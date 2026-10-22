@@ -27,7 +27,8 @@
   `find_tools` 수확 → `tools/list_changed`. 참고 그림은 한 실행에 한 번만(이미 인정된 그림은 다시 안 싣는다), 1568px 초과는 «손실 없을 때만» 정수
   배율로 줄인다(번들 953장 중 3장). 비용의 대부분은 관문이 요구하는 참고문서 글(버들항 한 용도 약 15만 자)이고 캐시 읽기다 — 관문은 줄이지 않는다.
 - 설정 API(첫 화면 설정 화면이 그린다): 동반 `GET /v1/local-agents[?fresh=1]` → `{clis, recommended}`(상태 «연결됨/로그인 필요/설치 필요/확인 실패»,
-  설치·로그인 안내 문구, 모델 목록, 역할별 기본 모델), `POST /v1/local-agents/health {cli}`. 선택 저장은 localStorage `oprn:assistant-engine`
+  설치·로그인 안내 문구, 모델 목록, 역할별 기본 모델), `POST /v1/local-agents/health {cli}`(워커는 `{cli}`·옛 `{id}` 둘 다 읽는다 —
+  2026-10-21 까지 `{id}` 만 읽어 「연결 시험」이 Codex(ChatGPT) 포함 모든 CLI 에서 매번 400 이었다. 재현 `node scripts/qa/chatgpt-connection-repro.mjs`). 선택 저장은 localStorage `oprn:assistant-engine`
   (`src/ai/localCliEngine.ts`), `loadAiConfig` 가 `applyAssistantEngine` 으로 덮는다. 개발 중 강제 선택: 그 키에 `{"kind":"local-cli","cli":"claude"}`.
 - 검증: 헤드리스 `bun scripts/spike/claude-cli-turn.mts --cli claude|codex`(SQLite 저장·재로드, `verify-shots/assistant-claude-p/<cli>/`),
   gemini 는 미로그인이라 녹화 스트림 재생 `scripts/spike/gemini-replay.mts`. 실제 입력창 경로는 하네스에 엔진 설정 파일을 준다:
@@ -4552,6 +4553,7 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 | interview-scene | 생성형 | `src/editor/interviewSceneGeneration.ts:45` | **결정 2 확정**: 도트 격자 검수까지 하지만 이미지 모델로 생성한다(유지) |
 | concept-thumb | 생성형 | `src/concepts/draft.ts:96`, 프롬프트 `src/concepts/art.ts:24` | **결정 2 확정**: «SNES 도트 썸네일» 이어도 이미지 모델로 생성한다(유지) |
 | tileset · map-object · interior-prop | 도트(텍스트) | 공방 `src/harnesses/_core/workshop/engine.ts:142`(`workshop-draw`), 표 `src/ai/assistantEndpoint.ts:107` | 지금 `pixelModel` 을 읽는 유일한 소비자 |
+| object-form-reference | 생성형 | `src/editor/workshop/pixels.ts` `referenceImage`(공방 엔진 참고 단계 `engine.ts` `makeReference`) | 2026-10-21: 공방 새 기물의 **모양 참고 그림**. 그리는 모델만 보고 화소가 되지 않는다(판 임시 기록, 설치·저장·스토어 없음). 그림 계정이 없으면 참고 없이 그린다 — `openwiki/editor-workshop.md` 「참고 그림 단계」 |
 | charset | 도트(텍스트) — 앱 안 소비자 없음(가드 전용) | `src/editor/tools/mechCharsetTools.ts:1-4`(`author_actor_charset` = 결정적 코드 도트, 모델 호출 없음) | RM2000 캐릭터 대량 저작은 외부 하네스 `charset-actor`(이 설정과 무관) |
 | user-upload | 업로드만 | `src/editor/panels/databaseResourcePickerDialog.ts:240`(AI 칸은 title·backdrop·still 만), 본문 위 「charset/battleCharset/chipset/parallax 타일링은 제외」 | 생성 경로 없음 |
 | (제외) 몬스터·트레이너 | 별도 하네스 | `src/harnesses/monster-collect-species/node/imageSource.ts`, `src/harnesses/battle-trainer-sprites` | 생성→격자 도트화+사람 pick. **라우터를 거치지 않고 건드리지 않았다** |
@@ -4593,3 +4595,9 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 - 스마트 팔레트 탭(`지형 | 프리팹 | 최근 | 개별 타일`, `src/editor/panels/tilePaletteSmart.ts`)을 누를 때 `라벨·태그 검색`(`catalogQuery`)이 남아 있으면 검색어와 디바운스 타이머를 함께 비워, 검색 결과 화면에 갇히지 않고 고른 탭의 카드 목록으로 바로 전환한다.
 - 왼쪽 활동 막대의 「스토어」(`data-testid="sidebar-store"`)는 다른 활동 탭과 마찬가지로 좌측 `left-store-pane`만 열고, 전체 화면 스토어 모달(`.store-host`)은 패널 안의 「인기 에셋 둘러보기」(`data-testid="left-store-open"`)를 눌렀을 때만 연다.
   - 2026-10-20: 패널 아래에 「내 에셋 나누기」(`data-testid="left-store-share"`)가 더해져 스토어를 `upload` 탭(3걸음 나누기 마법사)으로 바로 연다. 창 안 계약은 `openwiki/asset-store.md` 「스토어 창 UX」.
+
+## UX 2차 — 도크 배치·서버 AI 꺼짐 문구 (2026-10-21, F24)
+
+- 오른쪽 AI 도크가 열려 있으면 폭 1100px 이상에서는 **레이아웃 폭을 차지**한다(지도 위를 덮지 않는다). 1100px 미만에서는 예전처럼 덮는 오버레이이고 툴바만 비켜 준다(`32-ai-workspace.css`).
+- 서버가 AI 를 껐을 때(`hostAiDisabled`) 잠금 막(`aiLockScrim`)과 칩은 같은 「AI 서버에서 꺼짐」 문구를 쓰고, 소용없는 로그인 버튼은 숨긴다. AI 입구 4곳은 그대로 둔다. 대화/조수 탭에는 설명 title 이 붙는다.
+- (UI 감사 2026-10-21) 같은 판정을 더 따른다: AI 설정 「연결」 탭의 계정 카드 배지는 503(`OPRN_HOST_OWNER_AI`)이면 「확인 실패」 대신 「AI 서버에서 꺼짐」(`cardAuth` 의 `"hostDisabled"`), 스튜디오 「내 요청」 유휴 줄은 「AI 꺼짐」 / 평소 「요청 없음」(예전 「대기 중」). 잠금 막이 덮는 동안 막 뒤 본문(스타터·대화 기록, `.ai-chat-body` 의 막 아닌 자식)은 `inert` 라 Tab 이 그리로 들어가지 않는다 — 컴포저는 body 밖이라 살아 있다.

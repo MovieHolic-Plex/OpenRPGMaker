@@ -1,0 +1,321 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7496523ec26187b0e160b60e4ae2592ccedacf63ab8385a6851e6523d440fcce",
+ "width": 48,
+ "height": 48,
+ "kind": "organic",
+ "name": "forest north-edge skyline of treetops",
+ "label": "jp_city/jp-forest-bl-sky-3",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 34,
+  "nearBlackEdge": 0.32,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lit treetop canopy mass",
+      "rows": "16-31",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "32-36"
+     },
+     {
+      "part": "shaded lower foliage (front face)",
+      "rows": "32-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette starts at row 15 with a bumpy, rounded top edge. Rows 16-31 are bright, lit leaf clusters (L about 110-168) that form the upward-facing canopy surface. At rows 31-32 the columns drop sharply to very dark values (x=24 goes from L=109 to 32 at row 32, x=35 from 79 to 37), which acts as the edge line followed by deep shadow. Rows 32-47 are darker foliage with leaf-shaped highlights, which reads as the south-facing front of the tree mass. The top is therefore a lit surface of about 16 rows with a front face of about 16 rows, which reads as three-quarter view. The object is a tiling skyline strip, so there is no single object outline."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a hedge-like band of treetops with leaf clumps in about 4 greens. It has some dot texture, and its dark edge pixels are tinted green (0% neutral), so the outline is dark_material_tone, not a sticker line. But it uses only 15 distinct colours in total and a median of 15 per 16x16 tile, against about 108 per tile and 427-567 colours in the references. That is far below both references. The references show many individually shaded leaf clumps with highlight, light, mid, dark and deep steps, branches and varied clump shapes. The candidate's canopy reads as a uniform, repeating scalloped band with a smooth dark gradient at the bottom and few highlight accents. Flat-fill coverage is 0%, so there are no flat areas, but the shading depth and information density are well short of the Beodeul bar. Fails on density and shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13045
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lit canopy top of the treetop mass",
+      "rows": "16-31",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "32-36"
+     },
+     {
+      "part": "dark shaded foliage front below the canopy",
+      "rows": "32-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 8 to 48 px over rows 15-19, which gives a rounded treetop outline. Rows 16-31 are bright, mottled green leaf clusters (L about 104-168) and form the lit upper canopy surface. In the column scans this lit band ends at rows 31-32 and drops sharply to very dark green (L about 26-37). That dark mass, with a few mid-green leaf clumps, runs through row 47 and reads as the shaded south face of the foliage, 16 rows tall. The front-edge line is a soft foliage transition rather than a crisp 1-row line, but the light-to-dark break and the shadow below it still give a top-plus-front structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a hedge-like band of treetops with leaf clumps in roughly 4 greens and a darker lower shadow. It has some leaf-clump texture, with no flat fills (0% coverage) and no neutral outline (0% near-neutral dark edge pixels, so edges lean green). Density is far below the references, though: 15 distinct colours in total and a median of 15 per tile, against 108-109 per tile and 427-567 colours in the references. The references show 5-6 greens with per-clump highlights, varied clump shapes, and trunk and branch detail. The candidate's ramp is shallower and its clumps are more uniform and repetitive. It reads as a flat, sparse strip next to the references, not as a rich skyline. A careful artist would not accept it beside them, so it fails on density and shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12784
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sunlit canopy top of the treetops",
+      "rows": "16-31",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "32-36"
+     },
+     {
+      "part": "dark shaded leaf mass and trunk zone below the canopy",
+      "rows": "32-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette starts at row 15 and widens to the full 48 px by row 19. Rows 16-31 are a bright, lumpy canopy band (L about 105-168). At rows 31-32 the columns drop sharply to very dark values (x=24 goes from L=109 to L=32, x=35 from L=79 to L=37). This works as a lit top surface ending in an edge, with dark eave shadow at rows 32-36. Rows 32-47 are a dark vertical face of shaded leaves, 16 rows tall. The edge is a lighting boundary rather than a clean 1-row line, so the 3/4 reading is moderate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a hedge-like band of treetops with leaf clumps in about 4 greens, and its dark edges are tinted green (0% neutral), so the outline is fine. The numbers are far below the references: 15 distinct colours in total against 427 and 567, and a median of 15 colours per tile against about 108. Flat-fill coverage is 0%, so there are no flat areas, and the scalloped leaf clumps give some texture. Even so, the ramp is shallower than the references' 5-6 greens, and the clumps look uniform and repetitive, with little highlight variation and no trunk or canopy structure. It reads as thinner and flatter than the reference trees. A skyline strip is a simpler object, but the density gap is large enough that a careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13568
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sunlit treetop canopy mass",
+      "rows": "16-31",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "32-36"
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is 48 px wide from row 19 and narrows to a lumpy skyline at rows 15-18. Rows 16-31 are bright, mid-green foliage that works as the sunlit upper canopy plane. Column scans show the lightness dropping from L~109 at rows 29-31 to L~32-37 at row 32 (x=24 and x=35). That change acts as the front edge, followed by dark eave-like shadow at rows 32-36. Rows 32-47 are a dark green leaf face with leaf clumps, which gives a front face of about 16 rows. There is no receding side face. The edge is soft and leafy rather than a crisp line, so the top-surface evidence is moderate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a low hedge-like band of treetops with about 4 green steps. It has leaf-clump dots and a dark green lower edge, with no neutral outline (0% near-neutral dark edge pixels), and no flat 5x5 areas (0%). However, it carries only 15 distinct colours in total and a median of 15 per tile. The references have 427 and 567 colours and a median of about 108 per tile. That is roughly 7x lower tile density, and the gap is far larger than the sparse-object allowance covers, since this is a full canopy mass. The references show many clumped leaf highlights, mid tones, deep shadows and visible branches, while the candidate is a fairly uniform texture with a gradual dark gradient and little clump definition. It would look thinner and flatter than the references next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16792
+  }
+ ],
+ "decidedAt": "2026-10-20T06:28:44.234Z",
+ "cells": {
+  "16": [
+   "2d465c2bd0227dae",
+   "32fe543bd97f2444",
+   "36f42be8935846eb",
+   "56aff616d8c47f5a",
+   "6be5db31397d1638",
+   "9e0f16a41ca5c012",
+   "d57d9f7aa526b29f",
+   "d66de0b87cac9b19"
+  ],
+  "24": [
+   "13c3ae4ad2d0b290",
+   "b484048c836516b2",
+   "f84f4b24560945af",
+   "fad48ccafbfba4ff"
+  ],
+  "32": [
+   "0ef60abd0e9eac8c",
+   "3e3201f9952bb3ea",
+   "43390cba0e8b70d1",
+   "4619b211a9516536",
+   "5033e496618a6e38",
+   "549a30ed3dabc186",
+   "591e05c963ec691c",
+   "6df2e32453ec47db",
+   "81fe7063479eb622",
+   "831436bfcba84bec",
+   "8d25f4bdf937ae10",
+   "9350c44ecc422a32",
+   "9421ee1685c159c9",
+   "a0f9e307b4941aa4",
+   "b45143a5c6a88fb5",
+   "bde4085403f4d899",
+   "bed183aacc01c5da",
+   "ca1fd5e772cc5807",
+   "ca5a4529f3022303",
+   "d577c1f517d8c2e6",
+   "e8d598d7a218c215",
+   "fb569e5a31352757"
+  ],
+  "48": [
+   "8a6c8a8d80e7fd64"
+  ]
+ }
+}

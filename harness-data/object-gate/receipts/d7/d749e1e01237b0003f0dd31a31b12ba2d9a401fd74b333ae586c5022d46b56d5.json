@@ -1,0 +1,428 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d749e1e01237b0003f0dd31a31b12ba2d9a401fd74b333ae586c5022d46b56d5",
+ "width": 80,
+ "height": 96,
+ "kind": "structure",
+ "name": "jp-inaka-dagashiya",
+ "label": "jp_inaka_pack/jp-inaka-dagashiya",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 35,
+  "darkV5": 35,
+  "nearBlackEdge": 0.78,
+  "opaqueTiles": 20
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof",
+      "rows": "28-50",
+      "evidence": "c",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "49-50"
+     },
+     {
+      "part": "striped awning",
+      "rows": "64-71",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper wall with yellow signboard",
+      "rows": "52-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "goods on shelves and counter",
+      "rows": "72-88",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The large tiled roof fills rows 28-50. It has a ridge band at the top (rows 28-33) and tile courses below. A light front-edge line sits at row 48, followed by dark eave shadow at rows 49-50 and the outline at row 51, so it reads as a sloped roof plane. The striped awning at rows 64-71 is a second sloped plane. Below it the front (south) face is drawn as the upper wall (rows 52-63), the shop front with shelves and window (rows 72-88), and a stone step (rows 89-94). That is about 38 rows of front face, so the object reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 21 visible tones per 16x16 tile, against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. Only 25% of its dark edge pixels are neutral, so most outlines lean toward a tint (dark blue-grey on the roof, dark brown on the wood), though the 25% is higher than the references' 7-9%. The shop front is dense with small details: striped awning, candy jars, a signboard, a shelf and a window. The roof is the weakest part. It has about 4 steps of blue-grey with banded rows and no per-tile scallop highlights, so it is shallower than the references' 5-6-step tile roofs. The wood and plaster areas still carry grain and variation, so there are no flat fills. Overall it sits at or above the references on the primary facts, with tinted outlines and a slightly simpler roof ramp, which is acceptable next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18542
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main tiled roof",
+      "rows": "28-50",
+      "evidence": "c",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "49-51"
+     },
+     {
+      "part": "striped awning",
+      "rows": "64-71",
+      "evidence": "c",
+      "front_edge_line_row": 71,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter display goods and shelf items",
+      "rows": "72-88",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 42,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The large roof fills rows 28-50 and is a sloped tile plane. A ridge highlight runs through rows 29-33, then tile courses to row 47. A light eave line sits at row 48, followed by dark eave shadow in rows 49-51. Below it the south wall, sign, striped awning (rows 64-71, a sloped canopy), shelves, window and stone base fill rows 52-93, about 42 rows of front face. The roof reads as a top surface above the front face, not a flat front strip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building (roof, signboard, awning, shopfront), so it matches the reference kind. It has 21 visible tones per 16x16 tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. Only 25% of its dark edge pixels are near-neutral, so about 75% carry a tint. The outline reads as dark navy or brown beside the roof and wood, and the forms are often separated by value alone. That is closer to material-tone outlining than to a uniform black sticker line, though it is a little more neutral than the references (7% and 9%). The slate roof shows about 4-5 lightness steps in banded rows, but it lacks the per-tile scallop highlights of the references. The striped awning, candy jars and wood-plank facade add real texture and varied clusters. Shading depth is slightly below the references (5 steps against 6), but the piece is dense with no flat fills, so a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16276
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main tiled roof with ridge cap",
+      "rows": "28-50",
+      "evidence": "c",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "49-51"
+     },
+     {
+      "part": "striped awning over shop front",
+      "rows": "64-71",
+      "evidence": "c",
+      "front_edge_line_row": 71,
+      "eave_shadow_rows": "72-73"
+     },
+     {
+      "part": "wall sign board",
+      "rows": "54-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "goods on shelves and counter",
+      "rows": "73-87",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 42,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building has a large sloped tile roof in rows 28-50. It has a ridge band at rows 28-34 and tile courses below. A lighter front-edge line sits at row 48, followed by dark eave shadow at rows 49-51. Below it, the south face runs from rows 52 to 93 (wall, sign, striped awning, shopfront and goods, stone base). The striped awning in rows 64-71 is a second sloped plane. The roof is a true sloped top surface, not a front-facing strip, so the structure reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building (roof, signboard, striped awning, shopfront with goods, door and window), so it matches the reference kind. It shows 21 visible tones per 16x16 tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. Only 25% of its dark edge pixels are near-neutral, so the outline mostly carries a blue-grey or brown lean next to the roof and wood. The references sit at 7-9%, so the candidate is somewhat blacker, but it is not a uniform sticker line, and I call it dark_material_tone. The slate roof has about 4-5 value steps in horizontal tile courses with per-row highlights, a little shallower than the reference tile roofs. The awning stripes, the candy dots and the wood grain on the lower facade add varied small-scale texture. Nothing is a large flat fill, and a careful artist would accept it beside the references. The slate roof is the weakest area, but it is not enough to fail the piece.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17811
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main tiled roof",
+      "rows": "28-51",
+      "evidence": "c",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "49-51"
+     },
+     {
+      "part": "striped awning over shop front",
+      "rows": "64-71",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "yellow sign board on wall",
+      "rows": "54-62",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "goods on shelves and counter",
+      "rows": "72-88",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 24,
+    "front_face_rows": 42,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A large slate roof fills rows 28-51 (24 rows). It has a ridge highlight at rows 29-31, tile courses below, and a light edge line at row 48 followed by dark eave rows 49-51. Below it the south wall, sign, striped awning (rows 64-71, a sloped canopy plane) and shopfront run through rows 52-93, about 42 rows of front face. No side face is drawn, so this is a building with a sloped roof top and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts are fine: 21 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 25% neutral dark edges against 7% and 9%. The picture is weaker than the numbers. The grey-blue tile roof has only about 3-4 bands (a lighter top, a mid body and a dark base), with faint tile rows. It has none of the per-tile scallops or highlights that the Beodeul roofs show in 5-6 steps. The roof is also a wide, flat slab, and the references have a modelled hip or gable with a lit slope. The wall is a dark wood band with few grain dots. The awning stripes, the goods and the window are all clean and busy, but they are flat, uniformly outlined shapes with the sticker look. The outline is partly tinted, partly near-black along the roof and frame edges, so I call it mixed. Much of the tone count comes from the small, saturated goods and signage, not from shaded material ramps. Overall the building is rich in small detail but its main materials are shallower than the references. It would look flatter next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13824
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:03.845Z",
+ "cells": {
+  "16": [
+   "059e50a10dcedaa1",
+   "0c39821a1fcdb5bf",
+   "13941fff8dc3354f",
+   "2bdb371f9927bac6",
+   "4243d04a9d36c356",
+   "49888b389e7047ac",
+   "5d268c7d8595c056",
+   "83000c944c9f8506",
+   "88e1739f93f85503",
+   "92c916bb5e103ab0",
+   "935023962b373502",
+   "9f55de909aa95117",
+   "a3c7ae29eb6b7d7b",
+   "aaa98e037f0ae2c4",
+   "bc2ef3a6666fa015",
+   "c1276ac536099f29",
+   "c4352891d0ecc564",
+   "c65c29e632f8b384",
+   "cd2ca26891d905ee",
+   "da02776d308db5d9",
+   "f1f2edad271420a5",
+   "f83928f78741c457",
+   "fcad77b6475cfa1a"
+  ],
+  "24": [
+   "0843254fd5e204d1",
+   "133726b6e1192c6c",
+   "1d3c1b85896a3de2",
+   "1e9b4f3d1c2715d3",
+   "34af64179c69835b",
+   "3d5eaad0b1f56bb3",
+   "4161cd11db61ba1f",
+   "41a9b201650a91e5",
+   "44bdde60335b20dc",
+   "499b3871c0d11720",
+   "531da70f89b61c58",
+   "774485be68a169c3",
+   "803a118a081ec032",
+   "83436bf96d99ef61",
+   "901f0046da5f852f",
+   "ad2828d2a9cb8cbc",
+   "aed6dff277bcd84d",
+   "b71ecdb06d3b0257",
+   "c01a9d3d8ee232d2",
+   "c2aef6a91e2c8134",
+   "c3d3c47f201997c8",
+   "c66974f31daa71f5",
+   "cb17ac40da0a5ee6",
+   "cd75b46141962d67",
+   "cdf11770a0e1d7f8",
+   "d4af108e19c7ebba",
+   "d5c3c4b56f95b13e",
+   "d7e160a7db69711e",
+   "da7cf83d9de57367",
+   "db8f0c8b8b1d8810",
+   "e301c960cf4de3e7",
+   "e93f36ba26bc69cd",
+   "f2c1408af3659f7a",
+   "f395cee52dc38035",
+   "f43af476b0da2733",
+   "f635929dc697135b"
+  ],
+  "32": [
+   "0a4784357ac3defe",
+   "1800682a6aa7d51a",
+   "193f6227685a3a5a",
+   "1f4696a6a80375e4",
+   "34044c93c833373b",
+   "394131fdfda5df90",
+   "60b8b28fa55bd389",
+   "63e9add69ebce161",
+   "67a16ba07e357694",
+   "6a77ba9aaea82d6b",
+   "6d090bf228a7ca58",
+   "74629af7091d9a9e",
+   "7694b0c75c2779bd",
+   "86d19e82dba3b40f",
+   "9d347c8e873a0f59",
+   "a6d119666df4169d",
+   "b1abb8f97263279e",
+   "e56c98ba5169e7c7",
+   "ecac1180a43833d7",
+   "eecc9be5003b59fb",
+   "f339d272ca2b78bd",
+   "f54bc8d9c4ec1c5c",
+   "f77db5d75f03e897",
+   "f80ef1516030d7f5",
+   "f8d2d1b9bf8d81e7"
+  ],
+  "48": [
+   "061c033f46c7f194",
+   "2c9f5fb5be1867b3",
+   "4e36946546a9988f",
+   "829cf4eb923389d9",
+   "91e79622f29bdf3b",
+   "9b6e2b78a5a20046",
+   "ba760fd062acdb5e",
+   "d6ba461665c51e26",
+   "d892b28e2239ff6f",
+   "df340a840a5ebae6",
+   "e12118622117a2ff",
+   "f56ba797f111fe87"
+  ]
+ }
+}

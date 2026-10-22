@@ -221,6 +221,11 @@ await withTsModule(resolve('electron/serve/runtime.ts'), `stress-host-${process.
         await page.getByTestId('ai-team-menu').getByRole('button', { name: '팀으로', exact: true }).click();
         await page.keyboard.press('Escape').catch(() => {});
       }
+      // 조수 창이 접혀 있으면(오른쪽 「조수」 막대) 먼저 편다 — 2026-10-21 기본 배치에서 입력칸이 숨어 fill 이 30초 기다리다 실패했다.
+      if (!await page.getByTestId('ai-input').isVisible().catch(() => false)) {
+        await page.getByTestId('ai-collapsed-restore').click().catch(() => {});
+        await page.getByTestId('ai-input').waitFor({ state: 'visible', timeout: 30000 });
+      }
       await page.getByTestId('ai-input').fill(spec.prompt);
       await page.getByTestId('ai-send').click();
     } else {

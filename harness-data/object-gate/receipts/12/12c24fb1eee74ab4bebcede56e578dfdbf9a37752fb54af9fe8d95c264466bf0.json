@@ -1,0 +1,414 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "12c24fb1eee74ab4bebcede56e578dfdbf9a37752fb54af9fe8d95c264466bf0",
+ "width": 32,
+ "height": 64,
+ "kind": "organic",
+ "name": "대나무 작은 무리(줄기 다섯·잎 덩이, 2×4) — 대숲 가장자리·절·료칸 뜰",
+ "label": "jp_city/jp-rg-bamboo-clump",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 10,
+  "darkV5": 38,
+  "nearBlackEdge": 0.23,
+  "opaqueTiles": 7
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper leaf clump (top canopy mass)",
+      "rows": "2-18",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle leaf tier",
+      "rows": "19-30",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower leaf tier",
+      "rows": "31-40",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "five bamboo stalks (front face)",
+      "rows": "38-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grassy ground mound at base",
+      "rows": "55-62",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is an organic bamboo clump. The leaf masses are rounded tiers seen from slightly above. Their widths grow and then shrink (rows 2-19: 7 to 31, then back down to 19 at row 26, with the same pattern repeating through row 40). The lit upper rows, with a lighter #689e63 band at the top of each tier, read as the top of the foliage over a darker underside. Below the leaves, the stalks form a vertical front face of about 20 rows (rows 38-58). The base is a grassy ellipse (rows 55-62, width 23 to 28 and back down to 13) that gives a ground plane. There is no isometric side face. The reading is three-quarter, though the top surface is soft organic foliage and not a hard edge line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small bamboo cluster with 8 visible tones per 16x16 tile (12 distinct colours in total), against 26 and 29 for the references, so it is far below both. Its shading is shallow: the canopy lumps have about 3-4 green steps and the stems about 3-4, where the references use 5-6 steps per material with per-clump highlights. Near-flat coverage is 0% and the dark edge pixels are tinted (0% neutral), so the outlines are dark green and not near-black, and there are no flat fills. The leaf masses and stems are broad and smooth, with little grain, leaf-clump variation or soil texture. The silhouette is clean, but next to the dense, textured reference canopies it looks thinner and flatter, so a careful artist would not accept it at Beodeul density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 19301
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper leaf canopy (domed mass, lit top and shaded underside)",
+      "rows": "2-25",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "18-25"
+     },
+     {
+      "part": "lower leaf clump (wide, rounded top, darker underside)",
+      "rows": "31-39",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "36-39"
+     },
+     {
+      "part": "five bamboo stalks (vertical cylinders with light node highlights)",
+      "rows": "40-54",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass and soil ground disc at the base",
+      "rows": "55-62",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette width grows from 7 to 31 px over rows 2-19 and narrows again, so the upper canopy is a rounded mass. Its light top (#689e63, rows 3-7) shades to darker green below. The second leaf clump at rows 31-39 follows the same widen-then-narrow profile. Below it the stalks form a vertical front face of about 15 rows (40-54), 19 px wide. The ground disc at rows 55-62 widens from 23 to 28 px and then narrows to 13, an ellipse of about 8 rows, so the base reads as a surface seen from above. Together these read as a 3/4 view, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small bamboo grove (2x4 tiles) with about 8 visible tones per tile, against 26 and 29 for the references. That is roughly a third of the reference density. Near-flat coverage is 0% and the dark edge pixels are tinted (0% neutral), so the outline reads as a dark green material tone, not a sticker line. The foliage clumps show about 4 green steps, but they are broad, smooth domes with little per-leaf clump texture. The stems are fairly uniform vertical bands with minimal grain or node detail. The references have many more leaf clumps and highlight/shadow variation, so beside them the candidate looks thinner and flatter. Bamboo is a simpler subject than a broadleaf tree, but 8 against 26+ tones is too far below the bar, so this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17359
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top leaf clump (dome of light leaves)",
+      "rows": "2-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle leaf clump (wide ellipse-like lump with lighter upper surface and dark underside)",
+      "rows": "13-26",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "24-26"
+     },
+     {
+      "part": "lower leaf clump (wide lobes)",
+      "rows": "31-39",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "36-39"
+     },
+     {
+      "part": "grass/earth base mound under the stalks",
+      "rows": "55-62",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The five bamboo stalks form the front face in rows 38-58. They have light and dark vertical bands and node marks, and they stand on an elliptical grass base (rows 55-62, width 23→28→13). The foliage is stacked clumps whose silhouettes widen and then narrow again. In the middle clump, width goes 24→31→22 over rows 13-26. Each clump has lighter leaves on top and a dark shadowed underside (rows 24-30 and 36-40) that sits above the stalks. This reads as a volumetric 3/4 plant with a visible top and a front face, not a flat elevation. The top-surface evidence is organic and soft rather than a crisp edge line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small bamboo grove with five stalks and foliage clumps. Its dark edges are tinted dark green, so the outline is not near-black (0% neutral edge pixels, same as the references). It has no flat 5x5 areas. Its density is far below the references: 8 visible tones per tile against 26 and 29, and only 12 distinct colours in total against 427 and 567. The canopy clumps are drawn in about 3-4 greens with few per-leaf highlights or clumped texture. The stalks are thin vertical bands with little node and grain detail. Compared with the references' 5-6 step leaf clusters, it looks thinner, simpler and more like a sticker. A careful artist would not accept it next to the references without more tones and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 18861
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top leaf clump",
+      "rows": "2-12",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle leaf clump (wide, widens to 31 then narrows)",
+      "rows": "13-26",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "20-25"
+     },
+     {
+      "part": "lower leaf clump",
+      "rows": "27-39",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "36-39"
+     },
+     {
+      "part": "grass and soil base ellipse",
+      "rows": "55-62",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The five bamboo stems (rows 38-58) form a vertical front face about 21 rows tall. The leaf masses above them are layered rounded volumes. The width profile widens to 31 at rows 19 and 34-35, then narrows again (26 at row 26, 19-20 at rows 40-41). Together with the shaded undersides, this reads as canopy volume seen from above and the front. The oval grass and soil base (rows 55-62) widens to 28 and narrows to 13, so it also reads as an ellipse on the ground. There is no flat front-elevation strip. The shape works as a 3/4-view organic cluster."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small bamboo cluster with 8 visible tones per 16x16 tile, against 26 and 29 in the references, so it is far below both. Near-flat coverage is 0%, so there are no large flat fills, and the dark edge pixels are tinted (0% neutral), which fits a dark green material-tone outline. Still, the canopy lumps and stalks use only about 4 green steps, with little per-leaf clumping or grain next to the references' many-step leaf clusters. The stalks are smooth, banded vertical shapes with few texture dots. The piece reads as simpler and flatter than the references and does not reach the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16137
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.688Z",
+ "cells": {
+  "16": [
+   "0c67a856f090f103",
+   "24a8b46d84e0b0ca",
+   "552a60fefe492fce",
+   "72c4ea4baaa11f92",
+   "7b93f52aa3021d9a",
+   "7f55ebae30b68f1a",
+   "8e6053e4ee8dc99f",
+   "e7d9682a2f53933e"
+  ],
+  "24": [
+   "01d7a743eff7a8bc",
+   "022b7fba22c25892",
+   "0518190f3d5d5dc7",
+   "0711f2e5772d4b90",
+   "1106d010a1f89a57",
+   "2127b9cbc0bef15d",
+   "252bfed205bcb648",
+   "2785d0637bd28e48",
+   "3aa6c3f10711feeb",
+   "3ac1e116e0326bde",
+   "45cbf4d3f668da6e",
+   "4e8ed55a02ece540",
+   "57c09040f2d0cd58",
+   "5d6c8f1d9b2a2d89",
+   "691152209c981510",
+   "6f95d2335d45f88a",
+   "7fbf01cf3ecb4820",
+   "814f5ba65811758a",
+   "91b6d9d0cde09338",
+   "95ff4f168667de20",
+   "9c77df4fde0ec0e5",
+   "9fe8b4116290d5fa",
+   "a64c54dad33a393d",
+   "a82a9cd8e6b9c65d",
+   "adfb974d15ec339d",
+   "b6a9a0a47134bf27",
+   "bc1ef2873c23e226",
+   "bfa70e011d1e50be",
+   "dd750691089ce397",
+   "de9b1e48431ec97d",
+   "e5ec29eb9be7b663",
+   "e8797be423d8653f",
+   "ee689375915631f9",
+   "f6ea43cea030ee91",
+   "f999a2f7f360433f",
+   "f9e676fc58624b09"
+  ],
+  "32": [
+   "5e3e1758a59d7c24",
+   "f95bb5eddcf7ee35"
+  ],
+  "48": [
+   "1acb93b3ff28de48",
+   "1ff38d9927c43076",
+   "4d07f0580341aeef",
+   "625ef19979836d07",
+   "778117117bd16922",
+   "7a2cc40a8b97a1ee",
+   "85ab59708ffd8394",
+   "9b2825013d620082",
+   "a07ef6f4367c7359",
+   "c7ff701c286053e0",
+   "d7805f54b10dbd11",
+   "d9cfa456f79b4f1e"
+  ]
+ }
+}

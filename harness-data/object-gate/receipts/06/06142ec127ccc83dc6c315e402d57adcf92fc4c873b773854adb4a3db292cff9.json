@@ -1,0 +1,395 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "06142ec127ccc83dc6c315e402d57adcf92fc4c873b773854adb4a3db292cff9",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-inaka-red-iron-bridge",
+ "label": "jp_inaka_pack/jp-inaka-red-iron-bridge",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 22,
+  "darkV5": 63,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 18
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back railing with posts and finials",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bridge deck planks seen from above",
+      "rows": "15-27",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "15-17"
+     },
+     {
+      "part": "front railing with posts and finials",
+      "rows": "28-37",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front fascia beam (south face)",
+      "rows": "39-46",
+      "evidence": "none",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": "45-46"
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a bridge span. Rows 15-27 are a 12-row deck of brown planks seen from above. Dark shadow rows 15-17 sit under the back rail. A dark edge line at row 28 separates the deck from the front railing. Below, the red fascia beam (rows 39-46) is a front face of about 8 rows, with a light top line at row 39 and dark shadow at rows 45-46. The back and front railings are vertical open frames, which is normal for a railing. The deck gives the horizontal surface and the fascia gives the south face, so the view is three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate matches the references on the primary facts. It has 12 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage like both references. Only 3% of its dark edge pixels are neutral, against 7% and 9% for the references. The outlines visibly lean dark red-brown beside the red railings and dark brown beside the deck planks, so they are not a black sticker line. The red railings step through highlight, mid and dark red, and the planked deck carries vertical grain marks and dark gaps. The dark red base course has some variation and no large flat blocks. The red ramps have about 4 steps against the references' 5-6, and the thin railings are simpler than roof tiles. The raw colour count (30) is low, but the palette is locked and the visible texture is comparable. A careful artist would accept it beside the references without it looking flatter or more sticker-like. The piece is a bridge rather than a roofed building, so the kind match is loose, but the style comparison still holds."
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22356
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rear railing with posts and finials",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plank deck seen from above (brown vertical planks)",
+      "rows": "15-27",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front railing with posts",
+      "rows": "25-37",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red girder front face with top cap line",
+      "rows": "39-46",
+      "evidence": "none",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a bridge span. Its plank deck fills rows 15-27 as a horizontal surface seen from above, about 13 rows tall, with a dark edge line at row 28. A rear railing sits above it (rows 6-14) and a front railing below it (rows 28-37). The south face is a red girder at rows 39-46, 8 rows tall, with a light top line at row 39 and a dark underside at rows 45-47. The deck is clearly visible between the two railings, so the object reads as a 3/4 view and not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a side-view bridge: red railings, a plank deck and a red girder. It has no roof, walls or door, so it is not the same kind as the house references. The measured facts are fine. It has 12 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and only 3% neutral dark edge pixels, so the outlines carry a tint (dark red beside red, dark brown beside wood). By eye the picture is weaker than the facts suggest. The red railings and posts are thin and use only about 3 steps (bright red, mid red, dark red), with no per-piece highlights, against the references' 5-6 steps per material. The plank deck has some grain and variation, but it reads as a flat band. The bottom girder has only a little hatching. Overall it looks thinner and flatter than the roof tiles and stone shading on the references. Because the kind does not match and the red ramp is shallow, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19750
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back railing (posts, rails)",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bridge deck planks seen from above",
+      "rows": "16-27",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "front handrail top band",
+      "rows": "29-31",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "32"
+     },
+     {
+      "part": "front girder face",
+      "rows": "39-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The deck is a 12-row plank band (rows 16-27) with darker shadow rows 16-17 under the back rail. It ends in a dark front-edge line at row 28, below which the front railing (rows 28-37) and the red girder face (rows 39-46) stand as vertical faces. The back railing sits above the deck. The width stays at 96 px across the deck and girder, with no side face. The plank band gives a clear horizontal surface, so this is a three-quarter view, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a red railed bridge deck, not a roofed building, so the house references are only a loose match. On the primary facts it is level with them: 12 visible tones per tile against 12 and 10, 0% near-flat coverage like both, and only 3% neutral dark edge pixels. That means the outlines are tinted dark red-brown rather than a black sticker line. The red railings step through about 4 tones (light top highlight, mid red, dark red, deep base). The plank deck has per-plank grain, dark joints and speckle, and no area is a flat fill. It has fewer steps and less clustered texture than the roof tiles and plaster of the houses, so density is slightly lower. Because the railings are thin, sparse elements, I judge by eye, and a careful artist would accept it beside the references without it looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22381
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "far railing with posts and gold finials",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14"
+     },
+     {
+      "part": "plank deck seen between the far and near railings",
+      "rows": "15-27",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "near railing top rail and posts",
+      "rows": "25-37",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "32"
+     },
+     {
+      "part": "red front girder / bridge fascia",
+      "rows": "39-46",
+      "evidence": "none",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": "45-46"
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a bridge seen from the south. The plank deck (rows 15-27, about 13 rows) runs between the far railing and the near railing. It is bounded below by a dark edge line at row 28 followed by the near rail (rows 29-31), and it has a dark band at rows 15-17 under the far rail that reads as shadow. The south face is the red girder at rows 39-46 (8 rows), with a light edge line at row 39 and a dark underside at rows 45-46, flanked by stone abutments. The deck's vertical plank stripes and the tall railings make it somewhat ambiguous, but the deck is a horizontal surface seen from above, so I read it as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a bridge, not a house, but it was assigned the building kind, so the house references are the right comparison. It matches them on the primary facts: 12 visible tones per tile against 12 and 10, 0% near-flat coverage like both references, and only 3% neutral dark edge pixels, so the outlines carry a dark red or brown tint rather than a black sticker line. By eye, the red railings use about 3-4 steps (base red, highlight cap, dark shadow), fewer than the roof ramps of about 6. The railing is thin and fairly simple, which I do not hold against it. The deck has plank grain and dark seam marks, and the base beam has tonal variation, so no large area is a flat fill. It looks slightly less rich than the roof and stone surfaces of the references, but an artist would accept it beside them without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21458
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.154Z",
+ "cells": {
+  "16": [
+   "106728165c7ffccd",
+   "2b085039a33b4213",
+   "395b3be0c91f186e",
+   "4b7b81514120afad",
+   "4d5846a3714b0ffd",
+   "607ea027b6fa8870",
+   "7700f386482230da",
+   "8944a8e12581e19c",
+   "995d483f9e74e1e2",
+   "9cee4745060f713a",
+   "a23dcf85b97cefe8",
+   "b08fcf15a8ce1921",
+   "b28495f7ece00520",
+   "c3f59cecaa3ce176",
+   "cc36696c089f9e6f",
+   "eb8bd737fcffdbe4",
+   "f6fcefcb43feed8a",
+   "fbefc637662ffd38"
+  ],
+  "24": [
+   "0c28e7c0682edb68",
+   "114815f166a4c521",
+   "253c3a6d084da938",
+   "27c061f734113b06",
+   "6623fd19eada9f6a",
+   "709ad3ee7dd6980a",
+   "9c2a41340e847b51",
+   "e80fe13a9b0dd8b4"
+  ],
+  "32": [
+   "0a0b3ddf831973c0",
+   "0a489580853e0d6e",
+   "0e411a958bd93729",
+   "187e20185c965c0c",
+   "1e2c5b86ab100240",
+   "3340f62314353491",
+   "4a0026eb8d8967ea",
+   "4dbed60ece34b3f5",
+   "8fc095c251e6b7c5",
+   "ae4b3a0738935a45",
+   "d109fdc117dae355",
+   "d902192877738dc4"
+  ],
+  "48": [
+   "6bdfb776ade10b3c",
+   "87d41f68180a2ddc"
+  ]
+ }
+}

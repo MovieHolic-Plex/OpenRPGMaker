@@ -1,0 +1,347 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6be499b899c407af6d86fc1b6592fa0c2f135c8eb87caf841fc3adb1c8374e34",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "subway vending machine",
+ "label": "modern_city_interior/subway-vending-machine",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 23,
+  "tileColorsP90": 28,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "borderline",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of the machine",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "front face: red header, product window, control panel, base",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 form a light gray band at the top. Its lightness rises through the band to a lightest line at row 6 (L=244), which acts as the front-edge line. Rows 7-8 below it are darker (L=112) and read as eave shadow. The front face runs from row 9 to row 30 (22 rows): red header, product window, control panel and base. The silhouette is a constant 26 px wide with no receding side face. The top band is borderline because it could be read as a front-facing header, but the edge line plus shadow meets evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 22 visible tones per tile, 0% near-flat coverage and 0% neutral dark edge pixels. That matches or beats the stall (17) and well (20) on the primary facts, and its outlines are tinted rather than near-black. By eye the picture is smaller and simpler than the stall and well. The body is a pale grey-blue panel with a small product grid of coloured dots. It shows about 4 lightness steps on the casing, with a light top, a mid body and a dark border, and few per-element highlights. The casing is fairly smooth, with little grain or speckle. The product grid does add varied small detail. The piece is clean and reads clearly, but it is shallower in material ramps and texture than the stall and well, so it is borderline. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14322
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of machine",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "front face with red header, product window, and control panel",
+      "rows": "7-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 form a light grey band with a highlight line at row 6 (#f3f4f7), the brightest row in the column. Rows 7-8 are darker (L=112), which reads as eave shadow. Below that is a front face of about 24 rows: a red header band (rows 9-10), a product window with items, a control panel, and a dark base. The top band is 6 rows, so this is more than a 1-2 row rim. The face has no receding side. The top reading is somewhat uncertain because the band could also be a face-on header panel."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate. It has 22 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, which means the outline carries a tint and is not a uniform black sticker line, the same as the hedge and stall references. By eye, the grey-blue casing has a lit top and edge, a mid face and a darker side. The product grid and the display panel add small clusters of varied colour, so the piece does not look flat. It is slightly less layered than the stall and well, which use about 6 steps on their main materials, but a careful artist would accept it next to them. The board is small, so the reading rests partly on the measured facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15179
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top plate of the machine body",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "front face: red sign strip, product window, side panel and base",
+      "rows": "9-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 form a light gray band that brightens from L=169 to L=244. Row 6 (#f3f4f7) is the lightest, so it works as the front-edge line. Rows 7-8 (L=112) are a darker eave shadow directly under it. Below that, rows 9-31 are the vertical front face: a red sign strip, a product window with shelves, a side panel and a dark base. No isometric side face is drawn. The top band is fairly tall and the evidence is borderline, since it could also be read as a lit header panel. The edge line plus shadow pattern matches evidence (a), so I read it as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts: the candidate has 22 visible tones per tile against 17-20 for the stall and well. Flat coverage is 0%, and the dark edge pixels are 0% neutral, so the outline is tinted rather than black. By eye, the vending machine is a small grey body with a bright product grid, and the grid is the main source of its tone count. The grey casing looks like only 3-4 steps (light grey, mid grey, dark rim) with little grain or speckle. There are no per-element highlights on the casing, and the panel and coin slot are simple. The Beodeul stall and well show more material ramps (5-6 steps), with tile scallops, stone-by-stone shading and wood grain. The candidate is cleanly drawn and its numbers hold up, but the casing is shallower and flatter than the references, so it falls short of a careful artist's bar. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13365
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel / roof of machine",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "red sign band with white lettering",
+      "rows": "7-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face: product window, buttons, coin panel, tray",
+      "rows": "11-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a constant 26 px wide in rows 0-31. Rows 1-6 form a light gray band whose lightness rises toward row 6 (#f3f4f7, the brightest row). This reads as a front-edge line. Rows 7-8 below it are darker (L=112), which reads as eave shadow. A red sign band follows in rows 7-10, then the product window, buttons and tray in rows 11-30. That gives a front face of about 24 rows. The top band could be read as a light-box header instead, but the edge line plus shadow is enough evidence of a top surface of about 6 rows. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate shows 22 visible tones per full tile, against 17-20 for the stall and well, so the numbers match or exceed those references. Near-flat coverage is 0% and 0% of its dark edge pixels are neutral, so the outline is tinted rather than a black sticker line. By eye, the casing is a light grey-blue body with a darker grey frame and a lighter highlight edge, roughly 3-4 steps. The display panel is a small cluster of colourful product dots, which is where most of the tone count comes from. The body itself is fairly smooth, with little grain, speckle or per-element shading. The stall and well references have more per-material ramps, such as roof tile scallops, wood grain and stone-by-stone shading. The candidate is clean and plausible, but it is a little flatter and more graphic than those references, and the density gain comes from the product dots rather than from shaded materials.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16851
+  }
+ ],
+ "decidedAt": "2026-10-21T08:22:08.639Z",
+ "cells": {
+  "16": [
+   "346ba6990762842b",
+   "75e0a65f155b8306",
+   "a232eb7016764912",
+   "f937db9f79031389"
+  ],
+  "24": [
+   "022ad6ab36c71cfe",
+   "03ccd1601dfe521e",
+   "081fe70fc50b0831",
+   "09e497056db3a6ac",
+   "11f5f8a4c79b02c7",
+   "16ca7f32970cef01",
+   "1e52dbe092db3755",
+   "249f7563699ac84a",
+   "2666a7b0495b209d",
+   "27b0dfaa67f8a246",
+   "27e6635b7ec84dcc",
+   "2b09ca3a2d1d8b26",
+   "30b58230d2ccd82d",
+   "54e7d79e8525c3ea",
+   "81fdd735bc518d9c",
+   "84972a17b3efa774",
+   "904c91894e0ae820",
+   "a5d2e8835a921a97",
+   "b3cd5bfd005b8a4e",
+   "b5de13b1b8a22823",
+   "c2e67c0bbcf5ef21",
+   "e2792df322f8fb0b",
+   "f8cd897db266f2f7",
+   "fa6946be590349bf"
+  ],
+  "32": [
+   "9f6017971582e275"
+  ],
+  "48": [
+   "40b1811cab0a1319",
+   "4d6d49c8a90919a6",
+   "b27b94a8e3fa3eb3",
+   "ca60c76113d2d96f",
+   "cd892a7e17c0a711",
+   "f048d34f71e9c14b"
+  ]
+ }
+}

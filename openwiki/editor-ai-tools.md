@@ -1,5 +1,39 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 없는 기물 그리기 `generate_missing_object` (2026-10-21)
+
+조수가 기물 하나를 놓아 달라는 요청을 받았는데 칩셋에 그 물건이 없을 때, 공방 object-gen 실행기를 사용자 자기 AI 계정으로 돌려 후보를 그리고 고른 것을 **그 맵 칩셋의 공방 칸**으로 구워 놓는다. 스킬 `assistant-skills/missing-object-generation/SKILL.md`, 정책 한 줄 `OBJECT_GEN_POLICY_LINE`(`src/ai/promptPolicies.ts`, Pi 시스템 프롬프트 공간 작업에 실린다).
+
+- **순서(조수)**: 찾기 → 있으면 `stamp_object`/`build_hand_interior_room` → 사용자가 콕 집은 물건이 정말 없을 때만 `generate_missing_object` → 턴 끝 → 카드가 그림 → 후속 요청 `[공방에서 그려 넣음] … 물체 id workshop:…` → `stamp_tileset_object({mapId, objectId, base})`.
+  `list_tileset_objects` 는 팩·공방·mc 킷만 본다 — 결과가 비면 요약이 `list_spatial_designs({kind:"object", query})`(칩셋 소품 킷 `kit:…`·공용 `obj:…`)를 가리킨다.
+- **도구**(`src/editor/tools/objectGenTool.ts`, read 도구·`fillsCurrentMapId`): 인자 title·description·objectKind(`floor|wall|hang|flat`)·tilesW(1~4)·tilesH(1~3)·rise(0~48, **기본 0** — 2026-10-21 시험 2부터, 발밑 칸 안에 다 들어가는 크기)·gateKind(3/4 관문 종류 enum, 선택)·base `{x,y}`·need·notThese(string[]). 정의에 칩셋별 배경 `setting`(`objectSetting`)을 싣는다. 자유 키 객체·빈 enum 없음(CCA 400 함정).
+  거절: 16px 아닌 칩셋 `unsupported-tileset` · 머리 낱말이 사람·동물 `people-not-generated`(→ `place_npc`) · 바닥·벽·물·길 `terrain-not-object`(→ `ask_missing_tiles`) · 이름이 맞는 킷/손 도트 부품이 이미 있음 `object-exists`(그 id 를 돌려준다. 실제로 다른 물건이면 `notThese` 로 다시) · 크기 한도(실내 3×2·rise≤32, 맵 4×3·rise≤48).
+  성공하면 data = `ObjectGenRequest`(`src/editor/workshop/objectRequest.ts`) 이고 요약이 턴을 끝내라고 한다.
+- **여러 개는 한 턴에 함께(2026-10-21 작업 줄)**: 없는 물건이 여럿이면 조수가 같은 턴에 물건마다 한 번씩 부른다(도구 설명·`promptPolicies.ts`). 채팅 패널(`aiChatPanel.ts` `showStoreCards`)이 그 턴의 요청을 **묶음 카드 하나**(`createObjectGenBatch`)로 받아 모두 공방 작업 줄(`openwiki/editor-workshop.md` 「작업 줄」)에 동시에 세운다. 묶음이 다 끝나면(넣음·그만둠) 후속 요청 **하나**로 물체 id·자리를 한꺼번에 보낸다(「넣은 것부터 놓게 하기」로 먼저 보낼 수 있다). 카드는 작업 줄의 작업을 비추기만 하고, 굽기·알아서 고르기는 작업 줄이 한다(카드가 닫혀도 계속). 아래 「카드」 줄의 `startObjectGenRound` 직접 시작은 이 길로 바뀌었다(`assistantObjectGen.ts` 는 고르기 규칙만 남음).
+- **카드**(`src/editor/panels/aiObjectGenCard.ts`, 스토어 카드와 같은 길 — `STORE_CARD_TOOLS`·`createStoreCard`): 붙자마자 공방 작업 줄에 선다(`workshopQueue().enqueueAssistantRequest` — 공방 세션에 새 기물 정의를 넣고 차례가 오면 `engine.startRound`, 실내는 `interior-props`, 그 밖 16px 은 `map-objects` + `mapObjectPalette`. `assistantObjectGen.startObjectGenRound` 는 더 쓰지 않는다). 후보 그림·검수 결과·「이걸로 넣기」, 「알아서 고르기」(기본 꺼짐, `oprn:assistant-objectgen-autopick`, 검수 PASS 후보만 — 하나면 그것, 둘 이상이면 object-gen picker 를 옮긴 고르기 `src/harnesses/_core/workshop/picker.ts`(원본 PROMPT + 견본 그림, 숫자 꼬리표를 섞어 3번 묻고 다수결, 이유 한 문장 → 카드 상태·피드백 메모). 고르기 답을 못 받으면 통과 첫 장). 그리기·검수 자체도 object-gen 흐름 그대로다 — `openwiki/editor-workshop.md` 「새 기물은 object-gen 흐름 그대로 그린다」, 「다시 그리기」(실패·불통과만), 「공방에서 보기」, 「있는 것으로 해 줘」(판 취소 + 대안 후속 요청). AI 미연결이면 「AI 연결하기」.
+  판은 공방 「물건·가구」 화면에도 그대로 보인다(같은 IndexedDB 세션).
+- **놓기 검사**(2026-10-21, `src/project/objectFootprint.ts`): `stamp_tileset_object`(prop·tall·decal, overwrite 아님)와 `stamp_object`(서는 소품 킷 `isStandingPropKit` — 8×8 이하·입구 없음·아래층 그림 없음, 다리·벽 걸이·배·노면 표시는 뺀다)가 찍기 전에 발자국을 본다.
+  발 칸(그림이 막는 칸, 없으면 맨 아래 줄)이 허공·벽·천장/지붕·막힌 칸 위거나, 그림 칸이 다른 물체(위층 그림)와 겹치면 거부하고 둘레 10칸 안 가장 가까운 놓을 자리(왼쪽 위·base)를 글과 오류 데이터로 돌려준다 — 조수는 그 자리로 다시 부른다.
+  접지 그림자·노면 표시처럼 지나가는 바닥 덧그림(passage passable + 이름/태그 그림자·노면·횡단보도·중앙선)은 물체로 치지 않는다(시험 2 실측: jp_city 보도의 건물 밑 그림자 때문에 자판기 자리가 하나도 없다고 거부했고, 조수가 그림자를 지웠다). 위로 솟은 칸은 벽 앞면에 걸쳐도 된다.
+- **굽기**: `bakeWorkshopPick(item, grid, palette, env, { autoPicked })` — 알아서 고른 것은 설명서 `review.pick`(사람 선택) 을 비우고 출처 도구 문자열 끝에 `/auto-pick` 을 붙인다. 시트 자르기는 순수 모듈 `src/harnesses/_core/workshop/bakeSheet.ts`(`workshopBakeSheet`·`workshopGridHash`).
+- **관문**: 공방 칸은 이 게임에만 들어간다. 스토어 올리기·공용 DB 는 막힌다(`storePublishBlockReason`). object-gate 영수증은 공방 굽기에 아직 배선되지 않았다 — 「3/4 관문 미통과」 상태의 로컬 그림이다. 후보 카드의 「3/4 통과·애매·미달」 배지는 같은 지시문으로 판정자 1번을 부른 **조언**이고 넣기를 막지 않는다(`openwiki/editor-workshop.md` 「새 기물 그리기 품질」). 카드에 참고 그림 줄(「참고용, 설치 안 됨」 또는 「참고 그림 없이 그림」)도 보인다.
+- **그리지 않는 것**: 「분위기 있는 거 하나」처럼 무엇인지 안 정한 요청(있는 것에서 고른다), 사람·동물(캐릭터 칩), 칸 타일(나중 tile-gen · 지금은 `ask_missing_tiles`), 16px 아닌 칩셋.
+- **QA**: `scripts/qa/objectgen-assistant/` — `dump-system-prompt.mjs`(실제 Pi 시스템 프롬프트), `assistant-tool.sh`(헤드리스 `oprn-tools --assistant` 로 조수 도구 호출 기록), `driver.mjs`(dev 빌드 한 장에 실제 카드를 붙이고 공방 채팅을 `claude -p` 로 잇는다). 결과는 아래.
+- **시험 결과(2026-10-21, 조수 대용: Sonnet 5.5 역할극 — Argon 쿼터 소진 · 공방 그리기·검수도 Sonnet 5.5 `claude -p` 중계)**: 8건 판단 8/8 맞음 — 없는 것 3건(버들항 벌통 · jp_city 빨간 공중전화 부스 · 손 도트 실내 금붕어 어항)만 그렸고, 있는 것 2건(벤치·자판기)·모호 1건(「분위기 있는 거」→ 있는 우물)·이름은 다르지만 있는 것 1건(혼천의)·사람 1건(→ 있는 NPC)은 그리지 않았다. 그린 판은 한 판 104~158초, 알아서 고르기 2건·사람 고르기 1건, 세 건 모두 SQLite 저장 → 다른 프로세스 재로드 뒤 킷·이식·자산·맵 칸이 남고 렌더가 화소까지 같다.
+  독립 Opus 적대 VQA: 통과 2(벤치·자판기) · 약함 5 · 실패 1(혼천의 2×4 킷을 방 사이 벽 위에 찍음 — 여러 칸 킷의 바닥·벽 확인이 없다). 그린 기물은 앞면 위주라 윗면이 얇고(3/4 약함), 벌통은 「1×1」이라 해 놓고 두 칸 높이(rise 기본 16)로 그려져 읽히지 않았다 → 카드에 그림 높이를 함께 적고 스킬에 `rise: 0` 안내를 넣었다. 증거·그림: `~/claude-viz/objectgen-assistant-1.html`.
+
+## 조수 스킬 읽기 `read_assistant_skill` · 장면 다듬기 `game-scene-polish` (2026-10-21)
+
+데모 세 편(「첫사랑」·Fallen Star·Astra Horizon)을 사람이 손으로 고친 결함을 조수가 같은 실수로 되풀이했다(사용자: 「생각보다 멍청하다」). 교훈을 조수가 실제로 읽는 스킬과 자동 경고 둘로 만들었다.
+
+- **원본은 하나**: `assistant-skills/<id>/SKILL.md`(Claude 스킬과 같은 글). `npm run assistant-skills:bundle` 이 `src/assets/assistantSkills.json` 으로 굽고,
+  `src/editor/tools/assistantSkillTools.ts` 의 `list_assistant_skills`·`read_assistant_skill`(6000자 쪽 읽기, domain event)이 그 번들을 돌려준다. `test/assistantSkillTools.test.ts` 가 번들 어긋남을 막는다.
+  (옛 위키의 「스킬 기능 제거(2026-08-27)」는 입력창 `/` 스킬 서랍 얘기다 — 이 도구는 읽기 전용 지침이다.)
+- **읽게 하는 길**: Pi 시스템 프롬프트(`src/ai/piAgent/systemPrompt.ts`)의 「장면 다듬기」 한 줄, 작업 레시피 `scene-polish`(`toolCapabilityIndex.ts`), find_tools 별칭(「장면 다듬기」「조수 스킬」「교훈」).
+- **경고**: 쓰기 도구 결과 issues 에 `scene-*` 가 이번 변경이 새로 만든 것만 앞쪽에 실린다(모델에는 issues 앞 8건만 간다). `run_lint` 는 전체 목록. 규칙은 `openwiki/editor-validation.md` 「장면 다듬기 경고」.
+- **새 교훈**: SKILL.md 에 «실수 → 규칙 → 확인» 한 줄 → 기계로 잡히면 `src/project/lint/scenePolishLint.ts` 에 경고 → `npx tsx scripts/qa/scene-polish-lint.mts <project.json>` 로 데모에 돌려 거짓 경고를 본다 → 번들 다시 굽기.
+- `build_hand_interior_room`: 맵 이름(승강장·백화점·병원…)이 준 `plan`·`layout.program` 을 더 이상 무작위 씨앗 청사진으로 갈아끼우지 않는다. 이름이 표준 구성과 맞으면 warnings 에 «표준 구성과 맞는다 — 원하면 layout:{program}» 만 남긴다.
+
 ## 장르 칩셋 잠금 `system.genreLock` — 조수·도구 경로 강제 (2026-10-15)
 
 권고(`monsterGameRequest` 지시문 · `openBlankStartOnMonsterKit` · 「칩셋 계열 지키기」)만으로는 조수가 버들항·사막·jp_city 등 다른 계열이나 비몬스터 파이프라인으로
@@ -2986,6 +3020,7 @@ Pi의 `generate_title_art`·`generate_opening_image`는 UI 핸드오프를 실�
 - `add_companion`: 이름이 이미 「… 합류」로 끝나면 이벤트 이름에 접미사를 다시 붙이지 않는다.
 - `changeParty` 명령 `action`: `add`·`remove`·`lead`(선두 교대). 명령 스키마·편집기 폼·미리보기가 셋 다 받는다.
 - `set_tile_rules` 항목 `ledge: up|down|left|right|none`: 한 방향 턱. `set_tile_passability` 스키마는 테스트가 고정하고 있어 건드리지 않았다.
+- `set_tile_rules` 항목 `counter: boolean` (2026-10-22): RPG Maker 카운터 속성(`TilesetDef.counterTiles`). 켜진 칸을 마주 보고 조사하면 너머(연속 카운터 2칸까지) 칸의 조사 이벤트에 말이 걸린다. 이름표가 카운터·탁자·책상인 막힘 칸은 기본으로 켜져 있어(손 도트 실내 v5·버들항 등) 보통은 부를 필요가 없다. `get_tile_info` 는 켜진 칸에 `counter: true` 를 돌려준다. `place_npc` 설명이 상점·여관 주인을 카운터 뒤 칸(카운터 윗면)에 세우고 카운터 앞 칸이 설 수 있는 바닥인지 보라고 안내한다. 런타임 계약은 `runtime-sessions.md` 「카운터 너머 말 걸기」.
 - `place_monster_center {mapId,x,y,name?,greeting?,checkpointLabel?,machineCells?[{x,y}≤6],graphic?,id?}`: 몬스터 수집용 센터 간호사. `monsterCenterRecipe` 레시피(맡길까요 → 볼 줄 → 회복 ME·섬광 → 전원 회복 → 센터 기록). 크리스탈 세이브 회복은 아래 `place_savepoint`. 모르는 칸·맵 밖 machineCells 는 거절. 몬스터 수집 잠금에서 보이고(`MONSTER_MARKER_TOOLS`·`MONSTER_GAME_INITIAL_TOOLS`) alias 는 센터·병원·간호사·회복소·포켓몬센터.
 - `place_savepoint {heal?:boolean, mode?:both|slot|checkpoint}`: 기본 false(크로노 트리거 세이브 포인트는 회복하지 않음). true 면 `recoverAll` 을 앞에 넣는다. `mode` 기본 both = 체크포인트 + 저장 칸 선택 창(`openSaveMenu`), slot = 저장 창만, checkpoint = 체크포인트만.
 - `create_time_gate {a:{mapId,x,y}, b:{mapId,x,y}, name?, effect?(flash|swirl|pillar|warp|quake), unlockWhen?, lockedMessage?, lockSide?, graphic?}` (`src/editor/tools/timeGateTools.ts`): `create_transfer_pair` 로 자리를 잡고, 전이 앞에 `effect` 연출(화면 왜곡·섬광·흔들림·파티클, 새 그림 없음)을 넣는다. `unlockWhen`({switchId}|{storyFlagId}|{variableId,op,value} 중 정확히 하나)을 주면 **잠긴 페이지를 앞에, 열린 페이지를 뒤에** 둔다(런타임은 조건이 모두 맞는 마지막 페이지를 쓴다). 모르는 키(`swich` 등)·`unlockWhen` 없는 `lockedMessage` 는 거절한다. 번들 캐릭터 시트에는 소용돌이·차원문 그림이 없어 기본 그래픽은 투명이다. 맵 이벤트는 `transfer` 뒤 명령을 실행하지 않아 왜곡은 전이 전에 스스로 풀린다.

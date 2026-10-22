@@ -75,11 +75,59 @@
 .event-editor-command-focused .cmd-staged-host { min-width: 0; max-height: 48vh; overflow: auto; }
 .event-editor-command-focused .cmd-staged-head { flex-wrap: wrap; }
 .event-editor-command-focused .ai-event-result[hidden] { display: none; }
+/* 좁은 창 미리보기 단추 — 넓은 창에서는 없다. */
+.event-editor-modal-window .event-editor-preview-toggle { display: none; }
+
 @media (max-width: 1100px) {
   .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench,
   .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench.has-command-inspector,
   .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench:has(.event-contents-fieldset > .cmd-list:not([hidden]), .event-storyboard-host > .event-storyboard:not([hidden])) {
-    grid-template-columns: 200px 6px minmax(0, 1fr) 260px;
+    grid-template-columns: 200px 6px minmax(0, 1fr) 260px 32px;
+  }
+}
+
+/* 좁은 창(801~1100px)은 미리보기 열을 접은 채 시작한다. 1024 에서 미리보기(260px)가 남아 설정 열이
+   190px 로 눌려 라벨이 3~4줄로 꺾이고 명령 툴바가 칼럼 밖으로 넘쳤다(UI 감사 07-eventcmd-03·07-eventcmd-01).
+   오른쪽 32px 단추(content.ts renderNarrowPreviewToggle)로 펼친다. */
+@media (min-width: 801px) and (max-width: 1100px) {
+  .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench:not(.is-preview-open),
+  .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench.has-command-inspector:not(.is-preview-open),
+  .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench:not(.is-preview-open):has(.event-contents-fieldset > .cmd-list:not([hidden]), .event-storyboard-host > .event-storyboard:not([hidden])) {
+    grid-template-columns: minmax(240px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) 32px;
+  }
+
+  .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench:not(.is-preview-open) > .event-editor-inspector-column {
+    display: none;
+  }
+
+  .event-editor-modal-window .event-editor-workbench > .event-editor-preview-toggle {
+    align-items: center;
+    appearance: none;
+    background: var(--bg-surface);
+    border: 0;
+    border-left: 1px solid var(--border-default);
+    color: var(--text-2);
+    cursor: pointer;
+    display: flex;
+    font: 600 12px/1 var(--font-ui);
+    grid-column: -2;
+    grid-row: 1;
+    justify-content: center;
+    letter-spacing: 0.02em;
+    min-width: 0;
+    padding: 12px 0;
+    writing-mode: vertical-rl;
+  }
+
+  .event-editor-modal-window .event-editor-workbench > .event-editor-preview-toggle:hover,
+  .event-editor-modal-window .event-editor-workbench > .event-editor-preview-toggle:focus-visible {
+    background: var(--bg-hover);
+    color: var(--text-1);
+  }
+
+  .event-editor-modal-window .event-editor-workbench > .event-editor-preview-toggle:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: -2px;
   }
 }
 @media (max-width: 800px) {

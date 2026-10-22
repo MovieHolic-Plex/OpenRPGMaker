@@ -131,6 +131,8 @@
 .cf-newband-blank:hover { background: #1f2024; color: var(--cf-fg); }
 .cf-newband-sep { width: 1px; height: 22px; margin: 0 8px; background: var(--cf-line); }
 .cf-feed-head { display: flex; align-items: baseline; gap: 12px; margin: 40px 0 14px; }
+/* 런처 「새로 만들기」 칸은 이 머리가 맨 위다(앞의 홈 선반은 2026-10-21 홈 칸으로 옮겼다). */
+.cf-root.cf-launcher .cf-feed-head { margin-top: 0; }
 .cf-feed-head h2 { margin: 0; font-size: 18px; letter-spacing: -0.01em; }
 .cf-feed-head p { margin: 0; color: var(--cf-faint, #6f7078); font-size: 13px; }
 .cf-newband:first-child, :empty + .cf-newband { margin-top: 0; }

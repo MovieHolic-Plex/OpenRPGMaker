@@ -22,7 +22,7 @@ export type ObjectSpecCategory = (typeof OBJECT_SPEC_CATEGORIES)[number];
 /** 3/4 관문(object-gate)의 종류. src/harnesses/_core/objectGate/rules.ts 의 ObjectGateKind 와 같은 값(의존 없이 복사). */
 export const OBJECT_SPEC_GATE_KINDS = [
   "tall_furniture", "low_furniture", "seat", "frame", "container", "round_body", "column", "box",
-  "structure", "figure", "organic", "debris", "flat", "wall_mounted", "front_prop", "terrain", "other",
+  "structure", "figure", "organic", "debris", "flat", "wall_mounted", "front_prop", "terrain", "other", "wall_structure",
 ] as const;
 export type ObjectSpecGateKind = (typeof OBJECT_SPEC_GATE_KINDS)[number];
 

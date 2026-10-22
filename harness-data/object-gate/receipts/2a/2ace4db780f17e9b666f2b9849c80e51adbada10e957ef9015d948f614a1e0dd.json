@@ -1,0 +1,347 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2ace4db780f17e9b666f2b9849c80e51adbada10e957ef9015d948f614a1e0dd",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "mci shelf office",
+ "label": "modern_city_interior/mci-shelf-office",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (2/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 22,
+  "tileColorsP90": 25,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of the bookshelf (plank rows)",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "shelf compartments with books, seen face-on, and the thin shelf boards",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 are a wood-plank band. The band ends in a lighter front-edge line at row 6 (L=195), followed by a dark eave row at row 7 (L=103), so it reads as a top surface about 6 rows tall. Below it, rows 7-30 (about 24 rows) are the vertical front face: three shelf bays with books, divided by a central post. The silhouette is a constant 30 px wide with no side face. The object is a bookshelf, which only loosely fits the 'large structure' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "The candidate is a small wooden bookshelf with coloured book spines, about 30x27 source pixels. It has no roof, no door or window, and no wall and roof material ramps, so it does not read as a whole building next to the two references. The measured facts do not count against it: 22 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% near-neutral dark edge pixels, which means the outline is tinted. The outline is dark brown beside the wood. The wood frame itself has only about 4 shading steps (light edge, mid, dark, outline), and the shelf interior is mostly book-colour dots. The references show 5-6 steps on roof tiles plus plaster and stone texture. Since the piece is not a building, there is no roof ramp to compare, and the comparison cannot confirm Beodeul-level building craft. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17195
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top plank surface of the shelf unit",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "books inside the shelf bays",
+      "rows": "9-28",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a front-facing bookshelf and fills the tile. Rows 1-5 are a light plank-textured band across the full width, like the top of the green reference cabinet. Row 6 (L=195) is a lighter front-edge line, and row 7 (L=103) is a dark eave shadow. Below that, rows 7-30 form a 24-row front face with the bay frame, shelf boards at rows 13-14, 21-22 and 29, and books visible in each bay. The top band is more than a 1-2 row rim. The kind 'structure (gate, pavilion, building)' fits poorly, since this reads as furniture (a shelf), though the drawing is large."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny bookshelf-like prop, about one tile in size. It has a wood frame and rows of coloured books, but no roof, no walls and no door. It does not read as a whole building, so it can't be compared fairly with the tiled-roof, timber and stone houses. The measured facts are fine on paper: 22 visible tones per tile against 10-12 for the references, 0% near-flat coverage, and 0% neutral dark edges. That fits the tinted dark-brown outline I can see around the wood. By eye, though, the frame carries only about 3 wood steps, against 5-6 on the reference roofs and walls. There are no tile scallops, plaster speckle or stone shading. The book rows add colour variety but little graded shading. As a building it falls well short of the Beodeul standard, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17457
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top plank surface of the shelf",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "book contents in the shelf compartments",
+      "rows": "9-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 are a light plank-textured top band. Row 6 (L=195) is a lighter front-edge line, and row 7 (L=103) is a dark eave shadow directly below it. Below that, rows 7-30 are the front face: a dark frame, shelf boards at rows 13-14, 21-22 and 29, and book-filled compartments. The top band is about 6 rows deep, so this is more than a 1-2 row rim. No isometric side face is drawn; the side posts are flat south-facing strips. The kind label 'structure' is loose for a bookshelf, but I accepted it."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny bookshelf or cabinet (about 2x1 tiles) with colourful books on wooden shelves. The references are whole buildings with a tiled roof, walls, a door and windows. It has no roof, wall or door, so it is not a building and cannot be compared with one at the same scale. The measured facts are good on their own terms: 22 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, which points to tinted brown outlines. But the wood frame has only about 3 shading steps, against 5-6 for the references' roof tiles and stone. There are no per-tile highlights, plaster speckle or stone-by-stone shading. The tone count mostly comes from small book colour accents. As a building it is far less rich and complex than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15540
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top plank slab of the shelf unit",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "books inside the compartments",
+      "rows": "9-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 form a light tan plank band across the full width, with plank seams in the pattern. Row 6 is a lighter front-edge line (L=195) and row 7 is a darker eave shadow (L=103). Below that the front face runs from row 7 to row 30 (24 rows), made of the dark frame, the shelf compartments with books, and the shelf boards. The structure matches the cabinet reference (top 5 plus edge plus eave). The 1-row outlines at rows 0 and 31 are not counted."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small bookshelf-like prop of about one tile, with a wooden frame and colourful book spines. It is not a whole building: it has no roof, no walls, no door and no windows. The references are full buildings with scalloped tile roofs, timber or stone walls and doors, so the kind does not match and the piece reads as a different object. On the measured facts it holds up: 22 visible tones per tile against 12 and 10, 0% near-flat coverage, and 0% neutral dark edge pixels, which means tinted brown outlines. By eye the frame wood has only about 3-4 lightness steps, against 5-6 per material on the references. The shelf is also tiny and has no roof-tile or plaster texture, so it cannot match the building's scale or richness. Its craft is clean, but it fails as a building.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15223
+  }
+ ],
+ "decidedAt": "2026-10-21T01:24:13.553Z",
+ "cells": {
+  "16": [
+   "04fedf44a280b92b",
+   "2298d07cffddf9e3",
+   "d9248329c1e3ea21",
+   "decab0fdc095decb"
+  ],
+  "24": [
+   "03d0afaba13fca7f",
+   "05640900096c7518",
+   "24910cf8f719e7d8",
+   "2bbb6bc980505fbc",
+   "34e0e08d45b69504",
+   "45dae97b559bc265",
+   "46f038c7cc5fa58d",
+   "56aa1f3565d1424e",
+   "58ed92b65fa2fde2",
+   "5b5c67adc7baaea9",
+   "5e78a5016aaaa356",
+   "812be8debe6d574b",
+   "8b01db4e257284e5",
+   "8e65c695be66c1c5",
+   "9d6b8c9be5a4796e",
+   "b304ae3f39e55d82",
+   "be6d58e9e2b4b9b6",
+   "cad58344ef4d4dc8",
+   "ccf8ef2029dda35e",
+   "d0520153eb1de9d3",
+   "d4c67a9e28faff59",
+   "e4f24b3a30b9784c",
+   "e4fc3435860f26e2",
+   "fc51c417f65e971e"
+  ],
+  "32": [
+   "5916e08ab3b1b31a"
+  ],
+  "48": [
+   "00bcc098d86af1b9",
+   "2de84f3c3a40b9da",
+   "7a4fcb3658df74fe",
+   "9af1b02d99d06161",
+   "e39cde723d10854c",
+   "ff149c08a0734e25"
+  ]
+ }
+}

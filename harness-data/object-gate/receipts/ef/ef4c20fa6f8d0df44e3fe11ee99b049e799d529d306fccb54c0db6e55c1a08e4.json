@@ -1,0 +1,367 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ef4c20fa6f8d0df44e3fe11ee99b049e799d529d306fccb54c0db6e55c1a08e4",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-inaka-unmanned-veg-stand",
+ "label": "jp_inaka_pack/jp-inaka-unmanned-veg-stand",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 22,
+  "tileColorsP90": 23,
+  "darkV5": 46,
+  "nearBlackEdge": 0.1,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank/thatch roof plane",
+      "rows": "2-23",
+      "evidence": "c",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "counter ledge under vegetables",
+      "rows": "34-35",
+      "evidence": "none",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vegetables and goods on counter",
+      "rows": "28-35",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small hanging sign",
+      "rows": "24-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 22,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-23 form a large roof plane of plank or thatch texture. A lighter ridge highlight sits at row 3, and the plane ends in a dark eave line at row 23 with more shadow at row 24. Below it the front face runs rows 25-46: an open stall with posts, goods on a counter ledge (rows 34-35), and a dark lower panel (rows 37-46). The roof is a sloped plane above an eave line, so it counts as a top surface (evidence c). The sign and vegetables are decor. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden stand, much simpler than the two reference houses. Even so, it matches them on the primary facts. It has 22 visible tones per 16x16 tile against 12 and 10 for the references. Near-flat coverage is 0%, the same as both references. Dark edge pixels are 0% neutral, so the outlines are tinted dark brown rather than black. By eye, the roof carries plank grain with light and dark streaks in about 4-5 brown steps. The posts and back wall are shaded dark brown with grain, and the counter holds multi-coloured produce clusters. I see no large single-colour areas and no uniform black sticker outline. The roof has no per-tile scallops like the references' tile roofs, which keeps texture at 'some' rather than 'rich'. A careful artist would still accept it next to the references without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15871
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof plane (weathered plank/thatch with moss)",
+      "rows": "2-23",
+      "evidence": "c",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "produce goods and sign on the counter",
+      "rows": "24-35",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter ledge",
+      "rows": "34-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower front panel",
+      "rows": "37-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 21,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A tall roof plane fills rows 2-22. Its textured plank and shingle rows have a light ridge edge at row 3, and a dark front-edge line at row 23 (L=51) with eave shadow at rows 23-24. Under it the open stall front runs from rows 24 to 46: posts, a goods shelf with produce, and a lower panel. The roof counts as the top surface by criterion (c). The sign and goods are decor. The silhouette is 32 wide at the roof and 30 below, from the posts, so no receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden produce stand with a plank roof, a post-and-board front and a counter of vegetables. It is much smaller than the references but still counts as a building with roof and walls. Measured facts support it: 22 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outlines carry a brown tint rather than a black sticker line. The roof planks show grain and several brown steps, the front boards are separated by value, and the vegetables add small colour clusters. The roof ramp is about 4 steps, a little below the references' 5-6, and the surfaces are simpler than the tile scallops and speckled plaster of the references. Even so it does not look thinner, flatter or more sticker-like than them. No flat fills found.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16676
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof",
+      "rows": "2-22",
+      "evidence": "c",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "vegetable goods and price sign on the counter",
+      "rows": "24-35",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter shelf ledge",
+      "rows": "35-36",
+      "evidence": "none",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower cabinet panel",
+      "rows": "37-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 21,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The large roof occupies rows 2-22 with a highlight on row 3 and plank or shingle texture with moss. Its lower edge is a dark front-edge line at row 23, followed by dark eave shadow at row 24, so it reads as a sloped roof plane. Below it, rows 24-47 form the front face: an open stall with posts, goods on the counter (decor) and a lower panel. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a small wooden stand, much smaller than the two houses, but it is still a whole building with a roof, walls and an opening, so the reference kind fits. Measured facts support it: 22 visible tones per 16x16 tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outlines are tinted. By eye, the plank roof has vertical grain in about 4-5 brown steps, and the dark edges lean brown next to the wood rather than forming a black sticker line. The counter carries small multi-colour produce clusters and the posts have wood grain. There are no flat 5x5 areas. Density is at or above the references for its size, and a careful artist would accept it next to the houses.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15957
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof (weathered plank/thatch slope with moss spots)",
+      "rows": "2-23",
+      "evidence": "c",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-25"
+     },
+     {
+      "part": "counter top strip with goods",
+      "rows": "34-35",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vegetables/goods on counter",
+      "rows": "28-34",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small sign",
+      "rows": "24-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front cabinet panel below counter",
+      "rows": "37-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 22,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A large roof plane fills rows 2-23, with a darker eave line at row 23 and shadow at rows 24-25 (evidence c). Below it is an open stall front with a counter at rows 34-36 and a dark front panel at rows 37-46, giving about 23 rows of front face. The goods and sign on the counter are decor. The roof is textured with vertical plank lines and could be read as a flat front-facing thatch wall, but the eave line and shadow below it mark it as a roof plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden stand with a plank roof, posts and a produce counter. It is much smaller than the reference houses but is still a building with a roof and walls, so the kind matches. The measured facts favour it: 22 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outlines carry a tint. By eye, the roof planks show about 4-5 brown/grey steps with vertical grain streaks. The posts and counter use dark wood-toned edges rather than a black sticker line, and the produce adds small multi-coloured clusters. It is somewhat less layered than the tile-scallop roofs of the references, but it does not look thinner, flatter or more sticker-like next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15672
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.003Z",
+ "cells": {
+  "16": [
+   "22bd5d573adbfb24",
+   "84738fcd4d75e54a",
+   "9abc136847c8583e",
+   "9c567e1452e600e9",
+   "a141bb09e9913fdc",
+   "a32f3fa0c7e57358"
+  ],
+  "24": [
+   "0cb9f315515c837b",
+   "127e200dd0c25fcf",
+   "149dfa801efef26f",
+   "47b253bb62f03c68",
+   "743a408d12194801",
+   "7b05a26a5901b9b9",
+   "7e6ace48c98a9027",
+   "8333b2edcec9736d",
+   "9bfc9354aa4fe428",
+   "a028925b3ecf3caf",
+   "a7add2a3ff5993b5",
+   "bf82851858eaae62"
+  ],
+  "32": [
+   "269fc48a7cf1b68a",
+   "82bdfc591d9a09e2",
+   "95c70e21c46b7968",
+   "f1708f8a08c22ebe"
+  ],
+  "48": [
+   "067a7ecb2721cf2d",
+   "7b5a4095ef192518",
+   "c7e7bf4ff8873a3f"
+  ]
+ }
+}

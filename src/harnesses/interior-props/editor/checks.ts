@@ -4,6 +4,7 @@
  * 꼭대기 면 판정(harness.py _top_gate) 그리고 검수 답 해석.
  */
 import { extractJsonObject } from "@/harnesses/_core/workshop/grid";
+import { sizeProblems, topShareGate } from "@/harnesses/_core/workshop/objectShape";
 import type { Grid, Verdict, WorkshopItem } from "@/harnesses/_core/workshop/types";
 
 /** 꼭대기 면 윗면 최소 행 수(16px). 칩셋 책장 3~4·옷장 4·찬장 6·벽난로 5 */
@@ -43,11 +44,25 @@ export function interiorHardCheck(item: WorkshopItem, grid: Grid, current: Grid 
     const tolerance = current ? 1 : 0;
     if (expected >= 0 && Math.abs(bottom - expected) > tolerance) problems.push(`접지선: 맨 아래 칠한 줄 y=${bottom} (기준 y=${expected}, 허용 ±${tolerance}) — 바닥에 닿게`);
   }
+  if (!current) problems.push(...sizeProblems(item, grid));
   return problems;
 }
 
 export function interiorGate(item: WorkshopItem, verdict: Verdict): Verdict {
   const rows = verdict.topRows;
+  // 새 기물(조수 요청·공방 새 정의)은 윗면 하한이 칠한 높이의 25%(objectShape.ts) — 있는 그림을 고치는 판은 옛 하한 3행.
+  if (item.isNew) {
+    const share = topShareGate(item, verdict);
+    if (share.failed) {
+      return {
+        ...verdict,
+        verdict: "FAIL",
+        codes: [...new Set([...verdict.codes, "THIN"])],
+        reasons: `꼭대기 면 윗면 ${rows ?? "없음"}행 < ${share.min}행(새 기물: 칠한 높이의 25%, 하네스 규칙). ${verdict.reasons}`.trim(),
+        fix: `${verdict.fix} 꼭대기 면(${verdict.top || "윗판·뚜껑"}) 윗면을 ${share.min}행 이상으로 — 남쪽 면을 줄인다.`.trim(),
+      };
+    }
+  }
   if (verdict.verdict !== "PASS" || !FURNITURE.has(item.kind) || rows === null || rows >= TOP_MIN) return verdict;
   return {
     ...verdict,
@@ -71,6 +86,7 @@ export function parseInteriorVerdict(text: string): Verdict {
       reasons: typeof raw.reasons === "string" ? raw.reasons : "",
       fix: typeof raw.fix === "string" ? raw.fix : "",
       worse: raw.worse === true,
+      ...(typeof raw.looks_like === "string" && raw.looks_like ? { looksLike: raw.looks_like.slice(0, 60) } : {}),
     };
   } catch {
     return { verdict: "FAIL", codes: ["READ"], top: "", topRows: null, reasons: "검수 답을 읽지 못했다", fix: "", worse: false };

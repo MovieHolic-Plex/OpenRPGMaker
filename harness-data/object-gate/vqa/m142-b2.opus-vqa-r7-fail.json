@@ -1,0 +1,64 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b2",
+ "round": 7,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "dept-rack-cool",
+   "pixelSha256": "0c026ae5dfa8f9ecf245ef99c504476ae18ac9a6f0026d4036f81eaa66ee3d97",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The rim of the round rack has a dotted row of bright white highlight pixels that reads as noise. The two side garments hang outside and apart from the centre coat, so they look like floating separate pieces instead of hanging from the ring."
+  },
+  {
+   "id": "home-appliance-rack",
+   "pixelSha256": "1dc3b85ac7ab0f4f43fbc471b79fcafc15092d0213fe67892874ab769a10e730",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    2
+   ],
+   "reasons": "At 1x the microwave and the small appliance are just a few grey and white pixels, so it reads as a generic narrow cabinet, not an appliance rack. It is also a single tile wide and tall, which makes it skinny compared with the originals' furniture."
+  },
+  {
+   "id": "home-drying-rack",
+   "pixelSha256": "e1573a1556b55d0c7e2199a97404776e39194e3423862cfd80f544c00192f143",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The middle is a cluttered mix of small white, red and yellow pixels for the laundry, and the beige towel on top floats without a clear bar under it. At 1x it is a muddy blob that does not read as a drying rack."
+  },
+  {
+   "id": "hospital-curtain-screen",
+   "pixelSha256": "63bc53e4792e254fb4277eb0d331d8733da53d775e8677bd9fa907fef71b04be",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    2
+   ],
+   "reasons": "It is a flat front view of a narrow green cylinder with rounded caps and no top plane or feet, so it reads as a glass tube or capsule, not a curtain screen. It is also far too narrow to work as a privacy screen at this room's scale."
+  }
+ ]
+}

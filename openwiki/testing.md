@@ -1584,13 +1584,59 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
 `@/project/store`, 내보내기 플레이어는 `exportProjectStoreShim` 을 쓰므로 **편집기
 경로로 하는 런타임 QA 는 출하물을 검증하지 않는다.**
 
+### 런타임 QA 체크포인트 — 늦은 단계는 타이틀부터 다시 하지 않는다 (2026-10-21, hard rule)
+
+**VQA·런타임 QA 가 게임의 뒤쪽 단계(보스·패배 카드·엔딩·보고 장면·고백·챔피언…)를 볼 때는 체크포인트로
+바로 들어간다. 타이틀부터 다시 플레이해 도달하지 마라.** 실측: 데모 VQA 가 매 판 타이틀에서 출발해
+시간 대부분을 로딩·초반 비트에 쓰고, 부하가 걸리면 늦은 장면 전에 죽었다 — 폴른 스타의 패배 카드·엔딩·보고
+장면이 그 이유로 한 번도 채점되지 않았다. 타이틀 경로는 «처음부터 이어서 진행이 되는가» 를 볼 때만 쓴다.
+
+```bash
+# 세트의 모든 체크포인트를 각자 새 페이지에서(하나가 죽어도 나머지는 간다), 동시에 2개씩
+npm run qa:runtime -- --scenario checkpoints --checkpoint-set fallen-star --checkpoint all --parallel 2
+npm run qa:runtime -- --scenario checkpoints --checkpoint-set first-love --checkpoint ending-a,ending-b
+npm run qa:runtime -- --scenario checkpoints --checkpoint-set astra-horizon --checkpoint 'gym*'
+# 사람이 눈으로: vite dev 서버(qa:runtime 이 띄우는 것과 같은 player.html)에서만 받는 URL 인자
+#   /player.html?demo=fallen-star&qaCheckpoint=fallen-star:boss
+```
+
+- 결과: `verify-shots/runtime-qa/<시나리오>--checkpoints/SUMMARY.md` 가 체크포인트별 통과·부팅 ms·샷을 표로 준다.
+  체크포인트마다 하위 폴더에 보통 시나리오와 같은 SUMMARY/manifest/PNG 가 있다. `--out` 으로 바꾼다.
+- `--parallel` 기본 2, 최대 4. 일꾼 하나가 브라우저 하나다. 1분 load 가 코어 수를 넘으면 스스로 1 로 줄인다(실측: load 200+/32코어에서
+  parallel 2 는 렌더러 «Target crashed», 1 은 통과). 렌더러가 죽은(크래시·부팅 시간 초과) 체크포인트는 끝에 혼자 한 번 더 돈다.
+- 세트 파일: `scripts/qa/runtime/checkpoints/<세트>.json` (데모마다 하나). 부팅은 세트의 `query`(예 `{ "demo": "fallen-star" }`,
+  소스에서 데모를 만드니 늘 현재 분기 내용) 또는 `projectFixture`. 체크포인트 하나의 필드:
+  `mapId x y facing`, `switches variables selfSwitches`, `party: [{ actorId, level }]`(그 레벨 최대 HP/MP 로 채움),
+  `items gold`, `sessionPatch`(호감도 `relationships`·`friendship`, 몬스터 `monsterInstances/monsterParty` 등 세션 최상위 키에
+  깊게 합침, 배열은 통째로 교체), `startEventId`(불러온 직후 실행할 맵 이벤트), `beats`(그 단계에서 할 일 — 없으면 세트의
+  `defaultBeats`, 그것도 없으면 1.5초 뒤 한 장), `snapshot`(실제 저장). 타입 정본은 `src/player/qaCheckpoint.ts` 의 `QaCheckpoint`.
+- **실제 저장이 정본이다.** 손으로 적은 상태는 흐름 코드를 읽고 그 단계에 실제 플레이어가 가진 값을 적은 것이어야 한다
+  (`note` 에 근거 파일:줄). 가능하면 그 지점까지 가는 시나리오에 `{ "kind": "captureCheckpoint", "id": "boss" }` op 을 넣고
+  `--save-checkpoints` 로 돌려 실제 `SaveSnapshot` 을 세트에 넣는다(같은 id 면 `snapshot` 만 바뀌고 선언 필드는 그 위에 덮인다).
+  맵·이벤트 좌표가 바뀌면 저장은 낡는다 — 부팅 오류 패널(«없는 맵…»)이 뜨면 즉시 실패로 끝난다(120초를 기다리지 않는다).
+- **경계(출하물 보호):** 체크포인트는 부팅 설정 `__OPENRPG_BOOT__.qaCheckpoint` 로만 들어가고, `qaInstrumentation: true`
+  일 때만 읽힌다(`src/player/exportEntry.ts` `qaCheckpointStart`). 출하 빌드·호스트 셸은 둘 다 넣지 않는다. URL 인자
+  `qaCheckpoint` 는 `import.meta.env.DEV` 분기 안이라 출하 빌드에서 통째로 빠진다. 프로젝트 데이터는 건드리지 않고 세션만 만든다
+  (새 게임 세션 또는 저장 → 선언 값). 오프닝 시네마틱은 세션이 주어진 부팅이라 건너뛴다.
+- 크로미움이 백지·«QA scene did not become ready» 로 끝나면 `--netns` 를 붙인다. 이 머신의 `net::ERR_NETWORK_CHANGED` 다. 실행기가 이미
+  `--disable-features=NetworkChangeNotifier` 를 주지만 부하 중엔 그래도 끊긴다(2026-10-21 실측) — 네트워크 이름 공간 안에서 돌린다:
+  `unshare -rn bash -c 'ip link set lo up; npm run qa:runtime -- --scenario checkpoints --checkpoint-set astra-horizon'`.
+- 수집 훅: 계측 씬의 `__oprnDebug.captureSave()` 가 지금 세션을 실제 저장 모양(`createSaveSnapshot`)으로 돌려준다.
+- 데모 시나리오가 자기 세트를 쓰게 하려면 시나리오에 `checkpointSet: "<세트>"` 를 두고 `checkpointBeats`(체크포인트 id →
+  비트, 또는 `(checkpoint) => beats` 함수)를 준다. 그러면 `--scenario <그 시나리오> --checkpoint all` 만으로 돈다.
+- 새 체크포인트 추가: 흐름 코드에서 단계 경계(어느 스위치·변수가 언제 켜지는지)를 찾고, 착지 칸은 빌드된 프로젝트에서 읽는다
+  (`createFlagshipDemoProject(id).project` 를 `npx vite-node --script` 로 덤프). 세트에 넣고 그 체크포인트만 돌려 PNG 를 눈으로
+  확인한 뒤 커밋한다. 체크포인트가 통과해도 그림이 그 단계가 아니면 거짓이다 — 샷을 연다.
+
 좁은 예외는 `scripts/qa/testplay-recovery-browser-qa.mts` 하나다. 편집기 **테스트 플레이**
 경로의 게이트라 편집기 셸을 통과한다. 결함이 톱바 `mode-play` 뒤의 저장·예비검사·복구 흐름에
 있어 `player.html` 로는 진입할 수 없기 때문이다. 살아 있는 WebGL 캔버스를 `drawImage` /
 `getImageData` 로 다시 읽으면 플레이 중에도 `distinct=1` 이므로 색 다양성은
 `scripts/lib/runtimeQaRun.mjs:435` 처럼 pngjs 로 스크린샷 PNG 를 읽어 잰다.
 `test/fixtures/projects/battle-v3.json` 은 거의 검으므로 렌더 여부 판정에는
-`editor-authored-demo-v3.json` 을 쓴다.
+`editor-authored-demo-v3.json` 을 쓰지 **않는다** — 2026-10-07 에 지운 EasyRPG ChipSet 을 가리켜 필드 타일이
+전부 `__MISSING` 이다(#2586). 스모크는 커밋된 예제 게임 `examples/saesol-red/project.json.gz` 를 쓴다
+(`runRuntimeQa` 가 `.json.gz` 를 풀어 싣는다).
 
 - 결과는 `verify-shots/runtime-qa/<시나리오>/SUMMARY.md` 를 **먼저** 읽고 "즉시 확인" 으로
   표시된 PNG 만 열어라. `shot` 은 옵트인이고 실패 비트는 자동 캡처된다. 출력 디렉터리는
@@ -1709,9 +1755,14 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
   상호작용 비트는 취약하다.
 - `__oprnPlayerSprite().resourceId` 가 채워져 있어도 `textureKey` 는 `__MISSING` 일 수 있다
   (Phaser 초록 와이어프레임). 게이트는 `playerSpriteTextureLoaded` 축으로 봐야 한다.
+- **타일까지 `__MISSING` 인지는 `expect.noMissingTextures`** (2026-10-22, #2586). `window.__oprnMissingTextures()`
+  (`src/player/playSceneTestHooks.ts`)가 표시 목록을 컨테이너 안까지 훑어 `{ textured, missing }` 를 돌려준다.
+  플레이어 축(`playerSpriteTextureLoaded`)만 보던 스모크는 지워진 타일셋을 가리키는 픽스처에서 바닥 1,450/1,457 칸이
+  초록 와이어프레임인데도 통과했다. 스모크의 모든 필드 비트가 이 축을 건다.
 - `test/fixtures/projects/oprn-sample-v3.json` 은 플레이어 캐릭셋이 `__MISSING` 으로 그려진다
-  (픽스처 4개 중 이것만, 같은 `resourceId`, 실패 요청 0건). 원인 미규명. 기본 픽스처는
-  `editor-authored-demo-v3.json` 을 쓴다.
+  (픽스처 4개 중 이것만, 같은 `resourceId`, 실패 요청 0건). 원인 미규명. 시나리오 기본값
+  `DEFAULT_PROJECT_FIXTURE` 는 아직 `editor-authored-demo-v3.json` 이지만(위 이유로 타일이 없다), 스모크는
+  `examples/saesol-red/project.json.gz` 를 명시한다.
 
 ## sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
 

@@ -3,6 +3,9 @@
 //         / list_resources / run_lint / check_reachability.
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
+import { oprnPanoramaSetOfImage } from "@/assets/oprnPanoramas";
+import { mapBackgroundVisibility } from "@/project/mapBackgroundVisibility";
+import { lintScenePolish } from "@/project/lint/scenePolishLint";
 import { SHARED_PORTRAIT_ASSETS, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitExpressionsOfSet, sharedPortraitReferenceNote } from "@/assets/sharedPortraitAssets";
 import { activeGenreLockVisualCatalog } from "@/project/genreLockVisuals";
 import { facePresentationForResource } from "@/project/facePresentation";
@@ -87,9 +90,23 @@ function conditionReferencesSwitch(condition: Condition | undefined, switchId: s
   return condition?.kind === "switch" && condition.switchId === switchId;
 }
 
+function summarizeMapBackground(project: Project, map: GameMap): Record<string, unknown> {
+  const background = map.background!;
+  const set = oprnPanoramaSetOfImage(background.imageId);
+  const visibility = mapBackgroundVisibility(map, project.tilesets[map.tilesetId]);
+  return {
+    ...(set ? { preset: set.id } : {}),
+    imageId: background.imageId,
+    layers: (background.layers ?? []).map((layer) => layer.imageId),
+    showInEmptyCells: background.showInEmptyCells === true,
+    /** 플레이에서 배경이 비치는 칸 수(0 이면 맵 바깥이 화면에 들어올 때만 보인다). */
+    visibleCells: visibility.visible,
+  };
+}
+
 const getProjectSummary: ToolDefinition = {
   name: "get_project_summary",
-  description: "제목/맵 목록(크기·이벤트 수)/DB 카운트/스위치·변수/시작점/공통 글꼴·대화창·전투창 설정 요약을 반환한다.",
+  description: "제목/맵 목록(크기·이벤트 수·맵 배경)/DB 카운트/스위치·변수/시작점/공통 글꼴·대화창·전투창 설정 요약을 반환한다.",
   mode: "read",
   parameters: { type: "object", properties: {} },
   run(project): ToolExecResult {
@@ -99,6 +116,8 @@ const getProjectSummary: ToolDefinition = {
       width: map.width,
       height: map.height,
       events: map.events.length,
+      // 맵 배경(먼 배경) — 조수가 set_map_properties 뒤에 결과를 다시 읽을 길이 이것뿐이었다(2026-10-21 감사).
+      ...(map.background ? { background: summarizeMapBackground(project, map) } : {}),
     }));
     const namedSwitches = project.switches.filter((entry) => entry.name !== "");
     const namedVariables = project.variables.filter((entry) => entry.name !== "");
@@ -730,6 +749,7 @@ export function runProjectLint(project: Project, args: Record<string, unknown>):
     ...lintTilesetPalettes(project),
     ...verifyPlacedTiles(project),
     ...flatGroundIssues(project),
+    ...lintScenePolish(project),
   ];
   const errors = issues.filter((issue) => issue.severity === "error").length;
   const warnings = issues.filter((issue) => issue.severity === "warning").length;
@@ -750,7 +770,7 @@ const runLint: ToolDefinition = {
   name: "run_lint",
   description:
     "projectLint, 타일셋 팔레트 lint, 타일 후검증을 실행해 무결성 issue 목록(error/warning/info)을 반환한다. "
-    + "검사 범위는 구조 무결성(참조·도달성·전이·이벤트 겹침·맵 크기·플래그 사용)이다. "
+    + "검사 범위는 구조 무결성(참조·도달성·전이·이벤트 겹침·맵 크기·플래그 사용)과 장면 다듬기 경고 scene-*(문 아닌 칸의 이동·짝 안 맞는 착지·제자리 사라짐·대화창 위치 섞임·BGM 없는 맵·움직이는 교통·겹쳐 선 인물 — read_assistant_skill game-scene-polish)다. "
     + "보상 중복, 경제 균형, 퀘스트 진행 순서 같은 게임플레이 설계 결함은 검사하지 않는다 — error 0 은 '설계가 옳다'는 뜻이 아니다.",
   mode: "read",
   parameters: {

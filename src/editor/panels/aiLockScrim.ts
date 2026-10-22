@@ -37,6 +37,18 @@ export function createAiLockScrim(options: {
   readonly onOpenSettings: () => void;
   readonly onLockChange?: (locked: boolean) => void;
 }): AiLockScrim {
+  const titleEl = el("p", { class: "ai-lock-title", text: "AI 연결이 필요합니다" });
+  const bodyEl = el("p", {
+    class: "ai-lock-body",
+    text: "로그인하면 마을 만들기·NPC 배치·이벤트 작성을 AI 와 함께 할 수 있습니다.",
+  });
+  const actionEl = el("button", {
+    class: "ai-lock-action",
+    attrs: { type: "button" },
+    dataset: { testid: AI_LOCK_SCRIM_TESTIDS.action },
+    text: "AI 연결하기",
+    on: { click: () => options.onOpenSettings() },
+  });
   const element = el("div", {
     class: "ai-lock-scrim",
     attrs: { role: "status", "aria-live": "polite", hidden: "" },
@@ -46,18 +58,9 @@ export function createAiLockScrim(options: {
         class: "ai-lock-card",
         children: [
           el("span", { class: "ai-lock-icon", attrs: { "aria-hidden": "true" }, text: "✦" }),
-          el("p", { class: "ai-lock-title", text: "AI 연결이 필요합니다" }),
-          el("p", {
-            class: "ai-lock-body",
-            text: "로그인하면 마을 만들기·NPC 배치·이벤트 작성을 AI 와 함께 할 수 있습니다.",
-          }),
-          el("button", {
-            class: "ai-lock-action",
-            attrs: { type: "button" },
-            dataset: { testid: AI_LOCK_SCRIM_TESTIDS.action },
-            text: "AI 연결하기",
-            on: { click: () => options.onOpenSettings() },
-          }),
+          titleEl,
+          bodyEl,
+          actionEl,
         ],
       }),
     ],
@@ -71,6 +74,13 @@ export function createAiLockScrim(options: {
     const config = loadAiConfig();
     const locked = !isAiConfigReady(config, getAiConnectionStatus(config));
     element.hidden = !locked;
+    // 톱바 칩과 같은 말을 한다 — 서버가 AI 를 꺼 둔 경우 로그인 버튼은 막다른 길이라 숨긴다(2차 UI/UX 검수 F24).
+    const hostOff = locked && getAiConnectionStatus(config).hostAiDisabled === true;
+    titleEl.textContent = hostOff ? "AI 서버에서 꺼짐" : "AI 연결이 필요합니다";
+    bodyEl.textContent = hostOff
+      ? "이 서버에서는 AI 가 꺼져 있어요. 서버 관리자에게 AI 를 켜 달라고 요청하세요."
+      : "로그인하면 마을 만들기·NPC 배치·이벤트 작성을 AI 와 함께 할 수 있습니다.";
+    actionEl.hidden = hostOff;
     options.onLockChange?.(locked);
     return locked;
   };

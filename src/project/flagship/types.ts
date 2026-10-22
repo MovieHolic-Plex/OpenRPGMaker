@@ -5,6 +5,7 @@ export const FLAGSHIP_DEMO_IDS = [
   "chrono-bell",
   "emerald-crown",
   "shitamachi-fourth-season",
+  "first-love",
 ] as const;
 
 export type FlagshipDemoId = (typeof FLAGSHIP_DEMO_IDS)[number];
@@ -52,8 +53,8 @@ export interface FlagshipBeatManifest {
   readonly targetMinutes: number;
   readonly mapCount: number;
   readonly endingCount: number;
-  readonly releaseOrder: 1 | 2 | 3;
-  readonly priorityRank: 1 | 2 | 3;
+  readonly releaseOrder: 1 | 2 | 3 | 4;
+  readonly priorityRank: 1 | 2 | 3 | 4;
   readonly summary: string;
   readonly thumb: string;
   readonly cast: readonly FlagshipCastMember[];

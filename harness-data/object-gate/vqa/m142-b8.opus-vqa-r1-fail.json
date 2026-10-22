@@ -1,0 +1,201 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b8",
+ "round": 1,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png",
+  "board-3.png",
+  "board-4.png",
+  "board-5.png"
+ ],
+ "items": [
+  {
+   "id": "arcade-claw-machine",
+   "pixelSha256": "404f3949003ae3c05698d5c3936f1468a45ce5f17886505983985c81a5ad6397",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "It is drawn as a flat front elevation. The top is a thin, noisy pink band, not a lit top plane, and the pink cabinet body is covered in streaky, speckled pixels."
+  },
+  {
+   "id": "school-piano",
+   "pixelSha256": "6fc838ef9313f7993ac7d606ad4f2b780e2c93b40782766b8166cb698f90a3d1",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    4
+   ],
+   "reasons": "The top shows only a dark band, so there is no readable lid plane. The near-black body is muddy and has none of the stepped shading the originals use, and the three yellow pedal dots look like stickers."
+  },
+  {
+   "id": "sento-shoe-locker",
+   "pixelSha256": "08787638853e01540a01945fe91bdb96a011beba9ad1609d65c28f004b150696",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The wood top plane is full of speckle noise. The 12 locker doors are irregular blobs of uneven size with scattered highlight pixels, not clean, repeated door shapes."
+  },
+  {
+   "id": "shop-drug-gondola",
+   "pixelSha256": "a8d6ea287bdfa0f06805dc7afbde1f8f5384b06ce4c61b3062da7c6c0400bfcb",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The products are muddy pink and green blobs with no clear package shapes. The top plane has grey speckle noise, unlike the clean shelving in mci-cooler."
+  },
+  {
+   "id": "shop-flower-cooler",
+   "pixelSha256": "e54e56c84e6ad3dfeb3ac5b17f022510be6bc0d8997b5f9eb97157b4cf18f613",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The glass doors are covered in grey speckle noise. The flowers are blotchy red, pink and yellow masses, and the top plane is noisy as well."
+  },
+  {
+   "id": "shop-peg-wall",
+   "pixelSha256": "ae3ff7df4e4257cb4bfb08112f89b18be28ba81334a33ee0199e2f6ab604428c",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4,
+    5
+   ],
+   "reasons": "It reads as a wooden shelving cabinet, not a perforated peg wall with hooks. The bright yellow \"100\" sign sticks up past the object's outline like a sticker and is painted onto the back wall."
+  },
+  {
+   "id": "shop-used-shelf",
+   "pixelSha256": "8937965ab6df1d70219b01ac39a99da00c60e28ad3f5ab49d51b5d6f60d9045c",
+   "verdict": "FAIL",
+   "failed": [
+    4,
+    5
+   ],
+   "reasons": "The lamp and teal radio on top stick out beyond the shelf outline and run to the top edge of the canvas. The goods on the shelves are noisy, mixed-colour clutter."
+  },
+  {
+   "id": "station-coin-lockers",
+   "pixelSha256": "e4304d5ebacd21194f37f609ad45a877f4e0e67a2bf1527b9b4ea3ffa1f0281a",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The grey top plane is speckled with noise. The locker doors differ in size and the keyholes are spaced unevenly, so the grid looks messy rather than crisp."
+  },
+  {
+   "id": "station-ic-charger",
+   "pixelSha256": "196b86ee527bd80c9cd2ee9a611e961821ee8cdbf8323b580cf0a2d61d7312aa",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "There is almost no top plane; it is a front-elevation green slab. At its size and with that saturated green it doesn't match the originals' palette or scale."
+  },
+  {
+   "id": "subway-pillar-sign",
+   "pixelSha256": "69929fb0f4bcb985869d85e9e1417f709e702c43f8985d33f0b9ba5f8aeb7f13",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    3
+   ],
+   "reasons": "The pillar is a short canister about 2 tiles tall that ends well below the wall top. It reads as a small post or bin, not a structural pillar with a sign."
+  },
+  {
+   "id": "subway-ticket-machine",
+   "pixelSha256": "459e42d4a6f74e299737c6bbcb0d76c28c1ec0707d3b73ac2925f2022f1b5739",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The grey top plane is clearly visible, the front face is short, and the outline and blue palette match the originals. The screens and slots read clearly, and it stands cleanly on the floor."
+  },
+  {
+   "id": "subway-trash-bins",
+   "pixelSha256": "f622f4a66391cf8e83a6d11ca786b7e4cf87bdcdd1719a5369c600e42518e3bd",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "A grey slab with slots sits above the bins and looks detached from them, as if the lids were floating. The bins underneath are shown front-on only, with no lid planes."
+  },
+  {
+   "id": "subway-vending-machine",
+   "pixelSha256": "2a5dd96775ec228e83df07d380d1d9b003c23b70bd7f0769341296fa74c7b52a",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "The top is only a thin grey and red band of about 2 rows, so it is close to a front elevation. It is also small for a vending machine: no taller than the claw machine, and short compared with the wall."
+  },
+  {
+   "id": "svc-arcade-shopfront",
+   "pixelSha256": "fac0e175a568f2bc9f13a1b6239eb6704582ada287d00671932c6d61238e14c4",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    5
+   ],
+   "reasons": "It is a flat facade elevation with no floor footprint. The striped awning and sign overlap and cover the room's back wall instead of standing on the floor."
+  },
+  {
+   "id": "svc-dryer-stack",
+   "pixelSha256": "0626362e4724dac5f252f36a1f9728bc339beac350a9e7692f7be1b18158c909",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The drum windows are noisy, speckled blue blobs. The top-plane controls look like pasted-on rectangles, and the light grey body has weak shading compared with the originals."
+  },
+  {
+   "id": "svc-salon-mirror",
+   "pixelSha256": "6878c04dac1bf3117ea3a7eed3fb0a50817b56877b1d10e8027786bedcf6b3df",
+   "verdict": "FAIL",
+   "failed": [
+    4,
+    5
+   ],
+   "reasons": "The mirror sits above the counter and looks detached from it. The counter top is cluttered with noisy bits, including a red \"3D\"-like blob and stray grey shapes."
+  },
+  {
+   "id": "svc-washer-row",
+   "pixelSha256": "0b852ad41b16e9c42caf94b106959983033c98c817096d8b867d397ee415d21a",
+   "verdict": "FAIL",
+   "failed": [
+    4,
+    5
+   ],
+   "reasons": "The detergent shelf is a separate wall-mounted block above the washers, painted against the back wall and outside the washers' floor footprint. The bottles on it are sticker-bright."
+  },
+  {
+   "id": "train-luggage-rack",
+   "pixelSha256": "9c0c2507ac8be0dc333b061376f1e74ee08746872659dafac235887f0fb1ecfd",
+   "verdict": "FAIL",
+   "failed": [
+    3
+   ],
+   "reasons": "It reads as a floor cabinet or display case with bags on top, not as an overhead luggage rack. The framed pictures on the front make it even less clear what it is."
+  }
+ ]
+}

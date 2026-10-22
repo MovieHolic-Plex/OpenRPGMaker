@@ -14,7 +14,7 @@ function routeProject(seed: number): { ctx: ToolContext; map: GameMap } {
   const ctx: ToolContext = { project };
   expect(runTool(ctx, "create_map", { id: "map_route", name: "1번 도로", width: 24, height: 36, tilesetId: "beodeul_city" }, { dryRun: false }).ok).toBe(true);
   const result = runTool(ctx, "author_wild_route", {
-    mapId: "map_route", exits: [{ x: 12, y: 35 }, { x: 12, y: 0 }], grassPatches: 3, seed, encounters: [{ troopId: "troop_wild", weight: 1 }],
+    mapId: "map_route", exits: [{ x: 12, y: 35 }, { x: 12, y: 0 }], seed, encounters: [{ troopId: "troop_wild", weight: 1 }],
   }, { dryRun: false });
   expect(result.ok, result.summary).toBe(true);
   expect(result.warnings ?? []).toEqual([]);   // 출구끼리 걸어서 이어진다
@@ -56,6 +56,20 @@ describe("버들항 도로", () => {
     const covered = map.lowerTiles.filter((_, i) => ([2, 3, 4] as const).some(L => layerTileAt(map, L, i) >= 0)).length;
     expect(covered / (map.width * map.height)).toBeGreaterThan(0.5);
     expect(map.mapRole).toBe("field");
+
+    // 일반 RPG(몬스터 수집 아님): 조우 풀숲·풀숲 로케이션이 없고 조우는 맵 전체, 짙은 풀 속 칸만으로 된 네모 판이 없다(2026-10-21 사용자 정정).
+    expect((map.locations ?? []).some(location => location.id.startsWith("loc_wild_grass_"))).toBe(false);
+    expect(map.encounterTable?.every(entry => !entry.conditions?.locationId)).toBe(true);
+    const dark = tileset.autotileGroups!.find(group => group.id === "beodeul_dark_grass_woodland")!;
+    const edge = new Set(dark.memberTileIds);
+    expect(map.lowerTiles.some(tile => edge.has(tile))).toBe(true);   // 나무 밑 짙은 풀은 가장자리 모양으로 풀린다
+    const core = (i: number) => map.lowerTiles[i] === 11628;
+    for (let y = 0; y + 2 < map.height; y++) for (let x = 0; x + 2 < map.width; x++) {
+      const i = y * map.width + x;
+      // 속 칸(11628) 3×3 이 덮개 없이 드러나면(2~4층 비어 있음) 네모 판이다
+      const bare3 = [0, 1, 2].every(dy => [0, 1, 2].every(dx => core(i + dy * map.width + dx) && ([2, 3, 4] as const).every(L => layerTileAt(map, L, i + dy * map.width + dx) < 0)));
+      expect(bare3, `seed ${seed} (${x},${y})`).toBe(false);
+    }
   });
 
   it("도로 맵에는 항구·농장 소품을 찍지 않고 숲길 소품은 찍는다", () => {

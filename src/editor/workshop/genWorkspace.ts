@@ -1,0 +1,383 @@
+// src/editor/workshop/genWorkspace.ts
+/**
+ * 공방 생성기 화면(내 컴퓨터에서 만들어 가져오는 길). 공방 큰 화면과 같은 오버레이 틀을 쓴다.
+ * - char-gen: ① 무엇을·몇 개 → 내 AI 에이전트에게 붙여 넣을 부탁 글 ② 다 만든 묶음 폴더 가져오기 → 미리 보기 → 이 프로젝트에 넣기
+ * - object-gen(가져오기만): ② 단계만. 편집기 안에서 그리기는 workshopWorkspace(공방 실행기)가 한다.
+ * 그림 생성은 전부 사용자 컴퓨터의 자기 로그인으로 돈다 — 우리 키·유료 대체 경로는 없다.
+ * - tile-gen(지형): ① 종류·무엇·참고 칸 + 지금 맵 칩셋 그림 받기(tile-gen 이 색을 잠글 타일셋 파일) → 부탁 글 ② 묶음 가져오기.
+ * 가져오기는 폴더를 끌어 놓거나(하위 폴더까지 읽는다) 눌러서 고른다.
+ */
+import "@/styles/database/workshop/index.css";
+import { editorState } from "@/editor/editorState";
+import { store } from "@/project/store";
+import { clearChildren, el } from "@/util/dom";
+import { t } from "@/i18n";
+import { charGenRequest, TERRAIN_MODES, TERRAIN_PRESETS, tileGenRequest, type GeneratorId } from "./generators";
+import { browserWorkshopEnv } from "./pixels";
+import { localPackPreviews, readLocalPack, revokeLocalPackPreviews, type LocalPack, type LocalPackPreview } from "./genPackImport";
+import { workshopQueue } from "./queue/workshopQueue";
+
+let host: HTMLElement | null = null;
+let previews: LocalPackPreview[] = [];
+
+export function isGenWorkspaceOpen(): boolean {
+  return host !== null;
+}
+
+export function closeGenWorkspace(): void {
+  document.removeEventListener("keydown", onKeydown);
+  revokeLocalPackPreviews(previews);
+  previews = [];
+  host?.remove();
+  host = null;
+}
+
+function onKeydown(event: KeyboardEvent): void {
+  if (event.key === "Escape" && host) {
+    event.preventDefault();
+    closeGenWorkspace();
+  }
+}
+
+type LocalGenerator = Extract<GeneratorId, "char-gen" | "tile-gen" | "object-gen">;
+const TITLES: Readonly<Record<LocalGenerator, string>> = {
+  "char-gen": "공방 · 캐릭터",
+  "tile-gen": "공방 · 지형·바닥",
+  "object-gen": "공방 · 물건 묶음 가져오기",
+};
+const LEADS: Readonly<Record<LocalGenerator, string>> = {
+  "char-gen": "캐릭터는 내 컴퓨터의 AI 에이전트가 내 계정으로 만들어요. 만든 캐릭터를 여기서 가져와 이 게임에 넣어요.",
+  "tile-gen": "지형은 내 컴퓨터의 AI 에이전트가 내 계정으로 그려요. 후보는 내가 직접 고르고, 다 만든 묶음을 여기서 가져와 이 게임에 넣어요. 물건·건물은 「물건·가구」에서 만들어요.",
+  "object-gen": "내 컴퓨터에서 object-gen 으로 만든 묶음 폴더를 가져와 이 게임에 넣어요.",
+};
+
+export function openGenWorkspace(generator: LocalGenerator): void {
+  closeGenWorkspace();
+  host = el("div", {
+    class: "workshop-host", dataset: { testid: "workshop-gen-host" },
+    on: { click: (event) => { if (event.target === host) closeGenWorkspace(); } },
+  });
+  if (document.querySelector('[data-testid="left-activity-bar"]')) host.style.left = "48px";
+  if (document.querySelector('[data-testid="oprn-menu-bar"]')) host.style.top = "48px";
+
+  const steps: HTMLElement[] = [];
+  if (generator === "char-gen") steps.push(requestStep());
+  if (generator === "tile-gen") steps.push(terrainRequestStep());
+  // 단계가 하나뿐이면 번호를 달지 않는다(순서가 없으니까)
+  steps.push(importStep(generator, steps.length ? steps.length + 1 : 0));
+
+  host.append(el("section", {
+    class: "workshop workshop-gen",
+    attrs: { role: "dialog", "aria-modal": "true", "aria-label": TITLES[generator] },
+    dataset: { testid: "workshop-gen", generator },
+    children: [
+      el("header", {
+        class: "workshop-head",
+        children: [
+          el("h2", { text: TITLES[generator] }),
+          el("button", { class: "workshop-close", text: "닫기", attrs: { type: "button", "aria-label": "공방 닫기" }, on: { click: closeGenWorkspace } }),
+        ],
+      }),
+      el("div", {
+        class: "workshop-gen-body",
+        children: [
+          el("p", { class: "workshop-gen-lead", text: LEADS[generator] }),
+          ...steps,
+        ],
+      }),
+    ],
+  }));
+  document.body.append(host);
+  document.addEventListener("keydown", onKeydown);
+}
+
+function stepBox(n: number, title: string, children: HTMLElement[], testid: string): HTMLElement {
+  return el("section", {
+    class: "workshop-gen-step", dataset: { testid },
+    children: [el("h3", { children: [...(n > 0 ? [el("span", { class: "workshop-gen-step-no", text: String(n) })] : []), el("span", { text: title })] }), ...children],
+  });
+}
+
+function requestStep(): HTMLElement {
+  const what = el("input", { attrs: { type: "text", placeholder: "예: 파란 외투를 입은 항구 선원", "aria-label": "무엇을 만들까요" }, dataset: { testid: "workshop-gen-what" } }) as HTMLInputElement;
+  const count = el("select", {
+    attrs: { "aria-label": "몇 명" }, dataset: { testid: "workshop-gen-count" },
+    children: [1, 2, 3, 4].map((n) => el("option", { value: n, text: `${n}명`, attrs: n === 3 ? { selected: "" } : {} })),
+  }) as HTMLSelectElement;
+  // 언어는 generators.charGenRequest 가 고른다.
+  const { request, copied, row } = requestBox();
+  const update = (): void => { request.value = charGenRequest(what.value, Number(count.value)); copied.textContent = ""; };
+  what.addEventListener("input", update);
+  count.addEventListener("change", update);
+  update();
+  return stepBox(1, "무엇을 만들까요?", [
+    el("div", { class: "workshop-form-row", children: [el("label", { class: "workshop-gen-grow", children: ["어떤 캐릭터", what] }), el("label", { children: ["몇 명", count] })] }),
+    request,
+    row,
+    // char-gen 저장소는 비공개가 됐다(2026-10-21, tiledata/gen-kits.lock.json) — 설치 링크는 받은 사람 말고는 404 라 내지 않는다.
+    el("p", { class: "workshop-item-meta", text: "char-gen 이 깔린 내 AI 에이전트가 만들어요(저장소는 아직 비공개라 받은 사람만 쓸 수 있어요). 그림은 내 계정으로만 만들고, 마지막에 사람이 직접 골라요." }),
+  ], "workshop-gen-step-request");
+}
+
+/** 부탁 글 칸 + 복사 단추 — 에이전트에게 가는 글이라 화면 번역기가 건드리지 않게 한다(data-i18n-skip). */
+function requestBox(): { request: HTMLTextAreaElement; copied: HTMLElement; row: HTMLElement } {
+  const request = el("textarea", {
+    class: "workshop-gen-request", attrs: { readonly: "", rows: "3", "aria-label": "부탁 글", "data-i18n-skip": "" }, dataset: { testid: "workshop-gen-request" },
+  }) as HTMLTextAreaElement;
+  const copied = el("span", { class: "workshop-item-meta", attrs: { role: "status" } });
+  const copy = el("button", {
+    text: "부탁 글 복사", attrs: { type: "button" }, dataset: { testid: "workshop-gen-copy" },
+    on: {
+      click: () => {
+        void navigator.clipboard?.writeText(request.value).then(
+          () => { copied.textContent = "복사했어요. 내 AI 에이전트(터미널)에 붙여 넣으세요."; },
+          () => { request.select(); copied.textContent = "복사하지 못했어요. 글을 직접 골라 복사해 주세요."; },
+        );
+      },
+    },
+  });
+  return { request, copied, row: el("div", { class: "workshop-form-actions", children: [copy, copied] }) };
+}
+
+/** 지금 맵의 칩셋(바탕 시트) — tile-gen 이 색을 잠글 타일셋 파일. 맵이 없으면 null. */
+function currentMapTileset(): { id: string; name: string; fileName: string } | null {
+  const project = store.getCurrent();
+  const mapId = editorState.get().currentMapId;
+  const tilesetId = mapId ? project.maps[mapId]?.tilesetId : undefined;
+  const tileset = tilesetId ? project.tilesets[tilesetId] : undefined;
+  if (!tilesetId || !tileset) return null;
+  const safe = tilesetId.replace(/[^a-z0-9_-]+/gi, "_").slice(0, 60) || "tileset";
+  return { id: tilesetId, name: tileset.name, fileName: `${safe}.png` };
+}
+
+/** tile-gen ① — 지형 종류·무엇·참고 칸 + 지금 맵 칩셋 그림 받기 → 부탁 글. */
+function terrainRequestStep(): HTMLElement {
+  const target = currentMapTileset();
+  const mode = el("select", {
+    attrs: { "aria-label": "지형 종류" }, dataset: { testid: "workshop-gen-terrain-mode" },
+    // optgroup label 은 DOM 번역기가 보지 않는 속성이라 t() 로 직접 옮긴다.
+    // 종류 다섯 + 그 종류에 재질 지시가 붙은 프리셋(용암·눈·돌길 …). 값은 그대로 `--mode` 로 간다.
+    children: [
+      el("optgroup", { attrs: { label: t("종류") }, children: TERRAIN_MODES.map((m) => el("option", { value: m.mode, text: m.label })) }),
+      el("optgroup", { attrs: { label: t("재질 프리셋") }, children: TERRAIN_PRESETS.map((m) => el("option", { value: m.mode, text: m.label })) }),
+    ],
+  }) as HTMLSelectElement;
+  const what = el("input", { attrs: { type: "text", placeholder: TERRAIN_MODES[0]!.example, "aria-label": "어떤 지형" }, dataset: { testid: "workshop-gen-what" } }) as HTMLInputElement;
+  const ref = el("input", { attrs: { type: "text", placeholder: "예: 0,3", inputmode: "numeric", "aria-label": "참고 칸" }, dataset: { testid: "workshop-gen-ref" } }) as HTMLInputElement;
+  const { request, copied, row } = requestBox();
+  const update = (): void => {
+    const chosen = [...TERRAIN_MODES, ...TERRAIN_PRESETS].find((m) => m.mode === mode.value) ?? TERRAIN_MODES[0]!;
+    what.placeholder = chosen.example;
+    request.value = tileGenRequest(chosen.mode, what.value, target?.fileName ?? "tileset.png", ref.value);
+    copied.textContent = "";
+  };
+  mode.addEventListener("change", update);
+  for (const input of [what, ref]) input.addEventListener("input", update);
+  update();
+  const status = el("span", { class: "workshop-item-meta", attrs: { role: "status" } });
+  const download = target
+    ? el("button", {
+      text: "지금 맵 칩셋 그림 받기", attrs: { type: "button" }, dataset: { testid: "workshop-gen-tileset-download" },
+      on: {
+        click: () => {
+          status.textContent = "칩셋 그림을 만드는 중…";
+          const env = browserWorkshopEnv();
+          void env.tilesetSource?.(target.id).then((source) => {
+            if (!source) { status.textContent = "칩셋 그림을 읽지 못했어요. 맵 칩셋이 다 불러와졌는지 확인하고 다시 눌러 주세요."; return; }
+            const link = el("a", { attrs: { href: env.encodePng(source.image), download: target.fileName } });
+            link.click();
+            status.textContent = `「${target.fileName}」을(를) 받았어요. 부탁 글의 파일 이름과 같아요.`;
+          }, () => { status.textContent = "칩셋 그림을 읽지 못했어요. 맵 칩셋이 다 불러와졌는지 확인하고 다시 눌러 주세요."; });
+        },
+      },
+    })
+    : null;
+  return stepBox(1, "어떤 지형을 만들까요?", [
+    el("div", {
+      class: "workshop-form-row",
+      children: [
+        el("label", { children: ["종류", mode] }),
+        el("label", { class: "workshop-gen-grow", children: ["어떤 지형", what] }),
+        el("label", { class: "workshop-gen-ref", children: ["참고 칸(선택)", ref] }),
+      ],
+    }),
+    el("p", {
+      class: "workshop-item-meta", dataset: { testid: "workshop-gen-tileset" },
+      text: target ? `색은 지금 맵 칩셋 「${target.name}」에서 가져와요. 아래 단추로 그 그림을 받아 두세요. 참고 칸은 그 그림에서 비슷한 땅 칸의 위치(가로,세로)예요.` : "열린 맵이 없어요. 칩셋 그림을 받으려면 그릴 맵을 먼저 열어 주세요.",
+    }),
+    ...(download ? [el("div", { class: "workshop-form-actions", children: [download, status] })] : []),
+    request,
+    row,
+    el("p", { class: "workshop-item-meta", text: "처음이면 tile-gen 을 내 컴퓨터에 설치하고 내 AI 에이전트에 연결하세요. 그림은 내 계정으로만 만들고, 후보는 내가 직접 골라요." }),
+  ], "workshop-gen-step-request");
+}
+
+/** 미리 보기 크기: 작은 도트는 정수 배율(최대 4배, 상자 안), 상자보다 큰 그림은 상자에 맞게 줄인다. 잘라 보이지 않는다. */
+function fitPreview(img: HTMLImageElement, boxW = 360, boxH = 220): void {
+  const w = Math.max(1, img.naturalWidth), h = Math.max(1, img.naturalHeight);
+  const fit = Math.min(boxW / w, boxH / h);
+  if (fit >= 1) {
+    const k = Math.min(4, Math.floor(fit));
+    img.style.width = `${w * k}px`;
+  } else {
+    img.style.width = `${Math.round(w * fit)}px`;
+    img.style.imageRendering = "auto";
+  }
+}
+
+/** 끌어 놓은 항목에서 파일을 모은다 — 폴더면 하위 폴더까지(묶음은 blobs/ 안에 그림이 있다). 너무 큰 폴더는 자른다. */
+async function filesFromDrop(transfer: DataTransfer): Promise<File[]> {
+  const entries = [...transfer.items].map((item) => item.webkitGetAsEntry?.() ?? null).filter((entry): entry is FileSystemEntry => entry !== null);
+  if (entries.length === 0) return [...transfer.files];
+  const out: File[] = [];
+  const walk = async (entry: FileSystemEntry, depth: number): Promise<void> => {
+    if (out.length >= 4000) return;
+    if (entry.isFile) {
+      out.push(await new Promise<File>((resolve, reject) => (entry as FileSystemFileEntry).file(resolve, reject)));
+    } else if (entry.isDirectory && depth < 4) {
+      const reader = (entry as FileSystemDirectoryEntry).createReader();
+      for (;;) {
+        const batch = await new Promise<FileSystemEntry[]>((resolve, reject) => reader.readEntries(resolve, reject));
+        if (batch.length === 0) break;
+        for (const child of batch) await walk(child, depth + 1);
+      }
+    }
+  };
+  for (const entry of entries) await walk(entry, 0);
+  return out;
+}
+
+/** 넣은 지형 칩셋의 자동 타일 묶음 수(가져오기가 autotileGroups 를 보존했는지 사람에게도 보인다). */
+function autotileCount(tilesetIds: readonly string[]): number {
+  const tilesets = store.getCurrent().tilesets;
+  return tilesetIds.reduce((sum, id) => sum + (tilesets[id]?.autotileGroups?.length ?? 0), 0);
+}
+
+function importStep(generator: LocalGenerator, n: number): HTMLElement {
+  const status = el("p", { class: "workshop-gen-status", attrs: { role: "status", "aria-live": "polite" }, dataset: { testid: "workshop-gen-status" } });
+  const result = el("div", { class: "workshop-gen-result", dataset: { testid: "workshop-gen-result" } });
+  const picker = el("input", { attrs: { type: "file", multiple: "", webkitdirectory: "", hidden: "" }, dataset: { testid: "workshop-gen-folder" } }) as HTMLInputElement;
+  let current: LocalPack | null = null;
+  /** 읽은 묶음은 공방 작업 줄에 「넣을 차례」로 선다 — 창을 닫거나 새로 고쳐도 작업 줄에서 넣을 수 있다. */
+  let currentJob: Promise<string> | null = null;
+
+  const show = (pack: LocalPack): void => {
+    currentJob = workshopQueue().enqueuePack(pack, generator).then((job) => job.id);
+    revokeLocalPackPreviews(previews);
+    previews = localPackPreviews(pack);
+    current = pack;
+    clearChildren(result);
+    const add = el("button", {
+      class: "workshop-primary", text: "이 게임에 넣기", attrs: { type: "button" }, dataset: { testid: "workshop-gen-add" },
+      on: {
+        click: () => {
+          if (!current) return;
+          add.disabled = true;
+          status.classList.remove("is-error");
+          status.textContent = "넣는 중…";
+          (currentJob ?? Promise.reject(new Error("묶음을 다시 골라 주세요.")))
+            .then(async (jobId) => {
+              const outcome = await workshopQueue().install(jobId, null);
+              if (outcome === "waiting") {
+                status.textContent = "조수가 일하는 중이라, 끝나면 작업 줄이 바로 넣어요.";
+                return null;
+              }
+              const installed = workshopQueue().snapshot().jobs.find((view) => view.job.id === jobId)?.job.installed;
+              return installed?.kind === "pack" ? { title: installed.title, tilesetIds: installed.tilesetIds } : null;
+            })
+            .then(
+            (added) => {
+              if (!added) return;
+              add.textContent = "넣었어요 ✓";
+              add.classList.add("is-done");
+              status.classList.add("is-done");
+              status.textContent = generator === "char-gen"
+                ? `「${added.title}」을(를) 넣었어요. 자료집의 캐릭터 그림 고르기에서 쓸 수 있어요. 되돌리기로 뺄 수 있어요.`
+                : generator === "tile-gen"
+                  ? `「${added.title}」을(를) 넣었어요. 타일셋 목록에 새 지형 칩셋으로 들어갔어요(자동 타일 ${autotileCount(added.tilesetIds)}벌). 그 칩셋을 쓰는 맵에서 칠할 수 있어요. 되돌리기로 뺄 수 있어요.`
+                  : `「${added.title}」을(를) 넣었어요. 타일셋 목록에 새 칩셋으로 들어갔고 조수도 쓸 수 있어요. 되돌리기로 뺄 수 있어요.`;
+              // 미리 보기 아래라 화면 밖일 수 있다 — 결과 글이 보이게 내린다.
+              status.scrollIntoView({ block: "nearest" });
+            },
+            (error: unknown) => { add.disabled = false; status.classList.add("is-error"); status.textContent = `넣지 못했어요: ${error instanceof Error ? error.message : String(error)}`; },
+          );
+        },
+      },
+    }) as HTMLButtonElement;
+    result.append(
+      el("div", {
+        class: "workshop-gen-pack-head",
+        children: [
+          el("strong", { text: pack.manifest.title, attrs: { translate: "no" } }),
+          el("span", { class: "workshop-chip", text: pack.manifest.license, attrs: { translate: "no" } }),
+          ...(pack.manifest.aiGenerated ? [el("span", { class: "workshop-chip", text: "AI 생성" })] : []),
+          el("span", { class: "workshop-chip", text: `그림 ${previews.length}장` }),
+        ],
+      }),
+      ...(pack.manifest.credits ? [el("p", { class: "workshop-gen-credits", attrs: { translate: "no" }, text: pack.manifest.credits })] : []),
+      // 그림이 많으면(캐릭터 묶음 38장 등) 같은 크기 칸 11개 + 「나머지 N장」 — 칸 안에 통째로 보이고 잘리지 않는다.
+      // 한두 장이면 크게 한 장씩.
+      el("div", {
+        class: "workshop-gen-previews" + (previews.length > 2 ? " is-grid" : ""),
+        children: previews.length
+          ? [
+            ...(previews.length > 12 ? previews.slice(0, 11) : previews).map((preview) => el("figure", {
+              children: [el("div", {
+                class: "workshop-gen-preview-art",
+                children: [el("img", {
+                  attrs: { src: preview.url, alt: preview.name },
+                  on: { load: (event) => (previews.length > 2 ? fitPreview(event.target as HTMLImageElement, 128, 104) : fitPreview(event.target as HTMLImageElement)) },
+                })],
+              }), el("figcaption", { attrs: { translate: "no", title: preview.name }, text: preview.name })],
+            })),
+            ...(previews.length > 12 ? [el("figure", { class: "is-more", children: [el("div", { class: "workshop-gen-preview-art", text: `+${previews.length - 11}` }), el("figcaption", { text: `나머지 ${previews.length - 11}장도 같이 들어가요` })] })] : []),
+          ]
+          : [el("p", { class: "workshop-item-meta", text: "미리 볼 그림이 없어요." })],
+      }),
+      el("div", { class: "workshop-gen-add-row", children: [add, el("span", { class: "workshop-item-meta", text: "이 게임에만 들어가요. 공용(스토어)에 올리려면 생성기에서 검사를 거쳐 올려 주세요." })] }),
+      status,
+    );
+    drop.classList.add("is-compact");
+  };
+
+  const load = (files: File[]): void => {
+    if (!files.length) return;
+    status.classList.remove("is-error", "is-done");
+    status.textContent = "묶음을 읽는 중…";
+    readLocalPack(files).then(
+      (pack) => { status.textContent = ""; show(pack); },
+      (error: unknown) => { current = null; clearChildren(result); drop.classList.remove("is-compact"); drop.after(status); status.classList.add("is-error"); status.textContent = error instanceof Error ? error.message : String(error); },
+    );
+  };
+
+  picker.addEventListener("change", () => {
+    const files = [...(picker.files ?? [])];
+    picker.value = "";
+    load(files);
+  });
+
+  const drop = el("button", {
+    class: "workshop-drop", attrs: { type: "button" }, dataset: { testid: "workshop-gen-pick-folder" },
+    children: [
+      el("strong", { text: "묶음 폴더를 여기에 끌어 놓으세요" }),
+      el("span", { class: "workshop-drop-or", text: "또는 눌러서 폴더 고르기" }),
+      el("span", { class: "workshop-drop-hint", text: `${generator} 가 마지막에 만든 묶음 폴더를 통째로 넣어요.` }),
+      el("span", { class: "workshop-drop-again", text: "다른 묶음 폴더를 끌어 놓거나 눌러서 고르기" }),
+    ],
+    on: {
+      click: () => picker.click(),
+      dragover: (event) => { event.preventDefault(); (event as DragEvent).dataTransfer!.dropEffect = "copy"; drop.classList.add("is-over"); },
+      dragleave: () => drop.classList.remove("is-over"),
+      drop: (event) => {
+        event.preventDefault();
+        drop.classList.remove("is-over");
+        const transfer = (event as DragEvent).dataTransfer;
+        if (!transfer) return;
+        status.textContent = "묶음을 읽는 중…";
+        filesFromDrop(transfer).then(load, (error: unknown) => { status.classList.add("is-error"); status.textContent = `폴더를 읽지 못했어요: ${error instanceof Error ? error.message : String(error)}`; });
+      },
+    },
+  });
+
+  return stepBox(n, "다 만든 묶음 가져오기", [drop, picker, status, result], "workshop-gen-step-import");
+}

@@ -1,0 +1,65 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b2",
+ "round": 6,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "dept-rack-cool",
+   "pixelSha256": "3a4b745a00fab90b45475f040db4e01d09cfc59def406b1895a2eb9cec334720",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The jackets are dark navy masses with heavy black outlines that run together. At 1x the object is a dark blue blob, and the elliptical ring and hanger bar barely show. The pale grey ring highlight sits on top like a sticker instead of shading the form."
+  },
+  {
+   "id": "home-appliance-rack",
+   "pixelSha256": "4275f2dc4dfd599a618ffaf38ada28e2c0e12bc1bd1205ed4de405a6ece74953",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "This is a flat front elevation: the top of the rack is a 1-row line with no lit plane, and the shelves are only front slots. The very narrow one-tile column is thin and toy-like next to the wardrobe and cooler originals."
+  },
+  {
+   "id": "home-drying-rack",
+   "pixelSha256": "05264c6ce69f2419d9df4eac8d4110f7948775d026c1e4591bc0d9cff3b6459e",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4,
+    5
+   ],
+   "reasons": "The frame uses thin pale grey and white lines with no dark outline, so it doesn't match the originals' dark-outlined pixel weight. The clothespins and small pale cloth pieces between the towel and shirt are noisy, detached specks. In the room the thin legs barely read, so the rack seems to hover with no clear ground contact."
+  },
+  {
+   "id": "hospital-curtain-screen",
+   "pixelSha256": "032a7a20d9896f12a126108fc3e54ad347ba944027f4a42b8c10024d29558333",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "It is drawn as a pure front elevation: a curtain panel with a flat top rail and no visible top or depth plane. The wheeled feet are separate grey blocks below a gap under the curtain, so they look detached rather than built into the frame."
+  }
+ ]
+}

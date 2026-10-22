@@ -8,7 +8,7 @@ import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_IN
 import { conceptCardsForText } from "../conceptCards";
 import { beodeulTownTargetFor } from "./beodeulTownRoute";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
-import { formatIntentAudit, type IntentSelectionFact } from "@/ai/intentDeclaration";
+import { formatIntentAudit, formatIntentClarifyMessage, type IntentDeclaration, type IntentSelectionFact } from "@/ai/intentDeclaration";
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { RoleModel } from "@/ai/modelRoles";
 import { buildSessionRegistryTools, SCENE_SETTING_NOTE, SCENE_SETTING_PATTERN } from "@/ai/sessionToolExposure";
@@ -97,6 +97,17 @@ export interface PlainPiTurnClassification {
    * 원인을 코드로 역추적해야 했다. 선언을 부르지 않은 턴(장르 프리셋·읽기 전용)은 그 사실을 적는다.
    */
   readonly routingAudit: string;
+  /**
+   * 선언이 「도구가 갈릴 만큼 모호하다」며 낸 되묻기(선택지 줄 포함). 있으면 호출자(입력창)는 실행하지 않고 이 질문을 사용자에게 보인다.
+   * 2026-10-22 배경 조수 시험: 「배경 좀 예쁘게」 에 선언은 「맵 배경/맵 꾸미기」 를 물었지만 Pi 경로가 이 값을 버려 소품 꾸미기 56호출로 갔다.
+   */
+  readonly clarify?: string;
+}
+
+/** 되묻기에 대한 사용자 답을 원래 요청과 묶은 문장의 표지 — 이 표지가 있는 턴은 다시 되묻지 않는다. */
+export const CLARIFY_ANSWER_MARKER = "[되묻기 답]";
+export function clarifyFollowUpText(original: string, question: string, answer: string): string {
+  return `${original}\n${CLARIFY_ANSWER_MARKER} 질문: ${question.split("\n")[0]} → 답: ${answer} — 이 뜻으로 진행한다. 다시 묻지 않는다.`;
 }
 
 interface SelectedEventSource {
@@ -123,6 +134,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
   let questionPromoted = false;
   let initialToolNames: readonly string[] | undefined;
   let intentNote: string | null = null;
+  let clarifyIntent: IntentDeclaration | null = null;
   // `/goal` is an explicit campaign command. It must bypass both intent routing and
   // the small genre-preset first-build contract, including the headless generator path
   // that calls this classifier before it can build a ParsedPiCommand.
@@ -193,6 +205,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     }
     if (declared.intent.source === "fallback" && !plan.readOnly) throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
     plan = { ...plan, viewNavigation: declared.intent.source === "llm" && declared.intent.viewNavigation === true };
+    if (declared.intent.source === "llm" && declared.intent.clarify && declared.intent.mode !== "question") clarifyIntent = declared.intent;
     // 선언이 확정한 것을 본문도 읽게 한다 — 세션 경로의 pushOrchestrationMessage(intentNote) 와 같은 자리.
     // Pi 이관(2026-09-11)에서 빠져 author_village·권장 크기·선택 사각형 지시가 모델에 닿지 않았다(2026-09-17 실측).
     const noteTargetMapId = declared.intent.targetMapId ?? currentMapId;
@@ -317,7 +330,9 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     routingAudit += " · 몬스터 수집 의도 → 몬스터 키트";
   }
   const team = input.piTeam && !plan.readOnly;
-  return { mode: team ? "team" : "single", plan: { ...plan, routingAudit }, questionPromoted, ...(initialToolNames ? { initialToolNames } : {}), intentNote, routingAudit, ...(monsterKit ? { monsterKit } : {}) };
+  const clarify = clarifyIntent && !plan.readOnly && !input.text.includes(CLARIFY_ANSWER_MARKER) ? formatIntentClarifyMessage(clarifyIntent) : undefined;
+  if (clarify) routingAudit += " · 되묻기";
+  return { mode: team ? "team" : "single", plan: { ...plan, routingAudit }, questionPromoted, ...(initialToolNames ? { initialToolNames } : {}), intentNote, routingAudit, ...(monsterKit ? { monsterKit } : {}), ...(clarify ? { clarify } : {}) };
 }
 
 /** Ultrabrain 계획 턴을 먼저 돌리는가 — 단독·쓰기·비일상 실행만. */

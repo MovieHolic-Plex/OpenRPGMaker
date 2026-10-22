@@ -41,6 +41,7 @@ export function createInterpreter(
     get eventPositions() { return options?.getEventPositions?.() ?? options?.eventPositions; },
     isEventIdle: options?.isEventIdle,
     onFactionStanceChanged: options?.onFactionStanceChanged,
+    onFriendshipChanged: options?.onFriendshipChanged,
     project,
   };
   let done = false;

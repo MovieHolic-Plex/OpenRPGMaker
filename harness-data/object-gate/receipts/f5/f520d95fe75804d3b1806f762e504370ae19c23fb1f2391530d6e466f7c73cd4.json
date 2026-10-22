@@ -1,0 +1,484 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f520d95fe75804d3b1806f762e504370ae19c23fb1f2391530d6e466f7c73cd4",
+ "width": 112,
+ "height": 96,
+ "kind": "structure",
+ "name": "jp-inaka-wooden-station",
+ "label": "jp_inaka_pack/jp-inaka-wooden-station",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 19,
+  "darkV5": 38,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 33
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hip roof (tile rows with ridge at the top, slopes narrowing upward)",
+      "rows": "21-44",
+      "evidence": "c",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "42-44"
+     },
+     {
+      "part": "white fascia/sign band",
+      "rows": "49-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "station front wall with windows, door and notice board",
+      "rows": "45-80",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "platform slab in front",
+      "rows": "81-93",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 24,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a station building with a large sloped hip roof in rows 21-44. Its width grows from 96 to 108 px, and it has stepped tile courses and a diagonal hip ridge at the left. A lighter course at row 41 serves as the front edge line, followed by dark eave shadow in rows 42-44 (L=30). Below is a 36-row vertical front face (rows 45-80) with windows, a door and a notice board. The platform slab (rows 81-93) is a flat strip with a yellow safety line in front of the building. The roof gives a clear top surface plus a front face, so the drawing reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "Measured facts put the candidate at 12 visible tones per tile against 12 and 10 for the references, with 4% near-flat coverage against 0% and 0%. Its dark edge pixels are 0% neutral, so the outline is tinted. In the image the outline is a dark brown-red beside the roof and a dark teal-grey beside the walls, not a uniform black line. The roof has about 5 steps with per-tile scallop rows and a highlight ridge, and the wall has panel shading, windows with reflections, and a platform with a yellow line. It reads as a lower-contrast, softer version of the references. The roof tile scallops are less distinct than the references' per-tile highlights, and the wall and platform have some smooth areas. Raw distinct colours (62) are far below the references' 185 and 66, but the visible-tone facts do not penalise it. It is structurally comparable and a careful artist would likely accept it next to the references, though it is slightly less textured.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18684
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hipped tile roof",
+      "rows": "21-44",
+      "evidence": "c",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "42-44"
+     },
+     {
+      "part": "white fascia/sign band",
+      "rows": "49-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "platform slab",
+      "rows": "81-93",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 24,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a station building under a large hipped roof. Rows 21-44 show a ridge at the top, stacked tile courses, and hip slopes on the left and right (silhouette widens from 96 to 108 px). The roof ends in a lighter line at row 41 followed by dark eave shadow on rows 42-44 (L=30). Below it the south wall runs from rows 45 to 80, with windows, a door and a notice board, so the front face is 3+ rows. The roof is a sloped plane (evidence c), not a flat front-facing cornice. The platform at rows 81-93 is ground and does not count as a major part of the building."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts are fine: 12 visible tones per tile against 12 and 10 for the references, 4% near-flat coverage, and 0% neutral dark edge pixels. The outlines lean brown and teal rather than black, so they read as dark material tones. By eye, though, the candidate is flatter than the references. Its roof is a brown gradient with horizontal rows and a ridge strip. It lacks the per-tile scallops and highlights that give the references 5-6 steps on the tiles. The walls and the platform base are mostly smooth siding bands and a flat grey slab with a yellow line. The windows and the door give some detail, but they sit in broad plain areas and have little grain. A careful artist would likely see this next to the references as a cleaner, flatter, more sticker-like building. It is plausibly just under the bar, and in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18090
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hip roof with tile courses",
+      "rows": "21-44",
+      "evidence": "c",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "42-44"
+     },
+     {
+      "part": "white signboard band under eaves",
+      "rows": "49-54",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall with windows and door",
+      "rows": "45-80",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "platform apron with yellow line",
+      "rows": "81-93",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 24,
+    "front_face_rows": 49,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a building. Its hip roof fills rows 21-44, and the tile courses step outward and widen from 96 to 108 px. The hips are visible at the left and right ends. A dark eave line at rows 43-44 forms the front edge, and the wall below it is lit differently. The roof is a clear sloped top surface. Below it the south face runs from row 45 to row 93: signboard, windows, door and a platform strip. The roof is the only part that needs a top, so every major part passes."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts are on par with the references: 12 visible tones per tile against 12 and 10, 4% near-flat coverage against 0%, and 0% neutral dark edge pixels, so the outlines are tinted. By eye the candidate's roof is a dark red-brown with only about 4 steps and weaker per-tile scallop highlights than the references' warm 5-6 step tile ramps. The walls and the white eave band are mostly clean flat panels with limited plaster speckle or grain. The windows, door and platform have reasonable structure and tinted edges, but the platform strip and the wall areas are simpler than the references' textured timber, stone and plaster. Overall it is cleaner and flatter than the references and looks somewhat thinner next to them, though not sticker-like. Because the shading is shallow and the surface texture limited, it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14652
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hip roof (ridge, upper slope and tiled lower slope)",
+      "rows": "21-44",
+      "evidence": "c",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "42-44"
+     },
+     {
+      "part": "white fascia/sign band",
+      "rows": "49-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "platform slab with yellow safety line",
+      "rows": "81-93",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 24,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the station building. Rows 21-44 are a large hip roof. It has a ridge highlight at rows 22-24, tile courses stepping outward in width from 96 to 108 px, and diagonal hip edges. A lighter line at row 41 is followed by dark eave shadow at rows 42-44. That is a clear sloped roof plane (evidence c), 24 rows tall. Below it, rows 45-80 are the vertical south wall: windows, a central ticket door, a timetable board, and posts. That is 36 rows of front face. The platform at rows 81-93 is a pale slab with a yellow line and a dark outline. It adds a ground surface and does not undermine the roof's top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts are on par with the references: 12 visible tones per tile vs 12 and 10, 4% near-flat coverage vs 0%, and 0% neutral dark edge pixels, so the outlines carry a tint (dark brown/blue-grey beside the materials) rather than a black sticker line. By eye, the roof is a brown tile with a few rows of scallop texture, but it has about 4 lightness steps and lacks the per-tile highlights and warm highlight band of the references, which use 5-6 steps. The wall is a muted teal-grey board with a window and a door panel. It shows some grain but is flatter and more uniform than the plaster speckle and individually shaded stones on the references. The platform base and the white fascia band are fairly flat and clean. Overall it is competent and not a sticker, but it is thinner in shading depth and texture than the Beodeul references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14902
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:03.857Z",
+ "cells": {
+  "16": [
+   "05f71329bba753d1",
+   "0a759056800bba39",
+   "1779aa95594a3bb6",
+   "25f4307bcb4d6229",
+   "27ac0cad2ce0aaaa",
+   "2ab1d868c62e8222",
+   "30ea71a4a883a987",
+   "35246a98c03c4523",
+   "3e8e6ddb21962436",
+   "3f315f567a144f8f",
+   "4092d0fb007b541f",
+   "45e223caa18c0608",
+   "4beccbff05106e9f",
+   "52d70748d37acfa6",
+   "5f51804b78e4e904",
+   "607cc2f07eaf56c5",
+   "611b4dfeb7da8fec",
+   "61af1dc92a79eb7a",
+   "694b6182ae24d40a",
+   "736bc5326385b399",
+   "7f1439f7c2f90940",
+   "81fea15df8610a3f",
+   "8870f1576b9f9474",
+   "899b519f3189c32a",
+   "9533713e7bd0a5b1",
+   "a11dd5fa04bfd7ca",
+   "a65a82a6d146187d",
+   "a9775a0a235171bb",
+   "ada2f0ef617d92ee",
+   "c06b0974586c80d0",
+   "c142b1dc0148faec",
+   "c1520d0170627d67",
+   "c657a3d8eb88d7ac",
+   "d1ad1e130e9675ad",
+   "f260e933a0bbb479"
+  ],
+  "24": [
+   "058bc1c8d9a75d97",
+   "06d4409713e14f12",
+   "0827efde7d16ab64",
+   "0f9efc77c9bef7c2",
+   "13eba3a7774fe348",
+   "150ecbcf9e79f889",
+   "1bc8787d604e0afd",
+   "1cb35617d8217d63",
+   "2471e62bf4df89fb",
+   "252ecd261c756d46",
+   "265e4e1c4257a4b2",
+   "2c2cbc39aa389815",
+   "2de20fd0360d9a5f",
+   "2e752da59ff2850d",
+   "32d33c61951f42bf",
+   "33449c3d12dbd634",
+   "3a50d7dee0f94ea6",
+   "3b5b811a4de5f50f",
+   "4d0dc51609e788a3",
+   "551a0118793cfb00",
+   "562a8e67302663b9",
+   "5a5bbe934abe7593",
+   "5c4286cb378dd3b3",
+   "5cb820e13fedf275",
+   "617568771ed53cbe",
+   "6a4c3285c19f5f04",
+   "71e7c31e83bae1ef",
+   "73a62f7796db0093",
+   "78c6021137f57ce0",
+   "7bd345e95a7d6247",
+   "7f1eccf47d970f1e",
+   "83d47ef1b081aceb",
+   "86774af51aecc57f",
+   "8b204e93fe566ec5",
+   "9444f89b1f7ff762",
+   "9aa3feac1fc04544",
+   "9c462f206e03d2f8",
+   "9cfd3390ccae3a34",
+   "9e16fe192ba6c6ec",
+   "a9f0f6d9551f1d9e",
+   "abb7b443f5bb7403",
+   "ae5b689f82e9ad68",
+   "af197f1a9e833c8f",
+   "b222baf070cad2b1",
+   "b54b2beaf60f0f4b",
+   "b9ea93066735df8f",
+   "bd67e646037c2f90",
+   "c1d9e6b733ed7a7c",
+   "c540448b1f234ca0",
+   "c64f5bdcddd93175",
+   "ccd6b127c89f9882",
+   "cdc6ea2a50567861",
+   "ce6449d365ed77b7",
+   "e10fc52eee1f8342",
+   "eca2aeda0f4d011a",
+   "f619334153080ad6",
+   "fb6347506d7cb8ed",
+   "ff76e564c00912bc"
+  ],
+  "32": [
+   "0000b67f6622e8c9",
+   "03bfca98c6c3015f",
+   "05a363c578941754",
+   "0ebbfb245911c982",
+   "0f4ab78708c60937",
+   "103d08f759995e59",
+   "1111038c8f074b40",
+   "11f13ba4f9e95f1e",
+   "1be34be3bad319e7",
+   "23057b44ca953ce0",
+   "25e6a50e310d1c41",
+   "35f66c973c604e2a",
+   "3cc6e95fb06e3525",
+   "4a16a0b901ceaa06",
+   "4b4df02f27c86e80",
+   "51700dcb60258553",
+   "73f06a7a16980a02",
+   "7e36ff46e49387c8",
+   "7f01148f5d19502c",
+   "901aa5509048cb2d",
+   "9a9db41030c9f5f0",
+   "a16da6ad0021dff4",
+   "a3f0139c4c4f934f",
+   "a71605ec4e657400",
+   "b74ce4de1128fc47",
+   "b9975f296c615273",
+   "be7a40779b5589e0",
+   "c0bf29fddb16f5b1",
+   "ca9fb6818a57f1aa",
+   "d18d6bebd9aa2b98",
+   "d6fee5ee52f852b8",
+   "dd9862ac8d4128c2",
+   "e8f690e99a038f9e",
+   "f0aca2d6a9fdcb1d",
+   "f72072a2eddb57a4",
+   "fbc523ccb2fb0c1e"
+  ],
+  "48": [
+   "0ff851c7ebc6e0aa",
+   "13922c9c15f2c937",
+   "164e6f8b6e31a40f",
+   "1b6816e3241b45b5",
+   "200c4d96dcad5ace",
+   "21cc5c0046c04805",
+   "23466d3bf154a4ac",
+   "26b829bb941cbdcd",
+   "344d33512f32861e",
+   "3bbe3f48b67ad15d",
+   "412936cab511562a",
+   "64b843cb940d7698",
+   "748deee969c2452d",
+   "9d0be2f6b526532c",
+   "b22bae79dd31e7aa",
+   "dbfbb27c53aa17e2",
+   "de7dd71f92d68c59",
+   "f6bc1634a2a78781"
+  ]
+ }
+}

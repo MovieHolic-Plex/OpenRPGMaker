@@ -1,0 +1,824 @@
+{
+ "schema": "oprn-object-gate-final-profile/1",
+ "profileHash": "7c00f78f2d6cad5a",
+ "status": "rejected",
+ "calibratedAt": "2026-10-20T20:47:34.474Z",
+ "judge": {
+  "provider": "claude-cli",
+  "model": "claude-opus-5-5",
+  "effort": "medium"
+ },
+ "bad": {
+  "total": 161,
+  "caught": 142,
+  "missed": [
+   "adv-front-prop/holdout__flat_timber_prop__w53-B",
+   "holdout/mir_stone_throne__w52-A",
+   "fresh5/s022_interior",
+   "style/synthetic__tree-5844f6",
+   "adv-front-prop/holdout__thin_timber_prop__w53-B",
+   "holdout/mir_pew_E3__w45-A",
+   "style/synthetic__house-h106_1",
+   "originals-v5large/v5l__reject-potion-cabinet-r0",
+   "interior/pew_E2__w45-A",
+   "holdout/mir_weapon_rack__A",
+   "style/synthetic__tree-7ecdb8",
+   "interior/stone_throne__w52-A",
+   "fresh5/s007_wizarding",
+   "holdout/mir_pew_E2__w45-A",
+   "originals-v5large/v5l__armchair",
+   "fresh4/q001_gothic",
+   "originals-v5large/v5l__mci-chair-wood-e",
+   "fresh5/s047_modern_city",
+   "interior/pew_E3__w45-A"
+  ]
+ },
+ "good": {
+  "total": 297,
+  "passed": 244,
+  "falseFail": [
+   "holdout/hue_feed_trough__w4-B",
+   "holdout/hue_new-column",
+   "holdout/mir_timber_prop__w53-B",
+   "fresh5/s053_pirate",
+   "holdout/mir_cheese_wheels__v5",
+   "fresh3/b3_house-h132_0",
+   "fresh4/q031_sf",
+   "fresh5/s006_modern_city",
+   "originals-jp/jp__jp-bldg-shop-vacant",
+   "fresh4/q019_prehistoric",
+   "originals-jp/jp__jp-bldg-house-nisetai",
+   "fresh4/q111_beodeul",
+   "fresh5/s059_prehistoric",
+   "fresh/g53_modern_city",
+   "holdout/mir_beodeul__prop-stall_herb_flower",
+   "fresh3/b3_house-h101_1",
+   "fresh5/s028_jp_city_interior",
+   "originals-interior/int__shelf__potion_potionb_potiong",
+   "holdout/real_broom_bucket",
+   "fresh3/b3_prop-anchor_display",
+   "interior/timber_prop__w53-B",
+   "fresh5/s089_sf",
+   "originals-interior/int__bar_stool",
+   "holdout/mir_potted_fern__w7-B",
+   "originals-interior/int__shelf__herb",
+   "fresh5/s049_interior",
+   "fresh/g18_modern_city",
+   "pairs/new-column",
+   "originals-jp/jp__jp-bldg-shop-realestate-shut",
+   "holdout/real_sack_flour",
+   "holdout/hue_beodeul__prop-stall_herb_flower",
+   "originals-interior/int__potted_cactus",
+   "fresh5/s042_sengoku",
+   "interior/coal_bin__w10-B",
+   "originals-interior/int__washbasin",
+   "fresh3/b3_prop-tree_planter",
+   "interior/bar_stool__w5-C",
+   "holdout/hue_coal_bin__w10-B",
+   "fresh/g62_modern_city",
+   "fresh/g47_sky",
+   "fresh3/b3_prop-stall_jug_bottle",
+   "murim/tea_table__B",
+   "interior/cheese_wheels__v5",
+   "fresh4/q054_desert",
+   "fresh5/s054_sf",
+   "fresh5/s055_gothic",
+   "holdout/hue_cheese_wheels__v5",
+   "fresh/g4_campus",
+   "holdout/mir_new-column",
+   "fresh2/g12_modern_city",
+   "fresh/g6_snow",
+   "interior/potted_fern__w7-B",
+   "fresh5/s031_modern_city"
+  ]
+ },
+ "sets": {
+  "holdout": {
+   "bad": {
+    "total": 34,
+    "caught": 30
+   },
+   "good": {
+    "total": 40,
+    "passed": 28
+   }
+  },
+  "style": {
+   "bad": {
+    "total": 5,
+    "caught": 2
+   },
+   "good": {
+    "total": 10,
+    "passed": 10
+   }
+  },
+  "fresh5": {
+   "bad": {
+    "total": 14,
+    "caught": 11
+   },
+   "good": {
+    "total": 41,
+    "passed": 31
+   }
+  },
+  "fresh4": {
+   "bad": {
+    "total": 17,
+    "caught": 16
+   },
+   "good": {
+    "total": 38,
+    "passed": 34
+   }
+  },
+  "adv-front-prop": {
+   "bad": {
+    "total": 61,
+    "caught": 59
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "murim": {
+   "bad": {
+    "total": 4,
+    "caught": 4
+   },
+   "good": {
+    "total": 4,
+    "passed": 3
+   }
+  },
+  "originals-jp": {
+   "bad": {
+    "total": 0,
+    "caught": 0
+   },
+   "good": {
+    "total": 59,
+    "passed": 56
+   }
+  },
+  "originals-v5large": {
+   "bad": {
+    "total": 3,
+    "caught": 0
+   },
+   "good": {
+    "total": 8,
+    "passed": 8
+   }
+  },
+  "fresh3": {
+   "bad": {
+    "total": 0,
+    "caught": 0
+   },
+   "good": {
+    "total": 21,
+    "passed": 16
+   }
+  },
+  "interior": {
+   "bad": {
+    "total": 15,
+    "caught": 12
+   },
+   "good": {
+    "total": 15,
+    "passed": 10
+   }
+  },
+  "fresh": {
+   "bad": {
+    "total": 4,
+    "caught": 4
+   },
+   "good": {
+    "total": 22,
+    "passed": 16
+   }
+  },
+  "originals-interior": {
+   "bad": {
+    "total": 0,
+    "caught": 0
+   },
+   "good": {
+    "total": 32,
+    "passed": 27
+   }
+  },
+  "fresh2": {
+   "bad": {
+    "total": 3,
+    "caught": 3
+   },
+   "good": {
+    "total": 6,
+    "passed": 5
+   }
+  },
+  "pairs": {
+   "bad": {
+    "total": 1,
+    "caught": 1
+   },
+   "good": {
+    "total": 1,
+    "passed": 0
+   }
+  }
+ },
+ "tiers": {
+  "U": {
+   "bad": {
+    "total": 26,
+    "passed": 2
+   },
+   "good": {
+    "total": 10,
+    "passed": 5
+   }
+  },
+  "A": {
+   "bad": {
+    "total": 150,
+    "passed": 16
+   },
+   "good": {
+    "total": 278,
+    "passed": 225
+   }
+  },
+  "A-style": {
+   "bad": {
+    "total": 78,
+    "passed": 63
+   },
+   "good": {
+    "total": 82,
+    "passed": 82
+   }
+  },
+  "K": {
+   "bad": {
+    "total": 0,
+    "passed": 0
+   },
+   "good": {
+    "total": 9,
+    "passed": 4
+   }
+  },
+  "D": {
+   "bad": {
+    "total": 28,
+    "passed": 15
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "C": {
+   "bad": {
+    "total": 74,
+    "passed": 12
+   },
+   "good": {
+    "total": 32,
+    "passed": 12
+   }
+  },
+  "B": {
+   "bad": {
+    "total": 14,
+    "passed": 4
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  }
+ },
+ "errors": [],
+ "originals": {
+  "beodeul_city": {
+   "total": 45,
+   "passed": 36,
+   "failed": [
+    "fresh3/b3_prop-stall_jug_bottle",
+    "fresh3/b3_prop-anchor_display",
+    "fresh3/b3_prop-fish_barrel",
+    "fresh3/b3_prop-bread_rack",
+    "fresh3/b3_prop-sword_barrel",
+    "fresh3/b3_prop-tree_planter",
+    "fresh3/b3_house-h101_1",
+    "fresh3/b3_house-h132_0",
+    "style/beodeul__prop-lamp_double"
+   ]
+  },
+  "jp_city": {
+   "total": 59,
+   "passed": 55,
+   "failed": [
+    "originals-jp/jp__jp-bldg-house-nisetai",
+    "originals-jp/jp__jp-bldg-shop-realestate-shut",
+    "originals-jp/jp__jp-bldg-shop-vacant",
+    "originals-jp/jp__vehicle__bus-right"
+   ]
+  },
+  "atlas_biome_interior": {
+   "total": 32,
+   "passed": 27,
+   "failed": [
+    "originals-interior/int__shelf__potion_potionb_potiong",
+    "originals-interior/int__shelf__herb",
+    "originals-interior/int__bar_stool",
+    "originals-interior/int__washbasin",
+    "originals-interior/int__potted_cactus"
+   ]
+  },
+  "oprn-interior-v5-large": {
+   "total": 8,
+   "passed": 8,
+   "failed": []
+  }
+ },
+ "families": {
+  "hand_interior": {
+   "bad": 55,
+   "caught": 47,
+   "good": 97,
+   "passed": 73
+  },
+  "synthetic": {
+   "bad": 5,
+   "caught": 2,
+   "good": 0,
+   "passed": 0
+  },
+  "pirate": {
+   "bad": 0,
+   "caught": 0,
+   "good": 9,
+   "passed": 8
+  },
+  "beodeul_city": {
+   "bad": 3,
+   "caught": 3,
+   "good": 38,
+   "passed": 32
+  },
+  "adv-front-prop": {
+   "bad": 61,
+   "caught": 59,
+   "good": 0,
+   "passed": 0
+  },
+  "murim": {
+   "bad": 4,
+   "caught": 4,
+   "good": 4,
+   "passed": 3
+  },
+  "jp_city": {
+   "bad": 0,
+   "caught": 0,
+   "good": 59,
+   "passed": 55
+  },
+  "desert": {
+   "bad": 0,
+   "caught": 0,
+   "good": 10,
+   "passed": 9
+  },
+  "sf": {
+   "bad": 0,
+   "caught": 0,
+   "good": 8,
+   "passed": 5
+  },
+  "jp_city_interior": {
+   "bad": 2,
+   "caught": 2,
+   "good": 3,
+   "passed": 2
+  },
+  "originals-v5large": {
+   "bad": 3,
+   "caught": 0,
+   "good": 8,
+   "passed": 8
+  },
+  "sengoku": {
+   "bad": 1,
+   "caught": 1,
+   "good": 6,
+   "passed": 5
+  },
+  "wizarding": {
+   "bad": 4,
+   "caught": 3,
+   "good": 5,
+   "passed": 5
+  },
+  "campus": {
+   "bad": 2,
+   "caught": 2,
+   "good": 5,
+   "passed": 4
+  },
+  "modern_city_interior": {
+   "bad": 0,
+   "caught": 0,
+   "good": 1,
+   "passed": 1
+  },
+  "sky": {
+   "bad": 1,
+   "caught": 1,
+   "good": 5,
+   "passed": 4
+  },
+  "modern_city": {
+   "bad": 12,
+   "caught": 11,
+   "good": 15,
+   "passed": 9
+  },
+  "steampunk": {
+   "bad": 1,
+   "caught": 1,
+   "good": 7,
+   "passed": 7
+  },
+  "snow": {
+   "bad": 1,
+   "caught": 1,
+   "good": 4,
+   "passed": 3
+  },
+  "prehistoric": {
+   "bad": 1,
+   "caught": 1,
+   "good": 5,
+   "passed": 3
+  },
+  "q061_beodeul": {
+   "bad": 1,
+   "caught": 1,
+   "good": 0,
+   "passed": 0
+  },
+  "q081_beodeul": {
+   "bad": 1,
+   "caught": 1,
+   "good": 0,
+   "passed": 0
+  },
+  "gothic": {
+   "bad": 2,
+   "caught": 1,
+   "good": 4,
+   "passed": 3
+  },
+  "farm": {
+   "bad": 0,
+   "caught": 0,
+   "good": 4,
+   "passed": 4
+  },
+  "q013_beodeul": {
+   "bad": 1,
+   "caught": 1,
+   "good": 0,
+   "passed": 0
+  }
+ },
+ "uncertain": [
+  {
+   "label": "uncertain-interior/int__desk_2x1",
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "label": "style/beodeul__prop-goods_pile",
+   "verdict": "fail",
+   "reasons": [
+    "charge 1/2: the left drum's top (rows 3-5) is a rounded dome lip, not an elliptical cap plate seen from above.",
+    "charge 1/2: the tall right body (rows 0-8) is drawn as a flat front face. Its upper end is only a 1-2 row lighter band with no foreshortened top plane.",
+    "The view is ambiguous because the stacked barrel and crate shapes read as a front elevation, so sure=false.",
+    "판정자가 확신하지 못함(애매하면 불합격)"
+   ]
+  },
+  {
+   "label": "fresh3/b3_prop-planter_round",
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "label": "uncertain-interior/int__chest",
+   "verdict": "fail",
+   "reasons": [
+    "Charge 2: only rows 1-3 (a light plank band) could be a top seen from above. Rows 3-5 are the lid's front-facing planks above the dark row-6 seam, so the top is below the 4-row box minimum.",
+    "Charge 4 (possible): a pale grey-blue vertical strip runs down the left edge (rows 1-10). It reads as a visible west side plane or a receding side face beside the south face.",
+    "The lid reads as a front elevation of a chest rather than a lid plane seen from above.",
+    "판정자가 확신하지 못함(애매하면 불합격)"
+   ]
+  },
+  {
+   "label": "uncertain-interior/int__table__loaf_bun",
+   "verdict": "fail",
+   "reasons": [
+    "charge 2: the loaves (rows 0-6) sit straight on the plank front's top line; no deck plane or back edge shows behind or between them, only background",
+    "charge 2: the body is an 8-row flat plank front (rows 7-14) whose top is only a 1-row edge, close to the RED counter contrast; it is unclear whether the loaf heap counts as a filled top",
+    "판정자가 확신하지 못함(애매하면 불합격)"
+   ]
+  },
+  {
+   "label": "uncertain-interior/int__basket__cabbage",
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "label": "uncertain-interior/int__crate__cabbage",
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "label": "fresh3/b3_prop-column_monument",
+   "verdict": "fail",
+   "reasons": [
+    "6: the capital under the gold orb (about rows 8-12) is a rectangular slab. It has 1-2 light rows over a grey front band and a dark shadow row, with straight sides. It is not an elliptical cap plate that narrows above and below its widest rows, and matches the red flat-band column example.",
+    "2: the lit top face of the cap is only about 1-2 rows, below the 4-row minimum for column.",
+    "6: the base plinth steps (about rows 46-58) read as stacked front bands with thin lit lips rather than elliptical top plates.",
+    "판정자가 확신하지 못함(애매하면 불합격)"
+   ]
+  },
+  {
+   "label": "uncertain-interior/int__water_jar",
+   "verdict": "fail",
+   "reasons": [
+    "2: the blue at rows 1-3 runs to the top edge with no back rim ellipse behind it; it reads as a painted neck band, not liquid seen inside an opening",
+    "2: the opening interior is at most 3 rows with no far rim, against 4 required (the cauldron anchor shows a full elliptical rim)",
+    "Unsure whether any opening is seen from above, so it fails",
+    "판정자가 확신하지 못함(애매하면 불합격)"
+   ]
+  },
+  {
+   "label": "uncertain-interior/int__crate__carrot",
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "label": "uncertain-interior/int__tea_2x1",
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "label": "uncertain-interior/int__work_2x1",
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "label": "uncertain-interior/int__armchair",
+   "verdict": "fail",
+   "reasons": [
+    "2: the seat cushion between the armrests (pink area at rows ~6-8) is about 3 rows deep, below the 4-row minimum for a seat",
+    "2b: the backrest at rows 0-4 and the cushion read like front-facing stacked panels, so the seat plane is ambiguous",
+    "판정자가 확신하지 못함(애매하면 불합격)"
+   ]
+  },
+  {
+   "label": "uncertain-interior/int__pot",
+   "verdict": "fail",
+   "reasons": [
+    "Charge 2: the jar mouth is only a 1-row dark slit at rows 1-2 inside a front-facing rim. No interior is seen from above, and an opening needs at least 4 interior rows.",
+    "Charge 1: the gourd body is drawn as a flat front elevation. It has no foreshortened rim ellipse like the holy water font anchor.",
+    "Style: no nameable mismatch; it uses tinted outlines and multi-step shading."
+   ]
+  },
+  {
+   "label": "uncertain-interior/int__basket__carrot",
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "label": "style/beodeul__prop-table_mugs",
+   "verdict": "fail",
+   "reasons": [
+    "Charge 1: the piece reads as stacked flat front-facing plank bands (rows 0-4 and 19-23) with a framed middle panel (rows 7-16).",
+    "Charge 1: no clear foreshortened top plane ending in a front-edge line; any top is at most a 1-2 row lip.",
+    "View is ambiguous: the middle panel could be a tabletop seen from above or a front panel, so sure=false.",
+    "판정자가 확신하지 못함(애매하면 불합격)"
+   ]
+  },
+  {
+   "label": "fresh3/b3_prop-statue_sage",
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "label": "uncertain-interior/int__throne",
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "label": "uncertain-interior/int__table__cake_pie",
+   "verdict": "fail",
+   "reasons": [
+    "Charge 1/2: the goods (bread, cake) stand in profile on a 1-2 row lip at about rows 4-6. Background checker shows between them, so there is no table-top deck behind them. This matches the RED counter-with-goods contrast.",
+    "Charge 1: below the lip, the white tablecloth (rows ~6-11) and the shadowed skirt/legs (rows ~11-16) are a flat front elevation with no foreshortened top plane."
+   ]
+  },
+  {
+   "label": "uncertain-interior/int__royal_chest",
+   "verdict": "fail",
+   "reasons": [
+    "1: the pink lid (rows ~1-5) is drawn as stacked horizontal stripes of a front-facing domed lid band; it does not read as a foreshortened plane seen from above with a back edge, so a front elevation is likely",
+    "2: even if read as a top, about 4 lid rows plus about 7 front rows on a 13 px piece is at the minimum; the view is uncertain, so it fails",
+    "판정자가 확신하지 못함(애매하면 불합격)"
+   ]
+  },
+  {
+   "label": "uncertain-interior/int__dining_2x1",
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "label": "fresh3/b3_prop-flowerbox_long",
+   "verdict": "fail",
+   "reasons": [
+    "2: the box opening (rows 0-4) is not clearly seen from above. The flowers are an upright row of front-facing red and yellow blooms on stems standing against a flat grey stone band, which reads as a back wall rather than a far rim.",
+    "2: no soil plane and no rim ellipse or front rim is visible from above. The box top is only the 1-row line where the leaves overhang (row ~5). Behind it, fill and back band read as one flat front-facing band, not a planting surface seen from above.",
+    "2 (doubt): the planting fill may be meant as the top seen from above, the way the same-chipset flowerbed anchor is drawn. The view cannot be confirmed, so sure=false.",
+    "style: the brown wood front (rows 6-11) uses several shades with grain lines. Outline and pixel grid match the beodeul_city anchors, so no 8a-8d charge applies.",
+    "판정자가 확신하지 못함(애매하면 불합격)"
+   ]
+  },
+  {
+   "label": "uncertain-interior/int__stove",
+   "verdict": "fail",
+   "reasons": [
+    "Charge 1 (unsure): the light-grey band in rows ~0-3 is one uniform tone with two dark dots that read like knobs on a front panel; it has no back edge or eave row, so it cannot be told apart from a front-facing strip on a flat front elevation",
+    "The stove/fireplace body below (rows ~5-23) is a flat front face with the firebox opening; the band cannot be confirmed as a horizontal top"
+   ]
+  },
+  {
+   "label": "fresh3/b3_prop-mooring_bollard",
+   "verdict": "fail",
+   "reasons": [
+    "6: the bollard head (top 3-4 rows, dark purple with one highlight speck) reads as a dome or hat, not an elliptical cap plate seen from above.",
+    "2: there is no clearly foreshortened top ellipse of 4 rows; the top is at most about 2 rows of rounded outline.",
+    "1: below the head, the orange band and dark body are flat front-facing bands with no visible top plane.",
+    "판정자가 확신하지 못함(애매하면 불합격)"
+   ]
+  },
+  {
+   "label": "uncertain-interior/int__cupboard",
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "label": "style/beodeul__prop-flower_cart",
+   "verdict": "fail",
+   "reasons": [
+    "Charge 2: the cart deck behind and between the three grey pots shows only about 2-3 source rows of brown top plane (magnified rows ~13-15) before the front-edge line. This is thinner than the veg_cart anchor, whose deck plane is clearly visible behind its heaped goods.",
+    "Charge 2 (support): the deck reads close to the RED contrast case, a 1-2 row lip over a flat front board (rows ~16-20), rather than a foreshortened plane carrying the pots.",
+    "The pots themselves are allowed: their leafy fill (rows ~3-9) is drawn as seen from above and counts as their top. The charge is on the cart body that carries them.",
+    "Not sure of the view: the deck depth is borderline at this size, so the 3/4 half fails with sure=false.",
+    "Style: shaded brown wood on a crisp 1-pixel grid with tinted dark outlines, consistent with the beodeul_city anchors; no 8a-8d charge can be named.",
+    "판정자가 확신하지 못함(애매하면 불합격)"
+   ]
+  },
+  {
+   "label": "uncertain-interior/int__pew",
+   "verdict": "fail",
+   "reasons": [
+    "2b/1: the red cushioned band (rows ~2-5) between the full-height side posts reads as a backrest seen face-on, like the RED pew contrast.",
+    "2b/1: the only possibly-horizontal seat part is a 2-3 row light plank strip (rows ~6-8) above a flat paneled front (rows ~9-18).",
+    "Cannot tell whether the red band is a seat top or a backrest, so charge 1 with sure=false.",
+    "판정자가 확신하지 못함(애매하면 불합격)"
+   ]
+  },
+  {
+   "label": "uncertain-interior/int__chair_S",
+   "verdict": "fail",
+   "reasons": [
+    "2b/1: the upper ~10 rows are a ladder-back backrest of stacked horizontal slats seen face-on. The only possibly-horizontal part above the legs is a thin strip of about 2-3 rows (rows ~10-12), which is not a seat plane of at least 4 rows seen from above.",
+    "It is unclear whether the bottom band is the seat top or a front rail. Under 2b, sure=false.",
+    "Style: wood tones and tinted outline fit the chipset; no nameable style mismatch.",
+    "판정자가 확신하지 못함(애매하면 불합격)"
+   ]
+  },
+  {
+   "label": "uncertain-interior/int__sofa",
+   "verdict": "pass",
+   "reasons": []
+  }
+ ],
+ "excludedNegatives": [
+  "fresh5/s011_modern_city",
+  "fresh5/s087_jp_city_interior",
+  "fresh4/q016_interior",
+  "fresh4/q024_wizarding",
+  "fresh4/q039_interior",
+  "fresh4/q060_interior",
+  "fresh4/q062_modern_city",
+  "fresh4/q068_interior",
+  "fresh4/q095_modern_city",
+  "fresh4/q125_interior",
+  "originals-interior/int__barrel__apple",
+  "originals-interior/int__holy_water_font",
+  "originals-interior/int__potted_flowering",
+  "originals-interior/int__double_bed_red",
+  "holdout/mir_new-pew-e",
+  "holdout/mir_new-chair-e",
+  "holdout/mir_new-chair-w",
+  "holdout/mir_beodeul__house-h122_0",
+  "holdout/mir_pew__v5",
+  "holdout/mir_votive_stand__v5",
+  "holdout/mir_coffin__w73-A",
+  "holdout/mir_column_marble__w51-A",
+  "holdout/mir_column_stone__w51-A",
+  "holdout/mir_chair_E__v5",
+  "holdout/mir_chair_W__v5",
+  "holdout/mir_sofa__v5",
+  "holdout/mir_powder_kegs__w9-B",
+  "holdout/mir_spear_rack__w70-A",
+  "holdout/mir_hay_bale__w44-A",
+  "holdout/mir_nightstand__w8-C",
+  "holdout/mir_water_trough__w4-A",
+  "holdout/mir_wardrobe__w42-A",
+  "holdout/mir_scroll_shelf__B",
+  "holdout/hue_nightstand__w8-C",
+  "holdout/hue_wardrobe__w42-A",
+  "holdout/flat_wardrobe__w42-A",
+  "holdout/thin_wardrobe__w42-A",
+  "holdout/flat_nightstand__w8-C",
+  "holdout/thin_nightstand__w8-C",
+  "holdout/flat_water_trough__w4-A",
+  "holdout/thin_water_trough__w4-A",
+  "holdout/real_potted_flowering",
+  "holdout/real_barrel_apple",
+  "fresh3/b3_prop-veg_cart",
+  "adv-front-prop/interior__pew__v5",
+  "adv-front-prop/interior__votive_stand__v5",
+  "adv-front-prop/interior__coffin__w73-A",
+  "adv-front-prop/interior__column_marble__w51-A",
+  "adv-front-prop/interior__column_stone__w51-A",
+  "adv-front-prop/interior__chair_E__v5",
+  "adv-front-prop/interior__sofa__v5",
+  "adv-front-prop/interior__powder_kegs__w9-B",
+  "adv-front-prop/interior__spear_rack__w70-A",
+  "adv-front-prop/interior__hay_bale__w44-A",
+  "adv-front-prop/murim__scroll_shelf__B",
+  "adv-front-prop/holdout__mir_pew__v5",
+  "adv-front-prop/holdout__mir_votive_stand__v5",
+  "adv-front-prop/holdout__mir_coffin__w73-A",
+  "adv-front-prop/holdout__mir_column_marble__w51-A",
+  "adv-front-prop/holdout__mir_column_stone__w51-A",
+  "adv-front-prop/holdout__mir_chair_E__v5",
+  "adv-front-prop/holdout__mir_chair_W__v5",
+  "adv-front-prop/holdout__mir_sofa__v5",
+  "adv-front-prop/holdout__mir_powder_kegs__w9-B",
+  "adv-front-prop/holdout__mir_spear_rack__w70-A",
+  "adv-front-prop/holdout__mir_hay_bale__w44-A",
+  "adv-front-prop/holdout__mir_scroll_shelf__B",
+  "adv-front-prop/holdout__flat_wardrobe__w42-A",
+  "adv-front-prop/holdout__thin_wardrobe__w42-A",
+  "adv-front-prop/holdout__flat_nightstand__w8-C",
+  "adv-front-prop/holdout__thin_nightstand__w8-C",
+  "adv-front-prop/holdout__flat_water_trough__w4-A",
+  "adv-front-prop/holdout__thin_water_trough__w4-A",
+  "pairs/new-pew-e",
+  "pairs/new-chair-e",
+  "style/prehistoric__fish-rack__before",
+  "style/prehistoric__fish-rack__after",
+  "style/beodeul__house-h122_0",
+  "style/synthetic__house-h122_0",
+  "interior/pew__v5",
+  "interior/votive_stand__v5",
+  "interior/coffin__w73-A",
+  "interior/column_marble__w51-A",
+  "interior/column_stone__w51-A",
+  "interior/chair_E__v5",
+  "interior/sofa__v5",
+  "interior/powder_kegs__w9-B",
+  "interior/spear_rack__w70-A",
+  "interior/hay_bale__w44-A",
+  "interior/holy_water_font__w7-A",
+  "interior/nightstand__w8-C",
+  "interior/water_trough__w4-A",
+  "interior/wardrobe__w42-A",
+  "murim/scroll_shelf__B"
+ ],
+ "note": "조건 (a) 위반 = 등급 A 3/4 위반(적대 시험 adv-*·object-gen 반려 포함) + 강한 라벨 화풍 얕음, 전체 판정으로 하나도 놓치면 안 된다. 조건 (b) 칩셋 원본 전체 판정 통과 126/144 ≥ 90%. 정상 = 라벨 반쪽으로 센다(보고만). 전체 판정 정상 통과 243/297. 전체 표본"
+}

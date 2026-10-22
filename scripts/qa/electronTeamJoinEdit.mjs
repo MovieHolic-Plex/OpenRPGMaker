@@ -1,3 +1,4 @@
+// @deprecated multi-user team collaboration is not supported yet (2026-10-21). 진입점은 TEAM_COLLAB_ENABLED(electron/shared/teamCollab.ts) 를 켜야 보인다.
 // 참여 창에서 실제 편집(타일 한 칸)을 하고 저장 왕복과 호스트 변경 반영이 얼마나 걸리는지 잰다.
 // 실행: xvfb-run -a node electronTeamJoinEdit.mjs --app . --url http://<호스트>:9840 [--out edit.json]
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";

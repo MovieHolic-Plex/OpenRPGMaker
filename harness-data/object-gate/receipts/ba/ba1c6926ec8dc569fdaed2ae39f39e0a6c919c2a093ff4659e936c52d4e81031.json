@@ -1,0 +1,386 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ba1c6926ec8dc569fdaed2ae39f39e0a6c919c2a093ff4659e936c52d4e81031",
+ "width": 64,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "amuse pachinko island",
+ "label": "modern_city_interior/amuse-pachinko-island",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 21,
+  "darkV5": 46,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 8
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top wooden band of the cabinet",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "small colored ornaments on the top band",
+      "rows": "1-4",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with four glass pachinko panels",
+      "rows": "6-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round stool seats on checkered base",
+      "rows": "23-31",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-5 form a wood top band that gets lighter downward and ends in a light front-edge line at row 5. Row 6 is dark, an eave shadow, and below it is the front face. The face is rows 6-22, a dark blue cabinet with four glass panels, with a checkered base and stools below it in rows 23-31. The ornaments on the top band are decor. The band is only about 5 rows and could be read as a front-facing cornice, but the edge line plus the shadow is enough to count it as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a row of four pachinko or arcade machines on stools. Measured facts: 20 visible tones per tile, matching the well (20) and above the cheese stall (17) and hedge (9). Near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outlines carry a tint. By eye the outlines are a dark blue/purple-tinted version of the neighbouring body material, not a uniform black line. Each machine has a body, a bezel, a glowing screen with coloured highlights, and stools with a few shading steps. This gives roughly 5 steps per material, and the machine panels show some dot-level variation. Texture is more graphic than the references' grain, such as tile scallops and wood grain, so I rate it 'some' rather than 'rich'. Overall it is comparable in density and craft to the well and stall references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15742
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cabinet band (wood cornice with lamp ornaments)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "machine front with glass-domed pachinko units",
+      "rows": "6-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stool seats on checkered base",
+      "rows": "24-28",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a wood top band that gets lighter toward the south. It ends in a light front-edge line at row 5 (#ddbf91), and row 6 is a dark shadow row (#202b48) directly beneath. The front face with the four machine units runs from row 6 to row 22, which is 17 rows. Below it, rows 24-28 show blue elliptical stool seats on pedestals. That is a top band of about 5 rows over a tall front face, so it reads as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a row of four pachinko machines on stools, which fits the prop kind. It measures 20 visible tones per 16x16 tile, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so the large areas are broken up. The dark edge pixels are 0% near-neutral, so the outlines carry a tint (dark navy/blue-violet beside the cabinet and dark tones beside the coloured domes) instead of a uniform black sticker line. The cabinets show several value steps (top panel, bezel, dome highlights, stool seats), though the shading ramps are a little shallower than the best Beodeul props. Texture comes mostly from the small lit domes and panel details, and there are no flat 5x5 fills. A careful artist would accept it beside the references without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17666
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top wooden band of the island",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "pachinko machine front panels",
+      "rows": "7-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower base with stools",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small gem ornaments on the top band",
+      "rows": "0-4",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a wood-grain band that ends in a light front-edge line at row 5 (#ddbf91). Row 6 is a dark eave shadow (#202b48), and the front face of 16 machine rows (7-22) plus a lower base sits below it. The column scan is identical at x=16, 32 and 47 for rows 0-6. That makes the top band a 5-row top surface (evidence a), like the green cabinet reference with a top, an edge line and an eave. The front face is much taller than the top. Only the small gems at the top edge are decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 20 visible tones per 16x16 tile, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0% and 0% of dark edge pixels are neutral, so the outlines lean toward the neighbouring material's tone and are not a black sticker line. By eye, the four cabinets show a stepped body ramp, lit coloured round windows with inner highlights, and stools shaded separately from the cabinets, with no large flat fills. Texture is moderate, with less grain than the cheese stall or well, but the structure and shading read as comparable to the references. The cabinet bodies look a little uniform in places, which keeps the score below the reference level.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15443
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band (wood, gradient shading)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "gem ornaments on top",
+      "rows": "0-3",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pachinko screens front face",
+      "rows": "7-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round stool seats below",
+      "rows": "24-28",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Columns x=16, 32 and 47 show a wood band at rows 1-5 that brightens toward a light front-edge line at row 5 (L=195). Row 6 is a dark eave-shadow row (L=43). That is evidence (a), a top surface about 5 rows deep. Below it the blue front face runs from row 7 to 22, which is 17 rows, and holds four machine screens. The round stool seats at rows 24-28 widen and then narrow again, and they are separate from the main body. The gems on the header are decor. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a row of four pachinko cabinets on stools, and it reads as the same kind of standing prop as the stall and well references. It has 20 visible tones per 16x16 tile, level with the roofed well (20) and above the cheese stall (17) and hedge (9). Near-flat coverage is 0%, so there are no large flat fills. The cabinet bodies show a lit top edge, mid and dark panel tones, and a layered shading on the coloured screens. The stool seats and bases are also stepped. The dark edge pixels are 0% neutral, so the outlines lean toward the cabinet's blue-grey and dark tones rather than a black sticker line. Shading steps are about 5 against the references' 5-6. Texture is mostly in the screens and trim, with less grain on the cabinet body than the stall or well, so I rate it 'some' rather than 'rich'. Overall it would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18076
+  }
+ ],
+ "decidedAt": "2026-10-20T22:55:59.180Z",
+ "cells": {
+  "16": [
+   "2c0e1a8dd58c2527",
+   "63ceef11cdf7577b",
+   "9b630bc167e35131",
+   "a10b7769390aa22c",
+   "a9107ea3f3a4e397",
+   "be12fa045dfe5e70",
+   "e4cebd85ac1c7c6e"
+  ],
+  "24": [
+   "01168573f63d889d",
+   "060332b0a1cc316d",
+   "0d534916a018943d",
+   "0e6f7614f6483617",
+   "205dd722bcc3da54",
+   "261c70bc64d419a6",
+   "269c9b8e4cb9a871",
+   "28576781c45db6c3",
+   "2b474e947c92dad3",
+   "2ec69dacddcb2134",
+   "36627327ef975414",
+   "3e1742848f7867dc",
+   "57b4fbd2b4fe173f",
+   "5b7f06ab681a2b53",
+   "5e7bcbc17b185680",
+   "88f80fd301d602f3",
+   "91c3dde5ba6f3eec",
+   "943bf60f2e996a1b",
+   "9f70024935d898c1",
+   "9ff5d369bd0e3b93",
+   "a6011624428b9ce0",
+   "a72c3745257af3a0",
+   "b459de2746db2dee",
+   "ba360b88703a8b6f",
+   "bf09928b3f8dee7d",
+   "c02a677e757b739b",
+   "c187bb13ff78e510",
+   "d1d7cbd6f447cc00",
+   "d9b735ea12778cb4",
+   "e1a77fbfc87c71ba",
+   "e1f64536c8233339",
+   "e999d62c627c1fb0",
+   "f2eeccf33067a4a2",
+   "f892a2393765ddd9"
+  ],
+  "32": [
+   "ae56746d7108a41f",
+   "ca1b5d9ac36a4cee"
+  ],
+  "48": [
+   "0d3983785bff6852",
+   "2e404c4d942ae08a",
+   "2f28a2057fa25d7c",
+   "37d47496d2515d15",
+   "487ec30de4ac0028",
+   "52c48eef28530938",
+   "56caa20c8d4813d4",
+   "6914eef9332adba4",
+   "6fdf85815575f345",
+   "8fbaa130df175d41",
+   "ec8ab03e742cf041",
+   "f93ab0793d1394ba"
+  ]
+ }
+}

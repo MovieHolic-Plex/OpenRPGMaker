@@ -1,0 +1,459 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "461ffeca34bd6c702670d80cc4d46d97504a54a80161ce54602393add5e3f2fa",
+ "width": 64,
+ "height": 64,
+ "kind": "tall_furniture",
+ "name": "jumbo hosp mri",
+ "label": "modern_city_interior/jumbo-hosp-mri",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (3/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 10,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 11
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main housing top panel with inset recess",
+      "rows": "4-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "side console top (screen and lighter band)",
+      "rows": "26-35",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "screen on the console",
+      "rows": "29-33",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "patient table extending south",
+      "rows": "52-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main housing has a band at the top, rows 4-21 (width 44), with a lighter front lip at rows 19-21. A darker edge line follows at rows 22-23, and the front face with the gantry ring runs from row 22 to row 51. The inset panel and its display on the band could be read as a vertical face, so this call is somewhat uncertain. The right console (rows 26-51, width 60) has its own top with a screen, a lighter edge band at rows 34-35, and a front face below. The narrow table at rows 52-63 is a small extension below the body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The MRI machine is a clean, readable large prop with a tinted blue-grey outline (0% neutral dark edge pixels, matching the hedge and cheese stall), so it does not have the black sticker look. It has about 4 lightness steps on the white casing (white, light grey, mid grey-blue, dark shade) and a separate blue ramp on the bore, with a small side panel unit. Measured density is 7 visible tones per tile, well below the stall (17) and well (20) and below the hedge (9). Near-flat coverage is 8%, between the references' 0% and 13%. The large casing faces are mostly smooth planes with little grain, speckle or panel texture, so surfaces read as somewhat flat. It is acceptable but thinner than the richer references of the same kind. With only 21 total colours against 38-40 for the stall and well, it looks simpler and flatter than a careful artist would accept next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17471
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main gantry housing top (panel with display)",
+      "rows": "4-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "right side control unit top (display strip)",
+      "rows": "26-35",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "patient table extending south",
+      "rows": "38-58",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main housing has a light top band at rows 4-21 with an inset panel and display. It ends in a darker front-edge line at rows 22-23 (x=17 L=144 at row 22, x=32 L=169/144 at rows 22-23). Below that is a front face of about 30 rows (22-51) holding the round gantry bore. The right-hand control unit has its own top at rows 26-35, an edge line at row 36 and a front face down to row 51. The patient table sticks out below the main body. The top band reads as a horizontal surface with an edge line, not just a rim, so the object is three-quarter rather than front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is an MRI machine drawn in blue-grey and white. It has about 4 lightness steps on the casing (white highlight, light grey, mid grey-blue, dark blue-grey) and a dark blue bore. Its outline is a tinted dark blue-grey, with 0% near-neutral dark edge pixels, so it is not a sticker-style black line. Measured facts: 7 visible tones per tile against 17-20 for the stall and well, and 9 for the hedge. Near-flat coverage is 8%, in line with the stall's 13%. The large casing panels and the front face are mostly smooth flat fills with only a few edge highlights. There is little grain, speckle or per-element shading, whereas the stall and well show texture dots, shaded stones and tile scallops. The structure and form read clearly, but it is flatter and has fewer tones than the richer references (stall, well). The bench and lamp are thin props, so their density numbers are not used. Overall it falls slightly short of the Beodeul bar for texture and shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16201
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main gantry housing top band",
+      "rows": "5-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right console unit top band with display",
+      "rows": "27-35",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "patient table bed surface",
+      "rows": "37-55",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 17,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main gantry housing has a wide top band in rows 5-21. It ends in a darker front-edge line at row 22, below which the front face with the round bore runs to row 51, about 30 rows. The right-hand console shows the same pattern: a top band in rows 27-35, an edge line at row 36, and a front face to row 50. The patient table below the bore extends south and has a visible padded surface. The eave shadow under the main edge line is weak, but the edge line itself is enough evidence of a top surface. It is a large equipment piece, so the tall_furniture kind is only a loose fit."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The MRI machine is a large prop, roughly 6x5 tiles. The measured 7 visible tones per tile is below the richer references (stall 17, well 20, hedge 9) but well above the thin props. Edge pixels are 0% neutral, so the outline is tinted: a dark blue-grey beside the casing, not the sticker-style black. The casing has about 4 steps (white highlight, light grey, mid blue-grey, dark shadow), which is less than the 5-6 on the references. The large casing front and the side panel are smooth, nearly flat fills with little grain, speckle or per-panel detail. Flat coverage is only 8%, similar to the stall's 13%. The gantry bore has decent ring shading, but the surfaces overall read cleaner and flatter than the roof tiles, cheese and stone detail on the references, so it looks a step thinner. Cleanly drawn but under-textured against a careful artist's bar, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16710
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "main housing top panel with inset display",
+      "rows": "5-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "main housing front face with gantry ring and bore",
+      "rows": "22-51",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right side console top",
+      "rows": "27-35",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "console screen",
+      "rows": "28-33",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "patient table extending south",
+      "rows": "52-59",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 17,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main housing has a light top band at rows 5-21, with an inset recessed panel, ending in a darker front-edge line at row 22 (x=17 and x=32 show L=144 there). Below it is a front face of about 30 rows (rows 22-51) holding the gantry ring and bore, with a darker base band at rows 48-51. The right-hand console has its own top at rows 27-35, a brighter edge line at rows 34-36, and a front face at rows 37-48. The object is a free-standing MRI scanner, not tall wall furniture, so kind_matches is false, but the structure reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The MRI is cleanly drawn. Its outline is a dark blue-grey that leans toward the body colour (0% near-neutral dark edge pixels), not a sticker-style black line. However, the grey housing has only about 3-4 lightness steps (highlight, light, mid, shadow), against 5-6 on the references' roofs, wood and foliage. The large front panel, the top of the housing and the side unit are broad, nearly flat fills with little grain, speckle or panel-edge variation. The bore ring has some gradient, but the rest stays plain. The measured facts agree: 7 visible tones per tile, versus 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Total distinct colours are 21, versus 38-40 for the stall and well. Near-flat coverage is 8%, similar to the stall's 13% and above the well's 0%. Overall the piece is a tidy, simplified shape, a clear step below the richer Beodeul props in shading depth and surface texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 19194
+  }
+ ],
+ "decidedAt": "2026-10-20T23:53:05.147Z",
+ "cells": {
+  "16": [
+   "01e5298754144bf7",
+   "0391edf82c9bf00c",
+   "07bc98afd5509af3",
+   "1e162331c359f7f5",
+   "30c80cf061411e97",
+   "58cc01d3e5a8f19b",
+   "72b71d0bc178ab98",
+   "7d6a82997b5c0fa0",
+   "8248870d00e75a6f",
+   "96cc520cca6b7947",
+   "a6d50416ed6f5657",
+   "c75faaf2f66a0681",
+   "d338a1f831ae66c5",
+   "d934695fe58951d7",
+   "dc5b6fc1be240dfe"
+  ],
+  "24": [
+   "08283dfd7e1775f9",
+   "097fd36ace42d5d5",
+   "0c430f8191a7dcec",
+   "0d85c6e4b32ebb14",
+   "120375c214dee627",
+   "1210502d193adacc",
+   "1a1567d0c6d46120",
+   "1cd707cb0e47135a",
+   "1db9024e803fe8fc",
+   "24194bb7d28590d0",
+   "24f09037f77c77e4",
+   "289d8dae26975829",
+   "2c02bf8ad3cd4f47",
+   "2ddcd5b9fe40d68a",
+   "3049f4b107c21ae2",
+   "3b2bd71e6917b1f0",
+   "3b6e24a801e9961a",
+   "3d88a5c41f3ed4cf",
+   "4181d56c4797edc9",
+   "43bbcf165c9b2cb7",
+   "4b28b9d532cfed4d",
+   "4ecf31a9aa7c4e09",
+   "5f30f4927dd6e140",
+   "66d3a25ce5a6f727",
+   "6afd767ec7c95530",
+   "6c1318b9cf62d38e",
+   "719c4e8b284bdd19",
+   "74dd768efb4992ac",
+   "76f9f0d1aaaa0604",
+   "79ff324341d45469",
+   "7fbafc76ed249b78",
+   "82ccf56ecb885b39",
+   "8b72c1b2459e195e",
+   "967a564bbf000f77",
+   "9c8f675abfbdd63c",
+   "a197ebd4732671ee",
+   "a42dff26bc411fbb",
+   "a43113fa4368a56d",
+   "a8635f2ee31d1230",
+   "afef938e49f0e441",
+   "b86bf5353a9f3b35",
+   "b9ce865c7c4436b0",
+   "c3fd8c5d324821de",
+   "ccf6111b2ffc1e28",
+   "d39309e981f1a83b",
+   "d48b2f48f02a2b7a",
+   "d69e754a70990689",
+   "d7c3da8895b467dd",
+   "d8b96f41277f7e6b",
+   "e97adcfba7e9a21e",
+   "f04bc4532fcfe1b1",
+   "fa369fdf90be982b"
+  ],
+  "32": [
+   "500ec713d4bcb633",
+   "6447c43037f443f5",
+   "9d03562d058a09b2",
+   "af52ee06e08b3ee9"
+  ],
+  "48": [
+   "091d13236c3ac4d5",
+   "163e93446de38a45",
+   "1d8ba009bec751c0",
+   "357a9c508a5094ba",
+   "37554ba84e496d9c",
+   "3758b11956f35077",
+   "3d6cecf66d168dff",
+   "48da0d7b028fdbaa",
+   "4988ae0b7ad0d685",
+   "5d7696e73f5b604e",
+   "60a9ee0146cc5366",
+   "628ef7d434384666",
+   "65b9e533b6964414",
+   "6d2b47dc9fe49e62",
+   "70313064081b5689",
+   "79b4e1672a92f31c",
+   "86e266292fc44952",
+   "8f4e2b6e7b10c44f",
+   "a0b7d49b4dc7be77",
+   "a6eeae157f9088f2",
+   "bb2a3ce51fd10964",
+   "bdc80b81f4abff73",
+   "f8bb2708f07e34fe"
+  ]
+ }
+}

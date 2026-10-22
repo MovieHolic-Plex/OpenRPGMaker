@@ -5,6 +5,7 @@ import { mapTileSize } from "@/project/tileGeometry";
 import { partySkillContext } from "@/project/partySkills";
 import { cancelFurniturePush } from './furniturePushAnimation';
 import { friendshipDeltaEmote } from "@/project/emotes";
+import { showRelationshipPulse } from "@/player/playSceneRelationshipPulse";
 import { showSceneEmote } from "@/player/playSceneEmotes";
 import {
   clearAudioState,
@@ -38,6 +39,7 @@ import { characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { waitForEventKey } from "@/player/eventInput";
 import { abortHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
 import { applyCameraControl } from "@/player/playSceneCamera";
+import { cameraViewOrigin } from "@/player/cameraScreen";
 import { applyLightingStep } from "@/player/playSceneLighting";
 import { playMapAnimation } from "@/player/playSceneMapAnimations";
 import { playPathfindMove } from "@/player/playScenePathfinding";
@@ -285,6 +287,7 @@ export async function runCommands(
     currentEventId, continueAfterTransfer: options.continueAfterTransfer, getEventPositions: () => scene.eventPositions,
     isEventIdle: target => isRuntimeEventIdle(scene, target),
     onFactionStanceChanged: () => invalidateFactionRetargetCache(scene),
+    onFriendshipChanged: (npcKey, delta) => showRelationshipPulse(scene, npcKey, delta),
   });
   // An awaited UI result must never resume commands after its owner/page/session was cancelled.
   const interpreter: Interpreter = { ...base, resume: value => current() ? base.resume(value) : { kind: "done" } };
@@ -446,6 +449,8 @@ async function consumeBlockingStep(
           textContext: { session: scene.session, project: store.getCurrent() },
           playerTileY: scene.tileY,
           mapHeight: scene.map.height,
+          // 대사와 같은 화면 속 높이로 가림을 판정한다(타일 높이만 보면 카메라가 맵 끝에 걸릴 때 대사와 다른 쪽을 고른다).
+          ...playerScreenYOf(scene),
         });
         const skipped = skipController.takeResult();
         if (skipped) return skipped;
@@ -553,6 +558,8 @@ async function consumeBlockingStep(
     case "tacticsBattle": {
       dialogue.hide();
       const result = await playTacticsBattle(scene, step);
+      // null = 전투 도중 플레이가 끝났다. 이벤트를 더 진행하지 않는다(battleProcessing 의 null 과 같다).
+      if (result === null) return { kind: "done" };
       if (result === undefined) return resumeAfterSurface(scene, interpreter);
       // 패배 불허 전투의 패배는 게임 오버다(battleProcessing 과 같은 규칙).
       if (result === "defeat" && !step.canLose) { applyBattleDefeat(scene); return { kind: "done" }; }
@@ -927,6 +934,8 @@ function playerScreenYOf(scene: PlaySceneContext): { playerScreenY?: number } {
   const sprite = scene.player;
   if (!camera || !sprite || !(camera.height > 0)) return {};
   const centerY = sprite.y - (sprite.displayHeight > 0 ? sprite.displayHeight : 0) * (sprite.originY ?? 1) + (sprite.displayHeight > 0 ? sprite.displayHeight : 0) / 2;
-  const ratio = ((centerY - camera.scrollY) * camera.zoom) / camera.height;
+  // 카메라 origin 기준 확대를 반영한다(cameraScreen.ts). 예전 (y - scrollY) * zoom 은 배율 2(아스트라 호라이즌)에서
+  // 화면 가운데 주인공을 1.00(맨 아래)으로 읽어 창을 위로 보냈다.
+  const ratio = ((centerY - cameraViewOrigin(camera).top) * camera.zoom) / camera.height;
   return Number.isFinite(ratio) ? { playerScreenY: Math.max(0, Math.min(1, ratio)) } : {};
 }

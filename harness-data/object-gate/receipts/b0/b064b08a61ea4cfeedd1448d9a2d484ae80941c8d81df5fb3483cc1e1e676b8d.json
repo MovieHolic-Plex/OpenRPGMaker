@@ -1,0 +1,312 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b064b08a61ea4cfeedd1448d9a2d484ae80941c8d81df5fb3483cc1e1e676b8d",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "station ic charger",
+ "label": "modern_city_interior/station-ic-charger",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 18,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band (light green)",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "upper screen panel",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main display panel",
+      "rows": "14-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "charging tray/slot band",
+      "rows": "21-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body is a 12px-wide tall cabinet spanning rows 3-31. Rows 4-8 form a light-green top band, 5 rows tall. Its last row, 8, is a lighter 1-row front-edge line (#a8f6b3), and row 9 is a darker green shadow row (#308050) just below it. Below that is a vertical front face of about 22 rows (rows 9-31) holding the screen, the display and the tray. This matches the 'cabinet: top 5 + edge + eave' reference. The top band is only weakly distinguished, so the reading is somewhat ambiguous."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small upright green charger cabinet with a screen, a panel and a slot. Its outline is a dark green-teal tone that follows the body, and the measured near-neutral share of dark edge pixels is 0%, so it is not a black sticker line. The body has a light edge, a mid tone and a dark side, plus a screen with its own highlights, which gives roughly 4 steps against the references' 5-6. Visible tones per tile are 17, level with the cheese stall (17) and close to the roofed well (20), and above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. Texture is modest because the object is small, but the panel details and screen pixels keep it from looking flat. A careful artist would accept it next to the references without it looking thinner or flatter, so it passes. The shallower total palette (23 colours) is expected for a small locked-palette piece and is not a defect on its own.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17441
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top light-green band",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "front face with screen, display and vents",
+      "rows": "10-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 4-8 form a light-green band at the top. Row 8 (#a8f6b3) is the lightest row and acts as a front-edge line. Row 9 (#308050) is a darker eave-shadow row. Below that the vertical front face runs from row 10 to row 30 (about 21 rows) and holds the dark panel, the blue screen and the grey vents. The silhouette stays 12 px wide, so no side face is drawn. The band could be read as a front-facing cap, but the edge line plus the shadow row is enough to count it as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small green charger kiosk, about 11x20 source pixels, so it is smaller than the stall and well. Measured facts: 17 visible tones per 16x16 tile, which matches the cheese stall (17) and is close to the roofed well (20) and above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, meaning the outline leans dark teal-green with the body rather than black, which fits the references' tinted-outline practice and is not a sticker look. By eye, the body has a highlight edge, light and mid green, and a dark side. The screen panel, card slot and base add small contrasting details, so it shows about 4 clear steps against the references' 5-6. Texture is limited to those panel details, but it is not flatter or thinner than the references' small props. A careful artist would accept it next to them at this size.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14700
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band of the charger housing",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "front face: dark display strip, blue screen, card slot, green lower panel",
+      "rows": "10-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The light green band at rows 4-8 sits above the front face. Row 8 (#a8f6b3) is a lighter 1-row front-edge line, and row 9 (#308050) is a darker eave-shadow row. Below that the vertical front face runs rows 10-30 with a display strip, a blue screen, a slot panel and a green lower body. No side face is drawn. The top band is shallow but meets evidence (a), so the body reads as a 3/4 view and not a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small green charging kiosk with a screen, a panel and a slot. It reads as a standing prop like the stall and well references. Measured facts support it: 17 visible tones per 16x16 tile, matching the cheese stall (17) and close to the well (20), and above the hedge (9). Near-flat coverage is 0%, so there are no large flat fills. 0% of its dark edge pixels are neutral, so the outline is a dark green-teal tint of the body rather than a black sticker line. The body shows about 4 lightness steps with highlight edges, a darker side face and a recessed screen. That is slightly fewer than the references' 5-6 steps, and the texture is moderate (panel detail, small indicator dots) rather than the grain of the stall or well. Overall it is equal to the references on the primary facts and would sit acceptably next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13944
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of charger cabinet",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-10"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 4-8 form a light green band, much lighter than the face below. Row 8 is a lighter front-edge line (L=215), followed by dark rows 9-10 that act as eave shadow. Below, the front face runs from row 9 to row 30 (22 rows) and holds the dark display, blue screen, grey panel and green base. This matches the green 'cabinet: top 5 + edge + eave' reference. The width profile is a constant 12 from row 4 to row 30, so no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, tall green charger kiosk. It has 17 visible tones per full tile, level with the cheese stall (17) and close to the well (20), and well above the hedge (9). Near-flat coverage is 0%, so there are no flat 5x5 fills, and the body, screen panel and base are broken up by highlight and shadow. The dark edge pixels are 0% neutral, so the outline leans dark green and teal rather than black, as in the references. It shows about 4 lightness steps on the green body against roughly 5 on the references, so it is slightly shallower in ramp depth but not sticker-like. The measured facts match what the picture shows, and a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12372
+  }
+ ],
+ "decidedAt": "2026-10-21T08:22:08.636Z",
+ "cells": {
+  "16": [
+   "69aeb755e3ac23a6",
+   "7b9e403308e20b97"
+  ],
+  "24": [
+   "1198f44415509c98",
+   "20a74c2ca22a902d",
+   "29daba8106dd5c75",
+   "3a1e168870b6d4be",
+   "43941390cf1e031e",
+   "43c8bffbf5880d6e",
+   "4a0510ae4c36cda7",
+   "5f051e16800caa59",
+   "9bc57ab35e9cae97",
+   "a92d05051e403052",
+   "ae7a658b9fc7cbf0",
+   "eb2a136ddafbef8e"
+  ],
+  "32": [
+   "a466aca1dc3d0bee",
+   "cff9fecca54b45ac",
+   "f51eed19cd775ee3"
+  ],
+  "48": [
+   "0953f5ad47f714ee",
+   "2472a4adfc86c56a",
+   "3c7a8ead26e8deb7",
+   "3ef3891fe11da8f6",
+   "50baa8ed207773f9",
+   "f4ab4b172e71b2b6"
+  ]
+ }
+}

@@ -108,6 +108,7 @@ def main():
         png.paste(img, ((n % COLS) * T, (n // COLS) * T))
     os.makedirs(os.path.dirname(OUT_PNG), exist_ok=True)
     png.save(OUT_PNG, optimize=True)
+    import sys as _s, pathlib as _pl; _s.path.insert(0, str(_pl.Path(__file__).resolve().parents[3] / 'scripts/content/rtp-attribution')); from rtp_check import require_credit; require_credit(OUT_PNG)  # EasyRPG RTP CC BY credit check (public/assets/ATTRIBUTION.md)
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, "w") as f:
         json.dump({"source": "scripts/content/atlas-scenes/build_vehicles.py", "tileSize": T, "tilesPerRow": COLS,

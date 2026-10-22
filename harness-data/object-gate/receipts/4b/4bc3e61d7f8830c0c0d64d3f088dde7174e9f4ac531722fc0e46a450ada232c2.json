@@ -1,0 +1,403 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4bc3e61d7f8830c0c0d64d3f088dde7174e9f4ac531722fc0e46a450ada232c2",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-inaka-sluice-gate",
+ "label": "jp_inaka_pack/jp-inaka-sluice-gate",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 3 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 2행 < 3 (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 21,
+  "darkV5": 63,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top beam with red ornament",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone lintel band across the gate top",
+      "rows": "5-10",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "inner gate frame with bars and foam",
+      "rows": "12-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water channel below the gate",
+      "rows": "24-31",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss tufts at the sides",
+      "rows": "24-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The lintel at rows 5-10 has a light top plane at rows 5-8. A lighter front-edge line sits at row 9 in columns 8, 16 and 23. Darker shadow rows 10-11 follow it, and below them is a front face with a gate frame, bars and water, rows 12-31. The top beam at rows 0-4 is a front-facing strip with no edge line. The top surface is shallow and the distinction is marginal, but it is a banded plane that ends in an edge line plus shadow, with a front face of about 20 rows below. The water at rows 24-31 adds weak evidence of contents seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a tiny stone sluice structure, not a full house, so it has no tile roof to compare. I judged it as a small building prop against the references. The measured facts support it: 19 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage (same as both references), and only 3% neutral dark edge pixels. That last figure means the outline leans toward the material (dark grey-blue beside stone, dark green beside the plants), not a uniform black sticker line. By eye, the stone body is split into light and dark bands with a gate slot, the water has several blue steps with highlights, there are green plant tufts at the base, and the red cap on top has its own highlight and shadow. The stone ramp has about 4 steps, below Beodeul's 5-6, and the texture is less rich than the references' per-tile scallops and stone-by-stone shading. Even so, a careful artist would accept it next to the references without it looking flatter or more sticker-like, and no area is a flat fill.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23036
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red ornament on top beam",
+      "rows": "0-4",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top cornice beam",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone lintel band",
+      "rows": "5-11",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "side stone piers",
+      "rows": "11-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gate opening with bars and water",
+      "rows": "11-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a full-width 32 px rectangle. Rows 1-3 are a flat front-facing beam with a red ornament, and rows 5-10 are a lintel band. The lintel has a bright line at row 6 and another at row 9, then dark row 11. It reads as a front-facing cornice with highlights, not a receding top plane, and no roof slope or ellipse is visible. Below it are vertical piers, bars and water seen face-on, so no major part shows a horizontal top surface. This is a flat front elevation. The lintel is the only ambiguous part, at most a 2-row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small stone sluice gate, much smaller than the two reference houses, so the comparison is loose. On the measured facts it holds up: 19 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and only 3% near-neutral dark edge pixels. That means the outlines are tinted, a dark version of the neighbouring stone, wood and water, not a black sticker line. By eye, the grey stone body shows several lightness steps with a top ledge highlight. The gate slats and the water at the base add varied tones, and the foliage and the red accent add grain. I see no large flat fills. It is simpler than a full roofed house, but a careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 34547
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top beam with red ornament",
+      "rows": "0-4",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lintel beam",
+      "rows": "5-11",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "side stone piers",
+      "rows": "12-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gate opening with water and crossbars",
+      "rows": "12-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The gate is a flat frontal drawing. The lintel at rows 5-11 is a stack of horizontal strips: light at row 6, mid at rows 7-8, light at row 9, dark at rows 10-11. It could be read as a 2-3 row top with an edge line at row 9, but it looks more like a front-facing beam. The side piers (rows 12-31) and the gate panel are vertical faces with no top surface. The water at rows 22-31 is seen face-on, not as a surface from above. No receding side face is drawn. The top surface is therefore only a thin strip of about 2 rows against a front face of about 20 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small sluice-gate structure (grey stone body, red valve wheel on top, water below), not a full roof-and-walls house, so it is much simpler than the references. I judged it on craft, not size. The stone has about 4 lightness steps (highlight, light, mid, dark) with visible block edges and speckle. The water has banded blues with highlights. The red wheel carries its own highlight. Outlines lean toward the neighbouring material (dark grey-brown beside stone, dark blue beside water), and only 3% of dark edge pixels are neutral, against 7% and 9% for the references, so this is not a sticker outline. Measured facts: 19 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, the same as the references. There are no large flat fills. It has fewer shading steps than the roof tiles of the houses, but a careful artist would accept it next to them without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19909
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red ornament/lantern on top beam",
+      "rows": "0-4",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper cornice beam",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main lintel top band",
+      "rows": "6-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-11"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main lintel has a band at rows 6-9. Row 6 is light (L=181), rows 7-8 are mid-tone, and row 9 is a light front-edge line (L=181). Dark eave shadow follows at rows 10-11 (L=130 then 81). Below it is a front face of about 20 rows (rows 12-31): stone side piers, a gate frame with crossbars and posts, and water at the bottom. The 4-row band is a modest top surface, and the evidence is borderline. The row 1-3 cornice and the red ornament at rows 0-4 read as a front-facing strip and decor, so they do not count as the top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile-scale waterworks prop, not a full house with roof and walls. It is still the same 'building' kind, and I judged it as a small piece without penalising its size. The measured facts support it. It has 19 visible tones per 16x16 tile against 12 and 10 in the references. Near-flat coverage is 0%, the same as the references. Only 3% of its dark edge pixels are neutral, so the outlines are tinted material tones rather than a black sticker line. By eye, the stone body has several grey steps with block separation, and the water has a dark-to-light ramp with white highlights. The grass at the base and the red cap on top add variation, and the dark gate openings are separated from the stone by value. It is simpler than the tiled roofs and stone walls of the references, but no large flat fills appear and a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24956
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.109Z",
+ "cells": {
+  "16": [
+   "1b015de83173cff9",
+   "77e099170ba0652d",
+   "9fd7f6ee7af6dcf4",
+   "db4c5035ef67038f"
+  ],
+  "24": [
+   "00ede946e7b2562c",
+   "09a25e3af9dfae62",
+   "19b87a70d540c09b",
+   "23215764c3ad3432",
+   "23a701b11e16679f",
+   "2768e77a223d6d13",
+   "61125692a744bb6e",
+   "6f1600efc4c416da",
+   "82526e28fd12d782",
+   "8a4ef3a0209da20d",
+   "93f48e8c85678398",
+   "98dd5f82e605acfe",
+   "b729d52737b375c5",
+   "b97bb9b3624db364",
+   "bf67b1c6d5c61221",
+   "c0d7739a52350354",
+   "c5aaa3b301f4c10f",
+   "cfe85cad7fbaf51d",
+   "d5e8cbf1fbcdf2b4",
+   "d882efe3e7dfa365",
+   "dd888d048ff66195",
+   "e9b57c855aec677a",
+   "ea153a3926ffd2a2",
+   "fb1e28dcf2e9f36f"
+  ],
+  "32": [
+   "e76d45d1f651b356"
+  ],
+  "48": [
+   "057056fac7d5bf81",
+   "0f1add9faca8a910",
+   "2383ed89769e6464",
+   "75acbff2e6dbc87f",
+   "bcbf9237eb7efb51",
+   "e7a004aa2f99107d"
+  ]
+ }
+}

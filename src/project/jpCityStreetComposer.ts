@@ -40,6 +40,8 @@ export interface JpStreetPlan {
   readonly propRects?: readonly { x: number; y: number; w: number; h: number }[];
   /** 걸어 다니는 큰길 줄(보도 둘 사이) — 시작 칸·문 후보를 고르는 기준. */
   readonly walkRows: readonly number[];
+  /** 공원 구획 사각형(잔디·판석 입구·연못·나무) — 조수 도구가 그 뒤쪽 잔디에 공원 숲(paintJpForestArea grove)을 칠한다. */
+  readonly parks?: readonly { x: number; y: number; w: number; h: number }[];
   readonly summary: string;
   readonly mapId: string;
   readonly seed: number;
@@ -119,7 +121,7 @@ const ENTRANCE_PROPS: Readonly<Record<string, readonly (readonly [string, number
 
 /** 완성 큰 건물(문 위치를 몰라 이름표·실내 연결은 하지 않는다 — 풍경). 띠 높이에 맞는 것만 놓는다. */
 const LANDMARKS: readonly { id: string; w: number; h: number }[] = [
-  { id: "jp-bldg-mansion4", w: 11, h: 11 }, { id: "jp-bldg-zakkyo5", w: 7, h: 14 }, { id: "jp-bldg-office6", w: 9, h: 15 }, { id: "jp-bldg-mansion6-slim", w: 7, h: 15 }, { id: "jp-bldg-clinic", w: 9, h: 8 }, { id: "jp-bldg-post-office", w: 9, h: 8 }, { id: "jp-bldg-supermarket", w: 14, h: 6 }, { id: "jp-bldg-koban", w: 6, h: 6 },
+  { id: "jp-bldg-mansion4", w: 11, h: 11 }, { id: "jp-bldg-zakkyo5", w: 7, h: 14 }, { id: "jp-bldg-office6", w: 9, h: 15 }, { id: "jp-bldg-mansion6-slim", w: 7, h: 15 }, { id: "jp-bldg-clinic", w: 9, h: 8 }, { id: "jp-bldg-post-office", w: 9, h: 8 }, { id: "jp-bldg-supermarket", w: 14, h: 6 }, { id: "jp-bldg-koban", w: 6, h: 7 },
 ];
 
 /** 겹침 검사용 소품 칸 크기(w,h) — 키트 색인 tiledata/jp-city/kit-index.json 의 값. 모르는 id 는 검사하지 않는다. */
@@ -614,9 +616,11 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       }
     }
   };
+  const parkRects: { x: number; y: number; w: number; h: number }[] = [];
   const nonShopFill = (sx: number, ex: number, b: Band, zone: JpBlockZone) => {
     const w = ex - sx, h = b.foot - b.top + 1;
     if (zone === "park") {
+      parkRects.push({ x: sx, y: b.top, w, h });
       fill(sx, b.top, w, h, "잔디", true);
       const px = sx + Math.floor(w / 2) - 1;
       fill(px, b.top + Math.floor(h / 2), 2, h - Math.floor(h / 2), "판석 광장", true);            // 입구 길(남쪽 보도로 이어짐)
@@ -964,6 +968,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     steps,
     buildings: placed,
     propRects: propRectsOut,
+    parks: parkRects,
     mapId, seed: opts.seed, style: flavor ?? style,
     walkRows: [...bands.flatMap((b) => (b.gap ? (b.gap.river ? [b.foot + 2, b.gap.sw2] : [b.foot + 2, b.gap.road0, b.gap.road0 + 1, b.gap.sw2]) : [])), H - 2],
     summary: `${flavor ? FLAVOR_KO[flavor] : style === "residential" ? "주택가" : "상가 거리"} ${W}×${H} — 띠 ${N}줄(발 ${bands.map((b) => `y${b.foot}`).join("·")}), 큰길 ${N - 1}(폭 ${roadWs.join("·")}), 세로 길 ${streets.length}${riverGap >= 0 ? ", 하천(가로)" : ""}, 구획 ${zones.map((z) => zoneNames[z.zone]).join("·")}, 건물 ${placed.length}채(${placed.map((p) => p.role).join("·")})`,

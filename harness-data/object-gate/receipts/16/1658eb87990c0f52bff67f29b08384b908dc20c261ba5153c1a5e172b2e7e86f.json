@@ -1,0 +1,290 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1658eb87990c0f52bff67f29b08384b908dc20c261ba5153c1a5e172b2e7e86f",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rice paddy ground tile (inaka-paddy-golden-bank)",
+ "label": "jp_inaka_pack/gnd/inaka-paddy-golden-bank",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 72,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy ground tile (full 16x16 tile of textured golden-green terrain with a dark soil band at rows 1-2)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a full-bleed 16x16 terrain tile: every row is 16 px wide, with a dark brown soil/shadow band at rows 1-2 and a mottled golden-olive field texture across rows 3-15. The column scan shows only texture variation (L 117-208) with no front-edge line, no eave shadow, and no ellipse. It is a flat ground texture rather than a standing object, so it has no distinct top and front face. This is consistent with the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate renders as a very small golden straw patch with a dark brown bank strip along the top. The measured facts are 12 colours in the whole piece, against 80 for the grass reference. The 12 colours per tile are above the paving reference (7) but well under the grass (26), which is the closer match for a natural soil or grass surface. I count about 3-4 lightness steps on the golden body, against 5-6 in the references. The dark edge pixels are 0% neutral and look brown, so the outline is a tinted material tone, not a black sticker line. Flat-fill coverage is 0%, and there is some vertical stalk striping, but it is regular and sparse. It lacks the clumped, multi-tone variation of the grass reference. A 4x3 paddy ground should carry far more grain, stubble and tonal variation across its tiles. With only 12 colours in total, it looks thinner and flatter than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14113
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy ground tile (full 16x16 fill, golden stalks texture with a dark soil/mud band at top rows 1-2)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a full-bleed 16x16 terrain tile: every row is 16 pixels wide, with a golden-yellow stalk texture (rows 3-15) under a dark brown soil strip (rows 1-2) and a few green pixels on row 0. It is not a standing object, so there is no body with a top surface or front face to measure. The dark strip is a bank edge inside a seamless ground tile, not an eave shadow. The kind (terrain tile) matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 12 distinct colours across the whole patch, against 80 for the grass reference. Its tiles hold about 12 colours each, which is above the paving reference (7 per tile) but well below the grass (26 per tile). It has no 5x5 flat fills, so the surface is not blank. But the golden paddy body reads as a pale tan base with a few regular horizontal straw-like stripes, about 3 lightness steps, where Beodeul grass uses 5 or more greens with clumps and tufts. The brown bank strip at the top has little internal variation and the green fringe is minimal. Dark edge pixels are 0% neutral, so any outline is tinted, but there is little real shading structure to judge. Overall it looks thinner and more repetitive than the grass reference, so it fails on shading depth and density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10257
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy ground tile (flat terrain fill, olive/golden texture with a dark brown soil strip at rows 1-2 and green/brown tufts at row 0)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The 16x16 tile is fully opaque with a width of 16 on every row. It is a mottled olive-gold texture (rows 3-15) with a dark brown strip at rows 1-2 and green/brown tufts at row 0. There is no standing body, no front-edge line with eave shadow, no ellipse, no roof plane and no separate front face. It is a flat terrain fill, which matches the terrain kind, and it has no 3/4 body structure to measure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 12 distinct colours in total, against 80 for the grass reference, and a median of 12 colours per tile against 26 for grass. It is only slightly above the paving reference, which is itself a sparse, low-colour piece. The candidate is tiny and reads as a single bank strip with a darker brown cap and a sandy-yellow body with horizontal striping. It does not read as a 4x3 paddy ground patch. Each ramp shows about 3 lightness steps (dark brown cap, mid, light sand), against 5-6 in the Beodeul grass, which has clumps in several greens plus tufts and highlights. The outline and edge pixels are tinted brown (0% neutral), so the outline is acceptable and not a sticker line. Flat-fill coverage is 0% and there is some grain from the stripes. Overall the shading is shallow and the variety is far below the reference. A careful artist would not accept it next to the grass tile.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 11944
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy ground tile (full 16x16 tiled field texture)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile fills the whole 16x16 area (width 16 on every row) with a mottled olive-golden texture of rice stalks. A dark brown/green band at rows 0-2 reads as a bank or soil strip at the top edge, but there is no front-edge line, no eave shadow, and no distinct front face below it. The rest (rows 3-15) is a continuous ground texture with no vertical face. This is a flat terrain tile, so it reads as top-down ground rather than a standing object, which is consistent with the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate has only 12 distinct colours in total, against 80 for the grass reference. Its median of 12 colours per tile is under half the grass reference's 26. It beats the paving reference (7), but that is a sparse, low-colour surface and not the right bar for a lush paddy. The dark edge pixels are 0% neutral, so the outline is tinted brown and is not a sticker line. Flat-fill coverage is 0%, and the straw bank has some speckle and a darker top strip. The golden surface still reads as about 4 lightness steps, where the grass reference uses 5-6 with varied clumps and tufts. The patch looks thin and simple next to the grass, with no tuft or clump variation and little grain. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12535
+  }
+ ],
+ "decidedAt": "2026-10-20T04:26:05.782Z",
+ "cells": {
+  "16": [
+   "cdf3120a312c0a0c"
+  ],
+  "24": [
+   "500a3f9f643d57ac",
+   "5d98d682171f5698",
+   "9fff85d0f0547b37",
+   "b4efa4ae7848ffd7",
+   "bdd8614ce45985a2",
+   "d713792e2563da15"
+  ],
+  "32": [
+   "11f74d4c2b7eca67",
+   "3843753bcc048619",
+   "8bb9afdfd2b31e16",
+   "c3c5fc9910f57e4d",
+   "cb6c67236d7b8e7b",
+   "f275efa02cb84cbf"
+  ],
+  "48": [
+   "60aba69ca24bb2dc",
+   "c0c502a9c7effc94",
+   "caf38ecbb2ae363e",
+   "d8d03632c165ad07",
+   "db0a8bf5a67dffa8",
+   "e39e70cce00da62d"
+  ]
+ }
+}

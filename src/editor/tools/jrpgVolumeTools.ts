@@ -1,6 +1,6 @@
 // expand_jrpg_campaign_volume — 마을 하나에 JRPG 한 고장 분량을 덧붙인다(jrpg-loop-4 R6 「게임 볼륨을 넓혀라」).
 //   1) 마을 집 문(구조 키트 parts.door) ↔ 손 도트 실내(atlas_biome_interior): 여관(숙박)·무기점(상점)·장로의 집(대화+상자)
-//   2) 마을 가장자리 ↔ 가도(author_wild_route): 순찰하는 보이는 적·풀숲 조우·길가 상자, 시대 모습(look)이면 땅·숲·조명까지 그 시대로
+//   2) 마을 가장자리 ↔ 가도(author_wild_route): 순찰하는 보이는 적·필드 조우·길가 상자, 시대 모습(look)이면 땅·숲·조명까지 그 시대로
 //   3) 가도 끝 ↔ 던전(author_dungeon): 계획된 자리의 보이는 적·상자, 보스 직전 방의 중간 보스, 보스방의 수호자
 // 새 규칙을 만들지 않는다 — 자리·착지·봉쇄 검사는 create_transfer_pair, 실내는 build_hand_interior_room, 적은 place_field_enemy 가 한다.
 // 이 파일은 그 도구들을 순서대로 부르고, 이벤트가 길을 막지 않는 칸(지워도 닿는 칸 수가 하나만 주는 칸)만 고른다.
@@ -242,7 +242,7 @@ const expandJrpgCampaignVolume: ToolDefinition = {
     "JRPG 마을 하나에 한 고장 분량(맵 2~5장)을 덧붙인다 — 「게임 볼륨을 넓혀줘·마을에 여관/상점/장로 집·가도·던전을 붙여줘」. "
     + "{hubMapId, prefix?, interiors?:[inn|shop|elder…], route?:false, routeName?, dungeon?:false, dungeonName?, dungeonType?, look?:ruin|past|future, troops?:{field?,midBoss?,boss?}, shopItemIds?, seed?} "
     + "① 마을 집 문 ↔ 손 도트 실내(build_hand_interior_room): inn=여관 주인(숙박 inn 명령), shop=무기·도구점 주인(shop 명령), elder=장로(대화) + 실내마다 보물상자. "
-    + "② 마을 가장자리 ↔ 가도(author_wild_route 40×30): 순찰하는 보이는 적 3·풀숲 조우·상자 2. look 을 주면 가도 땅·숲·조명까지 그 시대(derive_map_variant 와 같은 모습)로 바꾼다. "
+    + "② 마을 가장자리 ↔ 가도(author_wild_route 40×30): 순찰하는 보이는 적 3·필드 조우(맵 전체)·상자 2. look 을 주면 가도 땅·숲·조명까지 그 시대(derive_map_variant 와 같은 모습)로 바꾼다. "
     + "③ 가도 끝 ↔ 던전(author_dungeon, look 별 기본 cave/temple/catacomb/castle): 계획된 자리의 보이는 적·상자 + 보스 직전 방 중간 보스 + 보스방 수호자(도망 불가). "
     + "적 그룹은 생략하면 DB 의 적 그룹을 세기로 나눠 고른다(이야기 이벤트가 이미 부르는 보스 그룹은 피한다). 이벤트는 길을 끊지 않는 칸에만 놓는다. "
     + "붕괴 후·과거 시대 마을(집이 철거된 변형)은 interiors:[] 로 가도·던전만 붙인다.",

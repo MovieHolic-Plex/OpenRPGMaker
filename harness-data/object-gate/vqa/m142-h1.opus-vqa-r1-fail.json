@@ -1,0 +1,201 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-h1",
+ "round": 1,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png",
+  "board-3.png",
+  "board-4.png",
+  "board-5.png"
+ ],
+ "items": [
+  {
+   "id": "arcade-racing-cabinet",
+   "pixelSha256": "e1881b68574cc02098969d478ceeb1bf52d05246901fa3fa2ff6641d4b03c78a",
+   "verdict": "FAIL",
+   "failed": [
+    1
+   ],
+   "reasons": "The view is mixed. The screen and red marquee are drawn as a flat front elevation, but the seat and wheel are seen from above. The cabinet has no lit top plane, so the cabinet and seat do not read as one 3/4 object."
+  },
+  {
+   "id": "dept-accessory-wall",
+   "pixelSha256": "9ab83d18beb431dced9ff0e755242858eb96578e7af28aec15ddadbfbf8bb66e",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    5
+   ],
+   "reasons": "Only a 1-px dark strip shows as a top, so this is a flat front elevation of a wall display. In the room it overlaps the bottom of the back wall instead of standing on the floor."
+  },
+  {
+   "id": "dept-rack-cool",
+   "pixelSha256": "4000f400943c8464ea6314d3061cf895d3f14a82ca669bd789e8485f5901e3d9",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The blue garments merge into one muddy lump with a bright blue sticker shirt in the middle. The single chrome pole and round base read as a table or lamp, not a clothing rack."
+  },
+  {
+   "id": "home-appliance-rack",
+   "pixelSha256": "d9c2994aeeb031db180878386ea1f7202bda96590791ef0f73df1d2d2b54731d",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "The microwave and rice cooker are flat front elevations with only a 1–2 row top strip. The rack is one tile wide and looks undersized next to the originals' furniture."
+  },
+  {
+   "id": "home-drying-rack",
+   "pixelSha256": "0fd60ea70df63dcf5659ae87aa4ca9fed183e15b5a093efb8bd6f6aae80166b9",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The thin white frame is drawn as a front elevation with no visible top plane. The legs look like table legs, and the clothes hang as flat stickers with thin noisy frame lines."
+  },
+  {
+   "id": "hosp-anesthesia",
+   "pixelSha256": "1b7c28a2835dc32aacbcbe826de431c82a17b738e4abbc7a36b45d1313849b6b",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The white work surface reads as a lit top plane, and the monitor sits on the cart. The outline and palette match the originals, and the bottles and dials are clean."
+  },
+  {
+   "id": "hospital-curtain-screen",
+   "pixelSha256": "e0d67f2cd00bf7f692829eb9591baf90d188d79013396273a0c52e71cfaefedf",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "It is a 1-tile-wide, 3-tile-tall strip with no top plane, which is neither a 3/4 view nor a front view of a folding screen. At 1x and in the room it reads as a pillar or pole, not a curtain screen."
+  },
+  {
+   "id": "ind-lathe",
+   "pixelSha256": "911e4ffbb50fa3bb2c2cc8f5c32c8bcb02a7898f5ad9d3dc2ca000efad808860",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The gray spindle, white blocks and the orange panel with bright pixels form a busy jumble. There is no clear bed, chuck or tailstock, so it reads as a generic machine rather than a lathe."
+  },
+  {
+   "id": "izakaya-beer-server",
+   "pixelSha256": "40d309fdb3d6608883398663a4c1453f47e59c01479cd30037e2e60d54ea94fc",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The tap tower is a tall, thin white hook shape, and the beer glass hangs beside it rather than sitting clearly on the drip tray. At 1x it is an illegible sliver."
+  },
+  {
+   "id": "jp-torii",
+   "pixelSha256": "0aa08fddf6e81c5f309bae9671c889f98bf0736abe363865974cda359304a214",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The kasagi is seen from above as a dark plank, with red nuki, red pillars and stone bases resting on the floor. The outline and shading match the chipset."
+  },
+  {
+   "id": "konbini-copier",
+   "pixelSha256": "ebd395901c3564c856902a949720d82a48c8cb2e9846bfaaed809941cc82f822",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The white lid reads as a top plane, with a control panel and paper trays below. It is clean and correctly scaled in the room."
+  },
+  {
+   "id": "library-carrel",
+   "pixelSha256": "972320718440ec6225cf1fff2c0145b8b52a5de5aa5b9a86edd2178fc197460f",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The desktops are lit planes seen from above, with partitions, green lamps and legs touching the floor. The wood palette matches the wardrobe original."
+  },
+  {
+   "id": "mart-bread-rack",
+   "pixelSha256": "d4d626b52b976fa13bd896771462d877a16904538d4b37a92addca876726bc6f",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The top is only a thin gray line, so this is a flat front elevation, unlike the cooler original's clear top plane. The separate base strip below has gapped feet that look detached."
+  },
+  {
+   "id": "mart-dairy-open",
+   "pixelSha256": "3c6194931ae0219d12071af0089d032a6836ba130b239da9448500a6c5fb4e06",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The blue canopy top reads from above and the open shelves show dairy packs. The outline and scale match the cooler original."
+  },
+  {
+   "id": "mart-gondola-detergent",
+   "pixelSha256": "a39aeff2e46892da5e24d1a56c134fc1bb05de10a496aa06bbbcc25220a2cbec",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The top plane shows stocked items from above, with three clean shelves of bottles. It sits on the floor at the right scale."
+  },
+  {
+   "id": "mart-gondola-tea",
+   "pixelSha256": "7ce3b4bf308fc699194a2c64c103b78c0b62667eeb4bfe0451e93b0ea4d8e3f1",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "Same clean 3/4 construction as the detergent gondola: boxes on the top plane and bottle rows on the shelves. The scale fits."
+  },
+  {
+   "id": "rest-bottle-shelf",
+   "pixelSha256": "850b51eedd2e0895c9630574d68cb9fca7cdf83a48832de4ec267822beca4671",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The wide lit wooden top plane sits over shelves of bottles. The palette and outline match the wardrobe original."
+  },
+  {
+   "id": "roof-fence",
+   "pixelSha256": "9a05f46d43941a6e7e26ccbe86a9c55a1a22fe18fe0c9d3a1dd21d8383e08323",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    4
+   ],
+   "reasons": "The panel is a flat front elevation with no top rail plane. The diamond mesh is noisy and high-contrast against the tan fill. Inside a room it reads as a crate rather than a fence segment."
+  },
+  {
+   "id": "roof-stair-hut",
+   "pixelSha256": "6d93cc60a61dc04d4e75668988f278f524d77e76045a8133364723d6c7dbfd5c",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The gray roof plane is visible from above above the front face with its door and exit sign. The ground line is clean and the scale fits a door."
+  },
+  {
+   "id": "school-cleaning-locker",
+   "pixelSha256": "7722fc026d29f8616015ad6c03c2948dc8eb38cd38f85efa5314f8439efb9196",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "There is no locker door or frame detail; it is an open gray box with a diagonal broom and a red dustpan blob. At 1x it reads as a sliver with a red smear."
+  }
+ ]
+}

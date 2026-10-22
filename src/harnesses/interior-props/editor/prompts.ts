@@ -5,6 +5,7 @@
  * 규칙 문장을 바꿀 때는 파이썬 쪽과 같이 바꾼다.
  */
 import { gridToAnswer } from "@/harnesses/_core/workshop/grid";
+import { requestedSize, shapeBrief, topRowsRange } from "@/harnesses/_core/workshop/objectShape";
 import type { Direction, DrawContext, ReviewContext } from "@/harnesses/_core/workshop/types";
 import { FLAT_KINDS, KIND_LABELS } from "./items";
 import { rampSummary } from "./palette";
@@ -63,7 +64,7 @@ const VIEW_SECTION = [
   "- 윗면 자리가 모자라면 남쪽 면(앞면)을 줄여서 만든다. 꼭대기 윗면을 깎지 않는다.",
   "- 옆을 보는 물건(동쪽을 보는 의자 등)의 남쪽 면은 그 물건의 옆모습이다 — 옆모습은 정상.",
   "- 기하 도형(원통·상자)으로 통째로 다시 만들지 마라. 손 도트 화풍(기준 그림·지금 그림)을 지킨다.",
-  "- 끝내기 전에 세어서 note 에 「꼭대기 윗면 N행(y=a~b)」을 적고 topRows 에 N 을 넣는다. 3행 미만이면 고친 뒤 낸다 — 검수가 다시 재고, 3행 미만이면 무조건 떨어진다.",
+  "- 끝내기 전에 세어서 note 에 「꼭대기 윗면 N행(y=a~b)」을 적고 topRows 에 N 을 넣는다. 3행 미만이면 고친 뒤 낸다 — 검수가 다시 재고, 3행 미만이면 무조건 떨어진다. 새 기물은 위 「윗면」 절의 행 수(칠한 높이의 25~33%)가 하한이다.",
 ].join("\n");
 
 export function drawSystemPrompt(): string {
@@ -87,7 +88,9 @@ export function drawBrief(ctx: DrawContext): string {
     "",
   ];
   if (item.isNew && !ctx.current) {
-    lines.push("## 새 기물 — 지금 그림이 없다", "설명대로 처음부터 그린다. 같은 방에 놓을 기준 그림과 윤곽 굵기·명암 단 수·크기감이 같아야 한다.", "");
+    lines.push("## 새 기물 — 지금 그림이 없다", "설명대로 처음부터 그린다. 같은 방에 놓을 기준 그림과 윤곽 굵기·명암 단 수·크기감이 같아야 한다.");
+    if (item.setting) lines.push(`- 배경: ${item.setting} — 이 배경에서 실제로 보는 모양으로 그린다(다른 나라·시대 모양 금지).`);
+    lines.push("", shapeBrief(item), "");
   }
   if (ctx.roundNote) lines.push("## 사용자 메모 (가장 먼저 따른다)", ctx.roundNote, "");
   if (ctx.redrawNote) lines.push("## 이 장만 다시 — 사용자가 남긴 말", ctx.redrawNote, "");
@@ -127,8 +130,18 @@ export function reviewSystemPrompt(): string {
 
 export function reviewBrief(ctx: ReviewContext): string {
   const flat = FLAT_KINDS.has(ctx.item.kind);
+  const fresh = ctx.item.isNew && !ctx.current;
+  const size = requestedSize(ctx.item);
+  const top = topRowsRange(size.height);
   return [
     `- 기물: ${ctx.item.title} — ${ctx.item.description} (종류 ${KIND_LABELS[ctx.item.kind] ?? ctx.item.kind} · 분류 ${ctx.item.category})`,
+    fresh ? `- 배경: ${ctx.item.setting ?? "SFC 시절 JRPG 실내"} · 요청 크기: 발밑 ${size.tilesW}×${size.footRows}칸${size.risePx ? ` + 위로 ${size.risePx}px` : ""} = 칠할 범위 약 ${size.width}×${size.height}px` : "",
+    fresh ? [
+      "## 새 기물 — 1배부터 본다 (제목을 잊고)",
+      "- 「후보 1배」만 보고 무엇으로 보이는지 looks_like 에 적는다. 그 다음 제목과 견준다.",
+      `- 1배에서 「${ctx.item.title}」로 읽히지 않으면 READ, 배경과 다른 나라·시대 모양이면 CONTEXT, 요청 크기와 다르면(한 칸을 두 칸 높이로 등) SIZE.`,
+      flat ? "" : `- 새 기물의 꼭대기 윗면 하한은 칠한 높이의 25%: 이 크기면 ${top.min}행(권장 ${top.min}~${top.max}행). 그보다 얇으면 THIN.`,
+    ].filter(Boolean).join("\n") : "",
     `- 후보: 시도 ${ctx.attempt}/${ctx.maxAttempts}, 방향 ${ctx.direction.letter}: ${ctx.direction.text}`,
     ctx.current ? "- 첨부: 지금 그림|후보 나란히(8배), 후보(8배), 칩셋 기준 가구(8배), 화풍 기준." : "- 새 기물이라 지금 그림이 없다. 첨부: 후보(8배), 칩셋 기준 가구(8배), 화풍 기준. 「나빠졌나」 대신 같은 방 가구와 화풍·크기감이 같은지(STYLE)를 본다.",
     ctx.previousVerdict ? `- 지난 시도는 ${ctx.previousVerdict.codes.join(", ")} 로 떨어졌다: ${ctx.previousVerdict.reasons}. 이번에 고쳐졌는지 본다.` : "",
@@ -145,10 +158,11 @@ export function reviewBrief(ctx: ReviewContext): string {
     "",
     "## 불합격 코드",
     "FRONT 정면 도면(윗면 없음·1~2행 띠) · THIN 수평 면이 납작한 띠로 읽힘 · TOPDOWN 위에서 본 판만 있고 남쪽 면이 없음 · CAP 기둥 머리 단면이 안 보임 · MIXED 부분마다 시점이 다름 · SIDE 안 보여야 할 동·서쪽 면이 크게 보임(옆을 보는 물건의 옆모습은 해당 없음) · WORSE 지금보다 나빠짐(디자인·비율이 깨짐, 기하 도형으로 다시 찍은 꼴, 뭉툭·지저분, 화풍이 다름) · READ 무슨 물건인지 안 읽힘 · STYLE (새 기물만) 같은 방 가구와 화풍·크기감이 다름",
+    "· CONTEXT (새 기물만) 배경과 다른 나라·시대 모양 · SIZE (새 기물만) 요청 크기와 다름",
     "- 지금 그림이 이미 3/4 로 충분히 읽히고 후보가 그것을 해치지 않았으면 합격이다. 고친 양이 적은 것은 불합격 사유가 아니다.",
     "- 있는 그림을 고친 후보는 확실하지 않은 의심만으로 떨어뜨리지 않는다. 그러나 꼭대기 면 규칙은 예외 없이 잰 수로 판정한다.",
     "",
     "## 답 형식 (JSON 하나, 한국어)",
-    '{"verdict": "PASS" 또는 "FAIL", "codes": ["THIN", …], "top": "꼭대기 면 이름과 윗면 행 수 — 예: 윗판 윗면 3행(y=2~4). 없는 물건이면 \\"해당 없음: 이유\\"", "top_rows": 정수 또는 null, "surfaces": "그 밖의 수평 면 행 수", "worse": true/false, "reasons": "불합격이면 화소 위치로(행·열), 합격이면 한 줄 근거", "fix": "불합격이면 다음 시도에 고칠 것만 구체적으로, 합격이면 빈 문자열"}',
+    '{"looks_like": "제목을 잊고 1배만 봤을 때 보이는 것(새 기물)", "verdict": "PASS" 또는 "FAIL", "codes": ["THIN", …], "top": "꼭대기 면 이름과 윗면 행 수 — 예: 윗판 윗면 3행(y=2~4). 없는 물건이면 \\"해당 없음: 이유\\"", "top_rows": 정수 또는 null, "surfaces": "그 밖의 수평 면 행 수", "worse": true/false, "reasons": "불합격이면 화소 위치로(행·열), 합격이면 한 줄 근거", "fix": "불합격이면 다음 시도에 고칠 것만 구체적으로, 합격이면 빈 문자열"}',
   ].filter((line) => line !== "").join("\n");
 }

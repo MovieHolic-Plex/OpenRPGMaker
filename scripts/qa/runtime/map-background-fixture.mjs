@@ -15,11 +15,16 @@
 //     --out verify-shots/runtime-qa/map-background
 import { readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
+import { mapBackgroundFromPanoramaSet } from "../../../src/assets/oprnPanoramas.ts";
 
 const SOURCE = "test/fixtures/projects/editor-authored-demo-v3.json";
 const MAP_ID = "map_lantern_village";
-/** 배경 그림이 없을 때 비어 있는 칸이 그려내는 것은 플레이 카메라의 검은 배경뿐이다. */
-export const DEFAULT_BACKGROUND = { imageId: "easyrpg-backdrop-sky1", scrollX: 2, scrollY: 0 };
+/**
+ * 배경 그림이 없을 때 비어 있는 칸이 그려내는 것은 플레이 카메라의 검은 배경뿐이다.
+ * 2026-10-07 저작권 정리로 옛 기본값(easyrpg-backdrop-sky1)이 사라져, OPRN 자체 견본 「노을」 세트를 쓴다
+ * (3층 · 빈 칸에도 보이기 켬). `--set <id>` 로 다른 견본, `--background-id` 로 한 장짜리.
+ */
+export const DEFAULT_BACKGROUND = mapBackgroundFromPanoramaSet("oprn-sunset");
 
 /**
  * 하늘 띠를 만들 시작 맵의 행 수. 6 이면 320×240 뷰포트(16px 타일 → 15행)의 위쪽
@@ -110,6 +115,7 @@ function parseArgs(argv) {
     const arg = argv[i];
     if (arg === "--out") args.out = argv[++i];
     else if (arg === "--no-background") args.background = null;
+    else if (arg === "--set") args.background = mapBackgroundFromPanoramaSet(argv[++i]);
     else if (arg === "--background-id") args.background = { ...(args.background ?? {}), imageId: argv[++i] };
     else if (arg === "--scroll-x") args.background = { ...(args.background ?? {}), scrollX: Number(argv[++i]) };
     // 반복을 끈 축은 그림이 화면을 떠나면 빈 자리(카메라 배경)가 남는다 — 그 판정용.

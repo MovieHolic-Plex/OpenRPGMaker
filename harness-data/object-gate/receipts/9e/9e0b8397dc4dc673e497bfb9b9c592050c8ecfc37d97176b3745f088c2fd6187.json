@@ -1,0 +1,296 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9e0b8397dc4dc673e497bfb9b9c592050c8ecfc37d97176b3745f088c2fd6187",
+ "width": 48,
+ "height": 32,
+ "kind": "organic",
+ "name": "jp-inaka-hydrangea-hedge",
+ "label": "jp_inaka_pack/jp-inaka-hydrangea-hedge",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 26,
+  "tileColorsP90": 30,
+  "darkV5": 35,
+  "nearBlackEdge": 0.3,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hydrangea blooms (pink, blue, violet heads)",
+      "rows": "3-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "leaf mass heaped inside the stone planter, visible from above",
+      "rows": "11-23",
+      "evidence": "d",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "stone planter front face",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The planter's stone front face covers rows 24-31, with a dark rim line at row 23 (x=24 L=25). Above it, a dense mass of leaves fills the opening, which is evidence (d) for a visible heap of contents inside an open container. The leaves run in dark-to-light green bands from about row 15 to row 23. The hydrangea heads sit on top of this mass as decor. The silhouette is a constant 47-48 px wide from row 7 down and has no side face. The planter's own top is hidden by the foliage, so the top reading rests on the visible leaf mass (about rows 15-23). The planter face below is a flat south face with no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small hydrangea hedge in a stone planter, which is a reasonable plant match for the tree references. It matches them on the primary facts: 26 visible tones per full tile against 26 and 29, 0% near-flat coverage, and 0% neutral dark edge pixels. That means the outline is tinted, not a black sticker line. By eye, the blossom clusters are built from several lightness steps in blue, pink and purple, with highlight dots, over dark green leaves that show through between the clusters. The planter has speckled stone grain. I see no flat fills of 5x5 pixels or more. The raw colour count is much lower than the references (26 against 108), but it is a locked palette and the visible tones are equal, so this does not count against it. Shading depth is slightly shallower than the reference canopies, about 5 steps against 5-6, but a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19327
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hydrangea blooms and foliage mass",
+      "rows": "2-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone planter box (main body)",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the stone planter. Its front face is rows 24-31 (8 rows) in grey stone with moss. Row 23 is a dark 1-row rim line where the foliage meets the stone. No planter mouth or ellipse is visible, because the plants cover the opening. The hydrangea heads and leaves (rows 2-22) are plants in a planter and count as decor. They are drawn mostly face-on, so no real horizontal top band exists. Only the rim line shows, so the planter reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts match the references. The candidate has 26 visible tones per 16x16 tile against 26 and 29 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so its outlines carry a tint. By eye, the hydrangea heads are built from several small florets with light-to-dark steps in blue, pink and violet. The dark green leaves between them separate the clusters by value rather than by a black outline. The stone planter has speckled grain, not a flat fill. It is a small, sparse prop and its ramps are a little shallower than the big tree canopies (about 5 steps against 6). It does not look flatter or more sticker-like than the references, so it is acceptable next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19175
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hydrangea flower heads and leaf mass growing from the planter",
+      "rows": "2-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone planter box (main body)",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The plants are decor: flowers and foliage fill rows 2-22 and grow out of the stone planter. The planter is the main body. Row 23 is a single dark rim line (L=25 at x=24). Rows 24-31 are a flat stone front face with only moss speckles and no top band, ellipse or eave shadow. The foliage heap is decor, so it does not count as a top surface. The planter therefore shows only a 1-row rim above an 8-row front face, which reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a low hydrangea hedge in a stone planter, a plant of the same kind as the tree references. Its measured visible tones per 16x16 tile (26) match tree-1a786c (26) and sit just under tree-d43edd (29). Near-flat coverage is 0%, the same as both references, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline leans toward each material's own tone instead of being a black sticker line. By eye, the blossoms are built as clumps of several lightness steps (highlight, light, mid, shadow) in blue, purple and pink. They sit over leaf greens and a stone base with speckle. The piece is small and simple, but it is not thinner or flatter than the references. The 26 raw colours per tile versus 100+ in the references fits a locked palette producing the same visible texture. I rate shading at about 5 steps against the references' 6, which is roughly on par.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19319
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hydrangea foliage mound with blooms",
+      "rows": "3-22",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "18-22"
+     },
+     {
+      "part": "stone planter trough",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 5 px at row 2 to 48 px by row 9, a mound. The foliage and blooms in rows 3-17 are lit leaf and flower clusters seen from above, as heaped contents of an open planter (evidence d). Rows 18-22 are darker green shadow under the foliage. Row 23 is a dark rim line, and rows 24-31 are a stone front face of about 8 rows with a shaded lower band. The top is not a flat plane, but the heap contents and the front face of 3+ rows read as a 3/4 view. This is a borderline call, since the foliage could also be counted as decor on a planter that shows only a 1-row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small hydrangea hedge in a stone planter. It is far smaller than the reference trees, so the per-tile facts matter less. It measures 26 visible tones per tile, equal to tree-1a786c at 26 and close to tree-d43edd at 29. Near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outlines are tinted. By eye the blooms are clustered in blue, pink and lilac with a few highlight dots, and the dark green leaves behind them are shaded in only about 3 steps. The stone planter is a fairly flat grey band with light speckle. Overall the piece is clean and tinted-outline, but each material has fewer shading steps (about 4) than the references (5-6), and the leaf mass is thin compared with the layered canopy clumps. The planter base is the weakest part. A careful artist would likely see it as a bit flatter than the reference trees, and when in doubt this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18111
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.071Z",
+ "cells": {
+  "16": [
+   "602453cf7db24a71",
+   "70d1f804772c9c93",
+   "99bf8d2e7cc79c28",
+   "ad5f5ddc02077b70",
+   "b1fd48cba9bfec39",
+   "c8c79ef3d2467053"
+  ],
+  "24": [
+   "0c0916839da1eb8e",
+   "3692ff44931dc4bd",
+   "3954a3f48d9931a2",
+   "97c83e699f9908ff",
+   "b4710ec1793e55e5",
+   "c6a71c462439ba44",
+   "e07c7b695562cd30",
+   "ef0f492a5a81b8c5"
+  ],
+  "32": [
+   "2a9078666086366a",
+   "395bcf2c75776a21",
+   "5cc95eecca7c8598",
+   "7956c4aca4725223",
+   "84cf4e09c614eeb9",
+   "b43f9f4990cfd97d"
+  ],
+  "48": [
+   "403da69f4f5feb0c",
+   "9f54e295153a5300"
+  ]
+ }
+}

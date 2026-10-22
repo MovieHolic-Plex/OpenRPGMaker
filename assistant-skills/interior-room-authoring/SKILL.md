@@ -83,7 +83,7 @@ description: Use when building or reviewing a 16px RPG interior (house, shop, in
    벽면·천장·그림자는 평면에서 자동이다. `paint_tiles`/`fill_region` 으로 벽을 칠하지 않는다.
 5. 오류(error)면 맵이 생기지 않는다 — 메시지 좌표를 고쳐 다시. 경고(닿지 못한 바닥·쓸 수 없는 가구)도 고친다. 고친 뒤 `replace:true`.
 6. 여러 층: 층마다 맵. 아래층 `stairs up wood|stone` 발밑 칸들에 `links:[{x,y,toMapId,toX,toY}]`(도착 = 위층 계단 구멍 바로 아래 바닥), 위층 `stairwell down` 칸에 아래층 도착 칸.
-7. `show_map_region` 으로 그림을 보고 확인한다. 참고문서에 없는 가구는 만들지 않는다 — 없다고 말하고 가장 가까운 id 를 쓴다.
+7. `show_map_region` 으로 그림을 보고 확인한다. 참고문서에 없는 가구는 만들지 않는다 — 없다고 말하고 가장 가까운 id 를 쓴다. 사용자가 콕 집어 말한 가구 하나가 정말 없으면(`list_hand_interior_parts`·`list_spatial_designs` 둘 다 0건) `generate_missing_object` 로 그려 달라고 요청하고 턴을 끝낸다 — `read_assistant_skill({id:"missing-object-generation"})`.
 8. 다른 실내 칩셋(Tibo·EasyRPG 실내)을 쓰라는 요청은 거절된다. 그 이유(폐기)를 사용자에게 말하고 손 도트 실내로 짓는다.
 9. 박물관·미술관 전시실(판타지·중세)·배 안(선장실·조타실·배 주방·선원 숙소 / 포 갑판·화물칸·배 감방)·투기장(관중석·모래 마당·검투사 방·무기고)은
    이 칩셋의 방 종류다 — `build_hand_interior_room({layout:{program:"museum"|"ship"|"ship_hold"|"arena"}})`, 말한 방만이면 `layout:{rooms:[{kind:"ship_cabin"},{kind:"ship_cargo"}]}`.

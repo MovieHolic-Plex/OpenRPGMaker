@@ -1,0 +1,424 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3138128c0b71be4c672952a573e21ece4185a398facc80567a920a73a61bebd8",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "dept accessory wall",
+ "label": "modern_city_interior/dept-accessory-wall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 4 (2/4)",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 17,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header panel with blue and tan plaques",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cornice / shelf ledge strip",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "open display recess with hanging belts, ties and a bag",
+      "rows": "11-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom drawer base",
+      "rows": "25-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is drawn face-on. Rows 1-8 are a uniform tan header with a blue plaque and a tan plaque, both flat on the face with shaded lower rows. Rows 9-10 step from L=151 to L=128 as a front-facing cornice strip, with no lighter front-edge line and no eave shadow above a front face. Rows 11-24 are the flat recess with hanging items. Rows 25-29 are the drawer base. Only row 1 is a light outline-like rim, so there is no real top surface, and the piece matches the red 'front elevation: top 1' reference rather than the green cabinet."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate shows 14 visible tones per tile, between prop-hedge (9) and prop-stall-cheese (17) and a little below prop-well-roofed (20). Near-flat coverage is 8%, below the stall's 13%, so there are no large dead fills. The dark edge pixels are 0% neutral, so the outline is tinted brown beside the wood and tan frame rather than a black sticker line. By eye, the cream frame has a highlight, mid and shadow edge, and the hanging tools and padlock are drawn in separate tones. Its 24 total colours are fewer than the stall's 40 and the well's 38, and each material gets about 4 steps against the references' 5-6. That makes it slightly shallower, but a careful artist would still accept it beside the references, and it does not look thin or flat.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18370
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header sign band with blue sign and tan plaque",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "darker ledge strip under the header",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10"
+     },
+     {
+      "part": "display recess with hanging ties and a bag",
+      "rows": "11-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower drawer base",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is drawn face-on at a constant width of 32 px for rows 1-30. The top band (rows 1-8) carries a blue sign and a plaque placed flat on its face, so it reads as a vertical header board. It has no back-to-front depth and no separate front-edge line. Rows 9-10 are only a 2-row darker ledge. The display recess (ties, bag) and the drawers below are all vertical faces. No ellipse, roof plane or visible contents of an open container shows a horizontal surface, so there is no real top surface and the drawing reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small wall-mounted cabinet with a tan/peach body, a darker brown frame, a few tool silhouettes and a padlock. Its measured facts are close to the references: 14 visible tones per tile against 17 for the stall and 20 for the well, near-flat coverage of 8% (stall 13%), and 0% neutral dark edges, so the outline is tinted brown rather than a black sticker line. By eye, though, the body panel is mostly 2-3 flat tones with little grain or speckle, and the frame has about 4 steps against the references' 5-6, so it looks flatter and simpler than the stall and well. It also lacks per-element shading on the hanging items. It is acceptable as a small simple prop, but I would not call it equal to the references. Because of the shallow panel shading and thin texture, I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17108
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header panel with blue label and tan plaque",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf lip under header",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10"
+     },
+     {
+      "part": "display cavity with hanging ties, belts and bag",
+      "rows": "11-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drawer base",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Everything is drawn face-on. Rows 1-8 hold a blue label and a tan plaque, so they are a vertical header panel, not a top surface. Rows 9-10 are only a 2-row lip with a darker line, which counts as a rim. Below it the cream cavity (rows 11-24) holds hanging items, and the drawer fronts with handles sit at rows 25-29. There is no ellipse, no sloped roof, and no visible horizontal surface. The silhouette is a flat rectangle 32 px wide, and the base at row 31 is only 6 px wide."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small wall-mounted cabinet-like prop with a cream/tan panel, a wood frame, hanging tools and a padlock. Measured facts: 14 visible tones per tile against 9 for the hedge, 17 for the stall and 20 for the well, so it is in the range of the references. Near-flat coverage is 8%, below the stall's 13%. 0% of dark edge pixels are neutral, so the outline is tinted brown and follows the material. By eye, the panel faces are fairly smooth with few grain dots. The wood frame has only about 3-4 steps, against 5-6 on the well and stall. The small tool and lock details add some interest but are simple. The piece is clean and not a sticker, but it is a little flatter than the stall and well references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15628
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header panel with blue sign and tan plaque",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cornice strip under header",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-10"
+     },
+     {
+      "part": "display bay with hanging ties, belts and a bag",
+      "rows": "11-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drawer base",
+      "rows": "25-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The piece is drawn as a flat frontal elevation. Rows 1-8 are a header band, but the blue sign and tan plaque are drawn flat on it with their own shading, so it reads as a vertical signboard and not a horizontal top. Rows 9-10 are a cornice-like strip that works as a 1-2 row rim, not a top surface. Below it the display bay (rows 11-24) and the drawer base (rows 25-29) are all vertical faces. No ellipse, no receding side face, and no visible shelf or top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small wall cabinet with a cream upper panel, a tan wood frame, a hanging tool rack and a padlock. It has 14 visible tones per tile, between the hedge (9) and the stall (17) and a little under the well (20). Near-flat coverage is 8%, below the stall's 13%, so there are no large flat fills. 0% of its dark edge pixels are neutral, so the outline is a tinted dark brown that follows the wood, like the hedge and stall, rather than a black sticker line. Its ramps are somewhat shallower than the stall and well (about 4 steps against 5-6), and the texture is moderate, mainly wood grain and small tool details. A careful artist would still accept it next to the references without it looking noticeably thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17003
+  }
+ ],
+ "decidedAt": "2026-10-21T01:38:23.332Z",
+ "cells": {
+  "16": [
+   "180e9e2f9a3bb2bc",
+   "71ab8241e10eabe5",
+   "9d108303f3922509",
+   "b70e8bfccf5137f3"
+  ],
+  "24": [
+   "08d2b548341638b5",
+   "08ef221fcf9f8802",
+   "08fde148c2693dc9",
+   "0a8ebc4808e1699c",
+   "116c3926400cf22c",
+   "279839b27de169c1",
+   "3242fe22851e0035",
+   "47232a8fb8bbfb8b",
+   "648c6de427379f16",
+   "7050a1a64606c735",
+   "744b9dec939e36be",
+   "759cb9f12cfee6d8",
+   "819284a0121a1d6b",
+   "850afde3af1cf1d3",
+   "86910335f852f096",
+   "86ee82767ba9ddbf",
+   "89588d90b904f245",
+   "8d3ec5f4c4e40951",
+   "9337f44b74ad1930",
+   "9a998caed3720999",
+   "ed62813a62261ccd",
+   "edc5b5ef6a4b80fe",
+   "ee1a843701d5ea1d",
+   "f63571226611c5db"
+  ],
+  "32": [
+   "ac6a5d9ee7846e68"
+  ],
+  "48": [
+   "3919c12a94f64637",
+   "596b00b828caf1d0",
+   "746426af1664ba49",
+   "7fb11e3f07436154",
+   "a25b8bd50481d9a5",
+   "a3860aa1c945da34"
+  ]
+ }
+}

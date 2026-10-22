@@ -1,0 +1,45 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b3",
+ "round": 5,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "jp-torii",
+   "pixelSha256": "509c64faf453cf3a1d655c0d46ca972f9f714d340ebaaa1dbae180e27c5f0408",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "The torii is drawn almost entirely as a flat front elevation. The kasagi top beam shows only a 1–2 row dark strip instead of a lit top plane, and the pillars and nuki crossbeam have no visible top surface. It is also only about 3x2 tiles, which is barely person height and lower than the counter, so it reads as a small table or bench rather than a gate."
+  },
+  {
+   "id": "jumbo-hosp-mri",
+   "pixelSha256": "7213d1a344828dae890299617a3a3ee836122612e670e2afa10c71f47ba0a36e",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "The gantry is a flat frontal slab with a bore cut into it. The top console strip has no 3/4 top plane, and the patient bed is a vertical tongue dropping straight down instead of a horizontal surface seen from above. At 1x the low-contrast beige mass with a blue arch reads more like an oven or fireplace, and the bright cyan ring and side tick marks look like stuck-on sticker highlights."
+  }
+ ]
+}

@@ -1,0 +1,398 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7a0debed635f7a9dc5570fb6740e87901f927ba729620257dd258b292b1057cb",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-inaka-rice-rack-hasagi",
+ "label": "jp_inaka_pack/jp-inaka-rice-rack-hasagi",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 0행 < 3 (3/4)",
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 0행 < 3 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 20,
+  "darkV5": 49,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "horizontal crossbeam/pole (front-facing strip behind the sheaves)",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vertical posts (dark wood, left, right and between sheaves)",
+      "rows": "0-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hung rice sheaves (six elongated golden bundles with rounded tops)",
+      "rows": "3-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grain heads at the bottom of the sheaves (bright yellow band)",
+      "rows": "21-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The rack is drawn flat-on as a front elevation. The crossbeam (rows 5-9) is a front-facing strip with no front-edge line and no eave shadow. The posts are vertical strips. The six sheaves (rows 3-26) are vertical shapes with dome-like rounded tops and a bright yellow grain band at rows 21-25. No row shows a horizontal surface seen from above: there is no ellipse, no roof or canopy plane and no visible contents of an open container. There is no receding side face. The silhouette widths hold at 45-48 across rows 5-24, so there is no top plane that widens and narrows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small drying-rack prop (wooden poles with hanging rice bundles), not a whole building with roof, walls and door, so the building references are not a like-for-like comparison. The measured facts do not count against it: 20 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% near-neutral dark edge pixels, which means the outlines are tinted and not a black sticker line. By eye, though, the rack is thin and sparse. The wood poles show about 3 steps and the rice bundles about 3-4 flat-ish yellow/ochre steps. It lacks the per-tile highlights, grain and clump texture the references carry on their roof and wall surfaces. Placed next to the references it reads as thinner and simpler, with little per-bundle texture. With the kind mismatch and the shallower shading, I fail it under the 'when in doubt, fail' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17163
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "horizontal drying pole / crossbeam",
+      "rows": "6-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging rice sheaf bundles (six, tied near top, flared gold bases)",
+      "rows": "3-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side posts / frame legs",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a rice drying rack seen face-on. The crossbeam (rows 6-9) is a flat front-facing strip with no front-edge line and no eave shadow. The six rice bundles (rows 3-26) are vertical faces with tied necks and flared bases, and none has a horizontal top, ellipse or roof plane. The posts are vertical, and the silhouette width is nearly constant at 42-48 for rows 5-24. There is no ellipse, no sloped roof plane and no contents visible from above, so no top surface is visible and the drawing reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are whole houses with a tiled roof, walls and a door. The candidate is a small prop, a wooden drying rack with hanging rice bundles, so the board does not compare like with like. On the numbers it looks fine: 20 visible tones per tile against 12 and 10, 0% near-flat coverage, and 0% neutral dark edge pixels, so its outlines are tinted brown rather than black. By eye, the bundles show only about 3-4 lightness steps (pale yellow, mid ochre, dark brown) and the poles are close to flat two-tone. There are no per-item highlights or grain like the roof tile scallops and stone-by-stone shading in the references. At this scale it reads as thinner and simpler than a reference building, and I cannot confirm it matches Beodeul richness. With the kind mismatch and no like-for-like reference, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16858
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "horizontal crossbeam (pole) behind the bundles",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rice bundles (six hanging sheaves, rounded tops)",
+      "rows": "3-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "yellow bundle bases / butt ends",
+      "rows": "21-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "support posts (dark vertical poles)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a row of six hanging rice bundles seen face-on. Each bundle has a narrow rounded head at rows 3-6, a darker tie band at rows 12-13, and a vertical body down to a yellow butt end at rows 21-25. The head is a rounded hat, not an ellipse with a front rim. The crossbeam at rows 5-9 is a thin front-facing strip, and the only hint of an edge is a dark row 9, so at most 1-2 rows read as a top. No horizontal surface, roof or ellipse is visible on the bundles, and the posts are drawn as plain vertical faces. The width profile only widens to 48 and stays level, so there is no top-surface band. The drawing is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The references are whole buildings (tiled roof, plaster or stone walls, door), but the candidate is a small open rice-drying rack: wooden poles with hanging golden bundles. The kinds do not match, so the comparison is only approximate. The measured facts favour the candidate: 20 visible tones per tile against 12 and 10, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted and dark-brown beside the wood. By eye, though, it is thin and sparse. The poles are mostly 2-3 brown tones with little grain. Each bundle has only about 3 yellow-orange steps and a few dark dots. It lacks the 5-6 step ramps and per-element texture, such as per-tile highlights and stone-by-stone shading, that the references show. It would look slightly thinner and flatter than the references. The wrong reference kind and the sparse look together mean it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18057
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "horizontal crossbar (hasagi pole) drawn as a front-facing strip",
+      "rows": "6-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging rice sheaves, vertical bundles with tied, rounded tops",
+      "rows": "3-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden posts and legs",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a drying rack with a row of rice sheaves hanging from a horizontal pole between posts. The sheaves (rows 3-26) are vertical faces with a rounded tied top and a darker yellow base at rows 22-25. They show no horizontal surface, no front-edge line and no eave shadow. The crossbar at rows 6-9 is a flat strip facing the viewer with no edge line or shadow below it. The posts are vertical. No ellipse, roof plane or visible contents appear anywhere. This is a flat front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, sparse prop: a wooden rack with hanging rice bundles. The references are whole houses with roof, walls and door, so the kinds do not match and the comparison is only partial. The measured facts do not count against it: 20 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, which means the outlines are tinted brown rather than black. By eye, the pole is a dark-brown wood ramp of about 3-4 steps with little grain. The rice bundles are mostly 3 yellow-orange steps with only a few highlight dots. The references show 5-6 steps per material, with per-tile roof highlights, plaster speckle and stones shaded one by one. The rack looks thinner and flatter than either house, and it has no clear grain or per-element highlight on the posts. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16997
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.031Z",
+ "cells": {
+  "16": [
+   "1293fa7996d29965",
+   "1feedbb86ae8837e",
+   "4cf8e5584bf9c2c5",
+   "9ce89999b0a1a81a",
+   "e3b8bae304bcb926",
+   "ee70a78c097dc093"
+  ],
+  "24": [
+   "523dc81c265aa81e",
+   "5ab3afb177938aa0",
+   "6969a4d3889f985c",
+   "7fda3259024b3743",
+   "812eb69797ac7696",
+   "835d9fceaa371a0b",
+   "b058c821ce00a29b",
+   "d581e40833b8106a"
+  ],
+  "32": [
+   "12312584eb50bdea",
+   "944f940f7176e176",
+   "96e766f3b4a53761",
+   "c23eeaefd5711226",
+   "e2a8db446a4a4d2e",
+   "e94a4b3b7ef2c676"
+  ],
+  "48": [
+   "b98919b701d036bb",
+   "e0b5040a9d0f651c"
+  ]
+ }
+}

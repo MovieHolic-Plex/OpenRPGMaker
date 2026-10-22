@@ -1,5 +1,48 @@
 # 버들항 v6·v7 — 로마풍 항구 도시를 편집기 맵·공용 타일셋으로 (beodeul_city)
 
+## 출처 정정 (2026-10-22) — RTP 파생 칸은 크레딧, 나무는 다시 그렸다
+
+버들항 v6 는 「손 도트 원본」만으로 이루어진 시트가 아니다. 파이프라인(`scripts/content/lib/city_v6/` 의 city6·terrain·pz·pn·pj·pk)이
+`assets/jungle-chipset-v6.png`(옛 숲마을 시트를 다시 칠한 것)에서 벽돌·기와·판자·포석길·광장·흙·나무를 잘라 썼다.
+- **EasyRPG RTP retro_Exterior(CC BY 4.0) 파생**은 `beodeul_city` 779칸(옛 784칸 중 jungle 땅 칸 5칸은 새 땅 그림으로 바뀌었다), architecture 94, forms 86, reviewed 54칸이다. 길 오토타일 16변형, 광장, 벽돌, 기와, 판자가 여기에 든다.
+  크레딧은 `public/assets/ATTRIBUTION.md` 의 `rtp-derived-sheets` 목록에 있다. 굽기 스크립트는 `scripts/content/rtp-attribution/rtp_check.py` 의 `require_credit` 를 부른다.
+  목록에 없는 시트에 RTP 화소가 들어가면 굽기가 멈춘다. 새 버들항 시트를 만들면 목록에 한 줄을 더한다.
+- **RTP 가 아니고 출처가 불명확한 것**은 활엽수 다섯(oakA·oakB·bushC·bushD·bushE → `bd-tree-*`), 수관·밑동, `beodeul_ground` 나무 칸, `beodeul_warm_trees`, `beodeul_nature` 활엽 수관 윤곽,
+  jungle 땅 칸 7·129·160·302·363·365·393·394·423(`lawn16.png` 포함)이다. 숲마을의 Tibo 편집 식생에서 나왔다. 2026-10-22 에 새 손 도트로 칸 번호를 지키며 제자리 교체했다.
+  자세한 감사 결과는 `openwiki/copyright-purge.md` 「정정 (2026-10-22)」에 있다.
+- **다시 그린 그림의 원본**은 `scripts/content/beodeul-redraw/` 이다. `draw_trees_a.py`(oakA 64×80·oakB 48×64), `draw_trees_b.py`(bushC·bushE 32×32, bushD 48×48),
+  `draw_ground_c.py`(땅 363·365·393·394·423, RTP 풀·흙 칸 2502·23169 를 결로 쓴다)가 `art/` 에 쓴다. 시트에 옮긴 자리는 `placements/city.json`(칸·디자인·틴트·뒤집기·어긋남)이다.
+  옮기기는 옛 나무를 정확 화소 대조로 찾아 같은 자리·틴트(orig·tint2·tint3·warm-*)·뒤집기의 새 그림으로 바꾼다. **키트 단위로 조립해서**(아래·위 층 겹쳐) 찾아야 한다 —
+  시트의 칸은 키트 안에서 이웃이 아니라서 칸 하나씩 찾으면 이웃 칸과 다른 나무로 맞춰져 수관이 칸 경계에서 잘린다(2026-10-22 실측: river-town 윗줄 나무 왼쪽이 세로로 잘림).
+- 이 옮기기 도구는 옛 그림과 대조해야 해서 저장소에 없다(옛 그림을 다시 들이지 않는다). 새 그림을 고치면 `beodeul-redraw/*.py` 를 다시 돌리고, 시트는 지금 그림에서 그 자리만 다시 칠한다.
+- `append-beodeul-forest-canopy.py` 는 수관 카탈로그(forestCanopy)가 있으면 **제자리 굽기**가 기본이다. 새 수관 타일을 옛 칸 번호에 헝가리안 배정으로 다시 앉히고,
+  칸이 모자라면 가장 비슷한 타일끼리 합친다(2026-10-22: 1961종 → 1942칸, 저장된 맵 자리 12902/13407 이 같은 그림). `beodeul_nature` 는 `ensureBundledTilesets` 가
+  기존 프로젝트의 칸 수를 늘리지 않으므로 시트를 늘리지 않는다. 번호를 처음부터 다시 매기려면 `--renumber`(저장된 맵의 숲 칸이 바뀐다).
+- **여러 그루가 겹친 묶음은 옮기지 말고 다시 조립한다.** `beodeul_ground` 숲 깊이 4종(woodland north·north-open·west·east)은 나무 본체 세 장
+  (`tiledata/beodeul-ground/tree-studies/current-<id>-body.png`)을 카탈로그 `anchors` 자리(`pixelX-8, pixelY`)에 발 순서로 겹친 것이다(HEAD 에서 화소 일치 확인).
+  화소 옮기기로 바꾸면 가려진 옛 줄기가 기둥으로 남고 수관이 떠서(2026-10-22 VQA r5 반려) 다음 순서로 다시 만든다:
+  `node scripts/content/beodeul-tree-studies.mjs`(새 도시 키트 → 본체·연구 그림) → `node scripts/content/beodeul-tree-palette-studies.mjs` →
+  `python3 scripts/content/beodeul-redraw/rebuild_woodland.py`(woodland PNG + ground 시트 칸) → `python3 scripts/content/build-beodeul-warm-trees.py`.
+  두 mjs 는 `verify-shots/beodeul-tree-variants`·`beodeul-tree-palette` 폴더가 있어야 끝까지 돈다.
+- 따뜻한 황록(warm)은 사용자가 옛 나무에서 고른 **모습**이다. 새 색에 옛 공식(R+24·G−5·B−13)을 그대로 쓰면 겨자색이 되어서,
+  `tree-palette-studies/warm-redrawn-lookup.json`(값 구간별 색조·채도·명도 목표를 옛 승인 치환표에서 잰 것)을 palette 스크립트가 먼저 쓴다.
+  `build-beodeul-warm-trees.py` 는 기존 카탈로그의 칸 번호를 지킨다(빈 칸이 된 자리는 빈 칸으로 두고, 새로 그림이 생긴 칸만 뒤에 붙인다).
+- 나무·덤불 키트의 그림자(`beodeul_nature` shadows)는 키트 알파에서 잰다. 나무 모양이 바뀌면 옛 그림자가 수관 옆 초승달로 남는다(tool-village 40곳, VQA r6 반려).
+  `python3 scripts/content/beodeul-redraw/reshadow_trees.py` 가 `build-beodeul-nature.py` 의 `shadow_for()` 로 새 그림자를 같은 칸에 다시 칠한다(여러 키트가 쓰는 칸은 교집합, 나무 아닌 키트와 나눠 쓰는 5칸은 그대로).
+- **숲 색 (2026-10-22 후속, 「숲이 바닥 풀과 안 갈린다」)**: 잎 색 단의 정본은 `beodeul-redraw/palette.json` 의 `leaf_ramps` 하나다
+  (`append-beodeul-forest-canopy.py` 의 `RAMP` 와 `draw_trees_b.py` 가 이 파일을 읽는다). 옛 oak 단의 넷째 단 (110,160,58) 이 잔디 737 (110,153,67) 과 같은 색이라
+  나무가 풀에 묻혔다. oak·elm·lime 을 L* 9~48 의 짙은 몸통(그늘은 청록, 빛 쪽은 황록으로 색조를 돌림) + 밝은 햇빛 단(L*≈66~72)으로 다시 잡았다.
+  첫 판(색조를 덜 돌린 차가운 단)은 object-gate 화풍 판정자가 원본 그림(art/)을 「평면 채움·단 대비 약함」으로 봐서 단 사이 색조·밝기 간격을 넓혔다.
+  Opus 적대 VQA r1·r2 PASS(`harness-data/object-gate/vqa/beodeul-forest-colour/`), 3/4 관문 7/7, 화풍은 조언 FAIL·REFER 를 위임 허용으로 기록(프로필 미보정). 모양·칸 번호는 그대로다.
+  색 단을 바꾸면 `bash scripts/content/beodeul-redraw/rebuild_colours.sh` 하나로 다시 칠한다 — 순서: restyle(자기 칸) → `recolour_city_trees.py`(restyle 밖에 놓인 나무 칸 873개,
+  orig·tint2·tint3 를 단별 Lab 차로 따라 옮김, 지금 칠한 단은 `art/city_tree_palettes.json`) → 수관 → 나무 연구 → `warm_lookup.py`(따뜻한 황록은 승인 당시 단별 Lab 색조를 지킨다) →
+  팔레트 연구 → woodland → warm. 대비는 `measure_forest_contrast.py`(잔디와 ΔE<12 인 잎 화소 비율: #3223 11~18% → 0~7%),
+  옛 계보 재유입은 `old_lineage_check.py`(옛 그림은 git 이력에서만 읽는다, 0 이어야 한다). 비교 그림 http://mdc-server:18301/beodeul-forest-colour.html.
+  참고문서 그림(`*-native.png`·농장 장면·variants render)은 다시 굽지 않았다 — 옛 #3223 색으로 남아 있다.
+- `build-beodeul-ground.py` 는 낡았다 — 돌리면 ground 시트를 112칸으로 다시 만들고 manifest 5천 줄을 지운다. 나중 덧붙이기 스크립트들이 늘린 시트를 되살리지 못하니 돌리지 마라.
+- `tiledata/beodeul-variants/` 의 만들기 스크립트(`_lib-5/bd5.py`)는 옛 워크트리 경로를 박아 두었고, 고쳐 돌려도 지금 코드로는 부품·바닥이 달라진다(구멍).
+  그래서 `deep-forest-path`·`wheat-roman-road` 의 `render-1x.png` 는 화소 옮기기 뒤 남은 8×8 대조 칸 19곳을 바로 위 8px 로 덮었다. 참고 그림일 뿐 맵 데이터가 아니다.
+
 ## 2026-10-05 건물 반려와 사람의 허용/거절 대기열
 
 사용자는 아래 `beodeul_forms`의 ㄱ자집·여관·대장간·창고 4종을 반려했다. 검사 통과를 미적 승인으로 쓰지 않는다. `beodeulForms.ts`는 새/기존 공용 선택 목록에서 이 4종의 본체·그림자·기초 키트를 제거하며, 기존 저장 지도의 칸·그림·통행은 보존한다. 관련 공용 참고문서는 반려를 명시한 과거 기록이다. 긴 민가와 좁은 이층집의 키트만 남긴다.
@@ -598,8 +641,14 @@ refine_beodeul_courtyard_vegetation({mapId})는 인식된 54×34 예제의 건�
 - composer 는 hold 칸 밖을 쓰지 않는다 — 같은 bd-tree 칸 번호로 따로 찍은 낱 나무·덤불을 지우던 함정(그림자만 남음)을 막는다. 마을에서는 composer 나무도 nature 밑동 그림자를 받는다.
 - `bdg-woodland-fence-*` 는 원본 밭 울타리 칸 화소 복사로 바뀌었고 남동·북서·북동 모서리와 동쪽 세로가 늘었다(643~649, `scripts/content/build-beodeul-woodland-fence.py`). 공동마당 보정은 남서/남동 모서리와 서/동변을 따로 쓴다.
 - r2(같은 날): 접지 — #3058 r6 `TreeComposerGround` 를 버들항 원본 숲 그늘 색(α65/α115 두 단)으로 채운다(`scripts/content/build-beodeul-forest-ground.py`, 공용 기초 칩셋 `bdg-forest-ground-*` 192칸 → 런타임 이식). 숲 종류 `forestType`(broadleaf·conifer·mixed)을 `author_wild_route`·`author_beodeul_town` 에 더했다. 침엽은 원본 해안 절벽길 전나무·도시 숲 측백 칸 그대로(새 그림 없음). 입구 `src/editor/tools/beodeulForest.ts` `composeBeodeulForest`. treeComposer.ts 는 #3058 2c72aeed32 와 같고 `composeTreesInMask` 의 `write` 인자만 더했다(#3058 에 넘길 것). 감사 렌더 숲 종류는 `BW_TYPES=broadleaf,conifer,mixed`.
-- 감사 렌더: `bun scripts/qa/beodeul-woodlands-audit.mts <dir> <tag>`(도로 숲 벽·공동마당·강가 마을을 실제 도구로 짓고 renderMapPng).
-- 남은 것: 공동마당 고정 숲 조각(north·west·east 를 두 번씩 반복)과 그 밑 밝은 잔디 사각 패치, 강가 마을 예제(river-town)의 남쪽 숲 조각 반복은 예제·참고문서 재생성이 필요해 이번에 손대지 않았다. 풀 군락 fringe 는 PIL 도형 그림이라 원본 결이 아니다 — 새 그림은 하네스·3/4 관문을 거쳐야 한다.
+- r3(2026-10-21, 독립 검수 1차 FAIL 6 대응): 밑동을 composer 격자 대신 `planBeodeulForest`(`beodeulForest.ts`)가 해시 순으로 고르고 `composeTreesPlaced`(treeComposer.ts 에 덧붙인 입구 — 밑동 목록·그늘 덮개를 받는다, #3058 에 넘길 것)로 쌓는다. 맵 밖으로 보이는 칸이 나가는 나무·칸당 층 수를 넘는 겹침은 심지 않는다. 숲 속 바닥은 그늘 덩이. 그늘 칸은 단색 덩이+낱점으로 다시 그렸다. **그늘 칸 71장은 새 그림이라 18323 사람 허용 대기**(`beodeul-forest-ground-r3`), 빌더는 허용 전 `--draft` 로만 굽는다. 공동마당 숲도 composer, 침엽·혼효 마을은 낱 나무도 침엽 계열·숲 덩이 크게.
+- r4(2026-10-21, 사용자 승인 B): 숲 덩이 한 톤 — 가장자리(깊이 ≤1)만 밝은 연두 나무, 속은 원본 짙은 초록 T3·덤불, 큰 4×5 와 작은 나무 섞기. 숲 장면(도로 숲 벽) 바닥 잔디만 채도 ×0.84(`bdg-woodland-grass`). 2차 검수 N2(윗줄 측백 같은 높이)·N4(전나무 꼭대기가 줄기에 꽂힘) 수정.
+- r5(같은 날, 사용자 정정): **나무 밑 땅 = 원본 「짙은 풀」 오토타일.** 원본 도시는 나무 밑을 짙은 결(원본 칸 11628) 둥근 디더 덩이로 칠했는데 칩셋에 가장자리가 없어 도로 도구가 11628 을 네모 판으로 깔았다.
+  `ensureBeodeulDarkGrass`(`beodeulForest.ts`)가 대상 칩셋에 오토타일 그룹 `beodeul_dark_grass`(_woodland)를 단다 — 속은 원본 칸, 가장자리 46모양×바탕 2벌은 원본 화소 조합(beodeul_ground 651~742).
+  코드가 그린 숲 바닥 그늘·둘레 땅 그늘 칸(r2~r4)은 모두 지웠다. `author_wild_route` 의 조우 풀숲은 `isDeclaredMonsterGame` 일 때만 깐다(일반 RPG 는 맵 전체 조우). 자세한 규칙 `tiledata/beodeul-ground/WOODLAND.md`.
+- r9(같은 날, 사용자 위임 허용): 독립 Opus 적대 VQA 가 한 칸 폭 띠·외딴 칸을 1~3판 내리 불합격시켰다(끊긴 점 사슬·구슬·풀포기). **짙은 풀은 2×2 덩이에서만 보이고** 외딴 칸·한 칸 폭 띠는 바탕 잔디, 덩이는 한 칸 폭 이음매에서 물러난다. 4판 93/93 통과 → 18323 묶음 `beodeul-dark-grass-r9` 허용(감독, 사용자 위임) → 실제 굽기. 잔디 결의 글자 같은 반복 무늬는 원본 737 의 것이고 650 은 그 복사본이다(이번 변경이 만든 것 아님).
+- 감사 렌더: `bun scripts/qa/beodeul-woodlands-audit.mts <dir> <tag>`(도로 숲 벽·공동마당·강가 마을·닫힌 울타리를 실제 도구로 짓고 renderMapPng, 높이 맵 pad 띠는 잘라 낸다 — 게임 화면 밖이다. 끝에 잘림 검사 `clip-check`).
+- 남은 것: 공동마당 밝은 잔디 사각 패치(마당 설계), 강가 마을 예제(river-town)의 남쪽 숲 조각 반복, 도로 풀숲(조우 칸)의 네모 판 — 풀숲 가장자리를 깎으면 조우 로케이션 사각형과 보이는 풀숲이 어긋나므로 가장자리 그림(새 그림·관문)이 필요하다. 풀 군락 fringe 는 PIL 도형 그림이라 원본 결이 아니다 — 새 그림은 하네스·3/4 관문을 거쳐야 한다.
 ## 기와 복원 · stone 박공 벽/중앙 창 (2026-10-04 사용자 정정)
 
 revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했다. 민가 5종/성당의 기와를 원본 픽셀로 복원했다. stone 지붕 아래 삼각형 벽의 일부 회벽 색만 덮던 보정 때문에 기존 목재 기둥/사각창이 남아 새 창과 겹쳤다. gable.py는 전체 박공 벽과 계단형 가장자리만 같은 돌 질감으로 채우고 원형창 하나를 중앙 (31,53)에 둔다. 원래 지붕/문/하단 벽/위치/통행/맵은 유지한다. 원본 기와 픽셀 대조, revision 15 대비 stone 박공 밖 픽셀 불변, 공용 참고문서와 새/기존 프로젝트, 실제 저장·재로드/화면은 verify-shots/beodeul-gable-fix.

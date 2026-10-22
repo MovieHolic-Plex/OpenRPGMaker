@@ -1,5 +1,7 @@
 // 2026-09-24 적대 검수(자료집 20갈래 + 전체 검수 병합본)에서 소스로 확인한 결함의 회귀 고정.
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+// 사람 팀 협업은 꺼져 있다(2026-10-21). 이 파일은 잠든 팀 코드의 계약을 지키므로 스위치를 켠 채로 검사한다.
+vi.mock("../electron/shared/teamCollab", () => ({ TEAM_COLLAB_ENABLED: true, TEAM_COLLAB_DEPRECATION_NOTE: "" }));
 import { stateBehavior } from "@/battle/battleStates";
 import { deleteSwitch, deleteVariable } from "@/editor/actions";
 import { aiActivityActionLabel, aiActivityFamilySource } from "@/editor/aiActivityNarration";

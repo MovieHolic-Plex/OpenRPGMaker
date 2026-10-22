@@ -1,0 +1,340 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e4f5146451aeb9d55fa31dc212f2e844690ed045145e812fe0e4e51c4212075",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "broadleaf tree (lobed leaf-cluster crown, jp_city forest kit prototype)",
+ "label": "jp-forest-proto/tree-t3x4",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 37,
+  "nearBlackEdge": 0.83,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf crown",
+      "rows": "12-46",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "42-46"
+     },
+     {
+      "part": "trunk",
+      "rows": "47-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The crown is a large rounded leaf mass. Its width profile widens from 12 px at row 12 to 47 px at rows 27-29, then narrows to 18 px at row 47, so it reads as a domed volume. The lit, lighter yellow-green patches on the upper rows 12-26 read as the sunlit top surface seen from above. There is no hard front-edge line. The darker leaf clusters and outline on rows 40-46 act as underside shadow and the front mass. The trunk below is a vertical south face about 6 px wide on rows 47-62, with a small ground shadow at the base. The crown's top is implied by shading rather than drawn with an explicit edge line, so the evidence is moderate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 18 distinct colours against 427 and 567 in the references, and 13 colours per tile against about 108. Its canopy reads as roughly 4 green steps with dithered clumps, but the clumps are small and tight, with little highlight variety. Compared with the references' bright, many-toned leaf clusters with distinct lobes, it looks darker, flatter and more muddy. The trunk is a thin, simple column with 2-3 browns and no root flare, branch structure showing through the crown, or bark grain, whereas both references have forked branches, roots and bark texture. Outlines are tinted dark green with no neutral edge pixels (0% neutral), which is acceptable. Flat-fill coverage is 0%, so it is not flat, but the shading is shallow and the density is much lower than every reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15975
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf crown",
+      "rows": "11-49",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk",
+      "rows": "48-61",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 50,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The crown (rows 11-49) is a lobed blob whose width grows from 12 px at row 12 to 47 px at rows 27-29, then narrows to 28 px at row 46. The lighter yellow-green patches at rows 12-16 and 26-29 are leaf highlights. There is no front-edge line, no eave shadow band and no ellipse plate, so no distinct horizontal top surface is drawn. The whole crown reads as a front-facing shaded mass. The trunk (rows 48-61, 6 px wide) is a vertical face only. It has no top, but it is a small part and is mostly hidden by the crown. The dark shadow patch at rows 57-62 is a ground-shadow decoration."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has 18 distinct colours and a median of 13 per tile, against 427-567 colours and a median of about 108 per tile for the references. That is far lower. The canopy has roughly 4 green steps and some mottled clumping, but the clumps are blurry and low-contrast, with no bright highlight tier and none of the crisp per-leaf lobes the references show. The trunk is a thin, nearly flat brown column with little bark grain or root flare, while the references have branching, shaded trunks with roots. The dark edge pixels are not neutral (0%), so the outline is tinted dark green and brown and reads as material tone. Flat-fill coverage is 0%, but only because the canopy is dithered at low contrast. Overall it is clearly shallower and simpler than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14969
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf crown (lit upper canopy)",
+      "rows": "12-18",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "42-46"
+     },
+     {
+      "part": "trunk",
+      "rows": "48-61",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The lobed crown spans rows 11-47 and widens from 12 px at row 12 to 47 px at rows 27-29, so it is a rounded volume. Its upper rows 12-18 carry the lightest greens and yellow-greens (#689e63, #7a874e at x=24 and x=35), which read as the canopy surface seen from above. The lower crown has a darker underside: rows 42-46 at x=35 are L=56, and the width narrows from 40 to 28 over rows 45-46. That underside acts as the eave shadow below the canopy mass. The crown has no distinct front-edge line, so the top evidence is a soft canopy plane (c) rather than a hard band. The trunk (rows 48-61, 6 px wide) is a plain vertical face with a dark outline and a small ground-shadow patch at its base. The crown is drawn as a volume with a lit top and a shaded front and underside, not as a flat front elevation. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has 18 distinct colours and a median of 13 per tile. The references have 427 and 567 colours and a median of about 108 per tile. The candidate's crown is a dark green mass with only 3-4 green steps. Its lobed clumps are faint and low in contrast, so it reads as a blob rather than the bright, clustered leaf pads of the references. There are no clear highlight clumps and no light-to-dark leaf layering. The outline is dark green-tinted (0% neutral edge pixels) and is acceptable. The trunk is a thin, flat brown stick with little bark texture, no root flare and no branches visible through the crown. The references have forked branches, a flared base and many-tone leaf clusters. The candidate has no flat 5x5 fills, but the colour count and density are far below both references, so it is much shallower.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14845
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf-cluster crown (top dome)",
+      "rows": "12-20",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "leaf-cluster crown (front/lower mass)",
+      "rows": "21-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk",
+      "rows": "47-61",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 40,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The crown is a lobed blob. Its width grows from 12 px at row 12 to 47 px at rows 27-29, then narrows to 28 px at row 46 and 6 px at the trunk. That profile reads as a domed volume seen from above. The upper rows 12-20 carry the lightest greens and olive highlights, so they read as the sunlit top surface. The darker greens and shadow clumps in rows 30-46 sit below it as the front mass. There is no hard front-edge line or eave band, so the top is a shaded dome rather than a flat plane. The trunk (rows 47-61, 6-14 px wide) is a vertical front face with a dark outline and a small ground patch at the base. The crown hides the trunk top, so no part is missing a horizontal surface. There is no isometric side face; the view is a plain south-facing 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a lobed crown with a thin trunk. Its dark edge pixels are tinted (0% neutral), so the outline is dark green beside the leaves and fits the standard. It has no flat-fill blocks (0%) and some clumped mottling in the crown. It falls well short of the references on richness: 18 distinct colours against 427 and 567, and 13 colours per tile against 108 and 109. By eye the crown has about 4 green steps, and they are muddy, low-contrast clusters, with no bright highlight leaf clumps like the references' 5-6 steps. The trunk is a plain, narrow, nearly flat brown column with no root flare, branch structure or bark grain. The references show crisp individual leaf clumps, visible branches through the canopy, and a flared root base. The candidate looks thinner and flatter than both, so it is much lower in density and shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15513
+  }
+ ],
+ "decidedAt": "2026-10-20T04:56:26.198Z",
+ "cells": {
+  "16": [
+   "04ce09dd385ade8d",
+   "0513a57bc421f787",
+   "1899d49b92914e3e",
+   "2126717f15a333e6",
+   "3349669be075a00a",
+   "554bdb18605ba67e",
+   "9ccd440b038e9800",
+   "a118f28bad67775e",
+   "a1d07acbac3e9c3a",
+   "cb90a6c0d4b62c24",
+   "dd2099b222967efe",
+   "ff7e2ab59a79dc78"
+  ],
+  "24": [
+   "01133e98b04a86bb",
+   "08c54e55d10180e5",
+   "099bd838339d2f65",
+   "122e8b8c1beb1c3d",
+   "1383ba6eb9c52083",
+   "457eb2dfaaa8627c",
+   "756450d91084c019",
+   "81acccb81bf1a085",
+   "9fd53a3b773e7934",
+   "acbd47f31cf3cb58",
+   "bd5aa882fb2d2aad",
+   "ec664203f3a2b2ad"
+  ],
+  "32": [
+   "1458291a9f2db5d5",
+   "489fcdd7424e6553",
+   "6e3e7232c523eecc",
+   "84258a54539e4160",
+   "85fa61d8c3cb3d19",
+   "8f7984d189abc9af",
+   "99b378893c4a3dc4",
+   "9b89338231780ade",
+   "bae5049f8aad9687",
+   "c09785c5691f00c9",
+   "c111af693b8558ab",
+   "dd10ecab925cddcc"
+  ],
+  "48": [
+   "b61db8938e6b0b89",
+   "ce8262a0f6018af4",
+   "e99f8f2732bc5989",
+   "edc607d8efff85e8"
+  ]
+ }
+}

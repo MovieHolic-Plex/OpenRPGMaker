@@ -1,0 +1,330 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "76d8560531af1b32cef95374f146bbafdece62524f786013e45c51e45fa3f757",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "amuse speaker stack",
+ "label": "modern_city_interior/amuse-speaker-stack",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 33,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top amp/unit panel band",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "second ledge strip above speaker cone",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "speaker cone front face",
+      "rows": "13-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band (rows 1-6) has small light vent or label dashes. It ends in a light front-edge line at row 7 (L=169 across all scanned columns), followed by 2 dark eave-shadow rows (8-9). Below that is the front face: a second ledge strip (rows 10-12) and the large round speaker cone (rows 13-30). The face is 23 rows tall. No receding side face is drawn. The top band is borderline, because the dashes could also be read as a front-facing panel. I counted it as a top surface because the edge line and eave shadow are both present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 11 visible tones per full tile, above prop-hedge (9) and below the stall (17) and well (20). It has 0% near-flat coverage, so no 5x5 block is a flat fill. The dark edge pixels are 0% neutral, so the outline leans toward the body's cool grey rather than being a black sticker line. The speaker box has about 4 grey steps, with a cone ring and grille dots for texture. That is fewer than the 5-6 steps on the stall or well, and the piece looks plainer than they do. It is still level with the hedge, which has a similar total colour count, on the primary facts, with no flat fills and a tinted outline, so I pass it narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21700
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of speaker stack",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "speaker cabinet front with two cones",
+      "rows": "10-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 form a grey top band across the full width. It ends in a bright front-edge line at row 7 (L=169), followed by two rows of dark eave shadow at rows 8-9 (L=60). Below that, the speaker front with its cones spans rows 10-31, about 24 rows, so the front face is clearly present. The top band has some light dashes that could read as a display, but the edge line plus eave shadow meet evidence (a). The silhouette is a constant 16 px wide with no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts put the candidate level with the hedge reference and below the stall and well. It has 11 visible tones per tile against 9 for the hedge and 17-20 for the stall and well. Near-flat coverage is 0%, so there are no big flat fills. Only 0% of its dark edge pixels are neutral, so the outline leans bluish-grey rather than black. That is a dark tone of the casing, not a uniform sticker line. By eye, the cabinet has a lighter top edge, a mid-grey face, darker sides and a ringed woofer cone with a small tweeter, which gives about 4 usable steps on the casing. That is a little fewer than the 5-6 of the richer references. The speaker is a simple object, and the grille and cone rings carry enough dot and ring detail that it should not look thinner or flatter next to the hedge or bench. It is a little less rich than the stall and well, but not enough to fail it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18294
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of the speaker stack",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "lower amp strip with highlight",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "speaker cabinet front with round cone",
+      "rows": "13-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 form a uniform grey band across the full width. It ends in a bright front-edge line at row 7 (L=169), followed by dark eave-shadow rows 8-9, which matches evidence (a). Below that is a front face of about 23 rows (rows 8-30): a highlight strip at row 10, then a dark speaker cone and grille in rows 13-30, with an outline at the bottom. The grey band carries small light bars that could be read as panel detail, so the top surface is ambiguous. I counted it as a top because the rule says a band does not need to be lighter than the face below. There is no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The speaker stack is a dark grey cabinet with a small tweeter and a large woofer circle, which is the right kind of prop. The measured facts are not shallow: 11 visible tones per tile (the hedge has 9, the stall 17, the well 20), 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted. By eye, though, the whole piece uses only 11 colours, so the cabinet body has about 3-4 lightness steps against the references' 5-6. The cabinet faces are mostly smooth, with little grain, speckle or per-element highlighting. The cone rings and grilles are a few simple tones and read as clean graphic shapes. It sits closer to the sticker look than the well or stall, which carry more per-element shading and texture. The tints and absence of flat blocks keep it from being a clear failure, but it is a step flatter than the references, so I fail it on the when-in-doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17825
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top amp/mixer unit band",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "middle strip under the shadow",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "speaker cabinet front with cone",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 form a gray band at the top. In the x=8 and x=11 scans it ends in a bright 1-row front-edge line at row 7 (L=169), followed by dark eave shadow at rows 8-9 (L=60). Under that, a lighter line at row 10 and a gray strip at rows 11-12 lead into the dark speaker front, which runs from about row 13 to row 31 and holds the cone rings. The top band has some face-like detail (light bars at rows 3-5), so this reading is moderately confident. The edge line plus eave shadow still meets evidence (a). The front face is well over 3 rows. No side face is drawn, and the silhouette is a constant 16 px wide."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a dark speaker cabinet with a concentric cone and a smaller top driver, and it reads as a modelled object rather than a flat sticker. Measured: 11 visible tones per 16x16 tile, which is above prop-hedge (9) and below prop-well-roofed (20) and prop-stall-cheese (17). Near-flat coverage is 0%, so there are no big flat fills. Dark edge pixels are 0% neutral, so the outline leans toward the cabinet's own tint and is not a black sticker line. The cone rings, rim highlights and cabinet panel edges give about 5 lightness steps, a little fewer than the 5-6 on Beodeul materials. The speaker grille and cabinet surface carry less grain than the stall or well. The piece is simple but sits acceptably next to the references on shading, outline and density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17432
+  }
+ ],
+ "decidedAt": "2026-10-20T22:55:59.211Z",
+ "cells": {
+  "16": [
+   "22f415bfc3dbbd1a",
+   "9fd81db5df7bf8f2"
+  ],
+  "24": [
+   "2afee1a0547e0493",
+   "32429477c15a22cc",
+   "375474c8e24d7226",
+   "592002551fae3fb8",
+   "5c63bf267492cb56",
+   "6f733de1e86e3b11",
+   "930cc68c5d90d3df",
+   "987579d566c95d2a",
+   "ae46fc16a796397e",
+   "d94343ac1e9ca754",
+   "f13d7c1115902fd7",
+   "f60f16e9b6337ae6"
+  ],
+  "32": [
+   "0a52e251452f0fc5",
+   "1aa33a583d96c0ae",
+   "6d94b64916283eb0"
+  ],
+  "48": [
+   "1bc0fca1773f664d",
+   "3b1b13ed2bfb44d9",
+   "579ef9349331dfa6",
+   "85997ba1e652e623",
+   "ce5cc86b679ffbe3",
+   "e4f1887ca61e2053"
+  ]
+ }
+}

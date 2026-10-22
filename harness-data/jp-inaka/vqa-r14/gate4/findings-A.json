@@ -1,0 +1,28 @@
+{"group": "A", "items": [{
+ "label": "jp_inaka_pack/jp-inaka-wooden-station",
+ "kind": "structure",
+ "verdict": "fail",
+ "kind_ok": true,
+ "closest_kind": null,
+ "facing": "south",
+ "top_rows": 24,
+ "front_rows": 49,
+ "roof_share": "rows 21-44 = 24 of 73 visible rows (21-93) = 32.9%",
+ "charges": ["roof8", "roof3"],
+ "view34": "pass",
+ "style": "pass",
+ "sure": true,
+ "reasons": [
+  "OLD CHARGES CLEARED: the clock gable and its b88165 rake are gone; tile courses run unbroken x 9-100. Course 3 is now a full 4 rows (37-40), then the eave tip 854a38 (row 41), 3d151f (rows 42-43), outline (row 44) and a dark wall shadow (row 45). This matches the jp-station_small eave exactly (854a38 / 3d151f x2 / ink). The canopy now closes with a #1a1226 row (row 54).",
+  "Roof grammar OK: ridge box rows 22-27 (b88165 light, e0dbb7 noshi row 24, darker rows below). Onigawara end blocks d1a181 at x 20-24 and x 87-91, each with a 3d151f inner divider (x 25 / x 86). Courses run on a 4-row period (joint 28/32/36/40). Joints every 4px only on courses 1-2 (rows 30-31, 34-35). Course 3 carries only 3px marks at x 23-25 and x 67-69 (44px apart). Hip faces are vertical-stripe triangles about 11px wide at the top (x 9-19 left, x 92-102 right), light west face and dark east face, as in the anchor. Roof share is 32.9% (rule 1 passes). No 3/4-view charge holds: the roof is a foreshortened plane of 24 rows, there are no side faces, and the front is 49 rows.",
+  "ROOF RULE 8 (tin canopy eave): the canopy ribs (rows 49-52) end in one e6e2f0 row (row 53) and then go straight to the outline (row 54). The required #cac7d6 row between the white tip and the ink is missing (rule 3: never skip the tip-then-dark pair).",
+  "ROOF RULE 3 (wall shadow under the canopy eave): row 55, directly under the canopy ink row 54, is not a shadow row. The post tops are bright a18d76 (x 8, 42, 70, 101), the window frame is 546b64/705c4a, and the centre has 7f8191 with red 862c22 dots. The main eave does have its dark shadow row (row 45: 331f21/353946); the canopy eave does not.",
+  "Minor, not charged: the platform (rows 82-92) is a top plane only, with a 1-row 8a8580 front edge (row 92) and no riser face. At 1x in maps/03 it reads as a flat paved slab, which is acceptable for a ground-level base. The centre notice board (x 53-65, rows 60-70) is a dot grid, not text."
+ ],
+ "fixes": [
+  "Tin canopy eave: make row 52 the e6e2f0 tip and recolour row 53 to #cac7d6, keeping the #1a1226 row 54. Or move the outline down one row and put cac7d6 in row 54.",
+  "Recolour row 55 across x 8-103, under the canopy ink row, to a single wall-shadow row in the same dark tones as row 45 (331f21/353946, with 546b64 over the window bays). The bright a18d76 post tops then start at row 56.",
+  "Optional: give the platform a 2-row riser face under row 92 (dark stone tones) so it reads as a raised platform rather than a flat plate."
+ ]
+}],
+"summary": "The redraw clears all of the old charges: the front gable is gone, course 3 is a full 4 rows, the canopy is closed in ink, and the roof is 32.9% of the height. The 3/4 view and the style pass. The piece still fails two binding roof-grammar rules, both at the tin canopy eave: the #cac7d6 row between the white tip (row 53) and the ink is missing, and there is no wall shadow row under it (row 55). Both are 1-row recolours."}

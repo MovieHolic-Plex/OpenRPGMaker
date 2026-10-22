@@ -468,7 +468,7 @@ export interface SectionStructureKitDef {
   /** AI 어휘 메타데이터. 없으면 AI 는 이름과 크기만 본다. */
   ai?: StructureKitAiMeta;
   /**
-   * 기물 설명서(ObjectSpec v1, 2026-10-20) — tile-gen·스토어·에디터가 같이 읽는 단일 정본.
+   * 기물 설명서(ObjectSpec v1, 2026-10-20) — object-gen·스토어·에디터가 같이 읽는 단일 정본(2026-10-21 부터 tile-gen 은 지형 전용).
    * 있으면 크기·발밑·놓는 곳·쓰임·3/4 영수증을 여기서 읽는다(공방의 옛 `hand:`·`foot:` 태그보다 우선). src/project/objectSpec.ts
    */
   spec?: ObjectSpecV1;
@@ -544,6 +544,12 @@ export interface TilesetDef {
    * `stop` 칸이나 막힌 칸 앞에서 멈춘다. 생략 = 미끄러짐 없음(기존 동작). 판정은 `@/project/slideTiles`.
    */
   slideTiles?: Record<string, SlideRule>;
+  /**
+   * 카운터 속성(RPG Maker 「카운터」, 2026-10-22). 타일 번호 목록. 주인공 정면 칸이 이 타일이면 조사 버튼이
+   * 그 너머(최대 두 칸 연속 카운터를 넘어) 칸의 이벤트에 닿는다 — 카운터 뒤 상점 주인, 식탁 건너편 사람.
+   * 통행과 별개다. undefined = 시드 전(번들 칩셋은 이름표에서 시드), [] = 없음. 판정은 `@/project/counterTiles`.
+   */
+  counterTiles?: number[];
   priority: ("lower" | "upper")[];
   terrain: number[];
   // 타일 이식 목록. 렌더는 베이크(캔버스 합성)로 처리 — tileGrafts.ts / tilesetImage.ts 참고.
@@ -647,7 +653,7 @@ export interface TreeComposerDef {
   shapeOrder: string[];                   // 모양 순서(첫째 우선 · 둘째 우선 · 셋째 우선 경계는 shapeOdds)
   shapeOdds: number[];
   trunkCols: Record<string, number[]>;    // 모양별 줄기 열(그림 왼쪽 기준)
-  overhangOnGroups: string[];             // 수관이 숲 밖으로 넘쳐도 되는 1층 오토타일 그룹(잔디) — 사람이 읽는 이름
+  overhangOnGroups?: string[];            // 수관이 숲 밖으로 넘쳐도 되는 1층 오토타일 그룹(잔디) — 사람이 읽는 이름
   overhangOnTiles: number[];              // 굽기가 위 그룹 멤버 + 제 숲 바닥으로 풀어 둔 칸 번호(엔진은 이것만 본다)
   sprites: TreeComposerSprite[];
   ground?: TreeComposerGround;            // r6 접지(없으면 땅 그늘 없이 나무만)

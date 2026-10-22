@@ -1,0 +1,38 @@
+{
+ "note": "생성물 — 손으로 고치지 말 것(npm run gen-kits:sync). 공방이 어느 생성기 커밋을 따르는지 보인다.",
+ "kits": {
+  "object-gen": {
+   "repo": "https://github.com/MovieHolic-Plex/object-gen.git",
+   "visibility": "public",
+   "commit": "7ebb92adbb9fc2300adb07bea1c9583c65b3b182",
+   "vendored": true,
+   "contract": "ok"
+  },
+  "char-gen": {
+   "repo": "https://github.com/MovieHolic-Plex/char-gen.git",
+   "visibility": "private",
+   "commit": "d5f263904ca2b671ab6d54942b9c3651aa3e9d22",
+   "vendored": false,
+   "contract": "ok",
+   "fingerprint": {
+    "chargen/prompts.py": "dfeb9ab2e262f1d8",
+    "chargen/judge.py": "23d62e79d627dbf8",
+    "chargen/quality.py": "b59db4df8a77bfe4",
+    "chargen/verify.py": "b3bf84c6b1b9413e"
+   }
+  },
+  "tile-gen": {
+   "repo": "https://github.com/MovieHolic-Plex/tile-gen.git",
+   "visibility": "private",
+   "commit": "bf5359722545fa7bd566aa6bba66aabac3c9c0df",
+   "vendored": false,
+   "contract": "ok",
+   "fingerprint": {
+    "tilegen/prompts.py": "881e11dbfe99ef05",
+    "tilegen/vqa.py": "0332f3ae8edfeed0",
+    "tilegen/checks.py": "8bc4d30a41f5ed5d",
+    "tilegen/gate.py": "71332670c8d5e67c"
+   }
+  }
+ }
+}

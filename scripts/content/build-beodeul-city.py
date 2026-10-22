@@ -229,6 +229,7 @@ sheet = np.zeros((rows * T, COLS * T, 4), np.uint8)
 for i, t in enumerate(tiles): sheet[(i // COLS) * T:(i // COLS + 1) * T, (i % COLS) * T:(i % COLS + 1) * T] = t
 SHEET_PNG.parent.mkdir(parents=True, exist_ok=True)
 Image.fromarray(sheet, "RGBA").save(SHEET_PNG, optimize=True)
+import sys as _s, pathlib as _pl; _s.path.insert(0, str(_pl.Path(__file__).resolve().parents[2] / 'scripts/content/rtp-attribution')); from rtp_check import require_credit; require_credit(SHEET_PNG)  # EasyRPG RTP CC BY credit check (public/assets/ATTRIBUTION.md)
 count = rows * COLS
 while len(tmeta) < count: tmeta.append(None)
 

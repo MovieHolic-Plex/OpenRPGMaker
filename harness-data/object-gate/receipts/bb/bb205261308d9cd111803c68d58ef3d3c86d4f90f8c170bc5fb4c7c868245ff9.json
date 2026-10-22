@@ -1,0 +1,383 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bb205261308d9cd111803c68d58ef3d3c86d4f90f8c170bc5fb4c7c868245ff9",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-inaka-bamboo-fence-gate",
+ "label": "jp_inaka_pack/jp-inaka-bamboo-fence-gate",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 20,
+  "darkV5": 34,
+  "nearBlackEdge": 0.13,
+  "opaqueTiles": 5
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gate tile roof (sloped plane with tile ridges)",
+      "rows": "0-11",
+      "evidence": "c",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "fence top band (straw/cream cap with dark back edge)",
+      "rows": "9-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-20"
+     },
+     {
+      "part": "gate lintel beam",
+      "rows": "14-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The gate has a trapezoid tile roof in rows 0-11. It widens from 24 to 28 px, has vertical tile stripes, and ends in a dark front-edge/eave line at rows 12-13 (#1a1226), so evidence (c) applies. Below it the two wooden posts (rows 13-30) and the lintel beam (rows 14-19) form the front face. The fence on both sides has a cream cap band in rows 11-16 with a light front-edge line at row 16, then a green bamboo front face in rows 17-29 (13 rows). Both major parts show a top surface above a front face of 3+ rows. The lintel is a front-facing strip, which is acceptable."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, thin fence gate set against two full houses, so I judged it as a sparse prop. It reaches 16 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. Its dark edge pixels are 34% near-neutral, much higher than the references' 7-9%, but still a minority. By eye the outline is mixed: the roof edge leans dark blue-grey, and the posts and bamboo have brown and green dark tones. Texture is present: the roof has tile rows with a lighter ridge, the bamboo has vertical stalk grain with node highlights, and the pale wall band carries grass-tuft dashes. The roof and bamboo each show about 4 ramp steps, fewer than Beodeul's 5-6. No large flat fills. Next to the references it is simpler but not thinner or more sticker-like, and it holds up on the measured facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 27640
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gate roof (tiled slope with ridge cap)",
+      "rows": "0-12",
+      "evidence": "c",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "fence top band (thatch/bamboo cap)",
+      "rows": "9-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-20"
+     },
+     {
+      "part": "gate lintel beam",
+      "rows": "14-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gate posts",
+      "rows": "13-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bamboo fence front face",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The gate has a gray tiled roof in rows 0-12. It narrows at the top (width 24, then 26, 28) and widens to the eave. A dark ridge or edge line sits at row 3 (x=47), and the tile columns run rows 4-11. The dark eave shadow in rows 12-13 closes the roof, and below it the lintel and two posts form the front face down to row 30. The flanking fences each have a cream top band in rows 9-16 that ends in a light front-edge line at row 16 (L=208 at x=16 and x=32). Below that line, the green bamboo front face runs rows 17-29, with darker shadow in rows 18-20. Both the roof and the fence caps show top surfaces, and the front faces are 13 or more rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, sparse fence gate set against two full houses, so I judged it by eye as a thin object. The measured facts support it: 16 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, the same as the references. The gate roof has a tiled texture with per-tile highlights and a few dark-to-light steps. The fence has a pale rail and dark-green vertical slats with grain variation, and I saw no 5x5 flat fills. It has fewer shading steps than the houses, about 4 against 5-6, so it is less rich than the reference roofs. The outline is mixed, with 34% neutral dark edge pixels against 7-9% for the references, but most dark edges lean toward the neighbouring material and it does not read as a uniform black sticker line. A careful artist would likely accept it next to the references without it looking noticeably flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25452
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gate roof (grey tiled hip roof with slat lines)",
+      "rows": "0-11",
+      "evidence": "c",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "bamboo fence straw-thatch cap (left and right wings)",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-20"
+     },
+     {
+      "part": "gate lintel beam",
+      "rows": "14-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The gate is a roofed structure. The roof spans rows 0-11 and widens from 24 to 28 px, with a light grey top plane and slatted rows below. A dark front-edge and eave line sits at rows 12-13 (#1a1226 at x=32 and x=47). Below it are two wooden posts and a lintel (rows 14-19) with an open passage, so the front face runs from row 13 to row 30. The fence wings have a pale straw cap at rows 11-16 ending in a light front-edge line at row 16, then a green bamboo face at rows 17-29 with 13 rows. The posts and lintel are vertical faces under the roof, and the roof covers them, so no major part is missing a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The references are full houses and the candidate is a low fence gate with a small tiled roof, so the comparison is approximate. On the measured facts it holds up: 16 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. By eye, the dark roof shows tile rows and highlights, and the bamboo has vertical slat banding with a lighter top rail. The posts show wood grain. I count about 4 steps per material, a little under the references' 5-6, but nothing reads as a flat fill. The outline is mixed: 34% of dark edge pixels are near-neutral against 7-9% for the references, but the rest lean visibly toward the neighbouring material, and there is no uniform black sticker line. A careful artist would accept it next to the references as equally textured, if slightly less deeply stepped.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25253
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gate roof (grey tile slope with ridge)",
+      "rows": "0-12",
+      "evidence": "c",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "bamboo fence top band (cream cap)",
+      "rows": "9-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-20"
+     },
+     {
+      "part": "bamboo fence front face (green slats)",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gate posts and lintel beam",
+      "rows": "12-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The gate has a sloped grey tile roof (rows 0-11, ridge highlight at the top, dark eave and shadow at rows 12-13 at x=47) over two brown posts and a lintel (rows 14-19), with the front face running to row 30. The fence wings show a cream top band (rows 9-16) ending in a bright front-edge line at row 16, followed by dark eave shadow in rows 18-20 and a green slat face down to row 29. Both the roof and the fence have a visible top surface with a front face of 3+ rows below, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The references are whole houses and the candidate is a small bamboo fence gate with a slate roof, so the kind only loosely matches and I judged craft rather than size. On the measured facts it holds up: 16 visible tones per tile against 12 and 10, 0% near-flat coverage like both references, and no flat fills. The fence shows vertical bamboo strokes, a pale top rail and a dark base with several greens, and the small roof has a few slate highlights. The roof ramp is shallower than the references' 5-6 step tile roofs, about 4 steps, and it has no per-tile scallop detail. Outlines are mixed: 34% of dark edge pixels are neutral against 7-9% in the references, but the other 66% lean toward the material colours, so it is not a uniform black sticker line. Overall a careful artist would accept it beside the references, though the roof is a little thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21995
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.130Z",
+ "cells": {
+  "16": [
+   "25fdf288e62c9f49",
+   "27614643ef50c4a1",
+   "2a02a733ac10e92f",
+   "4bfe3f5873af9fe6",
+   "7fad937a40e0ac36",
+   "946da95459669feb",
+   "952dc2213e029532",
+   "ea1d43861584a9df"
+  ],
+  "24": [
+   "0bdf8eee6a9420a7",
+   "0db0b5af1d94c813",
+   "15f1723faca61328",
+   "16f746212b950cb5",
+   "2069209680bbaedd",
+   "24109e8152332d90",
+   "28391c543abb6b24",
+   "2f380c434f06bd16",
+   "3314667a6b0533b0",
+   "38d2145a8d66c454",
+   "3c97061da57aa516",
+   "462734f19d819d91",
+   "61cf54c2275df8b1",
+   "67d9480105be7fb5",
+   "75beaf68da09a284",
+   "8b6f5eb20dc6a87a",
+   "8f25ab7bc3307fff",
+   "a763975954eb8649",
+   "aab2c0b251bb198a",
+   "ab56f5210563e01b",
+   "ab655bf766e03f06",
+   "ad2abea30a990853",
+   "adb86395900e4362",
+   "af9a6d41d92c55e9",
+   "b607c3edd65492db",
+   "b8b9447b59c1760c",
+   "c7a4651ef232b37b",
+   "cd7c0cfaa9aba59d",
+   "d1db1634f2d49585",
+   "d1e9c0f7c81eeebf",
+   "d448b07130d3e481",
+   "d485791cde185809",
+   "f308c5d095c9d3ee"
+  ],
+  "32": [
+   "167779c03006c36c",
+   "811a5ac8e8b849b1"
+  ],
+  "48": [
+   "2638e21fabd6e93e",
+   "281fd29ee1b31dcc",
+   "29e2802f8f90d5fa",
+   "2e4696b1220897a9",
+   "638f131426440eff",
+   "9550ecfcf830dd24",
+   "9e6f12468797d506",
+   "ad4cd42e546d4bfa",
+   "c3fe4d77ee9d5d2f",
+   "d4a161edab92b627",
+   "f8613f80bf578436",
+   "fc01424baa4e6ec3"
+  ]
+ }
+}

@@ -158,9 +158,12 @@ def gable_front_top(c, x0, x1, ytop, yeave, ywall, mat, base, rise, wx0, wx1, wm
         lit = x <= xc
         for y in range(yt, yb - 1):
             t = min(base + 2, 2) if lit else max(base - 1, -1)                # 그늘 면 하한 −1: 기와 단(−2/+1)이 램프 끝에 눌려 사라지지 않게(3~5색)
-            if tex_ribs:                                                     # 골판: 얕은 세로 골 + 12줄마다 판 이음
-                t += (1 if (x - x0) % 6 == 1 else -1 if (x - x0) % 6 == 4 else 0)
-                if (y - yt) % 12 == 11: t -= 1
+            if tex_ribs:                                                     # 골판(r2 VQA 2026-10-21): 골은 물매 방향 = 박공 끝 Λ 와 나란(세로 골은 서 있는 판으로 읽혔다)
+                k = (y - yt) % 5
+                t += 1 if k == 0 else -1 if k == 3 else 0                    # 골 마루 빛 · 골 바닥 그늘
+                if d > 0.72 and k != 0: t -= 1                              # 처마 쪽으로 한 단 어둡게(면 명암 단계)
+                if d < 0.22 and k == 1: t += 1                              # 용마루 쪽 밝게
+                if abs(x - xc) % 22 == 11 and k != 0: t -= 1                # 판 이음(물매에 가로지르는 겹침)
             else:                                                            # 기와: 가로 단(4줄) + 엇갈린 골
                 k = (y - yt) % 4
                 if k == 3: t -= 2
@@ -204,9 +207,9 @@ def shed_top(c, x0, x1, ytop, yeave, mat, base):
         f = (y - ytop) / max(1, D)
         for x in range(x0 + 3, x1 - 2):
             # 위(뒤)에서 아래(처마)로 밝음 → 어두움 그러데이션(경계는 체커 디더, 띠·격자 없음) + 왼쪽 위 반사
-            m = (x - x0) % 8
-            g = 2 if f < 0.30 else 1 if f < 0.68 else 0                     # 경사 방향(위→아래)으로만 3단 가로 띠(곧은 경계, 디더·계단 없음)
-            t = base + g + (1 if m == 0 else -1 if m == 1 else 0)          # 성긴 골(8px)
+            m = (x - x0) % 4
+            g = 2 if f < 0.22 else 1 if f < 0.50 else 0 if f < 0.80 else -1   # 경사 방향(위→아래)으로 4단(r4 VQA 2026-10-21: 3단·8px 골은 민 판으로 읽혔다)
+            t = base + g + (1 if m == 0 else -1 if m == 1 else 0)          # 골판 골 4px(apart-steel2 처럼 면 전체에 결)
             c.P(x, y, K(mat, t))
         c.P(x0, y, K(mat, base + 3)); c.P(x0 + 1, y, K(mat, base + 2)); c.P(x0 + 2, y, K(mat, base + 2))   # 마구리(빛)
         c.P(x1, y, K(mat, base - 3)); c.P(x1 - 1, y, K(mat, base - 2)); c.P(x1 - 2, y, K(mat, base))      # 마구리(그늘)

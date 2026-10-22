@@ -124,7 +124,7 @@ const defineEnding: ToolDefinition = {
       presentation: {
         type: "object", additionalProperties: false,
         description: "에필로그 뒤의 마지막 화면. credits는 줄바꿈을 유지하는 크레딧. tone은 warm 또는 dark.",
-        properties: { musicResourceId: { type: "string" }, tone: { type: "string", enum: ["warm", "dark"] }, credits: { type: "string", maxLength: 20000 }, kicker: { type: "string", maxLength: 24, description: "제목 위 작은 줄. 비우면 연애 게임은 '두 사람의 이야기'" }, backgroundResourceId: { type: "string" } },
+        properties: { musicResourceId: { type: "string" }, tone: { type: "string", enum: ["warm", "dark"] }, credits: { type: "string", maxLength: 20000 }, kicker: { type: "string", maxLength: 24, description: "제목 위 작은 줄. 비우면 연애 게임은 '두 사람의 이야기'" }, badge: { type: "string", maxLength: 40, description: "엔딩 CG 위 배지. 비우면 게임 언어로 HAPPY ENDING·다음 이야기에 계속 등을 고른다" }, finalTitle: { type: "string", maxLength: 40, description: "마지막 장의 큰 글자. 비우면 '끝', 막·장 끝(id 에 act1·chapter2)은 '제1막 끝' — 게임 언어" }, backgroundResourceId: { type: "string" } },
       },
       epilogue: { type: "array", description: "CutsceneBeat[]", items: CUTSCENE_BEAT_SCHEMA },
     },

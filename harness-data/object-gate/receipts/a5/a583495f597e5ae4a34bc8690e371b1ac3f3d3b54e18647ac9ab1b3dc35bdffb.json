@@ -1,0 +1,310 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a583495f597e5ae4a34bc8690e371b1ac3f3d3b54e18647ac9ab1b3dc35bdffb",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "flooded rice paddy",
+ "label": "jp-inaka-r5:at-paddy-water",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 9,
+  "darkV5": 107,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flooded paddy water tile with rice sprout tufts",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a full-bleed 48x48 terrain tile. Blue-teal water fills every row (silhouette width is 48 on rows 0-47), with small repeating green rice sprout tufts every 4 rows and lighter blue ripple patches. There is no standing body, no front-edge line, no eave shadow, and no front face. It is a flat ground texture, which is correct for a terrain kind, so it reads as a top-down surface rather than a standing 3/4 object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 9 distinct colours in total, against 80 for the grass reference. It carries a median of 8 colours per tile against 26 for the grass. The paving reference is also low at 7 per tile, but its stone shading is richer by eye. The water body is a blue-grey base with a few lighter ripple patches, so it has about 3 lightness steps. The rice sprouts are a regular grid of identical light-green dots with a darker pixel, which looks mechanical and stamped rather than clumped and varied like Beodeul's leaf clumps and grass tufts. There are no paddy bunds, mud banks or soil grain, so the 4x3 patch reads as one uniform tiled texture. Flat-fill coverage is low at 5%, and there is no outline to judge, so the weakness lies in shallow shading and low variety, not in sticker outlines. A careful artist would find it thinner and flatter than the grass reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 27444
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flooded paddy water surface with rice seedling tufts in a repeating pattern",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The tile is a full-bleed 48x48 seamless terrain fill: water-blue base (#4a7387) with a repeating grid of green rice sprout tufts every 4 rows and lighter ripple patches. The silhouette is 48 wide on every row, with no outline, no front-edge line, no eave shadow, and no ellipse. It is a flat ground texture rather than a standing object, so top/front-face measures do not apply. This is appropriate for terrain, and the tile reads as flat water with seedlings."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 9 distinct colours in total, against 80 for the grass reference. Its median is 8 colours per tile versus 26 for grass. It is a blue-grey water base with a regular grid of small green sprout dots and a few lighter ripple patches. That is about 3 lightness steps on the water, where the references use 5-6. Flat-fill coverage is low at 5%, but only because the evenly spaced dots break up the field. The dots form a mechanical lattice, not shaded clumps, and there are no paddy dike or mud edges or soil grain to give structure. The outline facts do not apply because the patch has no outline (0% neutral edge pixels). Per-tile density is close to the paving reference, which is itself a simple surface, but well below the grass reference of the same kind. Overall it reads as a shallow, repetitive texture next to the references' hand-shaded variation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 23591
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flooded paddy water surface with rice sprout tufts",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 48x48 opaque square with constant width on every row (0-47:48). It is a repeating pattern of blue-teal water with small green sprout tufts every 4 rows, with no front-edge line, eave shadow, ellipse, or vertical front face. It is a flat seamless terrain tile, which suits the terrain kind. The column scans show only the repeating sprout rows (L=135) over water (L=105), with no structural top/front division."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a blue-grey water field with a regular grid of small green sprout dots and a few lighter ripple patches. It has only 9 distinct colours in total, against 80 for the grass reference, and a median of 8 per tile, against 26 for grass. The paving reference has a similar tile median of 7, but it is a hard stone pattern with a 7-colour palette, so it is not a fair density bar for a living surface. The water has about 3 lightness steps (base, lighter ripple, darker mottle). There are no distinct highlight and deep tones, no reflections, no mud bank or bund edges, and no soil grain between the plants. The sprouts are evenly spaced and uniform, so they read as a repeating stamp rather than hand-placed clumps like the grass tufts in the reference. Flat-fill coverage is low at 5%, and dark edge pixels are tinted (0% neutral), so there is no sticker outline problem. Overall the patch is shallow in shading and variety compared with the grass reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17549
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flooded paddy water surface with rice sprout tufts",
+      "rows": "0-47",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 48x48 opaque square of blue-teal water (#4a7387) with a regular grid of small green rice sprouts and a few lighter ripple patches. The width is 48 on every row, so there is no silhouette and no standing volume. There is no front face and no front-edge line or eave shadow; the repeating sprout rows (green at every 4th row) are surface texture. As a flat terrain tile this reads as a top-down ground/water surface, which is what the kind (terrain) calls for."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 9 distinct colours in total, against 80 for the grass reference. Its median is 8 colours per tile, against 26 for grass, and it is about equal to the paving reference at 7 only because paving is a sparse, low-colour kind. The water body is a blue-grey base with a few lighter ripple patches, so it reads as roughly 3 steps and is shallow next to the 5-6 steps in the references. The plants are a regular grid of identical bright green dots with a single highlight each. They look stamped, with no clumping, no varied greens, no mud or soil grain, no bund edges and no reflections. Flat-fill coverage is 5%, so the texture is not strictly flat, but it is a repeating dot pattern that comes across as a uniform tiled overlay. There are no outlines, so the sticker check does not apply. Overall it is clearly thinner and more mechanical than the Beodeul grass, which has tufts and varied greens, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13351
+  }
+ ],
+ "decidedAt": "2026-10-20T06:05:13.036Z",
+ "cells": {
+  "16": [
+   "27b897e758518ab9",
+   "4e020ed40f12e6a2",
+   "8a2b02cd6da79b06",
+   "c52468d5c03d745c",
+   "e2cc3f2ce3728798",
+   "e901de2bd6f8a1cb"
+  ],
+  "24": [
+   "3b635bbb781be88c",
+   "88e0f6e73d1aa1de",
+   "b527617a79e72a3f",
+   "e952ca7d7b41c04d"
+  ],
+  "32": [
+   "0bc58d410d7dad69",
+   "2256db211dbe0d7a",
+   "3051509df042ec29",
+   "352d04f0920963c1",
+   "368373dc7db04f82",
+   "3d3eacd76e5effef",
+   "53dccfe95c1b9b8a",
+   "5843a9084d6caee8",
+   "58e6c17be2ac70f0",
+   "59cd277403af5f7e",
+   "705a0955a1dcdd76",
+   "70a161d5e5d64d77",
+   "962dfc4c13248f2e",
+   "a03725726463f457",
+   "a286f9ba2fced61c",
+   "c1367dfe054c4df1",
+   "c67bf9d9f289074e",
+   "cb751efefc2b43b6",
+   "cbc0b537d205257a",
+   "d0e162ae33366f6f",
+   "e714df97c4113a84",
+   "ee7eb8861e452679",
+   "eee9602d43f4d48a",
+   "fb65d0285493e058"
+  ],
+  "48": [
+   "8b7bfecce3a4cba5"
+  ]
+ }
+}

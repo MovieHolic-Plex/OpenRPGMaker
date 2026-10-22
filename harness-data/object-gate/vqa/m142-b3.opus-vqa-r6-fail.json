@@ -1,0 +1,42 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b3",
+ "round": 6,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "jp-torii",
+   "pixelSha256": "05bf3e2eecfe9b803e0fec031db8b537a7a1df9b20c601eb5a1ef60c1607f3fa",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    5
+   ],
+   "reasons": "The torii is drawn as a flat front elevation. The kasagi and nuki beams show no lit top planes and the pillars have no depth, unlike the originals, which all show a 3+ row top surface. The red and grey parts don't use the chipset's consistent dark navy outline, and at 2x the thin gate (about 2 tiles wide) looks undersized and pasted onto the room floor. The grey base blocks barely work as a ground line."
+  },
+  {
+   "id": "jumbo-hosp-mri",
+   "pixelSha256": "461ffeca34bd6c702670d80cc4d46d97504a54a80161ce54602393add5e3f2fa",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The gantry top is a lit plane with the display panel, the bore ring sits on a short front face, and the patient table runs forward and is seen from above. The thick dark outline and the white/grey palette with blue accents match the counter and desk originals. It reads clearly as an MRI at 1x and sits on the floor in the room without hovering."
+  }
+ ]
+}

@@ -42,9 +42,8 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 /* ??ъ갹: dialogue-frame.png 瑜?9-slice(border-image)濡??곸슜.
    ?먯뀑? 64x64, slice=16px. 以묒븰? 諛섑닾紐??대몢???ㅼ씠???띿뒪??媛?낆꽦 ?뺣낫. */
 .dialogue-box {
-  border-style: solid;
-  border-width: 16px;
-  /* border-image 誘몄????먯뀑 ?꾨씫 ???대갚. */
+  /* 테두리는 런타임 dialogue.css·dialogueStyles.css 가 소유한다. 여기서 16px 을 주면 편집기의 이벤트
+     미리보기(게임과 같은 클래스를 320×240 에 그린다)에서 본문이 7px 로 눌렸다(UI 감사 06-eventwin-03). */
   max-width: 720px;
   /* ?댁쭩 ?쒕∼ ??꾩슦濡?寃뚯엫 ?붾㈃怨?遺꾨━. */
   filter: drop-shadow(0 4px 10px rgba(42, 37, 33, 0.10));

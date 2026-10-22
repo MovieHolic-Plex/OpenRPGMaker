@@ -40,6 +40,8 @@ const CARD_COLUMNS = 3;
 /** 시트에서 잘라 내는 칸. 이보다 크면 조선·버들항 시트의 background-size 가 텍스처 한도를 넘긴다. */
 export const PALETTE_THUMB_PX = 32;
 const SEARCH_DELAY_MS = 120;
+/** 네 탭이 aria-controls 로 가리키는 본문. 카드 본문이거나(지형·프리팹·최근) 개별 타일 시트다. */
+export const PALETTE_SMART_PANEL_ID = "palette-smart-panel";
 
 const viewByTileset = new Map<string, PaletteViewId>();
 let terrainChip: TerrainChipId = "all";
@@ -83,11 +85,12 @@ export function makePaletteSmartTabs(tileset: TilesetDef, onRerender: () => void
     attrs: { role: "tablist", "aria-label": "타일 팔레트" },
     dataset: { testid: "palette-smart-tabs" },
   });
-  const items: readonly { readonly id: PaletteViewId; readonly label: string; readonly count: number }[] = [
-    { id: "terrain", label: "지형", count: catalog.terrain.length },
-    { id: "prefab", label: "프리팹", count: catalog.prefabs.length },
-    { id: "recent", label: "최근", count: recentTilesView().length },
-    { id: "tiles", label: "개별 타일", count: tileset.count },
+  // 탭 글자는 짧게 둔다 — 좌패널 폭(258px)에 네 탭이 영어로도 다 읽혀야 한다. 긴 이름은 title 이 맡는다.
+  const items: readonly { readonly id: PaletteViewId; readonly label: string; readonly title: string }[] = [
+    { id: "terrain", label: "지형", title: `지형 ${catalog.terrain.length}` },
+    { id: "prefab", label: "프리팹", title: `프리팹 ${catalog.prefabs.length}` },
+    { id: "recent", label: "최근", title: `최근 ${recentTilesView().length}` },
+    { id: "tiles", label: "타일", title: `개별 타일 ${tileset.count}` },
   ];
   for (const item of items) {
     const selected = view === item.id;
@@ -98,10 +101,14 @@ export function makePaletteSmartTabs(tileset: TilesetDef, onRerender: () => void
         type: "button",
         role: "tab",
         "aria-selected": selected ? "true" : "false",
-        title: `${item.label} ${item.count}`,
+        "aria-controls": PALETTE_SMART_PANEL_ID,
+        // 탭 묶음 안에서는 고른 탭 하나만 Tab 키로 들어온다. 나머지는 화살표로 옮긴다.
+        tabindex: selected ? "0" : "-1",
+        title: item.title,
       },
       dataset: { testid: `palette-tab-${item.id}`, paletteView: item.id },
       on: {
+        keydown: (event) => movePaletteTabFocus(tabs, event),
         click: () => {
           const hadQuery = catalogQuery.trim().length > 0;
           if (searchTimer !== null) {
@@ -111,12 +118,33 @@ export function makePaletteSmartTabs(tileset: TilesetDef, onRerender: () => void
           if (hadQuery) catalogQuery = "";
           if (currentPaletteView(tileset) === item.id && !hadQuery) return;
           viewByTileset.set(tileset.id, item.id);
+          const hadFocus = document.activeElement?.closest(".palette-smart-tabs") === tabs;
           onRerender();
+          // 다시 그린 탭 줄에 초점을 돌려준다 — 키보드로 탭을 바꾼 뒤 초점이 문서 맨 앞으로 튀지 않게.
+          if (hadFocus) document.querySelector<HTMLElement>(`[data-testid="palette-tab-${item.id}"]`)?.focus();
         },
       },
     }));
   }
   return tabs;
+}
+
+/** 탭 패턴의 화살표·Home·End 이동. 초점만 옮기고, 고르기는 Enter·Space(click)가 한다. */
+function movePaletteTabFocus(tabs: HTMLElement, event: Event): void {
+  if (!(event instanceof KeyboardEvent)) return;
+  const buttons = Array.from(tabs.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+  const current = buttons.findIndex((button) => button === event.currentTarget);
+  if (current < 0) return;
+  const last = buttons.length - 1;
+  const next = event.key === "ArrowRight" ? (current === last ? 0 : current + 1)
+    : event.key === "ArrowLeft" ? (current === 0 ? last : current - 1)
+    : event.key === "Home" ? 0
+    : event.key === "End" ? last
+    : null;
+  if (next === null) return;
+  event.preventDefault();
+  for (const [index, button] of buttons.entries()) button.tabIndex = index === next ? 0 : -1;
+  buttons[next]?.focus();
 }
 
 /**
@@ -144,12 +172,12 @@ export function makePaletteSmartBody(
   if (view === "prefab") shell.append(makePrefabChipRow(catalog, onRerender));
   const body = el("div", {
     class: "palette-smart-body",
-    attrs: { role: "tabpanel" },
+    attrs: { id: PALETTE_SMART_PANEL_ID, role: "tabpanel" },
     dataset: { testid: "palette-smart-body" },
   });
   if (view === "terrain") mountCardWindow(body, terrainCards(catalog), (card) => makeTerrainButton(tileset, card, onRerender), "이 분류에 해당하는 지형이 없습니다.");
   else if (view === "prefab") mountCardWindow(body, prefabList(catalog), (card) => makePrefabButton(tileset, card, onRerender), "이 분류에 해당하는 프리팹이 없습니다.");
-  else mountCardWindow(body, recentCards(tileset), (card) => makeRecentButton(tileset, card, onSelectTile), "아직 고른 타일이 없습니다.");
+  else mountCardWindow(body, recentCards(tileset), (card) => makeRecentButton(tileset, card, onSelectTile), "아직 고른 타일이 없습니다. 지도에 타일을 칠하면 여기에 쌓입니다.");
   shell.append(body);
   return shell;
 }
@@ -259,6 +287,7 @@ function makeSearchResults(
   const result = searchPaletteCatalog(tileset, query);
   const body = el("div", {
     class: "palette-smart-body",
+    attrs: { id: PALETTE_SMART_PANEL_ID, role: "tabpanel" },
     dataset: { testid: "palette-search-results" },
   });
   const total = result.terrainTotal + result.groupTotal + result.prefabTotal + result.tileTotal;
@@ -444,6 +473,10 @@ function selectTerrainCard(card: TerrainCard): void {
     tool: keep ? state.tool : "paint",
     autoConnectMode: card.kind === "autotile" ? true : state.autoConnectMode,
   });
+  // 수동으로 둔 이웃 연결이 지형 카드를 고르는 순간 말없이 자동으로 바뀌던 문제(F11) — 바꾸되 알린다.
+  if (card.kind === "autotile" && !state.autoConnectMode) {
+    toast("지형 카드라 「이웃 연결」을 자동으로 켰어요. 끄려면 위의 「이웃 연결」을 누르세요.", "ok");
+  }
   if (state.layer !== "event" && state.layer !== nextLayer) {
     toast(nextLayer === "upper" ? "상위 레이어 타일 — 상위 레이어 편집으로 전환" : "하위 레이어 타일 — 하위 레이어 편집으로 전환", "ok");
   }

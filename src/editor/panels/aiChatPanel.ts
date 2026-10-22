@@ -72,13 +72,15 @@ import { createJobEntry } from "./aiJobEntry";
 import { mountAiMapPresence } from "@/editor/aiMapPresence";
 import { createTilesetChangeCard } from "./aiTilesetChangeCard";
 import { createStoreCard } from "./aiStoreCard";
+import { createObjectGenBatch } from "./aiObjectGenCard";
+import { isObjectGenRequest } from "@/editor/workshop/objectRequest";
 import type { StoreCardRequest } from "@/editor/tools/storeTools";
 import type { TilesetChangeQuestion } from "@/editor/tools/tilesetChangeTools";
 import { createAssistantWide } from "./aiAssistantWide";
 import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
 import { DEFAULT_PI_TEAM, type PiRunPlan } from "@/ai/piAgent/executionRoute";
-import { classifyPlainPiTurn, selectedEventFact } from "@/ai/piAgent/plainTurn";
+import { classifyPlainPiTurn, clarifyFollowUpText, selectedEventFact } from "@/ai/piAgent/plainTurn";
 import { applyMonsterIntentStart, needsMonsterKitStart } from "@/project/genrePresets";
 import { resolveContextWindow } from "@/ai/contextCompaction";
 import { modelForRole } from "@/ai/modelRoles";
@@ -123,7 +125,7 @@ import { aiActivityPersistenceState, extractCommitIdsFromAudit } from "@/ai/acti
 import { recordPiIntentFailure } from "@/ai/piAgent/activityLog";
 import { listAiUiEvents, recordAiUiEvent } from "@/ai/uiEventLog";
 import { AI_UI_ACTIONS } from "@/ai/uiEventTypes";
-import { parseQuickReplies } from "@/ai/interviewPrompt";
+import { parseQuickReplies, QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
 import { buildClusterEditKickoff, buildUnclassifiedAnalysisKickoff, type ClusterGroupSnapshot } from "@/ai/clusterAssistPrompt";
 import { resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
 import { AI_STUDIO_TOGGLE_EVENT, publishAiStudioChange } from "@/editor/aiStudioMode";
@@ -286,6 +288,13 @@ export {
   shouldShowStatusInChat,
   type StatusTransition,
 } from "./aiChatPanelHelpers";
+
+/** 되묻기의 선택지 표식 줄(「[선택지] A | B」)은 이 창에 단추가 없어 날것으로 보였다 — 읽히는 한 줄로 바꾼다. */
+function clarifyForChat(text: string): string {
+  return text.split("\n").map((line) => line.startsWith(QUICK_REPLY_MARKER)
+    ? `(골라 답해 주세요: ${line.slice(QUICK_REPLY_MARKER.length).split("|").map((option) => option.trim()).filter(Boolean).join(" · ")})`
+    : line).join("\n");
+}
 
 /** 컴포저가 AI 에게 넘기는 현재 맵/선택 영역 컨텍스트. */
 interface PanelMapContext {
@@ -585,6 +594,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let autoCollapseTimer: number | null = null;
   // Pending questions keep the conversation engaged even without promoted reply chips.
   let pendingQuestion = false;
+  /** 의도 선언의 되묻기를 보이고 멈춘 턴 — 다음 전송이 그 답이다. */
+  let pendingClarify: { readonly text: string; readonly question: string } | null = null;
   const hasPendingQuestion = (): boolean => pendingQuestion;
   // applyCollapsed 정의 전에 턴이 잡혀도 안전한 바인딩(런타임 호출은 패널 마운트 이후).
   let expandForAiWork: () => void = () => {};
@@ -2139,14 +2150,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     syncGlassIdle();
     // 조수가 ask_tileset_change 로 물었으면 턴이 끝난 뒤 질문 카드를 띄운다(마지막 질문 하나).
     let tilesetQuestion = null as TilesetChangeQuestion | null;
-    let storeCard = null as StoreCardRequest | null;
+    // 스토어·없는 기물 카드 — 조수가 generate_missing_object 를 한 턴에 여러 번 부르면 모두 모아 함께 줄 세운다.
+    const storeCards: StoreCardRequest[] = [];
     const turnConversation = conversationId;
     try {
       await runPiCommand(command, {
         onEvent: event => progress.event(event),
         getApprovedTilesetFamilies: () => approvedTilesetFamilies,
         onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
-        onStoreCard: (request) => { storeCard = request; },
+        onStoreCard: (request) => { storeCards.push(request); },
         appendBubble: (role, line) => appendBubble(role, line),
         appendProcess: (text) => (reviewCard ?? ensureWorkCard()).attachElement(el("p", { class: "ai-work-process-note", text })),
         appendCard: (element) => { appendChangeCard(element); },
@@ -2197,17 +2209,24 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       syncGlassIdle();
     }
     if (tilesetQuestion && !disposed && turnConversation === conversationId) showTilesetChangeCard(tilesetQuestion);
-    if (storeCard && !disposed && turnConversation === conversationId) showStoreCard(storeCard);
+    if (storeCards.length && !disposed && turnConversation === conversationId) showStoreCards(storeCards);
   };
-  /** 스토어 카드(aiStoreCard). 넣기·그리기·있는 타일 고르기는 후속 요청을 평소 전송 경로로 보낸다. 올리기·숨기기는 카드 안에서 끝난다. */
-  const showStoreCard = (request: StoreCardRequest): void => {
+  /**
+   * 스토어 카드(aiStoreCard). 넣기·그리기·있는 타일 고르기는 후속 요청을 평소 전송 경로로 보낸다. 올리기·숨기기는 카드 안에서 끝난다.
+   * 없는 기물 그리기 요청(generate_missing_object)은 이 턴의 것을 모두 한 묶음 카드로 — 공방 작업 줄에 함께 서서 동시에 그리고,
+   * 다 넣으면 후속 요청 하나로 조수가 한꺼번에 놓는다. 그 밖의 스토어 카드는 예전처럼 마지막 하나.
+   */
+  const showStoreCards = (requests: readonly StoreCardRequest[]): void => {
     const owner = conversationId;
-    const card = createStoreCard(request, (followUp) => {
+    const followUp = (text: string): void => {
       if (disposed || owner !== conversationId) return;
-      restoreComposer(followUp);
+      restoreComposer(text);
       void send();
-    });
-    log.append(card);
+    };
+    const objectRequests = requests.filter(isObjectGenRequest);
+    const other = requests.filter((request) => !isObjectGenRequest(request)).at(-1);
+    if (objectRequests.length) log.append(createObjectGenBatch(objectRequests, followUp));
+    if (other) log.append(createStoreCard(other, followUp));
     followConversationLog(log);
   };
   /** 칩셋 계열 변경 질문 카드. 고르면 승인 목록을 고치고 후속 요청을 평소 전송 경로로 보낸다. */
@@ -2229,7 +2248,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 분류가 지연·실패하면 다이얼 그대로 두는 쪽이 안전하므로 타임아웃을 짧게 둔다.
   let piIntentDeclarer: { declarer: IntentDeclarer; timeoutMs: number } | null = null;
   /** 평문 한 줄 → Pi 명령 + 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
-  type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
+  type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly clarify?: string; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
   const plainPiTurn = async (text: string, turnOptions?: {
     readonly team?: boolean;
     /** 같이 도는 실행(맵별 대기열)은 보낸 순간의 맵·선택으로 해석한다 — 사용자는 그 사이 다른 맵으로 옮겼을 수 있다. */
@@ -2278,6 +2297,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       command: plainPiCommand(text, classified.mode, turnMapId),
       plan: classified.plan,
       questionPromoted: classified.questionPromoted,
+      ...(classified.clarify ? { clarify: classified.clarify } : {}),
       ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}),
       intentNote: classified.intentNote,
       timing,
@@ -2310,6 +2330,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (explicit) command = explicit;
     else {
       const classified = await plainPiTurn(run.text, { ...(run.team ? { team: true } : {}), mapId: run.mapId, selection: run.selection, onDeclaring: () => card.setStatus("의도 읽는 중…") });
+      if (classified.clarify) {
+        pendingClarify = { text: run.text, question: classified.clarify };
+        card.say("assistant", clarifyForChat(classified.clarify));
+        renderQuickReplies(classified.clarify);
+        return;
+      }
       command = classified.command;
       options = piRunOptionsFor(classified.plan, { timing: classified.timing, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote });
       if (classified.questionPromoted) card.say("system", "프로젝트를 바꾸지 않고 확인해서 답할게요.");
@@ -2317,7 +2343,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     signal.throwIfAborted();
     card.setStatus("작업 중");
     let tilesetQuestion = null as TilesetChangeQuestion | null;
-    let storeCard = null as StoreCardRequest | null;
+    // 스토어·없는 기물 카드 — 조수가 generate_missing_object 를 한 턴에 여러 번 부르면 모두 모아 함께 줄 세운다.
+    const storeCards: StoreCardRequest[] = [];
     let phase: string | undefined;
     await runPiCommand(command, {
       background: true,
@@ -2327,7 +2354,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       onActivity: (state) => { phase = state.phase; if (ticketRef.id !== null) reportBackgroundBoard(ticketRef.id, state); },
       getApprovedTilesetFamilies: () => approvedTilesetFamilies,
       onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
-      onStoreCard: (request) => { storeCard = request; },
+      onStoreCard: (request) => { storeCards.push(request); },
       appendBubble: (role, line) => card.say(role, line),
       appendProcess: (text) => card.note(text),
       appendCard: (element) => card.attach(element),
@@ -2343,7 +2370,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     card.finish({ ok: !signal.aborted && phase !== "실패" && phase !== "중단",
       message: signal.aborted || phase === "중단" ? "중단" : phase === "실패" ? "실패" : phase === "검토 대기" ? "검토 필요" : "끝남" });
     if (tilesetQuestion && !disposed && owner === conversationId) showTilesetChangeCard(tilesetQuestion);
-    if (storeCard && !disposed && owner === conversationId) showStoreCard(storeCard);
+    if (storeCards.length && !disposed && owner === conversationId) showStoreCards(storeCards);
   };
   const enqueueMapRun = (run: MapRunInput, mapKey: string, exclusive: boolean): void => {
     const project = store.getCurrent();
@@ -2378,8 +2405,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const typed = input.value.trim();
     // 입력창에 담긴 핸드오프를 그대로 보낼 때만 전체 지시문으로 바꾼다. 말풍선은 사용자가 본 문장이다.
     const handoff = composerHandoff && composerHandoff.display === typed ? composerHandoff : null;
-    const text = handoff?.full ?? typed;
-    const shown = handoff ? typed : text;
+    // 되묻기에 답한 턴은 원래 요청과 묶어 보낸다 — 답 한 낱말(「맵 배경」)만으로는 무엇을 하라는지 모른다. 말풍선은 사용자가 친 답 그대로.
+    const clarified = pendingClarify && !handoff && typed && !typed.startsWith("/") ? clarifyFollowUpText(pendingClarify.text, pendingClarify.question, typed) : null;
+    pendingClarify = null;
+    const text = clarified ?? handoff?.full ?? typed;
+    const shown = handoff || clarified ? typed : text;
     if (!text && !stampPlaceOn) {
       // 조용한 return 은 "버튼이 고장났나" 로 읽혔다. 무엇이 부족한지 말하고 초점을 준다.
       toast("보낼 지시를 입력하세요", "info");
@@ -2469,6 +2499,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         appendBubble("system", `지시를 해석하지 못했습니다: ${reason}`);
         return;
       }
+      if (classified.clarify) {
+        // 선언이 도구가 갈릴 만큼 모호하다고 봤다 — 실행하지 않고 묻는다. 답은 다음 전송에서 원래 요청과 묶인다(clarifyFollowUpText).
+        pendingClarify = { text, question: classified.clarify };
+        appendBubble("assistant", clarifyForChat(classified.clarify));
+        renderQuickReplies(classified.clarify);
+        finishWorkCard({ ok: true, message: "되묻기" });
+        setStatus("대기");
+        return;
+      }
       await runPiTurn(classified.command, shown, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote, timing: classified.timing, ...(handoff ? { sentText: text } : {}) });
       // 턴이 카드를 끝내지 않고 빠져나간 갈래(선택지 제시·거절 등)에서 시계가 영영 돌지 않게 한다.
       if (!turnBusy) finishWorkCard({ ok: true });
@@ -2535,11 +2574,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 20자에 레이아웃 60회·스타일 74회). 줄 수가 늘 때는 scrollHeight 가 지금 높이를 넘는다 — 그때만 늘리고,
   // 줄이 줄어들 수 있는 삭제·붙여넣기·비우기에서만 전체를 다시 잰다.
   let lastInputLength = 0;
-  const syncInputHeight = (): void => {
+  const syncInputHeight = (force = false): void => {
     const length = input.value.length;
     const shrinking = length < lastInputLength;
     lastInputLength = length;
-    if (!shrinking && input.style.height && input.scrollHeight <= input.clientHeight) return;
+    if (!force && !shrinking && input.style.height && input.scrollHeight <= input.clientHeight) return;
     input.style.height = "auto";
     const minHeight = typeof getComputedStyle === "function"
       ? Number.parseFloat(getComputedStyle(input).minHeight) || 0
@@ -2646,9 +2685,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     syncGlassIdle();
   };
+  // 빈 입력창 높이는 안내문 줄 수를 따른다 — 번역문이 원문보다 길면(영어 Quick paint 안내 3줄) 마지막 줄이
+  // 잘렸다(UI 감사 09-ai-06). 번역 계층이 placeholder 를 바꾼 뒤에 재야 하므로 다음 프레임에 다시 윔다.
+  const setComposerPlaceholder = (text: string): void => {
+    if (sourceAttributeOf(input, "placeholder") === text) return;
+    input.setAttribute("placeholder", text);
+    if (!input.value && typeof requestAnimationFrame === "function") {
+      requestAnimationFrame(() => { if (!disposed && !input.value) syncInputHeight(true); });
+    }
+  };
   const refreshComposerPlaceholder = (): void => {
     if (stampPlaceOn) {
-      input.setAttribute("placeholder", "바로 깔기 — 무엇을 어떻게 깔지 한 문장으로(상자·NPC도). 비우면 알아서.");
+      setComposerPlaceholder("바로 깔기 — 무엇을 어떻게 깔지 한 문장으로(상자·NPC도). 비우면 알아서.");
       syncConversationState();
       return;
     }
@@ -2658,7 +2706,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 두 번 파싱하고, 쓰이지 않는 readAgentBrief() 가 lowerTiles 전체를 훑었다.
     const aiConfig = loadAiConfig();
     const placeholder = formatComposerPlaceholder(isAiConfigReady(aiConfig, getAiConnectionStatus(aiConfig)));
-    if (sourceAttributeOf(input, "placeholder") !== placeholder) input.setAttribute("placeholder", placeholder);
+    setComposerPlaceholder(placeholder);
     syncConversationState();
   };
   const clearSelectionTaskContext = (): void => {
@@ -3484,7 +3532,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    */
   const lockScrim = createAiLockScrim({
     onOpenSettings: () => openAiSettingsModal(),
-    onLockChange: (locked) => { panel?.classList.toggle("is-ai-locked", locked); },
+    onLockChange: (locked) => {
+      panel?.classList.toggle("is-ai-locked", locked);
+      // 막이 덮은 본문(스타터·대화 기록)은 키보드·낭독기로도 닿지 않게 한다. 막 자신과
+      // 컴포저(commandBar, body 밖)는 살려 둔다 — 쓰다가 로그인하면 이어 쓸 수 있어야 한다.
+      for (const child of body.children) {
+        if (child !== lockScrim.element && child instanceof HTMLElement) child.inert = locked;
+      }
+    },
   });
   body.append(lockScrim.element);
 

@@ -74,7 +74,12 @@ function openClaudeSession(options: LocalCliSessionOptions, toolsEnabled = true)
   const systemPromptPath = join(work.dir, "system.md");
   // 비밀값은 설정 파일에 자리표시로만 둔다 — 실제 값은 자식 환경 변수로만(명령줄은 같은 머신 누구나 ps 로 본다).
   writeFileSync(configPath, JSON.stringify({ mcpServers: { [CLAUDE_MCP_SERVER_NAME]: { type: "http", url: options.mcpUrl, headers: { Authorization: `Bearer \${${MCP_TOKEN_ENV}}` } } } }), { mode: 0o600 });
-  writeFileSync(systemPromptPath, options.systemPrompt, { mode: 0o600 });
+  // Claude Code 는 MCP 도구를 mcp__oprn__<이름> 으로 노출한다. 지시문은 맨 이름(show_map_region)으로 말하므로 모델이 맨 이름으로 먼저
+  // 불러 실패한 뒤 「Tool names have the mcp__oprn__ prefix; retrying.」 같은 줄을 답에 흘렸다(2026-10-22 배경 조수 시험). 처음부터 알려 준다.
+  const toolNaming = toolsEnabled
+    ? `\n\n## Tool names in this session\nEvery tool these instructions name (for example show_map_region) is available as mcp__${CLAUDE_MCP_SERVER_NAME}__<name> (for example mcp__${CLAUDE_MCP_SERVER_NAME}__show_map_region). Call that full name directly. Never mention tool names, prefixes or retries in your replies to the user.\n`
+    : "";
+  writeFileSync(systemPromptPath, options.systemPrompt + toolNaming, { mode: 0o600 });
   let proc: SpawnedLines | undefined;
   let waiting: { resolve: () => void } | undefined;
   let lastMessageId = "";
@@ -86,7 +91,8 @@ function openClaudeSession(options: LocalCliSessionOptions, toolsEnabled = true)
     binary: options.binary ?? "claude",
     args: buildClaudeArgs(configPath, systemPromptPath, { tools: toolsEnabled, ...(options.model ? { model: options.model } : {}), ...(options.effort ? { effort: options.effort } : {}) }),
     cwd: work.dir,
-    env: { ...process.env, [MCP_TOKEN_ENV]: options.mcpToken },
+    // 그림 생성 같은 긴 도구(한 장 수십 초)가 Claude Code 기본 MCP 도구 시간 제한에 끊기지 않게 — codex 의 tool_timeout_sec=900 과 같은 값.
+    env: { MCP_TOOL_TIMEOUT: "900000", ...process.env, [MCP_TOKEN_ENV]: options.mcpToken },
     stdin: "keep-open",
     onJson: (line) => {
       options.onRaw?.(line);

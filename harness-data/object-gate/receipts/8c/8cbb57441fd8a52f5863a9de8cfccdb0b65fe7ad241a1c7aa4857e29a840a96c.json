@@ -1,0 +1,464 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8cbb57441fd8a52f5863a9de8cfccdb0b65fe7ad241a1c7aa4857e29a840a96c",
+ "width": 144,
+ "height": 64,
+ "kind": "other",
+ "name": "노선버스(흰·초록 띠) (bus) facing left",
+ "label": "jp_vehicles/jp-bus-city/left",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 14,
+  "darkV5": 41,
+  "nearBlackEdge": 0.11,
+  "opaqueTiles": 30
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bus roof with hatches/vents",
+      "rows": "2-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "25-27"
+     },
+     {
+      "part": "side body with windows and green stripe",
+      "rows": "28-54",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "54-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 22,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bus is a left-facing body with a large light roof band at rows 2-23. It carries roof hatches with frames and grilles, so it reads as a horizontal surface seen from above. Its width is about 22 rows, which fits a foreshortened roof on a 141px-long bus. The roof ends in a front-edge line at row 24 (L=162, then 130), followed by a dark eave shadow at rows 26-27 (L=81, then dark green). Below that the vertical side face runs from rows 28 to 54, with dark windows, a green stripe and a grey skirt. The wheels extend to row 62. The roof band may be a flat white side panel instead, but the hatches, the edge line and the eave shadow support a roof."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The bus has a large white roof and body with only 2-3 light steps (white, pale grey, a light dither line). The long white roof panel and dark window band are largely flat fills; the measured near-flat coverage is 18%, above the hedge and well (0%) and the stall (13%). The outline and dark edge pixels are 88% near-neutral, so the dark grey/black sticker-style line around the body and wheels shows no material tint. That is unlike the tinted dark-material outlines of the hedge (0%) and stall (1%). Visible tones per tile (10) are on par with the hedge (9) but well below the stall (17) and well (20). The roof and windows have few texture dots, with only small vent details and some speckle on the lower body. The green stripe is a thin flat band. Overall it is cleanly drawn but shallower and more sticker-like than the Beodeul references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16959
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof with skylight hatches",
+      "rows": "2-23",
+      "evidence": "c",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "26-27"
+     },
+     {
+      "part": "side body with windows and green stripe",
+      "rows": "28-54",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "46-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 22,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bus faces left and shows its south side as the normal front face (rows 28-54: windows, green stripe, wheels). Above it, rows 2-23 form a large white roof plane with raised hatch or vent frames, which read as a horizontal surface seen from above. The roof ends in a front-edge line at rows 24-25 and a dark green eave shadow at rows 26-27, and the window band follows below. The roof plane is 22 rows against a 27-row side face. The wheels are small parts below the body and do not need a top. The roof could alternatively be read as a tall flat white side panel, but the hatch frames and the edge line plus eave favour a roof top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The bus body is a large white roof and side panel with only light dithering and about 3 lightness steps (white, light grey, grey). The dark edge pixels are 88% near-neutral, so the outline is a neutral near-black line around the wheels, windows and body. The Beodeul references that carry colour (hedge, cheese stall, well) have tinted dark edges (0-33% neutral) and 5-6 steps per material. Visible tones per tile are 10, which is in line with the hedge (9) but well below the stall (17) and the well (20). Near-flat coverage is 18%, above the 0% of the hedge and well and above the stall's 13%. The large white roof and body areas read as flat fills, with only a few dither dots and window rectangles. The window frames and the green stripe are cleanly drawn, but the shading is shallow and the outline has the sticker look, so it falls short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15122
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof with vent hatches",
+      "rows": "1-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "25-27"
+     },
+     {
+      "part": "side body with windows and green stripe",
+      "rows": "28-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "54-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bus faces left. Rows 1-23 form a large white band, 22 rows tall, that holds recessed vent or hatch rectangles with their own shading. It ends in a light edge line at row 24, followed by a darker shadow at rows 25-26 and a dark green line at row 27. This reads as a roof plane above the eave. Below it, rows 28-53 are a front (south) face of 26 rows with windows, a green stripe and a skirt, and the wheels sit under that. This is ambiguous: the roof band could instead be a flat white side panel, which would make it a pure side elevation. I read it as a roof because of the hatches and the eave line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The bus is a large vehicle with a white roof and body, a green stripe, windows and wheels. Its roof is mostly flat white with only light dither speckle. The body is a flat grey-white and dark-blue panel with 2-3 steps, where the references show 5-6 steps per material. The dark edge pixels are 88% near-neutral, so the outline is a near-black line, not the tinted dark material tone Beodeul uses (hedge 0%, cheese stall 1%). Near-flat coverage is 18%, above the hedge and well at 0% and the cheese stall at 13%. Visible tones per tile (10) are below the cheese stall (17) and the roofed well (20), though near the hedge (9). Texture is limited to window frames, the stripe and a little roof dither, with no per-surface grain. This looks like a clean, sticker-like vector vehicle and not an equal-craft Beodeul piece.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 21182
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof band with three rectangular roof hatches/vents",
+      "rows": "1-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "25-27"
+     },
+     {
+      "part": "body side (windows, doors, green stripe)",
+      "rows": "28-54",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "47-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bus faces left and shows its long south side. Rows 1-23 form a large near-white roof band with three raised hatch rectangles at rows 5-18. It ends in a front-edge line at row 24 (L=162, then 130), followed by darker eave shadow at rows 25-27 (L=81, then the dark green line at row 27). Below it, rows 28-54 hold the vertical body face: windows, doors, a green stripe and the bumper. The wheels at rows 47-62 are small parts and need no top surface. The roof band is much taller than a 1-2 row rim, so the main body reads as three-quarter rather than a pure side elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The bus is far larger than the references, and its 10 visible tones per tile is comparable to the hedge (9) but well below the stall (17) and well (20). The white roof and body are large areas with only 2-3 steps: white, a pale grey, and a faint dither at the roof edge. The roof panel and window vents are flat. The measured near-flat coverage is 18%, above the hedge and well (0%) and the stall (13%). 88% of dark edge pixels are near-neutral, so the outline is a neutral dark grey-black line around the body, wheels and windows. That is the sticker look, unlike the tinted outlines on the stall, hedge and well. Wheels and windows have some detail, and the green stripe has a highlight and a shadow. Overall the shading is shallow and the outlines are neutral, so it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17637
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.157Z",
+ "cells": {
+  "16": [
+   "12b53637d61df831",
+   "1336b1ad8e289603",
+   "18c13262682c2b46",
+   "1ca890036af667b5",
+   "1dba8b23452eca09",
+   "1ebb90d4decd5b39",
+   "216fe8704754c510",
+   "35458a951cf0f5f1",
+   "3b13dfc8833b22ad",
+   "40908e2fa0e8b1d3",
+   "4755c614b7468d92",
+   "5de495376854ea52",
+   "63a3341d371514d0",
+   "65655a6a6665ac44",
+   "706586978c376589",
+   "712dfdf7a8adc404",
+   "7a4d41c66585781c",
+   "7a73a83ce047e9c3",
+   "94d7a220dc664b19",
+   "96403fdc7baa0174",
+   "971ad1d855b6bced",
+   "a1371b642dbfabfa",
+   "a77c642a28b90b32",
+   "a8baf525bde02717",
+   "b11f12dbd3f1d58a",
+   "b81b538ed4740708",
+   "d40580fd48b7c183",
+   "d8e20ea71cec4f3a",
+   "dab264fe7c96048b",
+   "db6697a26ece5eb6",
+   "dc15ffc5a2a973a0",
+   "e46ad24fd79f3054",
+   "e9e1634aad1acc3b",
+   "fb14dcf90dd7a7eb",
+   "fbbddc021bac29c3",
+   "fdaf2050a0ece6d0"
+  ],
+  "24": [
+   "02739168d4db25fd",
+   "0323ddc93d5a81e9",
+   "05fb65bafc2b95aa",
+   "0beb94d3be9baf04",
+   "0d1caa8cee4ab766",
+   "129a72a170de5c08",
+   "154a59f08604e4a4",
+   "15fb624258252c5b",
+   "199a82348097be70",
+   "2916ca86801b17b4",
+   "4fe853319d684fa5",
+   "5402353cfbe4c736",
+   "69bc346b62512b82",
+   "7533c53a2a8413a2",
+   "86a4fd3f86476aa6",
+   "8b4245863046c946",
+   "8f91dd74363397df",
+   "938c8792c74510bd",
+   "988269749cfbcc95",
+   "9b4425c6328ff38b",
+   "ac2f03a415dbc19c",
+   "ae857fa80ef148f6",
+   "b78b389c7c8f9977",
+   "bdf6c8bd6aeeb8d9",
+   "c13b369b45597c93",
+   "c72b5a0d1939cc88",
+   "cb1ab50bbbb72b55",
+   "d076ca9b353967a2",
+   "d8e95c48f13836c6",
+   "d9497efd7af0ba11",
+   "dab293cbe9d5c515",
+   "dffbef4b5780c963",
+   "ecb20120a289e857",
+   "ee72f28c0ecd4ea3",
+   "ef878762f4763798",
+   "ffb7ed4438085c6b"
+  ],
+  "32": [
+   "02878b46f802c13f",
+   "06e50a305357d87d",
+   "0b46375388992ed4",
+   "0f7f46ad13040a1b",
+   "1379aa2c789cbaf7",
+   "1885e5c1d6a8e3ac",
+   "25fb51d555624e24",
+   "2a1b0aae45615a43",
+   "2d963c7ea3149d18",
+   "30bc642b367250c1",
+   "34bd1772c36f9a9f",
+   "36fe1837654f949d",
+   "375a9854b80313db",
+   "3db37cd85683e615",
+   "4eb03b0302bfc025",
+   "54234ffde3e9511a",
+   "5d2fa7cbce506524",
+   "627c7ba11afd0e93",
+   "62af32bd251fcf1c",
+   "69d280bf97670905",
+   "6c44b1f051b573a9",
+   "6f7bd36d06f6d3a0",
+   "70fb6de786eee27e",
+   "8057329aebe49782",
+   "86c7b0c18ef3118a",
+   "a2ca696ea569c5f4",
+   "abdf479eae3b7260",
+   "e0cc3380b0ed44d2",
+   "f43ffc7936693cee",
+   "f5d72ab09fed1989"
+  ],
+  "48": [
+   "1a14ce747c24c4b9",
+   "1d2987e3c03b8d3f",
+   "6f04123711206e5e",
+   "9132ddcbceba5054",
+   "98e55513f9f28625",
+   "99316731f1bf6f1a",
+   "9b3295edd986acdb",
+   "ae640db2e54140b8",
+   "bc5581b151f0327b",
+   "bea11a994e4c61b2",
+   "d230058447da3445",
+   "e756f71c42e80a4d"
+  ]
+ }
+}

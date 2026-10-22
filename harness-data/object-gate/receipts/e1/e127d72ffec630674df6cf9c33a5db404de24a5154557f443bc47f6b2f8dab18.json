@@ -1,0 +1,346 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e127d72ffec630674df6cf9c33a5db404de24a5154557f443bc47f6b2f8dab18",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "arcade prize counter",
+ "label": "modern_city_interior/arcade-prize-counter",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 20,
+  "darkV5": 40,
+  "nearBlackEdge": 0.32,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "counter top (pink slab)",
+      "rows": "7-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "toys on counter (teddy bear, balls, bunny)",
+      "rows": "4-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front glass display case with prizes",
+      "rows": "19-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The columns at x=12, 24 and 35 all show the counter top as a mauve band over rows 7-15. Row 16 is a lighter front-edge line (L=131), followed by darker eave shadow on rows 17-18 (L=90, then 70). Below that, the front face runs from row 19 to row 31. It holds a display case with prizes, a purple kick panel and a dark base. The toys standing on the counter top are decor. The top is about 10 rows deep against a front face of about 13 rows, so this is a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "Measured facts favour the candidate. It shows 17 visible tones per tile, the same as prop-stall-cheese (17) and close to prop-well-roofed (20). Near-flat coverage is 2%, below the cheese stall's 13%. Dark edge pixels are 0% neutral, so the outline is tinted: dark purple beside the counter body and dark tones beside the toys, not a sticker-like black line. By eye, the counter has a top ledge, a front panel, and a lower shelf holding small items. The plush toys and coloured balls on top add clustered detail and varied tones. The main purple ramp has about 4 steps against 5-6 in the references, which is slightly shallower. That is acceptable for a compact counter of this kind, and no large flat fills are visible. A careful artist would accept it next to the cheese stall and well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17205
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "counter top (mauve surface)",
+      "rows": "7-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "plush bear, balls and bunny placed on the counter top",
+      "rows": "4-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front display cabinet with glass compartments and plinth",
+      "rows": "19-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a counter. Rows 7-16 form a wide mauve top surface. It ends in a lighter front-edge line at row 16, followed by darker eave-shadow rows 17-18. Below it, rows 19-31 are the vertical front face: a display window with plush toys inside, divided into two compartments, over a dark base. The plush toys and balls on the counter are decor. The top surface is 10 rows, well beyond a rim, and the front face is 13 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts: the candidate has 17 visible tones per 16x16 tile, equal to the cheese stall (17) and close to the well (20). Near-flat coverage is 2% (stall 13%, well 0%), and the dark edge pixels are 0% neutral, so the outline is tinted (dark purple/brown-toned) rather than a black sticker line. By eye, the counter is a small, compact piece: a purple body with a lighter top, a couple of shelf bands, and small toys and balls (bears, bunny, colored balls) on top that add varied dots and clusters. The ramps on the body are about 4 steps, a bit shallower than the stall's roof stripes, wood and cheese ramps (5-6 steps). The body panel and base are rather smooth bands with little grain, with no real wood or plaster speckle, so texture is moderate rather than rich. Overall it is plausible next to the references but a little thinner in material shading than the stall and well. Because the brief says to fail when in doubt, and the structure is simpler than the stall and well references, this is borderline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 11964
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "counter top (pink surface)",
+      "rows": "7-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "plush toys and balls on counter",
+      "rows": "4-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front glass case with prizes",
+      "rows": "19-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The counter body has a wide pink top band at rows 7-16. A lighter front-edge line at row 16 ends it, and darker eave-shadow rows 17-18 follow. Below that is a front face of about 13 rows (rows 19-31), a display case with prizes and a dark base. The toys and balls standing on the top (rows 4-15) are decor. The top band is 10 rows of surface and the front face is over 3 rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts: the candidate has 17 visible tones per tile, matching prop-stall-cheese (17) and just below prop-well-roofed (20). Near-flat coverage is 2%, well under the cheese stall's 13%. Dark edge pixels are 0% neutral, so the outline is tinted, a dark purple-brown that follows the counter body, not a black sticker line. By eye, the counter is a small, compact piece. The purple body and its lighter top show about 3-4 steps, with a few plush toys and colored balls as small clusters on top. It has no roof, no complex grain and no per-element shading, so it reads simpler and flatter than the stall and well. The front panel is mostly a smooth purple with small prize dots. The shelf details are clean but quite small and sparse. An artist might accept it beside the bench and lamp, but against the richer stall and well it looks a little thinner in material ramps and texture. The measured numbers do not contradict this, so I judge it slightly lower and borderline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 10836
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "counter top (pink surface)",
+      "rows": "7-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "toys on counter (teddy bear, balls, bunny)",
+      "rows": "4-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with display compartments and prizes",
+      "rows": "19-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The counter top is a band of pink rows 7-16. It ends in a lighter front-edge line at row 16, followed by darker eave-shadow rows 17-18 (L=90, then 70) and a dark outline at row 19. Below it, rows 19-31 form a front face about 12-13 rows tall, with a teal display window holding prizes and a purple base. The plush toys and balls sitting on the top are decor. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a standing furniture prop of the same kind as the stall and well references, drawn at the same scale. It measures 17 visible tones per 16x16 tile, the same as prop-stall-cheese (17) and just under prop-well-roofed (20). Near-flat coverage is 2%, below the cheese stall's 13%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline leans toward the material's own dark tone (dark purple beside the counter body) instead of a black sticker line. The counter body has a lighter top, a mid face and a darker base, about 4 steps against roughly 5 on the references. The plush toys on top and the coloured prizes on the shelf add small clusters of varied tones. This is slightly shallower than the best references in the ramps but not noticeably thinner or flatter, and it would sit acceptably next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12352
+  }
+ ],
+ "decidedAt": "2026-10-20T22:55:59.231Z",
+ "cells": {
+  "16": [
+   "2c2eb171b9142810",
+   "9e8ff1c442853ddc",
+   "d5ec56cba0f4052a",
+   "d900ae460634d904",
+   "e4c9a3ee6b6d1be1",
+   "f7a851e619f43ef7"
+  ],
+  "24": [
+   "2e52b69973c06079",
+   "794a8aa033f939a1",
+   "9cdecb1c6e4cb24e",
+   "a803bab1f261e47b",
+   "bc1d166956dfdd26",
+   "e1fdc128ebbab331",
+   "ed640468e8d905d6",
+   "f260f870237ee731"
+  ],
+  "32": [
+   "42742f942a47b4ed",
+   "49d7fa21c1a4d334",
+   "b9f164e6ad10f7cc",
+   "ddb40b2bb2157e93",
+   "dfaa9bac1999bd02",
+   "ec887bb2f4338d04"
+  ],
+  "48": [
+   "4e95678940995011",
+   "8fa378a5786fe653"
+  ]
+ }
+}

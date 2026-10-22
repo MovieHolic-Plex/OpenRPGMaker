@@ -1,3 +1,4 @@
+// @deprecated multi-user team collaboration is not supported yet (2026-10-21). 진입점은 TEAM_COLLAB_ENABLED(electron/shared/teamCollab.ts) 를 켜야 보인다.
 // 앱끼리 팀 참여 증거: 앱 두 개를 띄워 한쪽이 호스트하고 다른 쪽이 시작 화면 「팀에 참여」로 들어온다.
 //
 // 확인하는 것

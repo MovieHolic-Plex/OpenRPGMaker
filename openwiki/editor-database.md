@@ -29,6 +29,28 @@ world z9, 배경 물결을 z4로 배치한다. 앞 효과는 기존 z60 층이�
 네이티브 입력·이름·종류·필터·보기 전환·맨 끝 스크롤·키보드 선택 근거는
 `verify-shots/editor-ux-improvements-20261004/README.md`와 `scripts/qa/editor-ux-forms-audit.mjs`를 본다.
 
+## 시스템(게임 설정) 탭 전수 점검 — 양쪽 전신 대화창이 해상도를 잠그던 버그 (2026-10-21)
+
+신고 「해상도 변경이 안 되는 것 같다」. 원인: 대화창이 「양쪽 전신 · 반투명 베일」(`dual-fullbody-veil`, 연애 프리셋 `partner-raise` 기본)이면
+`resolvePlayResolution`(`src/project/playResolution.ts`)·`resolveCameraZoom`(`src/project/cameraZoom.ts`)이 **저작값이 480×320 이하이면 무조건** 1024×768·3.2배를 돌려줬다(#2907).
+그래서 「화면」에서 480×270(새 기본)·320×240·「보기 범위 → 기본」을 골라도 store 에는 들어가지만 칸은 1024로 되돌아가고, 시연 실행·출하 플레이어도 1024×768 이었다.
+
+- 고친 규칙: 고해상도 승격은 **`playResolution` 이 아예 없는** 옛 프로젝트에만 한다. 작가가 고른 값이 이긴다.
+- 양쪽 전신 프로젝트에서는 생략이 1024×768 을 뜻하므로, 작가가 고른 기본값(320×240·배율 1)도 생략하지 않고 값으로 남긴다:
+  `normalizePlayResolution(v, { keepDefault })`·`normalizeCameraZoom(v, { keepDefault })`, 판정 `keepsExplicitDefaultResolution(system)`.
+  `normalizeSystemRecords`(저장·재로드)·`storeCameraZoom`·자료집 `storePlayResolution` 이 이 규칙을 쓴다.
+- 새 프로젝트가 양쪽 전신을 깔 때(인터뷰 시작 `projectInterviewStartup.ts`, 조수 `reset_project`)는 `ensureHighResFullbodyPlayResolution` 으로 1024×768 을 값으로 저장한다 — 예전 동작(1024×768)은 그대로이고, 자료집에서 바꿀 수 있게 됐다.
+- 「화면」 구획: 해상도·배율을 바꾸면 「보기 범위」·「화면 맞춤」 선택도 다시 맞춘다(예전엔 빠른 선택 뒤 「가깝게」가 남았다). 양쪽 전신이면 안내 `db-system-resolution-veil-note`.
+- 「시작 설정」 장르 칩셋 잠금: 설명 전체가 라벨(132px 칸)에 들어가 네 줄로 꺾이던 것을 짧은 라벨 + 화면용 안내 문장으로. 몬스터 자산 막힘 문장도 도구용(`monsterAssetStatus().reason`) 대신 화면용.
+- 시스템 폼 라벨이 옛 `.db-detail-form label { text-transform: uppercase }` 에 걸려 「(PX)」「(%P)」로 보이던 것을 `studio-refresh.css` 에서 끔.
+- 「초기 파티」: 같은 멤버를 두 칸에 고를 수 있었고 저장·재로드에서 말없이 하나로 줄었다 → 다른 칸에 있는 멤버는 선택지에서 잠근다.
+- 「시작 설정 › 감정 상성」: 형식이 틀린 줄이 말없이 사라졌다 → 버린 줄 수와 예시를 `db-field-system-emotion-cycle-dropped` 로 알린다.
+- 「팀 교대 전투 사용」(`databaseBattleTeamsSection.ts`)이 혼자 맨 체크박스였다 → 다른 칸과 같은 알약 스위치.
+- 증거·도구: `scripts/qa/db-system-audit.mjs`(구획별 컨트롤 목록·넘침 1280×800/1920×1080, 컨트롤마다 바꿔 store·serialize→deserialize 재로드·런타임이 키를 읽는지),
+  `scripts/qa/db-system-veil-resolution.mjs`(재현·시연 실행 캔버스), 출하 플레이어 `npm run qa:runtime -- --scenario db-system-res`(픽스처 `res480-fixture.mts` 의 `RES_DIALOGUE`).
+  전후(로컬 `verify-shots/db-system-audit/`, gitignore): 출하 플레이어 캔버스 고치기 전 1024×768·3.2배 → 고친 뒤 480×270·1배, 시연 실행도 같음. 점검 표·전후 그림은 `~/claude-viz/db-system-audit-1.html`. 이 머신은 크로미움이 `ERR_NETWORK_CHANGED` 로 vite 모듈을 끊으므로 `unshare -rn` 격리 netns 에서 dev 서버와 같이 돌린다.
+- 그대로 둔 것(이 탭 밖 공용 부품): 리소스 칸 이름이 원시 id(`windowskin-warm`)로 보임, 숨은 시험 호환 id 칸(`.db-authoring-id`, aria-hidden)에 임의 글자를 넣으면 재로드가 참조 검사로 실패 — 사람 경로가 아니라 고치지 않았다.
+
 ## 시스템(게임 설정) 탭 구획 목록·폼 격자·스위치 통일 (2026-10-17, 메뉴 감사 PR-5)
 
 `system` 탭(`src/editor/panels/databaseSystemView.ts`, `src/styles/database/studio-refresh.css`)의 상단 13칩 가로 줄을 왼쪽 세로 구획 목록(`184px | minmax(0, 1fr)`)으로 옮기고 소제목 3개(`규칙` / `보이는 것` / `시작·끝`)로 묶었다. 구획 DOM·testid(`db-system-nav-<slug>`, `data-system-section`)와 `requestSystemSection`·`DATABASE_SEARCH_DESTINATIONS` 경로는 그대로다.
@@ -1198,6 +1220,7 @@ The Database modal was modernized in six waves while keeping every hard contract
 - **Tileset graphic picker (2026-08-20):** `tileset-rm2k3-graphic-browse` is enabled (`설정...`). It opens `tileset-graphic-picker` listing bundled chipsets plus uploaded `chipset`/`tileset` assets (not `picture`). Same-id pick is a no-op unless `tilesPerRow`/`tileSize`/`count`/`passability` length is stale, in which case it remaps to `CHIPSET_SLICING` + `TILE_FRAME_COUNT`. Bundled EasyRPG and uploaded chipset/tileset both remap those arrays. Display shows the Korean chipset name; raw id stays in `title`. Tests: `test/databaseTilesetGraphicPicker.test.ts`.
 - **Tileset tab slim (2026-08-31):** default surface is the chipset sheet + passage/layer. Per-tile `description` lives in a collapsed `<details>` on the knowledge tab (`tileset-tile-meaning-details`); group prose (`description` / `placementRules`) is likewise folded (`tileset-knowledge-prose`). Harness seed no longer copies group essays onto every `tileMeta.description` (`applyTileContract` in `combinedTown.ts` / `themePacks.ts`). The unused `최대 개수 (고정)` button, inline AI launcher, duplicate full-sheet button, and compose-tab dummy side pane are gone. `AI 타일셋` stays on the detail hero. Tests: `test/tilesetSectionTabs.test.ts`, `test/tilesetHarness.test.ts`, `test/e2e/oprn-tileset-readability.spec.ts`.
 - **통행 붓 + 넓은 시트 (2026-09-01):** 타일 규칙(통행) 면은 칸 클릭 토글이 아니라 **통과/막힘/위 ★ 붓**이다. 시트에서 클릭·드래그가 그 규칙을 칠하고, 통과 칸은 글자를 비워 그림을 가리지 않는다. 레이어·나침반(4방향)은 오른쪽 얇은 인스펙터. 방향별 통행은 기본으로 열려 있고, 화살표를 눌러도 접히지 않는다. 통행 면의 라벨 입력은 빼 둔다(우클릭 의미 편집·지식 탭). 이름/그래픽/투명색 카드는 시트 **아래**. 목록 열은 176–200px. **전체창**도 같은 붓(통과/막힘/위 ★) + 순환이며 클릭·드래그로 칠한다. Tests: `test/tilesetSectionTabs.test.ts`.
+- **카운터 스위치 (2026-10-22):** 통행 인스펙터(방향별 통행 아래)에 「카운터 (너머로 말 걸기)」 스위치(`tileset-counter-toggle`). 켜진 칸을 마주 보고 조사하면 너머 칸의 사람에게 말이 걸린다(상점 카운터 뒤 주인·식탁 건너편). 저자가 정한 적 없으면 이름표 기본값(카운터·탁자·책상 + 막힘)이 보이고, 처음 고치면 그 기본값을 `counterTiles` 목록으로 굳힌다. 계약: `runtime-sessions.md` 「카운터 너머 말 걸기」, 코드 `src/project/counterTiles.ts`.
 - **Animation frame pick + battle-command door (2026-08-20):** `selectFrame` writes `editorState` **and** calls the form `rerender` so `.active` and the cell table follow the row/prev/next (do not rely on map `refreshPanels`). Battle Commands keep `db-field-battle-command-*` (no `database.battleCommands` path copy); kind labels match class `COMMAND_KIND_LABELS`; skill is a named `<select>` (`db-picker-battle-command-skill-*`) plus a visually hidden fillable `db-field-battle-command-skill-*`; `db-open-classes-tab` jumps via G006. Animation graphic uses `resourcePickerControl` kind `battle` (visible catalog name + 그래픽 선택/변경, fillable hidden id). Battle Screen uses a System2 resource picker. Tests: `test/databaseAnimationFrameSelect.test.ts`, `test/databaseBattleCommandsTab.test.ts`.
 - **Battle Studio surfaces (2026-08-24, revised 2026-09-04):** `battleAnimations`, `battleScreen`, `battleCommands`, and `terrain` keep the Database modal's cream shell, sidebar, record list, and every existing field/testid, but share a canvas-first studio language through `databaseBattleStudio.ts` and `src/styles/database/battle-studio.css`. `battleStudioHeading` renders the description callers pass as `.db-battle-studio-sub` (scoped under the modal selectors). The shared underline navigation must call `switchDatabaseActiveTab` (G006) and never reopen the modal. Animation editing now puts its named graphic and full-width dark stage first, with a separate light transport and titled authoring sections below (see Phase 2 below); Battle Screen previews the resolved background/enemy assets beside system controls and a troop strip, and links out to system › 시작 설정 (`db-battle-screen-open-system-startup`, `requestSystemSection("startup")` + focus on `db-field-system-battle-ui-style`) for UI style / rule model which live only there; Battle Commands pairs a live menu canvas with class-link guidance and editable command cards; Terrain pairs presets, a live backdrop, and the existing record controls. Flow wording is `턴 전투` / `게이지 전투` everywhere (`엄격 턴제` retired; `라운드` retired). This is derived/editor UI only: zero schema or persistence changes. The root surface explicitly owns a one-column grid so legacy `.db-detail-form` desktop columns cannot scatter its regions. At 1024px the workspaces stack inside the existing detail scroll area without document-level horizontal overflow; animation remains preview-first and full-width at 1440px, while the other studios retain their existing columns. Contract: `test/databaseBattleStudio.test.ts`; browser evidence: `output/evidence/database-battle-studio/`.
 
@@ -2053,7 +2076,8 @@ Studio v2의 최종 소유 규칙을 먼저 확인하고 앞선 시트에 같은
 일반 `.database-modal-window`는 다른 작업 창도 사용하므로 DB 전용으로 간주해 삭제하지 않는다.
 테마의 살아 있는 important 규칙, 동적 import 시트, 도킹·최대화 예외와 호환 폴백은 별도 계약이다.
 
-**셸.** 헤더는 `데이터베이스 | 그룹 › 탭`(`database-modal-crumb`). 활성 탭은 `database.ts` 의
+**셸.** 헤더는 `데이터베이스 | 그룹 › 탭`(`database-modal-crumb`). 조각은 `ol.database-modal-crumb-list > li` 로
+나뉘고 `›` 는 aria-hidden 이다(화면 낭독기가 조각을 목록 항목으로 따로 읽는다, UI 감사 2026-10-21). 활성 탭은 `database.ts` 의
 `subscribeDatabaseActiveTab` 으로 따라간다 — 레일 클릭·G006 점프·Ctrl+T 가 전부 `setDatabaseActiveTab`
 한 곳을 지나므로 DOM 이벤트가 필요 없고 fake DOM 에서도 돈다. 창 컨트롤은 `⇥ □ x` 글리프가 아니라
 SVG(`database-modal-icon`, `tileToolbarIcons` 규격). 푸터 상태는 전폭 초록 띠가 아니라 점 하나 붙은

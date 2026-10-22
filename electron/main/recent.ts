@@ -52,6 +52,7 @@ export function teamEntryUrl(target: URL): string {
   return url.href;
 }
 
+/** @deprecated multi-user team collaboration is not supported yet (2026-10-21). */
 export function listRecentTeams(): readonly RecentTeamEntry[] {
   const path = recentTeamsPath();
   if (!existsSync(path)) return [];
@@ -63,6 +64,7 @@ export function listRecentTeams(): readonly RecentTeamEntry[] {
   } catch { return []; }
 }
 
+/** @deprecated multi-user team collaboration is not supported yet (2026-10-21). */
 export function rememberRecentTeam(target: URL): void {
   const url = teamEntryUrl(target);
   const entries = [{ url, lastJoinedAt: new Date().toISOString() }, ...listRecentTeams().filter((entry) => entry.url !== url)];

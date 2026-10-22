@@ -1,0 +1,87 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "modern-city-interior-m142-b2",
+ "title": "modern_city 실내 기물 m142-b2 (13) — object-gen 다시 그림, 사용자 위임·Opus 적대 VQA 통과 2026-10-21",
+ "note": "delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/m142-b2.opus-vqa-r*.json",
+ "createdAt": "2026-10-20T23:22:37.496Z",
+ "items": [
+  {
+   "sha": "5c5fc6874e868d26f4ec249ca28019cdd82fb6cf63ec9fde7b24dc88b9d5ae9c",
+   "kind": "container",
+   "label": "modern_city_interior/dept-handbag-vitrine",
+   "source": "/home/main/.cache/ogm142/ship/m142-b2/dept-handbag-vitrine.png"
+  },
+  {
+   "sha": "ce75dcb0660f775a064d18e8b1bf6cb4c6ce44fc9077885082efdc7e72defe19",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/dept-perfume-wall",
+   "source": "/home/main/.cache/ogm142/ship/m142-b2/dept-perfume-wall.png"
+  },
+  {
+   "sha": "6d4c2ad81e532cf6901be81e928a9fcb8f6055fe664aba420a7f6f096d5d0164",
+   "kind": "frame",
+   "label": "modern_city_interior/dept-rack-pastel",
+   "source": "/home/main/.cache/ogm142/ship/m142-b2/dept-rack-pastel.png"
+  },
+  {
+   "sha": "fe7ede7de4da2d083c7c3a64c9b2bf3222a0557e3829e6b52600ed992f60697a",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/dept-shoe-wall",
+   "source": "/home/main/.cache/ogm142/ship/m142-b2/dept-shoe-wall.png"
+  },
+  {
+   "sha": "dda1b6894a8b7900b8ac2c5ad439d27f1a9b7aed0b89a53c8f76735b8c71bf06",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/dept-sneaker-wall",
+   "source": "/home/main/.cache/ogm142/ship/m142-b2/dept-sneaker-wall.png"
+  },
+  {
+   "sha": "1877e5382545c655f5f793b98514b07c29cbd752d383bb9051486cd1a16d8362",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/food-ticket-machine",
+   "source": "/home/main/.cache/ogm142/ship/m142-b2/food-ticket-machine.png"
+  },
+  {
+   "sha": "c38c52719987544492a79bd7b63ce684dec0cfb015ac78861a5a8b8f57c4d055",
+   "kind": "container",
+   "label": "modern_city_interior/home-ofuro",
+   "source": "/home/main/.cache/ogm142/ship/m142-b2/home-ofuro.png"
+  },
+  {
+   "sha": "ef40742803a84f7c5f8b0ce45f6e8ed4ee89eae845bbfbc0061030274eb0df3c",
+   "kind": "container",
+   "label": "modern_city_interior/home-school-bag",
+   "source": "/home/main/.cache/ogm142/ship/m142-b2/home-school-bag.png"
+  },
+  {
+   "sha": "93009d3e0f9a60c411d2196c266d4680f0706d05942076136192675dd051542c",
+   "kind": "container",
+   "label": "modern_city_interior/home-umbrella-stand",
+   "source": "/home/main/.cache/ogm142/ship/m142-b2/home-umbrella-stand.png"
+  },
+  {
+   "sha": "a5003fea425887c2159e4fb1806fcbb7c78a0d2ead7644750238042c55595c67",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/home-washing-machine",
+   "source": "/home/main/.cache/ogm142/ship/m142-b2/home-washing-machine.png"
+  },
+  {
+   "sha": "482afb63f693fc91cc03e6d7d6f756cbf5652fd38fd8db7cdaf163f2c65073c5",
+   "kind": "other",
+   "label": "modern_city_interior/hosp-crash-cart",
+   "source": "/home/main/.cache/ogm142/ship/m142-b2/hosp-crash-cart.png"
+  },
+  {
+   "sha": "0cdc30c2571f69d25586090cc038248663597770026226f4a54d20db75e06fad",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/hosp-ticket-dispenser",
+   "source": "/home/main/.cache/ogm142/ship/m142-b2/hosp-ticket-dispenser.png"
+  },
+  {
+   "sha": "8661f2dad1d7adb674d01a575f6c01f0274cf2db1f213442e55d0c0071562682",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/hosp-vitals-bank",
+   "source": "/home/main/.cache/ogm142/ship/m142-b2/hosp-vitals-bank.png"
+  }
+ ]
+}

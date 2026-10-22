@@ -12,6 +12,7 @@ import { clearTileStack } from "@/project/mapOverlayTiles";
 import type { GameMap, Project } from "@/project/types";
 import { claimStartIfBlank } from "./composerStart";
 import { requireMap } from "./mapHelpers";
+import { hasJpForestR4, paintJpForestArea } from "@/editor/jpCity/forestPainter";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 // toolRegistry 가 이 파일을 (jpCityTools 를 거쳐) 불러오므로 레지스트리를 직접 import 하면 순환이다 — 레지스트리가 만들어진 뒤 조회 함수를 꽂는다.
@@ -65,6 +66,8 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
       shops: { type: "array", items: { type: "string", enum: ["konbini", "izakaya", "ramen", "cafe", "shop", "office", "apartment", "house", "machiya", "garage", "sento", "bento"] }, description: "거리에 꼭 넣을 가게(앞에서부터 건물에 배정)" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 짠다" },
       region: { type: "string", enum: JP_REGIONS.map((r) => r.id), description: "일본 지역 30종 id(list_jp_regions) — 주면 style·shops 대신 그 지역 문법으로 짓는다" },
+      parkForest: { type: "string", enum: ["grove", "dense", "none"], description: "공원 구획 뒤쪽 잔디에 숲 — grove 덩이 숲(기본) · dense 빽빽한 숲 · none 숲 없음(나무 키트 몇 그루만)" },
+      grounding: { type: "boolean", description: "옛 인자 — 무시한다. 숲 나무 밑 땅 그늘(접지)은 늘 켜진다" },
       lotsOnly: { type: "boolean", description: "다시 짜지 않고 이미 지은 jp_city 맵의 남은 빈 대지만 쓰임(코인 주차·골목 자판기·놀이터·텃밭·공사장·광장 꾸밈)으로 채운다 — 건물을 손으로 더하거나 옮긴 뒤 부른다" },
     },
     additionalProperties: false,
@@ -74,7 +77,7 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     if (typeof args.region === "string" && args.region) {
       const tool = lookup("compose_jp_region");
       if (!tool) throw new ToolError("도구 compose_jp_region 이 없다", { code: "unknown-tool" });
-      return tool.run(draft, { region: args.region, ...(typeof args.mapId === "string" ? { mapId: args.mapId } : {}), ...(typeof args.seed === "number" ? { seed: args.seed } : {}), ...(args.replace === true ? { replace: true } : {}) });
+      return tool.run(draft, { region: args.region, ...(typeof args.mapId === "string" ? { mapId: args.mapId } : {}), ...(typeof args.seed === "number" ? { seed: args.seed } : {}), ...(args.replace === true ? { replace: true } : {}), ...(args.grounding === false ? { grounding: false } : {}) });
     }
     const mapId = typeof args.mapId === "string" && args.mapId.trim() ? args.mapId.trim() : "";
     if (!mapId) throw new ToolError("mapId 가 없고 지금 보는 맵도 없다 — 거리를 짤 jp_city 맵 id 를 준다", { code: "map-not-found" });
@@ -121,14 +124,25 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     }, () => ({ map: next.maps[mapId]!, tileset: next.tilesets[map.tilesetId]! }));
     if (outcome.built < 4) throw new ToolError(`거리를 짜지 못했다 — 건물 ${outcome.built}채만 지어졌다. 맵을 더 크게 하거나 다른 seed 를 준다`, { code: "compose-failed", mapId });
     const built = next.maps[mapId]!;
+    // 공원 숲: 공원 구획 뒤쪽(북쪽) 절반 남짓 잔디에 나무 composer 숲(입구 판석·연못·벤치·나무 키트 칸은 건너뛴다).
+    let parkForestCells = 0;
+    const parkForest = args.parkForest === "dense" || args.parkForest === "none" ? args.parkForest : "grove";
+    if (parkForest !== "none" && plan.parks?.length && hasJpForestR4(next.tilesets[map.tilesetId]!)) {
+      const want = new Uint8Array(built.width * built.height);
+      for (const p of plan.parks) {
+        const rows = Math.max(4, Math.ceil(p.h * 0.55));
+        for (let y = Math.max(0, p.y); y < Math.min(built.height, p.y + rows); y++) for (let x = Math.max(0, p.x); x < Math.min(built.width, p.x + p.w); x++) want[y * built.width + x] = 1;
+      }
+      parkForestCells = paintJpForestArea(built, next.tilesets[map.tilesetId]!, want, { forestType: parkForest, grounding: args.grounding !== false, seed })?.floorCells ?? 0;
+    }
     built.locations = (built.locations ?? []).filter((l) => !(l.tags ?? []).includes("jp-building"));    // 다시 짜면 옛 건물 위치 이름표는 지운다
     const labels = labelStreetBuildings(built, outcome.buildings);
     draft.maps[mapId] = built;
     for (const [id, ts] of Object.entries(next.tilesets)) draft.tilesets[id] = ts;
     const startNote = claimStartIfBlank(draft, mapId, pickStreetStartPos(draft, built, plan.walkRows)).note;
     return {
-      summary: `${plan.summary} — 건물 ${outcome.built}채(못 지은 자리 ${outcome.skipped}) · 소품 ${outcome.props}개, 빈터 쓰임 ${outcome.lotUses.length}곳(${[...new Set(outcome.lotUses.map((u) => u.use))].join("·") || "없음"}). 건물 문: ${labels.join(" · ")}. 문마다 가게에 맞는 실내를 link_jp_city_interior 로 잇는다(건물 이름표는 list_map_locations).${startNote}`,
-      data: { mapId, seed, style, shopsBuilt: labels, built: outcome.built, skipped: outcome.skipped, props: outcome.props, walkRows: plan.walkRows },
+      summary: `${plan.summary} — 건물 ${outcome.built}채(못 지은 자리 ${outcome.skipped}) · 소품 ${outcome.props}개, 빈터 쓰임 ${outcome.lotUses.length}곳(${[...new Set(outcome.lotUses.map((u) => u.use))].join("·") || "없음"})${parkForestCells ? `, 공원 숲 ${parkForestCells}칸` : ""}. 건물 문: ${labels.join(" · ")}. 문마다 가게에 맞는 실내를 link_jp_city_interior 로 잇는다(건물 이름표는 list_map_locations).${startNote}`,
+      data: { mapId, seed, style, parkForestCells, shopsBuilt: labels, built: outcome.built, skipped: outcome.skipped, props: outcome.props, walkRows: plan.walkRows },
       ...(warnings.length ? { warnings } : {}),
     };
   },

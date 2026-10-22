@@ -1,0 +1,99 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "modern-city-interior-m142-b1",
+ "title": "modern_city 실내 기물 m142-b1 (15) — object-gen 다시 그림, 사용자 위임·Opus 적대 VQA 통과 2026-10-21",
+ "note": "delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/m142-b1.opus-vqa-r*.json",
+ "createdAt": "2026-10-20T22:50:04.398Z",
+ "items": [
+  {
+   "sha": "ba1c6926ec8dc569fdaed2ae39f39e0a6c919c2a093ff4659e936c52d4e81031",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/amuse-pachinko-island",
+   "source": "/home/main/.cache/ogm142/ship/m142-b1/amuse-pachinko-island.png"
+  },
+  {
+   "sha": "76d8560531af1b32cef95374f146bbafdece62524f786013e45c51e45fa3f757",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/amuse-speaker-stack",
+   "source": "/home/main/.cache/ogm142/ship/m142-b1/amuse-speaker-stack.png"
+  },
+  {
+   "sha": "5aeab2bd4ce3e23a255d078b8d8933ed372ea3b726efbd05e89bbef3d3e272de",
+   "kind": "container",
+   "label": "modern_city_interior/arcade-cabinet-pair",
+   "source": "/home/main/.cache/ogm142/ship/m142-b1/arcade-cabinet-pair.png"
+  },
+  {
+   "sha": "e127d72ffec630674df6cf9c33a5db404de24a5154557f443bc47f6b2f8dab18",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/arcade-prize-counter",
+   "source": "/home/main/.cache/ogm142/ship/m142-b1/arcade-prize-counter.png"
+  },
+  {
+   "sha": "24cb61f8e0d8a91fe7a3434a76e1ba0821e2fa916efc1fe1c8c1b6e34db17117",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/arcade-rhythm",
+   "source": "/home/main/.cache/ogm142/ship/m142-b1/arcade-rhythm.png"
+  },
+  {
+   "sha": "34d419af2ca8fdddf8d2a84e36b9260d1f5100c472e3f1b33ad54645809b6a77",
+   "kind": "box",
+   "label": "modern_city_interior/art-plinth",
+   "source": "/home/main/.cache/ogm142/ship/m142-b1/art-plinth.png"
+  },
+  {
+   "sha": "230e87be33749fa5d3a090d7925b3594bace4997f3a5de59155f4460d5c7636c",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/aud-lectern",
+   "source": "/home/main/.cache/ogm142/ship/m142-b1/aud-lectern.png"
+  },
+  {
+   "sha": "f6357ca2e6e27066f1dc5f62d804a240edc54b304c84228657a7f20547a62e86",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/book-shelf",
+   "source": "/home/main/.cache/ogm142/ship/m142-b1/book-shelf.png"
+  },
+  {
+   "sha": "915310549ee5026421e1c308b89dd08020006cbb5353f08bc6d3b85569473ae7",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/cafe-maid-stage",
+   "source": "/home/main/.cache/ogm142/ship/m142-b1/cafe-maid-stage.png"
+  },
+  {
+   "sha": "58f9eb2f3188207fd4023c7efa4c4d42b15808e055f96cf8b8efc025fefa1143",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/cinema-concession",
+   "source": "/home/main/.cache/ogm142/ship/m142-b1/cinema-concession.png"
+  },
+  {
+   "sha": "ed8dff532c9550957862ff3e6f6e454174a933f726e7d3979150c3d4985bf4de",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/clinic-pet-kennels",
+   "source": "/home/main/.cache/ogm142/ship/m142-b1/clinic-pet-kennels.png"
+  },
+  {
+   "sha": "f6576f970210dcdc21e336c28bc48b4ec719a124cbf664ad82e4cb1420963204",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/clinic-pharmacy-shelf",
+   "source": "/home/main/.cache/ogm142/ship/m142-b1/clinic-pharmacy-shelf.png"
+  },
+  {
+   "sha": "af8003b566801d6e5100801fcfa6ea9217146481bc42561e6dc919aa72e8bdfb",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/council-trophy-case",
+   "source": "/home/main/.cache/ogm142/ship/m142-b1/council-trophy-case.png"
+  },
+  {
+   "sha": "d76c1beebfdcb4ce6467a134b77b8365e480998b6ca774a8ac7893f66736c8fb",
+   "kind": "frame",
+   "label": "modern_city_interior/court-witness-stand",
+   "source": "/home/main/.cache/ogm142/ship/m142-b1/court-witness-stand.png"
+  },
+  {
+   "sha": "71dede7813ec78b54ad833cc779fec966170ce96c359ef06151332e6c8c81b84",
+   "kind": "structure",
+   "label": "modern_city_interior/dept-directory-kiosk",
+   "source": "/home/main/.cache/ogm142/ship/m142-b1/dept-directory-kiosk.png"
+  }
+ ]
+}

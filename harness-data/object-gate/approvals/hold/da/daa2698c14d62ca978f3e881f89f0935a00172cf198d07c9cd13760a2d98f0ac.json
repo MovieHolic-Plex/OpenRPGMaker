@@ -1,0 +1,20 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "daa2698c14d62ca978f3e881f89f0935a00172cf198d07c9cd13760a2d98f0ac",
+ "profileHash": "4d8774b517f41638",
+ "kind": "wall_mounted",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T03:41:55.947Z",
+ "by": "delegated",
+ "delegatedBy": "user (2026-10-21, all gate decisions delegated to the superv",
+ "evidence": "/home/main/z-project/rpg-zzu-jp-house-furniture/harness-data/object-gate/vqa/jp-house3-8.opus-vqa-r2.json",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 질감 없음 (2/4)"
+ ],
+ "note": "묶음 허용: jp 집 실내 보강 8 (house3) — 사용자 위임·Opus 적대 VQA 통과 2026-10-21 — delegated by user to supervisor 2026-10-21; Opus VQA receipt /home/main/z-project/rpg-zzu-jp-house-furniture/harness-data/object-gate/vqa/jp-house3-8.",
+ "sig": "178188e30cbe6ea73720dfa64d95698c9819fc8226e58897b44f4f97801eaaaf"
+}

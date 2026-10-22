@@ -764,6 +764,78 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
   (구름 언덕 7장, 60×30 맵, 창 타일 하늘, 30칸의 밟는 이벤트가 세피아 색조 + 흐름 0%/2500ms).
   `--project <조수가 만든 project.json>` 을 주면 그 프로젝트의 시작 칸에서 오른쪽으로 걸으며 찍는다.
 
+## 맵 배경 사용성 — OPRN 자체 파노라마 견본·움직임 프리셋·게임 화면 미리보기 (2026-10-21)
+
+**감사 결과(이전):** 2026-10-07 저작권 정리로 CraftPix·greggman·EasyRPG 배경이 빠져 「레이어 세트」 창은 비었고
+(`OGA_CRAFTPIX_BACKDROP_SETS = []`, 조수 스키마 `layerSet` enum 도 빈 배열), 그림 고르기에는 전투 배경 세 장만 남았다
+(하늘·노을·바다·별 없음, 고르기 창에 올리기 없음). 남은 칩셋에는 창 타일(#233·#258)이 없는데 `showInEmptyCells` 기본이 꺼져 있어
+**편집기 미리보기는 하늘을 보여 주는데 플레이는 검은 칸**이었다. 기본 20×15 맵은 풀로 꽉 차 있어 지우기 전엔 0칸.
+편집기 캔버스 미리보기도 플레이와 같은 `displayTexture` 함정(모서리만 확대)과 편집기 뷰포트 기준 배율을 갖고 있었다.
+처음 쓰는 사람이 숲 전투 배경 한 장을 플레이에서 보기까지 약 5분 47초(실측, 단계별 시간은 `~/claude-viz/panorama-usability-1.html`).
+
+**지금:**
+- **견본 다섯 세트** `src/assets/oprnPanoramas.ts` — 맑은 하늘·노을(옆에서 본 지평선 640×240, cover 로 320×240 에 배율 1),
+  밤하늘·별·바다·구름 바다(위에서 본 면, 사방 이음매 없음, native). 코드 손 도트, 생성기 `scripts/content/panoramas/bake_panoramas.py`
+  (결정적, 그림 `public/assets/panoramas/`). 세트마다 층별 권장 흐름·깊이가 들어 있고 `mapBackgroundFromPanoramaSet` 가
+  **`showInEmptyCells:true` 로 편다**. 지평선(노을의 해·도시 실루엣, 맑은 하늘의 구름)은 **화면 위쪽 절반·가운데 320px(그림 x 160..480) 안**에 둔다 —
+  배경은 화면 고정이라 지붕·절벽 위 윗줄 몇 칸만 비우면 그 위쪽만 비친다(처음 굽기는 해가 맨 아래·x=430 이라 윗줄을 비워도 어두운 보라뿐이었다).
+  **「화면에 맞춤」 은 넘치는 축을 가운데 맞춘다**(`mapBackgroundCoverCentre` — 플레이·탭 미리보기·캔버스 공통). 예전에는 왼쪽 위에 붙어 16:9 그림의 오른쪽 1/4 이 늘 잘렸다.
+  등록: 자원 해석기·참조 검증·고르기(맨 앞)·검색. 내보내기는 `resolveAssetResourceUrl` 로 자동으로 실린다.
+- **움직임 프리셋** `MAP_BACKGROUND_MOTIONS`(`src/project/mapBackground.ts`): 고정·느린 시차(층마다 깊이 0.1→0.5)·가로 흐름·세로 흐름·타일과 같이(깊이 1).
+  `applyMapBackgroundMotion` / `detectMapBackgroundMotion`. 숫자 칸은 「세부 조정」 접힘 안으로 옮겼다.
+- **비칠 칸 판정** `src/project/mapBackgroundVisibility.ts` — 렌더러 `renderEmptyCellCover` 와 같은 규칙. 창 타일은 합본 마을 칩셋에서만 센다.
+  탭의 「플레이에서 N칸에 보입니다 / 한 칸도 안 보입니다」 줄과 고치기 단추, 조수 0칸 경고가 같은 함수를 본다.
+- **편집기 「맵 배경」 탭** (`mapProps.ts renderBackgroundTab`): 견본 카드(층을 겹친 썸네일·「옆에서 본 하늘/위에서 본 면」), 다른 그림 고르기,
+  **내 그림 올리기**(`backdropUpload.ts`, 자원 관리자와 같은 검사·저장, 올린 그림은 cover), 배경 끄기, 상태 줄, 움직임 단추, 맞추기(큰 그림 1:1 이면 경고),
+  빈 칸에도 보이기, **게임 화면 미리보기**(`mapBackgroundLivePreview.ts`: 게임 해상도/카메라 배율 크기 캔버스, 플레이와 같은 cover·반복·흐름·깊이 식,
+  카메라가 ±40px 좌우로 흔들려 시차가 보인다, **타일이 가리는 칸은 어둡게** 칠한다 — 시작 칸 기준 첫 화면).
+  고친 결함: 「맵 배경」 을 누르면 「기본 설정」 이 열리고 모든 절이 한꺼번에 보이던 것(`.map-props-section-block[hidden]` 이 CSS 에 덮여 있었다).
+- **편집기 캔버스 미리보기**(`EditScene.renderMapBackgroundPreview`): 맵 (0,0) 에 고정, 크기는 맵 사각형(반복 끈 축은 그림 크기까지),
+  배율은 게임 뷰포트 기준 cover, `displayTexture` 키로 원본 크기를 읽는다. 「빈 칸에도 보이기」 가 꺼져 있으면 캔버스에도 안 그린다 — 플레이와 같은 거짓말 없는 화면.
+- **되돌리기·확인(적대 검수 뒤):** 배경 바꾸기·끄기·칸 비우기는 `recordProjectSnapshot(..., {kind:"map"})` 로 Ctrl+Z 가 된다. 칸 비우기는 확인 창(지울 타일 수·그 자리 이벤트)을 거치고
+  `clearMapCellForBackground` 로 모든 층·덧칠 더미(`*TileStacks`)·그림자까지 지운다(더미를 남기면 충돌이 막힌 칸으로 본다).
+  고치기 단추는 견본 종류를 따른다 — 옆에서 본 하늘은 「윗줄 N줄」(N = ceil(112px/칸 크기), 맵 높이 절반까지), 위에서 본 면은 「물 칸 N개」(없으면 「맵 둘레 2칸」).
+  **시작 칸을 비우면 주인공이 첫 칸에서 못 움직인다**(빈 칸 = 통행 불가) — 편집기 단추와 조수 `clearForBackground` 모두 `startPosAfterBackgroundClear` 로 비운 뒤 맵에서 `isPassableLanding` 이 참인(타일이 남았다고 설 수 있는 게 아니다 — 벽 줄), 이벤트 없는 가장 가까운 칸으로 시작 위치를 옮기고 확인 창·도구 경고로 알린다. 설 칸이 하나도 안 남으면 편집기는 경고, 조수 도구는 `start-buried` 오류로 호출 전체를 되돌린다. 시작 위치를 옮기는 비우기는 프로젝트 스냅숏이라 Ctrl+Z 한 번에 타일과 시작 위치가 같이 돌아온다.
+  탭 미리보기는 **맵이 화면보다 클 때만** 카메라를 흔들고(시작 화면에서 갈 수 있는 거리까지), 타일 덮개는 카메라와 함께 움직이며 불투명하다.
+  캔버스 「배경 보기」 는 **시작 화면 기준**(시작 칸이 그 맵이면 그 칸을 가운데 둔 첫 카메라)으로 그린다 — 그 화면 밖은 근사.
+- **조수**: `set_map_properties.background.preset`(OPRN 다섯 + 남아 있으면 CraftPix; `layerSet` 은 같은 뜻의 옛 이름), `motion`, `showInEmptyCells` 기본 true,
+  `clearForBackground{water:true}` 는 그 맵의 물 타일 칸을 비운다(섬 바깥 바다를 배경으로). 이벤트 도구 힌트도 preset 을 가리킨다.
+  `get_project_summary` 의 `maps[].background`(preset·그림·층·빈 칸·보이는 칸 수)로 결과를 다시 읽는다(전에는 읽을 도구가 없었다). `backdrop:` 접두 id 도 받는다.
+  지평선 견본인데 위쪽 빈 줄이 7줄(112px)보다 적으면 경고와 정확한 clearForBackground 를 돌려준다. 빈 enum 이던 `layerSet` 은 스키마에서 뺐다(실행기는 옛 이름을 계속 받는다).
+- **검증(2026-10-21):** 출하 플레이어 1배(320×240) `scripts/qa/runtime/map-panorama.scenario.mjs` — 노을 지붕·맑은 하늘 절벽·섬 바깥 바다·우주 발판 네 장면,
+  제자리·걸은 뒤·더 걸은 뒤 세 장. 모서리 확대·검은 빈칸 없음, 층마다 다른 이동. 이 박스는 크롬이 ERR_NETWORK_CHANGED 라 `unshare -rn` 안에서 돌렸다.
+  `map-background-fixture.mjs` 기본값도 사라진 `easyrpg-backdrop-sky1` 대신 노을 세트(`--set <id>`). 단위 `test/mapBackgroundPanoramas.test.ts`(실행 안 함).
+- **남은 한계:** 맵에 처음 들어갈 때 배경 그림은 비동기로 실린다 — dev 서버 첫 로드에서는 첫 몇 프레임이 검을 수 있다(예전부터, 미리 싣기 없음).
+  배경 흐름·깊이는 플레이에서만 움직이고 편집기 캔버스는 정지 화면이다(움직임은 탭 미리보기에서 본다). 칸을 비운 가장자리는 해안·절벽 타일 없이 각지게 잘린다(조수·편집기 모두 가장자리 마감은 하지 않는다). 지평선 세트는 화면 고정이라 맵 아래쪽에서 하늘을 보이게 하면 지평선 아래(물) 부분이 보인다.
+  `map-parallax.capture.mjs` 는 아직 빈 CraftPix 세트를 쓴다.
+
+## 맵 배경 조수 경로 — 견본 고르기 정확도·새 배경 생성 generate_map_background (2026-10-22)
+
+실조수 시험(Sonnet 5.5 high, 실제 입력창 Pi 경로 `local-cli:claude`, 9장면, `~/claude-viz/panorama-assistant-1.html`)에서 고친 것:
+- **의도 분류**(`intentDeclaration.ts`): 맵 배경(하늘·섬 바깥 바다·창밖 별)은 `set_map_properties`, 견본에 없는 새 배경은 `generate_map_background`. 다시 칠하거나 맵을 새로 짓지 않는다.
+  도구 색인 레시피 `map-background`(`toolCapabilityIndex.ts`)·별칭(파노라마·맵 배경·창밖·시차 배경, `toolAliases.ts`).
+- **배치 품질 재촉 오판**(`piAgent/layoutQuality.ts`): `paintedShare` 가 비운 칸(-1)을 칠한 칸으로 셌다 → 하늘 7줄을 비우면 「맵이 비었다」 재촉이 붙어 지붕 위를 다시 칠했다. 이제 새 타일이 ≥0 인 칸만 센다.
+- **`set_map_properties.background.speed`**(0.1–4): 모든 층 흐름 배율. 움직임 프리셋 뒤에 곱하고, 명시한 scrollX/Y·cameraFollow 는 프리셋 뒤에 다시 얹는다(전에는 「느리게」 가 프리셋에 덮였다).
+  요약 줄에 층별 흐름 px/프레임. **한 화면 맵**(맵 ≤ 뷰포트)이면 시차가 안 보인다는 주의를 요약·경고 둘 다에, 위에서 본 면 견본을 하늘 띠(윗줄만 비움)에 쓰면 지평선 견본을 권하는 경고.
+- **Pi 경로의 `generate_image_asset`** 은 그림을 만들지 않고 「ui-required」 를 성공처럼 돌려줬다 → 정직한 실패로 바꾸고 맞는 도구(배경이면 generate_map_background)를 가리킨다.
+- **새 도구 `generate_map_background`**(`src/editor/tools/mapBackgroundGenerationTool.ts` 스키마·검사, 실행은 `scripts/lib/piAgentRuntime.ts`):
+  렌더 브로커(`generateOpeningImage`, `panoramaLayer` 표시) → 브라우저 `src/editor/mapPanoramaGeneration.ts` 가 사용자 이미지 계정(용도 backdrop)으로 생성 →
+  지평선은 먼 층 640×240·40색 + 가까운 실루엣 층(마젠타 바탕 분리, 24색), 위에서 본 면은 320×256 사방 이음 → 이음 띠(12%) 교차 섞기로 가로(면은 세로도) 반복 이음 →
+  `upsert_resource`(kind backdrop) → `set_map_properties`(cover·loopX·showInEmptyCells, 가까운 층 cameraFollow 0.2) + clearForBackground. 층들은 동시에 만든다. 하나라도 실패하면 아무것도 연결하지 않고 견본으로 몰래 대신하지 않는다.
+  결과 PNG 를 모델에게 첨부한다(보고는 그림에 보이는 것만). 맵 한정 실행에서는 거부. 헤드리스 도구 run 은 `image-generation-unavailable`. 배경 그림은 object-gate 대상이 아니다.
+- **`decodeImage`(`cutsceneArt/imageProcess.ts`)가 `fetch(dataURL)` 을 썼다** → 출하·팀 호스트 CSP `connect-src 'self'` 가 막아 「NetworkError」. data: 는 직접 Blob 으로 푼다(컷신 그림 처리도 같은 함수).
+- **Claude Code MCP 도구 시간 제한**: 그림 2장 생성(약 60초)이 기본 제한에 끊겨 모델이 「시간 초과」 로 받았다 → `MCP_TOOL_TIMEOUT=900000`(codex 의 tool_timeout_sec=900 과 같게, `localCliAgent/claude.ts`).
+- **보이는 띠에 맞춤(Opus 적대 검수 뒤):** 지평선 배경은 위쪽 빈 줄(비울 사각형 포함, 기본 7줄=112px)만 비친다 — 생성 그림 아래쪽(반영·땅)과
+  그림 가운데에 있던 가까운 층은 타일에 가려 한 번도 안 보였다. 이제 실행기가 그 높이(`panoramaVisibleTop`)를 넘기고, 가까운 층은
+  `seatSilhouetteBand` 가 띠 바닥을 맵 바닥선에 세운다(아래는 띠 마지막 줄로 채움). 윗선이 평평한 띠(하늘까지 통째로 그린 그림)는 거절하고
+  **먼 층만 연결한 뒤 그 사실을 결과에 적는다.** 먼 층 지시는 「달·해·지평선을 그림 위 40% 안」. 모델에게는 `composeVisiblePanorama`
+  (플레이어 첫 화면 = 가운데 320px 폭 × 보이는 높이, 가까운 층 겹침)만 첨부한다 — 전체 그림을 주면 가려진 반영까지 보고했다.
+- **반복하지 않는 축은 카메라를 따라가지 않는다**(`playSceneMapBackground.placeMapBackgroundLayer`): `cameraFollow` 는 두 축에 같이 걸리는데,
+  그림 한 장짜리 축(지평선 loopY:false)이 따라가면 위로 걸을 때 그림이 내려가 위쪽에 검은 띠가 생기고, 실루엣 층은 맵 바닥선을 떠나 아래 채움 줄이 드러났다
+  (출하 플레이어 실측). 이제 깊이는 반복하는 축에만 적용 — 지평선은 가로 시차만, 세로는 화면 고정. 편집기 탭 미리보기는 원래 가로로만 흔든다.
+- **남은 한계:** `show_map_region` 은 배경을 그리지 못해(설계상 거부) 조수가 배경을 눈으로 검수하지 못한다 — 생성 도구는 그림을 첨부해 대신한다.
+  Pi 경로는 되묻기를 건너뛰므로(`executionRoute.ts clarifyBypassed`) 「배경 좀 예쁘게」 는 묻지 않고 해석한다. 칸을 비운 가장자리는 여전히 각지다. 견본 바다·구름 바다는 흐릿한 얼룩 질감이고 노을 견본의 해는 7줄 바닥선에 반쯤 잘린다(견본 그림 문제, 이번 변경 밖). 다리 상판 타일(버들항 3640)은 자기 그림에 물이 있어 다리 밑으로 배경이 비치지 않는다.
+
 ## 8차 맵 진입 (2026-09-28)
 
 `playSceneMapRuntime.renderTiles`의 **한 번의 동기 패스**가 `TileRenderPass`를 소유한다.
@@ -864,11 +936,52 @@ See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant
 
 - **규칙.** 흉상·전신 초상이 실제로 그려지는 줄은 저작한 위치(위·가운데, `displayTextSettings`·say `position`·가림 방지 자동)와 상관없이 `position-bottom` 이다. 초상이 없는 줄·48px 작은 얼굴·`hideFace`·말풍선은 저작한 위치를 그대로 따른다. 위·가운데 저장은 막지 않는다.
 - **결정은 한 곳.** `src/project/dialoguePortraitPosition.ts`(`portraitForcesBottom`·`positionWithPortrait`·안내 문구 `PORTRAIT_BOTTOM_NOTICE`/`PORTRAIT_BOTTOM_RULE`). 플레이어는 `dialogue.ts` `mount()` 에서 vnLook→초상(`baseFace`/`portraitMode`)을 **먼저** 구한 뒤 `applyTextSettings(…, forceBottom)` → `applyOverlayPosition(…, forceBottom)` 로 넘긴다(순서가 거꾸로면 위치를 먼저 정해 버린다). 스크림 방향도 같은 `position` 을 쓴다.
-- **선택지.** `lastLineForcedBottom` 이 같은 세션(`wasOpen`)이면 `showChoices` 도 아래다 — 흉상 대사 바로 뒤 선택지가 위로 뛰지 않는다. 퇴장 끝·`resetOverlay`/`dispose` 에서 초기화한다. 숫자 입력(`dialogueNumberInput.ts`)은 대사 직후가 아니라 따로 이어 쓰지 않는다.
+- **선택지.** (2026-10-22 고정 틀로 대체) 선택지는 같은 세션이면 바로 앞 대사 상자의 자리(`lastBoxPosition`)에 선다 — 흉상 대사 바로 뒤 선택지가 위로 뛰지 않는다. 퇴장 끝·`resetOverlay`/`dispose` 에서 초기화한다. 숫자 입력(`dialogueNumberInput.ts`)은 대사 직후가 아니라 따로 이어 쓰지 않는다.
+- **선택지 입력 유예 (2026-10-21, 첫사랑).** `showChoices` 는 열린 뒤 `CHOICE_CONFIRM_GRACE_MS`(300ms) 동안 **실제(isTrusted)** 결정·숫자 키를 버리고, 그 사이 키보드발 클릭(detail 0)도 버린다. 앞 대사를 넘기던 Enter 연타가 선택지가 그려진 바로 그 순간 닿아 플레이어가 읽지 못한 0번이 골라지고, 이어진 연타가 엔딩·타이틀을 넘겨 「새 게임으로 리셋」처럼 보이던 결함의 수정이다(재현 로그: 선택지 등장과 Enter 가 같은 0.1초). 단위 테스트의 합성 이벤트는 isTrusted 가 거짓이라 영향이 없다.
+- **호감 변화 알림 (2026-10-21).** `changeFriendship` 은 인터프리터 훅 `onFriendshipChanged` 를 부르고, 관계 메뉴를 쓰는 게임(`usesRelationshipMenu`)에서만 `playSceneRelationshipPulse.ts` 가 오른쪽 위에 「♥ 이름 · 호감이 올랐다/내려갔다」를 3.2초 띄운다(대사 진행을 막지 않음, 스타일 `playSurface.css`). 관계 메뉴 행은 `project.characters[key].note` 한 줄 소개를 함께 보인다.
 - **전환 부드럽게.** 같은 세션에서 초상 규칙이 창 자리를 바꾸는 줄(흉상 없음(위) ↔ 흉상 있음(아래))에서만 `glideFromPreviousBox` 가 Web Animations `translate` 로 앞 창 자리에서 새 자리까지 220ms 미끄러진다. 레이아웃은 즉시 새 자리로 확정되고 출발점은 변환(진입 연출)을 뺀 `offsetTop` 에 호스트 배율을 곱한 값이다 — 배율로 나누지 않으면 화면 배율(3.2배)만큼 어긋나 창이 화면 밖에서 날아온다(실측). 움직임 줄이기에서는 쓰지 않는다. 그 밖의 줄(같은 위치끼리의 높이 변화 등)은 옛 동작 그대로다.
 - **옛 위쪽 흉상 CSS.** `.position-top` 흉상 매달기 규칙(위 절)은 `dialogue.ts` 경로에서는 더는 닿지 않는다(흉상이면 아래). 편집기 미리보기·저작 도구가 직접 `position-top` 을 붙일 때를 위해 남겼다.
 - **편집기·도구 안내.** 이벤트 명령 「문장 표시 설정」 위치 그룹, 자료집 「메뉴·시스템」 대사창·대사창 룩 카드(`db-menu-system-portrait-bottom-note`), 도구 설명(`schemaShapes` say·displayTextSettings position, `cutsceneStageTools`, `set_dialogue_system`, `set_vn_look`), `gameAuthoringPresets/romance.md` 한 문단. 카탈로그 en/ja/zh 에 안내 문장 한 줄.
 - **증거.** `scripts/qa/runtime/vn-bust-bottom.scenario.mjs`(프로필 `bustbottom`): 캡처마다 DOM 을 읽어 흉상 줄은 아래, 흉상 없는 줄은 저작 위치임을 단정하고(어긋나면 비트 실패) 프레임별 창 윗변 궤적(`_trace.json`)을 남긴다. 전 조합은 프로필 `bb` + `VN_POS_PROBE_DIR=<dir>`(캡처마다 `.json` 위치 탐침, `vn-matrix.lib.mjs`).
+
+## 대사창은 고정 틀 (2026-10-22, dialogue-stable-frame)
+
+데모 두 개에서 「대사창이 위로 갔다 아래로 갔다」. 실측(`dialogue-frame` 시나리오, rAF 로 매 프레임 상자 사각): 아스트라 호라이즌은
+대사가 위·선택지가 아래로 200px 뛰고 높이도 80→112px, 첫사랑은 선택지가 위로 27px 자랐다. 원인 넷과 고친 곳:
+
+- **가림 피하기를 줄마다 다시 판정.** `effectivePosition` 은 화면 속 주인공이 0.5 를 넘으면 위로 보냈다 — 가리지도 않는 아래 창이 뒤집혔다.
+  이제 저작한 자리가 주인공을 **실제로 덮을 때만**(`DIALOGUE_OBSCURE_BAND` 0.36 띠 안) 반대쪽이다. 그리고 열린 세션(`wasOpen`)의 줄은
+  `sessionPosition` 을 물려받는다 — 판정은 세션 첫 창에서 한 번. 저자가 그 줄에 못박은 자리(say `position` top·center·bottom,
+  가림 피하기를 끈 `displayTextSettings`)는 따르되 세션 자리를 바꾸지 않는다(다음 보통 줄은 원래 자리로). 흉상·전신 줄의 아래 강제는 그대로이고 세션 자리를 아래로 옮긴다.
+- **화면 속 높이 계산이 배율 ≠ 1 에서 틀렸다.** `playerScreenYOf`(`playSceneInterpreter.ts`)와 말풍선 기준점(`playSceneDialogueHooks.ts`)이
+  `(y - scrollY) * zoom` 을 썼다. Phaser 카메라는 가운데를 기준으로 확대하므로 화면 높이 절반만큼 어긋난다(아스트라 배율 2: 가운데 주인공이 1.00).
+  이제 `cameraViewOrigin`(`src/player/cameraScreen.ts`: 스크롤·원점·배율로 화면 왼쪽 위 월드 좌표, 경계 클램프 포함) 기준. 선택지 요청에도 같은 값을 넘긴다.
+  `camera.worldView` 를 쓰지 말 것 — preRender 전(자동 실행 첫 프레임)에는 낡아서 폴른 스타가 1.00 으로 읽혀 창이 위로 갔다.
+- **선택지가 대사 상자를 갈아 치우고 내용 높이로 자랐다.** `showChoices` 는 앞 대사 상자 자리(`lastBoxPosition`)에 서고, 그 자리에 **틀**
+  (`choiceFrame`: 질문이 있으면 질문, 없으면 앞 대사 상자의 사본, 둘 다 없으면 빈 상자; testid `dialogue-choice-frame`)을 남긴다.
+  선택지 칸(testid 는 그대로 `dialogue-box`, 목록 `runtime-choices`)은 오버레이 `.choices-framed` 아래에서 `position:absolute` 로 틀 위(위쪽 창이면 아래)에 뜬다 —
+  오른쪽 정렬, 미연시 룩·두 전신 무대는 가운데, 오른쪽 흉상이 선 틀이면 왼쪽. 칸 높이 상한은 틀의 230%(넘치면 목록만 스크롤). 소지금 창은 왼쪽으로 비킨다.
+  에메랄드(handheld)는 원작처럼 80px 글 상자를 두고 그 위 오른쪽에 예/아니오 칸. CSS: `dialogue.css` 끝 「고정 틀 선택지」, `playSurface.css`, `emeraldSurfaces.css`.
+- **얼굴 있는 줄만 63px 로 커졌다.** `.dialogue-box:has(.dialogue-face)` 의 `max(100%, 63px)` 와 같은 바닥(`min-height: 63px`)을 위·아래 오버레이 전체에 준다(두 전신 무대 제외).
+  위쪽 자막 한 줄의 내용 높이 규칙(`playSurface.css`)은 **저자가 위에 고정한**(`data-dialogue-position-reason="fixed"`) 세션 첫 창에서만 쓴다.
+  가림 피하기로 위에 간 내레이션(폴른 스타 천문대 잠긴 철문 「꿈쩍도 하지 않는다」)이 67.5→25.5px 납작한 자막 상자로 바뀌던 것이 이것이었다.
+- **레터박스 띠를 덮었다.** `syncLetterboxInset`(`playSceneFieldStaging.ts`)이 무대에 `data-letterbox`·`--runtime-letterbox-px` 를 걸고,
+  `playSurface.css` 「레터박스 안쪽」이 아래 창은 위로·위 창은 아래로 `translate`(띠 높이 − 크롭 여백, 음수면 0)만큼 민다. 전환 애니메이션은 없다
+  (띠가 켜진 뒤 열리는 창이 미끄러져 오르면 그것이 곧 「창이 움직인다」). 말풍선은 무대 좌표라 제외.
+
+QA 근거와 재실행: `scripts/qa/runtime/dialogue-frame-fixture.mts`(데모의 실제 대사 명령으로 화자+초상 → 내레이션 → 선택지 → 초상 없는 화자 → … → 저자 top 한 줄),
+`dialogue-frame.scenario.mjs`(약 0.2초 띠 + `<out>-rects.json`), `dialogue-frame-measure.py`(줄마다 안정 상태 위·아래와 줄 사이 이동). 스킨 행렬은
+`DFRAME_STYLE`/`DFRAME_VN` 또는 같은 픽스처의 `system.dialogueStyle`·`meta.oprnVnLook` 만 바꾼 사본 + `DFRAME_FAST=1`.
+`DFRAME_SCENE=door`(천문대 철문 칸에서 화자 → 잠긴 문 안내)·`letterbox`(광장 컷신 그대로). 영상: `QA_RECORD_VIDEO=<폴더>`(runtime-qa.mjs, 컨텍스트 녹화) + `DFRAME_VIDEO=1`, `<out>-t0.json` 으로 자른다(영상 시각 ≈ performance.now + 0.75초). 오버레이의
+`data-dialogue-position-reason`(portrait·session·fixed·auto:0.25·previous-box)이 자리를 정한 근거다. 저작 쪽 경고는 `scene-dialogue-position-jump`(`scenePolishLint.ts`).
+
+## 엔딩 카드 글자는 게임 언어 (2026-10-22)
+
+`showEndingScreen`(`playSceneOverlays.ts`)의 배지(HAPPY·NORMAL·BAD·CHARACTER ENDING, 막·장 끝은 「다음 이야기에 계속」)·마지막 장(끝 / 「제1막 끝」)·
+기본 kicker·전당 등록·안내·「타이틀로 돌아가기」는 `vnExtrasStrings.ts` 의 `ending.*` 네 언어 표에서 고른다. 언어는 편집기 언어가 아니라
+게임 언어(`vnExtrasLanguage`: 저작 vnExtras > `meta.oprnDialogueSystem.language` > ko, auto 는 기기 언어). 막·장 끝 판정은 엔딩 id 의
+`act<n>`/`chapter<n>`(`endingSegmentOf`). 엔딩마다 덮기: `EndingPresentation.badge`·`finalTitle`(각 40자, `kicker` 도 40자 상한)
+— 엔딩 정의 presentation 과 ending 명령 presentation 둘 다, 검증 `validateEndingPresentation`, 조수 `define_ending` 스키마. 게임 오버 화면 글자는 이번 범위 밖이다.
 
 ## 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
 

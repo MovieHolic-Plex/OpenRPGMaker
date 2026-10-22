@@ -1,0 +1,310 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "91a045a60c8c640e68836bd0b47ba029e5ec89bf2c42c32463bd25da8ee627a5",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "forest north-edge skyline of treetops (bamboo)",
+ "label": "jp_city/jp-forest-bb-sky-0",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 53,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "treetop canopy skyline (lit upper crown band with ragged silhouette)",
+      "rows": "11-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dense foliage mass below the crown",
+      "rows": "21-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The piece is a tileable strip of foliage. Rows 11-17 form a ragged, lit crown silhouette that widens from 2 to 24 px and reaches the full 32 px at row 18. Rows 18-47 are a uniform dark-green foliage mass with leaf-cluster texture. There is no front-edge line, no eave shadow, no ellipse, and no visible contents. The light highlights in rows 12-20 are only the lit upper edge of the foliage, not a separate horizontal surface. The object reads as a flat front-facing foliage wall with a skyline, so it has no true top surface. The column scan shows no edge line, only gradual dark-to-light texture variation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small bamboo treetop skyline block with only 9 distinct colours in total and a median of 9 per 16x16 tile. The references have a median of 108-109 per tile and 427-567 colours overall, so it is about an order of magnitude lower. Flat-fill coverage is 0%, and the dark edge pixels are tinted (0% neutral), so the outline is a dark green material tone rather than a black sticker line. There is some leaf-clump dotting in about 4 green steps, but the references use 6 or more with per-clump highlights and varied clusters. The silhouette is a plain rectangular block with a lumpy top edge. It lacks the layered clump highlights, depth and edge variation of the references. Even allowing for a simple skyline tile, it reads as thinner and flatter than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16833
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "treetop canopy skyline band",
+      "rows": "11-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a tiling strip of foliage with a ragged, bumpy upper silhouette (rows 11-18, width growing from 2 to 32) over a uniform dark leafy mass (rows 18-47, full width 32). It has no front-edge line, no eave shadow, no ellipse and no distinct front face. Light and dark leaf clusters are scattered through the mass, so it reads as dense canopy texture and not as a standing object with a top and a front. It is neither a flat slab nor a profile drawing, so it is classed as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small skyline strip of bamboo/treetop foliage. It shows about 4 green steps with some leaf-clump dots and no flat 5x5 fills (0%). Its dark edge pixels are tinted green rather than neutral (0% near-neutral), so the outline reads as dark material tone. It has only 9 distinct colours in total and a median of 9 per tile, against 108-109 per tile and 427-567 colours in the references. That is a large gap in tonal range and clump variety. Even allowing for a simple edge strip, the references carry far more highlight-to-shadow steps and per-clump shading, so the candidate looks flatter and thinner next to them. A careful artist would not accept it beside the references at this richness level.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11879
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "treetop canopy skyline (lit upper edge)",
+      "rows": "11-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dense foliage mass",
+      "rows": "20-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a 32px-wide band of foliage with a bumpy, lit upper silhouette (rows 11-19, width growing 2 to 32) and a dark, mottled leaf mass below (rows 20-47). There is no front-edge line, no eave shadow, no ellipse and no visible interior contents. The light upper rows are the sunlit tops of the foliage along an irregular outline, not a separate horizontal surface. The whole piece reads as a flat front-facing wall of treetops, so it is a front elevation, not a three-quarter object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small bamboo/treetop skyline strip with only 9 distinct colours in total and a median of 9 per 16x16 tile. The references have about 108 per tile and 427-567 colours overall, so it is far below them on colour count and density. Its greens run about 4 steps, against the references' 5-6 with clustered leaf highlights. The dark edge pixels are tinted dark green (0% neutral), which is acceptable, and flat-fill coverage is 0%, so there are no big flat areas. The leaf clumps are only a few small dabs in a limited number of greens, so the texture is simpler and less varied than the references' individually shaded leaf clusters. Because of the limited ramp and much lower density, it would look thinner and flatter than the references next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14871
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "treetop canopy skyline (light leaf crest at top)",
+      "rows": "11-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dense foliage mass below crest",
+      "rows": "20-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a full-width foliage strip with a ragged, bumpy silhouette on rows 11-17 that widens to 32 px at row 18 and stays constant to row 47. The light crest on rows 12-19 is only the lit upper edge of the leaves. It has no front-edge line, no eave shadow and no ellipse, and it is not a distinct horizontal plane. Below it, rows 20-47 are mottled dark and mid green foliage seen face-on. This is an organic texture with no clear top surface, so it reads as a front elevation, not a three-quarter volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small bamboo/leaf treetop strip with only 9 distinct colours in total and a median of 9 per tile. The references have 427 and 567 colours and a median of about 108 per tile, so the candidate is far below them on every density measure. It shows roughly 4 green steps against the references' 5-6, with some leaf-clump dithering, no 5x5 flat fills, and a dark green outline that is tinted rather than neutral (0% near-neutral dark edge pixels). The clumps are small and repetitive, with little highlight variety and no sub-clump shading. Next to the references' multi-green clumps and highlights it looks flatter and thinner. The palette is limited and the density gap is large, so it does not reach the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14143
+  }
+ ],
+ "decidedAt": "2026-10-20T06:28:44.239Z",
+ "cells": {
+  "16": [
+   "3949839e4e74d7c9",
+   "45c144e31bf1b3a3",
+   "640183979cd0f516",
+   "b3ad0ac61937b925",
+   "f5eb1df1c5fd54a7"
+  ],
+  "24": [
+   "131a7790fbad0d72",
+   "250546d9dc78b231",
+   "49c77bb2e1f28bc4",
+   "5cb2760e4c92fa60",
+   "617086a219af52ea",
+   "62297fac6c53088d",
+   "857a2038cd72b689",
+   "ac88777f7abf91b5",
+   "cf46ce6a7f696446",
+   "d2cdfc1e321afb66",
+   "d2daa2ac3943dbe5",
+   "dafa5399ad05248d"
+  ],
+  "32": [
+   "0771d05c7b549164",
+   "9bd8bafa88659b79",
+   "ba18b977f9472854",
+   "f9efe3e210b8cf8b"
+  ],
+  "48": [
+   "503c0d78ba81653a",
+   "bc2b4d91c936c80d",
+   "de9db6e052f1e9cf"
+  ]
+ }
+}

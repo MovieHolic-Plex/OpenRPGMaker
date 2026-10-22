@@ -4,17 +4,17 @@
  * 「검수 통과」는 보증이 아니다 — 사람이 본다. 고르기는 사람만 한다.
  * 버린 이유는 다음 판 지시문의 「하지 말 것」이 된다(engine.contextFor → rejected).
  */
-import { CALLS_PER_CANDIDATE_ESTIMATE } from "@/harnesses/_core/workshop/engine";
 import type { WorkshopItem, WorkshopRun } from "@/harnesses/_core/workshop/types";
 import { REJECT_REASONS } from "@/harnesses/interior-props/editor/prompts";
 import { el } from "@/util/dom";
-import { workshopObjectId } from "@/project/workshopTiles";
-import { WORKSHOP_MODEL_ADVICE } from "./chat";
+import { toast } from "@/util/toast";
 import { gridDataUrl } from "./pixels";
-import { bakeWorkshopPick, isWorkshopPickBaked, workshopTargetTileset } from "./workshopBake";
+import { gateBadge } from "./gateBadge";
+import { armWorkshopStamp, bakeWorkshopPick, isWorkshopPickBaked, workshopTargetTileset } from "./workshopBake";
 import { store as projectStore } from "@/project/store";
 import type { WorkshopSession } from "./workshopSession";
-import { latestRound, roundProgress } from "./workshopStatus";
+import { latestRound } from "./workshopStatus";
+import { workshopQueue } from "./queue/workshopQueue";
 
 export type RoundViewState = { selected: number; zoom: "fit" | "big"; rejectFor: string | null };
 
@@ -36,7 +36,8 @@ function keyButton(action: string, text: string, onClick: () => void, extra: Rec
   return el("button", { text, attrs: { type: "button", ...extra }, dataset: { keyAction: action }, on: { click: onClick } }) as HTMLButtonElement;
 }
 
-export function renderRoundView(session: WorkshopSession, item: WorkshopItem, state: RoundViewState, rerender: () => void): HTMLElement {
+/** close = 공방 화면을 닫는다(「맵에 놓기」 뒤 맵을 바로 클릭할 수 있게). */
+export function renderRoundView(session: WorkshopSession, item: WorkshopItem, state: RoundViewState, rerender: () => void, close: () => void = () => {}): HTMLElement {
   const round = latestRound(item.key, session.rounds);
   const palette = session.runner.palette(item);
   const current = session.runner.currentGrid(item);
@@ -57,7 +58,8 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     ? [el("p", { class: "workshop-blocked", attrs: { role: "alert" }, text: `작업이 실패했습니다: ${lastError.message}` })] : []);
 
   async function startRound(note: string): Promise<void> {
-    await session.engine.startRound(item, { note });
+    // 판은 작업 줄이 연다(동시 작업 수·계정 한도 멈춤을 줄이 맡는다).
+    await workshopQueue().enqueueObject({ harnessId: session.harnessId, itemKey: item.key, title: item.title, count: drawCount, note, source: "workshop" });
     state.selected = 0;
     await session.reload();
   }
@@ -78,19 +80,24 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     rerender();
   }
 
-  const note = el("textarea", { class: "workshop-note", attrs: { placeholder: "그릴 때 지킬 말(선택) — 예: 나무를 더 밝게, 윗판을 두껍게", "aria-label": "판 메모" } }) as HTMLTextAreaElement;
+  const note = el("textarea", { class: "workshop-note", attrs: { placeholder: "더 바라는 점(선택) — 예: 나무를 더 밝게, 윗판을 두껍게", "aria-label": "더 바라는 점" } }) as HTMLTextAreaElement;
   note.value = notes.get(item.key) ?? "";
   note.addEventListener("input", () => { notes.set(item.key, note.value); });
+  // 다시 그리기는 지난 판에서 고른 장 수 그대로(폼에서 2장을 골랐으면 2장) — 단추 글과 실제 장 수가 같아야 한다.
+  const drawCount = round ? Math.max(1, round.runs.length) : session.runner.candidates;
+  // 작업 줄에서 아직 차례를 기다리는 판이 있으면 같은 판을 또 세우지 않는다.
+  const waiting = workshopQueue().snapshot().jobs.find((view) => view.job.itemKey === item.key && view.job.harnessId === session.harnessId && view.state === "queued" && !view.job.roundId);
   const startBlock = el("div", {
     class: "workshop-start",
     children: [
       note,
-      el("button", {
-        attrs: { type: "button" }, dataset: { testid: "workshop-start-round" },
-        text: `후보 ${session.runner.candidates}장 뽑기 (모델 호출 약 ${session.runner.candidates * CALLS_PER_CANDIDATE_ESTIMATE}번)`,
-        on: { click: () => act(() => startRound(noteText())) },
-      }),
-      el("p", { class: "workshop-item-meta", dataset: { testid: "workshop-model-advice" }, text: WORKSHOP_MODEL_ADVICE }),
+      waiting
+        ? el("p", { class: "workshop-item-meta", dataset: { testid: "workshop-start-waiting" }, text: "작업 줄에서 차례를 기다리는 중이에요. 자리가 나면 바로 그려요." })
+        : el("button", {
+          class: round ? "" : "workshop-primary", attrs: { type: "button" }, dataset: { testid: "workshop-start-round" },
+          text: round ? `후보 ${drawCount}장 다시 그리기` : `후보 ${drawCount}장 그리기`,
+          on: { click: () => act(() => startRound(noteText())) },
+        }),
     ],
   });
 
@@ -100,22 +107,41 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     const grid = pickedRun?.grid;
     if (!grid) return [];
     const baked = isWorkshopPickBaked(item, grid);
-    const objectId = workshopObjectId(item.key);
     const sheetName = item.tilesetId ? `「${projectStore.getCurrent().tilesets[workshopTargetTileset(item)]?.name ?? item.tilesetId}」 칩셋` : "손 도트 실내 칩셋";
+    const placeNote = el("span", { class: "workshop-blocked", attrs: { role: "status" }, dataset: { testid: "workshop-place-note" } });
+    const action = baked
+      ? el("button", {
+        class: "workshop-primary", text: "맵에 놓기", attrs: { type: "button" }, dataset: { testid: "workshop-place" },
+        on: {
+          click: () => {
+            const reason = armWorkshopStamp(item, grid);
+            if (reason) { placeNote.textContent = reason; return; }
+            close();
+            toast(`「${item.title}」 붓을 들었어요. 맵에서 놓을 곳을 누르세요. Esc 로 내려놓아요.`, "info");
+          },
+        },
+      })
+      : el("button", {
+        class: "workshop-primary", text: `고른 ${pick!.letter} 를 프로젝트 칩셋에 넣기`, attrs: { type: "button" }, dataset: { testid: "workshop-bake" },
+        on: { click: () => act(async () => { bakeWorkshopPick(item, grid, palette, session.env, { gate: pickedRun?.gate ?? null }); rerender(); }) },
+      });
     return [el("div", {
-      class: "workshop-bake",
+      class: "workshop-bake" + (baked ? " is-baked" : ""), dataset: { testid: "workshop-bake-row", baked: String(baked) },
       children: [
-        el("button", {
-          text: baked ? `칩셋에 넣음 ✓ (${pick!.letter})` : `고른 ${pick!.letter} 를 프로젝트 칩셋에 넣기`,
-          attrs: { type: "button", ...(baked ? { disabled: "" } : {}) },
-          dataset: { testid: "workshop-bake" },
-          on: { click: () => act(async () => { bakeWorkshopPick(item, grid, palette, session.env); rerender(); }) },
-        }),
-        el("span", {
-          class: "workshop-item-meta",
-          text: baked
-            ? `${sheetName}에 ${objectId} 로 들어갔어요. 조수에게 「${item.title} 놓아 줘」라고 하면 맵에 놓아요.`
-            : `넣으면 이 프로젝트의 ${sheetName} 끝에 칸이 붙고, 조수와 스탬프가 이 기물을 쓸 수 있어요. 되돌리기로 뺄 수 있어요.`,
+        action,
+        el("div", {
+          class: "workshop-bake-text",
+          children: [
+            el("span", {
+              class: "workshop-item-meta",
+              text: baked
+                ? `${sheetName}에 들어갔어요. 「맵에 놓기」를 누르고 맵을 클릭하면 놓여요. 조수에게 「${item.title} 놓아 줘」라고 해도 돼요.`
+                : `넣으면 이 프로젝트의 ${sheetName} 끝에 칸이 붙고, 조수와 스탬프가 이 기물을 쓸 수 있어요. 되돌리기로 뺄 수 있어요.`,
+            }),
+            // 공용(번들·공용 묶음·스토어)은 3/4 시점 관문을 통과한 그림만 — 공방 그림은 아직 그 영수증이 없어 스토어 올리기에서 막힌다(storePublishBlockReason).
+            el("span", { class: "workshop-item-meta", dataset: { testid: "workshop-shared-note" }, text: "이 게임에만 들어가요. 공용(스토어)에 올리려면 3/4 시점 검사를 통과해야 해요." }),
+            placeNote,
+          ],
         }),
       ],
     })];
@@ -127,13 +153,12 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
       el("h3", { text: item.title }),
       el("span", { class: "workshop-chip", text: `${item.width}×${item.height}px` }),
       el("span", { class: "workshop-chip", text: item.category }),
-      ...(round ? [el("span", { class: "workshop-chip", text: `판 ${roundProgress(round).done}/${roundProgress(round).total}` })] : []),
       ...(pick ? [el("span", { class: "workshop-chip is-pass", text: `고름: ${pick.letter}` })] : []),
       el("span", { class: "workshop-round-desc", text: item.description }),
     ],
   });
 
-  if (!round) return el("div", { children: [...errorLine(), head, ...bakeRow(), startBlock, ...(current ? [compare(null)] : [])] });
+  if (!round) return el("div", { class: "workshop-round", children: [...errorLine(), head, ...bakeRow(), startBlock, ...(current ? [compare(null)] : [])] });
 
   const runs = round.runs;
   state.selected = Math.max(0, Math.min(runs.length - 1, state.selected));
@@ -143,9 +168,11 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     const picked = pick?.roundId === round!.id && pick.letter === run.letter;
     const rejected = state.rejectFor === run.letter;
     const facts = [
-      el("span", { class: "workshop-chip", text: `${run.letter} · ${RUN_STATUS[run.status]}${run.status === "drawing" || run.status === "reviewing" ? ` ${run.attempt}/3` : ""}` }),
+      el("span", { class: "workshop-chip", text: `${run.letter} · ${RUN_STATUS[run.status]}${(run.status === "drawing" || run.status === "reviewing") && run.attempt > 1 ? ` ${run.attempt}/3` : ""}` }),
       ...(run.topRows !== null ? [el("span", { class: "workshop-chip", text: `꼭대기 ${run.topRows}행` })] : []),
       ...(run.verdict ? [el("span", { class: `workshop-chip ${run.verdict.verdict === "PASS" ? "is-pass" : "is-fail"}`, text: run.verdict.verdict === "PASS" ? "검수 통과" : `검수 불통과 ${run.verdict.codes.join(",")}`, attrs: { title: run.verdict.reasons } })] : []),
+      // 3/4 관문 조언(판정 1번, 막지 않음) — 조수 카드와 같은 배지(gateBadge.ts)
+      ...(gateBadge(run) ? [gateBadge(run)!] : []),
       ...(run.attempt > 1 ? [el("span", { class: "workshop-chip", text: `다시 그림 ${run.attempt - 1}번` })] : []),
       ...(run.error ? [el("span", { class: "workshop-chip is-fail", text: run.error, attrs: { title: run.error } })] : []),
     ];
@@ -156,14 +183,15 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
       children: [
         el("div", {
           class: "workshop-card-art",
-          children: run.grid ? [el("img", { attrs: { src: gridDataUrl(run.grid, palette, scale, BACKGROUND), alt: `후보 ${run.letter}` } })] : [el("span", { text: RUN_STATUS[run.status] })],
+          children: run.grid ? [el("img", { attrs: { src: gridDataUrl(run.grid, palette, scale, BACKGROUND), alt: `후보 ${run.letter}` } })]
+            : [el("span", { class: "workshop-card-wait" + (run.status === "drawing" || run.status === "reviewing" || run.status === "queued" ? " is-busy" : ""), text: RUN_STATUS[run.status] })],
         }),
         el("div", { class: "workshop-card-facts", children: facts }),
         ...(run.note ? [el("div", { class: "workshop-item-meta", text: run.note })] : []),
         el("div", {
           class: "workshop-card-actions",
-          children: run.grid ? [
-            el("button", { text: picked ? "고름 ✓" : "고르기", attrs: { type: "button" }, dataset: { testid: "workshop-pick" }, on: { click: (e) => { e.stopPropagation(); act(() => choose(run)); } } }),
+          children: run.grid && (run.status === "done" || run.status === "failed") ? [
+            el("button", { class: picked ? "workshop-pick is-picked" : "workshop-pick", text: picked ? "고름 ✓" : "고르기", attrs: { type: "button" }, dataset: { testid: "workshop-pick" }, on: { click: (e) => { e.stopPropagation(); act(() => choose(run)); } } }),
             el("button", { text: "버리기", attrs: { type: "button" }, dataset: { testid: "workshop-reject" }, on: { click: (e) => { e.stopPropagation(); state.rejectFor = run.letter; rerender(); } } }),
             el("button", { text: "이 장 다시", attrs: { type: "button" }, on: { click: (e) => { e.stopPropagation(); act(() => session.engine.redrawRun(round!.id, run.letter, noteText())); } } }),
           ] : [],
@@ -199,15 +227,17 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
 
   const pending = runs.some((run) => run.status === "queued" || run.status === "drawing" || run.status === "reviewing");
   return el("div", {
+    class: "workshop-round",
     children: [
       ...errorLine(),
       head,
       ...bakeRow(),
-      el("p", { class: "workshop-item-meta", text: `1~${runs.length} 카드 · Enter 고르기 · X 버리기 · 0 지금 것이 낫다 · R 이 장 다시 · F 확대 · ↑↓ 기물. 「검수 통과」는 AI 판정일 뿐입니다 — 직접 보고 고르세요.` }),
+      // 그린 장이 하나도 없으면(그리는 중·막힘) 검수·단축키 안내는 소음이다.
+      ...(!runs.some((r) => r.grid) ? [] : [el("p", { class: "workshop-keys", text: `「검수 통과」는 AI 판정일 뿐이에요. 직접 보고 고르세요. 단축키: 1~${runs.length} 카드, Enter 고르기, X 버리기, R 이 장 다시, F 확대.` })]),
       el("div", { class: "workshop-cards" + (state.zoom === "big" ? " is-big" : ""), children: runs.map(card) }),
-      compare(selectedRun ?? null),
+      ...(current ? [compare(selectedRun ?? null)] : []),
       pending
-        ? el("button", { attrs: { type: "button" }, text: "이 판 그만 그리기", on: { click: () => act(() => session.engine.cancelRound(round.id)) } })
+        ? el("div", { class: "workshop-start", children: [el("button", { attrs: { type: "button" }, text: "이 판 그만 그리기", on: { click: () => act(() => session.engine.cancelRound(round.id)) } })] })
         : startBlock,
       hidden,
     ],

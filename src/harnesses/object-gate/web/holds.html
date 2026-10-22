@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<title>오브젝트 게이트 — 사람 검토 대기열</title>
+<title>오브젝트 게이트 — Opus 최종 판정 · 검토 대기열</title>
 <style>
   body { margin: 0; font: 14px/1.5 system-ui, sans-serif; background: #1d1f24; color: #e8e6e1; }
   header { padding: 12px 20px; background: #26292f; border-bottom: 1px solid #3a3d44; position: sticky; top: 0; z-index: 2; }
@@ -19,6 +19,9 @@
   .chip .n { color: #e7c27a; font-weight: 600; }
   #batchbar { margin-top: 8px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
   #batchbar .title { font-weight: 600; }
+  #batchbar .explain { flex-basis: 100%; background: #1d2a1f; border: 1px solid #3d5a40; border-radius: 6px; padding: 10px 12px; }
+  #batchbar .explain-text { white-space: pre-line; line-height: 1.55; font-size: 14px; margin-bottom: 8px; max-width: 980px; }
+  #batchbar .explain img { max-width: 100%; image-rendering: pixelated; border-radius: 4px; display: block; }
   main { padding: 16px 20px; display: grid; gap: 14px; }
   .card { background: #26292f; border: 1px solid #3a3d44; border-radius: 8px; padding: 12px 14px; }
   .card.done { opacity: .6; }
@@ -44,12 +47,13 @@
 </head>
 <body>
 <header>
-  <h1>사람 검토 대기열 — 허용 / 거절 (최종 판정은 사람)</h1>
+  <h1>Opus 최종 판정 · 검토 대기열 (최종 = Opus 5.5 적대적 판정, 사람 거절은 덮어쓴다)</h1>
   <div class="meta totals" id="meta">불러오는 중…</div>
   <div class="meta" style="margin-top:6px">결정한 사람 <input type="text" id="who" size="12" placeholder="이름">
-    <label>AI 조언 <select id="ai"><option value="">전부</option><option value="refer">보류</option><option value="fail">불합격</option><option value="pass">통과(미보정)</option><option value="none">판정 없음</option></select></label>
+    <label>Opus <select id="opus"><option value="">전부</option><option value="fail">불합격(다시 그리기)</option><option value="pass">통과</option><option value="none">판정 없음</option></select></label>
+    <label>옛 AI 조언 <select id="ai"><option value="">전부</option><option value="refer">보류</option><option value="fail">불합격</option><option value="pass">통과(미보정)</option><option value="none">판정 없음</option></select></label>
     <label><input type="checkbox" id="decided"> 이미 결정한 것도 보기</label></div>
-  <div class="meta" style="margin-top:4px">AI 판정은 조언이다. 허용은 이 그림(화소 해시)·이 종류에만 묶이고, 서명되어 모든 출구(번들·공용·스토어·공방)를 연다. 거절은 최종이다. 그림이 한 화소라도 바뀌면 새로 판정·결정해야 한다.</div>
+  <div class="meta" style="margin-top:4px">최종 판정은 Opus 5.5 medium 적대적 판정이다(보정된 프로필만 효력). Opus 불합격은 다시 그린다. 사람 거절은 Opus 통과도 막는 최종 차단이다. 사람 허용은 이제 선택이며 Opus 판정이 없는 그림에만 효력이 있다. 옛 AI(Sonnet·gemini) 판정은 참고다. 그림이 한 화소라도 바뀌면 새로 판정받아야 한다.</div>
   <div id="batches"></div>
   <div id="batchbar"></div>
 </header>
@@ -69,20 +73,21 @@ async function load(batch) {
   data = await (await fetch('/api/queue?' + q)).json();
   current = data.batch;
   const t = data.totals;
-  document.getElementById('meta').innerHTML = `판정 프로필 ${esc(data.currentProfile)} (${esc(data.profileStatus)}) · 대기 <b>${t.waiting}</b> · 허용 <b>${t.allowed}</b> · 거절 <b>${t.rejected}</b> · 보정 프로필 자동 통과 ${t.autoPass}`;
-  document.getElementById('batches').innerHTML = data.batches.map(b => `<span class="chip ${b.id === current ? 'on' : ''} ${b.auto ? 'auto' : ''}" data-id="${esc(b.id)}" title="${esc(b.title)}">${esc(b.auto ? b.id.slice(5) : b.title)} <span class="n">${b.waiting}</span>${b.allowed ? ` · 허용 ${b.allowed}` : ''}${b.rejected ? ` · 거절 ${b.rejected}` : ''}</span>`).join('');
+  document.getElementById('meta').innerHTML = `Opus 최종 프로필 ${esc((data.finalProfiles || []).join(', ') || '보정 안 됨')} · Opus 통과 <b>${t.opusPass}</b> · Opus 불합격 <b>${t.opusFail}</b> · Opus 판정 없음(대기) <b>${t.waiting}</b> · 사람 허용 <b>${t.allowed}</b> · 사람 거절 <b>${t.rejected}</b> · 옛 프로필 ${esc(data.currentProfile)} (${esc(data.profileStatus)})`;
+  document.getElementById('batches').innerHTML = data.batches.map(b => `<span class="chip ${b.id === current ? 'on' : ''} ${b.auto ? 'auto' : ''}" data-id="${esc(b.id)}" title="${esc(b.title)}">${esc(b.auto ? b.id.slice(5) : b.title)} <span class="n" title="Opus 불합격">✗${b.opusFail}</span> <span title="Opus 통과">✓${b.opusPass}</span> <span title="판정 없음">·${b.waiting}</span>${b.allowed ? ` · 허용 ${b.allowed}` : ''}${b.rejected ? ` · 거절 ${b.rejected}` : ''}</span>`).join('');
   for (const c of document.querySelectorAll('.chip')) c.onclick = () => load(c.dataset.id);
   render();
 }
 function render() {
   const b = data.batches.find(x => x.id === current);
-  const ai = document.getElementById('ai').value;
-  const items = data.items.filter(i => !ai || (ai === 'none' ? !i.aiVerdict : i.aiVerdict === ai));
+  const ai = document.getElementById('ai').value, op = document.getElementById('opus').value;
+  const items = data.items.filter(i => (!ai || (ai === 'none' ? !i.aiVerdict : i.aiVerdict === ai)) && (!op || (op === 'none' ? !(i.opus && i.opus.calibrated) : i.opus && i.opus.calibrated && i.opus.verdict === op)));
   const ready = data.items.filter(i => i.status === 'waiting' && i.hasImage);
   document.getElementById('batchbar').innerHTML = b ? `<span class="title">${esc(b.title)}</span>
-    <span class="meta">전체 ${b.total} · 대기 ${b.waiting}(AI 통과 ${b.ai.pass} · 보류 ${b.ai.refer} · 불합격 ${b.ai.fail}) · 허용 ${b.allowed} · 거절 ${b.rejected}${b.noReceipt ? ` · AI 판정 대기 ${b.noReceipt}` : ''}${b.autoPass ? ` · 자동 통과 ${b.autoPass}` : ''}${b.waiting - b.withImage ? ` · 그림 없음 ${b.waiting - b.withImage}` : ''}</span>
+    <span class="meta">전체 ${b.total} · Opus 통과 ${b.opusPass} · Opus 불합격 ${b.opusFail} · Opus 판정 없음 ${b.waiting}(AI 통과 ${b.ai.pass} · 보류 ${b.ai.refer} · 불합격 ${b.ai.fail}) · 허용 ${b.allowed} · 거절 ${b.rejected}${b.noReceipt ? ` · AI 판정 대기 ${b.noReceipt}` : ''}${b.autoPass ? ` · 자동 통과 ${b.autoPass}` : ''}${b.waiting - b.withImage ? ` · 그림 없음 ${b.waiting - b.withImage}` : ''}</span>
     <button class="allall" id="allall" ${ready.length ? '' : 'disabled'}>이 묶음 전부 허용 (${ready.length}장)</button>
-    ${b.note ? `<div class="meta" style="flex-basis:100%">${esc(b.note)}</div>` : ''}` : '';
+    ${b.note ? `<div class="meta" style="flex-basis:100%">${esc(b.note)}</div>` : ''}
+    ${b.explainText || b.hasExplainImage ? `<div class="explain">${b.explainText ? `<div class="explain-text">${esc(b.explainText)}</div>` : ''}${b.hasExplainImage ? `<img src="/explain/${encodeURIComponent(b.id)}.png" alt="이 묶음이 쓰이는 곳">` : ''}</div>` : ''}` : '';
   const all = document.getElementById('allall'); if (all) all.onclick = () => allowBatch(b, ready);
   const list = document.getElementById('list');
   if (!items.length) { list.innerHTML = '<div class="empty">이 묶음에는 사람 결정을 기다리는 그림이 없다.</div>'; return; }
@@ -91,16 +96,18 @@ function render() {
     const img = i.hasImage && w ? `<figure><img class="pix" loading="lazy" src="/img/${i.sha}.png" width="${w}" height="${h}"><figcaption>1배</figcaption></figure>
       <figure><img class="pix" loading="lazy" src="/img/${i.sha}.png" width="${w * z4}" height="${h * z4}"><figcaption>4배</figcaption></figure>` : `<div class="why">${i.aiVerdict ? '그림이 저장돼 있지 않다 — object-gate enqueue/review 로 다시 받아야 결정할 수 있다.' : 'AI 판정(조언)이 아직 없다 — 판정이 끝나면 결정할 수 있다.'}</div>`;
     const refs = (i.refs || []).map(r => `<figure><img class="pix ref" data-src="/ref/${esc(i.styleKind)}/${esc(r)}.png"><figcaption>버들항 ${esc(r)} (4배)</figcaption></figure>`).join('');
-    const dec = i.decision ? `<span class="status" style="color:${i.decision.decision === 'allow' ? '#7fd38f' : '#f08a8a'}">${i.decision.decision === 'allow' ? '허용됨' : '거절됨(최종)'} — ${esc(i.decision.decidedBy)} ${esc(i.decision.decidedAt.slice(0, 16))}${i.decision.note ? ' · ' + esc(i.decision.note) : ''}</span>` : '';
-    const can = i.status === 'waiting' && i.hasImage;
+    const dec = i.decision ? `<span class="status" style="color:${i.decision.decision === 'allow' ? '#7fd38f' : '#f08a8a'}">${i.decision.decision === 'allow' ? (i.decision.by === 'delegated' ? '허용됨(위임)' : '허용됨') : '거절됨(최종)'} — ${esc(i.decision.decidedBy)}${i.decision.by === 'delegated' ? ' ← 위임: ' + esc(i.decision.delegatedBy || '') : ''} ${esc(i.decision.decidedAt.slice(0, 16))}${i.decision.note ? ' · ' + esc(i.decision.note) : ''}</span>` : '';
+    const can = i.status === 'waiting' && i.hasImage, canReject = (i.status === 'opus-pass' || i.status === 'opus-fail') && !i.decision;
+    const ot = i.opus ? `<span class="tag t-${i.opus.verdict}">Opus ${word(i.opus.verdict)}${i.opus.calibrated ? '' : '(미보정 프로필)'}</span><span class="sub">3/4 ${word(i.opus.view34)} · 화풍 ${word(i.opus.style)}${i.opus.kindOk ? '' : ' · 종류 틀림'}${i.opus.sure ? '' : ' · 확신 없음'} · ${esc(i.opus.profileHash)}</span><div class="why">${(i.opus.reasons || []).map(esc).join('<br>')}</div>` : '<span class="tag">Opus 판정 없음</span>';
     const tag = i.aiVerdict ? `<span class="tag t-${i.aiVerdict}">AI ${word(i.aiVerdict)}${i.aiVerdict === 'pass' && !i.calibrated ? '(미보정)' : ''}</span>` : '<span class="tag">AI 판정 없음</span>';
     return `<section class="card ${i.decision ? 'done' : ''}" data-sha="${i.sha}" data-kind="${esc(i.kind)}">
       <div class="title">${esc(i.label)} <span class="sub">· 종류 ${esc(i.kind)}</span></div>
-      <div class="advice">${tag}<span class="sub">3/4 ${word(i.view34)} · 화풍 ${word(i.style)}${i.profileHash ? ' · 프로필 ' + esc(i.profileHash) : ''}</span>
+      <div class="advice">${ot}</div>
+      <div class="advice" style="opacity:.75">옛 ${tag}<span class="sub">3/4 ${word(i.view34)} · 화풍 ${word(i.style)}${i.profileHash ? ' · 프로필 ' + esc(i.profileHash) : ''}</span>
         <div class="why">${(i.reasons || []).map(esc).join('<br>')}</div></div>
       <div class="sub">종류 뜻: ${esc(i.kindMeaning)} · 해시 ${i.sha}</div>
       <div class="row" style="margin-top:6px">${img}<div class="refs">${refs}<figure><img class="pix" loading="lazy" src="/guide/pairs.png" style="max-width:420px;height:auto"><figcaption>3/4 기준 쌍(초록 = 맞음, 빨강 = 틀림)</figcaption></figure></div></div>
-      <div class="btns" style="margin-top:10px">${can ? `<button class="allow">허용</button><button class="reject">거절</button> 메모 <input type="text" class="note" size="30">` : ''}${dec}</div>
+      <div class="btns" style="margin-top:10px">${can ? `<button class="allow">허용</button><button class="reject">거절</button> 메모 <input type="text" class="note" size="30">` : canReject ? `<button class="reject">사람 거절(최종)</button> 메모 <input type="text" class="note" size="30">` : ''}${dec}</div>
     </section>`;
   }).join('');
   for (const im of document.querySelectorAll('img.ref')) { im.onload = () => { im.width = im.naturalWidth * 4; im.height = im.naturalHeight * 4; }; im.src = im.dataset.src; }
@@ -131,6 +138,7 @@ async function allowBatch(b, ready) {
 }
 document.getElementById('decided').addEventListener('change', () => load());
 document.getElementById('ai').addEventListener('change', render);
+document.getElementById('opus').addEventListener('change', render);
 load();
 </script>
 </body>

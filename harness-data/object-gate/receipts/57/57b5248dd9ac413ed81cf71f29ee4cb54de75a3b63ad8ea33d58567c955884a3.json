@@ -1,0 +1,414 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "57b5248dd9ac413ed81cf71f29ee4cb54de75a3b63ad8ea33d58567c955884a3",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "konbini magazine rack",
+ "label": "modern_city_interior/konbini-magazine-rack",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 32,
+  "tileColorsP90": 34,
+  "darkV5": 70,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top header board / back band of upper cubby",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "upper shelf board",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "middle shelf board",
+      "rows": "21-22",
+      "evidence": "none",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "bottom shelf board",
+      "rows": "26-27",
+      "evidence": "none",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "28"
+     },
+     {
+      "part": "magazines on shelves",
+      "rows": "9-13, 16-20, 22-25",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The rack is a shelf unit drawn face-on. Posts start at rows 2-3, and the body runs from row 4 to row 31 with widths 28-32. The top band at rows 5-7 is a flat tan strip with a brighter row 7 and a dark row 8. It sits recessed between the posts and reads as a header or back board, not a horizontal surface. Each shelf (rows 14, 21, 26-27) is only a 1-2 row light edge with a dark line under it, so these are rims, not top surfaces. The magazines are seen with their covers facing the viewer and no opening is seen from above. There is no ellipse, no roof, and no container mouth. The whole piece is a front elevation with no real top surface, and it is not an open container."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden magazine rack with a tiered frame and rows of small magazines in varied colours. It reads as a proper standing prop at the same scale as the references. Measured facts: 32 visible tones per 16x16 tile against 17-20 for the richer references (stall, well), 0% near-flat coverage, and 0% near-neutral dark edge pixels. The outline is therefore tinted, not a neutral black line, and the picture agrees: it is a dark brown lean next to the wood frame. The wood frame shows several steps (highlight, light, mid, dark, deep) with grain and edge lighting. The magazine spines and covers add varied detail, with no large flat fills. It is at least as dense as the stall and well references and does not look like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20888
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top header board / cornice band",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "magazines on upper shelf",
+      "rows": "10-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf board edge (upper)",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "magazines on middle shelf",
+      "rows": "16-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf board edge (middle)",
+      "rows": "21-22",
+      "evidence": "none",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "magazines on lower shelf",
+      "rows": "23-25",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower shelf board and base plinth",
+      "rows": "26-31",
+      "evidence": "none",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "28-30"
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a face-on shelving unit. Wooden posts run down both sides and rows of magazines are drawn as vertical covers in three bays. Each shelf is a thin 1-row tan edge line with a 1-row dark shadow (rows 14-15, 21-22, 26-27), so none of them shows a horizontal top surface seen from above. The top band (rows 5-7) reads as a header board or back-shelf strip inside the frame, with no ellipse and no opening seen from above. The magazines are not contents of an open container seen from above, so the object does not read as an open container. It is a front elevation with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden magazine rack with rows of small magazine covers in varied colours. Wood frame shows several tones (light top edge, mid, dark shelf shadow), and the magazine rows add many small distinct patches. Measured: 32 visible tones per tile, above the stall (17) and well (20) references, with 0% near-flat coverage. 0% of dark edge pixels are neutral, so the outline is tinted, a dark brown beside the wood, matching the Beodeul approach rather than a black sticker line. No large flat fills; the rack is dense and detailed at the same scale as the references. It would sit comfortably next to the stall and well props.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20244
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top compartment back panel / top board",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "shelf boards",
+      "rows": "14, 21, 26-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "magazines on shelves",
+      "rows": "9-13, 16-20, 22-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The rack is drawn flat-on, like the WRONG bookshelf reference. The width profile is nearly constant (28, 30, 32 px) with no ellipse and no widening and narrowing at the top. Rows 5-7 are a tan gradient band that gets lighter downward and then meets a dark line at row 8. It reads as the inside back of the top cubby, not a horizontal surface seen from above. The shelf boards (rows 14, 21, 26-27) are 1-2 row strips. The magazines are shown face-on as vertical covers, so they do not show contents seen from above through an opening. There is no top surface of 3 or more rows, so it is front elevation. It also does not fit the container kind, which needs an opening seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate magazine rack is a wooden shelf frame with rows of small multicolour magazine covers. It measures 32 visible tones per 16x16 tile, above the stall (17), well (20) and hedge (9) references. Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% near-neutral, so the outline is tinted, a dark brown beside the wood rather than a black sticker line. The wood frame shows several lightness steps with a highlighted top rail and shaded sides. The magazine covers add varied cluster detail comparable to the stall goods. It would sit next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15838
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top header board / cornice strip",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "shelf boards (1-row tan edge lines at rows 14, 21, 26-27)",
+      "rows": "14-14",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "magazines on shelves (face-on covers)",
+      "rows": "10-13, 16-20, 22-25",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth / front face",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is an open shelving unit seen straight-on, not a container with an opening seen from above. Its width profile is a stepped rectangle with posts at rows 2-3. Rows 5-7 are a thin tan header strip with a lighter gradient and no real edge line or eave, which reads as a face-on cornice or rim of about 2 rows. Each shelf is a 1-row tan line (rows 14, 21, 26-27) with magazine covers drawn as vertical faces between them. No ellipse and no opening interior is seen from above. Nothing shows a horizontal surface of 3 or more rows, so it is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden magazine rack with a tilted slatted frame and rows of colourful magazine covers. It shows 32 visible tones per 16x16 tile, above the references with measurable tiles (hedge 9, cheese stall 17, well 20). Near-flat coverage is 0%, so there are no flat fills. The wood frame has several steps (highlight, light, mid, dark, deep). The magazines add per-cover variation and small detail dots. The dark edge pixels are 0% near-neutral, so the outlines lean dark brown and match the adjacent wood, like the hedge and cheese stall, rather than a black sticker line. Its detail level and structure match the references, and it would sit comfortably next to the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18534
+  }
+ ],
+ "decidedAt": "2026-10-20T23:53:05.201Z",
+ "cells": {
+  "16": [
+   "2e1be71cbe4daa79",
+   "483fca3abaad8659",
+   "71ba7cc5a2475fc6",
+   "f702883b5d7d7d6f"
+  ],
+  "24": [
+   "0214c7704267946a",
+   "042306140e1fc8d7",
+   "171134c6e13500fd",
+   "186fe3a8f94eac9a",
+   "236fbb32734ea0ac",
+   "24df64e74efc7eb0",
+   "2751d97582546e5a",
+   "29e6a34398e927cd",
+   "3e8bcedfdb799818",
+   "5b54c1474e13b12e",
+   "6ae4317d0089c92e",
+   "747fcfeccf793e76",
+   "7bae4c6b8eb3194d",
+   "82b53642983fdd96",
+   "82dea00f88167c22",
+   "87bf9725c3c76d9f",
+   "91d995177ea73e8e",
+   "a961427b3949328a",
+   "bae7870f8e56f715",
+   "c9b33abe4c44c674",
+   "cd44898d3bd9febb",
+   "e16872399253b5f3",
+   "e63635275721eb89",
+   "fc81b3f0243732dd"
+  ],
+  "32": [
+   "2b509b7ba1fd4966"
+  ],
+  "48": [
+   "1880cad82373e8fc",
+   "312de076b63eb9fa",
+   "5d361657f7e1606f",
+   "746fafc7c7efa968",
+   "a9f90a31dbf7dda7",
+   "d914593ed7f487a1"
+  ]
+ }
+}

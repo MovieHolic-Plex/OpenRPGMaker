@@ -120,7 +120,7 @@ export function scopeUsesJpCity(project: Pick<Project, "tilesets" | "maps">, map
 
 /** jp_city 작업 첫 요청부터 스키마가 보여야 하는 도구 — 조립 도구 둘과, 그 앞뒤 순서(참고문서 → 땅 → 도로 → 검사)에 쓰는 것. */
 export const JP_CITY_EXPOSED_TOOLS: readonly string[] = [
-  "compose_jp_city_street", "list_jp_regions", "compose_jp_region", "list_jp_city_building_parts", "build_jp_city_building", "list_tileset_references", "read_tileset_reference",
+  "compose_jp_city_street", "list_jp_regions", "compose_jp_region", "paint_jp_forest", "list_jp_city_building_parts", "build_jp_city_building", "list_tileset_references", "read_tileset_reference",
   "create_map", "fill_region", "lay_path", "paint_tiles", "stamp_object", "check_reachability", "show_map_region", "ask_tileset_change",
   "set_street_traffic", "set_map_transit", "inspect_map_transit", "import_region_reference", "list_hand_interior_parts", "build_hand_interior_room", "link_jp_city_interior",
 ];
@@ -133,6 +133,7 @@ export const JP_CITY_POINTER_LINE =
   + "compose 는 끝에 남은 빈 대지를 쓰임(보도에 닿는 코인 주차·골목 자판기/자전거·생울타리 놀이터·텃밭·공사장·광장 분수/시계탑·화단·매점)으로 스스로 채운다 — 건물을 손으로 더하거나 옮긴 뒤에는 compose_jp_city_street({lotsOnly:true, style}) 를 한 번 더 불러 새로 생긴 빈터만 채운다(빈 땅에 소품을 하나씩 흩뿌리지 않는다). "
   + "결과 요약의 「빈터 쓰임 N곳」과 show_map_region 으로 확인한다: 쓰임이 0~1곳인데 맨 자갈이 넓게 남았으면 seed 를 바꿔 replace:true 로 다시 짠다. 사용자가 놀이터·코인 주차·텃밭·광장 분수를 콕 집어 원했는데 안 나왔으면 맵을 키우거나(50×36 이상) seed 를 바꾼다 — 빈터 쓰임은 남은 땅의 크기·위치로 고르므로 손으로 한 칸씩 찍어 맞추지 않는다. 건물 지붕 너머 1~2칸 틈에 남은 자갈은 숨 쉴 자리로 둔다. "
   + "상가 거리가 아닌 일본 장소(역 앞 로터리·운하·요코초·단치·건널목·언덕 계단 마을·마치야·고교·대학·공원·박물관 광장·마츠리·도리이 신사·오중탑 사찰·성 해자·석조 유적·지장 고개·대숲 등산로·로프웨이·계곡 폭포·습원 데크·폐선 터널·온천 마을·다랑논·어항·해변·무인역)는 list_jp_regions({query}) 로 30종 중 지역 id 를 고르고 compose_jp_region({region, seed}) 한 번으로 짓는다(맵은 region.size 권장, 40×28 이상). "
+  + "숲(신사 옆 진수의 숲·공원 숲·산자락·집 뒤 숲)은 paint_jp_forest({rect 또는 beside:{x,y,w,h,side,depth} 또는 besideLocation, forestType:\"dense\"|\"grove\", grounding}) 한 번으로 — 나무 키트를 여러 번 stamp 하거나 수관 칸을 번호로 칠하지 않는다(잔디 칸만 숲이 되고 길·물·건물은 비켜 간다, 4×4 칸 이상). 자리는 숲을 원하는 잔디 구역만 — 맵 전체를 주지 않는다. 신사 옆이면 dense, 공원 안이면 grove. compose_jp_region·compose_jp_city_street 가 이미 숲을 깔았으면 show_map_region 으로 보고 모자랄 때만 더한다. "
   + "짠 뒤: 건물 하나만 고칠 때만 build_jp_city_building(id 는 list_jp_city_building_parts), 땅·소품 보정은 fill_region·stamp_object(kit:jp_city/…), 탈것은 set_map_transit. author_beodeul_town 은 쓰지 않는다. "
   + "집·가게 실내(현관·LDK·편의점·음식점·목욕탕·의원)는 완성 장소(import_region_reference) 또는 build_hand_interior_room({tileset:\"jp_city\", layout:{program:\"house-1f\" 또는 rooms:[{kind:\"genkan\"},…]}}) — 부품은 list_hand_interior_parts({tileset:\"jp_city\"}). "
   + "사무실·회의실·급탕실·병원(대기실·진찰실·병실·약국)과 일본 학교(교실·신발장 복도·교무실·보건실·특별교실) 실내도 jp_city 다 — layout:{program:\"office-floor\"|\"office-1f\"|\"hospital-1f\"|\"hospital-2f\"|\"school-1f\"|\"school-2f\"|\"school-3f\"} (일본 표지 없는 교실·대학 강의실은 캠퍼스 칩셋). "

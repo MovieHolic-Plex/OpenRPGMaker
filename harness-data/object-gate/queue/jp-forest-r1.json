@@ -1,0 +1,653 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "jp-forest-r1",
+ "title": "jp_city 숲 r7 · 나무 24 · 대숲 3 · 거리 건물 55 · 탈것 23 · 숲 바닥 2",
+ "note": "독립 Opus 5.5 medium 적대 VQA r1~r7, r7 전부 통과 107/107. 영수증 harness-data/object-gate/vqa/jp-forest-r1.opus-vqa-r7.json (PR #3058). 승용차·트럭 오른쪽 12프레임은 묶음 jp-vehicles-12 와 같은 그림이라 같은 종류(box)",
+ "explainImage": "jp-forest-r1.explain.png",
+ "explainText": "신사 지역에 새 숲(나무·접지 그늘·이끼 바닥)을 깐 실제 도구 결과 4배. 거리 건물·탈것은 같은 판 다시 그리기.",
+ "createdAt": "2026-10-21T04:27:38.719Z",
+ "items": [
+  {
+   "sha": "75e8c0bf07330a4597807a6a758891bf5538190ea9013ca2b0adffd84d0b7ee5",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T40",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T40.png"
+  },
+  {
+   "sha": "2b8b0ab6fc28d3a31dc86d68ec1cca51262491a633697f34e3f24828dd2a784f",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T41",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T41.png"
+  },
+  {
+   "sha": "42bb052e60ccfc8cef86245547328ca6a2ad94b9a147114c1be7f44c79e4965a",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T42",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T42.png"
+  },
+  {
+   "sha": "0752fa9eea5ee4d3c4b1a1e429ae2b395c0f3a0e396afeec32dbf4acf1abafd7",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T40d",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T40d.png"
+  },
+  {
+   "sha": "3f18bf810056b462e853d6205fc13a1570523e1e03ea167a6a064c7f6c392535",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T41d",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T41d.png"
+  },
+  {
+   "sha": "4f8213abf012ba5a292634e459feb6fbea7c0ae4f95d932b3ffe97ad9cf4ea6d",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T42d",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T42d.png"
+  },
+  {
+   "sha": "9eb26f465ad314920c6b7833d27820cd0e2dc0a60bd76f3134cad25d22c62b38",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T30",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T30.png"
+  },
+  {
+   "sha": "561d7def49229019ce98131e915ffd574ba79934fed0bc36af897ded9e3e125f",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T31",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T31.png"
+  },
+  {
+   "sha": "b4ee1500420e50f9e4dd7e30942fc1b1c5b1c3406ce73365399ac654dbb7f2c9",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T32",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T32.png"
+  },
+  {
+   "sha": "e7e39975531ae4ff9c1fc33c7b69cf09446ec1cd33db9e6d573fc44cdec3dc90",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T33",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T33.png"
+  },
+  {
+   "sha": "c1fb776040b9a5ceda5e8a1659187b8e1fbed0d98892732a5b5199c82a6dede6",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T34",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T34.png"
+  },
+  {
+   "sha": "249e28d99ecc71eb515bd57f2ca9d487d33f8cd645ea409682439e78007ee602",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T30d",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T30d.png"
+  },
+  {
+   "sha": "c81408cad32a938d0dbf6676e1e48f9f3df53f021e5a12af49920ffc2b32f06d",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T31d",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T31d.png"
+  },
+  {
+   "sha": "40b01d44e516c831d9b106ee4555fc39811f67101b20a5fb550378f543976da3",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T32d",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T32d.png"
+  },
+  {
+   "sha": "4e28bb13d0b4bac8076305de2d79aeb711c88570d4dc68e06a5550435cdbc2f7",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T33d",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T33d.png"
+  },
+  {
+   "sha": "46d280867896f669c7d76bf3cdcf34c34687c67612307dc614e5e85e821ab577",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T34d",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T34d.png"
+  },
+  {
+   "sha": "bdfaa2f8729894973420a6a84ad750fea5074c3932d15f2e578855e7f9ca659d",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T20",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T20.png"
+  },
+  {
+   "sha": "3a93bcfacfc8b47b5255d26a32a4587fbe73a9e027698c9812e5a60c72acb15a",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T21",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T21.png"
+  },
+  {
+   "sha": "2c30d72f10f5bb98e005f0f5ee04fabc09fecae791f07de08f50585508d9a37e",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T22",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T22.png"
+  },
+  {
+   "sha": "58007825a5a24e7e2b132fd4a1333dd8c69c6e6e5045a7d830ed61f304d19ae4",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T23",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T23.png"
+  },
+  {
+   "sha": "fa106009dbf1697d4545de7c5c2a6a25ff7ba96bb5c6b7e8e8b857f5f120e326",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T20d",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T20d.png"
+  },
+  {
+   "sha": "564676a0a1a060870ddd97d138669a7a928988d8631024b2364d38a627b3fea8",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T21d",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T21d.png"
+  },
+  {
+   "sha": "f6a76941528f03e2a14a89734f5e5f79ca7a8e80086725b35815509d3602267e",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T22d",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T22d.png"
+  },
+  {
+   "sha": "0b851f8d10f60639c72715ecfbc2dcbfab475e1b70a69e9d1c7370b35e3fb93b",
+   "kind": "organic",
+   "label": "jp_forest_r4/bl-T23d",
+   "source": "/home/main/.cache/jpf/enq-forest/tree-bl-bl-T23d.png"
+  },
+  {
+   "sha": "0d18f36d65458bb7207e04c563844538c230c227f087fd00bbbda3668fae7886",
+   "kind": "box",
+   "label": "jp_vehicles/jp-car-white/right",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-car-white-right.png"
+  },
+  {
+   "sha": "599235368e01c47ae85f2af1bb45f7cfe1e0edd74b7c0cb0d179ec5aa97ebe44",
+   "kind": "other",
+   "label": "jp_vehicles/jp-car-white/left",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-car-white-left.png"
+  },
+  {
+   "sha": "aa90dbaaef87b8f6d19dbd8dc026956ac6c1427e926a8633d1a2e900708528b7",
+   "kind": "box",
+   "label": "jp_vehicles/jp-car-silver/right",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-car-silver-right.png"
+  },
+  {
+   "sha": "46e8568bc332edcd84c6a66b325eeb383eeb8db95ff3610c5c181d3381101006",
+   "kind": "other",
+   "label": "jp_vehicles/jp-car-silver/left",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-car-silver-left.png"
+  },
+  {
+   "sha": "b95207e5034207f93584c48dd9445d2f2bbc936c8668289bde8142ad9c424c53",
+   "kind": "box",
+   "label": "jp_vehicles/jp-car-black/right",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-car-black-right.png"
+  },
+  {
+   "sha": "6a845ac826b020efe7bda08626d488641fa03da3b7ba3a0fafe53db657ec8b24",
+   "kind": "other",
+   "label": "jp_vehicles/jp-car-black/left",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-car-black-left.png"
+  },
+  {
+   "sha": "4d0783169e9ebfb1511ba3c68271daeb2dc57cbf4ed3999939eb388f88262362",
+   "kind": "box",
+   "label": "jp_vehicles/jp-car-red/right",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-car-red-right.png"
+  },
+  {
+   "sha": "1bb073c816128b3622b613cfb2f840f081cb10576a2c8645f4bcc83b8692cabf",
+   "kind": "other",
+   "label": "jp_vehicles/jp-car-red/left",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-car-red-left.png"
+  },
+  {
+   "sha": "af81887d43ab5d38e9137e3f0eaa2ea7bb571683f165fae44a3376274588322d",
+   "kind": "box",
+   "label": "jp_vehicles/jp-car-blue/right",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-car-blue-right.png"
+  },
+  {
+   "sha": "a72056bff7f1dffcc0ae4bcfe1c49bd76fece72096877546322aa3822306f28c",
+   "kind": "other",
+   "label": "jp_vehicles/jp-car-blue/left",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-car-blue-left.png"
+  },
+  {
+   "sha": "47ea5bed8721cea0fa91dc031b191007f42c70de38fc8467cdc790e2567e6dcc",
+   "kind": "box",
+   "label": "jp_vehicles/jp-car-kei-yellow/right",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-car-kei-yellow-right.png"
+  },
+  {
+   "sha": "56609f743f46f26a7f54f537479eff49d31a3f935992e8fcbff8b0043fe42847",
+   "kind": "other",
+   "label": "jp_vehicles/jp-car-kei-yellow/left",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-car-kei-yellow-left.png"
+  },
+  {
+   "sha": "e566b59be42907af7b0857f91aae17f41344d8e016ca5e92c1a47bc3eb760464",
+   "kind": "box",
+   "label": "jp_vehicles/jp-car-kei-mint/right",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-car-kei-mint-right.png"
+  },
+  {
+   "sha": "26b0da4c67f00b03226376a38d29186f152d5af9fc5ce97379675f1a74425079",
+   "kind": "other",
+   "label": "jp_vehicles/jp-car-kei-mint/left",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-car-kei-mint-left.png"
+  },
+  {
+   "sha": "12719d9f717a48b3126088f7229addaee26cb7516883df12c02378824f8ca854",
+   "kind": "box",
+   "label": "jp_vehicles/jp-car-taxi/right",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-car-taxi-right.png"
+  },
+  {
+   "sha": "c37253fe6b9671caca909ed7b3ff1a0f816b79426ae2411047c8636a87e67ba9",
+   "kind": "other",
+   "label": "jp_vehicles/jp-car-taxi/left",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-car-taxi-left.png"
+  },
+  {
+   "sha": "8b83bb9d31b67b35a9c6cb74640f4712ab09893f30ca7175a452c2d51f386e13",
+   "kind": "box",
+   "label": "jp_vehicles/jp-truck-kei/right",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-truck-kei-right.png"
+  },
+  {
+   "sha": "f09c9fcd30da73f5b0da8c60292bfd7a06bd22b7a89d4e493d3a063b769d9627",
+   "kind": "other",
+   "label": "jp_vehicles/jp-truck-kei/left",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-truck-kei-left.png"
+  },
+  {
+   "sha": "9b4a85b915b8230d04d2499f982ff6b1d9282075250e39201d1b84f5ff327e52",
+   "kind": "box",
+   "label": "jp_vehicles/jp-truck-box/right",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-truck-box-right.png"
+  },
+  {
+   "sha": "0b08d7cd1fff3587a0a2f2d9935869d419f18fb0b10d040e28ac8fa947aaa2e9",
+   "kind": "other",
+   "label": "jp_vehicles/jp-truck-box/left",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-truck-box-left.png"
+  },
+  {
+   "sha": "5e650f7271a6707df7d28b5c282132adaec150fc1455c5d3afbf042aeb22901a",
+   "kind": "box",
+   "label": "jp_vehicles/jp-bus-city/right",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-bus-city-right.png"
+  },
+  {
+   "sha": "8cbb57441fd8a52f5863a9de8cfccdb0b65fe7ad241a1c7aa4857e29a840a96c",
+   "kind": "other",
+   "label": "jp_vehicles/jp-bus-city/left",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-bus-city-left.png"
+  },
+  {
+   "sha": "3c1dc0541690562817db83b7b39820b654d335207ba636234eac738e561fa500",
+   "kind": "box",
+   "label": "jp_vehicles/jp-bus-city/left_open",
+   "source": "/home/main/.cache/jpf/enq-forest/veh-jp-bus-city-left_open.png"
+  },
+  {
+   "sha": "a1a7e1d2bb1074ff0b3b4fa1b10d1d50b52bd88986b630675e778d5d7a4f77c7",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-hip2",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-house-hip2.png"
+  },
+  {
+   "sha": "635a1eba5e3d95d24aa88b2ad5c733b45d229504f08cf30f931885ca5b503220",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-gable-garage",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-house-gable-garage.png"
+  },
+  {
+   "sha": "93fd54305e4bcc8204e820f6d5d976117848f9239ab47dfc5c065ccef29fbf1f",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-hiraya",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-house-hiraya.png"
+  },
+  {
+   "sha": "43abb1a9cde6c023a8b74d4e1a7b71e01f2e2d3043b7c9f85cea8e5827c1379e",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-shed-modern",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-house-shed-modern.png"
+  },
+  {
+   "sha": "beaa21ce4669228c14e39b601d7eb0ee30821770ac8b64c74231433b6bdb4948",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-flat3",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-house-flat3.png"
+  },
+  {
+   "sha": "5ef329ee7a0aa313d3a3e75fcc7179a1ba070b7aca162997682b88020dd8b572",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-greengrocer",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-greengrocer.png"
+  },
+  {
+   "sha": "41069296b5173d526a8853a80992a37f9ea31b9d86ed48f9e955f00362f4e177",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-fish",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-fish.png"
+  },
+  {
+   "sha": "af8f6822919d544cdccd45ee486e714c4f8ab50839cae99b20f504b4f6d36d82",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-butcher",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-butcher.png"
+  },
+  {
+   "sha": "bfbd4263512ceaddf846435f3536f6614da11c4735556ab275aafd61a6c64bb1",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-bakery",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-bakery.png"
+  },
+  {
+   "sha": "8f20470f57bf381044839a6ad8ef356a93bd9be5c9f0977331862b71444a8493",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-flower",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-flower.png"
+  },
+  {
+   "sha": "d935578a2d69e9a3ef0089f609d889ef99155e5fcebb534bb4ef263bd2e5a452",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-books",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-books.png"
+  },
+  {
+   "sha": "ebdb529166f59d79619fab8454046412da6e41880e69a8bee310e928fb4837d1",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-pharmacy",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-pharmacy.png"
+  },
+  {
+   "sha": "2b29409544c449cea6643879137333cb7ea339396bae598fce2023d06ab58c9d",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-cleaning",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-cleaning.png"
+  },
+  {
+   "sha": "18fa3071d6399d99edc438c4c87376dcb9e4f5aa51a767d49fd553cc06484034",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-ramen",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-ramen.png"
+  },
+  {
+   "sha": "4063df550b8aa7da693f8314c08100cfc3c29cb7c39832db4ef0c2da3cf3504f",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-izakaya",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-izakaya.png"
+  },
+  {
+   "sha": "68c4d3bb556eaf94dd090772785cb833751b78e811213e562357c13edf373edc",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-cafe",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-cafe.png"
+  },
+  {
+   "sha": "d618270a17bcfe5e46bf171bee7ddf5acf9e884e18936c489e6d1a4ca9c35f61",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-barber",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-barber.png"
+  },
+  {
+   "sha": "81138781786fb5aa8d28b8ad82bb1c7634581a3ef20a750be72a67b6e81ae924",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-tabako",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-tabako.png"
+  },
+  {
+   "sha": "d517c74e9de2fe34de7a62df5910c8ccbbb532ff7dd26a692ca9ebd270b0cd13",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-hip2-wide",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-house-hip2-wide.png"
+  },
+  {
+   "sha": "bcce7810a12816fadfb17335af0fbae1fb68edc4d047efeb0c959c414cc1b8c9",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-machiya",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-house-machiya.png"
+  },
+  {
+   "sha": "57f17dad54effc9203e0653c59c90d33ac746c81c9dc16b76ea3f6c33166d4a7",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-nagaya",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-house-nagaya.png"
+  },
+  {
+   "sha": "2460065d5fcbcbd9ddd3427e18f2e550317c1692d91f646a3865b460fef36bd2",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-western",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-house-western.png"
+  },
+  {
+   "sha": "7b9b955ff5308ab2a0076f9cff489d630383b5807cc4ee9a4a4b5673c37f338d",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-nisetai",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-house-nisetai.png"
+  },
+  {
+   "sha": "f444ad3182bc09976b2f5f80f147fd8aaa3128e3a46b4eb02ac042135db7a6df",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-tile3",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-house-tile3.png"
+  },
+  {
+   "sha": "6d8ca892cc953596b262d33d775b51662f6c4da323834ced4c99fd3507bfacea",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-terrace",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-house-terrace.png"
+  },
+  {
+   "sha": "1a19a8dd49bfb1077736d4e084c7c69646eb551a6ced46564c4149d30aaf514c",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-hiraya-gable",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-house-hiraya-gable.png"
+  },
+  {
+   "sha": "efd671469d90cbeacb2d66897b7219e1c1b59d9a309d2950bbd1fe29440ef77b",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-sushi",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-sushi.png"
+  },
+  {
+   "sha": "6b3a4e44dd81ba52f043cdf94de469a41705ded1be54f3ce8cc16c7b4c4a0221",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-teishoku",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-teishoku.png"
+  },
+  {
+   "sha": "4d68e05d974c5bf0e7e4578e2e42a7316239a68e63981f1fe93d9cc65ef4c860",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-dagashi",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-dagashi.png"
+  },
+  {
+   "sha": "9cb4de52451c3d1561f032a0dfcfcb1d4acafa4affb1b794fa4eb2e470a239d4",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-sake",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-sake.png"
+  },
+  {
+   "sha": "c27e11b85f9f4ea3de8c41bd83ef6a7e24ef02928544900f80bd7115b366b288",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-bicycle",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-bicycle.png"
+  },
+  {
+   "sha": "f41b3f071217c93c9b5e8e2dc0940a569f187cea33a6aab50a131d413b4a8f58",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-realestate",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-realestate.png"
+  },
+  {
+   "sha": "0cb2aab527136c96c752385f45fcadc0c987e1481fe2dd48ee67f0c1216897ab",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-salon",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-salon.png"
+  },
+  {
+   "sha": "56d0f285531d2f89f47ff3a5c9eaf0a61155a7907b601204ac6a0bb4b721a059",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-post-office",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-post-office.png"
+  },
+  {
+   "sha": "7b01112dfaffbb42969d9fa03fed5413d83b5ab112b4d8fab0bcd17b5596c977",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-koban",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-koban.png"
+  },
+  {
+   "sha": "4d49ee08dc7a049e876060ded3a964e89a6cc4f6831fb1e06ec76aa9276022c9",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-warehouse",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-warehouse.png"
+  },
+  {
+   "sha": "918770d52249786e95661a5c75d0f9ad42cb121e844c87b8ceccc159213c4046",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-garage-carport-house",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-garage-carport-house.png"
+  },
+  {
+   "sha": "2a1a82eacd9144bf69916601b2975758e41c315d674fcdcb9b1136f3619ef49b",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-fish-shut",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-fish-shut.png"
+  },
+  {
+   "sha": "0f159c101de40f5ed23f1d0cb8799e033d6e0cdcd468695d3f2154fa35fdc20d",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-butcher-shut",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-butcher-shut.png"
+  },
+  {
+   "sha": "1e9f251596e742a2e73b39042cff7a20b81bafaf48df7770eef900766f697397",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-books-shut",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-books-shut.png"
+  },
+  {
+   "sha": "9a4384b2da1cbfa6f253918e2bf5ac1c01633b650ee031a4f3086089e0d6a8dd",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-cleaning-shut",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-cleaning-shut.png"
+  },
+  {
+   "sha": "c9cb8a6aeada2ef19ef9abc0adc46796b850f8e9f0d2bcd957fc76f4b9cd038c",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-bicycle-shut",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-bicycle-shut.png"
+  },
+  {
+   "sha": "aaedd05b2627adb88f14e3f6912794fb36fecbd61d4c177a551e4f634e7e47fa",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-sake-shut",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-sake-shut.png"
+  },
+  {
+   "sha": "bfb32447f5afa7cf8218a286ef92dc08e4e800081d76f43d0b04b2ac8337cded",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-flower-shut",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-flower-shut.png"
+  },
+  {
+   "sha": "0768f574a0ef6c5a454e487142e9767d30c1ae591df079c1a743fffd692cc6cc",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-realestate-shut",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-realestate-shut.png"
+  },
+  {
+   "sha": "fdf24b5140808b7346437d5c3bfef6f5ae7d2eb0b6509bcb73807bcd9f4b5bdf",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-vacant",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-shop-vacant.png"
+  },
+  {
+   "sha": "e241bad997f5ddd801b0a4a46347a70c11e3a450e01502cfa765f0383f5e99e5",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-station-small",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-station-small.png"
+  },
+  {
+   "sha": "99aae6335babc53549ccefac5f295c8db14678f41376fe4ef3c9a0f427572ac7",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-row-shotengai-a",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-row-shotengai-a.png"
+  },
+  {
+   "sha": "10f25f633c6f696e70a2748a2785d2e3d8a1c96b5fc66b32d920a406cf960dbb",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-row-shotengai-b",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-row-shotengai-b.png"
+  },
+  {
+   "sha": "d17ab371518d51708dc1c9d9f79e9eba127744200a6946e8ef9c3bddca2f3c53",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-row-shotengai-c",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-row-shotengai-c.png"
+  },
+  {
+   "sha": "f1ceb4a257b4511ca0229de489c1518f45880bde1761454fff90666b4cf012bb",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-row-shotengai-d",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-row-shotengai-d.png"
+  },
+  {
+   "sha": "2f213599226d76d833b1e1982284e15174c52f481cfae6014af53b814f0c6e01",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-row-inshokugai",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-row-inshokugai.png"
+  },
+  {
+   "sha": "da303a92d9d5542073ac086bb2b94d6a493fa090e17f8c0c385480fa62b5474c",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-row-ekimae",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-row-ekimae.png"
+  },
+  {
+   "sha": "d910efe303abe91f4927b596503440bde53f2ecd7bbe7fb230d88ab39c98a6a1",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-row-shutter-a",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-row-shutter-a.png"
+  },
+  {
+   "sha": "11fe509da39d7047d53dac42042bfd2ef32f803ae83d6fa913defd595ffd79a3",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-row-shutter-b",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-bldg-row-shutter-b.png"
+  },
+  {
+   "sha": "0eb5c81e648b03d49982567fbc80f45a5017ff31498bac3d914a4b8814863ce3",
+   "kind": "organic",
+   "label": "jp_city/jp-rg-bamboo-grove",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-rg-bamboo-grove.png"
+  },
+  {
+   "sha": "099063ddfdb7320eab10dac8bb0c57fe7f221dc64c0390ba27a6bfb02480ad74",
+   "kind": "organic",
+   "label": "jp_city/jp-rg-bamboo-grove-b",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-rg-bamboo-grove-b.png"
+  },
+  {
+   "sha": "12c24fb1eee74ab4bebcede56e578dfdbf9a37752fb54af9fe8d95c264466bf0",
+   "kind": "organic",
+   "label": "jp_city/jp-rg-bamboo-clump",
+   "source": "/home/main/.cache/jpf/enq-forest/kit-jp-rg-bamboo-clump.png"
+  },
+  {
+   "sha": "3423be6b2fd269b90124847eb42bb5c93ac4db51ec7a17732c02d20d71a7df54",
+   "kind": "terrain",
+   "label": "jp_forest_r4/floor-cells",
+   "source": "/home/main/.cache/jpf/enq-forest/ground-floor-cells.png"
+  },
+  {
+   "sha": "f7b6726a2599e912f3276377af47448d584c9de072790cfe34d87b8783bba963",
+   "kind": "terrain",
+   "label": "jp_forest_r4/apron-cells",
+   "source": "/home/main/.cache/jpf/enq-forest/ground-apron-cells.png"
+  }
+ ]
+}

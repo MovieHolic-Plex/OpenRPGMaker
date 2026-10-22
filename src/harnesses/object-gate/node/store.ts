@@ -4,7 +4,7 @@ import { homedir } from 'node:os';
 import { existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { PNG } from 'pngjs';
-import { OBJECT_GATE_PROFILE, objectGatePixelSha256, objectGateProfileHash, type ObjectGateFrontPropApproval, type ObjectGateHoldDecision, type ObjectGateProfileRecord, normalizeObjectGateImage, objectGateHoldPayload, type ObjectGateReceipt, type ObjectGateStyleKind } from '../../_core/objectGate';
+import { OBJECT_GATE_PROFILE, objectGatePixelSha256, objectGateProfileHash, type ObjectGateFinal, type ObjectGateFinalProfileRecord, type ObjectGateFrontPropApproval, type ObjectGateHoldDecision, type ObjectGateProfileRecord, normalizeObjectGateImage, objectGateHoldPayload, type ObjectGateReceipt, type ObjectGateStyleKind } from '../../_core/objectGate';
 
 export const GATE_DATA = resolve(process.env.OBJECT_GATE_DATA ?? 'harness-data/object-gate');
 const receiptPath = (sha: string) => resolve(GATE_DATA, 'receipts', sha.slice(0, 2), `${sha}.json`);
@@ -172,6 +172,8 @@ export const gatePromptHash = (half: 'view34' | 'style' | 'eye' = 'view34') => {
  */
 export type ObjectGateQueueBatch = {
   schema: 'oprn-object-gate-queue/1'; id: string; title: string; note?: string; createdAt: string;
+  /** 선택 — 검토하는 사람에게 「이 묶음이 무엇이고 어디에 쓰이는지」 보여 줄 그림(queue/ 안 파일 이름, png)과 쉬운 말 한 단락. 효력은 없다. */
+  explainImage?: string; explainText?: string;
   items: Array<{ sha: string; kind: string; label: string; source?: string }>;
 };
 const queueDir = () => resolve(GATE_DATA, 'queue');
@@ -179,10 +181,52 @@ export function listQueueBatches(): ObjectGateQueueBatch[] {
   if (!existsSync(queueDir())) return [];
   return readdirSync(queueDir()).filter(f => f.endsWith('.json')).sort().map(f => JSON.parse(readFileSync(resolve(queueDir(), f), 'utf8')) as ObjectGateQueueBatch);
 }
+/** 묶음 설명 그림의 경로 — queue/ 바로 아래의 png 파일 이름만 받는다(경로 이동 금지). 없으면 null. */
+export function queueExplainImagePath(name: string | undefined): string | null {
+  if (!name || !/^[a-z0-9][-a-z0-9_.]{0,120}\.png$/.test(name)) return null;
+  const path = resolve(queueDir(), name);
+  return existsSync(path) ? path : null;
+}
 export function writeQueueBatch(batch: ObjectGateQueueBatch): string {
   if (!/^[a-z0-9][-a-z0-9_.]{0,80}$/.test(batch.id)) throw Error(`묶음 id 는 영문 소문자·숫자·-_. 만: ${batch.id}`);
   const path = resolve(queueDir(), `${batch.id}.json`);
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, `${JSON.stringify(batch, null, 1)}\n`);
   return path;
+}
+
+/** Opus 최종 판정 기록(2026-10-21) — final/<해시 앞 2자>/<화소 해시>.json, 최종 프로필 final-profiles/<해시>.json. */
+const finalPath = (sha: string) => resolve(GATE_DATA, 'final', sha.slice(0, 2), `${sha}.json`);
+export function readFinal(sha: string): ObjectGateFinal | null {
+  const path = finalPath(sha);
+  return existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) as ObjectGateFinal : null;
+}
+export function writeFinal(record: ObjectGateFinal): string {
+  const path = finalPath(record.pixelSha256);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, `${JSON.stringify(record, null, 1)}\n`);
+  return path;
+}
+export function listFinals(): ObjectGateFinal[] {
+  const root = resolve(GATE_DATA, 'final');
+  if (!existsSync(root)) return [];
+  return readdirSync(root).flatMap(dir => readdirSync(resolve(root, dir)).filter(f => f.endsWith('.json')).map(f => JSON.parse(readFileSync(resolve(root, dir, f), 'utf8')) as ObjectGateFinal));
+}
+export function readFinalProfiles(): ObjectGateFinalProfileRecord[] {
+  const root = resolve(GATE_DATA, 'final-profiles');
+  if (!existsSync(root)) return [];
+  return readdirSync(root).filter(f => f.endsWith('.json')).map(f => JSON.parse(readFileSync(resolve(root, f), 'utf8')) as ObjectGateFinalProfileRecord);
+}
+export function calibratedFinalProfiles(): Set<string> {
+  return new Set(readFinalProfiles().filter(p => p.status === 'calibrated').map(p => p.profileHash));
+}
+export function writeFinalProfile(record: ObjectGateFinalProfileRecord): string {
+  const path = resolve(GATE_DATA, 'final-profiles', `${record.profileHash}.json`);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, `${JSON.stringify(record, null, 1)}\n`);
+  return path;
+}
+/** 출구 입력 한 벌(영수증·승인·사람 결정·Opus 최종) — 노드 출구가 같은 것을 넘기게. */
+export function exitInputs(sha: string) {
+  return { receipt: readReceipt(sha), approval: readApproval(sha), hold: readHoldDecision(sha), final: readFinal(sha), calibratedProfiles: calibratedProfiles(), calibratedFinalProfiles: calibratedFinalProfiles() };
 }

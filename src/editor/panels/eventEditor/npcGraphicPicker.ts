@@ -275,6 +275,17 @@ function slotTeachState(textureKey: string, characterIndex: number): { label: st
   };
 }
 
+let charsetTeachFormCount = 0;
+
+function charsetTeachField(caption: string, input: HTMLInputElement): HTMLLabelElement {
+  const field = document.createElement("label");
+  field.className = "npc-charset-teach-field";
+  const text = document.createElement("span");
+  text.textContent = caption;
+  field.append(text, input);
+  return field;
+}
+
 function renderCharsetTeachForm(
   current: () => NpcGraphicSelection,
   onSaved: () => void,
@@ -286,14 +297,17 @@ function renderCharsetTeachForm(
   const heading = document.createElement("p");
   heading.className = "npc-charset-teach-heading";
   heading.textContent = "이 칸 이름 (AI가 이 이름으로 찾습니다)";
+  heading.id = `npc-charset-teach-heading-${++charsetTeachFormCount}`;
   const labelInput = document.createElement("input");
   labelInput.type = "text";
   labelInput.dataset.testid = "npc-charset-label-input";
   labelInput.placeholder = "예: 우리 마을 촌장";
+  labelInput.setAttribute("aria-describedby", heading.id);
   const tagsInput = document.createElement("input");
   tagsInput.type = "text";
   tagsInput.dataset.testid = "npc-charset-tags-input";
   tagsInput.placeholder = "태그, 쉼표로 구분";
+  tagsInput.setAttribute("aria-describedby", heading.id);
   const status = document.createElement("p");
   status.className = "npc-charset-teach-status";
   status.dataset.testid = "npc-charset-teach-status";
@@ -316,7 +330,8 @@ function renderCharsetTeachForm(
     syncedKey = "";
     onSaved();
   });
-  root.append(heading, labelInput, tagsInput, save, status);
+  // 값이 차면 placeholder 가 사라져 무엇을 적는 칸인지 안 보였다(UI 감사 06-eventwin-06) — 칸마다 보이는 라벨을 붙인다.
+  root.append(heading, charsetTeachField("이름", labelInput), charsetTeachField("태그", tagsInput), save, status);
   return {
     root,
     sync: () => {

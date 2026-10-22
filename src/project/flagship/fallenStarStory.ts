@@ -35,7 +35,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
       // 남쪽 입구에서 북쪽 끝 공터(추락지)까지 이어지는 막다른 숲길. 풀숲에서는 숲짐승이 나온다.
       route: {
         exits: [{ x: 15, y: 39 }], end: { x: 15, y: 8 }, clearings: [{ x: 9, y: 2, w: 13, h: 8 }],
-        grassPatches: 3, encounterRate: 12, forestType: "mixed", edgeDecor: "soft",
+        grassPatches: 3, encounterRate: 12, forestType: "mixed",
         encounters: [{ troopId: "troop_fs_wolves", weight: 3 }, { troopId: "troop_fs_spiders", weight: 3 }, { troopId: "troop_fs_wisps", weight: 2 }],
       },
     },

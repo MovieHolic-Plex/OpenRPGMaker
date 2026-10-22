@@ -1,0 +1,315 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f04c573e46c17d07f9cfa97c5d424d400ac27fc733f981bbddf54b8ec2eff1a0",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "jizo shrine row",
+ "label": "jp-inaka-r5:inaka-jizo-shrine-row",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 6/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 6/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 25,
+  "darkV5": 36,
+  "nearBlackEdge": 0.49,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thatched/wood roof over the shrine row",
+      "rows": "0-9",
+      "evidence": "c",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "stone base and jizo statues",
+      "rows": "10-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-9 form a roof or canopy plane about 10 rows tall. Its brown plank/thatch texture, moss patches and a bright row 0 darken steadily toward the bottom. Column scans show L=144 at row 0 falling to 51 at row 9, which reads as a sloped surface ending in dark eave shadow at rows 8-9. Below it, rows 10-31 show the front (south) face: three seated jizo statues with red bibs on a stone base, 22 rows tall. No receding side face is drawn. The roof reading is somewhat uncertain because the vertical streak texture could also be a front-facing fascia, but the graded shading and the dark shadow band favour a roof."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a row of three jizo statues under a tiled roof on a stone base. From the image, the roof shows scalloped tile rows with several lightness steps. The statues and base are shaded stone with varied tones and red accents. Measured facts: 20 colours per 16x16 tile, equal to the well and above the stall and hedge; 0% flat-fill coverage; 30 distinct colours. 0% of dark edge pixels are neutral, so the outlines carry a tint (dark brown or red-brown) and are not a uniform black sticker line. Shading depth and texture are comparable to the well-roofed and stall references, so I judge it equal or richer.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20926
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof band over the shrine row",
+      "rows": "0-8",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "stone plinth with jizo statues and alcoves (front face)",
+      "rows": "10-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-9 form a roof or thatch plane about 8 rows tall. It is textured with moss and darkens from a light top row (L=144) down to a dark eave line at rows 8-9 (L=70, then 51). Below it, rows 10-31 show the vertical south face: three seated jizo statues with red bibs in dark alcoves, standing on a stone plinth. The front face is well over 3 rows. The roof reads as a sloped plane with eave shadow (evidence c), not a flat front-facing strip. This is a judgement call, because the band is textured rather than showing a crisp edge line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a roofed row of three jizo statues. Its median is 20 distinct colours per 16x16 tile, which matches the roofed well (20) and beats the stall (17) and hedge (10). It has 30 distinct colours in total, in the range of the references. Flat-fill coverage is 0%, so there are no large single-colour areas. The dark edge pixels are 0% near-neutral, which means the outline is tinted. By eye the outline is dark brown beside the wooden roof and stone, not a black sticker line. The tiled roof shows several steps from highlight through mid to dark, with per-tile texture. The stone statues have speckle and shading with red bibs/accents. Overall it sits at the level of the well and stall references with no sign of shallow shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17654
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof/canopy over shrine row",
+      "rows": "0-9",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "jizo statues with bibs and alcoves (front face)",
+      "rows": "10-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base/plinth",
+      "rows": "22-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-9 form a roof band. It shades from a lighter back row 0 (#a18d76) through mid browns to dark rows 8-9 (L=70 and 51), which act as the eave shadow over the alcoves. This reads as a sloped roof plane, though its front-edge line is weak. Below it, rows 10-31 are the south face: three jizo statues with red bibs in dark alcoves on a stone base, 22 rows. The silhouette is a constant 44-48 px wide with no ellipse. The roof is a plane of about 9 rows rather than a 1-2 row rim, so the object reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a row of three jizo statues under a tiled roof on a stone base. Measured facts support it: 20 distinct colours per tile (equal to the well and above the stall at 17), 0% flat-fill coverage, and 30 distinct colours overall. Dark edge pixels are 0% near-neutral, so the outlines are tinted, matching the dark brown and grey-brown material tones I can see next to the roof and stone. The roof shows scalloped tile rows with highlights and about 5 lightness steps, and the stone base and statues show grain and individual shading, so no large flat areas. Its density and shading are comparable to the roofed well and the cheese stall, so it would sit next to them without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16006
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "shrine roof/canopy over the statues",
+      "rows": "0-9",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "stone plinth under the statues",
+      "rows": "22-24",
+      "evidence": "none",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-9 form a brown canopy band that darkens steadily from L=144 at the top to L=51 at rows 8-9, which reads as a roof plane ending in dark eave shadow. Its vertical streaks lean toward a front-facing plank look, and no distinct light edge line is visible, so this reading is moderately confident. Below it, rows 10-31 are the front opening with three jizo statues, red bibs, and a stone plinth, about 22 rows of south face. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's measured facts match the richest references: 20 distinct colours per 16x16 tile (equal to the roofed well, above the cheese stall at 17 and the hedge at 10), 0% flat-fill coverage, and 30 distinct colours overall. Its dark edge pixels are 0% near-neutral, so the outlines carry a tint and are not a black sticker line. By eye, the tiled roof has several tone steps with per-tile variation, and the stone jizo figures and base are shaded stone by stone with speckle, about 5 steps per material, similar to the well and stall references. Nothing reads thinner or flatter than the references, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18495
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.455Z",
+ "cells": {
+  "16": [
+   "1ed12cd6de77f0a1",
+   "358cadf47225565f",
+   "37fb4d2fa2d5e856",
+   "596ae85a8c660bf5",
+   "84329bec76dc70e0",
+   "bb1f728a2143fca2"
+  ],
+  "24": [
+   "29cbe6dab6ea2720",
+   "376d50752205a227",
+   "57c4b25ee1b97d40",
+   "5b26b26986bbb223",
+   "62b4882cc17a9e8e",
+   "6f2dcaf656505ac2",
+   "7cf9ecac01634909",
+   "8c85bb87bcb8f2f3"
+  ],
+  "32": [
+   "08195134b429012c",
+   "884847a8f356c0e8",
+   "c2767cd4be7010cf",
+   "dc04354b780769b7",
+   "e3ec17d5c10150db",
+   "e445ac023d4b3162"
+  ],
+  "48": [
+   "941efaefa7a3e347",
+   "c2994897ee70ad69"
+  ]
+ }
+}

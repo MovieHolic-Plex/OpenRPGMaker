@@ -1,0 +1,51 @@
+{
+  "verdict": "FAIL",
+  "reviewer": "fresh Opus adversarial look-check, 2026-10-22",
+  "images": [
+    "/tmp/bdtrees/before/village50.png", "/tmp/bdtrees/after/village50.png",
+    "/tmp/bdtrees/before/facilities-town.png", "/tmp/bdtrees/after/facilities-town.png",
+    "/tmp/bdtrees/before/forms-town.png", "/tmp/bdtrees/after/forms-town.png",
+    "/tmp/bdtrees/before/reviewed-street.png", "/tmp/bdtrees/after/reviewed-street.png",
+    "/tmp/bdtrees/before/river-town.png", "/tmp/bdtrees/after/river-town.png",
+    "/tmp/bdtrees/before/tool-village.png", "/tmp/bdtrees/after/tool-village.png"
+  ],
+  "findings": [
+    {
+      "severity": "major",
+      "map": "tool-village",
+      "location": "x 0-130, y 455-625 (west forest mass)",
+      "note": "Before: one organic, overlapping canopy mass. After: the forest reads as a regular orchard grid - identical crowns repeated in rows with a horizontal band of visible trunks at about y 520 and y 585, each row stamped the same. This is the 'stamped stripes / visible grid' failure mode; the forest no longer reads as one mass."
+    },
+    {
+      "severity": "minor",
+      "map": "tool-village",
+      "location": "x 205-300, y 115-205 (grove west of the north house) and x 660-730, y 650-720 (south-east corner grove)",
+      "note": "Same effect on a smaller scale: crowns sit side by side in a row, with exposed trunks aligned on one line, so the grove looks tiled rather than clustered."
+    },
+    {
+      "severity": "minor",
+      "map": "tool-village",
+      "location": "x 740-890, y 165-230 and x 0-105, y 0-60",
+      "note": "Darker forest-floor lawn patches have hard rectangular edges against the light lawn. The rectangles also exist in BEFORE, but the old canopy hid them more. With the thinner new canopy they are more exposed."
+    },
+    {
+      "severity": "minor",
+      "map": "tool-village",
+      "location": "scattered bushes across the map",
+      "note": "Bushes changed to a brighter, rounder style. They read cleanly and consistently, with no clipping found. They are now lighter than the surrounding foliage, which is a style change, not a defect."
+    },
+    {
+      "severity": "info",
+      "map": "village50 / facilities-town / river-town",
+      "location": "all tree rows and groves (e.g. river-town x 800-915, y 640-700; x 320-450, y 800-860; bottom row y 1030-1110)",
+      "note": "New broadleaf trees are lighter and yellower with clear trunks. No clipped crowns, floating crowns, trunks without crowns, half-tree mismatches or holes over roofs were seen at 1x. Houses, roads, water and fences are unchanged."
+    },
+    {
+      "severity": "info",
+      "map": "forms-town / reviewed-street",
+      "location": "whole image",
+      "note": "No visible difference between BEFORE and AFTER. The broken-looking building fragments in forms-town are already present in BEFORE, so they are not a regression from this change."
+    }
+  ],
+  "summary": "Town maps (village50, facilities-town, river-town) show the new tree style cleanly, with no clipping, holes or mismatched halves at 1x. forms-town and reviewed-street are unchanged. The regression is in tool-village: forest masses built from the redrawn bushes/trees now look like a stamped orchard grid, with repeated identical rows and aligned trunk bands, where they used to be an organic canopy. That is the forest-seam/stamped-stripe failure, so the verdict is FAIL. Caveat: review was at native 1x full view only, without zoomed crops."
+}

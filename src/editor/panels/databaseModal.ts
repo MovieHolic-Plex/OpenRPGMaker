@@ -78,30 +78,29 @@ function writeCrumb(crumb: HTMLElement, tab: DatabaseTab): void {
   const group = databaseTabGroupLabel(tab);
   const path = databaseTabPath(tab);
   const section = getDatabaseSubLocation(tab);
-  crumb.replaceChildren(
-    ...(group
-      ? [
-        el("span", { class: "database-modal-crumb-group", text: group }),
-        el("span", { class: "database-modal-crumb-sep", text: "›", attrs: { "aria-hidden": "true" } }),
-      ]
-      : []),
-    ...path.flatMap((entry, index) => [
-      ...(index > 0 ? [el("span", { class: "database-modal-crumb-sep", text: "›", attrs: { "aria-hidden": "true" } })] : []),
-      el("span", { class: "database-modal-crumb-tab", text: databaseTabLabel(entry), dataset: { tab: entry } }),
-    ]),
-    // 세 번째 칸 — 구획을 가진 탭(시스템)이 보고 있는 구획. 마지막 칸이라 aria-current 로 알린다.
-    ...(section
-      ? [
-        el("span", { class: "database-modal-crumb-sep", text: "›", attrs: { "aria-hidden": "true" } }),
-        el("span", {
-          class: "database-modal-crumb-section",
-          text: section,
-          attrs: { "aria-current": "location" },
-          dataset: { section },
-        }),
-      ]
-      : []),
-  );
+  // 조각마다 목록 항목(li)이다 — 「›」 는 aria-hidden 이라, span 만 잇대면 화면 낭독기가 「파티직업」 처럼
+  // 경계 없이 이어 읽었다(UI 감사 08-database-05). 구분자는 두 번째 항목부터 자기 항목 앞에 둔다.
+  const items: HTMLElement[] = [];
+  const item = (part: HTMLElement): HTMLElement => el("li", {
+    children: [
+      ...(items.length > 0 ? [el("span", { class: "database-modal-crumb-sep", text: "›", attrs: { "aria-hidden": "true" } })] : []),
+      part,
+    ],
+  });
+  if (group) items.push(item(el("span", { class: "database-modal-crumb-group", text: group })));
+  for (const entry of path) {
+    items.push(item(el("span", { class: "database-modal-crumb-tab", text: databaseTabLabel(entry), dataset: { tab: entry } })));
+  }
+  // 세 번째 칸 — 구획을 가진 탭(시스템)이 보고 있는 구획. 마지막 칸이라 aria-current 로 알린다.
+  if (section) {
+    items.push(item(el("span", {
+      class: "database-modal-crumb-section",
+      text: section,
+      attrs: { "aria-current": "location" },
+      dataset: { section },
+    })));
+  }
+  crumb.replaceChildren(el("ol", { class: "database-modal-crumb-list", children: items }));
   crumb.dataset.tab = tab;
 }
 

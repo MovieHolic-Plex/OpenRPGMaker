@@ -104,6 +104,7 @@ import { difficultyFieldset, monsterFusionFieldset } from "@/editor/panels/datab
 import { TITLE_VARIANT_LIMIT } from "@/project/titleVariants";
 import {
   analyzePlayResolution,
+  keepsExplicitDefaultResolution,
   normalizePlayResolution,
   PLAY_RESOLUTION_LIMITS,
   resolvePlayResolution,
@@ -843,6 +844,7 @@ function playResolutionFieldset(project: Project, rerender: SystemRefresh): HTML
       text: "플레이 화면이 보여 주는 논리 영역입니다. 값이 커질수록 한 화면에 더 넓은 맵이 보이며, 다음 테스트 플레이부터 적용됩니다.",
       dataset: { testid: "db-system-resolution-help" },
     }),
+    veilResolutionNote(project),
     viewPresetField(rerender),
     field("빠른 선택", presetSelect),
     numberField("가로 (px)", "db-field-system-resolution-width", () => resolvePlayResolution(store.getCurrent().system).width, (value) => {
@@ -885,14 +887,18 @@ const VIEW_PRESETS = [
   { id: "close", label: "가깝게 · 640 × 360 · 배율 2 (16px 칸 20 × 11)", width: 640, height: 360, zoom: 2 },
 ] as const;
 
+/** 지금 해상도·배율이 맞는 「보기 범위」 id. 없으면 custom. 빠른 선택·가로·세로·배율을 바꾼 뒤에도 같은 함수로 다시 맞춘다. */
+function viewPresetIdFor(system: SystemRecords): string {
+  const resolution = resolvePlayResolution(system);
+  const zoom = resolveCameraZoom(system);
+  return VIEW_PRESETS.find((preset) => preset.width === resolution.width && preset.height === resolution.height && preset.zoom === zoom)?.id ?? "custom";
+}
+
 function viewPresetField(rerender: SystemRefresh): HTMLElement {
   const select = el("select", { dataset: { testid: "db-field-system-view-preset" } }) as HTMLSelectElement;
   for (const preset of VIEW_PRESETS) select.append(el("option", { text: preset.label, attrs: { value: preset.id } }));
   select.append(el("option", { text: "직접 정함", attrs: { value: "custom", disabled: "" } }));
-  const system = store.getCurrent().system;
-  const resolution = resolvePlayResolution(system);
-  const zoom = resolveCameraZoom(system);
-  select.value = VIEW_PRESETS.find((preset) => preset.width === resolution.width && preset.height === resolution.height && preset.zoom === zoom)?.id ?? "custom";
+  select.value = viewPresetIdFor(store.getCurrent().system);
   select.addEventListener("change", () => {
     const preset = VIEW_PRESETS.find((candidate) => candidate.id === select.value);
     if (!preset) return;
@@ -903,6 +909,20 @@ function viewPresetField(rerender: SystemRefresh): HTMLElement {
     rerender("values");
   });
   return field("보기 범위", select);
+}
+
+/**
+ * 양쪽 전신 대화창 안내. 그 대화창을 고르면 1024×768·3.2배로 올라가지만, 여기서 작가가 고른 해상도가 이긴다
+ * (2026-10-21 전에는 480×320 이하를 고르면 말없이 1024×768 로 되돌아가 「해상도가 안 바뀐다」였다).
+ */
+function veilResolutionNote(project: Project): HTMLElement {
+  const note = el("p", {
+    class: "db-system-resolution-help",
+    text: "대화창이 「양쪽 전신 · 반투명 베일」이라 기본은 1024 × 768 · 배율 3.2 입니다. 여기서 고른 크기가 그대로 쓰이며, 작게 고르면 전신 그림이 화면에 비해 커 보일 수 있습니다.",
+    dataset: { testid: "db-system-resolution-veil-note" },
+  });
+  note.hidden = project.system.dialogueStyle !== "dual-fullbody-veil";
+  return note;
 }
 
 /** 화면 맞춤 — 정수 배율(도트 굵기 고름, 남는 창은 여백) 또는 창에 꽉 맞춤. 생략 = 프로젝트 규칙(resolvePlaySurfaceScaleMode). */
@@ -1063,7 +1083,7 @@ function presetResolution(preset: PlayResolutionPreset): PlayResolution | undefi
 }
 
 function storePlayResolution(system: SystemRecords, value: PlayResolution): void {
-  const normalized = normalizePlayResolution(value);
+  const normalized = normalizePlayResolution(value, { keepDefault: keepsExplicitDefaultResolution(system) });
   if (normalized) system.playResolution = normalized;
   else delete system.playResolution;
 }
@@ -1268,6 +1288,11 @@ function startPartySlots(
     });
     const empty = selector.querySelector('option[value=""]');
     if (empty) empty.textContent = "빈 슬롯";
+    // 같은 멤버를 두 칸에 넣지 못하게 한다 — 예전에는 고를 수 있었지만 저장·재로드에서 말없이 하나로 줄었다(2026-10-21 감사).
+    const taken = new Set(startActorIds.filter((id, slot) => slot !== index && id));
+    for (const option of Array.from(selector.querySelectorAll<HTMLOptionElement>("option"))) {
+      if (option.value && taken.has(option.value)) option.disabled = true;
+    }
     const face = actor ? recordListThumbnail("actors", actor, store.getCurrent(), START_PARTY_FACE_SIZE) : null;
     return el("div", {
       class: "db-system-party-row", dataset: { testid: `db-system-party-row-${index + 1}` },
@@ -1738,15 +1763,22 @@ function battleResourcesFieldset(project: ReturnType<typeof store.getCurrent>): 
         dataset: { testid: "db-field-system-emotion-cycle" },
       }) as HTMLTextAreaElement;
       textarea.value = formatEmotionCycle(system.emotionCycle);
+      // 형식이 틀린 줄은 버려진다 — 예전에는 말없이 사라져 「저장이 안 된다」로 보였다(2026-10-21 감사).
+      const note = el("p", { class: "db-system-resolution-warning", dataset: { testid: "db-field-system-emotion-cycle-dropped" } });
+      note.hidden = true;
       textarea.addEventListener("change", () => {
         const rules = parseEmotionCycle(textarea.value);
+        const written = textarea.value.split(/\r?\n/).filter((line) => line.trim()).length;
         updateSystem((draft) => {
           if (rules.length > 0) draft.system.emotionCycle = rules;
           else delete draft.system.emotionCycle;
         });
         textarea.value = formatEmotionCycle(rules);
+        const dropped = written - rules.length;
+        note.hidden = dropped <= 0;
+        note.textContent = dropped > 0 ? `형식이 맞지 않는 ${dropped}줄을 버렸습니다. 「기쁨>분노=1.5」처럼 적어 주세요.` : "";
       });
-      return textarea;
+      return el("div", { class: "db-system-emotion-cycle", children: [textarea, note] });
     })()),
   ]);
 }
@@ -1809,7 +1841,11 @@ function genreLockField(project: ReturnType<typeof store.getCurrent>, rerender: 
   const lock = project.system.genreLock;
   const report = genreLockReport(project);
   const lockPreset = lock?.preset ?? (project.gameDesignBrief?.interview?.genre === "romance" ? "romance" : "monster-collect");
-  const lockLabel = lockPreset === "romance" ? "연애 — 조수는 현대 학교·도시 칩셋만 새로 쓴다" : "몬스터 수집 — 조수는 몬스터 칩셋·캐릭터 칩·얼굴·전투 그림만 새로 쓴다";
+  // 라벨은 132px 칸에 들어가는 짧은 이름만 — 예전에는 설명 전체를 라벨에 넣어 네 줄로 꺾였다(2026-10-21 감사).
+  const lockLabel = lockPreset === "romance" ? "연애" : "몬스터 수집";
+  const offText = lockPreset === "romance"
+    ? "꺼짐 — 켜면 AI 조수가 현대 학교·도시 칩셋만 새로 씁니다. 손으로 칠한 것은 막지 않습니다."
+    : "꺼짐 — 켜면 AI 조수가 몬스터 칩셋·캐릭터 칩·얼굴·전투 그림만 새로 씁니다. 손으로 칠한 것은 막지 않습니다.";
   const checkbox = checkboxField(`장르 칩셋 잠금 (${lockLabel})`, "db-field-system-genre-lock", lock !== undefined, (checked) => {
     recordProjectSnapshot();
     store.update((draft) => {
@@ -1821,7 +1857,7 @@ function genreLockField(project: ReturnType<typeof store.getCurrent>, rerender: 
   const badge = el("p", {
     class: "db-system-resolution-help",
     dataset: { testid: "db-genre-lock-badge" },
-    text: !lock ? "꺼짐 — 조수가 다른 계열 칩셋으로 맵을 만들 수 있다."
+    text: !lock ? offText
       : `잠금 중(${lock.mode === "warn" ? "경고만" : "강제"}) · 허용 칩셋 ${report.allowedTilesets.length}개`
         + (genreLockAllowedCharsetLabels(project).length ? ` · 캐릭터 칩: ${genreLockAllowedCharsetLabels(project).join("·")}` : "")
         + (genreLockVisualSummary(project) ? ` · 얼굴·전투 그림: ${genreLockVisualSummary(project)}` : "")
@@ -1835,7 +1871,10 @@ function genreLockField(project: ReturnType<typeof store.getCurrent>, rerender: 
   const monsterBadge = el("p", {
     class: "db-system-resolution-help",
     dataset: { testid: "db-monster-asset-lock-badge" },
-    text: `몬스터 자산: ${monsterAssets.allowed ? "허용" : "조수에게 막힘"} — ${monsterAssets.reason}`,
+    // reason 은 조수 도구용 문장이라 화면에는 막힘일 때 화면용 문장을 쓴다.
+    text: monsterAssets.allowed
+      ? `몬스터 자산: 허용 — ${monsterAssets.reason}`
+      : "몬스터 자산: 몬스터 수집 게임이 아니라서 AI 조수가 포켓몬식 칩셋·캐릭터 칩·전투 그림을 새로 고르지 않습니다. 이미 있는 것과 손 편집은 막지 않습니다.",
   });
   return el("div", { class: "db-genre-lock-field", children: [checkbox, badge, monsterBadge] });
 }
@@ -3667,6 +3706,13 @@ function refreshSystemDerived(form: HTMLElement, kind: "values" | "effects"): vo
   diagnostics?.replaceWith(playResolutionDiagnostics(project, resolvePlayResolution(project.system)));
   const preset = form.querySelector<HTMLSelectElement>('[data-testid="db-field-system-resolution-preset"]');
   if (preset) preset.value = playResolutionPreset(resolvePlayResolution(project.system));
+  // 「보기 범위」와 「화면 맞춤」도 해상도·배율에서 나온 값이다 — 빠른 선택이나 숫자를 바꾼 뒤 옛 값이 남지 않게 맞춘다.
+  const view = form.querySelector<HTMLSelectElement>('[data-testid="db-field-system-view-preset"]');
+  if (view) view.value = viewPresetIdFor(project.system);
+  const scale = form.querySelector<HTMLSelectElement>('[data-testid="db-field-system-surface-scale"]');
+  if (scale) scale.value = resolvePlaySurfaceScaleMode(project);
+  const veil = form.querySelector<HTMLElement>('[data-testid="db-system-resolution-veil-note"]');
+  if (veil) veil.hidden = project.system.dialogueStyle !== "dual-fullbody-veil";
   refreshTimeSummary(form);
 }
 

@@ -76,6 +76,7 @@ export function itemFromDefinition(def: ItemDefinition): WorkshopItem {
   return {
     key: def.key, title: def.title, description: def.description, kind: def.kind, category: def.category,
     width: def.tilesW * TILE, height, padTop: height - drawn, footRows: def.tilesH, risePx: def.rise, isNew: true, refs: def.refs, use: def.use,
+    ...(def.setting ? { setting: def.setting } : {}), ...(def.gateKind ? { gateKind: def.gateKind } : {}),
   };
 }
 

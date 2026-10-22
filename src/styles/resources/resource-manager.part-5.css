@@ -107,9 +107,9 @@
 .rm-inspector-title {
   color: var(--text-1);
   font: 600 14px/1.3 var(--font-ui);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
 }
 
 .rm-inspector-badge {

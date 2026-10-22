@@ -362,12 +362,13 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       ...(options.state.gameOverRequest ? { gameOverRequest: { ...options.state.gameOverRequest } } : {}),
       ...(options.state.screen ? { screen: { ...options.state.screen, filter: { ...options.state.screen.filter } } } : {}),
       messageWindowSettings: settingsChanged && options.state.messageWindowSettings ? { ...options.state.messageWindowSettings } : undefined,
-      switches: options.state.switches,
-      variables: options.state.variables,
+      // 호출 시점 사본(#2586) — 이벤트가 나중에 스위치·변수·소지품을 바꿔도 이 스냅샷은 그대로다.
+      switches: { ...options.state.switches },
+      variables: { ...options.state.variables },
       selfSwitches: Object.fromEntries(
         Object.entries(options.state.selfSwitches ?? {}).map(([eventId, keys]) => [eventId, { ...keys }])
       ),
-      inventory: options.state.inventory,
+      inventory: { ...options.state.inventory },
       itemUseCharges: { ...(options.state.itemUseCharges ?? {}) },
       gold: options.state.gold ?? 0,
       partyActorIds: [...(options.state.partyActorIds ?? [])],

@@ -1,33 +1,36 @@
 {
- "id": "home-school-bag",
- "w": 16,
- "h": 16,
- "legend": {
-  "a": "#0b1224ff",
-  "b": "#96222cff",
-  "c": "#cc343cff",
-  "d": "#ccd0d8ff",
-  "e": "#ee6c6cff",
-  "f": "#601e28ff",
-  "g": "#8d9095ff"
- },
- "rows": [
-  "................",
-  "..aaaaaaaaaaaa..",
-  "..acccccccccca..",
-  "..aeeeeeeeeeea..",
-  "..aeeeeeeeeeea..",
-  ".aaffffffffffaa.",
-  ".abeccccccccbba.",
-  ".abeccccccccbba.",
-  ".abeccccccccbba.",
-  ".abecccddccbbba.",
-  ".abbcccggcccbba.",
-  ".abffffffffffba.",
-  ".abbbbbbbbbbbba.",
-  "..affffffffffa..",
-  "..aaaaaaaaaaaa..",
-  "................"
- ],
- "note": "r16-2: 3-row top dome plane (far c -> lit e, 2 rows) closed by a 1px dark seam; front flap with lit left edge and dark right edge, flap hem shadow, darker side gussets and lower body; clasp = clean 2x2 metal lock (light top / grey bottom) with no black box"
+"id": "home-school-bag",
+"w": 16,
+"h": 16,
+"legend": {
+"a": "#2d010fff",
+"b": "#585a64ff",
+"c": "#5e0a24ff",
+"d": "#881438ff",
+"e": "#8d9095ff",
+"f": "#96222cff",
+"g": "#a6a9adff",
+"h": "#cc343cff",
+"i": "#dde0e7ff",
+"j": "#ee6c6cff"
+},
+"rows": [
+"................",
+"......cccc......",
+".....ch..hc.....",
+"..cccchcchcccc..",
+".chhfhhhhhfhhfc.",
+".chjjjhhfjjjhfc.",
+".cjjjjjhjjjjjhc.",
+".cjjjjjjjjjjjjc.",
+".cjhhhhhhhhhhfc.",
+".cjhdhhhhhhdhfc.",
+".cjhdhhfhhhdffc.",
+".cjfdfbeebfdffc.",
+".chcccbgibcccdc.",
+".chfffbggbfffdc.",
+".chffffbbffffdc.",
+"..aaaaaaaaaaaa.."
+],
+"note": ""
 }

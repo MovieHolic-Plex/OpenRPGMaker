@@ -124,6 +124,9 @@ export function interactionPromptLabel(page: EventPage | undefined): string | nu
   if (page.commands.some((command) => command.kind === "checkpointSave")) return "Z 휴식";
   if (page.commands.some((command) => command.kind === "battleProcessing")) return "Z 전투";
   if (page.commands.some((command) => command.kind === "transfer")) return "Z 오르기";
+  // 보이는 인물이 이름 붙은 대사로 말하면 사람이다 — 「조사」가 아니라 「대화」(첫사랑 VQA 1차: 사람 앞에 「Z 조사」).
+  const visible = page.graphic && !page.graphic.transparent && page.graphic.sprite;
+  if (visible && page.commands.some((command) => command.kind === "text" && typeof command.speaker === "string" && command.speaker.trim() !== "")) return "Z 대화";
   return "Z 조사";
 }
 

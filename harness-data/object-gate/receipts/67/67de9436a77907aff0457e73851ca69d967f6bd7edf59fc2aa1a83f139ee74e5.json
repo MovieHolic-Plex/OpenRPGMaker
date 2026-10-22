@@ -1,0 +1,366 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "67de9436a77907aff0457e73851ca69d967f6bd7edf59fc2aa1a83f139ee74e5",
+ "width": 48,
+ "height": 48,
+ "kind": "organic",
+ "name": "forest canopy crown heads (tile overlay on forest roof)",
+ "label": "jp_city/jp-forest-bl-head-c3x3-0",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 34,
+  "nearBlackEdge": 0.43,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper-left foliage clump",
+      "rows": "5-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper-right foliage clump",
+      "rows": "7-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-left foliage clump",
+      "rows": "28-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-right foliage clump",
+      "rows": "27-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a tile overlay of four leafy crown clumps seen from above on a dark green background. Each clump is a lumpy mass with light highlights at the upper left and darker green at the lower right. There is no front-edge line, no eave shadow, and no vertical front face of 3 or more rows; the clumps are shaded only as rounded foliage. The silhouette is a full 48-wide tile with no width profile that shows a cap or a shaft. It reads as a flat top-down canopy texture with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a 64x64 tile of canopy crown heads with about 15 colours in total and a per-tile median of 15, against 108-109 per tile and 427-567 colours in the references. That is far below both. It has 0% flat-fill coverage and 0% neutral dark edge pixels, so the dark outlines are tinted dark green and not black. Shading is roughly 4 green steps (highlight, light, mid, dark, deep shadow) in rounded clumps. The references have 6+ greens with fine per-leaf clumps, highlight speckle and dithering. The candidate's crown heads are smooth, blobby lumps with only a little speckle, so the texture is simpler and more sticker-like. Because it is much lower in colour count and density, it does not match the reference richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12280
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage clumps (four bright leaf mounds on dark canopy)",
+      "rows": "5-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a tile overlay of tree crowns seen from above. The 48x48 image is full width on every row. It has four lumpy light-green leaf clusters on a dark green ground, with no front-edge line, no eave shadow and no ellipse lid. There is no vertical south face, only a dense top-down foliage texture. The brighter upper-left areas of each clump are shading and not a separate top plane. It has no front face of 3 or more rows, so it reads as a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a 4x4-tile canopy overlay with clumped leaf blobs in about 4 greens, a highlight on each clump and a dark green between clumps. The outlines lean green and the edge pixels are 0% neutral, so they are dark_material_tone and not sticker black. Flat-fill coverage is 0%. Density is far below both references: 15 colours per 16x16 tile against 108 and 109, and 15 distinct colours in total against 427 and 567. The references use many more shades and fine per-leaf dithering, while the candidate's clumps are smooth, rounded blobs with only 3-4 value steps each and little leaf-level grain. That is a clear gap in shading depth and information density, even allowing for a simple tiling overlay.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13555
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper-left leaf clump",
+      "rows": "5-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper-right leaf clump",
+      "rows": "5-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-left leaf clump",
+      "rows": "28-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-right leaf clump",
+      "rows": "27-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a full-tile overlay of four bush-like leaf clusters seen from above on a dark green background, filling 48 columns across all 48 rows. There are no front-edge lines, no eave shadows, no ellipse rim, and no vertical front face. Lighter yellow-green highlights sit at the top of each clump with darker shading below, which is organic foliage shading and not a distinct top surface or front face. It is a canopy texture rather than a standing object, so there is no 3/4 body to measure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a 64x64-ish canopy tile showing rounded leaf clumps in about 4 greens, with dark green gaps between the clumps and no near-black line (0% neutral dark edge pixels, matching the references). It has no flat 5x5 fills. It only has 15 distinct colours and a median of 15 per tile, against roughly 108 per tile and 427-567 colours in the references. The clumps are smooth, blobby domes with few leaf-level dots, highlight clusters or grain, so they read softer and flatter than the references' many-shade leaf clusters. The ramp is shallower (about 4 steps against 5-6) and the density is far lower. A careful artist would see it as thinner than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13692
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper-left foliage clump",
+      "rows": "5-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper-right foliage clump",
+      "rows": "5-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-left foliage clump",
+      "rows": "28-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-right foliage clump",
+      "rows": "26-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The tile is a full 48x48 overlay of four leafy canopy blobs on dark shadow gaps. Highlights are at the top of each clump and shade is at the bottom, which suggests foliage volume viewed from above. There are no edge lines, eave shadows, vertical front faces or receding side faces. It is organic texture, not a standing object with a distinct top and front, so the structural top/front rules do not apply cleanly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 6,
+    "evidence": "The candidate is a 64x64 canopy overlay with rounded leaf-clump heads in about 5 green steps (highlight, light, mid, dark, deep), and the dark gaps between clumps are a tinted dark green, not neutral black (0% neutral edge pixels, same as the references). It has no flat 5x5 fills. The clumps are smooth, rounded blobs with little per-leaf dot texture or speckle, so they read softer than the references' broken, many-greened leaf clusters. Density is far lower: 15 colours per tile and 15 distinct colours in total, against 108-109 per tile and 427-567 distinct for the references. Even allowing that a tile overlay is simpler than a full tree, 15 colours per tile is far below the bar, and a careful artist would see it as flatter and more uniform next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14454
+  }
+ ],
+ "decidedAt": "2026-10-20T06:28:44.233Z",
+ "cells": {
+  "16": [
+   "1c74921ededb105d",
+   "47610da1dae93a8f",
+   "8015d1895343205c",
+   "86857214130fdf3c",
+   "8b346a8bbfa2ed1d",
+   "b926efb45047b7fa",
+   "eac728a3282df29b",
+   "f48ed897f8f5dd7f",
+   "faddadc55e214ec9"
+  ],
+  "24": [
+   "06526a876720e21b",
+   "3fd5a6137f452a72",
+   "6340aeb566abda5b",
+   "82cb8cf42094cffc"
+  ],
+  "32": [
+   "023ff47f00e4dace",
+   "1d0fe1bdd6f43d6d",
+   "355999a0a3cd85f0",
+   "56369e5d3c13e656",
+   "58d2fea24209f9b9",
+   "654aeb50171307c7",
+   "6acd15442775a1cd",
+   "6bc6f8234ff93dc7",
+   "78911576c403e09d",
+   "7ea0d0675274e9ba",
+   "7f0377965d53fff9",
+   "820ba394f7be4b70",
+   "9876b40b01e98e9a",
+   "a02ad15890f44754",
+   "a6861a605f19124b",
+   "ae57a0f4654ceb2e",
+   "b05216055def97a9",
+   "c407e2cc37c8e489",
+   "ca4dbaa396aeb4d9",
+   "d39f32c34e7d1338",
+   "daca97b26a360000",
+   "eb501655850084b7",
+   "f79c13ec5ee616ef",
+   "fcf6decf81f7c4cb"
+  ],
+  "48": [
+   "d6a97108265a7011"
+  ]
+ }
+}

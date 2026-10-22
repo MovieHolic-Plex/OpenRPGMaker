@@ -1,7 +1,7 @@
 import { configureEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
 import { defaultOpeningSequence } from "@/project/defaults/defaultOpeningSequence";
 import { inBounds, isPassable } from "@/project/collision";
-import { createBlankProject } from "@/project/defaults";
+import { createBlankProject, createStarterBlankProject } from "@/project/defaults";
 import { applyGenrePreset } from "@/project/genrePresets";
 import { GENRE_PACK_IDS, type GenrePackId } from "@/project/genrePackId";
 import { isActionCombatMap } from "@/project/actionCombat";
@@ -311,7 +311,7 @@ export function createProjectFromGenreBlankProjectSystemPreset(
  * 맵·이벤트·DB 레코드는 만들지 않는다 — 바뀌는 건 system.* 토글뿐이다.
  */
 export function createNewProjectSeed(packId: GenrePackId | null, title?: string): Project {
-  const project = packId === null ? createBlankProject() : createProjectFromGenreBlankProjectSystemPreset(
+  const project = packId === null ? createStarterBlankProject() : createProjectFromGenreBlankProjectSystemPreset(
     createGenreBlankProjectSystemPresetPlan(packId, genrePackById(packId).starter.defaultRecipeId),
   );
   if (title !== undefined) {

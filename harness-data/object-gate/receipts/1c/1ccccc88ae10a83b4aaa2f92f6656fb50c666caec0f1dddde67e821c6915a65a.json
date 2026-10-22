@@ -1,0 +1,349 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1ccccc88ae10a83b4aaa2f92f6656fb50c666caec0f1dddde67e821c6915a65a",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "세면화장대(큰 거울)",
+ "label": "jp_city/interior_house3/vanity-mirror",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 21,
+  "darkV5": 51,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall mirror with frame (vertical panel above the counter)",
+      "rows": "1-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "countertop with sink basin",
+      "rows": "12-21",
+      "evidence": "d",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "lower cabinet front with doors and drawers",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The counter is wider than the mirror (32 px vs 26 px) and spans rows 12-21. It is a light surface (L~236) with the sink basin visible, so a horizontal top is clearly shown. Row 21 is a darker front-edge line (L=202), and row 22 is a very dark eave shadow (L=37). Below that, the cabinet front (rows 23-31, doors and drawers) is a front face of about 9-10 rows. The mirror above (rows 1-11) is a vertical wall panel, but the counter carries the top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small washstand with a framed mirror, a white basin counter, brown cabinet doors and taps. The mirror frame has a lit top edge and darker lower edge. The glass shows diagonal highlight streaks. The counter has a light-to-shaded ramp, and the cabinet doors have panel detail. Visible tones per 16x16 tile are 20, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline is tinted (dark brown and blue-grey beside the material) rather than a uniform black sticker line. The piece is small and its shading is slightly less layered than the stall or well, so I rate its texture 'some' rather than 'rich'. It would still sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19391
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mirror in frame (upper panel)",
+      "rows": "1-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top with sink basin seen from above",
+      "rows": "12-21",
+      "evidence": "d",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "cabinet front with doors and drawers",
+      "rows": "22-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile steps from 26 (rows 1-11) to 32 (rows 12-21) to 30 (rows 22-31). Rows 12-21 are a light counter slab with a sink bowl visible from above, which is contents seen in an open basin. The slab ends in a lighter front-edge line at row 21 (L=202) and a dark row 22 (L=37) as eave shadow. Below it, rows 22-31 are a 10-row front face with cabinet doors and drawers. The mirror above (rows 1-11) is a vertical framed panel with no top surface, like a backrest panel, so I report it as lacking one. The main body, counter plus cabinet, has a real top and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a washstand with a framed mirror, a white basin counter and a brown cabinet with drawers, so it is the same kind of standing furniture prop as the references. It measures 20 visible tones per 16x16 tile, the same as prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%. The 0% near-neutral share of dark edge pixels means the outlines carry a tint: dark blue-grey beside the mirror and dark brown beside the cabinet wood, not a black sticker line. Each material has about 4-5 tones: the glass with its diagonal streaks, the frame, the porcelain counter and sink, and the wooden doors with their handle dots. Texture is moderate rather than rich, because the counter and cabinet surfaces are somewhat smooth. Nothing reads as a flat fill, and a careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18849
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mirror panel with frame",
+      "rows": "1-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "countertop with sink basin",
+      "rows": "12-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "cabinet front with doors and drawers",
+      "rows": "22-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The countertop is a 10-row light band (rows 12-21) that is wider than the body (32 px vs 26 and 30). It contains a sink basin and fixtures seen from above, ends in a lighter front-edge line at row 21 (L=202), and has a dark shadow row at row 22. Below it, rows 23-31 are a cabinet front face with doors and drawers. The mirror above (rows 1-11) is a thin vertical wall panel in a frame, like a backrest, and the counter carries the top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a standing furniture prop of the same kind as the references, drawn at the same scale. The mirror has a frame with a bluish glass gradient and glints, the basin is a shaded white-grey ramp, and the cabinet has drawer panels with small handles. The measured facts support this: 20 visible tones per 16x16 tile, matching prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% near-neutral, so the outline leans brown and blue-grey like the adjacent materials rather than sticker-style black. Shading is about 5 steps on the wood and basin ramps, close to the references. Texture is somewhat less grainy than the best references, but I see no flat-fill weakness. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16970
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mirror with frame (above the counter)",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sink countertop with basin",
+      "rows": "12-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "cabinet front with doors and drawers",
+      "rows": "22-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 12-21 form a wide, light countertop (width 32, wider than the 26-wide mirror and 30-wide cabinet) with a sink basin ellipse and small items on it. Row 12 is a light top edge. Row 21 (L=202) is a front-edge line, and row 22 (L=37) is a dark eave shadow beneath it. The cabinet front with two doors and two drawers fills rows 22-31, which is 10 rows of vertical face. The mirror in rows 1-11 is a framed vertical panel standing on the counter, so it is treated as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small washstand with a mirror, basin and cabinet drawers. It has 20 visible tones per 16x16 tile, equal to the well (20) and above the hedge (9) and cheese stall (17). Near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outlines carry a tint (dark brown/blue-grey) instead of a sticker-style black line. The mirror has a highlight streak, the counter has light and dark steps, and the drawers have handles and panel shading. On the main material ramps it has about 4 steps (wood: light, mid, dark, deep; basin: white, light grey, grey), slightly fewer than the 5-6 on the references. This is a modest gap, not shallow, and the measured density is at reference level. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15227
+  }
+ ],
+ "decidedAt": "2026-10-21T03:39:44.780Z",
+ "cells": {
+  "16": [
+   "1b89fc17e5102545",
+   "1feed0138eb5bc00",
+   "36744eedf384fe89",
+   "e8071de34ce3225a"
+  ],
+  "24": [
+   "0a81c84af1dbd723",
+   "0abd882cb7c18d47",
+   "16c1ccdf81139696",
+   "1d4bad3a273767c3",
+   "1f317d3b3306d8e7",
+   "2d7768d7af118699",
+   "465c5808a7736977",
+   "4c68937645c353f9",
+   "51af5331008511ba",
+   "5cde238355f38e2b",
+   "646ebb195d4d2c1b",
+   "680488819d6504dc",
+   "793004dc8e6fadd5",
+   "7c1bb27913e0a4b7",
+   "851f77b0ad64e80f",
+   "90174aceef71ceb1",
+   "97dabf762d59049a",
+   "a1630041d35baeb4",
+   "ac212c77719b49af",
+   "b375d1d7cdb8f032",
+   "b3af466158b9a156",
+   "c9e6aa0135d9c31d",
+   "f1fb06c8c1a82e93",
+   "fbc2b678c8c2ea76"
+  ],
+  "32": [
+   "38f593d1d71e6f06"
+  ],
+  "48": [
+   "ab817b322525955c",
+   "b91a2f01e9ba580b",
+   "c8b0e6b9ff4179fe",
+   "e068ea59bc54f028",
+   "e5ea14227c3622e6",
+   "fb2010cf18ca68ca"
+  ]
+ }
+}

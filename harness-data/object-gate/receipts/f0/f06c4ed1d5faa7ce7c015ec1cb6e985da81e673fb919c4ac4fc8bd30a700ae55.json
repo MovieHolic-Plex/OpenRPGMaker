@@ -1,0 +1,300 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f06c4ed1d5faa7ce7c015ec1cb6e985da81e673fb919c4ac4fc8bd30a700ae55",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "summer rice paddy",
+ "label": "jp-inaka-r5:at-paddy-summer",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 9,
+  "darkV5": 51,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rice paddy terrain tile (repeating horizontal crop rows, light green tops fading to dark green shadow bands)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The silhouette is a full 48x48 opaque square (width 48 for rows 0-47), so this is a seamless terrain tile and not a standing object. The column scans show a repeating pattern of light green, mid green, then dark green bands about every 8 rows (rows 0-7, 8-15, 16-22, 23-31, 32-39, and so on). This reads as rows of rice plants with shadow between them, not a bounded object with a top surface and a front face. There is no outline, no ellipse, no roof plane and no container contents, so none of the top-surface evidence types apply. The kind is terrain, which matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate paddy is built from horizontal rows of rice clumps in about 4 greens, so the shading is banded and repetitive. It has only 9 distinct colours and a median of 7 per tile, against 80 and 26 for the reference grass. That grass also has varied tufts and speckle, while the candidate's rows are regular and mechanical. No 5x5 flat fills are measured, and edge pixels are 0% neutral, so there is no black sticker outline. But the patch is far poorer than the grass reference in colour variety and organic texture, and the 4 steps are fewer than the reference's 5-6. The paving reference also has only 7 colours, but it is a simple stone material and does not excuse the gap to the grass reference. A careful artist would find the candidate flatter and thinner than the grass reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16805
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy tile: repeating rice-row bands, light tips over dark green shadow",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The object is a full 48x48 opaque tile (every row is 48 px wide) with no silhouette, so it is terrain ground fill, not a standing object. It repeats a bands pattern about every 16 rows: a light green and olive-yellow tuft row (L about 160), then mid green (L about 135 to 106), then dark shadow rows (L about 42 to 51). The bands are evenly spaced and the tile is seamless vertically. There is no front-edge line, no ellipse, no roof or canopy plane and no container contents. There is no distinct front face or side face either. It reads as a planar crop texture with a rows-of-plants rhythm, so a three-quarter or front-elevation reading does not apply. The small blue pixel at row 6 is a stray detail."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a striped paddy of horizontal green bands with only 9 distinct colours in total, against 80 for the grass reference. Its median is 7 colours per tile against 26 for the grass reference; it only matches the paving reference's 7, and paving is a simple, low-colour kind. The bands show roughly 4 green steps (light, mid, dark, deep) with some small tuft dots, but they repeat as regular rows with little clump variation, soil grain or irregular tufts. Flat-fill coverage is 0%, so there are no large flat areas. There is no real outline, so the neutral-edge fact is not a concern. Overall it reads as a tidy but repetitive, shallow pattern next to the grass reference, which has varied tufts, speckle and multiple greens.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 26216
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rice paddy ground, repeating horizontal crop-row bands across the full 48x48 tile",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The silhouette is a full 48-px-wide rectangle on every row (0-47:48), so this is a seamless ground tile and not a standing object. The column scans repeat a pattern of about 8 rows: light green/olive rows, then mid green, then dark green shadow (e.g. x=24 rows 8-9 L=162, 10-11 L=135, 12 L=106, 13 L=81, 14-15 L=51, then 16-19 L=144 again). That is a periodic crop-row texture and not a single top surface with a front-edge line, ellipse, or roof plane. There is no single body, no distinct front face, no side face, and no column cap. It reads as flat terrain texture, so the object-style top and front measures do not apply."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a rice paddy built from repeating horizontal green bands, with a dark green line under each row and a lighter highlight on top. It has only 9 distinct colours in total, against 80 for the reference grass, and a median of 7 colours per tile against 26. Its dark edge pixels are 0% neutral, so the outline leans green and counts as dark material tone. There are no flat fills, but the texture is a regular stripe pattern with little grain, clumping or per-blade variation. The reference grass has many greens, tufts and speckle across the surface. The candidate reads as about 4 steps per band, close to a tiled pattern, and is clearly flatter and less varied than the grass reference. The paving reference also has only 7 colours per tile, but its stones are shaded individually, and the candidate's rows are uniform. Overall the candidate is much sparser in colour and detail than the grass reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 27946
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy terrain tile (repeating rows of rice plants and shadow furrows)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 48x48 tile with constant silhouette width of 48 across rows 0-47. It has no silhouette, no standing body, and no front face. It shows a repeating pattern of light green and tan rice-plant rows over dark furrow shadow bands, about every 8 rows. This reads as a seamless terrain texture, which matches the kind (terrain tile). The 3/4 top-and-front structure does not apply to a ground tile, so it is reported as a flat slab with no standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a rice paddy drawn as horizontal bands of green rows. It uses only 9 distinct colours and a median of 7 per 16x16 tile, against 80 colours and a median of 26 for the grass reference. The rows show about 4 green steps, a lighter top edge and a darker base, but they repeat identically from row to row. There are no clump variations, soil grain or water detail between the rows. Flat-fill coverage is 0%, so there are no large flat areas, and the dark edge pixels are tinted, so there is no black outline. The candidate matches the paving reference on per-tile colours (7), but the grass is the closer reference for a vegetated ground, and the candidate is far below it in richness and variety. It reads as a tidy, repeating pattern, not hand-shaded Beodeul texture. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 22900
+  }
+ ],
+ "decidedAt": "2026-10-20T06:14:17.629Z",
+ "cells": {
+  "16": [
+   "113f0350d8d50e5e",
+   "838ac491cd676dd3",
+   "9178afd922bcfb71",
+   "be3914503a3d6f8a",
+   "be8d45b38fb63d03",
+   "d969bbad27b74adb"
+  ],
+  "24": [
+   "3edc04f14602f2ef",
+   "6a02dbd8ab85869b",
+   "7f740a5d686d0c3c",
+   "c5f2c9fac2627f9d"
+  ],
+  "32": [
+   "090470c33f4137cd",
+   "0c2b5dcf9bf943a0",
+   "1f419cbc3cb909d9",
+   "2cdcd539119f0bae",
+   "33d693d6f92864a9",
+   "494cca7ff6588f72",
+   "4e966958c0d4ff22",
+   "5b36c132607094da",
+   "62e708418ea2caf1",
+   "7dbc21c4d57dc586",
+   "87787cb63867a0e0",
+   "8c4d4cbdff6369b1",
+   "968e0c2e8a3206d2",
+   "c11ce08110484d36",
+   "d2656b6807652731",
+   "d4156550beccab1a",
+   "daff0cd09b0e0f8e",
+   "dbf46aefa77f32de",
+   "dd5aba8cf382600a",
+   "ede0f1e092b21473",
+   "ee414a3e610eabac",
+   "f943ea5f40380f20",
+   "fcae0bde3333b13f",
+   "fd912bf82d022732"
+  ],
+  "48": [
+   "a0ba8cffcf34c62c"
+  ]
+ }
+}

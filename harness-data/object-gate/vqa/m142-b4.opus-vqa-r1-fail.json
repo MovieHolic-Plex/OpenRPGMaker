@@ -1,0 +1,205 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b4",
+ "round": 1,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png",
+  "board-3.png",
+  "board-4.png",
+  "board-5.png"
+ ],
+ "items": [
+  {
+   "id": "lab-reagent-shelf",
+   "pixelSha256": "a7c5bd8047cdb9192c9a6ad80ee7f68fb2cd7eb4bcb280e3c64f6d1c8b618db1",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "The outline is light grey, not the originals' dark navy. It is drawn as a flat front elevation with only about 1–2 rows of top plane, so there is no lit top surface."
+  },
+  {
+   "id": "lecture-podium",
+   "pixelSha256": "e1fe1b83384675668183f772d2e788c0839a575aa6dea25ab54f9cee48b94eac",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The top desk plane with a monitor is visible above a short emblem front panel, it has a dark outline and wood shading close to the wardrobe, and it sits on the floor at a believable size."
+  },
+  {
+   "id": "library-carrel",
+   "pixelSha256": "7ee555bbf0797c52863d9ea0e311709d04cfff7c7d40cc404df4b41e227f1231",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The desk and lamps are drawn near-plan-view while the divider posts and legs are shown in elevation, so the view is mixed. Heavy dark outlines box every part and make the lower half a muddy brown blob."
+  },
+  {
+   "id": "library-shelf",
+   "pixelSha256": "5aff09692ceeca0bbab56ef0ce1c803f3a244b5ce7c3da85fe80fd724345d925",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "It has a clear lit wooden top plank several rows deep, a short front with three bays of colored book spines, wood shading that matches the wardrobe, and a solid base on the floor."
+  },
+  {
+   "id": "manga-booth",
+   "pixelSha256": "30fe126c8a50457538d5dd8bf775d1d3ae2d836d8d0c65e6578a4f038db6ae6b",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "It reads as a top-down floor plan: the chair is seen from above and both blue side walls are shown as side faces. It is also about 1.5 tiles too tall for the room."
+  },
+  {
+   "id": "manga-shelf",
+   "pixelSha256": "abbca1024038d91fc6b3ed24df98a09c70e37ed18c76fe349afecb5891c4f41b",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    4
+   ],
+   "reasons": "It is a flat white front elevation with almost no top plane. The outline is pale grey with stray tan corner dots instead of the dark outline the originals use."
+  },
+  {
+   "id": "mart-basket-stacker",
+   "pixelSha256": "41ec396929ea0bfb5743e0b701e19782104fba486c6d4328095fccffe3f19153",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "It is a narrow flat-front stack of orange and blue bands with no readable basket openings seen from above. At 1x it reads as a striped column, not a basket stand."
+  },
+  {
+   "id": "mart-bread-rack",
+   "pixelSha256": "e3a31102070afbebe9030653bc716d3aaf49b9f680dd6deac7722d825809f7a9",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "The light grey outline and very thin top rail make it a front elevation. It lacks the dark outline weight of the originals."
+  },
+  {
+   "id": "mart-cake-showcase",
+   "pixelSha256": "31caace698eb2cfdbfea0b89cfb840000389a33dd2cbd7a664edd5f4c1505deb",
+   "verdict": "FAIL",
+   "failed": [
+    1
+   ],
+   "reasons": "The top is only a thin 1–2 row light band, so there is no readable lit counter or glass top plane. It looks like a framed front view of a cabinet."
+  },
+  {
+   "id": "mart-cold-case",
+   "pixelSha256": "2dfa003310b07ff33400effb64769af661cd326d61fc3d05c67011affcf5e0ce",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "It has a white top plane several rows deep, a red header band, two glass doors with stocked shelves, a dark base vent, and a dark outline consistent with mci-cooler and the counter."
+  },
+  {
+   "id": "mart-dairy-open",
+   "pixelSha256": "918695f7a7ae242aa4bf15d632ade95f87244a8d418bc4aaf64a45f8662d5d52",
+   "verdict": "FAIL",
+   "failed": [
+    1
+   ],
+   "reasons": "The top is a thin white strip with a blue awning band and the rest is a flat open front. It lacks a lit top plane and depth for an open case."
+  },
+  {
+   "id": "mart-donut-case",
+   "pixelSha256": "834168f3340bc605d936c84fcb2b05e35ed60d3761a97622a08c604702097a1b",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The left and right silhouette edges are stair-stepped and jagged, and the pink sign block sits as a separate bit on top, so the outline looks broken and noisy."
+  },
+  {
+   "id": "mart-gondola-cans",
+   "pixelSha256": "6d7be20b3d0920f188867fed726a355c355449e5c40b96be16e62d818d47b2ef",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "It has a grey top plane about 3 rows deep, a dark outline, and evenly stocked can rows in muted colors that fit the cooler. Its size and floor placement are believable."
+  },
+  {
+   "id": "mart-gondola-cereal",
+   "pixelSha256": "41bfa7cfe6fbf7c8ac04ee2fdef1f59ca10f365204d31b603736409cddfebcd4",
+   "verdict": "FAIL",
+   "failed": [
+    2
+   ],
+   "reasons": "The saturated purple top and box blocks and the bright yellow boxes clash with the chipset's muted palette and read as sticker-like color fields."
+  },
+  {
+   "id": "mart-gondola-detergent",
+   "pixelSha256": "82faab108ab9301e0b22cb153a094f414e776f45f40d55df034427a4a7cf662c",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The lower shelf is noisy with tiny bottles, and stray orange dots sit along the bottom rail. The top beam is a dark grey slab rather than a lit plane."
+  },
+  {
+   "id": "mart-gondola-ramen",
+   "pixelSha256": "a85d49e04d05634938967d45fae6cec5ea7a19399741b28ad5ff3e16c5266939",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The whole unit is a muddy red-on-red mass with noisy orange and white specks. The body has no neutral structure or dark outline like the originals."
+  },
+  {
+   "id": "mart-gondola-tea",
+   "pixelSha256": "e1af6770c9b5624c5a97edfbfd66c0dbfdb2c20818effd59208a7293d5cb18b6",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The outline is dark green instead of navy and the top plane is muddy green with blotchy packages. The lower boxes are noisy beige smudges."
+  },
+  {
+   "id": "mart-gondola-water",
+   "pixelSha256": "ba48f3260191fa5cf3b182ae3be08b073cd1ebae24dd9db78e78404005d56da7",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "It has a grey top plane, a dark outline, and clearly readable blue bottles and bottle packs on two shelves, with a palette and density matching the cooler. It sits correctly on the floor."
+  },
+  {
+   "id": "mart-liquor-fridge",
+   "pixelSha256": "36985cc5962e5af3d93904dfce4ac0828b87883ecd3326e0cbc3d4cbc266c14c",
+   "verdict": "FAIL",
+   "failed": [
+    2
+   ],
+   "reasons": "The side outlines are pale grey or missing instead of the originals' dark outline, and the top plane is only a thin white strip."
+  },
+  {
+   "id": "mart-meat-showcase",
+   "pixelSha256": "7f3f837bda552039040c098ed09804ed18eb30081254a5bcfccfedca53296f46",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The glass top tray with meat cuts is seen from above, and the short white front with a red stripe matches mci-counter-register. It has a dark outline and a believable width on the floor."
+  }
+ ]
+}

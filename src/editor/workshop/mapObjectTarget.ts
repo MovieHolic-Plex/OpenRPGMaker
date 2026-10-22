@@ -35,3 +35,12 @@ export async function mapObjectPalette(env: WorkshopEnv, tilesetId: string, titl
   const similar = similarObjects(source, title, description, 6).map((object) => ({ image: object.image, weight: 8 }));
   return paletteFromImages([...similar, { image: source.image, weight: 1 }]);
 }
+
+/** 「물건·가구」 카드가 쓰는 두 실행기 — 손 도트 실내 칩셋(실내 가구)과 지금 맵 칩셋(맵 물건). */
+export const OBJECT_WORKSHOP_HARNESSES = ["interior-props", "map-objects"] as const;
+export type ObjectWorkshopHarness = (typeof OBJECT_WORKSHOP_HARNESSES)[number];
+
+/** 「만들기」가 처음 여는 실행기: 지금 맵이 손 도트 실내가 아닌 16px 맵이면 그 맵 칩셋, 아니면 실내 가구. */
+export function objectWorkshopHarness(): ObjectWorkshopHarness {
+  return currentDrawTarget().harnessId === "map-objects" ? "map-objects" : "interior-props";
+}

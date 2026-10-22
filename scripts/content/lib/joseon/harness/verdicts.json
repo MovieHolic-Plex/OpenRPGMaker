@@ -16,12 +16,12 @@
   "date": "2026-10-02"
  },
  "willow": {
-  "hash": "1e622f9c5c1e",
+  "hash": "8e49becc2f7e",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "well": {
   "hash": "1f1c12a61fab",
@@ -160,92 +160,92 @@
   "date": "2026-10-02"
  },
  "zelkova_a": {
-  "hash": "fb93c870d542",
+  "hash": "6f981f055a52",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "zelkova_b": {
-  "hash": "49821b1a9ab3",
+  "hash": "d9b88976d2db",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "zelkova_c": {
-  "hash": "4e06f299408a",
+  "hash": "9e10772a2285",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "pine_a": {
-  "hash": "e8b2c27a8e91",
+  "hash": "23dbf6d6e719",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "pine_b": {
-  "hash": "cc774fd8fd13",
+  "hash": "e52db209f389",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "persimmon_a": {
-  "hash": "2d54f701c693",
+  "hash": "b958244c098f",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "persimmon_b": {
-  "hash": "c40cb51d70ab",
+  "hash": "3c9060c53fcc",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "bamboo": {
-  "hash": "a4399ad87176",
+  "hash": "7edd7209c6d5",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "bush_a": {
-  "hash": "8d16af4044a5",
+  "hash": "a7a69853170f",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "bush_b": {
-  "hash": "640e40242543",
+  "hash": "972f3722077d",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "bush_c": {
-  "hash": "fb9a812c2737",
+  "hash": "364a743fa022",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "fence_h": {
   "hash": "f5546aa84432",
@@ -280,28 +280,28 @@
   "date": "2026-10-02"
  },
  "small_z_a": {
-  "hash": "143547bfe8ab",
+  "hash": "b2c989479245",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "small_z_b": {
-  "hash": "03ed1ace74e7",
+  "hash": "6d76c3c90d6e",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "small_p": {
-  "hash": "38d912466427",
+  "hash": "cbe8af262f86",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "stone_bank": {
   "hash": "7e535c61f9d5",
@@ -384,84 +384,84 @@
   "date": "2026-10-02"
  },
  "zelkova_d": {
-  "hash": "bb6e21566a37",
+  "hash": "4afae87b55a8",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "zelkova_e": {
-  "hash": "718fa63c1d7e",
+  "hash": "123dfc556857",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "pine_c": {
-  "hash": "957904cb0de5",
+  "hash": "f6ff19409195",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "pine_d": {
-  "hash": "b6c0cbe9cc3b",
+  "hash": "c23baf2f0515",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "persimmon_c": {
-  "hash": "beccb672df8d",
+  "hash": "045293e9a711",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "bush_l_a": {
-  "hash": "b8764babf0e0",
+  "hash": "2a42e7844987",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "bush_l_b": {
-  "hash": "be73fc760985",
+  "hash": "6f1ef2dfb2dc",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "bush_s_a": {
-  "hash": "c76273a8790c",
+  "hash": "578919085072",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "bush_s_b": {
-  "hash": "d7aee610f3e7",
+  "hash": "46f9229a3d57",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "bamboo_grove": {
-  "hash": "b3ed828a888e",
+  "hash": "83a7b82c9b8d",
   "status": "note",
-  "line": "2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 2026-10-02 밝은 팔레트(땅·잎·물·돌 버들항 램프)로 교체 후 미리보기 확인, 3/4 문법 불변",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "giwa_house_5b": {
   "hash": "42e307666b5d",
@@ -1192,28 +1192,28 @@
   "date": "2026-10-02"
  },
  "palace_pine_a": {
-  "hash": "963e0c903077",
+  "hash": "fe5509de1966",
   "status": "pass",
-  "line": "기존 pine 위 화단: 돌 경계 윗면+앞면이 보이는 3/4.",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 기존 pine 위 화단: 돌 경계 윗면+앞면이 보이는 3/4.",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "palace_pine_b": {
-  "hash": "27fec8af59f8",
+  "hash": "6c4eec0878fc",
   "status": "pass",
-  "line": "소나무 변형 b.",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 소나무 변형 b.",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "palace_pine_c": {
-  "hash": "80e4e9fa3fbc",
+  "hash": "c397afc581d0",
   "status": "pass",
-  "line": "둥근 돌 화단 변형.",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 둥근 돌 화단 변형.",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-02"
+  "date": "2026-10-22"
  },
  "palace_lantern": {
   "hash": "b944d2b7e810",
@@ -2064,140 +2064,140 @@
   "date": "2026-10-02"
  },
  "zelkova_f": {
-  "hash": "c31ecc819992",
+  "hash": "4c9265922d6e",
   "status": "note",
-  "line": "",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: ",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "zelkova_g": {
-  "hash": "fb2a89210feb",
+  "hash": "d2920bf43690",
   "status": "note",
-  "line": "",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: ",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "zelkova_h": {
-  "hash": "e9d1b08bef81",
+  "hash": "04b25df056bd",
   "status": "note",
-  "line": "",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: ",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "zelkova_i": {
-  "hash": "8b4bdf119588",
+  "hash": "252ebdaf36c6",
   "status": "note",
-  "line": "",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: ",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "zelkova_j": {
-  "hash": "12e5abb39d70",
+  "hash": "ab9d2b453e12",
   "status": "note",
-  "line": "",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: ",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "pine_e": {
-  "hash": "ec6deb5e7b38",
+  "hash": "f264dce60d9d",
   "status": "note",
-  "line": "",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: ",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "pine_f": {
-  "hash": "dbfa544e9991",
+  "hash": "aa1a396ebf15",
   "status": "note",
-  "line": "",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: ",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "persimmon_d": {
-  "hash": "2ac8c8394731",
+  "hash": "089e0536a64b",
   "status": "note",
-  "line": "",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: ",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "persimmon_e": {
-  "hash": "8915819460bb",
+  "hash": "a7a2273adb1f",
   "status": "note",
-  "line": "",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: ",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "persimmon_f": {
-  "hash": "ce0d5c1dec34",
+  "hash": "29f8980e6316",
   "status": "note",
-  "line": "",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: ",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "bush_d": {
-  "hash": "2df95db1e661",
+  "hash": "657dafa34492",
   "status": "note",
-  "line": "",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: ",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "bush_e": {
-  "hash": "e2bd2ebaec09",
+  "hash": "e1e439bffc19",
   "status": "note",
-  "line": "",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: ",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "bush_f": {
-  "hash": "e0a252cdc4fb",
+  "hash": "465507b55631",
   "status": "note",
-  "line": "",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: ",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "bush_l_c": {
-  "hash": "7537b0fe09c7",
+  "hash": "cf3c0c0634a3",
   "status": "note",
-  "line": "",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: ",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "bush_l_d": {
-  "hash": "11274469eb37",
+  "hash": "22b69df26cc5",
   "status": "note",
-  "line": "",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: ",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "bush_s_c": {
-  "hash": "12dac4d930b1",
+  "hash": "cb8316f77bd0",
   "status": "note",
-  "line": "",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: ",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "bush_s_d": {
-  "hash": "9ecfe177b8e9",
+  "hash": "2c069ee0c6f7",
   "status": "note",
-  "line": "",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: ",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "gungnae_wall_v3": {
   "hash": "460f7fd7cf20",
@@ -2256,52 +2256,52 @@
   "date": "2026-10-03"
  },
  "bamboo_b": {
-  "hash": "8ef98d8a7a0e",
+  "hash": "3bb76e16522d",
   "status": "pass",
-  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "bamboo_c": {
-  "hash": "13ff631828b5",
+  "hash": "e96ef9979952",
   "status": "pass",
-  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "bamboo_d": {
-  "hash": "6b3b53a0495c",
+  "hash": "8fd9abb8621a",
   "status": "pass",
-  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "bamboo_grove_b": {
-  "hash": "9c9f03bd8c25",
+  "hash": "32f84f77ae62",
   "status": "pass",
-  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "bamboo_grove_c": {
-  "hash": "ce3b0e048fd5",
+  "hash": "88ddc0000122",
   "status": "pass",
-  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "bamboo_grove_d": {
-  "hash": "655313caa913",
+  "hash": "7fa126cb5477",
   "status": "pass",
-  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-03"
+  "date": "2026-10-22"
  },
  "gnf_gate_side_5": {
   "hash": "9de612e4e91e",
@@ -2592,28 +2592,28 @@
   "date": "2026-10-04"
  },
  "fld_bush_flower_a": {
-  "hash": "d4b8bc442a0b",
+  "hash": "01cb9c8632bb",
   "status": "pass",
-  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-04"
+  "date": "2026-10-22"
  },
  "fld_bush_flower_b": {
-  "hash": "0e07145c4c4d",
+  "hash": "d7f1f138895d",
   "status": "pass",
-  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-04"
+  "date": "2026-10-22"
  },
  "fld_bush_berry": {
-  "hash": "fab657203b4b",
+  "hash": "07f86b063045",
   "status": "pass",
-  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-04"
+  "date": "2026-10-22"
  },
  "fld_fern": {
   "hash": "a4ee6c08c3e8",
@@ -2776,68 +2776,68 @@
   "date": "2026-10-04"
  },
  "fld_zelkova_a": {
-  "hash": "05dc0301b746",
+  "hash": "72468b377d5c",
   "status": "pass",
-  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-04"
+  "date": "2026-10-22"
  },
  "fld_zelkova_b": {
-  "hash": "0991ebff9b19",
+  "hash": "25efb4160575",
   "status": "pass",
-  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-04"
+  "date": "2026-10-22"
  },
  "fld_zelkova_c": {
-  "hash": "29b48f51155b",
+  "hash": "0a630cc90754",
   "status": "pass",
-  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-04"
+  "date": "2026-10-22"
  },
  "fld_zelkova_d": {
-  "hash": "ec73ee736062",
+  "hash": "047207b8fedf",
   "status": "pass",
-  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-04"
+  "date": "2026-10-22"
  },
  "fld_pine_a": {
-  "hash": "68ffd0b5e6b4",
+  "hash": "33fef269ecc3",
   "status": "pass",
-  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-04"
+  "date": "2026-10-22"
  },
  "fld_pine_b": {
-  "hash": "6a9ab8053119",
+  "hash": "c3d96d25d618",
   "status": "pass",
-  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-04"
+  "date": "2026-10-22"
  },
  "fld_pine_c": {
-  "hash": "f2e579ae0476",
+  "hash": "994a6696b601",
   "status": "pass",
-  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-04"
+  "date": "2026-10-22"
  },
  "fld_pine_d": {
-  "hash": "27f6464fba4d",
+  "hash": "8ecea3b046ba",
   "status": "pass",
-  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-04"
+  "date": "2026-10-22"
  },
  "fld_dead_a": {
   "hash": "be2ce58d48af",
@@ -2856,20 +2856,20 @@
   "date": "2026-10-04"
  },
  "fld_grove_broad": {
-  "hash": "6d9e74dac1c9",
+  "hash": "7acdc5b39d5b",
   "status": "pass",
-  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-04"
+  "date": "2026-10-22"
  },
  "fld_grove_pine": {
-  "hash": "06b9a4a78cdd",
+  "hash": "882c685fe324",
   "status": "pass",
-  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "line": "2026-10-22 잎 결만 교체(leaf_tones.json 손 도트 32×32, 옛 결은 출처 불명 이미지 표본) — 모양·알파·빛·통행 불변, 독립 Opus 적대 VQA PASS(verify-shots/beodeul-redraw/receipts/receipt-joseon-leaf.json). 이전 판정: 수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
   "reviewer": "claude",
   "user": "pending",
-  "date": "2026-10-04"
+  "date": "2026-10-22"
  },
  "fld_cave_a": {
   "hash": "bd08fa285d8c",
@@ -4616,9 +4616,9 @@
   "date": "2026-10-04"
  },
  "pal_buk_big": {
-  "hash": "cd0a39b2bbab",
+  "hash": "1ba1cd48fefa",
   "status": "pass",
-  "line": "큰 북: 두 기둥 틀에 걸린 붉은 큰 북(가죽 면 + 붉은 테 + 금 징 둘레 + 태극 점) + 받침 널 + 북채",
+  "line": "큰 북 2×3. 나무 틀 윗가로대 윗면 + 붉은 테·금 못·삼태극 가죽 면. 정면 소품(가죽 면이 앞을 본다) — 틀 윗면과 북 윗 두께로 3/4",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
@@ -6555,14 +6555,6 @@
   "hash": "6f9fee9d49ae",
   "status": "pass",
   "line": "대형 향로(놋쇠 몸통 + 열린 화구에 불씨 + 연기 두 줄기). 윗면 타원 속 불씨가 보이는 것이 a 와 다르다",
-  "reviewer": "claude",
-  "user": "pending",
-  "date": "2026-10-04"
- },
- "pal_buk_big": {
-  "hash": "1ba1cd48fefa",
-  "status": "pass",
-  "line": "큰 북 2×3. 나무 틀 윗가로대 윗면 + 붉은 테·금 못·삼태극 가죽 면. 정면 소품(가죽 면이 앞을 본다) — 틀 윗면과 북 윗 두께로 3/4",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"

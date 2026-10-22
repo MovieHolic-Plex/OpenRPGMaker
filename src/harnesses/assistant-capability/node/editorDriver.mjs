@@ -101,6 +101,7 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
       const response=await original.apply(this,args);
       const endpoint=String(args[0]);
       if(endpoint.includes('/v1/agent/run') && response.body){
+        window.__capEvents.push({type:'stream_open',endpoint:'agent',at:Date.now()});
         const reader=response.clone().body.getReader(),decoder=new TextDecoder();let pending='';
         const consume=line=>{try{
           const outer=JSON.parse(line.replace(/^data:\s*/,'')),event=outer.type==='agent_event'?outer.event:outer;
@@ -122,6 +123,7 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
       // settled response to the harness so a real read is not mistaken for a
       // hung Pi turn merely because it did not open an agent SSE stream.
       if(endpoint.includes('/v1/chat/completions') && response.body){
+        window.__capEvents.push({type:'stream_open',endpoint:'chat',at:Date.now()});
         void(async()=>{try{
           const raw=await response.clone().text();
           let emitted=false;
@@ -172,9 +174,10 @@ async function saveThroughUi(page) {
 export async function execute(entry, dir, timeoutMs, config, diagnostics={}) {
   const projectDir=resolve(dir,'project'), host=await startHost(projectDir,dir);
   let browser,context,bootPage,phase='editor-start';const errors=[],requests=[]; const evidence=[];
-  const captureOptions={onPage(page) {
+  const captureOptions={async onPage(page,context) {
     bootPage=page;
     page.on('pageerror',error=>errors.push(error.message));
+    await diagnostics.onPage?.(page,context);
   }};
   try {
     browser=await firefox.launch({firefoxUserPrefs:{'network.notify.changed':false,'network.notify.IPv6':false,'network.captive-portal-service.enabled':false,'network.connectivity-service.enabled':false}});

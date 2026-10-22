@@ -1,0 +1,75 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b2",
+ "round": 3,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "dept-rack-cool",
+   "pixelSha256": "64548ca97f0ff3259cbd339a499a4ae92b3195d462c4963c6e188e86bcaf4eb0",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The round top ring is scattered with bright yellow-orange single-pixel dots that read as sticker sparkles, not shading. The hanging garments are a dense blue mass with no clear dark outer outline like the originals, so the silhouette is noisy and the edges are soft."
+  },
+  {
+   "id": "home-appliance-rack",
+   "pixelSha256": "5d6562bccf1427994a4a465307b65f8c04a8fce60f182c4d90a8f4bdc5553e64",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "The shelf is drawn as a flat front elevation: the top plank shows only a 1–2 px sliver with no lit top plane, and the microwave and rice cooker are also shown straight-on. At 1 tile wide and 2 tall it looks narrow and toy-sized next to the wardrobe and cooler."
+  },
+  {
+   "id": "home-drying-rack",
+   "pixelSha256": "15f16a895b730246e6d460eabd9fa49b461db18992ed26f34c884a5bc0bcd6cc",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The frame is a front-on rectangle of rails with no visible top plane or depth to the drying bars. The red garment in the middle is a muddy dark-red clump that merges with the green and blue pieces, and the clothes lack the dark outline weight of the originals."
+  },
+  {
+   "id": "home-umbrella-stand",
+   "pixelSha256": "7bf2be2137e5c63b648cc97710455418ae62416b06b9578093134cadc1724aea",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The umbrellas are lumpy red, blue and grey figure-like blobs that run up to the top edge of the canvas. At 1x they read as little people or bottles in a bin, not furled umbrellas, and the stand's opening isn't shown as a top-down rim."
+  },
+  {
+   "id": "hospital-curtain-screen",
+   "pixelSha256": "088365847397163dbbd9410200e4820855a601fa4165d3cdee3b895d7b3385d1",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "It is a pure front elevation of a tall green panel, with no top rail or plane seen from above and a flat-on base. At 1x it reads as a locker or door rather than a curtain screen on a frame, and the dark bottom corner blocks look detached from the frame."
+  }
+ ]
+}

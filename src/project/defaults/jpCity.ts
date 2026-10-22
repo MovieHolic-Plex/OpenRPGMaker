@@ -12,6 +12,7 @@ import { bundledJson } from "./bundledJson";
 /** 번들 정의 JSON — 처음 쓸 때 읽는다(bundledJson.ts). 칸 수·한 줄 폭은 같은 굽기가 쓰는 작은 시트 메타(`jpCitySheet.json`)에서 읽는다. */
 const data = () => bundledJson("jpCityTileset");
 import references from "@/assets/jpCityReferences.json";
+import forestReferences from "@/assets/jpForestReferences.json";
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 
@@ -23,7 +24,8 @@ export const JP_CITY_COUNT: number = sheet.count;
 export const JP_CITY_TILES_PER_ROW: number = sheet.tilesPerRow;
 /** 조립 부품·오토타일 그룹·참고문서 id 머리. 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
 export const JP_CITY_PREFIX = "jp-";
-const REFERENCES = references as unknown as TilesetReferenceCategory[];
+// 숲 용도(jp-forest)는 따로 굽는다(scripts/content/jp-city/forest/bake_forest_refs.py) — bake_refs.py 가 다른 용도를 다시 구워도 숲 문서가 지워지지 않게.
+const REFERENCES = [...(references as unknown as TilesetReferenceCategory[]), ...(forestReferences as unknown as TilesetReferenceCategory[])];
 
 const isOwned = (id: string): boolean => id.startsWith(JP_CITY_PREFIX);
 

@@ -49,17 +49,17 @@ try {
   await page.goto(base, { waitUntil: "domcontentloaded" });
   await page.getByTestId("sidebar-workshop").click();
   await page.getByTestId("left-workshop-pane").waitFor();
-  await shot("01-left-pane", "왼쪽 막대 「공방」 판");
-  await page.getByTestId("left-workshop-open-interior-props").click();
-  await page.getByTestId("workshop").waitFor();
-  await page.getByTestId("workshop-filter-all").click();
-  await page.locator('[data-testid="workshop-item"][data-key="wardrobe"]').click().catch(() => page.getByTestId("workshop-item").first().click());
-  await shot("02-item-empty", "기물 선택, 아직 판 없음 — 지금 그림 비교");
-  await page.getByTestId("workshop-start-round").click();
+  await shot("01-left-pane", "왼쪽 막대 「공방」 — 생성기 카드 넷");
+  await page.getByTestId("workshop-gen-open-object-gen").click();
+  await page.getByTestId("workshop-item-form").waitFor();
+  await shot("02-item-form", "「물건·가구」 첫 화면 — 무엇을 만들까요 폼");
+  await page.getByTestId("workshop-form-title").fill("약초 말리는 선반");
+  await page.getByTestId("workshop-form-description").fill("나무 선반 3단, 말린 약초 다발이 걸려 있다.");
+  await page.getByTestId("workshop-item-save").click();
   await page.waitForTimeout(1500);
   await shot("03-drawing", "후보 그리는 중(진행 줄)");
   await page.waitForFunction(() => [...document.querySelectorAll('[data-testid="workshop-card"]')].every((card) => ["done", "failed"].includes(card.getAttribute("data-status"))), null, { timeout: 120_000 });
-  await shot("04-round-done", "후보 5장 · 꼭대기 행 · 검수 칩");
+  await shot("04-round-done", "후보 3장 · 꼭대기 행 · 검수 칩");
   await page.keyboard.press("3");
   await page.keyboard.press("f");
   await shot("05-zoom-compare", "3번 선택 · 크게 · 비교");
@@ -71,7 +71,7 @@ try {
   await shot("07-picked", "고름 표시");
   await page.getByTestId("workshop-new-item").click();
   await page.getByTestId("workshop-item-form").waitFor();
-  await shot("08-new-item-form", "새 기물 정의 폼");
+  await shot("08-new-item-form", "+ 새로 만들기 폼");
 } finally {
   writeFileSync(resolve(out, "SUMMARY.md"), [
     "# 공방 화면 캡처 (가짜 모델)", "",

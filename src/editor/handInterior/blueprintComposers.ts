@@ -22,6 +22,7 @@ import {
   type HandInteriorZone,
 } from "./builder";
 import { composeHandInteriorRooms, type ComposedRooms, type HandInteriorConnect, type HandInteriorExit, type HandInteriorRoom } from "./rooms";
+import { composeJpHouseBlueprint } from "./jpHouseBlueprint";
 
 /** 요청 문장에서 읽은 공간 뉘앙스. */
 export interface SpaceNuance {
@@ -36,9 +37,12 @@ export interface BlueprintInteriorArgs {
   readonly floor: string;
   readonly wall: string;
   readonly ceiling?: string;
-  readonly rooms: readonly HandInteriorRoom[];
-  readonly connect: readonly HandInteriorConnect[];
-  readonly exit: HandInteriorExit;
+  /** 방 사각형·문·출구(도구가 칸막이를 계산). 위층처럼 바깥 출구가 없는 청사진은 대신 plan·start 를 준다(일본 집 2층). */
+  readonly rooms?: readonly HandInteriorRoom[];
+  readonly connect?: readonly HandInteriorConnect[];
+  readonly exit?: HandInteriorExit;
+  readonly plan?: readonly string[];
+  readonly start?: readonly { readonly x: number; readonly y: number }[];
   readonly zones: readonly HandInteriorZone[];
   readonly objects: readonly HandInteriorObject[];
   readonly tables: readonly HandInteriorTable[];
@@ -1175,5 +1179,7 @@ export function composeInteriorBlueprint(tilesetId: string, program: string, spe
   if (tilesetId === "modern_campus" && program === "university-lecture-wing") return composeLectureWing(spec, nuance, seed);
   if (tilesetId === "atlas_biome_interior" && program === "throne") return composeThroneHall(spec, nuance, seed);
   if (tilesetId === "modern_city" && (program === "department-store" || program === "mc_department_store")) return composeDepartmentStore(spec, nuance, seed);
+  // 일본 2층 단독주택 1층·2층(jpHouseBlueprint.ts) — 참고 그림에서 읽은 구조(물 쓰는 곳 묶음·가운데 복도 계단·남쪽 현관)를 지킨다.
+  if (tilesetId === "jp_city") { const jp = composeJpHouseBlueprint(program, spec, seed); if (jp) { const { stairs: _s, layoutRooms: _r, ...args } = jp; return args; } }
   return undefined;
 }

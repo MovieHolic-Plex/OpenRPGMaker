@@ -162,7 +162,8 @@ export function renderAiAuthSettings(
   const quickButtons = new Map<string, HTMLButtonElement>();
   const cardPills = new Map<string, HTMLElement>();
   /** 카드별 마지막으로 확인된 자격 상태 — 선택되지 않은 카드도 「연결됨」을 보여 주기 위한 캐시. */
-  const cardAuth = new Map<string, ChatGptAuthStatus | "checking" | "error">();
+  // "hostDisabled" 는 서버가 AI 를 꺼 둔 503 — 계정 문제가 아니므로 「확인 실패」 와 가른다(UI 감사 09-ai-09).
+  const cardAuth = new Map<string, ChatGptAuthStatus | "checking" | "error" | "hostDisabled">();
   const quickBlock = el("div", {
     class: "ai-auth-quick-block",
     dataset: { testid: "ai-auth-quick-block" },
@@ -225,7 +226,11 @@ export function renderAiAuthSettings(
     const auth = cardAuth.get(id);
     let text = "확인 중…";
     let tone = "checking";
-    if (auth === "error") {
+    if (auth === "hostDisabled") {
+      // 톱바 칩과 같은 말을 한다.
+      text = "AI 서버에서 꺼짐";
+      tone = "offline";
+    } else if (auth === "error") {
       text = "확인 실패";
       tone = "offline";
     } else if (auth && auth !== "checking") {
@@ -566,6 +571,7 @@ export function renderAiAuthSettings(
     // 이전 연산이 버튼을 비활성화한 채로 남았어도(대기 중 로그인/연결 해제) 새 선택에서
     // 되살린다 — 오래된 finally 는 세대 가드 때문에 이걸 덮지 못한다.
     loginButton.disabled = false;
+    loginButton.removeAttribute("title");
     disconnectButton.disabled = false;
   }
 
@@ -602,7 +608,10 @@ export function renderAiAuthSettings(
     if (isHostAiDisabledMessage(detail)) {
       setStatus("서버에서 AI가 꺼져 있음", "offline");
       serverError.textContent = HOST_AI_DISABLED_GUIDANCE;
-      cardAuth.set(providerId, "error");
+      // 서버가 AI 를 꺼 둔 상태에서는 「로그인」을 눌러도 같은 503 이라 막다른 길이다 — 비활성화하고 이유를 붙인다.
+      loginButton.disabled = true;
+      loginButton.title = HOST_AI_DISABLED_GUIDANCE;
+      cardAuth.set(providerId, "hostDisabled");
       renderCardPill(providerId);
       return;
     }
@@ -1099,9 +1108,10 @@ export function renderAiAuthSettings(
         cardAuth.set(idle, auth);
         renderCardPill(idle);
       })
-      .catch(() => {
+      .catch((error: unknown) => {
         if (disposed) return;
-        cardAuth.set(idle, "error");
+        const hostOff = isChatGptCompanionResponseError(error) && isHostAiDisabledMessage(error.serverMessage ?? "");
+        cardAuth.set(idle, hostOff ? "hostDisabled" : "error");
         renderCardPill(idle);
       });
   }

@@ -1,0 +1,60 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b1",
+ "round": 6,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "amuse-speaker-stack",
+   "pixelSha256": "76d8560531af1b32cef95374f146bbafdece62524f786013e45c51e45fa3f757",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The light grey cap is a lit top plane above a short front face with a woofer cone and an amp-head slot. The dark outline and 3-step greys match the originals, the 1-tile footprint suits a floor speaker, and its base sits on the floor line."
+  },
+  {
+   "id": "arcade-purikura",
+   "pixelSha256": "29372becba3cfeac98ec0eaacf202a31303de262d72ace6a7638990576811d0b",
+   "verdict": "FAIL",
+   "failed": [
+    2
+   ],
+   "reasons": "A purikura booth is a walk-in booth that should tower over a person, but here it is about wardrobe size (roughly 1.5 tiles wide by 2 tall in the room), one size too small. The pink curtains and heart sign read fine, and the light top strip gives an acceptable top plane."
+  },
+  {
+   "id": "arcade-racing-cabinet",
+   "pixelSha256": "667a43981eae1c090730c59137ed15268066638a3793dc5058f6e7daad3a12b3",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The cabinet is a flat front elevation: the red marquee and screen have no lit top plane, only about 1 row of red on top. The seat is a separate red blob on a dark block below the console, joined only by black, so it reads as detached rather than one footprint seen in 3/4."
+  },
+  {
+   "id": "dept-accessory-wall",
+   "pixelSha256": "4ecc2a7ac82297f1546fac274fc8b81ad3987ae488abfb79464b5b6d81a64c39",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The bags, belts and boxes are muddy brown and maroon blobs on a cream backing, so at 1x it reads as a generic cabinet, not an accessory display. The items have no clear outlines separating them, unlike the crisp bottles on the originals' cooler shelves."
+  }
+ ]
+}

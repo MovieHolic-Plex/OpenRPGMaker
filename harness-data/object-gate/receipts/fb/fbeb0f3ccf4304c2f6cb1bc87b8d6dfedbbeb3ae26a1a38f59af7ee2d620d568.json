@@ -1,0 +1,359 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fbeb0f3ccf4304c2f6cb1bc87b8d6dfedbbeb3ae26a1a38f59af7ee2d620d568",
+ "width": 48,
+ "height": 48,
+ "kind": "organic",
+ "name": "forest canopy crown heads (tile overlay on forest roof) (autumn maple)",
+ "label": "jp_city/jp-forest-mp-head-c3x3-0",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 11,
+  "darkV5": 34,
+  "nearBlackEdge": 0.43,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper maple crown clumps (rounded foliage mass)",
+      "rows": "5-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower maple crown clumps",
+      "rows": "28-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a full-tile, 48x48 overlay of autumn-red foliage clumps with light highlights on the upper-left of each clump and dark gaps between them. The silhouette width is 48 for every row, so it is a seamless texture rather than a standing object. It has no front-edge line, eave shadow, ellipse cap or distinct front face. The clumps are lit blobs, not a top surface over a vertical front face. It does not read as a standing object with a top and a front face, so 'other' fits better than three_quarter or front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a single 16x16-ish tile with 11 distinct colours in total, against 427 and 567 for the references, which have a median of about 108 colours per tile. The leaf clumps are drawn as rounded red-brown blobs with a light highlight, a mid tone and a dark edge, so about 4 readable steps against 6 or more on the references. The dark edge pixels are tinted dark red-brown (0% neutral), so the outline is material-toned and not a black sticker line. There are no flat 5x5 fills, but the texture is only per-clump shading, with no per-leaf dots or multi-tone clump variation. The canopy tile is shallower and much less dense than the references, even allowing for it being a small overlay tile. A careful artist would not accept it next to the references without it looking flatter and simpler.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12133
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper-left maple crown clump",
+      "rows": "6-22",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper-right maple crown clump",
+      "rows": "6-22",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-left crown clump",
+      "rows": "29-39",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-right crown clump",
+      "rows": "28-45",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a tile overlay of autumn maple foliage with four rounded crown clumps on a dark green gap background. Each clump has a lighter orange highlight on its upper-left rows (rows 6-9 and 29-33) that fades into darker red mass below, so it reads as lit foliage heaps seen from above at an angle. There is no box-like structure, no front-edge line and no eave shadow. Because it is an organic canopy tile rather than a standing object with a distinct south face, the top and front rules do not apply cleanly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a 64x64-ish tile of red-brown maple clumps with only 11 distinct colours, against 427-567 in the references. Its median of 10 colours per tile versus about 108 is roughly a tenth of the reference density. Shading is about 4 steps (highlight, light, mid, dark, deep shadow), while the references have 6 or more greens per canopy. The dark edge pixels are tinted dark red-brown (0% neutral), so the outline is a material tone, not a sticker line. There is no 5x5 flat-fill, and the clumps carry some highlight and shadow shape. But the clumps are large smooth lobes with few texture dots, little leaf-level grain, and no per-leaf variation. It reads as a simplified rock-like blob pattern, flatter and far less information-rich than the leaf-clump work in either reference. Colour count and density are far below the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13746
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper-left maple crown clump",
+      "rows": "6-23",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper-right maple crown clump",
+      "rows": "6-22",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-left crown clump",
+      "rows": "28-40",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-right crown clump",
+      "rows": "27-46",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a tile overlay of foliage: four irregular rounded leaf clumps with light highlights on their upper-left edges and dark shading toward the bottom, on a dark green background. It is an organic canopy texture, not a standing object with a defined top plane and a vertical south face. There is no edge line, eave shadow, or ellipse cap, and the clumps are lit and shaded as volumes. The 48-wide silhouette is fully opaque on every row, so the width profile gives no shape information. It does not read as a box-like object with a top and a front, so it falls under other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a single 16x16-ish overlay of red-brown maple clumps on a dark ground. It uses only 11 distinct colours against 427 and 567 in the references, and its 10 colours per tile is far below their 108-109. Flat-fill coverage is 0%, so there are no large flat areas, and the dark edge pixels are fully tinted (0% neutral), so the outline reads as a dark red-brown material tone rather than black. Each clump has about 4 lightness steps (highlight, light, mid, dark) with some facet texture, but it is much shallower than the references' 5-6 step leaf ramps with many clumps. The tile looks thinner and more uniform, with repeated similar blobs and little variation or grain between them. Since the colour counts are only a fraction of the references', I judge it shallow even allowing for it being a small tile overlay.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12597
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper maple crown clumps",
+      "rows": "5-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower maple crown clumps",
+      "rows": "28-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a tile overlay of autumn maple foliage clumps, a 48x48 field of rounded leaf masses with light highlights on their upper edges and dark gaps between them. It has no box-like structure, no front-edge line with eave shadow, no ellipse lid and no distinct vertical front face. The highlights at rows 5-10 and 28-33 only shade the organic canopy volumes. It does not fit the top-plus-front-face structure of the references, so it reads as organic foliage texture rather than a three-quarter solid."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 11 distinct colours in total and a median of 10 per tile. The references have 427 and 567 colours in total and about 108 per tile, so the candidate is far below them on both measures. Its crown heads are rounded red-orange blobs with about 4 lightness steps (highlight, light, mid, dark) over a dark red-brown ground. The references use 5-6 steps, with many individual leaf clumps in several tones. The outlines and shadows lean dark red-brown and are not neutral, which matches the 0% near-neutral edge share, so they count as dark_material_tone. There are no 5x5 flat fills, but the blobs are smooth and soft-edged, with little per-clump leaf texture or highlight dots. They read as simple shaded lumps and not as layered foliage. Next to the references the piece looks flatter and thinner, and the tile information density is much lower.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15420
+  }
+ ],
+ "decidedAt": "2026-10-20T07:08:11.778Z",
+ "cells": {
+  "16": [
+   "0ab0df53fa09e075",
+   "0fedb3dff371f4bd",
+   "172a8915d491de8d",
+   "7b3f0c1e14cb75a4",
+   "937ce43309f52bf4",
+   "bb71bbf23c22a0c6",
+   "cf4bb177714c97c3",
+   "d6849bf00ebdc661",
+   "ed95f4c8a67d6c01"
+  ],
+  "24": [
+   "0fd00f44aeb1cdef",
+   "9cd5c4a40a41d5d2",
+   "a09df392a88d5375",
+   "f160908e8d8d9cd2"
+  ],
+  "32": [
+   "025d3a15f4263532",
+   "0c7e1ebc91abec1e",
+   "171b8d26f9ad3e76",
+   "1c672196cd1a1f85",
+   "226c7ec83d404b8f",
+   "25488e8947a6001d",
+   "40cd8218fd6f1390",
+   "468d439d74c48f3d",
+   "4b07b03a8a87bbdb",
+   "6025b12f3cff7535",
+   "625da83885b903ea",
+   "723b6edf103b88de",
+   "75a36347d41c74cc",
+   "7c57ad1ab2062921",
+   "8b0f8984b3d7f526",
+   "9abec74442f36e1f",
+   "9eca65f0ad6b53b1",
+   "bcb5682d98acfad3",
+   "bf82e47db81b6614",
+   "d29b8084a7b72236",
+   "e5b59f795cebaec6",
+   "ea811de4e7f43389",
+   "f1a00d75fb87ecee",
+   "f75e19d1d74124d0"
+  ],
+  "48": [
+   "a4f95819ef8697ba"
+  ]
+ }
+}

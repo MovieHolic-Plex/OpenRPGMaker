@@ -558,7 +558,7 @@ function renderPassageShortcuts(tileset: TilesetDef, group: AutotileGroup, reren
       el("span", { text: "이 블록 통행" }),
       paint("o", "통과", "tileset-autotile-passage-open"),
       paint("x", "막힘", "tileset-autotile-passage-blocked"),
-      paint("star", "위 ★", "tileset-autotile-passage-star"),
+      paint("star", "캐릭터 위 ★", "tileset-autotile-passage-star"),
     ],
   });
 }

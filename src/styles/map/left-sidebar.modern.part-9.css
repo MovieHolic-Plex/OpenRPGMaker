@@ -84,7 +84,11 @@
   font-size: var(--font-size-sm);
 }
 
+/* 조합 붓 배지와 해제 단추가 길어도 패널 폭 안에서 줄바꿈한다 — 부모 flex 가 이 줄을
+   max-content(약 380px)로 두면 해제 단추가 리사이저·캔버스 위로 삐져나갔다. */
 .sidebar-brush-controls {
+  max-width: 100%;
+  min-width: 0;
   padding-block: var(--space-1);
 }
 
@@ -237,9 +241,15 @@
   min-width: 0;
 }
 
+/* 검색창은 한 줄을 다 쓰고 분류 셀렉트·# 은 아랫줄에 선다. 한 줄에 셋을 두면 좌패널 폭(258px)에서
+   placeholder 와 「전체 (2192)」 숫자가 함께 잘렸다. */
 .editor-layout .left-panel-stack .palette-filter-search-row {
-  grid-template-columns: minmax(0, 1fr) 72px 26px;
+  grid-template-columns: minmax(0, 1fr) 26px;
   gap: var(--space-1);
+}
+
+.editor-layout .left-panel-stack .palette-filter-search-row .tile-search-input {
+  grid-column: 1 / -1;
 }
 
 .editor-layout .left-panel-stack .tile-search-input {
@@ -252,9 +262,13 @@
   flex-wrap: nowrap;
 }
 
+/* 도구 합(되돌리기 쌍 + 도구 + 스포이드)이 칸보다 길면 다음 줄로 내린다. nowrap 에 overflow:visible 이면
+   넘친 스포이드가 오른쪽 ⋯(검사·기록) 밑으로 흘러 그 절반을 누르면 ⋯ 메뉴가 열렸다.
+   overflow 를 auto 로 바꾸지 않는 이유: 되돌리기 기록·도구 메뉴 드롭다운이 이 줄의 자손이라 잘린다. */
 .editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-toolbar-scroll {
   flex: 1 1 auto;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  min-width: 0;
   overflow: visible;
 }
 

@@ -46,7 +46,11 @@ function scheduleDisable(): void {
   else queueMicrotask(run);
 }
 
-/** Keep browsing/navigation available while clearly disabling authored DB fields. */
+/**
+ * Keep browsing/navigation available while clearly disabling authored DB fields.
+ * 보기 전용 팀원에게만 켜진다. 그 역할을 만드는 초대 진입점은
+ * @deprecated multi-user team collaboration is not supported yet (2026-10-21). 혼자 쓰는 프로젝트에서는 아무것도 하지 않는다.
+ */
 export function syncTeamReadOnlyUi(): void {
   const readonly = !canWriteTeamProject();
   document.body.classList.toggle('team-readonly', readonly);

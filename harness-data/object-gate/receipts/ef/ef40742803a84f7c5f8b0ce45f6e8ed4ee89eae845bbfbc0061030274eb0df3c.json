@@ -1,0 +1,345 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ef40742803a84f7c5f8b0ce45f6e8ed4ee89eae845bbfbc0061030274eb0df3c",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "home school bag",
+ "label": "modern_city_interior/home-school-bag",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 45,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top handle",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front flap (hanging face-on)",
+      "rows": "3-8",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front pocket with buckle",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The bag is a face-on satchel. A 2-row handle (width 4) sits on a body 14 px wide. Rows 3-8 are a flap with a light highlight at rows 5-7 and a darker line at row 8. Below it, rows 9-15 are a darker pocket with a silver buckle at rows 11-14. The flap hangs down as a vertical face, so I do not count it as a horizontal top. No opening, rim ellipse or visible contents is drawn, so nothing is seen from above. It does not match the container kind, which needs the inside of an opening visible. It reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small red school backpack, roughly one tile in size. Its outline is a dark red-brown that leans toward the bag's own material, and the measured 0% neutral dark edge pixels confirms the tint, so it is not a black sticker line. It has about 4 red steps (highlight, light, mid, dark) plus separate tones for the buckle and straps. The flap, front pocket, top handle and clasp are separated by value rather than by outline. Measured visible tones per tile are 10, level with the hedge (9) and the well (20), and well above the 0 of the thin bench and lamp, which can't be compared. Near-flat coverage is 0%, so there are no flat fills. Total palette is only 10 colours, so shading is a bit less layered than the stall or well, but it holds up beside the hedge. A careful artist would accept it next to the references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18588
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top handle",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flap / upper bag front (light band rows 5-7)",
+      "rows": "4-8",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower bag front with grey buckle",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The bag is drawn face-on. A 1-row dark outline at row 3 sits above a body 14 px wide that runs to row 14, with a small 4 px wide handle on rows 1-2. The column scan shows a light band on rows 5-7, which is a highlight on the front flap. It ends in a mid-red line at row 8, and below it the front is darker (rows 9-12 at x=4 and x=11) with a grey buckle on rows 11-14. The width profile jumps from 4 to 12 to 14 with no ellipse widening and narrowing. No opening, contents or horizontal top plane is visible, so the object reads as a flat front elevation and not as a container seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small red school bag with a dark red-brown outline that leans visibly toward the body colour, not a neutral black line. This matches the measured 0% near-neutral dark edge pixels, like the hedge and cheese-stall references. It reads with a lit top flap, a shaded body, a pocket, a buckle, a handle and straps. That is about 4 steps on the red ramp, a little under Beodeul's 5-6, but the piece is tiny. Measured facts: 10 visible tones in its 16x16 tile against 9 for the hedge, which is the closest-sized reference. Near-flat coverage is 0%, so there are no large flat fills. Its total of 10 colours is comparable to the hedge (11) and bench (14). Next to the references it does not look thinner or more sticker-like. The ramp is somewhat compact and the texture is modest, but this is acceptable for a one-tile prop.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19421
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "handle loop",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flap / upper band of bag body",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-11"
+     },
+     {
+      "part": "front face with pocket and buckle",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a satchel seen from the front, not a container with an opening. No interior, contents or ellipse mouth is visible. The top of the body is a lighter band at rows 4-8 (L about 147 at rows 5-7). It ends in a mid-red edge line at row 8, followed by darker rows 9-11 that act as eave shadow. By criterion (a) that band counts as a top surface of about 5 rows, though it could equally be a vertical flap face. Below it is a front face of about 7 rows (rows 9-15): a dark line at row 12, a pocket at rows 13-14, and a grey buckle at x=8, rows 11-14. The handle at rows 1-2 is only a narrow loop. The silhouette is 14 wide from row 4 to row 14."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small red bag, about one tile in size. It shows 10 visible tones in its tile, against 9 for the hedge and 20 for the well. Near-flat coverage is 0%, so it has no flat fills. Its dark edge pixels are 0% neutral, so the outline is a tinted dark red-brown rather than a near-black sticker line, in keeping with the hedge's 0%. By eye, the body has a highlight, light, mid and dark red ramp, plus a pocket, straps and a buckle in separate tones, which reads as shaded form rather than a flat body with an outline. Compared with the richer references (stall, well) it has a shallower ramp, about 4 steps against 5-6. That fits its small size, and it is not thinner than the hedge or bench. The kind is a standing prop, so the references match.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20922
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flap / upper band of the bag",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-11"
+     },
+     {
+      "part": "top carry handle",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "metal buckle on the front",
+      "rows": "11-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body spans rows 3-14 at a constant width of 14. At x=4, 8 and 11 the same stack appears: outline row 3-4, a light band in rows 5-7, a mid-tone edge line in row 8, then darker rows 9-11 that read as eave shadow, a dark line in row 12 and a mid-tone front in rows 13-14. That matches the band, edge line and shadow pattern of evidence (a), giving a top or flap plane of about 4-5 rows over a front face of about 7 rows (rows 9-14). It is a borderline reading, because the light band could instead be a front-facing flap panel. No opening or contents are visible, so evidence (d) does not apply. The grey buckle at x=8, rows 11-14, is a small front detail. The handle in rows 0-2 is only 4 px wide and is not part of the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small red school bag with a dark red-brown outline, a lighter top flap, a front pocket, a buckle and a handle. Its outline pixels are tinted, with 0% near-neutral dark edges, so it avoids the black-sticker look. It has 10 visible tones per 16x16 tile, level with the hedge reference (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The red ramp is about 4 steps, a little under Beodeul's 5-6 but fine for a prop this small. A careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21102
+  }
+ ],
+ "decidedAt": "2026-10-20T23:28:13.349Z",
+ "cells": {
+  "16": [
+   "615694781af2dee2"
+  ],
+  "24": [
+   "45645d676fd69173",
+   "464fb953a3fb6182",
+   "4940a2a99f92f0e9",
+   "c0c724929d8a3fa8",
+   "c7d7184b1ab48f9c",
+   "fc40c70eb4a53709"
+  ],
+  "32": [
+   "077f69ca9c7adb62",
+   "26e6dd9678d5de67",
+   "5c68b88d516893fa",
+   "bd93e1054403ed82",
+   "cf377dd542db13ff",
+   "e7f0a2b958e5b354"
+  ],
+  "48": [
+   "1fbf75829380042d",
+   "335a1333b594c130",
+   "90e11c686b34411e",
+   "afe955ef15a55d68",
+   "c25b84c0a16af355",
+   "f0a52baef3cc8c7d"
+  ]
+ }
+}

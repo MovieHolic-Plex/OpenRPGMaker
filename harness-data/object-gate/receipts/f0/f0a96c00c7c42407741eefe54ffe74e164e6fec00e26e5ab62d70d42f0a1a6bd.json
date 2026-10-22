@@ -1,0 +1,450 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f0a96c00c7c42407741eefe54ffe74e164e6fec00e26e5ab62d70d42f0a1a6bd",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "jp-inaka-wooden-pole-transformer",
+ "label": "jp_inaka_pack/jp-inaka-wooden-pole-transformer",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 4 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 27,
+  "tileColorsP90": 27,
+  "darkV5": 35,
+  "nearBlackEdge": 0.19,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "insulator caps with snow on top of pole",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden crossarm",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "transformer can",
+      "rows": "17-30",
+      "evidence": "b",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "pole shaft",
+      "rows": "14-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snowy base",
+      "rows": "43-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 8,
+     "cap_width": 14,
+     "shaft_width": 6,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The pole shaft (width 6-7, rows 31-42) is a plain vertical face. The crossarm at rows 5-12 is a horizontal beam seen face-on. It has only a 1-row highlight at row 7 and 4 rows of flat face below, with no ellipse or lid plate overhanging the shaft. The transformer can shows a lighter lid at rows 17-20, but it is a side attachment, not the main body. The top end is two small insulator caps (rows 0-4), not an elliptical cap plate, so the top reads as at most a 2-row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a thin pole with a transformer can and a pale cap. It measures 25 visible tones per 16x16 tile, above the well (20) and cheese stall (17). Near-flat coverage is 0% and none of its dark edge pixels are neutral, so the outlines carry a colour tint (dark brown beside the wood, dark grey-blue beside the can) rather than a black sticker line. By eye, the pole has a lit and a shaded side with grain, and the transformer can has several grey steps with highlight and shadow. The cap and cross-arm hardware are shaded with a few steps instead of one flat fill. It is a sparse, thin object, but it does not look flatter or thinner than the lamp-crook and bench references, so it should sit acceptably beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19978
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white insulator caps on top of crossarm",
+      "rows": "0-4",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden crossarm at pole top",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "transformer can with a pale lid",
+      "rows": "17-21",
+      "evidence": "b",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "pole shaft",
+      "rows": "14-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white base",
+      "rows": "43-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 9,
+     "cap_width": 14,
+     "shaft_width": 6,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a thin wooden pole, 6 px wide at rows 37-42. Its top end is a crossarm, rows 5-13, with a width profile of 11, 12, 14, 12, 11. It is drawn face-on as a beam with one light edge line at row 7 and dark shading at rows 11-12. It has no back rim and no front rim, so it is not an ellipse plate; it reads as a vertical beam with rounded ends, so I set rounded_at_both_edges to false. The small white insulators at rows 0-4 are ornaments. The grey transformer can at rows 17-29 has a pale lid at rows 17-21, but it is a side-mounted attachment, not the cap of the shaft. The pole itself shows no overhanging top plate, so the object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin pole prop, so I judged it mostly by eye against the lamp, well and stall references. It has about 25 visible tones per full tile, which is above the stall (17) and well (20) references. Near-flat coverage is 0% and none of its dark edge pixels are neutral, so the outline is tinted. Edges are dark brown next to the wood and dark grey-blue next to the transformer can, not a uniform black sticker line. The pole has grain, the can has banded highlight and shadow, and the base has a striped band. The snow cap is shaded in several steps rather than drawn as one flat white. Shading depth is about 5 steps on the wood and can, close to the references' 5-6. It is not noticeably thinner or flatter than the lamp-crook next to it, and it matches the stall and well on tone density.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19800
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "insulator tips on crossarm",
+      "rows": "0-4",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden crossarm at top of pole",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey transformer canister on right of shaft",
+      "rows": "17-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole shaft",
+      "rows": "13-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white base/snow collar",
+      "rows": "43-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 7,
+     "cap_width": 14,
+     "shaft_width": 6,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The pole is a vertical shaft about 6 px wide (rows 31-42) with a wooden crossarm at rows 5-12 (width 14). The crossarm is a front-facing beam. It has a light highlight at row 7 and chamfered ends, but no eave shadow and no ellipse plate whose back and front rims overhang the shaft. At most 2 rows read as a top edge. The transformer canister (rows 17-30) is drawn as a front-facing cylinder with no visible lid ellipse. The white insulator tips at rows 0-4 are small decor on the crossarm. The silhouette widens to 14 and narrows again, but this is the outline of a flat beam, not a horizontal cap plate seen from above. The result is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a tall, thin pole prop with a transformer can and a pale cap, comparable in kind to the lamp-crook and stall references. On the primary facts it matches or beats the references: 25 visible tones per tile against 17-20 for the stall and well, and 0% near-flat coverage. Its dark edge pixels are 0% neutral, so the outline is tinted, with dark brown beside the wood and a dark grey-blue lean beside the can, rather than a uniform black sticker line. By eye, the pole has grain and several brown steps, and the transformer can has highlight, mid and shadow bands plus small fittings. It is a thin object, so I judge density by eye. It does not look thinner or flatter than the references and shows no large flat fills. Texture is a little less rich than the stall or well, but it is acceptable beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20000
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top insulator / white cap",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden crossarm",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "transformer can (light upper part)",
+      "rows": "17-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole shaft",
+      "rows": "13-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base / white foot",
+      "rows": "43-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 43,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 4,
+     "cap_width": 8,
+     "shaft_width": 6,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The pole is drawn as a flat front elevation. The top (rows 0-4) is a tiny 6-8 px insulator, not an elliptical plate overhanging the shaft. The crossarm (rows 5-12) is a front-facing beam: row 7 is a lighter highlight, but there is no front-edge line with eave shadow and no ellipse. The transformer (rows 17-30) is nearly constant width (12-13 px), so its light upper rows read as a highlight band rather than an ellipse lid. The shaft (width 6, rows 31-42) is a vertical face only. None of the major parts shows a clear horizontal top surface, so there is no ellipse cap like the green column in the guide."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The pole is a thin object but still carries about 25 visible tones per full tile, against 17-20 for the stall and well references. Near-flat coverage is 0%, so there are no large single-colour areas. The dark edge pixels are 0% neutral, so the outlines lean brown or grey-blue next to wood and metal instead of being a black sticker line. By eye, the wooden shaft has several brown steps with grain and the transformer can has a lit side and a shaded side. The cap and the bands add small highlight and shadow detail. I could not read fine detail at this scale, so the judgement leans on the measured facts. It sits next to the stall and well references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19882
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:03.972Z",
+ "cells": {
+  "16": [
+   "5b36b84c18f4e824",
+   "c780d163633e0296",
+   "f465db1fa5e01dcb"
+  ],
+  "24": [
+   "4363d82e9a07f29e",
+   "644fd1d1840c445c",
+   "bd9fabc22daf19ef",
+   "da5d8534fecf2c79",
+   "f1e62bf90d170440",
+   "fb688723e8dbeaaa"
+  ],
+  "32": [
+   "000cca298f2ca523",
+   "01da2590dc32b644",
+   "0e318cb956cfe892",
+   "1a395430f41fe0f7",
+   "52b6b3a06048cb14",
+   "58549695a1f76792",
+   "91ba4065b236daf9",
+   "a1401db71ac6a68e",
+   "a46951531bfe69c1",
+   "a4d3740567fd1f41",
+   "bf79de45fe87d6e1",
+   "f4e2c0a2f829c0e9"
+  ],
+  "48": [
+   "4bec95b23d315339",
+   "9bdff2b5197a5bfc",
+   "c0104b12953d6fdf"
+  ]
+ }
+}

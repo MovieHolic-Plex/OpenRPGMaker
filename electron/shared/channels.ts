@@ -6,9 +6,14 @@ export const OPRN_CHANNELS = {
   windowFullscreen: "oprn:window.fullscreen",
   /** 최대화·전체화면 상태 조회(invoke)와 변화 알림(push). 같은 이름으로 오간다. */
   windowState: "oprn:window.state",
+  /** 시작 화면이 첫 카드를 그렸다(렌더러 → 메인, 단방향). 메인은 숨긴 창을 보이고 스플래시를 닫는다. */
+  startScreenReady: "oprn:start.screenReady",
   teamStatus: "oprn:team.status",
+  /** @deprecated multi-user team collaboration is not supported yet (2026-10-21). 호스트 팀 관리 페이지만 부른다(소유자 권한). */
   teamInvite: "oprn:team.invite",
+  /** @deprecated multi-user team collaboration is not supported yet (2026-10-21). */
   teamRevoke: "oprn:team.revoke",
+  /** @deprecated multi-user team collaboration is not supported yet (2026-10-21). */
   teamRename: "oprn:team.rename",
   teamLock: "oprn:team.lock",
   companionOrigin: "oprn:companion.origin",
@@ -59,9 +64,9 @@ export const OPRN_CHANNELS = {
   startCoverSource: "oprn:start.coverSource",
   /** 시작 화면이 구운 카드 그림을 그 폴더의 cover.jpg 로 남긴다. */
   startSaveCover: "oprn:start.saveCover",
-  /** 다른 컴퓨터의 팀 호스트를 앱 창으로 연다(참여하는 쪽). */
+  /** 다른 컴퓨터의 팀 호스트를 앱 창으로 연다(참여하는 쪽). @deprecated multi-user team collaboration is not supported yet (2026-10-21). */
   startJoinTeam: "oprn:start.joinTeam",
-  /** 전에 참여한 팀 호스트 주소. 초대 비밀(#join=)은 남기지 않는다. */
+  /** 전에 참여한 팀 호스트 주소. 초대 비밀(#join=)은 남기지 않는다. @deprecated multi-user team collaboration is not supported yet (2026-10-21). */
   startRecentTeams: "oprn:start.recentTeams",
   assetBrowserOpen: "oprn:assetBrowser.open",
   assetBrowserBounds: "oprn:assetBrowser.bounds",

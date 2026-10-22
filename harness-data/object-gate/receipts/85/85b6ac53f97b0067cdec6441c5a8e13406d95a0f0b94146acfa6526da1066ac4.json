@@ -1,0 +1,403 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "85b6ac53f97b0067cdec6441c5a8e13406d95a0f0b94146acfa6526da1066ac4",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "jp-inaka-bus-stop-shelter",
+ "label": "jp_inaka_pack/jp-inaka-bus-stop-shelter",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 18,
+  "darkV5": 38,
+  "nearBlackEdge": 0.79,
+  "opaqueTiles": 10
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof (sloped gray tile plane, widening toward the eave)",
+      "rows": "3-18",
+      "evidence": "c",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "roof front edge band",
+      "rows": "19-20",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "stone base slab",
+      "rows": "48-50",
+      "evidence": "a",
+      "front_edge_line_row": 49,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bench seat inside shelter",
+      "rows": "39-47",
+      "evidence": "a",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "posters/goods on back wall and bench",
+      "rows": "22-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bus stop sign post at right",
+      "rows": "8-60",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a shelter with a large sloped roof (rows 3-18, vertical tile stripes, silhouette widening from 28 to 48 px). The roof ends in a light front-edge line at rows 19-20 with a dark outline and eave shadow at rows 21-22. Below it is an open south face about 35 rows tall (rows 22-56): back wall, posts, a cream bench seat and a stone base slab whose light top row is row 49. The roof is a real top surface and not a rim, and the front face is clearly present. The sign post on the right is decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small shelter with a grey ribbed roof, a weathered wood and plaster body, a bench and a sign pole. By the measured facts it matches or beats both references: 14 visible tones per tile against 12 and 10, 0% near-flat coverage like the references, and 0% neutral dark edge pixels, so the outline is tinted. By eye the outlines are dark grey-brown, matching the adjacent roof and wood rather than a uniform black sticker line. The roof shows about 4 steps (highlight, mid, dark, deep) with rib and grain variation, a little fewer than the references' 5-6 steps per material. The wall and bench carry speckle and panel detail, and I found no large flat fills. It is simpler than a full house but not thinner or flatter than the references at the same scale, so it would sit acceptably next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17101
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "corrugated grey roof",
+      "rows": "3-18",
+      "evidence": "c",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "22-24"
+     },
+     {
+      "part": "bench seat/back panel inside shelter",
+      "rows": "39-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey concrete base slab",
+      "rows": "48-56",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bus stop sign on pole",
+      "rows": "10-59",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 17,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a shelter with a wide sloped roof plane. Rows 3-18 are ribbed grey and the roof widens from 28 to 48 px. A light front-edge line sits at rows 19-20 with an outline at row 21, and a dark interior under the eave at rows 22+ acts as eave shadow. Below the roof the front face runs from row 22 to about row 56 (posts, back wall, bench front, concrete base), which is well over 3 rows. The sign on the pole at the right is a separate decor-like element. The roof reads as a sloped top surface, so the shelter is three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The shelter is a small, simple building, so I judged it on structure rather than size. The measured facts support it. Visible tones per tile are 14 against 12 and 10 for the references. Near-flat coverage is 0%, the same as the references. Dark edge pixels are 0% near-neutral, so the outlines lean toward the neighbouring material rather than being neutral black. By eye, the grey roof has about 5 steps with panel ribbing and highlight bands. The wood-grey walls carry plank and shadow variation, with small poster and bench details and a tinted pole sign. It is not a flat sticker. The total of 43 distinct colours is lower than the references, but that is expected from a locked palette and not a depth problem. The roof and walls have slightly less grain than the tiled and stone references. That is minor and fits the small, plain subject.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16427
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "corrugated gray roof",
+      "rows": "2-18",
+      "evidence": "c",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "roof front eave lip",
+      "rows": "19-20",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bench/seat interior and back wall",
+      "rows": "22-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gray stone base plinth",
+      "rows": "48-56",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bus stop sign on pole",
+      "rows": "9-61",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 17,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a shelter with a large sloped gray roof (rows 2-18, trapezoid widening from 28 to 48 px) that ends in a light front-edge line at rows 19-20, with the dark outline and shadow at rows 21-22 below it. Below that is a tall open front face (rows 22-47) showing posts, a back wall and a bench, then a gray base (rows 48-56). The roof plane reads as a top surface, so the view is three-quarter. The separate bus stop sign on the right is decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small shelter with a ribbed grey roof, a wooden frame, a bench and sign panels, and a separate round-sign pole. Measured facts support it. It has 14 visible tones per 16x16 tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels. The outline is therefore tinted: it reads as dark grey-brown beside the roof and wood rather than a uniform black line. Forms are separated partly by value. By eye the roof ribs have highlight, mid and dark steps, and the posts and panels carry grain and speckle, so there are no large flat fills. It is a bit shallower than the references' 5-6 step tile scallops, with about 4 steps on the roof and walls. Density is still at or above the references for a thin, small prop, and it would not look flatter or more sticker-like next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16557
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "corrugated gray roof plane",
+      "rows": "3-18",
+      "evidence": "c",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "21"
+     },
+     {
+      "part": "roof front lip (light edge)",
+      "rows": "19-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "open shelter interior with wooden posts, back wall and bench",
+      "rows": "21-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base slab",
+      "rows": "48-56",
+      "evidence": "none",
+      "front_edge_line_row": 49,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bus stop sign on pole",
+      "rows": "9-60",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped plane (rows 3-18) that widens from 28 to 48 px. It has vertical corrugation stripes and a darker seam at row 14, and it ends in a light front-edge line at rows 19-20 above the dark outline at row 21. This is evidence (c). Below it the south-facing open front shows posts, a back wall, a bench and a stone base, about 36 rows of front face. The bus stop sign on the right is decor. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per 16x16 tile against 12 and 10 for the references. Near-flat coverage is 0%, the same as both references, and the dark edge pixels are 0% neutral, so the outlines carry a tint. The roof is a grey ramp of about 5 steps with ribbed highlights. The wood posts, bench, posters and sign pole are each shaded in several tones, and I see no large flat fills. It is smaller and simpler than the reference houses and has less tile-by-tile scallop texture, but a careful artist would accept it next to them without it looking thinner or more sticker-like. It is a small building (roof, walls, open front), so the reference kind is an acceptable match.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16626
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:03.865Z",
+ "cells": {
+  "16": [
+   "1df56685b20968bd",
+   "34f06392e484f6d5",
+   "4722325e898ac91d",
+   "473f74169e81c1de",
+   "5c5456793ff16889",
+   "63bd1510873c0641",
+   "6861d6e50494dcd2",
+   "a5e57a8d629d7ebe",
+   "c82ea973a0c598bd",
+   "d996e6d4e260d0e6",
+   "e1c3f976c31669f6",
+   "ea2865975712c7a3"
+  ],
+  "24": [
+   "24936a349a1ee46d",
+   "38ccd336e9121d10",
+   "3ea5c4171c395ffa",
+   "52e644c078a71c9d",
+   "7bea28c6ad949527",
+   "87e2e9809c5fd4db",
+   "8ac276477741df62",
+   "a0902d8a2ad98a6a",
+   "a70917922ebc27c9",
+   "c997efd6a8063ab7",
+   "cbdccfc50bcd6107",
+   "cf738d4f1d94e4b4"
+  ],
+  "32": [
+   "177a249da763560b",
+   "49a4e6b603cddcc1",
+   "4a73c057636a292a",
+   "55095ce753ff28ae",
+   "568169ff587337fb",
+   "56fddb82f1b6eed7",
+   "5e041ffe7194a640",
+   "950ebe0a264eb6ee",
+   "9bbf2f0a20f3e7b9",
+   "ad912ecbdc29d811",
+   "bf63f7a1cd4eea31",
+   "f33a061bafd82206"
+  ],
+  "48": [
+   "1b26f992e95699db",
+   "300787ff9a30b57e",
+   "b785f58af7caa568",
+   "f4b2b740fcf55000"
+  ]
+ }
+}

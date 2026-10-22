@@ -1,0 +1,66 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b1",
+ "round": 4,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "amuse-speaker-stack",
+   "pixelSha256": "43713b7c1a8def75699fbf13d6e92e02e36b0a3322cd914a2469faace5df5c9c",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    3
+   ],
+   "reasons": "It is drawn as a flat front elevation. The top shows at most one row of slightly lighter grey, so there is no lit top plane. The near-black body has almost no shading steps and is much darker than the originals. It shows one cabinet with a single woofer, not a stack, and at 1x it reads only as a dark rectangle."
+  },
+  {
+   "id": "arcade-purikura",
+   "pixelSha256": "f4438133a3443232935825f1e69c4fdb948eaae89c6fb5e815aea7f059701327",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "The booth is mostly a front elevation: the roof is a thin 2-row pink strip, not a top plane seen from above, and the curtain and kiosk run straight down like a wall. The saturated hot-pink palette and heavy dark outline around the whole block do not match the originals' muted palette."
+  },
+  {
+   "id": "arcade-racing-cabinet",
+   "pixelSha256": "a5e627c4c8200e0dec18595963c580d4f0ffa96f4ca2791345d7d79c473d5aac",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4,
+    5
+   ],
+   "reasons": "The seat is drawn as a separate outlined block below the cabinet, which reads as two stacked pieces rather than one machine. The cabinet has no visible top plane. The red steering wheel and the seat back are muddy red-and-black blobs with noisy highlights, and the seat looks pasted on, not standing on the floor."
+  },
+  {
+   "id": "dept-accessory-wall",
+   "pixelSha256": "90dab9cb0b34cb8fc4046760ba631b4b23205851e0e912b63e4a36a8be54e54c",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The wooden top plank is fine. The merchandise is a dark muddy cluster: the belts and ties are brown-black vertical smears and the bags are dark brown boxes. At 1x it reads as a generic brown cabinet, not an accessory display, and the yellow dots on the bottom plinth are stray sticker pixels."
+  }
+ ]
+}

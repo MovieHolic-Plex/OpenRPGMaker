@@ -299,7 +299,9 @@
   align-items: center;
   gap: 6px;
   flex: 0 1 auto;
-  max-width: 220px;
+  /* 220px 고정이면 1920 에서도 영어 경고 문구가 잘렸다(2026-10-21 UI 감사 01-shell-08). 문구 전부를 보이고,
+     톱바가 모자라면 「14. 넘침 맞춤」 2단계가 점만 남긴다(이름은 title). */
+  max-width: 320px;
   min-width: 0;
   margin-left: 2px;
   padding: 4px 10px;
@@ -773,7 +775,7 @@
 /* ── 11. 전문가 = 촘촘하게 ───────────────────────────────────────────────────────────── */
 
 /* ── 12. 좁은 뷰포트(1024~1439) — 폭은 줄이고 클릭 경로는 남긴다 ───────────────────────── */
-@media (max-width: 1439px) {
+@media (max-width: 1559px) {
   /* 명령 아이콘의 32px을 먼저 확보하고, 왼쪽 저장 상태가 남은 폭 안에서 줄어든다. */
   .oprn-menu-bar.studio-bar {
     column-gap: 4px;
@@ -854,6 +856,21 @@
 
 }
 
+/* 1439 이하: 왼쪽 도구 이름표(찾기·이벤트)까지 접는다. 1280 에서 레이어 분절과 명령 칩이
+   24~32px 겹치던 실측(2026-10-21 UI VQA R01) — 이름은 title/aria-label 로 남는다. */
+@media (max-width: 1439px) {
+  .studio-tool-button .studio-tool-button-label {
+    display: none;
+  }
+
+  .studio-tool-button {
+    flex: 0 0 32px;
+    justify-content: center;
+    padding: 0;
+    width: 32px;
+  }
+}
+
 @media (max-width: 1119px) {
   .studio-tool-button .studio-tool-button-label,
   .studio-bar .workspace-panels-label {
@@ -901,6 +918,43 @@
   .studio-bar .oprn-window-control {
     display: none;
   }
+}
+
+/* ── 14. 넘침 맞춤 — topbarFit.ts 가 실제 넘침을 재서 data-fit-level 을 올린다(누적) ───────────────────
+   폭 경계(미디어 쿼리)만으로는 언어·프로젝트 이름·연결 문구 조합을 다 못 막아, 영어 1440 에서 찾기가
+   ▶·전투 버튼 위에 그려져 클릭을 가로채었다(2026-10-21 UI 감사 01-shell-01). */
+.studio-bar .studio-tools-more {
+  display: none;
+}
+
+.studio-bar:is([data-fit-level="1"], [data-fit-level="2"], [data-fit-level="3"]) .studio-tools-more {
+  display: inline-flex;
+}
+
+.studio-bar:is([data-fit-level="1"], [data-fit-level="2"], [data-fit-level="3"]) .studio-bar-lead > :is([data-testid="toolbar-world"], [data-testid="toolbar-sound-test"], [data-testid="toolbar-search"]) {
+  display: none;
+}
+
+.studio-bar:is([data-fit-level="2"], [data-fit-level="3"]) .ai-connection-chip {
+  justify-content: center;
+  padding: 0;
+  width: 32px;
+}
+
+.studio-bar:is([data-fit-level="2"], [data-fit-level="3"]) .ai-connection-chip .ai-connection-label {
+  display: none;
+}
+
+.studio-bar[data-fit-level="3"] .header-layer-switcher {
+  margin-inline: 2px;
+}
+
+.studio-bar[data-fit-level="3"] .header-layer-switcher .left-layer-btn {
+  padding-inline: 5px;
+}
+
+.studio-bar[data-fit-level="3"] .studio-project-button .oprn-menu-item-label {
+  max-width: 72px;
 }
 
 /* 키보드 포커스 링 — 01-shell-topbar-team.css 가 이 버튼들의 :focus-visible 에서 outline 을 지우고

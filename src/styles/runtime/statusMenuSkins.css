@@ -70,6 +70,7 @@
 .oprn-status-menu .status-menu-rel-row { align-items: center; display: grid; gap: 6px; grid-template-columns: minmax(0, 1fr) auto auto; padding: 1px 4px 1px 36px; }
 .oprn-status-menu .status-menu-rel-name { font-size: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .oprn-status-menu .status-menu-rel-hearts { color: #ef6a68; font-size: 8px; letter-spacing: 1px; }
+.oprn-status-menu .status-menu-rel-note { color: var(--px-ink-dim, #b9bfd6); font-size: 6.5px; grid-column: 1 / -1; line-height: 1.5; padding: 0 0 4px; white-space: normal; }
 .oprn-status-menu .status-menu-rel-tier { color: var(--px-ink-dim, #b9bfd6); font-size: 6.5px; }
 .oprn-status-menu .status-menu-overview-row.crit { background: rgba(190, 55, 50, 0.16); border-color: rgba(255, 127, 118, 0.35); }
 .oprn-status-menu .status-menu-overview-row .status-menu-face { border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); }

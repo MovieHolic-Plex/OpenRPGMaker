@@ -1,0 +1,57 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b7",
+ "round": 6,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "food-drink-bar",
+   "pixelSha256": "bfeb2b5d336853777543437050344937301deadd3627f3cfa981ffc98e172ac9",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "reasons": "It is drawn as a flat front elevation, a tall narrow cabinet with no lit top plane, and at 1x it is a thin noisy sliver that doesn't read as a drink bar. The grey bottle-shelf top and wood-drawer bottom look like two different pieces stacked, and the bottles are noisy white and coloured specks."
+  },
+  {
+   "id": "mart-drink-open",
+   "pixelSha256": "e50153e75eb436532838a058a6d64c71e10948dfc78b803fd03a2c1830db2406",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    5
+   ],
+   "reasons": "Pure front elevation: the red header band with white squares sits right on the top edge, and there is no top surface seen from above, unlike mci-cooler's slanted top plane. A detached tan strip floats above the body in the 4x view, outside the object's outline."
+  },
+  {
+   "id": "mart-gondola-snack",
+   "pixelSha256": "315e54e2622a32c7d65eda2372bda59eb30e784f99dee6374a0364dbf75149bb",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    4
+   ],
+   "reasons": "Flat front view of two shelves with no top plank visible from above and no short front face. The snacks are saturated yellow-orange blobs with heavy dark outlines, which look muddy and sticker-like against the chipset's muted palette."
+  }
+ ]
+}

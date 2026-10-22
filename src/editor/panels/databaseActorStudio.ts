@@ -127,7 +127,7 @@ function actorRow(
     // 선택 상태를 CSS 클래스로만 알리면 보조기술이 못 읽는다. 다른 레코드 목록은
     // databaseRecordViews.ts 에서 aria-pressed 를 세우지만, 여기는 role=row 이므로
     // 유효한 상태 속성은 aria-selected 다.
-    attrs: { role: "row", type: "button", "aria-selected": String(selected) },
+    attrs: { role: "row", type: "button", "aria-selected": String(selected), title: `ID: ${actor.id}` },
     dataset: { recordId: actor.id, testid: `db-record-row-${actor.id}` },
     children: [
       el("span", {
@@ -173,7 +173,8 @@ function tableCell(text: string, role: "gridcell" | "columnheader", className = 
   return el("span", { class: className, attrs: { role }, text });
 }
 
-// 목록 두 번째 줄 — 칭호가 있으면 칭호, 없으면 식별용 id.
+// 목록 두 번째 줄 — 칭호가 있으면 칭호, 없으면 시작 레벨. 내부 id(#actor_hero)는 목록에 노출하지 않는다
+// (이름과 섞여 보여 노이즈였다 — 2026-10 UI/UX VQA F14). id 는 행 title 과 상세 「ID」 줄에 남는다.
 // 예제 데이터의 칭호는 빈 문자열 대신 "없음"/"-" 같은 자리표시 값으로 들어오는 경우가 있어
 // 그대로 쓰면 목록에 "없음"이 칭호처럼 박힌다 — 자리표시 값은 칭호 없음으로 취급한다.
 const NICKNAME_PLACEHOLDERS: ReadonlySet<string> = new Set(["없음", "-", "—", "미정", "무"]);
@@ -181,5 +182,5 @@ const NICKNAME_PLACEHOLDERS: ReadonlySet<string> = new Set(["없음", "-", "—"
 function actorSubLabel(actor: ActorRecord): string {
   const nickname = (actor.nickname ?? "").trim();
   if (nickname.length > 0 && !NICKNAME_PLACEHOLDERS.has(nickname)) return nickname;
-  return `#${actor.id}`;
+  return `Lv ${actor.initialLevel}`;
 }

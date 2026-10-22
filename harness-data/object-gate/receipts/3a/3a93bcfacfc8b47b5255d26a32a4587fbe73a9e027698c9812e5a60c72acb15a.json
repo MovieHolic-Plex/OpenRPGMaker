@@ -1,0 +1,360 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3a93bcfacfc8b47b5255d26a32a4587fbe73a9e027698c9812e5a60c72acb15a",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "broadleaf forest tree (zelkova)",
+ "label": "jp_forest_r4/bl-T21",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 12,
+  "darkV5": 37,
+  "nearBlackEdge": 0.05,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy (lit upper mass, darker underside)",
+      "rows": "1-30",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "26-30"
+     },
+     {
+      "part": "trunk",
+      "rows": "31-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "31-34"
+     },
+     {
+      "part": "root flare and ground foliage",
+      "rows": "43-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy's width profile widens from 3 px at row 1 to 30 px at row 10, stays wide through row 23, then narrows to 20 px at row 29 and 9 px at row 31. That is a rounded ellipse-like volume. Its upper rows 2-18 are lighter, mid-green leaf clusters. Rows 19-30 are darker green, shading the underside and acting as eave shadow (the column scan drops from L=114 to L=65-73, then L=35 at row 29). No hard front-edge line exists, as expected for foliage. Below the canopy, the trunk (rows 31-42, 5-7 px wide, brown) reads as the vertical front face. The root flare and ground foliage (rows 43-47) widen it at the base. Trunk, canopy and ground give a clear top mass over a front column, so the tree reads as three-quarter rather than a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, simple zelkova with a rounded canopy in about 4 muted greens and a thin trunk. Its outline is a dark green tint beside the leaves, not near-black, matching the 0% neutral edge share. The canopy has some leaf-clump dots but they are soft and low in contrast, and the trunk is plain with little bark grain or root detail. Both references show distinct leaf clusters with bright highlights, deep shadow pockets, branches visible through the canopy and a detailed root flare. Measured visible tones per tile are 10 against 26 and 29 for the references, under half the reference density. Raw colours are 27 against 427 and 567. Flat coverage is 0%, so there are no flat fills, but the shading is shallower and the tile information is much lower than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17863
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy (lit upper dome)",
+      "rows": "1-18",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "26-30"
+     },
+     {
+      "part": "canopy underside / front mass",
+      "rows": "19-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk",
+      "rows": "31-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "root flare and grass tufts at base",
+      "rows": "41-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the broad leaf canopy (rows 1-30). Its width grows from 3 to 30 px over rows 1-10, stays wide through row 23, then narrows over rows 24-31. This is a rounded ellipse-like volume. The upper rows 2-13 are lighter (L about 120) and read as the lit top. Rows 19-30 are darker, with the darkest clusters at rows 26-30 acting as an underside shadow, so the canopy has a top and a front. The trunk (rows 31-42, width 5-7) is a vertical shaft, and the root flare with grass at rows 41-47 widens to 20-25 px. There is no hard front-edge line, but the lit-top/dark-underside shading is enough to read the canopy as a 3/4 mass rather than a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, simple tree. Its canopy has about 4 green steps (light, mid, dark, deep) with some clump dots, but the clumps are small and uniform. The trunk is short and thin, with little bark grain or root detail. The dark edge pixels are tinted green/brown (0% neutral), so the outline is fine. It has 10 visible tones per tile against 26 and 29 for the references, which is under half. The raw count of 11 colours per tile against about 108 supports this. Both references show many individually shaded leaf clumps with bright highlights, plus a flared root base. The candidate looks flatter, more muted and less textured next to them. Near-flat coverage is 0%, so there are no flat fills, but the density gap is large.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 19034
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy (top lit dome)",
+      "rows": "1-13",
+      "evidence": "b",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "14-17"
+     },
+     {
+      "part": "canopy front/underside mass",
+      "rows": "14-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk",
+      "rows": "31-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "root flare and ground tufts",
+      "rows": "43-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy is the main body. Its width profile widens from 3px at row 1 to 30px at row 10, stays wide, then narrows to 20px at row 29, so it reads as a rounded volume. The light foliage clusters in rows 2-13 form the top surface. Dark leaf clusters in rows 14-17 (x=16 rows 14-20 at L=65-73) act as a shade line, and the darker lower canopy (rows 18-30) is the front face. The trunk (rows 31-42, 6px wide) and the root flare (rows 43-47) are the support below. The trunk is only a narrow vertical column, with no top surface expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small tree with a muted green canopy and a thin trunk. It shows about 4 green steps and some leaf-clump dotting, but the clumps are small and fairly uniform. The trunk is thin with little bark grain and little root flare, unlike the references' flared, shaded roots. Dark edge pixels are tinted (0% neutral), so the outline is a dark green/brown material tone rather than a black sticker line, and there are no flat fills (0% near-flat). On density the candidate has 10 visible tones per tile against 26 and 29 for the references, a gap of more than 2x. By eye it also looks thinner and flatter, with less highlight/shadow separation between leaf clumps than the references' layered, bright-lit canopies. It is clean but shallower than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15480
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy (main volume)",
+      "rows": "1-31",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "26-31"
+     },
+     {
+      "part": "trunk",
+      "rows": "31-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "root flare and ground leaves",
+      "rows": "43-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy silhouette widens from 3 px at row 1 to 30 px at row 10, then narrows to 5 px at row 32. That is an ellipse-like mass. Its top rows (about 2-13) are lit light green, and its lower rows (about 18-31) are dark green underside shadow above the trunk. The canopy therefore reads as a volume seen from above and in front, not a flat face-on disc. There is no crisp front-edge line, so this is a soft organic blob. The trunk (rows 32-42, about 6 px wide) is a vertical front face of 10+ rows, and the root flare at rows 43-47 gives a grounded base. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, muted zelkova with a canopy of about 4 greens, softly clumped, and a thin trunk with little root flare. Its dark edge pixels are tinted (0% near-neutral), so the outline reads as dark green beside leaves rather than a black sticker line, and there are no flat fills (0% near-flat). However, it shows 10 visible tones per tile against 26-29 for the references, which is far lower, and the 27 total colours against 427-567 confirm much less variety. The leaf clumps are small and uniform, with no strong highlight/shadow separation, no leaf-cluster silhouette breaks and no bright top-lit highlights like the references. The trunk is simple, with few grain or bark tones, and the roots are minimal compared with the detailed root flare and branches in the references. It is cleanly drawn but visibly thinner and softer than the references, so I would not accept it next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15640
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.044Z",
+ "cells": {
+  "16": [
+   "201b741b67581e98",
+   "251fdb7c5292bdf7",
+   "6ed79605c14d6db1",
+   "8d52f8138f2279fc",
+   "ca37efbc928fad5b",
+   "e6dd255fe0997730"
+  ],
+  "24": [
+   "041b60bc4a053b2c",
+   "1a29efb230738d67",
+   "24e441de154e69fe",
+   "36226c1a7e036753",
+   "3da59537cd5b8b3c",
+   "64d19fcd05db6ccf",
+   "78c45954ddeca581",
+   "ae48074c122d9f84",
+   "b07dc423782efe32",
+   "bf15f39e1960da0a",
+   "c0c467426786cf14",
+   "cec5e2560bc6703d"
+  ],
+  "32": [
+   "0b6827518be6b372",
+   "6abea46bae4bbfa5",
+   "9abed621f5935cda",
+   "fed936e83733d235"
+  ],
+  "48": [
+   "47b9caf11deaa9f9",
+   "5b5439dcd3d7e9e3",
+   "e992e1c26a94614d"
+  ]
+ }
+}

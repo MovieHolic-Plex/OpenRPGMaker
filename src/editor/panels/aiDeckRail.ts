@@ -72,6 +72,9 @@ export function createDeckRail(): DeckRail {
     statusSlot,
     setContext: (mapName) => {
       ctx.textContent = mapName ?? "";
+      // 좁은 패널에서는 이름이 말줄임으로 잘린다 — 전체 이름은 title 로 남긴다.
+      if (mapName) ctx.title = mapName;
+      else ctx.removeAttribute("title");
     },
     setState: (state) => {
       root.dataset.aiState = state;

@@ -1,0 +1,78 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b8",
+ "round": 6,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "school-piano",
+   "pixelSha256": "8ce30fba033cb2bc2942cd2842f0b32e51f3c1e3f8b2174ff5031607fa570b9b",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "It is mostly a flat front elevation. The top is only a thin dark strip behind the sheet-music block, so it shows no lit 3+ row top plane like the originals have. The body is a dark near-black mass with very little shading, so it reads as muddy next to the warm mid-tone originals."
+  },
+  {
+   "id": "shop-peg-wall",
+   "pixelSha256": "a661f55d1116d4b90ece4f43e2f52e3cec14c74b70d4c81d9ab93c73f0f746e2",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4,
+    5
+   ],
+   "reasons": "The pegboard is drawn as a flat front elevation that runs from above the wall stripe down onto the floor, and only a thin wood plank on top is seen from above. The bright yellow '100' sign is a sticker-like highlight, and the scattered pegs and small items make the board noisy and busy."
+  },
+  {
+   "id": "subway-pillar-sign",
+   "pixelSha256": "0db8478a321598ef7e8654a2f15aa894f4bbd3f0bb8dad7948d50d9e102ebe4b",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    5
+   ],
+   "reasons": "The pillar is a straight front view with no top cap plane, and its glossy white vertical highlight bands do not match the chipset's flat shading. In the room it is a thin, too-small strip set out on the floor tiles and not tied to the wall or ceiling, so it does not read as a structural pillar at this scale."
+  },
+  {
+   "id": "svc-arcade-shopfront",
+   "pixelSha256": "bdaf86f0e0e84e258e55c020282e365c292175d28f6f063f171860e4496ce071",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    5
+   ],
+   "reasons": "It is a whole storefront facade drawn as a flat front elevation, with the awning and SHOP sign and no horizontal plane seen from above. Placed in the room, the sign sticks up over the wall stripe into the back wall, and a full building front inside an interior chipset is the wrong scale."
+  },
+  {
+   "id": "train-luggage-rack",
+   "pixelSha256": "a2bacceeb14e8ef01f9d980e5dad7489a2e5ea0aee2fbb2208aef125b56efcdf",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The top shelf with the suitcase and parcel is seen from above correctly. Below it, three poster-like cards hang inside the leg frame over a bare tan floor area, so it reads as a display stand rather than a luggage rack. The thin grey legs and the detached cards look like floating bits."
+  }
+ ]
+}

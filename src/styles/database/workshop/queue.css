@@ -1,0 +1,85 @@
+/* 공방 작업 줄(queueDock.ts) — 늘 닿는 단추 + 모달 아닌 판. 편집기 토큰만 쓴다. 공방 큰 화면(z 900) 위에 둔다. */
+.wq-dock { position: fixed; right: 16px; bottom: 16px; z-index: 960; display: flex; flex-direction: column-reverse; align-items: flex-end; gap: 8px; pointer-events: none; font-size: 13px; color: var(--text-1); }
+.wq-dock[hidden] { display: none; }
+.wq-dock > * { pointer-events: auto; }
+.wq-dock button { font: inherit; }
+.wq-dock button:focus-visible, .wq-dock select:focus-visible { outline: var(--focus-outline); outline-offset: 1px; }
+
+.wq-pill { display: inline-flex; align-items: center; gap: 8px; max-width: min(460px, calc(100vw - 32px)); min-height: 36px; padding: 6px 14px 6px 10px; border: 1px solid var(--border-default); border-radius: var(--radius-pill); background: var(--bg-raised); color: var(--text-1); box-shadow: var(--shadow-pop); cursor: pointer; font-size: 12.5px; }
+.wq-pill:hover { border-color: var(--border-strong); background: var(--bg-hover); }
+.wq-pill.has-ready { border-color: var(--accent-border); box-shadow: var(--shadow-pop), inset 0 0 0 1px var(--accent-border); }
+.wq-pill.has-paused { border-color: color-mix(in srgb, var(--warning) 55%, transparent); }
+.wq-pill-icon { flex: none; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--accent); border-right-color: transparent; }
+.wq-pill-icon:not(.is-spinning) { border-right-color: var(--accent); background: var(--accent-muted); }
+.wq-pill-icon.is-spinning { animation: wq-spin 0.9s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .wq-pill-icon.is-spinning { animation: none; } }
+@keyframes wq-spin { to { transform: rotate(360deg); } }
+.wq-pill-title { flex: none; font-weight: var(--font-weight-semibold, 600); white-space: nowrap; }
+.wq-pill-count { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-2); }
+.wq-pill.has-ready .wq-pill-count { color: var(--accent-active); font-weight: var(--font-weight-medium, 500); }
+
+.wq-panel { display: flex; flex-direction: column; width: min(460px, calc(100vw - 32px)); max-height: min(calc(100vh - 230px), 820px); border: 1px solid var(--border-default); border-radius: var(--radius-m); background: var(--bg-raised); box-shadow: var(--shadow-modal); overflow: hidden; outline: none; }
+.wq-panel > * { flex: none; }
+.wq-panel > .wq-list { flex: 1 1 auto; }
+.wq-head { display: flex; align-items: center; gap: 10px; padding: 10px 12px 10px 14px; border-bottom: 1px solid var(--border-default); }
+.wq-head-text { flex: 1 1 auto; min-width: 0; }
+.wq-head h2 { margin: 0; font-size: 14px; font-weight: var(--font-weight-semibold, 600); white-space: nowrap; }
+.wq-summary { margin: 2px 0 0; font-size: 11.5px; color: var(--text-2); line-height: 1.35; }
+.wq-limit { flex: none; display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); white-space: nowrap; }
+.wq-limit select { min-height: 28px; padding: 2px 6px; border: 1px solid var(--border-default); border-radius: var(--radius-s); background: var(--bg-raised); color: var(--text-1); font: inherit; font-size: 12px; }
+.wq-close, .wq-btn, .wq-link { min-height: 28px; padding: 3px 10px; border: 1px solid var(--border-default); border-radius: var(--radius-s); background: var(--bg-raised); color: var(--text-1); font-size: 12px; line-height: 1.3; cursor: pointer; white-space: nowrap; }
+.wq-close:hover, .wq-btn:hover:not(:disabled), .wq-link:hover { background: var(--bg-hover); border-color: var(--border-strong); }
+.wq-btn:disabled { opacity: 0.55; cursor: default; }
+.wq-btn.is-primary { border-color: transparent; background: var(--accent); color: #fff; font-weight: var(--font-weight-semibold, 600); }
+.wq-btn.is-primary:hover:not(:disabled) { background: var(--accent-hover); }
+.wq-link { border-color: transparent; background: none; color: var(--accent); }
+.wq-btn.is-quiet { border-color: transparent; background: none; color: var(--text-2); }
+.wq-btn.is-quiet:hover:not(:disabled) { color: var(--text-1); }
+/* 한국어 낱말 가운데서 줄이 끊기지 않게(「남 / 아요」, 2026-10-21 VQA) */
+.wq-panel { word-break: keep-all; overflow-wrap: anywhere; }
+
+.wq-hold { display: grid; gap: 2px; margin: 0; padding: 8px 14px; border-bottom: 1px solid var(--border-default); background: color-mix(in srgb, var(--warning) 10%, transparent); font-size: 12px; line-height: 1.45; }
+.wq-hold strong { color: color-mix(in srgb, var(--warning) 62%, var(--text-1)); }
+.wq-muted { color: var(--text-2); font-size: 11.5px; }
+
+.wq-list { list-style: none; margin: 0; padding: 6px; display: grid; gap: 4px; align-content: start; overflow: auto; min-height: 0; }
+.wq-empty { margin: 0; padding: 18px 16px; color: var(--text-2); font-size: 12.5px; line-height: 1.5; }
+.wq-row { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 10px; padding: 8px; border-radius: var(--radius-s); border: 1px solid transparent; }
+.wq-row:hover { background: var(--bg-surface); }
+.wq-row.is-ready { border-color: var(--accent-border); background: var(--accent-muted); }
+.wq-row.is-warn { background: color-mix(in srgb, var(--warning) 7%, transparent); }
+.wq-row.is-bad { background: color-mix(in srgb, var(--danger) 6%, transparent); }
+.wq-thumb { width: 56px; height: 56px; display: grid; place-items: center; border-radius: var(--radius-s); background: #967a5a; overflow: hidden; }
+.wq-thumb img { max-width: 52px; max-height: 52px; image-rendering: pixelated; }
+.wq-thumb.is-draft img { opacity: 0.55; }
+.wq-thumb.is-empty { background: var(--bg-inset); border: 1px dashed var(--border-default); }
+/* 멈춘 작업은 빈 점선 칸 대신 멈춤 표시(두 막대) — 깨진 그림처럼 보이지 않게 */
+.wq-thumb.is-empty.is-paused { border-style: solid; background: linear-gradient(90deg, transparent 38%, var(--text-3, var(--text-2)) 38% 46%, transparent 46% 54%, var(--text-3, var(--text-2)) 54% 62%, transparent 62%) center / 100% 36% no-repeat, var(--bg-inset); }
+.wq-thumb.is-empty.is-drawing, .wq-thumb.is-empty.is-reference, .wq-thumb.is-empty.is-review { background: linear-gradient(110deg, var(--bg-inset) 30%, var(--bg-hover) 50%, var(--bg-inset) 70%) 0 0 / 200% 100%; animation: wq-shimmer 1.6s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .wq-thumb.is-empty { animation: none !important; } }
+@keyframes wq-shimmer { to { background-position: -200% 0; } }
+.wq-row-body { display: grid; gap: 4px; min-width: 0; }
+.wq-row-head { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.wq-title { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: var(--font-weight-semibold, 600); }
+.wq-state { flex: none; padding: 1px 8px; border-radius: var(--radius-pill); background: var(--bg-inset); color: var(--text-2); font-size: 11px; white-space: nowrap; }
+.wq-state.is-work { background: var(--accent-muted); color: var(--accent-active); }
+.wq-state.is-ready { background: var(--accent); color: #fff; }
+.wq-state.is-done { background: var(--success-muted); color: var(--success); }
+.wq-state.is-warn { background: color-mix(in srgb, var(--warning) 18%, transparent); color: color-mix(in srgb, var(--warning) 62%, var(--text-1)); }
+.wq-state.is-bad { background: var(--danger-muted); color: var(--danger); }
+.wq-meta { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.wq-chip { flex: none; padding: 0 6px; border: 1px solid var(--border-default); border-radius: var(--radius-pill); color: var(--text-2); font-size: 11px; line-height: 16px; }
+.wq-line { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-2); font-size: 11.5px; }
+.wq-row.is-warn .wq-line, .wq-row.is-bad .wq-line { white-space: normal; overflow-wrap: anywhere; }
+.wq-bar { height: 5px; border-radius: var(--radius-pill); background: var(--bg-active); overflow: hidden; }
+.wq-bar span { display: block; height: 100%; border-radius: inherit; background: var(--accent); transition: width 0.5s ease; }
+.wq-candidates { display: flex; flex-wrap: wrap; gap: 6px; }
+.wq-candidate { display: grid; gap: 2px; justify-items: center; padding: 4px; border: 1px solid var(--border-default); border-radius: var(--radius-s); background: var(--bg-raised); cursor: pointer; }
+.wq-candidate:hover:not(:disabled) { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.wq-candidate.is-pass { border-color: color-mix(in srgb, var(--success) 50%, transparent); }
+.wq-candidate img { display: block; max-width: 72px; max-height: 72px; image-rendering: pixelated; }
+.wq-candidate-tag { font-size: 11px; color: var(--text-2); }
+.wq-candidate.is-pass .wq-candidate-tag { color: color-mix(in srgb, var(--success) 70%, var(--text-1)); }
+.wq-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.wq-actions:empty { display: none; }
+.wq-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px 8px 14px; border-top: 1px solid var(--border-default); }

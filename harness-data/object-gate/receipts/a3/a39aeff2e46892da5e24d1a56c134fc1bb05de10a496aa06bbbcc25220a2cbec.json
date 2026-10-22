@@ -1,0 +1,511 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a39aeff2e46892da5e24d1a56c134fc1bb05de10a496aa06bbbcc25220a2cbec",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "mart gondola detergent",
+ "label": "modern_city_interior/mart-gondola-detergent",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 1행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 1행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 20,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top rail of the gondola",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": 1,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper shelf bay with goods (teal, pink, teal boxes)",
+      "rows": "2-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf board front edge",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "middle bay with detergent boxes",
+      "rows": "9-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf board front edge",
+      "rows": "15-16",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16"
+     },
+     {
+      "part": "lower bay with detergent boxes",
+      "rows": "17-21",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf board front edge",
+      "rows": "22-23",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "bottom bay with bottles",
+      "rows": "24-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base shelf edge",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30"
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole 32x32 sprite is a flat face-on view of a shelf unit. The top is a 1-row light line (row 1) directly above goods, with no top band, ellipse, or eave shadow. The shelf boards at rows 7, 15, 22 and 29 are 1-row edge lines with 1 row of shadow below, so they read as edge-on boards, not horizontal surfaces. The goods are face-on boxes and bottles in the bays. The unit has a large front face and no visible top surface, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The gondola is a shelving unit with a pale frame and rows of pink, blue and teal detergent bottles. The frame shows about 4-5 lightness steps (highlight top, light face, mid, dark base), and each bottle has its own highlight and shade, so it is not a flat body with one shade. The measured facts support this. It has 19 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well, with 0% near-flat coverage. Its dark edge pixels are 0% neutral, so the outline is tinted dark blue-teal beside the frame rather than a black sticker line, which matches the tinted outlines on the hedge and stall. Texture comes from the bottle and shelf detail and the shaded back panel, which is repetitive but not flat. It is slightly more regular and less grainy than the weathered wood and stone references, but a careful artist would accept it next to the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18551
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header row with goods (teal and pink boxes)",
+      "rows": "1-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf edge strip under the header, with dark gap behind",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "shelf 1 goods, drawn face-on",
+      "rows": "10-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf edge strip",
+      "rows": "15-16",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16"
+     },
+     {
+      "part": "shelf 2 goods, drawn face-on",
+      "rows": "17-21",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf edge strip",
+      "rows": "22-23",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "shelf 3 goods (bottles), drawn face-on",
+      "rows": "24-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom shelf edge strip and base",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30"
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The gondola is a flat face-on elevation of 32 columns by 32 rows. Every shelf is a 1-row light strip (rows 7, 15, 22, 29) followed by 1-2 dark rows, and the goods sit in front-facing compartments. No band of rows reads as a horizontal surface seen from above. The top row-1 strip is a 1-row rim, and the shelf strips have no depth. There are no ellipses and no receding side face. The column scan at x=8, 16 and 23 repeats the same bands at the same rows, which confirms a flat vertical layout. The reference 'front elevation: top 1' and 'rim only' pairs match this structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts put the candidate at 19 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, and none of its dark edge pixels are neutral, so the outline carries a tint rather than being a black sticker line. By eye, the cabinet frame has a light-to-dark ramp with a dark bluish edge and a shaded shelf interior. The bottle rows have highlights, shadows and varied hues, and there is no large flat fill. It is somewhat more regular and less grainy than the stall, but it is not thinner or flatter than the references, so a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19734
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header shelf goods (teal and pink boxes)",
+      "rows": "2-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top of unit, light cap line",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": 1,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf front lips (rows 7-8, 15, 22, 29), each followed by a dark shadow row",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "shelf bays with detergent bottles",
+      "rows": "9-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The unit is a flat front view of a shelving gondola. The top is a 1-row light line at row 1 under the outline at row 0. Rows 2-6 hold products on the top shelf, which is decor. The shelves at rows 7-8, 15, 22 and 29 are thin front-facing lips of 1-2 rows, each with one dark shadow row below. No horizontal shelf surface is visible from above. The bays between them are vertical faces with bottles drawn face-on. This matches the red 'front elevation' and 'rim only' references and not the green cabinet with a top of 5 rows plus an edge line and eave shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 19 visible tones per 16x16 tile, level with prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, and 0% of its dark edge pixels are near-neutral, so the outline is tinted. It reads as a dark blue-grey tone beside the pale frame, not a black sticker line. The frame has about 4 lightness steps (highlight, light, mid, dark). The bottles on each shelf are individually shaded with highlights and varied hues, and the shelf rows and back panel add structure. There are no large flat areas. Texture is moderate rather than rich: the frame is cleaner and less grainy than the reference wood and tile. That keeps it slightly below the 5-6 steps of the best references, but it would sit acceptably beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18901
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header shelf products (teal and mauve boxes)",
+      "rows": "2-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top crown / header band of the gondola",
+      "rows": "1-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf board 1 (front strip)",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "9-9"
+     },
+     {
+      "part": "row 1 products (detergent boxes)",
+      "rows": "10-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf board 2 (front strip)",
+      "rows": "15-16",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-16"
+     },
+     {
+      "part": "row 2 products",
+      "rows": "17-21",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf board 3 (front strip)",
+      "rows": "22-23",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-23"
+     },
+     {
+      "part": "row 3 products (bottles)",
+      "rows": "24-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth strip",
+      "rows": "29-30",
+      "evidence": "none",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30-30"
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The unit is a flat, face-on shelving elevation. The silhouette is a 32-wide rectangle for all rows 0-31. Row 0 is the outline and row 1 is a 1-row light rim. There is no top band, ellipse or roof above the front face. The light lines at rows 7, 15, 22 and 29 are 1-row shelf-front strips. Each is followed by a dark row (9, 16, 23, 30) and then a vertical back wall with products drawn face-on. The shelves show no horizontal tops, the products are front-facing boxes and bottles, and there is no side face. The drawing is a front elevation with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a glass-front shelf gondola with a pale frame, a dark interior and rows of coloured bottles. It measures 19 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, so it matches the richest references. Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, which means the outline leans toward the tint of the adjacent material rather than being a black sticker line. The frame and glass show a highlight, mid and dark step, plus a darker interior, which is close to the reference ramps. The bottles carry their own light and dark tones. The drawing is slightly schematic and grid-regular, and texture is a little less organic than the references, but it holds up beside them without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21423
+  }
+ ],
+ "decidedAt": "2026-10-21T01:38:23.387Z",
+ "cells": {
+  "16": [
+   "26d7e2342c8a2aaf",
+   "5f88a16801273c88",
+   "aaff4b47e392f8d5",
+   "cd724097e50b10b5"
+  ],
+  "24": [
+   "1ce6a9c758dfd7bf",
+   "209492cbe70b4270",
+   "240e95fa955e7be9",
+   "3697137c81688784",
+   "3f64fb44e017547b",
+   "45ea57ce6f3d211c",
+   "47bb1ef66436b2d7",
+   "4e359e2760700ed8",
+   "6e914621b8aaf47a",
+   "6f194dadebf4a916",
+   "72ff3511d7821fc9",
+   "74a2be32054ae155",
+   "81cab0128f4f27f5",
+   "8fcdcdd724910a32",
+   "938858cc51c0afd6",
+   "9c2daf762355e660",
+   "b0b6b59282dec770",
+   "b124b3e483546ba2",
+   "bc0fcdc5ffeba929",
+   "be367a29298a11d1",
+   "c46d37a7e7d5e615",
+   "d2030e27c0874b67",
+   "da1a647afb441abf",
+   "eb805254697a74e2"
+  ],
+  "32": [
+   "ebb9efddf57b38bf"
+  ],
+  "48": [
+   "14ac63b2b1155757",
+   "327bb260f3a44617",
+   "6bbd58f7c33a51e5",
+   "76b7fba544e42f02",
+   "8fdf367956dabc1d",
+   "b776915b04a6634d"
+  ]
+ }
+}

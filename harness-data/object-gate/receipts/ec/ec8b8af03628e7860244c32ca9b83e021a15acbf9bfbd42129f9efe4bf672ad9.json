@@ -1,0 +1,306 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ec8b8af03628e7860244c32ca9b83e021a15acbf9bfbd42129f9efe4bf672ad9",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "countryside dirt path",
+ "label": "jp-inaka-r5:at-dirt",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 13,
+  "darkV5": 125,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dirt ground tile",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a full 48x48 seamless ground tile with a uniform tan dirt fill, scattered pebbles, grass tufts and small twig marks. Every row is the same width (48), and the column scans show no front-edge line or eave shadow, only the small twig and shadow marks. It is flat terrain with no standing volume, no front face and no top/front split, so it reads as a flat top-down surface, which is correct for a terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a mostly flat tan soil fill with only a few sparse specks, small grass sprigs and tiny twig marks. It has about 2 lightness steps in the soil against roughly 5 in the grass reference. The measured facts agree: flat-fill coverage is 49% (references 0%), distinct colours are 13 (grass 80), and the median is 7 colours per tile (grass 26). The paving reference also has a median of 7, but its tiles are densely textured stones, so that median does not excuse the candidate's flat areas. There is no real outline, since this is a ground patch, and the 0% neutral edge share just means no neutral line. The soil has no grain, pebble shading or per-clump variation, so it looks flat and sparse beside the Beodeul grass.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15537
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dirt ground tile",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a full 48x48 opaque tileable dirt ground texture. It has scattered pebbles, small grass tufts and a few wheel-rut or fence-like dashes, with no silhouette, front face, edge line, eave shadow or ellipse. The column scan shows a uniform tan (L=146) with only small speckle marks. It is a flat terrain tile, not a standing object, so the 3/4 top and front-face structure does not apply. The kind (terrain) matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate dirt patch is mostly one flat tan colour. Only 13 distinct colours overall against 80 for the grass reference, and 49% of pixels sit in 5x5 flat blocks against 0% for both references. Its median of 7 colours per tile matches the paving, but the paving is a deliberately limited-palette stone pattern with no flat blocks, while the candidate's count comes from sparse specks. The soil has only about 2 lightness steps: a base tan with a few darker pebble and twig marks. It has no grain, no clumping, no tonal patches and no soil ramp. The scattered pebbles, tiny green tufts and brown fence-like dashes are sparse and tiny, so they do not break up the large flat areas. There are no outlines to judge (dark edge share 0%). Next to the richly textured grass, this reads as a flat sticker-like fill.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17447
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dirt ground tile",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless 48x48 tile of flat dirt, filled edge to edge. It has scattered pebbles, grass tufts, and small rut or track marks. The column scan shows uniform lightness (L=146) across all rows with only small dark marks. There is no front-edge line, no eave shadow, no silhouette change and no vertical face, so it reads as flat top-down ground. That is correct for a terrain tile, not a standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate dirt path is mostly one flat tan/brown fill with only sparse specks, small grass tufts and a few dashed fence-like marks. It has about 2-3 lightness steps against roughly 5 on the grass reference. Flat-fill coverage is 49% against 0% on both references, and it uses 13 colours in total against 80 for the grass. The median of 7 colours per tile roughly matches the paving, but the paving is a deliberately limited-palette stone pattern that is fully textured, whereas the candidate's 7 colours sit in large empty areas. There is no real soil grain, pebble shading or edge variation, so the surface looks like a flat sticker beside the grass reference. The candidate has no outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15156
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dirt ground tile",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 48x48 opaque tile of flat brown dirt. Rows 0-47 all have width 48, and the column scans show a uniform lightness of about 146, with only small 1-2 row dark flecks (pebbles, twig marks, grass tufts). There is no silhouette, front-edge line, eave shadow, ellipse or front face. It is a seamless ground texture, which fits the terrain kind, so it is flat top-down with no standing volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a flat tan soil fill with only a few scattered specks, small grass tufts and thin fence-like dashes. It has about 2-3 lightness steps on the soil, against roughly 5 in the grass reference. Flat-fill coverage is 49% against 0% for both references, so about half the patch is large single-colour area. It has only 13 distinct colours, against 80 for the grass, and 7 colours per tile against 26 for the grass. The paving reference also has 7 per tile, but its stones are shaded one by one with no flat areas. The candidate has no outlines, so the neutral-edge fact does not apply. Soil grain, pebble shading and per-clump variation are missing, so it reads as a sticker-like flat ground, clearly below the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15549
+  }
+ ],
+ "decidedAt": "2026-10-20T06:14:17.629Z",
+ "cells": {
+  "16": [
+   "3e29924180327243",
+   "654bf3a117ad8f3b",
+   "9d84c5d9519a26ec"
+  ],
+  "24": [
+   "2fb01459a48d4132",
+   "6324244788f123ae",
+   "7ef1c00a28810ed0",
+   "dc793587b0c55e6c"
+  ],
+  "32": [
+   "037026698ec998d5",
+   "09096f51940ec629",
+   "0d6b6938f930f65d",
+   "0e9af15939dce31e",
+   "113ebd7fbc3b91a8",
+   "124b3332058fc885",
+   "14e75ca4c9075cc4",
+   "1e54a2809eb2a9e0",
+   "23912406605724a2",
+   "292edadb9fbf0eba",
+   "3a4e949981cd4f79",
+   "490cb1ef020e88e5",
+   "4fa3e2be21c353c8",
+   "4fcf2762a135ea94",
+   "5757c394b27350fc",
+   "59471b2e15c79f18",
+   "6f8e0c31ed093b48",
+   "aeaef5b0749a0a9f",
+   "bb38447698092618",
+   "c3b14b9a2325c7a8",
+   "c46f90723215f00e",
+   "e44097d03cc9a010",
+   "fea5e0089ca8f0c1"
+  ],
+  "48": [
+   "bbc574b83537d279"
+  ]
+ }
+}

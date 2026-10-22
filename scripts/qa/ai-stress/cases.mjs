@@ -57,4 +57,11 @@ export const CASES = [
   { id: 'p-team-delete-declined', kind: 'prompt', pack: 'adventure-jrpg', team: true,
     prompt: '팀으로 작업해 줘. 새 맵 「작은 숲」(20×15)을 만들어 시작 위치를 그리로 옮기고, 지금 시작 맵은 지워 줘. 그다음 작은 숲에 나무꾼 NPC 한 명을 세워 대사 두 줄을 넣어 줘.',
     expect: '맵 삭제 거절(드라이버) 뒤에도 실행 계속: 작은 숲·시작 위치·나무꾼 NPC, 옛 시작 맵은 남음' },
+  // 맵 배경(파노라마) 쓰임새 — 사용자 원문 그대로. 플레이에서 실제로 보이는지(빈 칸·창 타일·cover)가 기준이다.
+  { id: 'p-pano-sunset', kind: 'prompt', pack: 'adventure-jrpg',
+    prompt: '이 맵 뒤에 노을 하늘 파노라마 깔아 줘',
+    expect: 'map.background 에 노을 그림·showInEmptyCells 또는 비칠 칸 확보·플레이에서 하늘이 실제로 보임(검은 칸 없음)' },
+  { id: 'p-pano-island-sea', kind: 'prompt', pack: 'adventure-jrpg',
+    prompt: '섬 맵 바깥을 바다 배경으로',
+    expect: 'map.background 에 바다 그림·맵 가장자리/빈 칸에서 바다가 보임·기존 지형 보존' },
 ];

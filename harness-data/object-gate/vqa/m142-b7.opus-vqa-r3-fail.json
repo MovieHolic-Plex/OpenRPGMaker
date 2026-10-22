@@ -1,0 +1,55 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b7",
+ "round": 3,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "food-drink-bar",
+   "pixelSha256": "c7ce8ea80a65a8bab4a8b6d3e654dc7758104c0a9c0b7143e0a9ceca952cf86f",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    4
+   ],
+   "reasons": "This is a flat front view of a narrow, tall soda tower. Its top shows only a 1–2 row grey strip with no lit counter plane, and the dispenser nozzles and cup slots are a noisy grey comb. At only about 1 tile wide with a thin cabinet, it is too small and spindly next to the originals' 2-tile counters, and the rainbow block of syrup colours reads as a sticker."
+  },
+  {
+   "id": "mart-drink-open",
+   "pixelSha256": "6924bdd2130ce55ffcb999389f39b5348b49f480d79e08f1601465b52c58fc7a",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The case is a straight front view. The top is just a thin grey band under a red header, with no 3+ row top plane, and the shelf planks are single bright lines seen edge-on instead of planes seen from above. The bottles are 1px-wide bright spikes with random white highlights that look noisy next to the original cooler's even bottle rows."
+  },
+  {
+   "id": "mart-gondola-snack",
+   "pixelSha256": "ca682bcb82385de6c40c224a703aec4203f9250b9ff9f588666ab273fa32e0a4",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The gondola is drawn as a front-on box. The shelves are edge-on white bars with no top surfaces, and the top band reads as a frame, not a lit shelf plane. The snack packs are muddy orange/yellow blobs with sticker-yellow highlights, and the packs at the right end of each shelf run into the side post and look cut off."
+  }
+ ]
+}

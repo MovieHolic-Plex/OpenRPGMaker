@@ -43,13 +43,15 @@
  },
  {
   "name": "b3_prop-anchor_display",
-  "kind": "frame",
+  "kind": "figure",
   "styleKind": "prop",
   "view34": "good",
   "style": "good",
   "group": "fresh3-beodeul-good",
   "tier": "A",
-  "note": "버들항 번들 키트 bd-prop-anchor_display — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+  "note": "버들항 번들 키트 bd-prop-anchor_display — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
+  "kindBefore": "frame",
+  "relabel": "2026-10-21 감사: anchor on a plinth is a display figure, not an open frame/rack"
  },
  {
   "name": "b3_prop-net_rack",
@@ -99,20 +101,24 @@
   "styleKind": "prop",
   "view34": "good",
   "style": "good",
-  "group": "fresh3-beodeul-good",
+  "group": "uncertain-defect",
   "tier": "A",
-  "note": "버들항 번들 키트 bd-prop-mooring_bollard — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+  "note": "버들항 번들 키트 bd-prop-mooring_bollard — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
+  "groupBefore": "fresh3-beodeul-good",
+  "defect": "2026-10-21 감사: bollard head is a dark blob without a readable cap plate; illegible at 1x"
  },
  {
   "name": "b3_prop-bread_rack",
-  "kind": "tall_furniture",
+  "kind": "frame",
   "styleKind": "prop",
   "view34": "good",
   "style": "good",
   "group": "fresh3-beodeul-good",
   "tier": "U",
   "note": "버들항 번들 키트 bd-prop-bread_rack — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
-  "tierNote": "사용자 수락(2026-10-20 블라인드 화소 규칙): 버들항 원본, 엄격 계약상 윗면 미달 — Shelf planks are 2 rows each and face-on, below the 4-row threshold. (윗면 2행). 판정 결과를 가린 측정으로 정함."
+  "tierNote": "사용자 수락(2026-10-20 블라인드 화소 규칙): 버들항 원본, 엄격 계약상 윗면 미달 — Shelf planks are 2 rows each and face-on, below the 4-row threshold. (윗면 2행). 판정 결과를 가린 측정으로 정함.",
+  "kindBefore": "tall_furniture",
+  "relabel": "2026-10-21 감사: open bread rack (posts and boards), not closed tall furniture"
  },
  {
   "name": "b3_prop-sandwich_board",
@@ -172,10 +178,12 @@
   "styleKind": "prop",
   "view34": "good",
   "style": "good",
-  "group": "fresh3-beodeul-good",
+  "group": "uncertain-defect",
   "tier": "U",
   "note": "버들항 번들 키트 bd-prop-planter_round — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
-  "tierNote": "사용자 수락(2026-10-20 블라인드 화소 규칙): 버들항 원본, 엄격 계약상 윗면 미달 — Opening is only about 3 rows, below 4. (윗면 3행). 판정 결과를 가린 측정으로 정함."
+  "tierNote": "사용자 수락(2026-10-20 블라인드 화소 규칙): 버들항 원본, 엄격 계약상 윗면 미달 — Opening is only about 3 rows, below 4. (윗면 3행). 판정 결과를 가린 측정으로 정함.",
+  "groupBefore": "fresh3-beodeul-good",
+  "defect": "2026-10-21 감사: 화소가 같은 fresh4/q116_beodeul 의 블라인드 라벨(판정 전 고정)이 3/4 위반·애매(등급 C)라 알려진 정상이 아니다 → 불확실"
  },
  {
   "name": "b3_prop-sword_barrel",
@@ -194,10 +202,12 @@
   "styleKind": "prop",
   "view34": "good",
   "style": "good",
-  "group": "fresh3-beodeul-good",
+  "group": "uncertain-defect",
   "tier": "U",
   "note": "버들항 번들 키트 bd-prop-flowerbox_long — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
-  "tierNote": "사용자 수락(2026-10-20 블라인드 화소 규칙): 버들항 원본, 엄격 계약상 윗면 미달 — Only rim and soil rows 5-6 (2 rows) before the front face, below 4. (윗면 2행). 판정 결과를 가린 측정으로 정함."
+  "tierNote": "사용자 수락(2026-10-20 블라인드 화소 규칙): 버들항 원본, 엄격 계약상 윗면 미달 — Only rim and soil rows 5-6 (2 rows) before the front face, below 4. (윗면 2행). 판정 결과를 가린 측정으로 정함.",
+  "groupBefore": "fresh3-beodeul-good",
+  "defect": "2026-10-21 감사: 화소가 같은 fresh4/q081_beodeul 의 블라인드 라벨(판정 전 고정)이 3/4 위반·애매(등급 C)라 알려진 정상이 아니다 → 불확실"
  },
  {
   "name": "b3_prop-laundry_rack",
@@ -225,10 +235,12 @@
   "styleKind": "prop",
   "view34": "good",
   "style": "good",
-  "group": "fresh3-beodeul-good",
+  "group": "uncertain-defect",
   "tier": "U",
   "note": "버들항 번들 키트 bd-prop-column_monument — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
-  "tierNote": "사용자 수락(2026-10-20 블라인드 화소 규칙): 버들항 원본, 엄격 계약상 윗면 미달 — Capital plate is a rectangular front elevation with about 2 rows of top, below 4. (윗면 2행). 판정 결과를 가린 측정으로 정함."
+  "tierNote": "사용자 수락(2026-10-20 블라인드 화소 규칙): 버들항 원본, 엄격 계약상 윗면 미달 — Capital plate is a rectangular front elevation with about 2 rows of top, below 4. (윗면 2행). 판정 결과를 가린 측정으로 정함.",
+  "groupBefore": "fresh3-beodeul-good",
+  "defect": "2026-10-21 감사: capital is a flat 2-row band without an elliptical cap plate (charge 6 holds)"
  },
  {
   "name": "b3_prop-statue_sage",
@@ -236,19 +248,23 @@
   "styleKind": "prop",
   "view34": "good",
   "style": "good",
-  "group": "fresh3-beodeul-good",
+  "group": "uncertain-defect",
   "tier": "A",
-  "note": "버들항 번들 키트 bd-prop-statue_sage — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+  "note": "버들항 번들 키트 bd-prop-statue_sage — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
+  "groupBefore": "fresh3-beodeul-good",
+  "defect": "2026-10-21 감사: plinth top is 1-2 rows, under the figure minimum 3"
  },
  {
   "name": "b3_prop-flowerbed",
-  "kind": "flat",
+  "kind": "container",
   "styleKind": "prop",
   "view34": null,
   "style": "good",
   "group": "fresh3-beodeul-good",
   "tier": "A",
-  "note": "버들항 번들 키트 bd-prop-flowerbed — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+  "note": "버들항 번들 키트 bd-prop-flowerbed — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
+  "kindBefore": "flat",
+  "relabel": "2026-10-21 감사: raised flowerbed with a stone curb front, not a flat decal"
  },
  {
   "name": "b3_house-h101_1",

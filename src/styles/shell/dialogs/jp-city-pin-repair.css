@@ -1,0 +1,12 @@
+/* 「jp_city 칸 번호 복구」 창 — editor/jpCityPinRepairDialog.ts */
+@layer shell {
+  .app-modal-card.jp-pin-repair-window { width: min(1180px, calc(100vw - 48px)); max-width: none; max-height: calc(100dvh - 48px); box-sizing: border-box; }
+  .jp-pin-repair-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 10px; }
+  .jp-pin-repair-choice { display: flex; flex-direction: column; gap: 4px; padding: 6px; border: 2px solid var(--border-subtle, transparent); border-radius: var(--radius-m, 6px); background: var(--bg-surface); color: var(--text-1); text-align: left; cursor: pointer; font: inherit; }
+  .jp-pin-repair-choice:hover { border-color: var(--border-strong); }
+  .jp-pin-repair-choice[aria-pressed="true"] { border-color: var(--accent, #2f7cf6); }
+  .jp-pin-repair-choice.is-current { cursor: default; opacity: 0.9; }
+  .jp-pin-repair-choice canvas { width: 100%; height: auto; image-rendering: pixelated; display: block; }
+  .jp-pin-repair-choice-title { font-size: 13px; font-weight: 600; }
+  .jp-pin-repair-choice-meta { font-size: 12px; color: var(--text-2); }
+}

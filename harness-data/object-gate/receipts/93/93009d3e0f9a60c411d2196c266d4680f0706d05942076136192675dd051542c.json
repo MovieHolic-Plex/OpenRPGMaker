@@ -1,0 +1,338 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "93009d3e0f9a60c411d2196c266d4680f0706d05942076136192675dd051542c",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "home umbrella stand",
+ "label": "modern_city_interior/home-umbrella-stand",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 18,
+  "darkV5": 40,
+  "nearBlackEdge": 0.14,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "umbrellas sticking out above the stand",
+      "rows": "3-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "open mouth of the bucket, with umbrella shafts visible inside between the dark side walls, ending at the bright front rim",
+      "rows": "18-22",
+      "evidence": "d",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "bucket front face",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The grey bucket has side walls (width 14) starting at row 18. Umbrella contents are visible inside the opening in rows 18-21. A 1-row bright front rim at row 22 (L=244) is followed by a darker row 23. Below it the front face runs rows 23-31, which is 9 rows. The umbrellas above row 18 are decor or contents. The opening is shallow, but the contents inside it show a top surface, and the front face is clear."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 18 visible tones per 16x16 tile, level with prop-stall-cheese (17) and prop-well-roofed (20) and well above prop-hedge (9). Near-flat coverage is 0%, so there are no 5x5 flat fills. Only 12% of its dark edge pixels are near-neutral, so the outlines carry a tint (dark material tone) rather than a uniform black sticker line. The white/grey bin shows a few lightness steps, and the umbrella handles and canopies are varied in several tones. The shading is slightly shallower than the 5-6 steps on the best references, but I judge it acceptable next to them. It does not look thinner or flatter than the references of the same kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18354
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "umbrellas (red, blue, white) standing in the stand",
+      "rows": "3-21",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bucket opening with umbrella contents visible above the front rim",
+      "rows": "18-22",
+      "evidence": "d",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "bucket front face",
+      "rows": "23-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a bucket about 14 px wide. Its light front rim line is at row 22, followed by a darker shadow at row 23 and a front face of rows 23-30 (8 rows). Above the rim, rows 18-21 show the umbrellas going down into the opening, so contents are visible inside the container (evidence d). The mouth is not an ellipse: the width stays at 14 from row 18 to row 30, and the opening is shown only by the contents behind the front rim. The umbrella handles and canopies above row 18 are decor. The dark blue outline pixels at the sides of rows 18-21 suggest the back rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 18 visible tones per 16x16 tile, level with the prop-stall-cheese (17) and prop-well-roofed (20) references and well above the hedge (9). Near-flat coverage is 0%, so there are no 5x5 flat fills. Only 12% of its dark edge pixels are near-neutral, so the outline leans toward the adjacent material, as in the Beodeul references, and is not a uniform black sticker line. By eye, the bucket body has several light-to-mid steps and the umbrella handles and canopies are separated by value, with highlights on the rim. The ramps are probably a little shallower than the best references (about 5 steps against 6), but nothing reads as flat or sticker-like next to them. The image is small, so this judgement rests partly on the measured facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18205
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "umbrellas (red, blue and white) sticking out of the stand",
+      "rows": "3-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bucket opening: umbrella bases seen inside the navy back walls, ending at the light front rim",
+      "rows": "18-22",
+      "evidence": "d",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bucket front face",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body is a bucket, 14 px wide, rows 18-31. Row 22 is a bright 1-row front rim (L=244) with a grey front face below it in rows 23-30 and a dark base in row 31. Above the rim, rows 18-21 hold the umbrella bases between navy side outlines. That reads as contents seen inside an open container (evidence d), though the umbrellas hide the ellipse of the mouth. The umbrellas above row 18 are decor. The top is therefore only 5 rows of contents and rim, a weak top surface, with a 9-row front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 18 visible tones per tile, level with prop-stall-cheese (17) and prop-well-roofed (20) and well above prop-hedge (9). Near-flat coverage is 0%, so it has no flat fills. Only 12% of its dark edge pixels are near-neutral, so the outlines lean toward the neighbouring material's tint, as in the Beodeul references, and the forms are not wrapped in a uniform black line. The white container has a lit side, a mid tone, a shadow side and a rim, and the umbrella handles and canopies are separated by value with small highlights. That is about 4 steps against the references' 5-6, a bit simpler but not shallow. The piece is small, and by eye a careful artist would accept it beside the references without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19239
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "umbrella stand body (cylinder with rim)",
+      "rows": "22-31",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "umbrellas (contents sticking out of the opening)",
+      "rows": "3-21",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The container body has a single bright rim line at row 22 (L=244), and the front face runs below it in rows 23-30 with a dark base at row 31. The width profile is a constant 14 from row 18 to row 30. It never widens and narrows again, so there is no ellipse mouth. The opening is not seen from above, and the opening itself is hidden behind the umbrellas. The dark navy columns at the sides in rows 18-21 are the back wall outline, not a top surface. The umbrellas (rows 3-21) are contents and decor, and no inside floor or surface is visible between the rim and the umbrellas. This matches the 'rim only' red examples, so the container reads as a front elevation with a 1-row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 18 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, and 0% near-flat coverage, so it has no large flat fills. Only 12% of its dark edge pixels are near-neutral, which means the outlines lean toward the material tone and are not a black sticker line. The pale container shows a lit side, a mid tone and a shaded side with a darker rim. The umbrellas have separate shaded folds and handles, so several materials are modelled and not just filled. It is a small, simple prop, but it does not look thinner or flatter than the references of the same kind, and the primary facts are at or above the references. The ramps are slightly shallower than the 5-6 steps Beodeul uses, but that is acceptable at this size.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18751
+  }
+ ],
+ "decidedAt": "2026-10-20T23:28:13.352Z",
+ "cells": {
+  "16": [
+   "11b03cc2aae0feeb",
+   "51a9217242a32c94"
+  ],
+  "24": [
+   "2459ac2a9e193de2",
+   "2a294713408b92f3",
+   "2d2672c80d202836",
+   "410b2d8a332b79a3",
+   "4543daa13ef4d5a7",
+   "505142b895d50ca1",
+   "5387b0e71665bf6f",
+   "550a10ca5b91c24d",
+   "63bfed3d3e24120a",
+   "827bb26e62727351",
+   "a301f6a213d8b4d2",
+   "b74f963db2793059"
+  ],
+  "32": [
+   "2abd187cbd5a9686",
+   "6e642210af7c1a27",
+   "d75ce4a91296a4c2"
+  ],
+  "48": [
+   "15213b01602ae376",
+   "4af3560bd89b2cea",
+   "4e1ce8d8c23ce7ee",
+   "e4343b7746c380d6",
+   "f1deb18c58aba26b",
+   "f44bd4286f3ff1f4"
+  ]
+ }
+}

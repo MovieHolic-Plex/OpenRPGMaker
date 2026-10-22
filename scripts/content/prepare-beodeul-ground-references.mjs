@@ -5,15 +5,15 @@ const example=JSON.parse(fs.readFileSync('tiledata/beodeul-ground/example.json',
 const lines=['# 정확한 칸 배열','',`시트 ${catalog.texture}, 16px, 8열, ${catalog.count}칸. 배열은 원본 source 칸 번호다.`,
   '빈칸 -1은 기존 층을 보존한다. 일반 stamp_object 키트는 빈 잔디에만 쓴다. 집·나무 보강은 dress_beodeul_ground로 한다.',''];
 for(const r of catalog.recipes){
- if(r.forestGround)continue; // 숲 접지 칸 192개는 아래 한 절로 요약(문서 12만 자 한도)
+ if(r.forestGround)continue; // 짙은 풀 가장자리 92칸·숲 장면 잔디는 아래 한 절로 요약(문서 12만 자 한도)
  lines.push(`## ${r.id} · ${r.name}`,`크기 ${r.width}×${r.height}, 도구의 홈 층 ${r.layer}, 통·장작 몸통 차단 ${r.blocked}.`);
  const empty=Array.from({length:r.height},()=>Array(r.width).fill(-1));
  lines.push('```json',JSON.stringify({anchor:r.anchor,dx:r.dx,dy:r.dy,baseTile:r.baseTile,variant:r.variant,kind:r.kind,mask:r.mask,blockingCells:r.blockingCells,upperCells:r.upperCells,anchors:r.anchors,overlapPixels:r.overlapPixels,lowerTiles:r.layer===1?r.rows:empty,lowerOverlayTiles:r.layer===2?r.rows:empty,
    upperTiles:r.layer===3?r.rows:empty,upperOverlayTiles:r.layer===4?r.rows:empty},null,2),'```','');
 }
 {const fg=catalog.recipes.filter(r=>r.forestGround);if(fg.length){const ids=k=>fg.filter(r=>r.kind===k).map(r=>r.rows[0][0]);
- lines.push('## 숲 접지 칸 bdg-forest-ground-* (나무 composer 전용)',`숲 바닥(1층) floor ${ids('forest-floor').length}칸 ${ids('forest-floor')[0]}~, 가장자리 바닥 edge ${ids('forest-floor-edge').length}칸, 둘레 땅 그늘(2층 투명) apron ${ids('forest-apron').length}칸. 번호는 그늘 코드(0~63) 순.`,
-  '칸 번호 표는 tiledata/beodeul-ground/forest-ground.json. 손으로 찍지 않는다 — author_wild_route·author_beodeul_town 의 숲(composer)이 그늘 코드로 고른다. WOODLAND 문서 「접지」 절 참고.','');}}
+ lines.push('## 짙은 풀 오토타일 bdg-dark-grass-* · 숲 장면 잔디 (나무 composer 전용)',`짙은 풀 가장자리 ${ids('dark-grass-edge').length}칸 ${ids('dark-grass-edge')[0]}~${ids('dark-grass-edge').at(-1)}(바탕 민무늬 잔디 46 + 숲 장면 잔디 46, 47모양 중 속 제외), 숲 장면 잔디 ${ids('woodland-grass')[0]}. 속 칸은 원본 beodeul_city 11628(같은 결 1597·12939·12946·12947·15152).`,
+  '마스크→칸 표는 tiledata/beodeul-ground/forest-ground.json(darkGrass.families). 손으로 낱칸을 찍지 않는다 — 대상 칩셋의 오토타일 그룹 beodeul_dark_grass(_woodland)로 깔린다. WOODLAND 문서 「나무 밑 땅 = 짙은 풀」 절 참고.','');}}
 lines.push('## 전체 조립 예제','버들항 시트에 밑동 칸을 이식한 3×4 완성 맵. 원본 737 잔디는 그대로다.','```json',JSON.stringify(example,null,2),'```');
 const markdown=lines.join('\n')+'\n';fs.writeFileSync('tiledata/beodeul-ground/CATALOG.md',markdown);
 const refs=[{id:'beodeul-ground-dressing',name:'버들항 · 밝은 잔디 접지·꾸미기',description:'얇은 기초·밑동·풀/꽃 군락과 집 곁 생활 흔적. 실제 덧그림 도구와 원본 보존.',

@@ -1,0 +1,331 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b9981836476c66aa6631d817b5f557e7f00445edf7448c47695da72f6272e4be",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "agri tin shed",
+ "label": "jp-inaka-r5:inaka-agri-tin-shed",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 24,
+  "darkV5": 38,
+  "nearBlackEdge": 0.04,
+  "opaqueTiles": 12
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "corrugated tin roof",
+      "rows": "0-15",
+      "evidence": "c",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-18"
+     },
+     {
+      "part": "open front wall with hay bales, post and diagonal brace",
+      "rows": "19-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-14 are a wide corrugated tin roof plane with rust patches. It ends in a light front-edge line at row 15 (L=155 across columns), followed by dark eave shadow in rows 16-18 (L about 23-29). Below that, rows 19-46 form a south front face with a floor or sill strip at rows 43-46, and the silhouette narrows from 64 to 56 px under the overhanging roof. The roof is a sloped plane above an eave line and the front wall is 28 rows, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small tin shed with a corrugated roof, rust speckles, a hay bale and a door. Per-tile colour median is 16 against references at 18 and 11, and flat-fill coverage is 1%, so it is not flat by the numbers. Dark edge pixels are 16% neutral against 7-9% in the references. That is higher but still mostly tinted, so the outline reads as mixed. The 40 distinct colours are far below 185 and 66, which fits a small, simple object. The corrugated roof has vertical ribs with rust dots, giving about 4 steps against 5-6 on the reference tile roofs. The wall and interior areas are darker and simpler, with fewer highlight steps. The hay bale and door have little per-material shading. A careful artist would find it a bit thinner than the references, but it is not a sticker look and the texture is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14065
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "corrugated tin roof",
+      "rows": "0-14",
+      "evidence": "c",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-18"
+     },
+     {
+      "part": "open front bay with hay bales and corrugated wall",
+      "rows": "19-46",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-14 form a roof plane of corrugated stripes with rust patches. It ends in a light front-edge line at row 15, followed by 3 rows of dark eave shadow (16-18), and it overhangs the body (width 62-64 against 56 below). The front face runs from row 19 to 46 and shows an open bay with hay bales, a diagonal-braced tin wall and a base strip. The roof is 15 rows tall, so it is not just a rim, and the front face is well over 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The shed is a small, simple building, but it matches the references on the measured facts. It has 16 distinct colours per 16x16 tile against 18 and 11 for the references, and 1% flat-fill coverage. Only 16% of its dark edge pixels are neutral, so the outlines lean toward dark material tones (brown/rust beside the tin and wood) rather than a black sticker line. The corrugated roof has vertical ribs in several greys, with rust speckle for texture. The interior has hay bales shaded in several steps, and the diagonal-braced door and posts carry wood grain. Its 40 total colours are below the references' 66 and 185, but that fits a smaller object with a narrower palette. Roof and wall ramps reach about 4 steps against the references' 5-6, which is slightly shallow but acceptable. A careful artist would accept it next to the references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 28655
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "corrugated tin roof",
+      "rows": "0-14",
+      "evidence": "c",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-18"
+     },
+     {
+      "part": "open shed front with hay bales and ground slab",
+      "rows": "19-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-14 are a sloped corrugated roof plane (vertical ribs, rust patches) at full width 62. A light front-edge line sits at row 15, and dark eave shadow fills rows 16-18, where the width widens to 64 as an overhang. Below it, rows 19-46 (28 rows, width 56) show the south face: an open bay with hay bales, a post, a diagonal brace, corrugated wall panels and a light base slab at rows 43-46. The roof reads clearly as a top surface above a front face, not a flat strip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts are close to the references. The candidate has 16 distinct colours per tile against 18 and 11, and 1% flat-fill coverage against 0%. Only 16% of its dark edge pixels are neutral, against 7% and 9% for the references, so the outlines mostly lean toward the material tone. The corrugated roof has about 4-5 grey steps, with vertical ribbing and scattered rust speckle. The dark interior, hay bales, tool and diagonal-braced door each carry their own shading. The total of 40 distinct colours is well below the references' 185 and 66, but this is a much smaller, simpler building. Its per-tile density matches the references, so it is slightly lower overall, not much lower. It has fewer shading steps than the Beodeul tile roofs, but it is not flat or sticker-like, so a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23586
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "corrugated tin roof",
+      "rows": "0-14",
+      "evidence": "c",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-18"
+     },
+     {
+      "part": "open front bay (interior, hay bales, wall panel) with floor strip",
+      "rows": "19-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a corrugated plane in rows 0-14. It ends in a light front-edge line at row 15, which is followed by 3 rows of very dark eave shadow in rows 16-18. Below that, the south face runs rows 19-46 (28 rows) and shows the open bay with hay bales, a tool, a diagonal-braced tin wall and a floor lip. The roof's vertical corrugation stripes look slightly front-on, but the edge line plus eave shadow give a clear roof top surface. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, low tin shed: a corrugated grey roof with rust speckles, an open front showing hay bales and a tool, and a plank door on the right. The measured facts are close to the references. It has 16 colours per tile against 18 and 11, 1% flat-fill coverage, and only 16% neutral dark edge pixels, so the outlines are mostly tinted, not a black sticker line. Its 40 distinct colours are well below the 185 and 66 of the references, and the picture agrees. The roof has about 4 grey steps with rust dots, which is fewer than the 6 steps of the tile roofs. The walls and interior are dark and fairly flat, with little grain, and the hay bales have only about 2-3 steps. The shed is small and simple, so the lower colour count is partly expected. Even so, it looks thinner and flatter than the references next to them, with less per-element shading, so I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16377
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.444Z",
+ "cells": {
+  "16": [
+   "0a3ce2bdbccfe397",
+   "31bae7e2a71829d7",
+   "67360b6cd5a158a4",
+   "68123f53ec0d8c07",
+   "71e70ec6b123bf18",
+   "844219dd29c5fa0c",
+   "99eba10118986045",
+   "aef197f19de43ad7",
+   "bf262e90ff30b490",
+   "d968f0d8e76110ca",
+   "da7ada7be5ab9eec",
+   "eae793303bb9cd12"
+  ],
+  "24": [
+   "0541415b212fc79c",
+   "11145a7fd29255e4",
+   "12f2a8aff87683d5",
+   "15c22a1df7dc5469",
+   "1e8a6fb1debb4c85",
+   "347c8284bfba54d2",
+   "3f83943454db4c57",
+   "448f27de4a52ce30",
+   "66925b06b3007ec6",
+   "6e42f0894813dcbf",
+   "7562d23f9b9099c8",
+   "76ac56acdecde9b4",
+   "86e1147116667896",
+   "afd2139bd06e3f1e",
+   "b3a5465fd874a27c",
+   "d2aae13be78f8761",
+   "e71baf9bd130d19f",
+   "e73aa74d1a6f4d4d"
+  ],
+  "32": [
+   "2ef03231fad225f4",
+   "4e1dbe40c5359da8",
+   "594f5e3fa534bd7b",
+   "d02f99aa217e8555",
+   "d13c953bc0edb807",
+   "d54e27ef91b41ec1",
+   "e6f530f9b285cd80",
+   "f6dcc36c87af8218"
+  ],
+  "48": [
+   "1c1a574cdd5119b9",
+   "2606365333cb26d3",
+   "26bc2e7c634f2bb6",
+   "3c8e51ddb4c91322",
+   "7945693e7b93ba89",
+   "899cf558b1083c58"
+  ]
+ }
+}

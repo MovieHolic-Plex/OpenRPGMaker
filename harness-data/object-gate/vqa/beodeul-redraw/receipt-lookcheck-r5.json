@@ -1,0 +1,19 @@
+{"reviewer":"fresh Opus look-check","round":5,"date":"2026-10-22","verdict":"PASS",
+"per_map":{
+"facilities-town":"The warm trees are now a yellow-green (163,198,74) and (116,154,44) family. They sit well on the grass, and the olive (135,141,39) is gone from the changed pixels. The top rows, the top-right column and the bottom-left cluster have jagged crown edges with no straight cuts. Checked at 6x: the left edge of the second bottom-left crown near x~53 is jagged, not a seam. The only isolated diff components are 1-2 px root tips at tree bases, with no stray specks.",
+"village50":"Same tree cells as facilities-town, and the changed-pixel colour histogram is identical. Same result: no olive or mustard and no specks.",
+"river-town":"The top row, the bottom row and the mid cluster at (300-460,800-900) are clean. Trunks are grounded with roots, crowns are rounded, and there is no seam. The isolated diff comps are root tips.",
+"tool-village":"The forest at (0-160,450-650) crowns now have rounded, jagged tops near y~533 (checked at 8x), not straight bands. The big oak at (300-370,40-130) is intact, and its left side clears the region outline line. The new bushes are fine.",
+"forms-town":"identical (0 changed pixels)",
+"reviewed-street":"identical (0 changed pixels)"},
+"previous_findings":{
+"warm trees olive/mustard in facilities-town and village50 (blocking)":"fixed: dominant colours are now 163,198,74 / 116,154,44 / 110,153,67; 135,141,39 no longer present",
+"tool-village straight horizontal crown-layer edges near y~533":"fixed: crown tops are irregular/rounded",
+"tool-village 3-trunk row near (0-120,600-620)":"still present, but the before render had the same 3 trunks in the same row, so this is not a regression (minor)",
+"facilities-town bottom-left middle tree dark hole pixels":"fixed/acceptable: only small dark leaf-gap shading and branch peeks remain, no see-through holes"},
+"blocking_regressions":[],
+"minor":[
+"tool-village forest bottom row: three similar trunks evenly spaced at ~32px (inherited from the map layout, not from the art change)",
+"tool-village oak (300-370,40-130): small checker-dither highlight patch on the upper-left crown reads slightly mechanical",
+"facilities-town/village50: some trees are layered with a lime rim where one crown overlaps another; this reads as rim light, not a seam",
+"Lone trees are a bit narrower than before; this is a stylistic change, not a breakage"]}

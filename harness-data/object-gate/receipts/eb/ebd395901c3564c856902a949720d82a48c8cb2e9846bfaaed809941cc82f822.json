@@ -1,0 +1,363 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ebd395901c3564c856902a949720d82a48c8cb2e9846bfaaed809941cc82f822",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "konbini copier",
+ "label": "modern_city_interior/konbini-copier",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper scanner/lid block",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control panel with blue/green/red indicators",
+      "rows": "15-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower paper-drawer cabinet",
+      "rows": "21-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The copier is drawn as a straight-on front view, 16 px wide, rows 6-31. Rows 7-14 are a light face with white bars and a darker line at row 10 (L=144). There is no eave shadow and no widening-then-narrowing ellipse. Rows 15-19 are a vertical control panel with indicator lights. Rows 21-30 are a drawer face with dark slots at rows 25 and 28. The only possible top is a 1-3 row strip at the very top (rows 7-9), which reads as a rim. No opening or contents are visible from above, so it does not read as a container, and it has no real top surface. This matches the red 'front elevation' and 'rim only' references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, roughly one-tile grey/white copier with a darker control panel, a paper tray and a few button dots. It shows about 10 visible tones per tile, above the hedge reference (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline leans toward a tinted blue-grey and is not a black sticker line. The body ramp has roughly 4 steps against 5-6 in the richer references, so it is a little shallow. For a compact single-tile prop it holds up beside the hedge and the simple bench and lamp, and it does not look flatter or thinner than they do.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20435
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "scanner lid / upper unit",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control panel strip with display and buttons",
+      "rows": "15-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower paper-tray unit",
+      "rows": "21-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a flat 16px-wide rectangle for rows 6-31. Every part is drawn face-on. The upper unit (rows 7-14) has a white slot at rows 8-9, a thin gray line at row 10 and a brighter white panel at rows 11-13. Row 10 is not a clear front-edge line and no dark eave shadow follows it, and the brightest rows sit below it, so rows 7-13 read as a front panel, not a top plane. Rows 15-19 are a control strip with a blue display, green and red lights and a button, all face-on. Rows 21-30 are tray fronts with dark slots. There is no ellipse, no visible interior or contents, and no roof or canopy plane. It is a copier, not a container with an opening, so the kind does not match. It reads as a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The copier is a small grey-white box with a control panel and a paper tray. Its outline is a dark blue-grey that leans toward the neighbouring material (0% near-neutral edge pixels), so it is not a sticker-style black line. The measured facts are acceptable: 10 visible tones per tile (hedge 9, stall 17, well 20) and 0% near-flat coverage. The shading is still shallow. The case has about 3-4 lightness steps (white, light grey, mid grey, dark) against Beodeul's 5-6. The whole piece uses only 13 distinct colours, against 38-40 on the stall and well. The big casing faces rely on a few banded tones with little grain, speckle or per-part highlights, and they read cleaner and flatter than the stall or well beside them. Not a clear fail on the numbers, but next to the richer references it looks thinner, so with doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21932
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper unit top band / paper slot",
+      "rows": "7-10",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper unit front face with white panel",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control panel with blue, green and red indicators",
+      "rows": "15-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower paper-tray unit with dark slots",
+      "rows": "20-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The copier is drawn as stacked vertical panels seen straight on, at a constant width of 16 across rows 6-31. Rows 7-9 are a light strip, and row 10 (L=144) is a slightly darker line. This is only a thin slot or rim, with no eave shadow beneath it. Rows 11-13 are a flat white front panel. Row 14 is a line, and rows 15-19 are a control panel with indicator lights. The lower unit (rows 20-31) is a dark drawer slot on a light face. No horizontal surface and no ellipse are visible. There is no open container and no contents are seen from above. Because of this, the kind 'container with an opening' does not fit, and the drawing is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, boxy copier. At this size I can only judge it roughly by eye, so the measured facts carry most of the weight. It has 10 visible tones per 16x16 tile, which matches the hedge (9) and sits below the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% near-neutral, so the outline is tinted and follows the material instead of being a uniform black line. The body shows roughly 4 lightness steps, with a light top, a mid body, a darker panel and a dark base. That is a little shallower than Beodeul's 5-6, but it is reasonable for a smooth plastic machine. It is not a sticker-style flat fill, and it holds up next to the simpler references (hedge, bench, lamp). Texture comes from panel details and buttons rather than grain, which suits the object. It is slightly leaner than the richest references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19606
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper scanner/lid band",
+      "rows": "7-10",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper unit front panel",
+      "rows": "11-19",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower paper-drawer unit front",
+      "rows": "21-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The copier is drawn as a flat front view, 16 px wide, rows 6-31. Rows 7-10 are a pale band with a 1-row grey line at row 10 (L=144) and a white strip at rows 8-9. That reads as a slot or glass strip, not a foreshortened top. Row 10 has no eave shadow below it, since rows 11-13 are the brightest rows (L=249). Row 14 is another thin line, and a control panel with a blue bar and green/red lights sits at rows 16-18. Below row 20 the lower unit shows dark drawer slots at rows 25 and 28, again as vertical faces. No ellipse, no interior contents and no opening are visible. At best there is a 1-2 row rim, so the main body shows no real top surface. It is also not an open container."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small grey-white copier about one tile wide. It shows a lit top, a control panel with button dots, and drawer or paper-tray divisions below. The body has about 4 lightness steps (highlight, light, mid, dark), a little fewer than the 5-6 on the references' main materials. The outline is a dark, slightly blue-grey version of the body, not a uniform black line, and the measured near-neutral share of dark edge pixels is 0%. That matches the hedge and cheese stall and differs from the lamp, which is 100% neutral. Near-flat coverage is 0%, so there are no flat fills. At 10 visible tones per tile it is on par with the hedge (9), though below the stall (17) and well (20). It is a simple modern appliance, so it is naturally less intricate than the stall or well. A careful artist would accept it next to the references without it looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19834
+  }
+ ],
+ "decidedAt": "2026-10-21T01:38:23.362Z",
+ "cells": {
+  "16": [
+   "a2d923d829bbbbdd",
+   "b2b620b1a60d8bb6"
+  ],
+  "24": [
+   "254369e7060f54b9",
+   "33f40d707be7d9bd",
+   "359f46504bd484e1",
+   "8c9566fe7c695d5d",
+   "8f1c684eb7029d64",
+   "90083e68fae97466",
+   "922729877dd1a05b",
+   "9c412c5ed71059de",
+   "aa6fe2017a06cc41",
+   "cbe4c80c43845808",
+   "e7d9754a0ae15bef",
+   "f1ad0c36b7b5d5eb"
+  ],
+  "32": [
+   "3b5a3b5eb75cd1a6",
+   "4184ad91849ac198",
+   "b2337848a41bcd52"
+  ],
+  "48": [
+   "5361c4e12c577211",
+   "6ccc2b9f1c7ddb29",
+   "735de5b91ea41fb4",
+   "ae97ed48f36798f9",
+   "ecd1cc7c1b7970dd",
+   "f1662e99b6dd3202"
+  ]
+ }
+}

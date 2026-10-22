@@ -12,19 +12,17 @@
 // 옮기기·닫기는 톱바 메뉴에서 처리한다.
 //
 // 소유권 — 한 명령의 집은 하나다. 두 번째 표면은 첫 번째가 그 모드에서 렌더되지 않을 때만 둔다.
-//  • 패널 도크 멤버십(타일·맵) = 이 메뉴가 도크 토글을 소유한다.
+//  • 왼쪽 패널 전환은 활동 막대(aiSidebarWorkspace.ts)가 소유한다. 이 메뉴의 「패널」 절은 그 막대의
+//    단추를 그대로 비춘다 — 체크 = 지금 펼쳐져 보이는 패널, 누르면 막대 단추를 누른 것과 같다.
+//    예전 절은 도크 멤버십(타일·맵)을 토글했는데, 타일은 작업 호스트라 늘 다시 붙고 맵은 막대로
+//    옮겨 가 도크에 안 붙어서 체크를 꺼도 화면이 그대로였고, 접힌 도크도 「열림」으로 보였다
+//    (2026-10-21 UI 감사 02-leftdock-02·03·09).
 // 초보/표준/전문가 편집 모드 라디오는 2026-09-27 에 모드와 함께 없앴다 — 편집기 화면은 하나다.
 
 import { makeSvgIcon } from "@/editor/panels/tileToolbarIcons";
 import { uiLabel } from "@/editor/uiCopy";
-import { allPanels, type DockZone, type PanelId } from "@/editor/workspace/panelRegistry";
-import { dockZoneHasHost } from "@/editor/workspace/leftDockPanels";
-import { dockOf, type WorkspaceLayout } from "@/editor/workspace/workspaceLayout";
-import { getWorkspaceLayout, moveWorkspacePanel, toggleWorkspacePanel } from "@/editor/workspace/workspaceStore";
 import { el } from "@/util/dom";
-import { getLocale, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES } from "@/i18n";
-
-const ZONE_LABEL: Record<DockZone, string> = { left: "왼쪽", right: "오른쪽", bottom: "아래" };
+import { getLocale, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES, sourceAttributeOf } from "@/i18n";
 
 /**
  * 「보기 ▾」 버튼과 그 메뉴. `.oprn-menu-popup` 이 형제 기준으로 위치를 잡으므로 감싸면 CSS 를
@@ -67,6 +65,14 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
     menu.hidden = true;
     menu.classList.remove("open");
     document.removeEventListener("pointerdown", onOutsidePointerDown, true);
+    document.removeEventListener("keydown", onEscapeKey, true);
+  };
+  // Esc 로 닫고 포커스를 「보기」 버튼으로 돌린다 — 바깥 클릭만 닫히면 키보드 사용자가 갇힌다.
+  const onEscapeKey = (event: KeyboardEvent): void => {
+    if (event.key !== "Escape") return;
+    event.stopPropagation();
+    close();
+    button.focus?.();
   };
   const onOutsidePointerDown = (event: Event): void => {
     const target = event.target;
@@ -79,7 +85,7 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
     menu.classList.add("open");
     // 메뉴는 톱바가 그릴 때 한 번만 만들어진다. 언어·패널 구성을 바꿔도 톱바는 다시 그려지지 않으므로
     // 열 때마다 현재 상태로 체크/라디오를 맞춘다.
-    syncPanelItems(menu, close);
+    syncPanelItems(menu, localeHeading, close);
     syncLocaleItems(menu);
     const rect = button.getBoundingClientRect?.();
     if (rect) {
@@ -91,6 +97,7 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
       menu.style.top = `${Math.round(rect.bottom + 4)}px`;
     }
     document.addEventListener("pointerdown", onOutsidePointerDown, true);
+    document.addEventListener("keydown", onEscapeKey, true);
   };
   button.addEventListener("click", (event) => {
     event.stopPropagation();
@@ -98,13 +105,10 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
     else open();
   });
 
-  const layout = getWorkspaceLayout();
   menu.append(el("div", { class: "workspace-menu-group", text: "패널" }));
-  for (const panel of allPanels().filter((candidate) => candidate.id !== "assistant")) {
-    menu.append(renderPanelRow(panel.id, panel.title, layout, close));
-  }
   // 언어 항목은 예전 편집 모드 라디오의 모양(workspace-ui-mode-*)을 그대로 빌려 쓴다.
-  menu.append(el("div", { class: "workspace-menu-group", text: "언어" }));
+  const localeHeading = el("div", { class: "workspace-menu-group", text: "언어" });
+  menu.append(localeHeading);
   for (const locale of SUPPORTED_LOCALES) {
     const active = getLocale() === locale;
     // 언어 이름은 그 언어로 쓴다 — 못 읽는 언어로 바뀐 화면에서도 자기 언어를 찾을 수 있어야 한다.
@@ -138,66 +142,45 @@ function syncLocaleItems(menu: HTMLElement): void {
     item.setAttribute("aria-checked", active ? "true" : "false");
   });
 }
-function syncPanelItems(menu: HTMLElement, close: () => void): void {
-  const layout = getWorkspaceLayout();
-  for (const panel of allPanels().filter((candidate) => candidate.id !== "assistant")) {
-    const existing = menu.querySelector<HTMLElement>(`[data-testid="workspace-panel-row-${panel.id}"]`);
-    if (existing) existing.replaceWith(renderPanelRow(panel.id, panel.title, layout, close));
-  }
+/** 왼쪽 활동 막대의 패널 단추들. 「검사」는 패널이 아니라 명령이라 aria-pressed 가 없어 빠진다. */
+function leftActivityPaneButtons(): HTMLElement[] {
+  const bar = document.querySelector<HTMLElement>('[data-testid="left-activity-bar"]');
+  if (!bar) return [];
+  return Array.from(bar.querySelectorAll<HTMLElement>(".left-activity-item"))
+    .filter((button) => button.getAttribute("aria-pressed") !== null);
 }
 
+/** 메뉴를 열 때마다 막대의 지금 상태로 다시 그린다 — 접힌 도크면 체크가 하나도 없다. */
+function syncPanelItems(menu: HTMLElement, localeHeading: HTMLElement, close: () => void): void {
+  menu.querySelectorAll(".workspace-panel-row").forEach((row) => row.remove());
+  for (const paneButton of leftActivityPaneButtons()) menu.insertBefore(renderPanelItem(paneButton, close), localeHeading);
+}
 
-/**
- * 패널 한 줄 = 표시 토글 + 도크 이동 칩.
- */
-function renderPanelRow(id: PanelId, title: string, layout: WorkspaceLayout, close: () => void): HTMLElement {
-  const zone = dockOf(layout, id);
-  const row = el("div", { class: "workspace-panel-row", dataset: { testid: `workspace-panel-row-${id}` } });
+function renderPanelItem(paneButton: HTMLElement, close: () => void): HTMLElement {
+  const open = paneButton.getAttribute("aria-pressed") === "true";
+  // 막대 단추의 이름은 DOM 번역이 바꿔 놓는다 — 원문을 읽어 이 메뉴도 같은 번역을 거치게 한다.
+  const title = sourceAttributeOf(paneButton, "aria-label") ?? paneButton.getAttribute("aria-label") ?? "";
+  const pane = (paneButton.dataset.testid ?? "").replace(/^sidebar-/, "");
   const toggle = el("button", {
-    class: `oprn-menu-command workspace-panel-toggle${zone ? " is-active" : ""}`,
+    class: `oprn-menu-command workspace-panel-toggle${open ? " is-active" : ""}`,
     attrs: {
       type: "button",
       role: "menuitemcheckbox",
-      "aria-checked": zone ? "true" : "false",
-      title: zone ? `${title} 패널 닫기` : `${title} 패널 열기`,
+      "aria-checked": open ? "true" : "false",
+      title: open ? `${title} 패널 닫기` : `${title} 패널 열기`,
     },
-    dataset: { testid: `workspace-panel-toggle-${id}` },
+    dataset: { testid: `workspace-panel-toggle-${pane}` },
     children: [
-      el("span", { class: "workspace-panel-check", attrs: { "aria-hidden": "true" }, children: zone ? [makeSvgIcon("check")] : [] }),
+      el("span", { class: "workspace-panel-check", attrs: { "aria-hidden": "true" }, children: open ? [makeSvgIcon("check")] : [] }),
       el("span", { class: "workspace-panel-title", text: title }),
     ],
     on: {
       click: (event) => {
         event.stopPropagation();
-        toggleWorkspacePanel(id);
-        syncPanelItems(row.parentElement ?? row, close);
         close();
+        paneButton.click();
       },
     },
   });
-  row.append(toggle);
-  // 이동 칩은 **호스트가 실제로 마운트된 zone 만** 제시한다. right/bottom 도크를 아무도
-  // 마운트하지 않는 동안 칩을 보여주면 눌러도 아무 일이 없고, 그 뒤 메뉴는 이동이 일어난
-  // 척한다(계획서 §1-1 B-2).
-  for (const target of ["left", "right"] as const) {
-    if (!zone || zone === target) continue;
-    if (!dockZoneHasHost(target)) continue;
-    row.append(
-      el("button", {
-        class: "workspace-panel-dock-chip",
-        text: ZONE_LABEL[target],
-        attrs: { type: "button", title: `${title} 패널을 ${ZONE_LABEL[target]} 도크로 옮긴다` },
-        dataset: { testid: `workspace-panel-dock-${id}-${target}` },
-        on: {
-          click: (event) => {
-            event.stopPropagation();
-            moveWorkspacePanel(id, target);
-            syncPanelItems(row.parentElement ?? row, close);
-            close();
-          },
-        },
-      }),
-    );
-  }
-  return row;
+  return el("div", { class: "workspace-panel-row", dataset: { testid: `workspace-panel-row-${pane}` }, children: [toggle] });
 }

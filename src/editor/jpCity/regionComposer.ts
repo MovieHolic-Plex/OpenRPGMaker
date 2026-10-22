@@ -5,7 +5,8 @@
 import type { JpRegion, JpRegionCategory, JpRegionOp, JpZoneHint } from "./japaneseRegionsCatalog";
 
 export interface JpRegionStep {
-  readonly tool: "fill_region" | "stamp_object";
+  /** paint_forest: args.kinds(칸마다 0 숲 아님·1 활엽·2 대숲·3 벚나무·4 삼나무·5 단풍·6 소나무·7 신사 섞인 숲(소나무+단풍)·8 산비탈 섞인 숲(삼나무+활엽), 길이 W*H; 6~8 은 r3 오토타일이 있을 때만)·args.seed — forestPainter.paintJpForest 가 칠한다. */
+  readonly tool: "fill_region" | "stamp_object" | "paint_forest";
   readonly args: Record<string, unknown>;
   readonly note: string;
 }
@@ -184,7 +185,7 @@ function isTreeOrBushKit(id: string): boolean {
     || k === "jp-rg-sugi"
     || k === "jp-rg-pine"
     || k === "jp-rg-maple"
-    || k === "jp-rg-bamboo-grove"
+    || k === "jp-rg-bamboo-grove" || k === "jp-rg-bamboo-grove-b" || k === "jp-rg-bamboo-clump"
     || k.startsWith("jp-tsutsuji")
   );
 }
@@ -208,7 +209,7 @@ export const ALLOWED_KITS: Readonly<Record<JpRegionCategory, readonly RegExp[]>>
     /^jp-(monthly-parking|fumikiri-|rail-|pole|pole-wood|gate|gatepost|carport|pots|monohoshi|keijiban|gomi-box|bike-shelter|jungle-gym|tetsubo|hokora-jizo|jizo|torii|tsutsuji)/,
     /^jp-prop-(wall-|gate-|stairs-|tree-|vending-|vend-|bike-|car-|bus|train|catenary-pole|curve-mirror|post-box|stop-sign|lantern-post|stone-lantern|ricksha-cart|bench|lamp-post|planter|pot|bollard|cat-|slide|swing|sandbox|a-frame)/,
     /^jp-lot-(slide|sandbox|clock|fountain|planter|veg)$/,
-    /^jp-rg-(ishigaki|fishing-boat|pine|maple|sugi|bamboo-grove)$/,
+    /^jp-rg-(ishigaki|fishing-boat|pine|maple|sugi|bamboo-grove|bamboo-grove-b|bamboo-clump)$/,
     /^jp-(gnd-|water-|bridge-|foot-shadow)/,
   ],
   campus_civic: [
@@ -219,18 +220,18 @@ export const ALLOWED_KITS: Readonly<Record<JpRegionCategory, readonly RegExp[]>>
     /^jp-(goal-l|goal-r|ball-net|chorei-dai|flagpoles|fujidana|biotope|gakkyuen|souko|ninomiya|kadan|tetsubo|jungle-gym|bike-shelter|keijiban|bus-stop|torii|pole|pole-wood|pots|monohoshi|gomi-box|tsutsuji)/,
     /^jp-lot-(clock|fountain|kiosk|planter|slide|sandbox)$/,
     /^jp-prop-(wall-|gate-|stairs-|tree-|bench|lamp-post|planter|hachiko|bus|car-|bike-|vending-|vend-|chozuya|censer|nakamise-|string-lanterns4|stone-lantern|lantern-post|nobori-|swing|sandbox)/,
-    /^jp-rg-(ishigaki|shoro|yatai|sugi|pine|maple|bamboo-grove)$/,
+    /^jp-rg-(ishigaki|shoro|yatai|sugi|pine|maple|bamboo-grove|bamboo-grove-b|bamboo-clump)$/,
     /^jp-(gnd-|water-|bridge-|foot-shadow)/,
   ],
   sacred_historic: [
     /^jp-bldg-shrine-haiden$/,
     /^jp-prop-(honden|pagoda5|sanmon6|kaminarimon|hozomon|chozuya|censer|nakamise-|stone-lantern|lantern-post|string-lanterns4|wall-tsuiji|wall-hedge|wall-board|stairs-stone8|stairs-stone15|tree-|bench|nobori-)/,
     /^jp-(torii|hokora-jizo|jizo|tsutsuji)/,
-    /^jp-rg-(ishigaki|tenshu|shoro|stone-ruin|moss-buddha|wakimizu|doshirube|lodge|sugi|pine|maple|bamboo-grove)$/,
+    /^jp-rg-(ishigaki|tenshu|shoro|stone-ruin|moss-buddha|wakimizu|doshirube|lodge|sugi|pine|maple|bamboo-grove|bamboo-grove-b|bamboo-clump)$/,
     /^jp-(gnd-|water-|bridge-|foot-shadow)/,
   ],
   mountain_nature: [
-    /^jp-rg-(bamboo-grove|sugi|pine|maple|ishigaki|stone-ruin|moss-buddha|waterfall|tsuribashi|ropeway|lodge|tunnel|wakimizu|doshirube|mujin-eki)$/,
+    /^jp-rg-(bamboo-grove|bamboo-grove-b|bamboo-clump|sugi|pine|maple|ishigaki|stone-ruin|moss-buddha|waterfall|tsuribashi|ropeway|lodge|tunnel|wakimizu|doshirube|mujin-eki)$/,
     /^jp-prop-(stairs-stone8|stairs-stone15|bench|stone-lantern|wall-hedge|wall-board|train8-g)/,
     /^jp-train-car-[ab]$/,
     /^jp-(hokora-jizo|jizo|torii|tsutsuji)/,
@@ -241,7 +242,7 @@ export const ALLOWED_KITS: Readonly<Record<JpRegionCategory, readonly RegExp[]>>
     /^jp-bldg-(sento|conbini|market-hall|warehouse|factory)$/,
     /^jp-bldg-shop-(wagashi|soba|izakaya|sake|fish|sushi|teishoku|cafe|dagashi|tabako|flower)$/,
     /^jp-recipe-(machiya-izakaya|l-machiya-annex)$/,
-    /^jp-rg-(rotenburo|yukemuri|ishigaki|kakashi|hazakake|sunflower|tsuribashi|wakimizu|doshirube|lighthouse|fishing-boat|tetrapod|yatai|mujin-eki|sugi|pine|maple|bamboo-grove)$/,
+    /^jp-rg-(rotenburo|yukemuri|ishigaki|kakashi|hazakake|sunflower|tsuribashi|wakimizu|doshirube|lighthouse|fishing-boat|tetrapod|yatai|mujin-eki|sugi|pine|maple|bamboo-grove|bamboo-grove-b|bamboo-clump)$/,
     /^jp-prop-(lantern-post|stone-lantern|ricksha-cart|wall-tsuiji|wall-block|wall-hedge|wall-board|stairs-stone8|tin-stall-|van-white|ad-truck|car-|bus|train8-g|lamp-post|bench|vending-|vend-|tree-|catenary-pole|curve-mirror|stop-sign)/,
     /^jp-(in-ht-bamboo-fence|fumikiri-|rail-|bus-stop|pole|pole-wood|gate|gatepost|pots|monohoshi|gomi-box|bike-shelter|souko|lot-veg|hokora-jizo|jizo|tsutsuji)/,
     /^jp-(gnd-|water-|bridge-|foot-shadow)/,
@@ -264,6 +265,8 @@ export function planJpRegionScene(input: {
   readonly height: number;
   readonly seed: number;
   readonly kitSize: (kitId: string) => { readonly w: number; readonly h: number } | undefined;
+  /** 칩셋에 붓으로 칠하는 숲 오토타일 r3(jp-forest3-*)이 있는가 — 있으면 FOREST 구획을 paint_forest 로 칠한다. */
+  readonly forestAutotile?: boolean;
 }): JpRegionPlan {
   const { region, mapId, width: W, height: H, seed, kitSize } = input;
   if (region.engine.kind !== "scene") throw new Error(`${region.id} 은 장면 지역이 아니다(engine ${region.engine.kind})`);
@@ -904,6 +907,12 @@ export function planJpRegionScene(input: {
   }
 
   function fillZones(): void {
+    // 숲 팩(jp_forest_pack)이 구워진 칩셋이면 FOREST 구획을 이어지는 수관으로 덮는다(paint_forest 한 단계):
+    // 마스크 → 수관 오토타일 → 하늘선 → 수관 머리 → 줄기 띠. 한 그루 키트 흩뿌리기(아래)는 숲 팩이 없는 옛 칩셋에서만 쓴다.
+    if (input.forestAutotile || kitSize("jp-forest-bl-sky-0")) {
+      paintForestZones();
+      return;
+    }
     // A3 & A4: 7.5-disc 잔디 산포는 완전히 삭제하고, FOREST 구획에만 겹침 수관 군락(min dist 2.2 + 연속 노이즈 수종)을 채운다.
     const forestPool = region.id === "bamboo_mountain_trail"
       ? ["rg-bamboo-grove", "rg-sugi"]
@@ -946,14 +955,20 @@ export function planJpRegionScene(input: {
       forestCandidates[j] = tmp;
     }
 
+    // 대숲은 한 덩이 키트만 되풀이하면 같은 꼴이 기둥처럼 쌓인다(R4 VQA) — 넓은 덩이·좁은 덩이·작은 무리를 섞는다.
+    const bambooVariant = (): string => {
+      const r = rand();
+      return r < 0.5 ? "rg-bamboo-grove" : r < 0.82 ? "rg-bamboo-grove-b" : "rg-bamboo-clump";
+    };
     const pickSpeciesAt = (x: number, y: number): string => {
       const n = Math.sin(x * 0.21 + seed * 0.9) + Math.cos(y * 0.19 - seed * 0.6) + 0.5 * Math.sin((x - y) * 0.13 + seed * 0.4);
       if (region.id === "bamboo_mountain_trail") {
         const isWest = x + n * 2.5 < W * 0.48;
-        return isWest ? (rand() < 0.88 ? "rg-bamboo-grove" : "rg-sugi") : (rand() < 0.88 ? "rg-sugi" : "rg-bamboo-grove");
+        return isWest ? (rand() < 0.88 ? bambooVariant() : "rg-sugi") : (rand() < 0.88 ? "rg-sugi" : bambooVariant());
       }
       const idx = Math.max(0, Math.min(forestPool.length - 1, Math.floor(((n + 2.5) / 5.0) * forestPool.length)));
-      return forestPool[idx]!;
+      const id = forestPool[idx]!;
+      return id === "rg-bamboo-grove" ? bambooVariant() : id;
     };
 
     const pendingTrees: { kit: string; x: number; y: number; w: number; h: number }[] = [];
@@ -965,9 +980,11 @@ export function planJpRegionScene(input: {
       if (!isForestTreeAllowed(x, y, s.w, s.h)) continue;
 
       // X 열이 겹치는 나무끼리는 밑동(y+h) 높이가 최소 3칸 이상 차이나야 앞 나무 수관이 뒤 나무 줄기만 자연스럽게 덮는다.
+      // 같은 x 에서 바로 앞뒤(밑동 차 6칸 미만)로 쌓으면 같은 나무가 세로 기둥처럼 줄 선다(R4 VQA) — 그 자리는 옆으로 어긋난 후보에 넘긴다.
       const clashesWithPlaced = pendingTrees.some((pt) => {
         const xOverlap = x < pt.x + pt.w && x + s.w > pt.x;
-        if (xOverlap) return Math.abs((y + s.h) - (pt.y + pt.h)) < 3;
+        const dBase = Math.abs((y + s.h) - (pt.y + pt.h));
+        if (xOverlap) return dBase < 3 || (x === pt.x && dBase < 6);
         return false;
       });
       if (clashesWithPlaced) continue;
@@ -1003,6 +1020,88 @@ export function planJpRegionScene(input: {
       stampedRecords.push({ kit: t.kit, x: t.x, y: t.y, w: t.w, h: t.h, fromOp: "fillZone" });
       placed++;
     }
+  }
+
+  function paintForestZones(): void {
+    // 마스크: 숲 구획 중 키트·길·물·비움 칸과 그 둘레 한 칸(숲 속 소품·건물로 가는 발 디딜 곳)을 뺀다.
+    const near = new Uint8Array(W * H);
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const i = y * W + x;
+        if (!used[i] && !path[i] && !wet[i]) continue;
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+          const xx = x + dx, yy = y + dy;
+          if (xx >= 0 && yy >= 0 && xx < W && yy < H) near[yy * W + xx] = 1;
+        }
+      }
+    }
+    const kinds = new Array<number>(W * H).fill(0);
+    const bambooPool = region.id !== "gorge_waterfall_trail";   // 옛 forestPool 과 같은 규칙: 계곡만 대숲이 없다
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const i = y * W + x;
+        if (surface[i] !== JpSurface.FOREST || clearMask[i] || near[i]) continue;
+        kinds[i] = 1;
+      }
+    }
+    // 폭 1칸 숲 기둥(좌우가 다 비어 있는 칸)은 지운다 — 수관이 막대처럼 선다. 두 번 깎는다.
+    for (let pass = 0; pass < 2; pass++) {
+      const drop: number[] = [];
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          const i = y * W + x;
+          if (!kinds[i]) continue;
+          const l = x > 0 && kinds[i - 1], r = x + 1 < W && kinds[i + 1];
+          if (!l && !r) drop.push(i);
+        }
+      }
+      for (const i of drop) kinds[i] = 0;
+    }
+    // 숲 덩이(4방 연결)마다 한 종류: 대숲 산길은 서쪽 덩이·서쪽 칸이 대숲, 다른 지역은 덩이 노이즈로 가끔 대숲
+    const seen = new Uint8Array(W * H);
+    let comp = 0;
+    for (let y0 = 0; y0 < H; y0++) {
+      for (let x0 = 0; x0 < W; x0++) {
+        if (!kinds[y0 * W + x0] || seen[y0 * W + x0]) continue;
+        const cells: number[] = [];
+        const st = [y0 * W + x0];
+        seen[y0 * W + x0] = 1;
+        while (st.length) {
+          const i = st.pop()!;
+          cells.push(i);
+          const x = i % W, y = (i - x) / W;
+          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+            const xx = x + dx, yy = y + dy, j = yy * W + xx;
+            if (xx >= 0 && yy >= 0 && xx < W && yy < H && kinds[j] && !seen[j]) { seen[j] = 1; st.push(j); }
+          }
+        }
+        if (cells.length < 6) {                 // 자투리(6칸 미만)는 숲 바닥으로 둔다
+          for (const i of cells) kinds[i] = 0;
+          continue;
+        }
+        comp++;
+        if (region.id === "bamboo_mountain_trail") {
+          // 서쪽은 대숲, 동쪽은 삼나무 — 경계 열 한 줄은 비워 두 숲이 서로 가장자리를 갖게 한다
+          const n = Math.sin(seed * 0.9) * 2.5;
+          for (const i of cells) {
+            const x = i % W;
+            const edge = W * 0.48 - n;
+            kinds[i] = Math.abs(x - edge) < 0.5 ? 0 : x < edge ? 2 : 4;   // 동쪽은 삼나무(옛 흩뿌리기와 같은 짝)
+          }
+        } else {
+          // 덩이마다 수종: 산·신사·절 숲은 삼나무가 주(사토야마 杉林), 봄은 벚나무 숲, 가끔 대숲, 나머지는 활엽(느티나무·잡목)
+          const q = rand();
+          const sugiBias = /mountain|shrine|temple|gorge|forest_railway|jizo|ropeway|ruins/u.test(region.id) ? 0.55 : 0.2;
+          const sakuraBias = region.season === "spring" ? 0.35 : region.id.includes("castle") || region.id.includes("park") ? 0.25 : 0.05;
+          const broad = region.season === "autumn" ? 5 : 1;   // 가을 지역의 활엽 숲은 단풍(계약 계절 규칙: 활엽수 잎을 단풍 램프로)
+          const k = q < sugiBias ? 4 : q < sugiBias + sakuraBias ? 3 : (bambooPool && cells.length >= 12 && q < sugiBias + sakuraBias + 0.2) ? 2 : broad;
+          for (const i of cells) kinds[i] = k;
+        }
+      }
+    }
+    if (!kinds.some((k) => k > 0)) return;
+    for (let i = 0; i < W * H; i++) if (kinds[i]) used[i] = 1;
+    stampSteps.push({ tool: "paint_forest", args: { mapId, kinds, seed, components: comp }, note: "forest" });
   }
 
   function validatePlan(): { violations: string[]; section4: JpRegionSection4Report } {

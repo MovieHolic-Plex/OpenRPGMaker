@@ -1,0 +1,326 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1b7c28a2835dc32aacbcbe826de431c82a17b738e4abbc7a36b45d1313849b6b",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "hosp anesthesia",
+ "label": "modern_city_interior/hosp-anesthesia",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 19,
+  "darkV5": 36,
+  "nearBlackEdge": 0.88,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "monitor/screen placed on top of the cabinet",
+      "rows": "0-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main cabinet top band",
+      "rows": "12-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-16"
+     },
+     {
+      "part": "main cabinet front face with dark drawer/window panels and lower compartments",
+      "rows": "16-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body (rows 11-30, width 14) starts with a light top band at rows 12-14 (L=244 then 224). It ends in a lighter front-edge line at row 15 (#c6cad4), followed by a darker row 16 (#8d9095) that acts as eave shadow. Below is a front face of about 15 rows with dark panels at rows 17-22, a light divider line at row 23, and lower compartments at rows 24-30. The narrower monitor at rows 0-10 (width 10) sits on the top and is decor. The top band is shallow but has an edge line and shadow, so it reads as a top surface rather than only a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, tall anesthesia cart with a monitor on top and a pale body with drawers. It has about 4 lightness steps on the body and screen ramps, slightly fewer than the 5-6 on the stall and well references. On the measured facts it matches or beats the comparable references. It has 19 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, with no large single-colour areas, and the drawers, screen and panel details add grain. Only 0% of the dark edge pixels are neutral, so the outline leans toward the tint of the neighbouring material rather than a black sticker line, as in the hedge and cheese-stall references. The piece is small and fairly clean, but it does not look thinner or flatter than the references at the same scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16644
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "monitor on top of cabinet",
+      "rows": "0-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cabinet top surface (light band)",
+      "rows": "12-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16"
+     },
+     {
+      "part": "front face with drawers and compartments",
+      "rows": "16-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The monitor on rows 0-10 is narrower (10 px against 14 px) and sits on the cabinet, so it counts as decor. The main body is the 14 px wide cabinet on rows 11-30. Its top is a light band on rows 12-15 (L 244, 224, 224, 202), closed by a lighter edge line at row 15 and a darker gray shadow row at row 16 (L 144). Below that is a front face of about 15 rows with dark drawer or door panels on rows 17-22, a light divider line at row 23, and lower compartments on rows 24-30. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a tall anesthesia cart with a monitor on top and a cabinet with drawers below. It is drawn at the same scale as the references. The measured facts support it. It has 19 visible tones per full tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, and the stall reference has 13%. The near-neutral share of dark edge pixels is 0%, so the outline is tinted (dark blue/teal beside the body), not a neutral black sticker line. By eye, the monitor screen, panel buttons and drawer fronts are each separated by value steps rather than left as one flat body. The cabinet reads as roughly 4 lightness steps, slightly shallower than the 5-6 on the references' main materials. The piece is small and the board is low resolution, so some detail is hard to judge. Nothing reads as a flat fill or a uniform black outline, and it would sit acceptably next to the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16476
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "monitor on top of the cabinet",
+      "rows": "0-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cabinet top surface (light band)",
+      "rows": "12-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-16"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The monitor at rows 0-10 is 10 px wide and sits on the 14 px wide body, so it counts as decor. The main body starts at row 11 with an outline. Rows 12-15 are a light band that shades from #f3f4f7 to #dde0e7 to #c6cad4, ending in a front-edge line at row 15. Row 16 (#8d9095) is a darker eave shadow, and below it the front face runs rows 16-30 with panels, a shelf line at row 23 and bottles at rows 25-30. This matches the 'cabinet: top 5 + edge + eave' reference. The 4-row band is a bit thin, but the edge line plus shadow make it a top surface rather than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small anesthesia cart with a monitor on top and cabinet panels below. It is only about 13x20 source pixels, so I judged it by eye as well as by the numbers. It measures 19 visible tones per full tile, on par with the stall (17) and well (20) and well above the hedge (9). Near-flat coverage is 0% and no 5x5 block is a flat fill. The dark edge pixels carry a tint (0% near-neutral), unlike the lamp's neutral outline, so the outline reads as a dark tone of the neighbouring material rather than a black sticker line. The monitor screen, panel inset lines and drawer/handle details give several tonal steps, though the ramps are slightly shallower than the roofed well or the stall. It would sit acceptably next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16513
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "monitor/screen unit on top of the cabinet",
+      "rows": "0-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main cabinet top (light worktop band)",
+      "rows": "12-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16"
+     },
+     {
+      "part": "front face with panels/drawers and lower bottle bay",
+      "rows": "16-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main cabinet (rows 11-30, width 14) starts with a light band at rows 12-14 (L 244 and 224). This band ends in a front-edge line at row 15 (L=202), followed by a grey shade row at row 16 (L=144). Below it is a front face of about 15 rows with two panels (rows 17-22), a divider line at row 23 and a lower bay (rows 24-30). The 10-wide monitor on top (rows 0-10) is a screen placed on the top, so it counts as decor. The structure matches the green 'cabinet: top + edge + eave' reference, but the top band is only 4 rows deep."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, roughly 1x2-tile standing machine: a dark monitor head with a screen and a pale cabinet with drawer and panel details. It measures 19 visible tones per full tile, which sits between the cheese stall (17) and the roofed well (20) and well above the hedge (9). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outlines lean toward the neighbouring material tone rather than a black sticker line, and forms are separated partly by value. Each material ramp has about 4 steps, a little under Beodeul's 5-6, but the panel detail, screen and drawer marks give grain and variation. Next to the references it does not look thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16145
+  }
+ ],
+ "decidedAt": "2026-10-21T01:38:23.340Z",
+ "cells": {
+  "16": [
+   "14eb30579feba7dc",
+   "61c7f3a9197a21c9"
+  ],
+  "24": [
+   "2676654e197c7eef",
+   "3fe2455c9e47e6fc",
+   "5243d55b7e69a9c2",
+   "5a6a07b7ab703918",
+   "5ea76956ea3800eb",
+   "6547ce3d9da5216b",
+   "b83f9cc3a1994bae",
+   "b9a4023e3e519442",
+   "cd47e54805f61b49",
+   "e8b74f2a621ef51f",
+   "efb42ac8d36397d6",
+   "fd194a3d2638e620"
+  ],
+  "32": [
+   "734f3491b4f4b85d",
+   "7f169b3c09ae55c9",
+   "84e77ce451205169"
+  ],
+  "48": [
+   "2f0dcc9c58498f05",
+   "4de2e5fa56cd6c24",
+   "605f4ebea4e149e7",
+   "6d51d50ff7d5c34c",
+   "74aac10bd2ea212b",
+   "c844881b8f63d6f1"
+  ]
+ }
+}

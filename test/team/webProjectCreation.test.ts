@@ -1,7 +1,9 @@
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, expect, it } from 'vitest';
+import { afterEach, expect, it, vi } from 'vitest';
+// 사람 팀 협업은 꺼져 있다(2026-10-21). 이 파일은 잠든 팀 코드의 계약을 지키므로 스위치를 켠 채로 검사한다.
+vi.mock("../../electron/shared/teamCollab", () => ({ TEAM_COLLAB_ENABLED: true, TEAM_COLLAB_DEPRECATION_NOTE: "" }));
 import { createBlankProject } from '@/project/defaults/blankProject';
 import { serialize } from '@/project/io';
 import { startLocalProjectServer, type LocalProjectServer } from '../../electron/serve/runtime';

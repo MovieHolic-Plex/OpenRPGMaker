@@ -1,0 +1,340 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e1fe1b83384675668183f772d2e788c0839a575aa6dea25ab54f9cee48b94eac",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "lecture podium",
+ "label": "modern_city_interior/lecture-podium",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 33,
+  "nearBlackEdge": 0.21,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "podium top slab",
+      "rows": "7-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "monitor/screen and microphone arm on top",
+      "rows": "2-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The podium body is 16px wide from row 7. Rows 7-12 are a tan top surface (#bc9250) with scuffs. Row 13 is a lighter front-edge line (#cba76c), and rows 14-15 are darker eave shadow (#96623a, #533020). Rows 16-31 are a vertical front face with a recessed panel, an emblem and a base molding, which makes 16 front-face rows. The dark monitor and mic arm above row 7 stand on the top and count as decor. The top is 6 rows deep, more than a 1-2 row rim, so it reads like the green cabinet reference (top plus edge plus eave)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small podium: a wooden body with a crest panel and a dark lectern top. It has 9 visible tones per 16x16 tile, equal to the hedge reference (9). That is below the stall (17) and well (20), but those are much larger, more complex props. Near-flat coverage is 0%, so there are no big flat fills, and the body and crest panel show tonal variation. Only 24% of dark edge pixels are near-neutral, so the outline mostly leans tinted brown rather than being a uniform black sticker line. It has about 4 wood and gold steps against roughly 5 on the references, which is slightly shallow. Its total of 13 colours is in line with the bench and lamp (14 each). A careful artist would probably accept it next to the bench and hedge without it looking noticeably flatter, though it is a little less rich than the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16094
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "podium top (desk surface)",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "podium front face with emblem panel and base",
+      "rows": "14-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark screen/monitor on top",
+      "rows": "2-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gooseneck microphone arm on right",
+      "rows": "3-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a podium. Rows 8-12 are a 5-row light tan top surface that is 16 px wide. Row 13 is a lighter 1-row front-edge line (#cba76c). Rows 14-15 are darker eave shadow (#96623a, #533020). Below that, rows 14-31 are the front face, with a framed panel and an emblem, and a wider base at rows 28-30. The dark screen on top (rows 2-7) and the microphone arm on the right are decor placed on the desk top, and they are not counted as the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 9 visible tones per full tile, the same as prop-hedge, which is the closest single-material solid reference. It is below the well (20) and the cheese stall (17), which are more complex pieces. Near-flat coverage is 0%, so there are no large flat fills. Only 24% of its dark edge pixels are neutral, so the outline mostly leans dark brown beside the wood and is not a uniform black sticker line. The wood body is split into a light panel, a mid body, shaded sides and a dark base, with an emblem and a top fixture adding detail. That gives about 4 wood steps against the references' 5-6, so shading is a little shallower and the grain is modest. Total colour count is low (13), but the references for thin or simple props are similar (14). A careful artist would probably accept it next to the references without it looking noticeably flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24665
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "podium top (wood lectern surface)",
+      "rows": "7-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "screen/monitor on top",
+      "rows": "2-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "microphone arm on right",
+      "rows": "6-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front panel with emblem and base",
+      "rows": "14-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The podium body is 16 px wide from row 7. Rows 7-12 are a tan wood top with lighter speckles. Row 13 (#cba76c) is a lighter front-edge line, followed by darker eave shadow in rows 14-15 (#96623a, #533020). Below is a framed front panel with an emblem, rows 14-27, and a wider base in rows 28-31, giving about 18 rows of front face. The dark screen above (rows 2-7) and the microphone arm on the right are decor on the counter top and are not the main body. The top band of about 7 rows plus a front face of 18 rows reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small wooden lectern with a crest panel and a slanted top. Its wood has about 4 lightness steps: a lit top edge, mid panel, shadow side and a dark base. The references use 5-6. The measured facts support it: 9 visible tones per tile matches the hedge (9) and is below the stall (17) and well (20). Near-flat coverage is 0%, and there are no 5x5 single-colour blocks, so it has no flat fills. Only 24% of dark edge pixels are near-neutral, so the outline mostly leans brown, like the wood-adjacent outlines on the references, and is not a uniform black sticker line. Texture comes from the emblem and the panel edge/grain variation. It is somewhat less textured than the stall and well, but about on par with the bench and hedge, the closest kinds. The total of 13 distinct colours is low next to the larger props, but similar to the bench (14) and lamp (14) at this size. It is slightly thinner than the best references, but a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18187
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "podium top slab",
+      "rows": "7-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "monitor/screen and gooseneck mic on top",
+      "rows": "2-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front panel with emblem",
+      "rows": "14-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The podium top is a tan band at rows 7-12 with a lighter front-edge line at row 13 (L=171). Dark eave shadow follows at rows 14-15 (L=109, 57). Below it the front face runs rows 14-31 as a recessed panel with an emblem, and the width stays 14-16. The dark monitor at rows 2-7 and the mic arm on the right sit on the top, so they count as decor. The top surface is 6 rows deep and the front face is 18 rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The podium reads as a single-tile standing prop, comparable to the hedge and lamp references. It measures 9 visible tones per tile, equal to the hedge and below the stall (17) and well (20). Near-flat coverage is 0%, so no large flat fills. Only 24% of dark edge pixels are near-neutral, so the outline mostly leans brown beside the wood rather than being a uniform black sticker line. The wood body, dark lectern top and emblem panel each carry about 3-4 steps with some grain and a shaded emblem, which is a little shallower than the 5-6 steps of the richer references. It is thinner than the stall and well, but a podium is a simple object and it sits at the hedge's level, so a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18807
+  }
+ ],
+ "decidedAt": "2026-10-21T00:04:54.216Z",
+ "cells": {
+  "16": [
+   "93d94185c17b54a7",
+   "a04a318d8d0766ee"
+  ],
+  "24": [
+   "00682d79f86a4ab6",
+   "017055b2a27a7d79",
+   "2d1c73919ecbf3bc",
+   "429ea650ddf7558b",
+   "59bc0fe7c7703e00",
+   "74279cedf9813489",
+   "85b54597e91670b5",
+   "910231aee0fa39dc",
+   "b9bf2e3da3b79881",
+   "edac6c409c7a0f12",
+   "f2bb5ded6a9a923d",
+   "f61a3d41e6c3831d"
+  ],
+  "32": [
+   "2baf78e2634aac84",
+   "650c722f1f861824",
+   "b8e30bf1cfbf6ed4"
+  ],
+  "48": [
+   "1e3869117e62d464",
+   "2274bef74affe503",
+   "364adf6747f63723",
+   "7e469b57074735d2",
+   "93968dc64dcfb56d",
+   "fc7d3e631160e34c"
+  ]
+ }
+}

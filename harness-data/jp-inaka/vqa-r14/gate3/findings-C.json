@@ -1,0 +1,32 @@
+{
+ "group": "C",
+ "items": [
+  {
+   "label": "jp_inaka_pack/jp-inaka-wooden-pole-transformer",
+   "kind": "column",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 4,
+   "front_rows": 2,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "Old charge 6 cleared: the pole-top cap (rows 0-3) is now a closed plate: 5 px wide at row 0, 8 px at rows 1-2, 6 px at row 3. Rows 0-2 are the light top (B/C) and row 3 is a grey front-edge line. It overhangs the 5-px shaft (cols 3-7) on both sides. Counted back edge to front-edge line inclusive, that is 4 rows, which meets the column minimum exactly.",
+    "Old canvas-cut defect cleared: the crossarm (rows 5-12) stays inside cols 1-14. Its ends are closed by tinted dark outline (col 1 S/S/R/W, col 14 R/V/R/W). Cols 0 and 15 are transparent.",
+    "Old gradient complaint cleared: the crossarm now has separate planes. Row 7 is a light back edge (P), rows 8-10 are a mid-brown top plane (U, with grain specks), row 11 is a dark front (Q) and row 12 is the underside outline (R). That gives 4 top rows and 2 front rows. Insulators sit on top at rows 4-6, cols 3-4 and 10-12.",
+    "The transformer can (rows 16-30, cols 7-15) shows a lit elliptical lid, rows 17-20, with a rim at row 21. Its body has a highlight column (col 8, 'e') and a shadow column (col 14). Its right edge is outline (D/d/a), so the canvas does not cut it. There is no side plane, so charge 4 does not apply.",
+    "The footing (rows 43-47) shows a white top, rows 43-45 (3 rows), over a grey front, rows 46-47. This matches the base of jp-pole-wood.",
+    "Style: outlines are tinted dark browns, purple-greys and greens, not a uniform black (8a no). The shaft uses 4-5 browns and the can about 6 greys (8b no). The grid is crisp at 1 px (8c no).",
+    "Not used in any of the 6 maps (template search: best mean diff 44-48, so no match). Pasted into map 02 at 1x, it reads as a small wooden pole with a crossarm, drop wires and a grey can, so 8d is not clear-cut. Non-blocking risk: it is 48 px tall against the 144 px jp-pole-wood used in the same maps, so side by side it looks like a stub or signpost.",
+    "Non-blocking: the crossarm is off-centre on the pole. It reaches 2 px left of the shaft but 7 px right."
+   ],
+   "fixes": [
+    "Optional: centre the crossarm on the shaft. Either move the shaft to cols 5-9, or shorten the right arm and extend the left one. A real crossarm is symmetric about the pole.",
+    "Optional: give the pole-top cap one more light top row (5 rows inclusive) so it clears the column minimum with margin instead of exactly meeting it.",
+    "Optional, for map use: do not place this next to jp-pole-wood. Its 3-tile height reads as a different scale; label or use it as a short service pole, or draw a taller variant."
+   ]
+  }
+ ],
+ "summary": "1 redraw reviewed: jp-inaka-wooden-pole-transformer PASSES. Old charge 6 is fixed: there is a closed, overhanging cap plate at rows 0-3, and the crossarm is closed and outlined inside the canvas with a 4-row top and a 2-row front. The can lid shows its top in 4 rows, no new view or style charge was found, and sure=true. Residual non-blocking risks: the crossarm is off-centre, and the 48-px height is a scale mismatch with the 144-px jp-pole-wood anchor. The piece is not used in any of the 6 maps."
+}

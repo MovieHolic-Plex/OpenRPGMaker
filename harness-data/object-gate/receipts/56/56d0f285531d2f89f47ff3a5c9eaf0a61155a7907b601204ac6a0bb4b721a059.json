@@ -1,0 +1,688 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "56d0f285531d2f89f47ff3a5c9eaf0a61155a7907b601204ac6a0bb4b721a059",
+ "width": 144,
+ "height": 128,
+ "kind": "structure",
+ "name": "郵便局",
+ "label": "jp_city/jp-bldg-post-office",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 13,
+  "darkV5": 38,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 56
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof parapet cap band",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper floor wall with window, AC units and dish",
+      "rows": "10-37",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "floor-divider cornice strip",
+      "rows": "38-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small window awning strips",
+      "rows": "46-48",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "projecting ledge above shopfront",
+      "rows": "70-74",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red sign board",
+      "rows": "76-97",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post box",
+      "rows": "105-124",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 120,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole building is a flat south facade with no roof slope, no ellipse, and no visible horizontal surface. The top is a 3-4 row parapet band (rows 6-9) that reads as a rim. The cornice at rows 38-42 and the ledge at rows 70-74 are front-facing strips without a distinct top plane or eave shadow. The window awnings are thin vertical strips. Everything else (windows, sign, shopfront glass, wall bricks) is a vertical face, so the drawing is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a modern grey-concrete post office with a red sign. Its outlines are tinted (0% near-neutral edge pixels), a dark blue-grey beside the walls and panels, so they are dark material tone rather than sticker black. Visible tones per tile are 9, against 12 and 10 for the references, so it is close to the stone reference but below h101. Near-flat coverage is 20% against 0% for both references. The flat areas are the rooftop panel, the upper wall band, the red sign and the storefront frame. The brick courses on the wall have some grain and the windows have gradient reflections, but the walls and sign read as 3-4 step ramps rather than the 5-6 steps Beodeul uses on its materials. There is no per-tile scalloping or speckle of the kind the roofs and plaster carry in the references. The piece is cleanly drawn and not sticker-like, but it is flatter and shallower than the references, with flat fills and fewer shading steps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 39707
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rooftop parapet band",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "10-13"
+     },
+     {
+      "part": "upper-storey facade with window, door panel, AC units and satellite dish",
+      "rows": "10-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mid cornice band between storeys",
+      "rows": "39-42",
+      "evidence": "none",
+      "front_edge_line_row": 43,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "second-storey brick wall with windows and awnings",
+      "rows": "44-70",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "projecting ledge above shopfront",
+      "rows": "71-74",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sign board and glass shopfront",
+      "rows": "75-123",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mailbox",
+      "rows": "105-123",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rooftop satellite dish",
+      "rows": "16-35",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 120,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole building is a flat, face-on facade. The top has only a 3-row parapet strip, with no sloped roof plane and no visible horizontal surface. The cornice at rows 39-43 and the ledge at rows 71-74 are thin front-facing strips, and the ledge is only 2 px wider than the body (116 vs 114). The silhouette width is constant at 114 from row 6 to row 127. No side face is drawn. This matches the red 'front elevation' and 'rim only' references, not the green ones with a visible top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a modern grey concrete post office. Its outline is a tinted dark blue-grey (0% near-neutral edge pixels), so it reads as a material tone rather than a sticker line. Visible tones per tile are 9, against 12 and 10 for the references, so it is close to them. The weak points are 20% near-flat coverage (references 0%) and about 4 shading steps on the wall and panel ramps against roughly 6 on the references' roofs and walls. The upper wall panel, the sign band and the grey brick wall have large smooth areas. Brick texture is only a few light dots and lines, with no per-brick shading. The rooftop AC units are small flat blocks. Neither reference has this kind of flat fill, and neither has such a uniform, plain facade. The candidate is clean and legible, but it is flatter and less textured than the Beodeul pieces, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 50061
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof parapet cap strip",
+      "rows": "6-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rooftop window/door box, two AC units, satellite dish",
+      "rows": "10-35",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "floor-divider ledge band",
+      "rows": "36-43",
+      "evidence": "none",
+      "front_edge_line_row": 43,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "projecting cornice strip above shopfront",
+      "rows": "69-74",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red sign board",
+      "rows": "75-97",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mailbox",
+      "rows": "105-125",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 120,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole building is a flat face-on elevation with a constant 114px width. The top at rows 6-9 is only a 1-3 row parapet cap, with no sloped roof or tile plane and no eave shadow. The ledges at rows 36-43 and 69-74 are front-facing strips with no readable horizontal surface behind them. The sign, the glazed shopfront and the upper windows are all vertical faces. The AC units, dish and mailbox are decor. No roof, awning or canopy top surface is visible anywhere, so the drawing is front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a modern grey-concrete post office with a flat rooftop, air-conditioner units and a red sign. It is the same kind (a whole building), but it is drawn with a different construction than the Beodeul houses. Its outlines are tinted dark blue-grey and not neutral black (0% near-neutral dark edge pixels), so they read as dark material tone. The brick grain on the walls, the glass panes with highlights and the sign lettering give some texture. Even so, large parts are flat. The rooftop panel, the wall bands and the sign face are almost uniform fills, and near-flat coverage is 20% against 0% on both references. The shading ramps on the wall and roof are shallow, with about 4 steps per material against 5-6 on the references' roof tiles and stone. Visible tones per tile are 9 against 12 and 10 for the references, so density is a little lower, not far below. The references show tile-by-tile scallops, per-stone shading and timber grain. This candidate lacks that fine per-element variation, so a careful artist would see it as flatter and slightly thinner next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 57700
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top parapet cornice band",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10"
+     },
+     {
+      "part": "upper floor wall with window, AC units, dish",
+      "rows": "10-37",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mid cornice strip",
+      "rows": "39-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "projecting ledge between floors",
+      "rows": "71-74",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sign board and shopfront",
+      "rows": "75-127",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post box",
+      "rows": "105-123",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rooftop AC units and dish",
+      "rows": "13-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 120,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole building is a flat facade. Rows 6-9 form a thin parapet strip with a highlight and no roof plane or sloped surface behind it. The strips at rows 39-42 and 71-74 are front-facing cornices or ledges only 3-4 rows tall, with no visible horizontal top surface. The windows, sign and shopfront are all vertical faces. The width stays constant at 114 and the silhouette is rectangular, so there is no roof slope or ellipse."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a modern grey concrete post office, so hue is not judged. Its outline is a dark bluish-grey tint, not neutral black (0% near-neutral dark edge pixels), so it counts as dark_material_tone. Visible tones per tile are 9 against 12 and 10 for the references, which is close but a little lower. Near-flat coverage is 20% against 0% for both references, so some large areas are flat: the rooftop panel, the wall bands and the sign face. The brick-like wall has some per-block texture, and the windows and AC units are shaded. The material ramps are shallow, at about 3-4 steps on the grey wall, the red sign and the glass, against 5-6 steps on the reference roofs and stone. The references carry per-tile highlights, grain and scallops everywhere, while the candidate has smooth planes with sparse texture. It reads cleaner and flatter than the references, so a careful artist would likely notice it is thinner.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 51094
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.334Z",
+ "cells": {
+  "16": [
+   "0429129b83c759e2",
+   "0473688f7e44c9a8",
+   "107699d8f6816203",
+   "122f1b25303e27af",
+   "15ff741a25f5d016",
+   "1839e7de9181cc78",
+   "198f2b2532c3b83d",
+   "29480968f62ce673",
+   "3c42a72b838c1a8a",
+   "3eded3c5ceba7169",
+   "3eec0c0627d5be09",
+   "46b9b9529b877276",
+   "4c10a57fb9fceee5",
+   "4c2c7fa234228790",
+   "51c2086874c2f0ee",
+   "551a6f48c5ae8a0c",
+   "554697512850c86c",
+   "55fc2078a1df3cf8",
+   "5eeec5a2939a6a13",
+   "5fe960c885ada011",
+   "603f02358dbc291a",
+   "60465d241515de92",
+   "6a290c2a2999b25a",
+   "74957c321c6eb62c",
+   "75a3ca92895e2466",
+   "76b1d049d6b6402f",
+   "77816018aa6c4025",
+   "77b1e14ae875c7f2",
+   "78a6f81b932678c2",
+   "7921f61ba6787ad6",
+   "7cf33c5b8504e024",
+   "7f0ad556730e0700",
+   "812a6e735a418c25",
+   "8513540cab5fa1e5",
+   "85451cb5cd651919",
+   "86b4960d42a7ac1c",
+   "89c6fc305755993b",
+   "8d09c38b8078c0c5",
+   "92a1c658c632df54",
+   "93bfc457b2f04c9e",
+   "9924847ebeb8c2ab",
+   "9e90c6b32a67426f",
+   "a096b5c424b6d4ae",
+   "a18a4355d62fba68",
+   "a30d38009e83ceed",
+   "b5611533c3b185a7",
+   "bb4de644c4a05369",
+   "c0b52067ceecd604",
+   "c2dfaeb22bd4d8e6",
+   "caabd277c3a25876",
+   "cfc5db805e59d672",
+   "d468af570f5c464a",
+   "d4e9e444e7fe9958",
+   "dddf527781a7957f",
+   "e126a2db1baec018",
+   "e570aac1df120645",
+   "eeea8e8dc6e5b971",
+   "efe37a3b1b2ce08e",
+   "f0f45405a00b29ce",
+   "f130514ec1007811"
+  ],
+  "24": [
+   "0d7a5471cb0cf708",
+   "0e5d285adcf769e6",
+   "14ebfebe860b0c3a",
+   "1efaec22e7312243",
+   "232db09c3e270984",
+   "25ac445877a3b8de",
+   "3660d3ff106297c5",
+   "36a985b030dd5f57",
+   "3b11f162afa3bd8b",
+   "4286cbea825d9153",
+   "445ed3095ac89ae5",
+   "4d277b14230aaf53",
+   "4e24130de947c3d3",
+   "536bf744efe5f244",
+   "54eb7272859f908b",
+   "5a1fcdc1f3518e32",
+   "5d08a8942de90a5d",
+   "5ef809dd3766ae0c",
+   "6200416304299457",
+   "637b16b9cd9e83d6",
+   "645ecec21a5fd1ae",
+   "64af5da839eb8006",
+   "6615b21417281725",
+   "6a9749a52629dca6",
+   "6dc3c69fa0a2df1e",
+   "6f2549972178cd1e",
+   "78c2121dd523043e",
+   "797487926753f292",
+   "82935c987774587c",
+   "84be3ec4df614e25",
+   "85e0701133f49549",
+   "8e10fa997dde5f10",
+   "9631de4eae511ad6",
+   "983a3bf26e8301af",
+   "9922304b15c74f90",
+   "993527b92b74866e",
+   "9ac5f6901ec0c52d",
+   "9afd24f5db30d5eb",
+   "9b8b74c15741fe75",
+   "9c354319158a629e",
+   "9f4937270fa25d61",
+   "a532088e94526c88",
+   "a63929f236497e9c",
+   "ad1334161a427ae5",
+   "ad953a72ec77ac4d",
+   "adc2c9f3527663e2",
+   "b0f934d5ad1f2c52",
+   "b20b95b062b5033d",
+   "b27366bdf59e121b",
+   "b4bf6c683353655f",
+   "b5812b9ff05f5542",
+   "ba1a7804111b8607",
+   "becd55949e153f58",
+   "c08d498aff5b79ba",
+   "c852f336e4ebc0ed",
+   "ce83785368cca7bd",
+   "d098ba80912e5677",
+   "daf98c75b107d3a8",
+   "db987f507f6d5250",
+   "e02dd8929d9a99f7",
+   "e2ea0bc84de2844b",
+   "e35eeae3b45cfe57",
+   "e39c3a4c4a31cc31",
+   "e7235a222f374f85",
+   "f0745d20c79ebfad",
+   "f498479f7021b7dc",
+   "f569fd4e739165b4",
+   "f9967aca88f715d7"
+  ],
+  "32": [
+   "02cf1789a68ae74e",
+   "02e79e0ae409f402",
+   "0a3865b4aeece33c",
+   "0eb63b62a0eb4d88",
+   "12df183dbf130c5f",
+   "197f67f3b800662a",
+   "1d1ec2fd7c3d545c",
+   "1f5f285114135218",
+   "28736c3b524d9a53",
+   "2d3fd00c59174486",
+   "3096feb12e94849e",
+   "3894234916079f2b",
+   "3942b23d4ec2e53a",
+   "3a3bd1d6573b5431",
+   "3bb8757148cb39b3",
+   "417b8ed2844fae00",
+   "49284b904e72dd2f",
+   "49e5b3f25c73cc54",
+   "53793c00b03ef67f",
+   "53c6762d4fde4bc1",
+   "63e254a45d7bdb0f",
+   "64b6025cb2bd2d27",
+   "6528c1735b7abb5d",
+   "67d4036e18f3bae1",
+   "6aaddbf0c678d4fc",
+   "6b164d54d3b12de6",
+   "6fae30f85f00be79",
+   "7695660a8f13c8c3",
+   "7d9d7f1e39fbf5c6",
+   "7ead368c331c2ed8",
+   "80a55b6540ea4e3c",
+   "88bd63612b15cc2a",
+   "906a3f557bf4c00e",
+   "910f7aa5d4d170f3",
+   "9531606baf13dfd9",
+   "981e77461165c4c8",
+   "99adba4bbf72502d",
+   "a3c04c661813be1e",
+   "ae0ca045f251d201",
+   "ae0d584e35814fb9",
+   "b0dc66394b167571",
+   "b6303ad11e9ca4bd",
+   "b65ae9b40a303aa3",
+   "b67f06698964b8d8",
+   "b7c9577bc15d518a",
+   "bb63471f1ca4d34c",
+   "bbedd74fb448958a",
+   "bef14cfe4425b670",
+   "c66c010299e93b56",
+   "cf36c407d908a09a",
+   "d47f43ba40d32237",
+   "d9dcd4586fab105a",
+   "de0b323c59014d81",
+   "e05b49d3c03e92ec",
+   "e2bc14c81704f76a",
+   "e5fabe21a83e3a77",
+   "e9db9ac7a171ba22",
+   "eb5afdd6858e8847"
+  ],
+  "48": [
+   "118a4c52fc96d18c",
+   "2173ad375f2540c6",
+   "3193f6e24c3adc9e",
+   "3cc650bce5cfd6e7",
+   "4effa006f127fa62",
+   "661c0dae9d86a113",
+   "8ecab36515eef1dd",
+   "95fa5a9e0dfbc779",
+   "9782c12682a3f709",
+   "bf04dd34deee912f",
+   "c49df8aab909644b",
+   "c52c7462a9560ae8",
+   "cfa131537cc14a95",
+   "d25619d7828b9731",
+   "d2731a4e91ef5fd0",
+   "df4ecd25f3f09bdf",
+   "e5687d810ab34fc1",
+   "f8eeec8933a3c3a8"
+  ]
+ }
+}

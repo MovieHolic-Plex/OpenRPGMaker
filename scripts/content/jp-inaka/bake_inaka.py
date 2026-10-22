@@ -29,6 +29,7 @@ for _p in (HERE, os.path.join(JP_CITY_DIR, 'houses'), os.path.join(JP_CITY_DIR, 
 import inaka_art_props as _props  # noqa: E402,F401  (registers kits 11..30 and GROUND)
 from inaka_art_houses import KITS, Cv, _RAMP  # noqa: E402
 from inaka_art_props import GROUND, GROUND_GROUPS  # noqa: E402
+from inaka_art_ground import autotile_cells  # noqa: E402
 
 BLOCK: Final[str] = 'jp_inaka_pack'
 OUTDIR: Final[str] = os.path.join(ROOT, 'tiledata', 'jp-city', 'blocks', BLOCK)
@@ -80,6 +81,9 @@ def _finalize():
             desc='[이나카 시골 팩] ' + desc,
             tags=['바닥', '일본 시골', 'inaka', nm],
         )
+    at_cells, autotiles, at_groups = autotile_cells()
+    for loc, (arr, pc, lab, desc, tags) in at_cells.items():
+        cells[loc] = dict(img=Image.fromarray(arr, 'RGBA'), pc=pc, label=lab, desc=desc, tags=tags)
     for k in KITS:
         up, base = _cv(k['w'], k['h']), _cv(k['w'], k['h'])
         k['draw'](up, base)
@@ -148,7 +152,8 @@ def _finalize():
     groups = [
         dict(id=gid, name=nm, role='terrain', defaultLayer='lower', cells=list(cs), desc=d, rules=d)
         for gid, nm, cs, d in GROUND_GROUPS
-    ]
+    ] + at_groups
+    _CACHE['at'] = autotiles
     _CACHE['r'] = (cells, kits, renders, groups)
     return _CACHE['r']
 
@@ -158,7 +163,8 @@ def build() -> dict:  # noqa: DICT_OK — required by bake_jp.py block interface
     cells, kits, _, groups = _finalize()
     return {
         'cells': collections.OrderedDict((k, dict(v, img=v['img'].copy(), tags=list(v['tags']))) for k, v in cells.items()),
-        'autotiles': [],
+        'autotiles': [dict(a, member=list(a['member']), connect=list(a['connect']), variantMap=dict(a['variantMap']),
+                           interior=[list(t) for t in a['interior']]) for a in _CACHE['at']],
         'groups': [dict(g, cells=list(g['cells'])) for g in groups],
         'kits': [dict(k) for k in kits],
         'notes': NOTES % len(kits),
@@ -183,6 +189,14 @@ def selftest(verbose: bool = True) -> int:
     b = build()
     if len(b['kits']) < 30:
         out.append('키트 수 미달: %d < 30' % len(b['kits']))
+    if len(b['autotiles']) != 6:
+        out.append('오토타일 수 %d != 6' % len(b['autotiles']))
+    for at in b['autotiles']:
+        if set(at['variantMap']) != {str(i) for i in range(256)}:
+            out.append('(c) %s variantMap 키' % at['id'])
+        for v in list(at['variantMap'].values()) + list(at['member']) + [x for t in at['interior'] for x in t]:
+            if v not in b['cells']:
+                out.append('(c) %s 칸 %s 없음' % (at['id'], v)); break
     if len(b['groups']) < 9:
         out.append('바닥 그룹 수 미달: %d < 9' % len(b['groups']))
     for k, c in b['cells'].items():
@@ -302,7 +316,7 @@ def render_contact_sheet(out_path: str = DEFAULT_SHEET_OUT, scale: int = 3) -> s
 
     # Header banner
     draw.rectangle([0, 0, W, header_h - 8], fill=(36, 48, 41, 255))
-    draw.text((pad, 18), 'JP-INAKA COUNTRYSIDE CHIPSET — 30 INAKA KITS (UPGRADED 4x2 KEITORA, 4x3 TRACTOR, 8x3 KIHA) + JP-TRAIN-CAR-A/B + 10 GROUND TILES', fill=(238, 234, 219, 255), font=font)
+    draw.text((pad, 18), 'JP-INAKA COUNTRYSIDE CHIPSET — %d INAKA KITS (4x2 KEITORA, 4x3 TRACTOR, 8x3 KIHA) + JP-TRAIN-CAR-A/B + %d GROUND TILES' % (len(KITS), len(GROUND)), fill=(238, 234, 219, 255), font=font)
     draw.text((pad, 44), 'jp_city house_kit / parts_vehicles conventions | 3/4 top-down (top plane + south face) | Top-Left Sun | 1px Sumi Contour', fill=(186, 204, 174, 255), font=font)
 
     for idx, (cid, cw_t, ch_t, im) in enumerate(cards):
@@ -323,7 +337,7 @@ def render_contact_sheet(out_path: str = DEFAULT_SHEET_OUT, scale: int = 3) -> s
     # Bottom row: 9 ground/water tiles tiled 2x2 at 3x scale
     gy0 = header_h + rows_n * (card_h + 12) + 8
     draw.rectangle([pad, gy0, W - pad, gy0 + ground_h - 12], fill=(36, 46, 40, 255), outline=(88, 108, 86, 255), width=2)
-    draw.text((pad + 12, gy0 + 10), 'GROUND & WATER TILES (9x 16x16 tiled 2x2 at 3x scale):', fill=(250, 226, 159, 255), font=font)
+    draw.text((pad + 12, gy0 + 10), 'GROUND & WATER TILES (%dx 16x16 tiled 2x2 at 3x scale):' % len(GROUND), fill=(250, 226, 159, 255), font=font)
     g_step = (W - pad * 2 - 24) // len(GROUND)
     for i, (gkey, _) in enumerate(GROUND.items()):
         gx = pad + 16 + i * g_step
@@ -341,10 +355,70 @@ def render_contact_sheet(out_path: str = DEFAULT_SHEET_OUT, scale: int = 3) -> s
     return out_path
 
 
+# object-gate 종류(키트 kind → 관문 종류). R5 영수증과 같은 대응이다. 정직하게 붙인다(면제 종류로 도망가지 않는다).
+GATE_KIND: Final[dict[str, str]] = {
+    'building': 'structure', 'structure': 'structure', 'wall': 'structure', 'water': 'container',
+    'vehicle': 'other', 'prop': 'other', 'tree': 'organic', 'column': 'column', 'terrain': 'terrain',
+}
+GATE_REGION_KITS: Final[tuple[str, ...]] = ('rg-bamboo-clump', 'rg-bamboo-grove', 'rg-bamboo-grove-b')   # 이 팩이 함께 바꾼 jp_regions_pack 대나무
+
+
+def _group_sheet(cells: dict, ids: list[str], per_row: int = 8) -> Image.Image:
+    """바닥 그룹 칸들을 8열로 빈틈없이 이어 붙인 관문 그림(결정적 — 같은 칸이면 같은 해시)."""
+    n = len(ids)
+    cols = min(per_row, n)
+    rows_n = (n + per_row - 1) // per_row
+    im = Image.new('RGBA', (cols * 16, rows_n * 16), (0, 0, 0, 0))
+    for i, cid in enumerate(ids):
+        im.alpha_composite(cells[cid]['img'], ((i % per_row) * 16, (i // per_row) * 16))
+    return im
+
+
+def gate_items() -> list[tuple[str, str, Image.Image]]:
+    """[(라벨, 관문 종류, 그림)] — 이 팩이 굽는 새 그림 전부: 키트 31 · 바닥 그룹 16장 · 대나무 3(jp_regions_pack)."""
+    cells, _, renders, groups = _finalize()
+    out = [('jp_inaka_pack/jp-%s' % k['id'], GATE_KIND[k['kind']], renders[k['id']]) for k in KITS]
+    for g in groups:
+        out.append(('jp_inaka_pack/ground/%s' % g['id'].split(':', 1)[-1], 'terrain', _group_sheet(cells, list(g['cells']))))
+    import jp_regions_pack as _rg
+    _, _, rg_renders, _ = _rg._finalize()
+    kinds_rg = _rg.kinds()
+    for rid in GATE_REGION_KITS:
+        out.append(('jp_regions_pack/jp-%s' % rid, GATE_KIND.get(kinds_rg['jp-' + rid], kinds_rg['jp-' + rid]), rg_renders[rid]))
+    return out
+
+
+def write_gate_batch(outdir: str) -> str:
+    """관문 그림 PNG 와 object-gate enqueue 용 items.jsonl 을 outdir 에 쓴다."""
+    os.makedirs(outdir, exist_ok=True)
+    lines = []
+    for label, kind, im in gate_items():
+        fn = label.replace('/', '__') + '.png'
+        im.save(os.path.join(outdir, fn))
+        lines.append(json.dumps(dict(png=fn, kind=kind, name=label.split('/')[-1], label=label), ensure_ascii=False))
+    path = os.path.join(outdir, 'items.jsonl')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(lines) + '\n')
+    return path
+
+
+def require_gate() -> None:
+    """3/4 관문: 굽기 전에 이 팩의 새 그림 전부가 object-gate 출구(bundle)를 통과해야 한다. 우회 없음."""
+    sys.path.insert(0, os.path.join(ROOT, 'src', 'harnesses', '_core'))
+    import object_gate as OG
+    try:
+        OG.require_all([(im, kind, label) for label, kind, im in gate_items()], context='bundle')
+    except OG.ObjectGateRefused as e:
+        print('3/4 관문 거절 — 굽지 않는다 (OBJECT_GATE_DATA=%s)\n%s' % (OG.GATE_DATA, e), file=sys.stderr)
+        sys.exit(3)
+    print('3/4 관문: jp_inaka_pack 새 그림 %d장 통과' % len(gate_items()))
+
+
 def bake_into_jp_city() -> None:
     """Run `bake_jp.bake(ROOT, dry=False)` and `bake_interior_spec.main()` to bundle `jp_inaka_pack` into `jp_city`."""
     import bake_interior_spec
     import bake_jp
+    require_gate()
     out = bake_jp.bake(ROOT, dry=False)
     rep = out['report']
     bad = (
@@ -379,8 +453,12 @@ def main() -> None:
     """CLI entry point for `bake_inaka.py`."""
     ap = argparse.ArgumentParser(description='Bake jp-inaka countryside pixel-art kits and ground tiles.')
     ap.add_argument('--bake', action='store_true', help='Also bake jp_inaka_pack into jp_city chipset and JSON')
+    ap.add_argument('--gate-out', help='Write object-gate PNGs + items.jsonl for `object-gate enqueue` into this folder and exit')
     ap.add_argument('--sheet-out', default=DEFAULT_SHEET_OUT, help='Output path for 3x contact sheet PNG')
     args = ap.parse_args()
+    if args.gate_out:
+        print(write_gate_batch(args.gate_out))
+        return
     bad = selftest(verbose=True)
     if bad:
         sys.exit(1)

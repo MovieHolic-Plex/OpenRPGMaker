@@ -1,0 +1,55 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b4",
+ "round": 6,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "mart-dairy-open",
+   "pixelSha256": "36cad020538a9c79833e13fcd0282607d3e709cabd6e8ccf202012eb4653c285",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The case is drawn as a flat front elevation. All that shows on top is a thin dark-navy band about 1–2 px deep, with no lit top plane, unlike the visible grey top on mci-cooler. The dairy packs on the shelves are tiny specks of red, blue, cream and white that turn into noise at 1x."
+  },
+  {
+   "id": "mart-gondola-detergent",
+   "pixelSha256": "ef86d393c9692d2dca7a8e47b5264c27728c3b2150bd3202527ffb5d52fcb295",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The top is only a pale 1–2 px strip, and the shelf is drawn as a straight-on front view with no readable lit top surface. The jugs carry bright white highlight 'stickers', and the light-grey case outline is lighter than the dark outlines on the originals, so the shelf blends into the white wall and floor."
+  },
+  {
+   "id": "mart-gondola-tea",
+   "pixelSha256": "82701130c3b1986dbed12fd1620f5fddaf0409cff7e5962d66fa6e1e476f3090",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    4
+   ],
+   "reasons": "It is a front elevation with a dark green rim on top and no lit top plane. The heavy saturated-green body doesn't match the muted chipset palette. The bottles are covered in scattered white highlight pixels that read as noise at 1x, and the brown boxes on the bottom shelf blur into muddy blobs."
+  }
+ ]
+}

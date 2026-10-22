@@ -1,0 +1,23 @@
+{
+  "verdict": "FAIL",
+  "reviewer": "fresh Opus adversarial VQA, 2026-10-22, round 2",
+  "images": [
+    "/tmp/bdtrees/vqa/trees_v2_kits_1x.png",
+    "/tmp/bdtrees/vqa/trees_v2_kits_2x.png",
+    "/tmp/bdtrees/vqa/pv_oakA.png",
+    "/tmp/bdtrees/vqa/pv_oakB.png",
+    "/tmp/bdtrees/vqa/pv_bushD.png",
+    "/tmp/bdtrees/vqa/pv_bushC_lime.png",
+    "/tmp/bdtrees/vqa/pv_bushE.png",
+    "/tmp/bdtrees/vqa/artistB_v2_preview_4x.png"
+  ],
+  "findings": [
+    {"severity": "major", "tree": "bushE (forest filler)", "row": "artistB_v2_preview_4x dense row", "issue": "Dense bushE row reads as a stamped grid: every copy has the identical lime highlight blob at the same upper-left spot and the same dark lower-right lobe, laid on a regular lattice, producing visible diagonal/horizontal stripes of repeated lumps. The stamped-stripe look the brief asked to avoid is present."},
+    {"severity": "major", "tree": "oak kit at end of AFTER row 3 (oakB-based composite, ~x430-470 @1x)", "row": "AFTER row 3", "issue": "Crown left edge is a near-vertical straight run with a stair-step notch and a doubled outline (dark line plus lime rim pixels outside it), i.e. clipping/misaligned seam at a cell boundary. A bright lime 1px halo also runs along the left and top silhouette outside the dark outline, which no native Beodeul tree or house has."},
+    {"severity": "major", "tree": "bush kit at end of AFTER row 3 (~x485-520 @1x) and small bushD/bushE kits in rows 3-4", "row": "AFTER rows 3-4", "issue": "Bush has a straight vertical left edge and a ruler-flat bottom, with the same lime rim halo; reads as cut off at the cell boundary rather than a rounded bush. Several small bush kits in row 4 (first and ~x480-540 @2x) likewise show flat clipped bases/edges."},
+    {"severity": "minor", "tree": "bushC vs bushE", "row": "AFTER rows 3-4, pv_bushC_lime, pv_bushE", "issue": "bushC and bushE are the same 32x32 'big lobe left + small lobe right' silhouette with only a hue change; little variety between the two replacement bushes."},
+    {"severity": "minor", "tree": "oakA, oakB", "row": "AFTER rows 3-4", "issue": "New oaks are generic lollipop crowns on straight pole trunks; read fine as 3/4 top-down and lit top-left, but the trunk is thin/flat next to the chunky native houses and lacks the ground shadow/contact the conifers have."},
+    {"severity": "minor", "tree": "all new shapes", "row": "AFTER", "issue": "Silhouettes are genuinely new (not traces of BEFORE): rounded single crowns vs. the old twisted multi-lobe oaks and round bushes. No see-through holes; light direction top-left is consistent after relight."}
+  ],
+  "summary": "The new oaks and bushes are genuinely new silhouettes, read as 3/4 top-down, and the relight matches the town ramps from the top left. FAIL for three major problems: (1) the dense bushE forest filler is an obviously stamped lattice with identical highlights; (2) the oak and bush kits at the end of AFTER row 3 show straight cell-boundary clipping and misaligned seams on the left edge; (3) a lime 1px rim halo sits outside the dark outline on several kits, which does not match the native outline style. Also minor: bushC and bushE are near-duplicates, and the trunks are thin poles."
+}

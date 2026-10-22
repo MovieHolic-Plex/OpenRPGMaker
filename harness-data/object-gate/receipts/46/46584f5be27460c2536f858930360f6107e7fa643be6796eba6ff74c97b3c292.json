@@ -1,0 +1,317 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46584f5be27460c2536f858930360f6107e7fa643be6796eba6ff74c97b3c292",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "infirmary eye chart",
+ "label": "modern_city_interior/infirmary-eye-chart",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 78,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden frame top rail",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chart paper board with letters and lines",
+      "rows": "5-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom wooden base/foot",
+      "rows": "25-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The eye chart is a flat board in a wooden frame, drawn face-on. The frame top (rows 0-4) is a 1-row dark outline plus a 2-row lighter band and no front-edge line or eave shadow, so it reads as a flat rim. The chart (rows 5-23) is a vertical white panel with letters and colored lines. The base at rows 25-31 is a wider stand or foot drawn as a front-facing strip. It is a flat wall-mounted picture-like object and shows no top surface, which is acceptable for the wall_mounted kind, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small standing chart with a wooden frame, a pale chart face carrying rows of optotype marks, and short feet. It measures 10 visible tones per 16x16 tile, level with prop-hedge (9) and below the stall (17) and the well (20). Near-flat coverage is 0%, so the chart face is broken up by the letter rows and paper shading rather than left as a flat fill. 0% of its dark edge pixels are neutral, so the outline leans brown, like the frame wood, rather than being a black sticker line. The wood has about 4 steps against roughly 5-6 on the references, and the piece uses only 12 colours in total. That is similar to the bench and lamp references, which are also thin props. It sits slightly below the richest references but would not look flat or sticker-like beside the hedge, bench or lamp.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13183
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden frame with eye chart board (flat face-on)",
+      "rows": "0-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base/foot bracket",
+      "rows": "26-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The chart is a flat face-on board with a wooden frame (rows 0-24) and a white chart with letters and colored lines (rows 5-22). The wall-mounted kind is a flat object. The frame top (rows 0-4) is only a 1-4 row border of nearly uniform tone with no front-edge line or eave shadow, so it reads as a frame, not a top surface. The base at rows 26-31 is a small bracket, also drawn face-on. No horizontal top plane is visible, so it is a front elevation, which is normal for a flat wall-mounted picture."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a slim standing chart on a wooden frame. It has 10 visible tones per full tile, which matches prop-hedge (9) and is well above the thin references (bench and lamp, 0). It is below the stall (17) and well (20), which are much larger and more complex pieces. Near-flat coverage is 0%, so there are no flat fills. The chart face carries letter rows and the frame has several wood tones. The dark edge pixels are 0% near-neutral, so the outline leans brown rather than being a black sticker line. The wood ramp is about 4 steps against Beodeul's 5-6, and the whole piece has only 12 distinct colours. That makes it a little simpler than the best references, but a careful artist would accept it beside the bench and hedge without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13740
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden frame top border",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "eye chart panel (white card with letters and colored bars)",
+      "rows": "5-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "narrow neck or bracket under frame",
+      "rows": "25-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden foot or base block",
+      "rows": "26-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a framed chart seen face-on. Rows 0-4 are a frame border with a bevel highlight at row 3 and no front-edge line or eave shadow. Rows 5-23 are the white chart face with dark letter rows (7-15), blue bars (17) and a red bar (19). Rows 23-24 form the bottom frame edge. The width stays constant at 14 for rows 0-24, so there is no ellipse, roof or visible contents. Rows 25-31 are a narrow neck and a wider foot (16 wide), and the foot shows only a 1-2 row highlight, which is a rim at most. There is no horizontal top surface and no receding side face, so the whole drawing is a flat vertical elevation, which is acceptable for a wall-mounted picture."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin, one-tile-wide standing prop: a wooden frame and stand around a pale chart with letter rows. The measured facts support it. It has 10 visible tones per tile, against 9 for the hedge reference, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%. None of its dark edge pixels are neutral, so the outline is tinted brown, in the material's own dark tone, rather than a black sticker line. The wood has about 4 lightness steps (highlight, mid, dark, deep), slightly fewer than Beodeul's 5-6. The chart face gets its texture from the letter rows, and the frame has some grain. Its total palette of 12 colours matches the hedge reference's 11, so the sparseness is acceptable for a simple prop. It is a little lower than the richest references (stall, well) but would sit acceptably next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19057
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden frame top band",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chart paper with letters",
+      "rows": "5-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden base/stand at bottom",
+      "rows": "25-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The chart is a flat, face-on board: a wooden frame surrounds a white chart with letter rows (rows 5-22), mounted on a small base at rows 25-31. The silhouette is a constant 14 wide for rows 0-24, with no widening or narrowing that would suggest an ellipse. No front-edge line or eave shadow marks a horizontal top surface. The frame top at rows 0-4 is a vertical bevelled border, not a top plane. The base (rows 27-30, width 16) is a front-facing strip too. This is a wall-mounted flat object, so a front elevation is expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a narrow standing chart with a wood frame, a pale board carrying rows of optotype letters, and a small base. Measured facts support it: 10 visible tones per tile, which matches prop-hedge (9) and is not far below the other references. Near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outline is tinted dark brown beside the wood rather than a black sticker line. The wood frame shows about 3-4 steps with highlight and shadow edges, and the board has a paper tone plus letter rows, so there is no large flat fill. It is slightly simpler than the richest references (stall, well) and has only 12 colours in total. That is in line with the hedge, bench and lamp, and a plain chart board is naturally sparse. A careful artist would accept it next to the references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13828
+  }
+ ],
+ "decidedAt": "2026-10-20T23:53:05.037Z",
+ "cells": {
+  "16": [
+   "a0d359b5f350fffa",
+   "ca429857fa6b7b9b"
+  ],
+  "24": [
+   "0101212681aeb1f2",
+   "43f228b401274a3b",
+   "46f3426c07bec987",
+   "5336bab5ae28c7f2",
+   "56c2daad217c8466",
+   "70d759ec03278c2f",
+   "81426d9edf456912",
+   "8f812939bc40c019",
+   "9377791a2aabfee0",
+   "985e69dd979016f5",
+   "9b89a25616d5b172",
+   "a7a8f9fef3acfa3b"
+  ],
+  "32": [
+   "3f2b6d843ab334e5",
+   "e097cf1370952e3a",
+   "e93b85aa34d033f2"
+  ],
+  "48": [
+   "2c27d827a62125e0",
+   "5225b74d6ec701cb",
+   "62095cd37f1623a2",
+   "8f7205abf1ee40c8",
+   "b96bfe545772e4c1",
+   "dc59654f926eb619"
+  ]
+ }
+}

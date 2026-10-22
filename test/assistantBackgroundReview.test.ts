@@ -11,7 +11,9 @@ import { installFakeDom } from "./fakeDom";
 afterEach(() => vi.unstubAllGlobals());
 
 describe("background review evidence", () => {
-  it("reports the real tile-only surface as unavailable instead of fabricating background evidence", async () => {
+  // 2026-10-22: 미리보기가 배경을 첫 프레임으로 그리게 되어(mapBackgroundPreview.ts) 배경 맵을 통째로 거부하지 않는다.
+  // 그림을 못 읽은 배경은 지어내지 않고 라벨에 그 사실을 남긴다.
+  it("does not refuse a background map and does not fabricate an unreadable background", async () => {
     const restore = installFakeDom();
     try {
       // This surface uses onerror properties; fakeDom's Image only dispatches listeners.
@@ -21,9 +23,12 @@ describe("background review evidence", () => {
       });
       const project = createBlankProject(), map = project.maps[project.startMapId];
       map.background = { imageId: "missing-resource", scrollX: 4 };
-      await expect(renderToolImages(project, "show_map_region", {
+      await renderToolImages(project, "show_map_region", {
         mapId: map.id, x: 0, y: 0, w: 1, h: 1, lower: [[-1]], upper: [[-1]],
-      })).rejects.toThrow("map-background-rendering-unavailable");
+      }).then(
+        images => { for (const image of images) expect(image.label).toMatch(/배경 그림 missing-resource/); },
+        error => expect(String(error)).not.toContain("map-background-rendering-unavailable"),
+      );
     } finally { vi.unstubAllGlobals(); restore(); }
   });
 

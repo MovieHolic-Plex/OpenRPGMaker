@@ -119,7 +119,10 @@ export class EventPlacementAnalysis {
     if (rectCells(body).some(cell => open(cell.x, cell.y)
       && (!blocks || !rectsOverlap(passage, pointRect(cell.x, cell.y)))
       && (seen !== undefined || incoming(cell.x, cell.y)))) return true;
-    if (touch) return blocks && rectCells(body).some(cell => incoming(cell.x, cell.y));
+    // 막힌 그림 칸(문짝·계단 입구) 위의 같은 층 접촉 이벤트는 이웃 통행 칸에서 부딪혀 발동한다(런타임 tryStartMove).
+    const bumpable = (x: number, y: number): boolean => !isPassable(this.project, this.map, x, y)
+      && STEPS.some(([dx, dy]) => !rectsOverlap(body, pointRect(x + dx, y + dy)) && open(x + dx, y + dy));
+    if (touch) return blocks && rectCells(body).some(cell => incoming(cell.x, cell.y) || bumpable(cell.x, cell.y));
     // Action signs can be inspected from outside without traversing their wall.
     for (let x = body.left; x <= body.right; x++) if (open(x, body.top - 1) || open(x, body.bottom + 1)) return true;
     for (let y = body.top; y <= body.bottom; y++) if (open(body.left - 1, y) || open(body.right + 1, y)) return true;

@@ -2,8 +2,8 @@
 /** 공방 화면의 순수 계산(기물 상태·진행·예상 시간). DOM 없음 — 시험한다. */
 import type { WorkshopPick, WorkshopRound } from "@/harnesses/_core/workshop/types";
 
-export type ItemState = "drawing" | "choose" | "picked" | "idle";
-export const ITEM_STATE_LABELS: Readonly<Record<ItemState, string>> = { choose: "고를 차례", drawing: "그리는 중", picked: "고름", idle: "아직" };
+export type ItemState = "drawing" | "choose" | "stopped" | "picked" | "idle";
+export const ITEM_STATE_LABELS: Readonly<Record<ItemState, string>> = { choose: "고를 차례", drawing: "그리는 중", stopped: "잠시 멈춤", picked: "고름", idle: "아직" };
 const PENDING = new Set(["queued", "drawing", "reviewing"]);
 const FALLBACK_MINUTES = 3;
 
@@ -18,8 +18,12 @@ export function itemState(itemKey: string, rounds: readonly WorkshopRound[], pic
   const pick = picks.find((p) => p.itemKey === itemKey);
   if (round?.runs.some((run) => PENDING.has(run.status))) return "drawing";
   const choosable = round?.runs.some((run) => run.status === "done" || run.status === "failed");
+  // 이번 판이 한 장도 못 그렸다(계정 한도·로그인 막힘 등) — 고를 차례가 아니라 멈춤이다.
+  const stopped = !!round && round.runs.length > 0 && round.runs.every((run) => run.status === "failed" && !run.grid);
   // 고른 판이 지워졌으면(pickedRound 없음) 새 판이 고를 차례다
   const pickedRound = pick ? rounds.find((r) => r.id === pick.roundId) : undefined;
+  const newer = !pick || (pick.roundId !== round?.id && (() => { const pr = rounds.find((r) => r.id === pick.roundId); return !pr || (round !== null && pr.created < round.created); })());
+  if (round && stopped && newer) return "stopped";
   if (round && choosable && (!pick || (pick.roundId !== round.id && (!pickedRound || pickedRound.created < round.created)))) return "choose";
   return pick ? "picked" : "idle";
 }

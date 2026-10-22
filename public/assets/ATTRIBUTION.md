@@ -56,8 +56,10 @@ source expands mechanically to a complete grid, with no shape generation or twee
   - `CharSet/Object1.png` by Tom Lemmens and Blarumyrran, CC0 original chest, https://github.com/lemtom
   - `CharSet/Object2.png` by Verdant_Jack, CC0, https://community.easyrpg.org/t/test-for-new-rtp/1067/8
 - Notes: This is an open replacement RTP material, not the proprietary RPG Maker 2000/2003 RTP.
-- 2026-10-07: EasyRPG ChipSet sheets (Exterior/Dungeon/Interior/Ship/World/retro_*) and every sheet derived from them were
-  deleted from the repository (copyright cleanup). They are no longer shipped.
+- 2026-10-07: the EasyRPG ChipSet sheets (Exterior/Dungeon/Interior/Ship/World/retro_*) and the forest-village, climate, biome and dungeon
+  sheets derived from them were deleted from the repository. Correction (2026-10-22): the Beodeul city, architecture, forms
+  and reviewed sheets, the vehicle sheet and the world-map icons still contain RTP-derived cells. They are credited
+  under «EasyRPG RTP material in the Beodeul sheets and the vehicle sheet» below.
 
 ## Scarloxy — Monster Taming Game Essentials (MyPixelWorld Special Packs #01)
 
@@ -227,6 +229,82 @@ source expands mechanically to a complete grid, with no shape generation or twee
 - Expressions: all 16 face cells — base (00), smile (01), happy (02), content (03), surprised (04), embarrassed (05), doubtful (06), serious (07), annoyed (08), angry (09), sad (10), crying (11), worried (12), determined (13), shy (14), wink (15); expression sheets are edits of the base sheet.
 - Files: `shared/portraits/<stem>/{bust,full}-<expression>.png`, 2432 files (magenta key removed, trimmed, 128-colour PNG).
 - The EasyRPG and supplied-expression attributions above still apply to the referenced faces and sprites. Generation does not establish a new license.
+## EasyRPG RTP material in the Beodeul sheets and the vehicle sheet (corrected 2026-10-22)
+
+Earlier entries in this file called the Beodeul sheets "project-owned" with "no third-party pixels". That was wrong.
+A pixel audit on 2026-10-21/22 against the upstream EasyRPG RTP ChipSet sheets (pinned commit
+`993d88cbc78c658d348bbfa74a3b424d393d27e5`) found exact RTP pixels, including flipped copies, in the sheets listed below. The Beodeul city
+pipeline (`scripts/content/lib/city_v6/`) cut its brick walls, blue and orange roof tiles, planks, road cobbles, plaza
+flagstones and some dirt from `scripts/content/lib/city_v6/assets/jungle-chipset-v6.png`. That sheet is a repaint of the
+earlier forest-village atlas, which itself was assembled from EasyRPG RTP `ChipSet/retro_Exterior.png` and
+`ChipSet/retro_World.png` (plus non-RTP material, see the next section).
+
+- Upstream: EasyRPG RTP, https://github.com/EasyRPG/RTP — Creative Commons Attribution 4.0 International
+  (https://creativecommons.org/licenses/by/4.0/). Licence text: `easyrpg/COPYING`. Full credit table: `easyrpg/AUTHORS.md`.
+- Credit lines for the upstream sheets these derivatives use (from `easyrpg/AUTHORS.md`):
+  - `ChipSet/retro_Exterior.png` (2017): MrBeast [CC-BY]; Stephen Challener (Redshrike) [CC-BY] (commissioned by OpenGameArt);
+    Carl Olsson (surt) [CC0]; Ogrebane [CC0]; Garrett Wessner (Gwes) [CC0]; Dmytro Kushnariov (jikmok) [CC0]; Tom Lemmens [CC0];
+    marianognu [WTFPL]. Sources: https://opengameart.org/content/town-tiles, https://opengameart.org/content/forest-tiles,
+    https://opengameart.org/content/worldmapoverworld-tileset, https://opengameart.org/content/16x16-tiles,
+    https://opengameart.org/content/16x16-indoor-rpg-tileset-the-baseline, https://opengameart.org/content/m13-cave-tileset,
+    https://community.easyrpg.org/t/basis-png-by-marianognu/121
+  - `ChipSet/Ship.png`, `ChipSet/Exterior.png`, `ChipSet/Dungeon.png`, `ChipSet/Interior.png`, `ChipSet/World.png` (2022):
+    JasonPerry [CC0], https://finalbossblues.itch.io/
+- Changes were made: cells were recoloured, repainted, cut, flipped and re-composited into new buildings, streets and
+  vehicles alongside this project's own pixels. The upstream authors do not endorse these derivatives.
+- Licence: the RTP-derived parts keep CC BY 4.0. This project's own edits follow the OPRN default-asset terms (free in games,
+  no standalone redistribution; `openwiki/licensing.md`). This section is part of the exported `assets/ATTRIBUTION.md`.
+- Check: `python3 scripts/content/rtp-attribution/rtp_check.py` scans every bundled chipset with a hashes-only fingerprint
+  of the upstream sheets (no upstream image is stored). It fails only when a sheet with RTP pixels is missing from
+  the list below. Bake scripts call the same check.
+
+Sheets that contain EasyRPG RTP pixels (paths under `public/assets/`; RTP cells found by the check on 2026-10-22):
+
+<!-- rtp-derived-sheets:begin -->
+- `beodeul-city/beodeul-city-chipset.png` (Beodeul v6 city): 779 cells, retro_Exterior (walls, roofs, planks, road, plaza, dirt). The bd-house, bd-block and district kits built on them carry the same credit.
+- `beodeul-architecture/chipset.png`: 94 cells, retro_Exterior (brick walls, blue roof tiles)
+- `beodeul-forms/chipset.png`: 86 cells, retro_Exterior (brick, orange roof tiles, planks)
+- `beodeul-reviewed/chipset.png`: 54 cells, retro_Exterior (brick, blue and orange roof tiles)
+- `atlas-scenes/vehicles.png`: 163 cells, Ship, Exterior, Dungeon and Interior (JasonPerry, CC0); details in `atlas-scenes/CREDITS.txt`
+- `worldmap-icons/worldmap-selected.png`: 464 cells, World, Exterior, Dungeon and Interior (JasonPerry, CC0); details in `worldmap-icons/ATTRIBUTION.md`
+<!-- rtp-derived-sheets:end -->
+
+Learning images and reference renders made from these sheets (`beodeul-*/` PNGs, `tiledata/beodeul-*`) show the same
+pixels and carry the same credit. The raw source copy `scripts/content/lib/city_v6/assets/jungle-chipset-v6.png` is kept
+because the city pipeline reads it. Its RTP cells carry this credit; its other cells are covered by the next section.
+
+## Beodeul trees and forest ground: redrawn by hand (2026-10-22)
+
+The broadleaf trees, the forest canopy and some ground cells in the Beodeul sheets used to come from the earlier
+forest-village atlas's vegetation, which the 2026-09-18 entry described as "user-reference-derived forest edits made
+using god-tibo-imagen". The reference image was never recorded, so those pixels had no clear licence. On 2026-10-22
+they were replaced by new hand-pixel art drawn in code in this repository (no image-generation service, no third-party
+image):
+
+- Five broadleaf designs (two oaks, three bushes) and five ground cells: `scripts/content/beodeul-redraw/`
+  (`draw_trees_a.py`, `draw_trees_b.py`, `draw_ground_c.py`, output in `art/`). The ground script samples the credited
+  EasyRPG RTP grass and dirt cells of the Beodeul city sheet (CC BY 4.0, previous section).
+- Every old tree in the Beodeul sheets was found by exact pixel match and replaced in place by the matching new design
+  at the same position, tint and mirror, so saved maps keep their cell numbers: the `bd-tree-*`, `bd-mpart-bush-*`,
+  woodland and grove kits in `beodeul-city/beodeul-city-chipset.png`, the tree cells of `beodeul-ground/chipset.png`,
+  `scripts/content/beodeul-foliage/source-tiles.png`, and the learning images and reference renders made from them.
+- The tree studies (`tiledata/beodeul-ground/tree-studies/`, `tree-palette-studies/`) are regenerated by their own
+  scripts from the new city kits. The four shared woodland groups are rebuilt from the new tree bodies at the catalog
+  anchors (`scripts/content/beodeul-redraw/rebuild_woodland.py`), and `beodeul-warm-trees/chipset.png` is rebuilt from
+  them by `scripts/content/build-beodeul-warm-trees.py` with the warm lookup in
+  `tiledata/beodeul-ground/tree-palette-studies/warm-redrawn-lookup.json` (the user-approved warm look, measured on the
+  earlier lookup and applied to the new colours).
+- The cast shadows of the tree and bush kits in `beodeul-nature/chipset.png` are redrawn from the new silhouettes by
+  `scripts/content/beodeul-redraw/reshadow_trees.py` (same cells).
+- The broadleaf forest canopy in `beodeul-nature/chipset.png` is rebaked from the new bush kits by
+  `scripts/content/append-beodeul-forest-canopy.py` (in place, same cell numbers).
+- Jungle ground cells 7 and 302 became our own lawn tile (`city_v6/assets/lawn16.png`,
+  `harness-data/charset-actor/lawn16.png`); 129 and 160 became the Beodeul cobble cell 544; 363, 365, 393, 394 and
+  423 became the new hand-pixel ground. The other old cells of `city_v6/assets/jungle-chipset-v6.png` that were not
+  RTP were cleared.
+- The Joseon tree crowns now use hand-authored leaf tones (`scripts/content/lib/joseon/leaf_tones.json`) instead of a
+  texture sampled from the old jungle sheet.
+- The world-map sheets are a separate, user-approved exception and were not changed.
 
 ## Opening mood stills (2026-09-22)
 
@@ -258,7 +336,9 @@ other bundled assets documented above.
 `tex_atlas_biome_interior` / `atlas_biome_interior` (family `oprn-atlas`). Every cell is cut by
 `scripts/content/hand-interior/build_tileset.py` from the hand-pixel interior kit in `tiledata/hand-interior/v5`
 (pixels drawn in code in this repository, 2026-09-28; no third-party image). Some floor/wall surface textures in that
-kit sample tile interiors of `atlas-biomes/jungle-chipset.png` (this repository's own generated sheet). Its conventions were
+kit sample tile interiors of `atlas-biomes/jungle-chipset.png`. Correction (2026-10-22): that sheet was not purely our own; it repaints
+EasyRPG RTP retro_Exterior/retro_World cells and earlier image-generation forest edits (the Beodeul copies were redrawn; see «Beodeul trees and forest ground»). The RTP attribution check finds no exact
+RTP cells in `atlas-interior/interior-chipset.png`. Its conventions were
 measured from the EasyRPG RTP (CC BY 4.0) as a visual reference only; no RTP pixels are pasted.
 Reference renders in `hand-interior-references/` are renders of the bundled example maps from this sheet (nearest-neighbour only).
 
@@ -324,7 +404,7 @@ and a separately drawn fallen body across the same nine-cell battle contract.
 - Files: `beodeul-door/door-states.png`, `beodeul-door/door-0.png` through `door-7.png`.
 - Source: this project's hand-pixel Beodeul city house `bd-house-h101_0`, source cells 5743 and 2333.
 - New opening stages: Codex, explicitly authored pixel coordinates (2026-10-04), no image-generation service.
-- Licensing: follows the existing project-owned Beodeul artwork's terms; no new third-party material.
+- Licensing: see «EasyRPG RTP material in the Beodeul sheets and the vehicle sheet» and «Beodeul trees and forest ground» (2026-10-22): native Beodeul cells are not all project-owned; the new door stages are project-authored.
 - Rebuild source and provenance: `scripts/content/build-beodeul-door.py`, `tiledata/beodeul-door/README.md`.
 - GIFs are artwork previews rather than recordings of game event playback.
 
@@ -334,44 +414,44 @@ and a separately drawn fallen body across the same nine-cell battle contract.
 - Author: Codex, explicit pixel coordinates, 2026-10-04; no image-generation service.
 - Original house/tree references: this project's Beodeul city hand-pixel artwork.
 - Source: `scripts/content/build-beodeul-ground.py`, `tiledata/beodeul-ground/`.
-- Licensing: follows the existing project-owned Beodeul artwork's terms; no third-party pixels.
+- Licensing: see «EasyRPG RTP material in the Beodeul sheets and the vehicle sheet» and «Beodeul trees and forest ground» (2026-10-22). The tree cells were redrawn by hand on 2026-10-22, and the neck and root cells of the ground sheet now carry the new trunk pixels. `tree-neck.png` and `roots.png` stay as drawn in code by `build-beodeul-ground.py`.
 - Atlas and normal/error images are learning references, not separate game sprites.
 - Later correction: `tree-neck.png` connects the crown and roots; appended source cell 41, preserving cells 0–40. The pack now has 42 painted cells and 16 recipes in the same 48 slots.
 - Further foundation extension preserves all 48 original slots, including padding, and appends five native-house/church foundation recipes. Current sheet: 112 slots, 21 recipes.
-- `small-village-native.png` is a learning reference rendered by the actual small-village tool and common ground dressing, using `scripts/content/prepare-beodeul-small-village-references.mts`. The earlier version used native Beodeul houses; the current version uses the 3/4 architecture source described below. No third-party material.
+- `small-village-native.png` is a learning reference rendered by the actual small-village tool and common ground dressing, using `scripts/content/prepare-beodeul-small-village-references.mts`. The earlier version used native Beodeul houses; the current version uses the 3/4 architecture source described below, so it shows the RTP-derived cells credited above.
 
 ## 버들항 3/4 탑뷰 민가·교회 손 도트
 
 - Files: `beodeul-architecture/chipset.png`, six concept PNGs, `buildings.png`, `atlas.png`, `normal-error.png`.
-- Author: project-owned native Beodeul artwork; localized pixel edits by Codex, 2026-10-04; no image-generation service.
-- Original footprint/collision source: project-owned Beodeul h101_0/h104_0/h112_0/h109_1/h107_0/cathedral kits. Original roofs, silhouettes and pixel textures are preserved. Side walls are optional. Only duplicate doors, localized windows and a masonry tint are edited.
+- Author: native Beodeul artwork (contains credited EasyRPG RTP retro_Exterior cells); localized pixel edits by Codex, 2026-10-04; no image-generation service.
+- Original footprint/collision source: native Beodeul h101_0/h104_0/h112_0/h109_1/h107_0/cathedral kits. Original roofs, silhouettes and pixel textures are preserved. Side walls are optional. Only duplicate doors, localized windows and a masonry tint are edited.
 - Source: `src/harnesses/beodeul-architecture/node/build.py`, `tiledata/beodeul-architecture/`; harness seed in `harness-data/beodeul-architecture/seed.json`.
-- Licensing: follows the existing project-owned Beodeul artwork's terms; no new third-party material.
+- Licensing: see «EasyRPG RTP material in the Beodeul sheets and the vehicle sheet» and «Beodeul trees and forest ground» (2026-10-22): native Beodeul cells are not all project-owned.
 - The earlier wholesale projected redraw was rejected and superseded by the native artwork. Learning images are not additional game sprites. The small-village learning render now uses the new architecture source through real tile grafts.
 
 ## 버들항 원본 보존 일광 바닥 (2026-10-04)
 
 - Files: beodeul-ground/light-*.png, chipset.png appended slots 112..303, lighting-preview.png, lighting-normal-error.png.
 - Source: src/harnesses/beodeul-architecture/node/lightground.py. Explicit pixel ground shadows and subtle meadow patches by Codex; road variants retain the native Beodeul tile silhouettes and edit curb contrast only.
-- Native artwork and its existing terms are preserved. No third-party pixels, image generation, or external photo copies. Saint11/SLYNYRD tutorials were consulted for lighting/grounding principles, with no artwork copied.
+- Native artwork and its existing terms are preserved (road variants contain credited EasyRPG RTP cells). No new third-party pixels, image generation, or external photo copies. Saint11/SLYNYRD tutorials were consulted for lighting/grounding principles, with no artwork copied.
 
 버들항 공용 ground의 작은 마을 흙/포석 경계·디딤돌·텃밭(hamletground.py, 2026-10-04)은 프로젝트 원본 잔디/포석과 코드 손 도트로 저작했다. 원본 버들항 출처/라이선스는 기존 항목을 따른다. SLYNYRD의 Top Down Tiles Part 2는 연결 원리 참고이며 그림 픽셀은 복사하지 않았다.
 
 버들항 공동마당 배치 학습 그림(courtyard-native.png, 2026-10-04)은 공용 원본 민가 5채·교회·나무·지면을 실제 도구로 조립한 표본이다. 새로운 외부 그림 픽셀은 포함하지 않는다. CrossCode 공식 마을 설계 글과 The 5 Ingredients of Game Town Design의 공간 구성 원리를 참고했다.
 
-버들항 식생 깊이 공용 조각(woodland.py, 2026-10-04)은 프로젝트 원본 나무 수관/목/뿌리를 지면 접점 순서로 합성한 것이다. 풀 군락과 연결 울타리/모서리는 코드 손 도트로 추가했다. stone 집 박공은 원본 정면 돌 질감으로 통일했다. 기존 버들항 출처/라이선스를 따르며 외부 그림 픽셀이나 생성 이미지 서비스는 사용하지 않았다.
+버들항 식생 깊이 공용 조각(woodland.py, 2026-10-04)은 프로젝트 원본 나무 수관/목/뿌리를 지면 접점 순서로 합성한 것이다. 풀 군락과 연결 울타리/모서리는 코드 손 도트로 추가했다. stone 집 박공은 원본 정면 돌 질감으로 통일했다. 이번 합성에 새 외부 그림 픽셀이나 생성 이미지 서비스는 쓰지 않았다. 원본 나무는 예전 생성 이미지 편집에서 나온 것이라 2026-10-22 에 손 도트로 다시 그려 같은 자리에 바꿨다(「Beodeul trees and forest ground」 절).
 
 Beodeul stone gable correction (2026-10-04): project-authored triangular masonry wall and centred round window from native Beodeul facade pixels; generated by the beodeul-architecture harness. Native roof pixels restored. No additional third-party artwork.
 
 Beodeul river-town learning composition (2026-10-04): 41 native building kits, three native bridges, common ground/forest artwork, assembled by scripts/content/lib/beodeul-river-town.mts. The user-supplied town diagram informed road hierarchy and district relationships only; none of its pixels are included. Rendered learning images follow the existing Beodeul artwork terms.
 
-Beodeul palette standard (2026-10-05): user-selected warm yellow-green from native Beodeul tree RGB variants, with native grass/house/road material roles. Reference comparison and the deliberately recoloured-ground error use project-owned source pixels only. scripts/content/prepare-beodeul-palette-standard.mjs; existing Beodeul artwork terms apply.
+Beodeul palette standard (2026-10-05): user-selected warm yellow-green from native Beodeul tree RGB variants, with native grass/house/road material roles. Reference comparison and the deliberately recoloured-ground error use native Beodeul source pixels (credited RTP cells and the redrawn trees; see 2026-10-22 sections). scripts/content/prepare-beodeul-palette-standard.mjs; existing Beodeul artwork terms apply.
 # Beodeul warm tree palette (2026-10-05)
 
-`beodeul-warm-trees/chipset.png` is derived from this project's native Beodeul trees and shared woodland compositions. The user selected the `warm` RGB lookup beside a native house. Pixel positions, alpha, bark, roots and existing ground shadows are preserved. No external artwork was copied. Source and prior attribution terms remain applicable. Reproduction: `scripts/content/build-beodeul-warm-trees.py`; lookup: `tiledata/beodeul-ground/tree-palette-studies/palettes.json`; whole-map learning source: `tiledata/beodeul-ground/VILLAGE50.md`.
+`beodeul-warm-trees/chipset.png` is a recolour of the Beodeul tree bodies and shared woodland compositions, which were redrawn by hand on 2026-10-22 (see «Beodeul trees and forest ground»). The user chose the `warm` look beside a native house. For the new colours that look is kept by `warm-redrawn-lookup.json`. Pixel positions and alpha follow the source groups, the ground shadows are unchanged, and existing cell numbers are kept. No external artwork was copied. Reproduction: `scripts/content/build-beodeul-warm-trees.py`. Lookup: `tiledata/beodeul-ground/tree-palette-studies/palettes.json` (`warm`). Whole-map learning source: `tiledata/beodeul-ground/VILLAGE50.md`.
 
 
-Beodeul structural families (2026-10-05): `beodeul-forms/chipset.png` and six families assemble this project's native Beodeul roof/wall/dormer/porch pixels at 1:1 scale, with project-authored local panes, contact foundations and ground shadows. Existing Beodeul attribution terms apply. Source: beodeul-architecture harness `node/forms.py`, seed.structuralFamilies; catalog and reference source: `tiledata/beodeul-forms/`. CrossCode, Stardew Valley and Sea of Stars screenshots informed architecture observations only; no external game artwork is included in these assets.
+Beodeul structural families (2026-10-05): `beodeul-forms/chipset.png` and six families assemble native Beodeul roof/wall/dormer/porch pixels (including credited EasyRPG RTP retro_Exterior cells) at 1:1 scale, with project-authored local panes, contact foundations and ground shadows. Existing Beodeul attribution terms apply. Source: beodeul-architecture harness `node/forms.py`, seed.structuralFamilies; catalog and reference source: `tiledata/beodeul-forms/`. CrossCode, Stardew Valley and Sea of Stars screenshots informed architecture observations only; no external game artwork is included in these assets.
 
 Beodeul building review round 3 (2026-10-05): `beodeul-architecture/review-r3-building-*-roof.png` assembles this project's native Beodeul building pixels at 1:1 resolution. Explicit roof palette lookups preserve texture coordinates; selected mill foundation pixels use native masonry. `review-sign-*.png` are project-authored 16×24 wood/iron sign grids with independent 8×8 pictograms. Reproduction: `src/harnesses/beodeul-building-review/node/author_round3_details.py`; pixel/coordinate source: `harness-data/beodeul-building-review/round3-detail-sources.json`. Final Fantasy, Stardew Valley, Chrono Trigger and Secret of Mana informed facility identification and shape observations only; no game artwork is copied. Existing Beodeul source/attribution terms apply to native parts. These are review candidate sources; runtime bundle installation requires human approval.
 

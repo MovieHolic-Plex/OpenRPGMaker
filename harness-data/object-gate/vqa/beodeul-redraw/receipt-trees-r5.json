@@ -1,0 +1,39 @@
+{
+  "reviewer": "fresh Opus adversarial VQA",
+  "round": 5,
+  "date": "2026-10-22",
+  "verdict": "FAIL",
+  "per_design": {
+    "oakA": {"verdict": "PASS_WITH_NOTES", "notes": "Crown 64x80 reads well with upper-left light and a dark lower-right mass. The lit body colour 6ea03a is almost the same value as grass 729c44, so on open grass the upper-left silhouette fades out (new_art_4x 1x x0-20 y10-30). It stays readable because b0cc58 highlights and the dark right side carry the form."},
+    "oakB": {"verdict": "PASS", "notes": "Same family as oakA. Trunk and roots are clean."},
+    "oakA_v2": {"verdict": "PASS", "notes": "Its own drawing: 2381 of 3596 art pixels differ from oakA. Not a re-tint."},
+    "oakA_v3": {"verdict": "PASS", "notes": "2303 of 3216 art pixels differ from oakA, and 2595 differ from v2."},
+    "oakB_v2": {"verdict": "PASS", "notes": "1467 of 2071 art pixels differ from oakB."},
+    "oakB_v3": {"verdict": "PASS", "notes": "1117 of 1670 art pixels differ from oakB. The right lobe is a little blocky (4x x1440-1470 y140-250) but fine at 1x."},
+    "bushC": {"verdict": "PASS", "notes": "Low loaf shape that sits on the tile bottom. Same palette family."},
+    "bushD": {"verdict": "PASS", "notes": "OK."},
+    "bushE": {"verdict": "PASS", "notes": "OK."}
+  },
+  "city_kits": {"verdict": "PASS_WITH_NOTES", "notes": "No crown is flush with a tile edge: the longest non-grass run on any edge of an AFTER tile is 3 px at 1x (tiles at 2x sheet (304,398) and (248,414) come within 1 px on the left). Old V-branch trunks and flared roots are fully gone. The warm bush (2x sheet 512-576, 548-612) keeps the old palette (bac668/84a03e/587e30, hue 67-89) and is not muddier than before. Bushes are now lower and flatter, which leaves the top of each 32x32 cell empty. That is acceptable."},
+  "ground": {"verdict": "FAIL", "notes": "woodland_west AFTER (2x sheet box 512-736 x 676-932; 1x recipe-local coordinates below) has the same defects as warm group 5: a bare 9x35 px trunk pole at x40-48 y67-102 with a flat cut bottom and no roots, and two stray dark-green horizontal dashes on open grass at x15-20 y61 and x48-54 y87. woodland_north AFTER (2x 272-496 x 644-932): the middle-left crown (x12-50 y48-84) has no trunk and floats with a 1-3 px grass gap above the lower-left crown, and the upper-right tree's trunk stub (x54-63 y47-59) hangs in open grass. light_trees AFTER (2x 656-912 x 172-332): the contact shadows are now dark-green crescent or hook fragments (local x~213-243 y~115-128 and x~146-200 y~137-147) that read as dark arcs rather than ground shadows. Minor. The neck and roots pieces are clean."},
+  "warm": {"verdict": "FAIL", "notes": "Colour is fixed: the yellow-green highlights are afbc51 and b0cc58, hue 67-74 with saturation 0.57. That is not mustard or olive, and in river-town the warm trees read as fresh yellow-green. Structure is not fixed. Group 5 AFTER (2x sheet 0-224 x 1210-1468, 1x local) has a tall bare trunk pole at x40-48 y67-102 with no roots, and dark dashes at x15-20 y61 and x48-54 y87. Group 4 AFTER (2x 1088-1312 x 644-932) has the same floating crown with no trunk (x12-50 y48-84, 1-3 px gap at x20-40 y84-87) and a hanging trunk stub (x54-63 y47-59). The three-tree row AFTER (2x 0-256 / 544-800 x 772-932) has crescent shadow fragments and a detached dark dash below the second tree's roots (2x ~x537-577 y~879). The shadow-only recipes are clean. The 2x2 dark speck at g4 local (80-81, 14-15) was already in BEFORE."},
+  "canopy": {"verdict": "PASS_WITH_NOTES", "notes": "The new broadleaf crowns mix with the unchanged conifers without seams. Tints vary and no grid reads at 1x. The dark 0c2222 voids at the top rim (canopy_after ~x77-95 y44-57 and ~x180-197 y44-57) and between crowns are as large as the ones in BEFORE, so they predate this change. The bottom edges of crowns in the fill are flat and horizontal, which is a property of the autotile and also matches BEFORE."},
+  "forest_in_context": {"verdict": "PASS_WITH_NOTES", "notes": "tool-village: the forest bottom row (after half, map ~x0-100 y600-620) now has three different trees: different drawings and tints, with no pixel-identical block found by search. The orchard look is gone. river-town, village50 and facilities: the tree rows read as a natural mixed grove, with no repeated copies and no cut crowns. In river-town the right tree of a trio overlaps its neighbour with a lit, outline-free left edge (after map x75-77 y1066-1087). It is acceptable but soft. The tall-pole and floating-crown recipes were not seen in these four maps, but any map that uses woodland_west, woodland_north or warm group 4/5 will show them."},
+  "previous_findings": {
+    "1_orchard_identical_copies": "FIXED: the variants differ in 31-74% of art pixels, and no identical 32px-stride copy was found in the tool-village forest row.",
+    "2_warm_muddy_olive": "FIXED: highlights are hue 67-82, saturation ~0.57, with no mustard or olive cast.",
+    "3_specks_seams_cut_edges_leftover_trunks": "NOT FULLY FIXED: city kits are clean, but the ground woodland_west, woodland_north and warm groups 4/5 still contain a bare leftover trunk pole, a hanging trunk stub, two dark dashes on grass, and a crown with no trunk."
+  },
+  "blocking_issues": [
+    "Warm group 5 and ground woodland_west (the same layout): a bare 9x35 px trunk pole at recipe-local x40-48 y67-102 with a flat bottom and no roots, between the crowns. Obvious at 1x and 2x.",
+    "Same recipes: stray dark-green horizontal dashes on open grass at local x15-20 y61 and x48-54 y87, with no tree above them.",
+    "Warm group 4 and ground woodland_north: the middle-left crown (local x12-50 y48-84) has no trunk and floats over a 1-3 px grass gap above the lower-left crown, and the upper-right tree's trunk stub (x54-63 y47-59) hangs in open grass."
+  ],
+  "minor": [
+    "The lit crown body 6ea03a is almost the same value as grass 729c44, so the upper-left silhouette fades on plain grass.",
+    "Contact shadows in light_trees and the warm three-tree row are now crescent or hook fragments, plus a detached dash under the second tree. They read as odd dark arcs at 2x.",
+    "A 2x2 dark speck on grass in warm group 4 (local 80-81, 14-15). It was already in BEFORE.",
+    "City oak crowns come within 1 px of the tile edge (up to 3 px run) and could clip if they are placed against non-grass neighbours.",
+    "Canopy rim voids (0c2222) are unchanged from BEFORE."
+  ]
+}

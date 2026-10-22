@@ -38,35 +38,47 @@ export async function prepareStoreItem(slug: string): Promise<PreparedStoreItem>
   // 아직 받지 않은 상품이면 받는다(스토어 창은 미리 받고 들어오고, 조수 도구는 여기서 받는다).
   if (!(await bridge.installed()).some((item) => item.slug === slug)) await bridge.install({ slug });
   const pkg = await bridge.package({ slug });
-  const blob = (sha: string): Uint8Array => {
-    const bytes = pkg.blobs[sha];
-    if (!bytes) throw new Error(`받은 팩에 파일이 빠졌습니다(${sha.slice(0, 12)}). 다시 받아 주세요.`);
-    return bytes;
-  };
-  const repository = projectRepository();
-  const storedRefs = new Map<string, NonNullable<UploadedAsset["ref"]>>();
-  const restoredDataUrls = new Map<string, string>();
-  const context: ApplyContext = {
+  return prepareManifestItem(pkg.manifest, {
     slug,
     version: pkg.version,
     author: pkg.author,
     storeUrl: pkg.storeUrl,
     itemUrl: pkg.itemUrl,
-    blob,
-    storedRefs,
-    restoredDataUrls,
-  };
-  // 빈 문서(번들 타일셋 참조만 공유)로 먼저 넣어 본다 — 깨진 팩이면 실제 프로젝트도, 프로젝트 저장소(assets/)도 건드리지 않는다.
+    blob: (sha: string): Uint8Array => {
+      const bytes = pkg.blobs[sha];
+      if (!bytes) throw new Error(`받은 팩에 파일이 빠졌습니다(${sha.slice(0, 12)}). 다시 받아 주세요.`);
+      return bytes;
+    },
+  });
+}
+
+/**
+ * 이미 손에 든 팩(매니페스트 + blob)을 넣을 준비를 한다. 스토어 상품과 공방이 가져온 생성기 묶음(genPackImport.ts)이 같이 쓴다.
+ * 빈 문서(번들 타일셋 참조만 공유)로 먼저 넣어 본다 — 깨진 팩이면 실제 프로젝트도, 프로젝트 저장소(assets/)도 건드리지 않는다.
+ */
+export async function prepareManifestItem(
+  manifest: StorePackManifest,
+  meta: Pick<ApplyContext, "slug" | "version" | "author" | "storeUrl" | "itemUrl" | "blob">,
+): Promise<PreparedStoreItem> {
+  const { slug, blob } = meta;
+  const repository = projectRepository();
+  const storedRefs = new Map<string, NonNullable<UploadedAsset["ref"]>>();
+  const restoredDataUrls = new Map<string, string>();
+  const context: ApplyContext = { ...meta, storedRefs, restoredDataUrls };
   // 복원한 dataUrl 은 캐시해 재사용한다.
   const currentTilesets = store.getCurrent().tilesets;
   const probeTilesets: Record<string, Project["tilesets"][string]> = {};
-  for (const id of Object.keys(pkg.manifest.content.tilesets)) {
+  for (const id of Object.keys(manifest.content.tilesets)) {
     const existing = Object.hasOwn(currentTilesets, id) ? currentTilesets[id] : undefined;
     if (existing) probeTilesets[id] = existing;
   }
-  applyPackToProject({ tilesets: probeTilesets, assets: { uploaded: {} } } as unknown as Project, pkg.manifest, context);
+  // 미리 돌려 보기용 빈 문서 — applyPackToProject 가 건드리는 칸(캐릭터 칸 설명·캐릭터 외형 포함)을 다 둔다.
+  // database 를 빼면 짝 초상이 든 캐릭터 팩(char-gen 묶음 등)이 「characterAppearances」 읽기에서 죽는다(2026-10-21 실측).
+  applyPackToProject({
+    tilesets: probeTilesets, assets: { uploaded: {} }, charsetLabels: [], database: { characterAppearances: [] },
+  } as unknown as Project, manifest, context);
   if (repository.supportsAssetRefs) {
-    for (const { id, asset } of packAssetTargets(pkg.manifest, slug)) {
+    for (const { id, asset } of packAssetTargets(manifest, slug)) {
       const bytes = blob(asset.blob);
       const mime = sniffMime(bytes);
       if (!mime || mime !== asset.mime) throw new Error(`${asset.name}: 받은 파일 형식이 팩 설명과 다릅니다.`);
@@ -79,7 +91,7 @@ export async function prepareStoreItem(slug: string): Promise<PreparedStoreItem>
       if (stored.ref) storedRefs.set(id, stored.ref);
     }
   }
-  return { manifest: pkg.manifest, version: pkg.version, context };
+  return { manifest, version: meta.version, context };
 }
 /** 준비한 판본을 문서에 넣는다(동기). 패널은 store.update 안에서, 조수 도구는 draft 에서 부른다. */
 export function applyPreparedStoreItem(project: Project, prepared: PreparedStoreItem): ApplyResult {

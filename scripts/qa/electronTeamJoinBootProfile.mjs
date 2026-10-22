@@ -1,3 +1,4 @@
+// @deprecated multi-user team collaboration is not supported yet (2026-10-21). 진입점은 TEAM_COLLAB_ENABLED(electron/shared/teamCollab.ts) 를 켜야 보인다.
 // 참여 창 부팅 CPU 프로파일 (같은 userData 로 두 번: 첫 참여 / 두 번째 참여)
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";

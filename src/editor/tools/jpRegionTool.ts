@@ -1,11 +1,12 @@
 // compose_jp_region · list_jp_regions — 일본 지역 30종(japaneseRegionsCatalog.ts)을 jp_city 맵 한 장에 짓는다.
 // 장면 지역은 regionComposer 가 펼친 바닥·키트 단계를 복제본에 시공하고, 상가·주택가 지역은 compose_jp_city_street 에 넘긴다.
 import { JP_REGION_CATEGORIES, JP_REGIONS, jpRegionBrief, jpRegionById, searchJpRegions, type JpRegion } from "@/editor/jpCity/japaneseRegionsCatalog";
+import { composeJpForestR4, hasJpForestR3, hasJpForestR4, paintJpForest } from "@/editor/jpCity/forestPainter";
 import { paintJpRegionGround, planJpRegionScene } from "@/editor/jpCity/regionComposer";
 import { isPassable } from "@/project/collision";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { isJpCityTileset, JP_CITY_FAMILY, JP_CITY_ID } from "@/project/defaults/jpCity";
-import { setLayerTileAt } from "@/project/mapLayers";
+import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import type { GameMap, Project } from "@/project/types";
 import { claimStartIfBlank } from "./composerStart";
@@ -87,6 +88,7 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
       region: { type: "string", enum: REGION_IDS, description: "지역 id(list_jp_regions)" },
       seed: { type: "integer", minimum: 0, description: "배치 씨앗 - 다른 값이면 다른 배치. 생략하면 0" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 짓는다(이벤트는 남는다)" },
+      grounding: { type: "boolean", description: "옛 인자 — 무시한다. 숲 나무 밑 땅 그늘(접지)은 늘 켜진다" },
     },
     required: ["region"],
     additionalProperties: false,
@@ -118,16 +120,32 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     target.lowerTiles.fill(blankFillTileFor(JP_CITY_ID, 0, next.tilesets[map.tilesetId]!));
     for (let i = 0; i < target.lowerTiles.length; i++) { setLayerTileAt(target, 3, i, -1); setLayerTileAt(target, 4, i, -1); clearTileStack(target, "upper", i); }
     const kits = new Map((tileset.structureKits ?? []).map((k) => [k.id, { w: k.width, h: k.height }]));
-    let plan = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed, kitSize: (id) => kits.get(id) });
+    // 숲 구획: r3 오토타일이 있거나, 나무 composer(r4 활엽)가 있으면 paint_forest 로 칠한다. 대숲 등산로는 r4(활엽만)로 바꾸면 대숲이 사라지므로 r3 가 없을 땐 옛 키트(대숲·삼나무)로 둔다.
+    const useForestAutotile = hasJpForestR3(tileset) || (hasJpForestR4(tileset) && region.id !== "bamboo_mountain_trail");
+    const grounding = args.grounding !== false;
+    let plan = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed, kitSize: (id) => kits.get(id), forestAutotile: useForestAutotile });
     for (let retry = 1; retry < 8 && plan.violations.length > 0; retry++) {
-      const candidate = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed: seed + retry, kitSize: (id) => kits.get(id) });
+      const candidate = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed: seed + retry, kitSize: (id) => kits.get(id), forestAutotile: useForestAutotile });
       if (candidate.violations.length < plan.violations.length) plan = candidate;
       if (plan.violations.length === 0) break;
     }
     let stamped = 0;
+    let forest: ReturnType<typeof paintJpForest> | undefined;
     const failed: string[] = [];
     for (const step of plan.steps) {
       try {
+        if (step.tool === "paint_forest") {
+          // 숲 구획: 마스크 → 수관 오토타일 → 하늘선 → 수관 머리 → 줄기 띠(forestPainter). 3층 수관·4층 덧그림.
+          const kinds = Uint8Array.from(step.args.kinds as number[]);
+          forest = paintJpForest({
+            width: target.width,
+            height: target.height,
+            getLayer: (layer, i) => layerTileAt(target, layer, i),
+            setLayer: (layer, i, t) => setLayerTileAt(target, layer, i, t),
+          }, next.tilesets[map.tilesetId]!, kinds, Number(step.args.seed) || 0);
+          stamped++;
+          continue;
+        }
         if (
           step.tool === "fill_region"
           && paintJpRegionGround(target, next.tilesets[map.tilesetId]!, step.args.rect as { x: number; y: number; w: number; h: number }, String(step.args.material))
@@ -164,6 +182,8 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
         failed.push(step.note);
       }
     }
+    // r4 나무 composer: 숲 바닥만 칠해 두었다가 집·소품을 다 찍은 뒤 한 번에 나무를 세운다(수관이 집·길·물 위로 넘치지 않게).
+    if (forest && hasJpForestR4(next.tilesets[map.tilesetId]!)) composeJpForestR4(target, next.tilesets[map.tilesetId]!, 0, grounding);   // 씨앗 0: 편집기 붓과 같은 배치(붓질 한 번에 둘레 나무가 바뀌지 않게)
     if (stamped === 0) throw new ToolError(`${region.id} 키트를 하나도 세우지 못했다 — 맵을 ${region.size[0]}×${region.size[1]} 로 키우거나 다른 seed 를 준다`, { code: "compose-failed", mapId });
     draft.maps[mapId] = next.maps[mapId]!;
     for (const [id, ts] of Object.entries(next.tilesets)) draft.tilesets[id] = ts;
@@ -176,7 +196,7 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     ];
     return {
       summary: `${region.ko}(${region.ja}) 지역을 지었다 — 키트 ${stamped}개, 씨앗 ${seed}. 주조 팔레트 ${region.palette.join("·")}, 권장 ${region.season}/${region.timeOfDay}. show_map_region 으로 확인하고 문·이벤트를 단다.${region.alsoWith ? ` 변형: ${region.alsoWith}.` : ""}${startNote}`,
-      data: { mapId, seed, region: info, stamped, unplaced: plan.unplaced, failed, violations: plan.violations, section4: plan.section4 },
+      data: { mapId, seed, region: info, stamped, unplaced: plan.unplaced, failed, violations: plan.violations, section4: plan.section4, ...(forest ? { forest } : {}) },
       ...(warnings.length ? { warnings } : {}),
     };
   },

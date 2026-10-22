@@ -86,6 +86,9 @@ const pick = (place: string, names: string): string[] => names.split(/\s+/).filt
 const CITY_HOUSES = "h101_0 h101_1 h102_0 h102_1 h103_0 h103_1 h103_2 h104_0 h106_1 h107_0 h107_1 h109_1 h110_0 h111_0 h111_1 h112_0 h113_0 h113_1 h116_0 h116_1 h117_0 h117_1 h119_0 h120_0 h122_0 h123_1 h129_0 h131_0 h132_0 h134_0 h135_0 h137_0 h138_0 h139_0"
   .split(" ").map((n) => `bd-house-${n}`);
 const LEAF_TREES = ["bd-tree-03a8f7", "bd-tree-a80c85", "bd-tree-e9d9b3", "bd-tree-cc0fcb", "bd-tree-47e17a", "bd-tree-d43edd", "bd-tree-5844f6", "bd-tree-3e8732", "bd-tree-1a786c", "bd-tree-d61d7e", "bd-tree-7ecdb8", "bd-tree-1e09f0", "bd-tree-bdd36e", "bd-tree-b1d104"];
+// 침엽·혼효 마을(forestType, woodland r3): 낱 나무도 숲과 같은 계열로 — 둥근 활엽 덤불이 침엽 마을을 덮지 않게(독립 검수 D10).
+const CONIFER_TREES = ["bd-pick-coast-cliff-road-fir-l", "bd-pick-coast-cliff-road-fir-m", "bd-pick-coast-cliff-road-fir-m2", "bd-tree-eef4bc", "bd-tree-28ad5e", "bd-tree-c27062"];
+const CONIFER_SHRUBS = ["bd-pick-coast-cliff-road-fir-s", "bd-tree-eef4bc", "bd-tree-c27062"];
 const LEAF_SHRUBS = ["bd-tree-f4f319", "bd-tree-37f48b", "bd-tree-d105b2", "bd-tree-0f7ed1", "bd-tree-132848", "bd-mpart-bush-c", "bd-mpart-bush-e"];
 const MEADOW = [...pick("deep-forest-path", "wild-a wild-b wild-c heath-a heath-b fern-a fern-b stones-a"), ...pick("wheat-roman-road", "wild-a wild-b")];
 
@@ -190,7 +193,10 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   }
   const base = THEMES[theme];
   // 흩어진 마을의 길은 포석이 아니라 모랫길(재료 길만 — 모래·눈·늪 표본 길은 그대로 폭 1)
-  const spec: ThemeSpec = form === "scatter" && "mat" in base.road ? { ...base, road: { mat: SAND_PATH } } : base;
+  const spec0: ThemeSpec = form === "scatter" && "mat" in base.road ? { ...base, road: { mat: SAND_PATH } } : base;
+  const spec: ThemeSpec = spec0.trees !== LEAF_TREES || forestType === "broadleaf" ? spec0
+    : forestType === "conifer" ? { ...spec0, trees: CONIFER_TREES, shrubs: CONIFER_SHRUBS }
+    : { ...spec0, trees: [...LEAF_TREES.slice(0, 7), ...CONIFER_TREES], shrubs: [...LEAF_SHRUBS.slice(0, 3), ...CONIFER_SHRUBS] };
   const fenced = "mat" in base.base; // 울타리 조각(숲 계열)은 풀밭 마을에만
   const ts: TilesetDef = draft.tilesets[TS_ID]!;
   const map0 = draft.maps[mapId]!;
@@ -1502,11 +1508,13 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const N4 = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
     // 숲 칸은 한 단 위에만(남쪽 칸도 같은 단 — 절벽 끝에 수관이 걸치지 않게), 길·집에서 한 칸(그늘 줄)을 띄운다
     const okCell = (c: number, L: number) => occ[c] === FREE && distRoad[c]! >= 2 && lv[c] === L && !rampCells.has(c) && (c + W >= W * H || lv[c + W] === L);
-    const goal = Math.round(W * H * (canopyStyle === "snow" ? 0.1 : 0.14));
+    // 침엽·혼효 마을은 숲 덩이를 크게·넓게(독립 검수 D10 「덩어리 없이 듬성듬성」) — 활엽 마을은 그대로
+    const bigGroves = canopyStyle === "leaf" && forestType !== "broadleaf";
+    const goal = Math.round(W * H * (canopyStyle === "snow" ? 0.1 : bigGroves ? 0.2 : 0.14));
     for (let t = 0; t < 90 && forestSet.size < goal; t += 1) {
       const sx = ri(0, W - 1), sy = ri(0, H - 1), s = idx(sx, sy);
       if (occ[s] !== FREE || distRoad[s]! < 4 || forestSet.has(s)) continue;
-      const L = lv[s]!, rx = ri(3, 8), ry = ri(2, 5), wob = rand() * 6.28;
+      const L = lv[s]!, rx = bigGroves ? ri(5, 9) : ri(3, 8), ry = bigGroves ? ri(3, 6) : ri(2, 5), wob = rand() * 6.28;
       const blob = new Set<number>([s]); const q = [s];
       for (let h = 0; h < q.length; h += 1) {
         const c = q[h]!, x = c % W, y = (c - x) / W;
@@ -1518,7 +1526,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
           blob.add(n); q.push(n);
         }
       }
-      if (blob.size >= 10) for (const c of blob) forestSet.add(c);
+      if (blob.size >= (bigGroves ? 24 : 10)) for (const c of blob) forestSet.add(c);
     }
     // 다듬기: 이웃 숲이 하나 이하인 혹은 지우고, 셋 이상 숲에 둘러싸인 빈 칸(같은 단)은 메운다 — 가는 가지·바늘구멍 수관이 생기지 않게
     const n4 = (c: number) => { const x = c % W, y = (c - x) / W; let k = 0; for (const [dx, dy] of N4) if (!inMap(x + dx, y + dy) || forestSet.has(idx(x + dx, y + dy))) k += 1; return k; };

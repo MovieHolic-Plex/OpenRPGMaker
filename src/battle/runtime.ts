@@ -2369,9 +2369,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       timeline: [...timeline],
       hitFeel: hitFeelFromActionResult(lastActionResult),
       lastCaptureResult,
-      capturedMonsters,
+      // 스냅샷은 호출 시점의 값이다(#2586): 런타임이 계속 고치는 배열·객체는 복사해 넘긴다.
+      // 그래야 이전 스냅샷이 나중 상태로 바뀌지 않고, 스냅샷에 쓴 값이 런타임으로 새지 않는다.
+      capturedMonsters: [...capturedMonsters],
       result,
-      rewards,
+      rewards: structuredClone(rewards),
       canEscape: options.canEscape,
       formation,
       failedEscapeAttempts,
@@ -2394,8 +2396,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         } : {}),
       },
       targetSelection,
-      roundLogs,
-      eventLogs: battleEvents.logs(),
+      roundLogs: [...roundLogs],
+      eventLogs: [...battleEvents.logs()],
       ...(partyGauge !== undefined ? { partyGauge } : {}),
     };
   }

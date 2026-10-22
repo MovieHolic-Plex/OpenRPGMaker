@@ -1,0 +1,480 @@
+{
+ "schema": "bdg-vqa/1",
+ "judge": "claude-opus-5-5",
+ "date": "2026-10-21",
+ "overall": "FAIL",
+ "criteriaNotes": {
+  "1_topdown_flat": "Blob edges and corners read as flat ground. All thin shapes (isolated cell, dead ends, 1-wide bands, bends, T, cross: every cell with a narrow centred border exit) render as strings of diamond/leaf-shaped bush lobes or arrowhead sprouts - object-like (shrubs/clover) rather than ground.",
+  "2_seams": "No hard seams or colour breaks. Border dark runs differ by 1px between piece types (4-10 vs 3-11, 8-15 vs 9-15) causing small steps; arm cells pinch to 7px necks at every border so 1-wide regions look discontinuous/beaded. Stray detached pixels: (8,12)/(9,13) in 672/718, (9,1) in 686/688/691/694/696 and woodland counterparts. 1px border holes in 677/693/694/695 match the original interior texture.",
+  "3_colour": "The 4 woodland colours (#759951 #688c48 #81a359 #8aab60) are a consistent desaturation of 737's 4 tones, sit naturally beside the original dark grass and crowns; no muddy/off-palette look.",
+  "4_style": "Dark side copies the original 11628 dither and highlight language; light side copies 737/650. No smeared or generated noise.",
+  "5_maps": "Straight edges show an obvious 16px sawtooth: each straight-edge tile carries one big lobe, so stacked/rowed edges (r9-route-1 721 column, s4/s1 slab boundaries, field blob sides) repeat visibly; combined with grid-aligned map layouts this reads as serrated square slabs. Corners and inner corners are fine under the original crowns."
+ },
+ "cells": [
+  {
+   "id": 650,
+   "verdict": "PASS",
+   "reasons": "Woodland base: pixel-identical layout to original 737 with 4 desaturated colours; reads as flat ground, sits fine beside original crowns in s1-s8. Note: inherits 737's 16px glyph wallpaper repetition (original trait, not introduced here)."
+  },
+  {
+   "id": 651,
+   "verdict": "FAIL",
+   "reasons": "Isolated single cell is a round dark leafy tuft with highlight dots and scalloped rim; in field-plain it reads as a small bush/shrub object rather than a patch of ground (crit 1)."
+  },
+  {
+   "id": 652,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 653,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 654,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 655,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 656,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 657,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 658,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 659,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 660,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 661,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 662,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 663,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 664,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 665,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 666,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 667,
+   "verdict": "PASS",
+   "reasons": "Outer blob corner; no thin arm, occurs once per corner so no periodic repetition; joins adjacent straight-edge cells with at most a 1px run offset (cols 8 vs 9), not visible at 1x/2x. Colours/texture match sheet."
+  },
+  {
+   "id": 668,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 669,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 670,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 671,
+   "verdict": "PASS",
+   "reasons": "Outer blob corner; no thin arm, occurs once per corner so no periodic repetition; joins adjacent straight-edge cells with at most a 1px run offset (cols 8 vs 9), not visible at 1x/2x. Colours/texture match sheet."
+  },
+  {
+   "id": 672,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs. Also stray diagonal single-pixel chain (8,12)/(9,13) detached from the blob."
+  },
+  {
+   "id": 673,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 674,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 675,
+   "verdict": "FAIL",
+   "reasons": "Straight edge piece: profile is one large lobe/chevron per tile (amplitude ~4-5px), so any straight run becomes a regular 16px sawtooth/scallop - clearly visible in r9-route-1 (721 x4 stacked column) and on every field blob side (crit 5, grid-aligned repeating edge)."
+  },
+  {
+   "id": 676,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 677,
+   "verdict": "PASS",
+   "reasons": "Outer blob corner; no thin arm, occurs once per corner so no periodic repetition; joins adjacent straight-edge cells with at most a 1px run offset (cols 8 vs 9), not visible at 1x/2x. Colours/texture match sheet."
+  },
+  {
+   "id": 678,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 679,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 680,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 681,
+   "verdict": "PASS",
+   "reasons": "Diagonal two-quadrant piece; dark regions connect through a pinched diagonal that reads as natural ground in seam patches; no stray pixels or seams found."
+  },
+  {
+   "id": 682,
+   "verdict": "FAIL",
+   "reasons": "Straight edge piece: profile is one large lobe/chevron per tile (amplitude ~4-5px), so any straight run becomes a regular 16px sawtooth/scallop - clearly visible in r9-route-1 (721 x4 stacked column) and on every field blob side (crit 5, grid-aligned repeating edge)."
+  },
+  {
+   "id": 683,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 684,
+   "verdict": "PASS",
+   "reasons": "Inner (concave) corner; continuous with full-dark neighbours on two sides; light notch reads as flat ground; inherited 1px hole at bottom border (col 6) also present in the original interior texture, not a new seam."
+  },
+  {
+   "id": 685,
+   "verdict": "PASS",
+   "reasons": "Outer blob corner; no thin arm, occurs once per corner so no periodic repetition; joins adjacent straight-edge cells with at most a 1px run offset (cols 8 vs 9), not visible at 1x/2x. Colours/texture match sheet."
+  },
+  {
+   "id": 686,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs. Isolated stray pixel at (9,1) next to the tile top border."
+  },
+  {
+   "id": 687,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 688,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs. Isolated stray pixel at (9,1) next to the tile top border."
+  },
+  {
+   "id": 689,
+   "verdict": "FAIL",
+   "reasons": "Straight edge piece: profile is one large lobe/chevron per tile (amplitude ~4-5px), so any straight run becomes a regular 16px sawtooth/scallop - clearly visible in r9-route-1 (721 x4 stacked column) and on every field blob side (crit 5, grid-aligned repeating edge)."
+  },
+  {
+   "id": 690,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 691,
+   "verdict": "PASS",
+   "reasons": "Diagonal two-quadrant piece; dark regions connect through a pinched diagonal that reads as natural ground in seam patches; no stray pixels or seams found."
+  },
+  {
+   "id": 692,
+   "verdict": "PASS",
+   "reasons": "Inner (concave) corner; continuous with full-dark neighbours on two sides; light notch reads as flat ground; inherited 1px hole at bottom border (col 6) also present in the original interior texture, not a new seam."
+  },
+  {
+   "id": 693,
+   "verdict": "FAIL",
+   "reasons": "Straight edge piece: profile is one large lobe/chevron per tile (amplitude ~4-5px), so any straight run becomes a regular 16px sawtooth/scallop - clearly visible in r9-route-1 (721 x4 stacked column) and on every field blob side (crit 5, grid-aligned repeating edge)."
+  },
+  {
+   "id": 694,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-plain, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs. Isolated stray pixel at (9,1) next to the tile top border."
+  },
+  {
+   "id": 695,
+   "verdict": "PASS",
+   "reasons": "Inner (concave) corner; continuous with full-dark neighbours on two sides; light notch reads as flat ground; inherited 1px hole at bottom border (col 6) also present in the original interior texture, not a new seam."
+  },
+  {
+   "id": 696,
+   "verdict": "PASS",
+   "reasons": "Inner (concave) corner; continuous with full-dark neighbours on two sides; light notch reads as flat ground; inherited 1px hole at bottom border (col 6) also present in the original interior texture, not a new seam."
+  },
+  {
+   "id": 697,
+   "verdict": "FAIL",
+   "reasons": "Isolated single cell is a round dark leafy tuft with highlight dots and scalloped rim; in field-woodland it reads as a small bush/shrub object rather than a patch of ground (crit 1)."
+  },
+  {
+   "id": 698,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 699,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 700,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 701,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 702,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 703,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 704,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 705,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 706,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 707,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 708,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 709,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 710,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 711,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 712,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 713,
+   "verdict": "PASS",
+   "reasons": "Outer blob corner; no thin arm, occurs once per corner so no periodic repetition; joins adjacent straight-edge cells with at most a 1px run offset (cols 8 vs 9), not visible at 1x/2x. Colours/texture match sheet."
+  },
+  {
+   "id": 714,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 715,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 716,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 717,
+   "verdict": "PASS",
+   "reasons": "Outer blob corner; no thin arm, occurs once per corner so no periodic repetition; joins adjacent straight-edge cells with at most a 1px run offset (cols 8 vs 9), not visible at 1x/2x. Colours/texture match sheet."
+  },
+  {
+   "id": 718,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs. Also stray diagonal single-pixel chain (8,12)/(9,13) detached from the blob."
+  },
+  {
+   "id": 719,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 720,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 721,
+   "verdict": "FAIL",
+   "reasons": "Straight edge piece: profile is one large lobe/chevron per tile (amplitude ~4-5px), so any straight run becomes a regular 16px sawtooth/scallop - clearly visible in r9-route-1 (721 x4 stacked column) and on every field blob side (crit 5, grid-aligned repeating edge)."
+  },
+  {
+   "id": 722,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 723,
+   "verdict": "PASS",
+   "reasons": "Outer blob corner; no thin arm, occurs once per corner so no periodic repetition; joins adjacent straight-edge cells with at most a 1px run offset (cols 8 vs 9), not visible at 1x/2x. Colours/texture match sheet."
+  },
+  {
+   "id": 724,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 725,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 726,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 727,
+   "verdict": "PASS",
+   "reasons": "Diagonal two-quadrant piece; dark regions connect through a pinched diagonal that reads as natural ground in seam patches; no stray pixels or seams found."
+  },
+  {
+   "id": 728,
+   "verdict": "FAIL",
+   "reasons": "Straight edge piece: profile is one large lobe/chevron per tile (amplitude ~4-5px), so any straight run becomes a regular 16px sawtooth/scallop - clearly visible in r9-route-1 (721 x4 stacked column) and on every field blob side (crit 5, grid-aligned repeating edge)."
+  },
+  {
+   "id": 729,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 730,
+   "verdict": "PASS",
+   "reasons": "Inner (concave) corner; continuous with full-dark neighbours on two sides; light notch reads as flat ground; inherited 1px hole at bottom border (col 6) also present in the original interior texture, not a new seam."
+  },
+  {
+   "id": 731,
+   "verdict": "PASS",
+   "reasons": "Outer blob corner; no thin arm, occurs once per corner so no periodic repetition; joins adjacent straight-edge cells with at most a 1px run offset (cols 8 vs 9), not visible at 1x/2x. Colours/texture match sheet."
+  },
+  {
+   "id": 732,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs. Isolated stray pixel at (9,1) next to the tile top border."
+  },
+  {
+   "id": 733,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 734,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs. Isolated stray pixel at (9,1) next to the tile top border."
+  },
+  {
+   "id": 735,
+   "verdict": "FAIL",
+   "reasons": "Straight edge piece: profile is one large lobe/chevron per tile (amplitude ~4-5px), so any straight run becomes a regular 16px sawtooth/scallop - clearly visible in r9-route-1 (721 x4 stacked column) and on every field blob side (crit 5, grid-aligned repeating edge)."
+  },
+  {
+   "id": 736,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs."
+  },
+  {
+   "id": 737,
+   "verdict": "PASS",
+   "reasons": "Diagonal two-quadrant piece; dark regions connect through a pinched diagonal that reads as natural ground in seam patches; no stray pixels or seams found."
+  },
+  {
+   "id": 738,
+   "verdict": "PASS",
+   "reasons": "Inner (concave) corner; continuous with full-dark neighbours on two sides; light notch reads as flat ground; inherited 1px hole at bottom border (col 6) also present in the original interior texture, not a new seam."
+  },
+  {
+   "id": 739,
+   "verdict": "FAIL",
+   "reasons": "Straight edge piece: profile is one large lobe/chevron per tile (amplitude ~4-5px), so any straight run becomes a regular 16px sawtooth/scallop - clearly visible in r9-route-1 (721 x4 stacked column) and on every field blob side (crit 5, grid-aligned repeating edge)."
+  },
+  {
+   "id": 740,
+   "verdict": "FAIL",
+   "reasons": "Thin 1-cell-wide arm(s) (border exit only 7-9px, centred). Each arm cell is a single centred diamond/leaf lobe pinched at both borders, so 1-wide bands, dead ends, bends, T and cross junctions render as a chain of bush/clover/arrowhead shapes (seams-woodland, field spurs) - reads as plants standing on grass, not flat ground (crit 1), and the beads repeat every 16px (crit 5). Arm borders also step by 1px between 4-10 and 3-11 runs. Isolated stray pixel at (9,1) next to the tile top border."
+  },
+  {
+   "id": 741,
+   "verdict": "PASS",
+   "reasons": "Inner (concave) corner; continuous with full-dark neighbours on two sides; light notch reads as flat ground; inherited 1px hole at bottom border (col 6) also present in the original interior texture, not a new seam."
+  },
+  {
+   "id": 742,
+   "verdict": "PASS",
+   "reasons": "Inner (concave) corner; continuous with full-dark neighbours on two sides; light notch reads as flat ground; inherited 1px hole at bottom border (col 6) also present in the original interior texture, not a new seam."
+  }
+ ]
+}

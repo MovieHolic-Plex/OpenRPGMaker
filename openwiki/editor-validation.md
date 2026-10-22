@@ -2,6 +2,31 @@
 
 # Editor Validation Expectations
 
+## 장면 다듬기 경고 `scene-*` (2026-10-21)
+
+`src/project/lint/scenePolishLint.ts` — 세 데모를 사람이 손으로 고친 결함 중 기계로 잡히는 것. 전부 warning(커밋을 막지 않는다).
+`run_lint`(`runProjectLint`)는 전체를, `toolRunner` 는 쓰기 성공 뒤 `newScenePolishIssues(before, draft)` 로 **새로 생긴 것만** issues 앞에 싣는다.
+규칙의 이유·고치는 법은 `assistant-skills/game-scene-polish/SKILL.md`.
+
+| 코드 | 판정 |
+|---|---|
+| `scene-transfer-off-door` | 문형 이동(밟기·조사 트리거 + 이동·소리·기다림·화면 효과뿐인 페이지)이 문·계단 그림 칸(이름표 낱말 + 건물 키트 `entrance` 부품 칸, 바닥 타일 제외)도, 자기 그림도, 가장자리 출구(끝 칸, 또는 끝까지 2칸 안 통행 칸이 곧게 이어짐)도 아니다. 문 그림이 상하좌우로 붙어 있으면 «문 칸으로 옮겨라»(건물 정면 앞 보도) |
+| `scene-transfer-pair` | 돌아오는 문형 이동이 있는데 착지가 그 문에서 체비쇼프 2칸 이상 / 방향이 «문 → 착지» 쪽이 아니다 |
+| `scene-transfer-facing` | transfer 에 direction 이 없다(장면 전환 포함) |
+| `scene-stair-direction` | 맵 이름의 층(옥상·N층·지하)으로 위/아래가 갈리는데 계단 이름표가 반대(내려가는·구멍 ↔ 올라가는) |
+| `scene-npc-vanish` | 첫 페이지가 보이는 NPC 가 Erase Event 또는 스위치 «떠남» 빈 투명 페이지로 사라지는데, 바로 앞 경로가 출구(가장자리·이동 이벤트 1칸 안·문 칸) 앞에서 끝나지 않는다. 예외: 검은 화면 뒤, 동료 합류 뒤, 전투 직후 대사 없이(쓰러진 필드 적). 경로 속 불투명도 -200 이하도 같은 판정 |
+| `scene-dialogue-position-mixed` | text.position·displayTextSettings 위치(preventObscuringPlayer 아래 = auto)가 둘 이상(sign·system·letter 줄 제외). 프로젝트당 1건 |
+| `scene-dialogue-context-mixed` | sign·system·letter 밖의 context 가 둘 이상, 또는 box 밖의 container(말풍선) |
+| `scene-map-no-bgm` | 시작 맵·이동 목적지인데 bgm 이 비었다(명시 `none` 은 의도). 자동/병렬 페이지의 BGM 재생이나 이동 직전 BGM 재생이 있으면 통과 |
+| `scene-moving-vehicle` | 켜진 `map.transit` 노선에 탈것이 있다 / 이름이 탈것인 이벤트의 첫 페이지 이동이 fixed 가 아니다 |
+| `scene-hang-on-floor` | 손 도트 실내 걸이 물건(handInteriorSpec kind `hang`, 칩셋 키트 `hand-interior:<id>`)의 위층 타일이 걸을 수 있는 칸에 있다(걸이 타일은 통행 가능, 벽면 1층은 막힘 — 칸이 통행 가능 = 바닥 위). 맵·물건마다 1건. Fallen 별자리표(fs_observatory)·거미줄(지하 화로의 방)을 잡았다 |
+| `scene-ceiling-tile` | 천장 구역 = 아래층이 천장·공허 이름표(`천장`·`ceiling`·`공허`·`void`, 막힘) 칸. ① 그 칸 어느 층이든 천장 아닌 타일이 있다 ② 천장 칸에 닿은 고립 통행 성분(아래층 통행만 본다, 이벤트·시작 칸 없음)이 있다. 맵마다 1건. Fallen fs_vault 의 방 밖 암반 바닥 값 칸(345칸)을 잡았다. 회색 디더 천장 재질(default·rock)은 천장 칸이라 못 잡는다 — 1배 실행 화면으로 본다(SKILL 3장 7) |
+| `scene-actors-stacked` | 한 페이지 안에서 Set Event Location·moveEvent(경로 끝 모의)로 **보이는** 두 인물이 같은 칸에 선다. 명령 순서대로 무대에서 내린다: Erase Event, 경로 끝 투명화, 스위치를 켜 «떠남» 페이지가 되거나 보이는 페이지 모두의 «스위치 꺼짐» 조건이 깨짐(`switchesThatHide`, 사라짐 검사와 공유). 같은 문으로 차례로 떠나는 것은 통과 |
+
+데모 검증(2026-10-21, `scripts/qa/scene-polish-lint.mts`): Fallen Star polish2 13건(방향 없는 이동 4·착지 2칸 3·문 아닌 칸 5·대사 뒤 사라짐 1), Astra fv 15건(문을 보는 착지 10 — 이후 손으로 고친 7fa8b2f3c2 와 같은 곳·한 칸 어긋난 출입 매트 2·표시 없는 출구 2·제자리 지우는 라이벌 1),
+「첫사랑」 수정 전 4건(움직이는 교통 2·내려가는 계단으로 옥상 1·맨바닥 출구 1) → 수정 뒤 r2 최신 2건(같은 칸으로 걷는 두 인물). 거짓 경고로 고친 것: 키트 문 부품의 풀밭 칸, 필드 길 출구(끝 2칸 안), 쓰러진 필드 적·합류 동료.
+`create_transfer_pair`(2026-10-21 뒤)는 doorAt·문 그림 칸이 있으면 트리거를 문 칸에 두고(막힌 칸이면 priority same + overlapForbidden true 부딪힘 문), 문앞 칸을 반대쪽 착지로, 모든 transfer 에 문을 등진 direction 을 붙인다 — 도구 출력이 off-door·pair·facing 을 내지 않는다(`test/transferPairDoorCell.test.ts`). 옛 동작은 `trigger:"front"`. `event-unreachable`(eventPlacementRecovery `hasInteractionPosition`)과 출입구 봉쇄 검사(`transferGatesStayApproachable`)는 막힌 칸의 부딪힘 문을 이웃 통행 칸에서 닿는 것으로 본다. 런타임 `tryStartMove` 가 막힌 칸으로 걷는 입력에서 그 문을 발동한다(첫사랑 r2 9cfb889150 을 main 으로).
+
 ## 규칙 감사 배지는 UI 선택만으로 재검사하지 않는다 (2026-09-18)
 
 `ruleAuditPanel.clusterRuleIssues`는 store의 프로젝트 참조·lineage·mutation generation이

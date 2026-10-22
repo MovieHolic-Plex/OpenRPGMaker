@@ -4,7 +4,7 @@ import { MAP_BACKGROUND_LAYER_DEPTH } from "@/player/characterDepth";
 import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
-import { decodeMapBackgroundFlow } from "@/project/mapBackground";
+import { decodeMapBackgroundFlow, mapBackgroundCoverCentre } from "@/project/mapBackground";
 import type { MapBackgroundFit, MapBackgroundLayer } from "@/project/types";
 import { store } from "@/project/store";
 
@@ -292,8 +292,15 @@ function placeMapBackgroundLayer(
     scene.mapBackgroundCameraAnchor = { x: camera.scrollX, y: camera.scrollY };
   }
   const anchor = scene.mapBackgroundCameraAnchor;
-  const logicalX = mapBackgroundLayerOffset(offset.x, camera.scrollX - (anchor?.x ?? Number.NaN), spec.cameraFollow);
-  const logicalY = mapBackgroundLayerOffset(offset.y, camera.scrollY - (anchor?.y ?? Number.NaN), spec.cameraFollow);
+  const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
+  const centre = mapBackgroundCoverCentre(spec.fit, {
+    width: (camera.width || PLAY_RESOLUTION.width) / zoom,
+    height: (camera.height || PLAY_RESOLUTION.height) / zoom,
+  }, sourceSizeOf(scene, sprite));
+  // 반복하지 않는 축(그림 한 장)은 카메라를 따라가지 않는다 — 따라가면 그 가장자리가 화면에 들어와 검은 띠가 생기거나
+  // 지평선 실루엣 층이 맵 바닥선을 떠나 아래 채움 줄이 드러났다(2026-10-22 출하 플레이어 실측). 지평선(loopY:false)은 가로로만 시차를 준다.
+  const logicalX = centre.x + mapBackgroundLayerOffset(offset.x, camera.scrollX - (anchor?.x ?? Number.NaN), spec.loopX ? spec.cameraFollow : 0);
+  const logicalY = centre.y + mapBackgroundLayerOffset(offset.y, camera.scrollY - (anchor?.y ?? Number.NaN), spec.loopY ? spec.cameraFollow : 0);
   sprite.tilePositionX = mapBackgroundTilePosition(logicalX, sprite.tileScaleX || 1);
   sprite.tilePositionY = mapBackgroundTilePosition(logicalY, sprite.tileScaleY || 1);
   applyAxisScroll(sprite, layout, spec);

@@ -1,0 +1,19 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "4b675ca2a206045f07e7d6bf4f442a9d91e8f997c1b9ddfd0cecfed73a445df9",
+ "profileHash": "4d8774b517f41638",
+ "kind": "organic",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-22T01:57:49.260Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "harness-data/object-gate/vqa/beodeul-forest-colour/receipt-r2.json",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "note": "delegated by user to supervisor 2026-10-21; Opus adversarial VQA harness-data/object-gate/vqa/beodeul-forest-colour/receipt-r2.json (round 2 PASS: reads at 1x, style match, no seams); profile uncalibr",
+ "sig": "abd20eb699b2c28831ec6a6ea097879b2fa564e2022540d59376dc2fc41500a4"
+}

@@ -1,4 +1,5 @@
 import { jsonEqual } from "@/util/structuralJson";
+import { npcMoveDurationMs, npcMoveIntervalMs, PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
 import { passageBlockWarning } from "../../project/eventPassageBlock";
 import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horrorBehaviorTools";
 // editor/tools/eventTools.ts
@@ -15,6 +16,7 @@ import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsa
 import { ACTION_CONTROLS_GUIDE } from "@/player/keyBindings";
 import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
 import { canMove, isPassable, tileAt } from "@/project/collision";
+import { isDoorArtCell } from "@/project/lint/scenePolishLint";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
@@ -1339,6 +1341,7 @@ const placeNpc: ToolDefinition = {
     + "한 줄 인사만 놓고 끝내지 마라. graphic은 {query} 또는 {textureKey,characterIndex}. query는 기존 별칭(villager|people|npc|human|사람|주민|actor|hero|animal|monster)과 자유 질의를 허용한다: 예 '할머니', 'old woman', '노인 남성'. "
     + "pages는 SimplePage로 EventPage로 컴파일된다. 페이지마다 name/graphic/conditions 를 줄 수 있다. 호감/선물은 characterId 를 명시. "
     + "**대사가 있으면 charset에 대응하는 faceset changeFace를 자동 삽입**한다(page.face로 덮어쓰기 가능). page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다. "
+    + "상점·여관 주인은 카운터 뒤 칸(카운터 윗면 칸)에 세워라: 카운터·탁자 칸은 카운터 속성(set_tile_rules counter, 손 도트 실내·버들항의 카운터/탁자/책상 칸은 기본으로 켜짐)이라 주인공이 카운터 앞에서 마주 보고 조사하면 너머 사람에게 말이 걸린다(연속 카운터 2칸까지). 카운터 앞 칸이 주인공이 설 수 있는 바닥인지 확인하라. "
     + "guide:'action-controls'는 예외: pages 없이 실제 키 계약의 조작 안내 한 페이지만 만든다. 맵마다 같은 안내를 재사용하며 재시도 시 기존 위치를 유지한다. 명시 id가 우선한다.",
   mode: "write",
   parameters: {
@@ -2334,7 +2337,10 @@ export function resolveTransferEndpoint(
   const fixed = requested.doorAt !== undefined;
   if (requested.doorAt && (!inMapBounds(map, requested.doorAt.x, requested.doorAt.y)
     || requested.x !== requested.doorAt.x || requested.y !== requested.doorAt.y + 1)) {
-    throw new ToolError('doorAt은 문 하단 칸이며 출입구는 바로 남쪽 문앞(x=doorAt.x, y=doorAt.y+1)이어야 합니다.', { code: 'transfer-door-mismatch', mapId: map.id });
+    // 실측(2026-10-22 여관·상점 문): 조수가 x,y 와 doorAt 에 같은 칸을 넣어 두 번 거부됐다 — 받은 값과 고친 두 가지 모양을 그대로 보여 준다.
+    const door = requested.doorAt;
+    throw new ToolError(`${label}: doorAt은 문 하단 칸이며 출입구(x,y)는 바로 남쪽 문앞(x=doorAt.x, y=doorAt.y+1)이어야 합니다 — 받은 값 x,y=(${requested.x},${requested.y}), doorAt=(${door.x},${door.y}). `
+      + `문이 (${door.x},${door.y}) 이면 {x:${door.x},y:${door.y + 1},doorAt:{x:${door.x},y:${door.y}}}, 문앞이 (${requested.x},${requested.y}) 이면 {x:${requested.x},y:${requested.y},doorAt:{x:${requested.x},y:${requested.y - 1}}}. 문 그림이 없으면 doorAt 을 빼세요.`, { code: 'transfer-door-mismatch', mapId: map.id });
   }
   const localNotes: string[] = [];
   const endpoint = transferEndpoint(project, map, requested.x, requested.y, fixed ? 0 : 3, localNotes, fixed);
@@ -2760,7 +2766,9 @@ const createTransferPair: ToolDefinition = {
   description:
     "두 맵 사이 양방향 출입구를 원자적으로 생성한다. 이미 있는 왕복 출입구의 「방향을 맞춰줘」는 patch_event_page 로 **두 문 모두**의 transfer.direction 을 바꾼다(가는 문은 도착해서 바라볼 쪽, 돌아오는 문은 그 반대쪽 — 한쪽만 바꾸면 안 맞는다). 「이 맵을 월드맵의 북쪽에 연결」은 월드맵의 **북쪽 가장자리(y 가 작은 쪽)** 에 이 맵으로 가는 출입구를 놓는다는 뜻이다(남쪽 가장자리가 아니다). 출입구는 벽·맵 가장자리에 바짝 붙인 통행 가능 칸에 놓는다 인자 {a:{mapId,x,y}, b:{mapId,x,y}} — 문·계단·텔레포트의 왕복 쌍을 한 번에 만든다. 좌표는 벽·맵 끝에 바짝 붙인 통행 칸(1칸 띄우지 말 것). 문의 시각 배치는 place_door."
     + "(1칸 안쪽 좌표는 자동으로 당기고, 벽 칸 위 요청은 바로 앞 통행 칸으로 옮긴다 — playerTouch는 벽 위에서 발동하지 않음)."
-    + " 착지점은 상대 출입구에 인접한 실제 왕복 통행 가능 칸으로 자동 선정(즉시 재전이 방지). 닿지 않는 출입구·봉쇄는 실패한다. 문 그림을 연결할 때는 place_door 결과의 transferEndpoint(x,y,doorAt)를 a/b에 넣는다. doorAt이 있으면 문앞을 옆 칸으로 옮기지 않는다.",
+    + " 착지점은 상대 출입구에 인접한 실제 왕복 통행 가능 칸으로 자동 선정(즉시 재전이 방지). 닿지 않는 출입구·봉쇄는 실패한다. 문 그림을 연결할 때는 place_door 결과의 transferEndpoint(x,y,doorAt)를 a/b에 넣는다. doorAt이 있으면 문앞을 옆 칸으로 옮기지 않는다."
+    + " 문이 있으면(doorAt, 또는 x,y 가 문·계단 그림 칸) 트리거는 **문 그림 칸 그 칸**에 선다 — 통행 칸이면 밟기, 막힌 칸이면 부딪힘(priority same). 반대쪽 착지는 문 바로 앞 칸, 도착 방향은 문을 등진 쪽(모든 transfer 에 direction 이 붙는다)."
+    + " 옛 동작(문앞 칸 트리거)은 trigger:\"front\" — 문 그림이 트리거 칸이 될 수 없는 특수한 경우에만.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2778,6 +2786,7 @@ const createTransferPair: ToolDefinition = {
         required: ["mapId", "x", "y"],
       },
       fade: { type: "string", enum: ["black", "white", "none"] },
+      trigger: { type: "string", enum: ["door", "front"], description: "기본 door: 문이 있으면 트리거를 문 그림 칸에. front: 옛 동작(문앞 칸) — 특수한 경우에만." },
     },
     required: ["a", "b"],
   },
@@ -2785,6 +2794,7 @@ const createTransferPair: ToolDefinition = {
     const a = args.a as { mapId: string; x: number; y: number; doorAt?: Point };
     const b = args.b as { mapId: string; x: number; y: number; doorAt?: Point };
     const fade = (args.fade as TransferFade | undefined) ?? "black";
+    const onDoor = args.trigger !== "front";
     const mapA = requireMap(draft, a.mapId);
     const mapB = requireMap(draft, b.mapId);
     const reachNotes: string[] = [];
@@ -2805,14 +2815,35 @@ const createTransferPair: ToolDefinition = {
       ].filter((entry): entry is string => entry !== null);
       throw new ToolError(`출입구 자리를 찾지 못했습니다. ${failures.join(" / ")}`, { code: "transfer-no-landing" });
     }
-    const { gate: gateA, landing: landingA } = endpointA;
-    const { gate: gateB, landing: landingB } = endpointB;
-    assertDoorExitWidths(draft, mapA, gateA, mapB, gateB, a.doorAt, b.doorAt);
+    assertDoorExitWidths(draft, mapA, endpointA.gate, mapB, endpointB.gate, a.doorAt, b.doorAt);
+    // 문 그림 칸이 트리거 칸이다(장면 다듬기 교훈: 문앞 보도에서 발동하면 «문에 닿기 전에 들어간다»).
+    // 문앞 칸(원래 출입구 자리)은 반대쪽에서 오는 착지가 된다 — 문을 등지고 선다.
+    const onDoorCell = (map: GameMap, req: { x: number; y: number; doorAt?: Point }, endpoint: { gate: Point; landing: Point }): { gate: Point; landing: Point; bump: boolean } => {
+      if (!onDoor) return { ...endpoint, bump: false };
+      // 실내 벽에 박힌 엘리베이터·계단은 그림 칸 바로 아래가 「탈 자리」(build_hand_interior_room 이 알려 주는 칸)다 —
+      // 조수가 그 탈 자리를 x,y 로 주면 트리거가 그림 아래 바닥에 남았다(2026-10-22 r3 office-elevator 2층 쪽).
+      const above = !isDoorArtCell(draft, map, req.x, req.y) && endpoint.gate.x === req.x && endpoint.gate.y === req.y
+        && isDoorArtCell(draft, map, req.x, req.y - 1) ? { x: req.x, y: req.y - 1 } : null;
+      const door = req.doorAt
+        ?? (isDoorArtCell(draft, map, req.x, req.y) && Math.abs(req.x - endpoint.gate.x) + Math.abs(req.y - endpoint.gate.y) === 1 ? { x: req.x, y: req.y } : null)
+        ?? above;
+      if (!door || (door.x === endpoint.gate.x && door.y === endpoint.gate.y)) return { ...endpoint, bump: false };
+      if (map.events.some((event) => event.x === door.x && event.y === door.y)) return { ...endpoint, bump: false };
+      return { gate: door, landing: endpoint.gate, bump: !isPassable(draft, map, door.x, door.y) };
+    };
+    const { gate: gateA, landing: landingA, bump: bumpA } = onDoorCell(mapA, a, endpointA);
+    const { gate: gateB, landing: landingB, bump: bumpB } = onDoorCell(mapB, b, endpointB);
+    const awayFrom = (gate: Point, landing: Point): Dir => {
+      const dx = landing.x - gate.x, dy = landing.y - gate.y;
+      if (Math.abs(dy) >= Math.abs(dx) && dy !== 0) return dy > 0 ? "down" : "up";
+      if (dx !== 0) return dx > 0 ? "right" : "left";
+      return "down";
+    };
 
     const idA = genId("ev_gate");
     const idB = genId("ev_gate");
-    const transferTo = (mapId: string, x: number, y: number): Command => ({ kind: "transfer", mapId, x, y, fade });
-    const gate = (id: string, x: number, y: number, target: Command): GameEvent => ({
+    const transferTo = (mapId: string, x: number, y: number, direction: Dir): Command => ({ kind: "transfer", mapId, x, y, direction, fade });
+    const gate = (id: string, x: number, y: number, target: Command, bump = false): GameEvent => ({
       id,
       x,
       y,
@@ -2825,8 +2856,9 @@ const createTransferPair: ToolDefinition = {
           conditions: [],
           graphic: { transparent: true },
           trigger: { kind: "playerTouch" },
-          priority: "below",
-          overlapForbidden: false,
+          // 막힌 문 그림 칸은 부딪힘으로 연다(같은 층 접촉 이벤트 — 런타임이 막힌 칸으로 걸어도 발동시킨다).
+          priority: bump ? "same" : "below",
+          overlapForbidden: bump, // 런타임 부딪힘 판정(findBlockingEventOverlappingRect)은 same + overlapForbidden 만 막는 이벤트로 본다.
           movement: PASSIVE,
           commands: [target],
         },
@@ -2837,8 +2869,8 @@ const createTransferPair: ToolDefinition = {
     for (const map of a.mapId === b.mapId ? [mapA] : [mapA, mapB]) {
       for (const entry of transferGatesStayApproachable(draft, map).sealed) sealedBefore.add(`${map.id}:${entry.replace(/\(.*$/u, "")}`);
     }
-    upsertEventIntoMap(mapA, gate(idA, gateA.x, gateA.y, transferTo(b.mapId, landingB.x, landingB.y)));
-    upsertEventIntoMap(mapB, gate(idB, gateB.x, gateB.y, transferTo(a.mapId, landingA.x, landingA.y)));
+    upsertEventIntoMap(mapA, gate(idA, gateA.x, gateA.y, transferTo(b.mapId, landingB.x, landingB.y, awayFrom(gateB, landingB)), bumpA));
+    upsertEventIntoMap(mapB, gate(idB, gateB.x, gateB.y, transferTo(a.mapId, landingA.x, landingA.y, awayFrom(gateA, landingA)), bumpB));
     // 배치가 끝난 뒤 두 맵의 모든 transfer 문이 방 바닥으로 열리는지 최종 점검(같은 맵 쌍·후보가
     // 없어 원자리를 쓴 경우 포함). 실패하면 toolRunner가 초안을 버려 두 맵 모두 보존한다.
     const sealedAfter: string[] = [];
@@ -2860,7 +2892,7 @@ const createTransferPair: ToolDefinition = {
     ];
     return {
       summary: `출입구 쌍 생성: ${mapA.name}(${gateA.x},${gateA.y}) ↔ ${mapB.name}(${gateB.x},${gateB.y})`,
-      data: { eventIdA: idA, eventIdB: idB, gateA, gateB, landingA, landingB, adjustedA, adjustedB },
+      data: { eventIdA: idA, eventIdB: idB, gateA, gateB, landingA, landingB, adjustedA, adjustedB, ...(bumpA || bumpB ? { bumpDoor: { a: bumpA, b: bumpB } } : {}) },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
@@ -3007,14 +3039,11 @@ const placeTrap: ToolDefinition = {
   },
 };
 
-/** 주인공 걷기 한 칸(PlayScene.moveDurationMs). */
-const PLAYER_WALK_STEP_MS = 160;
 const CHASER_FREQUENCY = 8;
 
-/** 런타임 추격 한 칸 = npcMoveDurationMs(speed) + npcMoveIntervalMs(frequency) (playScenePageMoveRoutes.ts 와 같은 식). */
+/** 런타임 추격 한 칸 = npcMoveDurationMs(speed) + npcMoveIntervalMs(frequency) (정본 표 @/project/characterMotion). */
 function chaseStepMs(speed: number, frequency: number): number {
-  const rank = (value: number) => Math.min(8, Math.max(1, Math.trunc(value)));
-  return Math.max(80, 640 - rank(speed) * 80) + Math.max(80, 1040 - rank(frequency) * 160);
+  return npcMoveDurationMs(speed) + npcMoveIntervalMs(frequency);
 }
 
 /**
@@ -3251,6 +3280,7 @@ export const placeChest: ToolDefinition = {
     "장식용 박스·나무상자·나무박스·과일박스는 place_props(harness-combined-town-wood-box / fruit-box) — place_chest 금지. " +
     "벽 위(문·벽감)여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 물 위는 거부한다 — 지면이나 통행 가능한 다리 위 좌표를 선택하라.",
   mode: "write",
+  choosesOwnGraphic: true,
   parameters: {
     type: "object",
     properties: {
@@ -3453,6 +3483,7 @@ const placeSavepoint: ToolDefinition = {
   name: "place_savepoint",
   description: "세이브 포인트 이벤트를 배치한다(크리스탈 외형). 조사하면 mode 에 따라 동작한다 — both(기본): 사망 재시도용 체크포인트를 기록하고 **저장 칸 메뉴(openSaveMenu)** 도 연다(크로노 트리거식: 크리스탈에서 3칸 중 골라 저장) · slot: 저장 칸 메뉴만 · checkpoint: 체크포인트만(저장 칸 안 염, 새로고침하면 사라진다 — 호러·사망 재시도용). 플레이어가 새로고침 뒤에도 이어 하려면 slot 이나 both 다. 맵이 저장 금지(set_map_properties disableSave)면 경고한다. 벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 세이브 포인트는 반드시 이 툴 — place_npc/upsert_event 흉내 금지.",
   mode: "write",
+  choosesOwnGraphic: true,
   parameters: {
     type: "object",
     properties: {
@@ -4067,7 +4098,7 @@ const scriptCutscene: ToolDefinition = {
     "회상/플래시백, 오프닝, 엔딩, 시네마틱, '플레이어가 아무것도 못 하는 장면' 요청은 모두 이 툴이다. " +
     "잠금/해제와 스킵 라벨은 컴파일러가 자동으로 감싸므로 upsert_event 로 수동 조립하지 말 것. beat 종류: " +
     "say{speaker,face,text|lines}, moveActor{target:'player'|eventId,moves:[{kind:'move',dir:'up'},{kind:'turn',dir:'left'}],wait}, camera{mode:'pan|follow|fixed|return',target|x,y,durationMs,wait,zoom}, " +
-    "picture{action:'show|move|erase',pictureId,resourceId,x,y,scale,opacity,durationMs,easing,blendMode,wait}(easing:'easeOut' 이면 멈출 때 부드럽다, blendMode:'add' 면 빛기둥·유령처럼 밝게 겹친다), music{action:'bgm|se|fade|stop',resourceId}, fade{direction:'in|out',durationMs,wait}, tint{color|value(sepia·#rrggbb·'r,g,b,알파'),durationMs,wait}, background{flowPercent,imageId?,durationMs,wait}(먼 배경 흐름 — 회상 진입에 flowPercent:0 으로 구름이 서서히 멈춘다. 배경 자체는 set_map_properties.background.layerSet), distort{effect:'wave|mosaic|rotate|clear',amount?,durationMs,wait}(화면 그림 자체를 비튼다 — 수중·꿈은 wave, 장면 전환은 mosaic(전환에만 — 켠 채 대사를 잇지 말고 곧 clear), 시간 왜곡은 rotate. 컷신 뒤에도 남으니 끝낼 때 clear), flash{color,durationMs}, shake{intensity:1|3|6|10,durationMs,axis:'both|horizontal|vertical'}(지진·쿵은 vertical, 부딪힘은 horizontal), " +
+    "picture{action:'show|move|erase',pictureId,resourceId,x,y,scale,opacity,durationMs,easing,blendMode,wait}(easing:'easeOut' 이면 멈출 때 부드럽다, blendMode:'add' 면 빛기둥·유령처럼 밝게 겹친다), music{action:'bgm|se|fade|stop',resourceId}, fade{direction:'in|out',durationMs,wait}, tint{color|value(sepia·#rrggbb·'r,g,b,알파'),durationMs,wait}, background{flowPercent,imageId?,durationMs,wait}(먼 배경 흐름 — 회상 진입에 flowPercent:0 으로 구름이 서서히 멈춘다. 배경 자체는 set_map_properties.background.preset), distort{effect:'wave|mosaic|rotate|clear',amount?,durationMs,wait}(화면 그림 자체를 비튼다 — 수중·꿈은 wave, 장면 전환은 mosaic(전환에만 — 켠 채 대사를 잇지 말고 곧 clear), 시간 왜곡은 rotate. 컷신 뒤에도 남으니 끝낼 때 clear), flash{color,durationMs}, shake{intensity:1|3|6|10,durationMs,axis:'both|horizontal|vertical'}(지진·쿵은 vertical, 부딪힘은 horizontal), " +
     "letterbox{show,size?,durationMs}(영화식 위아래 검은 띠 — 중요한 장면 시작에 넣는다. 컷신 끝에 자동으로 걷힘, 남기려면 keep:true), " +
     "particles{preset:'sparkle|magic|heal|fire|smoke|dust|explosion|splash',target:'player'|이벤트 id|생략+x,y,durationMs,wait}(한 인물·한 칸에서 터지는 효과 — 보물=sparkle, 주문=magic, 회복=heal, 사라짐=smoke, 착지=dust, 폭발=explosion), " +
     "look{target,pose:'normal|fallen|fallenLeft|crouch|float',tint:'red|blue|green|yellow|purple|gray|black|white|none|#rrggbb',tintFill,flip,angle,afterimage,alpha,reset}(인물 모습 — 기절·잠=fallen, 숨기=crouch, 유령=float+alpha 0.6, 독=tint green, 실루엣=tint black+tintFill, 빠른 이동 잔상=afterimage. 컷신 뒤에도 남으니 되돌릴 땐 {reset:true}), " +

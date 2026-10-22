@@ -9,13 +9,22 @@ selected=next(p for p in json.loads((source/'palettes.json').read_text()) if p['
 lookup={tuple(p['from']):tuple(p['to']) for p in selected['paletteMapping']}
 ground=json.loads((R/'src/assets/beodeulGroundCatalog.json').read_text())
 recipes=[];cells=[];proof=[]
+# Saved maps hold these cell numbers, so an existing recipe keeps its numbering: a cell that turns empty stays as an
+# empty cell, and a tile that becomes non-empty where there was no cell gets a new cell after the existing ones.
+previous={r['id']:r for r in json.loads((R/'src/assets/beodeulWarmTreesCatalog.json').read_text())['recipes']} if (R/'src/assets/beodeulWarmTreesCatalog.json').exists() else {}
+reserved=1+max([n for r in previous.values() for row in r['rows'] for n in row]+[-1])
+cells.extend([None]*reserved)
 def emit(key,im,layer,blocking=None,origin=None):
+    old=previous.get('bdw-'+key)
+    if old and (old['width'],old['height'])!=(im.width//16,im.height//16):old=None
     rows=[]
     for y in range(im.height//16):
         row=[]
         for x in range(im.width//16):
             tile=im.crop((x*16,y*16,x*16+16,y*16+16))
-            if tile.getbbox():row.append(len(cells));cells.append(tile)
+            n=old['rows'][y][x] if old else -1
+            if n>=0:cells[n]=tile;row.append(n)
+            elif tile.getbbox():row.append(len(cells));cells.append(tile)
             else:row.append(-1)
         rows.append(row)
     recipes.append(dict(id='bdw-'+key,name='따뜻한 황록 · '+key,layer=layer,width=im.width//16,height=im.height//16,rows=rows,blockingCells=blocking or [],source=origin))
@@ -40,8 +49,10 @@ for key in ['north','north-open','west','east']:
     proof.append(dict(id=key,alphaPreserved=True,blockingCellsPreserved=True))
 count=(len(cells)+7)//8*8
 atlas=Image.new('RGBA',(128,count//8*16))
-for n,im in enumerate(cells):atlas.paste(im,(n%8*16,n//8*16))
+for n,im in enumerate(cells):
+    if im is not None:atlas.paste(im,(n%8*16,n//8*16))
 atlas.save(out/'chipset.png')
+import sys as _s, pathlib as _pl; _s.path.insert(0, str(_pl.Path(__file__).resolve().parents[2] / 'scripts/content/rtp-attribution')); from rtp_check import require_credit; require_credit(out/'chipset.png')  # EasyRPG RTP CC BY credit check (public/assets/ATTRIBUTION.md)
 catalog=dict(id='beodeul_warm_trees',texture='tex_beodeul_warm_trees',tileSize=16,tilesPerRow=8,count=count,selection='warm',recipes=recipes)
 (R/'src/assets/beodeulWarmTreesCatalog.json').write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+'\n')
 (R/'tiledata/beodeul-ground/warm-trees-catalog.json').write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+'\n')

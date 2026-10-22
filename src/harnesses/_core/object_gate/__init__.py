@@ -7,10 +7,12 @@
     from object_gate import require_pass, ObjectGateRefused
     require_pass(img, kind="tall_furniture", context="bundle", label="murim/prop_scroll_shelf")
 
-최종 통과는 서명된 사람 허용이다(2026-10-20 사용자 결정 — AI 판정 보정 2회 실패, 사용자가 매번 눈으로 판정 → AI 는 1차 거름·조언).
-사람이 검토 화면(`object-gate serve-holds`, 18323)에서 허용한 기록(approvals/hold/<해시>.json, 저장소 밖 키로 HMAC 서명)이
-그림 해시·종류와 맞고 그 그림의 영수증(어느 프로필이든 — AI 조언)이 있으면 모든 출구를 지난다. 사람 거절은 최종이다.
-서명이 안 맞는 기록(손으로 쓴 것)은 없는 것과 같다. 사람 결정이 없으면 보정된 프로필의 pass 만 지난다.
+최종 판정은 Opus 5.5 medium 적대적 VQA 다(2026-10-21 사용자 결정 — 옵션 A 「사람 허용이 최종」을 대체):
+  ① 서명된 사람 거절(approvals/hold/<해시>.json, 18323 검토 화면)은 언제나 최종 차단.
+  ② 보정된 최종 프로필(final-profiles/<해시>.json status calibrated)의 Opus 기록(final/<해시>.json)이 있으면 그 판정이 최종 —
+     pass 면 통과, fail 이면 차단(사람 허용도 뒤집지 않는다. 공방 로컬만 사람 「그래도 넣기」).
+  ③ Opus 기록이 없을 때만 옛 규칙: 서명된 사람 허용(선택) 또는 보정된 옛 프로필의 pass.
+서명이 안 맞는 기록(손으로 쓴 것)은 없는 것과 같다.
 front_prop 은 사람 승인 기록(approvals/front_prop/<해시>.json)이 있어야만 3/4 반쪽을 면제한다(승인은 CLI approve-front-prop, 터미널에서 사람이 직접).
 출구(context): bundle·shared·store 는 pass 만(사람 덮어쓰기도 무효), workshop-local 은 pass 또는 사람의 「그래도 넣기」.
 """
@@ -24,7 +26,7 @@ from pathlib import Path
 
 KINDS = (
     "tall_furniture", "low_furniture", "seat", "frame", "container", "round_body", "column", "box",
-    "structure", "figure", "organic", "debris", "flat", "wall_mounted", "front_prop", "terrain", "other",
+    "structure", "figure", "organic", "debris", "flat", "wall_mounted", "front_prop", "terrain", "other", "wall_structure",
 )
 CONTEXTS = ("bundle", "shared", "store", "workshop-local")
 
@@ -77,11 +79,14 @@ def read_front_prop_approval(sha: str) -> dict | None:
 
 HOLD_KEY_PATH = Path(os.environ.get("OBJECT_GATE_HOLD_KEY") or Path.home() / ".config" / "oprn" / "object-gate-hold.key")
 _HOLD_KEYS = ("schema", "pixelSha256", "profileHash", "kind", "decision", "decidedBy", "decidedAt", "by", "via", "reasons", "note")
+# 위임 결정(by: "delegated")만 서명 대상에 더한다 — 사람 기록의 서명 문자열은 그대로다. TS objectGateHoldPayload 와 같다.
+_HOLD_DELEGATED_KEYS = ("delegatedBy", "evidence")
 
 
 def hold_payload(d: dict) -> str:
     """서명 대상 문자열. TS objectGateHoldPayload 와 같다."""
-    return json.dumps([[k, d.get(k)] for k in _HOLD_KEYS], ensure_ascii=False, separators=(",", ":"))
+    keys = _HOLD_KEYS + _HOLD_DELEGATED_KEYS if d.get("by") == "delegated" else _HOLD_KEYS
+    return json.dumps([[k, d.get(k)] for k in keys], ensure_ascii=False, separators=(",", ":"))
 
 
 def read_hold_decision(sha: str) -> dict | None:
@@ -101,7 +106,9 @@ def human_decision(d: dict | None, receipt: dict | None) -> str | None:
     """서명 확인을 마친 사람 결정이 이 영수증(그림 해시·종류)에 묶였으면 'allow'|'reject', 아니면 None. 프로필 보정 여부는 보지 않는다(TS humanDecision 과 같다)."""
     if not d or not receipt:
         return None
-    ok = d.get("schema") == "oprn-object-gate-hold-decision/1" and d.get("by") == "human" and d.get("via") == "review-page" \
+    by_ok = d.get("by") == "human" or (d.get("by") == "delegated" and d.get("decision") == "allow"
+                                       and str(d.get("delegatedBy") or "").strip() != "" and str(d.get("evidence") or "").strip() != "")
+    ok = d.get("schema") == "oprn-object-gate-hold-decision/1" and by_ok and d.get("via") == "review-page" \
         and d.get("decision") in ("allow", "reject") and d.get("pixelSha256") == receipt.get("pixelSha256") \
         and d.get("kind") == receipt.get("kind") and str(d.get("decidedBy") or "").strip() != "" and bool(d.get("decidedAt")) \
         and bool(d.get("profileHash"))
@@ -124,6 +131,24 @@ def calibrated_profiles() -> set[str]:
     return out
 
 
+def read_final(sha: str) -> dict | None:
+    """Opus 최종 판정 기록(final/<해시>.json). 효력은 calibrated_final_profiles() 에 든 프로필일 때만."""
+    path = GATE_DATA / "final" / sha[:2] / f"{sha}.json"
+    return json.loads(path.read_text()) if path.exists() else None
+
+
+def calibrated_final_profiles() -> set[str]:
+    root = GATE_DATA / "final-profiles"
+    if not root.exists():
+        return set()
+    return {r["profileHash"] for r in (json.loads(p.read_text()) for p in root.glob("*.json")) if r.get("status") == "calibrated"}
+
+
+def final_applies(final: dict | None, sha: str) -> bool:
+    return bool(final) and final.get("schema") == "oprn-object-gate-final/1" and final.get("pixelSha256") == sha \
+        and final.get("verdict") in ("pass", "fail") and final.get("profileHash") in calibrated_final_profiles()
+
+
 def refusal(img, *, kind: str | None, context: str) -> str | None:
     """통과면 None, 막으면 이유."""
     if context not in CONTEXTS:
@@ -132,8 +157,22 @@ def refusal(img, *, kind: str | None, context: str) -> str | None:
         raise ValueError(f"모르는 종류 {kind}: {KINDS}")
     sha = pixel_sha256(img)
     receipt = read_receipt(sha)
+    # 2026-10-21: Opus 최종 판정이 우선이다. 사람 거절만 그 위에 있다(TS objectGateRefusal 과 같다).
+    final = read_final(sha)
+    if final_applies(final, sha):
+        if kind and final.get("kind") != kind:
+            return f"최종 판정 종류({final.get('kind')})가 요청 종류({kind})와 다르다"
+        held = read_hold_decision(sha)
+        if human_decision(held, {"pixelSha256": sha, "kind": final.get("kind")}) == "reject":
+            return f"사람이 검토 화면에서 거절했다({held.get('decidedBy')}, {str(held.get('decidedAt'))[:10]}) — 최종이다. 다시 그려 새 해시로 다시 받아라"
+        if final.get("verdict") == "pass":
+            return None
+        if context == "workshop-local" and receipt and (receipt.get("override") or {}).get("by") == "human":
+            return None
+        why = " · ".join(final.get("reasons") or []) or "fail"
+        return f"Opus 최종 판정 불합격({why}) — 다시 그려 새 해시로 다시 받아라"
     if not receipt:
-        return "3/4·화풍 판정 영수증이 없다 — object-gate review 를 먼저 받아라"
+        return "3/4·화풍 판정 영수증이 없다 — object-gate final-review 로 Opus 최종 판정을 받아라"
     if kind and receipt.get("kind") != kind:
         return f"영수증 종류({receipt.get('kind')})가 요청 종류({kind})와 다르다"
     # 사람 결정이 최종이다(2026-10-20): 허용 = 통과(프로필 보정 여부·AI 판정과 무관), 거절 = 모든 출구에서 막는다(TS objectGateRefusal 과 같다).
@@ -144,7 +183,7 @@ def refusal(img, *, kind: str | None, context: str) -> str | None:
     if human == "allow":
         return None
     if receipt.get("profileHash") not in calibrated_profiles():
-        return f"판정 프로필 {receipt.get('profileHash')} 가 보정되지 않았다 — AI 판정({receipt.get('verdict')})은 조언일 뿐이다. 검토 화면(serve-holds, 18323)에서 사람이 허용해야 지나간다"
+        return f"판정 프로필 {receipt.get('profileHash')} 가 보정되지 않았다 — AI 판정({receipt.get('verdict')})은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
     # front_prop: 이 그림 해시에 사람이 종류를 승인했다면 3/4 반쪽은 면제 — 화풍 반쪽만 본다(TS objectGateRefusal 과 같다).
     if receipt.get("kind") == "front_prop" and read_front_prop_approval(sha):
         sv = (receipt.get("style") or {}).get("verdict")

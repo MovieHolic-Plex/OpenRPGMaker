@@ -1,0 +1,396 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "972320718440ec6225cf1fff2c0145b8b52a5de5aa5b9a86edd2178fc197460f",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "library carrel",
+ "label": "modern_city_interior/library-carrel",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (1/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (1/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hutch top band",
+      "rows": "1-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "desk work surface ledge",
+      "rows": "20-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green desk lamps",
+      "rows": "4-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "papers/books on desk",
+      "rows": "17-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-3 form a light tan top band that ends in a slightly darker edge line at row 3. Dark shadow follows at rows 4-5 above the cubby interior, so the top is 3 rows, which is thin but more than a rim. A second, lighter ledge at rows 20-22 reads as the desk surface, with the brown front apron at rows 23-26 below it. Dark leg openings at rows 27-30 complete a front face of about 27 rows. The lamps and papers are decor. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The carrel is a small piece with a wood frame, two teal drawer fronts and cream label plates, so it is the right kind of prop. The measured facts are at or near the references: 11 visible tones per tile against 9 for the hedge and 17-20 for the stall and well, and 0% near-flat coverage. The dark edge pixels are 0% neutral, so the outline leans brown and green and does not read as a black sticker line. The wood and the drawers show about 5 lightness steps, with a lighter top edge and darker lower edges. Texture is moderate, with panel shading and label detail but little grain, so it is somewhat simpler than the stall and well. A careful artist would accept it next to the hedge and bench without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21392
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "carrel top panel band",
+      "rows": "1-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "desk lamps (green shades, gold stems)",
+      "rows": "4-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "books on desk",
+      "rows": "17-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "desk front lip strip",
+      "rows": "20-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The carrel is drawn almost entirely as a flat front view. The top band is rows 1-3 (rows 1-2 light, row 3 slightly darker as an edge line), followed by dark shadow rows 4-5. That is only a thin 3-row top, close to a rim. The desk surface at rows 20-22 is a 3-row lip with a highlight row, not a foreshortened top plane. The lamps and books are decor on the desk. Rows 23-30 are the apron and legs, with grey knee-space openings at rows 27-30. No side face is shown. The overall impression is a front elevation with a minimal top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The carrel is a small wooden cabinet-desk with a tan top, brown body, two drawers and green label plates. The measured facts support it. It has 11 visible tones per tile, which is above the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so no large flat fills. The dark edge pixels are 0% neutral, so the outlines lean brown, which matches the dark-material-tone approach rather than a black sticker line. It has about 4 wood and top steps, a little shallower than the 5-6 on the stall and well. Texture is limited to panel edges, drawer lines and label dots, with no real grain. It looks slightly simpler than the stall and well but is comparable to the hedge and bench-class props, so a careful artist would accept it.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22695
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back partition top rim",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "back partition panel with lamps",
+      "rows": "3-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lamps (green shades, gold stems)",
+      "rows": "4-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "desk top surface with papers",
+      "rows": "14-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "apron and legs with open knee space",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The desk surface at rows 14-20 is a tan band that holds the lamp bases and the white papers (rows 17-19). It ends in a lighter front-edge line at row 21, followed by darker apron rows 23-24. Below that the front face runs to row 30: an apron, then legs around a dark open knee space at rows 27-30. The back partition (rows 1-13) is drawn face-on as a vertical panel with only a 2-row top rim, so it shows no top surface of its own. The lamps are decor. The desk top is about 7 rows, enough to read as three-quarter, though the tall upright partition is mostly front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The carrel is a wooden desk with two drawer units, labels and a green blotter, drawn at the same scale as the references. Its dark edge pixels are 0% neutral, so the outline is a tinted dark brown, the same as the hedge and stall references, and it does not have the black sticker look. It measures 11 visible tones per 16x16 tile, above the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no big flat fills, and the drawer fronts and top shelf carry some grain and variation. The wood ramp has about 4 steps against 5-6 in the best references, and the palette is small (14 colours in total). That makes it slightly lighter on detail than the stall and well, but it is on par with the hedge, a prop of the same kind, and it is not flat or sticker-like. A careful artist would accept it next to these references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22811
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "carrel top panel band",
+      "rows": "1-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "desk ledge / writing surface",
+      "rows": "20-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "green desk lamps",
+      "rows": "4-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "papers on desk",
+      "rows": "17-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is drawn from the front. Rows 1-2 are a light tan band across the full width. Row 3 is a slightly darker edge line, and rows 4-5 are dark brown eave shadow over the front face, which counts as a top surface under (a), though only 3 rows deep. A second light band at rows 20-22 (edge lines at rows 20 and 22, lightest at row 21) reads as the desk surface, with darker front face at rows 23-25. Legs and a dark gray panel fill rows 26-30. The lamps and papers are decor. The top is shallow and borderline, but it has an edge line and shadow, so it is more than a bare rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a wooden carrel with two drawer or shelf units and small green label cards. It shows about 11 visible tones per tile, which sits between prop-hedge (9) and prop-stall-cheese (17), and below prop-well-roofed (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood, not a black sticker line. The wood has a highlight top, a mid body, shadowed drawer recesses and a dark base, which is roughly 5 steps against the references' 5-6. The grain and dot texture is lighter than the stall and well, and its 14 total colours is thin next to their 38-40. It still matches the hedge and bench in craft, so a careful artist would accept it beside the references. The slightly lower density does not outweigh that.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21451
+  }
+ ],
+ "decidedAt": "2026-10-21T01:38:23.369Z",
+ "cells": {
+  "16": [
+   "4d0c73bbfd82a0f3",
+   "bf93330f164dbfa7",
+   "c37e233f0040cf82",
+   "d4118d701f9094ec"
+  ],
+  "24": [
+   "00b5ffb59fdbea01",
+   "03c5210b3c05e192",
+   "05cff3b2b2b80406",
+   "074650606564a33b",
+   "098246903e278e96",
+   "211cf69f115bf0f4",
+   "291fd5bfc2b084fe",
+   "38aab01c8b5d9543",
+   "4345fe8369dfa43f",
+   "4d7bf3c377f1c710",
+   "56fc89a3472044f3",
+   "5a089c04c0072481",
+   "69de9e0b18a956a8",
+   "8aab7bc71f1a076c",
+   "a2516e28fdee4788",
+   "b16229517f5801e1",
+   "caa01021496b1a60",
+   "d9ecd763457a27dd",
+   "e394c49100f68937",
+   "e7879ae1f3b349c1",
+   "ea10d556564498a9",
+   "f038af8a05ca62a0",
+   "f42263e28c0acc95",
+   "fbb0b70da853681a"
+  ],
+  "32": [
+   "0e56664b70256066"
+  ],
+  "48": [
+   "323b3421b4db6380",
+   "452e6f1034267518",
+   "638c50f15587352d",
+   "791510d675b901b9",
+   "ac9167dc76dc44e6",
+   "ede596e550c2d225"
+  ]
+ }
+}

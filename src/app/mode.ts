@@ -481,8 +481,8 @@ function renderLoadFailureScreen(_error: unknown): void {
   blank.textContent = "새 작업으로 시작";
   blank.title = "기존 저장본을 바꾸지 않고 빈 작업을 엽니다.";
   blank.addEventListener("click", () => {
-    void import("@/project/defaults").then(async ({ createBlankProject }) => {
-      await store.loadFallbackProject(createBlankProject());
+    void import("@/project/defaults").then(async ({ createStarterBlankProject }) => {
+      await store.loadFallbackProject(createStarterBlankProject());
       await finishEditorBoot(performance.now());
     });
   });

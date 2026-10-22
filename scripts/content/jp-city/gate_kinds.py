@@ -123,6 +123,9 @@ def state(png_path: str, kind: str, context: str = 'bundle'):
     if human == 'allow' and rc.get('kind') == kind: return 'pass', None
     if rc.get('kind') != kind: return None, f"영수증 종류({rc.get('kind')})가 요청 종류({kind})와 다르다"
     if rc.get('profileHash') != current_profile() and rc.get('profileHash') not in OG.calibrated_profiles():
+        # 이미 출하된 그림의 동결 목록(gate_grandfather.py, 2026-10-21): 화소가 한 점도 안 바뀌었고 옛 프로필 통과 영수증이 있으면 통과.
+        import gate_grandfather as GF
+        if GF.is_grandfathered(sha, kind, rc): return 'grandfathered', None
         return None, f"옛 판정 프로필({rc.get('profileHash')}) 영수증이다 — 다시 판정받아라"
     if rc.get('verdict') != 'pass': return None, '3/4 시점 판정 불합격(' + ' · '.join(rc.get('reasons') or ['fail']) + ')'
     return ('pass' if rc.get('profileHash') in OG.calibrated_profiles() else 'provisional'), None
@@ -131,20 +134,23 @@ def state(png_path: str, kind: str, context: str = 'bundle'):
 def check_all(context: str = 'bundle') -> dict:
     """모든 _gate 키트의 영수증 확인. {'ok':[...], 'bad':[(id, kind, why)], 'total':n}. 모델 호출 없음."""
     import object_gate as OG
-    ok, bad, prov, covered = [], [], [], []
+    ok, bad, prov, covered, gf, changed = [], [], [], [], [], []
     import gate_assembled as GA
     for kid in gate_kits():
         kind = kind_of(kid)
         if is_part(kid):
             name, st = GA.covering(kid, context)
-            if name: covered.append((kid, name + (' [미보정 프로필 임시]' if st == 'provisional' else ''))); continue
+            if name: covered.append((kid, name + (' [미보정 프로필 임시]' if st == 'provisional' else GF_TAG if st == 'grandfathered' else ''))); continue
             bad.append((kid, kind, st)); continue
+        png = os.path.join(GATE_DIR, kid + '.png')
         try:
-            st, why = state(os.path.join(GATE_DIR, kid + '.png'), kind, context)
+            st, why = state(png, kind, context)
         except Exception as e:  # 깨진 PNG 등
             st, why = None, f'확인 실패: {e}'
         if st == 'provisional':                                  # 현재 프로필의 PASS 이지만 프로필이 아직 보정 전 → 임시 통과(보고에 「미보정」 표기)
             prov.append(kid); continue
+        if st == 'grandfathered': gf.append(kid); continue
+        if why: why = _changed_note(kid, png, why, changed)
         (bad if why else ok).append((kid, kind, why) if why else kid)
     # 시설 실내 블록(병원 hs- · 학교 보강 sx- · 사무실 보강 ox-, 2026-10-14): 새 그림이라 관문을 거친다(옛 실내 블록은 소급 면제).
     # 종류표 = 블록이 내보낸 _gate/kinds.json. 문(part)은 조립 방 조각 영수증(gate_rooms.py, kind structure)으로 덮는다.
@@ -152,19 +158,38 @@ def check_all(context: str = 'bundle') -> dict:
     for b, kid, png, kind in inst_items():
         if kind == 'part':
             name, st = GR.covering(kid, png, context)
-            if name: covered.append((kid, 'room ' + name + (' [미보정 프로필 임시]' if st == 'provisional' else ''))); continue
+            if name: covered.append((kid, 'room ' + name + (' [미보정 프로필 임시]' if st == 'provisional' else GF_TAG if st == 'grandfathered' else ''))); continue
             bad.append((kid, kind, st)); continue
         try:
             st, why = state(png, kind, context)
         except Exception as e:
             st, why = None, f'확인 실패: {e}'
         if st == 'provisional': prov.append(kid); continue
+        if st == 'grandfathered': gf.append(kid); continue
+        if why: why = _changed_note(kid, png, why, changed)
         (bad if why else ok).append((kid, kind, why) if why else kid)
-    return dict(ok=ok, prov=[p if isinstance(p, str) else p[0] for p in prov], covered=covered, bad=bad, total=len(ok) + len(prov) + len(covered) + len(bad))
+    gf_cov = [kid for kid, name in covered if name.endswith(GF_TAG)]
+    return dict(ok=ok, prov=[p if isinstance(p, str) else p[0] for p in prov], covered=covered, bad=bad, grandfathered=gf, grandfathered_covered=gf_cov,
+                changed=changed, total=len(ok) + len(prov) + len(gf) + len(covered) + len(bad))
+
+
+GF_TAG = ' [동결 출하본]'
+
+
+def _changed_note(key, png, why, changed):
+    """동결 목록의 그림인데 화소가 바뀌어 동결이 풀린 경우 사유를 크게 바꾼다(changed 에 모은다)."""
+    import object_gate as OG, gate_grandfather as GF
+    try: old = GF.changed(key, OG.pixel_sha256(png))
+    except Exception: old = None
+    if not old: return why
+    changed.append(key)
+    return f'동결 출하본인데 화소가 바뀌었다(동결 {old[:12]}) — 새 그림 기준으로 판정·허용받아라. 원래 사유: {why}'
 
 
 def report(res: dict, file=sys.stdout) -> None:
-    print(f"[3/4 관문] street_hand·시설 실내 키트 {res['total']}개 중 통과 {len(res['ok'])} + 조립 건물 영수증으로 덮임 {len(res.get('covered', []))} + 미보정 프로필 임시통과 {len(res.get('prov', []))}, 영수증 없음/불합격 {len(res['bad'])}", file=file)
+    print(f"[3/4 관문] street_hand·시설 실내 키트 {res['total']}개 중 통과 {len(res['ok'])} + 동결 출하본(화소 그대로) {len(res.get('grandfathered', []))} + 조립 건물 영수증으로 덮임 {len(res.get('covered', []))}(그중 동결 {len(res.get('grandfathered_covered', []))}) + 미보정 프로필 임시통과 {len(res.get('prov', []))}, 영수증 없음/불합격 {len(res['bad'])}", file=file)
+    if res.get('changed'):
+        print(f"!!! [3/4 관문] 동결 출하본 {len(res['changed'])}개의 화소가 바뀌었다 — 동결이 풀려 새 그림 기준을 거쳐야 한다: {', '.join(res['changed'][:12])}", file=file)
     for kid, name in res.get('covered', [])[:3]: print(f'  {kid}: covered by assembled {name}', file=file)
     if res.get('covered'): print(f"  … 띠 {len(res['covered'])}개 모두 'covered by assembled <표본>' (조립 건물 영수증, kind=structure)", file=file)
     if res['bad']:
@@ -179,12 +204,17 @@ def report(res: dict, file=sys.stdout) -> None:
 def enforce() -> None:
     """bake 진입 관문. 미통과 키트가 있으면 표를 찍고 종료(코드 3). 우회 환경변수는 없다(JP_GATE=skip 은 2026-10-15 제거)."""
     res = check_all()
+    if res.get('changed'):
+        print(f"!!! [3/4 관문] 동결 출하본 {len(res['changed'])}개의 화소가 바뀌었다: {', '.join(res['changed'])}", file=sys.stderr)
     if not res['bad'] and res['total']:
+        ng, nc = len(res.get('grandfathered', [])), len(res.get('grandfathered_covered', []))
+        print(f"[3/4 관문] 동결 출하본(화소 그대로·옛 프로필 통과 영수증) {ng} + 동결 조립 표본으로 덮인 부품 {nc} · 새 영수증 통과 {len(res['ok'])} · 임시 {len(res.get('prov', []))}"
+              f" (동결 목록 tiledata/jp-city/gate-grandfathered.json)", file=sys.stderr)
         if res.get('covered'): print(f"[3/4 관문] 상가 띠 {len(res['covered'])}개는 조립 건물 영수증으로 덮임(covered by assembled)", file=sys.stderr)
         if res.get('prov'):
             print(f"[3/4 관문] 통과 {len(res['ok'])} · 임시통과 {len(res['prov'])} — 판정 프로필이 아직 「보정 안 됨」이다. 보고에 「관문 임시통과(프로필 미보정)」라고 적을 것.", file=sys.stderr)
         else:
-            print(f"[3/4 관문] 통과 {res['total']}/{res['total']}")
+            print(f"[3/4 관문] 통과 {res['total']}/{res['total']} (동결 출하본 포함)")
         return
     report(res, file=sys.stderr)
     print('굽기를 거절한다. 영수증을 받으려면: python3 scripts/content/jp-city/gate_review_all.py 후 npm run harness -- object-gate review --batch /tmp/jp-gate-chunk-N.jsonl\n'

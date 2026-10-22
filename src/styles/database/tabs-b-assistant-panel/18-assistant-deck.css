@@ -78,7 +78,8 @@
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail { cursor: default; flex-wrap: nowrap; gap: 8px; padding: 16px 18px; border-bottom: 0; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-who { flex: 1; min-width: 0; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-name { font-size: 14px; }
-.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-state { max-width: 90px; }
+/* 상태 칸은 보이는 글자만큼만 차지한다 — 유휴 상태 글자는 숨는데(display:none) flex 1 이면 빈 칸이 맵 이름 폭을 빼앗았다(UI 감사 09-ai-10). */
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-state { flex: 0 1 auto; max-width: 90px; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-spacer { display: none; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-actions { width: auto; justify-content: flex-end; gap: 4px; flex-shrink: 0; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck > .ai-chat-body {
@@ -138,7 +139,7 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
 
 /* Sidebar header and overflow retain the original controls and keyboard behavior. */
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-state:empty { display: none; }
-.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-ctx { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 130px; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-ctx { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 130px; }
 .ai-chat-secondary-actions { display: grid; gap: 3px; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border-subtle); }
 .ai-deck .ai-chat-secondary-actions > button { display: flex; align-items: center; justify-content: flex-start; gap: 10px; width: 100%; min-height: 34px; padding: 7px 10px; border: 0; border-radius: var(--radius-s); background: transparent; color: var(--text-2); font: 12px var(--font-ui); }
 .ai-deck .ai-chat-secondary-actions > button:hover { background: var(--bg-inset); color: var(--text-1); }
@@ -739,7 +740,10 @@ html[data-ai-render="off"] {
 .ai-chat-sidebar.has-activity-bar .left-activity-bar .left-activity-item[aria-pressed="true"]::before {
   content: ""; position: absolute; left: -4px; top: 10px; bottom: 10px; width: 3px; border-radius: 2px; background: var(--accent);
 }
-.ai-chat-sidebar.has-activity-bar .left-activity-bar .ai-chat-sidebar-tab-label { display: block; font-size: 11px; line-height: 1; }
+/* 이름표는 한 글꼴 크기다. 단추(40px)보다 긴 한 낱말(영어 Progress·Workshop)은 번역의 줄바꿈 자리(소프트
+   하이픈)에서 두 줄로 내린다 — 공방만 9.5px 로 줄이던 규칙은 여전히 넘쳤고 크기도 어긋났다
+   (2026-10-21 UI 감사 02-leftdock-04·12). */
+.ai-chat-sidebar.has-activity-bar .left-activity-bar .ai-chat-sidebar-tab-label { display: block; font-size: 11px; line-height: 1; max-width: 100%; text-align: center; hyphens: manual; }
 .left-activity-badge {
   position: absolute; top: 2px; right: 0; min-width: 16px; height: 14px; padding: 0 4px; border-radius: 7px;
   background: var(--warning, var(--accent)); color: var(--on-accent); font: 700 10px/14px var(--font-ui); text-align: center;
@@ -795,15 +799,16 @@ html[data-ai-render="off"] {
 .left-progress-bar { height: 4px; border-radius: 2px; background: var(--bg-inset); overflow: hidden; }
 .left-progress-bar > span { display: block; height: 100%; background: var(--accent); }
 .left-progress-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-.left-progress-step { display: flex; align-items: flex-start; gap: 10px; padding: 8px; border-radius: var(--radius-m); }
+.left-progress-step { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 6px 10px; padding: 8px; border-radius: var(--radius-m); }
 .left-progress-step.is-next { background: var(--accent-muted); }
 .left-progress-mark {
   flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
   border: 1px solid var(--border-default); font: 600 11px var(--font-ui); color: var(--text-2);
 }
 .left-progress-step.is-done .left-progress-mark { background: var(--success, var(--accent)); border-color: transparent; color: var(--on-accent); }
+.left-progress-step.is-claimed .left-progress-mark { background: transparent; border: 1px dashed var(--text-muted, currentColor); color: var(--text-muted, inherit); }
 .left-progress-step.is-next .left-progress-mark { border-color: var(--accent); color: var(--accent); }
-.left-progress-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.left-progress-copy { flex: 1 1 150px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .left-progress-copy strong { font: 600 12.5px var(--font-ui); }
 .left-progress-detail { color: var(--text-3); font-size: 11.5px; overflow-wrap: anywhere; }
 .left-progress-hint { color: var(--text-2); font-size: 11.5px; }

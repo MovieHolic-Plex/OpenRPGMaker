@@ -1,0 +1,19 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "71ee3e53472ad84df7e5a574a64d7f6ba9bb02d66f8cac52bf2b3bcf04fba5e0",
+ "profileHash": "4d8774b517f41638",
+ "kind": "tall_furniture",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T01:24:20.198Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 1/4)",
+  "3/4: 윗면 3행 < 4 (3/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (1/4)",
+  "3/4: 윗면 2행 < 4 (1/4)"
+ ],
+ "note": "묶음 허용: modern_city 실내 기물 m142-b5 (17) — object-gen 다시 그림, 사용자 위임·Opus 적대 VQA 통과 2026-10-21 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/m142-b5.opus-vqa-r*.json",
+ "sig": "caa9d5ac73c2d471b8612cb723d337332c39bda838f8aecc4aac148dff751382"
+}

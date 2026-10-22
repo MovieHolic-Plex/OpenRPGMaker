@@ -1,0 +1,394 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "006f1283fb5a4f106339ad7e28e074f561d846340d98c8d8dfd313e34e9d85e8",
+ "width": 48,
+ "height": 32,
+ "kind": "container",
+ "name": "konbini bento",
+ "label": "modern_city_interior/konbini-bento",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 18,
+  "darkV5": 44,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top header band (white/grey gradient, green and orange stripes)",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper shelf goods (rice balls / packs)",
+      "rows": "9-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle shelf goods",
+      "rows": "16-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom shelf bento trays",
+      "rows": "24-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 46-48 px wide rectangle. Rows 0-8 are a face-on header strip of horizontal colour bands (grey/white, green row 6, orange row 7, dark row 8). It has no ellipse, no foreshortened plane and no clear front-edge line with eave shadow, so it reads as a sign or cornice. Rows 9-31 are the front face: shelves of goods seen straight on, with white shelf-edge strips at rows 14 and 21-22. No opening is seen from above, and there are no contents or heap visible inside a container. It is a display shelf or cooler drawn in front elevation, not a container with an opening."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a konbini display case with a striped sign band, shelves and stocked products. The measured facts match the richer references. It has 17 visible tones per tile, equal to the cheese stall's 17 and just under the well's 20. Near-flat coverage is 0%, so there are no flat fills, and 0% of its dark edge pixels are neutral, so the outline is tinted rather than a black sticker line. By eye, the shelves carry small product dots and clusters, and the case frame has a few light-to-dark steps. The case body and the sign band are somewhat smoother and less grainy than the cheese stall's wood and awning, so I put shading and texture slightly below the references. The structure and information density are still acceptable next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16828
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top header panel (grey/white gradient with green and orange stripes)",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper shelf with bento items",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle shelf with items",
+      "rows": "15-22",
+      "evidence": "none",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower shelf with bento trays",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat, face-on display case. Rows 0-5 are a light grey gradient band, and rows 6-7 are green and orange stripes (L=131 and L=170). Together they read as a vertical sign or header strip, with no receding top plane and no ellipse. Rows 9-31 are shelves with items drawn face-on, separated by 1-row light shelf edges at rows 14 and 21. Nothing is seen from above, so there is no opening with contents visible and no top surface. This is a front elevation of a shelf or fridge, not a container with an opening, so the kind does not match."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a konbini shelf with a striped header and stocked shelves. It reads as a real prop of the same kind as the stall and well references. Measured facts support it: 17 visible tones per tile, matching the cheese stall (17) and near the well (20), and above the hedge (9). Near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the edges carry a colour tint rather than a black sticker line. Shading is slightly shallower than the references, at about 4 steps on the white and grey body, but the shelves are broken up by per-item colour clusters, small highlights and divider lines. No large flat fills. The piece is a bit cleaner and more uniform than the cheese stall, but it would not look thinner or flatter beside it.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16650
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "header sign band (grey/white rows with green and orange stripes)",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top shelf with onigiri items",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle shelf with drinks and boxes",
+      "rows": "15-22",
+      "evidence": "none",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom shelf with bento boxes",
+      "rows": "23-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a flat, face-on display case. Rows 0-8 are a front-facing header strip with horizontal grey, white, green and orange bands. It has no front-edge line, no eave shadow and no widening or narrowing. Rows 9-30 are shelves seen straight on, with items drawn as front views. The shelf ledges at rows 14 and 21-22 are only 1-2 row lips. Nothing shows an opening seen from above, no contents from above, and no ellipse. The silhouette is a constant 46-48 px wide rectangle. The kind 'container with an opening' does not fit a shelf display case, and there is no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a konbini display case with a striped sign band, shelves and product items. It is a standing prop of the same kind as the stall and well references. Measured facts: 17 visible tones per 16x16 tile, equal to prop-stall-cheese (17) and close to prop-well-roofed (20), above prop-hedge (9). Near-flat coverage is 0%, lower than the stall's 13%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is tinted and not a black sticker line, similar to the hedge and stall. The case body is a light grey/white ramp with shelf shadows and many small product dots, which gives about 4 steps against the references' 5-6. That is a little shallower but not shallow. By eye, the shelf contents carry enough varied detail that a careful artist would accept it next to the stall reference.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15651
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top header banner (grey, green and orange stripes)",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper shelf ledge (1-row light line)",
+      "rows": "14-14",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle shelf ledge (1-row light line)",
+      "rows": "21-21",
+      "evidence": "none",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bento goods on upper shelf (onigiri-like items)",
+      "rows": "9-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bento goods on middle shelf",
+      "rows": "16-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bento boxes in lower dark bay",
+      "rows": "24-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a face-on display shelf. The banner at rows 0-8 is a vertical sign strip with stripes (grey, green, orange) and a dark row 8 below it. It has no front-edge line and no eave shadow, so it is a front-facing fascia. The shelf ledges at rows 14 and 21 are 1-row lines that act only as lips. The goods sit face-on in compartments, and nothing is seen from above, so there is no opening with contents visible. The whole object, rows 0-30, is one vertical front face with no horizontal top surface. It is not a container with an opening."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a konbini shelf unit with a striped header, a light-grey casing and rows of small products. Measured facts back it up: 17 visible tones per tile, equal to prop-stall-cheese (17) and just under prop-well-roofed (20), and above prop-hedge (9). Near-flat coverage is 0%, so there are no big flat fills. Dark edge pixels are 0% neutral, so the outline is tinted (a dark bluish-grey on the casing) rather than a black sticker line. The shelves and goods are varied and hold several tones. The casing ramp is a bit shallow at about 4 steps, with less grain than the wood and tile references. Overall, a careful artist would accept it next to the stall and well references without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17728
+  }
+ ],
+ "decidedAt": "2026-10-20T23:53:05.186Z",
+ "cells": {
+  "16": [
+   "0f698a9805f9917f",
+   "2fc183f1122e60b0",
+   "35d715c37383b427",
+   "43a08d06919fd80b",
+   "9d80e6c4d57d7f13",
+   "ca663786517406e6"
+  ],
+  "24": [
+   "03cab192461e6b3b",
+   "7f8c7c3e6f8fbeed",
+   "882f18b88bd30c8f",
+   "a959b874329ec170",
+   "b5813c458d1a6f4e",
+   "bf1f57ce6b45e90d",
+   "e9a41b542a9fd5d0",
+   "fd8c74c9e878cf49"
+  ],
+  "32": [
+   "2d1a8c8f329698a9",
+   "3b793fbe5fd03e9e",
+   "562a569a4e9dea7c",
+   "c265589cda59e2db",
+   "c45201297be041d0",
+   "db0a89ab21d5aefd"
+  ],
+  "48": [
+   "1630c016fbc337c0",
+   "268c78e9ddeddf0b"
+  ]
+ }
+}

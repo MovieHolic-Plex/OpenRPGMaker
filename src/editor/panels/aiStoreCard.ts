@@ -5,6 +5,7 @@
 //   사용자가 고르고 「프로젝트 칩셋에 넣기」를 누르면(WORKSHOP_BAKED_EVENT) 조수에게 물체 id 와 함께 원래 요청을 잇게 한다.
 // - store_publish: 무엇을 어떤 조건으로 올리는지 + 권리 동의 + 올리기
 // - store_set_visibility: 숨기기·다시 보이기
+// - generate_missing_object: 없는 기물 하나를 공방으로 그려 넣는 카드(aiObjectGenCard.ts)
 // 스토어에 쓰는 동작(넣기·올리기·숨기기)은 전부 사용자가 이 카드의 버튼을 눌렀을 때만 일어난다. 조수는 제안만 한다.
 
 import type { PiAgentEvent } from "@/ai/piAgent/protocol";
@@ -15,12 +16,13 @@ import { aiMadeNote, buildUploadPack, uploadCandidates } from "@/editor/assetSto
 import { aiMadeAssets } from "@/assetStore/pack";
 import { WORKSHOP_BAKED_EVENT, type WorkshopBakedDetail } from "@/editor/workshop/workshopEvents";
 import { currentDrawTarget } from "@/editor/workshop/mapObjectTarget";
+import { createObjectGenCard } from "./aiObjectGenCard";
 import { isStoreCardRequest, type MissingTilesQuestion, type StoreCardRequest, type StorePublishProposal, type StoreVisibilityProposal } from "@/editor/tools/storeTools";
 import { getLocale } from "@/i18n";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 
-const STORE_CARD_TOOLS: ReadonlySet<string> = new Set(["ask_missing_tiles", "store_publish", "store_set_visibility"]);
+const STORE_CARD_TOOLS: ReadonlySet<string> = new Set(["ask_missing_tiles", "store_publish", "store_set_visibility", "generate_missing_object"]);
 
 /** Pi 이벤트(팀 모드의 agent_event 포장 포함)에서 스토어 카드 요청을 꺼낸다. */
 export function storeCardFromEvent(raw: PiAgentEvent): StoreCardRequest | null {
@@ -292,6 +294,7 @@ function visibilityCard(proposal: StoreVisibilityProposal): HTMLElement {
 }
 
 export function createStoreCard(request: StoreCardRequest, followUp: StoreCardFollowUp): HTMLElement {
+  if (request.kind === "workshop-object-request") return createObjectGenCard(request, followUp);
   if (request.kind === "store-missing-tiles") return missingTilesCard(request, followUp);
   if (request.kind === "store-publish-proposal") return publishCard(request);
   return visibilityCard(request);

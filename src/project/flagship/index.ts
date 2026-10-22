@@ -10,6 +10,7 @@ import {
 } from "./beats";
 import { createChronoBellFlagshipDemo } from "./chronoBell";
 import { createEmeraldCrownFlagshipDemo } from "./emeraldCrown";
+import { createFirstLoveFlagshipDemo } from "./firstLove";
 import { createShitamachiFourthSeasonFlagshipDemo } from "./shitamachiFourthSeason";
 import {
   FLAGSHIP_DEMO_IDS,
@@ -28,6 +29,7 @@ export {
   FLAGSHIP_DEMO_IDS,
   createChronoBellFlagshipDemo,
   createEmeraldCrownFlagshipDemo,
+  createFirstLoveFlagshipDemo,
   createShitamachiFourthSeasonFlagshipDemo,
   flagshipBeatManifestForChoice,
   formatFlagshipExemplarPrompt,
@@ -59,6 +61,12 @@ export const FLAGSHIP_DEMO_SPECS: Readonly<Record<FlagshipDemoId, FlagshipDemoSp
     choiceId: "story-cutscene",
     manifest: FLAGSHIP_BEAT_MANIFESTS["shitamachi-fourth-season"],
     build: createShitamachiFourthSeasonFlagshipDemo,
+  },
+  "first-love": {
+    id: "first-love",
+    choiceId: "story-cutscene",
+    manifest: FLAGSHIP_BEAT_MANIFESTS["first-love"],
+    build: createFirstLoveFlagshipDemo,
   },
 };
 

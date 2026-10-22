@@ -1,0 +1,335 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f9731ab5d0d088570ff375a0746c4fa7c83fd33c36c349e8edbef2634456aeb2",
+ "width": 48,
+ "height": 48,
+ "kind": "organic",
+ "name": "forest canopy crown heads (tile overlay on forest roof) (cherry blossom)",
+ "label": "jp_city/jp-forest-sk-head-c3x3-0",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 34,
+  "nearBlackEdge": 0.43,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper blossom canopy clumps",
+      "rows": "5-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower blossom clumps",
+      "rows": "28-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a tile overlay of cherry blossom foliage clusters over dark green gaps, filling the full 48x48 tile. It is an organic texture with no discrete standing body. There is no front-edge line, eave shadow, ellipse lid or separate front face. Light pink highlights sit at the tops of each clump and darker pink at the bottoms, which is only canopy shading. It does not read as a standing object with a top and front, nor as a flat slab or a front elevation, so I classify it as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a single 16x16-ish tile of pink blossom clumps over a dark green-brown backing. It has about 10 distinct colours in total and a median of 10 per tile. The references have 108-109 per tile and 427-567 colours overall, so the candidate is about 10x lower on both. Flat-fill coverage is 0%, and the clumps do carry some shading, roughly 4 steps (highlight, light pink, mid, dark mauve). Each clump is shaded as a rounded lump with a lighter top-left, which is decent craft. The dark edge pixels are 0% neutral, so the outline is tinted, a dark mauve or green-brown, and reads as dark_material_tone. Compared with the references' layered leaf clumps in 5-6 greens with per-cluster highlights and varied edges, the candidate has fewer ramp steps and much less per-tile variation. The clumps are smooth blobs with little grain or dot texture, so it looks simpler and flatter next to the references. The density gap is large, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13477
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper blossom canopy clusters",
+      "rows": "4-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower blossom clusters",
+      "rows": "28-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a seamless tile overlay of pink blossom clumps on dark green foliage, filling the 48-wide by 48-tall frame. The clumps are shaded organically, with light pixels at the upper left and darker ones below. There is no front-edge line, eave shadow, ellipse rim or distinct front face. It is not a standing object with a top and front, so the 3/4 rules do not apply and it reads as 'other' (a foliage texture)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a single 16x16-ish tile of pink blossom clumps over a dark background, with only 10 distinct colours in total. The references have 108-109 colours per tile and 427-567 colours overall. Each blossom clump has about 3 pink steps (highlight, mid, shadow) where the references use 5-6 greens per canopy. The dark edge pixels are 0% neutral, so the outline is tinted (dark maroon/green-brown) and reads as dark_material_tone, not a sticker line. The clumps are rounded blobs with little per-leaf or per-petal texture and no clustering detail, although there are no 5x5 flat fills. It is far thinner than the references in colour count and shading depth, so I rate it much lower in density. It would look shallow beside the reference canopies.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 11401
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper blossom canopy clusters",
+      "rows": "4-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower blossom clumps",
+      "rows": "27-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a tile overlay of irregular cherry-blossom foliage clumps in pink with dark green gaps. It has no front-edge line, no eave shadow, no ellipse and no roof plane. Highlights at rows 6-10 and 28-30 are only organic shading on the blobs. There is no south face, no vertical front, and no structure of a box-like object. It is an amorphous foliage texture, not a standing object with a top and a front, so the three-quarter rule does not apply and I report it as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small tile overlay of pink blossom clumps on a dark green ground. It has only 10 distinct colours in total and a per-tile median of 10, against about 108 per tile and 427-567 distinct colours in the references. Each blossom clump is shaded in roughly 3-4 pink steps (highlight, light, mid, shadow), well below the 5-6 steps of the reference canopies. The dark edge pixels are 0% neutral, so the outline is tinted, a dark green-brown between the clumps, which is acceptable. There are no flat 5x5 fills, but the clumps are smooth blobs with little per-leaf or per-petal texture, no leaf-clump variation and no stray dots. Next to the richly textured reference canopies this reads as thinner and flatter, with much lower colour variety. Because the tile is an overlay, its small size is partly excused, but the colour count and ramp depth are still clearly below the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11809
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper blossom cluster",
+      "rows": "3-22",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower blossom clusters",
+      "rows": "26-42",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The object is an irregular tile overlay of cherry blossom clumps on dark green foliage. It has no front-edge line, eave shadow, ellipse lid, or defined front face. Light pink highlights at the top of each clump and darker pink below give a loose organic volume, but there is no structured top-and-front division. This is a texture overlay and not a standing object with a defined top surface, so the three-quarter rules do not apply cleanly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a single 16x16-ish tile of pink blossom clumps over a dark green-brown backing. Its measured colour count is 10 per tile and 10 overall, against about 108 per tile and 427-567 overall for the references, so it is roughly a tenth as rich. The blossom clumps show about 4 lightness steps (pale highlight, light pink, mid mauve, dark mauve) with little per-clump variation. The references use 5-6 greens with leaf-by-leaf clumps and highlights. The dark edge pixels are tinted (0% neutral), so the outline reads as dark material tone, not sticker black. Flat-fill coverage is 0%, but the clumps are smooth lobes with little grain, so texture is only some. As a tile overlay it is not expected to match a whole tree, but the colour count and shading depth are far below the Beodeul bar, and the reference tile density is clearly higher.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14013
+  }
+ ],
+ "decidedAt": "2026-10-20T07:08:11.762Z",
+ "cells": {
+  "16": [
+   "90c27991c8b6c1b9",
+   "984e7359d371798f",
+   "9891484d1030c556",
+   "d8b6c1c4d05d9c08",
+   "dcdbbef07d6e6296",
+   "e2e6ad08805cbdc5",
+   "e5b8b65ac1650eb0",
+   "e8c000936ab93cbd",
+   "fd8a3ba68d6fef0d"
+  ],
+  "24": [
+   "483b9f87bb798a01",
+   "5098eb7f206267e5",
+   "75e8b4a4b7fb5b34",
+   "d333ff0e97c78fac"
+  ],
+  "32": [
+   "22342b33e21dda49",
+   "29b0745d0aaae733",
+   "2ea61f7c48cdfe64",
+   "31a443222d977936",
+   "335ce70b209813a6",
+   "4a0d9542c1c17d89",
+   "4e8c81d40620e81b",
+   "4f96bf076ccd146b",
+   "5d5bd13e87d0c0d9",
+   "5ee45a9cc0a665fa",
+   "6ad3e12cf8aaa087",
+   "6ccb8511b29938f1",
+   "828c51b683c546c2",
+   "8502e41b05b92574",
+   "95ed358d77469aa9",
+   "a31618b0f4024a75",
+   "a62d922cc39e2cc6",
+   "a6e4d68db05e0e26",
+   "b749d4fa70dd2fc2",
+   "c1d388c476977648",
+   "c652e1938306c739",
+   "cea05f3f4e718bb7",
+   "da620ebca2aa4fbf",
+   "f8600c461a0da3f2"
+  ],
+  "48": [
+   "31eb1d3172ca4f74"
+  ]
+ }
+}

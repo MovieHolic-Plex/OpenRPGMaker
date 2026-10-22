@@ -1,0 +1,18 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "0456a5a899061f01bef9cb3f04959a9c022286cb433253b8bfbb378e717d3494",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-20T22:16:46.207Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (3/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "note": "delegated by user to supervisor 2026-10-21; Opus 5.5 medium adversarial VQA receipt harness-data/jp-inaka/vqa-r14/gate2/findings-A.json (PR #3071)",
+ "sig": "b5a780c8bca445ccdfb530093149c83091545d2cc76a9b39f65fdba37ecb72e8"
+}

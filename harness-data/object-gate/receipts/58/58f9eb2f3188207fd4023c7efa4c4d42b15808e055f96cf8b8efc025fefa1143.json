@@ -1,0 +1,422 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "58f9eb2f3188207fd4023c7efa4c4d42b15808e055f96cf8b8efc025fefa1143",
+ "width": 48,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "cinema concession",
+ "label": "modern_city_interior/cinema-concession",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 19,
+  "darkV5": 33,
+  "nearBlackEdge": 0.27,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "popcorn machine on counter",
+      "rows": "3-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soda dispenser on counter",
+      "rows": "1-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cups and register on counter",
+      "rows": "5-18",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top",
+      "rows": "18-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "striped front panel of counter",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the counter. Its wooden top is a tan band at rows 18-22, about 5 rows, and it ends in a darker front-edge line at row 22 (#a67a37). Below it is a light line at row 23 and then the red and white striped front face, rows 23-31, 9 rows. The popcorn machine, soda dispenser, cups and register stand on the counter and are decor. The counter top has a visible horizontal surface and a front face of 3 or more rows, similar to the green cabinet reference with a top and edge."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a striped-front concession counter with a popcorn machine, a dark soda dispenser and cups on top. Measured facts are close to the stall and well references: 17 visible tones per tile against 17 for the cheese stall and 20 for the well, and 0% near-flat coverage. Dark edge pixels are 47% near-neutral, so the outline is partly neutral and partly tinted. That is a mixed outline, and the dark machine and soda units read as near-black. The red and cream awning stripes and the counter body have only about 3-4 steps each, with little grain or per-element highlight. The popcorn has some dotted texture. Compared with the cheese stall's wood grain, crate texture and scalloped roof, the counter reads flatter and more sticker-like. It has no 5-6 step ramps, and the body panels are simple. A careful artist would find it slightly thinner than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20052
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "counter top (wood)",
+      "rows": "17-22",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "popcorn machine",
+      "rows": "3-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soda dispenser",
+      "rows": "1-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cups",
+      "rows": "7-18",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cash register and screen",
+      "rows": "3-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "striped front panel",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a low sales counter. Its tan wood top runs from about row 17 to row 22. In column x=24 the top is #cba76c on rows 18-20, with a lighter front-edge line at row 21 (#ddbf91) and a dark eave shadow at row 22 (#a67a37). Below that, rows 23-31 are a red-and-white striped front face 9 rows tall. The popcorn machine, soda dispenser, cups and register stand on the counter as decor. The counter is low furniture, so the tall_furniture kind fits poorly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 17 visible tones per 16x16 tile, the same as prop-stall-cheese (17) and close to prop-well-roofed (20). Its near-flat coverage is 0%, below the cheese stall's 13%, so the measured density is at the references' level. The picture agrees: the popcorn machine, the soda dispenser, the bottles and the striped counter each carry several tones and small highlight and shadow details. Outline tint is mixed. 47% of dark edge pixels are near-neutral, similar to the bench (44%) and well (33%), while the cheese stall and hedge are tinted (1% and 0%). The machines use dark outlines, but the counter and awning edges lean toward the material tones, so it is not a uniform black sticker line. Shading is about 4 steps per material, a little shallower than Beodeul's 5-6, and the red and white counter stripes are the simplest area. The piece is clearly structured and textured enough to sit beside the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19057
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "popcorn machine on counter",
+      "rows": "3-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soda dispenser on counter",
+      "rows": "1-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cups and straws on counter",
+      "rows": "7-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "register and screen on counter",
+      "rows": "3-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top (wood)",
+      "rows": "17-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "striped counter front",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a low counter, not tall furniture against a wall. Its wooden top runs rows 17-21, drawn as a lighter tan band. Row 22 is a darker edge line (#a67a37) that acts as the front-edge line and eave shadow. Below it, rows 23-31 hold the red and white striped front face, 9 rows tall. The machines, cups and register standing on the counter are decor. The counter top has foreshortened depth and a front face of 3+ rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 17 visible tones per 16x16 tile, equal to prop-stall-cheese (17) and close to prop-well-roofed (20). Near-flat coverage is 0%, so it has no large flat fills. The striped counter, popcorn machine, menu board and cups each carry several tones with highlight and shadow separation. Of the dark edge pixels, 47% are near-neutral, about the same as the bench (44%) and the well (33%), and well below the lamp's 100%. By eye the outlines are mixed: dark neutral on the machine and sign, tinted dark red-brown on the counter. That reads as selective rather than a uniform black sticker line. Per-material ramps are a little shallower than Beodeul's, about 4 steps against 5-6, and texture is moderate rather than dense. A careful artist would still accept it next to the stall and well references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23091
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "popcorn machine on counter",
+      "rows": "3-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soda dispenser on counter",
+      "rows": "1-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cups and register on counter",
+      "rows": "5-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top",
+      "rows": "17-22",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "striped counter front",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a low serving counter. Its wooden top is a band of about 5 rows (17-21). Column x=24 shows a lighter front-edge line at row 21 (#ddbf91) and a dark eave shadow at row 22 (#a67a37). Below that is a red-and-white striped front face of about 9 rows (23-31). The popcorn machine, soda dispenser, cups and register stand on the counter, so they are decor and not the main body. The object is a counter, not tall wall furniture, so the kind only loosely matches. As a counter it has a top surface plus a front face, which is the pattern of the green cabinet reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a red-and-cream striped counter with a popcorn machine, a dark menu box and cups. It matches the prop kind. Measured facts: 17 visible tones per tile, equal to prop-stall-cheese (17) and close to prop-well-roofed (20). Near-flat coverage is 0%, so there are no big flat fills. The counter stripes, the popcorn heap, the machine's glass and trim, and the cups all carry value variation. Dark edge pixels are 47% near-neutral, in line with the bench (44%) and the well (33%). The outline is therefore mixed: some dark neutral lines on the menu box and machine frame, some tinted dark red on the counter. It is not a uniform black sticker outline. Shading is about 4 steps per material, slightly shallower than the references' 5-6, and the piece is smaller and simpler than the stall. Overall it holds up next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16552
+  }
+ ],
+ "decidedAt": "2026-10-20T22:55:59.259Z",
+ "cells": {
+  "16": [
+   "01c519c876a3077a",
+   "0afe12a972888fdb",
+   "5b2970d002f2c614",
+   "98bacbb7ddf24719",
+   "9b71c0c77f9ea86f",
+   "dbc146e6e0afbe7f"
+  ],
+  "24": [
+   "04951b4fef546100",
+   "26e0fe96b70982a4",
+   "3b4ad569d755052a",
+   "565d0f47688ec576",
+   "adeda929247afbeb",
+   "b67f568d544a7301",
+   "de472b4a7d1bfb26",
+   "f08d59f57d48afb4"
+  ],
+  "32": [
+   "4983bde40b9c30bb",
+   "634bc7c346ba76cc",
+   "8638bea82d15e159",
+   "990206e27217f73a",
+   "b5b6ca4cac6f28cc",
+   "e12b00bb4c89ce57"
+  ],
+  "48": [
+   "c700e48b4cfd476d",
+   "e1047f2f58b0b64b"
+  ]
+ }
+}

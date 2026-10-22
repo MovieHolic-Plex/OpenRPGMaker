@@ -8,6 +8,7 @@
 // 엔진 선택 저장·해석은 조수가 읽는 src/ai/localCliEngine.ts 하나를 쓴다(그 모듈은 타입 말고 아무것도 가져오지 않아 첫 화면 번들이 늘지 않는다).
 // 고르는 것은 여전히 opt-in 이다 — 고르지 않으면(또는 「원래 AI 연결로 되돌리기」) 기존 엔진이다.
 
+import { fetchCompanion } from "@/ai/companionConnection";
 import { ASSISTANT_ENGINE_STORAGE_KEY, LOCAL_CLI_ENGINE_IDS, loadAssistantEngine, saveAssistantEngine, type AssistantEngineChoice, type LocalCliEngineId } from "@/ai/localCliEngine";
 
 export { ASSISTANT_ENGINE_STORAGE_KEY, type AssistantEngineChoice };
@@ -81,13 +82,9 @@ function companionBase(): string {
   return (typeof window !== "undefined" ? (window as { oprn?: { companionOrigin?: string } }).oprn?.companionOrigin : undefined) ?? "";
 }
 
-function companionHeaders(): Record<string, string> {
-  const token = typeof window !== "undefined" ? (window as { oprn?: { companionToken?: string } }).oprn?.companionToken : undefined;
-  return { "Content-Type": "application/json", ...(token ? { "x-oprn-companion-token": token } : {}) };
-}
-
 async function call<T>(method: "GET" | "POST", path: string, body?: unknown): Promise<T> {
-  const response = await fetch(`${companionBase()}/v1${path}`, { method, headers: companionHeaders(), ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
+  // 토큰·서버 재시작 뒤 다시 맺기는 한 입구(fetchCompanion)가 맡는다.
+  const response = await fetchCompanion(`${companionBase()}/v1${path}`, { method, headers: { "Content-Type": "application/json" }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   return await response.json() as T;
 }

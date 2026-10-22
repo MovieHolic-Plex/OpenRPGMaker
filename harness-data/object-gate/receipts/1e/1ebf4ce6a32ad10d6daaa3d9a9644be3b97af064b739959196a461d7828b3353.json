@@ -1,0 +1,363 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1ebf4ce6a32ad10d6daaa3d9a9644be3b97af064b739959196a461d7828b3353",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "station coin lockers",
+ "label": "modern_city_interior/station-coin-lockers",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 평면 채움 (1/4)",
+  "화풍: 질감 없음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)",
+   "평면 채움 (1/4)",
+   "질감 없음 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 13,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of locker bank",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "header strip with blue label band",
+      "rows": "7-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "locker doors (3 rows of cells)",
+      "rows": "11-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-6 form a gray top band: rows 2-4 are mid gray, row 5 is lighter, and row 6 is the lightest, a front-edge line. Row 7 is a dark eave shadow, so the band counts as a top surface of 5 rows (evidence a). Below it, rows 7-30 are a vertical front face of about 24 rows, with a blue label strip and 3 rows of locker doors. No side face is drawn. The locker bank is a single body, so there are no other parts that need a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 12 visible tones per tile, which is within range of the hedge (9) and below the stall (17) and well (20). Its dark edge pixels are 0% neutral, so the outline leans blue-grey and counts as a dark material tone rather than a black sticker line. Near-flat coverage is only 7%, close to the cheese stall's 13%. By eye it is weaker than the references. The body is a pale grey-blue slab with a regular grid of near-identical square doors, and each door has about 2-3 tones (face, a lighter edge and a dark gap). The top bar and the sides are almost flat, with no grain, speckle, wear or per-door variation. The shading ramp is about 4 steps against the 5-6 in the stall and well. The silhouette is a plain rectangle that reads more like a calculator or a window panel than lockers, with no feet, base, hinges or number plates to give it structure. Next to the stall and well it looks thinner and flatter, so I fail it because of that doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15673
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of locker block",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "locker door grid with label strip",
+      "rows": "7-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-6 form a 5-row gray band at the top. Row 5 is lighter (#c6cad4) and row 6 is the lightest (#dde0e7), so row 6 acts as the front-edge line. Rows 7-10 below it are a dark band (#585a64 and the blue strip) that works as eave shadow. The locker front face runs from about row 7 to row 30, with door panels and dividers and a base at rows 29-30. This is similar to the green cabinet reference (top 5 + edge + eave). The top band is only weakly distinguished from a front-facing cornice, so this reading is borderline."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a grey-blue locker bank with a header strip and a grid of small doors. Measured facts: 12 visible tones per 16x16 tile, which sits between the hedge (9) and the stall (17) and the well (20). Near-flat coverage is 7%, below the stall's 13%. The dark edge pixels are 0% neutral, so the outline is a tinted dark blue-grey rather than black, and it reads as a dark tone of the neighbouring material. By eye, the frame and doors have about 4 lightness steps (highlight, light, mid, dark) against the references' 5-6. Each door carries a small highlight and a handle or slot dot, so the grid is not one flat colour. It is a little plainer than the stall and well, and the doors are somewhat uniform, but it does not look like a flat sticker beside the references. The primary facts are at or near reference level and the outline is tinted, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19284
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of locker bank",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "blue label strip",
+      "rows": "7-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "locker doors (2 rows of 3 small, 2 large)",
+      "rows": "11-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-6 form a light-gray band at the top, brightening to a 1-row edge line at row 6 (L=224). Row 7 below it is darker (L about 91-98), which acts as eave shadow before the blue label strip at rows 7-10. The locker doors on rows 11-29 form a front face of about 24 rows. The band is only 5 rows and its gradient could also be read as a front-facing header, so this is a borderline reading of a top surface. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey-blue locker block with a header bar and a regular grid of door squares. The measured facts are mixed. It has 12 visible tones per tile, above the hedge at 9 but below the stall at 17 and the well at 20. Near-flat coverage is 7%, between the references' 0% and 13%. Dark edge pixels are 0% neutral, so the outline is tinted (bluish dark) rather than near-black. Against that, there are only 15 distinct colours in total, versus 38-40 for the stall and well. By eye, the metal body is only about 3-4 steps (light face, mid, dark, edge), and each locker door is a near-identical repeated square with little per-door shading, wear, rust or grain. The overall read is a flat, calculator- or keypad-like sticker, thinner than the stall and well, which have per-element highlights, grain and clustered detail. The structure is fine and the outline is acceptable, but the shading depth and texture fall short of the Beodeul bar. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18933
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of locker bank",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "blue label strip with lock plate",
+      "rows": "7-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "locker doors (six small, two large)",
+      "rows": "11-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band at rows 2-6 is 5 rows deep. It brightens through rows 5 and 6, and row 6 (L=224) is the lightest front-edge line. Row 7 is a darker eave-shadow line, and the front face continues below it. The front face is the blue label strip (rows 7-10) plus the locker doors (rows 11-29), about 24 rows including the base row. There is no isometric side face. The top band shares the door face's gray tone, so it could be read as a front-facing cornice. But the edge line and the shadow row beneath it satisfy evidence (a), so I measure it as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 12 visible tones per tile, above prop-hedge (9) and below stall-cheese (17) and well-roofed (20). Near-flat coverage is 7%, so there are no large flat fills; the references range from 0% to 13%. Dark edge pixels are 0% neutral, so the outline leans blue/grey, matching the adjacent material, not a black sticker line. By eye, the grey-blue body ramps through about 4 steps: a header bar, light door panels, mid and dark seams, and small handle or slot highlights. The grid of doors is clean but fairly uniform and has less grain than the stall or well. It reads slightly calculator-like and is a little lower than the best references, but it is comparable to the hedge on the primary facts, so it is acceptable at this scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20189
+  }
+ ],
+ "decidedAt": "2026-10-21T08:22:08.634Z",
+ "cells": {
+  "16": [
+   "b129e0eded2a9bb2",
+   "c13c62f30cb06992",
+   "d3cb98522e1c93db",
+   "fa0be7d067e158c4"
+  ],
+  "24": [
+   "0086f6621259ad4a",
+   "0b4b21ac2823d8e8",
+   "260d85029c06d38a",
+   "2a91a918e5bb5ed3",
+   "3a042345974b9afd",
+   "3b2ec1d67cfaaa99",
+   "3b89ae9ff5ea1c40",
+   "443cc72de9bc2ce8",
+   "4eec9fae86383583",
+   "52ee0989e0dd52dd",
+   "6b79f51c7f2f1235",
+   "732b127596af64b6",
+   "7fa77ef71236d1f5",
+   "86ce38d654a515c6",
+   "8822c46216b1bae6",
+   "89c422ee8c2e42d1",
+   "8b89f3ae557fc032",
+   "8e97c08bc0a64350",
+   "8fc1da9af301ef9f",
+   "abdc0dde47651f23",
+   "f0950e0650e7d6cc",
+   "f42f59106352d770",
+   "f9f5d44e5af8afd3",
+   "fb997fc866a4ad7d"
+  ],
+  "32": [
+   "8910975472e68208"
+  ],
+  "48": [
+   "02a7182e9fe8fe80",
+   "06cfacafaf3dea88",
+   "2ab4a6466731a0c3",
+   "66336cf6bc137ccf",
+   "94ea1755f2131c8c",
+   "ee6cc8e47ce0a9c6"
+  ]
+ }
+}

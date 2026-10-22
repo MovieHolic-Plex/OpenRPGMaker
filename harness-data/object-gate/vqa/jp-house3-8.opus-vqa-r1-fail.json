@@ -1,0 +1,101 @@
+{
+ "schema": "jp-vqa/1",
+ "batch": "jp-house3-8",
+ "round": 1,
+ "judge": "claude-opus-5-5 (medium, fresh independent subagent per group per round; saw neither the author's opinion nor earlier verdicts)",
+ "date": "2026-10-21",
+ "overall": "FAIL",
+ "criteria": {
+  "path": "/home/main/.cache/jpf/vqa/criteria.md",
+  "sha256": "61571cf0d8916cafa1346da6581f589175582c58dc00997904c08527f02f250a",
+  "text": "# jp_city new-pixel adversarial VQA — fixed criteria (do not change between rounds)\n\nYou are an adversarial visual QA judge for 16px pixel art in the `jp_city` chipset of a top-down JRPG drawn in **3/4 view**\n(camera south of the subject, looking down about 45 degrees). Your job is to find real defects. Do not be polite.\nYou have not seen any earlier verdicts and you get nobody's opinion about these pictures.\n\nEach candidate board shows every candidate at **1x** (true game size) and **4x**. Each `ref-*.png` board shows\n**original jp_city pieces of the same kind** (already in the shipped chipset) at 1x and 4x. The originals are the quality bar.\nJudge every candidate against those originals, at both 1x and 4x. Use the Read tool to open every image you are given.\n\nA candidate FAILS if any of these is clearly true:\n\n1. **View (3/4).** A standing object (building, vehicle, tree trunk/crown base, prop) must show its top surfaces seen from above\n   (roof planes, flat roofs with a visible top plane, car roof/hood/trunk tops, foreshortened) **and** its south front face.\n   Pure side or front elevation with no visible top plane, or pure plan view with almost no front face, fails.\n   Vehicles facing east/west show their side profile as the south face plus the roof/hood tops above it. Ground tiles must read as\n   flat ground seen from above.\n2. **Shading craft vs the originals.** Main materials have clearly fewer value steps than the same material in the originals,\n   or large single-colour areas (about 5x5 px or more) with no texture where the originals carry texture, or muddy/blurred/\n   noise-like clusters where the originals have clean readable pixel clusters.\n3. **Outline.** Outlines are neutral black/grey wrapped around everything where the originals use dark tones of the adjacent material.\n4. **Palette/coherence.** Colours or contrast clash with the originals so that the piece would look foreign next to them in one map.\n5. **Tiling (ground cells and scenes only).** Visible tile-grid artefacts in a composed map: square/rectangular blocks snapped to the\n   16px grid, hard straight seams, obviously repeated stamps, or a hard ruler-straight boundary between the new ground and the\n   neighbouring original ground that the originals do not have. Ground autotile cells are variants: judge the cell sheet for pixel\n   quality and the **scenes** for how they actually look when laid.\n6. **Readability at 1x.** At game size it does not read as what it is named.\n\nRelative rule (fixed): a trait that the originals share to the same degree is not a defect of the candidate.\nTree sprites are never seen alone in game; they overlap in forests — use the forest scenes for crown/trunk/ground judgement as well.\n\nOutput: JSON only, written to the file you are told, schema:\n```\n{\"schema\":\"jp-vqa/1\",\"judge\":\"claude-opus-5-5\",\"group\":\"<group>\",\"overall\":\"PASS|FAIL\",\n \"items\":[{\"label\":\"<label exactly as printed on the board>\",\"verdict\":\"PASS|FAIL\",\"criteria\":[<numbers violated>],\n           \"reasons\":\"<concrete: where (rows/area), what, compared with which original>\",\"fix\":\"<what to change if FAIL>\"}]}\n```\n`overall` is PASS only if every item is PASS. Every label on your boards must appear exactly once.\n"
+ },
+ "verdictFiles": [
+  "/home/main/.cache/jpf/h3vqa/r1/verdict-house3.json"
+ ],
+ "boards": [
+  "/home/main/.cache/jpf/h3vqa/r1/cand-house3.png",
+  "/home/main/.cache/jpf/h3vqa/r1/ref-house3.png"
+ ],
+ "counts": {
+  "items": 8,
+  "passed": 7
+ },
+ "items": [
+  {
+   "group": "house3",
+   "label": "glass-cupboard",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Wood top plane (top ~3 rows, grained) plus south front with glazed upper doors and two drawers; wood value steps and dark-brown outline match getabako/dresser-low; reads as a glass-front cupboard at 1x. Small white smudge on the top right is minor.",
+   "fix": "",
+   "pixelSha256": "8c242a07b25253ff75c89c389095e5029e7a2f14a33601f0cf0c5541d4e6f77b"
+  },
+  {
+   "group": "house3",
+   "label": "vanity-mirror",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Mirror on the wall face, counter top seen from above with oval basin and small bottles, cabinet front below; comparable to washbasin/kitchen-sink originals in view, value steps and outline.",
+   "fix": "",
+   "pixelSha256": "1ccccc88ae10a83b4aaa2f92f6656fb50c666caec0f1dddde67e821c6915a65a"
+  },
+  {
+   "group": "house3",
+   "label": "unit-bath",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Tub rim and water seen from above with front panels, like the bathtub original; wall shower bar and cup on the wall above. Right-hand wash block with the cross-grid drain is the weakest part, and the large flat white panels are acceptable because the bathtub original has them too.",
+   "fix": "Optional: give the right wash block a clearer faucet/stool so it reads at 1x.",
+   "pixelSha256": "7253b3ee11234dd5d6cb5b0058385540f5652f98344d98e9dface84da98c8a18"
+  },
+  {
+   "group": "house3",
+   "label": "serving-hatch",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Wall opening framed in plaster with dark kitchen interior and a wooden counter ledge whose top plane and front are both visible; wood shading matches the originals. At 1x it reads as a hatch/counter.",
+   "fix": "",
+   "pixelSha256": "8e4a83950ea1e81f1f867f6dd8b3d4082224766af25e950c13a35a174c25b91a"
+  },
+  {
+   "group": "house3",
+   "label": "wood-post",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Wall-mounted post drawn on the wall face with light/mid/dark wood stripes and a dark band, outline in dark wood tones; consistent with wall:juraku post.",
+   "fix": "",
+   "pixelSha256": "daa2698c14d62ca978f3e881f89f0935a00172cf198d07c9cd13760a2d98f0ac"
+  },
+  {
+   "group": "house3",
+   "label": "toilet-shelf",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Small wooden shelf with grained top plane and short front/legs, toilet roll and potted plant on top; matches the toilet-paper and dresser originals in palette and shading.",
+   "fix": "",
+   "pixelSha256": "c71f433806aefd47b508dd550a798b22a46e6f1d065a8d25d4d53d6c400ab303"
+  },
+  {
+   "group": "house3",
+   "label": "cloth-wainscot",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    6
+   ],
+   "reasons": "The cream cloth area (upper half) is textured with evenly staggered white dashes in horizontal courses, so at 1x and 4x it reads as a brick/tile wall rather than wallpaper cloth. Originals wall:cloth / wall:cloth-beige use fine irregular speckle noise without course structure.",
+   "fix": "Replace the staggered dash courses with fine irregular 1px speckle in two or three close values, like wall:cloth-beige; keep the wainscot band.",
+   "pixelSha256": "bfe9a1add79d1cd697950f048874ca26fe4a92bc79e6eb94eba90f576eb78f3c"
+  },
+  {
+   "group": "house3",
+   "label": "genkan-vase",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "White planter with its top opening (dark soil) visible and a front face, plus flowers; reads as a flower vase/planter at 1x and has a similar construction to good:toothbrush-cup and good:sh-bouquet.",
+   "fix": "",
+   "pixelSha256": "099079e54e7f045d29492c810d7974068564350f0066af130a449c32ae8a71f1"
+  }
+ ]
+}

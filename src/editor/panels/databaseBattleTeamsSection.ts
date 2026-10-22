@@ -8,11 +8,15 @@ import type { BattleTeamRecord, Project, TeamSwapCost } from "@/project/types";
 
 const COST_OPTIONS = ["free", "gauge", "turn"] as const satisfies readonly TeamSwapCost[];
 
+/** 시스템 탭의 다른 켜기 칸과 같은 34×18 알약 스위치(R3) — 맨 체크박스는 카드 오른쪽 끝으로 밀려 났다(2026-10-21 감사). */
 function checkboxField(label: string, testid: string, checked: boolean, onChange: (checked: boolean) => void): HTMLElement {
-  const input = el("input", { attrs: { type: "checkbox" }, dataset: { testid } }) as HTMLInputElement;
+  const input = el("input", { class: "db-toggle-input", attrs: { type: "checkbox", role: "switch" }, dataset: { testid } }) as HTMLInputElement;
   input.checked = checked;
   input.addEventListener("change", () => onChange(input.checked));
-  return el("label", { class: "db-field", children: [el("span", { text: label }), input] });
+  return el("label", {
+    class: "db-field",
+    children: [el("span", { text: label }), el("span", { class: "db-toggle-switch", children: [input, el("span", { class: "db-toggle-thumb" })] })],
+  });
 }
 
 type Update = (mutator: (draft: Project) => void, snapshotKey?: string) => void;

@@ -1,0 +1,488 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "845f235ae7d038b448ae5cc53e3164e2f2661f898251ee7146840d19e41e5a3f",
+ "width": 64,
+ "height": 64,
+ "kind": "tall_furniture",
+ "name": "jumbo arcade racing twin",
+ "label": "modern_city_interior/jumbo-arcade-racing-twin",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 윗면 2행 < 4 (2/4)",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "윗면 2행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 20,
+  "darkV5": 33,
+  "nearBlackEdge": 0.01,
+  "opaqueTiles": 16
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band above the marquee",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "marquee with checker panels and RACE sign",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "twin screen and cabinet front with seat backs",
+      "rows": "15-55",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth band",
+      "rows": "56-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 58,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is a flat face-on elevation. At the top, rows 2-5 form a tan strip (row 2 dark outline, row 3 highlight, rows 4-5 tan). Row 6 is a dark line (#601e28 at x=32, #8a6128 at x=16) with no eave shadow, and the face-on marquee continues straight below it. The strip is only about 3 rows, which is close to a rim and well short of the 5-row top in the green cabinet reference. Rows 6-55 are vertical faces: the checker marquee, the screens, the red seat backs and the dark center column. Rows 56-63 are a plain base band with no top surface and no receding side face. The width stays constant at 62 from row 6 to row 63."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts: the candidate has 14 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well. Its near-flat coverage is 9%, close to the stall's 13%, and only 1% of its dark edge pixels are neutral, so the outline is tinted rather than a black sticker line. By eye, the cabinet is a tall, boxy shape with a checkered header, a RACE sign, screens and two red seats. The seats carry roughly 3-4 red steps and the cabinet body about 3-4 steps of dark brown. The side panels and the lower base look somewhat flat and uniform. They lack the per-tile highlights, grain and clustered texture of the stall's awning and wood or the well's stones. The piece is clean and readable, and it sits a little below the richest references (stall, well) in shading steps and texture variety. It reads as slightly thinner and flatter than a careful Beodeul prop, so I am failing it on the 'when in doubt' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 3행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 3행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15734
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top cornice strip",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "marquee with checker panels and RACE sign",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "twin cabinet fronts with screens, consoles and seats",
+      "rows": "15-54",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "55-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 58,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is drawn as a flat front-on elevation. The top band (rows 2-5) is a cornice strip across the full width with no eave shadow beneath it. Row 6 is a plain outline or frame line, not a front edge with a surface above it. The marquee, the two cabinet fronts and the base plinth (rows 55-63) are all vertical faces. The widths stay at 60-62 px the whole way down, so no ellipse, roof plane or side face appears. The twin arcade machine only loosely fits tall furniture, so kind_matches is false. A top band this thin at most reads as a rim, so main_top_rows is 2."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is an arcade racing cabinet pair with a RACE sign, a checkered top, two red seats and dark screens. It reads as a standing prop, like the cheese stall and well. It measures 14 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the well and 9 for the hedge, so it is in the same range as the references. Near-flat coverage is 9%, which is below the stall's 13%. Only 1% of its dark edge pixels are near-neutral, so the outlines are tinted dark material tones and not a black sticker line. The red seats show several shaded steps with highlights, and the cabinet body has panel shading and the checker pattern. Some of the cabinet's side panels and the lower base are fairly smooth with little grain, so texture is moderate and not as rich as the well's stonework. Overall it would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15484
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top cap",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "marquee with checker and RACE sign",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "screens, seats and dividers",
+      "rows": "14-55",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth front",
+      "rows": "56-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 57,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A tan band at rows 3-5 (lighter highlight row 3, outline row 2) sits above the marquee. It ends at a darker edge line at row 6, where the marquee border starts. This is a thin cap about 3 rows tall, with no eave shadow. The marquee, screens, seats and divider are all drawn face-on as one vertical front, rows 6-63. The base plinth at rows 56-63 is also a front-facing strip. The top evidence is weak but present, and no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts: the candidate has 14 visible tones per 16x16 tile, 9% near-flat coverage and 1% near-neutral dark edge pixels. The stall-cheese reference has 17 tones, 13% flat and 1% neutral, and the well reference has 20 tones, 0% flat and 33% neutral. The candidate sits between the hedge (9) and stall/well (17-20) on tones, so it is slightly under the richest references. Its flat coverage is lower than the stall's. Tinted outlines (1% neutral) mean the lines read as dark material tone rather than a black sticker line. By eye, the arcade cabinet has a checkered header, a RACE sign, screens, red seats and a wooden base, and each is shaded with about 3-4 steps. The red seats and the dark panels carry fairly smooth fills, and the screens and the lower base show less grain and per-element highlighting than the stall's cheese wheels, awning stripes and wood grain or the well's stones and roof tiles. It is a reasonable prop, but it is a bit flatter and more panel-like than the references. With a 4-step ramp against references of about 5-6, it falls slightly short of the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20646
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap strip above marquee",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "marquee with checkers and RACE sign",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "twin screen and control cabinet face",
+      "rows": "15-54",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "racing seats seen face-on",
+      "rows": "34-54",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base panel",
+      "rows": "55-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 58,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole drawing is a flat front elevation of a twin arcade cabinet. Rows 2-5 are a plain beige strip with no eave shadow and the same width as the body, so it reads as a cornice or header rather than a foreshortened top. The marquee (rows 6-14), screens and seats (rows 15-54) and base panel (rows 55-63) are all vertical faces. The seats are drawn face-on, and no horizontal surface is shown. Column scans at x=16, 32 and 47 show the same stacked vertical bands."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a standing arcade cabinet twin with a checkered 'RACE' header and two red seats, which fits the prop kind. It has 14 visible tones per 16x16 tile, in the range of the cheese stall (17) and well (20) and above the hedge (9). Near-flat coverage is 9%, below the stall's 13%, and only 1% of dark edge pixels are neutral, so the outlines carry a tint (dark red-brown and dark navy) instead of a black sticker line. The seats show several red steps with highlights, the screens have bezel and glow detail, and the header has checker pattern and lettering. Small flat patches remain on the dark panels and the base trim, but they are no bigger than the stall's. Overall it holds up beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15814
+  }
+ ],
+ "decidedAt": "2026-10-20T23:53:05.131Z",
+ "cells": {
+  "16": [
+   "185d58b6239d1a58",
+   "2474928de8f4dbad",
+   "30490c66ead84acb",
+   "44931c768bf34c83",
+   "487681e5a1e99450",
+   "5e344894ecb71991",
+   "66dca2e24b1bb64b",
+   "7179f81f0770a465",
+   "76625e66e1e5a7bf",
+   "95180ee5fc0bd288",
+   "9e61cbe473bef3da",
+   "a484445496316c58",
+   "b6d6389908b64eba",
+   "bc3c88f436c21b28",
+   "cdfa8c76ba803cdd",
+   "eb506ecb093ff33a"
+  ],
+  "24": [
+   "071dd24c8df318a2",
+   "0d3d603871b2b900",
+   "1676ff78ed1977b5",
+   "178808e417f21ac0",
+   "1b9d40e7f2387229",
+   "1e0540156e1043e2",
+   "2478d2f5dff168e1",
+   "2b64dffbf76b96c7",
+   "2c151fe6714142df",
+   "2c9e26e844bb6316",
+   "2ddc5dd396797fd5",
+   "2ef6f9655053fc3c",
+   "3331736e06014dec",
+   "3389ba7534b9a585",
+   "375f97a6afdb5797",
+   "3bbbb8de24af0af6",
+   "42920bedc0ad4caf",
+   "487bf4213be1b1ea",
+   "4a76eed63dc9e7cd",
+   "4d531ca41b282a42",
+   "4d8cf22ad20581e9",
+   "4f6988594adaa8a6",
+   "574ea88e7ca1c8a1",
+   "5f6fa82c99905217",
+   "60b042f6f05c8d42",
+   "61cc1e31b42a9773",
+   "64b3764fd81f78d9",
+   "692ba5f7faec9fda",
+   "6a40b3d1259a2c78",
+   "6c959c0fd52400a0",
+   "7092adc3d86f5dac",
+   "742b0b195dad5f8a",
+   "784a372d9eea6dce",
+   "8d14ac5e14c54728",
+   "8e1ccca1890d45e2",
+   "926937d0125b32a1",
+   "929f3d7f9dadb3f0",
+   "a8b95000840a6cfa",
+   "aa2533db47908889",
+   "b01336f0a07d3606",
+   "b4d14892645f4645",
+   "b5670cb9ce419f3a",
+   "b736472fa1d58528",
+   "bc476b2991e1bf66",
+   "bc893a46ff2bb1a5",
+   "bc8a6190e53e861f",
+   "c7ff19787306b55c",
+   "cd565bdbc4f3436c",
+   "ce30eb027aec307e",
+   "db9c0327be7e8749",
+   "e132057f1094185a",
+   "e60d4e6b31cf1cc9",
+   "f21618fa18a8b341",
+   "f67cd8b8af22c7e1"
+  ],
+  "32": [
+   "1f7e5e89499b763e",
+   "8e669d7f3f9350ff",
+   "d8506025e8c71b04",
+   "f8859267e09d5a6e"
+  ],
+  "48": [
+   "0cf2841673e3dc51",
+   "19028de90a10e658",
+   "1c69e1214af3e29f",
+   "214c2e96cd3b042f",
+   "21eed30c60eb3068",
+   "28a8f5a486ea071f",
+   "2a291c706c7c7bbe",
+   "38ac1e01750691ca",
+   "3b263a1be48b165a",
+   "4a84d34f6e516334",
+   "4ab3addc79dc3753",
+   "5c720763a16b2c07",
+   "5ec6e48787cb0bed",
+   "7726b25430351bef",
+   "7924205a197f2004",
+   "7b4cf55817542cd8",
+   "8462c5e3e4ee0f81",
+   "a0f4d04ad4c1b673",
+   "ad8fcf80500359f0",
+   "bc40d67c1eb70f0a",
+   "d2407e74ad807038",
+   "d83ca1662e698fbb",
+   "e0e771ad3a1b0cec",
+   "ec8d857320342015"
+  ]
+ }
+}

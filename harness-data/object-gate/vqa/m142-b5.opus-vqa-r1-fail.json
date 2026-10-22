@@ -1,0 +1,217 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b5",
+ "round": 1,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png",
+  "board-3.png",
+  "board-4.png",
+  "board-5.png"
+ ],
+ "items": [
+  {
+   "id": "mart-meat-case",
+   "pixelSha256": "f1c515b938d4c46fd66a57fdf59f49c09582f7b57734a41edfe993f4b198efb6",
+   "verdict": "FAIL",
+   "failed": [
+    1
+   ],
+   "reasons": "This is a flat front elevation. The top is only a red sign band, and there is no lit counter or lid plane seen from above, so it does not match the cooler original's 3+ row top."
+  },
+  {
+   "id": "mart-sale-endcap",
+   "pixelSha256": "02fb7cf87ef5e6f0f378c11a87ae5606692ca51e0907622b0c6d7a2900e0472e",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    3,
+    4
+   ],
+   "reasons": "At 1x it reads as a small crate with a sign on a stick, not an aisle endcap. It is one size too small next to the room's shelving, and the yellow '1+1' sign hangs on a thin grey pole like a separate piece."
+  },
+  {
+   "id": "mart-scale-station",
+   "pixelSha256": "501734d5d3e0808f6f7ec843d98ab88762ec7a564fe213b2b0b2129b92dd52b6",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The scale on top is a muddy white blob with a stray red/dark block beside it. At 1x it reads as a plain grey cabinet with clutter, not a weighing station."
+  },
+  {
+   "id": "mart-veg-wall",
+   "pixelSha256": "58cabaa38dba43ad335a970d7ae8c120220abe263a3793256025322cd41bde3d",
+   "verdict": "FAIL",
+   "failed": [
+    1
+   ],
+   "reasons": "It is drawn as a front elevation with only a 1–2 row grey top edge, so no shelf or top plane is seen from above. The produce rows are flat front-on stripes."
+  },
+  {
+   "id": "mci-hosp-bed",
+   "pixelSha256": "0cf1fad396a111430e6712b42d4bcb18547ca1b6c59f62864fdf91114fba9a4e",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The green sheet is covered in scattered darker speckle pixels that read as noise, not fabric shading. The originals use clean, flat shading steps."
+  },
+  {
+   "id": "mci-magazine",
+   "pixelSha256": "2dab9478d6241326b9042d746868c90f69996d2d9c7ef1aa664d56af48e4ec36",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The outline is a mid-brown instead of the originals' near-black. The magazines are muddy colour blobs with no readable covers or edges."
+  },
+  {
+   "id": "mci-mailboxes",
+   "pixelSha256": "499855924ce0c5ec363acf21b6bfd61fa06842aaef84b791baddf09a11e5fa6f",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The grey 4x5 grid of slots reads as a calculator or keypad, not a bank of mailboxes. The white/red envelope on the top plane looks like a sticker, and there are random red pixels on some doors."
+  },
+  {
+   "id": "mci-med-cart",
+   "pixelSha256": "2090fcf31021451b057374ada34c26e1f147b49570bff645130ccc94d20fd161",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The items on top (red-cross box, bottle, brown jar) are cluttered against the top canvas edge. The drawers are garish saturated colour stripes that don't follow the chipset's restrained palette."
+  },
+  {
+   "id": "mci-shelf-office",
+   "pixelSha256": "87c04676ed1abd9d95082198cddeae78e8c9526eddc890f3956640aedc7f90c4",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "The top board is only about 1–2 rows, so it is essentially a front elevation. The brown outline and frame don't match the originals' dark outline weight."
+  },
+  {
+   "id": "mci-toilet",
+   "pixelSha256": "dedc8bad9ced6fa427aef0cc56e1128c200527a93fac171ac4d64e121a29cb67",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The tank and bowl are seen from above with a blue water plane, the outline is dark and clean, the scale fits the floor tiles, and it stands grounded."
+  },
+  {
+   "id": "mci-tv-stand",
+   "pixelSha256": "74a8127946c160e4a2e41a83a5ce2500961b78cd573c8e00b4a2a18a462598bc",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The potted plant's leaves are noisy, speckled green pixels. The TV screen carries a diagonal highlight streak that reads as a sticker compared with the originals' flat monitor screens."
+  },
+  {
+   "id": "museum-partition-wall",
+   "pixelSha256": "9cbf1653fbf27a829bdfbb25ea0547a721fe62408b5c5630405a00bc03baa7ee",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The wood base reads as a separate bench, not the foot of a partition. The black spotlight blocks with white cones look noisy and cut off at the top edge, so at 1x it is an unclear panel."
+  },
+  {
+   "id": "music-amp",
+   "pixelSha256": "974a5af0cb4a049838326f420b08fcbe1f83f8a62f8a7ab45b1450d29158df23",
+   "verdict": "FAIL",
+   "failed": [
+    1
+   ],
+   "reasons": "The amp head and cabinet are stacked front-on, with only a thin 1–2 row grey top. There is no real top plane, so it is a flat front elevation."
+  },
+  {
+   "id": "office-water-cooler",
+   "pixelSha256": "6281410c5b8135ceb355bcf6d65891d17ec339003c2a49d3e0226521feee3a36",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The tap panel is a cluster of red/blue/dark noise pixels. The bottle and body join awkwardly with no shoulder, so the bottle looks pasted on top."
+  },
+  {
+   "id": "park-pay-machine",
+   "pixelSha256": "1205ea488c7c7e7294abd39c670ef4bfad5aab2c5ef9cc4a6bb9f8cfdc804e44",
+   "verdict": "FAIL",
+   "failed": [
+    1
+   ],
+   "reasons": "It is a tall blue kiosk drawn purely as a front elevation, with no lit top plane visible."
+  },
+  {
+   "id": "park-pillar",
+   "pixelSha256": "130a14e50e4fd39934817a6032afa6a5868c3b7db81e38dfcc0c42ba9cd7d57f",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    5
+   ],
+   "reasons": "The top cap is flat with no proper top plane. In the room the pillar sits in the middle of the floor as a short block, not running up to the ceiling, so it doesn't read as structural."
+  },
+  {
+   "id": "pub-atm",
+   "pixelSha256": "b7c87c08c173d510481a0b5c636d8b3f3de6e32785df8c3f2eb1630600c1e4c4",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "It is a front elevation stack of three disjoint blocks, with the lower blue slot box looking detached from the upper unit. There is no top plane, and in the room it overlaps the wall band awkwardly."
+  },
+  {
+   "id": "pub-fire-locker",
+   "pixelSha256": "1baffc5a62b743a00c04a7ba86785464a30f70baeb31970f4966cd75e029ec0d",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The orange-and-black turnout gear and helmets are high-contrast noisy pixel clusters that look like stickers behind the glass, much busier than the originals' density."
+  },
+  {
+   "id": "pub-service-window",
+   "pixelSha256": "11f93841caf43b8ffd01864b6a4b28305fc071f3051a38f2169ca21b179e9511",
+   "verdict": "FAIL",
+   "failed": [
+    4,
+    5
+   ],
+   "reasons": "The 1–4 number signs float as detached boxes above the counter, painted outside the object's body. The counter itself is a front elevation with a minimal top."
+  },
+  {
+   "id": "pub-ticket-dispenser",
+   "pixelSha256": "76fd3adc781de77c2159acee1e8b78ea9d81a2f3918373d8f95d5c6c1857acef",
+   "verdict": "FAIL",
+   "failed": [
+    1
+   ],
+   "reasons": "It is a narrow kiosk drawn as a front elevation, with only a 2-row white top and no real top plane; the '27' display and button sit flat on the front."
+  }
+ ]
+}

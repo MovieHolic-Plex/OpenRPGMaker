@@ -1,0 +1,433 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a23ffb151c4c655e5d96541bbae14320142e1e8a9bfd2df140c9aa696a1e58d9",
+ "width": 64,
+ "height": 64,
+ "kind": "structure",
+ "name": "waterwheel mill",
+ "label": "jp-inaka-r5:inaka-waterwheel-mill",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 23,
+  "darkV5": 31,
+  "nearBlackEdge": 0.01,
+  "opaqueTiles": 12
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thatched roof slope",
+      "rows": "13-26",
+      "evidence": "c",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "32-33"
+     },
+     {
+      "part": "ridge beam on top of roof",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "eave band (front lip of roof)",
+      "rows": "27-31",
+      "evidence": "a",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "32-33"
+     },
+     {
+      "part": "water basin at lower right",
+      "rows": "51-53",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The mill building has a sloped thatch roof plane in rows 13-26, widening from 35 to 58 px, with a light front-edge line at row 27 (L=208). Below it is a darker eave shadow at rows 32-33, then a wooden front wall with a dark doorway in rows 33-50 and a stone foundation in rows 51-55. The ridge beam in rows 7-12 is a front-facing strip. The waterwheel is drawn face-on as a side profile, which is normal for this object. The basin at lower right shows water inside an open container, rows 51-53."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "evidence": "The candidate is a small building with a thatched roof, a timber and stone body, a door opening, a waterwheel and a blue flume, so it matches the building kind. The measured facts are at or above the references. It has 20 colours per 16x16 tile against 18 and 11 for the references. Flat-fill coverage is 0%, the same as both references. Only 16% of dark edge pixels are neutral, so outlines mostly lean toward the adjacent material (dark brown beside wood, dark green beside thatch) rather than being a black sticker line. Its 58 total colours are close to the stone reference's 66 and below h101's 185, which is fair for a much smaller piece. By eye, the thatch has layered strands in several olive and yellow tones. The wheel has separate spokes and rim planks with highlight and shadow steps. The water has light and dark blue steps. The ramps look slightly shallower than the roof tile ramps in the references (about 5 steps against 6), but there are no flat areas and the texture is varied. A careful artist would accept it next to the references.",
+    "score": 7,
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18820
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thatched roof (main body)",
+      "rows": "13-26",
+      "evidence": "c",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "31-32"
+     },
+     {
+      "part": "roof eave strip",
+      "rows": "27-31",
+      "evidence": "a",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "31-32"
+     },
+     {
+      "part": "ridge beam on top",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water trough at lower right",
+      "rows": "51-54",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building has a wide sloped thatch roof plane (rows 13-26) that widens from 33 to 58 px. It ends in a bright front-edge line at row 27, an eave band to row 31, and a dark shadow at rows 31-32. Below it is a south wall with a doorway, rows 32-55, about 24 rows, on a stone base. The ridge beam at rows 7-12 is a front-facing strip and is not counted as a top. The waterwheel is a vertical disc seen face-on, and the open trough shows water inside (rows 51-54). The structure matches the cabinet and seat 'top + front face' references, not the front-elevation or rim-only ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's measured facts are at or above the references: 20 colours per tile against 18 and 11, 0% flat-fill coverage, and only 16% near-neutral dark edge pixels, so the outline is mostly tinted. By eye, the thatched roof has several straw tones with fibre-like streaks, the timber walls are shaded, and the stone base and door interior carry variation. The wheel has wood-toned spokes and rim with blue water shading. The outlines lean dark brown beside wood and thatch rather than forming a uniform black sticker line. The total of 58 distinct colours is lower than house-h101_0 (185), but that is expected for a much smaller piece, and it is close to the 66 of the stone house. The piece is small, but a careful artist would accept it beside the references. The shading ramps are a little shallower than the roof tiles on the references, roughly 5 steps against 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17701
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thatched roof slope",
+      "rows": "13-26",
+      "evidence": "c",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "32-33"
+     },
+     {
+      "part": "eave band, lighter thatch edge",
+      "rows": "27-31",
+      "evidence": "c",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "32-33"
+     },
+     {
+      "part": "ridge beam on top of roof",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water trough at lower right",
+      "rows": "51-55",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The mill building has a wide sloped thatch roof (rows 13-26) that widens from 33 to 63 px. A bright edge line at row 27 (L=208) marks the front of the roof and the eave band (rows 27-31). Dark eave shadow follows at rows 32-33, with the timber wall front face below (rows 33-50) over a stone base (51-55). The ridge beam at rows 7-12 is a small detail and reads as a front-facing strip. The waterwheel is a vertical disc, which is natural for a wheel. The trough shows water contents at rows 51-53. Together these give a top surface and a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate's measured facts are at or above the references per tile: 20 colours per tile against 18 and 11, 0% flat-fill coverage, and only 16% neutral dark edge pixels, so the outline carries a tint. Visually, the thatch roof has a few green-yellow steps with straw grain, the timber walls are dark brown-outlined, and the wheel has spokes and a blue water flume, so it reads as a small themed mill and not a sticker. The total of 58 colours is lower than the references' 185 and 66, which fits a much smaller piece. It is a small, compact building, and its shading on the wall and wheel is a bit less layered than the reference roofs with per-tile highlights. A careful artist would accept it next to the references, though it is slightly thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19099
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thatched roof (main body)",
+      "rows": "13-26",
+      "evidence": "c",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "30-32"
+     },
+     {
+      "part": "roof eave band",
+      "rows": "27-31",
+      "evidence": "a",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "30-32"
+     },
+     {
+      "part": "ridge beam on top",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water trough at lower right",
+      "rows": "51-55",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main cabin has a wide sloped thatch roof plane in rows 13-26, widening from 33 to 63 px. A light front-edge line at row 27 is followed by darker eave shadow in rows 30-32. Below it is a south wall in rows 33-50 with a door opening and plank texture. The trough at lower right shows water in rows 51-55. The waterwheel is a face-on disc, a minor attachment. The top beam at rows 7-12 is a front-facing strip and does not count as the main top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small mill with a thatched roof, a timber-and-plaster body, a waterwheel and a water channel. The measured facts support it: its median of 20 colours per tile is at or above both references (18 and 11), flat-fill coverage is 0%, and only 16% of dark edge pixels are neutral, which is a bit higher than the references' 7-9% but still mostly tinted. By eye the outlines lean brown or green beside wood and thatch, so they are a dark material tone and not a black sticker line. The thatch has several tones with strand texture, the wheel has shaded spokes and rim, and the water has highlight and mid steps. The total of 58 colours is lower than house-h101_0 (185) and close to the stone reference (66), which fits a much smaller piece. It has roughly 5 steps against the references' 6, and the walls and door area are somewhat simpler than the reference plaster and stone texture. Overall it would sit acceptably next to the references without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14537
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.442Z",
+ "cells": {
+  "16": [
+   "211ff227d11a1869",
+   "2424e441fdf3643d",
+   "2601ecb702a931ac",
+   "38ce32c6a0d18bb2",
+   "44d12b65476f3de3",
+   "53a4a8d287e7f711",
+   "59b668b2fcd9902c",
+   "5c8602920b605f3e",
+   "6dafd77b7b9d7e15",
+   "7257a9e95c83078b",
+   "91816e95c6aaff4b",
+   "bdcb14157e556bbc",
+   "c548edbc028a20a9",
+   "d1a7843332ae7230",
+   "e4c3f7048f7af71d",
+   "e5da89b07c965eff"
+  ],
+  "24": [
+   "05c930fb050e8356",
+   "07225d2fd7090cf8",
+   "085e3abb59045237",
+   "09c95c6000597561",
+   "0aa6ffa474ede0de",
+   "189b3831193c25b8",
+   "18f666a105114a14",
+   "27f8a1f65022989f",
+   "2be6fcea504e441a",
+   "317c74a852b77e2d",
+   "32be74a5db77c630",
+   "3856dba31ce4e3cc",
+   "3d17168dabf7fe57",
+   "4172887a88eb9156",
+   "43708de047a30271",
+   "47a8b35c01f7afe0",
+   "4a38be65a665cc37",
+   "54782a5a5681a6ab",
+   "57c8913dd3d2870b",
+   "62bd857d07aaa306",
+   "64c1698dddf58eb8",
+   "65f39c7af85837be",
+   "6740b0890f522c3e",
+   "71950278c5258658",
+   "72c34e266bbb9af3",
+   "77a293315bf120bd",
+   "78e01533ea71cca8",
+   "7f0363a6f50abdc8",
+   "8023ba09f0a6947b",
+   "808ac857ad1fb450",
+   "83719198ff2621b2",
+   "87eddc76dd36fafc",
+   "88141aa4df8c385b",
+   "8913e64f85675d91",
+   "8ac635ffce758d2c",
+   "961260791f1c3a5e",
+   "a161f422b47aa792",
+   "aeb2f23890d8f584",
+   "b1239411bdff0cd2",
+   "b6cebace6f36b994",
+   "b941ccf1b1383798",
+   "b97d7d612953ac2a",
+   "c08c26048950c9c6",
+   "c508e901b211cb47",
+   "c6aadac864f6f81d",
+   "c784f38fa2374f93",
+   "cb45dae8792afa19",
+   "d44a85e812e5daa3",
+   "d9049fcf6e948625",
+   "e024f025a11f6125",
+   "e3b48bf86f2f6b75",
+   "e816727c8e4bc2ba",
+   "f0dfae03e5b93768",
+   "f9945d188bf003a8"
+  ],
+  "32": [
+   "4040f4cd64b0ff3e",
+   "84b9398664b9b927",
+   "d468086b9022c3f6",
+   "fdf054e067d398c9"
+  ],
+  "48": [
+   "1c91563d23f2ba43",
+   "232cf2b07737250e",
+   "24e6af8044900392",
+   "266ef3c7480493f8",
+   "364e6d7a305b5afe",
+   "3ccc82c435db77fd",
+   "47c5ea8cb138d985",
+   "5119a3bd83bfa235",
+   "562f532256e5604e",
+   "5e5d2e45eee8d62d",
+   "69144b0bed400577",
+   "829313c937064405",
+   "92a3b2a3b91ea8e7",
+   "9433592231ef43b2",
+   "9495d4c497fdfc83",
+   "94b158e7957fc567",
+   "9f1844eb9d40fa77",
+   "abcff61e7dcc82a2",
+   "b2f16ba71bc106b8",
+   "ca0bd7a807a770f8",
+   "cb46b661bb68dae1",
+   "de7ce159e8ace517",
+   "e20f7b5064ff0b2f",
+   "e92a2eef3e878368"
+  ]
+ }
+}

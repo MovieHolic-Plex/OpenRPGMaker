@@ -1,0 +1,428 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b16136e1a5cbc19d36b8069264d3769462f1e44437733533ab1d2ac54d7b60ad",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "ind lathe",
+ "label": "modern_city_interior/ind-lathe",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 17,
+  "darkV5": 35,
+  "nearBlackEdge": 0.98,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper-left white housing block",
+      "rows": "3-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "orange control monitor",
+      "rows": "10-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark lathe bed and spindle",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white bed slab band",
+      "rows": "15-19",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey base cabinet rim",
+      "rows": "21-22",
+      "evidence": "none",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey base cabinet front with panels and teal screen",
+      "rows": "23-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The machine is drawn flat-on, as a set of front-facing panels. The base cabinet starts with a 1-2 row light rim (rows 21-22) and then drops straight into its front face (rows 23-30). It has no band of rows with a front-edge line and eave shadow, and no ellipse. The white band at rows 15-19 is a vertical strip with a darker bottom line and shows no real depth. The upper-left housing (rows 3-9), the monitor and the lathe bed are all vertical faces with no horizontal top. The object also reads more like a machine than tall furniture."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The lathe reads as a machine prop with a pale casing, a dark control panel, a green screen accent and a darker base. Its outline is a dark bluish-grey tone and not neutral black, which matches the measured 0% near-neutral dark edges. The measured 11 visible tones per tile is above the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The metal ramp has about 4 steps against the references' 5-6, and the texture is mostly panel lines and small details, with little grain. This is a little lighter than the best references but it would sit acceptably next to them without looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19069
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "base cabinet lip",
+      "rows": "21-22",
+      "evidence": "none",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left orange control box with screen",
+      "rows": "10-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left upper white panel",
+      "rows": "4-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lathe bed band with chuck",
+      "rows": "15-19",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right upper block",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat front view of a machine. The lower base cabinet (rows 21-30) has only a 1-2 row light lip at rows 21-22 (row 21 L=202, row 22 L=169) above its panelled front face, so it has no real top surface. The control box (rows 10-20) and the upper white panels (rows 4-9) are vertical faces with no edge line or eave shadow. The light band at rows 15-19 is ambiguous. It could be a bed top, but it looks more like a shaded front strip: the lightest rows (244, 224) sit at the top and it ends at the dark outline at row 20. No part shows an ellipse, a roof plane or visible contents. The object is also a machine rather than a wall-standing piece of tall furniture, so the kind only loosely fits."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The lathe is a machine-shop prop of the same kind as the stall and well. It has a grey metal ramp of about 5 steps, with a light top plate, mid panels, dark base and feet, plus small accents: a green readout, an orange knob and a chuck. Measured facts: 11 visible tones per tile, which is above the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outlines lean to a tinted blue-grey dark rather than a black sticker line, which is how Beodeul separates forms by material tone. Texture is moderate: panel seams, bolts and highlights give variation, but there is less grain than in the stall's tiles or the well's stones. Overall it is a little leaner than the richest references but sits at or above the hedge, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20374
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "lathe bed, white top plane",
+      "rows": "15-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-20"
+     },
+     {
+      "part": "left white headstock block top",
+      "rows": "3-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right grey block",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "orange monitor with green screen",
+      "rows": "9-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base cabinet lip and front face",
+      "rows": "21-29",
+      "evidence": "none",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is a machine, not tall furniture. The main white bed (rows 15-19) is a 5-row top plane. Column x=16 runs bright f3f4f7 at row 15, then dde0e7 at rows 16-17, then c6cad4 at row 18. Row 19 is a darker edge line (8d9095) and row 20 is a dark outline that acts as shadow. Below it, the base cabinet is a front face of rows 21-29 with a 2-row lip (rows 21-22) and drawer or panel details. The left white block (rows 3-8) also ends in an edge line at row 9. The orange monitor is treated as decor. The top-surface evidence is moderately ambiguous because the dark row 20 separates the bed from the base."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a grey metal lathe with a green display and a dark base, about 1.5 tiles across. The measured facts back it up: 11 visible tones per tile, which is above the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outlines carry a tint rather than being sticker-style black. By eye, the casing has a highlight, light, mid and dark ramp plus panel seams, vents, a control panel and a base with bolt-like dots. That is about 5 steps, against 5-6 for the references. It is slightly less textured than the stall and well, but it reads as a finished, shaded piece and sits acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19881
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper left white housing block",
+      "rows": "4-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "orange monitor on left stand",
+      "rows": "10-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right gray block and chuck head",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white lathe bed top",
+      "rows": "15-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-20"
+     },
+     {
+      "part": "lower gray cabinet front with teal panel",
+      "rows": "21-29",
+      "evidence": "none",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the long lathe bed over a lower cabinet. The bed has a 5-row graded white band (rows 15-19: highlight at 15, darker at 18-19) that ends in a dark outline at row 20, so it reads as a horizontal top. Below it the cabinet front spans rows 21-29 with a light edge at row 21 and panel faces and a teal screen beneath. The orange monitor is decor placed on the machine. The upper left white block has a similar graded band ending at row 9. The object is a machine, not tall wall furniture, so kind_matches is false, but its structure still reads as a top surface over a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The lathe reads as a grey metal machine with a light top, panel seams, a small screen, a dark base with rivets and a tool carriage. I count about 5 lightness steps on the grey metal ramp, close to the 5-6 on the stall and well references. The measured 11 visible tones per tile is above the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% near-neutral, so the outline carries a blue-grey tint and follows the adjacent material instead of being a black sticker line. Texture is moderate: panel detail and a few highlights, but less grain than the well stones or stall goods. Overall it sits close to the references without looking flatter or thinner, so I pass it.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20895
+  }
+ ],
+ "decidedAt": "2026-10-21T01:38:23.344Z",
+ "cells": {
+  "16": [
+   "248791d6eac13394",
+   "517772c18a6368f4",
+   "9cea1af9fae191ff",
+   "ab7dc96102ba8ee5"
+  ],
+  "24": [
+   "06808319ee15a16d",
+   "1155d0dde6add818",
+   "15c3db415cd63ce4",
+   "37ccee3972f2985e",
+   "55a2af689ecffae2",
+   "6759bcff95a4d81b",
+   "745fde8871ede62b",
+   "74f17a134321723e",
+   "810f9dd74534145a",
+   "84d87f6330937b48",
+   "8b6f33ed77a4ff4c",
+   "a7266831e33d0f1a",
+   "a8009680dffec433",
+   "a83549c2cd18158d",
+   "ab0df9d795f8a586",
+   "bc1ec4e9cbd270fd",
+   "bd4551f33f2a0aef",
+   "c0a56ca9427a2d0f",
+   "c612b1ee855fe54d",
+   "cd6be227c8d39afd",
+   "d654d9b829f2d95f",
+   "e561a06ed1935c39",
+   "e708fb3b73fe7f9a",
+   "e7fc0efbd938d732"
+  ],
+  "32": [
+   "6388bc1fdddf965c"
+  ],
+  "48": [
+   "0176ac11b0549f45",
+   "60d88f9ba52efd03",
+   "8d251f968624a71b",
+   "9de67e40e248f003",
+   "b8b66b727cca4a45",
+   "fa2e00958cf0c5ba"
+  ]
+ }
+}

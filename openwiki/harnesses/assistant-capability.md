@@ -214,3 +214,99 @@ npm run harness -- assistant-capability review --out <실행> --case npc-line \
 5/5 통과. 앞 3문장은 첫 시험, 뒤 2문장은 같은 날 재시험(8319 Argon `gemini-4-argon-high` medium, 시드 `seed-novn.json`, `--no-check`)이다. 모두 `read_game_systems` → `set_vn_extras` → `review_game_systems` 순서와 인자·보존이 맞았고 인자는 바꿀 칸 하나뿐이었다.
 
 **재시험 시도 기록(정직하게):** 「안 연 그림 칸」 2번 시도 중 1번 실패·2번째 통과, 「일본어」 4번 시도 중 3번 실패·4번째 통과. 실패는 전부 `classifyPlainPiTurn` 30초 한도(재시도 1회 포함)의 `시간 초과(30000ms)` 로, 도구 인자·내용 때문이 아니라 제공자 지연이다 — 처음 시험에서 「미검증」으로 둔 이유와 같다. 같은 문장·같은 설정으로 다시 돌린 것이고 통과분의 저장본(`project.json` 의 `meta.oprnVnExtras`)을 직접 읽어 확인했다. 분류 호출이 막히는 동안은 모델 품질이 아니라 한도가 병목이므로, 시간 초과 한 번을 실패로, 통과 한 번을 만능으로 읽지 말 것(각 문장 표본 1개).
+
+## 장면 교훈 묶음 (2026-10-22)
+
+데모 게임(낙성·아스트라·첫사랑 등)을 손으로 고치며 얻은 교훈을 **조수가 혼자 하는지** 재는 묶음이다.
+시드 `harness-data/assistant-capability/scene-lessons-seed.json` — 20건(엘리베이터 왕복·NPC 걸어 나가기·성벽 마을 북동문·
+어두운 천장 지하·흉상 마주보기·없는 기물(자판기)·보스 체크포인트·여관/상점 문·아래 서술창·모든 맵 BGM·벽걸이 서재·밤 마을·
+집 계단·파티 입장 컷신·조용한 현대 거리·꾸미되 통행 유지·예/아니오 기본값·보이는 출구·NPC 초상 짝·보스 밸런스). 각 건은
+요구(`requirements`)와 0이어야 할 `scene-*` 경고(`lint0`)를 미리 적는다. 배경 파노라마는 다른 묶음이 다루므로 넣지 않는다.
+
+**모델 표기:** Argon 쿼터가 없을 때는 `assistantEngine` = `local-cli:claude` + `claude-sonnet-5-5` high(**조수 대용**)로 돈다.
+실제 입력창 → companion → Bun 워커 → `claude -p`(MCP 도구 서버) 경로이며 요청 기록에 provider 가 남는다. Argon 점수와 섞지 않는다.
+
+```bash
+R=qa-runs/harnesses/assistant-capability/<날짜>-scene-lessons-rN
+mkdir -p $R && cp harness-data/assistant-capability/scene-lessons-seed.json $R/experiment.json   # 고칠 건만 남겨도 된다
+npm run harness -- assistant-capability genre-prepare --out $R
+jq -r '.cases[].id' $R/experiment.json > $R/queue.txt
+xargs -P 2 -I{} sh -c "npm run harness -- assistant-capability genre-run --out $R --case {} > $R/log-{}.txt 2>&1" < $R/queue.txt &
+src/harnesses/assistant-capability/node/scenePostLoop.sh $R 1 &   # 채점 → 출하 player 영상 → 2초 간격 프레임
+```
+
+- `scene-score`(sceneLessons.mjs): 도구 호출·실패 호출(이름별)·`scene-polish-lint`·`qa-game check` 막힘(엔딩 없음 류 제외)·저장 재로드·1배 렌더.
+  `machinePass` 는 실행·변경·저장·lint0·막힘 없음 전부다. **시각 합격이 아니다.**
+- `scene-film`(sceneFilm.mjs): 저장본을 출하 `player.html` 에서 실제 방향키로 한 칸씩 걷고 결정 키로 말을 건다(순간이동·상태 주입 없음).
+  대화 이벤트 먼저, 이동 이벤트는 마지막. 편집기 슬롯 잠금을 같이 써서 브라우저는 동시에 둘까지만 뜬다.
+  키는 **짧게 톡** 누른다(누르고 있으면 두 칸 가서 길 위를 오락가락했다). 걸음마다 `step`, 콘솔 경고는 `console`, 녹화 끝은 `closing` 으로
+  `film-log.json` 에 남는다. `sceneDenseFrames.mjs <attempt>` 는 도착한 상호작용마다 0.5초 간격 근접 프레임(`film/dense`)을 뽑는다 —
+  2초 간격으로는 「말하고 걸어 나가 사라짐」이 한 칸 사이에 묻힌다. 출하 플레이어는 `dist/export-player`(= `build:player`)다. 런타임을 고쳤으면 그것부터 다시 굽는다.
+- `scene-judge-input`(sceneJudgePrompt.mjs): **새 Opus 판정자**(읽기 전용 서브에이전트)에게 줄 지시문과 그림 해시. 조수의 완료 보고는 주지 않는다.
+  판정 JSON 은 `sceneSaveVisual.py <attempt 폴더>` 로 그림 sha256 과 함께 `visual.json` 에 남긴다. 그림이 바뀌면 다시 판정한다.
+- 판정 보정: 3/4 실내 벽 문·엘리베이터·계단 아래 **문턱 칸**의 이벤트는 문 위 이벤트다. 템플릿의 빈 맵·오프닝 슬라이드는 조수 결함이 아니다.
+  칸막이 출입구(천장색 상인방 아래 통행 칸)는 구멍이 아니다. 관찰자가 결정 키를 0.5초마다 눌러 선택지가 두 프레임 사이에 기본값으로 골라질 수 있다 —
+  뒤따른 갈래가 기본값이다. 겹침·그리는 순서는 잘라 확대해 보고 말한다(r2 예/아니오 판정자가 둘 다 오판했다).
+- 되묻기 건(`lessons` 에 `clarify-ambiguous-request`): 기계 합격 = 턴이 묻고 멈춤(`clarifyAsked`) + 변경 없음. 판정자는 턴 직후 패널(`after.png`)을 본다.
+- 합격 = `machinePass` + 판정 `pass`(MAJOR 없음).
+
+**연속 규칙(AGENTS.md hard rule):** 데모 게임을 손으로 고칠 때마다 (a) 이 시드에 그 교훈의 건을 하나 더하고
+(b) 조수가 혼자 못 한 원인을 도구·스키마·스킬·`scene-*` 경고에서 고친다. 프롬프트 한 줄 덧대기는 고침이 아니다.
+
+### 첫 판 결과 (r2 기준선 → r3 수정 후)
+
+결과·영상·못 하는 일 목록: http://mdc-server:18301/assistant-capability-loop-1.html
+기준선에서 고친 근본 원인:
+- `moveEvent` 경로를 방향 문자열 목록·JSON 문자열로 보내 거부 → `canonicalizeMoveEventRoute`, `displayTextSettings` 일부 생략 → 기본값 채움.
+- 시작 위치가 빈 시드 맵에 남음(지은 장소에 갈 수 없음) → 조수 쓰기 도구 뒤 `adoptBuiltMapAsStart`(`startOnBuiltMap.ts`).
+- `list_hand_interior_parts` 모르는 방 → 그 방을 가진 실내 칩셋을 알려 줌.
+- `run_scene_test` 의 `lastTransfer.eventId` UUID 오타로 맞는 문을 실패로 읽음 → eventId 선택, 없는 id 는 오타라고 말함.
+- 「배경 좀 예쁘게」 같은 모호한 말에서 의도 선언의 되묻기를 Pi 입력 경로가 버리고 맵 꾸미기 56회 → 되묻기를 그대로 보이고 멈춘다.
+  답은 원래 요청과 묶여 다음 전송으로 간다(`clarifyFollowUpText`). 선택지는 날것 `[선택지]` 대신 읽히는 한 줄.
+- `show_map_region` 미리보기가 맵 배경(파노라마)을 그리지 않아 조수가 배경을 눈으로 검수 못 함 → 배경 층을 타일 아래에 그린다.
+- 로컬 Claude CLI 엔진이 첫 도구 호출에 접두사를 틀리고 「도구 이름에 mcp__oprn__ 접두사가…」를 답에 흘림 → 시스템 지시에 도구 이름 규칙을 미리 준다.
+- 실내 층 이동 트리거가 계단·엘리베이터 그림 아래 바닥에 섬 → 그림 칸으로 올리고 앞 바닥을 착지로(`build_hand_interior_room`, `create_transfer_pair`).
+  새 실내는 BGM 을 받는다.
+- `furnish_outdoor_area` 를 버들항 맵에 부르면 모르는 바닥 오류 → `dress_beodeul_ground`·키트 `stamp_object` 로 안내.
+- 저절로 그래픽을 고르는 도구(세이브 포인트·상자·필드 적)가 캐릭터 칩 선택 관문에 막혀 되돌려짐 → `choosesOwnGraphic`.
+- 문자열 `"true"`/`"false"` 불리언, `changeFace` 중첩 `face:{}`, `camera {from,to}` 를 받아 들인다.
+- 「연애 이야기의 첫 만남 장면에 쓸 골목 맵」이 새 게임 오프닝 6샷·타이틀·연애 엔딩 3개 완료 검사를 끌고 옴 → 「연애」 낱말 하나는 게임 제작 요청이 아니다.
+- NPC 가 말하고 걸어 나가지 않고 제자리에서 사라짐: (1) `moveEvent` 의 `wait` 를 route 밖에 둬 걸음을 기다리지 않음 → route 안으로 옮김,
+  `scene-npc-vanish` 가 「기다리지 않는 퇴장」을 잡음 (2) 말을 건 주인공이 첫 걸음 칸에 서 있어 걸음이 버려짐 → 명령 경로가 주인공에 막히면
+  같은 끝 칸으로 비켜 감(`src/player/commandRouteDetour.ts`, 출하 런타임).
+- 빈 맵을 만들어 두고 나중에 칠하면 시작이 빈 시드 맵에 남음 → 처음 칠할 때도 시작을 옮김. 템플릿 빈 풀밭에 이벤트만 놓으면 경고.
+- 판정 그림(`qa-game render`)이 업로드(공용) 캐릭터 칩을 그리지 않아 보스가 「보이지 않음」으로 판정 → 저장본 옆 자산 폴더에서 그린다.
+
+r3 판정 뒤(r4 로 다시 잰 것):
+- 주인공이 유일한 출구 칸을 막아 NPC 가 한 칸 틈에서 못 나옴(이벤트 30초 정지) → 비켜 갈 길이 없으면 주인공이 한 번 옆으로 비켜 선다.
+- 엘리베이터 아래 탑승 칸을 준 `create_transfer_pair` 가 2층 트리거를 그림 밖에 둠 → 위 그림 칸으로 올린다.
+- 이벤트 경로 끝의 `turn`(서로 마주보기)이 경로가 끝나자마자 마지막 걸음 방향으로 되돌아감 → 돈 방향을 런타임 위치에 남긴다
+  (`playSceneAutonomousCommands.ts` turnNpc). r3 party-enter 에서 두 동료가 대사 내내 등을 보였다.
+- 로컬 CLI 엔진의 보조 완성이 「어느 그림을 실었는지」(`image_delivery`)를 돌려주지 않아 **전체 맵 검수가 매번 실패** — 21건 중 7건 화면에
+  「#4 전체 검수 작업을 끝내지 못했어요」. 그림은 실제로 CLI 에 실렸다(Claude·Codex). 이제 그 자리를 돌려준다(`ohMyPiPiAiRuntime.ts`).
+- 배경(`map.background`)이 있는 맵은 미리보기·전체 맵 검수가 통째로 거부(`map-background-rendering-unavailable`) — 배경을 그리게 한 것이
+  닿지 않았다. 두 표면 모두 배경 첫 프레임을 빈 칸 뒤에 그리고 「스크롤 없음」을 라벨에 적는다(`mapBackgroundPreview.ts`). 움직임은 영상의 몫.
+- 관찰자(scene film) 결함 — 조수 결함이 아니다: 창 없이 컷신만 도는 동안 누른 Escape 가 필드 메뉴를 열고 40회 한도가 컷신 도중에 끝나
+  다음 대사를 아무도 넘기지 않음(r3 party-enter 「같은 대사 80초」), 전투에서 Escape 가 명령을 취소해 첫 턴에 멈춤, 상점 목록에서 Enter 가 다시 삼.
+  이제 대사 창=Enter(같은 글 6회 넘게 그대로면 Escape), 전투=Enter, 상점·저장·메뉴 창=Escape, 창 없는 컷신=키 없이 기다림(최대 120초).
+  녹화 영상은 전투 프레임 상당수를 검게 떨어뜨린다(녹화 결함, 게임은 정상) — 전투는 실제 페이지 스크린숏(`film/battle`)을 판정자에게 준다.
+
+r4 판정 뒤(같은 저장본 재촬영·r5·r6):
+- r4 npc-walk-out 은 여전히 제자리 소멸(판정 3) — 「비켜 섬」이 주인공 방향만 돌리고 걷지 않았다. 이제 주인공에서 BFS(최대 8걸음)로
+  NPC 남은 경로·현재 칸이 아닌 가장 가까운 설 수 있는 칸을 찾아 **실제로 걸어 비킨다**(수직 방향 먼저). 비키는 동안 NPC 는 같은 걸음을 다시 시도한다
+  (`commandRouteDetour.ts` `sidestepForPlayer`, `playSceneAutonomous.ts`). 모델 재실행 없이 같은 저장본 재촬영 → 판정 7.
+- 「작은 마을 맵에 NPC 세 명」이 r2~r5 네 번 모두 템플릿 빈 풀밭에 세 사람만 세움(경고는 무시됨). 의도 선언 단계에서 대상이 손 안 댄 빈 맵이고
+  사용자가 아직 없는 장소 맵(마을·여관·동굴…)을 말했으면 대상을 떼고(`targetMapId: null`, `needsPlan`) 시공 도구
+  (`author_beodeul_town` / 실내는 `build_hand_interior_room`)를 첫 요청부터 노출하며, 메모에 「[장소 먼저] … 먼저 지어라」를 적는다
+  (`intentDeclaration.ts` `retargetNamedPlaceOffBlankMap`). r6 에서 「한결 마을」 40×30 을 지은 뒤 세 사람을 세웠다.
+
+### 루프 1 숫자 (Sonnet 5.5 high 조수 대용, 2026-10-22)
+
+| | 시각 합격 | 시각+기계 | 평균 |
+|---|---|---|---|
+| r2 기준선(20건) | 15/20 | 12 | 6.2 |
+| 고친 뒤(21건, 건마다 마지막 재측정) | 21/21 | 20 | 7.2 |
+
+실행마다 흔들린다(동료 입장 컷신: r2 합격 → r3 불합격 → r4 합격). 한 번의 합격으로 능력을 단정하지 않는다.
+못 하는 일(그림 저작 필요·관찰 한계): 성문 그림, 밤 창빛, 파노라마 프리셋 그림 품질, 버들항 풀 반복 무늬, 조수 창 선택지 단추,
+영상의 소리, 보스 승리 경로, 전체 검수 1/6 실패(하네스가 패널 실행 기록을 남기지 않아 원인 미상).

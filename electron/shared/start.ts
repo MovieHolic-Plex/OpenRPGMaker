@@ -45,10 +45,12 @@ export type SuggestedProjectDir = {
   readonly projectDir: string;
 };
 
-/** 전에 참여한 팀 호스트. url 에는 초대 비밀(#join=)이 없다. */
+/** 전에 참여한 팀 호스트. url 에는 초대 비밀(#join=)이 없다.
+ * @deprecated multi-user team collaboration is not supported yet (2026-10-21). */
 export type RecentTeamEntry = {
   readonly url: string;
   readonly lastJoinedAt: string;
 };
 
+/** @deprecated multi-user team collaboration is not supported yet (2026-10-21). */
 export type JoinTeamResult = { readonly ok: true; readonly url: string } | { readonly ok: false; readonly error: string };

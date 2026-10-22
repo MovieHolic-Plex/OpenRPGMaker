@@ -1,0 +1,390 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "761b9dd5521073a9383c041c3076e70e3b6da2a724f7c6ae710089cd67de70ef",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "roof water tank",
+ "label": "modern_city_interior/roof-water-tank",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 9,
+  "darkV5": 37,
+  "nearBlackEdge": 0.77,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tank lid (top surface)",
+      "rows": "2-11",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "tank barrel body (front face)",
+      "rows": "12-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stand platform front band",
+      "rows": "24-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stand legs and cross brace",
+      "rows": "34-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tank's lid spans rows 2-11. Its width grows from 10 to 26 px, it has a lighter hatch and rim detail, and the light front-edge line at row 11 (L=189 in x=16 and x=22) sits above a dark eave-shadow row at 12. Below that, the barrel front face runs rows 12-24, and the platform's front band continues to row 33. The platform's own top is hidden behind the tank. The stand has legs and a cross brace below, rows 34-47. The tank has a clear top surface plus a front face of well over 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The tank is a blue-grey cylinder on a steel stand. It shows about 4 lightness steps on the body: a highlight band on the left, a mid tone, a dark side, and a lid. Dark blue-tinted outlines sit beside the blue body, and the metal legs are outlined in a dark slate tone, so the outline reads as tinted material tone, not neutral black. The 0% near-neutral share of dark edge pixels supports this. Measured density is 8 visible tones per tile, close to the hedge (9) but well under the roofed well (20) and cheese stall (17). Near-flat coverage is 12%, similar to the cheese stall at 13%. Texture is limited to a few hoop bands and highlights, with no grain, rivet dots or wood-plank detail. The tank's flat body areas and plain legs are simpler than the well's stone and tile work. It is a clean, competent prop but thinner than the richer Beodeul props. It lacks per-plank or per-rivet shading and has only 4 steps against about 6, so a careful artist would see it as slightly flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18782
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tank lid",
+      "rows": "3-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "tank body front face",
+      "rows": "11-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stand apron/front",
+      "rows": "24-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stand legs and cross brace",
+      "rows": "34-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tank lid occupies rows 3-10. Its width grows from 10 to 22 to 24 and then to the 26px body, and a light front-edge line sits at row 10. A dark eave shadow follows at row 11, and a darker blue cylindrical front face runs from row 11 to 23. The lid is a slightly tilted disc with a lighter rim rather than a flat band. Below it, the stand's apron (rows 24-33) and legs (rows 34-47) form a front face of well over 3 rows. The stand's own top is hidden under the tank, so the visible top surface is the lid, about 8 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The outline is tinted: 0% of dark edge pixels are neutral, with a dark blue-teal beside the tank and a dark slate beside the stand. That matches Beodeul practice and is not the sticker look. The weakness is depth. The whole object uses only 14 distinct colours, against 38-40 for the well and the cheese stall. It shows 8 visible tones per tile, against 17 for the stall and 20 for the well, and is level only with the simple hedge at 9. The tank body is a smooth cylinder with about 4 blue steps (a vertical highlight, a mid tone, a shadow side and a couple of band lines), and it has little grain, no rivet or rust speckle and no per-plank or per-panel variation. The stand is flat slate with only 2-3 tones. Near-flat coverage of 12% is close to the stall's 13%, so there are no big flat fills. Still, a careful artist would see it as thinner and smoother than the well and stall beside it, so it does not reach that bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 23927
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tank lid (elliptical top)",
+      "rows": "2-11",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "tank drum front face",
+      "rows": "12-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stand apron/table band",
+      "rows": "24-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stand legs and cross brace",
+      "rows": "34-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tank is the main body. Its silhouette widens from 10 to 26 px over rows 2-7, which makes a lid ellipse with a back rim at row 2. A light front-edge line sits at row 10-11 (#b4becc) and is followed by a dark eave-shadow row at 12 (#2d3e64). Below it the tank's front face runs rows 12-23, and the stand's apron and legs run to row 47. The stand's own top surface is hidden under the tank, so the tank's top counts as the main top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The tank is a readable blue-grey cylinder with hoop bands, a lid and a braced steel stand, and its outlines lean blue or teal (0% neutral dark edge pixels), so it avoids the black sticker look. It is thinner than the references on craft, though. The whole piece uses only 14 distinct colours, against 38-40 for the well and the cheese stall. Visible tones per tile are 8, close to the hedge (9) but well below the stall (17) and the well (20). The tank body is mostly smooth vertical banding with about 4 lightness steps, where the references use 5-6. There are no per-plate rivet dots, grain, rust or speckle, and the stand legs are nearly flat two-tone strips. Near-flat coverage (12%) is similar to the stall (13%), so large flat fills are not the main problem. Overall it still sits below the references in material richness and texture, and with the borderline result and the 'when in doubt, fail' rule it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22091
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "tank lid (elliptical top)",
+      "rows": "2-10",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "tank cylindrical front face",
+      "rows": "12-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stand apron/table band",
+      "rows": "24-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "24-25"
+     },
+     {
+      "part": "stand legs and cross brace",
+      "rows": "34-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the round tank. Its lid spans rows 2-10 and the width profile grows 10, 18, 22, 24, 26. The lid is highlighted and ends in a light front-edge line at row 11 (#b4becc), followed by a dark shadow at row 12. Below that is a 12-row cylindrical front face (rows 12-23). The tank sits on a stand with a front apron (rows 24-33) and legs (rows 34-47). The stand's own top is hidden behind the tank, and rows 24-25 read as shadow. The object is a water tank on a trestle, not a cabinet or other tall furniture, so the kind only loosely fits."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The outline is tinted dark blue-grey against the tank and stand, not neutral black (0% near-neutral dark edge pixels, like the hedge and cheese stall), so it passes on outline. The structure is shallower than the references. The whole object uses only 14 distinct colours, against 38-40 for the roofed well and cheese stall. The large cylindrical body has about 4 blue steps: a left highlight, a mid tone, a darker right side and a few hoop lines. The wide areas between the hoops are smooth gradient-like fills with almost no grain, speckle or per-plank/per-stone variation. The stand is thin, with 2-3 flat grey-teal tones and no texture. The measured 8 visible tones per tile is in line with the hedge (9) but well below the well (20) and stall (17), and the 12% near-flat coverage is similar to the stall's 13%. Next to the well and stall it looks flatter and more like a clean icon, so a careful artist would not accept it as equally rich.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 22494
+  }
+ ],
+ "decidedAt": "2026-10-21T01:08:32.865Z",
+ "cells": {
+  "16": [
+   "1f10697bbd34129f",
+   "3ad3ea9acf9426ae",
+   "93bbcd1fe2be2fe2",
+   "a18bf1b91d78913f",
+   "aa39b1615510a198",
+   "eb8384adc6cb27af"
+  ],
+  "24": [
+   "0f4beed242bd97f1",
+   "1a8c13b9de01545d",
+   "29c5e94f4f9998d7",
+   "6f2284f8e2b65a28",
+   "7540395e27b32544",
+   "a2d54e463b20a490",
+   "c1d89498ac74d0d3",
+   "cc88eaafb2d7c6f7",
+   "df0a90d751f8c74e",
+   "dfe40ddc2ccef61f",
+   "f620b32239b719a9",
+   "ffd081b1bfe8b4c4"
+  ],
+  "32": [
+   "4b5262cf94e7d51a",
+   "6b7d790df2c38dc0",
+   "7f34fcf1b07cd6cd",
+   "f4f4757ca42814ca"
+  ],
+  "48": [
+   "6f3b9cff4b63b109",
+   "d8370960ccc99fed",
+   "e6567de2f238409f"
+  ]
+ }
+}

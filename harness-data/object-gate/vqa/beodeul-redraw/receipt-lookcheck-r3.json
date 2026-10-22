@@ -1,0 +1,13 @@
+{"reviewer":"fresh Opus look-check","round":3,"date":"2026-10-22","verdict":"FAIL",
+"per_map":{
+"facilities-town":{"verdict":"FAIL","notes":"Top tree groves (y~0-60): new crowns sit lower than old ones; leftover old-outline pixels float above the crowns at (255,13) and (735,13). Crowns are recoloured olive with yellow highlights, so they read autumnal in a summer-green town; this is not blocking on its own. Buildings and ground are unchanged."},
+"forms-town":{"verdict":"PASS","notes":"Pixel-identical to before (0 changed pixels)."},
+"reviewed-street":{"verdict":"PASS","notes":"Pixel-identical to before (0 changed pixels)."},
+"river-town":{"verdict":"FAIL","notes":"Top tree row (y~10-60, x~280-1030): each crown's left edge is a straight vertical cut with a detached jagged dark/lime outline beside it. A stray dark 2px speck sits at the upper right of each crown (y=27; x=299,347,491,539,635,827,875,923,1019). The trunk has shrunk to a stub. Lower groves (y~320-440) look fine."},
+"village50":{"verdict":"FAIL","notes":"Same orphan pixels as facilities-town at (255,13), (735,13) and (192,413), so this is the same top-grove artifact."},
+"tool-village":{"verdict":"FAIL","notes":"Large twin-oak cluster (~x205-300, y110-210): a visible vertical seam line runs down the canopy centre at x~241, y~165-192, and the crown is built from hard horizontal bands. The new conifers and bushes elsewhere read fine. About 118 small unchanged dark specks sit near changed areas; many are probably ground speckle, but some are crown leftovers (e.g. 752,17)."}},
+"blocking_regressions":[
+{"map":"river-town","where":"top tree row y~10-60, x~280-1030 (zoom: lookcheck/zr3.png)","what":"Crown left edge is cut flat with a detached outline, and a stray dark speck sits above each crown (y=27). Old-outline remnants or a cell boundary are cutting through the crown."},
+{"map":"facilities-town / village50","where":"(255,13), (735,13) (zoom: lookcheck/z8_after.png)","what":"Floating dark 2-3px pixels above the top grove crowns. These are unchanged old-crown outline pixels left behind after the redraw."},
+{"map":"tool-village","where":"big oak cluster ~x241, y165-192 (zoom: lookcheck/zt2.png)","what":"Vertical tile seam line visible inside the merged canopy."}],
+"minor":["Summer town trees are now olive/yellow-tipped (facilities-town, village50) and read autumnal next to the bright grass.","Trunks shortened to stubs on the river-town top row.","Canopy shading uses flat horizontal bands (tool-village oak cluster) and looks less organic than before."]}

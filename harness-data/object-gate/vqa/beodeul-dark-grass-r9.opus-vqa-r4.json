@@ -1,0 +1,480 @@
+{
+ "schema": "bdg-vqa/1",
+ "judge": "claude-opus-5-5",
+ "date": "2026-10-21",
+ "overall": "PASS",
+ "criteriaNotes": {
+  "view34": "All cells read as flat ground seen from above. Isolated 2x2 masses become a ~1-cell dark tuft and 2-wide strips become ~1-cell-wide strips with a regular nub fringe; at 1x these read as dark grass patches, not plant objects (no outline, no volume shading).",
+  "seams": "Re-rendered the autotile myself (bits N1 E2 S4 W8 NE16 SE32 SW64 NW128, diagonal only with both cardinals) on bands, crosses, diagonal joins, random and cellular-automaton fields for both families. 0 runs (>=4 px) of dark/light mismatch along tile borders; dark/light transitions cluster at x,y%16=6..8 (mid-cell), border columns have the fewest. 0 isolated dark pixels. Light pinholes inside dark: 483/696 are the original 11628 highlight (729c44); the rest are single base-colour dither pixels inside cells 681/682/683/691/695/696 (and woodland twins) at cell-interior positions. Interior texture continuous across edge/interior boundaries.",
+  "colour": "Woodland adds 759951/688c48/81a359/8aab60 (6501/1341/882/70 px), a uniform desaturation of 737's ramp; dark ramp untouched. Sits naturally with crowns and the sheet; no off-palette look.",
+  "style": "Edge cells reuse the 11628 dark texture and 737/650 texture; fringe is pixel dither in the sheet's language, no smeared or noise-generated look. Variant groups (e.g. 667-670, 675-676) are intentionally identical because extra cardinals without diagonals do not form a 2x2 mass.",
+  "maps": "In s1-s8 and r10 renders the dark floor reads as forest ground under the crowns; edges are blob-shaped with chamfered corners, no one-lobe-per-tile sawtooth and no per-tile square slabs. Residual risk, not failed: long straight painted runs give ruler-straight edges (no large-scale wobble variants). Unrelated to these cells: bright 509730 rectangles in r10-courtyard and a 32451e line at x=448 in r10-river-3 come from other tiles/overlays; path tiles in woodland maps carry 737 fringe next to 650."
+ },
+ "cells": [
+  {
+   "id": 650,
+   "verdict": "PASS",
+   "reasons": "Woodland base: same texture as city 737, uniformly desaturated with the 4 new colours; reads as flat ground, sits naturally next to 651+ on the sheet and under original crowns in s1-s8 / r10-route maps."
+  },
+  {
+   "id": 651,
+   "verdict": "PASS",
+   "reasons": "mask 0 (no 2x2 mass): base grass identical to 737 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 652,
+   "verdict": "PASS",
+   "reasons": "mask 1 (no 2x2 mass): base grass identical to 737 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 653,
+   "verdict": "PASS",
+   "reasons": "mask 2 (no 2x2 mass): base grass identical to 737 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 654,
+   "verdict": "PASS",
+   "reasons": "mask 3 (no 2x2 mass): base grass identical to 737 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 655,
+   "verdict": "PASS",
+   "reasons": "mask 4 (no 2x2 mass): base grass identical to 737 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 656,
+   "verdict": "PASS",
+   "reasons": "mask 5 (no 2x2 mass): base grass identical to 737 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 657,
+   "verdict": "PASS",
+   "reasons": "mask 6 (no 2x2 mass): base grass identical to 737 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 658,
+   "verdict": "PASS",
+   "reasons": "mask 7 (no 2x2 mass): base grass identical to 737 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 659,
+   "verdict": "PASS",
+   "reasons": "mask 8 (no 2x2 mass): base grass identical to 737 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 660,
+   "verdict": "PASS",
+   "reasons": "mask 9 (no 2x2 mass): base grass identical to 737 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 661,
+   "verdict": "PASS",
+   "reasons": "mask 10 (no 2x2 mass): base grass identical to 737 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 662,
+   "verdict": "PASS",
+   "reasons": "mask 11 (no 2x2 mass): base grass identical to 737 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 663,
+   "verdict": "PASS",
+   "reasons": "mask 12 (no 2x2 mass): base grass identical to 737 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 664,
+   "verdict": "PASS",
+   "reasons": "mask 13 (no 2x2 mass): base grass identical to 737 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 665,
+   "verdict": "PASS",
+   "reasons": "mask 14 (no 2x2 mass): base grass identical to 737 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 666,
+   "verdict": "PASS",
+   "reasons": "mask 15 (no 2x2 mass): base grass identical to 737 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 667,
+   "verdict": "PASS",
+   "reasons": "mask 19: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 668,
+   "verdict": "PASS",
+   "reasons": "mask 23: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 669,
+   "verdict": "PASS",
+   "reasons": "mask 27: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 670,
+   "verdict": "PASS",
+   "reasons": "mask 31: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 671,
+   "verdict": "PASS",
+   "reasons": "mask 38: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 672,
+   "verdict": "PASS",
+   "reasons": "mask 39: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 673,
+   "verdict": "PASS",
+   "reasons": "mask 46: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 674,
+   "verdict": "PASS",
+   "reasons": "mask 47: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 675,
+   "verdict": "PASS",
+   "reasons": "mask 55: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; in 2-wide strips the strip is ~1 cell wide with 2 nubs/tile (slightly hedge-like at 4x, acceptable at 1x)."
+  },
+  {
+   "id": 676,
+   "verdict": "PASS",
+   "reasons": "mask 63: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 677,
+   "verdict": "PASS",
+   "reasons": "mask 76: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 678,
+   "verdict": "PASS",
+   "reasons": "mask 77: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 679,
+   "verdict": "PASS",
+   "reasons": "mask 78: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 680,
+   "verdict": "PASS",
+   "reasons": "mask 79: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 681,
+   "verdict": "PASS",
+   "reasons": "mask 95: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; a few single base-colour pinholes inside dark are cell-interior dither, not border strays."
+  },
+  {
+   "id": 682,
+   "verdict": "PASS",
+   "reasons": "mask 110: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; in 2-wide strips the strip is ~1 cell wide with 2 nubs/tile (slightly hedge-like at 4x, acceptable at 1x); a few single base-colour pinholes inside dark are cell-interior dither, not border strays."
+  },
+  {
+   "id": 683,
+   "verdict": "PASS",
+   "reasons": "mask 111: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; a few single base-colour pinholes inside dark are cell-interior dither, not border strays."
+  },
+  {
+   "id": 684,
+   "verdict": "PASS",
+   "reasons": "mask 127: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 685,
+   "verdict": "PASS",
+   "reasons": "mask 137: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 686,
+   "verdict": "PASS",
+   "reasons": "mask 139: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 687,
+   "verdict": "PASS",
+   "reasons": "mask 141: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 688,
+   "verdict": "PASS",
+   "reasons": "mask 143: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 689,
+   "verdict": "PASS",
+   "reasons": "mask 155: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; in 2-wide strips the strip is ~1 cell wide with 2 nubs/tile (slightly hedge-like at 4x, acceptable at 1x)."
+  },
+  {
+   "id": 690,
+   "verdict": "PASS",
+   "reasons": "mask 159: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 691,
+   "verdict": "PASS",
+   "reasons": "mask 175: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; a few single base-colour pinholes inside dark are cell-interior dither, not border strays."
+  },
+  {
+   "id": 692,
+   "verdict": "PASS",
+   "reasons": "mask 191: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 693,
+   "verdict": "PASS",
+   "reasons": "mask 205: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; in 2-wide strips the strip is ~1 cell wide with 2 nubs/tile (slightly hedge-like at 4x, acceptable at 1x)."
+  },
+  {
+   "id": 694,
+   "verdict": "PASS",
+   "reasons": "mask 207: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth."
+  },
+  {
+   "id": 695,
+   "verdict": "PASS",
+   "reasons": "mask 223: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; a few single base-colour pinholes inside dark are cell-interior dither, not border strays."
+  },
+  {
+   "id": 696,
+   "verdict": "PASS",
+   "reasons": "mask 239: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; a few single base-colour pinholes inside dark are cell-interior dither, not border strays."
+  },
+  {
+   "id": 697,
+   "verdict": "PASS",
+   "reasons": "mask 0 (no 2x2 mass): base grass identical to 650 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 698,
+   "verdict": "PASS",
+   "reasons": "mask 1 (no 2x2 mass): base grass identical to 650 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 699,
+   "verdict": "PASS",
+   "reasons": "mask 2 (no 2x2 mass): base grass identical to 650 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 700,
+   "verdict": "PASS",
+   "reasons": "mask 3 (no 2x2 mass): base grass identical to 650 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 701,
+   "verdict": "PASS",
+   "reasons": "mask 4 (no 2x2 mass): base grass identical to 650 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 702,
+   "verdict": "PASS",
+   "reasons": "mask 5 (no 2x2 mass): base grass identical to 650 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 703,
+   "verdict": "PASS",
+   "reasons": "mask 6 (no 2x2 mass): base grass identical to 650 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 704,
+   "verdict": "PASS",
+   "reasons": "mask 7 (no 2x2 mass): base grass identical to 650 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 705,
+   "verdict": "PASS",
+   "reasons": "mask 8 (no 2x2 mass): base grass identical to 650 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 706,
+   "verdict": "PASS",
+   "reasons": "mask 9 (no 2x2 mass): base grass identical to 650 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 707,
+   "verdict": "PASS",
+   "reasons": "mask 10 (no 2x2 mass): base grass identical to 650 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 708,
+   "verdict": "PASS",
+   "reasons": "mask 11 (no 2x2 mass): base grass identical to 650 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 709,
+   "verdict": "PASS",
+   "reasons": "mask 12 (no 2x2 mass): base grass identical to 650 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 710,
+   "verdict": "PASS",
+   "reasons": "mask 13 (no 2x2 mass): base grass identical to 650 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 711,
+   "verdict": "PASS",
+   "reasons": "mask 14 (no 2x2 mass): base grass identical to 650 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 712,
+   "verdict": "PASS",
+   "reasons": "mask 15 (no 2x2 mass): base grass identical to 650 per design rule; no stray dark pixels; tiles seamlessly."
+  },
+  {
+   "id": 713,
+   "verdict": "PASS",
+   "reasons": "mask 19: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 714,
+   "verdict": "PASS",
+   "reasons": "mask 23: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 715,
+   "verdict": "PASS",
+   "reasons": "mask 27: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 716,
+   "verdict": "PASS",
+   "reasons": "mask 31: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 717,
+   "verdict": "PASS",
+   "reasons": "mask 38: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 718,
+   "verdict": "PASS",
+   "reasons": "mask 39: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 719,
+   "verdict": "PASS",
+   "reasons": "mask 46: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 720,
+   "verdict": "PASS",
+   "reasons": "mask 47: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 721,
+   "verdict": "PASS",
+   "reasons": "mask 55: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; in 2-wide strips the strip is ~1 cell wide with 2 nubs/tile (slightly hedge-like at 4x, acceptable at 1x); new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 722,
+   "verdict": "PASS",
+   "reasons": "mask 63: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 723,
+   "verdict": "PASS",
+   "reasons": "mask 76: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 724,
+   "verdict": "PASS",
+   "reasons": "mask 77: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 725,
+   "verdict": "PASS",
+   "reasons": "mask 78: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 726,
+   "verdict": "PASS",
+   "reasons": "mask 79: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 727,
+   "verdict": "PASS",
+   "reasons": "mask 95: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; a few single base-colour pinholes inside dark are cell-interior dither, not border strays; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 728,
+   "verdict": "PASS",
+   "reasons": "mask 110: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; in 2-wide strips the strip is ~1 cell wide with 2 nubs/tile (slightly hedge-like at 4x, acceptable at 1x); a few single base-colour pinholes inside dark are cell-interior dither, not border strays; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 729,
+   "verdict": "PASS",
+   "reasons": "mask 111: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; a few single base-colour pinholes inside dark are cell-interior dither, not border strays; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 730,
+   "verdict": "PASS",
+   "reasons": "mask 127: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 731,
+   "verdict": "PASS",
+   "reasons": "mask 137: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 732,
+   "verdict": "PASS",
+   "reasons": "mask 139: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 733,
+   "verdict": "PASS",
+   "reasons": "mask 141: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 734,
+   "verdict": "PASS",
+   "reasons": "mask 143: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 735,
+   "verdict": "PASS",
+   "reasons": "mask 155: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; in 2-wide strips the strip is ~1 cell wide with 2 nubs/tile (slightly hedge-like at 4x, acceptable at 1x); new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 736,
+   "verdict": "PASS",
+   "reasons": "mask 159: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 737,
+   "verdict": "PASS",
+   "reasons": "mask 175: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; a few single base-colour pinholes inside dark are cell-interior dither, not border strays; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 738,
+   "verdict": "PASS",
+   "reasons": "mask 191: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 739,
+   "verdict": "PASS",
+   "reasons": "mask 205: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; in 2-wide strips the strip is ~1 cell wide with 2 nubs/tile (slightly hedge-like at 4x, acceptable at 1x); new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 740,
+   "verdict": "PASS",
+   "reasons": "mask 207: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 741,
+   "verdict": "PASS",
+   "reasons": "mask 223: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; a few single base-colour pinholes inside dark are cell-interior dither, not border strays; new colours sit with the palette, no muddy cast."
+  },
+  {
+   "id": 742,
+   "verdict": "PASS",
+   "reasons": "mask 239: edge fringe joins neighbours with no border seam (0 straight border cuts in a 60x40 CA field and seam patches; dark/light transitions sit mid-cell, not on tile borders); interior texture continuous with 11628; reads as flat dark ground, fringe is fine dither not a lobe-per-tile sawtooth; a few single base-colour pinholes inside dark are cell-interior dither, not border strays; new colours sit with the palette, no muddy cast."
+  }
+ ]
+}

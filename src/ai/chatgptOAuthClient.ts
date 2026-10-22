@@ -1,5 +1,6 @@
 import { DEFAULT_CHATGPT_BASE_URL } from "@/ai/llmClient";
-import { companionToken, companionTokenHeaders } from "@/ai/companionToken";
+import { companionToken } from "@/ai/companionToken";
+import { fetchCompanion } from "@/ai/companionConnection";
 import {
   parseOpenAiCompatReasoningMode,
   setKnownOpenAiCompatEndpoints,
@@ -151,12 +152,9 @@ async function companionFetch(url: string, init?: RequestInit): Promise<Response
   const timer = controller && typeof setTimeout === "function"
     ? setTimeout(() => controller.abort(), COMPANION_TIMEOUT_MS)
     : undefined;
-  const token = companionTokenHeaders();
-  const withToken: RequestInit = Object.keys(token).length
-    ? { ...init, headers: { ...(init?.headers ?? {}), ...token } }
-    : (init ?? {});
   try {
-    return await fetch(url, controller ? { ...withToken, signal: controller.signal } : withToken);
+    // 토큰·서버 재시작 뒤 다시 맺기·연결 알림은 한 입구(fetchCompanion)가 맡는다.
+    return await fetchCompanion(url, controller ? { ...init, signal: controller.signal } : init);
   } catch (error) {
     // 우리가 건 abort 는 네트워크 단절과 원인이 다르다 — 진단 문구를 갈라 쓸 수 있게 표시한다.
     throw new ChatGptCompanionUnreachableError(error, controller?.signal.aborted ? "timeout" : "network");
@@ -519,10 +517,9 @@ export async function testOpenAiCompatEndpoint(request: OpenAiCompatTestRequest)
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), request.model ? 130_000 : 30_000);
   try {
-    const token = companionTokenHeaders();
-    const response = await fetch(`${companionOrigin()}/auth/openai-compat/test`, {
+    const response = await fetchCompanion(`${companionOrigin()}/auth/openai-compat/test`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", ...token },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(request),
       signal: controller.signal,
     });

@@ -1,0 +1,365 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "60561b3bf913585baca72efe4f6bb93aa8975eff26757d53aff9906cd5c60837",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "office water cooler",
+ "label": "modern_city_interior/office-water-cooler",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "water jug (bottle on top)",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cooler body top surface",
+      "rows": "12-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18"
+     },
+     {
+      "part": "cooler front face with panel, buttons and taps",
+      "rows": "19-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The blue jug in rows 1-11 is goods placed on top of the body, so it counts as decor. The cooler body below it has a top band in rows 12-17: a darker line at row 14, then light rows 15-16, then a lighter front-edge line at row 17. A dark eave shadow follows at row 18. The front face runs from row 19 to row 31 (13 rows) and holds the control panel, buttons and taps. The body is a constant 16 px wide. The kind 'large structure: gate, pavilion, door, building' does not really describe an office appliance."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-object prop, so judging it against full buildings is limited. On the measured facts it matches the references: 12 visible tones per tile against 12 and 10, and 0% near-flat coverage like both references. Only 0% of its dark edge pixels are neutral, so the outlines lean blue-grey to match the adjacent material and it avoids the black sticker look. By eye, the blue water jug has highlight, mid and dark steps. The white and grey body has a shaded side, a tap panel and a base, so about 4 steps against the references' 5-6. It has no large flat fills. The total of 16 distinct colours is low, but those colours separate into visible tones, so density holds up. A careful artist would accept it next to the references without it looking noticeably flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21058
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "water jug on top",
+      "rows": "1-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cooler body top band",
+      "rows": "12-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "cooler front panel with buttons and spigot",
+      "rows": "15-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The blue jug on rows 1-10 is a decor object standing on the cooler. The main body spans rows 11-31 at 16px wide. Its top is a thin light band on rows 12-13, ending in a darker front-edge line on row 14 (L=144 at x=4 and x=11). Below that is a front face of about 16 rows (15-30) with a red and a blue button, a spigot panel and a base strip. The top band is thin (3 rows) but has an edge line, so it counts as a weak top surface. The object is a small appliance, not a large structure like a gate or building, so kind_matches is false."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are whole buildings with tiled roofs, plaster and stone walls, and 66-185 distinct colours. The candidate is a tiny single prop with only 16 colours in total, so it is not the same kind. Its measured numbers are acceptable: 12 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, which means the outline is tinted. By eye, though, the jug and the body each get only about 3 lightness steps (highlight, base, shadow) where the references use 5-6 per material. The panel and base have little grain or per-element shading, and the small, cleanly outlined silhouette reads as sticker-like next to the richly textured tile and stone surfaces. It is not clearly equal to the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20715
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "water bottle (inverted jug on top)",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cooler body top band",
+      "rows": "12-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "14"
+     },
+     {
+      "part": "cooler body front face (panel, tap, spigot and drip tray)",
+      "rows": "15-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The body is 16 px wide from row 10 down. Its top shows only a thin light band at rows 12-13 (L about 231-237 at x=4 and x=11). A darker gray line at row 14 (L=144-169) acts as the front edge line, and the face starts at row 15. That is only 2 rows of top surface, comparable to the rim-only and front-elevation references (red). The blue bottle (rows 1-11) is decor on top of the body. Below the top band the body is a flat vertical front: a panel with red and blue buttons, a tap column and a base strip at rows 28-30. No receding top plane, side face or ellipse is drawn for the body. The object is also an appliance rather than a gate, pavilion or building, so the supplied kind fits poorly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are whole buildings with roofs, walls and doors. The candidate is a tiny single-tile prop, so the kind does not really match and I judged it by eye. The measured facts do not count against it: 12 visible tones per tile against 12 and 10 in the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline carries a tint (dark blue/grey-blue beside the jug and body). By eye, though, it is thin. The blue jug and white/grey body each have only about 3-4 lightness steps against the references' 5-6. There are only 16 distinct colours in total, against 66 and 185. There is no grain, speckle or per-element shading like the tile scallops and stones. It reads as a clean, simple icon and looks flatter and more sticker-like next to the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20632
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "water jug (blue bottle) on top of the body",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cooler body top strip under the jug",
+      "rows": "12-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cooler body front face (panel, buttons, tap panel, base band)",
+      "rows": "15-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The jug (rows 1-11) is a placed object, so it counts as decor. The main body is the 16-wide block from row 10 to row 31. Row 11 is a dark outline. Rows 12-13 are a thin light-gray strip, and row 14 is a darker line (#8d9095 at x=4 and x=11). That gives a top of only about 2 rows, which is a rim. Below it rows 15-30 are a flat vertical face: light panel, red and blue buttons, a tap column on the right, and a bottom band. There is no ellipse, roof or deep top plane, and no side face. The body reads as front elevation. The 'large structure' kind does not fit an appliance."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The cooler is a tiny prop, about 14x22 source pixels, set against two full houses. On the primary facts it matches them: 12 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage like both references, and 0% neutral dark edge pixels. Its outline is therefore tinted, not a black sticker line. By eye, the blue jug has a highlight, mid and dark band, and the white body has a shaded side, a recessed panel and a grey base, so each material gets about 3-4 steps. That is fewer than the references' 5-6, but reasonable for something this small. The low total of 16 colours fits a locked palette. No large flat fills are visible, and it does not look thinner or flatter than the references at this scale.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25984
+  }
+ ],
+ "decidedAt": "2026-10-21T01:24:13.575Z",
+ "cells": {
+  "16": [
+   "207922d8b832c67a",
+   "9d2d4a1073f78ed5"
+  ],
+  "24": [
+   "285093d1af0cd035",
+   "376c22d415eea89f",
+   "57ff647e8dfc1798",
+   "6f501716ad8e23c5",
+   "72e18c07bcd3a9ba",
+   "8109be642065b45d",
+   "8735a5bb387d2f17",
+   "b03fa519f8ff0fb5",
+   "ba93ae8a0a270887",
+   "bf3fb77a7b5481c7",
+   "ee914c850c7a4dbe",
+   "ffefcc2edc73d0d0"
+  ],
+  "32": [
+   "7f2f72c3afbc627d",
+   "ea51207757ad430c",
+   "eafae11678c63eb9"
+  ],
+  "48": [
+   "097dad444a0f7708",
+   "23bd7242b4f790d5",
+   "2fee2b5c041d3425",
+   "95f3e53e04af478a",
+   "a35b412988668ac6",
+   "f251d4bb98de3867"
+  ]
+ }
+}

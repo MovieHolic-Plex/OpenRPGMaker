@@ -1,0 +1,690 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ebdb529166f59d79619fab8454046412da6e41880e69a8bee310e928fb4837d1",
+ "width": 112,
+ "height": 144,
+ "kind": "structure",
+ "name": "薬局 약국",
+ "label": "jp_city/jp-bldg-shop-pharmacy",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 13,
+  "darkV5": 38,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 40
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "borderline",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat roof with parapet and rooftop garden, seen from above",
+      "rows": "14-48",
+      "evidence": "d",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": "49-50"
+     },
+     {
+      "part": "rooftop hut, potted plants and AC unit",
+      "rows": "22-46",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small window awnings",
+      "rows": "52-55",
+      "evidence": "a",
+      "front_edge_line_row": 55,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cornice ledge below the upper facade",
+      "rows": "78-82",
+      "evidence": "a",
+      "front_edge_line_row": 79,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 35,
+    "front_face_rows": 94,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top of the building (rows 14-48) is a large roof plane seen from above. It has a light parapet rim, a dark green garden floor inside, and a hut, plants and an AC unit standing on it. The roof ends in a bright front-edge line at rows 47-48, followed by a darker shadow at rows 49-50. Below that the south facade continues to row 143 with a stone-wall storey with windows, a cornice ledge that widens to 84 px at rows 79-82, the signboard, and the shop window. That gives roughly 94 rows of front face, so the roof has a real top surface and the front face is deep."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a modern multi-storey pharmacy with a rooftop garden, a grey concrete body, a blue sign band and a glass shopfront. The references are tiled-roof houses with timber or stone walls. Both are buildings, so the kind matches, but the candidate is far plainer. Its grey wall ramps have only about 3 steps, against 5-6 on the reference roofs and walls. The measured facts back this: 9 visible tones per tile against 12 and 10 for the references, and 20% near-flat coverage against 0% for both. The flat areas are visible by eye in the blue sign band, the grey wall panels and the rooftop planter block. The outline is tinted (0% near-neutral edge pixels), a dark blue-grey beside the materials, so it does not read as a black sticker line. The shopfront has dotted window displays that add some texture. There are no per-tile highlights, grain or speckle like the references' roof scallops, plaster and stone shading. Overall it is clean but flatter and thinner than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17896
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rooftop terrace (parapet frame and green lawn seen from above)",
+      "rows": "14-46",
+      "evidence": "c",
+      "front_edge_line_row": 46,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rooftop shed, AC unit and potted plants",
+      "rows": "16-44",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone facade wall with two window awnings",
+      "rows": "47-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "52-56"
+     },
+     {
+      "part": "cornice ledge",
+      "rows": "79-82",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sign band (くすり)",
+      "rows": "83-104",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shopfront glass with shelves and door",
+      "rows": "105-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 33,
+    "front_face_rows": 96,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building's top is a roof terrace drawn as a large horizontal surface in rows 14-46: a light parapet frame around a dark green lawn, with a shed, an AC unit and planters on it. It ends in a front-edge line at row 46 and a light parapet face in rows 47-48. Below it the south facade is a vertical face about 96 rows tall (stone wall with windows, cornice, sign, glass shopfront). No receding side face is drawn. The top surface is deep enough to read as three-quarter, not as a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a modern multi-storey shop: a rooftop garden, a grey panel floor, a blue くすり sign band and a glass storefront. The references are tiled-roof, timber and stone houses. The kind matches as a whole building, but the candidate's materials are much simpler. Its walls and sign band have only about 3 tones each, against about 6 on the reference roofs. The measured facts are 9 visible tones per tile against 12 and 10 for the references, and 20% near-flat coverage against 0% for both. The 0% near-neutral edge share means the outlines are tinted, which is good. But the dark frame lines are fairly uniform around the panels and the sign, a sticker-like boxed look. The grey wall floor and the blue sign band are large, nearly flat areas with little grain. The storefront has some dotted detail (shelves and lights), and the rooftop plants add some texture. Even so, the shading is shallower and the flat fills are larger than on the references, so it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21989
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rooftop terrace (parapet frame with green garden floor)",
+      "rows": "14-46",
+      "evidence": "d",
+      "front_edge_line_row": 46,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front parapet lip below the terrace",
+      "rows": "47-48",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small rooftop hut with door",
+      "rows": "23-40",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "potted shrubs on the roof",
+      "rows": "33-43",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rooftop tank/unit on legs",
+      "rows": "23-45",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "window awnings/hoods over the two upper windows",
+      "rows": "52-56",
+      "evidence": "a",
+      "front_edge_line_row": 56,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cornice ledge above the sign",
+      "rows": "79-83",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 33,
+    "front_face_rows": 95,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building is viewed from the south. Rows 14-46 form a roof terrace: a light parapet border with a green garden floor, planters and a small hut visible inside (evidence d). Its front edge is a line at row 46 (L=104), followed by a light parapet lip at rows 47-48. Below that is a tall front face with a stone-brick wall and windows (rows 50-80), a cornice ledge, a blue sign (rows 84-98) and a shopfront (rows 100-143), about 95 rows in total. Small awnings over the upper windows have their own edge bands. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a modern multi-storey pharmacy block with a sign and a glass shopfront, so it is the same kind (building) but a different style of structure. Measured: 9 visible tones per tile against 12 and 10 for the references, so close to the stone reference. Near-flat coverage is 20% against 0% for both references, and the picture agrees: the grey wall bands, the blue sign panel and the dark green rooftop panel are large flat fills with 2-3 steps each. The references carry 5-6 steps per material, with per-tile roof highlights, plaster speckle and stone shaded one by one, and the candidate has none of that. Edge pixels are 0% neutral, so the outlines are tinted (dark blue-grey and green beside their materials) and not a black sticker line. That is acceptable, but the flat panels and shallow ramps still leave it visibly flatter than the references. Shop window details (shelf dots) add some texture, but the upper floors and sign stay flat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 22357
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat rooftop with garden (roof plane inside the parapet)",
+      "rows": "14-46",
+      "evidence": "c",
+      "front_edge_line_row": 46,
+      "eave_shadow_rows": "49-50"
+     },
+     {
+      "part": "rooftop plants in pots",
+      "rows": "19-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rooftop AC unit",
+      "rows": "13-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small rooftop hut",
+      "rows": "13-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cornice above sign",
+      "rows": "79-82",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 33,
+    "front_face_rows": 97,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building has a large rooftop surface at rows 14-46 with a green garden, a hut, pots and an AC unit visible on it. A light parapet front-edge line sits at row 46, with light rows 47-48 and a darker shadow at rows 49-50. Below it is a tall front face of about 97 rows (rows 47-143): stone facade with windows, cornice, the くすり sign, and a glass shopfront. The roof is seen from above as a flat plane, so the main body has a top surface and a front face. There is no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a modern flat-roofed storefront, not a tiled house like the references. Its roof is a rooftop garden panel and its walls are flat grey blocks. Main materials (grey wall, blue sign, green roof panel) show about 3 shading steps each, against 5-6 for the references' tile roofs, plaster and stone. Edge pixels are tinted (0% neutral), so the outlines lean toward dark grey-blue rather than a pure black sticker line, but they are a uniform frame around each band and read as boxy. Visible tones per tile are 9 against 10-12 for the references, which is close. Near-flat coverage is 20% against 0% for both references: the sign band, the wall panels and the rooftop are large flat fills with no grain. The references have per-tile tile highlights, plaster speckle and stone shading, and the candidate has none of this. The window shelves with dots add some texture, but the overall piece is flatter and more sticker-like than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18806
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.230Z",
+ "cells": {
+  "16": [
+   "02745bdc9d5553fa",
+   "0d25ec103c1da478",
+   "143b61632d5e92ec",
+   "15ff741a25f5d016",
+   "17aeb82e1e797f7f",
+   "19b8d130bb1bc0e2",
+   "1bb6b3f386232edf",
+   "1d2482448dcbca51",
+   "1d57d64327119db1",
+   "2923c944d7ba98e1",
+   "2eff5dd94bf0aa4e",
+   "393216d67cd081dc",
+   "3b1a5ff491012cb4",
+   "46136102e9965242",
+   "5b104061e35db1bb",
+   "5bb47ab822dae167",
+   "6add7b515a0a1e73",
+   "7cf33c5b8504e024",
+   "7d37ed322b948bd9",
+   "7ec1af3d6f3826ae",
+   "8a37ce1244cafdf8",
+   "8ddc280bee12db9e",
+   "915fd95026be7b09",
+   "957412662255f6d3",
+   "9c381d62d907b9cb",
+   "9d7c7f327b9c9321",
+   "a111f2525c430a8d",
+   "a21cb1190472adf5",
+   "a7a6f78ea1ad145e",
+   "b3d08565d6c0c491",
+   "b54eb3a35d312d22",
+   "b6be9ab6b765cb43",
+   "bc2b63ad4cf77235",
+   "c99cfa27aa46df49",
+   "cd6e2a283f7d5a87",
+   "cf43e4ac1e46f313",
+   "cfdec6212d914487",
+   "d2d350947752f7cd",
+   "de1d1052502841cb",
+   "df5fc40a7607061d",
+   "e061be58ca3fbee0",
+   "e09a2ef87e141c8b",
+   "e77d700fbd9cc98b",
+   "ef6e1de2631845cc",
+   "f274892ce069fa98",
+   "f361a7d0f0db2381",
+   "f490b65977155a24",
+   "f49278aa0458edd5",
+   "f843f6f87544a056",
+   "fc07cb04cdccc900",
+   "fef818ab53905c9e"
+  ],
+  "24": [
+   "01c42dfce8399b16",
+   "0b29b1042a83748d",
+   "12114f564eaf43ff",
+   "166e97ab2906b13f",
+   "19aec00e75ca3138",
+   "19d518ad6305cc40",
+   "1c6fbbc90629ab66",
+   "1d7081eafa82ab82",
+   "1da1248f73219910",
+   "1e8b4dd2c03c53ca",
+   "23a553bc50eef75f",
+   "2830139cd6ffbee3",
+   "2b928f16cf1dec85",
+   "2f3df594296506f1",
+   "2f9f579c509e694b",
+   "3416f7cf8443c533",
+   "357145eff81884c1",
+   "3cb1a934d77411c3",
+   "3cd300c32a117925",
+   "3fb03c1ddc3f8b06",
+   "40d2b06810dbbb22",
+   "453d26d0b250c858",
+   "492b7665a53d2d78",
+   "5356b389cfb56f15",
+   "576779517187603c",
+   "5aaf13d25f61ca88",
+   "6006ee3c9b1029fd",
+   "60a0ef94459328af",
+   "639205c66631139e",
+   "68f9b733b396dea7",
+   "695e5450cdd04dce",
+   "6efb29021419e6fd",
+   "6fe7f22b3148aabc",
+   "72cbbea093279467",
+   "739f6490fbe33659",
+   "73a595aceb2ae6c2",
+   "75a4dbb186833fcb",
+   "763aeb8b9bb2c138",
+   "80e217ed2080ac04",
+   "873bf9efd6a7642b",
+   "8a2edd42ebc1e179",
+   "8afd9c6c29cfe00f",
+   "8b97bec128e287f5",
+   "8bb56ec5d28421ed",
+   "8ea7786cfbc59ad5",
+   "8fc795edcf5b69e9",
+   "91284247d76ffa78",
+   "94283ce91d52ecbf",
+   "97b7a82f953c371c",
+   "9cca4b0ac211a1aa",
+   "9ce7ad21906a8582",
+   "9ee403fa225a9cf5",
+   "a33c522a1adbb04f",
+   "a4c12de6876b93de",
+   "a64ffdb8712fb312",
+   "a8d15fbbcfb70caf",
+   "b162c2008d046367",
+   "b166ca16f51f362d",
+   "b1ce5b4833832ba1",
+   "b7aef6e2f0d88710",
+   "c114cbe1a0e67b3a",
+   "c1599b27923aad94",
+   "c17a6ce32fd62eb1",
+   "c50e0ab1f0c3eedc",
+   "c536c0922e8a31b7",
+   "ca4aff47b5216010",
+   "cb4af956f158dc1a",
+   "cee78f3017ceee71",
+   "cfcbfae19d6ee9d0",
+   "cfe7b4ab47c7a5e5",
+   "d32af53552b90cbd",
+   "d43939419acbe815",
+   "d575f9f9125faf6d",
+   "dd719274bdc0e23e",
+   "df414407e069f24d",
+   "e1ae417068fba4bb",
+   "ec2c135f737c925e",
+   "f014d0737f7e543a",
+   "f6cf66ee39158e4c",
+   "f7d436c1ff349b7c",
+   "f8c59a6b4dd3d8a6",
+   "f9f0e75b6911e0e0",
+   "fc5b65eb90532a6a",
+   "feb5db443049c128"
+  ],
+  "32": [
+   "0b37503e2fee337d",
+   "0f64852bd0469492",
+   "1293ceac4ca06319",
+   "12b480cb84a6e6d9",
+   "1464d272c85b2127",
+   "175db0c4e2590136",
+   "17841efe497165e5",
+   "19e3cb75a3b014b7",
+   "1a9dad22a7d6ecfa",
+   "1c0acd5c6a3ce83a",
+   "1c1d3e26003c6aa2",
+   "1ceae063147eac51",
+   "1cfa4b68d47f99fe",
+   "1d07012076490fcc",
+   "1d9802715e5b552b",
+   "209c4fb21a536959",
+   "20f34888249b947a",
+   "233d8f69a0c0a732",
+   "281705ce46022898",
+   "2994ae90631f848f",
+   "317bc138991c2d4a",
+   "34aae5b6a7c01f71",
+   "3e48b2ecbf98adcc",
+   "4324a1f508282425",
+   "45b5ad6df15f9b69",
+   "47abd23b3ec2d219",
+   "4915729a455fe593",
+   "49d088e37f10712e",
+   "4d4a3b6122786aed",
+   "4dd0378ddec141bf",
+   "4e0b75a706924acf",
+   "4f0c1f14480f67b4",
+   "4fd2f14db3207c97",
+   "510dc67cc92a6a3d",
+   "524189d12aa34ebb",
+   "535cbcc00a2f96af",
+   "53e040b41a017d84",
+   "55dd20ba9d7ecee7",
+   "59c3197947710f50",
+   "5a0594a89221c515",
+   "5c4bc3f29269f307",
+   "5ea44576e3b4ee4d",
+   "65ba56e76ccc3f73",
+   "6beab80123e2f45e",
+   "6d0acc8f4f1323e2",
+   "6f05bcaa2611048f",
+   "6f5183f6de23d4a6",
+   "713b888b6cc58bc5",
+   "726c53c57902f6cd",
+   "75cf8cc22a0f6e08",
+   "77c987a90aa603df",
+   "7a07b322db41ec6c",
+   "7de1dae51f279fc2",
+   "80188aca22061c48",
+   "833e32e6c14f9bc9",
+   "870033f3362c09c7",
+   "885062dd13902402",
+   "8c8c146ae646dbe1",
+   "8ef7fe9fb7b367f8",
+   "91069fd8ca25d231",
+   "93a5a1929d9a105c",
+   "9c9a1daf34bf137f",
+   "9e87f13e79e52e49",
+   "a1a5f551a4f3bb7f",
+   "a3062eb711898425",
+   "a3a82c111295f557",
+   "a3c04c661813be1e",
+   "a4cb0089351c8e07",
+   "a764a1439ce00231",
+   "a7d38d196eb79eb3",
+   "a85c969559cd3ece",
+   "acb38a743a73d986",
+   "b0dc66394b167571",
+   "b14123ed88692bce",
+   "b1d353f878857651",
+   "b453f3791fe85148",
+   "b68cb9a968bc8870",
+   "b91516026f15ae1e",
+   "bc4365185c0a6e02",
+   "bebeb9e507c5c583",
+   "befa188f0bd23faa",
+   "c3dbe26c218f6688",
+   "c4804e68460cca35",
+   "c4e8924d9c9dbb8b",
+   "c8c025a84ea2cdc8",
+   "ceb55f8b6139c67a",
+   "cefbedf5d046e7a5",
+   "d0489880f9984465",
+   "d1d1462006d8d288",
+   "d2d88c01a94fa162",
+   "d48ef56b18b6bd7e",
+   "d944974e4acb338f",
+   "dc1ab4c7b9650d43",
+   "e13a1da1eadb2eed",
+   "e3c23e08bc8e86c2",
+   "e4c7f4d7599993f6",
+   "e5b62eabe206dbd0",
+   "e62213c774b2c9fe",
+   "ec1b30d790613834",
+   "ed290f5b61f45345",
+   "ed319af61c3d2837",
+   "ede778f8794d65f1",
+   "f0f8e72f0434a5b7",
+   "f29312ad7deb2190",
+   "f3ab7be0d6a6b856",
+   "f61d4fe697192c5a",
+   "f737f1bd1d1802a9",
+   "fa355b53070d69be",
+   "fa3aa41a5de51fa4",
+   "fb0784c075237b51",
+   "fb7894d632d91e43"
+  ],
+  "48": [
+   "0d879f1d44bb99ef",
+   "1842b95b3baddf1b",
+   "29e9219305c102c2",
+   "2f2e44bf27a43721",
+   "5f37e3a10c877bb3",
+   "672bf0cf4ee30e56",
+   "696b15f117ddea04",
+   "6ed207796e1de6af",
+   "6fee629f93bdd4f1",
+   "70c8168cd6bc45d8",
+   "71fea7f580946e5f",
+   "7470a9b5b453d1cf",
+   "7698095bbedc3221",
+   "8789ce4edfcce4c4",
+   "894150e6e8b02c74",
+   "963e9eafd0fd2ea3",
+   "9a73342031aaaaae",
+   "c143fa9929549121",
+   "cf691bec2d60aead",
+   "d5c91d92f89d8bff",
+   "d7468965f6411782",
+   "ddd348c93ca3ff47",
+   "e849f058db7e3346",
+   "ee96713b8dfabce3",
+   "f8babfb03c417545",
+   "f9fbdf0888cf9384",
+   "fa8a7b0eb18a43c4"
+  ]
+ }
+}

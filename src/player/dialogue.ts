@@ -141,6 +141,8 @@ export type DialogueLogEntry = {
 };
 
 const DIALOGUE_LOG_LIMIT = 200;
+/** 선택지가 열린 직후 결정 키를 받지 않는 시간 — 앞 대사를 넘기던 연타가 선택을 대신하지 않게. */
+const CHOICE_CONFIRM_GRACE_MS = 300;
 /** 휠 위로 백로그 열기: 닫은 뒤 이 시간은 다시 안 열고, 이 시간 안에 문턱만큼 쌓여야 연다(관성 스크롤·핀치 오작동 방지). */
 const WHEEL_REOPEN_COOLDOWN_MS = 450;
 const WHEEL_OPEN_WINDOW_MS = 300;
@@ -550,6 +552,7 @@ export function createDialogueUI(
     // 위치가 바뀌는 연속 대사에서 창이 튀지 않게, 지우기 전에 앞 창의 자리를 기억한다(FLIP).
     const prevBox = overlay.querySelector<HTMLElement>(".dialogue-box");
     const savedBoxTop = prevBox ? layoutTop(overlay, prevBox)?.top : undefined;
+    previousTextBox = wasOpen && prevBox && !prevBox.classList.contains("choices") && !prevBox.classList.contains("dialogue-balloon") ? prevBox : undefined;
     cancelActiveText?.();
     cancelActiveChoice?.();
     previousBoxTop = savedBoxTop;
@@ -579,6 +582,8 @@ export function createDialogueUI(
       stageSlots = {};
       lastLineForcedBottom = false;
       previousBoxTop = undefined;
+      sessionPosition = undefined;
+      lastBoxPosition = undefined;
     };
     const cancelTimer = schedule(finish, exitMs);
     // schedule 이 동기로 끝냈으면(node 환경) 예약을 남기지 않는다.
@@ -841,6 +846,14 @@ export function createDialogueUI(
   // 직전 대사가 초상 때문에 아래로 강제됐는가 — 같은 세션의 선택지가 대사창과 같은 자리에 서도록 이어 쓴다.
   let lastLineForcedBottom = false;
   let previousBoxTop: number | undefined;
+  // 고정 틀(2026-10-22): 열려 있는 대화 세션의 창 자리. 「주인공 가림 피하기」(auto)는 세션의 첫 창에서 한 번만 정하고,
+  // 이어지는 줄·선택지는 이 자리를 물려받는다 — 줄마다 다시 판정해 창이 위↔아래로 튀던 결함(아스트라·폴른 데모).
+  // 저자가 그 줄에 자리를 못박았으면(top·center·bottom, 또는 가림 피하기를 끈 문장 표시 설정) 그 자리를 따른다.
+  let sessionPosition: MessageWindowPosition | undefined;
+  // 선택지 직전의 대사 상자(떼어 낸 노드). 선택지는 이 상자를 같은 자리에 「틀」로 남기고 그 위에 선택지 칸을 띄운다.
+  let previousTextBox: HTMLElement | undefined;
+  // 바로 앞 창이 선 자리(저자가 못박은 줄 포함). 선택지는 앞 대사 상자와 같은 자리에 선다.
+  let lastBoxPosition: MessageWindowPosition | undefined;
   let listenerPortrait: { readonly key: string; readonly face: FaceGraphic } | undefined;
   let stageSlots: {
     left?: { readonly key: string; readonly idKey: string; readonly face: FaceGraphic };
@@ -935,7 +948,11 @@ export function createDialogueUI(
         // 같은 세션에서 초상 규칙이 창 자리를 바꾸는 줄에서만 앞 창이 있던 자리에서 미끄러진다(그 밖의 줄은 옛 동작 그대로).
         glideFromPrevious = wasOpen && lastLineForcedBottom !== forceBottom;
         lastLineForcedBottom = forceBottom;
-        position = applyTextSettings(overlay, box, request, undefined, forceBottom);
+        position = applyTextSettings(overlay, box, request, undefined, forceBottom, wasOpen ? sessionPosition : undefined);
+        // 저자가 못박은 한 줄(top·center·bottom)은 세션 자리를 바꾸지 않는다 — 다음 보통 줄은 원래 자리로 돌아간다.
+        if (forceBottom || (request.settings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS).preventObscuringPlayer) sessionPosition = position;
+        lastBoxPosition = position;
+        overlay.classList.toggle("dialogue-continued", wasOpen);
         applyDialoguePresentation(box, profile);
         applyDialogueScrim(scrim, profile, position);
         const content = el("div", {
@@ -1673,8 +1690,15 @@ export function createDialogueUI(
         ? resolveAuthoredVnLook({ version: 1, preset: DUAL_FULLBODY_VEIL_PRESET_ID }, "setting-default")
         : rawVnLook;
       const isDualFullbodyVeil = choiceLook.style === DUAL_FULLBODY_VEIL_PRESET_ID || effectiveVnLook?.preset === DUAL_FULLBODY_VEIL_PRESET_ID;
-      // 초상이 선 대사 바로 뒤의 선택지는 그 대사창과 같은 아래 자리에 선다(같은 세션 안에서 창이 위로 뛰지 않게).
-      const position = applyOverlayPosition(overlay, request, (wasOpen && lastLineForcedBottom) || isDualFullbodyVeil);
+      // 선택지는 바로 앞 대사 상자와 같은 자리에 선다(같은 세션 안에서 창이 위로 뛰지 않게). 앞 창이 없으면 대사와 같은 규칙으로 정한다.
+      const anchorPosition = wasOpen ? lastBoxPosition : undefined;
+      const framePrevious = previousTextBox;
+      previousTextBox = undefined;
+      if (anchorPosition) overlay.dataset.dialoguePositionReason = "previous-box";
+      const position = anchorPosition
+        ? (overlay.classList.add(`position-${anchorPosition}`), anchorPosition)
+        : applyOverlayPosition(overlay, request, isDualFullbodyVeil);
+      lastBoxPosition = position;
       overlay.classList.add("choices-active");
       if (request.options.length >= 4) overlay.classList.add("choices-compact");
       const choicesWindow = dialogueBox("choices", "dialogue-box");
@@ -1714,7 +1738,14 @@ export function createDialogueUI(
         }
       }
       const choicesEl = el("div", { class: "choice-list", dataset: { testid: "runtime-choices" } });
-      if (request.prompt) {
+      // 고정 틀: 대사 상자 크기·자리는 그대로 두고, 선택지 칸은 그 위(창이 위에 있으면 아래)에 따로 뜬다.
+      // 틀에는 질문(prompt)이, 질문이 없으면 바로 앞 대사가 그대로 남는다. 둘 다 없으면 빈 틀이다.
+      const frame = choiceFrame(request, framePrevious, choiceLook);
+      if (frame) {
+        overlay.classList.add("choices-framed");
+        applyTextSettings(overlay, frame, request, position);
+      }
+      if (request.prompt && !frame) {
         const promptEl = el("div", {
           class: "choice-prompt-row",
         });
@@ -1724,6 +1755,12 @@ export function createDialogueUI(
 
       let onKey: (event: KeyboardEvent) => void;
       let settled = false;
+      // 앞 대사를 넘긴 그 Enter 가 선택지를 고르지 않게 한다. 대사를 닫는 keydown 안에서 선택지가 열리고 0번 단추에
+      // 포커스가 가면, 브라우저가 같은 키의 기본 동작으로 그 단추를 「클릭」해 플레이어가 보지도 못한 선택이 된다
+      // (첫사랑 VQA 4차 — 마지막 선택이 저절로 골라져 엔딩까지 흘러감). 키보드 결정은 onKey 가 따로 받으므로
+      // 열린 직후, 이 선택지가 keydown 을 하나도 받지 않은 채 들어온 키보드발 클릭(detail 0)만 버린다.
+      const openedAt = performance.now();
+      let sawKeyDown = false;
       const cleanup = (): void => {
         settled = true;
         document.removeEventListener("keydown", onKey);
@@ -1740,6 +1777,7 @@ export function createDialogueUI(
         if (settled) return;
         recordChoice(request, index);
         cleanup();
+        if (frame) frame.dataset.dialoguePhase = "exit";
         beginExit(choicesWindow, choicesProfile.exitMs);
         resolve(index);
       };
@@ -1766,6 +1804,14 @@ export function createDialogueUI(
       };
       onKey = (e: KeyboardEvent) => {
         if (settled || e.isComposing) return;
+        // 열린 직후의 결정·숫자 키는 버린다 — 앞 대사를 넘기려고 연타한 Enter 가, 선택지가 그려진 바로 그 순간 닿아
+        // 플레이어가 읽지도 못한 0번이 골라지던 결함(첫사랑 r11·r8 재현: 선택지 등장과 Enter 가 같은 0.1초).
+        // 실제 키 입력(isTrusted)만 막는다. 단위 테스트의 합성 이벤트는 그대로 지나간다.
+        if (e.isTrusted && performance.now() - openedAt < CHOICE_CONFIRM_GRACE_MS && (isConfirmKey(e.key) || /^[1-9]$/.test(e.key))) {
+          e.preventDefault();
+          return;
+        }
+        sawKeyDown = true;
         if (e.repeat && (isConfirmKey(e.key) || isCancelKey(e.key) || /^[1-9]$/.test(e.key))) {
           e.preventDefault();
           return;
@@ -1815,7 +1861,10 @@ export function createDialogueUI(
         renderDialogueSegments(btn, parseDialogueText(opt.text, request.textContext));
         btn.addEventListener("mouseenter", () => setSelected(idx));
         btn.addEventListener("focus", () => setSelected(idx));
-        btn.addEventListener("click", () => finish(idx));
+        btn.addEventListener("click", (event) => {
+          if (event.isTrusted && event.detail === 0 && !sawKeyDown && performance.now() - openedAt < 400) return;
+          finish(idx);
+        });
         buttons.push(btn);
         choicesEl.append(btn);
       });
@@ -1827,8 +1876,11 @@ export function createDialogueUI(
       document.addEventListener("keydown", onKey);
 
       choicesWindow.append(choicesEl);
+      if (frame) overlay.append(frame);
       overlay.append(choicesWindow, ...choiceBehindPortraits);
       if (system) applyWindowOpacity(choicesWindow, getEffectiveReadingPreferences(system.defaults).windowOpacity);
+      if (system && frame) applyWindowOpacity(frame, getEffectiveReadingPreferences(system.defaults).windowOpacity);
+      if (frame) beginEnter(frame, choicesProfile.enterMs, !wasOpen);
       beginEnter(choicesWindow, choicesProfile.enterMs, !wasOpen);
     });
   }
@@ -1850,6 +1902,8 @@ export function createDialogueUI(
     stageSlots = {};
     lastLineForcedBottom = false;
     previousBoxTop = undefined;
+    sessionPosition = undefined;
+    lastBoxPosition = undefined;
   }
 
   /** 퇴장 연출을 재생한 뒤 비운다. 이미 예약이 걸려 있으면 그대로 둔다. */
@@ -2319,6 +2373,35 @@ function dialoguePagesOverflowBody(bodyEl: HTMLElement, pages: readonly Dialogue
   }
 }
 
+/**
+ * 선택지 동안 자리를 지키는 대사 상자 「틀」. 질문이 있으면 질문을 본문으로 쓴 새 상자, 없으면 바로 앞 대사 상자의 사본
+ * (이름표·얼굴·글 그대로, 입력은 받지 않는다). 앞 대사도 질문도 없으면 빈 상자다 — 다음 대사가 이 자리·이 높이로 이어진다.
+ */
+function choiceFrame(request: DialogueChoicesRequest, previous: HTMLElement | undefined, look: DialogueLook): HTMLElement {
+  let frame: HTMLElement;
+  if (!request.prompt && previous) {
+    frame = previous.cloneNode(true) as HTMLElement;
+    frame.querySelectorAll(".dialogue-page-cursor, .continue-hint, .dialogue-log-button").forEach((node) => node.remove());
+    frame.classList.remove("page-ready", "dialogue-beat-shake");
+    for (const key of ["dialogueShake", "dialogueFlash", "dialogueCharReveal", "dialogueBeats"]) delete frame.dataset[key];
+  } else {
+    frame = dialogueBox("", "dialogue-choice-frame");
+    const content = el("div", { class: "dialogue-content" });
+    const column = el("div", { class: "dialogue-text-column" });
+    const body = el("div", { class: "body" });
+    if (request.prompt) renderDialogueSegments(body, parseDialogueText(request.prompt, request.textContext));
+    column.append(body);
+    content.append(column);
+    frame.append(content);
+    frame.dataset.dialogueStyle = look.style;
+  }
+  frame.classList.add("choices-frame");
+  frame.dataset.testid = "dialogue-choice-frame";
+  frame.removeAttribute("data-play-input-owner");
+  frame.setAttribute("aria-hidden", "true");
+  return frame;
+}
+
 function dialogueBox(extraClass: string, testId: string): HTMLElement {
   const box = el("div", {
     class: `dialogue-box${extraClass ? ` ${extraClass}` : ""}`,
@@ -2364,10 +2447,11 @@ function applyTextSettings(
   box: HTMLElement,
   request: DialogueSurfaceSettings,
   appliedPosition?: MessageWindowPosition,
-  forceBottom = false
+  forceBottom = false,
+  sessionAnchor?: MessageWindowPosition
 ): MessageWindowPosition {
   const settings = request.settings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS;
-  const position = appliedPosition ?? applyOverlayPosition(overlay, request, forceBottom);
+  const position = appliedPosition ?? applyOverlayPosition(overlay, request, forceBottom, sessionAnchor);
   box.classList.toggle("transparent", settings.format === "transparent");
   box.dataset.messageFormat = settings.format;
   box.dataset.messagePosition = position;
@@ -2406,17 +2490,36 @@ function applyVnLook(overlay: HTMLElement, look: ResolvedVnLook | undefined): Re
   return look;
 }
 
-function applyOverlayPosition(overlay: HTMLElement, request: DialogueSurfaceSettings, forceBottom = false): MessageWindowPosition {
+/**
+ * 창 자리 하나를 정한다. 순서: 초상 규칙(흉상·전신은 아래) → 열린 세션의 자리(가림 피하기가 켜진 줄만 물려받는다 —
+ * 저자가 못박은 자리는 그대로 따른다) → 가림 피하기 판정 → 저작한 자리.
+ */
+function applyOverlayPosition(
+  overlay: HTMLElement,
+  request: DialogueSurfaceSettings,
+  forceBottom = false,
+  sessionAnchor?: MessageWindowPosition
+): MessageWindowPosition {
   const settings = request.settings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS;
   const position: MessageWindowPosition = forceBottom
     ? "bottom"
-    : effectivePosition({
+    : sessionAnchor && settings.preventObscuringPlayer
+      ? sessionAnchor
+      : effectivePosition({
         settings,
         playerTileY: request.playerTileY,
         mapHeight: request.mapHeight,
         ...(request.playerScreenY === undefined ? {} : { playerScreenY: request.playerScreenY }),
       });
   overlay.classList.add(`position-${position}`);
+  // QA·디버그용 근거(무엇이 이 자리를 정했나). 화면에는 쓰이지 않는다.
+  overlay.dataset.dialoguePositionReason = forceBottom
+    ? "portrait"
+    : sessionAnchor && settings.preventObscuringPlayer
+      ? "session"
+      : !settings.preventObscuringPlayer
+        ? "fixed"
+        : request.playerScreenY !== undefined ? `auto:${request.playerScreenY.toFixed(2)}` : `auto-tile:${request.playerTileY}/${request.mapHeight}`;
   return position;
 }
 
@@ -2476,6 +2579,9 @@ function applyDialoguePresentation(box: HTMLElement, profile: DialoguePresentati
   }
 }
 
+/** 창이 덮는 화면 띠의 높이 비율(창 약 0.29 + 주인공 스프라이트 반 키 여유). 주인공 중심이 이 띠 안이면 가린다. */
+const DIALOGUE_OBSCURE_BAND = 0.36;
+
 function effectivePosition(model: {
   readonly settings: MessageWindowSettings;
   readonly playerTileY: number;
@@ -2484,9 +2590,16 @@ function effectivePosition(model: {
 }): MessageWindowPosition {
   if (!model.settings.preventObscuringPlayer) return model.settings.position;
   const maxY = Math.max(1, model.mapHeight - 1);
-  // 화면 속 높이를 알면(카메라를 거친 값) 가운데 구간 없이 주인공에서 먼 쪽으로 보낸다 — 대사 상자는 화면 약 40%를 덮으므로
-  // 가운데(35~65%)에 선 주인공이 그대로 가려지던 문제(2026-10-02 컷신 시험)를 막는다.
-  if (model.playerScreenY !== undefined) return model.playerScreenY <= 0.5 ? "bottom" : "top";
+  // 화면 속 높이를 알면(카메라를 거친 값) 저작한 자리가 주인공을 **실제로 덮을 때만** 반대쪽으로 보낸다.
+  // 예전 규칙(가운데 0.5 를 넘으면 위)은 화면 가운데 근처에 선 주인공에서 줄마다·세션마다 창을 위↔아래로 뒤집었다
+  // (2026-10-22 아스트라 호라이즌: 덮지도 않는 아래 창이 위로 올라갔다가 선택지에서 다시 아래로). 창 띠는
+  // DIALOGUE_OBSCURE_BAND(창 높이 약 30% + 주인공 반 키) — 그 안에 주인공 중심이 들어와야 가린다고 본다.
+  if (model.playerScreenY !== undefined) {
+    const y = model.playerScreenY;
+    if (model.settings.position === "top") return y < DIALOGUE_OBSCURE_BAND ? "bottom" : "top";
+    if (model.settings.position === "bottom") return y > 1 - DIALOGUE_OBSCURE_BAND ? "top" : "bottom";
+    return y <= 0.5 ? "bottom" : "top";
+  }
   const normalizedY = model.playerTileY / maxY;
   if (normalizedY <= 0.35) return "bottom";
   if (normalizedY >= 0.65) return "top";

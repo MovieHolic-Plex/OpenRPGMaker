@@ -129,12 +129,14 @@ export function mountPlayLoadingOverlay(
   const setProgress = (ratio: number | null): void => {
     if (ratio === null || !Number.isFinite(ratio)) {
       bar.classList.add("is-indeterminate");
+      root.classList.remove("has-progress");
       barFill.style.width = "";
       bar.dataset.progress = "";
       return;
     }
     const clamped = Math.max(0, Math.min(1, ratio));
     bar.classList.remove("is-indeterminate");
+    root.classList.add("has-progress");
     barFill.style.width = `${Math.round(clamped * 100)}%`;
     bar.dataset.progress = String(Math.round(clamped * 100));
     // Keep a soft floor so early stages still look alive.

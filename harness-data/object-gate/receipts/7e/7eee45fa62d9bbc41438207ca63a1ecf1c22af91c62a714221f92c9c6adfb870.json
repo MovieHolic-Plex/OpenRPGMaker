@@ -1,0 +1,369 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7eee45fa62d9bbc41438207ca63a1ecf1c22af91c62a714221f92c9c6adfb870",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "fire watchtower",
+ "label": "jp-inaka-r5:inaka-fire-watchtower",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 21,
+  "darkV5": 34,
+  "nearBlackEdge": 0.19,
+  "opaqueTiles": 8
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "conical gray roof",
+      "rows": "0-10",
+      "evidence": "c",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "red cabin and wooden deck band",
+      "rows": "12-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs and ladder",
+      "rows": "28-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 52,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a sloped plane. Its width grows from 3 px at row 0 to 32 px at row 11, which reads as a pyramid or cone roof seen from above. Row 11 is a light edge line (L=184) and rows 12-13 are dark eave shadow (L=71). Below that is a tall front face: the red cabin with posts at rows 12-27, then the legs with a central ladder at rows 28-63. No isometric side face is drawn. The roof covers the cabin, so no major part is missing a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, thin lattice tower, so I judged it mostly by eye and against the measured facts. It has 19 colours per 16x16 tile against 18 and 11 for the references, so it is at or above both on tile density. Flat-fill coverage is 0%, the same as both references. None of its dark edge pixels are neutral (0%, versus 7% and 9% for the references), so the outline is tinted. The dark red-brown beside the red frame and the dark grey-blue beside the cone roof read as material-toned rather than a black sticker line. The total of 42 distinct colours is below the references' 185 and 66, but that fits a piece a fraction of their size. The cone roof shows about 4 grey steps with a highlight side, and the red struts and wooden platform have light, mid and dark tones plus some grain. This is slightly shallower than the references' 5-6 step tile ramps, and the lattice is sparse. I judge it acceptable next to the references and not flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20314
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "conical roof",
+      "rows": "0-10",
+      "evidence": "c",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "cabin and railing platform",
+      "rows": "12-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "splayed legs with ladder",
+      "rows": "28-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 52,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile grows from 3 px at row 0 to 32 px at row 11, so a sloped gray roof plane covers rows 0-10. A light 1-row edge line at row 11 (L=184) ends it, and dark eave shadow follows in rows 12-13. Below that, the red-railed cabin front (rows 14-27) and the legs with a central ladder (rows 28-63) form a tall front face. The roof plane is the top surface of the main structure. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small open-frame tower: a grey conical roof, a wooden platform band and a red lattice frame with a ladder. It is much smaller than the two house references and has no walls, so it is only loosely the same kind, but it is still a whole building. The measured facts favour it: 19 distinct colours per tile against 18 and 11 for the references, 0% flat-fill coverage, and 0% neutral dark edge pixels. The outlines therefore carry a tint, which fits the dark red-brown beside the red struts and a dark tone beside the roof. The total of 42 colours is low next to 185 and 66, but the piece is small and sparse, so that count is not held against it. By eye, the roof and red frame each show about 4 lightness steps, with highlights on the cone and struts and visible grain on the platform. That is a little below the references' 5-6 steps and their scalloped tile texture. It does not look like a flat sticker, and a careful artist would plausibly accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19771
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "conical/pyramid roof",
+      "rows": "0-10",
+      "evidence": "c",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "red beam band and wooden platform cabin (front face)",
+      "rows": "12-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs and ladder (open support)",
+      "rows": "28-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 52,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof widens steadily from 3px at row 0 to 32px at row 11. It reads as a sloped roof plane with light and dark facets. A 1-row light edge line at row 11 (L=184) is followed by dark eave shadow at rows 12-13 (L=71). Below that are the red beam band (rows 12-18), the brown platform front (rows 19-27) and a long open leg/ladder section (rows 28-63), so the front face is well over 3 rows. The roof is the top surface of the main structure, and the platform below it sits under that roof as a front face. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, thin tower, so I judged density mostly by eye. The measured facts support it: 19 colours per full tile against 18 and 11 for the references, 0% flat-fill coverage, and 0% neutral dark edge pixels, so the outlines are tinted. The visible outlines are dark red-brown beside the red scaffold and dark grey-blue beside the roof cone, not a uniform black line. Its 42 total colours are fewer than the references' 66 and 185, but that fits a piece this small. The red legs, cross-braces and ladder use about 3-4 tones with darker shadow sides. The roof cone and platform band carry some light-to-dark steps and a few texture dots, though less tile scalloping than the references' roofs. It is a little shallower than the references in step count and texture, but it does not look flat or sticker-like beside them, and a careful artist would accept it as a small themed building.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24660
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pyramid roof",
+      "rows": "0-11",
+      "evidence": "c",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "cabin and platform body",
+      "rows": "12-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs and ladder",
+      "rows": "28-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 52,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The gray pyramid roof widens from 3 px at row 0 to 32 px at row 11. Row 11 is a light front-edge line (L=184), followed by dark eave shadow at rows 12-13. That makes the roof a sloped top surface of about 11 rows. Below it, the red cabin and brown platform band (rows 12-27) and the legs and ladder (rows 28-63) form the front face, well over 3 rows. The roof is a real plane, not just a front-facing strip. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, sparse tower: a grey conical roof, a platform band, and red braced legs with a ladder. The facts support it. It has 19 colours per tile against 18 and 11 for the references, 0% flat-fill coverage, and 0% neutral dark edge pixels, so the outline carries a tint. By eye, the outline is dark red-brown beside the red timber and dark grey-blue beside the roof, not a uniform black sticker line. The roof and legs show about 4 lightness steps with highlight and shadow sides, and there is some grain and cross-bracing detail. It has fewer total colours (42, against 66 and 185) and less texture than the tile-scalloped roofs and stone-by-stone walls of the references, so I rate it slightly lower in density. That gap comes mostly from the object being thin and small. Next to the references it still reads as the same craft level, not flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 28200
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.453Z",
+ "cells": {
+  "16": [
+   "55b1a27bfadc9e15",
+   "5cde4190c9e9a8b2",
+   "6fe9aa5e96177934",
+   "9ad149706c9c9f02",
+   "c4a0cf0febf5a2c0",
+   "d84a340d7d4f5311",
+   "ed41b83e6af1f86e",
+   "f68c53c3a9dc8551"
+  ],
+  "24": [
+   "0714e6a359bca4c8",
+   "0b039505a1b898a5",
+   "177052dfbea2439a",
+   "1aa620229a5858da",
+   "215b46fa9da12db6",
+   "246c85b1d8257c7c",
+   "30d6c8be5ab4082d",
+   "37ff13b34a747e91",
+   "3d7f35cee5b5e1b2",
+   "40c5f5d7ecf07dd7",
+   "46867c9c32598ad1",
+   "504365b5e76e3051",
+   "5350383a493353ca",
+   "5ef6528283a2004e",
+   "67d536666b3f4390",
+   "74347b791c4c6ad6",
+   "76aeb9deb06e03c9",
+   "7a4955b0ed32dcd7",
+   "83295de162eaea09",
+   "87d2af5599a0fc01",
+   "905313c305394d16",
+   "943273d909adcf2d",
+   "9829ba22c6e2727b",
+   "9d53dd3421fa9dac",
+   "9ec660db3157e4c3",
+   "9f60cc53b8ece50e",
+   "a405d2d7a621bbf4",
+   "b0a9beb7210d91e2",
+   "b8e63509ef1e7f8e",
+   "cb5d99677c99992b",
+   "d626bc6b3ed33db2",
+   "dee22f83d76c5571",
+   "e929921f66b54f13",
+   "ead5abb6e1080cea",
+   "ecdc9ca6f8f237df",
+   "fd6d2ebfcd9f2995"
+  ],
+  "32": [
+   "29a779c7ccb310eb",
+   "3312b9dc6c5e4be6"
+  ],
+  "48": [
+   "1299eca8fee86dfc",
+   "3260dafd7d491537",
+   "4a0e2def742a34e4",
+   "56f46674b1c589ef",
+   "5cab0cd5ab5ab767",
+   "698a6fd22c3add26",
+   "726e57ece66e55bf",
+   "7a335dbb7497a26e",
+   "8364fa712d4e20ff",
+   "8787a0d52e14144a",
+   "aece2dfadbfe95e6",
+   "edc9c55668ea946c"
+  ]
+ }
+}

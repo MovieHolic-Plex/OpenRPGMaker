@@ -2,6 +2,34 @@
 
 # 팀 프로젝트 호스트 (2026-09-18)
 
+## 사람 팀 협업은 접었다 — 저장 호스트는 그대로 (2026-10-21)
+
+**여러 사람이 여러 컴퓨터에서 한 프로젝트를 같이 편집하는 「팀 협업」은 아직 지원하지 않는다(@deprecated).**
+코드는 지우지 않고 스위치 하나 뒤에 숨겼다: `electron/shared/teamCollab.ts` 의 `TEAM_COLLAB_ENABLED = false`.
+되살릴 때는 이 값만 `true` 로 바꾼다. 아래 이 문서의 「팀 협업 시작」·「팀에 참여」·초대·권한 절은 그 스위치를 켰을 때의 기록이다.
+
+| 구분 | 무엇 | 지금 |
+|---|---|---|
+| 숨김 | 파일 메뉴 「팀 협업 시작 / 관리」·「팀에 참여…」·「팀 호스트 중지」(`electron/main/main.ts`) | 메뉴에 없음 |
+| 숨김 | 시작 화면 위 막대 「팀에 참여」, 참여 칸·「최근 참여한 팀」(`src/start/startScreen.ts`, `#join` 은 홈으로) | 단추 없음 |
+| 숨김 | 편집기 팀 연결 막대(`.oprn-team-session-bar`, 팀 이름·팀원 이름·「팀 관리 ↗」, `src/editor/teamSession.ts`) | 호스트 연결이 끊겼을 때만 「호스트 연결 끊김 · 편집은 계속됩니다. 다시 연결되면 자동 저장합니다」로 뜬다(막지 않는 안내) |
+| 숨김 | 호스트 페이지 `/__oprn/team` 의 팀원 초대·팀 이름 바꾸기(`electron/serve/teamPage.ts`), 로그인 페이지의 「팀에 참여하기」 문구 | 초대 칸 숨김, 로그인은 「호스트에 접속하기」 |
+| 막힘 | IPC `oprn:start.joinTeam`·`oprn:start.recentTeams` | 「팀 협업은 아직 지원하지 않습니다」·빈 목록 |
+| @deprecated 표시만 | `teamWindow.ts`, `normalizeTeamUrl`, `listRecentTeams`·`rememberRecentTeam`, `JoinTeamResult`·`RecentTeamEntry`, 채널 `teamInvite`·`teamRevoke`·`teamRename`, `teamAccess.ts` 역할, `teamReadOnlyUi.ts`, QA `scripts/qa/electronTeamJoin*.mjs`·`team-*-shots.mjs` | 동작 그대로(스위치를 켜면 바로 쓴다) |
+| 유지 | 저장 호스트: Electron IPC·`npm run host`/`npm start` HTTP 의 `project.sqlite` + `assets/`, 공통 서비스 `createStoreHandlers` | 그대로 |
+| 유지 | 리비전 폴링·`refreshFromHost`, 3-way 저장 병합 `core/teamMerge.ts`, 접속 코드(소유자 로그인)·백업 | 그대로 |
+| 꺼짐 | 맵 lease(`mapEditLocks.ts` `checkoutMapForEditing`·`canEditMap`, 호스트 `oprn:team.lock`, 저장 때 임대 충돌 검사) | 임대를 잡지 않고 편집·저장을 막지 않는다. 동시 저장은 기준 sha·3-way 병합이 맡는다 |
+| 꺼짐 | 역할 게이트 `canWriteTeamProject`(store·도구·자료집·스토어 넣기), 호스트의 「보기 전용」 쓰기 거절 | 언제나 쓸 수 있다. 호스트는 옛 viewer 를 editor 로 본다(`sessions.ts` `member`) |
+| 유지(범위 밖) | AI 조수 팀(팀장·팀원 에이전트, `/team`, teamBoardState, 맵 묶음 병합), 전투 파티, 팀·학교 스토어 주소 | 그대로 |
+
+예전에 팀 모드로 열었던 프로젝트도 평소처럼 열린다. 1인 팀의 owner 는 지금도 owner 라 아무것도 막히지 않는다.
+**팀 관련 무엇도 편집을 막지 않는다(2026-10-21, 사용자 신고).** 예전엔 호스트가 재시작되거나 연결이 끊기면 역할 읽기가 실패해
+`role=null` → `canWriteTeamProject()` 가 false → store 의 모든 쓰기가 조용히 거절됐고, 맵은 임대를 못 잡아 「호스트 연결을 확인하세요」·
+「편집 권한을 확인하고 있습니다」로 칠하기가 막혔다. 남은 다른 탭의 90초 임대도 「호스트님이 편집 중입니다」로 막았다.
+스위치가 꺼져 있으면 `canWriteTeamProject`·`canEditMap` 은 언제나 true, 맵 임대는 잡지 않고, 호스트도 임대 충돌·보기 전용 거절을 하지 않는다.
+연결이 끊긴 동안의 편집은 메모리에 남고 자동 저장 재시도(10s→120s 백오프)가 다시 연결되면 저장한다.
+맵 하나에 조수 한 명 규칙(맵별 AI 대기열)은 이것과 별개라 그대로다. 잠든 팀 코드의 테스트는 `vi.mock` 으로 스위치를 켜고 검사한다.
+
 ## 소유와 실행 위치
 
 `export-player/` 아래 SDK 파일은 HTML도 디스크 바이트 그대로 제공한다(2026-10-03).
@@ -29,10 +57,11 @@ SQLite 파일 위치와 브라우저 UI 위치는 독립적이다. 원격 접속
 
 ## 실행
 
-브라우저 팀 연결 상태는 `teamSession.ts`의 `.oprn-team-session-bar`다.
+브라우저 팀 연결 상태는 `teamSession.ts`의 `.oprn-team-session-bar`다(2026-10-21 부터 `TEAM_COLLAB_ENABLED=false` 이면 연결이 끊겼을 때만 보인다).
 높이/지형 도구 막대는 이 배지가 있으면 아래에서 64px 띄운다(2026-10-03).
 배지가 표면 모드의 높이 버튼을 가리던 실제 호스트 겹침을 막으며 팀 관리 링크는 유지한다.
 
+(@deprecated 2026-10-21 — 아래 메뉴는 `TEAM_COLLAB_ENABLED` 를 켜야 보인다.)
 Electron에서 프로젝트를 연 뒤 **파일 → 팀 협업 시작 / 관리**. 앱이 같은 session registry를
 사용하는 HTTP 호스트를 실행한다. 기본은 코드 없이 주소로 바로 접속한다.
 
@@ -427,6 +456,17 @@ node scripts/install-project-host-service.mjs --project-dir /home/main/.local/sh
 `workspace_sessions`에 12시간 만료와 함께 저장해 재시작 후에도 로그인 상태를 유지한다.
 로그아웃은 해당 세션을 삭제하며 매 요청에서 회원 취소 여부를 확인한다. 기존 메모리 세션은
 이번 전환 때 한 번 재로그인이 필요하다. 접속 코드·쿠키 원문은 로그/증거/커밋에 남기지 않는다.
+
+### 서버 재시작 뒤 열린 페이지의 옛 토큰 (2026-10-21)
+
+로컬 서버는 실행마다 브리지 토큰(`x-oprn-bridge-token`)과 동반 서비스 토큰(`x-oprn-companion-token`)을 새로 만든다.
+예전에는 서버가 다시 시작되면 이미 열린 페이지가 HTML 에 박힌 옛 토큰을 계속 실어 저장(`/__oprn/bridge`)과
+AI(`/auth/*`·`/v1/*`)가 새로고침 전까지 전부 403 이었다(사용자 신고 「한 번 오류 뒤 ChatGPT 연결이 계속 실패」).
+
+- 서버: `GET /__oprn/handshake` → `{ token, companionToken }`(호스트·출처 검사·팀 로그인 뒤, `no-store`). 노출 범위는 같은 값을 싣는 페이지 HTML 과 같다. 공유 호스트는 `companionToken: null`(서버가 붙인다).
+- 브리지(`electron/browser/bridge.ts`): 403 이면 `refreshConnection()` 으로 한 번 다시 받아 같은 요청을 한 번 다시 보낸다(`keepalive` 제외). `window.oprn.refreshConnection` 으로도 내보낸다.
+- 조수 쪽 한 입구: `src/ai/companionConnection.ts` 의 `fetchCompanion`. 동반 서비스 호출(조수·Pi 실행·체크포인트·그림·월드맵·연결 시험·로그인 상태)은 모두 여기를 지난다 — 요청마다 지금 토큰을 싣고, 401/403 이면 한 번 다시 맺어 토큰이 바뀌었을 때만 다시 보낸다. 그래도 실패하거나 경로가 404 면 한국어 알림(토스트 키 하나)에 「다시 연결」(`companion-reconnect`) 단추를 띄우고, 다음 성공 응답에서 걷는다. 남는 상태는 진행 중인 다시 맺기 약속 하나뿐이다.
+- 재현·확인: `node scripts/qa/chatgpt-connection-repro.mjs --restart-serve`(서버를 직접 두 번 띄워 옛 토큰 403 → handshake → 200, 모델 호출 없음).
 
 ## 내부 웹 기본 접속 (2026-09-18)
 

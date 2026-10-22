@@ -1,0 +1,382 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7253b3ee11234dd5d6cb5b0058385540f5652f98344d98e9dface84da98c8a18",
+ "width": 48,
+ "height": 48,
+ "kind": "container",
+ "name": "유닛 배스(욕조+샤워 패널)",
+ "label": "jp_city/interior_house3/unit-bath",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 19,
+  "darkV5": 91,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bathtub rim and opening with water inside",
+      "rows": "16-33",
+      "evidence": "d",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tub front face with three panels",
+      "rows": "35-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right-hand fixture panel top band",
+      "rows": "28-31",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shower pole, head, hose and shelf",
+      "rows": "3-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tub is the main body. Its white rim and gray inner wall (rows 16-22) frame a blue water area (rows 23-29), seen from above inside the opening (evidence d). Light bands at rows 31-33 end in a gray front-edge line at row 34. Below it is a 13-row front face (rows 35-47) of three recessed panels with a dark base strip. The right-hand fixture block has a top band at rows 28-31 with an edge line at row 31, then a front face with fixtures. The shower pole and head above it are decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per 16x16 tile, which falls between the hedge (9) and the cheese stall (17) and well roofed (20), and well above the sparse bench and lamp. Near-flat coverage is 0%, so there are no big single-colour fills. The dark edge pixels carry 0% neutral share, so the outline leans blue-grey against the white and blue body rather than being a black sticker line. The white enamel body shows about 5 steps of light and shadow, with panel edges, a blue screen and fixture details that add information. Texture is more graphic and less grainy than the stall or well, which keeps it at 'some' rather than 'rich'. Overall it sits at the same craft level as the references, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17814
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tub rim and opening with water (inner basin)",
+      "rows": "16-33",
+      "evidence": "d",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": "35-36"
+     },
+     {
+      "part": "tub front panel with three recessed compartments",
+      "rows": "35-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right side control cabinet top ledge",
+      "rows": "28-31",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shower pole, head and shelf rack on the right",
+      "rows": "3-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the tub. Rows 16-22 are the rim and rows 23-30 show a blue water surface inside the opening (evidence d). A light front rim runs through rows 31-33 and ends in a darker edge line at row 34. Below it, rows 35-47 form the front face, with three recessed panels and a dark base strip. The side cabinet on the right has a thin top ledge at rows 28-31 and a face-on control panel below it. The shower pole and head are on the right and count as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate shows 14 visible tones per tile, which is above the hedge (9) and a little below the stall (17) and well (20). Near-flat coverage is 0%, and 0% of its dark edge pixels are neutral, so the outlines carry a cool tint rather than being sticker-style near-black. The white and grey porcelain body steps through about 4 lightness levels (highlight, light, mid, shade). The blue control panel, tap and shower fixtures add small-scale detail, and the large white areas are broken up rather than being one flat colour. It is somewhat cleaner and less grainy than the stall and well, with 27 total colours against 38-40, and the porcelain has fewer steps than the 5-6 Beodeul uses. That is not enough to look thin or flat next to the references, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21872
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bathtub rim and opening with water (main body)",
+      "rows": "16-30",
+      "evidence": "d",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": "20-22"
+     },
+     {
+      "part": "tub front rim band",
+      "rows": "31-33",
+      "evidence": "a",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side shower-panel cabinet top",
+      "rows": "28-30",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cup with brushes on shower holder",
+      "rows": "7-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shower pole and arm",
+      "rows": "3-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tub is the main body. Rows 16-19 are the back rim and rows 20-22 are the dark inner shadow. Rows 23-29 show blue water inside the opening (evidence d), and rows 31-33 form the front rim. A front-edge line at row 34 separates the top from the front face, which runs from row 35 to row 47 with three panels and a dark base strip. The side cabinet on the right has a top band at rows 28-30 with an edge line at row 31, then a front face below. The shower pole is a thin fixture, not a major volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per 16x16 tile, which is above the hedge (9) and close to the stall (17) and well (20). Near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outlines carry a tint. By eye they look like a dark blue-grey beside the white and blue body, not a uniform black sticker line. The porcelain, tub rim and control panel each use about 4 steps (white, light grey-blue, mid, dark), with small screen and button details, a faucet and a shower fixture. That is a little fewer than Beodeul's 5-6 steps and the texture is milder, since smooth porcelain has no grain. It still reads as a hand-shaded piece with no large flat fills, and it would sit next to the references without looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23000
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tub rim and opening with water",
+      "rows": "16-33",
+      "evidence": "d",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tub front face with three panels",
+      "rows": "35-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right shower-panel cabinet top band",
+      "rows": "28-31",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shower head and pipe fixture",
+      "rows": "3-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the tub. Rows 16-22 are the rim and the inner back wall. Rows 23-30 show blue water inside the opening, which is evidence (d). Rows 31-33 are the light front rim, and row 34 is a darker front-edge line. Below it, rows 35-47 are a 13-row front face split into three panels. The right-hand panel unit has a 3-row top band at rows 28-31 that ends in an edge line, and its front face is below that. The shower head and pipe at top right are thin fixtures, so I counted them as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a pale tub with a control panel and a shower fixture on the right. The primary facts support it: 14 visible tones per 16x16 tile sits between the hedge (9) and the stall (17) and well (20). Near-flat coverage is 0%, so no 5x5 flat fills. Dark edge pixels are 0% neutral, so the outline leans blue-grey beside the white and blue surfaces rather than being a black sticker line. The white tub body and panel show about 4 lightness steps (highlight, white, light grey-blue, shadow, dark edge), a little under the 5-6 on the references. Some texture appears in the panel details and rim shading, but less grain than the well or stall. Overall density is slightly below the best references but not shallow, and an artist could place it next to them without it looking much flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18302
+  }
+ ],
+ "decidedAt": "2026-10-21T03:39:44.783Z",
+ "cells": {
+  "16": [
+   "07651c28eb1e9290",
+   "59e2c2328ebb01e8",
+   "732761ad4aaf878f",
+   "7e607ac599da522d",
+   "8873d4385f530700",
+   "a565937cf903d6fd",
+   "dc6f8f045285c444"
+  ],
+  "24": [
+   "1b8552e9639f4934",
+   "426b271d473670c0",
+   "68756b865ce5f1d7",
+   "bc134bbca71de782"
+  ],
+  "32": [
+   "0a31ea27ec78d765",
+   "102a82a755910976",
+   "20f4b911ed492f22",
+   "30a99c43b357b025",
+   "33a4128b7de1b79f",
+   "4926daa1e199239a",
+   "5a189217ce312bda",
+   "6b20c90978a06f1d",
+   "6cd025cee08e080e",
+   "8c531d598ec15641",
+   "96a00102d468b327",
+   "b49f7fb16fc2ae26",
+   "b8eda121fb2db0c6",
+   "c1dffdc6a9c34b7b",
+   "ce0f74489eb1c6cc",
+   "deeeb30c900c0c35",
+   "e1aebf897a05495c",
+   "e488dea4736c9a44",
+   "e4a75d9186575b26",
+   "e9db1906182c302f",
+   "ea41815670bcaef9"
+  ],
+  "48": [
+   "8a93aca0ec64084d"
+  ]
+ }
+}

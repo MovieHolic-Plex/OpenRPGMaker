@@ -84,7 +84,10 @@ const RETRO_EXTENSION_CLASS_IDS: readonly string[] = [
  */
 export function ensureRetroRosterRecords(project: {
   database: RetroRosterDatabase;
+  flags?: Record<string, unknown>;
 }): boolean {
+  // 슬림 스타터(빈 프로젝트)는 로스터를 다시 채우지 않는다 — slimStarter.ts.
+  if (project.flags?.slimStarter === true) return false;
   const db = project.database;
   const wantedClassIds = new Set<string>([...RETRO_EXTENSION_CLASS_IDS, ...rosterClassIds()]);
   const party = defaultPartyRecords();

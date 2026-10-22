@@ -171,7 +171,7 @@ function renderLoginModal(mode: LoginMode, onIdentityChanged?: () => void): void
             class: "team-login-head",
             children: [
               el("h2", { text: `${PRODUCT_BRAND} 로그인` }),
-              el("p", { text: "목업 신원으로 팀 작업 표시를 시작합니다." }),
+              el("p", { text: "커밋 기록에 남길 이름을 정합니다." }),
             ],
           }),
           form,

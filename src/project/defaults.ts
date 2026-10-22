@@ -60,6 +60,7 @@ export {
   singleNodeTree,
 } from "./defaults/defaultMaps";
 export { createBlankProject, ensureSwitchVariableSlots } from "./defaults/blankProject";
+export { createStarterBlankProject, isSlimStarterProject, SLIM_STARTER_FLAG } from "./defaults/slimStarter";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 이 배럴은 **가벼운 것만** 내보낸다. 데모·쇼케이스 프로젝트/맵 빌더와 《천공의 계단》은

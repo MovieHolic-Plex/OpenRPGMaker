@@ -94,6 +94,16 @@
     "이층침대"
    ]
   },
+  "study": {
+   "ko": "서재",
+   "alias": [
+    "書斎",
+    "서재",
+    "서재 방",
+    "책상 방",
+    "study"
+   ]
+  },
   "oneroom": {
    "ko": "원룸 방",
    "alias": [
@@ -1857,53 +1867,18 @@
   [
    "house-1f",
    "jp_house",
-   "washitsu",
-   [
-    [
-     "tokonoma",
-     1
-    ],
-    [
-     "butsudan",
-     1
-    ],
-    [
-     "oshiire",
-     1
-    ],
-    [
-     "shoji-window",
-     1
-    ],
-    [
-     "zataku",
-     1
-    ],
-    [
-     "zabuton",
-     4
-    ],
-    [
-     "andon",
-     1
-    ],
-    [
-     "ikebana",
-     1
-    ],
-    [
-     "fusuma-open",
-     1
-    ]
-   ]
-  ],
-  [
-   "house-1f",
-   "jp_house",
    "toilet",
    [
     [
      "toilet",
+     1
+    ],
+    [
+     "window-sash-small",
+     1
+    ],
+    [
+     "toilet-handwash",
      1
     ],
     [
@@ -1912,18 +1887,6 @@
     ],
     [
      "toilet-slippers",
-     1
-    ],
-    [
-     "toilet-paper",
-     1
-    ],
-    [
-     "toilet-handwash",
-     1
-    ],
-    [
-     "door-open-toilet",
      1
     ]
    ]
@@ -1939,7 +1902,7 @@
     ],
     [
      "kitchen-worktop",
-     4
+     3
     ],
     [
      "kitchen-sink",
@@ -1950,15 +1913,23 @@
      1
     ],
     [
+     "microwave-rack",
+     1
+    ],
+    [
      "cupboard",
      1
     ],
     [
-     "trash-bins",
+     "window-sash",
      1
     ],
     [
-     "window-sash",
+     "calendar",
+     1
+    ],
+    [
+     "genkan-mat",
      1
     ],
     [
@@ -1970,27 +1941,51 @@
   [
    "house-1f",
    "jp_house",
-   "bath",
+   "hall",
    [
     [
-     "bathtub",
+     "door-open-western",
      1
     ],
     [
-     "shower-faucet",
+     "door-open-toilet",
      1
     ],
     [
-     "bath-mirror",
+     "stairs-up-wood",
      1
     ],
     [
-     "bath-stool",
+     "wall-clock",
      1
     ],
     [
-     "bath-bucket",
+     "houseplant",
+     2
+    ],
+    [
+     "bookshelf",
      1
+    ],
+    [
+     "intercom",
+     1
+    ],
+    [
+     "ht-slipper-rack",
+     1
+    ],
+    [
+     "slippers",
+     1
+    ],
+    [
+     "genkan-mat",
+     1
+    ],
+    [
+     "agarikamachi",
+     3
     ]
    ]
   ],
@@ -2000,7 +1995,15 @@
    "dressing",
    [
     [
+     "door-side-sliding",
+     1
+    ],
+    [
      "washbasin",
+     1
+    ],
+    [
+     "dresser-low",
      1
     ],
     [
@@ -2012,65 +2015,15 @@
      1
     ],
     [
+     "window-sash-small",
+     1
+    ],
+    [
      "bath-mat",
      1
     ],
     [
-     "door-side-sliding",
-     2
-    ]
-   ]
-  ],
-  [
-   "house-1f",
-   "jp_house",
-   "hall",
-   [
-    [
-     "stairs-up-wood",
-     1
-    ],
-    [
-     "wall-clock",
-     1
-    ],
-    [
-     "calendar",
-     1
-    ],
-    [
-     "agarikamachi",
-     5
-    ],
-    [
-     "genkan-mat",
-     1
-    ],
-    [
-     "slippers",
-     1
-    ]
-   ]
-  ],
-  [
-   "house-1f",
-   "jp_house",
-   "genkan",
-   [
-    [
-     "getabako",
-     1
-    ],
-    [
-     "umbrella-stand",
-     1
-    ],
-    [
-     "shoes-pair",
-     1
-    ],
-    [
-     "genkan-door",
+     "h2-laundry-pole",
      1
     ]
    ]
@@ -2080,6 +2033,10 @@
    "jp_house",
    "ldk",
    [
+    [
+     "ac-unit",
+     1
+    ],
     [
      "tv-board",
      1
@@ -2093,36 +2050,16 @@
      1
     ],
     [
-     "floor-lamp",
-     1
-    ],
-    [
-     "chair-dining-s",
-     2
-    ],
-    [
-     "chair-dining-n",
-     2
-    ],
-    [
-     "bookshelf",
-     1
-    ],
-    [
      "houseplant",
-     1
-    ],
-    [
-     "ac-unit",
-     1
-    ],
-    [
-     "door-side-western",
      1
     ],
     [
      "rug",
      1
+    ],
+    [
+     "chair-dining-e",
+     2
     ],
     [
      "dining",
@@ -2131,40 +2068,59 @@
    ]
   ],
   [
-   "house-2f",
+   "house-1f",
    "jp_house",
-   "bedroom",
+   "genkan",
    [
     [
-     "bed-double",
+     "getabako-narrow",
      1
     ],
     [
-     "bed-side-table",
+     "umbrella-stand",
      1
     ],
     [
-     "dresser-low",
+     "shoes-pair",
+     2
+    ],
+    [
+     "genkan-door",
+     1
+    ]
+   ]
+  ],
+  [
+   "house-1f",
+   "jp_house",
+   "bath",
+   [
+    [
+     "kr-shower-door",
      1
     ],
     [
-     "wardrobe",
+     "bathtub",
      1
     ],
     [
-     "mirror-stand",
+     "shower-faucet",
      1
     ],
     [
-     "curtain-window",
+     "bath-mirror",
      1
     ],
     [
-     "ac-unit",
+     "sc-sunoko",
+     5
+    ],
+    [
+     "bath-stool",
      1
     ],
     [
-     "rug",
+     "bath-bucket",
      1
     ]
    ]
@@ -2179,11 +2135,7 @@
      1
     ],
     [
-     "toilet-mat",
-     1
-    ],
-    [
-     "toilet-slippers",
+     "window-sash-small",
      1
     ],
     [
@@ -2191,7 +2143,11 @@
      1
     ],
     [
-     "toilet-handwash",
+     "toilet-mat",
+     1
+    ],
+    [
+     "toilet-slippers",
      1
     ]
    ]
@@ -2218,15 +2174,23 @@
      1
     ],
     [
+     "hs-toy-shelf",
+     1
+    ],
+    [
+     "wardrobe",
+     1
+    ],
+    [
      "window-sash",
+     2
+    ],
+    [
+     "hs-kids-mat",
      1
     ],
     [
-     "closet-doors",
-     1
-    ],
-    [
-     "low-table",
+     "floor-lamp",
      1
     ],
     [
@@ -2241,7 +2205,11 @@
    "hall",
    [
     [
-     "light-switch",
+     "door-side-western",
+     2
+    ],
+    [
+     "door-open-toilet",
      1
     ],
     [
@@ -2250,22 +2218,95 @@
     ],
     [
      "houseplant",
+     2
+    ]
+   ]
+  ],
+  [
+   "house-2f",
+   "jp_house",
+   "washitsu",
+   [
+    [
+     "door-side-sliding",
      1
     ],
     [
-     "door-open-toilet",
+     "tansu",
      1
     ],
     [
-     "door-open-western",
+     "tokonoma",
+     1
+    ],
+    [
+     "zabuton",
+     3
+    ],
+    [
+     "zataku",
+     1
+    ]
+   ]
+  ],
+  [
+   "house-2f",
+   "jp_house",
+   "bedroom",
+   [
+    [
+     "wardrobe",
+     1
+    ],
+    [
+     "bed-side-table",
      2
     ],
     [
-     "window-sash",
+     "bed-double",
      1
     ],
     [
-     "laundry-rack",
+     "dresser-low",
+     1
+    ],
+    [
+     "ac-unit",
+     1
+    ],
+    [
+     "rug",
+     1
+    ],
+    [
+     "slippers",
+     1
+    ],
+    [
+     "floor-lamp",
+     1
+    ]
+   ]
+  ],
+  [
+   "house-2f",
+   "jp_house",
+   "study",
+   [
+    [
+     "door-side-western",
+     1
+    ],
+    [
+     "desk-study",
+     1
+    ],
+    [
+     "bookshelf",
+     1
+    ],
+    [
+     "desk-chair-n",
      1
     ],
     [
@@ -2273,7 +2314,11 @@
      1
     ],
     [
-     "calendar",
+     "cushion-floor",
+     1
+    ],
+    [
+     "houseplant",
      1
     ]
    ]

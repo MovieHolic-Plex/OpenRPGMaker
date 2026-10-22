@@ -18,6 +18,8 @@ export const OP_KINDS = [
   "audioAction",
   // 맵 타일을 실제 캔버스 위에서 누른다(클릭 이동 #32, masterpiece-field).
   "clickTile",
+  // 키를 누르며 JS 조건이 설 때까지 되풀이(first-love 시나리오).
+  "pressUntilJs",
   // 인라인 CSS 사용자 속성 값 대기(ct-engine: 적 이동 뒤 렌더 좌표).
   "waitForStyleVar",
   // 하위 op 묶음을 조건이 설 때까지 되풀이(ct-engine: 적이 쓰러질 때까지 공격).
@@ -73,6 +75,7 @@ export const OP_KINDS = [
   "waitForClass",
   // 페이지 안에서 함수 본문을 실행하고 결과를 JSON 파일로 남긴다(레이아웃 측정용 탐침).
   "evalToFile",
+  "captureCheckpoint",
   // 체공(jump/dropIn). 이동 경로를 주인공에게 직접 물리고 리프트를 조건으로 기다린다 —
   // Phaser 의 displayOrigin 계약은 jsdom 으로 재현되지 않아 브라우저에서만 증명된다.
   "playerRoute",
@@ -595,6 +598,13 @@ export function evaluateExpect(expected, observed) {
           + ` — resourceId=${playerSpriteResourceId ?? "없음"}`,
       );
     }
+  }
+  // 타일·이벤트 그림까지: 지워진 타일셋을 가리키는 맵은 플레이어만 멀쩡하고 바닥 전체가 __MISSING 이다(#2586).
+  if (expected.noMissingTextures) {
+    const health = observed.missingTextures;
+    if (!health) failures.push("noMissingTextures: 텍스처 관측 훅 없음");
+    else if (health.textured === 0) failures.push("noMissingTextures: 그려진 텍스처 객체가 0개다");
+    else if (health.missing > 0) failures.push(`noMissingTextures: __MISSING 텍스처 ${health.missing}/${health.textured}개`);
   }
   // 체공 판정. liftPx 는 원점 채널을 되읽은 값이고, playerSpriteY 는 접지선이다.
   // 체공 중에도 접지선이 타일 경계에 남아야 깊이·카메라·조명이 깨지지 않는다.

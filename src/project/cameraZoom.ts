@@ -27,31 +27,35 @@ export const DEFAULT_CAMERA_ZOOM = 1;
  * 저작값 정리. 유한하지 않거나 1 이면 undefined(= 필드 제거), 범위를 넘으면 클램프한다.
  * 1 을 지우는 이유는 playResolution 이 기본값을 생략으로 저장하는 것과 같다.
  */
-export function normalizeCameraZoom(value: unknown): number | undefined {
+export function normalizeCameraZoom(
+  value: unknown,
+  options: { readonly keepDefault?: boolean } = {},
+): number | undefined {
   if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
   const clamped = Math.min(CAMERA_ZOOM_LIMITS.max, Math.max(CAMERA_ZOOM_LIMITS.min, value));
-  if (clamped === DEFAULT_CAMERA_ZOOM) return undefined;
+  if (!options.keepDefault && clamped === DEFAULT_CAMERA_ZOOM) return undefined;
   return clamped;
+}
+
+/** 양쪽 전신 대화창 프로젝트는 배율 생략이 3.2 를 뜻하므로 작가가 고른 1 도 값으로 남긴다(playResolution 과 같은 규칙). */
+function keepsExplicitDefaultZoom(system: Pick<SystemRecords, "dialogueStyle"> | undefined): boolean {
+  return system?.dialogueStyle === "dual-fullbody-veil";
 }
 
 /** 플레이·편집기가 쓰는 유효 배율. 저작이 없으면 1. */
 export function resolveCameraZoom(
   system: Pick<SystemRecords, "cameraZoom" | "dialogueStyle" | "playResolution"> | undefined,
 ): number {
-  const normalized = normalizeCameraZoom(system?.cameraZoom);
+  const normalized = normalizeCameraZoom(system?.cameraZoom, { keepDefault: true });
   if (normalized !== undefined) return normalized;
-  if (
-    system?.dialogueStyle === "dual-fullbody-veil" &&
-    (!system.playResolution || (system.playResolution.width <= 480 && system.playResolution.height <= 320))
-  ) {
-    return 3.2;
-  }
+  // 양쪽 전신 승격(1024×768·3.2배)은 해상도를 아무도 안 정한 옛 프로젝트에만 — resolvePlayResolution 과 같은 조건.
+  if (system?.dialogueStyle === "dual-fullbody-veil" && system.playResolution === undefined) return 3.2;
   return DEFAULT_CAMERA_ZOOM;
 }
 
 /** 편집기 입력용 저장 함수 — 1 이면 필드를 지운다. */
 export function storeCameraZoom(system: SystemRecords, value: unknown): void {
-  const normalized = normalizeCameraZoom(value);
+  const normalized = normalizeCameraZoom(value, { keepDefault: keepsExplicitDefaultZoom(system) });
   if (normalized === undefined) delete system.cameraZoom;
   else system.cameraZoom = normalized;
 }

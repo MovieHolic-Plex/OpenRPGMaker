@@ -1,0 +1,423 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "97417a746a0b552ee252db0a8b1c424264be987c7a6b218c789e6aa62c0142cc",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "shop used shelf",
+ "label": "modern_city_interior/shop-used-shelf",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 19,
+  "darkV5": 42,
+  "nearBlackEdge": 0.25,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "items on top (cream lamp or hat shape)",
+      "rows": "1-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top frame rim of shelf",
+      "rows": "3-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper compartment with items on shelf board",
+      "rows": "5-11",
+      "evidence": "none",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "middle compartment (teal box and items)",
+      "rows": "12-22",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "lower compartment (items)",
+      "rows": "23-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The shelf is drawn face-on. The silhouette is a flat 30px-wide rectangle from row 4 to row 30, with only a 1-2 row frame rim at rows 3-4 and no top band or ellipse. The compartments are vertical interior faces separated by shelf-board edges (rows 11, 22) with dark shadow bands below them (rows 12-13, 23-24). These boards are read as parts of the front face and do not form a receding top surface. The items on top at rows 1-5 are decor. The result is a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a wooden shelf holding small goods. Its measured facts are on par with the references: 17 visible tones per tile, matching the cheese stall (17) and close to the well (20). Near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outline carries a tint. By eye the outline is dark brown beside the wood, not a black sticker line. The wood frame shows about 4 steps with a lighter top edge and darker shelf interiors. The shelf items (books, boxes, cloth) add varied small shapes and clusters. It has less grain and per-plank highlights than the stall's and well's wood, and the frame reads a bit uniform. At this scale it would sit acceptably next to the references, though marginally thinner in material ramps than the stall or well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18353
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "shelf unit top frame / upper rim",
+      "rows": "3-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lamp or hat item and books on the top shelf",
+      "rows": "1-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "items on the middle and bottom shelves (teal box, red cushion, books, dark box)",
+      "rows": "12-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards (front-facing planks)",
+      "rows": "10-11, 21-22, 29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The body is a flat, face-on open shelf frame, 30 px wide for rows 4-30. Its top is only a 1-2 row dark/tan rim at rows 3-4. There is no band ending in a front-edge line with eave shadow, and no ellipse or roof plane. The shelf boards at rows 10-11, 21-22 and 29-30 are 1-2 row front-facing planks with no visible horizontal surface. The items on the shelves are decor. The reference bookshelf and fireplace pairs show that a rim-only top like this is the wrong drawing."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden shelf holding small goods, so it matches the prop kind. Its 17 visible tones per tile equal prop-stall-cheese (17) and sit between prop-hedge (9) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline leans dark brown beside the wood rather than black. The frame shows about 4 wood steps (highlight, mid, shadow, dark brown), a little shallower than the references' 5-6. The shelf contents add varied small shapes and tones, and the shelf boards and back panel carry shading. Against the references it does not look flatter or more sticker-like, so I would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15006
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top frame/cornice of shelf unit",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "items on top shelf (cloth, cone, books)",
+      "rows": "3-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards (front-facing strips)",
+      "rows": "10-11, 21-22, 29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle and bottom compartments with goods",
+      "rows": "12-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The shelf unit is drawn as a flat front elevation. The top is only a 2-3 row dark outline/frame at rows 1-3, with no band, front-edge line or eave shadow below it. The shelf boards (rows 10-11, 21-22, 29-30) are 1-2 row front-facing strips, and the contents are drawn face-on, so no horizontal surface is visible. Compared with the cabinet reference (top 5 + edge + eave), this has only a rim-level top, so it matches the 'rim only' and 'front elevation' wrong examples."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The shelf is a wooden frame with a dark brown, tinted outline beside the wood and a darker recessed interior. Goods on the shelves (folded cloth, boxes, bottles) break up the surface. The measured facts support it. It has 17 visible tones per tile, the same as prop-stall-cheese (17) and close to prop-well-roofed (20). Near-flat coverage is 0%, with no 5x5 flat blocks. None of its dark edge pixels are near-neutral, so the outline is tinted rather than a black sticker line. Its 28 total colours are below the stall (40) and well (38). The wood ramp is about 4 steps against the references' 5-6, and the plank grain is a little sparse. A careful artist would still accept it next to the references without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14286
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top frame / cornice of shelf unit",
+      "rows": "3-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "items on top shelf (lamp, books)",
+      "rows": "0-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards (front-facing light bands)",
+      "rows": "9-11, 21-22, 29-30",
+      "evidence": "none",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "items in middle and lower bays (books, boxes, cushion)",
+      "rows": "13-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The unit is a flat, face-on bookshelf. Rows 3-4 are only the outline and a thin tan frame strip, with no front-edge line or eave shadow. The shelf boards (rows 9-11, 21-22, 29-30) are 2-3 row front-facing bands, and the bays between them are drawn as vertical faces with goods seen face-on. No ellipse, no roof plane and no receding top surface appear. The silhouette is a constant 30 px wide from row 4 to row 30. The top is at most a 2-row rim, so the object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a wooden shelf holding goods, and it fits the prop kind. Measured facts are 17 visible tones per tile, equal to the cheese stall (17) and close to the well (20), with 0% near-flat coverage and 0% neutral dark edge pixels. The outline is a tinted dark brown and is not a black sticker line. By eye, the wood frame has about 3-4 steps (light edge, mid, dark, shadow). The items on the shelves are small and read as only partly shaded, with little grain, so the wood and goods look slightly simpler than the stall and well references. The piece is clean and has no big flat areas, but it is a bit flatter in shading depth than the references. With the instruction to fail when in doubt, it is borderline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14880
+  }
+ ],
+ "decidedAt": "2026-10-21T08:22:08.631Z",
+ "cells": {
+  "16": [
+   "29a475db64bb711a",
+   "6bd4c63ee31081c5",
+   "cc4060730344df74",
+   "f118c2822980b344"
+  ],
+  "24": [
+   "06622a819b15eb75",
+   "0a43c6d84a60fdb3",
+   "11a64eaa2fb1518b",
+   "18d562a97f54f784",
+   "47ef9e6d337fb560",
+   "4af1b52a08dffb72",
+   "679fbe5f2ec4b98f",
+   "835d3ec0a8dcc0da",
+   "852806fa9358c869",
+   "8bb5fe0e89bb9a0a",
+   "8f2121ad5dd0bc05",
+   "9816011fa7c79a82",
+   "a365d5e8ddf7c397",
+   "b1c9ed86066716ba",
+   "ba7fa0a46541287a",
+   "d227661918bda362",
+   "da5377f29620d89c",
+   "dc77856bf9cf4d92",
+   "df63322212710ee8",
+   "e18e2b4ff985b6e9",
+   "e7f9a4adb70c9244",
+   "f0804b2ecaa3083f",
+   "f363348b90143822",
+   "ff44ea474aac786a"
+  ],
+  "32": [
+   "46fa5b6b07505997"
+  ],
+  "48": [
+   "246c2cd8b8834fdb",
+   "2a41a9ae6f1e16b0",
+   "2c81d7a990ac98f3",
+   "3a25ff51ccfaef83",
+   "ae67150cfb08ceff",
+   "ba819ec50fac0af0"
+  ]
+ }
+}

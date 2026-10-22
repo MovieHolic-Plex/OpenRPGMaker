@@ -13,6 +13,7 @@ import { refreshRuntimeEntities } from "./playSceneMapRuntime";
 import { conditionWaitScenes } from "@/player/runtimeConditionWait";
 import { canMoveFootprint, inBounds, isPassable, ledgeDirectionAt } from "@/project/collision";
 import { slideAfterStep, slideRuleAt } from "@/project/slideTiles";
+import { counterReachTarget } from "@/project/counterTiles";
 import { loopStepTarget, wrapLoopPosition } from "@/project/mapLoop";
 // 경로 세팅은 잎 모듈에 있다(가벼운 소비자가 이 파일 전체를 끌어오지 않도록) — 기존
 // 임포트 경로를 깨지 않기 위해 여기서 다시 내보낸다.
@@ -426,6 +427,13 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
     if (diagnosticObserved("collision")) publishDiagnostic({ category: "collision", phase: "terrain", x: scene.tileX + moveX, y: scene.tileY + moveY });
     // 벽을 향해도 그 방향으로 몸은 돌린다(제자리 방향 전환).
     if (input.dir) scene.facing = input.dir;
+    // 지나갈 수 없는 그림 칸(문짝·계단 입구) 위의 「캐릭터와 같은 층」 접촉 이벤트는 부딪히면 발동한다 —
+    // 문 그림 칸이 곧 옮기기 칸이어야 하는데, 지형 판정이 먼저 막아 영영 안 열렸다(첫사랑 r2 9cfb889150 에서 옮겨 옴).
+    if (input.dir && (moveX === 0 || moveY === 0)) {
+      const d = directionDelta(input.dir);
+      const bumped = findBlockingEventForPlayerBody(scene, body, scene.tileX + d.x, scene.tileY + d.y);
+      if (bumped) firePlayerTouchEvent(scene, bumped.event.id, bumped.trigger.kind);
+    }
     return;
   }
   scene.facing = facingForStep(step.dx, step.dy);
@@ -715,7 +723,7 @@ function performAction(
   const delta = directionDelta(scene.facing);
   const tx = scene.tileX + delta.x;
   const ty = scene.tileY + delta.y;
-  const event = findRuntimeEventInScene(scene, tx, ty, "action");
+  const event = findRuntimeEventInScene(scene, tx, ty, "action") ?? findEventAcrossCounter(scene, world.project, tx, ty, delta);
   if (event) {
     if (event.page?.interaction?.kind === 'hiding') return toggleHiding(world, event);
     if (event.page?.interaction?.kind === 'pushable') {
@@ -762,6 +770,26 @@ function performAction(
   const message = underfootFarm.message ?? facingFarm.message;
   if (message) showFarmFeedbackMessage(scene, message);
   return false;
+}
+
+/**
+ * RPG Maker 카운터 속성: 정면 칸이 카운터·탁자(tileset.counterTiles, 없으면 이름표 기본값)면 그 너머 칸의 조사 이벤트를 찾는다.
+ * 카운터 뒤 상점 주인·식탁 건너편 사람에게 말을 거는 길이다. 연속 카운터는 최대 두 칸 넘는다(`@/project/counterTiles`).
+ */
+function findEventAcrossCounter(
+  scene: ActionEventSceneContext,
+  project: ReturnType<typeof store.getCurrent>,
+  tx: number,
+  ty: number,
+  delta: { readonly x: number; readonly y: number },
+): RuntimeEventView | undefined {
+  const tileset = project.tilesets[scene.map.tilesetId];
+  let found: RuntimeEventView | undefined;
+  counterReachTarget(tileset, scene.map, { x: tx, y: ty }, delta, (x, y) => {
+    found = findRuntimeEventInScene(scene, x, y, "action");
+    return found !== undefined;
+  });
+  return found;
 }
 
 function attemptLifeInteraction(scene: ActionEventSceneContext, x: number, y: number): boolean {

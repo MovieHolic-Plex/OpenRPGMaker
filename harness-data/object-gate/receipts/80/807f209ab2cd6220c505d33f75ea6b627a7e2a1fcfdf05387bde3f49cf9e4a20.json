@@ -1,0 +1,335 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "807f209ab2cd6220c505d33f75ea6b627a7e2a1fcfdf05387bde3f49cf9e4a20",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "bus stop shelter",
+ "label": "jp-inaka-r5:inaka-bus-stop-shelter",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 26,
+  "darkV5": 38,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof",
+      "rows": "3-11",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-14"
+     },
+     {
+      "part": "base slab / plinth",
+      "rows": "33-36",
+      "evidence": "a",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bench inside",
+      "rows": "27-30",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "31-33"
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a 9-row band (rows 3-11) with a bright top edge on row 4 and slat stripes. It ends in a light front-edge line on row 11 (#bbb4c4), followed by dark eave shadow on rows 12-14. Below it is a tall front opening (rows 15-32) with a back wall, a poster and a bench, then a gray base slab (rows 33-41) with its own lighter top rows. The sign pole on the right is a small separate detail. The body shows a top surface plus a front face of well over 3 rows, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small shelter with a slatted roof, a dark interior holding a bench and poster, and a sign pole. It is much smaller than the references but matches them on the measured density: 18 colours per tile, equal to house-h101_0 and above the stone house's 11. Flat-fill coverage is 0%, the same as both references, and 58 distinct colours is close to the stone reference's 66 for a far smaller piece. Only 28% of dark edge pixels are near-neutral, so most outlines carry a tint (dark brown beside the wood and interior, blue-grey on the pole and roof rail). That is higher than the references' 7-9%, so I call the outline mixed, not a uniform black sticker line. The roof and pole ramps have about 4 steps against the references' 5-6, and the texture is slat and grain detail without the per-tile scallops, so the shading is somewhat shallower. It would still sit acceptably next to the references without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19409
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof",
+      "rows": "3-11",
+      "evidence": "c",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-14"
+     },
+     {
+      "part": "front low wall / base",
+      "rows": "33-34",
+      "evidence": "none",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-11 form a roof plane 48px wide. Row 4 is a light edge line and row 11 is a light front-edge line (#bbb4c4). Rows 12-14 below it are dark eave shadow. Under the roof is a front face about 30 rows tall (rows 12-41): a brown back wall with a poster, a bench, and a gray front wall whose top edge is a light line at row 34. The roof is slatted and a little flat-looking, but the front-edge line plus the eave shadow qualify as a top surface. The base wall has only a thin top edge, which is a minor part."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "Measured facts are at the references' level: 18 distinct colours per 16x16 tile (same as h101, above h112's 11), 0% 5x5 flat-fill coverage, and 58 distinct colours (near h112's 66; the lower total is expected for a much smaller piece). Only 28% of dark edge pixels are neutral, so most outlines carry a tint. This is higher than the references' 7-9%, so I call it mixed rather than clearly material-toned. By eye, the slatted grey roof has a highlight, mid and dark band with per-slat variation. The dark interior has a bench and a coloured poster. The posts and the sign pole carry a few value steps, and the sign disc and plate add small accents. Shading is a little shallower than the 5-6 steps on the roof tiles, at about 4 on the main materials. There are no large flat areas and no uniform black sticker outline. A careful artist would accept it beside the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21380
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof canopy (slatted panel)",
+      "rows": "4-10",
+      "evidence": "c",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-14"
+     },
+     {
+      "part": "concrete base/curb",
+      "rows": "34-36",
+      "evidence": "none",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof spans rows 3-11, with a light back outline at row 4 and slats in rows 5-10. A light front-edge line at row 11 (L=184, #bbb4c4) is followed by dark eave shadow in rows 12-14 (L=24-58). Below it the open front face runs from rows 15 to 41. It shows the posts, back wall, poster, bench and gray base. The 10-row-wide strip in rows 33-41 is a front-facing base. The sign pole on the right is a separate small detail. The roof is a clear top plane of about 7 rows, so this reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts match the references. The candidate has 18 colours per tile, the same as house-h101_0 and above the stone house's 11. Flat-fill coverage is 0%, like both references. Its 58 distinct colours are close to the stone house's 66, which is reasonable for a much smaller piece. 72% of its dark edge pixels carry a tint (28% are neutral), so the outline is not the uniform near-black sticker line. It reads as mixed because the neutral share is higher than the references' 7-9%. By eye, the slatted roof has a highlight, mid and dark band, and the dark interior has a bench, a poster and a posts-and-frame structure. The sign pole is shaded with a light edge and a dark side. There are about 4 lightness steps on the main materials, fewer than the references' 5-6. The surface texture is lighter than the tiled roofs and stone of the references. It is a small, simple prop-like building, so it is not failed for size. A careful artist would accept it beside the references, though it looks slightly thinner and less textured.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22475
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof canopy",
+      "rows": "3-11",
+      "evidence": "c",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-14"
+     },
+     {
+      "part": "bench seat inside",
+      "rows": "27-30",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "31-33"
+     },
+     {
+      "part": "front base ledge",
+      "rows": "34-36",
+      "evidence": "a",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top rows 3-11 form a roof band with a light top outline at row 4, a bright front-edge line at row 11, and dark eave shadow in rows 12-14. Below it the open front face runs from row 15 to about row 41. It shows the back wall, posts, a poster, a bench with its tan top and dark front, and a grey base ledge with a light top line at row 34. The roof is about 8 rows deep, so it is more than a 1-2 row rim. The sign pole at the right is a minor detail."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small prop-scale building, but it meets the measured bar. Median colours per tile are 18, equal to house-h101_0 and above the stone house at 11. Flat-fill coverage is 0%, and 58 distinct colours is close to the stone reference's 66. By eye, the slatted grey roof has about 4 lightness steps with highlights, the post and sign pole are shaded, and the bench and poster add small details. Only 28% of dark edge pixels are neutral, so most outlines lean toward the neighbouring material. That is higher than the references (7-9%), so I call it mixed rather than clean dark_material_tone. It is simpler and has fewer ramp steps than the big tiled-roof houses, but it does not read as a flat sticker next to them, and a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20267
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.441Z",
+ "cells": {
+  "16": [
+   "11e672d87b12f24e",
+   "82dfc42b75b04ce1",
+   "a9e21b72c3ad3449",
+   "b1d9e4721bbc2977",
+   "b21c4e5b205a3412",
+   "b84d9d36c4946e40",
+   "e48923d82223e038",
+   "e5625aef8da1b193",
+   "e7346b2d42f7f5a4"
+  ],
+  "24": [
+   "03a54ed60ec1cc3f",
+   "5fc06a41e48715af",
+   "bd31e05c5122dfe5",
+   "ec5b7c979d55d535"
+  ],
+  "32": [
+   "002062b73571a953",
+   "07c57e6878ddf3f1",
+   "10669dc0ea5c8eef",
+   "25acb74dbc1507fa",
+   "28837831f83be457",
+   "2c6a3d972dd0df2b",
+   "390fc03773426a41",
+   "4133cc0e4ea27b3b",
+   "4298018f37f25ceb",
+   "4a0e4df612e12c9b",
+   "4dd9b51866340327",
+   "4f590d8c08b775a8",
+   "5fe213fd521a3a0e",
+   "6f580c0b556697ea",
+   "84d1f2a2061d2e28",
+   "8eaba0f7feaf1461",
+   "a37078ab831ba61e",
+   "a5a9450aaa8cdc44",
+   "aa96fbbd24764817",
+   "b47ef20261d68da6",
+   "c0ff83d5f56965fb",
+   "d70389bb3c30fb00",
+   "dfe873f98853c117",
+   "f2ff4272869ed1ec"
+  ],
+  "48": [
+   "53574568879e9e90"
+  ]
+ }
+}

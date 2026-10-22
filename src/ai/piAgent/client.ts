@@ -4,7 +4,7 @@ import type { Project } from "@/project/types";
 // NDJSON 진행 이벤트를 받는다. checkpoint는 실제 적용/승인 뒤 ACK하며 done을 최종 결과로 돌려준다.
 
 import { companionAuthUrl } from "@/ai/chatgptOAuthClient";
-import { companionTokenHeaders } from "@/ai/companionToken";
+import { describeCompanionFailure, fetchCompanion } from "@/ai/companionConnection";
 import { createPiAgentLineDecoder, PI_AGENT_HEARTBEAT_MS, PI_AGENT_STALE_MS, restoreCheckpointProject, slimCheckpointProject, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiCheckpointHeavyKey } from "./protocol";
 import { piRequestBody } from "./requestBody";
 import { forgetHeavySent, markHeavySent, planHeavyWire, withHeavyBlobs } from "./heavyWire";
@@ -59,7 +59,7 @@ async function openRun(request: PiAgentRequest, runId: string, doFetch: typeof f
   const plan = await planHeavyWire(request);
   const post = async (body: unknown) => {
     const wire = await piRequestBody(body, signal);
-    return doFetch(url, { method: "POST", ...wire, headers: { ...wire.headers, ...companionTokenHeaders() }, ...(signal ? { signal } : {}) });
+    return fetchCompanion(url, { method: "POST", ...wire, headers: wire.headers, ...(signal ? { signal } : {}) }, { fetchImpl: doFetch });
   };
   if (!plan) return post({ ...request, runId });
   let response = await post({ ...(await withHeavyBlobs(plan, origin, [])), runId });
@@ -90,7 +90,8 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   let response = await openRun(request, runId, doFetch, options.signal);
   if (!response.ok) {
     const payload = await readError(response);
-    throw new PiAgentClientError(`Pi 에이전트 실행 실패: ${payload.error ?? response.status}`, response.status);
+    const connection = describeCompanionFailure(response, "/v1/agent/run", typeof payload.error === "string" ? payload.error : "");
+    throw new PiAgentClientError(connection ?? `Pi 에이전트 실행 실패: ${payload.error ?? response.status}`, response.status);
   }
   if (!response.body) throw new PiAgentClientError("Pi 에이전트 응답에 본문이 없습니다");
   // 호스트가 실행 기록을 들고 있으면(헤더) 끊겨도 이어 받는다. 없으면 예전처럼 한 연결이 전부다.
@@ -98,9 +99,9 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   // 사용자 중단은 연결을 끊는 것만으로는 실행이 멈추지 않는다(호스트가 이어 받기를 기다린다) — 명시적으로 알린다.
   const onUserAbort = () => {
     if (!resumable) return;
-    void doFetch(companionAuthUrl("/v1/agent/cancel", request.provider), {
-      method: "POST", headers: { "Content-Type": "application/json", ...companionTokenHeaders() }, body: JSON.stringify({ runId }),
-    }).catch(() => undefined);
+    void fetchCompanion(companionAuthUrl("/v1/agent/cancel", request.provider), {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ runId }),
+    }, { fetchImpl: doFetch }).catch(() => undefined);
   };
   options.signal?.addEventListener("abort", onUserAbort, { once: true });
   // 대입이 스트림 콜백 안에서만 일어나 제어흐름 분석이 초기값 null 로 좁힌다(그러면 truthy 분기가 never 가 된다).
@@ -136,7 +137,12 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
       try {
         options.signal?.throwIfAborted();
         const draft = restoreCheckpointProject(request.project, event.project, event.unchangedKeys, event.unchangedTilesetIds);
-        if (event.toolName === 'generate_opening_image') {
+        if (event.toolName === 'generate_opening_image' && typeof (event.data as { panoramaLayer?: unknown } | undefined)?.panoramaLayer === 'string') {
+          // generate_map_background 이 같은 생성 브로커를 쓴다 — 맵 배경 전용 지시·도트화·이음매(src/editor/mapPanoramaGeneration.ts).
+          const { generateMapPanoramaLayer } = await import('../../editor/mapPanoramaGeneration');
+          still = await generateMapPanoramaLayer(event.data as Record<string, unknown>, { signal: options.signal });
+          if (!still.ok) { issue = still.summary; still = undefined; }
+        } else if (event.toolName === 'generate_opening_image') {
           const { generateOpeningStill } = await import('../../editor/openingImageGeneration');
           still = await generateOpeningStill(event.data as Record<string, unknown>, { project: draft, signal: options.signal });
           if (!still.ok) { issue = still.summary; still = undefined; }
@@ -151,11 +157,11 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
           png = url.replace(/^data:image\/png;base64,/, '');
         }
       } catch (error) { issue = error instanceof Error ? error.message : String(error); }
-      const ack = await doFetch(companionAuthUrl("/v1/agent/render", request.provider), {
-        method: "POST", headers: { "Content-Type": "application/json", ...companionTokenHeaders() },
+      const ack = await fetchCompanion(companionAuthUrl("/v1/agent/render", request.provider), {
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ renderId: event.renderId, png, still, issue }),
         ...(options.signal ? { signal: options.signal } : {}),
-      });
+      }, { fetchImpl: doFetch });
       if (!ack.ok) throw new PiAgentClientError("맵 이미지 응답을 전달하지 못했습니다.", ack.status);
     })).catch(error => { checkpointError = error; abortStream(); });
     return true;
@@ -193,12 +199,12 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
           ? slimForAck(project, event.unchangedKeys ?? [], event.unchangedTilesetIds ?? [])
           : project;
         const ackWire = await piRequestBody({ checkpointId: event.checkpointId, ok: issue === undefined, issue, project: ackProject }, options.signal);
-        const ack = await doFetch(companionAuthUrl("/v1/agent/checkpoint", request.provider), {
+        const ack = await fetchCompanion(companionAuthUrl("/v1/agent/checkpoint", request.provider), {
           method: "POST",
           ...ackWire,
-          headers: { ...ackWire.headers, ...companionTokenHeaders() },
+          headers: ackWire.headers,
           ...(options.signal ? { signal: options.signal } : {}),
-        });
+        }, { fetchImpl: doFetch });
         if (!ack.ok) throw new PiAgentClientError(stale ? "적용 응답을 전달하지 못했습니다 — 워커 연결이 먼저 끊겼습니다." : "적용 응답을 전달하지 못했습니다.", ack.status);
       })).catch(error => { checkpointError = error; abortStream(); });
       return;
@@ -278,9 +284,10 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
       options.onEvent?.({ type: "execution_status", name: "stream.resume", summary: "연결이 끊겨 이어 받는 중", ok: true, data: { after: lastSeq + 1, attempt: failures } });
       let resumed: Response;
       try {
-        resumed = await doFetch(companionAuthUrl("/v1/agent/run", request.provider) + "&runId=" + encodeURIComponent(runId) + "&after=" + (lastSeq + 1), {
-          method: "GET", headers: companionTokenHeaders(), ...(options.signal ? { signal: options.signal } : {}),
-        });
+        // 404 는 「호스트가 실행을 잃었다」는 정상 결과다 — 아래에서 따로 처리하므로 연결 알림을 띄우지 않는다.
+        resumed = await fetchCompanion(companionAuthUrl("/v1/agent/run", request.provider) + "&runId=" + encodeURIComponent(runId) + "&after=" + (lastSeq + 1), {
+          method: "GET", ...(options.signal ? { signal: options.signal } : {}),
+        }, { fetchImpl: doFetch, expect404: true });
       } catch (error) { dropError = error; continue; }
       // 404: 호스트가 실행을 잃었다(재시작·기록 만료) — 더 기다려도 오지 않는다.
       if (resumed.status === 404) { lastError = (await readError(resumed)).error ?? lastError; break; }

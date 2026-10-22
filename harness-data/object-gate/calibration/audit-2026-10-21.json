@@ -1,0 +1,565 @@
+{
+ "about": "2026-10-21 감독 지시 감사: v6 에서 떨어진 원본 47 + 놓친 위반 8. 분류 i=종류 라벨 잘못(데이터 수정) ii=판정자 오류 iii=원본이 실제 3/4 결함(불확실·다시 그리기로) keep=위반 유지 out=시점 결함이 아니라 (a)에서 뺌(보고만). 판정자의 판정 이유를 본 뒤 그림을 4배로 보고 정했다. v9 추가: 버들항 원본 중 화소가 같은 fresh4 블라인드 표본이 위반·애매로 라벨된 5장도 iii(불확실). 벽 선반은 면제 종류 대신 wall_structure.",
+ "items": [
+  {
+   "n": 1,
+   "group": "beodeul_city",
+   "label": "fresh3/b3_prop-stall_jug_bottle",
+   "kind": "low_furniture",
+   "class": "ii",
+   "newKind": null,
+   "reason": "goods on the counter cover its top; awning exempt — judge counts the counter lip only",
+   "judge": "Charge 1: the counter top is only a 1-2 row lip (rows ~28-29) under the jugs and bottles. · Charge 1: the goods stand in pure front view and do not form a fille"
+  },
+  {
+   "n": 2,
+   "group": "beodeul_city",
+   "label": "fresh3/b3_prop-anchor_display",
+   "kind": "frame",
+   "class": "i",
+   "newKind": "figure",
+   "reason": "anchor on a plinth is a display figure, not an open frame/rack",
+   "judge": "2: the display base (rows ~24-29) shows only a 1-2 row light top strip above its front face, below the minimum of 3 rows. · The anchor itself is a flat front si"
+  },
+  {
+   "n": 3,
+   "group": "beodeul_city",
+   "label": "fresh3/b3_prop-fish_barrel",
+   "kind": "round_body",
+   "class": "ii",
+   "newKind": null,
+   "reason": "small barrel with fill (fish) seen from above; judge demands the 4-row empty cap",
+   "judge": "2: the barrel top is only a 1-2 row dark rim line with a small grey fish tail sticking up. No 4-row elliptical opening or cap is visible from above, unlike the "
+  },
+  {
+   "n": 4,
+   "group": "beodeul_city",
+   "label": "fresh3/b3_prop-mooring_bollard",
+   "kind": "column",
+   "class": "iii",
+   "newKind": null,
+   "reason": "bollard head is a dark blob without a readable cap plate; illegible at 1x",
+   "judge": "6/2: the bollard head is a flat dark purple band with a 1-row highlight; no elliptical cap plate is seen from above · 8d: at 1x the dark purple/orange blob does"
+  },
+  {
+   "n": 5,
+   "group": "beodeul_city",
+   "label": "fresh3/b3_prop-bread_rack",
+   "kind": "tall_furniture",
+   "class": "i",
+   "newKind": "frame",
+   "reason": "open bread rack (posts and boards), not closed tall furniture",
+   "judge": "Charge 1: the rack's top is only the 1-2 row dark brown rim at rows 0-1. No foreshortened plane sits behind it. · Charge 1: the shelf boards are thin front-faci"
+  },
+  {
+   "n": 6,
+   "group": "beodeul_city",
+   "label": "fresh3/b3_prop-parasol_table",
+   "kind": "low_furniture",
+   "class": "ii",
+   "newKind": null,
+   "reason": "parasol covers the small table top; table is fine under the canopy",
+   "judge": "1: the parasol is exempt as a fabric cover, but the table under it (rows ~17-25) reads as a front-facing brown block. Only a 1-2 row lighter strip sits at its t"
+  },
+  {
+   "n": 7,
+   "group": "beodeul_city",
+   "label": "fresh3/b3_prop-sword_barrel",
+   "kind": "round_body",
+   "class": "ii",
+   "newKind": null,
+   "reason": "barrel filled with swords; the fill is the top",
+   "judge": "1/2: the barrel top is only the 1-row orange rim line at row ~6. No elliptical cap or opening interior is drawn, while the anchors show about 4 rows. · The swor"
+  },
+  {
+   "n": 8,
+   "group": "beodeul_city",
+   "label": "fresh3/b3_prop-flowerbox_long",
+   "kind": "container",
+   "class": "iii",
+   "newKind": null,
+   "reason": "화소가 같은 fresh4/q081_beodeul 의 블라인드 라벨(판정 전 고정)이 3/4 위반·애매(등급 C)라 알려진 정상이 아니다 → 불확실",
+   "judge": "2: the flowers (rows 0-4) stand in one front-facing row of blooms with no back edge or far rim; the soil/leaf line (row ~5) is a flat strip on top of the plante"
+  },
+  {
+   "n": 9,
+   "group": "beodeul_city",
+   "label": "fresh3/b3_prop-tree_planter",
+   "kind": "container",
+   "class": "ii",
+   "newKind": null,
+   "reason": "tree canopy covers the planter soil; rim and soil are visible",
+   "judge": "Charge 2: the planter's soil and rim opening is only about 2 rows (white rim plus brown soil strip under the trunk), below the 4-row opening minimum · The tree "
+  },
+  {
+   "n": 10,
+   "group": "beodeul_city",
+   "label": "fresh3/b3_prop-column_monument",
+   "kind": "column",
+   "class": "iii",
+   "newKind": null,
+   "reason": "capital is a flat 2-row band without an elliptical cap plate (charge 6 holds)",
+   "judge": "Charge 6/1: the capital under the gold orb (about rows 8-11) is a flat light band of about 2 rows over a dark strip, a front-facing band with no elliptical cap "
+  },
+  {
+   "n": 11,
+   "group": "beodeul_city",
+   "label": "fresh3/b3_prop-statue_sage",
+   "kind": "figure",
+   "class": "iii",
+   "newKind": null,
+   "reason": "plinth top is 1-2 rows, under the figure minimum 3",
+   "judge": "Charge 2: the stepped base (rows ~41-58) shows only a dark line plus 1-2 lighter rows as its top. That is thinner than the 3-row minimum and reads as front-faci"
+  },
+  {
+   "n": 12,
+   "group": "beodeul_city",
+   "label": "fresh3/b3_prop-flowerbed",
+   "kind": "flat",
+   "class": "i",
+   "newKind": "container",
+   "reason": "raised flowerbed with a stone curb front, not a flat decal",
+   "judge": "Charge 7: this is a raised flowerbed/planter, not a flat decal. The bottom ~4 rows are a grey stone curb drawn as a vertical front face, and plants sit on top, "
+  },
+  {
+   "n": 13,
+   "group": "beodeul_city",
+   "label": "fresh3/b3_house-h101_1",
+   "kind": "structure",
+   "class": "ii",
+   "newKind": null,
+   "reason": "lower front roof is a sloped roof with tiles; judge read it as a wall",
+   "judge": "The main hip roof is a deep top plane of about 44 rows, which is acceptable. · Charge 3: the central lower section (rows ~45-88) is unclear. Roof-tile texture f"
+  },
+  {
+   "n": 14,
+   "group": "beodeul_city",
+   "label": "fresh3/b3_house-h120_0",
+   "kind": "structure",
+   "class": "ii",
+   "newKind": null,
+   "reason": "chimney flagged; roof and wall read correctly",
+   "judge": "Roof plane seen from above (rows 0-~43) over the half-timbered south wall is fine · 3: the chimney on the right is drawn as a vertical dark translucent strip ru"
+  },
+  {
+   "n": 15,
+   "group": "beodeul_city",
+   "label": "fresh3/b3_house-h132_0",
+   "kind": "structure",
+   "class": "ii",
+   "newKind": null,
+   "reason": "same as h101: front lower roof read as wall",
+   "judge": "Charge 3: below the main eave (about rows 45-68), the central section is filled with roof-tile texture where a wall should be. It has no eave or front-edge line"
+  },
+  {
+   "n": 16,
+   "group": "beodeul_city",
+   "label": "style/beodeul__prop-stall_herb_flower",
+   "kind": "low_furniture",
+   "class": "ii",
+   "newKind": null,
+   "reason": "goods on the counter cover its top; awning exempt",
+   "judge": "Charge 2: the awning is exempt, but the counter under it shows only a 2-row light front band (about rows 26-27) instead of a 3+ row top plane. · Charge 2: the g"
+  },
+  {
+   "n": 17,
+   "group": "beodeul_city",
+   "label": "style/beodeul__prop-flower_cart",
+   "kind": "low_furniture",
+   "class": "iii",
+   "newKind": null,
+   "reason": "화소가 같은 fresh4/q113_beodeul 의 블라인드 라벨(판정 전 고정)이 3/4 위반·애매(등급 C)라 알려진 정상이 아니다 → 불확실",
+   "judge": "2: this is the mirrored version of #4. The bench/cart body is a front-facing band (rows ~10-18) with only about 1-2 rows of top behind the pots, below the 3-row"
+  },
+  {
+   "n": 18,
+   "group": "beodeul_city",
+   "label": "style/beodeul__prop-goods_pile",
+   "kind": "other",
+   "class": "iii",
+   "newKind": null,
+   "reason": "화소가 같은 fresh4/q013_beodeul 의 블라인드 라벨(판정 전 고정)이 3/4 위반·애매(등급 C)라 알려진 정상이 아니다 → 불확실",
+   "judge": "Charge 2: neither the barrels/jars nor the sack show a clear elliptical top or an opening seen from above; only ~2 lighter rows sit at their tops. · 8d: at 1x t"
+  },
+  {
+   "n": 19,
+   "group": "beodeul_city",
+   "label": "style/beodeul__prop-table_mugs",
+   "kind": "low_furniture",
+   "class": "iii",
+   "newKind": null,
+   "reason": "화소가 같은 fresh4/q061_beodeul 의 블라인드 라벨(판정 전 고정)이 3/4 위반·애매(등급 C)라 알려진 정상이 아니다 → 불확실",
+   "judge": "Charge 1: the body reads as stacked front-facing planks (rows 0-3, 7-16, 19-23) with grey gaps. No foreshortened top plane is visible behind the top plank. · Un"
+  },
+  {
+   "n": 20,
+   "group": "beodeul_city",
+   "label": "style/beodeul__prop-lamp_double",
+   "kind": "column",
+   "class": "i",
+   "newKind": "other",
+   "reason": "street lamp with a crossbar and lanterns is not a column/pillar (no cap expected)",
+   "judge": "Charge 6: the lamp pole ends in a 1-row crossbar (about row 4) with no elliptical cap plate. · Charge 3/1: the hanging lanterns (rows 7-12) are drawn as flat fr"
+  },
+  {
+   "n": 21,
+   "group": "jp_city",
+   "label": "originals-jp/jp__jp-bldg-post-office",
+   "kind": "structure",
+   "class": "ii",
+   "newKind": null,
+   "reason": "jp flat-roof building, rooftop penthouse and units on a roof plane; user-approved flat-roof art",
+   "judge": "Charge 3: the rooftop stair penthouse (rows ~7-27, left) is drawn only as a framed front face with a ~2-row top band, with no top plane. · It is unclear whether"
+  },
+  {
+   "n": 22,
+   "group": "jp_city",
+   "label": "originals-jp/jp__jp-bldg-house-flat3",
+   "kind": "structure",
+   "class": "ii",
+   "newKind": null,
+   "reason": "jp flat-roof building; user-approved",
+   "judge": "Charge 1: the building is drawn as a flat front elevation. Its top is only a light parapet band of about 3-4 rows (y0-4). The rooftop penthouse door and the AC "
+  },
+  {
+   "n": 23,
+   "group": "jp_city",
+   "label": "originals-jp/jp__jp-bldg-house-terrace",
+   "kind": "structure",
+   "class": "ii",
+   "newKind": null,
+   "reason": "jp flat-roof terrace; user-approved",
+   "judge": "Charge 1 (unsure): the grey upper block, roughly rows 0-32, reads as a third-storey wall face. Its AC units are front-facing boxes, and only a 1-2 row parapet l"
+  },
+  {
+   "n": 24,
+   "group": "jp_city",
+   "label": "originals-jp/jp__jp-bldg-shop-pharmacy",
+   "kind": "structure",
+   "class": "ii",
+   "newKind": null,
+   "reason": "jp flat-roof shop; user-approved",
+   "judge": "1: the top section (rows ~0-35) is a picture-like panel outlined on all sides; the rooftop reads as a front-facing band, not a roof plane seen from above · 3: t"
+  },
+  {
+   "n": 25,
+   "group": "jp_city",
+   "label": "originals-jp/jp__jp-bldg-shop-realestate",
+   "kind": "structure",
+   "class": "ii",
+   "newKind": null,
+   "reason": "jp flat-roof shop; user-approved",
+   "judge": "Charge 1: the whole building is a flat front elevation. Its top is only the 1-2 row light rim at rows 0-2. · Charge 1: the top storey (rows ~2-30) shows the roo"
+  },
+  {
+   "n": 26,
+   "group": "jp_city",
+   "label": "originals-jp/jp__jp-bldg-shop-books-shut",
+   "kind": "structure",
+   "class": "ii",
+   "newKind": null,
+   "reason": "jp flat-roof shop; user-approved",
+   "judge": "Charge 3: the rooftop stairwell box (top band, rows ~1-33) is a framed front elevation with a door and no visible top surface; the AC unit and plant pots are al"
+  },
+  {
+   "n": 27,
+   "group": "jp_city",
+   "label": "originals-jp/jp__jp-bldg-shop-realestate-shut",
+   "kind": "structure",
+   "class": "ii",
+   "newKind": null,
+   "reason": "jp flat-roof shop; user-approved",
+   "judge": "Charge 1: the building has no roof slope or roof plane seen from above. · Charge 1: the top section (rows ~0-30) is a front-facing framed panel (rooftop wall wi"
+  },
+  {
+   "n": 28,
+   "group": "jp_city",
+   "label": "originals-jp/jp__jp-bldg-shop-vacant",
+   "kind": "structure",
+   "class": "ii",
+   "newKind": null,
+   "reason": "jp flat-roof shop; user-approved",
+   "judge": "Charge 1: the top section (rows ~0-30) draws a penthouse door, potted plants and an AC unit all face-on inside a framed box. It reads as a front elevation of a "
+  },
+  {
+   "n": 29,
+   "group": "jp_city",
+   "label": "originals-jp/jp__vehicle__bus-left_open",
+   "kind": "box",
+   "class": "ii",
+   "newKind": null,
+   "reason": "bus: style 8c anti-alias claim is false (crisp grid); user-approved vehicle",
+   "judge": "8c: the roof units, window edges and wheel rims show soft, blurred anti-aliased edges and a noisy, resampled-looking texture on the white roof. This is not the "
+  },
+  {
+   "n": 30,
+   "group": "jp_city",
+   "label": "originals-jp/jp__vehicle__bus-right",
+   "kind": "box",
+   "class": "ii",
+   "newKind": null,
+   "reason": "bus: roof plane seen from above; style 8b claim on a white roof; user-approved",
+   "judge": "View: the large white roof plane (rows 0-24) carrying roof units is seen from above, with the windowed side face below. This is acceptable. · 8b: the roof (rows"
+  },
+  {
+   "n": 31,
+   "group": "jp_city",
+   "label": "originals-jp/jp__vehicle__jp-car-kei-mint",
+   "kind": "box",
+   "class": "ii",
+   "newKind": null,
+   "reason": "kei van roof plane read as side panel; user-approved",
+   "judge": "1: the light area of rows ~1-12 above the windows has no front-edge line separating a roof plane from the side panel; it reads as the upper side panel of a flat"
+  },
+  {
+   "n": 32,
+   "group": "jp_city",
+   "label": "originals-jp/jp__vehicle__jp-car-kei-yellow",
+   "kind": "box",
+   "class": "ii",
+   "newKind": null,
+   "reason": "kei van front read as receding face; user-approved vehicle",
+   "judge": "4: besides the long side profile, the van's right end shows a second receding face (diagonal windshield, front panel and bumper at columns ~50-58), giving a two"
+  },
+  {
+   "n": 33,
+   "group": "atlas_biome_interior",
+   "label": "originals-interior/int__barrel__potato",
+   "kind": "round_body",
+   "class": "ii",
+   "newKind": null,
+   "reason": "barrel filled with potatoes seen from above",
+   "judge": "2: rows 0-5 are a ragged orange mass around a dark centre. No far rim or elliptical cap reads behind it, so it is unclear whether this is a fill seen from above"
+  },
+  {
+   "n": 34,
+   "group": "atlas_biome_interior",
+   "label": "originals-interior/int__shelf__potion_potionb_potiong",
+   "kind": "tall_furniture",
+   "class": "i",
+   "newKind": "wall_structure",
+   "reason": "wall shelf boards on the wall with potions, not a free-standing tall unit (v9: wall_structure — 면제 종류로 옮기지 않는다)",
+   "judge": "Charge 1: the unit has no top plane of its own; it is two shelf boards seen front-on, each showing only a 2-row plank strip over a dark front band · Charge 2: t"
+  },
+  {
+   "n": 35,
+   "group": "atlas_biome_interior",
+   "label": "originals-interior/int__shelf__herb",
+   "kind": "tall_furniture",
+   "class": "i",
+   "newKind": "wall_structure",
+   "reason": "wall shelf boards with herb pots, not a free-standing tall unit (v9: wall_structure — 면제 종류로 옮기지 않는다)",
+   "judge": "7: the object reads as two stacked planter strips with a green checker fill, not as tall furniture. · 1: each tier is a front-facing green/orange band. No fores"
+  },
+  {
+   "n": 36,
+   "group": "atlas_biome_interior",
+   "label": "originals-interior/int__cauldron",
+   "kind": "container",
+   "class": "ii",
+   "newKind": null,
+   "reason": "cauldron liquid ellipse ~3 rows under the rim at 16px",
+   "judge": "2: the cauldron opening shows a grey rim row plus only ~2 rows of green liquid (rows ~4-6), under the 4-row interior minimum · 판정자가 확신하지 못함(애매하면 불합격)"
+  },
+  {
+   "n": 37,
+   "group": "atlas_biome_interior",
+   "label": "originals-interior/int__quench_barrel",
+   "kind": "round_body",
+   "class": "ii",
+   "newKind": null,
+   "reason": "quench barrel water ellipse ~3 rows at 16px",
+   "judge": "Charge 2: the top is only about 3 rows (blue band at rows 2-4 under a 1-row rim). This is thinner than the anchor barrels' 5-6 row tops. · The blue band reads m"
+  },
+  {
+   "n": 38,
+   "group": "atlas_biome_interior",
+   "label": "originals-interior/int__bar_stool",
+   "kind": "seat",
+   "class": "ii",
+   "newKind": null,
+   "reason": "bar stool cushion seen from above; judge read it as a dome",
+   "judge": "1/2b: the red cushion (rows 0-4) reads as a puffy dome seen from the side, light above and dark below, and not as an elliptical seat plane seen from above. The "
+  },
+  {
+   "n": 39,
+   "group": "atlas_biome_interior",
+   "label": "originals-interior/int__holy_water_font",
+   "kind": "container",
+   "class": "ii",
+   "newKind": null,
+   "reason": "font basin water seen from above at 16px",
+   "judge": "Charge 2: the basin's water interior shows only about 3 rows (rows 1-3) below the rim, under the container minimum of 4 opening rows. · Unsure whether the rim r"
+  },
+  {
+   "n": 40,
+   "group": "atlas_biome_interior",
+   "label": "originals-interior/int__washbasin",
+   "kind": "container",
+   "class": "i",
+   "newKind": "low_furniture",
+   "reason": "washstand: a cabinet carrying a basin/jug, not a container",
+   "judge": "7: Reads as a water-cooler or jug-on-cabinet unit, not a container whose opening is seen from above. There is no visible opening interior. · 3/1: The blue dome "
+  },
+  {
+   "n": 41,
+   "group": "atlas_biome_interior",
+   "label": "originals-interior/int__canopy_bed",
+   "kind": "low_furniture",
+   "class": "ii",
+   "newKind": null,
+   "reason": "bed: mattress and blanket seen from above, short footboard is normal",
+   "judge": "Canopy bed: the mattress and blanket are seen from above, and the canopy curtain is a fabric cover (exempt). The footboard face is only about 3 rows (dark red b"
+  },
+  {
+   "n": 42,
+   "group": "atlas_biome_interior",
+   "label": "originals-interior/int__straw_bed",
+   "kind": "low_furniture",
+   "class": "ii",
+   "newKind": null,
+   "reason": "straw bed on a low frame; plan-view mattress with a 3-row front",
+   "judge": "5: the speckled yellow body fills rows ~1-21 as a plan-view slab, and only a thin brown/grey band of about 3 rows at the bottom reads as a front face · 8d: at 1"
+  },
+  {
+   "n": 43,
+   "group": "atlas_biome_interior",
+   "label": "originals-interior/int__potted_fern",
+   "kind": "container",
+   "class": "ii",
+   "newKind": null,
+   "reason": "plant fills the pot top; rim visible",
+   "judge": "Charge 2: the pot opening is never seen from above. The rim is only a 1-2 row front band at about row 8. · The leaves are a front-facing bush silhouette with no"
+  },
+  {
+   "n": 44,
+   "group": "atlas_biome_interior",
+   "label": "originals-interior/int__potted_cactus",
+   "kind": "container",
+   "class": "ii",
+   "newKind": null,
+   "reason": "plant fills the pot top; rim visible",
+   "judge": "1/2: the pot's opening is only a flat 1-row rim band at the soil line (row ~8), with no foreshortened soil plane seen from above · The plant leaves are drawn in"
+  },
+  {
+   "n": 45,
+   "group": "atlas_biome_interior",
+   "label": "originals-interior/int__bed_green",
+   "kind": "low_furniture",
+   "class": "ii",
+   "newKind": null,
+   "reason": "bed: short footboard is normal for beds",
+   "judge": "Charge 5: below the green blanket there is only a 1-2 row orange strip as a front face. The anchor bed draws a footboard front of about 5 rows. This reads as a "
+  },
+  {
+   "n": 46,
+   "group": "atlas_biome_interior",
+   "label": "originals-interior/int__double_bed_red",
+   "kind": "low_furniture",
+   "class": "ii",
+   "newKind": null,
+   "reason": "bed: short footboard is normal for beds",
+   "judge": "5: the bed is drawn almost entirely as a plan view (headboard, pillows and blanket fill rows ~0-35). The front/footboard is only ~1-2 rows of wood plus a dark b"
+  },
+  {
+   "n": 47,
+   "group": "atlas_biome_interior",
+   "label": "originals-interior/int__bench_2",
+   "kind": "seat",
+   "class": "ii",
+   "newKind": null,
+   "reason": "bench plank top seen from above with legs",
+   "judge": "Charge 1 (unsure): rows 0-6 are a uniform orange panel outlined on all sides. Below it there is only a 1-row dark strip (row 7) and then the legs. There is no f"
+  },
+  {
+   "n": 48,
+   "group": "missed",
+   "label": "originals-v5large/v5l__reject-loaf-cabinet-r1",
+   "kind": "tall_furniture",
+   "class": "out",
+   "newKind": null,
+   "reason": "user rejected for style (copied loaf on black), not a view defect → style-bad, reported only",
+   "judge": ""
+  },
+  {
+   "n": 49,
+   "group": "missed",
+   "label": "interior/stone_throne__w52-A",
+   "kind": "seat",
+   "class": "keep",
+   "newKind": null,
+   "reason": "blind label: red cushion only a front band, no seat top — clear view violation",
+   "judge": ""
+  },
+  {
+   "n": 50,
+   "group": "missed",
+   "label": "fresh4/q001_gothic",
+   "kind": "tall_furniture",
+   "class": "keep",
+   "newKind": null,
+   "reason": "two blind labels: closed-door wardrobe front elevation, cornice strip only",
+   "judge": ""
+  },
+  {
+   "n": 51,
+   "group": "missed",
+   "label": "originals-v5large/v5l__reject-potion-cabinet-r0",
+   "kind": "tall_furniture",
+   "class": "keep",
+   "newKind": null,
+   "reason": "user note says front elevation — view defect",
+   "judge": ""
+  },
+  {
+   "n": 52,
+   "group": "missed",
+   "label": "style/farm__farm-coop__v2",
+   "kind": "structure",
+   "class": "out",
+   "newKind": null,
+   "reason": "user rejected for shallow information/outline/texture — not nameable under the style rule (never charge less detail) → reported only",
+   "judge": ""
+  },
+  {
+   "n": 53,
+   "group": "missed",
+   "label": "originals-v5large/v5l__reject-book-cabinet-r1",
+   "kind": "tall_furniture",
+   "class": "out",
+   "newKind": null,
+   "reason": "user rejected for style (books as nameplates), not view → style-bad, reported only",
+   "judge": ""
+  },
+  {
+   "n": 54,
+   "group": "missed",
+   "label": "originals-v5large/v5l__reject-potion-cabinet-r1",
+   "kind": "tall_furniture",
+   "class": "out",
+   "newKind": null,
+   "reason": "user rejected for style (copied flat blocks), not view → style-bad, reported only",
+   "judge": ""
+  },
+  {
+   "n": 55,
+   "group": "missed",
+   "label": "style/farm__farm-barn__v2",
+   "kind": "structure",
+   "class": "out",
+   "newKind": null,
+   "reason": "same as farm coop v2 → reported only",
+   "judge": ""
+  },
+  {
+   "n": 56,
+   "group": "beodeul_city",
+   "label": "fresh3/b3_prop-planter_round",
+   "kind": "",
+   "class": "iii",
+   "newKind": null,
+   "reason": "화소가 같은 fresh4/q116_beodeul 의 블라인드 라벨(판정 전 고정)이 3/4 위반·애매(등급 C)라 알려진 정상이 아니다 → 불확실",
+   "judge": ""
+  }
+ ]
+}

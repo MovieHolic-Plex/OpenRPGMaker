@@ -1,0 +1,369 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c71f433806aefd47b508dd550a798b22a46e6f1d065a8d25d4d53d6c400ab303",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "화장실 선반",
+ "label": "jp_city/interior_house3/toilet-shelf",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 19,
+  "darkV5": 90,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "toilet paper roll on shelf",
+      "rows": "0-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plant on shelf (right)",
+      "rows": "0-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf board / body",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a 16px-wide wooden board spanning rows 3-14, with a 1-row dark outline at row 3. Below it the columns alternate between mid and light horizontal plank bands (x=8: rows 4, 5, 6-7, 8, 9-10), then dark rows 11-13 and the darkest row 14 for the base. No clear front-edge line followed by eave shadow separates a top surface from the face. The light band at rows 4-5 reads as a rim or plank, not a foreshortened top. There is no ellipse and no visible contents. The toilet paper roll (rows 0-6, left) and the plant (right) are decor on top. The whole body reads as a front-facing panel, so it is front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, roughly one-tile wooden shelf with items on top. Its dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood, not a black sticker line. It has 19 visible tones in its tile, against 17 for the cheese stall and 20 for the roofed well, and 0% near-flat coverage, so there are no flat fills. The wood shows some plank and shelf-edge variation, and the small items add clusters of tone. It has slightly fewer shading steps per material than the bigger references (about 4 against 5-6), which is acceptable for a prop this small. A careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17764
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "toilet paper roll on the shelf",
+      "rows": "0-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plant at top right",
+      "rows": "0-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden shelf body",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The wooden body spans rows 3-14 at a constant width of 16. Row 3 is a dark outline. Rows 4-5 are only a thin lighter strip, which reads as a rim. Row 8 is a slightly darker line, but the rows below it are light plank face (rows 9-10), not eave shadow. Rows 11-12 are a dark band, and row 14 is a dark base. The body is a flat run of horizontal plank bands with no clear horizontal top surface or front-edge line followed by eave shadow, so the front is a plain elevation. The roll and the plant on top are decor and do not count."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden shelf with items on it, about one tile in size. It measures 19 visible tones per 16x16 tile, close to the stall (17) and well (20) and well above the hedge (9). Near-flat coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline leans brown or tinted rather than black. By eye, the wood shows about 4 steps with grain, and the items on the shelf (a plant, small objects) add varied clusters. It is slightly less deep than the 5-6 step references, but it does not look thinner or more sticker-like than the same-kind props. No large flat fills were visible.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18731
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "toilet paper roll on shelf top",
+      "rows": "0-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green plant on shelf top (right)",
+      "rows": "0-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden shelf body",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a 16px-wide wooden panel at rows 3-14. Row 3 is a dark outline. The rows below it are horizontal plank bands (light, mid and dark stripes) with no clear front-edge line or eave shadow. At x=8 the bands run as light 5, mid 6-7, dark 8, light 9-10, dark 11-12, darkest 14. These read as a face-on front, not a receding horizontal top. Only about 1-2 rows at the top could be a rim. The roll and plant above are decor, and row 15 is a narrow 4px foot. No ellipse, roof, or visible contents appear, so the shelf reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden shelf with items on it, about one tile in size. It measures 19 visible tones per 16x16 tile, which matches the richer references (well 20, cheese stall 17) and is well above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% near-neutral, so the outlines carry a tint. By eye they read as dark brown beside the wood, not a black sticker line. The wood has several lightness steps, plus small props (plant, bottles) in different tones that add variety. It is slightly simpler than the roofed well in ramp depth, but for a single-tile furniture prop it would sit acceptably next to the bench and stall without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18055
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "toilet paper roll on the shelf",
+      "rows": "0-4",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plant on the shelf",
+      "rows": "0-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf board (main body)",
+      "rows": "3-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a 16-wide wooden shelf spanning rows 3-14. Row 3 is the outline, and rows 4-5 are a light band that reads as a rim. Below it, rows 6-10 alternate light and mid wood stripes that look like front-face grain. The column scans at x=4, 8 and 11 do not agree on a single front-edge line or eave shadow. Rows 11-14 are a dark lower band that ends in the darkest row at 14. The roll (rows 0-4) and the plant (rows 0-5) are decor. The shelf shows no ellipse, no roof plane and no visible contents, so it reads as a front elevation with at most a 2-row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden shelf holding items (a plant, papers, small objects), about one tile in size. It has 19 visible tones per 16x16 tile, close to the well (20) and the cheese stall (17) and well above the hedge (9). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% near-neutral, so the outlines lean brown or material-toned rather than sticker black. The wood shows several steps with grain, and the small items add clusters and highlights. It is a little simpler than the roofed well or the stall, but nothing looks thinner or flatter than the references of the same kind.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17780
+  }
+ ],
+ "decidedAt": "2026-10-21T03:39:44.801Z",
+ "cells": {
+  "16": [
+   "cb37e5c749089ad0"
+  ],
+  "24": [
+   "1eadf3665e9cf88f",
+   "7107d629a57f9151",
+   "71c77dfa9555a0db",
+   "7ce5473fd972e8f8",
+   "9424049d456cefc4",
+   "b9b0a969a6bd95c4"
+  ],
+  "32": [
+   "5142fea5af309a5b",
+   "7810ff6b35ae377b",
+   "8137b025b68edbad",
+   "8edde2d6aecc6538",
+   "9be7d034df954598",
+   "bf70cf041ebc4234"
+  ],
+  "48": [
+   "0cfe7e3f51bd9e86",
+   "4033b6224976ed62",
+   "5db68a41212d2b50",
+   "a29b55120055a304",
+   "c6c7abf2430ccf62",
+   "fe3bdc2fcc0d8616"
+  ]
+ }
+}

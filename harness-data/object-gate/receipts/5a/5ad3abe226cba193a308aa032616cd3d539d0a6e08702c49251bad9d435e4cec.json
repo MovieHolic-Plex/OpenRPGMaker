@@ -1,0 +1,284 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5ad3abe226cba193a308aa032616cd3d539d0a6e08702c49251bad9d435e4cec",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rice paddy ground tile (inaka-paddy-water)",
+ "label": "jp_inaka_pack/gnd/inaka-paddy-water",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 68,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy water ground tile (full 16x16 tiled texture of water with green plant tufts)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a seamless terrain tile that fills the whole 16x16 area (width 16 on every row). It has no silhouette, no front-edge line, no eave shadow and no standing volume, only a repeating pattern of teal water cells with green and yellow-green tufts. The column scans show alternating light and dark runs with no top band followed by a front face. It is a flat ground texture, so it is not a standing object and the view-contract rows do not apply."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a single small tile with only 7 distinct colours in total. The grass reference has 80 colours and a median of 26 per tile, so the candidate is far below it. It only matches the paving reference's 7 per tile, and paving is a deliberately limited, regular pattern. The dark edge pixels are 0% neutral, so the outline is tinted teal and not a black sticker line. There are no 5x5 flat fills, and the dotted ripple texture is real but sparse. Shading is about 4 effective steps against the 5-6 Beodeul uses per material, and the surface lacks the multi-tone clumping and grain of the grass reference. Water can be simpler than grass, but this is thin next to the richer reference, and the piece also reads as one tile rather than a 4x3 patch. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12812
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy water terrain tile (full 16x16 fill, flat tiling texture)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The tile is a full 16x16 opaque square (width 16 on every row) filled with teal/green water pixels and scattered lighter green/yellow plant specks, with a faint grid pattern. There is no silhouette, no front-edge line, no eave shadow, no ellipse and no front face. It is a flat, seamless terrain fill, not a standing object, so the top/front structure rules do not apply. It matches the stated kind of terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a speckled teal-green water patch with only 7 distinct colours in total, so about 4 usable lightness steps once the speckle accents are set aside. The grass reference has 80 colours and 26 per tile, and its clumps are shaded in 5-6 greens. The candidate has no 5x5 flat fills (0%), and the speckle breaks up the surface, so it is not flat. However, the pattern reads as a uniform noise or dither with no larger forms such as ripple clumps, reflections, mud edges or rice-shoot tufts. The paving reference also has 7 colours, but it gets its richness from stones shaded one by one and a clear structure, and the candidate has neither. There is no real outline, and the 0% neutral edge share only confirms nothing is near-black. Overall, the colour count and density are far below the grass reference, and the surface has less variety than a careful artist would accept next to it. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11638
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy water ground tile (full 16x16 fill)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 16x16 opaque square (width 16 on every row) filled with a mottled pattern of teal water and green/yellow-green plant specks. There is no silhouette, no front-edge line, no eave shadow and no ellipse. It is a flat seamless terrain texture seen from above, not a standing object, so there is no front face and no 3/4 structure to measure. This is expected for a ground tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 7 distinct colours across the whole patch, against 80 for the grass reference, and about 7 per tile against 26 for the grass. Its flat-fill coverage is 0% and its dark pixels are tinted rather than neutral, so there is no sticker outline and no big flat areas. However, the water and plant ramp is only about 4 steps, with sparse dither dots. The grass reference has varied clumps in many greens, and the candidate has no comparable per-clump shading, ripple highlights or soil grain. It matches the paving reference's colour count, but paving is a rigid, simple pattern, while a water-and-crop surface should carry more variation. Next to the grass it looks thinner and flatter, and I cannot call it equal to the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12957
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy water ground tile (full 16x16 tiling pattern)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The candidate is a full-bleed 16x16 terrain tile (width 16 on every row, rows 0-15) with a scattered pattern of teal water and green/yellow-green speckles. The column scans show only small alternating color runs with no front-edge line, eave shadow, ellipse, or distinct front face. It is a flat seamless ground/water texture, not a standing object, so the top/front-face rules for objects do not apply. It matches the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a single small tile with only 7 distinct colours in total. The grass reference has 80 colours and a median of 26 per tile, and the candidate's per-tile median of 7 is far below that. It only matches the paving reference's per-tile 7, and that paving is a more restricted pattern. The water surface shows a few ripple and speckle dots in teal and blue-grey, with a darker edge, so it is not a flat fill (0% flat-fill coverage). Dark edge pixels are 0% neutral, so the edges lean toward the material's own tint rather than a black sticker outline. The ramp has only about 4-5 lightness steps with sparse texture, against the grass reference's 5-6 steps with clumps, tufts and varied dots. For a 4x3 ground patch, 7 colours across the whole piece is much poorer than the richest same-kind reference. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12255
+  }
+ ],
+ "decidedAt": "2026-10-20T04:26:05.780Z",
+ "cells": {
+  "16": [
+   "80aa897a6836d18a"
+  ],
+  "24": [
+   "28a402090b6b7a4d",
+   "5d69d96ab62d51d3",
+   "af6d2d02eb73acae",
+   "b6397f22ec5e2ce6",
+   "e3205efd463ab1cf",
+   "f3233acc57dabe86"
+  ],
+  "32": [
+   "5f126f0050504bd6",
+   "8dfc740f075d6858",
+   "94f892b1238aa058",
+   "a9b3b1f41db2e40b",
+   "de3a34bcdbc38d0a",
+   "f11c58e8791022be"
+  ],
+  "48": [
+   "11789cb44a49b1a6",
+   "7c185a584ee4627c",
+   "93e986823de48065",
+   "96d6b1bfdc74cb8c",
+   "ab3804aa38c0ecd4",
+   "d2b93172b5538fb6"
+  ]
+ }
+}

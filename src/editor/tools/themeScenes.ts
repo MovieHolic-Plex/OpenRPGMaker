@@ -65,8 +65,8 @@ export const THEME_SCENES: readonly ThemeScene[] = [
     about: "버들항 칩셋의 마을(강가·포구·사막·설원·늪)·로마풍 도시", keywords: ["마을", "촌", "도시", "항구", "village", "town", "hamlet", "city"] },
   { id: "beodeul_dungeon", label: "버들항 던전", tilesetId: BEODEUL_TILESET_ID, tool: "author_dungeon", styleParam: "type", styles: ["catacomb", "castle", "labyrinth", "sewer", "cave", "temple", "mine", "volcano", "ice"], defaultStyle: "cave",
     about: "버들항 칩셋의 던전(동굴·광산·미궁·지하묘지·하수도…)", keywords: ["던전", "동굴", "광산", "미궁", "지하", "탑", "dungeon", "cave", "mine", "labyrinth"] },
-  { id: "beodeul_field", label: "버들항 필드(길·숲·풀숲)", tilesetId: BEODEUL_TILESET_ID, tool: "author_wild_route",
-    about: "버들항 칩셋의 야외 필드 — 출구에서 출구로 이어지는 흙길·양옆 숲·키큰 풀숲(남쪽→북쪽 기본)", keywords: ["필드", "들판", "평원", "길", "도로", "숲", "진군", "field", "route", "road", "plain"],
+  { id: "beodeul_field", label: "버들항 필드(길·숲)", tilesetId: BEODEUL_TILESET_ID, tool: "author_wild_route",
+    about: "버들항 칩셋의 야외 필드 — 출구에서 출구로 이어지는 흙길·양옆 숲(나무 밑 짙은 풀), 몬스터 수집 게임이면 조우 풀숲(남쪽→북쪽 기본)", keywords: ["필드", "들판", "평원", "길", "도로", "숲", "진군", "field", "route", "road", "plain"],
     extraArgs: (map) => ({ exits: [{ x: Math.floor(map.width / 2), y: map.height - 1 }, { x: Math.floor(map.width / 2), y: 0 }] }) },
 ];
 

@@ -1,0 +1,481 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7b01112dfaffbb42969d9fa03fed5413d83b5ab112b4d8fab0bcd17b5596c977",
+ "width": 96,
+ "height": 112,
+ "kind": "structure",
+ "name": "交番 파출소",
+ "label": "jp_city/jp-bldg-koban",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 12,
+  "darkV5": 38,
+  "nearBlackEdge": 0.99,
+  "opaqueTiles": 24
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hip/gable roof, two shingled planes left and right of a central ridge",
+      "rows": "7-47",
+      "evidence": "c",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "47-50"
+     },
+     {
+      "part": "white gable wall under the eave with small vent window",
+      "rows": "45-56",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue sign band with kanji",
+      "rows": "57-77",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brick wall, door and window",
+      "rows": "78-111",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 41,
+    "front_face_rows": 60,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped plane that starts as a peak at row 7 and widens row by row to full width at row 19, with shingle courses on both slopes down to a light eave edge line at about rows 45-50. A dark eave shadow line follows it, and the front wall (sign band, brick wall, door, window) runs below to row 111. The two roof planes are shaded differently, but this is not an isometric side wall of the body. The south face is a normal elevation. The roof counts as a sloped top surface (evidence c) above a front face of well over 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a whole building like the references, and its visible tones per tile (9) are close to the references (12 and 10). Its dark edge pixels are 0% neutral, so the outlines are tinted (dark grey-blue beside the slate roof, dark tone beside the wall) rather than a black sticker line. Near-flat coverage is 15% against 0% for both references. The roof has about 4 grey steps with some tile-row texture, but it reads as fairly regular and flat. The white stone wall has only light grey block lines and little per-stone shading or speckle, and the blue sign band is a large flat fill with only the text on it. The references have 5-6 steps per material, scalloped tiles with per-tile highlights, plaster speckle and stones shaded one by one. The candidate is cleaner and simpler, and it looks flatter and thinner next to them. Because of the flat fills on the sign band and walls and the shallower ramps, it does not match the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 33651
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hipped roof, two tiled slopes meeting at a central ridge",
+      "rows": "7-49",
+      "evidence": "c",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "50"
+     },
+     {
+      "part": "white gable/eave wall under roof with small orange vent",
+      "rows": "50-56",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue signboard with kanji",
+      "rows": "57-77",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brick wall, wooden door and window",
+      "rows": "78-111",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 42,
+    "front_face_rows": 56,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A large tiled roof fills rows 7-49. The silhouette widens steadily from 3px at row 7 to 74px at row 19, and the tile courses run in horizontal bands that are light on the left slope and dark on the right. The roof ends in a bright edge line, diagonal at rows 45-49 (white at x=29 rows 48-49), followed by a dark eave shadow row at 50. Below it the front face runs from row 50 to 111, about 56 rows from the narrower wall start at row 56: the white wall, blue sign, brick wall, door and window. So the building shows both a roof top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's grey roof has only about 3 steps: flat slate with faint tile lines and no per-tile highlights, where the references show scalloped tiles with 5-6 steps. The wall is pale grey brick with 2-3 tones and large flat areas, such as the blue sign band and the plain wall panels. The sign band is a flat navy fill with white text, which looks sticker-like. The outline is a dark bluish-grey, tinted and not neutral (0% near-neutral edge pixels), but it is applied fairly uniformly around the shapes. Measured facts: 9 visible tones per tile against 10-12 in the references, and 15% near-flat coverage against 0%. The candidate is clearly flatter and simpler than both references, which have rich grain, per-tile shading and speckled plaster or stone. The door and window are decent but small.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 30693
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gabled roof (left lit slope and right shaded slope with tile rows)",
+      "rows": "7-55",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gable wall triangle under roof with small vent",
+      "rows": "45-57",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue signboard band with kanji",
+      "rows": "59-77",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall with door and window",
+      "rows": "78-111",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 49,
+    "front_face_rows": 54,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building has a large tiled roof with a ridge line and two slopes (rows 7-55, widening from 3 to 74 px) that forms the top surface (evidence c). Along the bottom edge of the roof there is a light eave edge line (about rows 45-55) with the gable wall triangle below it. Below that, the front face runs from the sign (rows 59-77) through the wall, door and window down to row 111, which is more than 3 rows. The roof is a real sloped plane, not a flat front-facing strip, so the object reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 9 visible tones per tile against 12 and 10 for the references, so it is near the stone reference but below the timber-and-tile house. Its near-flat coverage is 15% against 0% for both references. That shows in the large uniform areas: the navy sign band, the pale grey wall blocks and the roof planes. The roof does have some slate texture and a few highlight rows, but it is only about 3-4 grey steps with a regular pattern. The references have 5-6 steps with per-tile scallops, plaster speckle and stones shaded one by one. The wall brick lines are thin and regular, with little per-stone variation. The outline is not neutral black (0% near-neutral dark edge pixels) and leans cool and tinted, but it is applied fairly uniformly around the shapes. This reads as a clean, slightly sticker-like building, thinner and flatter than the Beodeul references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 62470
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof (two planes meeting at a central hip/ridge line)",
+      "rows": "7-49",
+      "evidence": "c",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "50-50"
+     },
+     {
+      "part": "gable wall / fascia under roof with small vent",
+      "rows": "45-55",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue sign board",
+      "rows": "59-77",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "door and window on brick wall",
+      "rows": "78-108",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 42,
+    "front_face_rows": 56,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped tile plane (rows 7-49) with a diagonal light fascia/edge line at about rows 45-49 and a dark shadow line at row 50 in the column scan. The roof is shaded light on the left and dark on the right. Below it is a tall south facade (rows ~56-111): a sign, a door, a window and a brick wall. The roof is a sloped plane above an eave line (evidence c), so the building reads as three-quarter, not front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are close to the references: 9 visible tones per tile against 12 and 10, 0% neutral dark edges, and tinted outlines (grey-blue next to the roof, dark brown on the door). Even so, by eye the candidate is shallower than the Beodeul pieces. The grey roof has only about 4 steps and reads as large flat facets with thin tile lines. It has none of the scalloped tiles with per-tile highlights or the speckle that the references show. The white wall is mostly a flat light grey with simple brick lines and little stone-by-stone shading. The blue sign band is a large flat fill, and the 15% near-flat coverage against 0% for both references confirms this. The result looks cleaner and more sticker-like than the references, so it does not match their richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 68740
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.340Z",
+ "cells": {
+  "16": [
+   "08d71527c8580fc6",
+   "0c71c29129e1a4aa",
+   "0e4fa9c02ff6ac06",
+   "13a90a24454aa75a",
+   "15ff741a25f5d016",
+   "1d5011f412f42887",
+   "23f3b3da529f0932",
+   "24798a82a4caee3a",
+   "29ca8d793add0122",
+   "2c8ba60fca89eb9d",
+   "32f467bc53f285d5",
+   "381d56b66a36eaa9",
+   "3a0ff209b669f1b3",
+   "3bef5a13d819aaba",
+   "44d755fafe845b30",
+   "4581f6806cc003b3",
+   "52364b289ce2396f",
+   "6524528cb6d8bce7",
+   "7019b493ac10d272",
+   "7cf33c5b8504e024",
+   "7e7ee7a186e9ead1",
+   "8a742d2cf9b4e3fd",
+   "8e1448e3206577ae",
+   "9c62aa5f4ffef5c1",
+   "9cfd13355ca27d53",
+   "a3a56c0b3784d061",
+   "ab287d983d018199",
+   "af3aceec53318108",
+   "bd2b0ee5d4264d98",
+   "c2724d87a70eb0f9",
+   "cc96c9b93ad64a52",
+   "d4a41028e30e491e",
+   "de75ca6b1d4ebc28",
+   "f4df8abbc1b3af14",
+   "fac4f06828a7bb0e",
+   "fb5fe770aa01d0a5"
+  ],
+  "24": [
+   "016c210d16644d5d",
+   "0a17ccac0062f17a",
+   "0c4f9e1fdd694777",
+   "0d57fd8d48348f01",
+   "0f3534f79ab3b0b6",
+   "1691de124dd541e3",
+   "17e724fb7b0d8297",
+   "18eb44769ce4ff94",
+   "21feb415f3be543e",
+   "2248453bf2eb2672",
+   "2c24303115c2ffb3",
+   "3468294a5d6bb48a",
+   "3df82b4236582927",
+   "3f4d8757cff17c03",
+   "4e00807a274e354f",
+   "5041c7e4b0e63988",
+   "5fd3c5b69dd11c5e",
+   "620530aecc477a8a",
+   "64ccc40f60a1ea06",
+   "65660ede38e8b801",
+   "7866966ec3d2ce80",
+   "7bf231bc49b1f1e3",
+   "82adfc6657d8bbb7",
+   "82f237e5e7e96971",
+   "86722b4b8b3ce52d",
+   "8bd29c58987fbbba",
+   "8e891402602b0bb5",
+   "9c0ef4e74722d8a6",
+   "a2a55d5272675e94",
+   "a8bcd2cdb2ce41ee",
+   "ab0be7b6d14d5095",
+   "bd6dc54749a8e8d7",
+   "c0199430dffa3f80",
+   "d6d1ffc57d9bb5b7",
+   "db76c375397d2728",
+   "e57aa2ff25c33da2",
+   "e5c3288b8633c5dd",
+   "e98cb0c230a31b13",
+   "f7032d1c02a2896e",
+   "fd6c7322762bc5d5"
+  ],
+  "32": [
+   "0a6393f18bfc7bb7",
+   "567bbe98a2accae5",
+   "5a44a71c513c3d14",
+   "66b0e61f05625f2a",
+   "6af7bd3c1fdb5381",
+   "728f676164242a66",
+   "7d92b8fc57091729",
+   "7df03850505bc7c6",
+   "875ffd19220b6afd",
+   "8a21aee7acbba062",
+   "8a536c58425defa1",
+   "8eb0060a3e39e021",
+   "8f5ef56bbc8a8256",
+   "948546ae8cef52ea",
+   "94f0ca7476e9bba6",
+   "ad72bfa7d4ef6d6f",
+   "bf769118889e45b9",
+   "ce1148f19b0b7b72",
+   "d64c4d20a4173f32",
+   "dd65cdea1a42abfb",
+   "e3c08fd6c8ef1379",
+   "ed9983f0ba046c5c",
+   "f2142e5f6a3af349",
+   "f4bfce165995eafa"
+  ],
+  "48": [
+   "00643357fede2f05",
+   "0ca6b418be5f0266",
+   "1b8cae1870d11521",
+   "3920915d0b307ebd",
+   "4c9d7d0b49ba59da",
+   "5066279b9427f2c3",
+   "c9d175501aaa84ef",
+   "cba045f2fd7fc945",
+   "d748f8a905bc763c",
+   "e93b6d1049631341",
+   "f44bbfbe34fbd26d",
+   "fbad29c925d2a6cc"
+  ]
+ }
+}

@@ -630,6 +630,12 @@
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-page-cursor { right: 12px; bottom: 12px; color: #c85048; font: 18px/20px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; text-shadow: none; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active { box-sizing: border-box; height: auto; min-height: 0; padding: 0 8px 8px; max-height: 240px; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active .dialogue-box.choices { width: 224px; height: auto; min-height: 0; max-height: 232px; padding: 8px 12px; margin-left: auto; overflow-y: auto; }
+/* 고정 틀(2026-10-22): 원작처럼 글 상자(80px)는 아래에 그대로 두고, 예/아니오 칸은 그 위 오른쪽에 뜬다. */
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active.choices-framed.position-bottom { top: auto; bottom: 0; }
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active.choices-framed.position-top { top: 0; bottom: auto; }
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active.choices-framed { height: 80px; min-height: 0; max-height: none; padding: 0; gap: 0; }
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active.choices-framed > .dialogue-box.choices { position: absolute; right: 0; bottom: 100%; top: auto; margin: 0; max-height: 160px; }
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active.choices-framed.position-top > .dialogue-box.choices { top: 100%; bottom: auto; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active .choice-list { gap: 0; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active .choice-btn { font: 18px/28px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; color: #384840; border: 0; border-radius: 0; background: transparent; padding: 0 8px 0 16px; text-shadow: none; min-height: 28px; height: auto; flex: 0 0 auto; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active .choice-btn.selected { background: #e0e8d0; box-shadow: none; }

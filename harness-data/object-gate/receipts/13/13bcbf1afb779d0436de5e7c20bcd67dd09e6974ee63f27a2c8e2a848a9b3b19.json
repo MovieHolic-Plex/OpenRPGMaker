@@ -1,0 +1,464 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "13bcbf1afb779d0436de5e7c20bcd67dd09e6974ee63f27a2c8e2a848a9b3b19",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "manga booth",
+ "label": "modern_city_interior/manga-booth",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 윗면 0행 < 3 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "윗면 0행 < 3 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 26,
+  "darkV5": 34,
+  "nearBlackEdge": 0.81,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel/back-wall band",
+      "rows": "16-19",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side pillars (blue)",
+      "rows": "15-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top",
+      "rows": "26-30",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter front",
+      "rows": "31-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "monitor, bookshelf, items on counter",
+      "rows": "20-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red armchair in front",
+      "rows": "31-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The booth is a flat front view. Two side pillars frame a blue back wall, and a 3-row blue strip at rows 16-18 sits at the top with a light line at row 19. That strip has no eave shadow and no roof or awning plane, so it reads as a front-facing lintel. The pillars are plain vertical strips with no tops. The counter has a small top band (rows 26-30, lightest edge line at row 30), but it is a secondary part. The main structure has no roof or top surface, and the width profile is a constant 32 px for rows 15-33, then 20-26 px with no widening or narrowing that would suggest a roof."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny desk/booth prop (blue frame, monitor, red chair) about one tile in size. It has no roof, no walls and no door, so it is not a whole building and does not match the reference kind. The measured facts (20 visible tones, 7% near-flat, 0% neutral dark edges) look fine for a small object, and the outline is tinted, but that is not enough. The reference buildings show 5-6 shaded steps per material, with scalloped roof tiles, plaster speckle and individually shaded stones. The candidate has about 3 steps per material (blue frame, red chair, brown desk), and its large areas are simple fills. As a building it is far less rich and complete than either reference, and at this scale it reads as a sticker-like icon rather than a Beodeul-quality structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17499
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue side walls",
+      "rows": "15-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "back wall panel",
+      "rows": "16-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top",
+      "rows": "27-30",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "31-32"
+     },
+     {
+      "part": "monitor and bookshelf on counter",
+      "rows": "16-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red chair",
+      "rows": "31-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The only horizontal surface is the wooden counter top, rows 27-30. It is about 4 rows deep and ends in a light front-edge line at row 30, with darker wood on rows 31-33 below it (a 3-row front face). The monitor, shelf and books on it are decor. The booth has no roof or lintel top slope. The blue side walls and the red chair are drawn as flat front-facing vertical faces with no top surface. So the counter gives a weak three-quarter read, and the rest of the structure is front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny desk-and-chair vignette: a blue frame, a monitor, a red chair and a desk. It has no roof, wall or door structure, so it is not a whole building like the two references. The measured facts are fine: 20 visible tones per tile (references 12 and 10), 7% near-flat coverage, and 0% neutral dark edges, so the outlines are tinted rather than near-black. But those numbers come from a very small, compact sprite. By eye, each material (blue frame, red chair, wood desk) has only about 2-3 shading steps, against the roughly 5-6 per material on the references. There are no roof-tile scallops, plaster speckle or stone-by-stone shading. The piece is much smaller and simpler than a building and lacks the per-material ramps the references show. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19607
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header/lintel band across the top, drawn as a front-facing blue strip",
+      "rows": "15-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right dark-blue side pillars, vertical faces",
+      "rows": "14-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden counter/desk top",
+      "rows": "27-30",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "monitor and bookshelf on the counter",
+      "rows": "19-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red chair in front of the booth",
+      "rows": "31-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The booth is drawn straight on. Rows 15-19 form a flat blue header with no roof slope, no front-edge line and no eave shadow, so it reads as a front-facing lintel. The side pillars (x=0-3 and x=29-32) are flat vertical strips with no tops. The only top-like surface is the small wooden counter at rows 27-30, which has a light edge line at row 30. That counter is a minor interior part, not the booth's main body. The booth structure, meaning its roof and lintel, shows no top slope or surface, so the main body reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The references are whole buildings with tiled roofs, timber-framed or stone walls, and doors. The candidate is a small desk-and-chair prop about one tile wide, with a blue monitor, a red chair and a dark frame. It has no roof, walls or door, so it is not a building and does not match the reference kind. Its measured tones per tile (20) are higher than the references (10-12), and its dark edge pixels are tinted (0% neutral). Those figures come from a tiny, busy sprite, though, and do not match the references' scale or structure. By eye it shows only about 3 ramp steps per material (chair red, frame blue-grey, desk tan), with no per-tile roof scallops, plaster speckle or stone-by-stone shading. Against the references it reads as a small, simple icon, not a building with the same depth of material shading. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18072
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band / roof strip",
+      "rows": "15-19",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right blue side pillars",
+      "rows": "15-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top with front edge",
+      "rows": "27-30",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "31-33"
+     },
+     {
+      "part": "monitor, bookshelf and papers on counter",
+      "rows": "20-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red armchair in front",
+      "rows": "31-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The booth is a flat front view. The roof or header is a 3-row blue strip (rows 16-18) with a 1-row light line at row 19 and no eave shadow, so it reads as a front-facing cornice and not as a sloped roof plane. The two side pillars (x about 0-4 and 28-32) are vertical faces with no top surface. The counter (rows 27-33) is a small interior detail with a short tan top and a front face. The booth as a whole shows no roof or top surface, so it is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny desk, monitor and red chair in a blue frame, roughly one or two tiles in size. It has no roof, walls or door, so it does not read as a whole building like the two references, which are large tile-roofed houses with timber or stone walls. The measured facts do not count against it: 20 visible tones per tile against 10-12 for the references, 7% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted. By eye, though, the objects are shaded with only about 3 steps each (chair red, monitor blue, desk brown). They lack the per-tile roof scallops, plaster speckle and stone-by-stone shading that the references show. As a building piece it is far thinner and flatter than the references and lacks their structural content, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17725
+  }
+ ],
+ "decidedAt": "2026-10-21T00:04:54.232Z",
+ "cells": {
+  "16": [
+   "231e06e795ac96a9",
+   "749c7203dfbb748f",
+   "7cfaabb90c58483b",
+   "d1f63c713cb1d811",
+   "f8540a62dfd2a43c",
+   "febe9390e9eb5638"
+  ],
+  "24": [
+   "0906bec1fd546ad9",
+   "0961eb76dac09d56",
+   "0b4cb5682a5f2941",
+   "764e837964128e6a",
+   "8b5b3c23559e1267",
+   "9051d58a9116cdc8",
+   "9f4a23fe463214c8",
+   "a557cd12a8c78625",
+   "b28deee65da63043",
+   "bbecc1902920a489",
+   "c4602647789c595e",
+   "dc197c0455011bcb"
+  ],
+  "32": [
+   "3de39e088b22f8ae",
+   "499e9443b025521c",
+   "8c3d725c81207a8f",
+   "c452c1be9e43ae0b"
+  ],
+  "48": [
+   "2ffaf1447b609aa3",
+   "950ab0a0f00933c2",
+   "a5fe070e71c22ea7"
+  ]
+ }
+}

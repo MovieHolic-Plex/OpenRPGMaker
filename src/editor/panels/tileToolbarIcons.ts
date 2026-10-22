@@ -8,7 +8,8 @@ type SvgIconName =
   // 스튜디오 바(톱바) 세트 — 2026-09-03 표준·전문가 셸 개편. 클래식 툴바의 CSS 배경 아이콘
   // (components/icons.css 의 .oprn-icon-*) 대신 사이드바와 같은 22px 스트로크 규격을 쓴다.
   | "database" | "image" | "globe" | "music" | "docSearch" | "command" | "play" | "gear"
-  | "history" | "user" | "help" | "expand" | "chevronDown" | "panels";
+  | "history" | "user" | "help" | "expand" | "chevronDown" | "panels"
+  | "grid";
 type SvgTag = "path" | "rect" | "circle";
 type SvgNodeSpec = {
   readonly tag: SvgTag;
@@ -262,6 +263,10 @@ const ICONS: Record<SvgIconName, readonly SvgNodeSpec[]> = {
     { tag: "rect", attrs: { x: "3.5", y: "4.5", width: "15", height: "13", rx: "1.5" } },
     { tag: "path", attrs: { d: "M9 4.5v13" } },
     { tag: "path", attrs: { d: "M3.5 12H9" } },
+  ],
+  grid: [
+    { tag: "rect", attrs: { x: "3.5", y: "3.5", width: "15", height: "15", rx: "1.5" } },
+    { tag: "path", attrs: { d: "M8.5 3.5v15M13.5 3.5v15M3.5 8.5h15M3.5 13.5h15" } },
   ],
 };
 

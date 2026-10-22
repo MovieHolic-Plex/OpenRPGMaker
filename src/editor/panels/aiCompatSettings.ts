@@ -28,6 +28,7 @@ import {
   type OpenAiCompatReasoningMode,
   type OpenAiCompatEndpointPublic,
 } from "@/ai/openAiCompat";
+import { HOST_AI_DISABLED_GUIDANCE, isHostAiDisabledMessage } from "@/ai/hostAiDisabled";
 import { getOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { attachDelayedTooltip } from "@/editor/delayedTooltip";
 import { el } from "@/util/dom";
@@ -71,7 +72,11 @@ interface HeaderRow {
 const KEY_MASK = "••••••••";
 
 function describeError(error: unknown): string {
-  if (error instanceof ChatGptCompanionResponseError) return error.serverMessage ?? `연결 서비스가 ${error.httpStatus} 로 응답했어요.`;
+  if (error instanceof ChatGptCompanionResponseError) {
+    // 서버가 AI 를 꺼 둔 503 은 서버 원문 대신 톱바·설정 창과 같은 안내를 쓴다.
+    if (error.serverMessage && isHostAiDisabledMessage(error.serverMessage)) return HOST_AI_DISABLED_GUIDANCE;
+    return error.serverMessage ?? `연결 서비스가 ${error.httpStatus} 로 응답했어요.`;
+  }
   const reason = (error as { reason?: string } | undefined)?.reason;
   return reason === "timeout"
     ? "연결 서비스의 응답이 늦어요. 잠시 뒤 다시 시도하세요."
@@ -99,6 +104,8 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
   let endpoints: readonly OpenAiCompatEndpointPublic[] = [];
   let editing: { readonly id: string | null; readonly source?: OpenAiCompatEndpointPublic } | null = null;
   let loadError = "";
+  /** 오류 원문·원인 안내. 안내 문장과 한 문장으로 잇지 않고 따로 한 줄로 보인다(번역·서버 원문이 섞이지 않게). */
+  let loadErrorDetail = "";
   let confirmingDelete: string | null = null;
 
   const list = el("div", { class: "ai-compat-list", dataset: { testid: "ai-compat-list" } });
@@ -136,7 +143,10 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
   // ── 목록 ──────────────────────────────────────────────────────────────────
   function renderList(): void {
     loadNote.hidden = !loadError;
-    loadNote.textContent = loadError;
+    loadNote.replaceChildren(
+      document.createTextNode(loadError),
+      ...(loadErrorDetail ? [el("span", { class: "ai-compat-load-detail", text: loadErrorDetail })] : []),
+    );
     if (endpoints.length === 0) {
       list.replaceChildren(el("p", {
         class: "ai-config-help ai-compat-empty",
@@ -206,7 +216,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
       confirmingDelete = null;
       void deleteOpenAiCompatEndpoint(endpoint.id)
         .then((next) => { endpoints = next; if (editing?.id === endpoint.id) closeForm(); renderList(); })
-        .catch((error: unknown) => { loadError = describeError(error); renderList(); });
+        .catch((error: unknown) => { loadError = describeError(error); loadErrorDetail = ""; renderList(); });
     });
 
     const toolsWarning = endpoint.lastTest?.toolsOk === false
@@ -622,9 +632,11 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
     try {
       endpoints = await fetchOpenAiCompatEndpoints();
       loadError = "";
+      loadErrorDetail = "";
     } catch (error) {
       if (!showErrors) return;
-      loadError = `사용자 지정 엔드포인트 목록을 불러오지 못했어요. ${describeError(error)}`;
+      loadError = "사용자 지정 엔드포인트 목록을 불러오지 못했어요.";
+      loadErrorDetail = describeError(error);
     }
     if (disposed) return;
     renderList();

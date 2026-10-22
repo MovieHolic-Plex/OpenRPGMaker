@@ -402,8 +402,11 @@ export async function observeScheduledTimeTransition(
 export function isGameTimePausedForRuntime(scene: Pick<PlaySceneContext, "game" | "session" | "timeSleepInProgress">): boolean {
   if (scene.timeSleepInProgress) return true;
   if (isCutsceneInputLocked(scene.session)) return true;
-  const root = scene.game.canvas.parentElement?.closest(".play-stage") ?? scene.game.canvas.ownerDocument;
-  return root.querySelector("[data-testid='main-menu'], [data-testid='world-atlas'], [data-testid='battle-scene'], [data-testid='ending-screen'], [data-testid='game-over-screen']") !== null;
+  // .play-viewport 가 .play-stage 를 감싼다. 상점·전술 전투·월드 지도처럼 viewport 층에 붙는 화면도 찾도록 바깥에서 고른다.
+  const canvasParent = scene.game.canvas.parentElement;
+  const root = canvasParent?.closest(".play-viewport") ?? canvasParent?.closest(".play-stage") ?? scene.game.canvas.ownerDocument;
+  // 전술 전투(tacticsBattle, TACTICS_OVERLAY_TESTID)도 전투다 — 일반 전투처럼 시계를 멈춘다(#2586).
+  return root.querySelector("[data-testid='main-menu'], [data-testid='world-atlas'], [data-testid='battle-scene'], [data-testid='tactics-battle'], [data-testid='ending-screen'], [data-testid='game-over-screen']") !== null;
 }
 
 function hideTimeTint(scene: PlaySceneContext): void {

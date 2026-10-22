@@ -1,0 +1,412 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "606be3bcfd1ab820483ed9758736e227d79fbd87f29f1b962176d59f1cc6c1f1",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "mci tv stand",
+ "label": "modern_city_interior/mci-tv-stand",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 명암 3단 < 4 (1/4)",
+  "화풍: 평면 채움 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "명암 3단 < 4 (1/4)",
+   "평면 채움 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 14,
+  "darkV5": 33,
+  "nearBlackEdge": 0.32,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "TV and screen on the stand top",
+      "rows": "1-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "potted plant on the right",
+      "rows": "8-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cabinet top surface",
+      "rows": "13-20",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "cabinet front with two drawers",
+      "rows": "22-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a drawer cabinet, not an open frame, so the kind does not match well. Its top is a tan band that runs from about row 13 to row 20 and is visible left and right of the TV base. It ends in a light front-edge line at row 21 (#ddbf91), followed by a darker shadow row at 22. Below that is a drawer front of about 10 rows (22-31). The TV and the plant sit on the top as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a wooden TV stand with a monitor and a small plant. The measured facts are decent: 12 visible tones per tile against 9 for the hedge, 17 for the stall and 20 for the well, 15% near-flat coverage (similar to the stall's 13%), and 44% near-neutral dark edges (the same as the bench). By eye, the wood body shows only about 3 steps (a light top, a mid body and a dark drawer or base), where Beodeul wood has 5-6 with grain and per-plank highlights. The TV screen is mostly a flat dark blue block with a single highlight. The outline leans dark but is only partly tinted, so it reads as mixed rather than a clear dark-material tone. Texture is modest, with a few grain marks on the cabinet and some leaf variation on the plant. Overall it is acceptable and clean but thinner and flatter than the stall and well references, and shallower in shading than a careful Beodeul piece.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14955
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "TV on stand top",
+      "rows": "1-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "potted plant",
+      "rows": "8-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stand top surface",
+      "rows": "14-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "front face with two drawers",
+      "rows": "22-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stand body is a cabinet with a tan top band at about rows 14-21. It ends in a light front-edge line at row 21 (#ddbf91), followed by darker shadow at row 22 (#8a6128). Below that is a 10-row front face (rows 22-31) with two drawers. The TV and the plant are decor sitting on the top. The drawn object is a closed drawer cabinet, not an open frame or rack, so the kind match is doubtful. It still reads as three-quarter because it has a clear top and front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a wooden TV stand with a monitor and a small plant. It measures 12 visible tones per 16x16 tile, which sits between the hedge (9) and the cheese stall (17) and well (20). Near-flat coverage is 15%, comparable to the cheese stall at 13%. Dark edge pixels are 44% neutral, the same as the bench and below the lamp at 100%, so the outline is mixed. Visually, the wood cabinet shows about 3-4 steps with a plank top, two drawers and a few grain dots. The monitor is a fairly flat dark blue screen with a light bezel, and the plant has only a couple of greens. This is thinner than the stall and well, which carry 5-6 steps with per-element highlights and grain. The piece is clean and acceptable but a little shallower than the richest references. Because the outline is partly neutral and the shading is shallow on the screen and plant, it is not clearly at the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15425
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "television (screen and stand foot)",
+      "rows": "1-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "potted plant on right",
+      "rows": "7-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stand top surface (light tan plane)",
+      "rows": "13-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "drawer front face",
+      "rows": "22-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a closed drawer cabinet carrying a TV and a plant, so it is not really an open frame or rack. Its top is a tan plane at about rows 13-21. The columns at x=8, 16 and 23 show it: mid-tan at row 20, a light front-edge line at row 21 (L=171-195), then the darker face (L=103) from row 22, with a dark shadow row at 23 under the edge on some columns. The drawer fronts run rows 22-30 with an outline at row 31, giving a front face of about 10 rows. The TV (rows 1-15, with its foot at 17-19) and the plant on the right are decor on the top. Overall it reads as a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 12 visible tones per 16x16 tile. That sits between the hedge (9) and the stall (17) and below the well (20), so density is only slightly lower. Near-flat coverage is 15%, close to the stall's 13%, and it has no large single-colour fills. The wood cabinet shows about 4 steps (top highlight, front, drawer shadow, dark base), a little shallower than the 5-6 on the references. The TV has a dark bezel against a lighter screen with highlight dots, and the plant has a few greens with a terracotta pot. Dark edge pixels are 44% near-neutral, the same as the bench and between the well (33%) and the lamp (100%). So the outline is mixed: some tinted brown beside the wood, with some near-black on the TV. This is not a uniform sticker outline. It is a small, simple piece that holds up next to the references and does not look thinner or flatter than them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21284
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "TV and screen",
+      "rows": "1-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "potted plant",
+      "rows": "7-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cabinet top surface",
+      "rows": "14-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "cabinet front with two drawers",
+      "rows": "22-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a two-drawer wooden cabinet, not an open frame or rack, so the kind does not match. Its tan top surface runs about rows 14-21. A light front-edge line sits at row 21 (#ddbf91), followed by darker eave shadow at rows 22-23 (#8a6128, #533020). Below that is a drawer front of about 10 rows (22-31). The TV and plant stand on the top and are decor. The TV base and screen are vertical or placed objects and are not the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small cabinet with a monitor and a potted plant. It has 12 visible tones per tile, which is above the hedge (9) but below the stall (17) and well (20). Its 21 total colours are about half the 38-40 of the comparable props. Near-flat coverage is 15%, in line with the stall's 13%, but the picture shows the TV screen, the dark bezel and the cabinet front as fairly flat slabs. The wood ramp has roughly 3-4 steps against about 6 on the references, with little grain or per-plank highlight. Dark edge pixels are 44% near-neutral, so the outline is mixed: part tinted, part neutral black, giving some of the sticker look. The Beodeul pieces instead use tinted dark-material outlines selectively and shade each surface in more steps. The piece is clean and readable but shallower in shading and texture than the references, so with doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18259
+  }
+ ],
+ "decidedAt": "2026-10-21T01:24:13.562Z",
+ "cells": {
+  "16": [
+   "0a6778cfe0722954",
+   "5a0877ba249b5848",
+   "7002ff9aa1bb7d3b",
+   "b88fd35a60808fa6"
+  ],
+  "24": [
+   "033f8c29993a4d0b",
+   "1bcc1bff5c59dfcb",
+   "1d9a4f3b28ff4a05",
+   "27d78d5283506d4b",
+   "3844b319117e9507",
+   "38f90b49b30d253e",
+   "5e5d7e3ad7d11c51",
+   "63faa5f04ce4ecea",
+   "6a110659c3902faf",
+   "71db1a81b6a1fe94",
+   "73e96b25c2c1cc24",
+   "7a545afd6df733e1",
+   "84c6d5284af43774",
+   "9493ed0dea3c93a7",
+   "951f8b90950f12b7",
+   "97ea1147a2bb401a",
+   "a1366fe67276c1f1",
+   "b97616888c9cbd4f",
+   "d84e32a64346eb21",
+   "e56248f1e11b43fb",
+   "e6437101a40244b9",
+   "e743aa55a8047f12",
+   "e99fe363325aa881"
+  ],
+  "32": [
+   "c2fcb66c1aa516cf"
+  ],
+  "48": [
+   "09007e8c278dfd15",
+   "10b5fec574f6f7ae",
+   "1567284841766315",
+   "23a390877fa90fcd",
+   "454e3fa170072754",
+   "8250a9f44a6aea5c"
+  ]
+ }
+}

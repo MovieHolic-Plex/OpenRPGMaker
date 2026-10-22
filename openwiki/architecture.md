@@ -49,6 +49,11 @@
   ⑤ 공용 자료 304 는 본문을 만들기 전에 판본(SELECT)만으로 판정한다 — 새 호스트 프로세스(데스크톱은 매 실행)의 첫 요청이 304 로 끝날 일에 읽기·gzip 1s 를 쓰던 것.
   ⑥ 창 닫기는 창을 바로 숨기고 저장을 60s 까지 기다린다 — 예전 10s 상한이 새 빌드 첫 실행 뒤의 큰 자동 저장(71MB 프로젝트 13~16s)을 끊어, 다음 실행이 또 «첫 부팅»(+10~15s)이 됐다.
   남은 것: 편집기 진입은 여전히 번들 타일셋 JSON 67MB 를 동기로 싣는다(정규화·소유 참고문서 복원이 동기로 쓴다) — 지연 로드는 부팅 경로 비동기화가 필요하다. 웜 부팅 편집기 입력 가능까지 클릭 뒤 약 5~7s(부하 40).
+- **시작 스플래시·입구 분리 (2026-10-21):** 아이콘을 누르면 app ready 직후 작은 스플래시 창(`electron/main/splash.ts` — data: 문서, 앱 아이콘·이름·진행 막대, 번들·프리로드 없음)이 뜬다.
+  `dist-electron/main.cjs` 는 이제 가벼운 입구 `electron/main/boot.ts`(12KB, 빌드가 200KB 상한 검사)다 — 스킴 권한·한 번만 실행 잠금·링크 받아 두기를 하고, ready 에서 스플래시를 띄운 뒤(그려지길 최대 400ms 기다림) 본체 `app.cjs`(옛 main.ts, `startApp(boot)`)를 require 한다. 본체를 먼저 평가하면 ready 가 약 0.3s 늦었다.
+  큰 창은 숨긴 채 만들고(`fullscreen` 은 보일 때 건다 — 리눅스는 생성자 fullscreen 이면 show:false 여도 창을 띄워 빈 화면이 스플래시를 덮었다), 시작 화면이 카드를 그린 뒤 `oprn:start.screenReady`(preload `startScreenReady`)를 보내면 보이고 스플래시를 닫는다. 신호는 rAF 없이 바로 보낸다(숨은 창은 프레임이 안 돈다). 신호가 없으면 문서 로드 6s 뒤 그래도 보인다.
+  숨은 동안 문서 실패(did-fail-load·응답 4xx/5xx·렌더러 종료·preload 오류)는 스플래시에 원인과 「다시 시도」(#retry)·「닫기」(#quit)로 보인다. QA 진입점(OPRN_SMOKE_PAGE·OPRN_OPEN_PROJECT_DIR)과 Playwright 실행은 스플래시가 기본으로 꺼진다(`app.firstWindow()` 가 앱 창이어야 해서) — `OPRN_SPLASH=1` 로 켜고 `0` 으로 끈다(측정기는 켠다).
+  `OPRN_STARTUP_TRACE=1` 이면 메인 단계를 stderr 에 찍는다. 실측(부하 64~72, 중앙값): 처음 보이는 것 1.41s → 0.72s, 카드 있는 시작 화면 1.52s → 1.46s. 남은 큰 비용은 렌더러 프로세스 기동(큰 창 생성 → 첫 페인트 약 0.45s)과 최근 목록 요약(project 행의 `current_json` 뒤 열을 읽느라 수 MB 넘침 페이지를 훑는다 — 디스크가 차가우면 프로젝트당 수백 ms).
 - **편집기 열기 2단계 (2026-10-20): 번들 타일셋 정의 JSON 지연 로드.** 카드 클릭 → 편집기 settled 5.3s → 4.3s, JS 실행 시작 1.4s → 0.7s, 프로젝트 읽기 끝 3.9s → 2.4s(6회 교대 중앙값, loadavg 약 31).
   큰 칩셋 16종의 정의(`src/assets/*Tileset.json`, 약 43MB)는 `src/project/defaults/bundledJson.ts` 하나로만 읽는다(`bundledJson(key)` 동기 · `preloadBundledJson(keys)` 비동기).
   출처는 기본이 정적(`bundledJsonSources.ts` — 테스트·tsx·헤드리스·Electron 메인·플레이어는 예전 그대로)이고, **`vite.config.ts` 의 `bundledJsonLazyPlugin` 이 브라우저 변환(SSR 아님)에서만** `bundledJsonSources.lazy.ts`(`?url` 원본 JSON 자산 → fetch, 못 읽어 둔 것을 동기로 물으면 동기 XHR + 콘솔 경고)로 바꿔 끼운다. `resolve.alias` 로 걸면 같은 설정을 읽는 vite-node(`npm run harness`·`store`·`qa:export` …)까지 지연 출처를 타서 `XMLHttpRequest is not defined` 로 죽는다(#3103 회귀) — alias 로 되돌리지 말 것.

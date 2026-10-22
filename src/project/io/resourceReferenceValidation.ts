@@ -28,6 +28,7 @@ import { SCARLOXY_RESOURCE_IDS } from "@/assets/scarloxyPack";
 import { HARNESS_MONSTER_CHARSET_RESOURCE_IDS, HARNESS_MONSTER_RESOURCE_IDS } from "@/assets/harnessMonsterArt";
 import { OGA_BACKDROP_ASSETS } from "@/assets/ogaBackdropAssets";
 import { OGA_CRAFTPIX_BACKDROP_ASSETS } from "@/assets/ogaCraftpixBackgrounds";
+import { OPRN_PANORAMA_ASSETS } from "@/assets/oprnPanoramas";
 import { seCatalogResourceIds } from "@/assets/seCatalogRuntime";
 import { assert } from "./guards";
 
@@ -65,6 +66,8 @@ export function collectResourceIds(project: Project): Set<string> {
   for (const asset of OGA_BACKDROP_ASSETS) ids.add(asset.id);
   // OGA CraftPix 계층 배경 팩(OGA-BY 3.0) 35장. 빠지면 이 레이어를 지정한 프로젝트가 역직렬화에서 던진다.
   for (const asset of OGA_CRAFTPIX_BACKDROP_ASSETS) ids.add(asset.id);
+  // OPRN 자체 파노라마 견본(코드 도트). 빠지면 이 배경을 지정한 프로젝트가 역직렬화에서 던진다.
+  for (const asset of OPRN_PANORAMA_ASSETS) ids.add(asset.id);
   for (const id of FARMING_RESOURCE_IDS) ids.add(id);
   for (const id of OPRN_MONSTER_CHARSET_RESOURCE_IDS) ids.add(id);
   for (const id of WIZARDING_CHARSET_RESOURCE_IDS) ids.add(id);

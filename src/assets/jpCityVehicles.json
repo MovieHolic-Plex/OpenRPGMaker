@@ -518,7 +518,7 @@
    "kind": "bus",
    "length": 9,
    "image": "/assets/jp-city/vehicles/jp-bus-city.png",
-   "width": 650,
+   "width": 504,
    "height": 176,
    "frames": {
     "right": {
@@ -561,18 +561,8 @@
       "h": 9
      }
     },
-    "right_open": {
-     "x": 360,
-     "y": 112,
-     "w": 144,
-     "h": 64,
-     "foot": {
-      "w": 9,
-      "h": 2
-     }
-    },
     "left_open": {
-     "x": 506,
+     "x": 360,
      "y": 112,
      "w": 144,
      "h": 64,

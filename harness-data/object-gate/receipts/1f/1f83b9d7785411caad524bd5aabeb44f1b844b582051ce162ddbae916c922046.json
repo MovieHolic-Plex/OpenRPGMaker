@@ -1,0 +1,340 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1f83b9d7785411caad524bd5aabeb44f1b844b582051ce162ddbae916c922046",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "mci mailboxes",
+ "label": "modern_city_interior/mci-mailboxes",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 11,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel / lid band",
+      "rows": "2-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with 4x4 mailbox doors",
+      "rows": "11-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-9 form a light band at the top, with a label-like detail. It ends in a darker 1-row front-edge line at row 10 (L=91, against L=224 above and L=111 below). Below it, rows 11-29 are a 19-row front face of mailbox doors with dark slots. The band could instead be read as a vertical header sign. I took it as a top surface because of the edge line, so this reading is uncertain. The silhouette is a uniform 28 px wide, with no side face drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey mailbox bank, a 4x3 grid of slots with a light top strip. It has 8 visible tones per tile and 0% near-flat coverage, which is close to the hedge (9) but well below the well (20) and the cheese stall (17). The outline is tinted, with 0% neutral dark edge pixels, so it does not read as a sticker line. Shading is shallow, with roughly 3 distinct steps on the grey body (light face, mid grey, dark slot edges) against about 5-6 on the references' main materials. Texture is limited to the regular slot grid and a few label dots, with no grain, speckle or per-element variation. The body is a near-uniform pale grey, which looks flatter and more diagrammatic than the hand-shaded references. A careful artist would likely call it thinner than the stall and well beside it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18779
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel / lid of mailbox bank",
+      "rows": "2-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with 4x4 grid of mailbox doors",
+      "rows": "11-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-9 form a light band, 8 rows tall, across the full width. It ends in a darker front-edge line at row 10 (L=91), and below it the front face runs rows 11-29 (19 rows) as a 4x4 grid of doors with dark slots. The band is lighter than the face and has a graded lightness, which fits a horizontal top. It also carries a small label, which could be read as a face-on header plate. The edge line at row 10 and the band's height are enough to count it as a top surface. There is no receding side face, and the bottom outline is at rows 30-31."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a grey mailbox bank, a rectangle with a regular grid of slots and a label strip. The numbers are acceptable. It has 8 visible tones per tile against 9 for the hedge, 17 for the stall and 20 for the well. Near-flat coverage is 0%, and the dark edge pixels are 0% neutral, so the outline is a tinted dark grey-blue rather than black. By eye, the grey material ramp has only about 4 steps against roughly 5-6 on the references. The slots are small, evenly repeated cells with little per-cell shading, grain or wear. The overall form reads as a flat, pale panel that is noticeably thinner than the stall and well and has the sticker look of a simple graphic. It matches the simplest references (hedge, bench) but not the richer ones, and with no clear evidence it matches them in shading craft, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21751
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band / lid of mailbox unit (with label strip)",
+      "rows": "2-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-10"
+     },
+     {
+      "part": "front face with 4x4 grid of mail slots",
+      "rows": "11-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-9 form a lighter band across the full width (L 169-237). It ends in a lighter front-edge line at row 9 (L=224), followed by a darker shadow row at row 10 (L=91). Below it, rows 11-29 are a 19-row front face with a 4x4 grid of slotted doors. The top band carries a label with text lines, which could be read as a face-on sign, but the edge line and shadow row support a horizontal top about 8 rows deep. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 8 visible tones per tile, which is close to the hedge (9) but well under the stall (17) and the well (20). Near-flat coverage is 0%, so no large flat areas. The dark edge pixels are 0% neutral, so the outline is tinted blue-grey rather than black. It is a bluish-grey panel with a regular grid of slots, and it reads as roughly 4 lightness steps against about 6 on the references. The slots repeat identically with little per-slot shading, grain, wear or material variation, which makes it look like a flat grey slab. It also has none of the per-element shading and texture of the stall or well, so it looks thinner and more sticker-like beside them. Because of that, and since doubtful cases fail, the verdict is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16419
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band / lid with label strip",
+      "rows": "2-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with 4x4 mailbox slots",
+      "rows": "11-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-9 form a lighter band across the full width. It ends in a darker 1-row line at row 10 (L=91, against the neighbouring L=202-224 above and L=111-144 below), which is a front-edge line. Below it, rows 11-29 are the front face with a 4x4 grid of dark slots, 19 rows tall. There is no separate eave shadow, since row 11 is not darker than the face. The band holds a label strip (white rectangle with a red dot) that could be read as a face-on header panel, so this reading is uncertain. By the edge-line criterion it counts as an 8-row top surface above a clear front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a single-tile grey mailbox panel with a bluish-grey outline and a grid of slots. The measured outline is tinted (0% near-neutral dark edge pixels), so it is not a black sticker line. It shows 8 visible tones per tile against 9 for prop-hedge, which is the closest reference in size, and 0% near-flat coverage. The slots, header strip and frame show about 5 lightness steps, with highlight edges and per-slot shading. It is plainly less rich than the large stall and well references (17-20 tones), but it is a small, simple object, and it matches the hedge on the primary facts. By eye the grid and trim read as deliberate detail, not flat fills. The main weakness is the fairly uniform grey body, which keeps it slightly below the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19662
+  }
+ ],
+ "decidedAt": "2026-10-21T01:24:13.542Z",
+ "cells": {
+  "16": [
+   "21fde2eef12fbb1e",
+   "76bcb5d4867d489c",
+   "94a6542683ab9a3b",
+   "94fae0da045af711"
+  ],
+  "24": [
+   "0c686c416080d0e6",
+   "1858b4ce0c5c39f0",
+   "34de55f28007f32a",
+   "3d42fc1768fbd914",
+   "44e6d471285f35c8",
+   "4b42674e0255c8d0",
+   "510980ea2a4943e2",
+   "5770a81dfe28529e",
+   "599fc48d9c2faa14",
+   "5be72bad6dc78a73",
+   "63bb95f310de9fca",
+   "7a198efaf98cb3fb",
+   "8c54fda431b62db5",
+   "95a8670d113ad3e8",
+   "b190c7c6d11e022f",
+   "b874b50e2d193cc4",
+   "bbee56f3305aa3e6",
+   "c6f9e7f768598b0c",
+   "cb7605d862ca2cb2",
+   "d4a14a0e1311041e",
+   "e24762ec8f4058a9",
+   "e24cbe8cf9524a98",
+   "e901cbc914edd7dc",
+   "f4ff49be50fc2fd3"
+  ],
+  "32": [
+   "989a559727db3d8f"
+  ],
+  "48": [
+   "053cc4b59b35b5cc",
+   "1bbdbde47a022cf4",
+   "2226896f14fbe572",
+   "4b7738ecfe6eb6be",
+   "cb808aa4991d81cb",
+   "d18714aa7980c9e8"
+  ]
+ }
+}

@@ -1,0 +1,22 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "6d93cc60a61dc04d4e75668988f278f524d77e76045a8133364723d6c7dbfd5c",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T01:38:30.381Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 0행 < 3 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "note": "묶음 허용: modern_city 실내 기물 m142-h1 (15) — object-gen 다시 그림, 사용자 위임·Opus 적대 VQA 통과 2026-10-21 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/m142-h1.opus-vqa-r*.json",
+ "sig": "537f83fbd0f9a5ca7f6737f9e77ef5e5a0ba37fab1b328c68d60850977099a1f"
+}

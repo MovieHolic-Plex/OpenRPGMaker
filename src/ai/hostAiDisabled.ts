@@ -11,4 +11,4 @@ export function isHostAiDisabledMessage(serverMessage: string): boolean {
 }
 
 export const HOST_AI_DISABLED_GUIDANCE =
-  "이 서버는 AI 연결을 꺼 둔 채로 실행됐어요. 다시 시작해도 풀리지 않습니다. 서버를 실행한 사람이 OPRN_HOST_OWNER_AI=1 을 붙여 다시 실행해야 합니다(팀 소유자만 사용할 수 있어요).";
+  "이 서버는 AI 연결을 꺼 둔 채로 실행됐어요. 다시 시작해도 풀리지 않습니다. 서버를 실행한 사람이 OPRN_HOST_OWNER_AI=1 을 붙여 다시 실행해야 합니다(호스트 소유자만 사용할 수 있어요).";

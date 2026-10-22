@@ -1,0 +1,392 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "999b8a881b04f88c7c3ee80e0e42489fdd0ca8411087e5aa6626d34a62f6bce7",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "vinyl greenhouse",
+ "label": "jp-inaka-r5:inaka-vinyl-greenhouse",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 5/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 5/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 20,
+  "darkV5": 56,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 13
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "domed vinyl roof with horizontal ribs",
+      "rows": "4-25",
+      "evidence": "c",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall with door and plants",
+      "rows": "26-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soil base",
+      "rows": "43-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 22,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 16px at row 4 to 76px at row 27. Horizontal rib bands and panel stripes curve over the dome in rows 4-25, which reads as a sloped roof plane seen from above (evidence c). The x=40 scan shows a darker rib line at row 25, where the roof meets the vertical front wall. Below that, the front wall (rows 26-42) has a door opening, vertical posts and plants. A soil strip fills rows 43-46. This gives a roof top surface of over 20 rows above a front face of 17 rows, so it reads as three-quarter view. There is no distinct eave shadow, but the roof plane is large and clear."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate matches house-h112_0-stone at 11 distinct colours per 16x16 tile, and its flat-fill coverage is 1% against 0% for both references. Its dark edge pixels are 0% neutral, so the outline leans toward the neighbouring material's tone (grey-blue beside the vinyl, brown beside the wooden base) rather than a black sticker line. By eye, the dome has about 5 lightness steps from bright highlight to grey-blue shade. The curved rib bands, the faint panel seams and the individually shaded plants and door inside give it real texture. Its total of 27 colours is well below the references' 66 and 185, so the piece is simpler and a bit less dense than h101. That is expected for a small, mostly translucent single-material structure, and it does not look flat or sticker-like beside the references. It is slightly lower in richness but acceptable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17759
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "curved vinyl roof (dome/barrel canopy with rib bands)",
+      "rows": "4-25",
+      "evidence": "c",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front glazed wall with door and plants",
+      "rows": "26-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soil base strip",
+      "rows": "43-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 22,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 16px at row 4 to 76px at row 27. Rows 4-25 are a sloped translucent roof plane, with horizontal rib lines at rows 8, 12, 16 and 20-21 (x=40) and light panel bands between them. A darker line at row 25 (x=40, L=155) marks the roof's lower edge. Below it, rows 26-42 are a vertical front wall with a door, posts and plants, then a brown soil base at rows 43-46. This matches the roof-over-front-face structure of the green references, not a flat front elevation. The roof is drawn as a roof plane (evidence c), but there is no distinct dark eave shadow band."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small dome, about 45x25 source pixels, so its 27 total colours are low only because of its size. Per tile it carries a median of 11 colours, equal to the stone reference (11) and below the timber house (18). Flat-fill coverage is 1%, in line with the references' 0%. The dark edge pixels are 0% neutral, so the outline is tinted: it reads as dark grey-green or brown-tinted frame and base lines, not a uniform black sticker line. The translucent roof has about 5 lightness steps from white highlight to grey-blue shade, with curved rib bands and panel highlights. The interior shows several greens for plants, and the door and base are separated by value. Texture is less rich than the tile roofs and plaster of the references, but it is not flat, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21839
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "curved vinyl roof (dome with ribs)",
+      "rows": "4-26",
+      "evidence": "c",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall with door, glazing and plants",
+      "rows": "27-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soil base strip",
+      "rows": "43-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 16 px at row 4 to 74-76 px at rows 22-27. This is a sloped roof plane, not a flat front face. Horizontal rib bands run across rows 8-24 and read as the roof surface (evidence c). The column scan at x=40 shows a lighter band at rows 22-24 and a darker line at row 25 where the roof meets the wall. Below that, rows 27-42 are a vertical front wall with a door, glass panels, plants and posts. Rows 43-46 are a soil strip, so the front face is about 20 rows. No receding side face is drawn. The dome roof is large enough to count as a real top surface, so the object reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a much smaller piece than the references (about 50x22 source px), so I judged it by eye against the measured facts. Its median is 11 colours per full tile, the same as the stone house (11) and below h101 (18). Flat-fill coverage is 1%, in line with the references' 0%, so there are no dead flat areas. Dark edge pixels are 0% neutral, so the outline is tinted rather than a black sticker line. It reads as a dark grey-blue and brown tone next to the vinyl and the wooden base, and the forms separate mainly by value. The dome carries about 5 lightness steps of white to grey-blue in banded panels, with rib lines and highlights. Seedlings are visible inside through the translucent skin, and there is a door and a plank base. The 27 total colours are well under the references' 66 and 185, but that fits a small single-material piece. The canopy texture is less granular than the roof tiles and plaster of the references, so I rate it 'some' rather than 'rich'. A careful artist would accept it beside the references without it looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18710
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "vaulted vinyl roof (dome with ribs)",
+      "rows": "4-26",
+      "evidence": "c",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south wall with door and plants",
+      "rows": "27-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soil base",
+      "rows": "43-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 16 px at row 4 to 74-76 px by rows 22-27. This is a curved roof plane, with horizontal rib bands (dark lines at rows 8, 12, 16, 20 at x=40) running across rows 4-24. Row 25 is a darker edge line at the eave, and below it the vertical south wall runs rows 26-42 with the door, posts and plants. Rows 43-46 are the soil base. The roof shows a sloped top surface above a front face of 16+ rows, so it reads as a three-quarter view. There is no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts support the candidate. Its median of 11 colours per tile equals the stone reference (11) and is below h101 (18). Flat-fill coverage is 1%, and 0% of dark edge pixels are neutral, so the outlines carry a tint. By eye, the dome is built from banded vinyl panels with rib lines and about 4 lightness steps from white highlight to blue-grey shadow. The interior has plants in several greens, a door, and a soil/wood base strip. These read as a hand-shaded material rather than a flat fill. The total of 27 colours is well below the references (66 and 185), and the dome has fewer steps than the roof ramps (about 6). This is partly explained by the small size and the single glazing material, so the piece is slightly lower in density but not a sticker-like or flat piece. A careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21551
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.442Z",
+ "cells": {
+  "16": [
+   "126e5cb15f873ef6",
+   "1e28ee2ccfa2ff3e",
+   "2909946d60c4cf8b",
+   "32a4612cc0cb7572",
+   "3b25466cc6519d66",
+   "47137657a8014861",
+   "6aaf3f7b04562675",
+   "721761cdc100fe5d",
+   "8cd0eb92082a2cda",
+   "8fe506b43c0bcbc4",
+   "95ee9d654e21eb02",
+   "a168f95b5c59ccff",
+   "a55dd2b1e9c17227",
+   "d6ff3edf7796a87c",
+   "f0dfde6cdcf62fed"
+  ],
+  "24": [
+   "06d454a8cbe5205a",
+   "0e6f13324c6657db",
+   "148f8e644bd3a456",
+   "20728dd280aea1f8",
+   "29a4496b3fb9f18c",
+   "3d5819a1914cce60",
+   "3e92d06351c12880",
+   "4a403377da5cea67",
+   "501928fdbd27af8d",
+   "5e9decb6d10c1723",
+   "6b312aa9a9f8b13d",
+   "73b63d38ccb04e21",
+   "7d7f9f25cf3aadac",
+   "874a284585ab0f9a",
+   "91694422703a5dfb",
+   "b334080645b68ea3",
+   "cf62116e64baf8d8",
+   "de091c0a414f66e9",
+   "e09683018e0be441",
+   "e14aa4118afc77ab",
+   "e42add46c74ef1ed",
+   "e7c9ad37bb65fb35",
+   "f6226bd3fa1a29b7",
+   "fddd6483c51f809a"
+  ],
+  "32": [
+   "0514c2990f90a70e",
+   "11691f5d5f180ac8",
+   "12bcb0346eba07e4",
+   "15eeb091d54bc406",
+   "1654abf48a652d5e",
+   "16809d2fc0a835d0",
+   "186cc7c574061722",
+   "22c4b4228348e5a0",
+   "234f68f00dcf09a6",
+   "2364a24ebefad2bb",
+   "28393337e8a34983",
+   "4f640c0ecfad3b8d",
+   "5beaac0f0544349a",
+   "5d454d0c06fc1bde",
+   "5fe3344a35b8095f",
+   "637ae997ea3a4213",
+   "63f9cd78efd77301",
+   "6dd570a2bbe69a8b",
+   "842ace4f8d6dea54",
+   "86c5c8d8b3fafa24",
+   "97111fa24441703e",
+   "9d27f78fafa9ca7a",
+   "9f7c846c3e2f8e9e",
+   "a7b14bd80c628780",
+   "b71a19189bd55b79",
+   "bf1c4555acbffe36",
+   "c00b142dca3860e6",
+   "caae0004eb7e0890",
+   "cb6b426aba423514",
+   "d5f9d2f514f364a6",
+   "e2e6a1c5b9049d02",
+   "e37444d88039d82f",
+   "e3b68329ab158f2b",
+   "f409c49100c604f9",
+   "f7a5d37a56393ad0",
+   "fcf6db342c62ee08"
+  ],
+  "48": [
+   "2be39c7624f9a859",
+   "2c71c5eb175d5256",
+   "67593a3aafb030ec",
+   "7f7de72a97cca634",
+   "b2d6bdce999845ad",
+   "c99338e5f670b312"
+  ]
+ }
+}

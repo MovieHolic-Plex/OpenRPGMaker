@@ -2,6 +2,8 @@
 // 브라우저 브리지는 페이지마다 새 탭 ID 를 만든다. 새로고침한 페이지가 자기 이전 임대(90초)를
 // 「호스트님이 편집 중입니다」로 보지 않도록, 떠나는 페이지는 쥔 잠금을 keepalive 로 놓아야 한다.
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+// 사람 팀 협업은 꺼져 있다(2026-10-21). 이 파일은 잠든 팀 코드의 계약을 지키므로 스위치를 켠 채로 검사한다.
+vi.mock("../electron/shared/teamCollab", () => ({ TEAM_COLLAB_ENABLED: true, TEAM_COLLAB_DEPRECATION_NOTE: "" }));
 
 type Sent = { body: { channel: string; payload: { resource: string; release?: boolean } }; keepalive?: boolean; session: string };
 

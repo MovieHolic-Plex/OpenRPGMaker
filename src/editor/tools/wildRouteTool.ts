@@ -14,6 +14,7 @@ import { mulberry32, type Rng } from "@/util/rng";
 import { requireMap } from "./mapHelpers";
 import { BEODEUL_PLAIN_GRASS, canPaintBeodeulWildRoute, paintBeodeulWildRoute } from "./wildRouteBeodeul";
 import { BEODEUL_FOREST_TYPES, parseBeodeulForestType, type BeodeulForestType } from "./beodeulForest";
+import { isDeclaredMonsterGame } from "@/project/genreLockMonsterAssets";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 type Point = { x: number; y: number };
@@ -268,9 +269,10 @@ function planRouteCorridor(map: GameMap, exits: readonly Point[], patchCount: nu
 const authorWildRoute: ToolDefinition = {
   name: "author_wild_route",
   description:
-    "몬스터 수집(포켓몬풍) 도로·필드 맵을 시공한다: 출구와 출구를 잇는 흙길, 양옆 숲, 길을 가로지르는 키큰 풀숲 패치, "
-    + "그리고 풀숲 안에서만 나오는 야생 조우(encounters → 풀숲마다 로케이션 「풀숲 N」 + encounterTable locationId 조건). "
-    + "create_map 으로 만든 빈 잔디 맵에 쓴다(버들항 beodeul_city 계열 — 곧게 뻗다 직각으로 꺾이는 모랫길·짙은 잎 풀숲·길 양옆을 막는 나무 벽·길섶 숲길 소품). 타일을 직접 고르지 않는 결정론 시공이라 참고문서 선행 읽기가 필요 없다. "
+    "버들항 도로·필드 맵을 시공한다: 출구와 출구를 잇는 흙길, 양옆 숲(나무 밑은 짙은 풀). "
+    + "몬스터 수집 게임(장르 monster-collect)에서만 길을 가로지르는 조우 풀숲 패치와 풀숲 안에서만 나오는 야생 조우(encounters → 풀숲마다 로케이션 「풀숲 N」 + encounterTable locationId 조건)를 더한다 — "
+    + "일반 RPG 에서는 풀숲을 깔지 않고 encounters 를 맵 전체 조우로 넣는다. "
+    + "create_map 으로 만든 빈 잔디 맵에 쓴다(버들항 beodeul_city 계열 — 곧게 뻗다 직각으로 꺾이는 모랫길·길 양옆을 막는 나무 벽·길섶 숲길 소품). 타일을 직접 고르지 않는 결정론 시공이라 참고문서 선행 읽기가 필요 없다. "
     + "exits 는 가장자리 칸 — 다음에 create_transfer_pair 로 그 칸에 문을 단다. 결과 data.trainerSpots 는 길가 트레이너 자리 후보다(place_npc 로 배치). "
     + "이미 타일이 칠해진 맵은 replace:true 일 때만 다시 깐다(이벤트는 보존).",
   mode: "write",
@@ -284,12 +286,11 @@ const authorWildRoute: ToolDefinition = {
         description: "가장자리 출구 칸 2개 이상 [{x,y}] — 순서대로 길로 잇는다. 예: 남쪽 마을 쪽 (14,21) → 북쪽 동굴 쪽 (14,0)",
         items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"] },
       },
-      grassPatches: { type: "integer", description: "길을 가로지르는 키큰 풀숲 개수(1~6, 기본 3)" },
+      grassPatches: { type: "integer", description: "몬스터 수집 게임만: 길을 가로지르는 조우 풀숲 개수(1~6, 기본 3). 일반 RPG 에서는 무시한다" },
       forestType: { type: "string", enum: [...BEODEUL_FOREST_TYPES], description: "길 양옆 숲 종류: broadleaf 활엽수림(기본) · conifer 침엽수림(전나무·측백) · mixed 혼효림(큰 활엽수 사이 측백·전나무)" },
-      edgeDecor: { type: "string", enum: ["default", "soft"], description: "버들항 길섶·풀숲 둘레 소품: default(기본, 고사리 큐브 포함) · soft(네모 울타리처럼 읽히는 fern-a/b 를 빼고 풀 무늬·열매 덤불만)" },
       encounters: {
         type: "array",
-        description: "풀숲에서 나올 야생 무리 [{troopId, weight}] — 조회한 troop id. 풀숲 밖(흙길·숲)에서는 조우가 없다.",
+        description: "야생 무리 [{troopId, weight}] — 조회한 troop id. 몬스터 수집 게임은 풀숲에서만, 일반 RPG 는 맵 전체 조우.",
         items: { type: "object", properties: { troopId: { type: "string" }, weight: { type: "integer" } }, required: ["troopId", "weight"] },
       },
       encounterRate: { type: "integer", description: `풀숲 조우율(기본 ${DEFAULT_ROUTE_ENCOUNTER_RATE})` },
@@ -332,8 +333,11 @@ const authorWildRoute: ToolDefinition = {
       if (![rect.x, rect.y, rect.w, rect.h].every(Number.isInteger) || rect.w < 1 || rect.h < 1) throw new ToolError(`clearings[${index}] 는 {x,y,w,h} 정수여야 합니다.`, { code: "invalid-args", mapId: map.id });
       return rect;
     });
-    const patchCount = args.grassPatches === undefined ? 3 : Number(args.grassPatches);
-    if (!Number.isInteger(patchCount) || patchCount < 1 || patchCount > 6) throw new ToolError("grassPatches 는 1~6 정수입니다.", { code: "invalid-args", mapId: map.id });
+    // 조우 풀숲은 몬스터 수집 게임의 문법이다(2026-10-21 사용자 정정 「포켓몬 칩이 아닌데 '조우 풀숲'은 또 왜 쓴거임?」) —
+    // 일반 RPG(버들항 마을·가도·숲길)에서는 풀숲을 깔지 않고, 주어진 encounters 는 맵 전체 조우로 넣는다.
+    const monster = isDeclaredMonsterGame(draft);
+    const patchCount = !monster ? 0 : args.grassPatches === undefined ? 3 : Number(args.grassPatches);
+    if (monster && (!Number.isInteger(patchCount) || patchCount < 1 || patchCount > 6)) throw new ToolError("grassPatches 는 1~6 정수입니다.", { code: "invalid-args", mapId: map.id });
     const seed = args.seed === undefined ? 1 : Number(args.seed);
     if (!Number.isInteger(seed)) throw new ToolError("seed 는 정수입니다.", { code: "invalid-args", mapId: map.id });
     const encounterInput = args.encounters === undefined ? [] : args.encounters;
@@ -354,6 +358,7 @@ const authorWildRoute: ToolDefinition = {
       throw new ToolError(`이 맵에는 이미 칠한 칸이 ${painted}개 있습니다. 다시 깔려면 replace:true 를 주세요(이벤트는 보존). 새 도로라면 create_map 으로 빈 맵을 먼저 만드세요.`, { code: "wild-route-map-not-blank", mapId: map.id });
     }
     const warnings: string[] = [];
+    if (!monster && args.grassPatches !== undefined) warnings.push("조우 풀숲은 몬스터 수집 게임에서만 깝니다 — grassPatches 를 무시했습니다.");
     // 도로는 필드 맵이다 — stamp_object 가 이 표시를 보고 마을·항구 소품을 거른다(routePropPolicy.ts).
     map.mapRole ??= "field";
     const size = map.width * map.height;
@@ -374,10 +379,10 @@ const authorWildRoute: ToolDefinition = {
       (from, to) => routePathStraight(map, from, to, noise), true);
     let forestType: BeodeulForestType;
     try { forestType = parseBeodeulForestType(args.forestType); } catch (e) { throw new ToolError((e as Error).message, { code: "invalid-args", mapId: map.id }); }
-    const laid = paintBeodeulWildRoute({ project: draft, map, tileset, road, grass, patches, exits, clearings, rng, forestType, edgeDecor: args.edgeDecor === "soft" ? "soft" : "default" });
+    const laid = paintBeodeulWildRoute({ project: draft, map, tileset, road, grass, patches, exits, clearings, rng, forestType });
     const roadCellCount = laid.roadCells;
     const treeCells = laid.treeCells;
-    const fillNote = `, 길섶 소품 ${laid.decor}개, 풀숲은 짙은 잎 풀(버들항엔 키큰 풀이 없다)`;
+    const fillNote = `, 길섶 소품 ${laid.decor}개${monster ? ", 풀숲은 짙은 풀 오토타일(버들항엔 키큰 풀이 없다)" : ""}`;
 
     for (let i = 0; i + 1 < exits.length; i++) {
       if (!reachable(draft, map, exits[i]!, exits[i + 1]!)) warnings.push(`출구 (${exits[i]!.x},${exits[i]!.y}) → (${exits[i + 1]!.x},${exits[i + 1]!.y}) 가 걸어서 이어지지 않습니다 — show_map_region 으로 확인하세요.`);
@@ -392,7 +397,13 @@ const authorWildRoute: ToolDefinition = {
     const oldIds = new Set((map.locations ?? []).filter(location => location.id.startsWith(GRASS_LOCATION_PREFIX)).map(location => location.id));
     const locations: MapNamedLocation[] = patches.map((rect, i) => ({ id: `${GRASS_LOCATION_PREFIX}${i + 1}`, name: `풀숲 ${i + 1}`, ...rect, tags: ["풀숲", "야생 조우"] }));
     map.locations = [...(map.locations ?? []).filter(location => !oldIds.has(location.id)), ...locations];
-    if (encounters.length > 0) {
+    if (encounters.length > 0 && !monster) {
+      // 일반 RPG: 풀숲 없이 맵 전체 조우(이 도구가 전에 만든 풀숲 한정 조우는 지운다)
+      const again = new Set(encounters.map(entry => entry.troopId));
+      const kept = (map.encounterTable ?? []).filter(entry => entry.conditions?.locationId ? !oldIds.has(entry.conditions.locationId) : !(again.has(entry.troopId) && !entry.conditions?.region));
+      map.encounterTable = [...kept, ...encounters.map(entry => ({ troopId: entry.troopId, weight: entry.weight }))];
+      map.encounterRate = args.encounterRate === undefined ? (map.encounterRate && map.encounterRate > 0 ? map.encounterRate : DEFAULT_ROUTE_ENCOUNTER_RATE) : Math.max(0, Math.floor(Number(args.encounterRate)));
+    } else if (encounters.length > 0) {
       const kept = (map.encounterTable ?? []).filter(entry => !entry.conditions?.locationId || !oldIds.has(entry.conditions.locationId));
       const unscoped = kept.filter(entry => !entry.conditions?.locationId && !entry.conditions?.region);
       if (unscoped.length > 0) warnings.push(`기존 맵 전체 조우 ${unscoped.length}건(${unscoped.map(e => e.troopId).join(", ")})을 지웠습니다 — 도로에서는 풀숲에서만 야생이 나옵니다.`);
@@ -402,7 +413,7 @@ const authorWildRoute: ToolDefinition = {
       ];
       map.encounterTable = table;
       map.encounterRate = args.encounterRate === undefined ? (map.encounterRate && map.encounterRate > 0 ? map.encounterRate : DEFAULT_ROUTE_ENCOUNTER_RATE) : Math.max(0, Math.floor(Number(args.encounterRate)));
-    } else {
+    } else if (monster) {
       warnings.push("encounters 를 주지 않아 풀숲만 깔았습니다 — 야생 조우는 set_encounter_table 의 conditions.locationId(풀숲 로케이션)로 연결하세요.");
     }
 
@@ -420,7 +431,7 @@ const authorWildRoute: ToolDefinition = {
     }
 
     return {
-      summary: `${map.name} 도로 시공 — 흙길 ${roadCellCount}칸, 풀숲 ${patches.length}곳(${grass.size}칸), 숲 ${treeCells}칸${fillNote}${encounters.length ? `, 풀숲 조우 ${encounters.length}종 × ${patches.length}곳` : ""}`,
+      summary: `${map.name} 도로 시공 — 흙길 ${roadCellCount}칸, ${monster ? `풀숲 ${patches.length}곳(${grass.size}칸), ` : ""}숲 ${treeCells}칸${fillNote}${encounters.length ? (monster ? `, 풀숲 조우 ${encounters.length}종 × ${patches.length}곳` : `, 맵 전체 조우 ${encounters.length}종`) : ""}`,
       data: {
         mapId: map.id,
         exits,

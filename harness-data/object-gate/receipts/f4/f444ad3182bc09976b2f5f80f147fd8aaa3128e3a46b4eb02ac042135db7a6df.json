@@ -1,0 +1,621 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f444ad3182bc09976b2f5f80f147fd8aaa3128e3a46b4eb02ac042135db7a6df",
+ "width": 112,
+ "height": 144,
+ "kind": "structure",
+ "name": "3층 타일 주택",
+ "label": "jp_city/jp-bldg-house-tile3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 12,
+  "darkV5": 38,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 45
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof plane",
+      "rows": "4-36",
+      "evidence": "c",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "38-39"
+     },
+     {
+      "part": "floor-divider ledge between floors 3 and 2",
+      "rows": "69-72",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "floor-divider ledge between floors 2 and 1",
+      "rows": "101-104",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small window awnings",
+      "rows": "45-48",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 33,
+    "front_face_rows": 99,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 4-36 are a large roof plane with vertical tile stripes and a light-to-dark gradient. It ends at a light front-edge line on row 37, followed by dark eave shadow on rows 38-39 and an outline on row 40. Below it is a tall south wall of about 99 rows (41-139) with windows, a garage shutter and a door. The floor ledges at rows 69-72 and 101-104 and the small window hoods are thin front-facing strips, not top surfaces. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a modern three-storey blue-grey building with a metal roof, brick-pattern walls, a shutter and a door. It is the same kind (a whole building) as the references. Its measured visible tones per tile (9) are slightly below the references (12 and 10), and its near-flat coverage is 10% against 0% for both references. Its dark edge pixels are 0% neutral, so the outline is tinted blue-grey and reads as dark material tone, not near-black. The roof has vertical grey streaks with only about 3-4 tones and little per-tile highlight work. The walls have a faint brick pattern but mostly large mid-blue fields with few grain dots. The garage shutter, window panes and floor bands are flat blocks with 2-3 steps each. The references carry roof tile scallops, plaster speckle and stones shaded one by one, with 5-6 steps per material. The candidate is clean and coherent, but its material ramps are shallower and it has flat fills in some areas, so it does not match the reference richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15352
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tile roof plane",
+      "rows": "5-36",
+      "evidence": "c",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "38-39"
+     },
+     {
+      "part": "floor ledge/cornice strip between floors 3 and 2",
+      "rows": "69-72",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "floor ledge/cornice strip between floors 2 and 1",
+      "rows": "101-104",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small window hoods",
+      "rows": "45-48",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 99,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top of the building is a large tiled roof plane in rows 5-36, shaded from lighter to darker towards the eave. It ends in a light front-edge line at row 37 (L=184) and 2 rows of dark eave shadow at rows 38-39 (the silhouette widens to 90 there as an overhang). Below it the south facade runs from row 41 to about row 139, about 99 rows, with windows, a shutter door and an entrance door. The floor ledges at rows 69-72 and 101-104 are minor cornice strips, not main volumes."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a modern grey-blue three-storey building. It is the right kind (a whole building with roof, walls, door and windows), but it is cleaner and less textured than the references. The roof is a vertical-stripe metal roof with about 4 tones and little per-tile scalloping. The walls are blue-grey brick with 3-4 tones and faint brick lines. The windows, shutter and door are mostly flat panels with a few highlights. Measured facts: 9 visible tones per tile against 12 and 10 for the references, so it is slightly lower but close. Near-flat coverage is 10% against 0% for both references, which shows some flat fills, though none is large. The dark edge pixels are 0% neutral, so the outlines lean toward a tinted blue-dark material tone and are not a sticker-like black line. The references have about 6 steps per material, with per-tile roof highlights, plaster speckle and stone shaded one by one. The candidate's wall and roof ramps are shallower and more uniform, and the shutter and the plain wall bands are flatter. A careful artist would likely see it as a bit thinner than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18812
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tile roof",
+      "rows": "5-36",
+      "evidence": "c",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "38-40"
+     },
+     {
+      "part": "window hood/awning strips (3rd floor)",
+      "rows": "44-48",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "floor ledge between 3F and 2F",
+      "rows": "69-72",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "floor ledge between 2F and 1F",
+      "rows": "101-104",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 99,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped tile plane in rows 5-36, drawn as vertical stripes that darken toward the bottom. It ends in a light front-edge line at row 37 (L=184) followed by dark eave shadow in rows 38-40, and its overhang is wider (90 px against 82 px for the walls). Below it is a tall south facade in rows 41-139 with windows, a garage shutter and a door. The ledges at rows 69-72 and 101-104 are small front-facing strips, not main volumes. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a modern blue-grey 3-storey building: the roof is a metal-like panel with vertical streaks, the walls are brick-like blue-grey, and there are windows, a shutter and a door. It reads as the same kind of piece (a whole building). Measured facts: 9 visible tones per tile against 10-12 for the references, near-flat coverage 10% against 0%, and 0% neutral dark edge pixels, so the outlines carry a tint (dark blue-grey beside the wall material) and are not a near-black sticker line. Weaknesses: the roof ramp is only about 4 tones with regular vertical stripes and no per-tile scallops or highlights. The wall brick texture is faint and uniform, and the shutter, window panes and trim use few steps. The references have 5-6 steps per material, with per-tile highlights, stone shaded one by one and timber grain. The candidate looks cleaner and flatter than the references, with a few flat patches (10% flat coverage). Density is slightly below the references but not far off, and the tinted outlines and visible brick and shutter detail keep it from being plain sticker work. Because the shading and texture still fall short of the Beodeul standard, and when in doubt the rule is to fail, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 79559
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled hip roof",
+      "rows": "5-36",
+      "evidence": "c",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "38-39"
+     },
+     {
+      "part": "floor-divider ledges (cornice bands)",
+      "rows": "69-72",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "floor-divider ledge (cornice band)",
+      "rows": "101-104",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small window hoods",
+      "rows": "44-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 99,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof fills rows 5-36 as a sloped tile plane with a gradient and vertical tile lines. It ends in a light front-edge line at row 37 and a dark eave shadow at rows 38-40, and the silhouette widens from 88 to 90 px at the eave overhang. Below it the south facade runs rows 41-139 with three storeys of windows, a garage shutter and a door. The ledges at rows 69-72 and 101-104 are thin floor-divider bands, not main volumes."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a modern grey-blue 3-storey building. Its visible tones per tile (9) sit close to the references (10 and 12), and its near-flat coverage is 10% against 0% for both references. Its dark edge pixels are 0% near-neutral, so the outlines lean toward the material tone rather than a black sticker line. The roof is a vertically striped grey slab with only about 3-4 steps and little per-tile highlight, where the reference roofs have 5-6 steps with scalloped tile highlights. The brick wall has some block variation, but the larger plain areas (shutter, window bands, door) are flat and lack the speckle and grain of the reference plaster and stone. The overall look is cleaner and flatter than the Beodeul references, with fewer steps per material and less grain.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 82417
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.296Z",
+ "cells": {
+  "16": [
+   "010c6918a61bbc67",
+   "06311fe48a26a79f",
+   "078e1f584813a99b",
+   "0fe5cf383a88997e",
+   "15d7cb6c6ca272e8",
+   "15ff741a25f5d016",
+   "19a42663c2af8124",
+   "1ddee1e5f88e4f8f",
+   "1f7c0cec0b55f998",
+   "202c500864ebf0e5",
+   "203557b7f989d792",
+   "2510b0269a40d7c9",
+   "272401045009db22",
+   "2b23fc02c1c4dcb4",
+   "2de416f623db11a6",
+   "2f1d9bceec5005b1",
+   "32b94a50f26ee81a",
+   "361203c5c76fe900",
+   "3e9978400466977e",
+   "4a7a35958a87eb5c",
+   "4c3be7e6e6939de6",
+   "4e045feb59323ab0",
+   "588b4c1001eb6460",
+   "6721e6f80ff1b161",
+   "69784d1653640d24",
+   "6c3582680e210295",
+   "72b31b8db685dc09",
+   "7707aaf7e35eabfb",
+   "7cf33c5b8504e024",
+   "83636ff5589c4937",
+   "8710e191c710fbde",
+   "9cd42239d9eed0ff",
+   "a4da5f9ff4e2f64d",
+   "a7b3e4ca15fa8353",
+   "a8bcff68417bbe44",
+   "abd8d308dbf0ba6f",
+   "ad6d1e3827a3ee51",
+   "b1292b0eb5e5ef81",
+   "b91812d819750c68",
+   "b9af9bda66731796",
+   "c0de233dbd9e3454",
+   "cde6bcd3f96430e2",
+   "d0e11e8aa8f0e2f4",
+   "d5d1659e27f6c196",
+   "e0b5b56db4b4f85b",
+   "e1effe129a05069f",
+   "ebd56e620c9bf9a3",
+   "f08a10c4076785f5",
+   "fdd045258dc1125c"
+  ],
+  "24": [
+   "0075564dcdd58d8b",
+   "050605b4c8b3e37a",
+   "05a5803006a41cdb",
+   "06f77adc845735a0",
+   "07ca52978e151187",
+   "0950a49e44d17567",
+   "0af5ff892e6418dc",
+   "0becec03fe93bfaa",
+   "0d1654e17ef0630b",
+   "0d2c5f985c39dfd6",
+   "137ee5700c81a600",
+   "1a1b652c6545c4da",
+   "1dc2af8e8813a63a",
+   "1edd3093290c387a",
+   "1f358b99978659eb",
+   "1f720bdb84291363",
+   "240e38ab63e169bb",
+   "2581d0539b34fe4b",
+   "26b2a2b7c73771e7",
+   "283112bb2aea7771",
+   "2d60b7dc8ad7e2db",
+   "2f7da4a36087512d",
+   "31d5b6abc8bb383d",
+   "31e4f06796f37d84",
+   "34c33687a6efa684",
+   "3505dee008463c56",
+   "43faf96c346601bb",
+   "486ed8888f998be1",
+   "488f8029a714e8e3",
+   "502b0c301b0943d0",
+   "5058634f9c42654f",
+   "5126fce898ccf862",
+   "54a3b73317382a19",
+   "5a824cc960aeeb93",
+   "5e562e39bd991ffa",
+   "5ef9130a41d9e1e1",
+   "60d8c859908e52cc",
+   "622716c3665fffe9",
+   "66848df4ebabc1ac",
+   "670ac5b2963e58ca",
+   "6ad95f6452205d21",
+   "73e77209035971f5",
+   "7adc082cb07e2bb0",
+   "7b1e3aad44914fa1",
+   "7bdb8cf81baa32fc",
+   "7cf64964f6a6fa83",
+   "80f1ed80617c97ea",
+   "83f528bc1253c2f6",
+   "86860c470399b15f",
+   "873b51d9ba21652a",
+   "8b96115879b41671",
+   "8f3b7ff0e960cc09",
+   "954bf8f3276dead1",
+   "967592b81df8228c",
+   "990c76e9b4253237",
+   "994ad7aeeb65cd17",
+   "9aed1ab7044e8040",
+   "9b2eb1a80cf88bb3",
+   "a1455fd8a5f964da",
+   "a451785d422dcd10",
+   "a5fa4f7f88c418f2",
+   "acd3f6e69aed4496",
+   "ad0ffbccef2c3fdd",
+   "b01218c6d289e5e8",
+   "b4a2e58267204f08",
+   "b4ba04ccead6ef1f",
+   "b6a799745dc405be",
+   "bb7321c4b0e6b0b3",
+   "bd4ff1876de53d22",
+   "c218056a44eb4a7c",
+   "c38f0a3776cb3626",
+   "c5e426010de5bb72",
+   "c8524641afdc1f20",
+   "cd2989f3609c471f",
+   "d2414fb8d454abf9",
+   "d7ec3b5e9744b06f",
+   "d9920f01e53af042",
+   "da71a817a3d6f764",
+   "dc03ace79465de69",
+   "ef54a8fa8dc40843",
+   "f30d13ef77d9e89d",
+   "fcb7c685974cb00a"
+  ],
+  "32": [
+   "0354f59e42e8fec1",
+   "0387df82d1157566",
+   "03bc0665d76e9afc",
+   "06f336ff2e304115",
+   "0d6bfbaac87d1c90",
+   "141ba60da7225c49",
+   "16cf0cb6975385fc",
+   "195b406c0f907c78",
+   "1a718f591a509f67",
+   "1c7a9893d47f3869",
+   "1cf3e4a47280cbc3",
+   "22f3b8efd765af86",
+   "2465e751549de5f2",
+   "2700ad87cd22ce2a",
+   "294c8210bc0eafe7",
+   "29d3b79e55ca3230",
+   "32fc74ff877b8b4a",
+   "33d996cc31c4bf28",
+   "36f0f3860ae3f855",
+   "382d5516c15552ec",
+   "38cdf9e2fccc9f56",
+   "3a4cd14b1fab286b",
+   "46e1a99a0881ddfb",
+   "4a738758748e7367",
+   "4be397ab69fede30",
+   "52b027e291150289",
+   "52efde9fc4d6fd36",
+   "5636f41014283df0",
+   "571dbc83ba439ba5",
+   "5c696ec674932587",
+   "5cdca9dc7ae3f89d",
+   "5dfb6527e35ec7b9",
+   "5fc0e86d563c79fd",
+   "635126b771334d58",
+   "69f094fd637bc9e2",
+   "6bacb76567f43dc0",
+   "6ccbede372a9b84d",
+   "6dcbb0a4253a5839",
+   "6eecca7af1719fe3",
+   "6f23d2821954ed50",
+   "7075a6c73f4c822a",
+   "709fefaf9faffd29",
+   "724c7e8092a26024",
+   "7471223e3a3853a5",
+   "75016f942c0615f7",
+   "7598bf394d0e15a2",
+   "7c98de4cdd9b35f4",
+   "7d9804233e8b8d46",
+   "7e2d58f7fe2d85a8",
+   "7f14e7c87fb5005b",
+   "84eb0591918bfd5b",
+   "8955170e8f3013c1",
+   "8ade3e57e0bc4092",
+   "8d04cfe80e2ed227",
+   "8ff98227ad9742e6",
+   "90f0e70b05eace20",
+   "94a1f9ce34085746",
+   "974186532dbe4eda",
+   "988345ffb4e46e3c",
+   "9908bc45d2917252",
+   "9cc289c98536fba2",
+   "9d3035623b333e73",
+   "9e47aae78502c686",
+   "9e52d86d7eac0bcb",
+   "9f3bc17e8fc0782d",
+   "a08695f0bf00b9cc",
+   "a4364c61f445f6ee",
+   "a76eacc60daebd7e",
+   "b29030d3286949fa",
+   "b323cbedd9f23663",
+   "b35444e7d0c45b31",
+   "b3ee4e82a07a94e7",
+   "b6d49d06794160d1",
+   "b9011b2c8ec374c6",
+   "b96fe926883c3ca8",
+   "baea6554f2bbdfee",
+   "bd0893e6c42a15d3",
+   "c201a2ea1b200806",
+   "c288c4fb2015b2db",
+   "c31c0aa0e930d902",
+   "c6b63530fa71408a",
+   "c7ad3df64fab622c",
+   "cba16d8d1de3024e",
+   "cca41f6a8b04004b",
+   "ccacd276bd754fbc",
+   "ccd10dfcf3a069bb",
+   "ce3622bfb3656527",
+   "d11db061c1910da4",
+   "d168b6509ec8b9d4",
+   "d46c9e97ff445543",
+   "d47db3a94ca88b70",
+   "db8f03ecfa8d4362",
+   "dde58ced1d5d2507",
+   "df9575cabd719ccb",
+   "e07e9651c0047b91",
+   "e1b39e7a4120c545",
+   "e3b2a25f149c9f54",
+   "e804da26705ef2d6",
+   "ebd64f9672f487ae",
+   "f3063ab72768d6ec",
+   "f33d5c885093d200",
+   "fa3753c1648ca97a",
+   "fbc218bcfc267357",
+   "ff783855d23387ca"
+  ],
+  "48": [
+   "100c499ea0e2733c",
+   "27a21937ff61d0f1",
+   "382294490ca22eab",
+   "4b4307e966e6582a",
+   "5b7ebb903e9cf44a",
+   "5d29725647c02b50",
+   "618da22cc566a9f1",
+   "61fb7ec73c48d41d",
+   "6a57821f08dde603",
+   "6eb4bb5124f3511f",
+   "6f9ab8997c006486",
+   "7b2010af0025be49",
+   "89956ddee8eb23fe",
+   "a1393acd6fc68260",
+   "a52f1215b4e09e53",
+   "a893a5bc78771d78",
+   "ab8080d84486ff6c",
+   "ae60756579292ad1",
+   "bab3a0e7b0bc40cf",
+   "bd608fda9a74e056",
+   "be808f47fa4945c5",
+   "bf199e4f914f2e6b",
+   "c55dca19ea089f06",
+   "d7b1896f93e6daf3",
+   "d7b31ad1a8757f1a",
+   "df3c93dd90b01857",
+   "ed322b720b724d3a"
+  ]
+ }
+}

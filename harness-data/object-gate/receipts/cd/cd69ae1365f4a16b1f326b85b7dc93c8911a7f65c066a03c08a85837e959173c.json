@@ -1,0 +1,489 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cd69ae1365f4a16b1f326b85b7dc93c8911a7f65c066a03c08a85837e959173c",
+ "width": 64,
+ "height": 112,
+ "kind": "structure",
+ "name": "jp-inaka-vinyl-greenhouse",
+ "label": "jp_inaka_pack/jp-inaka-vinyl-greenhouse",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 15,
+  "darkV5": 63,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 26
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "curved vinyl roof plane (barrel vault seen from above, with ribs and painted plant blobs)",
+      "rows": "1-81",
+      "evidence": "c",
+      "front_edge_line_row": 81,
+      "eave_shadow_rows": "81-82"
+     },
+     {
+      "part": "front gable end with arched frame, glass double door and planters",
+      "rows": "82-110",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens gradually from 10 px at row 1 to 63 px by row 27, so the roof reads as a long sloped plane seen from above. Horizontal rib lines at rows 7, 13, 20, 26 and 33 run across it. A dark eave line sits at rows 81-82 above the door. Below it is a vertical front face (rows 83-110) with an arched frame, glass double door and planters. The darker purple band on the right is curved-roof shading, not a separate side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a vinyl greenhouse: a pale translucent barrel vault with a few green plant dots and a lower frame and door. Its main material ramp (the vinyl) has about 4 steps, with soft vertical banding and a highlight stripe, against 5-6 in the references' roof tiles, plaster and stone. Visible tones per tile are 8 vs 12 and 10 in the references, so it is lower but not drastically. Near-flat coverage is 25% vs 0% in both references, and the plain pale vinyl panels and the lower wall have flat areas with little grain. Only 16% of dark edge pixels are neutral (refs 7% and 9%), so the outline leans tinted/grey-blue rather than pure black. The frame and arch edges look selective, but the lower frame outline looks a bit uniform. Overall it is cleanly drawn and acceptable as a simpler object, but it is thinner and flatter than the references, with less per-tile grain. Since the instruction says to fail when in doubt, it falls short.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16096
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "vinyl vault roof (tunnel-shaped roof seen sloping back from the front arch, with horizontal rib lines)",
+      "rows": "1-82",
+      "evidence": "c",
+      "front_edge_line_row": 82,
+      "eave_shadow_rows": "80-82"
+     },
+     {
+      "part": "front end wall with arched frame, glass sliding door and planters",
+      "rows": "83-108",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 81,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette grows smoothly from 10 px wide at row 1 to 63 px at row 27, then stays constant. The area from rows 1 to 82 is a large curved vinyl roof with horizontal rib lines at rows 7, 13, 20, 26 and 33, and its shading runs from light on the left to dark on the right. It ends at an arched edge line near row 82, with a dark door header at rows 80-82 under it. Below that is a vertical front wall (rows 83-108) with the door frame, glass panes and planters, then a ground strip at rows 109-111. The roof plane is much taller than the 3-row minimum, and the front face is 26 rows, so the object has both a top surface and a south face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a vinyl greenhouse with a pale translucent barrel-vault shell. Its measured visible tones per tile are 8, against 12 and 10 for the references, so it is lower but not far below. Its near-flat coverage is 25%, while both references sit at 0%. The shell has a few banded highlight steps (about 4 lightness steps) and small leaf clusters on the plants inside, but the large smooth areas of the vault and the lower wall are close to flat. The references carry 5-6 steps with per-tile highlights and grain. Only 16% of the candidate's dark edge pixels are neutral, so the outline leans tinted (grey-blue/green) rather than a black sticker line. It is mixed, since the dark base and frame lines are fairly uniform. The sparse, translucent subject justifies some simplicity, but the flat panels and the shallower ramps would look thinner next to the references, so it fails under the when-in-doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15595
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "vinyl vault roof (tunnel sheet with rib lines receding from the ridge)",
+      "rows": "1-80",
+      "evidence": "c",
+      "front_edge_line_row": 80,
+      "eave_shadow_rows": "81-82"
+     },
+     {
+      "part": "front arched end wall with glazed double door and planters",
+      "rows": "81-110",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 10 px at row 1 to 63 px at row 27, then stays constant. Rows 1-80 are a large roof plane with horizontal rib lines and the plants showing through. It ends in an arched eave edge at about row 80, with a dark door header at row 81 beneath it. Below that is a south front face of about 30 rows (rows 81-110) with the glazed double door, arched frame and planters. The purple shading on the right is curvature shading of the roof, not a receding side face. This is a roof over a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a vinyl greenhouse: a pale translucent barrel-vault dome with a few green plant marks and a darker base frame. Its main material ramp (the translucent panel) has about 4 light steps, against 5-6 for the reference roof tiles and plaster. Dark edge pixels are only 16% neutral, so the outlines lean tinted/grey-blue rather than a pure black sticker line. Texture is limited to faint vertical ribs and sparse plant dots. The tops of the dome and the lower panels have large smooth areas, and measured near-flat coverage is 25% against 0% for both references, which supports flat fills. Visible tones per tile are 8 against 10-12 in the references, so density is a little lower but not drastically. Overall it is cleanly drawn, but flatter and thinner than the references' per-tile scalloping, speckle and stone shading. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 13936
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "curved vinyl roof (barrel vault) with plant shadows and ribs",
+      "rows": "1-81",
+      "evidence": "c",
+      "front_edge_line_row": 81,
+      "eave_shadow_rows": "79-81"
+     },
+     {
+      "part": "south end wall with arched frame, sliding glass door and shrub planters",
+      "rows": "81-110",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green side posts",
+      "rows": "22-105",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 10px at row 1 to 63px by row 27. This is the foreshortened curved roof, which fills rows 1-80 with ribs and light-to-shade banding. It ends at an arched front edge at about row 80-81, with a dark eave shadow above the door header. Below that is a south end wall of about 30 rows (rows 81-110) with an arch frame, glass door and planters. The roof therefore reads as a sloped top plane over a front face. The purple shading on the right is curvature shading, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a vinyl greenhouse, a different structure from the tiled-roof houses, but it is still a whole building, so the kind matches. Its shading is fairly shallow: the translucent dome has about 4 pale steps (highlight, light, mid, shadow) plus a few green plant dots, against 5-6 steps per material on the references. Outline: the dark edge pixels are only 16% neutral, so the edges lean tinted, but the frame is a thin grey-green line with little material-toned darkening, which I call mixed. Texture: there are some ribbing lines, plant clusters and base dirt, but nothing like the per-tile scallops and plaster speckle on the references. Measured: 8 visible tones per tile against 12 and 10 for the references, and 25% near-flat coverage against 0% for both. Together these show large smooth dome panels with little grain, so some flat fills remain. Overall it is clean and readable but visibly flatter and thinner than the Beodeul references, so it falls short of the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17161
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:03.912Z",
+ "cells": {
+  "16": [
+   "0d65596515caffdd",
+   "0d6c44760f40b86a",
+   "1541001e1e6ae8d5",
+   "21f0f6a24bf7e473",
+   "30b64adbafadc7b3",
+   "3ad5b305ef33dc11",
+   "3e02e7198444012b",
+   "5622cb47b765c29d",
+   "591624f62b47bc6f",
+   "656523c4e105e34e",
+   "6b9a6c06634b3327",
+   "7194ab6cca27d7d1",
+   "727ed90a270b6c68",
+   "83b06f6e34c5728a",
+   "8b32dc477cd37acf",
+   "8b3f8f450a76b200",
+   "99a1f37952a73bd4",
+   "9da1a470744fc57f",
+   "a88b4e5cbe320e3c",
+   "c32355864ee6f963",
+   "cd33de1c1bcc417f",
+   "d055ebefe4587dd7",
+   "d45d67af31898236",
+   "d5c453fcab659057",
+   "e48a229f7bd386b4",
+   "e7bad3e05c01c590",
+   "f805a0741c7fc34c",
+   "f9d2a73c02023ba6"
+  ],
+  "24": [
+   "04e3a5dbbf011340",
+   "0632377d6ec391b0",
+   "0b073eed7b5e172a",
+   "0d548d2ce96137f8",
+   "0fac64632f3ec760",
+   "1810e259cb3dc999",
+   "1a987be4aefefda6",
+   "1aaf4ff77c1ad9c2",
+   "1b91be02bbaed577",
+   "220d609d375d4c5f",
+   "224e254570b0f3eb",
+   "2282d9860f2b8fd1",
+   "228367b5938f22d3",
+   "22fb996b421ea866",
+   "25f2181cf21a26a7",
+   "25f312009a2a2ec9",
+   "26837eb222d08a66",
+   "290cfd39bcc4db28",
+   "297177a5d149b372",
+   "2b12610447ddd14b",
+   "2cdf9ed39a8a65f4",
+   "35387f1be551f02e",
+   "3c8244b720ccc55d",
+   "3e1cba223b8725a7",
+   "42aeb726b965d84c",
+   "42fd8d2c440ebcdc",
+   "44fb5a9f7b6e83ee",
+   "4ed14bb4e25dcfc8",
+   "51026fdf16547d16",
+   "582859dc635303b1",
+   "5a34915964560784",
+   "5ada19ff289a6a83",
+   "5bd8e6c8dc6f2dde",
+   "5d9d3c9487d21428",
+   "5e62303a15adf027",
+   "5fd37c4539ebda69",
+   "64aa77133b0ab01e",
+   "64f56443d4032d5c",
+   "65c9eae5656e0956",
+   "674ed20a460d1c04",
+   "69915ec50096f829",
+   "69a4b93ce8d78165",
+   "6d8e79a6bf0547da",
+   "7050d4ef1e0bbbdf",
+   "741306a7bae3d107",
+   "75036562b6f9497e",
+   "7720a6810e4ef453",
+   "798f13fa09593d4b",
+   "7def81728a9365ed",
+   "7dfe29d30e702993",
+   "7e34def42c93e372",
+   "81f431659c173709",
+   "83027e98d6838433",
+   "844994cf2b7390d0",
+   "878e8f2101f3656c",
+   "892805a5b0dfa3fa",
+   "8a5c2b8fef432af5",
+   "8b08053890f31253",
+   "8bfa1b962c324062",
+   "8caa07774ddaa988",
+   "8e9ba14b780ddf3d",
+   "8eaf8525611c6061",
+   "90ac129f3a324125",
+   "9467f4af803c4323",
+   "965a8a754f0748db",
+   "98e831035f7e0e3d",
+   "9a8d260747b9598f",
+   "9ebaef0e6ababb09",
+   "a806745818639e84",
+   "af615a80aa6428aa",
+   "ba3687374067f5fb",
+   "c532b8bf47e13907",
+   "c5a6c5f8f47b8856",
+   "c9ee486c10544955",
+   "cd3f5c205776dd80",
+   "cda31b40e7a4b5f2",
+   "e65494e00e959d85",
+   "e99630f91ce5d81e",
+   "ed2e02751e2dd642",
+   "eeae7b83992a1e3a",
+   "ef82914eb5fd4f5e",
+   "f2a299a397930483",
+   "f352a6e4b4e34fb2",
+   "f38f7bbc86ccaea3",
+   "f6211ee2ebcaa1d0",
+   "f96a13353af0fcdf",
+   "f9d0588d31dda679",
+   "faf6a150d976ca7d",
+   "fce8a363f7b890ea",
+   "feac3916d3e6bdf8"
+  ],
+  "32": [
+   "13a1eb7fe2e516f8",
+   "1b11b82dc9e6de65",
+   "37167e2b41cb474a",
+   "4649e2c6efb836ef",
+   "4d239de5087fe72b",
+   "61683191e8c9d3a0",
+   "738c42c1949c2652",
+   "796a1afd13803ee7",
+   "92a4326b388b88b6",
+   "99f99206d81d1bd1",
+   "9ca016cdca3e744c",
+   "a2a4fcf1fd7d40ef",
+   "b4a1fddbdabe51be",
+   "e4e3287b99c21109",
+   "e5cd76b45baafa57",
+   "fe5f9e152a2d7f95"
+  ],
+  "48": [
+   "0040e47a5a7b3f95",
+   "049c9126392b3a7c",
+   "05ae2d33f0dc7afa",
+   "0ec03011273203e9",
+   "0ef16b3aea6b8442",
+   "191f1f02e8514781",
+   "1eb7748599928a4e",
+   "24a8c41a9b2b9214",
+   "2d4a93b09c630836",
+   "34f9a00e13bdcec4",
+   "37fe057d9f5d4e84",
+   "3cbbdd02a3ecfa9f",
+   "3e1ba916c59b1d0d",
+   "425082790dd89a3b",
+   "46b169ba81044f83",
+   "55fd91f71deb71d7",
+   "591a0f3d7fc00e4d",
+   "5b5a91348648105f",
+   "61e471a12d225dde",
+   "6683f73953c3da1d",
+   "8c2a49f08f4adcf9",
+   "90a4ad199ee6eb21",
+   "9d0f4aaa27f47351",
+   "a60a2efcc0f24025",
+   "ab189e798cace525",
+   "bdd3ee230794f3ae",
+   "c44802f7d804a59b",
+   "c705f75a380847ca",
+   "ce3a6387d70b8a73",
+   "d89284f4fe3d4355",
+   "d9a3fc9059afe133",
+   "e27e2ddfb1788dda",
+   "e803a4afaa7e6480",
+   "e91c35cceb89b5b3",
+   "f2949fa86422565b",
+   "ffb45934a9683813"
+  ]
+ }
+}

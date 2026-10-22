@@ -1,0 +1,72 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b7",
+ "round": 2,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "food-drink-bar",
+   "pixelSha256": "f5f74c0b3be279ff9fdd6b5c50e71864bb4b7c882b0c461011e180eb60f2a610",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "It's a tall, narrow front view of a dispenser stacked on a wood cabinet, with almost no lit top surface. The thin white strip down the right edge looks like a detached side face, and at 1x it reads as a jumble of coloured dots rather than a drink bar."
+  },
+  {
+   "id": "mart-cart-bay",
+   "pixelSha256": "d545082c7ab67f005a472df379a450a2ee7d16902aa8f6b281f4cacace996720",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "It shows a single cart from the front, with grey wire grid rows and red bars, rather than a bay of nested carts. There's no top plane, it reads mostly as a front view, and the light grey outline is weaker than the originals' dark outline."
+  },
+  {
+   "id": "mart-drink-open",
+   "pixelSha256": "bc8e80727165e2376b1f1ea4968b42ea4c08c5741bb508fd63fe59b62fb54586",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The view and scale match mci-cooler, but the red header band is broken up by scattered white dashes that read as noise. The bright bottle caps on both shelves look like busy stickers next to the originals' calmer spines."
+  },
+  {
+   "id": "mart-gondola-household",
+   "pixelSha256": "508788c29cc30da848cfaf1f3a1f532782c3c05777b327ed27f748a8a19230c6",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The pale top plane is visible, with two shelf rows of white/red boxes and bottles and a teal kick plate at the bottom. The dark outline and density match the cooler, and it sits on the floor inside a one-tile-wide footprint."
+  },
+  {
+   "id": "mart-gondola-snack",
+   "pixelSha256": "20ca6552a0d9eefc754f0196e128e31a9283c22f441a79e9c1dbe5b2f8a054b5",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The tan/beige columns on the left and right sides break the chipset's dark navy outline and read as side faces. The yellow snack bags loose on the top plane look like floating stickers, and the orange blobs on the shelves are muddy, with no clear shapes."
+  }
+ ]
+}

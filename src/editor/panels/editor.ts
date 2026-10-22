@@ -246,6 +246,10 @@ export function renderEditor(main: HTMLElement): void {
   const suggestionPeek = aiPanel.querySelector<HTMLElement>(".ai-suggestion-peek");
   if (suggestionPeek) canvasArea.append(suggestionPeek);
   main.append(layout, projectExportNodeElement());
+  // 공방 작업 줄(내려받기 관리자처럼 오른쪽 아래) — 작업이 있을 때만 보인다. 새로 고침 뒤 남은 작업도 여기서 다시 잇는다.
+  void import("@/editor/workshop/queue/queueDock").then(({ mountWorkshopQueueDock }) => mountWorkshopQueueDock()).catch((error: unknown) => {
+    console.warn("[workshop-queue] 작업 줄을 붙이지 못했다:", error);
+  });
   disposeFirstRunGuide?.();
   disposeFirstRunGuide = mountFirstRunGuide(aiDock, layout);
 
@@ -441,6 +445,7 @@ function applyLeftDockLayout(): void {
 }
 
 export function teardownEditor(): void {
+  void import("@/editor/workshop/queue/queueDock").then(({ unmountWorkshopQueueDock }) => unmountWorkshopQueueDock()).catch(() => undefined);
   disposeFirstRunGuide?.();
   disposeFirstRunGuide = null;
   panelRefreshEpoch += 1;
@@ -1095,7 +1100,7 @@ function paintMapEditLockBanner(container: HTMLElement, status: MapEditLockStatu
     el("button", {
       class: "map-lock-takeover-button",
       text: "편집 권한 가져오기",
-      attrs: { type: "button", title: status.canTakeover === false ? "본인의 다른 탭 또는 팀 소유자만 편집 권한을 가져올 수 있습니다" : "현재 맵 편집 권한 가져오기", ...(status.canTakeover === false ? { disabled: "" } : {}) },
+      attrs: { type: "button", title: status.canTakeover === false ? "다른 곳에서 편집 중이라 편집 권한을 가져올 수 없습니다" : "현재 맵 편집 권한 가져오기", ...(status.canTakeover === false ? { disabled: "" } : {}) },
       dataset: { testid: "map-lock-banner-takeover" },
       on: {
         click: () => void requestMapLockTakeover(status),
@@ -1198,7 +1203,7 @@ function bindLeftResizer(): void {
   leftResizer.addEventListener("mousedown", (event: MouseEvent) => {
     event.preventDefault();
     const startX = event.clientX;
-    const startWidth = leftWidth;
+    const startWidth = renderedLeftWidth();
     const onDrag = (moveEvent: MouseEvent): void => {
       leftWidth = Math.max(LEFT_PANEL_MIN_WIDTH, Math.min(LEFT_PANEL_MAX_WIDTH, startWidth + moveEvent.clientX - startX));
       applyLayout();
@@ -1216,11 +1221,22 @@ function bindLeftResizer(): void {
   });
   leftResizer.addEventListener("keydown", (event: KeyboardEvent) => {
     const step = event.shiftKey ? 40 : 16;
-    if (event.key === "ArrowLeft") { leftWidth = Math.max(LEFT_PANEL_MIN_WIDTH, leftWidth - step); applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
-    else if (event.key === "ArrowRight") { leftWidth = Math.min(LEFT_PANEL_MAX_WIDTH, leftWidth + step); applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
+    if (event.key === "ArrowLeft") { leftWidth = Math.max(LEFT_PANEL_MIN_WIDTH, renderedLeftWidth() - step); applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
+    else if (event.key === "ArrowRight") { leftWidth = Math.min(LEFT_PANEL_MAX_WIDTH, renderedLeftWidth() + step); applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
     else if (event.key === "Home") { leftWidth = LEFT_PANEL_MAX_WIDTH; applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
     else if (event.key === "End") { leftWidth = LEFT_PANEL_MIN_WIDTH; applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
   });
+}
+
+/**
+ * 지금 화면에 그려진 좌패널 폭. 저장값(leftWidth)은 표시 상한·남는 폭에 눌려 화면보다 클 수 있다 —
+ * 끌기·방향키를 저장값(예: 640)에서 시작하면 그 차이만큼 끌어도 폭이 1px 도 안 변했다
+ * (2026-10-21 UI 감사 02-leftdock-01). 치수를 잴 수 없는 환경에서는 저장값을 쓴다.
+ */
+function renderedLeftWidth(): number {
+  const panel = aiSidebarWorkspace?.root ?? leftRoot;
+  const width = panel?.getBoundingClientRect?.().width ?? 0;
+  return width > 0 ? Math.round(width) : leftWidth;
 }
 
 // leftRoot 를 전제하지 않는다 — mountLeftDock 은 renderEditor 가 leftRoot 를 대입하기

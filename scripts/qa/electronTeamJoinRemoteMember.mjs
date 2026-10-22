@@ -1,3 +1,4 @@
+// @deprecated multi-user team collaboration is not supported yet (2026-10-21). 진입점은 TEAM_COLLAB_ENABLED(electron/shared/teamCollab.ts) 를 켜야 보인다.
 // 두 컴퓨터 팀 참여 — 참여 쪽. 다른 컴퓨터의 팀 호스트에 시작 화면 「팀에 참여」로 들어가
 // 참여 창에서 저장한다. 앱 번들(dist·dist-electron·package.json)과 electron·playwright 만 있으면 된다.
 //

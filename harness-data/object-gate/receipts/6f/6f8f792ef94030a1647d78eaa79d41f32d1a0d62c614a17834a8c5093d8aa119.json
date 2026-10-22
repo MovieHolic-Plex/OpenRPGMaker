@@ -1,0 +1,254 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6f8f792ef94030a1647d78eaa79d41f32d1a0d62c614a17834a8c5093d8aa119",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "inaka-paddy-water",
+ "label": "jp_inaka_pack/ground/inaka-paddy-water",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 107,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy water tile with rice sprout tufts",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a full-bleed 16x16 terrain tile (width 16 on every row, rows 0-15) showing blue-teal water with small green sprout tufts and a few lighter ripple pixels. It is a seamless ground/water tile, not a standing object. No front-edge line, eave shadow, ellipse, or front face is drawn. The column scans show only repeating water color (#4a7387) with scattered green sprout pixels and a darker shadow pixel, so the 3/4 top-and-front rules do not apply."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate renders as a single small tile with a speckled, rippled water-and-soil look. It has 8 visible tones per tile, against 3 for the grass reference and 7 for the paving reference, so it is at or above both. Near-flat coverage is 0%, so there are no flat fills. A ground patch has no outline to judge, and the 0% neutral dark-edge share means no black sticker line. The 8 colours form roughly 5 usable lightness steps, close to the reference ramps. Texture is mostly fine dither and speckle rather than larger clumps, so I rate it 'some' rather than 'rich'. It is not thinner or flatter than the references, so a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11806
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy water tile with rice sprout tufts",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 16x16 opaque seamless water texture in teal-blue (#4a7387) with small green sprout tufts in a repeating pattern and a few lighter blue ripple pixels. The silhouette is a constant 16 wide for every row 0-15. It has no front-edge line, no eave shadow, no ellipse, and no separate front face. It is a flat terrain surface seen from above, which is expected for a terrain tile, so it reads as a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate renders at only about 32x32 px on the board, so I judged it mostly from the measured facts. It has 8 visible tones per 16x16 tile, against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 0%, so there are no flat 5x5 fills, and the speckled water surface shows several teal/green lightness steps with dot variation. The dark edge pixels are 0% neutral, so any darker edges carry a colour tint and it is not a black sticker outline. It uses only 8 colours in total, which is fewer than the grass reference, but they read as distinct tones. Density is on par with the references and the shading is close to the 5-6 step standard, though it is slightly simpler than the grass reference's clumped texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12330
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water tile with rice seedling tufts",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a full 16x16 opaque terrain tile (width 16 on every row) showing flooded paddy water in a blue-teal base (#4a7387) with small green seedling tufts and a few lighter ripple pixels. It is a flat ground/water texture, not a standing object. There is no front-edge line, eave shadow, ellipse, or front face, which is expected for terrain tiles; the tile reads as a flat top-down surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is tiny on the board, about one tile, so I judged it mostly by the measured facts and a close look at the dotted surface. It shows 8 visible tones per tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 0%, so there are no flat 5x5 fills. Dark edge pixels are 0% neutral, so any dark edge is tinted and not a black sticker line. The teal-blue water surface has dotted ripple grain and a lighter rim, which gives about 5 shading steps. It is simpler than the grass reference's clumped tufts, but it is not shallower than the references on any primary fact.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13424
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy water tile with rice sprout tufts",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 16x16 opaque water surface (width 16 on every row) with small green sprout tufts on a blue-teal base. There is no silhouette, front-edge line, eave shadow, or front face. It is a flat terrain tile seen from above, which is normal for kind terrain, so no standing-object structure is present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a single small ground tile of speckled blue-green water. By eye it shows a dark rim and light and mid speckle dots, so it is not a flat fill with a sticker outline. The measured facts support this: 8 visible tones per tile against 3 for the grass reference and 7 for the paving reference, and 0% near-flat coverage like both references. Its dark edge pixels are 0% neutral, so the edge carries a colour tint and is not near-black. It has about 8 colours in total, fewer than the grass reference, but they are visibly distinct, and the visible-tone count is what matters here. The speckle is small and fairly uniform, so the texture is 'some' rather than 'rich', and the shading ramp of about 5 steps is close to the references. At this size I see nothing that would make a careful artist reject it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14348
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.173Z",
+ "cells": {
+  "16": [
+   "27b897e758518ab9"
+  ],
+  "24": [
+   "40f6a73b1dcdc3db",
+   "4ddf7f71c67f761b",
+   "71ce25516299c4e8",
+   "74de791212508754",
+   "c993b5405c844426",
+   "e9d236792f07ff1f"
+  ],
+  "32": [
+   "0b016264c1fb6dc6",
+   "3a48465cdc2ed07a",
+   "59cd277403af5f7e",
+   "e454d3d9e577ee3e",
+   "eee9602d43f4d48a",
+   "fcb624ecd260f368"
+  ],
+  "48": [
+   "21a0cdaeb5fc7dd1",
+   "3ba14a0d47b1e628",
+   "475c13ce396e3634",
+   "6c47b9bc06c8214d",
+   "7c681141ee8160b8",
+   "a1d2adf1afbb1cfe"
+  ]
+ }
+}

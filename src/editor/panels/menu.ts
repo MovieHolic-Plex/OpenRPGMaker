@@ -54,6 +54,7 @@ import { uiLabel, type UiCopyKey } from "@/editor/uiCopy";
 import { requestCommandPalette } from "@/editor/panels/commandPalette";
 import { makeSvgIcon, type SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { installToolbarOverflow } from "@/editor/panels/toolbarOverflow";
+import { installTopbarFit } from "@/editor/panels/topbarFit";
 import { renderWorkspaceBar } from "@/editor/panels/workspaceBar";
 import { toolbarButton } from "./menuToolbar";
 import { renderCommitHistoryButton, renderIdentityTopbarControl } from "@/editor/teamWorkflowUi";
@@ -74,7 +75,7 @@ import { claimTransientLayer, releaseTransientLayer } from "@/editor/ui/transien
 // 초보/표준/전문가 편집 모드는 2026-09-27 에 없앴다 — 편집기 화면은 하나다. 초보 전용이던
 // 「도구 ▾」 메뉴도 그때 걷었다(자료집·소재·세계관·음악·찾기가 모두 인라인 버튼이다).
 
-type MenuId = "project" | "help";
+type MenuId = "project" | "help" | "more-tools";
 
 const autoSaveLog = createLogger("autosave");
 
@@ -102,6 +103,7 @@ let disposeLayerSwitcher: (() => void) | null = null;
 let disposeStudioButton: (() => void) | null = null;
 let disposeAiConnectionChip: (() => void) | null = null;
 let disposeFullscreenButton: (() => void) | null = null;
+let disposeTopbarFit: (() => void) | null = null;
 let lastLoggedAutoSaveKind: AutoSaveState["kind"] | null = null;
 // 실패 에피소드가 진행 중인가. error 로 켜지고 saved/idle 로 꺼진다 — 재시도 중(saving)에도
 // 칩을 붙잡아 두는 데 쓴다. 톱바가 다시 그려져도 에피소드는 이어져야 하므로 모듈 상태다.
@@ -124,6 +126,8 @@ export function renderTopbar(topbar: HTMLElement): void {
   disposeAiConnectionChip = null;
   disposeFullscreenButton?.();
   disposeFullscreenButton = null;
+  disposeTopbarFit?.();
+  disposeTopbarFit = null;
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
   const mode = getMode();
   const menuBar = el("div", {
@@ -144,6 +148,8 @@ export function renderTopbar(topbar: HTMLElement): void {
     toolButton({ testId: "toolbar-world", icon: "globe", title: headerLabel("world"), onClick: () => openWorldPanel() }),
     toolButton({ testId: "toolbar-sound-test", icon: "music", title: headerLabel("audio"), onClick: () => openAudioTestDialog() }),
     toolButton({ testId: "toolbar-search", icon: "docSearch", title: headerLabel("mapEventSearch"), onClick: () => openMapEventSearchModal() }),
+    // 폭이 모자랄 때만 보인다(topbarFit 1단계) — 위 세 아이콘과 같은 일을 메뉴 한 칸으로 한다.
+    renderMenu("more-tools", "도구 더 보기", menuCommands("more-tools", topbar), { icon: "more", className: "studio-icon-button studio-tools-more" }),
   );
   if (mode === "edit") {
     const resources = lead.querySelector<HTMLElement>('[data-testid="toolbar-resource-manager"]');
@@ -201,6 +207,7 @@ export function renderTopbar(topbar: HTMLElement): void {
   menuBar.append(trailing);
 
   topbar.append(menuBar);
+  disposeTopbarFit = installTopbarFit(menuBar);
   restoreFocus(topbar, focusSnapshot);
   installDelayedTooltips(topbar);
   // 플레이 모드(편집기 안에서 게임이 도는 상태)에서만 「편집으로 돌아가기」 줄을 하나 더 둔다.
@@ -761,6 +768,12 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
         item("웹 서버 번들 내보내기 (.zip)...", "menu-project-export-web", () => void doExportWebGame()),
         item("Windows · Steam Depot 패키지 내보내기...", "menu-project-export-standalone", () => void doExportDesktopSteamGame({ platform: "win64-steam" })),
       ];
+    case "more-tools":
+      return [
+        item(headerLabel("world"), "menu-more-tools-world", () => openWorldPanel(), "globe"),
+        item(headerLabel("audio"), "menu-more-tools-audio", () => openAudioTestDialog(), "music"),
+        item(headerLabel("mapEventSearch"), "menu-more-tools-search", () => openMapEventSearchModal(), "docSearch"),
+      ];
     case "help":
       return [
         item("단축키 · 도움말", "menu-help-shortcuts", () => openHelpModal()),
@@ -778,6 +791,8 @@ function sampleProjectCommands(): readonly MenuCommand[] {
     item("아스트라 호라이즌: 다우닝 시티와 여명의 날개 (기본 몬스터 수집 데모)", "menu-project-demo-emerald-crown", () => void loadFlagshipDemoInEditor("emerald-crown")),
     item("아스트라 호라이즌: 다우닝 시티와 여명의 날개 — 바로 플레이 ▶", "menu-project-play-emerald-crown", () => void loadFlagshipDemoInEditor("emerald-crown", true)),
     item("시타마치 사계절 (기본 현대 연애 데모)", "menu-project-demo-shitamachi", () => void loadFlagshipDemoInEditor("shitamachi-fourth-season")),
+    item("첫사랑 (기본 오피스 로맨스 데모)", "menu-project-demo-first-love", () => void loadFlagshipDemoInEditor("first-love")),
+    item("첫사랑 — 바로 플레이 ▶", "menu-project-play-first-love", () => void loadFlagshipDemoInEditor("first-love", true)),
     { kind: "separator" },
     item("Scarloxy 몬스터 초원 데모", "menu-project-scarloxy-demo", () => void newScarloxyDemoProject()),
   ];
@@ -990,7 +1005,10 @@ async function doBackupProject(): Promise<void> {
   try {
     const saved = await store.flush();
     if (saved.kind !== "saved") throw new Error("현재 변경을 저장하지 못했습니다. 다시 저장하거나 프로젝트 파일을 내보내세요.");
-    toast(`백업을 만들었습니다: ${await repository.backup()}`, "ok");
+    // 백업 폴더 경로(ISO 시각·UUID)는 토스트에 쓰지 않는다 — 사람이 읽는 시각만 보여 주고, 백업은 「백업에서 복구」 목록에서 찾는다.
+    await repository.backup();
+    const time = new Date().toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+    toast(`백업을 만들었습니다 (${time})`, "ok");
   } catch (error) {
     toast(error instanceof Error ? `백업 실패: ${error.message}` : "백업 실패", "error");
   }

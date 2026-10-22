@@ -58,6 +58,23 @@
   min-width: 0;
 }
 
+/* 이름 줄 = 이름 + (시작 맵이면) 배지. 배지는 줄 끝에 붙고, 메타 줄은 그 아래까지 전체 폭을 쓴다. */
+.map-tree-panel .map-tree-name-line {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+}
+
+.map-tree-panel .map-tree-name-line .map-tree-name {
+  flex: 0 1 auto;
+}
+
+.map-tree-panel .map-tree-name-line .start-mark {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
 .map-tree-panel .map-tree-name,
 .map-tree-panel .map-tree-meta {
   min-width: 0;

@@ -1,0 +1,254 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "woodland grass",
+ "label": "beodeul_ground/bdg-woodland-grass (칸 650)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 4,
+  "tileColorsP90": 4,
+  "darkV5": 140,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The 16x16 tile is a uniform, fully opaque green grass texture with mottled variation. The column scan shows a single run over rows 0-15 at similar lightness (L about 133-135). There is no front-edge line, eave shadow, or vertical front face. It is a flat ground tile viewed top-down, which is normal for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a single mottled grass tile with a speckled, mid-green base. It has 4 visible tones per 16x16 tile against 3 for the reference grass, and 0% near-flat coverage, the same as the reference. Its raw palette is only 4 colours versus 26 on the reference tile, but the visible variation is equivalent. A grass ground patch has no outline, so the dark-edge tint figure (0% neutral) raises no sticker concern. By eye the dither-like clumps are comparable to the reference's tufted grass, though a little less structured than the reference's larger tuft clusters. It does not look thinner or flatter than the reference tile, so it is acceptable next to it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 10400
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a uniform 16x16 square of mottled green grass with no front-edge line, no eave shadow, no ellipse and no front face. The column scans show one continuous run of rows 0-15 with the same lightness (L about 133-135). It is a flat top-down ground texture, which is what a terrain tile should be."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a mottled grass tile with 4 visible tones per 16x16 tile, against 3 for the reference grass. Near-flat coverage is 0%, the same as the reference, so there are no flat fills. A ground patch has no outline, and the dark pixels are tinted, not neutral (0% near-neutral). The grain is evenly distributed and reads as grass speckle. It lacks the reference's darker tuft clusters and the 26-colour raw variety, but the visible tone count and speckle match the reference grass, so it would sit acceptably beside it. The raw count of 4 colours is not held against it, because visible tones are what matter and the palette is locked.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12653
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a uniform 16x16 green grass texture with mottled shading. The column scan shows one continuous run over rows 0-15 at all three columns, and the width is 16 on every row. It has no front-edge line, eave shadow, or vertical face, so it is a flat seamless terrain tile seen from above. That fits the terrain kind, where a flat top-down ground tile is expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ground patch with no outlines, so edge tint is not an issue (0% neutral dark edge pixels). Its tile shows 4 visible tones against 3 for the reference grass, and near-flat coverage is 0%, the same as the reference. By eye it is a mottled grass speckle in about 4 lightness steps, with no large flat areas. The reference grass reads as a mid green base with a few lighter tufts and one dark patch, which is about 4 steps. The candidate only has 4 raw colours, so it is simpler than the reference's 26. That is the expected result of a locked palette, and the visible-tone count matches or beats the grass reference. It is less elaborate than the paving reference, but that is a different material. It has no distinct tuft shapes, so the texture is 'some' rather than 'rich'. It would sit acceptably beside the reference grass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13700
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a uniform 16x16 square of mottled green grass with no front-edge line, eave shadow, or silhouette change. Column scans show one continuous run of rows 0-15 with nearly constant lightness (L about 133-135), so no front face is drawn. As a flat terrain tile it reads as a top-down ground texture."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate is a small mottled grass swatch with no outline, so there is no sticker look. It has 4 visible tones per tile against 3 for the reference grass, and 0% near-flat coverage, the same as the reference. Dark edge pixels are 0% neutral, so any edge tones lean green rather than black. The speckled light-to-dark clumps read as grass grain similar to the reference grass tufts. It only has 4 raw colours against the reference's 26, but the visible-tone count is what matters and it is at or above the reference. It is simpler than the paving reference, but that is a different material. A careful artist would accept it beside the reference grass without it looking flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12702
+  }
+ ],
+ "decidedAt": "2026-10-20T18:24:46.226Z",
+ "cells": {
+  "16": [
+   "f3f32ed965feaf89"
+  ],
+  "24": [
+   "1498ad49624d0a05",
+   "1fd5ad8628b9ebd1",
+   "36b64090b635d7fa",
+   "927b78e9af56ed5f",
+   "9c75a1f00a6959fd",
+   "a0fa22e6ce47900e"
+  ],
+  "32": [
+   "19cb986ab0629d24",
+   "73c169fa6a06657b",
+   "ac0463e687135cd8",
+   "b67c0f026f98df46",
+   "b73e71248ac4baa5",
+   "c4ac3614c2c07578"
+  ],
+  "48": [
+   "2279a149b5ca7537",
+   "934b132a7acf9062",
+   "d2fa05833676dbc7",
+   "dcae9d66e34ef8d8",
+   "e9ed5025784b3fc1",
+   "f266679b9eee017b"
+  ]
+ }
+}

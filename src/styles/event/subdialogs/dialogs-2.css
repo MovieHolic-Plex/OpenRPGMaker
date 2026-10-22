@@ -687,6 +687,20 @@
   width: 100%;
 }
 
+/* 명령 편집 창의 확인·취소 줄은 본문(.event-subdialog-body)과 함께 스크롤돼, 긴 폼(문장 표시)에서는
+   스크롤하기 전엔 보이지 않았다(UI 감사 07-eventcmd-08). 본문 아래 가장자리에 붙여 둔다.
+   -16px 는 본문 아래 여백(padding-bottom 16px)이다 — 그 틈으로 뒤 내용이 비치지 않게 여백까지 덮는다.
+   팝업 표면색은 반투명이라 불투명 바탕 위에 겹쳐 같은 색을 만든다. */
+.event-command-edit-actions {
+  background: linear-gradient(var(--event-popup-surface), var(--event-popup-surface)), var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+  bottom: -16px;
+  margin-bottom: -16px;
+  padding: 10px 0 16px;
+  position: sticky;
+  z-index: 2;
+}
+
 .event-command-edit-actions,
 .event-command-picker-footer,
 .event-record-picker-footer,
@@ -827,6 +841,11 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* 「더 묻는 명령」 말줄임. 글자에 넣으면 번역 키와 어긋난다(commandPicker.ts pickerLabelParts). */
+.event-command-picker-command-label[data-ellipsis]::after {
+  content: "...";
 }
 
 .command-runtime-badge {

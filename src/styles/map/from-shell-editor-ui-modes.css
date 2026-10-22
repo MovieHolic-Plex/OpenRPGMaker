@@ -69,6 +69,13 @@
   width: max-content !important;
 }
 
+/* 16열 이하 시트는 최소 칸 크기 대신 패널 안쪽 폭(100cqi = 세로 스크롤바를 뺀 내용 폭)에 맞춘다 —
+   최소 16px 을 지키면 16열이 256px 이 되어 248px 안쪽에서 마지막 열이 잘렸다(tilePaletteGrid.ts CUSTOM_PALETTE_FIT_COLUMNS). */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.custom-palette.fits-panel .chipset-grid.custom-palette-grid {
+  --chipset-cell: min(32px, calc(100cqi / var(--custom-cols)));
+  min-width: 0 !important;
+}
+
 /* shell/editor-ui-modes.css:474-478 */
 .left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.custom-palette.source-layout {
   overflow-x: auto !important;

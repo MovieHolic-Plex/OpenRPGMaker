@@ -24,7 +24,13 @@ modern3 팔레트(154색) 손 도트로 그린 일본 도시(상가·주택·역
 ## 굽기 규약 (TS 가 기대하는 것)
 
 - 칸 번호는 덧붙이기 전용(자리 키 핀: 같은 번호에서 그림만 바뀌고 새 칸은 끝에 붙는다).
-- **번호가 실제로 밀린 사고(2026-10-14~18, 2026-10-20 발견):** 낡은 `pins.json` 으로 구운 PR 이 머지되며 번호가 밀렸다 — #2899 한 번에 11,329칸, 그 밖에 fbe80f3·f8a7d06·1e5a3f1·4c8c1df·ec73a64 가 128~458칸. 그 전에 게시한 장소 32곳(`public/assets/region-references/jp-city-*.oprn.json`·`src/project/regionReferences/jp-city-*.json`)이 지금 시트로 엉뚱한 칸을 그렸다(가져오기·조수 `import_region_reference` 모두). 고침: `maps/remap-refs.mjs --from 0d4f13e7c8` 가 그 장소를 만든 굽기의 핀 → 자리 키 → 지금 핀으로 번호를 옮기고 타일셋 사본을 지금 정의(칸 이름표 뺀 사본)로 바꾼다. 동네 한 장은 키트에서 뺀 칸(블록 담 등)을 써서 `town.mjs --publish` 로 다시 지었다. 그 기간에 jp_city 로 맵을 만든 **사용자 프로젝트**는 여전히 옛 번호다(이전 판 핀으로 옮기는 이주는 아직 없다).
+- **번호가 실제로 밀린 사고(2026-10-14~18, 2026-10-20 발견):** 낡은 `pins.json` 으로 구운 PR 이 머지되며 번호가 밀렸다 — #2899 한 번에 11,329칸, 그 밖에 fbe80f3·f8a7d06·1e5a3f1·4c8c1df·ec73a64 가 128~458칸. 그 전에 게시한 장소 32곳(`public/assets/region-references/jp-city-*.oprn.json`·`src/project/regionReferences/jp-city-*.json`)이 지금 시트로 엉뚱한 칸을 그렸다(가져오기·조수 `import_region_reference` 모두). 고침: `maps/remap-refs.mjs --from 0d4f13e7c8` 가 그 장소를 만든 굽기의 핀 → 자리 키 → 지금 핀으로 번호를 옮기고 타일셋 사본을 지금 정의(칸 이름표 뺀 사본)로 바꾼다. 동네 한 장은 키트에서 뺀 칸(블록 담 등)을 써서 `town.mjs --publish` 로 다시 지었다. 그 기간에 jp_city 로 맵을 만든 **사용자 프로젝트**는 옛 번호다 — 아래 「사용자 프로젝트 복구」.
+- **번호가 다른 판(지금 번호와 견줌, 커밋 시각 KST):** ① 10-09 14:50~10-14 15:38(0d4f13e~d1e786d, 덧붙이기만 한 굽기는 같은 판) ② 10-14 15:38~15:53(fbe80f3) ③ 10-14 15:53~10-18 12:00(f8a7d06) ④ 10-18 12:00~15:11(#2899 275fc20) ⑤ 10-18 15:11~15:48(1e5a3f1) ⑥ 10-18 20:28~23:47(9cba5ea; ec73a64 가 되돌림). 10-18 15:48~20:28(4c8c1df~4cce899)과 ec73a64 이후는 지금과 같은 번호다.
+- **사용자 프로젝트 복구(2026-10-21) — 자동 이주는 하지 않는다.** 프로젝트는 맵을 어느 시트 판에서 그렸는지 저장하지 않는다: jp_city 타일셋 사본은 로드마다 `ensureJpCityTileset` 이 그때 번들 것으로 갈아 끼워(칸 수·표가 다르면) 남는 것은 「마지막으로 연 판」뿐이고, `meta.bootNormalization` 도 마지막 정규화 빌드일 뿐이다. 앞 판에서 그린 맵을 다음 판에서 열어 저장하면 사본은 다음 판·맵 번호는 앞 판이 된다(맵마다 다를 수 있다). 지금 번호로 그린 맵에도 모든 판 표가 「옮길 칸」을 내놓는다(실측: 대조용 파출소 맵에 판 ①~③ 이 173칸씩). 그래서 확실히 가를 수 없고 옮기지 않는다.
+  대신 편집기 맵 목록 우클릭(초보 모드는 맵 상세 버튼) **「jp_city 칸 번호 복구」**(jp_city 맵에만 보인다, `src/editor/jpCityPinRepairDialog.ts`)가 「지금 그대로」와 판마다 옮긴 결과를 같은 자리로 그려 보여 주고 사람이 고른다. 적용하면 로컬 폴더는 `backups/` 사본을 먼저 만들고, 실행 취소 한 단계(`applyProjectWithHistory`)로 들어가며, `meta.oprnJpCityPinRepairs` 에 {맵·판·시각·옮긴 칸·그대로 둔 칸·옮긴 명령 수} 를 남긴다. 기록이 있는 맵은 다시 옮기지 않는다(멱등). 옮기는 것: 층 4개·칸 더미·기물 묶음(놓은 칸·밑 칸)·그 맵을 가리키는 「타일 바꾸기」 명령(맵 이벤트·공통 이벤트). jp_city 아닌 맵·고르지 않은 맵은 건드리지 않는다.
+  표 `src/assets/jpCityPinEras.json`(37KB, 창을 열 때만 읽는다)은 `maps/bake-pin-eras.mjs` 가 pins.json 이력에서 굽는다 — 게시 장소를 옮긴 `remap-refs.mjs` 와 같은 `maps/pinRemap.mjs`(옛 번호 → 자리 키 → 지금 번호)를 쓴다. 지금 핀에 자리 키가 없는 칸(그 판 뒤 키트에서 빠지거나 크기가 바뀐 칸)은 그 판 시트와 **화소가 똑같은** 지금 칸이 있으면 그리로 옮기고(같은 키트 칸 우선), 없으면 그대로 두고 수를 알린다(`lost`). `--check` 로 표가 지금 pins.json·시트와 맞는지 본다(화소로 찾은 칸은 시트를 다시 그리면 달라질 수 있어 CI 에는 걸지 않았다 — 판 표 자체는 옛 핀이라 바뀌지 않는다).
+  **남는 한계:** 판 ④(#2899, 3시간 남짓)의 시타마치·쇼텐가이 키트는 판 ⑤~⑥ 에서 7줄 키트로 다시 그려져 옛 칸이 시트에 없다 — 그 판 거리 맵은 467칸이 그대로 남는다(검증 거리 52×34 기준). 이 칸은 생성기로 다시 짓는 것이 맞다. 판 ①~③ 장소(파출소·찻집·학교)는 옮긴 뒤 게시 때 그림과 같았다.
+  검증 도구: `qa/pin-repair-check.mts`(헤드리스: 정규화 → 후보 → 적용 → 멱등·고르지 않은 맵 불변), `qa/pin-repair-editor.capture.mjs`(패키지 빌드 + `oprn-serve` 정본 SQLite 에서 실제 창을 눌러 적용 → 자동 저장 → 새로고침 뒤 다시 찍기). 판 맵 재현은 그 커밋 워크트리에서 `bun scripts/qa/jp-street-probe.mts --style shitamachi`(그 판 편집기 도구로 짓고 그 판 시트로 그린다).
 - **재발 막기:** `bake_jp.py` 는 저장소에 굽을 때 `pins.json` 이 `origin/main` 것을 그대로 품지 않으면(키가 빠졌거나 번호가 다르면) 굽기 전에 멈추고, 굽기 뒤에도 한 번 더 본다(`bake_lib.base_pin_problems`). `ci-fast` 는 main 푸시마다 `check-pins.mjs --base HEAD~1` 로 바로 앞 커밋 핀과 비교한다.
 - **키트 모양이 바뀌면 새 자리 키:** 건물 키트(`blocks/buildings.py`)는 `tiledata/jp-city/buildings-shapes-v1.json`(2026-10-20 굽기 모양, 덧붙이기만)과 폭×높이가 다르면 칸 자리 키에 `@폭x높이` 를 붙인다. 옛 번호는 legacy 로 옛 그림이 남아 이미 깔린 맵의 건물이 어긋나지 않고, 새로 찍는 키트만 새 그림을 쓴다. 3/4 깊은 지붕(#3098)으로 46채가 1~2칸 높아진 굽기가 이 경로를 탄다. 코드에 박힌 키트 크기(`jpCityStreetComposer` LANDMARKS 의 `jp-bldg-koban` 6×6 → 6×7)는 굽기가 키트와 대조해 다르면 멈춘다 — 같은 PR 에서 표를 고친다.
 - 굽기가 내놓는 조립 부품 id 와 오토타일 그룹 id 는 반드시 `jp-` 로 시작해야 한다. 아니면 갱신 때 저자 항목으로 보고 번들 것을 새로 바꾸지 못한다.
@@ -44,6 +50,10 @@ modern3 팔레트(154색) 손 도트로 그린 일본 도시(상가·주택·역
 
 - 행인 `person.*`(Actor1 프레임)은 번들에서 **제외**한다. Actor1 은 타일이 아니고 출처·라이선스가 불확실하다.
 - 새 칸의 색은 modern3 팔레트(`tiledata/atlas-pick/palette/modern3.pal`) 안이어야 한다. modern4(modern_city 쪽)로 확장하지 않는다.
+- **일본 로케일 팔레트 계약**(`src/editor/jpCity/paletteContract.ts` → `bun scripts/content/jp-city/export_palette_contract.mts` → `tiledata/jp-city/palette-contract.json`): 6계열 × 재료 3~4개. 바깥 칸(실내·던전 블록 제외)은 굽기에서 퇴출 램프 색이 계약 색으로 옮겨지고, 허용 색 = modern3 ∪ 계약 색(`bake_jp.py`·`bake_inaka.py`).
+  - **2026-10-20 사용자 결정: 「재료당 5단」 제한을 푼다.** 재료는 핵심 5단(`steps`, 뜻 불변 — 시간대 단 이동·퇴출 램프 짝·`jp_regions_pack` 의 단 번호) 위에 버들항식 **확장 램프** `ramp`(6~10단, 핵심 5단을 순서대로 품는다)와 **하위 램프** `subRamps`(3~10단, 같은 재료의 다른 결)를 가질 수 있다. JSON v2 의 `ramps` 가 이름 붙은 램프 전부를 펼친다: `<재료>`(핵심) · `<재료>+`(확장) · `<재료>/<하위>`. jp_city 와 시골 팩(`jp_inaka_pack`) 모두 적용.
+  - 처음 넣은 것: `pine_bamboo+`(9단) · `pine_bamboo/sunleaf`(9단, 그늘 청록 → 빛 연두로 색상이 도는 버들항 숲 실측 램프, 채도 ≤ 0.49) · `pine_bamboo/culm`(대 줄기 7단) · `moss+`(7단) · `aged_cedar/bark`(나무껍질 7단) · `sakura_petal+`(벚나무 숲 9단) · `autumn_maple+`(단풍 숲 9단). 쓰는 곳: 숲 팩 `jp_forest_pack`(`openwiki/harnesses/jp-city.md` 「이어지는 숲 팩」). 새 재료 결이 필요하면 같은 자리로 더한다 — 램프 밖 낱색은 여전히 금지.
+  - 검사 `validateJpPaletteContract()`(내보내기가 부르고 실패하면 JSON 을 안 쓴다): 핵심 5단 · 확장 6~10단·핵심 포함 · 하위 3~10단 · 단마다 밝기 증가 · 채도 ≤ 램프 상한 ≤ 0.50. 정규화(`nearestContractColor`)는 핵심 5단 색만 본다 — 확장 전에 구운 칸의 정규화 결과가 그대로다.
 
 ## 조수 정책
 
@@ -251,7 +261,7 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 
 ## 탈것 — 차·버스·노면전차·전철·지하철 (2026-10-07)
 
-**그림**: 칩셋 칸이 아니라 따로 된 시트 `public/assets/jp-city/vehicles/<id>.png` 14종(승용 5·경차 2·택시·경트럭·박스 트럭·시내버스·노면전차·전철·지하철), 목록 `src/assets/jpCityVehicles.json`(프레임 `right/left/up/down` + `*_open`, 발자국 `foot`). 원본 `scripts/content/jp-city/vehicles/`(`SPEC.md` 규약: 발자국 아래 가장자리 정렬, 옆 = 길이 L × 2칸, 위아래 = 2 × L, 경차 L=4, 버스·전차 문은 차의 **왼쪽 면**에만 — 동쪽행 `right_open` = `right`, 3/4 윗면 띠·짙은 남색 유리). 관문 `vehicles` 통과.
+**그림**: 칩셋 칸이 아니라 따로 된 시트 `public/assets/jp-city/vehicles/<id>.png` 14종(승용 5·경차 2·택시·경트럭·박스 트럭·시내버스·노면전차·전철·지하철), 목록 `src/assets/jpCityVehicles.json`(프레임 `right/left/up/down` + `*_open`, 발자국 `foot`). 원본 `scripts/content/jp-city/vehicles/`(`SPEC.md` 규약: 발자국 아래 가장자리 정렬, 옆 = 길이 L × 2칸, 위아래 = 2 × L, 경차 L=4, 버스·전차 문은 차의 **왼쪽 면**에만 — 동쪽행 버스엔 `right_open` 이 없다(멈춰도 `right`), 3/4 윗면 띠·짙은 남색 유리). 관문 `vehicles` 통과.
 
 **저장 모양**: `GameMap.transit = { routes: MapTransitRoute[] }` (`src/project/mapTransit.ts`). 노선 = 칸 경로(꺾이는 점) + 탈것 목록 + `loop`/`count`(순환) 또는 `headwaySec`(열린 노선, 맵 밖에서 나타나 맵 밖으로) + `speed` + `stops[{index, waitSec, name, board{mapId,x,y,dir}}]`. 경로 칸 = 머리가 지나는 칸이자 몸 폭 2칸의 위/왼쪽 칸. 좌측통행(`laneOffsetFor`): 폭 4칸 길에서 동쪽행 위 두 줄·서쪽행 아래 두 줄·남쪽행 오른쪽 두 열·북쪽행 왼쪽 두 열. 상태(위치)는 저장하지 않는다.
 
@@ -288,8 +298,20 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 - 굽기: `bake_jp.py` 끝에서 `bake_interior_spec.py`(먼저 `interior/rooms.py` 가 예제 방 사각형 → `tiledata/jp-city/interior/rooms.json`) → `src/assets/jpInteriorSpec.json`(가구 97 · 바닥 7 · 벽면 5 · 탁자 2 · 탁상 20). 핀 8126 → 9017.
 - 조립기 일반화: `builder.ts` 의 `handInteriorStructure`·`buildHandInteriorLayers` 가 사양 인자를 받고(기본 v5), `HAND_INTERIOR_SPECS = {atlas_biome_interior, jp_city}`. `isSeatId` 는 `use` 에 `sit` 이 있는 가구도 앉는 자리로 본다. `parts.ts` 의 예제 문서 id 머리는 `rooms.docPrefix`(jp = `jp-interior-ex-`).
 - 예제: `tiledata/jp-city/interior/examples/{house-1f,house-2f,apartment-1k}.json`(도구 인자 + `rooms` 사각형) → `node scripts/content/jp-city/maps/interior.mjs [--publish]` 가 **조수 도구 그대로** 짓고 엔진 canMove BFS 로 이동 칸 도달까지 잰다.
-  1층(21×15): 복도는 동서, 화실·화장실·부엌이 복도 **북쪽**(방문이 복도 쪽 벽면에 보이게), 욕실·탈의실은 남서(세로 칸막이 3줄 틈), LDK 는 동쪽. 1층 계단 발칸 (11,9) → 2층 (18,10), 2층 계단통 아랫줄 (19,10)(20,10) → 1층 (11,10).
-  짓는 순서는 조수와 같다 — 모든 층을 links 없이 → 같은 mapId·`replace:true` 로 links 넣어 다시(도구가 없는 맵으로 가는 links 를 `link-target-missing` 으로 거부). 장소 `jp-city-house-interior-21x15`(1·2층 한 다운로드) · `jp-city-apartment-1k-12x13`.
+  **2층 단독주택 구조(2026-10-20 개편, 10-21 격자 재배치)** — 일본 一戸建て 평면 구조를 따른다(참고 그림은 구조만 읽었고 화소는 쓰지 않았다). 1·2층이 같은 **세 띠 × 두 줄 격자**(열: 서 8 | 가운데 3 | 동 3, 줄: 북 띠 | 남 띠)를 쓴다. 1층(18×20): 북쪽 띠 = 부엌(대면식, 북쪽 복도와 트임) · 북쪽 복도(북서 귀퉁이 계단 — 북쪽 너머가 바깥이라 `stairs-into-partition` 없음, 북쪽 벽 문 → 돌출 화장실, 동쪽 미닫이 옆문 → 탈의·세면 3×3) · 남쪽 띠 = 거실·식당(부엌 동쪽 끝 2칸 트임) · 현관 복도(남쪽으로 2줄 돌출한 현관) · 욕실 3×3(탈의실 바로 아래). 2층(18×18): 같은 격자를 그대로 쌓아 **1층 바깥선 안**(화장실 위 화장실, 부엌 위 아이방, 탈의실 위 화실, 거실 위 침실, 욕실 위 서재, 1층 현관 돌출은 지붕) — 가운데 복도(북쪽 끝 계단통 — 1층 계단 바로 위) + 네 방 옆문, 출입구 없음. 계단 1층 (10,9) → 2층 (11,11), 2층 계단통 (10,8) 2×2 아랫줄 (10,10)(11,10) → 1층 (11,9).
+  정본은 청사진 `src/editor/handInterior/jpHouseBlueprint.ts`(`composeJpHouse1F/2F(spec, seed)` — 씨앗으로 좌우 반전, 색 조합 3, 가구 변형 2; 방 폭은 방마다 빈 바닥 ≤30% 배열에 묶여 고정). `blueprintComposers.ts` 가 jp_city 의 `layout.program` `jp-house-1f`·`jp-house-2f`(별칭 `house-1f`·`house-2f`·`jp_house`)를 layoutCandidates 보다 먼저 가로챈다. 예제 JSON 은 씨앗 1 을 `scripts/content/jp-city/interior/gen_house_examples.mts` 로 쓴다(손으로 고치지 말 것) → `maps/interior.mjs --only house-1f,house-2f` → `interior-templates/extract.mts`(jp_house 만 옮김) → `bake_refs.py --dump`. 씨앗 검사 `qa/jp-house-blueprint.mts --seeds 1-60`(경고 0·맵 빈 바닥 ≤30%·**방마다 빈 바닥(통로 포함) ≤30%**·계단 도달·2층 출구 없음·2층이 1층 바깥선 안). 구조 참고문서 `jp-interior-house-structure` + 그림 `jp-img-interior-house-structure-{1f,2f}`(예제 맵에 방 이름·문·트임·계단 덧칠).
+  **장소 다운로드(`jp-city-house-interior-21x15`)는 아직 옛 구조다** — `interior.mjs --publish` 가 전 예제 검사를 요구하는데 places4(지하 주차장 `parking-b1`·하수도 `sewer-2`·항구 창고 `harbor-warehouse-2`)가 조립기의 「탈 자리 도달」 검사에 걸려 게시가 막힌다. 그 예제를 고친 뒤 `--publish --sets 1`. `engine_dump.mts` 는 그런 다른 묶음 예제가 거부되면 직전 덤프 값을 쓰고 `interior.staleExamples` 에 남긴다(집 예제는 실패하면 멈춘다). 이름 추론(`단독주택 1층` → program house-1f)은 가구까지 준 평면을 청사진으로 바꾸지 않는다. 참고문서 굽기(2026-10-20): main 의 `bake_refs.py` 는 다른 묶음 드리프트(학교 예제 수영장 입구 도달 실패·places4 예제 거부)로 자기검사에서 멈춘다 — 이번엔 지역 팩 3종 영역(`packs`)·거리 시설 묶음(`gnd`·`regions`)만 보태고, 결과 중 `jp-interior` 분류(문서·그림)만 `src/assets/jpCityReferences.json` 에 갈아 끼웠다. 나머지 분류는 각 묶음 담당이 드리프트를 고친 뒤 전체 굽기로 갱신한다.
+  **`bake_refs.py --dump` 를 막는 자기검사 전부(2026-10-21 origin/main 32ecae70e2 실측, assert 를 모두 출력으로 바꿔 끝까지 돌린 결과)**:
+  ① `bake_refs.py:2182` 학교 예제 수영장 입구 (51,19)(52,19) 도달 실패 — `scripts/content/jp-city/maps/school.mjs`(+`blocks/school.py`) ·
+  ② `:2183` 그 때문에 `poolKadan` 변조 미검출(→ `img_sch` 가 빈 목록으로 `min()` 크래시) ·
+  ③ `:2397` 지하철역 콘코스 정상 맵에 개찰 우회 (12,14)(13,14) — `scripts/content/jp-city/maps/station.mjs` ·
+  ④ `:2398` 그 때문에 `stairsBench` 변조 미검출 ·
+  ⑤ `:3083` 층 정정 위층 칸 수 73≠74(`OLD_GROUP_LAYER` 노면 표시 그룹 lane-center 16·lane-dash 16·crosswalk 8·tactile 16·road-kit-marking 17) — 엔진 홈이 한 칸 바뀜 ·
+  ⑥ `:3087` 실내 밖 밟는 계단(★) 74≠62 — 지역 팩(`packs`, 칸 15813~16951) 계단 12칸이 새로 늘었는데 기대값이 그대로.
+  assert 가 아닌 경고: places4 예제 `parking-b1`(`cs-ramp-down` @21,12)·`sewer-2`(`ug-manhole-ladder` @20,8)·`harbor-warehouse-2`(`wh-ladder-hatch` @19,13) 탈 자리 도달 실패 → 직전 덤프 값 사용, 엔진 감사 mismatches 37.
+  관문(2026-10-21): 12~15회차 지적(층 겹침·탈의실 7칸 폭·세면실 입구·방별 빈 바닥 30% 초과)을 배치로 고쳤다 — 관문 판정 방식·문서의 30% 기준은 그대로. 방마다 빈 바닥(예제·씨앗 60): 부엌 26%·거실 21%·탈의실 22%·욕실 0%·화장실 25%·아이방 25%·화실 11%·침실 25%·서재 22%. 걷는 자리를 쓰임 있는 납작 가구(키친 매트·현관 매트·깔개·놀이 매트·방석·슬리퍼·욕실 발판)로 덮고, 남는 방은 줄였다. 17회차는 「2층 계단통이 1층 계단과 행이 어긋남」(major)으로 불합격 → 2층 계단통을 1층 계단 바로 위 (10,8) 로 옮겨 **18회차 합격**(blocker·major 0). 남은 사소 3건(후속): 2층 계단통 동쪽 절반 아래가 1층 화분 (11,8), 오르내림 도착 칸이 한 열 옆(x10↔x11), 2층 복도 같은 열 화분 두 개. 결과는 `tiledata/jp-city/gates/interior.json`(파일 해시에 묶임 — 그림·문서·보고서를 바꾸면 다시 받는다).
+  칩셋에 없어 대용한 것(object-gen 으로 만들 후보): 유리 장식 찬장(→ `cupboard`), 큰 거울 일체형 세면대(→ `washbasin`), 유닛 배스 욕조+샤워 패널, 신발장 위 꽃병(→ 탁상 `sh-bouquet`), 허리벽 벽면 변형, 방 사이 나무 기둥, 화장실 선반, 부엌↔거실 배식 창, 키친 매트(→ `genkan-mat`), 수건 서랍장(→ `dresser-low`), 실내 빨래 장대(→ `h2-laundry-pole`), 욕실 발판(→ `sc-sunoko`).
+  짓는 순서는 조수와 같다 — 모든 층을 links 없이 → 같은 mapId·`replace:true` 로 links 넣어 다시(도구가 없는 맵으로 가는 links 를 `link-target-missing` 으로 거부). 장소 `jp-city-house-interior-21x15`(1·2층 한 다운로드 — id 는 크기가 바뀌어도 그대로 둔다) · `jp-city-apartment-1k-12x13`.
   런타임 QA `unshare -rn sh -c 'ip link set lo up; node scripts/content/jp-city/qa/interior.probe.mjs'` — 걷는 길은 `interior-fixture.mts` 가 예제 `rooms` 사각형마다 엔진 canMove BFS 로 구한다(평면을 바꿔도 손으로 고칠 것 없음).
 - 평면 함정(실측): 세로 칸막이 틈은 3줄이어야 지나간다(위 두 줄이 벽면) · 칸막이 틈 앞 칸에 가구를 두면 방 하나가 통째로 막힌다 · 소파를 좌탁 바로 남쪽에 붙이면 등받이 overhang 이 좌탁 칸 3·4층을 차지해 탁상 물건이 `goods-no-layer` 로 거부된다 · 대면 카운터는 양 끝 중 하나를 통로로 남긴다.
 - **방문 `door` 종류**(2026-10-07, 관문 2회차 「문 그림이 한 번도 안 쓰인다」): 가로 칸막이 1칸 틈 칸 (x,y) 에 단다 — ikit 가 틈 칸에 인방(천장 띠 비트 1|2, ★)을 붙이고, 그림 16×32 는 틈 아래 벽면 높이 두 줄(윗줄 ★ · 아랫줄 2층)에 열린 문틀·문짝. 통로를 막지 않고 발자국도 차지하지 않는다. 조립기 검사 `door-not-in-gap`(틈 좌우 `#`, 틈 위 실내, 틈 아래 두 줄 바닥, 그 양옆은 벽면/막힘). 세로 칸막이 틈에는 못 단다 — 그래서 문이 필요한 방은 복도 북쪽에 둔다. id `door-open-western`·`door-open-toilet`·`fusuma-open`, 현관문 문턱 `genkan-door`(flat, 맨 아래 출입구 틈 칸).
@@ -412,6 +434,20 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 - 측정: `bun scripts/qa/jp-street-probe.mts --from 3 --seeds 3 --w 64 --h 56 --style shopping` 이 `empty <seed> X%` 와 `.empty.json`(마스크)을 낸다. `NOLOT=1` 이면 이 단계 없이(비교용).
 - 키트 그림 `scripts/content/jp-city/blocks/lot_art.py`(`ENABLED` 만 굽는다, `street_hand.py` 가 등록). 관문 실패로 빠진 것: `jp-lot-pay`·`jp-lot-hoarding`·`jp-lot-notice`.
 
+## 일본 집 보강 8종 `interior_house3` — object-gen, 3/4 관문 보류 (2026-10-21)
+
+유리 식기장·세면화장대·유닛 배스·현관 꽃병·허리벽(`cloth-wainscot`)·나무 기둥·화장실 선반·배식 창.
+object-gen 흐름(시점 판정 통과 참고 그림 → Opus 손 도트 A/B → Opus 블라인드 검수 3회 → `by: opus-picker` 고르기)으로 4판까지 그렸으나
+**8종 모두 최종 3/4 관문(object-gate final, Opus 적대적 VQA) 불합격 → 보류**. 그림·고른 기록은 `tiledata/jp-city/interior/house3/`,
+판정 확인은 `scripts/content/jp-city/interior/house3_picks.py`(`refusal(kind=…, context='bundle')`, 해시 일치).
+블록은 통과분만 등록하므로 지금은 칸 0, 분류표에서도 빠진다. `jpHouseBlueprint.ts` 는 사양(spec)에 그 조각이 있을 때만 쓰고
+없으면 옛 대역(cupboard·washbasin·bathtub+shower-faucet·sh-bouquet·2칸 틈)으로 간다 — 다시 그려 관문을 받으면 굽기만으로 들어간다.
+청사진 자리(2026-10-21 새 격자 c0/c1·e0/e1 기준): 허리벽 = 거실·현관 복도 벽면 · 유리 식기장 = 부엌 식기장 자리(새 배치엔 거실·서재 식기장이 없다) ·
+세면화장대 = 탈의실 (e0+1,8) 2칸, 세탁기 (e0,8)·바구니 (e1,9) · 배식 창 = 거실 북벽 (a-2,12) 2칸 + 기둥 (a-3,12), 부엌↔거실 트임은 (a) 1칸 ·
+현관 꽃병 = 신발장 위 · 화장실 선반 = 2층 화장실 북벽 변기 위(작은 창 대신) · **유닛 배스는 지금 들어가지 않는다** — 욕실 폭 3 의 북벽 첫 줄로 욕실 문(e0)이 들어와 3칸 덩어리를 둘 수 없다(폭 ≥ 4 일 때만).
+대역 주입 시험(사양에 임시 조각을 넣고 `qa/jp-house-blueprint.mts` 씨앗 1~40)으로 경고 0·계단 도달·방 빈 바닥 ≤30% 를 확인했다.
+관문 종류 판정이 흔들린 조각: 기둥(terrain↔wall_mounted), 배식 창(wall_mounted→low_furniture→terrain 모두 kind 반려), 선반(other).
+
 ## 시설 실내 6묶음 — 병원·학교 별관·IT 사옥 + 방 구성(program)·길 고르기 (2026-10-14)
 
 - 블록 3개(`BLOCK_ORDER` 끝): `interior_hospital`(`hs-`, 병원 기물 30 + 바닥·벽면) · `interior_school2`(`sx-`, 학교 복도·교무·특별교실·옥상 보강 13) · `interior_office2`(`ox-`, 자유석·급탕실·로비 보강 13) — 관문 보류 19종을 뺀 수. 틀은 `scripts/content/jp-city/interior/inst.py`(`Inst`: ikit Registry 위에 관문 종류·`_gate/*.png`·`items.jsonl`·`kinds.json` 내보내기). 그림 엔진은 캠퍼스 `px.py`(modern3 램프).
@@ -429,3 +465,27 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 - layout(program·rooms)으로 지은 맵에는 방마다 위치 이름표(`hand-layout-room` + `composed-layout`)를 단다 — 조수 배치 품질 권고(«빈 바닥 → 맵을 줄여라»)가 견본 한 벌짜리 방을 빈 방으로 보고 손으로 다시 짓게 하던 것을 막는다(`piAgentRuntime.ts` 가 composed-layout 맵을 건너뜀). 시설 노트에도 «닿지 못한 빈 바닥 0·경고 0 이면 그대로 두고 다시 짓지 말라, 다른 배치는 layout.variant» 한 줄.
 - 실조수 시험(입력창 경로, `harness-data/assistant-capability/ai-configs/gemini-4-argon.json`: 모든 역할 gemini-4-argon 추론 medium): 새 기본 프로젝트에 4문장(일본 학교 교실·회사 사무실·병원 진료실과 대기실·일본 학교 신발장과 복도). 지침 개선 전 7·7·8·6(c1 은 6번 다시 지음, c4 는 «빈 바닥» 권고에 22×16 손 짓기로 줄임) → 개선 후 7·7·8·7 — 넷 다 jp_city program(school-2f·office-floor·hospital-1f, c4 는 rooms 뒤 school-1f)으로 짓고 다시 짓기 없이 경고 0. 남은 흠: 학교 2층 두 교실이 소품까지 똑같다, 사무 층 자판기 옆 곁문, 학교 1층 계단 옆 짧은 문. 실조수 시험 중에 굽기 사슬(`interiorRoomTemplates.json` 을 origin 판으로 되돌렸다 다시 뽑는다)을 같이 돌리면 «방 구성 "school-2f" 이 없다»가 난다 — 둘을 겹치지 말 것. 3.8-flash·gpt 로 잰 점수와 섞지 않는다.
 - 남은 것: program 배치 후보가 병실을 옆문으로 지나가게 짜는 경우(병동 program 후보 1) · 동·서 벽면 걸이 없음 · 의사·간호사 NPC 는 Actor1 이벤트.
+
+## 숲 — 조수 도구 `paint_jp_forest`·지역/거리 숲·참고문서 `jp-forest` (2026-10-21, PR #3058)
+
+- 숲은 1층 숲 바닥 오토타일 `jp-forest4-bl` + 나무 composer(`src/project/defaults/treeComposer.ts`, 그림 `scripts/content/jp-city/blocks/jp_forest_r4.py`). 나무·접지 그늘 칸은 composer 가 놓는다 — 낱칸·키트로 숲을 만들지 않는다.
+- **조수 입구 셋:** ① `compose_jp_region` 숲 구획(r4 가 구워졌으면 기본, `grounding` 인자; 대숲 등산로는 r3 가 없으면 옛 대숲·삼나무 키트) ② `compose_jp_city_street` 주택가 공원 구획 뒤쪽 55% 에 `parkForest` (`grove` 기본 | `dense` | `none`) + `grounding` ③ 이미 있는 맵에 `paint_jp_forest`(`src/editor/tools/jpForestTool.ts`: `rect` | `beside{x,y,w,h,side,depth}` | `besideLocation`+`side`·`depth`, `forestType` `dense|grove`, `grounding`, `seed` = grove 덩이 모양만).
+- 공용 함수 `paintJpForestArea`(`src/editor/jpCity/forestPainter.ts`): 요청 칸 ∩ 잔디(2~4층에 남의 칸 없음) → dense 는 2×2 열기, grove 는 값 잡음 분위수 55% + 3×3 열기 → 1층 숲 바닥(바닥에 맞춰 잔디 위 `bl`·이끼 바닥 위 `bm`) → `composeR4Family(…, 0)`(형제 composer 를 두 번에 나눠 짠다 — 한 번씩 `composeTreesAll` 을 부르면 서로의 나무를 지웠다). **composer 씨앗은 늘 0** — 편집기 붓이 씨앗 0 으로 다시 짜므로 다른 씨앗으로 세우면 붓질 한 번에 둘레 나무가 바뀐다(지역 도구도 0 으로 바꿨다).
+- **판 r7 (2026-10-21, 독립 Opus 적대 VQA 7판 끝에 전부 통과):**
+  - 나무: 수관 v7.
+  - 숲 바닥 그늘: `forest_r6_ground.py` 의 매끈한 물결 흔들림 + 바깥 1px 성김. 곧은 칸 모서리 그늘이 보여 r2 에서 반려됐다.
+  - 이끼 바닥 형제 그룹 `jp-forest4-bm`: 바탕 칸은 지역 팩 이끼 16109.
+  - 접지(땅 그늘): 늘 켜진다. 도구의 `grounding` 인자는 옛 인자라 무시한다. 접지 없는 숲은 칸 격자 사각형으로 보여 반려됐다.
+  - 대숲 키트 `jp-rg-bamboo-*`: `bamboo_mass`·`bamboo_crown` 으로 다시 그렸다.
+  - 같은 판의 거리 그림 보정:
+    - 함석 지붕: 골이 Λ 박공을 따라 기운다.
+    - 단층·창고 지붕: 4단 + 4px 골.
+    - 간판 탁점: 두 2×2 점, 그림자 없음. 굵히면 だ·が·ご 가 한 덩이로 붙었다.
+    - 交: 1px 틈을 지킨다(文 으로 읽혔다).
+    - 역 문 높이: 간판과 겹치지 않게 잘랐다.
+  - 탈것: 동쪽(right) 버스는 `right_open` 이 없다(문이 반대쪽이다). 런타임이 닫힌 프레임으로 내린다.
+  - 판정 기준: `harness-data/object-gate/vqa/jp-forest-r1.*`. 허용은 사용자 위임 감독 허용이다(18323 묶음 `jp-forest-r1`).
+- 구조 검사 `checkJpForest`: `FOREST_TILE_ON_LAYER1`·`FOREST_ROOT_OFF_FOREST`(줄기 열 밑칸만)·`FOREST_OVER_FOREIGN`·`FOREST_TRUNK_MISSING`·`FOREST_APRON_OFF_LAWN`. 보기 좋은지는 판정하지 않는다.
+- 참고문서 용도 `jp-forest`(4쪽·그림 8장 — 접지 비교 그림은 접지가 늘 켜져 뺐다)는 **따로 굽는다** — `forest_refs_scenes.mts`(실제 도구 결과·변조 검출 JSON) → `bake_forest_refs.py` → `src/assets/jpForestReferences.json` + `public/assets/jp-city-references/forest-*.png`. `jpCity.ts` 가 `jpCityReferences.json` 뒤에 붙여 `ensureJpCityReferences` 로 기존 프로젝트에도 심는다(bake_refs.py 재굽기가 숲 문서를 지우지 않게 파일을 나눴다). 숲 칸이 구워진 시트로만 굽는다(시트 칸 수 확인).
+- 실조수 시험 `scripts/qa/jp-forest-assistant-run.mts`(Pi 실행기, `argonproxy/gemini-4-argon-high` 강도 medium, 새 SQLite 폴더 저장·재로드·1배 그림 → `verify-shots/jp-forest-assistant/<label>/`).
+- **옛 번호는 옛 그림을 지킨다 (2026-10-21):** 핀은 덧붙이기만이다. 같은 키로 그림만 바뀐 칸(예: #3098 깊은 지붕·차량 다시 그리기)이 옛 번호에 덮어써지면 이미 깔린 맵이 바뀐다. `bake_jp.py` 의 `Cells._frozen_key` 가 옛 시트(정의 count 미만 번호)의 화소와 새 그림(야외는 색 계약 적용 후)을 비교해 다르면 키를 `<키>@r<sha8>` 로 바꿔 새 번호를 받게 한다. 굽기 보고 `tiles.rekeyed_art`(바꾼 키 수)·`tiles.old_cells_changed`(옛 번호 중 화소가 바뀐 칸, 0 이 아니면 굽기 거절). 실측(origin/main 핀 기준 임시 굽기): 칸 19,614 · legacy 1,837 · 다시 키 344 · 옛 칸 화소 변경 0 · 핀 이동 0. 전에 적었던 「옛 칸 1,493」은 이동이 아니라 legacy(이번 굽기가 만들지 않는 번호)였고, 그중 344칸이 제자리에서 그림이 바뀌고 있었다 — 이 규칙으로 막았다.

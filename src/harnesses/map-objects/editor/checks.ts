@@ -1,6 +1,7 @@
 // src/harnesses/map-objects/editor/checks.ts
 /** 맵 기물의 깨짐 검사(격자로 잴 수 있는 것)와 검수 답 해석. */
 import { extractJsonObject } from "@/harnesses/_core/workshop/grid";
+import { sizeProblems, topShareGate } from "@/harnesses/_core/workshop/objectShape";
 import type { Grid, Verdict, WorkshopItem } from "@/harnesses/_core/workshop/types";
 
 const STANDING = new Set(["floor", "wall"]);
@@ -22,7 +23,21 @@ export function mapObjectHardCheck(item: WorkshopItem, grid: Grid): string[] {
     }
   }
   if (STANDING.has(item.kind) && bottom !== grid.height - 1) problems.push(`접지선: 맨 아래 칠한 줄 y=${bottom} — 캔버스 맨 아래(y=${grid.height - 1})에 닿게`);
+  problems.push(...sizeProblems(item, grid));
   return problems;
+}
+
+/** 하네스 판정: 검수자가 잰 윗면이 칠한 높이의 25% 미만이면 불합격(THIN). */
+export function mapObjectGate(item: WorkshopItem, verdict: Verdict): Verdict {
+  const { min, failed } = topShareGate(item, verdict);
+  if (!failed) return verdict;
+  return {
+    ...verdict,
+    verdict: "FAIL",
+    codes: [...new Set([...verdict.codes, "THIN"])],
+    reasons: `윗면 ${verdict.topRows ?? "없음"}행 < ${min}행(칠한 높이의 25%, 하네스 규칙). ${verdict.reasons}`.trim(),
+    fix: `${verdict.fix} 맨 위 수평 면(${verdict.top || "뚜껑·지붕·윗판"}) 윗면을 ${min}행 이상으로 — 앞면을 줄여 자리를 만든다.`.trim(),
+  };
 }
 
 export function parseMapObjectVerdict(text: string): Verdict {
@@ -36,6 +51,7 @@ export function parseMapObjectVerdict(text: string): Verdict {
       reasons: typeof raw.reasons === "string" ? raw.reasons : "",
       fix: typeof raw.fix === "string" ? raw.fix : "",
       worse: raw.worse === true,
+      ...(typeof raw.looks_like === "string" && raw.looks_like ? { looksLike: raw.looks_like.slice(0, 60) } : {}),
     };
   } catch {
     return { verdict: "FAIL", codes: ["READ"], top: "", topRows: null, reasons: "검수 답을 읽지 못했다", fix: "", worse: false };

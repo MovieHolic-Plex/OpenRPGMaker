@@ -1,5 +1,8 @@
 // 다른 컴퓨터의 팀 호스트를 앱 창으로 연다.
 //
+// @deprecated multi-user team collaboration is not supported yet (2026-10-21).
+// 파일 메뉴·시작 화면 진입점은 TEAM_COLLAB_ENABLED(electron/shared/teamCollab.ts) 뒤에 숨었다.
+//
 // 참여하는 쪽도 앱이어야 한다(브라우저 탭이 아니라). 창은 호스트 페이지를 그대로 싣는다 —
 // 호스트가 주입하는 /__oprn/bridge.js 가 HTTP 로 같은 저장 채널(window.oprn)을 만든다.
 // 원격 페이지이므로 preload(IPC) 를 주지 않는다. 이 창은 이 컴퓨터의 파일·IPC 에 닿지 못한다.

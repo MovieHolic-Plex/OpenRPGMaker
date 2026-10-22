@@ -63,11 +63,12 @@
   z-index: 39;
 }
 
+/* 위 창은 6px 내려 선다 — 이름표(top:-9px)가 화면 위 끝에 닿지 않게. 여백(padding)이 아니라 자리를 옮겨 상자 높이는 아래 창과 같다. */
 .dialogue-overlay.position-top {
   bottom: auto;
   height: var(--runtime-dialogue-panel-height);
   padding: 8px 10px 0;
-  top: 0;
+  top: 6px;
   transform: none;
 }
 
@@ -1378,4 +1379,86 @@
 .qte-count { font-size: 22px; font-weight: 700; min-height: 1em; }
 @media (prefers-reduced-motion: reduce) {
   .timed-choice-bar-fill, .qte-meter-fill { transition: none; }
+}
+
+/* ── 고정 틀 선택지 (2026-10-22) ─────────────────────────────────────────────
+   선택지가 떠도 대사 상자는 크기·자리를 그대로 지킨다(dialogue.ts choiceFrame). 상자 자리에는 질문 또는 바로 앞 대사가
+   「틀」로 남고, 선택지 칸은 그 위(창이 위에 있으면 아래)에 따로 뜬다. 예전에는 선택지 창이 대사 상자를 갈아 치우며
+   내용 높이로 자라 위로 27~32px 늘었고, 자리도 세션 설정을 따로 따라가 위↔아래로 튀었다. */
+.dialogue-overlay.choices-active.choices-framed {
+  gap: 6px;
+  justify-content: flex-start;
+}
+.dialogue-overlay.choices-active.choices-framed.position-bottom {
+  height: var(--runtime-dialogue-panel-height);
+  max-height: none;
+  min-height: 63px;
+  padding: 0 10px 8px;
+}
+.dialogue-overlay.choices-active.choices-framed.position-top {
+  height: var(--runtime-dialogue-panel-height);
+  max-height: none;
+  min-height: 63px;
+  padding: 8px 10px 0;
+}
+.dialogue-overlay.choices-active.choices-framed.position-center {
+  min-height: var(--runtime-dialogue-panel-height);
+  padding: 0 10px;
+}
+.dialogue-overlay.choices-framed > .dialogue-box.choices-frame {
+  cursor: default;
+  pointer-events: none;
+}
+.dialogue-overlay.choices-active.choices-framed > .dialogue-box.choices {
+  bottom: calc(100% + 4px);
+  flex: none;
+  height: auto;
+  max-height: 230%;
+  max-width: calc(100% - 20px);
+  min-height: 0;
+  min-width: min(168px, 60%);
+  position: absolute;
+  right: 10px;
+  top: auto;
+  width: auto;
+  z-index: 3;
+}
+.dialogue-overlay.choices-active.choices-framed.position-top > .dialogue-box.choices {
+  bottom: auto;
+  top: calc(100% + 4px);
+}
+/* 오른쪽 흉상이 선 틀이면 선택지 칸은 왼쪽으로 비킨다. */
+.dialogue-overlay.choices-active.choices-framed:has(> .choices-frame.bust-right) > .dialogue-box.choices {
+  left: 10px;
+  right: auto;
+}
+/* 미연시 룩은 선택지를 가운데에 띄운다(카드·막대 선택지가 화면 가운데 줄에 서는 관례). */
+.dialogue-overlay[data-vn-look].choices-active.choices-framed > .dialogue-box.choices {
+  left: 10px;
+  margin-inline: auto;
+  right: 10px;
+  width: fit-content;
+}
+.dialogue-overlay.choices-active.choices-framed .dialogue-gold-window {
+  left: 6px;
+  right: auto;
+}
+/* 얼굴이 있는 줄만 상자가 63px 로 커지던 규칙(.dialogue-box:has(.dialogue-face))과 같은 바닥을 틀 전체에 준다 —
+   얼굴 있는 줄과 없는 줄의 높이가 같다. */
+.dialogue-overlay:not([data-dialogue-stage]).position-bottom,
+.dialogue-overlay:not([data-dialogue-stage]).position-top {
+  min-height: 63px;
+}
+/* 두 전신 무대(dual-fullbody-veil)는 화면 아래 띠(여백 0, 높이 22%)가 대사 상자다 — 틀도 같은 띠, 선택지 칸은 띠 위에 진한 판으로. */
+.dialogue-overlay[data-dialogue-stage].choices-active.choices-framed.position-bottom {
+  min-height: 0;
+  padding: 0;
+}
+.dialogue-overlay[data-dialogue-stage].choices-active.choices-framed > .dialogue-box.choices {
+  background: rgba(12, 10, 18, 0.86);
+  border: 1px solid rgba(243, 210, 140, 0.42);
+  left: 10px;
+  margin-inline: auto;
+  right: 10px;
+  width: fit-content;
 }

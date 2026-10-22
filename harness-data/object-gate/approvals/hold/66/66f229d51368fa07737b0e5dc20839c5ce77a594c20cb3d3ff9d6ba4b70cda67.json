@@ -1,0 +1,14 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "66f229d51368fa07737b0e5dc20839c5ce77a594c20cb3d3ff9d6ba4b70cda67",
+ "profileHash": "4d8774b517f41638",
+ "kind": "terrain",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-20T22:16:46.713Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [],
+ "note": "delegated by user to supervisor 2026-10-21; Opus 5.5 medium adversarial VQA receipt harness-data/jp-inaka/vqa-r14/gate1/findings-E.json (PR #3071)",
+ "sig": "512afd0fe6429a8ad24a4465ae3bcd0bf8478894fc563fab51b23d91677cec74"
+}

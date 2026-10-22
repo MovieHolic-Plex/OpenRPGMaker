@@ -1,0 +1,375 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ed8dff532c9550957862ff3e6f6e454174a933f726e7d3979150c3d4985bf4de",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "clinic pet kennels",
+ "label": "modern_city_interior/clinic-pet-kennels",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 5/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 5/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 15,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of kennel cabinet",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "cats and dogs inside kennel cells",
+      "rows": "18-25, 34-43",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band at rows 1-6 is lighter (L~177-183 at x=16 and x=23) than the face. It ends in a front-edge line at row 7 (L=151) and a darker shadow row at row 8 (L=121). The front face below, rows 9-46, holds two tiers of barred kennel doors separated by a shelf line at row 26. That is about 38 rows of vertical face. The animals inside the cells are contents, not tops. There is no receding side face. The top band is thick enough, with an edge line and shadow, to count as a top surface rather than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The kennel is a grey stacked cage block with a pale grey frame, blue-grey bar panels and two small pets. Visible tones per tile (12) fall between the hedge (9) and the stall/well (17-20), and there are no flat 5x5 areas, so density is acceptable. Shading is shallow: the frame and body show about 3-4 steps against the 5-6 on the references' roofs, wood and canopies. The dark edge pixels are 100% near-neutral, so the outline is a uniform neutral dark line around the whole block rather than a tinted tone of the adjacent material. This is the sticker look that the tinted-outline references (hedge 0%, stall 1%) avoid. Only the lamp is also neutral, and it is a thin metal object. The cage panels are regular, repeating bar patterns with little per-surface grain or clumping, so the texture is only moderate. The piece is clean and readable but flatter and more outlined than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 15773
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of kennel unit",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "upper kennel cage front with bars and sleeping cat",
+      "rows": "9-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower kennel cage front with bars and sleeping dog",
+      "rows": "27-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cat and dog animals inside cages",
+      "rows": "18-25, 34-43",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At column x=16 rows 1-6 form a lighter gray band (L157-177) at the top, closed by a front-edge line at row 7 (L151) and a darker shadow line at row 8 (L121). Below it is a 38-row front face (rows 9-46) of barred cages and a mid divider at row 26. The top band is about 7 rows, more than a 1-2 row rim, so it counts as a top surface above a tall front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The kennel is a grey stacked cabinet with barred doors and small animals inside. It has about 4 lightness steps on the grey body and fewer on the bars, against about 5-6 per material on the references. The dark edge pixels are 100% near-neutral. That matches the neutral outline measured on the lamp reference, and the references that carry a colour tint (hedge 0%, stall 1%) look clearly different. It reads as a uniform dark sticker line around the frame and each compartment, not a dark tone of the adjacent material. Measured density is respectable at 12 visible tones per tile with 0% near-flat coverage. That is above the hedge (9) but below the stall (17) and well (20). The panels are fairly smooth, with little grain or per-element shading compared with the roofed well or cheese stall. Overall it is clean but shallower than the Beodeul standard, mainly because of the neutral outline and limited ramps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16153
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of kennel unit",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "upper kennel tier with barred doors",
+      "rows": "9-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower kennel tier with barred doors",
+      "rows": "27-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 form a lighter grey top band (L about 157-183). It ends in a front-edge line at row 7 (L=151) followed by a darker shadow row at row 8 (L=121). Below it the front face runs from row 9 to row 46, about 38 rows. It has two tiers of barred kennel doors split by a shelf line at row 26, with animals inside. The silhouette is a constant 30 px wide and no receding side face is drawn. The top is shallow but meets the top-surface test (a), so the drawing reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The kennel is a grey cabinet with a bluish-grey barred door panel, drawn at the same scale as the references. Measured density is acceptable: 12 visible tones per tile against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, so there are no big flat fills. The weak point is the outline. 100% of its dark edge pixels are near-neutral, which matches the neutral black-line look and not the tinted dark material tone of the hedge (0%), the cheese stall (1%) or the well (33%). By eye, the frame reads as a uniform dark grey/black line around the cabinet and each compartment. The body ramps look shallow, about 4 steps, with little grain, speckle or per-element shading on the frame and panels. The animals inside are small and simple. The piece is clean and its density is adequate, but the sticker-like neutral outline and limited shading ramp fall short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 15464
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "upper kennel row (barred doors with cat)",
+      "rows": "9-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower kennel row (barred doors with dog)",
+      "rows": "27-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cat and dog inside kennels",
+      "rows": "18-25, 34-43",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cabinet has a light-grey top band in rows 1-6. It ends in a lighter front-edge line at row 7 (L=151), followed by a darker shadow row at row 8 (L=121), so it meets evidence (a). Below it is a front face of about 38 rows (rows 9-46) with two tiers of barred kennel doors and a base plinth. The 30px width is constant and no side face is drawn. The cat and dog are contents or decor and do not count as main-body parts."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tall grey kennel cabinet with barred doors and small animals inside. Measured facts: 12 visible tones per tile against 9-20 for the references with tiles (hedge 9, stall 17, well 20), and 0% near-flat coverage, so density is acceptable and there are no real flat fills. The outline is the problem. 100% of its dark edge pixels are near-neutral, while the hedge (0%), cheese stall (1%) and well (33%) use tinted dark material tones. The frame and bars read as a uniform neutral dark line around grey slabs, which is the 'sticker' look. The grey frame has only about 3-4 lightness steps against roughly 5-6 on the references' main materials. Texture is limited to light panel edges and the animals, with little grain or per-element shading. Because of the neutral outline and shallower ramps, a careful artist would not accept it next to the references without rework.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 14049
+  }
+ ],
+ "decidedAt": "2026-10-20T22:55:59.262Z",
+ "cells": {
+  "16": [
+   "19ca3ce3f13abe43",
+   "34550adf067695fa",
+   "90a8d4ee0daa7a81",
+   "974ab8c0e78dea77",
+   "ccddc14642654da6",
+   "d1d845b0fbadc240"
+  ],
+  "24": [
+   "2a39c41938a555a8",
+   "3a4bc5928db7d857",
+   "3b5dd06b2607bd7f",
+   "3d803c317293fa70",
+   "64344dd320a350c8",
+   "658fb73e62d8f6c1",
+   "765a4cdb64d28833",
+   "83ccffce1a739acc",
+   "bd64b1d99e447329",
+   "c773395c53562389",
+   "f13f866597b63c10",
+   "f51b167ab594685c"
+  ],
+  "32": [
+   "7892e066d44839a9",
+   "be5668ab6d482ffd",
+   "cfbffefc49a5d856",
+   "d824a3e5fc178190"
+  ],
+  "48": [
+   "133b4f408e0dfdb5",
+   "3a99a0f8af6c69f8",
+   "dc6c269d24232cd0"
+  ]
+ }
+}

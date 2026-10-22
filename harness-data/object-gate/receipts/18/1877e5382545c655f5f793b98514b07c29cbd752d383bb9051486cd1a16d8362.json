@@ -1,0 +1,333 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1877e5382545c655f5f793b98514b07c29cbd752d383bb9051486cd1a16d8362",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "food ticket machine",
+ "label": "modern_city_interior/food-ticket-machine",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 27,
+  "tileColorsP90": 27,
+  "darkV5": 33,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band of the machine body",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "front face: display slot, ticket button grid, dispenser tray",
+      "rows": "8-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The red body has a band at rows 1-6 (row 0 is the narrower outline). Row 6 is a lighter front-edge line (L=128 against L=107 above), and row 7 is a dark eave shadow (L=62). Below that, rows 8-31 form a vertical front face with a display slot, a button grid and a dispenser tray. The face is 24 rows tall and has no side face. The top band has an edge line and shadow, so it counts as a top surface and not a plain front-facing cornice."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small upright red vending machine, a standing prop like the references. The measured facts are strong: 27 visible tones per 16x16 tile against 17-20 for the stall and well, 0% near-flat coverage, and only 6% neutral dark edge pixels. The outline is therefore tinted, a dark red-brown beside the red body, and not a neutral black line. By eye the body has several red steps, a lit panel, a button grid and a dispensing slot, so there are no large flat fills. The pixel art is small and a little less textured than the stall or well, but it is not thinner or more sticker-like than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14659
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top red cap band",
+      "rows": "0-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "front face with display slot, ticket button grid and dispenser tray",
+      "rows": "8-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is 14 px wide from row 1 down. Rows 1-5 form a red band, and row 6 is a lighter front-edge line (#c46264) against the red above. Row 7 is a dark eave shadow (#742630), and the vertical front face runs from row 8 to row 31 (about 24 rows). That face holds a display slot, a button grid and a tray. The top band is not clearly a horizontal surface and could be read as a front-facing sign header. It still meets evidence (a): a band ending in an edge line, followed by shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a tall red vending-style machine. The body has a highlight edge, mid red and dark red-brown shading, plus a panel of small buttons and a slot. This gives about 5 steps, close to the references' 5-6. The outline is a dark red-brown that leans toward the body material, not a neutral black line, and only 6% of dark edge pixels are near-neutral. Measured density is 27 visible tones per tile, above the well (20) and cheese stall (17), and near-flat coverage is 0%. The panel and buttons carry varied detail, so there are no flat fills. It reads as a finished prop of the same standing as the references and does not look like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15478
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top hood/roof band",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "display window with yellow slots",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ticket button grid",
+      "rows": "12-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dispensing tray and slot",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a red top band (5 rows). Row 6 is a lighter front-edge line (#c46264) and row 7 is a darker eave shadow (#742630). Below that, rows 8-31 form the vertical front face (24 rows) with the display, button grid and dispenser. The width is a constant 14 px with no receding side face. The top band is modest, but it meets evidence (a), so it counts as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow vending-style prop with a maroon body, a light display panel and a grid of small buttons. The outline reads as a dark red-brown that leans toward the body colour, not a neutral black line. Only 6% of its dark edge pixels are near-neutral, against 33% for the roofed well and 100% for the lamp. It has 27 visible tones per 16x16 tile, above the stall (17), well (20) and hedge (9). Near-flat coverage is 0%, so there are no large flat fills, and the button grid and panel supply varied detail. The body ramp shows about 4-5 lightness steps (highlight, light, mid, dark, deep), close to the references' 5-6. The main weakness is that the flat front of the red body has less grain than the stall or well, but it is not a sticker-style piece and sits acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16181
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top hood band of the machine",
+      "rows": "0-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "display strip with yellow slots",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ticket or food button grid",
+      "rows": "13-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dispenser tray and bottom base",
+      "rows": "25-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a red top band (L~107). Row 6 is a lighter front-edge line (L=128), and row 7 is a dark eave-shadow row (L=62). That meets evidence (a) for a top surface of about 6 rows. Below it is a vertical front face of about 24 rows (rows 8-31) with the display strip, button grid and tray. The silhouette is 14 wide with a chamfered 12-wide row 0. No isometric side face is drawn. The top band is fairly tall and could be read as a hood panel, but the edge line plus eave shadow make it count as a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a standing prop of the same kind as the references. It shows 27 visible tones per 16x16 tile, above the stall (17) and well (20) and well above the hedge (9). Near-flat coverage is 0%, so the body and button panel carry variation rather than large flat fills. Only 6% of its dark edge pixels are neutral, so the outline is tinted dark red-brown against the red body, as Beodeul does, and not a black sticker line. The body ramps through about 5 steps, and the button grid and display add small detail clusters. The image is small, so I judged mainly on the measured facts. It would sit next to the stall and well without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17699
+  }
+ ],
+ "decidedAt": "2026-10-20T23:28:13.343Z",
+ "cells": {
+  "16": [
+   "3b7a878861753830",
+   "73ce76d5696c5af5"
+  ],
+  "24": [
+   "07a3894f4f818ffe",
+   "3ec5c19ddf81ecb2",
+   "4593494fa0b87b90",
+   "6bc0e62f66baf44c",
+   "6c8303e97f6252b1",
+   "6e678b8ab4ccb859",
+   "97bd1a52da144da0",
+   "ad973f51ae72d92f",
+   "bd9c09a179a5f270",
+   "c683a9d643ecd591",
+   "c785d7c5a7a0d522",
+   "f0168a8ddfb7427b"
+  ],
+  "32": [
+   "1ba6e05fb1e2bdf2",
+   "6273d70c7a2adf8f",
+   "da21a97ab82f150a"
+  ],
+  "48": [
+   "3f92e3f7b3b8079b",
+   "52b1ae115ccffde3",
+   "94ee3ef48c1ff05e",
+   "a238ecb2c809700c",
+   "d150af849be60c92",
+   "d657026730b3e48f"
+  ]
+ }
+}

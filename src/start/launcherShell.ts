@@ -3,7 +3,8 @@
 // 왼쪽 레일(홈 · 내 게임 · 기본 게임 · 새로 만들기 · 에셋 스토어, 바닥에 AI 상태 줄 · 설정 · 판 번호) + 위 막대 + 본문 한 칸.
 //
 // 2026-10-17 판의 「플레이」·「만들기」 두 갈래는 없앴다 — 내 게임 카드마다 「플레이」와 「편집」이 같이 있어서 갈래를 나눌 이유가 없다.
-// 레일의 홈·내 게임·기본 게임·새로 만들기는 한 본문 안의 선반으로 스크롤한다(화면을 바꾸지 않는다).
+// 레일의 홈·내 게임·기본 게임·새로 만들기는 본문 칸을 바꾼다(2026-10-21). 예전에는 한 긴 본문 안의 선반으로 스크롤했는데,
+// 스크롤 위치가 레일 표시를 다시 정해 누른 단추와 표시가 어긋나고, 앞 칸의 검색·상세가 남았다. 지금 칸의 주인은 startScreen.ts 하나다.
 import "./launcher.css";
 import { el } from "@/util/dom";
 import { startIcon, type StartIconName } from "./icons";
@@ -21,7 +22,7 @@ export const LAUNCHER_TESTIDS = {
 
 const BRAND_MARK = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" shape-rendering="crispEdges"><rect width="16" height="16" fill="#4a57d6"/><rect x="3" y="3" width="4" height="4" fill="#fff"/><rect x="9" y="3" width="4" height="4" fill="#fff" fill-opacity=".55"/><rect x="3" y="9" width="4" height="4" fill="#fff" fill-opacity=".55"/><rect x="9" y="9" width="4" height="4" fill="#f3c34f"/></svg>';
 
-/** 위 막대 오른쪽의 글자 단추(폴더 열기·팀에 참여). */
+/** 위 막대 오른쪽의 글자 단추(폴더 열기·팀에 참여 — 팀에 참여는 @deprecated, 2026-10-21 팀 협업 접힘). */
 export function topButton(label: string, testid: string, icon: StartIconName, onClick: () => void): HTMLButtonElement {
   return el("button", {
     class: "ln-tbtn", attrs: { type: "button" }, dataset: { testid }, on: { click: onClick },
@@ -38,7 +39,7 @@ const NAV: readonly { readonly id: LauncherNav; readonly label: string; readonly
 
 export type LauncherShell = {
   readonly element: HTMLElement;
-  /** 레일 표시만 바꾼다(스크롤 위치에 따라 부른다). */
+  /** 레일 표시만 바꾼다. null = 레일 밖 칸(팀에 참여). */
   setActive(nav: LauncherNav | null): void;
   /** 레일 바닥 AI 상태 줄. */
   setAiStatus(status: { readonly tone: "ok" | "warn" | "off"; readonly text: string }): void;

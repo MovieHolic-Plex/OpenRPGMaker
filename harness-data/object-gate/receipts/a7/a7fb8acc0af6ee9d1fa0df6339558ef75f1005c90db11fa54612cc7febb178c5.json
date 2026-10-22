@@ -1,0 +1,510 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a7fb8acc0af6ee9d1fa0df6339558ef75f1005c90db11fa54612cc7febb178c5",
+ "width": 48,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "jp tokonoma",
+ "label": "modern_city_interior/jp-tokonoma",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 0행 < 4 (3/4)",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 평면 채움 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 0행 < 4 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)",
+   "평면 채움 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 16,
+  "darkV5": 67,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel beam",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper alcove back wall with middle shelf ledge",
+      "rows": "9-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging scroll and incense on the shelf",
+      "rows": "10-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flower sprig and vase",
+      "rows": "13-38",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron kettle",
+      "rows": "32-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower alcove with pink front ledge",
+      "rows": "29-40",
+      "evidence": "none",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base cabinet with drawer panels",
+      "rows": "41-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Everything is drawn face-on. The top lintel (rows 1-8) is a front-facing beam with a gradient and no front-edge line or eave shadow, so it shows no horizontal top surface. The alcove is a flat back wall with a 3-row dark shelf ledge (rows 26-28). The pink line at row 40 is a 1-row lip. The base (rows 41-47) is vertical drawer panels. The scroll, vase and kettle are decor and add no top surface. The whole piece reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate shows 13 visible tones per tile. That sits between the hedge (9) and the cheese stall (17) and below the well (20), so it is in the reference range. Near-flat coverage is 16%, close to the stall's 13%, and the flat areas are small patches of back wall rather than large dead fills. Dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood frame, not a black sticker line. By eye, the wood frame has beam and grain variation with about 4-5 steps. The scroll, vase with blossoms, incense burner and tatami-like floor each have their own tonal detail. The wall is somewhat plainer than the reference roof and stall surfaces, so it is slightly lower in density but would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17729
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top beam / cornice",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "upper alcove back wall with scroll",
+      "rows": "9-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vase and flowers",
+      "rows": "10-38",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging scroll",
+      "rows": "10-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "incense burner",
+      "rows": "26-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower alcove floor strip",
+      "rows": "39-40",
+      "evidence": "none",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41-42"
+     },
+     {
+      "part": "lower cabinet drawers/panels",
+      "rows": "41-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is drawn as a flat front elevation. The top beam (rows 1-8) is a front-facing strip with no front-edge line. The left and right posts, the alcove back walls and the lower panels are all vertical faces. The alcove floor at rows 30-39 is the same cream as the back wall and has no depth cue. Only a 1-2 row pink lip appears at row 40 above the dark shadow at rows 41-42, which is a rim and not a top surface. The width is a constant 46 px across rows 1-47, and there is no ellipse or receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tokonoma alcove with a wood frame, a plaster back wall, a hanging scroll, a vase with blossoms and an incense burner. Its dark edge pixels are 0% neutral, so the outlines lean brown and are dark material tone, which matches the Beodeul approach. It has 13 visible tones per tile, between the hedge (9) and the cheese stall (17) and well (20). Near-flat coverage is 16%, close to the stall's 13% but above the hedge, well and bench at 0%. In the image the wall panel and the lower wood floor/base show broad, mostly flat areas. The wood beams have about 3-4 steps with little grain, with no per-plank highlights or knots like the bench and stall. The plaster has no speckle. The vase and the plants are small and only moderately shaded. Overall it is competent, but its shading is shallower than the references (about 4 steps against 5-6) and it has some flat fills. A careful artist would see it as slightly flatter than the stall and well references, so it does not clearly meet the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15401
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top beam / lintel (front-facing strip)",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper alcove back wall",
+      "rows": "9-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle shelf board (3-row dark strip)",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower alcove back wall with pink sill line",
+      "rows": "29-40",
+      "evidence": "none",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base cabinet doors (front panels)",
+      "rows": "41-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging scroll",
+      "rows": "10-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flower branch",
+      "rows": "15-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vase",
+      "rows": "28-38",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "incense burner / kettle",
+      "rows": "31-38",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is drawn flat-on. The top beam (rows 1-8) is a front-facing strip with highlight streaks and a dark bottom row 8; it has no edge line followed by eave shadow and no ellipse. The shelf (rows 26-28) is a thin dark band. The lower alcove and base cabinet are vertical faces with a 1-row pink sill at row 40. The side posts are front-facing vertical strips, not receding side faces. No horizontal top surface is visible, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is an alcove with a wood frame, plaster back wall, hanging scroll, vase with blossoms and an incense burner. It has 13 visible tones per tile, which sits between the hedge (9) and the cheese stall (17) and close to the well (20). Near-flat coverage is 16% against 13% for the stall, which is comparable. The dark edge pixels are 0% neutral, so the outlines lean brown and follow the neighbouring material. The frame beams carry grain bands and a lighter top edge. The wall has some speckle and shading, and the vase and scroll are shaded in several steps. The wall and the scroll's paper face are still somewhat calm, with a few larger smooth patches, so it is slightly less dense than the well and the stall. It would not look thinner or more sticker-like next to the references, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17986
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header beam",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle shelf ledge",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "scroll, vase, incense burner and flowers inside the alcove",
+      "rows": "10-39",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower base with drawer panels",
+      "rows": "40-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is a flat frontal elevation. The header beam at rows 1-8 is a front-facing strip with a darkening gradient and no front-edge line or eave shadow that would mark a horizontal top. The side posts, the shelf band at rows 26-28 (3 rows, dark), the pinkish lip at row 40 and the lower drawer panels at rows 41-47 are all vertical faces or thin rims. The alcove interior is a flat back wall (cream, rows 9-25) with objects drawn face-on, not a visible floor or contents seen from above. No part has a top surface of 3 or more rows, so there is no 3/4 top view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tokonoma alcove with a wood frame, a pale wall, a hanging scroll, a vase with blossoms and an incense burner. Measured: 13 visible tones per tile against 9-20 for the references with tiles (hedge 9, stall 17, well 20), so the numbers alone don't mark it as shallow. Near-flat coverage is 16%, a little above the stall's 13% and well above the hedge and well at 0%. Dark edge pixels are 0% neutral, so the outline is tinted dark brown/red-brown, not a sticker line. By eye, the wood frame has about 3-4 steps with some grain, which is fewer than the roofed well or stall's 5-6 steps. The large pale back wall is a mostly flat fill with only slight variation, and the floor strip and shelf are simple. The scroll, vase and plant are small and fairly sparse next to the stall's clusters of goods and the well's per-stone shading. Overall it is clean and consistent but a little flatter and thinner than the best references, and the flat wall area counts against it. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14702
+  }
+ ],
+ "decidedAt": "2026-10-20T23:53:05.066Z",
+ "cells": {
+  "16": [
+   "17aafa8c4b795284",
+   "5c4498bc9d753b5e",
+   "8d438063751b4bb1",
+   "929ea11ddd701d51",
+   "aeb75bc62fed9262",
+   "b6fea8f61cf02d37",
+   "d64b6f902f0682f3",
+   "dcb668e3df20b5b1",
+   "f0c7d6aa17774954"
+  ],
+  "24": [
+   "1846f3c81d0d23bb",
+   "54a1643534b4eb6c",
+   "62b038089813285f",
+   "d1c21984acd319c0"
+  ],
+  "32": [
+   "14431950585f5fcc",
+   "48b258e546599451",
+   "4a0a86d9948f12dd",
+   "4a78879d965f3001",
+   "54f31f2830b5bc9f",
+   "5590e2028e2bf4fd",
+   "579c8caf145d6323",
+   "62a06c2298c4211f",
+   "656ff4da20e34ca9",
+   "657fcba4492a5414",
+   "7e264369f2d43039",
+   "96959f589ab9cbda",
+   "9eea7235ab613e1b",
+   "9efcafb6fd6d4df0",
+   "9f141f9ecf4135c1",
+   "ae58407b893c7558",
+   "af19a0be60b7f8f5",
+   "b1bea9bad2ee46c1",
+   "b29e7afaab5ce033",
+   "be6385ecf59d9acc",
+   "c92988466fa6a126",
+   "ca060fcd7c437c0f",
+   "cea01e35425c9253",
+   "f65ceefef84492c1"
+  ],
+  "48": [
+   "9279ac3978dc10b5"
+  ]
+ }
+}

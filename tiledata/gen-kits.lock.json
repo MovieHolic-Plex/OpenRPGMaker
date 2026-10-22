@@ -1,0 +1,127 @@
+{
+  "note": "생성기 저장소(object-gen·char-gen·tile-gen)를 고정 커밋으로 묶는다. `npm run gen-kits:sync` 가 이 커밋에서 프롬프트·템플릿·시점 필터·팔레트·판정 기준(object-gen, 공개)을 뽑아 src/harnesses/_core/workshop/genKits/ 에 생성하고, 비공개 저장소(char-gen·tile-gen)는 편집기가 기대는 계약(CLI 동사·묶음 형식·지형 종류)만 검사한다 — 비공개 저장소의 글은 공개 모노레포에 옮기지 않는다. `-- --check` 는 생성물이 lock 과 맞는지, `-- --drift` 는 lock 과 각 저장소 main 의 차이를 본다. 저장소를 올리려면 `-- --bump <kit>`. 비공개 저장소는 `fingerprint` 파일(지시문·판정 기준)의 지문만 생성물에 남겨 바뀜을 보인다. 편집기의 부탁 글은 이 lock 커밋을 적어 사용자 에이전트가 같은 판을 쓰게 한다. CI: `npm run gen-kits:check`(object-gen, 10커밋 넘게 뒤처지면 실패).",
+  "kits": {
+    "object-gen": {
+      "repo": "https://github.com/MovieHolic-Plex/object-gen.git",
+      "visibility": "public",
+      "branch": "main",
+      "commit": "7ebb92adbb9fc2300adb07bea1c9583c65b3b182",
+      "vendor": {
+        "out": "src/harnesses/_core/workshop/genKits/object-gen.json",
+        "modules": [
+          "objectgen/prompts.py",
+          "objectgen/reference.py",
+          "objectgen/picker.py",
+          "objectgen/drawer.py",
+          "objectgen/vqa.py",
+          "objectgen/gate.py",
+          "objectgen/checks.py",
+          "objectgen/spec.py",
+          "objectgen/palette.py",
+          "objectgen/project34.py",
+          "objectgen/exemplars.py"
+        ],
+        "files": [
+          "objectgen/palettes/*.pal",
+          "objectgen/anchors/*/set.json"
+        ],
+        "copy": [
+          {
+            "from": "objectgen/anchors/",
+            "to": "public/assets/gen-kits/object-gen/anchors/",
+            "ext": ".png"
+          }
+        ]
+      },
+      "contract": [
+        {
+          "file": "objectgen/pack.py",
+          "contains": [
+            "oprn-store-pack/1"
+          ]
+        },
+        {
+          "file": "objectgen/cli.py",
+          "verbs": [
+            "new",
+            "run",
+            "ref",
+            "draw",
+            "vqa",
+            "gate",
+            "pick",
+            "pack"
+          ]
+        }
+      ]
+    },
+    "char-gen": {
+      "repo": "https://github.com/MovieHolic-Plex/char-gen.git",
+      "visibility": "private",
+      "branch": "main",
+      "commit": "d5f263904ca2b671ab6d54942b9c3651aa3e9d22",
+      "contract": [
+        {
+          "file": "chargen/pack.py",
+          "contains": [
+            "oprn-store-pack/1"
+          ]
+        },
+        {
+          "file": "cli.py",
+          "verbs": [
+            "pack",
+            "draw",
+            "verify",
+            "set"
+          ]
+        }
+      ],
+      "fingerprint": [
+        "chargen/prompts.py",
+        "chargen/judge.py",
+        "chargen/quality.py",
+        "chargen/verify.py"
+      ]
+    },
+    "tile-gen": {
+      "repo": "https://github.com/MovieHolic-Plex/tile-gen.git",
+      "visibility": "private",
+      "branch": "main",
+      "commit": "bf5359722545fa7bd566aa6bba66aabac3c9c0df",
+      "contract": [
+        {
+          "file": "tilegen/pack.py",
+          "contains": [
+            "oprn-store-pack/1"
+          ]
+        },
+        {
+          "file": "tilegen/cli.py",
+          "verbs": [
+            "new",
+            "auto",
+            "pick",
+            "pack"
+          ]
+        },
+        {
+          "file": "tilegen/cli.py",
+          "contains": [
+            "floor",
+            "autotile",
+            "water",
+            "forest",
+            "cliff"
+          ]
+        }
+      ],
+      "fingerprint": [
+        "tilegen/prompts.py",
+        "tilegen/vqa.py",
+        "tilegen/checks.py",
+        "tilegen/gate.py"
+      ]
+    }
+  }
+}

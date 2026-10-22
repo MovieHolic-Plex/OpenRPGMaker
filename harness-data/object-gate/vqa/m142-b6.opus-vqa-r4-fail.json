@@ -1,0 +1,67 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b6",
+ "round": 4,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "rest-bottle-shelf",
+   "pixelSha256": "c894d591cc827a79566731d0027ed9e5b66a0d03ed7c233dad711b81ee40a3ce",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    4
+   ],
+   "reasons": "The shelf top is only a single thin brown row with no lit plane, so it reads as a flat front elevation, and its brown outline doesn't match the originals' dark navy outline. The bottle rows are a noisy jumble of saturated red, blue and green sticker pixels instead of the clean, even rows in mci-cooler."
+  },
+  {
+   "id": "roof-fence",
+   "pixelSha256": "84185a3cc19217ddc71b60125d3e6859ae40e488c36618c1c5f8d7abee9b064a",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4,
+    5
+   ],
+   "reasons": "A beige band is painted across the top behind and above the posts, outside the fence's own footprint, and the fence itself is a pure front elevation with no top rail plane. The lattice pattern is a busy checker of light and dark green pixels that turns into noise at 1x."
+  },
+  {
+   "id": "roof-stair-hut",
+   "pixelSha256": "11931be1e37efd10d5ffc7ee982df41e7cf9f16e1f84ffcccc6183cb2ea79e56",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    3
+   ],
+   "reasons": "The roof plane is fine, but in the room the hut is no bigger than a counter, and its door is only about 5px wide, far too small for an enclosure a character walks into. At 1x the tiny door, light and green sign blur together, so it reads as a vending machine or counter, not a stair hut."
+  },
+  {
+   "id": "school-cleaning-locker",
+   "pixelSha256": "9fbd3a91995e9e974119207cfaeeaf240141f08a3eb9744a9b8468fefb764ba3",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    4
+   ],
+   "reasons": "The top is only about 2 rows of pale gray with no real depth, and the light gray outline and washed-out palette don't match the originals' dark outline. The broom and red bucket are pasted on as overlapping blobs that stick out past the locker's right and bottom edges, and at 1x it turns into a muddy smudge."
+  }
+ ]
+}

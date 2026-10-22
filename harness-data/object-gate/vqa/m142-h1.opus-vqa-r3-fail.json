@@ -1,0 +1,108 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-h1",
+ "round": 3,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "dept-rack-cool",
+   "pixelSha256": "a572e47f701eac477fa58d509a225836e42dde124aba74dc78ca84554a8a0590",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    3,
+    4
+   ],
+   "reasons": "The oval rail has a light grey halo outline, not the dark outline the originals use. At 1x the hanging shirts merge into a muddy blue-grey blob, so it doesn't read as a clothing rack."
+  },
+  {
+   "id": "home-appliance-rack",
+   "pixelSha256": "b2038c55fd7fda141ba6748948d926279095eb0c9c228fa7c635038201d7a764",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "The shelf is a flat front elevation: there is no lit top plane on the frame or the shelf planks, only a 1-2px cap. The narrow 1-tile column with tiny appliances looks one size too small next to the wardrobe and cooler."
+  },
+  {
+   "id": "home-drying-rack",
+   "pixelSha256": "b3d9d9f8d7ed7d82bb59d7e2da5ff2c84b66e2578609901b82ff1ba6ed1e716c",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "It is a pure front elevation: the frame has no top bars seen from above, and the legs are drawn as flat ladder strips. At 1x the blue, white and red cloth blocks and the noisy white-black leg segments read as a jumble rather than a drying rack."
+  },
+  {
+   "id": "hospital-curtain-screen",
+   "pixelSha256": "0ec774f600446d4c40ec3ad6f28f74e0eef06b586f91109b01f16fe7fc4bdd6a",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "It is a flat front elevation with no top rail plane, so the view reads as a wall panel, not 3/4. The long, very thin 1-tile panel is out of proportion with the chunkier originals."
+  },
+  {
+   "id": "roof-fence",
+   "pixelSha256": "127be2c66f2b8c607d66a5fc45f6f7724b10919d11ddd65c96361b8006021306",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The diamond mesh is a low-contrast muddy green-on-green pattern that becomes a grey-green smear at 1x. The posts and top rail are pale against it, so it reads as a glass panel or box rather than a chain-link fence."
+  },
+  {
+   "id": "mart-sale-endcap",
+   "pixelSha256": "27837c4d513774d531e4ca535a55a8c5a05d0338a05aa6a3e7b4d02485a890ea",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4,
+    5
+   ],
+   "reasons": "The bright yellow-red sale sign is a sticker-like block on a thin pole that sticks out above and beside the body. The shelves are a front elevation with no lit top plane, and the cardboard box overlaps the sign pole messily."
+  },
+  {
+   "id": "mart-scale-station",
+   "pixelSha256": "92eb00e08a7d27e80ef3db203873bb13e3597baeeb70c4bbd09b2379f118d737",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The display, scale plate and cabinet each sit in their own heavy black box, stacked like separate parts with the monitor floating on a thin neck. At 1x it reads as a stack of grey boxes, not a weighing station."
+  },
+  {
+   "id": "museum-partition-wall",
+   "pixelSha256": "f2962eaefd0cda9bd204e1cd07efc977a9a0270956991265c9bf1583597370df",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "It is drawn like a low white table: a large lit top plane with the painting lying on it and spotlights along the back edge. There is no tall vertical front face, so it doesn't read as a standing partition wall with a hung artwork."
+  }
+ ]
+}

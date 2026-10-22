@@ -1,0 +1,395 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fe7ede7de4da2d083c7c3a64c9b2bf3222a0557e3829e6b52600ed992f60697a",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "dept shoe wall",
+ "label": "modern_city_interior/dept-shoe-wall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 윗면 0행 < 4 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "윗면 0행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 18,
+  "darkV5": 49,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header band",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cubby shelves with shoes",
+      "rows": "8-28",
+      "evidence": "none",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shoes",
+      "rows": "9-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is drawn face-on. Rows 1-5 are a white header strip, the same near-white as the shelf-board fronts at rows 16-17 and 27-28. Rows 6-7 are a thin tan edge line with no eave shadow, so they read as a flat panel and not a receding top. Below, four cubbies show back walls (rows 8-15 and 19-26) and shoes drawn in side profile. The shelf lines at rows 18 and 29 are 1-2 row edges, and no band reads as a horizontal surface seen from above. The silhouette is a uniform 30 columns wide with a dark outline, and no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are healthy: 17 visible tones per tile matches the cheese stall (17) and sits near the well (20), and near-flat coverage is 0%. The weakness is the outline. 100% of the dark edge pixels are near-neutral, and in the image the cabinet frame has a uniform grey-black line around it and around the shelf compartments. The references that carry tinted edges (hedge 0%, stall 1%) use dark material tones, so this reads as the 'sticker' outline. The only neutral reference is the iron lamp pole, where a neutral dark is natural for the material. The cream frame and shelf panels have only about 3-4 lightness steps, with little grain or per-plank shading, and look flatter than the stall's wood and awning ramps. The shoes add small colour clusters with some internal shading, which is why density is only slightly lower. Overall the piece is shallower than the Beodeul standard in outline treatment and material ramps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 20371
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band / header board of the unit",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "shoes in the cubbies (red heel, yellow sandal, brown boot, blue heel)",
+      "rows": "9-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The unit is a 30px-wide cabinet seen from the front. Rows 2-5 form a light band at the top. Row 6 (L=188) and row 7 (L=165) form an edge line, and row 8 (L=112) is a dark shadow below it. That matches evidence (a), so I count a 4-row top. The band could also be read as a face-on header board, but the edge line plus shadow follow the literal rule. Below it is a 2x2 grid of cubbies (rows 8-29) with a dark outline at row 30. The cubby shelf boards are drawn the same way: rows 16-17 are white, row 18 is the edge line and row 19 is the shadow. The shoes sit in the cubbies as decor. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "On the numbers the candidate holds up: 17 visible tones per tile is level with the cheese stall (17) and close to the well (20), and near-flat coverage is 0%. The shoes and shelf cubbies add some variation. The problem is the outline. 100% of its dark edge pixels are near-neutral, so the frame is a uniform grey/black line. The roofed well (33%) and the stall (1%) lean toward dark tones of their own materials, and the hedge (0%) is fully tinted. The lamp is the only reference at 100%, and it is a thin metal post, not a framed piece like this one. The cream frame and shelf boards are shaded in only about 3 steps, with little grain or per-item shading, so they read flatter than the stall and well. Because of the neutral sticker-style outline and shallow material ramps, it does not match the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21763
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header band / cornice strip",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shoe cubbies with shoes (shown face-on)",
+      "rows": "8-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shoes in cubbies",
+      "rows": "9-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is a flat frontal elevation. Rows 1-5 are a white header panel, a front-facing strip, and rows 6-7 are only a 1-2 row beige lip. The cubbies below (rows 8-29) show the back wall and the shoes face-on, split by shelf boards at rows 18 and 29. No horizontal top surface is visible on the unit, and the shelf boards are only 1-row lines, so there is no real top plane and no receding side face. The 30px-wide silhouette is constant from row 0 to row 30, so there is no ellipse or roof."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "On tile density the candidate holds up: 17 visible tones per tile matches the cheese stall (17) and is close to the well (20), and near-flat coverage is 0%. The weakness is structure. 100% of its dark edge pixels are near-neutral, so the outline is a uniform black/grey line around the frame, shelves and shoes. The references that carry real material shading (stall 1%, hedge 0%, well 33%) use tinted, material-toned edges instead. By eye the cream shelf frame and the cubbies read as only about 3-4 steps (cream, light grey, shadow, line), where Beodeul materials use 5-6. The shoes are small clusters with limited internal shading. The result looks more like a clean sticker than the Beodeul pieces, and with the neutral outline and shallower ramps it should not sit next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17455
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header band above the cubbies",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shoe cubbies with shoe decor",
+      "rows": "8-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The unit is a flat face-on grid of two columns by two cubbies with side-view shoes inside. The white band at rows 1-5 is the same white as the side and bottom frame and carries tan smudges, so it reads as a header board or frame. Rows 6-7 (L=188, 165) are a divider line, and the same pair repeats at rows 18-19 as the mid-shelf, so it is not a distinct top-edge line. The only dark rows are inside the cubbies (row 8 at x=8 and x=23). There is no ellipse, no roof plane and no visible contents seen from above, so no horizontal top surface is drawn. The whole body is a vertical front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a shoe display wall: a pale cream/white frame with shelves holding small red, brown and blue shoes. On the measured facts it matches the references: 17 visible tones per tile (stall-cheese 17, well 20), 0% near-flat coverage. But 100% of its dark edge pixels are near-neutral, so the outline is a neutral dark line, and the references' tinted outlines (hedge 0%, stall 1%) are the Beodeul norm. The frame and back panel have only about 3 lightness steps (cream, light grey, dark grey) against 5-6 on the references' wood, roof and leaf ramps. Texture is limited to the shoe details; the cream panels are mostly smooth with little grain or speckle. The shoes carry some highlight and shadow variation, but the structure reads as a clean, slightly sticker-like panel rather than the layered, tinted shading of the stall or well. The neutral outline and shallow ramps on the main material outweigh the good tone count.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17460
+  }
+ ],
+ "decidedAt": "2026-10-20T23:28:13.330Z",
+ "cells": {
+  "16": [
+   "1dc58bd14571d0cd",
+   "80eccde5de8fad63",
+   "a27fd930b4482d09",
+   "dbc079c803fcaf64"
+  ],
+  "24": [
+   "0b621e4a44da8729",
+   "1faf156336ceb73f",
+   "2b8fc1859b07f20e",
+   "343167ae8db3e47b",
+   "35178375b601543b",
+   "3d93d71468596764",
+   "569556a193fc67db",
+   "59150212214129ff",
+   "5a5109fdb34882c5",
+   "6e32a5a7d90a9f86",
+   "75fad1e4ebe04da5",
+   "8624c74bf82e2bbc",
+   "8cf55658341cd0d2",
+   "9f5f64eed0f7a098",
+   "a8546470a31a8bb1",
+   "ab060d0b2b7c0f16",
+   "c619f8bad6ecdcc6",
+   "c7f94f2440f8ab2e",
+   "dea856abf30dc15d",
+   "e78070eaf59f9107",
+   "e92ef02f3c21256b",
+   "f3981f053ab25a69",
+   "f6728e1cc2d90410",
+   "fbf7ff66c67ddd4d"
+  ],
+  "32": [
+   "c4073c3bdb35f06a"
+  ],
+  "48": [
+   "304c8a8e9d6df8c0",
+   "379e5720b1555620",
+   "38dac92bb3a41bab",
+   "820309a249b028e3",
+   "9f98cf2eb570d874",
+   "fe802a33f9ee635b"
+  ]
+ }
+}

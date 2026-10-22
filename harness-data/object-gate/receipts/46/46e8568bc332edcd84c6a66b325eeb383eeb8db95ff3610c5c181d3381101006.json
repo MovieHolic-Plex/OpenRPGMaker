@@ -1,0 +1,453 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46e8568bc332edcd84c6a66b325eeb383eeb8db95ff3610c5c181d3381101006",
+ "width": 80,
+ "height": 48,
+ "kind": "other",
+ "name": "은색 승용차 (car) facing left",
+ "label": "jp_vehicles/jp-car-silver/left",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (3/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 11,
+  "darkV5": 27,
+  "nearBlackEdge": 0.12,
+  "opaqueTiles": 11
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof",
+      "rows": "6-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "hood (left end)",
+      "rows": "13-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "windshield and side windows",
+      "rows": "12-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "33-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The car faces left and its main body is the cabin. The roof is an 11-row light band (rows 6-16, with sheen highlights) that ends in a lighter edge line at row 16 (L=158). Rows 17-18 below it are dark window and shadow (L=104, 34), and the side face continues below. This meets evidence (a). The south face (windows rows 17-23, door and body rows 24-37, wheels to row 45) is about 25 rows tall, so the front face is clearly present. The hood block at left has a highlight on rows 14-16 and a darker edge line at row 24, so it reads as a top as well. The drawing is largely a side profile, but the roof band and edge line give it a top surface. The silhouette widens from 34 to 73 px going down."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The car is a silver/grey body with a light-blue window and dark wheels. The body ramp has about 4 steps (highlight, light grey, mid, dark underside), shallower than the 5-6 steps on Beodeul materials such as the well and the stall. The measured dark edge pixels are 89% near-neutral, and the picture agrees: a dark grey-black outline runs around the whole silhouette, windows and wheels. That is the uniform sticker-style line, whereas the references (hedge 0%, cheese stall 1%, well 33%) use tinted dark material tones. Texture is limited to a few speckle and highlight dots on the roof and hood; the door and side panels are broad smooth areas with little grain. Visible tones per tile (9) match the hedge but sit well below the cheese stall (17) and well (20). Near-flat coverage of 15% is above every reference except the cheese stall (13%), which is similar. Overall it is clean and readable but shallower than the references, with a neutral black outline and large flat body panels.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 19873
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof panel",
+      "rows": "6-16",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "hood",
+      "rows": "13-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "windshield and side windows",
+      "rows": "7-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The car's left-facing south side is the normal front face: the window band at rows 18-23, the door panels at rows 25-37, and the wheels down to row 44. The roof is a wide light plane at rows 6-16, about 11 rows. It carries a diagonal sheen and ends in a darker edge line at rows 16-17, directly above the dark window glass at row 18, which acts as the eave shadow. The hood at rows 13-23 has a highlight and a bottom edge at row 24. The roof and hood both read as horizontal surfaces seen from above. A pure side elevation would have no such band. This is borderline, because the roof band could also be read as a tall flat side panel."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The silver car has a bluish-grey body with about 4 lightness steps (highlight, light, mid, shadow) plus a pale blue-grey window ramp. Its dark edge pixels are 89% near-neutral, and the outline reads as a uniform dark grey/near-black line around the whole silhouette. The references (hedge, stall, well) use tinted dark-material outlines (0-33% neutral) and separate forms by value. Visible tones per tile are 9, matching the hedge but well below the stall (17) and well (20). Near-flat coverage is 15%, slightly above the hedge (0%) and the well (0%), and close to the stall (13%). Large door and roof panels are smooth single-tone fills with only a few specks, so the texture is limited to window glints, wheel detail and a couple of body highlights. The sticker-like neutral outline and the flat panels leave it a little thinner than the Beodeul props.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17644
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof",
+      "rows": "6-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "hood",
+      "rows": "13-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "windshield and side windows",
+      "rows": "8-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "body side and doors",
+      "rows": "25-37",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The car faces left and its south side is drawn as the normal flank: windows at rows 17-23, body side at rows 25-37, and wheels below. The roof is a wide, lighter band at rows 6-16 (x=39 is L=181 over rows 7-15) with diagonal gloss highlights. It ends in a slightly darker edge line at row 16, followed by dark window rows 17-18 that act as eave shadow. The hood at the left is also a lighter, highlighted band over rows 13-23 above the front panel that starts at row 24. These bands read as horizontal surfaces seen from above, so the car reads as three_quarter and not as a pure side profile. The roof is the main top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The silver car reads clearly as a car. The body has about 4 steps (white highlight, light grey, mid grey, dark grey) plus a blue-grey window with a diagonal glint. Its 9 visible tones per tile match the hedge but sit well below the stall (17) and well (20). 89% of its dark edge pixels are near-neutral, so the outline is a neutral dark grey/black line around the body, wheels and bumpers. That is the sticker look, unlike the references' tinted dark-material outlines (hedge 0%, stall 1%). Near-flat coverage is 15%, about the same as the stall's 13%. The large door and side panels are fairly smooth with little grain, dirt, or per-panel variation. Shading is shallower than the 5-6 steps Beodeul uses. Overall it is clean and competent but flatter and more outlined than the references, so it falls short of the standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17144
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof panel",
+      "rows": "6-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "hood",
+      "rows": "14-23",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-24"
+     },
+     {
+      "part": "windshield and side windows",
+      "rows": "14-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "body side with wheels",
+      "rows": "25-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The car is drawn facing left, with its south side as the front face. The wide roof (rows 6-16, x=39 and x=57) is a light plane that ends in a 1-row edge line at row 16 (L=158). Dark rows 17-18 (L=104, then 34) follow it, like eave shadow above the side windows (rows 19-22). That meets evidence (a). The hood (rows 14-23, left part) is a second light plane with a highlight at its top rows, though its edge line is less clear than the roof's. Below the beltline highlight at row 25, the body side runs through row 41 and has doors, wheels (rows 33-44), a headlight and a tail light. That gives about 25 rows of front face. No receding side face is drawn. The roof is a weaker top than a clean ellipse or box lid, because the side windows sit directly under it like a profile view. Even so, it still has an edge line and a shadow band."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate car is a light-grey body with a blue-grey window and dark wheels. The body ramp has about 4 steps (white highlight, light grey, mid grey, dark grey) and is smoother than the references' multi-tone materials. The dark edge pixels are 89% near-neutral, so the outline is a uniform dark grey/black line around the whole shape. That is the sticker look, unlike the tinted material-tone outlines of the stall and well (1% and 33% neutral). Visible tones per tile (9) match the hedge but fall well below the stall (17) and well (20). Near-flat coverage is 15%, slightly above the stall's 13% and well above the hedge's and well's 0%. The large door and side panels are smooth single-tone fills with no speckle, grain or per-panel highlights, whereas the references have grain, per-tile highlights and shaded stones. The silhouette and window reflection are decent, but the neutral outline, the flat panels and the lower tone count mean a careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 21806
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.088Z",
+ "cells": {
+  "16": [
+   "08e98919f9ab6ba9",
+   "0d050369676bd74f",
+   "1147fe174715eb75",
+   "26a7d81250867538",
+   "2c89982b258dd90a",
+   "4c8f85cf04fb10ee",
+   "4d44add82c64955f",
+   "69e29928b5cda011",
+   "6dd4acb3fe278942",
+   "74a5268f32191653",
+   "8e9d956b01b20f4d",
+   "9bc49ee523814f57",
+   "b17cf47e9d8039c6",
+   "d875f6a1bdda8c1f",
+   "e9294a4add598e1c"
+  ],
+  "24": [
+   "1cc6d7c85d0df05a",
+   "21aef37c0e3ff000",
+   "4e15c59d5c8c8e35",
+   "5b8a2f1542d80598",
+   "6c527adf6be21601",
+   "704c0996b3366d22",
+   "7116682848b7c658",
+   "7db7d2213bc10eba",
+   "8c7edd4751f6513d",
+   "8f12198c30eac3d0",
+   "906aeb6080b623b7",
+   "983b6fff8ea5fe79",
+   "9919e6ac29414e77",
+   "9cf6a668cbcc07f0",
+   "af8b664c1cb9efa3",
+   "c5b29241647dac63",
+   "c8074fc15a73edad",
+   "db4fcf81d50762f2",
+   "dcea310c11be95aa",
+   "de41823600d8a42a",
+   "e1754c48801d9dd1",
+   "e3af78befb3537d1",
+   "e9f0833e9a29277c",
+   "f62ab720052080a5"
+  ],
+  "32": [
+   "0323ddc11e35badd",
+   "05e5e291330a58f7",
+   "0ba01150d65fb2b4",
+   "288c34b9f4ffde89",
+   "2905cf0f8a4ab591",
+   "29d39ac2241e7e9d",
+   "2e78a4a91b27e652",
+   "312e8a465e6b4018",
+   "4196daeacb65e55a",
+   "43959ed2bcc86eff",
+   "4d28d07b2aaadf56",
+   "4e0963844f8ffa9d",
+   "51b16499e86201c6",
+   "5a0625a9b82ffd66",
+   "5d6d06abb385cc67",
+   "5e763af84cccf26e",
+   "609b8f3af09e4601",
+   "620f966abb8fa205",
+   "630c9f870af8ca28",
+   "66eb9c30fcdcc973",
+   "77863677a22fcfc0",
+   "92b8890e7b51cdaf",
+   "94b6dc0514d7d9ec",
+   "94f6472675e6485f",
+   "a152c22d546e7244",
+   "b12dbf74d2a85312",
+   "b3446845d856fc20",
+   "b7de50e4ce9fb0de",
+   "bddea03f9c93a682",
+   "ccaca426657d6fc4",
+   "d0e93f591e8a3887",
+   "d53341406c94677b",
+   "d9e584af2dc7d956",
+   "dd999b93841c9df5",
+   "ea3959c57b0b83b4",
+   "f25d732f0c85c8b1"
+  ],
+  "48": [
+   "05a1d503fc4731e6",
+   "343e16970ba0d975",
+   "4c26dbf3d91328af",
+   "8212e6814142c652",
+   "dd66f9e3a275c1a8",
+   "e6cc190f4cae695d"
+  ]
+ }
+}

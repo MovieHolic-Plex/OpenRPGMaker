@@ -1,0 +1,83 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b6",
+ "round": 2,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "rest-bottle-shelf",
+   "pixelSha256": "e59188edb224d3ff55a090a3ffcc25c75edcf219e89863a73e89f23c4a6e610c",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The bottles are 1-2 px specks of mixed colours on shelf rows that look like books. At 1x the whole thing reads as a bookshelf, not a bottle shelf, and the dense multicoloured specks are noisier than the clean bottle rows in mci-cooler."
+  },
+  {
+   "id": "rest-wine-rack",
+   "pixelSha256": "ccaf8ec849b18fe6b27165a04338e2fa10b3a6c70cc22f139026c2b21eb7a368",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The wood top shows as a lit plane of about 3 rows above a short front face. The 3x3 cubby grid with red and green bottle ends reads as a wine rack, its outline and wood palette match mci-wardrobe, and it sits on the floor at a believable size."
+  },
+  {
+   "id": "roof-fence",
+   "pixelSha256": "b961604a52d129fd9a7dd788857c8d30ab54c1d06d3c2cfbe6536469cf741435",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    5
+   ],
+   "reasons": "This is a flat front view of a green lattice panel between two blue posts, with no visible top. Green lattice on a green panel turns to mush at 1x, and in the room the posts have no clear ground line, so the panel looks like a floating screen."
+  },
+  {
+   "id": "roof-stair-hut",
+   "pixelSha256": "db595be466924d5c22ab8050c03803856844d83c9b53869e97f0f3faaeccac99",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    3
+   ],
+   "reasons": "The thin grey roof strip and a door flanked by two drawer-like panels make it read as a grey appliance or filing cabinet, not a rooftop stair enclosure. Its flat light-grey surfaces with sparse detail are less dense than the originals."
+  },
+  {
+   "id": "roof-water-tank",
+   "pixelSha256": "ced4b0c103c75fab7e5c773087a0ad0d82181a590269f0761d6ded3b42ab75e1",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "Dark horizontal lines run down the whole blue cylinder in a regular stripe pattern, so it looks noisy and muddy compared with the smooth 2-3 step shading of the originals. The lid cap is also hard to read against the busy bands."
+  },
+  {
+   "id": "school-cleaning-locker",
+   "pixelSha256": "91d6f12b626e72209d452fc8fe581f055f615b42aaef1d30027a2d5482db04fd",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "Only the front face shows, with at most a 1-2 row light strip on top instead of a lit top plane. The mop and blue dustpan are pasted onto the front as a stick and a blob, so at 1x it reads as a grey box with smudges rather than a cleaning locker."
+  }
+ ]
+}

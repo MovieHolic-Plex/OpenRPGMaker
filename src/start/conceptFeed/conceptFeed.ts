@@ -84,6 +84,13 @@ export type ConceptFeed = {
   returnToFeed(): boolean;
   /** 만들기가 진행 중이면 true — 덮는 창은 이동안 닫지 않는다. */
   busy(): boolean;
+  /**
+   * 처음 상태로 — 상세·골라서 만들기 창을 닫고, 검색어·분류를 비우고, 맨 위로. 만들기 중이면 false(아무것도 바꾸지 않는다).
+   * 런처가 다른 칸으로 갔다가 돌아올 때 앞 칸의 검색·상세가 남지 않게 부른다(2026-10-21 상태 누수).
+   */
+  reset(): boolean;
+  /** 이 컨셉의 상세를 바로 연다(홈의 「지금 만들 수 있는 게임」 카드). */
+  openConcept(concept: GameConcept): void;
   dispose(): void;
 };
 
@@ -608,6 +615,26 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     escape,
     returnToFeed,
     busy: () => making,
+    reset() {
+      if (making) return false;
+      closeQuick();
+      showFeed();
+      clearTimeout(searchTimer);
+      const filtered = query.q.trim() !== "" || query.tag !== undefined;
+      search.value = "";
+      query.q = "";
+      query.tag = undefined;
+      feedScroll = 0;
+      body.scrollTop = 0;
+      if (filtered) { renderChips(); void reload(); }
+      return true;
+    },
+    openConcept(concept) {
+      if (making) return;
+      closeQuick();
+      feedScroll = 0;
+      openDetail(concept);
+    },
     dispose() {
       closeQuick();
       disposed = true;

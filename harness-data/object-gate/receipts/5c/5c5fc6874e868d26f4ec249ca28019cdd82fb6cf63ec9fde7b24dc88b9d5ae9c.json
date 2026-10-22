@@ -1,0 +1,382 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c5fc6874e868d26f4ec249ca28019cdd82fb6cf63ec9fde7b24dc88b9d5ae9c",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "dept handbag vitrine",
+ "label": "modern_city_interior/dept-handbag-vitrine",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 18,
+  "darkV5": 33,
+  "nearBlackEdge": 0.36,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass top of the vitrine with bags visible inside",
+      "rows": "1-10",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "front display compartments with three handbags",
+      "rows": "12-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark lower cabinet and gold base",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-8 are a teal glass panel framed in gold, with a red bag and a brown bag seen inside from above (evidence d). The band ends in a light front-edge line at row 9 and a gold lip at row 10. Row 11 is a dark eave shadow (#2a2c34). Below it the front face runs rows 12-31 (about 21 rows): three compartments with front-on handbags, a dark lower panel and a gold base. The top is about 9 rows against a 21-row front, so it reads as a three-quarter view and not a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The density numbers are fine: 17 visible tones per tile, equal to the cheese stall, and 0% near-flat coverage. The structure is weaker than the references. The vitrine has a uniform neutral dark outline all the way round, and 100% of its dark edge pixels are near-neutral. The stall, hedge and well use tinted dark material tones, with 1%, 0% and 33% neutral edge pixels. That uniform line gives it the 'sticker' look. The frame and body are only about 3-4 steps, a light cream or grey with a mid tone and a dark, and none of the references' per-material 5-6 step ramps with per-element highlights. The handbags in the windows are small and fairly flat. Next to the stall and well, which carry grain, scallops and clustered shading, it looks thinner and more outlined, so I fail it on outline and shading depth despite the tone count.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17405
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass top display with bags lying inside",
+      "rows": "2-9",
+      "evidence": "d",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "front compartments with three bags, face-on",
+      "rows": "12-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark lower drawer/base panel with gold handles",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-9 form a teal glass panel with a gold frame and two bags that look like they lie flat inside. It ends in a light front-edge line at row 9, then a gold lip at row 10 and a dark shadow row at 11, so I read it as a glass lid showing contents from above (evidence d). The front face is rows 12-31 and has three compartments with face-on bags, a dark drawer panel and a base. This reading is uncertain: the bags in the top panel could also be a face-on window, which would make the whole object a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate matches the references on the primary density facts: 17 visible tones per tile (same as the cheese stall, below the well's 20), and 0% near-flat coverage. It fails on the outline. 100% of its dark edge pixels are near-neutral, so the vitrine has a uniform black/grey sticker outline. The stall and well references use tinted material-tone edges (1% and 33% neutral). Only the thin lamp pole is fully neutral, and it is too sparse to count as a comparison. By eye, the frame and body ramps are shallow, about 3 steps, against the references' 5-6. The handbags and glass read as small blocks with little grain or per-item shading, and the frame has no wood or metal grain. That leaves it flatter and more sticker-like than the cheese stall and roofed well beside it. A careful artist would not accept it next to these references without redrawing the outline in material tones and adding more shading steps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18464
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper glass panel with two bags (frame, teal glass and goods drawn face-on)",
+      "rows": "2-8",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "gold top frame rim",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower display with three bags in front-facing compartments",
+      "rows": "12-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base panel with two small gold handles and gold bottom plinth",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is a flat front view of a display cabinet. The upper teal panel (rows 2-8) has a light line at row 9 and a dark row at 11. However, the bags in it are drawn as flat face-on blobs, with no opening, ellipse or contents seen from above. This is a stacked window, not a horizontal surface. The lower part (rows 12-23) shows three bags in front-facing compartments with gold dividers. Rows 24-28 are a dark drawer or base panel with two handle dashes, and rows 29-31 are a plinth. No ellipse, no receding side face, and no opening is seen from above, so it does not read as an open container. The only top evidence is a 1-2 row gold rim at row 1-2."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's tile density is on par with the stall and well references (17 visible tones per tile, 0% near-flat coverage), so it is not a flat fill. The structure is shallower than the references. The vitrine is wrapped in a uniform neutral dark outline, and 100% of its dark edge pixels are near-neutral. Beodeul's stall and well use tinted, material-toned edges (1% and 33% neutral). The only reference with a similar neutral value is the thin lamp pole. The gold frame and the glass panel each show only about 3-4 lightness steps, against the 5-6 per material in the references. The two handbags are small, simple shapes with little grain or per-item shading. The result reads as a clean sticker-style prop rather than the layered, material-toned shading of the stall and well. The neutral outline is the deciding weakness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 19618
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass top of the vitrine, with bags visible inside",
+      "rows": "2-10",
+      "evidence": "d",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "front face with three bag compartments and a base",
+      "rows": "12-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-10 are a teal glass lid inside a gold frame, with a red bag and a brown bag seen from above. Row 9 is a light front-edge line (L=195) and row 10 is a gold lip. Row 11 is a dark eave-shadow line (L=44). Rows 12-31 are a vertical front face with three framed compartments, each holding a bag, and a dark base with a gold trim at the bottom. The top has about 9 rows and the front face about 20, so the main body shows both a top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's visible tones per tile (17) match the cheese stall (17) and are close to the well (20). Near-flat coverage is 0%, so the density numbers alone would not fail it. The outline is the problem: 100% of its dark edge pixels are neutral, against 0-1% for the hedge and cheese stall and 33-44% for the well and bench. The frame and cabinet read as a uniform dark grey/black line around every shape, which is the 'sticker' look rather than a dark tone of the adjacent material. The frame and cabinet body show only about 3-4 lightness steps, where the references carry 5-6 with per-material tonal outlines. The display interior has some detail from the small bag shapes, but the frame and base are fairly plain. A careful artist would not accept it next to the Beodeul stall and well without redoing the outline and deepening the ramps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16295
+  }
+ ],
+ "decidedAt": "2026-10-20T23:28:13.309Z",
+ "cells": {
+  "16": [
+   "1b730012daf45d85",
+   "472819bd1c2c8e41",
+   "6ffb569f4947a165",
+   "ad9c206044d4f6a4"
+  ],
+  "24": [
+   "0002b973409fb8ff",
+   "0b13344f1ec0d8a0",
+   "0c3ed15c1a8432b5",
+   "0f077aeb979057cf",
+   "14b5eb521d8263ae",
+   "1556e0a5fe07737f",
+   "163cfd161d1ac58d",
+   "17033f48315441ce",
+   "30ab452a1da442d0",
+   "39e26b765f993edc",
+   "51725bcffc363f00",
+   "52c26dd503a7c23c",
+   "58fda1a8bb800d15",
+   "6451b309e45d81b4",
+   "71630e5220b94797",
+   "86370b88f6cf5d05",
+   "883c501e23c2192a",
+   "99d14da42ef13a79",
+   "a36ee77ce061fbb2",
+   "bae75eb583a737bb",
+   "d05510b57cc25fb7",
+   "e579c73288e5f40e",
+   "fbb613f4216dc829",
+   "fcf2826da993034c"
+  ],
+  "32": [
+   "df33f766d8b4f49b"
+  ],
+  "48": [
+   "581f5781e992924b",
+   "6ad83bae17b75990",
+   "7c149021e16bb72d",
+   "aa938693fbc49c4b",
+   "c21e6b36d2730288",
+   "d81736dc858d53f4"
+  ]
+ }
+}

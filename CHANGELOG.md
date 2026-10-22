@@ -5,6 +5,267 @@
 
 <!-- releases -->
 
+## 0.317.0 — 2026-10-22
+
+### 기능
+
+- **ai** — assistant capability loop 1 — scene lessons suite, root-cause fixes (Sonnet stand-in 15/20 → 21/21) (#3226) (`1150b31`)
+
+## 0.316.0 — 2026-10-22
+
+### 기능
+
+- **beodeul** — redraw the broadleaf trees, canopy and forest ground by hand (drop unknown-licence lineage) (#3223) (`431380e`)
+
+## 0.315.0 — 2026-10-22
+
+### 기능
+
+- **ai** — map background assistant path — preset routing, generate_map_background, honest image handoff (#3221) (`843c6af`)
+
+## 0.314.0 — 2026-10-22
+
+### 기능
+
+- **gen-kits** — workshop runners read object-gen prompts/rubrics from the pinned sync output; CI drift check (#3216) (`8ff0a05`)
+- **qa** — runtime QA checkpoints — start any demo stage directly in the shipped player (#3192) (`b249d68`)
+
+### 수정
+
+- **ci** — stop hosted ci-fast from cloning private object-gen (`14fb65e`)
+- **first-love** — platform exit gap is found on the lowest open row — the demo stopped building after #3182 honoured the explicit platform plan (#3218) (`2503cc5`)
+
+## 0.313.0 — 2026-10-22
+
+### 기능
+
+- **workshop** — persistent job queue for all generators + gen-kits lock/sync (#3212) (`9fd1628`)
+
+### 수정
+
+- **runtime** — stable dialogue frame (no jumps across speaker/narration/choices, letterbox, locked-door line) + ending cards in the game language (#3214) (`a8dbf00`)
+
+## 0.312.0 — 2026-10-22
+
+### 기능
+
+- **map-bg** — usable map backgrounds — own panorama presets, live preview, motion presets, centred cover, assistant support (#3210) (`f44e5a3`)
+
+### 수정
+
+- **editor** — UI audit — 55 approved fixes across shell, dock, palette, canvas, maps, event editor, AI, database and dialogs (#3211) (`b335eb9`)
+
+## 0.311.0 — 2026-10-22
+
+### 기능
+
+- **workshop** — new objects follow the object-gen flow verbatim; setting as rules; placement check; advisory 3/4 badge (#3209) (`3af1cf3`)
+
+### 수정
+
+- **attribution** — credit EasyRPG RTP pixels in the Beodeul and vehicle sheets; add an RTP attribution check (#3208) (`6f9d34b`)
+- **workshop** — tile-gen forest packs with a tree composer save again; forest card says "forest floor + trees" (#3206) (`d0352d4`)
+
+## 0.310.0 — 2026-10-21
+
+### 기능
+
+- **workshop** — tile-gen material presets in the terrain request; drop the withdrawn grass sample (EasyRPG-derived target) (#3204) (`3c14f8d`)
+
+## 0.309.0 — 2026-10-21
+
+### 기능
+
+- **workshop** — terrain card shows a real tile-gen grass sample, labelled 「견본 출력」 (not picked) (#3202) (`2eb1855`)
+
+### 정리
+
+- deprecate multi-user team collaboration (hide entry points behind TEAM_COLLAB_ENABLED) (#3201) (`8e642e4`)
+
+## 0.308.0 — 2026-10-21
+
+### 기능
+
+- **workshop** — generator hub redesign, object stepper with place-on-map, terrain import, honest account-block states, char pack import fix (#3199) (`34193ea`)
+
+## 0.307.0 — 2026-10-21
+
+### 기능
+
+- **ai** — generate_missing_object — assistant draws a truly missing prop via workshop object-gen (#3198) (`7a82250`)
+- **lint** — scene-ceiling-tile — non-ceiling tile or stray floor in a ceiling area (#3197) (`81d8c64`)
+- **modern-city** — redraw 11 interior objects (m142-b8) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3195) (`83b6a8d`)
+
+## 0.306.0 — 2026-10-21
+
+### 기능
+
+- **workshop** — 공방을 생성기 넷(char-gen·object-gen·tile-gen·item-gen) 허브로 개편 (#3193) (`7aaffd0`)
+
+## 0.305.0 — 2026-10-21
+
+### 기능
+
+- **ai** — scene-hang-on-floor — wall-hang kits standing on floor cells (#3187) (`5dd2a4e`)
+- **jp-city** — jp house furniture 8 (interior_house3) — Opus VQA 8/8, delegated allow, baked into the house blueprint (#3146) (`1285886`)
+- **jp-city** — forest r7 — tree composer forest, moss-floor sibling, always-on ground shade, paint_jp_forest; street/vehicle redraws; Opus VQA 107/107, delegated allow (#3058) (`7efb883`)
+
+### 수정
+
+- **jp-city** — house blueprint QA no longer counts the alias name-match hint as a failure (#3188) (`c8efb75`)
+- **ai** — create_transfer_pair puts the trigger on the door cell; bump doors count as reachable (#3186) (`bcacb86`)
+- **ai** — scene-actors-stacked replays visibility in order; more balance/backdrop lessons (#3183) (`4c4663e`)
+
+### 문서
+
+- **ai** — scene-polish §11-6 — interior padding is dark void only, no floor-valued or speck tiles (#3191) (`32e0ee1`)
+- **ai** — scene-polish §11 map touch-ups (canal jogs, partial kit copies, reachability after stamping, relief offset, bridge footprint, dark interior pad) + QA timing lessons (#3190) (`331df3c`)
+- **ai** — scene-polish §5-2 — pick BGM by ear; 3-run listening judge drops tracks flagged cheap 2/3 (#3189) (`13110c8`)
+- **ai** — game-scene-polish only points at what exists on main (#3184) (`ffffbac`)
+
+## 0.304.0 — 2026-10-21
+
+### 기능
+
+- **ai** — game-scene-polish skill + scene-* lint warnings from the three demo fixes (#3182) (`b347fd4`)
+- **jp-city** — gate grandfathers already-shipped kits whose pixels are unchanged (#3180) (`d4e33d8`)
+
+## 0.303.0 — 2026-10-21
+
+### 기능
+
+- **modern-city** — redraw 1 interior objects (m142-h3) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3177) (`3d9406d`)
+- **modern-city** — redraw 1 interior objects (m142-b7) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3176) (`f0df402`)
+
+### 수정
+
+- **first-love** — konbini plaza props + compact top caption (#3178) (`e41f159`)
+
+## 0.302.0 — 2026-10-21
+
+### 기능
+
+- **first-love** — 첫사랑 built-in office-romance demo (3 endings) + choice confirm grace, relationship pulse (#3173) (`a0cafb7`)
+- **modern-city** — redraw 1 interior objects (m142-h2) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3172) (`5d9d8d7`)
+
+### 수정
+
+- **i18n** — 첫사랑 home card genre and description in en/ja/zh (#3174) (`a64ad74`)
+
+## 0.301.0 — 2026-10-21
+
+### 기능
+
+- **modern-city** — redraw 15 interior objects (m142-h1) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3171) (`de37eb1`)
+- **modern-city** — redraw 17 interior objects (m142-b5) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3170) (`b327231`)
+- **modern-city** — redraw 2 interior objects (m142-b6) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3168) (`0d4c8a8`)
+
+## 0.300.0 — 2026-10-21
+
+### 기능
+
+- **modern-city** — redraw 15 interior objects (m142-b4) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3166) (`a99cdaa`)
+- **modern-city** — redraw 13 interior objects (m142-b3) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3165) (`10fa766`)
+- **modern-city** — redraw 13 interior objects (m142-b2) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3164) (`a09fe6c`)
+- **modern-city** — redraw 15 interior objects (m142-b1) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3163) (`f23df26`)
+- **jp-inaka** — countryside R12-R14 — jp_city roof grammar hand pixels, Opus VQA gate (50/50), bake (#3071) (`e45d411`)
+
+### 수정
+
+- **inaka** — park the map 4 kei truck on the open dirt field instead of across the N-S farm lane (#3162) (`5914650`)
+- delegated gate holds, jp interior 'study' kind, inaka map 3 truck (#3160) (`8d2a4d8`)
+- **editor** — UI/UX 적대적 VQA 2차 (슬림 시작·AI 도크·공방·진행 창·타일 탭) (#3159) (`03c7061`)
+
+### 성능
+
+- **db** — fast 타일 tab (windowed chipset cells) + fix Fallen Star browser crash (#3167) (`ca8cb3f`)
+
+## 0.299.0 — 2026-10-21
+
+### 기능
+
+- **object-gate** — Opus final judge v9-v11 — no exempt kind correction, wall_structure, contrast pairs, side-seat charge, 3 per call (all rejected) (#3158) (`97fa517`)
+
+### 수정
+
+- **beodeul** — woodland — tree composer forests + original-pixel fence corners (#3122) (`6159010`)
+- **db-system** — 해상도 변경이 안 되던 버그(양쪽 전신 대화창) + 게임 설정 탭 전수 점검 (#3155) (`5eca89b`)
+- **editor** — UI/UX VQA 1 — topbar overlap, canvas seams, i18n, CSP, AI-off login (#3154) (`d893ccd`)
+
+### 잡무
+
+- **object-gate** — beodeul dark-grass r9 — allow records (user-delegated to supervisor 2026-10-21), receipts, held images, Opus VQA receipts r1-r4 (#3157) (`498d040`)
+
+## 0.298.0 — 2026-10-21
+
+### 기능
+
+- **object-gate** — Opus final judge v8 — same-chipset style anchors, kind correction (rejected) (#3151) (`6293e4e`)
+
+### 수정
+
+- **ai** — recover the ChatGPT/assistant connection after a local serve restart (stale token 403) without reload (#3152) (`0a1a93b`)
+
+## 0.297.0 — 2026-10-21
+
+### 기능
+
+- **object-gate** — review page shows an optional per-batch explanation (scene image + plain text) (#3150) (`ca78853`)
+- **object-gate** — Opus final judge v7 — audit of v6 misses, per-kind negative example, reshuffled anchors, majority of 3 (rejected) (#3147) (`cebdcc8`)
+
+### 수정
+
+- **ai** — Codex(ChatGPT) connection test always failed with 400 — worker now reads the {cli} body the settings screen sends (#3148) (`f6a1e7e`)
+
+## 0.296.0 — 2026-10-21
+
+### 기능
+
+- **object-gate** — Opus final judge v5/v6 — chipset-original anchors, condition (b), per-family report (both profiles rejected) (#3144) (`b5df7b9`)
+- **desktop** — splash at click, light boot entry, show home when cards are drawn (#3142) (`41a4ac9`)
+
+### 수정
+
+- **jp-city** — house interior passes the Opus interior gate by layout only; 2F inside 1F, 3-wide dressing room off the north corridor (#3143) (`c57c4d9`)
+
+## 0.295.1 — 2026-10-21
+
+### 수정
+
+- **start** — start screen sections with one view-state owner; home shows only what you can do; refreshed demo art (#3140) (`adcaaf5`)
+- **object-gate** — revoke Opus final profile 3b8dddb2 (7.5% clean pass; originals not measured) (#3139) (`80d20fc`)
+
+## 0.295.0 — 2026-10-21
+
+### 기능
+
+- **object-gate** — final-queue fails list carries tileset, sheet and sheet cells; written atomically per batch (#3136) (`4d5939f`)
+- **object-gate** — Opus 5.5 medium adversarial VQA is the final verdict (replaces option A) (#3135) (`f5aa0c2`)
+
+### 수정
+
+- **object-gate** — final-queue summary counts fails; beodeul_ground maps to beodeul_city (#3137) (`a7c3d1a`)
+
+## 0.294.0 — 2026-10-21
+
+### 기능
+
+- **jp-city** — 일본 2층 단독주택 실내를 一戸建て 구조로 — 청사진 jp-house-1f/2f, 예제 재생성, 구조 참고문서 (#3133) (`4484b90`)
+
+## 0.293.0 — 2026-10-21
+
+### 기능
+
+- **jp-city** — 「jp_city 칸 번호 복구」 — 밀린 판에서 그린 사용자 맵을 판 미리보기로 골라 지금 번호로 (#3132) (`036b48b`)
+- **object-gate** — signed human allow is the final pass; 18323 review queue with batches (#3130) (`0832641`)
+
+### 수정
+
+- **object-gate** — review queue counts an image once — duplicate hashes in a batch broke 'allow this whole batch' (#3131) (`2d9c450`)
+- **runtime** — choice window grows to fit 3-5 options at 480x270 (#3128) (`2b0af42`)
+- **jp-city** — remap 32 published places to the current tile pins; block stale-pin bakes (#3127) (`38bcd79`)
+- **build** — scope bundled-JSON lazy loader to browser transforms so vite-node runs work again (#3126) (`8f9da4d`)
+
 ## 0.292.0 — 2026-10-20
 
 ### 기능

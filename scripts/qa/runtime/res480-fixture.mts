@@ -2,6 +2,7 @@
 //   RES_WHICH=ui     새 프로젝트 wide 씨앗(모험 JRPG 예제) + 시작 칸 오른쪽에 UI 순회 NPC(대화→선택지→상점→저장→전투)
 //   RES_WHICH=fallen 『폴른 스타』 플래그십
 //   RES_VIEW=480x270x1 처럼 주면 해상도·배율을 덮는다(전후 비교용). 생략하면 코드의 기본값 그대로.
+//   RES_DIALOGUE=dual-fullbody-veil 처럼 주면 대화창 스타일을 덮는다(양쪽 전신 해상도 잠김 재현, 2026-10-21).
 // 실행: npx --no-install tsx --import ./tiledata/jp-city/refs/css-stub.mjs scripts/qa/runtime/res480-fixture.mts > .omo/runtime-qa/res/ui.json
 import { serialize } from "../../../src/project/io";
 import type { Command, Project } from "../../../src/project/types";
@@ -17,6 +18,7 @@ if (which === "fallen") {
   addUiTourNpc(project);
 }
 
+if (process.env.RES_DIALOGUE) project.system.dialogueStyle = process.env.RES_DIALOGUE as never;
 const view = process.env.RES_VIEW;
 if (view) {
   const [width, height, zoom] = view.split("x").map(Number);

@@ -128,3 +128,19 @@
 
 .canvas-toolbar.is-icon-toolbar.is-expanded .canvas-toolbar-zoom-menu { display: none; }
 .canvas-toolbar.is-icon-toolbar .canvas-toolbar-zoom-group.is-menu-open .canvas-toolbar-zoom-menu { display: inline-flex; }
+/* 배율 목록은 배율 그룹 아래에 뜨는 팝오버다. 흐름 안에서 펼치면 툴바가 484→797px 로 늘어나
+   모든 단추가 왼쪽으로 313px 밀렸다. 닫기(Escape·바깥 누름)는 editorZoomToolbar.ts 가 맡는다. */
+.canvas-toolbar.is-icon-toolbar .canvas-toolbar-zoom-group { position: relative; }
+.canvas-toolbar.is-icon-toolbar .canvas-toolbar-zoom-group.is-menu-open .canvas-toolbar-zoom-menu {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  padding: var(--space-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  box-shadow: 0 6px 20px rgba(42, 37, 33, 0.12);
+  white-space: nowrap;
+}

@@ -87,7 +87,8 @@ export function renderCommonEventsTab(host: HTMLElement, rerender: () => void): 
     rows,
     empty: query.length > 0
       ? emptyState({ icon: "⌕", title: "검색 결과가 없습니다", body: `"${query}" 와 일치하는 공통 이벤트가 없습니다.`, compact: true })
-      : emptyState({ icon: "⟳", title: "아직 공통 이벤트가 없습니다", compact: true }),
+      // 제목·만들기 버튼은 상세 쪽 빈 상태 카드가 맡는다 — 목록은 같은 문구를 반복하지 않고 자리만 알린다(UI 감사 08-database-02).
+      : emptyState({ icon: "⟳", title: "첫 공통 이벤트를 만들면 여기에 나타납니다", compact: true }),
     toolbar: listToolbar([
       {
         label: ADD_LABEL,

@@ -1,0 +1,99 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "modern-city-interior-m142-b4",
+ "title": "modern_city 실내 기물 m142-b4 (15) — object-gen 다시 그림, 사용자 위임·Opus 적대 VQA 통과 2026-10-21",
+ "note": "delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/m142-b4.opus-vqa-r*.json",
+ "createdAt": "2026-10-20T23:58:41.693Z",
+ "items": [
+  {
+   "sha": "55504bca0c2cb67766adcaade4c3352236c626b27148eabd567f616ca3d19e45",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/lab-reagent-shelf",
+   "source": "/home/main/.cache/ogm142/ship/m142-b4/lab-reagent-shelf.png"
+  },
+  {
+   "sha": "e1fe1b83384675668183f772d2e788c0839a575aa6dea25ab54f9cee48b94eac",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/lecture-podium",
+   "source": "/home/main/.cache/ogm142/ship/m142-b4/lecture-podium.png"
+  },
+  {
+   "sha": "5aff09692ceeca0bbab56ef0ce1c803f3a244b5ce7c3da85fe80fd724345d925",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/library-shelf",
+   "source": "/home/main/.cache/ogm142/ship/m142-b4/library-shelf.png"
+  },
+  {
+   "sha": "13bcbf1afb779d0436de5e7c20bcd67dd09e6974ee63f27a2c8e2a848a9b3b19",
+   "kind": "structure",
+   "label": "modern_city_interior/manga-booth",
+   "source": "/home/main/.cache/ogm142/ship/m142-b4/manga-booth.png"
+  },
+  {
+   "sha": "d10047c622bad502d1be57b2a48d57b4b9219776f628558e378fb75a5c68e04b",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/manga-shelf",
+   "source": "/home/main/.cache/ogm142/ship/m142-b4/manga-shelf.png"
+  },
+  {
+   "sha": "9f6220961b50f1b663d11dfbefc044c319fdb59daad2777d8ec683a162fa1154",
+   "kind": "container",
+   "label": "modern_city_interior/mart-basket-stacker",
+   "source": "/home/main/.cache/ogm142/ship/m142-b4/mart-basket-stacker.png"
+  },
+  {
+   "sha": "6df809d96b1de473d9385c384099b28f18a4b36a6141c28d83fac9fdbc4430ba",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/mart-cake-showcase",
+   "source": "/home/main/.cache/ogm142/ship/m142-b4/mart-cake-showcase.png"
+  },
+  {
+   "sha": "2dfa003310b07ff33400effb64769af661cd326d61fc3d05c67011affcf5e0ce",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/mart-cold-case",
+   "source": "/home/main/.cache/ogm142/ship/m142-b4/mart-cold-case.png"
+  },
+  {
+   "sha": "419908daf8de2633c602839fe7a5fea19b565bcb9024ef3af10bf8a04426ef44",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-donut-case",
+   "source": "/home/main/.cache/ogm142/ship/m142-b4/mart-donut-case.png"
+  },
+  {
+   "sha": "6d7be20b3d0920f188867fed726a355c355449e5c40b96be16e62d818d47b2ef",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-gondola-cans",
+   "source": "/home/main/.cache/ogm142/ship/m142-b4/mart-gondola-cans.png"
+  },
+  {
+   "sha": "5dcc335ecdabc505d6dbce001b5094cd5693fe5033bb5b8ba4bfb6ec3b5aae00",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-gondola-cereal",
+   "source": "/home/main/.cache/ogm142/ship/m142-b4/mart-gondola-cereal.png"
+  },
+  {
+   "sha": "9924c5ba94b4e1689685cd9956a9062c8c4f295fb9100cc3b9cc937b0579418e",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-gondola-ramen",
+   "source": "/home/main/.cache/ogm142/ship/m142-b4/mart-gondola-ramen.png"
+  },
+  {
+   "sha": "ba48f3260191fa5cf3b182ae3be08b073cd1ebae24dd9db78e78404005d56da7",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-gondola-water",
+   "source": "/home/main/.cache/ogm142/ship/m142-b4/mart-gondola-water.png"
+  },
+  {
+   "sha": "f39115da4ee29ed52d5d6cfd3569566d1ec7872557725129489e5df847d769ed",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-liquor-fridge",
+   "source": "/home/main/.cache/ogm142/ship/m142-b4/mart-liquor-fridge.png"
+  },
+  {
+   "sha": "7f3f837bda552039040c098ed09804ed18eb30081254a5bcfccfedca53296f46",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/mart-meat-showcase",
+   "source": "/home/main/.cache/ogm142/ship/m142-b4/mart-meat-showcase.png"
+  }
+ ]
+}

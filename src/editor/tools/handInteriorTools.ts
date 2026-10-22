@@ -13,6 +13,7 @@ import { createWizardingWorldTileset, ensureWizardingWorldTileset } from "@/proj
 import { createModernCityTileset, ensureModernCityTileset } from "@/project/defaults/modernCity";
 import { kitHandObjects } from "@/project/roomKit";
 import { passabilityOf } from "@/project/collision";
+import { isDoorArtCell } from "@/project/lint/scenePolishLint";
 import { isUntouchedMap } from "@/project/projectBlankness";
 import type { Command, GameEvent, GameMap, Project, TilesetDef } from "@/project/types";
 import { workshopHandObjects } from "@/project/workshopTiles";
@@ -44,7 +45,7 @@ const CEILING_IDS = uniq((s) => s.ceilings);
 const TILESET_IDS = Object.keys(HAND_INTERIOR_SPECS);
 /** 새 실내 맵에 BGM 을 자동으로 고르는 현대 칩셋. */
 const MODERN_BGM_TILESETS: ReadonlySet<string> = new Set(["modern_campus", MODERN_CITY_INTERIOR_TILESET_ID, JP_INTERIOR_TILESET_ID]);
-const TILESET_PARAM = { type: "string", description: `실내 칩셋 id — 방 짓기 역할표(roomKit)가 있는 타일셋. ${HAND_INTERIOR_TILESET_ID}(기본, 판타지·중세 손 도트) · ${JP_INTERIOR_TILESET_ID}(일본 현대 집: 현관·화실·LDK·욕실·화장실·침실, 일본 거리 jp_city 와 같은 칩셋) · ${WIZARDING_INTERIOR_TILESET_ID}(마법 학교 성채·병동·온실·도서관 — 가구는 그 칩셋 조립 부품 wz-… id) · ${SENGOKU_INTERIOR_TILESET_ID}(전국·에도 일본: 다다미 방·다실·여관 손님방·성 알현실·가게·농가·도장·목욕간 — layout:{program:"samurai-house"|"ryokan-1f"|"ryokan-2f"|"castle-hall"|"machiya"|"minka"|"dojo"}) · modern_campus(현대 학교: 교실·복도·도서관·보건실·급식실·기숙사 — 남쪽 출구가 2칸인 예제 평면이면 exitWidth:2) · ${MODERN_CITY_INTERIOR_TILESET_ID}(도쿄풍 현대 도시 실내: 백화점·대형 마트·지하철역·종합병원·영화관 아케이드·레스토랑 바·미술관 박물관·사무실·편의점·아파트·빌딩 로비·카페·은행·창고 — layout:{program:"department-store"|"supermarket-mart"|"subway-station"|"hospital-ward"|"cinema-arcade"|"restaurant-bar"|"museum-gallery"|"office-floor"|"konbini"|"apartment"|"lobby"|"cafe"|"bank"|"concourse"|"warehouse"}, 남쪽 출구 2칸 이상이면 exitWidth) · 스토어에서 받은 그 사본(store_…)도 된다. 인자 없이 list_hand_interior_parts 를 부르면 이 프로젝트에서 쓸 수 있는 칩셋이 나온다.` } as const;
+const TILESET_PARAM = { type: "string", description: `실내 칩셋 id — 방 짓기 역할표(roomKit)가 있는 타일셋. ${HAND_INTERIOR_TILESET_ID}(기본, 판타지·중세 손 도트) · ${JP_INTERIOR_TILESET_ID}(일본 현대 집: 현관·화실·LDK·욕실·화장실·침실, 일본 거리 jp_city 와 같은 칩셋 — 2층 단독주택은 layout:{program:"jp-house-1f"|"jp-house-2f", seed} 가 가운데 복도·현관·계단·물 쓰는 곳 덩이·독립 화장실 구조로 짓는다) · ${WIZARDING_INTERIOR_TILESET_ID}(마법 학교 성채·병동·온실·도서관 — 가구는 그 칩셋 조립 부품 wz-… id) · ${SENGOKU_INTERIOR_TILESET_ID}(전국·에도 일본: 다다미 방·다실·여관 손님방·성 알현실·가게·농가·도장·목욕간 — layout:{program:"samurai-house"|"ryokan-1f"|"ryokan-2f"|"castle-hall"|"machiya"|"minka"|"dojo"}) · modern_campus(현대 학교: 교실·복도·도서관·보건실·급식실·기숙사 — 남쪽 출구가 2칸인 예제 평면이면 exitWidth:2) · ${MODERN_CITY_INTERIOR_TILESET_ID}(도쿄풍 현대 도시 실내: 백화점·대형 마트·지하철역·종합병원·영화관 아케이드·레스토랑 바·미술관 박물관·사무실·편의점·아파트·빌딩 로비·카페·은행·창고 — layout:{program:"department-store"|"supermarket-mart"|"subway-station"|"hospital-ward"|"cinema-arcade"|"restaurant-bar"|"museum-gallery"|"office-floor"|"konbini"|"apartment"|"lobby"|"cafe"|"bank"|"concourse"|"warehouse"}, 남쪽 출구 2칸 이상이면 exitWidth) · 스토어에서 받은 그 사본(store_…)도 된다. 인자 없이 list_hand_interior_parts 를 부르면 이 프로젝트에서 쓸 수 있는 칩셋이 나온다.` } as const;
 /** 역할표가 있는 이 프로젝트의 칩셋 + 번들 칩셋(프로젝트에 아직 없어도 짓기 전에 넣는다). */
 function roomTilesetIds(project: Project): string[] {
   return [...new Set([...TILESET_IDS, ...Object.values(project.tilesets).filter((t) => roomSpecOf(t)).map((t) => t.id)])];
@@ -192,7 +193,14 @@ export const LIST_HAND_INTERIOR_PARTS_TOOL: ToolDefinition = {
       const r = roomParts(room, Math.min(limit, 16), S);
       if (!r) {
         const idx = roomIndex(S);
-        throw new ToolError(`방 종류·건물 '${room}' 을(를) 모른다 — 방: ${idx.rooms} / 건물: ${idx.buildings}`, { code: "unknown-room" });
+        // 다른 실내 칩셋에는 그 방이 있다(2026-10-22 조수 시험: 「카페」를 기본 판타지 실내에서 찾다 실패 — modern_city 에 cafe 가 있었다).
+        const elsewhere = roomTilesetIds(project).filter((id) => id !== tilesetId).filter((id) => {
+          try { return Boolean(roomParts(room, 1, specFor(project, id))); } catch { return false; }
+        });
+        const hint = elsewhere.length
+          ? ` → '${room}' 은(는) 다른 실내 칩셋에 있다: ${elsewhere.map((id) => `list_hand_interior_parts({tileset:"${id}", room:"${room}"})`).join(" · ")} — 시대(현대·판타지)에 맞는 칩셋을 고른다.`
+          : "";
+        throw new ToolError(`방 종류·건물 '${room}' 을(를) ${tilesetId} 에서 모른다${hint} — ${tilesetId} 의 방: ${idx.rooms} / 건물: ${idx.buildings}`, { code: "unknown-room" });
       }
       const n = Object.values(r.groups).reduce((a, g) => a + (g?.length ?? 0), 0);
       return { summary: `${r.mode === "building" ? "건물" : "방"} ${r.ko}: 예제 ${r.exampleDocs.length}맵 ${r.roomCount}방에서 쓰인 가구 ${n}종(종류별)${r.alsoTagged ? ` + 태그가 맞는 ${r.alsoTagged.length}종` : ""}. 예제 참고문서 documentId: ${r.exampleDocs.slice(0, 4).join(", ")}${r.exampleDocs.length > 4 ? " …" : ""}.`,
@@ -245,6 +253,55 @@ type TransferCommand = Extract<Command, { kind: "transfer" }>;
 function eventTransfers(event: GameEvent): TransferCommand[] {
   const lists = [event.commands ?? [], ...(event.pages ?? []).map((page) => page.commands)];
   return lists.flatMap((commands) => commands.filter((command): command is TransferCommand => command.kind === "transfer"));
+}
+
+/**
+ * 층 이동 착지를 돌아오는 계단 그림 칸 바로 앞으로 당긴다. liftTravelLinksOntoArt 가 트리거를 한 줄 올리면 조수가 예전 탈 자리
+ * 아래 줄에 둔 착지가 2칸 떨어진다(scene-transfer-pair). 착지가 돌아오는 문에서 1칸 안이 아니고, 바로 위 두 칸째가 층 이동 그림 칸
+ * 트리거면 그 앞 칸(통행)으로 옮긴다.
+ */
+function snapArrivalsToTravelArt(draft: Project, notes: string[]): void {
+  for (const from of Object.values(draft.maps)) {
+    for (const event of from.events ?? []) {
+      for (const t of eventTransfers(event)) {
+        const target = draft.maps[t.mapId];
+        if (!target || target.climate?.mode !== "indoor" || target.id === from.id) continue;
+        const returns = (target.events ?? []).filter((e) => eventTransfers(e).some((r) => r.mapId === from.id) && isDoorArtCell(draft, target, e.x, e.y));
+        if (!returns.length || returns.some((e) => Math.max(Math.abs(e.x - t.x), Math.abs(e.y - t.y)) <= 1)) continue;
+        const above = returns.find((e) => e.x === t.x && e.y === t.y - 2);
+        if (!above) continue;
+        const tileset = draft.tilesets[target.tilesetId];
+        const idx = (t.y - 1) * target.width + t.x;
+        const p = tileset ? passabilityOf(tileset, target.lowerTiles[idx] ?? -1, target.lowerOverlayTiles?.[idx] ?? -1, target.upperTiles[idx] ?? -1, target.upperOverlayTiles?.[idx] ?? -1) : null;
+        if (!p || !(p.up || p.down || p.left || p.right)) continue;
+        notes.push(`${from.id} ${event.id} 착지 ${target.id}(${t.x},${t.y}) → (${t.x},${t.y - 1}) — 돌아오는 계단 그림 칸 바로 앞`);
+        (t as { y: number }).y = t.y - 1;
+      }
+    }
+  }
+}
+
+/**
+ * 층 이동 트리거를 계단·엘리베이터 그림 칸으로 올린다. 탈 자리(그림 앞 첫 바닥 줄)는 도착 칸으로 남긴다.
+ * 왜(2026-10-22 장면 교훈 시험 「집 계단」): 도구가 알려 준 탈 자리(그림 앞 바닥)에 links 를 두자 scene-transfer-off-door 가
+ * 여섯 건 났다 — 계단 앞 바닥을 지나가기만 해도 층이 바뀐다. 데모 교훈은 「문·계단 그림 칸에서 발동, 착지는 그 앞」이다.
+ * 그림 칸이 이미 문 그림(엘리베이터 문턱)이면 그대로 두고, 그림 칸이 막혀 있으면 priority:"same" 부딪힘으로 발동한다.
+ */
+function liftTravelLinksOntoArt(draft: Project, map: GameMap, tileset: TilesetDef, notes: string[]): void {
+  const taken = new Set((map.events ?? []).map((e) => `${e.x},${e.y}`));
+  for (const event of map.events ?? []) {
+    const indoor = eventTransfers(event).some((t) => t.mapId !== map.id && draft.maps[t.mapId]?.climate?.mode === "indoor");
+    if (!indoor || isDoorArtCell(draft, map, event.x, event.y) || !isDoorArtCell(draft, map, event.x, event.y - 1)) continue;
+    if (taken.has(`${event.x},${event.y - 1}`)) continue;
+    const idx = (event.y - 1) * map.width + event.x;
+    const p = passabilityOf(tileset, map.lowerTiles[idx] ?? -1, map.lowerOverlayTiles?.[idx] ?? -1, map.upperTiles[idx] ?? -1, map.upperOverlayTiles?.[idx] ?? -1);
+    const walkable = p.up || p.down || p.left || p.right;
+    taken.delete(`${event.x},${event.y}`);
+    notes.push(`층 이동 ${event.id} 트리거 (${event.x},${event.y}) → 그림 칸 (${event.x},${event.y - 1})${walkable ? "" : " 부딪힘"} — 앞 바닥은 도착 칸`);
+    event.y -= 1;
+    taken.add(`${event.x},${event.y}`);
+    if (!walkable) for (const page of event.pages ?? []) (page as { priority: string }).priority = "same";
+  }
 }
 
 /**
@@ -669,15 +726,15 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       const isSchool = /교실|학생회|고등학교|중학교|학급/u.test(mapName);
       const isUniversity = !isSchool && /대강의실|강의실|전공|세미나|대학|캠퍼스/u.test(`${mapName}\n${briefText}`);
       const campusProgram = isUniversity ? "university-lecture-wing" : isSchool ? "school-class-wing" : undefined;
+      // 맵 이름은 «제안» 만 한다 — 명시한 layout.program·plan 을 이름으로 갈아끼우지 않는다(2026-10-21 「첫사랑」:
+      // 이름의 「승강장」이 계획한 평면을 무작위 씨앗 청사진으로 바꿔 버렸다). 이름이 표준 구성과 맞으면 알리기만 한다.
       if (args.layout && typeof args.layout === "object") {
         const lbag = args.layout as Record<string, unknown>;
         if (lbag.program === "school-class-wing" && isUniversity) {
-          args = { ...args, layout: { ...lbag, program: "university-lecture-wing" } };
+          fitNotes.push(`이름이 대학 강의동과 맞는다 — 대학 표준 구성을 원하면 layout:{program:"university-lecture-wing"} 로 다시 부른다(요청한 "school-class-wing" 으로 지었다)`);
         }
-      } else if (campusProgram && Array.isArray(args.plan) && args.plan.length === 15 && typeof args.plan[0] === "string" && args.plan[0].length === 26) {
-        const { plan: _p, zones: _z, objects: _o, tables: _t, goods: _g, lines: _l, daises: _d, ...rest } = args as Record<string, unknown>;
-        args = { ...rest, layout: { program: campusProgram } } as typeof args;
-        fitNotes.push(`예제 평면(26×15) 대신 "${campusProgram}" 다구역 표준 배치로 지었다`);
+      } else if (campusProgram && Array.isArray(args.plan) && args.plan.length > 0) {
+        fitNotes.push(`이름이 "${campusProgram}" 표준 구성과 맞는다 — 준 평면대로 지었다. 다구역 표준 배치를 원하면 plan 을 빼고 layout:{program:"${campusProgram}"} 로 부른다`);
       }
     } else if (tilesetId === "modern_city" || tilesetId === "jp_city") {
       const matchedProgram =
@@ -702,17 +759,14 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         : tilesetId === "modern_city" && /로비|1층\s*홀/u.test(mapName) ? "lobby"
         : tilesetId === "modern_city" && /오피스|사무실|사무층|마케팅|디자인팀|개발팀|기획팀|본사\s*[2-9]층/u.test(mapName) ? "office-floor"
         : undefined;
+      // 명시한 layout.program·plan 은 이름이 무엇이든 그대로 짓는다(위 캠퍼스와 같은 규칙). 이름이 다른 표준 구성과 맞으면 알리기만 한다.
       if (args.layout && typeof args.layout === "object") {
         const lbag = args.layout as Record<string, unknown>;
-        if (matchedProgram && typeof lbag.program === "string" && ["lobby", "konbini", "cafe", "mall-1f", "supermarket", "station", "hospital-1f", "cinema", "game-center", "famires", "bank", "clinic"].includes(lbag.program) && lbag.program !== matchedProgram) {
-          args = { ...args, layout: { ...lbag, program: matchedProgram } };
+        if (matchedProgram && typeof lbag.program === "string" && lbag.program !== matchedProgram && !lbag.rooms) {
+          fitNotes.push(`이름이 "${matchedProgram}" 표준 구성과 맞는다 — 요청한 "${lbag.program}" 으로 지었다. 바꾸려면 layout:{program:"${matchedProgram}"} 로 다시 부른다`);
         }
       } else if (matchedProgram && Array.isArray(args.plan) && args.plan.length > 0 && typeof args.plan[0] === "string") {
-        const planH = args.plan.length, planW = args.plan[0].length;
-        if (planW < 28 || planH < 18) {
-          const { plan: _p, zones: _z, objects: _o, tables: _t, goods: _g, lines: _l, daises: _d, start: _s, exits: _e, ...rest } = args as Record<string, unknown>;
-          args = { ...rest, layout: { program: matchedProgram } } as typeof args;
-        }
+        fitNotes.push(`이름이 "${matchedProgram}" 표준 구성과 맞는다 — 준 평면대로 지었다. 표준 다구역 배치를 원하면 plan 을 빼고 layout:{program:"${matchedProgram}"} 로 부른다`);
       }
       // 공공시설 짧은 이름(library·city-hall·bank·clinic, 한국어 이름)은 두 칩셋 모두 같은 표준 구성으로 맞춘다 — 2026-10-19 RCA r2: jp_city 에서 "library" 가
       // 「방 구성이 없다」로 거부돼 조수가 수백 줄 plan 을 손으로 짰다.
@@ -877,8 +931,12 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     }
     // 현대 실내(캠퍼스·도시·일본 도시)를 새로 지을 때 BGM 이 비면 맵 이름으로 곡을 고른다 — 연애·학원물 실내가 무음으로 남던 구멍(2026-10-16 실제 Argon 시험).
     // 다시 짓는 맵(replace)은 저작자가 정했을 수 있으니 건드리지 않는다. 환상 실내(손 도트 v5 등)는 그대로 둔다.
-    if ((!existing || existingUntouched) && !map.bgm && MODERN_BGM_TILESETS.has(tilesetId)) assignCreatedMapBgm(map, {}, { draft, fallbackTheme: "everyday" });
+    // 2026-10-22 장면 교훈 시험(Sonnet 5.5): 환상 실내(손 도트 v5)도 새로 지으면 무음으로 남아 지하 창고·여관·집 2층·서재 등 7건에서
+    // scene-map-no-bgm 이 났다 — create_map 처럼 새 실내는 모두 이름으로 곡을 고른다(현대 실내는 일상 곡, 환상 실내는 마을 곡이 기본).
+    if ((!existing || existingUntouched) && !map.bgm) assignCreatedMapBgm(map, {}, { draft, fallbackTheme: MODERN_BGM_TILESETS.has(tilesetId) ? "everyday" : "village" });
+    liftTravelLinksOntoArt(draft, map, tileset, doorNotes);
     draft.maps[mapId] = map;
+    snapArrivalsToTravelArt(draft, doorNotes);
     const trimNote = trimmed.trimmed
       ? `평면 바깥 막힌 여백을 잘라 ${built.width}×${built.height} 로 지었다 — 입력 좌표는 왼쪽 ${trimmed.dx}·위 ${trimmed.dy} 칸만큼 옮겨졌다. 이후 이 맵 좌표는 새 기준을 쓴다.`
       : "";

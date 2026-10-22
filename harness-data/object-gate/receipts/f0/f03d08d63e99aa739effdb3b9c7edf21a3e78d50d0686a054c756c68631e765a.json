@@ -1,0 +1,268 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f03d08d63e99aa739effdb3b9c7edf21a3e78d50d0686a054c756c68631e765a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "inaka-canal-water",
+ "label": "jp_inaka_pack/ground/inaka-canal-water",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 4,
+  "tileColorsP90": 4,
+  "darkV5": 82,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water tile fill",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 16x16 opaque tile of dark blue water. It has mottled pixels in a few shades (#31486b, #233352, #456184, #627e9c) and no silhouette, edge line, eave shadow, or front face. The width is 16 in every row. It is a flat seamless terrain texture, not a standing object. The kind is terrain, so it plausibly matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small dark-blue water swatch with exactly 4 colours in total. That gives 4 visible tones per tile and 4 shading steps, against about 5-6 steps on the Beodeul materials. Its density sits above the grass reference (3 visible tones) but well below the paving reference (7). Near-flat coverage is 0%, so there are no flat fills. The speckle reads as fairly uniform noise with no distinct ripple clusters, highlight glints or shaded wave shapes, which the references carry through clumps and per-stone shading. Dark edge pixels are 0% neutral, so there is no sticker outline, and a water ground patch needs none. The ramp is shallow and the piece is thinner than the references, so it fails the Beodeul bar, though not by much.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14823
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water tile fill",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "A full 16x16 opaque tile of dark blue water with a checkered noise pattern and a few lighter highlight pixels. It has no silhouette, no front face and no edge lines. It is a flat terrain tile, which is consistent with the terrain kind. Column scans show only small lightness variation (L=50, 69, 93, 121) with no band structure, so there is no object top or front to measure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a dark water tile with 4 visible tones per tile. That is above the grass reference (3) and below the paving reference (7). Near-flat coverage is 0%, and the speckled, dithered surface shows no 5x5 flat fills. It has no black sticker outline, and the 0% near-neutral dark edge share means any edge pixels carry a tint. The ramp is shallower than Beodeul's 5-6 steps, but water is a simple surface. Its tone count and grain match the grass reference, so a careful artist would accept it next to the grass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12990
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water tile fill",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 16x16 block of dark blue water texture with scattered lighter and darker pixel ripples. Every row is 16 wide, with no silhouette, edge line, eave shadow, or front face. It is a flat seamless terrain tile, which suits the terrain kind. It has no standing structure, so there is no top-versus-front split to measure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate is a small dark-blue water swatch with speckled variation across four distinct tones. Measured facts: 4 visible tones per tile against 3 for the grass reference and 7 for the paving reference, 0% near-flat coverage, and 0% neutral dark edge pixels. There is no black sticker outline, and the surface reads as dithered noise rather than a flat fill. It is simpler than the paving and has fewer raw colours than the grass, but the grass reference reads as only about 3 visible tones, so the candidate matches the grass on the primary facts. Judged by eye it is a plausible water ground next to the grass, not thinner or flatter. It is small and hard to inspect, which is the main risk behind a modest score.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14127
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water tile fill",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The tile is a full 16x16 opaque block (width 16 on every row) of dark blue noise with scattered lighter ripple pixels (#456184, #627e9c) and darker flecks (#233352). It has no silhouette, no front-edge line, no eave shadow and no standing structure. It is a flat seamless water terrain tile, not a standing object, so the top/front rules do not apply."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a dark blue water patch with only 4 distinct colours in total, and the same 4 show per tile. That is below Beodeul's 5-6 steps per material and well below the paving reference's 7 visible tones. It does match the grass reference's 3 visible tones and sits slightly above it. The scattered lighter speckle keeps it from being flat: near-flat coverage is 0%, so there are no large single-colour areas. It has no outline, which is acceptable for a ground patch. The ramp is shallow, with no distinct highlight or ripple step and no clustered texture like the grass tufts or per-stone shading. Dark edge pixels are 0% neutral, so there is no sticker outline. Overall it is cleanly made but thinner than the references, and with a 4-colour ramp and no sign of richer craft, I fail it on the 'when in doubt, fail' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14548
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.196Z",
+ "cells": {
+  "16": [
+   "7806e3725a93835e"
+  ],
+  "24": [
+   "2bfed1929a88fb8b",
+   "3cfce371476a749f",
+   "4f9091c2ef92c5ef",
+   "7eb2d54f992ae409",
+   "82686f77be2fdf34",
+   "b451f0eb715fe0ca"
+  ],
+  "32": [
+   "196f7f2b0b8b0f15",
+   "5f604c3dc0655287",
+   "803568e8e36d4157",
+   "87ee7584e4c782d9",
+   "d6b9548ea76ca885",
+   "f3dfec359f6cb49e"
+  ],
+  "48": [
+   "25084a21f1c5e8b5",
+   "6562d9198ceb61ba",
+   "67b265cbdf67179d",
+   "a8d433561c7a852c",
+   "c3c57614eab09b64",
+   "ffea37c8ec9e5b10"
+  ]
+ }
+}

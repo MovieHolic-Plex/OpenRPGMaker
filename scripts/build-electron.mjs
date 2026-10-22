@@ -31,8 +31,18 @@ const OUT_DIR = resolve(REPO_ROOT, "dist-electron");
 
 const ENTRIES = [
   {
-    entry: resolve(REPO_ROOT, "electron/main/main.ts"),
+    // 시작 입구(package.json main). 스플래시를 띄우고 본체(app.cjs)를 읽는다 — 가볍게 둔다(크기 상한을 아래에서 검사).
+    entry: resolve(REPO_ROOT, "electron/main/boot.ts"),
     outfile: resolve(OUT_DIR, "main.cjs"),
+    maxBytes: 200_000,
+    format: "cjs",
+    platform: "node",
+    target: "node22",
+    external: ["electron", "node:*"],
+  },
+  {
+    entry: resolve(REPO_ROOT, "electron/main/main.ts"),
+    outfile: resolve(OUT_DIR, "app.cjs"),
     injectOAuth: true,
     format: "cjs",
     platform: "node",
@@ -154,7 +164,7 @@ for (const namespace of Object.keys(PROJECT_CORE_MODULES)) {
 }
 process.stdout.write(`built dist-electron/project-core.cjs (${Object.values(projectCoreExports).flat().length} exports)\n`);
 
-for (const { entry, outfile, format, platform, target, external, injectOAuth } of ENTRIES) {
+for (const { entry, outfile, format, platform, target, external, injectOAuth, maxBytes } of ENTRIES) {
   await build({
     absWorkingDir: REPO_ROOT,
     bundle: true,
@@ -172,6 +182,8 @@ for (const { entry, outfile, format, platform, target, external, injectOAuth } o
   process.stdout.write(`built ${outfile.replace(`${REPO_ROOT}/`, "")}\n`);
   if (format === "cjs") assertNoTopLevelImportMeta(outfile);
   if (!injectOAuth) assertNoOAuthSecrets(outfile);
+  // 입구가 무거워지면 아이콘을 누른 뒤 스플래시가 그만큼 늦게 뜬다(electron/main/boot.ts).
+  if (maxBytes && readFileSync(outfile).length > maxBytes) throw new Error(`${outfile}: ${readFileSync(outfile).length} bytes > ${maxBytes} — 시작 입구에 무거운 import 가 끌려 왔다`);
 }
 
 // 데스크톱 앱은 사용자 PC에 bun 이 없다. 리눅스·윈도우 워커를 실행 파일로 넣어 채팅이 그 파일을 띄운다.

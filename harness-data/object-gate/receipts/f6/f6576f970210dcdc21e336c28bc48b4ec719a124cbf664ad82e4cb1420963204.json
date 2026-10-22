@@ -1,0 +1,355 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f6576f970210dcdc21e336c28bc48b4ec719a124cbf664ad82e4cb1420963204",
+ "width": 48,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "clinic pharmacy shelf",
+ "label": "modern_city_interior/clinic-pharmacy-shelf",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 20,
+  "darkV5": 74,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 7
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green cross sign above the cabinet",
+      "rows": "0-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cabinet top band",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "shelf compartments with medicine boxes and bottles (front face)",
+      "rows": "17-37",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom drawers (front face)",
+      "rows": "38-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body spans rows 9-47 at width 48. Rows 9-13 form a 5-row top band (the row-8 outline is excluded), ending in a light tan front-edge line at row 14. Rows 15-16 are darker eave shadow, and below them is the front face with two shelf rows of medicine boxes and a drawer row down to row 47. The green cross sign above (rows 0-8, narrower at width 16) sits on the top and counts as decor. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden shelf with a green cross sign, drawn at the same scale as the stall and well references. Measured facts: 17 visible tones per 16x16 tile, equal to the cheese stall (17) and close to the well (20). Near-flat coverage is 4%, below the stall's 13%. Dark edge pixels are 0% neutral, so the outline carries a tint. It reads as dark reddish-brown beside the wood, matching the Beodeul practice of using the adjacent material's dark tone. The wood frame shows several brown steps (highlight, light, mid, dark, deep) with a lit top edge and darker shelf interiors. The shelves hold small multicolour items (bottles, boxes) that add clusters and variation instead of flat fills, and the sign has a lighter border and cross. Texture is a little less grainy than the best references, since the wood panels are fairly smooth, but there are no large flat areas. Nothing about it looks thinner or more sticker-like than the stall or well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14201
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green medical-cross sign on top of the shelf",
+      "rows": "0-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf top board (main body top)",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "front face with two shelf compartments and drawer row",
+      "rows": "15-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body spans rows 8-47 at width 48. Rows 9-13 form a 5-row wood top band that ends in a light tan front-edge line at row 14 (#cba76c, L=171). Darker eave shadow follows in rows 15-16 (L=95 and 76). Below it is a front face of about 33 rows with shelf compartments (items in rows 17-35) and a drawer row (rows 38-46). This matches the green 'cabinet: top 5 + edge + eave' guide. The green cross sign above is a decor part and is not counted as the body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden shelf cabinet with a green cross sign. It shows about 17 visible tones per tile, matching the stall (17) and close to the well (20). Near-flat coverage is only 4%, below the stall's 13%. Dark edge pixels are 0% neutral, so the outline is tinted dark brown beside the wood rather than a black sticker line. The wood frame has about 5 steps: a highlight top edge, light and mid planks, dark shelf interiors and a deep brown outline. The shelves are filled with small multi-colour bottles and boxes, which gives per-item texture and variation. The only large areas of fairly even colour are the cabinet side panels and the sign, and these are small and still carry grain. It would sit comfortably next to the stall and well references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20447
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top surface",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "green cross sign on top",
+      "rows": "0-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with shelves, bottles and drawers",
+      "rows": "15-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cabinet body spans rows 8-47 at width 48. Rows 9-13 form a reddish-brown top band, shaded with lighter streaks. It ends in a light tan front-edge line at row 14 (#cba76c), followed by dark eave shadow at rows 15-16. Below that the front face runs rows 15-47: two shelf rows with bottles and boxes, then three drawers with handles. The green cross sign sits on the top at rows 0-11 and is decor placed on the cabinet, not the main body. The top band is 5 rows with a clear edge line and shadow, so this is not a thin rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 17 visible tones per 16x16 tile, equal to the cheese stall (17) and close to the well (20). Near-flat coverage is 4%, below the stall's 13%. Dark edge pixels are 0% neutral, so the outline carries a tint: it reads as dark brown beside the wood cabinet, not a uniform black sticker line. The cabinet wood has about 5 steps (highlight, light, mid, dark, deep) with a grain and plank structure. The shelves hold varied small items (bottles, boxes, labels in several tones), and the green cross sign is shaded rather than flat. It sits at the reference's level of detail and construction, with no large flat fills.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13127
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green cross sign on top (decor)",
+      "rows": "0-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cabinet top band",
+      "rows": "9-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "front face with shelf compartments and drawers",
+      "rows": "15-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body spans rows 8-47 at width 48. Rows 9-13 form a mottled top band, ending in a light tan front-edge line at row 14 (#cba76c). Darker eave shadow follows at rows 15-16. Below that is a front face of about 33 rows, with shelf compartments holding medicine boxes and a row of drawers. The green cross sign above the body (rows 0-11, 16 wide) is decor placed on the top. The top reads like the 'cabinet: top 5 + edge + eave' reference, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden shelf cabinet with a green cross sign and small items on the shelves. It reads as a prop of the same kind as the stall and well. Measured facts: 17 visible tones per tile, matching the cheese stall (17) and close to the well (20). Near-flat coverage is 4%, below the stall's 13%. 0% of dark edge pixels are neutral, so the outlines carry a tint; by eye they are dark brown beside the wood, as in Beodeul. The wood frame shows about 5 steps (highlight top edge, light, mid, dark, deep outline). The shelves hold varied small items (bottles and boxes in red, white and blue) that break up the surface. The sign has a lighter edge and a dark inner tone. There are no large flat fills; the back panel has some tone variation. Overall it would sit next to the stall and well without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13105
+  }
+ ],
+ "decidedAt": "2026-10-20T22:55:59.269Z",
+ "cells": {
+  "16": [
+   "364acfb6201a1209",
+   "51b91614499fe47b",
+   "7cbf56b23b17f714",
+   "82a686c363378cb1",
+   "bb9baf88f6050773",
+   "bcbe367a46d302d8",
+   "e8363266b1f56f40",
+   "f72b8271f607b139",
+   "fe86209b0bfd57b4"
+  ],
+  "24": [
+   "3389073c83e741be",
+   "991a217b5666a7e8",
+   "b29f81b0d7cb3a01",
+   "e9c44661a5f7baba"
+  ],
+  "32": [
+   "047703182af31ad9",
+   "0634c8bcef4b3b22",
+   "0d549f3cf12ecb80",
+   "0e0293f64a416a52",
+   "35217d70e80b2b8f",
+   "39b10b9af19cad6a",
+   "4031dc34b1026800",
+   "5953051155547b20",
+   "60af1af27d3b8e75",
+   "60c0cedd609ef7ef",
+   "6208cbd24ad01946",
+   "7046dbb840977614",
+   "8bdba664c76e8662",
+   "9df49dd75d65dccb",
+   "9ffd8416cc7d19af",
+   "a73e92c2e8bc5dc4",
+   "beebd57bf833e830",
+   "c5180e8a9ca7f003",
+   "d7a4713e45f8f1db",
+   "d7ab7370e79c8b2c",
+   "dcf7231c536557be",
+   "df066c77606337a2",
+   "f5a2b95e9599a40e",
+   "ff7a42c263d08941"
+  ],
+  "48": [
+   "060ae126a17de4d7"
+  ]
+ }
+}

@@ -1,0 +1,357 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cf4963eff343d7cec68e21ae84b678076fa8b01cf6657a946a7f23db4469a94a",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "mossy stone retaining wall middle",
+ "label": "jp-inaka-r5:inaka-mossy-stone-wall-mid",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "wall",
+  "refs": [
+   "wall-h104_0-timber",
+   "wall-h106_1-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 18,
+  "darkV5": 54,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 8
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "moss-covered wall cap (top of retaining wall)",
+      "rows": "4-10",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "stone block front face",
+      "rows": "11-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a full-width 64px slab from row 4 to row 30. Rows 4-10 are a mossy green band, lighter than and distinct in hue from the stone below. Its lower edge is ragged, with moss drips, and sits over dark shadow rows 9-10, which are dark green at x=47. At row 11 the stone course starts with a light highlight line (L=179 at x=47). Below that, rows 11-30 are three courses of stone blocks with dark mortar lines, giving a front face of about 20 rows. The moss cap reads as the top surface seen from above, so this is a three-quarter view, though the top band is somewhat irregular. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a mossy stone retaining wall with a grass and moss fringe on top and a row of blocks below. It has 15 colours per tile, which is above the stone reference's 13 but well below the timber reference's 26. It has 25 distinct colours against 33 and 68. Flat-fill coverage is 0%, so there are no flat areas. Stones are shaded individually with a lighter top edge, darker bottom and a few moss clumps, and the grass tufts use several greens. That gives about 4 lightness steps on the stone against about 5-6 on the reference. The dark edge pixels are 37% near-neutral against about 12% for the references, so the outline leans toward black and grey in places rather than consistently dark material tones. The blocks look somewhat uniform and the grey is cool and fairly flat inside each block, so it reads slightly thinner than the reference. It would sit next to the references acceptably but is a little shallower in shading and outline craft. Given the neutral outline share and fewer shading steps, it is borderline, and I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 27748
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mossy turf cap on top of wall",
+      "rows": "4-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "stone brick front face",
+      "rows": "11-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a full-width 64px slab from rows 4-30. Rows 4-10 are a green moss band with grass tufts above it, and vines hang over the stone below. The band ends at a dark line at row 10 (x=32 L=57, x=47 L=75 around rows 9-10). The stone courses start right under it, with a highlight at row 11 (x=47 L=179). This gives a moss top of about 6 rows over a face-on stone front of about 20 rows (rows 11-30), which shows brick courses with mortar lines. The moss top has no sharp edge line and is partly broken by the drips, so the top reads as a weak but present surface. There is no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a mossy stone retaining wall: grey-blue stone blocks with a moss and grass fringe along the top. Measured facts: 15 colours per tile median, above the stone reference (13) and below the timber reference (26). 0% flat-fill coverage, so there are no flat areas. 25 distinct colours against 33 for the stone reference and 68 for the timber reference, which is lower overall. Near-neutral share of dark edge pixels is 37%, against 12-13% for the references, so some outline pixels lean grey/black rather than tinted. The outline reads as mixed: dark seams between blocks look fairly neutral and bluish-grey rather than a dark version of each stone. Shading is about 4 steps per stone (highlight top edge, mid, shadow, dark seam), where the references use 5-6. Texture is some: the moss clumps and speckle on the stones are decent, but the stone faces are fairly uniform block to block, not shaded one by one with varied grain. Overall it is competent and close to the stone reference in density, but with a slightly more neutral outline, fewer steps and less per-stone variety, so it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19985
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mossy grass cap on top of wall",
+      "rows": "5-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "stone block front face",
+      "rows": "11-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The full-width (64px) wall has a green moss band on rows 5-10 that sits above the stone courses. It is a different hue from the grey stone and ends in a darker row at 9-10, with moss drips hanging over the face below. The stone front face runs from about row 11 to 30, with mortar lines at rows 10, 16, 23 and 29-30. The top band is irregular and its front-edge line is weak, so this is a modest top surface, but it is more than a 1-2 row rim. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a mossy stone retaining wall with 25 distinct colours and a median of 15 per 16x16 tile. That is above the stone reference's 13 per tile, though below its 33 distinct colours overall and well below the timber reference's 26 per tile and 68 overall. Flat-fill coverage is 0%, the same as both references. By eye the stones are blocky grey-blue rectangles with only about 3-4 lightness steps each, a lighter top face and a darker lower edge. The moss on top has a few greens and clump variation. Stones are shaded individually, but with less per-stone speckle and grain than the pink brick-stone reference, which has 5-6 steps. Dark edge pixels are 37% near-neutral against 12-13% for the references, so the outline leans grey-black on part of the perimeter instead of consistently dark stone or moss tone. That makes it 'mixed', with a mild sticker look in places. Overall it is serviceable and not flat, but shallower in shading depth and outline craft than the references, and it would look slightly thinner next to them. Given the 'when in doubt, fail' rule, and the outline being partly neutral, it fails narrowly.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 30183
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "moss-covered wall top",
+      "rows": "5-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "stone block front face",
+      "rows": "11-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is 64 px wide from row 4 to row 30, with small moss tufts above it in rows 1-3. Rows 5-10 form a green moss band that is lighter at the top and darker toward the bottom. It sits above a dark line at about row 10 (#353946 at x=32) and a light stone highlight at rows 11-12, which together act as a front-edge line and shadow. Below, rows 11-30 show stacked stone blocks with mortar lines, about 20 rows of front face. The moss drips over the face in places (x=16 stays moss through row 16), so the top band is somewhat ragged. It still reads as a top surface over a front face rather than a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a mossy stone retaining wall with a moss fringe on top and a row of blocks below. It has 15 distinct colours per tile, above the stone reference's 13 and below the timber reference's 26. It has 25 distinct colours in total against 33 and 68 for the references. Flat-fill coverage is 0%, the same as both references. The stone blocks show some per-block shading and speckle, and the moss has a few greens. The lightness ramp is about 4 steps on the stone and 3-4 on the moss, shallower than the roughly 6 steps in the references. 37% of dark edge pixels are neutral, against 12-13% for the references. The block seams and base look greyish-dark and only partly tinted, so I rate the outline as mixed rather than dark_material_tone. The blocks are fairly uniform grey-blue and large, so they carry less per-stone variation and grain than the reference's individually shaded bricks. The per-tile colour count matches the stone reference, so density is only slightly lower. The wall is acceptable but a little flatter and more sticker-like than the references, and the outline is not clearly material-toned. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 30487
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.457Z",
+ "cells": {
+  "16": [
+   "2a2162838e310a47",
+   "2aa1c3ddfa1c9bb6",
+   "2e151554e6236ab7",
+   "3fd766d796c69330",
+   "675f59f3476aa668",
+   "7de11244ecfdec9e",
+   "c014ea3dcc28cfff",
+   "eae77b7cae0d5bd5"
+  ],
+  "24": [
+   "029991617a6de055",
+   "1585f1e85b3095d7",
+   "1713674256cb9381",
+   "2042b2237c9dac1c",
+   "301a4e7cbcb82914",
+   "3f0404a59593d3ca",
+   "411da67247acdab7",
+   "4f4140fbf06259cd",
+   "5064e5b854476017",
+   "5509bb097092156e",
+   "63b78c8e0df21292",
+   "65dc461c3aafb9d1",
+   "65fe562dce3669f9",
+   "6a243657a7542c61",
+   "72d21e21ec5907fe",
+   "7bdb07733bea986a",
+   "8821258e2d0b1c65",
+   "98dd5bb51cc4bdb9",
+   "991fb6a14a7bce64",
+   "9c4461b71e8a1920",
+   "9f8993e4606b0fab",
+   "a0eb9c37b3c5f787",
+   "a58d43e63fa4462d",
+   "a63fc68b9c52d06b",
+   "c26d3124ffae6062",
+   "c8315e6dacb51c58",
+   "c89e3aa23efd3f20",
+   "ca66048bdcee9707",
+   "d504acacfefec891",
+   "d5dc518502f50a63",
+   "d9d4e1f8b9d18d52",
+   "e0e91940885e6b8e",
+   "e2aa737f9b2f6e64",
+   "e8aa2481a58eacb5",
+   "ef43b5f6c129bbff",
+   "fb6cf531d5cc1383"
+  ],
+  "32": [
+   "ca0eca17f4715473",
+   "e46e406e4c3c6d5f"
+  ],
+  "48": [
+   "0a5261c4b6ec2221",
+   "12fd9f32a848cc60",
+   "284f0b549a74c70e",
+   "2cc89b5743c88ece",
+   "39809e4af68190c3",
+   "3af3eafa33a9a1c8",
+   "6ab74e74ad6b5973",
+   "8739cb5390386498",
+   "8d7f85d1e7e97268",
+   "a11253791e502a1d",
+   "d4e3718c2ec4c12e",
+   "e34ecf804c14a978"
+  ]
+ }
+}

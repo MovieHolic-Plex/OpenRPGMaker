@@ -1,3 +1,4 @@
+// @deprecated multi-user team collaboration is not supported yet (2026-10-21). 진입점은 TEAM_COLLAB_ENABLED(electron/shared/teamCollab.ts) 를 켜야 보인다.
 // 참여 창 로드·저장이 어디서 시간을 쓰는지 잰다. 요청마다 경로·크기·시간·캐시를 남긴다.
 // 실행: xvfb-run -a node electronTeamJoinTraffic.mjs --app . --url http://<호스트>:9840 [--runs 2] [--out traffic.json]
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";

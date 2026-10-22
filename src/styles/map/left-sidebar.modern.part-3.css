@@ -45,9 +45,13 @@
 
 .editor-layout .left-panel-stack .selected-tile-status .selected-tile-tileset {
   color: var(--text-2);
+  /* 타일 이름이 폭을 먼저 갖는다 — 타일셋 이름은 남는 폭만 쓴다(기준 폭 0). 둘이 같은 비율로
+     줄어 「360 물(바…」·「에메랄드 몬스터 …」 둘 다 잘렸다(2026-10-21 UI 감사 02-leftdock-06). 전체 이름은 title. */
+  flex: 1 1 0;
   font: 500 11px/1.2 var(--font-ui);
   margin-left: auto;
   max-width: 40%;
+  min-width: 32px;
   text-align: right;
   text-decoration: underline dotted;
   text-decoration-color: var(--border-strong);

@@ -1,0 +1,471 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0456a5a899061f01bef9cb3f04959a9c022286cb433253b8bfbb378e717d3494",
+ "width": 64,
+ "height": 80,
+ "kind": "structure",
+ "name": "jp-inaka-kura-storehouse",
+ "label": "jp_inaka_pack/jp-inaka-kura-storehouse",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (3/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (3/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 18,
+  "darkV5": 38,
+  "nearBlackEdge": 0.76,
+  "opaqueTiles": 16
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof with ridge band and end caps",
+      "rows": "9-31",
+      "evidence": "c",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": "30-31"
+     },
+     {
+      "part": "white plaster wall with double door and barred windows",
+      "rows": "33-66",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone plinth and steps",
+      "rows": "67-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 22,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof fills rows 9-32 as a large sloped plane. It has a ridge band at rows 10-14, then tile courses with stripe rows from 17 to 29, and dark eave shadow at rows 30-31 above the dark front-edge line at row 32. Below it, the plaster wall is a south face of 34 rows (33-66) with a door and windows. The roof overhangs the wall, since the width goes from 60 to 54. The stone plinth and steps are small details below the wall. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a clean, readable kura, but it is flatter than the references. The roof is a slate-blue block with horizontal row lines and a lighter ridge strip. It has no per-tile scallops or per-tile highlights, and only about 4 lightness steps against the references' 5-6 on their tile roofs. The white plaster walls are mostly one flat tone with little speckle or grain, and the namako checker base and door dots are the only real texture. The measured facts agree. Near-flat coverage is 6% against 0% for both references. Raw colours total 37 against 185 and 66. Visible tones per tile are 10 against 12 and 10, so they are close and I do not rely on that alone. Dark edges are only 28% neutral, so the outline leans toward a dark material tone rather than pure black, but I rate it mixed because the roof and window edges look uniformly dark. Overall it reads as more of a sticker than the hand-shaded references, with large plain wall and roof areas, so it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16103
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof with ridge",
+      "rows": "9-32",
+      "evidence": "c",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30-32"
+     },
+     {
+      "part": "white plaster front wall with double door and windows",
+      "rows": "33-66",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone plinth base",
+      "rows": "67-73",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "entry steps",
+      "rows": "74-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 24,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof fills rows 9-32 as a sloped plane. It has a ridge band at rows 10-14, then rows of tiles with a lighter edge line at row 29 and dark eave shadow at rows 30-32. Below it the white plaster south face runs rows 33-66 (34 rows) with a door and windows, standing on a stone plinth (rows 67-73) and steps. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate kura is a clean, legible storehouse, but it is shallower than the references. The blue-grey roof reads as about 3-4 steps with a thin horizontal band pattern. It has no per-tile scallops or highlights like the references' red tile roofs, which carry 5-6 steps and tile-by-tile highlights. The white plaster wall is a large, nearly flat light fill with little speckle, and the door and window lattice are drawn with simple dark strokes. The checker pattern at the base adds some texture. Measured facts: 10 visible tones per tile against 12 and 10 for the references, so the count is comparable. Near-flat coverage is 6% against 0% for both references, which points to the flat wall and roof areas. 28% of dark edge pixels are neutral against 7-9% for the references, so the outline leans toward near-black and sticker-like in places, not consistently a dark material tone. Overall the candidate is a little thinner and flatter than the references, and it does not reach the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 11802
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof with ridge",
+      "rows": "9-32",
+      "evidence": "c",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": "30-31"
+     },
+     {
+      "part": "white plaster wall with double door and barred windows (front face)",
+      "rows": "33-66",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone plinth",
+      "rows": "67-73",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "entrance steps",
+      "rows": "74-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 24,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped plane at rows 9-32. It has a ridge band at rows 10-14, tile courses with eave lines at rows 20, 24 and 28, and a dark front edge with eave shadow at rows 30-32. Below it the white wall is a south face of about 34 rows (33-66), with a door and windows. Stone plinth and steps lie below it. The roof is the main top surface, so the object reads as a 3/4 view. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a kura storehouse with a slate-blue tile roof, white plaster walls, a lattice door and barred windows. Measured facts are close to the references: 10 visible tones per tile against 12 and 10, and 6% near-flat coverage against 0%. Only 28% of its dark edge pixels are near-neutral, against 7-9% for the references, so the outline leans partly neutral and I call it mixed. By eye, the roof has only about 3-4 lightness steps with a faint horizontal tile-row pattern. It lacks the per-tile scallops and highlights of the reference roofs, and the ridge bar is a flat strip. The white plaster walls are large, nearly uniform areas with only light speckle, and the dark outlines and base checker pattern look sticker-like. The reference walls carry timber and stone shading with grain, and their roofs have 5-6 steps. The candidate is cleanly drawn but shallower in shading and texture than the Beodeul standard, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16622
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof (ridge cap and sloped tile planes)",
+      "rows": "9-31",
+      "evidence": "c",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30-31"
+     },
+     {
+      "part": "stone plinth base",
+      "rows": "67-70",
+      "evidence": "a",
+      "front_edge_line_row": 70,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "entry steps",
+      "rows": "74-79",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a kura with a large tiled roof at rows 9-31. It has a ridge band at rows 10-14, then stacked tile courses with lighter and darker stripes at rows 17-27. It ends in a lighter eave edge line at row 29 with dark shadow at rows 30-31 and an outline at row 32, so the roof reads as a sloped plane seen from above. Below it is a white plaster front wall at rows 33-66 (34 rows) with a double door, barred windows and a lattice dado. The stone plinth at rows 67-73 and the steps below it carry lighter top bands over darker front faces. No isometric side face is drawn; the structure is a south-facing 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a kura storehouse with a blue-grey tile roof, white plaster walls, a lattice door and small windows. Measured tones per tile (10) are close to the references (12 and 10), and near-flat coverage is 6% against 0% for both references. Only 28% of its dark edge pixels are neutral, against 7-9% for the references, so the outline is mixed: some dark edges lean neutral and some are tinted. By eye, the roof is a fairly flat slate band with faint horizontal tile lines and a thin top ridge. It lacks the per-tile scallops and highlights that the reference roofs show with 5-6 steps. The plaster walls are mostly one near-white tone with little speckle or shading, and the large white wall areas read as flat fills. The door has a few dotted details, and the checker pattern at the base and the stone steps add some texture. The result is cleaner and flatter than the references, with about 3 steps on the main materials, so it reads as a sticker-like silhouette beside the richly textured tile roofs and stone walls.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14724
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:03.834Z",
+ "cells": {
+  "16": [
+   "0a60294b7a5c0e32",
+   "18f70c74a56c8f6d",
+   "1f6935933a93c61f",
+   "28a3aba4579ab957",
+   "5163c9e605b65255",
+   "551e5610e1731268",
+   "560cfab39658c0f1",
+   "5cbb86f2e98a7359",
+   "62895fe02ae36734",
+   "66ee6d05a616831f",
+   "6f22be1039779aa5",
+   "7285b7cd3382d4a2",
+   "7dfece54921709b9",
+   "92591a981b437c04",
+   "b664ca38cc42f785",
+   "b9a44f463dd6e5f3",
+   "d2e90f984e467041",
+   "e6d036e83a308595",
+   "f71fb470f65418e2"
+  ],
+  "24": [
+   "034678b5e4d9331e",
+   "04d28450d0cf56f2",
+   "061eaeed988e0e20",
+   "075c10cae03f5253",
+   "0f2b2277d728a5b4",
+   "10ac99ddfc1540f7",
+   "10fad0d57e72415e",
+   "129266e6e0c7ae00",
+   "14eb325ced3e751a",
+   "226efef3864247b1",
+   "227676e1e9bdb13a",
+   "271a38f6c3b08f50",
+   "28b2d4e3b021c561",
+   "335811c68163178e",
+   "355bc3bc51b51504",
+   "38991c11f8a50691",
+   "38c6ff34eaba9524",
+   "3be675dff9f13635",
+   "3d11edaa09af927a",
+   "3de65fd5f7985105",
+   "423969413ce077d8",
+   "45fad389d5c71b76",
+   "470efbe588a259c0",
+   "4748ad2dea374c17",
+   "4a5a59c4b77dd44a",
+   "4b01321668da6f2f",
+   "5280428992e3bb39",
+   "5285d004a5f0c7eb",
+   "535ea1ea9c243c8c",
+   "56f88d5f5511695f",
+   "58b23cc44627085c",
+   "61426b50b05fe43b",
+   "6314f688b563dc18",
+   "63154c312db2b34a",
+   "72212bbcf818fc1e",
+   "74b294ef34d00ea2",
+   "75f5acc0fc14b036",
+   "766cb60964449bac",
+   "78e4dcd3eaf455d7",
+   "7ce3af3e5778de2e",
+   "7ffa8629589726ef",
+   "894c1258ac244b8c",
+   "89c0017f1adc6f12",
+   "8f9cf550ab8082f4",
+   "8fe0cc3d77c54de9",
+   "915ad2e2d72f35cb",
+   "9f2088e4838600e5",
+   "b313f062e7e6f9e6",
+   "b3520f66783f4f68",
+   "babbad76d3fbd274",
+   "bac3d0cdc724c941",
+   "bc61ef7dbd27d204",
+   "c3979d3b8be1c3d3",
+   "c79ee09a18415f3d",
+   "d37749451d8f2a24",
+   "dbd31c60a6941303",
+   "dce646dc954d572e",
+   "ecae9f569ff19d2e",
+   "ecf3ceb221f73b25",
+   "f1a39abc1906baf4",
+   "f7a9221d5848ef69",
+   "f8ec93d21fa26d03",
+   "fe914ddb7b03ee11"
+  ],
+  "32": [
+   "1ed7e9a2499e6441",
+   "2c1db8c610341700",
+   "34158e25935ff549",
+   "45bdec0ade72bff6",
+   "5e4d37935e7fcb2a",
+   "6dfb56d47c438dff",
+   "7f06c5dc127e6a30",
+   "8e1de4cbf3ab78aa",
+   "95d1a2125d82d596",
+   "c38f4d6e060de73e",
+   "d1717caa3906f2ee",
+   "df071b77efc07014"
+  ],
+  "48": [
+   "0498ed7147ed3ff4",
+   "04aa4976d74efe83",
+   "100e2c1b62a6de0c",
+   "15ba84dc873feda1",
+   "21173fc4ae97873a",
+   "240641f8ebfb3977",
+   "28a5ee2d3190da3e",
+   "2ac00b1d1f0aaca2",
+   "401ff4c1e34ffaa8",
+   "41c0284a59d0c82b",
+   "4c53f0ca8d3c538b",
+   "546420b01fb13de5",
+   "5610745aa2c6aabb",
+   "5ff3f287f6fdbf80",
+   "6211a841538f48ac",
+   "627a0bf2f307d62a",
+   "65a163078379442f",
+   "a0663f1178382734",
+   "a4ea9bb52de96252",
+   "a882c03a920cb327",
+   "b8ab3908f8c8387b",
+   "bd42481875464014",
+   "d9aec1b3aa71545f",
+   "fd9765ee21dde824"
+  ]
+ }
+}

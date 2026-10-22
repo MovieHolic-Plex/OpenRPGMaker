@@ -22,7 +22,7 @@ describe("event command picker audio intent", () => {
     });
 
     const button = Array.from(document.querySelectorAll<HTMLButtonElement>(".event-command-picker-command"))
-      .find((candidate) => candidate.textContent?.includes(label));
+      .find((candidate) => candidate.getAttribute("aria-label") === label);
     expect(button, `${label} command button`).toBeDefined();
     button?.click();
 

@@ -1,0 +1,1323 @@
+{
+ "schema": "jp-gate-grandfathered/1",
+ "frozenAt": "a9ff93ba59a1bd497273726575690379f463c6ce",
+ "date": "2026-10-21",
+ "rule": "화소 해시가 같고 그 해시에 어느 프로필이든 통과 영수증이 있을 때만 통과. 한 화소라도 바뀌면 새 그림 기준. 덧붙이기 금지.",
+ "decidedBy": "supervisor (user delegated object-gate decisions 2026-10-21)",
+ "entries": {
+  "asm:apartment-L-w3to6": {
+   "sha": "7fd2ef134efe1ab1240a73afdba43969680bea78d330335d9bc38ecc6d97d44c",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "apartment-L-w3to6.png"
+  },
+  "asm:apartment-L-w7to9": {
+   "sha": "4292aae6437f4dd198978477b7c84fc4cf90e49a60a24cac17aa0c9626d4e94a",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "apartment-L-w7to9.png"
+  },
+  "asm:apartment-R-w3to6": {
+   "sha": "f00b9e629df8227e4755e5c94ab113acc96c60363f9c0a59f36161bba018162a",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "apartment-R-w3to6.png"
+  },
+  "asm:apartment-R-w7to9": {
+   "sha": "aaa2e26a2cc2548b4975ed0bbb6dafba5953406ca88708df7d1613fbecadbeae",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "apartment-R-w7to9.png"
+  },
+  "asm:bento-L-w3to6": {
+   "sha": "6feb46c2d49b2d4aa12d87d5272d45961f25258a92b0e5262ed3c2ef16866287",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "bento-L-w3to6.png"
+  },
+  "asm:bento-L-w7to9": {
+   "sha": "ee1e066f41d188c79231740ecddc67ee2b720f5e5c0482ed2a12e6f141f13f9f",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "bento-L-w7to9.png"
+  },
+  "asm:bento-R-w3to6": {
+   "sha": "62bb65a2415022f144ded438c96232a1a1f6979bd9280329e23bce2870e59b34",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "bento-R-w3to6.png"
+  },
+  "asm:bento-R-w7to9": {
+   "sha": "b856a5aea5e9a998c7c9bfd63d9f7773c917e73a94326f1d28b303a59252bf90",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "bento-R-w7to9.png"
+  },
+  "asm:cafe-L-w3to6": {
+   "sha": "58558eabfad99fb5e76b767a4f7ff9332bc5067b9539bdd6cfb237c66ef0111c",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "cafe-L-w3to6.png"
+  },
+  "asm:cafe-L-w7to9": {
+   "sha": "e4f1b6748be3219c62496c46fecb662b5f0171edf5b0cf93416bc053010a8560",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "cafe-L-w7to9.png"
+  },
+  "asm:cafe-R-w3to6": {
+   "sha": "78f88325970f37f7287c20b4f366124defb8d645a26b4b6b0650aae00d9d0464",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "cafe-R-w3to6.png"
+  },
+  "asm:cafe-R-w7to9": {
+   "sha": "b9cb0df950c621f500e5ae297090f82ab12c135475e2b429b04a4eb0a3ae8aca",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "cafe-R-w7to9.png"
+  },
+  "asm:house-L-w3to6": {
+   "sha": "797a03850ed7e78aa88e3f6c46b33caca768fb2c33d94aa35ce748f964c20aa8",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "house-L-w3to6.png"
+  },
+  "asm:house-L-w7to9": {
+   "sha": "08b4ca06bc9556a074a6bbb12f5f0db9c75ce45880e38b1f82c53712a81dc0d9",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "house-L-w7to9.png"
+  },
+  "asm:house-R-w3to6": {
+   "sha": "a2e21f22a33dad6234c5652e4cd1759c3ded879fbcb12a7713a9af28a6f7236b",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "house-R-w3to6.png"
+  },
+  "asm:house-R-w7to9": {
+   "sha": "78bea7e47870deac24fe4610548d9435bb276f2863c78f98f129bb549762710b",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "house-R-w7to9.png"
+  },
+  "asm:izakaya-L-w3to6": {
+   "sha": "a212ff62ecfc0fff624382306c0c486cfad54821e0acb466c9f0d21259c697c7",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "izakaya-L-w3to6.png"
+  },
+  "asm:izakaya-L-w7to9": {
+   "sha": "31f8e1d6e2c4f2e8f05f9697f260e160889eedd1e210f41a6a8d927bd3f93ef4",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "izakaya-L-w7to9.png"
+  },
+  "asm:izakaya-R-w3to6": {
+   "sha": "b076fec31677440c371b23e5cc7075ea2c8c1e7fa95104e84015f29a428628a6",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "izakaya-R-w3to6.png"
+  },
+  "asm:izakaya-R-w7to9": {
+   "sha": "3d100840449b1f1b16848eabec00412b877afa3e84d572569845c5b72b18a6a0",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "izakaya-R-w7to9.png"
+  },
+  "asm:konbini-L-w3to6": {
+   "sha": "7d0cd86262313f3adfcef5fd0d1a8ef31980b88c85075d04d450bcab85a3bb9e",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "konbini-L-w3to6.png"
+  },
+  "asm:konbini-L-w7to9": {
+   "sha": "9457765ba5ad1fc49a1db692ab8922bd6e74d724970f3378dbcb10dad2eef94a",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "konbini-L-w7to9.png"
+  },
+  "asm:konbini-R-w3to6": {
+   "sha": "2c96f2cd34fc3aaa1abc24c3fc96a129b113eabb76f1f83d399408b14190dced",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "konbini-R-w3to6.png"
+  },
+  "asm:konbini-R-w7to9": {
+   "sha": "0154762c920f41cfb170d50fa0a9effeb0b8da4feeca55a335830e1d2ba7c074",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "konbini-R-w7to9.png"
+  },
+  "asm:machiya-L-w3to6": {
+   "sha": "7c7035616b66086e84169288e96da9b8f01c4540e9d0f5041e4197b5afd7cad5",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "machiya-L-w3to6.png"
+  },
+  "asm:machiya-L-w7to9": {
+   "sha": "962a0ebfd7ccf170e3b8bfbf5fe220db77c6189ccecdb7fbce8ef4a87d9b7ab0",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "machiya-L-w7to9.png"
+  },
+  "asm:machiya-R-w3to6": {
+   "sha": "6069398d78037c549adc49b88548969138a96fb1d3ed27104c36db1f94a1f7a2",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "machiya-R-w3to6.png"
+  },
+  "asm:machiya-R-w7to9": {
+   "sha": "bfcf560589900633c4010644cf1fcbe64e90b2e9376d0e183afd7e838cd07da7",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "machiya-R-w7to9.png"
+  },
+  "asm:office-L-w3to6": {
+   "sha": "f4b2608dc7592fb0902445b0d0c1be3cc33f4573466a0faa2c208c2f19fbce17",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "office-L-w3to6.png"
+  },
+  "asm:office-L-w7to9": {
+   "sha": "b69c723fda9c95fc4aeb147670abe221e246b476027df510941937d802f47237",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "office-L-w7to9.png"
+  },
+  "asm:office-R-w3to6": {
+   "sha": "e00463d562a392396defe79ecd254fad1280f7e3f78dc3ebf7d08b5ec18dedb5",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "office-R-w3to6.png"
+  },
+  "asm:office-R-w7to9": {
+   "sha": "bbe758fade1e39d114041ab683cf4b0e39387f0eda8040a3eb22046dcf09d623",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "office-R-w7to9.png"
+  },
+  "asm:ramen-L-w3to6": {
+   "sha": "545577b07ad39c8253ea7c193ca89a2b7792a2095d267cd77daf47ed67599e97",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "ramen-L-w3to6.png"
+  },
+  "asm:ramen-L-w7to9": {
+   "sha": "105b91a90b9d466187c0420d17a6d8be06757bb709ed14ba81627e1f2bdbd130",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "ramen-L-w7to9.png"
+  },
+  "asm:ramen-R-w3to6": {
+   "sha": "3128f6032dcc8b01373515d8bf0a06e13c75185baf34da2ccc68d1fe828409f4",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "ramen-R-w3to6.png"
+  },
+  "asm:ramen-R-w7to9": {
+   "sha": "d6c3c4182dc41aed236906fe38c45ea4fafdbd7e2ba6d9bfcf7169e5dcaf75f7",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "ramen-R-w7to9.png"
+  },
+  "asm:roof-ac_cyl": {
+   "sha": "4ff291db316a7834c4a63d56e1c01473256d4097c88f71c3d0902e1f1197a3ad",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "roof-ac_cyl.png"
+  },
+  "asm:roof-ac_tank": {
+   "sha": "d1e65587ec4d12c786dfde64c09a62ea4d94adde06aa3896b9eed3cbd77b1940",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "roof-ac_tank.png"
+  },
+  "asm:roof-hip": {
+   "sha": "38fb9a6b7e6363370a245670b16127dd51709753936f3763beb4087151ee4354",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "roof-hip.png"
+  },
+  "asm:roof-hip_slate": {
+   "sha": "8ba942434a2f7a5de0523f22571db8c735e8951d302a6ddfb1adb2e27335eb8b",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "roof-hip_slate.png"
+  },
+  "asm:roof-plain_plain": {
+   "sha": "8c0ce024ca7befcc22279647ce1e6741d6a7b2f570857dabfb682da1bc2ee072",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "roof-plain_plain.png"
+  },
+  "asm:roof-plain_tank": {
+   "sha": "f33194404591915d195877460ac9677bbd499b9b23b22aa19cb3e944a21c6350",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "roof-plain_tank.png"
+  },
+  "asm:roof-slate": {
+   "sha": "33f40c7a693343841cc87bcbc6d8193962e009467ea9a2d437b1881a789958e5",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "roof-slate.png"
+  },
+  "asm:roof-tile": {
+   "sha": "51261d637a33afd57941dc0212ee0d2250b8813b0d869056e9c73d240550ad66",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "roof-tile.png"
+  },
+  "asm:sento-L-w3to6": {
+   "sha": "7e90b09a0bec58aa7cb83f39fe5a488f9bfdbe59ab7a3a728ba983e04fe7cf3c",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "sento-L-w3to6.png"
+  },
+  "asm:sento-L-w7to9": {
+   "sha": "397fdf757eaf836d86edab5e1d6c05365e37fc670a3a735e8e3a0083333859ac",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "sento-L-w7to9.png"
+  },
+  "asm:sento-R-w3to6": {
+   "sha": "d2af0673ba4884b1673d74585a1ab0bb8e98824b50214571e452a10f7dc9f95d",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "sento-R-w3to6.png"
+  },
+  "asm:sento-R-w7to9": {
+   "sha": "5a541aa4aff3d5d40f3c9cc6c8d8768e48a16ced315334c0a0de2ded6ea2b07e",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "sento-R-w7to9.png"
+  },
+  "asm:shop-L-w3to6": {
+   "sha": "2737c7c35d65cbea4a96498980bb63126a404faa194e31ff99e9886ee4c1654d",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "shop-L-w3to6.png"
+  },
+  "asm:shop-L-w7to9": {
+   "sha": "9ff6ab9b3b480550a0a02012a25d1b2471c6678011c8c8e714ee98244be6d40e",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "shop-L-w7to9.png"
+  },
+  "asm:shop-R-w3to6": {
+   "sha": "ef6a6f685c20de0424764e5521a33a8dc8cb80e0e9d41ff443dfa95cf2b23f84",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "shop-R-w3to6.png"
+  },
+  "asm:shop-R-w7to9": {
+   "sha": "63a7f71b37e5ab991c3aeaafd7feecadf7fa3c258a33a13e6966b6611971f37e",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "shop-R-w7to9.png"
+  },
+  "hs-aed": {
+   "sha": "df81975de1448607bc00143ac645e77842a655d72aa4c22d368a94ca9aeaabeb",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-aed.png"
+  },
+  "hs-bed-headwall": {
+   "sha": "fac1b67daa7fc212579f1af9c06b88c4c5a442af5b8258b7a952e65d561b7f83",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-bed-headwall.png"
+  },
+  "hs-bedside-cabinet": {
+   "sha": "1bd78de428d8152ca4d7edfaa2ea671cc3f39b2f07b119eab6d5e2a9ae4abf59",
+   "kind": "tall_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-bedside-cabinet.png"
+  },
+  "hs-bench-row-n": {
+   "sha": "40107dbd04e73ebc140d10bad80aad66995bcb13ff987b3467268e5672d58163",
+   "kind": "seat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-bench-row-n.png"
+  },
+  "hs-bench-row-s": {
+   "sha": "287d503ee665da7c2f3e8946f82ff481ecb2cb549a3caba5c9960f665cdd0773",
+   "kind": "seat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-bench-row-s.png"
+  },
+  "hs-call-display": {
+   "sha": "5e81e53a7c8ede63f58329ad989dbf4239ef5fdb8294cc49391173e2fbb236e4",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-call-display.png"
+  },
+  "hs-chart-cart": {
+   "sha": "00b45cbbfcd3e89d28b4e039a191aefdad7976a8882365015281cd8bac25e8dd",
+   "kind": "low_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-chart-cart.png"
+  },
+  "hs-dispense-table": {
+   "sha": "2a54656914af1a7ecca5e2b37c3842711f1b224245bf7c186c9a666cbad9c640",
+   "kind": "low_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-dispense-table.png"
+  },
+  "hs-drug-drawers": {
+   "sha": "858bb569964a57539ca4df19a2ce426aec944e9f2475757a7e85c927ed600b57",
+   "kind": "tall_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-drug-drawers.png"
+  },
+  "hs-exam-stool": {
+   "sha": "e97237e575dcf6d2221cb0d2275275a6ad086e759ae3c7911de820464d37b67d",
+   "kind": "seat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-exam-stool.png"
+  },
+  "hs-floor-sheet": {
+   "sha": "06337b9bb677b0f4d3634dc8fb4c16470dad8e04a6223e4195ff386b37c2b81a",
+   "kind": "terrain",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-floor-sheet.png"
+  },
+  "hs-floor-ward": {
+   "sha": "8a5531a9b1ead4e1e40a76442beb9fc09b14737fa77528581a0a909088c1f818",
+   "kind": "terrain",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-floor-ward.png"
+  },
+  "hs-front-counter": {
+   "sha": "1dfdd4d7ed947398a4e6518d256824bd5c5d08b7c0078bebea538ff36279e778",
+   "kind": "low_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-front-counter.png"
+  },
+  "hs-instrument-cart": {
+   "sha": "a8489677952f06cbe2dffd4b6ba01864ac9566450171eabb9cb1e0db8aeb204f",
+   "kind": "low_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-instrument-cart.png"
+  },
+  "hs-iv-stand": {
+   "sha": "8e9ab5baf7f2ff4a9566f2f06c4d518ca0f54948dbe1b9e073f2e4f29fc34082",
+   "kind": "column",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-iv-stand.png"
+  },
+  "hs-kids-mat": {
+   "sha": "5a8d58c30f2640fba936ef15485db3f085170486cd5c3fca8304fddd4a499147",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-kids-mat.png"
+  },
+  "hs-med-cart": {
+   "sha": "7d77559fb48fe9191b9fbd646bf3e279c19e5535cf0e902bfba20bccaf138ab7",
+   "kind": "box",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-med-cart.png"
+  },
+  "hs-nurse-counter": {
+   "sha": "528ccee04c21f871056027169f8bf53b56efc5835d918e0bdc1284f012a5438c",
+   "kind": "low_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-nurse-counter.png"
+  },
+  "hs-overbed-table": {
+   "sha": "757174f63de26734f4c53a937d4ee6c913452f26c4b40fe861ba024bf922ffc7",
+   "kind": "low_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-overbed-table.png"
+  },
+  "hs-patient-locker": {
+   "sha": "a4c0c7ea542c4d1ce425e910a32c3a0fe316cebabfcafff7e28000d22d18e1b5",
+   "kind": "tall_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-patient-locker.png"
+  },
+  "hs-pickup-window": {
+   "sha": "0ac1e56265e66e61ca727187c6638f7379241a14e0eda500f99f92fcc2918b6d",
+   "kind": "low_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-pickup-window.png"
+  },
+  "hs-sanitizer-stand": {
+   "sha": "5514429b82a98ae372c12fa82bea10cfea22b48a796a74eb9171eff9e4d2fcee",
+   "kind": "column",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-sanitizer-stand.png"
+  },
+  "hs-sharps-bin": {
+   "sha": "4eeca44df7da0e73cbb07c9331209fcbbddebd17bf4592591b1fec4dcb329a97",
+   "kind": "box",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-sharps-bin.png"
+  },
+  "hs-stretcher": {
+   "sha": "05c59c8026ef6948fdb211b2862a999f32fc2d9ef5d000332cb288084696f2d5",
+   "kind": "low_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-stretcher.png"
+  },
+  "hs-toy-shelf": {
+   "sha": "aeb17039ec9d092fbababe07c5176860987017558d13f0019b453da42fb452db",
+   "kind": "low_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-toy-shelf.png"
+  },
+  "hs-tv-wall": {
+   "sha": "f9f504fbd999a91dd7e5324fd0729c33b6add9d10c3d7d151c4634df7f408b5f",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-tv-wall.png"
+  },
+  "hs-ultrasound": {
+   "sha": "3280245af3666ed062f8c4bb2ad039cb038abbb012b951b7208c1ac4b3c28896",
+   "kind": "tall_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-ultrasound.png"
+  },
+  "hs-vitals-monitor": {
+   "sha": "debcfb2ebfa9ffcfafddf0ca4b9f10b7df4bc9696054c6cf3ed4f55c5688a464",
+   "kind": "column",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-vitals-monitor.png"
+  },
+  "hs-wall": {
+   "sha": "6609a350e7aa01c196d7aaabd7c6fd284a3f2a5affdbb936df8265fcf8d5cb9e",
+   "kind": "terrain",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-wall.png"
+  },
+  "hs-wall-room": {
+   "sha": "42bbf80ae3cc1cb89951e5e9ca3721b391b5b39f62ce8659edcae23a2f9443e9",
+   "kind": "terrain",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-wall-room.png"
+  },
+  "hs-ward-bed": {
+   "sha": "aa1f0b99e084049cb5ad804b9fcaca439d86be127e8acd89f5207e627171c889",
+   "kind": "low_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-ward-bed.png"
+  },
+  "hs-wheelchair": {
+   "sha": "61b18c634ad998ab0893a7513e400f27c788690543f949f29f6cf43e8f3d5bef",
+   "kind": "seat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-wheelchair.png"
+  },
+  "hs-xray-viewer": {
+   "sha": "29661bf740ba0bd71f91eee4ce9459c6220e6178c5cf92221471a186852faff2",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_hospital/_gate/hs-xray-viewer.png"
+  },
+  "jp-ac-unit": {
+   "sha": "54f3384290641b195b535e47bae1bce972d18e8af966298bf3d8393c66c7f58d",
+   "kind": "box",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-ac-unit.png"
+  },
+  "jp-bank-lip": {
+   "sha": "ed72ab0521003ce7856f467fd952c4f4c05bcb8575fbe9593472b71652676f19",
+   "kind": "terrain",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-bank-lip.png"
+  },
+  "jp-bank-mid": {
+   "sha": "5c0da295e36abc83b4e1e11061ef7d7a9471b1fa50e25a8f115b4f12602be04d",
+   "kind": "terrain",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-bank-mid.png"
+  },
+  "jp-bank-slope": {
+   "sha": "e5293febbf42256d77bde2880232ddb5797c85218469a319065c14dec98e7e20",
+   "kind": "terrain",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-bank-slope.png"
+  },
+  "jp-bridge-abut": {
+   "sha": "c12a218e78a9a7f5f1534a17506c5cbc2bdc534200240acddbb098820d0f9f57",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-bridge-abut.png"
+  },
+  "jp-bridge-joint": {
+   "sha": "c3f2c1703ea3b4d299fddf687d3b77fe7afe70c2fd73175a47eb5b5854b0ff1c",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-bridge-joint.png"
+  },
+  "jp-bridge-lip": {
+   "sha": "b1b3e5f60a1e43b38e562e9d67d9fffc32d160d842571fabd05f5fa9df210fce",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-bridge-lip.png"
+  },
+  "jp-bridge-pier": {
+   "sha": "22ea1793a232bf45e7b8a06648c0de0b3630a3d63e3bb2023d91622c4a3be567",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-bridge-pier.png"
+  },
+  "jp-bridge-plank": {
+   "sha": "c7f0329cd669f3f36069aef2aaf6fff7b3f149b1cf599e01dd8e46ca1f33a29b",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-bridge-plank.png"
+  },
+  "jp-bridge-post": {
+   "sha": "adb1ab8186f910ccfc1e2bf0ef40c6efdcd356cdc8b9db599a0567a39127f9a8",
+   "kind": "column",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-bridge-post.png"
+  },
+  "jp-bridge-rail-v": {
+   "sha": "2796495504766537110c602f43c2bb984bde0d806d132dd55e730e8b8c76e0ec",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-bridge-rail-v.png"
+  },
+  "jp-bus-stop": {
+   "sha": "8a6cd019e4464926b8f279614a40d20d48549146e3c5c21816ad4d57f660d723",
+   "kind": "column",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-bus-stop.png"
+  },
+  "jp-carport": {
+   "sha": "1f7597bb1780da82b5c563c0d6afc40bba8e7316fe355b6d10af0fedda71bad1",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-carport.png"
+  },
+  "jp-crosswalk-v": {
+   "sha": "900810eb1cc1a03d838ca8b834c78f8ae4b0dc03238857ecf9f9b7849b220d8e",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-crosswalk-v.png"
+  },
+  "jp-foot-shadow": {
+   "sha": "952d3a4ed53937027b0587b5a79ca00fccccf221f6e3f16f563261bce6faf03f",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-foot-shadow.png"
+  },
+  "jp-gas-canopy": {
+   "sha": "ed50f871d62df6fbeab32d7e87b936d4a1853e0c091832784634b5713cd3f8c3",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-gas-canopy.png"
+  },
+  "jp-gate": {
+   "sha": "e3140e1b37619e625d8d127de3f5d29a72e37e78edb986a10182f6b42d9f2814",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-gate.png"
+  },
+  "jp-gatepost": {
+   "sha": "f47affcbab602b4ea3b1cd1eeae3cbc610a765f59b5f101a292737cfd62d5a68",
+   "kind": "column",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-gatepost.png"
+  },
+  "jp-glory": {
+   "sha": "ce4ad85a3b7ad28d9e091bfe1e0958d41d944b5726b026b8dc393d1194951bb1",
+   "kind": "organic",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-glory.png"
+  },
+  "jp-gomi-box": {
+   "sha": "0c6da520bbb4158b94d0a6d696a4f1ebd646841ad482ca5aea8e0ee630d21b91",
+   "kind": "box",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-gomi-box.png"
+  },
+  "jp-hydrant-sign": {
+   "sha": "6facb20ecdcd634173c0cb52a2e9fb93fae0e23087ed814e7934c4a1dbe659cd",
+   "kind": "column",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-hydrant-sign.png"
+  },
+  "jp-ivy": {
+   "sha": "af4d1d877de6e421ede6d0e61142b140cc4dc84a404424a6c432c83602bde5bd",
+   "kind": "organic",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-ivy.png"
+  },
+  "jp-jizo": {
+   "sha": "fb132b294433659781642e630256c04304f70298f1e24e0d4163b46a3aebb32b",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-jizo.png"
+  },
+  "jp-keijiban": {
+   "sha": "38f7b0f2d27573f2e1b83ac42d0c1516f4e0162f79b7f01c373081316f235dcd",
+   "kind": "frame",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-keijiban.png"
+  },
+  "jp-lot-bay": {
+   "sha": "a12227816b6d7af1bb3565deda36f6ee08875749217263028334193350cb0870",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-lot-bay.png"
+  },
+  "jp-lot-board": {
+   "sha": "3318b80067928d1ffaf6930f0aa1a6676f1c7888b8c47160690c4ff0ee4aef3d",
+   "kind": "column",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-lot-board.png"
+  },
+  "jp-lot-cabin": {
+   "sha": "f99d9f3135bd19ac01ca999e306cfe1c23de6176fd64eaf13cc2831fcc1668ca",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-lot-cabin.png"
+  },
+  "jp-lot-clock": {
+   "sha": "2e82f139034fe46e5ad1ae03e29d0c8cc854e0edb9f698240c7d70abc29e3d2c",
+   "kind": "column",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-lot-clock.png"
+  },
+  "jp-lot-fountain": {
+   "sha": "06f0d628bd9d87fa474e62489d91adaf9d2b90603701c342d3a8ac9afd442976",
+   "kind": "container",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-lot-fountain.png"
+  },
+  "jp-lot-kiosk": {
+   "sha": "0b59fcade4b95fc6596cf15a4eba510b1cb5b154680b76bde43e06ed37b76cc5",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-lot-kiosk.png"
+  },
+  "jp-lot-planter": {
+   "sha": "d0922f52f7493d87f5a786abdf81c94efc6d18731ae43f85a1fd44665d6c4a35",
+   "kind": "container",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-lot-planter.png"
+  },
+  "jp-lot-sandbox": {
+   "sha": "d4cef93c3d3d2b9d238934a47f16ac789ec6d5bce073263a55787703621f1bde",
+   "kind": "container",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-lot-sandbox.png"
+  },
+  "jp-lot-slide": {
+   "sha": "786290835cf4b546ea945b530ad95fded878d650234b6762489763a30458918f",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-lot-slide.png"
+  },
+  "jp-lot-spring": {
+   "sha": "67a77e9dbf0e97bafa823c62e19602e4e449f8c47d64902a5b442c5d3e1ec825",
+   "kind": "figure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-lot-spring.png"
+  },
+  "jp-lot-veg": {
+   "sha": "413e86ca25865a43b33debf65992b8320c74164010e24930e3c4d3fa3cdcb26f",
+   "kind": "organic",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-lot-veg.png"
+  },
+  "jp-mark-30": {
+   "sha": "8f3fcc909f8d90c995f2fb75072671b727c9aa2bb70b7d035af31d378ca28db6",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-30.png"
+  },
+  "jp-mark-30-e": {
+   "sha": "4b2cd47a26f21a0bd056a6dd2c73a676e0cb7500e4ab373259316315a404dc03",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-30-e.png"
+  },
+  "jp-mark-30-w": {
+   "sha": "26b3f79642f7bb9da21e328331920c1f0cfeaee232075830056555cefd9c7457",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-30-w.png"
+  },
+  "jp-mark-center-v": {
+   "sha": "7aacf35cc5b553d20f9cbcea358e62d610b266e2ebaccc065caaa1e75c0ec3a6",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-center-v.png"
+  },
+  "jp-mark-center-v-l": {
+   "sha": "8075ef340093daa1be5dfb6072f10afaa494572b1c773bfdce848c50e7b0e2f1",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-center-v-l.png"
+  },
+  "jp-mark-edge-e": {
+   "sha": "dedb38cace70c46131148cb5cc4d68673f572018459f1491987c0ab1912ec0e8",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-edge-e.png"
+  },
+  "jp-mark-edge-e-grate": {
+   "sha": "1b3a9b96700a21c33b27c42b992135e32ddc4f661d55dc02f4764700e4e35866",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-edge-e-grate.png"
+  },
+  "jp-mark-edge-n": {
+   "sha": "f9056402b2e2d80eca4a11c0e8d38f7638c0d4ab23bb2af6ef5fa006c9801dc2",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-edge-n.png"
+  },
+  "jp-mark-edge-n-grate": {
+   "sha": "595905eb5a5a36f82ffa2c749d3f5a5587d476c47297ae763420b5c80b6d15c1",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-edge-n-grate.png"
+  },
+  "jp-mark-edge-s": {
+   "sha": "290240025e705ea0ed90310311d97092858de02f0fbe2e51fb2f58272172fd0c",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-edge-s.png"
+  },
+  "jp-mark-edge-s-grate": {
+   "sha": "b6543f4719138888616ca31c18cc796f82fcc598e8db3ad0f4b836b56e407b2c",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-edge-s-grate.png"
+  },
+  "jp-mark-edge-w": {
+   "sha": "7750abab2210a9aefc00dfdd9157cd7edf810de359dea4473657ad51e9be6770",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-edge-w.png"
+  },
+  "jp-mark-edge-w-grate": {
+   "sha": "def6fb4ae367b41f9506c40b7bd3ea3cad3bd8941e990333945df0e08f683ea3",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-edge-w-grate.png"
+  },
+  "jp-mark-line-e": {
+   "sha": "8d8cfacafb82d3a6e478c2baef55dc0e485dc0d76747d51da7e5e134d31be42a",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-line-e.png"
+  },
+  "jp-mark-line-n": {
+   "sha": "baa695e7cd48318157ad85d783fb0af52769d6ae453854d8de85e0c1dad5d3a1",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-line-n.png"
+  },
+  "jp-mark-line-s": {
+   "sha": "baa695e7cd48318157ad85d783fb0af52769d6ae453854d8de85e0c1dad5d3a1",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-line-s.png"
+  },
+  "jp-mark-line-w": {
+   "sha": "8d8cfacafb82d3a6e478c2baef55dc0e485dc0d76747d51da7e5e134d31be42a",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-line-w.png"
+  },
+  "jp-mark-lockplate": {
+   "sha": "03899bd886a677c6c67b5e1ffaa1f6caa0d10785deb7a4f60022f6af67f8e7fa",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mark-lockplate.png"
+  },
+  "jp-mirror2": {
+   "sha": "1bb0f0cacf459293f27bbf28a93e49a6c05c7a598be1023b8a66e52c108fe239",
+   "kind": "column",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-mirror2.png"
+  },
+  "jp-monohoshi": {
+   "sha": "c64d6f4873d3a0a109ad058fec150209e98ce6478b0f1d7cf3bf827661044413",
+   "kind": "frame",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-monohoshi.png"
+  },
+  "jp-pave-a": {
+   "sha": "971c8388716c2e934d5b8157da3d219848b8fe42dc535c1de2197528daeeaaf6",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-pave-a.png"
+  },
+  "jp-pave-b": {
+   "sha": "717bf55870519e9817b6cbf4af7b53ce5f9eacac0d96a38625b845ff487f826e",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-pave-b.png"
+  },
+  "jp-pave-manhole": {
+   "sha": "8a3121712e132ed1e8ab20bf871e71094788fcb9550bca4f92657425068a196b",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-pave-manhole.png"
+  },
+  "jp-platform-edge": {
+   "sha": "e0c072e9da41c11da64e7ae0bdc2975fc26fcc4f442bba395c4da6431c218b72",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-platform-edge.png"
+  },
+  "jp-pole": {
+   "sha": "dbbe6e3f4eab658c16cc330cadf2f1eda445688e6b10df2c03e65c7a89b967a7",
+   "kind": "column",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-pole.png"
+  },
+  "jp-pole-wood": {
+   "sha": "bf6b63de0e82b7304cc098c4f2326c71ded21a296768df83c04efb5a761f7afa",
+   "kind": "column",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-pole-wood.png"
+  },
+  "jp-pots": {
+   "sha": "b52176062e500176428db2882556f52fa07feb112e882fe1ab02155446fa89e2",
+   "kind": "container",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-pots.png"
+  },
+  "jp-propane": {
+   "sha": "b8cd86cf002d3f008729a47fcc9e0e3dd27f213c54b61c7e52fad9a323f7bb45",
+   "kind": "round_body",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-propane.png"
+  },
+  "jp-rail-h": {
+   "sha": "406b340c917ace1dea155a41b29deaa78aec8ffa424d76c9d001baa45c340e96",
+   "kind": "terrain",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-rail-h.png"
+  },
+  "jp-rail-verge": {
+   "sha": "a64bcc2e4daadd30601e8914855f89c0a3e74256385d39384a04bb8f2d6eeaea",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-rail-verge.png"
+  },
+  "jp-rail-wire": {
+   "sha": "536b28755d54f0a2ed02db4bd6c010085d22c6f0f6edddf6feb7bdb7b645b8be",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-rail-wire.png"
+  },
+  "jp-rail-xing": {
+   "sha": "e3e87d6def8c29eb82940881ca6882177966de71975c656d20fdf52b8cf22d32",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-rail-xing.png"
+  },
+  "jp-rail-xing-bars": {
+   "sha": "d6739f39ee9d3add6487241511b67a2581dabbc46e15ee2b24f80123b96a7c55",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-rail-xing-bars.png"
+  },
+  "jp-river-wall": {
+   "sha": "fd4e4e0d4f8d8f8cc8222395046f1deccbc95cb49ca7265e2bbf0d3f423d720c",
+   "kind": "terrain",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-river-wall.png"
+  },
+  "jp-roof-charcoal": {
+   "sha": "2516d6cf324170350a4ffc641e874974c617f4e5c1fe5bb8ad359d9823d388eb",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-roof-charcoal.png"
+  },
+  "jp-roof-green": {
+   "sha": "6944f4331ee620de5b91afcfd218519d73fa67bd6e9f492659a26594e7123f7d",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-roof-green.png"
+  },
+  "jp-roof-navy": {
+   "sha": "df33d8f7868a87511d95df897ef1e254571fbcfdd6eec330aac6e922b9cd095e",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-roof-navy.png"
+  },
+  "jp-roof-orange": {
+   "sha": "bd5f2b92296d2b768081077d3014f1f04d932049a0c4711d60aa8ccdaf55e729",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-roof-orange.png"
+  },
+  "jp-sat-dish": {
+   "sha": "8a113b9ca07a859cd2e3c438290d6f7bea873990aadf02311f94451ea1b172fc",
+   "kind": "other",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-sat-dish.png"
+  },
+  "jp-school-gate": {
+   "sha": "a0095e18f706e381b99108b2d04197305431dfaf5736f527ec1f4c5a1839b108",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-school-gate.png"
+  },
+  "jp-torii": {
+   "sha": "b782947af8c096bd3296d0da57c523b31e2b77ef2fddf6c653446af46a052548",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-torii.png"
+  },
+  "jp-train-car-a": {
+   "sha": "d10a37adddf8d74423538fab8ae8ae638ed22b8bc03641fe5a8ea09ff49d0405",
+   "kind": "box",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-train-car-a.png"
+  },
+  "jp-train-car-b": {
+   "sha": "e8b0c8591a638e3954bca6fc5adfb2fb8e95e3246bbc4369f1fb1013664da150",
+   "kind": "box",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-train-car-b.png"
+  },
+  "jp-via-pier": {
+   "sha": "143961941d7a8b4c50aab2ce00a4f253275f28be9bf06bc110d8dbcbe43ec9c9",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-via-pier.png"
+  },
+  "jp-via-span": {
+   "sha": "72fd29ecffbca85545c48c03a20cbd8ddc643466df34b5df53cfec381c3194fa",
+   "kind": "structure",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-via-span.png"
+  },
+  "jp-wall-drain": {
+   "sha": "72e3ee506291ca214320189ea7228af23c9db4fd19345da761d640d20f12beff",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wall-drain.png"
+  },
+  "jp-water-dark": {
+   "sha": "d10c7a3261fd790048ecfd6af4d6dbe06e6eac286e4b851097073e20d21b04d6",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-water-dark.png"
+  },
+  "jp-water-dark-r": {
+   "sha": "f73cb517ad0f414d2cafd3f2bc270e81ab12e4b03154f4b2ef7219340939e39d",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-water-dark-r.png"
+  },
+  "jp-water-glint": {
+   "sha": "f33e3cd2d4dfd84a2a746302e08eaded86099e5a6f6230997160756288e3aed2",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-water-glint.png"
+  },
+  "jp-water-rim-s": {
+   "sha": "430bc1e831de79c09349526195216d360e5d40741fdca975ab01393966e34154",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-water-rim-s.png"
+  },
+  "jp-water-shade": {
+   "sha": "233ce3d5411221a17a0e922e97643d5b0d7628e41a47ed09877a0c924c5edf33",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-water-shade.png"
+  },
+  "jp-water-streak": {
+   "sha": "20964e23bb95d48b9d44f80fb455ab904a7df607f47e2618eb448db4a482016b",
+   "kind": "flat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-water-streak.png"
+  },
+  "jp-water-tank": {
+   "sha": "a3f7dd903b80d9d4a01deec8dcfcda87213b6d61581a3a81015d73db11b908f4",
+   "kind": "round_body",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-water-tank.png"
+  },
+  "jp-wire-10": {
+   "sha": "900565073e5ac19d0951767e079fa0c5dba679a084d023f22f50fef72915a7a2",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-10.png"
+  },
+  "jp-wire-11": {
+   "sha": "e164430cd6cc7ac2ad4162c68aed52c59926f9838fcaafa3a75a5e68ea800314",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-11.png"
+  },
+  "jp-wire-12": {
+   "sha": "31355b15a81898fd2b013b75d192bc035e5edf76854145820d1980965bd5f5c0",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-12.png"
+  },
+  "jp-wire-13": {
+   "sha": "1c9f04629c47d75881135d146b4c3f08801254f74b588dd11e9a9b4ec32c4277",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-13.png"
+  },
+  "jp-wire-14": {
+   "sha": "200c231c1e40a4322da106b575d68ec529297634d967f966c66e6516b066138c",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-14.png"
+  },
+  "jp-wire-15": {
+   "sha": "3c4977a7b7cceaa68fd32d9d9104a3ca649da12d78ce87601ee05b33e740afd8",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-15.png"
+  },
+  "jp-wire-16": {
+   "sha": "d5232ed2887957100b0c4c33860ecaa450ae40dfc9766a319993e13799506f42",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-16.png"
+  },
+  "jp-wire-17": {
+   "sha": "19c003a339f8ee9f8db493c1f089ee38ac37588c7c6bf47c9bbcc3f541c424a1",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-17.png"
+  },
+  "jp-wire-18": {
+   "sha": "fc92bb2c216853cb6ae5608b8a712e83a7ae3fbcf3de343117ccf7ac939eda2a",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-18.png"
+  },
+  "jp-wire-19": {
+   "sha": "9a4ef07a3e4a41b3c7c438a0e9fb0624642720c393bedd9f7d73f4d7d9fe3180",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-19.png"
+  },
+  "jp-wire-20": {
+   "sha": "af573ddeb77168715cf4ae054fa57d5cfddc52e21e748632f78165d65bffc7cd",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-20.png"
+  },
+  "jp-wire-5": {
+   "sha": "934a9c14aafafb91b9f0287933b6d334c3fdf4c5d76db1e25843716a9d9d6939",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-5.png"
+  },
+  "jp-wire-6": {
+   "sha": "de936661e3cc15b444ff80d03f95937a3254e4ae8d6a61ef9109cac95d5ddb56",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-6.png"
+  },
+  "jp-wire-7": {
+   "sha": "a518a12de6f723ac8b880c034799d14442a4fdf52b46a2faa898be85025fd652",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-7.png"
+  },
+  "jp-wire-8": {
+   "sha": "a5dd388565bfecea1c51d5dffed66561d756e6626198ede5463d5bffe4cb7f32",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-8.png"
+  },
+  "jp-wire-9": {
+   "sha": "473a810201f07ada77fdfa407d25faebaddaf9c27ceadbd6e7d99f3a96090694",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-9.png"
+  },
+  "jp-wire-v10": {
+   "sha": "9fec27f7a33bdb37432ec448b4bac2ee4dac6298e0eaea1e11fe428944040dff",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-v10.png"
+  },
+  "jp-wire-v6": {
+   "sha": "b21f9058194b17c0cf584f34339db6e0ead6c7fbf111ff1e9d9eb0fc0e7e06b5",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-v6.png"
+  },
+  "jp-wire-v8": {
+   "sha": "0931b76a2fa8fdcd4f390ffd0316919ff6a32abcc94a72f7dd971ac055260ee9",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/street_hand/_gate/jp-wire-v8.png"
+  },
+  "ox-bar-stool": {
+   "sha": "8ece9657134e70af99066e7346c918311941f7b61458d35b07afb63fe5f29ff7",
+   "kind": "seat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_office2/_gate/ox-bar-stool.png"
+  },
+  "ox-bench-desk": {
+   "sha": "f1506863da1c3eb0c51b60af37c2fa68e722767e7e319486de2d16deff729985",
+   "kind": "low_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_office2/_gate/ox-bench-desk.png"
+  },
+  "ox-coffee-counter": {
+   "sha": "cf40564ef713236f9d7afeaf622ae79131cdb6069d70403ab706e148976e69d8",
+   "kind": "low_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_office2/_gate/ox-coffee-counter.png"
+  },
+  "ox-desk-wagon": {
+   "sha": "883680f9b9039a391cce68f5ecc963c4c0d1af422553d979dacc55c0f891fc79",
+   "kind": "box",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_office2/_gate/ox-desk-wagon.png"
+  },
+  "ox-lounge-sofa": {
+   "sha": "8c5da20750602818f9d8bd9eeb521ab339eea3e20726761899dc2f0516f21e80",
+   "kind": "seat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_office2/_gate/ox-lounge-sofa.png"
+  },
+  "ox-planter-box": {
+   "sha": "6a8046f285514840329c917924b659d528017a5276106a843450d5940820548f",
+   "kind": "container",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_office2/_gate/ox-planter-box.png"
+  },
+  "ox-projector-screen": {
+   "sha": "09273648715cae64ad6acf245bf09c385c8c65e1f5366e68546af501778fd8db",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_office2/_gate/ox-projector-screen.png"
+  },
+  "ox-security-desk": {
+   "sha": "b29cd66af7534bec2da9da58c50d718b38b518c2bd6458cfa368c0c74b69560a",
+   "kind": "low_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_office2/_gate/ox-security-desk.png"
+  },
+  "ox-shredder": {
+   "sha": "d620b1a2422a465655d1821a5f101aab5568fe1643996cc5c722feb3787db440",
+   "kind": "box",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_office2/_gate/ox-shredder.png"
+  },
+  "ox-standing-table": {
+   "sha": "c38a4c399610d007fb48cc697a67937615ac3be27e5e5644f52b52506e6a21d2",
+   "kind": "low_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_office2/_gate/ox-standing-table.png"
+  },
+  "ox-trash-column": {
+   "sha": "b151185a0d7c2a117d35bbd82e15f0957098af15bf677cd7bc022e1c81b78624",
+   "kind": "round_body",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_office2/_gate/ox-trash-column.png"
+  },
+  "ox-water-boiler": {
+   "sha": "6a510966e3a87b268c00fba9d5adfdbdd377af8debe6bc9aa2baa1f55bc6a478",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_office2/_gate/ox-water-boiler.png"
+  },
+  "ox-whiteboard-wall": {
+   "sha": "2db9e7bf341263cf54333dafff17312dce821baf787d4d5dc1d595b756c6ea9f",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_office2/_gate/ox-whiteboard-wall.png"
+  },
+  "sx-art-display": {
+   "sha": "83b8c71b4be9e403f77a3512e5f7a8d046c5f40e0aa406f6309a14ce405c399c",
+   "kind": "low_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_school2/_gate/sx-art-display.png"
+  },
+  "sx-class-plate": {
+   "sha": "1615e5b309600e0c668a17613298ab78ccc6be3cfc52345a29d4beb43d744112",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_school2/_gate/sx-class-plate.png"
+  },
+  "sx-drum-kit": {
+   "sha": "21b0daaa5d253cf723fffd8e8b41dc287863bf2f7e979a273058717859ebdd9c",
+   "kind": "round_body",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_school2/_gate/sx-drum-kit.png"
+  },
+  "sx-extinguisher": {
+   "sha": "1b64f1482f8fd8ffef954f0d859e4ed2d8aa4292a0893aa1db5f7132ddb0b736",
+   "kind": "round_body",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_school2/_gate/sx-extinguisher.png"
+  },
+  "sx-hall-bench": {
+   "sha": "07246a12da233222b0e97bb6bbec565616eb1cc10c8588442bae8258ba9ff122",
+   "kind": "seat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_school2/_gate/sx-hall-bench.png"
+  },
+  "sx-hydrant-box": {
+   "sha": "31f122d3ac3f45fe2c43ee06bc6ff1b2ecaaa77ecfef478af8d0e3005848cb18",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_school2/_gate/sx-hydrant-box.png"
+  },
+  "sx-mop-bucket": {
+   "sha": "71af57cee61e23bde9a5a274a17068a46532fbe10b30acba0e9218db4d21f10c",
+   "kind": "container",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_school2/_gate/sx-mop-bucket.png"
+  },
+  "sx-pa-speaker": {
+   "sha": "00c2a2de45a4cc83b28a6bfe02b128130aa3b7f10ab95624f1c0ab29587e21b5",
+   "kind": "wall_mounted",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_school2/_gate/sx-pa-speaker.png"
+  },
+  "sx-roof-bench": {
+   "sha": "be9faf2721ec8227e5b28486383792cc8de84674d59d9b4eabd1ea952d21c2cd",
+   "kind": "seat",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_school2/_gate/sx-roof-bench.png"
+  },
+  "sx-timpani": {
+   "sha": "b5940ff00367dbb4425d94e525b0cb4ca17abcbe2992f05baf019ec3f1e5c16d",
+   "kind": "round_body",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_school2/_gate/sx-timpani.png"
+  },
+  "sx-trophy-case": {
+   "sha": "5baa58320f3ee4eaf4e5e2007006d433a54cb5be89a697901b1a45c0dfcfe84a",
+   "kind": "tall_furniture",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_school2/_gate/sx-trophy-case.png"
+  },
+  "sx-umbrella-rack": {
+   "sha": "f5c0fffb3e97b00eb2011f6f430e2d5b4e50fa89c83676c1103b825c2d6cf3c7",
+   "kind": "frame",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_school2/_gate/sx-umbrella-rack.png"
+  },
+  "sx-xylophone": {
+   "sha": "837d098110b0a388208db0ba39ca749dfeb4baa0b80234acc46b6af29e5c8217",
+   "kind": "frame",
+   "profile": "ca6aaa9c55194dc5",
+   "path": "tiledata/jp-city/blocks/interior_school2/_gate/sx-xylophone.png"
+  }
+ },
+ "notFrozen": {
+  "asm:roof-ac_plain": "영수증 불합격(ca6aaa9c55194dc5)",
+  "asm:roof-stair_tank": "영수증 불합격(ca6aaa9c55194dc5)",
+  "room:hs-door-sliding__hospital-1f_10_10": "그림 파일 없음",
+  "room:hs-door-sliding__hospital-1f_4_10": "그림 파일 없음"
+ }
+}

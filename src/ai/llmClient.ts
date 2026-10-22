@@ -22,6 +22,7 @@ import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, RECOMMENDED_IMAGE_MODEL
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import { getKnownOpenAiCompatEndpoint } from "@/ai/openAiCompat";
 import { companionTokenHeaders } from "@/ai/companionToken";
+import { describeCompanionFailure, fetchCompanion } from "@/ai/companionConnection";
 
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
 export interface ToolCall { id: string; type: "function"; function: { name: string; arguments: string } }
@@ -1097,12 +1098,14 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest, captureEpo
     const onCallerAbort = () => controller.abort();
     req.signal?.addEventListener("abort", onCallerAbort, { once: true });
     try {
-      response = await fetch(endpoint(config), {
+      const init: RequestInit = {
         method: "POST",
         headers: headers(config),
         body: requestBody(config, req, stream, captureEpoch),
         signal: controller.signal,
-      });
+      };
+      // 동반 서비스는 한 입구로 — 서버 재시작 뒤 옛 토큰(403)을 한 번 다시 맺어 고친다.
+      response = usesOhMyPiCompanion(config) ? await fetchCompanion(endpoint(config), init) : await fetch(endpoint(config), init);
     } finally {
       clearTimeout(timeoutTimer);
       req.signal?.removeEventListener("abort", onCallerAbort);
@@ -1128,11 +1131,16 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest, captureEpo
     } catch {
       /* ignore */
     }
+    // 동반 서비스의 401/403/404 는 연결 문제다 — 알림과 같은 한국어 문장(경로·「다시 연결」)으로 보인다.
+    let detail = body;
+    try { const parsed = JSON.parse(body) as { error?: unknown }; if (typeof parsed?.error === "string") detail = parsed.error; } catch { /* 평문 */ }
+    const message = (usesOhMyPiCompanion(config) ? describeCompanionFailure(response, "/v1/chat/completions", detail.trim().slice(0, 160)) : null)
+      ?? humanizeLlmStatus(response.status, body, config.authMode);
     // 429(사용량 제한)는 연결 문제 아님 — 칩까지 붉히지 않는다.
     if (response.status !== 429) {
-      reportTransportHealth(false, response.status, humanizeLlmStatus(response.status, body, config.authMode));
+      reportTransportHealth(false, response.status, message);
     }
-    throw new LlmError(humanizeLlmStatus(response.status, body, config.authMode), response.status);
+    throw new LlmError(message, response.status);
   }
   reportTransportHealth(true, response.status);
 

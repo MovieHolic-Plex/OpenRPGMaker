@@ -13,3 +13,24 @@
 .ai-store-facts dd { margin: 0; color: var(--text-1); overflow-wrap: anywhere; }
 .ai-store-agree { display: flex; align-items: flex-start; gap: 8px; margin: 4px 0 0; font-size: 12px; cursor: pointer; }
 .ai-store-agree input { margin-top: 3px; accent-color: var(--choice-accent); }
+/* 없는 기물 그리기 카드(aiObjectGenCard.ts) — 후보 그림 격자. */
+.ai-objectgen-candidates { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 8px; margin: 0 0 6px; }
+.ai-objectgen-candidate { display: grid; justify-items: center; gap: 4px; padding: 8px; border: 1px solid var(--border-default); border-radius: 10px; background: var(--bg-inset); }
+.ai-objectgen-candidate.is-pass { border-color: var(--choice-accent); }
+.ai-objectgen-candidate img { max-width: 100%; height: 96px; object-fit: contain; image-rendering: pixelated; border-radius: 6px; }
+.ai-objectgen-candidate strong { color: var(--text-1); font-size: 12px; }
+.ai-objectgen-candidate small { color: var(--text-3); font-size: 11px; text-align: center; overflow-wrap: anywhere; }
+.ai-objectgen-candidate button { width: 100%; }
+.ai-objectgen-placeholder { display: grid; place-items: center; width: 96px; height: 96px; border: 1px dashed var(--border-default); border-radius: 6px; color: var(--text-3); font-size: 11px; }
+.ai-objectgen-auto { margin: 2px 0 6px; }
+/* 3/4 관문 조언 배지(editor/workshop/gateBadge.ts) — 조수 「없는 기물」 카드와 공방 판 화면이 같이 쓴다. 참고용이라 넣기 단추를 막지 않는다. */
+.ws-gate-badge { display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 600; line-height: 18px; border: 1px solid transparent; white-space: nowrap; }
+.ws-gate-badge.is-pass { color: var(--success); background: var(--success-muted); border-color: var(--success); }
+.ws-gate-badge.is-refer { color: var(--warning); background: var(--warning-muted); border-color: var(--warning); }
+.ws-gate-badge.is-fail { color: var(--danger); background: var(--danger-muted); border-color: var(--danger); }
+.ai-objectgen-candidate .ai-objectgen-looks { color: var(--text-2); }
+.ai-objectgen-reference { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; }
+.ai-objectgen-reference:empty { display: none; }
+.ai-objectgen-reference img { width: 72px; height: 72px; object-fit: contain; border-radius: 6px; border: 1px dashed var(--border-default); background: var(--bg-inset); }
+.ai-objectgen-reference small { color: var(--text-3); font-size: 11px; }
+.ai-objectgen-reference .is-none { color: var(--text-2); font-weight: 600; }

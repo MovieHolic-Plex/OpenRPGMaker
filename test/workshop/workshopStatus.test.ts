@@ -13,6 +13,8 @@ describe("공방 기물 상태", () => {
     expect(itemState("box", [], [])).toBe("idle");
     expect(itemState("box", [round("r1", 1, ["done", "drawing"])], [])).toBe("drawing");
     expect(itemState("box", [round("r1", 1, ["done", "failed"])], [])).toBe("choose");
+    // 한 장도 못 그린 판(계정 한도·로그인 막힘)은 고를 차례가 아니라 멈춤
+    expect(itemState("box", [round("r1", 1, ["failed", "failed"])], [])).toBe("stopped");
     expect(itemState("box", [round("r1", 1, ["done"])], [{ projectKey: "p", itemKey: "box", roundId: "r1", letter: "A", at: 5 }])).toBe("picked");
     // 고른 뒤 새 판을 뽑아 다 그렸으면 다시 고를 차례
     expect(itemState("box", [round("r1", 1, ["done"]), round("r2", 9, ["done"])], [{ projectKey: "p", itemKey: "box", roundId: "r1", letter: "A", at: 5 }])).toBe("choose");

@@ -1,0 +1,379 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "55504bca0c2cb67766adcaade4c3352236c626b27148eabd567f616ca3d19e45",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "lab reagent shelf",
+ "label": "modern_city_interior/lab-reagent-shelf",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 26,
+  "tileColorsP90": 31,
+  "darkV5": 28,
+  "nearBlackEdge": 0.8,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "bottles and flasks on shelves",
+      "rows": "11-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottles and flasks on lower shelf",
+      "rows": "21-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a uniform light-grey top band. Row 5 is a lighter front-edge line (L=189), followed by darker eave shadow in rows 6-7 and the dark shelf opening in rows 8-9. This matches the green cabinet reference (top band, edge line, eave). Below it is a front face about 25 rows tall: open shelf bays with light shelf-edge lines at rows 18 and 28, and a base. The bottles are goods on the shelves and count as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a glass-fronted shelf with small bottles. The tile facts are good: 26 visible tones per tile against 17-20 for the stall and well, and 0% near-flat coverage. The structure is shallower than the references. The frame and cabinet body show only about 3-4 lightness steps, where the cheese stall and roofed well carry 5-6 on each material. The glass interior is a pale, mostly uniform field, and the bottles are tiny clusters. 100% of the dark edge pixels are near-neutral, so the cabinet is wrapped in a uniform neutral dark line. That is the sticker look. The tinted references (hedge 0%, stall 1%, well 33%) use outlines in the dark tone of the adjacent material instead. Only the lamp reference is fully neutral, and it is a thin iron post, so it is not a fair comparison for a furniture piece. Overall the piece is cleanly drawn but flatter and more outlined than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16684
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "shelf top / cornice band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "reagent bottles and flasks on shelves",
+      "rows": "11-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "reagent bottles and flasks on lower shelf",
+      "rows": "22-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band, rows 1-4, is light grey and ends in a lighter front-edge line at row 5. Rows 6-7 are darker mid-greys and read as eave shadow, and the dark shelf opening starts at row 8. Together these give a top surface of about 5 rows, which is evidence (a). Below it is a front face of about 25 rows (rows 6-30). The face holds two shelf compartments with front-edge lines at rows 18 and 28. The bottles on the shelves are decor. The side posts are flat vertical frame, with no receding side face. The width profile is 30 px from row 1 to row 30, then narrow feet at row 31."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "Density and texture are fine. The candidate has 26 visible tones per tile, against 17-20 for the stall and well references. Near-flat coverage is 0%, and the bottles and shelves carry small varied details. The weak point is the outline. 100% of its dark edge pixels are near-neutral, so the dark line around the cabinet carries no material tint. The tinted references (hedge 0%, stall 1%) separate forms by dark material tone, whereas this reads as a uniform dark grey sticker outline. The grey cabinet frame also has only about 4 lightness steps, short of the 5-6 Beodeul uses per material. Because the outline is neutral and the frame ramp is shallower than the references, a careful artist would not accept it next to them. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16932
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "upper shelf bottles",
+      "rows": "10-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower shelf bottles",
+      "rows": "22-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a light grey top band that ends in a lighter front-edge line at row 5. Rows 6-7 are darker eave shadow, followed by the front face with two shelf bays (rows 8-30). Each bay has a dark inner top shadow (rows 8-9 and 20-21) and a shelf edge line (rows 18 and 28), with bottles standing inside. The structure matches the green cabinet reference: a top band, an edge line, an eave and then the front face. The bottles are decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts favour the candidate on density: 26 visible tones per tile against 17-20 for the richer references, and 0% near-flat coverage. That count comes mostly from the small bottles and shelf contents, though. The cabinet body itself is shallow, with only about 3 steps on the frame and glass panel. It is seen straight on with little form shading, whereas the stall and well references show 5-6 steps with per-part highlights. 100% of the dark edge pixels are near-neutral, so the outline is a uniform neutral dark line around the whole cabinet. That is the sticker look, not the tinted dark material tone the richer references use (0-1% neutral for the hedge and cheese stall). The pale glass panel is smooth and has few grain dots. The bottles add detail, but the structure and outline craft are below the Beodeul bar, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16211
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of shelf cabinet",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "reagent bottles on shelves",
+      "rows": "11-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "reagent bottles on lower shelf",
+      "rows": "22-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a light top band, ending in a lighter front-edge line at row 5. Rows 6-7 are a darker eave shadow above the dark interior at rows 8-9. This is the same structure as the green 'cabinet: top 5 + edge + eave' reference. Below it, rows 6-30 are the front face, with an open two-compartment shelf. Shelf boards sit at rows 18-19 and 28-30, and the bottles on them are decor. Row 31 shows the feet, 6 px wide. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "The candidate is a glass-fronted shelf with bottles. It has 26 visible tones per tile against 17-20 for the stall and well references, and 0% near-flat coverage, so its density and texture are not the problem. The failure is the outline. 100% of its dark edge pixels are near-neutral, and the picture shows a uniform dark grey-black line around the whole cabinet and the shelf frame. The tinted references (hedge 0%, stall 1%, well 33%) use dark material tones instead. Only the metal lamp pole is neutral, and that is a thin piece of bare metal. The cabinet body has about 4 lightness steps (frame, glass, back panel, shelf edge), which is fewer than the 5-6 steps in the references. The bottles supply the visible detail, while the body reads as a flat grey box with a sticker-like border. An artist would not accept this next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 15799
+  }
+ ],
+ "decidedAt": "2026-10-21T00:04:54.199Z",
+ "cells": {
+  "16": [
+   "97b19ddd13b1d5ab",
+   "da12b10c465ac4ac",
+   "e74d076a37248abf",
+   "f5a39e60843530b5"
+  ],
+  "24": [
+   "1ba09246ea8126b3",
+   "1d66a3ac9bd7af90",
+   "2119054e8917d53e",
+   "2303cb6768fd1e5a",
+   "4444cda81d325ad3",
+   "4e2e0000c69e411b",
+   "54bce149facd54ec",
+   "5fcc7cf48dfd5123",
+   "6c2443d435818dfe",
+   "71cb486a912ce6c9",
+   "76746bec8e9f62ea",
+   "948ee89f3289c06c",
+   "94c517f7170e9f96",
+   "9e38c78c8644d22a",
+   "9e83bf3b234ff845",
+   "ae9401b1fd73ecd1",
+   "b00f33d8fd65a925",
+   "b4f8109ab5f7f7c6",
+   "b6361de9c1dd7748",
+   "c1a9cf908ebc08c5",
+   "dfcc48c8381de22b",
+   "e04e6c77006dae65",
+   "ee215b68a5bbbf47",
+   "f441725dea580dd9"
+  ],
+  "32": [
+   "bc0ce5ef81b6a2ff"
+  ],
+  "48": [
+   "034e1c182641474a",
+   "344f3b218e54c5e5",
+   "6b245e6b70bbb513",
+   "8d142cd754b64dcf",
+   "d2b8dcea0cb2f920",
+   "fcb5f8bb736c1540"
+  ]
+ }
+}

@@ -184,6 +184,7 @@ count=(len(cells)+7)//8*8
 sheet=Image.new('RGBA',(128,count//8*16))
 for i,cell in enumerate(cells):sheet.paste(cell,(i%8*16,i//8*16))
 sheet.save(OUT/'chipset.png')
+import sys as _s, pathlib as _pl; _s.path.insert(0, str(_pl.Path(__file__).resolve().parents[2] / 'scripts/content/rtp-attribution')); from rtp_check import require_credit; require_credit(OUT/'chipset.png')  # EasyRPG RTP CC BY credit check (public/assets/ATTRIBUTION.md)
 sheet.resize((512,sheet.height*4),Image.Resampling.NEAREST).save(OUT/'atlas.png')
 manifest=dict(id='beodeul_ground',texture='tex_beodeul_ground',tileSize=16,tilesPerRow=8,count=count,recipes=recipes)
 (DATA/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')

@@ -1,4 +1,5 @@
 import { stripResourceSearchIdPrefixes } from "./resourceSearchIdArgs";
+import { adoptBuiltMapAsStart, seedMapPlacementNote } from "./startOnBuiltMap";
 import { syncHeroineDeadline } from "@/project/deadlineEnding";
 import { normalizePlaceToolArgs } from "./spatialPlaceContract";
 // editor/tools/toolRunner.ts
@@ -25,6 +26,7 @@ import { guardWholeRecordRewrite } from "./assistantRewriteGuard";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { beginSpatialToolProposal, sealSpatialToolProposal } from "./spatialToolState";
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
+import { newScenePolishIssues } from "@/project/lint/scenePolishLint";
 import { compactMapLayers, EXTRA_LAYER_KEYS, hasExtraLayers } from "@/project/mapLayers";
 import { formatTreePairRepairSummary, repairTreePairsOnMap } from "@/project/lint/repairTreePairs";
 import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition";
@@ -313,6 +315,10 @@ function compactTouchedMapLayers(before: Project, draft: Project): void {
   }
 }
 
+function safeScenePolish(before: Project, after: Project): LintIssue[] {
+  try { return newScenePolishIssues(before, after); } catch { return []; }
+}
+
 /**
  * 커밋 거부 요약에 첫 위반 사유를 싣는다. 예전에는 어느 lint 가 터졌든 `'<tool>' 커밋 거부(무결성 오류)`
  * 로 고정이라 DB AI 바·채팅 로그·모델 응답 어디에도 이유가 보이지 않았다(issues 에만 있었다 —
@@ -592,6 +598,11 @@ export function runToolDefinition(
       treeRepairNote = formatTreePairRepairSummary(repaired);
     }
     assertHouseProtection(protectedHouses, draft, builtHouses);
+    // 새 프로젝트의 빈 시드 맵에 시작이 남은 채 새 맵만 지었으면 시작을 그 맵으로 옮긴다(startOnBuiltMap.ts).
+    const startNote = ctx.assistantRun && tool.mode === "write" && name !== "set_start_position" ? adoptBuiltMapAsStart(before, draft) : null;
+    if (startNote) exec = { ...exec, warnings: [...(exec.warnings ?? []).filter((w) => !w.startsWith("게임 시작 위치가 아직 빈 시드 맵")), startNote] };
+    const seedNote = ctx.assistantRun && tool.mode === "write" ? seedMapPlacementNote(before, draft) : null;
+    if (seedNote) exec = { ...exec, warnings: [...(exec.warnings ?? []), seedNote] };
 
     // 지연 타일셋 사전을 확정한다 — 아래 비교·커밋은 모든 타일셋을 훑으므로, 확정 전이면 전부 복제된다.
     finishDraftTilesets(draft);
@@ -623,7 +634,10 @@ export function runToolDefinition(
     }
     const postTile = verifyPostTilePlacement(draft, { name, args: normalizedArgs, data: exec.data });
     if (postTile.length > 0) diff.warnings.push(...postTile.map((issue) => issue.message));
-    const issues = [...(exec.issues ?? []), ...commit.issues, ...postTile];
+    // 장면 다듬기(scene-*): 이번 변경이 새로 만든 것만 — 앞에 싣는다(모델에는 issues 앞 8건만 간다). 규칙은 game-scene-polish 스킬.
+    const scene = tool.mode === "write" ? safeScenePolish(before, draft) : [];
+    if (scene.length > 0) diff.warnings.push(...scene.map((issue) => issue.message));
+    const issues = [...(exec.issues ?? []), ...scene, ...commit.issues, ...postTile];
     const summary = treeRepairNote ? `${exec.summary} · ${treeRepairNote}` : exec.summary;
     return {
       ok: true,

@@ -1,6 +1,6 @@
 {
   "candidateOnly": true,
-  "nativeAtlasHash": "4c451a7b86b2f8e6f173f99b2baa425238398f3eef1a360d13bc7f1aa686cdd0",
+  "nativeAtlasHash": "a771ab2a0f48d495b3ed4c32560e2bb3c9486493629b8cd1be5113ad6b96c6fe",
   "sourceProjectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
   "sourceRevision": 18,
   "labels": [
@@ -42,7 +42,7 @@
         },
         {
           "sourceKit": "bd-tree-1a786c",
-          "changedBodyPixels": 124
+          "changedBodyPixels": 82
         }
       ]
     },
@@ -51,15 +51,15 @@
       "edits": [
         {
           "sourceKit": "bd-tree-03a8f7",
-          "changedBodyPixels": 229
+          "changedBodyPixels": 227
         },
         {
           "sourceKit": "bd-tree-3e8732",
-          "changedBodyPixels": 229
+          "changedBodyPixels": 227
         },
         {
           "sourceKit": "bd-tree-1a786c",
-          "changedBodyPixels": 231
+          "changedBodyPixels": 218
         }
       ]
     },
@@ -68,15 +68,15 @@
       "edits": [
         {
           "sourceKit": "bd-tree-03a8f7",
-          "changedBodyPixels": 1572
+          "changedBodyPixels": 1080
         },
         {
           "sourceKit": "bd-tree-3e8732",
-          "changedBodyPixels": 1572
+          "changedBodyPixels": 1080
         },
         {
           "sourceKit": "bd-tree-1a786c",
-          "changedBodyPixels": 1625
+          "changedBodyPixels": 1388
         }
       ]
     },
@@ -85,15 +85,15 @@
       "edits": [
         {
           "sourceKit": "bd-tree-03a8f7",
-          "changedBodyPixels": 2041
+          "changedBodyPixels": 1196
         },
         {
           "sourceKit": "bd-tree-3e8732",
-          "changedBodyPixels": 2036
+          "changedBodyPixels": 1210
         },
         {
           "sourceKit": "bd-tree-1a786c",
-          "changedBodyPixels": 2074
+          "changedBodyPixels": 1498
         }
       ]
     },
@@ -102,15 +102,15 @@
       "edits": [
         {
           "sourceKit": "bd-tree-03a8f7",
-          "changedBodyPixels": 1800
+          "changedBodyPixels": 1307
         },
         {
           "sourceKit": "bd-tree-3e8732",
-          "changedBodyPixels": 1800
+          "changedBodyPixels": 1307
         },
         {
           "sourceKit": "bd-tree-1a786c",
-          "changedBodyPixels": 1830
+          "changedBodyPixels": 1580
         }
       ]
     }

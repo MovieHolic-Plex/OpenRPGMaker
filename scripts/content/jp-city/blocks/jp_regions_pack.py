@@ -297,46 +297,214 @@ def rows(w, ys):
 
 
 # ----------------------------- 나무 -----------------------------
-@kit('rg-bamboo-grove', '대숲(竹林) 한 덩이(대나무 여덟 그루·잎 깃털·마디, 4×6)', 4, 6, 'tree', solid=[(1, 5), (2, 5)],
-     tags=['대나무', '대숲', '竹林', '산길', '사가노'], rules='길 양옆에 겹쳐 줄지어 세워 대숲 터널을 만든다. 발 두 칸만 막힌다.', role='prop')
+# 대나무 문법(2026-10-20 R4 재작화, 사용자 「대나무가 끔찍하다」): 옛 대숲은 4~5px 굵은 기둥 + 10px 마다 검은 마디 띠 + 활엽수 공 수관이라
+# 「초록 철창 위의 브로콜리」로 읽혔다. 새 문법 —
+#   · 줄기(稈) 2~3px: 왼쪽 빛 1px · 몸 · 오른쪽 그늘. 줄기마다 윤곽선을 두르지 않는다(실루엣만 OL) — 굵은 검은 띠가 철창으로 읽히던 원인.
+#   · 마디(節) 6~9px 간격, 줄기마다 어긋남: 마디 줄 1px 어둡게 + 바로 위 1px 밝은 마디 턱. 앞줄일수록 밝다(뒷줄 = 그늘 단).
+#   · 잎은 둥근 덩이가 아니라 아래로 처진 가는 잎 부채(笹 잎 4~6px, 밑동 2px → 끝 1px)를 겹쳐 뾰족하게 솟은 수관을 만든다.
+#   · 3/4 발치: 줄기 밑동이 타원 위에 앞뒤로 어긋나게 선다(뒤 줄기는 높이, 앞 줄기는 낮게) + 마른 댓잎(다다미 짚) 깔린 타원 + 오른쪽 아래 그늘.
+def bamboo_culm(c, x, top, bot, w=3, depth=2, seed=0, lean=0):
+    """대나무 줄기 하나: x = 밑동 왼쪽 열, top~bot(포함), 폭 w(2|3), depth 0 뒤(그늘) · 1 가운데 · 2 앞(밝음).
+    lean = 꼭대기에서 옆으로 기운 화소 수(밑동은 곧고 위로 갈수록 휜다). 마디는 줄기마다 어긋난다."""
+    hi, body, sh = ((('pine_bamboo', 2), ('pine_bamboo', 1), ('pine_bamboo', 0)),
+                    (('pine_bamboo', 4), ('pine_bamboo', 3), ('pine_bamboo', 2)),
+                    (('moss', 4), ('pine_bamboo', 4), ('pine_bamboo', 3)))[depth]
+    hi, body, sh = J(*hi), J(*body), J(*sh)
+    node = J('pine_bamboo', (0, 1, 2)[depth])
+    ridge = J(*(('pine_bamboo', 3), ('moss', 4), ('tatami_straw', 3))[depth])
+    span = max(1, bot - top)
+    gap = 7 + int(H(x, depth, seed) * 3)                          # 마디 간격 7~9
+    first = bot - 3 - int(H(x, top, seed + 1) * gap)
+    dark = J('pine_bamboo', max(0, (0, 1, 2)[depth] - (depth == 0)))
+    for y in range(top, bot + 1):
+        ox = x + round(lean * ((bot - y) / span) ** 2)
+        ww = w if y > top + 6 else max(2, w - 1)                    # 끝은 가늘어진다
+        seg = (first - y) % gap if y < first else gap               # 마디 위로 몇 줄째(0 = 마디 줄)
+        c.P(ox, y, hi)
+        if ww == 3: c.P(ox + 1, y, body if seg not in (1, 2) else sh)  # 마디 바로 위 2줄은 마디 턱 그늘(마디마다 둥근 결)
+        c.P(ox + ww - 1, y, sh if seg != 1 else dark)
+        if y < first and y > top + 2 and seg == 0:
+            c.HL(ox, y, ww, node)
+        elif y < first - 1 and y > top + 2 and seg == gap - 1:
+            c.HL(ox, y, ww - 1, ridge)
+
+
+def _tri(v, period):
+    """톱니 0..1(가운데 1): 잎 끝이 아래로 뾰족하게 처지는 띠 경계·실루엣에 쓴다."""
+    ph = v % period
+    return 1.0 - abs(ph - period / 2.0) / (period / 2.0)
+
+
+def bamboo_mass(cx, cy, rx, ry, w, h, seed=0, tip=5):
+    """笹 잎 덩이 하나의 마스크(h×w bool)와 덩이 안 위치값 f(-1 왼쪽 위 … +1 오른쪽 아래).
+    둥근 공이 아니라 처진 잎 부채: 윗면은 둥근 반타원(ry), 아랫면은 납작(0.45ry)하고 그 아래로 4~5px 간격의
+    처진 잎 끝(밑동 2px → 끝 1px, 길이 tip±1)이 매달린다. 옆구리 잎 끝도 바깥보다 아래를 향한다."""
+    m = np.zeros((h, w), bool)
+    f = np.full((h, w), 9.0)
+    rb = ry * 0.45
+    for y in range(max(0, int(cy - ry - 2)), min(h, int(cy + rb + 2))):
+        for x in range(max(0, int(cx - rx - 2)), min(w, int(cx + rx + 2))):
+            dx = (x - cx) / rx
+            dy = (y - cy) / (ry if y < cy else rb)
+            if dx * dx + dy * dy <= 1.0:
+                m[y, x] = True; f[y, x] = dx * 0.55 + (y - cy) / ry * 1.25
+    tips = []
+    n = max(4, int(round(2 * rx / 4.3)))
+    for i in range(n + 1):
+        u = -1.0 + 2.0 * i / n                                          # 아래 테두리를 왼쪽 끝 → 오른쪽 끝
+        u += (H(i, 1, seed) - 0.5) * 0.12
+        ex = cx + u * (rx - 0.8)
+        ey = cy + rb * math.sqrt(max(0.0, 1 - u * u)) - 1.0
+        nx, ny = u * 0.7, 1.0
+        L = math.hypot(nx, ny); nx, ny = nx / L, ny / L
+        ln = tip + (1 if H(i, 3, seed) < 0.4 else 0) - (1 if H(i, 4, seed) < 0.25 else 0) - (1 if abs(u) > 0.85 else 0)
+        side = -1 if u < 0 else 1
+        for k in range(ln + 1):
+            px, py = int(round(ex + nx * k)), int(round(ey + ny * k))
+            cols = (px, px + side) if k < ln - 1 else (px,)              # 밑동 2px · 끝 1px
+            for j, qx in enumerate(cols):
+                if 0 <= qx < w and 0 <= py < h and not m[py, qx]:
+                    m[py, qx] = True
+                    lit = (u < 0.3) and qx == min(cols)                  # 잎 끝은 숲 속 그늘(가장 짙은 단) 위에서 읽히게 중간 단, 빛 쪽 열은 한 단 밝다
+                    f[py, qx] = (-0.35 if lit else 0.05) + u * 0.35 + 0.1 * k / max(1, ln)
+    return m, f
+
+
+def bamboo_crown(c, masses, seed=0):
+    """대숲 수관: 겹친 잎 덩이(뒤·위 → 앞·아래 순서). 덩이마다 4단 띠 명암(왼쪽 위 빛 → 오른쪽 아래 그늘),
+    띠 경계는 5px 주기 처진 잎 끝 톱니(밑동 넓고 끝 뾰족)로 끊어 겹겹이 매달린 笹 잎 층을 만든다.
+    앞 덩이는 뒤 덩이 위에 1px 그늘을 드리운다. 반환: 잎 마스크(h×w bool)."""
+    G = [J('pine_bamboo', s) for s in range(5)]
+    lvl = np.full((c.h, c.w), -1, int)
+    gx0, gx1 = min(m[0] - m[2] for m in masses), max(m[0] + m[2] for m in masses)
+    gy0, gy1 = min(m[1] - m[3] for m in masses), max(m[1] + m[3] for m in masses)
+    for k, (cx, cy, rx, ry) in enumerate(masses):
+        m, f = bamboo_mass(cx, cy, rx, ry, c.w, c.h, seed=seed + 31 * k, tip=5 if rx >= 7 else 3)
+        # 수관 전체의 빛: 왼쪽 위 덩이일수록 밝고 오른쪽 아래 덩이일수록 그늘 — 덩이마다 같은 띠라 단조롭지 않게
+        f = f + 1.1 * ((cx - gx0) / max(1, gx1 - gx0) - 0.45) + 1.0 * ((cy - gy0) / max(1, gy1 - gy0) - 0.35)
+        prev = lvl.copy()
+        off = int(H(k, 9, seed) * 5)
+        amp = 3.2 * 1.25 / ry                                            # 잎 끝 톱니 3px(밑동 5px → 끝 1px)
+        for y, x in zip(*np.nonzero(m)):
+            g = f[y, x]
+            tooth = amp * _tri(x + off, 5) if g < 0.9 else 0.0
+            lvl[y, x] = 4 if g < -0.45 else 3 if g - tooth < -0.05 else 2 if g < 0.62 else 1
+        # 밝은 잎 층 끝 바로 아래 1px 은 한 단 어둡게 — 매달린 잎 끝이 아래 층에 드리운 그늘(톱니 하나 = 잎 한 장)
+        cur = lvl.copy()
+        for y, x in zip(*np.nonzero(m)):
+            if y > 0 and m[y - 1, x] and cur[y - 1, x] == 3 and cur[y, x] == 2:
+                lvl[y, x] = 1
+        for y, x in zip(*np.nonzero(~m & (prev >= 0))):
+            if (y > 0 and m[y - 1, x]) or (x > 0 and y > 0 and m[y - 1, x - 1]):
+                lvl[y, x] = max(0, min(prev[y, x], 2) - 1)
+    leaf = lvl >= 0
+    for y, x in zip(*np.nonzero(leaf)):                                   # 윗선의 외톨이 1px 뾰루지(아래에만 이웃) 정리
+        nb = [(dy, dx) for dy, dx in ((-1, 0), (1, 0), (0, -1), (0, 1)) if 0 <= y + dy < c.h and 0 <= x + dx < c.w and leaf[y + dy, x + dx]]
+        if nb == [(1, 0)]: lvl[y, x] = -1
+    leaf = lvl >= 0
+    for y, x in zip(*np.nonzero(leaf)):
+        c.P(int(x), int(y), G[lvl[y, x]])
+    return leaf
+
+
+def bamboo_grove_art(c, cx, ground_y, rx, culms, masses, seed=0, twigs=()):
+    """대숲 한 덩이. culms=[(x, top, bot, w, depth, lean)], masses=[(cx, cy, rx, ry)] 뒤·위 → 앞·아래 순서,
+    twigs=[(cx, cy, rx, ry)] 줄기 사이에 매달린 작은 잎 덩이(맨 줄기와 수관을 잇는다)."""
+    # 1) 3/4 발치: 오른쪽 아래 그늘 → 윤곽 → 이끼 둔덕 윗면(타원) 위 마른 댓잎 2px 결
+    disc(c, cx + 3, ground_y + 1.5, rx, J('pine_bamboo', 0), ry=4)
+    disc(c, cx, ground_y, rx, OL, ry=4)
+    disc(c, cx, ground_y - 0.5, rx - 1, J('moss', 1), ry=3.2)
+    disc(c, cx - 2, ground_y - 1, rx - 4, J('moss', 2), ry=2.2)
+    for i in range(int(rx * 0.8)):
+        lx = int(cx - rx + 3 + H(i, 1, seed) * (rx * 2 - 7)); ly = int(ground_y - 2 + H(i, 2, seed) * 3)
+        if ((lx + 1 - cx) / (rx - 2.5)) ** 2 + ((ly - ground_y + 0.5) / 2.4) ** 2 < 1:
+            c.HL(lx, ly, 2, J('tatami_straw', 1)); c.P(lx, ly, J('tatami_straw', 2))
+    for _ in range(2):                                                   # 타원 끝의 외톨이 1px 뾰루지 정리
+        for y in range(max(0, ground_y - 6), min(c.h, ground_y + 7)):
+            for x in range(c.w):
+                if c.a[y, x, 3] and sum(1 for dy, dx in ((-1, 0), (1, 0), (0, -1), (0, 1))
+                                        if 0 <= y + dy < c.h and 0 <= x + dx < c.w and c.a[y + dy, x + dx, 3]) <= 1:
+                    c.a[y, x, 3] = 0
+    # 2) 수관(겹친 잎 덩이) — 먼저 따로 그려 둔다. 잎 둘레 윤곽은 잎 색 가장 짙은 단(검정 아님)
+    tc = Cv(c.w, c.h)
+    leaf = bamboo_crown(tc, list(masses) + list(twigs), seed=seed)
+    hh, ww = leaf.shape
+    edge = J('pine_bamboo', 0)
+    for y in range(hh):
+        for x in range(ww):
+            if leaf[y, x]: continue
+            if any(0 <= y + dy < hh and 0 <= x + dx < ww and leaf[y + dy, x + dx] for dy, dx in ((-1, 0), (1, 0), (0, -1), (0, 1))):
+                tc.P(x, y, edge)
+    t = Cv(c.w, c.h)
+    # 3) 숲 속 그늘: 줄기 사이 뒤쪽은 짙은 잎 그늘 한 면(점·결 없이). 위에 잎이 덮인 열만, 그 열 잎의 아랫선 3px 위부터 발치까지 —
+    #    수관 밖으로 네모 모서리가 삐져나오지 않게 한다
+    def gtop(x):                                                         # 이끼 둔덕 윗면(타원) 윗선 — 숲 그늘·줄기 밑동이 이 곡선에 박힌다
+        return int(round(ground_y - 0.5 - 3.2 * math.sqrt(max(0.0, 1 - ((x - cx) / (rx - 1)) ** 2))))
+    xs = [x for x, *_ in culms]
+    x0, x1 = min(xs) + 1, max(xs) + 1
+    for x in range(x0, x1 + 1):
+        col = np.nonzero(leaf[:, x])[0] if 0 <= x < ww else []
+        if len(col) == 0: continue
+        for y in range(int(col[-1]) - 3, gtop(x) + 2):
+            t.P(x, y, J('pine_bamboo', 0))
+    # 4) 줄기(뒤 → 앞) — 꼭대기는 수관 속에 묻힌다(잎 윗선보다 위로 삐져나온 맨 막대가 없게 그 열 잎 윗선 5px 아래에서 시작)
+    for d in (0, 1, 2):
+        for x, top, bot, w, dd, lean in culms:
+            if dd != d: continue
+            tx = min(ww - 1, max(0, x + lean + 1))
+            col = np.nonzero(leaf[:, tx])[0]
+            if len(col): top = max(top, int(col[0]) + 5)
+            bamboo_culm(t, x, top, max(gtop(x), gtop(x + w - 1)) + 2 - (d == 0), w, d, seed, lean)
+    add_outline(t)
+    for y, x in zip(*np.nonzero(t.a[..., 3] > 0)):                      # 둔덕 윗면 안쪽 윤곽선은 지운다(발치에 검은 네모·톱니가 생기지 않게)
+        if y >= gtop(x) and abs(x - cx) < rx - 1 and tuple(t.a[y, x, :3]) == ((OL >> 16) & 255, (OL >> 8) & 255, OL & 255):
+            t.a[y, x, 3] = 0
+    # 수관 속 투명 구멍(바깥과 이어지지 않은 빈칸)은 숲 속 그늘로 메운다 — 구멍에 윤곽선이 둘러지지 않게
+    opaque = (t.a[..., 3] > 0) | (tc.a[..., 3] > 0)
+    seen = np.zeros_like(opaque); stack = [(0, x) for x in range(ww)] + [(y, 0) for y in range(hh)] + [(y, ww - 1) for y in range(hh)]
+    while stack:
+        y, x = stack.pop()
+        if not (0 <= y < hh and 0 <= x < ww) or seen[y, x] or opaque[y, x]: continue
+        seen[y, x] = True; stack += [(y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)]
+    for y, x in zip(*np.nonzero(~seen & ~opaque)):
+        if y < ground_y - 4: tc.P(int(x), int(y), J('pine_bamboo', 0))
+    for src in (t, tc):
+        for y in range(c.h):
+            for x in range(c.w):
+                if src.a[y, x, 3]:
+                    c.P(x, y, (int(src.a[y, x, 0]) << 16) | (int(src.a[y, x, 1]) << 8) | int(src.a[y, x, 2]))
+
+
+@kit('rg-bamboo-grove', '대숲(竹林) 한 덩이(줄기 열하나·마디·처진 笹 잎 덩이·마른 댓잎 발치, 4×6)', 4, 6, 'tree', solid=[(1, 5), (2, 5)],
+     tags=['대나무', '대숲', '竹林', '산길', '사가노'], rules='길 양옆에 겹쳐 줄지어 세워 대숲 터널을 만든다. 발 두 칸만 막힌다. 같은 덩이만 잇지 말고 rg-bamboo-grove-b·rg-bamboo-clump 와 섞는다.', role='prop')
 def bamboo_grove(c, base):
-    # 3/4 발치 이끼 둔덕 윗면 + 죽순·경계석
-    disc(c, 32, 90, 26, OL, ry=5)
-    disc(c, 32, 89, 25, J('moss', 1), ry=4.5)
-    disc(c, 31, 88, 22, J('moss', 2), ry=3.5)
-    disc(c, 29, 87, 16, J('moss', 3), ry=2.5)
-    stalks = [(6, 1, 14), (13, 2, 10), (21, 1, 6), (28, 2, 12), (35, 1, 8), (43, 2, 6), (50, 1, 11), (56, 2, 15)]
-    # 뒷줄 대나무 줄기 (짙은 청록 + OL)
-    for x, depth, top in stalks:
-        if depth != 1: continue
-        c.R(x - 1, top, 5, 90 - top, OL)
-        c.R(x, top, 3, 90 - top, J('pine_bamboo', 2))
-        c.VL(x, top, 90 - top, J('pine_bamboo', 3))
-        c.VL(x + 2, top, 90 - top, J('pine_bamboo', 1))
-        for ny in range(top + 8, 88, 10):
-            c.HL(x - 1, ny, 5, OL); c.HL(x, ny - 1, 3, J('pine_bamboo', 4))
-    # 풍성한 상부 대나무 잎 수관 (클러스터 + OL)
-    canopy_clusters(c, [
-        (16, 20, 14, 12), (34, 15, 16, 12), (49, 21, 13, 11),
-        (11, 31, 10, 8), (27, 29, 14, 9), (44, 31, 13, 9), (54, 33, 8, 7)
-    ], 'pine_bamboo', seed=3)
-    # 앞줄 대나무 줄기 (밝은 죽세공 마디 + OL)
-    for x, depth, top in stalks:
-        if depth != 2: continue
-        t0 = max(top, 26)
-        c.R(x - 1, t0, 6, 91 - t0, OL)
-        c.R(x, t0, 4, 90 - t0, J('moss', 3))
-        c.VL(x, t0, 90 - t0, J('moss', 4))
-        c.VL(x + 3, t0, 90 - t0, J('pine_bamboo', 2))
-        for ny in range(t0 + 7, 89, 10):
-            c.HL(x - 1, ny, 6, OL)
-            c.HL(x, ny - 1, 4, J('moss', 4))
-            c.HL(x, ny + 1, 4, J('pine_bamboo', 1))
-    # 발치 죽순(3/4 원추) 3개
-    for sx in (10, 32, 48):
-        c.R(sx - 1, 84, 5, 6, OL)
-        c.R(sx, 85, 3, 4, J('aged_cedar', 3))
-        c.P(sx, 84, J('aged_cedar', 4)); c.P(sx + 1, 84, J('aged_cedar', 3))
+    culms = [(10, 30, 86, 2, 0, -3), (20, 20, 85, 2, 0, -1), (30, 10, 84, 2, 0, 0), (40, 20, 85, 2, 0, 2), (50, 30, 86, 2, 0, 3),
+             (15, 34, 89, 3, 1, -2), (35, 30, 88, 3, 1, 1), (46, 38, 89, 3, 1, 2),
+             (9, 48, 92, 3, 2, -2), (25, 44, 93, 3, 2, -1), (52, 48, 92, 3, 2, 1)]
+    masses = [(31, 11, 9, 9), (22, 20, 10, 8), (41, 20, 10, 8), (14, 31, 9, 8), (49, 31, 9, 8), (31, 29, 11, 9),
+              (21, 41, 10, 8), (42, 42, 10, 8), (11, 50, 7, 6), (52, 52, 7, 6), (31, 51, 9, 6)]
+    twigs = []
+    bamboo_grove_art(c, 31, 89, 27, culms, masses, seed=11, twigs=twigs)
+
+
+@kit('rg-bamboo-grove-b', '대숲(竹林) 좁은 덩이(줄기 아홉·높이 솟은 끝, 3×6)', 3, 6, 'tree', solid=[(1, 5)],
+     tags=['대나무', '대숲', '竹林', '산길', '사가노'], rules='rg-bamboo-grove 사이·뒤에 끼워 대숲 가장자리를 들쭉날쭉하게. 발 한 칸만 막힌다.', role='prop')
+def bamboo_grove_b(c, base):
+    culms = [(8, 30, 86, 2, 0, -2), (18, 8, 84, 2, 0, -1), (29, 18, 85, 2, 0, 1), (38, 32, 86, 2, 0, 2),
+             (13, 36, 89, 3, 1, -1), (33, 38, 88, 3, 1, 1),
+             (7, 50, 91, 2, 2, -2), (23, 44, 92, 3, 2, 0), (38, 52, 90, 2, 2, 1)]
+    masses = [(20, 10, 8, 8), (12, 21, 8, 8), (30, 20, 9, 8), (21, 31, 10, 9), (10, 41, 7, 7), (35, 42, 8, 7),
+              (22, 50, 9, 6)]
+    twigs = []
+    bamboo_grove_art(c, 23, 89, 20, culms, masses, seed=23, twigs=twigs)
+
+
+@kit('rg-bamboo-clump', '대나무 작은 무리(줄기 다섯·잎 덩이, 2×4) — 대숲 가장자리·절·료칸 뜰', 2, 4, 'tree', solid=[(0, 3), (1, 3)],
+     tags=['대나무', '竹', '정원', '대숲 가장자리'], rules='대숲 가장자리·사찰·료칸 뜰 모퉁이에 한두 무리. 큰 대숲 앞줄에 세워 숲 끝을 낮춘다.', role='prop')
+def bamboo_clump(c, base):
+    culms = [(9, 16, 55, 2, 0, -1), (19, 8, 54, 2, 0, 1), (13, 26, 58, 3, 1, -1), (21, 28, 59, 3, 2, 1), (7, 32, 59, 2, 2, -1)]
+    masses = [(16, 9, 7, 7), (10, 18, 7, 6), (23, 18, 7, 6), (16, 27, 8, 6), (7, 34, 5, 4), (25, 35, 5, 4)]
+    bamboo_grove_art(c, 16, 57, 13, culms, masses, seed=37)
 
 
 @kit('rg-sugi', '삼나무(杉) 한 그루 - 원뿔 층 잎·붉은 줄기(3×6)', 3, 6, 'tree', solid=[(1, 5)],

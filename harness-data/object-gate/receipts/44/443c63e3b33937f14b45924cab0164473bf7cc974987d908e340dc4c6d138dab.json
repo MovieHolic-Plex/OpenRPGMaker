@@ -1,0 +1,325 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "443c63e3b33937f14b45924cab0164473bf7cc974987d908e340dc4c6d138dab",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "forest canopy crown heads overlay",
+ "label": "jp_city/jp-forest-bl-headx-c2x2-0",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 34,
+  "nearBlackEdge": 0.21,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper foliage clump (main crown)",
+      "rows": "1-13",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower foliage clump",
+      "rows": "18-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Two leafy canopy clumps. The upper clump's light top (rows 1-8, bright #8bc84c highlights) widens from 5 to 21 px, then transitions to darker shaded foliage on rows 9-17, which reads as the front/underside. The lower clump has a lighter upper dome (rows 18-23) over darker lower rows (24-30). Organic blobs with no hard edge lines; the lit upper surface plus shaded front is a plausible 3/4 volume. It is an overlay of foliage, not a rigid object, so the evidence is soft."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small canopy-only overlay, two leaf clumps with no trunk, so sparseness alone is not held against it. Even by eye it is thinner than the references. It has about 15 colours and a median of 14 per tile, against 108-109 per tile and 427-567 colours for the references. It has roughly 4 green steps on the clumps, while the references show 6 or more, with many individual leaf clusters in several greens and highlights. The dark edge pixels are 0% neutral and lean green, so the outline is a dark material tone, which is fine. There are no 5x5 flat fills, but the leaf texture is coarse and blobby, with few per-leaf highlight dots. It looks simpler and more sticker-like beside the references, so it fails on shading depth and density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10534
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper foliage clump",
+      "rows": "1-13",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower foliage clump",
+      "rows": "18-30",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Two blobby foliage clumps. Each has a light, bright upper area (column x=19 rows 1-8 at L 112-168, x=13 rows 3-9) that reads as a sunlit top surface/heap seen from above. Below it the tone steps darker (rows 9-17, down to L 41-53) as the shaded front/underside. The lower clump repeats this, lighter at rows 18-23 and darker at rows 24-30. The silhouette widens from 5 at row 1 to 21 at row 13 and then narrows, which reads as a rounded organic mass with a lit top and shaded front. There are no hard edge lines, as is expected for foliage."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small canopy-only bush overlay made of two leaf clumps. It has only 15 distinct colours and a median of 14 per tile, against about 108 per tile and 427-567 colours in the references. That is far below both. Flat-fill coverage is 0% and the dark edge pixels are tinted rather than neutral (0% near-neutral), so the outline reads as dark green leaf tone, not a black sticker line. It shows about 4 green steps with some clump dots, but the clumps are chunky and simplified. The references have many small leaf clusters with highlights, a full trunk and branches, and layered shading across six or more steps. The candidate is noticeably thinner and flatter next to them. It is not a sparse prop like a pole or fence, so the density gap counts against it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11748
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper foliage clump",
+      "rows": "1-13",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower foliage clump",
+      "rows": "18-23",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is two lumpy leaf-canopy masses. In both, the lit light-green upper area (column x=19 rows 1-8, L about 112-168) reads as the top of the foliage seen from above. Below it the colour darkens to L about 41-80 (rows 9-18 in the upper clump, rows 23-30 in the lower), which reads as the shaded south face. The silhouette is organic and rounded, with widths rising from 5 to 21 and then tapering, so there is no hard edge line or rim. The top is shown only by the light-to-dark shading, so the 3/4 read is moderate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small two-clump leafy bush with about 15 colours in total and a median of 14 per tile. The references have 427-567 colours and a median of about 108 per tile, so it is far below them on the numbers. By eye it shows roughly 4 green steps with some leaf-clump dots and a dark green outline. That outline is tinted, matching the 0% near-neutral measure, so it is not a sticker look. Flat-fill coverage is 0%. The leaf clumps are much simpler and fewer than the reference canopies, which have many clumped leaf highlights in several greens, and the candidate has no trunk or branch structure. Overall it is clearly shallower than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12713
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper foliage clump (main canopy mass)",
+      "rows": "1-17",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower foliage clump",
+      "rows": "18-30",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is two rounded leaf clumps. Each is lit on top (light green, rows 1-9 at x=19, L 168 to 112) and shades darker toward the bottom (rows 14-30, L 27 to 54). That gives a bright upper top surface of about 8 rows and a darker, shadowed front mass below. No flat front-edge line exists, as expected for foliage. The lower clump repeats the pattern, with a light top at rows 18-22 and dark underside at rows 25-30. The silhouette widens and then narrows again, which reads as a volumetric 3/4 form and not a flat slab or a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small two-clump bush, much smaller than the full reference trees. It has about 4 green steps with some leaf-clump dithering and no flat 5x5 fills (0%). Its dark edges are tinted dark green (0% neutral), so the outline is not near-black. However, it has only 15 distinct colours in total against 427 and 567 for the references, and a median of 14 colours per tile against about 108. That is far below both references. The clumps look simpler and more uniform than the references' multi-tone leaf clusters, with fewer highlight and shadow steps and little variation inside each clump. Even allowing for its small size, it would look thinner and flatter next to the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11786
+  }
+ ],
+ "decidedAt": "2026-10-20T06:28:44.232Z",
+ "cells": {
+  "16": [
+   "1600e6a7e2c37be6",
+   "7f6a8db4ce14a2d0",
+   "cb91ad05a6a6b577",
+   "fc9b4cb3cef143e7"
+  ],
+  "24": [
+   "1f579ac51e7b1f55",
+   "2b49ed62a588b1b1",
+   "3c0fde6a95d22189",
+   "61cea3268d0aefb1",
+   "6344e38d4b44c02f",
+   "6d6a2f817f3ba727",
+   "6f6c1beae6966386",
+   "7a443cf793c4b087",
+   "874900eb2c6be7c5",
+   "96f333716b0d80aa",
+   "c54a344228fdf0f9",
+   "c9b27bdfcc68546a",
+   "d450dcb004821a0b",
+   "da1c68f89dacf5ce",
+   "dbeafd9e74da896f",
+   "f0d39b428f62c64b",
+   "f21c3f4ad91d1268",
+   "f6eb0fec4eb45324",
+   "fbce9e21a50fc671",
+   "fef78530be35b823",
+   "ff22275d6ea57acf"
+  ],
+  "32": [
+   "e84e891acff9cb14"
+  ],
+  "48": [
+   "0fd6dd0b13670538",
+   "1fe0a80ba065f221",
+   "41714b3ef6f6aa6f",
+   "61d8b9e45edd9dff",
+   "933a2eeda2077b47",
+   "b194d297966f5f73"
+  ]
+ }
+}

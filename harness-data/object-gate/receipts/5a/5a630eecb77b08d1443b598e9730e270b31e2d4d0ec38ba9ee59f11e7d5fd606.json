@@ -1,0 +1,386 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5a630eecb77b08d1443b598e9730e270b31e2d4d0ec38ba9ee59f11e7d5fd606",
+ "width": 96,
+ "height": 112,
+ "kind": "organic",
+ "name": "dense broadleaf forest grove (canopy autotile + crown patches + trunk band)",
+ "label": "jp-forest-proto/grove-broadleaf",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 14,
+  "darkV5": 36,
+  "nearBlackEdge": 0.74,
+  "opaqueTiles": 34
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy mass (autotile with crown patches)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk band with grass strip",
+      "rows": "80-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The canopy (rows 0-79) is a textured foliage mass with a bumpy outline. It has no front-edge line, no eave shadow band and no ellipse. The lighter crown patches at rows 3-20 and 35-55 are leaf highlights, not a horizontal surface. Only a dark outline and shadow at about rows 77-80 separate the canopy from the trunk band below. The trunk band (rows 80-94) shows vertical trunks and a grass strip, which is a vertical face. The whole object is a front elevation with no distinct top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate has 20 distinct colours and a median of 9 per 16x16 tile, against 108-109 per tile and 427-567 colours in the references. Its dark edge pixels are 0% neutral, so the outline is a dark green tint, which fits the dark_material_tone category. Flat-fill coverage is only 3%, so large flat areas are not the problem. The canopy is a dark, uniform green mass with only about 4 lightness steps, whereas the references show 5-6 steps with bright highlight clumps. Leaf clumps are small and low-contrast, and the two lighter crown patches are blurry and soft, not built from individually shaded leaf clusters. The trunk band is a row of simple dark vertical bars with little bark grain. Overall it is much sparser and flatter than the references in tile information, so it does not reach the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9552
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy mass (main body)",
+      "rows": "0-78",
+      "evidence": "c",
+      "front_edge_line_row": 78,
+      "eave_shadow_rows": "78-80"
+     },
+     {
+      "part": "trunk band with grass",
+      "rows": "79-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 60,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy is a large leafy mass (rows 0-78) with lighter crown patches at rows 3-8, 40-46 and highlights that read as a tilted canopy plane seen from above. It ends in a dark edge line at about row 78 with eave shadow beneath. Below it, the dark trunk band (rows 79-94) is a vertical front face with 5 brown trunks and a grass strip at the base, which is 16 rows, well over 3. This is the standard canopy-over-trunks 3/4 structure rather than a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate has only 20 distinct colours against 427 and 567 for the references, and a median of 9 colours per tile against about 108. Its canopy is a dark green scalloped mass with only about 4 green steps, and the two lighter crown patches are soft and blurry rather than clumped leaf by leaf. The references show many separate leaf clumps in 5-6 greens with bright highlights. The outline is a dark green tone that is not neutral (0% near-neutral edge pixels), so it reads as dark_material_tone. Flat-fill coverage is low at 3%, but the canopy interior is a uniform dark mass with little contrast or highlight variation. The trunk band is simple dark vertical stripes with little bark shading. Overall it is clearly shallower and less rich than the Beodeul references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9488
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy mass (autotile with crown patches)",
+      "rows": "0-77",
+      "evidence": "c",
+      "front_edge_line_row": 78,
+      "eave_shadow_rows": "78-80"
+     },
+     {
+      "part": "trunk band with grass base",
+      "rows": "79-94",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 78,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A large foliage canopy fills rows 0-77. It is a stack of leaf clumps that reads as a roof-like top plane seen from above. A dark outline and shadow band at rows 77-80 form the eave line. Below it, a front trunk band sits in dark shadow: five brown trunks on a dark background, with a grass strip at the base, about rows 80-94. That gives a front face of roughly 15 rows. The width narrows from 96 to about 86-90 below the canopy, which fits a canopy overhanging the trunks. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a dark green canopy block with a few lighter crown patches and a trunk band. Its 20 distinct colours and median of 9 per tile are far below both references (427 and 567 colours, about 108 per tile). The canopy reads as roughly 4 greens against the references' 5-6 steps, and the scalloped leaf clumps are small and uniform. The edge pixels are 0% neutral, so the outline is a tinted dark green and not a sticker line, and flat-fill coverage is only 3%, so there are no large flat areas. The structure is acceptable, but the colour count and per-tile density are much lower than the Beodeul standard. The lighter crown patches look blurry and soft, not shaded clump by clump, and the trunk band is dark and flat with little grain. The candidate would look thinner next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12823
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy mass with crown patches",
+      "rows": "0-78",
+      "evidence": "c",
+      "front_edge_line_row": 78,
+      "eave_shadow_rows": "79-81"
+     },
+     {
+      "part": "trunk band with grass strip",
+      "rows": "79-94",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 78,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy fills rows 0-78 as a large foliage plane seen from above. It ends in a dark outline and edge line near rows 77-78, followed by dark shadow under the canopy at rows 79-81. Below that, rows 79-94 show a front face of five brown trunks on dark undergrowth, with a grass strip at the base. The canopy therefore acts as a roof-like top surface over a visible front face of 16 rows. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate has only 20 distinct colours against 427 and 567 for the references, and about 9 colours per 16x16 tile against roughly 108. The canopy reads as a dark green mass with about 4 steps. The scalloped edge and the lighter crown patches add some clump texture, and the dark edge is green-tinted (0% neutral), so it is not a sticker outline. Even so, the leaf clumps lack the several distinct greens and the per-leaf highlights of the references. The interior is mostly one dark green with soft, low-contrast variation, and the lighter patches are blurry rather than crisply clustered. The trunk band is a row of simple dark brown bars with little bark grain or shading. Flat-fill coverage is low at 3%, but that comes from dithered noise, not from rich structure. Overall it is clearly shallower and less information-dense than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12993
+  }
+ ],
+ "decidedAt": "2026-10-20T04:56:26.200Z",
+ "cells": {
+  "16": [
+   "0435bbbdc399313e",
+   "107d8b928a43ddec",
+   "29c1b46b3f088046",
+   "2f1f93c9b0ac68a3",
+   "3e348b789594e537",
+   "44ec23e431ee5a76",
+   "46b3b958005ea191",
+   "4ac58b43205bdeb4",
+   "5b17f4c05667928a",
+   "6e91c40888538bf8",
+   "7886601b6f4eeb19",
+   "8c91514c8688085c",
+   "9a1aafa56ab015f3",
+   "9b8e1d17f5dec9f7",
+   "a797c7d2d8a1f524",
+   "ad665356a7536113",
+   "ad7df2bef49d8f88",
+   "b659c5c4f8b238d9",
+   "b86237dad8571589",
+   "c146ed46802bd671",
+   "ce0fd2bb931e6ca8",
+   "cea9e870dc02c1a6",
+   "d275f935c64316f6",
+   "d2b002a5bfa42d97",
+   "deaf9c02c1c80f3d",
+   "ec69e64af16bb9c9"
+  ],
+  "24": [
+   "047ce9756b13dd86",
+   "0668c36b201b994f",
+   "0dd4508509c6b4e5",
+   "13bc166075ad37ee",
+   "1756ac15f4881a9b",
+   "17e6e0e24c59f48d",
+   "18d6b9a979ad1f19",
+   "1c7bdcd4cefdc735",
+   "26f43bcfe71eb417",
+   "30e4866f229ba288",
+   "3beb53c117cd84f9",
+   "474f92dd9888c0c3",
+   "4c4cac1bc6b120f1",
+   "511f6e2a47de25e6",
+   "520d514b989387a6",
+   "6519490639be1b85",
+   "6e0c54dc1945c06b",
+   "6e9c921235d5221b",
+   "718e20f31b6009a2",
+   "73511b730a413d36",
+   "77839da9d041d148",
+   "782f919ca8238be2",
+   "7a4e5918429d9d1b",
+   "8d9cad99f73897e1",
+   "94899d58c60c333a",
+   "9d9691143f60bfbb",
+   "9f1c703be67b77c8",
+   "a6a69f9a6ad20f20",
+   "b69bc360b7484ff7",
+   "bdaf76971bfa3ab7",
+   "d220b0d0cd36ba96",
+   "dc16e8724761143d",
+   "e3265e597042c4a7",
+   "e47888fae0a4f018",
+   "e85fff1a186a2456",
+   "ecfa0ce833b2b3cf"
+  ],
+  "32": [
+   "074d291da84120ab",
+   "129c52f057c305f3",
+   "16170bc03c8db1a6",
+   "1911d34beac394e7",
+   "1a161144d0742fb2",
+   "1c172e6d2c37486c",
+   "3ed3ef718edc1cec",
+   "4dbf291c69e2a759",
+   "54c7b24b99cc94c8",
+   "5d84c45c55414d11",
+   "6336fe62db78de9f",
+   "6a1d299341391926",
+   "6ecc47b3b89dca8d",
+   "845a433e5c64e54d",
+   "8d322df3e3a6eac0",
+   "999e5ee869d844f3",
+   "9e38a812c7603d2d",
+   "b0fc8dbf0b66635c",
+   "b8432da726bd72eb",
+   "f2162c6b9d2fc37b",
+   "fa5338d7f4eda224"
+  ],
+  "48": [
+   "1e47a5e7bf484a66",
+   "310c15ecb3e1b431",
+   "41c97487c419ddab",
+   "4426aa113e14a14b",
+   "4ffbfdc7219b57ca",
+   "824b3e1f630890fc",
+   "d15c34f8fda2aee5",
+   "e68fae7cc6fc3c14",
+   "e6fc86de43298f15",
+   "ef2cb15b5eed792b"
+  ]
+ }
+}

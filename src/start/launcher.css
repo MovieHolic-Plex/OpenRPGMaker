@@ -185,7 +185,13 @@ body:has(.ln-root) .studio-window-controls { --swc-fg: var(--ln-fg, #eceef6); }
   transition: opacity 140ms ease, transform 140ms ease;
 }
 .hm-card:is(:hover, :focus-within) .hm-card-acts { opacity: 1; transform: none; }
-.hm-card:first-child { box-shadow: 0 0 0 2px var(--ln-gold); }
+.hm-games .hm-card:first-child { box-shadow: 0 0 0 2px var(--ln-gold); }
+/* 홈 칸(2026-10-21): 최근 게임 · 지금 만들 수 있는 게임 · 기본 게임을 같은 칸 너비(4열)로 */
+.hm-recent, .hm-concepts, .hm-builtin-row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.hm-skel .hm-cov { background: linear-gradient(90deg, #161927, #1d2133); }
+.hm-skel .hm-nm, .hm-skel .hm-mt { width: 70%; border-radius: 3px; background: #1d2133; color: transparent; }
+.hm-notice.hm-notice-inline { height: auto; margin: 0 0 18px; }
+.hm-bmini .hm-cov img { image-rendering: pixelated; }
 .hm-new {
   display: grid; place-items: center; align-content: center; gap: 4px; min-height: 100%; border: 2px dashed #3a4060; background: transparent;
   color: var(--ln-sub); font: inherit; font-weight: 800; cursor: pointer;
@@ -218,6 +224,7 @@ body:has(.ln-root) .studio-window-controls { --swc-fg: var(--ln-fg, #eceef6); }
 .hm-thumb.is-on { opacity: 1; outline: 2px solid var(--ln-gold); }
 
 /* ── 팀에 참여 ────────────────────────────────────────────────────────── */
+/* @deprecated multi-user team collaboration is not supported yet (2026-10-21). TEAM_COLLAB_ENABLED 를 켜야 쓰인다. */
 .ln-join { max-width: 680px; }
 .ln-join .ln-link { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 16px; }
 .ln-join h1 { margin: 0 0 20px; font-size: 26px; line-height: 1.2; letter-spacing: -0.02em; }

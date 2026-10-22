@@ -12,12 +12,13 @@ import { sanitizeRiversidePromenade } from "@/project/startRoutePaint";
 // editor/tools/mapTools.ts
 // 맵 생성/타일 페인팅/도로/구조물/시작위치 쓰기 툴.
 
-import { isPassable } from "@/project/collision";
+import { isPassable, isPassableLanding } from "@/project/collision";
 import { normalizeCloudShadowParams } from "@/player/cloudShadows";
 import { TILE } from "@/project/defaults/constants";
+import { clearMapCellForBackground, emptyTopRows, HORIZON_PRESET_FEATURE_HEIGHT, mapBackgroundVisibility, startPosAfterBackgroundClear } from "@/project/mapBackgroundVisibility";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
-import { DIRT_ROAD_TILE, isPanoramaWindowTile, SAND_TILE } from "@/project/defaults/chipsetMapping";
+import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { autotileGroupLayer, autotileGroupLayerView, autotileLayerView, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { applyMapDeletion, planMapDeletion } from "@/project/mapDeletion";
@@ -53,8 +54,16 @@ import {
   MAP_BACKGROUND_SCROLL_LIMIT,
   mapBackgroundFromLayerSet,
   normalizeMapBackground,
+  applyMapBackgroundMotion,
+  MAP_BACKGROUND_MOTIONS,
+  MAP_BACKGROUND_MOTION_LABELS,
+  mapBackgroundGameViewport,
+  type MapBackgroundMotion,
 } from "@/project/mapBackground";
 import { craftpixDefaultLayers, OGA_CRAFTPIX_BACKDROP_SETS } from "@/assets/ogaCraftpixBackgrounds";
+import { mapBackgroundFromPanoramaSet, oprnPanoramaSetOfImage, OPRN_PANORAMA_SETS } from "@/assets/oprnPanoramas";
+import { mapTileSize } from "@/project/tileGeometry";
+import { tileCategoriesForTile } from "@/project/tilesetPalette";
 import { isActionCombatMap } from "@/project/actionCombat";
 import type { EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, MapBackground, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
 import { mapLocations, resolveLocation } from "@/project/mapNamedLocations";
@@ -1858,26 +1867,52 @@ const BACKGROUND_FIT_SCHEMA: JsonSchema = {
   description: "native=원본 1:1(게임 해상도용 파노라마), cover=화면을 덮게 축소·확대(1920×1080 레이어 아트는 반드시 cover).",
 };
 
+/** 세트 이름(조수가 고르는 칸). OPRN 자체 견본 + (남아 있으면) CraftPix 세트. 빈 enum 은 Gemini 가 400 을 내므로 늘 한 개 이상이다. */
+const BACKGROUND_PRESET_IDS: readonly string[] = [
+  ...OPRN_PANORAMA_SETS.map((set) => set.id),
+  ...OGA_CRAFTPIX_BACKDROP_SETS.map((set) => set.id),
+];
+const BACKGROUND_PRESET_GUIDE = [
+  ...OPRN_PANORAMA_SETS.map((set) => `${set.id}: ${set.name} — ${set.summary}`),
+  ...OGA_CRAFTPIX_BACKDROP_SETS.map((set) => `${set.id}: ${set.summary}`),
+].join(" / ");
+
 const backgroundSchema: JsonSchema = {
   type: "object",
   description:
-    "맵 뒤 먼 배경(파노라마). 가장 쉬운 길은 layerSet 하나 — 층 순서·cover·층별 깊이(시차)가 자동으로 들어간다. "
-    + "배경은 **타일이 없는 칸으로만** 보인다: showInEmptyCells:true + clearForBackground 로 하늘 자리를 비우거나, "
-    + "합본 마을 칩셋이면 파노라마 창 타일(#233·#258)을 깐다. 회상·꿈·하늘 장면에서 구름을 멈추거나 느리게 하려면 "
-    + "script_cutscene 의 background 비트(flowPercent).",
+    "맵 뒤 먼 배경(파노라마). 가장 쉬운 길은 preset 하나 — 층 순서·맞추기·층별 움직임·빈 칸에도 보이기가 자동으로 들어간다. "
+    + "배경은 **타일이 없는 칸과 맵 바깥으로만** 보이고 화면에 고정된다(화면 위쪽 칸에는 그림 위쪽이 비친다). "
+    + "하늘(절벽·지붕 뒤)은 clearForBackground {x,y,width,height} 로 위쪽 줄을 비운다 — 지평선 세트(oprn-sky-day·oprn-sunset)의 구름·해·도시 실루엣은 "
+    + "화면 위에서 약 112px(16px 칸 7줄) 안에 있으니 7줄쯤 비워야 다 보이고, 3~4줄이면 하늘 위쪽 색만 보인다. "
+    + "섬 둘레 바다·구름 위·우주는 clearForBackground {water:true} 로 물 칸을 비워 배경 바다가 보이게 한다. "
+    + "회상·꿈에서 구름을 멈추거나 느리게 하려면 script_cutscene 의 background 비트(flowPercent).",
   properties: {
-    layerSet: {
+    preset: {
       type: "string",
-      enum: OGA_CRAFTPIX_BACKDROP_SETS.map((set) => set.id),
-      description: `CraftPix 다층 배경 세트(주면 imageId·layers 를 대신 채운다). ${OGA_CRAFTPIX_BACKDROP_SETS.map((set) => `${set.id}: ${set.summary}`).join(" / ")}`,
+      enum: [...BACKGROUND_PRESET_IDS],
+      description: `견본 세트(주면 imageId·layers 를 대신 채운다). ${BACKGROUND_PRESET_GUIDE}`,
     },
-    cloudDrift: {
+    motion: {
+      type: "string",
+      enum: [...MAP_BACKGROUND_MOTIONS],
+      description: `움직임 프리셋(생략하면 세트 권장값). ${MAP_BACKGROUND_MOTIONS.map((motion) => `${motion}=${MAP_BACKGROUND_MOTION_LABELS[motion].name}(${MAP_BACKGROUND_MOTION_LABELS[motion].hint})`).join(", ")}`,
+    },
+    speed: {
       type: "number",
-      minimum: -MAP_BACKGROUND_SCROLL_LIMIT,
-      maximum: MAP_BACKGROUND_SCROLL_LIMIT,
-      description: "layerSet 전용: 구름·새 층만 이 속도(px/프레임)로 흐른다. 0.3~0.8 이 잔잔하다.",
+      minimum: 0.1,
+      maximum: 4,
+      description: "흐름 속도 배율 — 모든 층의 scrollX·scrollY 에 곱한다(1=세트·프리셋 기본). 「느리게」 0.4~0.6, 「아주 느리게」 0.2~0.3, 「빠르게」 1.5~2. 층마다 빠르기 차이(먼 층이 느림)는 그대로 남는다.",
     },
-    imageId: { type: "string", description: "첫 장(맨 아래) 그림 — list_resources(kind:\"backdrop\") 의 id. layerSet 을 주면 생략." },
+    // CraftPix 세트가 하나라도 남아 있을 때만 보인다(2026-10-07 정리 뒤 0개 — 빈 선택지는 조수를 헷갈리게 한다).
+    ...(OGA_CRAFTPIX_BACKDROP_SETS.length > 0 ? {
+      cloudDrift: {
+        type: "number",
+        minimum: -MAP_BACKGROUND_SCROLL_LIMIT,
+        maximum: MAP_BACKGROUND_SCROLL_LIMIT,
+        description: "CraftPix 세트 전용: 구름·새 층만 이 속도(px/프레임)로 흐른다.",
+      },
+    } : {}),
+    imageId: { type: "string", description: "직접 고른 첫 장(맨 아래) 그림 — list_resources(kind:\"backdrop\") 의 id 나 올린 그림 id. preset 을 주면 생략." },
     // 상한은 편집기 입력·로드 정규화와 같은 값이어야 한다 — 툴로만 들어가는 값이 생기면
     // 저장한 뒤 다시 열 때 조용히 잘린다.
     scrollX: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
@@ -1893,11 +1928,11 @@ const backgroundSchema: JsonSchema = {
     },
     showInEmptyCells: {
       type: "boolean",
-      description: "true 면 빈 칸(타일 없음)에도 배경이 보인다. 기본은 파노라마 창 타일 칸에서만 — 창 타일이 없는 칩셋은 true 가 필요하다.",
+      description: "빈 칸(타일 없음)에도 배경을 보인다. 생략하면 true — 지금 칩셋에는 RM2K 파노라마 창 타일이 없어서 false 면 배경이 안 보인다.",
     },
     layers: {
       type: "array",
-      description: `추가 배경 레이어(최대 ${MAP_BACKGROUND_EXTRA_LAYER_LIMIT}장, 앞이 아래 = 먼 것부터). layerSet 을 주면 생략.`,
+      description: `추가 배경 레이어(최대 ${MAP_BACKGROUND_EXTRA_LAYER_LIMIT}장, 앞이 아래 = 먼 것부터). preset 을 주면 생략.`,
       items: {
         type: "object",
         properties: {
@@ -1919,14 +1954,14 @@ const backgroundSchema: JsonSchema = {
 
 const clearForBackgroundSchema: JsonSchema = {
   type: "object",
-  description: "이 사각형의 모든 타일 층을 비운다(하늘 자리 만들기). background.showInEmptyCells 를 같이 켜야 배경이 보인다.",
+  description: "배경이 보일 자리를 비운다(모든 타일 층). 사각형 {x,y,width,height}(하늘 자리 — 예: 위쪽 몇 줄) 또는 {water:true}(물 칸 전부 — 섬 둘레를 배경 바다로). 비운 칸은 걸을 수 없다.",
   properties: {
     x: { type: "integer", minimum: 0 },
     y: { type: "integer", minimum: 0 },
     width: { type: "integer", minimum: 1 },
     height: { type: "integer", minimum: 1 },
+    water: { type: "boolean", description: "true 면 사각형 대신 이 맵의 물 칸(칩셋 이름표 water)을 전부 비운다." },
   },
-  required: ["x", "y", "width", "height"],
   additionalProperties: false,
 };
 
@@ -1967,64 +2002,98 @@ const sunlightSchema: JsonSchema = {
 };
 
 /**
- * `background` 인자 → 저작값. `layerSet` 이 있으면 세트를 펴고(`mapBackgroundFromLayerSet`), 같이 준
+ * `background` 인자 → 저작값. `preset`(옛 이름 `layerSet`, 스키마에서는 뺐다)이 있으면 세트를 펴고, 같이 준
  * 개별 값(scrollX·fit·showInEmptyCells 등)은 첫 장에 덮어쓴다. 없으면 예전처럼 그대로 정규화한다.
  */
 function resolveBackgroundArgs(raw: Record<string, unknown>, mapId: string): MapBackground {
-  const { layerSet, cloudDrift, ...rest } = raw;
+  const { layerSet, preset, motion, speed, cloudDrift, ...rest } = raw;
+  const setId = preset ?? layerSet;
   let candidate: Record<string, unknown> = rest;
-  if (layerSet !== undefined) {
-    const layers = typeof layerSet === "string" ? craftpixDefaultLayers(layerSet) : [];
-    if (layers.length === 0) {
+  if (setId !== undefined) {
+    const own = typeof setId === "string" ? mapBackgroundFromPanoramaSet(setId) : undefined;
+    const craftpix = typeof setId === "string" && !own ? craftpixDefaultLayers(setId) : [];
+    if (!own && craftpix.length === 0) {
       throw new ToolError(
-        `없는 배경 세트: ${String(layerSet)} — ${OGA_CRAFTPIX_BACKDROP_SETS.map((set) => set.id).join(", ")} 중 하나.`,
+        `없는 배경 세트: ${String(setId)} — ${BACKGROUND_PRESET_IDS.join(", ")} 중 하나.`,
         { code: "invalid-args", mapId },
       );
     }
-    const expanded = mapBackgroundFromLayerSet(layers.map((entry) => entry.id), {
+    const expanded = own ?? mapBackgroundFromLayerSet(craftpix.map((entry) => entry.id), {
       cloudDrift: typeof cloudDrift === "number" ? cloudDrift : undefined,
     });
     candidate = { ...expanded, ...rest, ...(rest.imageId === undefined ? { imageId: expanded!.imageId } : {}), layers: rest.layers ?? expanded!.layers };
   }
+  // list_resources(kind:"backdrop") 는 id 를 「backdrop:<resourceId>」 로 준다 — 그대로 넣어도 받는다.
+  const stripKind = (value: unknown): unknown => typeof value === "string" ? value.replace(/^backdrop:/u, "") : value;
+  candidate = {
+    ...candidate,
+    imageId: stripKind(candidate.imageId),
+    ...(Array.isArray(candidate.layers)
+      ? { layers: candidate.layers.map((layer) => layer && typeof layer === "object" ? { ...layer, imageId: stripKind((layer as { imageId?: unknown }).imageId) } : layer) }
+      : {}),
+  };
   if (typeof candidate.imageId !== "string") {
-    throw new ToolError("background 에는 layerSet 또는 imageId 가 필요합니다.", { code: "invalid-args", mapId });
+    throw new ToolError("background 에는 preset 또는 imageId 가 필요합니다.", { code: "invalid-args", mapId });
   }
-  const normalized = normalizeMapBackground(candidate);
-  if (!normalized) throw new ToolError("background 는 { layerSet } 또는 { imageId, scrollX?, layers? … } 여야 합니다.", { code: "invalid-args", mapId });
+  // 창 타일이 있는 칩셋이 남아 있지 않다 — 저자가 일부러 false 를 주지 않으면 빈 칸에도 보이게 한다.
+  if (candidate.showInEmptyCells === undefined) candidate = { ...candidate, showInEmptyCells: true };
+  let normalized = normalizeMapBackground(candidate);
+  if (!normalized) throw new ToolError("background 는 { preset } 또는 { imageId, scrollX?, layers? … } 여야 합니다.", { code: "invalid-args", mapId });
+  const hasMotion = typeof motion === "string" && (MAP_BACKGROUND_MOTIONS as readonly string[]).includes(motion);
+  if (hasMotion) normalized = applyMapBackgroundMotion(normalized, motion as MapBackgroundMotion);
+  if (typeof speed === "number" && Number.isFinite(speed) && speed > 0 && speed !== 1) {
+    const scale = (value: number | undefined): number | undefined => value === undefined || value === 0 ? value
+      : Math.max(-MAP_BACKGROUND_SCROLL_LIMIT, Math.min(MAP_BACKGROUND_SCROLL_LIMIT, Math.round(value * speed * 100) / 100));
+    const scaled = <T extends { scrollX?: number; scrollY?: number }>(layer: T): T => ({
+      ...layer,
+      ...(layer.scrollX !== undefined ? { scrollX: scale(layer.scrollX) } : {}),
+      ...(layer.scrollY !== undefined ? { scrollY: scale(layer.scrollY) } : {}),
+    });
+    normalized = { ...scaled(normalized), ...(normalized.layers ? { layers: normalized.layers.map(scaled) } : {}) };
+  }
+  if (hasMotion) {
+    // 움직임 프리셋(과 speed)이 층 속도를 다시 쓴다 — 같이 준 첫 장의 scrollX·scrollY·cameraFollow 는 그 위에 그대로 다시 얹는다.
+    // 2026-10-22 조수 시험: 「느리게」 에 scrollX:0.2 + motion:flowX 를 보냈는데 프리셋이 0.25/0.5/0.75 로 덮어 더 빨라졌고, 조수는 「0.2 로 느리게」 라고 보고했다.
+    for (const key of ["scrollX", "scrollY", "cameraFollow"] as const) {
+      if (typeof rest[key] === "number") normalized = { ...normalized, [key]: rest[key] as number };
+    }
+  }
   return normalized;
 }
 
-/** 사각형의 모든 타일 층을 비운다. 맵 밖은 잘라 낸다. 비운 칸 수를 돌려준다. */
-function clearTilesForBackground(map: GameMap, rect: { x: number; y: number; width: number; height: number }): number {
+/** 이 맵의 물 칸(칩셋 이름표·분류 water)을 모든 층에서 비운다. 비운 칸 인덱스를 돌려준다. */
+function clearWaterForBackground(map: GameMap, tileset: Project["tilesets"][string] | undefined): number[] {
+  if (!tileset) return [];
+  const isWater = (tile: number): boolean => tile >= 0
+    && (tileCategoriesForTile(tileset, tile).includes("water") || tileset.tileMeta?.[tile]?.tags?.includes("water") === true);
+  const cleared: number[] = [];
+  for (let index = 0; index < map.lowerTiles.length; index += 1) {
+    if (!isWater(map.lowerTiles[index] ?? -1)) continue;
+    clearMapCellForBackground(map, index);
+    cleared.push(index);
+  }
+  return cleared;
+}
+
+/** 사각형의 모든 타일 층을 비운다. 맵 밖은 잘라 낸다. 비운 칸 인덱스를 돌려준다. */
+function clearTilesForBackground(map: GameMap, rect: { x: number; y: number; width: number; height: number }): number[] {
   const x0 = Math.max(0, Math.floor(rect.x));
   const y0 = Math.max(0, Math.floor(rect.y));
   const x1 = Math.min(map.width, x0 + Math.max(0, Math.floor(rect.width)));
   const y1 = Math.min(map.height, y0 + Math.max(0, Math.floor(rect.height)));
-  let cleared = 0;
+  const cleared: number[] = [];
   for (let y = y0; y < y1; y += 1) {
     for (let x = x0; x < x1; x += 1) {
-      const index = y * map.width + x;
-      map.lowerTiles[index] = TILE.EMPTY;
-      map.upperTiles[index] = TILE.EMPTY;
-      if (map.lowerOverlayTiles) map.lowerOverlayTiles[index] = TILE.EMPTY;
-      if (map.upperOverlayTiles) map.upperOverlayTiles[index] = TILE.EMPTY;
-      cleared += 1;
+      clearMapCellForBackground(map, y * map.width + x);
+      cleared.push(y * map.width + x);
     }
   }
   return cleared;
 }
 
-/** 플레이에서 배경이 실제로 비칠 칸 수 — 렌더러 `renderEmptyCellCover` 와 같은 판정. */
-function backgroundVisibleCells(map: GameMap): number {
-  const showEmpty = map.background?.showInEmptyCells === true;
-  let visible = 0;
-  for (let index = 0; index < map.lowerTiles.length; index += 1) {
-    const lower = map.lowerTiles[index] ?? TILE.EMPTY;
-    const upper = map.upperTiles[index] ?? TILE.EMPTY;
-    if (isPanoramaWindowTile(lower) || isPanoramaWindowTile(upper)) visible += 1;
-    else if (showEmpty && lower < 0) visible += 1;
-  }
-  return visible;
+/** 플레이에서 배경이 실제로 비칠 칸 수 — 렌더러 `renderEmptyCellCover` 와 같은 판정(`mapBackgroundVisibility`). */
+function backgroundVisibleCells(map: GameMap, tileset?: Project["tilesets"][string]): number {
+  return mapBackgroundVisibility(map, tileset).visible;
 }
 
 /** 반복 축 가장자리에서 양쪽 칸이 모두 통행 가능한 줄 수(넘어갈 수 있는 자리). */
@@ -2038,7 +2107,7 @@ function loopEdgeOpenings(project: Project, map: GameMap): number {
 // 맵 속성 설정. 크기 변경은 resize_map, 트리 위치는 manage_map_tree로 분리.
 const setMapProperties: ToolDefinition = {
   name: "set_map_properties",
-  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·캐릭터 크기(characterScale — 월드맵에서 캐릭터를 작게)·인카운트·BGM·배경(먼 풍경 파노라마·parallax background — 회상·꿈·하늘 장면은 background.layerSet 한 칸 + showInEmptyCells + clearForBackground 로 하늘 자리 비우기, 층마다 깊이가 달라 시차 스크롤이 된다)·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자·기후(실내 차단/고정/상속)·반복 맵(loop: 가장자리가 반대편으로 이어짐 — 끝없는 숲·꿈 세계·반복 복도는 가장자리 이동 이벤트 대신 이것).",
+  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·캐릭터 크기(characterScale — 월드맵에서 캐릭터를 작게)·인카운트·BGM·맵 배경(먼 풍경 파노라마·맵 바깥 배경·parallax background — 하늘·노을·섬 둘레 바다·별밤·회상·꿈 장면은 background.preset 한 칸(맑은 하늘·노을·밤하늘·바다·구름 바다 견본) + clearForBackground 로 하늘 자리나 물 칸 비우기(물 타일을 지운다 — 되돌리기는 revert_last_edit), 층마다 깊이가 달라 시차 스크롤이 된다. 결과는 get_project_summary 의 maps[].background 로 다시 읽는다)·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자·기후(실내 차단/고정/상속)·반복 맵(loop: 가장자리가 반대편으로 이어짐 — 끝없는 숲·꿈 세계·반복 복도는 가장자리 이동 이벤트 대신 이것).",
   mode: "write",
   parameters: {
     type: "object",
@@ -2139,33 +2208,88 @@ const setMapProperties: ToolDefinition = {
     } else if (args.background && typeof args.background === "object" && !Array.isArray(args.background)) {
       map.background = resolveBackgroundArgs(args.background as Record<string, unknown>, map.id);
       const layerCount = map.background.layers?.length ?? 0;
-      const setId = (args.background as { layerSet?: unknown }).layerSet;
+      const setId = (args.background as { layerSet?: unknown; preset?: unknown }).preset ?? (args.background as { layerSet?: unknown }).layerSet;
       // 조수가 결과만 보고 시차가 걸렸는지 알 수 있게 층별 깊이·흐름·맞춤을 요약한다(2026-09-27 조수 시험: 「레이어 6장」 만으로는 확인 불가).
       const stack = [map.background, ...(map.background.layers ?? [])];
       const depths = stack.map((layer) => Math.round((layer.cameraFollow ?? 0) * 100));
-      const drifting = stack.filter((layer) => (layer.scrollX ?? 0) !== 0 || (layer.scrollY ?? 0) !== 0).length;
+      const flows = stack.map((layer) => Math.hypot(layer.scrollX ?? 0, layer.scrollY ?? 0));
+      const drifting = flows.filter((flow) => flow !== 0).length;
       const covered = stack.filter((layer) => layer.fit === "cover").length;
       changed.push(
         `배경=${typeof setId === "string" ? `세트 ${setId}` : map.background.imageId}${layerCount > 0 ? ` + 레이어 ${layerCount}장` : ""}`
-        + ` (층별 깊이 ${depths.join("/")}%${drifting > 0 ? `, 흐르는 층 ${drifting}` : ""}${covered > 0 ? `, cover ${covered}/${stack.length}` : ""}`
+        + ` (층별 깊이 ${depths.join("/")}%${drifting > 0 ? `, 흐르는 층 ${drifting}(층별 흐름 ${flows.map((flow) => Math.round(flow * 100) / 100).join("/")}px/프레임)` : ""}${covered > 0 ? `, cover ${covered}/${stack.length}` : ""}`
         + `${map.background.showInEmptyCells ? ", 빈 칸에도 보임" : ""})`,
       );
     }
     if (args.clearForBackground && typeof args.clearForBackground === "object") {
-      const cleared = clearTilesForBackground(map, args.clearForBackground as { x: number; y: number; width: number; height: number });
-      changed.push(`하늘 자리 ${cleared}칸 비움`);
+      const clear = args.clearForBackground as { x?: number; y?: number; width?: number; height?: number; water?: boolean };
+      let clearedCells: number[] = [];
+      if (clear.water === true) {
+        const cleared = clearWaterForBackground(map, draft.tilesets[map.tilesetId]);
+        clearedCells = cleared;
+        changed.push(`물 칸 ${cleared.length}칸 비움(배경이 보이는 자리)`);
+        if (cleared.length === 0) backgroundWarnings.push("이 맵 칩셋에서 물로 표시된 칸을 찾지 못했습니다 — 사각형 {x,y,width,height} 로 비울 자리를 직접 주세요.");
+      } else if ([clear.x, clear.y, clear.width, clear.height].every((value) => typeof value === "number")) {
+        const cleared = clearTilesForBackground(map, clear as { x: number; y: number; width: number; height: number });
+        clearedCells = cleared;
+        changed.push(`하늘 자리 ${cleared.length}칸 비움`);
+      } else {
+        throw new ToolError("clearForBackground 는 {x,y,width,height} 또는 {water:true} 여야 합니다.", { code: "invalid-args", mapId: map.id });
+      }
+      // 시작 칸을 비우면 주인공이 첫 칸에서 못 움직인다 — 가장 가까운 남는 칸으로 옮긴다.
+      // 시작 칸에 설 수 없게 됐으면(빈 칸·둘러싸임) 가장 가까운 설 수 있는 칸으로 옮긴다. 없으면 이 호출 전체를 되돌린다.
+      const startPlan = draft.startMapId === map.id
+        ? startPosAfterBackgroundClear(map, draft.startPos, new Set(clearedCells), (cleared, x, y) => isPassableLanding(draft, cleared, x, y))
+        : null;
+      if (startPlan?.kind === "moved") {
+        backgroundWarnings.push(`시작 위치(${draft.startPos.x},${draft.startPos.y})${startPlan.reason === "cleared" ? "가 비운 칸이라" : "에서 비운 뒤 나갈 길이 없어"} 가장 가까운 설 수 있는 칸(${startPlan.x},${startPlan.y})으로 옮겼습니다 — 다른 자리를 원하면 set_start_position.`);
+        draft.startPos = { x: startPlan.x, y: startPlan.y };
+      } else if (startPlan?.kind === "stuck") {
+        throw new ToolError("이렇게 비우면 주인공이 설 수 있는 칸이 남지 않아 시작 칸에서 움직이지 못합니다 — 비울 자리를 줄이거나 시작 위치를 다른 맵으로 옮기세요.", { code: "start-buried", mapId: map.id });
+      }
     }
     if (map.background && (args.background || args.clearForBackground)) {
-      const visible = backgroundVisibleCells(map);
+      const visible = backgroundVisibleCells(map, draft.tilesets[map.tilesetId]);
       if (visible === 0) {
         backgroundWarnings.push(
           map.background.showInEmptyCells
-            ? "배경이 보일 빈 칸이 0칸입니다 — clearForBackground 로 하늘 자리(예: 위쪽 몇 줄)를 비우세요."
+            ? "배경이 보일 빈 칸이 0칸입니다(맵이 화면보다 크면 맵 바깥도 안 보입니다) — clearForBackground 로 하늘 자리(예: 위쪽 몇 줄) 또는 {water:true} 로 물 칸을 비우세요."
             : "배경이 보일 칸이 0칸입니다 — 기본 규칙은 파노라마 창 타일(#233·#258, 합본 마을 칩셋)을 깐 칸에서만 비칩니다. "
               + "background.showInEmptyCells:true 를 켜고 clearForBackground 로 하늘 자리를 비우세요.",
         );
       } else {
         changed.push(`배경이 보이는 칸 ${visible}`);
+        // 지평선 견본은 화면 위쪽 약 112px 안에 해·구름·실루엣이 있다 — 위쪽 빈 줄이 모자라면 하늘 위쪽 색만 보인다.
+        // 한 화면에 들어가는 맵은 카메라가 움직이지 않는다 — 층별 깊이(cameraFollow)는 보이지 않고 흐르는 층만 움직인다.
+        // 2026-10-22 조수 시험: 20×15 맵에서 「걸을 때 깊이가 달라 시차로 움직입니다」 라고 보고했다(편집기 배경 탭은 같은 경고를 띄운다).
+        const viewport = mapBackgroundGameViewport(draft.system);
+        const tile = mapTileSize(map, draft.tilesets[map.tilesetId]);
+        const depthLayers = [map.background, ...(map.background.layers ?? [])].filter((layer) => (layer.cameraFollow ?? 0) > 0 && (layer.cameraFollow ?? 0) < 1);
+        if (depthLayers.length > 0 && map.width * tile <= viewport.width && map.height * tile <= viewport.height) {
+          changed.push("주의: 한 화면 맵이라 시차(깊이) 안 보임 — 흐르는 층만 움직임");
+          backgroundWarnings.push(
+            `이 맵(${map.width}×${map.height}칸)은 게임 화면(${viewport.width}×${viewport.height}px) 한 장에 다 들어가 걸어도 카메라가 움직이지 않습니다 — `
+            + "층별 깊이(시차)는 보이지 않고 흐르는 층(scrollX)만 움직입니다. 사용자에게 그대로 알리고, 시차를 보이려면 맵을 화면보다 크게 해야 합니다.",
+          );
+        }
+        const horizonSet = oprnPanoramaSetOfImage(map.background.imageId);
+        // 위에서 본 면(구름 바다·바다)을 지붕·절벽 뒤 «하늘 줄» 에만 비추면 옆에서 본 하늘이 아니라 바닥 무늬처럼 보인다.
+        // 2026-10-22 조수 시험: 「흐르는 구름으로」 에 옥상 맵 위 7줄 하늘을 구름 바다(oprn-clouds)로 바꿨다.
+        const topRowsOnly = emptyTopRows(map) > 0 && emptyTopRows(map) * map.width === visible;
+        if (horizonSet?.view === "surface" && topRowsOnly && horizonSet.id !== "oprn-night-stars") {
+          backgroundWarnings.push(
+            `${horizonSet.name} 견본은 위에서 내려다본 면입니다 — 이 맵은 위쪽 줄만 비어 있어(지붕·절벽 뒤 하늘 자리) 옆에서 본 하늘이 어울립니다. `
+            + "구름이 흐르는 하늘이면 preset oprn-sky-day(+ speed), 저녁이면 oprn-sunset 을 쓰세요.",
+          );
+        }
+        const needRows = Math.ceil(HORIZON_PRESET_FEATURE_HEIGHT / mapTileSize(map, draft.tilesets[map.tilesetId]));
+        const topRows = emptyTopRows(map);
+        if (horizonSet?.view === "horizon" && topRows > 0 && topRows < needRows) {
+          backgroundWarnings.push(
+            `${horizonSet.name} 견본의 해·구름·실루엣은 화면 위 ${needRows}줄 안에 있는데 위쪽 빈 줄이 ${topRows}줄이라 하늘 위쪽 색만 보입니다 — `
+            + `clearForBackground {x:0,y:0,width:${map.width},height:${Math.min(needRows, map.height)}} 로 더 비우면 다 보입니다.`,
+          );
+        }
       }
     }
     if (args.clearBattleBackground === true) {

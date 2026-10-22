@@ -1,0 +1,49 @@
+{
+  "verdict": "FAIL",
+  "reviewer": "fresh Opus adversarial VQA, 2026-10-22",
+  "images": [
+    "/tmp/bdtrees/vqa/trees_kits_before_after_1x.png",
+    "/tmp/bdtrees/vqa/trees_kits_before_after_2x.png",
+    "/tmp/bdtrees/vqa/artistA_preview_4x.png",
+    "/tmp/bdtrees/vqa/artistB_preview_4x.png"
+  ],
+  "findings": [
+    {
+      "severity": "major",
+      "tree": "oakA (64x80)",
+      "location": "AFTER row 1, both oakA instances (2x approx x=195-320 and x=385-510); AFTER row 2 rightmost tree before the house (x=920-1045)",
+      "issue": "Crown is broken into separate ragged clumps with grass showing through gaps, and clumps droop down the sides to trunk height. With roughly 40 percent of the height as bare straight trunk, it reads as a windswept side-elevation tree rather than a 3/4 top-down crown mass. The native Beodeul oaks (BEFORE) and the row-end native tree have a dense, closed, round crown on a short root-flared trunk. At 1x the new oakA silhouette is spiky and noisy beside the house."
+    },
+    {
+      "severity": "major",
+      "tree": "bushD (48x48)",
+      "location": "AFTER row 1 (2x approx x=705-770); AFTER row 2 first and later dark bushes (x=0-60, x=78-140, x=553-615); artistB preview middle bush",
+      "issue": "The silhouette is a near-rectangular block that fills the cell edge to edge, with flat top, flat sides and a flat bottom. It reads as a cube hedge, and the left and right edges look like straight cell-boundary clipping (AFTER row 2 col 1 has a straight left edge where BEFORE was round). The restyle adds scattered yellow highlight specks on very dark green, which is muddy and noisy at 1x."
+    },
+    {
+      "severity": "minor",
+      "tree": "oakB (48x64)",
+      "location": "AFTER row 1 last tree before house (x=865-940); AFTER row 2 x=240-310, x=715-790, x=820-900",
+      "issue": "After restyle the crown tapers to a pointed top and reads half-conifer or poplar, not a broadleaf. The raw artist version is rounder. The outline is harder and darker than the soft native shading."
+    },
+    {
+      "severity": "minor",
+      "tree": "bushC (32x32) light variant",
+      "location": "AFTER row 2 x=155-205",
+      "issue": "The pale variant is sparse, with gaps in the crown and low contrast. It is weak at 1x and reads as a dying shrub."
+    },
+    {
+      "severity": "minor",
+      "tree": "bushE (32x32)",
+      "location": "AFTER row 1 x=635-690 and x=790-840; artistB dense row",
+      "issue": "The former round bush is now a tiny lollipop tree with a trunk. This changes the semantic role in kits that used it as a bush or hedge filler. In the dense row the identical clumps repeat visibly."
+    },
+    {
+      "severity": "minor",
+      "tree": "all",
+      "location": "AFTER rows vs BEFORE rows",
+      "issue": "Style fit: the new trees use hard dark clump outlines and cel-like steps. The native Beodeul foliage uses softer dithered leaf texture. The new set looks like a different artist next to the house and the untouched cypresses. Silhouettes are genuinely new, not recolours (pass on criterion 5). No broken trunks or floating pieces were seen."
+    }
+  ],
+  "summary": "The five replacements have genuinely new silhouettes, and the relight is broadly top-left with a town-ramp palette, so criterion 5 passes. No trunk breaks or floating pieces were seen. However, two trees regress against the native set. oakA's crown is fragmented and see-through, with drooping side clumps on a long bare trunk, so it reads as a side-elevation windswept tree rather than a closed 3/4 top-down crown. bushD is a boxy block that fills its 48x48 cell to straight edges and is muddied by speckled highlights after restyle. oakB also tapers into a conifer-like point after restyle. Overall the hard-outlined clump style is visibly foreign next to the native Beodeul foliage and house. FAIL until oakA's crown is closed into a top-visible mass and bushD gets an organic, cell-inset outline."
+}

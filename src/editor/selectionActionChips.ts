@@ -168,7 +168,7 @@ export function renderSelectionActionChips(
     class: "selection-action-prompt",
     attrs: {
       rows: "1",
-      placeholder: isStampPlaceOn() ? "바로 깔기 — 비우면 알아서" : "이 영역에 AI 지시…",
+      placeholder: isStampPlaceOn() ? "바로 깔기 — 비우면 알아서" : "AI에게 시킬 일…",
       "aria-label": "이 영역에 내릴 AI 지시",
       spellcheck: "false",
     },
@@ -229,7 +229,7 @@ export function renderSelectionActionChips(
       : "바로 깔기 — 켜면 Enter 가 계획·승인 없이 곧바로 깐다";
     stampButton.setAttribute("title", stampTitle);
     stampButton.setAttribute("aria-label", "바로 깔기");
-    prompt.setAttribute("placeholder", stamp ? "바로 깔기 — 비우면 알아서" : "이 영역에 AI 지시…");
+    prompt.setAttribute("placeholder", stamp ? "바로 깔기 — 비우면 알아서" : "AI에게 시킬 일…");
   };
 
   const copyButton = iconButton({

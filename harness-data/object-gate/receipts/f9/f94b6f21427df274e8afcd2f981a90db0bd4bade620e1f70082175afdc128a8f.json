@@ -1,0 +1,336 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f94b6f21427df274e8afcd2f981a90db0bd4bade620e1f70082175afdc128a8f",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "forest south edge: trunk band under the canopy (cherry blossom)",
+ "label": "jp_city/jp-forest-sk-band-M-0",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 34,
+  "nearBlackEdge": 0.15,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cherry blossom canopy (pink mass at top)",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk band (brown trunk on dark green shadow)",
+      "rows": "5-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pink petals and ground strip at bottom",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is 16 px wide for rows 0-10, narrows at row 11, and is full width again for rows 12-14. Columns x=4, 8 and 11 show pink canopy at rows 0-4 or 0-5. Below that comes a vertical trunk and dark green shadow (rows 5-14), then pink petals at rows 13-15. Nothing in the canopy reads as a horizontal top surface. It has no front-edge line followed by eave shadow, no ellipse, and no visible contents. The canopy and trunk are both drawn face-on as vertical elevation, so the object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a single 16x16 tile (a trunk band) with only 12 distinct colours. The references have a median of about 108 colours per tile and 427-567 colours overall, so it is roughly 9x lower on per-tile density. Flat-fill coverage is 0% and the dark edge pixels are 0% neutral, so the outline is tinted (dark brown/maroon beside the trunk), which matches Beodeul. The trunk itself shows only about 3 lightness steps (dark, mid, a pinkish highlight) against 5-6 in the references, with little per-bark grain or root flare shading. At this size it reads as a small, simple dark patch beside the richly shaded reference trunks. A single tile of a thin trunk band could excuse some sparseness, but 12 colours against about 108 is still far below the reference, and the shading ramp is shallow.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15652
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cherry blossom canopy (pink foliage mass above trunk)",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk band (brown trunk with dark green shadow)",
+      "rows": "5-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tile is a front-on slice of a forest edge: pink blossom canopy in rows 0-4, then a brown trunk with dark green shade in rows 5-14 and pink petals and grass at the base in rows 13-15. The silhouette is a near-full 16px-wide rectangle (rows 0-10 at width 16, a slight narrowing at row 11, and 16 again to row 14). There is no ellipse, no front-edge line followed by an eave shadow, and no visible horizontal surface. Everything is a vertical face with foliage texture, so it reads as a front elevation rather than a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny trunk-band tile of about one 16x16 tile. It has 12 distinct colours in total, against 427 and 567 for the references, and a median of 12 colours per tile against about 108. That is roughly 9x lower, and as a single tile it is not a thin or sparse object, so the density fact counts against it. By eye it shows a dark trunk with a pinkish canopy fringe and only about 3 distinct lightness steps on the trunk, where the references use 5-6 on bark and foliage. Flat-fill coverage is 0% and the dark edge pixels are 0% neutral, so the outlines are tinted dark tones rather than black stickers. The surface has a little variation but no per-clump or per-bark-ridge shading of the kind the references show. It is cleanly built but clearly shallower and less textured than the Beodeul trees, so it does not meet the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12633
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cherry blossom canopy (pink foliage mass at top)",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk (dark brown/green vertical column)",
+      "rows": "4-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tile is a band of tree trunk seen face-on under a pink canopy. Columns x=8 and x=11 show the trunk as a single vertical run (rows 4/5 to 14) with no front-edge line, eave shadow, or ellipse. The width profile is nearly constant at 16 for rows 0-14, so there is no widening and narrowing. The pink foliage at the top is a front-facing mass, not a horizontal surface. The trunk is therefore only a vertical face, with no distinguishable top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny single-tile trunk band, so I judged it by eye as well as by the numbers. It has only 12 distinct colours in total and a tile median of 12, against about 108 per tile and 427-567 colours in the references. That is far below both. Flat-fill coverage is 0%, so there are no large flat areas, and the dark edge pixels are 0% neutral, so the outline is tinted and not a sticker line. Even so, the trunk and bark show only about 3 lightness steps, where the references use 5-6 on bark and canopy. The bark grain is minimal and there are no clumped highlights or root detail like the references' trunks. The pink/dark tones are muddy and clustered, with little ramp structure. A careful artist would find this noticeably thinner and flatter than the Beodeul trees, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14847
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cherry blossom canopy (pink foliage band)",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk (brown, dark green shadow between roots)",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fallen petals and ground at the base",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tile is a face-on strip. Pink canopy fills rows 0-4 across the full 16px width, then the trunk runs down rows 5-14 with dark green shadow on both sides and petals at rows 13-15. The width profile is 16 for rows 0-10, narrows to 12 at row 11, returns to 16, then drops to 10 at row 15. It has no ellipse, no front-edge line followed by eave shadow, and no sloped plane. The canopy is a flat vertical mass, not a visible horizontal top. Only the front face is shown, so it matches the front-elevation reference examples."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a single 16x16 tile, a trunk band with a bit of canopy, and it is tiny next to the full reference trees. Its measured facts are far below both references: 12 distinct colours in total against 427 and 567, and a median of 12 per tile against about 108. Flat-fill coverage is 0%, and the dark edge pixels carry a tint (0% neutral), so the outline reads as dark material tone rather than near-black. By eye, the trunk and the dark foliage look like only about 3 lightness steps, with a few speckles of pink and green. The references have 5-6 steps per material, with clumped leaf highlights and shaded roots. A trunk band can legitimately be sparse, but 12 colours in a full tile is much thinner than the reference tile density, and the shading is shallow. A careful artist would not accept it next to the references without it looking flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15500
+  }
+ ],
+ "decidedAt": "2026-10-20T07:08:11.770Z",
+ "cells": {
+  "16": [
+   "6dd89fa7cbe858df"
+  ],
+  "24": [
+   "08fe1949f1c6887b",
+   "357250ae150e2248",
+   "3af26497b5a66eab",
+   "59883b4ea6f8791e",
+   "c77b5341371b0637",
+   "d878c4c4b8f71362"
+  ],
+  "32": [
+   "0a69a1b94f503774",
+   "202fd5666deaf0d7",
+   "79bb442061863ddc",
+   "7d9350063460ad6c",
+   "926e95ef2a48bd34",
+   "d9f03f116c97f3ae"
+  ],
+  "48": [
+   "12f92ef9eb5f62ee",
+   "5ecda48450c0964b",
+   "722f29c3bb0f3ccd",
+   "770fd1f339c3b74c",
+   "8d3366e5227fe862",
+   "e0bdf0669e66b6b4"
+  ]
+ }
+}

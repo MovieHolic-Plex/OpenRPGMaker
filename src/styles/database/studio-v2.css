@@ -59,6 +59,21 @@
   margin: 0;
 }
 
+/* 크럼 조각은 화면 낭독기용 목록(ol > li)이다. 목록 상자는 보이지 않게 하고, 부모 크럼의 간격을 그대로 이어받는다. */
+.database-modal-crumb-list,
+.database-modal-crumb-list > li {
+  align-items: center;
+  display: inline-flex;
+  gap: inherit;
+  min-width: 0;
+}
+
+.database-modal-crumb-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
 /* 현재 위치 — 레일은 한 그룹만 펼치므로 "어디를 편집하고 있나" 는 헤더가 답한다. */
 .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-crumb {
   align-items: center;

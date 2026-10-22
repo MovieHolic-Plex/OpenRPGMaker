@@ -20,6 +20,8 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `assistant-capability` · 시드 `harness-data/assistant-capability/seed.json`
   → `npm run harness -- assistant-capability <단계>` · 문서 `openwiki/harnesses/assistant-capability.md`
   → 실제 입력창의 Pi 경로를 쓴다. 필수 검수 누락은 미검증이며, 조수의 완료 선언이나 캡처만으로 합격시키지 않는다.
+  → **데모 게임을 손으로 고칠 때마다(hard rule, 2026-10-22):** 같은 변경에서 (a) `harness-data/assistant-capability/scene-lessons-seed.json` 에 조수 과제 한 줄을 더하고,
+    (b) 조수가 혼자 못 하는 결함이면 도구·스키마·스킬(`game-scene-polish`)·`scene-*` 경고를 고친다. 데모만 고치고 끝내지 않는다 — 절차는 문서 「장면 교훈 묶음」.
 
 - **버들항 새 건물 후보를 사람이 하나씩 허용/거절할 때** → `beodeul-building-review` · 시드 `harness-data/beodeul-building-review/seed.json` · `npm run harness -- beodeul-building-review produce|build|validate|gate|publish|serve|status|export` · 문서 `openwiki/harnesses/beodeul-building-review.md`. 사용자가 새 지붕·창문·벽 질감 저작을 명시 허용한 후보 경로다. 원본 도트 질감을 보존하고, 독립적인 질감·구조 Visual QA와 숨긴 반려 표본 검사를 모두 통과한 후보만 공개한다. build는 비공개 초안이다. 검사 생략·강제 PASS·점수 완화 금지. 사람이 현재 그림 해시에 대해 허용하기 전에는 번들·지도에 설치하지 않는다. 이전 form-wing/inn/smithy/warehouse는 사용자 반려이며 기준작으로 쓰지 않는다. 기존 원본 보존 보정은 아래 beodeul-architecture 경로를 따른다.
 
@@ -62,7 +64,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
 - **던전·동굴 공용 칩셋 beodeul_dungeon(버들항과 같은 oprn-atlas 계열)의 불규칙 벽·바닥 오토타일·물/용암/얼음 가장자리·계단·문·함정·상자·횃불 조각을 그릴 때**
   → `dungeon-chipset` · 시드 `harness-data/dungeon-chipset/seed.json` · `npm run harness -- dungeon-chipset palette|validate|list|draw|gate|sheet|pick|reject|status` · 문서 `openwiki/harnesses/dungeon-chipset.md`
   → 코드 손 도트(행 문자열), 버들항 실제 색 잠금 팔레트. 후보는 사람이 시트(`~/claude-viz/dungeon-<판>.html`)에서 고르고 pick 은 그림 해시에 묶인다. 관문 통과는 합격이 아니며 번들 굽기는 별도.
-- **새 기물(오브젝트) 그림을 번들·공용 DB·스토어·공방 칩셋에 굽거나 올리기 전 / 굽기·게시 스크립트에 3/4 시점 관문을 붙일 때** → `object-gate` · 시드 `harness-data/object-gate/seed.json` · `npm run harness -- object-gate review|enqueue|check|status|holds|serve-holds|calibrate|audit|preview|selftest-holds` · 문서 `openwiki/harnesses/object-gate.md`. **최종 통과는 서명된 사람 허용이다(사용자 결정 2026-10-20 — AI 판정 보정 2회 실패, 사용자가 매번 눈으로 판정).** 판정자 Claude Sonnet 5.5 high(`claude -p`) 하나×네 번의 3/4 + 버들항 화풍 판정은 1차 거름·조언이고, 영수증(어느 프로필이든)이 있는 그림을 사람이 검토 화면 `serve-holds`(http://mdc-server:18323/, 묶음별 대기열·「이 묶음 전부 허용」)에서 허용하면 그 화소 해시·종류에 묶인 서명 기록이 모든 출구를 연다. 거절은 최종. 사람 결정이 없으면 보정된 프로필의 PASS 만 지나간다(현재 프로필 `4d8774b517f41638` rejected → AI 만으로는 아무것도 안 지나감). 새 그림은 `enqueue` 로 대기열에 올린다. 감독·에이전트는 허용·거절하지 않는다.
+- **새 기물(오브젝트) 그림을 번들·공용 DB·스토어·공방 칩셋에 굽거나 올리기 전 / 굽기·게시 스크립트에 3/4 시점 관문을 붙일 때** → `object-gate` · 시드 `harness-data/object-gate/seed.json` · `npm run harness -- object-gate final-review|final-queue|final-calibrate|final-status|check|serve-holds|enqueue|review|status|preview` · 문서 `openwiki/harnesses/object-gate.md`. **최종 판정은 Opus 5.5 medium 적대적 VQA 다(사용자 결정 2026-10-21, 옵션 A 「사람 허용이 최종」을 대체).** 검사관 지시문으로 그 종류의 올바른 3/4 탑뷰(윗면 보임·옆면/아이소 없음·정면 입면도 아님·버들항 화풍)가 아닌 이유를 찾고, 한 호출 6장, 3표 만장일치, 애매하면 불합격. 기록(`final/<해시>.json`)은 그림 화소 해시·종류·프로필에 묶이고 **보정된 최종 프로필**(확실 위반을 하나도 놓치지 않은 것)의 기록만 출구에서 효력이 있다. Opus fail = 다시 그린다. 서명된 사람 거절(18323 검토 화면)은 Opus 통과도 막는 최종 차단이고, 사람 허용은 선택이며 Opus 판정이 없는 그림에만 효력이 있다. 감독자가 위임받아 허용을 기록할 때는 검토 API 에 `delegatedBy`+`evidence` 를 넣어 `by: "delegated"` 로 남긴다(사람 클릭 `human` 으로 위장 금지; 2026-10-21 이전 위임 기록은 note 의 「delegated by user to supervisor 2026-10-21」 로 구분). 옛 Sonnet·gemini 영수증은 조언이다. 감독·에이전트는 이 판정자 밖에서 그림을 통과시키지 않는다. **2026-10-21 현재 보정된 Opus 프로필 없음**(조건: 위반 100% + 칩셋 원본 90% 이상, v6 원본 70.3%) — 그때까지 Opus 기록은 효력이 없다.
 - **조선(바람의나라풍) 칩셋 joseon_baram 의 조각·지도를 만지거나 번들을 재생성할 때** (팔레트 잠금·게이트 P/E/T/L/S/A/K/TR/V·판정·지도 관문·16구역 적대 검수)
   → `joseon-baram` · 시드 `harness-data/joseon-baram/seed.json`(지도 15장·관문·쓰지 말 것)
   → `npm run harness -- joseon-baram <단계>` (palette·validate·list·gate·verdict·build·map·review·status) · 문서 `openwiki/harnesses/joseon-baram.md`
@@ -211,17 +213,17 @@ index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents
 **손 도트·코드 도트로 새로 그린 그림(jp_city 키트·건물 정면·소품, 칩셋 조각, 실내 기물, 월드맵 아이콘, 스토어 팩 그림 등 종류 불문)은
 3/4 탑뷰 검증을 통과한 뒤에만 번들·공용 DB·맵·스토어에 들어간다.** 「눈으로 봤다」「기계 지표 통과」「서브에이전트 QA 점수」는 이 관문을 대신하지 못한다.
 
-**최종 통과 = 서명된 사람 허용 (사용자 결정 2026-10-20, 옵션 A).** 이유: AI 판정 보정 2회 실패(규칙 v9 `1db03a95`·v10 `4d8774b5` 모두 rejected), 사용자가 매번 눈으로 판정 → 서명된 사람 허용이 최종.
-- AI 판정(`object-gate review`)은 **1차 거름·조언**이다. 영수증(어느 프로필이든)이 있어야 사람이 결정할 수 있다 — AI 가 한 번도 안 본 그림은 허용할 수 없다.
-- 사람이 검토 화면 `serve-holds`(http://mdc-server:18323/)에서 누른 **허용**은 그 그림 화소 해시·종류에 묶여 저장소 밖 키로 서명되고, 프로필 보정 여부와 무관하게 모든 출구(`require_pass`·`check`·시트 칸 관문·스토어·공방)를 연다. **거절은 최종**이다(공방 「그래도 넣기」도 무효). 한 화소라도 바뀌면 새로 판정·결정한다.
-- 사람 결정이 없으면 예전 그대로: 보정된 프로필의 PASS 만 지나가고 나머지는 막힌다.
-- **감독·에이전트는 절대 허용·거절하지 않는다.** 기록 파일을 쓰거나, 세션을 흉내 내 POST 하거나, 키를 읽어 서명하지 않는다. 할 수 있는 것은 `object-gate enqueue`(AI 조언을 받아 대기열에 올리기)와 화면 주소를 사람에게 주는 것뿐이다.
+**최종 판정 = Opus 5.5 medium 적대적 VQA (사용자 결정 2026-10-21 — 옵션 A 「서명된 사람 허용이 최종」(2026-10-20)을 대체).** 18323 에서 불합격인 그림은 다시 그린다.
+- 판정기 `npm run harness -- object-gate final-review --batch items.jsonl`(또는 `--png --kind`) — `claude -p --model claude-opus-5-5 --effort medium`(로컬 Claude 경로, Argon 아님), 검사관 지시문, 한 호출 6장, 3표 만장일치, 애매하면 불합격. 기록 `final/<해시>.json` 은 그림 화소 해시·종류·프로필에 묶인다. 한 화소라도 바뀌면 다시 받는다.
+- **보정된 최종 프로필의 기록만 효력이 있다**(`final-calibrate`: 숨김 표본 포함 확실 위반을 하나도 놓치지 않아야 calibrated). 현황은 `object-gate final-status`. 보정 기준을 풀지 마라 — 놓치면 지시문을 더 엄하게 한다.
+- 출구(`require_pass`·`check`·시트 칸 관문·스토어·공방, TS·Python 같은 규칙): ① 서명된 사람 **거절**은 최종 차단(Opus 통과도 막는다) ② Opus 기록이 있으면 그 판정이 최종(fail = 차단, 공방 로컬만 사람 「그래도 넣기」) ③ Opus 기록이 없을 때만 옛 규칙(서명된 사람 허용 — 이제 선택 — 또는 보정된 옛 프로필의 PASS).
+- 검토 화면 `serve-holds`(http://mdc-server:18323/)는 Opus 판정·이유를 보이고 「Opus 불합격」으로 거른다. 대기열 일괄 판정은 `final-queue`, 불합격 목록(`~/.cache/opus-gate/fails.json`)이 다시 그리기 작업 목록이다.
+- **감독·에이전트는 이 판정자 밖에서 그림을 통과시키지 않는다.** 기록 파일을 손으로 쓰거나, 사람 화면을 흉내 내 POST 하거나, 서명 키를 읽지 않는다.
+- 새 그림을 만든 에이전트는 완료 보고에 `object-gate final-review` 결과(또는 `final-status`)를 붙인다. Opus pass 가 없으면 「3/4 관문 미통과」라고 쓴다.
 
-- 관문의 정본은 `object-gate` 하나다: `npm run harness -- object-gate review|check|status` · 문서 `openwiki/harnesses/object-gate.md`.
-- **개별 저장소(2026-10-20 분리):** 관문 코드·데이터의 공유 정본은 비공개 저장소 `MovieHolic-Plex/object-gate`(로컬 `~/z-project/object-gate`)다. 이 저장소의 네 경로(`src/harnesses/object-gate`·`src/harnesses/_core/objectGate`·`src/harnesses/_core/object_gate`·`harness-data/object-gate`)는 같은 경로·같은 바이트의 **사본**이라 모든 호출자는 그대로 쓴다. 여기서 관문을 바꾸면 평소처럼 PR 로 병합한 뒤 `npm run object-gate:sync -- export --push` 로 그 저장소에 올린다. 그 저장소에서 바뀐 것은 `import` 해서 PR 로 들인다. `status` 가 충돌을 보이면 손으로 맞추고, 영수증·승인 파일은 내용을 고치지 않는다.
-  판정자 Claude Sonnet 5.5 high(`claude-cli/claude-sonnet-5-5` effort=high) 하나×네 번(중앙값·과반 + 독립 눈 3번 거부권)이고, 3/4 와 버들항 화풍을 따로 호출해 둘 다 통과해야 통과한다(영수증에 칸 둘; 숫자 지표는 보조). 결과는 pass·fail·refer(사람 확인) 3상태다. 영수증은 그림 화소 해시에 묶인다. 그림이 한 화소라도 바뀌면 다시 받는다.
-- **지금 상태(2026-10-20 실측): 현재 프로필 `4d8774b517f41638`(규칙 v10) 보정 rejected** — AI 판정만으로 지나가는 그림은 없다. 새 그림은 `npm run harness -- object-gate enqueue --batch items.jsonl --id <묶음> --title <이름>` 으로 AI 조언을 받아 18323 대기열에 올리고, 사용자가 허용한 것만 굽는다(굽기 스크립트 `refusal`/`require_pass` 가 서명 기록을 확인한다; 우회 `JP_GATE=skip`·`--no-gate`·`--dev` 는 제거됨, 배선 표는 `openwiki/harnesses/object-gate.md`). 정면형 소품(간판·건조 틀)은 종류 `front_prop`(터미널 `approve-front-prop` 승인 경로도 남아 있다). 사람 허용 전에는 「관문이 있다」·「통과했다」고 쓰지 마라.
-- 새 그림을 만든 에이전트는 완료 보고에 `object-gate holds` 출력(대기열 묶음과 허용 수)을 붙인다. 사람 허용이 없으면 「3/4 관문 미통과(사람 검토 대기)」라고 쓴다.
+- 관문의 정본은 `object-gate` 하나다: `npm run harness -- object-gate final-review|check|final-status` · 문서 `openwiki/harnesses/object-gate.md`.
+- **개별 저장소(2026-10-20 분리):** 관문 코드·데이터의 공유 정본은 비공개 저장소 `MovieHolic-Plex/object-gate`(로컬 `~/z-project/object-gate`)다. 이 저장소의 네 경로(`src/harnesses/object-gate`·`src/harnesses/_core/objectGate`·`src/harnesses/_core/object_gate`·`harness-data/object-gate`)는 같은 경로·같은 바이트의 **사본**이라 모든 호출자는 그대로 쓴다. 여기서 관문을 바꾸면 평소처럼 PR 로 병합한 뒤 `npm run object-gate:sync -- export --push` 로 그 저장소에 올린다. 그 저장소에서 바뀐 것은 `import` 해서 PR 로 들인다. `status` 가 충돌을 보이면 손으로 맞추고, 영수증·승인·최종 기록 파일은 내용을 고치지 않는다.
+- 옛 판정자(Claude Sonnet 5.5 high ×4 + 독립 눈, 프로필 `4d8774b517f41638` rejected) 영수증(`review`·`enqueue`)은 조언으로만 남는다. 정면형 소품(간판·건조 틀)은 종류 `front_prop` — Opus 도 종류가 맞을 때만 면제한다.
 - 굽기·게시 스크립트에는 `src/harnesses/_core/object_gate` 의 `require_pass(img, kind=, context=, label=)` 를 붙인다(Python). 새 굽기 스크립트를 만들 때 이것부터 건다.
 - 관문을 건너뛰거나 점수·기준을 완화하지 마라. 막히면 그림을 고치거나 사용자에게 묻는다.
 - 시점 규칙 면제 종류(`flat`·`terrain`·`organic`·`debris`·`wall_mounted`)도 판정자 과반이 「종류가 맞다」고 해야 한다.
@@ -241,6 +243,10 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 `scripts/qa/runtime/<name>.scenario.mjs`. 설계·근거는
 `docs/superpowers/specs/2026-08-28-runtime-vision-qa-design.md`, 함정 목록은
 `openwiki/testing.md`.
+
+**늦은 단계(보스·엔딩·패배 카드·보고 장면 등)는 타이틀부터 다시 플레이하지 말고 체크포인트로 바로 들어간다:**
+`npm run qa:runtime -- --scenario checkpoints --checkpoint-set <데모> --checkpoint <id|all> --parallel 2`.
+세트는 `scripts/qa/runtime/checkpoints/<데모>.json`, 규칙·형식은 `openwiki/testing.md` 「런타임 QA 체크포인트」.
 
 왜 편집기 경로로 하면 안 되는가 (실측):
 - `src/app/mode.ts` 의 `enterMode` 는 play 모드에서도 `renderTopbar()` 를 호출한다 —
@@ -359,6 +365,7 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 현재 정본은 Electron 또는 팀 프로젝트 호스트가 관리하는 `project.sqlite` + `assets/`다.
 LegacyDb는 과거 데이터 이관·복구 경로이며 새 콘텐츠 작업의 필수 연결이 아니다.
 실행·백업 계약은 `openwiki/team-project-host.md`, 제거 현황은 `openwiki/storage-retirement.md`를 따른다.
+사람 여러 명이 같이 편집하는 「팀 협업」(초대·참여·권한)은 2026-10-21 부터 @deprecated 다 — 진입점은 `electron/shared/teamCollab.ts` 의 `TEAM_COLLAB_ENABLED=false` 뒤에 숨었다. 저장 호스트 자체는 그대로다.
 
 1. 콘텐츠 작업 전에 **프로젝트 폴더 또는 호스트 주소와 project id**를 확인한다.
    저장 대상에 접근할 수 없으면 대상 연결 정보를 요청한다. 임시 메모리 세션으로 대체하지 않는다.

@@ -54,7 +54,7 @@ LegacyDb 설정은 과거 데이터 이관에만 필요하다. 제거 현황은 
 현재 Electron과 `npm run serve:project`, `npm start`는 로컬/서버 SQLite 정본을 사용한다.
 `npm start`에는 기존 SQLite 폴더를 `OPRN_PROJECT_DIR` 또는 `--project-dir`로 지정한다.
 `npm run preview`는 저장 브리지 없는 정적 미리보기다.
-팀 초대·호스팅·백업·충돌 처리 절차는 `openwiki/team-project-host.md`.
+호스팅·백업·충돌 처리 절차는 `openwiki/team-project-host.md`. 사람 팀 협업(초대·참여·권한)은 2026-10-21 부터 @deprecated — 같은 문서 첫 절.
 아래 과거 Mac launcher/LegacyDb 설정 설명을 새 팀 호스트의 필수 설정으로 적용하지 않는다.
 
 ## 1a. Mac / 개인 로컬 실행 (2026-09-21)

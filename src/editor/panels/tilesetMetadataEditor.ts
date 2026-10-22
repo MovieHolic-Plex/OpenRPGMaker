@@ -7,7 +7,8 @@ import {
 } from "@/editor/panels/tilesetAutotileEditor";
 import { renderChipsetPreviewPanel } from "@/editor/panels/tilesetChipsetPreview";
 import { renderTileGroupPanel } from "@/editor/panels/tilesetGroupEditor";
-import { textControl } from "@/editor/panels/databaseControls";
+import { textControl, toggleSwitch } from "@/editor/panels/databaseControls";
+import { isCounterTile, setCounterTile } from "@/project/counterTiles";
 import {
   ensureTileMeta,
   listUnlabeledTileIds,
@@ -309,7 +310,7 @@ function renderPassagePaintTools(rerender: () => void): HTMLElement {
     el("button", {
       class: `database-footer-button tileset-passage-choice${current === mark ? " active" : ""}`,
       text: label,
-      attrs: { type: "button", "aria-pressed": String(current === mark), title: `${label} — 시트에서 클릭·드래그로 칠합니다` },
+      attrs: { type: "button", "aria-pressed": String(current === mark), title: mark === "star" ? "지나갈 수 있지만 캐릭터보다 위에 그려져요 (나뭇잎·지붕 끝처럼 캐릭터를 가리는 칸)" : `${label} — 시트에서 클릭·드래그로 칠합니다` },
       dataset: { testid },
       on: {
         click: () => {
@@ -328,7 +329,7 @@ function renderPassagePaintTools(rerender: () => void): HTMLElement {
         children: [
           paintButton("o", "통과", "tileset-passage-open"),
           paintButton("x", "막힘", "tileset-passage-blocked"),
-          paintButton("star", "위 ★", "tileset-passage-star"),
+          paintButton("star", "캐릭터 위 ★", "tileset-passage-star"),
         ],
       }),
       el("span", { class: "tileset-passage-paint-hint", text: "시트에서 클릭·드래그로 칠합니다" }),
@@ -340,7 +341,7 @@ function renderPassageInspector(tileset: TilesetDef, rerender: () => void): HTML
   const home = tileLayerHome(tileset, selectedTile);
   const homeLabel = home === "both" ? "양쪽" : home === "upper" ? "상위" : "하위";
   const mark = passageMarkForTile(tileset, selectedTile);
-  const markLabel = mark === "x" ? "막힘" : mark === "star" ? "위 ★" : "통과";
+  const markLabel = mark === "x" ? "막힘" : mark === "star" ? "캐릭터 위 ★" : "통과";
   const rows = Math.ceil(tileset.count / tileset.tilesPerRow);
   const passage = tileset.passability[selectedTile] ?? passableFlag();
   return el("section", {
@@ -378,6 +379,7 @@ function renderPassageInspector(tileset: TilesetDef, rerender: () => void): HTML
         });
         return details;
       })(),
+      renderCounterToggle(tileset, rerender),
       ...renderRuleControls(tileset, rerender).filter((node) => String(node.className ?? "").includes("tileset-rule-layer")),
       el("div", {
         class: "tileset-legend-sheet-info",
@@ -394,6 +396,29 @@ function renderPassageInspector(tileset: TilesetDef, rerender: () => void): HTML
       }),
     ],
   });
+}
+
+/**
+ * RPG Maker 「카운터」 속성. 켜면 주인공이 이 칸을 마주 보고 조사할 때 너머 칸의 이벤트(카운터 뒤 주인·식탁 건너편 사람)에
+ * 말이 걸린다. 칩셋이 정한 적 없으면 이름표(카운터·탁자·책상) 기본값이 보인다 — 처음 고치면 그 기본값을 목록으로 굳힌다.
+ */
+function renderCounterToggle(tileset: TilesetDef, rerender: () => void): HTMLElement {
+  const wrap = el("div", {
+    class: "tileset-rule-counter",
+    dataset: { testid: "tileset-rule-counter" },
+    attrs: { title: "카운터·탁자 칸: 마주 보고 조사하면 너머 칸의 사람에게 말을 겁니다 (상점 카운터 뒤 주인)" },
+    children: [
+      toggleSwitch("카운터 (너머로 말 걸기)", "tileset-counter-toggle", isCounterTile(tileset, selectedTile), (on) => {
+        recordProjectSnapshot();
+        store.update((project) => {
+          const target = project.tilesets[tileset.id];
+          if (target) setCounterTile(target, selectedTile, on);
+        }, { scope: "project", label: "타일 카운터 속성" });
+        rerender();
+      }),
+    ],
+  });
+  return wrap;
 }
 
 function renderTileZoom(tileset: TilesetDef, tile: number): HTMLElement {

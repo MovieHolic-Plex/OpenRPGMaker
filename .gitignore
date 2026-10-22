@@ -280,3 +280,5 @@ harness-data/object-gate/calibration/answers/eye-*/
 
 # 월드맵 키트 체크아웃(정본 = 공개 저장소 oprn-worldmap-kit, npm run worldmap-kit:sync)
 /.worldmap-kit/
+# 생성기 저장소 bare 사본(정본 = object-gen·char-gen·tile-gen 저장소, npm run gen-kits:sync)
+/.gen-kits/

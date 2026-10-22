@@ -1,0 +1,386 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "230e87be33749fa5d3a090d7925b3594bace4997f3a5de59155f4460d5c7636c",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "aud lectern",
+ "label": "modern_city_interior/aud-lectern",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 39,
+  "nearBlackEdge": 0.09,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sloped reading desk top",
+      "rows": "5-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "14-14"
+     },
+     {
+      "part": "quill or pen strokes on top",
+      "rows": "1-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal front with gold emblem",
+      "rows": "15-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth with gold band",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The lectern head has a light pink reading surface in rows 5-11 at full width 14. It ends in a gold front-edge band at rows 12-13, followed by a dark shadow row at 14, so the top surface has a front-edge line and eave shadow. Below it the narrower pedestal (width 12, rows 15-27) shows the front face with a gold emblem, and a base band sits at rows 28-31. The dark strokes in rows 1-9 are a quill or ink decor, not the main body. The top is about 7 rows, which is more than a rim, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The lectern is about one tile wide and two tall. It has 10 visible tones per full tile, close to prop-hedge at 9 and below the well at 20 and the stall at 17. Near-flat coverage is 0%, so there are no 5x5 flat fills. Only 18% of its dark edge pixels are neutral, so the outline is a tinted dark brown/red-brown beside the material rather than a uniform black line, and it is used selectively. The slanted desk top and pedestal body each carry roughly 4 value steps with edge highlights and grain dots, a little under the 5-6 steps of the references. It is a small, simple piece and looks like it belongs next to the references rather than a flat sticker. Overall it is slightly lighter on detail than the richest references but matches the hedge on the primary facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17342
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "reading slope / desk top",
+      "rows": "5-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "14-14"
+     },
+     {
+      "part": "gold front trim band",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "black stand arms / ornaments on top",
+      "rows": "1-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal front body with emblem",
+      "rows": "15-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base with gold band",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wide pinkish desk slab (rows 5-11, 14 px wide) sits above a gold front-edge line at rows 12-13, followed by a dark eave shadow at row 14. This reads as a foreshortened top surface. Below it the narrower pedestal front (rows 15-27) with a gold emblem and a gold-trimmed base (rows 28-31) gives about 17 rows of front face. The thin black lines at rows 1-9 are small decor items on the desk top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small wooden lectern, drawn on roughly one tile, with a pink-red pedestal base and a brown reading slope topped by a small hanging element. Measured facts: 10 visible tones per tile, 0% near-flat coverage, and 18% near-neutral dark edge pixels. This is in line with the hedge (9 tones) and well below the well (20) and cheese stall (17). The outline is mostly a tinted dark brown/red rather than neutral black, so it counts as dark_material_tone. No large flat fills. Shading on the body is about 4 steps (highlight, light, mid, dark) versus roughly 5-6 on the stall and well, and grain on the column is modest. At 2x it looks a little simpler and smaller than the larger references, with less per-surface grain, though it is clean and not sticker-like. It is acceptable next to the sparse props (bench, lamp), but slightly thinner than the richer ones, so it is borderline. Given the 'when in doubt, fail' rule, the slightly lower density and 4 steps tip it to a fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13985
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "reading desk top (slanted pink panel)",
+      "rows": "5-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "14-14"
+     },
+     {
+      "part": "black ribbons / bookmarks on desk",
+      "rows": "1-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold front band under the desk top",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaft with emblem (front face)",
+      "rows": "15-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth with gold rim",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The desk top is a 14px-wide pink panel on rows 6-11. A 1-row dark outline is on row 5. The panel ends in a gold front-edge band on rows 12-13, which widens to 16px on rows 13-15. A darker shadow row (14, #8b4f3f) follows, then the 12px-wide shaft with a gold emblem on rows 15-27. A gold-rimmed base is on rows 28-31, so the front face is about 17 rows. The black ribbons or pen rising from rows 1-9 are decor. The top surface is a distinct multi-row plane with an edge line and eave shadow, so it is not a flat front panel."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The lectern is a small, tall single-tile prop. It shows 10 visible tones per full 16x16 tile, which is above the hedge reference (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. Only 18% of the dark edge pixels are near-neutral, so the outline is mostly tinted and sits close to the material tone rather than being a black sticker line. The body has a lighter central panel and a shaded top reading stand, with grain-like variation. It has about 4 ramp steps against roughly 5 on the references, and its 13 total colours are far fewer than the complex props. That is comparable to the hedge, which has 11, and the piece is simple by nature. A careful artist would accept it beside the references without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19349
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "slanted reading top (pink panel)",
+      "rows": "6-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "14-14"
+     },
+     {
+      "part": "gold front lip band",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark candle/stylus ornaments on top",
+      "rows": "1-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front body with emblem",
+      "rows": "15-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold base band",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The lectern head has a pink top panel in rows 6-11 (width 14) that ends in a gold front-edge band at rows 12-13, with a dark eave shadow at row 14 (L=95). Below it is a narrower front body in rows 15-27 (width 12) with an emblem, then a wider gold base at rows 28-31. The dark strokes above the top in rows 1-9 are decor. The 6-row top plus 17-row front face reads as a 3/4 view, not a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The lectern is about one tile wide and 1.25 tiles tall. It has 10 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no flat fills. Only 18% of dark edge pixels are near-neutral, so the outline carries a dark brown tint, like the wood and hedge references, rather than a black sticker line. The wood body shows about 5 lightness steps (top, face, side, shadow, base), with a lit slab and a book or sign on the slanted top that give it grain-like variation. It is less rich than the stall and well, but those are much larger multi-material pieces. At its small scale it matches the hedge and bench in density and craft, so a careful artist would accept it next to them. The total palette of 13 colours is comparable to the hedge's 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16484
+  }
+ ],
+ "decidedAt": "2026-10-20T22:55:59.242Z",
+ "cells": {
+  "16": [
+   "7614b957e387ca38",
+   "89fb1092ad094f56"
+  ],
+  "24": [
+   "1a31abb87acecffe",
+   "22d16b25260359d2",
+   "25910671acd687e7",
+   "289f1a28ab04b297",
+   "4b65117d01b23a44",
+   "5b84141c186cda41",
+   "5d015d52d276061f",
+   "b557ea659f4570ed",
+   "de41c4c124e4567d",
+   "e0439e579fba5fb3",
+   "ecd8b8e94e858206",
+   "f0e8621157e7a43e"
+  ],
+  "32": [
+   "cc6bc229c2318274",
+   "dbe0b573a0415742",
+   "ff03e44bdf32606c"
+  ],
+  "48": [
+   "1893ad199bb270ba",
+   "27bc99407e4b692a",
+   "3512509eb9492bc8",
+   "48118f8f3d96aa2c",
+   "a52dbcc60866664f",
+   "cf827e56b98a5f77"
+  ]
+ }
+}

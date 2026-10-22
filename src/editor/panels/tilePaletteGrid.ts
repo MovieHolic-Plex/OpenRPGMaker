@@ -21,6 +21,11 @@ import {
 
 export const GRID_PALETTE_COLUMNS = 6;
 export const CUSTOM_PALETTE_MIN_CELL_SIZE = 16;
+/**
+ * 이 열 수 이하의 시트는 칸을 패널 폭에 맞춰 줄여서라도 한 화면에 다 보인다(가로 스크롤 없음).
+ * 16열 × 최소 16px = 256px 가 좌패널 안쪽 248px(세로 스크롤바 제외)보다 길어 마지막 열이 반쯤 잘렸다.
+ */
+export const CUSTOM_PALETTE_FIT_COLUMNS = 16;
 /** Large uploaded atlases should not block the first editor paint with thousands of buttons. */
 const DEFERRED_CUSTOM_PALETTE_THRESHOLD = 512;
 
@@ -359,7 +364,7 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
   const rows = Math.max(1, Math.ceil(args.tileset.count / columns));
   const displayTiles = buildCustomPaletteModel(args.tileset);
   const sheet = el("div", {
-    class: `chipset-sheet tile-palette custom-palette${sourceLayout ? " source-layout" : ""}`,
+    class: `chipset-sheet tile-palette custom-palette${sourceLayout ? " source-layout" : ""}${!sourceLayout && columns <= CUSTOM_PALETTE_FIT_COLUMNS ? " fits-panel" : ""}`,
     dataset: {
       testid: "tile-palette",
       paletteKind: "custom",

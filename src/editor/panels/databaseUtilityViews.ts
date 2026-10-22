@@ -335,7 +335,7 @@ function flagInspector(
         testid: `db-${kind.kind}-name-card`,
       }),
       sectionCard({
-        title: "런타임 초기값",
+        title: "테스트 플레이 시작값",
         hint: kind.kind === "switch"
           ? "테스트 플레이를 시작할 때의 on/off 상태입니다."
           : "테스트 플레이를 시작할 때의 숫자 값입니다.",
@@ -350,8 +350,8 @@ function flagInspector(
       }),
       usageCard(kind, record.id, usage),
       sectionCard({
-        title: `${kind.label} 범위 이름 변경`,
-        hint: "시작 번호부터 개수만큼 접두사를 붙여 한 번에 이름을 매깁니다.",
+        title: "여러 개 이름 한꺼번에 붙이기",
+        hint: "시작 번호와 개수를 정하면, 그 번호들에 같은 앞말을 붙여 한 번에 이름을 매깁니다.",
         children: [rangeControls(kind, rerender)],
         testid: `db-${kind.kind}-range-card`,
       }),

@@ -2,6 +2,7 @@ import { existsSync, realpathSync } from "node:fs";
 import { resolve } from "node:path";
 import { openTeamDirectory, type TeamDirectory, type TeamMember } from "../local-store/team";
 import { join } from "node:path";
+import { TEAM_COLLAB_ENABLED } from "../shared/teamCollab";
 import { initLocalProjectStore, type LocalProjectStore } from "../local-store/store";
 
 /** 창 하나·탭 하나를 가리키는 키. Electron 은 webContents.id, HTTP는 로그인 세션·브라우저 탭별 키를 쓴다. */
@@ -105,6 +106,8 @@ export function createProjectSessionRegistry() {
       if (!session) throw new Error("no project session");
       const member = session.team.member(identities.get(key) ?? session.team.owner().id);
       if (!member) throw new Error("팀 접근 권한이 취소되었습니다");
+      // 사람 팀 협업이 꺼져 있으면(2026-10-21) 예전 초대로 남은 「보기 전용」도 편집자로 본다 — 팀 역할이 편집을 막지 않는다.
+      if (!TEAM_COLLAB_ENABLED && member.role === "viewer") return { ...member, role: "editor" };
       return member;
     },
     get(key: SessionKey): ProjectSession | null {

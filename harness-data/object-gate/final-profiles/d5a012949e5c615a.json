@@ -1,0 +1,460 @@
+{
+ "schema": "oprn-object-gate-final-profile/1",
+ "profileHash": "d5a012949e5c615a",
+ "status": "rejected",
+ "calibratedAt": "2026-10-20T17:33:42.810Z",
+ "judge": {
+  "provider": "claude-cli",
+  "model": "claude-opus-5-5",
+  "effort": "medium"
+ },
+ "bad": {
+  "total": 223,
+  "caught": 215,
+  "missed": [
+   "fresh5/s022_interior",
+   "originals-v5large/v5l__reject-loaf-cabinet-r1",
+   "fresh4/q001_gothic",
+   "originals-v5large/v5l__reject-potion-cabinet-r0",
+   "style/farm__farm-coop__v2",
+   "originals-v5large/v5l__reject-book-cabinet-r1",
+   "originals-v5large/v5l__reject-potion-cabinet-r1",
+   "style/farm__farm-barn__v2"
+  ]
+ },
+ "good": {
+  "total": 338,
+  "passed": 213,
+  "falseFail": [
+   "holdout/mir_bar_stool__w5-C",
+   "holdout/mir_beodeul__prop-stall_herb_flower",
+   "fresh4/q019_prehistoric",
+   "originals-jp/jp__jp-bldg-shop-realestate-shut",
+   "fresh5/s084_prehistoric",
+   "interior/stove__w44-A",
+   "interior/feed_trough__w4-B",
+   "fresh4/q110_beodeul",
+   "fresh/g39_desert",
+   "fresh5/s006_modern_city",
+   "originals-interior/int__bookshelf_3w",
+   "fresh3/b3_prop-tree_planter",
+   "fresh3/b3_prop-parasol_table",
+   "originals-interior/int__basket__cabbage",
+   "originals-interior/int__table__loaf_bun",
+   "originals-jp/jp__jp-bldg-house-flat3",
+   "holdout/mir_roundtable__v5",
+   "originals-interior/int__throne",
+   "fresh/g6_snow",
+   "holdout/real_broom_bucket",
+   "originals-interior/int__potted_cactus",
+   "interior/bar_stool__w5-C",
+   "holdout/mir_beodeul__house-h124_0",
+   "originals-interior/int__pew",
+   "fresh4/q118_modern_city",
+   "fresh3/b3_prop-veg_cart",
+   "fresh5/s070_wizarding",
+   "fresh5/s027_jp_city_interior",
+   "interior/cheese_wheels__v5",
+   "fresh/g26_modern_city",
+   "fresh5/s019_campus",
+   "fresh/g63_sky",
+   "fresh/g79_sengoku",
+   "fresh5/s055_gothic",
+   "holdout/mir_stove__w44-A",
+   "fresh5/s082_sengoku",
+   "fresh5/s042_sengoku",
+   "originals-jp/jp__jp-bldg-shop-vacant",
+   "originals-interior/int__potted_flowering",
+   "fresh5/s059_prehistoric",
+   "fresh2/g26_steampunk",
+   "originals-interior/int__pot",
+   "originals-jp/jp__jp-bldg-shop-realestate",
+   "holdout/mir_timber_prop__w53-B",
+   "fresh5/s031_modern_city",
+   "style/beodeul__prop-stall_herb_flower",
+   "fresh/g18_modern_city",
+   "interior/coal_bin__w10-B",
+   "fresh4/q055_wizarding",
+   "fresh/g62_modern_city",
+   "fresh4/q108_interior",
+   "fresh5/s024_sf",
+   "fresh3/b3_house-h132_0",
+   "holdout/mir_cheese_wheels__v5",
+   "originals-interior/int__bed_green",
+   "holdout/hue_cheese_wheels__v5",
+   "fresh3/b3_prop-statue_sage",
+   "fresh5/s026_desert",
+   "originals-interior/int__table__cake_pie",
+   "fresh/g47_sky",
+   "originals-jp/jp__vehicle__jp-car-kei-yellow",
+   "pairs/new-column",
+   "holdout/hue_new-column",
+   "originals-jp/jp__jp-bldg-shop-books-shut",
+   "originals-interior/int__bar_stool",
+   "originals-interior/int__shelf__potion_potionb_potiong",
+   "holdout/mir_coal_bin__w10-B",
+   "originals-jp/jp__jp-bldg-post-office",
+   "originals-interior/int__cauldron",
+   "originals-interior/int__water_jar",
+   "originals-interior/int__barrel__potato",
+   "originals-interior/int__stove",
+   "fresh4/q031_sf",
+   "fresh3/b3_prop-mooring_bollard",
+   "originals-interior/int__chair_S",
+   "fresh4/q102_steampunk",
+   "originals-interior/int__barrel__apple",
+   "interior/holy_water_font__w7-A",
+   "holdout/mir_new-column",
+   "holdout/hue_beodeul__prop-stall_herb_flower",
+   "fresh2/g7_steampunk",
+   "fresh2/g12_modern_city",
+   "fresh5/s028_jp_city_interior",
+   "originals-interior/int__holy_water_font",
+   "originals-interior/int__basket__carrot",
+   "fresh2/g25_desert",
+   "originals-interior/int__ice_chest__fish_fishr_fish",
+   "fresh/g0_pirate",
+   "originals-interior/int__washbasin",
+   "originals-interior/int__shelf__herb",
+   "holdout/mir_potted_fern__w7-B",
+   "fresh4/q054_desert",
+   "fresh/g53_modern_city",
+   "fresh3/b3_house-h101_1",
+   "fresh5/s049_interior",
+   "fresh5/s023_jp_city_interior",
+   "originals-interior/int__crate__cabbage",
+   "originals-interior/int__ice_chest__fish_fishg_fishr",
+   "fresh/g12_desert",
+   "fresh/g4_campus",
+   "originals-jp/jp__jp-bldg-shop-pharmacy",
+   "fresh4/q029_pirate",
+   "fresh3/b3_prop-anchor_display",
+   "interior/potted_fern__w7-B",
+   "fresh4/q092_modern_city",
+   "fresh5/s053_pirate",
+   "fresh5/s089_sf",
+   "fresh5/s054_sf",
+   "holdout/mir_conductor_podium__w31-F",
+   "originals-interior/int__armchair",
+   "holdout/hue_coal_bin__w10-B",
+   "fresh3/b3_prop-stall_jug_bottle",
+   "originals-interior/int__straw_bed",
+   "originals-jp/jp__jp-bldg-house-terrace",
+   "interior/timber_prop__w53-B",
+   "originals-interior/int__chest",
+   "originals-interior/int__potted_fern",
+   "fresh4/q003_sengoku",
+   "fresh3/b3_prop-stall_veg",
+   "fresh3/b3_house-h120_0",
+   "holdout/real_sack_flour",
+   "holdout/mir_beodeul__house-h122_0",
+   "fresh5/s045_snow",
+   "holdout/hue_feed_trough__w4-B",
+   "fresh4/q111_beodeul"
+  ]
+ },
+ "sets": {
+  "holdout": {
+   "bad": {
+    "total": 47,
+    "caught": 47
+   },
+   "good": {
+    "total": 47,
+    "passed": 28
+   }
+  },
+  "interior": {
+   "bad": {
+    "total": 24,
+    "caught": 24
+   },
+   "good": {
+    "total": 19,
+    "passed": 11
+   }
+  },
+  "fresh4": {
+   "bad": {
+    "total": 25,
+    "caught": 24
+   },
+   "good": {
+    "total": 38,
+    "passed": 26
+   }
+  },
+  "adv-front-prop": {
+   "bad": {
+    "total": 84,
+    "caught": 84
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "originals-interior": {
+   "bad": {
+    "total": 0,
+    "caught": 0
+   },
+   "good": {
+    "total": 57,
+    "passed": 28
+   }
+  },
+  "fresh2": {
+   "bad": {
+    "total": 3,
+    "caught": 3
+   },
+   "good": {
+    "total": 6,
+    "passed": 2
+   }
+  },
+  "originals-jp": {
+   "bad": {
+    "total": 0,
+    "caught": 0
+   },
+   "good": {
+    "total": 59,
+    "passed": 50
+   }
+  },
+  "fresh5": {
+   "bad": {
+    "total": 16,
+    "caught": 15
+   },
+   "good": {
+    "total": 41,
+    "passed": 22
+   }
+  },
+  "fresh": {
+   "bad": {
+    "total": 4,
+    "caught": 4
+   },
+   "good": {
+    "total": 22,
+    "passed": 10
+   }
+  },
+  "murim": {
+   "bad": {
+    "total": 5,
+    "caught": 5
+   },
+   "good": {
+    "total": 4,
+    "passed": 4
+   }
+  },
+  "originals-v5large": {
+   "bad": {
+    "total": 6,
+    "caught": 2
+   },
+   "good": {
+    "total": 8,
+    "passed": 8
+   }
+  },
+  "style": {
+   "bad": {
+    "total": 8,
+    "caught": 6
+   },
+   "good": {
+    "total": 12,
+    "passed": 11
+   }
+  },
+  "fresh3": {
+   "bad": {
+    "total": 0,
+    "caught": 0
+   },
+   "good": {
+    "total": 24,
+    "passed": 13
+   }
+  },
+  "pairs": {
+   "bad": {
+    "total": 1,
+    "caught": 1
+   },
+   "good": {
+    "total": 1,
+    "passed": 0
+   }
+  }
+ },
+ "tiers": {
+  "A": {
+   "bad": {
+    "total": 209,
+    "passed": 6
+   },
+   "good": {
+    "total": 318,
+    "passed": 193
+   }
+  },
+  "C": {
+   "bad": {
+    "total": 76,
+    "passed": 3
+   },
+   "good": {
+    "total": 37,
+    "passed": 6
+   }
+  },
+  "A-style": {
+   "bad": {
+    "total": 77,
+    "passed": 48
+   },
+   "good": {
+    "total": 84,
+    "passed": 80
+   }
+  },
+  "U": {
+   "bad": {
+    "total": 32,
+    "passed": 1
+   },
+   "good": {
+    "total": 15,
+    "passed": 5
+   }
+  },
+  "D": {
+   "bad": {
+    "total": 32,
+    "passed": 3
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "B": {
+   "bad": {
+    "total": 14,
+    "passed": 2
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "K": {
+   "bad": {
+    "total": 0,
+    "passed": 0
+   },
+   "good": {
+    "total": 10,
+    "passed": 0
+   }
+  }
+ },
+ "errors": [],
+ "originals": {
+  "beodeul_city": {
+   "total": 55,
+   "passed": 31,
+   "failed": [
+    "fresh3/b3_prop-stall_jug_bottle",
+    "fresh3/b3_prop-veg_cart",
+    "fresh3/b3_prop-anchor_display",
+    "fresh3/b3_prop-stall_veg",
+    "fresh3/b3_prop-fish_barrel",
+    "fresh3/b3_prop-mooring_bollard",
+    "fresh3/b3_prop-bread_rack",
+    "fresh3/b3_prop-door_pots",
+    "fresh3/b3_prop-parasol_table",
+    "fresh3/b3_prop-planter_round",
+    "fresh3/b3_prop-sword_barrel",
+    "fresh3/b3_prop-flowerbox_long",
+    "fresh3/b3_prop-tree_planter",
+    "fresh3/b3_prop-column_monument",
+    "fresh3/b3_prop-statue_sage",
+    "fresh3/b3_prop-flowerbed",
+    "fresh3/b3_house-h101_1",
+    "fresh3/b3_house-h120_0",
+    "fresh3/b3_house-h132_0",
+    "style/beodeul__prop-stall_herb_flower",
+    "style/beodeul__prop-flower_cart",
+    "style/beodeul__prop-goods_pile",
+    "style/beodeul__prop-table_mugs",
+    "style/beodeul__prop-lamp_double"
+   ]
+  },
+  "jp_city": {
+   "total": 59,
+   "passed": 49,
+   "failed": [
+    "originals-jp/jp__jp-bldg-post-office",
+    "originals-jp/jp__jp-bldg-house-flat3",
+    "originals-jp/jp__jp-bldg-house-terrace",
+    "originals-jp/jp__jp-bldg-shop-pharmacy",
+    "originals-jp/jp__jp-bldg-shop-realestate",
+    "originals-jp/jp__jp-bldg-shop-books-shut",
+    "originals-jp/jp__jp-bldg-shop-realestate-shut",
+    "originals-jp/jp__jp-bldg-shop-vacant",
+    "originals-jp/jp__vehicle__bus-right",
+    "originals-jp/jp__vehicle__jp-car-kei-yellow"
+   ]
+  },
+  "atlas_biome_interior": {
+   "total": 57,
+   "passed": 28,
+   "failed": [
+    "originals-interior/int__crate__cabbage",
+    "originals-interior/int__basket__cabbage",
+    "originals-interior/int__basket__carrot",
+    "originals-interior/int__barrel__potato",
+    "originals-interior/int__barrel__apple",
+    "originals-interior/int__shelf__potion_potionb_potiong",
+    "originals-interior/int__shelf__herb",
+    "originals-interior/int__table__loaf_bun",
+    "originals-interior/int__table__cake_pie",
+    "originals-interior/int__cauldron",
+    "originals-interior/int__bar_stool",
+    "originals-interior/int__pew",
+    "originals-interior/int__holy_water_font",
+    "originals-interior/int__armchair",
+    "originals-interior/int__washbasin",
+    "originals-interior/int__straw_bed",
+    "originals-interior/int__water_jar",
+    "originals-interior/int__potted_fern",
+    "originals-interior/int__potted_flowering",
+    "originals-interior/int__potted_cactus",
+    "originals-interior/int__throne",
+    "originals-interior/int__chair_S",
+    "originals-interior/int__bed_green",
+    "originals-interior/int__bookshelf_3w",
+    "originals-interior/int__chest",
+    "originals-interior/int__pot",
+    "originals-interior/int__stove",
+    "originals-interior/int__ice_chest__fish_fishr_fish",
+    "originals-interior/int__ice_chest__fish_fishg_fishr"
+   ]
+  },
+  "oprn-interior-v5-large": {
+   "total": 8,
+   "passed": 8,
+   "failed": []
+  }
+ },
+ "note": "조건 (a) 위반 = 등급 A 3/4 위반(적대 시험 adv-*·object-gen 반려 포함) + 강한 라벨 화풍 얕음, 전체 판정으로 하나도 놓치면 안 된다. 조건 (b) 칩셋 원본 전체 판정 통과 116/179 ≥ 90%. 정상 = 라벨 반쪽으로 센다(보고만). 전체 판정 정상 통과 198/338. 전체 표본"
+}

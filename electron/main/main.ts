@@ -4,8 +4,8 @@ import { readFile } from "node:fs/promises";
 import { startLocalProjectServer, type LocalProjectServer } from "../serve/runtime";
 import { normalizeTeamUrl } from "../serve/localNetwork";
 import { join, resolve } from "node:path";
-import { BrowserWindow, Menu, app, clipboard, dialog, ipcMain, protocol, shell, type IpcMainInvokeEvent } from "electron";
-import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME, OPRN_CHANNELS } from "../shared/channels";
+import { BrowserWindow, Menu, app, clipboard, dialog, ipcMain, shell, type IpcMainInvokeEvent } from "electron";
+import { OPRN_APP_SCHEME, OPRN_CHANNELS } from "../shared/channels";
 import { isWindowControlAction, windowChromeFor, type WindowState } from "../shared/windowControl";
 import { registerIpcHandlers } from "./ipc";
 import { registerAssetBrowser } from "./assetBrowser";
@@ -16,44 +16,17 @@ import { createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
 import { describeRecentProjects, listRecentTeams, prepareNewProjectDir, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
 import { openTeamWindow } from "./teamWindow";
+import type { Splash } from "./splash";
+import { bootsToStartScreen, rendererDirectory, windowIconPath, type BootContext } from "./bootContext";
 import type { JoinTeamResult } from "../shared/start";
+import { TEAM_COLLAB_ENABLED } from "../shared/teamCollab";
 
-protocol.registerSchemesAsPrivileged([
-  // codeCache: 편집기 번들(약 90MB)의 V8 컴파일 결과를 다음 실행에 다시 쓴다(standard 와 함께여야 켜진다).
-  { scheme: OPRN_APP_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true, codeCache: true } },
-  { scheme: OPRN_ASSET_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } },
-]);
+// 앱 본체(dist-electron/app.cjs). 시작 입구 boot.ts(dist-electron/main.cjs)가 app ready 뒤 스플래시를 띄우고 이 파일을 읽어
+// startApp 을 부른다. ready 전에 해야 하는 일(스킴 권한·한 번만 실행·링크 받아 두기)은 입구에 있다.
 
 // ── 「에디터에서 열기」 링크(oprn://store/install?…) ─────────────────────────────
 // 판정은 src/assetStore/deepLink.ts(순수), 받은 뒤 처리는 assetStore.ts 의 acceptStoreDeepLink. openwiki/asset-store.md.
 const DEEP_LINK_SCHEME = "oprn";
-/**
- * 한 번만 실행(single instance). 배포 앱에서만 건다 — QA 하니스는 개발 빌드 Electron 을 여러 개 동시에 띄우고
- * (OPRN_SMOKE_PAGE·OPRN_OPEN_PROJECT_DIR), 잠금을 걸면 두 번째부터 바로 꺼진다.
- */
-const singleInstance = app.isPackaged && process.env.OPRN_SMOKE_PAGE === undefined && process.env.OPRN_OPEN_PROJECT_DIR === undefined
-  && process.env.OPRN_MULTI_INSTANCE !== "1";
-if (singleInstance && !app.requestSingleInstanceLock()) {
-  // 이미 떠 있는 앱이 second-instance 로 이 실행의 인자(링크)를 받는다.
-  app.exit(0);
-}
-/** 앱이 준비되고 첫 창을 만들기 전에 들어온 링크(macOS 는 open-url 이 ready 전에 올 수 있다). */
-let earlyLinks: string[] | null = [];
-function receiveDeepLink(url: string): void {
-  if (earlyLinks) { earlyLinks.push(url); return; }
-  acceptStoreDeepLink(url);
-}
-// macOS: 링크·「다음으로 열기」는 open-url 로 온다. ready 전에 붙여야 첫 실행 링크를 놓치지 않는다.
-app.on("open-url", (event, url) => {
-  event.preventDefault();
-  receiveDeepLink(url);
-});
-// Windows·Linux: 이미 떠 있는 앱에 두 번째 실행의 인자로 링크가 온다. 링크가 아니면 예전처럼 새 창(시작 화면)을 연다.
-app.on("second-instance", (_event, argv) => {
-  const link = findStoreDeepLinkArg(argv);
-  if (link) receiveDeepLink(link);
-  else if (app.isReady()) createWindow();
-});
 
 /** OS 에 oprn: 처리기로 등록한다. 개발 실행은 OPRN_REGISTER_PROTOCOL=1 일 때만(개발 빌드가 사용자 등록을 빼앗지 않게). */
 function registerDeepLinkProtocol(): void {
@@ -72,9 +45,10 @@ const sessions = createProjectSessionRegistry();
 const hosting = new Set<string>();
 const teamHosts = new Map<string, LocalProjectServer>();
 let companionServer: CompanionServer | null = null;
-const rendererDir = process.env.OPRN_RENDERER_DIR ?? join(app.getAppPath(), "dist");
-const windowIcon = process.platform === "darwin" ? undefined : join(rendererDir, "icons", "pwa-512.png");
+const rendererDir = rendererDirectory();
+const windowIcon = windowIconPath(rendererDir);
 /** 팀 호스트 포트. 앱을 다시 켜도 팀원이 받은 주소가 그대로 맞도록 고정 범위에서 먼저 찾는다. */
+/** @deprecated multi-user team collaboration is not supported yet (2026-10-21). 「팀 협업 시작」이 LAN 에 여는 포트. */
 const TEAM_HOST_PORTS = [9840, 9841, 9842, 9843, 9844, 9845, 9846, 9847, 9848, 9849];
 
 const closing = new Set<number>();
@@ -132,16 +106,33 @@ const chromeOptions: Electron.BrowserWindowConstructorOptions = chrome.drawsOwnB
   ? { frame: false }
   : { titleBarStyle: "hiddenInset", trafficLightPosition: { x: 14, y: 16 } };
 
-function createWindow(): BrowserWindow {
+/** 시작 화면 창이 첫 카드를 그렸다고 알리면 부를 것(webContents id → 보이기). */
+const revealOnStartReady = new Map<number, () => void>();
+/** 시작 화면이 신호를 못 보내도(옛 렌더러·오류) 첫 페인트 뒤 이만큼 지나면 창을 보인다. */
+const START_READY_FALLBACK_MS = 6_000;
+
+function isStartScreenBoot(window: BrowserWindow): boolean {
+  return process.env.OPRN_SMOKE_PAGE === undefined && process.env.OPRN_OPEN_PROJECT_DIR === undefined && sessions.get(window.webContents.id) === null;
+}
+
+/**
+ * 창을 만든다. 처음 뜨는 창은 스플래시(splash.ts)와 짝을 이룬다 — 숨긴 채 준비하고, 시작 화면이 첫 카드를 그렸다고 알리면
+ * 보이며 스플래시를 닫는다. 그 전에 문서를 못 불러오면 스플래시가 오류를 보인다. 스플래시가 없는 창(두 번째 창·QA 진입점)은
+ * 예전처럼 첫 페인트(ready-to-show)에 보인다. deferLoad 면 문서는 loadWindowContent 로 따로 싣는다(앱 시작 때 창 객체만 먼저 만든다).
+ */
+function createWindow(options: { readonly splash?: () => Splash | undefined; readonly deferLoad?: boolean } = {}): BrowserWindow {
+  const splash = (): Splash | undefined => options.splash?.();
   const window = new BrowserWindow({
     width: 1280,
     height: 800,
     minWidth: 1100,
     minHeight: 600,
     show: false,
-    // 첫 프레임(스플래시)이 그려지기 전·창 크기가 바뀌는 순간에 흰 화면이 비치지 않게 스플래시·시작 화면 바탕색과 맞춘다(tokens.css --bg-base).
-    backgroundColor: "#F7F8F8",
-    fullscreen: true,
+    // 창 크기가 바뀌는 순간에 다른 색이 비치지 않게 문서 바탕색과 맞춘다 — 시작 화면은 어두운 #111214(startScreen.css),
+    // 편집기는 tokens.css --bg-base.
+    backgroundColor: bootsToStartScreen() ? "#111214" : "#F7F8F8",
+    // 전체화면은 보일 때 켠다 — 리눅스는 생성자에서 fullscreen 을 주면 show:false 여도 창을 바로 띄워(빈 화면이 스플래시를 덮었다).
+    fullscreen: false,
     autoHideMenuBar: true,
     ...chromeOptions,
     // 리눅스·윈도우 창 제목줄과 작업표시줄 아이콘. 맥은 앱 번들 icns 를 쓰므로 주지 않는다.
@@ -156,9 +147,52 @@ function createWindow(): BrowserWindow {
       backgroundThrottling: false,
     },
   });
+  const id = window.webContents.id;
 
-  // ready-to-show 는 렌더러가 첫 프레임을 그린 뒤에 온다 — 창이 처음 보이는 순간 이미 스플래시(index.html)·시작 화면 뼈대가 그려져 있다.
-  window.once("ready-to-show", () => window.show());
+  let shown = false;
+  /** 스플래시에 오류를 띄웠다 — 「다시 시도」 전에는 대체 타이머가 빈 창을 보이지 않는다. */
+  let failed = false;
+  const reveal = (reason: string): void => {
+    if (shown || failed || window.isDestroyed()) return;
+    shown = true;
+    revealOnStartReady.delete(id);
+    // 맥은 숨은 창에 전체화면을 걸면 무시될 수 있어 보인 뒤에 건다. 그 밖은 전체화면을 건 뒤 보여 크기 튐이 없다.
+    if (process.platform === "darwin") { window.show(); window.setFullScreen(true); }
+    else { window.setFullScreen(true); window.show(); }
+    mainMark("windowShown");
+    if (process.env.OPRN_STARTUP_TRACE === "1") process.stderr.write(`[startup] window shown (${reason})\n`);
+    splash()?.close();
+  };
+  const fail = (detail: string): void => {
+    const current = splash();
+    if (shown || !current?.open()) return;
+    failed = true;
+    current.fail(detail);
+  };
+  // ready-to-show 는 렌더러가 첫 프레임을 그린 뒤에 온다(창마다 한 번). 스플래시가 있으면 시작 화면이 카드를 그릴 때까지 더 기다린다.
+  window.once("ready-to-show", () => {
+    mainMark("firstPaint");
+    if (!splash()?.open()) reveal("first-paint");
+  });
+  if (options.splash) {
+    revealOnStartReady.set(id, () => reveal("start-screen-ready"));
+    // 「다시 시도」로 다시 싣는 경우까지 — 문서를 다 받은 뒤 신호가 끝내 안 오면(옛 렌더러·시작 화면 오류) 그래도 창을 보인다.
+    window.webContents.on("did-finish-load", () => {
+      setTimeout(() => reveal("fallback-timeout"), START_READY_FALLBACK_MS);
+    });
+    // 아직 숨어 있을 때 문서를 못 불러오거나 렌더러가 죽으면 빈 화면 대신 스플래시에 오류를 보인다.
+    window.webContents.on("did-fail-load", (_event, code, description, url, isMainFrame) => {
+      if (!isMainFrame || code === -3) return; // -3 = 다른 이동으로 취소됨(정상)
+      fail(`${description || "load failed"} (${code})\n${url}`);
+    });
+    // app:// 이 문서를 못 찾으면(빌드 누락·손상) did-fail-load 없이 오류 응답을 그린다 — 응답 코드로 잡는다.
+    window.webContents.on("did-navigate", (_event, url, httpResponseCode, httpStatusText) => {
+      if (httpResponseCode >= 400) fail(`${httpResponseCode} ${httpStatusText}\n${url}`);
+    });
+    window.webContents.on("render-process-gone", (_event, details) => fail(`renderer ${details.reason} (exit ${details.exitCode})`));
+    window.webContents.on("preload-error", (_event, _path, error) => fail(`preload: ${error.message}`));
+    window.webContents.on("did-start-loading", () => { failed = false; });
+  }
   // F11·보기 메뉴 등 버튼 밖에서도 전체화면이 바뀐다 — 렌더러가 아이콘 상태를 맞출 수 있게 알린다.
   const broadcastFullscreen = (fullscreen: boolean): void => {
     if (!window.isDestroyed()) window.webContents.send(OPRN_CHANNELS.windowFullscreen, fullscreen);
@@ -173,6 +207,7 @@ function createWindow(): BrowserWindow {
   window.on("unmaximize", broadcastState);
   window.on("restore", broadcastState);
   window.on("minimize", broadcastState);
+  window.on("closed", () => revealOnStartReady.delete(id));
   window.webContents.on("will-navigate", (event, url) => {
     if (!url.startsWith(`${OPRN_APP_SCHEME}://`)) event.preventDefault();
   });
@@ -181,13 +216,17 @@ function createWindow(): BrowserWindow {
     return { action: "deny" };
   });
   installCloseFlow(window);
+  if (!options.deferLoad) loadWindowContent(window);
+  return window;
+}
 
-  const hasOpenProject = sessions.get(window.webContents.id) !== null;
+/** 창에 첫 문서를 싣는다 — 시작 화면, QA 진입점(OPRN_SMOKE_PAGE·OPRN_OPEN_PROJECT_DIR), 또는 편집기. */
+function loadWindowContent(window: BrowserWindow): void {
   // QA 하니스용 진입점(OPRN_SMOKE_PAGE·OPRN_RENDERER_DIR 와 같은 계열): 폴더를 주면 시작 화면을
   // 건너뛰고 그 폴더를 연 채로 편집기를 띄운다. GUI 폴더 선택 대화상자를 자동화할 수 없어서
   // "앱이 폴더를 열고 편집기로 들어간다" 를 헤드리스에서 확인할 유일한 길이다.
   const bootProjectDir = process.env.OPRN_OPEN_PROJECT_DIR;
-  const startScreen = process.env.OPRN_SMOKE_PAGE === undefined && bootProjectDir === undefined && !hasOpenProject;
+  const startScreen = isStartScreenBoot(window);
   const smokePage = process.env.OPRN_SMOKE_PAGE;
   const devServerUrl = process.env.ELECTRON_RENDERER_URL;
   if (smokePage) void window.loadFile(smokePage);
@@ -201,7 +240,6 @@ function createWindow(): BrowserWindow {
       else void window.loadURL(`${OPRN_APP_SCHEME}://oprn/index.html`);
     });
   }
-  return window;
 }
 
 /** 렌더러 문서 주소. 개발 중에는 dev 서버, 배포는 app:// 다. */
@@ -220,7 +258,8 @@ function focusedWindow(): BrowserWindow | null {
   return BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0] ?? null;
 }
 
-/** 참여하는 쪽: 다른 컴퓨터의 팀 호스트를 앱 창으로 연다. 창이 첫 페이지를 불러오면 끝난다. */
+/** @deprecated multi-user team collaboration is not supported yet (2026-10-21).
+ * 참여하는 쪽: 다른 컴퓨터의 팀 호스트를 앱 창으로 연다. 창이 첫 페이지를 불러오면 끝난다. */
 function joinTeam(input: string): Promise<JoinTeamResult> {
   let target: URL;
   try { target = normalizeTeamUrl(input); }
@@ -262,7 +301,8 @@ function teamHostDetail(host: LocalProjectServer, accessCodeRequired: boolean): 
   ].filter(Boolean).join('\n\n');
 }
 
-/** The app owns the local host lifecycle; users do not install or start a DB/server. */
+/** @deprecated multi-user team collaboration is not supported yet (2026-10-21).
+ * The app owns the local host lifecycle; users do not install or start a DB/server. */
 async function hostCurrentTeam(): Promise<void> {
   const window = focusedWindow();
   if (!window) return;
@@ -291,7 +331,8 @@ async function hostCurrentTeam(): Promise<void> {
   finally { hosting.delete(session.projectDir); }
 }
 
-/** 파일 메뉴 → 팀에 참여. 주소 입력은 시작 화면이 맡는다. 새 창은 프로젝트가 없으니 시작 화면으로 열린다. */
+/** @deprecated multi-user team collaboration is not supported yet (2026-10-21).
+ * 파일 메뉴 → 팀에 참여. 주소 입력은 시작 화면이 맡는다. 새 창은 프로젝트가 없으니 시작 화면으로 열린다. */
 function showJoinFromMenu(): void {
   const window = BrowserWindow.getAllWindows().find((candidate) => candidate.webContents.getURL().includes('start-screen.html'));
   if (window) { window.show(); window.focus(); return; }
@@ -304,15 +345,19 @@ function buildMenu(): void {
     {
       label: "파일",
       submenu: [
-        { label: "팀 협업 시작 / 관리", click: () => { void hostCurrentTeam(); } },
-        { label: "팀에 참여…", click: () => { showJoinFromMenu(); } },
-        { label: "팀 호스트 중지", click: async () => {
-          const window = focusedWindow();
-          const projectDir = window ? sessions.get(window.webContents.id)?.projectDir : undefined;
-          if (!projectDir) return;
-          await teamHosts.get(projectDir)?.close(); teamHosts.delete(projectDir);
-        } },
-        { type: "separator" },
+        // @deprecated multi-user team collaboration is not supported yet (2026-10-21).
+        // TEAM_COLLAB_ENABLED(electron/shared/teamCollab.ts) 를 켜면 세 항목이 돌아온다.
+        ...(TEAM_COLLAB_ENABLED ? [
+          { label: "팀 협업 시작 / 관리", click: () => { void hostCurrentTeam(); } },
+          { label: "팀에 참여…", click: () => { showJoinFromMenu(); } },
+          { label: "팀 호스트 중지", click: async () => {
+            const window = focusedWindow();
+            const projectDir = window ? sessions.get(window.webContents.id)?.projectDir : undefined;
+            if (!projectDir) return;
+            await teamHosts.get(projectDir)?.close(); teamHosts.delete(projectDir);
+          } },
+          { type: "separator" as const },
+        ] : []),
         {
           label: "새 프로젝트",
           accelerator: "CmdOrCtrl+N",
@@ -379,8 +424,14 @@ function buildMenu(): void {
   ]));
 }
 
-app.whenReady().then(async () => {
-  mainMark("appReady");
+/** 입구(boot.ts)가 스플래시를 띄운 뒤 부른다. */
+export async function startApp(boot: BootContext): Promise<void> {
+  // 큰 창 객체(숨김)를 먼저 만들고 문서는 프로토콜·동반 서비스가 준비된 뒤 싣는다(아래 loadWindowContent).
+  const { splash } = boot;
+  mainMark("createWindow");
+  const firstWindow = createWindow({ splash: () => splash, deferLoad: true });
+  mainMark("windowCreated");
+  boot.setRetry(() => { if (!firstWindow.isDestroyed()) loadWindowContent(firstWindow); });
   const workerBinName = process.platform === "win32" ? "oh-my-pi-worker.exe" : "oh-my-pi-worker";
   const workerBin = [
     process.env.OPRN_OH_MY_PI_WORKER_BIN,
@@ -397,6 +448,7 @@ app.whenReady().then(async () => {
   // 조수 워커(컴파일된 실행 파일)는 자기 위치로 public/ 을 찾지 못한다 — 번들 참고 그림을 읽을 렌더러 폴더를 물려준다.
   process.env.OPRN_RENDERER_DIR ??= rendererDir;
   companionServer = await startCompanionServer();
+  mainMark("companionReady");
   ipcMain.on(OPRN_CHANNELS.companionOrigin, (event) => {
     event.returnValue = companionServer?.origin ?? null;
   });
@@ -406,6 +458,9 @@ app.whenReady().then(async () => {
   buildMenu();
   registerAppProtocol(rendererDir, () => sessions.firstProjectDir() ?? process.cwd(), () => companionServer?.origin ?? null);
   registerAssetProtocol(sessions);
+  // 렌더러는 이 동기 블록이 끝나기 전에는 IPC 를 보낼 수 없다 — 문서를 먼저 걸고 아래 처리기를 같은 틱에 붙인다(약 50ms 앞당김).
+  if (!firstWindow.isDestroyed()) loadWindowContent(firstWindow);
+  mainMark("windowLoading");
   ipcMain.handle(OPRN_CHANNELS.lifecycleFlushDone, (event) => {
     const window = BrowserWindow.fromWebContents(event.sender);
     if (window) destroyWindow(window);
@@ -439,7 +494,12 @@ app.whenReady().then(async () => {
     if (!window || !event.senderFrame?.url.startsWith(`${OPRN_APP_SCHEME}://`)) return false;
     return window.isFullScreen();
   });
-  ipcMain.handle(OPRN_CHANNELS.startRecentProjects, () => describeRecentProjects());
+  ipcMain.handle(OPRN_CHANNELS.startRecentProjects, () => {
+    mainMark("recentProjectsAsked");
+    const entries = describeRecentProjects();
+    mainMark("recentProjectsAnswered");
+    return entries;
+  });
   ipcMain.handle(OPRN_CHANNELS.startCoverSource, (_event: IpcMainInvokeEvent, payload: unknown) =>
     recentProjectCoverSource((payload as { readonly projectDir?: unknown } | null)?.projectDir));
   ipcMain.handle(OPRN_CHANNELS.startSaveCover, (_event: IpcMainInvokeEvent, payload: unknown) => {
@@ -505,28 +565,37 @@ app.whenReady().then(async () => {
   ipcMain.handle(OPRN_CHANNELS.startImportFile, async (event: IpcMainInvokeEvent, payload: unknown) => {
     return { projectDir: null, imported: false };
   });
+  // @deprecated multi-user team collaboration is not supported yet (2026-10-21). 시작 화면이 부르지 않는다.
   ipcMain.handle(OPRN_CHANNELS.startJoinTeam, async (_event: IpcMainInvokeEvent, payload: unknown) => {
+    if (!TEAM_COLLAB_ENABLED) return { ok: false, error: "팀 협업은 아직 지원하지 않습니다." } satisfies JoinTeamResult;
     const url = (payload as { readonly url?: unknown } | null)?.url;
     return joinTeam(typeof url === "string" ? url : "");
   });
-  ipcMain.handle(OPRN_CHANNELS.startRecentTeams, () => listRecentTeams());
+  ipcMain.handle(OPRN_CHANNELS.startRecentTeams, () => (TEAM_COLLAB_ENABLED ? listRecentTeams() : []));
+  ipcMain.on(OPRN_CHANNELS.startScreenReady, (event) => {
+    mainMark("startScreenReady");
+    revealOnStartReady.get(event.sender.id)?.();
+  });
   registerIpcHandlers(sessions);
   registerAssetBrowser();
   registerAssetStore({ hasProject: (webContentsId) => sessions.get(webContentsId) !== null });
   registerDeepLinkProtocol();
-  mainMark("createWindow");
-  createWindow();
-  mainMark("windowCreated");
-  // 첫 실행 인자(Windows·Linux)와 ready 전에 온 링크를 이제 처리한다.
-  const pendingLinks = [...(earlyLinks ?? [])];
-  earlyLinks = null;
+  mainMark("handlersRegistered");
+  // 첫 실행 인자(Windows·Linux)와 본체를 읽기 전에 온 링크·두 번째 실행을 이제 처리한다. 이후 것은 바로 받는다.
+  // 두 번째 실행: 링크면 받고, 아니면 예전처럼 새 창(시작 화면)을 연다.
+  const onSecondInstance = (argv: readonly string[]): void => {
+    const link = findStoreDeepLinkArg([...argv]);
+    if (link) acceptStoreDeepLink(link);
+    else createWindow();
+  };
+  const early = boot.attachLinks(acceptStoreDeepLink, onSecondInstance);
   const initialLink = findStoreDeepLinkArg(process.argv);
-  if (initialLink) pendingLinks.unshift(initialLink);
-  for (const link of pendingLinks) acceptStoreDeepLink(link);
+  for (const link of [...(initialLink ? [initialLink] : []), ...early.links]) acceptStoreDeepLink(link);
+  for (const argv of early.secondInstances) onSecondInstance(argv);
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
-});
+}
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();

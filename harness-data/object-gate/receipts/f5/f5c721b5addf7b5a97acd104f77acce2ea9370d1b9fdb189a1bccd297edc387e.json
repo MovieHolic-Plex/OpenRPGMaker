@@ -1,0 +1,400 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f5c721b5addf7b5a97acd104f77acce2ea9370d1b9fdb189a1bccd297edc387e",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "mci med cart",
+ "label": "modern_city_interior/mci-med-cart",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 22,
+  "tileColorsP90": 22,
+  "darkV5": 37,
+  "nearBlackEdge": 0.17,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top tray with bottles and items",
+      "rows": "3-11",
+      "evidence": "d",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "bottles and items standing in the tray",
+      "rows": "4-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "four-drawer front body",
+      "rows": "12-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels or base",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cart is a wide white tray (rows 3-11, width 16) sitting on a narrower drawer body (rows 12-29, width 14) with small wheels (rows 30-31, width 6). The tray's front edge is a light line at row 10 (#f3f4f7), followed by a darker gray row 11 (#a6a9ad) that acts as eave shadow. The tray interior, with its bottles and items, is visible as an open container (rows 4-9), giving about 7 rows of top surface. The items themselves are drawn face-on, so the top reading is borderline, but the edge line, shadow and visible contents are enough for evidence (d)/(a). Below that is a front face of 18 rows of stacked drawers, each with a handle. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small drawer cart with bottles on top. On the numbers it holds up: 21 visible tones per tile against 17-20 for the stall and well, and 0% near-flat coverage. Structure and shading are weaker. The body is a few flat steps (white, light blue, grey, one dark) with little per-material ramping or grain, against about 5-6 steps on the stall awning and well roof. The outline is a uniform dark line around the whole silhouette, and 91% of its dark edge pixels are near-neutral, versus 0-1% for the tinted hedge and stall outlines and 33% for the well. The hedge, stall and well use dark material tones and separate forms by value, while this piece reads as a sticker-style outlined sprite. The drawers and bottles are clean, but the shading is shallower and the outline is the near-black type the standard rejects, so it would look flatter next to the stall and well.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20247
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top tray / counter surface",
+      "rows": "4-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "bottles and items standing on the tray",
+      "rows": "3-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drawer front body with four colored drawers",
+      "rows": "12-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels / base",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top tray spans rows 4-10 and is full width (16 px, wider than the 14 px body below). Its front edge is a bright 1-row line at row 10 (L=244 across all scanned columns), followed by a darker gray shadow row at row 11 (L=169). The bottles and items on it (rows 3-9) are decor. The drawer front below runs rows 12-29, 18 rows, with colored drawers and white handles. Wheels are at rows 30-31. The top band is a modest rows-4-9 area partly covered by the goods, so the top-surface reading is fairly weak but still supported by the edge line and shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small drawer cart, about one tile wide and just over one tile tall. It matches the prop kind. Density is fine on the numbers: 21 visible tones per tile against 17 and 20 for the stall and well, and 0% near-flat coverage. The outline is the problem. 91% of its dark edge pixels are near-neutral, against 0-1% for the hedge and cheese stall and 33% for the well. The dark grey/black line wraps the whole cart as a uniform sticker outline instead of the dark tone of the adjacent material (dark brown beside wood, dark red-brown beside tiles). The body ramps look shallow, roughly 3-4 steps, on the white/grey frame and the blue drawers. The drawer fronts are mostly clean panels with little grain, unlike the references' per-material highlights and speckle. The 21 tones come from many small coloured items (the bottles on top, the drawer handles) rather than from layered shading of the main materials. Because of the near-black outline and the shallower ramps, it would look flatter and more sticker-like beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18445
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top tray surface",
+      "rows": "3-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "bottles and items on tray",
+      "rows": "3-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drawer stack front",
+      "rows": "12-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cart has a wide top tray in rows 3-10 (16 px wide). Its white surface sits behind bottles whose bases end at row 9, and it ends in a light front-edge line at row 10 followed by a gray shadow row at 11. The bottles are decor placed on the tray. Below, the drawer stack in rows 12-29 is a clear vertical south face of about 18 rows, with four colored drawers and handles. Wheels sit in rows 30-31. The tray top is only moderately deep and is partly hidden by the goods, but it still reads as a top plane above a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small drawer cart with bottles on top. Its tile density is fine: 21 visible tones per tile against 17-20 for the stall and well, with 0% near-flat coverage. The outline is the problem. 91% of its dark edge pixels are near-neutral, so it reads as a uniform near-black line around every shape. The tinted references (hedge 0%, cheese stall 1%, well 33%) use dark material tones instead. The drawers, body and frame show only about 3 lightness steps each, against about 5 on the stall awning, wood and well roof. Drawer faces are mostly clean cells with a few highlight dots, not the per-material grain and clumped shading of the references. The result looks like a sticker rather than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19130
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top tray / work surface",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "bottles and items on tray",
+      "rows": "4-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drawer stack (blue, green, yellow, red drawers)",
+      "rows": "12-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels / base",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top tray spans rows 3-9 and is 16 px wide. Row 10 is a light front-edge line (L=244 at x=4, 8 and 11), and row 11 is a gray shadow row (L=169). Below it, rows 12-29 are the drawer front face, 18 rows of colored drawers with handles, and rows 30-31 are narrow wheels. The bottles on the tray are decor. The tray is borderline: the bottles look somewhat face-on, but the edge line and shadow still indicate a top surface of about 7 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "Density is not the problem. The candidate has 21 visible tones per tile against 17-20 for the stall and well, and 0% near-flat coverage. The drawers, the items on top and the wheels all carry variation. The weakness is the outline. 91% of its dark edge pixels are near-neutral, and the board shows a uniform dark line around the cabinet, drawers and wheels. That is the sticker look, not the tinted dark-material outlines of the stall (1% neutral) and well (33%). The only reference with a comparably neutral outline is the lamp, a thin metal pole. The cart's large white and blue body panels have only about 3-4 lightness steps each, which is shallower than the 5-6 on the stall awning and well roof. Because the outline is near-black and the ramps are shallow, it would look flatter than the references beside them, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18659
+  }
+ ],
+ "decidedAt": "2026-10-21T01:24:13.549Z",
+ "cells": {
+  "16": [
+   "219ca82d0943822d",
+   "72fef77b4627d302"
+  ],
+  "24": [
+   "09fd3b9f02e2e965",
+   "0bd4148595f2c113",
+   "23018d506fcf0470",
+   "434db0fec14bdb34",
+   "45edcec92ecefb04",
+   "6378afb7c39c2426",
+   "7195d490122dd368",
+   "73894bf697c2b981",
+   "808fe1d768f029dc",
+   "db606508a7c16264",
+   "dcc9138d1f622d73",
+   "df3263e772f6ba81"
+  ],
+  "32": [
+   "360a1e3fff94153f",
+   "37e2f5412901f6b2",
+   "e61409f0a61e730e"
+  ],
+  "48": [
+   "1fad41c6b5623237",
+   "30e17d5297583f5b",
+   "45ac8571c77a77f6",
+   "585a87b9de30d403",
+   "b06d1ef8f8debe46",
+   "f084ef3e93e4e9fe"
+  ]
+ }
+}

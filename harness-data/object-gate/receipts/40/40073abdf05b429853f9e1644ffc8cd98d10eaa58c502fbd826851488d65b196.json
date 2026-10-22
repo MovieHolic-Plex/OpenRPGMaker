@@ -1,0 +1,402 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "40073abdf05b429853f9e1644ffc8cd98d10eaa58c502fbd826851488d65b196",
+ "width": 128,
+ "height": 48,
+ "kind": "other",
+ "name": "jp-inaka-single-car-train",
+ "label": "jp_inaka_pack/jp-inaka-single-car-train",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 26,
+  "darkV5": 39,
+  "nearBlackEdge": 0.15,
+  "opaqueTiles": 24
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof",
+      "rows": "1-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "roof vents/AC units",
+      "rows": "2-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "car body front face with windows and doors",
+      "rows": "20-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "undercarriage and rails",
+      "rows": "40-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 17,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-17 form a light grey roof plane, about 17 rows tall, with vent units on it. It ends in a dark front-edge line at row 18 and a darker eave shadow at row 19. Below that, rows 20-39 are the orange and cream south face with windows and doors, and rows 40-46 are the undercarriage. The roof is a real top surface seen from above, with a clear front face beneath it, so the car reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 15 visible tones per tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, so there are no 5x5 flat fills. Only 5% of its dark edge pixels are near-neutral, so the outlines carry a tint (dark blue-grey and red-brown beside the body and stripe) rather than a uniform black line. Visually, the grey roof has several value steps with panel and vent details. The red and cream body band has window frames with lighter and darker panes, and the undercarriage is shaded. Texture is moderate: panel seams, rivets and window sub-shading, but less grain than the well or stall. Overall it sits at the reference level for a prop of this kind and does not look like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16819
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof with air-conditioner units",
+      "rows": "0-17",
+      "evidence": "c",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "car body side with windows and doors",
+      "rows": "20-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "undercarriage and bogies",
+      "rows": "40-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-17 form a pale roof plane carrying AC units, vents and shading. It ends in a dark front-edge line at rows 18-19 (L≈58, then L≈23) that acts as the eave shadow. Below it the south side face runs from row 20 to about row 39: an orange roof-edge stripe, windows, doors and a cream and red livery. The undercarriage and bogies fill rows 40-46. The roof is 18 rows and the front face is well over 3 rows, so this is a top surface above a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The train car has a grey roof with panel and vent detail, a cream and red body band, blue windows with highlights, and a dark undercarriage. It shows about 4-5 lightness steps on the roof and body. Only 5% of its dark edge pixels are near-neutral, so the outlines lean toward the material tones (brown-red and blue-grey) rather than a black sticker line. It has 15 visible tones per tile, close to the stall (17) and well (20) and above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. The surfaces carry per-window shading, roof panel variation and body speckle. It is somewhat more uniform and repetitive than the stall or well, which have more grain, so density is slightly lower. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15217
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof with vent units",
+      "rows": "0-17",
+      "evidence": "c",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "car body side with windows and doors",
+      "rows": "20-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "undercarriage and rails",
+      "rows": "40-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-17 show a wide, light roof plane with vent units. It ends in a dark front-edge line at rows 18-19 that works as the eave shadow. Below it, the orange and cream car side with windows and doors runs from row 20 to about row 39, followed by the bogie and rail strip in rows 40-46. The roof is a horizontal surface seen from above, and it sits above a front face of 20 rows. The silhouette is a constant 126 px wide over rows 1-39, so no receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate carries 15 visible tones per 16x16 tile, close to the stall (17) and well (20) and above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. The roof, window band and body show several steps: grey roof panels with highlight and shadow, a red/cream stripe, window glints, and a dark undercarriage. Only 5% of dark edge pixels are near-neutral, so the outlines are tinted dark tones of the neighbouring material rather than a uniform black sticker line. Texture comes from rivets, window frames, roof vents and panel seams. Judged by eye next to the references, it is equally rich and would be accepted beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13153
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof with air-conditioner units and vents",
+      "rows": "0-17",
+      "evidence": "c",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "car body side with windows and doors",
+      "rows": "20-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "undercarriage and bogies",
+      "rows": "40-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The train car's long side is the normal south face. Above it, rows 0-17 form a tall light-grey roof plane with AC units and vents. Row 17 is a lighter front-edge line (L=205), and rows 18-19 are a dark eave shadow (L=58, then L=23). Below that the body face runs from row 20 to row 39 (orange stripe, cream band, windows, doors). The undercarriage and rails fill rows 40-46. The roof is a clear top surface and the front face is well over 3 rows, so this reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 15 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the well and 9 for the hedge, so it sits within the range of the references that are large enough to measure. Near-flat coverage is 0%. Only 5% of its dark edge pixels are near-neutral, so the outline is tinted (dark red-brown and blue-grey beside the body and roof) rather than a black sticker line. The roof band shows several grey steps with rivets and panel breaks, the body has window panes with highlights and a red stripe with a trim line, and the undercarriage and wheels are dark and tinted. The shading is about 5 steps, close to the references. The weakest area is texture: the large roof and body areas are fairly regular and graphic, with less grain than the best Beodeul pieces such as the hedge or the stall. The panels do vary in tone, so I don't count them as flat fills. The piece is wide and low, so it is a long strip rather than a chunky prop. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19810
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:03.960Z",
+ "cells": {
+  "16": [
+   "0577417eb38347a2",
+   "13f98b40bec4c95b",
+   "1c6e8df29c3e5ede",
+   "2c12eb02a585c0bd",
+   "35a50dbd56008fac",
+   "3f78885733be9058",
+   "44468d0af8e813d6",
+   "5f0310271da97e30",
+   "65b79351d574c89b",
+   "7b4a69371aa85409",
+   "84b70126803732ce",
+   "8b2f5d52d9419d3b",
+   "91c08a6b2fff7b72",
+   "93b4a90d469424c8",
+   "986e0e130ae1faec",
+   "a85ed7b5bc96f011",
+   "b1c7c4143fcb7af8",
+   "b6aff07394d7157f",
+   "ba1383151cf773f3",
+   "baf8cef5239d7b60",
+   "d6b6cb61d1220d21",
+   "e26c53a57694e1ba",
+   "e6a3bdfeeded6a68",
+   "eff8776a0987b04d"
+  ],
+  "24": [
+   "013ddc30efbacdb7",
+   "04d3d5f48c3f94f0",
+   "189301ec62bc573a",
+   "20389da08fc48d00",
+   "2fe4cc13167e87fe",
+   "401196655370fead",
+   "430f0cf3eec46aea",
+   "49e43f855fa23b7e",
+   "5c9f1f762db926f5",
+   "6128ba91bb21643f",
+   "69735acbd33edadc",
+   "6a707fbafefa2f9c",
+   "7d9ba5b00fdf208d",
+   "7e840bfc1459a1b2",
+   "7ff54df2f235329e",
+   "8ef554006165220c",
+   "933bde7ed0483725",
+   "9e2c3c9958611374",
+   "a8ecc94305bb0c1d",
+   "b2510ed8ebcfefde",
+   "b3e9d55c68095537",
+   "b53db786e48e5728",
+   "b985417ca2b86d09",
+   "baf7e890d961b5d8",
+   "bfed4b97d26f6cb9",
+   "c08fe9f2a2595133",
+   "c09c90e908bb49d1",
+   "c4c0531631ad9b12",
+   "c8e216f78165136e",
+   "c9ebfd300ef52901",
+   "cd0c807b6b0ad17d",
+   "e63335554abcf737",
+   "eff5d512df1fad64",
+   "f10dda76d4e2247a",
+   "f9fe6d5ef7883a39",
+   "fbdd23f2ce2f9f13"
+  ],
+  "32": [
+   "0f514cea0684bc47",
+   "18ee66ed5b88f281",
+   "1c8c24e591a1de09",
+   "2c1b0c6c2d5c1e1e",
+   "2ed47e32193416e6",
+   "3e3c3ab91831e8af",
+   "5a40b9f5c4d5d8d0",
+   "5f4cc42f39483f05",
+   "6099fd074da9e9c1",
+   "66a7f2406b2bc2b1",
+   "6d437df144a9de5d",
+   "99814a9a80474e6f",
+   "9af9818cb87693a0",
+   "9b8b3d79d375c168",
+   "c0420174a3ca4e53",
+   "c7c3a9574f3c0773"
+  ],
+  "48": [
+   "0d3412f4ed0fc17e",
+   "12a50a15debee8fa",
+   "26661bb5d8f99a41",
+   "992901c0b13a1096",
+   "b0815882c76af3d5",
+   "b083474ef7a4f924",
+   "cb7a66d1bd219d7c",
+   "d73410a226e66219",
+   "dd6766929cafdd28"
+  ]
+ }
+}

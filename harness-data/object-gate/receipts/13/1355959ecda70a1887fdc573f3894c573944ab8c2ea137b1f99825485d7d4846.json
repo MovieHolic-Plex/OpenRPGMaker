@@ -1,0 +1,372 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1355959ecda70a1887fdc573f3894c573944ab8c2ea137b1f99825485d7d4846",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "jp-inaka-fire-watchtower",
+ "label": "jp_inaka_pack/jp-inaka-fire-watchtower",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 21,
+  "darkV5": 46,
+  "nearBlackEdge": 0.05,
+  "opaqueTiles": 8
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pyramid roof",
+      "rows": "2-18",
+      "evidence": "c",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "19-19"
+     },
+     {
+      "part": "watch cabin (brown wall with red band)",
+      "rows": "19-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red lattice trestle legs with cross braces",
+      "rows": "29-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 17,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-18 are a large sloped roof plane. Its alternating light and dark tile rows (rows 4-12 at x=8 and x=23) show a lit left slope and a darker right slope. The roof ends in a light front-edge band at rows 17-18 (L=184), and the dark red cabin wall starts at row 19 directly below it. Below the roof is the brown cabin front face (rows 19-28), then an open red lattice trestle (rows 29-63) with cross braces, which is the front face of the open structure. The roof is the main top surface and has a front-edge line, so the object reads as three-quarter, not front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small tank-style watchtower, much narrower than the reference houses. Even so, it meets the primary measured facts. It has 15 visible tones per 16x16 tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. Only 4% of its dark edge pixels are neutral, so the outline is tinted: dark red-brown beside the red lattice legs and a dark grey-blue beside the roof. By eye, the conical roof has several facet steps from highlight to deep shade. The tank has banding and a rim, and the legs have lit and shaded faces with cross-bracing. Nothing reads as a flat fill and there is no uniform black sticker line. The thin lattice and the missing wall, door and window detail keep it a little simpler than the references, but that comes from the subject being sparse, not from shallow shading. A careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18381
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pyramid roof",
+      "rows": "2-18",
+      "evidence": "c",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "19-19"
+     },
+     {
+      "part": "tan cabin front with red beams",
+      "rows": "19-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red lattice tower legs and cross braces",
+      "rows": "28-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "finial at roof peak",
+      "rows": "0-2",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 17,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A large gray roof plane covers rows 2-18. It has alternating light and dark diagonal stripes and a lighter front-edge line at rows 17-18 (L=184), with dark red eave shadow at row 19 beneath. Below it, the tan cabin front (rows 19-27) and the open red lattice legs (rows 28-63) form a front face of about 45 rows. The roof is a sloped top plane over a tall front face, so the object reads as three-quarter view. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, thin lattice tower, so I judged it by eye as well as by the numbers. It has 15 visible tones per tile against 12 and 10 in the references, and 0% near-flat coverage, the same as both references. Only 4% of its dark edge pixels are near-neutral, so the outlines carry a tint: dark red-brown beside the red legs and a cool dark tone beside the grey roof. The grey cone roof shows highlight, mid and dark facets plus a rim. The tank has banding and shaded steel-red legs with cross-bracing. There are no flat fills, and the lattice is not a sticker silhouette. It has fewer steps and less grain than the tile roofs and plaster of the references, so it sits slightly below them on craft. It would still sit acceptably next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21963
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray pyramid roof",
+      "rows": "2-18",
+      "evidence": "c",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "wooden watch cab with red beams",
+      "rows": "19-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red lattice tower legs and cross-bracing",
+      "rows": "30-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A large sloped gray roof fills rows 2-18. It has a lighter front-edge line at rows 17-18 (L=184) and a dark red and brown cab directly beneath it, which acts as eave shadow. The roof's tone alternates in diagonal bands in the x=8 and x=23 columns, so it reads as a roof plane and not a flat vertical strip. Below it the cab (rows 19-29) and the red lattice legs (rows 30-63) form a tall south front face. No isometric side face is drawn. The cab is covered by the roof, so every major part has a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small water-tower-style watchtower with a grey banded tank, a conical cap and a red X-braced lattice. It is much smaller than the house references, but it is a whole structure, so the kind is acceptable. Outlines lean dark red-brown beside the red legs and dark grey-blue beside the tank, with only 4% neutral dark edge pixels, so they are tinted material tones and not a black sticker line. The tank shows about 4-5 steps (highlight, light, mid, dark, deep) with band and rivet variation. The legs show about 3-4 reds with highlight edges on the braces. That is a little below the roughly 5-6 steps on the references' roofs, but reasonable for thin members. Measured facts back this up: 15 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage. No large flat fills are visible. The thin lattice makes it sparser than the houses, but it does not look flatter or more sticker-like next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18838
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pyramidal gray roof/canopy",
+      "rows": "1-18",
+      "evidence": "c",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tan cabin front wall with red band, under the roof",
+      "rows": "19-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red lattice legs and cross bracing",
+      "rows": "30-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 17,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main top is the large sloped gray roof at rows 2-18. It has a peak finial at rows 0-2 and a stripe-textured slope (x=23 alternates L=102/79 over rows 4-12). It ends in a lighter edge band at rows 17-18 (L=184), above the cabin. The front face below is the tan cabin wall (rows 19-29) on an open red lattice tower (rows 30-63) with cross braces, about 45 rows in total. The roof plane is clearly drawn, so this is not a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate: 15 visible tones per full tile against 12 and 10 for the references, 0% near-flat coverage, and only 4% neutral dark edge pixels. The outlines are tinted dark red-brown beside the red lattice and dark grey-blue beside the roof, so they are not a sticker-style black line. By eye, the conical roof has a highlight, light, mid and dark facet split with rivet or seam dots. The tank has a red band with its own shading. The lattice legs and cross-braces are lit with at least 3 red steps and have no flat fills. The candidate is a thin, sparse open-frame prop with no walls, door or windows, so it lacks the per-tile scallop and plaster-speckle density of the full houses. That makes it slightly lower than the references, but a careful artist would accept it next to them because it is not thinner or flatter than a lattice structure should be.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22136
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.026Z",
+ "cells": {
+  "16": [
+   "0686aee7ace9366a",
+   "489fa377b1582c3f",
+   "7fab4c45e8a29258",
+   "a10f53f8b9a081d4",
+   "a4daf2f762a7fbd5",
+   "ae12e4662aac3032",
+   "c0f869e7ea5d2feb",
+   "e42ceba85c3166d9"
+  ],
+  "24": [
+   "1352799acfc0b56b",
+   "149324257a7ad274",
+   "1ae64a4a7d3de56b",
+   "1e566e2775389594",
+   "2cc9390eab280829",
+   "3c2abbadbfc4e25c",
+   "45732125d21fe0ec",
+   "47bae36f8a7171df",
+   "48e74bd08243f992",
+   "4e89b91492d30c8f",
+   "5e371349d5569441",
+   "6ac1874ed90fb468",
+   "6d873555c31d1730",
+   "6f3b4950f8b08a26",
+   "709249b04095f72a",
+   "73ffdfd5205c1a61",
+   "76601dd4105e2c84",
+   "7d5a9b142f9aa43d",
+   "7deebe92cf5aed7c",
+   "80fd93bc851de666",
+   "93f001eeb4be002a",
+   "9786daa630c23f37",
+   "9a671fa231566f1b",
+   "a05380f5245e42dd",
+   "a51c82f18f1e7662",
+   "ab2e8ce850b01185",
+   "b0edb0cef5619fe1",
+   "b33731ff94bf7582",
+   "b9ef0fdd4258d68f",
+   "bc610df9b9b22af3",
+   "c9d24349a20f54ef",
+   "e2a98aed61acd691",
+   "e338987f7e28c880",
+   "eecfc5edb3e2abf0",
+   "f9db35bb778b2e71",
+   "fdfe3139d1983f25"
+  ],
+  "32": [
+   "a5bf8f159ffb1c40",
+   "c8cffbf92eae2be7"
+  ],
+  "48": [
+   "0d25dbe7f766921f",
+   "0ef0fbdfbfe81831",
+   "432bef9fb7199464",
+   "44e0deb2dbd840a4",
+   "4ca97341b12e7487",
+   "561e416eaf207004",
+   "582ac66ae751c5a4",
+   "8312723101c5d249",
+   "8862e6469dd51594",
+   "a6e62be48b67d1c8",
+   "a98f24e8fa946b6a",
+   "b07943c31e16184f"
+  ]
+ }
+}

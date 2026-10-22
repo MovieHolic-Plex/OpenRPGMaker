@@ -1,0 +1,375 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7e39975531ae4ff9c1fc33c7b69cf09446ec1cd33db9e6d573fc44cdec3dc90",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "broadleaf forest tree (zelkova)",
+ "label": "jp_forest_r4/bl-T33",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 12,
+  "darkV5": 37,
+  "nearBlackEdge": 0.05,
+  "opaqueTiles": 7
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy",
+      "rows": "1-43",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "36-43"
+     },
+     {
+      "part": "trunk",
+      "rows": "44-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "root flare and ground tufts",
+      "rows": "56-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy is a large rounded mass. Its silhouette widens from 2 px at row 1 to 44 px at rows 18-21, then narrows to 32 px by row 42 and 25 px at row 43, so it forms a dome or ellipse. Light foliage at the top (rows 5-18, with highlights at rows 6-7) reads as the upper surface seen from above. Darker clumps and shadow at rows 19-43 form the front and underside, ending in dark shadow at rows 40-45 above the trunk. The trunk is a vertical front face of about 10 px width (rows 46-55) that flares into roots at rows 56-63. This is an organic tree with a canopy top and a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate canopy is a soft, blobby mass in about 4 muted greens with only faint clump separation. It has no bright highlight leaf clusters and no distinct leaf-by-leaf texture. The references show 6+ greens, crisp leaf clumps, and visible branches inside the canopy, and the trunk and roots are detailed. The candidate trunk is a simple 2-3 tone column with little bark grain. Measured visible tones per tile are 9 against 26-29 for the references, roughly a third, and this gap is too large to put down to palette limits alone. Edge pixels are 0% neutral, so the outline is tinted dark green/brown rather than black, which is good. Near-flat coverage is 0%, so there are no large flat fills, but the shading is shallower and softer than the references. The overall look is smoother and less crafted than the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11818
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy upper mass (lit crown)",
+      "rows": "2-22",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "canopy lower mass and shaded underside",
+      "rows": "23-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "40-45"
+     },
+     {
+      "part": "trunk",
+      "rows": "46-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "root flare and grass tufts",
+      "rows": "58-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 41,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the broad canopy. Its silhouette widens from 2 px at row 1 to 44 px at rows 18-21, then narrows to 32 px by row 42, so it forms a rounded volume. The light upper leaf clusters (rows 3-22, L about 120-150) read as the crown seen from above. The mid-tone and dark clusters (rows 23-39, L about 70) form the front face. Rows 40-45 are a dark underside shadow (L 30-70) that works as eave shadow over the trunk. The trunk (rows 46-58, width 10) is a vertical face with a root flare at rows 58-63. Its top is hidden under the canopy. The canopy has no hard front-edge line, but the crown is lit from above and the underside is shadowed, so it is a rounded 3/4-view mass rather than a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate shows 9 visible tones per 16x16 tile against 26 and 29 in the references, which is about a third of the reference density. Its raw colour count is also low: 28 distinct colours in total, against 427 and 567. The canopy is built from a few soft green clumps in roughly 4 steps. It lacks the many-toned leaf clusters, the bright highlight leaves and the dark gaps between clumps that the references have. The surface is smooth and blobby, with little per-leaf grain. The trunk is a simple brown form with only a little shading and no real root or bark detail. The outline is tinted (0% neutral dark edge pixels) and sits as a dark green tone beside the leaves, so it does not read as a sticker. There are no large flat fills (0% near-flat). Even so, the canopy is clearly shallower and flatter than both references, so a careful artist would not accept it next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15812
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage canopy (large rounded crown)",
+      "rows": "1-43",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "36-45"
+     },
+     {
+      "part": "trunk",
+      "rows": "44-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "root flare and ground tufts",
+      "rows": "56-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 42,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy is the main volume. Its width profile grows from 2 px at row 1 to 44 px at rows 18-21, then narrows to 32 px at row 42 and 25 px at row 43, so it is an ellipse-like mass. The top rows 5-13 carry the lightest greens (#82b671), and the lower rows 33-45 are darker and act as the shaded underside. Below the canopy, the trunk (about 10 px wide, rows 44-58) is the front face, and it flares into roots at rows 56-63. The object is viewed from the south with a visible crown top and a front trunk, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate canopy is a soft, blobby mass in about 4 muted greens, with only faint clump separation. The references show crisp leaf clusters with bright highlights, deep shadow pockets and visible branches through the canopy. Measured visible tones per tile are 9 against 26-29 for the references, roughly a third of the reference density. Raw colours are 28 total against 427-567. Near-flat coverage is 0% and the dark edge pixels are tinted rather than neutral (0% near-neutral), so the outline is a dark green/brown material tone and not a sticker line. The trunk is simple, with little bark grain or root detail compared with the flared, textured roots on the references. The canopy lacks per-clump highlights and dark gaps, so it reads as smoothed and shallower than the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15001
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy (lit upper mass)",
+      "rows": "2-39",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "40-45"
+     },
+     {
+      "part": "canopy underside shadow band",
+      "rows": "40-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk",
+      "rows": "46-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "root flare and grass tufts",
+      "rows": "58-63",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 38,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy is the main body. Its silhouette widens from 2px at row 1 to 44px at rows 18-21, then narrows to 32px at row 42 and 25px at row 43. That is a rounded ellipse-like mass. The lit upper foliage in rows 3-22 is lighter green (L~120-150) and the lower leaf clumps get darker (L~70 at rows 23-43). A dark shadow band at rows 40-45 sits under the canopy, over the trunk. The trunk (rows 46-58, 10-13px wide) is the vertical front face, about 13 rows, and it flares into roots with grass tufts at rows 58-63. There is no isometric side face. The canopy has no hard front-edge line; its top reads through the rounded volume and the shading from light to dark."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate canopy is a soft, blobby mass of about 4 muted greens. The clumps are large and rounded, with little per-leaf highlight or dark gaps. The references have crisp leaf clusters in 5-6 steps, bright highlights, deep shadow pockets and visible branches inside the crown. Measured visible tones per tile are 9 for the candidate against 26 and 29 for the references, so it is far lower. Raw colours are 10 per tile against about 108, which supports this. Near-flat coverage is 0%, and edge pixels are tinted (0% neutral), so there is no sticker outline and no flat fills. The trunk is a simple brown column with little bark grain and a minimal root flare, much plainer than the references' buttressed roots. The picture shows a smooth, low-contrast tree that would look thinner and flatter next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14851
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.001Z",
+ "cells": {
+  "16": [
+   "11e86a76f6fe6b34",
+   "357d64c011bf2038",
+   "60c42b6827b695cc",
+   "721dd2a635479683",
+   "74a0a05a104b5063",
+   "77c9e16ef3a6f540",
+   "98f923614b784088",
+   "9ba2ee5e8c3c691c",
+   "9fcd218cb4921eff",
+   "ad131690e884c1ef",
+   "cf82762605716405",
+   "db8e78e96a673b81"
+  ],
+  "24": [
+   "195b697128b18161",
+   "3999a5f7c5d4eda0",
+   "55ae785f54b2f73c",
+   "5d4b350cc721d8fb",
+   "648636b00ffae991",
+   "9a20a93cb4ee546d",
+   "a92fd9477d101dfd",
+   "baa49d71d0bd7d17",
+   "c4e07d3f4aea94ee",
+   "c58e652f09b34359",
+   "e19c83b5f62f9c98",
+   "f31cd58046ce5ae0"
+  ],
+  "32": [
+   "0ef5f003e52ba3b6",
+   "0feb42d8ffd8edf1",
+   "1f1fd08c189b6503",
+   "492e50553c427aaa",
+   "718e18a0bf58f64c",
+   "9d0cf0130d35e176",
+   "9eb3970508d3fb56",
+   "a1923697cd27e667",
+   "d4b627221ebdb0d6",
+   "e6cc1a53bb19f4dc",
+   "e9a70998eb85cee0",
+   "ea31be2881833e78"
+  ],
+  "48": [
+   "1f7f106434f22e8c",
+   "8aa4f153da9d2c54",
+   "994d9480ea48954a",
+   "cc64b55283f6af31"
+  ]
+ }
+}

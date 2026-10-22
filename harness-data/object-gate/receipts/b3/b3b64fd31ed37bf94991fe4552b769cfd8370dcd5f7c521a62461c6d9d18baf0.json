@@ -1,0 +1,393 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b3b64fd31ed37bf94991fe4552b769cfd8370dcd5f7c521a62461c6d9d18baf0",
+ "width": 64,
+ "height": 64,
+ "kind": "structure",
+ "name": "kura storehouse",
+ "label": "jp-inaka-r5:inaka-kura-storehouse",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 24,
+  "darkV5": 38,
+  "nearBlackEdge": 0.03,
+  "opaqueTiles": 16
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof",
+      "rows": "2-22",
+      "evidence": "c",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "23-26"
+     },
+     {
+      "part": "stone base and steps",
+      "rows": "51-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-22 hold a large sloped tile roof with vertical tile strips, a lighter eave edge line at rows 21-22 and dark eave shadow at rows 23-26. Below it the white plaster south wall runs about rows 27-50 with a double door, a barred window and lattice panels. A stone plinth and steps fill rows 51-63. The roof is a real roof plane, not a 1-2 row rim, and the wall is a front face of well over 3 rows, so the body has both a top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small kura with a grey tile roof, white plaster walls, a lattice base and steps. Measured facts are close to the references: 17 colours per tile against 18 and 11, and 0% flat-fill coverage. Its total of 46 distinct colours is well below 185 and 66, so its ramps are narrower. The roof shows tile rows with a few grey steps (about 4) but no per-tile highlights like the red scalloped roofs. The plaster is speckled but pale and light on steps. The dark edge pixels are 32% neutral, against 7-9% in the references, so the outline leans toward black/grey in places, though some tinted tones remain, hence mixed. The overall look is acceptable but thinner and more sticker-like than the references, with a dark uniform roof outline and a simple window and door. Shallower than the Beodeul standard, so it does not clearly match it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17634
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof",
+      "rows": "2-22",
+      "evidence": "c",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "stone base platform",
+      "rows": "51-57",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-22 are a large sloped tiled roof plane, drawn as vertical tile stripes with a ridge cap at rows 2-3. It ends in a lighter eave edge line at rows 21-22, followed by dark eave shadow at rows 23-24. Below it the white plaster front wall runs from about row 25 to row 50 and holds the double door, a barred window and lattice panels. A stone base and steps fill rows 51-63. The roof is the top surface and the wall is a front face of 3+ rows, so the building reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts hold up against the references. Median colours per 16x16 tile is 17, level with house-h101_0 (18) and above the stone house (11). Flat-fill coverage is 0%, the same as both references. Distinct colours is 46, below the stone reference (66) and well below h101_0 (185), but the candidate is a much smaller sprite with a restrained palette, so this is not far below every reference. The dark edge pixels are 32% near-neutral, against 7-9% for the references. That is a mixed outline: it is partly tinted, but there is some neutral dark line work around the roof and the base. By eye, the roof has about 4 tone steps with tile-row banding and highlights. The plaster wall carries speckle, the lattice windows and door have several tones, and the stepped base is shaded. This is slightly shallower than the references' 5-6 steps. Nothing reads as a flat fill or a pure black sticker outline, and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18169
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof",
+      "rows": "3-22",
+      "evidence": "c",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "stone base platform and steps",
+      "rows": "51-57",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-22 are a large sloped tile roof, drawn as vertical tile stripes under a ridge strip at rows 2-5. A lighter eave edge line sits at rows 21-22, followed by dark eave shadow at rows 23-24. Below it the south wall (rows 25-50) is a full front face with a double door, a barred window and lattice panels. A stone plinth with steps (rows 51-63) supports the wall. No isometric side face is drawn. The roof is a real top plane with a front edge and shadow, so this is not a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate's per-tile median of 17 colours matches or exceeds the references (18 and 11), and 5x5 flat-fill coverage is 0%. Its total of 46 colours is well below the references (185 and 66), so the whole building has fewer shade steps. The grey tile roof has about 3-4 steps with a few scallop highlights, against 5-6 steps in the references' roofs. The plaster wall has speckle, and the lattice base is detailed. The 32% near-neutral share of dark edge pixels is clearly higher than the references' 7% and 9%. That suggests part of the outline is neutral dark grey rather than tinted material tone, giving a somewhat sticker-like edge around the roof and lattice. Overall it is competent and textured but shallower than the references in ramp depth and outline tinting, and I would not accept it as equal next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15857
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof",
+      "rows": "2-22",
+      "evidence": "c",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "23-27"
+     },
+     {
+      "part": "stone base platform",
+      "rows": "51-57",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A large sloped tile roof fills rows 2-20, with vertical tile-stripe columns. It ends in a lighter eave edge line at rows 21-22, followed by dark eave shadow at rows 23-27. Below it is a plaster front wall, rows 28-50, with a double door, lattice windows and a barred window. A stone base (rows 51-57) and steps (rows 58-63) sit under the wall. The roof is a clear top plane over a front face of more than 3 rows, so the building reads as 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate kura is a whole building (tile roof, plaster walls, lattice windows, door, stone steps), so it matches the reference kind. Measured facts: 17 colours per tile is close to the references (18 and 11), and flat-fill coverage is 0%, so there are no big flat areas. The candidate has only 46 distinct colours against 185 and 66, so it is narrower in palette. The roof has about 4 grey steps with tile-row texture, but it is more uniform and less scalloped than the references' tiles with per-tile highlights. The plaster wall has speckle and the lattice and steps have some variation. About 32% of dark edge pixels are neutral, against 7% and 9% for the references. That is a noticeable neutral lean, so the outline is mixed rather than a clean dark material tone. The dark roof edge and the dark window and door frames read somewhat like a sticker outline. Overall it is competent and nearly on par in per-tile density but shallower in ramps and palette variety than the references. Judged by the stricter standard (when in doubt, fail), it is slightly below the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17503
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.438Z",
+ "cells": {
+  "16": [
+   "083c4f7e0cb6eddd",
+   "1168115e8eaad57f",
+   "1b08480dd845be51",
+   "318b50114d74963c",
+   "35b7d379714722bd",
+   "441bf5377282b644",
+   "52d1faa42cb26634",
+   "9c03793075f16b8c",
+   "9ff53ca04aa54d92",
+   "b31ec6592fdadd86",
+   "cd0b02cd1dcdd427",
+   "cd4136cafbe13370",
+   "d6e2cedcba2ebdee",
+   "e7ab2b8852430dcf",
+   "f69d964baa3a93c9",
+   "fbe1de6d57f1c809"
+  ],
+  "24": [
+   "0e2e0cc4744b3ae9",
+   "0ec67e941eb8cac5",
+   "19453421a81cccd2",
+   "1e8506872ed5efee",
+   "1f07c5bd3cf16a6a",
+   "20049493cace8a60",
+   "24ff86437f97d38c",
+   "27ee98af484c8e10",
+   "291422efdbc4f2c2",
+   "2997505cf50442c3",
+   "328c88a2aa4310fa",
+   "3c48ba060c59dc61",
+   "497b366691e700e4",
+   "4b6d6df45242238e",
+   "4fa3a6b154557888",
+   "52acc14eb73313d0",
+   "54238606a97b54fa",
+   "57c559cbe6e08327",
+   "67ce9791a2b7437d",
+   "687cf6bf0767f171",
+   "6b3c4a2a91cc8d41",
+   "6c1a483e8bd101de",
+   "6df0bd2b3fdff628",
+   "7027c3855ed849c5",
+   "766361efc2e419fc",
+   "777c36c1835235eb",
+   "792492b39e9f611d",
+   "7b7c41413d0e84b7",
+   "8025331844c209f0",
+   "85b6273ebf831aba",
+   "877a212e13aa1016",
+   "89d63d411eddfbf9",
+   "8a4fff9a7663c185",
+   "8e16008b2a773a1a",
+   "93bc6a3d39b80440",
+   "96260e1fc7ff0db3",
+   "9e71ef96c57d5ce3",
+   "a5da5f429fbe4127",
+   "a61f1edb33a950b3",
+   "a99fec688aacdc21",
+   "b41d68b209d2d45a",
+   "b7b0f2def053cf7f",
+   "bbd9f9ef90a530e5",
+   "bd3f187937e5965c",
+   "c0b12f795091d03a",
+   "c86b5182475425b8",
+   "cfa34f1821df78bc",
+   "d1247ab8a090131f",
+   "e0639f6ead2560d7",
+   "e1ed21652be62d41",
+   "ebc76c5933bbdcd2",
+   "ed62c6eea81c2ad4",
+   "f4d580a29299a3bf",
+   "f9767b3b10cc4203"
+  ],
+  "32": [
+   "1ba58ba5443b2a5a",
+   "71a20c0f45745295",
+   "7dc9e8eb402f1148",
+   "c83ee8175c332915"
+  ],
+  "48": [
+   "01667210596dcd56",
+   "08321bce12db0a6d",
+   "0959d2e03883d56c",
+   "10778c6cac519994",
+   "13b10d7eaad72540",
+   "2e16440b7ed5f945",
+   "37ebf13d30d94c07",
+   "3d3ad0d4ac248250",
+   "4e94ec81acf11f59",
+   "6e91654ddb9ec58c",
+   "73f600bafd1a9a37",
+   "7c1fa1d695def1a7",
+   "7e4fbba381b72398",
+   "95509eedc645ec2a",
+   "9dfcb7dd5b2045cf",
+   "aa1ab7ce0f2f7985",
+   "b402b2edddbdf548",
+   "c1d73fb99a21ad9b",
+   "c4b78d63cbed4915",
+   "d00a83b66cf9aacf",
+   "e6df8d71435e1952",
+   "e778c56925dbdf43",
+   "fa8b574b6753e9cb",
+   "fae30ab109da8a7a"
+  ]
+ }
+}

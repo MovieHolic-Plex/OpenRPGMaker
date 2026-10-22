@@ -2,8 +2,11 @@
  * 공용 오브젝트 게이트 — 영수증·해시·출구 판정(브라우저·노드 공용, Web Crypto 만 쓴다).
  *
  * 영수증은 그림 화소 해시(pixelSha256)에 묶인다. 한 화소라도 바뀌면 영수증이 없어져 다시 판정받아야 한다.
- * 최종 통과는 서명된 사람 허용이다(2026-10-20 사용자 결정): 그 그림 해시·종류의 영수증(어느 프로필이든 — AI 조언)이 있고
- * 검토 화면 서버가 서명한 「허용」이 있으면 모든 출구를 지난다. 사람 「거절」은 최종이다. 사람 결정이 없을 때만 아래 옛 규칙:
+ * 최종 판정은 Opus 5.5 medium 적대적 VQA 다(2026-10-21 사용자 결정, 옵션 A 「사람 허용이 최종」을 대체):
+ *   ① 서명된 사람 「거절」은 언제나 최종 차단(덮어쓰기).
+ *   ② 보정된 Opus 최종 프로필의 기록(final/<해시>.json, 그림 해시·종류·프로필에 묶임)이 있으면 그 판정이 최종 — pass 면 통과, fail 이면 차단
+ *      (사람 허용도 Opus fail 을 뒤집지 않는다. 공방 로컬만 사람 「그래도 넣기」).
+ *   ③ Opus 기록이 없을 때만 옛 규칙: 서명된 사람 허용(이제 필수가 아니라 선택) 또는 보정된 옛 프로필의 pass.
  *   bundle·shared·store → 보정된 프로필의 「pass」 영수증만. 공방 「그래도 넣기」도 받지 않는다.
  *   workshop-local      → pass, 또는 사람이 직접 누른 「그래도 넣기」 덮어쓰기. 조수·에이전트는 덮어쓸 수 없다.
  * Python 쪽 같은 규칙: src/harnesses/_core/object_gate/__init__.py. 둘을 같이 고친다.
@@ -75,26 +78,69 @@ export function validFrontPropApproval(approval: ObjectGateFrontPropApproval | n
  * 허용 = 모든 출구 통과, 거절 = 최종(모든 출구에서 막고 공방 「그래도 넣기」도 무효).
  * 출구는 서명을 확인한 기록만 받는다(노드 store.readHoldDecision · Python read_hold_decision). 감독·에이전트·MCP 도구는 쓰지 않는다.
  * 스키마 이름(hold-decision)은 서명 대상이라 바꾸지 않는다(2026-10-20 이전 기록 4건이 그대로 유효하다).
+ *
+ * by: 'human' = 사람이 검토 화면에서 직접 누른 결정. by: 'delegated' = 사용자가 감독자에게 위임해 감독자가 독립 검수 뒤 같은 검토 API 로 기록한 허용.
+ * 위임 기록은 delegatedBy(위임한 사람)·evidence(근거 영수증·검수 결과 경로)가 둘 다 있어야 하고, 두 필드는 위임 기록의 서명 대상에만 들어간다
+ * (사람 기록의 서명 문자열은 그대로라 기존 기록이 그대로 유효하다). 출구 효력은 사람 허용과 같다 — 그림 해시·종류·서명 확인은 똑같이 요구한다.
  */
 export type ObjectGateHoldDecision = {
   schema: 'oprn-object-gate-hold-decision/1'; pixelSha256: string; profileHash: string; kind: ObjectGateKind;
-  decision: 'allow' | 'reject'; decidedBy: string; decidedAt: string; by: 'human'; via: 'review-page'; reasons: string[]; note?: string; sig: string;
+  decision: 'allow' | 'reject'; decidedBy: string; decidedAt: string; by: 'human' | 'delegated'; via: 'review-page'; reasons: string[]; note?: string;
+  /** by === 'delegated' 일 때만. 위임한 사람(예: 사용자 이름). */ delegatedBy?: string; /** by === 'delegated' 일 때만. 독립 검수 근거(영수증·결과 파일 경로). */ evidence?: string; sig: string;
 };
 /** 서명 대상 문자열(sig 제외, 키 이름순). Python hold_payload 와 같다. */
 export function objectGateHoldPayload(d: ObjectGateHoldDecision): string {
   const keys = ['schema', 'pixelSha256', 'profileHash', 'kind', 'decision', 'decidedBy', 'decidedAt', 'by', 'via', 'reasons', 'note'] as const;
-  return JSON.stringify(keys.map(k => [k, (d as Record<string, unknown>)[k] ?? null]));
+  const extra = d.by === 'delegated' ? (['delegatedBy', 'evidence'] as const) : ([] as const);
+  return JSON.stringify([...keys, ...extra].map(k => [k, (d as Record<string, unknown>)[k] ?? null]));
 }
+const nonEmpty = (v: unknown) => typeof v === 'string' && v.trim().length > 0;
 /** 서명 확인을 마친 기록이 이 영수증(그림 해시·종류)에 묶인 사람 결정이면 'allow'|'reject', 아니면 null. 프로필은 보지 않는다. */
 export function humanDecision(d: ObjectGateHoldDecision | null | undefined, receipt: ObjectGateReceipt | null | undefined): 'allow' | 'reject' | null {
   if (!d || !receipt) return null;
-  const ok = d.schema === 'oprn-object-gate-hold-decision/1' && d.by === 'human' && d.via === 'review-page' && (d.decision === 'allow' || d.decision === 'reject')
+  const ok = d.schema === 'oprn-object-gate-hold-decision/1' && (d.by === 'human' || (d.by === 'delegated' && d.decision === 'allow' && nonEmpty(d.delegatedBy) && nonEmpty(d.evidence))) && d.via === 'review-page' && (d.decision === 'allow' || d.decision === 'reject')
     && d.pixelSha256 === receipt.pixelSha256 && d.kind === receipt.kind && typeof d.decidedBy === 'string' && d.decidedBy.trim().length > 0 && !!d.decidedAt
     && typeof d.profileHash === 'string' && d.profileHash.length > 0;
   return ok ? d.decision : null;
 }
 export function holdAllows(d: ObjectGateHoldDecision | null | undefined, receipt: ObjectGateReceipt): boolean {
   return humanDecision(d, receipt) === 'allow';
+}
+
+/**
+ * Opus 최종 판정 기록(2026-10-21). 적대적(검사관) 지시문으로 Opus 5.5 medium 이 여러 그림을 한 호출에 보고 pass/fail 과 이유를 낸다.
+ * 그림 화소 해시·종류·판정 프로필 해시에 묶인다. 출구는 보정된(final-profiles/<해시>.json status calibrated) 프로필의 기록만 받는다.
+ */
+export type ObjectGateFinal = {
+  schema: 'oprn-object-gate-final/1';
+  pixelSha256: string; width: number; height: number;
+  kind: ObjectGateKind; styleKind: ObjectGateStyleKind; name: string; label?: string;
+  profileHash: string;
+  judge: { provider: 'claude-cli'; model: string; effort: string };
+  verdict: 'pass' | 'fail';
+  view34: 'pass' | 'fail'; style: 'pass' | 'fail'; kindOk: boolean; sure: boolean;
+  reasons: string[];
+  answer: unknown;
+  decidedAt: string;
+  cells?: Record<string, string[]>;
+};
+export type ObjectGateFinalProfileRecord = {
+  schema: 'oprn-object-gate-final-profile/1'; profileHash: string; status: 'calibrated' | 'rejected'; calibratedAt: string;
+  judge: { provider: 'claude-cli'; model: string; effort: string };
+  bad: { total: number; caught: number; missed: string[] }; good: { total: number; passed: number; falseFail: string[] };
+  sets?: Record<string, { bad: { total: number; caught: number }; good: { total: number; passed: number } }>;
+  tiers?: Record<string, { bad: { total: number; passed: number }; good: { total: number; passed: number } }>;
+  errors?: string[]; note?: string;
+  /** 조건 (b): 칩셋 원본(알려진 정상) 묶음별 전체 판정 통과. */
+  originals?: Record<string, { total: number; passed: number; failed: string[] }>;
+  families?: Record<string, { bad: number; caught: number; good: number; passed: number }>;
+  uncertain?: Array<{ label: string; verdict: string; reasons: string[] }>;
+  excludedNegatives?: string[];
+};
+/** 이 그림·종류에 효력이 있는 Opus 최종 기록인가(보정된 프로필·해시 일치). 종류가 다르면 효력 없음이 아니라 「종류 불일치」로 막는다(refusal). */
+export function finalApplies(final: ObjectGateFinal | null | undefined, pixelSha256: string, calibratedFinalProfiles: ReadonlySet<string> | undefined): final is ObjectGateFinal {
+  return !!final && final.schema === 'oprn-object-gate-final/1' && final.pixelSha256 === pixelSha256 && (final.verdict === 'pass' || final.verdict === 'fail')
+    && !!calibratedFinalProfiles?.has(final.profileHash);
 }
 
 export type ObjectGateConfusion = { badTotal: number; caught: number; missed: string[]; goodTotal: number; passed: number; falseFail: string[] };
@@ -168,18 +214,32 @@ export function objectGateRefusal(input: {
   calibratedProfiles: ReadonlySet<string>;
   /** front_prop 종류의 사람 승인 기록(없으면 null). 이 그림 해시에 묶인 유효한 승인이 있을 때만 3/4 반쪽을 면제한다. */
   approval?: ObjectGateFrontPropApproval | null;
-  /** 사람 결정(서명 확인을 마친 것만 넘긴다). 허용이면 통과, 거절이면 최종 차단 — 프로필 보정 여부와 무관하다. */
+  /** 사람 결정(서명 확인을 마친 것만 넘긴다). 거절이면 최종 차단. 허용은 Opus 최종 기록이 없을 때만 통과로 센다(2026-10-21). */
   hold?: ObjectGateHoldDecision | null;
+  /** Opus 최종 판정 기록(final/<해시>.json). 보정된 최종 프로필의 것만 효력이 있다. */
+  final?: ObjectGateFinal | null;
+  calibratedFinalProfiles?: ReadonlySet<string>;
 }): string | null {
   const { receipt, pixelSha256, kind, context } = input;
-  if (!receipt) return '3/4·화풍 판정 영수증이 없다 — object-gate review 를 먼저 받아라';
+  // 2026-10-21: Opus 최종 판정이 우선이다. 사람 거절만 그 위에 있다.
+  const final = finalApplies(input.final, pixelSha256, input.calibratedFinalProfiles) ? input.final : null;
+  if (final) {
+    if (kind && final.kind !== kind) return `최종 판정 종류(${final.kind})가 요청 종류(${kind})와 다르다`;
+    const finalHuman = humanDecision(input.hold, { pixelSha256, kind: final.kind } as ObjectGateReceipt);
+    if (finalHuman === 'reject') return `사람이 검토 화면에서 거절했다(${input.hold!.decidedBy}, ${input.hold!.decidedAt.slice(0, 10)}) — 최종이다. 다시 그려 새 해시로 다시 받아라`;
+    if (final.verdict === 'pass') return null;
+    if (context === 'workshop-local' && receipt?.pixelSha256 === pixelSha256 && receipt.override?.by === 'human') return null;
+    const why = final.reasons.length ? final.reasons.join(' · ') : 'fail';
+    return `Opus 최종 판정 불합격(${why}) — 다시 그려 새 해시로 다시 받아라`;
+  }
+  if (!receipt) return '3/4·화풍 판정 영수증이 없다 — object-gate final-review 로 Opus 최종 판정을 받아라';
   if (receipt.pixelSha256 !== pixelSha256) return '영수증의 그림 해시가 지금 그림과 다르다 — 고친 뒤 다시 판정받아라';
   if (kind && receipt.kind !== kind) return `영수증 종류(${receipt.kind})가 요청 종류(${kind})와 다르다`;
   // 사람 결정이 최종이다(2026-10-20). 허용 = 통과(프로필 보정 여부·AI 판정과 무관), 거절 = 모든 출구에서 막는다.
   const human = humanDecision(input.hold, receipt);
   if (human === 'reject') return `사람이 검토 화면에서 거절했다(${input.hold!.decidedBy}, ${input.hold!.decidedAt.slice(0, 10)}) — 최종이다. 다시 그려 새 해시로 다시 받아라`;
   if (human === 'allow') return null;
-  if (!input.calibratedProfiles.has(receipt.profileHash)) return `판정 프로필 ${receipt.profileHash} 가 보정되지 않았다 — AI 판정(${receipt.verdict})은 조언일 뿐이다. 검토 화면(serve-holds, 18323)에서 사람이 허용해야 지나간다`;
+  if (!input.calibratedProfiles.has(receipt.profileHash)) return `판정 프로필 ${receipt.profileHash} 가 보정되지 않았다 — AI 판정(${receipt.verdict})은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라`;
   // front_prop: 사람이 이 그림 해시에 대해 종류를 승인했다면 3/4 반쪽은 면제 — 남은 것은 화풍 반쪽의 판정뿐이다. 승인이 없으면 아래 보류 경로(번들·공용·스토어 출구 차단).
   if (receipt.kind === 'front_prop' && validFrontPropApproval(input.approval, pixelSha256)) {
     const styleVerdict = receipt.style?.verdict;

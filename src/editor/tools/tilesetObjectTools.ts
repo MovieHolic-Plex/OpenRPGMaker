@@ -7,6 +7,7 @@
 
 import type { GameMap, Project, SectionStructureKitDef, TilesetDef } from "@/project/types";
 import { isPassable } from "@/project/collision";
+import { footprintFromUpper, footprintRefusal } from "@/project/objectFootprint";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { requireMap } from "./mapHelpers";
 
@@ -184,7 +185,7 @@ const listTilesetObjects: ToolDefinition = {
       });
     return {
       summary: objects.length === 0
-        ? `${map.name} 타일셋(${map.tilesetId})에 ${query ? `"${query}" 에 맞는 ` : ""}팩 물체가 없습니다.`
+        ? `${map.name} 타일셋(${map.tilesetId})에 ${query ? `"${query}" 에 맞는 ` : ""}팩 물체가 없습니다. 칩셋 소품 킷(버들항 bd-prop-* 등)은 list_spatial_designs({kind:"object", query}) 로 찾고 stamp_object 로 놓는다 — 거기에도 없을 때만 generate_missing_object.`
         : `${map.name} 타일셋의 팩 물체 ${objects.length}개${query ? `("${query}")` : ""}`,
       data: { tilesetId: map.tilesetId, objects },
     };
@@ -195,7 +196,7 @@ const stampTilesetObject: ToolDefinition = {
   name: "stamp_tileset_object",
   description:
     "팩 프리셋 물체 하나를 at(왼쪽 위 칸) 또는 base(땅에 닿는 맨 아래 줄 왼쪽 칸)에 원형 그대로 찍는다(위층). objectId = list_tileset_objects 의 id(또는 정확한 이름). "
-    + "막힌 밑칸이 옥상·외벽·물 위면 거부한다. 한 줄 높이 소품은 탁자·카운터·상자 같은 다른 물체 위에 올릴 수 있다(자동으로 4층). "
+    + "막힌 밑칸(발)이 옥상·외벽·벽·천장·허공·물 위거나 그림이 다른 물체와 겹치면 거부하고 가장 가까운 빈 바닥 자리(at·base)를 알려 준다 — 그 자리로 다시 부른다. 한 줄 높이 소품은 탁자·카운터·상자 같은 다른 물체 위에 올릴 수 있다(자동으로 4층). "
     + "repeat {x,y} 는 이어 찍을 수 있는 물체(차선·횡단보도·벤치·울타리)만 — 그 축으로 물체 크기만큼 붙여 반복한다. "
     + "이미 위층 타일이 있는 칸은 overwrite:true 가 없으면 거부한다. 문(door)은 외벽 맨 아래 줄에, 창·간판(wallmount)은 외벽·옥상 안에만(밖에 걸치면 거부) 찍는다. "
     + "횡단보도는 차도 칸에만, 차선 화살표는 우측통행 차로에만(반대 차로면 거부). "
@@ -302,6 +303,18 @@ const stampTilesetObject: ToolDefinition = {
           { code: "occupied-cell", mapId: map.id, x: clash.x, y: clash.y },
         );
       }
+    }
+    // 발자국 검사(project/objectFootprint.ts, 2026-10-21): 서는 물건·바닥 무늬의 발이 허공·벽·천장·물·구조물 위거나
+    // 그림이 다른 물체와 겹치면 거부하고, 가장 가까운 빈 바닥 자리를 알려 준다. 탁자 위 한 줄 소품(4층 올림)·다리·벽 걸이는 아래 옛 규칙이 본다.
+    const footLabel = `${kit.id} ${kit.name ?? ""}`;
+    const footExempt = /\bbridge\b|footbridge|다리|널다리|돌다리|torch-wall|벽 횃불|횃불|arch-|벽 아치|stairs-up-face|banner|현수막|niche|벽감|chains|사슬|vines|담쟁이/iu.test(footLabel)
+      || kit.ai?.tags?.includes("on-road") === true || /^mc-veh-|^jp-prop-(?:car|ad-truck|ricksha|train)|crosswalk|횡단보도|^lane_|^arrow_/iu.test(footLabel);
+    if ((kind === "prop" || kind === "tall" || kind === "decal") && args.overwrite !== true && stacked === 0 && !footExempt) {
+      const upperPattern = new Array<number>(width * height).fill(-1);
+      for (const w of writes) if (w.layer === "upperTiles") upperPattern[(w.y - oy) * width + (w.x - ox)] = w.tile;
+      const cells = footprintFromUpper(width, height, upperPattern, tileset).map((cell) => (kind === "decal" ? { ...cell, foot: true } : cell));
+      const refusal = footprintRefusal(draft, map, cells, ox, oy, `${kit.id}(${kit.name ?? kit.id}) ${width}×${height}`);
+      if (refusal) throw new ToolError(refusal.message, { code: refusal.code, mapId: map.id, ...(refusal.suggestion ? refusal.suggestion.at : { x: ox, y: oy }) });
     }
     // 땅에 서는 물체의 막힌 칸이 옥상·외벽·물 위면 거부한다 — 좌표를 「서 있는 칸」으로 착각한 흔한 실수다
     // (2026-09-24 헤드리스 실측: 보도 가로등 at 을 밑칸으로 줘서 건물 옥상 위에 세웠다).

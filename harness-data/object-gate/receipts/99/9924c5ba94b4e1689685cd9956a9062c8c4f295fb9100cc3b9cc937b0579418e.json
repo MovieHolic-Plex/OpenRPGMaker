@@ -1,0 +1,406 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9924c5ba94b4e1689685cd9956a9062c8c4f295fb9100cc3b9cc937b0579418e",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "mart gondola ramen",
+ "label": "modern_city_interior/mart-gondola-ramen",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 22,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band (pale gray)",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red header/price strip",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards (3 shelves)",
+      "rows": "13-14, 21-22, 29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ramen goods on shelves",
+      "rows": "7-12, 15-20, 23-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The unit is drawn face-on, like the bookshelf reference. Rows 1-4 are a pale gray band with highlight rows, and the red strip at rows 5-6 follows directly with no front-edge line and no eave shadow. That reads as a front-facing header, not a horizontal top surface, so I count only about 2 rows as a rim. The shelf boards at rows 13-14, 21-22 and 29-30 are 2-row light/gray strips, which is rim-like. The product rows sit in dark navy openings and are seen face-on. The body has no top surface and no receding side face, only a 26-row front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a shelf-style gondola with a red header band, a grey-white frame, and rows of orange and red goods. Measured facts support it: 20 visible tones per tile, matching prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outlines carry a tint (a dark blue-grey beside the frame, a dark red-brown beside the goods) and it does not read as a black sticker line. The frame has about 5 lightness steps and the goods show several tones each. The product rows give it grain and repetition, though by eye it is slightly cleaner and less textured than the stall reference. It would sit acceptably next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19928
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header panel (light grey)",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red valance strip under the header",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards (front-facing strips with grey underside line)",
+      "rows": "13-14, 21-22, 29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ramen cups and packs on the shelves",
+      "rows": "8-12, 16-20, 24-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole gondola is drawn face-on. Rows 1-4 are a flat header strip, and the red band at rows 5-6 sits directly on dark row 7 with no horizontal surface or front-edge line between them. The shelf boards at rows 13-14, 21-22 and 29-30 are 2-row front strips with no depth. The products are seen face-on and count as decor. The silhouette is a constant 30 px wide with no receding side face. At best there is a 1-2 row rim at the top, so there is no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small shelf-style prop of the same kind as the references. It has about 20 visible tones per 16x16 tile, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% near-neutral, meaning the outline leans bluish-grey, matching the frame, rather than a black sticker line. The frame has about 4 value steps (white, light grey, mid grey, dark blue-grey) with a striped top band, and the shelves are separated by value. The product rows have small dotted detail in several red and orange tones. It is a little shallower than the stall and well in material ramps, but it is not thinner or flatter than the references on the measured facts or by eye.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18623
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header panel / top cap",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards (3 front-facing strips)",
+      "rows": "13-14, 21-22, 29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "goods on shelves (ramen cups/packs)",
+      "rows": "8-12, 16-20, 24-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is drawn face-on. The top is a flat light-grey header band (rows 1-4) with a red stripe (rows 5-6). It is a vertical sign-like strip with no front-edge line and no eave shadow, so it does not read as a horizontal surface. Each shelf board is only a 2-row strip (light row 13, grey row 14, and the same at 21-22 and 29-30), which reads as a rim. The goods are seen from the front and show no top faces. The silhouette is a constant 30 px wide from row 1 to row 31, with no receding side face. This matches the 'front elevation: top 1' and 'rim only' wrong references, not the cabinet with a 5-row top plus edge and eave."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small shelf gondola with a light grey frame and rows of red/orange ramen packs. It has 20 visible tones per 16x16 tile, matching prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills; the frame has highlight, mid and shadow steps, and each shelf row has pack-by-pack variation. The dark edge pixels are 0% neutral, so the outline is tinted to the neighbouring material rather than a black sticker line. The piece is slightly simpler than the cheese stall in overall form, with fewer ramp steps on the frame. Its density and shading craft are still at the reference level, and a careful artist would accept it beside the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20188
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header cornice band",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red sign strip",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards (front edges only)",
+      "rows": "13-14, 21-22, 29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ramen goods on shelves",
+      "rows": "8-12, 16-20, 24-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is drawn face-on. Rows 1-4 are a light grey header strip with no front-edge line and no eave shadow, so it reads as a front-facing cornice. Rows 5-6 are a red sign strip, which is also vertical. Below that are a dark navy back panel and shelves whose boards show only 2-row front edges (rows 13-14, 21-22, 29-30), which count as rims. The goods are seen straight on and no shelf surface is visible from above. This is a front elevation with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a shelf gondola with a grey-blue frame, a red header strip and three shelves of orange and red packs. The measured facts match the stall and well references: 20 visible tones per tile against 17 and 20, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted rather than black. By eye, the dark blue-grey outline sits next to the frame and the dark red-brown next to the packs, so it reads as dark material tone, not a sticker line. Individual packs carry highlight and shadow dots, and the frame has a light, mid and dark ramp, so there are no large flat areas. The frame and header ramps are slightly shallower (about 4 steps) than the 5-6 on the stall and well, and the texture is moderate rather than rich, but the piece would not look thinner or flatter beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18763
+  }
+ ],
+ "decidedAt": "2026-10-21T00:04:54.261Z",
+ "cells": {
+  "16": [
+   "8b6c593dcf39045d",
+   "8de5cbf3637f5456",
+   "aef5fd6b742d9ae3",
+   "bd9490e402da139a"
+  ],
+  "24": [
+   "074f4ca7dcf2497c",
+   "088a1ac615701aa7",
+   "0eb4c6a9174263df",
+   "391c96706556d235",
+   "5069133e34fa2505",
+   "5a400954e6f700cf",
+   "6522a7803777d810",
+   "71d4267fc5358654",
+   "745d5a991a0f6815",
+   "7accd6cb9cda7db3",
+   "7fcc80c8329e6dbf",
+   "914ddd0e58f21397",
+   "a9dc9ad63125120f",
+   "ac1c98415513c10c",
+   "b264de172109f79b",
+   "b569034a244725d7",
+   "cc386df7ff7eb196",
+   "d321ee17c8d4076c",
+   "daa4ffaeb14f2fe3",
+   "e16f056f1e67f5ac",
+   "e51510b35679ea34",
+   "e83330d0fca6ba3e",
+   "f42a43301b932b42",
+   "f5dea67628e683e7"
+  ],
+  "32": [
+   "9e3189746479660d"
+  ],
+  "48": [
+   "48053eb601404564",
+   "5a74ec4f20aa730e",
+   "6a771e1b1175476a",
+   "afbd59f2967d8065",
+   "b8a67cda15e6519f",
+   "f89b61a4759a6727"
+  ]
+ }
+}

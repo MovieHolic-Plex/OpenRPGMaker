@@ -6,6 +6,7 @@ import { canonicalJsonString } from "../../src/project/persistence/core/canonica
 import { resolveMapPatchDocuments, applyProjectDocumentPatch } from "../../src/project/persistence/core/projectPatch";
 import type { Project } from "../../src/project/types";
 import { OPRN_CHANNELS } from "../shared/channels";
+import { TEAM_COLLAB_ENABLED } from "../shared/teamCollab";
 import {
   activityListSchema,
   activityRecordSchema,
@@ -121,6 +122,12 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
     [OPRN_CHANNELS.teamLock]: (key, payload) => {
       const input = z.object({ resource: z.string().min(1).max(300).refine(value => value === 'database' || /^map:.+/.test(value), 'invalid lock resource'), release: z.boolean().optional(), takeover: z.boolean().optional() }).parse(payload);
       const session = sessions.require(key), member = sessions.member(key);
+      // 사람 팀 협업이 꺼져 있으면 맵 임대는 아무것도 막지 않는다 — 늘 「쥐었다」고 답하고 기록하지 않는다.
+      // 실측(2026-10-21): 호스트 재시작·끊긴 탭의 90초 임대·남은 잠금이 혼자 쓰는 사용자의 편집과 저장을 막았다.
+      if (!TEAM_COLLAB_ENABLED) {
+        session.locks.delete(input.resource);
+        return input.release ? { kind: 'released' } : { kind: 'held', expiresAt: Date.now() + 90_000 };
+      }
       if (member.role === 'viewer') throw new Error('읽기 전용 팀원은 편집할 수 없습니다');
       const lease = session.locks.get(input.resource);
       const liveForeignLease = lease && lease.expiresAt > Date.now() && lease.session !== key ? lease : null;
@@ -363,7 +370,8 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
       if (channel === OPRN_CHANNELS.assetsPruneUnused && sessions.require(key).team.list().length > 1) throw new Error('팀 작업 중에는 미사용 에셋 정리를 실행할 수 없습니다');
       if ([OPRN_CHANNELS.assetsPruneUnused, OPRN_CHANNELS.projectSeparateMedia, OPRN_CHANNELS.projectBackup,
         OPRN_CHANNELS.projectListBackups, OPRN_CHANNELS.projectRestoreBackup].some(candidate => candidate === channel)) requireOwner(key);
-      if (channel === OPRN_CHANNELS.projectSave || channel === OPRN_CHANNELS.projectSaveMapPatch) {
+      // 팀 협업이 꺼져 있으면 다른 세션의 맵 임대와 저장을 비교하지 않는다(동시 저장은 기준 sha·3자 병합이 맡는다).
+      if (TEAM_COLLAB_ENABLED && (channel === OPRN_CHANNELS.projectSave || channel === OPRN_CHANNELS.projectSaveMapPatch)) {
         // 다른 세션이 지금 쥐고 있는 임대가 있을 때만 문서를 열어 비교한다. 혼자 쓰는 흔한 경우에는
         // 역직렬화를 하지 않는다 — 실측(2026-09-26, 81MB 새 프로젝트) 전체 저장마다 저장 행 파싱+역직렬화 약 2s.
         let documents: { readonly base: Project | undefined; readonly local: Project } | null = null;

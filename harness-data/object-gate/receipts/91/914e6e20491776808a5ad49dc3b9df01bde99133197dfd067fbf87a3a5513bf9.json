@@ -1,0 +1,407 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "914e6e20491776808a5ad49dc3b9df01bde99133197dfd067fbf87a3a5513bf9",
+ "width": 48,
+ "height": 48,
+ "kind": "container",
+ "name": "svc washer row",
+ "label": "modern_city_interior/svc-washer-row",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 26,
+  "darkV5": 33,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper shelf unit top",
+      "rows": "1-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "bottles and goods on shelf",
+      "rows": "6-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "washer countertop (top of the machines)",
+      "rows": "16-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a row of three front-loading washers. Rows 16-20 form a light gray-to-white top band, and row 20 (L=244) is a bright front-edge line. Below it, rows 21-46 form the blue front face with control panels (rows 22-24) and round door drums (rows 26-40). The shelf above has a lighter top band at rows 1-3 and holds detergent bottles, which are decor. The object has no open container mouth, so the container kind does not fit. The washer drums are doors seen face-on, not openings seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a row of three front-loading washers in a blue cabinet with a shelf of bottles on top. It carries 15 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is tinted: a dark blue version of the cabinet rather than a black sticker line. The drums show about 5 steps (rim, glass highlight, mid blue, dark, deep) and the cabinet panels are shaded in several blues, with small bottles and detail on the top shelf. It sits at the level of the stall and well and is richer than the bench, hedge and lamp, which are sparse. A careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13489
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top shelf unit: cornice band above the cubbies",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "detergent bottles and boxes on the shelf",
+      "rows": "6-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "washer tops (grey to white gradient band)",
+      "rows": "16-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "washer fronts with control panel and round doors",
+      "rows": "21-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a row of three washing machines. Rows 16-20 form a 5-row top band that shades from grey to near-white and ends in a bright front-edge line at row 20. Below it is a 26-row front face (rows 21-46) with control panels and round glass doors. A wall shelf above (rows 0-15) has a light cornice band at rows 1-3 and a darker shadow at rows 4-5, with goods inside that count as decor. The object is a washer row, not a container with an opening, so the kind does not fit. There is no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "Measured facts: the candidate has 15 visible tones per 16x16 tile, against 17 and 20 for the stall and well and 9 for the hedge. Near-flat coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline is tinted (dark blue-toned) rather than black. By eye, the three washer drums have a rim, a glass ring, and a few steps of blue shading with highlight dots. The top shelf holds small bottles and items, and the frame is separated by value. It is a compact, well-shaded piece that sits comfortably beside the stall and well. Its main weakness is that the blue body is somewhat uniform in the panels between the drums, and the drums repeat identically.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16349
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper shelf top band",
+      "rows": "1-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "detergent bottles and goods on shelf",
+      "rows": "5-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf front board and feet",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "washer tops (three machines)",
+      "rows": "16-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "washer front face with control panel and round doors",
+      "rows": "21-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a row of three front-loading washers. Rows 16-20 form a gray top band with a graded lightness. It ends in a bright front-edge line at row 20 (L=244), directly above the blue front face. The front face runs from row 21 to row 46 and holds the control panel (rows 22-25) and the round glass doors (rows 27-40). The shelf above, with goods on it, is mostly a front-facing face with a light top band at rows 1-3. The object is not an open container: the round doors are seen face-on, and no opening is seen from above. The kind therefore does not fit well, but the top and front structure is a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a row of three front-loading washers under a shelf with bottles. Measured facts: 15 visible tones per tile (references: hedge 9, cheese stall 17, well 20), 0% near-flat coverage and 0% neutral dark edge pixels. The outline is therefore tinted: a dark blue tone beside the blue body, not near-black. These numbers are in range. By eye, the machine bodies are mostly flat blue panels with only one or two shade steps, and the drum circles have a few rings of highlight. The shelf has small bottle details. The references (stall, well) show more per-material ramps, such as 5-6 step roofs, grain, and individually shaded stones. The washers read as clean, somewhat smooth and graphic, with fewer ramp steps and less grain than the stall or well. Texture is present only in the drums and the shelf. It is not sticker-like, but it is slightly shallower than the best references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16447
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "wall shelf header cap",
+      "rows": "1-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "bottles and boxes on shelf",
+      "rows": "6-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "washer tops (counter band)",
+      "rows": "16-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-21"
+     },
+     {
+      "part": "washer front faces with round doors and control panel",
+      "rows": "21-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a row of three front-loading washers. Rows 16-20 form a light grey-white band that brightens down to the front-edge line at row 20 (L=244), with a darker blue row below at 21. That reads as the washer tops seen from above. Below it, rows 21-46 are the blue front face with control panels and round doors drawn face-on. The shelf above has a lighter header at rows 1-3 and goods inside (decor). The object is not an open container: the washer doors are vertical faces, so the container kind fits poorly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 15 visible tones per tile, which is in line with the stall (17) and well (20) and above the hedge (9). Near-flat coverage is 0% and none of its dark edge pixels are neutral, so the outline carries a tint. By eye the outline is a dark blue tone beside the blue machine bodies, not a black sticker line. That fits the Beodeul approach. The machines are three near-identical washers with a rim, a door ring and a glass highlight, and they read as only about 4 steps on the blue ramp. The top shelf holds small bottles and boxes, which add variety. Compared with the stall and well, the large blue body panels and the door interiors look smoother and more uniform. They have little grain or speckle, and there are no per-surface texture dots. The repeated identical units and the shallow ramps feel a little more clean and vector-like than the references. It is close but a little thinner in shading depth, so it does not clearly match the Beodeul standard. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18309
+  }
+ ],
+ "decidedAt": "2026-10-21T08:22:08.643Z",
+ "cells": {
+  "16": [
+   "248fc9b051ba96b1",
+   "4d6ac33325c96d3a",
+   "644fe88b757fdd90",
+   "6aa57b5335f5ab4c",
+   "725f5b96796684fb",
+   "8e8d6afa3df12489",
+   "913a43a8cda45b45",
+   "b44ac215ced6ee37",
+   "b46f8c8017ea65ed"
+  ],
+  "24": [
+   "0e5d7ca8aee16429",
+   "22b71dfc75895924",
+   "455b59d84f9d44b1",
+   "aa1fc7f1392b64ae"
+  ],
+  "32": [
+   "0cc76d74d88ff3c9",
+   "2161c3ae964436ec",
+   "39d1cfa8411d0af1",
+   "43d5c31210e04561",
+   "4d1120303db75119",
+   "5bb56fa90c5c8201",
+   "65e89b6a941f9a35",
+   "6a7e157877fc3cdb",
+   "6a9e1f0901e77ec0",
+   "78e798b0f2c3b55c",
+   "9dfaf9a593e09628",
+   "a2f08177e75bc177",
+   "a9dba316708f7b67",
+   "abfaac4c923d6e8d",
+   "ac94ab224ddcee8d",
+   "b7e44d2bd508cdb6",
+   "c0e9432de6505519",
+   "c8718d9a51dba2f0",
+   "cb496f1b8eff4b03",
+   "e094f7c64f80b1af",
+   "eab9090183a4f2a0",
+   "eefe8925d9644f88",
+   "ef6ea68cee3a64bb",
+   "fd0b6f5a8db8dc59"
+  ],
+  "48": [
+   "d10367299851f2bb"
+  ]
+ }
+}

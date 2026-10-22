@@ -1,0 +1,15 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "modern-city-interior-m142-b7",
+ "title": "modern_city 실내 기물 m142-b7 (1) — object-gen 다시 그림, 사용자 위임·Opus 적대 VQA 통과 2026-10-21",
+ "note": "delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/m142-b7.opus-vqa-r*.json",
+ "createdAt": "2026-10-21T02:27:29.873Z",
+ "items": [
+  {
+   "sha": "508788c29cc30da848cfaf1f3a1f532782c3c05777b327ed27f748a8a19230c6",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-gondola-household",
+   "source": "/home/main/.cache/ogm142/ship/m142-b7/mart-gondola-household.png"
+  }
+ ]
+}

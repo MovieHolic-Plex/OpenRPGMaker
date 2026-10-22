@@ -102,9 +102,11 @@ const server = Bun.serve({
         return json({ clis, recommended: pickDefaultLocalCli(clis) ?? null });
       }
       if (request.method === "POST" && url.pathname === "/local-agents/health") {
-        const body = await request.json().catch(() => ({})) as { id?: string; model?: string };
-        const id = localCliIdOf(`local-cli:${body.id ?? ""}`);
-        if (!id) return json({ error: "알 수 없는 CLI 입니다" }, 400);
+        // 설정 화면(src/start/settings/localAgents.ts)은 {cli} 로 보낸다. 예전엔 {id} 만 읽어서 「연결 시험」이
+        // 어떤 CLI 든 매번 400(「알 수 없는 CLI」)으로 끝났다 — Codex(ChatGPT) 연결이 안 되는 것처럼 보였다(2026-10-21).
+        const body = await request.json().catch(() => ({})) as { cli?: string; id?: string; model?: string };
+        const id = localCliIdOf(`local-cli:${body.cli ?? body.id ?? ""}`);
+        if (!id) return json({ error: `알 수 없는 AI 프로그램입니다: ${String(body.cli ?? body.id ?? "(없음)")}. claude·codex·gemini 중 하나여야 합니다.` }, 400);
         return json(await healthCheckLocalCli(id, typeof body.model === "string" && body.model ? body.model : undefined, request.signal));
       }
       if (request.method === "POST" && url.pathname === "/agent/render") {

@@ -1,0 +1,18 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "1f83b9d7785411caad524bd5aabeb44f1b844b582051ce162ddbae916c922046",
+ "profileHash": "4d8774b517f41638",
+ "kind": "box",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T01:24:20.198Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "note": "묶음 허용: modern_city 실내 기물 m142-b5 (17) — object-gen 다시 그림, 사용자 위임·Opus 적대 VQA 통과 2026-10-21 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/m142-b5.opus-vqa-r*.json",
+ "sig": "834f54553dea5d7aaf415ed385f64e53f24fad73ae192088f466e4fb96557d48"
+}

@@ -1,0 +1,377 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "62f3e0f7649dd4d5518825ad2bcfc5b9f4fc3aae7380e80d091d3a04fecfed0a",
+ "width": 96,
+ "height": 80,
+ "kind": "structure",
+ "name": "kawara farmhouse",
+ "label": "jp-inaka-r5:inaka-kawara-farmhouse",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 24,
+  "tileColorsP90": 32,
+  "darkV5": 33,
+  "nearBlackEdge": 0.04,
+  "opaqueTiles": 23
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper hip roof (main tiled roof)",
+      "rows": "7-36",
+      "evidence": "c",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": "35-36"
+     },
+     {
+      "part": "lower pent roof (awning over ground floor)",
+      "rows": "48-55",
+      "evidence": "c",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "56-57"
+     },
+     {
+      "part": "upper floor white plaster wall",
+      "rows": "38-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ground floor wall with doors and windows",
+      "rows": "57-77",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main hip roof spans rows 7-36 with the silhouette widening from 43 to 92 px. It shows tile stripes, sloped hip edges, and a front eave edge line around row 34 with dark shadow at rows 35-36. A second pent roof at rows 48-55 has a light edge line at row 48 and shadow beneath it. Below these, the plaster wall (rows 38-47) and the ground-floor wall with doors and windows (rows 57-77) give about 30 rows of vertical front face. Both roofs read as sloped top surfaces above the front faces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a kawara farmhouse with a blue-grey tiled roof in two tiers, a plastered upper wall with small windows, and a wooden lower wall with a lattice door. The roof shows about 5 value steps with per-tile scallops and ridge highlights. Plaster has speckle, and the wood shows grain and lattice. Measured facts support this: 24 colours per tile is above both references (18 and 11), flat-fill coverage is 0%, and dark edge pixels are only 22% neutral, so the outlines mostly lean toward the material tone (dark blue-grey beside the roof, dark brown beside wood) rather than a uniform black line. The total of 55 distinct colours is lower than h101's 185 and slightly under h112's 66, and the walls and lower storey are a little simpler than the references' stone and timber detail. That is slightly lower overall richness but not shallow, and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15285
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper hip roof (main tiled roof with ridge)",
+      "rows": "7-35",
+      "evidence": "c",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36-37"
+     },
+     {
+      "part": "lower pent roof / eave over ground floor",
+      "rows": "48-55",
+      "evidence": "c",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "56"
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The large tiled hip roof spans rows 7-35, widening steadily from 43 to 92 px. It has tile stripes and a ridge cap at rows 7-11, and it ends in a light eave edge line around row 34-35 with dark shadow at rows 36-37. Below it, the white-plaster upper wall (rows 38-47) is a vertical front face. A second smaller roof band at rows 48-55 has a light front-edge line at row 48 and tile texture, then dark shadow at row 56. The ground floor (rows 57-77) is a front face with doors, windows and a porch. Both roofs show top slopes, so the building reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building (roof, walls, door and windows) like the references. Measured facts: 24 colours per 16x16 tile against 18 and 11 for the references, 0% flat-fill coverage, and 55 distinct colours (fewer than the references' 185 and 66, but expected for a smaller piece). Only 22% of dark edge pixels are neutral, versus 7% and 9% for the references, so the outline mostly carries a tint. By eye the outlines lean blue-grey beside the roof and brown beside the wood, not a uniform black sticker line. The slate roof shows about 5 steps with per-tile scallop highlights, the plaster wall has speckle, and the lower wood lattice and windows add varied detail. The walls and eaves are a little less textured than the references' stone and timber work, but nothing reads as a flat fill or a sticker. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16817
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main hip roof with ridge cap",
+      "rows": "5-35",
+      "evidence": "c",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": "36-37"
+     },
+     {
+      "part": "lower pent roof / awning band",
+      "rows": "48-55",
+      "evidence": "c",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "56-57"
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 43 px at row 7 to 92 px at rows 34-36. This is a sloped tile roof plane with vertical tile stripes. It ends at a lighter eave edge line at row 34 and a dark eave shadow at rows 36-37. Below it is a white plaster upper wall with windows (rows 38-47). A second, lower tiled pent roof (rows 48-55) starts with a light front-edge line at row 48 and has a shadow below it. Under that, the ground-floor front face (rows 56-77) has a lattice door, shoji windows and a stone base. Both roofs show their top slopes and the front faces are well over 3 rows tall, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building (roof, plaster walls, windows, door, base), the same kind as the references. Its median is 24 distinct colours per 16x16 tile, above both references (18 and 11). Flat-fill coverage is 0%, the same as the references. Its total of 55 distinct colours is lower than the references (185 and 66), but that mostly reflects a smaller, simpler piece and does not outweigh the per-tile richness. The roof has about 5 blue-grey steps with per-tile scallop rows and highlights. The walls carry plaster speckle and timber banding with a lit window. The dark edge pixels are 22% neutral, so most (78%) lean toward a tint. By eye the outlines are dark blue-grey and brown, matching the adjacent roof and wood, and the outline is selective rather than a uniform black sticker line. Weak points: the shading ramps are slightly shallower than the references' roof ramps, and the lower wall and base are a little busy and less clearly shaded. Overall a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20578
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper hip roof (tile slope)",
+      "rows": "7-35",
+      "evidence": "c",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36-37"
+     },
+     {
+      "part": "lower pent roof / awning over ground floor",
+      "rows": "48-55",
+      "evidence": "c",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "56"
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is topped by a large sloped tile roof (rows 7-35, ridge at 7-11, width growing from 43 to 92) that ends in an eave line at rows 34-36, with dark shadow at row 37 above the white plaster upper wall (rows 38-47). A second tiled pent roof (rows 48-55) has a light front-edge line at row 48 and shadow below it, over the ground floor with doors and windows (rows 57-77). Both roofs show their top slopes, so this is a 3/4 view and not a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate's measured facts are at or above the references per tile: 24 distinct colours per 16x16 tile against 18 and 11, and 0% flat-fill coverage like both references. Its 55 total colours is the lowest, below 66 and 185, but that is expected for a smaller palette and a single building. Only 22% of its dark edge pixels are near-neutral, so the outline mostly carries a tint. By eye the slate-blue roof shows about 5 steps with per-tile scallops and highlights, the plaster wall has speckle, and the wooden lower floor and shutters are shaded in several tones. Outlines are dark blue-grey and brown against the adjacent material, not a uniform black line. It is slightly less textured than the best reference roof, so texture is 'some' rather than 'rich', but a careful artist would accept it beside the references without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14869
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.437Z",
+ "cells": {
+  "16": [
+   "070f2521aefe40b2",
+   "0c4a929eb8c2e7a0",
+   "16ac69822b5c930e",
+   "1789d8c0d3b4f915",
+   "30e4be2848ac3260",
+   "3361419e2aa4f14b",
+   "424a71981e3919ad",
+   "518a4a7fe5de7b21",
+   "54dc475feabd838c",
+   "57da4b5534a00224",
+   "5928da2fa42d8d7b",
+   "6e53db34de6e87d4",
+   "7c5d8da07b4f92d2",
+   "86dc4f51a022f950",
+   "89fefbe4a6fcdd50",
+   "950566e0133bc8e0",
+   "9a04e3c500544a51",
+   "9f6c5b664e406b9c",
+   "9fb39cbb2507c8d4",
+   "af4b870f07128cae",
+   "b281ea952b9f256f",
+   "c8ab81e5eeddbc17",
+   "c9b47dab56fe4e9e",
+   "d93e9d6b9aa38a00",
+   "e4b06e0f108ef8cc",
+   "e6906e190997856c",
+   "f3a7ddb3a2421955",
+   "f8cf0e93b3bd789b"
+  ],
+  "24": [
+   "12dfc145ad43887a",
+   "27325be86f033bee",
+   "29f49b331c72471c",
+   "2d8e6eb367c10f57",
+   "2dbcb2da590a07d1",
+   "40bae08802fefdbb",
+   "43793b59d21d71d2",
+   "4725a41b7a0e3a74",
+   "4ee4fc1d35d3c881",
+   "5036b467176528dc",
+   "54a59b8da4c33322",
+   "72443254c497bbfd",
+   "73a86a9e2bdfb0cf",
+   "7971d78a6422ab12",
+   "80b84e8e9fefeeba",
+   "8ceda1474751cd29",
+   "90f8ee33febaf472",
+   "9561e1a0f66c0cbc",
+   "a1bdfa79c261a1f8",
+   "a94aeeb48295f6f1",
+   "b08359bf6c5bf48d",
+   "b0c3ef952502a4af",
+   "ccca3b99d7920794",
+   "d17264ae09d199fa",
+   "e1f6a6f8fdcedac2",
+   "e22d2c2f1f1c3ce9",
+   "e7d83c24e384b8b1",
+   "f04c16481a96b75c",
+   "fc3ac989d52abd06",
+   "fc9619bf9d505bb8"
+  ],
+  "32": [
+   "077e49d4fee3f2da",
+   "0966f8f4f27eba28",
+   "16970185e166885e",
+   "221f6765c530e5b7",
+   "293d4f3c05b88678",
+   "36d99a70ba5c9d17",
+   "44c524ee1c70f3ce",
+   "63bdc7cbd9eff27c",
+   "8f000d4efca3809c",
+   "ab18848bd7b6c1e3",
+   "ada7f661c9650b3c",
+   "ae6605da4939d42c",
+   "b5942363e9a3236e",
+   "c5420609f4dc9388",
+   "c771cb9f1936cc92",
+   "c9e4235b238e3767",
+   "e513b1b7d17f0c54",
+   "eeb841203fdca129"
+  ],
+  "48": [
+   "04273985a8f989d2",
+   "203ccfd5c60c3392",
+   "3793389d1dedb063",
+   "7a9040d4599c941f",
+   "9a352a76f40bd4b5",
+   "e1590cb31d1f98c8",
+   "e3d4b36c72115403",
+   "fb21adff644741b4"
+  ]
+ }
+}

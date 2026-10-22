@@ -1,0 +1,474 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "633856d8adc5d1c021b2ccb63c024e113139d3d569e5afde0d8356dda2c16c06",
+ "width": 64,
+ "height": 80,
+ "kind": "structure",
+ "name": "hillside torii stairs",
+ "label": "jp-inaka-r5:inaka-hillside-torii-stairs",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 23,
+  "darkV5": 42,
+  "nearBlackEdge": 0.01,
+  "opaqueTiles": 20
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "torii kasagi grey cap",
+      "rows": "1-5",
+      "evidence": "c",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "torii red kasagi and nuki beams",
+      "rows": "6-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone stairs landing and treads",
+      "rows": "24-31",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "33-35"
+     },
+     {
+      "part": "stone lanterns",
+      "rows": "47-72",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the stone stairs with the torii above them. The stairs have a lighter landing band at rows 24-31, with a lighter edge line at rows 30-31. Below it, alternating light tread rows and dark riser rows run down to row 78, so the front face is well over 3 rows. The torii cap at rows 1-5 has a light edge at row 2 and darker rows below it, which reads as a slight top plane. The red beams and pillars are thin front-facing strips, but they are secondary to the stairs. Side faces are not drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 51 distinct colours and a median of 16 per 16x16 tile, comparable to the stall (17) and well (20) and above the bench and hedge. Flat-fill coverage is 1%, so there are no large flat areas. Dark edge pixels are 0% neutral, which means the outlines are tinted. The picture agrees: dark brown-red beside the torii posts, dark green beside the moss and foliage, and dark grey-blue beside the stone. The stone steps are shaded block by block with speckle and moss clumps. The torii has a lighter top edge, a mid red body and a dark red shadow side. The lanterns are shaded stone with a lit top. The overall look matches the Beodeul reference quality and is not a sticker look.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20910
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone stairs (main body)",
+      "rows": "24-78",
+      "evidence": "a",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": "33-35"
+     },
+     {
+      "part": "stair top landing",
+      "rows": "24-29",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "torii kasagi (top beam)",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "torii nuki and shimaki (red beams)",
+      "rows": "6-9, 14-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone lanterns",
+      "rows": "47-71",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 49,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the stone staircase, rows 24-78. It has a 6-row flat landing at rows 24-29. Below that, repeated light tread bands (rows 30-32, with a light edge line at row 32 and L=179) alternate with darker risers (rows 33-35 and onward), so top surfaces and front faces both show. The torii gate above (rows 0-21) is drawn mostly as front-facing strips. The kasagi is dark slate with a single highlight row, and the red beams each have a highlight row and a dark lower row. None of them shows a clear top slope or edge-line plus eave shadow. This is why all_major_parts_have_top is false, although the stair body itself reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 51 distinct colours and a median of 16 per full tile, against 38-40 colours and 17-20 per tile for the richest references (stall, well). Flat-fill coverage is 1%, lower than the stall's 13%. Dark edge pixels are 0% neutral, so the outlines are tinted: dark brown-red beside the torii wood and dark green beside the moss. By eye, the stone steps are shaded block by block with speckle. The moss and ivy have several greens, the lanterns are shaded stone, and the torii has a tiled roof cap with a highlight on the red pillars. Material ramps run about 5 steps, matching the references. It would sit next to the stall and well without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21283
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "kasagi (top roof beam, dark gray cap)",
+      "rows": "0-5",
+      "evidence": "c",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "nuki (lower tie beam)",
+      "rows": "14-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone stair treads (light tread bands above darker risers)",
+      "rows": "24-78",
+      "evidence": "a",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": "33-35"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 50,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The kasagi has a dark gray slab cap on rows 1-5 that ends in a dark edge line on row 5. Below it is the red front face on rows 6-9, so it reads as a roof plane over a front face. The stairs on rows 24-78 repeat a light tread band (for example rows 30-32) followed by darker riser rows (33-35), which shows horizontal surfaces and front faces. The nuki on rows 14-17 and the pillars are plain front-facing strips. They are minor parts and do not change the overall read. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 51 distinct colours and a median of 16 per 16x16 tile, comparable to the stall (17) and well (20) and above the hedge (10). Flat-fill coverage is 1%, lower than the stall's 13%. 0% of its dark edge pixels are neutral, so the outlines carry a tint, which fits the visible dark red-brown beside the torii wood and dark green beside the moss and ivy. The stone stairs show per-block shading and speckle. The torii pillars have several red tones and the dark roof has highlights. The moss and ivy use several greens, and the stone lanterns are shaded stone by stone. Shading is about 5 steps per material, matching the references. It is not a sticker look, and the density sits at the level of the richest references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 28125
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "kasagi top cap (gray roof slab)",
+      "rows": "1-5",
+      "evidence": "c",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "kasagi front face (red beam)",
+      "rows": "6-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "nuki lower tie beam",
+      "rows": "14-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone stairs (treads with risers, landing at top)",
+      "rows": "24-78",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "33-35"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The torii's top beam has a gray slab on rows 1-5, with a highlight at row 2 and a dark shadow row at row 5. It sits above the red front face on rows 6-9, so it reads as a roof plane over a front face. The nuki on rows 14-17 and the pillars are plain front-facing strips. The stairs on rows 24-78 show repeated light tread bands, each followed by a darker riser band, plus a landing on rows 24-29. That reads as horizontal surfaces and front faces rather than a flat slab. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 51 distinct colours and a median of 16 per tile, which is on par with the stall (17) and the well (20) and above the hedge (10). Flat-fill coverage is 1%, so there are no large single-colour areas. Dark edge pixels are 0% neutral, so the outlines lean toward material tones: dark red-brown beside the torii beams, dark green beside the moss and foliage, and dark grey-blue beside the stone. The stone steps are shaded block by block with speckle. The mossy foliage on both sides has several greens in clumps. The torii has a lit top and darker underside on the beams, and the roof cap has a few tone steps. The stone lanterns have highlight and shadow variation. Overall it holds up next to the well and stall at the same scale without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20571
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.446Z",
+ "cells": {
+  "16": [
+   "00c29dfa3c13e9cf",
+   "0b5dcde00b191701",
+   "1eb7c29a4833cbeb",
+   "2ac7d8348a7131f1",
+   "34b5a0a308a2bcf3",
+   "426c40feba102d33",
+   "5623ec5ad4d6094d",
+   "57321a4843991b55",
+   "6876f014cbf959be",
+   "6a6ce53e9820977c",
+   "70a38c6c3ada4b78",
+   "8b95b717acbb8a12",
+   "8ccc437dd07fd036",
+   "9be49c0025f0fbcb",
+   "a862d70ee7b1ad17",
+   "b6e3d648d8d392e9",
+   "b92373da0651cac5",
+   "cbfb9986d9bd8169",
+   "d8564802b154e3f7",
+   "e4f4047520d1b76b"
+  ],
+  "24": [
+   "021d9844be21dc44",
+   "02e50c6090859b5e",
+   "048db037b1e55448",
+   "050c6b58119d42cb",
+   "075febeb3022d16e",
+   "078241bc18710f52",
+   "08595ece9b1bb94e",
+   "0fe8d43a0793a799",
+   "112871d44091e1c6",
+   "12a950bf6fbfed4b",
+   "12ad77ce3b01b2b8",
+   "17de5a23149cc3fe",
+   "1b7422e7b4ca1d4f",
+   "20dc1517d73534a7",
+   "2252b6091d098512",
+   "2724188301018250",
+   "2b15b3fa0407bc94",
+   "2e90f456834699f4",
+   "3436ab7fd6233db5",
+   "37b8c638df89fcaf",
+   "3f72b06e07046752",
+   "4459813775406cef",
+   "4766bf6c2e93273b",
+   "4d84e896e1e31e4a",
+   "4f5e3edf5e1c8f33",
+   "50df82fbc019c572",
+   "537ed1c4f1edfe8e",
+   "542187945dd99edf",
+   "5d129d4325cf00f9",
+   "62ea31e4233c25e6",
+   "63ab58ded71fd7f5",
+   "717aa58e5bc405b6",
+   "7417ff8479c42c8a",
+   "745c4a820c182899",
+   "74ff07361482a059",
+   "80d755b8bd3a5d88",
+   "86a55eef34cb8f79",
+   "86f3adb7e703c3e9",
+   "8836a5deb7c7c383",
+   "8b4eccb66c1c966c",
+   "8d3d704ca779e82c",
+   "92fecd012a886c85",
+   "958da483fd868b6c",
+   "95fc7eb9e60e429f",
+   "988937bfd8671ebf",
+   "997c3f484ea1f460",
+   "9ac4420641f15660",
+   "9af611ab5dbafbac",
+   "9b2e24ed3ecbb658",
+   "9e84562f25526112",
+   "a0b061e7d279018f",
+   "a111b9daa04da103",
+   "a34672249c5755fa",
+   "a5a52ff5a1730bdf",
+   "acfe970688edc7a5",
+   "ad5f627040f8fe4d",
+   "be185569bb35b486",
+   "c7fe8b5376303db5",
+   "c9f5a96f1728c6d0",
+   "cee8f5086e58d35a",
+   "d5af24ea131f23d7",
+   "d5d09aff2d049967",
+   "db436be56990e791",
+   "def5165e8f9cbaa7",
+   "df5f69e591f57866",
+   "e3d6b3c530d1eb60",
+   "e61f90c7382629e1",
+   "ec6933b3bf446581",
+   "efb62e46bf40da0e",
+   "f0744ef7c486c325",
+   "f67f2b1e6efac905",
+   "f97b1075d0719572"
+  ],
+  "32": [
+   "15312068061233fd",
+   "245554367448ae0a",
+   "2cf6c69c24360c35",
+   "62576b1a9efb99a5",
+   "68f39ea53b7d9bef",
+   "7811d9ba7813ff43",
+   "8928b49839eac011",
+   "9829662f7bee73d1",
+   "a6781bdea6902def",
+   "b8e8c7fdb92195dc",
+   "c54d19e3aafc923a",
+   "e40f46efbf8c6ad1"
+  ],
+  "48": [
+   "064048e523def7e6",
+   "09c9b76328cfa613",
+   "09e483fcde997d60",
+   "110dcbffe3fe7a50",
+   "159bcc05f08fb595",
+   "1978830923f7c28e",
+   "1a82a32a6124e97d",
+   "2dc391d08d20eb7f",
+   "335357792a9465d5",
+   "3978f13e0e8c6530",
+   "3a26352236e054f0",
+   "3dfa688cc4bd328b",
+   "3edee8282155cecf",
+   "44624c1b0e46d7c9",
+   "53c4b34cf40fdcf4",
+   "546e7cfd3647fc68",
+   "6660068c718de98f",
+   "7d0fdda24f4253c8",
+   "b43e990d3417ec48",
+   "dde64a0656bab916",
+   "e559717114e36f3a",
+   "e8f5c2b3758f73a3",
+   "ea4f590ad780cf41",
+   "ee65b90dcc2c1185"
+  ]
+ }
+}

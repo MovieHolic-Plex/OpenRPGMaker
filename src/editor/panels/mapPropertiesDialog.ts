@@ -54,12 +54,21 @@ function focusMapPropertiesControl(mapId: MapId, controlTestId: string): void {
     ?? dialog.querySelector<HTMLElement>(`[data-testid="${controlTestId}"]`);
   if (!target) return;
   if (target.dataset.testid?.startsWith("map-props-tab-")) target.click();
-  target.scrollIntoView?.({ block: "center" });
-  target.focus?.({ preventScroll: true });
+  // 창은 항목 목록으로 열리고 각 설정 섹션은 숨어 있다. 컨트롤이 숨은 섹션 안에 있으면 그 항목을
+  // 먼저 열어야 보이고 초점을 받는다 — 안 열면 크기 0 트리거에 초점이 가지 않아 아무 일도 일어나지 않았다.
+  const section = target.closest?.<HTMLElement>(".map-props-section-block");
+  const sectionRow = section
+    ? dialog.querySelector<HTMLElement>(`[data-testid="map-props-tab-${section.dataset.section}"]`)
+    : null;
+  if (section?.hidden) sectionRow?.click();
+  // 그래도 화면에 없으면(크기 0) 그 항목 행에 초점을 둔다.
+  const focusTarget = target.getClientRects?.().length === 0 && sectionRow ? sectionRow : target;
+  focusTarget.scrollIntoView?.({ block: "center" });
+  focusTarget.focus?.({ preventScroll: true });
   // 프로그램 초점은 :focus-visible 링을 못 그리는 브라우저가 많다 — 어디로 보내졌는지 1.6초 동안
   // 링을 깜박여 알린다(event-editor.custom-select.css 의 .is-attention).
-  target.classList?.add?.("is-attention");
-  globalThis.setTimeout?.(() => target.classList?.remove?.("is-attention"), ATTENTION_MS);
+  focusTarget.classList?.add?.("is-attention");
+  globalThis.setTimeout?.(() => focusTarget.classList?.remove?.("is-attention"), ATTENTION_MS);
 }
 
 const ATTENTION_MS = 1600;

@@ -1,0 +1,352 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2dfa003310b07ff33400effb64769af661cd326d61fc3d05c67011affcf5e0ce",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "mart cold case",
+ "label": "modern_city_interior/mart-cold-case",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 23,
+  "tileColorsP90": 26,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cold case top panel",
+      "rows": "2-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-11"
+     },
+     {
+      "part": "red header band and glass-door front with shelves and goods",
+      "rows": "9-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base plinth",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-7 form a light grey top band that brightens toward the front (L 202, 224, 244). Row 8 is a darker front-edge line (L=169), followed by the red header band in rows 9-11, which acts as the eave shadow. Below that, the front face runs from rows 9 to 31 (23 rows). It has a glass door with shelves and goods in rows 12-27 and a dark base in rows 28-31. The top band is 7 rows including its edge line, which is more than a 1-2 row rim. It is a thin top, but it counts as a top surface under evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cold case (fridge/display) with a red-and-white striped awning, a pale body, and shelves of coloured goods behind glass. It measures 23 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is tinted rather than a black sticker line, which matches the hedge, stall and well references. The shelves are broken into small item clusters and the awning stripes are shaded, so the information density matches the references. The body has fewer shading steps and less grain than the stall or well, but this does not read as shallow next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13901
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cold case top lid",
+      "rows": "2-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red header band with label",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass door front with shelves and goods",
+      "rows": "12-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base plinth",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top is a light band at rows 2-7 (6 rows). It ends in a gray front-edge line at row 8 (L=169), and the front face sits below it. Below that are a red header (rows 9-11), glass doors with shelves and goods (rows 12-27), and a dark base (rows 28-31), about 23 front rows in total. The top is wide and has a clear edge line, so it reads as a horizontal surface and not just a rim. The red header is a vertical face, not eave shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 23 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is tinted rather than a black sticker line. By eye, the case shows a red top band, a light casing with a few lightness steps, glass panels, and shelves with varied small items. That is comparable to the stall and well references, though the casing and glass ramps are a bit shorter than Beodeul's 5-6 steps and the texture is more graphic than grainy. It would sit acceptably next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15041
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cold case top/lid",
+      "rows": "2-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red header band",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf goods (bottles, boxes)",
+      "rows": "13-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-7 form a light, shaded band across the full 30px width. It ends in a darker front-edge line at row 8 (L=169), so it reads as a top surface about 6 rows deep. Below it is a front face of about 23 rows (rows 9-31): a red header strip (9-11), two glass-fronted shelf bays with goods (12-27) and a dark base (28-31). No side face is drawn. The top is a plain band, not an ellipse, and the red strip is a front-facing panel rather than a shadow. The top is fairly thin and flat-shaded, so this is a borderline reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a standing prop like the stall and well references. It shows 23 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, and the stall reference has 13%. The dark edge pixels are 0% neutral, so the outline is tinted rather than a black sticker line. By eye, the cabinet has a red awning band, a light grey body with a bevelled frame, and a glass door with several shelves of small coloured goods, so the interior is varied and not a flat fill. The body ramp has about 5 steps (highlight, light, mid, shadow, dark edge), slightly fewer than the references' 5-6 but not shallow. Texture is moderate: the shelf goods carry detail, while the grey frame is cleaner and less grainy than the reference tile roofs and stonework. Overall it would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17086
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cold case top lid",
+      "rows": "2-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-11"
+     },
+     {
+      "part": "red header band and glass-door front with shelves of goods",
+      "rows": "9-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base plinth",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-7 are a light gray-white lid band, the same width as the body. It ends in a darker front-edge line at row 8 (L=169). The darker red band at rows 9-11 sits under it like eave shadow. Below that is a front face of about 23 rows (rows 9-31): the red header, glass doors with shelves and goods, and a dark base. The lid is a 6-row top surface and the front face is well over 3 rows. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The cold case is a standing furniture piece, so it fits the prop references. The measured facts back it up: 23 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no flat fills. The white/grey casing steps through several lightness levels, and the red top band, glass door and shelves with stocked items add varied detail. Dark edge pixels are 0% near-neutral, so the outline leans blue-grey or red-brown next to its material instead of being a black sticker line. Its tones, structure and texture are at or above the stall and well, so a careful artist would accept it beside them. The ramps are slightly shallower than the references' 5-6 steps, but that is a minor gap.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14470
+  }
+ ],
+ "decidedAt": "2026-10-21T00:04:54.247Z",
+ "cells": {
+  "16": [
+   "654ec8763ad8a5e0",
+   "988cd342c5b36519",
+   "a306a6c55115cae5",
+   "e518a03e08873ec7"
+  ],
+  "24": [
+   "07a13eaa433a4111",
+   "09f26b694c4224bd",
+   "0e85afeceae498c6",
+   "211495458e783444",
+   "3561cd3183a174a8",
+   "43fb352063cf5ab7",
+   "4b30a8c7c6f99ea7",
+   "4f35c4d7bce3bdb8",
+   "58699d1eaa37537c",
+   "62407abf4b0128c7",
+   "63b0b5e45334dd42",
+   "6733f3e7e63aeb8c",
+   "69536cd6e835421a",
+   "7109ec8ce6ee7af5",
+   "7b1d9d9711c6c437",
+   "7effcca3a4dac603",
+   "81ddf36c8e53c1f4",
+   "83e9b8c6ea2deb9b",
+   "97d9025a56ff52df",
+   "a2b107482865cce5",
+   "bd2f16a336b04624",
+   "c3f33c91d7baa0b4",
+   "e1ec1cf914551d29",
+   "efe94eff41a3d66f"
+  ],
+  "32": [
+   "c26be3ba9cf0f685"
+  ],
+  "48": [
+   "458b0b702c0b9133",
+   "50c9558cd7446bda",
+   "5fcfbdbc3bb6b936",
+   "9d97cd26434d81a0",
+   "eb8f5a204c0203d9",
+   "f76c9596c4b032b5"
+  ]
+ }
+}

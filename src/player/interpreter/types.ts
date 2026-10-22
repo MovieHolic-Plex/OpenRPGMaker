@@ -252,6 +252,7 @@ export interface InterpreterState {
   // 현재 실행 중인 이벤트 id. 셀프 스위치 조작/평가 기준.
   currentEventId?: string;
   onFactionStanceChanged?: () => void;
+  onFriendshipChanged?: (npcKey: string, delta: number) => void;
   // 루프 무한 반복 가드의 상한. 실제 카운트는 루프 프레임마다 따로 센다(Frame.loopOwner.iterations).
   maxLoopIterations: number;
   instructionsExecuted: number;
@@ -271,6 +272,8 @@ export interface InterpreterOptions {
   readonly currentEventId?: string;
   /** 진영 태도가 바뀐 프레임에 액션 전투의 타깃 캐시를 비우는 런타임 훅. */
   readonly onFactionStanceChanged?: () => void;
+  /** 호감이 바뀐 직후 — 관계 중심 게임은 화면 구석에 짧은 알림을 띄운다(playSceneRelationshipPulse). */
+  readonly onFriendshipChanged?: (npcKey: string, delta: number) => void;
 }
 
 export interface Interpreter {

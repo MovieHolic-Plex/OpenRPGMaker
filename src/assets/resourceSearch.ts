@@ -9,6 +9,7 @@ import { listMonsterResources, type MonsterResourceProject } from "@/assets/mons
 import { SCARLOXY_BACKDROP_ASSETS } from "@/assets/scarloxyPack";
 import { OGA_BACKDROP_ASSETS } from "@/assets/ogaBackdropAssets";
 import { OGA_CRAFTPIX_BACKDROP_ASSETS } from "@/assets/ogaCraftpixBackgrounds";
+import { oprnPanoramaSetOfImage, OPRN_PANORAMA_ASSETS } from "@/assets/oprnPanoramas";
 import { moodTagsForAsset } from "@/assets/resourceMoodTags";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
 import { DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsDungeon";
@@ -232,6 +233,12 @@ function candidatesForKind(kind: Exclude<ResourceSearchKind, "charset">, options
       }));
     case "backdrop":
       return [
+        ...OPRN_PANORAMA_ASSETS.map((asset) => ({
+          id: `backdrop:${asset.id}`,
+          resourceId: asset.id,
+          label: asset.name,
+          tags: ["backdrop", "panorama", "파노라마", "맵 배경", ...(oprnPanoramaSetOfImage(asset.id)?.tags ?? []), ...idWords(asset.id)],
+        })),
         ...EASYRPG_BACKDROP_ASSETS.map((asset) => ({
           id: `backdrop:${asset.id}`,
           resourceId: asset.id,

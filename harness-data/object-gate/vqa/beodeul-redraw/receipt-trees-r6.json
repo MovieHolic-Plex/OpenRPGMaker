@@ -1,0 +1,15 @@
+{"reviewer":"fresh Opus adversarial VQA","round":6,"date":"2026-10-22","verdict":"PASS",
+"ground":{"verdict":"PASS_WITH_NOTES","notes":"North and west woodland AFTER (2x sheet x272-496/y645-932 and x512-736/y676-932) are now whole trees with crowns, trunks, root flares and contact shadows, layered back to front. No bare pole, no floating crown, no stray dashes. Light-tree row (x0-256,y772-932) and 4-tree group (x656-912,y172-332) are clean. Neck/roots pieces (x0-208,y300-332) are partial slices by design, the same as BEFORE.","coords_checked":"2x sheet coordinates"},
+"warm":{"verdict":"PASS_WITH_NOTES","notes":"The warm grove (x1088-1312,y645-932) and east grove (x0-224,y1212-1468) match the ground groups pixel for pixel in structure, so the round-5 defects are gone. Singles (y172-332) and rows (y772-932) are clean. Shadow-only recipes sit under their tree anchors. The warm lookup is very close to the ground green, with no clash."},
+"studies":{"verdict":"PASS_WITH_NOTES","notes":"Regenerated from the new kits, with no old-art fragments. Top-row shape studies are all coherent. The 'integrated' study (x~1760-1900,y150-215) has dithered brown and grass ground noise that reads slightly muddy. Palette studies 'muted' (x~480-610,y330-460) and 'cool' (x~1440-1580) desaturate or blue-shift against Beodeul grass. They are exploratory only."},
+"city_kits":{"verdict":"PASS","notes":"Unchanged from round 5. Big trees, bushes and hedges all use the new art, and no cut crowns were found."},
+"forest_in_context":{"verdict":"PASS","notes":"river-town, village50, facilities-town and tool-village AFTER all read naturally at 1x. The tool-village dense forest (right panel x902-1100,y440-720) and the forest beside the house (x1080-1320,y80-260) layer correctly. The river-town bottom rows (x1222-1622,y1000-1120) are clean. No grid repetition stands out, and the palette sits with the houses and grass."},
+"previous_findings":{"bare_trunk_pole_9x35":"FIXED - no bare pole in the north or west woodland, ground or warm","stray_dark_green_dashes":"FIXED - none on open grass in any woodland recipe","floating_crown_and_trunk_stub":"FIXED - every crown has a trunk reaching ground or is occluded by a nearer crown, and no detached stubs remain"},
+"blocking_issues":[],
+"minor":[
+ "North woodland (ground and warm, the same art): the middle-left tree's root flare and white contact shadow peek out as a small fragment to the right of the lower-left crown, at 2x sheet (348-372,830-845). This is natural occlusion but reads slightly detached.",
+ "North woodland: a 2-3 px brown twig nub sticks out of the lower-right crown's right edge onto grass at 2x (444-447,859-865). It is barely visible at 1x.",
+ "West/east woodland: the lower-right tree has root flare but no white contact ellipse, unlike its neighbours (2x x655-700,y880-900). This is the same as BEFORE.",
+ "The roots slice recipe is a bare trunk segment with a flat top. It is fine under a crown and was the same before.",
+ "Study palettes 'muted' and 'cool' clash with Beodeul grass. They are exploratory studies, not production."
+]}

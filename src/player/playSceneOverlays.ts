@@ -18,6 +18,20 @@ import { resolveEndingCouplePortraits } from "@/player/dialogue";
 import { ANY_FRIENDSHIP_KEY } from "@/project/session";
 import type { FaceGraphic } from "@/project/types";
 import { sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
+import { vnUiText, type VnUiKey } from "@/player/vnExtrasStrings";
+import { vnExtrasLanguage } from "@/project/vnExtras";
+
+/** 엔딩 화면 글자 — 게임 언어(편집기 언어가 아니다: 저작 vnExtras·대사 시스템 언어, 없으면 ko)로 고른다. */
+function endingText(key: VnUiKey, ...args: readonly (string | number)[]): string {
+  return vnUiText(vnExtrasLanguage(store.getCurrent()), key, ...args);
+}
+
+/** 막·장 끝 엔딩 id(end_fs_act1·chapter2_end 등)의 종류와 번호. 이야기가 이어지는 엔딩이다. */
+export function endingSegmentOf(endingId: string | undefined): { readonly kind: "act" | "chapter"; readonly number: number } | undefined {
+  const match = /(?:^|_)(act|chapter)(\d+)/iu.exec(endingId ?? "");
+  if (!match) return undefined;
+  return { kind: match[1]!.toLowerCase() === "act" ? "act" : "chapter", number: Number(match[2]) };
+}
 
 export function showRuntimeOverlay(
   scene: PlaySceneContext,
@@ -283,7 +297,7 @@ function emeraldHallOfFame(scene: PlaySceneContext): HTMLElement | undefined {
   if (cards.length === 0) return undefined;
   const hall = textNode("div", "ending-hall", "");
   hall.dataset.testid = "ending-hall";
-  hall.append(textNode("div", "ending-hall-title", "전당 등록!"));
+  hall.append(textNode("div", "ending-hall-title", endingText("ending.hallOfFame")));
   const grid = textNode("div", "ending-hall-grid", "");
   grid.append(...cards);
   hall.append(grid);
@@ -293,8 +307,17 @@ function emeraldHallOfFame(scene: PlaySceneContext): HTMLElement | undefined {
 function endingKicker(presentation?: EndingPresentation): string {
   const own = presentation?.kicker?.trim();
   if (own) return own;
-  if (presentation?.tone === "dark") return "이야기의 끝";
-  return usesRelationshipMenu(store.getCurrent()) ? "두 사람의 이야기" : "우리의 여정";
+  if (presentation?.tone === "dark") return endingText("ending.kicker.dark");
+  return endingText(usesRelationshipMenu(store.getCurrent()) ? "ending.kicker.couple" : "ending.kicker.journey");
+}
+
+/** 마지막 장의 큰 글자. 저작한 finalTitle → 막·장 끝이면 「제1막 끝」 → 「끝」(게임 언어). */
+function endingFinalTitle(presentation: EndingPresentation | undefined, endingId: string | undefined): string {
+  const own = presentation?.finalTitle?.trim();
+  if (own) return own;
+  const segment = endingSegmentOf(endingId);
+  if (segment) return endingText(segment.kind === "act" ? "ending.actEnd" : "ending.chapterEnd", segment.number);
+  return endingText("ending.theEnd");
 }
 
 type EndingCg = { readonly layer: HTMLElement; readonly mode: "couple" | "scene"; readonly badge: string; readonly epilogue: string };
@@ -307,19 +330,15 @@ function endingBackdropResourceId(project: Project, presentation?: EndingPresent
   return presentation?.backgroundResourceId ?? project.system.titleScreen?.backgroundResourceId ?? project.system.titleResourceId ?? openingStill;
 }
 
-/** 막·장 끝 엔딩(이야기가 이어지는 끝). */
-function isSegmentEnding(endingId: string | undefined): boolean {
-  return /(?:^|_)(?:act|chapter)\d/iu.test(endingId ?? "");
-}
-
 function endingBadge(endingId: string | undefined, hasPartner: boolean, presentation?: EndingPresentation): string {
-  if (hasPartner) return "CHARACTER ENDING";
-  if (/bad/iu.test(endingId ?? "")) return "BAD ENDING";
-  if (/normal|segment/iu.test(endingId ?? "")) return "NORMAL ENDING";
+  const own = presentation?.badge?.trim();
+  if (own) return own;
+  if (hasPartner) return endingText("ending.badge.character");
+  if (/bad/iu.test(endingId ?? "")) return endingText("ending.badge.bad");
+  if (/normal|segment/iu.test(endingId ?? "")) return endingText("ending.badge.normal");
   // 막·장 끝(end_fs_act1 등)은 이야기가 이어진다 — 「해피 엔딩」이라 부르지 않는다(폴른 스타 감사 2차).
-  // 「TO BE CONTINUED」는 마지막 카드 제목이 맡는다 — 첫 카드와 둘 다 쓰면 같은 말이 두 번 나왔다(가혹 검수 r8·r9).
-  if (isSegmentEnding(endingId)) return /chapter/iu.test(endingId ?? "") ? "END OF CHAPTER" : "END OF ACT";
-  return presentation?.tone === "dark" ? "ENDING" : "HAPPY ENDING";
+  if (endingSegmentOf(endingId)) return endingText("ending.badge.continued");
+  return endingText(presentation?.tone === "dark" ? "ending.badge.plain" : "ending.badge.happy");
 }
 
 function endingFigure(project: Project, face: FaceGraphic, role: "hero" | "partner"): HTMLElement | undefined {
@@ -389,7 +408,7 @@ function buildEndingCg(terminal: TerminalScene, project: Project, presentation: 
 }
 
 export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string): void {
-  const terminal = createTerminalScene(scene, "ending", title || "엔딩");
+  const terminal = createTerminalScene(scene, "ending", title || endingText("ending.heading"));
   if (!terminal) return;
   terminal.root.dataset.tone = presentation?.tone ?? "warm";
   if (isEmeraldMonsterStyle(store.getCurrent())) terminal.root.dataset.monsterStyle = "emerald";
@@ -408,7 +427,7 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
       terminal.root.append(hall);
       terminal.phase("hall");
       if (!await terminal.wait(terminal.reducedMotion ? 0 : 1400)) return;
-      const hallHint = textNode("div", "game-over-hint", "Z / Enter 계속");
+      const hallHint = textNode("div", "game-over-hint", endingText("ending.continue"));
       terminal.root.append(hallHint);
       const advanced = await new Promise<boolean>((resolve) => {
         terminal.signal.addEventListener("abort", () => resolve(false), { once: true });
@@ -419,15 +438,19 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
       if (!await terminal.wait(400)) return;
     }
     const epilogue = textNode("div", "ending-epilogue", "");
-    if (cg) epilogue.append(textNode("div", "ending-badge", cg.badge));
+    if (cg) {
+      const badge = textNode("div", "ending-badge", cg.badge);
+      badge.dataset.testid = "ending-badge";
+      epilogue.append(badge);
+    }
     epilogue.append(textNode("div", "ending-kicker", endingKicker(presentation)));
-    epilogue.append(textNode("h1", "ending-heading", title || "The End"));
+    epilogue.append(textNode("h1", "ending-heading", title || endingText("ending.heading")));
     const body = message || cg?.epilogue;
     if (body) epilogue.append(textNode("div", "ending-message", body));
     terminal.root.append(epilogue);
     terminal.phase("epilogue");
     if (!await terminal.wait(1800)) return;
-    const hint = textNode("div", "game-over-hint", "Z / Enter 계속");
+    const hint = textNode("div", "game-over-hint", endingText("ending.continue"));
     terminal.root.append(hint);
     terminal.keys(event => {
       const body = epilogue.querySelector<HTMLElement>(".ending-message");
@@ -441,13 +464,14 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     terminal.root.querySelector(".game-over-hint")?.remove();
     terminal.phase("final");
     const final = textNode("div", "ending-final game-over-content", "");
-    // 막 끝은 「끝」이 아니다 — 마지막 카드가 이어짐을 말한다(첫 카드 배지는 END OF ACT).
-    final.append(textNode("div", "ending-final-title", isSegmentEnding(endingId) ? "TO BE CONTINUED" : "THE END"));
+    const finalTitle = textNode("div", "ending-final-title", endingFinalTitle(presentation, endingId));
+    finalTitle.dataset.testid = "ending-final-title";
+    final.append(finalTitle);
     final.append(textNode("div", "ending-final-caption", title));
     const summary = endingSummaryLine(scene);
     if (summary) final.append(textNode("div", "ending-final-summary", summary));
     const actions = textNode("div", "game-over-actions", "");
-    const button = terminalButton("return-title", "타이틀로 돌아가기", () => { void exitTerminal(terminal, () => scene.returnToTitle()); });
+    const button = terminalButton("return-title", endingText("ending.returnTitle"), () => { void exitTerminal(terminal, () => scene.returnToTitle()); });
     actions.append(button); final.append(actions); terminal.root.append(final);
     terminal.menu(() => attachCursorMenu(final, { items: [button], cancelEl: button }));
   };
@@ -468,7 +492,7 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     terminal.root.style.setProperty("--credits-duration", `${duration}ms`);
     terminal.root.style.setProperty("--credits-start", `${start}px`);
     terminal.root.style.setProperty("--credits-end", `${-roll.scrollHeight}px`);
-    const hint = textNode("div", "game-over-hint", terminal.reducedMotion ? "PgUp/PgDn 읽기   ·   Z / Enter 마침" : "Z / Enter 크레딧 건너뛰기");
+    const hint = textNode("div", "game-over-hint", endingText(terminal.reducedMotion ? "ending.creditsRead" : "ending.creditsSkip"));
     terminal.root.append(hint);
     let finished = false;
     const finishOnce = (): void => { if (finished || terminal.signal.aborted) return; finished = true; terminal.keys(); finish(); };

@@ -3,6 +3,7 @@ import { store } from "@/project/store";
 import { briefOpeningMotive, briefOpeningSequence, isUntouchedDefaultOpening } from "@/project/defaults/defaultOpeningSequence";
 import { toast } from "@/util/toast";
 import { DEFAULT_DIALOGUE_STYLE_ID, recommendedDialogueStyleForPreset } from "@/project/dialogueStyles";
+import { ensureHighResFullbodyPlayResolution } from "@/project/playResolution";
 import { welcomeGenrePresetById, buildWelcomeGenrePresetPrompt, welcomeGenrePresetDisplayText } from "./welcomeGenrePresets";
 import { applyPendingAiBootIntent, peekAiAssistantDraft, setPendingAiBootIntent } from "./aiBootIntent";
 import { isAssistantEndpointReady, resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
@@ -68,6 +69,8 @@ export async function prepareProjectInterviewStartup(): Promise<void> {
       if (project.system.dialogueStyle === undefined) {
         const dialogueStyle = brief.interview ? "pixel-cinematic" : recommendedDialogueStyleForPreset(brief.presetId);
         if (dialogueStyle !== DEFAULT_DIALOGUE_STYLE_ID) project.system.dialogueStyle = dialogueStyle;
+        // 양쪽 전신은 1024×768 무대를 값으로 저장한다 — 작가가 자료집에서 해상도를 바꿀 수 있게(playResolution.ts).
+        if (dialogueStyle === "dual-fullbody-veil") ensureHighResFullbodyPlayResolution(project.system);
       }
     }, { scope: "project", label: "새 프로젝트 기획 전달 준비", origin: "system" });
     if (!stillCurrent()) return;

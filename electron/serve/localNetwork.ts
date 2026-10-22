@@ -58,6 +58,7 @@ export function preferredLanAddresses(interfaces: Interfaces): readonly string[]
  * 팀원이 입력한 주소를 참여 URL 로 바꾼다. 스킴이 없으면 http 를 붙인다.
  * 초대 링크의 #join= 비밀은 그대로 둔다(로그인 화면이 읽고 주소에서 지운다).
  */
+/** @deprecated multi-user team collaboration is not supported yet (2026-10-21). 팀에 참여하는 쪽만 쓴다. */
 export function normalizeTeamUrl(input: string): URL {
   const trimmed = input.trim();
   if (!trimmed) throw new Error("호스트 주소를 입력해 주세요.");

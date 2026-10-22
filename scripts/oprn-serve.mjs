@@ -67,7 +67,7 @@ await withTsModule(RUNTIME_ENTRY, "oprn-serve-runtime.mjs", async (runtime) => {
   });
   if (server.ownerAccessCode) {
     const accessPath = resolve(options.projectDir, '.oprn-host-access');
-    process.stdout.write(`팀 소유자 접속 코드 파일: ${accessPath} (외부 공유·백업에 포함하지 마세요)\n`);
+    process.stdout.write(`호스트 소유자 접속 코드 파일: ${accessPath} (외부 공유·백업에 포함하지 마세요)\n`);
   }
   process.stdout.write(`OPRN 로컬 편집기: ${server.url}\n`);
   process.stdout.write(`프로젝트 폴더: ${server.projectDir}\n`);

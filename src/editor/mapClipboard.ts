@@ -141,7 +141,8 @@ export function pasteClipboard(mapId: MapId, x: number, y: number): boolean {
     return false;
   }
   const cells = pastedCells(map, clipboard.width, clipboard.height, x, y);
-  recordProjectSnapshot();
+  // pastedCells 는 칸마다 lower·upper 두 줄이다 — 기록 라벨에는 칸(위치) 수를 적는다.
+  recordProjectSnapshot(`붙여넣기 · ${cells.length / 2}칸`);
   store.update((project) => {
     const targetMap = project.maps[mapId];
     if (!targetMap) return;
@@ -176,7 +177,7 @@ export function clearSelectionRegion(mapId: MapId): boolean {
   const map = store.getCurrent().maps[mapId];
   if (!map || !isRegionInsideMap(selection.x, selection.y, selection.width, selection.height, map.width, map.height)) return false;
   const cells = pastedCells(map, selection.width, selection.height, selection.x, selection.y);
-  recordProjectSnapshot();
+  recordProjectSnapshot(`선택 영역 지우기 · ${cells.length / 2}칸`);
   store.update((project) => {
     const targetMap = project.maps[mapId];
     if (!targetMap) return;

@@ -106,6 +106,7 @@ count=(len(cells)+15)//16*16
 sheet=Image.new('RGBA',(256,count))
 for n,c in enumerate(cells):sheet.paste(c,(n%16*16,n//16*16))
 sheet.save(OUT/'chipset.png');sheet.resize((768,sheet.height*3),Image.Resampling.NEAREST).save(OUT/'atlas.png')
+import sys as _s, pathlib as _pl; _s.path.insert(0, str(_pl.Path(__file__).resolve().parents[4] / 'scripts/content/rtp-attribution')); from rtp_check import require_credit; require_credit(OUT/'chipset.png')  # EasyRPG RTP CC BY credit check (public/assets/ATTRIBUTION.md)
 manifest=dict(id='beodeul_architecture',texture='tex_beodeul_architecture',tileSize=16,tilesPerRow=16,count=count,paintedCount=sum(bool(c.getbbox()) for c in cells),buildings=bs,priority=priority+['lower']*(count-len(cells)),passability=passage+[dict(up=True,down=True,left=True,right=True)]*(count-len(cells)),appearanceVersion=5)
 for p in [DATA/'catalog.json',ROOT/'src/assets/beodeulArchitectureCatalog.json']:p.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
 board=Image.new('RGBA',(640,440),(88,138,57,255))

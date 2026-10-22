@@ -99,9 +99,9 @@ export type OprnBridgeStart = {
   readonly coverSource?: (input: { readonly projectDir: string }) => Promise<import("../../../electron/shared/start").ProjectCoverSource | null>;
   /** 데스크톱 전용 — 시작 화면이 구운 카드 그림 저장. 목록에 없는 경로면 false. */
   readonly saveCover?: (input: { readonly projectDir: string; readonly dataUrl: string }) => Promise<boolean>;
-  /** 데스크톱 전용 — 다른 컴퓨터의 팀 호스트를 앱 창으로 연다. */
+  /** 데스크톱 전용 — 다른 컴퓨터의 팀 호스트를 앱 창으로 연다. @deprecated multi-user team collaboration is not supported yet (2026-10-21). */
   readonly joinTeam?: (input: { readonly url: string }) => Promise<import("../../../electron/shared/start").JoinTeamResult>;
-  /** 데스크톱 전용 — 전에 참여한 팀 호스트 주소. */
+  /** 데스크톱 전용 — 전에 참여한 팀 호스트 주소. @deprecated multi-user team collaboration is not supported yet (2026-10-21). */
   readonly recentTeams?: () => Promise<readonly import("../../../electron/shared/start").RecentTeamEntry[]>;
 };
 
@@ -124,6 +124,8 @@ export type OprnBridge = {
   readonly windowFullscreen?: () => Promise<boolean>;
   /** 네이티브 전체화면 변화(F11·메뉴 포함) 구독. 해지 함수를 돌려준다. */
   readonly onWindowFullscreen?: (callback: (fullscreen: boolean) => void) => () => void;
+  /** 데스크톱 전용 — 시작 화면이 첫 카드를 그렸다. 메인이 숨겨 둔 창을 보이고 스플래시를 닫는다(electron/main/splash.ts). */
+  readonly startScreenReady?: () => void;
   readonly team?: import("../../../electron/shared/team").TeamBridge;
   /** true 면 닫기 절차를 호스트(일렉트론 메인)가 연다. 브라우저 로컬 서버는 false 라서 페이지가 직접 막는다. */
   readonly closeIsHostDriven: boolean;
@@ -131,6 +133,11 @@ export type OprnBridge = {
   readonly companionOrigin: string | null;
   /** 동반 서비스 실행별 토큰(설계 7.4). 루프백은 같은 머신의 다른 프로세스에 열려 있다. */
   readonly companionToken: string | null;
+  /**
+   * 브라우저 로컬 서버 전용 — 서버가 다시 시작돼 토큰이 바뀌었을 때 새로고침 없이 지금 토큰을 다시 받는다
+   * (`src/ai/companionConnection.ts` 가 401/403 에 한 번 부른다). 일렉트론은 동반 서비스가 앱과 수명을 같이 해서 없다.
+   */
+  readonly refreshConnection?: () => Promise<{ readonly bridgeTokenChanged: boolean; readonly companionTokenChanged: boolean }>;
   /** 내용 주소 자산을 열 수 있는 접두사. 일렉트론은 oprn-asset 스킴, 브라우저 로컬 서버는 HTTP 경로다. */
   readonly assetBaseUrl: (projectId: string) => string;
   readonly lifecycle: OprnBridgeLifecycle;

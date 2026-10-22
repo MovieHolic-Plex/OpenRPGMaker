@@ -1,0 +1,78 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b4",
+ "round": 3,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "mart-bread-rack",
+   "pixelSha256": "d107dc63e8aedce538156689133aa163e9130c96f5a02b91e45c63c972f388ec",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "Reads as a flat front elevation. The only top is a dark grey grille strip with no lit top plane, unlike the cooler's lit top. The loaves are tiny orange blobs with white sticker highlights on dark shelves, so at 1x it is noisy and doesn't read as bread."
+  },
+  {
+   "id": "mart-dairy-open",
+   "pixelSha256": "c5fe406ddb23b43b9582b41a717859c624a575f9b6a6585ce404c1f44b529377",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "The top is a 1–2 row blue strip with no visible top plane or open well, so it's a front elevation. At 1x it reads as a generic white shelf with coloured dashes rather than an open dairy case; there's no cold-case lip and no visible milk or yoghurt shapes."
+  },
+  {
+   "id": "mart-gondola-cereal",
+   "pixelSha256": "fd7ae8ed54540e0c6c41d7a894f91350eed4c7f528813f2cc0c4fe22d739aca9",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    4
+   ],
+   "reasons": "The saturated purple body sits outside the chipset's muted palette, and the top is only a thin purple band with no lit shelf plane. The cereal boxes are muddy purple and orange blocks with no clean shading steps, and in the room it is a flat square face pasted onto the floor."
+  },
+  {
+   "id": "mart-gondola-detergent",
+   "pixelSha256": "e2a8603be5ff7d70e36e0b0ad0756a7761307423cf38bb22cc948bcae1fbd2db",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "Front elevation with a speckled, noisy white top strip instead of a clean lit top plane. The bottles are large stamped teal and magenta icons with bright sticker-like label pixels, and the only visible shelf is a single grey plank."
+  },
+  {
+   "id": "mart-gondola-tea",
+   "pixelSha256": "e05922f5198ef0cfda1b943d75184bff0ab9b0e97b0e6bb39fb9bb805623c4db",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    4
+   ],
+   "reasons": "The top area is a mottled green band with stray light pixels rather than a clean lit plane, and the whole unit is a flat front face. The green body and beige box blob on the bottom shelf are muddy and off the chipset's shading style; the jars are noisy yellow-green dots."
+  }
+ ]
+}

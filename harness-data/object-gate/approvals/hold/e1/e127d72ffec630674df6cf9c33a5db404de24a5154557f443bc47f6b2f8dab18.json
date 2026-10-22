@@ -1,0 +1,17 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "e127d72ffec630674df6cf9c33a5db404de24a5154557f443bc47f6b2f8dab18",
+ "profileHash": "4d8774b517f41638",
+ "kind": "low_furniture",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-20T22:56:04.904Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "note": "묶음 허용: modern_city 실내 기물 m142-b1 (15) — object-gen 다시 그림, 사용자 위임·Opus 적대 VQA 통과 2026-10-21 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/m142-b1.opus-vqa-r*.json",
+ "sig": "f4bff7925aa04b3848e952868b63b3d3710422ed1d0a2944463ae1641a33912a"
+}

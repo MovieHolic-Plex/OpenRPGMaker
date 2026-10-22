@@ -1,0 +1,292 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "86873923e3866da060178fe986930aec017fab9d3c93872431a8662c0f55aea0",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rice paddy ground tile (inaka-paddy-golden)",
+ "label": "jp_inaka_pack/gnd/inaka-paddy-golden",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 5,
+  "darkV5": 103,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy ground tile (full 16x16 texture)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The silhouette is a full 16x16 opaque square (width 16 on every row 0-15). It is a seamless, mottled olive/gold texture with scattered lighter and darker pixels and no edge line, eave shadow, ellipse or front face. The column scans show only noise-like alternation (L 88-208) with no band structure. This is a flat ground texture, which fits the terrain kind. It is not a standing object, so top and front face rules do not apply."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small straw-gold patch with only 5 distinct colours in total and a median of 5 per 16x16 tile. The reference grass has 80 colours and a median of 26 per tile, and the paving reference has 7 colours with 80% neutral dark edges. The candidate shows a faint horizontal-stripe grain with about 3 visible lightness steps, against 5-6 steps in the grass reference. It has no flat 5x5 fills (0%), but the texture is a regular repeating hatch with no clumps, no stalk variation and no soil or water detail between rows. Edges carry no outline (0% neutral), which is fine. Overall it is much sparser than the grass reference, with too few steps and too little per-tile information for a paddy ground patch, so it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 8252
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy ground tile (full 16x16 field of golden rice texture)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The silhouette is a full 16x16 opaque square (width 16 on rows 0-15). The column scans show only small lightness variations, with scattered light and dark pixels in olive-gold tones and no front-edge line, eave shadow, ellipse or standing front face. It is a seamless flat terrain texture of rice stalks, not a standing object, so the top/front-face rules do not apply. It matches the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small straw-gold patch with only 5 distinct colours in total and a median of 5 per tile. The grass reference has 80 colours and 26 per tile, and even the paving reference has 7 distinct colours per tile. The candidate shows a light-to-mid-to-dark hatch pattern, about 3 visible lightness steps, against the references' 5-6. It has no outline, and the dark edge pixels are 0% neutral, so there is no sticker look. Flat-fill coverage is 0%, with small horizontal grain dashes, so it has some texture. However, it looks thin and repetitive next to the grass reference, which has varied clumps, tufts and several greens. The paddy reads as a basic woven-straw pattern without the layered clumps, soil grain or water/stalk variation that the Beodeul ground carries. The distinct colour count and tile density are far below the grass reference, so it falls short of the standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10026
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy ground tile (full 16x16 fill, horizontal stripe texture)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile fills the whole 16x16 area with an opaque, uniform olive-gold texture (width 16 on every row). It has no silhouette, no front-edge line, no eave shadow, and no front face. The scattered lighter and darker pixels and the faint horizontal row-bands at rows 3, 7 and 11 read as paddy rows or stalks on flat ground. This is a seamless terrain tile, not a standing object, so no 3/4 top-and-front structure applies. The kind matches the terrain tile category."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny golden patch with only 5 distinct colours in total, against 80 for the reference grass. Its median is 5 colours per tile against 26 for grass. It does have some horizontal straw-like hatching, so no 5x5 block is flat (0% coverage). But the ramp is only about 3 lightness steps, where Beodeul uses 5-6. There is no real outline, since the edge is just a darker rim, and the patch is too small to show the grass tufts, soil grain or per-element shading that the references carry. A careful artist would find it thinner and flatter than the grass reference. The paving reference's low 7 colours does not excuse it, because that reference still has stones shaded one by one. Failing as much lower in density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 9640
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy ground tile (full 16x16 square, uniform olive-gold texture with horizontal furrow rows)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 16x16 opaque square (width 16 on every row). The columns show only repeating noise and horizontal furrow bands with no front-edge line, no eave shadow, no ellipse, and no vertical front face. It is a flat, seamless ground tile viewed from above, which suits a terrain tile. It is not a standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny golden patch of about 5 colours in total. Its median is 5 colours per tile, against 26 for the grass reference with 80 distinct colours. It has roughly 3-4 lightness steps, where the references use 5-6. It does show some horizontal straw-like grain and speckle, and flat-fill coverage is 0%, so there are no large flat areas. The 0% neutral share means the few dark edge pixels carry a tint, and there is no sticker outline. Even so, the palette is far thinner and the grain is more regular than the grass reference's clumps, tufts and soil variation. A careful artist would see it as clearly flatter and less rich than the grass reference. A 4x3 paddy ground should carry more clump and grain variation, so it fails on density and shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15455
+  }
+ ],
+ "decidedAt": "2026-10-20T04:26:05.781Z",
+ "cells": {
+  "16": [
+   "6de113eaa0bfe83d"
+  ],
+  "24": [
+   "009349bcafe4aa36",
+   "35b77ac8283a6d66",
+   "76f6e3f120eae1bc",
+   "85aac1efa9c081e2",
+   "8e8dda507eee8012",
+   "d09b15d79a89b7c0"
+  ],
+  "32": [
+   "0c7e1d8ede4ceb54",
+   "17702979ea657eef",
+   "5d003a42ce496430",
+   "83c21ef7467602fa",
+   "b05f4587ab18a39d",
+   "ee9f6c4dd47c01c8"
+  ],
+  "48": [
+   "2032314b641eb5e5",
+   "32a96c5778ed32f9",
+   "4f57f039127adc81",
+   "525c19481402d95a",
+   "80cbe41eae031a2a",
+   "a49c098dc2367564"
+  ]
+ }
+}

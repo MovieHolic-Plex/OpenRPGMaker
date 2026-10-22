@@ -1,0 +1,56 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-h3",
+ "round": 2,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "food-drink-bar",
+   "pixelSha256": "9aa191702919d169f46b360d8ba837e5be38e12479607446c048d19995435d17",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    3
+   ],
+   "reasons": "The narrow 1x2-tile tower is drawn as a flat front elevation. There is no lit counter or top plane, only a grey box with a white cap, a recess holding three coloured nozzles and a cabinet door underneath. At 1x it reads as a vending column, not a drink bar. It is also much narrower and more cramped than the counter originals, and the dark cabinet base sinks into the floor without a clear ground line."
+  },
+  {
+   "id": "mart-cart-bay",
+   "pixelSha256": "92b426b3554a3913ce9b7fb2410ca19d5ffed888d9f4d2920e7cf67adbb1f51b",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "The basket mesh is a noisy checker dither, and its slanted trapezoid sides go diagonal and pseudo-perspective instead of the chipset's straight 3/4 view. Four tall red bars stick straight up like posts rather than reading as nested cart handles. At 1x it is a grey-red smudge that does not read as a cart bay."
+  },
+  {
+   "id": "mart-drink-open",
+   "pixelSha256": "f0fae0f8780e5cc1ebd8a9a9fd6da5b2ead721d458a8931677dcbf7e2ea13614",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "The bottles are shown head-on in a dark recess like a flat front elevation. You can't see tiered shelf planks from above, which an open cooler needs. The white top and the red stripes top and bottom copy the counter-register almost exactly, so it reads as a reskinned counter. The heavy black frame boxes in the whole interior, which is heavier than the original cooler's treatment."
+  }
+ ]
+}

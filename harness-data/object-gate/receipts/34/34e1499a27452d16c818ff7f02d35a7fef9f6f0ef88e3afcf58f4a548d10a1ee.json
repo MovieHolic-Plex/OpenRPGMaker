@@ -1,0 +1,353 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "34e1499a27452d16c818ff7f02d35a7fef9f6f0ef88e3afcf58f4a548d10a1ee",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "izakaya beer server",
+ "label": "modern_city_interior/izakaya-beer-server",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 16,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top light band of upper housing",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "beer glass in the recessed tray, with a white rim band",
+      "rows": "16-23",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower red panel unit",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The upper housing has a light band in rows 3-6 (L 244 to 202, fading downward). It ends in a slightly darker line at row 6, and a blue shadow stripe at rows 7-8 sits beneath it. The gray front face with the nozzle runs from row 9 down, and the whole object has about 23 rows of front face. The top band is only 4 rows and could also be read as a white label panel. I treat it as a weak top surface, since the stripe works like an eave shadow. The lower red panel (rows 25-30) is a pure vertical face with no top, which is why all_major_parts_have_top is false. The silhouette widens from 14 to 16 px at row 16 around the beer tray."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, roughly one-tile-wide appliance prop. Its measured facts are close to the richer references. It has 15 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, so there are no big flat fills. Dark edge pixels are 0% neutral, so the outline leans to the material tone (blue-grey on the body, brown on the base) and is not a sticker-style black line. The body, panel and mug show about 4 lightness steps each, a little under Beodeul's 5-6. The total palette of 20 colours is also well below the stall's 40 and the well's 38. Texture is limited to a few dots and highlights, with no real grain. A careful artist would still accept it next to the references, though it is slightly lighter on detail than the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20938
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of the server body",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "grey front body with spout",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "beer mug and tray, front-facing",
+      "rows": "16-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower red panel and base",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-6 form a light band across the full body width. It shades from L=244 down to 202 at row 6, which reads as a front-edge line. A blue stripe in rows 7-8 below it acts as eave shadow. The grey front face with the spout runs from row 9 down to row 31, 25 rows in all. The top is a borderline 4-row band. It could also be a front-facing panel with a blue accent stripe, but the edge line and the shadow stripe below it count as evidence (a). The mug section (rows 16-23) and the red drip-tray panel (rows 24-31) are drawn face-on with no horizontal surface, so not every part shows a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small standing prop, about one tile wide and a bit over one tile tall, so it is comparable to the lamp and bench. The measured facts are at or near the references: 15 visible tones per tile against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, and none of the dark edge pixels are neutral, so the outline carries a tint (dark blue-grey beside the casing, dark brown beside the mug) rather than a uniform black line. By eye the casing shows a highlight, a mid tone and a shadow side, with a separate blue cap and a gold beer mug, so there are no large flat fills. It is a little simpler than the richer references: about 4 steps on the body ramp and only 20 total colours, against 38-40 for the stall and well. That is slightly lower density but acceptable for a small appliance-like prop, and it does not look like a sticker next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18801
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top light panel of upper machine",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "beer mug alcove with white lid band",
+      "rows": "16-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower red drip-tray panel",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The upper body has a light band at rows 3-6 (L 244 to 224, then a darker row 6 at L=202) that works as a front-edge line. Blue shadow rows 7-8 follow it, then the grey front face runs from row 9 to row 31, about 23 rows. This is a weak top surface of 4 rows. The lower mug and drip-tray sections are drawn only as vertical faces, with no top of their own. The silhouette is 14 wide at rows 2-15 and 16 wide at rows 16-31. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a roughly one-tile standing prop, and the references are the same kind. It has 15 visible tones per tile, between the hedge (9) and the cheese stall (17) and well (20), with 0% near-flat coverage. Its dark edge pixels are 0% near-neutral, so the outlines carry a tint rather than being a black sticker line, matching the hedge and cheese-stall references. By eye, the body, tap and mug show several lightness steps with highlight and shadow separation, and there are no large flat fills. The texture is somewhat simpler than the roofed well or cheese stall, but it is not thinner or flatter than the hedge or bench. I could only judge fine texture and outline tint from a very small image, so those rest partly on the measured facts.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17971
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of upper housing",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "lower wider cabinet / glass window ledge",
+      "rows": "16-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-6 form a light band at the top that darkens from L=244 to 202, ending at an edge line on row 6. A blue eave-shadow stripe on rows 7-8 follows it. Below that is a vertical front face on rows 9-31 with the tap, the beer window, the red panel and the base. This is a weak but plausible top surface of about 4 rows, with a front face of well over 3 rows. The lower wider section (rows 16-31) shows only a thin 1-2 row light lip on rows 16-17, so it has no real top of its own. The top reading is borderline: the light band could also be a front-facing white panel."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a compact prop, about one tile, and the references are the same kind. The measured facts put it at or above the references. It has 15 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, with no 5x5 flat fills. The dark edge pixels are 0% neutral, so the outline carries a blue-grey tint and is not a black sticker line. By eye, the metal body shows about 5 steps (highlight, light, mid, dark, deep), with a lighter top panel and a dark tap/window area. The warm mug adds a separate small ramp. Surface grain is modest, closer to the hedge and bench than to the stall's busy textures, so texture is 'some' rather than 'rich'. Nothing reads as thinner or flatter than the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17916
+  }
+ ],
+ "decidedAt": "2026-10-21T01:38:23.352Z",
+ "cells": {
+  "16": [
+   "d7a4a41088fdcb4a",
+   "f0b93f88fd1a11a7"
+  ],
+  "24": [
+   "1b006f0799adbb3a",
+   "59bbdbeeb1f61790",
+   "5ba6b115d585ff4f",
+   "72323a718c427a4d",
+   "804ddfe82974c933",
+   "93725b6f3e83b306",
+   "a3b8ba0875e8853a",
+   "b01dc29315722d6c",
+   "b3205f9084915763",
+   "c81e5ff5720dd1ba",
+   "cab52fcaa6c8e59c",
+   "e39cabeb8c3dd369"
+  ],
+  "32": [
+   "307b4f17f09ca3af",
+   "38853e9ad4847e63",
+   "7e9e2b378f41af4e"
+  ],
+  "48": [
+   "02a1a77c0878bc93",
+   "141cc5de49a4c0a9",
+   "392331772d7cbbb4",
+   "533eb43e99110919",
+   "5e2341bf0a1576b7",
+   "97ec3d1d8fdfc8fb"
+  ]
+ }
+}

@@ -39,6 +39,8 @@ interface OpenRpgBootConfig {
   /** Private export-QA capability; omitted by all production host shells. */
   readonly qaInstrumentation?: boolean;
   readonly actionCombatProbe?: { readonly runId: string; readonly mapId: string };
+  /** Private runtime-QA checkpoint (scripts/qa/runtime/checkpoints). Ignored unless qaInstrumentation is true. */
+  readonly qaCheckpoint?: unknown;
   // 호스트 주입값은 신뢰하지 않는다 — hostBridge.parseHostBridge 가 방어적으로 파싱한다.
   readonly returnUrl?: unknown;
   readonly hostFeatures?: unknown;
@@ -53,24 +55,24 @@ function readBootConfig(): OpenRpgBootConfig {
 void bootExportedPlayer(app);
 
 async function bootExportedPlayer(root: HTMLElement): Promise<void> {
-  const boot = readBootConfig();
+  const boot = await withDevCheckpointParam(readBootConfig());
   // The private editor probe loads the shipped player bundle, but public game
   // resources belong to the editor host, one directory above that bundle.
   const probeAssets = boot.qaInstrumentation === true && boot.actionCombatProbe !== undefined;
   registerExportAssetBase(new URL(probeAssets ? "../" : ".", document.baseURI));
   const rawDemoParam = new URLSearchParams(window.location.search).get("demo");
   const demoParam = rawDemoParam === "fallen-star" ? "chrono-bell" : rawDemoParam === "astra-horizon" ? "emerald-crown" : rawDemoParam;
-  if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season") {
+  if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season" || demoParam === "first-love") {
     // 정적 import 하면 ?demo= 가 없는 일반 player.html 부팅에도 에디터 toolRegistry(1,800개 모듈) 전체가 로드된다.
     const { createFlagshipDemoProject } = await import("@/project/flagship");
-    startPlayer(root, boot, createFlagshipDemoProject(demoParam).project, "bundled");
+    void startPlayer(root, boot, createFlagshipDemoProject(demoParam).project, "bundled");
     return;
   }
   // 단일 HTML 로 내보낸 게임: 프로젝트도 에셋도 이 문서 안에 있다. fetch 가 막히는 file:// 에서
   // 돌아야 하므로 네트워크를 타는 아래 경로보다 **먼저** 본다.
   const standalone = readStandalonePayload();
   if (standalone) {
-    startPlayer(root, boot, deserialize(standalone.projectJson), "opened-file");
+    void startPlayer(root, boot, deserialize(standalone.projectJson), "opened-file");
     return;
   }
   if (new URLSearchParams(window.location.search).has("open")) {
@@ -79,7 +81,7 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   }
   const bundled = await loadBundledProject(boot);
   if (bundled.ok) {
-    startPlayer(root, boot, bundled.project, "bundled");
+    void startPlayer(root, boot, bundled.project, "bundled");
     return;
   }
   openGameFilePicker(root, boot, bundled.message);
@@ -102,19 +104,48 @@ async function loadBundledProject(boot: OpenRpgBootConfig): Promise<BundledProje
   }
 }
 
+/**
+ * 수동 QA 용: vite dev 서버에서만 `player.html?demo=…&qaCheckpoint=<세트>:<id>` 를 받는다.
+ * 출하 빌드에서는 import.meta.env.DEV 가 거짓이라 이 분기가 통째로 빠진다.
+ */
+async function withDevCheckpointParam(boot: OpenRpgBootConfig): Promise<OpenRpgBootConfig> {
+  if (!import.meta.env.DEV) return boot;
+  const param = new URLSearchParams(window.location.search).get("qaCheckpoint");
+  if (!param) return boot;
+  const [setName, id] = param.split(":");
+  const response = await fetch(`/scripts/qa/runtime/checkpoints/${encodeURIComponent(setName ?? "")}.json`);
+  if (!response.ok) throw new Error(`QA 체크포인트 세트 ${setName} 를 읽지 못했다 (${response.status})`);
+  const set = (await response.json()) as { checkpoints?: { id: string }[] };
+  const checkpoint = set.checkpoints?.find((entry) => entry.id === id);
+  if (!checkpoint) throw new Error(`QA 체크포인트 ${setName}:${id} 가 없다`);
+  return { ...boot, qaInstrumentation: true, qaCheckpoint: checkpoint };
+}
+
+/** QA 체크포인트 세션. 계측이 켜진 부팅에서만 만든다 — 아니면 일반 타이틀 부팅이다. */
+async function qaCheckpointStart(boot: OpenRpgBootConfig, project: Project) {
+  if (boot.qaInstrumentation !== true || boot.qaCheckpoint === undefined) return undefined;
+  const { parseQaCheckpointBoot, sessionFromQaCheckpoint } = await import("@/player/qaCheckpoint");
+  const checkpoint = parseQaCheckpointBoot(boot.qaCheckpoint);
+  if (!checkpoint) throw new Error("QA 체크포인트 모양이 틀렸다(id 필요)");
+  return {
+    initialSession: sessionFromQaCheckpoint(project, checkpoint),
+    ...(checkpoint.startEventId ? { initialEventTestId: checkpoint.startEventId } : {}),
+  };
+}
+
 function openGameFilePicker(root: HTMLElement, boot: OpenRpgBootConfig, reason: string): void {
   renderOprnGameFilePicker(root, {
     reason,
-    onOpen: (project) => startPlayer(root, boot, project, "opened-file"),
+    onOpen: (project) => void startPlayer(root, boot, project, "opened-file"),
   });
 }
 
-function startPlayer(
+async function startPlayer(
   root: HTMLElement,
   boot: OpenRpgBootConfig,
   project: Project,
   source: ExportProjectSource,
-): void {
+): Promise<void> {
   try {
     installExportUploadedAssets(project);
     // 옛 저장본에서 내보낸 게임도 에디터와 같은 얼굴을 보여 준다(faceMatchRepair.ts — 걷기 그림의 짝으로 교정).
@@ -139,7 +170,9 @@ function startPlayer(
     const host = parseHostBridge(boot);
     installDesktopShellBridge(root, boot.desktopShell);
     const probe = boot.qaInstrumentation === true ? boot.actionCombatProbe : undefined;
+    const qaStart = await qaCheckpointStart(boot, project);
     renderPlayer(root, {
+      ...(qaStart ?? {}),
       // 배율은 프로젝트가 정한다(resolvePlaySurfaceScaleMode): 해상도를 저장한 프로젝트·몬스터 수집 게임은 정수 배율+여백,
       // 해상도를 안 정한 옛 320×240 프로젝트는 창에 맞춤. 저작자는 DB 시스템 「화면 맞춤」으로 바꾼다.
       // 마우스·터치로도 메뉴·전투를 연다(D15). 몬스터 수집 게임만 — 다른 게임은 기존 키보드 전용 계약을 지킨다.

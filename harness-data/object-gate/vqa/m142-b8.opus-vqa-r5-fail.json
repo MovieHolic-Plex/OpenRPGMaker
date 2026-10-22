@@ -1,0 +1,82 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b8",
+ "round": 5,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "arcade-claw-machine",
+   "pixelSha256": "0d541a263e4a321a5063c8d825515c2da89e975b0c30ff2957eddf03464f2a50",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The pink cabinet has a lit top plane about 3 rows deep, a short glass front with a claw and plush prizes, and a base with a coin slot. The dark outline and the 2-3 shading steps match the cooler and desk originals, and the base sits on the floor line at about 1 tile wide."
+  },
+  {
+   "id": "school-piano",
+   "pixelSha256": "0a8ba873b64ab6c6c2dd3277b151a72b7623fd3b75a7e327aab7b4366a5a8af5",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The keyboard is drawn as a front elevation (white keys as a vertical strip with black keys above them), so there is no key shelf seen from above. The top lid is filled with noisy grey dither, and the three orange-gold pedal pixels on the black lower body look like stickers."
+  },
+  {
+   "id": "shop-peg-wall",
+   "pixelSha256": "a661f55d1116d4b90ece4f43e2f52e3cec14c74b70d4c81d9ab93c73f0f746e2",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    5
+   ],
+   "reasons": "It is a flat front elevation of a pegboard with no top or shelf planes, just items stuck on a tan board with a large yellow '100' tag. In the room it covers the wall stripe and runs down onto the floor tiles, so it is neither believably wall-mounted nor freestanding."
+  },
+  {
+   "id": "subway-pillar-sign",
+   "pixelSha256": "0036f6ce5a81cb0e7014f8e3076e52fa404ceab2cf14238f359dc54897c22a6b",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    5
+   ],
+   "reasons": "The 'pillar' is only about 1x1.5 tiles tall and stops well short of the wall top, so it reads as a small bollard or sign stand rather than a structural pillar. Its scale is too small compared with the wardrobe and cooler originals, and it sits in front of the wall without connecting to anything."
+  },
+  {
+   "id": "svc-arcade-shopfront",
+   "pixelSha256": "8573384a2e398eb18b10076bc7082a36ed5760c87b59c9c8e9dddd25c4890162",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    5
+   ],
+   "reasons": "It is a pure front-elevation facade (B1 SHOP signboard, striped awning, shop window) with no horizontal plane seen from above. In the room it is pasted over the back wall's white and red bands and spills onto the floor row, which breaks the room's 3/4 view."
+  },
+  {
+   "id": "train-luggage-rack",
+   "pixelSha256": "49c2be485fce9e83bb805a93f6d1310f3d0827757ba8d836f09545ef4f731af6",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The lower half is three framed blue, red and orange poster panels, so the object reads as a kiosk or ad stand rather than an overhead train luggage rack. A small cream item between the suitcase and the bag hangs detached at the shelf edge."
+  }
+ ]
+}

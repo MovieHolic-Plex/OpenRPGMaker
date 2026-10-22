@@ -1,0 +1,530 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e241bad997f5ddd801b0a4a46347a70c11e3a450e01502cfa765f0383f5e99e5",
+ "width": 224,
+ "height": 96,
+ "kind": "structure",
+ "name": "さくら駅 작은 역사",
+ "label": "jp_city/jp-bldg-station-small",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 13,
+  "darkV5": 38,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 60
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hipped tile roof",
+      "rows": "10-42",
+      "evidence": "c",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": "40-42"
+     },
+     {
+      "part": "front wall with sign, vending machines, clock, windows and glass entrance",
+      "rows": "43-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 53,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a sloped tile plane over rows 10-39, with tile rows and a widening silhouette (180 to 204 px) from the hipped ends. A lighter front-edge line sits at row 39, followed by dark eave shadow at rows 40-42. Below it, the white front wall runs rows 43-95 (about 53 rows) and carries the sign, doors and windows. The hipped roof ends read as roof planes, not wall side faces, so no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate's roof has scalloped tiles with 4 steps (light, mid, dark, deep red-brown) and a dark red-brown outline, so the outline is tinted (0% neutral edge pixels). Its tile density is 8 visible tones per 16x16 tile against 12 and 10 for the references, so it is lower but not drastically. The walls are mostly flat white with only light speckle, and the sign, shop-front and vending machines are simple few-tone fills. Near-flat coverage is 18% against 0% for both references, so flat areas are present. Shading depth is clearly shallower than the references' 5-6 step ramps, with no per-tile highlights on the roof and no grain on the plaster or base. It is a clean piece, but a careful artist would see it as flatter than the Beodeul houses next to it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 13891
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hip roof with tile rows, widening from 180 to 204 px",
+      "rows": "10-42",
+      "evidence": "c",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": "40-42"
+     },
+     {
+      "part": "white front wall with sign, vending machines, shop windows and clock",
+      "rows": "43-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 33,
+    "front_face_rows": 53,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The large tiled roof fills rows 10-42 (33 rows). It is a sloped plane with a lighter edge line at row 39 and dark eave shadow at rows 40-42, which is evidence (c). The hip ends at left and right are part of the roof, not a receding wall side face. Below the roof the white south wall runs from row 43 to about row 95, about 53 rows of front face. The sign, vending machines, windows and clock are details on that vertical wall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The roof has scallop-tile texture in a few reds/browns and a lighter ridge, so it is close to the references. The tinted dark outline (0% neutral edge pixels) is a dark red-brown or blue-grey, not black. The wall is the weak part: the large white plaster face, the navy sign band and the grey platform shelter are mostly flat, with only sparse speckle on the plaster, and the 18% near-flat coverage against 0% in both references confirms this. Visible tones per tile are 8 against 12 and 10 for the references, so a bit lower but not far off. The wall materials have about 3-4 steps against 5-6 in the references, and there are no per-element highlights on the windows, vending machines or sign. It reads as cleanly drawn but flatter than the Beodeul houses, so it does not clearly meet the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14589
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tile roof (hip roof, sloped plane)",
+      "rows": "10-42",
+      "evidence": "c",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": "40-42"
+     },
+     {
+      "part": "front wall with signboard, shopfront glazing, vending machines, clock and window",
+      "rows": "43-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 33,
+    "front_face_rows": 53,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 10-39 are a sloped tile roof with repeating tile-course lines. The silhouette widens from 180 to 204 px, so the hip roof flares outward toward the eave. Row 39 (L=90) is a lighter eave edge line, and rows 40-42 are dark eave shadow (L about 30). Below the roof, rows 43-95 (about 53 rows) are the vertical south wall with the sign, glass shopfront, vending machines, clock and window. The wall is a normal front face, and no isometric receding side face is drawn. The roof is a clear top surface above a tall front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a whole building like the references, so the kind matches. Its outlines are tinted: dark red-brown along the roof and dark blue-grey around the sign and windows, with 0% near-neutral dark edge pixels. That is the Beodeul approach and is not a sticker outline. The roof has tile rows with some highlights, but it has about 4 lightness steps against about 6 in the references, with no per-tile scallop highlights or warm-to-dark gradient. The white wall has light speckle. The sign board, the glass panels and the vending machine bodies are close to flat fills, and the measured near-flat coverage is 18% against 0% for both references. Visible tones per tile are 8 against 12 and 10, so the candidate is below both. Overall it is clean and tinted but flatter and thinner than the references. In doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14492
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hip roof with tile courses (sloped roof plane, hipped ends at left and right)",
+      "rows": "11-42",
+      "evidence": "c",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": "40-42"
+     },
+     {
+      "part": "white front wall with sign band, glass shopfront, vending machines, clock and window",
+      "rows": "43-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 53,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof fills rows 11-39 as a large sloped plane of tile courses. The light line at row 39 (#854a38) is the front edge line, and rows 40-42 are dark eave shadow. The silhouette widens from 180 to 204 px across the roof rows, which fits the hipped slopes. Below the eave the wall runs from row 43 to about row 95, which is 53 rows of vertical front face. The roof is a clear top surface above this face, so the building reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The roof has tile rows with a few lightness steps and tinted dark red-brown edges, so it is not a sticker outline (0% neutral dark edge pixels). The white plaster wall has light speckle. Against the references, though, the piece is shallower. It has about 4 steps on the roof and about 3 on the wall, against 5-6 in the references. It shows 8 visible tones per tile against 10-12. Its near-flat coverage is 18% against 0% for both references. The flat areas are the navy sign board, the dark base strip and the window panes, which are large regions of one colour with little grain. The roof also lacks the per-tile highlights and scallop variation the references have. It is close but sits slightly below the Beodeul bar, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16445
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.428Z",
+ "cells": {
+  "16": [
+   "01a9e3b58bdb295f",
+   "03b728d567820c42",
+   "06afc13abd597a5e",
+   "0b80aacf53f89264",
+   "15ff741a25f5d016",
+   "27aea07f10feb63a",
+   "3294f24e194ff6fe",
+   "3437bf82d84ff729",
+   "349992264b2be9ca",
+   "3ad406d0c7bef52f",
+   "3bdd05c2b8a43860",
+   "3e1e6ab59d3f2ac8",
+   "3ee73d7eb1642e47",
+   "426f04ce16c7f4c1",
+   "4716eb6e79183fb1",
+   "4765feebd0b73197",
+   "4a291531a4de7c35",
+   "4c011cf13e0248ae",
+   "4c0f39fe4dc0cf59",
+   "4ff483a411b1bd87",
+   "5362e077e19a5c2a",
+   "54e7647f9bb080c8",
+   "5511647368aaa252",
+   "55ac78a014d43299",
+   "5663859136df4fc1",
+   "571219b3fa96acdc",
+   "58b5c2bd680be9d3",
+   "5e3868b8a32feef5",
+   "6106c03bfc17c1b1",
+   "620e0b85cfeb558a",
+   "681e989611ba1267",
+   "68514ffa2e01a6b1",
+   "6a8d25df17ee3e7d",
+   "7235817b8cad1813",
+   "75d18576f04de309",
+   "77c67a88f0d0953e",
+   "7b45359c75d0bc7a",
+   "7cf33c5b8504e024",
+   "7f4bcfa24e8d8fef",
+   "869a8dde554a11c5",
+   "8fe72f88a9aac7ba",
+   "9913a210979b235f",
+   "a0bb8e5c95d3670c",
+   "a349b01e088699d3",
+   "aabc68f7858c9df7",
+   "ac8002349b0f3be8",
+   "b0a8ef91afe77082",
+   "b31bc83f014ab5a3",
+   "b56c3362e166d057",
+   "ba821c525c55b09d",
+   "be01005fdd1f73b8",
+   "bf29d111fdba979a",
+   "c310e50459e27652",
+   "c6dc32bdd4c7f950",
+   "c997a18713f5cc2d",
+   "d0e2e43a014c5ed0",
+   "d15b2640ed68a895",
+   "d3bc53e5675862a3",
+   "db1192c50e6b23d4",
+   "e0e36098ca57c0d0",
+   "e1ca683dc8f166c5",
+   "e4db5849935451ff",
+   "e4ffacff038dca8e",
+   "eb160b5804a97e86",
+   "eb84dabe3dc3c6e8",
+   "efd3bd55f4c0a149",
+   "f280a2930c50ba52",
+   "fb150849e6c935aa",
+   "fdc5bf61c86985f1"
+  ],
+  "24": [
+   "086ab73b566641d5",
+   "0d151476092418c4",
+   "0eb76dbf45377d13",
+   "1241f8d5e5125304",
+   "127901b05f6542cc",
+   "172e4456a535d5ce",
+   "19d518ad6305cc40",
+   "1bc97e3adfa58623",
+   "1be5e7c8db913ade",
+   "1d1ca4ccc946b4d6",
+   "26f56e8fb01d5c6b",
+   "2740cf4349c184f7",
+   "27f3f0dfab969431",
+   "2a0bbd919d23a292",
+   "2e156e74ed147e59",
+   "2efd3b95410f0ecf",
+   "314d13fd91d03f53",
+   "356f6aa349e053f8",
+   "3a4c4dc352006e3c",
+   "3b7affc9a7f97542",
+   "3cb490110a97bd23",
+   "3cf191a42fab3bc9",
+   "3ef43d7c652455ad",
+   "41ca51f1d28e701e",
+   "435043ad45be57f8",
+   "443f1b896c362c0b",
+   "44ed766a010305f9",
+   "45b42af23f09a5ed",
+   "463b901c7ccbd50e",
+   "4ad80eec80ebf2d9",
+   "4b9198aa7f1f0135",
+   "4d8c20676f5f5da1",
+   "4e03f960f43d2433",
+   "4fc7f3acea9d2810",
+   "516eb891e424778f",
+   "5ffa843375227949",
+   "6055e60746051193",
+   "639fa4faadb939c3",
+   "6658281205403c0a",
+   "70abeacf756f8d0d",
+   "7dde3a1952d11b89",
+   "7f5c99926602e51d",
+   "810fbccb7020ef4e",
+   "874edffb4098bc7f",
+   "87e07518983600f3",
+   "8937121fa4fc7786",
+   "8e2db9624fb54adc",
+   "8ee9e7ea42427b71",
+   "93c350b802316586",
+   "94feece6ae823710",
+   "999d312afa372e36",
+   "9b6a1fbfaa47fc78",
+   "9baeb8d08a184f8a",
+   "9cd8cb34705a3a14",
+   "9d85d4454aaba2cb",
+   "9da85345c191c268",
+   "9e13ecceaa6242e1",
+   "a027c70086eaf57e",
+   "a08722e9d4fee418",
+   "a33c522a1adbb04f",
+   "a9f8fec7b273d69e",
+   "abe81e50533c8872",
+   "abfd09a2b1b4aee5",
+   "ae149e1b64862b2d",
+   "af840587da053c68",
+   "b17ae20ec23afd7b",
+   "b17b543377099693",
+   "b5afe9f2a07375ea",
+   "b645c5ef4cce7816",
+   "b801e10cc966d3f3",
+   "b86d0b66dbce64f7",
+   "ba586f5fe11977e2",
+   "bca5b398b506f9cb",
+   "bcb84207cd0419e0",
+   "c14c9d4721acc587",
+   "c58423523289b2f8",
+   "cb31827d3821066b",
+   "cc4da11c378cb148",
+   "ccd40db39789a175",
+   "cf85f4b3042cc8ac",
+   "d6510da39b6079af",
+   "d75fca44a512d9c1",
+   "d8cf25547ed104e6",
+   "d92e43454164ed37",
+   "d9e62bd8455554a5",
+   "da0a376478ad6958",
+   "dce7c9eff6726b08",
+   "dd312442e582809a",
+   "e0124d4fed78e1b6",
+   "e5d9c7954dded1e8",
+   "e646fc15fe9660b7",
+   "e782d16aac565c69",
+   "e7adb401cbf31743",
+   "e9254d221b02888f",
+   "f4af59718033f5c6",
+   "f70bc7c39f92678e",
+   "f8da61170173a464",
+   "f95ef105d660f377",
+   "fb6ceb30ea7398e7",
+   "feecc376301aab28",
+   "fffe4c84d9ce897b"
+  ],
+  "32": [
+   "0147865f53bd6703",
+   "030c0842a9fd4a68",
+   "072dbf102a6286c2",
+   "0bad6de326d41252",
+   "1ffb44d42a47c29f",
+   "28220fbd5c185389",
+   "2b5f58a2748bfbe4",
+   "2e2b71b7de43b4b4",
+   "72fee908b3d7f534",
+   "74161394472bfa06",
+   "7f5dcd47960228d2",
+   "873a94ea8f3766fb",
+   "9c638f33a228261c",
+   "aa4066d8ba185300",
+   "b193b3f0ec206dd3",
+   "bd03d647e4bfeb20",
+   "cc788ac1b6129459",
+   "e377cc810189f8da",
+   "e8901784bb9a6fb7",
+   "f19f8740ab3fca0f",
+   "fd99a5c74e790220"
+  ],
+  "48": [
+   "004738278da07302",
+   "092643ed9cdd7b49",
+   "16143f5a2a43e170",
+   "2e725ce331d26e3e",
+   "33964c591a792b13",
+   "39709d3a9062ad16",
+   "57a9eec4e99c7d58",
+   "66ffaf9fdf349cb2",
+   "6774beb2f8027526",
+   "6a29e778400fc503",
+   "8570393fab195c8f",
+   "89e6d9ed77453625",
+   "8a011d427430cf2b",
+   "8e6a1c98ae639a18",
+   "903c8dcc41bd8023",
+   "92cd60445349166d",
+   "9b4807375619053d",
+   "9c9d9d5fe21ac42d",
+   "a49962c7b0f166f1",
+   "b2b7ddc34fae22b4",
+   "b35eee1a4579b5d0",
+   "bad92dce85010376",
+   "c388528e4b24f528",
+   "c3b988fc061046d5",
+   "cb28df333f8eb51f",
+   "cd9982d6c7b2d0d1",
+   "d130ca994d86589f",
+   "e8c2a6072fcaad00",
+   "f58dd82daedaa066",
+   "ffce2965ce31c291"
+  ]
+ }
+}

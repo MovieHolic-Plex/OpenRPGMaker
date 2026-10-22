@@ -1,0 +1,82 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b1",
+ "round": 3,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "amuse-speaker-stack",
+   "pixelSha256": "1e0c3732418266d40f20208e74cca865ac1b1095438369e9026caa77eada5955",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    3
+   ],
+   "reasons": "It is a flat front view of two stacked boxes, a tape deck on top of a woofer, and no top surface is visible from above. At 1x it is a tiny dark-grey smudge, much smaller and less detailed than the originals, and it doesn't read clearly as a speaker stack."
+  },
+  {
+   "id": "arcade-prize-counter",
+   "pixelSha256": "e127d72ffec630674df6cf9c33a5db404de24a5154557f443bc47f6b2f8dab18",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The mauve countertop is visible from above as a lit plane about 3+ rows deep, with plush prizes sitting on it, and the short glass front shows the prizes inside. The outline, muted palette and density match mci-counter-register, and in the room it sits flat on the floor with a ground line."
+  },
+  {
+   "id": "arcade-purikura",
+   "pixelSha256": "850866c2615a8a3913fce5cecb34b32ec4334a4d6d54e3d8df584017d0415709",
+   "verdict": "FAIL",
+   "failed": [
+    1
+   ],
+   "reasons": "This is a front elevation: the booth's roof and sign are drawn straight on, with no top surface visible from above. The pink curtain and the kiosk panel are also flat side by side with no depth, which doesn't match the 3/4 view of the originals."
+  },
+  {
+   "id": "arcade-racing-cabinet",
+   "pixelSha256": "fdb108fee515f15af1b41832e991a82588688161fa1159d7e218d4bbc3090402",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "The marquee, screen, wheel and seat are stacked vertically as flat front-on bands, and the cabinet top has no lit top plane. The lower red-ringed box is unclear (seat or pedal block?), so at 1x it reads as a jumble rather than a racing cabinet."
+  },
+  {
+   "id": "dept-accessory-wall",
+   "pixelSha256": "50d8d626235f7ea1a47208b1efe489daa318251cc77ddfb55e1b502d462d0959",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    5
+   ],
+   "reasons": "It is a flat-on shelving unit whose top plank shows only about 1 row, with no visible top plane like mci-wardrobe has. In the room it covers the back-wall stripe and floats over the wall/floor seam instead of standing on the floor."
+  },
+  {
+   "id": "dept-eyewear-tower",
+   "pixelSha256": "15a143cabd054d9156762461c29e91ecf93025763bbd2d1b71f2f0ee85ad7fc4",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "It is a tall, flat front view of shelves with no top surface. The blue mirror on top is a detached bright sticker wider than the tower's own footprint, and the grey-white body has a heavy black box outline that doesn't match the originals."
+  }
+ ]
+}

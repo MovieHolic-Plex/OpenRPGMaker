@@ -1,0 +1,480 @@
+{
+ "schema": "bdg-vqa/1",
+ "judge": "claude-opus-5-5",
+ "date": "2026-10-21",
+ "overall": "FAIL",
+ "criteriaNotes": {
+  "1_view": "Wide blobs read as flat ground. Isolated cell (651/697) and the bulb end-caps of 1-wide bands read as small round shrubs/holes on the grass, i.e. objects.",
+  "2_seams": "Wide-region edges join cleanly (boundary columns differ by at most 1-4 px dither offsets). 1-wide bands fail: each band cell is a bulb with a narrow, lighter neck at the tile border, so bands become bead chains/dumbbells pinched at every 16 px seam. Convex corners carry a single-pixel diagonal thorn that produces X/star shapes in the seam patches.",
+  "3_colour": "The 4 new woodland colours (#759951 #688c48 #81a359 #8aab60) are a consistent desaturation of 737's ramp and sit naturally with the dark grass and the sheet; no muddy/off-palette look. 650 passes.",
+  "4_style": "Edge fringe uses the sheet's dither language and the original 11628 interior; but the corner thorns are hairlines of isolated pixels, and some band edges use a perfectly regular 1-px comb ('#,#,#,#,#') along a straight row, which looks mechanical.",
+  "5_maps": "Under the original crowns the dark ground reads acceptably; long straight edges follow the grid and repeat every 16 px (single variant per mask) similar to the sheet's paths. Blob convex corners show diagonal thorns, stubs end in round knobs (field renders)."
+ },
+ "cells": [
+  {
+   "id": 650,
+   "verdict": "PASS",
+   "reasons": "Woodland light base: 737 texture with uniform desaturation into the new olive colours; flat ground, tiles seamlessly in field-woodland, sits naturally next to the sheet and under original crowns in maps."
+  },
+  {
+   "id": 651,
+   "verdict": "FAIL",
+   "reasons": "mask 0 (isolated). Isolated single cell is drawn as a round dark disc with a dithered rim and highlight dots; at 1x/2x in the field it reads as a small shrub/bush top or hole sitting on the grass (an object), not flat ground (crit 1). Also the bulb motif is what makes every 1-wide band end in a knob."
+  },
+  {
+   "id": 652,
+   "verdict": "FAIL",
+   "reasons": "mask 1 (thin+corner). 1-wide band cell with a bend/end: bulb-plus-neck construction makes the band a chain of round beads pinched at the 16 px seams (dumbbell/lollipop shapes in seams and field), and the end bulbs read as round shrub objects; also carries the diagonal single-pixel dither thorn at the convex corner (crit 1, 2, 5)."
+  },
+  {
+   "id": 653,
+   "verdict": "FAIL",
+   "reasons": "mask 2 (thin+corner). 1-wide band cell with a bend/end: bulb-plus-neck construction makes the band a chain of round beads pinched at the 16 px seams (dumbbell/lollipop shapes in seams and field), and the end bulbs read as round shrub objects; also carries the diagonal single-pixel dither thorn at the convex corner (crit 1, 2, 5)."
+  },
+  {
+   "id": 654,
+   "verdict": "FAIL",
+   "reasons": "mask 3 (thin+corner). 1-wide band cell with a bend/end: bulb-plus-neck construction makes the band a chain of round beads pinched at the 16 px seams (dumbbell/lollipop shapes in seams and field), and the end bulbs read as round shrub objects; also carries the diagonal single-pixel dither thorn at the convex corner (crit 1, 2, 5)."
+  },
+  {
+   "id": 655,
+   "verdict": "FAIL",
+   "reasons": "mask 4 (thin+corner). 1-wide band cell with a bend/end: bulb-plus-neck construction makes the band a chain of round beads pinched at the 16 px seams (dumbbell/lollipop shapes in seams and field), and the end bulbs read as round shrub objects; also carries the diagonal single-pixel dither thorn at the convex corner (crit 1, 2, 5)."
+  },
+  {
+   "id": 656,
+   "verdict": "FAIL",
+   "reasons": "mask 5 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 657,
+   "verdict": "FAIL",
+   "reasons": "mask 6 (thin+corner). 1-wide band cell with a bend/end: bulb-plus-neck construction makes the band a chain of round beads pinched at the 16 px seams (dumbbell/lollipop shapes in seams and field), and the end bulbs read as round shrub objects; also carries the diagonal single-pixel dither thorn at the convex corner (crit 1, 2, 5)."
+  },
+  {
+   "id": 658,
+   "verdict": "FAIL",
+   "reasons": "mask 7 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 659,
+   "verdict": "FAIL",
+   "reasons": "mask 8 (thin+corner). 1-wide band cell with a bend/end: bulb-plus-neck construction makes the band a chain of round beads pinched at the 16 px seams (dumbbell/lollipop shapes in seams and field), and the end bulbs read as round shrub objects; also carries the diagonal single-pixel dither thorn at the convex corner (crit 1, 2, 5)."
+  },
+  {
+   "id": 660,
+   "verdict": "FAIL",
+   "reasons": "mask 9 (thin+corner). 1-wide band cell with a bend/end: bulb-plus-neck construction makes the band a chain of round beads pinched at the 16 px seams (dumbbell/lollipop shapes in seams and field), and the end bulbs read as round shrub objects; also carries the diagonal single-pixel dither thorn at the convex corner (crit 1, 2, 5)."
+  },
+  {
+   "id": 661,
+   "verdict": "FAIL",
+   "reasons": "mask 10 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 662,
+   "verdict": "FAIL",
+   "reasons": "mask 11 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 663,
+   "verdict": "FAIL",
+   "reasons": "mask 12 (thin+corner). 1-wide band cell with a bend/end: bulb-plus-neck construction makes the band a chain of round beads pinched at the 16 px seams (dumbbell/lollipop shapes in seams and field), and the end bulbs read as round shrub objects; also carries the diagonal single-pixel dither thorn at the convex corner (crit 1, 2, 5)."
+  },
+  {
+   "id": 664,
+   "verdict": "FAIL",
+   "reasons": "mask 13 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 665,
+   "verdict": "FAIL",
+   "reasons": "mask 14 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 666,
+   "verdict": "FAIL",
+   "reasons": "mask 15 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 667,
+   "verdict": "FAIL",
+   "reasons": "mask 19 (corner). Convex outer-corner cell: the dark quarter is finished with a 45-degree hairline of single isolated dither pixels (e.g. row 2-4 '#,#' steps) that sticks out toward the outer corner; in the seam patches four of these meet as an X/pinwheel star and in the field every blob corner grows a diagonal thorn. Stray isolated pixels, not natural ground (crit 2, 4, 5)."
+  },
+  {
+   "id": 668,
+   "verdict": "FAIL",
+   "reasons": "mask 23 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 669,
+   "verdict": "FAIL",
+   "reasons": "mask 27 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 670,
+   "verdict": "FAIL",
+   "reasons": "mask 31 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 671,
+   "verdict": "FAIL",
+   "reasons": "mask 38 (corner). Convex outer-corner cell: the dark quarter is finished with a 45-degree hairline of single isolated dither pixels (e.g. row 2-4 '#,#' steps) that sticks out toward the outer corner; in the seam patches four of these meet as an X/pinwheel star and in the field every blob corner grows a diagonal thorn. Stray isolated pixels, not natural ground (crit 2, 4, 5)."
+  },
+  {
+   "id": 672,
+   "verdict": "FAIL",
+   "reasons": "mask 39 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 673,
+   "verdict": "FAIL",
+   "reasons": "mask 46 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 674,
+   "verdict": "FAIL",
+   "reasons": "mask 47 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 675,
+   "verdict": "PASS",
+   "reasons": "mask 55 (edge). Straight edge cell: irregular 4-5 px meander with the sheet's dither fringe, joins neighbours without a seam, colours from the original palette. Only caveat: single variant, so long straight runs repeat every 16 px and follow the grid, comparable to the sheet's own path edges; not judged a failure of this cell."
+  },
+  {
+   "id": 676,
+   "verdict": "FAIL",
+   "reasons": "mask 63 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 677,
+   "verdict": "FAIL",
+   "reasons": "mask 76 (corner). Convex outer-corner cell: the dark quarter is finished with a 45-degree hairline of single isolated dither pixels (e.g. row 2-4 '#,#' steps) that sticks out toward the outer corner; in the seam patches four of these meet as an X/pinwheel star and in the field every blob corner grows a diagonal thorn. Stray isolated pixels, not natural ground (crit 2, 4, 5)."
+  },
+  {
+   "id": 678,
+   "verdict": "FAIL",
+   "reasons": "mask 77 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 679,
+   "verdict": "FAIL",
+   "reasons": "mask 78 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 680,
+   "verdict": "FAIL",
+   "reasons": "mask 79 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 681,
+   "verdict": "PASS",
+   "reasons": "mask 95 (inner). Concave/inner-corner cell: full dark texture with light notch(es) that meet the diagonal light neighbours cleanly; no stray border pixels, texture is the original interior. Passes 1-5."
+  },
+  {
+   "id": 682,
+   "verdict": "PASS",
+   "reasons": "mask 110 (edge). Straight edge cell: irregular 4-5 px meander with the sheet's dither fringe, joins neighbours without a seam, colours from the original palette. Only caveat: single variant, so long straight runs repeat every 16 px and follow the grid, comparable to the sheet's own path edges; not judged a failure of this cell."
+  },
+  {
+   "id": 683,
+   "verdict": "FAIL",
+   "reasons": "mask 111 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 684,
+   "verdict": "PASS",
+   "reasons": "mask 127 (inner). Concave/inner-corner cell: full dark texture with light notch(es) that meet the diagonal light neighbours cleanly; no stray border pixels, texture is the original interior. Passes 1-5."
+  },
+  {
+   "id": 685,
+   "verdict": "FAIL",
+   "reasons": "mask 137 (corner). Convex outer-corner cell: the dark quarter is finished with a 45-degree hairline of single isolated dither pixels (e.g. row 2-4 '#,#' steps) that sticks out toward the outer corner; in the seam patches four of these meet as an X/pinwheel star and in the field every blob corner grows a diagonal thorn. Stray isolated pixels, not natural ground (crit 2, 4, 5)."
+  },
+  {
+   "id": 686,
+   "verdict": "FAIL",
+   "reasons": "mask 139 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 687,
+   "verdict": "FAIL",
+   "reasons": "mask 141 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 688,
+   "verdict": "FAIL",
+   "reasons": "mask 143 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 689,
+   "verdict": "PASS",
+   "reasons": "mask 155 (edge). Straight edge cell: irregular 4-5 px meander with the sheet's dither fringe, joins neighbours without a seam, colours from the original palette. Only caveat: single variant, so long straight runs repeat every 16 px and follow the grid, comparable to the sheet's own path edges; not judged a failure of this cell."
+  },
+  {
+   "id": 690,
+   "verdict": "FAIL",
+   "reasons": "mask 159 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 691,
+   "verdict": "PASS",
+   "reasons": "mask 175 (inner). Concave/inner-corner cell: full dark texture with light notch(es) that meet the diagonal light neighbours cleanly; no stray border pixels, texture is the original interior. Passes 1-5."
+  },
+  {
+   "id": 692,
+   "verdict": "PASS",
+   "reasons": "mask 191 (inner). Concave/inner-corner cell: full dark texture with light notch(es) that meet the diagonal light neighbours cleanly; no stray border pixels, texture is the original interior. Passes 1-5."
+  },
+  {
+   "id": 693,
+   "verdict": "PASS",
+   "reasons": "mask 205 (edge). Straight edge cell: irregular 4-5 px meander with the sheet's dither fringe, joins neighbours without a seam, colours from the original palette. Only caveat: single variant, so long straight runs repeat every 16 px and follow the grid, comparable to the sheet's own path edges; not judged a failure of this cell."
+  },
+  {
+   "id": 694,
+   "verdict": "FAIL",
+   "reasons": "mask 207 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5)."
+  },
+  {
+   "id": 695,
+   "verdict": "PASS",
+   "reasons": "mask 223 (inner). Concave/inner-corner cell: full dark texture with light notch(es) that meet the diagonal light neighbours cleanly; no stray border pixels, texture is the original interior. Passes 1-5."
+  },
+  {
+   "id": 696,
+   "verdict": "PASS",
+   "reasons": "mask 239 (inner). Concave/inner-corner cell: full dark texture with light notch(es) that meet the diagonal light neighbours cleanly; no stray border pixels, texture is the original interior. Passes 1-5."
+  },
+  {
+   "id": 697,
+   "verdict": "FAIL",
+   "reasons": "mask 0 (isolated). Isolated single cell is drawn as a round dark disc with a dithered rim and highlight dots; at 1x/2x in the field it reads as a small shrub/bush top or hole sitting on the grass (an object), not flat ground (crit 1). Also the bulb motif is what makes every 1-wide band end in a knob. Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 698,
+   "verdict": "FAIL",
+   "reasons": "mask 1 (thin+corner). 1-wide band cell with a bend/end: bulb-plus-neck construction makes the band a chain of round beads pinched at the 16 px seams (dumbbell/lollipop shapes in seams and field), and the end bulbs read as round shrub objects; also carries the diagonal single-pixel dither thorn at the convex corner (crit 1, 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 699,
+   "verdict": "FAIL",
+   "reasons": "mask 2 (thin+corner). 1-wide band cell with a bend/end: bulb-plus-neck construction makes the band a chain of round beads pinched at the 16 px seams (dumbbell/lollipop shapes in seams and field), and the end bulbs read as round shrub objects; also carries the diagonal single-pixel dither thorn at the convex corner (crit 1, 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 700,
+   "verdict": "FAIL",
+   "reasons": "mask 3 (thin+corner). 1-wide band cell with a bend/end: bulb-plus-neck construction makes the band a chain of round beads pinched at the 16 px seams (dumbbell/lollipop shapes in seams and field), and the end bulbs read as round shrub objects; also carries the diagonal single-pixel dither thorn at the convex corner (crit 1, 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 701,
+   "verdict": "FAIL",
+   "reasons": "mask 4 (thin+corner). 1-wide band cell with a bend/end: bulb-plus-neck construction makes the band a chain of round beads pinched at the 16 px seams (dumbbell/lollipop shapes in seams and field), and the end bulbs read as round shrub objects; also carries the diagonal single-pixel dither thorn at the convex corner (crit 1, 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 702,
+   "verdict": "FAIL",
+   "reasons": "mask 5 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 703,
+   "verdict": "FAIL",
+   "reasons": "mask 6 (thin+corner). 1-wide band cell with a bend/end: bulb-plus-neck construction makes the band a chain of round beads pinched at the 16 px seams (dumbbell/lollipop shapes in seams and field), and the end bulbs read as round shrub objects; also carries the diagonal single-pixel dither thorn at the convex corner (crit 1, 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 704,
+   "verdict": "FAIL",
+   "reasons": "mask 7 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 705,
+   "verdict": "FAIL",
+   "reasons": "mask 8 (thin+corner). 1-wide band cell with a bend/end: bulb-plus-neck construction makes the band a chain of round beads pinched at the 16 px seams (dumbbell/lollipop shapes in seams and field), and the end bulbs read as round shrub objects; also carries the diagonal single-pixel dither thorn at the convex corner (crit 1, 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 706,
+   "verdict": "FAIL",
+   "reasons": "mask 9 (thin+corner). 1-wide band cell with a bend/end: bulb-plus-neck construction makes the band a chain of round beads pinched at the 16 px seams (dumbbell/lollipop shapes in seams and field), and the end bulbs read as round shrub objects; also carries the diagonal single-pixel dither thorn at the convex corner (crit 1, 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 707,
+   "verdict": "FAIL",
+   "reasons": "mask 10 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 708,
+   "verdict": "FAIL",
+   "reasons": "mask 11 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 709,
+   "verdict": "FAIL",
+   "reasons": "mask 12 (thin+corner). 1-wide band cell with a bend/end: bulb-plus-neck construction makes the band a chain of round beads pinched at the 16 px seams (dumbbell/lollipop shapes in seams and field), and the end bulbs read as round shrub objects; also carries the diagonal single-pixel dither thorn at the convex corner (crit 1, 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 710,
+   "verdict": "FAIL",
+   "reasons": "mask 13 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 711,
+   "verdict": "FAIL",
+   "reasons": "mask 14 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 712,
+   "verdict": "FAIL",
+   "reasons": "mask 15 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 713,
+   "verdict": "FAIL",
+   "reasons": "mask 19 (corner). Convex outer-corner cell: the dark quarter is finished with a 45-degree hairline of single isolated dither pixels (e.g. row 2-4 '#,#' steps) that sticks out toward the outer corner; in the seam patches four of these meet as an X/pinwheel star and in the field every blob corner grows a diagonal thorn. Stray isolated pixels, not natural ground (crit 2, 4, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 714,
+   "verdict": "FAIL",
+   "reasons": "mask 23 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 715,
+   "verdict": "FAIL",
+   "reasons": "mask 27 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 716,
+   "verdict": "FAIL",
+   "reasons": "mask 31 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 717,
+   "verdict": "FAIL",
+   "reasons": "mask 38 (corner). Convex outer-corner cell: the dark quarter is finished with a 45-degree hairline of single isolated dither pixels (e.g. row 2-4 '#,#' steps) that sticks out toward the outer corner; in the seam patches four of these meet as an X/pinwheel star and in the field every blob corner grows a diagonal thorn. Stray isolated pixels, not natural ground (crit 2, 4, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 718,
+   "verdict": "FAIL",
+   "reasons": "mask 39 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 719,
+   "verdict": "FAIL",
+   "reasons": "mask 46 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 720,
+   "verdict": "FAIL",
+   "reasons": "mask 47 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 721,
+   "verdict": "PASS",
+   "reasons": "mask 55 (edge). Straight edge cell: irregular 4-5 px meander with the sheet's dither fringe, joins neighbours without a seam, colours from the original palette. Only caveat: single variant, so long straight runs repeat every 16 px and follow the grid, comparable to the sheet's own path edges; not judged a failure of this cell. Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 722,
+   "verdict": "FAIL",
+   "reasons": "mask 63 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 723,
+   "verdict": "FAIL",
+   "reasons": "mask 76 (corner). Convex outer-corner cell: the dark quarter is finished with a 45-degree hairline of single isolated dither pixels (e.g. row 2-4 '#,#' steps) that sticks out toward the outer corner; in the seam patches four of these meet as an X/pinwheel star and in the field every blob corner grows a diagonal thorn. Stray isolated pixels, not natural ground (crit 2, 4, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 724,
+   "verdict": "FAIL",
+   "reasons": "mask 77 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 725,
+   "verdict": "FAIL",
+   "reasons": "mask 78 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 726,
+   "verdict": "FAIL",
+   "reasons": "mask 79 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 727,
+   "verdict": "PASS",
+   "reasons": "mask 95 (inner). Concave/inner-corner cell: full dark texture with light notch(es) that meet the diagonal light neighbours cleanly; no stray border pixels, texture is the original interior. Passes 1-5. Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 728,
+   "verdict": "PASS",
+   "reasons": "mask 110 (edge). Straight edge cell: irregular 4-5 px meander with the sheet's dither fringe, joins neighbours without a seam, colours from the original palette. Only caveat: single variant, so long straight runs repeat every 16 px and follow the grid, comparable to the sheet's own path edges; not judged a failure of this cell. Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 729,
+   "verdict": "FAIL",
+   "reasons": "mask 111 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 730,
+   "verdict": "PASS",
+   "reasons": "mask 127 (inner). Concave/inner-corner cell: full dark texture with light notch(es) that meet the diagonal light neighbours cleanly; no stray border pixels, texture is the original interior. Passes 1-5. Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 731,
+   "verdict": "FAIL",
+   "reasons": "mask 137 (corner). Convex outer-corner cell: the dark quarter is finished with a 45-degree hairline of single isolated dither pixels (e.g. row 2-4 '#,#' steps) that sticks out toward the outer corner; in the seam patches four of these meet as an X/pinwheel star and in the field every blob corner grows a diagonal thorn. Stray isolated pixels, not natural ground (crit 2, 4, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 732,
+   "verdict": "FAIL",
+   "reasons": "mask 139 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 733,
+   "verdict": "FAIL",
+   "reasons": "mask 141 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 734,
+   "verdict": "FAIL",
+   "reasons": "mask 143 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 735,
+   "verdict": "PASS",
+   "reasons": "mask 155 (edge). Straight edge cell: irregular 4-5 px meander with the sheet's dither fringe, joins neighbours without a seam, colours from the original palette. Only caveat: single variant, so long straight runs repeat every 16 px and follow the grid, comparable to the sheet's own path edges; not judged a failure of this cell. Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 736,
+   "verdict": "FAIL",
+   "reasons": "mask 159 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 737,
+   "verdict": "PASS",
+   "reasons": "mask 175 (inner). Concave/inner-corner cell: full dark texture with light notch(es) that meet the diagonal light neighbours cleanly; no stray border pixels, texture is the original interior. Passes 1-5. Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 738,
+   "verdict": "PASS",
+   "reasons": "mask 191 (inner). Concave/inner-corner cell: full dark texture with light notch(es) that meet the diagonal light neighbours cleanly; no stray border pixels, texture is the original interior. Passes 1-5. Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 739,
+   "verdict": "PASS",
+   "reasons": "mask 205 (edge). Straight edge cell: irregular 4-5 px meander with the sheet's dither fringe, joins neighbours without a seam, colours from the original palette. Only caveat: single variant, so long straight runs repeat every 16 px and follow the grid, comparable to the sheet's own path edges; not judged a failure of this cell. Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 740,
+   "verdict": "FAIL",
+   "reasons": "mask 207 (thin). Contains a 1-cell-wide arm: the arm is drawn as a narrow neck at the tile border (horizontal necks are ~7-8 px and mostly the lighter #426a2e while the cell centre is a #375a27 bulb), so 1-wide bands render as bead chains / dumbbells pinched at every 16 px seam and stubs end in round lollipop knobs (seam patches masks 0-15, field). Discontinuous dark region at the seam, grid-periodic (crit 2, 5). Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 741,
+   "verdict": "PASS",
+   "reasons": "mask 223 (inner). Concave/inner-corner cell: full dark texture with light notch(es) that meet the diagonal light neighbours cleanly; no stray border pixels, texture is the original interior. Passes 1-5. Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  },
+  {
+   "id": 742,
+   "verdict": "PASS",
+   "reasons": "mask 239 (inner). Concave/inner-corner cell: full dark texture with light notch(es) that meet the diagonal light neighbours cleanly; no stray border pixels, texture is the original interior. Passes 1-5. Woodland copy: dark shape is pixel-identical to the plain cell, so the same verdict; new colours themselves are fine."
+  }
+ ]
+}

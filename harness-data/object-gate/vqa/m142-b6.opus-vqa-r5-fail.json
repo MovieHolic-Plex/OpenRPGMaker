@@ -1,0 +1,69 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b6",
+ "round": 5,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "rest-bottle-shelf",
+   "pixelSha256": "c894d591cc827a79566731d0027ed9e5b66a0d03ed7c233dad711b81ee40a3ce",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "Reads as a flat front elevation. The top plank is only a 1–2 px brown strip with no lit plane seen from above, while the originals (cooler, wardrobe) show 3+ rows of top surface. The bottle rows are a busy speckle of single-pixel red/blue/white highlights, which looks noisy next to the cleaner, blockier bottles in mci-cooler."
+  },
+  {
+   "id": "roof-fence",
+   "pixelSha256": "9e6b0f653247377cbda0b21c9a45ce2bd159f227d431e83364b4c5cfa80ec4aa",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4,
+    5
+   ],
+   "reasons": "The green top rail is a front-facing band, not a plane seen from above. The posts and panels are drawn as a flat elevation on an opaque tan backing rectangle. At 1x the tan lattice diamond pattern on green reads as a patterned screen or partition, not a rooftop fence. The tan backing paints outside the fence's own footprint, and in the room the fence floats as a boxed tile."
+  },
+  {
+   "id": "roof-stair-hut",
+   "pixelSha256": "acc53b6f66a545a117c952a50e12eb7370503475a9083723d13ba3362cd94388",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    3
+   ],
+   "reasons": "A whole building facade (door, exit sign, wall panels) is shrunk to cabinet size. In the room the door is about half the height of the furniture, so the scale is badly wrong for a stair hut. The roof is a thin grey slab and the body is a pure front elevation, so at 1x it reads as a grey cabinet or console."
+  },
+  {
+   "id": "school-cleaning-locker",
+   "pixelSha256": "b44b7f100cded86ea1d8ecf008011287e74c911b958a90f40b583fbcce4561ea",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    4,
+    5
+   ],
+   "reasons": "The locker has almost no top plane (a 1–2 px light cap) and is a flat front panel. Its light grey has no dark outline, which doesn't match the heavy navy outlines on the originals. The broom leans outside the locker body, the red bucket/plunger blob sits at its foot as a detached part, and the tan background box extends beyond the object's footprint."
+  }
+ ]
+}

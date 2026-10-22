@@ -1,0 +1,406 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "07218de84eadca78100f78cb00f32de341eeeeaaf2aac4ea67ed072e523f349d",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "jp-inaka-scarecrow-pair",
+ "label": "jp_inaka_pack/jp-inaka-scarecrow-pair",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 0행 < 3 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 0행 < 3 (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 24,
+  "tileColorsP90": 25,
+  "darkV5": 35,
+  "nearBlackEdge": 0.18,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "straw hat (both figures)",
+      "rows": "2-8",
+      "evidence": "b",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "crossbar arms",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "torso / clothing",
+      "rows": "12-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mound base with grass tufts",
+      "rows": "24-30",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Two scarecrows face south. The straw hat (rows 2-8) has an ellipse width profile (10, 22, 28, 30, 30, 28, 22, 20), so it shows a top plane above the head. Below it, the head, crossbar and torso (rows 9-23) form a vertical front face about 20 rows tall. The base (rows 24-30, widths 15, 22, 24, 24, 22, 18, 13) also widens and narrows like a mound top, with grass tufts at its corners. The torso and crossbar are drawn as vertical faces, which is normal for a figure. The hat and base give the figure a top plane, so it reads as three-quarter, though weakly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is two small scarecrow figures, the same standing-prop kind as the references. The facts back this up: 24 visible tones per 16x16 tile against 17-20 for the stall and well, 0% near-flat coverage, and 0% neutral dark edge pixels. That last figure means the outlines carry a tint. By eye, the straw hats show a highlight, mid and shadow ramp with a few dark dots, and the blue and orange-red bodies each have about 4-5 steps of shading. The outlines are dark brown or dark blue/red next to each material, not a uniform black sticker line. The figures are small and have no large flat areas. The texture is a little less rich than the stall or well, but it holds up next to them and is above the sparse bench and lamp references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25621
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "straw hats (wide brim ellipse, both scarecrows)",
+      "rows": "2-9",
+      "evidence": "b",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "arm beam / shoulders strip",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue and red torsos with sashes",
+      "rows": "12-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dirt mound bases",
+      "rows": "24-31",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile of the hat runs 10, 22, 28, 30, 30, 28, 22, 20 over rows 2-9. It widens and then narrows, so it reads as a wide brim seen from above with an ellipse-like top surface of about 8 rows. The torso (rows 12-23), the arm beam and the face are vertical front faces, drawn face-on with no top. The torso is about 12 rows tall and the whole figure below the hat is about 22 rows. The mounds at the base (rows 24-31) widen to 24 and narrow again, so they read as ellipses. The hat gives the figure its top surface, so it reads as three-quarter overall, though the torso itself is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate: 24 visible tones per 16x16 tile against 17-20 for the richer references (stall, well) and 9 for the hedge. Near-flat coverage is 0%, so the hat, body and straw areas show no large single-colour fills. The dark edge pixels are 0% near-neutral, which means the outlines lean toward the neighbouring material (brown beside straw and wood, dark blue or red-brown beside the clothing) and are not a black sticker line. By eye, the two scarecrows have layered straw hats with brim shading, shaded clothing in two colourways, and straw and arm detail, about 5 lightness steps per material. That is slightly below the 5-6 steps of the roof and well references but comparable to the stall. The pieces are small, and I see no flat or sticker-like regions. The facts agree with the visual impression, so I pass it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20264
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "straw hat (both figures)",
+      "rows": "2-8",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossbar arms / shoulders",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue and red tunic torsos",
+      "rows": "12-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mound bases with moss",
+      "rows": "24-31",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is two scarecrows seen face-on: head, crossbar arms and tunic torso (rows 9-23), which are vertical faces. The torso has no horizontal top, edge line or eave shadow. The shoulder crossbar is a front-facing strip. The straw hats (rows 2-8, width 10 to 30 and back to 22) have a slight ellipse profile, but they are small worn items, not the main volume. The mounds at rows 24-31 (width 15, 22, 24, 24, 22, 18, 13) form a small base ellipse, but they are a minor part under the body. The torso is a flat elevation with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate. It has 24 visible tones per 16x16 tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% near-neutral, so the outlines lean brown or material-toned rather than being a black sticker line. By eye, the two scarecrows (straw hats, blue and red-orange tunics, stick arms) show several tones on the hat, face and clothing, with a dark tinted edge and some straw and cloth variation. The pieces are small and the board is low resolution, so I give 5 steps against the references' 5-6. Both scarecrows are shaded in the same way, with no flat single-colour bodies, and they sit comfortably beside the stall and well in density and finish.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19819
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "straw hats (brim and crown)",
+      "rows": "2-9",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "head/face",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossbar arms",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue and red torso/clothing",
+      "rows": "12-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mound bases",
+      "rows": "24-31",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body of each scarecrow is the torso and clothing in rows 12-23, drawn as a flat front-facing figure. It has no top surface, edge line or eave shadow. The head, crossbar arms and clothing are all vertical faces seen head-on. The hat (rows 2-9, widths 10-30-20) is a wide, ellipse-like brim, but it belongs to the figure and is not the main body. The small mound bases at the bottom (rows 24-31) widen and narrow like an ellipse, but they carry only a little of the volume. The figure as a whole reads as a front elevation rather than three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is two small scarecrows, each with a straw hat, a face, and a blue or orange-red patched body. The board is only readable at 2x, so I lean on the measured facts. Visible tones per full tile are 24, above the richest references (well 20, stall 17, hedge 9). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% near-neutral, meaning the outlines carry a tint (dark brown or dark material tone) and do not read as a black sticker line. By eye, the hat, face and body show several tones of straw and cloth with some patch and grain variation, roughly 5 steps per material against the references' 5-6. It is a little less textured than the stall or well, but it holds up next to them in density and outline treatment.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17845
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.041Z",
+ "cells": {
+  "16": [
+   "6300f3500f2f67b3",
+   "c168b3ae130e86b9",
+   "d3eae59338b98605",
+   "dc0ef65b201d7bd7"
+  ],
+  "24": [
+   "0795534c72b07fed",
+   "0a90a2afc4dc055b",
+   "0b0eb498129f2783",
+   "0e0ccdbc2ed18e35",
+   "181d4456c7858cdb",
+   "26fb2f174380ebdf",
+   "654d56c7f458dd16",
+   "671954aed498956d",
+   "6c9269f1532dde26",
+   "7eedbca146c23ecf",
+   "8d9db35fb97d3ef8",
+   "93f9626d3d3bacd8",
+   "9a143fb6b6bf6bb3",
+   "a06b856410019b97",
+   "b56b238daeb381cb",
+   "b580895cf986afcc",
+   "c094953e5d12825f",
+   "c42cfd59b06918b9",
+   "c71f5e7c0dbdf818",
+   "e0af94bbe507a98a",
+   "e5863dc32e7c5a6b",
+   "e846216c04985c27",
+   "ee86224e6774b727",
+   "fde4ae633a4ff366"
+  ],
+  "32": [
+   "33994bbfc7aa9ce4"
+  ],
+  "48": [
+   "137bac2b8a3a52a4",
+   "26a66c89bf22f5bb",
+   "5b92d233806e3249",
+   "bc84f37b52222b5b",
+   "c561ca20d6d9072e",
+   "cda8f6767e4a1264"
+  ]
+ }
+}

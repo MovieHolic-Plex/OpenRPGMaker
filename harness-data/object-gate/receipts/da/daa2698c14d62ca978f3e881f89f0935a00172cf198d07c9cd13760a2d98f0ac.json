@@ -1,0 +1,315 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "daa2698c14d62ca978f3e881f89f0935a00172cf198d07c9cd13760a2d98f0ac",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "나무 기둥(柱)",
+ "label": "jp_city/interior_house3/wood-post",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 질감 없음 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "질감 없음 (2/4)"
+  ],
+  "styleKind": "wall",
+  "refs": [
+   "wall-h104_0-timber",
+   "wall-h106_1-stone"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 92,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden pillar shaft (6px wide, full height, light left, dark right, thin horizontal band at row 27)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 6px wide strip across rows 0-31. There is no cap, no ellipse, and no band ending in an edge line. No eave shadow appears either. Column x=6 is uniformly light (L=200) and x=9 uniformly dark (L=95), so the shading is a left-to-right vertical split. Row 27 holds a single darker 1-row line, which is a strap or band on the shaft and not a top surface. The object is a flat vertical face with no horizontal surface visible, so it reads as a front elevation. That is acceptable for a wall-mounted piece, but it shows no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin vertical timber post, narrower than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It has only 5 distinct colours in total. It shows a light-to-dark vertical gradient with a few horizontal grain marks and a darker edge. That is roughly 3-4 tones, against about 6 steps and 13-17 visible tones per tile in the references. The timber reference carries grain, nail dots, knots and dark-brown edges on its beams. The candidate has no knots, no per-plank variation and no cracks, so it looks like a flat, simple post, thinner and more sticker-like than the reference. The edges lean brown, but with only 5 colours there is no real material-tone outline work. Nothing is flat-filled, but the shading is shallow and the surface is sparse. A careful artist would not accept it next to the reference without it looking thinner and flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10646
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden pillar shaft (full height, 6px wide vertical strip with light left face, mid face and dark right edge)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "horizontal band/binding at row 27 across the shaft",
+      "rows": "27-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a uniform 6px-wide vertical strip over rows 0-31. Column scans show constant lightness down the full height: x=6 at L=200, x=9 at L=95, with only 1-row grain marks (rows 5, 9-10, 15, 20, 25, 30) and a 1-row dark band at row 27. There is no band ending in a front-edge line, no eave shadow, no ellipse (the width stays 6 on every row), no roof, and no visible contents. It is a flat vertical timber face, shown straight-on like a wall-mounted piece. As a wall-mounted kind, it may be flat, and it reads as front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin vertical wooden post, narrower than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It has only 5 distinct colours in total, against 33 and 68 for the references. It shows roughly 3 wood tones (a light centre strip, a mid tone, a dark edge) plus a few cap and base accents. That is well short of the 5-6 steps in the timber reference's beams. There is no visible grain, knots, or per-plank highlights, and the surface reads as banded vertical stripes. The edges are a dark brownish tone, but the post is so narrow that the outline is hard to read. A careful artist would not accept it beside the reference timber wall: it looks thinner, flatter and more sticker-like. The 0% flat coverage is an artefact of the piece being too small for any 5x5 block.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9963
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden pillar shaft (vertical strip, 6px wide, full height)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark band/joint across the shaft",
+      "rows": "27-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a uniform 6px-wide strip across rows 0-31 with no widening or narrowing, so there is no ellipse cap, roof or visible contents. Columns show a light face (x=6, L=200), a mid-tone (x=8) and a dark right edge (x=9, L=95), which reads as a vertical shading gradient on a flat face. Only a single dark row at 27 interrupts it, and that is a joint line rather than a top-surface edge. This is a flat, wall-mounted pillar drawn in front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin vertical post, narrower than one 16x16 tile. That is why the per-tile facts read 0 and the density fact is not used against it. Judged by eye, it shows only about 4 tones: a light highlight strip, a mid brown, a darker brown edge and a few grain marks. The post reads as a plain stick with a vertical gradient and little wood grain, knots or per-plank variation. The timber reference is richer, with beams, plaster speckle and shaded wood. The candidate's edge pixels are tinted brown rather than neutral, and 0% near-neutral supports that. But the edge is a uniform dark outline on both sides, so it is not selective. Only 5 distinct colours are used overall, against 33-68 in the references. It would look thinner and flatter than the reference timber beams next to it, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12008
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden pillar shaft",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "horizontal band/knot mark",
+      "rows": "27-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a 6px-wide vertical strip over rows 0-31. Its width is constant (6) with no cap, ellipse, or edge line at the top. The columns show a light face (x=6, L=200) and a darker shaded right side (x=9, L=95) running unbroken for the full height. Only a 1-row dark band at row 27 interrupts it, and it is a vertical detail rather than a top surface. There is no horizontal surface visible, so it is a flat front elevation of a post. That fits a wall-mounted flat piece."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin vertical post, narrower than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It has only 5 distinct colours in total, against 33 and 68 in the references. The visible ramp is light edge, mid brown and dark edge, about 3 steps, where the references use 5 or more. There is almost no grain, knots or per-plank highlight, so the surface reads as a smooth striped bar. The timber reference's posts carry wood grain and dark brown shading with plaster speckle beside them. The candidate lacks that and looks thinner and flatter next to it. The outline is not neutral black, since the dark edge pixels read as tinted brown, but it is a plain uniform edge rather than selective shading. A careful artist would not accept this next to the reference, so it fails on shallow shading and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9705
+  }
+ ],
+ "decidedAt": "2026-10-21T03:39:44.797Z",
+ "cells": {
+  "16": [
+   "89aad8a43c4d2a22",
+   "b2b0d1d0a5ac13ab"
+  ],
+  "24": [
+   "01e07fd86e04c737",
+   "3eeabf63ba88cca6",
+   "4af1b4b81eadd179",
+   "4ea2d7837c32a097",
+   "61716554eecf502c",
+   "6b77fc527f03a5c3",
+   "7ce4eb4e1e9b9f38",
+   "7e43270ea5d125f1",
+   "aefd9495a545080b",
+   "b172ce699e3a9994",
+   "b367f53e0692f799",
+   "d86399cc08dd3765"
+  ],
+  "32": [
+   "0101408c369ee8a4",
+   "603d70868ca0afea",
+   "6bcbe4f21dba9131"
+  ],
+  "48": [
+   "32bb92ea08b66943",
+   "3c08d290f5033790",
+   "65a67259b215ec31",
+   "70f7da9a4cd072e8",
+   "80be5a41ad33f421",
+   "9f9a02723e498b28"
+  ]
+ }
+}

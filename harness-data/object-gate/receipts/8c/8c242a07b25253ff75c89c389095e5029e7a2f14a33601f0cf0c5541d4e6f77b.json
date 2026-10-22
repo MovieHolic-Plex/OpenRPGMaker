@@ -1,0 +1,333 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8c242a07b25253ff75c89c389095e5029e7a2f14a33601f0cf0c5541d4e6f77b",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "유리 식기장",
+ "label": "jp_city/interior_house3/glass-cupboard",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 76,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "glass door upper section",
+      "rows": "9-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drawer base",
+      "rows": "21-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-7 form a tan top band with a lighter front-edge line at row 7. Row 8 is a dark eave shadow (#5c302a). Below it the front face runs rows 9-30: a glass-door section, a ledge at row 20, and drawers. The structure matches the green 'cabinet: top 5 + edge + eave' reference, with a larger top band of 7 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small glass cabinet with a wood frame, glass panes and shelf contents. It matches the prop kind. Its visible tones per full tile (17) equal prop-stall-cheese (17) and sit just under prop-well-roofed (20), well above prop-hedge (9). Near-flat coverage is 0%, so there are no flat fills. 0% of its dark edge pixels are near-neutral, so the outline is a tinted dark brown rather than a black sticker line. It uses 21 distinct colours in total, which is reasonable for a piece this small, since the larger references use 38-40. It shows about 5 lightness steps on the frame and panes, a little below the references' 5-6, with some grain and per-pane variation. At board scale it looks about as dense as the references, so it would sit acceptably beside them, though I could not make out fine detail in the image.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14117
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top surface of cabinet",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "glass door section",
+      "rows": "10-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower drawer or cupboard section",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-7 form a tan band at the top, 7 rows tall. It ends in a 1-row light front-edge line at row 7 (#e0c599), which is lighter than the band above it. Rows 8-9 are dark eave shadow (#5c302a, then #80543e). Below that is the front face, rows 8-30: a glazed door section with a light shelf line at row 20 and a lower drawer section. The silhouette is a constant 14 px wide with no side face, so the object faces south. The top band has the front-edge line and shadow of a top surface, not a plain front-facing cornice."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate measures 17 visible tones per full tile, the same as prop-stall-cheese (17) and just below prop-well-roofed (20). Its near-flat coverage is 0%, lower than the cheese stall's 13%. Dark edge pixels are 0% neutral, so the outline leans toward the material (dark brown beside the wood frame) and does not read as a sticker line. By eye, the wood frame and glass panes show about 4 lightness steps, with shelves and dishes breaking up the panes, so there are no large flat areas. It uses fewer raw colours (21 against 38-40), which is expected with a locked palette. Shading is slightly shallower than the best references but not enough to look thinner or flatter beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15019
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "glass doors",
+      "rows": "10-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower drawers/doors",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 form a tan top band with a lighter front-edge line at row 7 (#e0c599). Dark eave shadow follows at row 8, then the dark outline at row 9. Below that the front face runs from row 9 to row 30, with glass doors in rows 10-19, a light divider line at rows 20-22, and drawers in rows 23-30. The silhouette is a constant 14 px wide, so no side face is drawn. The top band plus edge line plus shadow matches the green 'cabinet: top 5 + edge + eave' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small glass cabinet, about one tile wide and two tall. Measured facts: 17 visible tones per full tile, which equals prop-stall-cheese (17) and is close to prop-well-roofed (20) and above prop-hedge (9). Near-flat coverage is 0%, with no large single-colour areas. Dark edge pixels are 0% neutral, so the outline is tinted dark brown beside the wooden frame and not a black sticker line. By eye, the frame has about 5 wood steps (highlight, light, mid, dark, deep), and the glass panes and shelf contents are separated by value, with items and mullions inside the doors. It is a little simpler than the stall or well, with less grain on the frame, but a careful artist would accept it next to the references without it looking flatter or more sticker-like. Verdict is pass, with the caveat that it is a small piece and I could not inspect it at full resolution.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14814
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top (tan plane with highlight)",
+      "rows": "0-8",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "glass-door upper section",
+      "rows": "9-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mid ledge and lower drawers",
+      "rows": "20-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-7 form a tan top band (row 0 is the outline) with a light highlight at the upper right. It ends in a light front-edge line at row 7 (#e0c599) followed by a dark eave shadow at row 8 (#5c302a). This is the same structure as the green 'cabinet: top + edge + eave' reference. Below it the front face runs from row 9 to row 30: a framed glass-door section at rows 11-19, a light ledge at rows 20-22, and drawer fronts at rows 23-30. The silhouette is a constant 14 px wide with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cabinet with a brown wooden frame and pale glass panes holding shelf items. It shows 17 visible tones per full tile, matching prop-stall-cheese (17) and prop-well-roofed (20) and well above prop-hedge (9). Near-flat coverage is 0%, so there are no large single-colour fills; the panes and shelves are broken up by items and highlights. The dark edge pixels are 0% neutral, so the outline leans brown, like the adjacent wood and unlike a black sticker line. The frame has about 5 steps of shading, slightly fewer than the best references, but a careful artist would accept it beside them without it looking thinner or flatter. The picture is small, so this judgement leans on the measured facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18228
+  }
+ ],
+ "decidedAt": "2026-10-21T03:39:44.765Z",
+ "cells": {
+  "16": [
+   "b05d11b1269929ab",
+   "c9e2e331d8f2c979"
+  ],
+  "24": [
+   "091119f1cb548b18",
+   "1d28a581f1aa436d",
+   "27964a675cc89f5b",
+   "33148f90e7f70801",
+   "3e754f68c7be10ad",
+   "4504dcd89e58ac73",
+   "533e6af4de0425e6",
+   "8f5565d18746497e",
+   "bb9eb1fa5241f01f",
+   "bdebce1a0607c60f",
+   "d84017f1d93ca7f2",
+   "e11f133b281a5f29"
+  ],
+  "32": [
+   "06b530daaab8dd73",
+   "71554a0acfa9acd3",
+   "ca72b0ece0cf4da9"
+  ],
+  "48": [
+   "2e096f1286cca287",
+   "7607263c41ff47c9",
+   "7dcd9afb09c6030b",
+   "88b11edaacacd1ef",
+   "a6efa1db48f3101a",
+   "e644fc63b3ca303f"
+  ]
+ }
+}

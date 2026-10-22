@@ -1,0 +1,310 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "870b70412a76f30f93e60a67bfc6605c7db77711bb39c308ce9b300e2bc01714",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "inaka-canal-wall",
+ "label": "jp_inaka_pack/ground/inaka-canal-wall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 51,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "coping stone top band",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "brick wall face with moss",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark waterline gap and water",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-2 are a light stone coping band (L about 190-213). Row 3 is a darker front-edge line (#8a8580). Rows 4-6 are darker shadow directly under it, and the brick front face with moss runs from row 4 to row 11. Rows 12-13 are a dark shadow band and rows 14-15 are water. The top surface is about 4 rows, which is more than a rim, and the front face is more than 3 rows, so this reads as a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate renders small in the board, so I leaned on the measured facts alongside what I could see. It has 13 visible tones per full tile, against 7 for the paving reference and 3 for the grass. Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outlines and mortar lean blue-grey and are not a black sticker line. The picture shows a pale stone cap row with several light-to-mid steps above blue-grey brick courses, with dark tinted mortar and per-brick variation. That gives about 5 steps, slightly below Beodeul's 5-6 but comparable to the paving reference. Texture is brick-and-cap grain only, with no speckle, so I rate it 'some' and not 'rich'. It reads as a wall strip, not an open ground patch, but it is acceptable as a canal-wall ground piece and is not thinner or flatter than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17674
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone coping / top ledge",
+      "rows": "0-2",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "brick wall face with mortar courses and moss",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water strip at base",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-2 form a light stone coping band (L about 189-213). Row 3 (L=134, #8a8580) is a darker front-edge line, and rows 4-6 are dark shadow just under it. Below that the vertical brick face runs rows 4-13, with dark mortar lines, lighter brick rows 5, 7-8 and 11, and moss at rows 10-11. Rows 14-15 are blue water at the base. The top band is only 3 rows, but it has an edge line and shadow, so it is a top surface and not just a rim. The front face is 10 rows tall. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 13 visible tones per 16x16 tile, against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 0%, so no large single-colour fills. The dark edge pixels are 0% neutral, so the outlines lean toward the neighbouring blue-grey stone and are not a black sticker line. By eye, a light stone cap sits over rows of blue-grey brick with per-brick light and dark variation, about 5 lightness steps. That is slightly fewer than the references' 5-6, but the brick grain and course joints give it comparable texture. The candidate is shown very small on the board, which limits fine judgement, so the facts carry more weight here. A careful artist would accept it next to the paving reference without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18956
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "canal wall coping (pale stone cap band)",
+      "rows": "0-2",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-6"
+     },
+     {
+      "part": "brick wall face",
+      "rows": "3-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water strip at base",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a full 16-wide rectangle. Rows 0-2 are a pale coping band (L about 190-213). Row 3 is a darker edge line (L=134, #8a8580) and is followed by dark shadow rows (4-6, L=41) at columns x=4, 8 and 11. Below that the brick face runs from rows 3 to 13, with dark mortar and some moss patches. Rows 14-15 are blue water at the base. The top band is 3 rows with an edge line and eave shadow, so it counts as a top surface, over a front face of about 11 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small canal wall: a pale stone cap on top, then blue-grey brick courses with darker mortar lines. It carries 13 visible tones per tile, against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 0%, the same as both references, so there are no flat fills. The dark edge pixels are 0% neutral, so the outlines lean toward the blue-grey of the stone and read as dark material tone, not near-black stickers. Each brick has its own highlight and shadow, with about 5 lightness steps (cap highlight, cap mid, brick light, brick mid, mortar dark). That is slightly below the paving reference but not shallow. The texture is mostly the brick pattern and per-brick shading, with less speckle grain than the grass reference. The piece is a wall face, not an open ground patch, but it is close enough to the paving kind to compare. A careful artist would accept it next to the paving reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17538
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone coping band along the top of the wall",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-6"
+     },
+     {
+      "part": "brick wall face",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water strip at the base",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-2 are a light coping band (L 213 then 189). Row 3 is a darker edge line (L 134), followed by dark shadow rows 4-6 (L 41) at x=8 and x=11. Below that, rows 4-13 are a dark brick face with mortar lines and moss, which gives a front face of about 10 rows. Rows 14-15 are water. The top band is thin at 3 rows, but it has an edge line and shadow, so it counts as a top surface. The canopy and ellipse evidence types do not apply. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate renders very small on the board (under one tile), so I judged mostly from the measured facts and a close look. It shows a light stone cap, stone blocks in several tones, darker mortar joints and a bluish base, which gives about 5 lightness steps. The blocks vary one by one rather than sitting as flat fills. The facts support this: 13 visible tones per tile against 7 for the paving and 3 for the grass, and 0% near-flat coverage. Dark edge pixels are 0% neutral, so the outline leans toward the material tone (blue-grey stone) rather than being a black sticker line. It is slightly less textured than the paving's cobble grain, but it is equal or richer on the primary facts and passes as a ground/wall piece next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21175
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.198Z",
+ "cells": {
+  "16": [
+   "a0040de7ad70139a"
+  ],
+  "24": [
+   "1d238a5c665cc1cf",
+   "42a3a6b53b6e695a",
+   "b20024bfeedf73ad",
+   "db8e3ad4067a7731",
+   "f959f134df5f75ba",
+   "fd7b617968840e7b"
+  ],
+  "32": [
+   "42147a1a47c41156",
+   "5cac9b95474e3b06",
+   "b928b26a3b5f66f5",
+   "d01ff0d5e9e51478",
+   "d3ddf7452d52c8e4",
+   "d52176cc61405378"
+  ],
+  "48": [
+   "06590340a16db57b",
+   "1d0e4b9035e3b036",
+   "2b5b61308136129d",
+   "5e4065475f6712b0",
+   "8e54ec7525da0eec",
+   "b997c8bd6ab8a7de"
+  ]
+ }
+}

@@ -227,8 +227,10 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
         ...(snapshot.chapterLabel
           ? [el("span", { class: "status-menu-chapter", text: snapshot.chapterLabel, dataset: { testid: "status-menu-chapter" } })]
           : []),
-        el("span", { class: "status-menu-gold", text: snapshot.goldLabel, dataset: { testid: "status-menu-gold" } }),
-        el("span", { class: "status-menu-time", text: snapshot.timeLabel, dataset: { testid: "status-menu-time" } }),
+        // 관계 중심(연애) 게임은 돈을 쓰지 않는다 — 머리줄에 「0G」 를 두지 않는다(첫사랑 VQA 1차).
+        ...(snapshot.relationship ? [] : [el("span", { class: "status-menu-gold", text: snapshot.goldLabel, dataset: { testid: "status-menu-gold" } })]),
+        // 연애 게임에서는 플레이 시간 알약도 뜻이 없다 — 관계 패널이 머리줄을 대신한다(첫사랑 VQA 2차).
+        ...(snapshot.relationship ? [] : [el("span", { class: "status-menu-time", text: snapshot.timeLabel, dataset: { testid: "status-menu-time" } })]),
       ],
     }),
     el("div", {
@@ -600,6 +602,7 @@ function renderRelationshipOverview(project: PlayerStatusMenuOptions["project"],
       el("span", { class: "status-menu-rel-name", text: row.name }),
       el("span", { class: "status-menu-rel-hearts", text: row.hearts }),
       ...(row.tierLabel ? [el("span", { class: "status-menu-rel-tier", text: row.tierLabel })] : []),
+      ...(row.note ? [el("span", { class: "status-menu-rel-note", text: row.note })] : []),
     ],
   })));
   return overview;

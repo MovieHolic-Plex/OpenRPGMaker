@@ -13,6 +13,7 @@ import type { MyStoreItem } from "@/assetStore/bridgeTypes";
 import type { PreparedStoreItem } from "@/editor/assetStore/storeApply";
 import { addStoreProfiles } from "@/editor/assetStore/storeProfiles";
 import { aiMadeAssets, applyPackToProject } from "@/assetStore/pack";
+import { isObjectGenRequest, type ObjectGenRequest } from "@/editor/workshop/objectRequest";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 /** 스토어에서 온 글을 모델에 넘길 때 붙이는 경고. */
@@ -183,11 +184,12 @@ export interface StoreVisibilityProposal {
   readonly reason: string;
 }
 
-export type StoreCardRequest = MissingTilesQuestion | StorePublishProposal | StoreVisibilityProposal;
+/** 조수 카드 요청 — 스토어 셋 + 없는 기물 그리기(generate_missing_object, objectGenTool.ts). 카드는 aiStoreCard.ts 가 갈라 띄운다. */
+export type StoreCardRequest = MissingTilesQuestion | StorePublishProposal | StoreVisibilityProposal | ObjectGenRequest;
 
 export function isStoreCardRequest(value: unknown): value is StoreCardRequest {
   const kind = (value as { kind?: unknown } | null)?.kind;
-  return kind === "store-missing-tiles" || kind === "store-publish-proposal" || kind === "store-visibility-proposal";
+  return kind === "store-missing-tiles" || kind === "store-publish-proposal" || kind === "store-visibility-proposal" || isObjectGenRequest(value);
 }
 
 const askMissingTiles: ToolDefinition = {

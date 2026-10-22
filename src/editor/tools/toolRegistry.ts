@@ -48,6 +48,7 @@ import { BEODEUL_LIGHT_TOOLS } from './beodeulLightTools';
 import { BEODEUL_GROUND_TOOLS } from './beodeulGroundTools';
 import { BEODEUL_ARCHITECTURE_TOOLS } from './beodeulArchitectureTools';
 import { DIRECTING_GUIDE_TOOLS } from "./directingGuideTools";
+import { ASSISTANT_SKILL_TOOLS } from "./assistantSkillTools";
 import { NPC_CAST_TOOLS } from "./npcCastTools";
 import { EXPORT_TOOLS } from "./exportTools";
 import { MAP_GEN_TOOLS } from "./generateMapTool";
@@ -122,6 +123,7 @@ import { AI_DOC_TOOLS } from "./aiDocTools";
 import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
 import { CINEMATIC_TOOLS } from "./cinematicTools";
 import { IMAGE_ASSET_TOOLS } from "./imageAssetTools";
+import { MAP_BACKGROUND_GENERATION_TOOLS } from "./mapBackgroundGenerationTool";
 import { TITLE_ART_TOOLS } from "./titleArtTools";
 import { PRESENTATION_TOOLS } from "./presentationTools";
 import { TITLE_IMPROVE_TOOLS } from "./titleImproveTools";
@@ -156,6 +158,7 @@ import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { WEB_SEARCH_TOOLS } from "./webSearchTool";
 import { TILESET_CHANGE_TOOLS } from "./tilesetChangeTools";
 import { STORE_TOOLS } from "./storeTools";
+import { OBJECT_GEN_TOOLS } from "./objectGenTool";
 import { SCENE_SETTING_TOOLS } from "./sceneSettingTools";
 
 export { PLACEMENT_TOOLS };
@@ -296,6 +299,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(TILESET_OBJECT_TOOLS, "tile"),
   ...withDomain(TILE_QUERY_TOOLS, "tile"),
   ...withDomain(MAP_TOOLS, "map"),
+  ...withDomain(MAP_BACKGROUND_GENERATION_TOOLS, "map"),
   // MZ 4층 쓰기(stamp_layer_block·paint_shadow) — 각 툴이 map·tile 두 도메인을 선언한다.
   ...withDomain(LAYER_TOOLS, "map"),
   ...withDomain(RELIEF_TOOLS, "map"),
@@ -338,6 +342,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(PIXEL_ART_TOOLS, "event"),
   ...withDomain(CUTSCENE_PREVIEW_TOOLS, "event"),
   ...withDomain(DIRECTING_GUIDE_TOOLS, "event"),
+  // 조수 스킬(assistant-skills/*/SKILL.md 번들) — 장면 다듬기 교훈 등. 장면·이벤트 작업에서 읽는다.
+  ...withDomain(ASSISTANT_SKILL_TOOLS, "event"),
   ...withDomain(LIFE_FLOWER_TOOLS, "event"),
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),
@@ -356,6 +362,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   // 다른 칩셋 계열이 필요할 때 사용자에게 묻는 도구 — 실행기 거부 메시지가 이름을 부르므로 core 로 늘 노출한다.
   ...TILESET_CHANGE_TOOLS,
   ...STORE_TOOLS,
+  ...OBJECT_GEN_TOOLS,
   ...TILE_ASSEMBLY_GUIDE_TOOLS,
   ...INTERIOR_PLACEMENT_TOOLS,
   ...KIT_AREA_TOOLS,

@@ -1,0 +1,303 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bdc1fcb81d709ccb342f14b24171072c468fcfb09104d265866b6fa779eccbc6",
+ "width": 48,
+ "height": 48,
+ "kind": "organic",
+ "name": "forest canopy crown heads (tile overlay on forest roof) (bamboo)",
+ "label": "jp_city/jp-forest-bb-head-c3x3-0",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 8,
+  "darkV5": 53,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage canopy mass",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a full-tile 48x48 texture of leafy foliage. It has no silhouette, no front-edge line, no eave shadow, no ellipse and no distinct front face. Every row has width 48 and the pixels are mottled greens with no horizontal banding. It is an overlay texture, not a standing object, so neither a top surface nor a front face can be identified."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a single 16x16-scale canopy overlay with only 8 distinct colours, against 427 and 567 for the references. Its median of 7 colours per tile is far below the reference medians of about 108. It has about 4 green steps and a dithered leaf-clump texture, but the clumps are small and uniform, with little highlight/shadow separation. 5x5 flat-fill coverage is 0%, so there are no flat fills, and no near-black outline is present (0% neutral edge pixels). The pattern is tileable, which suits an overlay, but the shading ramp is shallower and the clump forms less defined than the references, which show 5-6 greens and individually shaded leaf clusters. The gap in colour count is too large to pass when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12897
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage canopy mass (full tile, 48x48)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 48x48 opaque square of leaf texture (width 48 on every row). It has no silhouette, no front-edge line, no eave shadow, no ellipse, and no distinct front face. It is a flat, top-down foliage overlay with light and dark speckle noise, so there is no 3/4 structure to measure. The 'bamboo canopy' is a texture tile and not a standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a single square tile of leaf clumps in about 8 colours, with roughly 4 distinct green steps. The references use 5-6 steps with 427-567 colours and about 108 colours per tile, so the candidate is far below them. Its 0% flat-fill coverage and the dot-clump texture show some leaf-cluster variation, and its 0% neutral dark edge share means no black sticker outline. But the clumps are small and repetitive, with little highlight and shadow variation and no distinct leaf-cluster shapes like the references. A careful artist would see it as thinner and flatter next to the references, so it fails on density and shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 18908
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage canopy mass (full-tile leaf texture)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a full-bleed 48x48 tile of leaf texture with a uniform silhouette width of 48 for every row. It has no object outline, no front-edge line, no eave shadow, no ellipse and no open container. The column scans show only noisy alternating light and dark leaf pixels, with no band that ends in an edge line. It is a seamless canopy overlay, not a standing object with a top surface and a front face. The top-surface rules do not apply, so it is classed as 'other'."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a 16x16-ish tile overlay of bamboo-green leaf clumps with only 8 distinct colours in total, and a median of 7 per tile. The references have 108-109 per tile and 427-567 colours overall, so this is far lower. There are about 4 visible green steps (dark, mid, light, highlight), whereas the references use 6 or more with per-clump highlights. Flat-fill coverage is 0% and the leaf clumps give some dithered texture, but the clumps are small and uniform, with no larger shaped leaf masses and little contrast between them. Dark edge pixels are 0% neutral, so any dark tones are green-tinted, but there is no real outline on a tile overlay, hence none. A tile overlay is naturally simpler than a full tree, but the colour count and step depth are still well below what a careful artist would accept next to the references. It reads thinner and flatter than the Beodeul canopy.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 18090
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage canopy mass (full tile texture)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a full-bleed 48x48 tile of leafy foliage texture, 48 px wide on every row, with no silhouette, front-edge line, eave shadow, ellipse or distinct front face. It is an overlay texture of bamboo/forest canopy crowns with mottled light and dark greens, not a standing object. There is no top surface or front face to measure, so it fits neither three_quarter nor a front elevation, and it is classed as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a seamless canopy overlay tile with leaf-clump texture in about 4 greens and no flat 5x5 areas (0% coverage). It has only 8 distinct colours and a median of 7 per 16x16 tile. The references carry about 108 per tile and 427-567 colours in total, so it is far lower in colour variety. The ramp is narrow, with a tight value range and little highlight or deep-shadow contrast. Leaf clumps read as repeating noise rather than individually shaded clusters with bright tops and dark undersides like the references. There is no outline, which suits a tile overlay, and the dark edge pixels are not neutral (0%). Even allowing for a simple texture tile, the density and shading depth fall clearly below the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 19013
+  }
+ ],
+ "decidedAt": "2026-10-20T06:28:44.238Z",
+ "cells": {
+  "16": [
+   "0d0199394cc0158f",
+   "2df6aebefce4087e",
+   "3949839e4e74d7c9",
+   "7191b9ca60df9d2a",
+   "c4a476f2b2f6a402",
+   "d121845a99150a16",
+   "d2b498a7dcc36928",
+   "d9040bc80ad033ad",
+   "f699427245ba7f91"
+  ],
+  "24": [
+   "5b22a17513a4ef69",
+   "63a5be7399ffaff9",
+   "8492f949d0b445aa",
+   "e9cd9fdf2e0bcee5"
+  ],
+  "32": [
+   "1a218c43a71c67dd",
+   "20bcc3d52c0a5ab6",
+   "20d73821ca105d90",
+   "2548dfbb64d032c1",
+   "3657bd735161b716",
+   "438fa4d4c94b37ff",
+   "5a8212c83451a2bc",
+   "682ff1d5ff7e6004",
+   "69a6839143a15ae0",
+   "6e7e4cf9fd98a73e",
+   "7851d1359a9f2169",
+   "9226a7340d879398",
+   "9a87875face2c9c5",
+   "9ae755cd89df829e",
+   "b30e30513a96528f",
+   "b7b7d804cf77bdf1",
+   "ba8d594757e9e9f1",
+   "bc9356f70e88588d",
+   "bcddc0429d1f9f1d",
+   "c268e53a4c6d44a8",
+   "c428724c0ec061f6",
+   "c54c43fffe34ff46",
+   "f896c2351e241c4a",
+   "fbbbc15480b99f93"
+  ],
+  "48": [
+   "7a3026ef3be0e1fa"
+  ]
+ }
+}

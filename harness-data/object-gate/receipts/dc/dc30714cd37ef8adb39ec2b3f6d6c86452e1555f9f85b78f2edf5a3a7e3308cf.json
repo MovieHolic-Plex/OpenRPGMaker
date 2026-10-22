@@ -1,0 +1,322 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dc30714cd37ef8adb39ec2b3f6d6c86452e1555f9f85b78f2edf5a3a7e3308cf",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "forest south edge: trunk band under the canopy (bamboo)",
+ "label": "jp_city/jp-forest-bb-band-M-0",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 34,
+  "nearBlackEdge": 0.36,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy band at top",
+      "rows": "2-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bamboo trunks (main body)",
+      "rows": "7-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a set of vertical bamboo stalks (rows 7-27) with node lines every 7 rows (rows 12, 13, 19, 20, 26, 27). They are drawn as vertical faces with no horizontal top surface, ellipse, or front-edge line with eave shadow. The leafy band at rows 2-6 is a canopy texture seen face-on, not a sloped plane over an edge line. The base at rows 28-31 is a grass strip. The object reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small bamboo trunk band of vertical green stalks with dark green separators. It has 14 distinct colours and a median of 13 per tile, against 108-109 per tile and 427-567 colours in the references, so it is far below both. The dark edge pixels are 0% neutral, so the outline leans green and counts as dark material tone, as in the references. Flat-fill coverage is 0%, so there are no large flat areas. Shading is shallow: each stalk has about 3 green steps (light, mid, dark) and a few node ticks. It has no per-leaf clumps or grain like the reference canopies and trunks. The piece is thin and sparse, so I do not fail it on the density number alone. By eye it still looks flatter and more uniform than the references, with simple repeated vertical stripes and little highlight work. A careful artist would not accept it next to them without it looking thinner and flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13977
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy band at top",
+      "rows": "2-6",
+      "evidence": "c",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "bamboo trunks (vertical stalks)",
+      "rows": "7-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a row of vertical bamboo stalks (rows 7-27) seen face-on. The stalks are segmented by node lines at rows 12-13, 19-20 and 26-27, which are not top surfaces. The only horizontal-looking element is the leaf canopy band at rows 2-6, a foliage strip that reads as a canopy plane. The trunks have no top surface of their own, and there is no ellipse or cap. This is a front-elevation tile, a strip of trunks under a canopy, not a volume with a top and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small bamboo trunk band of vertical green stalks with a dark green outline (0% neutral dark edge pixels, so tinted, not near-black). It uses about 4 green steps with some node marks and highlight stripes, and has no 5x5 flat fills. It has only 14 distinct colours and a median of 13 per tile, against 108-109 per tile and 427-567 colours in the references. That is far below both references in density, and the stalks look regular and sticker-like next to the clumped, multi-green references. Bamboo is a simpler subject than a full tree, but the shading and texture are still clearly shallower than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11716
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy band at top",
+      "rows": "2-7",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bamboo trunk stalks",
+      "rows": "7-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a 16x32 strip of vertical bamboo stalks. Rows 7-27 are vertical stalks with node lines at rows 12-13, 19-20 and 26-27, which are segment joints and not top surfaces. The canopy band at rows 2-7 is a foliage strip drawn face-on, with no edge line and no eave shadow, and no horizontal surface is shown on the trunks. The base at rows 28-31 is a grass or ground strip. The result is a front elevation with no top surface on the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small bamboo trunk band of about 2x2 tiles. It has 14 distinct colours and a median of 13 per tile, against 108-109 per tile and 427-567 colours in the references. Flat-fill coverage is 0% and the dark edge pixels are 0% neutral, so the outline is tinted dark green rather than black. The bamboo culms show vertical stripes with node segments and about 4 green steps. That is fewer than the 5-6 steps in the references, and the culms look regular and striped rather than hand-shaded. Per-tile colour counts are far below the references. This is a trunk band rather than a full canopy, so some sparseness is expected. Even so, it reads thinner and flatter than the reference trunks and foliage, with no grain, speckle or leaf-clump variation, and I judge it a notch below the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11442
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy band at top",
+      "rows": "0-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bamboo trunk band (main body)",
+      "rows": "7-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is vertical bamboo stalks (rows 7-27) seen face-on. Each stalk has node lines (a 1-row lighter line, then a dark line, at rows 12-13, 19-20 and 26-27) that read as segment joints, not as a top surface. The canopy at rows 0-6 is a leafy foliage band with no front-edge line or eave shadow. The base at rows 28-31 is grass or ground. No ellipse, no roof plane and no visible contents appear, so no top surface is drawn and the object is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small bamboo trunk band, about 2 tiles wide and 3 tall. It has 14 distinct colours in total and a median of 13 per tile, against 108-109 per tile and 427-567 colours in the references. That is roughly an order of magnitude lower. The bamboo stalks show about 3 green steps: a light highlight strip, a mid green and a dark green. The references use 5-6 steps with leaf clumps in many greens. The outline is tinted dark green (0% neutral edge pixels), so it is not a near-black sticker line. There are no flat 5x5 fills, but the texture is limited to simple vertical stalk bands and node ticks. It lacks the grain, dot variation and per-clump shading seen on the references. Even allowing for a trunk band being simpler than a full canopy, it looks thinner and flatter next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12000
+  }
+ ],
+ "decidedAt": "2026-10-20T06:28:44.239Z",
+ "cells": {
+  "16": [
+   "08db49fc6d2e8395",
+   "3b72f86a757850e1"
+  ],
+  "24": [
+   "1c3d542adfe6f932",
+   "4166cc41fc299b3c",
+   "5d8635db13d87f04",
+   "7918cd66a13f7b2e",
+   "7c1310e4842c1070",
+   "7f8ce55b418d66b7",
+   "8b12a9f732b60efc",
+   "9cae0a8b5424edc9",
+   "d84b8b4c0b83acc4",
+   "e6ef66da00990d68",
+   "ec852ba8bebe4550",
+   "f6fdccb76ff560e3"
+  ],
+  "32": [
+   "30c6e334427913a0",
+   "76e973c2eabd630b",
+   "f23eef5ff48edf1a"
+  ],
+  "48": [
+   "02a96460dc5e4665",
+   "319e8ab8068b5897",
+   "6e0a31238349e4c7",
+   "8d8c5bdce8b056ba",
+   "b4e72ecc239350f4",
+   "e8743e6ae80fb33d"
+  ]
+ }
+}

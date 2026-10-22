@@ -6,6 +6,7 @@
 // - analyze_map_tile_usage: 사람이 깐 맵에서 사용된 타일·설명 커버리지·인접 통계를 추출.
 // - highlight_map_region: 질문 대상 영역을 에디터 화면에 강조(패널이 selection으로 반영).
 
+import { isCounterTile, setCounterTile } from "@/project/counterTiles";
 import { markUserTileRuntimeMetadata, setTileLayerOverride } from "@/editor/runtimeTileMetadata";
 import { bundledTileSemantics } from "@/assets/resourceSearch";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
@@ -260,6 +261,7 @@ const getTileInfo: ToolDefinition = {
         passable: !isBlockedPassage(tileset.passability[tile]),
         layer: tileset.priority[tile] === "upper" ? "upper" : "lower",
         terrainTag: tileset.terrain[tile] ?? 0,
+        ...(isCounterTile(tileset, tile) ? { counter: true } : {}),
         groups: usage.groups.map((group) => ({
           name: group.name,
           role: group.role,
@@ -380,7 +382,7 @@ const setTileMetadata: ToolDefinition = {
 const setTileRules: ToolDefinition = {
   name: "set_tile_rules",
   description:
-    "타일의 규칙을 설정한다: layer(auto/lower/upper — 홈 레이어 확정), passable(통행 가능 여부), terrainTag(지면 종류), ledge(한 방향 턱: up/down/left/right 방향으로 들어서면 주인공이 2칸 뛰어내리고 다른 방향은 막힌다, none=해제). 레이어 변경은 사용자가 요청/확인한 경우에만 confirmedByUser=true로 호출하라. 여러 타일은 entries로 한 번에.",
+    "타일의 규칙을 설정한다: layer(auto/lower/upper — 홈 레이어 확정), passable(통행 가능 여부), terrainTag(지면 종류), ledge(한 방향 턱: up/down/left/right 방향으로 들어서면 주인공이 2칸 뛰어내리고 다른 방향은 막힌다, none=해제), counter(RPG Maker 카운터 속성: true 면 주인공이 이 칸을 마주 보고 조사할 때 너머 칸(연속 카운터 최대 2칸 너머)의 이벤트에 말이 걸린다 — 상점 카운터·식탁. 이름표에 카운터/탁자/책상이 있는 막힘 칸은 기본으로 켜져 있다). 레이어 변경은 사용자가 요청/확인한 경우에만 confirmedByUser=true로 호출하라. 여러 타일은 entries로 한 번에.",
   mode: "write",
   parameters: {
     type: "object",
@@ -388,7 +390,7 @@ const setTileRules: ToolDefinition = {
       tilesetId: { type: "string", description: "생략 시 시작 맵의 타일셋(없으면 숲마을)" },
       entries: {
         type: "array",
-        description: "[{tile, layer?: auto|lower|upper, passable?: boolean, terrainTag?: integer, ledge?: up|down|left|right|none}]",
+        description: "[{tile, layer?: auto|lower|upper, passable?: boolean, terrainTag?: integer, ledge?: up|down|left|right|none, counter?: boolean}]",
         items: { type: "object", additionalProperties: true },
       },
       confirmedByUser: { type: "boolean", description: "사용자가 직접 요청/확정한 변경이면 true — layer 변경에 필수" },
@@ -448,6 +450,10 @@ const setTileRules: ToolDefinition = {
           changes.push(`타일 ${tile} 턱→${ledge} 방향으로 뛰어내림`);
         }
       }
+      if (typeof entry.counter === "boolean") {
+        setCounterTile(tileset, tile, entry.counter);
+        changes.push(`타일 ${tile} 카운터→${entry.counter ? "켬(너머로 말 걸기)" : "끔"}`);
+      }
       if (typeof entry.terrainTag === "number" && Number.isInteger(entry.terrainTag)) {
         tileset.terrain[tile] = entry.terrainTag;
         markUserTileRuntimeMetadata(tileset, tile, { terrainTag: entry.terrainTag });
@@ -459,7 +465,7 @@ const setTileRules: ToolDefinition = {
       warnings.push(`사용자 확정(잠금) 메타데이터라 건너뜀: 타일 ${skipped.join(", ")} — confirmedByUser=true로만 수정 가능`);
     }
     if (changes.length === 0 && skipped.length === 0) {
-      throw new ToolError("entries에 적용할 규칙(layer/passable/terrainTag/ledge)이 없습니다.", { code: "invalid-args" });
+      throw new ToolError("entries에 적용할 규칙(layer/passable/terrainTag/ledge/counter)이 없습니다.", { code: "invalid-args" });
     }
     return {
       summary: `타일 규칙 ${changes.length}건 설정${skipped.length > 0 ? `, ${skipped.length}건 잠금 건너뜀` : ""}${changes.length > 0 ? ` — ${changes.slice(0, 4).join(", ")}${changes.length > 4 ? " 외" : ""}` : ""}`,

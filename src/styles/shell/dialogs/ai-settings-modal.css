@@ -1022,6 +1022,12 @@
   flex: 0 0 auto;
 }
 
+/* 목록 오류 아래 줄 — 원인 안내나 서버 원문을 안내 문장과 잇지 않고 따로 보인다. */
+.ai-compat-load-detail {
+  display: block;
+  margin-top: 2px;
+}
+
 .ai-compat-list {
   display: grid;
   gap: var(--space-2);

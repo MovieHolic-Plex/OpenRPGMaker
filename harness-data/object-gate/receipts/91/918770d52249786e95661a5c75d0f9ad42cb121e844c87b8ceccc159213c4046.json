@@ -1,0 +1,497 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "918770d52249786e95661a5c75d0f9ad42cb121e844c87b8ceccc159213c4046",
+ "width": 160,
+ "height": 64,
+ "kind": "structure",
+ "name": "단층 차고 딸린 집",
+ "label": "jp_city/jp-bldg-garage-carport-house",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 16,
+  "darkV5": 38,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 32
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof plane",
+      "rows": "1-20",
+      "evidence": "c",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-24"
+     },
+     {
+      "part": "front wall with door, window and garage shutter",
+      "rows": "25-59",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "entry step",
+      "rows": "56-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof fills rows 1-20 as a sloped plane with vertical tile striping and a gradient from light at the top to dark at the bottom. A light front-edge line at row 21 closes it, followed by dark eave shadow in rows 22-24. Below that, the cream wall front runs rows 25-59, about 35 rows, and holds the door, window and garage shutter. Those are vertical faces and need no top. The small entry step at rows 60-63 is minor. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a modern single-storey house with a garage. It is much simpler than the references. The roof is a dark slate band with vertical gradient stripes, about 4-5 steps, but there are no per-tile scallops or highlights like the references' clay tiles. The walls are flat cream plaster with almost no speckle, and the shutter and door have only light grain lines. The measured facts show 8 visible tones per tile against 10-12 for the references, which is lower but not far below. Near-flat coverage is 4% against 0%. Dark edge pixels are 0% neutral, so the outline is tinted and reads as dark material tone, not a black sticker line. Still, the large cream wall and the sliding window area read as smooth fills with little grain, so the piece looks flatter and thinner than the half-timber and stone references, which have per-tile texture on every surface. A careful artist would likely ask for more wall speckle and roof texture before accepting it beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14303
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof plane",
+      "rows": "1-20",
+      "evidence": "c",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "front wall with door, window and garage shutter",
+      "rows": "24-59",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "entrance step",
+      "rows": "56-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-20 are a large tiled roof plane, read from its vertical tile stripes and a light top ridge line at row 1. It ends in a light front-edge line at row 21 and eave shadow at rows 22-23 (#646473, #3a3942). Below it the south wall runs about rows 24-59 and holds the door, the window and the garage shutter. The roof is a sloped top surface above an eave line, so this is a 3/4 view and not a front elevation. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a modern single-storey house with a garage. Its roof is a dark grey band with vertical gradient stripes, which gives about 4 steps but no per-tile scallops or highlights like the references' clay tiles. The walls are cream plaster with little speckle. The door, window and shutter are clean but simple, and the shutter has only a few horizontal slat lines. Outlines are tinted dark, with 0% near-neutral edge pixels, so they are not a sticker black line. Measured facts: 8 visible tones per tile against 12 and 10 in the references, and 4% near-flat coverage against 0%. That is lower but not far lower. Overall the piece looks flatter and thinner than the references: the wall surfaces are smooth, there is no grain, and the roof is a smooth gradient rather than tile-by-tile shading. It is cleanly drawn but would look noticeably simpler next to the Beodeul houses.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14266
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main roof (tile plane)",
+      "rows": "1-20",
+      "evidence": "c",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-24"
+     },
+     {
+      "part": "front wall with door, window and garage shutter",
+      "rows": "25-59",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "entrance step",
+      "rows": "60-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-20 form a large roof plane. It has a light ridge line at row 1, vertical tile stripes, and a gradient that darkens toward the eave. A light front-edge line sits at row 21, followed by eave shadow in rows 22-24 (L 102, 58, then dark #1a1226). Below that, the south wall in rows 25-59 holds the door, sliding window and garage shutter. That is a front face of about 35 rows, plus a 4-row entrance step. The roof is a sloped top surface, so the building reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a modern single-storey house with a garage. Its roof is a grey-violet ramp with vertical streaks and about 4 steps, with no per-tile scallops or highlights like the references' tile roofs. The walls are cream plaster with little speckle. The garage shutter has horizontal slats, which is some texture. The door and window are simple, with flat panels and few tones. Outline pixels carry a tint (0% neutral), so they read as dark material tone and not a sticker line. Measured facts: 8 visible tones per tile against 12 and 10 for the references, near-flat coverage 4% against 0%, and 37 total colours against 185 and 66. The candidate is clearly below both references on tones per tile and total colour count. Shading is shallower (about 4 steps against 5-6) and wall and roof textures are sparser. It is cleanly drawn but plainer and flatter than the Beodeul references, so I fail it on the rule 'when in doubt, fail'.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15486
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof plane",
+      "rows": "1-20",
+      "evidence": "c",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-24"
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-20 are a sloped tile roof plane. It has a light ridge line at row 1, tile stripes that darken toward the eave, a light front-edge line at row 21, and eave shadow at rows 22-24. Below it the south wall runs from rows 25 to 59, with a door, a window and a garage shutter. The small porch step at rows 60-63 is minor, so the roof and wall are the major parts and the roof clearly shows its top slope."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a modern one-storey house with a garage. Its dark roof has a vertical gradient with faint banding, but no per-tile scallops or highlights like the reference tile roofs. The cream walls, wood door panel and grey shutter are mostly smooth, with only 3-4 steps each. The outline is tinted, not neutral (0% near-neutral dark edge pixels), and it is used selectively. Measured density is 8 visible tones per tile against 10-12 for the references, and near-flat coverage is 4% against 0%. That is lower but not flat. Large wall areas and the roof body read as simple gradients without grain, so it looks thinner and flatter than the Beodeul references next to them. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14358
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.351Z",
+ "cells": {
+  "16": [
+   "03dc6735a91f0076",
+   "061e571150c81d22",
+   "0ead8b8ef4deb24c",
+   "15ff741a25f5d016",
+   "18e44eb315512f79",
+   "1c445547eae99b72",
+   "1fd134c2ac6cc27f",
+   "202c500864ebf0e5",
+   "3219b94e0c065455",
+   "3ab864b83f8bf4cc",
+   "3e4d54d91e3591fe",
+   "46184067dc7d0e59",
+   "4947fd3dd599ff16",
+   "61b2ef525f4b4399",
+   "6274f9c2d18396c0",
+   "6549922ba2112c22",
+   "69784d1653640d24",
+   "6bac1db7d8172615",
+   "72b31b8db685dc09",
+   "7cf33c5b8504e024",
+   "7e7fc5fa3eb585d2",
+   "92dd5135e61d59ad",
+   "a250c88586ea924b",
+   "a6a16c0aea755272",
+   "a7b3e4ca15fa8353",
+   "ac9c12044d79235b",
+   "b91812d819750c68",
+   "bdf7777bf974fb33",
+   "c069a261a46b4466",
+   "c8a50b181a3f3878",
+   "d6f7abe112dd07b2",
+   "e0b5b56db4b4f85b",
+   "ffd94d7d5b182113"
+  ],
+  "24": [
+   "03ab92ad68eb05f2",
+   "0492dd59f096f098",
+   "0934edb7f821133d",
+   "09f0509943332119",
+   "0a6ea8721dd93a5a",
+   "0e70f91bb4c03703",
+   "146cd1a8f4ad9d04",
+   "15c57925763249eb",
+   "1dc2721a78d2449b",
+   "1e09a91ead6945ef",
+   "254721b571126280",
+   "2a91d36a1aafeafa",
+   "2accf75bf67c5dd6",
+   "2bc0855c585db81a",
+   "2d60b7dc8ad7e2db",
+   "2e11279e9e948f08",
+   "31b960e3f0495370",
+   "32cb418d87e9c299",
+   "356be26591285b1e",
+   "36ec9cf99119765d",
+   "3baa547379510a95",
+   "3e8783e316d47fd8",
+   "3fcbdc4cb3e1d1f2",
+   "4256e60af10b99a9",
+   "435e70ddb00f37d0",
+   "4a0f2166a6fce23d",
+   "4a967121ee4a141e",
+   "4e6f338527869ad0",
+   "4f41e5b720f24202",
+   "504d65a47425c03a",
+   "517fa5ef03889aec",
+   "5a70cda1e8115ca2",
+   "5b2009a7b70f7941",
+   "67e4239226350398",
+   "67f3f119bd94bc19",
+   "69e17ebe38f26105",
+   "6ada8f31ab4f55da",
+   "6ce31c884f768695",
+   "6fac4a55cf09d7eb",
+   "73158d097b770daf",
+   "779e151bb37084cf",
+   "799add6bc4a7ba79",
+   "7b4c0a213358d3a3",
+   "7ddb2404b267b917",
+   "80557efd6a262267",
+   "836f5b1c837fa289",
+   "86825730423ab71f",
+   "88707d4601241c3e",
+   "8b71f288138d315f",
+   "91a04d94090b1c91",
+   "92dcf981da0cf71f",
+   "941cfa2be962dda1",
+   "97e95100b089e548",
+   "98e0e78bf75a77d9",
+   "990c76e9b4253237",
+   "9c0adbea79eb6767",
+   "9df961affb1565a6",
+   "a0b1210539d41d66",
+   "a63d77227031b15e",
+   "a96261eaed0769bd",
+   "acd3f6e69aed4496",
+   "ae40c33370f88e3d",
+   "b05450fef1c5452e",
+   "b21e625a34ec37d7",
+   "b3752d5eefa7da3f",
+   "b3e2711ec7924d9e",
+   "b41ec76ef74fa131",
+   "b60267c77ecece89",
+   "b74e4f49267be2e2",
+   "ba650be40e74d339",
+   "bf499fb04a252298",
+   "bfcafee2f4a6f497",
+   "c99e0612d6e09265",
+   "d019249c481d4772",
+   "d2ed9d2957beac1d",
+   "d41572cfb8aa374f",
+   "d9598edf51e3bbb1",
+   "d965b9ca1cceea7f",
+   "dbc17ed8464b8283",
+   "dd10717f60cb60f9",
+   "de0ee2b964fc5dc4",
+   "de430f63ac73a13b",
+   "dea2da05f857a874",
+   "def3725c570c1ed7",
+   "e008a176d632263b",
+   "e1365eeb63206b3a",
+   "e30cfa2f171990b6",
+   "e8a971562ea64939",
+   "ea0b2abc9a8aff95",
+   "ec5e95e71cf016a8",
+   "edc827901d3f96cb",
+   "f162b324f312c7fd",
+   "f27032abd3a1a889",
+   "f28380021323a116",
+   "f896fa984bad784c",
+   "f8ce7c078537aaa2",
+   "fcad2e7373b38dac",
+   "feb0557a20b9475c"
+  ],
+  "32": [
+   "1c70adbbbd4d014b",
+   "4be397ab69fede30",
+   "51e292f8d53ebcae",
+   "5482f95c75af2868",
+   "9be1ecce1ab51206",
+   "bc154630a98f7dce",
+   "c6fa04a6b76b19c1",
+   "cd60e87e60440302",
+   "d204f5219655a324",
+   "f491f0c032e106bd"
+  ],
+  "48": [
+   "0168329151792d60",
+   "0725d9491fe3cb1a",
+   "0ca196cad0dde000",
+   "15500edd0e8c60c2",
+   "1d95e31e83257547",
+   "26fd8b07099bc1d4",
+   "280c00142b4ff7b6",
+   "3292d2e6f5e3b7b2",
+   "32c44d708ffc58d2",
+   "38274fb4b8699ca4",
+   "3ae1d60d7a420cb7",
+   "3e5c2f15e218ce3e",
+   "3f176124a815ab55",
+   "4021b7d38a2b4977",
+   "40fda39a3ce3d16c",
+   "418e8e65bd843ace",
+   "49b7a2807647ff18",
+   "525de138d36aee40",
+   "5339fec012aa676a",
+   "5ab4f17fd4b51a00",
+   "5f8ef3f7f3ca76e3",
+   "631225adfefea809",
+   "725b92b8f1ef7d87",
+   "7ab796ee204fd553",
+   "7ce2516bfbc1eee6",
+   "7e41861741fc1119",
+   "7e676af8f073757f",
+   "8315364e285752b9",
+   "9289f465f87441a9",
+   "9fa5c8ae2202e7bd",
+   "a23d13ca9b137e67",
+   "ac6522a4ff3eb08a",
+   "b02bd92ec3bb6f6c",
+   "b6c39e4fab04e3c8",
+   "b71bb3cfff89f89c",
+   "bbd82b2e3a37698a",
+   "bd828d44411258c0",
+   "da5f2b335fc82cd7",
+   "db2d12225138bd4c",
+   "eb813ac0c905df3a",
+   "f8be0087cfb45511",
+   "fcb8d8a2792c767c",
+   "ff323b9d58f2cb0c"
+  ]
+ }
+}

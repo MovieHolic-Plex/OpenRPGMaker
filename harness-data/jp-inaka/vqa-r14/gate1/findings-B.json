@@ -1,0 +1,137 @@
+{
+ "group": "B",
+ "items": [
+  {
+   "label": "jp_inaka_pack/jp-inaka-vinyl-greenhouse",
+   "kind": "structure",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 80,
+   "front_rows": 28,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "view34 pass: tunnel roof seen from above rows 0-80 (long foreshortened hoop plane, front-edge at the arch line row ~80); south end face is the full-width arch rows 80-108 with door; no receding side plane (edges symmetric)",
+    "style pass: tinted dark grey-blue outline like jp-warehouse, film shaded in 4+ greys; reads as a hoop house at 1x in maps/04"
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/jp-inaka-hillside-torii-stairs",
+   "kind": "structure",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 6,
+   "front_rows": 72,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "view34 pass: kasagi roof top rows 1-6 seen from above, same depth as jp-torii anchor; each stair tread drawn as a light top band with a dark riser (rows 24-78), landing rows 22-30; stone lantern kasa rows 48-53 shows a lit top",
+    "style pass: tinted outlines, stone in 4+ tones; reads at 1x on the wall in maps/06"
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/jp-inaka-retro-postbox-vending",
+   "kind": "structure",
+   "verdict": "pass",
+   "kind_ok": false,
+   "closest_kind": "box",
+   "top_rows": 8,
+   "front_rows": 15,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "kind: a postbox + vending machine is not a building/gate; judged as box (min top 4, front 8)",
+    "view34 pass: vending top plane rows 8-16 (8 rows) with front face rows 17-31; round postbox shows a lighter cap rows 9-16 over the red body rows 17-31; right 1-2px darker column is shading, not a side plane",
+    "style pass: tinted dark outlines; reads at 1x in maps/02"
+   ],
+   "fixes": [
+    "none required; optionally relabel kind as box/other in the manifest"
+   ]
+  },
+  {
+   "label": "jp_inaka_pack/jp-inaka-unmanned-veg-stand",
+   "kind": "structure",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 22,
+   "front_rows": 23,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "view34 pass: plank roof seen from above rows 1-23 ending in a dark eave line rows 23-25; vegetables heaped on the shelf rows 29-35 count as filled top; front cabinet rows 36-47",
+    "style pass: wood in 4+ browns, tinted brown outline; reads at 1x in maps/01,02,06"
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/jp-inaka-fire-watchtower",
+   "kind": "structure",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 17,
+   "front_rows": 45,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "view34 pass: pyramid roof seen from above rows 1-18; cabin rows 19-28 under eave; 4-leg lattice with rear footings rows 41-47 and front footings rows 59-63 (correct depth staggering, no isometric side face)",
+    "style pass: red steel in 4 tones with dark-red outline; reads as a hinomi-yagura at 1x in maps/04"
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/jp-inaka-jizo-shrine-row",
+   "kind": "structure",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 23,
+   "front_rows": 21,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "view34 pass: hokora roof seen from above rows 0-23 ending in eave line rows 21-24; stone plinth top rows 36-38 (3 rows, meets structure/figure min 3) with front face rows 39-44",
+    "style pass: same tinted-outline wood/stone treatment as jp-jizo; reads at 1x in maps/06"
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/jp-inaka-sluice-gate",
+   "kind": "structure",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 11,
+   "front_rows": 20,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "view34 pass: concrete deck/hoist beam top rows 0-11 with handwheel as a horizontal ellipse rows 1-3 (seen from above); front: piers and gate leaf rows 12-21, water rows 22-31",
+    "style pass: grey concrete 4+ tones, tinted outline; reads at 1x in the canal in maps/04"
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/jp-inaka-red-iron-bridge",
+   "kind": "structure",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 12,
+   "front_rows": 18,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "view34 pass: deck seen from above rows 15-27 between far railing (rows 2-14, south face) and near railing (top rail rows 28-30 lit top, posts to row 37); girder front face rows 38-45 with stone abutments",
+    "style pass: red in 4 tones with dark-red outline; reads at 1x on the road over the river in maps/05"
+   ],
+   "fixes": []
+  }
+ ],
+ "summary": "8/8 pass. All show top planes from above at or above anchor depth (roofs, deck, kasagi, plinth) with south faces below; no front-elevation, side-face or sticker-outline charges. Only note: retro-postbox-vending is mislabeled structure (closest kind box), which does not fail by itself."
+}

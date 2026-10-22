@@ -1,0 +1,75 @@
+{
+ "scenes": {
+  "light": {
+   "name": "성긴 숲(잡목림)",
+   "kind": "broadleaf",
+   "size": [
+    24,
+    16
+   ],
+   "seam_jump": null
+  },
+  "dense": {
+   "name": "빽빽한 숲(활엽 혼효림)",
+   "kind": "broadleaf",
+   "size": [
+    24,
+    16
+   ],
+   "seam_jump": 0.056
+  },
+  "bamboo": {
+   "name": "빽빽한 대숲(竹林)과 오솔길",
+   "kind": "bamboo",
+   "size": [
+    24,
+    16
+   ],
+   "seam_jump": 0.157
+  },
+  "edge": {
+   "name": "길가 숲 가장자리(산길)",
+   "kind": "broadleaf",
+   "size": [
+    24,
+    16
+   ],
+   "seam_jump": 0.058
+  }
+ },
+ "palette": {},
+ "piece_cells": {
+  "broadleaf": 190,
+  "bamboo": 110
+ },
+ "colors_per_cell": {
+  "broadleaf": {
+   "interior": [
+    6,
+    6,
+    6,
+    6,
+    6,
+    6,
+    6,
+    6
+   ],
+   "crown_patch_median": 12,
+   "crown_patch_max": 13
+  },
+  "bamboo": {
+   "interior": [
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10
+   ],
+   "crown_patch_median": 12,
+   "crown_patch_max": 13
+  }
+ }
+}

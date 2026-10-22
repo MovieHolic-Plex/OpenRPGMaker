@@ -1,0 +1,265 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5965cff64ae6a17333ff7d012a30839193a0a06abf5395d1cea26a64542fd2a8",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "countryside stream water",
+ "label": "jp-inaka-r5:at-stream",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "water",
+  "refs": [
+   "water"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 10,
+  "darkV5": 87,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water tile field",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 48x48 tileable water texture. Every row is 48 px wide, with no silhouette, no front-edge line, no eave shadow and no front face. It is teal with ripple highlights, white sparkle pixels and a few grey-beige stones, and it fills the whole frame. This is a flat terrain tile, so it has no standing-object structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a water patch of the same kind as the reference. It has about 5 lightness steps, from deep teal through mid teal to pale highlights, and a few small rock or foam accents. The reference is a flat dark teal with sparse dots and faint streaks, using only 5 colours and 54% flat-fill coverage. The candidate has 10 distinct colours, a median of 6 per tile against the reference's 5, and 0% flat-fill coverage. It carries ripple streaks, speckle and varied dither across the whole surface, so it is richer than the reference. Water has no real outline here, and the measured 0% near-neutral dark edge share shows no black sticker line. A careful artist would accept it next to the reference without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16562
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water tile surface (full 48x48 tile, repeating ripple pattern with small stones and sparkles)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless, full-bleed 48x48 water terrain tile. The silhouette is a constant 48 wide on every row, with no edge line, eave shadow, or front face. The column scans show only repeating ripple and highlight colours (teal #3c726f, #2a5657, #5a918b, with white sparkles and a few grey stones) across all rows. This is a flat terrain texture, not a standing object, so it has no 3/4 top-and-front structure to measure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a water patch like the reference. It has about 10 distinct colours against the reference's 5, and 6 colours per tile against 5. Flat-fill coverage is 0% against the reference's 54%, so the reference is the flatter piece. The candidate has several lightness steps from deep teal to pale highlights, with ripple streaks, dithered speckle and small stones or foam dots. Water has no outline, so the tint question does not apply, and the 0% neutral edge share fits that. Structure and texture are at or above the reference, so a careful artist would accept it next to the reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16000
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water tile texture (full 48x48 field)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a full-bleed 48x48 tile of teal water texture with a constant width of 48 for rows 0-47. It has no silhouette, front-edge line, eave shadow, ellipse or roof plane. It has only scattered ripple highlights, white sparkle pixels and small stones. It is a flat terrain tile, not a standing object, so the top/front-face measurements do not apply. The kind matches terrain water."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a water patch with no outlines, like the reference, so outline is 'none'. It has about 10 distinct colours against the reference's 5, and a median of 6 colours per tile against 5. Flat-fill coverage is 0% against the reference's 54%. By eye, the candidate has several teal steps, dithered mottling, light ripple streaks and small pale and brownish pebble or foam spots, so the surface is varied and textured. The reference is a flatter dark teal with sparse dots and faint streaks. The candidate is at least as rich as the reference in shading steps, texture and density, so a careful artist would accept it next to the reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16771
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water tile fill (flat terrain texture)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "Full-bleed 48x48 opaque tile of teal water texture with random ripple highlights, a few white sparkle pixels and small grey-tan stones. No silhouette edge, no front face, no eave or edge line, no ellipse. It is a seamless terrain tile and not a standing object, so the top/front structure rules do not apply. The kind (terrain water) matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a water patch with no outline, as expected for a surface tile. It uses about 5 lightness steps from deep teal through mid teal to pale highlights, with light ripple streaks, speckle and small stones scattered over the surface. The reference is mostly one dark teal with sparse dots: 5 colours in total, 54% flat-fill coverage and a median of 5 colours per tile. The candidate measures 10 distinct colours, a median of 6 per tile and 0% flat-fill coverage, so it is at or above the reference on every measure. Its texture is varied and carries no large flat areas. It is not shallow or sticker-like, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16366
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.459Z",
+ "cells": {
+  "16": [
+   "187e8b31b8cebd03",
+   "59e3b7e32b905922",
+   "f150c157f2f8aa12"
+  ],
+  "24": [
+   "0191fd071bd8e969",
+   "0bb9587e5dda91ba",
+   "86557ef6f8cff5d4",
+   "8b2fdba39ad6583d"
+  ],
+  "32": [
+   "078de04833e5a7dd",
+   "1e90d17be5717e67",
+   "26497684d0b00487",
+   "3424c71c052cc1ee",
+   "4224423bdee3d843",
+   "516507bf3fd7a378",
+   "596ab4344f83b7c1",
+   "65288d158242acc3",
+   "6bb299bd1c1aa8b6",
+   "740715d576b5e491",
+   "78bb8b9cf19be49a",
+   "79c8c91b0ec498b9",
+   "79d40aa44099e517",
+   "925e61eec40eb7c0",
+   "a87a17630685ba92",
+   "ab401e12899eb8b5",
+   "b3db298a051bea1b",
+   "b9d82527d766e984",
+   "c2001d227891ea26",
+   "d0612da26df8edf3",
+   "d823eec11c745a60",
+   "e26fcf711f49f3a7",
+   "fc770017e30e579b"
+  ],
+  "48": [
+   "aa08077b27ba1b0c"
+  ]
+ }
+}

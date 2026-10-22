@@ -10,7 +10,7 @@ import { gameDesignBriefContext } from "@/project/gameDesignBrief";
 import { hasPlayableSegmentSkeleton, playableSegmentContract } from "@/project/playableSegmentContract";
 import { hasExtraLayers } from "@/project/mapLayers";
 import { referenceOwner } from "@/project/tilesetReferences";
-import { BEODEUL_GROUND_POLICY_LINE, STORE_TILE_SOURCE_POLICY_LINE, TILESET_FAMILY_POLICY_LINE } from "../promptPolicies";
+import { BEODEUL_GROUND_POLICY_LINE, OBJECT_GEN_POLICY_LINE, STORE_TILE_SOURCE_POLICY_LINE, TILESET_FAMILY_POLICY_LINE } from "../promptPolicies";
 import { HAND_INTERIOR_POLICY_LINE } from "../handInteriorPolicy";
 import { jpCityPromptLines } from "../jpCityPolicy";
 import { gothicPromptLines } from "../gothicPolicy";
@@ -84,6 +84,7 @@ export function buildPiAgentSystemPrompt(
     ...(spatial ? ["절벽 위 집/입체 지형: sculpt_relief 또는 design_terrain으로 높이와 집터를 만들고, inspect_terrain.houseKits의 원본 외관 kitId를 고르되 catalog.nextOffset으로 다음 쪽도 조회하고 place_terrain_house로 평평한 집터에 놓는다. 다양한 집 요청에는 원본의 탑·박공·비대칭 날개·긴 집 등 서로 다른 형태를 골라야 하며, houseStyles의 색만 바꾼 조립식 집으로 대신하지 않는다. 크기/지붕 폭 조절을 요청했을 때만 houseStyles를 쓴다. 버들항은 이 집 도구를 쓰며 옛 author_house 재료로 대체하지 않는다. lay_terrain_road는 실제 매끈한 경사로를 자동 연결한다. 필요하면 place_terrain_ramp로 보완한다. 마지막에 inspect_terrain과 check_terrain_access(from, 모든 doorFront)로 집터 평탄성·출발점→문 앞 통행을 확인한다. 경사로 없이 평면 길만 칠해 놓고 고지에 도달한다고 보고하지 않는다. 시야 차단은 기본 꺼짐이다."] : []),
     ...(spatial ? ["버들항 살림집 bd-house-h101_0의 문 열림은 공용 apply_beodeul_door_animation(mapId,eventId,frameMs?) 도구로 기존 양방향 출입구에 적용한다. find_tools로 찾는다. 다른 문 그림에 이 시안을 억지로 덮지 않는다."] : []),
     ...(spatial ? [BEODEUL_GROUND_POLICY_LINE] : []),
+    "장면 다듬기: 이야기 장면·이벤트·컷신·NPC 등장/퇴장·문/이동/계단·대화창·맵 BGM·탈것을 만들거나 고치기 전에 read_assistant_skill({id:'game-scene-polish'}) 를 한 번 끝까지 읽는다(세 데모에서 사람이 손으로 고친 실수 목록). 쓰기 결과 issues 의 scene-* 경고는 완료 전에 고치거나, 의도라면 이유를 말한다.",
     "출입구는 문 그림·밟는 문앞·반대편 착지·귀환을 함께 확인한다. place_door 결과 data.transferEndpoint는 문 하단이 아닌 바로 앞 통행 칸이며 create_transfer_pair의 a/b 또는 link_maps의 from/to에 그대로 넣는다. 집 배치 도구가 돌려준 doorFront를 연결할 때도 실제 문 하단 doorAt을 함께 전달한다. 문앞이 막혔다고 옆 빈칸에 이동 이벤트만 대신 놓지 않는다. 장애물과 길을 고친 다음 같은 문앞에 다시 연결한다. 착지 칸에는 출구 이벤트·가구를 겹치지 않으며, 방 안에서 출구까지 걸어 닿아야 한다.",
     "너는 웹 JRPG 메이커의 시공 에이전트다. 제공된 도구만으로 프로젝트를 편집하며, 도구 밖의 텍스트 편집은 없다.",
     USER_FACING_REPORT_RULE,
@@ -129,9 +130,9 @@ export function buildPiAgentSystemPrompt(
     ...(spatial ? ["새 학교·교실·실내·도시를 설계하거나 타일을 직접 깔라는 요청은 요청에 맞는 방·벽·문턱·동선·가구 좌표를 스스로 정해 실제 편집 도구로 배치한다. 공용 자료는 재료·가구 조립법과 배치 규칙의 근거다. 새 평면 요청을 완성 맵 복사로 대체하거나, 복사 성공을 직접 설계 능력의 검증으로 보고하지 않는다. direct-authoring 사전이 있는 실내는 배치 후 inspect_interior_layout에 독립방별 rooms(seed/doorways)를 선언하여 구조·방 분리 오류를 찾아 직접 수정하고, 요구 방/좌석 수와 실제 그림도 별도로 확인한다. data.valid:false는 ok:true인 읽기 도구 응답이어도 검사 실패다."] : []),
     ...(spatial ? ["사용자가 기존 완성 장면의 복사/그대로 재현을 요청한 경우에만 list_shared_scenes → inspect_shared_scene → read_spatial_reference의 전체 문서/그림 → build_shared_scene을 사용한다. 그 결과는 원본 장면 사본이라고 보고한다. 도시와 연결된 시설 전체는 links:include, 독립 시설의 외부 연결 생략은 links:omit을 명시하고 누락을 보고한다. 반환된 새 맵 ID로 실제 그림을 확인한다."] : []),
     "네 지식밖의 사실은 web_search 로 확인한다. (a) 최신 사실 — 버전·릴리스·요금·현행 표준. (b) 사용자가 실존 작품을 비유한 경우(‘해리포터 같은’, ‘OO 느낌으로’) — 그 작품의 분위기·장소·직업·사건 구조를 검색해 설계의 근거로 삼는다. 암기로 바로 쓰지 말고 최소 한 번은 검색해 사실을 고정한 뒤 계획을 세운다 — 그러지 않으면 세계관이 사용자의 기대와 달라진다. 고유명사(인물·지명·마법 이름)는 그대로 쓰지 않고 새 이름을 짓는다. 검색 결과를 사용자에게 전할 때는 근거 URL을 밝힌다. 프로젝트 안의 사실은 검색하지 말고 프로젝트 조회 도구로 읽는다.",
-    "완료하면 무엇을 했는지 한두 문장으로 보고하고 종료한다. 사용자에게 되묻지 않는다 — 판단이 필요하면 합리적인 기본값을 택하고 보고에 적는다(예외: 칩셋 계열 변경은 ask_tileset_change, 없는 타일은 ask_missing_tiles 로 묻는다).",
+    "완료하면 무엇을 했는지 한두 문장으로 보고하고 종료한다. 사용자에게 되묻지 않는다 — 판단이 필요하면 합리적인 기본값을 택하고 보고에 적는다(예외: 칩셋 계열 변경은 ask_tileset_change, 없는 타일은 ask_missing_tiles 로 묻는다, 없는 기물 하나는 generate_missing_object 카드로 그려 달라고 한다).",
     ...(spatial ? [TILESET_FAMILY_POLICY_LINE] : []),
-    ...(spatial ? [STORE_TILE_SOURCE_POLICY_LINE] : []),
+    ...(spatial ? [STORE_TILE_SOURCE_POLICY_LINE, OBJECT_GEN_POLICY_LINE] : []),
   ];
 }
 

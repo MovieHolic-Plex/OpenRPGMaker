@@ -40,6 +40,8 @@ export interface AiConnectionStatus {
   readonly label: string;
   /** 칩 hover/title 용 상세 문구. */
   readonly title: string;
+  /** 공유 호스트가 AI 를 꺼 둔 경우 — 이 PC 에서 로그인해도 풀리지 않는다. 패널 안내가 칩과 같은 말을 하도록 노출한다. */
+  readonly hostAiDisabled?: boolean;
 }
 
 interface CachedOAuthStatus {
@@ -180,6 +182,7 @@ export function getAiConnectionStatus(config: AiConfig = loadAiConfig()): AiConn
       authMode: "chatgpt",
       label: "AI 서버에서 꺼짐",
       title: HOST_AI_DISABLED_GUIDANCE,
+      hostAiDisabled: true,
     });
   }
   if (aiOAuthCachedStatus.serverMessage) {

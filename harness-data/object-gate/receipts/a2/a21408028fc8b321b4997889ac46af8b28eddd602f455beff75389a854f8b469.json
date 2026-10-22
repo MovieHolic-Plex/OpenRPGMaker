@@ -1,0 +1,294 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a21408028fc8b321b4997889ac46af8b28eddd602f455beff75389a854f8b469",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rice paddy ground tile (inaka-paddy-summer)",
+ "label": "jp_inaka_pack/gnd/inaka-paddy-summer",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 5,
+  "darkV5": 74,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy ground tile (full 16x16 fill, mottled green texture)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a fully opaque 16x16 square (width 16 on every row) filled with mottled green pixels in several lightness values (L 50-153), with no silhouette, edge line, eave shadow, or front face. It is a flat, seamless terrain texture seen from above, not a standing object. There is no front-face structure, so it reads as a flat top-down surface, which is normal for a ground tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny olive-green patch with only 5 distinct colours and a median of 5 per tile. The grass reference has 80 colours and a median of 26 per tile, and the paving reference has 7 colours. The candidate has no outline, so there is nothing to judge there. Its surface is a regular, repetitive hatch or dither pattern with no clumps, tufts or varied soil grain, so it reads as a flat patterned fill, not hand-shaded. It has about 3 usable lightness steps against the 5 or more on the grass reference. Density is far below the grass reference and the shading is shallow, so it falls short of the Beodeul standard. The paving reference is also low in colour count, but it has per-stone shading and structure that the candidate lacks.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 8017
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "full 16x16 paddy ground tile (mottled green texture)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is fully opaque (width 16 on all rows 0-15) and consists of mottled green noise with scattered lighter (#98a466) and darker (#46532d, #2e3820) pixels. There is no front-edge line, no eave shadow, no ellipse, and no distinct front face. It is a flat seamless ground texture, which fits a terrain tile and is not a standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny olive/yellow-green patch with only 5 distinct colours in total and a median of 5 per tile. The grass reference has 80 colours and 26 per tile, so the candidate is far below it. The patch shows a regular hatched or striped pattern with about 3 readable lightness steps, whereas the grass uses about 5 with clumps and tufts. It has no outline, so none can be tinted to match the material, and its dark edge pixels are not neutral (0%). It has no 5x5 flat fills, but the texture is a repetitive dither rather than varied grain, clumps or soil detail. It is also much smaller than the references, and at this scale it reads as a simple flat texture swatch rather than a richly shaded 4x3 paddy ground. The paving reference has a similar low colour count, but it is a different material with stone-by-stone shading, and the grass is the closer comparison. Against the grass, the candidate is clearly shallower in colour count, steps and variation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 8688
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy ground fill (full 16x16 tile, mottled green texture)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The tile is a full 16x16 opaque square (width 16 on every row) filled with mottled green pixels in a few close lightness values (L=50 to 153). There is no silhouette, no front-edge line, no eave shadow, no ellipse and no front face. It is a flat, seamless terrain texture and not a standing object, so the top/front-face view rules do not apply. It reads as a terrain tile that matches the stated kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny patch with only 5 distinct colours in total and a median of 5 per tile, against 80 colours and 26 per tile for the reference grass. It has about 3 olive-green lightness steps in a regular striped or hatched pattern, so the texture is repetitive and not hand-varied. Flat-fill coverage is 0%, so it is not flat-filled, but it has no clumps, tufts, soil grain or per-element shading like the grass reference. The paving reference is also low in colours (7), but its stones are shaded one by one, which the candidate lacks. The candidate has no outline, so the outline criterion does not apply. Overall it is clearly shallower than the grass reference and reads as a simple tiled pattern, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 8355
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy ground tile (full 16x16 field of green mottled texture)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile fills the full 16x16 area (width 16 on every row) with mottled green pixels in a few close lightness values (L=50, 75, 99, 125, 153). Column scans show scattered single-pixel highlights and dark flecks, with no front-edge line, eave shadow, ellipse, or distinct front face. It is a flat, seamless terrain texture seen from above, so as a terrain tile it has no standing front face to judge."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny patch, roughly 48x32 source pixels, and the board shows it as a single olive-green square with a horizontal striped texture. It uses only 5 distinct colours in total (median 5 per tile). The grass reference has 80 colours and a median of 26 per tile, with several greens, clumps and tufts. The paving reference has 7 colours, but it is stone-shaded, with tinted edges and distinct stones. The candidate has no visible outline, so the outline check does not apply, and its 0% flat-fill coverage comes from the regular stripe dither rather than real variation. The ramp has about 3 lightness steps (dark, mid, light stripe), against 5-6 in the Beodeul grass. It has no clumps, no tufts and no soil grain, and the regular horizontal rows read as a repeating pattern rather than organic paddy water or crop detail. Its density is far below the grass reference, which is the closer kind match, so it is shallow next to the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 9349
+  }
+ ],
+ "decidedAt": "2026-10-20T04:26:05.780Z",
+ "cells": {
+  "16": [
+   "0daeaaac4db1d100"
+  ],
+  "24": [
+   "43f76311518d382b",
+   "7751d8ca04a320c5",
+   "78b1ab57ddc8bc3d",
+   "7d61382932b46325",
+   "ce0ee6a12adece27",
+   "ef59c24d492b6cba"
+  ],
+  "32": [
+   "02d978d5dfbf560e",
+   "0bc10b955cf21e6c",
+   "2c59b32d30f2bf9f",
+   "4ebd66d2dea299cc",
+   "6a961146b29ee0cb",
+   "a2279ed9f4bb1f26"
+  ],
+  "48": [
+   "35f21b2c585b207f",
+   "46a45805b85cd8f2",
+   "6a5e84aad7ee3246",
+   "b6b94803c375053c",
+   "b8e7b4c25fa17ef4",
+   "cfda897df06dcb54"
+  ]
+ }
+}

@@ -50,6 +50,15 @@ export function validateMeta(value: unknown): void {
   if (meta.oprnDialogueSystem !== undefined) validateDialogueSystem(meta.oprnDialogueSystem);
   if (meta.oprnVnExtras !== undefined) validateVnExtras(meta.oprnVnExtras);
   if (meta.oprnVnLook !== undefined) validateVnLook(meta.oprnVnLook);
+  if (meta.oprnJpCityPinRepairs !== undefined) {
+    for (const item of requireArray("meta.oprnJpCityPinRepairs", meta.oprnJpCityPinRepairs)) {
+      const record = requireRecord("jp_city pin repair", item);
+      requireString("jp_city pin repair mapId", record.mapId);
+      requireString("jp_city pin repair era", record.era);
+      requireString("jp_city pin repair at", record.at);
+      requireNumber("jp_city pin repair moved", record.moved);
+    }
+  }
   if(meta.oprnMenuSounds!==undefined) {
     const sounds=requireRecord('meta.oprnMenuSounds',meta.oprnMenuSounds);
     assert(Object.keys(sounds).every(k=>['cursor','confirm','cancel'].includes(k)),'Unknown menu sound cue');
@@ -230,6 +239,12 @@ export function validateTileset(id: string, value: unknown): void {
       assert(["up", "down", "left", "right", "ice", "stop"].includes(rule as string), `tileset ${id}: slideTiles[${tile}] 규칙 오류`);
     }
   }
+  if (tileset.counterTiles !== undefined) {
+    // 위 한계는 걸지 않는다 — 공방 칸을 떼었다 붙이는 동안 count 가 잠시 줄 수 있고, 범위 밖 번호는 그냥 안 맞을 뿐이다.
+    for (const tile of requireArray(`tileset ${id}.counterTiles`, tileset.counterTiles)) {
+      assert(Number.isInteger(tile) && (tile as number) >= 0, `tileset ${id}: counterTiles 타일 ${String(tile)} 오류`);
+    }
+  }
   if (tileset.suppressedHarnessGroupIds !== undefined) {
     for (const groupId of requireArray(`tileset ${id}.suppressedHarnessGroupIds`, tileset.suppressedHarnessGroupIds)) {
       requireString(`tileset ${id}.suppressedHarnessGroupIds[]`, groupId);
@@ -383,6 +398,43 @@ export function validateTileset(id: string, value: unknown): void {
         requireNumber(`tileset ${id}.autotileGroups[${index}].variantMap[${mask}]`, variant);
       }
       if (record.edgeConnects !== undefined) requireBoolean(`tileset ${id}.autotileGroups[${index}].edgeConnects`, record.edgeConnects);
+      if (record.phaseVariants !== undefined) {
+        const phase = requireRecord(`tileset ${id}.autotileGroups[${index}].phaseVariants`, record.phaseVariants);
+        requireNumber(`tileset ${id}.autotileGroups[${index}].phaseVariants.w`, phase.w);
+        requireNumber(`tileset ${id}.autotileGroups[${index}].phaseVariants.h`, phase.h);
+        for (const [p, table] of requireArray(`tileset ${id}.autotileGroups[${index}].phaseVariants.maps`, phase.maps).entries()) {
+          for (const [mask, tileId] of Object.entries(requireRecord(`tileset ${id}.autotileGroups[${index}].phaseVariants.maps[${p}]`, table))) {
+            requireNumber(`tileset ${id}.autotileGroups[${index}].phaseVariants.maps[${p}][${mask}]`, tileId);
+          }
+        }
+      }
+      if (record.composer !== undefined) {
+        const at = `tileset ${id}.autotileGroups[${index}].composer`;
+        const cp = requireRecord(at, record.composer);
+        requireString(`${at}.kind`, cp.kind);
+        for (const layer of requireArray(`${at}.layers`, cp.layers)) requireNumber(`${at}.layers[]`, layer);
+        // overhangOnGroups 는 사람이 읽는 이름일 뿐(엔진은 overhangOnTiles 만 본다) — 공방 지형 팩은 빼고 보낸다.
+        if (cp.overhangOnGroups !== undefined) {
+          for (const name of requireArray(`${at}.overhangOnGroups`, cp.overhangOnGroups)) requireString(`${at}.overhangOnGroups[]`, name);
+        }
+        if (cp.overhangOnTiles !== undefined) {
+          for (const t of requireArray(`${at}.overhangOnTiles`, cp.overhangOnTiles)) requireNumber(`${at}.overhangOnTiles[]`, t);
+        }
+        if (cp.ground !== undefined) {
+          const gr = requireRecord(`${at}.ground`, cp.ground);
+          for (const t of requireArray(`${at}.ground.floorTiles`, gr.floorTiles)) requireNumber(`${at}.ground.floorTiles[]`, t);
+          for (const t of requireArray(`${at}.ground.apronTiles`, gr.apronTiles)) requireNumber(`${at}.ground.apronTiles[]`, t);
+          for (const t of requireArray(`${at}.ground.apronBases`, gr.apronBases)) requireNumber(`${at}.ground.apronBases[]`, t);
+          requireNumber(`${at}.ground.apronLayer`, gr.apronLayer);
+        }
+        for (const [n, sprite] of requireArray(`${at}.sprites`, cp.sprites).entries()) {
+          const sp = requireRecord(`${at}.sprites[${n}]`, sprite);
+          requireNumber(`${at}.sprites[${n}].w`, sp.w);
+          requireNumber(`${at}.sprites[${n}].h`, sp.h);
+          for (const tileId of requireArray(`${at}.sprites[${n}].tiles`, sp.tiles)) requireNumber(`${at}.sprites[${n}].tiles[]`, tileId);
+          for (const c of requireArray(`${at}.sprites[${n}].cover`, sp.cover)) requireNumber(`${at}.sprites[${n}].cover[]`, c);
+        }
+      }
       if (record.interiorVariants !== undefined) {
         for (const [depth, tier] of requireArray(`tileset ${id}.autotileGroups[${index}].interiorVariants`, record.interiorVariants).entries()) {
           for (const tileId of requireArray(`tileset ${id}.autotileGroups[${index}].interiorVariants[${depth}]`, tier)) {

@@ -10,6 +10,13 @@ export async function run(argv: string[]): Promise<number> {
     const child = spawn('bun', [resolve('src/harnesses/assistant-capability/node/genrePrepare.ts'), resolve(root)], { stdio: 'inherit', cwd: process.cwd() });
     return await new Promise<number>((done, reject) => { child.once('error', reject); child.once('exit', code => done(code ?? 1)); });
   }
+  // 장면 교훈 묶음(scene-lessons-seed.json): genre-prepare/genre-run 으로 실행한 뒤 채점·영상·판정 입력.
+  if (stage === 'scene-score' || stage === 'scene-film' || stage === 'scene-judge-input') {
+    const script = { 'scene-score': 'sceneLessons.mjs', 'scene-film': 'sceneFilm.mjs', 'scene-judge-input': 'sceneJudgePrompt.mjs' }[stage];
+    const args = stage === 'scene-score' ? ['score', ...argv.slice(1)] : argv.slice(1);
+    const child = spawn(process.execPath, [resolve('src/harnesses/assistant-capability/node', script), ...args], { stdio: 'inherit', cwd: process.cwd() });
+    return await new Promise<number>((done, reject) => { child.once('error', reject); child.once('exit', code => done(code ?? 1)); });
+  }
   if (stage === 'genre-run') {
     const root = option('out'), caseId = option('case');
     if (!root || !caseId) throw Error('genre-run --out <experiment root> --case <genre>');

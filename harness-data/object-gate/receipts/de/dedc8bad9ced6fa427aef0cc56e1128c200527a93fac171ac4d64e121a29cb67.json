@@ -1,0 +1,340 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dedc8bad9ced6fa427aef0cc56e1128c200527a93fac171ac4d64e121a29cb67",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "mci toilet",
+ "label": "modern_city_interior/mci-toilet",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tank lid (top of cistern)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "bowl seat ring with water visible inside (ellipse opening)",
+      "rows": "12-20",
+      "evidence": "d",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal and foot",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tank has a light top band at rows 1-5 that ends in a darker front-edge line at row 6, with the front face at rows 7-12 below it. The bowl is the main body. Its seat ring runs from about row 12 to row 20. The width widens from 12 to 14 across rows 13-19 and narrows again to 12 at row 20. Blue water is visible inside the opening at rows 15-18, so the opening is seen from above. Below it, the bowl underside and pedestal (rows 20-31, narrowing to 8 wide and flaring to 10 at the foot) form a front face of about 12 rows. No isometric side face is drawn. The pedestal is a narrow vertical shaft and does not need its own top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small porcelain toilet about one tile in size. It shows 11 visible tones per tile, which is above the hedge reference (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% near-neutral, so the outlines carry a tint (a cool blue-grey beside the white porcelain) rather than a black sticker line. Porcelain is a smooth material, so about 5 steps (highlight, light, mid, shadow, deep) with a few specular dots and a bowl/tank/seat split by value is acceptable. It is slightly simpler than the stall or well, but it is not thinner or flatter than the hedge or bench references, and it would sit next to them without looking sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17556
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tank lid",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tank front face",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl seat ring with water opening",
+      "rows": "13-21",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water inside bowl",
+      "rows": "15-18",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal base",
+      "rows": "22-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tank has a lid band in rows 1-5 that ends in a darker front-edge line at row 6, with a front face in rows 7-12. The bowl is the main container. Its width profile goes 12, then 14 across rows 13-19, then narrows to 12, 10 and 8 by rows 21-27, so the seat forms an ellipse. Blue water is visible inside it in rows 15-18, which is evidence (d). A narrower pedestal and flared foot in rows 22-31 form the front face of 10 rows, so the object has both a top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The toilet is a single-tile-sized prop. Its porcelain ramp reads as about 5 steps (white highlight, light grey, mid grey-blue, shadow, deep), plus a darker tank/bowl interior. The measured facts support this: 11 visible tones per tile, above the hedge (9) and below the stall (17) and well (20), with 0% near-flat coverage. The dark edge pixels are 0% near-neutral, so the outline carries a tint rather than being a black sticker line. It is separated by value on the lit side. The bowl water and seat give some shape variation, though the porcelain has little grain or speckle compared with the stall and well. It is slightly less textured than the larger references but not flat or sticker-like, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19501
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tank lid (top of cistern)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl rim ellipse with water inside",
+      "rows": "13-20",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water visible in bowl opening",
+      "rows": "15-19",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bowl is the main open container. Its rim widens from 12 to 14 px at rows 13-19, then narrows to 12, 10 and 8 px at rows 20-23, so the width profile traces an ellipse. Blue water is visible inside at rows 15-19 (x=8: #486090, #8397b3, #6f83a0), which shows the opening is seen from above. Below it the bowl front and the pedestal form a front face of about 11 rows (21-31) that narrows to 8 px and then flares to a 10 px base. The tank at the top has a lid at rows 1-5 (L=232) ending in a darker edge line at row 6 (L=144), with the front face at rows 7-12, so it also shows a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The toilet reads as a small standing prop with a tank, lid, seat and bowl. The porcelain is built from about 5 lightness steps (highlight, white, light grey, mid, shadow), and the bowl water is a separate bluish tone. The measured facts support this: 11 visible tones per 16x16 tile, which is above the hedge reference (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so no large flat fills. Dark edge pixels are 0% neutral, so the outlines lean toward a tinted blue-grey rather than a sticker-style black line, and some forms are separated by value alone. Texture is limited to highlights and shading on smooth porcelain, with little grain or speckle. That is plausible for a glazed surface, and it is only slightly less rich than the richer references. A careful artist would accept it next to the hedge and bench without it looking flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17816
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tank top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl seat ring and water opening",
+      "rows": "13-20",
+      "evidence": "d",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tank has a light top band at rows 1-4 that ends in a darker front-edge line at row 6, with the tank's front face at rows 7-12. The bowl is an oval seat ring at rows 13-20. Its width goes 12, then 14 across rows 13-19, then 12 and 10 at rows 20-22, so it widens and narrows again. Blue water is visible inside at rows 15-18, which shows the opening from above. Below that the bowl front and pedestal form a front face of about 11 rows (rows 21-31). This matches the green three-quarter references, not the flat-band or rim-only wrong ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The toilet is about one tile in size. It carries 11 visible tones per tile, above the hedge reference (9) and close to the cheese stall (17) and roofed well (20). Near-flat coverage is 0%, so there are no large single-colour fills. The dark edge pixels are 0% neutral, so the outline leans blue-grey, a darker version of the porcelain next to it, rather than a black sticker line. The tank, lid, seat and bowl are separated by value steps of about 5 tones (highlight, light, mid, shade, dark). Texture is modest, with shading rather than grain, which suits smooth porcelain. Next to the hedge and bench it does not look thinner, flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16326
+  }
+ ],
+ "decidedAt": "2026-10-21T01:24:13.558Z",
+ "cells": {
+  "16": [
+   "2486a0d86c09b8ca",
+   "da09f87a2e405286"
+  ],
+  "24": [
+   "08ad06c31e9bb2c3",
+   "2571c20fd0acc4b9",
+   "2fc45ccb75b488b8",
+   "7cfe3c3dab9056c6",
+   "8492d7a46f7f32d6",
+   "a4d75c58203bf9d4",
+   "a5e96b868f07f979",
+   "ba653908df9b736e",
+   "c14f664d04e6ac8e",
+   "d7533ac1ef4439e5",
+   "e182f4b4f48eaaad",
+   "f1cf63b592df2875"
+  ],
+  "32": [
+   "8976a97a0b8c3dac",
+   "e77c6add7db70a39",
+   "e7cae358d003bd52"
+  ],
+  "48": [
+   "011f421b6921d7d0",
+   "2a798a7fa84a77bd",
+   "4971017daa91f61a",
+   "be73cea6429c372b",
+   "ea0f3bfbfa633a68",
+   "efa02868c861c1fc"
+  ]
+ }
+}

@@ -104,6 +104,8 @@ export interface IntentDeclaration {
    */
   readonly referenceWork?: string | null;
   readonly summary: string;
+  /** 요청이 이름으로 말한 장소인데 아직 없는 것(템플릿 빈 풀밭을 대상으로 잡았던 선언을 코드가 돌린 경우) — 「작은 마을」. */
+  readonly placeToBuild?: string;
   readonly source: IntentSource;
 }
 
@@ -129,6 +131,34 @@ export interface IntentFacts {
   readonly wikiContext?: string;
   readonly actualStart?: { readonly mapId: string; readonly x: number; readonly y: number };
   readonly unresolvedFunctional?: readonly UnresolvedFunctionalRequirement[];
+  /** 아무것도 칠하지 않은 템플릿 맵(풀밭 한 장) id — 이름 붙은 장소를 요청했는데 선언이 이 맵을 대상으로 잡으면 새 장소로 돌린다. */
+  readonly untouchedMapIds?: readonly string[];
+}
+
+/** 「작은 마을 맵에」「숲 깊은 곳 맵에」처럼 장소 이름을 붙인 맵. 「이 맵에」「빈 맵에」「현재 맵에」는 아니다. */
+const NAMED_PLACE_MAP = /([가-힣A-Za-z]+(?:\s+[가-힣A-Za-z]+){0,2})\s*맵\s*(?:에|에서|을|를|으로|로|의|안)/u;
+const NOT_A_PLACE = new Set(["이", "그", "저", "현재", "지금", "빈", "이번", "열린", "시작", "기존", "같은", "새", "다른", "모든", "각", "두"]);
+const INTERIOR_PLACE = /방|실내|가게|상점|여관|교회|성당|학교|사무실|서재|도서관|창고|지하|집\s*안|대장간|술집|카페/u;
+
+/**
+ * 장소를 이름으로 말했는데(「작은 마을 맵에 NPC 세 명」) 선언이 템플릿의 빈 풀밭을 대상으로 잡았으면 대상을 비우고 새 장소를 짓게 한다.
+ * 왜(2026-10-22 조수 능력 루프 r2·r3·r4 npc-portrait-match, r2·r3 boss-balance-sim): 선언이 「현재 맵에 세 명을 놓는다」로 읽어
+ * space=none·targetMapId=빈 맵·needsPlan=false 를 냈고, 조수는 집 한 채 없는 풀밭에 인물만 세웠다(판정 「마을이 없다」 세 번).
+ * 빈 맵에 놓으라는 경고(seedMapPlacementNote)는 놓은 뒤라 조수가 무시했다 — 계획 단계에서 바로잡는다.
+ * 그 이름의 맵이 이미 있으면(사용자가 지은 「마을」 맵) 건드리지 않는다.
+ */
+export function retargetNamedPlaceOffBlankMap<T extends Pick<IntentDeclaration, "mode" | "space" | "targetMapId" | "needsPlan" | "placeToBuild">>(intent: T, facts: Pick<IntentFacts, "userText" | "maps" | "untouchedMapIds">): T {
+  if (intent.mode !== "create" && intent.mode !== "modify") return intent;
+  if (!intent.targetMapId || !facts.untouchedMapIds?.includes(intent.targetMapId)) return intent;
+  const match = NAMED_PLACE_MAP.exec(facts.userText.normalize("NFKC"));
+  if (!match) return intent;
+  const words = match[1]!.trim().split(/\s+/u);
+  if (NOT_A_PLACE.has(words[words.length - 1]!) || words.length === 1 && NOT_A_PLACE.has(words[0]!)) return intent;
+  const place = words.join(" ");
+  const named = facts.maps.some((map) => !facts.untouchedMapIds!.includes(map.id) && (map.name.includes(place) || place.includes(map.name)));
+  if (named) return intent;
+  return { ...intent, targetMapId: null, needsPlan: true, placeToBuild: place,
+    space: intent.space === "none" || intent.space === "unclear" ? (INTERIOR_PLACE.test(place) ? "interior" : "outdoor") : intent.space };
 }
 
 export const INTENT_MODES: readonly IntentMode[] = ["create", "modify", "question", "other"];
@@ -199,6 +229,7 @@ Rules:
 - 마을·도시를 짓는 요청은 tools 에 author_beodeul_town 을 적는다(버들항 블록 키트 조립). 집 한 채는 inspect_terrain·place_terrain_house. 숲마을 author_village·author_house 는 없다.
 - 던전·카타콤·지하 감옥·성 지하·미궁·하수도·동굴·신전 유적·광산·화산·얼음 동굴 층을 짓는 요청은 tools 에 author_dungeon 을 적는다(방 배치·벽·바닥·장식·계단을 코드가 한 번에 깐다). 월드맵 장소 입구에 던전·마을을 잇는 요청은 link_world_entrance 도 적는다. 칩셋과 장르는 코드가 정한다 — 몬스터 수집(포켓몬풍) 프로젝트는 몬스터 키트의 짧은 동굴(방 2~4, 야생 조우 구역·시선 트레이너), 그 밖은 버들항 beodeul_city 의 긴 던전(방 6~9, 보스·보물·잠긴 문). 종류는 사용자 낱말로 type 을 고른다 — 지하묘지·카타콤·감옥·던전=catacomb, 성 지하·성채=castle, 미궁·미로=labyrinth, 하수도·수로=sewer, 동굴·지하 호수=cave, 신전·사원·유적=temple, 광산·갱도=mine, 화산·용암=volcano, 얼음 동굴=ice. 그 칩셋이 못 짓는 종류(예: 몬스터 키트의 광산·하수도, 버들항의 얼음)는 도구가 가장 가까운 종류를 권하며 거절한다 — 사용자에게 알리고 다른 칩셋으로 바꿔 칠하지 않는다. 벽·소품을 stamp_object·paint_tiles 로 따로 깔지 않는다. 필드 적·상자·트레이너는 그 결과의 빈 바닥 칸(data.rooms[].spots, data.population)에 둔다.
 - 탈것(비행선·배·초코보·광산 수레·뗏목)을 놓는 요청은 tools 에 place_vehicle 을 적는다(vehicle: boat|ship|airship|chocobo|cart|raft). 초코보는 숲·들을 걷고, 광산 수레는 레일 칸에서만, 뗏목은 강에서만 다닌다 — 월드맵 키트 지도는 지형 태그가 이미 붙어 있다.
+- 맵 뒤·창밖·맵 바깥으로 보이는 먼 풍경(하늘·노을·밤하늘·별·우주·섬 둘레 바다·구름 바다·흐르는 구름 — 맵 배경·파노라마·시차 배경) 요청은 tools 에 set_map_properties 를 적는다(background.preset 견본 + clearForBackground 로 비칠 자리 비우기). 이미 물 타일로 둘러싸인 섬의 「바깥을 바다로」, 우주 정거장의 「창밖을 별밤으로」 도 맵 배경이다 — 물·별 타일을 다시 칠하거나 맵을 새로 짓지(compose_*·resize_map) 않는다. 견본에 없는 새 배경 그림(붉은 달 밤하늘·모래폭풍 지평선처럼)을 «만들어» 달라면 generate_map_background 를 적는다. 「배경」 이 맵 배경(파노라마)인지 맵 꾸미기인지 말에서 갈리지 않으면(예: 「배경 좀 예쁘게」) clarify 로 묻고 clarifyOptions 에 두 뜻을 둔다.
 - 오페라·콘서트·연극 무대 공연(가사 자막·합창·막마다 배경 전환·조명)은 tools 에 author_stage_performance 를 적는다(막 목록 acts). 대사·카메라 중심 컷신은 script_cutscene, 그림 배우가 걷고 부딪히는 연출은 script_cutscene_staged.
 - 일본 상가·상점가·골목 거리(번들 칩셋 jp_city)나 jp_city 맵 위의 건물 짓기는 author_beodeul_town 이 아니다 — tools 에 create_map·fill_region·list_jp_city_building_parts·build_jp_city_building 을 적는다.
 - 크로노 트리거·FF6 풍 한 장(章)(천년제 마을·나르셰 광산·오페라 하우스 사건처럼 거점 맵 + 갈래 맵 + NPC·퀘스트·사건을 한 번에) 요청은 tools 에 author_jrpg_chapter 를 적는다.
@@ -356,18 +387,23 @@ export function parseIntentDeclaration(raw: string, facts: IntentFacts): IntentP
   const actionCombat = authoring && parsed.actionCombat !== undefined
     ? parseActionCombatRequirements(parsed.actionCombat) : undefined;
   if (actionCombat === null) return { intent: null, error: "actionCombat targets are missing or malformed" };
+  const retargeted: Pick<IntentDeclaration, "mode" | "space" | "targetMapId" | "needsPlan" | "placeToBuild"> = retargetNamedPlaceOffBlankMap({ mode: mode as IntentMode, space, targetMapId, needsPlan: parsed.needsPlan === true }, facts);
   return {
     intent: {
       mode: mode as IntentMode,
-      space,
+      space: retargeted.space,
       facility,
-      targetMapId,
+      targetMapId: retargeted.targetMapId,
       useSelection: facts.selection !== null && parsed.useSelection === true,
       clarify,
       clarifyOptions,
-      needsPlan: parsed.needsPlan === true,
+      needsPlan: retargeted.needsPlan,
+      ...(retargeted.placeToBuild ? { placeToBuild: retargeted.placeToBuild } : {}),
       resetsContext: parsed.resetsContext === true,
-      tools,
+      // 지어야 할 장소가 있으면 시공 도구를 처음부터 보이게 한다 — 선언 목록은 인물 도구뿐이었다(r5 npc-portrait-match).
+      tools: retargeted.placeToBuild
+        ? [...new Set([...(retargeted.space === "interior" ? ["build_hand_interior_room", "list_hand_interior_parts"] : ["author_beodeul_town"]).filter((name) => knownTools.has(name)), ...tools])]
+        : tools,
       viewNavigation: parsed.viewNavigation === true && clarify === null,
       ...(isRecord(parsed.readBeforeWrite) ? { readBeforeWrite: {
         project: parsed.readBeforeWrite.project === true,
@@ -629,6 +665,11 @@ export function formatIntentNote(
   }
   if (intent.clarify && options.clarifyBypassed) {
     lines.push(`[의도] 모호한 점: ${intent.clarify} — 자율 모드라 되묻지 않는다. 가장 그럴듯한 해석으로 진행하고 첫 문장에 어느 쪽을 택했는지 밝혀라.`);
+  }
+  if (intent.placeToBuild && intent.mode !== "question") {
+    // 코드가 찾은 사실: 요청한 장소가 아직 없고 지금 맵은 템플릿 빈 풀밭이다(retargetNamedPlaceOffBlankMap).
+    lines.push(`[장소 먼저] 요청한 「${intent.placeToBuild}」 맵이 아직 없다 — 지금 열린 맵은 아무것도 칠하지 않은 템플릿 풀밭이다. `
+      + `인물·이벤트를 놓기 전에 그 장소를 먼저 지어라(야외 마을·거리는 author_beodeul_town 등, 실내는 build_hand_interior_room). 빈 풀밭에 인물만 세우면 요청한 장면이 없다.`);
   }
   if (intent.mode === "question") {
     lines.push("[의도] 질문·조회다. 프로젝트를 바꾸지 말고 조회 툴로 답한다.");

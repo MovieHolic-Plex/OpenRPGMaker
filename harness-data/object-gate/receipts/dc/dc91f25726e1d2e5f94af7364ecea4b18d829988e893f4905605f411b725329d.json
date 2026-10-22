@@ -1,0 +1,399 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dc91f25726e1d2e5f94af7364ecea4b18d829988e893f4905605f411b725329d",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "mart gondola snack",
+ "label": "modern_city_interior/mart-gondola-snack",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 1행 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 1행 < 4 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 17,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band with goods or sign blocks",
+      "rows": "1-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top shelf lip with shadow",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "shelf bays with snack boxes (3 tiers)",
+      "rows": "10-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat front view of shelving. The top band (rows 1-6) holds front-facing tan boxes on a light gray ground, so it reads as a header or goods, not a horizontal surface. Row 7 is a light line and rows 8-9 are gray and dark, which together make a 1-3 row lip, not a top plane. The shelf tiers below have 1-row front lips (rows 15, 22, 29) followed by dark shadow rows, and the snack boxes are drawn face-on. Nothing in the width profile (a constant 32) shows an ellipse, a roof or a receding top. This matches the 'front elevation: top 1' and 'rim only' wrong examples."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small shelf unit with a grey-blue frame and rows of orange and cream snack items. It has 16 visible tones per tile, in line with the stall (17), well (20) and hedge (9). Near-flat coverage is 0%, so there are no flat fills. 0% of its dark edge pixels are neutral, so the outline is a tinted dark frame tone, not a sticker-style black line. Each shelf slot carries its own item shapes and highlights, and the frame has a lit top edge and darker sides. Weaknesses: the frame ramp has about 4 steps against the references' 5-6, and the repeated item pattern is somewhat regular. It would not look thinner or flatter than the stall or well beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25281
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header band with sign panels",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "shelf edge strips (rows 15, 22, 29), each 1 row, with a dark row below",
+      "rows": "15-15",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-16"
+     },
+     {
+      "part": "snack boxes on shelves",
+      "rows": "10-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat 32-wide rectangle seen straight on. Rows 1-6 are a header strip of sign panels, which reads as a vertical face rather than a roof or top. Row 7 is a 1-row light line, followed by rows 8-9 of gray and dark. This is a rim or edge, not a foreshortened top. Below it are three shelf bays (rows 10-14, 17-21, 24-28) with product boxes shown face-on. Each bay is divided by a 1-row light shelf lip (rows 15, 22, 29) with a dark row under it. No shelf shows its horizontal surface, no ellipse is drawn, and there is no receding side face. This matches the 'front elevation, top 1-2' reference rather than the cabinet with a 5-row top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small shelf unit, about one tile. It has 16 visible tones per tile against 17-20 for the stall-cheese and well references. Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is tinted (dark blue-grey beside the frame, dark brown beside the goods) and not a black sticker line. The frame has a lit top rail and darker sides and bottom, and each shelf row has its own packaged items with highlights and shadows. The items repeat in a regular grid, which keeps the grain a little simpler than the stall's varied goods, and the frame ramp is about 4 steps against the references' 5-6. Structure and tone count are still at the reference level, and a careful artist would accept it beside the stall without it looking flat.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 29590
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band with snack packs (face-on products on pale panel)",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "shelf lip lines",
+      "rows": "15, 22, 29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snack boxes on shelves",
+      "rows": "10-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat front view of a store shelf. Rows 1-6 are a header strip of face-on product packs, not a horizontal surface. Row 7 is a 1-row light lip with rows 8-9 below it, and the same lip pattern repeats at rows 15, 22 and 29. Each shelf bay (rows 10-14, 17-21, 24-28) shows boxes face-on, with no receding top plane, no ellipse and no side face. The silhouette is a uniform 32 px wide for rows 0-31. That gives a front face of about 30 rows and at most a 1-row rim on top, which matches the red 'front elevation: top 1' and 'rim only' references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The gondola is a single-tile-scale shelf unit. Its frame has a light cap, mid and dark steps, and the snack packs are shaded in 2-3 tones with highlight dots. That is about 4 steps against roughly 5 for the references, so slightly shallower but not flat. The outline is a dark, visibly tinted blue-grey and not neutral black: 0% of dark edge pixels are near-neutral, the same as the hedge and the stall. The measured facts support it: 16 visible tones per tile against 17 for the stall, 20 for the well and 9 for the hedge, with 0% near-flat coverage. The repeated shelf grid is somewhat regular, and its 18 total colours are fewer than the stall's 40 and the well's 38. Even so, a careful artist would accept it next to the references without it looking thinner or more sticker-like than the bench or lamp.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21948
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header sign band with product banners",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "shelf 1 with snack boxes",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16"
+     },
+     {
+      "part": "shelf 2 with snack boxes",
+      "rows": "16-21",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "shelf 3 with snack boxes",
+      "rows": "23-28",
+      "evidence": "none",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30"
+     },
+     {
+      "part": "snack boxes on shelves",
+      "rows": "10-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is drawn face-on. The header (rows 1-6) is a vertical sign panel with banners, ending in a light 1-row line at row 7 and a dark row at 9. No band, ellipse, roof or visible contents show a horizontal surface. The shelf lines at rows 15, 22 and 29 are 1-row rims with 1 row of shadow beneath, and each shelf bay is a vertical face with front-facing boxes. The column scan repeats the same pattern (light line, dark line, 5 rows of dark interior) down the full height, with no top surface at the top. The result is a flat front elevation like the 'front elevation: top 1' and 'rim only' reference cases."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a standing shelf prop of the same kind as the references. Its measured facts are 16 visible tones per tile, 0% near-flat coverage and 0% neutral dark edge pixels. That is on par with the stall (17) and well (20) and above the hedge (9). The outline is a tinted dark grey-brown, not a neutral black sticker line. By eye, the frame has a few lightness steps (highlight, mid, dark), and the shelf rows carry many small snack packages in varied tones, so no large flat areas remain. It is somewhat more regular and grid-like than the hand-grained references, with less grain on the frame itself, but it does not look thinner or flatter next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17678
+  }
+ ],
+ "decidedAt": "2026-10-21T02:40:47.101Z",
+ "cells": {
+  "16": [
+   "69dbb8834dd5b246",
+   "8d35c598f804c137",
+   "cac1298f0fba88a8",
+   "ce6a487cbf343331"
+  ],
+  "24": [
+   "0c87fd184dd5892d",
+   "0daa3f39eecf932e",
+   "1be0a0f4ae2e647b",
+   "2f117bc946690205",
+   "3581171f4b1e720d",
+   "376e733fd2364005",
+   "3d0ea3b0a859f51e",
+   "404dc9d606d66094",
+   "431f8d7c0eaa1e2e",
+   "5b8a10ae7f56747f",
+   "6073437e89b0f406",
+   "81d66e6ccd2b0be9",
+   "857661c6e9ba90f8",
+   "89de82e8d977b306",
+   "8eec6c5cdee8a7d6",
+   "935bb7979f024c86",
+   "a669c6617aea86d3",
+   "a6e39b3490d9f5c7",
+   "a92332868d5824ea",
+   "bbd29d231d6ddbd4",
+   "c6d3de8e36bbae2e",
+   "d26ae4b31c76df28",
+   "e2313a9ff667944f",
+   "e8d93b9e055eaac7"
+  ],
+  "32": [
+   "491bcd389e0caa2a"
+  ],
+  "48": [
+   "269f51462707a181",
+   "78682b3cbd3ff990",
+   "a0bbf7b1b58c31b0",
+   "b0475463d2eb642b",
+   "b67ea75fe0927dac",
+   "f63a1e9529fb2279"
+  ]
+ }
+}

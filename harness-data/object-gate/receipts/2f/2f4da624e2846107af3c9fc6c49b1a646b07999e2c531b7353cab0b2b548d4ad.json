@@ -1,0 +1,531 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2f4da624e2846107af3c9fc6c49b1a646b07999e2c531b7353cab0b2b548d4ad",
+ "width": 64,
+ "height": 64,
+ "kind": "other",
+ "name": "jp-inaka-red-tractor",
+ "label": "jp_inaka_pack/jp-inaka-red-tractor",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 투영이 3/4 아님(side_profile_no_top) (2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "투영이 3/4 아님(side_profile_no_top) (2/4)",
+   "투영이 3/4 아님(front_elevation) (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 22,
+  "darkV5": 38,
+  "nearBlackEdge": 0.25,
+  "opaqueTiles": 10
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "canopy roof",
+      "rows": "3-10",
+      "evidence": "c",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-14"
+     },
+     {
+      "part": "hood top strip",
+      "rows": "30-33",
+      "evidence": "a",
+      "front_edge_line_row": 33,
+      "eave_shadow_rows": "34"
+     },
+     {
+      "part": "rear fender arch",
+      "rows": "33-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "exhaust pipe",
+      "rows": "18-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat and backrest",
+      "rows": "21-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rear and front wheels",
+      "rows": "39-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The tractor is drawn as a side profile facing east. The canopy roof (rows 3-10) has a front-edge line at row 11 and eave shadow at rows 12-14, so it does read as a top surface. The main body (hood, fender and wheels) is a side elevation. The hood top is only a thin 3-4 row strip (rows 30-33, pale highlight at rows 32-33) above a tall vertical side (rows 34-48) with vents and stripes. The fender and wheels are vertical profile shapes with no horizontal plane, so the main body shows effectively no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate tractor shows 13 visible tones per 16x16 tile, between the hedge (9) and the cheese stall (17) and well (20). Near-flat coverage is 4%, well below the stall's 13%. The dark edge pixels are 0% neutral, so the outlines lean toward the material colours (dark red-brown beside the body, dark tint beside the wheels) rather than a black sticker line. By eye, the red body has about 4-5 steps (highlight, light, mid, dark, deep). The yellow wheel hubs and the grey-white canopy are also stepped, and the tyres have tread detail. There is some texture, such as hub and tread dots, though the big red bonnet and the canopy are fairly smooth. It is a larger, busier object than the bench or lamp and would sit acceptably beside the stall and well without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16790
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "canopy roof",
+      "rows": "3-10",
+      "evidence": "c",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-14"
+     },
+     {
+      "part": "hood top strip",
+      "rows": "31-33",
+      "evidence": "a",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hood side face with vents",
+      "rows": "34-48",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rear fender arch",
+      "rows": "33-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "big and small wheels",
+      "rows": "39-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat and backrest",
+      "rows": "18-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "exhaust pipe",
+      "rows": "18-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The tractor is drawn in side profile facing east. Its canopy roof has a real top plane (rows 3-10) with a front edge line at row 11 and eave shadow at rows 12-14, but the canopy is not the main body. The main body is the hood and engine. Its top is only a thin 3-row highlight strip (rows 31-33) ending in a dark line at row 34. Below that is a vertical side face with vents (rows 35-48). The fender, wheels, seat and exhaust are all drawn as vertical profile shapes with no horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The tractor shows 13 visible tones per 16x16 tile, against 9 for the hedge, 17 for the stall and 20 for the well, so it sits inside the reference range. Near-flat coverage is 4%, below the stall's 13%. Dark edge pixels are 0% near-neutral, so the outlines are tinted dark red-brown beside the red body, not a black sticker line. The red body has about 5 steps (highlight, light, mid, dark, deep). The roof canopy is light grey with a darker underside, and the wheels carry yellow hubs with dark tyres and tread detail. Larger areas such as the canopy top and the rear wheel are fairly smooth, but they carry shade variation and no 5x5 flat blocks are measured. At this scale it holds up next to the stall and well without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21391
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "canopy roof",
+      "rows": "3-10",
+      "evidence": "c",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-14"
+     },
+     {
+      "part": "engine hood top",
+      "rows": "30-33",
+      "evidence": "a",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": "34-35"
+     },
+     {
+      "part": "rear fender arch",
+      "rows": "32-38",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "37-39"
+     },
+     {
+      "part": "seat and cab rear",
+      "rows": "21-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "exhaust pipe",
+      "rows": "18-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "39-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tractor is drawn in side profile, facing east. The canopy has a clear roof plane in rows 3-10 (white), ending in a red front-edge row 11 with dark eave shadow in rows 12-14. The hood has a light top band in rows 31-33, ending in a dark line at row 34, above a red side face of about 16 rows (rows 34-50). The hood top is thin (about 3-4 rows) but has an edge line. The wheels, rear fender and cab are mostly vertical profile shapes, so some parts lack a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The tractor is a recognizable red tractor with a canopy, yellow-hubbed wheels and an orange front attachment. The measured facts are comparable to the references: 13 visible tones per tile against 9 (hedge), 17 (cheese stall) and 20 (well). Near-flat coverage is 4%, below the cheese stall's 13%. The dark edge pixels are 0% neutral, so the outline is tinted: dark red-brown beside the red body and dark tone beside the wheels. It is not a sticker-style black line. By eye, the red body has about 4 steps (highlight, light red, mid, dark) and the wheels have 3-4. The grey canopy roof is fairly smooth, with a light top and a darker underside but little grain. The wheel hubs are simple discs. The tractor has less grain and fewer per-material ramps than the well or the cheese stall, which have per-tile highlights and speckle. It is slightly less textured than the best references but is within the acceptable range, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19354
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "canopy roof",
+      "rows": "3-10",
+      "evidence": "c",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-14"
+     },
+     {
+      "part": "hood top",
+      "rows": "30-32",
+      "evidence": "a",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rear fender over big wheel",
+      "rows": "33-36",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "37-38"
+     },
+     {
+      "part": "seat and backrest",
+      "rows": "18-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "canopy pillars",
+      "rows": "15-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "exhaust pipe",
+      "rows": "18-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "big and small wheels",
+      "rows": "39-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tractor is drawn in side profile facing east. The canopy roof (rows 3-10, red edge at row 11, shadow rows 12-14) does show a top plane. The main body is the hood, and its top is only about 3 rows (30-32, with a peach highlight at row 32) before the vertical red side face (rows 33-48) with its grille slats. The fender, seat, pillars and exhaust pipe are drawn as vertical shapes, and the wheels are flat side discs with no tread top. So the main volume has only a rim-like top strip, which reads as a front/side elevation rather than a true three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The tractor candidate has 13 visible tones per full tile, which sits between the hedge (9) and the cheese stall (17) and below the roofed well (20). Near-flat coverage is 4%, close to the stall's 13% and far from a flat fill. The dark edge pixels are 0% near-neutral, so the outlines lean toward tinted dark red-brown and dark grey-blue rather than a neutral black sticker line. The red body shows roughly 4-5 steps (highlight, light, mid, dark, deep), the yellow wheel hubs have several steps, and the grey canopy and roof have 3-4 steps. The tires and the dark-red shading carry some grain and variation. Overall it is comparable to the stall and well in craft, with no large flat areas.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19248
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:03.951Z",
+ "cells": {
+  "16": [
+   "172f998adadf4892",
+   "3ae34d471247b749",
+   "752f654b81cff0c3",
+   "7ca7eff3977ef150",
+   "8d08a432d33fb905",
+   "8e1b4c06b8609d90",
+   "a12ff81558e561f6",
+   "a240d6137f85d086",
+   "a25a7ea96bb4c1cf",
+   "a9feacc5bdcc1786",
+   "b56bfd12c9384fe7",
+   "c51e22768bb141c1",
+   "d534b259c82cd398",
+   "e3e55cf3ef65108b",
+   "e8244101042c6af3"
+  ],
+  "24": [
+   "001918ec50d09e0f",
+   "034b1b24b73e451e",
+   "035e457de6b1a9ea",
+   "0414a2eb165b9d57",
+   "043d0fcdc205859c",
+   "08e0aed5c94a02b5",
+   "0d4a812c8f973382",
+   "183c1a04e7694a62",
+   "1d2e7e4dec52e802",
+   "2088aa051f405014",
+   "24b08d8a1ef3e841",
+   "2c34f265938436b8",
+   "2d08ce91f424ae37",
+   "2db570f81aafde99",
+   "2ee6561a7c8d1cbd",
+   "33bc8d9e63ac41f7",
+   "3bc6a1acc3943800",
+   "3dda107af006d93d",
+   "40dfe86a0da9ee3f",
+   "43c073fdbdb38144",
+   "470f3b137c5e1af2",
+   "47418ea9eb0f416f",
+   "4d70d577a4035c6b",
+   "4da194d9dca41995",
+   "63e0065881142daf",
+   "6b282e5b8fe8725b",
+   "6d2adb0e78a6f773",
+   "789223f3d9e664d6",
+   "798aeb9a5cf2eb60",
+   "803accac09954e7d",
+   "820a7763633e6d42",
+   "8340650750ce618b",
+   "8d7cf4119753c6b2",
+   "8e5b77d4fc6fc1d0",
+   "8f842f5541b0cc53",
+   "8f8cfa68af45fa5c",
+   "9c532b72a89e6389",
+   "a18c94d3099bfb4f",
+   "b2168ddb6a8261ca",
+   "b416cf0ba6c96c9f",
+   "b41dc0a82378b558",
+   "b47e9a9a268537dd",
+   "c4260d1740552fa1",
+   "c48ec54d3dfed461",
+   "c7e48bbac105b166",
+   "ced558179b2baaf6",
+   "d38794630919d2e6",
+   "e986972375ab6b96",
+   "ef8579a7a0572347",
+   "f758f8127ce96489",
+   "fcc0cb35b92ddf1d"
+  ],
+  "32": [
+   "6829fe4d1352ee8d",
+   "81fcc0cdeb9cab7b",
+   "ad22489ad23fa0ac",
+   "b68d65f7b1e21155"
+  ],
+  "48": [
+   "12a20a83fe8a0d6d",
+   "18c28cd48cc91157",
+   "22ea80a35c75dc89",
+   "34d280bf539f768a",
+   "35f86828dc89be4b",
+   "469040ab65dc558c",
+   "6c620724fb4a31c0",
+   "789edfcc5981c5cf",
+   "7f73c49ec4bb4e08",
+   "83e77841b4844083",
+   "884aef0712181ea8",
+   "995a7ed2af0fe0ff",
+   "a313f50289c5c5e6",
+   "a80d214d32de7ce6",
+   "aed3d9bba9eea6b4",
+   "c438685af28c0645",
+   "dd70ac00fe2b9c16",
+   "e51f925e05d5034e",
+   "e6b6aeb82917aea9",
+   "e9e0ab43a5a23044",
+   "ef4fe7471fd30464",
+   "fe0c167e8d03e476",
+   "fe8e911a49f4c4d2"
+  ]
+ }
+}

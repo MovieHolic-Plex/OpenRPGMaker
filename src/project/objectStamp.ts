@@ -59,6 +59,10 @@ export function translateTiles(source: TilesetDef, target: TilesetDef, tiles: It
   let slotsAdded = 0;
   for (const tile of new Set(tiles)) {
     if (tile < 0) continue;
+    // Stamping a tileset's own kit onto a map of that same tileset: the number is the picture. Do not second-guess it
+    // against the bundled sheet catalog (bundledChipsetFrameCount), which can lag the tileset's count — otherwise every
+    // cell past the catalog became -1 and the stamp reported cells while drawing nothing.
+    if (source === target && tile < target.count) { result.set(tile, tile); continue; }
     const picture = pictureOf(source, sourceGrafts, tile);
     if (!picture) { result.set(tile, -1); continue; }
     // Same number, same picture (the common case: stamping a kit onto its own tileset).
@@ -112,6 +116,10 @@ export function stampPattern(project: Project, map: GameMap, source: TilesetDef,
     throw new Error(`(${x},${y}) 에 ${pattern.width}×${pattern.height} 를 놓으면 맵 ${map.width}×${map.height} 과 겹치지 않습니다`);
   }
   const translated = translateTiles(source, target, [...pattern.lower, ...pattern.upper]);
+  const lost = [...translated.map].filter(([, to]) => to < 0).map(([from]) => from);
+  if (lost.length) {
+    throw new Error(`${source.id} 칸 ${lost.slice(0, 8).join(", ")}${lost.length > 8 ? ` 외 ${lost.length - 8}칸` : ""} 의 그림을 찾을 수 없어 찍지 않았습니다(타일셋 칸 수 ${source.count}, 시트 칸 수를 넘음)`);
+  }
   let clipped = false, cells = 0;
   const coveredUpper: { x: number; y: number }[] = [];
   for (let py = 0; py < pattern.height; py += 1) {

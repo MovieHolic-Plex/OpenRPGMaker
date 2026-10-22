@@ -1,0 +1,83 @@
+{
+ "group": "E",
+ "items": [
+  {
+   "label": "jp_inaka_pack/ground/inaka-aze-path",
+   "kind": "terrain",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "Old defect gone: specks are now spread over all 16 rows (each row's std 20-23), and a 12x8 tiled field at 1x/2x/3x shows no ruled line every 16 px.",
+    "Style: base (166,142,115) is the same as the at-dirt centre fill and covers 212/256 px, with 1-px specks in 5 tones on a crisp grid. That matches the same-chipset ground (at-dirt is flat in the same way), so no 8b; 8a/8c/8d do not hold. Joins at-dirt with no seam.",
+    "Advisory (not a gate charge): it still cannot be told apart from at-dirt fill, and there is no grass at all to read as an aze levee. maps/04 is an OLD render that still shows the ruled-line version, so the new tile has not been seen in a real map."
+   ],
+   "fixes": [
+    "Optional: add a few 1-2 px grass tufts near the tile edges (green 104,158,99 / 73,128,76) so it reads as a levee path rather than dirt.",
+    "Re-render maps/04 with the redrawn tile to confirm it in place."
+   ]
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-canal-water",
+   "kind": "terrain",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "Old defect gone: the white glints and the diagonal cluster are removed. It is now 4 navy tones (176 px base, 53 dark, 27 light dashes) with short horizontal ripple dashes spread across the tile; tiled 12x8 and as a 2-wide channel between canal-wall tiles, it reads as an even rippled surface with no hard diagonal lattice.",
+    "Style: crisp 1-px grid, no outline or blur; the 4-tone water is not flat. Being darker and bluer than at-stream (teal) is palette only, which is not charged.",
+    "Advisory: in a long 1-2 tile channel the dash columns repeat every 16 rows and are faintly visible at 3x, but not at 1x."
+   ],
+   "fixes": [
+    "Optional: make a second variant with the dashes moved, and alternate the two on long canal runs."
+   ]
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-gravel-road",
+   "kind": "terrain",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "Old defect gone: the single stone clump is replaced by stones spread over the whole tile in 9 tones (dark 105,77,56 shadows, light 184,179,163 tops). At 1x and tiled 4x4 at 8x it reads as an even gravel surface, with no polka-dot lattice and no visible tile seam.",
+    "Style: crisp grid, shading in tinted browns rather than a black outline; no 8a-8d.",
+    "Advisory: at 2-3x there is a faint upper-left-to-lower-right diagonal grain, because the dark/light stone pairs line up; it is not visible at 1x."
+   ],
+   "fixes": [
+    "Optional: break the diagonal grain by moving 2-3 dark stone pairs onto the opposite diagonal."
+   ]
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-meadow-wildflower",
+   "kind": "terrain",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "Old defect gone: one fixed flower group is replaced by about 8 small flowers and tufts spread over the tile. Tiled 4x4 at 8x and as a field at 1x, there is no rigid flower-group lattice. The base 104,158,99 is the same as at-grass, so they join with no seam.",
+    "Style: crisp grid, tinted dark-green tufts, no outline; no 8a-8c. At 1x it reads as grass dotted with flowers, so no 8d.",
+    "Advisory: the flowers are all blue-white (195,201,211 / near-white) and the one olive-yellow pixel is invisible at 1x. At 2-3x the field looks frosted or salted rather than flowery. Not a gate charge."
+   ],
+   "fixes": [
+    "Optional: make 2-3 of the white flowers clearly another colour (yellow, e.g. 230,200,80, or pink/purple) so the field reads as wildflowers rather than frost; keep the current density."
+   ]
+  }
+ ],
+ "summary": "Group E (4 ground redraws): all 4 PASS. Each previously charged tiling defect (aze ruled lines, canal diagonal glint lattice, gravel single-clump polka dots, meadow fixed flower group) is gone when tiled at 1x-8x, and no new 8a-8d charge holds. Advisories, none of them gate charges: aze is still indistinguishable from at-dirt, and maps/04 is a stale render of the old version; the meadow flowers are all white, so the field reads as frost at 2-3x; gravel has a faint diagonal grain at 2-3x. None of the 4 new tiles appears in maps/*.png, so in-map checks were simulated: tiled fields plus a canal/road/levee test scene."
+}

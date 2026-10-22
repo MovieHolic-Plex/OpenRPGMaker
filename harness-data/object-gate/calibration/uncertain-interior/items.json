@@ -1,0 +1,233 @@
+[
+ {
+  "name": "int__crate__cabbage",
+  "kind": "box",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:crate:cabbage (양배추 궤짝) · 10-01 전수조사 B",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "B",
+  "defect": true
+ },
+ {
+  "name": "int__basket__cabbage",
+  "kind": "container",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:basket:cabbage (양배추 바구니) · 10-01 전수조사 B",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "B",
+  "defect": false
+ },
+ {
+  "name": "int__crate__carrot",
+  "kind": "box",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:crate:carrot (당근 궤짝) · 10-01 전수조사 B",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "B",
+  "defect": false
+ },
+ {
+  "name": "int__basket__carrot",
+  "kind": "container",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:basket:carrot (당근 바구니) · 10-01 전수조사 B",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "B",
+  "defect": false
+ },
+ {
+  "name": "int__table__loaf_bun",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:table:loaf+bun (식빵·둥근빵 탁자) · 10-01 전수조사 B",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "B",
+  "defect": false
+ },
+ {
+  "name": "int__table__cake_pie",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:table:cake+pie (케이크·파이 탁자) · 10-01 전수조사 B",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "B",
+  "defect": true
+ },
+ {
+  "name": "int__pew",
+  "kind": "seat",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:pew (교회 긴의자) · 10-01 전수조사 A",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "A",
+  "defect": false
+ },
+ {
+  "name": "int__armchair",
+  "kind": "seat",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:armchair (안락의자) · 10-01 전수조사 A",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "A",
+  "defect": false
+ },
+ {
+  "name": "int__sofa",
+  "kind": "seat",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:sofa (소파) · 10-01 전수조사 A",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "A",
+  "defect": false
+ },
+ {
+  "name": "int__water_jar",
+  "kind": "container",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:water jar (물독) · 10-01 전수조사 B",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "B",
+  "defect": false
+ },
+ {
+  "name": "int__throne",
+  "kind": "seat",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:throne (왕좌) · 10-01 전수조사 B",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "B",
+  "defect": false
+ },
+ {
+  "name": "int__royal_chest",
+  "kind": "box",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:royal chest (왕실 상자) · 10-01 전수조사 B",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "B",
+  "defect": false
+ },
+ {
+  "name": "int__chair_S",
+  "kind": "seat",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:chair S (의자 S) · 10-01 전수조사 A",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "A",
+  "defect": false
+ },
+ {
+  "name": "int__cupboard",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:cupboard (서랍장) · 10-01 전수조사 B",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "B",
+  "defect": false
+ },
+ {
+  "name": "int__chest",
+  "kind": "box",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:chest (상자) · 10-01 전수조사 B",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "B",
+  "defect": false
+ },
+ {
+  "name": "int__pot",
+  "kind": "container",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:pot (항아리) · 10-01 전수조사 B",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "B",
+  "defect": false
+ },
+ {
+  "name": "int__stove",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:stove (화덕) · 10-01 전수조사 ok",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "ok",
+  "defect": true
+ },
+ {
+  "name": "int__dining_2x1",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:dining 2x1 (식탁 2×1) · 10-01 전수조사 B",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "B",
+  "defect": false
+ },
+ {
+  "name": "int__work_2x1",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:work 2x1 (작업대 2×1) · 10-01 전수조사 B",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "B",
+  "defect": false
+ },
+ {
+  "name": "int__desk_2x1",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:desk 2x1 (책상 2×1) · 10-01 전수조사 B",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "B",
+  "defect": false
+ },
+ {
+  "name": "int__tea_2x1",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:tea 2x1 (찻상(붉은 천) 2×1) · 10-01 전수조사 B",
+  "view34": null,
+  "style": null,
+  "group": "uncertain-interior-v5",
+  "audit": "B",
+  "defect": false
+ }
+]

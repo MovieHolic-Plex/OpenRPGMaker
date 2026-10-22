@@ -1,0 +1,413 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3c6194931ae0219d12071af0089d032a6836ba130b239da9448500a6c5fb4e06",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "mart dairy open",
+ "label": "modern_city_interior/mart-dairy-open",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 1행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 1행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 19,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue sign/banner panel on top",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top rim of case",
+      "rows": "9-9",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dairy products on shelves",
+      "rows": "10-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base/counter front panel",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is drawn face-on. The blue banner at rows 0-8 is a flat front-facing strip with no edge line or eave shadow. Row 9 is a single grey rim line. Rows 10-22 hold shelves and products seen straight on, with dark dividers and no visible contents from above. Rows 23-31 are the vertical front of the base, with white and light bands ending in a blue and dark base. No ellipse, no sloped plane, and no receding top surface is visible. This matches the 'front elevation: top 1' and 'rim only' wrong examples."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small dairy display case with a striped awning top, a pale frame and a shelved window holding many small items. Its measured visible tones per tile (18) match prop-stall-cheese (17) and prop-well-roofed (20) and are well above prop-hedge (9). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% near-neutral, so the outline is tinted, a dark blue-grey tone of the neighbouring frame, not a black sticker line. The frame and glass show about 5 lightness steps, with highlights and shadow on the rim, and the shelf contents add clusters of varied tones. It is smaller and simpler than the cheese stall, with less grain on the frame. Even so, a careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19069
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top awning/header strip",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "case top rim",
+      "rows": "9-9",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "open display shelves with goods (face-on)",
+      "rows": "10-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front counter panel",
+      "rows": "23-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a dairy display case drawn flat and face-on. Row 9 is a single grey rim line at the top of the case, with no band of top-surface rows. Rows 10-22 show the dark interior with shelves and goods seen straight on. Rows 23-30 are a flat white/blue front panel with no counter-top band or edge line. The blue strip at rows 0-8 is a front-facing header with a dark bottom row and no sloped plane. Nothing in the width profile or column scan shows a horizontal top surface (no ellipse, no edge line with eave shadow, no visible contents from above). The structure matches the 'front elevation' red examples."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a 32x32 front-view dairy display case. It has a pale frame, a dark blue-tinted outline, a white interior with shelf rows, and small product dots. Judged against the prop-stall-cheese reference at the same scale, it carries 18 visible tones per tile against the reference's 17, and 0% near-flat coverage against the reference's 13%. The measured 0% near-neutral share of dark edge pixels matches the tinted, material-toned outline I see by eye, so it is not a black sticker line. The frame and glass have about 5 lightness steps against about 6 on the reference, and the shelves and goods give some grain. It is simpler and more geometric than the cheese stall, but it is not thinner or flatter than the references on the primary facts, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20687
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue awning/canopy band above the case",
+      "rows": "1-7",
+      "evidence": "c",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "top rim of the display case",
+      "rows": "9-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf goods (dairy items) inside the case",
+      "rows": "10-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white counter front panel with blue base strip",
+      "rows": "23-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a display case seen straight on. Row 9 is a 1-row gray rim. Below it, rows 10-22 are an open dark interior with shelves and goods, all drawn as vertical faces. Rows 23-27 are a flat white front panel and rows 28-29 a blue base strip, with no edge line or eave shadow marking a horizontal surface. The counter and case body show no horizontal top. The blue awning at rows 1-7 is separate from the body, ends in a darker edge at row 7 with outline row 8, and does not give the body a top. Nothing in the case shows a top-down view, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a dairy display cabinet with a blue-grey frame, a striped top band, a pale interior with shelf dividers and small coloured product dots. It is a standing prop like the stall and well references. It measures 18 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, so no large flat fills; the cheese stall has 13%. The dark edge pixels are 0% neutral, so the outline carries a tint (dark blue-grey beside the frame) rather than a black sticker line, which matches the hedge and cheese stall. The frame shows about 4-5 lightness steps (highlight, light, mid, dark, deep). The interior is a bit simpler than the cheese stall's goods, but the shelf items and grid lines give varied texture. It would sit next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19639
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue striped awning/canopy above the case",
+      "rows": "1-7",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey top rim of the display case",
+      "rows": "9-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "open dairy shelves with products (seen face-on)",
+      "rows": "10-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white front counter panel and blue base",
+      "rows": "23-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the dairy case, rows 9-30. Row 9 is a single grey rim row. Rows 10-22 are a dark interior with shelves of products, all seen straight on from the front. Rows 23-27 are a white front panel, rows 28-29 a blue base, and row 30 an outline. The case has no top band, ellipse or visible contents seen from above, and no front-edge line with eave shadow. The blue striped awning (rows 1-7) is a separate strip detached from the case by outline row 8. It does not give the case a top surface. The case therefore reads as a flat front elevation, not a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a dairy display case. It has a blue-grey frame with highlight, mid and dark bands, a pale interior with shelf lines, and small multi-tone product items. It carries 18 visible tones per 16x16 tile, level with prop-stall-cheese (17) and prop-well-roofed (20) and above prop-hedge (9). Near-flat coverage is 0%, so there are no flat fills of 5x5 or larger. Dark edge pixels are 0% neutral, so the outline leans blue-grey and follows the neighbouring material, as in the references, rather than a black sticker line. It is slightly simpler than the stall and well, with a cleaner, more regular interior and a bit less grain on the frame, but it would sit acceptably beside them without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17669
+  }
+ ],
+ "decidedAt": "2026-10-21T01:38:23.382Z",
+ "cells": {
+  "16": [
+   "34c6d7eb9660eeca",
+   "60650900beaee575",
+   "7d8f56c62134a48b",
+   "86fcfe67a721a45a"
+  ],
+  "24": [
+   "01e38586e14432f7",
+   "157a10b1e8a90eec",
+   "38a1d9842a6b9d2e",
+   "44b0e1ff64a68b66",
+   "45e79b0d8b9778a1",
+   "4b85952863dc5e9c",
+   "595aab83c0766ba4",
+   "64965696af058e1b",
+   "725a366765b34069",
+   "736d7db4f801e9be",
+   "8084bcbe033a4584",
+   "81a298e53817adcf",
+   "84dec52751a121ee",
+   "8c63fe10a516e2f0",
+   "9ca6a9607d7d674d",
+   "a3b526b80b671265",
+   "abff3f78fca0087c",
+   "c27adca1e0cf02cc",
+   "cdbf4c6b27b7ba51",
+   "db0584eb9bd252c5",
+   "e190df6c0f8cabd3",
+   "e44db4d2fdfc105e",
+   "fbd2e7ac2ab87a9b",
+   "fbea90529da617ad"
+  ],
+  "32": [
+   "da9b984ffc9f18a4"
+  ],
+  "48": [
+   "2d42586a85e63346",
+   "9cd3f25abf03dbcf",
+   "9d73647ac9974aa7",
+   "b9b37283580bf132",
+   "be34f79bb6766aa2",
+   "c88ec3312def553e"
+  ]
+ }
+}

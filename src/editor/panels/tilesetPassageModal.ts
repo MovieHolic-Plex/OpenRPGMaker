@@ -21,10 +21,13 @@ const MARK_LABELS = {
   star: passageGlyph("star"),
 } as const satisfies Record<PassageMark, string>;
 
+// 「캐릭터 위 ★」= 지나갈 수는 있지만 캐릭터보다 위에 그려지는 칸(나뭇잎·지붕 끝처럼). 옛 라벨 「위 ★」는 암호 같았다.
+const STAR_MARK_HINT = "지나갈 수 있지만 캐릭터보다 위에 그려져요 (나뭇잎·지붕 끝처럼 캐릭터를 가리는 칸)";
+
 const MARK_SPOKEN = {
   o: "통과",
   x: "막힘",
-  star: "위 지나감",
+  star: "캐릭터 위로 지나감",
 } as const satisfies Record<PassageMark, string>;
 
 const PASSAGE_META = {
@@ -104,13 +107,13 @@ function renderTilesetSettingsModal(tilesetId: string, close: () => void, rerend
 function renderLegend(): HTMLElement {
   const hint = el("span", {
     dataset: { testid: "tileset-settings-paint-hint" },
-    text: modalPaint === "cycle" ? "클릭할 때마다 통과 → 막힘 → 위" : "클릭·드래그로 칠합니다",
+    text: modalPaint === "cycle" ? "클릭할 때마다 통과 → 막힘 → 캐릭터 위" : "클릭·드래그로 칠합니다",
   });
   const paintButton = (value: ModalPaint, label: string, testid: string): HTMLElement =>
     el("button", {
       class: `btn tileset-settings-paint${modalPaint === value ? " active" : ""}`,
       text: label,
-      attrs: { type: "button", "aria-pressed": String(modalPaint === value) },
+      attrs: { type: "button", "aria-pressed": String(modalPaint === value), ...(value === "star" ? { title: STAR_MARK_HINT } : {}) },
       dataset: { testid },
       on: {
         click: (event) => {
@@ -124,7 +127,7 @@ function renderLegend(): HTMLElement {
             button.setAttribute("aria-pressed", String(on));
           }
           const hintEl = host.querySelector("[data-testid='tileset-settings-paint-hint']");
-          if (hintEl) hintEl.textContent = value === "cycle" ? "클릭할 때마다 통과 → 막힘 → 위" : "클릭·드래그로 칠합니다";
+          if (hintEl) hintEl.textContent = value === "cycle" ? "클릭할 때마다 통과 → 막힘 → 캐릭터 위" : "클릭·드래그로 칠합니다";
         },
       },
     });
@@ -133,7 +136,7 @@ function renderLegend(): HTMLElement {
     children: [
       paintButton("o", "통과", "tileset-settings-paint-open"),
       paintButton("x", "막힘", "tileset-settings-paint-blocked"),
-      paintButton("star", "위 ★", "tileset-settings-paint-star"),
+      paintButton("star", "캐릭터 위 ★", "tileset-settings-paint-star"),
       paintButton("cycle", "순환", "tileset-settings-paint-cycle"),
       hint,
     ],

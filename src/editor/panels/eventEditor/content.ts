@@ -78,6 +78,30 @@ import {
   renderPageActions,
 } from "./pageProps";
 import type { CommandListActions } from "./types";
+
+// 좁은 창(1100px 이하)에서는 미리보기 열을 접은 채 시작해 그 폭을 설정·명령 열에 준다(UI 감사
+// 07-eventcmd-03). 펼친 상태는 본문이 다시 그려져도 유지한다. 넓은 창에서는 단추가 보이지 않는다(CSS).
+let narrowPreviewOpen = false;
+
+function renderNarrowPreviewToggle(): HTMLButtonElement {
+  const label = (): string => (narrowPreviewOpen ? "미리보기 접기" : "미리보기 펼치기");
+  const button = el("button", {
+    class: "event-editor-preview-toggle",
+    text: "미리보기",
+    attrs: { type: "button", title: label(), "aria-label": label(), "aria-expanded": String(narrowPreviewOpen) },
+    dataset: { testid: "event-editor-preview-toggle" },
+    on: {
+      click: () => {
+        narrowPreviewOpen = !narrowPreviewOpen;
+        button.closest(".event-editor-workbench")?.classList.toggle("is-preview-open", narrowPreviewOpen);
+        button.title = label();
+        button.setAttribute("aria-label", label());
+        button.setAttribute("aria-expanded", String(narrowPreviewOpen));
+      },
+    },
+  }) as HTMLButtonElement;
+  return button;
+}
 import { commandKindLabel } from "./options";
 import { openFieldMonsterTemplateDialog } from "./fieldMonsterTemplateDialog";
 import { renderFollowerPresetBar } from "./followerPresetPicker";
@@ -457,8 +481,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   );
 
   const workbench = el("div", {
-    class: `event-editor-workbench${inspectorColumn.hidden ? "" : " has-command-inspector"}`,
-    children: [settingsColumn, columnResizer, commandsColumn, inspectorColumn],
+    class: `event-editor-workbench${inspectorColumn.hidden ? "" : " has-command-inspector"}`
+      + (narrowPreviewOpen ? " is-preview-open" : ""),
+    children: [settingsColumn, columnResizer, commandsColumn, inspectorColumn, renderNarrowPreviewToggle()],
   });
   applyStoredSettingsColumnWidth(workbench);
   attachColumnResize(columnResizer, workbench);

@@ -1,20 +1,27 @@
 // src/harnesses/map-objects/editor/runner.ts
 /**
  * map-objects 의 공방 실행기 — 지금 맵 칩셋에 없는 물건을 그 칩셋 화풍으로 그린다.
+ * 그리기·고치기·검수는 object-gen 흐름 그대로다(_core/workshop/objectGenFlow.ts, 2026-10-21): 원본 지시문·견본·숨긴 반려 표본·다수결.
  * 화풍 기준(닮은 물체·시트 조각)은 그릴 때마다 env.tilesetSource 로 받은 칩셋에서 잘라 붙이고,
  * 팔레트는 기물을 정의할 때 뽑아 정의에 넣어 둔다(카드 그림이 칩셋 상태와 무관하게 같은 색으로 나오게).
  */
-import type { ChatMessage, ContentPart } from "@/ai/llmClient";
+import type { ContentPart } from "@/ai/llmClient";
 import { onBackground, renderGrid, scaleImage } from "@/harnesses/_core/workshop/grid";
 import type { AnchorSample, Grid, ItemDefinition, Palette, Rgba, RgbaImage, WorkshopEnv, WorkshopItem, WorkshopRunner, WorkshopTilesetSource } from "@/harnesses/_core/workshop/types";
-import { mapObjectHardCheck, parseMapObjectVerdict } from "./checks";
+import { gateAdviceMessages, parseGateAdvice } from "@/harnesses/_core/workshop/gateAdvice";
+import { workshopRefDescribe } from "@/harnesses/_core/workshop/referencePrompt";
+import {
+  kitValue, loadAnchors, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
+} from "@/harnesses/_core/workshop/objectGenFlow";
+import { parseMapObjectVerdict } from "./checks";
 import { mapItemFromDefinition, paletteFromHexes } from "./items";
-import { drawBrief, drawSystemPrompt, MAP_DIRECTIONS, reviewBrief, reviewSystemPrompt } from "./prompts";
+import { reviewBrief, reviewSystemPrompt } from "./prompts";
 import { dominantColor, sheetExcerpt, similarObjects } from "./sheet";
 
 const FALLBACK_BACKGROUND: Rgba = [96, 96, 96, 255];
 const ANCHOR_LIMIT = 3;
 type Style = { readonly name: string; readonly background: Rgba; readonly refs: readonly { label: string; url: string }[] };
+const ogStyle = (style: Style): OgStyle => ({ name: style.name, floor: style.background, refs: style.refs });
 
 export function createMapObjectRunner(): WorkshopRunner {
   let defs: readonly ItemDefinition[] = [];
@@ -52,10 +59,20 @@ export function createMapObjectRunner(): WorkshopRunner {
     return pending;
   }
 
+  /** 원본 견본 묶음(oprn-interior-v5-large). 못 읽으면 칩셋 물체를 GOOD 으로 쓴다(원본 anchor_cards 의 견본 없는 갈래). */
+  let anchorsPending: Promise<OgAnchors | null> | null = null;
+  const anchorsFor = (env: WorkshopEnv): Promise<OgAnchors | null> =>
+    (anchorsPending ??= loadAnchors(env).catch((error) => { console.warn("[workshop] object-gen 견본을 못 읽음:", error); anchorsPending = null; return null; }));
+
   const runner: WorkshopRunner = {
     harnessId: "map-objects",
     label: "맵 기물",
-    candidates: 3,
+    // 원본 flow: 후보 A·B 두 장, 참고 그림 2장, 그리기 + 불통과 다시 그리기 1번, 미리보기 고치기.
+    candidates: OG_DIRECTIONS.length,
+    referenceCount: 2,
+    referenceStyleNote: kitValue("reference", "STYLE_NOTE"),
+    maxAttempts: 2,
+    looks: OG_LOOKS,
     async prepare() { /* 시트는 기물마다 그릴 때 읽는다 */ },
     items(next) {
       if (next !== defs || items.length !== next.filter((def) => def.tilesetId).length) {
@@ -74,7 +91,7 @@ export function createMapObjectRunner(): WorkshopRunner {
       return palette;
     },
     currentGrid: () => null,
-    directions: () => MAP_DIRECTIONS,
+    directions: () => OG_DIRECTIONS,
     anchors(item, picked) {
       // 같은 칩셋에서 사용자가 고른 기물만 기준으로 — 다른 칩셋 것은 색이 다르다
       const sameSheet = new Set(items.filter((other) => other.tilesetId === item.tilesetId && other.key !== item.key).map((other) => other.key));
@@ -83,20 +100,33 @@ export function createMapObjectRunner(): WorkshopRunner {
     },
     async drawMessages(ctx, env) {
       const style = await styleFor(ctx.item, env);
-      const parts: ContentPart[] = [label(drawBrief(ctx, style.name))];
-      for (const ref of style.refs) parts.push(label(ref.label), image(ref.url));
-      if (ctx.previousGrid) parts.push(label("지난 시도(8배)"), image(shot(env, ctx.previousGrid, ctx.palette, style.background)));
-      for (const anchor of ctx.anchors) parts.push(label(`이 칩셋에서 사용자가 고른 기물: ${anchor.title} (8배)`), image(shot(env, anchor.grid, runner.palette(items.find((i) => i.key === anchor.itemKey) ?? ctx.item), style.background)));
-      ctx.rejected.forEach((rejected, index) => parts.push(label(`버린 것 ${index + 1}`), image(shot(env, rejected.grid, ctx.palette, style.background))));
-      return [{ role: "system", content: drawSystemPrompt() }, { role: "user", content: parts }] satisfies ChatMessage[];
+      return ogDrawMessages(ctx, env, ogStyle(style), await anchorsFor(env));
+    },
+    async lookMessage(ctx, grid, env, look, max) {
+      const style = await styleFor(ctx.item, env);
+      return ogLookMessage(ctx, grid, env, ogStyle(style), look, max);
+    },
+    async review(ctx, env, ask) {
+      const style = await styleFor(ctx.item, env);
+      return ogReview(ctx, env, ogStyle(style), await anchorsFor(env), ask);
     },
     async reviewMessages(ctx, env) {
       const style = await styleFor(ctx.item, env);
-      const parts: ContentPart[] = [label(reviewBrief(ctx)), label("후보 (8배)"), image(shot(env, ctx.candidate, ctx.palette, style.background))];
+      const actual = (scale: number) => env.encodePng(scaleImage(onBackground(renderGrid(ctx.candidate, ctx.palette), style.background), scale));
+      const parts: ContentPart[] = [
+        label(reviewBrief(ctx, style.name)),
+        label("후보 1배 (실제 게임 크기 — 먼저 본다)"), image(actual(1)),
+        label("후보 2배"), image(actual(2)),
+        label("후보 (8배)"), image(shot(env, ctx.candidate, ctx.palette, style.background)),
+      ];
       for (const ref of style.refs) parts.push(label(ref.label), image(ref.url));
       return [{ role: "system", content: reviewSystemPrompt() }, { role: "user", content: parts }];
     },
-    hardCheck: mapObjectHardCheck,
+    referenceDescribe: workshopRefDescribe,
+    adviseMessages: gateAdviceMessages,
+    parseAdvice: parseGateAdvice,
+    // 원본 checks.check 의 FAIL 코드만 막는다(WARN 은 미리보기에서 보여 준다). 판정은 블라인드 검수 다수결이 정한다.
+    hardCheck: (item, grid) => ogCheck(item, grid, runner.palette(item)).hard.map((issue) => `${issue.code}: ${issue.msg}`),
     parseVerdict: parseMapObjectVerdict,
     gate: (_item, verdict) => verdict,
   };

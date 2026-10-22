@@ -1,0 +1,387 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5dcc335ecdabc505d6dbce001b5094cd5693fe5033bb5b8ba4bfb6ec3b5aae00",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "mart gondola cereal",
+ "label": "modern_city_interior/mart-gondola-cereal",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gondola top cap",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "purple header strip",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper shelf ledge",
+      "rows": "18-19",
+      "evidence": "none",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-19"
+     },
+     {
+      "part": "lower shelf ledge",
+      "rows": "28-29",
+      "evidence": "none",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-29"
+     },
+     {
+      "part": "cereal boxes on shelves",
+      "rows": "8-17, 20-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top cap occupies rows 1-4 as a light grey band with some tonal variation. It ends in a bright front-edge line at row 4 (L=224), followed by a darker shadow row at row 5 (L=144). Below it the front face runs from row 6 to row 30: the header strip, two bays with face-on cereal boxes and shelf ledges. The boxes are goods on the shelves, so they count as decor. The structure matches the green cabinet reference with a top band, an edge line and an eave shadow, though the top here is only 4 rows. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a shelf-style gondola with a frame, header panel and stocked shelf rows, so it is the same kind as the stall and well references. It measures 17 visible tones per tile, equal to prop-stall-cheese at 17 and close to prop-well-roofed at 20. Near-flat coverage is 0%, below the stall's 13%. The dark edge pixels are 0% near-neutral, so the outline is tinted toward the adjacent material (dark purple/blue beside the frame) and does not read as a black sticker line. The frame has a highlight, mid and dark ramp of about 5 steps. The shelf rows carry varied product blocks and small details rather than flat fills. It is slightly less textured than the cheese stall, but it holds up beside it without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15539
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band of the gondola",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "purple sign band (vertical face)",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle shelf ledge",
+      "rows": "18-19",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "cereal boxes upper shelf",
+      "rows": "8-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cereal boxes lower shelf",
+      "rows": "20-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan shows a light-gray top band at rows 1-4. Row 4 (L=224) is a bright front-edge line and row 5 (L=144) is a darker shadow row, so this meets evidence (a). The front face is rows 6-30, a purple sign band over two shelf bays with face-on cereal boxes. The ledge at rows 18-19 repeats the edge-line-plus-shadow pattern at x=8, 16 and 23. The top is only about 4 rows, so it is a modest top, and the rest of the object is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate matches the stall-cheese reference on visible tones per tile (17 vs 17) and is above the hedge (9). Near-flat coverage is 0%, so there are no large flat fills. The shelf frame, sign panel and product boxes are broken up by shelf bands, label blocks and box highlights. The dark edge pixels are 0% neutral, so the outline leans toward the purple-grey frame and box tones, not a black sticker line. The weak point is the total palette of only 22 colours, which gives about 4 shading steps per material against Beodeul's 5-6, and the grain is sparser than the references' per-item texture. That is a modest gap for a small, rigid, manufactured prop, and a careful artist would accept it beside the stall and well references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18321
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of gondola",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "purple header strip (vertical sign face)",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cereal boxes on shelves",
+      "rows": "8-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards (front lips)",
+      "rows": "18-19",
+      "evidence": "none",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-19"
+     },
+     {
+      "part": "bottom shelf board / base",
+      "rows": "28-30",
+      "evidence": "none",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-29"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a light grey top band. Row 4 (L=224) is a bright front-edge line, and row 5 (L=144) is a darker eave shadow. Below it the front face runs from row 5 to row 30 (about 26 rows): a header strip, two open shelf bays holding cereal boxes (shown as decor), and shelf-board lips at rows 18-19 and 28-29. No side face is drawn. The top is only 4 rows deep, but it has an edge line and shadow, so it counts as a top surface rather than a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a gondola shelf with a dark purple frame, pale shelf panels and rows of small boxes in yellow and purple. The measured facts match the richer references: 17 visible tones per tile equals prop-stall-cheese (17) and sits between prop-hedge (9) and prop-well-roofed (20). Near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outlines carry a tint (dark purple/brown) rather than being a near-black sticker line. Rows of boxes, shelf edges and label dots break up every surface, and I see no large flat areas. The frame and panel ramps look a little shallower (about 4 steps) than the 5-6 steps in the stall and well, but the piece is small and reads as structured, not sticker-like. A careful artist would accept it next to the stall reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15940
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of gondola",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "purple header strip with gold labels",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cereal boxes on shelves",
+      "rows": "8-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a light grey top band with a lighter front-edge line at row 4 (L=224). Row 5 is a darker eave shadow (L=144). Below it the front face runs rows 6-30 (25 rows) and holds the purple header, two shelf bays and the cereal boxes. The shelf ledges at rows 18-19 and 28-29 are front-facing strips with edge lines. The body is 32 px wide and shows no side face. The top band is 4 rows, which is more than a 1-2 row rim. It has an edge line and eave shadow, so it reads as a top surface above a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a shelved cereal gondola. It has a tinted dark purple-grey frame, lighter shelf panels, and rows of small boxes in alternating yellow and purple with varied pixels. The measured facts are 17 visible tones per tile, matching prop-stall-cheese (17) and sitting between prop-hedge (9) and prop-well-roofed (20). Near-flat coverage is 0%, and the 0% near-neutral share of dark edge pixels shows the outline carries a tint, not a black sticker line. The frame and panel ramps have about 4 steps, a little under the references' 5, but the box rows and shelf dividers give grain and variation, with no large flat areas. At this scale it would sit next to the stall reference without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20643
+  }
+ ],
+ "decidedAt": "2026-10-21T00:04:54.258Z",
+ "cells": {
+  "16": [
+   "7ae12153d8a3c7a1",
+   "8c2f7ef69cd8f078",
+   "b7801c0b0ca2a628",
+   "c5901dc25ffaa957"
+  ],
+  "24": [
+   "0f909dec1a460953",
+   "116fa4b308744652",
+   "1c0a703ac406a508",
+   "27cb1b81d14b03f7",
+   "38a9656f739a75b3",
+   "5806b37cfedb5ce4",
+   "78ecac4586878ae9",
+   "7c3b1c5a5d8b534d",
+   "82465b256d652265",
+   "948481e158f47ef7",
+   "9525a59bece3a90c",
+   "995c32a107e7f244",
+   "9ed41555f55a6885",
+   "9f8e007a8bbcc0ed",
+   "a016dece7a23a1e4",
+   "a6af1dad8c354b6f",
+   "b0ef897860b4acf1",
+   "b1734e67e303159a",
+   "c90c67294d9d60d6",
+   "d18a3601f43949d0",
+   "d5eb49b228070c37",
+   "e28abd95860034a1",
+   "fa10a73c35ad10ca",
+   "fd1d498867115ae8"
+  ],
+  "32": [
+   "89184d8e23786230"
+  ],
+  "48": [
+   "0e2a77ff80330e67",
+   "14b964bb5ec4fa47",
+   "203ad00001505fba",
+   "4ae8825b508d6e21",
+   "a1000b5ca71e4844",
+   "df8c3ce10dadbe37"
+  ]
+ }
+}

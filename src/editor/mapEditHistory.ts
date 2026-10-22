@@ -329,7 +329,7 @@ export function applyProjectWithHistory(project: Project, label: string): boolea
 export function recordMapEditIfChanged(
   mapId: MapId,
   edit: () => void,
-  options: { readonly includeTilesets?: boolean } = {},
+  options: { readonly includeTilesets?: boolean; readonly label?: string } = {},
 ): boolean {
   const before = store.getCurrent();
   const beforeMap = before.maps[mapId];
@@ -346,8 +346,24 @@ export function recordMapEditIfChanged(
     mapId,
     before: mapWithCommittedEvents(beforeMap),
     ...(options.includeTilesets ? { beforeTilesets: structuredClone(before.tilesets) } : {}),
-  }, undefined, mapId);
+  }, options.label, mapId);
   return true;
+}
+
+/**
+ * 방금 쌓인 지도 편집 기록의 라벨 끝에 바뀐 타일 칸 수를 붙인다(「칠하기 · 12칸」).
+ * 칠하기 스트로크는 첫 칸에서 기록되고 끝날 때까지 칸이 늘어나므로, 수는 스트로크가 끝난 뒤에야 센다.
+ * marker(getMapEditHistoryMarker) 이후에 쌓인 그 맵의 맨 위 기록만 고친다 — 아무것도 안 바꾼 스트로크가
+ * 앞선 기록의 라벨을 건드리지 않게.
+ */
+export function appendCellCountToLatestMapEdit(mapId: MapId, marker: number): void {
+  const top = undoStack[undoStack.length - 1];
+  if (!top || top.at < marker || top.snapshot.kind !== "map" || top.snapshot.mapId !== mapId) return;
+  const now = store.getCurrent().maps[mapId];
+  const change = now ? diffHistoryMap(1, mapId, top.snapshot.before, now) : null;
+  if (!change || change.tileCellCount === 0) return;
+  undoStack[undoStack.length - 1] = { ...top, label: `${top.label} · ${change.tileCellCount}칸` };
+  emitHistoryChange();
 }
 
 /**

@@ -1,0 +1,75 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b3",
+ "round": 4,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "hospital-med-cabinet",
+   "pixelSha256": "0c992f55872d44aca66963ecc69e1c9f678de68ca3484d8d5fa52a7553e9b35c",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The top reads as a lit white plane of about 3 rows above a short glass front, and the outline is dark navy like mci-cooler. The green cross and the boxes on the shelves read clearly at 1x, and the cabinet sits on the floor line at a believable size."
+  },
+  {
+   "id": "hotel-capsule-pods",
+   "pixelSha256": "e2f687a56c255cd1da0b0fea879b9bb24fd9652c24f92a0cff9ef951fab9acfb",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    3
+   ],
+   "reasons": "It is a flat front elevation of a 3x2 grid with no top plane, and the pale green-grey cells with grey-and-orange pillow blobs come out as a muddy repeated pattern. At 1x it does not read as capsule pods, and in the room it is oversized and covers the wall/floor boundary."
+  },
+  {
+   "id": "izakaya-beer-server",
+   "pixelSha256": "a5dcb7934c2c12cf2c6a3c3c2260e7dce8190a8cfd138e9763dd2327521187d2",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "The red tap knob sticks up above the body as a detached nub that breaks the outline, and the narrow box shows only a front face with no counter-top plane. At 1x the grey-and-yellow cluster reads as a generic dispenser or locker, not a beer server."
+  },
+  {
+   "id": "jp-torii",
+   "pixelSha256": "879619e5c27302ac93bb55e937a11675bc03873e46ae0fb31d0b49ef49fd94c1",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    5
+   ],
+   "reasons": "It is a pure front elevation: the black kasagi beam and the red nuki beam have no top surface, and nothing is seen from above. The pillars end in grey bases with no shadow or ground line, so it looks pasted onto the tiles, and it is too small and squat for a gate next to the room's wall."
+  },
+  {
+   "id": "jumbo-hosp-mri",
+   "pixelSha256": "f1a36a6dba6ea54d4b760207545dcad736bc5bafb1096055ed1e245e5bc39070",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The views are mixed: the bore ring is drawn head-on like an arch, while the bed is shown from the top and juts below the base past the machine's footprint. A display panel is stuck flat on the top plane like a sticker. The blue ring has stair-stepped edges with a speckled light-blue/white halo, and the bed tip below the base looks detached."
+  }
+ ]
+}

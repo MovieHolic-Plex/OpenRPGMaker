@@ -1,3 +1,4 @@
+// @deprecated multi-user team collaboration is not supported yet (2026-10-21). 진입점은 TEAM_COLLAB_ENABLED(electron/shared/teamCollab.ts) 를 켜야 보인다.
 // 두 컴퓨터 팀 참여 — 호스트 쪽. 이 컴퓨터에서 앱을 띄워 팀 호스트를 열고, 다른 컴퓨터의 참여 앱이
 // 저장할 때까지 기다린다. 참여 쪽은 scripts/qa/electronTeamJoinRemoteMember.mjs.
 //

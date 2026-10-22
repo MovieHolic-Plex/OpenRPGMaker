@@ -368,7 +368,9 @@ describe("RPG Maker style event editor entry points", () => {
     expect(document.querySelector('[data-testid="event-editor-identity"]')).toBeNull();
     // 페이지 이름은 설정 패널의 「페이지 이름」 상자에서 고친다.
     const pageName = document.querySelector<HTMLInputElement>('[data-testid="event-page-name-input"]');
-    expect(pageName?.value).toBe("페이지 2");
+    // 자동 이름(`페이지 N`)은 값이 아니라 placeholder 로 보인다 — 입력칸 값은 번역되지 않아 탭과 언어가 갈렸다.
+    expect(pageName?.value).toBe("");
+    expect(pageName?.placeholder).toBe("페이지 2");
   });
 
   // 예전 계약: 모달 안에서 맨 Delete 를 누르면 확인 후 **이벤트가 통째로** 지워졌다.
