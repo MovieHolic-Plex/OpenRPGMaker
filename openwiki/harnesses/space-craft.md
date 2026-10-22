@@ -54,3 +54,6 @@ npm run harness -- space-craft status --out <실행>
 `fallen-observatory`·`fallen-brazier-vault`·`fallen-starkeeper-vault` — 코딩 에이전트가 28바퀴 다듬은 같은 세 방을 조수에게 자연어로만 시킨다(좌표·평면 없음).
 판정은 새 Opus 적대 VQA(`~/claude-viz/vqa-rubric.md` 축 1·2·6)와 폴른 r28 그림 나란히. Argon 이 막히면 `ai-configs/local-claude-sonnet-high.json`(Sonnet 5.5 high, 「조수 대용」 표기).
 결과와 도구 수리는 `openwiki/atlas-biome-interior.md` 「조수 실력 시험 — 폴른 스타 세 방」.
+
+검수 그림은 `measure.json` 의 `render.clean`(편집기 전용 시작 위치 표시를 뺀 1배 그림)을 쓴다 — 시작 표시를 이동 칸으로 읽은 검수자가 출구 major 를 매긴 적이 있다(2026-10-22).
+`measure` 는 실내 빈 바닥(`bareFloor`, 보정된 자)도 함께 남긴다. 과제 `fantasy-magic-library`(마법 학교 도서관 — 조수가 wizarding_world 로 짓는다)를 더했다.

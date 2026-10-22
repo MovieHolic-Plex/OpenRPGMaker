@@ -109,7 +109,7 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
             // Never persist reasoning, auth headers or system prompt payloads.
             window.__capEvents.push({type:event.type,name:event.name??event.toolName,id:event.id,ok:event.ok,
               text:event.type==='assistant'?event.text:undefined,summary:event.summary,message:event.message,args:event.args,
-              data:['charset.image.delivered','charset.image.received'].includes(event.name)?event.data:undefined,
+              data:['charset.image.delivered','charset.image.received','feature_checklist','feature_review','feature_review.critic','feature_review.repair'].includes(event.name)?event.data:undefined,
               runId:outer.runId,usage:event.usage,stats:event.type==='done'?event.stats:undefined,at:Date.now()});
           }
           if(outer.type==='done'&&event.type!=='done')window.__capEvents.push({type:'done',runId:outer.runId,at:Date.now()});

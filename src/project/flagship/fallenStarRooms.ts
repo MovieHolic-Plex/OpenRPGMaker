@@ -431,6 +431,9 @@ const VAULT_ROOM: RoomSpec = {
 
 /** 네 화로(퍼즐 프리셋 순서: 0 북서 · 1 북동 · 2 남서 · 3 남동)의 발밑 왼쪽 칸. 큰 돌 화로는 2칸 폭 — 꺼짐은 발밑 + 위 1줄, 켜짐은 위 2줄(불꽃).
  * 방 VQA r8~r11: 1칸 버들항 돌 화로는 1배에서 사발 속이 2~3px 라 꺼졌을 때 검은 말뚝으로 읽혔다. 이벤트는 오른쪽 칸에도 복제한다(어느 칸에서 말 걸어도 켠다). */
+/** 세 방 평면(코딩 에이전트 28바퀴 합격 판) — 조수 실내 빈 바닥 측정의 보정 기준으로도 읽는다(scripts/qa/interior-bare-floor-calibrate.mts). */
+export const FALLEN_ROOM_SPECS: Readonly<Record<"observatory" | "gate" | "vault", Readonly<RoomSpec>>> = { observatory: OBS_ROOM, gate: GATE_ROOM, vault: VAULT_ROOM };
+
 const BRAZIERS: readonly Cell[] = [{ x: 12, y: 8 }, { x: 18, y: 8 }, { x: 12, y: 11 }, { x: 18, y: 11 }];
 const BRAZIER_W = 2;
 const PORTCULLIS: Cell = { x: 15, y: 1 };          // 2×2, 벽면 두 줄
