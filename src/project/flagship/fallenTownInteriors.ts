@@ -8,6 +8,7 @@
 import { runTool } from "@/editor/tools/toolRunner";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { GameMap, Project } from "@/project/types";
+import { isPassable } from "@/project/collision";
 
 type Cell = { x: number; y: number };
 type Run = { ok: boolean; summary?: string; issues?: unknown; data?: unknown };
@@ -29,6 +30,8 @@ type Home = {
     readonly chip: readonly [string, number];
     /** 계산대 뒤에 선다(앞 칸에 투명한 대리 이벤트를 두어 계산대 너머로 말을 건다). */
     readonly behindCounter?: boolean;
+    /** 서 있을 칸을 정해 둔다(쓰임 있는 자리 — 별지기는 별 렌즈 곁). 걸을 수 없거나 막히면 무시하고 빈 칸을 고른다. */
+    readonly at?: Cell;
     readonly lines: readonly string[]; readonly after: readonly string[];
     readonly commands?: readonly Record<string, unknown>[];
   }[];
@@ -95,12 +98,13 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       // 식료품 광·지하 저장고는 뺐다 — 집집마다 같은 광·저장고·부엌 묶음이 되풀이돼 「같은 저택」으로 읽혔다(VQA r11 major). 쉼터는 약재를 말리며 쉬는 작은 방.
       // 가게 19×9·조제실 9×7·늘인 서재(16×8 원형)는 빈 마루가 화면 절반 가까이 남았다(VQA r24 major) — 바구니로 메우지 않고 벽을 당긴다.
       // 방마다 원형 크기(가게 14×6·조제실 7×6·서재 8×7·부부 침실 8×7·쉼터 5×6·약재 광 5×5)로 줄이면 원형 가구가 방을 채운다.
+      // 부부 침실 8×7 은 리사네 부부 침실과 같은 덮개 침대·보라 깔개 묶음이었다(VQA r30) — 6×6(붉은 겹침대·벽걸이) 원형으로.
       // 쉼터 원형(광산 휴게실)의 동굴 바위 벽은 목조 집 안에서 튀었다(VQA r24·r25 minor) — 회벽·마루로 바꾼다.
-      layout: { rooms: [{ kind: "pharmacy_shop", w: 14, h: 6 }, { kind: "alchemy", w: 7, h: 6 }, { kind: "study", w: 8, h: 7 }, { kind: "master_bedroom", w: 8, h: 7 }, { kind: "rest", w: 5, h: 6, wall: "plaster", floor: "plank" }, { kind: "storeroom", w: 5, h: 5 }], seed: 13, variant: 0, styleVariant: "A" },
-      // 약재 광(아래 오른쪽, 바닥 x24~28·y11~14, 문 틈 (23,12))은 원형 가구가 셋뿐이라 빈 돌바닥으로 읽혔다(VQA r25) — 약재 자루·통·궤짝(문 앞 칸은 비운다).
-      dress: [["sack", 25, 11], ["sack", 26, 11], ["barrel", 27, 11], ["crate", 26, 14], ["basket:herb", 27, 14],
-        // 위 가운데 쉼터(바닥 x14~18·y3~7, 문 틈 (15,8))는 원형 가구가 넷뿐이라 빈 방으로 읽혔다(VQA r28) — 약초 말리는 틀·약 빻는 자리.
-        ["herb drying rack", 16, 3], ["mortar and pestle", 16, 5], ["crate", 17, 5], ["basket:herb", 14, 6]],
+      layout: { rooms: [{ kind: "pharmacy_shop", w: 14, h: 6 }, { kind: "alchemy", w: 7, h: 6 }, { kind: "study", w: 8, h: 7 }, { kind: "master_bedroom", w: 6, h: 6 }, { kind: "rest", w: 5, h: 6, wall: "plaster", floor: "plank" }, { kind: "storeroom", w: 5, h: 5 }], seed: 13, variant: 0, styleVariant: "A" },
+      // 약재 광(위 오른쪽, 바닥 x23~27·y4~7, 문 틈 (24,8))은 원형 가구가 셋뿐이라 빈 돌바닥으로 읽혔다(VQA r25) — 약재 자루·통·궤짝(문 앞 x24 줄은 비운다).
+      // 쉼터(위 왼쪽, 바닥 x1~5·y3~7)는 원형 가구가 넷뿐이라 빈 방으로 읽혔다(VQA r28) — 약초 말리는 틀·약 빻는 자리.
+      dress: [["sack", 24, 5], ["sack", 25, 5], ["barrel", 26, 5], ["crate", 26, 7], ["basket:herb", 25, 7],
+        ["herb drying rack", 4, 3], ["mortar and pestle", 4, 5], ["crate", 5, 6]],
       people: [
         {
           id: "ev_fs_apothecary", name: "약재상 오든", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 7], behindCounter: true,
@@ -142,7 +146,8 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
         ["desk 2x1", 2, 11], ["chair N", 2, 12]],
       people: [
         {
-          id: "ev_fs_old_stargazer", name: "늙은 별지기 오스본", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 6],
+          // 거실 오른쪽 아래 구석에 서 있었다(VQA r30) — 진열실의 큰 별 렌즈 곁(왼쪽)에 선다.
+          id: "ev_fs_old_stargazer", name: "늙은 별지기 오스본", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 6], at: { x: 7, y: 4 },
           lines: ["나도 젊을 땐 저 천문대에서 별을 셌지. 하넬 녀석이 내 자리를 물려받았고.", "어젯밤 그 별은 궤도가 이상했어. 떨어진 게 아니라… 내려앉은 것처럼 보였지."],
           after: ["하늘을 건너는 배라… 하넬이 평생 찾던 답이 그 아이 안에 있겠구먼.", "교단은 하늘을 두려워해. 두려운 건 덮으려 들지. 조심하게, 카엘."],
         },
@@ -154,10 +159,15 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       // 여덟 방(여덟 자리 식탁·식료품 광·헛간·지하 저장고)은 작은 오두막에 안 맞았다(VQA r11 major) — 거실·부엌·침실 둘·바느질 방(리사의 일감).
       // 거실 12칸은 오른쪽 아래가 큰 어둠으로 남았고(VQA r20), 16칸으로 넓혀도 부부 침실 왼쪽·아래 왼쪽에 검은 띠가 남았다(VQA r22) —
       // 부부 침실을 11칸으로 넓히면 다섯 방이 30×17 에 빈틈 없이 맞물린다(허공 0).
-      layout: { rooms: [{ kind: "living", w: 16, h: 7 }, { kind: "kitchen", w: 8, h: 7 }, { kind: "master_bedroom", w: 11, h: 7 }, { kind: "bedroom", w: 8, h: 7 }, { kind: "tailor_work", w: 9, h: 7 }], seed: 29, variant: 0, styleVariant: "A" },
+      // 거실 16×7 은 별지기 집 거실과 같은 벽난로·붉은 안락의자 셋·괘종시계·분홍 찻상 묶음이었다(VQA r30) — 거실을 8×7 로 줄이고
+      // 가족 식당(8×7, 긴 식탁)을 더한다. 여섯 방이 31×17 에 맞물린다(허공 3%).
+      layout: { rooms: [{ kind: "living", w: 8, h: 7 }, { kind: "dining", w: 8, h: 7 }, { kind: "kitchen", w: 8, h: 7 }, { kind: "master_bedroom", w: 11, h: 7 }, { kind: "bedroom", w: 8, h: 7 }, { kind: "tailor_work", w: 9, h: 7 }], seed: 29, variant: 0, styleVariant: "A" },
       // 거실(아래 왼쪽) 동쪽에 찻상과 의자, 서쪽 구석에 짐 궤짝 — 문(8,16)에서 벽난로로 가는 길은 비운다. 아이 방·바느질 방 아랫단에 궤짝·책 더미.
-      dress: [["tea 2x2", 12, 13], ["chair E", 11, 13], ["chair W", 14, 13], ["book pile", 16, 15], ["luggage trunk", 2, 15], ["basket:herb", 1, 14],
-        ["luggage trunk", 7, 7], ["book pile", 2, 7], ["luggage trunk", 18, 7]],
+      // 방마다 쓰임 묶음: 거실(아래 가운데, 문 (13,16) 길 x13 은 비운다) 나무 둥근 탁자·걸상(별지기 집 분홍 찻상과 겹치지 않게), 부엌(아래 왼쪽) 통·자루·바구니,
+      // 바느질 방(아래 오른쪽) 옷감 탁자·바구니, 아이 방(위 오른쪽) 둥근 양탄자·상자·책 더미, 부부 침실 오른쪽 상자·화분.
+      dress: [["roundtable", 15, 13], ["stool", 14, 13], ["stool", 16, 13], ["luggage trunk", 10, 15],
+        ["barrel", 1, 15], ["sack", 2, 15], ["basket:herb", 3, 15], ["table:bolt+yarn", 23, 14], ["basket:herb", 26, 15],
+        ["chest", 28, 7], ["book pile", 22, 7], ["round rug", 25, 6], ["chest", 20, 7], ["plant", 19, 3]],
       people: [
         {
           id: "ev_fs_lisa", name: "리사", query: "젊은 여성", chip: ["tex_easyrpg_charset_people3", 3],
@@ -285,7 +295,9 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
     const taken: Cell[] = [exitCell];
     for (const [k, person] of home.people.entries()) {
       const counter = person.behindCounter ? counterSpot(project, interior, exitCell) : undefined;
-      const spot = counter?.behind ?? farFreeCell(project, interior, exitCell, taken, k === 0 ? 0.45 : 0.8);
+      const fixed = person.at && isPassable(project, interior, person.at.x, person.at.y)
+        && !interior.events.some((e) => Math.abs(e.x - person.at!.x) + Math.abs(e.y - person.at!.y) <= 1) ? person.at : undefined;
+      const spot = counter?.behind ?? fixed ?? farFreeCell(project, interior, exitCell, taken, k === 0 ? 0.45 : 0.8);
       if (!spot) throw new Error(`[fallen-town-interiors] ${home.name}: ${person.name} 이 설 칸이 없다`);
       taken.push(spot);
       run(project, "place_npc", {
@@ -300,6 +312,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       if (!npc) continue;
       // place_npc 는 가구 곁 칸을 피해 옆으로 비켜 세운다 — 계산대 뒤 자리는 일부러 고른 칸이라 그대로 둔다.
       if (counter) { npc.x = counter.behind.x; npc.y = counter.behind.y; }
+      else if (spot === fixed) { npc.x = spot.x; npc.y = spot.y; }
       // 이름 있는 사람마다 다른 칩 — 같은 낱말(노인 남성·젊은 여성)로 고르면 두 집에 같은 얼굴이 섰다(VQA r5).
       for (const page of npc.pages ?? []) {
         if (!page.graphic?.sprite) continue;
