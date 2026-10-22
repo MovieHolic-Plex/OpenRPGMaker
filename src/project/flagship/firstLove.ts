@@ -19,7 +19,7 @@ import { deserialize, serialize } from "@/project/io";
 import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
-  approach, bgm, call, callTo, caption, CAST, choices, clearTint, emote, event, face, faceEachOther, faceToward, fadeIn, fadeOut, flash, hidePlayer, ifCond, letterbox, page,
+  approach, bgm, call, callTo, caption, CAST, choices, clearTint, emote, event, exitVia, face, faceEachOther, faceToward, fadeIn, fadeOut, flash, hidePlayer, ifCond, letterbox, page,
   playSe, say, sayTo, setSw, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk, walkTo,
 } from "./firstLoveKit";
 import { buildFirstLoveMaps, FL_MAP, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
@@ -608,7 +608,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     bgm(BGM_NIGHT),
     ...caption("수요일 오후 8시 3분."),
     ...say("minho", "happy", "서하 씨, 나 먼저 가요! 내일 봐요—"),
-    walk("ev_fl_w_minho", ["down", "down", "right", "right"]),
+    exitVia("ev_fl_w_minho", o.elevator),
     setSw("sw_fl_minho_left", true),
     playSe(SE_MAIL),
     ...emote("player", "exclamation"),
@@ -644,6 +644,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         ...like(1, "ev_fl_w_jihu"),
       ] },
     ]),
+    exitVia("ev_fl_w_lead", o.elevator),
     setSw("sw_fl_lead_left", true),
     ...fadeOut(700),
     ...caption("밤 10시 40분."),
@@ -722,7 +723,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
       ] },
     ]),
     ...say("lead", "happy", "그럼 다음 주부터 2차 개발 들어가겠습니다. 감사합니다, 본부장님."),
-    walk("ev_fl_f_client", ["down", "down"]),
+    exitVia("ev_fl_f_client", o.elevator),
     setSw("sw_fl_client_left", true),
     approach("ev_fl_f_minho", "@player"),
     ...say("minho", "happy", "대박! 서하 씨, 첫 주에 발표 통과! 오늘 회식 각이에요!"),
@@ -733,8 +734,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     ], [
       ...say("lead", "happy", "서하 씨, 수요일에 바로 말해 준 거. 그거 잘한 거예요. 그게 팀이에요."),
     ]),
-    face("ev_fl_f_jihu", "down"),
-    walk("ev_fl_f_jihu", ["down", "down"]),
+    exitVia("ev_fl_f_jihu", o.elevator),
     setSw("sw_fl_jihu_left", true),
     ...say("lead", "base", "그리고… 다들 알다시피, 오늘이 지후 씨 마지막 날이에요."),
     ...emote("player", "exclamation"),

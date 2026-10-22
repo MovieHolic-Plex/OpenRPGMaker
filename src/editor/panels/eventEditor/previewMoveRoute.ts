@@ -1,5 +1,5 @@
 import { el } from "@/util/dom";
-import { stageTargetLabel } from "./moveRouteCommandCatalog";
+import { doorLabel, stageTargetLabel } from "./moveRouteCommandCatalog";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
@@ -283,6 +283,14 @@ function chipLabel(move: MoveCommand): string {
       return `다가가기→${stageTargetLabel(move)}`;
     case "turnToward":
       return `↻${stageTargetLabel(move)}`;
+    case "exitVia":
+      return `⇲${doorLabel(move)}`;
+    case "enterVia":
+      return `⇱${doorLabel(move)}`;
+    case "doorCue":
+      return "문";
+    case "placeAt":
+      return `→(${move.x},${move.y})`;
     case "setDirectionFix":
       return `방향고정 ${onOff(move.enabled)}`;
     case "setThrough":

@@ -125,6 +125,17 @@ export const MOVE_ROUTE_COMMAND_ROWS: readonly (readonly MoveRouteButton[])[] = 
     })),
   ],
   [
+    // 문 출입 — 문 칸 «위로» 걸어 들어가 문 소리와 함께 사라진다(대상 비우면 가장 가까운 문·이동 이벤트).
+    contextCommandButton("문으로 나가기...", "exit-via", "⇲", (context) => {
+      const target = context.stageTarget?.trim();
+      return target && target !== "@player" ? { kind: "exitVia", target } : { kind: "exitVia" };
+    }),
+    contextCommandButton("문으로 들어오기...", "enter-via", "⇱", (context) => {
+      const target = context.stageTarget?.trim();
+      return target && target !== "@player" ? { kind: "enterVia", target } : { kind: "enterVia" };
+    }),
+  ],
+  [
     commandButton("플레이어에게서 멀어짐", "move-away-from-player", "⇠", { kind: "moveAwayFromPlayer" }),
     commandButton("플레이어 반대로 향함", "turn-away-from-player", "⊘", { kind: "turnAwayFromPlayer" }),
     contextCommandButton("스위치 ON...", "switch-on", "⚑", (context) => ({
@@ -261,6 +272,14 @@ export function moveCommandLabel(command: MoveCommand): string {
       return `${stageTargetLabel(command)} 곁으로 다가가기${command.distance === 0 ? " (그 칸으로)" : command.distance && command.distance > 1 ? ` (${command.distance}칸)` : ""}`;
     case "turnToward":
       return `${stageTargetLabel(command)} 쪽으로 향함`;
+    case "exitVia":
+      return `${doorLabel(command)} 문으로 나가기`;
+    case "enterVia":
+      return `${doorLabel(command)} 문으로 들어오기`;
+    case "doorCue":
+      return command.se ? `문 소리 ${command.se}` : "문 프레임";
+    case "placeAt":
+      return `(${command.x}, ${command.y}) 로 옮김`;
     case "setDirectionFix":
       return `방향 고정 ${onOff(command.enabled)}`;
     case "setThrough":
@@ -287,6 +306,12 @@ export function moveCommandLabel(command: MoveCommand): string {
 }
 
 /** 다가가기·쪽으로 돌기 대상의 짧은 이름: 주인공 · 이벤트 id · (x, y) 칸. */
+/** 문 출입 대상 표시(비면 «가장 가까운»). */
+export function doorLabel(command: { readonly target?: string; readonly x?: number; readonly y?: number }): string {
+  if (!command.target?.trim() && command.x === undefined) return "가장 가까운";
+  return stageTargetLabel(command);
+}
+
 export function stageTargetLabel(command: { readonly target?: string; readonly x?: number; readonly y?: number }): string {
   const target = command.target?.trim() ?? "";
   if (target === "@player" || target === "player") return "주인공";

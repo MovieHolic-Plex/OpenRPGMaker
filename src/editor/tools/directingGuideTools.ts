@@ -24,6 +24,7 @@ export const DIRECTING_GUIDE = `# 연출 지침 (script_cutscene 비트)
 ## 장면 레시피
 - 중요한 장면 시작: letterbox{size:12,durationMs:500} → camera{mode:"pan",target:인물,durationMs:900,easing:"easeOut"}.
 - 다가와 말 걸기: say{speaker:"민호",text:"서하 씨!",calling:true} → approach{actor:"민호",target:"player",wait:true} → say{speaker:"민호",…}.
+- 퇴장·등장: exitVia{actor:"민호"}(가장 가까운 문 칸 위까지 걸어가 문 소리와 함께 사라짐 — 그 뒤 switch 로 «떠남» 페이지) · enterVia{actor:"점원",door:"뒷문"}(문 칸에 나타나 한 걸음 들어섬). 걸음을 세어 문 앞에서 지우면 한 칸 앞에서 사라진다.
 - 셋이 모이는 대화: approach{actor:A,target:"player"} → approach{actor:B,target:"player",distance:2} → faceEachOther{a:A,b:B} 로 마무리.
 - 놀람: emote{target,emote:"exclamation"} + moveActor 한 칸 뒤로(jump). 의문은 "question", 침묵은 "ellipsis".
 - 폭발·충돌: parallel[ particles{preset:"explosion",target 또는 x,y}, shake{intensity:6,axis:"both",durationMs:500}, flash{color:"white",durationMs:200} ].

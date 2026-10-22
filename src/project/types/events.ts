@@ -184,6 +184,22 @@ export type MoveCommand =
   | { kind: "approach"; target?: string; x?: number; y?: number; distance?: number }
   /** 대상(주인공 "@player"·이벤트 id·x,y 칸) 쪽으로 돈다. */
   | { kind: "turnToward"; target?: string; x?: number; y?: number }
+  /**
+   * 문·출구로 나간다: 문 칸까지 길을 찾아 걸어가 문 여는 소리(문 이벤트에 그림이 있으면 여는 프레임) → 문 칸 «위로» 한 걸음
+   * → 사라짐 → 문 닫는 소리. 한 칸 앞에서 사라지지 않는다(2026-10-22 짐꾼). target: 문(이동) 이벤트 id, 또는 x,y 칸,
+   * 둘 다 없으면 가장 가까운 문·이동 이벤트. 사라진 뒤 인물은 투명·통과 상태로 문 칸에 남는다 — 이어서 지우기(Erase)나 «떠남» 스위치.
+   * se/closeSe: 소리 리소스 id(""= 소리 없음). 문 이벤트·문 그림 칸이면 기본 문 소리, 맵 가장자리면 소리 없음.
+   */
+  | { kind: "exitVia"; target?: string; x?: number; y?: number; se?: string; closeSe?: string }
+  /**
+   * 문·출구로 들어온다: 문 칸으로 옮겨(보이지 않게) 문 여는 소리 → 나타남 → 문 밖(방 안)으로 한 걸음 → 문 닫는 소리.
+   * dir: 들어오는 걸음 방향(생략 시 문 칸에서 걸을 수 있는 쪽, 아래 우선). target·x,y·se·closeSe 는 exitVia 와 같다.
+   */
+  | { kind: "enterVia"; target?: string; x?: number; y?: number; dir?: Dir; se?: string; closeSe?: string }
+  /** exitVia·enterVia 가 펼치는 단계: 문 소리와 문 이벤트 프레임(direction 0~3 = 아래·왼쪽·오른쪽·위 = 닫힘→열림). ms 만큼 쉰다. */
+  | { kind: "doorCue"; target?: string; frame?: number; se?: string; ms?: number }
+  /** exitVia·enterVia 가 펼치는 단계: 이 칸으로 순간 이동(enterVia 의 등장 칸). */
+  | { kind: "placeAt"; x: number; y: number }
   | { kind: "setDirectionFix"; enabled: boolean }
   | { kind: "setThrough"; enabled: boolean }
   | { kind: "setAnimation"; enabled: boolean }

@@ -1,5 +1,5 @@
 import { defaultChaseSight, defaultChasePursuit } from "@/project/npcBehavior";
-import { stageTargetLabel } from "./moveRouteCommandCatalog";
+import { doorLabel, stageTargetLabel } from "./moveRouteCommandCatalog";
 import { renderMovementSight } from "./pageNpcBehavior";
 import { renderChaseSettings } from "./pageHorror";
 import { updateEventPage } from "@/editor/eventPages";
@@ -187,6 +187,14 @@ function moveLabel(command: MoveCommand): string {
       return `${stageTargetLabel(command)} 곁으로 다가가기`;
     case "turnToward":
       return `${stageTargetLabel(command)} 쪽으로 향함`;
+    case "exitVia":
+      return `${doorLabel(command)} 문으로 나가기`;
+    case "enterVia":
+      return `${doorLabel(command)} 문으로 들어오기`;
+    case "doorCue":
+      return command.se ? `문 소리 ${command.se}` : "문 프레임";
+    case "placeAt":
+      return `(${command.x}, ${command.y}) 로 옮김`;
     case "setDirectionFix":
       return `방향 고정 ${onOff(command.enabled)}`;
     case "setThrough":

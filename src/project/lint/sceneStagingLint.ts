@@ -268,6 +268,25 @@ function simulateRoute(ctx: Ctx, st: Replay, who: string, moves: readonly MoveCo
         else if (m.delta >= 200 && who !== PLAYER_ACTOR) (me as ActorState).hiddenByRoute = false;
         break;
       case "npcTransfer": if (who !== PLAYER_ACTOR) (me as ActorState).hiddenByRoute = true; break;
+      case "exitVia":
+      case "enterVia": {
+        // 런타임 playSceneDoorway 와 같은 문 칸: target 이벤트 → x,y → 가장 가까운 이동 이벤트.
+        if (who === PLAYER_ACTOR) break;
+        const gates = (ctx.map.events ?? []).filter((e) => e.id !== who && JSON.stringify(e.pages ?? []).includes('"kind":"transfer"'));
+        const byTarget = m.target ? ctx.byId.get(m.target.trim()) : undefined;
+        const door = byTarget ? { x: byTarget.x, y: byTarget.y }
+          : Number.isFinite(m.x) && Number.isFinite(m.y) ? { x: m.x!, y: m.y! }
+          : gates.length ? gates.reduce((a, b) => (chebyshev(b, me) < chebyshev(a, me) ? b : a)) : null;
+        if (m.kind === "exitVia") {
+          if (door) { me.x = door.x; me.y = door.y; }
+          (me as ActorState).hiddenByRoute = true;
+        } else if (door) {
+          const dir = m.dir ?? (["down", "left", "right", "up"] as const).find((d) => isPassable(ctx.project, ctx.map, door.x + DIR_DELTA[d].x, door.y + DIR_DELTA[d].y)) ?? "down";
+          me.x = door.x + DIR_DELTA[dir].x; me.y = door.y + DIR_DELTA[dir].y; me.dir = dir;
+          (me as ActorState).hiddenByRoute = false;
+        }
+        break;
+      }
       default: break;
     }
   }

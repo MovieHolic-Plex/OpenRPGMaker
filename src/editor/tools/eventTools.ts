@@ -3954,6 +3954,7 @@ function resolveCutsceneActorTargets(map: GameMap, beats: readonly CutsceneBeat[
     };
     if (beat.kind === "approach" || beat.kind === "faceToward") return { ...beat, actor: byName(beat.actor, "actor") ?? beat.actor, target: byName(beat.target, "target") };
     if (beat.kind === "faceEachOther") return { ...beat, a: byName(beat.a, "a") ?? beat.a, b: byName(beat.b, "b") ?? beat.b };
+    if (beat.kind === "exitVia" || beat.kind === "enterVia") return { ...beat, actor: byName(beat.actor, "actor") ?? beat.actor, door: byName(beat.door, "door") };
     if (beat.kind === "say" && (beat.actor || beat.to)) return { ...beat, actor: byName(beat.actor, "actor"), to: byName(beat.to, "to") };
     if (beat.kind !== "moveActor") return beat;
     const raw = (beat.target ?? beat.eventId ?? beat.actor ?? "player").trim();
@@ -3969,7 +3970,7 @@ function resolveCutsceneActorTargets(map: GameMap, beats: readonly CutsceneBeat[
   let moves = 0;
   const scan = (items: readonly CutsceneBeat[]): void => items.forEach((beat) => {
     if (beat.kind === "parallel") scan(beat.beats);
-    else if (beat.kind === "moveActor" || beat.kind === "approach" || beat.kind === "faceToward" || beat.kind === "faceEachOther") moves += 1;
+    else if (beat.kind === "moveActor" || beat.kind === "approach" || beat.kind === "faceToward" || beat.kind === "faceEachOther" || beat.kind === "exitVia" || beat.kind === "enterVia") moves += 1;
     else if (beat.kind === "say" && typeof beat.speaker === "string") speakers.add(beat.speaker.trim());
   });
   scan(resolved);
@@ -4109,7 +4110,7 @@ const scriptCutscene: ToolDefinition = {
     "**플레이어 조작(이동·조사·공격·메뉴)을 잠그고 시청만 하게 만드는 장면 전용 도구다** — " +
     "회상/플래시백, 오프닝, 엔딩, 시네마틱, '플레이어가 아무것도 못 하는 장면' 요청은 모두 이 툴이다. " +
     "잠금/해제와 스킵 라벨은 컴파일러가 자동으로 감싸므로 upsert_event 로 수동 조립하지 말 것. beat 종류: " +
-    "say{speaker,face,text|lines,actor?,to?,calling?,autoFace?}(말하는 인물은 듣는 인물 쪽으로 저절로 돈다 — to 생략 시 주인공, 멀리서 부르면 calling:true, 끄려면 autoFace:false), approach{actor:'player'|eventId|이름,target:'player'|eventId|이름 또는 x,y,distance?(기본 1),wait}(대상 곁 빈 칸까지 길을 찾아 걸어가 대상을 본다 — 말 걸기 전에 이것을 쓴다. 걸음을 손으로 늘어놓지 말 것), faceEachOther{a,b}(둘이 마주 본다), faceToward{actor,target|x,y}, moveActor{target:'player'|eventId,moves:[{kind:'move',dir:'up'},{kind:'turn',dir:'left'}],wait}(정해진 칸 수만큼 걷기·퇴장 같은 자유 이동만), " +
+    "say{speaker,face,text|lines,actor?,to?,calling?,autoFace?}(말하는 인물은 듣는 인물 쪽으로 저절로 돈다 — to 생략 시 주인공, 멀리서 부르면 calling:true, 끄려면 autoFace:false), approach{actor:'player'|eventId|이름,target:'player'|eventId|이름 또는 x,y,distance?(기본 1),wait}(대상 곁 빈 칸까지 길을 찾아 걸어가 대상을 본다 — 말 걸기 전에 이것을 쓴다. 걸음을 손으로 늘어놓지 말 것), faceEachOther{a,b}(둘이 마주 본다), faceToward{actor,target|x,y}, exitVia{actor,door?|x,y,wait}(NPC 가 문·출구 칸 위로 걸어 들어가 문 소리와 함께 사라진다 — 떠나는 인물은 이것으로 내보내고 그 뒤에 지우거나 «떠남» 스위치. 문 한 칸 앞에서 지우지 말 것. door 생략 = 가장 가까운 문), enterVia{actor,door?|x,y,dir?,wait}(문 칸에 나타나 한 걸음 들어선다), moveActor{target:'player'|eventId,moves:[{kind:'move',dir:'up'},{kind:'turn',dir:'left'}],wait}(정해진 칸 수만큼 걷기·퇴장 같은 자유 이동만), " +
     "camera{mode:'pan|follow|fixed|return',target|x,y,durationMs,wait,zoom}, " +
     "picture{action:'show|move|erase',pictureId,resourceId,x,y,scale,opacity,durationMs,easing,blendMode,wait}(easing:'easeOut' 이면 멈출 때 부드럽다, blendMode:'add' 면 빛기둥·유령처럼 밝게 겹친다), music{action:'bgm|se|fade|stop',resourceId}, fade{direction:'in|out',durationMs,wait}, tint{color|value(sepia·#rrggbb·'r,g,b,알파'),durationMs,wait}, background{flowPercent,imageId?,durationMs,wait}(먼 배경 흐름 — 회상 진입에 flowPercent:0 으로 구름이 서서히 멈춘다. 배경 자체는 set_map_properties.background.preset), distort{effect:'wave|mosaic|rotate|clear',amount?,durationMs,wait}(화면 그림 자체를 비튼다 — 수중·꿈은 wave, 장면 전환은 mosaic(전환에만 — 켠 채 대사를 잇지 말고 곧 clear), 시간 왜곡은 rotate. 컷신 뒤에도 남으니 끝낼 때 clear), flash{color,durationMs}, shake{intensity:1|3|6|10,durationMs,axis:'both|horizontal|vertical'}(지진·쿵은 vertical, 부딪힘은 horizontal), " +
     "letterbox{show,size?,durationMs}(영화식 위아래 검은 띠 — 중요한 장면 시작에 넣는다. 컷신 끝에 자동으로 걷힘, 남기려면 keep:true), " +

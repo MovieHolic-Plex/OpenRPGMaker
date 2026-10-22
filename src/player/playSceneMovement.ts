@@ -639,6 +639,11 @@ function applyPlayerRouteCommand(scene: PlaySceneContext, route: PlayerRouteStat
     case "setThrough":
       route.through = command.enabled;
       return false;
+    case "exitVia":
+    case "enterVia":
+      // 주인공의 문 출입은 장소 이동(transfer)이다 — 문 연출 단계는 NPC 전용.
+      console.warn(`[player] ${command.kind} 는 NPC 이동 경로 전용이다(주인공은 장소 이동으로 문을 지난다) — 건너뛴다`);
+      return false;
     // 주인공에게 의미 없거나 MVP 범위 밖(그래픽/투명도/NPC상대 이동 등) → 조용히 건너뛴다.
     default:
       return false;

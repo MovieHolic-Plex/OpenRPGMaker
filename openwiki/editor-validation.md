@@ -24,10 +24,11 @@
 | `scene-speaker-absent` | 대사 한 줄의 화자(이름 → 맵 인물, `project/staging/dialogueActors.ts`)나 명시 듣는 인물이 그 줄 시점에 **보이지 않는다** — 페이지를 명령 순서대로 재생(Set Event Location·moveEvent 경로 끝·approach 계획·Erase·스위치·모습 효과 투명 주인공), 분기는 사본으로. 선택지는 «방금 말한 인물»(lastSpoken)이 없으면 같은 코드 |
 | `scene-talk-far` | 화자–듣는 인물 체비쇼프 > 2(`TALK_DISTANCE_LIMIT`). 부르는 줄(`text.calling`·외침 context·말풍선)은 제외 |
 | `scene-talk-facing` | 자동 돌아보기(런타임과 같은 규칙) 뒤에도 듣는 인물의 방향 부채꼴(90°)에 화자가 없다(NPC 끼리, 듣는 쪽이 고정 방향일 때) |
+| `scene-npc-vanish-short` | 출구 «한 칸 앞»(이동 이벤트 1칸 안·문 그림 이웃·가장자리 2칸 안)에서 경로가 끝난 NPC 가 그 뒤 지우기·«떠남» 페이지·경로 속 불투명도 0 으로 사라진다. 사라져도 되는 칸은 이동 이벤트 칸·문 그림 칸·맵 끝 칸 «바로 그 칸»뿐 → exitVia. exitVia 경로는 문 칸에서 사라진 것으로 본다(런타임과 같은 문 칸 규칙) |
 | `scene-actors-stacked` | 한 페이지 안에서 Set Event Location·moveEvent(경로 끝 모의)로 **보이는** 두 인물이 같은 칸에 선다. 명령 순서대로 무대에서 내린다: Erase Event, 경로 끝 투명화, 스위치를 켜 «떠남» 페이지가 되거나 보이는 페이지 모두의 «스위치 꺼짐» 조건이 깨짐(`switchesThatHide`, 사라짐 검사와 공유). 같은 문으로 차례로 떠나는 것은 통과 |
 
 인물 연출 셋(`src/project/lint/sceneStagingLint.ts`, 2026-10-22): 페이지 조건(스위치·변수·셀프 스위치, 어디서도 안 켜는 스위치는 꺼짐)으로 시작 시점 보이는 인물을 정하고, 주인공 위치는 그 맵으로 오는 유일한 이동 착지 → 조사 트리거 앞 칸 → 시작 위치 순.
-`npx --no-install tsx --import ./tiledata/jp-city/refs/css-stub.mjs scripts/qa/staging/lint-flagship-staging.mts`: 첫사랑 origin/main 8건(talk-far 9·4·5·12·3·3·3·3칸) → approach 이관 뒤 0, Fallen Star·Astra 0(이름 있는 화자 줄 96·125, 인물로 푼 줄 33·79).
+`npx --no-install tsx --import ./tiledata/jp-city/refs/css-stub.mjs scripts/qa/staging/lint-flagship-staging.mts`: 첫사랑 origin/main 8건(talk-far 9·4·5·12·3·3·3·3칸) → approach 이관 뒤 0, Fallen Star·Astra 0(이름 있는 화자 줄 96·125, 인물로 푼 줄 33·79). 퇴장(`scene-npc-vanish`): 첫사랑 origin/main 4건(방 안에서 두 칸 걷고 사라지는 민호·본부장·지후, 걷지 않고 사라지는 팀장) → exitVia 이관 뒤 0, Fallen 1건(fs_vault ev_fs_main_kill2, 그대로), Astra 0. `scene-npc-vanish-short` 는 세 데모 0.
 
 데모 검증(2026-10-21, `scripts/qa/scene-polish-lint.mts`): Fallen Star polish2 13건(방향 없는 이동 4·착지 2칸 3·문 아닌 칸 5·대사 뒤 사라짐 1), Astra fv 15건(문을 보는 착지 10 — 이후 손으로 고친 7fa8b2f3c2 와 같은 곳·한 칸 어긋난 출입 매트 2·표시 없는 출구 2·제자리 지우는 라이벌 1),
 「첫사랑」 수정 전 4건(움직이는 교통 2·내려가는 계단으로 옥상 1·맨바닥 출구 1) → 수정 뒤 r2 최신 2건(같은 칸으로 걷는 두 인물). 거짓 경고로 고친 것: 키트 문 부품의 풀밭 칸, 필드 길 출구(끝 2칸 안), 쓰러진 필드 적·합류 동료.

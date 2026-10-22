@@ -1583,8 +1583,9 @@ function validateMoveRoute(
     if (move.kind === "playSe") {
       requireReference(issues, pageId, "reference.resource.missing", "이동 경로 효과음", move.resourceId, refs.resources, pageField("event-page-move-route-sound-id"), commandPath);
     }
-    if ((move.kind === "approach" || move.kind === "turnToward") && move.target && !["@player", "player", "@this", "this-event"].includes(move.target)) {
-      requireReference(issues, pageId, "reference.event.missing", move.kind === "approach" ? "다가갈 대상 이벤트" : "바라볼 대상 이벤트", move.target, refs.events, pageField("event-page-move-route-stage-target"), commandPath);
+    if ((move.kind === "approach" || move.kind === "turnToward" || move.kind === "exitVia" || move.kind === "enterVia") && move.target && !["@player", "player", "@this", "this-event"].includes(move.target)) {
+      const what = move.kind === "approach" ? "다가갈 대상 이벤트" : move.kind === "turnToward" ? "바라볼 대상 이벤트" : "드나들 문 이벤트";
+      requireReference(issues, pageId, "reference.event.missing", what, move.target, refs.events, pageField("event-page-move-route-stage-target"), commandPath);
     }
   }
 }

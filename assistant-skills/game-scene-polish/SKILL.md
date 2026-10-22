@@ -37,6 +37,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 2. **말 걸기 전에 주인공은 한 칸 물러선다.** 24×32 주인공 머리가 바로 위 NPC 발을 가린다. 첫 인사 같은 큰 장면은 화자 **2칸 앞** playerTouch 칸에서 시작해 callMapEvent 로 화자를 부른다(«아직» 스위치로 한 번만). 확인: 첫 대사 때 주인공이 화자와 2칸 이상.
 3. **바라보는 방향은 위치로 계산한다.** 맵이 바뀐 뒤 "down" 고정이면 인사하는 상대에게 등을 돌린다. 방향을 손으로 고르지 말고 `faceToward{actor,target}`·`faceEachOther{a,b}`(이벤트 명령은 경로 단계 `turnToward{target}`). 대사(say/text)는 말하는 인물이 듣는 인물 쪽으로 저절로 돈다(듣는 인물 생략 = 주인공, 끄기 `autoFace:false`).
 9. **말은 곁에서 한다.** 대화 상대에게 가는 걸음을 `moves:["left","left",…]` 로 늘어놓지 않는다 — 시작 칸이 한 칸만 달라도 엉뚱한 칸에 멈추고, 화자가 화면 밖에 있는 채로 인사 선택지가 뜬다(2026-10-22 첫사랑). `approach{actor,target,distance?}`(경로 단계 `{kind:"approach",target}`)가 실행 순간의 위치로 곁의 빈 칸을 찾아 걸어가 대상을 본다. 기둥·수관 뒤 칸은 피한다. 멀리서 부르는 한 줄은 `calling:true`, 그다음 approach. 확인: `scene-speaker-absent`·`scene-talk-far`·`scene-talk-facing` 0.
+10. **떠나는 인물은 문 칸 «위에서» 사라진다.** 걸음을 세어 문 앞에서 멈추고 지우면 한 칸 앞에서 사라져 보인다(문 이벤트는 대개 막힌 벽 칸이라 그 위로 못 걷는다, 2026-10-22 짐꾼). 이동 경로 `{kind:"exitVia"}`(컷신 `exitVia{actor,door?}`)가 문 칸까지 걸어가 문 소리와 함께 그 칸에서 사라지게 한다 — 그 뒤에 지우기·«떠남» 스위치. 들어오는 인물은 `enterVia{actor,door?}`(문 칸에 나타나 한 걸음 들어섬). 확인: `scene-npc-vanish`·`scene-npc-vanish-short` 0.
 4. **대사의 풍경은 맵에 있다.** 「기차가 떠난다」면 선로가, 「계단을 오른다」면 계단이 화면에 있다.
 5. **밤은 어둡게.** 밤 자막 뒤 맵은 ambient ≤ 0.5 + 색, 빛은 등불·창에만. 실내 맵의 바깥 구역도 밤이면 어둡다. 정지 렌더 PNG 는 바탕 색조만 보이고 광원은 안 보인다 — 「따뜻한 빛을 더했다」는 실행 화면 프레임으로 확인한다.
 6. **벽 걸이는 벽에.** 액자·별자리표·시계·거미줄 같은 걸이(손 도트 실내 kind hang) 키트를 바닥 가운데 찍으면 깃발처럼 홀로 선다. 걸이는 벽면 두 줄(천장 띠 바로 아래) 윗줄에만 — stamp_object 로 찍을 때도 같다. 확인: `scene-hang-on-floor` 0.
@@ -127,6 +128,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 | `scene-moving-vehicle` | 움직이는 교통·탈것 |
 | `scene-hang-on-floor` | 벽 걸이 키트가 걸을 수 있는 바닥 칸에 있다 → 벽면 윗줄로 옮긴다 |
 | `scene-ceiling-tile` | 천장 구역(아래층이 천장·공허 칸)에 천장 아닌 칸이 얹혔거나, 방 밖 천장 띠에 고립된 통행 바닥 칸이 깔렸다 → 그 칸을 어두운 천장만 남긴다 |
+| `scene-npc-vanish-short` | 출구 한 칸 앞에서 사라진다 → exitVia 로 문 칸 위까지 걸어 들어가 사라지게 |
 | `scene-speaker-absent` | 대사 화자(또는 듣는 인물)가 그 줄에서 맵에 없다(그 맵에 있지만 숨었거나 아직 안 왔다). 선택지가 방금 말한 인물이 없는 채로 뜬다 → 먼저 등장시키고 approach |
 | `scene-talk-far` | 화자와 듣는 인물이 2칸보다 멀다(부르는 줄 calling 제외) → approach{actor,target} |
 | `scene-talk-facing` | 자동 돌아보기 뒤에도 듣는 인물이 화자를 안 본다 → faceEachOther 또는 듣는 쪽 faceToward |

@@ -8,6 +8,7 @@
 //  - scene-transfer-facing         transfer 에 도착 방향이 없다
 //  - scene-stair-direction         내려가는 계단 그림이 위층으로(또는 반대로) 이어진다
 //  - scene-npc-vanish              NPC 가 출구까지 걷지 않고 제자리에서 사라진다(Erase Event·투명 «떠남» 페이지·경로 속 불투명도 0)
+//  - scene-npc-vanish-short        출구 «한 칸 앞»에서 사라진다(문 칸 위까지 걸어 들어가지 않는다) → exitVia
 //  - scene-dialogue-position-mixed 대사 위치(top·center·bottom·auto)가 한 게임 안에서 섞였다
 //  - scene-dialogue-position-jump  이어지는 두 대사(사이에 창을 닫는 명령 없이)가 서로 다른 자리를 못박아 창이 위↔아래로 뛴다
 //  - scene-dialogue-context-mixed  sign·system·letter 밖의 특수 대화창 모양을 둘 이상 섞거나 말풍선을 쓴다
@@ -24,12 +25,12 @@ import { isPassable } from "../collision";
 import handInteriorSpec from "@/assets/handInteriorSpec.json";
 import type { LintIssue } from "./projectLint";
 import { checkSceneStaging } from "./sceneStagingLint";
+import { cellIs, doorCacheKey, isDoorArtCell, LAYERS, type TileMetaLike } from "../staging/doorCells";
+
+export { isDoorArtCell };
 
 type Cell = { x: number; y: number };
 
-const DOOR_WORDS = /(?<![창주])문(?![양자서장제구화턱])|door|입구|출입|출구|현관|계단|stair|엘리베이터|승강기|에스컬레이터|escalator|elevator|lift|사다리|ladder|개찰|portal|포털|게이트|gate|구멍|hole|셔터|맨홀|manhole|동굴 입/iu;
-const STAIR_DOWN = /내려가|아래로|하강|down|下り|구멍|hole/iu;
-const STAIR_UP = /올라가|위로|상승|\bup\b|上り/iu;
 const VEHICLE_WORDS = /자동차|승용차|택시|버스|트럭|오토바이|스쿠터|자전거|전차|열차|기차|\bcar\b|taxi|\bbus\b|truck|motorbike|motorcycle|scooter|bicycle|\bbike\b|train|tram/iu;
 /** 문형 이동 페이지에 같이 있어도 되는 명령(소리·기다림·화면 효과·스위치). 대사·선택지가 있으면 이야기 장면 전환이다. */
 const DOOR_PAGE_EXTRA: ReadonlySet<Command["kind"]> = new Set(["transfer", "playAudio", "stopAudio", "wait", "m2Command", "setSwitch", "setSelfSwitch", "setVariable"]);
@@ -106,95 +107,6 @@ function fieldNum(command: Command, key: string): number | null {
   if (command.kind !== "m2Command") return null;
   const v = Number((command.fields as Record<string, unknown> | undefined)?.[key]);
   return Number.isFinite(v) ? v : null;
-}
-
-// ---------------------------------------------------------------------------- 문·계단 타일
-
-type TileMetaLike = { label?: string; tags?: readonly string[]; description?: string };
-type DoorSets = { door: Set<number>; down: Set<number>; up: Set<number> };
-/** 쓰기 도구마다 초안이 타일셋을 복제하므로 객체가 아니라 id·크기로 기억한다(이름표·키트가 바뀌면 크기도 바뀐다). */
-const doorTileCache = new Map<string, DoorSets>();
-
-function doorCacheKey(tileset: TilesetDef): string {
-  const meta = (tileset as { tileMeta?: unknown }).tileMeta;
-  const metaSize = Array.isArray(meta) ? meta.length : meta && typeof meta === "object" ? Object.keys(meta).length : 0;
-  const kits = (tileset as { structureKits?: readonly unknown[] }).structureKits?.length ?? 0;
-  return `${tileset.id}|${metaSize}|${kits}`;
-}
-
-function metaAt(tileset: TilesetDef, tile: number): TileMetaLike | undefined {
-  const meta = (tileset as { tileMeta?: unknown }).tileMeta;
-  if (!meta) return undefined;
-  if (Array.isArray(meta)) return meta[tile] as TileMetaLike | undefined;
-  return (meta as Record<string, TileMetaLike>)[String(tile)];
-}
-
-/** 이 타일셋에서 문·계단·출구로 읽히는 칸 번호. 이름표 낱말 + 건물 키트의 entrance 부품 칸. */
-function doorTiles(tileset: TilesetDef | undefined): DoorSets {
-  const empty = { door: new Set<number>(), down: new Set<number>(), up: new Set<number>() };
-  if (!tileset) return empty;
-  const key = doorCacheKey(tileset);
-  const cached = doorTileCache.get(key);
-  if (cached) return cached;
-  const out = { door: new Set<number>(), down: new Set<number>(), up: new Set<number>() };
-  const meta = (tileset as { tileMeta?: unknown }).tileMeta;
-  const entries: Array<[number, TileMetaLike]> = Array.isArray(meta)
-    ? meta.map((m, i) => [i, m as TileMetaLike])
-    : meta && typeof meta === "object" ? Object.entries(meta as Record<string, TileMetaLike>).map(([k, m]) => [Number(k), m]) : [];
-  for (const [tile, m] of entries) {
-    if (!m || typeof m !== "object") continue;
-    const text = `${m.label ?? ""} ${(m.tags ?? []).join(" ")}`;
-    if (!DOOR_WORDS.test(text)) continue;
-    out.door.add(tile);
-    if (/계단|stair|escalator|에스컬레이터|구멍|hole|사다리|ladder/iu.test(text)) {
-      if (STAIR_DOWN.test(m.label ?? "")) out.down.add(tile);
-      else if (STAIR_UP.test(m.label ?? "")) out.up.add(tile);
-    }
-  }
-  for (const raw of (tileset as { structureKits?: readonly unknown[] }).structureKits ?? []) {
-    const kit = raw as { rows?: Array<{ tiles?: number[]; upperTiles?: number[] }>; parts?: Array<{ kind?: string; dx?: number; dy?: number; w?: number; h?: number }> };
-    for (const part of kit.parts ?? []) {
-      if (part?.kind !== "entrance" || typeof part.dx !== "number" || typeof part.dy !== "number") continue;
-      for (let y = part.dy; y < part.dy + (part.h ?? 1); y++) {
-        for (let x = part.dx; x < part.dx + (part.w ?? 1); x++) {
-          const row = kit.rows?.[y];
-          for (const t of [row?.tiles?.[x], row?.upperTiles?.[x]]) {
-            if (typeof t !== "number" || t < 0) continue;
-            // 키트 문 부품 칸이라도 풀밭·포석 같은 바닥 타일은 문 그림이 아니다(다른 곳에도 깔린다).
-            const m = metaAt(tileset, t) as (TileMetaLike & { role?: string; passage?: string }) | undefined;
-            if (m && (m.role === "terrain" || m.role === "empty" || (m.passage && m.passage !== "solid" && m.role !== "building" && m.role !== "prop"))) continue;
-            out.door.add(t);
-          }
-        }
-      }
-    }
-  }
-  if (doorTileCache.size > 64) doorTileCache.clear();
-  doorTileCache.set(key, out);
-  return out;
-}
-
-const LAYERS = ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"] as const;
-
-function tilesAt(map: GameMap, x: number, y: number): number[] {
-  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return [];
-  const i = y * map.width + x;
-  const out: number[] = [];
-  for (const key of LAYERS) {
-    const arr = (map as unknown as Record<string, unknown>)[key];
-    if (Array.isArray(arr)) { const t = arr[i]; if (typeof t === "number" && t >= 0) out.push(t); }
-  }
-  return out;
-}
-
-function cellIs(project: Project, map: GameMap, x: number, y: number, kind: "door" | "down" | "up"): boolean {
-  const set = doorTiles(project.tilesets[map.tilesetId])[kind];
-  return set.size > 0 && tilesAt(map, x, y).some((t) => set.has(t));
-}
-
-/** 문·계단·엘리베이터 그림 칸인가(이름표 낱말 + 건물 키트 entrance 부품). create_transfer_pair 가 트리거를 문 칸에 둘 때 쓴다. */
-export function isDoorArtCell(project: Project, map: GameMap, x: number, y: number): boolean {
-  return x >= 0 && y >= 0 && x < map.width && y < map.height && cellIs(project, map, x, y, "door");
 }
 
 // ---------------------------------------------------------------------------- 이동(transfer)
@@ -309,19 +221,23 @@ function checkTransfers(project: Project, issues: LintIssue[], gates: readonly G
 
 // ---------------------------------------------------------------------------- NPC 퇴장
 
-function simulateRoute(start: Cell, moves: readonly MoveCommand[] | undefined, map: GameMap): { end: Cell; fades: boolean } {
+function simulateRoute(start: Cell, moves: readonly MoveCommand[] | undefined, map: GameMap, doorOf?: (m: Extract<MoveCommand, { kind: "exitVia" | "enterVia" }>, from: Cell) => Cell | null): { end: Cell; fades: boolean; viaDoor: boolean } {
   let cur = { ...start };
   let fades = false;
+  let viaDoor = false;
   for (const m of moves ?? []) {
     if (!m || typeof m !== "object") continue;
+    // 문으로 나가기: 문 칸 위로 걸어 들어가 사라진다 — 문을 못 찾으면(런타임도 제자리에서 사라진다) 제자리.
+    if (m.kind === "exitVia") { const door = doorOf?.(m, cur); if (door) { cur = door; viaDoor = true; } fades = true; continue; }
+    if (m.kind === "enterVia") { const door = doorOf?.(m, cur); if (door) cur = door; fades = false; viaDoor = false; continue; }
     if (m.kind === "move") cur = { x: cur.x + STEP[m.dir].x, y: cur.y + STEP[m.dir].y };
     else if (m.kind === "moveDiagonal") cur = { x: cur.x + (m.horizontal === "left" ? -1 : 1), y: cur.y + (m.vertical === "up" ? -1 : 1) };
     else if (m.kind === "jump") cur = { x: cur.x + (m.dx || 0), y: cur.y + (m.dy || 0) };
     else if (m.kind === "changeOpacity" && m.delta <= -200) fades = true;
-    else if (m.kind === "npcTransfer") return { end: cur, fades: true };
+    else if (m.kind === "npcTransfer") return { end: cur, fades: true, viaDoor: false };
   }
   cur = { x: Math.max(0, Math.min(map.width - 1, cur.x)), y: Math.max(0, Math.min(map.height - 1, cur.y)) };
-  return { end: cur, fades };
+  return { end: cur, fades, viaDoor };
 }
 
 function exitCells(project: Project, map: GameMap, gates: readonly Gate[]): (c: Cell) => boolean {
@@ -329,6 +245,25 @@ function exitCells(project: Project, map: GameMap, gates: readonly Gate[]): (c: 
   return (c) => isEdgeExit(project, map, c.x, c.y)
     || mapGates.some((g) => chebyshev(g, c) <= 1)
     || [c, ...Object.values(STEP).map((d) => ({ x: c.x + d.x, y: c.y + d.y }))].some((n) => cellIs(project, map, n.x, n.y, "door"));
+}
+
+/** 사라져도 되는 «바로 그» 칸: 이동(문) 이벤트 칸·문 그림 칸·맵 끝 칸. exitCells 는 그 한 칸 앞까지 받아 준다. */
+function exitCellsStrict(project: Project, map: GameMap, gates: readonly Gate[]): (c: Cell) => boolean {
+  const mapGates = gates.filter((g) => g.map.id === map.id).map((g) => ({ x: g.event.x, y: g.event.y }));
+  return (c) => onEdge(map, c.x, c.y) || mapGates.some((g) => g.x === c.x && g.y === c.y) || cellIs(project, map, c.x, c.y, "door");
+}
+
+/** exitVia·enterVia 의 문 칸(런타임 playSceneDoorway 와 같은 규칙: target 이벤트 → x,y → 가장 가까운 이동 이벤트). */
+function doorCellFinder(map: GameMap, gates: readonly Gate[]): (m: Extract<MoveCommand, { kind: "exitVia" | "enterVia" }>, from: Cell) => Cell | null {
+  const mapGates = gates.filter((g) => g.map.id === map.id).map((g) => g.event);
+  return (m, from) => {
+    const id = m.target?.trim();
+    if (id) { const e = (map.events ?? []).find((ev) => ev.id === id); return e ? { x: e.x, y: e.y } : null; }
+    if (typeof m.x === "number" && typeof m.y === "number") return { x: m.x, y: m.y };
+    if (mapGates.length === 0) return null;
+    const best = mapGates.reduce((a, b) => (chebyshev(b, from) < chebyshev(a, from) ? b : a));
+    return { x: best.x, y: best.y };
+  };
 }
 
 /** 이 이벤트를 가리키는 moveEvent 인가(""=자기 자신은 호스트 이벤트일 때). */
@@ -364,6 +299,20 @@ function switchesThatHide(map: GameMap, strict: boolean): Map<string, GameEvent[
 function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly Gate[]): void {
   for (const map of Object.values(project.maps)) {
     const isExit = exitCells(project, map, gates);
+    const isExitStrict = exitCellsStrict(project, map, gates);
+    const doorOf = doorCellFinder(map, gates);
+    /** 출구 «한 칸 앞»에서 경로가 끝나는 NPC → 그 끝 칸. 이 뒤에 지우거나 숨기면 한 칸 모자라게 사라진다. */
+    const shortOfExit = new Map<string, Cell>();
+    const reportShort = (npc: GameEvent): void => {
+      const end = shortOfExit.get(npc.id);
+      const key = `short|${npc.id}`;
+      if (!end || reported.has(key)) return;
+      reported.add(key);
+      issues.push({
+        severity: "warning", code: "scene-npc-vanish-short", mapId: map.id, eventId: npc.id, x: end.x, y: end.y,
+        message: `NPC ${npc.name || npc.id}(${map.id}) 가 출구 한 칸 앞 (${end.x},${end.y}) 에서 사라진다 — 문·출구 칸 위까지 걸어 들어가야 한다. 걸음을 세지 말고 이동 경로 {kind:"exitVia"}(컷신 exitVia{actor,door?}) 로 내보낸다: 문 칸까지 걷고 문 소리와 함께 사라진다. 그 뒤에 지우기·«떠남» 스위치.`,
+      });
+    };
     const byId = new Map((map.events ?? []).map((e) => [e.id, e] as const));
     const routedToExit = new Set<string>();
     const reported = new Set<string>();
@@ -383,9 +332,12 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
         const id = routeTarget(command, host);
         const npc = id ? byId.get(id) : undefined;
         if (!npc || command.kind !== "moveEvent") continue;
-        const { end, fades } = simulateRoute(npc, command.route?.moves, map);
-        if (isExit(end)) routedToExit.add(npc.id);
-        else if (fades) report(npc, `경로 끝 (${end.x},${end.y}) 에서 불투명도를 0 으로 내려 출구가 아닌 자리에서 사라진다`);
+        const { end, fades, viaDoor } = simulateRoute(npc, command.route?.moves, map, doorOf);
+        if (isExit(end) || viaDoor) {
+          routedToExit.add(npc.id);
+          if (!viaDoor && !isExitStrict(end)) shortOfExit.set(npc.id, end); else shortOfExit.delete(npc.id);
+          if (fades && !viaDoor && !isExitStrict(end)) reportShort(npc);
+        } else if (fades) report(npc, `경로 끝 (${end.x},${end.y}) 에서 불투명도를 0 으로 내려 출구가 아닌 자리에서 사라진다`);
       }
     }
     // 2) 지우기(Erase Event)와 «떠남» 스위치를 켜는 자리를 이야기 순서대로 훑는다.
@@ -415,6 +367,7 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
             if (hides && visibleGraphic(pagesOf(host)[0])) {
               if (leavesWithoutWaiting(host.id)) report(host, "출구로 가는 moveEvent 가 route.wait:true 없이 끝나, 걷기 시작하자마자 셀프 스위치가 켜져 투명 페이지로 사라진다 — route 안에 wait:true 를 넣는다");
               else if (!(st.lastRouteTo === host.id && routedToExit.has(host.id)) && !excused(st)) report(host, "셀프 스위치로 투명 페이지가 켜져 제자리에서 사라진다");
+              else if (st.lastRouteTo === host.id && !excused(st)) reportShort(host);
             }
           }
           if (m2Title(command) === "Erase Event") {
@@ -424,11 +377,12 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
               report(npc, "출구로 가는 moveEvent 가 route.wait:true 없이 끝나, 걷기 시작하자마자 Erase Event 로 지워진다 — route 안에 wait:true 를 넣는다");
             } else if (npc && visibleGraphic(pagesOf(npc)[0]) && !excused(st) && !(st.lastRouteTo === id && routedToExit.has(id))) {
               report(npc, "Erase Event 로 제자리에서 지워진다");
-            }
+            } else if (npc && visibleGraphic(pagesOf(npc)[0]) && !excused(st) && st.lastRouteTo === id) reportShort(npc);
           }
           if (command.kind === "setSwitch" && command.value === true) {
             for (const npc of goneSwitch.get(command.switchId) ?? []) {
               if (!routedToExit.has(npc.id) && !excused(st)) report(npc, "스위치로 보이는 페이지가 꺼져 방 안에서 사라진다");
+              else if (!excused(st)) reportShort(npc);
             }
           }
           if (command.kind === "battleProcessing") {

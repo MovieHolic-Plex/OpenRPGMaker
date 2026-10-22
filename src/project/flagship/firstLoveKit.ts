@@ -143,6 +143,15 @@ export function walkTo(eventId: string, cell: { x: number; y: number }, waitDone
   return approach(eventId, cell, 0, waitDone);
 }
 
+/**
+ * 문·출구로 나간다: 문 칸까지 걸어가 문 소리와 함께 그 칸 «위에서» 사라진다(한 칸 앞에서 사라지지 않는다).
+ * door 를 비우면 가장 가까운 문(이동 이벤트). 문 이벤트 페이지가 꺼져 있으면 칸 좌표로 준다.
+ */
+export function exitVia(eventId: string, door?: string | { x: number; y: number }, waitDone = true): Command {
+  const to = door === undefined ? {} : typeof door === "string" ? { target: door } : { x: door.x, y: door.y };
+  return { kind: "moveEvent", eventId, route: { moves: [{ kind: "exitVia", ...to }], repeat: false, wait: waitDone, skippable: true } } as Command;
+}
+
 /** 대상 쪽으로 돈다. */
 export function faceToward(eventId: string, target: string): Command {
   return { kind: "moveEvent", eventId, route: { moves: [{ kind: "turnToward", target }], repeat: false, wait: true, skippable: true } } as Command;

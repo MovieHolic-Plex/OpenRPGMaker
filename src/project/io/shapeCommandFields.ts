@@ -952,6 +952,25 @@ function validateMoveCommandShape(label: string, value: unknown): void {
       if (command.y !== undefined) requireNumber(`${label}.y`, command.y);
       if (kind === "approach" && command.distance !== undefined) requireNumber(`${label}.distance`, command.distance);
       return;
+    case "exitVia":
+    case "enterVia":
+      if (command.target !== undefined) requireString(`${label}.target`, command.target);
+      if (command.x !== undefined) requireNumber(`${label}.x`, command.x);
+      if (command.y !== undefined) requireNumber(`${label}.y`, command.y);
+      if (command.se !== undefined) requireString(`${label}.se`, command.se);
+      if (command.closeSe !== undefined) requireString(`${label}.closeSe`, command.closeSe);
+      if (kind === "enterVia" && command.dir !== undefined) requireDir(`${label}.dir`, command.dir);
+      return;
+    case "doorCue":
+      if (command.target !== undefined) requireString(`${label}.target`, command.target);
+      if (command.frame !== undefined) requireNumber(`${label}.frame`, command.frame);
+      if (command.se !== undefined) requireString(`${label}.se`, command.se);
+      if (command.ms !== undefined) requireNumber(`${label}.ms`, command.ms);
+      return;
+    case "placeAt":
+      requireNumber(`${label}.x`, command.x);
+      requireNumber(`${label}.y`, command.y);
+      return;
     case "moveRandom":
     case "moveTowardPlayer":
     case "moveAwayFromPlayer":

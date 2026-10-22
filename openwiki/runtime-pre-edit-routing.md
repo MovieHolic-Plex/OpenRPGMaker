@@ -1023,4 +1023,5 @@ QA 근거와 재실행: `scripts/qa/runtime/dialogue-frame-fixture.mts`(데모�
 
 - 경로 단계 `approach`·`turnToward` 는 **즉시 명령**이다. NPC 는 `playSceneAutonomousCommands.executeInstantCommand`, 주인공은 `playSceneMovement.applyPlayerRouteCommand` 가 그 순간 `expandApproach`(`playSceneApproach.ts`)로 경로에 보통 `move` + `turnToward` 를 끼워 넣는다(`mover.step-1`·`route.index-1` 자리). 그래서 걸음 속도·막힘·주인공 비켜 가기(`commandRouteDetour`)는 기존 걸음과 같다. 속도 표를 여기서 다시 정하지 않는다(`project/characterMotion.ts`).
 - 대사 자동 돌아보기는 인터프리터 `text` 단계가 showText 직전에 부른다(`playSceneDialogueFacing.applyDialogueFacing`). 화자·듣는 인물 규칙은 장면 검사와 같은 `project/staging/dialogueActors.ts` 다 — 한쪽만 바꾸면 검사가 상상한 방향과 게임이 다르다.
+- `exitVia`·`enterVia` 도 같은 즉시 펼침이다(`playSceneDoorway.ts`): 걸음 + `doorCue`(문 소리·문 이벤트 방향 프레임, `mover.routeWaitMs` 로 프레임 사이 쉼 — `playSceneAutonomous` 의 wait 처리 옆) + `placeAt`(같은 맵 순간 이동). 문 그림 칸 판정은 `project/staging/doorCells.ts`(장면 검사와 공유 — 검사 모듈은 큰 JSON 을 들고 있어 출하 플레이어가 끌어오면 안 된다).
 - `moveEvent` 대상 `"@this"`/`"this-event"` 는 실행 중 이벤트 id 로 묶인다(`bindStageTargets`).

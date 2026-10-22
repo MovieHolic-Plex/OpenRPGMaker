@@ -19,7 +19,7 @@ import { clampEmoteDurationMs, EMOTE_KINDS, type EmoteKind } from "@/project/emo
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import { MAP_BACKGROUND_FLOW_PERCENT_LIMIT } from "@/project/mapBackground";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
-import type { Command, FaceGraphic, M2CommandFields, M2CommandValue, MoveCommand, MoveRoute } from "@/project/types";
+import type { Command, Dir, FaceGraphic, M2CommandFields, M2CommandValue, MoveCommand, MoveRoute } from "@/project/types";
 import { CUTSCENE_END_LABEL } from "@/player/cutsceneControl";
 
 export type CutsceneBeat =
@@ -50,7 +50,8 @@ export type CutsceneBeat =
   | CutsceneWeatherBeat
   | CutsceneApproachBeat
   | CutsceneFaceEachOtherBeat
-  | CutsceneFaceTowardBeat;
+  | CutsceneFaceTowardBeat
+  | CutsceneDoorwayBeat;
 
 /**
  * 인물 연출 기본기(2026-10-22). 걸음을 손으로 늘어놓지 말고 «누구 곁으로»·«서로 본다»를 선언한다 —
@@ -66,6 +67,22 @@ export type CutsceneApproachBeat = {
   readonly y?: number;
   /** 말 거리(칸). 기본 1 = 바로 옆. */
   readonly distance?: number;
+  readonly wait?: boolean;
+};
+/**
+ * 문으로 나가기·들어오기(2026-10-22). 나가기는 문 칸 «위로» 걸어 들어가 문 소리와 함께 사라진다 — 한 칸 앞에서 지우지 않는다.
+ * 들어오기는 문 칸에 나타나 한 걸음 들어선다. door: 문(이동) 이벤트 id·이름, 칸이면 x,y, 둘 다 없으면 가장 가까운 문.
+ */
+export type CutsceneDoorwayBeat = {
+  readonly kind: "exitVia" | "enterVia";
+  readonly actor: string;
+  readonly door?: string;
+  readonly x?: number;
+  readonly y?: number;
+  /** 들어오는 걸음 방향(enterVia). */
+  readonly dir?: Dir;
+  readonly se?: string;
+  readonly closeSe?: string;
   readonly wait?: boolean;
 };
 export type CutsceneFaceEachOtherBeat = { readonly kind: "faceEachOther"; readonly a: string; readonly b: string };
@@ -663,6 +680,9 @@ function compileBeat(
       return [compileFaceTowardBeat(beat, options.forceNonBlocking)];
     case "faceEachOther":
       return compileFaceEachOtherBeat(beat, options.forceNonBlocking);
+    case "exitVia":
+    case "enterVia":
+      return [compileDoorwayBeat(beat, options.forceNonBlocking)];
     case "camera":
       return [compileCameraBeat(beat, state, options.forceNonBlocking)];
     case "picture":
@@ -816,6 +836,15 @@ function compileApproachBeat(beat: CutsceneApproachBeat, forceNonBlocking: boole
     ...(beat.target ? { target: stageRef(beat.target) } : { x: beat.x ?? 0, y: beat.y ?? 0 }),
     ...(beat.distance !== undefined && beat.distance !== 1 ? { distance: beat.distance } : {}),
   };
+  return stageMoveEvent(beat.actor, [move], forceNonBlocking ? false : beat.wait ?? true);
+}
+
+function compileDoorwayBeat(beat: CutsceneDoorwayBeat, forceNonBlocking: boolean): Command {
+  const where = beat.door?.trim() ? { target: beat.door.trim() } : typeof beat.x === "number" && typeof beat.y === "number" ? { x: beat.x, y: beat.y } : {};
+  const sounds = { ...(beat.se !== undefined ? { se: beat.se } : {}), ...(beat.closeSe !== undefined ? { closeSe: beat.closeSe } : {}) };
+  const move: MoveCommand = beat.kind === "exitVia"
+    ? { kind: "exitVia", ...where, ...sounds }
+    : { kind: "enterVia", ...where, ...sounds, ...(beat.dir ? { dir: beat.dir } : {}) };
   return stageMoveEvent(beat.actor, [move], forceNonBlocking ? false : beat.wait ?? true);
 }
 
@@ -1043,7 +1072,7 @@ function compileParallelBeat(beat: CutsceneParallelBeat, state: CompileState): C
 
 function needsWaitAllMovement(beat: CutsceneBeat): boolean {
   if (beat.kind === "moveActor") return beat.wait ?? beat.route?.wait ?? true;
-  if (beat.kind === "approach") return beat.wait ?? true;
+  if (beat.kind === "approach" || beat.kind === "exitVia" || beat.kind === "enterVia") return beat.wait ?? true;
   if (beat.kind === "parallel") return beat.beats.some(needsWaitAllMovement);
   return false;
 }
@@ -1157,6 +1186,9 @@ function validateKnownBeat(beat: CutsceneBeat, path: string, errors: string[]): 
     const hasTarget = typeof beat.target === "string" && beat.target.trim() !== "";
     if (!hasTarget && (typeof beat.x !== "number" || typeof beat.y !== "number")) errors.push(`${path}: ${beat.kind} 에는 target('player'·이벤트 id) 또는 칸 x,y 가 필요합니다.`);
   }
+  if ((beat.kind === "exitVia" || beat.kind === "enterVia") && (typeof beat.actor !== "string" || !beat.actor.trim() || ["player", "@player"].includes(beat.actor.trim()))) {
+    errors.push(`${path}.actor: ${beat.kind} 는 NPC(이벤트 id·이름)가 문으로 나가고 들어오는 비트입니다 — 주인공은 transfer 비트로 장소를 옮깁니다.`);
+  }
   if (beat.kind === "faceEachOther" && (typeof beat.a !== "string" || !beat.a.trim() || typeof beat.b !== "string" || !beat.b.trim())) {
     errors.push(`${path}: faceEachOther 에는 두 인물 a·b('player' 또는 이벤트 id)가 필요합니다.`);
   }
@@ -1222,10 +1254,11 @@ function referencedEventIds(beat: CutsceneBeat): readonly string[] {
     const target = beat.target ?? beat.eventId ?? beat.actor;
     return target && target !== "player" && target !== "this-event" ? [target] : [];
   }
-  if (beat.kind === "approach" || beat.kind === "faceToward" || beat.kind === "faceEachOther" || beat.kind === "say") {
+  if (beat.kind === "approach" || beat.kind === "faceToward" || beat.kind === "faceEachOther" || beat.kind === "say" || beat.kind === "exitVia" || beat.kind === "enterVia") {
     const refs = beat.kind === "faceEachOther" ? [beat.a, beat.b]
       : beat.kind === "say" ? [beat.actor, beat.to]
-      : [beat.actor, beat.target];
+      : beat.kind === "approach" || beat.kind === "faceToward" ? [beat.actor, beat.target]
+      : [beat.actor, beat.door];
     return refs.filter((r): r is string => typeof r === "string" && r.trim() !== "" && !["player", "@player", "this-event", "@this"].includes(r.trim())).map((r) => r.trim());
   }
   if (beat.kind === "camera") {
@@ -1381,6 +1414,8 @@ const KNOWN_BEAT_KINDS: ReadonlySet<string> = new Set([
   "approach",
   "faceEachOther",
   "faceToward",
+  "exitVia",
+  "enterVia",
 ]);
 
 function isCameraObjectTarget(value: unknown): value is { readonly eventId?: string; readonly x?: number; readonly y?: number } {
