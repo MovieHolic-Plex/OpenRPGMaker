@@ -264,6 +264,7 @@ const LEAF_CAST_MAX = kitValue<number>("checks", "LEAF_CAST_MAX");
 const LEAF_DARK_MIN = kitValue<number>("checks", "LEAF_DARK_MIN");
 const LEAF_CONTRAST_MIN = kitValue<number>("checks", "LEAF_CONTRAST_MIN");
 const LEAF_BAND_MAX = kitValue<number>("checks", "LEAF_BAND_MAX");
+const LEAF_BASE_MAX = kitValue<number>("checks", "LEAF_BASE_MAX");
 const ORGANIC_LEAF_RAMP = kitValue<readonly string[]>("prompts", "ORGANIC_LEAF_RAMP");
 const ORGANIC_LEAF_SHARES = kitValue<readonly number[]>("prompts", "ORGANIC_LEAF_SHARES");
 
@@ -422,6 +423,10 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
       if (lv.leafCast > LEAF_CAST_MAX) hard.push({ code: "LEAFHUE", msg: `the leaves are olive/yellow (red-blue ${lv.leafCast}, exemplars -9..-4, limit -1) - paint them with the listed leaf-green keys` });
       if (lv.leafContrast < LEAF_CONTRAST_MIN) hard.push({ code: "LEAFFLAT", msg: `the leaves are a smooth gradient, not clumps (neighbour contrast ${lv.leafContrast}, exemplars 12-18) - build separate clumps: a 2-4 px light dash on each clump's upper left right next to dark pockets` });
       if (lv.leafBand < LEAF_BAND_MAX) hard.push({ code: "LEAFBAND", msg: `light and dark change by height (luma-height correlation ${lv.leafBand}, exemplars -0.44..-0.53) - light every clump on its own upper left, put dark pockets between clumps at every height` });
+      const art = renderGrid(grid, palette);
+      const widths: number[] = [];
+      for (let y = 0; y < art.height; y++) { let n = 0; for (let x = 0; x < art.width; x++) if (art.data[(y * art.width + x) * 4 + 3]! > 0) n++; if (n) widths.push(n); }
+      if (widths.length && widths.at(-1)! / Math.max(...widths) > LEAF_BASE_MAX) hard.push({ code: "FLATBASE", msg: `the base is cut flat along the ground (lowest row ${widths.at(-1)} of ${Math.max(...widths)} px wide) - let the lower edge come down unevenly: leaves hanging lower in places, gaps, a rounded tuck` });
       if (lv.leafDark < LEAF_DARK_MIN) hard.push({ code: "LEAFLIGHT", msg: `the crown is too light (${Math.round(lv.leafDark * 100)}% dark leaf pixels, exemplars 28-38%) - more dark interior, shadow under lobes, darker lower right` });
     }
   } else if (TOP_KINDS.has(item.gateKind ?? "") && STANDING.has(anchor) && topRows < 3) warn.push({ code: "TOP", msg: `measured top plane is ${topRows} row(s) (column scan) - a 3/4 top needs >= 3 lit rows above the front` });
