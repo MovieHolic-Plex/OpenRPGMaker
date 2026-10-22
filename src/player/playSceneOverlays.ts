@@ -530,6 +530,6 @@ function endingSummaryLine(scene: { session: { partyActorIds?: readonly string[]
     .filter((name): name is string => Boolean(name));
   const seconds = Math.max(0, Math.floor(scene.session.playTimeSeconds ?? 0));
   const time = `${Math.floor(seconds / 3600)}:${String(Math.floor((seconds % 3600) / 60)).padStart(2, "0")}`;
-  const parts = [names.length ? `함께한 이 ${names.join(" · ")}` : "", seconds > 0 ? `플레이 시간 ${time}` : ""].filter(Boolean);
+  const parts = [names.length ? `함께한 이: ${names.join(" · ")}` : "", seconds > 0 ? `플레이 시간: ${time}` : ""].filter(Boolean);
   return parts.join("   ·   ");
 }

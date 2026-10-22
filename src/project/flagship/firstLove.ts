@@ -353,7 +353,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   const leadMeetStop = named.meetLead ?? spot(project, FL_MAP.office, { x: heroMeet.x, y: heroMeet.y + 2 }, taken);
   const jihuMeetStop = named.meetJihu ?? spot(project, FL_MAP.office, { x: leadMeetStop.x + 1, y: leadMeetStop.y }, taken);
   // 흉상 자리는 장면 내내 고정(서하 왼쪽, 상대 오른쪽, VQA r16) — 민호도 서하 오른쪽(팀장 옆)에 선다.
-  const minhoMeetStop = spot(project, FL_MAP.office, { x: leadMeetStop.x + 1, y: leadMeetStop.y }, [...taken, leadMeetStop, jihuMeetStop]);
+  // 민호는 탕비실(왼쪽)에서 와 서하 왼쪽에 선다 — 팀장 오른쪽에 세우면 팀장을 사이에 두고 서하에게 말했다(VQA r18).
+  const minhoMeetStop = spot(project, FL_MAP.office, { x: heroMeet.x - 1, y: heroMeet.y }, [...taken, leadMeetStop, jihuMeetStop]);
   // 둘 다 자기 자리에서 걸어 나온다(빈 바닥에서 솟아나지 않는다).
   const leadSpot = o.leadDesk;
   const jihuMeet = jihuSeat;
@@ -675,7 +676,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
       ...think("…이 동네에도, 금요일 점심을 기억하는 사람이 있나 보다."),
     ], { who: "clerk", dir: "down" })]),
     door("ev_fl_kon_door", k.door, [stageIs(V_STAGE, 999)], [], think("뭐라도 사서 나가자.")),
-    event("ev_fl_jihu_kon", "강지후", jihuEnter, [page("jk", [swOn("sw_fl_jihu_in_konbini")], [], { who: "jihu", dir: "up" })]),
+    event("ev_fl_jihu_kon", "강지후", k.door, [page("jk", [swOn("sw_fl_jihu_in_konbini")], [], { who: "jihu", dir: "up" })]),
   );
   add(kon, scene("ev_fl_kon_enter", { x: 1, y: 1 }, S.EVENING, [
     ...call("clerk", "happy", "어서 오세요~"),
@@ -687,7 +688,8 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
       ...think("바나나우유. 손이 먼저 간다.", "…아직도 이걸 고르네, 나."),
       playSe("cc0-se-orp-interface-interface2"),
       setSw("sw_fl_jihu_in_konbini", true),
-      wait(400),
+      // 자동문이 다 열린 뒤에 들어선다(VQA r18: 문이 19% 열렸는데 지후가 이미 한 칸 안에 있었다) — 문 칸에 나타나 문 소리와 함께 한 걸음 들어온다.
+      { kind: "moveEvent", eventId: "ev_fl_jihu_kon", route: { moves: [{ kind: "enterVia", x: k.door.x, y: k.door.y, dir: "up" }], repeat: false, wait: true, skippable: true } } as Command,
       walk("ev_fl_jihu_kon", path(jihuEnter, jihuStop, true)),
       // 주인공은 냉장고 앞(아래 칸)에 서 있다 — 냉장고 칸이 아니라 그 칸에서 지후 쪽으로 돈다.
       face("@player", dirToward(coolerFront, jihuStop)),

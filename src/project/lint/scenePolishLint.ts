@@ -1129,6 +1129,12 @@ function checkSeatedCannotStand(project: Project, issues: LintIssue[]): void {
           let through = false;
           for (const move of command.route?.moves ?? []) {
             if (move?.kind === "setThrough") { through = Boolean((move as { enabled?: boolean }).enabled); continue; }
+            // 문으로 들어오기: 문 칸(좌표를 준 경우)에서 dir(준 경우) 한 걸음 안 — 통과로 걷는다.
+            if (move?.kind === "enterVia") {
+              const ev = move as { x?: number; y?: number; dir?: Dir };
+              if (typeof ev.x === "number" && typeof ev.y === "number") cell = ev.dir && STEP[ev.dir] ? { x: ev.x + STEP[ev.dir].x, y: ev.y + STEP[ev.dir].y } : { x: ev.x, y: ev.y };
+              continue;
+            }
             if (move?.kind !== "move") continue;
             const dir = (move as { dir?: Dir }).dir;
             if (!dir || !STEP[dir]) continue;
