@@ -277,6 +277,43 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
       }
       g.liquid.set(next);
     }
+    // 흐르는 용암(2026-10-22 VQA 「흐르는 용암인데 고인 못 셋뿐」): 용암 못에서 가장 먼 일반 방까지 굽이치는 폭 2 용암 줄기를 판다.
+    // 통로를 가로지르면 settle 이 가장 짧은 곳에 다리를 놓는다. 입구 방·보스방·보물 방·문 앞은 건드리지 않는다.
+    if (profile.id === "volcano") {
+      const ban = new Set(chambers.filter((c) => c.kind === "boss" || c.kind === "vault").map((c) => c.index));
+      const lakes = chambers.filter((c) => c.kind === "lake");
+      const plain = chambers.filter((c) => c.kind === "cavern" || c.kind === "grotto" || c.kind === "lake");
+      /** a→b 줄기: 금지 방·입구를 피해 바닥을 따라가는 최단 길(BFS) — 방 안(가장자리 2칸 안쪽)은 폭 2, 통로는 폭 1(settle 이 다리를 놓는다). */
+      const tryStream = (a: Chamber, b: Chamber): boolean => {
+        const s0 = g.idx(a.cx, a.cy), t0 = g.idx(b.cx, b.cy);
+        const okCell = (i: number) => g.floor[i] && g.roomAt[i] !== 0 && !ban.has(g.roomAt[i]!) && ((i / g.W) | 0) < entY - 6;
+        if (!okCell(s0) || !okCell(t0)) return false;
+        const prev = new Int32Array(g.W * g.H).fill(-2); prev[s0] = -1;
+        const q = [s0];
+        for (let h = 0; h < q.length && prev[t0] === -2; h += 1) {
+          const c = q[h]!, x = c % g.W, y = (c / g.W) | 0;
+          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+            if (!g.inb(x + dx, y + dy)) continue;
+            const n = g.idx(x + dx, y + dy);
+            if (prev[n] !== -2 || !okCell(n)) continue;
+            prev[n] = c; q.push(n);
+          }
+        }
+        if (prev[t0] === -2) return false;
+        const path: number[] = [];
+        for (let c = t0; c >= 0; c = prev[c]!) path.push(c);
+        if (path.length < 10) return false;
+        for (const c of path) {
+          g.liquid[c] = 1;   // 좁은 목에서 길이 끊기면 settle 이 다리를 놓는다
+          if (ed[c]! >= 2 && g.roomAt[c]! > 0) { const r = c + 1; if (ed[r]! >= 2) g.liquid[r] = 1; }
+        }
+        return true;
+      };
+      const pairs: [Chamber, Chamber][] = [];
+      for (const a of lakes.length ? lakes : plain) for (const b of plain) if (a !== b) pairs.push([a, b]);
+      pairs.sort((p, q) => Number(q[1].kind === "lake") - Number(p[1].kind === "lake") || Math.hypot(p[1].cx - p[0].cx, p[1].cy - p[0].cy) - Math.hypot(q[1].cx - q[0].cx, q[1].cy - q[0].cy));
+      for (const [a, b] of pairs) if (tryStream(a, b)) break;
+    }
   }
   // 문 앞 칸은 액체가 아니다
   const rooms: PlacedRoom[] = [{ id: "entrance", kind: "entrance", ...entrance, from: null, dir: null, depth: 0 }];
