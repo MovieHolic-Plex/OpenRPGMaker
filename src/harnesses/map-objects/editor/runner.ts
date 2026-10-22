@@ -9,9 +9,9 @@ import type { ContentPart } from "@/ai/llmClient";
 import { onBackground, renderGrid, scaleImage } from "@/harnesses/_core/workshop/grid";
 import type { AnchorSample, Grid, ItemDefinition, Palette, Rgba, RgbaImage, WorkshopEnv, WorkshopItem, WorkshopRunner, WorkshopTilesetSource } from "@/harnesses/_core/workshop/types";
 import { gateAdviceMessages, parseGateAdvice } from "@/harnesses/_core/workshop/gateAdvice";
-import { workshopRefDescribe } from "@/harnesses/_core/workshop/referencePrompt";
+import { refCells, workshopRefDescribe } from "@/harnesses/_core/workshop/referencePrompt";
 import {
-  kitValue, loadAnchors, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
+  aspectOf, aspectSheet, kitValue, loadAnchors, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
 } from "@/harnesses/_core/workshop/objectGenFlow";
 import { parseMapObjectVerdict } from "./checks";
 import { mapItemFromDefinition, paletteFromHexes } from "./items";
@@ -123,6 +123,19 @@ export function createMapObjectRunner(): WorkshopRunner {
       return [{ role: "system", content: reviewSystemPrompt() }, { role: "user", content: parts }];
     },
     referenceDescribe: workshopRefDescribe,
+    // 참고 그림 견본(원본 reference 흐름의 exemplar_sheet + job refs, 물체 비율 캔버스): 이름이 맞는 칩셋 물체 ≤2(대상 게임의 시점·결) + object-gen 견본.
+    // 이름이 안 맞는 칩셋 물체는 넣지 않는다 — 2026-10-22 A/B 에서 아무 화분이나 붙였더니 나무 참고 그림이 화분을 베꼈다.
+    async referenceAnchor(item, env) {
+      const anchors = await anchorsFor(env);
+      const id = item.tilesetId ?? "";
+      const source = id && env.tilesetSource ? await env.tilesetSource(id) : null;
+      const own = source ? similarObjects(source, item.title, item.description, 2, true).map((object) => object.image) : [];
+      const pictures = [...own, ...(anchors?.examples.map((anchor) => anchor.image) ?? [])];
+      if (!pictures.length) return null;
+      const cells = refCells(item);
+      const sheet = aspectSheet(pictures, aspectOf(cells.w, cells.h), source ? dominantColor(source.image) : FALLBACK_BACKGROUND);
+      return sheet ? env.encodePng(sheet) : null;
+    },
     adviseMessages: gateAdviceMessages,
     parseAdvice: parseGateAdvice,
     // 원본 checks.check 의 FAIL 코드만 막는다(WARN 은 미리보기에서 보여 준다). 판정은 블라인드 검수 다수결이 정한다.

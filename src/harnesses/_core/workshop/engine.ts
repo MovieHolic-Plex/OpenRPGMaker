@@ -7,6 +7,7 @@
 import type { ChatMessage } from "@/ai/llmClient";
 import { applyRowFix, parseDrawAnswer, rowsNeedingFix } from "./grid";
 import { parseRefViewCheck, REF_TRIES, REF_VIEW_PROMPT, refMinTop, refPrompt, refPromptNames } from "./referencePrompt";
+import { kitConstant, objectGenKit } from "./genKits";
 import type { WorkshopStore } from "./store";
 import { perItem } from "./types";
 import type {
@@ -66,6 +67,24 @@ function isKeepAnswer(text: string): boolean {
 /** 참고 그림을 판 기록에 담을 크기(긴 변 px). 모양만 보면 되니 원본(1024)을 다 담지 않는다. */
 const REF_STORE_PX = 512;
 const REJECTED_REF_PX = 160;
+/** 견본 기록 크기(긴 변) */
+const ANCHOR_STORE_PX = 256;
+/** 참고 그림 바탕색(object-gen reference.BACKGROUND) */
+const REF_BACKGROUND = kitConstant<readonly [number, number, number]>(objectGenKit, "reference", "BACKGROUND");
+
+/**
+ * 투명 바탕을 회색 바탕에 합성한다(object-gen reference.flatten). 그림 경로 답의 절반쯤은 투명 바탕 RGBA 이고 투명 칸 밑에
+ * 어두운 RGB 찌꺼기가 있다 — 알파를 버리고 읽는 쪽(검수·그리기 모델)에는 물체가 검은 바탕·후광 속에 보였다(2026-10-22 실측).
+ */
+export function flattenImage(image: RgbaImage, background: readonly [number, number, number] = REF_BACKGROUND): RgbaImage {
+  const data = new Uint8ClampedArray(image.data.length);
+  for (let i = 0; i < data.length; i += 4) {
+    const a = image.data[i + 3]! / 255;
+    for (let c = 0; c < 3; c++) data[i + c] = Math.round(image.data[i + c]! * a + background[c]! * (1 - a));
+    data[i + 3] = 255;
+  }
+  return { width: image.width, height: image.height, data };
+}
 
 /** 상자 평균으로 줄인다(참고 그림 보관용 — 칩셋 화소로 쓰지 않는다). */
 function shrinkImage(image: RgbaImage, maxSide: number): RgbaImage {
@@ -221,7 +240,11 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       void save(round);
       return [];
     }
-    const prompt = refPrompt(describe, item.gateKind, runner.referenceStyleNote === undefined ? undefined : perItem(runner.referenceStyleNote, item));
+    // 견본(시점·화풍, 물체 비율 캔버스)을 붙일 때만 「붙인 그림」을 말하는 STYLE_NOTE 를 붙인다 — 예전에는 그림 없이 그 문장만 갔다.
+    const anchor = runner.referenceAnchor ? await runner.referenceAnchor(item, env).catch(() => null) : null;
+    const styleNote = anchor && runner.referenceStyleNote !== undefined ? perItem(runner.referenceStyleNote, item) : undefined;
+    const prompt = refPrompt(describe, item.gateKind, styleNote, item.refTop);
+    const anchorNote = anchor ? env.encodePng(shrinkImage(await env.loadImage(anchor), ANCHOR_STORE_PX)) : undefined;
     const names = refPromptNames(prompt);
     if (names.length) {
       round.reference = { status: "failed", prompt, tries: 0, note: `참고 그림 없이 그림 — 지시문에 쓰면 안 되는 이름(${names.join(", ")})이 들어 있다` };
@@ -241,16 +264,16 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
     const finish = (): string[] => {
       const [first, ...more] = accepted;
       round.reference = first
-        ? { status: "ok", dataUrl: first.dataUrl, prompt, view: first.view, tries, ...(more.length ? { more } : {}), ...(rejected.length ? { rejected } : {}), source,
+        ? { status: "ok", dataUrl: first.dataUrl, prompt, view: first.view, tries, ...(more.length ? { more } : {}), ...(rejected.length ? { rejected } : {}), ...(anchorNote ? { anchor: anchorNote } : {}), source,
           note: `참고 그림 ${accepted.length}장(시점 검사 통과, 윗면 ${accepted.map((a) => `${a.view.topShare}%`).join("·")}) — 참고용, 설치 안 됨` }
-        : { status: "failed", prompt, view: last, tries, rejected, source, note: `참고 그림 없이 그림 — 참고 그림 ${tries}장이 모두 시점 검사에서 떨어졌다(${last?.view ?? "?"}, 윗면 ${last?.topShare ?? 0}%)` };
+        : { status: "failed", prompt, view: last, tries, rejected, ...(anchorNote ? { anchor: anchorNote } : {}), source, note: `참고 그림 없이 그림 — 참고 그림 ${tries}장이 모두 시점 검사에서 떨어졌다(${last?.view ?? "?"}, 윗면 ${last?.topShare ?? 0}%)` };
       void save(round);
       return accepted.map((a) => a.dataUrl);
     };
     for (let n = 0; n < need; n++) {
       for (let attempt = 1; attempt <= triesEach; attempt++) {
         if (signal.aborted) throw new Cancelled();
-        const made = await env.referenceImage(prompt, signal);
+        const made = await env.referenceImage(prompt, signal, anchor ? { image: anchor } : undefined);
         if (!made) {
           if (accepted.length) return finish();
           round.reference = { status: "none", prompt, tries, note: "참고 그림 없이 그림 — 그림을 만들 수 있는 계정이 연결되지 않았다" };
@@ -259,7 +282,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
         }
         tries += 1;
         source = made.source;
-        const small = shrinkImage(await env.loadImage(made.dataUrl), REF_STORE_PX);
+        const small = shrinkImage(flattenImage(await env.loadImage(made.dataUrl)), REF_STORE_PX);
         const dataUrl = env.encodePng(small);
         const viewText = await call("workshop-review", [
           { role: "system", content: REF_VIEW_PROMPT },

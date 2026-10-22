@@ -7,11 +7,11 @@ import { makePalette } from "@/harnesses/_core/workshop/grid";
 import type { ItemDefinition, Palette, Rgba, WorkshopItem } from "@/harnesses/_core/workshop/types";
 
 export const TILE = 16;
-/** 가로·발밑 칸 상한(나무·작은 건물 정도까지) */
-export const MAX_TILES_W = 4;
-export const MAX_TILES_H = 3;
-/** 발밑 위로 솟는 px 상한(키 큰 나무 3칸) */
-export const MAX_RISE = 48;
+/** 가로·발밑 칸 상한(5×4 노점·4×3 분수까지, editor/workshop/objectRequest.ts objectGenLimits 와 같다) */
+export const MAX_TILES_W = 6;
+export const MAX_TILES_H = 4;
+/** 발밑 위로 솟는 px 상한(키 큰 나무 4칸 = 발밑 1 + 위 3) */
+export const MAX_RISE = 64;
 
 /** 칩셋에 구울 때 통행·층을 정하는 종류 — 손 도트 실내와 같은 넷(project/workshopTiles.ts HAND_KINDS) */
 export const MAP_KIND_LABELS: Readonly<Record<string, string>> = {
@@ -29,6 +29,7 @@ export function mapItemFromDefinition(def: ItemDefinition): WorkshopItem {
     width: def.tilesW * TILE, height, padTop: height - drawn, footRows: def.tilesH, risePx: def.rise,
     isNew: true, refs: def.refs, use: def.use, ...(def.tilesetId ? { tilesetId: def.tilesetId } : {}),
     ...(def.setting ? { setting: def.setting } : {}), ...(def.gateKind ? { gateKind: def.gateKind } : {}),
+    ...(def.passage ? { passage: def.passage } : {}), ...(def.refTop ? { refTop: def.refTop } : {}), ...(def.footprintNote ? { footprintNote: def.footprintNote } : {}),
   };
 }
 

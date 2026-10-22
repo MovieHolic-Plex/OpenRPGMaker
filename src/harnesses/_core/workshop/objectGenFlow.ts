@@ -19,7 +19,7 @@ import { kitConstant, kitFile, objectGenKit } from "./genKits";
 import { gridToAnswer, onBackground, renderGrid, scaleImage } from "./grid";
 import type { DrawContext, Grid, Palette, Rgba, RgbaImage, ReviewContext, Verdict, WorkshopEnv, WorkshopItem } from "./types";
 
-type KitSection = "prompts" | "reference" | "picker" | "vqa" | "drawer" | "exemplars";
+type KitSection = "prompts" | "reference" | "picker" | "vqa" | "drawer" | "exemplars" | "footprint";
 type AnchorSet = { examples?: { file: string; label: string }[]; good: { file: string; label: string; why?: string }[]; bad: { file: string; label: string; why?: string }[]; rejects?: { file: string }[] };
 
 /**
@@ -105,6 +105,55 @@ export function card(image: RgbaImage, floor: Rgba, k = SCALE): RgbaImage {
 export function exemplarSheet(anchors: OgAnchors, floor: Rgba, k = 6): RgbaImage {
   return hstack(anchors.examples.map((anchor) => scaleImage(onBackground(anchor.image, floor), k)), 12, [200, 200, 200, 255]);
 }
+
+// --- 참고 그림 견본(원본 reference.aspect_sheet) ------------------------------------------------------------------------
+const ASPECT_PX = kitValue<Readonly<Record<"wide" | "tall" | "square", readonly [number, number]>>>("reference", "ASPECT_PX");
+const REF_BG = kitValue<readonly [number, number, number]>("reference", "BACKGROUND");
+export type RefAspect = "wide" | "tall" | "square";
+/** 원본 aspect_of: 폭:키 ≥1.3 wide, ≤0.77 tall, 나머지 square. */
+export function aspectOf(w: number, h: number): RefAspect {
+  const r = w / Math.max(h, 1e-9);
+  return r >= 1.3 ? "wide" : r <= 0.77 ? "tall" : "square";
+}
+function sheetLayout(images: readonly RgbaImage[], width: number, height: number, k: number, pad: number): [number, number][] | null {
+  let x = pad, y = pad, row = 0;
+  const spots: [number, number][] = [];
+  for (const image of images) {
+    const w = image.width * k, h = image.height * k;
+    if (x + w > width - pad && x > pad) { x = pad; y += row + pad; row = 0; }
+    if (x + w > width - pad || y + h > height - pad) return null;
+    spots.push([x, y]);
+    x += w + pad;
+    row = Math.max(row, h);
+  }
+  return spots;
+}
+/**
+ * 원본 aspect_sheet: 견본 그림(1배)을 물체 비율(ASPECT_PX) 캔버스에 들어가는 만큼 크게(kMax→1), 각각 바닥색 위에.
+ * 그림 경로는 붙인 그림의 비율로 답한다 — 옛 한 줄 띠(약 4.6:1)를 붙이면 짐마차가 평면도, 노점이 정면으로 나왔다(2026-10-22 A/B).
+ * 안 들어가는 그림은 뒤에서부터 뺀다.
+ */
+export function aspectSheet(images: readonly RgbaImage[], aspect: RefAspect, floor: Rgba, kMax = 8): RgbaImage | null {
+  const [width, height] = ASPECT_PX[aspect];
+  const pad = 24;
+  for (let use = images.length; use > 0; use--) {
+    const list = images.slice(0, use);
+    for (let k = kMax; k >= 1; k--) {
+      const spots = sheetLayout(list, width, height, k, pad);
+      if (!spots) continue;
+      const data = new Uint8ClampedArray(width * height * 4);
+      for (let i = 0; i < data.length; i += 4) data.set([REF_BG[0], REF_BG[1], REF_BG[2], 255], i);
+      list.forEach((image, n) => {
+        const big = scaleImage(onBackground(image, floor), k);
+        const [ox, oy] = spots[n]!;
+        for (let y = 0; y < big.height; y++) data.set(big.data.subarray(y * big.width * 4, (y + 1) * big.width * 4), ((oy + y) * width + ox) * 4);
+      });
+      return { width, height, data };
+    }
+  }
+  return null;
+}
+
 const fit = (image: RgbaImage, width: number, height: number): RgbaImage => {
   // 원본 _fit: 더 크면 최근접으로 줄이고, 바닥에 맞춰 가운데.
   let source = image;
@@ -284,6 +333,10 @@ export function ogDrawBrief(ctx: DrawContext, opts: { readonly hasReference: boo
     `- Brief: ${brief}`,
     `- Placement: ${ANCHOR_TEXT[anchor] ?? anchor}${item.use.length ? `; use: ${item.use.join(", ")}` : ""}`,
     `- Canvas: ${item.width}x${item.height} px = ${cellsW}x${cellsH} cells of 16px. Foot rows (blocking): ${item.footRows ?? 1}.${item.padTop ? ` Keep the top ${item.padTop} rows empty.` : ""}`,
+    // 원본 prompts.draw_brief 의 Footprint 줄(object-gen 8d894eb) — 큰 물건의 발밑/위 줄을 그리는 쪽이 알게.
+    ...((item.footRows ?? 1) > 0 && (item.footRows ?? 1) < cellsH && anchor !== "flat" && anchor !== "hang"
+      ? [`- Footprint: the bottom ${item.footRows ?? 1} cell row(s) are where it stands (they block walking); the ${cellsH - (item.footRows ?? 1)} row(s) above hold only its tall parts, drawn over a person walking behind it. A person is 1 cell wide and 2 cells tall.`]
+      : []),
     `- 3/4 gate kind: ${item.gateKind ?? "other"}`,
     `- Your direction ${letter}: ${DIRECTIONS[letter] ?? ctx.direction.text}`,
     "",

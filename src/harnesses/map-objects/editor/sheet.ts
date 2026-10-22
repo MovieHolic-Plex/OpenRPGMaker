@@ -106,7 +106,7 @@ const words = (text: string): string[] => text.toLowerCase().split(/[\s,.;:!?()[
  * 만들 기물과 닮은 물체를 고른다 — 이름·설명 낱말이 겹치는 것부터, 모자라면 여러 칸짜리 물체로 채운다.
  * 그림으로 그릴 수 있는 것(시트 안 칸만 쓰는 것)만.
  */
-export function similarObjects(source: WorkshopTilesetSource, title: string, description: string, limit = 4): { name: string; image: RgbaImage }[] {
+export function similarObjects(source: WorkshopTilesetSource, title: string, description: string, limit = 4, matchedOnly = false): { name: string; image: RgbaImage }[] {
   const wanted = new Set(words(`${title} ${description}`));
   const scored = source.objects.map((object, index) => {
     const hay = `${object.name} ${object.description}`.toLowerCase();
@@ -126,6 +126,7 @@ export function similarObjects(source: WorkshopTilesetSource, title: string, des
     out.push({ name: entry.object.name, image });
   };
   for (const entry of scored) if (entry.score > 0) take(entry);
+  if (matchedOnly) return out;
   for (const entry of scored) if (entry.object.layers.some((layer) => layer.length > 1 || (layer[0]?.length ?? 0) > 1)) take(entry);
   return out;
 }

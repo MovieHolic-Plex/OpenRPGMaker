@@ -47,6 +47,12 @@ export type WorkshopItem = {
   readonly setting?: string;
   /** 3/4 관문(object-gate) 종류(조언 배지용). 없으면 놓는 방식으로 정한다(hang → wall_mounted, flat → flat, 그 밖 other). */
   readonly gateKind?: string;
+  /** 크기 결정(footprint.ts)이 정한 칸 통행: 위→아래 줄마다 X 막힘 · * 위에 그려짐(지나감). 칩셋에 구울 때 칸마다 쓴다. 없으면 발밑 줄 전부 막힘. */
+  readonly passage?: readonly string[];
+  /** 크기 결정의 윗면 낱말(참고 그림 지시문 {top}) */
+  readonly refTop?: string;
+  /** 크기 결정 한 줄(왜 이 칸 수인가) — 카드·그리기 지시문에 보인다 */
+  readonly footprintNote?: string;
 };
 
 /** 사용자가 공방에서 정의한 새 기물 */
@@ -70,6 +76,12 @@ export type ItemDefinition = {
   readonly setting?: string;
   /** 3/4 관문 종류(조언 배지용). */
   readonly gateKind?: string;
+  /** 크기 결정의 칸 통행(위→아래, X 막힘 · * 위에 그려짐). 조수 요청이 footprint.ts 로 정한다. */
+  readonly passage?: readonly string[];
+  /** 크기 결정의 윗면 낱말(참고 그림 지시문) */
+  readonly refTop?: string;
+  /** 크기 결정 한 줄 */
+  readonly footprintNote?: string;
 };
 
 export type Direction = { readonly letter: string; readonly text: string };
@@ -143,6 +155,8 @@ export type RoundReference = {
   readonly note: string;
   /** 시점 검사를 넘은 다음 참고 그림들(object-gen 흐름은 2장을 만든다). dataUrl 이 첫 장. */
   readonly more?: readonly { readonly dataUrl: string; readonly view: { readonly view: string; readonly topShare: number; readonly why: string; readonly ok: boolean; readonly minTop: number } }[];
+  /** 붙인 시점·화풍 견본(작게, 기록용). 없으면 견본 없이 만들었다. */
+  readonly anchor?: string;
 };
 
 export type WorkshopRound = {
@@ -227,7 +241,7 @@ export interface WorkshopEnv {
    * 참고 그림 한 장(사용자 자기 그림 계정). null = 그림을 만들 수 있는 계정이 없다(참고 없이 그린다). 오류는 던진다.
    * 돌려받은 그림은 판 임시 기록에만 두고 칩셋·스토어로 보내지 않는다.
    */
-  referenceImage?(prompt: string, signal: AbortSignal): Promise<{ readonly dataUrl: string; readonly source: string } | null>;
+  referenceImage?(prompt: string, signal: AbortSignal, options?: { readonly image?: string }): Promise<{ readonly dataUrl: string; readonly source: string } | null>;
   /** 공개 자산 경로(앞 / 없이) → 이 앱에서 쓸 URL */
   assetUrl(path: string): string;
 }
@@ -261,6 +275,11 @@ export interface WorkshopRunner {
   reviewMessages(ctx: ReviewContext, env: WorkshopEnv): Promise<ChatMessage[]>;
   /** 있으면 판을 시작할 때 참고 그림을 한 번 만든다(object-gen ref 단계). 돌려준 글은 물건 설명(영어 지시문 끝의 Object:). null = 이 기물은 참고 단계 없음. */
   referenceDescribe?(item: WorkshopItem): string | null;
+  /**
+   * 참고 그림에 붙이는 시점·화풍 견본(object-gen exemplar_sheet, 물체 비율 캔버스) data URL. 그림 경로는 붙인 그림의 비율로 답한다.
+   * 없거나 null 이면 견본 없이 만들고, 「붙인 그림」을 말하는 STYLE_NOTE 도 붙이지 않는다.
+   */
+  referenceAnchor?(item: WorkshopItem, env: WorkshopEnv): Promise<string | null>;
   /** 있으면 다 그린 후보마다 3/4 관문 조언 호출을 한 번 더 한다(굽기를 막지 않는 배지). */
   adviseMessages?(item: WorkshopItem, grid: Grid, palette: Palette, env: WorkshopEnv): Promise<ChatMessage[]>;
   parseAdvice?(item: WorkshopItem, text: string): GateAdvice;
