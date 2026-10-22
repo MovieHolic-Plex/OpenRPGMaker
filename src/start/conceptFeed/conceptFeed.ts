@@ -478,7 +478,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
       if (making) return;
       making = true;
       make.disabled = true;
-      make.textContent = t("만드는 중…");
+      make.textContent = t("준비하는 중…");
       setError("");
       void options.onMake(concept, tweak.value.slice(0, CONCEPT_TWEAK_LIMIT)).then((started) => {
         if (started) return;

@@ -103,7 +103,12 @@ export function createTranslator(catalog: Catalog): Translator {
     }
     if (!best) return null;
     const { template, values } = best;
-    const filled = values.map((value) => (containsHangul(value) ? (translateExact(normalizeSource(value)) ?? value) : value));
+    // 인자는 정확 일치, 안 되면 「칠하기 · 9개」 같은 조각 이은 라벨로 번역한다.
+    const filled = values.map((value) => {
+      if (!containsHangul(value)) return value;
+      const source = normalizeSource(value);
+      return translateExact(source) ?? translateSegments(source) ?? value;
+    });
     // 동적 자리에 남는 한국어가 고정부 한국어보다 많으면 짧은 템플릿이 긴 문장을 잘못 잡은 것이다
     // ("{0} 용어" ← "타일 팔레트와 맵 트리 · 쉬운 용어"). 반쯤 번역보다 원문 그대로가 낫다.
     const leftover = filled.reduce((sum, value) => sum + hangulCount(value), 0);
@@ -130,10 +135,15 @@ export function createTranslator(catalog: Catalog): Translator {
   };
 
   const translateSegments = (text: string): string | null => {
-    const separator = SEGMENT_SEPARATORS.find((candidate) => text.includes(candidate));
+    // 괄호 안의 구분자는 가리고 고른다 — 「(라벨 없음: map) · 300셀」을 「: 」에서 쪼개면 괄호가 갈라진다.
+    const masked = maskParenthesized(text);
+    const separator =
+      SEGMENT_SEPARATORS.find((candidate) => masked.includes(candidate)) ??
+      SEGMENT_SEPARATORS.find((candidate) => text.includes(candidate));
     if (!separator) return translatePiece(text);
+    const splitSource = masked.includes(separator) ? masked : text;
     let changed = false;
-    const parts = text.split(separator).map((part) => {
+    const parts = splitAt(text, splitSource, separator).map((part) => {
       const hit = translatePiece(part) ?? translateSegments(part);
       if (hit !== null) changed = true;
       return hit ?? part;
@@ -149,6 +159,31 @@ export function createTranslator(catalog: Catalog): Translator {
       return translatePiece(key) ?? translateSegments(key);
     },
   };
+}
+
+// 괄호(…) 안의 글자를 같은 길이의 \0 으로 바꾼다. 구분자 위치를 찾는 데만 쓰고 원문은 건드리지 않는다.
+function maskParenthesized(text: string): string {
+  let depth = 0;
+  let out = "";
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+    if (char === "(") depth += 1;
+    out += depth > 0 ? "\0" : char;
+    if (char === ")" && depth > 0) depth -= 1;
+  }
+  return out;
+}
+
+// positions 에서 separator 가 놓인 자리마다 text 를 자른다(둘의 길이는 같다).
+function splitAt(text: string, positions: string, separator: string): string[] {
+  const parts: string[] = [];
+  let start = 0;
+  for (let at = positions.indexOf(separator); at >= 0; at = positions.indexOf(separator, start)) {
+    parts.push(text.slice(start, at));
+    start = at + separator.length;
+  }
+  parts.push(text.slice(start));
+  return parts;
 }
 
 function push(map: Map<string, string[]>, key: string, value: string): void {
