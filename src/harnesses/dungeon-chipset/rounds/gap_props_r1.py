@@ -882,6 +882,75 @@ PAL2_MID = [
     '666677666677666z',
     'zzzzzzzzzzzzzzzz',
 ]
+# 가운데 변형 둘: 덩이 구성(셋·둘)·말뚝 높이·묶음 높이·가죽 조각 자리가 다르다.
+PAL2_MID2 = [
+    '................',
+    '.............z..',
+    '............DCa.',
+    '...z........cba.',
+    '..DCa.......cba.',
+    '..cba......Ddba.',
+    '..cbaz.....Ccaa.',
+    '..dbDCa....ccba.',
+    'z.cadba....ccba.',
+    'Cbcbcaa...BCBCz.',
+    'CBCBCBCz..zCBzz.',
+    'BzBzBzBz...Bcba.',
+    'cacadba....bcba.',
+    'bacbcaa....cdba.',
+    'cbcbcba...cacaa.',
+    'cadbacba..bacba.',
+    'bacabdba..cbcba.',
+    'cbcbacaa..cadba.',
+    'cacbacba..bacaa.',
+    'badbacba..BCBCz.',
+    'cbcabdba..BzBzz.',
+    'cacbacaa..badba.',
+    'bacbacba..cbcDz.',
+    'cbdbacba..cacBz.',
+    'CBCBCBCz..bacba.',
+    'BzBzBzBz..cbdba.',
+    'cbcbacba..cacaa.',
+    'ca7bacb7z.bacbz.',
+    '77c7bd7a78cb77az',
+    '776788766788776z',
+    '666677666677666z',
+    'zzzzzzzzzzzzzzzz',
+]
+PAL2_MID3 = [
+    '................',
+    '................',
+    '..z.............',
+    '.DCa............',
+    '.cba.......z....',
+    '.dba.......Ca...',
+    '.caa.z.....ca...',
+    '.cbaDCa..z.ca...',
+    '.cbacba..Cbbz...',
+    '.dbadba..cacCa..',
+    '.caacaa..bacca..',
+    'cba.cba..cbbca..',
+    'cba.cba..cacba..',
+    'dba.dba..CBCBCz.',
+    'caa.caa..zBCBzz.',
+    'BCBCBCBz.caBba..',
+    'BzBzBzBz.bacca..',
+    'dEEDdba..cbbaca.',
+    'cEDBcaa..cacbba.',
+    'cbDzcba..bacaca.',
+    'cba.cba..cbbaca.',
+    'BCBCBCBz.cacbba.',
+    'BzBzBzBz.bacaca.',
+    'cba.cba..CBCBCz.',
+    'cba.cba..zBzBzz.',
+    'dba.dba..bacaca.',
+    'caa.caa..cbbaca.',
+    'cbz.cba88cacbbz.',
+    '77a8cb7777ac77bz',
+    '776788766788776z',
+    '666677666677666z',
+    'zzzzzzzzzzzzzzzz',
+]
 PAL2_WEST = [
     '..z.............',
     '.EDa............',
@@ -1133,7 +1202,7 @@ class Set:
     def mids(s):
         if s.n == 1:
             return [g(r, PAL_LEG) for r in (PAL1_MID, PAL1_MID2, PAL1_MID3)]
-        return [palisade(PAL2_MID)]
+        return [palisade(r) for r in (PAL2_MID, PAL2_MID2, PAL2_MID3)]
 
 
 def camp_room(line, st, k):
@@ -1207,10 +1276,8 @@ def pal_cand(n):
             for x, p in ((1, w), (2, ms[0]), (3, ms[1 % len(ms)]), (4, ms[2 % len(ms)]), (5, e)):
                 cv.paste(p, x * T, 3 * T)
         v = common_scene(place, actor_at=(6, 5))
-        parts = {'서끝': w, '가운데': m, '동끝': e}
-        for i, extra in enumerate(ms[1:], 2):   # 가운데 변형(시드 크기 3×2 밖 — 시트 그림에는 넣지 않고 부품·장면에만)
-            parts[f'가운데{i}'] = extra
-        return hcat(w, m, e), {'kind': 'objects', 'parts': parts, 'vignette': v}
+        parts = {'서끝': w, '가운데': ms[0], '가운데2': ms[1], '가운데3': ms[2], '동끝': e}
+        return hcat(w, *ms, e), {'kind': 'objects', 'parts': parts, 'vignette': v}
     return fn
 
 
@@ -1250,8 +1317,8 @@ NOTES_BY_ITEM = {
         'A2': '뼈: 받침 없이 바닥에 흩어져 쌓인 굵은 갉힌 뼈 넷(뼈마다 밑·오른쪽 접지 그늘로 갈라짐) + 앞 왼쪽 바닥의 작은 해골(밝은 정수리·짙은 회색 눈구멍) · 약탈품: 밝은 뚜껑 윗면(가로 널, 위에 금화)과 어두운 앞면이 갈리는 궤짝 + 앞의 큰 금화 무더기(밝은 윗단 → 어두운 밑단) + 기댄 창',
     },
     'gap.palisade': {
-        'A1': '거친 고블린 말뚝 울 — 굵은 말뚝(폭 4~5), 끝 높이 들쭉날쭉, 기운 말뚝, 껍질 결, 말뚝마다 따로 감긴 밧줄. 밑동은 받침 띠 없이 흙에 박힘(흙 높이가 열마다 달라 이음 없음). 가운데 변형 셋(높이·기울기·밧줄 높이가 다름, 시드 3×2 라 변형 둘은 부품·장면에만). 서끝·동끝 = 키 큰 모서리 기둥',
-        'A2': '조잡한 방어 말뚝 벽 — 짙게 바랜 가는 말뚝(폭 2~3)을 두세 개씩 덩이로 박아 덩이마다 거친 밧줄로 묶음, 높이·굵기·기울기 제각각, 덩이 사이 빈틈, 묶음에 매단 가죽 조각. 가로대 없음. 끝 기둥 꼭대기에 꿴 해골',
+        'A1': '거친 고블린 말뚝 울 — 굵은 말뚝(폭 4~5), 끝 높이 들쭉날쭉, 기운 말뚝, 껍질 결, 말뚝마다 따로 감긴 밧줄. 밑동은 받침 띠 없이 흙에 박힘(흙 높이가 열마다 달라 이음 없음). 가운데 변형 셋(높이·기울기·밧줄 높이가 다름, 어느 순서로도 이어짐). 그림 = [서끝|가운데|가운데2|가운데3|동끝]. 서끝·동끝 = 키 큰 모서리 기둥',
+        'A2': '조잡한 방어 말뚝 벽 — 짙게 바랜 가는 말뚝(폭 2~3)을 두세 개씩 덩이로 박아 덩이마다 거친 밧줄로 묶음, 높이·굵기·기울기 제각각, 덩이 사이 빈틈, 묶음에 매단 가죽 조각. 가로대 없음. 가운데 변형 셋(덩이 구성·높이·묶음 자리가 다름). 그림 = [서끝|가운데|가운데2|가운데3|동끝]. 끝 기둥 꼭대기에 꿴 해골',
     },
     'gap.campfire': {
         'A1': '받침대 없음 — 작은 둥근 돌 3/4 타원 고리 + 둥근 끝이 보이는 큰 장작 더미 + 큰 불. 장면 넷 = 불꽃 높이는 같고 혀 모양·기울기가 바뀜(곧음·왼쪽·오른쪽·세 갈래) + 불티',
