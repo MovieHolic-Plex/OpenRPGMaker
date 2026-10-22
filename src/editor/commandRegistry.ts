@@ -5,7 +5,8 @@ import { AUTHORING_TASKS, runAuthoringTask } from "@/editor/authoringTasks";
 import { toolLabel } from "@/editor/uiCopy";
 import { editorState, type Tool } from "@/editor/editorState";
 import { dismissLocationDrawModeForTool } from "@/editor/locationDrawMode";
-import { dockZoneHasHost } from "@/editor/workspace/leftDockPanels";
+import { dockZoneHasHost, LEFT_DOCK_TASK_HOST } from "@/editor/workspace/leftDockPanels";
+import { t } from "@/i18n";
 import { allPanels } from "@/editor/workspace/panelRegistry";
 import { moveWorkspacePanel, toggleWorkspacePanel } from "@/editor/workspace/workspaceStore";
 import { selectEditorMap } from "@/editor/mapSelection";
@@ -89,7 +90,8 @@ export function listEditorCommands(): readonly EditorCommand[] {
     // 톱바 작업 칩과 함께 사라진 개념이고, 패널 표시는 아래 「패널 — 열기/닫기」 명령이 이미 다룬다.
     // 패널 도킹 — ⌘K 에서 좌/우 도크로 바로 보낸다. 호스트 없는 도크는 명령 자체를 내놓지 않고
     // 열린 팔레트가 낡아도 다시 막는다.
-    ...allPanels().filter((panel) => panel.id !== "assistant").flatMap((panel): readonly EditorCommand[] => [
+    // 좌측 도크의 작업 호스트(타일)는 레이아웃과 무관하게 늘 마운트된다 — 열기/닫기 명령은 화면을 바꾸지 못하므로 내놓지 않는다.
+    ...allPanels().filter((panel) => panel.id !== "assistant" && panel.id !== LEFT_DOCK_TASK_HOST).flatMap((panel): readonly EditorCommand[] => [
       {
         id: `workspace-panel-${panel.id}`,
         label: `화면: 패널 — ${panel.title} 열기/닫기`,
@@ -209,9 +211,11 @@ export function listMapCommands(
 export function matchEditorCommands(query: string, commands: readonly EditorCommand[]): readonly EditorCommand[] {
   const q = query.trim().toLowerCase();
   if (!q) return commands;
+  // 화면에는 번역된 라벨이 보인다(DOM 번역 계층). 원문과 t(원문) 을 함께 비교해야 보이는 글자로 찾힌다.
   return commands.filter(
     (command) =>
       command.label.toLowerCase().includes(q) ||
-      command.keywords.some((keyword) => keyword.toLowerCase().includes(q)),
+      t(command.label).toLowerCase().includes(q) ||
+      command.keywords.some((keyword) => keyword.toLowerCase().includes(q) || t(keyword).toLowerCase().includes(q)),
   );
 }

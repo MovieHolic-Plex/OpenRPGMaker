@@ -109,7 +109,19 @@ export function openCommandPalette(): HTMLElement {
             el("span", { class: "command-palette-item-desc", text: entry.detail }),
             ...(entry.hotkey ? [el("span", { class: "command-palette-hotkey", text: entry.hotkey })] : []),
           ],
-          on: { click: () => runEntry(entry) },
+          on: {
+            click: () => runEntry(entry),
+            // hover 가 Enter 대상을 옮긴다 — 키보드 선택과 hover 가 따로 강조돼 대상이 모호했다.
+            // 목록을 다시 그리면 hover 가 끊기므로 클래스만 옮긴다.
+            mousemove: () => {
+              if (index === activeIndex) return;
+              activeIndex = index;
+              listHost.querySelectorAll(".command-palette-item").forEach((node, nodeIndex) => {
+                node.classList.toggle("is-active", nodeIndex === index);
+                node.setAttribute("aria-selected", String(nodeIndex === index));
+              });
+            },
+          },
         }),
       );
     });
@@ -119,6 +131,11 @@ export function openCommandPalette(): HTMLElement {
 
   search.addEventListener("input", () => { activeIndex = 0; refresh(); });
   search.addEventListener("keydown", (event) => {
+    // aria-modal 이므로 Tab 이 배경(톱바 메뉴 등)으로 나가지 않게 입력칸에 붙잡는다.
+    if (event.key === "Tab") {
+      event.preventDefault();
+      return;
+    }
     // Escape 는 공용 모달 스택이 라우팅한다(아래 registerModal).
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       event.preventDefault();
