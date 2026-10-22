@@ -314,12 +314,13 @@ function openPlaza(draft: Project, map: GameMap, plaza: NonNullable<QuarterDef["
   const prev = new Map<number, number>();
   let queue: number[] = [];
   let touching = false;
+  const touchCells: number[] = [];
   for (let yy = b.y; yy < b.y + b.h; yy++) for (let xx = b.x; xx < b.x + b.w; xx++) {
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
       const nx = xx + dx, ny = yy + dy;
       if (nx < 0 || ny < 0 || nx >= W || ny >= H || inBox(nx, ny)) continue;
       const ni = ny * W + nx;
-      if (isRoad(nx, ny) && (!softTiles.size || lv(ni) === boxLevel)) touching = true; // 이미 길에 맞닿았다 — 길을 낼 필요 없다.
+      if (isRoad(nx, ny) && (!softTiles.size || lv(ni) === boxLevel)) { touching = true; touchCells.push(ni); } // 이미 길에 맞닿았다 — 길을 낼 필요 없다.
       else if (!prev.has(ni) && walkable(ni)) { prev.set(ni, -1); queue.push(ni); }
     }
   }
@@ -339,6 +340,13 @@ function openPlaza(draft: Project, map: GameMap, plaza: NonNullable<QuarterDef["
       if (laneCells.length) break;
     }
     queue = next;
+  }
+  // 맞닿은 길이 모랫길(가는 길 그림 — 칸 둘레가 풀)이면 마당과 길 사이에 풀 띠가 보였다(r4 검수) — 마당 가운데에 가까운 맞닿은 길 두 칸을 마당 흙으로 이어 입구를 낸다.
+  if (touching && softTiles.size && touchCells.length) {
+    const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
+    const near = [...new Set(touchCells)].sort((p, q) => Math.hypot(p % W - cx, Math.floor(p / W) - cy) - Math.hypot(q % W - cx, Math.floor(q / W) - cy));
+    const first = near[0]!; const pair = near.find((c) => c !== first && Math.abs(c - first) === 1 && Math.floor(c / W) === Math.floor(first / W)) ?? near.find((c) => c !== first && Math.abs(c - first) === W);
+    laneCells = [first, ...(pair !== undefined ? [pair] : [])];
   }
   const lane = laneCells.length ? { cells: laneCells } : null;
   // 마당 샛길은 두 칸 폭(한 칸 띠는 양쪽 연석만 남아 장난감 같다) — 걸을 수 있는 옆 칸을 하나 더 붙인다.
@@ -541,6 +549,7 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
       break;
     }
   }
+  if (quarterId === "vineyard") varyVineRows(draft.maps[map.id]!, placed.filter((p) => p.objectId.endsWith("/bd-pick-vineyard-vine-field")));
   if (!placed.length) throw new ToolError(`「${quarter.ko}」 조각을 하나도 놓지 못했다 — 트인 땅이 모자라거나 놓으면 길이 끊긴다. 마을을 더 크게 짓거나 near 를 바꾼다.`, { code: "no-quarter-slot", mapId: map.id });
   const box = placed.reduce((a, p) => ({ x0: Math.min(a.x0, p.x), y0: Math.min(a.y0, p.y), x1: Math.max(a.x1, p.x + p.w), y1: Math.max(a.y1, p.y + p.h) }), { x0: W, y0: H, x1: 0, y1: 0 });
   const missing = pieces.length - placed.length;
@@ -549,6 +558,31 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
     data: { mapId: map.id, quarter: quarterId, ...(plazaBox ? { plaza: plazaBox } : {}), pieces: placed, rejected, rect: { x: box.x0, y: box.y0, w: box.x1 - box.x0, h: box.y1 - box.y0 } },
     ...(missing ? { warnings: [`${missing}개 조각은 놓지 못했다 — 더 넣으려면 마을을 키워 다시 짓거나 near 를 다른 트인 땅으로 준다. 조각을 손으로 흩어 찍지 않는다.`] } : {}),
   };
+}
+
+/**
+ * 포도밭 이랑 키트(bd-pick-vineyard-vine-field)는 한 장뿐이라 여러 번 찍으면 같은 빈 칸·같은 노란 칸까지 «복사 도장»으로 읽혔다(r4 검수).
+ * 찍은 뒤 이랑 칸을 같은 구실(윗줄·속·아랫줄·양 끝)의 다른 칸으로 자리마다 바꿔 이랑마다 다르게 한다 — 새 그림 없이 원본 칸만 섞는다.
+ */
+const VINE_SWAP: readonly (readonly number[])[] = [
+  [24270, 24271, 24272],
+  [...Array(4).fill([24275, 24276, 24278, 24281, 24282, 24284]).flat(), 24277, 24283],
+  [...Array(4).fill([24287, 24288, 24289]).flat(), 24290],
+  [24274, 24280],
+  [24279, 24285],
+];
+function varyVineRows(map: GameMap, fields: readonly { x: number; y: number; w: number; h: number }[]): void {
+  const cls = new Map<number, readonly number[]>();
+  for (const c of VINE_SWAP) for (const t of c) cls.set(t, c);
+  const layers = [map.lowerTiles, map.lowerOverlayTiles, map.upperTiles, map.upperOverlayTiles].filter((a): a is number[] => Array.isArray(a));
+  for (const f of fields) for (let y = f.y; y < f.y + f.h; y++) for (let x = f.x; x < f.x + f.w; x++) {
+    const i = y * map.width + x;
+    for (const a of layers) {
+      const c = cls.get(a[i]!); if (!c) continue;
+      let hsh = Math.imul(x * 374761393 + y * 668265263, 1274126177) >>> 0; hsh = (hsh ^ (hsh >>> 13)) >>> 0;
+      a[i] = c[hsh % c.length]!;
+    }
+  }
 }
 
 export const DRESS_VILLAGE_QUARTER_TOOL: ToolDefinition = {
