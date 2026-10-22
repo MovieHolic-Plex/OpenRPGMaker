@@ -535,10 +535,11 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   // 호위 여덟 — 기사 이벤트를 그대로 본떠 RTP 칩만 바꾼다(기사 넷 · 흰 두건 사제 넷). 오프닝 아침 그림은 흰 옷 행렬이
   // 두 줄로 성문을 지난다 — 셋·넷으로는 행렬이 아니라 일행으로 읽혔다(VQA r3).
   const escorts: [string, string, number, string][] = [
-    ["a", "tex_easyrpg_charset_actor1", 3, "심문회 기사"], ["b", "tex_easyrpg_charset_people2", 1, "교단 사제"],
-    ["c", "tex_easyrpg_charset_people3", 4, "교단 사제"], ["d", "tex_easyrpg_charset_actor1", 2, "심문회 기사"],
-    ["e", "tex_easyrpg_charset_people2", 2, "교단 사제"], ["f", "tex_easyrpg_charset_people3", 5, "심문회 기사"],
-    ["g", "tex_easyrpg_charset_people2", 3, "교단 사제"], ["h", "tex_easyrpg_charset_people3", 6, "심문회 기사"],
+    // 흰 머리 사제·민머리 칩은 행렬 속 「백성」으로 읽혔다(VQA r12·r13 — 백성이 호위보다 먼저 성문을 나간다) — 여덟 모두 갑옷 기사.
+    ["a", "tex_easyrpg_charset_actor1", 3, "심문회 기사"], ["b", "tex_easyrpg_charset_actor1", 2, "심문회 기사"],
+    ["c", "tex_easyrpg_charset_actor1", 3, "심문회 기사"], ["d", "tex_easyrpg_charset_actor1", 2, "심문회 기사"],
+    ["e", "tex_easyrpg_charset_actor1", 3, "심문회 기사"], ["f", "tex_easyrpg_charset_actor1", 2, "심문회 기사"],
+    ["g", "tex_easyrpg_charset_actor1", 3, "심문회 기사"], ["h", "tex_easyrpg_charset_actor1", 2, "심문회 기사"],
   ].map(([k, tex, index, name]) => [`ev_${FS_PREFIX}_escort_${k}`, tex as string, index as number, name as string]);
   hub.events = hub.events.filter((e) => !escorts.some(([id]) => id === e.id));
   for (const [id, tex, index, name] of escorts) {
@@ -580,15 +581,25 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     // 백성 쪽이 아니라 카메라를 보는 것처럼 읽혔다(VQA r8 major).
     // r10·r12: 모두 남쪽(카메라)을 보면 말하는 이와 듣는 이가 나란히 선 줄 세우기로 읽혔다(VQA r12 major) — 발렌은 동쪽 행렬·백성을,
     // 행렬은 서쪽 발렌을 본다(서로 마주 보는 연설). 풀밭 백성은 아래에서 발렌을 본다.
-    for (const page of event.pages ?? []) if (page.graphic?.sprite) page.graphic.direction = event === valen ? "right" : "left";
+    for (const page of event.pages ?? []) if (page.graphic?.sprite) page.graphic.direction = "down";
     setEventChip(hub, event.id, tex, index); // 방향이 바뀌면 칩 프레임 번호도 다시 고른다
   }
 
   // 발렌은 호위 줄보다 한 걸음 앞(남쪽, 백성 쪽)에 홀로 선다 — 호위와 같은 줄에 서면 누가 말하는지 안 읽히고, 호위 줄이
   // 카메라를 보는 백성으로 읽혔다(VQA r10 major).
-  if (isPassable(project, hub, valen.x, valen.y + 1) && !doorCells.has(`${valen.x},${valen.y + 1}`) && !standing.has(`${valen.x},${valen.y + 1}`)
-    && !hub.events.some((e) => !marchers.has(e.id) && e.x === valen.x && e.y === valen.y + 1)) {
-    standing.delete(`${valen.x},${valen.y}`); valen.y += 1; standing.add(`${valen.x},${valen.y}`);
+  // 발렌은 기사 두 줄 한가운데 앞(남쪽)에 서서 남쪽 백성을 본다 — 줄 서쪽 끝 곁길에 서면 연설의 중심이 안 읽혔다(VQA r13).
+  {
+    const xs = formation.filter(([e]) => e !== valen).map(([, dx]) => lead.x + dx);
+    const mid = Math.round((Math.min(...xs) + Math.max(...xs)) / 2);
+    const front = Math.max(...formation.filter(([e]) => e !== valen).map(([, , dy]) => lead.y + dy)) + 1;
+    const slot = formation.find(([e]) => e === valen)!;
+    for (const tx of [mid, mid - 1, mid + 1, mid - 2, mid + 2]) {
+      if (!isPassable(project, hub, tx, front) || doorCells.has(`${tx},${front}`) || standing.has(`${tx},${front}`)
+        || hub.events.some((e) => !marchers.has(e.id) && e.x === tx && e.y === front)) continue;
+      standing.delete(`${valen.x},${valen.y}`); valen.x = tx; valen.y = front; standing.add(`${tx},${front}`);
+      slot[1] = -1; // 행진은 동쪽(앞)부터 — 발렌은 맨 뒤에서 따라간다(앞장세우면 그 길을 피하느라 기사 모두가 수십 걸음 늦게 떠나 행렬이 멈춘 듯했다)
+      break;
+    }
   }
 
   // 포고를 듣는 백성 — 발렌이 「백성은 들어라」 하는데 듣는 사람이 일행뿐이라 누구에게 말하는지 읽히지 않았다(VQA r7 major).
@@ -1471,8 +1482,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       ["bd-pick-deep-forest-path-stump", 3.3], ["bd-pick-deep-forest-path-log-fallen", 3.9], ["bd-pick-deep-forest-path-heath-a", 1.6],
       ["bd-pick-deep-forest-path-heath-b", 4.6], ["bd-pick-deep-forest-path-fern-c", 5.4], ["bd-pick-deep-forest-path-stump", 5.9],
       ["bd-pick-deep-forest-path-heath-c", 2.2],
-      // 충격에 넘어간 나무 — 바깥을 향해 누운 통나무를 더(VQA r8 「쓰러진 나무 3~5」).
-      ["bd-pick-deep-forest-path-log-fallen", 0.65], ["bd-pick-deep-forest-path-log-fallen", 3.45], ["bd-pick-deep-forest-path-log-fallen", 5.6],
+      // (통나무를 고르게 더 둘렀더니 목재 야적장처럼 읽혔다 — VQA r13. 쓰러진 나무는 위 셋과 갈래 끝 그루터기로 충분하다.)
     ];
     // 흙길 오토타일이 오목한 모서리 칸을 스스로 채운다 — 실제로 바뀐 칸을 다시 모아 둑을 얹는다.
     const live = M(ids.forest);
@@ -1551,7 +1561,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         const x = Math.round(cx + Math.cos(angle) * rx * r), y = Math.round(cy + Math.sin(angle) * ry * r);
         if (x < 1 || y < 1 || x >= live.width - 1 || y >= live.height - 1 || pit.has(y * live.width + x)) continue;
         // 불씨 자국은 풀 위에서 검은 돌무더기로 읽혔다(VQA r10) — 충격에 꺾인 나무(그루터기·쓰러진 통나무)로 바꾼다.
-        if (tryStamp(project, M(ids.forest), `kit:beodeul_city/${k % 2 === 0 ? "bd-pick-deep-forest-path-stump" : "bd-pick-deep-forest-path-log-fallen"}`, x, y)) break;
+        if (tryStamp(project, M(ids.forest), `kit:beodeul_city/${k % 3 === 1 ? "bd-pick-deep-forest-path-heath-b" : "bd-pick-deep-forest-path-stump"}`, x, y)) break;
       }
     }
     // 구덩이 북쪽 위로 맵 끝까지 붙은 모랫길 토막 둘은 아무 데로도 안 갔다(VQA r6 m13) — 풀로 되돌린다.

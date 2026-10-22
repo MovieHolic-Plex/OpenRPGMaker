@@ -128,7 +128,10 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
         ["desk 2x2", 14, 4], ["book pile", 12, 3],
         // 서고 가운데·거실 아랫단이 빈 마루로 남았다(VQA r7 minor) — 읽는 탁자와 의자, 거실 찻상.
         ["tea 2x2", 17, 15], ["chair E", 16, 15], ["chair W", 19, 15], ["book pile", 22, 14],
-        ["tea 2x2", 6, 15], ["chair E", 5, 15], ["chair W", 8, 15]],
+        ["tea 2x2", 6, 15], ["chair E", 5, 15], ["chair W", 8, 15],
+        // 거실 아랫단·서고 아랫단·진열실 남쪽이 빈 마루였다(VQA r13 minor 「35~40% 빈 바닥」).
+        ["tea 2x2", 4, 7], ["chair E", 3, 7], ["chair W", 6, 7], ["globe", 24, 7], ["book pile", 27, 8], ["scroll rack", 16, 8],
+        ["tea 2x2", 27, 17], ["chair E", 26, 17], ["chair W", 29, 17], ["book pile", 21, 18]],
       people: [
         {
           id: "ev_fs_old_stargazer", name: "늙은 별지기 오스본", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 6],
@@ -143,7 +146,9 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       // 여덟 방(여덟 자리 식탁·식료품 광·헛간·지하 저장고)은 작은 오두막에 안 맞았다(VQA r11 major) — 거실·부엌·침실 둘·바느질 방(리사의 일감).
       layout: { rooms: [{ kind: "living", w: 12, h: 8 }, { kind: "kitchen", w: 8, h: 7 }, { kind: "bedroom", w: 8, h: 7 }, { kind: "bedroom", w: 8, h: 7 }, { kind: "tailor_work", w: 9, h: 7 }], seed: 29, variant: 0, styleVariant: "A" },
       // 거실 아랫단·바느질 방 아랫단이 빈 마루였다 — 찻상과 의자, 옷감 상자.
-      dress: [["tea 2x2", 16, 14], ["chair E", 15, 14], ["chair W", 18, 14], ["book pile", 20, 15], ["luggage trunk", 5, 15], ["dining 2x1", 3, 13], ["chair S", 3, 12], ["chair N", 4, 14]],
+      dress: [["tea 2x2", 16, 14], ["chair E", 15, 14], ["chair W", 18, 14], ["book pile", 20, 15], ["luggage trunk", 5, 15], ["dining 2x1", 3, 13], ["chair S", 3, 12], ["chair N", 4, 14],
+        // 침실 둘이 똑같은 그림이고 아랫단이 비었다(VQA r13) — 부부 방엔 찻상, 아이 방엔 짐 궤짝·책 더미.
+        ["tea 2x2", 14, 6], ["chair E", 13, 6], ["chair W", 16, 6], ["luggage trunk", 21, 7], ["book pile", 26, 7], ["basket:herb", 25, 7]],
       people: [
         {
           id: "ev_fs_lisa", name: "리사", query: "젊은 여성", chip: ["tex_easyrpg_charset_people3", 3],
@@ -215,6 +220,16 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
     }
     // 부엌의 수도꼭지 개수대·쇠 레인지는 중세 집에 어울리지 않았고 세 집에 똑같이 깔렸다(VQA r5) — 물동이와 화덕·조리대로 바꾼다.
     periodKitchen(project.maps[home.mapId]!);
+    // 약방 뒷방의 나선 계단(어디로도 안 가고 시점이 달랐다)·마법진, 바닥에 누운 망원경은 걷는다(VQA r13 minor).
+    {
+      const im = project.maps[home.mapId]!;
+      const metaX = (project.tilesets[im.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+      const drop = /^(나선 계단|마법진|망원경)/;
+      for (const layer of [im.lowerOverlayTiles, im.upperTiles, im.upperOverlayTiles]) {
+        if (!layer) continue;
+        for (let i = 0; i < layer.length; i += 1) if (layer[i]! >= 0 && drop.test(metaX[layer[i]!]?.label ?? "")) layer[i] = -1;
+      }
+    }
     // 출구 바로 앞(두 칸 안)의 모피 깔개는 들어오자마자 주인공 뒤에 자루처럼 놓였다(VQA r9 minor) — 걷는다.
     {
       const im = project.maps[home.mapId]!;
