@@ -1219,7 +1219,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           playSe(SE_PAPER),
           // 지후는 승강장 끝(안전선)까지 걸어가 선로를 보고 선다 — 닫힌 객차 옆구리로 걸어 들어가지 않는다(VQA r15). 떠나는 건 검은 화면 뒤다.
           face("ev_fl_p_jihu", "down"),
-          { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [{ kind: "move", dir: "down" }, { kind: "move", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
+          { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [{ kind: "move", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
           ...fadeOut(1200),
           setSw("sw_fl_jihu_boarded", true),
           stopBgm(),
@@ -1234,7 +1234,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
         playSe(SE_PAPER),
         // 지후는 승강장 끝(안전선)까지 걸어가 선로를 보고 선다 — 닫힌 객차 옆구리로 걸어 들어가지 않는다(VQA r15). 떠나는 건 검은 화면 뒤다.
         face("ev_fl_p_jihu", "down"),
-        { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [{ kind: "move", dir: "down" }, { kind: "move", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
+        { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [{ kind: "move", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
         ...fadeOut(1200),
         setSw("sw_fl_jihu_boarded", true),
         stopBgm(),
