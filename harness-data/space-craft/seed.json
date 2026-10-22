@@ -106,6 +106,19 @@
       ]
     },
     {
+      "id": "fantasy-magic-library",
+      "category": "fantasy-interior",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마법 학교의 오래된 마법 도서관 실내를 지어 줘. 높은 책장이 줄지어 선 서가, 가운데 열람 탁자들, 금서를 모아 둔 잠긴 구역, 마법진이 그려진 연구 자리가 있었으면 해.",
+      "requires": [
+        "높은 책장 서가",
+        "열람 탁자",
+        "잠긴 금서 구역",
+        "마법진 연구 자리"
+      ]
+    },
+    {
       "id": "modern-store",
       "category": "modern-interior",
       "mode": "balanced",

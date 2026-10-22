@@ -9,11 +9,11 @@
 //   · 단 위에 마법진(flat) → 지워졌다 — 빌더가 단 위 바닥 무늬를 3층으로 올려 얹도록 고쳤다(builder.ts base).
 // 거부하지 않는다 — 경고에 좌표와 고치는 법을 붙여 다음 짓기에서 고치게 한다.
 import type { GameMap, Project } from "@/project/types";
-import { measureLayoutQuality } from "@/ai/piAgent/layoutQuality";
+import { INTERIOR_BARE_FLOOR_LIMIT, measureInteriorBareFloor } from "./bareFloor";
 import type { HandInteriorInput, HandInteriorSpec } from "./builder";
 
 /** 실내 빈 바닥 한도(%) — 검수 기준(vqa-rubric 축 1: 빈 바닥·허공 ≤ 화면의 15%)에 맞춘다. 끝 검사(layoutQuality 30%)보다 엄하다. */
-export const INTERIOR_BARE_FLOOR_MAX = 15;
+export const INTERIOR_BARE_FLOOR_MAX = INTERIOR_BARE_FLOOR_LIMIT;
 
 /**
  * 같은 걸이가 이만큼 넘으면 벽지 무늬처럼 읽힌다(창·횃불·깃발은 예외). 바닥 가구 반복은 묻지 않는다 —
@@ -143,14 +143,15 @@ export function handInteriorCompositionLint(project: Project, map: GameMap, inpu
   }
 
   // ④ 빈 바닥 — 구성기(layout program·rooms 견본) 맵은 복도·동선의 빈칸이 쓰임이라 묻지 않는다.
+  //    자는 bareFloor.ts(1배 화면에서 사람이 세는 빈 덩이) — 옛 3×3 이웃 자는 조수 판을 9~21% 로, 검수자는 25~30% 로 봤다.
   let bareFloor: number | undefined;
   if (!options.composed) {
-    const q = measureLayoutQuality(project, map);
+    const q = measureInteriorBareFloor(project, map);
     if (q && q.floorCells >= 40) {
-      bareFloor = q.empty;
-      if (q.empty > INTERIOR_BARE_FLOOR_MAX) {
-        const where = q.emptiestWindows.map((r) => `(${r.x},${r.y}) ${r.w}×${r.h}칸 중 빈 칸 ${r.emptyCells}`).join(" · ");
-        warnings.push(`빈 바닥 ${q.empty}% (실내 기준 ≤${INTERIOR_BARE_FLOOR_MAX}% — 가구·깔개 3×3 안에 아무것도 없는 바닥)${where ? ` — 가장 빈 곳: ${where}` : ""}${q.square > 4 && q.squareAt ? `, 소품 없는 빈 정사각형 ${q.square}×${q.square} (왼위 ${q.squareAt.x},${q.squareAt.y})` : ""}. 낱개 소품을 흩뿌려 메우지 마라. 고치는 법 둘 중 하나: ① 그 빈 띠를 plan 에서 '#' 로 들여 쌓는다(방 가장자리 빈 줄을 벽으로, 깊은 알코브는 얕게, 넓은 홀은 칸막이로 두 방) ② 그 구역에 쓰임 하나를 정하고 그 쓰임의 가구 한 벌(앵커 + 짝 2점 이상, 깔개·탁상 물건 포함)을 둔다. 통로·주인공 물건 앞 한두 줄은 비워도 된다`);
+      bareFloor = q.pct;
+      if (q.pct > INTERIOR_BARE_FLOOR_MAX) {
+        const where = q.regions.map((r) => `(${r.x},${r.y}) ${r.w}×${r.h} 안 빈 칸 ${r.cells}`).join(" · ");
+        warnings.push(`빈 바닥 ${q.pct}% (실내 기준 ≤${INTERIOR_BARE_FLOOR_MAX}% — 깔개·가구·바닥 무늬 없는 맨바닥이 2×2 이상 이어진 넓이 ÷ 방과 그 위 벽면)${where ? ` — 큰 빈 덩이: ${where}` : ""}. 낱개 소품을 흩뿌려 메우지 마라. 고치는 법 둘 중 하나: ① 그 빈 띠를 plan 에서 '#' 로 들여 쌓는다(방 가장자리 빈 줄을 벽으로, 깊은 알코브는 얕게, 넓은 홀은 칸막이로 두 방) ② 그 구역에 쓰임 하나를 정하고 그 쓰임의 가구 한 벌(앵커 + 짝 2점 이상, 깔개·탁상 물건 포함)을 둔다. 통로·주인공 물건 앞 한두 줄은 비워도 된다`);
       }
     }
   }
