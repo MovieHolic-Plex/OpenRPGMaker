@@ -654,12 +654,13 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   const spots: { x: number; y: number }[] = [];
   const candidates: { x: number; y: number; d: number }[] = [];
   // 백성은 발렌 남쪽(길 아래 풀밭)에 모여 위를 본다.
-  for (let y = valen.y + 2; y <= valen.y + 5; y += 1) for (let x = valen.x - 5; x <= valen.x + 4; x += 1) {
+  for (let y = valen.y + 2; y <= valen.y + 5; y += 1) for (let x = valen.x - 5; x <= valen.x + 8; x += 1) {
     if (Math.abs(x - start.x) <= 1 || near(x, y, 1, valen) || !free(x, y)) continue;
     // 엘레나 대사 때 주인공이 옆으로 두 걸음 비켜선다 — 그 두 칸 바로 아래에 서면 몸이 겹쳐 그려졌다(QA fs49).
     if (Math.abs(x - start.x) <= 2 && y <= start.y + 1) continue;
     // 길(포석·흙길) 칸은 비운다 — 외길에 둘이 줄지어 서서 길을 막고 아무것도 안 보는 것처럼 읽혔다(VQA r9).
-    if (!/풀밭/.test(hubMeta[hub.lowerTiles[y * hub.width + x]!]?.label ?? "")) continue;
+    // 넓은 광장 판석(광장·마당)은 길이 아니라 모이는 자리다 — 발렌 앞이 집 한 채로 막히면 풀밭만으로는 둘·셋밖에 못 섰다(VQA r33).
+    if (!/풀밭|광장·마당/.test(hubMeta[hub.lowerTiles[y * hub.width + x]!]?.label ?? "")) continue;
     // 바로 위 칸에 가로등·간판 같은 소품이 있으면 머리에서 기둥이 솟은 것처럼 그려졌다(VQA r14 minor).
     { const t = hub.upperTiles[(y - 1) * hub.width + x] ?? -1; if (t >= 0 && !/풀|꽃|잔돌|자갈|버섯|고사리|덤불|그림자/.test(hubMeta[t]?.label ?? "")) continue; }
     if ([...doorCells].some((k) => { const [dx, dy] = k.split(",").map(Number); return Math.abs(x - dx!) <= 2 && Math.abs(y - dy!) <= 2; })) continue;
