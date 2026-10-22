@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.320.0 — 2026-10-22
+
+### 기능
+
+- **staging** — approach / faceEachOther / dialogue auto-facing / exitVia + scene staging lint; migrate 첫사랑 (#3236) (`af99a64`)
+
 ## 0.319.0 — 2026-10-22
 
 ### 기능
