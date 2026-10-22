@@ -266,6 +266,8 @@ const LEAF_CONTRAST_MIN = kitValue<number>("checks", "LEAF_CONTRAST_MIN");
 const LEAF_BAND_MAX = kitValue<number>("checks", "LEAF_BAND_MAX");
 const LEAF_BASE_MAX = kitValue<number>("checks", "LEAF_BASE_MAX");
 const LEAF_LONE_MAX = kitValue<number>("checks", "LEAF_LONE_MAX");
+const DEEP_LUMA = kitValue<number>("checks", "DEEP_LUMA");
+const DEEP_MIN = kitValue<number>("checks", "DEEP_MIN");
 const ORGANIC_LEAF_RAMP = kitValue<readonly string[]>("prompts", "ORGANIC_LEAF_RAMP");
 const ORGANIC_LEAF_SHARES = kitValue<readonly number[]>("prompts", "ORGANIC_LEAF_SHARES");
 
@@ -432,7 +434,12 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
     if (footprintClass(item.title, item.description ?? "") === "tree" && g.rows >= GEOMETRIC_MIRROR_ROWS && g.mirror > GEOMETRIC_MIRROR) {
       hard.push({ code: "SYMMETRIC", msg: `the crown is nearly mirror-symmetric (left/right match ${g.mirror}, exemplars 0.80-0.85) - make one shoulder 3+ px higher, one side wider, lobes and notches at different heights` });
     }
-    const lv = leafTone(renderGrid(grid, palette));
+    const shown = renderGrid(grid, palette);
+    let opaque = 0, deep = 0;
+    for (let i = 0; i < shown.data.length; i += 4) if (shown.data[i + 3]! > 0) { opaque++; if (0.299 * shown.data[i]! + 0.587 * shown.data[i + 1]! + 0.114 * shown.data[i + 2]! < DEEP_LUMA) deep++; }
+    // 원본 checks NODEEP: 견본 나무·덤불은 덩이 사이 깊은 그늘이 14~20%, 「바랜 베개 돌」로 반려된 돌무더기는 0~4%.
+    if (g.rows >= GEOMETRIC_MIN_ROWS && opaque && deep / opaque < DEEP_MIN) hard.push({ code: "NODEEP", msg: `no deep shadow (${Math.round((deep / opaque) * 100)}% of pixels below luma ${DEEP_LUMA}, exemplars 14-18%) - put near-black pockets in the gaps between clumps / stones and under the object` });
+    const lv = leafTone(shown);
     if (lv.leafPixels >= LEAF_MIN_PIXELS) {
       if (lv.leafCast > LEAF_CAST_MAX) hard.push({ code: "LEAFHUE", msg: `the leaves are olive/yellow (red-blue ${lv.leafCast}, exemplars -9..-4, limit -1) - paint them with the listed leaf-green keys` });
       if (lv.leafLone > LEAF_LONE_MAX) hard.push({ code: "LEAFSPECK", msg: `the highlights are single sprinkled pixels (${Math.round(lv.leafLone * 100)}% of the lightest leaf tone stands alone, exemplars 0-12%) - group the lightest green into 2-4 px dashes on the upper-left lobes only` });
