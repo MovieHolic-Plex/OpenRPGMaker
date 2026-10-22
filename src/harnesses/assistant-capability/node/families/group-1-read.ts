@@ -1,6 +1,6 @@
 import type { Project } from '../../../../project/types';
 import {
-  MAP, blockedCells, called, coordinatesIn, fail, inside, mapOf, mentions, pass, readOnly,
+  MAP, blockedCells as specBlockedCells, called, coordinatesIn, EVENT_FIELDS, fail, inside, mapOf, mentions, pass,
 } from '../matrixNativeSpec';
 import { rectArg, strArg, type Family, type FamilyOutcome } from './types';
 
@@ -11,6 +11,42 @@ import { rectArg, strArg, type Family, type FamilyOutcome } from './types';
  */
 
 const TILE_LAYERS = ['lowerTiles', 'upperTiles', 'lowerOverlayTiles', 'upperOverlayTiles', 'shadowBits'] as const;
+
+const BLOCKED_CACHE = new WeakMap<object, Map<string, Array<{ x: number; y: number }>>>();
+const blockedCells = (project: Project, rect: { x: number; y: number; w: number; h: number }) => {
+  const cache = BLOCKED_CACHE.get(project) ?? new Map<string, Array<{ x: number; y: number }>>();
+  BLOCKED_CACHE.set(project, cache);
+  const key = `${rect.x},${rect.y},${rect.w},${rect.h}`;
+  const hit = cache.get(key);
+  if (hit) return hit;
+  const cells = specBlockedCells(project, rect);
+  cache.set(key, cells);
+  return cells;
+};
+
+/** Same "nothing else changed" question as the spec's readOnly, on a cheap projection instead of two deep clones. */
+const unchanged = (before: Project, after: Project): boolean => {
+  const strip = (project: Project) => {
+    const doc: any = { ...(project as any) };
+    delete doc.tilesets;
+    delete doc.meta;
+    delete doc.assets;
+    doc.maps = Object.fromEntries(Object.entries((project as any).maps).map(([id, map]: [string, any]) => {
+      const copy: any = { ...map };
+      for (const key of EVENT_FIELDS) delete copy[key];
+      return [id, copy];
+    }));
+    return JSON.stringify(doc);
+  };
+  return strip(before) === strip(after);
+};
+
+const readOnly = (input: { before: Project; after: Project; tools: Array<{ ok?: boolean }>; answer: string }, label: string, check: () => { ok: boolean; note: string }) => {
+  if (!unchanged(input.before, input.after)) return fail(`${label}: 읽기 명령이 문서를 바꿨다`);
+  if (!input.tools.some(tool => tool.ok === true)) return fail(`${label}: 성공한 조회 도구 호출이 없다`);
+  if (!input.answer.trim()) return fail(`${label}: 답변이 비었다`);
+  return check();
+};
 const cellHasAny = (project: Project, x: number, y: number, tags: readonly string[]): boolean => {
   const tileset = (project as any).tilesets[(project as any).maps[MAP].tilesetId];
   const map = mapOf(project);
@@ -26,6 +62,21 @@ const listEvents = (project: Project) => (mapOf(project).events as any[]);
 const named = (project: Project, event: any) => event.name ?? event.pages?.[0]?.name ?? event.id;
 
 const OBSTACLE_WORDS = /나무|막힘|막혀|막는|통행\s*불가|못\s*지나|지나갈\s*수\s*없/u;
+/**
+ * An answer to "show me this empty area" must not claim it is blocked. A claim names a concrete obstacle next
+ * to a blocking verb, or states a blocked-cell count, inside one sentence — unless that obstacle is denied
+ * there ("나무는 없고 …"). Judging the whole answer with one regex does not work: "막힌 칸은 없습니다" and
+ * "나무로 막혀 지나갈 수 없습니다" share both 막힌/막혀 and 없.
+ */
+const OBSTACLE_NOUN = /나무|성벽|바위|울타리|벽|물|장애물/u;
+const BLOCKAGE_VERB = /막혀|막고|막는|막힌|가로막|둘러싸|지나갈\s*수\s*없|통행\s*불가|못\s*지나/u;
+const DENIED_OBSTACLE = /(나무|성벽|바위|울타리|벽|물|장애물)[^\s]{0,2}\s*(이|가|은|는|도)?\s*(없|않)/u;
+const claimsBlockage = (answer: string): boolean => answer.split(/[.\n!?。？！]/u).some(sentence => {
+  if (!BLOCKAGE_VERB.test(sentence)) return false;
+  if (/통행\s*불가\s*[^\d]{0,4}\d+\s*(칸|개)/u.test(sentence)) return true;
+  if (!OBSTACLE_NOUN.test(sentence)) return false;
+  return !DENIED_OBSTACLE.test(sentence);
+});
 
 const regionPreview: Family = {
   id: 'region-preview',
@@ -47,10 +98,11 @@ const regionPreview: Family = {
       if (!called(input.tools, 'show_map_region', 'get_map_region')) return fail(`${label}: 영역을 조회한 도구 호출이 없다`);
       const blocked = blockedCells(input.before, rect);
       if (!blocked.length) {
-        if (OBSTACLE_WORDS.test(input.answer)) return fail(`${label}: 실제로는 막힌 칸이 없는데 막혔다고 했다`);
         const onArea = coordinatesIn(input.answer).some(cell => inside(rect, cell.x, cell.y))
           || input.answer.includes(`${rect.w}×${rect.h}`) || input.answer.includes(`${rect.w}x${rect.h}`);
-        return onArea ? pass(`${label}: 미리보기, 막힌 칸 없음`) : fail(`${label}: 물어본 ${rect.w}×${rect.h} 영역이 아니라 다른 곳을 설명했다`);
+        if (!onArea) return fail(`${label}: 물어본 ${rect.w}×${rect.h} 영역이 아니라 다른 곳을 설명했다`);
+        if (claimsBlockage(input.answer)) return fail(`${label}: 실제로는 막힌 칸이 없는데 막혔다고 했다`);
+        return pass(`${label}: 미리보기, 막힌 칸 없음`);
       }
       if (!OBSTACLE_WORDS.test(input.answer)) return fail(`${label}: 통행 불가 ${blocked.length}칸을 말하지 않았다(장식으로만 서술)`);
       const wrongMaterial = ['물', '성벽', '벽'].filter(word => input.answer.includes(word));
@@ -62,7 +114,8 @@ const regionPreview: Family = {
   reference(project, args) {
     const rect = rectArg(args);
     const blocked = blockedCells(project, rect);
-    if (!blocked.length) return `${rect.w}×${rect.h} 영역은 모두 걸어 다닐 수 있는 풀밭입니다. 이벤트도 물도 없습니다.`;    return `${rect.w}×${rect.h} 영역입니다. 지나갈 수 없는 칸 ${blocked.length}개: ${coordList(blocked)}. 막고 있는 것은 나무·덤불입니다. 나머지 칸은 잔디라 걸어갈 수 있습니다.`;
+    if (!blocked.length) return `${rect.w}×${rect.h} 영역은 모두 걸어 다닐 수 있는 풀밭입니다. 막는 것은 없고 이벤트도 물도 없습니다.`;
+    return `${rect.w}×${rect.h} 영역입니다. 지나갈 수 없는 칸 ${blocked.length}개: ${coordList(blocked)}. 막고 있는 것은 나무·덤불입니다. 나머지 칸은 잔디라 걸어갈 수 있습니다.`;
   },
   wrongs(project, args): FamilyOutcome[] {
     const rect = rectArg(args);
@@ -329,7 +382,10 @@ const unreachableLinks: Family = {
       }
       const orphan = Object.keys((input.before as any).maps).filter(id => !linked.has(id));
       const said = orphan.filter(id => mentions(input.answer, id) || input.answer.includes(String((input.before as any).maps[id].name)));
-      if (!said.length) return fail(`${label}: 끊긴 맵(${orphan.join(',')})을 지목하지 않았다`);
+      if (said.length !== orphan.length) return fail(`${label}: 끊긴 맵 ${orphan.length}곳 중 ${said.length}곳만 지목했다 (${orphan.join(',')})`);
+      const connected = Object.keys((input.before as any).maps).filter(id => linked.has(id));
+      const wrong = connected.filter(id => mentions(input.answer, id) || input.answer.includes(String((input.before as any).maps[id].name)));
+      if (wrong.length) return fail(`${label}: 이어진 맵(${wrong.join(',')})을 끊겼다고 했다`);
       return pass(`${label}: 끊긴 맵 ${said.join(',')} 지목`);
     });
   },

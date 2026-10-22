@@ -1,8 +1,8 @@
+import { isDeepStrictEqual } from 'node:util';
 import { autotileGroupsForTileset } from '../../../../project/defaults/autotileGroups';
 import type { Project } from '../../../../project/types';
 import {
-  MAP, TILE_LAYERS, blockedCells, changedCells, fail, inside, mapOf, pass, runOn,
-  sameExcept, tileAt, withoutTiles,
+  MAP, TILE_LAYERS, blockedCells as specBlockedCells, changedCells, EVENT_FIELDS, fail, inside, mapOf, pass, runOn, tileAt,
 } from '../matrixNativeSpec';
 import { numArg, rectArg, strArg, type Family, type FamilyOutcome } from './types';
 
@@ -14,6 +14,63 @@ import { numArg, rectArg, strArg, type Family, type FamilyOutcome } from './type
  * request; the judges therefore tolerate that ring but reject any *newly painted material* outside
  * the asked cells, which is what a wrong target or a too-wide brush looks like.
  */
+
+/** Blocked cells per (document, rect): get_map_region clones the whole project, and a judge asks the same question many times. */
+const BLOCKED_CACHE = new WeakMap<object, Map<string, Array<{ x: number; y: number }>>>();
+const blockedCells = (project: Project, rect: { x: number; y: number; w: number; h: number }) => {
+  const cache = BLOCKED_CACHE.get(project) ?? new Map<string, Array<{ x: number; y: number }>>();
+  BLOCKED_CACHE.set(project, cache);
+  const key = `${rect.x},${rect.y},${rect.w},${rect.h}`;
+  const hit = cache.get(key);
+  if (hit) return hit;
+  const cells = specBlockedCells(project, rect);
+  cache.set(key, cells);
+  return cells;
+};
+
+/**
+ * "Everything except the tiles is preserved", compared on a projection instead of a deep clone of the
+ * document: a 30k-tile tileset makes structuredClone+isDeepStrictEqual dominate a whole self-check run.
+ * Same blanking as the spec's withoutTiles, so a tileset edit is out of scope exactly as before.
+ */
+const usedTiles = (project: Project): number[] => {
+  const used = new Set<number>();
+  for (const map of Object.values<any>((project as any).maps)) for (const layer of TILE_LAYERS) for (const tile of (map[layer] ?? []) as number[]) used.add(tile);
+  return [...used].sort((a, b) => a - b);
+};
+/** `passability[tile]` is `{up,down,left,right}`; compare fields, not a serialization whose key order a draft rebuild may change. */
+const samePassability = (a: any, b: any): boolean => {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  return a.up === b.up && a.down === b.down && a.left === b.left && a.right === b.right;
+};
+const preserved = (before: Project, after: Project, blank: readonly string[] = []): boolean => {
+  const projection = (doc0: Project) => {
+    const doc: any = { ...(doc0 as any) };
+    delete doc.tilesets;
+    delete doc.meta;
+    delete doc.assets;
+    for (const key of blank) delete doc[key];
+    doc.maps = Object.fromEntries(Object.entries((doc0 as any).maps).map(([id, map]: [string, any]) => {
+      const copy: any = { ...map };
+      for (const key of EVENT_FIELDS) delete copy[key];
+      return [id, copy];
+    }));
+    return doc;
+  };
+  // Structural equality, not `JSON.stringify`: every write tool runs on a draft that rebuilds each map object
+  // (`createDraft` re-appends the tile buffers), so key order differs while every value is the same. A serialized
+  // comparison therefore rejects the reference of every family that calls a real tool.
+  if (!isDeepStrictEqual(projection(before), projection(after))) return false;
+  // Passability is compared only for tiles a document uses: painting a new tile is not a tileset edit, but
+  // changing what a used tile does is.
+  const tileset: any = tilesetOf(before);
+  const other: any = tilesetOf(after);
+  for (const tile of usedTiles(before)) {
+    if (!samePassability(tileset?.passability?.[tile], other?.passability?.[tile])) return false;
+  }
+  return true;
+};
 
 const tilesetOf = (project: Project): any => (project as any).tilesets[(project as any).maps[MAP].tilesetId];
 const metaOf = (project: Project, tile: number): any => tilesetOf(project).tileMeta?.[tile];
@@ -99,7 +156,7 @@ const clearRegion: Family = {
   variants: [
     { key: 'grove-plain', prompt: '이 5×3 영역만 비워줘.', args: { rect: { x: 1, y: 1, w: 5, h: 3 } }, setup: { select: { x: 1, y: 1, w: 5, h: 3 } } },
     { key: 'grove-polite', prompt: '선택한 4×2 영역의 나무와 잡동사니를 정리해 주세요.', args: { rect: { x: 5, y: 1, w: 4, h: 2 } }, setup: { select: { x: 5, y: 1, w: 4, h: 2 } } },
-    { key: 'terse-strip', prompt: '여기 3×1 치워.', args: { rect: { x: 1, y: 4, w: 3, h: 1 } }, setup: { select: { x: 1, y: 4, w: 3, h: 1 } } },
+    { key: 'terse-strip', prompt: '여기 3×1 치워.', args: { rect: { x: 2, y: 4, w: 3, h: 1 } }, setup: { select: { x: 2, y: 4, w: 3, h: 1 } } },
     { key: 'scope-explained', prompt: '선택한 3×4 영역의 소품과 구조물을 모두 걷어 주세요. 영역 밖은 그대로 두세요.', args: { rect: { x: 6, y: 1, w: 3, h: 4 } }, setup: { select: { x: 6, y: 1, w: 3, h: 4 } } },
     { key: 'whole-grove', prompt: '숲 덩이 전체(8×4)를 깨끗하게 정리해줘.', args: { rect: { x: 1, y: 1, w: 8, h: 4 } }, setup: { select: { x: 1, y: 1, w: 8, h: 4 } } },
   ],
@@ -109,10 +166,13 @@ const clearRegion: Family = {
     const cells = changedCells(input.before, input.after);
     if (!cells.length) return fail(`${label}: 바뀐 칸이 없다`);
     if (!cells.every(cell => inside(rect, cell.x, cell.y))) return fail(`${label}: 영역 밖 칸이 바뀌었다`);
-    if (!sameExcept(input.before, input.after, withoutTiles)) return fail(`${label}: 타일 밖 내용(이벤트 등)이 바뀌었다`);
+    if (!preserved(input.before, input.after)) return fail(`${label}: 타일 밖 내용(이벤트 등)이 바뀌었다`);
     // "비워라" has two valid readings — empty cells (-1) or plain ground — so only leftovers count as failure.
     const props = cellsIn(rect).filter(cell => ['tree', 'wall', 'water', 'gate', 'kit7'].some(tag => cellHasAny(input.after, cell.x, cell.y, [tag])));
     if (props.length) return fail(`${label}: 소품·구조물이 ${props.length}칸 남았다 (예: ${props[0]!.x},${props[0]!.y} 「${cellLabel(input.after, props[0]!.x, props[0]!.y)}」)`);
+    const wasBlocked = cellsIn(rect).filter(cell => ['tree', 'wall', 'water', 'gate', 'kit7'].some(tag => cellHasAny(input.before, cell.x, cell.y, [tag])));
+    const untouched = wasBlocked.filter(cell => !cells.some(changed => sameCell(changed, cell)));
+    if (untouched.length) return fail(`${label}: 비우라고 한 칸 (${untouched[0]!.x},${untouched[0]!.y}) 을 건드리지 않았다`);
     const clearedCells = cellsIn(rect).filter(cell => TILE_LAYERS.every(layer => tileAt(input.after, layer, cell.x, cell.y) <= (layer === 'shadowBits' ? 0 : -1)));
     return pass(`${label} 정리 — ${cells.length}칸 변경(빈 칸 ${clearedCells.length}), 소품 0, 이벤트 보존`);
   },
@@ -143,7 +203,7 @@ const copyRegion: Family = {
   mode: 'write',
   title: '영역을 오른쪽으로 복사',
   variants: [
-    { key: 'grove-2x2', prompt: '이 영역을 오른쪽으로 2칸 복사해줘.', args: { from: { x: 5, y: 1, w: 3, h: 2 }, to: { x: 13, y: 4 } }, setup: { select: { x: 5, y: 1, w: 3, h: 2 } } },
+    { key: 'grove-2x2', prompt: '선택한 3×2 영역을 (13,4) 자리에 복사해줘.', args: { from: { x: 5, y: 1, w: 3, h: 2 }, to: { x: 13, y: 4 } }, setup: { select: { x: 5, y: 1, w: 3, h: 2 } } },
     { key: 'grove-polite', prompt: '선택한 3×2 영역을 (13,7) 자리에 그대로 복사해 주세요.', args: { from: { x: 5, y: 1, w: 3, h: 2 }, to: { x: 13, y: 7 } }, setup: { select: { x: 5, y: 1, w: 3, h: 2 } } },
     { key: 'terse-2x2', prompt: '이 2×2, (12,6)으로 복사.', args: { from: { x: 1, y: 2, w: 2, h: 2 }, to: { x: 12, y: 6 } }, setup: { select: { x: 1, y: 2, w: 2, h: 2 } } },
     { key: 'scope-explained', prompt: '선택한 4×2 숲 조각을 (14,8)에 화소 그대로 복사하고, 원본은 지우지 마세요.', args: { from: { x: 5, y: 1, w: 4, h: 2 }, to: { x: 14, y: 8 } }, setup: { select: { x: 5, y: 1, w: 4, h: 2 } } },
@@ -157,15 +217,21 @@ const copyRegion: Family = {
     const cells = changedCells(input.before, input.after);
     if (!cells.length) return fail(`${label}: 바뀐 칸이 없다`);
     if (!cells.every(cell => inside(target, cell.x, cell.y))) return fail(`${label}: 목적지 밖 칸이 바뀌었다(원본을 지웠거나 다른 곳을 건드렸다)`);
-    if (!sameExcept(input.before, input.after, withoutTiles)) return fail(`${label}: 타일 밖 내용이 바뀌었다`);
+    if (!preserved(input.before, input.after)) return fail(`${label}: 타일 밖 내용이 바뀌었다`);
     let differs = 0;
+    let untouched = 0;
     for (let dy = 0; dy < from.h; dy++) for (let dx = 0; dx < from.w; dx++) for (const layer of TILE_LAYERS) {
       const source = tileAt(input.before, layer, from.x + dx, from.y + dy);
       const written = tileAt(input.after, layer, to.x + dx, to.y + dy);
       if (written !== source) return fail(`${label}: 복사된 칸 (${to.x + dx},${to.y + dy}) 의 ${layer} 이 원본과 다르다`);
-      if (source !== tileAt(input.before, layer, to.x + dx, to.y + dy)) differs += 1;
+      const was = tileAt(input.before, layer, to.x + dx, to.y + dy);
+      if (source !== was) {
+        differs += 1;
+        if (written === was) untouched += 1;
+      }
     }
     if (!differs) return fail(`${label}: 목적지가 이미 원본과 같아 아무것도 복사되지 않았다`);
+    if (untouched) return fail(`${label}: 원본과 달랐던 목적지 ${untouched}칸이 그대로다(일부만 복사)`);
     return pass(`${label}: ${differs}개 타일 값이 원본과 같아짐`);
   },
   reference(project, args) {
@@ -176,11 +242,11 @@ const copyRegion: Family = {
     const to = coordArg(args, 'to');
     const shifted = copied(project, from, { x: to.x + 2, y: to.y });
     const moved = runOn(copied(project, from, to), 'clear_region', { mapId: MAP, x: from.x, y: from.y, w: from.w, h: from.h, layer: 'both' });
-    const partial = copied(project, { ...from, w: 1 }, to);
+    const wrongSource = copied(project, { ...from, x: from.x + 1 }, to);
     const overPainted = runOn(copied(project, from, to), 'paint_tiles', {
       mapId: MAP, layer: 'lower', mode: 'cells', tile: tileForTag(project, 'road'), cells: [{ x: to.x, y: to.y }],
     });
-    return [shifted, moved, partial, overPainted];
+    return [shifted, moved, wrongSource, overPainted];
   },
 };
 
@@ -206,7 +272,7 @@ const mirrorRegion: Family = {
     const cells = changedCells(input.before, input.after);
     if (!cells.length) return fail(`${label}: 바뀐 칸이 없다`);
     if (!cells.every(cell => inside(rect, cell.x, cell.y))) return fail(`${label}: 영역 밖 칸이 바뀌었다`);
-    if (!sameExcept(input.before, input.after, withoutTiles)) return fail(`${label}: 타일 밖 내용이 바뀌었다`);
+    if (!preserved(input.before, input.after)) return fail(`${label}: 타일 밖 내용이 바뀌었다`);
     for (let dy = 0; dy < rect.h; dy++) for (let dx = 0; dx < rect.w; dx++) {
       const mirrorX = rect.x + rect.w - 1 - dx;
       for (const layer of TILE_LAYERS) {
@@ -263,7 +329,7 @@ const placeTreesFamily: Family = {
     const cells = changedCells(input.before, input.after);
     if (!cells.length) return fail(`${label}: 바뀐 칸이 없다`);
     if (!cells.every(cell => inside(area, cell.x, cell.y))) return fail(`${label}: 선택 영역 밖 칸이 바뀌었다`);
-    if (!sameExcept(input.before, input.after, withoutTiles)) return fail(`${label}: 타일 밖 내용이 바뀌었다`);
+    if (!preserved(input.before, input.after)) return fail(`${label}: 타일 밖 내용이 바뀌었다`);
     const clutter = cells.filter(cell => ['wall', 'water', 'gate'].some(tag => cellHasAny(input.after, cell.x, cell.y, [tag])));
     if (clutter.length) return fail(`${label}: 나무가 아닌 구조물·물 타일 ${clutter.length}칸 (예: ${clutter[0]!.x},${clutter[0]!.y})`);
     const trees = treeCount(input.before, input.after, cells);
@@ -312,7 +378,7 @@ const placeWellFamily: Family = {
     const cells = changedCells(input.before, input.after);
     if (!cells.length) return fail(`${label}: 바뀐 칸이 없다`);
     if (!cells.every(cell => inside(area, cell.x, cell.y))) return fail(`${label}: 선택 영역 밖 칸이 바뀌었다`);
-    if (!sameExcept(input.before, input.after, withoutTiles)) return fail(`${label}: 타일 밖 내용이 바뀌었다`);
+    if (!preserved(input.before, input.after)) return fail(`${label}: 타일 밖 내용이 바뀌었다`);
     const well = cells.filter(cell => isWellCell(input.after, cell.x, cell.y));
     if (!well.length) return fail(`${label}: 우물 타일이 없다`);
     return pass(`${label}: 우물 ${well.length}칸 (${well[0]!.x},${well[0]!.y})`);
@@ -356,7 +422,7 @@ const forestPathFamily: Family = {
     const ring = ringOf(cellsIn(rect));
     const stray = cells.filter(cell => !ring.has(keyOf(cell.x, cell.y)));
     if (stray.length) return fail(`${label}: 선택 영역 밖 먼 칸 ${stray.length}개가 바뀌었다 (예: ${stray[0]!.x},${stray[0]!.y})`);
-    if (!sameExcept(input.before, input.after, withoutTiles)) return fail(`${label}: 타일 밖 내용이 바뀌었다`);
+    if (!preserved(input.before, input.after)) return fail(`${label}: 타일 밖 내용이 바뀌었다`);
     const holes = cells.filter(cell => tileAt(input.before, 'lowerTiles', cell.x, cell.y) > 0 && tileAt(input.after, 'lowerTiles', cell.x, cell.y) <= 0);
     if (holes.length) return fail(`${label}: 바닥이 빈 구멍 칸 ${holes.length}개`);
     const blocked = cells.filter(cell => !isGround(input.after, tileAt(input.after, 'lowerTiles', cell.x, cell.y)));
@@ -404,7 +470,7 @@ const moveStartFamily: Family = {
     const label = `시작 위치 (${want.x},${want.y})`;
     if (!(start?.x === want.x && start?.y === want.y)) return fail(`${label}: 시작 위치가 (${start?.x},${start?.y}) 이다`);
     if ((input.after as any).startMapId !== (input.before as any).startMapId) return fail(`${label}: 시작 맵까지 바뀌었다`);
-    return sameExcept(input.before, input.after, doc => { delete doc.startPos; delete doc.startMapId; })
+    return preserved(input.before, input.after, ['startPos', 'startMapId'])
       ? pass(`${label} 로 이동, 다른 필드 보존`) : fail(`${label}: 시작 위치 밖 내용이 바뀌었다`);
   },
   reference(project, args) {
@@ -424,13 +490,22 @@ const moveStartFamily: Family = {
 const MATERIAL_FOR_TAG: Record<string, string> = { sand: '버들항 모랫길', road: '버들항 길 포석', grass: '버들항 풀밭' };
 
 /** The cells the correct tools touch for this selection: autotile reshaping and companion tiles included. */
+const FOOTPRINT_CACHE = new WeakMap<Project, Map<string, Set<string>>>();
+
+/** Running the correct tool once per (project, selection) is enough: the self-check judges the same document many times. */
 const allowedFootprint = (project: Project, cells: ReadonlyArray<{ x: number; y: number }>, tag: string): Set<string> => {
+  const key = `${tag}:${cells.map(cell => keyOf(cell.x, cell.y)).join(';')}`;
+  const cached = FOOTPRINT_CACHE.get(project) ?? new Map<string, Set<string>>();
+  FOOTPRINT_CACHE.set(project, cached);
+  const hit = cached.get(key);
+  if (hit) return hit;
   const allowed = new Set(changedCells(project, paintCells(project, cells, tileForTag(project, tag))).map(cell => keyOf(cell.x, cell.y)));
   const xs = cells.map(cell => cell.x), ys = cells.map(cell => cell.y);
   const bbox = { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs) + 1, h: Math.max(...ys) - Math.min(...ys) + 1 };
   if (cells.length === bbox.w * bbox.h && MATERIAL_FOR_TAG[tag]) {
     for (const cell of changedCells(project, fillRect(project, bbox, MATERIAL_FOR_TAG[tag]))) allowed.add(keyOf(cell.x, cell.y));
   }
+  cached.set(key, allowed);
   return allowed;
 };
 
@@ -442,7 +517,7 @@ const selectionJudge = (input: any, cells: ReadonlyArray<{ x: number; y: number 
   if (stray.length) return fail(`${label}: 선택 밖 칸 ${stray.length}개가 바뀌었다 (예: ${stray[0]!.x},${stray[0]!.y})`);
   const missing = cells.filter(cell => !cellHasAny(input.after, cell.x, cell.y, [tag]));
   if (missing.length) return fail(`${label}: 선택 칸 ${missing.length}개가 요청한 재료로 바뀌지 않았다 (예: ${missing[0]!.x},${missing[0]!.y} 「${cellLabel(input.after, missing[0]!.x, missing[0]!.y)}」)`);
-  if (!sameExcept(input.before, input.after, withoutTiles)) return fail(`${label}: 타일 밖 내용이 바뀌었다`);
+  if (!preserved(input.before, input.after)) return fail(`${label}: 타일 밖 내용이 바뀌었다`);
   return pass(`${label}: 선택 ${cells.length}칸 칠함`);
 };
 
@@ -510,7 +585,7 @@ const selectionColumn: Family = {
     const tooWide = paintCells(project, cellsIn({ ...rect, w: 2 }), tile);
     const half = paintCells(project, cellsIn({ ...rect, h: Math.max(1, rect.h - 2) }), tile);
     const stray = runOn(paintCells(project, cellsIn(rect), tile), 'paint_tiles', {
-      mapId: MAP, layer: 'lower', mode: 'cells', tile, cells: [{ x: rect.x + 4, y: rect.y }],
+      mapId: MAP, layer: 'lower', mode: 'cells', tile, cells: [{ x: rect.x - 3, y: rect.y }],
     });
     return [shifted, tooWide, half, stray];
   },
@@ -567,7 +642,15 @@ const selectionL: Family = {
     const bboxFill = paintCells(project, cellsIn(bbox), tile);
     const shifted = paintCells(project, cells.map(cell => ({ x: cell.x + 1, y: cell.y })), tile);
     const partial = paintCells(project, cells.slice(0, Math.max(1, cells.length - 2)), tile);
-    const stray = runOn(paintCells(project, cells, tile), 'paint_tiles', { mapId: MAP, layer: 'lower', mode: 'cells', tile, cells: [{ x: bbox.x, y: bbox.y + bbox.h + 2 }] });
+    // The stray cell must be inside the map: `paint_tiles` silently skips out-of-bounds cells, so a
+    // "side effect" aimed past the edge paints nothing and the wrong answer becomes the reference.
+    const map = mapOf(project);
+    const allowed = allowedFootprint(project, cells, tag);
+    const outside = [
+      { x: bbox.x - 2, y: bbox.y }, { x: bbox.x + bbox.w + 2, y: bbox.y },
+      { x: bbox.x, y: bbox.y + bbox.h + 1 }, { x: bbox.x, y: bbox.y - 2 },
+    ].find(cell => cell.x >= 0 && cell.x < map.width && cell.y >= 0 && cell.y < map.height && !allowed.has(keyOf(cell.x, cell.y)))!;
+    const stray = runOn(paintCells(project, cells, tile), 'paint_tiles', { mapId: MAP, layer: 'lower', mode: 'cells', tile, cells: [outside] });
     return [bboxFill, shifted, partial, stray];
   },
 };
@@ -578,11 +661,11 @@ const selectionWholeMap: Family = {
   mode: 'write',
   title: '맵 전체 칠하기',
   variants: [
-    { key: 'sand-all', prompt: '맵 전체 바닥을 모랫길로 다 바꿔줘.', args: { tag: 'sand', material: '버들항 모랫길', tag: 'sand' } },
-    { key: 'sand-polite', prompt: '이 맵 전체를 흙바닥으로 깔아 주세요. 이벤트는 지우지 마세요.', args: { tag: 'sand', material: '버들항 모랫길', tag: 'sand' } },
-    { key: 'terse', prompt: '맵 전체, 모래.', args: { tag: 'sand', material: '버들항 모랫길', tag: 'sand' } },
+    { key: 'sand-all', prompt: '맵 전체 바닥을 모랫길로 다 바꿔줘.', args: { tag: 'sand', material: '버들항 모랫길' } },
+    { key: 'sand-polite', prompt: '이 맵 전체를 흙바닥으로 깔아 주세요. 이벤트는 지우지 마세요.', args: { tag: 'sand', material: '버들항 모랫길' } },
+    { key: 'terse', prompt: '맵 전체, 모래.', args: { tag: 'sand', material: '버들항 모랫길' } },
     { key: 'road-explained', prompt: '맵의 모든 칸을 길 포석으로 통일하고, 이벤트·건물은 그대로 두세요.', args: { tag: 'road', material: '버들항 길 포석' } },
-    { key: 'sand-events', prompt: '마을 바닥 전부를 모랫길로 갈아줘. 출입구 이벤트는 남겨.', args: { tag: 'sand', material: '버들항 모랫길', tag: 'sand' } },
+    { key: 'sand-events', prompt: '마을 바닥 전부를 모랫길로 갈아줘. 출입구 이벤트는 남겨.', args: { tag: 'sand', material: '버들항 모랫길' } },
   ],
   judge(input, args) {
     const tag = strArg(args, 'tag');
@@ -594,7 +677,7 @@ const selectionWholeMap: Family = {
     const before = mapOf(input.before).events.map((event: any) => event.id).sort();
     const after = map.events.map((event: any) => event.id).sort();
     if (JSON.stringify(before) !== JSON.stringify(after)) return fail(`${label}: 이벤트가 사라지거나 늘었다(${before.length} → ${after.length})`);
-    return sameExcept(input.before, input.after, withoutTiles) ? pass(`${label} ${map.width * map.height}칸 칠함, 이벤트 ${after.length}개 보존`) : fail(`${label}: 타일 밖 내용이 바뀌었다`);
+    return preserved(input.before, input.after) ? pass(`${label} ${map.width * map.height}칸 칠함, 이벤트 ${after.length}개 보존`) : fail(`${label}: 타일 밖 내용이 바뀌었다`);
   },
   reference(project, args) {
     const map = mapOf(project);
@@ -639,7 +722,7 @@ const chainPaintThenPlace: Family = {
     const allowed = ringOf(cellsIn(area));
     const stray = changed.filter(cell => !allowed.has(keyOf(cell.x, cell.y)));
     if (stray.length) return fail(`${label}: 영역 밖 칸 ${stray.length}개가 바뀌었다 (예: ${stray[0]!.x},${stray[0]!.y})`);
-    if (!sameExcept(input.before, input.after, withoutTiles)) return fail(`${label}: 타일 밖 내용이 바뀌었다`);
+    if (!preserved(input.before, input.after)) return fail(`${label}: 타일 밖 내용이 바뀌었다`);
     const bare = cellsIn(area).filter(cell => !cellHasAny(input.after, cell.x, cell.y, ['sand', 'farm_lane', 'tree']));
     if (bare.length) return fail(`${label}: 바닥이 흙이 아닌 칸 ${bare.length}개 (예: ${bare[0]!.x},${bare[0]!.y} 「${cellLabel(input.after, bare[0]!.x, bare[0]!.y)}」)`);
     const trees = treeCount(input.before, input.after, cellsIn(area));
