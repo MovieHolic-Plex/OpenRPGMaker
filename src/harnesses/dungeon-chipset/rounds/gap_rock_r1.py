@@ -100,6 +100,35 @@ def _east_notch(rows):
     return rows
 
 
+# A: 가장 밝은 테두리 단(h)이 칸마다 끊김 없이 돌면 대각 계단의 한 칸 단마다 밝은 테두리가 감겨 상자를 쌓은 것처럼 보인다.
+# 귀(바깥·안)와 변 띠의 칸 끝(이음점 0·7·8·15번)과 몇 자리에서 h 를 한 단 낮춰(l) 테두리가 띄엄띄엄 끊긴 바위 끝으로 읽히게 한다.
+LIP_FADE = {'A': {'from': 'h', 'to': 'l', 'N': (0, 1, 3, 6, 7, 8, 9, 11, 12, 14, 15), 'W': (0, 1, 4, 5, 7, 8, 12, 14, 15),
+                  'S': (0, 1, 2, 5, 6, 7, 8, 9, 13, 14, 15)}}
+
+
+def _fade(fr, inner, f):
+    g = [list(r) for r in fr]
+    a, b = f['from'], f['to']
+    def sub(x, y):
+        if g[y][x] == a:
+            g[y][x] = b
+    for y in range(32):
+        for x in range(32):
+            if (x < 8 or x >= 24) and (y < 8 or y >= 24):
+                sub(x, y)
+    for i in f['N']:
+        for y in range(8):
+            sub(8 + i, y)
+    for i in f['W']:
+        for x in range(8):
+            sub(x, 8 + i)
+    for i in f['S']:
+        for y in range(24, 32):
+            sub(8 + i, y)
+    inn = [r.replace(a, b) for r in inner]
+    return [''.join(r) for r in g], inn
+
+
 def rock_frame(line, prof):
     """prof = {'N','W','E','S'}: 옆선 표 16칸씩 (홈 깊이, 테두리 끝). 반환 (틀 32×32 기호, 안 모서리 16×16 기호)."""
     lit, sh, lip = LIT[line], SHADE[line], LIP[line]
@@ -112,6 +141,8 @@ def rock_frame(line, prof):
     fr = CR.frame(_sym(NW, line), _sym(NE, line), _sym(SW, line), _sym(SE, line), n, s, w, e)
     inner = [a + b for a, b in zip(_sym(IN_NW, line), _sym(IN_NE, line))] + \
             [a + b for a, b in zip(_sym(IN_SW, line), _sym(IN_SE, line))]
+    if line in LIP_FADE:
+        fr, inner = _fade(fr, inner, LIP_FADE[line])
     CR.check_frame(f'{line} 바위 채움', fr, inner, strict_inner=False)
     return fr, inner
 
@@ -271,7 +302,7 @@ BOULDER = {
           ['.mgm.', 'mcccb', 'ccbbd', '.ddd.'], ['mc', 'bd']),
     'B': (['...llll...', '.llmmmmcc.', 'lmmmmmmccp', 'mmmmmmcccp', '.cmmcccpp.', '..pppppp..'],
           ['.ll.', 'lmmc', 'mmcp', '.pp.'], ['lm', 'cp']),
-    'C': (['..whcm....', '.hhccmmcb.', 'hcccmmmcbbm', '.mbbmcmbbbk', '.kkkkmbbbk.', '.....kxxk..'],   # 5단: w h c·m b k x
+    'C': (['..hccm....', '.cccmmmmb.', 'ccmmmmmbbbm', '.mbbmmbbbbk', '.kkkkbbbbk.', '.....kxxk..'],   # 완만한 5단: h c m b k x
           ['.hcm.', 'hccmb', '.mbk.', '.kxk.'], ['hm', 'bk']),
 }
 # 층(C1): 가는 층 줄 — 위 옅은 빛(m) + 줄(k). 가로 변은 y=4·11 에서만 건넌다.
@@ -290,9 +321,63 @@ def _crack(line, rows, paths):
     return cut(rows, paths, dark=d, shade=sh, lit=li)
 
 
+# B·C 윗면: 조용한 바탕(같은 값 단의 색조 얼룩 X·Y + 드문 점 Z) 위에 칸마다 1~3개의 큰 덩이(5~9px)만 — 덩이 안은
+# 위·왼 빛 → 몸 → 아래 그늘로 단이 이웃끼리 가깝게 이어지는 완만한 기울기(밝은 점 W·깊은 점 D 는 한 화소씩).
+# 덩이 크기·자리·개수를 변형마다 고르지 않게 둔다(자갈·포석처럼 고르게 깔리지 않게).
+BIG = (['.HMB.', 'HMMBS', '.BBS.', '..D..'],
+       ['.WHM..', 'HHMMB.', 'MMMBBS', '.BBSS.', '..SD..'],
+       ['..WHH..', '.HHMMB.', 'HMMMBBS', 'MMBBBSS', '.BBSSD.', '..SSD..'],
+       ['...WHH...', '..HHMMMB.', '.HMMMMBBB', 'HMMMMBBBS', 'MMMBBBBSS', '.BBBBSSD.', '...SSSD..'])
+BIG_AT = [((2, 2, 3), (11, 10, 0)), ((6, 1, 2), (1, 9, 1), (11, 12, 0)), ((3, 5, 3),), ((9, 2, 1), (2, 8, 2)),
+          ((1, 1, 0), (7, 6, 3)), ((10, 3, 2), (3, 11, 0)), ((2, 3, 1), (8, 9, 2)), ((4, 4, 2),)]
+BIG_AT2 = [((1, 3, 3),), ((7, 2, 3), (2, 11, 1)), ((2, 1, 2),), ((4, 6, 3), (13, 2, 0)),
+           ((1, 2, 1), (3, 9, 2)), ((6, 5, 3), (1, 1, 0)), ((10, 4, 2), (2, 7, 3)), ((4, 4, 2),)]
+QUIET = {   # X Y Z (바탕) · W H M B S D (덩이) · G- G^ (잔결) — B: 0.23~0.58 다섯 단, C: 0.10~0.50 다섯 단
+    'B': ('b', 'm', 'd', 'h', 'l', 'm', 'b', 'd', 'k', 'd', 'm'),
+    'C': ('b', 'k', 'k', 'h', 'c', 'm', 'b', 'k', 'x', 'k', 'm'),
+}
+# 바탕 잔결: 이웃 단 한 화소(- 한 단 어둡게 · ^ 한 단 밝게)를 고르지 않게 흩어 5×5 어디에도 같은 색 평면이 남지 않게 한다.
+GRAIN = ['.-......^...-...',
+     '................',
+     '....-.....-....^',
+     '..^.............',
+     '.......-.....-..',
+     '-...............',
+     '...-......^.....',
+     '.........-....-.',
+     '.^..............',
+     '.....-.....-....',
+     '..............^.',
+     '-.......^.......',
+     '...-.........-..',
+     '..........-.....',
+     '.....^..........',
+     '.-.........-...^']
+
+
+
+def quiet_top(line, k, at):
+    X, Y, Z, W, H, M, B, S, D, G1, G2 = QUIET[line]
+    g = [list(r.replace('.', X).replace('#', Y).replace('+', Z)) for r in turn(BLOTCH, k)]
+    for y, r in enumerate(turn(GRAIN, (k + 1) % 4)):
+        for x, ch in enumerate(r):
+            if ch != '.' and g[y][x] == X:
+                g[y][x] = G1 if ch == '-' else G2
+    mp = {'W': W, 'H': H, 'M': M, 'B': B, 'S': S, 'D': D}
+    for x, y, sz in sorted(at, key=lambda t: t[1]):
+        for dy, r in enumerate(BIG[sz]):
+            for dx, ch in enumerate(r):
+                if ch != '.':
+                    g[(y + dy) % 16][(x + dx) % 16] = mp[ch]
+    return [''.join(r) for r in g]
+
+
 def tops(line, n):
     ks = (1, 2, 3, 0, 1, 2, 3, 0) if n == 1 else (2, 3, 0, 1, 2, 3, 0, 1)
-    t = [clumped(line, base_rows(line, k), at, () if line == 'A' else ex) for k, at, ex in zip(ks, CLUMP_AT, EXTRA_AT)]
+    if line == 'A':
+        t = [clumped(line, base_rows(line, k), at) for k, at in zip(ks, CLUMP_AT)]
+    else:
+        t = [quiet_top(line, k, at) for k, at in zip(ks, BIG_AT)]
     if n == 1:   # 금·턱·층 줄은 칸 안에서 시작해 칸 안에서 끝난다(이웃 칸 앞에서 잘린 금이 생기지 않게)
         big, small = LEDGE[line]
         if line == 'C':
@@ -304,6 +389,14 @@ def tops(line, n):
                  _crack(line, t[4], [((12, 2), (13, 6)), ((4, 4), (6, 3))]),
                  t[5],
                  _crack(line, t[6], [((11, 2), (11, 5), (13, 7)), ((11, 5), (8, 6))])]
+        elif line == 'B':   # B1: 턱 도장 대신 길고 짧은 금만 — 큰 덩이 사이를 가르는 깨진 바위 결
+            v = [_crack(line, t[0], [((2, 3), (4, 5), (7, 8), (11, 13))]),
+                 _crack(line, t[1], [((3, 12), (6, 11), (8, 13))]),
+                 t[2],
+                 _crack(line, t[3], [((5, 2), (6, 4), (3, 8), (2, 12))]),
+                 _crack(line, t[4], [((2, 2), (5, 3)), ((12, 3), (13, 6))]),
+                 t[5],
+                 _crack(line, t[6], [((13, 11), (11, 10), (9, 6))])]
         else:
             v = [_crack(line, t[0], [((2, 3), (4, 5), (7, 8), (11, 13))]),
                  stampl(t[1], [(big, 2, 5)]),
@@ -312,6 +405,15 @@ def tops(line, n):
                  _crack(line, stampl(t[4], [(small, 7, 9)]), [((2, 2), (5, 3))]),
                  t[5],
                  _crack(line, t[6], [((13, 11), (11, 10), (9, 6))])]
+    elif line != 'A':   # B2·C2: 큰 덩이 자체가 둥근 바위 — 따로 찍는 평평한 바위 조각은 겹쳐 붐비게 해서 뺐다. 덩이 배치만 다르게.
+        t = [quiet_top(line, k, at) for k, at in zip(ks, BIG_AT2)]
+        if line == 'C':   # 검은 화산암은 덩이만이면 같은 도장이 되풀이돼 보인다 — 칸 절반에 짧은 갈래 금을 섞는다
+            v = [_crack(line, t[0], [((9, 10), (11, 13), (10, 15))]), t[1],
+                 _crack(line, t[2], [((12, 2), (13, 5)), ((13, 5), (11, 6))]), t[3],
+                 _crack(line, t[4], [((12, 10), (14, 12)), ((12, 10), (11, 13))]),
+                 _crack(line, t[5], [((12, 13), (11, 11), (13, 9))]), t[6]]
+        else:
+            v = [t[0], t[1], t[2], t[3], t[4], _crack(line, t[5], [((12, 13), (11, 11), (13, 9))]), t[6]]
     else:
         b1, b2, peb = BOULDER[line]
         v = [stampl(t[0], [(peb, 3, 4)]),
@@ -410,7 +512,7 @@ FACE_MOTTLE = [
     '..+...++.......-', '......+++.....--', '.-.....+........', '.--..........++.', '..........-.+++.',
     '.....++..---....', '....+++...-.....', '.....+..........', '..-.........++..', '.---.......+++..']
 FACE_LADDER = {   # (바탕 글자, 표) → 바꿀 글자. 금·주름 글자(k·x)는 그대로
-    'B': {('b', '+'): 'm', ('b', '-'): 'd', ('d', '+'): 'b', ('d', '-'): 'k', ('m', '+'): 'l'},
+    'B': {('b', '+'): 'm', ('b', '-'): 'd', ('d', '+'): 'b', ('d', '-'): 'k', ('e', '+'): 'd', ('m', '+'): 'l'},
     'C': {('b', '+'): 'm', ('b', '-'): 'k', ('k', '+'): 'b', ('k', '-'): 'x', ('d', '+'): 'm', ('m', '+'): 'h'},
 }
 
@@ -419,9 +521,10 @@ def face_cv(line, rows, left, right):
     """rows 16×32 → 32×32 표본. left/right = 끝 마구리 열 [(열0 글자열 32), …] — '.' 는 그대로."""
     leg = LEG[line]
     assert len(rows) == 32 and all(len(r) == 16 for r in rows), [len(r) for r in rows]
-    if line == 'B':   # B 앞면은 한두 단 밝게: 위 단 d→b·e→d, 아래 단 e→d (금 k 는 그대로) — 거의 검은 벽이 되지 않게
-        rows = [r.translate(str.maketrans('de', 'bd')) if 3 <= y < 15 else
-                r.translate(str.maketrans('e', 'd')) if 15 <= y < 28 else r for y, r in enumerate(rows)]
+    if line == 'B':   # B 앞면: 윗면(≈0.36)보다 두 단 어둡게 — 위 단 d(0.25), 아래 단 e·k(0.23), 얼룩 + 만 b
+        rows = [r.translate(str.maketrans('e', 'd')) if 3 <= y < 15 else r for y, r in enumerate(rows)]
+    if line == 'C':   # C 앞면: 바탕 b(0.26)를 k(0.17)로 내려 윗면(≈0.28)보다 확실히 어둡게, 얼룩 + 는 b
+        rows = [r.translate(str.maketrans('b', 'k')) if 3 <= y < 28 else r for y, r in enumerate(rows)]
     if line in FACE_LADDER:   # B·C: 손으로 찍은 얼룩 표로 바탕 단을 한 단 올리고(+) 내려(-) 넓은 한 단 면을 깬다 → 4~5단
         lad = FACE_LADDER[line]
         out = []
@@ -623,12 +726,12 @@ def cand(line, n):
 
 
 NOTES = {
-    'A1': '턱 진 사암 암반 — 바닥보다 한 단 어둡고 차가운(회녹 뭉치) 잔 얼룩 5단 윗면에 작은 홈·혹·조각, 드물게 긴 금·턱. 앞면 = 물결 층리 사암',
-    'A2': '사암 돌무더기 — 같은 어두운 잔 얼룩 윗면에 작은 홈·혹, 드물게 덩이·조약돌. 앞면 = 지그재그 세로 금으로 갈린 사암 벼랑',
-    'B1': '턱 진 회색 산 암반 — 무채색 잔 얼룩 5단 윗면에 작은 홈·혹·조각, 드물게 금·모난 턱. 앞면 = 비스듬한 금으로 갈린 큰 화강암 덩이(무채색)',
-    'B2': '회색 돌무더기 — 무채색 잔 얼룩 윗면에 작은 홈·혹, 드물게 둥근 바윗덩이. 앞면 = 지그재그 세로 금·짧은 턱으로 갈린 화강암 벼랑',
-    'C1': '층 진 현무암 — 검푸른 잔 얼룩 윗면에 가는 층 줄·턱. 앞면 = 물결 층리',
-    'C2': '현무암 돌무더기 — 검푸른 잔 얼룩 윗면에 드물게 기둥 머리 덩이. 앞면 = 두꺼운 층이 턱으로 튀어나온 층벽',
+    'A1': '턱 진 사암 암반 — 바닥보다 한 단 어둡고 차가운(회녹 뭉치) 잔 얼룩 5단 윗면에 작은 홈·혹·조각. 계단 모서리·끝에서 밝은 턱 줄이 끊긴다. 앞면 = 물결 층리 사암',
+    'A2': '사암 돌무더기 — 같은 어두운 잔 얼룩 윗면에 작은 홈·혹, 드물게 덩이·조약돌. 계단 턱 줄이 모서리에서 끊긴다. 앞면 = 지그재그 세로 금으로 갈린 사암 벼랑',
+    'B1': '깨진 회색 산 암반 — 조용한 무채색 바탕(이웃 단 잔결)에 칸마다 큰 덩이 1~3개(5~9px, 완만한 빛→그늘)와 긴 금. 앞면 = 윗면보다 두 단 어두운 화강암 덩이, 맨 위 밝은 턱 줄',
+    'B2': '회색 바윗덩이 — 같은 조용한 바탕에 더 크고 고르지 않은 둥근 바위 덩이. 앞면 = 두 단 어두운 지그재그 금 화강암 벼랑, 맨 위 밝은 턱 줄',
+    'C1': '갈라진 현무암 — 검푸른 조용한 바탕에 큰 덩이 몇 개와 여러 방향 갈래 금. 앞면 = 한층 어두운 물결 층리, 맨 위 밝은 턱 줄',
+    'C2': '현무암 바윗덩이 — 같은 바탕에 크고 고르지 않은 덩이와 짧은 금. 앞면 = 한층 어두운 두꺼운 층 턱 벽, 맨 위 밝은 턱 줄',
 }
 
 CANDIDATES = {'gap.rock_fill': {f'{ln}{n}': cand(ln, n) for ln in 'ABC' for n in (1, 2)}}
