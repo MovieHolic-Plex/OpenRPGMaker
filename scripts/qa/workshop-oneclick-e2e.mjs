@@ -74,7 +74,9 @@ try {
   mark("result");
   await hold(1200);
   await page.screenshot({ path: resolve(out, `${kind}-3-done.png`) });
-  await click(toast);
+  // 부하가 높으면 Playwright 의 「안정」 검사(두 프레임 같은 자리)가 2분 내내 못 맞춘 적이 있다(화면에서는 가만히 있었다) — 그때는 같은 자리를 그대로 누른다
+  await toast.click({ timeout: 20_000 }).catch(() => toast.click({ force: true }));
+  result.clicks += 1;
   await hold(900);
   const box = await canvasBox();
   const cx = box.x + box.width * 0.5, cy = box.y + box.height * 0.5;
@@ -85,8 +87,8 @@ try {
     for (let row = 0; row < 4; row++) for (let i = 0; i <= 8; i++) await page.mouse.move(cx - 80 + (row % 2 ? 8 - i : i) * 20, cy - 40 + row * 24, { steps: 3 });
     await page.mouse.up();
   } else {
-    // 캐릭터는 풀밭(용암·우물이 아닌 칸)에 세운다
-    const dx = kind === "character" ? -160 : -40;
+    // 풀밭에 놓는다(앞 영상의 용암 위가 아닌 칸)
+    const dx = kind === "character" ? -160 : 160;
     await page.mouse.move(cx + dx, cy - 20, { steps: 6 });
     await hold(400);
     await page.mouse.click(cx + dx, cy - 20);

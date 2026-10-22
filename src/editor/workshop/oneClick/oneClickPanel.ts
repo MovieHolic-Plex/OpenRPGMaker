@@ -18,6 +18,7 @@ import { toast } from "@/util/toast";
 import { workshopAiReady } from "../chat";
 import { WORKSHOP_GENERATORS, type GeneratorId } from "../generators";
 import { gridDataUrl } from "../pixels";
+import { getWorkshopSession } from "../workshopSession";
 import { armWorkshopStamp } from "../workshopBake";
 import { craftBar, generatorStage } from "../workshopArt";
 import { jobStateLabel } from "../queue/jobModel";
@@ -207,11 +208,22 @@ function elapsedOf(view: JobView): number {
   return Math.max(0, end - start);
 }
 
+const sessionLoads = new Set<string>();
+
 /** 결과 미리 보기(작게): 물건 = 고른 격자, 캐릭터 = 앞모습 칩. */
-function resultThumb(view: JobView): HTMLElement | null {
+function resultThumb(view: JobView, render: () => void): HTMLElement | null {
   const installed = view.job.installed;
   if (!installed) return null;
   if (installed.kind === "object") {
+    // 새로고침 뒤에는 판 기록(격자)이 아직 안 열려 있다 — 열고 다시 그린다(그림 없는 완성 카드가 남았다, 2026-10-23 실화면).
+    if (!view.session && view.job.harnessId) {
+      const harnessId = view.job.harnessId;
+      if (!sessionLoads.has(harnessId)) {
+        sessionLoads.add(harnessId);
+        void getWorkshopSession(harnessId).then(() => render(), () => undefined);
+      }
+      return null;
+    }
     const grid = view.round?.runs.find((run) => run.letter === installed.letter)?.grid;
     const palette = view.session && view.item ? view.session.runner.palette(view.item) : null;
     if (!grid || !palette) return null;
@@ -268,7 +280,7 @@ function progressCard(view: JobView, render: () => void): HTMLElement {
       on: { click: () => { void queue.cancel(job.id).then(render); } },
     }));
   } else if (jobState === "installed") {
-    const thumb = resultThumb(view);
+    const thumb = resultThumb(view, render);
     const what = job.installed?.kind === "object" ? "칩셋에 넣었어요." : job.installed?.kind === "pack" && job.installed.characters?.length ? "캐릭터 목록에 넣었어요." : job.installed?.kind === "pack" && job.installed.terrain ? "지금 맵 칩셋에 넣었어요." : "이 게임에 넣었어요.";
     children.push(el("div", { class: "workshop-oneclick-done", children: [...(thumb ? [thumb] : []), el("p", { class: "left-workshop-meta", text: `${what} 「맵에 놓기」를 누르고 맵을 클릭하세요.` })] }));
     children.push(el("button", { class: "left-workshop-primary", text: "맵에 놓기", attrs: { type: "button" }, dataset: { testid: "workshop-oneclick-place" }, on: { click: () => placeOneClickResult(job.id) } }));
