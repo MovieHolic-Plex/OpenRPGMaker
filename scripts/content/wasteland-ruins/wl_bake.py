@@ -31,7 +31,8 @@ P = dict(png=os.path.join(ROOT, 'public/assets/wasteland-ruins/wasteland-ruins-c
 GROUP_KO = dict(ground='바닥', ruins='폐허', shacks='판잣집', defense='방어·울타리', props='기물')
 FLOOR_GROUP_IDS = {'dirt-a', 'dirt-b', 'dirt-c', 'dirt-d', 'slab-a', 'slab-b', 'slab-c', 'rubble-a', 'rubble-b', 'rubble-c',
                    'weeds-a', 'weeds-b', 'weeds-c', 'puddle', 'fence-h', 'fence-v',
-                   'road-crack-a', 'road-crack-b', 'road-crack-c', 'pothole-a', 'pothole-b'}
+                   'road-crack-a', 'road-crack-b', 'road-crack-c', 'pothole-a', 'pothole-b',
+                   'asphalt-in-ne', 'asphalt-in-nw', 'asphalt-in-se', 'asphalt-in-sw'}
 BUILDING_IDS = {'husk-a', 'husk-b', 'husk-tall', 'shack-a', 'shack-b', 'lean-to', 'shack-c', 'container-home', 'tent-tarp'}
 ANIM_FPS = 6
 

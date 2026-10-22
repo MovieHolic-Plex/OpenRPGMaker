@@ -781,46 +781,42 @@ AP_DARK = K('asph', 2)                                    # 3d4b51: 드문 어�
 
 
 def _ap_tex():
-    """128×128 이음 결 T(r51): 어두운 숯빛 524b49 한 단이 주인(약 2/3), 그 위에 가운데 단 68605e 낟알(덩이 1~2화소 + 낱화소)이 고르게 흩어지고,
-    낮은 주파수(주기 128) 닳은 자리에서만 낟알이 짙어지고 밝은 단 7b7270 이 섞인다(바퀴 닳은 부드러운 자리). 드문 어두운 골재 3d4b51 · 드문 밝은 골재 8d8482(포아송).
-    5×5 창 하나가 한 단으로만 채워지면 낟알 하나를 더 넣어 평평한 칸을 없앤다."""
-    B2 = blobs(AP, 1805, 2)
-    U, Wr = {}, {}
+    """128×128 이음 결 T(r52): 2~4화소 골재 덩이마다 한 단 — 어두운 숯빛 524b49 가 주인(약 63%), 가운데 단 68605e 덩이 약 25%, 밝은 7b7270 덩이 약 7%,
+    짙은 타르 덩이 3d4b51 약 5%. 닳은 자리(주기 128)는 대비를 낮게만 바꾼다(줄무늬·판 전체 기울기 없음). 낱화소 소금·후추 없음 — 평평한 5×5 창은 2화소 낟알로 깬다.
+    밝은 골재 8d8482 는 포아송(서로 18 이상) 2화소 알 14개."""
+    B3 = blobs(AP, 1871, 3)
+    keys = sorted({v[0] for v in B3.values()}, key=lambda k: hsh(k[0], k[1], 1877))
+    R = {k: i / len(keys) for i, k in enumerate(keys)}
+    T = {}
     for y in range(AP):
         for x in range(AP):
-            w = 0.62 * vnoise(x, y, 1801, 64, AP) + 0.38 * vnoise(x, y, 1803, 32, AP)
-            k = B2[(x, y)][0]
-            U[(x, y)] = 0.55 * hsh(k[0], k[1], 1807) / 65535.0 + 0.45 * (h2(x, y, 1809) % 1000) / 1000.0
-            Wr[(x, y)] = w
-    rank = lambda D: {p: i / len(D) for i, p in enumerate(sorted(D, key=D.get))}       # 고른 0..1 로 펴기(몫을 맞추려고)
-    U, Wr = rank(U), rank(Wr)
-    T = {}
-    for (x, y), u in U.items():
-        w = _stretch(Wr[(x, y)], 1.9)
-        n2 = (h2(x, y, 1811) % 1000) / 1000.0
-        pHI = 0.08 + 0.50 * w
-        p6 = 0.34 * max(0.0, w - 0.35) / 0.65
-        col = TAR
-        if u < pHI: col = TAR_HI
-        if u < p6: col = K('asph', 6)
-        if u < 0.06 * max(0.0, w - 0.55) / 0.45: col = K('conc', 4)          # 닳은 자리 속 밝은 골재(8d8482)
-        if col == TAR and n2 < 0.07 * (1 - 0.6 * w): col = AP_DARK            # 어두운 골재·패인 알(3d4b51)
-        T[(x, y)] = col
-    for it in range(4):                                   # 평평한 5×5 창 없애기(낟알 하나 더)
+            k = B3[(x, y)][0]
+            w = 0.5 * vnoise(x, y, 1873, 32, AP) + 0.5 * vnoise(x, y, 1875, 16, AP)
+            r = R[k]
+            p6 = 0.045 + 0.03 * (w - 0.5) * 2
+            pHI = 0.20 + 0.08 * (w - 0.5) * 2
+            col = K('asph', 6) if r < p6 else TAR_HI if r < p6 + pHI else K('dirt', 1) if r > 0.975 else TAR      # 짙은 타르 덩이는 따뜻한 4a3828(차가운 남빛 알 없음)
+            T[(x, y)] = col
+    for it in range(6):                                   # 평평한 5×5 창 깨기: 2화소 낟알(가로 또는 세로)
         fixed = 0
         for y in range(AP):
             for x in range(AP):
                 c0 = T[(x, y)]
                 if all(T[((x + i) % AP, (y + j) % AP)] == c0 for j in range(5) for i in range(5)):
-                    i, j = 1 + h2(x, y, 1813 + it) % 3, 1 + h2(y, x, 1815 + it) % 3
-                    T[((x + i) % AP, (y + j) % AP)] = TAR_HI if c0 != TAR_HI else TAR; fixed += 1
+                    i, j = 1 + h2(x, y, 1879 + it) % 3, 1 + h2(y, x, 1881 + it) % 3
+                    col = TAR_HI if c0 != TAR_HI else TAR
+                    T[((x + i) % AP, (y + j) % AP)] = col
+                    if h2(x, y, 1883) % 2: T[((x + i + 1) % AP, (y + j) % AP)] = col
+                    else: T[((x + i) % AP, (y + j + 1) % AP)] = col
+                    fixed += 1
         if not fixed: break
-    pts = []                                              # 밝은 골재 알: 포아송(서로 14 이상), 32개
+    pts = []
     for k in range(6000):
-        if len(pts) >= 32: break
-        x = h2(k, 1, 1817) % AP; y = h2(k, 2, 1817) % AP
-        if all(min(abs(x - a), AP - abs(x - a)) ** 2 + min(abs(y - b), AP - abs(y - b)) ** 2 >= 196 for a, b in pts): pts.append((x, y))
-    for x, y in pts: T[(x, y)] = K('conc', 4)
+        if len(pts) >= 14: break
+        x = h2(k, 1, 1885) % AP; y = h2(k, 2, 1885) % AP
+        if all(min(abs(x - a), AP - abs(x - a)) ** 2 + min(abs(y - b), AP - abs(y - b)) ** 2 >= 324 for a, b in pts): pts.append((x, y))
+    for x, y in pts:
+        T[(x, y)] = K('conc', 4); T[((x + 1) % AP, y)] = K('asph', 6)
     return T
 
 
@@ -838,27 +834,41 @@ def _stretch(v, s=2.0):
 
 @functools.lru_cache(maxsize=None)
 def ap_depth(side, g):
-    """변(side)의 전역 깨짐 깊이(연속, 1..3): 주기 128 의 여러 겹 잡음 — 넓은 흐름 + 짧은(3~6화소) 이 빠짐. 남쪽은 짧은 겹이 약하다(턱이 톱니로 읽히지 않게)."""
-    a = vnoise(g, side * 13, 1821 + side, 16, AP); b = vnoise(g, side * 13 + 5, 1825 + side, 6, AP); c = vnoise(g, side * 13 + 9, 1829 + side, 3, AP)
-    v = (0.6 * a + 0.3 * b + 0.1 * c) if side == 2 else (0.45 * a + 0.35 * b + 0.2 * c)
-    return 1.0 + 2.0 * _stretch(v, 2.2)
+    """변(side)의 전역 깨짐 깊이(연속, 1..4): 긴 물결(32·16화소 격자 잡음 — 파장 40~60화소, 폭 최대 약 3화소) + 작은 이 빠짐(4·2화소).
+    남쪽은 작은 이 빠짐이 약하다(턱이 톱니로 읽히지 않게)."""
+    p1 = (h2(side, 1, 1891) % 628) / 100.0; p2 = (h2(side, 2, 1893) % 628) / 100.0
+    lw = 0.95 * math.sin(2 * math.pi * 2 * g / AP + p1) + 0.6 * math.sin(2 * math.pi * 3 * g / AP + p2)     # 파장 64·43화소 두 겹(주기 128 에 맞물림)
+    ch = 0.6 * vnoise(g, side * 13 + 9, 1895 + side, 4, AP) + 0.4 * vnoise(g, side * 13 + 11, 1897 + side, 2, AP) - 0.5
+    return max(1.0, min(4.0, 2.4 + lw + (0.5 if side == 2 else 1.1) * ch))
 
 
 def _ap_soil(m, gx0, gy0, xs, ys):
-    """칸 안 연속 좌표 (xs, ys)(0..16) 가 흙인가 — 이웃 없는 변은 전역 깊이로 깎고, 두 변이 다 빈(바깥) 모서리는
-    가장자리 깊이에 맞닿는 초타원(지수 2.6) + 전역 잡음 흔들림으로 깎는다 — 막다른 끝·외딴 칸이 반듯한 원·알약이 되지 않는다."""
+    """칸 안 연속 좌표 (xs, ys)(0..16) 가 흙인가 — 이웃 없는 변은 전역 깊이로 깎는다. 두 변이 다 빈(바깥) 모서리는 비스듬한 깨진 면(모깎기 폭 4~7, 기울기 칸마다 다름)으로,
+    막다른 끝·외딴 칸은 끝 변에 고르지 않은 물어뜯긴 자리 1~2곳 — 둥근 알약·동전·초타원 없음."""
     nN, nE, nS, nW = not m & N, not m & E, not m & Sb, not m & W
     gx, gy = gx0 + xs, gy0 + ys
     if nN and ys < ap_depth(0, gx): return True
     if nS and ys > 16 - ap_depth(2, gx): return True
     if nW and xs < ap_depth(3, gy): return True
     if nE and xs > 16 - ap_depth(1, gy): return True
-    for a, b, sx, sy in ((nN, nW, -1, -1), (nN, nE, 1, -1), (nS, nW, -1, 1), (nS, nE, 1, 1)):
-        if a and b and (xs - 8) * sx > 0 and (ys - 8) * sy > 0:
-            ry = 8 - ap_depth(0 if sy < 0 else 2, gx0 + 8)
-            rx = 8 - ap_depth(3 if sx < 0 else 1, gy0 + 8)
-            q = (abs(xs - 8) / rx) ** 2.6 + (abs(ys - 8) / ry) ** 2.6
-            if q > 1 + 0.5 * (vnoise(gx, gy, 1833, 5, AP) - 0.5) + 0.04: return True
+    for ci, (a, b, sx, sy) in enumerate(((nN, nW, -1, -1), (nN, nE, 1, -1), (nS, nW, -1, 1), (nS, nE, 1, 1))):
+        if a and b:
+            u = xs if sx < 0 else 16 - xs; v = ys if sy < 0 else 16 - ys
+            hh = h2(gx0 + ci * 31, gy0 + m * 7, 1901)
+            f = (4.5 + hh % 4 + (0.8 if sy > 0 else 0)) * (0.65 if nN + nE + nS + nW == 4 else 1)   # 모깎기 폭 4.5~8(외딴 칸은 줄인다)
+            ka = 0.7 + (hh >> 4) % 7 * 0.1                         # 기울기 0.7~1.3
+            if ka * u + (2.0 - ka) * v < f + (vnoise(gx, gy, 1903, 3, AP) - 0.5) * 1.6: return True
+    nmiss = nN + nE + nS + nW
+    if nmiss >= 3:                                            # 막다른 끝·외딴 칸: 끝 변에 물어뜯긴 자리
+        ends = [sd for sd, miss in ((0, nN), (1, nE), (2, nS), (3, nW)) if miss and (nmiss == 4 or not ((sd == 0 and nS) and (sd == 2 and nN)))]
+        if nmiss == 3: ends = [{0: 2, 1: 3, 2: 0, 3: 1}[[sd for sd, miss in ((0, nN), (1, nE), (2, nS), (3, nW)) if not miss][0]]]
+        hh = h2(gx0, gy0 + m, 1905)
+        sd = ends[hh % len(ends)]
+        for j in range(1 + (hh >> 3) % 2):
+            t = 4 + h2(gx0 + j, gy0, 1907 + m) % 8; rr = 1.6 + h2(gx0, gy0 + j, 1909) % 4 * 0.35
+            d = ap_depth(sd, (gx0 if sd in (0, 2) else gy0) + t)
+            cx, cy = {0: (t, d), 2: (t, 16 - d), 3: (d, t), 1: (16 - d, t)}[sd]
+            if (xs - cx) ** 2 + ((ys - cy) * 1.3 if sd in (0, 2) else (ys - cy)) ** 2 < rr * rr: return True
     return False
 
 
@@ -1003,14 +1013,11 @@ def _road_crack(v):
             for j, (i, dx, dy) in enumerate(((len(main) // 4, 0.5, 3.5), (len(main) // 2, 1.0, -3.5), (3 * len(main) // 4, 0.5, -4.0))):
                 x, y = main[i]; line((x, y), (x + dx, y + dy), 40 + j, 0.35)
             opens = [main[len(main) // 2 - 1]]
-        elif v == 1:                                      # Y 갈래 금: 아래에서 올라온 줄기가 가운데에서 둘로 갈라진다
-            j0 = (7.5, 7.5)
-            stem = line((5.0, 13.0), j0, 51, 0.2)
-            b1 = line(j0, (2.5, 2.5), 52, 0.2)
-            b2 = line(j0, (13.0, 4.5), 53, 0.2)
-            x, y = b1[len(b1) // 2]; line((x, y), (x - 0.5, y + 3.0), 54, 0.3)
-            x, y = b2[len(b2) // 2]; line((x, y), (x + 1.0, y + 3.5), 55, 0.3)
-            opens = [j0 and (int(j0[0]), int(j0[1]))]
+        elif v == 1:                                      # 비대칭 갈래 금(r52): 구불구불한 긴 줄기 하나 + 한쪽에만 짧은 가지 + 다른 쪽 더 짧은 잔가지
+            stem = line((3.0, 12.5), (12.5, 3.0), 57, 0.16)
+            x, y = stem[len(stem) * 3 // 10]; line((x, y), (x - 3.5, y - 2.0), 58, 0.3)
+            x, y = stem[len(stem) * 7 // 10]; line((x, y), (x + 2.0, y + 1.5), 59, 0.3)
+            opens = [stem[len(stem) // 2]]
         else:                                             # 거북등 금 조각: 들쭉날쭉한 다각형 넷이 맞붙은 그물(10×9 안팎)
             nodes = [(2.5, 6.0), (6.5, 3.0), (11.5, 3.5), (5.5, 8.0), (10.0, 8.5), (13.0, 11.0), (8.0, 12.5), (3.0, 12.0), (13.0, 6.5)]
             for k, (a_, b_) in enumerate(((0, 1), (1, 2), (0, 3), (1, 3), (2, 8), (8, 4), (3, 4), (4, 5), (3, 7), (4, 6), (5, 6), (7, 6))):
@@ -1023,12 +1030,16 @@ def _road_crack(v):
                 blk = [(x, y), (x + 1, y), (x, y + 1), (x + 1, y + 1)]
                 if all(b in pix for b in blk): del pix[min(blk, key=nb8)]
         for (x, y) in opens:                              # 벌어진 자리: 흙 알(dirt 1) + 아래 dirt 2
+            if v == 1: pix[(x + 1, y)] = K('dirt', 1)    # 비대칭 금은 줄기를 따라 두 화소(점 하나 «눈» 없음)
             pix[(x, y)] = K('dirt', 1)
             if (x, y + 1) not in pix and y + 1 <= 13: pix[(x, y + 1)] = K('dirt', 2)
         core = [p for p, col in pix.items() if col == CRACK]
         for p in core:                                    # 끝으로 갈수록 가늘어진다: 끝 화소는 옅은 짙은 단(3d4b51)
             if nb8(p) <= 1: pix[p] = AP_DARK
-        for (x, y) in core:                               # 깨진 금 아래 턱이 빛을 받는다(군데군데 7b7270 한 화소)
+        for (x, y) in (core if v == 1 else ()):           # 비대칭 금: 가로로 이은 두 화소 아래에만 밝은 턱 두 화소(외톨이 밝은 알 없음)
+            if pix.get((x, y)) == CRACK and pix.get((x + 1, y)) == CRACK and (x, y + 1) not in pix and (x + 1, y + 1) not in pix and y + 1 <= 13 and h2(x, y, 1861) % 2 == 0:
+                pix[(x, y + 1)] = K('asph', 6); pix[(x + 1, y + 1)] = K('asph', 6)
+        for (x, y) in (core if v != 1 else ()):           # 깨진 금 아래 턱이 빛을 받는다(군데군데 7b7270 한 화소)
             if pix.get((x, y)) == CRACK and (x, y + 1) not in pix and (x, y - 1) in pix or ((x - 1, y) in pix and (x + 1, y) in pix and (x, y + 1) not in pix):
                 if h2(x, y, 1859 + v) % 3 == 0 and y + 1 <= 13: pix[(x, y + 1)] = K('asph', 6)
         for (x, y), col in pix.items():
@@ -1037,57 +1048,153 @@ def _road_crack(v):
 
 
 def _pothole(v):
+    """포트홀(r52): 원 여럿을 합친 들쭉날쭉한 구멍 — 바닥이 길보다 어둡다(dirt 1 주, dirt 2 드묾), 먼(위) 안벽은 가장 짙게(dirt 0),
+    앞(아래) 안벽 한 줄만 밝은 흙(dirt 3). 바깥 앞·옆 가장자리는 군데군데 깨진 밝은 면(7b7270, 이어진 덩이로 — 톱니 없음), 둘레에 떨어진 조각 몇.
+    A 는 넓고(14화소) 납작한 하나, B 는 비스듬히 놓인 두 웅덩이가 좁은 목으로 이어진 꼴."""
     def draw(c):
-        cx, cy, rx, ry = (7.5, 7.6, 6.0, 4.3) if v == 0 else (7.6, 7.4, 4.8, 3.4)
+        if v == 0:
+            circ = ((6.0, 7.6, 3.6), (9.6, 8.3, 3.5), (3.6, 9.0, 2.2), (12.0, 7.4, 1.9), (7.8, 9.6, 2.6))
+            neck = ()
+        else:
+            circ = ((4.9, 5.9, 3.0), (10.4, 9.7, 3.3))
+            neck = ((4.9, 5.9), (10.4, 9.7))
         inside = set()
-        for y in range(16):
-            for x in range(16):
-                ang = math.atan2(y - cy, x - cx)
-                r = 1 + (0.12 if v == 0 else 0.17) * math.sin(3 * ang + v * 1.7 + 0.6) + 0.08 * math.sin(5 * ang + 0.9 + v * 2.3) + (h2(x, y, 1861 + v) % 3 - 1) * 0.06
-                e = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2
-                if v == 1: e = min(((x - 5.8) / 3.6) ** 2 + ((y - 6.4) / 2.7) ** 2, ((x - 9.6) / 3.4) ** 2 + ((y - 8.8) / 2.6) ** 2)   # 두 덩이가 이어진 길쭉한 깨진 자리
-                if e < r * r and 2 <= x <= 13 and 2 <= y <= 13: inside.add((x, y))
+        for y in range(1, 15):
+            for x in range(1, 15):
+                j = (h2(x // 2, y // 2, 1921 + v) % 3 - 1) * 0.22                  # 덩이 단위 흔들림(낱화소 톱니 없음)
+                if v == 0:                                      # A: 극좌표 들쭉날쭉 타원(고조파 셋) — 위 테도 굽이친다
+                    th = math.atan2(y - 8.0, x - 7.5)
+                    rr = 1 + 0.13 * math.sin(2 * th + 1.0) + 0.11 * math.sin(3 * th + 2.2) + 0.08 * math.sin(5 * th + 0.4)
+                    if ((x - 7.5) / 6.4) ** 2 + ((y - 8.0) / 3.9) ** 2 < (rr + j * 0.5) ** 2: inside.add((x, y))
+                elif any(((x - cx) / (r * 1.15)) ** 2 + ((y - cy) / (r * 0.85)) ** 2 < (1 + 0.16 * math.sin(3 * math.atan2(y - cy, x - cx) + cx) + 0.09 * math.sin(5 * math.atan2(y - cy, x - cx) + cy) + j * 0.4) ** 2
+                         for cx, cy, r in circ): inside.add((x, y))       # B: 들쭉날쭉 웅덩이 둘(극좌표 고조파 — 네모 꼴 없음)
+                elif neck:
+                    (ax, ay), (bx, by) = neck; t = max(0.0, min(1.0, ((x - ax) * (bx - ax) + (y - ay) * (by - ay)) / ((bx - ax) ** 2 + (by - ay) ** 2)))
+                    if (x - ax - t * (bx - ax)) ** 2 + (y - ay - t * (by - ay)) ** 2 < (1.15 + j) ** 2: inside.add((x, y))
+        B = blobs(16, 1923 + v, 2)
         for (x, y) in inside:
-            if (x, y - 1) not in inside: col = AP_DARK                            # 먼(위) 안벽 위 테: 깨진 아스팔트 단면(짙은 단)
-            elif (x, y - 2) not in inside: col = K('dirt', 0)                     # 안벽 그늘(가장 짙게)
-            elif (x, y - 3) not in inside: col = K('dirt', 1)
-            elif (x, y + 1) not in inside: col = K('dirt', 3) if h2(x, y, 1869 + v) % 2 else K('dirt', 2)   # 앞(아래) 가장자리 쪽 바닥만 밝다
-            else: col = K('dirt', 1) if h2(x, y, 1863 + v) % 3 == 0 else K('dirt', 2)  # 흙 바닥(젖은 듯 어둡게 섞임)
+            if (x, y - 1) not in inside: col = K('dirt', 0)                       # 먼 안벽 위(가장 짙게)
+            elif (x, y - 2) not in inside: col = K('dirt', 0) if hsh(*B[(x, y)][0], 1925) % 3 else K('dirt', 1)
+            elif (x, y + 1) not in inside: col = K('dirt', 3)                     # 앞 안벽: 밝은 흙 한 줄
+            else: col = K('dirt', 2) if hsh(*B[(x, y)][0], 1927 + v) % 6 == 0 else K('dirt', 1)   # 바닥: 길보다 어둡다
             c.P(x, y, col)
-        for (x, y) in inside:                              # 깨진 테: 앞(아래)·옆 가장자리 밖 한 화소가 밝은 깨진 면, 군데군데 이 빠짐(그대로 둔다)
-            for dx, dy in ((0, 1), (1, 0), (-1, 0)):
+        out = {}
+        for (x, y) in inside:
+            for dx, dy in ((0, 1), (1, 0), (-1, 0), (1, 1), (-1, 1)):
                 q = (x + dx, y + dy)
-                if q in inside or not (0 <= q[0] < 16 and 0 <= q[1] < 16): continue
-                if dy == 1 and h2(*q, 1865 + v) % 4: c.P(*q, K('asph', 6))
-                elif dx and y > cy and h2(*q, 1867 + v) % 2: c.P(*q, TAR_HI)
-        for (x, y) in (((3, 4), (12, 12), (13, 5)) if v == 0 else ((3, 10), (13, 5), (11, 12))):   # 떨어져 나온 아스팔트 조각·흙 알
-            if (x, y) not in inside: c.P(x, y, TAR_HI); c.P(x, y + 1, K('dirt', 1))
+                if q not in inside and 0 <= q[0] < 16 and 0 <= q[1] < 16 and q[1] >= y: out[q] = dy
+        for q, dy in out.items():                         # 앞·옆 깨진 면: 이어진 덩이로(가로 3화소 단위 잡음)
+            if vnoise(q[0], q[1], 1929 + v, 3, 16) > 0.45: c.P(*q, K('asph', 6) if dy else TAR_HI)
+        frags = ((2, 12), (13, 11), (12, 4), (3, 5)) if v == 0 else ((2, 9), (13, 6), (8, 13))
+        for (x, y) in frags:                              # 떨어져 나온 아스팔트 조각(2화소) + 그 밑 그늘
+            if (x, y) in inside or (x + 1, y) in inside: continue
+            c.P(x, y, TAR_HI); c.P(x + 1, y, K('asph', 6)); 
+            if y + 1 < 16 and (x, y + 1) not in inside: c.P(x, y + 1, K('dirt', 1))
     return draw
 
 
-def mark_sample(pid):
-    """덧그림 표본: 길 속 칸(네 이웃이 다 길 — 조합기가 얹는 자리)에 얹은 모습, 3×3 아스팔트 판 가운데 한 칸."""
+def mark_sample(pid, frozen=None):
+    """덧그림 표본: 길 속 칸(네 이웃이 다 길 — 조합기가 얹는 자리)에 얹은 모습, 3×3 아스팔트 판 가운데 한 칸.
+    frozen = tiledata/wasteland-ruins/_frozen/ 안 바탕 그림 이름 — 이미 관문을 통과한 덧그림(r51c 금 A·C)은 그때 아스팔트 바탕에 얹어 영수증 sha 를 지킨다."""
     lay = ['###', '###', '###']
     def mk(_=0):
-        return ap_board(lay, ((1, 1, pid),))
+        if not frozen: return ap_board(lay, ((1, 1, pid),))
+        from PIL import Image as _Im
+        a = np.array(_Im.open(os.path.join(OUT, '_frozen', frozen)).convert('RGBA'))
+        d = render(PIECES[pid]); op = d[..., 3] == 255
+        blk = a[16:32, 16:32]; blk[op] = d[op]
+        return a
     return mk
 
 
 for _v, _l in enumerate('abc'):
     piece('road-crack-' + _l, '길 금 ' + 'ABC'[_v], 1, 1, FLAT,
           en=['a long thin wandering dark grey-black crack with three short side branches and one dirt-filled opening, drawn as a transparent decal on old asphalt',
-              'a Y-shaped dark grey-black crack whose stem splits into two wandering branches, with a dirt-filled opening, drawn as a transparent decal on old asphalt',
+              'an asymmetric dark grey-black crack: one long wandering diagonal stem with a single short side branch on one side and a tiny spur on the other, a short dirt-filled opening along the stem and lit lips under its flatter stretches, drawn as a transparent decal on old asphalt',
               'a small patch of alligator cracking — a net of three or four small polygons outlined by dark grey-black cracks, one plate slightly lifted, drawn as a transparent decal on old asphalt'][_v],
           group='ground', tags=['아스팔트', '금', '덧그림'], desc='아스팔트 길 속 금 덧그림 — 조합기가 길 속 칸에 드물게 얹는다. 걷는다.',
-          sample=mark_sample('road-crack-' + _l))(_road_crack(_v))
+          sample=mark_sample('road-crack-' + _l, None if _v == 1 else 'asphalt-r51c-3x3.png'))(_road_crack(_v))
 
 for _v, _l in enumerate('ab'):
     piece('pothole-' + _l, '포트홀 ' + 'AB'[_v], 1, 1, FLAT,
-          en=['an irregular broken-asphalt pothole, seen from a 3/4 top-down view: the far inner wall shows the dark asphalt edge and a shadow, the bottom is dirt, the near rim is a chipped lighter broken edge, with a few loose asphalt chips around it; transparent decal on old asphalt',
-              'a smaller irregular broken-asphalt pothole with a dirt bottom, a shadowed far inner wall, a chipped lighter near rim, a short crack running out of it and a couple of loose chips; transparent decal on old asphalt'][_v],
+          en=['a wide irregular broken-asphalt pothole, about 14 px across, seen from a 3/4 top-down view: its dirt floor is darker than the road, the far inner wall is the darkest shadow, only a thin strip of lit earth shows on the near inner wall, the near and side rims are broken lighter asphalt edges, and a few loose asphalt fragments lie around it; transparent decal on old asphalt',
+              'a pothole made of two small eroded basins joined by a narrow neck, lying diagonally, with dark dirt floors darker than the road, shadowed far walls, a thin lit near inner wall, broken lighter near rims and a couple of loose fragments; transparent decal on old asphalt'][_v],
           group='ground', tags=['아스팔트', '포트홀', '덧그림'], desc='아스팔트 길 속 팬 구멍 덧그림 — 조합기가 길 속 칸에 드물게 얹는다. 걷는다.',
           sample=mark_sample('pothole-' + _l))(_pothole(_v))
 
+
+
+# ------------------------------------------------------------------ 안쪽 모서리 덧그림(r52): asphalt-in-ne/nw/se/sw — 조합기가 길 칸의 두 이웃(예: 북·동)이 길인데
+# 그 사이 대각(북동)이 흙일 때 그 칸 위층에 얹는다. 4방 마스크가 못 그리는 T·十·굽이 자리의 오목한 귀를 부드럽게 깨진 흙 한 입으로 메운다.
+def _inner_corner(cn):
+    """칸의 cn 귀에 흙 한 입(반지름 3~5, 극좌표 흔들림 — 반듯한 사분원 아님) + 둘레 처리: 흙이 위(북)에 있으면 아래 길 화소가 깨진 밝은 면,
+    흙이 아래(남)에 있으면 위 길 화소가 마른 흙빛 턱(dirt 1)·그 밑 흙 그늘, 옆은 군데군데 밝은 조각. 흙 쪽에 아스팔트 부스러기 둘, 길 쪽에 흙 알 하나. 그 밖은 투명."""
+    sx = 1 if 'e' in cn else -1; sy = -1 if cn[0] == 'n' else 1
+    px0 = 16.0 if sx > 0 else 0.0; py0 = 0.0 if sy < 0 else 16.0
+    seed = {'ne': 1, 'nw': 2, 'se': 3, 'sw': 4}[cn]
+    def draw(c):
+        soil = set()
+        for y in range(16):
+            for x in range(16):
+                dx, dy = x + 0.5 - px0, y + 0.5 - py0
+                th = math.atan2(abs(dy), abs(dx))
+                R = 4.3 + 0.9 * math.sin(2 * th * 2 + seed) + 0.5 * math.sin(5 * th + seed * 1.7) + (h2(x // 2, y // 2, 1941 + seed) % 3 - 1) * 0.3
+                if dx * dx + dy * dy < R * R: soil.add((x, y))
+        S = lambda x, y: (x, y) in soil
+        for (x, y) in soil:
+            c.P(x, y, K('dirt', 2) if (sy < 0 and not S(x, y + 1) and y + 1 < 16) else dirt_col(dirt_base(x, y)))
+        for y in range(16):
+            for x in range(16):
+                if S(x, y): continue
+                if S(x, y - 1) and h2(x, y, 1943 + seed) % 5: c.P(x, y, K('asph', 6) if h2(x, y, 1945) % 4 else K('conc', 4))   # 흙이 위: 깨진 면이 빛을 받는다
+                elif S(x, y + 1):                                   # 흙이 아래: 턱 + 흙 그늘
+                    c.P(x, y, K('dirt', 1))
+                    c.P(x, y + 1, K('dirt', 2) if h2(x, y, 1947) % 3 else K('dirt', 0))
+                elif (S(x - 1, y) or S(x + 1, y)) and h2(x, y, 1949 + seed) % 3 == 0: c.P(x, y, TAR_HI)
+        ins = sorted(soil, key=lambda p: (abs(p[0] + 0.5 - px0) + abs(p[1] + 0.5 - py0)))
+        for k, (x, y) in enumerate(ins[:: max(1, len(ins) // 3)][:2]):   # 흙 위 아스팔트 부스러기
+            c.P(x, y, TAR_HI)
+        ex = [(x, y) for (x, y) in soil if not S(x - sx, y) or not S(x, y - sy)]
+        if ex:
+            x, y = ex[len(ex) // 2]; q = (x - 2 * sx, y - 2 * sy)
+            if 0 <= q[0] < 16 and 0 <= q[1] < 16 and not S(*q): c.P(*q, K('dirt', 1))       # 길 쪽에 튄 흙 알
+    return draw
+
+
+def corner_board(lay):
+    """조합기 규칙 그대로 귀 덧그림 자리를 고른다(첫 맞는 귀 하나: ne → nw → se → sw). 판 밖은 흙으로 본다."""
+    H, Wd = len(lay), len(lay[0])
+    on = lambda x, y: 0 <= x < Wd and 0 <= y < H and lay[y][x] == '#'
+    out = []
+    for y in range(H):
+        for x in range(Wd):
+            if not on(x, y): continue
+            t = 'ne' if on(x, y - 1) and on(x + 1, y) and not on(x + 1, y - 1) else 'nw' if on(x, y - 1) and on(x - 1, y) and not on(x - 1, y - 1) \
+                else 'se' if on(x, y + 1) and on(x + 1, y) and not on(x + 1, y + 1) else 'sw' if on(x, y + 1) and on(x - 1, y) and not on(x - 1, y + 1) else None
+            if t: out.append((x, y, 'asphalt-in-' + t))
+    return out
+
+
+CORNER_LAYOUTS = {                                         # 귀 하나만 생기는 굽이 판(2칸 폭 길) — 관문 그림
+    'ne': ['......', '.##...', '.##...', '.#####', '.#####', '......'],
+    'nw': ['......', '...##.', '...##.', '#####.', '#####.', '......'],
+    'se': ['......', '.#####', '.#####', '.##...', '.##...', '......'],
+    'sw': ['......', '#####.', '#####.', '...##.', '...##.', '......'],
+}
+
+
+def corner_sample(cn):
+    def mk(_=0):
+        lay = CORNER_LAYOUTS[cn]
+        return ap_board(lay, tuple(d for d in corner_board(lay)))
+    return mk
+
+
+for _cn in ('ne', 'nw', 'se', 'sw'):
+    piece('asphalt-in-' + _cn, '아스팔트 안쪽 귀 ' + _cn.upper(), 1, 1, FLAT,
+          en=f'a soft chipped bite of dirt in the {"north" if _cn[0] == "n" else "south"}-{"east" if "e" in _cn else "west"} corner of an old asphalt road tile, rounding off the inside corner where two roads meet: an irregular quarter-blob of dirt about 4 px across with a broken lighter asphalt edge (or a dry dark ledge on its south side), a couple of loose asphalt crumbs on the dirt and a dirt fleck on the road; transparent elsewhere, shown on a bend of road',
+          group='ground', tags=['아스팔트', '모서리', '덧그림'], desc='아스팔트 안쪽 귀 덧그림 — 조합기가 두 이웃이 길이고 그 사이 대각이 흙인 길 칸 위층에 얹는다(T·十·굽이의 오목한 귀).',
+          sample=corner_sample(_cn))(_inner_corner(_cn))
 
 # asphalt-b/-c(패인 구멍·균열 낱칸)는 감독 결정으로 뺐다 — 속 변형은 asphalt 5·6번째 줄이 맡는다.
 
