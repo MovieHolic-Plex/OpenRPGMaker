@@ -147,9 +147,9 @@ function mark(taken: Uint8Array, W: number, H: number, b: Box): void {
 }
 
 /** 기준점 둘레(반경 CLUSTER)에서 가까운 순서로 자리 하나. */
-function nearestSlot(grid: Uint8Array, walk: Uint8Array, taken: Uint8Array, W: number, H: number, w: number, h: number, ax: number, ay: number, skip = 0): Box | null {
+function nearestSlot(grid: Uint8Array, walk: Uint8Array, taken: Uint8Array, W: number, H: number, w: number, h: number, ax: number, ay: number, skip = 0, radius = CLUSTER): Box | null {
   const found: Box[] = [];
-  for (let r = 0; r <= CLUSTER; r++) {
+  for (let r = 0; r <= radius; r++) {
     for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
       if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
       const b = { x: ax + dx - Math.floor(w / 2), y: ay + dy - Math.floor(h / 2), w, h };
@@ -492,7 +492,8 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
       const outside = quarter.yard?.outside?.includes(piece.id) ?? false;
       const b = !outside && plazaBox && quarter.yard?.pack === "corner"
         ? packSlot(ok, walk, taken, W, H, piece.size.w, piece.size.h, plazaBox, attempt, fromRight)
-        : nearestSlot(outside ? outsideOk : ok, walk, taken, W, H, piece.size.w, piece.size.h, anchor.x, anchor.y, attempt)
+        : nearestSlot(outside ? outsideOk : ok, walk, taken, W, H, piece.size.w, piece.size.h,
+          outside && plazaBox ? plazaBox.x + Math.floor(plazaBox.w / 2) : anchor.x, outside && plazaBox ? plazaBox.y + Math.floor(plazaBox.h / 2) : anchor.y, attempt, outside && plazaBox ? 20 : CLUSTER)
           // 마당 안 아무 자리에서 자라게 했더니 귀퉁이 기준점이면 반경 밖 빈 마당을 못 썼다 — 마당 안 남은 자리를 훑어 채운다.
           ?? (!outside && plazaBox && yardFreeAnchor ? packSlot(ok, walk, taken, W, H, piece.size.w, piece.size.h, plazaBox, attempt, fromRight) : null);
       if (!b) break;

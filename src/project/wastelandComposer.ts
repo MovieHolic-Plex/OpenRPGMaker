@@ -243,7 +243,8 @@ class Board {
   markKeep(x: number, y: number, w = 1, h = 1): void { for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) if (this.inb(x + dx, y + dy)) this.keep[this.idx(x + dx, y + dy)] = true; }
 }
 
-const DIRT = ["dirt-a", "dirt-b", "dirt-c", "dirt-d"];
+// dirt-a 는 r3 검수에서 떨어져 굽지 않는다 — 같은 바탕을 쓰는 dirt-b 가 주 땅이다.
+const DIRT = ["dirt-b", "dirt-c", "dirt-d"];
 /** 맵 하나당 상한(같은 차·더미가 서너 번 찍혀 «도장»으로 읽히던 r2 지적). */
 const CAPS: Record<string, number> = { "car-rust-h": 2, "car-rust-v": 2, "van-rust": 2, "scrap-heap": 3, "rubble-pile": 3, "water-tank": 2, "generator": 2, "solar-scrap": 3, "husk-tall": 3, "husk-a": 3, "husk-b": 3, "dead-tree": 4, "bush-wild": 4 };
 const SLAB = ["slab-a", "slab-b", "slab-c"];
@@ -251,7 +252,7 @@ const RUBBLE = ["rubble-a", "rubble-b", "rubble-c"];
 const WEEDS = ["weeds-a", "weeds-b", "weeds-c"];
 
 function fillDirt(b: Board): void {
-  for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) b.setLower(x, y, b.field(DIRT, x, y, [17, 1, 1, 1]));
+  for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) b.setLower(x, y, b.field(DIRT, x, y, [10, 3, 3]));
 }
 function fillSlab(b: Board, x0: number, y0: number, w: number, h: number): void {
   for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) {
@@ -295,6 +296,12 @@ function rowOf(b: Board, ids: readonly string[], x0: number, x1: number, footY: 
     }
   }
   return out;
+}
+
+/** 섞은 줄에서 같은 조각이 바로 이웃하지 않게(나란한 같은 건물 두 채가 도장으로 읽혔다). */
+function noRepeat(ids: string[]): string[] {
+  for (let i = 1; i < ids.length; i++) if (ids[i] === ids[i - 1]) { const j = ids.findIndex((v, k) => k > i && v !== ids[i]); if (j > 0) [ids[i], ids[j]] = [ids[j]!, ids[i]!]; }
+  return ids;
 }
 
 /** 빈 땅(사각형 안) 아무 데나 조각 n 개 — 서로 1칸 띄운다. */
@@ -522,13 +529,16 @@ function composeRuinedCity(b: Board): { areas: WlArea[]; spawn: Pt; road: boolea
   const areas: WlArea[] = [];
   fillDirt(b);
   const road = new Array<boolean>(Wd * Hd).fill(false);
-  const ys = [Math.floor(Hd * 0.3) + b.int(-1, 1), Math.floor(Hd * 0.72) + b.int(-1, 1)];
-  const xs = [Math.floor(Wd * 0.28) + b.int(-1, 1), Math.floor(Wd * 0.7) + b.int(-1, 1)];
+  // 길 짜임도 맵마다 다르게(r2: 두 맵이 같은 3×3 바둑판) — 가로 길 둘 위치를 크게 흔들고, 세로 길은 둘 또는 셋.
+  const ys = [Math.floor(Hd * 0.3) + b.int(-3, 2), Math.floor(Hd * 0.7) + b.int(-2, 3)];
+  const xs = b.int(0, 2) === 0
+    ? [Math.floor(Wd * 0.2) + b.int(-1, 1), Math.floor(Wd * 0.5) + b.int(-1, 1), Math.floor(Wd * 0.8) + b.int(-1, 1)]
+    : [Math.floor(Wd * 0.26) + b.int(-4, 3), Math.floor(Wd * 0.7) + b.int(-3, 4)];
   for (const y0 of ys) for (let y = y0; y < y0 + 3; y++) for (let x = 0; x < Wd; x++) road[b.idx(x, y)] = true;
   for (const x0 of xs) for (let y = 0; y < Hd; y++) for (let x = x0; x < x0 + 3; x++) road[b.idx(x, y)] = true;
   b.autotile("asphalt", road);
   const spawn = { x: 1, y: ys[0]! + 1 };
-  const must: Pt[] = [{ x: Wd - 2, y: ys[0]! + 1 }, { x: Wd - 2, y: ys[1]! + 1 }, { x: xs[0]! + 1, y: 1 }, { x: xs[1]! + 1, y: Hd - 2 }];
+  const must: Pt[] = [{ x: Wd - 2, y: ys[0]! + 1 }, { x: Wd - 2, y: ys[1]! + 1 }, { x: xs[0]! + 1, y: 1 }, { x: xs[xs.length - 1]! + 1, y: Hd - 2 }];
   // 보도 흙 1줄(길 둘레)은 비운다
   for (let y = 0; y < Hd; y++) for (let x = 0; x < Wd; x++) {
     if (road[b.idx(x, y)]) continue;
@@ -536,7 +546,7 @@ function composeRuinedCity(b: Board): { areas: WlArea[]; spawn: Pt; road: boolea
   }
   // 블록: 도로로 나뉜 사각형들
   const bandsY = [[0, ys[0]! - 2], [ys[0]! + 4, ys[1]! - 2], [ys[1]! + 4, Hd - 1]] as const;
-  const bandsX = [[0, xs[0]! - 1], [xs[0]! + 3, xs[1]! - 1], [xs[1]! + 3, Wd - 1]] as const;
+  const bandsX = [[0, xs[0]! - 1] as const, ...xs.slice(1).map((x, i) => [xs[i]! + 3, x - 1] as const), [xs[xs.length - 1]! + 3, Wd - 1] as const];
   let block = 0;
   // 블록마다 쓰임을 다르게: 빈 건물 줄·무너진 잔해 벌판·풀숲에 묻힌 터·생존자 야영·폐차장. 같은 블록이 바둑판으로 되풀이되지 않게.
   const themes = b.shuffle(["buildings", "buildings", "buildings", "collapsed", "overgrown", "camp", "lot", "buildings", "collapsed"] as const);
@@ -548,7 +558,7 @@ function composeRuinedCity(b: Board): { areas: WlArea[]; spawn: Pt; road: boolea
     if (theme === "buildings") {
       // 건물 터 판석은 건물 줄 뒤쪽 일부만(블록 전체를 판석으로 덮으면 바둑판처럼 보인다)
       if (bh >= 5) fillSlab(b, x0 + 1 + b.int(0, 2), Math.max(y0 + 1, y1 - 6), bw - 2 - b.int(0, 3), Math.min(bh - 1, 6));
-      const ids = b.shuffle(["husk-tall", "husk-a", "husk-b", "husk-a", "husk-tall", "wall-h"]).slice(0, b.int(2, 3));
+      const ids = noRepeat(b.shuffle(["husk-tall", "husk-a", "husk-b", "husk-a", "husk-tall", "wall-h"])).slice(0, b.int(2, 3));
       const placed = rowOf(b, ids, x0 + 1 + b.int(0, 2), x1 - 1, y1, spawn, must, [1, 3], areas, () => `무너진 건물 ${block}`);
       for (const p of placed) { const d = b.door(p.id, p.x, p.y); if (b.inb(d.x, d.y + 1)) b.markKeep(d.x, d.y + 1); }
       // 담쟁이 벽은 건물 옆구리에만 붙인다(빈 흙에 홀로 선 초록 덩이 금지)
