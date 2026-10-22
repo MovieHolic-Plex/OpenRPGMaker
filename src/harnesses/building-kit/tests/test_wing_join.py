@@ -340,6 +340,41 @@ CANDIDATES = {{item: {{k: (lambda item=item, k=k: (dot.Cv.of(H.compose(item, k))
         self.assertEqual(by['cottage.r7']['fails'], [])
         self.assertEqual(by['hall.r7']['fails'], [])
 
+    def test_drawer_draws_only_the_item_the_reused_round_lacks(self):
+        """reuseParts 판을 그릴 때 옛 판에 있는 항목은 빈 함수를 만들지 않는다 — 빈 함수가 옛 그림을 가리면 다시 그려야 한다."""
+        import drawer
+        old_sandbox = drawer.SANDBOX
+        drawer.SANDBOX = os.path.join(self.tmp, 'sandbox')
+        self.addCleanup(setattr, drawer, 'SANDBOX', old_sandbox)
+        self.assertEqual([i['id'] for i in drawer.draw_items(H.THEME, R7, 'A')], ['roof.gf.valley'])
+        name = drawer.func_name('roof.gf.valley', 'A')
+        prompts = []
+
+        def runner(cmd, prompt, cwd, timeout):
+            prompts.append(prompt)
+            path = os.path.join(cwd, 'round_module.py')
+            text = open(path, encoding='utf-8').read()
+            block = '\n'.join([drawer.BEGIN.format(name=name), f'def {name}():', '    import helpers as H',
+                               "    return dot.Cv.of(H.compose('roof.gf.valley', 'A')), {}", drawer.END.format(name=name)])
+            start = text.index(drawer.BEGIN.format(name=name))
+            end = text.index(drawer.END.format(name=name)) + len(drawer.END.format(name=name))
+            open(path, 'w', encoding='utf-8').write(text[:start] + block + text[end:])
+            return 0, 'drew', ''
+
+        self.assertEqual(drawer.run(H.THEME, R7, lines_=['A'], runner=runner, cmd=['fake']), 0)
+        self.assertIn(name, prompts[0])
+        self.assertNotIn(drawer.func_name('roof.hip', 'A'), prompts[0])
+        self.assertIn('roof.hip ← style-r5', prompts[0])
+        own = open(os.path.join(self.tmp, 'own-missing.py'), encoding='utf-8').read()
+        self.assertNotIn(drawer.func_name('roof.hip', 'A'), own)
+        mod = self.harness.round_module(H.THEME, R7)
+        self.assertNotIn('roof.gf.valley', mod.REUSED)
+        self.assertEqual(mod.REUSED['roof.hip']['A'], 'style-r5')
+        parts = {i: {'item': ITEMS[i], 'img': fns['A']()[0].img()} for i, fns in mod.CANDIDATES.items()}
+        by = {r['recipe']['id']: r for r in self.harness.assemble_all(H.THEME, parts, quiet=True, rid=R7)}
+        self.assertFalse(by['thouse.r7']['res'].get('needsDrawing'))
+        self.assertEqual(by['thouse.r7']['fails'], [])
+
 
 if __name__ == '__main__':
     unittest.main()

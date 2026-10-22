@@ -67,6 +67,41 @@ def keys_for(theme, rid, only_lines=None):
         return ls
     return [f'{ln}{n}' for ln in ls for n in range(1, CANDIDATES_PER_LINE + 1)]
 
+def reused_items(theme, rid, key):
+    """reuseParts 판에서 후보 키 key 의 그림을 옛 판(연쇄 포함)에서 가져오는 항목 {항목: 원본 판}. reuseParts 가 없으면 빈 dict.
+    이 판 모듈에 그 (항목, 키) 함수가 이미 있으면(다시 그린 것) 옛 판 것이 아니므로 넣지 않는다."""
+    rd = dot.seed(theme)['rounds'][rid]
+    reuse = rd.get('reuseParts')
+    if not reuse:
+        return {}
+    import harness  # 판 모듈 해석(reuseParts 연쇄)은 harness.round_module 하나가 정본이다
+    base = harness.round_module(theme, reuse)
+    own = harness.load_round(theme, rid) if os.path.exists(round_path(theme, rid)) else None
+    out = {}
+    for item in rd['items']:
+        if key not in (base.CANDIDATES.get(item) or {}):
+            continue
+        fn = ((own.CANDIDATES.get(item) or {}) if own else {}).get(key)
+        if fn is not None and not _is_stub(fn):
+            continue
+        out[item] = (getattr(base, 'REUSED', {}).get(item) or {}).get(key, reuse)
+    return out
+
+def _is_stub(fn):
+    try:
+        fn()
+    except NotImplementedError:
+        return True
+    except Exception:  # noqa: BLE001 — 깨진 그림도 이 판에서 그린 것이다(다시 그린다)
+        return False
+    return False
+
+def draw_items(theme, rid, key, seed=None):
+    """후보 키 key 가 이번 판에서 그릴 항목 — reuseParts 판은 옛 판에서 가져오지 못하는 항목만(다시 그리지 않는다)."""
+    seed = seed or dot.seed(theme)
+    reused = reused_items(theme, rid, key)
+    return [it for it in seed['items'] if it['id'] in seed['rounds'][rid]['items'] and it['id'] not in reused]
+
 def skeleton(theme, rid, seed):
     rd = seed['rounds'][rid]
     items = [it for it in seed['items'] if it['id'] in rd['items']]
@@ -93,8 +128,13 @@ def ensure_module(theme, rid):
     seed = dot.seed(theme)
     head, items, keys = skeleton(theme, rid, seed)
     text = open(path, encoding='utf-8').read() if os.path.exists(path) else head
+    # reuseParts 판: 옛 판에서 가져오는 (항목, 키)에는 빈 함수를 만들지 않는다 — 빈 함수가 옛 그림을 가린다(round_module 은 이 판 것이 이긴다)
+    drawn = {key: {it['id'] for it in draw_items(theme, rid, key, seed)} for key in keys}
+    have = {key: [it for it in items if it['id'] in drawn[key]] for key in keys}
     for it in items:
         for key in keys:
+            if it not in have[key]:
+                continue
             name = func_name(it['id'], key)
             if BEGIN.format(name=name) in text:
                 continue
@@ -103,7 +143,8 @@ def ensure_module(theme, rid):
                      f'    raise NotImplementedError({name!r} + " — 그리기 에이전트가 채운다")',
                      END.format(name=name), '', '']
             text = text.replace(CANDIDATES_HEAD, '\n'.join(block) + CANDIDATES_HEAD, 1) if CANDIDATES_HEAD in text else text + '\n'.join(block)
-    lines = [f'    {it["id"]!r}: {{' + ', '.join(f'{k!r}: {func_name(it["id"], k)}' for k in keys) + '},' for it in items]
+    lines = [f'    {it["id"]!r}: {{' + ', '.join(f'{k!r}: {func_name(it["id"], k)}' for k in keys if it in have[k]) + '},'
+             for it in items if any(it in have[k] for k in keys)]
     body = CANDIDATES_HEAD + '\n' + '\n'.join(lines) + '\n}\n'
     text = re.sub(r'CANDIDATES = \{.*?\n\}\n', body, text, flags=re.S) if CANDIDATES_HEAD in text else text + '\n' + body
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -300,6 +341,19 @@ def line_ramps(seed, line):
     return f"- 이 줄의 램프: {' · '.join(mats)}\n" if mats else ''
 
 
+def reuse_section(theme, rid, key):
+    reused = reused_items(theme, rid, key)
+    if not reused:
+        return ''
+    rows = '\n'.join(f'  - {item} ← {src}' for item, src in reused.items())
+    return f"""## 옛 판에서 그대로 가져오는 부품 — 그리지 않는다
+이 판은 reuseParts 판이다. 아래 항목은 옛 판의 {key} 그림을 화소 그대로 조립에 쓴다(해시·관문·검수도 그 그림).
+네가 그릴 항목은 이 부품들과 같은 색·결·윤곽으로 맞물려야 한다 — `python3 dry.py` 가 둘을 함께 조립해 preview/ 에 보여 준다.
+{rows}
+
+"""
+
+
 def brief(theme, rid, seed, key, items, line):
     names = ', '.join(func_name(it['id'], key) for it in items)
     return f"""# building-kit 그리기 — {seed['theme']['name']} · 판 {rid} · 후보 {key} (항목 {len(items)}개)
@@ -311,7 +365,7 @@ def brief(theme, rid, seed, key, items, line):
 ## 이번에 그릴 항목
 {item_sections(seed, items)}
 
-{projection_section(theme, rid, seed)}## 3/4 지붕 — 여기서 갈린다
+{reuse_section(theme, rid, key)}{projection_section(theme, rid, seed)}## 3/4 지붕 — 여기서 갈린다
 - 모임지붕(hip)을 3/4 탑뷰로 보면 위에서부터: ① 용마루가 위쪽 가까이 **짧고 밝은 선**으로 지나가고
   ② 그 아래 **큰 사면**이 면으로 보이며(2행 이상) 기와 줄이 가로로 흐르고 ③ 맨 아래 처마 띠는 더 어둡다.
   ④ 왼끝·오른끝 조각(각 2칸 폭) 안에 처마 모서리에서 용마루 끝으로 올라가는 **모임 사선**을 어두운 단으로 긋고
@@ -423,7 +477,10 @@ def sandbox_for(theme, rid, key):
 def draw_one(theme, rid, key, runner, cmd, timeout, effort):
     line = key[0]
     seed = dot.seed(theme)
-    items = [it for it in seed['items'] if it['id'] in seed['rounds'][rid]['items']]
+    items = draw_items(theme, rid, key, seed)
+    if not items:
+        return {'theme': theme, 'round': rid, 'key': key, 'exit': 0, 'changed': [], 'missing': [], 'skipped': True,
+                'sandbox': '', 'tail': ['그릴 항목 없음 — 전부 reuseParts']}
     sandbox = sandbox_for(theme, rid, key)
     text = brief(theme, rid, seed, key, items, line)
     (open(os.path.join(sandbox, 'BRIEF.md'), 'w', encoding='utf-8')).write(text)
@@ -455,9 +512,9 @@ def run(theme, rid, lines_=None, jobs=1, cmd=None, runner=None, timeout=None, ef
         if 'error' in r:
             print(f'  그리기 실패: {r["error"]}')
             continue
-        state = ('함수 갱신 ' + ','.join(r['changed'])) if r['changed'] else '변경 없음'
+        state = ('함수 갱신 ' + ','.join(r['changed'])) if r['changed'] else ('그릴 항목 없음(전부 reuseParts)' if r.get('skipped') else '변경 없음')
         if r['missing']:
             state += ' · 안 고침 ' + ','.join(r['missing'])
         print(f'  후보 {r["key"]:3} exit {r["exit"]} {state} · {r["sandbox"]}')
     print(f'{theme} {rid}: 후보 {len(results)}벌 그리기 → {os.path.relpath(path, REPO)}  (다음: gate → review → sheet)')
-    return 0 if all(r.get('exit') == 0 and r.get('changed') and not r.get('missing') for r in results) else 1
+    return 0 if all(r.get('skipped') or (r.get('exit') == 0 and r.get('changed') and not r.get('missing')) for r in results) else 1
