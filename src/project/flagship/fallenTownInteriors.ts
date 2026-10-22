@@ -91,17 +91,10 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       door: { x: 31, y: 31 }, mapId: "fs_apothecary", name: "아스텔 · 약방", bgm: "cc0-bgm-rtp-cln-001",
       // 가게 앞방 + 조제실 + 약재 광 + 지하 저장고 + 서재 + 부부 침실 — 부엌은 두지 않는다(집집마다 같은 부엌이 되풀이됐다, VQA r6).
       // 식료품 광·지하 저장고는 뺐다 — 집집마다 같은 광·저장고·부엌 묶음이 되풀이돼 「같은 저택」으로 읽혔다(VQA r11 major). 쉼터는 약재를 말리며 쉬는 작은 방.
-      layout: { rooms: [{ kind: "pharmacy_shop", w: 19, h: 9 }, { kind: "alchemy", w: 9, h: 7 }, { kind: "study" }, { kind: "master_bedroom" }, { kind: "rest" }], seed: 13, variant: 0, styleVariant: "A" },
-      dress: [["table:potion+flask", 12, 15], ["herb drying rack", 26, 15], ["basket:herb", 9, 17], ["basket:mushroom", 10, 17],
-        ["basket:potion+potionb+potiong", 13, 17],
-        // 가게 바닥 가운데가 비었다(VQA r7 minor) — 물약 진열대 하나와 약초 바구니를 더 둔다(문에서 계산대 가는 길은 비운다).
-        ["herb drying rack", 21, 14], ["basket:herb", 23, 16], ["basket:mushroom", 24, 16],
-        // 위 왼쪽 조제실이 빈 마루였다(VQA r16) — 약초 건조대·조제 탁자·약초 바구니.
-        ["herb drying rack", 13, 4], ["herb drying rack", 14, 4], ["table:potion+flask", 7, 5], ["basket:herb", 9, 5], ["basket:mushroom", 9, 6], ["book pile", 9, 4],
-        ["herb drying rack", 4, 7], ["basket:potion+potionb+potiong", 14, 7],
-        // 가게 아랫단·조제실 가운데 줄이 아직 빈 마루였다(VQA r17) — 진열 탁자·약초 걸이·바구니(문~계산대 길은 비운다).
-        ["herb drying rack", 27, 17], ["basket:herb", 24, 18],
-        ["basket:herb", 2, 6]],
+      // 가게 19×9·조제실 9×7·늘인 서재(16×8 원형)는 빈 마루가 화면 절반 가까이 남았다(VQA r24 major) — 바구니로 메우지 않고 벽을 당긴다.
+      // 방마다 원형 크기(가게 14×6·조제실 7×6·서재 8×7·부부 침실 8×7·쉼터 5×6·약재 광 5×5)로 줄이면 원형 가구가 방을 채운다.
+      layout: { rooms: [{ kind: "pharmacy_shop", w: 14, h: 6 }, { kind: "alchemy", w: 7, h: 6 }, { kind: "study", w: 8, h: 7 }, { kind: "master_bedroom", w: 8, h: 7 }, { kind: "rest", w: 5, h: 6 }, { kind: "storeroom", w: 5, h: 5 }], seed: 13, variant: 0, styleVariant: "A" },
+      dress: [],
       people: [
         {
           id: "ev_fs_apothecary", name: "약재상 오든", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 7], behindCounter: true,
@@ -133,13 +126,12 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       // 지하 저장고 대신 별 유물 진열실(천구의·운석 진열장) — 별지기 집만의 방(VQA r11 major).
       // 거실 8×6 배치는 들어서자마자 왼쪽 아래 방 사이 큰 어둠(7×4)이 보였다(VQA r22) — 거실을 12×6 으로 넓히면 다섯 방이 맞물리고
       // 남는 어둠은 오른쪽 아래 침실 밑 구석뿐이다.
-      layout: { rooms: [{ kind: "library", w: 18, h: 8 }, { kind: "study", w: 9, h: 7 }, { kind: "bedroom" }, { kind: "museum_relics" }, { kind: "living", w: 12, h: 6 }], seed: 21, variant: 0, styleVariant: "D" },
-      // 방마다 한 묶음: 서고(위 오른쪽) 별 지도 책상·천구의, 진열실(위 왼쪽) 천구의·두루마리, 서재(아래 왼쪽) 관측 책상·부엉이 횃대,
-      // 거실(아래 가운데) 찻상. 문(18,19)~벽난로 길(x17~19)은 비운다. 지구본·책 더미를 고르게 흩지 않는다(VQA r22).
-      dress: [["desk 2x2", 20, 6], ["chair N", 20, 8], ["orrery", 25, 6], ["book pile", 23, 8], ["scroll rack", 16, 8],
-        ["orrery", 3, 5], ["globe", 11, 6], ["scroll rack", 1, 7], ["wall map", 5, 1], ["picture", 9, 1],
-        ["desk 3x1", 3, 16], ["chair N", 4, 17], ["owl perch", 9, 17], ["book pile", 1, 17],
-        ["tea 2x2", 22, 16], ["chair E", 21, 16], ["chair W", 24, 16], ["orrery", 14, 16]],
+      // 서고 18×8·서재 9×7·거실 12×6 은 들어서자마자 타일 바닥이 화면 절반을 덮었다(VQA r24 major) — 벽을 당겨 원형 크기로 줄인다
+      // (서고 12×6·서재 6×5·침실 5×5·진열실 7×6·거실 10×5). 흩어 둔 지구본·책 더미 대신 방마다 원형 가구만 둔다.
+      layout: { rooms: [{ kind: "library", w: 12, h: 6 }, { kind: "study", w: 6, h: 5 }, { kind: "bedroom", w: 5, h: 5 }, { kind: "museum_relics", w: 7, h: 6 }, { kind: "living", w: 10, h: 5 }], seed: 21, variant: 0, styleVariant: "D" },
+      // 진열실(위 왼쪽, 바닥 x4~12·y3~6)은 무기고로 읽히는 투구·왕관 진열을 걷어 내면 비므로, 별지기 방의 쓰임인 큰 별 렌즈·별자리표·천체 모형을 둔다.
+      // 거실(아래 오른쪽, 바닥 x14~25·y9~14)은 벽난로 앞 안락의자뿐이라 아랫단이 비었다 — 찻상 하나(문 x18 길은 비운다).
+      dress: [["star lens", 8, 1], ["orrery", 5, 3], ["globe", 12, 5], ["tea 2x2", 21, 12], ["chair E", 20, 12], ["chair W", 23, 12]],
       people: [
         {
           id: "ev_fs_old_stargazer", name: "늙은 별지기 오스본", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 6],
@@ -208,8 +200,8 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       const metaX = (project.tilesets[im.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
       const drop = home.mapId === "fs_stargazer_home"
         // 진열실의 갑옷·투구·왕관·검 진열은 무기고·박물관으로 읽혔다(VQA r16) — 별 유물(천구의·별 지도)만 남긴다.
-        // 벽 진열장(투구·왕관이 든 유물 벽 진열장)도 무기고처럼 읽혔다(VQA r23) — 걷는다.
-        ? /^(나선 계단|마법진|망원경|검 유리 진열장|왕관 받침|받침대 위 고대 투구|청동 원형 방패 걸이|장신구 진열장|넓은 유물 벽 진열장|유물 벽 진열장)/
+        // 벽 진열장(투구·왕관이 든 유물 벽 진열장)도 무기고처럼 읽혔다(VQA r23) — 걷는다. 망원경은 별지기 서재의 쓰임이라 남긴다.
+        ? /^(나선 계단|마법진|검 유리 진열장|왕관 받침|받침대 위 고대 투구|청동 원형 방패 걸이|장신구 진열장|넓은 유물 벽 진열장|유물 벽 진열장)/
         // 약방 조제실(위 왼쪽)의 부엉이 횃대·천체 모형·마법서 받침은 마법사 서재 물건이라 흩어진 잡동사니로 읽혔다(VQA r23).
         : home.mapId === "fs_apothecary" ? /^(나선 계단|마법진|망원경|부엉이 횃대|천체 모형|마법서 받침)/
         : /^(나선 계단|마법진|망원경)/;
@@ -235,9 +227,11 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
           after.upperOverlayTiles?.forEach((t, i) => { if (snap.upperOverlay && t !== snap.upperOverlay[i]) changed.push(i); });
           // 이미 놓인 가구 위에 겹쳐 찍으면 가구가 반쯤 지워진 덩이가 됐다 — 비어 있던 바닥 칸에만.
           // 벽 걸이(벽 지도 등)는 벽면 칸에만 — 바닥 가구는 바닥 칸에만.
-          const onWall = /^(wall map|picture|star chart)$/.test(kit);
-          const onFloor = changed.every((i) => (metaD[after.lowerTiles[i]!]?.label ?? "").startsWith(onWall ? "벽면" : "바닥")
-            && (snap.upper[i] ?? -1) < 0 && (snap.upperOverlay?.[i] ?? -1) < 0);
+          const onWall = /^(wall map|picture)$/.test(kit);
+          // 키 큰 별 기물(별 렌즈·별자리표)은 윗부분이 북쪽 벽면을 덮고 발은 바닥에 선다.
+          const tall = /^(star lens|star chart)$/.test(kit);
+          const onFloor = changed.every((i) => { const lab = metaD[after.lowerTiles[i]!]?.label ?? ""; return (tall ? lab.startsWith("벽면") || lab.startsWith("바닥") : lab.startsWith(onWall ? "벽면" : "바닥"))
+            && (snap.upper[i] ?? -1) < 0 && (snap.upperOverlay?.[i] ?? -1) < 0; });
           if (onFloor) Object.assign(project, ctx.project);
           else {
             after.upperTiles.splice(0, after.upperTiles.length, ...snap.upper);
