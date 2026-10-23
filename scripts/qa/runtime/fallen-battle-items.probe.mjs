@@ -148,9 +148,23 @@ try {
     await dump("after teleport");
     for (const d of ["up", "up", "right", "right", "down"]) { await page.evaluate((x) => window.__oprnDebug.playerRoute([{ kind: "move", dir: x }]), d); await page.waitForTimeout(700); await dump("after " + d + " battle=" + (await inBattle(page))); }
     await shot(page, "diag");
+  } else if (phase === "stepcheck") {
+    // 한 번의 route move 가 몇 칸 가는지 — 걸음 수 측정이 실제 조우 판정 횟수와 맞는지 본다.
+    const page = await boot(fixture({ rate: 0.001 }));
+    await toForest(page);
+    const out2 = [];
+    for (const d of ["up", "right", "down", "left", "up", "right"]) {
+      const a = await page.evaluate(() => { const s = window.__oprnDebug.readState(); return [s.x, s.y]; });
+      await page.evaluate((x) => window.__oprnDebug.playerRoute([{ kind: "move", dir: x }]), d);
+      await page.waitForTimeout(1500);
+      const b = await page.evaluate(() => { const s = window.__oprnDebug.readState(); return [s.x, s.y]; });
+      out2.push({ d, a, b });
+    }
+    results.stepcheck = out2; console.log("STEPCHECK", JSON.stringify(out2));
+    await page.close();
   } else if (phase === "steps") {
     const N = Number(process.env.N ?? 14);
-    for (const rate of [12, 1.6]) {
+    for (const rate of (process.env.RATES ?? "12,1.6").split(",").map((r) => (r === "baked" ? undefined : Number(r)))) {
       const page = await boot(fixture({ rate }));
       await toForest(page);
       const counts = [];
