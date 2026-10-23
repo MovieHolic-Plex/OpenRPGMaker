@@ -214,7 +214,10 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   const task = env.request.task;
   const run = createBuildRun(env.ctx);
 
-  const finishPlace = async (toolCallId: string, verb: string, args: unknown, spec: PlaceSpec, builderId: string, built: PlaceBuildResult, rounds: number): Promise<PiToolExecResult> => {
+  const problemCount = (seen: Seen | undefined, mapIds: readonly string[]) => !seen ? Infinity
+    : seen.checks.filter((c) => !c.ok && mapIds.includes(c.mapId)).length + seen.critics.filter((v) => mapIds.includes(v.mapId)).reduce((n, v) => n + v.majors.length, 0);
+  const finishPlace = async (toolCallId: string, verb: string, args: unknown, spec: PlaceSpec, builderId: string, built: PlaceBuildResult, rounds: number,
+    before?: { project: typeof env.ctx.project; record: PlaceRecord; seen: Map<string, Seen> }): Promise<PiToolExecResult> => {
     let result = built;
     recordWrite(env, run, toolCallId, verb, args, result.ok, result.summary, { mapIds: result.mapIds });
     for (const m of result.missingArt) session.missingArt.add(m);
@@ -231,6 +234,21 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     await env.checkpoint(verb);
     const seen = await see(env, session, task, spec.type, result.mapIds, result.entrance, true);
     for (const mapId of result.mapIds) session.seen.set(mapId, seen);
+    // 고친 결과가 앞보다 나쁘면(기계 실패 + 비평 major 가 늘면) 앞 상태로 되돌린다 — 천문대 고치기가 방을 하나 더 붙여 맨바닥 52% 가 됐다(2026-10-23 v2 실조수).
+    if (before) {
+      const oldIds = before.record.result.mapIds;
+      const was = problemCount(before.seen.get(oldIds[0]!), oldIds), now = problemCount(seen, result.mapIds);
+      if (now > was) {
+        env.ctx.project = before.project;
+        for (const mapId of result.mapIds) { session.places.delete(mapId); session.seen.delete(mapId); }
+        const kept: PlaceRecord = { ...before.record, rounds };
+        for (const mapId of oldIds) { session.places.set(mapId, kept); const old = before.seen.get(mapId); if (old) session.seen.set(mapId, old); }
+        env.record({ toolCallId, name: verb, args, result: { ok: false, summary: `고친 결과가 더 나빠(문제 ${was}→${now}) 되돌렸다` } });
+        await env.checkpoint(`${verb}-revert`);
+        return withImages({ ok: false, reverted: true, summary: `고친 결과의 문제(${now})가 앞(${was})보다 많아 앞 상태로 되돌렸다 — 이 패치는 버렸다.`, triedResult: { ...seenPayload(seen), summary: result.summary.slice(0, 300) }, round: rounds,
+          next: rounds >= V2_MAX_REPAIR_ROUNDS ? "고치기 상한 — 남은 문제를 보고한다." : "다른 패치(더 작은 변화)를 한 번 더 시도하거나, 남은 문제를 보고한다." }, before.seen.get(oldIds[0]!));
+      }
+    }
     return withImages({ ok: true, mapIds: result.mapIds, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, ...seenPayload(seen), round: rounds, next: nextStep(seen, rounds) }, seen);
   };
 
@@ -301,8 +319,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const onlyAnchors = floor === 1 && !!patch.addAnchors?.length && !patch.set && !patch.addZones?.length && !patch.removeZones?.length && !patch.addFeatures?.length && !patch.removeFeatures?.length && patch.variant === undefined && patch.seed === undefined && patch.dressing === undefined;
       const spec = applyPatch(record.spec, patch, floor);
       env.emit({ type: "execution_status", name: "v2.repair", ok: true, summary: `${spec.name} 고치는 중(${record.rounds + 1}바퀴)` });
+      const before = { project: env.ctx.project, record, seen: new Map(record.result.mapIds.map((m) => [m, session.seen.get(m)!] as const).filter(([, v]) => !!v)) };
       const result = onlyAnchors && builder.id === interiorBuilder.id ? interiorAddAnchors(run, record, patch.addAnchors!) : builder.build(run, spec, record);
-      return finishPlace(id, "edit_place", params, spec, builder.id, result, record.rounds + 1);
+      return finishPlace(id, "edit_place", params, spec, builder.id, result, record.rounds + 1, before.seen.size ? before : undefined);
     },
   };
 

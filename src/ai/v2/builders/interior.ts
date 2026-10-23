@@ -230,7 +230,7 @@ const SETS: readonly [RegExp, readonly Obj[]][] = [
 /** 빈 바닥 덩이(1배 2×2 이상 맨바닥)를 그 방의 쓰임 한 벌로 메운다. 측정은 v1 의 보정된 자(bareFloor.ts). */
 function fillBare(run: BuildRun, spec: HandInteriorSpec, args: Record<string, unknown>, rb: Rebuild, roomKinds: Map<string, string>, limit: number): { args: Record<string, unknown>; rb: Rebuild; filled: number } {
   let filled = 0;
-  for (let round = 0; round < 6; round++) {
+  for (let round = 0; round < 12; round++) {
     const map = run.ctx.project.maps[String(args.mapId)];
     if (!map) break;
     const bare = measureInteriorBareFloor(run.ctx.project, map);
