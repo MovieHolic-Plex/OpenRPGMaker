@@ -1,3 +1,4 @@
+import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { BATTLE_SCENERY_CATALOG, BATTLE_SCENERY_LAYERS, resolveSceneryBiome, type BattleSceneryBiome } from "@/assets/battleSceneryCatalog";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
@@ -24,7 +25,7 @@ function loadSceneryLayers(biome: BattleSceneryBiome): Promise<boolean> {
     const timer = window.setTimeout(() => resolve(false), LAYER_LOAD_TIMEOUT_MS);
     image.onload = () => { void image.decode().catch(() => undefined).then(() => { window.clearTimeout(timer); resolve(true); }); };
     image.onerror = () => { window.clearTimeout(timer); resolve(false); };
-    image.src = `/${entry.layers[layer]}`;
+    image.src = withInlineAsset(`/${entry.layers[layer]}`);
   }))).then((results) => {
     const ok = results.every(Boolean);
     if (ok) readyBiomes.add(biome);
@@ -133,7 +134,7 @@ export function syncBattleScenery(backdrop: HTMLElement, project: Project, resou
       for (const name of BATTLE_SCENERY_LAYERS) {
         const node = document.createElement("div");
         node.className = `battle-scenery-layer battle-scenery-${name}`;
-        node.style.backgroundImage = `url("/${entry.layers[name]}")`;
+        node.style.backgroundImage = `url("${withInlineAsset(`/${entry.layers[name]}`)}")`;
         camera.insertBefore(node, canvas);
       }
       camera.dataset.layers = "ready";

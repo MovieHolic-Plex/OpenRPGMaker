@@ -1,3 +1,4 @@
+import { withInlineAsset } from "@/assets/inlineAssetStore";
 import type { BattleSnapshot } from '@/battle/types';
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import { resolveEventPage } from '@/project/io/pageResolution';
@@ -36,7 +37,7 @@ function authoredTrainerPair(project: Project, troopId: string): TrainerIntroPai
 
 /** 번들 인물 그림(public/assets/battle-trainers/<role>/{front,back,throw}.png) 의 role id 꼴. 업로드 그림 id 가 먼저다. */
 const BUNDLED_ROLE = /^[a-z][a-z0-9_]*$/u;
-const bundledTrainerUrl = (role: string, file: 'front' | 'back' | 'throw' | 'orb'): string => `/assets/battle-trainers/${role}/${file}.png`;
+const bundledTrainerUrl = (role: string, file: 'front' | 'back' | 'throw' | 'orb'): string => withInlineAsset(`/assets/battle-trainers/${role}/${file}.png`);
 
 function trainerPicture(project: Project, id: string, bundledFile: 'front' | 'back' = 'front'): TrainerPicture | null {
   const asset = project.assets.uploaded[id];

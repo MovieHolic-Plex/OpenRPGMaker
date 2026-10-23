@@ -589,6 +589,19 @@ const MONSTER_SOUND: Readonly<Record<string, string>> = {
   mon_demon_aura: "easyrpg-sound-darkness5", mon_judgment_sky: "easyrpg-sound-darkness4",
 };
 
+/**
+ * Every sound id the retro timeline can play. The ids live only in these source tables, never in project
+ * data, so the web export reads this list to ship them (webExportAssets) — otherwise exported retro battles 404.
+ */
+export function retroTimelineSoundIds(): readonly string[] {
+  return [...new Set([
+    // Literals used inline in the builders below (scripts/check-runtime-assets.mts fails if one is missing here).
+    RETRO_SOUND_FLASH, "easyrpg-sound-magic2", "easyrpg-sound-breath",
+    ...Object.values(SOUND), ...Object.values(EXTENSION_SOUND), ...KEY_SOUND.map(([, sound]) => sound),
+    ...Object.values(CAST_SOUND), ...Object.values(MONSTER_SOUND),
+  ])].sort();
+}
+
 /** 몬스터 스킬의 레이어 키 → 효과음. 표에 없으면 아군과 같은 낱말 규칙. */
 export function retroMonsterSoundForLayer(key: string): string {
   return MONSTER_SOUND[key] ?? retroSoundForLayer(key);

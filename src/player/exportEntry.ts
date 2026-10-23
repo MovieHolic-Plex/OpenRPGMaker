@@ -24,6 +24,7 @@ import { installDesktopShellBridge, type DesktopShellBootConfig } from "@/player
 import { stopAllAudio } from "@/player/audio";
 import { registerExportAssetBase } from "@/assets/inlineAssetStore";
 import { exportAssetBaseFor } from "@/player/exportAssetBase";
+import { rebaseRuntimeCssAssetUrls } from "@/player/rebaseCssAssetUrls";
 import { installExportUploadedAssets } from './exportUploadedAssets';
 import { repairFaceMatches } from "@/project/faceMatchRepair";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
@@ -62,6 +63,7 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   const probeAssets = boot.qaInstrumentation === true && boot.actionCombatProbe !== undefined;
   const assetBase = exportAssetBaseFor(document.baseURI, { editorProbe: probeAssets });
   registerExportAssetBase(assetBase);
+  rebaseRuntimeCssAssetUrls(assetBase);
   const rawDemoParam = new URLSearchParams(window.location.search).get("demo");
   const demoParam = rawDemoParam === "fallen-star" ? "chrono-bell" : rawDemoParam === "astra-horizon" ? "emerald-crown" : rawDemoParam;
   if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season" || demoParam === "first-love") {

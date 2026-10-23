@@ -85,6 +85,11 @@ jobs:
       - name: 호스티드 러너 계약
         run: npm run gates:self-hosted
 
+      # 플레이어·웹 내보내기가 선언한 런타임 에셋이 public/ 에 실제로 있는지(저작권 정리로 지운 그림을
+      # 계속 선언해 모든 Web ZIP 내보내기가 실패했던 회귀를 막는다). 브라우저·빌드 없이 수십 초.
+      - name: 런타임 에셋 존재
+        run: npm run check:runtime-assets
+
       # 에디터↔플레이어 데이터 왕복 계약. 9파일이라 바운드가 확실하다.
       # 잡은 러너마다 격리되므로 호스트 락은 없다.
       - name: parity 스위트
