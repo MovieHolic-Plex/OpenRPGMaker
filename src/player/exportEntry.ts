@@ -27,6 +27,7 @@ import { exportAssetBaseFor } from "@/player/exportAssetBase";
 import { rebaseRuntimeCssAssetUrls } from "@/player/rebaseCssAssetUrls";
 import { installExportUploadedAssets } from './exportUploadedAssets';
 import { repairFaceMatches } from "@/project/faceMatchRepair";
+import { installFocusGuard } from "@/player/focusGuard";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import type { ActionCombatRuntimeResult } from "@/testing/actionCombatProof";
 
@@ -54,6 +55,7 @@ function readBootConfig(): OpenRpgBootConfig {
   return config ?? {};
 }
 
+installFocusGuard(app);
 void bootExportedPlayer(app);
 
 async function bootExportedPlayer(root: HTMLElement): Promise<void> {
