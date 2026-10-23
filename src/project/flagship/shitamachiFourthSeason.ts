@@ -348,11 +348,31 @@ export function createShitamachiFourthSeasonFlagshipDemo(): FlagshipDemoBuildRes
   currentHub.events.push(seoyeonEvent);
 
   // East of spawn: Jiho & Yuna Festival Confession Stage (multi-route confession -> Ending)
+  // 등롱 점등(sw_shitamachi_lantern_lit) 전에는 무대가 열리지 않는다 — 예전에는 조건 없는 페이지가 스폰
+  // 바로 옆에 있어 새 게임 첫 프레임부터 고백 선택지(엔딩 직행)가 열렸다(2026-10-23 필드 QA F2).
+  // 잠긴 페이지는 안내만 하고, 점등 뒤에 조건 페이지(마지막 일치 우선)가 무대 그림과 선택지를 낸다.
   const stagePos = { x: spawn.x + 1, y: spawn.y };
+  const confessionLockedPage: EventPage = {
+    id: "ev_shitamachi_confession_locked",
+    name: "문화제 준비 중",
+    conditions: [],
+    graphic: { transparent: true },
+    movement: { type: "fixed", speed: 3, frequency: 3 },
+    priority: "same",
+    overlapForbidden: true,
+    trigger: { kind: "action" },
+    commands: [
+      {
+        kind: "text",
+        speaker: "지호",
+        body: "아직 아케이드 등롱이 켜지지 않았어. 서연이랑 문화제 준비를 먼저 마치자!",
+      },
+    ],
+  };
   const confessionPage: EventPage = {
     id: "ev_shitamachi_confession_p1",
     name: "문화제 고백 무대",
-    conditions: [],
+    conditions: [{ kind: "switch", switchId: "sw_shitamachi_lantern_lit", value: true }],
     graphic: {
       sprite: { type: "bundled", id: "tex_oprn_charset_modern2" },
       direction: "left",
@@ -421,7 +441,7 @@ export function createShitamachiFourthSeasonFlagshipDemo(): FlagshipDemoBuildRes
     y: stagePos.y,
     trigger: { kind: "action" },
     commands: [],
-    pages: [confessionPage],
+    pages: [confessionLockedPage, confessionPage],
   });
 
   // Apply 1024x768 dual-fullbody-veil romance defaults

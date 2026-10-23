@@ -94,6 +94,13 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   // Queue this final landing, not the requested tile or the source map's position overlay.
   const destinationMap = runtimeMap(targetMap, scene.session);
   const destination = nearestPassableTile(project, destinationMap, request.x, request.y);
+  // 저작한 도착 칸이 통행 불가일 때만 가까운 칸으로 물러선다(저작 검사 checkMapGraph 는 그 도착을
+  // blocker `transfer-impassable` 로 이미 잡는다). 다만 조용히 옮기지는 않는다 — 예전에는 나무 밑동이
+  // 도착 칸을 덮은 데모에서 (15,20)→(14,19) 로 아무 흔적 없이 밀려, 플레이어와 저자 모두 원인을 몰랐다
+  // (2026-10-23 필드 QA F1). 진단 채널이 켜져 있으면 옮긴 사실을 알린다.
+  if ((destination.x !== request.x || destination.y !== request.y) && diagnosticObserved("transfer")) {
+    publishDiagnostic({ category: "transfer", phase: "relocated", requested: { x: request.x, y: request.y }, landing: destination });
+  }
   const body = resolvePlayerBody(project, scene.session);
   const landing = resolveFootprintLanding(
     project, destinationMap, scene.session,
