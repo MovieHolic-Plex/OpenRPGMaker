@@ -201,7 +201,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   let lastBootRequest: PlayBootRequest = { safeMode: options.safeMode === true };
   // teardownPlayer 이후에 호스트 버튼/F5 가 들어와도 새 런(타이머·리스너)을 만들지 않는다.
   let shellActive = true;
-  const surfaceScaleFor = (project: Project): PlaySurfaceScaleMode => options.surfaceScaleMode ?? resolvePlaySurfaceScaleMode(project);
+  // 터치 기기는 작은 화면을 꽉 채우는 것이 우선이라 정수 배율 대신 맞춤(fit)을 쓴다.
+  const surfaceScaleFor = (project: Project): PlaySurfaceScaleMode => options.surfaceScaleMode ?? (options.touchInput === true ? "fit" : resolvePlaySurfaceScaleMode(project));
   const emeraldStyle = options.pointerInput === true;
   // 터치 기기에서는 모든 게임이 탭으로 메뉴·대사·전투를 연다. 키보드 전용 계약은 데스크톱에서만 남는다.
   const pointerInput = emeraldStyle || options.touchInput === true;
