@@ -111,7 +111,8 @@
     "object-gate:sync": "node scripts/object-gate-sync.mjs",
     "store": "vite-node --script scripts/store/agentStore.mts --",
     "store:publish-buildings": "vite-node --script scripts/store/publish-buildings.mts --",
-    "store:publish-bundle": "vite-node --script scripts/store/publish-bundle.mts --"
+    "store:publish-bundle": "vite-node --script scripts/store/publish-bundle.mts --",
+    "store:publish-game": "node scripts/store/publish-game.mjs"
   },
   "dependencies": {
     "@oh-my-pi/pi-agent-core": "^18.8.4",

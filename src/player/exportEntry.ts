@@ -31,6 +31,17 @@ import { installFocusGuard } from "@/player/focusGuard";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { isTouchDevice } from "@/player/touchPad";
 import type { ActionCombatRuntimeResult } from "@/testing/actionCombatProof";
+import {
+  askContinueFromOlderVersion,
+  continueFromOlderVersion,
+  declineOlderVersion,
+  parseStoreGameBoot,
+  renderStoreEmbedBlocked,
+  shouldOfferContinue,
+  storeGameEmbedderAllowed,
+  storeGameSaveNamespace,
+  type StoreGameBoot,
+} from "@/player/storeGameHost";
 
 const app = document.getElementById("app");
 if (!app) {
@@ -49,6 +60,10 @@ interface OpenRpgBootConfig {
   readonly returnUrl?: unknown;
   readonly hostFeatures?: unknown;
   readonly desktopShell?: DesktopShellBootConfig;
+  /** 스토어에서 바로 플레이하는 판본(storeGameHost.ts). 판본별 세이브·품는 곳 확인·이어서 하기. */
+  readonly storeGame?: unknown;
+  /** "auto": 터치 기기에서 가상 패드를 붙인다(스토어 웹 게임). */
+  readonly touchControls?: unknown;
 }
 
 function readBootConfig(): OpenRpgBootConfig {
@@ -61,6 +76,11 @@ void bootExportedPlayer(app);
 
 async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   const boot = await withDevCheckpointParam(readBootConfig());
+  const storeGame = parseStoreGameBoot(boot.storeGame);
+  if (storeGame && !storeGameEmbedderAllowed(storeGame)) {
+    renderStoreEmbedBlocked(root, storeGame);
+    return;
+  }
   // The private editor probe and any hosted build (player under /export-player/) read public game
   // resources from the editor host, one directory above that bundle — see exportAssetBase.ts.
   const probeAssets = boot.qaInstrumentation === true && boot.actionCombatProbe !== undefined;
@@ -87,6 +107,7 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
     return;
   }
   const bundled = await loadBundledProject(boot);
+  if (bundled.ok && storeGame) await offerOlderVersionSave(root, storeGame);
   if (bundled.ok) {
     void startPlayer(root, boot, bundled.project, "bundled");
     return;
@@ -162,6 +183,28 @@ async function qaCheckpointStart(boot: OpenRpgBootConfig, project: Project) {
   };
 }
 
+/**
+ * 스토어 웹 게임: 이 판본 세이브가 없고 옛 판본 세이브가 있으면 이어서 할지 묻는다(한 번만).
+ * 저장소에 손댈 수 없는 환경(사파리 비공개 창 등)에서도 부팅은 막지 않는다.
+ */
+async function offerOlderVersionSave(root: HTMLElement, storeGame: StoreGameBoot): Promise<void> {
+  let storage: Storage;
+  try {
+    storage = window.localStorage;
+  } catch {
+    return;
+  }
+  try {
+    const older = shouldOfferContinue(storage, storeGame);
+    if (!older) return;
+    const choice = await askContinueFromOlderVersion(root, storeGame, older);
+    if (choice === "continue") continueFromOlderVersion(storage, storeGame, older);
+    else declineOlderVersion(storage, storeGame);
+  } catch (error) {
+    console.warn("[oprn] 옛 판본 세이브 확인을 건너뜁니다:", error);
+  }
+}
+
 function openGameFilePicker(root: HTMLElement, boot: OpenRpgBootConfig, reason: string): void {
   renderOprnGameFilePicker(root, {
     reason,
@@ -182,7 +225,8 @@ async function startPlayer(
     setExportedProject(project);
     // 에디터 boot 를 거치지 않는 웹·단일 HTML 플레이어도 저장된 공통 글꼴을 쓴다.
     syncProjectFontTheme(project);
-    const saveNamespace = resolveExportSaveNamespace(project, {
+    const storeGame = parseStoreGameBoot(boot.storeGame);
+    const saveNamespace = storeGame && source === "bundled" ? storeGameSaveNamespace(storeGame) : resolveExportSaveNamespace(project, {
       source,
       hostSaveNamespace: boot.saveNamespace,
       pathname: window.location.pathname,
