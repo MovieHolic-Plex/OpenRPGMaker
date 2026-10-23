@@ -77,6 +77,12 @@ RAMPS = {
               lambda c: c[0] >= c[2] and lum(c) > 60, 6, '뼈'),
     'moss':  (['temple-ruins/face_temple_3h', 'aqueduct-sewer/face_sewer_3h', 'temple-ruins/vines_2'], is_green, 6, '이끼·덩굴'),
     'glow':  (['sea-cave/glow_moss_floor', 'sea-cave/glow_mushroom'], is_teal, 6, '발광 이끼·수정 청록'),
+    # 2026-10-23 theme-earth(광산·지하묘지·성·유적) 판이 더한 램프 — 덧붙이기만 한다(위 램프 색은 그대로).
+    'grass': (['kit:bd-pick-temple-ruins-floor-grass'], is_green, 6,
+              '폐허 판석 틈으로 솟은 풀(버들항 신전 폐허 풀 바닥 — 조각 파일 floor_grass.png 는 시트와 색이 달라 시트에 구운 키트에서 뽑는다)'),
+    'marble': (['temple-ruins/fallen_column_temple', 'temple-ruins/column_temple', 'temple-ruins/rubble_temple'],
+               lambda c: c[0] >= c[2] and lum(c) > 60, 7, '신전 폐허 대리석(기둥·쓰러진 기둥·부스러기)'),
+    'castle': (['castle-catacombs/face_castle_3h', 'castle-catacombs/face_castle_2h'], None, 7, '성 지하 벽 앞면 돌(성문·옥좌 단)'),
 }
 
 # 공용 시트의 칩 램프(palette.RAMPS_CHIP) 가운데 던전에 쓸 것 — 시트에 실제로 있는지 대조한다.
@@ -92,10 +98,25 @@ def part(name):
     return os.path.join(VAR, place, 'parts', file + '.png')
 
 
+def kit_image(kid):
+    """'kit:<structureKits id>' — 공용 시트에 구워진 버들항 키트를 rows 칸 번호로 그대로 붙인 그림(조각 파일이 시트와 다를 때)."""
+    kits = {k['id']: k for k in json.load(open(os.path.join(REPO, 'src', 'assets', 'beodeulCityTileset.json'), encoding='utf-8'))['structureKits']}
+    k = kits[kid]
+    sheet = Image.open(SHEET).convert('RGBA')
+    im = Image.new('RGBA', (k['width'] * 16, k['height'] * 16))
+    for r, row in enumerate(k['rows']):
+        for layer in ('tiles', 'upperTiles'):
+            for c, t in enumerate(row.get(layer) or []):
+                if t is not None and t >= 0:
+                    x, y = (t % 128) * 16, (t // 128) * 16
+                    im.alpha_composite(sheet.crop((x, y, x + 16, y + 16)), (c * 16, r * 16))
+    return im
+
+
 def ramp_from(sources, pred, k):
     cnt = collections.Counter()
     for s in sources:
-        a = np.array(Image.open(part(s)).convert('RGBA'))
+        a = np.array((kit_image(s[4:]) if s.startswith('kit:') else Image.open(part(s))).convert('RGBA'))
         op = a[a[:, :, 3] == 255][:, :3]
         for c in map(tuple, op):
             c = tuple(int(v) for v in c)
@@ -131,7 +152,8 @@ def build():
     for name, (sources, pred, k, why) in RAMPS.items():
         cols, npx = ramp_from(sources, pred, k)
         ramps[name] = [hx(c) for c in cols]
-        srcs[name] = {'from': [f'tiledata/beodeul-variants/{s.split("/")[0]}/parts/{s.split("/")[1]}.png' for s in sources],
+        srcs[name] = {'from': [(f'{os.path.relpath(SHEET, REPO)} {s}' if s.startswith('kit:') else
+                                f'tiledata/beodeul-variants/{s.split("/")[0]}/parts/{s.split("/")[1]}.png') for s in sources],
                       'pixels': npx, 'why': why}
         missing += [(name, hx(c)) for c in cols if tuple(c) not in sheet_cols]
     for name, (cols, why) in CHIP_EXTRA.items():
