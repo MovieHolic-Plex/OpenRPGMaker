@@ -15,6 +15,10 @@ import type { ContentBuildResult, EventSpec, ObjectSpec, PersonSpec, PlaceBuildR
 import { buildPeople, findMap, resolveWhere } from "./people";
 import { buildEvent } from "./events";
 import { drawObject } from "./drawObject";
+// 콘텐츠 동사(컷신 무대·연출 비평·물건 자리 계획) — finishContent·addEvent·drawObjectVerb·placeObject 가 쓴다.
+import { critiqueStaging } from "./critic";
+import { pickStageFrames, stageFrameProject, type EventBuildResult } from "./events";
+import { rememberObjectPlan, takeObjectPlan, type DrawObjectResult } from "./drawObject";
 
 export const V2_MAX_REPAIR_ROUNDS = 3;
 /** build_hand_interior_room 이 layout 방마다 다는 장소 꼬리표(handInteriorTools.ts 와 같은 값). */
@@ -265,6 +269,55 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     for (const m of result.missingArt) session.missingArt.add(m);
     if (result.ok) await env.checkpoint(verb);
     const mapIds = result.mapIds.length ? result.mapIds : [];
+    const stage = (result as EventBuildResult).stage;
+    // 컷신: 끝 그림 한 장이 아니라 장면을 따라 그린 틀 여러 장 + 무대 검사(걸음 길이·도착·대사 거리) + 연출 비평가.
+    if (result.ok && stage) {
+      const map = env.ctx.project.maps[stage.mapId];
+      const frames: { label: string; image: string; crop: { x: number; y: number; w: number; h: number } }[] = [];
+      if (map && env.render) {
+        for (const frame of pickStageFrames(stage, 5)) {
+          const { project: framed, crop } = stageFrameProject(env.ctx.project, stage, frame);
+          const saved = env.ctx.project;
+          try {
+            env.ctx.project = framed; // render 는 그 순간의 ctx.project 를 그린다
+            frames.push({ label: frame.label, image: await env.render(stage.mapId, crop.x, crop.y, crop.w, crop.h), crop });
+          } catch { /* 그림 경로 없음 */ } finally { env.ctx.project = saved; }
+        }
+      }
+      const critics: CriticVerdict[] = [];
+      if (map && frames.length) {
+        env.emit({ type: "execution_status", name: "v2.critic", ok: true, summary: `다른 눈(연출 비평가)이 컷신 장면 ${frames.length}장을 보는 중` });
+        const notes = [
+          ...(stage.letterbox ? ["the scene starts by sliding in cinematic letterbox bars and removes them at the end"] : []),
+          ...stage.walks.map((w) => `${w.who} walks ${w.steps} cells from (${w.from.x},${w.from.y}) to (${w.goal.x},${w.goal.y})${w.onRoad ? `, ${w.onRoad} of them on road tiles` : ""}`),
+          "after walking up, the two characters turn to face each other; each spoken line is shown in a dialogue box with the speaker's portrait",
+        ];
+        try {
+          const ran = await critiqueStaging({ task, map: { id: map.id, name: map.name }, frames, notes, sideChat: env.sideChat, ...(env.signal ? { signal: env.signal } : {}) });
+          session.criticCalls++; session.criticMs += ran.ms;
+          critics.push(ran.verdict);
+        } catch (error) {
+          critics.push({ mapId: map.id, majors: [], problem: `연출 비평 호출 실패: ${error instanceof Error ? error.message : String(error)}` });
+        }
+      }
+      const seen = mapIds.length ? await see(env, session, task, "content", mapIds, undefined, false) : undefined;
+      const npcProblems = seen?.checks.filter((c) => !c.ok && (c.id === "npc-reachable" || c.id.startsWith("exit"))) ?? [];
+      const stageBad = stage.checks.filter((c) => !c.ok);
+      const majors = critics.reduce((n, v) => n + v.majors.length, 0);
+      const rounds = session.content.filter((c) => c.verb === verb && (c.result as EventBuildResult).stage?.mapId === stage.mapId).length;
+      const clean = !stageBad.length && !npcProblems.length && !majors && !critics.some((v) => v.problem);
+      const payload = {
+        ok: true, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, eventIds: result.eventIds,
+        machineChecks: [...stage.checks.map((c) => `[${c.id}] ${c.ok ? "통과" : "문제"} — ${c.detail}`), ...(npcProblems.length ? npcProblems.map((c) => c.detail) : ["사람·출입 검사 통과"])],
+        critic: critics.map((v) => ({ mapId: v.mapId, score: v.score, majors: v.majors, ...(v.problem ? { problem: v.problem } : {}) })),
+        round: rounds,
+        next: clean ? "통과 — 무대 검사·연출 비평 major 0. 다른 요청 부분이 남았으면 이어서, 아니면 보고한다."
+          : rounds >= V2_MAX_REPAIR_ROUNDS ? `고치기 상한(${V2_MAX_REPAIR_ROUNDS}번)에 닿았다 — 남은 문제를 보고한다.`
+          : "문제가 있다 — add_event 를 같은 kind·when 으로 다시 부르면 앞 컷신(과 그 컷신이 세운 사람)을 바꾼다(겹쳐 쌓이지 않는다). 걷는 곳 낱말·appear where·비트 순서를 고쳐 한 번에 다시 부른다. 칸 좌표는 비평이 짚은 칸이 꼭 필요할 때만.",
+      };
+      const shots: Seen = { checks: [...stage.checks], critics, images: frames.map((f) => ({ mapId: stage.mapId, dataUrl: f.image })) };
+      return withImages(payload, shots.images.length ? shots : seen, 3);
+    }
     const seen = mapIds.length ? await see(env, session, task, "content", mapIds, undefined, false) : undefined;
     const npcProblems = seen?.checks.filter((c) => !c.ok && (c.id === "npc-reachable" || c.id.startsWith("exit"))) ?? [];
     return withImages({ ok: result.ok, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, eventIds: result.eventIds,
@@ -408,7 +461,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }, required: ["what"] } }, required: ["object"] },
     async execute(id, params) {
       const object = (params as { object: ObjectSpec }).object;
-      const result = drawObject(run, { ...object, ...(object.mapId || !env.ctx.currentMapId ? {} : { mapId: env.ctx.currentMapId }) });
+      const result: DrawObjectResult = drawObject(run, { ...object, ...(object.mapId || !env.ctx.currentMapId ? {} : { mapId: env.ctx.currentMapId }) });
+      // 미리 정한 자리·크기를 기억한다 — 그림이 끝난 뒤 place_object 가 where·at 없이 불리면 이 자리에 놓는다.
+      if (result.ok && result.plan) rememberObjectPlan(session, result.plan);
       return finishContent(id, "draw_object", params, result);
     },
   };
@@ -421,7 +476,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const p = params as { mapId: string; objectId: string; where?: string; at?: { x: number; y: number } };
       const map = findMap(env.ctx.project, p.mapId);
       if (!map) return text({ ok: false, summary: `맵 ${p.mapId} 이 없다` });
-      const first = p.at && !p.where ? p.at : resolveWhere(env.ctx.project, map, p.where, p.at ? { at: p.at } : {}).cell;
+      // where·at 이 없으면 draw_object 가 크기에 맞춰 미리 정한 자리(있으면).
+      const plan = !p.where && !p.at ? takeObjectPlan(session, p.mapId, p.objectId) : undefined;
+      const first = plan ? plan.base : p.at && !p.where ? p.at : resolveWhere(env.ctx.project, map, p.where, p.at ? { at: p.at } : {}).cell;
       const tried: string[] = [];
       let placed: { ok: boolean; summary: string } | undefined;
       for (let r = 0; r <= 3 && !placed?.ok; r++) for (let dy = -r; dy <= r && !placed?.ok; dy++) for (let dx = -r; dx <= r && !placed?.ok; dx++) {
@@ -429,7 +486,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         const base = { x: first.x + dx, y: first.y + dy };
         const res = run.call("stamp_tileset_object", { mapId: p.mapId, objectId: p.objectId, base });
         tried.push(`(${base.x},${base.y})`);
-        if (res.ok) placed = { ok: true, summary: `${p.objectId} 를 (${base.x},${base.y})에 놓았다${r ? ` — 처음 자리 (${first.x},${first.y})가 막혀 옮겼다` : ""}` };
+        if (res.ok) placed = { ok: true, summary: `${p.objectId} 를 (${base.x},${base.y})에 놓았다${plan && !r ? ` — draw_object 가 미리 정한 자리${plan.how ? `(${plan.how})` : ""}` : ""}${r ? ` — 처음 자리 (${first.x},${first.y})가 막혀 옮겼다` : ""}` };
         else placed = { ok: false, summary: String(res.summary).slice(0, 200) };
       }
       return finishContent(id, "place_object", params, { ok: !!placed?.ok, mapIds: [p.mapId], summary: placed?.ok ? placed.summary : `놓지 못했다(${tried.length}자리 시도): ${placed?.summary ?? ""}`, warnings: [], missingArt: placed?.ok ? [] : [`${p.objectId} — 놓을 자리가 없다`], calls: [] });
