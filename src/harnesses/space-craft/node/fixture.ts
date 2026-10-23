@@ -4,6 +4,7 @@ import { backup, DatabaseSync } from 'node:sqlite';
 import { sharedContentFile } from '../../../../scripts/lib/sharedContentSqlite';
 import { createBlankProject } from '../../../project/defaults';
 import { initLocalProjectStore } from '../../../../electron/local-store/store';
+import { execFileSync } from 'node:child_process';
 
 export interface SpaceCase {
   readonly id: string;
@@ -11,6 +12,8 @@ export interface SpaceCase {
   readonly mode: string;
   readonly startTileset: string;
   readonly prompt: string;
+  /** 시작 상태를 결정론 도구로 미리 짓는다(편집·NPC·컷신 과제처럼 「이미 있는 맵」에서 시작하는 요청). 실제 도구 레지스트리로 돈다. */
+  readonly startBuild?: readonly { readonly tool: string; readonly args: Record<string, unknown> }[];
 }
 export interface SpaceSeed {
   readonly timeoutMs: number;
@@ -58,6 +61,13 @@ export async function prepare(root: string, selected?: string, repeat?: number, 
     project.meta.title = `공간 제작 시험 · ${attempt}`;
     if (project.system.opening) project.system.opening.enabled = false;
     mkdirSync(dir, { recursive: true });
+    // 시작 짓기는 Bun 으로 실제 도구 레지스트리를 돌린다(vite-node 는 레지스트리 전체를 끌어오다 의존성 재최적화로 서버를 재시작한다).
+    if (entry.startBuild?.length) {
+      const io = resolve(dir, 'start-build.json');
+      writeFileSync(io, JSON.stringify({ project, steps: entry.startBuild }));
+      execFileSync('bun', [resolve('src/harnesses/space-craft/node/startBuild.mts'), io], { stdio: 'inherit' });
+      Object.assign(project, JSON.parse(readFileSync(io, 'utf8')).project);
+    }
     if (existsSync(pinned)) linkSync(pinned, resolve(dir, 'shared-content.sqlite'));
     const store = await initLocalProjectStore({ projectDir });
     try {

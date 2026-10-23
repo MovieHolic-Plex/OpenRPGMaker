@@ -175,7 +175,15 @@ export interface RunPiAgentOptions {
   readonly streamFn?: StreamFn;
   /** Team mailbox notifications, delivered through the core steering queue at a tool boundary. */
   readonly subscribeTeamMessages?: (notify: () => void) => () => void;
+  /**
+   * 조수 v2(scripts/lib/assistantV2Runtime.ts) — 도구 목록을 v2 동사로 바꾸고 v1 의 낱말별 지시·완료 검사·배치 권고를 끈다.
+   * 동사는 이 실행의 ctx 위에서 결정론 빌더를 부르고, 체크포인트·시공 재생·사용량 집계는 v1 과 같은 길로 간다. 없으면 v1 그대로다.
+   */
+  readonly v2?: PiAssistantV2Hooks;
 }
+
+export type { PiAssistantV2Env, PiAssistantV2Hooks } from "../../src/ai/v2/env.ts";
+import type { PiAssistantV2Env, PiAssistantV2Hooks } from "../../src/ai/v2/env.ts";
 
 const DEFAULT_MAX_TURNS = 200;
 const DEFAULT_TIMEOUT_MS = PI_AGENT_DEFAULT_TIMEOUT_MS;
@@ -338,12 +346,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 배열 교체(setTools)는 진행 중 루프에 닿지 않는다(컨텍스트가 같은 배열을 잡고 있어서다).
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
-  const monsterGameProduction = new PiMonsterGameProduction(!request.readOnly && !options.readOnlyTools && (requestsEmeraldMonsterGame(request.task) || classifyMonsterGameRequest(request.task) === 'campaign'), request.task);
+  const monsterGameProduction = new PiMonsterGameProduction(!options.v2 && !request.readOnly && !options.readOnlyTools && (requestsEmeraldMonsterGame(request.task) || classifyMonsterGameRequest(request.task) === 'campaign'), request.task);
   const gameSystemProduction = new PiGameSystemProduction();
   // 채팅 한 줄 연애 게임 요청 — 도구 목록이 고정된 팀 하위 실행은 제외(팀은 finish 게이트가 한다).
   const romanceProduction = new PiRomanceProduction(!request.readOnly && !options.readOnlyTools && !options.toolNames && !options.subscribeTeamMessages, request.task);
   const npcLayoutProduction = new PiNpcLayoutProduction();
-  const openingProduction = new PiOpeningProduction(!request.readOnly && !options.readOnlyTools && !monsterGameProduction.requested && (request.openingProduction ?? requestsOpeningProduction(request.task)), request.task);
+  const openingProduction = new PiOpeningProduction(!options.v2 && !request.readOnly && !options.readOnlyTools && !monsterGameProduction.requested && (request.openingProduction ?? requestsOpeningProduction(request.task)), request.task);
   const interiorCompletion = new PiInteriorCompletion(!request.readOnly && !options.readOnlyTools && !!options.interiorRequirements, options.interiorRequirements);
   // 묶음 실행이면 호출 시점에 묶음 밖 맵 변경을 거부한다(병합의 「범위 밖 변경 버림」은 최후 안전망으로 남는다).
   // 계약 범위거나 호출자가 병합한다고 알린 실행(mapBundleMerge)이면 켠다 — 판정은 piMapScopeGuard 한 곳.
@@ -771,6 +779,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...registryTools.filter(tool => tool.name !== WEB_SEARCH_TOOL && !PI_PRESENTATION_GENERATORS.some(name => name === tool.name)).map(wrapTool),
     ...(options.extraTools ?? []),
   );
+  // v2 동사 — wrapTool 을 거쳐 쓰기마다 체크포인트(실시간 적용·시공 재생)가 v1 과 같은 길로 간다.
+  const v2Env: PiAssistantV2Env | undefined = options.v2 ? {
+    ctx, request, emit, record: recordCall,
+    checkpoint: (label: string) => request.applyMode !== "step" ? checkpoint(label, label, options.signal) : Promise.resolve(),
+    sideChat: async (messages, signal) => {
+      const reply = await eventAssistChat(null, { messages, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
+      return typeof reply.message.content === "string" ? reply.message.content : "";
+    },
+    ...(options.renderToolImage ? { render: async (mapId: string, x: number, y: number, w: number, h: number) => `data:image/png;base64,${await renderMapRegionImage(ctx.project, { mapId, x, y, w, h }, options.renderToolImage!, options.signal)}` } : {}),
+    ...(options.signal ? { signal: options.signal } : {}),
+  } : undefined;
+  if (options.v2 && v2Env) tools.push(...options.v2.tools(v2Env).map(wrapTool));
   for (const tool of tools) exposed.add(tool.name);
   // 인게임 오프닝(시작 맵 컷신)은 애니메틱·그림책 도구 40여 개가 필요 없다 — 다 내보내면 도구 목록이 20만 자를 넘어 로컬 CLI 세션이 문맥을 채우고 멈췄다
   // (2026-10-22 실측: 컷신 요청이 도구 102개·목록 198K 자로 세 번 자동 압축 뒤 끝났다). 그 밖의 도구는 find_tools 로 부른다.
@@ -871,6 +891,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const systemPrompt = request.systemPrompt
     ? [...request.systemPrompt]
     : buildPiAgentSystemPrompt(base, request.mapIds, request.scopeStrict !== false, { spatialWork });
+  // v2 는 낱말별 v1 지시(없는 도구 이름을 부른다)를 싣지 않는다 — 지시문은 v2 카드가 정한다.
+  if (!options.v2) {
   if (openingProduction.requested) systemPrompt.push(OPENING_PRODUCTION_PROMPT);
   if (monsterGameProduction.requested) systemPrompt.push(MONSTER_GAME_PRODUCTION_PROMPT + monsterScaleNote(request.task), EMERALD_MONSTER_AUTHORING_GUIDE);
   else if (isEmeraldMonsterStyle(base)) systemPrompt.push(EMERALD_MONSTER_AUTHORING_GUIDE);
@@ -882,6 +904,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   if (allowedDefinitions.some(tool => tool.name === "find_tools")) {
     const openingSupport = new Set(['find_tools', 'get_project_summary', 'get_database_records', 'get_event', 'find_events', 'list_resources', 'recommend_bgm', 'read_project_wiki', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio']);
     systemPrompt.push(buildToolCapabilityIndex(openingProduction.requested ? allowedDefinitions.filter(t => /opening|animatic/.test(t.name) || openingSupport.has(t.name)) : allowedDefinitions));
+  }
   }
   // 읽기 전용은 툴 목록으로 강제된다(options.readOnlyTools). 이 한 줄은 모델이 "왜 답만 하는지" 알게 한다 —
   // 이유를 모르면 쓰기를 시도하며 턴을 태운다.
@@ -1131,6 +1154,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: "execution_status", name: "plan_execution_rekick", ok: false, summary: "계획만 다시 쓰고 바뀐 것 없이 끝나 실행을 한 번 더 요청합니다." });
       await promptResuming(PLAN_EXECUTION_REKICK);
     }
+    // v2 완료 조건(비평 통과·기계 검사 통과) — 못 채웠으면 한 차례 더 돌며 사실대로 보고하게 한다.
+    if (options.v2?.afterMain && v2Env && !fatal && !rejected && !options.signal?.aborted && turns < maxTurns) {
+      const followUp = await options.v2.afterMain(v2Env);
+      if (followUp && !fatal && !rejected && !options.signal?.aborted) await promptResuming(followUp);
+    }
     // 인게임 컷신은 조수의 보고가 아니라 객관 측정 + 독립 판정자로 검증한다(openingProduction.recordCutsceneReview).
     const reviewInGameCutscene = async (): Promise<void> => {
       if (!openingProduction.inGame) return;
@@ -1171,7 +1199,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: 'execution_status', name: 'cutscene.review.judged', ok: critique.verdict === 'accept', summary: critique.verdict === 'unjudged' ? `독립 판정 불가(${critique.fix}) — 합격으로 보고하지 않습니다` : `독립 판정자(${critique.judge}) ${critique.verdict === 'accept' ? '합격' : '불합격'}: ${Object.entries(critique.scores).map(([k, v]) => `${k} ${v}`).join(', ')}${critique.fix ? ` — ${critique.fix}` : ''}`, data: critique });
     };
     let previousOpeningIssues = '';
-    for (let attempt = 0; !fatal && !rejected && attempt < (openingProduction.inGame ? 3 : openingProduction.requiresPixelAnimatic ? 4 : 2) && turns < maxTurns && !options.signal?.aborted; attempt++) {
+    for (let attempt = 0; !options.v2 && !fatal && !rejected && attempt < (openingProduction.inGame ? 3 : openingProduction.requiresPixelAnimatic ? 4 : 2) && turns < maxTurns && !options.signal?.aborted; attempt++) {
       await reviewInGameCutscene();
       const issues = [...openingProduction.inspect(ctx.project, base),...gameSystemProduction.inspect(ctx.project),...npcLayoutProduction.inspect(ctx.project),...monsterGameProduction.inspect(ctx.project),...romanceProduction.inspect(ctx.project)], signature = JSON.stringify(issues);
       if (!issues.length || (signature === previousOpeningIssues && !openingProduction.inGame && !openingProduction.requiresPixelAnimatic)) break;
@@ -1356,7 +1384,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     // 구성기가 구역마다 쓰임을 정해 깐 맵(composed-layout 표식, 예: compose_steampunk_city_map)도 뺀다 — inspectPiLayoutQuality 가 isComposedLayoutMap 으로 스스로 건너뛴다.
     // 전체 몬스터 게임도 뺀다 — 맵은 검수된 공용 캠페인이 깔고(포켓몬 마을·센터는 원래 트였고 대칭이다), 고칠 도구가 없어
     // 조수가 repair 를 한 번 더 부른 뒤 「마지막 변경 뒤 read/review_monster_game」 완료 검사에 걸려 실행 실패로 끝났다(2026-10-06 실측).
-    if (!fatal && !rejected && !request.readOnly && turns < maxTurns && !options.signal?.aborted && !conceptSkipsLayoutQuality(request.task) && !monsterGameProduction.requested) {
+    if (!options.v2 && !fatal && !rejected && !request.readOnly && turns < maxTurns && !options.signal?.aborted && !conceptSkipsLayoutQuality(request.task) && !monsterGameProduction.requested) {
       const describe = (issues: typeof layout) => issues.map(i => `${i.mapId} ${i.problems.join(", ")}`).join(" / ");
       // 1배 특징 확인을 거친 맵은 빈 바닥(보정된 자)까지 그 루프가 봤다 — 옛 권고를 한 번 더 돌리지 않는다.
       let layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds, reviewedMapIds);
