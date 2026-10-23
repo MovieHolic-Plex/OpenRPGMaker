@@ -26,9 +26,29 @@ export function flagshipDemoIdForLocation(): FlagshipDemoId | null {
  * 예전에는 편집기 진입 번들이 데모 빌더를 정적으로 품어 모든 부팅이 예제 그림 약 18MB 를 읽었다(2026-10-20 실측).
  */
 export async function prepareDevShowcaseProjectFactory(): Promise<() => Project | null> {
-  if (flagshipDemoIdForLocation() === null) return () => createDevShowcaseProjectForLocation();
+  const demoId = flagshipDemoIdForLocation();
+  if (demoId === null) return () => createDevShowcaseProjectForLocation();
+  // 출하 빌드는 데모를 미리 구워 둔다(scripts/content/bake-flagship-demos.mts → dist/demos/<id>.project.json).
+  // 런처의 「플레이」·「열기」(/index.html?demo=…)가 브라우저에서 모든 맵을 다시 짓지 않게 그 파일을 먼저 읽는다.
+  // dev 서버·패키지 빌드처럼 구운 파일이 없으면 예전처럼 빌더로 짓는다.
+  const baked = await loadBakedFlagshipDemo(demoId);
+  if (baked) return () => baked;
   const { createFlagshipDemoProject } = await import("@/project/flagship");
   return () => createDevShowcaseProjectForLocation(createFlagshipDemoProject);
+}
+
+async function loadBakedFlagshipDemo(id: FlagshipDemoId): Promise<Project | null> {
+  if (import.meta.env.DEV) return null;
+  try {
+    const response = await fetch(new URL(`demos/${id}.project.json`, document.baseURI));
+    // 정적 호스트의 SPA 폴백(HTML 200)은 구운 파일이 아니다.
+    if (!response.ok || !(response.headers.get("content-type") ?? "").includes("json")) return null;
+    const { deserialize } = await import("@/project/io");
+    return deserialize(await response.text());
+  } catch (error) {
+    console.warn("[demo] 구운 데모를 읽지 못해 직접 짓습니다:", error);
+    return null;
+  }
 }
 
 export function createDevShowcaseProjectForLocation(buildFlagship?: FlagshipBuilder): Project | null {

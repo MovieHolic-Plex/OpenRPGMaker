@@ -60,13 +60,14 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   // The private editor probe and any hosted build (player under /export-player/) read public game
   // resources from the editor host, one directory above that bundle — see exportAssetBase.ts.
   const probeAssets = boot.qaInstrumentation === true && boot.actionCombatProbe !== undefined;
-  registerExportAssetBase(exportAssetBaseFor(document.baseURI, { editorProbe: probeAssets }));
+  const assetBase = exportAssetBaseFor(document.baseURI, { editorProbe: probeAssets });
+  registerExportAssetBase(assetBase);
   const rawDemoParam = new URLSearchParams(window.location.search).get("demo");
   const demoParam = rawDemoParam === "fallen-star" ? "chrono-bell" : rawDemoParam === "astra-horizon" ? "emerald-crown" : rawDemoParam;
   if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season" || demoParam === "first-love") {
-    // 정적 import 하면 ?demo= 가 없는 일반 player.html 부팅에도 에디터 toolRegistry(1,800개 모듈) 전체가 로드된다.
-    const { createFlagshipDemoProject } = await import("@/project/flagship");
-    void startPlayer(root, boot, createFlagshipDemoProject(demoParam).project, "bundled");
+    const demo = await loadFlagshipDemo(demoParam, assetBase);
+    if (demo.ok) void startPlayer(root, boot, demo.project, "bundled");
+    else renderBootError(root, demo.message);
     return;
   }
   // 단일 HTML 로 내보낸 게임: 프로젝트도 에셋도 이 문서 안에 있다. fetch 가 막히는 file:// 에서
@@ -99,6 +100,28 @@ async function loadBundledProject(boot: OpenRpgBootConfig): Promise<BundledProje
       return { ok: false, message: `이 주소에는 번들된 게임이 없습니다. ${OPRN_EXTENSION} 게임 파일을 열어 주세요.` };
     }
     if (!response.ok) return { ok: false, message: `project.json 로드 실패 (${response.status})` };
+    return { ok: true, project: deserialize(await response.text()) };
+  } catch (error) {
+    return { ok: false, message: error instanceof Error ? error.message : String(error) };
+  }
+}
+
+/**
+ * 대표 데모(?demo=)는 빌드가 구워 둔 프로젝트를 읽는다(scripts/content/bake-flagship-demos.mts → dist/demos/<id>.play.json,
+ * 공용 에셋 assets/ 옆이라 에셋 기준 주소로 찾는다).
+ * 예전에는 여기서 에디터 데모 빌더(약 15MB JS + 도구 레지스트리)를 받아 모든 맵을 브라우저에서 지었다 —
+ * 2026-10-23 실측: 타이틀까지 first-love 23초, shitamachi 33초, chrono-bell 134초(메인 스레드 131초).
+ * dev 서버(QA 하네스)에는 구운 파일이 없으므로 그때만 예전처럼 짓는다. 출하 빌드에서는 import.meta.env.DEV 가
+ * 거짓이라 빌더 import 가 통째로 빠지고, 내보낸 게임 zip 에도 데모 빌더 청크가 실리지 않는다.
+ */
+async function loadFlagshipDemo(id: string, assetBase: URL): Promise<BundledProjectLoad> {
+  if (import.meta.env.DEV) {
+    const { createFlagshipDemoProject } = await import("@/project/flagship");
+    return { ok: true, project: createFlagshipDemoProject(id as Parameters<typeof createFlagshipDemoProject>[0]).project };
+  }
+  try {
+    const response = await fetch(new URL(`demos/${encodeURIComponent(id)}.play.json`, assetBase));
+    if (!response.ok) return { ok: false, message: `데모 ${id} 를 읽지 못했습니다 (${response.status})` };
     return { ok: true, project: deserialize(await response.text()) };
   } catch (error) {
     return { ok: false, message: error instanceof Error ? error.message : String(error) };
