@@ -27,7 +27,8 @@ const FADE_TICK_MS = 40;
 // 대략 0.25~4 다. 그 밖의 값은 무음이 되어 "고장"으로 보이므로 여기서 클램프한다.
 const MIN_PLAYBACK_RATE = 0.25;
 const MAX_PLAYBACK_RATE = 4;
-const UNLOCK_EVENTS: readonly string[] = ["pointerdown", "keydown", "touchstart"];
+// iOS Safari 는 touchstart/pointerdown 을 사용자 활성화로 치지 않는다 — 손을 뗄 때(touchend/pointerup/click)가 진짜 언락이다.
+const UNLOCK_EVENTS: readonly string[] = ["pointerdown", "pointerup", "keydown", "touchstart", "touchend", "click"];
 
 // 요청 단위 재생 옵션. 전부 선택적이므로 기존 호출부(playAudioCommand 등)는 그대로 동작한다.
 export interface AudioPlayOptions {
