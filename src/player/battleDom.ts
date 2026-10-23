@@ -41,7 +41,8 @@ import {
 } from "@/player/battleDirectorDom";
 import { battleSkinFamily, getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import type { BattleFieldPresentation } from "@/player/battleFieldDom";
-import { applyActionMotion, applyFieldBackdrop, battleField, battlePartyStatus, blinkBattlerNode, findBattlerNode, playCaptureCinematic, spawnHitSparks, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
+import { applyActionMotion, applyFieldBackdrop, battleField, battlePartyStatus, blinkBattlerNode, findBattlerNode, playCaptureCinematic, settleBattleTopPads, spawnHitSparks, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
+import { battleAnimationSheetUrls, deferUntilBattleReady, whenBattleStageReady } from "@/player/battleReadiness";
 import { emitBattleJuice as emitContextBattleJuice, fadeBattleCue, flashBattleField, playBattleCue as playContextBattleCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleCueShape, type BattleJuiceEvent } from "@/player/battleJuice";
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
@@ -84,6 +85,11 @@ export interface BattleDomOptions {
   readonly onSnapshot?: (snapshot: BattleSnapshot) => void;
   readonly onResult: (result: BattleResult, snapshot: BattleSnapshot) => void;
   readonly introHold?: boolean;
+  /**
+   * true 면 인트로 연출과 ATB 시계를 `controller.begin()` 까지 미룬다. 진입 연출이 `controller.ready` 를 기다리는 동안
+   * 보이지 않는 전투가 흘러가지 않게 한다. 미루는 동안에도 DOM 은 한 번 그려져(syncView) 준비 문이 첫 프레임 그림을 모은다.
+   */
+  readonly deferStart?: boolean;
   readonly showEventText?: (request: Extract<BattleEventPauseSnapshot, { kind: "text" }>, signal: AbortSignal) => Promise<void>;
   readonly showEventChoices?: (request: BattleEventChoiceSnapshot, signal: AbortSignal) => Promise<number>;
   readonly onDestroy?: () => void;
@@ -98,6 +104,10 @@ export interface BattleDomOptions {
 
 export interface BattleDomController {
   readonly root: HTMLElement;
+  /** 첫 프레임에 보이는 전투 그림(적·배우·배경·시트·얼굴·창 스킨)이 모두 디코드된 뒤 풀린다(상한 6초, 넘으면 경고 후 풀림). 진입 연출은 이것을 기다린 뒤 보여 준다. */
+  readonly ready: Promise<void>;
+  /** `deferStart` 로 미룬 인트로·시계를 시작한다. 여러 번 불러도, 미루지 않았어도 안전하다. */
+  begin(): void;
   destroy(): void;
 }
 
@@ -146,10 +156,11 @@ export function destroyBattleSceneOnHost(host: HTMLElement): void {
 
 export function mountBattleScene(options: BattleDomOptions): BattleDomController {
   // 블라인드 전환 동안 기본 SE 세트를 디코딩해 둔다 — 첫 임팩트부터 소리가 정시에 온다.
-  preloadBattleJuiceSamples();
+  // 소리 파일(수백 KB)이 무대 그림과 같은 연결을 먹으면 좁은 망에서 그림이 5초 늦는다 — 무대 그림이 디코딩된 뒤에 받는다.
+  deferUntilBattleReady(preloadBattleJuiceSamples);
   // 기술 이펙트의 타이밍 소리도 — 행동 시작 때(preloadBattleAnimationSounds) 받으면 3배속에서는 approach 가 60~110ms 라
   // 디코딩이 끝나기 전에 착탄이 와서 요소 재생(0.2~0.4초 늦음)으로 떨어졌다.
-  preloadAllBattleAnimationSounds();
+  deferUntilBattleReady(preloadAllBattleAnimationSounds);
   const playBattleCue = (event: BattleJuiceEvent): void => playContextBattleCue(event, options.audioContext);
   const emitBattleJuice = (event: BattleJuiceEvent, target?: HTMLElement | null, shape?: BattleCueShape): void =>
     emitContextBattleJuice(event, target, options.audioContext, shape);
@@ -179,7 +190,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const pokemonMotion = root.dataset.battleUiStyle === "pokemon" && !retroMotion;
   // 포켓몬 안무의 이펙트 재생 계획 — animationImpactMs 가 정하고 onEntryAnimation 이 씬 루트에 건너뛸 프레임 수로 넘긴다.
   let animationPlan: { animationId: string; skipFrames: number; skippedMs: number } | undefined;
-  if (pokemonMotion) preloadPokemonMotionSounds();
+  if (pokemonMotion) deferUntilBattleReady(preloadPokemonMotionSounds);
   // 지금 재생 중인 타임라인 엔트리의 기술 움직임 종류(접촉·발사체·…). onTimelineEntry 가 비트보다 먼저 온다.
   let captureEntryActive = false;
   let pokemonMove: PokemonMoveContext = { motion: "contact", color: "#ffffff", fromBelow: false };
@@ -314,7 +325,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   if (battleLook) applyBattleLook(root, field, battleLook);
   if (retroMotion) {
     initRetroMotion(field, initialSnapshot);
-    preloadRetroMotionSe();
+    deferUntilBattleReady(preloadRetroMotionSe);
   }
   syncPlaybackStatus();
   // 씬이 붙으면 포커스를 씬 안으로 가져온다 — 없으면 인트로·명령 국면 내내 activeElement 가
@@ -1981,11 +1992,18 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   // 인트로는 startIntro 가 인트로 상태로 syncView 를 부른다. 그 앞에 명령 상태로 한 번 더 그리면 전투 DOM 전체를
   // 명령 화면으로 만들고 포커스·레이아웃까지 한 뒤 곧바로 인트로로 갈아엎는다(첫 전투 진입 115–128ms 의 절반 가량).
-  if (options.introHold !== false) sequencer.startIntro(initialSnapshot);
-  else syncView();
+  let started = false;
+  function beginBattle(): void {
+    if (started) return;
+    started = true;
+    if (options.introHold !== false) sequencer.startIntro(options.runtime.snapshot());
+  }
+  if (options.deferStart) syncView();
+  else if (options.introHold !== false) beginBattle();
+  else { started = true; syncView(); }
 
   function battleTick(): void {
-    if (sequenceBusy || inputPrompt) return;
+    if (!started || sequenceBusy || inputPrompt) return;
     const before = options.runtime.snapshot();
     if (before.result) return;
     // Active ATB: 명령·대상 메뉴가 열려 있어도 시간이 흐른다. 런타임이 적만 행동시키고 메뉴를 되돌려 준다.
@@ -2019,8 +2037,15 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
   const tickInterval = window.setInterval(battleTick, BATTLE_TICK_MS);
 
+  const readyProject = store.getCurrent();
+  const ready = whenBattleStageReady(root, {
+    extraUrls: battleAnimationSheetUrls(initialSnapshot, readyProject),
+    settle: (lookup) => settleBattleTopPads(root, lookup),
+  });
   const controller: BattleDomController = {
     root,
+    ready,
+    begin: beginBattle,
     destroy(): void {
       // 멱등 — 여러 경로(onResult, teardown, 재마운트)에서 중복 호출돼도 안전해야 한다.
       if (destroyed) return;

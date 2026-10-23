@@ -1,3 +1,18 @@
+## 전투 진입 그림 준비 관문 battle readiness gate (2026-10-24)
+
+원인: `playSceneBattle` 이 진입 연출 덮개 직후 전투를 얹고 그림을 기다리지 않고 열었다. `mountBattleScene` 은 소리만 미리 받았고
+`battle*Dom` 은 `img.src`/CSS `background-image` 만 걸어 첫 프레임에 적 초상·배경이 비고, `--battle-sprite-top-pad` 는 열린 뒤 비동기 프로브로 정해졌다.
+느린 망에서는 장면 겹 PNG 같은 저우선 요청이 wav·이펙트 그림·BGM 홍수 뒤에 줄을 서서 더 늦었다.
+
+- `src/player/battleReadiness.ts` — `whenBattleStageReady(root, {extraUrls, settle, timeoutMs})`. 무대 안 `img`·배경 URL 을 모아 디코딩하고(절대 href 키 캐시, 지도 선로딩과 공유), 상한 `BATTLE_READY_TIMEOUT_MS`=6초를 넘기면 `[battle-ready]` 경고 후 그대로 연다.
+  무대 그림은 필수, 첫 전투 연출 시트(`battleAnimationSheetUrls`)는 무대가 끝난 뒤 요청하고 `BATTLE_EXTRA_GRACE_MS`=800ms 만 더 기다리며, 장면 겹(`battleScenery`)은 `BATTLE_SCENERY_GRACE_MS`=1500ms. 요청은 `fetchPriority="high"`.
+- `mountBattleScene({deferStart:true})` → `controller.ready: Promise<void>` 와 `begin()`. `playSceneBattle` 은 `ready` 를 기다린 뒤 `markBattleEntry; begin(); entryTransition.reveal()`.
+- `settle` 콜백에서 `--battle-sprite-top-pad` 를 이미 디코딩된 그림 크기로 첫 페인트 전에 계산한다(`settleBattleTopPads`).
+- 대량 워밍업(`retroSkillChoreography` 이펙트 시트, 전투 소리 preload)은 `deferUntilBattleReady` 로 관문이 끝난 뒤(없으면 7초 뒤)로 미룬다 — 안 그러면 좁은 망에서 무대 그림의 대역을 먹는다.
+- `src/player/battleAssetPrefetch.ts` — `loadMap` 끝에서 그 지도의 조우·이벤트 전투에 나올 수 있는 모든 troop 의 전투 그림과 공용 UI·배경을 idle 에 동시 2개로 데운다(중복 제거).
+- 진입 연출이 없는 `quickBattleModal`·`testPlayModal`·`backBattlerHarness` 는 바꾸지 않았다.
+- 실측(출하 플레이어 프로덕션 빌드, 1.5Mbps/300ms, 캐시 끔, 크로노벨 보스): 느린 망 첫 프레임 빠진 img 1·배경 7 → 0, 진입 +1.3초; 빠른 망 +0.5초. 재현 `node scripts/qa/runtime/battle-preload.record.mjs --out <dir> --static <빌드>`.
+
 ## 전투 체감 battle-feel r1 (#3063 머지) · r2 (2026-10-20)
 
 사용자 「전투가 허접」. 출하 player 녹화(`scripts/qa/runtime/battle-feel.record.mjs --out <dir> [--res 640x360] [--only group,boss,defeat]`,
