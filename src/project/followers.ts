@@ -353,14 +353,18 @@ function trailBehind(
   open: (x: number, y: number) => boolean
 ): RuntimeFollowerTrailPoint[] {
   const behind = OPPOSITE[facing];
-  const sides: readonly Dir[] = facing === "up" || facing === "down" ? ["left", "right"] : ["up", "down"];
-  const order: readonly Dir[] = [behind, ...sides, facing];
+  const sidesOf = (dir: Dir): readonly Dir[] => (dir === "up" || dir === "down" ? ["left", "right"] : ["up", "down"]);
+  // 첫 칸은 주인공 바로 뒤 → 옆 → 앞. 둘째 칸부터는 앞 걸음의 방향을 이어 간다(곧장 → 옆 → 되돌아감) —
+  // 뒤가 막혀 첫 칸이 옆으로 빠져도 줄이 지그재그·대각선으로 꺾이지 않고 칸마다 사방 인접으로 이어진다.
+  const firstOrder: readonly Dir[] = [behind, ...sidesOf(facing), facing];
   const used = new Set<string>([`${hero.x},${hero.y}`]);
   const key = (x: number, y: number): string => `${x},${y}`;
   const trail: RuntimeFollowerTrailPoint[] = [];
   let prev = hero;
+  let stepDir: Dir | null = null;
   for (let i = 0; i < count; i += 1) {
     let next: { x: number; y: number } | null = null;
+    const order: readonly Dir[] = stepDir ? [stepDir, ...sidesOf(stepDir), OPPOSITE[stepDir]] : firstOrder;
     for (const dir of order) {
       const x = prev.x + DIR_STEP[dir].dx, y = prev.y + DIR_STEP[dir].dy;
       if (!used.has(key(x, y)) && open(x, y)) { next = { x, y }; break; }
@@ -373,6 +377,7 @@ function trailBehind(
     }
     used.add(key(next.x, next.y));
     trail.push({ x: next.x, y: next.y, direction: dirToward(next, prev) });
+    if (Math.abs(next.x - prev.x) + Math.abs(next.y - prev.y) === 1) stepDir = dirToward(prev, next);
     prev = next;
   }
   return trail;
@@ -705,6 +710,11 @@ export type FollowerSlotMotion = {
    * 대시·탈것 배속·프레임 분할이 달라도 동료가 한 프레임도 뒤처지거나 앞서지 않는다.
    */
   readonly lockToHero?: boolean;
+  /**
+   * 대각선 이동(두 축이 다 바뀜)을 한 칸씩 꺾어 가는 경유 지점. 슬롯이 사방 인접이 아닐 때 직선으로 미끄러지면
+   * 비스듬히 가로지르고 바라보는 쪽도 틀린다 — 클래식 JRPG 처럼 한 축을 먼저 걷고 꺾는다.
+   */
+  readonly via?: FollowerSlot;
 };
 
 /** 플레이어 사방 인접 4칸. 플레이어 칸 자체는 넣지 않는다 — 겹쳐 서면 동료가 안 보인다. */
