@@ -66,10 +66,10 @@ export function buildMask(layout: DungeonLayout, profile: GrammarInfo, type: Dun
   (layout.grid ? [] : rooms).forEach((r, i) => {
     const rs = rng(seed * 31 + i * 977 + 5);
     // 둥근 방(탑 층): 네 모서리를 비스듬히 깎아 팔각으로 — 탑이 「넓은 지하 감옥」으로 읽히던 것(2026-10-23 VQA). 문 앞 칸은 깎지 않는다.
-    if (r.shape === "round" || r.shape === "apse") {
+    if (r.shape === "round" || r.shape === "apse" || r.shape === "ring") {
       const k = Math.max(2, Math.floor(Math.min(r.w, r.h) / 3));
       for (let dy = 0; dy < k; dy += 1) for (let dx = 0; dx + dy < k; dx += 1) {
-        const top = r.shape === "round" ? [[r.x + dx, r.y + dy], [r.x + r.w - 1 - dx, r.y + dy]] as const : [];
+        const top = r.shape !== "apse" ? [[r.x + dx, r.y + dy], [r.x + r.w - 1 - dx, r.y + dy]] as const : [];
         for (const [x, y] of [...top, [r.x + dx, r.y + r.h - 1 - dy], [r.x + r.w - 1 - dx, r.y + r.h - 1 - dy]] as const) {
           if (!inb(x, y) || doorstep[idx(x, y)]) continue;
           markRect({ x, y, w: 1, h: 1 }, -1, 0);

@@ -257,6 +257,14 @@ def bake_autotile(st, at, gid, name, origin, cmeta, connect_extra=()):
 def bake_autotile_anim(st, frames, gid, name, origin, cmeta):
     """4장면 오토타일: 모양·몸통마다 4칸 덩이. variantMap 은 첫 장면 칸."""
     assert len(frames) == FRAMES, len(frames)
+    if getattr(frames[0], 'body32', None) is not None:
+        # 위상 몸통(32×32, 2026-10-23): 위상 넷 × 47 모양마다 4칸 덩이. variantMap = 위상 0, phaseVariants {w:2,h:2} = 엔진이 칸 위치로 고른다.
+        canon = sorted(set(dot.canon(k) for k in range(256)))
+        byp = [{m: st.anim([f.tile(m, p) for f in frames], cmeta(m), origin) for m in canon} for p in range(4)]
+        members = sorted({c for d in byp for c in d.values()})
+        return dict(id=gid, name=name, neighborhood=8, edgeConnects=True, memberTileIds=members, connectTileIds=list(members),
+                    variantMap={str(k): byp[0][dot.canon(k)] for k in range(256)},
+                    phaseVariants=dict(w=2, h=2, maps=[{str(m): d[m] for m in canon} for d in byp]))
     by = {}
     for m in sorted(set(dot.canon(k) for k in range(256))):
         by[m] = st.anim([f.tile(m) for f in frames], cmeta(m), origin)
@@ -679,6 +687,21 @@ def write_out(st):
     return count
 
 
+def retail_theme():
+    """gap 꼬리를 다시 쓰면 시트·칸 표가 gap 끝에서 잘린다 — 주제 꼬리(bake_theme.py, 30,848~)를 저장소대로 다시 붙인다."""
+    theme = ROOT / "tiledata/beodeul-dungeon/theme/cells.json"
+    if not theme.exists() or SHEET_PATH != ROOT / "public/assets/beodeul-city/beodeul-city-chipset.png":
+        return
+    if BASE + STORE_ROWS() * COLS > 30848:
+        sys.exit("gap 꼬리가 주제 꼬리 시작(30,848)을 넘었다 — bake_theme.py 의 BASE 를 옮겨야 한다")
+    subprocess.run([sys.executable, str(HERE / "bake_theme.py"), "--from-store"], cwd=ROOT, check=True)
+
+
+def STORE_ROWS():
+    d = json.loads(STORE_JSON.read_text())
+    return max(1, -(-len(d["cells"]) // COLS))
+
+
 # ================================================================================================ 본체
 def main():
     ap = argparse.ArgumentParser()
@@ -709,6 +732,7 @@ def main():
             return
         count = write_out(st)
         print(f"gap 꼬리 다시 씀: {BASE}..{count - 1} (칸 {len(st.cells)}, 키트 {len(st.defs['structureKits'])})")
+        retail_theme()
         return
     if (a.assume_picks or a.no_gate or a.provisional) and not (a.dry or a.test_out):
         sys.exit("--assume-picks · --no-gate · --provisional 은 --dry 와 함께만 쓴다(시험 결과를 번들에 굽지 않는다)")
@@ -767,6 +791,7 @@ def main():
         st.save()
         count = write_out(st)
         print(f"썼다: {SHEET_PATH} · {TS_PATH} (count {count}) · {STORE}/")
+        retail_theme()
     if blocked:
         print("3/4 관문 미통과 — 굽지 않은 항목:", *blocked, sep="\n  ", file=sys.stderr)
         sys.exit(2)

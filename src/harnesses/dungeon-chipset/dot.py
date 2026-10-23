@@ -152,23 +152,41 @@ class Autotile:
     각 조각은 Cv. 사분면 TL 은 (N, W, NW), TR (N, E, NE), BL (S, W, SW), BR (S, E, SE) 로 판정한다.
     """
 
-    def __init__(s, body, edge, outer, inner, variants=()):
+    def __init__(s, body, edge, outer, inner, variants=(), body32=None):
         s.body, s.edge, s.outer, s.inner = body, edge, outer, inner
         # 몸통 변형(엔진 AutotileGroup.interiorVariants 한 단). 8방이 다 이어진 칸(마스크 255)만 cell_hash 로 고른다.
         # 변형끼리·본몸통과 어떤 순서로 붙어도 이어지도록, 그리는 쪽이 칸 둘레 한 줄을 같게 맞춘다.
         s.bodies = [body] + list(variants)
+        # 위치 위상 몸통(2026-10-23 dungeon-themes, 용암 16px 격자 해결): 32×32 몸통 한 장을 칸 위치로 네 쪽 중 하나 고른다
+        # — 엔진 AutotileGroup.phaseVariants {w:2,h:2} 와 같은 규칙 (x%2)+2*(y%2). 가장자리·모서리도 그 칸 몸통 위에 얹는다.
+        # 몸통 32×32 는 가로·세로로 반복해 이음이 없어야 한다(16px 마다가 아니라 32px 마다 반복).
+        s.body32 = body32
+        if body32 is not None:
+            assert body32.w == 2 * T and body32.h == 2 * T, (body32.w, body32.h)
+            assert not variants, "body32 와 몸통 변형(variants)은 같이 쓰지 않는다"
+
+    def phase_body(s, p):
+        """위상 p(0..3, = (x%2)+2*(y%2)) 몸통 칸."""
+        cv = Cv(T, T)
+        if s.body32 is None:
+            cv.a[:] = s.body.a
+        else:
+            px, py = p % 2, p // 2
+            cv.a[:] = s.body32.a[py * T:(py + 1) * T, px * T:(px + 1) * T]
+        return cv
 
     def tile_at(s, mask, x, y):
-        """맵 (x, y) 칸의 그림 — 마스크 255 칸은 엔진 shadeAutotileInterior 와 같은 해시로 몸통 변형을 고른다."""
+        """맵 (x, y) 칸의 그림 — 위상 몸통이면 칸 위치로 몸통 쪽을 고르고, 아니면 마스크 255 칸만 엔진 shadeAutotileInterior 와 같은 해시로 몸통 변형을 고른다."""
+        if s.body32 is not None:
+            return s.tile(canon(mask), phase=(x % 2) + 2 * (y % 2))
         if mask == 255 and len(s.bodies) > 1:
             cv = Cv(T, T)
             cv.a[:] = s.bodies[cell_hash(x, y) % len(s.bodies)].a
             return cv
         return s.tile(mask)
 
-    def tile(s, mask):
-        cv = Cv(T, T)
-        cv.a[:] = s.body.a
+    def tile(s, mask, phase=0):
+        cv = s.phase_body(phase)
         for qx, qy, v, h, d, vk, hk, ck in ((0, 0, N, W, NW, 'N', 'W', 'NW'), (1, 0, N, E, NE, 'N', 'E', 'NE'),
                                             (0, 1, S, W, SW, 'S', 'W', 'SW'), (1, 1, S, E, SE, 'S', 'E', 'SE')):
             vc, hc, dc = bool(mask & v), bool(mask & h), bool(mask & d)
@@ -183,14 +201,19 @@ class Autotile:
                 _over(cv, s.inner[ck], x0, y0, 0, 0, Q, Q)
         return cv
 
-    def variants(s):
-        """정규화된 47 마스크 → 타일. 대각은 두 곧은 이웃이 다 이어졌을 때만 뜻이 있다."""
+    def variants(s, phase=0):
+        """정규화된 47 마스크 → 타일. 대각은 두 곧은 이웃이 다 이어졌을 때만 뜻이 있다. phase = 위상 몸통 쪽(body32 일 때)."""
         out = {}
         for m in range(256):
             k = canon(m)
             if k not in out:
-                out[k] = s.tile(k)
+                out[k] = s.tile(k, phase)
         return out
+
+    @property
+    def phases(s):
+        """위상 수(body32 면 4, 아니면 1)."""
+        return 1 if s.body32 is None else 4
 
 
 def cell_hash(x, y):

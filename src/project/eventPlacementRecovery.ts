@@ -33,6 +33,30 @@ export function eventIsMovable(event: GameEvent): boolean {
     page.movement.type !== "fixed" || page.interaction?.kind === "pushable"));
 }
 
+/**
+ * 이 맵의 이벤트가 changeTile 로 바꿔 넣는 1층 그림을 미리 깐 사본(장치로 여는 길: 레버로 내리는 다리 등).
+ * 도달 판정은 「저자가 열 방법을 둔 칸」을 지나갈 수 있다고 본다 — 레버 다리 건너편 적·보스가 「닿지 않는 이벤트」로 울리지 않게(2026-10-23 dungeon-themes).
+ * changeTile 이 없으면 맵을 그대로 돌려준다.
+ */
+function openedByChangeTile(map: GameMap): GameMap {
+  const opens: { x: number; y: number; tile: number }[] = [];
+  const walk = (v: unknown, depth: number): void => {
+    if (!v || typeof v !== "object" || depth > 12) return;
+    if (Array.isArray(v)) { for (const item of v) walk(item, depth + 1); return; }
+    const rec = v as Record<string, unknown>;
+    if (rec.kind === "changeTile" && rec.mapId === map.id && rec.layer === "lower" && Number.isInteger(rec.x) && Number.isInteger(rec.y) && Number.isInteger(rec.tile)) {
+      opens.push({ x: rec.x as number, y: rec.y as number, tile: rec.tile as number });
+      return;
+    }
+    for (const key of ["pages", "commands", "branch", "then", "else", "options", "cancelBranch", "otherwiseBranch", "body", "victoryBranch", "defeatBranch", "escapeBranch"]) if (key in rec) walk(rec[key], depth + 1);
+  };
+  walk(map.events, 0);
+  if (!opens.length) return map;
+  const lowerTiles = map.lowerTiles.slice();
+  for (const o of opens) if (o.x >= 0 && o.y >= 0 && o.x < map.width && o.y < map.height) lowerTiles[o.y * map.width + o.x] = o.tile;
+  return { ...map, lowerTiles };
+}
+
 /** One synchronous, immutable analysis only. Never retain across a project mutation. */
 export class EventPlacementAnalysis {
   private occupancy?: Map<string, { bodies: Set<string>; blockers: Set<string> }>;
@@ -47,7 +71,7 @@ export class EventPlacementAnalysis {
     const key = `${origin.x},${origin.y}`;
     let seen = this.floods.get(key);
     if (!seen) {
-      seen = computeReachableCells(this.project, this.map, origin.x, origin.y);
+      seen = computeReachableCells(this.project, openedByChangeTile(this.map), origin.x, origin.y);
       this.floods.set(key, seen);
     }
     return seen;

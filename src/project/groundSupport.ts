@@ -21,7 +21,8 @@ export function supportSurfaceOf(ts: TilesetDef, tile: number): SupportSurface {
   if (tile < 0) return "empty";
   const meta = ts.tileMeta?.[tile];
   const tags = meta?.tags ?? [];
-  if (tags.includes("wall")) return /천장|ceiling/i.test(meta?.label ?? "") ? "ceiling" : "wall";
+  // 천장 태그(ceiling·천장)도 천장이다 — gap 탑 링 바깥 어둠(29775)은 이름표가 「탑 바깥 어둠」이라 이름만 보면 벽으로 셌다(2026-10-23).
+  if (tags.includes("wall")) return tags.includes("ceiling") || tags.includes("천장") || /천장|ceiling/i.test(meta?.label ?? "") ? "ceiling" : "wall";
   return "ground";
 }
 

@@ -1,0 +1,734 @@
+{
+ "panel": "theme-climate-r1 blind panel 5 (3 fresh Opus + 1 Argon), 2026-10-23",
+ "rule": "a major counts only if at least 2 of the 4 judges raise the same problem; pick = candidate with 0 counted majors, majority vote among those (Opus majority on ties)",
+ "delegatedBy": "delegated by user to supervisor 2026-10-23",
+ "prompt": "# Blind review panel — dungeon chipset pieces\n\nYou are one independent judge. Do not edit or create any files; only open the PNG boards below with the Read tool\n(they are large; read each one fully). No other context is needed.\n\nEach board is one item for an OPRN 16px RPG chipset in 3/4 top-down view (RPG Maker style: tops are visible planes, fronts below them,\nno side faces, light from top-left). At the top of the board are REFERENCE crops from the existing \"Beodeul\" chipset (the quality\nbar) at 1x and 3x and an RPG Maker person for scale. Below are anonymous candidates labelled X and Y for the same item: the piece at 1x and\n3x, its parts, a small scene at 1x and 2x (animated items show all frames side by side), and extras (tile mosaics / test maps) for\nfloors, walls and autotiles.\n\nJudge each candidate against these criteria:\n1. reads correctly in 3/4 top-down at 1x (top planes visible, fronts below, no side/isometric faces, sits on the floor with contact);\n2. sits in the same game as the Beodeul reference (palette harmony, texture density, number of shading steps, no toy/flat/clip-art look,\n   no black ink outlines);\n3. seamless joins: floors/walls/autotiles show no visible 16px repeat or seams; multi-cell objects join without cuts;\n4. reads as its stated purpose and as its theme (the board title says what it is).\n\nA MAJOR problem = something that would make you refuse to ship it (misreads at 1x, wrong view, clearly below the reference's quality,\nvisible seams/grid, does not read as the item). A MINOR problem = worth polishing but shippable.\n\nReply with ONLY a JSON object, no prose before or after:\n{\"<board file name without .png>\": {\"X\": {\"majors\": [{\"problem\": \"...\", \"where\": \"...\"}], \"minors\": [{\"problem\": \"...\", \"where\": \"...\"}]},\n                                    \"Y\": {\"majors\": [...], \"minors\": [...]},\n                                    \"pick\": \"X\" or \"Y\", \"why\": \"one sentence\"}, ...}\n\nBoards:\n- /home/main/.cache/dungeon-themes/climate-panel/r2-swamp/theme-climate-r1__tc.sw_boardwalk.png\n- /home/main/.cache/dungeon-themes/climate-panel/r2-swamp/theme-climate-r1__tc.sw_idol.png\n- /home/main/.cache/dungeon-themes/climate-panel/r2-swamp/theme-climate-r1__tc.sw_lily.png\n- /home/main/.cache/dungeon-themes/climate-panel/r2-swamp/theme-climate-r1__tc.sw_moss.png\n- /home/main/.cache/dungeon-themes/climate-panel/r2-swamp/theme-climate-r1__tc.sw_wisp.png\n",
+ "boards": {
+  "theme-climate-r1__tc.sw_moss": {
+   "item": "tc.sw_moss",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "37fc14a4a7f734585edb64f4111f06b8d28cafa792d47ea0fdeceb9f980c79a4"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "fc1558c0d69cecf4b98799ad59cb119145a1d4249a890dbe0a0dbc225d9814ed"
+    }
+   },
+   "votes": {
+    "argon": "A2",
+    "opus1": "A2",
+    "opus2": "A2",
+    "opus3": "A2"
+   },
+   "counted": {
+    "A1": [
+     "redrawn moss mass hides the dead branches and reads as a leafy bush/weeping tree (opus1, opus2, opus3)"
+    ],
+    "A2": []
+   },
+   "pick": "A2"
+  },
+  "theme-climate-r1__tc.sw_lily": {
+   "item": "tc.sw_lily",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "14ff21dd0d60ece48a63121c3d97118dd0c52789ac4035275d742a937fa0c1b4"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "d5aee77ba5aee72137be0b3debbe05a747fe7ad03242d4cfeb636245c3d74112"
+    }
+   },
+   "votes": {
+    "argon": "A2",
+    "opus1": "A2",
+    "opus2": "A2",
+    "opus3": "A2"
+   },
+   "counted": {
+    "A1": [
+     "redrawn pads read as bushy heaps/shrubs on water, not flat pads (opus2, opus3, argon)"
+    ],
+    "A2": []
+   },
+   "pick": "A2"
+  },
+  "theme-climate-r1__tc.sw_boardwalk": {
+   "item": "tc.sw_boardwalk",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "84ea58b43dc064367ffa559615728becb09874c76f24fc92f19da67e7bca9227"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "2b30c1db3abf85f3781c845d761b2268baaaebfc625ba047c443f545fd30459e"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A2",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": [
+     "redrawn planks broken into noisy segments, loses plank form (opus3, argon)"
+    ]
+   },
+   "pick": "A1"
+  },
+  "theme-climate-r1__tc.sw_wisp": {
+   "item": "tc.sw_wisp",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "ed467d878684b8a8ef17280480956e6e96cea8f8f788b397e13aa43fc9f71a9d"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "d9c5eabf43d300e9bbaf4140d5193249370b5cd366f143f112360d834b4309d6"
+    }
+   },
+   "votes": {
+    "argon": "A2",
+    "opus1": "A2",
+    "opus2": "A2",
+    "opus3": "A2"
+   },
+   "counted": {
+    "A1": [
+     "saturated cyan clip-art balloon/marker, off-palette (opus1, opus2, argon)"
+    ],
+    "A2": []
+   },
+   "pick": "A2"
+  },
+  "theme-climate-r1__tc.sw_idol": {
+   "item": "tc.sw_idol",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "24165bd5633034591d83b6cb9f1a4f1acf31bcf0624b90f2968040222ee11730"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "770fd21495617b0da7369ebfe4ecfbc914b4b1e02f931f7d48eb3c39c69db8b0"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A2",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": [
+     "pale mud island clashes with the bog, does not read half-sunk (opus1, argon)"
+    ]
+   },
+   "pick": "A1",
+   "note": "A1 helmet-on-bog major by one judge only"
+  }
+ },
+ "raw": {
+  "argon": {
+   "theme-climate-r1__tc.sw_boardwalk": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The curved sagging plank detail on the intact end piece reads slightly like a chest latch at 1x",
+       "where": "X part 1 center planks"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "Planks are broken into noisy short brick-like segments with vertical posts cutting through the top surface, failing to match the horizontal plank rhythm of the reference boardwalk",
+       "where": "Y part 1 and scene join with reference boardwalk"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "Floating diagonal wood fragments in the broken variant look scattered and disconnected on the water",
+       "where": "Y part 2 center-right"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X matches the reference boardwalk's horizontal plank width, palette, and join lines cleanly while clearly reading as intact and broken boardwalk ends."
+   },
+   "theme-climate-r1__tc.sw_idol": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Silhouette is slightly boxy and symmetrical, and the bottom water-contact ripple line is a bit straight",
+       "where": "X piece outer silhouette and bottom row"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "Reads as a small knight helmet or turret sitting on a bright tan mud island rather than a 2x2 stone idol head half-sunk in a bog, and the tan mound clashes with the dark swamp water",
+       "where": "Y piece whole object and lower mud base in scene"
+      }
+     ],
+     "minors": []
+    },
+    "pick": "X",
+    "why": "X clearly reads at 1x as a mossy carved stone idol head partially submerged in swamp water, whereas Y looks like a small helmet on a floating dirt patch."
+   },
+   "theme-climate-r1__tc.sw_lily": {
+    "X": {
+     "majors": [
+      {
+       "problem": "Pads curl upward with heavy vertical volume like upright cabbages or bushes rather than flat floating lily pads on the water plane",
+       "where": "X part 1 and part 2 pad bodies"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "Both variants include a prominent bright flower, making repeated placement in the scene look uniform and busy",
+       "where": "X part 1 and part 2 upper-left"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Single-pixel yellow-green highlights and scattered duckweed dots have slightly high contrast against the dark water",
+       "where": "Y part 1 and part 2 pad rims and surrounding water"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y sits flat on the water surface in 3/4 view with clear notched lily-pad silhouettes and natural variety between the flowering and non-flowering variants."
+   },
+   "theme-climate-r1__tc.sw_moss": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Hanging moss curtains fall in slightly stiff vertical columns at 1x",
+       "where": "X piece left and right hanging moss"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "High-contrast grey bark and speckled yellow-green pixels create severe pixel noise at 1x and clash with the warm brown reference dead tree in the same scene",
+       "where": "Y piece trunk and branches"
+      }
+     ],
+     "minors": []
+    },
+    "pick": "X",
+    "why": "X matches the reference dead-tree bark palette and shading while clearly reading as draped hanging moss over dead branches at 1x."
+   },
+   "theme-climate-r1__tc.sw_wisp": {
+    "X": {
+     "majors": [
+      {
+       "problem": "Saturated cyan palette clashes with the warm Beodeul swamp palette, and the solid reflection disc makes it read like a rigid glass marker or pin rather than a floating flame",
+       "where": "X parts 1..3 orb and lower reflection disc"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "Animation frames show very little motion at 1x",
+       "where": "X scene frames 1..3 at 1x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Flame silhouette in the middle frame is slightly diamond-symmetric and lacks a subtle glow on the water below",
+       "where": "Y part 2 flame body"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y harmonizes with the reference lantern's warm spectral glow and reads clearly as a flickering floating will-o'-wisp across its three animation frames."
+   }
+  },
+  "opus1": {
+   "theme-climate-r1__tc.sw_boardwalk": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the broken-end cell shows a flat grey-blue backdrop through the gap. It reads as a cutout rather than swamp water and clashes with the dark green bog in the scene",
+       "where": "part 2 / right cell of piece"
+      },
+      {
+       "problem": "the support post/rail on the front edge reads a little like a table apron and not much like pilings",
+       "where": "part 1 front"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the splintered planks and diagonal broken boards are busier and noisier than the reference's calm plank texture. At 1x the end looks messy",
+       "where": "part 2 / scene boardwalk end"
+      },
+      {
+       "problem": "the grey-blue gap shows through the broken section the same way as in X",
+       "where": "part 2"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X keeps the plank rhythm and value range of the Beodeul deck and reads more cleanly as a boardwalk end at 1x. Y's splintering turns into noise."
+   },
+   "theme-climate-r1__tc.sw_idol": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the face is mostly horizontal grey bands with a soft lumpy outline. At 1x it reads more as a mossy boulder than a carved idol head",
+       "where": "face/front at 1x"
+      },
+      {
+       "problem": "the waterline contact is a pale grey rim and not dark bog, so the head looks set on top of the water rather than half sunk",
+       "where": "base"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "it sits on a large pale olive mud mound that does not match the dark bog water around it and looks like a pasted island. It also does not read as 'half sunk in bog'",
+       "where": "base mound in scene"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "the head is small inside the 2x2 footprint and the spiky crown is noisy at 1x",
+       "where": "head/crown"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X reads as a stone mass sunk directly into the water with a coherent value range, while Y's bright mud island clashes with the bog."
+   },
+   "theme-climate-r1__tc.sw_lily": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the pads are dense, bright lime clumps with a lot of volume. They read a bit like floating shrubs, not flat pads on water",
+       "where": "both variants"
+      },
+      {
+       "problem": "the saturation runs slightly above the reference's muted swamp water",
+       "where": "pad highlights"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the flat ring outlines with notches read slightly diagrammatic and less textured than the reference",
+       "where": "pad edges"
+      },
+      {
+       "problem": "the small specks around the pads add scattered noise",
+       "where": "part 2 surroundings"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y reads as flat lily pads lying on the water surface in top-down view and blends with the swamp water, while X looks like floating bushes."
+   },
+   "theme-climate-r1__tc.sw_moss": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the hanging moss is pale grey-green streaks to one side and could read as dripping paint at 1x",
+       "where": "left branch moss"
+      },
+      {
+       "problem": "the trunk base needs a slightly stronger ground contact shadow",
+       "where": "base"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "the moss mass is so dense and yellow-green that it hides the dead branches. At 1x it reads as a small leafy/weeping tree, not dead branches with hanging moss",
+       "where": "crown at 1x and in scene"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "the moss is speckled with light dots, which adds noise compared with the reference's clean bark shading",
+       "where": "moss strands"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X keeps the bare dead-trunk silhouette of the reference tree with moss hanging off it, so it reads as its purpose at 1x."
+   },
+   "theme-climate-r1__tc.sw_wisp": {
+    "X": {
+     "majors": [
+      {
+       "problem": "it is a large, saturated cyan balloon with a ground glow puddle. It reads as a toy balloon or water drop, and its look (palette and clip-art shine) does not belong with the muted Beodeul set",
+       "where": "piece at 1x and in scene"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "the frame-to-frame change is small; the bob is weak",
+       "where": "frames 1-3"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "it is very small at 1x and barely reads as more than a spark. A soft glow halo would help",
+       "where": "scene 1x"
+      },
+      {
+       "problem": "the yellow-green flame is close in hue to the lamp reference but could use one more shading step",
+       "where": "flame body"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y reads as a small flickering marsh flame in a palette that matches the reference lamp. X looks like a cyan toy balloon."
+   }
+  },
+  "opus2": {
+   "theme-climate-r1__tc.sw_boardwalk": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The broken end reads more like a gap with a cross-beam than splintered planks. The water showing through is flat grey-blue, not the swamp water colour.",
+       "where": "part 2 / X piece 3x right cell"
+      },
+      {
+       "problem": "The support-post fronts look a little like furniture legs (table-like rail).",
+       "where": "part 1 front edge"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The diagonal fallen plank is busy and noisy at 1x, so the broken end is harder to read.",
+       "where": "part 2 / Y piece 1x"
+      },
+      {
+       "problem": "The water gap is a flat grey hole that doesn't match the swamp water tile.",
+       "where": "part 2 background"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's tilted, splintered plank reads more clearly as a broken boardwalk end, and its wood texture matches the reference deck equally well."
+   },
+   "theme-climate-r1__tc.sw_idol": {
+    "X": {
+     "majors": [
+      {
+       "problem": "At 1x it reads as a grey helmet or robot head sitting on top of the bog, not half sunk. There is no waterline or bog occlusion.",
+       "where": "X scene 1x/2x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The stone is fairly uniform light grey with few moss patches, so it looks a bit clean for a swamp.",
+       "where": "X piece 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The head is small for 2x2, and the spiky crown reads a bit like a castle turret at 1x.",
+       "where": "Y piece 1x / scene 1x"
+      },
+      {
+       "problem": "The yellow-ochre mud mound is lighter than the surrounding bog water and grass palette.",
+       "where": "Y piece 3x base"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's mud mound gives the head contact and a half-sunk feel, while X floats on the bog like a helmet."
+   },
+   "theme-climate-r1__tc.sw_lily": {
+    "X": {
+     "majors": [
+      {
+       "problem": "The pads are drawn as bushy, leafy heaps rather than flat floating discs, so at 1x they read as shrubs on the water.",
+       "where": "X piece 3x / X scene 2x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "Light lime highlights are brighter than the reference swamp greens.",
+       "where": "part 1, part 2"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The pads are small and sparse, so the 'cluster' reads a little thin at 1x.",
+       "where": "Y scene 1x"
+      },
+      {
+       "problem": "The tiny light-blue flecks around the pads look like noise.",
+       "where": "Y piece 3x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's flat round pads with notches read correctly as lily pads lying on the water in 3/4 view."
+   },
+   "theme-climate-r1__tc.sw_moss": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "There are few branches, so it reads more as a stump with moss curtains than as dead branches.",
+       "where": "X piece 3x"
+      },
+      {
+       "problem": "The moss strands are pale grey-green and stringy, a bit thin at 1x.",
+       "where": "X scene 1x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "The upper half is a dense yellow-green moss blob that hides the branches, so at 1x it reads as a bushy small tree or broom rather than dead branches with hanging moss.",
+       "where": "Y piece 1x / scene 1x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The blue-grey speckles in the moss clash with the reference palette.",
+       "where": "Y piece 3x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X keeps the dead-wood silhouette consistent with the reference stilt tree, with moss clearly hanging from it."
+   },
+   "theme-climate-r1__tc.sw_wisp": {
+    "X": {
+     "majors": [
+      {
+       "problem": "The saturated cyan glossy orbs with a cyan ground ring look like clip-art balloons or gems. They are off-palette against the muted swamp and don't read as a ghostly light.",
+       "where": "X piece 3x / X scene 2x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The frames differ only slightly, so the animation is barely visible at 1x.",
+       "where": "X scene frames 1..3"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The flame is very small at 1x and could be missed on dark water.",
+       "where": "Y scene 1x"
+      },
+      {
+       "problem": "There is no glow or light pooling on the ground beneath it, so it feels slightly detached.",
+       "where": "Y scene 2x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's pale yellow-green flickering flame with sparks reads as a will-o-wisp and fits the muted swamp palette, while X looks like cyan clip-art orbs."
+   }
+  },
+  "opus3": {
+   "theme-climate-r1__tc.sw_boardwalk": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the broken end shows dark gray where water should be, so at 1x it reads more like a gap than like water under the planks",
+       "where": "part 2, right cell"
+      },
+      {
+       "problem": "the planks are a little more orange and blocky than the reference deck's weathered planks",
+       "where": "piece 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "the planks are cut into busy diagonal splinters and lose their plank form; at 1x the broken piece reads as scattered brown noise, not as the end of a boardwalk",
+       "where": "part 2 and the bottom of the scene column"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "the speckled texture is denser and noisier than the clean plank grain in the reference",
+       "where": "piece 3x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X keeps clear plank rows and a readable post-and-rail end that join the reference deck, while Y's broken end turns to noise at 1x."
+   },
+   "theme-climate-r1__tc.sw_idol": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "there is little bog contact at the bottom; it reads more as a stone head sitting on the water than half sunk into it",
+       "where": "base of piece, scene 2x"
+      },
+      {
+       "problem": "the face is a little generic, with stacked horizontal slabs, so it could pass for a rock pile",
+       "where": "piece 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the yellow-olive mud mound is bright and fairly flat next to the dark bog water and makes the piece look like it sits on a pedestal",
+       "where": "mound base, scene 2x"
+      },
+      {
+       "problem": "the head is small inside the 2x2 footprint and the crown spikes are hard to read at 1x",
+       "where": "piece 1x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X reads as a large mossy stone head at 1x with shading close to the reference, while Y's head is small and its bright mud mound dominates."
+   },
+   "theme-climate-r1__tc.sw_lily": {
+    "X": {
+     "majors": [
+      {
+       "problem": "the pads are bulky, lumpy bush-like clumps with no flat floating top plane, so they read as shrubs on the water rather than lily pads",
+       "where": "parts 1 and 2, scene 2x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "the bright yellow-green highlights are more saturated than the reference swamp palette",
+       "where": "piece 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the pads are fairly uniform ovals with a slightly stamped look; more variation in size and angle would help",
+       "where": "piece 3x"
+      },
+      {
+       "problem": "a few stray light pixels around the pads look like noise",
+       "where": "part 2"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's flat round pads with notches and small flowers read clearly as lily pads floating on the water, while X's pads read as bushes."
+   },
+   "theme-climate-r1__tc.sw_moss": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the moss strands are pale gray-green and thin, so at 1x they read weakly against the grass",
+       "where": "left side, scene 1x"
+      },
+      {
+       "problem": "the trunk is short and stubby next to the reference's dead tree",
+       "where": "piece 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "the hanging moss covers almost the whole piece as a bright yellow-green and pale curtain, so at 1x it reads as a leafy bush or willow rather than dead branches with moss",
+       "where": "piece 1x, scene 1x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "the speckled pale highlights make it noisy against the reference's clean dead-tree shading",
+       "where": "piece 3x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X keeps a readable dead trunk and branches with moss hanging from them, close to the reference dead tree, while Y reads as a leafy shrub."
+   },
+   "theme-climate-r1__tc.sw_wisp": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the cyan teardrop with a flat ellipse under it reads a little like a lamp or water drop on a base; the reflection ellipse is heavy",
+       "where": "parts 1-3"
+      },
+      {
+       "problem": "the three frames differ only slightly, so the animation will be subtle",
+       "where": "scene frames 1..3"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the wisps are small, and the pale yellow can be lost against the olive grass at 1x",
+       "where": "scene 1x, right edge"
+      },
+      {
+       "problem": "the yellow-green flame is close to the reference lamp's light, so it reads less clearly as an eerie swamp light",
+       "where": "piece 3x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y reads as a floating flame with drifting sparks and has no grounded base, which fits a will-o-wisp better than X's drop-on-a-base shape."
+   }
+  }
+ }
+}

@@ -22,6 +22,15 @@ const THEMES: Record<string, Theme> = {
   maze: { id: "maze", label: "미궁", field: ["enemy_skeleton_bone", "enemy_armor_living"], midBoss: "enemy_armor_living", boss: "enemy_minotaur_maze" },
   dragon: { id: "dragon", label: "용", field: ["enemy_dragon_whelp"], midBoss: "enemy_wyvern_cliff", boss: "enemy_dragon_red" },
   demon: { id: "demon", label: "마왕", field: ["enemy_imp_mischief", "enemy_knight_fallen"], midBoss: "enemy_knight_fallen", boss: "enemy_demon_lord" },
+  // 2026-10-23 dungeon-themes: 새 주제
+  forest: { id: "forest", label: "숲", field: ["enemy_wolf_grey", "enemy_plant_carnivore", "enemy_bee_giant"], midBoss: "enemy_wolf_dire", boss: "enemy_troll_cave", bossName: "숲의 늙은 트롤" },
+  swamp: { id: "swamp", label: "늪", field: ["enemy_lizardman_spear", "enemy_snake_viper", "enemy_wisp_blue"], midBoss: "enemy_ooze_acid", boss: "enemy_hydra_three", bossName: "늪의 히드라" },
+  pyramid: { id: "pyramid", label: "피라미드", field: ["enemy_mummy_bandage", "enemy_scorpion_sand"], midBoss: "enemy_worm_sand", boss: "enemy_golem_crystal", bossName: "왕묘의 수호 거상" },
+  ice: { id: "ice", label: "얼음", field: ["enemy_wolf_grey", "enemy_spirit_wind", "enemy_ghost_pale"], midBoss: "enemy_golem_crystal", boss: "enemy_dragon_blue", bossName: "빙굴의 푸른 용" },
+  magic: { id: "magic", label: "마법탑", field: ["enemy_eye_floating", "enemy_sword_flying", "enemy_mage_rogue"], midBoss: "enemy_gargoyle_stone", boss: "enemy_lich_frost", bossName: "탑의 대마법사" },
+  abyss: { id: "abyss", label: "마계", field: ["enemy_imp_mischief", "enemy_spirit_dark", "enemy_wraith_dark"], midBoss: "enemy_behemoth_horn", boss: "enemy_demon_lord", bossName: "마계의 군주" },
+  castle: { id: "castle", label: "성", field: ["enemy_skeleton_knight", "enemy_armor_living", "enemy_gargoyle_stone"], midBoss: "enemy_knight_fallen", boss: "enemy_knight_fallen", bossName: "타락한 성주" },
+  magitek: { id: "magitek", label: "마도 광산", field: ["enemy_golem_iron", "enemy_kobold_digger"], midBoss: "enemy_golem_iron", boss: "enemy_behemoth_horn", bossName: "광산 깊은 곳의 괴수" },
 };
 
 /** 이름 낱말이 종류보다 먼저다(「고블린 굴」은 cave 지만 고블린). */
@@ -32,11 +41,13 @@ const WORDS: readonly [RegExp, string][] = [
 ];
 
 export function dungeonTheme(args: Record<string, unknown>): Theme {
-  const name = `${typeof args.name === "string" ? args.name : ""} ${typeof args.theme === "string" ? args.theme : ""}`;
+  const name = `${typeof args.name === "string" ? args.name : ""} ${typeof args.theme === "string" ? args.theme : ""} ${typeof args.inspiration === "string" ? args.inspiration : ""}`;
   for (const [re, id] of WORDS) if (re.test(name)) return THEMES[id]!;
+  if (/ff\s*6|ff\s*vi|파판\s*6|마도|magitek/i.test(name) && args.type === "mine") return THEMES.magitek!;
   const type = typeof args.type === "string" ? args.type : "catacomb";
   if (args.lair === true) return THEMES.goblin!;
   if (args.flooded === true) return THEMES.water!;
+  if (type === "tower") return THEMES.magic!;
   if (args.direction === "up" && Number(args.floors) > 1) return THEMES.tower!;
   if (type === "volcano") return THEMES.volcano!;
   if (type === "temple") return THEMES.temple!;
@@ -44,6 +55,13 @@ export function dungeonTheme(args: Record<string, unknown>): Theme {
   if (type === "sewer") return THEMES.sewer!;
   if (type === "mine") return THEMES.mine!;
   if (type === "labyrinth") return THEMES.maze!;
+  if (type === "forest") return THEMES.forest!;
+  if (type === "swamp") return THEMES.swamp!;
+  if (type === "pyramid") return THEMES.pyramid!;
+  if (type === "ice") return THEMES.ice!;
+  if (type === "tower") return THEMES.magic!;
+  if (type === "otherworld") return THEMES.abyss!;
+  if (type === "castle") return THEMES.castle!;
   return THEMES.undead!;
 }
 

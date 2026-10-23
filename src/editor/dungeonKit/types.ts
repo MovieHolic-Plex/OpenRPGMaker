@@ -2,7 +2,7 @@
 import type { Grid } from "./grid";
 
 /** 던전 종류 — 배치 문법·분위기의 이름. 어느 칩셋이 어느 종류를 지을 수 있는지는 어댑터가 정한다(dungeonKit/adapters.ts). */
-export const DUNGEON_TYPES = ["catacomb", "castle", "labyrinth", "sewer", "cave", "temple", "mine", "volcano", "ice"] as const;
+export const DUNGEON_TYPES = ["catacomb", "castle", "labyrinth", "sewer", "cave", "temple", "mine", "volcano", "ice", "forest", "swamp", "pyramid", "tower", "otherworld"] as const;
 export type DungeonType = (typeof DUNGEON_TYPES)[number];
 export type DungeonGrammar = "rooms" | "maze" | "blob";
 
@@ -12,6 +12,7 @@ export const DUNGEON_ROOM_KINDS = [
   "cavern", "lake", "grotto", "forge",                                         // 동굴·화산
   "nave",                                                                      // 신전
   "junction", "stope", "depot",                                                // 광산·미궁
+  "library",                                                                   // 마법탑(서고)
 ] as const;
 export type DungeonRoomKind = (typeof DUNGEON_ROOM_KINDS)[number];
 
@@ -22,6 +23,13 @@ export const DUNGEON_STYLES = ["catacomb", "castle"] as const;
 export type DungeonStyle = (typeof DUNGEON_STYLES)[number];
 export const DUNGEON_SIZES = ["small", "medium", "large"] as const;
 export type DungeonSize = (typeof DUNGEON_SIZES)[number];
+
+/**
+ * 배치 가족(2026-10-23 dungeon-themes): 같은 종류를 두 번 불러도 복사본이 아니게 — 방 구성의 뼈대가 다르다.
+ * linear 한 줄 사슬(곁방 하나 둘) · hub 가운데 큰 방에서 사방 갈래 · loop 고리 하나가 도는 순환 · vertical 여러 층(계단)으로 쌓는다.
+ */
+export const DUNGEON_LAYOUTS = ["linear", "hub", "loop", "vertical"] as const;
+export type DungeonLayoutFamily = (typeof DUNGEON_LAYOUTS)[number];
 
 export interface DungeonRoomInput {
   readonly id?: string;
@@ -36,8 +44,9 @@ export interface DungeonRoomInput {
   /** 통로 길이(칸)와 앞 방 가운데에서의 옆 어긋남(칸) — 지정하면 그 값만 시도한다(대칭 신전·곧은 갱도). */
   readonly len?: number;
   readonly shift?: number;
-  /** round = 네 모서리를 비스듬히 깎은 팔각 방(탑 층 — 둥근 탑 안으로 읽히게, 2026-10-23). apse = 아래 두 모서리만 깎는다(북쪽 벽은 문·계단을 달 만큼 평평하게). */
-  readonly shape?: "round" | "apse";
+  /** ring = 둥근 탑 링 키트(bd-dg-tower-ring-<w+2>, 바닥 w×h = 링 지름-2 × 지름-4, 통로는 남쪽 가운데 2칸 — 시공기가 링으로 찍고, 키트가 없으면 round 와 같다).
+   *  round = 네 모서리를 비스듬히 깎은 팔각 방(탑 층 — 둥근 탑 안으로 읽히게, 2026-10-23). apse = 아래 두 모서리만 깎는다(북쪽 벽은 문·계단을 달 만큼 평평하게). */
+  readonly shape?: "round" | "apse" | "ring";
 }
 
 export interface DungeonSpec {
@@ -54,6 +63,8 @@ export interface DungeonSpec {
   readonly vault?: boolean;
   readonly seed?: number;
   readonly size?: DungeonSize;
+  /** 배치 가족(rooms 를 주지 않았을 때 방 구성 뼈대·고리 수). 생략하면 시드로 고른다. */
+  readonly layout?: DungeonLayoutFamily;
   /** 맵 가로·세로 바람(칸). 방 구성을 정할 때 방 수·크기를 이 넓이에 맞추고, 배치가 이 비율에 가깝게 자란다. */
   readonly width?: number;
   readonly height?: number;
@@ -85,7 +96,7 @@ export interface DungeonStairCell {
 }
 
 export interface Rect { x: number; y: number; w: number; h: number }
-export interface PlacedRoom extends Rect { id: string; kind: DungeonRoomKind; from: string | null; dir: DungeonDir | null; depth: number; shape?: "round" | "apse" }
+export interface PlacedRoom extends Rect { id: string; kind: DungeonRoomKind; from: string | null; dir: DungeonDir | null; depth: number; shape?: "round" | "apse" | "ring" }
 export interface PlacedCorridor { a: string; b: string; dir: DungeonDir; rect: Rect; loop?: boolean }
 
 
@@ -115,7 +126,11 @@ export interface DungeonCompose {
   readonly anchors: { boss: string | null; treasure: string | null; gate: { x: number; y: number; to: string } | null };
   readonly spots: Record<string, { x: number; y: number }[]>;
   readonly picture: string[];
-  readonly liquid: { readonly kind: "water" | "lava" | null; readonly cells: number; readonly bridges: number };
+  readonly liquid: { readonly kind: "water" | "lava" | "void" | null; readonly cells: number; readonly bridges: number };
+  /** 야외 던전(숲·늪): 벽 칸 = 수관 숲. 맵에 쓸 때 writeBeodeulCanopy 로 2·3층에 깐다(compose 는 바닥만 칠한다). */
+  readonly canopy?: { readonly style: "leaf" | "snow"; readonly cells: readonly number[] };
+  /** 자연 물가 둑 덧그림(2층): 액체 칸 목록 — 맵에 쓸 때 beodeul_nature 둑 칸(256 이웃 모양)으로 덮는다. 다리 칸은 이웃(같은 물)로 친다. */
+  readonly banks?: { readonly style: "grass" | "bog" | "lava"; readonly cells: readonly number[] };
   readonly counts: Record<string, number>;
   /** 이 층을 그린 어댑터와 쓴 타일셋(몬스터 키트는 시트마다 타일셋이 다르다). */
   readonly adapter?: string;

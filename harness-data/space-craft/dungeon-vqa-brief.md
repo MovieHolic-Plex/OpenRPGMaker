@@ -1,4 +1,4 @@
-# Dungeon VQA brief (fixed — every round uses this text unchanged)
+# Dungeon VQA brief (fixed — every round uses this text unchanged; M11–M13 added 2026-10-23 for the dungeon-themes dt-* cases)
 
 You are a fresh, adversarial visual QA judge for RPG dungeon/cave maps that an editor AI assistant built from plain-Korean requests.
 Do not trust the assistant's final answer. Do not open any earlier `vqa*.json` or `~/claude-viz/*.html` before you have scored.
@@ -21,6 +21,9 @@ plus `overall` = min(mean of the three, lowest axis + 1). Apply the caps: any ma
 | M8 junk | Leftover duplicate/extra maps the assistant made, or objects from a different chipset family stamped in. | 2 |
 | M9 render defect | Black square holes in walls/ceiling rims, floating walls or props, props on void, enemies with no visible sprite, blocked paths. | 2 |
 | M10 theme | The boss/enemies clearly do not match the request's theme (e.g. a red dragon in a crypt, slimes in a lava cave). Count once per case. | 1 |
+| M11 theme read | (dt-* cases) The map does not read unmistakably as the requested theme at 1× — e.g. a "forest" that looks like a stone cave, a "pyramid" that looks like a grey crypt, a "magic tower" with no books/circles/arcane anchors, a "demon realm" that looks like a plain cave, an "ice cave" without ice. Judge walls/ceiling, floor, props and the boss room together; one generic room is fine, the whole map is not. | 1 |
+| M12 copies | (dt-* cases, judged per theme pair `-a`/`-b`) The two maps of the same theme are near-copies: same room graph shape and same placement of anchors/gimmick, only shifted. Different layout family (chain / hub / loop / stacked floors) **or** a different gimmick counts as different. Record it on the `-b` case. | 1 |
+| M13 gimmick | (dt-* cases) No theme gimmick a player can use (lever gate, lowered bridge, teleporter pair, minecart, ice slide, sand-pit trap, …), or the gimmick is broken (a pad/lever nobody can reach, a transfer that lands on a wall, a lever that opens nothing). Read `events.json` for the gimmick events. | 6 |
 
 Anything else that is noticeable but small is a minor. Never invent a major that is not in this list; never drop an item from this list.
 If art is missing (e.g. no lava edge tiles exist), still record the visible problem, and add `"art_only": true` to that major.
