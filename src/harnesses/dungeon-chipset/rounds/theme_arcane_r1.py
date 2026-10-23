@@ -928,9 +928,9 @@ def _mottle(i):
                 g[y][x] = 'h'
     for y in range(16):                                  # 깊은 홈 속(e) · 가장 높은 알갱이 끝(H) — 판 한 장에 여섯 단
         for x in range(16):
-            if g[y][x] == 'd' and deep[y][x] < -2.6:
+            if g[y][x] == 'd' and deep[y][x] < -2.2:
                 g[y][x] = 'e'
-            elif g[y][x] == 'h' and deep[y][x] > 2.5:
+            elif g[y][x] == 'h' and deep[y][x] > 2.1:
                 g[y][x] = 'H'
     return [''.join(r) for r in g]
 
