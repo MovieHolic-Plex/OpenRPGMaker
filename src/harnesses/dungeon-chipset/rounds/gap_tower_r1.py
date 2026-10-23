@@ -257,62 +257,62 @@ A2 = {
         'rqyrrrrrrqyrrqyr',
         'qqqqqqqqqqqqqqqq',
     ],
-    'floor': [   # 불규칙 판돌(토러스 덩이 지도 — 판이 칸 경계를 넘고, 칸을 가로지르는 온 줄 줄눈이 없다): 판마다 왼위 모서리 빛·윗·왼 빛·밑·오른 그늘·몸 반점, 누런 판 + 붉은 판, 회색 잔돌 k·d, 줄눈 P
-        'LOOPLQQPLppPORMP',
-        'CNRPOCNPpomPPPPP',
-        'ONRPQCNPpnmPLQQP',
-        'ORRPQCNPpmmPQCNP',
-        'ONRPQNRPpmmPQCNP',
-        'ORRPPPPPPPmPQCNP',
-        'ORMPLCOOOPpPQNRP',
-        'PPPPORNNPPPPPPPP',
-        'pLLPONRPLQQQQPLL',
-        'ponPONRPQCNCPPLn',
-        'nnmPCRMPQCNPLpnn',
-        'PPPPPPPPOQNPPPPP',
-        'LOOOCCOPQNNPLOOP',
-        'OONNNNRPQCNPCNRP',
-        'CRRRRRMPQNRPONRP',
-        'PPPPPPPPPPPPONRP',
+    'floor': [   # 큰 판돌(4px 단위 덩이 지도, ㄱ자 판 포함, 토러스 — 판이 칸 경계를 넘고 온 줄 줄눈이 없다): 판마다 왼위 모서리 빛·윗·왼 빛·밑·오른 그늘·몸 반점, 누런 판 + 붉은 판, 줄눈 P
+        'LOOPpnmPLCOOOOCP',
+        'QCNPonmPONNNNCRP',
+        'OCNPpmPPORRRRRMP',
+        'QCNPPPPPPPPPPPPP',
+        'CCNPLOCOOOOPLQQQ',
+        'OONPCNCNNNRPOCQQ',
+        'NNRPORRRRNRPQNNN',
+        'PPPPPPPPkNRPPPPP',
+        'LQQQQQOPONRPLOOP',
+        'QCCkooNPONRPONRP',
+        'QoOCNNRPORMPONRP',
+        'QCCCPPPPPPPPCNRP',
+        'QCNPLppPLOOORNRP',
+        'QCNPpnmPOCONNCRP',
+        'QNRPpnmPORRRRRMP',
+        'PPPPpnmPPPPPPPPP',
     ],
-    'floor_var': [[   # 변형 = 판 하나만 더 나누고 색을 바꾼다(칸 경계 줄눈은 같다)
-        'LOCPLQOPLppPORMP',
-        'ONRPQCNPpnmPPPPP',
-        'ORRPQCNPpnmPLQOP',
-        'OCRPQCNPpnmPQCNP',
-        'ONRPQNRPpmmPQCNP',
-        'ONRPPPPPPPmPQCNP',
-        'ORMPLQQQQPoPQNRP',
-        'PPPPQCCNPPPPPPPP',
-        'LLLPQCNPLOOOQPLL',
-        'oonPQCNPOONCPPLn',
-        'nnmPQNRPQCNPLLnn',
-        'PPPPPPPPQCNPPPPP',
-        'LOOOPLpPQCNPLOOP',
-        'CNNRPpmPOCNPONRP',
-        'ORRMPoPPQNRPOkRP',
-        'PPPPPPPPPPPPORRP',
+    'floor_var': [[   # 변형 = 같은 덩이 지도에서 안쪽 줄눈만 지워 큰 판으로 + 판 색 바꿈(칸 경계 줄눈은 같다)
+        'LQQPCNRPLLLLLLLP',
+        'OCNPONRPLooooonP',
+        'OONPORMPLnnnnnmP',
+        'ONNPPPPPPPPPPPPP',
+        'CCNPLQQQQQQPLQQQ',
+        'CCNPQNCNCCNPQdCC',
+        'NNRPQCCOCCNPQNNN',
+        'PPPPOCOOCCNPPPPP',
+        'LQOQkCCCCCNPLOOP',
+        'OCCOCCCCCCNPCNRP',
+        'QCCCNNNNNNRPORRP',
+        'QCCCPPPPPPPPCNRP',
+        'QkNPLCOPLOCONNRP',
+        'QNNPONRPORNNRNRP',
+        'QNRPOCRPORRRRRMP',
+        'PPPPCNRPPPPPPPPP',
     ], [
-        'LCOPLQQPLppPCRMP',
-        'CRRPQNRPonmPPPPP',
-        'ONRPPPPPpomPLQQP',
-        'OkRPLLLPpnmPQCNP',
-        'ONRPLnmPpmmPQdNP',
-        'CCRPPPPPPPmPQONP',
-        'ORMPLOCCOPpPQNRP',
-        'PPPPONNkPPPPPPPP',
-        'LpLPONRPLOOOCPLp',
-        'oonPONRPCNONPPpo',
-        'nnmPORMPCNRPLLnn',
-        'PPPPPPPPOCRPPPPP',
-        'LOOCOOOPONRPLOCP',
-        'ONNRNNRPOCRPONRP',
-        'ORRRRRMPCRMPOnRP',
-        'PPPPPPPPPPPPONRP',
+        'LppPQQNPLOOOCOCP',
+        'onmPQCNPCCNNNNRP',
+        'pnmPQNRPORRRRRMP',
+        'pnmPPPPPPPPPPPPP',
+        'oomPLQOQQOQPLppp',
+        'pnmPQCCkCCNPonNn',
+        'mmPPQNNNCCNPommm',
+        'PPPPPPPPCkNPPPPP',
+        'LOCOCOOPOCOCQQQP',
+        'CnRNkNRPOCCCCNNP',
+        'ONNNRRMPOCOCCNNP',
+        'ONNNPPPPQQNCQoNP',
+        'ONRPLQQPQkOCCoNP',
+        'CORPQCNPQCCCCCNP',
+        'ORMPQCNPONNNNNRP',
+        'PPPPQCNPPPPPPPPP',
     ]],
     'floor_mix': [0, 1, 2, 0, 1],
     'course_var': True,   # 둘레 칸도 변형을 섞는다(한 판 도장 반복 방지)
-    'iface_shift': 0,
+    'iface_shift': 1,   # 앞면 전체 한 단 밝게(그늘 초승달이 아니라 빛 받는 벽)
     'dark': {'L': 'Q', 'Q': 'O', 'O': 'C', 'C': 'N', 'N': 'R', 'R': 'M', 'M': 'P', 'P': 'P', 'p': 'o', 'o': 'n', 'n': 'm', 'm': 'P', 'd': 'k', 'k': 'M'},
     # 나선 계단(버들항 나선 계단 말): 나무 디딤판 — 앞 끝 턱 I · 몸 H · 결 J · 뒤 이음 K · 판 두께 V V Z
     'tread': ['HHIHHJJHHHHKHHHH', 'HJJHHHHHIHHHHJJH', 'HHHHKHHHJJJHHHHH', 'JHHHHHIHHHHHKHHJ', 'HHKJJHHHHHJHHHHH', 'HHHHHHJHHKHHIIHH'],
@@ -713,7 +713,7 @@ def carve_flat(cv, kind, geo, Ro, rows, u0, leg, v0=0):
         return
     y0 = itop[min(xs, key=lambda x: abs(ucol[x] - w // 2))] + v0
     for (x, y), k in kind.items():
-        if k != 'face' or x not in ucol:
+        if k not in ('face', 'band') or x not in ucol:   # 차양 윗줄은 띠 자리까지 올라갈 수 있다(앞면 윗줄이 곡면이라 기운다)
             continue
         col, v = ucol[x], y - y0
         if 0 <= col < w and 0 <= v < len(rows) and rows[v][col] != '.':
@@ -761,14 +761,15 @@ def light_patch(sc, kind, c, Ro, u0, top=0):
 #   A1 = 벽을 따라 오르는 좁은 돌 디딤판 7 + 계단참(설계 2): 단마다 둘레 6°(약 7px 깊이), 2px 씩 오르고, 계단참 옆 안벽에 문틀 문.
 #   A2 = 쇠 기둥을 도는 나무 나선 계단(설계 1, 버들항 나선 계단 말): 둥근 돌 받침 위 디딤판 7(40° 씩, 3px 씩), 북쪽 맨 위 판이 벽에 닿는다.
 STAIR_RO = 96
-RUN = {'A1': {'steps': 5, 'a_lo': 72, 'deg': 9, 'rise': 2, 'land': 6, 'w': 12,
-              # 낱낱의 단 5 + 계단참: 단마다 앞면 2·4·6·8·10px, 계단참 12px. 윗면 = 탑 회색 돌 8단(iron1 iron2 cata3 cata4 cata5 stone4 stone5 rim6),
-              # 엇갈린 돌은 푸른 회색 몸(vrock3·iron3). 몸 단은 위로 갈수록 밝다, 앞 턱 = 몸 + 2
-              'lad': 'ijwylqQH', 'lad2': 'ijGXlqQH', 'lad3': 'iMIyFAQH', 'body': [3, 3, 4, 4, 5, 5], 'stone_len': 7,
-              'face_body': ['j', 'w', 'G', 'I', 'j', 'M'], 'face_lit': 'y', 'face_top': 'X', 'chip': 'F',   # 돌 셋째마다 따뜻한 회갈색(rim) 돌
+RUN = {'A1': {'steps': 5, 'a_lo': 72, 'deg': 9, 'rise': 3, 'land': 6, 'w': 12,
+              # 낱낱의 단 5 + 계단참: 앞면 2·5·8·11·13px(가파르게), 계단참 14px(문이 사람 키에 가깝게 서도록). 윗면 = 탑 회색 돌 한 재질 8단(iron1 iron2 cata3 cata4 cata5 stone4 stone5 rim6),
+              # 돌마다 몸 명암만 한 단 엇갈림(색조 섞지 않음). 몸 단은 위로 갈수록 밝다, 앞 턱 = 몸 + 2
+              'heights': [2, 5, 8, 11, 13, 14],
+              'lad': 'ijwylqQH', 'body': [3, 3, 4, 4, 5, 5], 'stone_len': 7,
+              'face_body': ['w', 'j', 'w', 'w'], 'face_lit': 'y', 'face_top': 'l',
               'shadow': ('J', 'z'),   # 바닥 그림자: 돌 바로 옆 1px 푸른 회색(차가운 바닥 어둠) 한 줄만
-              # 계단참 끝 안벽 문(20열 × 21행 — 문 안 14px, 사람보다 크다): 두 돌 상인방 · 돌마다 이음 문설주 · 푸른 보랏빛 문 안 · 빛 받는 문턱 돌
-              'door': ['QQQQQQQQQjQQQQQQQQQq', 'lqllllllljllllllllyi', 'yyyyyyyyyjyyyyyyyyyi', 'qlKKKKKKKKKKKKKKKDli', 'lyK,K,K,K,K,K,K,KDyi', 'lyKK,K,K,K,K,K,KJDyi', 'yyK,,,J,,,,,,J,,,Dyi', 'jjK,,,,,,J,,,,,,JDji', 'qlK,,J,,,,,,J,,,JDli', 'lyK,,,,,J,,,,,,J,Dyi', 'lyK,J,,,,,,J,,,,,Dyi', 'yyK,,,,J,,,,,,J,JDyi', 'jjKJ,,,,,,J,,,,,,Dji', 'qlKJ,J,J,J,J,J,J,Dli', 'lyK,J,J,J,J,J,J,JDyi', 'lyKJ,J,J,J,J,J,J,Dyi', 'yyKCJJJJJCJJJJJCJDyi', 'jjKJJJJJCJJJJJCJJDji', 'lyKJJJJJJJJJJJJJJDyi', 'qQQQQQQQQQQQQQQQQQQq', 'lyllllllllllllllllyi']}}
+              # 계단참 끝 안벽 문(20열 × 19행, 문 안 14px): 윗면이 보이는 차양 돌(3/4 윗면) + 둥근 모서리 두 돌 상인방 · 돌마다 이음 문설주 · 푸른 보랏빛 문 안 · 빛 받는 문턱 돌(계단참 윗면에 닿는다), 위로 벽 2줄
+              'door': ['.HHHHHHHHHHHHHHHHHH.', 'qQQQQQQQjQQQQQQQQQQi', 'lyyyyyyyjyyyyyyyyyyi', 'ijjjjjjjjjjjjjjjjjji', 'qqllllllljllllllllyi', 'qlyyKKKKKKKKKKKKyyli', 'lyyK,,,,,,,,,,,,KDyi', 'lyK,,,,,,,,,,,,,,Dyi', 'jjK,,,,,,,,,,,,,JDji', 'qlK,,,,J,,,,,,,,,Dli', 'lyK,J,,,,,,,J,,,,Dyi', 'yyK,,,,,,J,,,,,,JDyi', 'jjK,,J,,,,,,,J,,,Dji', 'qlK,,,,,,J,,,,,,,Dli', 'lyKJ,J,J,J,J,J,J,Dyi', 'yyKJJJJCJJJJJCJJJDyi', 'qQQQQQQQQQQQQQQQQQQq', 'lyllllllllllllllllyi', 'jjjjjjjjjjjjjjjjjjji']}}
 SPIRAL = {'A2': {'ang': 50, 'off': 21, 'R': 18, 'n': 7, 'span': 40, 'start': 100, 'rise': 3, 'post': 2}}
 
 
@@ -838,12 +839,13 @@ def _tread_fn(c, i):
 
 
 def _run_fn(P, i, fcx, fcy, a0, a1, rin, rout, e):
-    """벽 계단 단 i(낱낱의 돌 덩이): 윗면 = 돌 2~4장(덩이마다 회색/푸른 회색 몸 엇갈림), 앞 턱 빛, 아래 끝(a0 쪽) 모서리 빛 + 뒤 이음,
-    위 단일수록 밝다(몸 b 가 오른다, 둘레 띠보다 밝은 턱). 앞면(남쪽으로 늘어진 면, 높은 단일수록 길다) = 돌 덩이 하나씩 음영(윗줄 빛·왼 빛·몸·밑 줄눈·오른 그늘)
-    + 아래 끝 세로 그늘 줄(K·J) — 단과 단이 갈라 보인다. 맨 밑 줄 = 바닥 접지."""
-    Ls = (P['lad'], P['lad2'], P['lad3'])
-    b = P['body'][i]
+    """벽 계단 단 i(낱낱의 돌 덩이, 한 재질 회색 돌 8단): 윗면 = 돌 2~4장(돌마다 몸 명암 한 단 엇갈림), 아래 끝 모서리 빛·앞 턱 빛,
+    위 끝(다음 높은 단 밑)엔 그 단이 드리운 그늘 띠, 위 단일수록 밝다. 앞면(남쪽으로 늘어진 면, 2·5·8·11·14px 로 가파르게 길어진다)
+    = 돌 덩이 하나씩 음영 + 아래 끝 세로 이음(재질 어두운 단 — 먹 아님). 맨 밑 줄 = 바닥 접지(재질 가장 어두운 단)."""
+    L = P['lad']
+    b0 = P['body'][i]
     deg_px = 180.0 / math.pi
+    last = i == P['steps']
 
     def hsh(fx, fy, s_):
         v = (fx * 92821) ^ (fy * 68917) ^ (i * 1237 + s_ * 7919)
@@ -853,47 +855,44 @@ def _run_fn(P, i, fcx, fcy, a0, a1, rin, rout, e):
     def geo_(fx, fy):
         r = math.hypot(fx + 0.5 - fcx, fy + 0.5 - fcy)
         a = math.degrees(math.atan2(fcx - fx - 0.5, fcy - fy - 0.5))
-        return r, (a0 - a) * r / deg_px          # 아래 끝(a0)에서 둘레 거리(px)
+        return r, (a0 - a) * r / deg_px, (a - a1) * r / deg_px      # 아래 끝에서 거리, 위 끝까지 거리(px)
 
     def f(fx, fy, k, fp):
-        r, d = geo_(fx, fy)
+        r, d, dh = geo_(fx, fy)
         stone = int(d // P['stone_len'])
+        b = b0 - (1 if stone % 2 else 0)
         if k > 0:
             if k == e:
-                return 'm'                                          # 바닥 접지
+                return 'i'                                          # 바닥 접지
             if d < 1.0:
-                return 'K'                                          # 아래 끝 세로 그늘 줄(단 사이)
-            if d < 2.0:
-                return 'J'
+                return 'j'                                          # 아래 끝 세로 이음 1px(단 사이 — 옆면으로 읽히지 않게 가늘게)
             if k == 1:
-                return 'i'                                          # 턱 밑 그늘
+                return 'j'                                          # 턱 밑 그늘
             course = (k - 2) // 3
-            blk = int((d + course * 2) // 5)
             row = (k - 2) % 3
             col = (d + course * 2) % 5
+            blk = int((d + course * 2) // 5)
             body = P['face_body'][(blk + course + i) % len(P['face_body'])]
             if row == 2 and k < e - 1:
                 return 'i'                                          # 켜 줄눈
             if col < 1.0:
                 return 'i'                                          # 세로 줄눈
             if col < 2.0:
-                return P['face_lit']                                # 덩이 왼 빛
+                return P['face_lit']
             if row == 0:
-                return P['face_top']                                # 덩이 윗줄 빛
+                return P['face_top']
             if col >= 4.0:
-                return 'B'                                          # 덩이 오른 그늘
+                return 'j'
             hh = hsh(fx, k, 3)
             if hh < 3:
-                return 'D'
-            if hh == 3:
-                return P['chip']
+                return 'j'
             if hh == 4:
                 return P['face_lit']
             return body
-        L = Ls[(stone + i) % 3]
-        crack = (stone + i) % 4 == 1
         if d < 1.0:
-            return L[b + 1]                                         # 아래 끝 모서리 빛(낮은 단 쪽으로 떨어지는 턱)
+            return L[b + 1]                                         # 아래 끝 모서리 빛
+        if not last and dh < 2.5:
+            return L[b - 2] if dh < 1.2 else L[b - 1]               # 위 단이 드리운 그늘 띠
         if (fx, fy + 1) not in fp:
             return L[min(b + 2, len(L) - 1)] if hsh(fx, fy, 2) > 3 else L[b + 1]   # 앞 턱
         if (fx, fy + 2) not in fp:
@@ -905,9 +904,7 @@ def _run_fn(P, i, fcx, fcy, a0, a1, rin, rout, e):
         if d % P['stone_len'] < 1.0:
             return L[b - 2]                                         # 돌 이음
         if d % P['stone_len'] < 2.0:
-            return L[b + 1]                                         # 이음 다음 돌 끝 빛
-        if crack and abs((d % P['stone_len']) - 3.5 - (fy % 3) * 0.7) < 0.5:
-            return L[b - 2]                                         # 금(돌 하나 걸러 사선 금)
+            return L[b + 1]
         h = hsh(fx, fy, 0)
         if h < 2:
             return L[b - 1]
@@ -915,8 +912,6 @@ def _run_fn(P, i, fcx, fcy, a0, a1, rin, rout, e):
             return L[b + 1]
         if h == 5:
             return L[b - 2]
-        if h == 6:
-            return P['chip']                                        # 따뜻한 돌가루 반점
         return L[b]
     return f
 
@@ -948,12 +943,12 @@ def stair_layer(key, c):
             a0 = P['a_lo'] - i * P['deg']
             a1 = P['land'] if i == n else a0 - P['deg']
             fp = _sector(px, a0, a1, rin, rout)
-            e = P['rise'] * (i + 1)
+            e = P['heights'][i]
             items.append((fp, e, e, _run_fn(P, i, fcx, fcy, a0, a1, rin, rout, e)))   # 막힌 돌 덩이: 앞면이 바닥까지 — 높은 단일수록 앞면이 길다
             fps.append(fp)
         am = math.radians((P['a_lo'] - n * P['deg'] + P['land']) / 2)   # 문: 계단참 한가운데 뒤 안벽
         u_door = -Ri * math.asin(min(1.0, math.sin(am) * (Ri + 1) / Ri))
-        e = P['rise'] * (n + 1)
+        e = P['heights'][n]
         door = P['door']
         carve_flat(cv, kind, geo, Ro, door, u_door, leg, v0=WALL_H - e - len(door) + 1)   # 문 밑 1줄이 계단참 뒤에 묻힌다(계단참에서 바로 문으로), 줄은 화면 수평(기울지 않은 문)
         owner = _stack(cv, kind, items, leg)
