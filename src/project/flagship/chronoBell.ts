@@ -23,7 +23,7 @@ import { buildFallenStarOpening, FALLEN_STAR_TITLE_BACKGROUND } from "./fallenSt
 import { clearOrphanShadows, rimPit } from "./fallenStarMapPolish";
 import { FS_VALEN_START, FS_VAULT_LENS, rebuildFallenRooms } from "./fallenStarRooms";
 import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./fallenStarStory";
-import { reworkFallenTown } from "./fallenTown";
+import { ASTEL, buildAstel } from "./fallenAstel";
 import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX, ensureFallenValenChip } from "./fallenValenChip";
 import { buildFallenTownInteriors } from "./fallenTownInteriors";
 import { placeFallenStarVessel } from "./fallenStarVessel";
@@ -513,461 +513,133 @@ function walkPath(
 }
 
 /**
- * 포고가 끝나면 교단 행렬(발렌·기사·호위 둘)이 큰길을 따라 동문으로 걸어 나간다 — 예전에는 이리스 합류 때 제자리에서
- * 페이지 전환으로 사라졌다(가혹 검수 r12 major 「NPC 가 문까지 걷지 않는다」). 오프닝 아침 컷의 행렬처럼 셋 이상이 줄지어
- * 걷고(적대 VQA r2: 혼자 풀밭을 가로질렀다), 길은 포석(큰길·광장)만 밟는다. 대사가 이어지는 동안(기다리지 않음) 걷고,
- * 성문 통로에 닿으면 루트 끝의 각자 스위치로 지운다(떠남 페이지).
+ * 포고 무대와 행진 — 왕도 아스텔 포고 광장(fallenAstel.ts ASTEL.stage)에 칸 좌표로 세운다.
+ * 발렌은 분수 곁 포고 단 위에서 남쪽 군중에게 말하고, 호위 여덟은 발렌 뒤(북쪽) 성문 축 두 열에 줄 사이 한 칸씩 띄워 선다
+ * (뒷사람 머리가 앞사람 몸을 덮지 않게). 포고가 끝나면 호위가 두 줄로 성문 통로를 지나 숲길로 나가고, 발렌·기사가 맨 뒤
+ * 짝으로 따라간다. 모두 같은 걸음으로 곧게 북쪽으로 걸어 줄 간격이 그대로 유지된다. 성문 밖 숲길 칸에서 옅어지며 사라진다.
  */
-/**
- * 행진 길을 막고 선 떠도는 주민(movement random)을 길 밖 빈 칸으로 비켜 세운다. 마을 배치는 버들항 구성기(seed)가 정하고
- * 동문 곁 이정표가 문 앞을 한 칸 목으로 좁힌다 — #3240 이후 seed 7 마을에서는 꼬마 토비가 그 목에 서서 기사·발렌의
- * 동문 길이 없어졌다(#3253). 떠도는 주민은 어차피 움직이므로 처음 자리만 옮긴다(고정 NPC·문·조사 칸은 건드리지 않는다).
- */
-function clearMarchRoute(project: Project, hub: GameMap, exit: { x: number; y: number }, marcherIds: readonly string[]): void {
-  const marcherSet = new Set(marcherIds);
-  const roamers = hub.events.filter((e) => !marcherSet.has(e.id) && (e.pages ?? []).some((p) => p.movement?.type === "random"));
-  const roamerIds = new Set(roamers.map((e) => e.id));
-  for (const id of marcherIds) {
-    const npc = hub.events.find((e) => e.id === id);
-    if (!npc || walkPath(project, hub, npc, exit, id, { ignore: marcherSet })) continue;
-    const through = walkPath(project, hub, npc, exit, id, { ignore: new Set([...marcherSet, ...roamerIds]) });
-    if (!through) continue;
-    const onPath = new Set<string>([`${npc.x},${npc.y}`]);
-    let x = npc.x, y = npc.y;
-    for (const dir of through) { x += dir === "right" ? 1 : dir === "left" ? -1 : 0; y += dir === "down" ? 1 : dir === "up" ? -1 : 0; onPath.add(`${x},${y}`); }
-    for (const roamer of roamers) {
-      if (!onPath.has(`${roamer.x},${roamer.y}`)) continue;
-      const others = hub.events.filter((e) => e !== roamer);
-      let spot: { x: number; y: number } | undefined;
-      for (let r = 2; r <= 10 && !spot; r += 1) for (let dy = -r; dy <= r && !spot; dy += 1) for (let dx = -r; dx <= r && !spot; dx += 1) {
-        if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
-        const cx = roamer.x + dx, cy = roamer.y + dy;
-        if (cx < 1 || cy < 1 || cx >= hub.width - 1 || cy >= hub.height - 1 || !isPassable(project, hub, cx, cy)) continue;
-        if (onPath.has(`${cx},${cy}`) || others.some((e) => Math.abs(e.x - cx) + Math.abs(e.y - cy) <= 1)) continue;
-        // 옮긴 자리에서 마을 본체로 이어져야 한다(나무 사이 섬에 갇히지 않게).
-        if (!walkPath(project, hub, { x: cx, y: cy }, exit, roamer.id, { ignore: new Set([...marcherIds, ...roamerIds]) })) continue;
-        spot = { x: cx, y: cy };
-      }
-      if (spot) { roamer.x = spot.x; roamer.y = spot.y; }
-    }
-  }
-}
-
 function marchOffAfterProclamation(project: Project, hub: GameMap): void {
-  // 동문 = 숲으로 나가는 성문 통로 가운데 칸(reworkFallenTown). 일행은 통로 안까지 걸어 들어가 사라진다.
-  const gate = hub.events.find((e) => String(e.id).startsWith("ev_gate_") && JSON.stringify(e).includes('"mapId":"fs_forest"'));
+  const st = ASTEL.stage;
   const proclamation = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_event`);
   const list = proclamation?.pages?.[0]?.commands;
   const after = list?.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("교단보다 먼저"));
-  if (!gate || !list || after === undefined || after < 0) throw new Error("[fallen-star] 포고·동문을 찾지 못했다");
-  const exit = { x: gate.x, y: gate.y };
+  if (!list || after === undefined || after < 0) throw new Error("[fallen-star] 포고를 찾지 못했다");
   const knight = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_knight`);
   const valen = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_valen`);
   if (!knight || !valen) throw new Error("[fallen-star] 발렌·기사가 없다");
+  const exitY = ASTEL.forestExit[0]!.y;
 
-  // 호위 여덟 — 기사 이벤트를 그대로 본떠 RTP 칩만 바꾼다(기사 넷 · 흰 두건 사제 넷). 오프닝 아침 그림은 흰 옷 행렬이
-  // 두 줄로 성문을 지난다 — 셋·넷으로는 행렬이 아니라 일행으로 읽혔다(VQA r3).
-  const escorts: [string, string, number, string][] = [
-    // 흰 머리 사제·민머리 칩은 행렬 속 「백성」으로 읽혔다(VQA r12·r13 — 백성이 호위보다 먼저 성문을 나간다) — 여덟 모두 갑옷 기사.
-    ["a", "tex_easyrpg_charset_actor1", 3, "심문회 기사"], ["b", "tex_easyrpg_charset_actor1", 2, "심문회 기사"],
-    ["c", "tex_easyrpg_charset_actor1", 3, "심문회 기사"], ["d", "tex_easyrpg_charset_actor1", 2, "심문회 기사"],
-    ["e", "tex_easyrpg_charset_actor1", 3, "심문회 기사"], ["f", "tex_easyrpg_charset_actor1", 2, "심문회 기사"],
-    ["g", "tex_easyrpg_charset_actor1", 3, "심문회 기사"], ["h", "tex_easyrpg_charset_actor1", 2, "심문회 기사"],
-  ].map(([k, tex, index, name]) => [`ev_${FS_PREFIX}_escort_${k}`, tex as string, index as number, name as string]);
-  hub.events = hub.events.filter((e) => !escorts.some(([id]) => id === e.id));
-  for (const [id, tex, index, name] of escorts) {
+  // 호위 여덟 — 기사 이벤트를 본떠 갑옷 기사 칩 둘(actor1 #3·#2)을 번갈아. 앞 짝부터 두 열(성문 통로 x55·56), 줄은 escortRows.
+  const escortIds = ["a", "b", "c", "d", "e", "f", "g", "h"].map((k) => `ev_${FS_PREFIX}_escort_${k}`);
+  hub.events = hub.events.filter((e) => !escortIds.includes(e.id));
+  escortIds.forEach((id, k) => {
     const clone = JSON.parse(JSON.stringify(knight)) as GameEvent;
-    clone.id = id; clone.name = name;
+    clone.id = id; clone.name = "심문회 기사";
     for (const page of clone.pages ?? []) page.id = `${page.id}__${id.slice(-1)}`;
+    clone.x = ASTEL.gate.x + (k % 2); clone.y = st.escortRows[Math.floor(k / 2)]!;
     hub.events.push(clone);
-    setEventChip(hub, id, tex, index);
+  });
+  valen.x = st.valen.x; valen.y = st.valen.y;
+  knight.x = st.knight.x; knight.y = st.knight.y;
+  // 모두 남쪽(군중)을 보고 선다 — 방향을 바꾼 뒤 칩 프레임을 다시 고른다.
+  for (const e of [valen, knight, ...escortIds.map((id) => hub.events.find((v) => v.id === id)!)]) {
+    for (const page of e.pages ?? []) if (page.graphic?.sprite) page.graphic.direction = "down";
   }
+  escortIds.forEach((id, k) => setEventChip(hub, id, "tex_easyrpg_charset_actor1", k % 2 === 0 ? 3 : 2));
+  setEventChip(hub, valen.id, FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX);
+  setEventChip(hub, knight.id, "tex_easyrpg_charset_actor1", 2);
 
-  // 무대 — 천문대 문 앞 큰길 두 줄(문 바로 아래 줄부터). 주인공(시작 칸) 동쪽에 발렌이 앞장서 서쪽을 보고,
-  // 뒤로 기사·호위가 두 줄로 선다. 행렬은 앞(동쪽)부터 걷는다.
-  const door = hub.events.find((e) => String(e.id).startsWith("ev_gate_") && JSON.stringify(e).includes('"mapId":"fs_observatory"'));
-  const roadTop = (door?.y ?? 20);
-  const lead = { x: (project.startPos?.x ?? 24) + 3, y: roadTop + 1 };
-  const byId = (id: string): GameEvent => hub.events.find((e) => e.id === id)!;
-  // 발렌이 주인공 쪽에 홀로 서고, 그 뒤(동쪽)로 두 줄(큰길 두 줄)이 늘어선다 — 걸을 때는 동쪽 끝부터 성문으로 간다.
-  const formation: [GameEvent, number, number, string, number][] = [
-    [valen, 0, 0, FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX], [knight, 1, -1, "tex_easyrpg_charset_actor1", 2],
-    // 두 줄 엇갈림(체크무늬) — 같은 줄 이웃은 두 칸, 앞뒤 줄은 대각선. 한 칸씩 붙여 세우면 24px 칩이 겹쳐 덩어리로 읽혔다(VQA r5).
-    ...escorts.map(([id, tex, index], k): [GameEvent, number, number, string, number] => [byId(id), k + 2, (k + 2) % 2 === 0 ? 0 : -1, tex, index]),
-  ];
-  const marchers = new Set(formation.map(([e]) => e.id));
-  // 뒷줄이 집 벽 맨 아랫줄·문 칸에 서던 것(VQA r6 major) — 걸을 수 있고 문·다른 사람이 없는 칸만 쓴다. 위 줄이 막히면 아래 줄로.
-  const doorCells = new Set(hub.events.filter((e) => String(e.id).startsWith("ev_gate_")).map((e) => `${e.x},${e.y}`));
-  const standing = new Set<string>();
-  const free = (x: number, y: number): boolean => isPassable(project, hub, x, y) && !doorCells.has(`${x},${y}`) && !standing.has(`${x},${y}`)
-    && !hub.events.some((e) => !marchers.has(e.id) && e.x === x && e.y === y);
-  for (const slot of formation) {
-    const [, dx, dy] = slot;
-    const tries = [dy, dy === 0 ? -1 : 1, dy === 0 ? 1 : 0].map((d) => lead.y + d);
-    const y = tries.find((ty) => free(lead.x + dx, ty)) ?? lead.y + dy;
-    slot[2] = y - lead.y;
-    standing.add(`${lead.x + dx},${y}`);
-  }
-  for (const [event, dx, dy, tex, index] of formation) {
-    event.x = lead.x + dx; event.y = lead.y + dy;
-    // 포고는 남쪽(길 아래 풀밭)에 모인 백성에게 한다 — 발렌과 호위 모두 남쪽을 보고 선다. 서쪽(일행 쪽)을 보던 옆모습은
-    // 백성 쪽이 아니라 카메라를 보는 것처럼 읽혔다(VQA r8 major).
-    // r10·r12: 모두 남쪽(카메라)을 보면 말하는 이와 듣는 이가 나란히 선 줄 세우기로 읽혔다(VQA r12 major) — 발렌은 동쪽 행렬·백성을,
-    // 행렬은 서쪽 발렌을 본다(서로 마주 보는 연설). 풀밭 백성은 아래에서 발렌을 본다.
-    for (const page of event.pages ?? []) if (page.graphic?.sprite) page.graphic.direction = "down";
-    setEventChip(hub, event.id, tex, index); // 방향이 바뀌면 칩 프레임 번호도 다시 고른다
-  }
-
-  // 발렌은 호위 줄보다 한 걸음 앞(남쪽, 백성 쪽)에 홀로 선다 — 호위와 같은 줄에 서면 누가 말하는지 안 읽히고, 호위 줄이
-  // 카메라를 보는 백성으로 읽혔다(VQA r10 major).
-  // 발렌은 기사 두 줄 한가운데 앞(남쪽)에 서서 남쪽 백성을 본다 — 줄 서쪽 끝 곁길에 서면 연설의 중심이 안 읽혔다(VQA r13).
-  {
-    const xs = formation.filter(([e]) => e !== valen).map(([, dx]) => lead.x + dx);
-    const mid = Math.round((Math.min(...xs) + Math.max(...xs)) / 2);
-    const front = Math.max(...formation.filter(([e]) => e !== valen).map(([, , dy]) => lead.y + dy)) + 1;
-    const slot = formation.find(([e]) => e === valen)!;
-    for (const tx of [mid, mid - 1, mid + 1, mid - 2, mid + 2]) {
-      if (!isPassable(project, hub, tx, front) || doorCells.has(`${tx},${front}`) || standing.has(`${tx},${front}`)
-        || hub.events.some((e) => !marchers.has(e.id) && e.x === tx && e.y === front)) continue;
-      standing.delete(`${valen.x},${valen.y}`); valen.x = tx; valen.y = front; standing.add(`${tx},${front}`);
-      // 행진은 동쪽(앞)부터 — 발렌은 행렬 한가운데(기사 앞 다섯 뒤 넷 사이)에서 걷는다. 맨 뒤에 두면 기사가 다 떠난 뒤 홀로
-      // 6~10칸 뒤처져 걸어 「호위」로 읽히지 않았다(VQA r22). 맨 앞은 그 길을 피하느라 기사 모두가 수십 걸음 늦게 떠났다.
-      slot[1] = Math.max(...formation.filter(([e]) => e !== valen).map(([, dx]) => dx)) / 2 + 0.5;
-      break;
-    }
-  }
-
-  // 포고를 듣는 백성 — 발렌이 「백성은 들어라」 하는데 듣는 사람이 일행뿐이라 누구에게 말하는지 읽히지 않았다(VQA r7 major).
-  // 발렌 서·남쪽 빈 칸에 넷이 서서 발렌을 본다. 주인공이 천문대 문으로 가는 세로 길(시작 칸 좌우 한 칸)과 문 앞은 비운다.
-  const start = { x: project.startPos?.x ?? 24, y: project.startPos?.y ?? 23 };
+  // 포고를 듣는 백성 — 앞줄과 양옆 무리. 성문 축·주인공 자리·비켜설 칸은 비워 둔다(ASTEL.stage).
   const crowd: [string, string, number, string, string][] = [
     ["a", "tex_easyrpg_charset_people4", 0, "광장의 농부", "별이 떨어진 게 이단이라니… 우리 밭에도 불똥이 튀었는데."],
     ["b", "tex_easyrpg_charset_people5", 1, "광장의 아낙", "심문관님이 직접 오셨어. 저 숲엔 얼씬도 말아야겠어."],
-    ["c", "tex_easyrpg_charset_people4", 2, "광장의 상인", "포고 때문에 동문 길이 막히면 장사는 다 했네."],
+    ["c", "tex_easyrpg_charset_people4", 2, "광장의 상인", "포고 때문에 북문 길이 막히면 장사는 다 했네."],
     ["d", "tex_easyrpg_charset_people1", 6, "광장의 노인", "하늘에서 온 것을 함부로 부르면 화를 입는 법이야."],
-    // 오프닝 아침 그림은 길가에 백성이 늘어서 있다 — 넷은 적었다(VQA r17).
     ["e", "tex_easyrpg_charset_people5", 3, "광장의 처녀", "기사님들 갑옷 좀 봐… 숲에 정말 뭐가 떨어졌나 봐."],
     ["f", "tex_easyrpg_charset_people1", 1, "광장의 청년", "이단이라니. 별을 보고 소원 빈 것도 죄가 되나?"],
+    ["g", "tex_easyrpg_charset_people4", 4, "광장의 대장장이", "망치질하다 말고 나왔네. 포고라니, 무슨 일이래?"],
+    ["h", "tex_easyrpg_charset_people5", 7, "광장의 학자", "별똥별 하나에 심문관까지… 교단이 겁을 먹은 거야."],
+    ["i", "tex_easyrpg_charset_people5", 6, "광장의 어부", "운하 물고기도 어젯밤엔 다 숨었지. 하늘이 그렇게 밝았으니."],
+    ["j", "tex_easyrpg_charset_people5", 5, "광장의 아가씨", "숲 쪽 하늘이 하얗게 탔어요. 저도 봤어요."],
+    ["k", "tex_easyrpg_charset_people4", 3, "광장의 짐꾼", "북문이 닫히면 짐을 어디로 나르라는 거야."],
+    ["l", "tex_easyrpg_charset_people2", 1, "광장의 수녀", "교단의 뜻이니 따라야지요. …그래도 마음이 무겁군요."],
+    ["m", "tex_easyrpg_charset_people4", 5, "광장의 아이 엄마", "얘야, 손 꼭 잡아. 기사님들 지나가신다."],
+    ["n", "tex_easyrpg_charset_people3", 6, "광장의 노점상", "포고 끝나면 사과 사 가요. 오늘은 싸게 줄게."],
   ];
-  const hubMeta = (project.tilesets[hub.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
-  const near = (x: number, y: number, r: number, c: { x: number; y: number }) => Math.abs(x - c.x) <= r && Math.abs(y - c.y) <= r;
-  const spots: { x: number; y: number }[] = [];
-  const candidates: { x: number; y: number; d: number }[] = [];
-  // 백성은 발렌 남쪽(길 아래 풀밭)에 모여 위를 본다.
-  for (let y = valen.y + 2; y <= valen.y + 5; y += 1) for (let x = valen.x - 5; x <= valen.x + 8; x += 1) {
-    if (Math.abs(x - start.x) <= 1 || near(x, y, 1, valen) || !free(x, y)) continue;
-    // 엘레나 대사 때 주인공이 옆으로 두 걸음 비켜선다 — 그 두 칸 바로 아래에 서면 몸이 겹쳐 그려졌다(QA fs49).
-    if (Math.abs(x - start.x) <= 2 && y <= start.y + 1) continue;
-    // 길(포석·흙길) 칸은 비운다 — 외길에 둘이 줄지어 서서 길을 막고 아무것도 안 보는 것처럼 읽혔다(VQA r9).
-    // 넓은 광장 판석(광장·마당)은 길이 아니라 모이는 자리다 — 발렌 앞이 집 한 채로 막히면 풀밭만으로는 둘·셋밖에 못 섰다(VQA r33).
-    if (!/풀밭|광장·마당/.test(hubMeta[hub.lowerTiles[y * hub.width + x]!]?.label ?? "")) continue;
-    // 바로 위 칸에 가로등·간판 같은 소품이 있으면 머리에서 기둥이 솟은 것처럼 그려졌다(VQA r14 minor).
-    { const t = hub.upperTiles[(y - 1) * hub.width + x] ?? -1; if (t >= 0 && !/풀|꽃|잔돌|자갈|버섯|고사리|덤불|그림자/.test(hubMeta[t]?.label ?? "")) continue; }
-    if ([...doorCells].some((k) => { const [dx, dy] = k.split(",").map(Number); return Math.abs(x - dx!) <= 2 && Math.abs(y - dy!) <= 2; })) continue;
-    candidates.push({ x, y, d: Math.hypot(x - valen.x, y - (valen.y + 2)) }); // 발렌 바로 앞(두 칸 아래)부터 — 멀면 빈 길을 보는 것처럼 읽혔다(VQA r10)
-  }
-  candidates.sort((p, q) => p.d - q.d);
-  for (const c of candidates) {
-    if (spots.length >= crowd.length) break;
-    if (spots.some((s) => near(c.x, c.y, 1, s) || (s.x === c.x && Math.abs(s.y - c.y) <= 2))) continue;
-    spots.push({ x: c.x, y: c.y }); standing.add(`${c.x},${c.y}`);
-  }
   hub.events = hub.events.filter((e) => !String(e.id).startsWith(`ev_${FS_PREFIX}_crowd_`));
-  const face = (from: { x: number; y: number }, to: { x: number; y: number }): Step => {
-    const dx = to.x - from.x, dy = to.y - from.y;
-    return Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? "right" : "left") : (dy > 0 ? "down" : "up");
-  };
-  const chat = (spot: { x: number; y: number }): Step => {
-    const others = spots.filter((o) => o !== spot).sort((p, q) => Math.hypot(p.x - spot.x, p.y - spot.y) - Math.hypot(q.x - spot.x, q.y - spot.y));
-    return others[0] ? face(spot, others[0]) : "down";
-  };
-  spots.forEach((spot, k) => {
-    const [key, tex, index, name, line] = crowd[k]!;
-    const dx = valen.x - spot.x, dy = valen.y - spot.y;
-    // 발렌이 위(북)에 서면 백성은 위를 본다 — 옆모습(좌·우)은 1배에서 카메라를 보는 것처럼 읽혔다(VQA r22). 옆으로 많이 비켜 선 사람만 옆을 본다.
-    const direction = dy < 0 && Math.abs(dx) <= 2 * Math.abs(dy) ? "up" : Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? "right" : "left") : (dy > 0 ? "down" : "up");
+  const gateDir = (spot: { x: number }): Step => (spot.x < ASTEL.gate.x - 2 ? "right" : spot.x > ASTEL.gate.x + 3 ? "left" : "up");
+  crowd.forEach(([key, tex, index, name, line], k) => {
+    const spot = st.crowd[k]!;
     const id = `ev_${FS_PREFIX}_crowd_${key}`;
+    const page = (suffix: string, label: string, direction: Step, conditions: unknown[]) => ({
+      id: `${id}_${suffix}`, name: `${name} · ${label}`, conditions,
+      graphic: { sprite: { type: "bundled", id: tex }, direction, pattern: charsetFrameIndex({ characterIndex: index, direction, pattern: 1 }) },
+      trigger: { kind: "action" }, priority: "same", overlapForbidden: true, movement: { type: "fixed", speed: 3, frequency: 3 },
+      commands: [{ kind: "text", speaker: name, body: line }],
+    });
     hub.events.push({
       id, name, x: spot.x, y: spot.y, trigger: { kind: "action" }, commands: [], placementRole: "npc",
-      pages: [{
-        id: `${id}_p0`, name: `${name} · 기본`, conditions: [],
-        graphic: { sprite: { type: "bundled", id: tex }, direction, pattern: charsetFrameIndex({ characterIndex: index, direction, pattern: 1 }) },
-        trigger: { kind: "action" }, priority: "same", overlapForbidden: true, movement: { type: "fixed", speed: 3, frequency: 3 },
-        commands: [{ kind: "text", speaker: name, body: line }],
-      }, {
-        // 발렌이 떠난 뒤에도 빈 자리를 보고 서 있었다(VQA r20 minor) — 행렬이 사라지면 가까운 이웃과 마주 보고 수군댄다.
-        id: `${id}_p1`, name: `${name} · 행렬 뒤`, conditions: [{ kind: "switch", switchId: SW_VALEN_MARCHED, value: true }],
-        graphic: { sprite: { type: "bundled", id: tex }, direction: chat(spot), pattern: charsetFrameIndex({ characterIndex: index, direction: chat(spot), pattern: 1 }) },
-        trigger: { kind: "action" }, priority: "same", overlapForbidden: true, movement: { type: "fixed", speed: 3, frequency: 3 },
-        commands: [{ kind: "text", speaker: name, body: line }],
-      }],
+      // 행렬이 떠난 뒤에는 성문 쪽(배웅)을 본다.
+      pages: [page("p0", "기본", spot.dir, []), page("p1", "행렬 뒤", gateDir(spot), [{ kind: "switch", switchId: SW_VALEN_MARCHED, value: true }])],
     } as unknown as GameEvent);
   });
 
-  const ts = project.tilesets[hub.tilesetId] as unknown as { autotileGroups?: { id: string; memberTileIds: number[] }[]; tileGroups?: { id: string; tileIds: number[] }[] };
-  const pavedIds = new Set<number>([
-    ...(ts.autotileGroups?.find((g) => g.id === "beodeul_road_autotile")?.memberTileIds ?? []),
-    ...(ts.tileGroups?.find((g) => g.id === "beodeul:plaza")?.tileIds ?? []),
-  ]);
-  const allow = (x: number, y: number): boolean => pavedIds.has(hub.lowerTiles[y * hub.width + x]!) || (Math.abs(x - exit.x) <= 1 && y <= exit.y + 1);
-
+  // 행진 — 앞 짝부터 같은 걸음으로 곧게 북쪽(성문 통로 → 숲길 끝 칸). 발렌은 한 걸음 쉬어 기사가 옆 열로 들어설 때를 맞춘다.
+  const marchers: { id: string; steps: (Step | "stay")[] }[] = escortIds.map((id, k) => ({ id, steps: Array.from({ length: st.escortRows[Math.floor(k / 2)]! - exitY }, () => "up" as const) }));
+  const knightCol = ASTEL.gate.x + 1;
+  marchers.push({ id: valen.id, steps: [...Array.from({ length: st.knight.x - knightCol }, () => "stay" as const), ...Array.from({ length: st.valen.y - exitY }, () => "up" as const)] });
+  marchers.push({ id: knight.id, steps: [...Array.from({ length: st.knight.x - knightCol }, () => "left" as const), ...Array.from({ length: st.knight.y - exitY }, () => "up" as const)] });
   const switches: Record<string, string> = { [valen.id]: SW_VALEN_MARCHED, [knight.id]: SW_KNIGHT_MARCHED };
-  for (const [id] of escorts) switches[id] = `sw_${id.slice(3)}_marched`;
-  const order = [...formation].sort((a, b) => b[1] - a[1]); // 동쪽(앞)부터
-  const marches: Command[] = [];
-  // 모두 같은 걸음으로 걷는다 — 걸음마다 자리를 미리 셈해, 앞사람과 같은 칸·같은 줄 바로 옆 칸에 서게 되면 출발을 한 걸음씩 늦춘다.
-  // (통과 켬이라 겹쳐도 막히지 않아 성문 앞에서 행렬이 한 칸에 포개졌다 — VQA r5.)
-  const DIRS: Record<string, [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
-  const tracks: { x: number; y: number }[][] = [];
-  const delays: number[] = [];
-  const paths: (Step | "stay")[][] = [];
-  const arrivals: number[] = [];
-  // 뒤에 출발할 사람의 제자리는 막힌 칸으로 친다 — 한가운데 발렌이 바로 위 기사 칸을 지나가는 길을 고르면 그 기사는
-  // 몇 걸음을 기다려도 겹침이 풀리지 않아 뒤 다섯이 60걸음 상한에 걸렸다. 앞서 떠난 사람 칸만 비었다고 본다.
-  clearMarchRoute(project, hub, exit, order.map(([npc]) => npc.id));
-  const departed = new Set<string>();
-  // 두 줄 행렬(VQA r34 「느슨한 한 줄 물줄기」) — 동쪽부터 둘씩 짝을 짓는다. 짝의 앞사람은 성문까지 제 길을 걷고,
-  // 짝꿍은 걸음마다 앞사람의 진행 방향 오른쪽(막혔으면 왼쪽, 둘 다 막혔으면 바로 뒤) 칸을 향해 한 걸음씩 따라 붙어 나란히 걷는다.
-  // 짝과 짝 사이는 앞사람이 성문에 닿는 걸음을 두 걸음씩 벌려(한 칸 띄움) 같은 간격으로 맞춘다.
-  const posAt = (track: { x: number; y: number }[], delay: number, t: number) => (t - delay >= track.length ? undefined : track[Math.max(0, t - delay)]);
-  const clash = (cells: { x: number; y: number }[], d: number): boolean => tracks.some((other, j) => {
-    for (let t = 0; t < cells.length + d + 2; t += 1) {
-      const a = posAt(cells, d, t), b = posAt(other, delays[j]!, t);
-      if (!a || !b) continue;
-      // 둘 다 아직 제자리(출발 전)면 처음 대열 그대로다 — 이것까지 겹침으로 치면 대열 앞줄에 선 발렌이 바로 위 기사와
-      // 「세로로 붙음」이 끝나지 않아 60걸음을 기다리다 홀로 남았다(VQA r14 major). 내가 제자리일 땐 같은 칸만 본다.
-      const aWaiting = t < d, bWaiting = t < delays[j]!;
-      if (aWaiting && bWaiting) continue;
-      if (a.x === b.x && a.y === b.y) return true;
-      // 출발 전 대열 곁을 지나가는 것은 겹침이 아니다(같은 칸만 본다) — 이걸 막으면 짝 간격이 다섯 걸음으로 벌어졌다.
-      if (aWaiting || bWaiting) continue;
-      if (a.y === b.y && Math.abs(a.x - b.x) <= 1) return true;
-      if (a.x === b.x && Math.abs(a.y - b.y) <= 1 && t > 0) return true;
-    }
-    return false;
-  });
-  const routeOf = (npc: GameEvent): Step[] => {
-    const path = walkPath(project, hub, { x: npc.x, y: npc.y }, exit, npc.id, { allow, ignore: departed })
-      ?? walkPath(project, hub, { x: npc.x, y: npc.y }, exit, npc.id, { ignore: departed })
-      ?? walkPath(project, hub, { x: npc.x, y: npc.y }, exit, npc.id, { allow, ignore: marchers })
-      ?? walkPath(project, hub, { x: npc.x, y: npc.y }, exit, npc.id, { ignore: marchers });
-    if (!path) throw new Error(`[fallen-star] ${npc.id} 가 동문까지 걸어갈 길이 없다`);
-    return path;
-  };
-  const cellsOf = (from: { x: number; y: number }, path: readonly (Step | "stay")[]) => {
-    const cells = [{ x: from.x, y: from.y }];
-    for (const dir of path) { const last = cells[cells.length - 1]!; const [dx, dy] = dir === "stay" ? [0, 0] : DIRS[dir as string]!; cells.push({ x: last.x + dx, y: last.y + dy }); }
-    return cells;
-  };
-  const same = (a: { x: number; y: number }, b: { x: number; y: number }) => a.x === b.x && a.y === b.y;
-  // 짝꿍의 걸음 — 앞사람 걸음 i 마다 그 옆 칸을 향해 한 걸음(앞사람 칸이면 제자리). 앞사람이 통로로 사라지면 통로 칸으로 들어가 사라진다.
-  const besideSteps = (npc: GameEvent, lead: { x: number; y: number }[]): (Step | "stay")[] => {
-    const at = (i: number) => lead[Math.max(0, Math.min(i, lead.length - 1))]!;
-    // 길 곁 풀밭 칸도 나란히 걷는 자리로 친다 — 포석만 보면 좁은 길에서 짝꿍이 앞사람 바로 뒤로 붙어 한 줄이 됐다.
-    const free = (c: { x: number; y: number }) => isPassable(project, hub, c.x, c.y) && !doorCells.has(`${c.x},${c.y}`);
-    const side = (i: number) => {
-      const a = at(i);
-      let dx = 0, dy = 0;
-      for (let k = i + 1; k < lead.length && !dx && !dy; k += 1) { dx = at(k).x - a.x; dy = at(k).y - a.y; }
-      for (let k = i - 1; k >= 0 && !dx && !dy; k -= 1) { dx = a.x - at(k).x; dy = a.y - at(k).y; }
-      dx = Math.sign(dx); dy = Math.sign(dy);
-      return [{ x: a.x - dy, y: a.y + dx }, { x: a.x + dy, y: a.y - dx }].find(free) ?? at(i - 1);
-    };
-    const steps: (Step | "stay")[] = [];
-    let cur = { x: npc.x, y: npc.y };
-    for (let i = 1; i < lead.length + 40; i += 1) {
-      const gone = i >= lead.length;
-      const want = gone ? exit : side(i);
-      if (same(cur, want)) { steps.push("stay"); continue; }
-      const p = walkPath(project, hub, cur, want, npc.id, { ignore: marchers });
-      const dir = p?.[0];
-      const next = dir ? { x: cur.x + DIRS[dir]![0], y: cur.y + DIRS[dir]![1] } : cur;
-      if (!dir || (!gone && same(next, at(i)))) { steps.push("stay"); continue; }
-      steps.push(dir); cur = next;
-      // 앞사람이 성문 통로 끝 칸에 닿는 걸음에 짝꿍도 통로 안 옆 칸에 닿으면 함께 사라진다 — 앞사람 뒤로 한 줄로 들어가면
-      // 짝꿍이 세 걸음 늦게 닿아 뒷짝의 앞사람과 통로에서 맞부딪혀 짝 간격이 다섯 걸음으로 벌어졌다.
-      if (i >= lead.length - 1 && cur.y === exit.y && Math.abs(cur.x - exit.x) === 1) break;
-      if (gone && same(cur, exit)) break;
-    }
-    while (steps[steps.length - 1] === "stay") steps.pop();
-    const end = cellsOf({ x: npc.x, y: npc.y }, steps).at(-1)!;
-    if (!(end.y === exit.y && Math.abs(end.x - exit.x) <= 1)) return routeOf(npc);
-    return steps;
-  };
-  // 짝마다 길을 먼저 다 셈한다. 처음 대열은 세 줄 지그재그라 짝꿍이 앞사람보다 한두 칸 뒤에서 출발해 끝까지 비스듬히 따라왔다 —
-  // 앞사람이 그 자리에서 짝꿍이 옆에 올 때까지 기다린 뒤(대열 정돈) 함께 걷는다.
-  type Pair = { members: GameEvent[]; paths: (Step | "stay")[][]; cells: { x: number; y: number }[][]; arrive: number };
-  const pairs: Pair[] = [];
-  for (let rank = 0; rank < order.length; rank += 2) {
-    const lead = order[rank]![0], mate = order[rank + 1]?.[0];
-    let leadPath: (Step | "stay")[] = routeOf(lead);
-    departed.add(lead.id);
-    let matePath: (Step | "stay")[] | undefined;
-    if (mate) {
-      for (let wait = 0; wait <= 4; wait += 1) {
-        const lp: (Step | "stay")[] = [...Array.from({ length: wait }, () => "stay" as const), ...(leadPath as Step[])];
-        const mp = besideSteps(mate, cellsOf(lead, lp));
-        matePath = mp;
-        const mc = cellsOf(mate, mp), lc = cellsOf(lead, lp);
-        // 출발 뒤 셋째 걸음에 나란히(같은 줄·이웃 칸 또는 같은 열·이웃 칸) 서면 정돈이 끝난 것이다.
-        const t = Math.min(wait + 3, lc.length - 1, mc.length - 1);
-        if (Math.abs(lc[t]!.x - mc[t]!.x) + Math.abs(lc[t]!.y - mc[t]!.y) === 1 || wait === 4) { leadPath = lp; break; }
-      }
-      departed.add(mate.id);
-    }
-    const members = mate ? [lead, mate] : [lead];
-    const pathsP = mate && matePath ? [leadPath, matePath] : [leadPath];
-    pairs.push({ members, paths: pathsP, cells: members.map((m, k) => cellsOf(m, pathsP[k]!)), arrive: leadPath.length });
-  }
-  // 짝 사이 간격은 하나로 — 성문에 닿는 걸음을 S 걸음씩 벌린다. 겹침이 없는 가장 작은 S 를 고른다(들쭉날쭉한 간격이 「느슨한 물줄기」였다).
-  const delaysFor = (S: number): number[] => {
-    const a0 = Math.max(...pairs.map((p, k) => p.arrive - k * S));
-    return pairs.map((p, k) => Math.max(0, a0 + k * S - p.arrive));
-  };
-  let chosen: number[] | undefined;
-  for (let S = 2; S <= 10 && !chosen; S += 1) {
-    const ds = delaysFor(S);
-    tracks.length = 0; delays.length = 0;
-    let ok = true;
-    pairs.forEach((p, k) => {
-      if (!ok) return;
-      if (p.cells.some((c) => clash(c, ds[k]!))) {
-        ok = false;
-        if (process.env.MARCH_DEBUG) for (const [mi, c] of p.cells.entries()) for (const [j, other] of tracks.entries()) for (let t = 0; t < c.length + ds[k]! + 2; t += 1) {
-          const a = posAt(c, ds[k]!, t), b = posAt(other, delays[j]!, t);
-          if (a && b && t >= ds[k]! && t >= delays[j]! && Math.abs(a.x - b.x) + Math.abs(a.y - b.y) <= 1) { console.error("  clash pair", k, "m", mi, "vs track", j, "t", t, JSON.stringify(a), JSON.stringify(b)); break; }
-        }
-      }
-      for (const c of p.cells) { tracks.push(c); delays.push(ds[k]!); }
-    });
-    if (ok) chosen = ds;
-    if (process.env.MARCH_DEBUG) console.error("march spacing", S, ok ? "ok" : "clash", JSON.stringify(ds));
-  }
-  if (!chosen) {
-    // 고른 간격이 없으면 예전처럼 짝마다 겹침이 풀릴 때까지 늦춘다.
-    tracks.length = 0; delays.length = 0; chosen = [];
-    let last = -Infinity;
-    for (const p of pairs) {
-      let d = Math.max(0, (Number.isFinite(last) ? last + 2 : p.arrive) - p.arrive);
-      while (p.cells.some((c) => clash(c, d)) && d < 60) d += 1;
-      for (const c of p.cells) { tracks.push(c); delays.push(d); }
-      chosen.push(d); last = d + p.arrive;
-    }
-  }
-  for (const [k, p] of pairs.entries()) {
-    for (const path of p.paths) paths.push(path);
-    arrivals.push(chosen[k]! + p.arrive);
-    if (process.env.MARCH_DEBUG) console.error("march", p.members.map((m) => m.id).join("+"), "delay", chosen[k], "steps", p.paths.map((x) => x.length).join("/"),
-      "\n   L", p.cells[0]!.map((c) => `${c.x},${c.y}`).join(" "), "\n   M", p.cells[1]?.map((c) => `${c.x},${c.y}`).join(" "));
-  }
-  order.forEach(([npc], rank) => {
-    const path = paths[rank]!;
+  for (const id of escortIds) switches[id] = `sw_${id.slice(3)}_marched`;
+  const marches: Command[] = marchers.map(({ id, steps }) => {
     const moves = [
-      // 처음부터 지나갈 수 있게: 주인공이 성문 통로 앞에 서 있으면 행렬이 막혀 스위치가 안 켜지고, 그동안 투명한 기사가
-      // 통로 칸을 막아 숲으로 못 나갔다(QA fallen-town to-forest). 길은 걸을 수 있는 칸으로만 짜였으니 건물은 안 뚫는다.
+      // 통과 켬: 주인공이 성문 축에 서 있어도 행렬이 막혀 스위치가 안 켜지는 일이 없게(QA fallen-town to-forest).
       { kind: "setThrough", enabled: true },
-      // 행진 걸음 — 기본(느림·드묾)으로는 30칸 길에 30초가 넘게 걸려 대사가 끝난 뒤에도 광장에 남았다.
-      // 속도 4 = 한 칸 240ms(characterMotion), 빈도 6 = 기다림 한 번 80ms. 명령 경로는 걸음 사이에 쉬지 않으므로 한 걸음 = 기다림 셋이다.
-      // 속도 5(200ms)에 기다림 넷(320ms)으로 늦추면 출발 지연이 걸음의 1.6배로 늘어 셈한 대열이 어긋났다 — 발렌이 홀로 앞서고
-      // 뒤 기사가 같은 세로 줄에서 발렌 위에 겹쳐 그려졌다(VQA r25 major).
+      // 속도 4 = 한 칸 240ms, 기다림 한 번 80ms — 명령 경로에서 한 걸음 = 기다림 셋.
       { kind: "changeSpeed", delta: 1 }, { kind: "changeFrequency", delta: 3 },
-      ...Array.from({ length: delays[rank]! * 3 }, () => ({ kind: "wait" })),
-      ...path.slice(0, -1).flatMap((dir) => (dir === "stay" ? [{ kind: "wait" }, { kind: "wait" }, { kind: "wait" }] : [{ kind: "move", dir }])),
-      // 성문 통로로 드는 마지막 걸음 동안 세 번에 걸쳐 옅어진다 — 한 프레임에 사라지지 않고(VQA r25 minor), 끝 칸에 머물지도 않는다.
+      ...steps.slice(0, -1).flatMap((dir) => (dir === "stay" ? [{ kind: "wait" }, { kind: "wait" }, { kind: "wait" }] : [{ kind: "move", dir }])),
+      // 마지막 걸음 동안 세 번에 걸쳐 옅어진다(한 프레임에 사라지지 않게, VQA r25 minor).
       { kind: "changeOpacity", delta: -85 },
-      ...path.slice(-1).map((dir) => ({ kind: "move", dir })),
+      ...steps.slice(-1).map((dir) => ({ kind: "move", dir })),
       { kind: "changeOpacity", delta: -85 }, { kind: "wait" },
       { kind: "changeOpacity", delta: -85 },
-      { kind: "setSwitch", switchId: switches[npc.id]!, value: true },
+      { kind: "setSwitch", switchId: switches[id]!, value: true },
     ];
-    marches.push({ kind: "moveEvent", eventId: npc.id, route: { moves, repeat: false, wait: false, skippable: true } } as unknown as Command);
+    return { kind: "moveEvent", eventId: id, route: { moves, repeat: false, wait: false, skippable: true } } as unknown as Command;
   });
-  const names: Record<string, string> = { [SW_VALEN_MARCHED]: "발렌 일행 동문으로 떠남", [SW_KNIGHT_MARCHED]: "심문회 기사 동문으로 떠남" };
+  const names: Record<string, string> = { [SW_VALEN_MARCHED]: "발렌 일행 북문으로 떠남", [SW_KNIGHT_MARCHED]: "심문회 기사 북문으로 떠남" };
   for (const [id, sw] of Object.entries(switches)) {
-    if (!project.switches.some((s) => s.id === sw)) project.switches.push({ id: sw, name: names[sw] ?? `${hub.events.find((e) => e.id === id)?.name ?? id} 동문으로 떠남` });
+    if (!project.switches.some((s) => s.id === sw)) project.switches.push({ id: sw, name: names[sw] ?? `${hub.events.find((e) => e.id === id)?.name ?? id} 북문으로 떠남` });
     vanishWhen(hub, id, sw);
   }
-  // 화면이 행렬을 따라간다 — 주인공 자리에 머물면 행렬이 곧 화면 동쪽 밖으로 나가 셋·넷만 스쳐 보였다(VQA r3).
-  // 행렬 가운데 사람을 따라 성문 통로까지 비추다가, 행렬이 통로로 사라지면 주인공에게 돌아온다.
+  // 화면이 행렬 가운데(셋째 짝)를 따라 성문까지 비추다가, 발렌이 숲길로 사라지면 주인공에게 돌아온다.
   const camera = (fields: Record<string, string>): Command => ({ kind: "m2Command", commandId: "m2-201-camera-control", fields } as unknown as Command);
-  const middle = order[Math.floor(order.length / 2) + 1]![0].id; // 가운데보다 한 오 뒤 — 앞줄이 통로에 들어설 때 성문루가 화면에 든다
   const follow: Command[] = [
     { kind: "wait", ms: 400 } as Command,
-    camera({ mode: "follow", targetEventId: middle, durationMs: "900", wait: "true" }),
-    // 따라가는 사람이 성문 통로로 사라질 때까지(벽시계 대기는 느린 기기에서 행렬보다 먼저 끝났다).
+    camera({ mode: "follow", targetEventId: escortIds[4]!, durationMs: "900", wait: "true" }),
     { kind: "loop", body: [
-      // 맨 뒤 발렌까지 성문으로 사라진 뒤에 돌아온다 — 가운데 사람 기준이면 발렌이 홀로 남은 채 엘레나 대사가 시작됐다(VQA r14 major).
-      { kind: "fork", condition: { kind: "switch", switchId: switches[order[order.length - 1]![0].id]!, value: true }, then: [{ kind: "breakLoop" }] },
+      { kind: "fork", condition: { kind: "switch", switchId: SW_VALEN_MARCHED, value: true }, then: [{ kind: "breakLoop" }] },
       { kind: "wait", ms: 250 },
     ] } as unknown as Command,
     { kind: "wait", ms: 500 } as Command,
     camera({ mode: "return", durationMs: "1000", wait: "true" }),
   ];
-  // 행렬이 떠나면 백성은 성문 쪽으로 고개를 돌려 배웅한다 — 빈 연설 자리를 보고 서 있었다(VQA r20 minor).
-  const watch: Command[] = spots.map((spot, k) => ({ kind: "moveEvent", eventId: `ev_${FS_PREFIX}_crowd_${crowd[k]![0]}`,
-    route: { moves: [{ kind: "turn", dir: face(spot, exit) }], repeat: false, wait: false, skippable: true } } as unknown as Command));
+  const turn = (eventId: string, dir: Step, wait = false): Command => ({ kind: "moveEvent", eventId, route: { moves: [{ kind: "turn", dir }], repeat: false, wait, skippable: true } } as unknown as Command);
+  // 행렬이 떠나면 백성은 성문 쪽으로 고개를 돌려 배웅한다.
+  const watch: Command[] = crowd.map(([key], k) => turn(`ev_${FS_PREFIX}_crowd_${key}`, gateDir(st.crowd[k]!)));
   list.splice(after + 1, 0, ...marches, ...watch, ...follow);
-  // 포고 동안 주인공(과 동료)은 발렌 쪽을 본다 — 화면만 보고 서 있었다(VQA r6 major).
-  const begin = list.findIndex((c) => c.kind === "cutsceneControl");
-  const towardValen: Step = valen.x > (project.startPos?.x ?? 0) ? "right" : "left";
-  // 발렌의 포고 넉 줄은 남쪽 백성에게 하는 말이다 — 대사 자동 돌아보기가 그를 서쪽 주인공 쪽으로 돌려 백성에게 옆모습을 보였다.
+  // 발렌의 포고 넉 줄은 군중에게 하는 말 — 대사 자동 돌아보기가 그를 주인공 쪽으로 돌리지 않게.
   for (const c of list.slice(0, after + 1)) if (c.kind === "text" && /발렌/.test(String((c as { speaker?: string }).speaker ?? ""))) (c as { autoFace?: boolean }).autoFace = false;
-  // 돌아다니는 주민이 포고 화면 한가운데(발렌 둘레)에서 시작하면 화면을 보고 서 있어 「주인공이 딴 데를 본다」로 읽혔다(VQA r33·r34) —
-  // 돌아다니는 사람은 돌려 세울 수 없으니 포고 화면 밖(발렌에서 가로 9칸·세로 6칸 너머) 가장 가까운 빈 칸으로 옮긴다.
-  {
-    const inFrame = (x: number, y: number) => Math.abs(x - valen.x) <= 8 && Math.abs(y - valen.y) <= 5;
-    for (const e of hub.events) {
-      if (marchers.has(e.id) || (e.pages?.[0]?.movement?.type ?? "fixed") === "fixed" || !inFrame(e.x, e.y)) continue;
-      let best: { x: number; y: number; d: number } | undefined;
-      for (let y = 1; y < hub.height - 1; y += 1) for (let x = 1; x < hub.width - 1; x += 1) {
-        if (inFrame(x, y) || !isPassable(project, hub, x, y) || doorCells.has(`${x},${y}`)) continue;
-        if (hub.events.some((o) => o !== e && Math.abs(o.x - x) + Math.abs(o.y - y) <= 1)) continue;
-        const d = Math.abs(x - e.x) + Math.abs(y - e.y);
-        if (!best || d < best.d) best = { x, y, d };
-      }
-      if (best) { e.x = best.x; e.y = best.y; }
-    }
-  }
-  // 광장 둘레 붙박이 주민(할머니 등)도 포고 동안 발렌을 본다 — 카메라를 보고 서 있었다(VQA r22).
-  const listeners: Command[] = hub.events.filter((e) => !marchers.has(e.id) && !String(e.id).startsWith("ev_gate_") && !String(e.id).startsWith(`ev_${FS_PREFIX}_crowd_`)
-    && Math.abs(e.x - valen.x) <= 7 && Math.abs(e.y - valen.y) <= 5 && (e.pages?.[0]?.graphic as { sprite?: unknown } | undefined)?.sprite
-    && (e.pages?.[0]?.movement?.type ?? "fixed") === "fixed")
-    .map((e) => {
-      const ddx = valen.x - e.x, ddy = valen.y - e.y;
-      const dir: Step = ddy < 0 && Math.abs(ddx) <= 2 * Math.abs(ddy) ? "up" : Math.abs(ddx) >= Math.abs(ddy) ? (ddx > 0 ? "right" : "left") : (ddy > 0 ? "down" : "up");
-      return { kind: "moveEvent", eventId: e.id, route: { moves: [{ kind: "turn", dir }], repeat: false, wait: false, skippable: true } } as unknown as Command;
-    });
-  list.splice(begin + 1, 0, { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "turn", dir: towardValen }], repeat: false, wait: true, skippable: true } } as unknown as Command, ...listeners);
-  // 엘레나가 말할 때 주인공이 화면(아래)을 보고 있었다(VQA r5) — 엘레나 쪽(위)으로 돌아선다.
+  // 포고 동안 주인공은 단 위 발렌을(위를) 보고, 광장의 할머니·문지기도 발렌 쪽을 본다.
+  const begin = list.findIndex((c) => c.kind === "cutsceneControl");
+  list.splice(begin + 1, 0, turn("@player", "up", true), turn(`ev_${FS_PREFIX}_elder`, "right"), turn(`ev_${FS_PREFIX}_gate`, "left"));
+  // 엘레나가 말하면 주인공이 오른쪽으로 두 걸음 비켜서고(heroAside, 비워 둔 칸) 뒤따르던 엘레나가 곁에 와 서로 마주 본다.
   const elenaLine = list.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("들었지, 카엘"));
-  // 위를 보면 RTP 주인공 칩 뒷모습(머리 뒤 흰 띠)이 얼굴처럼 읽혀 엘레나에게 등을 돌린 것으로 보였다(VQA r10 major) —
-  // 주인공이 옆으로 두 걸음 비켜서면 뒤따르던 엘레나가 곁(같은 줄)으로 와 서로 옆모습으로 마주 본다.
-  const startX = project.startPos?.x ?? 24, startY = project.startPos?.y ?? 23;
-  // 비켜설 두 칸에 묘목·풀 포기 같은 덧그림이 있으면 그 위에 선 것처럼 그려졌다(VQA r22) — 덧그림 없는 칸만.
-  // 시작 칸과 비켜설 줄의 낮은 풀 덧그림(헤더·고사리·풀 포기)은 걷는다 — 주인공이 헤더 덤불 위에 서서 시작하고, 비켜선 칸의 고사리에
-  // 발이 묻혔다(VQA r22·r23). 나무·덤불(묘목)은 그대로 두고, 그런 칸으로는 비켜서지 않는다.
-  {
-    const metaH = (project.tilesets[hub.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
-    for (let dx = -2; dx <= 2; dx += 1) for (const layer of [hub.upperTiles, hub.upperOverlayTiles]) {
-      const i = startY * hub.width + startX + dx, t = layer?.[i] ?? -1;
-      if (t >= 0 && /헤더|고사리|풀 포기|들꽃|버섯|잔돌/.test(metaH[t]?.label ?? "")) layer![i] = -1;
-    }
-  }
-  const bareCell = (x: number, y: number): boolean => [hub.lowerOverlayTiles, hub.upperTiles, hub.upperOverlayTiles].every((l) => (l?.[y * hub.width + x] ?? -1) < 0);
-  const sideOpen = (dx: number): boolean => [1, 2].every((k) => isPassable(project, hub, startX + dx * k, startY) && bareCell(startX + dx * k, startY)
-    && !hub.events.some((e) => e.x === startX + dx * k && e.y === startY && !marchers.has(e.id)));
-  const side: Step | undefined = sideOpen(-1) ? "left" : sideOpen(1) ? "right" : undefined;
-  const faceElena: unknown[] = side ? [{ kind: "move", dir: side }, { kind: "move", dir: side }, { kind: "turn", dir: side === "left" ? "right" : "left" }] : [{ kind: "turn", dir: "up" }];
-  if (elenaLine >= 0) list.splice(elenaLine, 0, { kind: "moveEvent", eventId: "@player", route: { moves: faceElena, repeat: false, wait: true, skippable: true } } as unknown as Command);
-  // 포고 넉 줄 동안 화면을 발렌과 그 아래 백성 쪽으로 옮긴다 — 주인공을 따라가는 화면에선 발렌 몸 아래가 대화 상자에 묻히고
-  // 듣는 백성(발렌 두~다섯 줄 아래)은 상자 밑이라 안 보였다(VQA r27). 상자 위 열 줄 안에 호위·발렌·가까운 백성이 함께 든다.
-  {
-    // 발렌 두 줄 아래가 화면 가운데 — 호위 두 줄이 화면 위 끝에 잘리지 않고, 가까운 백성 줄이 상자 위에 든다.
-    const cy = valen.y + 2;
-    const cx = Math.round((startX + valen.x) / 2) + 1;
-    const box = list.findIndex((c) => c.kind === "m2Command" && (c as { commandId?: string }).commandId === "m2-202-screen-effect");
-    if (box >= 0) list.splice(box + 1, 0, camera({ mode: "panTo", target: "screen", x: String(cx), y: String(cy), durationMs: "700", wait: "true" }));
-  }
+  if (elenaLine >= 0) list.splice(elenaLine, 0, { kind: "moveEvent", eventId: "@player",
+    route: { moves: [{ kind: "move", dir: "right" }, { kind: "move", dir: "right" }, { kind: "turn", dir: "left" }], repeat: false, wait: true, skippable: true } } as unknown as Command);
+  // 포고 넉 줄 동안 화면은 호위 줄·단·앞줄 군중이 함께 드는 곳(대화 상자 위)에 둔다.
+  const box = list.findIndex((c) => c.kind === "m2Command" && (c as { commandId?: string }).commandId === "m2-202-screen-effect");
+  if (box >= 0) list.splice(box + 1, 0, camera({ mode: "panTo", target: "screen", x: String(ASTEL.gate.x - 1), y: String(st.valen.y - 1), durationMs: "700", wait: "true" }));
 }
 
 /**
@@ -1285,20 +957,6 @@ function stageBossVictory(vault: GameMap, lens: { x: number; y: number }): void 
   );
 }
 
-function nearFree(project: Project, map: GameMap, origin: { x: number; y: number }, maxR: number, selfId?: string): { x: number; y: number } | undefined {
-  const others = map.events.filter((e) => e.id !== selfId);
-  for (let r = 0; r <= maxR; r += 1) {
-    for (let dy = -r; dy <= r; dy += 1) for (let dx = -r; dx <= r; dx += 1) {
-      if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
-      const x = origin.x + dx, y = origin.y + dy;
-      if (x < 1 || y < 1 || x >= map.width - 1 || y >= map.height - 1 || !isPassable(project, map, x, y)) continue;
-      if (others.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) continue;
-      return { x, y };
-    }
-  }
-  return undefined;
-}
-
 /** 소품 발자국이 모두 걸을 수 있는 빈 바닥이고 이벤트와 붙지 않을 때만 찍는다(길·조사 칸을 막지 않는다). */
 /** 숲 맵의 맨 풀밭에 밟을 수 있는 바닥 덮개(고사리·히스·들풀·잔돌)를 덩이지게 깐다. 길 바로 곁·이벤트 곁은 비운다. */
 /** 추락 구덩이에서 뻗은 불씨 자국 줄 — 숲 풀숲 덩이가 그 위를 덮지 않게 비워 둔다(맵 id → 칸 번호). */
@@ -1417,11 +1075,10 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   setEventFace(M(ids.hub), `ev_${FS_PREFIX}_gate`, undefined);
   setEventFace(M(ids.forest), `ev_${FS_PREFIX}_bram`, undefined);
   polishLines(M(ids.observatory), M(ids.forest), M(ids.vault));
-  // 왕도를 오프닝 그림과 같은 곳으로 — 운하·아치 돌다리·둥근 돌 천문대 탑·성벽 동문·성문 광장(fallenTown.ts).
-  // 문지기는 성문 곁에 세운다. 문·출구 좌표는 여기서 정해지고, 뒤 단계(도착 칸·포고 행진)가 이 자리를 쓴다.
-  // 성벽 고리의 남 성벽(위 통로 + 앞면 두 줄)이 들어갈 자리 — 마을 남쪽 거리 밑으로 세 줄 늘린다.
-  execTool(project, "resize_map", { mapId: ids.hub, width: M(ids.hub).width, height: M(ids.hub).height + 3 });
-  reworkFallenTown(project, ids.hub, { observatory: ids.observatory, forest: ids.forest });
+  // 왕도 아스텔 — 장 구성기 마을을 비우고 오프닝 그림을 설계도로 처음부터 짓는다(fallenAstel.ts · tiledata/fallen-astel/PLAN.md).
+  // 문·출구·무대 자리는 모두 ASTEL 상수 — 뒤 단계(실내 문·포고 무대·도착 칸)가 같은 좌표를 쓴다.
+  execTool(project, "resize_map", { mapId: ids.hub, width: ASTEL.W, height: ASTEL.H });
+  buildAstel(project, ids.hub, { observatory: ids.observatory, forest: ids.forest });
   // 장 구성기의 「기억의 세이브 결정」은 시스템 말투다 — 세계 안의 이름과 문장으로(감사 3차).
   for (const event of M(ids.vault).events) if (event.name === "기억의 세이브 결정") {
     event.name = "푸른 별빛 결정";
@@ -1648,7 +1305,6 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 천문대 세 방(천문대 · 네 화로의 방 · 옛 별지기의 방)을 손 도트 실내로 다시 짓고 이벤트 자리·이동을 맞춘다(fallenStarRooms.ts).
   rebuildFallenRooms(project, execTool, { hub: ids.hub, observatory: ids.observatory, gate: PUZZLE_ROOM, vault: ids.vault });
 
-  // 동문 문지기는 성문 곁(reworkFallenTown 이 세운 자리)에 그대로 선다.
 
   // 추락지 — 금속 알 둘레를 그을린 흙(농장 흙길 오토타일)으로 타원형으로 칠하고, 가장자리에 불씨 자국·쓰러진 나무·그루터기를 둔다.
   // 민무늬 풀 칸만 칠한다(알 그림·길은 건드리지 않는다). 알 앞 조사 칸과 숲길은 비운다.
@@ -2002,35 +1658,6 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       }
     }
   }
-  // 선포하는 발렌이 광장 가장자리 수정 기둥에 겹쳐 서 몸이 가렸다(감사 VQA) — 광장 포석 쪽 빈 칸으로 옮긴다.
-  const herald = M(ids.hub).events.find((e) => e.id === `ev_${FS_PREFIX}_valen`);
-  if (herald) {
-    const spot = nearFree(project, M(ids.hub), { x: herald.x + 2, y: herald.y }, 3, herald.id);
-    if (spot) { herald.x = spot.x; herald.y = spot.y; }
-  }
-  // 다리 상판에 선 붙박이 주민은 남쪽 난간에 다리가 잘려 보였고, 뒤따르는 동료가 그 머리 뒤에 가렸다(VQA r27·r28) —
-  // 다리·물이 아닌 가까운 빈 칸으로 옮긴다.
-  {
-    const hub = M(ids.hub);
-    const metaB = (project.tilesets[hub.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
-    const onBridge = (x: number, y: number): boolean => /다리|물/.test(metaB[hub.lowerTiles[y * hub.width + x]!]?.label ?? "")
-      || /다리|물/.test(metaB[hub.lowerTiles[(y + 1) * hub.width + x]!]?.label ?? "");
-    for (const npc of hub.events) {
-      if (String(npc.id).startsWith("ev_gate_") || (npc.pages?.[0]?.movement?.type ?? "fixed") !== "fixed" || !npc.pages?.[0]?.graphic?.sprite) continue;
-      if (!onBridge(npc.x, npc.y)) continue;
-      let spot: { x: number; y: number } | undefined;
-      for (let r = 1; r <= 4 && !spot; r += 1) for (let dy = -r; dy <= r && !spot; dy += 1) for (let dx = -r; dx <= r && !spot; dx += 1) {
-        if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
-        const x = npc.x + dx, y = npc.y + dy;
-        if (x < 1 || y < 1 || x >= hub.width - 1 || y >= hub.height - 1 || !isPassable(project, hub, x, y) || onBridge(x, y)) continue;
-        if (hub.events.some((e) => e !== npc && Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) continue;
-        if ((hub.upperTiles[y * hub.width + x] ?? -1) >= 0) continue;
-        spot = { x, y };
-      }
-      if (spot) { npc.x = spot.x; npc.y = spot.y; }
-    }
-  }
-  // 천문대 입구는 reworkFallenTown 이 둥근 돌 탑(마법사의 탑 키트)과 곁의 놋쇠 망원경으로 바꿨다 — 예전 재단사 집 간판 바꾸기·혼천의는 걷었다.
   // 풀숲 가장자리에 풀 둑 덧그림을 얹던 마감은 걷어 냈다 — 흙 입술(진흙 못 가장자리)로 읽혔다(감사 라운드 2).
   // 맵 마감(감사 3차) — 주인 없는 그림자, 화로의 방 긴 화덕 띠.
   // 숲 들머리·추락지 둘레의 맨 풀밭(화면 4분의 1)이 잔디밭처럼 비어 보였다(VQA r26) — 길 바로 곁을 뺀
@@ -2060,7 +1687,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     land(hub, obs, "up", "up");
     land(obs, hub, "down", "down");
     land(hub, forest, "up", "up");
-    land(forest, hub, "down", "down"); // 성문 통로(북쪽) 앞 광장에 내려 성문을 등진다
+    // 숲에서 돌아오면 성문 통로 앞 광장에 성문을 등지고 선다(출구 칸은 성문 밖 숲길이라 맞은편 문 기준 계산을 쓰지 않는다).
+    for (const { rec } of transfersTo(forest, hub.id)) { rec.x = ASTEL.forestArrival.x; rec.y = ASTEL.forestArrival.y; rec.direction = "down"; }
 
     // 보이지 않는 터치 칸이던 두 출구에 문 그림을 세운다(VQA r12). 터치 칸과 도착 칸은 비워 둔다(발자국이 겹쳐도 통행 칸은 그림에 안 막힌다).
     const stampKit = (map: GameMap, kitId: string, x: number, y: number): void => {
@@ -2104,14 +1732,9 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       if (tryStamp(project, M(ids.forest), `kit:beodeul_city/bd-pick-deep-forest-path-${kits[(x * 7 + y * 3) % kits.length]}`, x, y)) placed.push([x, y]);
     }
   }
-  // 시작 — 광장, 천문대 문이 보이는 곳.
-  const observatoryDoor = M(ids.hub).events.find((e) => JSON.stringify(e).includes(`"mapId":"${M(ids.observatory).id}"`));
-  let start = observatoryDoor ? { x: observatoryDoor.x, y: observatoryDoor.y + 3 } : { x: Math.floor(M(ids.hub).width / 2), y: Math.floor(M(ids.hub).height / 2) };
-  if (!isPassable(project, M(ids.hub), start.x, start.y) || M(ids.hub).events.some((e) => e.x === start.x && e.y === start.y)) {
-    start = pickSpot(project, M(ids.hub), start, new Set(), 0.02, 0) ?? start;
-  }
+  // 시작 — 포고 광장 군중 앞줄, 단 위 발렌을 올려다보는 자리(ASTEL.stage.hero).
   project.startMapId = M(ids.hub).id;
-  project.startPos = start;
+  project.startPos = { x: ASTEL.stage.hero.x, y: ASTEL.stage.hero.y };
 
   // 빈 시작 맵 정리 + 맵 나무.
   for (const blankId of initialBlankMapIds) {
@@ -2165,7 +1788,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenSoundtrack(project, { hub: M(ids.hub), observatory: M(ids.observatory), forest: M(ids.forest), vault: M(ids.vault) }, bossEvent?.id);
   // 마을 집 안 — 여관·약방·집 셋을 손 도트 실내로 짓고 부딪힘 문으로 잇는다. 나머지 집 문은 잠겼다고 말한다(사용자 「집에 들어갈 수 없다」).
   // 행렬보다 먼저 짓는다 — 행렬(열 명)이 큰길 두 줄에 서면 리사네 문 앞이 막혀 문 잇기가 거절됐다.
-  buildFallenTownInteriors(project, ids.hub, { irisJoined: SW_IRIS_JOINED, valenMarched: SW_VALEN_MARCHED });
+  buildFallenTownInteriors(project, ids.hub, { irisJoined: SW_IRIS_JOINED, valenMarched: SW_VALEN_MARCHED, doors: ASTEL.doors });
   // 길은 모든 소품·표지를 찍은 뒤에 잰다 — 앞에서 재면 뒤에 선 표지·자리 옮김이 길을 막았다.
   marchOffAfterProclamation(project, M(ids.hub));
   clearDoorFronts(project, M(ids.hub));
@@ -2186,20 +1809,6 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     if (!exit) continue;
     const i = exit.y * map.width + exit.x;
     map.upperTiles[i] = 6423;
-  }
-  // 천문대 문 — 탑 문 그림 칸(문 앞 큰길 한 칸 위)에서 부딪혀 들어가고, 나오면 그 문 바로 앞에 문을 등지고 선다(scene-transfer-off-door·pair).
-  {
-    const hub = M(ids.hub);
-    const door = hub.events.find((e) => String(e.id).startsWith("ev_gate_") && JSON.stringify(e).includes(`"mapId":"${ids.observatory}"`));
-    if (door) {
-      const front = { x: door.x, y: door.y };
-      door.y -= 1;
-      for (const page of door.pages ?? []) { page.priority = "same"; (page as { overlapForbidden?: boolean }).overlapForbidden = true; }
-      for (const event of M(ids.observatory).events) for (const list of eventCommandLists(event)) for (const cmd of list) {
-        const rec = cmd as unknown as Record<string, unknown>;
-        if (rec.kind === "transfer" && rec.mapId === ids.hub) { rec.x = front.x; rec.y = front.y; rec.direction = "down"; }
-      }
-    }
   }
   applySpeakerFaces(project, {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),

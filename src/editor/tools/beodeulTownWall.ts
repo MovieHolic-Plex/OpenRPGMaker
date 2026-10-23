@@ -180,7 +180,15 @@ export function townWallAvailable(ts: TilesetDef | undefined): boolean {
 /** 계획을 맵에 싣는다: 위층 조각은 3층, 아래층 조각은 2층. 성벽 칸의 2·4층(풀꽃·그림자 덧그림)은 비운다. 바뀐 칸 수.
  * biome 이 snow·desert 면 그 기후 변형 조각(snow:… · desert:…)을 쓴다 — 그림자·터널 입 그늘처럼 변형이 없는 조각은 기본 그대로. */
 export function stampTownWall(map: GameMap, plan: TownWallPlan, biome: TownWallBiome = null): number {
-  const { up, lo } = planTownWallRing(plan);
+  return stampTownWallCells(map, planTownWallRing(plan), biome);
+}
+
+/** 성벽 조각 이름 → 칸 번호(없으면 undefined). */
+export function townWallTile(name: string): number | undefined { return TILES[name]; }
+
+/** 이미 고른 조각 이름 지도(planTownWallRing 결과를 여러 고리에서 골라 합친 것 등)를 맵에 싣는다. stampTownWall 과 같은 층 규칙. */
+export function stampTownWallCells(map: GameMap, cells: { up: Cells; lo: Cells }, biome: TownWallBiome = null): number {
+  const { up, lo } = cells;
   const W = map.width, H = map.height;
   let n = 0;
   const tileOf = (name: string) => (biome ? TILES[`${biome}:${name}`] : undefined) ?? TILES[name];

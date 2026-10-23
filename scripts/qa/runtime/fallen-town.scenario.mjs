@@ -1,4 +1,4 @@
-// 『폴른 스타』 왕도(fs_hub) — 성벽 고리·성문루·운하 수문·광장을 출하 플레이어에서 1배로 둘러본다(오프닝 그림과 대조용).
+// 『폴른 스타』 왕도 아스텔(fs_hub, fallenAstel.ts) — 성벽 고리·성문루·운하 수문·포고 광장·왕성을 출하 플레이어에서 1배로 둘러본다(오프닝 그림과 대조용).
 // 포고가 끝나면 발렌 일행이 광장 북쪽 성문 통로로 걸어 나가는 것도 0.4초 간격으로 찍는다.
 //   RES_WHICH=fallen npx --no-install tsx --import ./tiledata/jp-city/refs/css-stub.mjs scripts/qa/runtime/res480-fixture.mts > /tmp/fs.json
 //   RES_FIXTURE=/tmp/fs.json npm run qa:runtime -- --scenario fallen-town
@@ -37,20 +37,21 @@ export default {
     // 0.2초 간격(행진 겹침·사라짐을 프레임으로 본다 — 판정 규칙의 움직임 캡처).
     ...Array.from({ length: 70 }, (_, i) => ({ id: `march-${String(i + 1).padStart(2, "0")}`, note: "발렌 일행이 성문으로(0.2초 간격, 화면이 행렬을 따라간다)", ops: [{ kind: "hold", dir: null, ms: 200 }], shot: true })),
     { id: "march-done", note: "행진 끝", ops: [{ kind: "hold", dir: null, ms: 4000 }, ...closeDialogue()], shot: true },
-    look("v-bridge", "아치 돌다리 · 운하 · 천문대 탑", 21, 21),
-    look("v-tower", "천문대 탑 문 앞", 24, 21, "up"),
-    look("v-gate", "성문루 · 성문 광장", 48, 19, "up"),
-    look("v-plaza", "옛 광장(우물·노점)", 42, 26),
-    look("v-ne-wall", "동북 성벽 · 꺾이는 원탑", 35, 17, "up"),
-    look("v-nw-wall", "서북 성벽 · 운하 북 수문", 15, 5, "up"),
-    look("v-west", "서쪽 성벽 · 주택가", 4, 22),
-    look("v-sw", "남서 모서리 원탑 · 과수원", 6, 43),
-    look("v-bridge2", "둘째 아치 다리", 16, 34),
-    look("v-south-gate", "남 성벽 운하 수문", 21, 40),
-    look("v-se", "남동 모서리 원탑 · 남쪽 거리", 47, 43),
-    look("v-east", "동쪽 성벽", 53, 32, "right"),
+    look("v-bridge", "아치 돌다리 · 운하 · 천문대 탑", 22, 25),
+    look("v-tower", "천문대 탑 문 앞", 27, 25, "up"),
+    look("v-gate", "성문루 · 원뿔 탑 · 포고 광장", 55, 19, "up"),
+    look("v-plaza", "광장 남서 노점·우물", 42, 30),
+    look("v-notch", "성벽 꺾임 · 원뿔 탑", 37, 21, "up"),
+    look("v-nw-wall", "서북 성벽 · 운하 북 수문", 15, 17, "up"),
+    look("v-west", "서쪽 성벽 · 북서 주택가", 4, 17),
+    look("v-palace-street", "궁전 거리 · 왕성 뒤 성벽", 40, 33),
+    look("v-quay", "선창 길 · 운하 · 왕성 서쪽 성벽", 25, 45),
+    look("v-avenue", "왕실 대로 · 귀족 저택", 18, 40),
+    look("v-chapel", "예배당 · 성 앞마당", 11, 61),
+    look("v-castle", "도개교 · 왕성 정문", 44, 61, "up"),
+    look("v-se", "남동 모서리 · 성 앞마당", 58, 61),
     // 집 문은 부딪혀 들어간다 — 들어가면 문을 등지고(위), 아래로 걸어 나오면 문 앞 칸에 문을 등지고(아래) 선다.
-    ...[["inn", 50, 31, "별빛 여관"], ["apothecary", 31, 31, "약방(사고팔기)"], ["bakery", 13, 11, "빵집 뒤채"], ["stargazer", 4, 20, "늙은 별지기의 집"], ["lisa", 32, 20, "리사네 집"]].flatMap(([id, x, y, note]) => [
+    ...[["inn", 8, 15, "별빛 여관"], ["apothecary", 41, 23, "약방(사고팔기)"], ["bakery", 14, 15, "빵집 뒤채"], ["stargazer", 30, 31, "늙은 별지기의 집"], ["lisa", 33, 21, "리사네 집"]].flatMap(([id, x, y, note]) => [
       { id: `in-${id}`, note: `${note} — 문에 부딪혀 들어감`, ops: [
         { kind: "teleport", mapId: "fs_hub", x, y: y + 1 }, { kind: "face", dir: "up" }, { kind: "hold", dir: null, ms: 400 },
         { kind: "hold", dir: "up", ms: 500 }, { kind: "hold", dir: null, ms: 1800 },
@@ -58,12 +59,12 @@ export default {
       { id: `out-${id}`, note: `${note} — 나와서 문 앞`, ops: [{ kind: "hold", dir: "down", ms: 700 }, { kind: "hold", dir: null, ms: 1800 }], shot: true },
     ]),
     { id: "locked-door", note: "잠긴 집 문 — 한 줄", ops: [
-      { kind: "teleport", mapId: "fs_hub", x: 7, y: 12 }, { kind: "face", dir: "up" }, { kind: "hold", dir: null, ms: 500 },
+      { kind: "teleport", mapId: "fs_hub", x: 36, y: 32 }, { kind: "face", dir: "up" }, { kind: "hold", dir: null, ms: 500 },
       { kind: "action" }, { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 8000 }, { kind: "hold", dir: null, ms: 900 },
     ], shot: true },
     { id: "locked-close", note: "잠긴 문 대사 닫기", ops: [...closeDialogue()], shot: false },
     { id: "to-forest", note: "성문 통로 → 숲", ops: [
-      { kind: "teleport", mapId: "fs_hub", x: 48, y: 16 }, { kind: "hold", dir: null, ms: 500 },
+      { kind: "teleport", mapId: "fs_hub", x: 55, y: 13 }, { kind: "hold", dir: null, ms: 500 },
       { kind: "hold", dir: "up", ms: 700 }, { kind: "hold", dir: null, ms: 1500 },
     ], shot: true },
     { id: "crash-site", note: "숲 추락지 — 구덩이·관·연기", ops: [

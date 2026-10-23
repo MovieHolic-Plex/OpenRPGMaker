@@ -58,13 +58,21 @@ function townDoors(project: Project, map: GameMap): Cell[] {
   return out;
 }
 
-export function buildFallenTownInteriors(project: Project, hubId: string, ids: { irisJoined: string; valenMarched: string }): { built: string[]; locked: Cell[] } {
+export function buildFallenTownInteriors(
+  project: Project, hubId: string, ids: { irisJoined: string; valenMarched: string; doors: Readonly<Record<string, Cell>> },
+): { built: string[]; locked: Cell[] } {
   const hub = project.maps[hubId]!;
   const after = (switchId: string) => [{ kind: "switch", switchId, value: true }];
   const shopItems = (project.database.items ?? []).filter((i) => (i.price ?? 0) > 0 && i.type === "medicine").slice(0, 4).map((i) => i.id);
+  // 문 자리는 마을 설계(fallenAstel.ts ASTEL.doors)가 정한다.
+  const doorOf = (mapId: string): Cell => {
+    const d = ids.doors[mapId];
+    if (!d) throw new Error(`[fallen-town-interiors] 문 자리가 없다: ${mapId}`);
+    return { x: d.x, y: d.y };
+  };
   const homes: Home[] = [
     {
-      door: { x: 50, y: 31 }, mapId: "fs_inn", name: "아스텔 · 별빛 여관", bgm: "cc0-bgm-rtp-rst-001",
+      door: doorOf("fs_inn"), mapId: "fs_inn", name: "아스텔 · 별빛 여관", bgm: "cc0-bgm-rtp-rst-001",
       // 선술집 홀 + 손님방 셋 + 부엌·저장고 — 「여관인데 침대가 없다」(VQA r5).
       // seed 5 배치는 손님방 셋이 홀과 떨어진 1칸 골방이고 그 아래가 큰 어둠이었다(VQA r20 minor, 화면 17% 허공) —
       // 손님방이 위 왼쪽에 모이고 부엌이 아래 왼쪽에 붙는 seed 1 배치로 바꾼다. 홀 위쪽 빈 마루에 식탁 두 벌·술통 걸이.
@@ -99,7 +107,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       ],
     },
     {
-      door: { x: 31, y: 31 }, mapId: "fs_apothecary", name: "아스텔 · 약방", bgm: "cc0-bgm-rtp-cln-001",
+      door: doorOf("fs_apothecary"), mapId: "fs_apothecary", name: "아스텔 · 약방", bgm: "cc0-bgm-rtp-cln-001",
       // 가게 앞방 + 조제실 + 약재 광 + 지하 저장고 + 서재 + 부부 침실 — 부엌은 두지 않는다(집집마다 같은 부엌이 되풀이됐다, VQA r6).
       // 식료품 광·지하 저장고는 뺐다 — 집집마다 같은 광·저장고·부엌 묶음이 되풀이돼 「같은 저택」으로 읽혔다(VQA r11 major). 쉼터는 약재를 말리며 쉬는 작은 방.
       // 가게 19×9·조제실 9×7·늘인 서재(16×8 원형)는 빈 마루가 화면 절반 가까이 남았다(VQA r24 major) — 바구니로 메우지 않고 벽을 당긴다.
@@ -121,7 +129,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       ],
     },
     {
-      door: { x: 13, y: 11 }, mapId: "fs_bakery_home", name: "아스텔 · 빵집 뒤채", bgm: "cc0-bgm-rtp-caf-001",
+      door: doorOf("fs_bakery_home"), mapId: "fs_bakery_home", name: "아스텔 · 빵집 뒤채", bgm: "cc0-bgm-rtp-caf-001",
       // 빵 진열 가게 + 빵 굽는 방(화덕이 부엌을 겸한다) + 식료품 광 + 지하 저장고 + 침실 + 식당.
       // 침실이 리사네 아이 방과 같은 견본(초록 침대·옷걸이)이었다(VQA r31) — 4×4 로 주면 난로·작은 밥상이 있는 제빵사 방 견본을 쓴다.
       // 가게 8줄은 아랫단 두 줄이 빈 대리석이었다 — 6줄로 줄인다.
@@ -138,7 +146,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       ],
     },
     {
-      door: { x: 4, y: 20 }, mapId: "fs_stargazer_home", name: "아스텔 · 늙은 별지기의 집", bgm: "cc0-bgm-rtp-mys-002",
+      door: doorOf("fs_stargazer_home"), mapId: "fs_stargazer_home", name: "아스텔 · 늙은 별지기의 집", bgm: "cc0-bgm-rtp-mys-002",
       // 별 지도 서고 + 관측 일지 서재 + 침실 + 지하 저장고 + 벽난로 거실(괘종시계) — 부엌·열 사람 식탁은 두지 않는다(혼자 사는 노인, VQA r6).
       // 지하 저장고 대신 별 유물 진열실(천구의·운석 진열장) — 별지기 집만의 방(VQA r11 major).
       // 거실 8×6 배치는 들어서자마자 왼쪽 아래 방 사이 큰 어둠(7×4)이 보였다(VQA r22) — 거실을 12×6 으로 넓히면 다섯 방이 맞물리고
@@ -163,7 +171,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       ],
     },
     {
-      door: { x: 32, y: 20 }, mapId: "fs_lisa_home", name: "아스텔 · 리사네 집", bgm: "cc0-bgm-rtp-emo-002",
+      door: doorOf("fs_lisa_home"), mapId: "fs_lisa_home", name: "아스텔 · 리사네 집", bgm: "cc0-bgm-rtp-emo-002",
       // 가족 집: 거실(벽난로) + 식당 + 부엌 + 침실 둘(부부·아이) + 식료품 광 + 헛간 광 + 지하 저장고(흰 도기 욕조는 중세 집에 안 맞았다, VQA r6).
       // 여덟 방(여덟 자리 식탁·식료품 광·헛간·지하 저장고)은 작은 오두막에 안 맞았다(VQA r11 major) — 거실·부엌·침실 둘·바느질 방(리사의 일감).
       // 거실 12칸은 오른쪽 아래가 큰 어둠으로 남았고(VQA r20), 16칸으로 넓혀도 부부 침실 왼쪽·아래 왼쪽에 검은 띠가 남았다(VQA r22) —
