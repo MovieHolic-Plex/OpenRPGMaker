@@ -270,6 +270,7 @@ const LEAF_BASE_MAX = kitValue<number>("checks", "LEAF_BASE_MAX");
 const LEAF_LONE_MAX = kitValue<number>("checks", "LEAF_LONE_MAX");
 const LEAF_HOLES_MIN = kitValue<number>("checks", "LEAF_HOLES_MIN");
 const STRAIGHT_SIDE_MAX = kitValue<number>("checks", "STRAIGHT_SIDE_MAX");
+const TRUNK_SHARE_MAX = kitValue<number>("checks", "TRUNK_SHARE_MAX");
 const DEEP_LUMA = kitValue<number>("checks", "DEEP_LUMA");
 const DEEP_MIN = kitValue<number>("checks", "DEEP_MIN");
 const ORGANIC_LEAF_RAMP = kitValue<readonly string[]>("prompts", "ORGANIC_LEAF_RAMP");
@@ -318,7 +319,7 @@ export function leafRampLine(palette: Palette): string {
  * 원본 checks.leaves: 잎 초록(초록이 빨강보다 10+ 크고 파랑 이상) 화소 수, 평균(빨강-파랑), 명도 60 미만 몫,
  * 이웃 명도 차 평균(contrast — 덩이마다 밝은 획 옆에 어두운 구멍이면 크다), 명도와 높이의 상관(band — 위 밝고 아래 띠로 어두우면 더 음수).
  */
-export function leafTone(image: RgbaImage): { leafPixels: number; leafHoles: number; leafLone: number; leafCast: number; leafDark: number; leafContrast: number; leafBand: number } {
+export function leafTone(image: RgbaImage): { leafPixels: number; leafHoles: number; leafLone: number; leafCast: number; leafDark: number; leafContrast: number; leafBand: number; trunkShare: number } {
   const lum = new Map<number, number>();
   let cast = 0, dark = 0;
   for (let i = 0; i < image.data.length; i += 4) {
@@ -326,7 +327,7 @@ export function leafTone(image: RgbaImage): { leafPixels: number; leafHoles: num
     if (image.data[i + 3]! > 0 && g >= r + 10 && g >= b) { const l = 0.299 * r + 0.587 * g + 0.114 * b; lum.set(i / 4, l); cast += r - b; if (l < 60) dark++; }
   }
   const n = lum.size;
-  if (!n) return { leafPixels: 0, leafHoles: 0, leafLone: 0, leafCast: 0, leafDark: 0, leafContrast: 0, leafBand: 0 };
+  if (!n) return { leafPixels: 0, leafHoles: 0, leafLone: 0, leafCast: 0, leafDark: 0, leafContrast: 0, leafBand: 0, trunkShare: 0 };
   const w = image.width;
   let steps = 0, stepSum = 0, sumY = 0, sumL = 0;
   for (const [i, l] of lum) {
@@ -367,8 +368,16 @@ export function leafTone(image: RgbaImage): { leafPixels: number; leafHoles: num
       for (const q of [(k % w) + 1 < w ? k + 1 : -1, k % w > 0 ? k - 1 : -1, k + w, k - w]) if (q >= 0 && darkIn.has(q) && !seen.has(q)) { seen.add(q); stack.push(q); }
     }
   }
+  // 맨 아래 칠한 줄과, 잎 화소가 3개 이상인 가장 낮은 줄 사이(맨 껍데기 줄기)의 높이 몫 (object-gen leaves trunkShare)
+  const rowLeaf = new Map<number, number>();
+  for (const i of lum.keys()) { const y = Math.floor(i / w); rowLeaf.set(y, (rowLeaf.get(y) ?? 0) + 1); }
+  let top = -1, bottom = -1;
+  for (let y = 0; y < image.height; y++) for (let x = 0; x < w; x++) if (image.data[(y * w + x) * 4 + 3]! > 0) { if (top < 0) top = y; bottom = y; break; }
+  let lowLeaf = -1;
+  for (const [y, k] of rowLeaf) if (k > 2 && y > lowLeaf) lowLeaf = y;
+  const trunkShare = top >= 0 && lowLeaf >= 0 ? Math.round(((bottom - lowLeaf) / (bottom - top + 1)) * 1000) / 1000 : 0;
   return { leafPixels: n, leafHoles: Math.round((holes * 1000) / n) / 10, leafLone: Math.round(lone * 100) / 100, leafCast: Math.round((cast / n) * 10) / 10, leafDark: Math.round((dark / n) * 1000) / 1000,
-    leafContrast: steps ? Math.round((stepSum / steps) * 10) / 10 : 0, leafBand: Math.round(band * 100) / 100 };
+    leafContrast: steps ? Math.round((stepSum / steps) * 10) / 10 : 0, leafBand: Math.round(band * 100) / 100, trunkShare };
 }
 /**
  * 원본 checks.geometry: 윤곽이 도형인가. turns = 왼/오른 가장자리가 들어갔다 나왔다 꺾이는 횟수(줄당) — 손으로 뭉친 수관은 자주 꺾이고
@@ -518,11 +527,12 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
     if (leafy && lv.leafPixels >= LEAF_MIN_PIXELS) {
       if (lv.leafCast > LEAF_CAST_MAX) hard.push({ code: "LEAFHUE", msg: `the leaves are olive/yellow (red-blue ${lv.leafCast}, Beodeul -16..+14) - paint them with the listed leaf-green keys` });
       if (!isTree && g.rows >= GEOMETRIC_MIN_ROWS && g.solidity > MASS_SOLIDITY_MAX) hard.push({ code: "BLOBBY", msg: `the leafy mass fills its outline like a ball or dome (solidity ${g.solidity}, Beodeul bushes 0.89-0.91) - bite 1-2 deep notches into the outline and let one clump stick out to one side` });
+      if (isTree && g.rows >= GEOMETRIC_MIRROR_ROWS && lv.trunkShare > TRUNK_SHARE_MAX) hard.push({ code: "TALLTRUNK", msg: `the bare trunk is ${Math.round(lv.trunkShare * 100)}% of the height (Beodeul 13-27%) - lower and widen the crown so it overhangs, keep the trunk short and stout with a root flare` });
       if (g.rows >= GEOMETRIC_MIN_ROWS && g.side > STRAIGHT_SIDE_MAX) hard.push({ code: "STRAIGHTSIDE", msg: `one side of the leafy mass runs straight down ${g.side} rows like a box wall (Beodeul 2-10) - let the side bulge in and out lobe by lobe, the edge moving every 1-3 rows` });
       if (lv.leafHoles < LEAF_HOLES_MIN) hard.push({ code: "LEAFHOLES", msg: `too few dark holes inside the crown (${lv.leafHoles} per 100 leaf px, Beodeul 0.9-3.2) - break big lobes into many small clusters with 1-3 px dark holes all through the interior` });
       if (lv.leafLone > LEAF_LONE_MAX) hard.push({ code: "LEAFSPECK", msg: `the highlights are single sprinkled pixels (${Math.round(lv.leafLone * 100)}% of the lightest leaf tone stands alone, Beodeul 0-35%) - group the lightest green into 2-4 px dashes on the upper-left lobes only` });
       if (lv.leafContrast < LEAF_CONTRAST_MIN) hard.push({ code: "LEAFFLAT", msg: `the leaves are a smooth gradient, not clumps (neighbour contrast ${lv.leafContrast}, Beodeul 15-25) - build separate clumps: a 2-4 px light dash on each clump's upper left right next to dark pockets` });
-      if (lv.leafBand < LEAF_BAND_MAX) hard.push({ code: "LEAFBAND", msg: `light and dark change by height (luma-height correlation ${lv.leafBand}, Beodeul -0.19..-0.71) - light every clump on its own upper left, put dark pockets between clumps at every height` });
+      if (lv.leafBand < LEAF_BAND_MAX) hard.push({ code: "LEAFBAND", msg: `light and dark change by height (luma-height correlation ${lv.leafBand}, Beodeul -0.19..-0.71) - keep a lit top, but break the bands: lit clumps reach into the lower half and dark gaps reach up between them` });
       const art = renderGrid(grid, palette);
       const widths: number[] = [];
       let lowLeaf = 0; // 가장 아래 칠한 줄에서 잎 초록의 비율 — 줄기·뿌리·화분이 바닥이면 FLATBASE 를 보지 않는다(실제 버들항 화분 가로수)
