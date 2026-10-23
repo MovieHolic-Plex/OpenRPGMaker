@@ -65,9 +65,10 @@ export async function bootPlayPage(page, {
   serverUrl,
   entryPath = "/player.html",
   timeoutMs = 180_000,
+  checkpoint = null,
 }) {
   await page.setViewportSize(viewport);
-  await page.addInitScript(([projectUrl, namespace]) => {
+  await page.addInitScript(([projectUrl, namespace, qaCheckpoint]) => {
     try {
       if (!sessionStorage.getItem("qp:booted")) {
         localStorage.clear();
@@ -76,8 +77,9 @@ export async function bootPlayPage(page, {
     } catch {
       // 저장소 접근이 막힌 표면이면 그대로 진행한다.
     }
-    window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace: namespace, qaInstrumentation: true };
-  }, [PLAY_PROJECT_PATH, `qp:${seed}`]);
+    // qaCheckpoint boots straight into a captured save (same path as scripts/qa/runtime/checkpoints), skipping the title.
+    window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace: namespace, qaInstrumentation: true, ...(qaCheckpoint ? { qaCheckpoint } : {}) };
+  }, [PLAY_PROJECT_PATH, `qp:${seed}`, checkpoint]);
   if (!query) {
     if (!projectJson && !projectFile) throw new Error("bootPlayPage: projectJson·projectFile·query 중 하나가 필요하다");
     await page.route(`**${PLAY_PROJECT_PATH}`, (route) =>
@@ -87,7 +89,19 @@ export async function bootPlayPage(page, {
   }
   const search = query ? `?${new URLSearchParams(query).toString()}` : "";
   await page.goto(`${serverUrl}${entryPath}${search}`, { waitUntil: "domcontentloaded", timeout: timeoutMs });
-  await page.waitForSelector("[data-testid='title-screen']", { timeout: timeoutMs });
+  if (checkpoint) await page.waitForSelector("[data-testid='runtime-state-json']", { state: "attached", timeout: timeoutMs });
+  else await page.waitForSelector("[data-testid='title-screen']", { timeout: timeoutMs });
+}
+
+/** The live session as a save snapshot (null on the title or when instrumentation is off). */
+export async function captureSaveSnapshot(page) {
+  return await page.evaluate(() => {
+    try {
+      return window.__oprnDebug?.captureSave?.() ?? null;
+    } catch {
+      return null;
+    }
+  });
 }
 
 /**
@@ -171,6 +185,40 @@ export async function readPlayState(page) {
       testids,
     };
   });
+}
+
+/** Where the player stands after an op — written into actions.jsonl so repro can start a log slice from there. */
+export async function readAnchor(page) {
+  const state = await readPlayState(page);
+  return { screen: state.screen, mapId: state.mapId, x: state.x, y: state.y, dir: state.dir };
+}
+
+/**
+ * Title -> new game -> field. A title with an intro sequence consumes the first input as "skip", so press only
+ * when the menu is actually visible and wait long only after that press (fallen-star needed three presses).
+ */
+export async function enterFieldFromTitle(page, timeoutMs = 120_000) {
+  const fieldReady = async () => page.evaluate(() => Boolean(window.__oprnDebug?.readState?.().currentMapId));
+  const menuReady = async () => page.evaluate(() => {
+    const titleEl = document.querySelector("[data-testid='title-screen']");
+    if (!titleEl) return false;
+    if (titleEl.dataset.seqState === "playing" && !titleEl.classList.contains("rm-title-seq-skipped")) return false;
+    const button = titleEl.querySelector(".rm-title-menu-button");
+    if (!button) return false;
+    const rect = button.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0;
+  });
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const ready = await menuReady();
+    await page.keyboard.press("Enter");
+    const until = Date.now() + (ready ? 15_000 : 3_000);
+    while (Date.now() < until) {
+      if (await fieldReady()) return true;
+      await page.waitForTimeout(200);
+    }
+  }
+  return false;
 }
 
 /** 에이전트가 읽는 한 덩이 텍스트. JSON 덤프가 아니다. */

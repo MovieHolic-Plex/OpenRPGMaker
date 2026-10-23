@@ -25,9 +25,11 @@ import { startPlayerQaServer } from "../../lib/runtimeQaRun.mjs";
 import {
   bootPlayPage,
   capturePageErrors,
+  captureSaveSnapshot,
   formatPlayState,
   launchPlayBrowser,
   prepareBoot,
+  readAnchor,
   readPlayState,
   runPlayOp,
 } from "../../lib/playSession.mjs";
@@ -196,6 +198,19 @@ async function serve(flags) {
     await appendFile(actionsPath, `${JSON.stringify(entry)}\n`);
   };
 
+  // A save snapshot next to observation rows lets repro boot straight into this moment (story switches included)
+  // instead of replaying the whole log, which drifts with wandering NPCs and real-time scene state.
+  let saveIndex = 0;
+  const saveAnchor = async () => {
+    const snapshot = await captureSaveSnapshot(page);
+    if (!snapshot) return {};
+    saveIndex += 1;
+    const rel = `saves/${String(saveIndex).padStart(4, "0")}.json`;
+    await mkdir(join(dir, "saves"), { recursive: true });
+    await writeFile(join(dir, rel), JSON.stringify(snapshot));
+    return { save: rel };
+  };
+
   /** 명령 하나를 실행한다. 모든 반환은 {ok, text} — 클라이언트가 그대로 출력한다. */
   const execute = async (name, args) => {
     const runOp = async (op, { command = name } = {}) => {
@@ -204,6 +219,7 @@ async function serve(flags) {
         const outcome = await runPlayOp(page, op, runState);
         const entry = { t: new Date().toISOString(), command, op, ok: true, ms: Date.now() - startedAt };
         if (outcome?.note) entry.note = outcome.note;
+        entry.at = await readAnchor(page);
         await record(entry);
         return outcome?.note ? `${name}: ${outcome.note}` : `${name}: ok`;
       } catch (error) {
@@ -290,17 +306,37 @@ async function serve(flags) {
       case "shot": {
         const file = join(dir, "shots", `${sanitize(args[0] ?? "shot")}.png`);
         await page.screenshot({ path: file });
-        await record({ t: new Date().toISOString(), command: name, op: { kind: "shot", name: args[0] ?? "shot" }, ok: true, observe: true });
+        await record({ t: new Date().toISOString(), command: name, op: { kind: "shot", name: args[0] ?? "shot" }, ok: true, observe: true,
+          ...(await saveAnchor()) });
         return { text: file };
       }
       case "state": {
         const state = await readPlayState(page);
-        await record({ t: new Date().toISOString(), command: name, op: { kind: "state" }, ok: true, observe: true });
+        await record({ t: new Date().toISOString(), command: name, op: { kind: "state" }, ok: true, observe: true,
+          at: { screen: state.screen, mapId: state.mapId, x: state.x, y: state.y, dir: state.dir }, ...(await saveAnchor()) });
         return { text: formatPlayState(state), data: state };
       }
       case "text": {
         // Pixel fonts are easy to misread from a screenshot; quote this DOM text instead (repro textPresent reads the same).
-        const visible = await page.evaluate(() => document.body.innerText);
+        const visible = await page.evaluate(() => {
+          // Only text a player can see: hidden debug mirrors (event ids, state JSON) also live in the DOM.
+          const out = [];
+          const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+          for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+            const text = node.textContent.replace(/\s+/g, " ").trim();
+            const parent = node.parentElement;
+            if (!text || !parent || parent.closest("[data-testid='runtime-state-json'],.runtime-debug-marker,script,style")) continue;
+            // QA mirrors render their ids at 1px inside the stage; no player can read text that small.
+            if (Number.parseFloat(getComputedStyle(parent).fontSize) < 6) continue;
+            if (!parent.checkVisibility({ opacityProperty: true, visibilityProperty: true })) continue;
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            const onScreen = [...range.getClientRects()].some((rect) => rect.width > 0 && rect.height > 0
+              && rect.right > 0 && rect.bottom > 0 && rect.left < innerWidth && rect.top < innerHeight);
+            if (onScreen) out.push(text);
+          }
+          return out.join("\n");
+        });
         await record({ t: new Date().toISOString(), command: name, op: { kind: "text" }, ok: true, observe: true });
         const lines = visible.split("\n").map((line) => line.trim()).filter(Boolean);
         return { text: lines.length ? lines.slice(0, 80).join("\n") : "(no text)" };

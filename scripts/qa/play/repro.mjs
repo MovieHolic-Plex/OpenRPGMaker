@@ -14,7 +14,7 @@
 // 출력: REPRODUCED / NOT_REPRODUCED, 근거 PNG·state JSON. 비영점 = 재현되지 않음.
 import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { startPlayerQaServer } from "../../lib/runtimeQaRun.mjs";
 import {
@@ -55,22 +55,38 @@ function parseArgs(argv) {
 }
 
 /** ops 파일: JSON 배열 · {ops:[…]} · actions.jsonl(한 줄에 한 항목, op 필드 사용). */
-async function loadOps(file, lines) {
+async function loadOps(file, lines, { anchor: useAnchor = true } = {}) {
   const text = await readFile(file, "utf8");
   let ops;
+  let rows = null;
   if (file.endsWith(".jsonl") || text.trimStart().startsWith("{")) {
-    const rows = text.split("\n").filter((line) => line.trim()).map((line) => JSON.parse(line));
+    rows = text.split("\n").filter((line) => line.trim()).map((line) => JSON.parse(line));
     ops = rows.map((row) => (row.op && row.t ? { ...row.op, recordedAt: Date.parse(row.t) } : row.op ?? row));
   } else {
     const parsed = JSON.parse(text);
     ops = Array.isArray(parsed) ? parsed : parsed.ops;
   }
   if (!Array.isArray(ops)) fail(`${file}: op 배열을 찾지 못했다`);
+  let anchor = null;
   if (lines) {
     const [from, to] = String(lines).split("-").map(Number);
-    ops = ops.slice((from ?? 1) - 1, to ?? from ?? undefined);
+    const start = (from ?? 1) - 1;
+    // A slice deep into a free-play log cannot be reached by replaying everything before it: wandering NPCs and
+    // real-time scene state make long replays drift. Boot from the last save snapshot qp captured before the slice
+    // (state/shot rows carry `save`), then replay only the slice.
+    if (useAnchor && rows && start > 0) {
+      for (let index = start - 1; index >= 0; index -= 1) {
+        const row = rows[index];
+        if (row?.save) {
+          const snapshot = JSON.parse(await readFile(join(dirname(file), row.save), "utf8"));
+          anchor = { line: index + 1, save: row.save, at: row.at ?? null, checkpoint: { id: `anchor-line-${index + 1}`, snapshot } };
+          break;
+        }
+      }
+    }
+    ops = ops.slice(anchor ? start : 0, to ?? from ?? undefined);
   }
-  return ops.filter((op) => op && typeof op === "object" && typeof op.kind === "string");
+  return { ops: ops.filter((op) => op && typeof op === "object" && typeof op.kind === "string"), anchor };
 }
 
 async function resolveGame(spec, { outRoot, gamesDir }) {
@@ -97,7 +113,7 @@ async function resolveGame(spec, { outRoot, gamesDir }) {
 /** 한 번의 재생. 반환값이 판정 근거다. */
 const MAX_PACE_GAP_MS = 10_000;
 
-async function replayOnce({ game, boot, ops, expect, attemptDir, viewport, seed, bootTimeoutMs, sharedPlayerUrl, pace }) {
+async function replayOnce({ game, boot, ops, anchor, expect, attemptDir, viewport, seed, bootTimeoutMs, sharedPlayerUrl, pace }) {
   await mkdir(attemptDir, { recursive: true });
   const server = sharedPlayerUrl
     ? { url: sharedPlayerUrl, close: async () => undefined }
@@ -111,11 +127,12 @@ async function replayOnce({ game, boot, ops, expect, attemptDir, viewport, seed,
   let bootError = null;
   try {
     try {
-      await bootPlayPage(page, { ...boot, viewport, seed, serverUrl: server.url, timeoutMs: bootTimeoutMs });
+      await bootPlayPage(page, { ...boot, viewport, seed, serverUrl: server.url, timeoutMs: bootTimeoutMs, checkpoint: anchor?.checkpoint ?? null });
     } catch (error) {
       bootError = String(error?.message ?? error);
       await page.screenshot({ path: join(attemptDir, "boot-failure.png") }).catch(() => undefined);
     }
+    if (!bootError && anchor) opResults.push({ op: { kind: "anchor", line: anchor.line, save: anchor.save, at: anchor.at }, ok: true });
     let previousRecordedAt = null;
     let previousEndedAt = null;
     for (const op of ops) {
@@ -175,8 +192,9 @@ async function main() {
   const outRoot = flags["games-out"] ? resolve(REPO_ROOT, String(flags["games-out"])) : join(REPO_ROOT, "tmp/qp/games");
   const gamesDir = flags["games-dir"] ? resolve(REPO_ROOT, String(flags["games-dir"])) : null;
   const game = await resolveGame(String(flags.game), { outRoot, gamesDir });
-  const ops = await loadOps(resolve(REPO_ROOT, String(flags.ops)), flags.lines);
+  const { ops, anchor } = await loadOps(resolve(REPO_ROOT, String(flags.ops)), flags.lines, { anchor: flags["no-anchor"] !== true });
   if (ops.length === 0) fail("op 이 0개다 — --lines 범위를 확인해라");
+  if (anchor) process.stdout.write(`anchor: line ${anchor.line} save ${anchor.save} ${anchor.at ? `${anchor.at.mapId} (${anchor.at.x},${anchor.at.y})` : ""}\n`);
   const expect = JSON.parse(await readFile(resolve(REPO_ROOT, String(flags.expect)), "utf8"));
   const boot = await prepareBoot({
     projectFile: game.file, entry: game.entry, dir: outDir, keepOpening: flags["keep-opening"] === true,
@@ -204,7 +222,7 @@ async function main() {
   const attempts = [];
   for (let attempt = 1; attempt <= repeat; attempt += 1) {
     attempts.push(await replayOnce({
-      game, boot, ops, expect, attemptDir: join(outDir, `run-${attempt}`), viewport, seed, bootTimeoutMs, sharedPlayerUrl, pace,
+      game, boot, ops, anchor, expect, attemptDir: join(outDir, `run-${attempt}`), viewport, seed, bootTimeoutMs, sharedPlayerUrl, pace,
     }));
     process.stdout.write(`run ${attempt}/${repeat}: ${attempts.at(-1).reproduced ? "symptom present" : "symptom absent"}`
       + `${attempts.at(-1).failures.length ? ` — ${attempts.at(-1).failures.slice(0, 3).join(" / ")}` : ""}\n`);
@@ -217,6 +235,7 @@ async function main() {
     game: game.id,
     projectFile: game.file,
     ops: ops.length,
+    anchor: anchor ? { line: anchor.line, save: anchor.save, at: anchor.at } : null,
     repeat,
     expect,
     attempts: attempts.map((attempt, index) => ({

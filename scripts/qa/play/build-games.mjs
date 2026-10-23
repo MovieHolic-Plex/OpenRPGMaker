@@ -25,6 +25,7 @@ import { startPlayerQaServer } from "../../lib/runtimeQaRun.mjs";
 import {
   bootPlayPage,
   capturePageErrors,
+  enterFieldFromTitle,
   launchPlayBrowser,
   prepareBoot,
   readPlayState,
@@ -136,33 +137,7 @@ async function smoke(game, projectPath, outRoot, timeoutMs) {
     await page.screenshot({ path: join(dir, "title.png") });
     const title = await readPlayState(page);
     result.titleText = title.testids.includes("title-screen") ? "title-screen" : null;
-    // 타이틀 확인은 게임마다 한 번이 아닐 수 있다: 입장 시퀀스(인트로)가 재생 중이면 첫 입력은
-    // 메뉴 확정이 아니라 **시퀀스 건너뛰기**로 소비된다(실측: 폴른 스타 — Enter 3번째에야 메뉴가 떴다).
-    // 그래서 "필드에 도달했나"와 "메뉴가 실제로 보이나"를 상태로 보고 누른다.
-    const fieldReady = async () => page.evaluate(() => Boolean(window.__oprnDebug?.readState?.().currentMapId));
-    const menuReady = async () => page.evaluate(() => {
-      const titleEl = document.querySelector("[data-testid='title-screen']");
-      if (!titleEl) return false;
-      if (titleEl.dataset.seqState === "playing" && !titleEl.classList.contains("rm-title-seq-skipped")) return false;
-      const button = titleEl.querySelector(".rm-title-menu-button");
-      if (!button) return false;
-      const rect = button.getBoundingClientRect();
-      return rect.width > 0 && rect.height > 0;
-    });
-    let entered = false;
-    const deadline = Date.now() + timeoutMs;
-    while (!entered && Date.now() < deadline) {
-      // 메뉴가 안 보이면 이 입력은 시퀀스 건너뛰기로 소비된다(그래서 짧게만 기다린다).
-      // 메뉴가 보이면 이 입력이 "새 게임" 확정이다 — 그때만 길게 기다린다.
-      const ready = await menuReady();
-      await page.keyboard.press("Enter");
-      const until = Date.now() + (ready ? 15_000 : 3_000);
-      while (Date.now() < until) {
-        entered = await fieldReady();
-        if (entered) break;
-        await page.waitForTimeout(200);
-      }
-    }
+    const entered = await enterFieldFromTitle(page, timeoutMs);
     if (!entered) {
       const state = await readPlayState(page);
       result.reason = `새 게임이 필드에 도달하지 않았다(screen=${state.screen})`;

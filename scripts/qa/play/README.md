@@ -88,6 +88,7 @@ menus=[]
 | `waitText <text> [timeoutMs]` | 화면 글자에 그 문자열이 나올 때까지 |
 | `waitTestid <id> [present\|absent\|visible] [timeoutMs]` | testid 상태 대기(`visible` 은 조상 opacity·상자까지) |
 | `shot <name>` | `DIR/shots/<name>.png` 저장, 경로 출력 |
+| `text` | 플레이어에게 **보이는** 화면 글자(1px 디버그 표식·상태 JSON 제외). 도트 글꼴을 그림으로 읽으면 오독한다(실측: 「숲늑대」→「슬롭대」) |
 | `state` | 화면·맵·좌표·방향·파티 HP/MP·골드·대사·열린 메뉴·스위치/변수 개수 |
 | `errors` | 마지막 호출 뒤의 콘솔 오류 + 페이지 오류(읽으면 비운다) |
 | `teleport <mapId> <x> <y>` | 그 맵·칸으로(같은 맵이면 좌표만, 다른 맵이면 실제 문 경로). 도착까지 기다린다 |
@@ -117,6 +118,12 @@ node scripts/qa/play/repro.mjs --game saesol-red \
 ```
 
 - `--ops` 는 **JSON 배열 · `{ops:[…]}` · actions.jsonl** 셋 다 받는다. `--lines 3-7` 로 로그 토막을 그대로 재생한다.
+- **세이브 앵커.** `qp` 는 `state`·`shot` 마다 그 순간의 세이브(`captureSave`)를 `<세션>/saves/NNNN.json` 에 남기고 로그 줄에 `save` 로 적는다.
+  `--lines A-B` 를 주면 repro 는 A 앞의 마지막 세이브로 **바로 부팅**(`__OPENRPG_BOOT__.qaCheckpoint`, 체크포인트 세트와 같은 길)한 뒤 A..B 만 재생한다.
+  긴 자유 플레이 로그를 처음부터 다시 돌리면 돌아다니는 NPC·실시간 연출 때문에 위치가 어긋난다(실측: 폴른 스타 68줄 재생이 오프닝 대사·막힌 이동으로 갈라짐).
+  순간이동만으로는 스토리 스위치가 비어 오프닝 이벤트가 다시 돈다 — 그래서 세이브다. `--no-anchor` 로 처음부터 재생.
+- **기록된 간격대로 재생한다.** 로그의 시각 차이(최대 10초)를 입력 사이에 둔다(대사 글자 출력·전환 연출이 실시간으로 진행되므로). `--no-pace` 로 끈다.
+- `--session <세션 폴더>` 는 그 세션의 뷰포트·시드(`qp.ready`)로 재생한다. 창 크기가 다르면 배치가, 시드가 다르면 조우가 달라진다.
 - `--repeat 2`(기본) — **두 번 다 재현돼야** REPRODUCED. 한 번만 나오는 것은 flaky 이고 버그 확정이 아니다.
 - 새 브라우저·새 페이지·새 서버에서 돈다. 오프닝은 기본으로 끈다(`--keep-opening` 으로 유지).
 - 종료 코드: 0 = REPRODUCED, 1 = NOT_REPRODUCED, 2 = 사용 오류.
