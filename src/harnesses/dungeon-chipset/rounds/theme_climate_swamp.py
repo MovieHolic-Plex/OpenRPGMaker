@@ -403,19 +403,19 @@ def _wisp(fn):
 # A1 끝 = 마지막 널 앞 마구리 + 앞 모서리 말뚝 둘 + 늘어진 밧줄 / 부서짐 = 이 빠진 널, 구멍 밑으로 세로 장선 둘과 물.
 # A2 끝 = 들쭉날쭉 끝 널 + 굵은 계류 말뚝(밧줄 감김)·짧은 말뚝 + 바닥에 감긴 밧줄 / 부서짐 = 큰 구멍과 물에 비스듬히 잠긴 꺾인 널.
 DECK_END1 = [
-    'eegeeeebeeeeefee',
-    'dcdddddbdddcdddd',
-    'ddcddccbdddddcdd',
-    'a1aaaaaaaaaaa2aa',
-    'gffgbffffgffffgf',
-    'eeeebeeeeeefeeee',
-    'eedebeeeceeedeee',
-    'aaaaaaaa2aaaaaaa',
-    'feeeeeebeeeefeee',
-    'dfddcdddbddcdfdd',
-    'dddcddddbddcdddd',
-    'edccdcdccdccdccc',
-    'cbbcbbbbbcbbbbbb',
+    'gfgffgfbeedeedde',
+    'feefdefbdcddcddd',
+    'eedeeedbccdcbccd',
+    'aa1aaaaaaaaa2aaa',
+    'eedebgfgfgffgffg',
+    'dcddbfeefcbfeefe',
+    'ccdcbeedefdeedde',
+    'aaaaaaa2aaaaaa1a',
+    'ffeffefefffbgfgf',
+    'edeecdeedeebfeef',
+    'ddcdddcddcdbeede',
+    'ddccdcdccdcbcdcc',
+    'c1bcbbbb2bbbcb1b',
     '~~~~~~~~~~~~~~~~',
 ]
 PILE = ['gf', 'fe', 'ed', 'ed', 'ec', 'dc', 'dc', 'ec', 'dc', 'cb']
@@ -426,21 +426,21 @@ ROPE1 = [
 ]
 END1 = None
 BROKEN1 = [
-    'eeefeeeebeeeeeee',
-    'dddcdcddbdddcddd',
-    'ddcdddddbddcdcdd',
+    'gfgffgfbeedeedde',
+    'feefdefbdcddcddd',
+    'eedeeedbccdcbccd',
     'aa1aaaaaaaaa2aaa',
-    'efeegfSSSSSgfeee',
-    'ddcedcSdcS0fdcdd',
-    'dcddbS0dc00Sbcdd',
-    'a2aa00Sdc0200a1a',
-    'SSSS0gfeeeebefee',
-    '0Sdc2edcddcbdddd',
-    '00dc0cddcdddcdcd',
-    '20dcSaaaa1aaaaaa',
-    'eeefeedefgfSSgee',
-    'dcdcdddbfddS02dd',
-    'dddccddbdd200bdd',
+    'fgfggSSSSSSgfgff',
+    'eefdeS0ec00dfeef',
+    'ddcdb00dc20Sdedd',
+    'a2aa00Sdb020aa1a',
+    'SSS0gfeeffgbffgf',
+    '0S20edeeddebeefe',
+    '00S0dcddcddbdded',
+    '200Saaaa1aaaaaaa',
+    'gfgffeefgSSSgfgf',
+    'feeffdefeS02Sfee',
+    'eedeedced200beed',
     'aa1aaaaaaa0S0aaa',
 ]
 DECK_END2 = [
@@ -513,7 +513,9 @@ def _bw1(end, broken):
         sc.paste(b, 5 * T, 3 * T)      # 부서진 칸(위·아래 칸이 널, 밑은 늪물)
         sc.paste(e, 5 * T, 5 * T)
         lib.put_actor(sc, 3, 2)
-        patch = ground(['bddd', 'wdwd', 'wwwd'])
+        patch = ground(['rddd', 'wdwd', 'wwwd'])
+        patch.paste(lib.bd_part('swamp-stilt/reed'), -2, -10)
+        patch.paste(lib.bd_part('swamp-stilt/lily'), 1, 2 * T + 4)
         patch.paste(e, 1 * T, 2 * T)
         patch.paste(b, 2 * T, 1 * T)
         patch.paste(e, 2 * T, 2 * T)
@@ -831,6 +833,66 @@ def moss_a2b():
     return G(rows_of(c))
 
 
+# A2(4판) — 더 굵은 고목: 껍질 여섯 단(g 하이라이트 · f 밝음 · e · d 중간 · c 그늘 · b 갈라진 틈)과 세로 결·옹이,
+# 가지 갈래마다 이끼 덩이(r 빛 끝 · 4/q 밝음 · W 중간 · 2 어두움 · 1/0 깊은 그늘) + 회녹 수염 가닥(r q 4 1), 밑동 뿌리에 늪 이끼.
+SNAG3 = [
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '.....g.f........',
+    '....gfef.e......',
+    '....fedcde......',
+    '....fedcdb.....f',
+    '.ggffedcbb....fe',
+    'feeffedcdbb..fed',
+    'dddeedcdcbb.fedc',
+    'cbcccdedcbbfedc.',
+    'b.bb.fedcbcedc..',
+    '.....fedcbdcb...',
+    '.....gedcbb.....',
+    '.....fecdcb.....',
+    '.....fedbcb.....',
+    '.....gedcbb.....',
+    '......fdbbcb....',
+    '......fedcbb....',
+    '......gecdcb....',
+    '......fedcbb....',
+    '......fedbcb....',
+    '......gedcbb....',
+    '......fecdcb....',
+    '.....gfedcbbb...',
+    '....gfe.edcb.cb.',
+    '...fe...edcb..cb',
+    '..fe.21.fdc.1.cb',
+    '.3W21562ec12W2b~',
+    '~~3221~~1221~~~.',
+]
+MCLUMP5 = ['.r4q.', 'r4W21', 'q2W10', '.1.0.']
+MCLUMP3 = ['r4.', 'q21', '.0.']
+SNAG3_CLUMPS = [(5, 7, MCLUMP3), (9, 11, MCLUMP5), (3, 4, MCLUMP3), (13, 6, MCLUMP3)]
+SNAG3_BEARDS = [(0, 13, 'q4q1.0'), (1, 12, '4q2r4q1W.1'), (2, 13, 'q41'), (3, 13, 'r4q4W21.q1'), (4, 13, '21.0'),
+                (5, 13, 'q4r1'), (10, 15, 'q4.1'), (11, 14, 'r4qW41.20'), (12, 14, 'q21'), (14, 10, 'rq4W1.0'),
+                (15, 11, 'q4r21')]
+
+
+def moss_a2c():
+    c = [list(r) for r in SNAG3]
+    for x, y, cl in SNAG3_CLUMPS:
+        for dy, r in enumerate(cl):
+            for dx, ch in enumerate(r):
+                if ch != '.':
+                    c[y + dy][x + dx] = ch
+    for x, y, col in SNAG3_BEARDS:
+        for k, ch in enumerate(col):
+            if ch != '.':
+                c[y + k][x] = ch
+    for x, y, ch in ((7, 17, '1'), (8, 18, 'W'), (8, 23, '2'), (7, 22, 'q')):
+        c[y][x] = ch
+    return G(rows_of(c))
+
+
 def _snag(rows, mossl):
     def f():
         c = [list(r) for r in rows]
@@ -1014,7 +1076,7 @@ FNS = {
     'tc.sw_lily': {'A1': _lily(lily_a1b), 'A2': _lily(lily_a2)},
     'tc.sw_wisp': {'A1': _wisp(wisp_a1b), 'A2': _wisp(wisp_a2b)},
     'tc.sw_root_arch': {'A1': _arch(arch_a1), 'A2': _arch(arch_a2)},
-    'tc.sw_moss': {'A1': _snag_scene(moss_a1b), 'A2': _snag_scene(moss_a2b)},
+    'tc.sw_moss': {'A1': _snag_scene(moss_a1b), 'A2': _snag_scene(moss_a2c)},
     'tc.sw_idol': {'A1': _idol(idol_a1b), 'A2': _idol(idol_a2)},
     'tc.sw_boardwalk': {'A1': _bw1(end_a1, BROKEN1), 'A2': _bw(end_a2, BROKEN2)},
 }

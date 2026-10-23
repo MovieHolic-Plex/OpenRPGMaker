@@ -33,77 +33,51 @@ def cv_of(w, h, pieces):
 # 위 처마는 2~3줄 한 덩이(빛 받는 윗입술 · 몸 · 그늘 진 아랫면) — 세로 줄무늬 없이 긴 토막으로.
 # 1칸과 2칸 그림은 서로 다른 배열(같은 무리를 옮겨 붙이지 않는다).
 
-# ---------------------------------------------------------------- 고드름 A1 「눈 처마 고드름」 — 눈 처마 + 가는 고드름, 성기게
-IC1_T13 = [           # 4×13
-    'cWbB',
-    'cWbB',
-    'cdbB',
-    'cWbB',
-    '.cWB',
-    '.cdB',
-    '.cWB',
-    '.cdB',
-    '..cB',
-    '..WB',
-    '..cB',
-    '..dB',
-    '..a.',
+# ---------------------------------------------------------------- 고드름 A1 「눈 처마 고드름」(판 4)
+# 판 3 지적(같은 3열 공식 반복·사다리 줄무늬·왼쪽 맨 가장자리·납작한 눈 띠) 반영: 1칸·2칸을 각각 통째로 손으로 그렸다 — 고드름마다
+# 폭 2~5px·길이·굽이·갈래가 다르고, 빛 면(e)은 끝으로 갈수록 좁아지며, 반짝(W)은 뿌리 가까이에만 짧게, 그늘 면(b) · 오른 윤곽 짙은 파랑(B·a) ·
+# 왼 윤곽 가운 얼음 파랑(c), 끝은 옅은 얼음(d). 위 처마 = 3~4줄 울퉁불퉁한 눈 덩이(빛 윗면 W·w, 몸 s, 들쭉날쭉 아랫변 S) +
+# 고드름 뿌리에 지는 푸른 그림자(D).
+IC1_ONE = [
+    '..wWw....wWWw...',
+    '.wWWWws.wWWWWw.w',
+    'swWWwssSswWwwsWS',
+    'SDeWbBScWBDeWbBS',
+    '.ceWbB.cdBcedbB.',
+    '.cedbB..dBcdBcB.',
+    '.cedbB..d.cdBd..',
+    '..cebB....ceB...',
+    '..cdbB....cdB...',
+    '..cdB.....cdB...',
+    '...cdB....dB....',
+    '...cdB....da....',
+    '....dB....d.....',
+    '....dB..........',
+    '.....d..........',
+    '................',
 ]
-IC1_T11 = [           # 4×11 — 굽이 다른 둘째
-    'cWbB',
-    'cWbB',
-    'cdbB',
-    '.cWB',
-    '.cWB',
-    '.cdB',
-    '..WB',
-    '..cB',
-    '..cB',
-    '..dB',
-    '..a.',
-]
-IC1_T9 = [            # 4×9
-    'cWbB',
-    'cdbB',
-    'cWbB',
-    '.cWB',
-    '.cdB',
-    '..WB',
-    '..cB',
-    '..dB',
-    '..a.',
-]
-IC1_T6 = [            # 3×6
-    'cWB',
-    'cdB',
-    'cWB',
-    '.cB',
-    '.dB',
-    '.a.',
-]
-IC1_T4 = [            # 3×4
-    'cWB',
-    'cdB',
-    '.dB',
-    '.a.',
-]
-IC1_LEDGE16 = [       # 눈 처마: 빛 윗입술 W · 몸 w · 푸른 그늘 아랫면 S
-    'sWWWWWwWWWWWWwWs',
-    'SwwwwwwwswwwwwwS',
-    '.SSbSSSSbSSSSSS.',
-]
-IC1_LEDGE32 = [
-    'sWWWWWWwWWWWWWWWWWwWWWWWWWWwWWWs',
-    'SwwwwwswwwwwwwwwwwwwwwwswwwwwwwS',
-    '.SSbSSSSbSSSSbSSSSSSSSSSSSSSSSS.',
+IC1_TWO = [
+    '.wWw..wWWWw...wWWw..wWWw..wWWw.w',
+    'wWWWwswWWWWWw.wWWWwwWWWWwswWWWWw',
+    'swWwSSswWwwWssSssSwWwwsSSswwWsSS',
+    'ScWBSDeWbBSScBSsDeWWdbBSScWbBSsS',
+    '.cdB.ceWbB..cB..ceWbcdB..cebB.cB',
+    '.cdB.cedbB..dB..cdB.cdB..cedB.d.',
+    '.cB..cedbB..d...cdB.cdB..cdbB...',
+    '.cB..cedbB.......cB.cdB..cdB....',
+    '..d..cdbB........cB..dB..cdB....',
+    '.....cdbB........dB..dB...cB....',
+    '....cdB...........d...d...dB....',
+    '....cdB....................d....',
+    '....cdB.........................',
+    '....dB..........................',
+    '....dB..........................',
+    '....d...........................',
 ]
 
 
 def icicles_a1():
-    one = cv_of(16, 16, [(IC1_LEDGE16, 0, 0), (IC1_T13, 2, 2), (IC1_T6, 7, 2), (IC1_T9, 10, 2), (IC1_T4, 13, 2)])
-    two = cv_of(32, 16, [(IC1_LEDGE32, 0, 0), (IC1_T6, 1, 2), (IC1_T13, 4, 2), (IC1_T4, 9, 2), (IC1_T9, 12, 2),
-                         (IC1_T4, 18, 2), (IC1_T11, 21, 2), (IC1_T6, 26, 2), (IC1_T4, 29, 2)])
-    return one, two
+    return cv_of(16, 16, [(IC1_ONE, 0, 0)]), cv_of(32, 16, [(IC1_TWO, 0, 0)])
 
 
 # ---------------------------------------------------------------- 고드름 A2 「유리 고드름」 — 얼음 처마 + 굵게 성긴 원뿔
@@ -545,7 +519,7 @@ FNS = {
     'tc.ice_drift': {'A1': mk_drift(drift_a1, 'A1'), 'A2': mk_drift(drift_a2, 'A2')},
 }
 NOTES_BY_ITEM = {
-    'tc.ice_icicles': {'A1': '눈 처마 고드름(판 3) — 눈 처마 밑 가는 고드름 성기게, 왼 가장자리·오른 윤곽 얼음색, 반짝 줄',
+    'tc.ice_icicles': {'A1': '눈 처마 고드름(판 4) — 울퉁불퉁 눈 처마 밑 폭·길이·굽이·갈래가 제각각인 가는 고드름, 면 명암·양쪽 얼음색 윤곽·옅은 끝',
                        'A2': '유리 고드름(판 3) — 한 덩이 얼음 처마 밑 굵게 성긴 원뿔, 다섯 결(가장자리·빛·반짝·몸·그늘+푸른 윤곽), 옅은 끝'},
     'tc.ice_crystal': {'A1': '눈 둔덕에서 솟은 얼음 결정 셋(가운데 큰 기둥, 좌우로 기운 작은 기둥)',
                        'A2': '서리 앉은 바위 위 큰 결정 하나 + 곁가지 둘(빛 면 눈 흰빛)'},
