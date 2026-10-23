@@ -10,7 +10,7 @@ const empty = (x, y) => !inStruct(x, y) && [1, 2, 3].every((l) => at(l, x, y) < 
 let pick = null;
 if (kit === 'yard') {
   const cells = [];
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const t = at(0, x, y); if (t >= 29568 && t < 29696) cells.push([x, y]); }
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const t = at(0, x, y); if (t >= 29568 && t < 29824) cells.push([x, y]); }
   const cx = cells.reduce((s, c) => s + c[0], 0) / cells.length, cy = cells.reduce((s, c) => s + c[1], 0) / cells.length;
   pick = cells.filter(([x, y]) => empty(x, y) && empty(x, y - 1)).sort((a, b) => Math.hypot(a[0] - cx, a[1] - cy + 2) - Math.hypot(b[0] - cx, b[1] - cy + 2))[0];
   fs.writeFileSync('output/va-walk/yard.route.json', JSON.stringify({ mapId: p.startMapId, x: pick[0], y: pick[1], note: `마당 칸 ${cells.length}개 한가운데 근처`, legs: [['left', 2200], ['down', 1400], ['right', 3600], ['up', 2400], ['left', 1600]] }));

@@ -23,6 +23,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import yard_art as A  # noqa: E402
 import vine_art as V  # noqa: E402
+import flag_dirt_art as FD  # noqa: E402
 
 ROOT = HERE.parents[2]
 sys.path.insert(0, str(ROOT / "src/harnesses/_core"))
@@ -33,7 +34,7 @@ T = 16
 COLS = 128
 BASE = 29568          # 성벽 꼬리(28,544~29,567, 3판 8행) 끝 = 마당 시작
 BASE_ROW = BASE // COLS
-ROWS_ADDED = 1
+ROWS_ADDED = 2         # 2026-10-23: 판석→흙 가장자리(129칸)를 덧붙이며 한 행 더(29,696~29,823). 이식 칸은 localTailRelocation 이 민다.
 COUNT = BASE + ROWS_ADDED * COLS
 GATE_KIND = "terrain"
 SURFACES = ["cobble", "dirt", "flag"]
@@ -67,6 +68,11 @@ VINE_BASE = ALT_BASE + len(A.ALT_ORDER) * len(A.EDGE_ALT_SURFACES)   # 29,639 �
 # 29,639~29,646 = 위 칸 줄(잎 지붕 윗면) 왼쪽 끝 · 가운데 여섯 · 오른쪽 끝, 29,647~29,654 = 아래 칸 줄(앞면·줄기·그늘) 같은 순서.
 # (1판 한 칸 높이 줄이 29,639~29,646 을 썼으나 게시 전이라 2판이 같은 번호를 이어 쓴다.)
 assert VINE_BASE == 29639 and VINE_BASE + len(V.PARTS) * len(V.ORDER) <= BASE + COLS
+# 판석→다진 흙 가장자리(flag_dirt_art.py r7): 포도나무 줄 뒤 129칸. 몸통 여덟은 판석 몸통 칸을 그대로 쓴다.
+FD_BASE = VINE_BASE + len(V.PARTS) * len(V.ORDER)   # 29,655
+FD_GROUP = "beodeul_yard_flag_dirt"
+assert FD_BASE == 29655 and FD_BASE + len(FD.NEW_ROLES) <= BASE + ROWS_ADDED * COLS
+FD_GATE_NAME = FD.GATE_NAME
 VINE_GATE_KIND = "organic"
 VINE_GROUP = "beodeul:vine_row"
 VINE_KO = {"left": "왼쪽 끝(끝 기둥·버팀 철사)", "right": "오른쪽 끝(끝 기둥·버팀 철사)", "mid": "가운데", "mid-post": "가운데(중간 기둥)"}
@@ -93,6 +99,20 @@ def roles_of(surface):
 def cells():
     S = A.surfaces()
     return {tid(s, r): (A.img_of(S[s][r]), s, r) for s in SURFACES for r in roles_of(s)}
+
+
+def fd_tid(role):
+    if role in FD.NEW_ROLES: return FD_BASE + FD.NEW_ROLES.index(role)
+    return tid("flag", role)     # 몸통 여덟 = 판석 몸통
+
+
+def fd_cells():
+    t = FD.tiles()
+    return {fd_tid(r): (t[r], r) for r in FD.NEW_ROLES}
+
+
+def fd_variant_map():
+    return {str(m): fd_tid(mask_role(m)) for m in range(256)}
 
 
 def vine_tid(name, part="top"):
@@ -244,6 +264,8 @@ def main():
         if r: why[s] = r
     vr = OG.refusal(vine_gate_image(), kind=VINE_GATE_KIND, context="bundle")
     if vr: why["vine_rows"] = vr
+    fr = OG.refusal(FD.gate_image(), kind=FD.GATE_KIND, context="bundle")
+    if fr: why["flag_dirt"] = fr
     if why:
         print("3/4 관문 미통과:", file=sys.stderr)
         for k, v in why.items(): print("  ", k, "←", v, file=sys.stderr)
@@ -259,7 +281,8 @@ def main():
     out_sheet.alpha_composite(sheet.crop((0, 0, COLS * T, BASE_ROW * T)), (0, 0))
     C = cells()
     VC = vine_cells()
-    for t, im in [(t, v[0]) for t, v in C.items()] + [(t, v[0]) for t, v in VC.items()]:
+    FC = fd_cells()
+    for t, im in [(t, v[0]) for t, v in C.items()] + [(t, v[0]) for t, v in VC.items()] + [(t, v[0]) for t, v in FC.items()]:
         i = t - BASE
         out_sheet.alpha_composite(im, ((i % COLS) * T, (BASE_ROW + i // COLS) * T))
     out_sheet.save(SHEET_PATH, optimize=True)
@@ -285,6 +308,12 @@ def main():
                                        tags=["버들항", "포도밭", "vineyard", "vine", role, part], defaultLayer="upper",
                                        passage="star" if part == "top" else "solid", source="bundled-default"))
             continue
+        if t in FC:
+            role = FC[t][1]
+            TS["tileMeta"].append(dict(label=f"버들항 마당 · 무너진 판석→흙 · {role}",
+                                       description=f"신전 폐허 판석이 다진 흙 마당으로 무너지는 가장자리(연석 없음, 판 단위로 깨지고 빠짐). 오토타일 `{FD_GROUP}` 의 {role}. 걸음.",
+                                       tags=["버들항", "마당", "yard", "flag", "ruin"], defaultLayer="lower", passage="passable", source="bundled-default"))
+            continue
         if t not in C: TS["tileMeta"].append(dict(empty)); continue
         _im, s, r = C[t]
         TS["tileMeta"].append(dict(label=f"버들항 마당 · {KO[s]} · {r}",
@@ -302,7 +331,14 @@ def main():
                            connectTileIds=sorted(set(members + others)), variantMap=variant_map(s),
                            interiorVariants=[[tid(s, v) for v in ["body"] + A.VARIANTS]],
                            **(dict(phaseVariants=phase_variants(s)) if s in A.EDGE_ALT_SURFACES else {})))
-    TS["autotileGroups"] = [g for g in TS["autotileGroups"] if g["id"] not in GROUP_ID.values()] + groups
+    # 판석→흙 가장자리: 판석 섬은 이 그룹끼리만 이어지고(바깥은 흙 그림), 흙 마당은 이 칸들을 마당으로 친다(흙 가장자리가 판석 쪽에 잔디 테를 그리지 않게).
+    fd_members = [fd_tid(r) for r in FD.ORDER]
+    for g in groups:
+        if g["id"] == GROUP_ID["dirt"]: g["connectTileIds"] = sorted(set(g["connectTileIds"]) | set(fd_members))
+    groups.append(dict(id=FD_GROUP, name="버들항 마당 — 무너진 판석(흙 마당 안)", neighborhood=8, memberTileIds=fd_members,
+                       connectTileIds=sorted(set(fd_members)), variantMap=fd_variant_map(),
+                       interiorVariants=[[tid("flag", v) for v in ["body"] + A.VARIANTS]]))
+    TS["autotileGroups"] = [g for g in TS["autotileGroups"] if g["id"] not in GROUP_ID.values() and g["id"] != FD_GROUP] + groups
     TS["tileGroups"] = [g for g in TS["tileGroups"] if not g["id"].startswith("beodeul:yard_") and g["id"] != VINE_GROUP] + [
         dict(id=f"beodeul:yard_{s}", name=f"버들항 마당 · {KO[s]}", role="ground", source="bundled-default",
              tileIds=[tid(s, r) for r in roles_of(s)], defaultLayer="lower", confidence="high",
