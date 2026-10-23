@@ -590,9 +590,18 @@ def tree_a2():
 GRASS = 'desert-oasis/ground-lawn'
 
 
-def forest_scene(w, h, items, actor_at=None, trees=None):
+GATE_GRASS = os.path.join(L.REPO, 'harness-data', 'object-gate', 'style-refs', 'ground', 'grass.png')
+
+
+def gate_grass():
+    """관문이 비교하는 버들항 풀(64×48 = 4×3 칸) — 장면 바탕 전용."""
+    from PIL import Image
+    return Cv.of(Image.open(GATE_GRASS))
+
+
+def forest_scene(w, h, items, actor_at=None, trees=None, ground=None):
     """w×h 칸 풀밭, 위·옆은 버들항 bd-tree 숲 벽. items = [(Cv, x칸, y칸)] — y 는 그림 윗변 칸."""
-    cv = L.tile_fill(w, h, L.bd_part(GRASS))
+    cv = L.tile_fill(w, h, ground or L.bd_part(GRASS))
     for kid, x, y in (trees or []):
         k = L.bd_kit(kid)
         cv.paste(k, x * T, y * T)
@@ -654,35 +663,35 @@ BOULDER_A1 = [
 BOULDER_A2 = [
  '................................',
  '................................',
+ '..............6.................',
+ '.......6.....56656..............',
+ '......56656.5666i5..............',
+ '.....566i65566i6i554FF..........',
+ '....56i6i5i5i4i5i5443EEDF.......',
+ '...5i5i4i44i4i4i4332FFEXEEDD....',
+ '...5i44443443332FFFEFEEuEDDDC...',
+ '...3443332EFF6565EEDEEEEDBEDDC..',
+ '..F2333EEFEF56i654EEEXEEEEDDCCg.',
+ '..FE223EEEDE4i4432EEEDEEDEDCCBg.',
+ '..EEF3EEDEEE2342FEEEDDDEDCCCBAg.',
+ '..DEDDDEDDDD3423DDDEDDCCCCBBBAg.',
+ '..DDDCDDEDDDD32DDDDDCCDCBBBABAg.',
+ '..DDDDCDDEBDDD3DDDCCCCCBBABBBAg.',
+ '..DEDDDDDDEBDDDDDCDCCCBBBBAABAg.',
+ '..CDDCDDDDD4EBDDDCCCCCBBBABBAAg.',
+ '..CDDDDCDDDD3EBDCCBCCBBABBBAAAg.',
+ '..CCDDEDDDCCC3CCCCCBBBCBBABAAAg.',
+ '..CCCDDCDDCCCCCBCCCBBBABBBAAAg..',
+ '...CCBCCCCCDCCCCCCBBABBBBAAAAg..',
+ '...BCCCCBCCCCCCCBBBBBABBAAAAg...',
+ '....gBBBBBABBBBBBBBBAABBAAAg....',
+ '.....3ggBBBBBBBBBBAABBAAggg3.DC.',
+ '......32gggggggggggggggg23.gBBg.',
+ '....~~~3332322323323322~~~~~~~..',
+ '......~~~~~~~~~~~~~~~~~~~~~~....',
+ '.........~~~~~~~~~~~~~~~~.......',
  '................................',
- '...........6...5................',
- '.........5i65.565i5.............',
- '.......56i5665i6i5i4ML5i........',
- '......5i6i54i65i4h4LMMLi65......',
- '.....5i65i4i5i4i4h3LMMLi54L.....',
- '....5i5ih4i45h4i43LMMLML4h3L....',
- '...56i4i54h4i4h43LMMMLLMLLLLKK..',
- '...i5i4h4i43h4LLMMMLLLMLLLLKKJ..',
- '..5i4ih4h43LLMLLLLLLLLLLLLLKKJI.',
- '..i4h43KLLKLLLLLLLKLLLLLKKJJJIp.',
- '..4h43KKKKKLKKKKKKKLKKKKJJJJIIp.',
- '..43KKKLKKIKKKKKKKKJJKJJJJIIIHp.',
- '..4KKKLKKKKHKKKKKKJJJJJJJIIIIHp.',
- '..3KKKKKKKKHLKKKKJJJJJJIIIIIHHp.',
- '..gKKKKKKKKKIKKKKJJJIJJJIIIIHHp.',
- '..gJKKKKKKKKHLKKJJJIIJJIIHIIHHp.',
- '.43JJKKKKKKKKKKKJJJIIIJIIIHIHHp5',
- '.3JJJJKKKKKKKKKJJJIIIIIIIIIHHp54',
- '..JJJJJKKKKKKKJJJIIIIIIIIIHHHp43',
- '..IJJJJJJKKKJJJIIIIIIIIIHHHHp.3.',
- '..IIJJJJJJJJJJIIIIIIIIIHHHHHp~..',
- '.KHIIIIJJJJJIIIIIIIHHHHHHHHpp~..',
- 'LMKHHHIIIIIIIIIHHHHHHHHHHpp~~...',
- 'KLJpHHHHHHHHHHHHHHHHHHHHpp~~....',
- '.Jpp~pppppppppppppppppppp~~~....',
- '..~~~~~~~~~~~~~~~~~~~~~~~~~.....',
- '.....~~~~~~~~~~~~~~~~~~~~.......',
- '........~~~~~~~~~~~~~~..........',
+ '................................',
  '................................',
 ]
 
@@ -726,6 +735,11 @@ GROUND_BITS = [  # (x, y, 행) 잎 다발·클로버·떨어진 잎·잔가지
  (27, 24, ['.6.', '656', '.4.']), (1, 23, ['6.', '45']), (14, 23, ['5.6', '454']),
  (6, 6, ['tu', 'st']), (21, 15, ['Vu', '.U']), (26, 5, ['u.', 'ts']), (3, 14, ['s', 't']), (10, 18, ['ut']),
  (17, 2, ['s..', '.s.', '..q']), (24, 20, ['..s', '.s.', 'q..']), (9, 25, ['rst']),
+ # 풀잎 다발(밝은 끝·짙은 밑) — 넓은 한 색 자리를 끊는다
+ (8, 2, ['6.5', '5.4', '3.3']), (20, 7, ['5', '4', '3']), (4, 9, ['.6', '54', '33']), (25, 11, ['6.', '45', '3.']),
+ (17, 22, ['6', '5', '3']), (5, 26, ['5.6', '4.5', '3.3']), (21, 26, ['.5', '64', '33']), (29, 17, ['5', '3']),
+ (11, 10, ['5', '3']), (19, 11, ['6', '4']), (8, 15, ['.5', '53']), (22, 22, ['6', '3']), (12, 28, ['5.', '35']),
+ (27, 28, ['6', '4']), (1, 18, ['5', '3']), (15, 6, ['5.', '43']),
 ]
 MUSH_L = [
  '...zzW...',
@@ -918,8 +932,8 @@ def ring_a1():
 
 
 
-def _small(cv, w, h, place, actor_at, trees, extra=()):
-    sc = forest_scene(w, h, list(extra) + [(cv, *place)], actor_at=actor_at, trees=trees)
+def _small(cv, w, h, place, actor_at, trees, extra=(), ground=None):
+    sc = forest_scene(w, h, list(extra) + [(cv, *place)], actor_at=actor_at, trees=trees, ground=ground)
     return cv, {'kind': 'object', 'parts': {'piece': cv}, 'vignette': sc}
 
 
@@ -934,7 +948,7 @@ def _part(name, x, y):
 def ring(rows):
     cv, meta = _small(rows if isinstance(rows, Cv) else g(rows), 8, 6, (3, 2), (6, 5), _TREES_S,
                       [_part('fern_a', 1, 4), _part('stump', 6, 3)])
-    patch = L.tile_fill(4, 3, L.bd_part(GRASS))
+    patch = gate_grass()
     patch.paste(cv, 16, 8)
     meta['extras'] = [('gate patch', patch, 1)]
     return cv, meta
