@@ -54,6 +54,11 @@
       "label": "v1·v2 비교 10과제",
       "families": [],
       "note": "조수 v2(판단은 AI, 짓기는 함수, 검수는 다른 눈) 비교용 고정 10과제(2026-10-23). 장소·사람·사건·없는 기물·기존 맵 편집을 고루 덮는다. 같은 모델로 v1·v2 를 돌리고 묶음마다 블라인드 Opus 리뷰어가 1배 그림을 채점한다."
+    },
+    "game": {
+      "label": "게임 요소(퀘스트·아이템·주인공·전투·대화·연출)",
+      "families": [],
+      "note": "맵이 아닌 요청 40개(2026-10-23 v1·v2 비교). 판정은 출하 플레이어로 플레이한 사실 + 그림."
     }
   },
   "forbiddenFamilies": [
@@ -1080,6 +1085,2733 @@
           }
         }
       }
+    },
+    {
+      "id": "g-fetch",
+      "category": "game",
+      "kind": "quest",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "촌장이 '약초 3개를 가져와 달라'고 부탁하는 심부름 퀘스트를 만들어 줘. 마을 근처에 약초를 줍는 곳을 두고, 3개를 가져가면 촌장이 100골드를 준다.",
+      "requires": [
+        "촌장이 의뢰",
+        "약초 3개를 얻는 곳",
+        "건네면 100골드",
+        "완료 뒤 다시 주지 않음"
+      ],
+      "verify": "촌장 대화 → 약초 줍기 ×3 → 촌장 대화(골드+100, 약초 -3) → 다시 대화(보상 없음)",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-chain",
+      "category": "game",
+      "kind": "quest",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "3단계로 이어지는 퀘스트를 만들어 줘: 촌장에게 의뢰 → 대장장이에게 칼을 받아 옴 → 다시 촌장에게 보고. 단계마다 대사가 바뀌어야 해.",
+      "requires": [
+        "3단계 순서",
+        "단계마다 다른 대사",
+        "순서를 건너뛸 수 없음"
+      ],
+      "verify": "대장장이 먼저(아무 일 없음) → 촌장 → 대장장이(칼) → 촌장(완료) → 다시 대화",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-side-journal",
+      "category": "game",
+      "kind": "quest",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마을에 선택 퀘스트 하나를 넣어 줘. 잃어버린 고양이를 찾아 주는 건데, 받으면 퀘스트 목록(일지)에 뜨고 끝나면 완료로 표시돼야 해.",
+      "requires": [
+        "선택 퀘스트(안 받아도 됨)",
+        "일지에 등록",
+        "완료 표시"
+      ],
+      "verify": "의뢰인 대화 → 일지 확인 → 고양이 찾기 → 보고 → 일지 완료",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-timed",
+      "category": "game",
+      "kind": "quest",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "제한 시간 퀘스트를 만들어 줘. 촌장이 '60초 안에 우물에 가서 물을 떠 와라'고 하고, 시간 안에 오면 성공, 늦으면 실패 대사.",
+      "requires": [
+        "타이머 시작",
+        "시간 안 성공 분기",
+        "시간 초과 실패 분기"
+      ],
+      "verify": "촌장 → 우물 → 촌장(성공) / 타이머 확인",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-fail-branch",
+      "category": "game",
+      "kind": "quest",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "실패할 수 있는 퀘스트를 만들어 줘. 마을 아이가 편지를 배달해 달라는데, 배달 중에 편지를 몰래 읽겠냐는 선택지가 나와. 읽으면 퀘스트 실패, 안 읽으면 성공.",
+      "requires": [
+        "배달 의뢰",
+        "몰래 읽기 선택지",
+        "읽으면 실패 결말",
+        "안 읽으면 성공 결말"
+      ],
+      "verify": "의뢰 → 선택(읽음/안 읽음) → 받는 사람 대화",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-shop-new",
+      "category": "game",
+      "kind": "item",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "새 회복약 '버들 꿀물'(HP 150 회복)과 새 무기 '갈대창'(공격 +12)을 만들어서 대장장이가 팔게 해 줘. 꿀물 30골드, 갈대창 250골드.",
+      "requires": [
+        "새 소모품 HP150",
+        "새 무기 공격+12",
+        "대장장이 상점",
+        "가격 30/250"
+      ],
+      "verify": "대장장이 대화 → 상점 목록·가격 확인 → 구매 → 소지품",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-key-door",
+      "category": "game",
+      "kind": "item",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마을 집 하나를 잠긴 문으로 만들고, 촌장이 주는 '낡은 열쇠'가 있어야 열리게 해 줘.",
+      "requires": [
+        "잠긴 문",
+        "열쇠 아이템",
+        "열쇠 없으면 안 열림",
+        "열쇠 있으면 열림"
+      ],
+      "verify": "문 조사(잠김) → 촌장(열쇠) → 문 조사(열림·이동)",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-chest-once",
+      "category": "game",
+      "kind": "item",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마을 뒤쪽에 보물상자 하나 놓고, 열면 '은 반지'(방어 +3 장신구)가 한 번만 나오게 해 줘.",
+      "requires": [
+        "상자",
+        "은 반지 방어+3",
+        "한 번만"
+      ],
+      "verify": "상자 열기 → 소지품 → 다시 열기(빈 상자)",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-equip-start",
+      "category": "game",
+      "kind": "item",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "주인공이 처음부터 '견습 검'을 들고 '가죽 갑옷'을 입은 채 시작하게 해 줘. 둘 다 새로 만들어도 돼.",
+      "requires": [
+        "견습 검 장착",
+        "가죽 갑옷 장착",
+        "시작부터"
+      ],
+      "verify": "새 게임 → 장비 창",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-craft",
+      "category": "game",
+      "kind": "item",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "대장장이에게 철광석 2개를 주면 '철검'을 만들어 주는 제작 기능을 넣어 줘. 철광석은 마을 광산 자리에서 주울 수 있게.",
+      "requires": [
+        "철광석 줍는 곳",
+        "철광석 2 → 철검",
+        "부족하면 거절"
+      ],
+      "verify": "대장장이(부족) → 광석 ×2 → 대장장이(철검)",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-sell-prices",
+      "category": "game",
+      "kind": "item",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "이 마을 상점에서 물건을 팔 때 원래 값의 절반이 아니라 70%를 받게 하고, 상점에 포션·에테르·해독제를 놓아 줘.",
+      "requires": [
+        "상점",
+        "포션·에테르·해독제",
+        "되팔기 70%"
+      ],
+      "verify": "상점 열기 → 사기·팔기 값",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-hero-edit",
+      "category": "game",
+      "kind": "party",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "주인공 이름을 '하늘'로 바꾸고, 직업은 궁수로, 시작 레벨 5에 HP를 넉넉하게 해 줘. 외형도 궁수답게.",
+      "requires": [
+        "이름 하늘",
+        "궁수 직업",
+        "레벨 5",
+        "HP 높음",
+        "궁수 외형"
+      ],
+      "verify": "새 게임 → 메뉴 상태 창",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-join",
+      "category": "game",
+      "kind": "party",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마을 광장에 떠돌이 검사 '라온'을 세워 줘. 말을 걸어 '같이 가자'를 고르면 파티에 들어와.",
+      "requires": [
+        "라온 NPC",
+        "선택지",
+        "고르면 파티 합류",
+        "합류 뒤 맵에서 사라짐"
+      ],
+      "verify": "라온 대화 → 같이 가자 → 파티 확인",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-leave",
+      "category": "game",
+      "kind": "party",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "동료 마법사가 처음부터 파티에 있다가, 촌장과 이야기한 뒤에는 '마을에 남겠다'며 파티를 떠나게 해 줘.",
+      "requires": [
+        "시작 파티에 마법사",
+        "촌장 대화 뒤 이탈",
+        "이탈 대사"
+      ],
+      "verify": "시작 파티 → 촌장 대화 → 파티 확인",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-levelskill",
+      "category": "game",
+      "kind": "party",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "주인공이 레벨 3이 되면 '회오리 베기'(적 전체 공격) 스킬을 배우게 해 줘.",
+      "requires": [
+        "새 스킬 전체 공격",
+        "레벨 3 습득"
+      ],
+      "verify": "DB 확인 → 레벨 올리기 → 스킬 목록",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-party-switch",
+      "category": "game",
+      "kind": "party",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "여관 주인에게 말하면 파티 앞줄을 바꿀 수 있게(동료 순서 바꾸기) 해 줘. 동료 둘은 처음부터 있게.",
+      "requires": [
+        "동료 둘 시작",
+        "순서 바꾸기 수단"
+      ],
+      "verify": "여관 주인 → 순서 바꾸기 → 파티",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-enemy-area",
+      "category": "game",
+      "kind": "battle",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마을 남쪽 풀밭에 '독버섯 괴물'이 나오게 해 줘. 새 적으로 만들고, 두세 마리 무리로 마주치게.",
+      "requires": [
+        "새 적 독버섯",
+        "무리(트룹)",
+        "마을 풀밭 조우"
+      ],
+      "verify": "풀밭 걷기 → 전투 → 적 이름",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-boss-event",
+      "category": "game",
+      "kind": "battle",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마을 동쪽 끝에 '늪의 왕' 보스를 세워 줘. 다가가면 짧은 대사 뒤 전투, 이기면 촌장이 감사 인사를 하게.",
+      "requires": [
+        "보스 이벤트",
+        "전투 전 대사",
+        "승리 분기",
+        "촌장 감사"
+      ],
+      "verify": "보스 대화 → 전투 → 승리 → 촌장",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-escape-lose",
+      "category": "game",
+      "kind": "battle",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마을 입구 경비병이 시험 삼아 싸우자고 해. 져도 게임오버가 아니라 '아직 멀었군' 하고 끝나고, 이기면 '합격'이라고 해 줘.",
+      "requires": [
+        "전투",
+        "패배 분기(게임오버 아님)",
+        "승리 분기"
+      ],
+      "verify": "경비병 → 전투(지기) → 대사 / 다시 → 이기기",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-troop-pages",
+      "category": "game",
+      "kind": "battle",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "슬라임 셋이 나오는 전투에서, 2턴째에 '슬라임들이 합체하려 한다!' 메시지가 뜨게 해 줘. 마을 아이에게 말 걸면 그 전투가 시작돼.",
+      "requires": [
+        "슬라임 셋 트룹",
+        "2턴 메시지",
+        "아이 대화로 시작"
+      ],
+      "verify": "아이 대화 → 전투 2턴 메시지",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-choice-memory",
+      "category": "game",
+      "kind": "dialogue",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "대장장이가 '검이 좋아, 도끼가 좋아?' 하고 묻게 하고, 나중에 다시 말 걸면 내가 고른 걸 기억해서 다른 대사를 하게 해 줘.",
+      "requires": [
+        "선택지 둘",
+        "선택 기억",
+        "재대화 대사 다름"
+      ],
+      "verify": "대장장이 → 검 → 다시 대화",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-affinity",
+      "category": "game",
+      "kind": "dialogue",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "꽃집 아가씨 '봄이'를 만들고, 말을 걸 때마다 호감이 올라서 세 번째에는 고백 비슷한 대사를 하게 해 줘.",
+      "requires": [
+        "봄이 NPC",
+        "호감 증가",
+        "3번째 특별 대사"
+      ],
+      "verify": "봄이 대화 ×3",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-portraits",
+      "category": "game",
+      "kind": "dialogue",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "촌장과 주인공이 얼굴 그림(초상)을 띄우고 서로 주고받는 대화 한 장면을 만들어 줘. 촌장 대사에 촌장 얼굴, 주인공 대사에 주인공 얼굴.",
+      "requires": [
+        "주고받는 대화",
+        "말하는 사람마다 얼굴"
+      ],
+      "verify": "촌장 대화 → 얼굴 확인",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-npc-gossip",
+      "category": "game",
+      "kind": "dialogue",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마을 사람 다섯 명을 더 세우고, 각자 성격이 드러나는 한마디와 다른 사람 소문 한마디씩을 하게 해 줘.",
+      "requires": [
+        "다섯 명",
+        "각자 다른 성격",
+        "서로 소문"
+      ],
+      "verify": "다섯 명 대화",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-cutscene-arrival",
+      "category": "game",
+      "kind": "cutscene",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "게임을 시작하면 주인공이 마을 입구에서 걸어 들어오고, 촌장이 마중 나와 인사하는 첫 장면을 만들어 줘.",
+      "requires": [
+        "시작 자동 실행",
+        "주인공 이동",
+        "촌장 마중",
+        "한 번만"
+      ],
+      "verify": "새 게임 → 장면 → 끝나고 조작",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-cutscene-night",
+      "category": "game",
+      "kind": "cutscene",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "촌장과 대화가 끝나면 화면이 어두워지며 밤이 되고, 마을에 수상한 그림자가 지나가는 연출을 넣어 줘.",
+      "requires": [
+        "대화 뒤 연출",
+        "어두워짐",
+        "그림자 지나감"
+      ],
+      "verify": "촌장 → 연출",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-cutscene-camera",
+      "category": "game",
+      "kind": "cutscene",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "다리를 건너면 카메라가 강 상류 쪽으로 이동해 보여 주고 다시 돌아오는 짧은 연출 넣어 줘.",
+      "requires": [
+        "다리 밟으면 시작",
+        "카메라 이동",
+        "복귀"
+      ],
+      "verify": "다리 건너기 → 화면",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-counter",
+      "category": "game",
+      "kind": "logic",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마을 우물에 동전을 던질 때마다 횟수를 세서, 5번째에 '소원이 이루어졌다!'와 함께 1000골드를 주게 해 줘. 그 뒤엔 아무 일 없게.",
+      "requires": [
+        "횟수 변수",
+        "5번째 보상",
+        "그 뒤 없음"
+      ],
+      "verify": "우물 ×6",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-lever-puzzle",
+      "category": "game",
+      "kind": "logic",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마을에 레버 세 개를 두고, 셋 다 당겨야 촌장 집 옆 창고 문이 열리게 해 줘.",
+      "requires": [
+        "레버 셋",
+        "모두 켜야 열림",
+        "일부는 안 열림"
+      ],
+      "verify": "레버 둘 → 문(닫힘) → 셋 → 문(열림)",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-daynight-npc",
+      "category": "game",
+      "kind": "logic",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "촌장이 낮에는 광장에, 밤에는 집 안에 있게 하고 밤에 광장에 가면 '촌장님은 주무셔'라는 팻말이 보이게 해 줘.",
+      "requires": [
+        "시간대별 위치",
+        "밤 팻말"
+      ],
+      "verify": "낮 확인 → 밤 확인",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-inn",
+      "category": "game",
+      "kind": "inn",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "이 마을에 여관을 하나 넣어 줘. 50골드를 내고 묵으면 체력이 다 회복되고, 돈이 모자라면 거절해.",
+      "requires": [
+        "여관",
+        "50골드",
+        "완전 회복",
+        "돈 부족 거절"
+      ],
+      "verify": "다치게 → 여관 → 골드-50·회복 / 골드 0 → 거절",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-save-point",
+      "category": "game",
+      "kind": "inn",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마을 광장에 저장 지점을 두고, 조사하면 저장하고 체력도 회복되게 해 줘.",
+      "requires": [
+        "저장 지점",
+        "저장",
+        "회복"
+      ],
+      "verify": "조사 → 저장 창 / 회복",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-healer",
+      "category": "game",
+      "kind": "inn",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마을 교회 신부를 세워서 독 상태를 무료로 치료해 주게 해 줘.",
+      "requires": [
+        "신부 NPC",
+        "독 치료",
+        "무료"
+      ],
+      "verify": "독 걸기 → 신부 → 상태 확인",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-edit-rename",
+      "category": "game",
+      "kind": "edit",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "주인공 이름을 게임 전체에서 '아린'으로 바꿔 줘. 촌장 대사에 나오는 이름도.",
+      "requires": [
+        "이름 아린",
+        "대사 속 이름도"
+      ],
+      "verify": "메뉴 → 촌장 대화",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-edit-rebalance",
+      "category": "game",
+      "kind": "edit",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "초반 적들이 너무 세. 슬라임과 동굴 박쥐 체력을 30% 낮추고 경험치는 50% 올려 줘.",
+      "requires": [
+        "슬라임 HP -30%",
+        "박쥐 HP -30%",
+        "경험치 +50%"
+      ],
+      "verify": "DB 비교",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-edit-add-town",
+      "category": "game",
+      "kind": "edit",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "이 마을에 우체부 NPC를 추가해서, 대장장이에게 편지를 전해 주는 작은 심부름을 하게 해 줘. 기존 촌장·대장장이 대사는 그대로 두고.",
+      "requires": [
+        "우체부",
+        "편지 심부름",
+        "기존 대사 보존"
+      ],
+      "verify": "우체부 → 대장장이 → 우체부",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-edit-shop-stock",
+      "category": "game",
+      "kind": "edit",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "대장장이를 무기 상점 주인으로 만들어 줘. 지금 있는 대사는 살리고, 철검·강철검·방패를 팔게.",
+      "requires": [
+        "기존 대사 유지",
+        "상점",
+        "철검·강철검·방패"
+      ],
+      "verify": "대장장이 → 대사 → 상점",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-mini-quest-game",
+      "category": "game",
+      "kind": "game",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "10분짜리 작은 게임을 만들어 줘: 마을에서 촌장 의뢰를 받고, 동굴에 가서 보스를 잡고, 돌아와서 엔딩.",
+      "requires": [
+        "의뢰",
+        "동굴 맵",
+        "보스 전투",
+        "귀환 엔딩"
+      ],
+      "verify": "시작 → 의뢰 → 동굴 → 보스 → 엔딩",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-mini-mystery",
+      "category": "game",
+      "kind": "game",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마을 안에서 끝나는 짧은 추리 게임: 대장장이 망치가 사라졌고, 주민 셋에게 단서를 듣고 범인을 지목하면 엔딩.",
+      "requires": [
+        "사건 제시",
+        "주민 셋 단서",
+        "범인 지목 선택",
+        "정답/오답 결말"
+      ],
+      "verify": "대장장이 → 주민 셋 → 지목",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "g-mini-collect",
+      "category": "game",
+      "kind": "game",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마을 곳곳에 숨은 반딧불 병 5개를 모으면 촌장이 축제를 열어 주는 수집 게임으로 만들어 줘.",
+      "requires": [
+        "병 5개",
+        "개수 세기",
+        "5개 뒤 축제 결말"
+      ],
+      "verify": "병 ×5 → 촌장",
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_chief",
+            "name": "촌장",
+            "x": 20,
+            "y": 16,
+            "movement": "fixed",
+            "graphic": {
+              "query": "노인 남성"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "어서 오게, 버들 마을일세."
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "tool": "place_npc",
+          "args": {
+            "mapId": "map_blank_start",
+            "id": "npc_smith",
+            "name": "대장장이",
+            "x": 14,
+            "y": 20,
+            "movement": "fixed",
+            "graphic": {
+              "query": "아저씨"
+            },
+            "pages": [
+              {
+                "lines": [
+                  "망치 소리 좋지?"
+                ]
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "gates": {
