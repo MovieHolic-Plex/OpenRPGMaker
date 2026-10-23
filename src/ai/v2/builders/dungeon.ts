@@ -50,7 +50,7 @@ const TYPE_WORDS: readonly [DungeonType, RegExp][] = [
 ];
 
 /** 테마 낱말이 없는 「던전」의 종류 후보 — 늘 지하묘지였다(2026-10-23 사용자 「던전 만들어 줘가 늘 비슷하다」). 무작위로 하나. */
-const PLAIN_TYPES: readonly DungeonType[] = ["catacomb", "castle", "labyrinth", "sewer", "temple", "mine"];
+const PLAIN_TYPES: readonly DungeonType[] = ["catacomb", "castle", "sewer", "temple", "mine"]; // 미궁은 판이 늘 같은 틀이라 뺐다
 
 function pickType(spec: PlaceSpec, text: string, keep?: DungeonType): DungeonType {
   const hinted = String(spec.hints?.type ?? "");
@@ -59,7 +59,7 @@ function pickType(spec: PlaceSpec, text: string, keep?: DungeonType): DungeonTyp
   for (const [t, re] of TYPE_WORDS) if (re.test(own)) return t;
   if (spec.type === "cave") return "cave";
   for (const [t, re] of TYPE_WORDS) if (t !== "cave" && re.test(text)) return t;
-  return keep ?? PLAIN_TYPES[Math.floor(Math.random() * PLAIN_TYPES.length)]!;
+  return keep ?? PLAIN_TYPES[(spec.salt ?? Math.floor(Math.random() * 1_000_000)) % PLAIN_TYPES.length]!;
 }
 
 /** 적 낱말 → 데이터베이스 적 id(보이는 잡몹). 「불 속성」처럼 종이 없는 말은 주제 적에 맡긴다. */
@@ -480,7 +480,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     // 새로 지을 때는 이름 해시에 무작위를 더한다 — 이름만 쓰면 같은 요청이 늘 같은 던전이었다(2026-10-23 사용자 「던전 만들어 줘가 늘 비슷하다」).
     // 고치기(prev·variant)는 앞 씨앗에서 밀어 재현된다.
     const nameHash = [...spec.name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 11);
-    const seed0 = num(args.seed) ?? (nameHash + Math.floor(Math.random() * 90000)) % 90000;
+    const seed0 = num(args.seed) ?? (nameHash + (spec.salt ?? Math.floor(Math.random() * 90000))) % 90000;
     let best: { seed: number; score: number; gimmick?: unknown } | undefined;
     const requestedLever = /레버|lever/.test(wanted) || spec.hints?.gimmick === "lever" || spec.hints?.puzzle === "lever";
     for (let i = 0; i < (Number(args.floors) > 1 ? SEED_TRIALS - 1 : SEED_TRIALS); i++) {

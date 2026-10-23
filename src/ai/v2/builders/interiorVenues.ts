@@ -93,6 +93,12 @@ const TAVERN_OBJECTS: Obj[] = [{id: "keg rack", x: 1, y: 3}, {id: "keg rack", x:
 const TAVERN_GOODS: Obj[] = [{id: "mug", x: 2, y: 5}, {id: "beer", x: 3, y: 5}, {id: "bottle", x: 4, y: 5}, {id: "plate", x: 2, y: 9}, {id: "mug", x: 3, y: 9}, {id: "plate", x: 11, y: 9}, {id: "beer", x: 12, y: 9}, {id: "breadplate", x: 2, y: 12}, {id: "mug", x: 13, y: 12}, {id: "candle", x: 1, y: 12}, {id: "candle", x: 14, y: 12}];
 const TAVERN_LINES: { id: string; rect: Rect }[] = [{id: "rug red", rect: {x0: 6, y0: 5, x1: 8, y1: 12}}];
 const TAVERN_STAIRS: Obj = { id: "stairs up wood", x: 6, y: 3 };
+/** 남쪽 손님 자리 다른 판(variant 둘째 비트) — 같은 요청이 늘 같은 홀이 되지 않게(2026-10-23 다양성). 긴 식탁 둘·둥근 탁자 하나 대신 둥근 탁자 네 벌, 맨 아래 긴 식탁·통·화분은 그대로. */
+const TAVERN_SOUTH_ALT: Obj[] = [{id: "chair S", x: 2, y: 8}, {id: "roundtable", x: 2, y: 9}, {id: "chair N", x: 2, y: 10}, {id: "chair S", x: 4, y: 8}, {id: "roundtable", x: 4, y: 9}, {id: "chair N", x: 4, y: 10},
+  {id: "chair S", x: 10, y: 8}, {id: "roundtable", x: 10, y: 9}, {id: "chair N", x: 10, y: 10}, {id: "chair S", x: 12, y: 8}, {id: "roundtable", x: 12, y: 9}, {id: "chair N", x: 12, y: 10}, {id: "barrel", x: 14, y: 8}, {id: "barrel", x: 14, y: 9},
+  {id: "chair S", x: 1, y: 11}, {id: "chair S", x: 2, y: 11}, {id: "chair S", x: 3, y: 11}, {id: "dining 3x1", x: 1, y: 12}, {id: "chair S", x: 12, y: 11}, {id: "chair S", x: 13, y: 11}, {id: "chair S", x: 14, y: 11}, {id: "dining 3x1", x: 12, y: 12},
+  {id: "potted fern", x: 5, y: 12}, {id: "potted fern", x: 9, y: 12}];
+const TAVERN_GOODS_ALT: Obj[] = [{id: "mug", x: 2, y: 5}, {id: "beer", x: 3, y: 5}, {id: "bottle", x: 4, y: 5}, {id: "mug", x: 2, y: 9}, {id: "beer", x: 4, y: 9}, {id: "plate", x: 10, y: 9}, {id: "mug", x: 12, y: 9}, {id: "breadplate", x: 2, y: 12}, {id: "mug", x: 13, y: 12}, {id: "candle", x: 1, y: 12}, {id: "candle", x: 14, y: 12}];
 
 export function tavernVenue(spec: HandInteriorSpec): InteriorVenue {
   return {
@@ -103,9 +109,12 @@ export function tavernVenue(spec: HandInteriorSpec): InteriorVenue {
     build(variant, withStairs) {
       const W = 16;
       const flip = variant % 2 === 1;
-      const base = withStairs ? TAVERN_OBJECTS : [...TAVERN_OBJECTS.filter((o) => o.id !== "stairs up wood"), { id: "quest board", x: 6, y: 1 }, { id: "bench 3", x: 6, y: 3 }];
+      const alt = Math.floor(variant / 2) % 2 === 1;
+      const all = alt ? [...TAVERN_OBJECTS.filter((o) => o.y < 8), ...TAVERN_SOUTH_ALT] : TAVERN_OBJECTS;
+      const base = withStairs ? all : [...all.filter((o) => o.id !== "stairs up wood"), { id: "quest board", x: 6, y: 1 }, { id: "bench 3", x: 6, y: 3 }];
       const objects = flip ? base.map((o) => mirror(spec, W, o)) : base;
-      const goods = flip ? TAVERN_GOODS.map((o) => ({ ...o, x: W - 1 - o.x })) : TAVERN_GOODS;
+      const g = alt ? TAVERN_GOODS_ALT : TAVERN_GOODS;
+      const goods = flip ? g.map((o) => ({ ...o, x: W - 1 - o.x })) : g;
       const lines = TAVERN_LINES.map((l) => (flip ? { id: l.id, rect: { x0: W - 1 - l.rect.x1, y0: l.rect.y0, x1: W - 1 - l.rect.x0, y1: l.rect.y1 } } : l));
       return {
         args: { floor: "boards", wall: "log", rooms: [{ id: "hall", x0: 1, y0: 1, x1: 14, y1: 12 }], exit: { room: "hall", x: flip ? W - 1 - 7 : 7 }, objects, lines, goods },

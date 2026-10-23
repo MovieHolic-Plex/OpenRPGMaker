@@ -259,12 +259,30 @@ function placeMinecart(c: Ctx): string {
   const cartId = firstKit(c.ts, [TK("minecart"), "bd-pick-mining-valley-cart-h", "bd-pick-mining-valley-cart"]);
   if (!cartId) return "";
   const railId = firstKit(c.ts, [TK("rails-ew"), TK("rails-straight")]);
+  // 주제 선로(rails-ew·끝막이)가 있으면 광차 아랫줄로 방 안을 가로지르는 선로를 깐다(양쪽 최대 8칸, 끝은 끝막이) — 걷는 칸 위 2층 데칼.
+  const railTile = (id: string): number | undefined => { const k = kitOf(c.ts, id); const t = k?.rows[0]?.upperTiles?.[0]; return t !== undefined && t >= 0 ? t : undefined; };
+  const layTrack = (r: FloorRoom, at: Pt, w: number, h: number): boolean => {
+    const mid = railTile(TK("rails-ew"));
+    if (mid === undefined) return false;
+    const y = at.y + h - 1, W = c.map.width;
+    const ok = (x: number) => x > r.x && x < r.x + r.w - 1 && isPassable(c.draft, c.map, x, y) && (c.map.upperTiles?.[y * W + x] ?? -1) < 0 && !c.map.events.some((e) => e.x === x && e.y === y);
+    const run = (dx: number) => { const xs: number[] = []; for (let x = dx < 0 ? at.x - 1 : at.x + w; xs.length < 8 && ok(x); x += dx) xs.push(x); return xs; };
+    const west = run(-1), east = run(1);
+    if (west.length + east.length < 2) return false;
+    const put = (x: number, t: number) => { if (c.map.upperTiles) c.map.upperTiles[y * W + x] = t; };
+    for (const x of [...west, ...east]) put(x, mid);
+    const endW = railTile(TK("rails-end-w")), endE = railTile(TK("rails-end-e"));
+    if (west.length && endW !== undefined) put(west[west.length - 1]!, endW);
+    if (east.length && endE !== undefined) put(east[east.length - 1]!, endE);
+    return true;
+  };
   const place = (r: FloorRoom): Pt | null => {
     const spots = centerSpots(r).filter((p) => free(c, p));
     for (const p of spots) {
       const at = stampFlat(c, cartId, [p]);
       if (!at) continue;
-      if (railId) stampFlat(c, railId, [{ x: at.x - 1, y: at.y + (kitOf(c.ts, cartId)!.height) }]);
+      const ck = kitOf(c.ts, cartId)!;
+      if (!layTrack(r, at, ck.width, ck.height) && railId) stampFlat(c, railId, [{ x: at.x - 1, y: at.y + ck.height }]);
       return at;
     }
     return null;
@@ -418,7 +436,7 @@ function placeBridge(c: Ctx): string {
 }
 
 // ---------------------------------------------------------------- lever at a chokepoint (blob·미로 배치 — 방+통로 문법의 잠긴 통로가 없을 때)
-function placeChokeLever(c: Ctx): string {
+function placeChokeLever(c: Ctx, entranceOk = true): string {
   const W = c.map.width, H = c.map.height;
   const bossId = text(field(c.data, "anchors"), "boss") ?? text(field(c.data, "anchors"), "treasure");
   const target = c.rooms.find((r) => r.id === bossId) ?? c.rooms[c.rooms.length - 1];
@@ -445,7 +463,7 @@ function placeChokeLever(c: Ctx): string {
   for (let i = hit; i >= 0; i = prev[i]!) path.push(i);   // 목표 → 입구 순
   // 목표 방 바깥에서, 목표에 가까운 순으로 좁은 목(가로 또는 세로 단면 ≤4칸)을 찾는다
   // 레버가 입구 방에 서는 목은 마지막 후보(들어서자마자 당기는 레버는 퍼즐이 아니다) — 먼저 레버가 더 깊은 방에 서는 목을 찾는다.
-  for (const allowEntrance of [false, true]) for (const i of path) {
+  for (const allowEntrance of entranceOk ? [false, true] : [false]) for (const i of path) {
     const x = i % W, y = (i - x) / W;
     if (inRoom(x, y, target) || c.map.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) continue;
     for (const horiz of [true, false]) {
@@ -538,12 +556,15 @@ export function placeThemeGimmick(draft: Project, map: GameMap, data: Record<str
   for (const g of order) {
     if (tried.has(g)) continue;
     tried.add(g);
-    const line = g === "lever" ? (leverFallback() || placeChokeLever(c)) : g === "bridge" ? placeBridge(c) : g === "teleporter" ? placeTeleporter(c) : g === "minecart" ? placeMinecart(c) : g === "iceslide" ? placeIceSlide(c) : placeSandpit(c);
+    const line = g === "lever" ? (leverFallback() || placeChokeLever(c, false)) : g === "bridge" ? placeBridge(c) : g === "teleporter" ? placeTeleporter(c) : g === "minecart" ? placeMinecart(c) : g === "iceslide" ? placeIceSlide(c) : placeSandpit(c);
     if (line) {
       if (want && g !== want) warnings.push(`${map.name}: ${GIMMICK_LABEL[want]} 자리가 없어 ${GIMMICK_LABEL[g]}(으)로 바꿨다.`);
       return { gimmick: g, line, after };
     }
   }
+  // 마지막: 입구 방에 서는 레버(들어서자마자 당기는 레버) — 다른 장치가 다 안 될 때만(dt r2 cave-a 는 다리 자리가 있는데도 입구 레버였다).
+  const last = placeChokeLever(c, true);
+  if (last) { if (want && want !== "lever") warnings.push(`${map.name}: ${GIMMICK_LABEL[want]} 자리가 없어 ${GIMMICK_LABEL.lever}(으)로 바꿨다.`); return { gimmick: "lever", line: last, after }; }
   warnings.push(`${map.name}: 주제 장치를 둘 자리가 없었다.`);
   return { gimmick: null, line: "", after };
 }

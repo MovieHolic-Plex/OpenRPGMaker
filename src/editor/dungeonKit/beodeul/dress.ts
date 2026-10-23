@@ -229,6 +229,8 @@ function dressTemple(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | nul
       const e = c.shuffle(rs, c.floorCells(rr, 1)).filter(([x, y]) => free(c, x, y) && lonely(c, x, y, 1));
       const at = e[0]; if (!at) continue;
       c.cluster(rs, at[0], at[1], 4, [[TEMPLE_RUBBLE, 4], [CC("rubble"), 1], [SW("bones"), 1]]);
+      // 풀 난 판석(theme-earth r2): 무너진 구석 곁 바닥이 뿌리·이끼로 갈라진다.
+      if (c.hasKit(TK("overgrown")) && rs() < 0.7) { const g = c.shuffle(rs, c.floorCells(rr, 1)).find(([x, y]) => Math.abs(x - at[0]) + Math.abs(y - at[1]) <= 4 && free(c, x, y) && free(c, x + 1, y) && free(c, x, y + 1) && free(c, x + 1, y + 1)); if (g) c.put(TK("overgrown"), g[0], g[1], { free: true }); }
       // 주제 그림(theme-earth): 무너진 석상 머리·큰 돌무더기가 있으면 구석마다 하나씩 섞는다 — 「옛 신의 신전」으로 읽히게.
       const big = rs();
       if (big < 0.3 && c.hasKit(TK("statue-head")) && stand(c, TK("statue-head"), at[0] + 2, at[1])) continue;
@@ -331,6 +333,7 @@ function dressMine(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
       const cart = [r.x + 2, r.x + r.w - 4];
       if (rs() < 0.8) c.put(MV("cart-h"), cart[Math.floor(rs() * 2)]!, trackY - 1);
       timberFrames(c, rs, slots, 1);
+      oreVeins(c, rs, slots, 1);
       for (const q of centerFirst.slice(0, 3)) if (rs() < 0.6 && lonely(c, q.x, q.y, 1)) c.put(TORCH, q.x, q.y);
       ores(2);
       sprinkle(c, rs, r, 0.05, () => c.weighted(rs, [[MV("barrel"), 2], [SW("rubble"), 2], [MV("slagrock"), 1]]), { max: 3 });
@@ -345,6 +348,7 @@ function dressMine(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
       if (f[1] && rs() < 0.6) stand(c, MV("rack"), f[1][0], f[1][1]);
       if (f[2]) lampAt(f[2][0], f[2][1]);
       timberFrames(c, rs, slots, 2);
+      oreVeins(c, rs, slots, 3);
       c.hangAlong(slots, rs, 5, () => TORCH, 2);
       return true;
     }
@@ -364,12 +368,14 @@ function dressMine(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
       if (m) c.putAny(MV("headframe"), [0, -1, 1].map((d) => [cx - 1 + d, r.y - 0] as [number, number]).map(([x, y]) => [x, y - 3] as [number, number]));
       for (const [x, y] of [[r.x + 2, r.y + r.h - 2], [r.x + r.w - 5, r.y + r.h - 2], [r.x + 2, r.y + 4], [r.x + r.w - 5, r.y + 4]] as const) stand(c, MV("slagheap"), x, y);
       ores(5);
+      oreVeins(c, rs, slots, 3, 0.6);
       for (const [x, y] of [[cx - 4, r.y + 3], [cx + 3, r.y + 3]] as const) lampAt(x, y);
       sprinkle(c, rs, r, 0.04, () => c.weighted(rs, [[SW("bones"), 2], [SW("skulls"), 1], [MV("slagrock"), 2]]), { inset: 2, max: 4 });
       c.hangAlong(slots, rs, 4, () => TORCH, 3);
       return true;
     }
     case "vault": {
+      oreVeins(c, rs, slots, 2, 1);
       for (const q of centerFirst.slice(0, 3)) if (rs() < 0.6) c.put(TORCH, q.x, q.y);
       const e = c.edgeCells(r, rs);
       if (e[0]) c.cluster(rs, e[0][0], e[0][1], 4, [[VC("ingots"), 2], [MV("ore"), 2], [MV("crates"), 1], [VC("coal-pile"), 1]]);
@@ -390,6 +396,19 @@ function timberFrames(c: DressCtx, rs: () => number, slots: Slot[], n: number): 
     if (k >= n) break;
     if (Math.abs(q.x - lastX) < 5) continue;
     if (c.put(id, q.x - 1, q.y, { label: "timber-frame" })) { k += 1; lastX = q.x; }
+  }
+}
+
+/** 광맥(theme-earth r2): 벽 앞면 아래 두 줄에 박힌 금·쇠 광맥(2×2, 좁으면 1×1) n 개, 4칸 간격. gold 는 금 비율. */
+function oreVeins(c: DressCtx, rs: () => number, slots: Slot[], n: number, gold = 0.35): void {
+  if (!c.hasKit(TK("ore-vein-iron"))) return;
+  let k = 0, lastX = -99;
+  for (const q of c.shuffle(rs, slots)) {
+    if (k >= n) break;
+    if (Math.abs(q.x - lastX) < 4) continue;
+    const g = rs() < gold;
+    const big = g ? TK("ore-vein-gold") : TK("ore-vein-iron"), small = g ? TK("ore-vein-gold-1") : TK("ore-vein-iron-1");
+    if ((c.wallB[c.idx(q.x + 1, q.y)] === 1 && c.put(big, q.x, q.y, { label: "ore-vein" })) || (c.hasKit(small) && c.put(small, q.x, q.y + (rs() < 0.5 ? 1 : 0), { label: "ore-vein" }))) { k += 1; lastX = q.x; }
   }
 }
 
@@ -857,7 +876,7 @@ function dressPyramid(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | nu
   const sarco = pickKit(c, [TK("pharaoh-sarcophagus"), SW("coffin")]);
   const statue = pickKit(c, [TK("jackal-statue"), TP("column-temple")]);
   const gold = pickKit(c, [TK("gold-pile"), DS("jars")]);
-  const drift = pickKit(c, [TK("sand-drift"), DS("bones")]);
+  const drift = pickKit(c, rs() < 0.5 ? [TK("sand-drift-2"), TK("sand-drift"), DS("bones")] : [TK("sand-drift"), DS("bones")]);
   const torch = () => TORCH;
   const sand = (n: number) => sprinkle(c, rs, r, 0.05, () => c.weighted(rs, [[drift, 4], [DS("bones"), 1], [DS("jars"), 1]]), { inset: 1, rad: 2, max: n });
   switch (r.kind) {
@@ -1006,14 +1025,20 @@ function dressOtherworld(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot |
         stand(c, fire, throne[0] - 2, throne[1] + 1); stand(c, fire, throne[0] + w + 1, throne[1] + 1);
         c.seats[r.id] = { x: throne[0] + Math.floor(w / 2), y: throne[1] + 2 };
       }
-      const portal = pickKit(c, [TK("portal-gate")]);
+      // 열린 차원문(소용돌이 3장면) — 마왕이 건너온 문. 없으면 봉인된 문.
+      const portal = pickKit(c, [TK("portal-gate-open"), TK("portal-gate")]);
       if (c.hasKit(portal)) sprinkle(c, rs, r, 0.05, () => portal, { inset: 2, rad: 3, max: 1 });
       for (const [x, y] of [[r.x + 2, r.y + r.h - 3], [r.x + r.w - 3, r.y + r.h - 3]] as const) stand(c, pillar, x, y);
       vinesOnWalls(c, rs, slots, 4, VC("hanging-chain"));
       edgeBits(8);
       return true;
     }
-    case "vault": { edgeBits(5); return true; }
+    case "vault": {
+      const sealed = pickKit(c, [TK("portal-gate")]);
+      if (c.hasKit(sealed)) standNorth(c, r, sealed, 1);
+      edgeBits(5);
+      return true;
+    }
     default: return false;
   }
 }
@@ -1023,7 +1048,7 @@ function dressIce(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null, 
   const rock = () => pickKit(c, rs() < 0.5 ? ["bd-pick-dungeon-gap-ice-rock", SF("rock")] : [SF("rock")]);
   const icicle = pickKit(c, [TK("icicles"), CV("vines-2")]);
   const frozen = pickKit(c, [TK("frozen-warrior"), SF("snowman")]);
-  const drift = pickKit(c, [TK("snow-drift"), SF("mound")]);
+  const drift = pickKit(c, rs() < 0.5 ? [TK("snow-drift-2"), TK("snow-drift"), SF("mound")] : [TK("snow-drift"), SF("mound")]);
   const bits = () => c.weighted(rs, [[drift, 3], [rock(), 2], [CV("stalagmite-1"), 2], [crystal, 2], [SF("mound"), 1]]);
   const e = c.edgeCells(r, rs);
   const edgeBits = (n: number) => { let k = 0; for (const [x, y] of e) { if (k >= n) break; if (rs() < 0.5 && lonely(c, x, y, 1) && stand(c, bits(), x, y)) k += 1; } };

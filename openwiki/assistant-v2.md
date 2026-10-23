@@ -13,6 +13,14 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 | 5 고치기 | 모델 → 빌더 | `edit_place` 패치(구역·주인공 물건 near·크기·variant·dressing)로 같은 빌더를 다시. 맵당 1바퀴(6차 속도 — 3바퀴는 바퀴마다 다시 짓기+비평 20~35초). |
 | 6 보고 | 모델 | 「다 됐다」는 비평 major 0 + 기계 검사 통과일 때만. `missingArt` 는 그대로 보고. |
 
+## 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
+
+`make_place` 가 처음 지을 때 명세에 무작위 `salt` 를 넣고, 고치기(`edit_place`)는 기록된 명세의 salt 를 물려받는다(모델은 쓰지 않는다).
+빌더는 요청이 정하지 않은 결정만 salt 로 고른다: 마을(씨앗·땅 모양 terraces·숲 종류·맵 크기), 일본 거리·집(씨앗), 실내(배치 variant·씨앗, 선술집 견본은 좌우 뒤집기 × 손님 자리 두 판),
+던전(종류가 없는 「던전」은 종류도). 던전 짓기 도구 쪽은 덩이 배치에 퍼짐 세 갈래(뭉침·구불·넓게)와 1층 입구 계단/문을 씨앗으로 고른다(`layouts.ts` `layoutBlobOnce`, `dungeonTools.ts`).
+여전히 고정인 것: 역전 상점가(지역 문법 station_plaza 가 씨앗을 안 탄다)·일본 집 예제 구성·컷신 무대 자리. 눈가림 「같아 보임」 점수와 빌더 표본은 보고서(`~/claude-viz/assistant-v2-report.html`) 다양성 절.
+빌더 증명에서 같은 명세를 다른 salt 로: `SALT=<n> CHECKS=1 bun scripts/qa/assistant-v2/builders.mts <out> <case>`.
+
 ## 켜는 법
 
 - 편집기 주소 `?assistant=v2`, 또는 `localStorage['oprn:assistant-v2'] = '1'`(`src/ai/v2/switch.ts`). `?assistant=v1` 이나 `'0'` 이면 끈다. **기본은 v1** — 기본을 바꾸는 것은 사용자 결정이다.

@@ -336,7 +336,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     description: "장소(실내·마을·던전·동굴·거리·집)를 명세 하나로 짓는다. 칸·좌표·타일 번호는 쓰지 않는다 — 함수가 짓고, 1배 그림·기계 검사·독립 비평 결과를 돌려준다.",
     parameters: { type: "object", properties: { spec: PLACE_SPEC_SCHEMA }, required: ["spec"] },
     async execute(id, params) {
-      const spec = (params as { spec: PlaceSpec }).spec;
+      // 같은 요청 → 같은 맵을 막는다(2026-10-23 다양성: 역전 상점가가 v1·v2·4차·5차 모두 화소까지 같았다). 고치기는 기록된 명세의 salt 를 물려받는다.
+      const raw = (params as { spec: PlaceSpec }).spec;
+      const spec: PlaceSpec = { ...raw, salt: Math.floor(Math.random() * 1_000_000) };
       const builder = builderFor(spec);
       if (!builder) {
         session.missingArt.add(`${spec.name}(${spec.type}${spec.style ? `·${spec.style}` : ""}) — 이 종류를 짓는 빌더가 없다`);

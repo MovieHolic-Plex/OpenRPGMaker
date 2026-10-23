@@ -45,6 +45,7 @@ export interface DesertEastTarget {
   readonly rooms?: readonly string[];
 }
 
+const DUNGEON_RE = /던전|dungeon|미궁|지하\s*\d+\s*층/iu;
 const INDOOR_RE = /찻집|다방|가게\s*안|상점\s*안|알현실|왕좌|옥좌|묘실|무덤\s*(?:안|내부)|피라미드\s*(?:안|내부|속)|내부|실내|목욕탕|함맘|여관\s*방|객실|방\s*안|interior|tomb\s*chamber|tea\s*house|hammam/iu;
 const OUTDOOR_RE = /마을|거리|시장|바자르|오아시스|유적|도시|성벽|궁전\s*(?:마당|정원)|야영|대상\s*숙소|town|village|street|ruins/iu;
 
@@ -91,6 +92,9 @@ export function desertEastTargetFor(
   if (map && isDesertEastTilesetDef(project.tilesets[map.tilesetId])) return { mapId: map.id, lived, kinds: desertKindsFor(text) };
   if (intent.mode !== "create") return null;
   if (!NAMES_DESERT_EAST_RE.test(text) && !describesDesertEast(text)) return null;
+  // 「사막 피라미드 던전」은 던전 시공기(author_dungeon type pyramid — 여러 방·함정·보스)의 일이다. 칩셋 이름을 직접 부르지 않았으면 비켜 준다
+  // (dt r2 pyramid-a: 사막·파라오 낱말에 잡혀 desert_east 묘실 한 칸 방으로 지어졌다).
+  if (!NAMES_DESERT_EAST_RE.test(text) && DUNGEON_RE.test(text)) return null;
   const rooms = desertRoomKindsFor(text);
   const indoorish = INDOOR_RE.test(text);
   // «피라미드 유적과 내부»처럼 야외 낱말이 함께 있으면 야외부터(실내는 rooms 로 노트에 붙는다).
@@ -114,7 +118,8 @@ export const DESERT_EAST_POINTER_LINE =
   + "새 맵 create_map tilesetId:\"desert_east\"(보는 맵이 다른 계열이면 ask_tileset_change 로 견본을 보이고 묻는다), 크기는 resize_map 으로 맞춘 뒤 "
   + "compose_desert_east_map({kind:\"oasis\"|\"bazaar\"|\"palace\"|\"pyramid\"|\"caravanserai\", seed}) 한 번으로 땅·길·건물·소품을 깐다(오아시스 48×36·바자르 48×32·궁전 46×38·피라미드 48×36·대상 숙소 40×32 언저리). "
   + "실내(찻집·가게·궁전 알현실·피라미드 묘실·목욕탕·여관)는 desert_east 맵을 하나 더 만들어 compose_desert_east_room({kind:\"teahouse\"|\"shop\"|\"palace_hall\"|\"tomb\"|\"hammam\"|\"inn\"}) 로 짓고 link_desert_east_interior 로 야외 문과 잇는다. "
-  + "칸 번호로 칠하지 않는다 — 소품을 더할 때만 list_tileset_objects → stamp_tileset_object(문 접근칸·길은 막지 않는다). 사람은 Actor1 캐릭터 이벤트로 놓는다.";
+  + "칸 번호로 칠하지 않는다 — 소품을 더할 때만 list_tileset_objects → stamp_tileset_object(문 접근칸·길은 막지 않는다). 사람은 Actor1 캐릭터 이벤트로 놓는다. "
+  + "단 「피라미드 던전」「왕묘 던전」처럼 던전을 말하면 여러 방·함정·보스가 있는 던전이다 — desert_east 묘실 한 칸이 아니라 author_dungeon({type:\"pyramid\"}) 한 번으로 짓는다.";
 
 export const DESERT_EAST_DETAIL_LINE =
   "이 작업의 맵은 사막·동양풍 칩셋(desert_east)이다. ⓪ 땅·길·건물·소품은 compose_desert_east_map 이 조화 규칙(바닥은 모래 한 재질 + 길·광장·풀·물·사구만 모서리 왕 타일, 건물 문은 남향·접근칸은 길, 소품은 맞는 땅 위·겹침 없음, 빈 땅마다 용도)을 지켜 한 번에 깐다. 손댄 맵을 다시 깔려면 replace:true. "

@@ -1,0 +1,249 @@
+{
+ "round": "theme-earth-r2",
+ "panel": 6,
+ "date": "2026-10-23",
+ "boards": [
+  "qa-runs/r2/board-earth.ore_vein-p6.png"
+ ],
+ "art": {
+  "earth.ore_vein": {
+   "A1": "1410c116",
+   "A2": "16deec32"
+  }
+ },
+ "criteria": "(1) reads in 3/4 top-down at 1x; (2) same game as Beodeul reference (palette, density, 4-6 shading steps, material-tone dark edges, no toy/flat look); (3) seamless joins, no 16px repeat; (4) reads as purpose and theme. Blind: only PNG paths and criteria given.",
+ "count_rule": "a major counts when at least 2 of 4 reviewers raise the same problem as a major",
+ "scope": "earth.ore_vein only (A2 redrawn after the panel-5 referee FAIL: smooth hand-set edge widths, no branch loop, olive wall-tone lit fringe, 5-tone 4x4 nuggets)",
+ "tally": {
+  "earth.ore_vein": {
+   "A1": "counted majors: boulder stuck on the wall (4/4); iron reads as plain rock (opus-a, opus-b, opus-c)",
+   "A2": "0 counted majors (rod/worm with ink outline: majors from opus-c only; opus-a, opus-b, argon no majors)"
+  }
+ },
+ "picks": {
+  "earth.ore_vein": {
+   "A2": [
+    "opus-a",
+    "opus-b",
+    "opus-c",
+    "argon"
+   ]
+  }
+ },
+ "gate": {
+  "earth.ore_vein A2": "PASS f356b27a39bb (wall_mounted)",
+  "earth.ore_vein A1": "PASS 11ee52c410f3 (earlier art 1410c116, unchanged)"
+ },
+ "answers_source": "verbatim result blocks of the four blind reviewer agents (opus-a ad77bdd2, opus-b a8deb73d, opus-c ae3a257e, argon afb82e1e)",
+ "answers": {
+  "opus-a": {
+   "items": [
+    {
+     "item": "earth.ore_vein",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "These read as loose ore boulders stuck onto the wall, not ore inside the wall. Each piece is a closed rounded lump with its own outer silhouette and a dark rim all round, and it is shaded like a free-standing rock. It sits on top of the wall face like a sticker instead of breaking through it. They are close copies of the Beodeul floor ore-rock prop.",
+         "where": "all four pieces, most visible on the 2x2 gold and 2x2 iron in the wall scene"
+        },
+        {
+         "problem": "The iron variant is grey cracked rock with only a few faint light flecks. At 1x it cannot be told apart from a plain wall boulder, so it does not read as iron ore.",
+         "where": "iron 2x2 and iron 1x1"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "The outline is near-black and heavier than the wall's material-tone edges, which adds to the pasted-on look.",
+         "where": "outer silhouette of all pieces"
+        },
+        {
+         "problem": "The 1x1 pieces are tiny blobs that turn into noise at 1x.",
+         "where": "gold 1x1, iron 1x1"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [],
+       "minors": [
+        {
+         "problem": "A dark rim with a green-grey halo traces each vein streak. It reads slightly as a cut-out stuck on the wall, where bare dark seams fading into the wall stone would read better.",
+         "where": "edge of every vein streak"
+        },
+        {
+         "problem": "The iron veins are a dull pink-grey with low contrast. At 1x they read weakly as ore next to the gold.",
+         "where": "iron 2x2, iron 1x1"
+        },
+        {
+         "problem": "The gold and iron pieces use the same diagonal streak. Repeated along a wall, the identical angle would show.",
+         "where": "all pieces"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2's diagonal seams with ore flecks read as a vein running through the wall face and fit the wall texture. A1 reads as loose boulders glued onto the wall, and its iron cannot be told apart from plain rock."
+    }
+   ]
+  },
+  "opus-b": {
+   "items": [
+    {
+     "item": "earth.ore_vein",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "The pieces read as loose boulders stuck onto the wall, not as ore set into the rock face. Each is a closed rounded blob with a full dark outline and its own bulging highlight, so it looks like a sticker over the wall texture.",
+         "where": "all four pieces in the scene, most visibly the 2x2 gold and 2x2 iron on the wall band"
+        },
+        {
+         "problem": "The iron pieces have no ore colour at all. They are plain grey cracked rock and, at 1x, read as rocks rather than iron ore.",
+         "where": "iron 2x2 and iron 1x1"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "The outline is close to near-black ink all the way round instead of the material-tone dark edge Beodeul uses on the wall.",
+         "where": "silhouette edge of every piece"
+        },
+        {
+         "problem": "The 1x1 pieces become small specks at 1x, and gold vs iron is barely distinguishable.",
+         "where": "gold 1x1 and iron 1x1 at 1x"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [],
+       "minors": [
+        {
+         "problem": "Each streak has a slightly bright, cool-toned rim plus a dark halo, which lifts it off the wall a little instead of letting it sink into the rock.",
+         "where": "edges of all four streaks, most visible at 2x in the scene"
+        },
+        {
+         "problem": "Every piece uses the same diagonal angle, so placing several on one wall will look like repeated stamps.",
+         "where": "2x2 and 1x1 pieces in the scene"
+        },
+        {
+         "problem": "The iron's rust-pink flecks are low-contrast against the grey matrix at 1x.",
+         "where": "iron 2x2"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2's thin diagonal veins run through the wall face and read as ore embedded in rock in 3/4 view. Gold and iron are distinguishable by colour, and the shading steps sit in Beodeul's grey-green wall palette. A1's pieces look like separate boulders pasted onto the wall, and its iron has no ore colour."
+    }
+   ]
+  },
+  "opus-c": {
+   "items": [
+    {
+     "item": "earth.ore_vein",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "Reads as round boulders stuck onto the wall, not as ore inside the wall face. The pieces are closed, puffy, cracked-rock blobs with their own rounded silhouettes, so they look like separate rocks pasted on top.",
+         "where": "gold 2x2 and iron 2x2, in scene"
+        },
+        {
+         "problem": "Iron does not read as iron. The iron pieces are plain grey cracked rock with no metallic or rust colour, so they read as rubble or empty rock.",
+         "where": "iron 2x2 and iron 1x1"
+        },
+        {
+         "problem": "A near-black outline goes all the way round each blob. Together with the high-contrast dark cracks it gives a sticker look that does not match Beodeul's material-tone edges or the flat, muted wall texture.",
+         "where": "all four pieces, outer silhouette"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "The cracked plate pattern is busier and higher in contrast than the wall texture around it.",
+         "where": "2x2 pieces"
+        },
+        {
+         "problem": "The 1x1 pieces are tiny round dots that barely read at 1x.",
+         "where": "gold 1x1, iron 1x1"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [
+        {
+         "problem": "The veins are drawn as thin closed diagonal rods with a dark outline all the way round. They read as sticks or worms laid on the wall, not as a seam running through the stone. Nothing blends into the wall texture.",
+         "where": "all pieces, in scene"
+        },
+        {
+         "problem": "The outline is near-black ink, not a material-tone dark edge, so the pieces look like stickers next to the Beodeul wall.",
+         "where": "outer silhouette of every vein"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "The iron vein's rust and pinkish flecks are faint. At 1x it is hard to tell iron from plain grey streak.",
+         "where": "iron 2x2, iron 1x1"
+        },
+        {
+         "problem": "Every vein uses the same 45-degree angle. Placed more than once, the diagonals repeat in a mechanical way.",
+         "where": "scene, both 2x2 pieces"
+        },
+        {
+         "problem": "The gold nuggets are evenly spaced beads along the rod, which looks toy-like.",
+         "where": "gold 2x2"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2's linear seams read more like ore running through the wall than A1's boulder blobs, and its iron at least has some colour cue. Even so, both need the ink outline replaced with wall-tone edges and the ore blended into the wall texture before either is acceptable."
+    }
+   ]
+  },
+  "argon": {
+   "items": [
+    {
+     "item": "earth.ore_vein",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "Reads as a round boulder or crater cluster glued onto the wall like a sticker rather than a mineral vein running through the wall face, and the cool slate-blue rock collar clashes with the olive-grey cave wall.",
+         "where": "2x2 and 1x1 pieces on the cave wall in scene"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "Gold and iron variants share an identical cloned rock base with evenly spaced triangular nuggets that look overly posed.",
+         "where": "gold 2x2 vs iron 2x2, gold 1x1 vs iron 1x1"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [],
+       "minors": [
+        {
+         "problem": "The cool blue-grey stone lip around the fissure contrasts with the olive-grey cave wall tile, leaving a visible patch edge around the decal.",
+         "where": "outer rock border of all four pieces when placed on the cave wall"
+        },
+        {
+         "problem": "Iron variants include warm orange-rust pixels that make the 1x1 iron piece read close to gold/copper at 1x scale.",
+         "where": "iron 2x2 and iron 1x1 center seam"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2's diagonal fissure silhouette and embedded nuggets clearly read as an ore seam splitting the cave wall at 1x, whereas A1 looks like round boulders pasted onto the wall."
+    }
+   ]
+  }
+ }
+}
