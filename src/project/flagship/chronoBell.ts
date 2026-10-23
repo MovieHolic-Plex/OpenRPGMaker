@@ -23,6 +23,7 @@ import { buildFallenStarOpening, FALLEN_STAR_TITLE_BACKGROUND } from "./fallenSt
 import { clearOrphanShadows, rimPit } from "./fallenStarMapPolish";
 import { FS_VALEN_START, FS_VAULT_LENS, rebuildFallenRooms } from "./fallenStarRooms";
 import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./fallenStarStory";
+import { applyFallenLoreAndHanel } from "./fallen/loreAndHanel";
 import { reworkFallenTown } from "./fallenTown";
 import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX, ensureFallenValenChip } from "./fallenValenChip";
 import { buildFallenTownInteriors } from "./fallenTownInteriors";
@@ -1723,7 +1724,9 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       // 맵 위 끝에 붙은 구덩이는 1배 화면 위 테두리에 뒷벽이 잘려 「빈터에 판 밭」으로 읽혔다(VQA r21 major) — 빈터가 허락하는
       // 만큼(최대 네 칸) 내려 구덩이 뒤로 숲이 보이게 한다. 잔돌·풀 포기 덧그림은 막지 않는다(큰 나무만 막는다).
       const open = (x: number, y: number): boolean => ground(x, y) || ((grassFloor(y * fm.width + x) || (metaS[fm.lowerTiles[y * fm.width + x]!]?.label ?? "").startsWith("버들항 · 모랫길")) && !treeAt(y * fm.width + x));
-      const SHIFT = [4, 3, 2].find((d) => {
+      // 새 버들항 수관 숲(#3259 플래너)은 빈터 아래가 트여 옛 숲(2칸)과 달리 4칸까지 내려가고, 내리면 관이 숲길 끝(15,8)을 막는다 —
+      // 옛 설계 좌표(조사 칸 (15,7))와 같게 두 칸만 내린다.
+      const SHIFT = [2].find((d) => {
         if (pod.y + d >= fm.height - 4) return false;
         for (let y = pod.y; y <= pod.y + d; y += 1) for (let x = pod.x - 1; x <= pod.x + 1; x += 1) if (!open(x, y)) return false;
         return true;
@@ -2162,6 +2165,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 얼굴은 모든 대사 편집이 끝난 뒤 한 번에 건다(위 단계들이 대사를 찾아 바꾸고 덧붙인다).
   const actorFace = (id: string): string => project.database.actors.find((a) => a.id === id)?.faceResourceId ?? "";
   // 이야기 장면(하넬·브람·지하의 발렌)은 말을 걸면 한 칸 물러서 마주 선다.
+  applyFallenLoreAndHanel(project, ids);
   stageTalk(M(ids.observatory).events.find((e) => e.id === `ev_${FS_PREFIX}_hanel`));
   stageTalk(M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_bram`));
   // bossEvent 는 앞에서 잡은 옛 맵 객체일 수 있다(도구를 부를 때마다 맵이 새로 만들어진다) — id 로 다시 찾는다.

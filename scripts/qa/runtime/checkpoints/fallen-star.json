@@ -628,6 +628,174 @@
      "shot": true
     }
    ]
+  },
+  {
+   "id": "hanel-h1",
+   "label": "하넬 첫 만남 (큰 망원경 곁)",
+   "note": "loreAndHanel.ts 읽을거리·하넬 대사 QA",
+   "mapId": "fs_observatory",
+   "x": 12,
+   "y": 13,
+   "facing": "up",
+   "switches": {
+    "sw_fs_valen_marched": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ]
+  },
+  {
+   "id": "hanel-h4",
+   "label": "하넬 — 의뢰 수락 뒤",
+   "note": "loreAndHanel.ts 읽을거리·하넬 대사 QA",
+   "mapId": "fs_observatory",
+   "x": 12,
+   "y": 13,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ]
+  },
+  {
+   "id": "hanel-h6",
+   "label": "하넬 — 이리스 합류 뒤",
+   "note": "loreAndHanel.ts 읽을거리·하넬 대사 QA",
+   "mapId": "fs_observatory",
+   "x": 12,
+   "y": 13,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ]
+  },
+  {
+   "id": "hanel-h10",
+   "label": "하넬 — 끝난 뒤",
+   "note": "loreAndHanel.ts 읽을거리·하넬 대사 QA",
+   "mapId": "fs_observatory",
+   "x": 12,
+   "y": 13,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_arrived": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_main_done": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ]
+  },
+  {
+   "id": "lore-irene",
+   "label": "읽을거리 — 이레네 명판",
+   "note": "loreAndHanel.ts 읽을거리·하넬 대사 QA",
+   "mapId": "fs_observatory",
+   "x": 12,
+   "y": 20,
+   "facing": "up",
+   "switches": {
+    "sw_fs_valen_marched": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ]
+  },
+  {
+   "id": "lore-journal",
+   "label": "읽을거리 — 하넬의 일지",
+   "note": "loreAndHanel.ts 읽을거리·하넬 대사 QA",
+   "mapId": "fs_observatory",
+   "x": 2,
+   "y": 17,
+   "facing": "left",
+   "switches": {
+    "sw_fs_valen_marched": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ]
+  },
+  {
+   "id": "lore-form",
+   "label": "읽을거리 — 정착 확인서 양식",
+   "note": "loreAndHanel.ts 읽을거리·하넬 대사 QA",
+   "mapId": "fs_observatory",
+   "x": 5,
+   "y": 10,
+   "facing": "up",
+   "switches": {
+    "sw_fs_valen_marched": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ]
   }
  ]
 }
