@@ -1769,6 +1769,9 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       ].join("\n"),
     },
   });
+  const reported = findTextList(M(ids.observatory), "이리스를 집에 데려다주거라");
+  if (!reported) throw new Error("[fallen-star] 보고 대사를 찾지 못했다");
+  reported.list.push({ kind: "triggerEnding", endingId: ENDING_ID } as Command);
   // 13-2·13-3 — 제1막 끝: 이리스가 숨겼던 한 줄, 그리고 붉은 못.
   // 하넬 1페이지는 applyFallenLoreAndHanel 이 다시 짜므로, 줄은 거기서 triggerEnding 앞에 끼운다(아래).
   const endingBeats: Command[] = [
