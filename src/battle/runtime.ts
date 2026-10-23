@@ -526,6 +526,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // 트룹 이벤트의 turn/everyRound 조건과 적 행동 패턴(turn)이 모델마다 다른 케이던스로
   // 발화했다(적대 리뷰: 적 3체 기준 gauge 의 "3턴"은 사실상 1라운드였다).
   let turn = 0;
+  // 파티가 확정해 실행한 명령 수. 플레이어가 세는 「턴」의 정본이다 — gauge 의 turn 은 생존 배틀러
+  // 전원이 한 번씩 행동해야 닫히므로, 적 게이지가 느리면 한 사이클에 파티가 여러 번 명령한다.
+  // 실측(2026-10-23, scarloxy-demo): 7행동·15줄짜리 도주 전투와 2회 공격 승리 전투가 모두 turn 1 이었다.
+  let partyCommandRounds = 0;
   /** 전투 날씨(쾌청·비·모래바람·싸라기눈). 기술이 켜고 차례 말에 줄어든다. 저장하지 않는다. */
   let weather: BattleWeatherState | undefined;
   // The cycle containing the current action, before a gauge completion increments turn.
@@ -1596,6 +1600,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function applyActorCommandEffect(actor: MutableBattler, command: ActorCommand): void {
+    partyCommandRounds += 1;
     const charged = actorChargeStep(actor, command);
     if (!charged) return;
     applyActorCommandEffectCore(actor, charged);
@@ -2381,6 +2386,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       troopId: options.troopId,
       backdropResourceId,
       turn,
+      partyCommandRounds,
       ...(weather ? { weather: { ...weather } } : {}),
       strictRound: strictRoundCount,
       strictPendingActorIds: [...strictPendingActorIds],

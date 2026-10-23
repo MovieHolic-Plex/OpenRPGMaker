@@ -974,9 +974,6 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     }
     selectedCommand = commandId;
     switch (commandId) {
-      case "wait":
-        toggleWaitMode();
-        return;
       case "to-title":
         confirmToTitle();
         return;
@@ -1000,6 +997,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "campaign-progress":
       case "trainer-card":
       case "options":
+      // 「전투 대기」도 다른 명령처럼 화면을 열기만 한다 — 값은 그 화면의 행에서 바꿉니다.
+      case "wait":
       case "load":
       case "status":
       case "row":
