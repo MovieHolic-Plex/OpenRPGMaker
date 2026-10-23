@@ -25,6 +25,7 @@ import { FS_VALEN_START, FS_VAULT_LENS, rebuildFallenRooms } from "./fallenStarR
 import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./fallenStarStory";
 import { applyFallenLoreAndHanel } from "./fallen/loreAndHanel";
 import { reworkFallenTown } from "./fallenTown";
+import { applyFallenBattleItems, FS_SPEAR_PIKE, FS_SWORD_GALE } from "./fallen/battleItems";
 import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX, ensureFallenValenChip } from "./fallenValenChip";
 import { buildFallenTownInteriors } from "./fallenTownInteriors";
 import { buildFallenTownLife, ensureFallenTownDatabase } from "./fallen/townLife";
@@ -1395,6 +1396,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
 
   setupCast(project);
   const troops = setupFoes(project);
+  applyFallenBattleItems(project); // 속성 상성·검/창·회복약·기믹 잡화·드롭 (fallen/battleItems.ts)
   if (!project.switches.some((s) => s.id === SW_IRIS_JOINED)) project.switches.push({ id: SW_IRIS_JOINED, name: "이리스 합류" });
 
   const built = buildJrpgChapter(project, FALLEN_STAR_ACT1, { chapterId: "fallen_star_act1", prefix: FS_PREFIX, seed: 7, troops });
@@ -1405,6 +1407,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   for (const id of Object.values(ids)) if (!project.maps[id]) throw new Error(`[fallen-star] 맵이 덜 지어졌다: ${id} ${JSON.stringify(built.warnings ?? [])}`);
   // 도구를 부를 때마다 맵 객체가 바뀐다 — 늘 새로 꺼낸다.
   const M = (id: string): GameMap => project.maps[id]!;
+  // 숲 조우율: 12(평균 11걸음)는 너무 잦다 → 1.0(해석 평균 약 40걸음, 실측 25~30). 길 도구가 정수로 내림해서 지어진 뒤 맵에 직접 쓴다.
+  M(ids.forest).encounterRate = 1.0;
 
   applySpeakerPrefixes(project);
 
@@ -1542,6 +1546,10 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       say("엘레나", "아, 이것도 챙겨. 숲에 짐승이 많대."),
       { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 3 } as Command,
       narrate("「회복약」 3개를 받았다."),
+      say("엘레나", "그리고 이거, 천문대 창고에서 나온 거야. 검이 편하면 검을, 창이 편하면 창을 써 봐."),
+      { kind: "changeItem", itemId: FS_SWORD_GALE, op: "+=", amount: 1 } as Command,
+      { kind: "changeItem", itemId: FS_SPEAR_PIKE, op: "+=", amount: 1 } as Command,
+      narrate("「바람결 검」과 「철심 창」을 받았다. 메뉴의 장비에서 바꿔 들 수 있다."),
     );
   }
   // 관 옆 두 칸 — 한 칸 옆이면 관 앞에 선 카엘과 대각선으로 붙어 24×32 몸이 겹쳐 보였다(가혹 검수 r9 장면 배치).
