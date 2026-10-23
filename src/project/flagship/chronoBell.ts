@@ -1724,7 +1724,9 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       // 맵 위 끝에 붙은 구덩이는 1배 화면 위 테두리에 뒷벽이 잘려 「빈터에 판 밭」으로 읽혔다(VQA r21 major) — 빈터가 허락하는
       // 만큼(최대 네 칸) 내려 구덩이 뒤로 숲이 보이게 한다. 잔돌·풀 포기 덧그림은 막지 않는다(큰 나무만 막는다).
       const open = (x: number, y: number): boolean => ground(x, y) || ((grassFloor(y * fm.width + x) || (metaS[fm.lowerTiles[y * fm.width + x]!]?.label ?? "").startsWith("버들항 · 모랫길")) && !treeAt(y * fm.width + x));
-      const SHIFT = [4, 3, 2].find((d) => {
+      // 새 버들항 수관 숲(#3259 플래너)은 빈터 아래가 트여 옛 숲(2칸)과 달리 4칸까지 내려가고, 내리면 관이 숲길 끝(15,8)을 막는다 —
+      // 옛 설계 좌표(조사 칸 (15,7))와 같게 두 칸만 내린다.
+      const SHIFT = [2].find((d) => {
         if (pod.y + d >= fm.height - 4) return false;
         for (let y = pod.y; y <= pod.y + d; y += 1) for (let x = pod.x - 1; x <= pod.x + 1; x += 1) if (!open(x, y)) return false;
         return true;

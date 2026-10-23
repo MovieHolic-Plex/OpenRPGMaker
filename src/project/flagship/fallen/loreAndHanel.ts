@@ -79,7 +79,7 @@ function hanelTalk(obs: GameMap): void {
 
   // 의뢰 페이지: 첫 대화 H1 → 다시 오면 H2, 「준비하고 오겠습니다」 H3.
   const ask = askPage.commands;
-  const firstNonText = ask.findIndex((c) => c.kind !== "text");
+  const firstNonText = ask.findIndex((c) => c.kind !== "text" && c.kind !== "changeFace");
   if (firstNonText < 1) throw new Error("[fallen-star] 하넬 의뢰 소개 줄이 없다");
   const h1: Command[] = [
     say(H, "왔느냐. 기다리고 있었다."),
@@ -234,7 +234,7 @@ function townReadables(project: Project, ids: Ids): void {
   }
   const forest = project.maps[ids.forest];
   if (forest) {
-    readable(forest, "l7_marker", "두 번째 별 표지석", { x: 16, y: 22 }, readLines([
+    readable(forest, "l7_marker", "두 번째 별 표지석", { x: 16, y: 20 }, readLines([
       "(표지석) 두 번째 별, 여기 서다.\n하늘을 건너온 이를 위하여.",
       "(표지석) 세워 준 이: 하넬 외 두 사람.\n이 표지석은 지도에 없다.",
     ]));
