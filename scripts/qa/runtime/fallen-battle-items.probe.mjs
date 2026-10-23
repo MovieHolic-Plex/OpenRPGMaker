@@ -64,6 +64,7 @@ async function boot(project) {
     if (st.dlg) { await page.keyboard.press("Enter", { delay: 350 }); await page.waitForTimeout(250); }
     else await page.waitForTimeout(400);
   }
+  if (process.env.HB) setInterval(async () => { try { console.log("hb", JSON.stringify(await page.evaluate(() => ({ ids: [...document.querySelectorAll("[data-testid]")].map((n) => n.dataset.testid).slice(0, 14), run: window.__oprnHooksScene?.running })))); await page.screenshot({ path: resolve(out, "hb.png") }); } catch {} }, 20000).unref();
   console.log("boot done", JSON.stringify((await page.evaluate(() => window.__oprnDebug.readState())).currentMapId));
   return page;
 }
@@ -107,7 +108,14 @@ async function walkUntilBattle(page, maxSteps = 400) {
 }
 
 async function click(page, testid, timeout = 15_000) {
-  await page.locator(`[data-testid="${testid}"]`).first().click({ timeout });
+  // 부하가 큰 박스에서 Playwright 의 안정성 대기가 멈추는 일이 있어 DOM click 을 직접 보낸다.
+  const t0 = Date.now();
+  for (;;) {
+    const ok = await page.evaluate((id) => { const n = document.querySelector(`[data-testid="${id}"]`); if (!n) return false; n.click(); return true; }, testid);
+    if (ok) return;
+    if (Date.now() - t0 > timeout) throw new Error("click timeout " + testid);
+    await page.waitForTimeout(150);
+  }
 }
 async function ready(page) {
   try { await page.locator('[data-testid^="actor-command-"]').first().waitFor({ timeout: 60_000 }); }
@@ -121,7 +129,7 @@ async function firstTarget(page) {
   const t = page.locator('[data-testid^="battle-target-"]:not([data-testid="battle-target-cancel"])').first();
   await t.waitFor({ timeout: 8000 });
   const id = await t.getAttribute("data-testid");
-  await t.click();
+  await t.evaluate((n) => n.click());
   return id;
 }
 const logOf = (page) => page.evaluate(() => window.__log.slice());
@@ -149,14 +157,17 @@ try {
       for (let k = 0; k < N; k++) {
         const c = await walkUntilBattle(page);
         if (c === null) break;
-        counts.push(c);
-        // 도망 — 실패하면 다시.
+        if (c === 0) k--; else { counts.push(c); console.log(`rate ${rate} #${k} steps=${c}`); }
+        // 도망 — 실패하면 다시. 전투 화면이 사라질 때까지 기다린다.
         for (let t = 0; t < 8 && (await inBattle(page)); t++) {
-          try { await ready(page); await click(page, "actor-command-escape", 6000); } catch {}
-          await page.waitForTimeout(1500);
+          try { await ready(page); await click(page, "actor-command-escape", 6000); } catch (e) { console.log('escape-try', t, String(e).slice(0, 80)); }
+          for (let w = 0; w < 30 && (await inBattle(page)); w++) {
+            await page.waitForTimeout(400);
+            if (await page.locator('[data-testid="battle-result-confirm"]').count()) await click(page, "battle-result-confirm", 2000).catch(() => {});
+          }
         }
-        await page.waitForTimeout(600);
-        await page.keyboard.press("z");
+        for (let w = 0; w < 30 && (await page.evaluate(() => window.__oprnHooksScene.running)); w++) { await page.keyboard.press("Enter", { delay: 350 }); await page.waitForTimeout(250); }
+        await page.waitForTimeout(800);
       }
       const mean = counts.reduce((a, b) => a + b, 0) / Math.max(1, counts.length);
       results[`rate_${rate}`] = { counts, mean: Math.round(mean * 10) / 10 };
