@@ -7,11 +7,12 @@ import { groundSupportIssues } from "@/project/groundSupport";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import type { Command, EncounterTableEntry, GameEvent, GameMap, Project } from "@/project/types";
-import { DUNGEON_DIRS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES, type DungeonRoomInput, type DungeonSpec } from "../dungeonKit/types";
+import { DUNGEON_DIRS, DUNGEON_LAYOUTS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES, type DungeonRoomInput, type DungeonSpec, type DungeonType } from "../dungeonKit/types";
 import { DungeonComposeError } from "../dungeonKit/errors";
 import { capabilityTableText } from "../dungeonKit/capabilities";
 import { DUNGEON_GENRES, GENRE_PRESETS, genreOfProject, planPopulation } from "../dungeonKit/genres";
-import { GRAMMAR } from "../dungeonKit/grammar";
+import { DUNGEON_REFERENCES, GRAMMAR, inferDungeonRequest } from "../dungeonKit/grammar";
+import { DUNGEON_GIMMICKS, GIMMICK_LABEL, THEME_GIMMICKS, placeThemeGimmick, type DungeonGimmick } from "./dungeonGimmicks";
 import { composeRouted, routeDungeon } from "../dungeonKit/route";
 import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS } from "./mapTools";
@@ -62,6 +63,7 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
     seed: floor.seed,
     size: (DUNGEON_SIZES as readonly string[]).includes(String(args.size)) ? (args.size as DungeonSpec["size"]) : undefined,
     width: int(args.width), height: int(args.height),
+    ...((DUNGEON_LAYOUTS as readonly string[]).includes(String(args.layout)) ? { layout: args.layout as DungeonSpec["layout"] } : {}),
     entryStair: floor.entry, exitStair: floor.exit, ...(floor.sideDoor ? { sideDoor: true } : {}), ...(args.flooded === true ? { flooded: true } : {}), ...(args.lair === true ? { lair: true } : {}), ...(args.rockLine === "A" || args.rockLine === "B" || args.rockLine === "C" || args.rockLine === "none" ? { rockLine: args.rockLine } : {}),
   };
   const entranceOpt = args.entrance === undefined ? undefined : parseEntranceOption(args.entrance);
@@ -146,16 +148,19 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
   // 야외 던전(숲·늪, 2026-10-23 dungeon-themes): 벽 칸을 버들항 수관 숲 오토타일로 덮는다(2·3층, 막힘). 숲 남쪽 끝 줄엔 줄기·뿌리, 그 아래 빈터엔 숲 그늘.
   if (composed.canopy) {
     const forest = new Set(composed.canopy.cells);
-    const plan = planBeodeulCanopy(map.width, map.height, composed.canopy.style, forest, (c) => !forest.has(c));
-    writeBeodeulCanopy(draft, map, tileset, plan);
-    // 수관 그림이 없는 숲 칸(한 칸 폭 틈 — 오토타일이 모양을 못 받는 칸)은 바닥이 걸을 수 있는 잔디라 숲 밖으로 새는 길이 된다 → 막힌 숲 덤불 칸으로.
-    const leak = [...forest].filter((c) => !plan.canopy.has(c));
-    if (leak.length) {
-      const blockTile = plan.canopy.values().next().value;
-      if (blockTile !== undefined) for (const c of leak) { const t = map.upperTiles; t[c] = map.upperTiles[c]! >= 0 ? t[c]! : -1; }
-      notes.push(`수관 오토타일이 받지 못한 숲 칸 ${leak.length}곳`);
-      (composed as { leak?: number[] }).leak = leak;
+    // 수관 오토타일이 모양을 못 받는 숲 칸(한 칸 폭 틈·외톨이 칸)은 그림 없이 걸을 수 있는 잔디로 남아 숲을 뚫는 길이 된다.
+    // 그런 칸은 숲에서 빼 빈터(잔디)로 둔다 — 이웃 모양이 바뀌니 고정점까지 몇 번 되풀이한다.
+    let plan = planBeodeulCanopy(map.width, map.height, composed.canopy.style, forest, (c) => !forest.has(c));
+    let opened = 0;
+    for (let pass = 0; pass < 6; pass += 1) {
+      const leak = [...forest].filter((c) => !plan.canopy.has(c));
+      if (!leak.length) break;
+      for (const c of leak) forest.delete(c);
+      opened += leak.length;
+      plan = planBeodeulCanopy(map.width, map.height, composed.canopy.style, forest, (c) => !forest.has(c));
     }
+    writeBeodeulCanopy(draft, map, tileset, plan);
+    if (opened) notes.push(`수관 모양이 안 맞는 한 칸 폭 숲 틈 ${opened}칸은 빈터로 열었다.`);
   }
   // 방마다 이름표 + composed-layout 표식: 큰 홀·통로의 빈 바닥은 필드 적이 돌아다닐 용도로 비운 칸이다.
   // 표식이 없으면 조수 실행기의 배치 품질 권고(빈 바닥 ≤30%)가 던전을 「빈 방」으로 보고 clear_map 으로 지우려 했다(2026-10-14 재시험 실측).
@@ -190,7 +195,9 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
     const gate = entry ? { x: entry.x, y: entry.y } : composed.entrance;
     const land = entry ? entry.front : undefined;
     map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(DUNGEON_ENTRANCE_TAG));
-    addMapLocation(map, { name: "던전 입구", x: gate.x, y: gate.y, w: 1, h: 1, note: `야외로 나가는 문 칸 (${gate.x},${gate.y})${land ? ` · 도착 칸 (${land.x},${land.y})` : ""}`,
+    // 야외 던전(숲·늪)의 출구는 맵 남쪽 끝 길 칸이다 — 1×1 이면 「맵 축소로 눌린 표식」으로 보이니 길 폭(3칸)으로 잡는다(문 칸은 gate: 태그가 정한다).
+    const edge = gate.y >= map.height - 1;
+    addMapLocation(map, { name: "던전 입구", x: edge ? Math.max(0, gate.x - 1) : gate.x, y: edge ? gate.y - 1 : gate.y, w: edge ? 3 : 1, h: edge ? 2 : 1, note: `야외로 나가는 문 칸 (${gate.x},${gate.y})${land ? ` · 도착 칸 (${land.x},${land.y})` : ""}`,
       tags: [DUNGEON_ENTRANCE_TAG, COMPOSED_LAYOUT_TAG, `gate:${gate.x},${gate.y}`, ...(land ? [`land:${land.x},${land.y}`] : [])] });
   }
   let entranceLink: ReturnType<typeof linkEntranceInDraft> | undefined;
@@ -222,6 +229,7 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
     entryStair: composed.entryStair ?? null, exitStair: composed.exitStair ?? null, sideDoor: composed.sideDoor ?? null,
     rooms: composed.rooms.map((room) => ({ id: room.id, kind: room.kind, x: room.x, y: room.y, w: room.w, h: room.h, from: room.from, spots: composed.spots[room.id] ?? [] })),
     corridors: composed.corridors.map((c) => ({ from: c.a, to: c.b, dir: c.dir, ...(c.loop ? { loop: true } : {}), ...c.rect })),
+    bridges: composed.picture.flatMap((row, y) => [...row].flatMap((ch, x) => (ch === "=" ? [{ x, y }] : []))),
     population, counts: composed.counts, warnings: composed.warnings,
     ...(entranceLink ? { entranceLink: { fromMapId: entranceOpt!.fromMapId, fromGate: entranceLink.fromGate, toGate: entranceLink.toGate, outEvent: entranceLink.link.eventIdA, backEvent: entranceLink.link.eventIdB, landing: entranceLink.link.landingB } } : {}),
   };
@@ -437,7 +445,24 @@ function attachDefaultExit(draft: Project, mapId: string, data: Record<string, u
 }
 
 /** author_dungeon 본체: 층 수만큼 짓고(계단 잇기), rpg 장르면 적·상자·보스·쉼터까지 채운다. */
-function authorDungeon(draft: Project, args: Record<string, unknown>): ToolExecResult {
+function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExecResult {
+  // 게임 참고·요청 문장(inspiration, 2026-10-23 dungeon-themes): 「엘든링 같은 지하묘지」 → 종류·배치·장치 기본값. 명시한 인자가 늘 이긴다.
+  const args: Record<string, unknown> = { ...argsIn };
+  const insp = typeof args.inspiration === "string" ? args.inspiration.trim() : "";
+  const refNote: string[] = [];
+  if (insp) {
+    const req = inferDungeonRequest(`${insp} ${typeof args.name === "string" ? args.name : ""}`);
+    if (args.type === undefined && req.type) args.type = req.type;
+    if (args.layout === undefined && req.layout) args.layout = req.layout;
+    if (args.gimmick === undefined && args.puzzle === undefined && req.gimmick && (DUNGEON_GIMMICKS as readonly string[]).includes(req.gimmick)) args.gimmick = req.gimmick;
+    if (req.reference) refNote.push(`참고 「${req.reference.label}」: ${req.reference.note}.`);
+  }
+  // 층을 쌓는 배치(vertical): 층 수를 안 주면 2층(탑·마법탑은 3층 위로).
+  if (args.layout === "vertical" && args.floors === undefined && args.rooms === undefined) {
+    args.floors = args.type === "tower" ? 3 : 2;
+    if (args.direction === undefined && args.type === "tower") args.direction = "up";
+  }
+  if (args.layout === "vertical") delete args.layout;   // 층 안 배치는 시드 가족(고리·갈래·사슬)로
   const floors = Number.isInteger(args.floors) ? Math.max(1, Math.min(5, args.floors as number)) : 1;
   const direction: "down" | "up" = args.direction === "up" ? "up" : "down";
   const baseSeed = defaultSeed(draft, args);
@@ -477,9 +502,19 @@ function authorDungeon(draft: Project, args: Record<string, unknown>): ToolExecR
     stairEvent(mb, `ev_${mb.id}_stair_back`, b, `${ma.name}(으)로`, { mapId: ma.id, land: a.front, facing: DIR_OF(a, a.front) });
     links.push(`${ma.id}(${a.x},${a.y}) ↔ ${mb.id}(${b.x},${b.y})`);
   }
+  // 주제 장치(2026-10-23 dungeon-themes): 버들항 rpg 던전은 마지막 층에 그 주제다운 장치 하나를 둔다(gimmick 생략 = 주제 기본, "none" = 끔).
+  const filled: string[] = [];
+  let gimmickPlaced: DungeonGimmick | null = null;
+  const gimmickArg = args.gimmick === "none" ? "none" : (DUNGEON_GIMMICKS as readonly string[]).includes(String(args.gimmick)) ? (args.gimmick as DungeonGimmick) : args.puzzle === "lever" ? "lever" : undefined;
+  if (gimmickArg !== "none" && datas.every((d) => d.adapter === "beodeul") && (gimmickArg || (args.populate !== false && datas.every((d) => d.genre === "rpg")))) {
+    const i = datas.length - 1;
+    const m = draft.maps[mapIds[i]!]!;
+    const { gimmick, line } = placeThemeGimmick(draft, m, datas[i]!, datas[i]!.type as DungeonType, gimmickArg, baseSeed, warnings, () => placeLeverGate(draft, m, datas[i]!, []));
+    gimmickPlaced = gimmick;
+    if (line) filled.push(`${m.name}: ${line}`);
+  }
   // 채우기(rpg): 생략하면 켠다. 몬스터 수집(pokemon)은 야생 조우 구역이 정본이라 건너뛴다.
   const populate = args.populate !== false && datas.every((d) => d.genre === "rpg");
-  const filled: string[] = [];
   const placedTotal = { enemies: 0, chests: 0, boss: 0, guardian: 0, save: 0 };
   if (populate) {
     const troops = themedTroops(draft, args);
@@ -489,16 +524,13 @@ function authorDungeon(draft: Project, args: Record<string, unknown>): ToolExecR
       if (line) filled.push(`${draft.maps[mapIds[i]!]!.name}: ${line}`);
       // 계획 자리(enemies 7·chests 7 같은 후보 목록)를 그대로 두면 조수가 그 수를 「상자 7개」로 답했다(2026-10-23 VQA). 채운 뒤에는 실제로 놓인 수만 남긴다.
       const plan = field(d, "population");
-      d.population = { ...(field(plan, "lockedGate") && args.puzzle === "lever" ? { lockedGate: field(plan, "lockedGate") } : {}), note: "채움 완료 — 놓인 이벤트 수는 placed 에 있다. 계획 후보 자리는 지웠다." };
+      d.population = { ...(field(plan, "lockedGate") ? { lockedGate: field(plan, "lockedGate") } : {}), note: "채움 완료 — 놓인 이벤트 수는 placed 에 있다. 계획 후보 자리는 지웠다." };
       d.placed = placed;
       placedTotal.enemies += placed.enemies; placedTotal.chests += placed.chests; placedTotal.boss += placed.boss; placedTotal.guardian += placed.guardian; placedTotal.save += placed.save;
     });
   }
-  if (args.puzzle === "lever") {
-    const i = datas.length - 1;
-    const line = placeLeverGate(draft, draft.maps[mapIds[i]!]!, datas[i]!, warnings);
-    if (line) filled.push(`${draft.maps[mapIds[i]!]!.name}: ${line}`);
-  }
+  // 레버 쇠창살을 안 놓았으면 잠긴 문 계획을 지운다 — 남겨 두면 조수가 「열쇠로 여는 잠긴 문이 있다」로 답했다(2026-10-23 VQA boss-run).
+  if (gimmickPlaced !== "lever") for (const d of datas) { const pop = field(d, "population"); if (pop && typeof pop === "object") delete (pop as Record<string, unknown>).lockedGate; }
   const floorWarnings = results.flatMap((r) => r.warnings ?? []);
   // 이미 채웠으면 「계획대로 직접 놓아라」는 문장을 빼고 채운 결과만 알린다(조수가 같은 자리에 적·상자를 또 놓았다).
   // 채웠으면 「잠긴 문을 둘 수 있는 칸」도 뺀다 — 조수가 그 문장을 「열쇠로 여는 잠긴 문이 있다」로 답했다(2026-10-23 VQA boss-run).
@@ -511,8 +543,8 @@ function authorDungeon(draft: Project, args: Record<string, unknown>): ToolExecR
   ].filter(Boolean).join(" ");
   const all = [...floorWarnings, ...warnings];
   return {
-    summary: `${head} ${tail}`.trim(),
-    data: results.length === 1 ? { ...datas[0], floors: [mapIds[0]], populated: populate } : { ...datas[0], floors: mapIds, floorData: datas, links, populated: populate },
+    summary: `${refNote.join(" ")} ${head} ${tail}`.trim(),
+    data: results.length === 1 ? { ...datas[0], floors: [mapIds[0]], populated: populate, gimmick: gimmickPlaced } : { ...datas[0], floors: mapIds, floorData: datas, links, populated: populate, gimmick: gimmickPlaced },
     ...(all.length ? { warnings: all } : {}),
   };
 }
@@ -540,7 +572,7 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
   preservesAuthoredRaster: true,
   // 채우기(populate)·레버 퍼즐이 상자·세이브 결정·전투 그림의 필드 적·레버·쇠창살 그림을 스스로 고른다 — 모델이 칩을 고르지 않는다.
   // 실측(2026-10-22 dg-r1): 이 표시가 없어 charsetSelectionGate 가 「캐릭터 그림 선택을 되돌렸습니다」로 세 번 거부했다.
-  choosesOwnGraphic: (args) => args.populate !== false || args.puzzle === "lever",
+  choosesOwnGraphic: (args) => args.populate !== false || args.puzzle === "lever" || (typeof args.gimmick === "string" && args.gimmick !== "none"),
   fillsCurrentMapIdAs: "sourceMapId",
   parameters: {
     type: "object",
@@ -564,6 +596,9 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
       direction: { type: "string", enum: ["down", "up"], description: "floors 가 2 이상일 때 층 방향: down(기본) 지하로 내려가는 던전(이름 「지하 N층」, 입구 방 북벽 오르는 계단 ↔ 깊은 방 바닥 내려가는 계단) · up 탑(이름 「N층」, 깊은 방 북벽 오르는 계단 ↔ 위층 입구 방 바닥 내려가는 계단, 꼭대기 층에 보스방·보물 방)." },
       populate: { type: "boolean", description: "rpg 장르 채우기(기본 true): 계획된 자리에 보이는 적(순찰)·상자(보물 방 먼저)·마지막 층 보스방 보스(도망 불가)·보스 앞 방 회복 세이브 포인트·그 아래층 층 수문장. 적 그룹은 troops 또는 데이터베이스에서 세기 순으로 고른다. false 면 data.population 계획만 돌려준다." },
       troops: { type: "object", additionalProperties: false, description: "채우기에 쓸 적 그룹 id(선택). 비우면 이 도구가 던전 주제(이름 낱말·소굴·잠김·탑·종류)에 맞는 적·보스 그룹을 만든다 — 지하 묘지 = 언데드·리치, 탑 = 흑기사, 화산 = 화염 짐승·붉은 용, 고블린 굴 = 고블린·대장. 사용자가 적을 직접 말했을 때만 upsert_troop 으로 만들어 여기 준다. 요청에 없는 용·드래곤 그룹을 보스로 고르지 말 것", properties: { field: { type: "array", items: { type: "string" }, description: "돌아다니는 잡몹 무리" }, midBoss: { type: "string", description: "층 수문장" }, boss: { type: "string", description: "마지막 방 보스" } } },
+      gimmick: { type: "string", enum: [...DUNGEON_GIMMICKS, "none"], description: "주제 장치(마지막 층에 하나, 버들항). 생략하면 종류에 맞는 장치를 스스로 고른다(" + Object.entries(THEME_GIMMICKS).map(([t, g]) => `${t}=${g.join("/")}`).join(" · ") + "). " + DUNGEON_GIMMICKS.map((g) => `${g} ${GIMMICK_LABEL[g]}`).join(" · ") + " · none 장치 없음. 자리가 없으면 그 종류의 다음 장치로 바꾸고 경고한다 — 장치 이벤트를 따로 손으로 놓지 말 것." },
+      inspiration: { type: "string", description: "사용자가 말한 게임·분위기 그대로(「엘든링 같은」「FF6 광산」「크로노 트리거 마법 왕국」). 종류(type)·배치(layout)·장치(gimmick)를 안 줬을 때 기본값을 정한다: " + DUNGEON_REFERENCES.map((r) => `${r.label} → ${r.type}${r.layout ? `·${r.layout}` : ""}${r.gimmick ? `·${r.gimmick}` : ""}`).join(" / ") + ". 종류 낱말(지하묘지·마계…)이 함께 오면 그 낱말이 이긴다." },
+      layout: { type: "string", enum: [...DUNGEON_LAYOUTS], description: "층 배치 가족: linear 한 줄 사슬(곁방 하나) · hub 가운데 홀에서 갈래 · loop 고리로 돌아오는 지름길 · vertical 층을 쌓는다(floors 생략 시 2층, tower 는 3층 위로). 생략하면 시드로 고른다 — 같은 종류 두 번 요청도 배치가 달라진다." },
       puzzle: { type: "string", enum: ["lever"], description: "같은 칩셋 안의 퍼즐(마지막 층): lever = 보물 방(없으면 보스방)으로 들어가는 통로를 닫힌 쇠창살로 막고, 먼 곁방에 레버를 둔다(당기면 열림). 「레버로 문을 여는 퍼즐 던전」은 이것 하나 — 다른 칩셋(손 도트 실내) 퍼즐 방을 따로 만들어 잇지 말 것(화풍이 갈린다)." },
       lair: { type: "boolean", description: "무리가 사는 소굴(고블린·도적·오크·짐승 굴): 버들항 cave 방마다 모닥불·가죽 걸이·궤짝·통·자루·뼈 무더기를 깔아 「누가 사는 굴」로 읽히게 한다. 보스방은 우두머리 자리로 더 쌓는다. 「고블린 굴」은 type cave + lair:true + troops." },
       rockLine: { type: "string", enum: ["A", "B", "C", "none"], description: "버들항 동굴 바위 덩이 줄(가로 2줄 바위 앞면 + 바위 윗면). 비우면 cave→A(동굴 바위)·mine→B(광산 바위)·volcano→C(화산암). none 이면 옛 3줄 돌벽. 보통은 비워 둔다." },

@@ -45,7 +45,8 @@ for (const [name, args] of Object.entries(CASES)) {
     fs.writeFileSync(path.join(out, `${name}.json`), JSON.stringify({ summary: res.summary, warnings: res.warnings, events, issues: issues.map((i) => `${i.severity} ${i.code} ${i.message}`) }, null, 1));
     console.log(`== ${name} ${ms}ms floors=${floors.length} start=${project.startMapId}@${project.startPos.x},${project.startPos.y}`);
     for (const f of events) { const m = measureSpace(project, project.maps[f.id]!); console.log(" ", f.id, f.name, f.size, f.events.length, "events", `void ${m.voidPct}% screen≤${m.worstScreenVoidPct}%(avg ${m.meanScreenVoidPct}) v+b≤${m.worstScreenVoidOrBarePct}%@${m.worstScreenVoidOrBareAt.x},${m.worstScreenVoidOrBareAt.y} bare ${m.bareFloorPct}% rect ${m.maxBareRect.w}x${m.maxBareRect.h}`); }
-    console.log("  lint:", issues.filter((i) => i.severity !== "info").map((i) => i.code).join(",") || "0");
+    console.log("  lint:", issues.filter((i) => i.severity !== "info").map((i) => i.code + (process.env.DT_DEBUG ? ":" + i.message : "")).join(" | ") || "0");
+    console.log("  gimmick:", res.data.gimmick, (res.summary.match(/(순간이동[^—]*|광차 정거장[^—]*|얼음 미끄럼길[^—]*|[가-힣]+ 함정:[^—]*|레버 퍼즐:[^.]*|[가-힣]+ 다리 장치:[^.]*)/) ?? [""])[0].slice(0, 160));
     if (res.warnings?.length) console.log("  warn:", res.warnings.slice(0, 6).join(" | ").slice(0, 600));
   } catch (e) { console.log(`== ${name} ERR`, (e as Error).message.slice(0, 400)); }
 }

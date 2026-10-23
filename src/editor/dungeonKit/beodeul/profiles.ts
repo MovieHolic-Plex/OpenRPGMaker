@@ -109,14 +109,14 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
     ...GRAMMAR.forest,
     face: { h3: C("face-cave-3h"), h2: C("face-cave-2h") },
     // 숲 바닥 = 버들항 공용 잔디 칸 737(BEODEUL_PLAIN_GRASS) + 흙길 덩이. 벽 칸은 수관 숲(writeBeodeulCanopy)이 덮는다.
-    floor: { base: T("floor-grass"), tile: 737, patches: [{ kit: T("floor-dirt"), at: 0.72, scale: 4 }, { kit: M("ground-meadow2"), at: 0.84, scale: 3 }], mix: true },
+    floor: { base: T("floor-grass"), tile: 737, patches: [], mix: true },   // 흙 덩이는 가장자리 그림이 없어 네모 얼룩으로 읽혔다 — 맨 잔디 + 풀·고사리 장식으로 결을 낸다
     bank: "grass", canopy: "leaf",
     bridge: { ew: SWP("ground-deck"), ns: SWP("ground-deck") },
   },
   swamp: {
     ...GRAMMAR.swamp,
     face: { h3: C("face-cave-3h"), h2: C("face-cave-2h") },
-    floor: { base: SWP("ground-mud"), patches: [{ kit: SWP("ground-bog"), at: 0.6, scale: 4 }, { kit: SWP("ground-reedbed"), at: 0.8, scale: 3 }], mix: true },
+    floor: { base: SWP("ground-mud"), patches: [{ kit: SWP("ground-reedbed"), at: 0.82, scale: 3 }], mix: true },
     bank: "bog", canopy: "leaf",
     bridge: { ew: SWP("ground-deck"), ns: SWP("ground-deck") },
   },

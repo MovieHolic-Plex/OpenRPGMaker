@@ -168,6 +168,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
     if (outdoor) break;
     if (!isFloor(x, y) || isFloor(x, y - 1)) continue;
+    if (voidLiquid && liquid[idx(x, y)]) continue;   // 허공(천장으로 그린다) 위에는 벽 앞면을 세우지 않는다 — 앞면이 허공을 마주 본다
+
     let run = 0;
     while (y - 1 - run >= 0 && !isFloor(x, y - 1 - run) && run < WR + 1) run += 1;
     const h = Math.min(WR, run >= WR + 1 ? WR : run - 1);
