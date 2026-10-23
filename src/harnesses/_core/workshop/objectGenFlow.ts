@@ -275,6 +275,7 @@ const BROAD_TREE_SIDE_MAX = kitValue<number>("checks", "BROAD_TREE_SIDE_MAX");
 const SHELF_LUMA = kitValue<number>("checks", "SHELF_LUMA");
 const SHELF_MIN_PIXELS = kitValue<number>("checks", "SHELF_MIN_PIXELS");
 const SHELF_MAX = kitValue<number>("checks", "SHELF_MAX");
+const LEAF_PALE_MIN = kitValue<number>("checks", "LEAF_PALE_MIN");
 const DEEP_LUMA = kitValue<number>("checks", "DEEP_LUMA");
 const DEEP_MIN = kitValue<number>("checks", "DEEP_MIN");
 const ORGANIC_LEAF_RAMP = kitValue<readonly string[]>("prompts", "ORGANIC_LEAF_RAMP");
@@ -329,7 +330,7 @@ export function leafRampLine(palette: Palette): string {
  * 원본 checks.leaves: 잎 초록(초록이 빨강보다 10+ 크고 파랑 이상) 화소 수, 평균(빨강-파랑), 명도 60 미만 몫,
  * 이웃 명도 차 평균(contrast — 덩이마다 밝은 획 옆에 어두운 구멍이면 크다), 명도와 높이의 상관(band — 위 밝고 아래 띠로 어두우면 더 음수).
  */
-export function leafTone(image: RgbaImage): { leafPixels: number; leafHoles: number; leafLone: number; leafCast: number; leafDark: number; leafContrast: number; leafBand: number; trunkShare: number; leafShelf: number } {
+export function leafTone(image: RgbaImage): { leafPixels: number; leafHoles: number; leafLone: number; leafCast: number; leafDark: number; leafContrast: number; leafBand: number; trunkShare: number; leafShelf: number; leafPale: number } {
   const lum = new Map<number, number>();
   let cast = 0, dark = 0;
   for (let i = 0; i < image.data.length; i += 4) {
@@ -337,7 +338,7 @@ export function leafTone(image: RgbaImage): { leafPixels: number; leafHoles: num
     if (image.data[i + 3]! > 0 && g >= r + 10 && g >= b) { const l = 0.299 * r + 0.587 * g + 0.114 * b; lum.set(i / 4, l); cast += r - b; if (l < 60) dark++; }
   }
   const n = lum.size;
-  if (!n) return { leafPixels: 0, leafHoles: 0, leafLone: 0, leafCast: 0, leafDark: 0, leafContrast: 0, leafBand: 0, trunkShare: 0, leafShelf: 0 };
+  if (!n) return { leafPixels: 0, leafHoles: 0, leafLone: 0, leafCast: 0, leafDark: 0, leafContrast: 0, leafBand: 0, trunkShare: 0, leafShelf: 0, leafPale: 0 };
   const w = image.width;
   let steps = 0, stepSum = 0, sumY = 0, sumL = 0;
   for (const [i, l] of lum) {
@@ -395,7 +396,7 @@ export function leafTone(image: RgbaImage): { leafPixels: number; leafHoles: num
     for (const i of pale) { if (!(i % w > 0 && pale.has(i - 1))) hr++; if (!pale.has(i - w)) vr++; }
     leafShelf = Math.round((vr / hr) * 100) / 100;
   }
-  return { leafPixels: n, leafShelf, leafHoles: Math.round((holes * 1000) / n) / 10, leafLone: Math.round(lone * 100) / 100, leafCast: Math.round((cast / n) * 10) / 10, leafDark: Math.round((dark / n) * 1000) / 1000,
+  return { leafPixels: n, leafShelf, leafPale: Math.round((pale.size / n) * 1000) / 1000, leafHoles: Math.round((holes * 1000) / n) / 10, leafLone: Math.round(lone * 100) / 100, leafCast: Math.round((cast / n) * 10) / 10, leafDark: Math.round((dark / n) * 1000) / 1000,
     leafContrast: steps ? Math.round((stepSum / steps) * 10) / 10 : 0, leafBand: Math.round(band * 100) / 100, trunkShare };
 }
 /**
@@ -556,6 +557,7 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
       if (g.rows >= GEOMETRIC_MIN_ROWS && g.side > STRAIGHT_SIDE_MAX) hard.push({ code: "STRAIGHTSIDE", msg: `one side of the leafy mass runs straight down ${g.side} rows like a box wall (Beodeul 2-10) - let the side bulge in and out lobe by lobe, the edge moving every 1-3 rows` });
       else if (isTree && g.rows >= GEOMETRIC_MIRROR_ROWS && shown.width >= 32 && g.side > BROAD_TREE_SIDE_MAX) hard.push({ code: "STRAIGHTSIDE", msg: `one side of the crown runs straight down ${g.side} rows like a box wall (broad Beodeul trees 3) - make the crown lopsided and lobed: the edge moves out or in every 1-3 rows, one shoulder higher` });
       if (isTree && g.rows >= GEOMETRIC_MIRROR_ROWS && lv.leafShelf > SHELF_MAX) hard.push({ code: "LEAFSHELF", msg: `the light leaves are 1 px horizontal strokes in tiers (run width/height ${lv.leafShelf}, Beodeul trees 0.74-1.35) - draw the highlights as flecks and small clumps about as tall as wide (2x2, 2x3, an L of 3-4 px)` });
+      if (lv.leafPale < LEAF_PALE_MIN) hard.push({ code: "LEAFDULL", msg: `almost no sunlit leaves (${Math.round(lv.leafPale * 1000) / 10}% of leaf pixels are pale, Beodeul 4-42%) - put the palest keys on the lit upper-left of the clumps as flecks and small 2x2-3x3 clumps, about a tenth of the leaves` });
       if (lv.leafHoles < LEAF_HOLES_MIN) hard.push({ code: "LEAFHOLES", msg: `too few dark holes inside the crown (${lv.leafHoles} per 100 leaf px, Beodeul 0.9-3.2) - break big lobes into many small clusters with 1-3 px dark holes all through the interior` });
       if (lv.leafLone > LEAF_LONE_MAX) hard.push({ code: "LEAFSPECK", msg: `the highlights are single sprinkled pixels (${Math.round(lv.leafLone * 100)}% of the lightest leaf tone stands alone, Beodeul 0-35%) - group the lightest green into 2-4 px dashes on the upper-left lobes only` });
       if (lv.leafContrast < LEAF_CONTRAST_MIN) hard.push({ code: "LEAFFLAT", msg: `the leaves are a smooth gradient, not clumps (neighbour contrast ${lv.leafContrast}, Beodeul 15-25) - build separate clumps: a 2-4 px light dash on each clump's upper left right next to dark pockets` });
