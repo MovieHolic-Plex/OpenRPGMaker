@@ -1,0 +1,242 @@
+{
+ "panel": "blind pair panel 1 (3 fresh Opus + 1 Argon), 2026-10-23",
+ "rule": "majority of 4; on a 2-2 tie the majority of the 3 Opus judges decides",
+ "delegatedBy": "delegated by user to supervisor 2026-10-23",
+ "prompt": "# Blind pick panel — dungeon chipset candidates\n\nYou are one judge on an independent panel. Each board shows a Beodeul reference crop (the quality bar, an existing\nOPRN 16px chipset in 3/4 top-down view) and two anonymous candidates labelled X and Y for the same item (scene at 2x, scene at 1x,\npieces magnified). Both candidates already passed a defect review; your job is to choose which one is BETTER to ship\ninto the shared dungeon chipset. Do not edit any files; only read the PNG files with the Read tool.\n\nChoose by, in order: (1) reads correctly in 3/4 top-down view at 1x; (2) sits in the same game as the Beodeul reference\n(palette harmony, texture density, shading steps, no toy look); (3) seamless joins / no visible 16px repeat; (4) how well it\nserves its purpose (rock fill = solid cave rock mass; water edge = water pool edges; tower window = round-tower wall window;\ncampfire = goblin camp fire with 4 frames; door = dungeon door closed/open). Ignore which one is labelled first.\n\nBoards:\n- /home/main/.cache/dgart/panel/gap-liquid-r1__gap.water_edge__A1-A2.png\n- /home/main/.cache/dgart/panel/gap-liquid-r1__gap.water_edge__B1-B2.png\n- /home/main/.cache/dgart/panel/gap-liquid-r1__gap.water_edge__C1-C2.png\n- /home/main/.cache/dgart/panel/gap-props-r1__gap.campfire__A1-A2.png\n- /home/main/.cache/dgart/panel/gap-props-r1__gap.door__A1-A2.png\n- /home/main/.cache/dgart/panel/gap-rock-r1__gap.rock_fill__A1-A2.png\n- /home/main/.cache/dgart/panel/gap-rock-r1__gap.rock_fill__B1-B2.png\n- /home/main/.cache/dgart/panel/gap-rock-r1__gap.rock_fill__C1-C2.png\n- /home/main/.cache/dgart/panel/gap-tower-r1__gap.tower_window__A1-A2.png\n\nReply with ONLY a JSON object: {\"<board file name without .png>\": {\"pick\": \"X\" or \"Y\", \"why\": \"one sentence\"}, ...}\n",
+ "results": [
+  {
+   "board": "gap-liquid-r1__gap.water_edge__A1-A2",
+   "round": "gap-liquid-r1",
+   "item": "gap.water_edge",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "96a5c6ea5c4ae84c27f9c6b403868003b3d049b8e05ee7c870325a9976748f82"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "84ff643d5faaf5bd36cb75f793a50fcf5e9d3106704ea65c7e51a361d067dd2a"
+    }
+   },
+   "votes": {
+    "opus1": "Y",
+    "opus2": "X",
+    "opus3": "Y",
+    "argon": "X"
+   },
+   "tie": true,
+   "pick": "Y",
+   "pickKey": "A1",
+   "pickSha256": "84ff643d5faaf5bd36cb75f793a50fcf5e9d3106704ea65c7e51a361d067dd2a",
+   "pickArtSha256": "336e81e6e85f8e248b20e3777b2fb19819119553f7d270f8b4da9a1d79ed69b3"
+  },
+  {
+   "board": "gap-liquid-r1__gap.water_edge__B1-B2",
+   "round": "gap-liquid-r1",
+   "item": "gap.water_edge",
+   "labels": {
+    "X": {
+     "key": "B1",
+     "sha256": "dc34bccf2fa3e7f6e9dbe3a4b25e3665e1e7b69b961addf9f4797c10429b7c51"
+    },
+    "Y": {
+     "key": "B2",
+     "sha256": "640b058674a23f4d458950d5da3e19f8aa422d7d9ed4ca6847d6ddb692a93985"
+    }
+   },
+   "votes": {
+    "opus1": "Y",
+    "opus2": "X",
+    "opus3": "X",
+    "argon": "Y"
+   },
+   "tie": true,
+   "pick": "X",
+   "pickKey": "B1",
+   "pickSha256": "dc34bccf2fa3e7f6e9dbe3a4b25e3665e1e7b69b961addf9f4797c10429b7c51",
+   "pickArtSha256": "70b659787708ddf94628d9fe304da8d9f98498b6185382dad2250216bb95e886"
+  },
+  {
+   "board": "gap-liquid-r1__gap.water_edge__C1-C2",
+   "round": "gap-liquid-r1",
+   "item": "gap.water_edge",
+   "labels": {
+    "X": {
+     "key": "C2",
+     "sha256": "e2e696384b4afdef45e3c91ba1c5b2abdcda28cd790c60150d3dd7436a63efe1"
+    },
+    "Y": {
+     "key": "C1",
+     "sha256": "ff2a9f75b38a7800d106f9f2f43d3230b43baf804e0fb57fa196b561fe41b064"
+    }
+   },
+   "votes": {
+    "opus1": "Y",
+    "opus2": "X",
+    "opus3": "Y",
+    "argon": "X"
+   },
+   "tie": true,
+   "pick": "Y",
+   "pickKey": "C1",
+   "pickSha256": "ff2a9f75b38a7800d106f9f2f43d3230b43baf804e0fb57fa196b561fe41b064",
+   "pickArtSha256": "6d8ae66dc4043342feb6b3ab8f6ceda291a21024c5e3ccc3dfb029f4d7d1d4c1"
+  },
+  {
+   "board": "gap-props-r1__gap.campfire__A1-A2",
+   "round": "gap-props-r1",
+   "item": "gap.campfire",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "22bb1e6beb10720e2100371675a9e2ddfdd05ca870e4a1d7816008f502fcdff1"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "2449a2468499a327fcf368f6c1d8986cf2e098e9f9aa286eead60135073d98ce"
+    }
+   },
+   "votes": {
+    "opus1": "X",
+    "opus2": "X",
+    "opus3": "Y",
+    "argon": "X"
+   },
+   "tie": false,
+   "pick": "X",
+   "pickKey": "A1",
+   "pickSha256": "22bb1e6beb10720e2100371675a9e2ddfdd05ca870e4a1d7816008f502fcdff1",
+   "pickArtSha256": "5e6d617b6dfab92c3a6149cf8097c3f66469c7739a019b5dfb6cfa834ecfcfe3"
+  },
+  {
+   "board": "gap-props-r1__gap.door__A1-A2",
+   "round": "gap-props-r1",
+   "item": "gap.door",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "2705523a2aa7e6b22e0e4aa5f7b0f881e133a47935fee7028ad19a0ebdf4466d"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "e9b7560399f169a793470f3998126625047d8e0106958ed37ee5170c60d901d8"
+    }
+   },
+   "votes": {
+    "opus1": "X",
+    "opus2": "X",
+    "opus3": "X",
+    "argon": "X"
+   },
+   "tie": false,
+   "pick": "X",
+   "pickKey": "A2",
+   "pickSha256": "2705523a2aa7e6b22e0e4aa5f7b0f881e133a47935fee7028ad19a0ebdf4466d",
+   "pickArtSha256": "61686a8629f90314f3c15581b8ba94cfdd5112e51e6f1ed38f51e83d3150696d"
+  },
+  {
+   "board": "gap-rock-r1__gap.rock_fill__A1-A2",
+   "round": "gap-rock-r1",
+   "item": "gap.rock_fill",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "fab5adfce36c69fc9c6bfb76ed7c8f9fdfaec17ce24313f7f721fc4cc3c69897"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "a568a8f64025ef12809122d68f7d006b54ee01488c72c2dd5316d012f5fa0843"
+    }
+   },
+   "votes": {
+    "opus1": "X",
+    "opus2": "X",
+    "opus3": "X",
+    "argon": "X"
+   },
+   "tie": false,
+   "pick": "X",
+   "pickKey": "A1",
+   "pickSha256": "fab5adfce36c69fc9c6bfb76ed7c8f9fdfaec17ce24313f7f721fc4cc3c69897",
+   "pickArtSha256": "19b9c2e2f40c238b28d53c737071bcd60c51e74ead5a30d7e3575eb6f14bc0b9"
+  },
+  {
+   "board": "gap-rock-r1__gap.rock_fill__B1-B2",
+   "round": "gap-rock-r1",
+   "item": "gap.rock_fill",
+   "labels": {
+    "X": {
+     "key": "B2",
+     "sha256": "3becc454833bf2c63444ffe43eff4b059fd7f85f7b3240ce5699d17027831de2"
+    },
+    "Y": {
+     "key": "B1",
+     "sha256": "15f871e06cbf6a08884e634fcc9b10c509b8fc9165c5d64b54a547ecca3ec54f"
+    }
+   },
+   "votes": {
+    "opus1": "X",
+    "opus2": "X",
+    "opus3": "X",
+    "argon": "Y"
+   },
+   "tie": false,
+   "pick": "X",
+   "pickKey": "B2",
+   "pickSha256": "3becc454833bf2c63444ffe43eff4b059fd7f85f7b3240ce5699d17027831de2",
+   "pickArtSha256": "68849d146bb813ead35c5ed0d290530ef1a6d22ec38c627b59517cfc7da40cb7"
+  },
+  {
+   "board": "gap-rock-r1__gap.rock_fill__C1-C2",
+   "round": "gap-rock-r1",
+   "item": "gap.rock_fill",
+   "labels": {
+    "X": {
+     "key": "C2",
+     "sha256": "ab901d03e7f852a447404c2212ceb2df5d742e29e9080dcdfc4588f439658813"
+    },
+    "Y": {
+     "key": "C1",
+     "sha256": "98a1c565ef630872447ac5a4c354d7b65da202bdce6ce33fab83b435d3f48167"
+    }
+   },
+   "votes": {
+    "opus1": "X",
+    "opus2": "X",
+    "opus3": "X",
+    "argon": "Y"
+   },
+   "tie": false,
+   "pick": "X",
+   "pickKey": "C2",
+   "pickSha256": "ab901d03e7f852a447404c2212ceb2df5d742e29e9080dcdfc4588f439658813",
+   "pickArtSha256": "f5d08cc95fa71535bccdee2bfde8f94df0fb6932cb03fa52a30eda23da6ca9aa"
+  },
+  {
+   "board": "gap-tower-r1__gap.tower_window__A1-A2",
+   "round": "gap-tower-r1",
+   "item": "gap.tower_window",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "1ce6bfd7bcefbede92fd629c432a42211bf4ef7dbae19827f9cabf236c7d6751"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "22373400e6d2cba233ae2f4467bdc7c5b31378279ca36d8d8f048cd215144216"
+    }
+   },
+   "votes": {
+    "opus1": "Y",
+    "opus2": "Y",
+    "opus3": "Y",
+    "argon": "Y"
+   },
+   "tie": false,
+   "pick": "Y",
+   "pickKey": "A2",
+   "pickSha256": "22373400e6d2cba233ae2f4467bdc7c5b31378279ca36d8d8f048cd215144216",
+   "pickArtSha256": "77046bedf563c9c91113342b0ccd47df7b2a35dabafbdaf6481a58995c818c06"
+  }
+ ]
+}
