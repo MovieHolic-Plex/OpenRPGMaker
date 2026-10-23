@@ -229,7 +229,7 @@ source는 16px/16열/336칸이며 기존 칸 배정을 유지하고 필요한 �
 - 몬스터 수집 도로(2026-10-01): `author_wild_route` 가 버들항 맵도 깐다(`wildRouteBeodeul.ts`) — 합본 마을 경로와 같은 길 계획(`planRouteCorridor`)을 포석·짙은 잎 풀(11628)·버들항 나무 키트로. **버들항엔 키큰 풀이 없어 풀숲은 짙은 잎 풀 대용이다** — 손 도트 키큰 풀을 시트에 더하는 일은 남았다. 이것이 없던 동안(#1789~) 새 프로젝트의 몬스터 수집 첫 구간 뼈대(AI 인터뷰 시작·예제로 시작)는 이 도구에서 멈췄다.
   - 2026-10-06 다시 손봄(「1번 도로가 엉망진창」): 시내 포석 → **`버들항 모랫길`** 오토타일, 잡음 경로의 계단 대각선 → **꺾임 비용 경로**(`routePathStraight`, 방향을 상태에 넣은 다익스트라) + 경유점까지 갔다 되돌아온 막다른 가지 잘라 내기(`pruneLoops`),
     풀숲에 잘려 남은 4칸 이하 모랫길 토막은 풀밭으로. 숲은 2칸 격자 흩뿌림(덤불 점박이) → **숲 벽**(`plantBeodeulForestWall`): 크기로 나눈 나무(3×3 수관·3×4 줄기 나무·2×2 덤불)를
-    위에서 아래로 벽돌처럼 엇갈려 붙이고, 아래가 트인 앞줄엔 줄기 나무, 맵 하나에 수관·줄기 한 종씩. 길섶엔 깊은 숲길 세트 1칸 소품(`dressBeodeulVerge`).
+    위에서 아래로 벽돌처럼 엇갈려 붙이고, 아래가 트인 앞줄엔 줄기 나무, 맵 하나에 수관·줄기 한 종씩. (2026-10-24 이후: 아래 「숲 벽은 수관 오토타일」 — composer 가 아니다.) 길섶엔 깊은 숲길 세트 1칸 소품(`dressBeodeulVerge`).
     도구가 맵에 `mapRole: "field"` 를 붙이고, `stamp_object` 는 필드 맵에 마을·항구·농장 소품(bd-house·block·harbour·garden…, bd-pick-fishing-port·riverside-mill·vineyard·walled-market·wheat-roman 등)을 `settlement-prop-on-route` 로 거부한다(`routePropPolicy.ts` — 조수가 1번 도로에 통발·건조대·밀단을 찍었다).
     남은 것: 수관 사이 풀밭 이음매(키트끼리 겹칠 수 없다), 키큰 풀 그림. 계약 `test/wildRouteBeodeul.test.ts`.
 - 계열 규칙(`isCombinedTownCompatibleTileset`)은 합본 마을 계열 기준 그대로다.
@@ -757,6 +757,7 @@ refine_beodeul_courtyard_vegetation({mapId})는 인식된 54×34 예제의 건�
 - 붓으로 까는 버들항 숲은 나무 composer(`src/project/defaults/treeComposer.ts` `composeTreesInMask`, #3058 jp 숲 r4 와 같은 규칙)로 짠다:
   도로 숲 벽 `plantBeodeulForestWall`(author_wild_route·이야기 산책), 강가·해안 마을 숲 덩이(`buildBeodeulVillage` leaf). 원본 줄기 나무 4종만 쓰고(`src/assets/beodeulForestComposer.json`, 빌더 `scripts/content/build-beodeul-forest-composer.py`)
   칸마다 앞 나무부터 4·3·2층에 쌓는다. 예전 3칸 격자 3×3 수관(반복·풀밭 틈·떠 있는 수관)과 leaf 수관 오토타일(칸 경계로 곧게 잘린 숲 가장자리)을 대신한다. 설원 수관은 그대로.
+- **숲 벽은 수관 오토타일 (2026-10-24)**: `plantBeodeulForestWall`(author_wild_route·이야기 산책·폴른 스타 속삭이는 숲)은 위 composer 가 아니라 마을 숲과 같은 `shapeBeodeulCanopyMask` → `planBeodeulCanopy`(leaf) → `writeBeodeulCanopy`(#3259, 마을 기준 minComponent 16·minExtent 4·minInterior 0.15·block 2)로 칠한다. 후보 칸 = `reserved`(길 반경 1·출구 반경 2·이벤트 반경 1·공터) 밖의 빈 민무늬 풀. 시그니처의 rng·stamp·forestType·family 는 호출부 호환용으로 남아 쓰이지 않는다.
 - composer 는 hold 칸 밖을 쓰지 않는다 — 같은 bd-tree 칸 번호로 따로 찍은 낱 나무·덤불을 지우던 함정(그림자만 남음)을 막는다. 마을에서는 composer 나무도 nature 밑동 그림자를 받는다.
 - `bdg-woodland-fence-*` 는 원본 밭 울타리 칸 화소 복사로 바뀌었고 남동·북서·북동 모서리와 동쪽 세로가 늘었다(643~649, `scripts/content/build-beodeul-woodland-fence.py`). 공동마당 보정은 남서/남동 모서리와 서/동변을 따로 쓴다.
 - r2(같은 날): 접지 — #3058 r6 `TreeComposerGround` 를 버들항 원본 숲 그늘 색(α65/α115 두 단)으로 채운다(`scripts/content/build-beodeul-forest-ground.py`, 공용 기초 칩셋 `bdg-forest-ground-*` 192칸 → 런타임 이식). 숲 종류 `forestType`(broadleaf·conifer·mixed)을 `author_wild_route`·`author_beodeul_town` 에 더했다. 침엽은 원본 해안 절벽길 전나무·도시 숲 측백 칸 그대로(새 그림 없음). 입구 `src/editor/tools/beodeulForest.ts` `composeBeodeulForest`. treeComposer.ts 는 #3058 2c72aeed32 와 같고 `composeTreesInMask` 의 `write` 인자만 더했다(#3058 에 넘길 것). 감사 렌더 숲 종류는 `BW_TYPES=broadleaf,conifer,mixed`.

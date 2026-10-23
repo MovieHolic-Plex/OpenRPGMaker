@@ -7,7 +7,7 @@
 // 「포켓몬 칩이 아닌데 '조우 풀숲'은 또 왜 쓴거임?」). 깔 때도 짙은 풀 속 칸 11628 을 네모 판으로 칠하지 않고 짙은 풀 오토타일로 둥글게 푼다.
 // - 길: 버들항 모랫길(fill_region 재료, 줄 단위 사각형) — 모랫길 오토타일이 잔디 가장자리를 맞춘다. 길 계획은 꺾임 비용을 준 직선 위주.
 // - 풀숲(몬스터 수집 게임만): 짙은 풀 오토타일(beodeulForest.ts paintBeodeulDarkGrass).
-// - 숲: 길 둘레 1칸·출구 둘레를 비운 풀밭을 앞줄 줄기 나무 + 안쪽 수관 + 덤불로 빈틈없이 막는다(plantBeodeulForestWall).
+// - 숲: 길 둘레 1칸·출구 둘레를 비운 풀밭을 버들항 수관 오토타일(#3259, beodeulForest.ts planBeodeulCanopy)로 덮는다(plantBeodeulForestWall, 2026-10-24).
 // - 길섶: 깊은 숲길 세트의 작은 소품을 드문드문(dressBeodeulVerge).
 
 import type { GameMap, Project, Rect, TilesetDef } from "@/project/types";
@@ -16,7 +16,7 @@ import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import type { ToolDefinition } from "./types";
 import { layerTileAt } from "@/project/mapLayers";
-import { beodeulWoodlandGrass, composeBeodeulForest, paintBeodeulDarkGrass, type BeodeulDarkGrassFamily, type BeodeulForestType } from "./beodeulForest";
+import { beodeulWoodlandGrass, paintBeodeulDarkGrass, planBeodeulCanopy, shapeBeodeulCanopyMask, writeBeodeulCanopy, type BeodeulDarkGrassFamily, type BeodeulForestType } from "./beodeulForest";
 
 const BEODEUL_TEXTURE = "tex_beodeul_city";
 const BEODEUL_ID = "beodeul_city";
@@ -128,14 +128,13 @@ export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells
 /**
  * 숲 벽 — 포켓몬 도로처럼 길 양옆을 나무로 빈틈없이 막는다(2026-10-06 「1번 도로가 엉망진창」).
  *
- * 2026-10-20 woodland 보정: 예전엔 3×3 수관·3×4 줄기 나무를 3칸 격자에 겹침 없이 찍고 틈을 덤불로 메웠다 —
- * 같은 수관이 바둑판처럼 반복되고, 수관 사이로 풀밭이 비치고, 안쪽 수관은 줄기 없이 떠 보였다.
- * 이제 나무 composer(#3058 treeComposer.ts, jp 숲 r4 와 같은 규칙)가 원본 줄기 나무(4×5·3×4)를 2줄·3칸 간격 밑동에 세우고,
- * 칸마다 남쪽(앞) 나무부터 4·3·2층에 쌓는다 — 앞 수관이 뒤 나무의 줄기를 가리고, 숲 남쪽 끝 줄만 줄기가 보인다.
- * 그림은 bd-tree 원본 칸 그대로다(src/assets/beodeulForestComposer.json, 새 그림 없음). 수관은 숲 칸 밖으로 넘치지 않는다(길 둘레 통행 보존).
+ * 2026-10-24: 나무 composer(#3234 woodland)를 버리고 버들항 마을 숲(#3259)과 같은 수관 오토타일로 바꿨다 —
+ * 숲 칸 마스크를 shapeBeodeulCanopyMask 로 다듬고(좁은 띠·작은 덩이·속 빈 덩이 제거) planBeodeulCanopy 가 칸마다 이웃 비트·위상으로
+ * 수관과 남쪽 그늘을 고른다. 수관은 막힘·상위, 그늘은 통행. 길 둘레(reserved)에는 쓰지 않아 통행이 보존된다.
+ * 인자 rng·forestType·family 는 옛 composer 용이라 쓰지 않는다(호출부 호환을 위해 남김).
  */
-export function plantBeodeulForestWall(project: Project, map: GameMap, tileset: TilesetDef, reserved: ReadonlySet<number>, rng: Rng,
-  _stampObject: ToolDefinition, forestType: BeodeulForestType = "broadleaf", family: BeodeulDarkGrassFamily = "plain"): number {
+export function plantBeodeulForestWall(project: Project, map: GameMap, tileset: TilesetDef, reserved: ReadonlySet<number>, _rng: Rng,
+  _stampObject: ToolDefinition, _forestType: BeodeulForestType = "broadleaf", _family: BeodeulDarkGrassFamily = "plain"): number {
   const w = map.width, h = map.height;
   const empty = (index: number): boolean => ([2, 3, 4] as const).every(L => layerTileAt(map, L, index) < 0);
   const plantable = (x: number, y: number): boolean => {
@@ -143,16 +142,15 @@ export function plantBeodeulForestWall(project: Project, map: GameMap, tileset: 
     const index = y * w + x;
     return !reserved.has(index) && map.lowerTiles[index] === BEODEUL_PLAIN_GRASS && empty(index);
   };
-  // 숲 칸을 먼저 정해 두고(짜는 동안 칸이 차도 판정이 흔들리지 않게) composer 에 넘긴다.
+  // 숲 칸을 먼저 정해 두고 수관 마스크를 다듬는다(마을 숲 #3259 와 같은 모양 규칙: 4칸 미만 띠·16칸 미만 덩이·속이 빈 덩이는 버린다).
   const forest = new Set<number>();
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (plantable(x, y)) forest.add(y * w + x);
-  const inForest = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h && forest.has(y * w + x);
-  // 나무 밑 땅(r5): 짙은 풀 오토타일(family = 가장자리 바탕 잔디). 수관은 숲 칸 안에만(hold·write) — 길 둘레 통행 보존.
-  composeBeodeulForest(project, map, tileset, forestType, inForest, inForest, Math.floor(rng() * 997), inForest, family);
-  let cells = 0;
-  for (const index of forest) if (!empty(index)) cells++;
-  // 틈 메우기 덤불은 따로 찍지 않는다(2026-10-20 r2) — 덤불은 composer 활엽 그림(B2)에 들어 있고, 숲 속 빈 틈은 짙은 풀이 메운다.
-  return cells;
+  const free = (c: number): boolean => plantable(c % w, Math.floor(c / w));
+  shapeBeodeulCanopyMask(w, h, forest, { canFill: free, minComponent: 16, minExtent: 4, minInterior: 0.15, block: 2 });
+  // 수관 오토타일(beodeul_nature leaf)이 칸마다 이웃 비트로 가장자리를, 숲 남쪽 바로 아래 빈 풀 칸에 그늘을 깐다. 길 둘레(reserved)에는 아무것도 안 쓴다.
+  const plan = planBeodeulCanopy(w, h, "leaf", forest, (s) => !forest.has(s) && free(s));
+  writeBeodeulCanopy(project, map, tileset, plan);
+  return plan.canopy.size;
 }
 
 /** 길섶 꾸미기 — 깊은 숲길 세트의 작은 소품(고사리·들꽃·돌·그루터기·버섯)을 길 둘레 빈 풀밭에 드문드문. */
