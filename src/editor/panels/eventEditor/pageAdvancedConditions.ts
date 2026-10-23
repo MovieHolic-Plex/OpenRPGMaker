@@ -493,6 +493,7 @@ function renderAdvancedConditionContent(
     case "relativeFacing":
     case "hiding":
     case "pursuitActive":
+    case "eventSeesPlayer":
     case "clearCount":
     case "endingSeen":
     case "newGamePlus":
@@ -560,6 +561,7 @@ function defaultAdvancedCondition(kind: AdvancedConditionKind): EventPageConditi
     case "relativeFacing":
     case "hiding":
     case "pursuitActive":
+    case "eventSeesPlayer":
     case "clearCount":
     case "endingSeen":
     case "newGamePlus":

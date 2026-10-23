@@ -16,6 +16,7 @@ export const ACTOR_QUERY_CONDITION_MODE_OPTIONS = [
   { value: "relativeFacing", label: "마주봄·등 뒤" },
   { value: "hiding", label: "숨어 있음" },
   { value: "pursuitActive", label: "추격 중" },
+  { value: "eventSeesPlayer", label: "이벤트가 주인공을 봄" },
   { value: "clearCount", label: "클리어 횟수" },
   { value: "endingSeen", label: "본 엔딩" },
   { value: "newGamePlus", label: "강하게 다시 하기 회차" },
@@ -76,6 +77,8 @@ export function defaultActorQueryCondition(kind: ActorQueryCondition["kind"]): A
       return { kind, value: true };
     case "pursuitActive":
       return { kind, value: true };
+    case "eventSeesPlayer":
+      return { kind, eventId: "", range: 5, value: true };
     case "clearCount":
       return { kind, op: ">=", value: 1 };
     case "endingSeen":
@@ -142,6 +145,8 @@ export function actorQueryConditionSummary(condition: ActorQueryCondition): stri
       return RELATIONS.find((r) => r.value === condition.relation)?.label ?? condition.relation;
     case "hiding":
       return condition.value ? "주인공이 숨어 있음" : "주인공이 숨지 않음";
+    case "eventSeesPlayer":
+      return `${condition.eventId || "이벤트"}이(가) 주인공을 ${condition.value === false ? "못 봄" : "봄"} (${condition.range ?? 5}칸)`;
     case "pursuitActive":
       return `${condition.eventId ? condition.eventId : "추격자"} ${condition.value ? "추격 중" : "추격 안 함"}`;
     case "clearCount":
@@ -179,6 +184,8 @@ export function actorQueryConditionHint(kind: ActorQueryCondition["kind"]): stri
       return "주인공과 이 이벤트의 자세를 봅니다. '안 볼 때만 움직이는 조각상' 은 '보고 있다' 를 '아닐 때' 로 감싸세요.";
     case "hiding":
       return "주인공이 숨는 장소에 들어가 있는지 검사합니다.";
+    case "eventSeesPlayer":
+      return "이벤트(집주인·경비)가 지금 주인공을 볼 수 있는지 봅니다. 같은 방(맵 장소 사각형) 안에서, 바라보는 쪽 앞 시야 범위 이내일 때 참. 방 밖이면 거짓. 훔쳐보기·들키기 판정에 씁니다.";
     case "pursuitActive":
       return "추격자가 지금 쫓는 중인지 봅니다. 이벤트 id 를 비우면 누구든.";
     case "clearCount":
@@ -277,6 +284,13 @@ export function renderActorQueryCondition(condition: ActorQueryCondition, onChan
         row("판정", bool(condition.value, "추격 중", "추격 안 함", "event-condition-pursuit-value", (value) => set({ value }))),
       );
       break;
+    case "eventSeesPlayer":
+      box.append(
+        row("보는 이벤트 id", text(condition.eventId, "event-condition-sees-event", (eventId) => set({ eventId }), "예: ev_owner")),
+        row("거리(칸)", num(condition.range ?? 5, "event-condition-sees-range", (range) => set({ range }))),
+        row("판정", bool(condition.value !== false, "보임", "안 보임", "event-condition-sees-value", (value) => set({ value }))),
+      );
+      break;
     case "endingSeen":
       box.append(
         row("엔딩", sel((project()?.endings ?? []).map((e) => ({ value: e.id, label: e.name || e.id })), condition.endingId, "event-condition-ending-seen", (endingId) => set({ endingId }))),
@@ -336,6 +350,9 @@ export function actorQueryConditionProblems(
       break;
     case "stringVariable":
       if (!condition.stringVariableId) problems.push("문자열 변수 id 가 비어 있음");
+      break;
+    case "eventSeesPlayer":
+      if (!condition.eventId) problems.push("보는 이벤트 id 가 비어 있음");
       break;
     case "weekday":
       if (condition.weekdays.length === 0) problems.push("요일을 하나 이상 고르세요");

@@ -791,6 +791,13 @@ export function validateConditionShape(label: string, value: unknown): void {
     case "newGamePlus":
       requireBoolean(`${label}.value`, condition.value);
       return;
+    case "eventSeesPlayer":
+      requireString(`${label}.eventId`, condition.eventId);
+      if (condition.range !== undefined) requireNumber(`${label}.range`, condition.range);
+      if (condition.sameRoom !== undefined) requireBoolean(`${label}.sameRoom`, condition.sameRoom);
+      if (condition.requireFacing !== undefined) requireBoolean(`${label}.requireFacing`, condition.requireFacing);
+      if (condition.value !== undefined) requireBoolean(`${label}.value`, condition.value);
+      return;
     case "pursuitActive":
       if (condition.eventId !== undefined) requireString(`${label}.eventId`, condition.eventId);
       requireBoolean(`${label}.value`, condition.value);
