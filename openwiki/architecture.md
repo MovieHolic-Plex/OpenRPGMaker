@@ -54,6 +54,7 @@
   이제 `npm run build` 의 `bake:demos`(`scripts/content/bake-flagship-demos.mts`)가 빌드 때 한 번 지어 `dist/demos/<id>.play.json`(웹 내보내기와 같은 투영)과
   `<id>.project.json`(편집기용 전체)을 쓰고, 출하 플레이어는 에셋 기준 주소(`exportAssetBase.ts`)의 `demos/` 를 읽는다. 빌더 import 는 `import.meta.env.DEV`(QA dev 서버) 분기에만 남아
   플레이어 번들에서 데모 빌더 청크가 빠졌다(dist/export-player 124MB → 65MB = 모든 웹 내보내기 zip). 굽기는 vite.config 를 타므로 `OPRN_ASSUME_ALL_BGM_INSTALLED=1`(입구 `.mjs` 가 넣는다)로 BGM 설치 define 을 끈다.
+  **편집기 데모 열기 (2026-10-24):** 편집기 메뉴(샘플)와 컨셉 피드 오버레이의 데모 「열기」·「플레이」도 같은 구운 `demos/<id>.project.json` 을 읽는다 — 공용 입구 `src/editor/flagshipDemoLoader.ts` 의 `openFlagshipDemo`(앱 기준 주소 `document.baseURI` 상대 fetch, 진행 토스트, 이중 호출 방지). 구운 파일이 없을 때(dev 서버)만 브라우저 빌더로 물러난다. 「열기」는 `store.replaceProject` 로 호스트 프로젝트를 덮어쓰지 않고 새 프로젝트 폴더(`createProjectFolderWithSeed`)를 만든 뒤 리로드해 편집·저장이 남게 하며(브리지가 없을 때만 이 탭 메모리), 「플레이」는 저장 없이 메모리에서 시연 창을 연다.
   데모 타이틀까지(루프백) 5~7s. **형식은 원인이 아니었다:** 같은 게임을 웹 ZIP(정적 호스트) 5~6s, 실행형 HTML 7.5~10.5s(100~230MB 한 장 파싱), 50Mbps 회선에서 웹+gzip 7~8s·웹 무압축 17~22s·HTML 14~42s.
   남은 비용은 모든 게임이 받는 플레이어 묶음 청크 약 50MB(번들 타일셋 정의 JSON — tileMeta 설명·이름표가 대부분, gzip 2.8MB)와 project.json 파싱이다. 호스트는 gzip 이 필수다.
   같이 고친 것: 칩셋 카탈로그 행(resourceProfiles kind chipset)을 «사용»으로 세지 않는다 — 저작권 정리로 지운 합본 마을 칩셋 행 때문에 빈 프로젝트까지 웹·HTML 내보내기가 실패했다.
