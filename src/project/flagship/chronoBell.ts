@@ -26,6 +26,7 @@ import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./falle
 import { applyFallenLoreAndHanel } from "./fallen/loreAndHanel";
 import { reworkFallenTown } from "./fallenTown";
 import { applyFallenBattleItems, FS_SPEAR_PIKE, FS_SWORD_GALE } from "./fallen/battleItems";
+import { swOn, fadeOut } from "./firstLoveKit";
 import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX, ensureFallenValenChip } from "./fallenValenChip";
 import { buildFallenTownInteriors } from "./fallenTownInteriors";
 import { buildFallenTownLife, ensureFallenTownDatabase } from "./fallen/townLife";
@@ -388,6 +389,102 @@ function setEventFace(map: GameMap, eventId: string, faceId: string | undefined)
  * 물러선 뒤에도 주인공 칸·서로의 칸을 나누지 않는다.
  */
 const BACK_STEP: Readonly<Record<"up" | "down" | "left" | "right", "up" | "down" | "left" | "right">> = { up: "down", down: "up", left: "right", right: "left" };
+/** F3(해질녘 다리 곁 등불의 발렌)와 9-A/9-B(망원경 앞 이리스 일지 한 줄)를 더한다. 말하는 쪽 얼굴은 applySpeakerFaces 가 붙인다. */
+const wait = (ms: number): Command => ({ kind: "wait", ms } as Command);
+
+function addBridgeValenAndScopeScene(project: Project, ids: { hub: string; observatory: string }): void {
+  const M = (id: string): GameMap => project.maps[id]!;
+  const SW_SCOPE_PLAYED = "sw_fs_scope_journal_played";
+  if (!project.switches.some((s) => s.id === SW_SCOPE_PLAYED)) project.switches.push({ id: SW_SCOPE_PLAYED, name: "망원경 일지 장면" });
+
+  // ── F3: 강가에서 등을 바라보는 발렌 (행진 뒤 ~ 이리스 합류 전) ──
+  const hub = M(ids.hub);
+  const srcValen = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_valen`);
+  const metaB = (project.tilesets[hub.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+  const onWater = (x: number, y: number): boolean => /다리|물/.test(metaB[hub.lowerTiles[y * hub.width + x]!]?.label ?? "")
+    || /다리|물/.test(metaB[hub.lowerTiles[(y + 1) * hub.width + x]!]?.label ?? "");
+  let spot: { x: number; y: number } | undefined;
+  for (let r = 0; r <= 5 && !spot; r += 1) for (let dy = -r; dy <= r && !spot; dy += 1) for (let dx = -r; dx <= r && !spot; dx += 1) {
+    if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+    const x = 21 + dx, y = 23 + dy;
+    if (x < 1 || y < 1 || x >= hub.width - 1 || y >= hub.height - 1 || !isPassable(project, hub, x, y) || onWater(x, y)) continue;
+    if (hub.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) continue;
+    if ((hub.upperTiles[y * hub.width + x] ?? -1) >= 0) continue;
+    spot = { x, y };
+  }
+  const srcGraphic = srcValen?.pages?.find((pg) => pg.graphic?.sprite)?.graphic;
+  if (spot && srcGraphic) {
+    const id = `ev_${FS_PREFIX}_valen_bridge`;
+    const gone = { transparent: true };
+    const watch = (dir: Step): Command[] => [{ kind: "moveEvent", eventId: id, route: { moves: [{ kind: "turn", dir }], repeat: false, wait: false, skippable: true } } as unknown as Command];
+    hub.events.push({
+      id, name: "등을 바라보는 발렌", x: spot.x, y: spot.y, trigger: { kind: "action" }, commands: [], placementRole: "npc",
+      pages: [
+        { id: `${id}_p0`, name: "아직 없음", conditions: [], graphic: gone, trigger: { kind: "action" }, priority: "below", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [] },
+        { id: `${id}_p1`, name: "등불 곁", conditions: [{ kind: "switch", switchId: SW_VALEN_MARCHED, value: true }],
+          graphic: { ...srcGraphic, direction: "left", pattern: charsetFrameIndex({ characterIndex: FS_VALEN_CHARSET_INDEX, direction: "left", pattern: 1 }) },
+          trigger: { kind: "action" }, priority: "same", overlapForbidden: true, movement: { type: "fixed", speed: 3, frequency: 3 },
+          commands: [
+            narrate("작은 등이 천천히 강 위로 떠 간다.\n누구를 위한 등인지는 알 수 없다."),
+            wait(700),
+            ...watch("down"),
+            narrate("(발렌이 돌아본다. 눈이 마주치기 전에\n장갑을 쥔다.)"),
+            say("심문관 발렌", "…잠깐 바람을 쐬러 왔을 뿐이다.\n별지기, 너는 일지나 쓰러 가라."),
+            ...watch("left"),
+          ] },
+        { id: `${id}_p2`, name: "없음", conditions: [{ kind: "switch", switchId: SW_IRIS_JOINED, value: true }], graphic: gone, trigger: { kind: "action" }, priority: "below", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [] },
+      ],
+    } as unknown as GameEvent);
+  }
+
+  // ── 9-A/9-B: 천문대 망원경 앞에서 이리스가 일지를 꺼낸다(이리스 합류 뒤, 한 번) ──
+  const obs = M(ids.observatory);
+  const scope = obs.events.find((e) => e.id === `ev_${FS_PREFIX}_scope`);
+  const base = scope?.pages?.[0];
+  if (scope && base) {
+    const Q1 = "sw_fs_q_bread_done";
+    const nine_a: Command[] = [
+      say("이리스", "…이게 하늘이에요?\n이렇게 작은 점들이?"),
+      say(FS_NAMES.hero, "작은 게 아니라, 먼 거야."),
+      say("이리스", "먼 것들이 이렇게 많이 반짝이는데\n저는 왜 혼자라고 느낄까요."),
+    ];
+    const nine_b: Command[] = [
+      narrate("(이리스가 접안경에서 눈을 뗀다.\n손에는 토마가 건넨 별 모양 빵이 한 조각 남아 있다.)"),
+      say("이리스", "카엘. 이 빵, 맛이 「따뜻한 모양」이에요.\n저는 맛을 모르는데도요."),
+      say(FS_NAMES.hero, "토마 아저씨가 열일곱 해 동안\n내 계단에 놓던 빵이야."),
+      say("이리스", "열일곱 해. 저는 어제 깨어났는데\n카엘은 그만큼 기다렸군요."),
+      say(FS_NAMES.hero, "기다린 줄도 몰랐어.\n빵이 있는 줄만 알았지."),
+      wait(600),
+      narrate("(이리스가 가슴께에서 작은 일지를 꺼낸다.\n비어 있다.)"),
+      say("이리스", "제 일지예요. 아직 한 줄도 없어요.\n카엘이 하나만 써 주실래요?"),
+      say(FS_NAMES.hero, "내가? 나는 당번 일지만 써 봤는데."),
+      say("엘레나", "당번 일지가 제일 정직해. 써."),
+      wait(500),
+      narrate("(카엘이 쓴다. 화면에 한 줄이 떠오른다.)"),
+      narrate("「오늘, 이리스가 빵을 먹었다.\n따뜻했다고 했다.」"),
+      say("이리스", "…이게 「기록」이에요?\n지워지지 않을까요, 이 줄도."),
+      say("엘레나", "지워지면 우리가 다시 써 줄게. 몇 번이고."),
+      say("이리스", "몇 번이고. …그 말도 적어 둘게요.\n엘레나가 한 말이라고."),
+      wait(600),
+      narrate("(이리스가 일지를 가슴에 안는다.\n망원경 렌즈가 한 번 반짝인다.)"),
+    ];
+    const played = { kind: "setSwitch", switchId: SW_SCOPE_PLAYED, value: true } as unknown as Command;
+    const fork = (cond: ReturnType<typeof swOn>, then: Command[], otherwise: Command[]): Command => ({ kind: "fork", condition: cond, then, else: otherwise } as unknown as Command);
+    scope.pages = [
+      ...(scope.pages ?? []),
+      { ...clone(base), id: `${scope.id}_journal`, name: "일지 한 줄",
+        conditions: [{ kind: "switch", switchId: SW_IRIS_JOINED, value: true }, { kind: "switch", switchId: SW_SCOPE_PLAYED, value: false }],
+        trigger: { kind: "action" },
+        commands: [
+          { kind: "cutsceneControl", mode: "begin", skippable: true } as unknown as Command,
+          fork(swOn(Q1), nine_b, nine_a),
+          played,
+          { kind: "cutsceneControl", mode: "end", skippable: true } as unknown as Command,
+        ] },
+    ] as typeof scope.pages;
+  }
+}
+
 function stageTalk(event: GameEvent | undefined): void {
   if (!event) return;
   const stepBack = (["up", "down", "left", "right"] as const).reduceRight<Command[]>((rest, facing) => [{
@@ -1658,7 +1755,6 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     conditions: [],
     epilogue: [
       { kind: "say", speaker: "이리스", text: "북쪽 하늘에서 아직 대답이 들려요. 아주 작게." },
-      { kind: "say", speaker: "카엘", text: "그럼 거기까지 가 보자. 같이." },
     ],
     // 가혹 검수 r5: 끝 화면이 두 줄뿐이라 여운이 약했다 — 짧은 크레딧 두루마리와 「다음 막」 예고를 단다.
     presentation: {
@@ -1667,7 +1763,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         // 첫 카드가 이미 제목·막 이름을 말한다 — 크레딧은 인물부터(가혹 검수 r10 「54·55 거의 같은 반복」).
         "카엘 — 견습 별지기", "엘레나 — 천문대의 마도학자", "이리스 — 별에서 온 기계 소녀", "",
         "천문대장 하넬", "숲지기 브람", "심문관 발렌", "",
-        "그날 밤 동쪽 숲에 떨어진 것은 별이 아니었다.", "이리스의 배가 남은 곳, 북쪽 하늘탑으로.", "",
+        "그날 밤 동쪽 숲에 떨어진 것은 별이 아니었다.", "이리스의 집이 부르는 곳, 북쪽 하늘탑으로.", "",
         "OPRN Studio 공식 데모", "",
         "제2막에서 계속됩니다.",
       ].join("\n"),
@@ -1675,6 +1771,24 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   });
   const reported = findTextList(M(ids.observatory), "이리스를 집에 데려다주거라");
   if (!reported) throw new Error("[fallen-star] 보고 대사를 찾지 못했다");
+  // 13-2·13-3 — 제1막 끝: 이리스가 숨겼던 한 줄, 그리고 붉은 못.
+  reported.list.push(
+    narrate("(천문대 위층. 렌즈 가운데에서 하늘탑 방향 신호가 깜빡인다.)"),
+    say("카엘", "그럼 거기까지 가 보자. 같이."),
+    narrate("(이리스는 대답하지 않고 일지를 가슴에 안는다.)"),
+    wait(600),
+    say("이리스", "…카엘. 아까는 말 못 했어요.\n전문에 한 줄이 더 있었어요."),
+    say("이리스", "「중계기 이리스 수신 확인.\n귀환 시 현지 기록을 소거합니다.」"),
+    say("카엘", "소거? 기억을 지운다는 거야?"),
+    say("이리스", "집에 돌아가면 오늘도 지워져요.\n카엘이 부른 별 이름도. 빵 맛도요."),
+    say("카엘", "…그래도 갈 거야?"),
+    say("이리스", "네. 가서 확인해야 해요.\n지워지는 게 정말 「저」인지."),
+    say("카엘", "그럼 가기 전에 한 줄 더 쓰자.\n오늘 줄 밑에."),
+    ...fadeOut(1500),
+    narrate("(북쪽 하늘에서 별 하나가 천천히 붉게 깜빡인다.)"),
+    narrate("(지도의 북쪽 끝. 붉은 못 하나가 박힌다.\n검은 장갑의 손이 못을 누른다.)"),
+    narrate("그 시각, 심문관은 지도의 북쪽 끝에 못을 박았다."),
+  );
   reported.list.push({ kind: "triggerEnding", endingId: ENDING_ID } as Command);
 
   // 숲길 — 보이는 적 셋(부딪히면 전투). 입구에서 공터까지 고르게 둔다.
@@ -2276,6 +2390,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       }
     }
   }
+  addBridgeValenAndScopeScene(project, ids);
   const speakerFaces: Record<string, string> = {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),
