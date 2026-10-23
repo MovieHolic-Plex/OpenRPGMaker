@@ -1,0 +1,1441 @@
+{
+ "set": "rt-fallen-star-quest-step-labels",
+ "projectGenerator": {
+  "game": "fallen-star"
+ },
+ "viewport": {
+  "width": 1280,
+  "height": 720
+ },
+ "checkpoints": [
+  {
+   "id": "anchor",
+   "label": "세션 로그 line 261 저장",
+   "note": "/home/main/salad/play/runs/rerun2/tasks/fallen-star__first-run/actions.jsonl 의 saves/0129.json 에서 부팅한다(리로드 경계를 넘지 않는 마지막 세이브). 기록 시점: field fs_observatory (24,21).",
+   "snapshot": {
+    "schemaVersion": 5,
+    "projectTitle": "폴른 스타",
+    "savedAt": "2026-10-23T06:55:04.848Z",
+    "mapName": "별빛 천문대",
+    "partyLevel": 6,
+    "playTimeSeconds": 1074,
+    "session": {
+     "switches": {
+      "sw_0001": false,
+      "sw_0002": false,
+      "sw_0003": false,
+      "sw_0004": false,
+      "sw_0005": false,
+      "sw_0006": false,
+      "sw_0007": false,
+      "sw_0008": false,
+      "sw_0009": false,
+      "sw_0010": false,
+      "sw_0011": false,
+      "sw_0012": false,
+      "sw_0013": false,
+      "sw_0014": false,
+      "sw_0015": false,
+      "sw_0016": false,
+      "sw_0017": false,
+      "sw_0018": false,
+      "sw_0019": false,
+      "sw_0020": false,
+      "sw_gen2_sun_relay": false,
+      "sw_gen2_moon_relay": false,
+      "sw_gen2_bridge_relay": false,
+      "sw_gen2_seal_relay": false,
+      "sw_catalog_gate_open": false,
+      "sw_catalog_lighthouse_lit": false,
+      "sw_catalog_mine_lift": false,
+      "sw_catalog_fountain_flow": false,
+      "sw_catalog_archive_unlock": false,
+      "sw_catalog_beacon_lit": false,
+      "sw_catalog_aqueduct_route": false,
+      "switch_shared_relay_sun": false,
+      "switch_shared_relay_moon": false,
+      "switch_shared_relay_tide": false,
+      "switch_shared_relay_earth": false,
+      "sw_fs_iris_joined": false,
+      "sw_ev_fs_vault_foe1_clear": false,
+      "sw_ev_fs_vault_foe2_clear": false,
+      "sw_ev_fs_vault_foe3_clear": false,
+      "sw_fs_main_started": true,
+      "sw_fs_main_done": false,
+      "sw_fs_main_step0": false,
+      "sw_fs_main_step1": false,
+      "sw_fs_main_step2": false,
+      "sw_fs_vault_open": false,
+      "sw_fs_iris_awake": false,
+      "sw_ev_fs_forest_foe1_clear": false,
+      "sw_ev_fs_forest_foe2_clear": false,
+      "sw_puzzle_fs_braziers_solved": false,
+      "sw_fs_braziers_brazier_0_lit": false,
+      "sw_fs_braziers_brazier_1_lit": false,
+      "sw_fs_braziers_brazier_2_lit": false,
+      "sw_fs_braziers_brazier_3_lit": false,
+      "sw_fs_valen_arrived": false,
+      "sw_fs_valen_walking": false,
+      "sw_fs_valen_marched": true,
+      "sw_fs_knight_marched": true,
+      "sw_fs_escort_a_marched": true,
+      "sw_fs_escort_b_marched": true,
+      "sw_fs_escort_c_marched": true,
+      "sw_fs_escort_d_marched": true,
+      "sw_fs_escort_e_marched": true,
+      "sw_fs_escort_f_marched": true,
+      "sw_fs_escort_g_marched": true,
+      "sw_fs_escort_h_marched": true
+     },
+     "selfSwitches": {
+      "ev_fs_event": {
+       "A": true
+      }
+     },
+     "variables": {
+      "var_0001": 0,
+      "var_0002": 0,
+      "var_0003": 0,
+      "var_0004": 0,
+      "var_0005": 0,
+      "var_0006": 0,
+      "var_0007": 0,
+      "var_0008": 0,
+      "var_0009": 0,
+      "var_0010": 0,
+      "var_0011": 0,
+      "var_0012": 0,
+      "var_0013": 0,
+      "var_0014": 0,
+      "var_0015": 0,
+      "var_0016": 0,
+      "var_0017": 0,
+      "var_0018": 0,
+      "var_0019": 0,
+      "var_0020": 0,
+      "var_fs_main_progress": 0,
+      "var_fs_braziers_brazier_step": 0
+     },
+     "timers": {},
+     "gold": 0,
+     "inventory": {
+      "item_potion": 3
+     },
+     "itemUseCharges": {},
+     "killedFieldSpawns": {},
+     "partyActorIds": [
+      "actor_hero",
+      "actor_fs_elena"
+     ],
+     "shippingQueue": {},
+     "shippingHistory": [],
+     "bundleContributions": {},
+     "completedBundleIds": [],
+     "bundleRewardAppliedIds": [],
+     "unlockedRegionIds": [],
+     "unlockedRecipeIds": [],
+     "makerInstances": {},
+     "monsterInstances": {},
+     "monsterParty": [],
+     "monsterBox": [],
+     "actorSkillIds": {},
+     "actorSkillPp": {},
+     "actorExperience": {
+      "actor_hero": 0,
+      "actor_fs_elena": 0
+     },
+     "actorLevels": {
+      "actor_hero": 6,
+      "actor_guardian": 1,
+      "actor_mage": 1,
+      "actor_scout": 1,
+      "actor_cleric": 1,
+      "actor_ranger": 1,
+      "actor_samurai": 1,
+      "actor_ninja": 1,
+      "actor_monk": 1,
+      "actor_bard": 1,
+      "actor_druid": 1,
+      "actor_witch": 1,
+      "actor_valkyrie": 1,
+      "actor_paladin": 1,
+      "actor_red_mage": 1,
+      "actor_dark_knight": 1,
+      "actor_chronomancer": 1,
+      "actor_thief": 1,
+      "actor_beast_tamer": 1,
+      "actor_pirate": 1,
+      "actor_sorceress": 1,
+      "actor_elf_archer": 1,
+      "actor_hunter": 1,
+      "actor_brawler": 1,
+      "actor_martial_artist": 1,
+      "actor_general": 1,
+      "actor_prince": 1,
+      "actor_berserker": 1,
+      "actor_gunner": 1,
+      "actor_dancer": 1,
+      "actor_alchemist": 1,
+      "actor_summoner": 1,
+      "actor_squire": 1,
+      "actor_flower_girl": 1,
+      "actor_swordsman": 1,
+      "actor_scholar": 1,
+      "actor_miner": 1,
+      "actor_farmer": 1,
+      "actor_elder": 1,
+      "actor_grandma": 1,
+      "actor_gunslinger": 1,
+      "actor_butler": 1,
+      "actor_priest_monk": 1,
+      "actor_gypsy": 1,
+      "actor_sword_dancer": 1,
+      "actor_gambler": 1,
+      "actor_seraph": 1,
+      "actor_fairy": 1,
+      "actor_king": 1,
+      "actor_merchant": 1,
+      "actor_noble": 1,
+      "actor_princess": 1,
+      "actor_archmage": 1,
+      "actor_heavy_knight": 1,
+      "actor_mercenary": 1,
+      "actor_dragoon": 1,
+      "actor_villager": 1,
+      "actor_tribal": 1,
+      "actor_fortune_teller": 1,
+      "actor_sailor": 1,
+      "actor_monk_elder": 1,
+      "actor_noblewoman": 1,
+      "actor_nomad": 1,
+      "actor_nun": 1,
+      "actor_jester": 1,
+      "actor_girl_alchemist": 1,
+      "actor_ronin": 1,
+      "actor_shrine_maiden": 1,
+      "actor_desert_warrior": 1,
+      "actor_maid": 1,
+      "actor_hermit": 1,
+      "actor_old_warrior": 1,
+      "actor_dog": 1,
+      "actor_cat": 1,
+      "actor_rooster": 1,
+      "actor_sheep": 1,
+      "actor_cow": 1,
+      "actor_horse": 1,
+      "actor_tiger": 1,
+      "actor_lion": 1,
+      "actor_skiff": 1,
+      "actor_galleon": 1,
+      "actor_gunboat": 1,
+      "actor_balloon": 1,
+      "actor_drill": 1,
+      "actor_tank": 1,
+      "actor_airship": 1,
+      "actor_ufo": 1,
+      "actor_slime_pal": 1,
+      "actor_demon": 1,
+      "actor_ogre_kid": 1,
+      "actor_ghost_pal": 1,
+      "actor_skeleton_pal": 1,
+      "actor_zombie_pal": 1,
+      "actor_reaper": 1,
+      "actor_minotaur_pal": 1,
+      "actor_harpy_pal": 1,
+      "actor_gargoyle_pal": 1,
+      "actor_vampire": 1,
+      "actor_demon_knight": 1,
+      "actor_golem_pal": 1,
+      "actor_dragonewt": 1,
+      "actor_oni_warrior": 1,
+      "actor_dark_lord": 1,
+      "actor_siren": 1,
+      "actor_lamia": 1,
+      "actor_wraith_mage": 1,
+      "actor_succubus": 1,
+      "actor_mound": 1,
+      "actor_red_dragon_pal": 1,
+      "actor_flame_spirit": 1,
+      "actor_demon_general": 1,
+      "actor_treant": 1,
+      "actor_mushroom": 1,
+      "actor_kappa": 1,
+      "actor_kitsune": 1,
+      "actor_tanuki": 1,
+      "actor_golem_moss": 1,
+      "actor_sprite_ice": 1,
+      "actor_mandrake": 1,
+      "actor_mimic_pal": 1,
+      "actor_living_armor": 1,
+      "actor_lantern_ghost": 1,
+      "actor_doll": 1,
+      "actor_book_demon": 1,
+      "actor_scarecrow": 1,
+      "actor_clockwork": 1,
+      "actor_candle_imp": 1,
+      "actor_yeti": 1,
+      "actor_merfolk": 1,
+      "actor_cyclops": 1,
+      "actor_mothman": 1,
+      "actor_basilisk": 1,
+      "actor_djinn": 1,
+      "actor_chimera": 1,
+      "actor_dark_angel": 1,
+      "actor_fs_elena": 6,
+      "actor_fs_iris": 6
+     },
+     "actorVitals": {
+      "actor_hero": {
+       "hp": 526,
+       "mp": 44,
+       "maxHp": 526,
+       "maxMp": 44
+      },
+      "actor_fs_elena": {
+       "hp": 526,
+       "mp": 44,
+       "maxHp": 526,
+       "maxMp": 44
+      }
+     },
+     "eventLocations": {},
+     "erasedEventIds": [],
+     "occupiedLocationIds": {
+      "fs_hub": [],
+      "fs_observatory": []
+     },
+     "removedEventIds": {},
+     "spawnedEvents": {},
+     "camera": {
+      "mode": "follow",
+      "target": {
+       "kind": "player"
+      }
+     },
+     "lighting": {
+      "ambient": 0.45,
+      "color": "#1c1830",
+      "sources": [
+       {
+        "id": "l1",
+        "at": {
+         "x": 13,
+         "y": 5
+        },
+        "radius": 1.6,
+        "intensity": 0.9,
+        "color": "#ffcf8a",
+        "flicker": true
+       },
+       {
+        "id": "l2",
+        "at": {
+         "x": 18,
+         "y": 5
+        },
+        "radius": 1.6,
+        "intensity": 0.9,
+        "color": "#ffcf8a",
+        "flicker": true
+       },
+       {
+        "id": "l10",
+        "at": {
+         "x": 28,
+         "y": 9
+        },
+        "radius": 1.6,
+        "intensity": 0.9,
+        "color": "#ffcf8a",
+        "flicker": true
+       },
+       {
+        "id": "l11",
+        "at": {
+         "x": 5,
+         "y": 8
+        },
+        "radius": 1.6,
+        "intensity": 0.9,
+        "color": "#ffcf8a",
+        "flicker": true
+       },
+       {
+        "id": "l12",
+        "at": {
+         "x": 26,
+         "y": 8
+        },
+        "radius": 1.6,
+        "intensity": 0.9,
+        "color": "#ffcf8a",
+        "flicker": true
+       },
+       {
+        "id": "l50",
+        "at": {
+         "x": 26,
+         "y": 18
+        },
+        "radius": 3.2,
+        "intensity": 0.9,
+        "color": "#ffcf8a",
+        "flicker": true
+       }
+      ]
+     },
+     "npcTravelStates": {},
+     "npcActivities": {},
+     "npcScheduleStates": {},
+     "lifeSkills": {},
+     "farmPlots": {},
+     "friendship": {},
+     "relationships": {},
+     "dailyGifts": {},
+     "dailyTalks": {},
+     "monsterCareSteps": 21,
+     "monsterCareDaily": {
+      "no-time": 0
+     },
+     "chests": {},
+     "placeables": {},
+     "followers": [
+      {
+       "id": "actor:actor_fs_elena",
+       "eventId": "actor_fs_elena",
+       "graphic": {
+        "sprite": {
+         "type": "bundled",
+         "id": "tex_easyrpg_charset_actor1"
+        },
+        "direction": "down",
+        "pattern": 82
+       },
+       "name": "엘레나",
+       "kind": "actor",
+       "source": "party"
+      }
+     ],
+     "followerTrail": [
+      {
+       "x": 23,
+       "y": 21,
+       "direction": "right"
+      },
+      {
+       "x": 22,
+       "y": 21,
+       "direction": "right"
+      },
+      {
+       "x": 21,
+       "y": 21,
+       "direction": "right"
+      },
+      {
+       "x": 21,
+       "y": 20,
+       "direction": "down"
+      },
+      {
+       "x": 21,
+       "y": 19,
+       "direction": "down"
+      },
+      {
+       "x": 21,
+       "y": 18,
+       "direction": "down"
+      },
+      {
+       "x": 21,
+       "y": 19,
+       "direction": "up"
+      },
+      {
+       "x": 21,
+       "y": 20,
+       "direction": "up"
+      },
+      {
+       "x": 20,
+       "y": 20,
+       "direction": "right"
+      },
+      {
+       "x": 19,
+       "y": 20,
+       "direction": "right"
+      },
+      {
+       "x": 18,
+       "y": 20,
+       "direction": "right"
+      },
+      {
+       "x": 17,
+       "y": 20,
+       "direction": "right"
+      },
+      {
+       "x": 16,
+       "y": 20,
+       "direction": "right"
+      },
+      {
+       "x": 15,
+       "y": 20,
+       "direction": "right"
+      },
+      {
+       "x": 14,
+       "y": 20,
+       "direction": "right"
+      },
+      {
+       "x": 13,
+       "y": 20,
+       "direction": "right"
+      },
+      {
+       "x": 13,
+       "y": 19,
+       "direction": "down"
+      },
+      {
+       "x": 14,
+       "y": 19,
+       "direction": "left"
+      },
+      {
+       "x": 15,
+       "y": 19,
+       "direction": "left"
+      },
+      {
+       "x": 16,
+       "y": 19,
+       "direction": "left"
+      },
+      {
+       "x": 17,
+       "y": 19,
+       "direction": "left"
+      },
+      {
+       "x": 17,
+       "y": 20,
+       "direction": "up"
+      },
+      {
+       "x": 17,
+       "y": 21,
+       "direction": "up"
+      },
+      {
+       "x": 17,
+       "y": 20,
+       "direction": "down"
+      },
+      {
+       "x": 17,
+       "y": 19,
+       "direction": "down"
+      },
+      {
+       "x": 16,
+       "y": 19,
+       "direction": "right"
+      },
+      {
+       "x": 15,
+       "y": 19,
+       "direction": "right"
+      },
+      {
+       "x": 15,
+       "y": 20,
+       "direction": "up"
+      },
+      {
+       "x": 15,
+       "y": 21,
+       "direction": "up"
+      },
+      {
+       "x": 15,
+       "y": 20,
+       "direction": "down"
+      },
+      {
+       "x": 15,
+       "y": 19,
+       "direction": "down"
+      },
+      {
+       "x": 15,
+       "y": 18,
+       "direction": "down"
+      },
+      {
+       "x": 15,
+       "y": 17,
+       "direction": "down"
+      },
+      {
+       "x": 15,
+       "y": 16,
+       "direction": "down"
+      },
+      {
+       "x": 15,
+       "y": 15,
+       "direction": "down"
+      },
+      {
+       "x": 15,
+       "y": 14,
+       "direction": "down"
+      },
+      {
+       "x": 15,
+       "y": 13,
+       "direction": "down"
+      },
+      {
+       "x": 16,
+       "y": 13,
+       "direction": "left"
+      },
+      {
+       "x": 17,
+       "y": 13,
+       "direction": "left"
+      },
+      {
+       "x": 18,
+       "y": 13,
+       "direction": "left"
+      },
+      {
+       "x": 19,
+       "y": 13,
+       "direction": "left"
+      },
+      {
+       "x": 19,
+       "y": 12,
+       "direction": "down"
+      },
+      {
+       "x": 20,
+       "y": 12,
+       "direction": "left"
+      },
+      {
+       "x": 21,
+       "y": 12,
+       "direction": "left"
+      },
+      {
+       "x": 22,
+       "y": 12,
+       "direction": "left"
+      },
+      {
+       "x": 23,
+       "y": 12,
+       "direction": "left"
+      },
+      {
+       "x": 23,
+       "y": 11,
+       "direction": "down"
+      },
+      {
+       "x": 23,
+       "y": 10,
+       "direction": "down"
+      },
+      {
+       "x": 24,
+       "y": 10,
+       "direction": "left"
+      },
+      {
+       "x": 24,
+       "y": 9,
+       "direction": "down"
+      },
+      {
+       "x": 23,
+       "y": 9,
+       "direction": "right"
+      },
+      {
+       "x": 22,
+       "y": 9,
+       "direction": "right"
+      },
+      {
+       "x": 21,
+       "y": 9,
+       "direction": "right"
+      },
+      {
+       "x": 20,
+       "y": 9,
+       "direction": "right"
+      },
+      {
+       "x": 19,
+       "y": 9,
+       "direction": "right"
+      },
+      {
+       "x": 18,
+       "y": 9,
+       "direction": "right"
+      },
+      {
+       "x": 17,
+       "y": 9,
+       "direction": "right"
+      },
+      {
+       "x": 16,
+       "y": 9,
+       "direction": "right"
+      },
+      {
+       "x": 16,
+       "y": 10,
+       "direction": "up"
+      },
+      {
+       "x": 16,
+       "y": 11,
+       "direction": "up"
+      },
+      {
+       "x": 17,
+       "y": 11,
+       "direction": "left"
+      },
+      {
+       "x": 18,
+       "y": 11,
+       "direction": "left"
+      },
+      {
+       "x": 19,
+       "y": 11,
+       "direction": "left"
+      },
+      {
+       "x": 20,
+       "y": 11,
+       "direction": "left"
+      }
+     ],
+     "currentMapId": "fs_observatory",
+     "x": 24,
+     "y": 21,
+     "mapOverrides": {},
+     "flags": {
+      "screen-effect:letterbox": true,
+      "camera:panTo": true,
+      "camera:follow": true,
+      "camera:return": true,
+      "screen-effect:clearLetterbox": true
+     },
+     "audio": {
+      "bgm": {
+       "resourceId": "cc0-bgm-rtp-hlc-004",
+       "loop": true
+      }
+     },
+     "pictures": {},
+     "actorEquipment": {
+      "actor_hero": {
+       "weapon": "equip_sword",
+       "shield": "equip_oak_shield",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+       "weapon": "equip_sword",
+       "shield": "equip_oak_shield",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+       "weapon": "equip_mage_staff",
+       "shield": "equip_oak_shield",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_samurai": {
+       "weapon": "equip_iron_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_ninja": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_monk": {
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_bard": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_druid": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_witch": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_valkyrie": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_paladin": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_red_mage": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_dark_knight": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_chronomancer": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_thief": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_beast_tamer": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_pirate": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_sorceress": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_elf_archer": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_hunter": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_brawler": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_martial_artist": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_general": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_prince": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_berserker": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_gunner": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_dancer": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_alchemist": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_summoner": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_squire": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_flower_girl": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_swordsman": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_scholar": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_miner": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_farmer": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_elder": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_grandma": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_gunslinger": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_butler": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_priest_monk": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_gypsy": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_sword_dancer": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_gambler": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_seraph": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_fairy": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_king": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_merchant": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_noble": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_princess": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_archmage": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_heavy_knight": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_mercenary": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_dragoon": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_villager": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_tribal": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_fortune_teller": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_sailor": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_monk_elder": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_noblewoman": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_nomad": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_nun": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_jester": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_girl_alchemist": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_ronin": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_shrine_maiden": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_desert_warrior": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_maid": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_hermit": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_old_warrior": {
+       "weapon": "equip_sword",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_dog": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_cat": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_rooster": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_sheep": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_cow": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_horse": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_tiger": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_lion": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_skiff": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_galleon": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_gunboat": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_balloon": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_drill": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_tank": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_airship": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_ufo": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_slime_pal": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_demon": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_ogre_kid": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_ghost_pal": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_skeleton_pal": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_zombie_pal": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_reaper": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_minotaur_pal": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_harpy_pal": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_gargoyle_pal": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_vampire": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_demon_knight": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_golem_pal": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_dragonewt": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_oni_warrior": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_dark_lord": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_siren": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_lamia": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_wraith_mage": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_succubus": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_mound": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_red_dragon_pal": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_flame_spirit": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_demon_general": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_treant": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_mushroom": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_kappa": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_kitsune": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_tanuki": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_golem_moss": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_sprite_ice": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_mandrake": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_mimic_pal": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_living_armor": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_lantern_ghost": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_doll": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_book_demon": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_scarecrow": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_clockwork": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_candle_imp": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_yeti": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_merfolk": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_cyclops": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_mothman": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_basilisk": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_djinn": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_chimera": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_dark_angel": {
+       "accessory": "equip_focus_charm"
+      },
+      "actor_fs_elena": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_fs_iris": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      }
+     },
+     "battleReports": [],
+     "actorRows": {
+      "actor_hero": "front",
+      "actor_fs_elena": "front"
+     },
+     "actorNames": {},
+     "actorCharacterResourceIds": {},
+     "classOverrides": {},
+     "actorParamBonuses": {},
+     "actorStateIds": {},
+     "playerFacing": "up",
+     "stepCount": 121,
+     "playTimeSeconds": 1074,
+     "rng": {
+      "seed": 2852564596,
+      "streams": {
+       "encounter": {
+        "seed": 5478320,
+        "state": 5478320
+       },
+       "battle": {
+        "seed": 2449206505,
+        "state": 2449206505
+       },
+       "movement": {
+        "seed": 4031626786,
+        "state": 4144356580
+       },
+       "fishing": {
+        "seed": 612093063,
+        "state": 612093063
+       },
+       "misc": {
+        "seed": 3245014447,
+        "state": 3245014447
+       }
+      }
+     }
+    }
+   }
+  }
+ ]
+}

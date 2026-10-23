@@ -120,7 +120,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
       getPlacementDirection: options.getPlacementDirection,
       getScene: options.getScene,
     });
-    case "wait": return waitDetail(options.waitModeEnabled);
+    case "wait": return waitDetail(options);
     case "to-title": return toTitleDetail(options);
     default: return assertNever(options.selectedCommand);
   }
@@ -861,16 +861,19 @@ function questsDetail(project: Project, session: PlaySession): StatusMenuDetail 
         attributes: { "data-quest-row": "summary" },
       },
       {
-        label: "진행",
+        // 라벨이 「진행」이면 바로 아래 단계 행들과 같은 낱말이 세 번 겹쳐 읽힌다(실측: 「진행 / 진행 중 (0/3) /
+        // 1. 진행 / 1. 대화 / 대기 중 …」). 이 행이 무엇인지 말하는 라벨을 쓴다.
+        label: "상태",
         value: `${questStateLabel(quest.state)} (${quest.completedSteps}/${quest.totalSteps})`,
         description: "완료한 단계 / 전체 단계",
         testId: `status-menu-quest-state-${quest.key}`,
         attributes: { "data-quest-row": "state" },
       },
       ...quest.steps.map((step) => ({
-        label: `${step.index + 1}. ${step.done ? "완료" : "진행"}`,
-        value: step.label,
-        description: step.done ? "완료됨" : "대기 중",
+        // step.label 이 이미 「N. 단계이름」이다 — 앞에 번호를 또 붙이고 상태를 라벨에 섞으면
+        // 「1. 진행 / 1. 대화 / 대기 중」 세 줄이 되어 단계를 읽을 수 없다. 한 행 = 번호+이름+상태.
+        label: step.label,
+        value: step.done ? "완료" : "대기 중",
         testId: `status-menu-quest-step-${quest.key}-${step.index}`,
         attributes: { "data-quest-row": "step" },
       })),
@@ -1036,7 +1039,8 @@ function relationshipsDetail(project: Project, session: PlaySession): StatusMenu
   };
 }
 
-function waitDetail(waitModeEnabled: boolean): StatusMenuDetail {
+function waitDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
+  const waitModeEnabled = options.waitModeEnabled;
   return {
     title: "전투 대기",
     entries: [{
@@ -1047,7 +1051,13 @@ function waitDetail(waitModeEnabled: boolean): StatusMenuDetail {
       description: waitModeEnabled
         ? "명령 입력 중 시간이 멈춥니다."
         : "명령 입력 중에도 시간이 흐릅니다.",
+      testId: "status-menu-wait-toggle",
+      // 값이 정보 행뿐이면 Enter 가 늘 「선택할 수 없습니다」로 거부되고, 값을 바꾸는 곳이
+      // 상위 목록뿐이라 화면 안에서 아무것도 못 한다(실측: scarloxy-demo · fallen-star).
+      // 이 화면의 행이 곧 스위치다 — 확정하면 값이 뒤집히고 화면이 그 값으로 다시 그려진다.
+      ...(options.onToggleWait ? { onActivate: options.onToggleWait } : {}),
     }],
+    ...(options.onToggleWait ? {} : { hint: "이 화면에서는 값을 바꿀 수 없습니다." }),
   };
 }
 
