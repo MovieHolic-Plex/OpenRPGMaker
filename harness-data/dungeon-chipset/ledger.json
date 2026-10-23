@@ -293,6 +293,18 @@
    "by": "delegated",
    "delegatedBy": "delegated by user to supervisor 2026-10-23",
    "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-panel-2.json"
+  },
+  {
+   "round": "gap-tower-r1",
+   "item": "gap.tower_stair",
+   "line": "*",
+   "letter": "A2",
+   "sha256": "73780a2fd54827a296d414ed9bdded089c8b7cce28cc70febfae53713b3583cc",
+   "note": "only eligible candidate",
+   "at": "2026-10-23T10:47:56",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-tower-stair-by-elimination.json"
   }
  ],
  "rejects": [],
