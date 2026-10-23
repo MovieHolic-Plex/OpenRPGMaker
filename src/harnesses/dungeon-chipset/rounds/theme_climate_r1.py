@@ -16,7 +16,7 @@ import traceback  # noqa: E402
 
 WAVE = 'theme_climate'
 THEMES = []
-for _name in ('theme_climate_desert', 'theme_climate_ice', 'theme_climate_swamp', 'theme_climate_forest'):
+for _name in ('theme_climate_desert', 'theme_climate_desert_props', 'theme_climate_ice', 'theme_climate_swamp', 'theme_climate_forest'):
     try:   # 한 테마 모듈이 고치는 중에 깨져도 나머지 테마는 그린다(빠진 항목은 validate 가 잡는다)
         THEMES.append(importlib.import_module(_name))
     except Exception:  # noqa: BLE001
