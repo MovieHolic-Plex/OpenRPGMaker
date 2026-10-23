@@ -4,7 +4,6 @@
      --mobile-ui-z : UI 확대 배율(참고용).
    무대 밖(.play-viewport 직속, 예: 상점)은 transform 이 없으므로 화면 px 를 그대로 쓴다.
    데스크톱에서는 속성이 없으니 이 파일의 어떤 규칙도 적용되지 않는다. */
-@layer runtime {
   .play-viewport[data-mobile-ui] {
     --mu-touch: calc(44px * var(--mobile-ui-k, 1));
     --mu-text: calc(14px * var(--mobile-ui-k, 1));
@@ -53,10 +52,16 @@
     margin-bottom: 20px;
   }
   .play-viewport[data-mobile-ui]:has(.runtime-shop-overlay) .touch-pad,
-  .play-viewport[data-mobile-ui]:has([data-testid="battle-scene"]) .touch-pad,
-  .play-viewport[data-mobile-ui]:has([data-testid="main-menu"]) .touch-pad {
+  .play-viewport[data-mobile-ui]:has([data-testid="battle-scene"]) .touch-pad {
     visibility: hidden !important;
     pointer-events: none !important;
+  }
+  /* 메뉴: 항목은 직접 탭하고, 닫기(B)만 엄지 자리에 남긴다. 방향·결정은 숨긴다. */
+  .play-viewport[data-mobile-ui]:has([data-testid="main-menu"]) .touch-pad :is(.touch-dpad, [data-testid="touch-action-a"]) {
+    display: none !important;
+  }
+  .play-viewport[data-mobile-ui]:has([data-testid="main-menu"]) .touch-pad .touch-actions [data-testid="touch-action-b"] {
+    margin-bottom: 0;
   }
 
   /* ── 제목 화면 ── */
@@ -132,4 +137,52 @@
     .runtime-shop-confirm, .runtime-shop-cancel, .runtime-shop-detail-open, .runtime-shop-tab, .runtime-shop-chip, .runtime-shop-menu-choice
   ) { min-height: 44px; min-width: 44px; touch-action: manipulation; }
   .play-viewport[data-mobile-ui] .runtime-shop-overlay .runtime-shop-item-row { min-height: 44px; touch-action: manipulation; }
+
+  /* ── 세로 화면: 무대가 390x219 로 작아진다. 안내는 눈에 띄는 알약으로, 메뉴 독은 한 줄 라벨로 ── */
+  .play-viewport[data-mobile-ui="portrait"][data-layout="portrait"]::after {
+    left: 16px;
+    right: 16px;
+    margin: 0 auto;
+    width: fit-content;
+    max-width: calc(100% - 32px);
+    box-sizing: border-box;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid #6c7a8c;
+    background: #1b2430;
+    color: #f2f5f8;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 22px;
+    top: calc(var(--play-stage-top) + var(--play-logical-height) * var(--play-scale) + 24px);
+  }
+  /* 세로 ESC 메뉴(픽셀 스킨): 줄 28px·라벨 12px, 독과 파티 창이 겹치지 않게 같이 넓힌다. */
+  .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"] {
+    --mu-row: calc(28px * var(--mobile-ui-k, 1));
+    --mu-dock-w: calc(76px * var(--mobile-ui-k, 1));
+    --px-dock-h: calc(var(--status-menu-command-count, 6) * var(--mu-row) + 8px);
+  }
+  .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-primary-dock {
+    width: var(--mu-dock-w);
+    gap: 0;
+    padding: 4px 0;
+  }
+  .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-command {
+    flex: 0 0 var(--mu-row);
+    min-height: var(--mu-row);
+    padding: 0 calc(4px * var(--mobile-ui-k, 1)) 0 calc(8px * var(--mobile-ui-k, 1));
+    font-size: calc(12px * var(--mobile-ui-k, 1));
+  }
+  .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-command-label {
+    white-space: nowrap;
+    font-size: calc(12px * var(--mobile-ui-k, 1));
+  }
+  .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-party-overview {
+    right: calc(var(--mu-dock-w) + 14px);
+  }
+  .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu .status-menu-command-icon { display: none; }
+
+/* 세로 화면: 무대가 낮아 명령 창 아래 보조 창(장소·시간·장)이 잘린다 — 돈만 남긴다. */
+.play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] :is(.status-menu-location, .status-menu-time, .status-menu-chapter) {
+  display: none;
 }

@@ -93,7 +93,7 @@ async function runState(browser, server, dev, d, state, log) {
     }
   }
   if (EVAL) {
-    await page.setViewportSize({ width: d.h, height: d.w }); await sleep(800);
+    await page.setViewportSize(arg("evalPortrait", "") ? { width: d.w, height: d.h } : { width: d.h, height: d.w }); await sleep(800);
     const r = await page.evaluate(new Function(`return (${EVAL})`)()).catch((e) => "ERR " + e.message);
     console.log(`EVAL ${dev} ${state}:`, JSON.stringify(r).slice(0, 2500));
   }
