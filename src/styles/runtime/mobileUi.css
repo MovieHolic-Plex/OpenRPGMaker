@@ -108,6 +108,10 @@
     bottom: calc(14px * var(--mobile-ui-k, 1));
   }
   .play-viewport[data-mobile-ui] .oprn-status-menu :is(.status-menu-heading, .status-menu-gold, .status-menu-time, .status-menu-location) { font-size: var(--mu-text-s); }
+  /* 상태 패널 보조 글자(9~10px)는 손가락 거리에선 읽히지 않는다 — 화면 12px 이상으로. */
+  .play-viewport[data-mobile-ui] .oprn-status-menu :is(.status-menu-actor-subline, .status-menu-overview-states, .status-menu-overview-vital-label, .status-menu-overview-value, .status-menu-message, .status-menu-controls) { font-size: var(--mu-text-s); }
+  /* 전체화면 토글: 보이는 크기는 그대로 두고 눌림 영역만 44px 로. */
+  .play-viewport[data-mobile-ui] > .play-fullscreen-toggle::after { content: ""; position: absolute; inset: -11px; }
   .play-viewport[data-mobile-ui] .oprn-status-menu .status-menu-overview-row { font-size: var(--mu-text-s); min-height: var(--mu-touch); }
 
   /* ── 전투 ── */
@@ -119,6 +123,14 @@
   }
   /* 전투 장면은 논리 무대(480×270)를 한 번 더 0.5625 로 줄인 854×480 이다 — 행 높이를 화면 44px 로 맞추려면
      k 를 그 배율로 한 번 더 나눈다. 가로 화면만(세로는 무대가 작아 목록이 스크롤로 간다). */
+  /* 세로 전투: 전체 장면이 390px 폭이라 44px 행은 불가능 — 글자 12px·행 32px 까지만 올리고, 가로 전환 안내가 항상 떠 있다. */
+  .play-viewport[data-mobile-ui="portrait"] .battle-scene[data-testid="battle-scene"][data-battle-layout][data-battle-ui-style][data-battle-skin-family][data-battle-motion] {
+    --battle-command-row-height: calc(32px * var(--mobile-ui-k, 1) / 0.5625);
+    --battle-hud-height: calc(4 * var(--battle-command-row-height) + 28px);
+  }
+  .play-viewport[data-mobile-ui="portrait"] .battle-scene[data-testid="battle-scene"][data-battle-layout][data-battle-ui-style][data-battle-skin-family][data-battle-motion] .battle-command :is(.battle-command-text, strong, small) { font-size: calc(12px * var(--mobile-ui-k, 1) / 0.5625); }
+  .play-viewport[data-mobile-ui="portrait"] .battle-scene[data-testid="battle-scene"][data-battle-layout][data-battle-ui-style] .battle-command :is(.battle-command-text, strong),
+  .play-viewport[data-mobile-ui="portrait"] .battle-scene[data-testid="battle-scene"][data-battle-layout][data-battle-ui-style] .battle-command { font-size: calc(12px * var(--mobile-ui-k, 1) / 0.5625); }
   .play-viewport[data-mobile-ui="landscape"] .battle-scene[data-testid="battle-scene"][data-battle-layout][data-battle-ui-style][data-battle-skin-family][data-battle-motion] {
     --battle-command-row-height: calc(44px * var(--mobile-ui-k, 1) / 0.5625);
     --battle-hud-height: calc(4 * var(--battle-command-row-height) + 28px);
@@ -184,9 +196,9 @@
   .play-viewport[data-mobile-ui="landscape"] .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] :is(.status-menu-location, .status-menu-time, .status-menu-chapter) {
     display: none;
   }
-  /* 세로 ESC 메뉴(픽셀 스킨): 줄 28px·라벨 12px, 독과 파티 창이 겹치지 않게 같이 넓힌다. */
+  /* 세로 ESC 메뉴(픽셀 스킨): 줄 33px·라벨 13px, 독과 파티 창이 겹치지 않게 같이 넓힌다. */
   .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"] {
-    --mu-row: calc(28px * var(--mobile-ui-k, 1));
+    --mu-row: calc(33px * var(--mobile-ui-k, 1));
     --mu-dock-w: calc(76px * var(--mobile-ui-k, 1));
     --px-dock-h: calc(var(--status-menu-command-count, 6) * var(--mu-row) + 8px);
   }
@@ -199,11 +211,11 @@
     flex: 0 0 var(--mu-row);
     min-height: var(--mu-row);
     padding: 0 calc(4px * var(--mobile-ui-k, 1)) 0 calc(8px * var(--mobile-ui-k, 1));
-    font-size: calc(12px * var(--mobile-ui-k, 1));
+    font-size: calc(13px * var(--mobile-ui-k, 1));
   }
   .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-command-label {
     white-space: nowrap;
-    font-size: calc(12px * var(--mobile-ui-k, 1));
+    font-size: calc(13px * var(--mobile-ui-k, 1));
   }
   .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-party-overview {
     right: calc(var(--mu-dock-w) + 14px);
