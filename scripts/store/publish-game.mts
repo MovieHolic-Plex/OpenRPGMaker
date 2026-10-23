@@ -11,12 +11,8 @@
 import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { FLAGSHIP_DEMO_IDS, createFlagshipDemoProject, type FlagshipDemoId } from "@/project/flagship";
-import { deserialize } from "@/project/io";
-import { buildStoreGameFiles, changelogFromChanges, projectChangeSummary, storeArtPath } from "@/project/storeGameRelease";
+import type { FlagshipDemoId } from "@/project/flagship";
 import { publishStoreGame, type StoreGameMeta, type StoreGameMine, type StoreGameTransport } from "@/assetStore/gamePublish";
-import { BUILTIN_GAMES } from "@/start/home/builtinGames";
-import { setInstalledBgmFiles } from "@/assets/installedBgm";
 import { PublishError, closeSession, openSession, requireTargetBase, type Session } from "./storePublish.mts";
 
 const root = resolve(import.meta.dirname, "..", "..");
@@ -106,6 +102,13 @@ if (rollback) {
     out({ ok: true, target, action: "rollback", slug, ...(result as object) });
   } finally { await closeSession(session); }
 }
+
+// 무거운 모듈(데모 빌더·내보내기)은 되돌리기에는 필요 없다 — 여기서부터 읽는다.
+const { FLAGSHIP_DEMO_IDS, createFlagshipDemoProject } = await import("@/project/flagship");
+const { deserialize } = await import("@/project/io");
+const { buildStoreGameFiles, changelogFromChanges, projectChangeSummary, storeArtPath } = await import("@/project/storeGameRelease");
+const { BUILTIN_GAMES } = await import("@/start/home/builtinGames");
+const { setInstalledBgmFiles } = await import("@/assets/installedBgm");
 
 const demoArg = arg("--demo") ?? "";
 const demoId = (ALIASES[demoArg] ?? demoArg) as FlagshipDemoId;
