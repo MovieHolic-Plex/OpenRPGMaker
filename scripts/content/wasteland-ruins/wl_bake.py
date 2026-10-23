@@ -58,7 +58,7 @@ def cell_pcs(p, a):
     return out
 
 
-SKIP = {'dirt-a', 'dirt-b45', 'dirt-b64', 'dirt-c64', 'dirt-d64', 'asphalt-b', 'asphalt-c', 'track', 'slab-edge', 'slab-break'}          # 키트에서 뺀 조각(감독 결정) — 표본 바탕으로만 남고 굽지 않는다(번호도 새로 잡지 않는다)
+SKIP = {'dirt-a', 'dirt-b45', 'dirt-b64', 'dirt-c64', 'dirt-d64', 'asphalt-b', 'asphalt-c', 'track', 'slab-edge', 'slab-break'} | {'asphalt-in-' + '-'.join(c) for n in range(1, 5) for c in __import__('itertools').combinations(('ne', 'nw', 'se', 'sw'), n)}  # r54 실패: 안쪽 귀 15조각 전부 뺌(감독 지시 「귀 없는 편이 낫다」)          # 키트에서 뺀 조각(감독 결정) — 표본 바탕으로만 남고 굽지 않는다(번호도 새로 잡지 않는다)
 
 
 def adopt(dev):

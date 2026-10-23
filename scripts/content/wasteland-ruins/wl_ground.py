@@ -1129,53 +1129,56 @@ for _v, _l in enumerate('ab'):
 CORNERS = ('ne', 'nw', 'se', 'sw')
 
 
+# r54: 귀 한 입은 계단 꼴 사분 곡선(단마다 2화소 이상, 단 길이 고르지 않음) — 45° 1화소 사선·네모 홈 없음. 서쪽 귀는 동쪽 귀의 정확한 거울.
+#      북쪽 귀(흙이 위): 아래 길 화소가 깨진 밝은 면(팔의 북쪽 테와 같은 7b7270·8d8482). 남쪽 귀(흙이 아래): 팔의 남쪽 턱과 같은 dirt 1 턱 + 가로 단 밑만 dirt 0.
+#      속은 가운데 흙(dirt 3 주, dirt 2·5 덩이). 길 위 외톨이 흙 알 없음, 부스러기는 칸 끝 줄·끝 칸에 두지 않는다.
+BITE_PROFILE = {'n': (3, 3, 3, 2, 2, 1, 1), 's': (3, 3, 2, 2, 2, 1)}   # 귀 칸 줄(귀 쪽 열부터)의 흙 높이
+
+
 def _bite(cn):
-    """cn 귀의 흙 한 입 화소 집합(반지름 3~5, 극좌표 흔들림 — 반듯한 사분원 아님) + (sx, sy, 귀 점, 씨앗)."""
+    """cn 귀의 흙 한 입 화소 집합 + (sx, sy, 귀 점 x, 귀 점 y, 씨앗). 동쪽 귀를 그리고 서쪽 귀는 x 거울."""
     sx = 1 if 'e' in cn else -1; sy = -1 if cn[0] == 'n' else 1
     px0 = 16.0 if sx > 0 else 0.0; py0 = 0.0 if sy < 0 else 16.0
-    seed = {'ne': 1, 'nw': 2, 'se': 3, 'sw': 4}[cn]
+    seed = {'ne': 1, 'nw': 1, 'se': 3, 'sw': 3}[cn]            # 거울 짝은 같은 씨앗 — 화소까지 거울
     soil = set()
-    for y in range(16):
-        for x in range(16):
-            dx, dy = x + 0.5 - px0, y + 0.5 - py0
-            th = math.atan2(abs(dy), abs(dx))
-            R = 4.3 + 0.9 * math.sin(2 * th * 2 + seed) + 0.5 * math.sin(5 * th + seed * 1.7) + (h2(x // 2, y // 2, 1941 + seed) % 3 - 1) * 0.3
-            if dx * dx + dy * dy < R * R: soil.add((x, y))
+    for d, hgt in enumerate(BITE_PROFILE[cn[0]]):
+        x = 15 - d if sx > 0 else d
+        for k in range(hgt):
+            y = k if sy < 0 else 15 - k
+            soil.add((x, y))
     return soil, sx, sy, px0, py0, seed
 
 
 def _inner_corner(cns):
-    """귀 덧그림(r52 낱 귀 · r53 묶음): cns 귀마다 흙 한 입(_bite)을 합치고 둘레를 처리한다 — 흙이 위(북)에 있으면 아래 길 화소가 깨진 밝은 면,
-    흙이 아래(남)에 있으면 위 길 화소가 마른 흙빛 턱(dirt 1)·그 밑 흙 그늘, 옆은 군데군데 밝은 조각. 귀마다 흙 쪽에 아스팔트 부스러기 둘, 길 쪽에 흙 알 하나. 그 밖은 투명.
-    묶음은 낱 귀와 같은 함수로 그린다(화소마다 가장 가까운 귀의 씨앗·방향) — 낱 귀 하나면 r52 그림과 화소까지 같다."""
+    """귀 덧그림(r54): cns 귀마다 계단 꼴 흙 한 입(_bite)을 합치고 둘레를 처리한다. 동·서 짝은 화소까지 거울(거울 짝은 x 를 뒤집어 같은 해시를 쓴다)."""
     if isinstance(cns, str): cns = (cns,)
     B = {cn: _bite(cn) for cn in cns}
     def owner(x, y):
         return min(cns, key=lambda cn: (x + 0.5 - B[cn][3]) ** 2 + (y + 0.5 - B[cn][4]) ** 2)
+    def mx(x, cn): return x if B[cn][1] > 0 else 15 - x      # 거울 좌표(해시용)
     def draw(c):
         soil = set().union(*(B[cn][0] for cn in cns))
         S = lambda x, y: (x, y) in soil
-        for (x, y) in soil:
-            sy = B[owner(x, y)][2]
-            c.P(x, y, K('dirt', 2) if (sy < 0 and not S(x, y + 1) and y + 1 < 16) else dirt_col(dirt_base(x, y)))
+        for (x, y) in soil:                                   # 속: 가운데 흙(2×2 덩이 단위로 섞음)
+            cn = owner(x, y); u = mx(x, cn)
+            r = h2(u // 2, y // 2, 1951 + B[cn][5]) % 10
+            col = K('dirt', 2) if r < 2 else K('dirt', 5) if r < 4 else K('dirt', 3)
+            if B[cn][2] > 0 and not S(x, y - 1):              # 남쪽 귀 윗줄(턱 밑): 가로 단 가운데만 짙은 그늘, 나머지 dirt 2
+                col = K('dirt', 0) if (S(x - 1, y) and S(x + 1, y) and not S(x - 1, y - 1) and not S(x + 1, y - 1)) else K('dirt', 2)
+            c.P(x, y, col)
         for y in range(16):
             for x in range(16):
                 if S(x, y): continue
-                seed = B[owner(x, y)][5]
-                if S(x, y - 1) and h2(x, y, 1943 + seed) % 5: c.P(x, y, K('asph', 6) if h2(x, y, 1945) % 4 else K('conc', 4))   # 흙이 위: 깨진 면이 빛을 받는다
-                elif S(x, y + 1):                                   # 흙이 아래: 턱 + 흙 그늘
+                cn = owner(x, y); u = mx(x, cn)
+                if S(x, y - 1):                                # 흙이 위(북쪽 귀): 깨진 면이 빛을 받는다(넷 중 셋, 가끔 8d8482)
+                    if h2(u, y, 1953) % 4: c.P(x, y, K('conc', 4) if h2(u, y, 1955) % 5 == 0 else K('asph', 6))
+                elif S(x, y + 1):                              # 흙이 아래(남쪽 귀): 팔과 같은 마른 흙빛 턱
                     c.P(x, y, K('dirt', 1))
-                    c.P(x, y + 1, K('dirt', 2) if h2(x, y, 1947) % 3 else K('dirt', 0))
-                elif (S(x - 1, y) or S(x + 1, y)) and h2(x, y, 1949 + seed) % 3 == 0: c.P(x, y, TAR_HI)
-        for cn in cns:
-            own, sx, sy, px0, py0, seed = B[cn]
-            ins = sorted(own, key=lambda p: (abs(p[0] + 0.5 - px0) + abs(p[1] + 0.5 - py0)))
-            for k, (x, y) in enumerate(ins[:: max(1, len(ins) // 3)][:2]):   # 흙 위 아스팔트 부스러기
-                c.P(x, y, TAR_HI)
-            ex = [(x, y) for (x, y) in own if not S(x - sx, y) or not S(x, y - sy)]
-            if ex:
-                x, y = ex[len(ex) // 2]; q = (x - 2 * sx, y - 2 * sy)
-                if 0 <= q[0] < 16 and 0 <= q[1] < 16 and not S(*q): c.P(*q, K('dirt', 1))       # 길 쪽에 튄 흙 알
+                elif (S(x - 1, y) or S(x + 1, y)) and h2(u, y, 1957) % 2 == 0: c.P(x, y, TAR_HI)     # 단 옆면: 밝은 깨진 조각(드문드문)
+        for cn in cns:                                        # 흙 위 아스팔트 부스러기 하나(칸 끝 줄·끝 칸 피함)
+            own, sx, sy = B[cn][0], B[cn][1], B[cn][2]
+            cand = sorted(p for p in own if 1 <= p[0] <= 14 and 1 <= p[1] <= 14 and S(p[0] - sx, p[1]) and S(p[0], p[1] + sy))
+            if cand: c.P(*cand[len(cand) // 2], TAR_HI)
     return draw
 
 
@@ -1237,9 +1240,34 @@ def combo_layout(cs):
     return [''.join(r) for r in g]
 
 
+def combo_layout2(cs):
+    """9×9 실제 길 판(r54): 가운데 칸 (4,4) 에 귀 묶음 cs 가 생기게 1칸 폭 팔을 놓고, cs 에 없는 귀 쪽으로 닿는 팔은 그 귀 쪽으로 2칸 폭으로 넓힌다
+    (1칸 폭 팔만 흙 위에 떠 있으면 판정자가 그림이 얇다고 봤다). 귀가 생기려면 그 귀의 두 팔은 가운데에서 1칸 폭이어야 한다 — 十(귀 넷)은 팔이 다 1칸 폭이다."""
+    g = [['.'] * 9 for _ in range(9)]
+    D = {'n': (0, -1), 's': (0, 1), 'e': (1, 0), 'w': (-1, 0)}
+    arms = {d for cn in cs for d in cn}
+    g[4][4] = '#'
+    for d in arms:
+        dx, dy = D[d]
+        for k in range(1, 4): g[4 + dy * k][4 + dx * k] = '#'
+    for cn in CORNERS:
+        if cn in cs: continue
+        v, h = cn[0], cn[1]
+        hx = D[h][0]; vy = D[v][1]
+        if h in arms:
+            for k in range(0, 4): g[4 + vy][4 + hx * k] = '#'
+        if v in arms:
+            for k in range(0, 4): g[4 + vy * k][4 + hx] = '#'
+        if h in arms and v in arms: g[4 + vy][4 + hx] = '#'
+    lay = [''.join(r) for r in g]
+    got = [d[2] for d in corner_board(lay) if d[:2] == (4, 4)]
+    assert got == ['asphalt-in-' + '-'.join(cs)], (cs, got, lay)
+    return lay
+
+
 def combo_sample(cs):
     def mk(_=0):
-        lay = combo_layout(cs)
+        lay = combo_layout2(cs)
         return ap_board(lay, tuple(corner_board(lay)))
     return mk
 
