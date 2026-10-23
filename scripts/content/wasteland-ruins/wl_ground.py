@@ -1126,52 +1126,73 @@ for _v, _l in enumerate('ab'):
 
 # ------------------------------------------------------------------ 안쪽 모서리 덧그림(r52): asphalt-in-ne/nw/se/sw — 조합기가 길 칸의 두 이웃(예: 북·동)이 길인데
 # 그 사이 대각(북동)이 흙일 때 그 칸 위층에 얹는다. 4방 마스크가 못 그리는 T·十·굽이 자리의 오목한 귀를 부드럽게 깨진 흙 한 입으로 메운다.
-def _inner_corner(cn):
-    """칸의 cn 귀에 흙 한 입(반지름 3~5, 극좌표 흔들림 — 반듯한 사분원 아님) + 둘레 처리: 흙이 위(북)에 있으면 아래 길 화소가 깨진 밝은 면,
-    흙이 아래(남)에 있으면 위 길 화소가 마른 흙빛 턱(dirt 1)·그 밑 흙 그늘, 옆은 군데군데 밝은 조각. 흙 쪽에 아스팔트 부스러기 둘, 길 쪽에 흙 알 하나. 그 밖은 투명."""
+CORNERS = ('ne', 'nw', 'se', 'sw')
+
+
+def _bite(cn):
+    """cn 귀의 흙 한 입 화소 집합(반지름 3~5, 극좌표 흔들림 — 반듯한 사분원 아님) + (sx, sy, 귀 점, 씨앗)."""
     sx = 1 if 'e' in cn else -1; sy = -1 if cn[0] == 'n' else 1
     px0 = 16.0 if sx > 0 else 0.0; py0 = 0.0 if sy < 0 else 16.0
     seed = {'ne': 1, 'nw': 2, 'se': 3, 'sw': 4}[cn]
+    soil = set()
+    for y in range(16):
+        for x in range(16):
+            dx, dy = x + 0.5 - px0, y + 0.5 - py0
+            th = math.atan2(abs(dy), abs(dx))
+            R = 4.3 + 0.9 * math.sin(2 * th * 2 + seed) + 0.5 * math.sin(5 * th + seed * 1.7) + (h2(x // 2, y // 2, 1941 + seed) % 3 - 1) * 0.3
+            if dx * dx + dy * dy < R * R: soil.add((x, y))
+    return soil, sx, sy, px0, py0, seed
+
+
+def _inner_corner(cns):
+    """귀 덧그림(r52 낱 귀 · r53 묶음): cns 귀마다 흙 한 입(_bite)을 합치고 둘레를 처리한다 — 흙이 위(북)에 있으면 아래 길 화소가 깨진 밝은 면,
+    흙이 아래(남)에 있으면 위 길 화소가 마른 흙빛 턱(dirt 1)·그 밑 흙 그늘, 옆은 군데군데 밝은 조각. 귀마다 흙 쪽에 아스팔트 부스러기 둘, 길 쪽에 흙 알 하나. 그 밖은 투명.
+    묶음은 낱 귀와 같은 함수로 그린다(화소마다 가장 가까운 귀의 씨앗·방향) — 낱 귀 하나면 r52 그림과 화소까지 같다."""
+    if isinstance(cns, str): cns = (cns,)
+    B = {cn: _bite(cn) for cn in cns}
+    def owner(x, y):
+        return min(cns, key=lambda cn: (x + 0.5 - B[cn][3]) ** 2 + (y + 0.5 - B[cn][4]) ** 2)
     def draw(c):
-        soil = set()
-        for y in range(16):
-            for x in range(16):
-                dx, dy = x + 0.5 - px0, y + 0.5 - py0
-                th = math.atan2(abs(dy), abs(dx))
-                R = 4.3 + 0.9 * math.sin(2 * th * 2 + seed) + 0.5 * math.sin(5 * th + seed * 1.7) + (h2(x // 2, y // 2, 1941 + seed) % 3 - 1) * 0.3
-                if dx * dx + dy * dy < R * R: soil.add((x, y))
+        soil = set().union(*(B[cn][0] for cn in cns))
         S = lambda x, y: (x, y) in soil
         for (x, y) in soil:
+            sy = B[owner(x, y)][2]
             c.P(x, y, K('dirt', 2) if (sy < 0 and not S(x, y + 1) and y + 1 < 16) else dirt_col(dirt_base(x, y)))
         for y in range(16):
             for x in range(16):
                 if S(x, y): continue
+                seed = B[owner(x, y)][5]
                 if S(x, y - 1) and h2(x, y, 1943 + seed) % 5: c.P(x, y, K('asph', 6) if h2(x, y, 1945) % 4 else K('conc', 4))   # 흙이 위: 깨진 면이 빛을 받는다
                 elif S(x, y + 1):                                   # 흙이 아래: 턱 + 흙 그늘
                     c.P(x, y, K('dirt', 1))
                     c.P(x, y + 1, K('dirt', 2) if h2(x, y, 1947) % 3 else K('dirt', 0))
                 elif (S(x - 1, y) or S(x + 1, y)) and h2(x, y, 1949 + seed) % 3 == 0: c.P(x, y, TAR_HI)
-        ins = sorted(soil, key=lambda p: (abs(p[0] + 0.5 - px0) + abs(p[1] + 0.5 - py0)))
-        for k, (x, y) in enumerate(ins[:: max(1, len(ins) // 3)][:2]):   # 흙 위 아스팔트 부스러기
-            c.P(x, y, TAR_HI)
-        ex = [(x, y) for (x, y) in soil if not S(x - sx, y) or not S(x, y - sy)]
-        if ex:
-            x, y = ex[len(ex) // 2]; q = (x - 2 * sx, y - 2 * sy)
-            if 0 <= q[0] < 16 and 0 <= q[1] < 16 and not S(*q): c.P(*q, K('dirt', 1))       # 길 쪽에 튄 흙 알
+        for cn in cns:
+            own, sx, sy, px0, py0, seed = B[cn]
+            ins = sorted(own, key=lambda p: (abs(p[0] + 0.5 - px0) + abs(p[1] + 0.5 - py0)))
+            for k, (x, y) in enumerate(ins[:: max(1, len(ins) // 3)][:2]):   # 흙 위 아스팔트 부스러기
+                c.P(x, y, TAR_HI)
+            ex = [(x, y) for (x, y) in own if not S(x - sx, y) or not S(x, y - sy)]
+            if ex:
+                x, y = ex[len(ex) // 2]; q = (x - 2 * sx, y - 2 * sy)
+                if 0 <= q[0] < 16 and 0 <= q[1] < 16 and not S(*q): c.P(*q, K('dirt', 1))       # 길 쪽에 튄 흙 알
     return draw
 
 
 def corner_board(lay):
-    """조합기 규칙 그대로 귀 덧그림 자리를 고른다(첫 맞는 귀 하나: ne → nw → se → sw). 판 밖은 흙으로 본다."""
+    """조합기 규칙 그대로 귀 덧그림 자리를 고른다(ae6666e440): 한 칸에 귀가 둘 이상이면 asphalt-in-ne-nw 처럼 ne·nw·se·sw 순으로 이은 묶음 조각. 판 밖은 흙으로 본다."""
     H, Wd = len(lay), len(lay[0])
     on = lambda x, y: 0 <= x < Wd and 0 <= y < H and lay[y][x] == '#'
     out = []
     for y in range(H):
         for x in range(Wd):
             if not on(x, y): continue
-            t = 'ne' if on(x, y - 1) and on(x + 1, y) and not on(x + 1, y - 1) else 'nw' if on(x, y - 1) and on(x - 1, y) and not on(x - 1, y - 1) \
-                else 'se' if on(x, y + 1) and on(x + 1, y) and not on(x + 1, y + 1) else 'sw' if on(x, y + 1) and on(x - 1, y) and not on(x - 1, y + 1) else None
-            if t: out.append((x, y, 'asphalt-in-' + t))
+            has = {'ne': on(x, y - 1) and on(x + 1, y) and not on(x + 1, y - 1), 'nw': on(x, y - 1) and on(x - 1, y) and not on(x - 1, y - 1),
+                   'se': on(x, y + 1) and on(x + 1, y) and not on(x + 1, y + 1), 'sw': on(x, y + 1) and on(x - 1, y) and not on(x - 1, y + 1)}
+            names = [k for k in CORNERS if has[k]]
+            if not names: continue
+            pid = 'asphalt-in-' + '-'.join(names)
+            out.append((x, y, pid if pid in PIECES else 'asphalt-in-' + names[0]))
     return out
 
 
@@ -1195,6 +1216,40 @@ for _cn in ('ne', 'nw', 'se', 'sw'):
           en=f'a soft chipped bite of dirt in the {"north" if _cn[0] == "n" else "south"}-{"east" if "e" in _cn else "west"} corner of an old asphalt road tile, rounding off the inside corner where two roads meet: an irregular quarter-blob of dirt about 4 px across with a broken lighter asphalt edge (or a dry dark ledge on its south side), a couple of loose asphalt crumbs on the dirt and a dirt fleck on the road; transparent elsewhere, shown on a bend of road',
           group='ground', tags=['아스팔트', '모서리', '덧그림'], desc='아스팔트 안쪽 귀 덧그림 — 조합기가 두 이웃이 길이고 그 사이 대각이 흙인 길 칸 위층에 얹는다(T·十·굽이의 오목한 귀).',
           sample=corner_sample(_cn))(_inner_corner(_cn))
+
+import itertools as _it
+CORNER_COMBOS = [cs for n in (2, 3, 4) for cs in _it.combinations(CORNERS, n)]
+
+
+def combo_layout(cs):
+    """묶음 cs 가 가운데 칸 (3,3) 에서만 생기는 실제 길 판(7×7, 1칸 폭 팔 + 채운 대각): 귀 cs 의 두 팔은 길, 그 대각은 흙, 다른 대각은 길로 채운다.
+    둘(같은 쪽) = T 줄기, 넷 = 十 교차, 대각 맞은편 둘 = 엇갈린 판."""
+    arms = {d for cn in cs for d in cn}                     # 'n','e','s','w'
+    g = [['.'] * 7 for _ in range(7)]
+    g[3][3] = '#'
+    for d, (dx, dy) in (('n', (0, -1)), ('s', (0, 1)), ('e', (1, 0)), ('w', (-1, 0))):
+        if d in arms:
+            for k in range(1, 3): g[3 + dy * k][3 + dx * k] = '#'
+    for cn in CORNERS:
+        if cn in cs or not (cn[0] in arms and cn[1] in arms): continue
+        dx = 1 if cn[1] == 'e' else -1; dy = -1 if cn[0] == 'n' else 1
+        g[3 + dy][3 + dx] = '#'
+    return [''.join(r) for r in g]
+
+
+def combo_sample(cs):
+    def mk(_=0):
+        lay = combo_layout(cs)
+        return ap_board(lay, tuple(corner_board(lay)))
+    return mk
+
+
+for _cs in CORNER_COMBOS:
+    _nm = '-'.join(_cs)
+    piece('asphalt-in-' + _nm, '아스팔트 안쪽 귀 ' + _nm.upper(), 1, 1, FLAT,
+          en='soft chipped bites of dirt in the ' + ', '.join({'ne': 'north-east', 'nw': 'north-west', 'se': 'south-east', 'sw': 'south-west'}[c] for c in _cs) + ' corners of one old asphalt road tile, rounding off the inside corners where roads meet at a junction: irregular quarter-blobs of dirt about 4 px across with broken lighter asphalt edges (or dry dark ledges on their south sides), loose asphalt crumbs on the dirt and dirt flecks on the road; transparent elsewhere, shown on a real T junction or crossing',
+          group='ground', tags=['아스팔트', '모서리', '덧그림'], desc='아스팔트 안쪽 귀 묶음 덧그림 — 한 길 칸에 오목한 귀가 둘 이상(T 줄기·十 가운데)일 때 조합기가 얹는다. 낱 귀와 같은 함수로 그린 합.',
+          sample=combo_sample(_cs))(_inner_corner(_cs))
 
 # asphalt-b/-c(패인 구멍·균열 낱칸)는 감독 결정으로 뺐다 — 속 변형은 asphalt 5·6번째 줄이 맡는다.
 

@@ -1,7 +1,7 @@
 {
 "version": 1,
 "tilesPerRow": 48,
-"count": 1745,
+"count": 1749,
 "cells": {
 "dirt-a/0.0": 1,
 "dirt-b/0.0": 2,
@@ -1746,6 +1746,10 @@
 "asphalt-in-ne/0.0": 1741,
 "asphalt-in-nw/0.0": 1742,
 "asphalt-in-se/0.0": 1743,
-"asphalt-in-sw/0.0": 1744
+"asphalt-in-sw/0.0": 1744,
+"asphalt-in-ne-sw/0.0": 1745,
+"asphalt-in-nw-se/0.0": 1746,
+"asphalt-in-ne-nw-se/0.0": 1747,
+"asphalt-in-nw-se-sw/0.0": 1748
 }
 }

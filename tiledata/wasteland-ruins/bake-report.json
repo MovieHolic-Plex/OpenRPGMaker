@@ -3,13 +3,13 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 1745,
-  "kits_checked": 58,
-  "groups_checked": 29,
+  "tiles_checked": 1749,
+  "kits_checked": 62,
+  "groups_checked": 30,
   "autotiles_checked": 1
  },
  "reassembly": {
-  "kits": 58,
+  "kits": 62,
   "mismatched": 0,
   "ids": []
  },
@@ -17,18 +17,18 @@
   "cells_off_palette": 0
  },
  "tiles": {
-  "count": 1745,
+  "count": 1749,
   "rows": 37,
-  "kits": 58,
-  "groups": 29,
+  "kits": 62,
+  "groups": 30,
   "autotiles": 1,
   "animationStrips": 1
  },
  "animation_noncontiguous": [],
  "adopted": {
-  "pieces": 59,
+  "pieces": 63,
   "by_group": {
-   "ground": 23,
+   "ground": 27,
    "ruins": 6,
    "shacks": 6,
    "defense": 3,
@@ -47,7 +47,11 @@
   "asphalt-in-ne",
   "asphalt-in-nw",
   "asphalt-in-se",
-  "asphalt-in-sw"
+  "asphalt-in-sw",
+  "asphalt-in-ne-sw",
+  "asphalt-in-nw-se",
+  "asphalt-in-ne-nw-se",
+  "asphalt-in-nw-se-sw"
  ],
  "mode": "dev",
  "rejected": [
@@ -75,6 +79,41 @@
    "id": "dirt-b45",
    "status": "skipped",
    "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt-in-ne-nw",
+   "status": "refer",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(refer)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "asphalt-in-ne-se",
+   "status": "refer",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(refer)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "asphalt-in-nw-sw",
+   "status": "fail",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(fail)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "asphalt-in-se-sw",
+   "status": "fail",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(fail)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "asphalt-in-ne-nw-sw",
+   "status": "fail",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(fail)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "asphalt-in-ne-se-sw",
+   "status": "refer",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(refer)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "asphalt-in-ne-nw-se-sw",
+   "status": "fail",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(fail)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
   },
   {
    "id": "track",
