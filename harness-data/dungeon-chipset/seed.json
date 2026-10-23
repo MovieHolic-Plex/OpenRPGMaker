@@ -54,7 +54,9 @@
   "deco": "뼈, 수정, 뿌리, 물웅덩이.",
   "props": "던전 기물 판(사용자 2026-10-08 「던전·무림에 어울리는 기물 충분히 — 최소 50개, 대형 5개까지」 중 던전 몫 27 = 일반 25 + 대형 2). 나무·쇠·뼈·금 기물은 줄 공통(common), 돌 기물은 줄마다.",
   "gap": "조수 던전 그림 부족분(2026-10-23, http://mdc-server:18301/assistant-dungeons-1.html 「그림 부족」 표): 방 사이를 채우는 바위(검은 허공 대신), 용암·물 가장자리 전이+움직임, 얼음 바닥·얼음 바위, 탑 조각, 버들항 화풍 문·레버, 고블린 야영 소품. 적대 검수(새 Opus 3명, 2명 이상 지적 = 큰 문제) 0건까지 고친 뒤 시트에 올린다.",
-  "theme_climate": "기후 테마 던전 부족분(2026-10-23, 감독 dungeon-themes): 피라미드(사암 바닥·앞면·천장 테두리·석관·오벨리스크·모래 함정·석상·금 더미), 얼음굴(고드름·얼음 수정·얼어붙은 전사·눈 더미), 늪(맹그로브 뿌리 아치·늘어진 이끼·연잎·도깨비불·가라앉은 석상·부서진 널길), 숲(거목·버섯 고리·이끼 바위·가시덤불·길돌). 모두 줄 공통(A1·A2). 버들항 기존 키트(desert-oasis·snowfield·swamp-stilt·deep-forest-path·bd-tree)와 다른 작업자 gap 판(얼음 바닥·얼음 바위·물가)을 먼저 쓰고 없는 것만 그린다. 블라인드 패널(Opus 3 + Argon 1, 2명 이상 = 큰 문제) 0건 → object-gate → 위임 pick."
+  "theme_climate": "기후 테마 던전 부족분(2026-10-23, 감독 dungeon-themes): 피라미드(사암 바닥·앞면·천장 테두리·석관·오벨리스크·모래 함정·석상·금 더미), 얼음굴(고드름·얼음 수정·얼어붙은 전사·눈 더미), 늪(맹그로브 뿌리 아치·늘어진 이끼·연잎·도깨비불·가라앉은 석상·부서진 널길), 숲(거목·버섯 고리·이끼 바위·가시덤불·길돌). 모두 줄 공통(A1·A2). 버들항 기존 키트(desert-oasis·snowfield·swamp-stilt·deep-forest-path·bd-tree)와 다른 작업자 gap 판(얼음 바닥·얼음 바위·물가)을 먼저 쓰고 없는 것만 그린다. 블라인드 패널(Opus 3 + Argon 1, 2명 이상 = 큰 문제) 0건 → object-gate → 위임 pick.",
+  "theme_arcane": "던전 테마 그림 부족분(2026-10-23, 감독 dungeon-themes): 「마법탑」(탑 바닥·책장·독서대·차원 이동진·받침 수정·촛대)과 「마계/이세계」(보라 검은 바닥·떠 있는 섬 허공 가장자리·타락한 수정·마왕 옥좌·가시 뼈 기둥·보라 불꽃 화로·봉인된 차원문). 이미 있는 버들항 마법사의 탑 키트(혼천의·증류로·지구본·태양계의·별자리 지도·달돌 표석·가로등)와 gap-tower-r1(둥근 탑 벽·계단·창)은 다시 그리지 않는다. 줄 공통(A1·A2), 블라인드 패널(새 Opus 3 + Argon 1, 2명 이상 같은 지적 = 큰 문제) 0건까지 고친 뒤 object-gate 를 받는다.",
+  "theme_earth": "땅 계열 던전 테마 넷(광산·지하묘지·성/요새·고대 유적)의 빠진 조각(2026-10-23 조수 던전 테마 부족분). 버들항 키트로 이미 있는 것(광차·광석 더미·성벽 흉벽 길·관·벽감·기둥·덩굴…)은 다시 그리지 않고 쓴다."
  },
  "lines": {
   "note": "던전은 컨셉이 여럿이라 화풍을 하나로 고정하지 않는다(사용자 2026-10-08: 「A B C 셋다 써도 그만일거같은데? … 버리긴 아깝군.」). style-r1 의 후보 글자 A·B·C 가 곧 줄이다. 이후 판은 줄마다 후보를 그린다(후보 키 <줄><번호>: A1 A2 B1 …). 줄의 화풍 기준 = style-r1 의 그 글자 조각(색·결 — 윤곽은 rules.outline 외곽선 규칙이 우선, 먹 윤곽 없음). 컨셉에 안 맞는 항목은 그 줄 skip 에 이유와 함께 적고 그리지 않는다. 고르기 단위는 (항목, 줄).",
@@ -2388,6 +2390,968 @@
    ],
    "wave": "theme_climate",
    "common": "테마 재료(사암·얼음·늪·숲)가 세 동굴 줄 어디에도 속하지 않는 그 테마 전용 그림 — 줄 공통 한 벌"
+  },
+  {
+   "id": "arcane.tower_floor",
+   "wave": "theme_arcane",
+   "title": "마법탑 바닥 오토타일 + 2×2 룬 상감",
+   "kind": "autotile",
+   "size": [
+    5,
+    2
+   ],
+   "layer": "lower",
+   "walk": "걸음",
+   "brief": "탑 안 바닥. 몸통 16×16 + 몸통 변형 둘(엔진 해시로 섞음), 벽·문턱과 만나는 변은 그늘 한두 줄. 같은 결 위에 놋쇠 고리 룬 상감 2×2(아래층 불투명) 하나. 그림 = 몸통 셋 + 가장자리 표본 셋 | 룬 상감.",
+   "accept": [
+    "넓게 깔아도 16px 반복이 도드라지지 않음",
+    "룬 상감이 바닥에 박힌 것으로 읽힘",
+    "둥근 탑 벽(gap-tower-r1)과 어울림"
+   ],
+   "common": "테마 기물 — 재질(나무·쇠·금·뼈·보라 검은 돌·빛)이 동굴 줄과 무관해 어느 던전 바닥에도 같은 그림을 쓴다",
+   "refs": [
+    "castle-catacombs:floor_castle",
+    "temple-ruins:mosaic_medallion_5x5"
+   ]
+  },
+  {
+   "id": "arcane.bookshelf",
+   "wave": "theme_arcane",
+   "title": "책장 2×2",
+   "kind": "object",
+   "size": [
+    2,
+    2
+   ],
+   "layer": "upper",
+   "walk": "아래 줄 막힘 · 위 줄 ★",
+   "brief": "윗면 3줄 + 앞면 두 칸(책등·두루마리·병).",
+   "accept": [
+    "윗면이 면으로 보임",
+    "책장으로 읽힘"
+   ],
+   "common": "테마 기물 — 재질(나무·쇠·금·뼈·보라 검은 돌·빛)이 동굴 줄과 무관해 어느 던전 바닥에도 같은 그림을 쓴다",
+   "footprint": [
+    2,
+    2
+   ],
+   "walk_grid": {
+    "기본": [
+     "★★",
+     "xx"
+    ]
+   },
+   "refs": [
+    "wizard-tower:orrery",
+    "wizard-tower:athanor"
+   ]
+  },
+  {
+   "id": "arcane.bookshelf_tall",
+   "wave": "theme_arcane",
+   "title": "높은 책장 2×3",
+   "kind": "object",
+   "size": [
+    2,
+    3
+   ],
+   "layer": "upper",
+   "walk": "아래 줄 막힘 · 위 두 줄 ★",
+   "brief": "2×2 책장에 칸 하나 더 + 윗면에 눕힌 책.",
+   "accept": [
+    "윗면이 면으로 보임",
+    "2×2 와 한 벌로 보임"
+   ],
+   "common": "테마 기물 — 재질(나무·쇠·금·뼈·보라 검은 돌·빛)이 동굴 줄과 무관해 어느 던전 바닥에도 같은 그림을 쓴다",
+   "footprint": [
+    2,
+    3
+   ],
+   "walk_grid": {
+    "기본": [
+     "★★",
+     "★★",
+     "xx"
+    ]
+   },
+   "refs": [
+    "wizard-tower:athanor"
+   ]
+  },
+  {
+   "id": "arcane.lectern",
+   "wave": "theme_arcane",
+   "title": "펼친 책 독서대 1×2",
+   "kind": "object",
+   "size": [
+    1,
+    2
+   ],
+   "layer": "upper",
+   "walk": "아래 칸 막힘 · 위 칸 ★",
+   "brief": "비스듬한 책상 위 펼친 책 + 기둥 + 받침.",
+   "accept": [
+    "책이 펼쳐진 것으로 읽힘"
+   ],
+   "common": "테마 기물 — 재질(나무·쇠·금·뼈·보라 검은 돌·빛)이 동굴 줄과 무관해 어느 던전 바닥에도 같은 그림을 쓴다",
+   "footprint": [
+    1,
+    2
+   ],
+   "walk_grid": {
+    "기본": [
+     "★",
+     "x"
+    ]
+   },
+   "refs": [
+    "wizard-tower:globe"
+   ]
+  },
+  {
+   "id": "arcane.teleport_circle",
+   "wave": "theme_arcane",
+   "title": "층 사이 차원 이동진 3×3(빛 4장면)",
+   "kind": "objects",
+   "size": [
+    12,
+    3
+   ],
+   "layer": "upper",
+   "walk": "걸음(사람 아래에 그림 — MZ 2층 바닥 장식, 이동 이벤트)",
+   "brief": "바닥에 박힌 원 — 룬 띠·팔각 별·가운데 빛. 장면 4(룬이 차례로 밝아지고 고리가 맥동). 그림 = 장면 1|2|3|4.",
+   "accept": [
+    "글자 없음",
+    "바닥 위 빛으로 읽힘",
+    "장면끼리 형태 같음"
+   ],
+   "common": "테마 기물 — 재질(나무·쇠·금·뼈·보라 검은 돌·빛)이 동굴 줄과 무관해 어느 던전 바닥에도 같은 그림을 쓴다",
+   "footprint": [
+    3,
+    3
+   ],
+   "frames": 4,
+   "walk_grid": {
+    "기본": [
+     "ooo",
+     "ooo",
+     "ooo"
+    ]
+   },
+   "refs": [
+    "temple-ruins:mosaic_medallion_5x5"
+   ]
+  },
+  {
+   "id": "arcane.crystal_pedestal",
+   "wave": "theme_arcane",
+   "title": "받침 위 수정 덩이 1×2(빛 3장면)",
+   "kind": "objects",
+   "size": [
+    3,
+    2
+   ],
+   "layer": "upper",
+   "walk": "아래 칸 막힘 · 위 칸 ★",
+   "brief": "돌·나무 받침 위 결정 셋. 장면마다 빛 단·빛 점.",
+   "accept": [
+    "결정 면이 셋 이상 읽힘",
+    "장면끼리 받침 같음"
+   ],
+   "common": "테마 기물 — 재질(나무·쇠·금·뼈·보라 검은 돌·빛)이 동굴 줄과 무관해 어느 던전 바닥에도 같은 그림을 쓴다",
+   "footprint": [
+    1,
+    2
+   ],
+   "frames": 3,
+   "walk_grid": {
+    "기본": [
+     "★",
+     "x"
+    ]
+   },
+   "refs": [
+    "wizard-tower:moon-obelisk",
+    "volcano-cave:fire_crystal"
+   ]
+  },
+  {
+   "id": "arcane.candelabra",
+   "wave": "theme_arcane",
+   "title": "촛대 1×2(불꽃 3장면)",
+   "kind": "objects",
+   "size": [
+    3,
+    2
+   ],
+   "layer": "upper",
+   "walk": "아래 칸 막힘 · 위 칸 ★",
+   "brief": "쇠 촛대 + 초 + 불꽃. 장면마다 불꽃만.",
+   "accept": [
+    "장면끼리 받침 같음",
+    "버들항 촛불과 같은 불빛"
+   ],
+   "common": "테마 기물 — 재질(나무·쇠·금·뼈·보라 검은 돌·빛)이 동굴 줄과 무관해 어느 던전 바닥에도 같은 그림을 쓴다",
+   "footprint": [
+    1,
+    2
+   ],
+   "frames": 3,
+   "walk_grid": {
+    "기본": [
+     "★",
+     "x"
+    ]
+   },
+   "refs": [
+    "aqueduct-sewer:candles",
+    "wizard-tower:lamppost"
+   ]
+  },
+  {
+   "id": "other.ground",
+   "wave": "theme_arcane",
+   "title": "마계 바닥 오토타일(보라 검은 갈라진 돌)",
+   "kind": "autotile",
+   "size": [
+    4,
+    1
+   ],
+   "layer": "lower",
+   "walk": "걸음",
+   "brief": "보라 검은 돌 판이 금으로 갈라지고 금 일부에 희미한 보라 빛 줄기. 몸통 + 변형 셋. 벽·문턱 쪽 가장자리는 그늘.",
+   "accept": [
+    "넓게 깔아도 16px 반복이 도드라지지 않음",
+    "마계로 읽힘(보통 동굴 바닥과 구별)"
+   ],
+   "common": "테마 기물 — 재질(나무·쇠·금·뼈·보라 검은 돌·빛)이 동굴 줄과 무관해 어느 던전 바닥에도 같은 그림을 쓴다",
+   "refs": [
+    "volcano-cave:altar"
+   ]
+  },
+  {
+   "id": "other.void_edge",
+   "wave": "theme_arcane",
+   "title": "허공 가장자리 · 떠 있는 섬(턱 오토타일 + 섬 밑 앞면 2단 + 허공)",
+   "kind": "autotile",
+   "size": [
+    6,
+    2
+   ],
+   "layer": "lower",
+   "walk": "바닥 칸 걸음 · 허공·섬 밑 막힘",
+   "brief": "빌더가 걷는 자리 밖을 허공으로 그릴 때. 바닥 칸 오토타일(허공 쪽 북·서·동 울퉁불퉁한 턱, 남 밝은 턱) + 바닥 남쪽 허공 칸에 섬 밑 바위 1단·2단(끝은 안으로 좁아짐) + 허공 몸통 셋. 떠 있는 발판도 같은 조각.",
+   "accept": [
+    "허공에 뜬 섬으로 읽힘(3/4: 남쪽만 밑면이 보임)",
+    "턱이 칸 격자를 따라 네모나게 꺾이지 않음",
+    "섬 밑 앞면 이음 없음"
+   ],
+   "common": "테마 기물 — 재질(나무·쇠·금·뼈·보라 검은 돌·빛)이 동굴 줄과 무관해 어느 던전 바닥에도 같은 그림을 쓴다",
+   "refs": [
+    "volcano-cave:bridge"
+   ]
+  },
+  {
+   "id": "other.crystal",
+   "wave": "theme_arcane",
+   "title": "타락한 수정 1×2",
+   "kind": "object",
+   "size": [
+    1,
+    2
+   ],
+   "layer": "upper",
+   "walk": "아래 칸 막힘 · 위 칸 ★",
+   "brief": "보라·붉은 빛 결정 + 바위 받침.",
+   "accept": [
+    "결정 면이 읽힘",
+    "마계 바닥 위에서 또렷"
+   ],
+   "common": "테마 기물 — 재질(나무·쇠·금·뼈·보라 검은 돌·빛)이 동굴 줄과 무관해 어느 던전 바닥에도 같은 그림을 쓴다",
+   "footprint": [
+    1,
+    2
+   ],
+   "walk_grid": {
+    "기본": [
+     "★",
+     "x"
+    ]
+   },
+   "refs": [
+    "volcano-cave:fire_crystal"
+   ]
+  },
+  {
+   "id": "other.crystal_big",
+   "wave": "theme_arcane",
+   "title": "타락한 수정 무리 2×2",
+   "kind": "object",
+   "size": [
+    2,
+    2
+   ],
+   "layer": "upper",
+   "walk": "아래 줄 막힘 · 위 줄 ★",
+   "brief": "결정 다섯 무리 + 넓은 바위 받침.",
+   "accept": [
+    "결정 면이 읽힘",
+    "1×2 와 한 벌"
+   ],
+   "common": "테마 기물 — 재질(나무·쇠·금·뼈·보라 검은 돌·빛)이 동굴 줄과 무관해 어느 던전 바닥에도 같은 그림을 쓴다",
+   "footprint": [
+    2,
+    2
+   ],
+   "walk_grid": {
+    "기본": [
+     "★★",
+     "xx"
+    ]
+   },
+   "refs": [
+    "volcano-cave:fire_crystal"
+   ]
+  },
+  {
+   "id": "other.throne",
+   "wave": "theme_arcane",
+   "title": "단 위 마왕 옥좌 3×3",
+   "kind": "object",
+   "size": [
+    3,
+    3
+   ],
+   "layer": "upper",
+   "walk": "위 줄 ★ · 아래 두 줄 막힘(보스 이벤트는 앞 칸)",
+   "brief": "돌 가시·뼈 뿔·보석 등받이, 해골 팔걸이, 두 층 단 + 깔개.",
+   "accept": [
+    "옥좌로 읽힘(소파 아님)",
+    "단이 3/4 로 읽힘",
+    "사람보다 큼"
+   ],
+   "common": "테마 기물 — 재질(나무·쇠·금·뼈·보라 검은 돌·빛)이 동굴 줄과 무관해 어느 던전 바닥에도 같은 그림을 쓴다",
+   "footprint": [
+    3,
+    3
+   ],
+   "walk_grid": {
+    "기본": [
+     "★★★",
+     "xxx",
+     "xxx"
+    ]
+   },
+   "refs": [
+    "volcano-cave:altar"
+   ]
+  },
+  {
+   "id": "other.bone_pillar",
+   "wave": "theme_arcane",
+   "title": "가시 뼈 기둥 1×2",
+   "kind": "object",
+   "size": [
+    1,
+    2
+   ],
+   "layer": "upper",
+   "walk": "아래 칸 막힘 · 위 칸 ★",
+   "brief": "등뼈 마디 기둥 + 뼈 가시 + 해골.",
+   "accept": [
+    "뼈 기둥으로 읽힘"
+   ],
+   "common": "테마 기물 — 재질(나무·쇠·금·뼈·보라 검은 돌·빛)이 동굴 줄과 무관해 어느 던전 바닥에도 같은 그림을 쓴다",
+   "footprint": [
+    1,
+    2
+   ],
+   "walk_grid": {
+    "기본": [
+     "★",
+     "x"
+    ]
+   },
+   "refs": [
+    "castle-catacombs:bone_heap"
+   ]
+  },
+  {
+   "id": "other.brazier",
+   "wave": "theme_arcane",
+   "title": "보라 불꽃 화로 1×2(3장면)",
+   "kind": "objects",
+   "size": [
+    3,
+    2
+   ],
+   "layer": "upper",
+   "walk": "아래 칸 막힘 · 위 칸 ★",
+   "brief": "쇠·돌 화로 + 보라 불꽃. 장면마다 불꽃만.",
+   "accept": [
+    "불꽃으로 읽힘(수정 아님)",
+    "장면끼리 받침 같음"
+   ],
+   "common": "테마 기물 — 재질(나무·쇠·금·뼈·보라 검은 돌·빛)이 동굴 줄과 무관해 어느 던전 바닥에도 같은 그림을 쓴다",
+   "footprint": [
+    1,
+    2
+   ],
+   "frames": 3,
+   "walk_grid": {
+    "기본": [
+     "★",
+     "x"
+    ]
+   },
+   "refs": [
+    "volcano-cave:brazier",
+    "castle-catacombs:brazier"
+   ]
+  },
+  {
+   "id": "other.portal",
+   "wave": "theme_arcane",
+   "title": "봉인된 차원문 3×3 닫힘·열림(열림 3장면)",
+   "kind": "objects",
+   "size": [
+    12,
+    3
+   ],
+   "layer": "upper",
+   "walk": "상태별 통행 격자(열림 = 아래 가운데 이동 이벤트)",
+   "brief": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+   "accept": [
+    "문이 사람보다 큼",
+    "두 상태 틀 같음",
+    "옆면 없음"
+   ],
+   "common": "테마 기물 — 재질(나무·쇠·금·뼈·보라 검은 돌·빛)이 동굴 줄과 무관해 어느 던전 바닥에도 같은 그림을 쓴다",
+   "footprint": [
+    3,
+    3
+   ],
+   "states": [
+    "닫힘",
+    "열림"
+   ],
+   "frames": 3,
+   "walk_grid": {
+    "닫힘": [
+     "★★★",
+     "xxx",
+     "xxx"
+    ],
+    "열림": [
+     "★★★",
+     "x★x",
+     "xox"
+    ]
+   },
+   "refs": [
+    "temple-ruins:door_wood"
+   ]
+  },
+  {
+   "id": "earth.rails",
+   "title": "광산 선로 이음 세트 15칸",
+   "kind": "objects",
+   "size": [
+    8,
+    2
+   ],
+   "footprint": [
+    1,
+    1
+   ],
+   "layer": "lower",
+   "walk": "걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+   "brief": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+   "accept": [
+    "어느 길 모양이든 이어 깔린다",
+    "침목·레일이 3/4 위에서 본 바닥 위 물건으로 읽힘",
+    "버들항 광차(mining-valley cart·cart-h)가 레일 위에 앉는다"
+   ],
+   "walk_grid": {
+    "기본": [
+     "o"
+    ]
+   },
+   "wave": "theme_earth",
+   "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
+  },
+  {
+   "id": "earth.timber_frame",
+   "title": "갱목 지지 틀 3×2(벽 걸이)",
+   "kind": "object",
+   "size": [
+    3,
+    2
+   ],
+   "footprint": [
+    3,
+    2
+   ],
+   "layer": "upper",
+   "walk": "벽 앞면 위(이미 막힘)",
+   "brief": "광산 벽 앞면(버들항 바다 동굴 face-cave 2h) 위에 거는 갱목 틀: 들보 + 두 기둥 + 가새. 기둥 사이 투명 — 벽 결이 보인다.",
+   "accept": [
+    "벽에 붙은 지지 틀로 읽힘",
+    "앞면 2단 높이에 맞음"
+   ],
+   "walk_grid": {
+    "기본": [
+     "xxx",
+     "xxx"
+    ]
+   },
+   "wave": "theme_earth",
+   "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
+  },
+  {
+   "id": "earth.timber_post",
+   "title": "갱목 기둥 1×2(바닥)",
+   "kind": "object",
+   "size": [
+    1,
+    2
+   ],
+   "footprint": [
+    1,
+    2
+   ],
+   "layer": "upper",
+   "walk": "아래 칸 막힘 · 위 칸 ★",
+   "brief": "방 한가운데 세우는 갱목 기둥 + 머리 받침목(윗면 보임).",
+   "accept": [
+    "받침목 윗면이 보임",
+    "사람 키보다 큼"
+   ],
+   "walk_grid": {
+    "기본": [
+     "★",
+     "x"
+    ]
+   },
+   "wave": "theme_earth",
+   "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
+  },
+  {
+   "id": "earth.ore_vein",
+   "title": "광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1",
+   "kind": "objects",
+   "size": [
+    6,
+    2
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "layer": "upper",
+   "walk": "벽 앞면 위(이미 막힘)",
+   "brief": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+   "accept": [
+    "벽 속 광맥으로 읽힘",
+    "금과 쇠가 구별됨"
+   ],
+   "walk_grid": {
+    "기본": [
+     "xx",
+     "xx"
+    ]
+   },
+   "wave": "theme_earth",
+   "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
+  },
+  {
+   "id": "earth.ossuary",
+   "title": "납골 벽(벽 앞면 덧그림) 3단·2단",
+   "kind": "objects",
+   "size": [
+    6,
+    3
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "layer": "upper",
+   "walk": "벽 앞면 위(이미 막힘)",
+   "brief": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+   "accept": [
+    "해골·뼈 벽으로 읽힘",
+    "앞면 높이 3h·2h 에 맞음"
+   ],
+   "walk_grid": {
+    "기본": [
+     "xxx",
+     "xxx",
+     "xxx"
+    ]
+   },
+   "wave": "theme_earth",
+   "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
+  },
+  {
+   "id": "earth.sarc_ns",
+   "title": "석관 남북 1×2 닫힘·열림",
+   "kind": "objects",
+   "size": [
+    2,
+    2
+   ],
+   "footprint": [
+    1,
+    2
+   ],
+   "layer": "upper",
+   "walk": "막힘(조사 이벤트)",
+   "brief": "남북으로 누운 석관: 뚜껑 윗면이 몸의 대부분, 앞면은 짧은 마구리. 그림 = [닫힘|열림]. 열림 = 뚜껑이 비껴 밀려 틈 안에 해골.",
+   "accept": [
+    "뚜껑 윗면이 넓게 보임",
+    "두 상태 받침 같음"
+   ],
+   "states": [
+    "닫힘",
+    "열림"
+   ],
+   "walk_grid": {
+    "닫힘": [
+     "x",
+     "x"
+    ],
+    "열림": [
+     "x",
+     "x"
+    ]
+   },
+   "wave": "theme_earth",
+   "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
+  },
+  {
+   "id": "earth.sarc_ew",
+   "title": "석관 동서 2×1 닫힘·열림",
+   "kind": "objects",
+   "size": [
+    4,
+    1
+   ],
+   "footprint": [
+    2,
+    1
+   ],
+   "layer": "upper",
+   "walk": "막힘(조사 이벤트)",
+   "brief": "동서로 누운 석관: 뚜껑 윗면 + 긴 옆판 앞면. 그림 = [닫힘|열림]. 열림 = 뚜껑이 남쪽으로 밀려 북쪽 틈 안에 해골·갈비.",
+   "accept": [
+    "뚜껑 윗면 보임",
+    "옆면 없음"
+   ],
+   "states": [
+    "닫힘",
+    "열림"
+   ],
+   "walk_grid": {
+    "닫힘": [
+     "xx"
+    ],
+    "열림": [
+     "xx"
+    ]
+   },
+   "wave": "theme_earth",
+   "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
+  },
+  {
+   "id": "earth.tomb_slab",
+   "title": "새긴 묘석 바닥 2×2",
+   "kind": "tile",
+   "size": [
+    2,
+    2
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "layer": "lower",
+   "walk": "걸음",
+   "brief": "카타콤 바닥 판석 자리에 끼우는 큰 묘석 한 장(불투명): 둘레 줄눈 + 새김(파인 홈의 먼 벽이 밝다).",
+   "accept": [
+    "바닥에 납작한 묘석으로 읽힘",
+    "둘레 줄눈이 버들항 카타콤 바닥과 어울림"
+   ],
+   "walk_grid": {
+    "기본": [
+     "oo",
+     "oo"
+    ]
+   },
+   "wave": "theme_earth",
+   "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
+  },
+  {
+   "id": "earth.candelabra",
+   "title": "촛대 1×2 (불꽃 3장면)",
+   "kind": "objects",
+   "size": [
+    3,
+    2
+   ],
+   "footprint": [
+    1,
+    2
+   ],
+   "layer": "upper",
+   "walk": "아래 칸 막힘 · 위 칸 ★",
+   "brief": "세 갈래 촛대 + 초 셋. 그림 = 장면 1|2|3(받침·초 같음, 불꽃만 바뀜).",
+   "accept": [
+    "촛대로 읽힘",
+    "받침 장면끼리 같음"
+   ],
+   "frames": 3,
+   "walk_grid": {
+    "기본": [
+     "★",
+     "x"
+    ]
+   },
+   "wave": "theme_earth",
+   "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
+  },
+  {
+   "id": "earth.throne",
+   "title": "옥좌와 단 3×3",
+   "kind": "object",
+   "size": [
+    3,
+    3
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "layer": "upper",
+   "walk": "칸 통행 격자",
+   "brief": "판석 단(윗면 넓게 + 앞 두 계단) 위 옥좌. 옥좌 칸만 막힘, 단 위 옆자리와 계단은 걸음, 옥좌 등받이 칸은 ★.",
+   "accept": [
+    "단 윗면·계단 디딤이 보임",
+    "옥좌가 성의 주인 자리로 읽힘"
+   ],
+   "walk_grid": {
+    "기본": [
+     "o★o",
+     "oxo",
+     "ooo"
+    ]
+   },
+   "wave": "theme_earth",
+   "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
+  },
+  {
+   "id": "earth.carpet",
+   "title": "왕실 양탄자 1칸 폭·3칸 폭(세로)",
+   "kind": "objects",
+   "size": [
+    4,
+    3
+   ],
+   "footprint": [
+    1,
+    1
+   ],
+   "layer": "lower",
+   "walk": "걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+   "brief": "세로로 까는 양탄자: 1칸 폭 [위 끝·가운데·아래 끝] + 3칸 폭 [위 줄·가운데 줄·아래 줄 × 왼·가운데·오른]. 가운데는 16px 주기로 몇 칸이든 이어진다. 그림 = [1칸 폭 1×3 | 3칸 폭 3×3].",
+   "accept": [
+    "바닥에 깔린 천으로 읽힘",
+    "가운데 칸을 이어 깔아도 이음이 안 보임"
+   ],
+   "walk_grid": {
+    "기본": [
+     "o"
+    ]
+   },
+   "wave": "theme_earth",
+   "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
+  },
+  {
+   "id": "earth.banner",
+   "title": "왕실 깃발 1×2(벽 걸이)",
+   "kind": "object",
+   "size": [
+    1,
+    2
+   ],
+   "footprint": [
+    1,
+    2
+   ],
+   "layer": "upper",
+   "walk": "벽 앞면 위(이미 막힘)",
+   "brief": "쇠 막대에 건 붉은 왕실 깃발 + 금 문장. 교단 깃발(버들항 banner-cult)과 다른 왕실 표지.",
+   "accept": [
+    "벽에 건 깃발로 읽힘",
+    "교단 깃발과 구별됨"
+   ],
+   "walk_grid": {
+    "기본": [
+     "x",
+     "x"
+    ]
+   },
+   "wave": "theme_earth",
+   "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
+  },
+  {
+   "id": "earth.armor_stand",
+   "title": "갑옷 거치대 1×2",
+   "kind": "object",
+   "size": [
+    1,
+    2
+   ],
+   "footprint": [
+    1,
+    2
+   ],
+   "layer": "upper",
+   "walk": "아래 칸 막힘 · 위 칸 ★",
+   "brief": "받침 위에 선 판금 갑옷(사람 키).",
+   "accept": [
+    "빈 갑옷 장식으로 읽힘(사람·적이 아님)",
+    "받침 윗면 보임"
+   ],
+   "walk_grid": {
+    "기본": [
+     "★",
+     "x"
+    ]
+   },
+   "wave": "theme_earth",
+   "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
+  },
+  {
+   "id": "earth.portcullis",
+   "title": "내리닫이 쇠창살문 3×2 닫힘·올림",
+   "kind": "objects",
+   "size": [
+    6,
+    2
+   ],
+   "footprint": [
+    3,
+    2
+   ],
+   "layer": "upper",
+   "walk": "상태별 통행 격자(올림 = 아래 줄 가운데 걸음, 이동 이벤트)",
+   "brief": "성 벽 앞면 두 단 자리에 끼우는 문틀 + 쇠 격자. 안쪽은 북쪽으로 이어지는 어두운 통로. 그림 = [닫힘|올림].",
+   "accept": [
+    "문이 사람보다 큼",
+    "두 상태 문틀 같음",
+    "옆면 없음"
+   ],
+   "states": [
+    "닫힘",
+    "올림"
+   ],
+   "walk_grid": {
+    "닫힘": [
+     "xxx",
+     "xxx"
+    ],
+    "올림": [
+     "xxx",
+     "xox"
+    ]
+   },
+   "wave": "theme_earth",
+   "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
+  },
+  {
+   "id": "earth.overgrown",
+   "title": "풀·뿌리가 뚫고 나온 판석(덧그림 2×2)",
+   "kind": "object",
+   "size": [
+    2,
+    2
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "layer": "lower",
+   "walk": "걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+   "brief": "버들항 신전 폐허 바닥(floor-ruin) 위에 얹는 풀·뿌리·깨진 자리. 판석 결은 버들항 그대로 비친다.",
+   "accept": [
+    "판석을 뚫고 자란 풀·뿌리로 읽힘",
+    "여러 장 깔아도 도장처럼 안 보임"
+   ],
+   "walk_grid": {
+    "기본": [
+     "oo",
+     "oo"
+    ]
+   },
+   "wave": "theme_earth",
+   "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
+  },
+  {
+   "id": "earth.rubble_heap",
+   "title": "무너진 돌무더기 2×2",
+   "kind": "object",
+   "size": [
+    2,
+    2
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "layer": "upper",
+   "walk": "막힘",
+   "brief": "무너진 대리석 덩이 더미(덩이마다 윗면 보임) + 이끼.",
+   "accept": [
+    "돌무더기로 읽힘",
+    "덩이 윗면 보임"
+   ],
+   "walk_grid": {
+    "기본": [
+     "xx",
+     "xx"
+    ]
+   },
+   "wave": "theme_earth",
+   "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
+  },
+  {
+   "id": "earth.statue_head",
+   "title": "이끼 덮인 쓰러진 석상 머리 2×2",
+   "kind": "object",
+   "size": [
+    2,
+    2
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "layer": "upper",
+   "walk": "막힘(조사 이벤트)",
+   "brief": "목에서 부러져 땅에 놓인 거대한 대리석 머리 + 이끼.",
+   "accept": [
+    "큰 석상 머리로 읽힘(바위·얼굴 낙서가 아님)",
+    "이끼 덮임"
+   ],
+   "walk_grid": {
+    "기본": [
+     "xx",
+     "xx"
+    ]
+   },
+   "wave": "theme_earth",
+   "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
   }
  ],
  "refs": {
@@ -2646,6 +3610,46 @@
   "bd-tree:d43edd": {
    "file": "harness-data/dungeon-chipset/refs/theme-climate/bd-tree-d43edd.png",
    "label": "버들항 큰 활엽수 bd-tree-d43edd(4×5)"
+  },
+  "castle-catacombs:floor_castle": {
+   "file": "tiledata/beodeul-variants/castle-catacombs/parts/floor_castle.png",
+   "label": "버들항 — 성 바닥"
+  },
+  "temple-ruins:mosaic_medallion_5x5": {
+   "file": "tiledata/beodeul-variants/temple-ruins/parts/mosaic_medallion_5x5.png",
+   "label": "버들항 — 신전 바닥 모자이크 메달리온"
+  },
+  "wizard-tower:orrery": {
+   "file": "tiledata/beodeul-variants/wizard-tower/parts/orrery.png",
+   "label": "버들항 — 마법사의 탑 태양계의"
+  },
+  "wizard-tower:athanor": {
+   "file": "tiledata/beodeul-variants/wizard-tower/parts/athanor.png",
+   "label": "버들항 — 마법사의 탑 증류로"
+  },
+  "wizard-tower:globe": {
+   "file": "tiledata/beodeul-variants/wizard-tower/parts/globe.png",
+   "label": "버들항 — 마법사의 탑 지구본"
+  },
+  "wizard-tower:moon-obelisk": {
+   "file": "tiledata/beodeul-variants/wizard-tower/parts/moon-obelisk.png",
+   "label": "버들항 — 달돌 표석"
+  },
+  "wizard-tower:lamppost": {
+   "file": "tiledata/beodeul-variants/wizard-tower/parts/lamppost.png",
+   "label": "버들항 — 마법사의 탑 가로등"
+  },
+  "aqueduct-sewer:candles": {
+   "file": "tiledata/beodeul-variants/aqueduct-sewer/parts/candles.png",
+   "label": "버들항 — 촛불 세 자루"
+  },
+  "volcano-cave:brazier": {
+   "file": "tiledata/beodeul-variants/volcano-cave/parts/brazier.png",
+   "label": "버들항 — 화산 동굴 돌 화로"
+  },
+  "volcano-cave:bridge": {
+   "file": "tiledata/beodeul-variants/volcano-cave/parts/bridge.png",
+   "label": "버들항 — 화산 동굴 바위 다리"
   }
  },
  "rounds": {
@@ -2812,6 +3816,77 @@
     "tc.fo_waystone"
    ],
    "lead": "피라미드·얼음굴·늪·숲 던전 부족분. 줄 공통 A1·A2. 모듈은 테마마다 theme_climate_<테마>.py, 모으는 곳 theme_climate_r1.py."
+  },
+  "gap-lava-r2": {
+   "module": "src/harnesses/dungeon-chipset/rounds/gap_lava_r2.py",
+   "wave": "gap",
+   "title": "용암 32×32 위상 몸통 gap-lava-r2",
+   "items": [
+    "gap.lava_edge"
+   ],
+   "lead": "엔진 phaseVariants {w:2,h:2} 로 32×32 몸통 — 버들항 용암 강 바탕 + 손 껍질 판/맥, 빛이 금을 타고 흐름. 줄 C·B."
+  },
+  "theme-arcane-r1": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_arcane_r1.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 마법탑·마계 theme-arcane-r1",
+   "items": [
+    "arcane.tower_floor",
+    "arcane.bookshelf",
+    "arcane.bookshelf_tall",
+    "arcane.lectern",
+    "arcane.teleport_circle",
+    "arcane.crystal_pedestal",
+    "arcane.candelabra",
+    "other.ground",
+    "other.void_edge",
+    "other.crystal",
+    "other.crystal_big",
+    "other.throne",
+    "other.bone_pillar",
+    "other.brazier",
+    "other.portal"
+   ],
+   "lead": "마법탑 7 · 마계 8 항목, 줄 공통 후보 A1·A2. 마법탑 기물 장면 = 탑 방(바닥 A1), 마계 기물 장면 = 떠 있는 섬(허공 가장자리 A1). 보라는 ostone(버들항 설원 s1 보라 그늘) + 선언 빛 램프 arcane."
+  },
+  "theme-earth-r1": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_earth_r1.py",
+   "wave": "theme_earth",
+   "title": "땅 계열 테마 theme-earth-r1 — 광산·지하묘지·성·유적",
+   "lead": "조수 던전 빌더(src/editor/dungeonKit/beodeul/profiles.ts)의 광산·지하묘지·성·폐허 테마에 빠진 조각. 모두 줄 공통(후보 A1 A2). 장면은 그 테마에 빌더가 실제로 까는 버들항 키트(천장 오토타일 · 앞면 3칸 표본 · 바닥 2×2) 위다. 선로·양탄자·풀 난 판석·광맥·납골 벽은 투명 덧그림이라 버들항 바닥·앞면이 그대로 비친다.",
+   "items": [
+    "earth.rails",
+    "earth.timber_frame",
+    "earth.timber_post",
+    "earth.ore_vein",
+    "earth.ossuary",
+    "earth.sarc_ns",
+    "earth.sarc_ew",
+    "earth.tomb_slab",
+    "earth.candelabra",
+    "earth.throne",
+    "earth.carpet",
+    "earth.banner",
+    "earth.armor_stand",
+    "earth.portcullis",
+    "earth.overgrown",
+    "earth.rubble_heap",
+    "earth.statue_head"
+   ],
+   "reused": {
+    "광차": "bd-pick-mining-valley-cart · cart-h",
+    "광석 더미": "bd-pick-mining-valley-ore · slagrock",
+    "선로 끝 막이(마을)": "bd-pick-mining-valley-buffer",
+    "광산 등": "bd-pick-mining-valley-lamp",
+    "성벽 흉벽 길(옥외 성벽 위)": "bd-wall-run-south-4 · run-north-4 · tower · gatehouse(beodeulTownWallPieces)",
+    "관": "bd-pick-aqueduct-sewer-coffin",
+    "뼈 더미·해골": "bd-pick-aqueduct-sewer-bone-heap · skulls",
+    "벽감": "bd-pick-castle-catacombs-niche-skull · niche-urn",
+    "기둥·부러진 기둥·쓰러진 기둥": "bd-pick-temple-ruins-column-temple(-broken/-tall) · fallen-column-temple",
+    "덩굴": "bd-pick-temple-ruins-vines-2",
+    "폐허 벽 조각": "bd-pick-temple-ruins-ruined-wall-2"
+   },
+   "line_notes": "줄 공통 17 항목(테마 조각). 줄 A·B·C 동굴 화풍과 무관하다."
   }
  }
 }

@@ -1,0 +1,219 @@
+{
+ "panel": "theme-arcane-r1-panel-7",
+ "rule": "major counts if raised by >=2 of 4 blind reviewers (3 opus general-purpose + 1 argon)",
+ "mapping": {
+  "other.void_edge": {
+   "X": {
+    "key": "A1",
+    "sha256": "eb275b19826735b546ebba161da355181b8812a12208ec68f9846f6d4dd058c4"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "26ec9ea942bd3fff5309d1c236685dddd14dad277a8483c6e0623ff50ee61a1a"
+   }
+  }
+ },
+ "prompt": "You are a blind pixel-art reviewer. Do not read any code or other files; look ONLY at the PNG boards listed below (open each with the Read tool; they are large, look carefully, zoom by reading them, do not skip any).\n\nContext: 16px-cell hand-pixel chipset for a JRPG dungeon, 3/4 top-down view (you see the top surface of things and their front face; NO side faces / no isometric). Two themes: MAGIC TOWER (wizard tower interior) and OTHERWORLD (demon realm, violet-black). Each board shows: the item description (yellow line at top), a Beodeul reference image from the existing chipset that sets the quality bar (shown 1x and 3x) with an Actor1 person for scale, then two anonymous candidates X and Y: piece at 1x and 3x, the piece placed in a scene (animation frames shown side by side), and sometimes extra sheets (autotile 6x6 mosaics, irregular test maps).\n\nCriteria, judge each candidate against them:\n1. Reads instantly as the described object at 1x game scale.\n2. 3/4 top-down view: top surface + front face visible, no side faces, no isometric skew, perspective consistent with the Beodeul reference and the Actor1 person.\n3. Style matches the Beodeul reference: material shading instead of black ink outlines, similar contrast, detail density and pixel cleanliness (no noise, no orphan pixels, no banding).\n4. Scale vs. the person is plausible; the object sits on the floor (contact shadow/base) rather than floating.\n5. Animation frames (if any): change is visible, smooth, loops, no jitter of the static parts.\n6. Autotiles: no visible seams or repeating grid, edges/corners join correctly in the mosaic and irregular map; floating-island underside hangs only below south edges.\n7. Fits its theme (magic tower / demon realm) and is distinct from generic.\n\nA MAJOR is a problem that would make you reject the piece for shipping (misreads, wrong view, broken seams, clashing style, ugly artefact clearly visible at 1x). A MINOR is a polish note.\n\nBoards (directory /home/main/z-project/rpg-zzu-dt-arcane/qa-runs/dungeon-themes/panel/r7/):\nother.void_edge.png\n\nWrite your answer as JSON to /home/main/z-project/rpg-zzu-dt-arcane/qa-runs/dungeon-themes/panel/r7/answer-1.json (use the Write tool) and also return the same JSON as your final message. Format:\n{\"items\":{\"<item id e.g. arcane.lectern>\":{\"X\":{\"majors\":[{\"problem\":\"...\",\"where\":\"...\"}],\"minors\":[{\"problem\":\"...\",\"where\":\"...\"}]},\"Y\":{...},\"pick\":\"X\"|\"Y\",\"why\":\"one line\"}}}\nCover the one item. Be specific and honest; do not invent problems, do not be polite. Do not edit anything else.\n",
+ "answers": {
+  "answer-1.json": {
+   "items": {
+    "other.void_edge": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Floor top is a uniform dense diagonal scribble texture with no larger slab/crack structure; reads noisier than the Beodeul reference and tiles look like static at 1x",
+        "where": "island top surface, scene and mosaic"
+       },
+       {
+        "problem": "No real south front face: the S edge is just a thin bright lip strip directly over the underside rubble, so the island has almost no thickness in 3/4 view",
+        "where": "south edges of main island and small islands"
+       },
+       {
+        "problem": "Underside is short (about one tile) and fairly uniform brick-like blocks rather than tapering jagged rock; reads more like a ledge wall than a floating-island root",
+        "where": "underside below S edges"
+       },
+       {
+        "problem": "N/W/E rim is a single bright violet 1px line that looks slightly like an ink outline compared to the material-shaded Beodeul edges",
+        "where": "island perimeter"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Floor top, lip and void are nearly the same dark mauve value; at 1x the island barely separates from the void and the N/W/E lip is almost invisible, so the floating-ground read fails",
+        "where": "scene 1x, W and N edges of main island, small islands"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Same scribbly diagonal floor noise as X, no slab structure",
+        "where": "island top surface"
+       },
+       {
+        "problem": "Scattered single red ember pixels on the underside read as orphan pixels / noise at 1x",
+        "where": "underside below S edges"
+       },
+       {
+        "problem": "South face is again only a thin lip strip with no visible cliff thickness",
+        "where": "south edges"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Same geometry and autotiling in both, but X's violet rim gives a clear island-vs-void read at 1x while Y's muted mauve almost dissolves into the void."
+    }
+   }
+  },
+  "answer-2.json": {
+   "items": {
+    "other.void_edge": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Underside reads as a regular rounded-cobble/brick masonry block with a flat, nearly rectangular cut-off and only a slight taper; looks like a stone foundation rather than torn rock hanging off a floating island",
+        "where": "underside below every S edge, clearest under the long south edge in the scene and in the underside extra view"
+       },
+       {
+        "problem": "Void is a fine dither of near-black/violet pixels plus scattered bright violet dots; at 1x it reads as static grain more than a deep void, and the stars sit on a regular-looking sprinkle",
+        "where": "void background in the piece 3x view and around the islands in the scene"
+       },
+       {
+        "problem": "Saturated violet lip is a hard 1-2px band with little shading variation along its length; strip-like, slightly flatter than the Beodeul material shading",
+        "where": "N/W/E rim and the S lip band"
+       },
+       {
+        "problem": "Floor top is low-contrast speckle noise (reddish flecks on dark purple) with little larger-scale form; fine at 1x but busy/noisy at 3x",
+        "where": "walkable top surface, all tiles"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Same masonry-block underside as X with flat bottom and weak taper; reads as a foundation, not a hanging rock mass",
+        "where": "underside below S edges"
+       },
+       {
+        "problem": "Single bright-red pixels scattered over the underside are isolated orphan pixels; at 1x they read as stray noise more than embers",
+        "where": "underside, scene and underside extra view"
+       },
+       {
+        "problem": "Dusty-rose lip has low contrast against the purple floor, so the island edge reads weaker at 1x and the colour reads muted/earthy rather than demon realm",
+        "where": "N/W/E rim and S lip band"
+       },
+       {
+        "problem": "Void dither has reddish speckles mixed in, making the background grainier/muddier than X",
+        "where": "void background"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Structurally identical sets with clean seams and correct S-only underside; X's violet rim reads the floating edge instantly at 1x and fits the demon realm better, and its underside has no orphan red pixels"
+    }
+   }
+  },
+  "answer-3.json": {
+   "items": {
+    "other.void_edge": {
+     "X": {
+      "majors": [
+       {
+        "problem": "Floor surface is a busy, low-contrast scratch/noise texture (dense diagonal red-brown flecks on near-black violet) with no material structure; it is far noisier and muddier than the clean, structured Beodeul stone and reads as static rather than ground",
+        "where": "walkable top surface in every tile, the scene and the mosaic"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Rock underside is a short band of brick-like cobbles that tapers within about one tile; it reads more like a masonry wall stub than hanging rock, and under the 1-tile step ledges it is a tiny stub",
+        "where": "south-edge underside in the scene, especially under the stepped SE/SW ledges and the small island"
+       },
+       {
+        "problem": "N/W/E lip is a 1px violet line that almost disappears at 1x; only the thick south lip clearly reads as an edge",
+        "where": "north and west/east rims of the island in the 1x scene"
+       },
+       {
+        "problem": "Bright single violet pixels scattered on the underside and in the void are orphan specks rather than shaped stars or crystals",
+        "where": "underside cobbles and void field"
+       },
+       {
+        "problem": "The whole tile is very dark; the separation between island and void relies mostly on the lip line and the void's bright specks",
+        "where": "1x scene"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Floor surface is a busy, low-contrast scratch/noise texture with no material structure; it is far noisier than the Beodeul reference",
+        "where": "walkable top surface in every tile, the scene and the mosaic"
+       },
+       {
+        "problem": "Island and void are poorly separated: the void speckle uses the same mauve/red-brown hues as the floor flecks and the lip is a dull mauve, so at 1x the floor nearly merges into the void",
+        "where": "1x scene, all island edges and especially the west and north sides"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Pure-red single pixels on the underside read as orphan pixels or noise rather than embers; they are scattered and unshaped",
+        "where": "underside cobbles on every south edge and the small island"
+       },
+       {
+        "problem": "Underside is the same short brick-like cobble stub as X and reads as masonry rather than hanging rock",
+        "where": "south-edge underside, step ledges"
+       },
+       {
+        "problem": "Thin N/W/E lip almost invisible at 1x",
+        "where": "north and west rims"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Identical geometry and the same noisy floor, but X's violet lip and void specks separate the island from the void clearly while Y's mauve palette blends the two and adds orphan red pixels."
+    }
+   }
+  },
+  "answer-4.json": {
+   "items": {
+    "other.void_edge": {
+     "X": {
+      "majors": [
+       {
+        "problem": "West and East edges lack a distinct lip/rim highlight, causing the dark ground texture to blend into the dark void along vertical sides and violating the N/W/E lip requirement.",
+        "where": "Scene 1x/2x and small islands extra view along all W and E vertical boundaries"
+       },
+       {
+        "problem": "Strong 16px tile repetition along straight south edges: the flat purple S rim has an identical bright dot on the left of every 16px cell, and the underside rock repeats the same vertical seam every 16px with boxy, un-tapered SW/SE underside corners.",
+        "where": "Scene 2x bottom straight south edge and small islands extra view (left island)"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "The single-tile-wide overhang on the far left of the main island has a truncated, nearly invisible underside compared to the normal 16px hanging rock.",
+        "where": "Scene 1x/2x far-left step of the main platform"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Along long straight south spans, the middle underside rock tile repeats visibly every 16px between the tapered corner pieces.",
+        "where": "Scene 2x bottom 4-tile straight south edge"
+       },
+       {
+        "problem": "Concave inner corners display a small isolated 2x2 lip dot that looks slightly detached from the continuous outer rim.",
+        "where": "Scene 2x stepped inner corners along the south-east and north-west indents"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y frames the entire floating platform with a clear N/W/E/S lip and has tapered, natural floating-island rock undersides on both wide platforms and 1-tile overhangs, whereas X lacks W/E lips and suffers from boxy, grid-repetitive south rims."
+    }
+   }
+  }
+ }
+}

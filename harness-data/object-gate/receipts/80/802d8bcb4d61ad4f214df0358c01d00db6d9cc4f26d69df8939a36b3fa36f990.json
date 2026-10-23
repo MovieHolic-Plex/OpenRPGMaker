@@ -1,0 +1,456 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "802d8bcb4d61ad4f214df0358c01d00db6d9cc4f26d69df8939a36b3fa36f990",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "arcane.candelabra",
+ "label": "beodeul_dungeon/arcane.candelabra",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 3 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 3 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 80,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flames (three)",
+      "rows": "0-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "candles (three)",
+      "rows": "3-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drip trays under the side candles and central candle",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "arm crossbar",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-15"
+     },
+     {
+      "part": "central stem with small collar",
+      "rows": "16-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flared base",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The candelabra is drawn as a flat front view. Candles, arms, stem and base are vertical strips. The width profile (rows 16-29: 2,4,2,4,2,4,6) is a stem flaring into the base, with no widen-then-narrow ellipse anywhere. The 1-row brown drip trays at rows 10 and 24 are only thin rims. The crossbar at rows 14-15 is a front-facing strip, light row then dark row, with no top plane above it. The base at rows 27-29 only widens, with no top surface. No part shows a horizontal surface seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candelabra is a thin, sparse prop, so the per-tile tone count is 0, the same as the bench and lamp-crook references. I judged density by eye against those two. The metal stem and branched arms show about 4 lightness steps, with a highlight edge, a mid tone and a dark side. The base has a stepped, shaded foot. The candles are cream with a lit-flame yellow-orange tip, so there are separate material ramps rather than one flat body. The dark edge pixels are 0% neutral, so the outline leans toward the material tone (dark bluish-grey beside metal), not the black sticker line. It is more selective than the lamp-crook's 100% neutral edge. There are no 5x5 flat fills (0% near-flat). It has 14 distinct colours, the same as the bench and lamp-crook. It is slightly less rich than the well and stall, but those are large, complex pieces. Beside the lamp-crook and bench it does not look thinner or flatter, so I pass it with a small margin.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17375
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "candles with flames",
+      "rows": "0-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "candle cups / drip trays",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone crossbar arms",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "central stone shaft",
+      "rows": "16-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flared base",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a thin stone stand: a crossbar at rows 13-15, a 2-4 px shaft at rows 16-26 and a flared base at rows 27-29. The crossbar has a light row 14 over a dark row 15, but it is only a 1-2 row strip with no wide horizontal surface. The shaft and base are drawn as vertical faces with no ellipse or top plane. The candles and flames above are decor. The overall silhouette is a front elevation with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candelabra is a thin, sparse prop, so the per-tile tone counts (0) are uninformative and I judged it by eye against the lamp-crook and bench references. It has 14 distinct colours, the same as those two thin references. The metal stand shows about 4 steps (highlight, light, mid, dark), and the candles and flames are separately shaded in cream and warm tones. Its dark edge pixels are 0% neutral, so the outline leans toward the adjacent material rather than being a uniform black sticker line. This is better than the lamp-crook, whose outline is 100% neutral. There are no 5x5 flat fills (0%). It is not noticeably thinner or flatter than the lamp or bench, though it does not reach the richness of the stall or well. A careful artist would accept it next to the thin-prop references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15129
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flames",
+      "rows": "0-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "candles",
+      "rows": "4-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "candle cups / drip plates",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "arm bar",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "shaft",
+      "rows": "16-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a thin vertical shaft (2-4 px wide, rows 16-26) with a cross arm (rows 12-15, width 10-12) and a flared base (rows 27-29, width 6). The arm has a light line on row 14 and a dark row 15, but it is only a 1-2 row rim, with no ellipse or wide horizontal surface. The candle cups at rows 10 and 12 are 1-row strips. The candles and flames are decor. The pole, arm and base are all drawn face-on as vertical elements, so the object reads as a front elevation with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candelabra is a thin, sparse prop smaller than one tile, so the per-tile tone count of 0 says nothing against it. Judged by eye, it is comparable to the lamp-crook and bench references, which also measure 0. It has 14 distinct colours, the same as both. The metal ramp reads as about 4 steps, with highlight, mid, shadow and dark on the stem, arms and base. The candles are pale with warm flames and have a few highlight and shadow pixels. The base is a shaded tripod rather than a flat block. Dark edge pixels are 0% near-neutral, so the outline is tinted toward the material (a dark blue-grey beside the metal), not a uniform black sticker line. This is clearly less lavish than the stall or well, but those are large props. It has no flat 5x5 fills (0% near-flat). A careful artist would accept it next to the lamp-crook without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19040
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flames",
+      "rows": "0-3",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side flames",
+      "rows": "4-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "candles (three)",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "curved arm / crossbar",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "central shaft",
+      "rows": "16-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flared base",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The candelabra is a thin vertical stand. The shaft is 2 px wide (rows 16-26) and flares into a 6 px base (rows 27-29). The three candles (rows 4-11) are plain vertical cylinders topped by flames, which count as decor. The arm bar at rows 14-15 is 12 px wide, but it is only 1 light row (14) over 1 dark row (15). Nothing wide sits above it, so it reads as a front-facing rim, not a horizontal surface. No ellipse, roof or visible contents appear anywhere. The whole object is a front elevation with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candelabra is a thin, sparse prop, so the per-tile tone count of 0 says nothing against it. The bench and crook lamp also measure 0, and all three have 14 distinct colours. I judged it by eye against the thin references. The metal stand has about 4 steps, with a highlight edge, mid, shade and dark. The candles are cream with a shaded side, and the flames have a bright core and an orange rim. The outline is a dark, cool-tinted tone of the metal with 0% neutral edge pixels. It is not the uniform black line the crook lamp has (100% neutral). There are no flat 5x5 areas (0% near-flat). It is a little simpler than the richer references (well, stall), but it is at least as detailed as the lamp-crook and bench of the same sparse kind, and it does not look like a flat sticker beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17895
+  }
+ ],
+ "decidedAt": "2026-10-23T02:39:59.804Z",
+ "cells": {
+  "16": [
+   "041ee88439b17303",
+   "8317eb6ee88779dc"
+  ],
+  "24": [
+   "216c6bbc8cf4b7b7",
+   "2e28c7cbc8ae5299",
+   "5851293c6abadb52",
+   "617eaf59db9e103e",
+   "70815c12efc15ecb",
+   "7b5042d976b2b720",
+   "92fb80ef4dedc3d1",
+   "99968c412420846a",
+   "b8777a4fccae406b",
+   "dae524f310c07c28",
+   "e8858e38c254462a",
+   "f4eb4e7ce81b4bdd"
+  ],
+  "32": [
+   "17f8361912d2133f",
+   "6d0c8f720beb193e",
+   "814bad72d7d0ef9d"
+  ],
+  "48": [
+   "03b2521397fdc294",
+   "583c3c14691a4297",
+   "7046766a30bf75bc",
+   "9e5f96490eab8ac8",
+   "abe0bcb6dc89ed01",
+   "c22d8089b3d85faa"
+  ]
+ }
+}

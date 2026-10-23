@@ -219,6 +219,8 @@ def current_picks(assume=None):
     for (item, line), (p, st) in sorted(H.pick_state().items()):
         if items.get(item, {}).get("wave") != "gap":
             continue
+        if (item, p["round"]) == ("gap.lava_edge", "gap-lava-r2"):
+            continue   # 32px 위상 몸통 용암은 주제 꼬리(bake_theme.py)가 굽는다 — gap 꼬리에 들어가지 않는다
         (out if st == "current" else void).append((p, line))
     return out, void
 

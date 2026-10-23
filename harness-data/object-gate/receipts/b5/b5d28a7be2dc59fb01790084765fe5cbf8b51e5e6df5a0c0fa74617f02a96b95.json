@@ -1,0 +1,274 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b5d28a7be2dc59fb01790084765fe5cbf8b51e5e6df5a0c0fa74617f02a96b95",
+ "width": 96,
+ "height": 96,
+ "kind": "terrain",
+ "name": "other.ground",
+ "label": "beodeul_dungeon/other.ground",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 36
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile texture (dark purple cobble/hex pattern filling the whole 96x96 tile)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 96,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 96x96 seamless terrain texture: dark purple/brown speckled cells separated by thin darker seams with small light-purple highlight flecks. The silhouette width is 96 on every row, with no outline, no front face, no eave or edge line and no standing volume. The column scans show only a repeating dark base with isolated 1-row highlights, which are crack or seam marks rather than edge lines. It reads as a flat top-down ground surface, which is correct for a terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a dark purple cracked-stone ground. It shows 7 visible tones per 16x16 tile, matching the paving reference (7) and well above the grass reference (3). Near-flat coverage is 0%, the same as both references. Its dark edge pixels are 0% neutral, so the crack lines carry a purple tint rather than a black sticker outline. By eye I count about 4 dark purple body steps plus 2 violet highlight steps, so roughly 6 steps against the references' 5-6. Cracks, per-stone shading and highlight flecks give grain with no large flat areas. The weaker point is that the motif repeats identically across the patch, and the palette has only 7 colours in total. Even so, that density at tile level matches the paving reference, so a careful artist would accept it next to it without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11899
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seamless dark purple ground tile with hex/cobble crack pattern",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 96x96 opaque terrain tile with no silhouette, no standing body, no front face, and no front-edge line or eave shadow. It shows a flat top-down texture of dark purple stone with hex-like crack lines, speckles and lighter highlight flecks. The width is 96 on every row. It is a flat ground tile, which fits the terrain kind, so it reads as a top-down surface rather than a standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a dark purple cobble/rock ground with a repeating tile pattern. It shows about 7 visible tones per 16x16 tile, matching the paving reference (7) and above the grass reference (3). Near-flat coverage is 0%, so there are no flat fills. The picture agrees: stones are shaded one by one in several purple steps, with small lighter violet crack highlights and grain dots. Dark edge pixels are 0% neutral, so the outlines lean purple and read as the dark tone of the adjacent material rather than a black sticker line. The repetition is visible but acceptable for a tiling ground patch. Overall it holds up beside the references on structure, texture and density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 9558
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile texture (full 96x96 seamless dark purple cobble/hex pattern)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 96x96 seamless terrain texture: dark purple cobble or hex cells with thin lighter purple outlines and speckle noise. The silhouette is 96 wide on every row, so there is no standing object, front face, or edge line. The column scan shows only a repeating cell-outline line (rows 6, 21, 37, 54, 70, 85) on a uniform dark base. It reads as a flat ground tile, which fits the terrain kind, so it is a top-down texture with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a dark violet cobble or cracked-stone ground. It shows 7 visible tones per 16x16 tile, equal to the paving reference (7) and above the grass reference (3). Near-flat coverage is 0%, so there are no flat fills. The surface carries stone-by-stone shading, speckle and thin bright violet crack highlights. Dark edge pixels are 0% neutral, meaning the outlines lean purple (the dark tone of the adjacent stone) rather than being a black sticker line. It has about 5 distinct lightness steps against roughly 6 on the paving reference, which is slightly fewer but not shallow. The pattern repeats tile to tile, but the same is true of the references. A careful artist would accept it next to the paving reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14808
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile texture (dark purple cobble/hex pattern fill)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The 96x96 image is a seamless terrain fill. Its width is 96 on every row, with no silhouette, no standing body, no front-edge line, no eave shadow and no ellipse. The texture is a dark purple base with scattered lighter flecks and thin violet crack or outline marks in a tiled pattern. The pattern is flat and repeating, with no vertical face of 3 or more rows. As terrain it is a flat top-down surface, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a dark purple cobble or rock floor with a repeating pattern and thin violet highlight cracks. It shows 7 visible tones per tile, which matches the paving reference (7) and beats the grass reference (3). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outlines lean purple and follow the material instead of using black. The stones show about 5 lightness steps from deep shadow to violet highlight, close to the reference. The weakness is that the tiling repeats visibly and the stones are less individually shaded than the reference paving. That is a minor flaw and does not reduce density or craft below the reference, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 9867
+  }
+ ],
+ "decidedAt": "2026-10-23T02:59:06.969Z",
+ "cells": {
+  "16": [
+   "696c1d1edd7910a9",
+   "9ebb0c9e3e1fd3d1",
+   "a6fe73f53a8b8c9a",
+   "f15656f14a2234b0"
+  ],
+  "24": [
+   "0e9a9e3ddaf66f0d",
+   "200b094b138acf0e",
+   "2149e7ea0ad6c44d",
+   "2ad55852796a729e",
+   "2cc66ef6b8026cda",
+   "46158f6567cbcd1a",
+   "4b1551b1310c0770",
+   "7fa793a8a37b3209",
+   "869c3a249e1ddf65",
+   "9d769074cbd8531d",
+   "b673e8e8c3e1af3b",
+   "d005320f55154a81",
+   "d4b4df3d0dfd1688",
+   "d68e36b01aa93499",
+   "e54f7352aee6f7c0",
+   "f58ce730d4a20392"
+  ],
+  "32": [
+   "6359f4e57029aac5",
+   "6d66f0670123e654",
+   "72be44779b43c36b",
+   "8dd49ea8012ee4e1",
+   "9d632dd87918260d",
+   "abb2ed286a521fa6",
+   "cbe5b3c2af04c9fa",
+   "f1e23aea03efcf84",
+   "fbb2dd9955779f69"
+  ],
+  "48": [
+   "299b192aa8bf476a",
+   "768a00cd35085a8b",
+   "83a16a8494d81abb",
+   "f54635a7b0e62bff"
+  ]
+ }
+}
