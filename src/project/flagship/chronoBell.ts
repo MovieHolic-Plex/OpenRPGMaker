@@ -914,7 +914,31 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   // 행렬이 떠나면 백성은 성문 쪽으로 고개를 돌려 배웅한다 — 빈 연설 자리를 보고 서 있었다(VQA r20 minor).
   const watch: Command[] = spots.map((spot, k) => ({ kind: "moveEvent", eventId: `ev_${FS_PREFIX}_crowd_${crowd[k]![0]}`,
     route: { moves: [{ kind: "turn", dir: face(spot, exit) }], repeat: false, wait: false, skippable: true } } as unknown as Command));
-  list.splice(after + 1, 0, ...marches, ...watch, ...follow);
+  // F2 — 소원 빈 아이(복선). 포고 끝, 행진 직전: 토비가 발렌 앞으로 뛰어들고, 발렌은 아이에게 소원을 묻는다.
+  // 왼손 장갑을 쥐었다 펴는 한 줄은 제2막 「망설임」의 첫 단서다. 토비가 마을에 없으면(마을 대본이 바뀌면) 건너뛴다.
+  const tobi = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_kid`);
+  const wishSpot = tobi ? nearFree(project, hub, { x: valen.x, y: valen.y + 2 }, 4, tobi.id) : undefined;
+  const tobiTurn = (dir: Step, wait = true): Command => ({ kind: "moveEvent", eventId: tobi!.id,
+    route: { moves: [{ kind: "turn", dir }], repeat: false, wait, skippable: true } } as unknown as Command);
+  const wish: Command[] = tobi && wishSpot ? [
+    { kind: "wait", ms: 500 } as Command,
+    { kind: "m2Command", commandId: "m2-040-set-event-location", fields: { target: tobi.id, mapId: hub.id, x: wishSpot.x, y: wishSpot.y } } as unknown as Command,
+    tobiTurn("up"),
+    { kind: "showEmote", target: { eventId: tobi.id }, emote: "exclamation", durationMs: 600 } as unknown as Command,
+    say("꼬마 토비", "저, 저기요! 나도 별똥별 봤어요!\n소원도 빌었어요!"),
+    { kind: "wait", ms: 400 } as Command,
+    say("심문관 발렌", "소원을 빌었다고? 뭘 빌었느냐."),
+    { kind: "showEmote", target: { eventId: tobi.id }, emote: "sweat", durationMs: 600 } as unknown as Command,
+    say("꼬마 토비", "비, 비밀이야!"),
+    { kind: "wait", ms: 700 } as Command,
+    say("심문관 발렌", "…좋다. 소원은 말하지 않아야\n이뤄진다더구나. 가거라."),
+    { kind: "moveEvent", eventId: tobi.id, route: { moves: [{ kind: "move", dir: "down" }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }], repeat: false, wait: false, skippable: true } } as unknown as Command,
+    { kind: "wait", ms: 900 } as Command,
+    narrate("(발렌이 왼손 장갑을 한 번 쥐었다 편다.)"),
+  ] : [];
+  // 토비·발렌은 서로(아래·위)를 본다 — 대사 자동 돌아보기가 서쪽 주인공 쪽으로 돌려 세우지 않게.
+  for (const c of wish) if (c.kind === "text") (c as { autoFace?: boolean }).autoFace = false;
+  list.splice(after + 1, 0, ...wish, ...marches, ...watch, ...follow);
   // 포고 동안 주인공(과 동료)은 발렌 쪽을 본다 — 화면만 보고 서 있었다(VQA r6 major).
   const begin = list.findIndex((c) => c.kind === "cutsceneControl");
   const towardValen: Step = valen.x > (project.startPos?.x ?? 0) ? "right" : "left";
