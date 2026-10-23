@@ -1,6 +1,7 @@
 // 조수 v2 던전·동굴 빌더 — PlaceSpec(dungeon|cave) → v1 author_dungeon 인자. 모델은 칸·좌표를 쓰지 않는다.
 // 명세 낱말만 도구 손잡이로 옮기고, 도구가 못 하는 것(예: 버들항 얼음 동굴)은 missingArt 로 정직하게 보고한다.
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
+import { terrainReachability } from "@/project/terrainReachability";
 import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../types";
 
 /** v2 계획 모델에게 주는 유일한 던전 지식(≤900자). */
@@ -86,7 +87,11 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const prev = previous?.result.state as DungeonState | undefined;
   const mapId = targetMapId(run, spec, previous);
   const variant = num(spec.hints?.variant);
-  if (prev && args.seed === undefined && prev.seed !== undefined) args.seed = prev.seed + (variant !== undefined && variant !== prev.variant ? variant : 0);
+  // 다른 배치(variant): 앞 씨앗이 없으면(도구가 맵 id 로 정함) 이름에서 씨앗을 만들어 variant 만큼 민다 — 안 그러면 세 번 고쳐도 같은 모양이었다(2026-10-23 v2 실조수).
+  if (args.seed === undefined && (prev || variant)) {
+    const base0 = prev?.seed ?? [...spec.name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 11) % 90000;
+    args.seed = base0 + (variant ?? 0) * 7919;
+  }
   const base: Record<string, unknown> = { name: spec.name, ...args };
   const firstCall = run.calls.length;
   // 고치기: 이전 층들을 지우고 같은 id 로 다시 짓는다(여러 층 rebuild 는 첫 층만 되므로).
@@ -112,6 +117,31 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     return { ok: false, mapIds: [], summary: `던전 짓기 실패: ${result.summary}`, warnings: [...warnings, ...(result.issues ?? []).map((i) => i.message)], missingArt: missing, calls, state: prev };
   }
   warnings.push(...(result.warnings ?? []));
+  // 보이는 적: 요청했는데 도구가 계획 자리 없이 0 마리를 놓았으면(작은 동굴) 층마다 입구에서 먼 걸을 수 있는 칸에 서너 마리를 직접 세운다.
+  const wantsFoes = /enem|monster|적|몬스터|박쥐|bat|해골|skeleton|거미|spider|고블린|goblin|슬라임|slime|늑대|wolf|좀비|zombie|유령|ghost/u.test(wanted) && args.populate !== false;
+  if (wantsFoes && /보이는 적 0/u.test(String(result.summary))) {
+    const troopId = (base.troops as { field?: string[] } | undefined)?.field?.[0];
+    let added = 0;
+    for (const floorId of floors) {
+      const map = run.ctx.project.maps[floorId];
+      if (!map) continue;
+      const start = run.ctx.project.startMapId === floorId ? run.ctx.project.startPos : { x: Math.floor(map.width / 2), y: map.height - 2 };
+      const reach = terrainReachability(run.ctx.project, map, start);
+      const taken = new Set(map.events.map((e) => `${e.x},${e.y}`));
+      const cells: { x: number; y: number }[] = [];
+      for (let y = 1; y < map.height - 1; y++) for (let x = 1; x < map.width - 1; x++) if (reach[y * map.width + x] && !taken.has(`${x},${y}`)) cells.push({ x, y });
+      const picks: { x: number; y: number }[] = [];
+      for (let k = 0; k < 4 && cells.length; k++) {
+        // 가장 먼 점 뽑기(입구·이미 고른 자리에서 가장 먼 칸) — 적이 한 곳에 몰리지 않는다.
+        const anchors = [start, ...picks];
+        const far = cells.reduce((a, b) => (Math.min(...anchors.map((p) => Math.abs(p.x - b.x) + Math.abs(p.y - b.y))) > Math.min(...anchors.map((p) => Math.abs(p.x - a.x) + Math.abs(p.y - a.y))) ? b : a));
+        if (Math.abs(far.x - start.x) + Math.abs(far.y - start.y) < 6) break;
+        const r = run.call("place_field_enemy", { mapId: floorId, x: far.x, y: far.y, ...(troopId ? { troopId } : {}), behavior: "patrol" });
+        if (r.ok) { picks.push(far); added++; } else cells.splice(cells.indexOf(far), 1);
+      }
+    }
+    if (added) warnings.push(`도구가 보이는 적을 0 마리 놓아 ${added}마리를 입구에서 먼 자리에 세웠다${troopId ? `(${troopId})` : ""}`);
+  }
   const first = floors[0]!;
   const ent = data.entrance as { x?: number; y?: number } | undefined;
   const start = run.ctx.project.startPos;
