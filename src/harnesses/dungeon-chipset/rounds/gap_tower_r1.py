@@ -761,15 +761,16 @@ def light_patch(sc, kind, c, Ro, u0, top=0):
 #   A1 = 벽을 따라 오르는 좁은 돌 디딤판 7 + 계단참(설계 2): 단마다 둘레 6°(약 7px 깊이), 2px 씩 오르고, 계단참 옆 안벽에 문틀 문.
 #   A2 = 쇠 기둥을 도는 나무 나선 계단(설계 1, 버들항 나선 계단 말): 둥근 돌 받침 위 디딤판 7(40° 씩, 3px 씩), 북쪽 맨 위 판이 벽에 닿는다.
 STAIR_RO = 96
-RUN = {'A1': {'steps': 5, 'a_lo': 72, 'deg': 9, 'rise': 3, 'land': 6, 'w': 12,
-              # 낱낱의 단 5 + 계단참: 앞면 2·5·8·11·13px(가파르게), 계단참 14px(문이 사람 키에 가깝게 서도록). 윗면 = 탑 회색 돌 한 재질 8단(iron1 iron2 cata3 cata4 cata5 stone4 stone5 rim6),
-              # 돌마다 몸 명암만 한 단 엇갈림(색조 섞지 않음). 몸 단은 위로 갈수록 밝다, 앞 턱 = 몸 + 2
-              'heights': [2, 5, 8, 11, 13, 14],
-              'lad': 'ijwylqQH', 'body': [3, 3, 4, 4, 5, 5], 'stone_len': 7,
-              'face_body': ['w', 'j', 'w', 'w'], 'face_lit': 'y', 'face_top': 'l',
+RUN = {'A1': {'steps': 7, 'a_lo': 72, 'deg': 7, 'rise': 2, 'land': 12, 'w': 12,
+              # 낱낱의 단 7 + 짧은 계단참: 앞면 2·4·6·8·10·12·14px, 계단참 16px — 호 전체가 디딤판·챌판 박자, 위로 갈수록 벽을 더 덮는다.
+              # 윗면 = 벽 벽돌과 같은 푸른 회색 돌 8단(iron1 vrock2 iron2 vrock3 iron3 vrock4 stone4 stone5) — 벽에 붙어 쌓은 돌로 읽히게.
+              # 돌마다 몸 명암 한 단 엇갈림, 몸 단은 위로 갈수록 밝다, 앞 턱 = 몸 + 2
+              'heights': [2, 4, 6, 8, 10, 12, 14, 16],
+              'lad': 'iCjDXYqQ', 'body': [3, 3, 3, 4, 4, 4, 5, 5], 'stone_len': 6,
+              'face_body': ['B', 'C', 'B', 'B'], 'face_lit': 'D', 'face_top': 'X',
               'shadow': ('J', 'z'),   # 바닥 그림자: 돌 바로 옆 1px 푸른 회색(차가운 바닥 어둠) 한 줄만
-              # 계단참 끝 안벽 문(20열 × 19행, 문 안 14px): 윗면이 보이는 차양 돌(3/4 윗면) + 둥근 모서리 두 돌 상인방 · 돌마다 이음 문설주 · 푸른 보랏빛 문 안 · 빛 받는 문턱 돌(계단참 윗면에 닿는다), 위로 벽 2줄
-              'door': ['.HHHHHHHHHHHHHHHHHH.', 'qQQQQQQQjQQQQQQQQQQi', 'lyyyyyyyjyyyyyyyyyyi', 'ijjjjjjjjjjjjjjjjjji', 'qqllllllljllllllllyi', 'qlyyKKKKKKKKKKKKyyli', 'lyyK,,,,,,,,,,,,KDyi', 'lyK,,,,,,,,,,,,,,Dyi', 'jjK,,,,,,,,,,,,,JDji', 'qlK,,,,J,,,,,,,,,Dli', 'lyK,J,,,,,,,J,,,,Dyi', 'yyK,,,,,,J,,,,,,JDyi', 'jjK,,J,,,,,,,J,,,Dji', 'qlK,,,,,,J,,,,,,,Dli', 'lyKJ,J,J,J,J,J,J,Dyi', 'yyKJJJJCJJJJJCJJJDyi', 'qQQQQQQQQQQQQQQQQQQq', 'lyllllllllllllllllyi', 'jjjjjjjjjjjjjjjjjjji']}}
+              # 계단참 끝 안벽 문(20열 × 16행): 윗면이 보이는 차양 돌 · 빛 받는 문틀 · 나무 문짝(널 + 쇠 띠 둘) · 빛 받는 문턱 돌(계단참 윗면에 닿는다)
+              'door': ['.HHHHHHHHHHHHHHHHHH.', 'qQQQQQQQjQQQQQQQQQQi', 'lyyyyyyyjyyyyyyyyyyi', 'ijjjjjjjjjjjjjjjjjji', 'qlXXXXXXXXXXXXXXXyli', 'lyXzsrrsrrsrrsrrzyli', 'lyXznroonroonroozDyi', 'yyXznroonroonroozDyi', 'jjXznpoonpoonpoozDji', 'qlXzbbbbbbbbbbbbzDli', 'lyXznroonrsonroozDyi', 'lyXznroonroonroozDyi', 'yyXznroonrponroozDyi', 'jjXzbbbbbbbbbbbbzDji', 'qQQQQQQQQQQQQQQQQQQq', 'lyllllllllllllllllyi']}}
 SPIRAL = {'A2': {'ang': 50, 'off': 21, 'R': 18, 'n': 7, 'span': 40, 'start': 100, 'rise': 3, 'post': 2}}
 
 
@@ -1225,14 +1226,18 @@ def hcat(cvs, gap=T):
     return out
 
 
-def tower_scene(key, c):
-    """세 항목 공통 장면: 참 원 셋. 12칸(돌아 오르는 계단·화살 구멍 둘·사람) | 10칸(북 문) | 8칸(남 통로 + 복도)."""
+def tower_scene(key, c, stair=False):
+    """세 항목 공통 장면: 참 원 셋. 12칸(돌아 오르는 계단·화살 구멍 둘·사람) | 10칸(북 문) | 8칸(남 통로 + 복도).
+    stair=True 이고 벽 계단(RUN) 이면 12칸 원에서 창·빛 쐐기를 뺀다 — 계단 끝 문 하나만 목적지로 읽히게."""
     rv, kind, geo, top = ring(c, 96)
-    place_window(rv, kind, geo, 96, key, c, 'dark', 2)
-    place_window(rv, kind, geo, 96, key, c, 'lit', 36)
+    plain = stair and key in RUN
+    if not plain:
+        place_window(rv, kind, geo, 96, key, c, 'dark', 2)
+        place_window(rv, kind, geo, 96, key, c, 'lit', 36)
     s12 = under(kind, rv.w, rv.h, c)
     s12.paste(rv, 0, 0)
-    light_patch(s12, kind, c, 96, 36)
+    if not plain:
+        light_patch(s12, kind, c, 96, 36)
     s12.paste(stair_layer(key, c), *((5, 5) if key in SPIRAL else (0, 0)))   # 장면에서만 나선 받침을 벽에서 띄운다
     s12.paste(actor(), 100, 110)
     r10, k10, g10, _ = ring(c, 80)
@@ -1274,7 +1279,7 @@ def c_wall(key, c):
 def c_stair(key, c):
     def fn():
         s, bx, by = stair(key, c)
-        return s, {'kind': 'objects', 'parts': {'계단': s}, 'vignette': tower_scene(key, c)}
+        return s, {'kind': 'objects', 'parts': {'계단': s}, 'vignette': tower_scene(key, c, stair=True)}
     return fn
 
 
