@@ -862,7 +862,7 @@ GROUND_VEIN_A1 = [((6, 4), (9, 7)), ((8, 5), (11, 6)), ((4, 4), (1, 8)), ((6, 9)
 GROUND_NODES_A2 = [[(9, 7), (8, 11)], [(9, 5)], [(2, 6), (12, 12)], [(6, 9)]]
 
 LGR = {'A1': L('b:ostone2 c:arcane0 m:arcane0 h:arcane1 H:arcane2 d:ostone1 e:ostone0 k:ostone0 r:ostone3 v:arcane2 V:arcane4'),     # 보라 검은 판 + 보라 핏줄
-       'A2': L('b:ostone1 c:ostone2 m:ostone2 h:ostone3 H:ostone4 d:ostone0 e:vrock0 k:ostone0 r:red0 v:red1 V:fire3')}           # 더 검은 재 판 + 붉은 핏줄
+       'A2': L('b:ostone1 c:ostone2 m:ostone3 h:ostone4 H:ostone5 d:ostone0 e:vrock0 k:ostone0 r:red0 v:red1 V:fire3')}           # 더 검은 재 판 + 붉은 핏줄
 
 
 def _ground_grain(rows, i):
@@ -920,7 +920,7 @@ def _mottle(i):
             for x in range(16):
                 nb = [g[(y + dy) % 16][(x + dx) % 16] for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))]
                 if g[y][x] not in nb:
-                    h[y][x] = max(set(nb), key=nb.count)
+                    h[y][x] = max(sorted(set(nb)), key=nb.count)   # 같은 수면 글자 순(실행마다 같은 그림)
         g = h
     for y in range(16):                                  # 얼룩 윗변이 빛을 받는다(위가 m 아님 → h)
         for x in range(16):
@@ -1133,7 +1133,7 @@ VOID_BODIES = [_void_body(st, i) for i, st in enumerate(VOID_STARS)]
 for _r in VE_FRAME + VE_FACE:
     assert len(_r) == 32, _r
 LVE = {'A1': L('k:vrock0 N:arcane0 n:ostone1 d:ostone1 h:arcane1 H:arcane2 s:arcane0 b:arcane0 e:ostone0 v:arcane2 V:arcane4 a:arcane0 A:arcane2'),   # 보라 바위 밑면
-       'A2': L('k:vrock0 N:ostone2 n:ostone1 d:ostone1 h:ostone4 H:ostone5 s:ostone3 b:ostone2 e:ostone0 v:red1 V:fire3 a:ostone1 A:red0')}           # 붉은 재 바위 밑면
+       'A2': L('k:vrock0 N:arcane0 n:ostone1 d:ostone1 h:ostone4 H:ostone5 s:ostone3 b:ostone2 e:ostone0 v:red0 V:ostone5 a:ostone2 A:red0')}           # 붉은 재 바위 밑면
 
 
 class VoidEdge:
@@ -1327,39 +1327,43 @@ def pad(rows, w):
 # 오른 면(그늘 0~1), 면 사이 능선은 한 단 밝게(4), 끝은 두 빗면이 만나는 뾰족 머리(왼 빗면 4 · 오른 빗면 1).
 # 앞 면 속 빛 점(5)과 밑으로 갈수록 한 단 밝아지는 속빛(오염된 결정이 안에서 빛난다). 뒤 조각부터 칠해 앞 조각이 덮는다.
 # 바위 받침 = 윗면이 보이는 둥근 무더기(r·o 윗면, q·p 앞면) + 돌 알갱이 결. 숫자 0~5 = 결정 단, 글자 = 바위.
-XTAL_S_SHARDS = [(10.5, 24, 9, 4, 0.35), (4.5, 25, 8, 4, -0.4), (7.5, 26, 21, 6, 0.05), (12.5, 26, 6, 3, 0.5)]
-XTAL_L_SHARDS = [(16.5, 23, 22, 7, 0.0), (8.5, 24, 15, 5, -0.35), (24.5, 24, 14, 5, 0.3), (12.5, 26, 9, 5, -0.15),
-                 (20.5, 26, 10, 5, 0.2), (3.5, 26, 7, 4, -0.5), (28.5, 26, 6, 4, 0.55)]
+XTAL_S_SHARDS = [(10.5, 25, 9, 4, 0.35), (4.5, 26, 8, 4, -0.4), (7.5, 27, 21, 6, 0.05), (12.5, 27, 6, 3, 0.5)]
+XTAL_L_SHARDS = [(16.5, 25, 22, 7, 0.0), (8.5, 25, 15, 5, -0.35), (24.5, 25, 14, 5, 0.3), (12.5, 27, 9, 5, -0.15),
+                 (20.5, 27, 10, 5, 0.2), (3.5, 27, 7, 4, -0.5), (28.5, 27, 6, 4, 0.55)]
 XTAL_GLINTS = {16: [(8, 14), (7, 20), (11, 21)], 32: [(16, 9), (17, 15), (8, 16), (25, 17), (12, 21), (21, 22)]}
 
 
 def _xtal_rock(w, y0):
-    """바위 무더기: 윗면 3줄(o 앞 모서리 빛 · r 윗면 · 알갱이 q) + 앞면 2줄(q·p) + 그림자."""
+    """바위 둔덕(3/4): 타원 윗면(o 뒤 테 빛 · r 면 · q 알갱이)이 보이고, 타원 앞쪽 아래로 앞면(q → p)이 내려간 뒤 땅 그림자(~).
+    윗면 행은 위로 갈수록 좁아 둥근 둔덕으로 읽힌다. 반환은 y0 부터 32 줄까지."""
+    cx, cy, rx, ry = (w - 1) / 2, 27.0, w / 2 - 0.6, 3.2
     rows = []
-    for i, (inset, fill) in enumerate([(2, 'r'), (1, 'r'), (0, 'r'), (0, 'o'), (0, 'q'), (1, 'p')]):
+    for y in range(y0, 32):
         r = ['.'] * w
-        for x in range(inset, w - inset):
-            r[x] = fill
+        for x in range(w):
+            dx = (x - cx) / rx
+            top = cy + (-ry * (1 - dx * dx) ** 0.5 if abs(dx) <= 1 else 99)
+            bot = cy + 1.4 + (ry * 0.9 * (1 - dx * dx) ** 0.5 if abs(dx) <= 1 else -99)
+            if top <= y + 0.5 <= cy + 0.5:
+                h = ((x * 7 + y * 13) % 9 == 0)
+                r[x] = 'o' if y + 0.5 - top < 1 else ('q' if h else ('r' if dx < 0.55 else 'q'))
+            elif cy + 0.5 < y + 0.5 <= bot:
+                r[x] = 'q' if y + 0.5 - cy < 1.6 and dx < 0.3 else 'p'
+                if (x * 5 + y * 3) % 11 == 0:
+                    r[x] = 'q' if r[x] == 'p' else 'p'
+            elif bot < y + 0.5 <= bot + 1 and abs(dx) < 0.85:
+                r[x] = '~'
         rows.append(r)
-    for (yy, xx) in [(0, 4), (1, w - 6), (2, 3), (2, w // 2), (1, w // 2 - 3), (4, 5), (4, w - 5), (0, w - 4)]:
-        if 0 <= xx < w and rows[yy][xx] != '.':
-            rows[yy][xx] = {'r': 'q', 'o': 'r', 'q': 'p', 'p': 'p'}[rows[yy][xx]]
-    for yy in (0, 1, 2):   # 오른쪽 끝은 그늘
-        xs = [x for x in range(w) if rows[yy][x] != '.']
-        if xs:
-            rows[yy][xs[-1]] = 'q'
-            rows[yy][xs[0]] = 'o' if yy < 3 else rows[yy][xs[0]]
-    shadow = ['.'] * w
-    for x in range(2, w - 2):
-        shadow[x] = '~'
-    return rows + [shadow]
+    return rows
 
 
 def xtal_rows(w, shards, glints):
     g = [['.'] * w for _ in range(32)]
-    rock = _xtal_rock(w, 25)
+    rock = _xtal_rock(w, 22)
     for i, r in enumerate(rock):
-        g[25 + i] = r
+        g[22 + i] = r
+    front = [(22 + i, x, c) for i, r in enumerate(rock) for x, c in enumerate(r)
+             if c != '.' and (c in 'p~' or (i >= 2 and rock[i - 1][x] != '.' and rock[i - 2][x] != '.' and (x * 5 + i) % 4))]
     for cx, by, h, sw, lean in shards:
         for y in range(by - h, by + 1):
             t = (by - y) / h
@@ -1374,19 +1378,23 @@ def xtal_rows(w, shards, glints):
                 if not 0 <= x < w:
                     continue
                 u = (x + 0.5 - c) / hw
+                fb = -0.2 + 0.9 * t                 # 비스듬한 면 경계(높이 따라 오른쪽으로 기운 결정 면)
                 if t >= 0.62:                       # 머리 빗면
                     tone = 4 if u < -0.1 else (3 if u < 0.35 else 1)
                 elif u < -0.45:
                     tone = 3
-                elif u < -0.2:
-                    tone = 4                        # 왼 능선
-                elif u < 0.4:
+                elif u < fb - 0.25:
+                    tone = 4                        # 왼 능선 면(빛)
+                elif u < fb + 0.15:
                     tone = 2
                 else:
                     tone = 1 if u < 0.8 else 0
                 if t < 0.25 and tone in (2, 1):     # 밑으로 갈수록 속빛
                     tone += 1
                 g[y][x] = str(tone)
+    for y, x, c in front:                  # 둔덕 앞면이 결정 밑동을 가린다(결정은 윗면 속에서 솟는다)
+        if g[y][x] not in '.~' or c != '~':
+            g[y][x] = c
     for x, y in glints:
         if g[y][x] in '123':
             g[y][x] = '5'
