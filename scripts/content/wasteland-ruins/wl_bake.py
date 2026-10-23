@@ -29,7 +29,7 @@ P = dict(png=os.path.join(ROOT, 'public/assets/wasteland-ruins/wasteland-ruins-c
          tileset=os.path.join(ROOT, 'src/assets/wastelandRuinsTileset.json'), sheet=os.path.join(ROOT, 'src/assets/wastelandRuinsSheet.json'),
          pins=os.path.join(C.OUT, 'pins.json'), report=os.path.join(C.OUT, 'bake-report.json'))
 GROUP_KO = dict(ground='바닥', ruins='폐허', shacks='판잣집', defense='방어·울타리', props='기물')
-FLOOR_GROUP_IDS = {'dirt-a', 'dirt-b', 'dirt-c', 'dirt-d', 'slab-a', 'slab-b', 'slab-c', 'rubble-a', 'rubble-b', 'rubble-c',
+FLOOR_GROUP_IDS = {'dirt-a', 'dirt-b', 'dirt-c', 'dirt-d', 'slab-a', 'slab-b', 'slab-c', 'slab-d', 'slab-e', 'rubble-a', 'rubble-b', 'rubble-c',
                    'weeds-a', 'weeds-b', 'weeds-c', 'puddle', 'fence-h', 'fence-v',
                    'road-crack-a', 'road-crack-b', 'road-crack-c', 'pothole-a', 'pothole-b',
                    'asphalt-in-ne', 'asphalt-in-nw', 'asphalt-in-se', 'asphalt-in-sw'}
