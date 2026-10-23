@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **182쪽 / 6819KB / 약 1,997,392 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **182쪽 / 6823KB / 약 1,998,682 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -19,7 +19,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/beodeul-city.md` | 170KB | 12KB | 952 | ~51,456 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 712KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4604 | ~208,981 |
-| `openwiki/editor-ai-tools.md` | 513KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3656 | ~149,930 |
+| `openwiki/editor-ai-tools.md` | 516KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3665 | ~150,784 |
 | `openwiki/editor-database.md` | 445KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2601 | ~130,556 |
 | `openwiki/editor-event-authoring.md` | 181KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1108 | ~53,027 |
 | `openwiki/editor-event-commands.md` | 72KB | 32KB | 315 | ~19,933 |
@@ -732,7 +732,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L4591` 왼쪽 사이드바(그리기·지형·활동 막대) 탭 전환 계약 (2026-10-17)
 - `L4599` UX 2차 — 도크 배치·서버 AI 꺼짐 문구 (2026-10-21, F24)
 
-### `openwiki/editor-ai-tools.md` — 513KB · 3656줄 · ~149,930 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-ai-tools.md` — 516KB · 3665줄 · ~150,784 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L3` 계단 입구 계약 — 조립기·stamp_object·create_transfer_pair (2026-10-22)
 - `L7` 없는 기물 그리기 `generate_missing_object` (2026-10-21)
@@ -3419,14 +3419,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L191` 조밀한 소형 주택 마을로 수정 (2026-09-13)
 - `L210` 저장된 소규모 집 구성 (2026-09-13)
 
-### `openwiki/wasteland-ruins.md` — 9KB · 96줄 · ~2,785 토큰
+### `openwiki/wasteland-ruins.md` — 10KB · 104줄 · ~3,221 토큰
 
 - `L6` 파일
 - `L23` 조각
 - `L46` 구성 규칙 (검수 r1~r3 에서 배운 것)
   - `L65` r5~r7 에서 더한 규칙
-- `L81` 검수 기록
-- `L92` 마을 종류 표 연결
+- `L89` 검수 기록
+- `L100` 마을 종류 표 연결
 
 ### `openwiki/wizarding-world.md` — 17KB · 147줄 · ~5,224 토큰
 
