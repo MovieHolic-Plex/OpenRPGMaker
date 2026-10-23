@@ -24,7 +24,7 @@ import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
 import { markBattleEntry } from "@/app/perfMetrics";
-import { BATTLE_READY_TIMEOUT_MS } from "@/player/battleReadiness";
+import { BATTLE_READY_TIMEOUT_MS, BATTLE_SCENERY_GRACE_MS, deferUntilBattleReady } from "@/player/battleReadiness";
 import { clearAudioState, nextSessionRandom, setAudioState } from "@/project/session";
 import type { MonsterInstance, PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
@@ -232,7 +232,7 @@ export async function playBattle(
       }
       // 전투 DOM 의 첫 스타일·레이아웃(수백 줄 CSS 를 처음 매칭)과 SE 디코드 요청을 진입 커버(번쩍임) 동안 치른다.
       // 마운트에서 치르면 커버가 걷히는 순간 한 프레임이 30~50ms 멈춘다(SwiftShader 실측, 준비 뒤 9ms).
-      preloadBattleJuiceSamples();
+      deferUntilBattleReady(preloadBattleJuiceSamples);
       warmBattleStyles(host, runtime.snapshot());
       // 겹 배경 네 장도 커버 동안 읽는다. 안 그러면 첫 1~2초 단일 배경이 보이다 바뀐다(「전투 도중 배경이 바뀐다」).
       let sceneryReady: Promise<unknown> = Promise.resolve();
@@ -400,7 +400,11 @@ export async function playBattle(
         // 인트로·ATB 시계는 커버가 걷힐 때 시작해 보이지 않는 전투가 흘러가지 않는다.
         const mounted = battleScene;
         await Promise.race([
-          Promise.all([mounted.ready, sceneryReady]),
+          // 무대 그림이 필수, 겹 배경은 그 뒤 짧은 말미만 기다린다(늦으면 단일 배경 위에 나중에 덮인다).
+          mounted.ready.then(() => Promise.race([
+            sceneryReady,
+            new Promise<void>((done) => { window.setTimeout(done, BATTLE_SCENERY_GRACE_MS); }),
+          ])),
           new Promise<void>((done) => { window.setTimeout(done, BATTLE_READY_TIMEOUT_MS); }),
         ]);
         if (!current() || settled || battleScene !== mounted) { abort(); return; }

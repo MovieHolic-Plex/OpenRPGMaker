@@ -22,6 +22,7 @@ function loadSceneryLayers(biome: BattleSceneryBiome): Promise<boolean> {
   const entry = BATTLE_SCENERY_CATALOG.find((item) => item.biome === biome)!;
   const load = Promise.all(BATTLE_SCENERY_LAYERS.map((layer) => new Promise<boolean>((resolve) => {
     const image = new Image();
+    image.fetchPriority = "high";
     const timer = window.setTimeout(() => resolve(false), LAYER_LOAD_TIMEOUT_MS);
     image.onload = () => { void image.decode().catch(() => undefined).then(() => { window.clearTimeout(timer); resolve(true); }); };
     image.onerror = () => { window.clearTimeout(timer); resolve(false); };

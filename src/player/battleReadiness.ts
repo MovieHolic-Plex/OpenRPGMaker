@@ -11,6 +11,8 @@ import type { BattleAnimationRecord, Project } from "@/project/types";
  */
 export const BATTLE_READY_TIMEOUT_MS = 6000;
 /** 무대 밖 이펙트 시트는 첫 행동 전에 받으면 좋을 뿐이라, 무대 그림이 끝난 뒤 이만큼만 더 기다린다. */
+/** 겹 배경 네 장은 무대 그림이 준비된 뒤 이만큼만 더 기다린다. 못 오면 단일 배경으로 시작하고 오는 즉시 덮는다. */
+export const BATTLE_SCENERY_GRACE_MS = 1500;
 export const BATTLE_EXTRA_GRACE_MS = 800;
 
 const afterReady: Array<() => void> = [];
@@ -47,6 +49,8 @@ export function decodeImageUrl(url: string): Promise<HTMLImageElement | null> {
   const pending = new Promise<HTMLImageElement | null>((resolve) => {
     const image = new Image();
     image.decoding = "async";
+    // 첫 프레임 그림은 같은 시각에 요청되는 음원·효과 시트보다 먼저 와야 한다(기본 낮은 우선순위는 느린 회선에서 굶는다).
+    image.fetchPriority = "high";
     image.addEventListener("error", () => resolve(null), { once: true });
     image.addEventListener("load", () => {
       const done = (): void => resolve(image.naturalWidth > 0 ? image : null);

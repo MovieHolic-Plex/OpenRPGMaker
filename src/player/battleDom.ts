@@ -42,7 +42,7 @@ import {
 import { battleSkinFamily, getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import type { BattleFieldPresentation } from "@/player/battleFieldDom";
 import { applyActionMotion, applyFieldBackdrop, battleField, battlePartyStatus, blinkBattlerNode, findBattlerNode, playCaptureCinematic, settleBattleTopPads, spawnHitSparks, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
-import { battleAnimationSheetUrls, whenBattleStageReady } from "@/player/battleReadiness";
+import { battleAnimationSheetUrls, deferUntilBattleReady, whenBattleStageReady } from "@/player/battleReadiness";
 import { emitBattleJuice as emitContextBattleJuice, fadeBattleCue, flashBattleField, playBattleCue as playContextBattleCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleCueShape, type BattleJuiceEvent } from "@/player/battleJuice";
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
@@ -156,10 +156,11 @@ export function destroyBattleSceneOnHost(host: HTMLElement): void {
 
 export function mountBattleScene(options: BattleDomOptions): BattleDomController {
   // 블라인드 전환 동안 기본 SE 세트를 디코딩해 둔다 — 첫 임팩트부터 소리가 정시에 온다.
-  preloadBattleJuiceSamples();
+  // 소리 파일(수백 KB)이 무대 그림과 같은 연결을 먹으면 좁은 망에서 그림이 5초 늦는다 — 무대 그림이 디코딩된 뒤에 받는다.
+  deferUntilBattleReady(preloadBattleJuiceSamples);
   // 기술 이펙트의 타이밍 소리도 — 행동 시작 때(preloadBattleAnimationSounds) 받으면 3배속에서는 approach 가 60~110ms 라
   // 디코딩이 끝나기 전에 착탄이 와서 요소 재생(0.2~0.4초 늦음)으로 떨어졌다.
-  preloadAllBattleAnimationSounds();
+  deferUntilBattleReady(preloadAllBattleAnimationSounds);
   const playBattleCue = (event: BattleJuiceEvent): void => playContextBattleCue(event, options.audioContext);
   const emitBattleJuice = (event: BattleJuiceEvent, target?: HTMLElement | null, shape?: BattleCueShape): void =>
     emitContextBattleJuice(event, target, options.audioContext, shape);
@@ -189,7 +190,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const pokemonMotion = root.dataset.battleUiStyle === "pokemon" && !retroMotion;
   // 포켓몬 안무의 이펙트 재생 계획 — animationImpactMs 가 정하고 onEntryAnimation 이 씬 루트에 건너뛸 프레임 수로 넘긴다.
   let animationPlan: { animationId: string; skipFrames: number; skippedMs: number } | undefined;
-  if (pokemonMotion) preloadPokemonMotionSounds();
+  if (pokemonMotion) deferUntilBattleReady(preloadPokemonMotionSounds);
   // 지금 재생 중인 타임라인 엔트리의 기술 움직임 종류(접촉·발사체·…). onTimelineEntry 가 비트보다 먼저 온다.
   let captureEntryActive = false;
   let pokemonMove: PokemonMoveContext = { motion: "contact", color: "#ffffff", fromBelow: false };
@@ -324,7 +325,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   if (battleLook) applyBattleLook(root, field, battleLook);
   if (retroMotion) {
     initRetroMotion(field, initialSnapshot);
-    preloadRetroMotionSe();
+    deferUntilBattleReady(preloadRetroMotionSe);
   }
   syncPlaybackStatus();
   // 씬이 붙으면 포커스를 씬 안으로 가져온다 — 없으면 인트로·명령 국면 내내 activeElement 가
