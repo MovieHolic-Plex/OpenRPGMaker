@@ -108,11 +108,12 @@ const SE_DOOR_SHUT = "cc0-se-osx-door-close-02"; // 묵직한 철문이 닫히�
 const SE_BUTTON = "cc0-se-osx-switch-01"; // 호출 단추 딸깍
 // 승강기·로비 문 — 옛 evade2 는 청취 설명이 «휙 피하기»라 전투 회피로 읽혔다(VQA r26). 걸쇠·공압·미끄러짐·잠김의 기계 문 소리.
 const SE_SLIDE = "cc0-se-orp-misc-random6";
-const SE_GLASS_OPEN = "easyrpg-sound-teleport2"; // 유리문 손잡이 걸쇠가 풀리는 소리
+const SE_GLASS_OPEN = "cc0-se-osx-pot-02"; // 유리문 손잡이가 풀리며 문이 밀리는 짧은 기계 클릭·마찰(teleport2 는 이름이 «순간이동»이라 소리 계획에서 오해됐다, VQA r32)
 const SE_GLASS_SHUT = "cc0-se-osx-door-close-03"; // 유리문 걸쇠 딸깍
 // 열차: 옛 earth2 는 카탈로그 청취 설명이 「심장 박동 쿵-쿵」이라 열차로 읽히지 않았다(VQA r25) — 저음 럼블이 부풀었다 빠지는 fire1,
 // 문은 공압이 빠지며 미끄러져 걸리는 random6. earth2 는 질주 장면의 심장 소리로 쓴다.
-const SE_TRAIN = "easyrpg-sound-fire1"; // 저역 럼블·공기 마찰이 부풀었다 빠지는 1.5초 — 들어오고 떠나는 열차
+const SE_TRAIN = "cc0-se-orp-misc-random1"; // 굵은 저역 모터 구동음 1초 — 들어오고 떠나는 열차의 견인 모터(fire1 «불 마법» 후시는 열차로 안 읽혔다, VQA r32 중대)
+const SE_TRAIN_AIR = "easyrpg-sound-wind8"; // 저역 럼블 섞인 강한 기류 1.4초 — 열차가 밀고 들어오는 바람·공기 제동
 const SE_TRAIN_DOOR = "cc0-se-orp-misc-random6"; // 걸쇠 딸깍 → 공압 배출·미끄러짐 → 잠김(열차 문 열림·닫힘)
 const SE_PULSE = "easyrpg-sound-earth2"; // 둔탁한 저음 쿵-쿵(심장 박동) — 막차까지 뛰는 장면
 const SE_CHIME = "easyrpg-sound-song"; // 편의점 자동문 입점 차임(네 음 상행)
@@ -1246,9 +1247,11 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
         face("ev_fl_f_minho", dirToward(minhoSpot, o.meetingSeat)),
         ...sayAt("minho", "left", "happy", "고깃집 2층이에요! 늦으면 서하 씨 몫 없어요~"),
         // 둘은 회의실 유리문 쪽으로 걸어 나간다 — 일어서기만 하고 컷되면 «아무도 안 나간다»였다(VQA r29). 서하는 남아 정리한다.
-        walkRoute(project, FL_MAP.officeFri, "ev_fl_f_lead", { x: leadSpot.x, y: leadSpot.y + 1 }, o.meeting, [o.meetingSeat], false),
-        walkRoute(project, FL_MAP.officeFri, "ev_fl_f_minho", { x: minhoSpot.x, y: minhoSpot.y + 1 }, { x: o.meeting.x - 1, y: o.meeting.y }, [o.meetingSeat], false),
-        waitMoves(), // 둘이 회의실 문에 닿은 뒤에 어두워진다(VQA r31: 방 한가운데서 끊겼다)
+        // 회의실 유리문으로 걸어 나가 문 칸에서 사라진다(exitVia) — 문 앞까지만 걸으면 «방 한가운데서 끊겼다»(VQA r31·r32).
+        { kind: "moveEvent", eventId: "ev_fl_f_lead", route: { moves: [{ kind: "exitVia", x: o.meeting.x, y: o.meeting.y - 1, se: "", closeSe: "" }], repeat: false, wait: false, skippable: true } } as unknown as Command,
+        wait(700),
+        { kind: "moveEvent", eventId: "ev_fl_f_minho", route: { moves: [{ kind: "exitVia", x: o.meeting.x, y: o.meeting.y - 1, se: "", closeSe: "" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
+        waitMoves(),
         // 엔딩 C 의 비(VQA r8: 「비가 오기 시작했다」는 말뿐 비가 없다) — 검은 화면에서 빌딩 앞 밤거리로 옮기고, 비는 거기 장면이 내린다.
         // 실내에 비를 뿌리지 않는다. 옮긴 뒤의 명령은 이 맵 이벤트에서 돌지 않으므로 이어지는 연출은 밤거리의 ev_fl_dinner_rain 이 한다.
         ...fadeOut(700),
@@ -1344,7 +1347,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
     wait(250),
     setSw("sw_fl_jihu_boarded", true),
     wait(700),
-    quiet(SE_TRAIN, 0.4), // 떠나는 열차
+    quiet(SE_TRAIN, 0.45), quiet(SE_TRAIN_AIR, 0.3), // 떠나는 열차 — 모터와 밀려나는 바람
     wait(4200),
   ];
   add(plat, scene("ev_fl_platform", { x: 1, y: 1 }, S.RUN, [
@@ -1376,7 +1379,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
     // 막차가 실제로 들어온다 — 안내 방송에 맞춰 부르고, 둘이 선로 쪽을 보는 사이 열차가 미끄러져 들어와 서고 문이 열린다(사용자 r2).
     setSw(FL_TRAIN_CALL, true),
     ...voice("안내 방송", "‘열차가 들어오고 있습니다. 안전선 뒤로 한 걸음 물러서 주십시오.’"),
-    quiet(SE_TRAIN, 0.5),
+    quiet(SE_TRAIN, 0.5), quiet(SE_TRAIN_AIR, 0.35), // 들어오는 열차 — 모터와 밀려드는 바람
     face("@player", "down"),
     face("ev_fl_p_jihu", "down"),
     shake(600),
