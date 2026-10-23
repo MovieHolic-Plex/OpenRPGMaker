@@ -2,8 +2,10 @@
  * 『폴른 스타』 왕도 아스텔의 살림(2026-10-24): 집 안 수납 뒤지기·주인에게 들키기·토마 빵집·대장간 재고.
  *
  * - 수납(통·궤짝·옷장·바구니·자루…)은 한 번만 뒤질 수 있고 먼저 말하는 한 줄로 결과를 보여 준다(더러는 빈다).
- * - 리사네 집은 리사가 문 쪽을 보고 서 있다. 방 안쪽(리사 눈앞) 수납을 뒤지면 처음은 경고, 두 번째는 호통·내쫓김·
- *   출입 금지(스위치로 저장되고 집 문이 거절한다). 가게·여관·천문대는 잠글 수 없다.
+ * - 리사·오스본·토마는 집 안을 오가며 산다(걷는 경로). 수납을 뒤질 때 주인이 같은 방에서 이쪽을 향해 5칸 안에
+ *   있어야만(eventSeesPlayer) 들킨다. 못 보면 그냥 챙긴다 — 다른 방이면 기척 없이, 가까이 있으면 「달그락」 소리.
+ *   들키면 「!」 말풍선, 처음은 경고, 두 번째는 호통·내쫓김(리사·오스본은 출입 금지 스위치가 저장되고 문이 거절).
+ *   토마(가게)·여관·약방·대장간은 잠글 수 없다.
  * - 토마의 빵은 전부 먹는 상태 기믹이다(데워진 빵=몇 전투에 걸친 재생, 약초 빵=상태 치료, 수상한 빵=무작위,
  *   든든한 빵=여관에서 쉴 때까지 힘 상승, 묵은 빵=싸지만 탈이 날 수 있음).
  * 이 파일은 fallenTownInteriors.ts 를 가져오지 않는다(재고 함수만 거기서 가져간다).
@@ -176,30 +178,80 @@ function ensureVariable(project: Project, id: string, name: string): void {
   if (!project.variables.some((v) => v.id === id)) project.variables.push({ id, name });
 }
 
-type Watch = { readonly person: string; readonly sees: (c: Cell) => boolean };
+/** 집 주인 — 이 사람이 방 안에서 나를 볼 수 있을 때만 수납 뒤지기가 들킨다(eventSeesPlayer). */
+type Owner = {
+  readonly mapId: string; readonly person: string; readonly name: string;
+  readonly warnVar: string; readonly banSwitch: string | null;
+  /** 주인이 가까이(다른 방·등 돌린 채) 있을 때 먼저 들리는 기척 */
+  readonly cue: string;
+  readonly lines: { readonly warn: readonly [string, string]; readonly expel: readonly [string, string]; readonly shove: string; readonly banned: string };
+};
 
-/** 리사: 문 쪽을 보고 서서 방 안쪽(서랍·옷장이 있는 아래쪽 왼편)을 지켜본다. */
-const LISA_WATCH: Watch = { person: "ev_fs_lisa", sees: (c) => c.y >= 9 && c.x <= 12 };
+const OWNERS: readonly Owner[] = [
+  {
+    mapId: "fs_lisa_home", person: "ev_fs_lisa", name: "리사", warnVar: VAR_LISA_WARNED, banSwitch: SW_LISA_BANNED,
+    cue: "부엌 쪽에서 달그락 소리가 난다. 리사가 가까이 있는 것 같다.",
+    lines: {
+      warn: ["…방금 거기, 손댔죠? 이번 한 번만 못 본 걸로 해 줄게요.", "한 번만 더 내 물건에 손대면 그땐 문밖으로 내쫓을 거예요. 이 집 문도 다시는 안 열어 줄 거고요."],
+      expel: ["내가 분명히 말했죠! 남의 집 서랍을 또 뒤져요?", "나가요, 당장! 그리고 다시는 이 집 문턱도 넘지 말아요!"],
+      shove: "리사에게 등을 떠밀려 집 밖으로 쫓겨났다.",
+      banned: "문 안쪽에서 리사의 목소리가 날카롭게 울린다. 「남의 서랍 뒤지는 사람은 들이지 않아요! 돌아가요!」",
+    },
+  },
+  {
+    mapId: "fs_stargazer_home", person: "ev_fs_old_stargazer", name: "오스본", warnVar: "var_fs_osborn_warned", banSwitch: "sw_fs_osborn_banned",
+    cue: "서재 쪽에서 책장 넘기는 소리와 낮은 헛기침이 들린다. 노인이 가까이 있다.",
+    lines: {
+      warn: ["…이보게, 지금 내 궤짝에 손을 넣지 않았나. 별 보는 늙은이도 눈은 멀쩡하다네.", "이번만은 넘어가겠네. 하지만 또 그러면 이 문을 다시는 열지 않을 걸세."],
+      expel: ["내가 분명히 일렀네! 또 남의 물건에 손을 대다니!", "나가게. 이 천문대 문턱을 다시 넘을 생각은 말게!"],
+      shove: "오스본의 지팡이에 떠밀려 집 밖으로 쫓겨났다.",
+      banned: "문 너머에서 오스본의 지팡이 소리가 울린다. 「도둑 손버릇은 들이지 않네. 돌아가게!」",
+    },
+  },
+  {
+    mapId: "fs_bakery_home", person: "ev_fs_baker_husband", name: "토마", warnVar: "var_fs_toma_warned", banSwitch: null,
+    cue: "오븐 쪽에서 반죽을 두드리는 소리가 난다. 토마가 멀지 않은 곳에 있다.",
+    lines: {
+      warn: ["어이쿠, 손님! 내 빵 궤짝에 손댔소? 이번엔 못 본 걸로 하겠소.", "하지만 한 번 더 그러면 가게 밖으로 끌어낼 거요. 알겠소?"],
+      expel: ["내가 말했잖소! 또 뒤졌소?!", "나가시오! 오늘은 더 팔 빵 없소!"],
+      shove: "토마에게 어깨를 잡혀 가게 밖으로 끌려 나왔다.",
+      banned: "",
+    },
+  },
+];
+
+function ownerSeesFork(owner: Owner, then: Command[], otherwise: Command[]): Command {
+  return {
+    kind: "fork", condition: { kind: "eventSeesPlayer", eventId: owner.person, range: 5 }, then, else: otherwise,
+  } as unknown as Command;
+}
 
 function containerEvent(
-  project: Project, mapId: string, c: Cell, label: string, loot: Loot, watch: Watch | null, expel: Command[] | null,
+  project: Project, mapId: string, c: Cell, label: string, loot: Loot, owner: Owner | null, expel: Command[] | null,
 ): GameMap["events"][number] {
   const id = `ev_fs_box_${mapId}_${c.x}_${c.y}`;
   const take = [...lootCommands(project, loot, label), { kind: "setSelfSwitch", key: "A", value: true } as Command];
   let first: Command[] = take;
-  if (watch && expel) {
+  if (owner && expel) {
+    const spotted = { kind: "showEmote", target: { eventId: owner.person }, emote: "exclamation", durationMs: 900 } as Command;
+    const near = {
+      kind: "fork", condition: { kind: "eventSeesPlayer", eventId: owner.person, range: 8, sameRoom: false, requireFacing: false },
+      then: [narrate(owner.cue), ...take], else: take,
+    } as unknown as Command;
     first = [
-      {
-        kind: "fork", condition: { kind: "variable", variableId: VAR_LISA_WARNED, op: ">", value: 0 },
-        then: expel,
-        else: [
-          ...take,
-          { kind: "showEmote", target: { eventId: watch.person }, emote: "exclamation", durationMs: 900 } as Command,
-          say("리사", "…방금 거기, 손댔죠? 이번 한 번만 못 본 걸로 해 줄게요."),
-          say("리사", "한 번만 더 내 물건에 손대면 그땐 문밖으로 내쫓을 거예요. 이 집 문도 다시는 안 열어 줄 거고요."),
-          { kind: "setVariable", variableId: VAR_LISA_WARNED, op: "=", value: 1 } as Command,
-        ],
-      } as Command,
+      ownerSeesFork(owner, [
+        spotted,
+        {
+          kind: "fork", condition: { kind: "variable", variableId: owner.warnVar, op: ">", value: 0 },
+          then: expel,
+          else: [
+            ...take,
+            say(owner.name, owner.lines.warn[0]),
+            say(owner.name, owner.lines.warn[1]),
+            { kind: "setVariable", variableId: owner.warnVar, op: "=", value: 1 } as Command,
+          ],
+        } as Command,
+      ], [near]),
     ];
   }
   return {
@@ -220,15 +272,15 @@ function containerEvent(
 
 const HOME_MAPS = ["fs_inn", "fs_apothecary", "fs_bakery_home", "fs_stargazer_home", "fs_lisa_home", "fs_smithy"] as const;
 
-/** 주인에게 호통 맞고 쫓겨나는 장면 — 리사 집 문 앞으로 나가고 출입 금지 스위치가 켜진다. */
-function expelCommands(exit: { mapId: string; x: number; y: number }): Command[] {
+/** 주인에게 호통 맞고 쫓겨나는 장면 — 집 문 앞으로 나가고(잠글 수 있는 집은) 출입 금지 스위치가 켜진다. */
+function expelCommands(owner: Owner, exit: { mapId: string; x: number; y: number }): Command[] {
   return [
     { kind: "showEmote", target: "player", emote: "sweat", durationMs: 700 } as Command,
-    { kind: "showEmote", target: { eventId: "ev_fs_lisa" }, emote: "anger", durationMs: 1100 } as Command,
-    say("리사", "내가 분명히 말했죠! 남의 집 서랍을 또 뒤져요?"),
-    say("리사", "나가요, 당장! 그리고 다시는 이 집 문턱도 넘지 말아요!"),
-    narrate("리사에게 등을 떠밀려 집 밖으로 쫓겨났다."),
-    { kind: "setSwitch", switchId: SW_LISA_BANNED, value: true } as Command,
+    { kind: "showEmote", target: { eventId: owner.person }, emote: "anger", durationMs: 1100 } as Command,
+    say(owner.name, owner.lines.expel[0]),
+    say(owner.name, owner.lines.expel[1]),
+    narrate(owner.lines.shove),
+    ...(owner.banSwitch ? [{ kind: "setSwitch", switchId: owner.banSwitch, value: true } as Command] : []),
     { kind: "transfer", mapId: exit.mapId, x: exit.x, y: exit.y, direction: "down", fade: "black" } as Command,
   ];
 }
@@ -238,45 +290,44 @@ function findGate(hub: GameMap, toMapId: string): GameMap["events"][number] | un
   return hub.events.find((e) => has(e.commands as Command[]) || (e.pages ?? []).some((p) => has(p.commands as Command[])));
 }
 
-export type TownLifeResult = { containers: Record<string, number>; bannedGate: Cell | null };
+export type TownLifeResult = { containers: Record<string, number>; bannedGate: Cell | null; bannedGates: Record<string, Cell> };
 
 export function buildFallenTownLife(project: Project, hubId: string): TownLifeResult {
-  ensureSwitch(project, SW_LISA_BANNED, "리사네 집 출입 금지(들켰다)");
-  ensureVariable(project, VAR_LISA_WARNED, "리사의 경고 횟수");
+  for (const o of OWNERS) {
+    ensureVariable(project, o.warnVar, `${o.name}의 경고 횟수`);
+    if (o.banSwitch) ensureSwitch(project, o.banSwitch, `${o.name}네 집 출입 금지(들켰다)`);
+  }
   const containers: Record<string, number> = {};
-  let bannedGate: Cell | null = null;
-
+  const bannedGates: Record<string, Cell> = {};
   const hub = project.maps[hubId];
-  const lisaGate = hub ? findGate(hub, "fs_lisa_home") : undefined;
-  const exit = lisaGate ? { mapId: hubId, x: lisaGate.x, y: lisaGate.y + 1 } : null;
 
   for (const mapId of HOME_MAPS) {
     const map = project.maps[mapId];
     if (!map) continue;
+    const owner = OWNERS.find((o) => o.mapId === mapId) ?? null;
+    const gate = hub && owner ? findGate(hub, mapId) : undefined;
+    const exit = gate ? { mapId: hubId, x: gate.x, y: gate.y + 1 } : null;
     const spots = findContainers(project, map, (x, y) => x >= 0 && y >= 0 && x < map.width && y < map.height && isPassable(project, map, x, y));
     let n = 0;
     for (const { cell, label } of spots) {
-      const watched = mapId === "fs_lisa_home" && LISA_WATCH.sees(cell);
-      const loot = rollLoot(project, mapId, cell, watched);
-      const ev = containerEvent(project, mapId, cell, label, loot, watched ? LISA_WATCH : null, watched && exit ? expelCommands(exit) : null);
-      map.events.push(ev);
+      const loot = rollLoot(project, mapId, cell, false);
+      map.events.push(containerEvent(project, mapId, cell, label, loot, owner, owner && exit ? expelCommands(owner, exit) : null));
       n++;
     }
     containers[mapId] = n;
+    // 잠글 수 있는 집의 문: 쫓겨난 뒤에는 거절하고 문밖으로 되돌려 보낸다.
+    if (gate && exit && owner?.banSwitch) {
+      (gate.pages ??= []).push({
+        id: `${gate.id}_banned`, name: "출입 금지", conditions: [{ kind: "switch", switchId: owner.banSwitch, value: true }],
+        graphic: { transparent: true }, movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "same",
+        trigger: { kind: "playerTouch" },
+        commands: [
+          narrate(owner.lines.banned),
+          { kind: "transfer", mapId: exit.mapId, x: exit.x, y: exit.y, direction: "down", fade: "none" } as Command,
+        ],
+      } as never);
+      bannedGates[mapId] = { x: gate.x, y: gate.y };
+    }
   }
-
-  // 리사네 집 문: 쫓겨난 뒤에는 거절하고 문밖으로 되돌려 보낸다.
-  if (hub && lisaGate && exit) {
-    (lisaGate.pages ??= []).push({
-      id: `${lisaGate.id}_banned`, name: "출입 금지", conditions: [{ kind: "switch", switchId: SW_LISA_BANNED, value: true }],
-      graphic: { transparent: true }, movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "same",
-      trigger: { kind: "playerTouch" },
-      commands: [
-        narrate("문 안쪽에서 리사의 목소리가 날카롭게 울린다. 「남의 서랍 뒤지는 사람은 들이지 않아요! 돌아가요!」"),
-        { kind: "transfer", mapId: exit.mapId, x: exit.x, y: exit.y, direction: "down", fade: "none" } as Command,
-      ],
-    } as never);
-    bannedGate = { x: lisaGate.x, y: lisaGate.y };
-  }
-  return { containers, bannedGate };
+  return { containers, bannedGate: bannedGates["fs_lisa_home"] ?? null, bannedGates };
 }

@@ -33,8 +33,9 @@ type Home = {
     readonly behindCounter?: boolean;
     /** 서 있을 칸을 정해 둔다(쓰임 있는 자리 — 별지기는 별 렌즈 곁). 걸을 수 없거나 막히면 무시하고 빈 칸을 고른다. */
     readonly at?: Cell;
-    /** 제자리에 서 있다(주변을 살피는 파수 — 리사가 서랍을 뒤지는 손님을 지켜본다). */
-    readonly fixed?: boolean;
+    /** 집 안을 돌아다니는 주인의 방 이름(GameMap.locations) — 시작 칸에서 이 방들을 차례로 들렀다 같은 길로 돌아온다(NPC 산책 route).
+     *  서랍을 뒤지는 손님은 「주인이 같은 방에서 이쪽을 보고 있을 때」만 들킨다(eventSeesPlayer — townLife.ts). */
+    readonly roam?: readonly string[];
     readonly lines: readonly string[]; readonly after: readonly string[];
     readonly commands?: readonly Record<string, unknown>[];
   }[];
@@ -134,7 +135,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
         ["roundtable", 16, 12], ["chair E", 15, 12], ["chair W", 17, 12]],
       people: [
         {
-          id: "ev_fs_baker_husband", name: "빵집 아저씨 토마", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people1", 4], behindCounter: true,
+          id: "ev_fs_baker_husband", name: "빵집 아저씨 토마", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people1", 4], behindCounter: true, roam: ["bakery_oven"],
           lines: ["아내는 광장에 나가 있어요. 별이 떨어진 밤엔 반죽이 안 부푼다던데… 미신이겠죠.", "그래도 오늘 새벽 반죽은 정말 안 부풀었어요."],
           after: ["기계 아가씨가 빵을 먹나요? …먹는 흉내라도 낸다면 하나 싸 줄게요."],
           commands: [{ kind: "shop", shopType: "normal", itemIds: fallenBakeryStock(project), allowSell: true }],
@@ -160,7 +161,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       people: [
         {
           // 거실 오른쪽 아래 구석에 서 있었다(VQA r30) — 진열실의 큰 별 렌즈 곁(왼쪽)에 선다.
-          id: "ev_fs_old_stargazer", name: "늙은 별지기 오스본", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 6], at: { x: 7, y: 4 },
+          id: "ev_fs_old_stargazer", name: "늙은 별지기 오스본", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 6], at: { x: 7, y: 4 }, roam: ["study", "living"],
           lines: ["나도 젊을 땐 저 천문대에서 별을 셌지. 하넬 녀석이 내 자리를 물려받았고.", "어젯밤 그 별은 궤도가 이상했어. 떨어진 게 아니라… 내려앉은 것처럼 보였지."],
           after: ["하늘을 건너는 배라… 하넬이 평생 찾던 답이 그 아이 안에 있겠구먼.", "교단은 하늘을 두려워해. 두려운 건 덮으려 들지. 조심하게, 카엘."],
         },
@@ -189,8 +190,8 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
         ["roundtable", 15, 14], ["stool", 14, 14], ["stool", 16, 14]],
       people: [
         {
-          id: "ev_fs_lisa", name: "리사", query: "젊은 여성", chip: ["tex_easyrpg_charset_people3", 3], at: { x: 9, y: 14 }, fixed: true,
-          lines: ["심문관 발렌이 왔다면서요. 교단은 그 별을 「불경한 하늘의 물건」이라 부른대요.", "우리 애가 밤새 창밖만 보더라고요. 별이 노래를 부른다나요.", "…그리고 손님, 서랍이나 옷장은 건드리지 마세요. 이 방은 내가 계속 보고 있으니까요."],
+          id: "ev_fs_lisa", name: "리사", query: "젊은 여성", chip: ["tex_easyrpg_charset_people3", 3], at: { x: 9, y: 14 }, roam: ["living", "kitchen"],
+          lines: ["심문관 발렌이 왔다면서요. 교단은 그 별을 「불경한 하늘의 물건」이라 부른대요.", "우리 애가 밤새 창밖만 보더라고요. 별이 노래를 부른다나요.", "…그리고 손님, 서랍이나 옷장은 건드리지 마세요. 집 안을 돌아다니다가도 눈이 마주치면 알아요, 나는."],
           after: ["그 은빛 머리 아가씨, 숨기는 게 좋을 거예요. 심문관은 한 번 본 얼굴은 잊지 않는대요."],
         },
       ],
@@ -355,6 +356,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       // place_npc 는 가구 곁 칸을 피해 옆으로 비켜 세운다 — 계산대 뒤 자리는 일부러 고른 칸이라 그대로 둔다.
       if (counter) { npc.x = counter.behind.x; npc.y = counter.behind.y; }
       else if (spot === fixed) { npc.x = spot.x; npc.y = spot.y; }
+      const roamMoves = person.roam ? roamRoute(project, live, { x: npc.x, y: npc.y }, exitCell, person.roam) : undefined;
       // 이름 있는 사람마다 다른 칩 — 같은 낱말(노인 남성·젊은 여성)로 고르면 두 집에 같은 얼굴이 섰다(VQA r5).
       for (const page of npc.pages ?? []) {
         if (!page.graphic?.sprite) continue;
@@ -365,7 +367,8 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
         };
         const direction = counter ? "down" : toward();
         page.graphic = { ...page.graphic, sprite: { type: "bundled", id: person.chip[0] }, direction, pattern: charsetFrameIndex({ characterIndex: person.chip[1], direction, pattern: 1 }) };
-        if (counter || person.fixed) page.movement = { type: "fixed", speed: 3, frequency: 3 };
+        if (roamMoves) page.movement = { type: "custom", speed: 3, frequency: 3, moveIntervalMs: 1000, route: { repeat: true, skippable: false, moves: roamMoves } };
+        else if (counter) page.movement = { type: "fixed", speed: 3, frequency: 3 };
       }
       if (counter) {
         // 계산대 칸에 투명한 대리 이벤트 — 손님이 계산대를 보고 말을 걸면 주인의 대사·가게가 열린다.
@@ -412,6 +415,80 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
 }
 
 /** origin 에서 걸어 닿는 칸 가운데 rank(0 가까움 ~ 1 멂) 자리 — 다른 칸·이벤트와 2칸 넘게 떨어진 곳. */
+type RouteMove = { kind: "move"; dir: "up" | "down" | "left" | "right" } | { kind: "turn"; dir: "up" | "down" | "left" | "right" } | { kind: "wait" };
+
+/**
+ * 주인이 집 안을 걷는 길 — start 에서 roam 방들을 차례로 들러 같은 길로 돌아오는 닫힌 고리(repeat 해도 제자리로 온다).
+ * 걸을 수 있고 다른 이벤트가 없는 칸만 BFS 로 잇고, 문 앞 두 칸은 비워 손님이 들어설 때 길이 막히지 않게 한다.
+ * 닿지 못하는 방은 건너뛴다(고리가 안 만들어지면 undefined → 제자리).
+ */
+function roamRoute(project: Project, map: GameMap, start: Cell, exitCell: Cell, rooms: readonly string[]): RouteMove[] | undefined {
+  const blocked = new Set<number>();
+  for (const e of map.events) blocked.add(e.y * map.width + e.x);
+  blocked.delete(start.y * map.width + start.x);
+  const open = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < map.width && y < map.height
+    && isPassable(project, map, x, y) && !blocked.has(y * map.width + x)
+    && Math.max(Math.abs(x - exitCell.x), Math.abs(y - exitCell.y)) > 2;
+  const DIRS = [["up", 0, -1], ["down", 0, 1], ["left", -1, 0], ["right", 1, 0]] as const;
+  const bfs = (from: Cell): { dist: Map<number, number>; prev: Map<number, number> } => {
+    const dist = new Map<number, number>([[from.y * map.width + from.x, 0]]);
+    const prev = new Map<number, number>();
+    const q = [from.y * map.width + from.x];
+    for (let h = 0; h < q.length; h += 1) {
+      const i = q[h]!; const x = i % map.width; const y = (i - x) / map.width;
+      for (const [, dx, dy] of DIRS) {
+        const nx = x + dx, ny = y + dy, ni = ny * map.width + nx;
+        if (dist.has(ni) || !open(nx, ny)) continue;
+        dist.set(ni, dist.get(i)! + 1); prev.set(ni, i); q.push(ni);
+      }
+    }
+    return { dist, prev };
+  };
+  const pathTo = (from: Cell, to: Cell): Cell[] | undefined => {
+    const { dist, prev } = bfs(from);
+    const ti = to.y * map.width + to.x;
+    if (!dist.has(ti)) return undefined;
+    const out: Cell[] = [];
+    for (let i = ti; i !== from.y * map.width + from.x; i = prev.get(i)!) out.push({ x: i % map.width, y: Math.floor(i / map.width) });
+    return out.reverse();
+  };
+  const reach = bfs(start).dist;
+  const stops: Cell[] = [];
+  for (const name of rooms) {
+    const loc = (map.locations ?? []).find((l) => l.name === name);
+    if (!loc) continue;
+    const cx = loc.x + (loc.w ?? 1) / 2, cy = loc.y + (loc.h ?? 1) / 2;
+    let best: Cell | undefined; let bd = Infinity;
+    for (let y = loc.y; y < loc.y + (loc.h ?? 1); y += 1) for (let x = loc.x; x < loc.x + (loc.w ?? 1); x += 1) {
+      if (!reach.has(y * map.width + x)) continue;
+      const d = (x - cx) ** 2 + (y - cy) ** 2;
+      if (d < bd) { bd = d; best = { x, y }; }
+    }
+    if (best && !(best.x === start.x && best.y === start.y)) stops.push(best);
+  }
+  if (!stops.length) return undefined;
+  const moves: RouteMove[] = [{ kind: "wait" }, { kind: "wait" }];
+  const walk = (cells: readonly Cell[], from: Cell): Cell => {
+    let cur = from;
+    for (const c of cells) {
+      moves.push({ kind: "move", dir: c.x > cur.x ? "right" : c.x < cur.x ? "left" : c.y > cur.y ? "down" : "up" });
+      cur = c;
+    }
+    return cur;
+  };
+  let cur = start;
+  for (const stop of stops) {
+    const p = pathTo(cur, stop); if (!p) continue;
+    cur = walk(p, cur);
+    moves.push({ kind: "turn", dir: "up" }, { kind: "wait" }, { kind: "wait" }, { kind: "wait" });
+  }
+  // 돌아오는 길 — 마지막 방에서 앞 방들을 거꾸로 들러 시작 칸으로.
+  const back = pathTo(cur, start);
+  if (!back) return undefined;
+  walk(back, cur);
+  return moves;
+}
+
 function farFreeCell(project: Project, map: GameMap, origin: Cell, taken: readonly Cell[], rank: number): Cell | undefined {
   const tileset = project.tilesets[map.tilesetId]!;
   const passable = (x: number, y: number): boolean => {
