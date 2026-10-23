@@ -861,8 +861,8 @@ GROUND_CRACKS = [
 GROUND_VEIN_A1 = [((6, 4), (9, 7)), ((8, 5), (11, 6)), ((4, 4), (1, 8)), ((6, 9), (10, 8))]
 GROUND_NODES_A2 = [[(9, 7), (8, 11)], [(9, 5)], [(2, 6), (12, 12)], [(6, 9)]]
 
-LGR = {'A1': L('b:ostone2 m:arcane0 h:arcane1 d:ostone1 k:ostone0 r:ostone3 v:arcane2 V:arcane4'),     # 보라 검은 판 + 보라 핏줄
-       'A2': L('b:ostone1 m:ostone2 h:ostone3 d:ostone0 k:ostone0 r:red0 v:red1 V:fire3')}           # 더 검은 재 판 + 붉은 핏줄
+LGR = {'A1': L('b:ostone2 c:arcane0 m:arcane0 h:arcane1 H:arcane2 d:ostone1 e:ostone0 k:ostone0 r:ostone3 v:arcane2 V:arcane4'),     # 보라 검은 판 + 보라 핏줄
+       'A2': L('b:ostone1 c:ostone2 m:ostone2 h:ostone3 H:ostone4 d:ostone0 e:vrock0 k:ostone0 r:red0 v:red1 V:fire3')}           # 더 검은 재 판 + 붉은 핏줄
 
 
 def _ground_grain(rows, i):
@@ -911,8 +911,9 @@ def _mottle(i):
         r = []
         for x in range(16):
             v = _wave(x, y, GROUND_PHASES[i])
-            r.append('d' if v < -1.5 else ('m' if v > 1.6 else 'b'))
+            r.append('d' if v < -1.3 else ('m' if v > 1.5 else ('c' if v > 0.7 else 'b')))
         g.append(r)
+    deep = [[_wave(x, y, GROUND_PHASES[i]) for x in range(16)] for y in range(16)]
     for _ in range(2):                                   # 외톨이 화소 지우기(4 이웃이 모두 다르면 이웃 다수 색으로)
         h = [row[:] for row in g]
         for y in range(16):
@@ -921,10 +922,16 @@ def _mottle(i):
                 if g[y][x] not in nb:
                     h[y][x] = max(set(nb), key=nb.count)
         g = h
-    for y in range(16):                                  # 얼룩 윗변이 빛을 받는다(위가 m 아님 → h) · 아랫변 그늘(아래가 m 아님 → e)
+    for y in range(16):                                  # 얼룩 윗변이 빛을 받는다(위가 m 아님 → h)
         for x in range(16):
             if g[y][x] == 'm' and g[(y - 1) % 16][x] not in 'mh' and (x + y + i) % 3:
                 g[y][x] = 'h'
+    for y in range(16):                                  # 깊은 홈 속(e) · 가장 높은 알갱이 끝(H) — 판 한 장에 여섯 단
+        for x in range(16):
+            if g[y][x] == 'd' and deep[y][x] < -2.6:
+                g[y][x] = 'e'
+            elif g[y][x] == 'h' and deep[y][x] > 2.5:
+                g[y][x] = 'H'
     return [''.join(r) for r in g]
 
 
@@ -1062,18 +1069,30 @@ def _ve_face():
                 r.append('.')
                 continue
             if y == 0:
+                ch = 'h' if (tc * 7) % 5 else 's'
+            elif y in (1, 2):
+                ch = 's' if (tc * 3 + y) % 4 == 0 else 'b'
+            elif y == 3:
                 ch = 'e'
             elif y >= bot - 1 or (c < 8 and c == inset) or (c >= 24 and c == 31 - inset):
                 ch = 'e'
             else:
-                band = (y + wav(tc, 0.4) * 1.3) % 5
-                deep = y > 12
-                if band < 1:
-                    ch = 'e' if deep else 'd'
-                elif band < 2 and not deep:
-                    ch = 's' if (tc + y) % 4 else 'b'
+                yy = y - 4 + round(wav(tc, 0.4))          # 물결진 층
+                band, row = yy // 4, yy % 4
+                off = (band * 5 + 2) % 16
+                stone = (tc + off) // 5 + band * 7
+                joint = (tc + off) % 5 == 0 and band % 2 == 0 or (tc + off) % 6 == 0 and band % 2 == 1
+                ramp = 'edbsh'
+                base = 3 - min(2, max(0, (y - 3) // 6)) - ((stone * 2654435761) >> 7) % 2
+                base = max(1, base)
+                if row == 0 or joint:
+                    ch = 'e'
+                elif row == 1:
+                    ch = ramp[min(4, base + 1)]
+                elif row == 2:
+                    ch = ramp[base]
                 else:
-                    ch = 'd' if deep else 'b'
+                    ch = ramp[max(0, base - 1)]
             if (tc, y) in ((3, 6), (12, 11), (8, 15)) and ch != '.':   # 틈에서 새는 빛 몇 점(줄기 대신 — 줄기는 칸마다 같은 자리에 늘어섰다)
                 ch = 'v'
             r.append(ch)
@@ -1088,17 +1107,20 @@ VOID_STARS = [[(12, 2, 'a'), (3, 5, 'd'), (9, 9, 'A'), (14, 13, 'd')],
               [(4, 7, 'a'), (13, 10, 'A'), (7, 13, 'd')]]
 
 
-def _void_body(stars):
-    """허공 몸통: 16 주기로 감기는 옅은 보라 안개(e 덩이 + 가장자리 체크 무늬 섞기) 위에 드문 별. 안개 무늬는 세 변형이
-    같아 변형끼리 이어지고, 별 자리만 다르다."""
+def _void_body(stars, i=0):
+    """허공 몸통: 정수 주파수 물결(16 주기)로 만든 옅은 성운 — 가장 짙은 속(n) · 둘레(e) · 둘레 체크 섞기 · 바탕(k).
+    변형마다 물결 자리가 달라 허공이 칸마다 같은 무늬로 늘어서지 않는다. 그 위에 드문 별."""
     rows = []
     for y in range(16):
         r = []
         for x in range(16):
-            v = (math.cos(2 * math.pi * (x / 16 + 0.1)) * math.cos(2 * math.pi * (y / 16 + 0.3))
-                 + 0.5 * math.cos(2 * math.pi * (2 * x / 16 + 0.6)) * math.cos(2 * math.pi * (y / 16 + 0.8)))
-            c = 'e' if v > 0.9 else ('e' if v > 0.55 and (x + y) % 2 == 0 else 'k')
-            if c == 'k' and ((x * 5 + y * 11) % 13 == 0):   # 성긴 알갱이 — 5×5 안에 한 색만 있는 자리가 없게
+            v = _wave(x, y, GROUND_PHASES[(i * 2 + 1) % 6])
+            c = 'N' if v > 2.6 else 'n' if v > 1.4 else ('e' if v > 0.5 else ('e' if v > -0.3 and (x + y) % 2 == 0 else 'k'))
+            if c == 'n' and v < 1.9 and (x + y) % 2:
+                c = 'e'
+            if c == 'N' and v < 3.0 and (x + y) % 2:
+                c = 'n'
+            if c == 'k' and v < -1.0 and (x * 5 + y * 11) % 7 == 0:
                 c = 'e'
             r.append(c)
         rows.append(r)
@@ -1107,11 +1129,11 @@ def _void_body(stars):
     return [''.join(r) for r in rows]
 
 
-VOID_BODIES = [_void_body(st) for st in VOID_STARS]
+VOID_BODIES = [_void_body(st, i) for i, st in enumerate(VOID_STARS)]
 for _r in VE_FRAME + VE_FACE:
     assert len(_r) == 32, _r
-LVE = {'A1': L('k:vrock0 d:ostone1 h:arcane2 H:arcane3 s:arcane1 b:arcane0 e:ostone0 v:arcane2 V:arcane4 a:arcane0 A:arcane2'),   # 보라 바위 밑면
-       'A2': L('k:vrock0 d:ostone1 h:ostone4 H:ostone5 s:ostone3 b:ostone2 e:ostone0 v:red1 V:fire3 a:ostone1 A:red0')}           # 붉은 재 바위 밑면
+LVE = {'A1': L('k:vrock0 N:arcane0 n:ostone1 d:ostone1 h:arcane2 H:arcane3 s:arcane1 b:arcane0 e:ostone0 v:arcane2 V:arcane4 a:arcane0 A:arcane2'),   # 보라 바위 밑면
+       'A2': L('k:vrock0 N:ostone2 n:ostone1 d:ostone1 h:ostone4 H:ostone5 s:ostone3 b:ostone2 e:ostone0 v:red1 V:fire3 a:ostone1 A:red0')}           # 붉은 재 바위 밑면
 
 
 class VoidEdge:
@@ -1158,9 +1180,9 @@ class VoidEdge:
 def void_edge(key):
     leg = LVE[key]
     gat = ground_at(key)
-    at = autotile_cv(gat.body, grid(VE_FRAME, leg, 32, 32), grid(VE_INNER, leg, 16, 16), gat.bodies[1:])
+    at = autotile_cv(gat.body, grid(noise(VE_FRAME, 'shH', 4, 41), leg, 32, 32), grid(noise(VE_INNER, 'shH', 4, 42), leg, 16, 16), gat.bodies[1:])
     voids = [grid(b, leg) for b in VOID_BODIES]
-    raw = grid(VE_FACE, leg, 32, 32)            # 투명 = 허공(그릴 때 칸 자리 허공 몸통 위에 얹는다)
+    raw = grid(noise(VE_FACE, 'edbs', 7, 31), leg, 32, 32)            # 투명 = 허공(그릴 때 칸 자리 허공 몸통 위에 얹는다)
     face_trans = dot.Face(raw)
     block = Cv(32, 32)                         # 관문용 불투명 표본: 표본 열 c → 칸 열(0~7→0~7, 8~15→0~7, 16~23→8~15, 24~31→8~15) 의 허공 0번
     for y in range(32):
