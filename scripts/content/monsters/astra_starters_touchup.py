@@ -10,6 +10,7 @@
 바탕은 지금 고른 격자(`grids/<종>-<면>.png`)를 하네스 build 가 줄인 번들 그림이다. 바탕 해시가 손질 표의 `from` 과 다르면
 거부한다(격자를 다시 고르면 손질 표도 다시 쓴다). 표: harness-data/monster-collect-species/astra-starters-touchup.json
   ops: {"recolor": ["#from", "#to"]}  한 색을 다른 색으로(마젠타 정리 뒤 남은 보라 윤곽 등)
+       {"clean": [x0,y0,x1,y1], "keep": [...]}  clear 와 같되 실루엣 가장자리 칸은 남긴다(몸 안쪽 잡선 지우기)
        {"clear": [x0,y0,x1,y1], "keep": [색...]}  상자 안에서 keep 에 없는 칸을 둘레 살갗 최빈색으로 메운다(옛 눈·입 지우기)
        {"at": [x,y], "rows": ["..."], "pal": {"n": "#121639"}}  '.' 그대로, '_' 투명, 그 밖 글자는 pal 색
 """
@@ -37,10 +38,16 @@ def apply_ops(im, ops):
     px = im.load()
     W, H = im.size
     for op in ops:
-        if 'clear' in op:
-            x0, y0, x1, y1 = op['clear']
+        if 'clear' in op or 'clean' in op:
+            x0, y0, x1, y1 = op.get('clear') or op['clean']
             keep = {hexrgb(c) for c in op.get('keep', [])}
-            todo = [(x, y) for y in range(y0, y1) for x in range(x0, x1) if px[x, y][3] >= 128 and px[x, y] not in keep]
+            inner = 'clean' in op  # 'clean' 은 실루엣 가장자리(투명과 닿는 칸)를 남기고 안쪽 선만 지운다
+
+            def interior(x, y):
+                return all(0 <= x + dx < W and 0 <= y + dy < H and px[x + dx, y + dy][3] >= 128
+                           for dx in (-1, 0, 1) for dy in (-1, 0, 1))
+            todo = [(x, y) for y in range(y0, y1) for x in range(x0, x1)
+                    if px[x, y][3] >= 128 and px[x, y] not in keep and (not inner or interior(x, y))]
             box = set(todo)
             # 바깥(상자 밖·keep 색) 살갗에서 안쪽으로 번지듯 채운다
             for _ in range(12):
@@ -59,8 +66,9 @@ def apply_ops(im, ops):
                 todo = rest
         elif 'recolor' in op:
             src, dst = hexrgb(op['recolor'][0]), hexrgb(op['recolor'][1])
-            for y in range(H):
-                for x in range(W):
+            bx0, by0, bx1, by1 = op.get('box', [0, 0, W - 1, H - 1])  # 'box' 가 있으면 그 상자 안만 바꾼다
+            for y in range(by0, by1 + 1):
+                for x in range(bx0, bx1 + 1):
                     if px[x, y] == src:
                         px[x, y] = dst
         elif 'rows' in op:
