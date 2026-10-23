@@ -1048,9 +1048,9 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   for (const sp of project.database.monsterSpecies ?? []) {
     const renamed = SPECIES_NAMES[sp.id];
     if (renamed) sp.name = renamed;
-    const note = STARTER_NOTES[sp.id];
-    if (note) sp.description = note;
   }
+  const speciesNotes = project.system.monsterCampaign?.speciesNotes;
+  if (speciesNotes) Object.assign(speciesNotes, STARTER_NOTES);
   for (const enemy of project.database.enemies) {
     const renamed = SPECIES_NAMES[enemy.id];
     if (renamed) enemy.name = renamed;
