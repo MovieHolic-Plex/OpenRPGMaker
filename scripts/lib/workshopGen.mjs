@@ -7,8 +7,10 @@
 // 우리 키·유료 대체 경로는 없다.
 //
 // 입구(scripts/lib/ohMyPiHttp.mjs):
-//   POST /v1/workshop/gen          { generator:"char-gen"|"tile-gen", text, count?, cli?, model?, mode?, tileset?:{png,refs} } → { ok, jobId }
+//   POST /v1/workshop/gen          { generator:"char-gen"|"tile-gen", text, count?, cli?, model?, mode?, tileset?:{png,refs}, photo? } → { ok, jobId }
 //   GET  /v1/workshop/gen?jobId=   → 상태(stage·progress·elapsedMs) · 끝나면 pack:{manifest, blobs:{sha:base64}}
+//                                    · 사진(mode:"photo")은 먼저 state "picking" + photoCandidates(후보마다 걷기 GIF·검사)
+//   POST /v1/workshop/gen/pick     { jobId, rank } → 고른 후보 하나를 묶는다(다시 running → done)
 //   POST /v1/workshop/gen/cancel   { jobId }
 // 작업은 이 프로세스 메모리에 있다 — 호스트가 다시 뜨면 사라지고, 브라우저는 「못 그림 · 다시」로 보인다.
 import { spawn, execFileSync } from "node:child_process";
@@ -214,6 +216,78 @@ async function runCharGen(job, input) {
   finish(job, join(job.dir, "pack"), { made: ok.length, asked: n });
 }
 
+// ── 캐릭터: 사진으로(char-gen photo, 종이 인형) ─────────────────
+//
+// 사진 한 장 → char-gen `photo --no-picture`: 사용자 CLI 가 사진에서 사람의 특징(성별·나이·머리·옷)을 읽고, RTP 머리·몸 짝 후보마다
+// 옷·머리 색을 칠한다(그림을 새로 그리지 않는다 — RTP 부위를 다시 칠한 종이 인형). 후보마다 조립 오류(눈으로 보는 검사)와 눈 순위를
+// 매겨 줄 세운다. 걷기 영상 검사는 CLI 가 영상을 못 봐서 건너뛴다. 마지막 선택은 사람이 한다 — 후보를 보여 주고(picking) 고른 것만 묶는다.
+// 사진은 이 컴퓨터의 작업 폴더에만 있고 묶음(게임)에는 들어가지 않는다.
+
+const PHOTO_CREDITS = "char-gen; base sprites: EasyRPG project, CC BY 4.0";
+const PHOTO_TYPES = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
+
+async function runCharPhoto(job, input) {
+  const kit = genKitDir("char-gen");
+  const cli = chooseCli(input.cli);
+  const model = input.model || DEFAULT_MODEL["char-gen"][cli] || "";
+  job.engine = `${cli}${model ? `/${model}` : ""}`;
+  const m = String(input.photo ?? "").match(/^data:(image\/(?:jpeg|png|webp));base64,(.+)$/u);
+  if (!m) throw new Error("사진(JPG·PNG·WEBP)을 받지 못했어요.");
+  const file = `photo.${PHOTO_TYPES[m[1]]}`;
+  writeFileSync(join(job.dir, file), Buffer.from(m[2], "base64"));
+  job.stage = "drawing";
+  job.expectMs = 8 * 60 * 1000;   // 실측(2026-10-23, Sonnet CLI): 후보 6명·검사까지 수 분
+  note(job, `사진에 맞는 머리·몸을 고르고 색을 칠해요(${job.engine})`);
+  const env = { CHARGEN_VISION_CLI: cli, ...(model ? { CHARGEN_VISION_MODEL: model } : {}) };
+  const made = await run(job, "python3", [join(kit, "cli.py"), "photo", file, "--out", "run", "--name", "photo", "--no-picture"], { cwd: job.dir, env, timeoutMs: 60 * 60 * 1000 });
+  if (job.state === "cancelled") return;
+  let list;
+  try {
+    list = JSON.parse(readFileSync(join(job.dir, "run", "candidates", "candidates.json"), "utf8"));
+  } catch {
+    fail(job, `사진으로 캐릭터를 만들지 못했어요 — ${(made.stderr || made.stdout).trim().split("\n").slice(-2).join(" ").slice(0, 300)}`);
+    return;
+  }
+  job.photoCandidates = (list.candidates ?? []).map((c) => ({
+    rank: c.rank, head: c.head, body: c.body, fit: c.fit,
+    passed: c.checks ? Boolean(c.checks.passed) : null,
+    errors: c.checks ? (c.checks.flaws ?? []).filter((f) => f.severity !== "minor").length : null,
+    eyes: c.checks?.eyes_place ?? null,
+    chip: c.chip,
+    gif: `data:image/gif;base64,${readFileSync(join(job.dir, "run", "candidates", c.preview)).toString("base64")}`,
+  }));
+  if (!job.photoCandidates.length) { fail(job, "사진에 맞는 후보가 나오지 않았어요. 다른 사진으로 해 보세요."); return; }
+  job.state = "picking";
+  job.stage = "picking";
+  job.finishedAt = now();
+  note(job, `후보 ${job.photoCandidates.length}명 — 하나를 골라 주세요`);
+}
+
+/** 사람이 고른 후보 하나를 묶는다. */
+export function pickWorkshopGen(body = {}) {
+  const job = jobs.get(String(body.jobId ?? ""));
+  if (!job || job.state !== "picking") return { ok: false, error: "고를 후보가 있는 작업이 아니에요. 다시 만들어 주세요." };
+  const chosen = job.photoCandidates.find((c) => c.rank === Number(body.rank));
+  if (!chosen) return { ok: false, error: "그 후보가 없어요." };
+  const title = String(body.title ?? "").trim().slice(0, 60) || "사진 속 사람";
+  let kit;
+  try { kit = genKitDir("char-gen"); } catch (error) { return { ok: false, error: error instanceof Error ? error.message : String(error) }; }
+  job.state = "running";
+  job.stage = "packing";
+  job.finishedAt = null;
+  job.picked = String(chosen.rank);
+  void run(job, "python3", [join(kit, "cli.py"), "pack", join("run", "candidates", chosen.chip), "pack", "--title", title, "--license", "CC-BY-4.0",
+    "--credits", PHOTO_CREDITS, "--chip-method", "procedural"], { cwd: job.dir, timeoutMs: 5 * 60 * 1000 }).then((pack) => {
+    if (job.state === "cancelled") return;
+    if (pack.code !== 0 || !existsSync(join(job.dir, "pack", "manifest.json"))) {
+      fail(job, `묶음을 만들지 못했어요 — ${(lastJson(pack.stdout)?.error ?? pack.stderr ?? "").toString().trim().slice(-300)}`);
+      return;
+    }
+    finish(job, join(job.dir, "pack"), { made: 1, asked: 1 });
+  }, (error) => fail(job, error instanceof Error ? error.message : String(error)));
+  return { ok: true };
+}
+
 function charProgress(job) {
   // 시도 폴더 수로 센다(칩마다 최대 3번). 시간 기대치와 섞어 막대가 멈춰 보이지 않게 한다.
   let attempts = 0;
@@ -321,15 +395,17 @@ export function startWorkshopGen(body = {}) {
   prune();
   const generator = body.generator;
   if (!KITS.includes(generator)) return { ok: false, error: `generator 는 ${KITS.join("·")} 중 하나다` };
-  const text = String(body.text ?? "").trim().slice(0, 200);
+  const photo = generator === "char-gen" && body.mode === "photo";
+  const text = String(body.text ?? "").trim().slice(0, 200) || (photo ? "사진 속 사람" : "");
   if (!text) return { ok: false, error: "무엇을 만들지 한 줄 적어 주세요." };
+  if (photo && !/^data:image\/(?:jpeg|png|webp);base64,/u.test(String(body.photo ?? ""))) return { ok: false, error: "사진(JPG·PNG·WEBP)을 골라 주세요." };
   const id = newId();
   const dir = join(workRoot(), id);
   mkdirSync(dir, { recursive: true });
   const job = { id, generator, text, dir, state: "running", stage: "starting", startedAt: now(), finishedAt: null, error: null, log: [], children: new Set(), engine: "", expectMs: 0, attempts: 0 };
   jobs.set(id, job);
   const body2 = { ...body, text };
-  const runner = generator === "char-gen" ? runCharGen : runTileGen;
+  const runner = photo ? runCharPhoto : generator === "char-gen" ? runCharGen : runTileGen;
   runner(job, body2).catch((error) => fail(job, error instanceof Error ? error.message : String(error)));
   return { ok: true, jobId: id };
 }
@@ -337,22 +413,23 @@ export function startWorkshopGen(body = {}) {
 export function workshopGenStatus(jobId) {
   const job = jobs.get(String(jobId ?? ""));
   if (!job) return { ok: false, state: "missing", error: "이 작업을 호스트가 모릅니다(호스트가 다시 시작됐을 수 있어요). 다시 만들어 주세요." };
-  if (job.state === "running") (job.generator === "char-gen" ? charProgress : tileProgress)(job);
+  if (job.state === "running" && !job.photoCandidates) (job.generator === "char-gen" ? charProgress : tileProgress)(job);
   const elapsedMs = (job.finishedAt ?? now()) - job.startedAt;
-  const progress = job.state === "done" ? 1 : Math.min(0.95, job.expectMs ? elapsedMs / job.expectMs : 0.05);
+  const progress = job.state === "done" || job.state === "picking" ? 1 : Math.min(0.95, job.expectMs ? elapsedMs / job.expectMs : 0.05);
   return {
     ok: true, jobId: job.id, generator: job.generator, text: job.text, state: job.state, stage: job.stage, engine: job.engine,
     progress, elapsedMs, expectMs: job.expectMs, attempts: job.attempts, detail: job.detail ?? null, reviewing: job.reviewing ?? false,
     error: job.error, picked: job.picked ?? null, review: job.review ?? null,
     made: job.made ?? null, asked: job.asked ?? null, candidates: job.candidates ?? null,
     log: job.log.slice(-6), ...(job.state === "done" && job.pack ? { pack: job.pack } : {}),
+    ...(job.state === "picking" ? { photoCandidates: job.photoCandidates } : {}),
   };
 }
 
 export function cancelWorkshopGen(jobId) {
   const job = jobs.get(String(jobId ?? ""));
   if (!job) return { ok: false };
-  if (job.state === "running") {
+  if (job.state === "running" || job.state === "picking") {
     job.state = "cancelled";
     job.finishedAt = now();
     for (const child of job.children) killTree(child);
