@@ -1,0 +1,531 @@
+{
+ "round": "gap-lava-r2",
+ "panel": 2,
+ "at": "2026-10-23",
+ "item": "gap.lava_edge",
+ "labels": {
+  "P": "C1",
+  "Q": "C2",
+  "R": "B1",
+  "S": "B2"
+ },
+ "hashes": {
+  "C1": "f85c2763",
+  "C2": "7a087efa",
+  "B1": "4fc102e9",
+  "B2": "ba09f40c"
+ },
+ "boards": "qa-runs/lava/p2/",
+ "prompt": "qa-runs/lava/panel-prompt-2.txt",
+ "raw": {
+  "opusA": {
+   "candidates": {
+    "P": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "The 6x6 mosaic and the 1x body copy show horizontal bands that repeat every 2 cells: a row of dark purple crust plates, then a row of bright glow blobs. At 1x it reads as striped tiling, not one continuous lava surface.",
+       "where": "lava body 6x6 mosaic and 1x body copy; also visible in the wide upper arm of the pool"
+      },
+      {
+       "id": "off-reference-palette",
+       "problem": "The body is much darker and redder than the Beodeul reference lava, which is mostly bright orange and yellow. Large dark purple crust areas make it look like a different, murkier material from a different game.",
+       "where": "whole body versus the reference mosaic"
+      }
+     ],
+     "minors": [
+      {
+       "id": "edge-sparkle-noise",
+       "problem": "Single yellow speck pixels fray along the inner bank edge and read as noise, not a molten lip.",
+       "where": "pool perimeter just inside the rock rim, especially the south and west edges"
+      },
+      {
+       "id": "anim-shuffle",
+       "problem": "Between frames the bright blobs jump to new positions instead of drifting. It reads as churning, but borders on shimmer and has no flow direction.",
+       "where": "frames3x, upper-left lobe"
+      },
+      {
+       "id": "too-noisy",
+       "problem": "The dark-red dither between the plates is busy at 1x compared with the flatter reference shading steps.",
+       "where": "body interior"
+      }
+     ]
+    },
+    "Q": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "The round glow blobs sit on a regular lattice with a 2-cell period, so the mosaic shows rows of identical bubbles. The 1x copy shows clear row tiling.",
+       "where": "lava body 6x6 mosaic and 1x body copy"
+      },
+      {
+       "id": "crust-looks-like-rocks",
+       "problem": "Round, evenly sized bright blobs with dark gaps read as glowing cobblestones or eggs in a bed, not as a liquid surface.",
+       "where": "pool body, most visible in the left lobe and the wide upper arm"
+      }
+     ],
+     "minors": [
+      {
+       "id": "off-reference-palette",
+       "problem": "The palette is closer to the reference than P's is, but it is still darker red and purple than the bright orange reference.",
+       "where": "body versus the reference"
+      },
+      {
+       "id": "anim-shuffle",
+       "problem": "The blobs swap brightness in place across frames. It reads like pulsing bubbles more than flowing lava.",
+       "where": "frames3x"
+      },
+      {
+       "id": "edge-sparkle-noise",
+       "problem": "The inner bank has yellow speck fringing.",
+       "where": "pool perimeter"
+      }
+     ]
+    },
+    "R": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "The body is identical to P and has the same 2-cell horizontal crust and glow striping in the mosaic and at 1x.",
+       "where": "lava body 6x6 mosaic and 1x body copy"
+      },
+      {
+       "id": "off-reference-palette",
+       "problem": "Same dark red and purple body as P, far from the bright orange reference. The purple crust also clashes with the warm brown cave floor.",
+       "where": "body versus the reference and the surrounding brown floor"
+      }
+     ],
+     "minors": [
+      {
+       "id": "edge-sparkle-noise",
+       "problem": "Yellow speck fringe on the inner bank.",
+       "where": "pool perimeter"
+      },
+      {
+       "id": "anim-shuffle",
+       "problem": "Blobs jump between frames with no flow direction.",
+       "where": "frames3x"
+      },
+      {
+       "id": "bank-lip-weak-south",
+       "problem": "The brown north lip reads correctly, but the south bank's dark band is only a 1px outline and gives little sunken depth.",
+       "where": "south edges of the pool and the stream tip"
+      }
+     ]
+    },
+    "S": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "The body is identical to Q and has the same regular bubble lattice with a 2-cell period.",
+       "where": "lava body 6x6 mosaic and 1x body copy"
+      },
+      {
+       "id": "crust-looks-like-rocks",
+       "problem": "The round blobs read as glowing pebbles or cobbles, not as a liquid surface.",
+       "where": "pool body"
+      }
+     ],
+     "minors": [
+      {
+       "id": "off-reference-palette",
+       "problem": "Darker and redder than the reference, though it sits better with the brown cave than R does.",
+       "where": "body"
+      },
+      {
+       "id": "anim-shuffle",
+       "problem": "The animation reads as pulsing bubbles, not flow.",
+       "where": "frames3x"
+      },
+      {
+       "id": "edge-sparkle-noise",
+       "problem": "Yellow speck fringe on the inner bank.",
+       "where": "pool perimeter"
+      }
+     ]
+    }
+   },
+   "pick": {
+    "blue_black_cave": "neither",
+    "brown_cave": "neither"
+   },
+   "why": "All four bodies tile with an obvious 2-cell (32px) row pattern at 1x and are much darker than the bright orange Beodeul reference. P/R's crust-plate texture is the more lava-like direction to keep if the repeat is broken and the palette brightened; Q/S read as glowing cobbles."
+  },
+  "opusB": {
+   "candidates": {
+    "P": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "Bright blobs stack in straight vertical columns at a 32px period; the body tiles into visible stripes/columns instead of an organic surface",
+       "where": "6x6 body mosaic (columns of yellow blobs) and left arm of the pool at 3x; diagonal striping visible in the 1x body copy"
+      },
+      {
+       "id": "crust-looks-like-rocks",
+       "problem": "Dark purple-brown crust plates are drawn as many small horizontal slabs with outlines; they read as scattered pebbles/rocks lying on the lava rather than cooling crust floating in it",
+       "where": "whole pool body, most visible in the central and right lobes"
+      }
+     ],
+     "minors": [
+      {
+       "id": "too-noisy",
+       "problem": "Salt-and-pepper dark-red dither between blobs is much busier than the reference lava, which uses clean large clusters",
+       "where": "background red between blobs, whole body"
+      },
+      {
+       "id": "palette-darker-than-ref",
+       "problem": "Overall value is far darker/redder than the Beodeul reference (orange-yellow dominant); acceptable as a cave variant but not obviously the same family",
+       "where": "body vs reference panel"
+      },
+      {
+       "id": "bank-sparkle",
+       "problem": "Isolated yellow sparkle pixels along the bank read as noise rather than a glow rim",
+       "where": "south and west bank edges"
+      },
+      {
+       "id": "anim-boil",
+       "problem": "Frames rearrange blobs rather than advecting them; reads as boiling/jitter more than flow at 3 fps",
+       "where": "frames3x 1->4"
+      }
+     ]
+    },
+    "Q": {
+     "majors": [],
+     "minors": [
+      {
+       "id": "repeat-32",
+       "problem": "Large bright blobs line up in horizontal rows with a 32px period; rows of blob/crust/blob are visible in the mosaic and faintly in the pool",
+       "where": "6x6 body mosaic rows; upper-left pool lobe"
+      },
+      {
+       "id": "too-noisy",
+       "problem": "Dark-red speckle dither between blobs is busier than the reference's clean shapes",
+       "where": "gaps between blobs"
+      },
+      {
+       "id": "palette-darker-than-ref",
+       "problem": "Darker red overall than reference lava; reads as a cave variant rather than identical family",
+       "where": "body vs reference"
+      },
+      {
+       "id": "bank-sparkle",
+       "problem": "Stray yellow pixels on bank edges",
+       "where": "south/west banks"
+      },
+      {
+       "id": "blob-bubbly",
+       "problem": "Round soft blobs lean slightly toward a bubbly/cartoon look",
+       "where": "large blobs in main lobe"
+      }
+     ]
+    },
+    "R": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "Same body as P: vertical columns of bright blobs at 32px period, visible stripe grid",
+       "where": "6x6 body mosaic and left pool arm; 1x body copy"
+      },
+      {
+       "id": "crust-looks-like-rocks",
+       "problem": "Small outlined dark slabs read as pebbles on top of the lava; next to the brown pebbly floor they blend into the floor texture language and the pool reads less liquid",
+       "where": "whole pool body"
+      }
+     ],
+     "minors": [
+      {
+       "id": "too-noisy",
+       "problem": "Speckle dither busier than reference",
+       "where": "between blobs"
+      },
+      {
+       "id": "palette-darker-than-ref",
+       "problem": "Darker than reference lava",
+       "where": "body vs reference"
+      },
+      {
+       "id": "anim-boil",
+       "problem": "Frame changes read as boiling jitter more than flow",
+       "where": "frames3x"
+      }
+     ]
+    },
+    "S": {
+     "majors": [],
+     "minors": [
+      {
+       "id": "repeat-32",
+       "problem": "Horizontal rows of large blobs at a 32px period visible in the mosaic and faintly in the pool",
+       "where": "6x6 body mosaic; upper pool lobe"
+      },
+      {
+       "id": "too-noisy",
+       "problem": "Speckle dither between blobs busier than reference",
+       "where": "gaps between blobs"
+      },
+      {
+       "id": "palette-darker-than-ref",
+       "problem": "Darker red than reference lava",
+       "where": "body vs reference"
+      },
+      {
+       "id": "bank-sparkle",
+       "problem": "Stray yellow pixels on brown bank edges",
+       "where": "south/west banks"
+      }
+     ]
+    }
+   },
+   "pick": {
+    "blue_black_cave": "Q",
+    "brown_cave": "S"
+   },
+   "why": "Q and S read as molten lava with floating crust, correct lit north lip/dark south bank, and a churning 4-frame cycle; their 32px row repeat is noticeable but milder than P/R, whose vertical blob columns and pebble-like crust slabs make the pool read as gridded rock-strewn texture."
+  },
+  "opusC": {
+   "candidates": {
+    "P": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "Bright glow blobs and dark crust form a regular diagonal lattice with a 2-cell period; vertical bright columns repeat and read as wallpaper, visible at 1x",
+       "where": "6x6 body mosaic and 1x body copy; also in the wide upper-left pool area"
+      },
+      {
+       "id": "crust-looks-like-rocks",
+       "problem": "Dense dark purple crust lumps dominate the surface, so it reads as coal/rubble in red mud rather than molten liquid; much darker and busier than the reference lava",
+       "where": "whole pool body, especially the left lobe and stream"
+      },
+      {
+       "id": "too-noisy",
+       "problem": "Single-pixel dark speckle dither over the red base adds noise the reference (flat clean shapes) does not have; at 1x the surface turns into mottled grain",
+       "where": "red base between blobs, all cells"
+      }
+     ],
+     "minors": [
+      {
+       "id": "south-bank-flush",
+       "problem": "South edge is only a dark outline; lava runs to the rim with no darker inner band, so the sunken read relies on the north lip alone",
+       "where": "south edges of the pool and the stream tip"
+      },
+      {
+       "id": "anim-reshuffle",
+       "problem": "Blobs reposition between frames rather than drifting; reads as boiling shimmer more than flow",
+       "where": "frames3x 1->2->3->4"
+      }
+     ]
+    },
+    "Q": {
+     "majors": [],
+     "minors": [
+      {
+       "id": "row-banding-16",
+       "problem": "Large bright blobs line up in horizontal rows about one cell apart; in the mosaic this reads as stripes, softened but still detectable in wide pool areas",
+       "where": "6x6 body mosaic; upper-left wide part of the pool"
+      },
+      {
+       "id": "too-noisy",
+       "problem": "Dark speckle dither on the red base is busier than the reference's flat fills",
+       "where": "red base between blobs"
+      },
+      {
+       "id": "south-bank-flush",
+       "problem": "South bank is just a dark outline; no darker inner shadow band under the south rim",
+       "where": "south edges and stream tip"
+      },
+      {
+       "id": "anim-reshuffle",
+       "problem": "Blob positions jump between frames; reads as bubbling more than directional flow, acceptable for a pool",
+       "where": "frames3x"
+      }
+     ]
+    },
+    "R": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "Same diagonal 2-cell lattice of glow and crust as P; wallpaper repeat clearly visible at 1x",
+       "where": "6x6 body mosaic and 1x body copy"
+      },
+      {
+       "id": "crust-looks-like-rocks",
+       "problem": "Purple crust lumps read as scattered rocks/coal on mud, too dark versus the reference lava",
+       "where": "whole pool body"
+      },
+      {
+       "id": "too-noisy",
+       "problem": "Heavy single-pixel speckle on the red base",
+       "where": "all body cells"
+      }
+     ],
+     "minors": [
+      {
+       "id": "south-bank-flush",
+       "problem": "Brown lip only lit on the north; south side lacks a darker inner band",
+       "where": "south edges"
+      },
+      {
+       "id": "anim-reshuffle",
+       "problem": "Blobs reshuffle per frame rather than drift",
+       "where": "frames3x"
+      }
+     ]
+    },
+    "S": {
+     "majors": [],
+     "minors": [
+      {
+       "id": "row-banding-16",
+       "problem": "Bright blobs line up in horizontal rows one cell apart; visible as stripes in the mosaic, mild in the pool",
+       "where": "6x6 body mosaic; wide upper pool"
+      },
+      {
+       "id": "too-noisy",
+       "problem": "Speckle dither on the red base busier than the reference",
+       "where": "red base"
+      },
+      {
+       "id": "south-bank-flush",
+       "problem": "Brown north lip reads well but the south bank has no darker inner band",
+       "where": "south edges and stream tip"
+      },
+      {
+       "id": "anim-reshuffle",
+       "problem": "Bubbling reshuffle rather than flow, fine for a pool",
+       "where": "frames3x"
+      }
+     ]
+    }
+   },
+   "pick": {
+    "blue_black_cave": "Q",
+    "brown_cave": "S"
+   },
+   "why": "Q and S read as bright molten lava with rounded glowing blobs closer to the reference's brightness, and their repeat is only mild row banding; P and R show an obvious 32px diagonal lattice and are dominated by dark rock-like crust that reads as rubble, not liquid."
+  },
+  "argon": {
+   "candidates": {
+    "P": {
+     "majors": [],
+     "minors": [
+      {
+       "id": "repeat-32-mosaic",
+       "problem": "A 32px diagonal repeat of bright yellow-orange ovals and dark crescent crusts is still noticeable in large uninterrupted expanses, though mostly masked inside the irregular pool.",
+       "where": "6x6 lava body mosaic (3x and 1x) and wider west lobe of the pool"
+      },
+      {
+       "id": "darker-noisy-vs-ref",
+       "problem": "Compared to the bright, broad molten swirls of the Beodeul reference lava, the crimson base has single-pixel dark speckles and isolated dark purple-brown crust plates.",
+       "where": "Throughout lava body compared to Beodeul lava reference"
+      },
+      {
+       "id": "bank-rim-polish",
+       "problem": "Horizontal north bank runs have a ruler-straight 1px top highlight line, and south/corner banks have stray 1px yellow-tan teeth poking into the dark rock edge.",
+       "where": "North horizontal bank lips and south bank edges of the pool"
+      }
+     ]
+    },
+    "Q": {
+     "majors": [
+      {
+       "id": "anim-blink",
+       "problem": "Animation does not flow smoothly: frames 1-2 have wide horizontal yellow-orange pillows, then frame 3 abruptly collapses into vertical figure-8 columns and frame 4 darkens, causing a jarring brightness pulse and topology jump at 3 fps.",
+       "where": "frames3x-Q (especially transition from frame 2 top-right to frame 3 bottom-left and frame 4 bottom-right)"
+      },
+      {
+       "id": "repeat-32",
+       "problem": "Strong 32px grid alignment where bright magma blobs and dark crust form alternating horizontal rows in frame 1 and rigid vertical columns in frame 3.",
+       "where": "Q 6x6 lava body mosaic (3x and 1x) and frames3x-Q frame 3"
+      }
+     ],
+     "minors": [
+      {
+       "id": "bank-rim-polish",
+       "problem": "Horizontal north bank runs have a ruler-straight 1px top highlight line, and south bank edges have stray 1px yellow-tan teeth.",
+       "where": "North and south bank edges of the pool"
+      },
+      {
+       "id": "stream-pinch",
+       "problem": "Bright yellow-orange blobs fill the full width of the 1-cell vertical stream, making the narrow channel look bulbous.",
+       "where": "South 1-cell vertical stream in the pool map"
+      }
+     ]
+    },
+    "R": {
+     "majors": [],
+     "minors": [
+      {
+       "id": "repeat-32-mosaic",
+       "problem": "A 32px diagonal repeat of bright yellow-orange ovals and dark crescent crusts is noticeable in the 6x6 mosaic, though acceptable inside the irregular pool.",
+       "where": "6x6 lava body mosaic (3x and 1x) and wider west lobe of the pool"
+      },
+      {
+       "id": "darker-noisy-vs-ref",
+       "problem": "Darker crimson base with single-pixel noise speckles and dark purple-brown crust plates contrasts with the brighter, cleaner swirls of the Beodeul reference lava.",
+       "where": "Throughout lava body compared to Beodeul lava reference"
+      },
+      {
+       "id": "bank-rim-polish",
+       "problem": "Horizontal north bank runs have a ruler-straight 1px top highlight line, and south bank edges have stray 1px yellow-tan teeth.",
+       "where": "North horizontal bank lips and south bank edges of the pool"
+      }
+     ]
+    },
+    "S": {
+     "majors": [
+      {
+       "id": "anim-blink",
+       "problem": "Animation pulses and shifts topology abruptly: frames 1-2 show broad horizontal magma blobs while frame 3 snaps into vertical figure-8 columns and frame 4 dims noticeably.",
+       "where": "frames3x-S (transition across frames 2, 3, and 4)"
+      },
+      {
+       "id": "repeat-32",
+       "problem": "Visible 32px row-and-column grid formed by horizontal bands of orange pillows alternating with dark crust in frame 1 and vertical double-blob columns in frame 3.",
+       "where": "S 6x6 lava body mosaic (3x and 1x) and frames3x-S frame 3"
+      }
+     ],
+     "minors": [
+      {
+       "id": "bank-rim-polish",
+       "problem": "Horizontal north bank runs have a ruler-straight 1px top highlight line, and south bank edges have stray 1px yellow-tan teeth.",
+       "where": "North and south bank edges of the pool"
+      },
+      {
+       "id": "stream-pinch",
+       "problem": "Bright blobs crowd the 1-cell vertical stream width.",
+       "where": "South 1-cell vertical stream in the pool map"
+      }
+     ]
+    }
+   },
+   "pick": {
+    "blue_black_cave": "P",
+    "brown_cave": "R"
+   },
+   "why": "P and R maintain consistent magma-to-crust proportions and smooth churning motion across all 4 animation frames while reading clearly as a sunken 3/4 pool in both cave palettes. Q and S suffer from an abrupt topology jump and brightness drop in frames 3-4 (anim-blink) along with stronger horizontal/vertical 32px banding."
+  }
+ },
+ "counted_majors": {
+  "P": [
+   "repeat-32 (A,B,C)",
+   "crust-looks-like-rocks (B,C)"
+  ],
+  "R": [
+   "repeat-32 (A,B,C)",
+   "crust-looks-like-rocks (B,C)"
+  ],
+  "Q": [
+   "repeat-32 (A,argon)"
+  ],
+  "S": [
+   "repeat-32 (A,argon)"
+  ]
+ },
+ "not_counted": [
+  "too-noisy (C major only)",
+  "off-reference-palette (A major only)",
+  "anim-blink Q/S (argon only)",
+  "crust-looks-like-rocks Q/S (A only)"
+ ],
+ "verdict": "redraw: break 32px row banding (spread lobe rows), crust as glowing-edged skin not shadowed slabs, smaller sway, less speckle"
+}

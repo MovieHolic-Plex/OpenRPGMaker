@@ -605,6 +605,30 @@
    "by": "delegated",
    "delegatedBy": "delegated by user to supervisor 2026-10-23",
    "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-8.json"
+  },
+  {
+   "round": "gap-lava-r2",
+   "item": "gap.lava_edge",
+   "line": "C",
+   "letter": "C2",
+   "sha256": "19d198a4f6aeb17fe1441e0906a54d5f8859bf927ad33780e46407a31543aa19",
+   "note": "",
+   "at": "2026-10-23T13:55:32",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-gap-lava-r2-panel-5.json"
+  },
+  {
+   "round": "gap-lava-r2",
+   "item": "gap.lava_edge",
+   "line": "B",
+   "letter": "B2",
+   "sha256": "410b9ee980f349e8a7672ff80f535fae3f562801cb1b82333de905cd51f60286",
+   "note": "",
+   "at": "2026-10-23T13:55:33",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-gap-lava-r2-panel-5.json"
   }
  ],
  "rejects": [],
@@ -8947,6 +8971,280 @@
     "tc.fo_waystone": {
      "A1": "57373602cdc0a21a693eaa356506f147ab35abc7e843c4727e371ff9ddbf99db",
      "A2": "16e35a0e1d5260001bc6d2a3d487c1a4cf75c4c48dce4cb80b36035c00caf4c1"
+    }
+   }
+  },
+  {
+   "round": "gap-lava-r2",
+   "at": "2026-10-23T13:05:53",
+   "fail": 2,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.lava_edge": {
+     "C1": "3bdc9821746b067ff73a6e00e88bbd95a99f6e6bd505205fdb18ae3f82a82219",
+     "C2": "7b6247774c0a2b6bdfdbdff430412d9fea0ed25458a953ba4a37fb9b6d08e2b6",
+     "B1": "d5a12aa711dfe3bae9628b56c61a846625664d857a075cc3b126d36e8c20ae76",
+     "B2": "a54cda193d0feca98a0933f18b8ab0d8eee25267c38c333936e4142038adc261"
+    }
+   }
+  },
+  {
+   "round": "gap-lava-r2",
+   "at": "2026-10-23T13:06:31",
+   "fail": 2,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.lava_edge": {
+     "C1": "0d47e890abbdb1341654f3ff01c91222c739fb733f02a87bee6a5b2ecc55af7a",
+     "C2": "7b6247774c0a2b6bdfdbdff430412d9fea0ed25458a953ba4a37fb9b6d08e2b6",
+     "B1": "321a9133e5d6cd925264945913c9bbb4e7807ce2b5c07927fe0652e77b717caa",
+     "B2": "a54cda193d0feca98a0933f18b8ab0d8eee25267c38c333936e4142038adc261"
+    }
+   }
+  },
+  {
+   "round": "gap-lava-r2",
+   "at": "2026-10-23T13:07:00",
+   "fail": 2,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.lava_edge": {
+     "C1": "95003e27842fc12d69f8a75e04086ca0520cac92ac672f884453c1b3ef720904",
+     "C2": "7b6247774c0a2b6bdfdbdff430412d9fea0ed25458a953ba4a37fb9b6d08e2b6",
+     "B1": "03a8ed4110b65eab0113076db4a4b055204a5160541a192fd6b12f612f18321e",
+     "B2": "a54cda193d0feca98a0933f18b8ab0d8eee25267c38c333936e4142038adc261"
+    }
+   }
+  },
+  {
+   "round": "gap-lava-r2",
+   "at": "2026-10-23T13:07:27",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.lava_edge": {
+     "C1": "df58c7f38ea019adb0fafd21d4fb468e411be4ebc590e76d71c3c2612667a72f",
+     "C2": "7b6247774c0a2b6bdfdbdff430412d9fea0ed25458a953ba4a37fb9b6d08e2b6",
+     "B1": "2d04c6c5e1c71c9370516abb21b020c3520e1b13b13d73cfe68a39f87c226103",
+     "B2": "a54cda193d0feca98a0933f18b8ab0d8eee25267c38c333936e4142038adc261"
+    }
+   }
+  },
+  {
+   "round": "gap-lava-r2",
+   "at": "2026-10-23T13:14:08",
+   "fail": 4,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.lava_edge": {
+     "C1": "a7eb7e995b5aec4ed9ff37a41b0a7fe3c177b429c1bd20a0942ad4d525cd31bb",
+     "C2": "ed72cc231076d78e0a0049d88f06f79fd1ede177dbc2f21b9c78454832dda59e",
+     "B1": "fe2b173a69e1463c69d237278dd96f16ffeedc71101f83c7502bb91677261f60",
+     "B2": "6cc473e305fd7f01c92932c0308c4b39aaf2e3f4b10d4cbda063460712ce209e"
+    }
+   }
+  },
+  {
+   "round": "gap-lava-r2",
+   "at": "2026-10-23T13:14:49",
+   "fail": 4,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.lava_edge": {
+     "C1": "58ef8e197f42e028b5e3e42f0fe2b870bf02b8450c815bbbd709a17924ece4c7",
+     "C2": "745c167c40bc81448c90f27d473b4eff39e158e0d66e6a981e3a268726ae0d2c",
+     "B1": "d986bb6f111bf7282f5aaf9efa1a36d0d8859c20fd762eea1bcd55aaf272f8c1",
+     "B2": "b208548f28da2bea0f2e847dd48d298818a998ef9aac2b8f65ec7c1cc6161186"
+    }
+   }
+  },
+  {
+   "round": "gap-lava-r2",
+   "at": "2026-10-23T13:15:14",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.lava_edge": {
+     "C1": "63c495ba9790ab58a0096ec5b1974757b1d27b8ac7e340e5dbabcaf75d8d781f",
+     "C2": "a7d32a2c49f06d5c15f2a207fca5e9cba0b359f51208a6e111e43bd499d4497a",
+     "B1": "3ad87fc760262999092406b9e19283b5f28e7566555e3bc515e2f617e8cf3083",
+     "B2": "938634e2c6dff95d11915dafd2244d43541215a49b8e28d6ec4048e1878b605a"
+    }
+   }
+  },
+  {
+   "round": "gap-lava-r2",
+   "at": "2026-10-23T13:21:53",
+   "fail": 3,
+   "warn": 4,
+   "warnByCode": {
+    "R": 4
+   },
+   "polish": [],
+   "hashes": {
+    "gap.lava_edge": {
+     "C1": "ca58ecb9627abaa181130f380fee86f323f20ba2b9aa38913ddcef93a8f7b4fa",
+     "C2": "0087282c84f451a427dc58420e360331ababec1cc7375ddac7addd9f75b371d3",
+     "B1": "8315a113719f991795b91f94bc3af78a6f3490223dbdbbe6f48099ec2bfd8a35",
+     "B2": "190ef7a09a068eaea41dc45d832215e0084e183af213443a8b05fd76669ac995"
+    }
+   }
+  },
+  {
+   "round": "gap-lava-r2",
+   "at": "2026-10-23T13:22:25",
+   "fail": 3,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.lava_edge": {
+     "C1": "1ebf36e0a1889d4e7c5c6a2ff702ddda4cd850cf3d2dab1bd9370d47b775f645",
+     "C2": "0087282c84f451a427dc58420e360331ababec1cc7375ddac7addd9f75b371d3",
+     "B1": "26fe632c0589a6951572ee8ea0cb926be8531e6a153b3e7496ca41ecd9260948",
+     "B2": "190ef7a09a068eaea41dc45d832215e0084e183af213443a8b05fd76669ac995"
+    }
+   }
+  },
+  {
+   "round": "gap-lava-r2",
+   "at": "2026-10-23T13:27:07",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.lava_edge": {
+     "C1": "f85c27630ab60a0b4b2f70370932ddc9f7cbf8447bcc71c0557f22ed40cb4ac8",
+     "C2": "7a087efa5ebb545424a2e68737e99b8f087e2629ddc935bea6012886af32d85c",
+     "B1": "4fc102e9c349845b9999b5b8c9e3f2d905a64065b2cfba844feeb4d281996555",
+     "B2": "ba09f40c4e6116cfa525abe963ff3cd02d48fc973eb3b5eb1ffbf43cddf1e482"
+    }
+   }
+  },
+  {
+   "round": "gap-lava-r2",
+   "at": "2026-10-23T13:32:55",
+   "fail": 2,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.lava_edge": {
+     "C1": "37754b1e34888bdb097d87f40d0da533950a20ec474253f1e68b9432d1bf9d3b",
+     "C2": "6b2deae26248f67aacd67c173206c9537922844c1fbe4a3841562b4d16d456dd",
+     "B1": "38456d3092aa8916d0735feb151eb39390208d8b804fc43cb9c0d140383b08d5",
+     "B2": "cc02234d718cf46607beec5b62f084bc835e67fcc2d43370ab4244dd77959ab1"
+    }
+   }
+  },
+  {
+   "round": "gap-lava-r2",
+   "at": "2026-10-23T13:37:11",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.lava_edge": {
+     "C1": "e6b05c7fa99b0ee52314d49cdb4833237f886cc6426dda3ba12a288e1bf6228c",
+     "C2": "4ca0b705ed03bf287c37f4acb825b7298165ad824490d63eb2711f63be9655c5",
+     "B1": "3a9753ac8486aa8abe48c4a22a8a0743e33ee85aa02b1b59df92c3c381716ac9",
+     "B2": "f893c7bbaa7a83f61ef46cf430a3892e9eddfb05a27d2046ebf37fd83f50f0fb"
+    }
+   }
+  },
+  {
+   "round": "gap-lava-r2",
+   "at": "2026-10-23T13:38:27",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.lava_edge": {
+     "C1": "e6b05c7fa99b0ee52314d49cdb4833237f886cc6426dda3ba12a288e1bf6228c",
+     "C2": "9aa5460d47cf7d61df49a6b0901bb4272a2964ad30b0e2caf4810a14a371e8c5",
+     "B1": "3a9753ac8486aa8abe48c4a22a8a0743e33ee85aa02b1b59df92c3c381716ac9",
+     "B2": "856b99ed0a6a4a955f9bbbc19b2521b1b9798cf40cb37e3f5c8b358e188c2d17"
+    }
+   }
+  },
+  {
+   "round": "gap-lava-r2",
+   "at": "2026-10-23T13:41:47",
+   "fail": 2,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.lava_edge": {
+     "C1": "b0e043ea16df32a55b263847ee6765c3946fcaf14f8d6f2e91db1c44e2f6f938",
+     "C2": "e5b4a6cba8a11f7c93062e94fdb2636eda3414e9debdc907f9ac34fc6aa0b350",
+     "B1": "fedcc3f691d6ba2ed312ca2b40bf3084f8e68f973d3bc445b628f3bd965016ff",
+     "B2": "2820c7f9cdb0e91a56859b380e9550547eb84c397d4cdc8e4a00814b55294039"
+    }
+   }
+  },
+  {
+   "round": "gap-lava-r2",
+   "at": "2026-10-23T13:44:44",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.lava_edge": {
+     "C1": "b0e043ea16df32a55b263847ee6765c3946fcaf14f8d6f2e91db1c44e2f6f938",
+     "C2": "3e7086427ad2b6ac1c6750318224aaddfb7d02806258d1388c134efdc64cb87f",
+     "B1": "fedcc3f691d6ba2ed312ca2b40bf3084f8e68f973d3bc445b628f3bd965016ff",
+     "B2": "3fce4563d2460b045c23e0d55b5853e411066dc5d6eb6f158229d812bef472dd"
+    }
+   }
+  },
+  {
+   "round": "gap-lava-r2",
+   "at": "2026-10-23T13:48:03",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.lava_edge": {
+     "C1": "b0e043ea16df32a55b263847ee6765c3946fcaf14f8d6f2e91db1c44e2f6f938",
+     "C2": "19d198a4f6aeb17fe1441e0906a54d5f8859bf927ad33780e46407a31543aa19",
+     "B1": "fedcc3f691d6ba2ed312ca2b40bf3084f8e68f973d3bc445b628f3bd965016ff",
+     "B2": "410b9ee980f349e8a7672ff80f535fae3f562801cb1b82333de905cd51f60286"
+    }
+   }
+  },
+  {
+   "round": "gap-lava-r2",
+   "at": "2026-10-23T13:55:04",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.lava_edge": {
+     "C1": "b0e043ea16df32a55b263847ee6765c3946fcaf14f8d6f2e91db1c44e2f6f938",
+     "C2": "19d198a4f6aeb17fe1441e0906a54d5f8859bf927ad33780e46407a31543aa19",
+     "B1": "fedcc3f691d6ba2ed312ca2b40bf3084f8e68f973d3bc445b628f3bd965016ff",
+     "B2": "410b9ee980f349e8a7672ff80f535fae3f562801cb1b82333de905cd51f60286"
     }
    }
   }

@@ -2812,6 +2812,15 @@
     "tc.fo_waystone"
    ],
    "lead": "피라미드·얼음굴·늪·숲 던전 부족분. 줄 공통 A1·A2. 모듈은 테마마다 theme_climate_<테마>.py, 모으는 곳 theme_climate_r1.py."
+  },
+  "gap-lava-r2": {
+   "module": "src/harnesses/dungeon-chipset/rounds/gap_lava_r2.py",
+   "wave": "gap",
+   "title": "용암 32×32 위상 몸통 gap-lava-r2",
+   "items": [
+    "gap.lava_edge"
+   ],
+   "lead": "엔진 phaseVariants {w:2,h:2} 로 32×32 몸통 — 버들항 용암 강 바탕 + 손 껍질 판/맥, 빛이 금을 타고 흐름. 줄 C·B."
   }
  }
 }
