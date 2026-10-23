@@ -684,6 +684,15 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
       detail: `${w.who} (${w.from.x},${w.from.y})→(${w.goal.x},${w.goal.y}) ${w.steps}걸음${w.onRoad ? `(길 위 ${w.onRoad}칸)` : ""} — ${ok ? "통과" : w.reached ? `${MIN_WALK}걸음 미만이라 걷는 장면으로 안 읽힌다` : `목적지 '${w.intent}' 에 닿지 못한다`}` });
   }
   {
+    // 장면 길이: 한 사람이 장면 안에서 30걸음 넘게 걸으면(한 걸음 약 ¼초 + 정지) 플레이어가 15초 넘게 서서 본다 —
+    // 2026-10-24 밤 컷신: 그림자 62걸음, 한 번 말 걸기 안에 안 끝나 보였다. 지나가는 사람은 짧은 한 구간으로.
+    const per = new Map<string, number>();
+    for (const w of sim.walks) per.set(w.who, (per.get(w.who) ?? 0) + w.steps);
+    for (const [who, n] of per) if (!isHero(who) && n > 30) {
+      checks.push({ id: "cutscene-length", mapId, ok: false, detail: `${who} 이(가) 장면 안에서 ${n}걸음 걷는다 — 너무 길다(30걸음 이하로: 걷기 비트를 줄이거나 가까운 자리 낱말로)` });
+    }
+  }
+  {
     // 대사 순간 위치: 모의 마지막 프레임 기준(대사는 걷기 뒤에 온다).
     const last = sim.frames.at(-1)!;
     const hero = last.actors.find((a) => a.key === PLAYER)!;
