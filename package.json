@@ -121,7 +121,7 @@
     "node-unrar-js": "2.0.2",
     "phaser": "^4.2.1",
     "tar": "7.5.22",
-    "zod": "^4.6.5"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@oh-my-pi/pi-ai": "^18.6.3",
