@@ -169,13 +169,6 @@ export function whenBattleStageReady(root: HTMLElement, options: BattleReadiness
         remember(url, await decodeImageUrl(url));
         settled.add(url);
       };
-      if (pass === 0) {
-        for (const url of extras) {
-          if (requested.has(url)) continue;
-          requested.add(url);
-          extraWork.push(load(url));
-        }
-      }
       if (fresh.length === 0) break;
       const imageNodes = [...root.querySelectorAll("img")].filter((img) => img.src && !img.complete);
       await Promise.all([
@@ -184,6 +177,12 @@ export function whenBattleStageReady(root: HTMLElement, options: BattleReadiness
       ]);
     }
     options.settle?.(decodedImageLookup);
+    // 이펙트 시트는 무대 그림이 다 온 뒤에 요청한다 — 먼저 보내면 좁은 망에서 무대 그림의 대역을 나눠 먹는다.
+    for (const url of extras) {
+      if (requested.has(url)) continue;
+      requested.add(url);
+      extraWork.push((async () => { remember(url, await decodeImageUrl(url)); settled.add(url); })());
+    }
     // 이펙트 시트는 짧게만 더 기다린다 — 못 받아도 전투는 시작하고 시트는 계속 받는다.
     if (extraWork.length > 0) {
       await Promise.race([
