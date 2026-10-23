@@ -134,6 +134,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 사막·동양풍 번들 desert_east(계열 oprn-desert-east) · 오아시스 마을·바자르·궁전·피라미드 유적·대상 숙소 + 찻집·가게·알현실·묘실·함맘·여관 실내를 코드 손 도트로 그려 object-gate 영수증 통과분만 굽고(모서리 왕 타일 5벌), 순수 구성기 `compose_desert_east_map`·`compose_desert_east_room`(발 밑 재질·문 접근칸·BFS)로 깐다: `openwiki/desert-east.md`
    - 북방 설원 번들 snow_north · 눈 덮인 북방 마을·얼어붙은 호수 낚시터·얼음 동굴 입구·겨울 장터 + 오두막·회관·선술집·사우나·얼음 동굴 실내 코드 손 도트 131조각(오토타일 6, object-gate 영수증·조립 그림, 프로필 미보정), 구성기 `compose_snow_north_map`, 버들항 눈 기후(theme:"snow")와의 라우팅 경계는 `src/ai/snowNorthPolicy.ts`: `openwiki/snow-north.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
+   - 조수 v2 (기본 꺼짐 — 모델은 명세만, 결정론 빌더가 짓고 독립 비평가가 1배 그림을 본다; `?assistant=v2`, v1 비교 결과): `openwiki/assistant-v2.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - 에디터 「공방」 (하네스를 에디터 안에서 사용자 계정 모델로 돌리기 — 왼쪽 막대, 실행기·저장·표면): `openwiki/editor-workshop.md`
    - 코딩 에이전트의 스토어 제출 (`npm run -s store`, 에이전트 토큰·확인 대기·검사 목록): `openwiki/store-agent-contribution.md`

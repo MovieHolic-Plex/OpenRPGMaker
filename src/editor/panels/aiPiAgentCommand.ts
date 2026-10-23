@@ -55,6 +55,7 @@ import { mapRunScope, independentMapRunRoots, settleMapRuns } from "@/ai/piAgent
 import { editorAiMapRuns } from "@/ai/piAgent/editorMapRunLocks";
 import { aiProjectRunKey } from "@/editor/aiMapRunOwnership";
 import { composePiTask } from "@/ai/piAgent/executionRoute";
+import { isAssistantV2Enabled } from "@/ai/v2/switch";
 import { buildPiRunRequest, buildUltrabrainPlanRequest, needsUltrabrainPlanTurn, prefersCallerThinking, withUltrabrainPlan } from "@/ai/piAgent/plainTurn";
 import { applyProposedProject, captureApplyAuthority } from "@/editor/tools/applyChangesetToStore";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
@@ -228,6 +229,8 @@ export interface PiRunOptions {
   readonly routingAudit?: string;
   /** 다듬기 모드 — 계획 턴 없이 1배 검토→고치기만 N바퀴·M분 돈다(src/ai/piAgent/featureReview.ts). */
   readonly polish?: import("@/ai/piAgent/featureReview").FeaturePolishOptions;
+  /** 조수 v2(src/ai/v2, 기본 꺼짐) — 계획 턴·조화 검수 없이 v2 실행기로 보낸다. 판단·짓기·비평·고치기는 워커의 v2 루프가 한다. */
+  readonly assistantVersion?: "v2";
 }
 
 /** 적용 뒤 영수증(지금 → 적용 후) 재료. 렌더는 패널이 한다 — 되돌리기와 스튜디오 「변경」 탭이 거기 있다. */
@@ -298,6 +301,8 @@ export async function runPiCommand(
   options: PiRunOptions = {},
 ): Promise<boolean> {
   if (command.goalMode) options = { ...options, maxTurns: GOAL_MAX_TURNS, timeoutMs: GOAL_TIMEOUT_MS };
+  // v2 스위치(기본 꺼짐) — 단독 평문 턴만 v2 로 간다. 목표·팀·다듬기는 v1 그대로.
+  if (!command.goalMode && command.mode !== "team" && !options.polish && isAssistantV2Enabled()) options = { ...options, assistantVersion: "v2", skipPlanTurn: true };
   const projectKey = aiProjectRunKey();
   editorAiMapRuns.refreshBundles(projectKey, store.getCurrent());
   const claim = editorAiMapRuns.acquire(projectKey, mapRunScope({
@@ -712,7 +717,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         preferCallerThinking,
         ...(options.thinkingLevel ? { callerThinkingLevel: options.thinkingLevel } : {}),
         ...(options.polish ? { polish: options.polish } : {}),
-      }), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) },
+      }), ...(options.assistantVersion ? { assistantVersion: options.assistantVersion } : {}), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) },
       { signal: surface.signal, returnIncompleteResult: command.goalMode === true, onEvent: wrap(mapIds, index),
         onCheckpoint: readOnly || applyMode === "review" ? undefined : async checkpoint => stage("checkpoint", async () => {
           // 이 체크포인트를 낳은 도구의 실제 시공 단계 — 적용 직후 맵 위에서 그 순서대로 다시 튼다(agentConstructionReveal).
@@ -942,7 +947,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   // Review the merged postprocessed draft once; preserve whole-map context.
   // Negative/unavailable review keeps the existing manual proposal path, never auto-applies.
   // 예상보다 범위가 커졌으면 검토를 복원한다. 생략을 "검수 통과"로 기록하지 않는다.
-  const needsHarmonyReview = applyMode !== "yolo" && (applyMode === "auto" || !routineEdit || changedKeys.some(key => key !== `maps.${command.mapIds[0]}` && key !== "tilesets" && key !== "assets" && !(key === "startPos" && merged.project.startMapId === command.mapIds[0])));
+  // v2 는 워커 안에서 독립 비평가가 1배 그림을 보고 고치게 했다 — 브라우저 조화 검수를 한 번 더 돌리지 않는다.
+  const needsHarmonyReview = options.assistantVersion !== "v2" && applyMode !== "yolo" && (applyMode === "auto" || !routineEdit || changedKeys.some(key => key !== `maps.${command.mapIds[0]}` && key !== "tilesets" && key !== "assets" && !(key === "startPos" && merged.project.startMapId === command.mapIds[0])));
   let harmonyApproved = false;
   // 끝난 뒤 사용자에게 보여 줄 «남은 문제» — 무엇이 문제인지 말하지 않는 경고는 아무것도 알려 주지 않는다.
   let unresolvedFindings: string[] = [];
