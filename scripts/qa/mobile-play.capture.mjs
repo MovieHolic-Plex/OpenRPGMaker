@@ -20,6 +20,7 @@ const TAG = arg("tag", "before");
 const PLAY = arg("play", "/tmp/mp/demos/chrono-bell.play.json");
 const OUT = join(arg("out", "/tmp/mp/shots"), TAG);
 const DEVICES = { iphone13: { w: 390, h: 844, ua: "iPhone" }, android: { w: 360, h: 640, ua: "Android" } };
+const EVAL = arg("eval", "");
 const devices = arg("device", "iphone13,android").split(",");
 const states = arg("states", "title,dialogue,field,menu,shop,battle").split(",");
 mkdirSync(OUT, { recursive: true });
@@ -90,6 +91,11 @@ async function runState(browser, server, dev, d, state, log) {
       for (let i = 0; i < 30 && !(await has(page, "battle-scene")); i++) await key(page, "Enter");
       await sleep(2500); await shotBoth(page, dev, "battle-weak", d);
     }
+  }
+  if (EVAL) {
+    await page.setViewportSize({ width: d.h, height: d.w }); await sleep(800);
+    const r = await page.evaluate(new Function(`return (${EVAL})`)()).catch((e) => "ERR " + e.message);
+    console.log(`EVAL ${dev} ${state}:`, JSON.stringify(r).slice(0, 2500));
   }
   const mobile = await page.evaluate(() => document.querySelector(".play-viewport")?.dataset.mobileUi ?? "none").catch(() => "?");
   log.push(`${dev} ${state} ok ${Math.round((Date.now() - t0) / 1000)}s mobileUi=${mobile} errs=${errs.length}${errs[0] ? " " + errs[0] : ""}`);
