@@ -8,7 +8,7 @@ import type { WorkshopEnv } from "@/harnesses/_core/workshop/types";
 import { ATLAS_BIOME_INTERIOR_ID } from "@/project/defaults/atlasBiomeInterior";
 import { store } from "@/project/store";
 import { footprintClass } from "@/harnesses/_core/workshop/footprint";
-import { leafLockHexes, ogIsOrganic } from "@/harnesses/_core/workshop/objectGenFlow";
+import { GROUND_SHADOW, leafLockHexes, ogCastsShadow, ogIsOrganic } from "@/harnesses/_core/workshop/objectGenFlow";
 import { classObjects, paletteFromImages, similarObjects } from "@/harnesses/map-objects/editor/sheet";
 
 export type DrawTarget =
@@ -45,7 +45,9 @@ export async function mapObjectPalette(env: WorkshopEnv, tilesetId: string, titl
   const similar = (picked.length ? picked : similarObjects(source, title, description, 6)).map((object) => ({ image: object.image, weight: 8 }));
   const hexes = paletteFromImages([...similar, { image: source.image, weight: 1 }]);
   // 잎 덩이 자연물은 잎 초록을 견본 잎 단으로 잠근다(잔디·올리브 키 제거)
-  return ogIsOrganic({ title }) && (cls === "tree" || cls === "plant") ? leafLockHexes(hexes, source.image) : hexes;
+  const locked = ogIsOrganic({ title }) && (cls === "tree" || cls === "plant") ? leafLockHexes(hexes, source.image) : hexes;
+  // 버들항 바위·꽃밭처럼 반투명 바닥 그림자 위에 놓이는 자연물은 그림자 키를 하나 더 준다(object-gen palette.with_ground_shadow)
+  return ogCastsShadow({ title, description }) ? [...locked, GROUND_SHADOW] : locked;
 }
 
 /** 「물건·가구」 카드가 쓰는 두 실행기 — 손 도트 실내 칩셋(실내 가구)과 지금 맵 칩셋(맵 물건). */
