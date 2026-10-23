@@ -167,12 +167,35 @@ async function prepareFirstScreen(loader: BootLoader, project: Project, autoStar
   setTimeout(() => {
     // QA 가 «뒤에서 받은 것» 과 «화면이 늦게 부른 것» 을 가르는 기준 시각(측정용, 비밀 아님).
     document.documentElement.dataset.preloadBackgroundAt = String(Math.round(performance.now()));
-    // 나머지 전부(가까운 맵 → 전투·메뉴·엔딩)를 낮은 우선순위로. 화면이 부르는 파일은 high 라 이 줄에 밀리지 않는다.
-    void preloadUrls(background, { concurrency: 6, priority: "low" }).then((done) => {
+    void (async () => {
+      // 판본의 파일 목록(preload-files.json)이 있으면 프로젝트 글자로 안 보이는 것(코드 조각·스킬 효과 시트·코드가 고르는
+      // 전투 그림)까지 전부 받는다. 순서: 가까운 맵 → 코드 조각·효과 시트(assets/ 바로 아래) → 나머지.
+      const listed = await readPreloadFileList();
+      const buildOutput = listed.filter((url) => /\/assets\/[^/]+$/u.test(url));
+      const rest = listed.filter((url) => !/\/assets\/[^/]+$/u.test(url));
+      // 나머지 전부를 낮은 우선순위로. 화면이 부르는 파일은 high 라 이 줄에 밀리지 않는다.
+      const done = await preloadUrls([...background, ...buildOutput, ...rest], { concurrency: 6, priority: "low" });
       document.documentElement.dataset.preloadBackgroundDoneAt = String(Math.round(performance.now()));
       document.documentElement.dataset.preloadBackgroundFiles = `${done.doneFiles}/${done.totalFiles}`;
-    });
+    })();
   }, 1500);
+}
+
+/** 판본 폴더의 preload-files.json(스토어 판본만 있다) → 절대 주소 목록. 없거나 이상하면 빈 목록. */
+async function readPreloadFileList(): Promise<string[]> {
+  try {
+    const base = new URL("preload-files.json", window.location.href);
+    const response = await fetch(base);
+    if (!response.ok) return [];
+    const raw = (await response.json()) as unknown;
+    if (!Array.isArray(raw)) return [];
+    return raw
+      .filter((path): path is string => typeof path === "string" && /^[\w./-]+$/u.test(path) && !path.includes(".."))
+      .slice(0, 20000)
+      .map((path) => new URL(path, base).href);
+  } catch {
+    return [];
+  }
 }
 
 type BundledProjectLoad =

@@ -119,6 +119,7 @@ export async function buildStoreGameFiles(project: Project, options: { readonly 
   // CSS 가 가리키는 공용 그림·글꼴(배틀 배경·메뉴 아이콘·도트 글꼴)도 판본 폴더에 함께 싣는다.
   for (const path of cssAssets) if (!files.has(path)) files.set(path, await options.fetchBytes(`/${path}`));
   if (options.transcodeAudio) await transcodeLargeAudio(files, options.transcodeAudio);
+  files.set(PRELOAD_FILES_NAME, new TextEncoder().encode(JSON.stringify(preloadFileList(files))));
   const entry = files.has("player.html") ? "player.html" : [...files.keys()].find((name) => name.endsWith(".html") && !name.includes("/"));
   if (!entry) throw new Error("플레이어 진입 문서(player.html)가 내보내기 목록에 없습니다.");
   return { files, entry, projectJson: prepared.projectJson, mapCount: prepared.summary.mapCount };
@@ -138,6 +139,18 @@ export function relativeCssAssetUrls(path: string, bytes: Uint8Array): Uint8Arra
 
 /** 표지·장면 그림을 판본 파일에 더할 때 쓰는 경로(게임 그림과 섞이지 않게 store/ 아래). */
 export const storeArtPath = (name: string): string => `store/${name.replace(/[^\w.-]+/g, "-")}`;
+
+/**
+ * 판본의 모든 게임 파일 목록 — 플레이어가 시작한 뒤 뒤에서 «전부» 받을 때 쓴다(scenePreload.ts).
+ * 프로젝트 글자로는 안 보이는 파일(코드가 고르는 전투 그림·스킬 효과 시트·코드 조각)까지 들어 있다.
+ * 진입 문서·데이터(html·project.json·loading.json)는 이미 받았으므로 뺀다.
+ */
+export const PRELOAD_FILES_NAME = "preload-files.json";
+function preloadFileList(files: ReadonlyMap<string, Uint8Array>): string[] {
+  return [...files.keys()]
+    .filter((path) => !/\.(html?|md)$/i.test(path) && path !== "project.json" && path !== "loading.json" && path !== PRELOAD_FILES_NAME)
+    .sort();
+}
 
 /** 큰 WAV 를 줄인 파일로 바꾸고, 플레이어가 원래 주소 대신 그 파일을 부르도록 loading.json 의 aliases 에 적는다. */
 async function transcodeLargeAudio(files: Map<string, Uint8Array>, transcode: StoreAudioTranscoder): Promise<void> {
