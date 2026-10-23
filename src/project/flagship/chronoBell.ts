@@ -23,6 +23,7 @@ import { buildFallenStarOpening, FALLEN_STAR_TITLE_BACKGROUND } from "./fallenSt
 import { clearOrphanShadows, rimPit } from "./fallenStarMapPolish";
 import { FS_VALEN_START, FS_VAULT_LENS, rebuildFallenRooms } from "./fallenStarRooms";
 import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./fallenStarStory";
+import { applyFallenLoreAndHanel } from "./fallen/loreAndHanel";
 import { reworkFallenTown } from "./fallenTown";
 import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX, ensureFallenValenChip } from "./fallenValenChip";
 import { buildFallenTownInteriors } from "./fallenTownInteriors";
@@ -2162,6 +2163,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 얼굴은 모든 대사 편집이 끝난 뒤 한 번에 건다(위 단계들이 대사를 찾아 바꾸고 덧붙인다).
   const actorFace = (id: string): string => project.database.actors.find((a) => a.id === id)?.faceResourceId ?? "";
   // 이야기 장면(하넬·브람·지하의 발렌)은 말을 걸면 한 칸 물러서 마주 선다.
+  applyFallenLoreAndHanel(project, ids);
   stageTalk(M(ids.observatory).events.find((e) => e.id === `ev_${FS_PREFIX}_hanel`));
   stageTalk(M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_bram`));
   // bossEvent 는 앞에서 잡은 옛 맵 객체일 수 있다(도구를 부를 때마다 맵이 새로 만들어진다) — id 로 다시 찾는다.
