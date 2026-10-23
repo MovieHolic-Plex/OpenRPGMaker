@@ -749,25 +749,25 @@ SARC_NS_A1 = [
 SARC_NS_OPEN_A1 = [
     '................',
     '..566666666664..',
-    '.65555555555543.',
-    '.65P33333333343~',
-    '.65P22222222243~',
-    '.65P11111111143~',
-    '.65PPQQvwPQQ143~',
-    '.65PQQvwwvQQ143~',
-    '.65PQQw;;uQQ143~',
-    '.65PQQPutQQP143~',
-    '.65PQPQvQQPQ143~',
-    '.65PPwvwvuQQ143~',
-    '.65PQtQvPtQQ143~',
-    '.65PQQvwvQQQ143~',
-    '.65PQQPvQQQP143~',
-    '.65PQPwvuQPQ143~',
-    '.65PPQvQvPQQ143~',
-    '.65PQQuQtQQQ143~',
-    '.65PQwtPwtQQ143~',
-    '.65PQQPQQQQP143~',
+    '.65555555555544.',
+    '.65Q44444444444~',
+    '.65Q32333233344~',
+    '.65Q32333233344~',
+    '.65Q22222222244~',
+    '.65QQQQQQQQQ244~',
+    '.65QQP665PPP244~',
+    '.65QQ6QQ54PP244~',
+    '.65QQQ654QQQ244~',
+    '.65QQPP5PPPP244~',
+    '.65QQ65654PP244~',
+    '.65QQP5P4PPP244~',
+    '.65QQ6564QQQ244~',
+    '.65QQPP5PPPP244~',
+    '.65QQP654PPP244~',
+    '.65QQP5P4PPP244~',
+    '.65QQQQQQQQQ244~',
     '.55555555555555~',
+    '.44444444444444~',
     '.3222222222222P~',
     '.433333R3333332~',
     '.43111111111432~',
@@ -966,29 +966,29 @@ DAIS_A1 = [
     '................................................',
     '................................................',
     '.6666666666666666666666666666666666666666666666.',
-    '66666555553666555555536665555555366655555366655P',
-    '65555555543555555555435555555554355555554355554P',
-    '655R555554355555555543555555555435555555R355554P',
-    '64444444443344444444434444444444344444444344444P',
-    '63333333333333333333333333333333333333333333333P',
-    '66666536665555553666555555536665555553666555555P',
-    '65555435555555543555555555435555555543555555554P',
-    '65555435555555543555555555435555555543555555554P',
-    '64444434444444443444444444434444444433444444444P',
-    '63333333333333333333333333333333333333333333333P',
-    '66666555553666555555536665555555366655555366655P',
-    '65555555543555555555435555555554355555554355554P',
-    '65555555543555555555435555555554355555554355554P',
-    '64444444443444444444434444444444344444444344R44P',
-    '63333333333333333333333333333333333333333333333P',
-    '66666536665555553666555555536665555553366555555P',
-    '65555435555555543555555555435555555543555555554P',
-    '65R55435555555543555555555435555555543555555554P',
-    '6444443444444444pVVUUUTSUUUTVUTp444443444444444P',
-    '6333333333333333pVUTUUSUTVUUUTTp333333333333333P',
-    '6666655555366R55pVUUUTVUUUTUUUTp366655555366655P',
-    '6555535554355555pVTVSUUTUUUUTSTp355555554355554P',
-    '6555555554355555pVUSTUUUUTUVSUTp355555554355554P',
+    '65665665665645665665665645665665665645665665665P',
+    '66555555555546555555555546555555555546555555555P',
+    '66555555555546555555555546555555555546555555555P',
+    '655R555555554555555555554555555555554555R555555P',
+    '66555555555546555555555546545555555546555555555P',
+    '66555555545546555555555546555555555546555555555P',
+    '65555555555545555555555545555555555545555555555P',
+    '64444444444444444444444444444444444444444444444P',
+    '66566546566566566546566566566546566566566546566P',
+    '65555545555555555545555555555545555545555545555P',
+    '65555546555555555546555555555546555555555546555P',
+    '65555546555555555546555555555546555555555546555P',
+    '655555R5555555555545555555555545545555555545555P',
+    '655555465555555555465R5555555546555555555546555P',
+    '65555546555555555546555555555546555555555546R55P',
+    '6444444444444444pVVUUTUUUUTUUUTp444444444444444P',
+    '6665665665664665pVTUUUUTUSUUTUTp656646656656656P',
+    '6655555555554R55pVUUTUUUSTUUUUTp555546455555555P',
+    '6555555555554555pVUUUUTSUUUTVUTp555545555555555P',
+    '66R5555555554655pVUTUUSUTVUUUTTp555546555555555P',
+    '6655555555554655pVUUUTVUUUTUUUTp5555465555R5555P',
+    '6555545555554555pVTVSUUTUUUUTSTp555545555555555P',
+    '6655555555554655pVUSTUUUUTUVSUTp555546555555555P',
     '4444444444443444pTSUUUTUVUUTUUTp444444444444444P',
     '2222222232222222pTTTTTTTTTTTTTSp22R222R22222222P',
     '1111111111111111pTTTTTTTTTTTTTSp111111111111111Q',
@@ -1008,21 +1008,19 @@ THRONE_A1 = [
     '..rqp.rrrrrrrrqq.nom..',
     '..rrrrrqqqqqqqppppqn..',
     '..rrWWWWWWWWWWWWWUon..',
-    '..rrWWWVVWVVVWVVUUon..',
     '..rrWWUVVVTVVVTVUUon..',
     '..rrWVVUUUUUUUUUTTon..',
     '..rrWVVUUUrqUUUUTTon..',
     '..rrWVVVUrqpoUUVTTon..',
     '..rqWVVUSqrqoUUUSTon..',
-    '..rqWVVUUUpoUUUUTTon..',
     '..rrWVVUUUUUUUUUTTon..',
-    '..rqWWVUUVUUUVUUTTon..',
     '..rqVUSTTTSTTTSTSSon..',
-    '..rqVUUTTTTTTTTTSSon..',
-    '..rqVUUTTTTTTTTTSSon..',
     'rrrqSSSSSSSSSSSSSSonnm',
-    'rrrpVVVVUUUUUUUUUUonnm',
-    'rqppVUUUUUUUUTTTTTonnm',
+    'rrrqWVVVVVVVVVVVVUonnm',
+    'rrrqVVVUVVVVUVVVVUonnm',
+    'rqppVUUUUUUUUUUUTTonnm',
+    'rqppVUUSUUUUUSUUTTonnm',
+    'rqppUUUUUUUUUUTTTTonnm',
     'rqppUUTTTTTTTTTSSSonnm',
     'rqpprrrqqqqqqqpppoonmm',
     'qpoorqpooooooonnnnmmmm',
@@ -1274,45 +1272,51 @@ GATE_FRAME2_A1 = [
     '4445443333332444233246555552444R332444444333533P',
     '433333333R3324333332444444424333332433333233333P',
     '222222222222P222222P233333PP222222P222222222222P',
-    '6555555552QIQQQQQQIQQQQQQIQQQQQQIQQQQP655555555P',
-    '4444333332QIIIIIIIIIIIIIIIIIIIIIIIIIIP444433333P',
-    '43R3333332QIQQQQQQIQQQQQQIQQQQQQIQQQQP431533333P',
-    '4333332332QIQQQQQQIQQQQQQIQQQQQQIQQQQP4343333R3P',
-    '222222222PQQQQQIQQQQQQIQQQQQQIQQQQQQIP222222222P',
-    '6552655552QIIIIIIIIIIIIIIIIIIIIIIIIIIP655265555P',
-    '4332443332QQQQQIQQQQQQIQQQQQQIQQQQQQIP433244333P',
-    '4322433332QQQQQIQQQQQQIQQQQQQIQQQQQQIP433243312P',
-    '4332433532QQIQQQQQQIQQQQQQIQQQQQQIQQQP43R243343P',
-    '4332433332QIIIIIIIIIIIIIIIIIIIIIIIIIIP433243333P',
-    '222P22222PQQIQQQQQQIQQQQQQIQQQQQQIQQQP222P22222P',
-    '6555555552QQIQQQQQQIQQQQQQIQQQQQQIQQQP655555555P',
-    '4444333332QQQQQQIQQQQQQIQQQQQQIQQQQQQP444433333P',
-    '4333533332QIIIIIIIIIIIIIIIIIIIIIIIIIIP431332333P',
-    '43331333R2QINIIIIINIIIIINIIIIINIIIIINP434333333P',
-    '4333433332QNIIIIINIIIIINIIIIINIIIIINIP453333333P',
-    '222222222PQIIIIINIIIIINIIIIINIIIIINIIP222222222P',
-    '6555265552QIIIINIIIIINIIIIINIIIIINIIIP655526555P',
-    '4433244332QNNN1NNNNNN1NNNNNN1NNNNNN1NP443324433P',
-    '4R33243332QNNN1NNNNNN1NNNNNN1NNNNNN1NP433354333P',
-    '4333243232QNNN1NNNNNN1NNNNNN1NNNNNN1NP431324333P',
-    '4333243332QNNN1NNNNNN1NNNNNN1NNNNNN1NP4343243R3P',
-    '2222P2222PQ22222221222222221222222221P2222P2222P',
-    '6555555552Q22222221222222221222222221P655555555P',
-    '4442333332Q22222221222222221222222221P444433333P',
+    '655555555244P4446QQQQQQQQQQQQQQ2P3333P655555555P',
+    '4444333332P446QQQQQQQQQQQQQQQQQQQQ2P33444433333P',
+    '43R333333246QQQQQQQQQQQQQQQQQQQQQQQQ23431533333P',
+    '43333323326QQQQQQQQQQQQQQQQQQQQQQQQQQ24343333R3P',
+    '222222222PQPQQQQQQQQQQQQQQQQQQQQQQQQQP222222222P',
+    '6552655552QPQQQQQQQQQQQQQQQQQQQQQQQQQP655265555P',
+    '4332443332QPQQQQQQQQQQQQQQQQQQQQQQQQQP433244333P',
+    '4322433332QPQQQQQQQQQQQQQQQQQQQQQQQQQP433243312P',
+    '4332433532QPQQQQQQQQQQQQQQQQQQQQQQQQQP43R243343P',
+    '4332433332QPQQQQQQQQQQQQQQQQQQQQQQQQQP433243333P',
+    '222P22222PQPQQQQQQQQQQQQQQQQQQQQQQQQQP222P22222P',
+    '6555555552QPQQQQQQQQQQQQQQQQQQQQQQQQQP655555555P',
+    '4444333332QPQQQQQQQQQQQQQQQQQQQQQQQQQP444433333P',
+    '4333533332QPQQQQQQQQQQQQQQQQQQQQQQQQQP431332333P',
+    '43331333R2QPQQQQQQQQQQQQQQQQQQQQQQQQQP434333333P',
+    '4333433332QPQQQQQQQQQQQQQQQQQQQQQQQQQP453333333P',
+    '222222222PQPQQQQQQQQQQQQQQQQQQQQQQQQQP222222222P',
+    '6555265552QPQQQQQQQQQQQQQQQQQQQQQQQQQP655526555P',
+    '4433244332QPQQQQQQQQQQQQQQQQQQQQQQQQQP443324433P',
+    '4R33243332QPIIIIIIQIIIIIIQIIIIIIQIIIQP433354333P',
+    '4333243232QPIQIIIIIIQIIIIIIQIIIIIIQIQP431324333P',
+    '4333243332QPNNNQNNNNNNQNNNNNNQNNNNNNQP4343243R3P',
+    '2222P2222PQPNNNNNINNNNNNINNNNNNINNNNQP2222P2222P',
+    '6555555552QPI111111I111111I111111I11QP655555555P',
+    '4442333332QP22I222222I222222I222222IQP444433333P',
     '433333R3323544444444444444444444444443433333533P',
     '222222222P2222222222222222222222222222222222222P',
     'QPPPPPPPPPPQPPPPPPPPPPQPPPPPPPPPPQPPPPPPPPPPQPPQ',
 ]
 
 
+GATE_SPAN_A1 = {4: (17, 30), 5: (14, 33), 6: (12, 35), 7: (11, 36)}   # 아치 머리 줄마다 통로 폭(그 아래 8~28행 = 11~36열)
+
+
 def portcullis(open_):
-    lg = GATE_L
-    cv = grid(GATE_FRAME2_A1, lg)
-    if open_:
-        stamp(cv, GATE_GRID_A1[-4:], lg, 10, 4)
-    else:
-        stamp(cv, GATE_GRID_A1[:-3] + GATE_GRID_A1[8:11] + GATE_GRID_A1[-3:], lg, 10, 4)
-    return cv
+    """패널 3: 통로는 어둠(rim 0) + 앞으로 밝아지는 바닥, 머리는 아치(이맛돌). 쇠 격자는 아치 안에서만 보인다. 올림 = 이빨 줄만."""
+    fr = [list(r) for r in GATE_FRAME2_A1]
+    rows = GATE_GRID_A1[-4:] if open_ else GATE_GRID_A1[:-3] + GATE_GRID_A1[8:11] + GATE_GRID_A1[-3:]
+    for dy, row in enumerate(rows):
+        y = 4 + dy
+        a, b = GATE_SPAN_A1.get(y, (11, 36))
+        for dx, c in enumerate(row):
+            if c != '.' and a <= 10 + dx <= b:
+                fr[y][10 + dx] = c
+    return grid([''.join(r) for r in fr], GATE_L)
 
 
 # ================================================================================================ 유적 — 풀·뿌리가 뚫고 나온 판석(덧그림 2×2, 바닥 위 두 번째 바닥층, 걸음)
@@ -1598,35 +1602,35 @@ def log_frame():
 POST_A2 = [
     '................',
     '................',
-    '....eeeeeeee....',
-    '...eeddddddde...',
-    '...eddcdddcdb...',
-    '...dcccbcccbb...',
-    '....bbbaabbb~...',
-    '.....eddcdb~....',
+    '..fffeefffeeee..',
+    '..eeddeeedddde..',
+    '..edddcdddddcd..',
+    '..ddcdddddcddc..',
+    '..edccbcccbccbb.',
+    '..dcbbbcbbbcbba~',
+    '..cbbbabbbbabaa~',
+    '....aa.aaaaa~~~.',
+    '.....fedcdb~....',
+    '.....fedccb~....',
     '.....wvvvvu~....',
     '.....uttvtt~....',
     '.....wvvvvu~....',
-    '.....edcddb~....',
-    '.....eddcdb.....',
-    '.....edddcb.....',
+    '.....fedcdb~....',
+    '.....fecdcb.....',
+    '.....fedcbb.....',
+    '.....edadcb.....',
+    '.....fedcdb.....',
+    '.....fedcda.....',
+    '.....fecdcb.....',
+    '.....fedcdb.....',
     '.....edcdcb.....',
-    '.....eddcdb.....',
-    '.....eddccb.....',
-    '.....edcddb.....',
-    '.....eddcdb.....',
-    '.....edcddb.....',
-    '.....eddcdb.....',
-    '.....edddcb.....',
-    '.....edcdcb.....',
-    '.....eddcdb.....',
-    '.....eddccb.....',
-    '.....edcddb.....',
-    '.....eddcdb.....',
-    '....dedddcba....',
-    '...cdbbbbbbaa...',
+    '.....fedbcb.....',
+    '.....fedcdb.....',
+    '.....fecdcb.....',
+    '....efedcdcb....',
+    '...feeddddccb...',
+    '...dccbbbbbaa...',
     '....~~~~~~~~~~..',
-    '................',
     '................',
 ]
 
@@ -1939,29 +1943,30 @@ DAIS_A2 = dais(DAIS_TOP, carpet_from=40)
 # ---- 양탄자 A2: 짙은 진홍(T 바탕 · U 결) + 금 점 테두리 띠(p 바탕 위 q 점) + 사슬처럼 이어지는 작은 마름모. 끝은 짧은 술.
 # r1 패널 1: 금 테두리의 2px 바둑판 점선이 1배에서 지글거리고, 3칸 끝 테두리 가운데로 노란 돌기가 튐(2명) →
 # 테두리를 한 결의 띠(바깥 o · 금 p · 4줄마다 바늘땀 q · 안쪽 그늘 n)로 바꾸고, 끝 테두리 바로 옆 두 줄에서는 가운데 사슬을 비운다.
-RUN1_MID_A2 = [   # 관문 4차: 금 테두리 5단(왼 o·r/q·p·n 빛 → 오른 n·o·n·m 그늘), 마름모 가운데 W 빛
-    '..orpnTTTTnonm..',
-    '..oqpnTUTTnonm..',
-    '..oppnTTqTnnnm..',
-    '..oqpnTqWqnonm..',
-    '..orpnTTqTnonm..',
-    '..oqpnTTTTnnnm..',
-    '..oppnTTUTnonm..',
-    '..oqpnTTTTnonm..',
-    '..orpnTTTTnonm..',
-    '..oqpnTUTTnnnm..',
-    '..oppnTTqTnonm..',
-    '..oqpnTqWqnonm..',
-    '..orpnTTqTnonm..',
-    '..oqpnTTTTnnnm..',
-    '..oppnTTUTnonm..',
-    '..oqpnTTTTnonm..',
+RUN1_MID_A2 = [   # 패널 3: 대칭 금 테두리 5단(o · q/r 수 · p · n), 붉은 결은 덩이 털결(PILE_A2), 반복 무늬 없음
+    '..oqpnTTTSnpqo..',
+    '..orpnSTTTnpro..',
+    '..oqpnTTUUnpqo..',
+    '..oqpnTTTTnpqo..',
+    '..oqpnTTSSnpqo..',
+    '..orpnTTTTnpro..',
+    '..oqpnUUTTnpqo..',
+    '..oqpnTTTTnpqo..',
+    '..oqpnSTTTnpqo..',
+    '..orpnTTTUnpro..',
+    '..oqpnTTTTnpqo..',
+    '..oqpnSTTUnpqo..',
+    '..oqpnTTTTnpqo..',
+    '..orpnUTTTnpro..',
+    '..oqpnTTSTnpqo..',
+    '..oqpnTTTTnpqo..',
 ]
 RUN1_TOP_A2 = ['................', '...p..p..p..p...', '..oooooooooooo..', '..opppppppppppo.'[:16], '..opnnnnnnnnpo..'] + [r.replace('q', 'T').replace('U', 'T') if 5 <= y < 7 else r for y, r in enumerate(RUN1_MID_A2)][5:]
 RUN1_BOT_A2 = [r.replace('q', 'T').replace('U', 'T') if 9 <= y < 11 else r for y, r in enumerate(RUN1_MID_A2[:11])] + ['..opnnnnnnnnpo..', '..opppppppppppo.'[:16], '..oooooooooooo..', '...p..p..p..p...', '...~..~..~..~...']
 
 # r1 관문: 붉은 바탕이 평면 채움·명암 3단(4/4) → 털결 반점을 손으로 찍는다(16줄 주기, 이음매에서 끊기지 않게 칸 안 좌표만).
-TWILL = ('TUTS', 'UTST', 'TSTU', 'STUT')   # 4×4 능직: 어두운 S 가 한 칸씩 비껴 내려가는 사선 결
+TWILL = ('TUTS', 'UTST', 'TSTU', 'STUT')
+PILE_A2 = ['TTUUTTTTTSSTTTTT', 'TTTTTTSTTTTTUUTT', 'TSTTTTTTUUTTTTTT', 'TTTTUUTTTTTTTSTT', 'TTTTTTTTSSTTTTTU', 'UTTSTTTTTTTUUTTT', 'TTTTTTUUTTTTTTTT', 'TTUTTTTTTTSTTTTT', 'TTTTTSSTTTTTTUUT', 'TTTTTTTTTUTTTTTT', 'TUUTTTTTTTTTSTTT', 'TTTTTTSTTUUTTTTT', 'TTSSTTTTTTTTTTTU', 'TTTTTUUTTTTTSTTT', 'TTTTTTTTSTTTTTTT', 'UTTTTTTTTTTUUTTT']   # 패널 3: 1px 능직이 아롱거린다(3/4) → 2px 덩이 털결 16×16 손 배치   # 4×4 능직: 어두운 S 가 한 칸씩 비껴 내려가는 사선 결
 PILE3 = {1: ((3, 'U'), (24, 'S'), (33, 'U')), 2: ((10, 'S'),), 3: ((27, 'U'), (4, 'S')), 5: ((12, 'U'), (31, 'S')),
          6: ((2, 'U'), (22, 'U')), 7: ((8, 'S'), (34, 'U')), 9: ((14, 'S'), (26, 'U'), (1, 'U')), 10: ((30, 'S'),),
          11: ((5, 'U'), (21, 'S')), 13: ((11, 'U'), (33, 'S')), 14: ((25, 'S'), (3, 'S')), 15: ((9, 'U'), (28, 'U'))}
@@ -1975,7 +1980,7 @@ def _pile1(rows):
         r = list(r)
         for x in range(6, 10):
             if r[x] == 'T':
-                r[x] = 'V' if x == 6 else 'S' if x == 9 else TWILL[y % 4][x % 4]
+                r[x] = PILE_A2[y % 16][x]
         out.append(''.join(r))
     return out
 
@@ -1989,25 +1994,11 @@ def run3_a2(kind):
     """3칸 폭 A2: 한 결 금 테두리 띠 4px + 진홍 바탕 + 가운데 마름모 사슬."""
     if kind == 'mid':
         core = []
-        for y in range(16):
-            row = ['T'] * 36
-            if y % 8 in (2, 6):
-                row[17] = 'q'
-                row[18] = 'q'
-            if y % 8 == 4:
-                row[15] = 'q'
-                row[16] = 'U'
-                row[19] = 'U'
-                row[20] = 'q'
-            if y % 8 in (3, 5):
-                row[16] = 'q'
-                row[19] = 'q'
-            if y % 8 == 0:
-                row[6] = 'U'
-                row[29] = 'U'
-            for x in range(36):   # 관문 3차: 능직 결(TWILL) — 붉은 바탕 T 자리만, 무늬(q·U)는 그대로. 왼 가장자리 빛 V · 오른 그늘 S
-                if row[x] == 'T':
-                    row[x] = 'V' if x == 0 else 'S' if x == 35 else TWILL[y % 4][x % 4]
+        for y in range(16):   # 패널 3: 가운데 마름모 사슬(16px 반복이 보임)·1px 능직 → 덩이 털결 + 안쪽 금 실선 두 줄(이어지는 무늬)
+            row = [PILE_A2[y][x % 16] for x in range(36)]
+            row[3] = row[32] = 'p'
+            if y % 4 == 1:
+                row[3] = row[32] = 'q'
             core.append(''.join(row))
         out = []
         for y, c in enumerate(core):
@@ -2526,7 +2517,7 @@ CANDIDATES = {
                       'A2': c_sarc_ew(lambda: grid(SARC_EW_A2, MARBLE_L), lambda: sarc_ew_open(SARC_EW_A2, 4))},
     'earth.tomb_slab': {'A1': c_slab(SLAB_A1, SLAB_L), 'A2': c_slab(SLAB_A2)},
     'earth.candelabra': {'A1': c_candle(CANDLE_BASE_A1, CANDLE_FLAMES_A1), 'A2': c_candle(CANDLE_BASE_A2, CANDLE_FLAMES_A2)},
-    'earth.throne': {'A1': c_throne(DAIS_A1, THRONE_A1, 2, THRONE_L), 'A2': c_throne(DAIS_A2, THRONE_A2, 6)},
+    'earth.throne': {'A1': c_throne(DAIS_A1, THRONE_A1, 0, THRONE_L), 'A2': c_throne(DAIS_A2, THRONE_A2, 6)},
     'earth.carpet': {'A1': c_carpet(RUN1_TOP_A1, RUN1_MID_A1, RUN1_BOT_A1, run3),
                      'A2': c_carpet(_pile1(RUN1_TOP_A2), _pile1(RUN1_MID_A2), _pile1(RUN1_BOT_A2), run3_a2)},
     'earth.banner': {'A1': c_banner(BANNER_A1), 'A2': c_banner(BANNER_A2)},
