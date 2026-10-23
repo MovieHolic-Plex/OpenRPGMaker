@@ -33,7 +33,7 @@ export const EVENT_CARD =
   "say{who,text}=대사 / appear{who,where?,looks?,talk?}=그 자리에 «팍» 나타남(where 생략 가능 — 뒤에 주인공에게 걸어오면 함수가 4~8칸 떨어진 길 위를 고른다; talk=컷신 뒤 말 걸면 할 말 배열) / " +
   "face{who,toward}=바라봄 / wait{ms} / fade{dir:'in'|'out'} / " +
   "tint{tone:'night'|'dusk'|'dawn'|'sepia'|'clear'}=화면 색(밤이 되면 컷신 뒤에도 밤으로 남는다, 되돌리려면 clear) / camera{to}=카메라를 자리 낱말·사람·'x,y' 로 옮겨 보여 줌, to:'back' 이면 주인공에게 복귀(빠뜨려도 끝에 돌아온다) / " +
-  "look{who,as:'shadow'|'ghost'|'normal'}=검은 실루엣·반투명 유령·원래 모습 / vanish{who}=연기처럼 사라짐. " +
+  "look{who,as:'shadow'|'ghost'|'normal'}=검은 실루엣·반투명 유령·원래 모습 / vanish{who}=연기처럼 사라짐(«지나가는» 그림자는 등장한 반대쪽 자리 낱말로 걸어가 사라진다 — 다른 사람 곁으로 걸으면 «찾아온» 장면이 된다). " +
   "who: 주인공·player·hero = 플레이어, 그 밖의 이름 = 컷신에 나타나는 사람(appear 로 먼저 등장시키거나 맵에 이미 있는 NPC 이름). " +
   "함수가 모든 걸음을 실제 통행 격자로 모의해 3칸 미만·못 닿는 걷기를 고치고, 레터박스·마주 보기를 넣고, 장면 그림 몇 장을 비평가가 본다.";
 
@@ -453,8 +453,10 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     }
     if (!ab) warnings.push(`${name}: appear 비트가 없고 맵에도 없어 새로 세우고 처음부터 보이게 둔다.`);
     const talk = (ab as { talk?: unknown } | undefined)?.talk;
-    const lines = Array.isArray(talk) ? talk.map((t) => String(t).trim()).filter(Boolean) : typeof talk === "string" && talk.trim() ? [talk.trim()] : defaultFollowUp(name, ab?.looks);
-    followUps.set(name, lines);
+    // 장면 끝에 사라지는 사람(지나가는 그림자 등)은 다시 말 걸 일이 없다 — 기본 «또 보세» 를 달지 않는다(2026-10-24 눈가림: 그림자가 «또 보세» 라 말한다).
+    const leaves = spec.beats.some((b) => b.do === "vanish" && b.who === name);
+    const lines = Array.isArray(talk) ? talk.map((t) => String(t).trim()).filter(Boolean) : typeof talk === "string" && talk.trim() ? [talk.trim()] : leaves ? [] : defaultFollowUp(name, ab?.looks);
+    if (lines.length) followUps.set(name, lines);
     const base: Record<string, unknown> = { mapId, name, x: cell.x, y: cell.y, movement: "fixed", pages: [{ name, lines }] };
     if (hostId) base.id = `${START_ACTOR_PREFIX}${++actorSeq}`;
     const placed = placeNpcWithGraphic(run, map!, base, name, ab?.looks, name, warnings);
