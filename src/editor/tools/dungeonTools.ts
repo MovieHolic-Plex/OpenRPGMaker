@@ -498,6 +498,8 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
     }
   }
   // 층을 쌓는 배치(vertical): 층 수를 안 주면 2층(탑·마법탑은 3층 위로).
+  // 탑(type tower)은 층·방 목록·배치를 안 줘도 층을 쌓는다 — 「마법사의 탑」이 한 층 넓은 던전으로 지어졌다(dt r2 tower-a).
+  if (args.type === "tower" && args.floors === undefined && args.rooms === undefined && args.layout === undefined) args.layout = "vertical";
   if (args.layout === "vertical" && args.floors === undefined && args.rooms === undefined) {
     args.floors = args.type === "tower" ? 3 : 2;
     if (args.direction === undefined && args.type === "tower") args.direction = "up";

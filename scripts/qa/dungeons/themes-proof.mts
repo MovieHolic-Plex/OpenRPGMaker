@@ -39,7 +39,7 @@ for (const [name, args] of Object.entries(CASES)) {
     const ms = Math.round(performance.now() - t0);
     const floors: string[] = res.data.floors;
     for (const id of floors) fs.writeFileSync(path.join(out, `${name}-${id}.png`), renderMapPng(project, project.maps[id]!).png);
-    const issues = (lintProject(project) as any[]).filter((i) => floors.includes(i.mapId));
+    const issues = (lintProject(project) as any[]).filter((i) => floors.includes(i.mapId) || (!i.mapId && i.severity === "error"));   // 직렬화 왕복(카탈로그 값) 오류는 mapId 가 없다 — 커밋을 막는다
     const events = floors.map((id) => ({ id, name: project.maps[id]!.name, size: `${project.maps[id]!.width}x${project.maps[id]!.height}`,
       events: project.maps[id]!.events.map((e) => `${e.id}@${e.x},${e.y}${JSON.stringify(e.pages?.[0]?.commands ?? []).includes('"transfer"') ? "→" + JSON.stringify((e.pages![0]!.commands as any[]).find((c) => c.kind === "transfer")) : ""}`) }));
     fs.writeFileSync(path.join(out, `${name}.json`), JSON.stringify({ summary: res.summary, warnings: res.warnings, events, issues: issues.map((i) => `${i.severity} ${i.code} ${i.message}`), ...(process.env.DT_DUMP ? { maps: floors.map((id) => ({ id, w: project.maps[id]!.width, lower: project.maps[id]!.lowerTiles, upper: project.maps[id]!.upperTiles })) } : {}) }, null, 1));
