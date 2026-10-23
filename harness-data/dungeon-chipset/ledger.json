@@ -149,66 +149,190 @@
    "note": "사용자 2026-10-08: 세 컨셉 줄로 모두 남김",
    "at": "2026-10-08T09:14:04",
    "by": "user"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "arcane.tower_floor",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "7105c12c839fbc612b8d83c893478dfaeec28e45767af4f96a6aa3d41ad5c537",
+   "note": "",
+   "at": "2026-10-23T13:53:13",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-1.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "arcane.bookshelf",
+   "line": "*",
+   "letter": "A2",
+   "sha256": "ee83f75e91a940d0ff7aebfec6edb9d4359afabcb742b3c85a6ee969f9562213",
+   "note": "",
+   "at": "2026-10-23T13:53:13",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "arcane.bookshelf_tall",
+   "line": "*",
+   "letter": "A2",
+   "sha256": "88beebddd0842539e479d263c5f19e944a985f70982525438b1252c809bd369a",
+   "note": "",
+   "at": "2026-10-23T13:53:14",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "arcane.lectern",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "1e487220d59ba4a760ce319e7cd551ab8fb59787c99d8062095fe60e5ed0ed3c",
+   "note": "",
+   "at": "2026-10-23T13:53:14",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-1.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "arcane.teleport_circle",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "9d7566524d96213ddf113ee24caef863e119c1d4015d1b2b552669d187c04bbc",
+   "note": "",
+   "at": "2026-10-23T13:53:15",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "arcane.crystal_pedestal",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "6bd4686d25fa0a6606afce577cd4abc0625d362733b519b4146da64df7d6c1ab",
+   "note": "",
+   "at": "2026-10-23T13:53:15",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "arcane.candelabra",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "455b4e6543232d482f1bb91de653a98ff0b23e4176f1253e7869ef0d5f331ddc",
+   "note": "",
+   "at": "2026-10-23T13:53:15",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "other.void_edge",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "69a363325aacd134712d8b60b9b73955a041591bfef7a6f60967954c429e9a25",
+   "note": "",
+   "at": "2026-10-23T13:53:16",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-10.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "other.crystal",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "906bea1243981a2a37d89a368d84cf07690d7225a1f5856dd57a4671c6690824",
+   "note": "",
+   "at": "2026-10-23T13:53:16",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-9.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "other.crystal_big",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "2358e115f22dfac64737716a357d07c4f3f32fb3aca769c1027aca32c8360f7e",
+   "note": "",
+   "at": "2026-10-23T13:53:17",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-9.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "other.throne",
+   "line": "*",
+   "letter": "A2",
+   "sha256": "23b1bfa88421bf29e4dd9d6a846a405eb7d08e719433bb9d362f2b958398fb0e",
+   "note": "",
+   "at": "2026-10-23T13:53:17",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "other.bone_pillar",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "17e5f32c0f1a3b441dce83e85ac3ae4aa46230dd61abebfa0c9d90d72660aae0",
+   "note": "",
+   "at": "2026-10-23T13:53:18",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "other.brazier",
+   "line": "*",
+   "letter": "A2",
+   "sha256": "f33d9e09cb08c7f2af0d7fdd0b9c64d6e2417b9d4116cb4e36a727c4cd09ae73",
+   "note": "",
+   "at": "2026-10-23T13:53:18",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "other.portal",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "5ad42b2d57a6d254dc2c4bcb27ba100002084492b595b78a0a57add75ed11ce5",
+   "note": "",
+   "at": "2026-10-23T13:53:19",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "other.ground",
+   "line": "*",
+   "letter": "A2",
+   "sha256": "91dbc23f6164cc54c36188bf529ff5e39787c755920c8d51ea56ce00350e9671",
+   "note": "",
+   "at": "2026-10-23T13:53:52",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-10.json"
   }
  ],
  "rejects": [],
  "runs": [
-  {
-   "round": "cave-r1",
-   "at": "2026-10-08T10:51:32",
-   "fail": 0,
-   "warn": 0,
-   "hashes": {
-    "cave.ceiling": {
-     "A1": "599f83ab94b1a9b93aa2823c3dcf479fbd0c12a070afdb4ee48d645b892d30dc",
-     "A2": "8664b43fea2967a7dd045e62c731a242b9e071b7b119f07b11a7f62ec263db9c",
-     "B1": "ce5bde8d820a88629a57cee2098fc848da17bddbe1e57d9fbe0ae84266378722",
-     "B2": "72b36e7a4d7d5b669029314b01d3caaf572d746fcf7f218073b06eea54a66b7d",
-     "C1": "8f56ed86ef72dc2c5a108c08d044adeee7285753d7418ecb002b2ecf1afed5ab",
-     "C2": "1f1f41e5c6515842221a76025ab28893cc9a773432dce2f53c14ddd4db081bd7"
-    },
-    "cave.face": {
-     "A1": "3a637e35a3a010b6b9cd6fb084aa699403c3f9454d4e611ac3ef51488fd79c66",
-     "A2": "15605b1f70c4cb4c6d46c264e36bcd8c6f73f86f6c45ce9bacbededb3869c130",
-     "B1": "72c9ea57ae3870041c05e3a346128c9f6d94b4484f6be35d2a1864e8cf3daf14",
-     "B2": "36bca8abed9226f6fbc3554ad7452278347e819062f90b3c6a4b2ab57bbeac53",
-     "C1": "5f825357f45d2e64d7358af766641e410012c7317b229584439e29f98c8ade13",
-     "C2": "7b494d5539cf737fdc1159d9249c9c9906025a957f2dfef4bf1b7255a946467e"
-    },
-    "cave.floor": {
-     "A1": "fe5a48d5504cfc30b80b726c1abdc85639bc9f5e373dbdda565b11f477740d65",
-     "A2": "4be979acf879a0aeb895410d1aad770469882111225f52ef412021012b659cda",
-     "B1": "a5c40cf7bd1414d18e4e4f8e894e4bc7c747d932923482d14313e952125bef9b",
-     "B2": "6e95ae7ad57eac8fe7eaadd68a8dcc639b02a50e3d08f760eb7a4e57aa2021b2",
-     "C1": "e084944b0d665f3410b9304280b941985a15ca95878a963e82a0901a2cb46223",
-     "C2": "cfc096251db1a3732204e1ef182fd1cefd288ad137b70ebd52398afbca2fa240"
-    },
-    "cave.floor_stone": {
-     "A1": "fb0c8977c3e2722a1d748582cd74852b69012f2135c5c2f86508ccb7b8e330f9",
-     "A2": "cc5948ee956e244d508772ba983268ea4f417ff61e0a2bad58d2a6c06b2ecfcd",
-     "B1": "1d2085bbe2cf4d7f89f25a82215a61e4253c24bd624e3cf27a041c35f723df46",
-     "B2": "632d43203ebba54a9e1e4df3b8984c476114ffcc1337145a7ce10342d8c09a05",
-     "C1": "ed4ea365a231998098063920d310f358582782e828409470e5b2bd4afa294f62",
-     "C2": "1cc8d3c4b45e94014d2a71792c0040838a6f1725e94b26ac4d8ad91679cf5260"
-    },
-    "cave.rubble": {
-     "A1": "7421487ca98bcf8330a0ba337cbf04d041c35b804b5c73fde557d12af0d532e4",
-     "A2": "69a0619c884ccc541c60674001eb06af71521d5f4a15dd0441138713028ab5a6",
-     "B1": "6fb5a4131286e635b31006a1d24d191581a04e5374fc8869acfd184fcef4ad7f",
-     "B2": "fd2f42d7974132c7b58606f68518d7594100930bb585c461931c40890f3951ba",
-     "C1": "5afcca62178f972df8be6c2dd3b9ba8a01631d1fb76dcab8f620a38836a72007",
-     "C2": "eda27dc4651e400df0e5809f1fba627283b3753303b645a4444c4abb60a36934"
-    },
-    "cave.stalagmite": {
-     "A1": "fc0383155f5d0032e3f3aad44a67b809f0b64de501c6a1f3e7be3788e4dde925",
-     "A2": "0bb2825c46933e2f0ae5c184aaee68b46dac20c97739cdd8711feac9f36847cc",
-     "B1": "14730c32b4005923c06ef286cd84c69993e306ac23c7bef530408b9ef5f32d27",
-     "B2": "1792dbcd43bc0133ffedf01af5ee02c13dea9c80b9f27db0090fbbd159985129",
-     "C1": "0ff9ead86f9c2a2f9b53065ed1dc0c05c6c7c26f6dfca697e3b38957da987a80",
-     "C2": "e5d59ab26814d363ce445239310e3bdfb63061aabfde1b1afd66a64ae09a2f19"
-    }
-   }
-  },
   {
    "round": "edges-r1",
    "at": "2026-10-08T10:51:36",
@@ -3983,6 +4107,171 @@
     "other.crystal_big": {
      "A1": "e177795181ec6588d703f7206ce4b97699ddac1c4ec45665d8882bb112e0b752",
      "A2": "53e77689a05800dee4e6dceb2cb86c0511baf7b483ab4db1ca43cd3b44bba9d8"
+    },
+    "other.throne": {
+     "A1": "bfd1f94941987d8471822bf837a6cfc3be1d67c981be467220c242c05bd89415",
+     "A2": "23b1bfa88421bf29e4dd9d6a846a405eb7d08e719433bb9d362f2b958398fb0e"
+    },
+    "other.bone_pillar": {
+     "A1": "17e5f32c0f1a3b441dce83e85ac3ae4aa46230dd61abebfa0c9d90d72660aae0",
+     "A2": "b9d19607baebbdb800db8bd0d2b02fe0a4f93db4b6052c0d39333d9d8cfa4c7f"
+    },
+    "other.brazier": {
+     "A1": "881fc2b54fa1fe94749a197197d840ed56b63d2d0412e10e00a05bd45af2e0b4",
+     "A2": "f33d9e09cb08c7f2af0d7fdd0b9c64d6e2417b9d4116cb4e36a727c4cd09ae73"
+    },
+    "other.portal": {
+     "A1": "5ad42b2d57a6d254dc2c4bcb27ba100002084492b595b78a0a57add75ed11ce5",
+     "A2": "a436301ea7c04df798331cf07355fec52a98f916a1b95ea745909f2e1f823310"
+    }
+   }
+  },
+  {
+   "round": "theme-arcane-r1",
+   "at": "2026-10-23T13:52:43",
+   "fail": 0,
+   "warn": 19,
+   "warnByCode": {
+    "CONTRAST": 11,
+    "OUTLINE": 4,
+    "R": 4
+   },
+   "polish": [
+    {
+     "item": "arcane.lectern",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.46 차 0.19 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.44 차 0.17"
+    },
+    {
+     "item": "arcane.lectern",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.46 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.38 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.44 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.crystal_pedestal",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.49 vs 바닥 0.46 차 0.03; 장면2(2칸) 그늘 쪽 0.53 vs 바닥 0.46 차 0.06; 장면3(2칸) 그늘 쪽 0.49 vs 바닥 0.46 차 0.03 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.49 vs 바닥 0.38 차 0.11; 장면2(2칸) 그늘 쪽 0.53 vs 바닥 0.38 차 0.14; 장면3(2칸) 그늘 쪽 0.49 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.49 vs 바닥 0.44 차 0.05; 장면2(2칸) 그늘 쪽 0.53 vs 바닥 0.44 차 0.09; 장면3(2칸) 그늘 쪽 0.49 vs 바닥 0.44 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.crystal_pedestal",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.34 vs 바닥 0.46 차 0.12; 장면2(2칸) 그늘 쪽 0.38 vs 바닥 0.46 차 0.08; 장면3(2칸) 그늘 쪽 0.34 vs 바닥 0.46 차 0.12 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.34 vs 바닥 0.38 차 0.04; 장면2(2칸) 그늘 쪽 0.38 vs 바닥 0.38 차 0.00; 장면3(2칸) 그늘 쪽 0.34 vs 바닥 0.38 차 0.04 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.34 vs 바닥 0.44 차 0.10; 장면2(2칸) 그늘 쪽 0.38 vs 바닥 0.44 차 0.06; 장면3(2칸) 그늘 쪽 0.34 vs 바닥 0.44 차 0.10 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.candelabra",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.03; 장면2(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.03; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.03 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.05; 장면2(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.05; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00; 장면2(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.candelabra",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.ground",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 65화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 북변 빛 쪽 먹·0단 54% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.ground",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 65화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 북변 빛 쪽 먹·0단 100%; ground 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.void_edge",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 263화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: edge 북변 빛 쪽 먹·0단 58%; edge 서변 빛 쪽 먹·0단 53%; underside 앞면 왼끝 빛 쪽 먹·0단 75% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.void_edge",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 269화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: edge 북변 빛 쪽 먹·0단 52%; underside 앞면 왼끝 빛 쪽 먹·0단 67% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.crystal",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 수정(2칸) 그늘 쪽 0.27 vs 바닥 0.46 차 0.19 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 수정(2칸) 그늘 쪽 0.27 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 수정(2칸) 그늘 쪽 0.27 vs 바닥 0.44 차 0.17"
+    },
+    {
+     "item": "other.bone_pillar",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.02 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.bone_pillar",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.33 vs 바닥 0.46 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.33 vs 바닥 0.38 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.33 vs 바닥 0.44 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.brazier",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.43 vs 바닥 0.46 차 0.03; 장면2(2칸) 그늘 쪽 0.42 vs 바닥 0.46 차 0.05; 장면3(2칸) 그늘 쪽 0.43 vs 바닥 0.46 차 0.03 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.43 vs 바닥 0.38 차 0.05; 장면2(2칸) 그늘 쪽 0.42 vs 바닥 0.38 차 0.03; 장면3(2칸) 그늘 쪽 0.43 vs 바닥 0.38 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.43 vs 바닥 0.44 차 0.01; 장면2(2칸) 그늘 쪽 0.42 vs 바닥 0.44 차 0.02; 장면3(2칸) 그늘 쪽 0.43 vs 바닥 0.44 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.brazier",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 장면1(2칸) 그늘 쪽 0.25 vs 바닥 0.46 차 0.21; 장면2(2칸) 그늘 쪽 0.24 vs 바닥 0.46 차 0.22; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.21 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.25 vs 바닥 0.38 차 0.13; 장면2(2칸) 그늘 쪽 0.24 vs 바닥 0.38 차 0.14; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 장면1(2칸) 그늘 쪽 0.25 vs 바닥 0.44 차 0.19; 장면2(2칸) 그늘 쪽 0.24 vs 바닥 0.44 차 0.20; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18"
+    }
+   ],
+   "hashes": {
+    "arcane.tower_floor": {
+     "A1": "7105c12c839fbc612b8d83c893478dfaeec28e45767af4f96a6aa3d41ad5c537",
+     "A2": "4d87c5866d8807a7d3b20b8aac56952b29f28df20ad6e22a3b4d81d0d0539f2e"
+    },
+    "arcane.bookshelf": {
+     "A1": "186467d8846206414250d69e17377f43723eaff742d5bd8a8fa86fcb6a5569b8",
+     "A2": "ee83f75e91a940d0ff7aebfec6edb9d4359afabcb742b3c85a6ee969f9562213"
+    },
+    "arcane.bookshelf_tall": {
+     "A1": "34449748ec6d6e2d56c4d20cd8ffa785bbaf671750180f3a0ad1008182e629e5",
+     "A2": "88beebddd0842539e479d263c5f19e944a985f70982525438b1252c809bd369a"
+    },
+    "arcane.lectern": {
+     "A1": "1e487220d59ba4a760ce319e7cd551ab8fb59787c99d8062095fe60e5ed0ed3c",
+     "A2": "17ff3f8007d5ad9f57073170f37c303c847811cf9e85b515222565d6e8c65a8e"
+    },
+    "arcane.teleport_circle": {
+     "A1": "9d7566524d96213ddf113ee24caef863e119c1d4015d1b2b552669d187c04bbc",
+     "A2": "d34940b46d6390c4ab4cd2a6148278ceb7ed5e164851a4679cd2ea71722c9d53"
+    },
+    "arcane.crystal_pedestal": {
+     "A1": "6bd4686d25fa0a6606afce577cd4abc0625d362733b519b4146da64df7d6c1ab",
+     "A2": "548960e9f41a123bd1262b26dc2e8701aea50f474d3fd0c7e05deba6aee2069b"
+    },
+    "arcane.candelabra": {
+     "A1": "455b4e6543232d482f1bb91de653a98ff0b23e4176f1253e7869ef0d5f331ddc",
+     "A2": "5de7d08eed243b176b854e10343e97dc02b1ddf96edab316a0383f8b1aa56363"
+    },
+    "other.ground": {
+     "A1": "4917c268cde382b4180df2c55547ecc64b1744df14cade90121132e4e506d6bb",
+     "A2": "91dbc23f6164cc54c36188bf529ff5e39787c755920c8d51ea56ce00350e9671"
+    },
+    "other.void_edge": {
+     "A1": "69a363325aacd134712d8b60b9b73955a041591bfef7a6f60967954c429e9a25",
+     "A2": "6b38b3abcb692e7627c1c74c84fb62b03f26fef2a74d3f90eab77c49d9d7ea02"
+    },
+    "other.crystal": {
+     "A1": "906bea1243981a2a37d89a368d84cf07690d7225a1f5856dd57a4671c6690824",
+     "A2": "f409ef2d2c15be6ba707d7fe5444e223713c6cb5f62864bb0edbec0488d07e19"
+    },
+    "other.crystal_big": {
+     "A1": "2358e115f22dfac64737716a357d07c4f3f32fb3aca769c1027aca32c8360f7e",
+     "A2": "546d6a8bc6b4da9b51cf114899cd7895c0aa6a4355500daf06708facb7f8c489"
     },
     "other.throne": {
      "A1": "bfd1f94941987d8471822bf837a6cfc3be1d67c981be467220c242c05bd89415",
