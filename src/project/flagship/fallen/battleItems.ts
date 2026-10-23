@@ -37,12 +37,19 @@ export const FS_WOLF_FANG = "item_fs_wolf_fang";
 export const FS_SPIDER_SILK = "item_fs_spider_silk";
 export const FS_WISP_EMBER = "item_fs_wisp_ember";
 export const FS_STAR_SHARD = "item_fs_star_shard";
+/** 대본(act1-script 19절) 드롭 — 늑대 가죽·독 주머니·별쇠 조각·별지기 인장·그을린 장갑. */
+export const FS_WOLF_HIDE = "item_fs_wolf_hide";
+export const FS_VENOM_SAC = "item_fs_venom_sac";
+export const FS_STARIRON_SHARD = "item_fs_stariron_shard";
+export const FS_KEEPER_SEAL = "item_fs_keeper_seal";
+export const FS_SCORCHED_GLOVE = "item_fs_scorched_glove";
 
 /** 이 모듈이 붙이는 모든 무기·아이템 id(검수·상점 목록용). */
 export const FS_BATTLE_EQUIPMENT_IDS = [FS_SWORD_GALE, FS_SWORD_STAR, FS_SPEAR_PIKE, FS_SPEAR_STAR] as const;
 export const FS_BATTLE_ITEM_IDS = [
   FS_FIRE_FLASK, FS_WATER_FLASK, FS_SMOKE_PELLET, FS_TONIC, FS_STAR_SCENT,
   FS_WOLF_FANG, FS_SPIDER_SILK, FS_WISP_EMBER, FS_STAR_SHARD,
+  FS_WOLF_HIDE, FS_VENOM_SAC, FS_STARIRON_SHARD, FS_KEEPER_SEAL, FS_SCORCHED_GLOVE,
 ] as const;
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
@@ -159,9 +166,15 @@ export function applyFallenBattleItems(project: Project): void {
       iconResourceId: icon, imageResourceId: icon, occasion: "never", consumable: false,
     }));
   };
-  goods(FS_WOLF_FANG, "늑대 송곳니", 35, "숲늑대의 송곳니. 대장간과 상점이 값을 쳐 줍니다.", "cc0-jetrel-gen-fang-beast");
-  goods(FS_SPIDER_SILK, "거미 비단", 30, "덤불거미가 뽑아낸 질긴 비단실. 상점에 팔 수 있습니다.", "cc0-jetrel-gen-thread-silk");
-  goods(FS_WISP_EMBER, "푸른 불씨", 45, "도깨비불에서 떨어진, 꺼지지 않는 푸른 불씨. 팔면 값이 꽤 나갑니다.", "cc0-jetrel-gen-phoenix-ash");
+  // 이름·문장은 act1-script.md 19절이 정본이다(설명 + 한 줄 여운).
+  goods(FS_WOLF_FANG, "늑대 송곳니", 35, "늑대의 날카로운 송곳니. 창의 재료로 쓰인다.\n아직 뜨겁다. 방금까지 숲이 숨 쉬던 곳에서 뽑혔다.", "cc0-jetrel-gen-fang-beast");
+  goods(FS_WOLF_HIDE, "늑대 가죽", 40, "두껍고 거친 늑대 가죽.\n숲지기 브람이 겨울마다 한 장씩 모은다.", "cc0-jetrel-gen-pelt-wolf");
+  goods(FS_SPIDER_SILK, "거미 비단", 30, "투명한 거미줄 뭉치. 가볍고 질기다.\n햇빛에 비추면 무지개가 번진다.", "cc0-jetrel-gen-thread-silk");
+  goods(FS_VENOM_SAC, "독 주머니", 50, "거미의 독이 든 주머니. 조심해서 다뤄야 한다.\n약방 오든이 비싼 값에 사 간다.", "cc0-jetrel-gen-poison-flask");
+  goods(FS_WISP_EMBER, "푸른 불씨", 45, "도깨비불에서 떨어진 불씨. 차갑게 타오른다.\n손에 쥐면 따뜻하지 않다. 그런데 주머니는 탄다.", "cc0-jetrel-gen-phoenix-ash");
+  goods(FS_STARIRON_SHARD, "별쇠 조각", 220, "별에서 떨어진 쇳조각. 차갑고 밝다.\n만지면 아주 멀리서 종소리가 난다.", "cc0-jetrel-gen-ore-iron");
+  goods(FS_KEEPER_SEAL, "별지기 인장", 300, "수호상이 쥐고 있던 인장. 옛 별지기의 표식.\n뒷면에 이름이 한 줄 새겨져 있었던 자국이 있다.", "cc0-jetrel-gen-badge-guard");
+  goods(FS_SCORCHED_GLOVE, "그을린 장갑", 150, "왼손 장갑. 빛 속성 저항 소폭 상승 제안.\n안쪽에 자수로 새긴 이름이 지워져 있다. 카엘이 한참 들여다본다.", "cc0-jetrel-gloves");
   goods(FS_STAR_SHARD, "별조각", 400, "떨어진 별의 파편. 아주 드물게 나옵니다. 비싸게 팔립니다.", "cc0-jetrel-crystal");
 
   // ── 드롭 표 ────────────────────────────────────────────────────────────────
@@ -171,11 +184,14 @@ export function applyFallenBattleItems(project: Project): void {
   };
   drops("enemy_fs_wolf", [
     { itemId: FS_WOLF_FANG, ratePercent: 45 },
+    { itemId: FS_WOLF_HIDE, ratePercent: 30 },
     { itemId: FS_POTION, ratePercent: 20 },
     { itemId: FS_STAR_SHARD, ratePercent: 4 },
+    { itemId: FS_STARIRON_SHARD, ratePercent: 6 },
   ]);
   drops("enemy_fs_spider", [
     { itemId: FS_SPIDER_SILK, ratePercent: 45 },
+    { itemId: FS_VENOM_SAC, ratePercent: 25 },
     { itemId: FS_ANTIDOTE, ratePercent: 25 },
     { itemId: FS_STAR_SCENT, ratePercent: 5 },
   ]);
@@ -184,6 +200,13 @@ export function applyFallenBattleItems(project: Project): void {
     { itemId: FS_WATER_FLASK, ratePercent: 15 },
     { itemId: FS_TONIC, ratePercent: 6 },
   ]);
+
+  // 보스: 수호상 = 인장(확정) + 별쇠 조각(35%), 발렌 = 그을린 장갑(확정). 이름 없는 인장·장갑은 이야기 소품이다.
+  drops("enemy_fs_guardian", [
+    { itemId: FS_KEEPER_SEAL, ratePercent: 100 },
+    { itemId: FS_STARIRON_SHARD, ratePercent: 35 },
+  ]);
+  drops("enemy_fs_valen", [{ itemId: FS_SCORCHED_GLOVE, ratePercent: 100 }]);
 
   // ── 무기: 검 vs 창 ─────────────────────────────────────────────────────────
   const hero = [DEFAULT_ACTOR_ID];
@@ -199,13 +222,13 @@ export function applyFallenBattleItems(project: Project): void {
     statBonuses: { attack: 14, defense: 0, mind: 0, agility: 6 }, attackElementIds: ["sword"], criticalRate: 14, accuracy: 100,
   });
   weapon(FS_SWORD_STAR, {
-    name: "별벼림 검", price: 640,
-    description: "별빛으로 벼린 검. 공격 22 · 민첩 +10 · 급소 확률 +22%. 바람결 검의 상위 — 빠르고 급소가 더 잘 난다.",
+    name: "별쇠 장검", price: 640,
+    description: "단일 대상에게 가장 센 한 방. 공격 22 · 민첩 +10 · 급소 확률 +22%. 바람결 검의 상위 — 빠르고 급소가 잘 난다.\n칼날에 얼핏 별자리처럼 점이 박혀 있다.",
     statBonuses: { attack: 22, defense: 0, mind: 0, agility: 10 }, attackElementIds: ["sword"], criticalRate: 22, accuracy: 100,
   });
   weapon(FS_SPEAR_PIKE, {
-    name: "철심 창", price: 220,
-    description: "무겁고 긴 창. 공격 22 · 민첩 -3 · 회피 무시. 한 방이 강하고 날랜 적도 꿰뚫는다. 거미·수호상은 창에 약하다. 느린 대신 급소는 잘 나지 않는다.",
+    name: "푸른 불꽃 창", price: 220,
+    description: "무겁고 긴 창. 공격 22 · 민첩 -3 · 회피 무시. 날랜 적도 꿰뚫는다. 거미·수호상은 창에 약하다.\n푸른 불씨를 먹은 쇠는 식어도 푸르다.",
     statBonuses: { attack: 22, defense: 0, mind: 0, agility: -3 }, attackElementIds: ["spear"], criticalRate: 2, accuracy: 100,
     effectFlags: { ...ZERO_FLAGS, ignoreDodge: true },
   });

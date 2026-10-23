@@ -1407,8 +1407,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   for (const id of Object.values(ids)) if (!project.maps[id]) throw new Error(`[fallen-star] 맵이 덜 지어졌다: ${id} ${JSON.stringify(built.warnings ?? [])}`);
   // 도구를 부를 때마다 맵 객체가 바뀐다 — 늘 새로 꺼낸다.
   const M = (id: string): GameMap => project.maps[id]!;
-  // 숲 조우율: 12(평균 11걸음)는 너무 잦다 → 1.6(평균 약 31걸음). 길 도구가 정수로 내림해서 지어진 뒤 맵에 직접 쓴다.
-  M(ids.forest).encounterRate = 1.6;
+  // 숲 조우율: 12(평균 11걸음)는 너무 잦다 → 1.25(해석 평균 약 35걸음). 길 도구가 정수로 내림해서 지어진 뒤 맵에 직접 쓴다.
+  M(ids.forest).encounterRate = 1.25;
 
   applySpeakerPrefixes(project);
 
