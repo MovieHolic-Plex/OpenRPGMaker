@@ -99,7 +99,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
     clue: {
       map: "forest",
       label: "떨어진 별",
-      lines: ["치익— 뚜껑이 열리고, 하얀 김 속에서 한 소녀가 몸을 일으켰다."],
+      lines: ["치익— 관이 열리고, 하얀 김 속에서 한 소녀가 몸을 일으켰다."],
     },
     foe: {
       map: "vault",
@@ -159,7 +159,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
         prompt: "떨리는 목소리다. 뭐라고 답할까?",
         options: ["누구냐! 정체를 밝혀라!", "괜찮아. 우리가 지켜 줄게.", "심문관이 오기 전에 빨리 나와!"],
         answer: 1,
-        hit: { lines: ["알 속의 목소리: …믿을게요. 지금, 뚜껑을 열게요."] },
+        hit: { lines: ["알 속의 목소리: …믿을게요. 지금, 관을 열게요."] },
         miss: { lines: ["목소리가 뚝 끊겼다. 관이 다시 차갑게 식는다."] },
       },
     ],

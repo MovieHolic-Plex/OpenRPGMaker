@@ -1569,14 +1569,14 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
 
   // 떨어진 별을 열면 이리스가 깨어나 동료가 된다. 별빛 열쇠는 알 안에 있다 — 뚜껑이 열린 뒤 이리스가 건넨다.
   // 장 구성기 기본값인 「풀이 칸 바닥을 풀숲으로 바꾸기」(changeTile)는 그을린 흙 위에 풀 한 칸을 남겨 뺀다.
-  const podOpened = findTextList(M(ids.forest), "치익— 뚜껑이 열리고");
+  const podOpened = findTextList(M(ids.forest), "치익— 관이 열리고");
   if (!podOpened) throw new Error("[fallen-star] 떨어진 별 조사 대사를 찾지 못했다");
   const podList = podOpened.list;
   let irisFacingBack: Command | undefined;
   const keyAt = podList.findIndex((c) => c.kind === "changeItem" && (c as { itemId?: string }).itemId === FS_STAR_KEY_ITEM);
   const keyGain = keyAt >= 0 ? podList.splice(keyAt, 2)[0]! : ({ kind: "changeItem", itemId: FS_STAR_KEY_ITEM, op: "+=", amount: 1 } as Command);
   for (let i = podList.length - 1; i >= 0; i -= 1) if (podList[i]!.kind === "changeTile") podList.splice(i, 1);
-  const opened = podList.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("치익— 뚜껑이 열리고"));
+  const opened = podList.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("치익— 관이 열리고"));
   // 8-5 이리스 깨어남 — 한 박스 한 감정. 가까이 오면 움츠리고(몸을 돌렸다 돌아본다), 손을 내밀고, 처음 땅을 밟는다.
   const irisRoute = (moves: Array<{ kind: "turn"; dir: string }>): Command =>
     ({ kind: "moveEvent", eventId: `ev_${FS_PREFIX}_iris_field`, route: { moves, repeat: false, wait: true, skippable: true } } as unknown as Command);
@@ -1591,7 +1591,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     say("이리스", "…신호, 수신. 현지 시각 불명.\n저는 중계기 이리스입니다."),
     kaelEmote("exclamation", 600),
     say("카엘", "말을 했어. 엘레나, 방금 말했지?"),
-    say("엘레나", "응. 놀라지 마. 놀라면 안 돼."),
+    say("엘레나", "응. 놀라지 마."),
     irisEmote("sweat", 700),
     irisRoute([{ kind: "turn", dir: "down" }]),
     pause(400),
@@ -1604,16 +1604,16 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     say("이리스", "이리스. 그리고 「집」이 있어요.\n얼굴은 기억 안 나는데, 이름표는 있어요."),
     say("카엘", "집? 어디에?"),
     irisEmote("ellipsis", 800),
-    say("이리스", "하늘 위, 라고 생각해요.\n거기서 부르는 소리를 따라왔어요."),
-    narrate("이리스가 유리창 밖으로 손을 내민다. 손끝이 가늘게 떨린다."),
+    say("이리스", "하늘 위라고 생각해요.\n거기서 부르는 소리를 따라왔어요."),
+    narrate("이리스가 관 유리 밖으로 손을 내민다. 손끝이 가늘게 떨린다."),
     say("이리스", "저는 물건이 아니에요.\n집에 돌아가고 싶을 뿐이에요."),
-    say("카엘", "알아. 우리가 도와줄게.\n괜찮아. 우리가 지켜 줄게."),
+    say("카엘", "알아. 같이 가자.\n집까지 데려다줄게."),
     { kind: "playAudio", resourceId: "easyrpg-sound-chime2", loop: false, channel: "se" } as Command,
     narrate("알이 낮은 소리로 열린다. 이리스가 처음으로 땅을 밟는다."),
     pause(500),
     say("이리스", "…땅이 따뜻해요. 카엘, 이게 「아침」이에요?"),
     say("엘레나", "…그래. 이게 아침이야."),
-    say("이리스", "이것도 드릴게요. 배 안에 박혀 있던 거예요."),
+    say("이리스", "이것도 드릴게요. 관 안에 박혀 있던 거예요."),
     keyGain,
     narrate("「별빛 열쇠」를 얻었다."),
     say("엘레나", "이 별 무늬… 천문대 서고 바닥 돌뚜껑의 홈이랑 똑같아!"),
@@ -1782,13 +1782,13 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     say("이리스", "…카엘. 아까는 말 못 했어요.\n전문에 한 줄이 더 있었어요."),
     say("이리스", "「중계기 이리스 수신 확인.\n귀환 시 현지 기록을 소거합니다.」"),
     say("카엘", "소거? 기억을 지운다는 거야?"),
-    say("이리스", "집에 돌아가면 오늘도 지워져요.\n카엘이 부른 별 이름도. 빵 맛도요."),
+    say("이리스", "집에 돌아가면 오늘 일도 지워져요.\n카엘이 부른 별 이름도. 빵 맛도요."),
     say("카엘", "…그래도 갈 거야?"),
     say("이리스", "네. 가서 확인해야 해요.\n지워지는 게 정말 「저」인지."),
-    say("카엘", "그럼 가기 전에 한 줄 더 쓰자.\n오늘 줄 밑에."),
+    say("카엘", "그럼 가기 전에 일지에 한 줄 더 쓰자.\n네가 잊으면, 내가 읽어 줄게."),
     ...fadeOut(1500),
     narrate("(북쪽 하늘에서 별 하나가 천천히 붉게 깜빡인다.)"),
-    narrate("(지도의 북쪽 끝. 붉은 못 하나가 박힌다.\n검은 장갑의 손이 못을 누른다.)"),
+    narrate("(……탁.)"),
     narrate("그 시각, 심문관은 지도의 북쪽 끝에 못을 박았다."),
   ];
 
