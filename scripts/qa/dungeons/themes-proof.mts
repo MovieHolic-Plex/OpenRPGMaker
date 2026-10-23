@@ -21,7 +21,7 @@ const CASES: Record<string, Record<string, unknown>> = {
   "catacomb-a": { type: "catacomb", name: "지하묘지", inspiration: "엘든링" }, "catacomb-b": { type: "catacomb", name: "납골당", layout: "hub", floors: 2 },
   "mine-a": { type: "mine", name: "나르쉐 광산", inspiration: "FF6" }, "mine-b": { type: "mine", name: "버려진 갱도", size: "large", layout: "loop" },
   "swamp-a": { type: "swamp", name: "독 늪" }, "swamp-b": { type: "swamp", name: "맹그로브 습지", size: "large", layout: "linear" },
-  "volcano-a": { type: "volcano", name: "화산 동굴" }, "volcano-b": { type: "volcano", name: "용암 신전", layout: "loop", size: "large" },
+  "volcano-a": { type: "volcano", name: "화산 동굴" }, "volcano-b": { type: "volcano", name: "용암 신전", layout: "loop", size: "large" }, "volcano-r2b": { type: "volcano", name: "무너진 대장간 화산", genre: "rpg", size: "medium" }, "cave-r2a": { type: "cave", name: "박쥐 동굴" }, "cave-r2b": { type: "cave", name: "지하 호수 동굴", size: "large" }, "otherworld-r2b": { type: "otherworld", name: "마계 허공 던전" },
   "ice-a": { type: "ice", name: "얼음 동굴" }, "ice-b": { type: "ice", name: "설산의 빙굴", size: "large", layout: "linear" },
   "pyramid-a": { type: "pyramid", name: "파라오의 피라미드" }, "pyramid-b": { type: "pyramid", name: "모래 왕묘", layout: "hub", size: "large" },
   "tower-a": { type: "tower", name: "마법탑", floors: 3, direction: "up" }, "tower-b": { type: "tower", name: "현자의 탑", inspiration: "크로노 트리거" },
