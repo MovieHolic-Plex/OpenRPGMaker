@@ -1030,7 +1030,56 @@
             }
           }
         }
-      ]
+      ],
+      "startBrief": {
+        "version": 1,
+        "presetId": "story-cutscene",
+        "summary": "학교 옥상에서 주인공과 소꿉친구 하린이 처음으로 속마음을 이야기하는 짧은 대화 장면. 상대 이름은 하린. 만나는 장소는 학교 옥상. 두 선택지는 속마음을 털어놓는다 / 웃으며 얼버무린다. 선택에 따라 하린의 반응이 달라진다.",
+        "answers": {
+          "experience": {
+            "question": "마지막에 어떤 감정이 남기를 바라나요?",
+            "label": "핵심 감정",
+            "text": "설렘과 따뜻함",
+            "source": "user"
+          },
+          "activity": {
+            "question": "이야기를 어떻게 알아가게 할까요?",
+            "label": "플레이 행동",
+            "text": "대화를 선택",
+            "source": "user"
+          },
+          "progression": {
+            "question": "이야기는 어떻게 나아가나요?",
+            "label": "진행",
+            "text": "한 장면",
+            "source": "user"
+          },
+          "detail": {
+            "question": "플레이어의 선택은 무엇을 바꾸나요?",
+            "label": "선택의 영향",
+            "text": "하린의 반응",
+            "source": "user"
+          },
+          "scope": {
+            "question": "첫 초안에서 어떤 이야기 단위를 완성할까요?",
+            "label": "첫 제작 범위",
+            "text": "짧은 대화 장면 하나",
+            "source": "user"
+          }
+        },
+        "interview": {
+          "version": 1,
+          "genre": "romance",
+          "concept": "학교 옥상에서 소꿉친구와 처음 속마음을 나누는 장면",
+          "protagonist": "아직 정하지 않음",
+          "notes": "상대 이름은 하린(소꿉친구). 대화 중심 한 장면.",
+          "choiceIds": {
+            "scope": "scene",
+            "activity": "talk",
+            "progression": "single"
+          }
+        }
+      }
     }
   ],
   "gates": {
