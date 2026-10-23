@@ -37,7 +37,34 @@
       "Quagsire",
       "Fennekin",
       "Skiddo",
-      "Sceptile"
+      "Sceptile",
+      "Oshawott",
+      "Popplio",
+      "Mudkip",
+      "Vaporeon",
+      "Scorbunny",
+      "Buneary",
+      "Growlithe",
+      "Sandshrew",
+      "Deerling",
+      "Chespin",
+      "Sprigatito",
+      "Fuecoco",
+      "Sobble",
+      "Grookey",
+      "Litten",
+      "Cyndaquil",
+      "Chikorita",
+      "Treecko",
+      "Turtwig",
+      "Snivy",
+      "Tepig",
+      "Chimchar",
+      "Piplup",
+      "Froakie",
+      "Quaxly",
+      "Smoochum",
+      "Snorlax"
     ]
   },
   "animation": {
@@ -116,10 +143,10 @@
       "stage": 1,
       "starterSet": "first-region",
       "campaignSpeciesId": "mx_species_coalbit",
-      "design": "A baby fire newt starter standing on four tiny stubby legs: a big round head with big eyes and a small cheerful mouth, a plump short rounded body, ember-orange back with two dark red stripes across it, cream belly and cream chin.",
-      "signature": "a huge round tail club - the short thick tail ends in a giant cracked-charcoal ball almost as big as its own head, with glowing orange cracks and one crisp pixel flame tuft on top (flat colors, dark outline, not glowing), so the tail looks like a smoldering mace it drags behind it",
-      "accent": "bright yellow-orange (the glowing cracks and the flame tuft)",
-      "palette": "ember orange, dark red, cream, charcoal grey",
+      "design": "A baby fire red panda cub starter standing on four tiny stubby legs: a very big round head (half of its height) with big bright eyes, a tiny black nose and a small happy smile, round fluffy cheeks, small round ears with cream inner fur, rusty orange-red fur with a cream face mask, dark brown legs, a short plump round body.",
+      "signature": "a gigantic fluffy ringed tail curled up behind it, bigger than its whole body, with alternating orange-red and cream rings, and the tail tip is a big round puff of crisp pixel flame (flat colors, dark outline, not glowing)",
+      "accent": "bright yellow-orange (only the flame tail tip)",
+      "palette": "rusty orange-red, cream, dark brown, maroon",
       "motion": {
         "flicker": "flame"
       }
@@ -133,10 +160,10 @@
       "stage": 1,
       "starterSet": "first-region",
       "campaignSpeciesId": "mx_species_rivulet",
-      "design": "A baby axolotl starter standing on four tiny stubby legs: a very big round head with big eyes and a tiny smiling mouth, a soft plump short blue body with a pale cream belly, a short thick paddle tail.",
-      "signature": "an enormous crown of feathery gills - three huge coral-pink fan-shaped gill fronds on each side of the head, spread wide like a flower ruff or frilled collar, each frond as long as the head is wide, so the head with its gills is wider than the whole body",
-      "accent": "coral pink (only the gills)",
-      "palette": "blue, pale cream, navy, coral pink"
+      "design": "A baby narwhal calf starter that waddles on land on four tiny stubby flipper feet: a very big round head-and-body (one soft round bean shape) with big bright eyes and a small happy smile, smooth sky-blue skin with a white belly and white chin, a few small pale dots on its back, a short tail ending in a small upturned whale fluke.",
+      "signature": "a short soft spiral horn on its forehead shaped like a twisting water spout, ending in a big round water droplet at the tip - pale aqua with white spiral lines, as tall as half its head",
+      "accent": "bright aqua cyan (only the water-spout horn and droplet)",
+      "palette": "sky blue, white, navy, pale aqua"
     },
     {
       "id": "leafling",
@@ -147,16 +174,10 @@
       "stage": 1,
       "starterSet": "first-region",
       "campaignSpeciesId": "mx_species_spriglet",
-      "design": "A baby grass fox starter standing on four tiny stubby legs: a big round head with big brown eyes and a small brown seed-shell acorn cap on top, a plump short body with green fur and a cream chest tuft, a small leafy tail.",
-      "signature": "two gigantic leaf ears - broad pointed leaves growing from the head, each as tall as its entire body, tilted outward like wide antennas with a visible vein line",
-      "accent": "bright lime green (the leaf ears)",
-      "palette": "leaf green, cream, acorn brown, dark green",
-      "emit": {
-        "back": {
-          "x": 42,
-          "y": 30
-        }
-      }
+      "design": "A baby grass bunny starter sitting up on its haunches: a very big round head (half of its height) with big bright eyes and a tiny happy smile, a small round chubby body like a rice ball, short stubby paws held to its chest, soft mint-green fur with a cream face patch and cream belly, a small round cotton-ball tail.",
+      "signature": "two huge drooping lop ears that are broad soft leaves - each leaf ear hangs down to the ground beside its cheeks like long floppy rabbit ears, as long as its whole body, rounded leaf tips with one bright vein line, and a tiny two-leaf sprout growing from the top of its head between the ears",
+      "accent": "bright lime green (the leaf ears and the sprout)",
+      "palette": "mint green, cream, leaf green, dark forest green"
     },
     {
       "id": "gustchick",
