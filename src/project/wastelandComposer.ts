@@ -658,9 +658,16 @@ function composeRoadsideSettlement(b: Board): { areas: WlArea[]; spawn: Pt; road
   for (const ex of [2, Wd - 3]) {
     let rt0 = Hd, rb0 = -1; for (let y = 0; y < Hd; y++) if (road[b.idx(ex, y)]) { rt0 = Math.min(rt0, y); rb0 = Math.max(rb0, y); }
     if (rb0 < 0) continue;
-    junkColumn(b, ex, Math.max(1, rt0 - 9), rt0 - 2, spawn, must);
-    junkColumn(b, ex, rb0 + 2, Math.min(Hd - 2, rb0 + 9), spawn, must);
+    // 한 끝에 한쪽만, 4~5칸 — 양 끝 네 줄을 다 세우면 맵 가장자리에 같은 고물 기둥이 일정 간격으로 줄지어 «울타리»로 읽혔다.
+    if (b.int(0, 1)) junkColumn(b, ex, Math.max(1, rt0 - 2 - b.int(4, 5)), rt0 - 2, spawn, must);
+    else junkColumn(b, ex, rb0 + 2, Math.min(Hd - 2, rb0 + 2 + b.int(4, 5)), spawn, must);
   }
+  // 둘째 줄 거처: 길가 줄 뒤(뒷마당 너머)에 판잣집·컨테이너 집·천막 한 줄씩 — 길에서 먼 땅이 텅 비었다(조수 시험·r6).
+  const back = noRepeat(b.shuffle(["shack-c", "container-home", "tent-tarp", "lean-to", "shack-a", "shack-b", "container-home", "tent-tarp"]));
+  const nFoot = top - 8;
+  if (nFoot >= 5) rowOf(b, back, 2 + b.int(0, 4), Wd - 3, nFoot, spawn, must, [2, 4], areas, () => "뒷줄 거처");
+  const sFoot = bot + 12;
+  if (sFoot <= Hd - 2) rowOf(b, b.shuffle(back), 2 + b.int(0, 4), Wd - 3, sFoot, spawn, must, [2, 4], areas, () => "뒷줄 거처");
   sprinkle(b, ["lean-to", "shack-b", "crates", "drums", "solar-scrap", "generator", "tyres"], 5, 2, 2, Wd - 3, Math.max(3, top - 9), spawn, must);
   sprinkle(b, ["lean-to", "shack-a", "crates", "drums", "solar-scrap", "tyres"], 4, 2, Math.min(Hd - 4, bot + 9), Wd - 3, Hd - 3, spawn, must);
   // 길에서 먼 곳: 무너진 건물 두어 채·고사목·폐차
