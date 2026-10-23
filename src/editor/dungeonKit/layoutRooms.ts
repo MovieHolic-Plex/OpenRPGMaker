@@ -16,7 +16,9 @@ const MARGIN = 2;
 
 const inter = (a: Rect, b: Rect): boolean => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 /** 방이 차지하는 칸: 바닥 + 위 벽 앞면 3줄 + 그 위 천장 한 줄 + 양옆·아래 천장 한 칸(띠). 두 방의 자리는 이 상자끼리 겹치지 않아야 한다. */
-const roomFootprint = (r: Rect): Rect => ({ x: r.x - 2, y: r.y - WALL_ROWS - 1, w: r.w + 4, h: r.h + WALL_ROWS + 2 });
+// 2026-10-23 assistant-dungeons-2: 옆 띠 1칸·아래 띠 0칸으로 줄였다 — 방 사이 검은 허공이 맵의 50~60%였다(VQA 「화면 절반이 허공」).
+// 옆으로 두 방은 천장 2칸(fixThickness 가 1칸 틈은 메운다), 위아래는 벽 앞면 3줄 + 천장 1줄 = 4칸이면 된다.
+const roomFootprint = (r: Rect): Rect => ({ x: r.x - 1, y: r.y - WALL_ROWS - 1, w: r.w + 2, h: r.h + WALL_ROWS + 1 });
 /** 통로: 바닥 + 가로 통로는 위 벽 앞면 3줄·천장 1줄, 세로 통로는 양옆 천장 한 칸. */
 const corridorFootprint = (c: PlacedCorridor): Rect => c.dir === "N" || c.dir === "S"
   ? { x: c.rect.x - 1, y: c.rect.y, w: c.rect.w + 2, h: c.rect.h }
@@ -54,11 +56,52 @@ export function planDungeonRooms(spec: DungeonSpec): DungeonRoomInput[] {
 // ---------- 1. 방 배치 ----------
 
 
+/**
+ * 같은 방 목록을 배치 흔들기만 바꿔 64번 놓고, 허공(방·통로·벽 앞면이 아닌 칸) + 가장 나쁜 카메라 창 허공이 가장 적은 배치를 고른다(2026-10-23 assistant-dungeons-2).
+ * 한 번만 놓으면 십자·사슬 모양이 되어 사분면이 통째로 검은 허공이었다. 결정적이다(같은 시드 = 같은 배치).
+ */
 export function layoutDungeon(spec: DungeonSpec): DungeonLayout {
   const inputs = spec.rooms?.length ? spec.rooms : planDungeonRooms(spec);
   if (inputs.length < 1) throw new DungeonComposeError("rooms 에 방이 하나 이상 있어야 한다.", "invalid-args");
   if (inputs.length > 12) throw new DungeonComposeError("방은 12개까지다 — 한 층을 둘로 나눠라.", "invalid-args");
-  const random = rng((spec.seed ?? 7) * 2654435761 + 1);
+  let best: { layout: DungeonLayout; score: number } | null = null;
+  let lastError: unknown = null;
+  for (let salt = 0; salt < 64; salt += 1) {
+    let layout: DungeonLayout;
+    try { layout = layoutOnce(spec, inputs, salt); } catch (error) { lastError = error; continue; }
+    const score = voidScore(layout);
+    if (!best || score < best.score - 1e-9) best = { layout, score };
+  }
+  if (!best) throw lastError;
+  return best.layout;
+}
+
+/** 배치의 허공 비율: 바깥 상자 중 방·통로 바닥과 그 북쪽 벽 앞면 3줄이 아닌 칸. */
+function voidScore(layout: DungeonLayout): number {
+  const W = layout.width, H = layout.height;
+  const occ = new Uint8Array(W * H);
+  const mark = (r: Rect, north: number) => { for (let y = r.y - north; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) if (x >= 0 && y >= 0 && x < W && y < H) occ[y * W + x] = 1; };
+  for (const r of layout.rooms) mark(r, WALL_ROWS);
+  for (const c of layout.corridors) mark(c.rect, c.dir === "E" || c.dir === "W" ? WALL_ROWS : 0);
+  let n = 0; for (let i = 0; i < occ.length; i += 1) n += occ[i]!;
+  // 플레이어 카메라(20×15, 맵 경계로 당김) 중 가장 나쁜 창의 허공 비율도 더한다 — 전체 비율만 보면 ㄱ자 판 구석 창이 57% 허공인 판을 골랐다
+  // (2026-10-23 dg2-r3 레버 던전·지하 묘지).
+  const SW = Math.min(20, W), SH = Math.min(15, H);
+  let worst = 0;
+  const seen = new Set<number>();
+  for (const r of layout.rooms) for (let cy = r.y; cy < r.y + r.h; cy += 2) for (let cx = r.x; cx < r.x + r.w; cx += 2) {
+    const sx = Math.max(0, Math.min(W - SW, cx - (SW >> 1))), sy = Math.max(0, Math.min(H - SH, cy - (SH >> 1)));
+    if (seen.has(sy * W + sx)) continue;
+    seen.add(sy * W + sx);
+    let v = 0;
+    for (let y = sy; y < sy + SH; y += 1) for (let x = sx; x < sx + SW; x += 1) if (!occ[y * W + x]) v += 1;
+    worst = Math.max(worst, v / (SW * SH));
+  }
+  return 1 - n / (W * H) + worst;
+}
+
+function layoutOnce(spec: DungeonSpec, inputs: readonly DungeonRoomInput[], salt: number): DungeonLayout {
+  const random = rng((spec.seed ?? 7) * 2654435761 + 1 + salt * 7919);
   const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, Math.round(v)));
   const aspect = spec.width && spec.height ? spec.width / spec.height : 1.35;
   const placed: PlacedRoom[] = [];
@@ -67,6 +110,7 @@ export function layoutDungeon(spec: DungeonSpec): DungeonLayout {
   const used = new Map<string, Set<DungeonDir>>();
   const ids = new Set<string>();
   const jitter = (base: number, spread: number) => base + Math.floor(random() * (spread * 2 + 1)) - spread;
+  const wallStair = spec.entryStair === undefined || spec.entryStair === "up" || spec.entryStair === "door";
   inputs.forEach((input, index) => {
     const kind: DungeonRoomKind = input.kind ?? (index === 0 ? "entrance" : "hall");
     const [dw, dh] = DEFAULT_SIZE[kind];
@@ -75,7 +119,7 @@ export function layoutDungeon(spec: DungeonSpec): DungeonLayout {
     while (ids.has(id)) id = `${id}_${index + 1}`;
     ids.add(id);
     if (index === 0) {
-      placed.push({ id, kind, x: 0, y: 0, w, h, from: null, dir: null, depth: 0 });
+      placed.push({ id, kind, x: 0, y: 0, w, h, from: null, dir: null, depth: 0, ...(input.shape ? { shape: input.shape } : {}) });
       used.set(id, new Set());
       return;
     }
@@ -91,18 +135,21 @@ export function layoutDungeon(spec: DungeonSpec): DungeonLayout {
     let best: Best | null = null;
     for (const [rank, parent] of list.entries()) {
     const taken = used.get(parent.id)!;
-    const dirs = (input.dir ? [input.dir, ...DUNGEON_DIRS.filter((d) => d !== input.dir)] : [...DUNGEON_DIRS]).filter((d) => !taken.has(d));
+    // 입구 방 북벽은 계단·문(바깥 출구) 자리다 — 북쪽 통로가 벽을 가르면 계단 놓을 평평한 벽이 사라졌다(2026-10-23 배치 64판에서 지하 묘지 2층).
+    // 방 목록이 북쪽을 직접 바란 경우(신전 현관→본당)만 허용한다.
+    const keepNorth = rank >= 0 && parent.kind === "entrance" && parent.depth === 0 && wallStair && input.dir !== "N";
+    const dirs = (input.dir ? [input.dir, ...DUNGEON_DIRS.filter((d) => d !== input.dir)] : [...DUNGEON_DIRS]).filter((d) => !taken.has(d) && !(keepNorth && d === "N"));
     for (const dir of dirs) {
       for (const shift of strict && input.shift !== undefined ? [input.shift] : [0, 2, -2, 4, -4, 6, -6, 9, -9]) {
         // 세로 통로는 5칸이 먼저(벽 앞면 3줄 위에 천장 두 줄 — 한 줄이면 두 방 사이 벽이 실선처럼 얇다), 가로 통로는 4칸.
-        for (const len of strict && input.len ? [input.len] : dir === "N" || dir === "S" ? [5, 6, 4] : [4, 5, 3, 6]) {
+        for (const len of strict && input.len ? [input.len] : dir === "N" || dir === "S" ? [4, 5] : [2, 3, 4]) {
           const attempt = attemptPlace(parent, { id, kind, w, h }, dir, shift, len);
           if (!attempt) continue;
           if (clashes(attempt.room, attempt.corridor, parent.id, placed, corridors)) continue;
           // 점수: 바람 비율에 가까운 작은 바깥 상자 + 시드 흔들기. 주어진 dir 은 크게 앞선다.
           const box = boundsOf([...placed, attempt.room]);
           const ratio = box.w / Math.max(1, box.h);
-          let score = box.w * box.h * (1 + Math.abs(Math.log(ratio / aspect)) * 1.6) + random() * 60 + Math.abs(shift) * 3 + Math.abs(len - (dir === "N" || dir === "S" ? 5 : 4)) * 6;
+          let score = box.w * box.h * (1 + Math.abs(Math.log(ratio / aspect)) * 1.6) + random() * 60 + Math.abs(shift) * 3 + Math.abs(len - (dir === "N" || dir === "S" ? 4 : 2)) * 6;
           score *= 1 + rank * 0.18;
           if (input.dir && dir === input.dir) score -= 1e6;
           if (!best || score < best.score) best = { ...attempt, score, parent };
@@ -123,7 +170,7 @@ export function layoutDungeon(spec: DungeonSpec): DungeonLayout {
     if (!chosen) throw new DungeonComposeError(`방 ${id} 를 이을 자리가 없다(모든 방의 네 쪽 문이 다 쓰였거나 다른 방과 겹친다). 방 수·크기를 줄여라.`, "layout-failed");
     const parent = chosen.parent;
     used.get(parent.id)!.add(chosen.corridor.dir);
-    placed.push({ ...chosen.room, from: parent.id, dir: chosen.corridor.dir, depth: parent.depth + 1 });
+    placed.push({ ...chosen.room, from: parent.id, dir: chosen.corridor.dir, depth: parent.depth + 1, ...(input.shape ? { shape: input.shape } : {}) });
     used.set(id, new Set<DungeonDir>([opposite(chosen.corridor.dir)]));
     corridors.push({ ...chosen.corridor, a: parent.id });
   });
@@ -212,7 +259,7 @@ function loopCorridor(a: PlacedRoom, b: PlacedRoom, used: Map<string, Set<Dungeo
   // 가로: a 가 왼쪽
   for (const [l, r] of [[a, b], [b, a]] as const) {
     const gap = r.x - (l.x + l.w);
-    if (gap >= 3 && gap <= 8 && free(l, "E") && free(r, "W")) {
+    if (gap >= 2 && gap <= 8 && free(l, "E") && free(r, "W")) {
       const lo = Math.max(l.y + 1, r.y + 1), hi = Math.min(l.y + l.h - 1, r.y + r.h - 1);
       if (hi - lo >= 3) {
         const cy = lo + Math.floor((hi - lo - 3) / 2);

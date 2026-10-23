@@ -52,6 +52,33 @@ const K = {
 export const DUNGEON_CEILING_GROUPS = ["beodeul_dungeon_ceiling", "beodeul_dungeon_ceiling_b"] as const;
 
 
+/**
+ * 천장 오토타일 칸: 굽힌 모양만 그림이 있고 나머지 모양은 테두리 없는 검은 칸(255 그림)으로 접혀 있다 — 바닥 바로 옆 천장이 「검은 네모 구멍」으로
+ * 그려졌다(2026-10-23 dg-r3 VQA 고블린 굴 major). 그림 없는 모양은 열린 쪽(네 변 먼저, 그다음 모서리)이 가장 가까운 그려진 모양으로 바꾼다.
+ */
+const ceilingNearest = new WeakMap<AutotileGroup, Map<number, number>>();
+function ceilingTile(g: AutotileGroup, m: number): number | undefined {
+  const voidT = g.variantMap["255"];
+  const own = g.variantMap[String(m)];
+  if (m === 255 || own === undefined || own !== voidT) return own;
+  let cache = ceilingNearest.get(g);
+  if (!cache) { cache = new Map(); ceilingNearest.set(g, cache); }
+  const hit = cache.get(m);
+  if (hit !== undefined) return hit;
+  const bits = (v: number) => { let n = 0; for (let b = v; b; b &= b - 1) n += 1; return n; };
+  let best = own, bestCost = Infinity;
+  for (const [key, tile] of Object.entries(g.variantMap)) {
+    const k = Number(key);
+    if (tile === voidT) continue;
+    const diff = k ^ m;
+    // 열린 변을 닫는 것(테두리가 사라짐)보다 닫힌 변을 여는 것(테두리가 하나 더)이 낫다
+    const cost = bits(diff & 15 & m) * 4 + bits(diff & 15 & ~m) * 6 + bits(diff & 240);
+    if (cost < bestCost) { bestCost = cost; best = tile; }
+  }
+  cache.set(m, best);
+  return best;
+}
+
 // ---------- 2. 타일 ----------
 
 export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompose {
@@ -127,7 +154,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     const bits: [number, number, number][] = [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]];
     for (const [dx, dy, bit] of bits) if (!isOpen(x + dx, y + dy)) m |= bit;
     const g = groups[groups.length > 1 && hash01(x, y, seed) < 0.5 ? 1 : 0]!;
-    lower[idx(x, y)] = g.variantMap[String(m)] ?? voidTile;
+    lower[idx(x, y)] = ceilingTile(g, m) ?? voidTile;
     if (m !== 255) rimmed += 1;
   }
   if (!groups.length) warnings.push("이 타일셋 사본에 천장 테두리 오토타일(beodeul_dungeon_ceiling)이 없어 천장을 테두리 없는 허공으로 깔았다 — 프로젝트를 다시 열면 번들 꼬리가 붙는다.");
@@ -338,7 +365,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
 
   const ctx: DressCtx = {
     W, H, rooms, corridors, seed, grid: !!layout.grid, hasKit, kit, put, putAny, weighted, shuffle, wallSlots, floorCells, edgeCells, hangAlong, cluster,
-    isFloor, isWalk, isWall, idx, inb, wallB, roomAt, liquid, bridge, upper, lower, blocked, doorstep, counts, litter, lair: !!spec.lair,
+    isFloor, isWalk, isWall, idx, inb, wallB, roomAt, liquid, bridge, upper, lower, blocked, doorstep, counts, litter, lair: !!spec.lair, seats: {},
   };
   let stairsUp: DungeonCompose["stairsUp"] = null;
   let stairsDown: DungeonCompose["stairsDown"] = null;
@@ -400,7 +427,9 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     if (r.kind === "entrance" && entryKind !== "none") {
       if (entryKind === "down") {
         // 탑 위층: 아래층에서 올라온 계단(바닥 내려가는 계단) — 입구 방 위쪽 가운데.
-        entryStair = floorHole(r, (x, y) => Math.abs(x - cx) * 2 + Math.abs(y - (r.y + 2)) * 3);
+        // 둥근 탑 층: 내려가는 계단은 방 한가운데가 아니라 벽 곁(층마다 좌우를 바꾼다) — 「계단이 바닥 한가운데 박혔다」(2026-10-23 VQA).
+        const wallSide = r.shape === "round" ? (seed % 2 === 0 ? r.x + 1 : r.x + r.w - 2) : null;
+        entryStair = floorHole(r, wallSide !== null ? (x, y) => Math.abs(x - wallSide) * 3 + Math.abs(y - (r.y + Math.floor(r.h / 2))) : (x, y) => Math.abs(x - cx) * 2 + Math.abs(y - (r.y + 2)) * 3);
         if (entryStair) counts["stairs-down"] = (counts["stairs-down"] ?? 0) + 1;
         else warnings.push("입구 방 바닥에 내려가는 계단을 놓을 자리가 없다.");
       } else {
@@ -440,6 +469,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         put(K.brazier, r.x + 1 + Math.floor(rs() * 2), r.y + r.h - 2);
         put(K.brazier, r.x + r.w - 2 - Math.floor(rs() * 2), r.y + r.h - 2);
         for (const [x, y] of e.slice(3, 7)) if (rs() < 0.6) put(weighted(rs, litter), x, y);
+        // 입구 앵커: 계단 앞 길 양옆 기둥 한 쌍 — 「거의 빈 10×8 바닥」으로 읽혔다(2026-10-23 dg2-r1 VQA 지하 묘지). 길(계단 앞 세로 줄)은 비운다.
+        if (s && r.w >= 9 && r.h >= 5) { const y = Math.min(r.y + r.h - 3, s.y + 3); if (put(K.column, s.x - 2, y - 1)) put(K.column, s.x + 2, y - 1); }
         break;
       }
       case "hall": {
@@ -649,7 +680,9 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   // 이벤트·적을 둘 만한 빈 바닥 칸(방마다) — 위층 그림이 없고 네 이웃도 걸을 수 있고 입구에서 닿는 칸, 방 가운데에서 가까운 순.
   const spots: Record<string, { x: number; y: number }[]> = {};
   for (const r of rooms) {
-    const ccx = r.x + (r.w - 1) / 2, ccy = r.y + (r.h - 1) / 2;
+    // 보스가 설 자리(우두머리 자리·뼈 제단 앞)가 있으면 그 칸에서 가까운 순 — 보스가 자리에서 떨어져 졸개처럼 서 있었다(2026-10-23 dg2-r1 VQA).
+    const seat = ctx.seats[r.id];
+    const ccx = seat ? seat.x : r.x + (r.w - 1) / 2, ccy = seat ? seat.y : r.y + (r.h - 1) / 2;
     const cells: { x: number; y: number; d: number }[] = [];
     for (const [x, y] of floorCells(r, 1)) {
       if (upper[idx(x, y)]! >= 0 || blocked[idx(x, y)] || !seen[idx(x, y)] || doorstep[idx(x, y)] || reservedFront.has(idx(x, y))) continue;
