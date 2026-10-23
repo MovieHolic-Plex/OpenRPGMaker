@@ -453,9 +453,10 @@
    남는 아래 띠에 가로 보기를 권하는 안내를 둔다. 도트 격자 계약상 비정수 확대·세로 전용 레이아웃은 만들지 않는다. */
 .play-viewport[data-layout="portrait"]::after {
   color: #98a090;
-  content: "가로로 돌리면 더 크게 보여요";
-  font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  content: attr(data-rotate-hint);
+  font: 15px/20px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
   left: 0;
+  padding: 0 12px;
   pointer-events: none;
   position: absolute;
   right: 0;

@@ -140,6 +140,8 @@ export type RenderPlayerOptions = {
   // 켜면 메뉴·전투 명령·대사 상자의 클릭이 키보드와 같은 핸들러를 타고, 오른쪽 클릭은 취소(Esc)가 되며,
   // 터치 기기(coarse 포인터)에서는 가상 패드가 붙는다. 몬스터 수집 게임(에메랄드 프로필)이 쓴다.
   readonly pointerInput?: boolean;
+  /** 터치 기기에서 가상 패드·탭 UI 를 연다(모든 게임 공통). 에메랄드 스킨(monsterStyle)은 pointerInput 만 켠다. */
+  readonly touchInput?: boolean;
   // 타이틀을 건너뛰고 새 런을 바로 시작한다. 편집 → 테스트 왕복마다 Enter 를 눌러
   // 타이틀을 통과하던 비용을 없앤다(startOverride / initialSession 가 있으면 이미 그 경로다).
   readonly autoStartRun?: boolean;
@@ -200,7 +202,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   // teardownPlayer 이후에 호스트 버튼/F5 가 들어와도 새 런(타이머·리스너)을 만들지 않는다.
   let shellActive = true;
   const surfaceScaleFor = (project: Project): PlaySurfaceScaleMode => options.surfaceScaleMode ?? resolvePlaySurfaceScaleMode(project);
-  const pointerInput = options.pointerInput === true;
+  const emeraldStyle = options.pointerInput === true;
+  // 터치 기기에서는 모든 게임이 탭으로 메뉴·대사·전투를 연다. 키보드 전용 계약은 데스크톱에서만 남는다.
+  const pointerInput = emeraldStyle || options.touchInput === true;
   // 재시작용 시작 지점. 선택-이벤트 테스트는 호출자가 세션을 주므로 그 세션이 플레이 중
   // 이동하기 전인 마운트 시점의 스폰만 붙잡아 둔다.
   const restartSpawn: { readonly mapId: string; readonly x: number; readonly y: number } | undefined =
@@ -216,7 +220,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     class: "player-layout system-shell",
     dataset: { playInputOwner: pointerInput ? "play-ui" : "keyboard-only" },
   });
-  if (pointerInput) { layout.dataset.pointerInput = "true"; layout.dataset.monsterStyle = "emerald"; }
+  if (pointerInput) { layout.dataset.pointerInput = "true"; if (emeraldStyle) layout.dataset.monsterStyle = "emerald"; }
   const cleanupPointerBlocker = installPlayPointerBlocker(layout);
   const cleanupRightClickCancel = pointerInput ? installRightClickCancel(layout) : () => {};
   main.append(layout);
@@ -265,6 +269,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       bridge: options.hostBridge,
       viewport,
       fullscreenRoot: main,
+      autoOnTouch: options.touchInput === true,
     });
   };
 
@@ -330,7 +335,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     cleanupPlaySurface = surface.cleanup;
     // 터치 기기에서만 가상 패드를 부착(데스크톱은 no-op). 방향키/Enter/Escape
     // 합성 이벤트로 기존 키보드 입력 경로(이동/대사/메뉴)를 그대로 구동한다.
-    touchPad = createTouchPad(pointerInput ? surface.viewport : surface.stage, pointerInput ? { enabled: isTouchDevice(), skin: "gba" } : undefined);
+    touchPad = createTouchPad(pointerInput ? surface.viewport : surface.stage, pointerInput ? { enabled: isTouchDevice(), skin: emeraldStyle ? "gba" : "touch" } : undefined);
     if (preflight.blockers.length > 0) {
       // 고칠 수 없는 상태(맵 0개 등)는 Phaser 를 띄우지 않는다 — 왜 못 노는지를 그대로 말한다.
       presentRecovery(loading, run, {

@@ -110,18 +110,18 @@
    그래서 크기는 실제 CSS 픽셀이고, 가로 화면에선 스테이지 좌우 여백에, 세로 화면에선 스테이지 아래 빈 띠에 앉는다.
    메뉴가 열리면 방향·결정은 직접 탭하므로 취소(B)만 남긴다. 전투·대사 중엔 숨는다(명령·상자를 직접 탭). */
 @layer runtime {
-  .play-viewport > .touch-pad[data-skin="gba"] { position: absolute; inset: 0; z-index: 40; }
+  .play-viewport > .touch-pad:is([data-skin="gba"], [data-skin="touch"]) { position: absolute; inset: 0; z-index: 40; }
   /* 컨테이너는 화면 전체를 덮는다 — player.css 의 touch-controls 규칙이 pointer-events:auto !important 를 줘서 메뉴 탭을 삼킨다. 컨트롤만 받게 되돌린다. */
-  .player-layout.system-shell .touch-pad[data-skin="gba"] { pointer-events: none !important; }
-  .touch-pad[data-skin="gba"] .touch-dpad { left: max(12px, env(safe-area-inset-left)); bottom: max(16px, env(safe-area-inset-bottom)); }
-  .touch-pad[data-skin="gba"] .touch-actions { right: max(12px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); gap: 12px; }
-  .touch-pad[data-skin="gba"] .touch-dpad-base { width: 112px; height: 112px; }
-  .touch-pad[data-skin="gba"] .touch-dpad-knob { width: 46px; height: 46px; }
-  .touch-pad[data-skin="gba"] .touch-action-btn { width: 56px; height: 56px; font: 18px/1 var(--runtime-pixel-font, "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif); }
-  .touch-pad[data-skin="gba"] .touch-actions [data-testid="touch-action-a"] { width: 62px; height: 62px; }
-  .touch-pad[data-skin="gba"] .touch-actions [data-testid="touch-action-b"] { margin-bottom: 16px; }
-  .play-viewport:has(.play-stage [data-testid="battle-scene"], .play-stage > .dialogue-overlay:not(:empty)) > .touch-pad[data-skin="gba"] { visibility: hidden; }
-  .play-viewport:has(.play-stage [data-testid="main-menu"]) > .touch-pad[data-skin="gba"] .touch-dpad,
-  .play-viewport:has(.play-stage [data-testid="main-menu"]) > .touch-pad[data-skin="gba"] .touch-action-btn[data-testid="touch-action-a"] { display: none; }
-  .play-viewport:has(.play-stage [data-testid="main-menu"]) > .touch-pad[data-skin="gba"] .touch-actions { left: max(12px, env(safe-area-inset-left)); right: auto; }
+  .player-layout.system-shell .touch-pad:is([data-skin="gba"], [data-skin="touch"]) { pointer-events: none !important; }
+  .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-dpad { left: max(12px, env(safe-area-inset-left)); bottom: max(16px, env(safe-area-inset-bottom)); }
+  .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-actions { right: max(12px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); gap: 12px; }
+  .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-dpad-base { width: 112px; height: 112px; }
+  .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-dpad-knob { width: 46px; height: 46px; }
+  .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-action-btn { width: 56px; height: 56px; font: 18px/1 var(--runtime-pixel-font, "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif); }
+  .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-actions [data-testid="touch-action-a"] { width: 62px; height: 62px; }
+  .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-actions [data-testid="touch-action-b"] { margin-bottom: 16px; }
+  .play-viewport:has(.play-stage [data-testid="battle-scene"], .play-stage > .dialogue-overlay:not(:empty)) > .touch-pad:is([data-skin="gba"], [data-skin="touch"]) { visibility: hidden; }
+  .play-viewport:has(.play-stage [data-testid="main-menu"]) > .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-dpad,
+  .play-viewport:has(.play-stage [data-testid="main-menu"]) > .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-action-btn[data-testid="touch-action-a"] { display: none; }
+  .play-viewport:has(.play-stage [data-testid="main-menu"]) > .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-actions { left: max(12px, env(safe-area-inset-left)); right: auto; }
 }
