@@ -48,13 +48,14 @@ export const ASTEL = {
     hero: { x: 56, y: 30 },
     heroAside: [{ x: 57, y: 30 }, { x: 58, y: 30 }],
     gatekeeper: { x: 59, y: 22 },
-    elder: { x: 50, y: 30 },
+    elder: { x: 52, y: 30 },
+    // 단을 반원으로 둘러선 군중 — 앞(남) 세 줄은 위를, 분수 쪽 무리는 오른쪽을, 동쪽 무리는 왼쪽을 본다.
+    // 같은 열에 위아래로 붙어 서지 않는다(뒷사람 몸이 앞사람 머리에 가리지 않게). 성문 축(55·56, 26줄 위)과 주인공 비켜설 칸(57·58, 29~30)은 비운다.
     crowd: [
-      { x: 53, y: 29, dir: "up" }, { x: 59, y: 29, dir: "up" },
-      { x: 47, y: 22, dir: "right" }, { x: 46, y: 26, dir: "right" },
-      { x: 59, y: 25, dir: "left" }, { x: 48, y: 29, dir: "up" },
-      { x: 51, y: 29, dir: "up" }, { x: 54, y: 30, dir: "up" }, { x: 47, y: 24, dir: "right" }, { x: 45, y: 22, dir: "right" },
-      { x: 48, y: 20, dir: "right" }, { x: 60, y: 27, dir: "left" }, { x: 58, y: 24, dir: "left" }, { x: 52, y: 30, dir: "up" },
+      { x: 51, y: 28, dir: "up" }, { x: 53, y: 28, dir: "up" }, { x: 49, y: 29, dir: "up" }, { x: 55, y: 29, dir: "up" },
+      { x: 50, y: 30, dir: "up" }, { x: 54, y: 30, dir: "up" },
+      { x: 47, y: 24, dir: "right" }, { x: 47, y: 26, dir: "right" }, { x: 46, y: 22, dir: "right" }, { x: 48, y: 28, dir: "right" },
+      { x: 59, y: 24, dir: "left" }, { x: 60, y: 26, dir: "left" }, { x: 59, y: 28, dir: "left" }, { x: 60, y: 30, dir: "left" },
     ] as { x: number; y: number; dir: "up" | "down" | "left" | "right" }[],
   },
   baker: { x: 12, y: 19 }, kid: { x: 34, y: 27 },

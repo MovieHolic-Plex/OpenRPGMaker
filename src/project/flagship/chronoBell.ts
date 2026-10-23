@@ -595,9 +595,10 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     const moves = [
       // 통과 켬: 주인공이 성문 축에 서 있어도 행렬이 막혀 스위치가 안 켜지는 일이 없게(QA fallen-town to-forest).
       { kind: "setThrough", enabled: true },
-      // 속도 4 = 한 칸 240ms, 기다림 한 번 80ms — 명령 경로에서 한 걸음 = 기다림 셋.
-      { kind: "changeSpeed", delta: 1 }, { kind: "changeFrequency", delta: 3 },
-      ...steps.slice(0, -1).flatMap((dir) => (dir === "stay" ? [{ kind: "wait" }, { kind: "wait" }, { kind: "wait" }] : [{ kind: "move", dir }])),
+      // 의식 행진 걸음 — 속도 2 = 한 칸 480ms(characterMotion), 기다림 한 번 80ms라 한 걸음 쉬기 = 기다림 여섯.
+      // 빠른 걸음(240ms)으로는 앞 짝이 2초 안에 통로로 사라져 화면이 따라가기 전에 행진이 끝났다(QA fallen-town march-01~03).
+      { kind: "changeSpeed", delta: -1 }, { kind: "changeFrequency", delta: 3 },
+      ...steps.slice(0, -1).flatMap((dir) => (dir === "stay" ? Array.from({ length: 6 }, () => ({ kind: "wait" })) : [{ kind: "move", dir }])),
       // 마지막 걸음 동안 세 번에 걸쳐 옅어진다(한 프레임에 사라지지 않게, VQA r25 minor).
       { kind: "changeOpacity", delta: -85 },
       ...steps.slice(-1).map((dir) => ({ kind: "move", dir })),
@@ -615,8 +616,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   // 화면이 행렬 가운데(셋째 짝)를 따라 성문까지 비추다가, 발렌이 숲길로 사라지면 주인공에게 돌아온다.
   const camera = (fields: Record<string, string>): Command => ({ kind: "m2Command", commandId: "m2-201-camera-control", fields } as unknown as Command);
   const follow: Command[] = [
-    { kind: "wait", ms: 400 } as Command,
-    camera({ mode: "follow", targetEventId: escortIds[4]!, durationMs: "900", wait: "true" }),
+    camera({ mode: "follow", targetEventId: escortIds[6]!, durationMs: "600", wait: "true" }),
     { kind: "loop", body: [
       { kind: "fork", condition: { kind: "switch", switchId: SW_VALEN_MARCHED, value: true }, then: [{ kind: "breakLoop" }] },
       { kind: "wait", ms: 250 },
@@ -632,7 +632,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   for (const c of list.slice(0, after + 1)) if (c.kind === "text" && /발렌/.test(String((c as { speaker?: string }).speaker ?? ""))) (c as { autoFace?: boolean }).autoFace = false;
   // 포고 동안 주인공은 단 위 발렌을(위를) 보고, 광장의 할머니·문지기도 발렌 쪽을 본다.
   const begin = list.findIndex((c) => c.kind === "cutsceneControl");
-  list.splice(begin + 1, 0, turn("@player", "up", true), turn(`ev_${FS_PREFIX}_elder`, "right"), turn(`ev_${FS_PREFIX}_gate`, "left"));
+  list.splice(begin + 1, 0, turn("@player", "up", true), turn(`ev_${FS_PREFIX}_elder`, "up"), turn(`ev_${FS_PREFIX}_gate`, "left"));
   // 엘레나가 말하면 주인공이 오른쪽으로 두 걸음 비켜서고(heroAside, 비워 둔 칸) 뒤따르던 엘레나가 곁에 와 서로 마주 본다.
   const elenaLine = list.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("들었지, 카엘"));
   if (elenaLine >= 0) list.splice(elenaLine, 0, { kind: "moveEvent", eventId: "@player",
@@ -1644,7 +1644,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         const kit = k === 2 ? "bd-pick-volcano-cave-coal-pile" : "bd-pick-volcano-cave-ember-a";
         if (!tryStamp(project, M(ids.forest), `kit:beodeul_city/${kit}`, c.x, c.y) && kit !== "bd-pick-volcano-cave-ember-a") tryStamp(project, M(ids.forest), "kit:beodeul_city/bd-pick-volcano-cave-ember-a", c.x, c.y);
       });
-      if (process.env.MARCH_DEBUG) console.error("scorch trail", JSON.stringify(best));
+      if (typeof process !== "undefined" && process.env?.MARCH_DEBUG) console.error("scorch trail", JSON.stringify(best));
     }
     // 구덩이 북쪽 위로 맵 끝까지 붙은 모랫길 토막 둘은 아무 데로도 안 갔다(VQA r6 m13) — 풀로 되돌린다.
     {
