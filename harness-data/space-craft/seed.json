@@ -990,6 +990,47 @@
         "횡단보도",
         "자판기·벤치"
       ]
+    },
+    {
+      "id": "cmp-monster-town",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "monster_overworld",
+      "prompt": "포켓몬 같은 몬스터 수집 게임의 첫 마을 만들어 줘. 주인공 집, 박사 연구소, 몬스터 센터가 있고, 마을 사람 NPC 셋이 각자 한마디씩 해 줘. 북쪽으로 풀숲 길이 이어지게.",
+      "requires": [
+        "주인공 집",
+        "박사 연구소",
+        "몬스터 센터",
+        "마을 사람 3명 각자 한마디",
+        "북쪽으로 이어지는 풀숲 길"
+      ]
+    },
+    {
+      "id": "cmp-romance-scene",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "jp_city",
+      "prompt": "학교 옥상에서 주인공과 소꿉친구 하린이 처음으로 속마음을 이야기하는 짧은 대화 장면 만들어 줘. 선택지 두 개로 하린의 반응이 달라지게.",
+      "requires": [
+        "학교 옥상 무대",
+        "하린(소꿉친구)과의 대화",
+        "선택지 두 개",
+        "선택마다 다른 하린의 반응"
+      ],
+      "startBuild": [
+        {
+          "tool": "build_hand_interior_room",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "학교 옥상",
+            "tileset": "jp_city",
+            "layout": {
+              "program": "school-roof",
+              "variant": 2
+            }
+          }
+        }
+      ]
     }
   ],
   "gates": {
