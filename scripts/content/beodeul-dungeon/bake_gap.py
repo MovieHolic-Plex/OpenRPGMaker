@@ -709,6 +709,7 @@ def main():
             return
         count = write_out(st)
         print(f"gap 꼬리 다시 씀: {BASE}..{count - 1} (칸 {len(st.cells)}, 키트 {len(st.defs['structureKits'])})")
+        if not a.test_out: rechain_capital()
         return
     if (a.assume_picks or a.no_gate or a.provisional) and not (a.dry or a.test_out):
         sys.exit("--assume-picks · --no-gate · --provisional 은 --dry 와 함께만 쓴다(시험 결과를 번들에 굽지 않는다)")
@@ -764,12 +765,25 @@ def main():
     if a.dry:
         print("(--dry: 쓰지 않음)")
     else:
+        if BASE + rows * COLS > CAPITAL_BASE:
+            sys.exit(f"gap 꼬리가 {BASE + rows * COLS - 1} 까지 — 왕도 아스텔 꼬리({CAPITAL_BASE}~)와 겹친다. 두 꼬리의 자리를 먼저 다시 정한다(덧붙이기 전용)")
         st.save()
         count = write_out(st)
         print(f"썼다: {SHEET_PATH} · {TS_PATH} (count {count}) · {STORE}/")
+        if not a.test_out: rechain_capital()
     if blocked:
         print("3/4 관문 미통과 — 굽지 않은 항목:", *blocked, sep="\n  ", file=sys.stderr)
         sys.exit(2)
+
+
+CAPITAL_BASE = 32768   # 왕도 아스텔 꼬리(scripts/content/beodeul-capital/bake_capital.py) 시작 — gap 꼬리는 이 앞에서 끝나야 한다
+
+
+def rechain_capital():
+    """이 스크립트는 시트를 gap 끝에서 자른다 — 뒤 꼬리(왕도 아스텔)를 다시 덧붙인다(관문 확인 그대로)."""
+    cap = ROOT / "scripts/content/beodeul-capital/bake_capital.py"
+    if cap.exists():
+        subprocess.run([sys.executable, str(cap)], check=True)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""왕도 아스텔(Fallen Star) 새 조각 — 버들항 시트 꼬리 29,696~ 에 덧붙여 굽는다(bake_wall.py 를 본뜸).
+"""왕도 아스텔(Fallen Star) 새 조각 — 버들항 시트 꼬리 32,768~(256행~) 에 덧붙여 굽는다(bake_wall.py 를 본뜸).
 
   python3 scripts/content/beodeul-capital/bake_capital.py --gate-export DIR   # 3/4 관문에 낼 조립 그림 + items.jsonl 만 쓴다
   python3 scripts/content/beodeul-capital/bake_capital.py --samples DIR       # 확인용 조립 그림만 쓴다
@@ -7,10 +7,11 @@
   python3 scripts/content/beodeul-capital/bake_capital.py                     # 관문을 확인하고 굽는다
 
 입력  capital_art.py (규칙 함수가 찍는 코드 손 도트)
-출력  public/assets/beodeul-city/beodeul-city-chipset.png — 앞 232행(29,696칸)은 그대로(231행 = 다른 작업의 마당 줄 자리, 짧으면 투명으로 채운다), 뒤에 덧붙인다
+출력  public/assets/beodeul-city/beodeul-city-chipset.png — 앞 256행(32,768칸)은 그대로(던전 gap 꼬리 29,568~ 와 그 뒤 빈 자리 ~32,767 — 짧으면 투명으로 채운다), 뒤에 덧붙인다
       src/assets/beodeulCityTileset.json(표·tileGroups beodeul:capital_*·structureKits bd-capital-*·animationStrips) · beodeulCitySheet.json · beodeulCapitalPieces.json
 덧붙이기 전용: 앞 칸 번호·화소는 바뀌지 않는다. 다시 돌려도 같은 결과(멱등).
-주의: 앞 꼬리(성벽 bake_wall.py · 마당 줄)를 굽는 스크립트가 시트를 자기 끝에서 자르면 이 꼬리가 사라진다 — 그 뒤에 이 스크립트를 다시 돌린다.
+사슬: bake_wall.py → bake_gap.py → 이 스크립트. 앞 꼬리 스크립트는 시트를 자기 끝에서 자르므로 bake_gap.py 가 끝에서 이 스크립트를 다시 부른다(관문 확인 그대로).
+30,848~32,767 은 gap 꼬리가 자랄 자리로 비워 둔다 — gap 이 32,768 을 넘으면 bake_gap.py 가 멈춘다.
 """
 import argparse, json, pathlib, sys
 
@@ -29,7 +30,7 @@ PIECES_JSON = ROOT / "src/assets/beodeulCapitalPieces.json"
 T = 16
 COLS = 128
 PALETTE_ROWS = 231          # 팔레트 잠금 기준: 시트 앞 231행(29,568칸)
-BASE = 29696                # 29,568~29,695 는 다른 작업(마당 줄) 자리 — 그 뒤부터
+BASE = 32768                # 29,568~ 던전 gap 꼬리(지금 ~30,847) + 자랄 자리 — 256행부터
 BASE_ROW = BASE // COLS
 FPS = 6
 
@@ -452,7 +453,7 @@ def write_tables():
     empty = dict(label="", description="", source="bundled-default")
     for k in ("passability", "priority", "terrain", "tileMeta"):
         TS[k] = TS[k][:BASE]
-        while len(TS[k]) < BASE:      # 29,568~29,695(다른 작업 자리)가 아직 없으면 빈 칸으로 채운다
+        while len(TS[k]) < BASE:      # 앞 꼬리 끝 ~ 32,767(빈 자리)은 빈 칸으로 채운다
             TS[k].append({"passability": pass_flag("UDLR"), "priority": "lower", "terrain": 0, "tileMeta": dict(empty)}[k])
     TS["animationStrips"] = [s for s in TS["animationStrips"] if s["baseTile"] < BASE]
     for i in range(ROWS_ADDED * COLS):
