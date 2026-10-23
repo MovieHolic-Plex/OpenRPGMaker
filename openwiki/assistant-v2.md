@@ -40,7 +40,10 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 
 - 실내(`builders/interior.ts`, 손 도트 v5 — 주인공 물건이 고른 칩셋보다 v5 에 더 많이 있으면 v5 로): 방 종류 낱말 → layout, 주인공 물건(부품 사전 낱말, 「큰」은 가장 큰 것) 자리 찾기·견본 가구 밀어내기·도달 재검사,
   빈 바닥 덩이를 방 쓰임 한 벌로 메우기(≤15%), 올라가는 계단 → 위층(남쪽 출구 없음)·양방향 이동, 계단은 맨 북쪽 바깥 벽 방에, `dressing` 아늑하게.
-  **못 함:** 남쪽 말고 다른 출구(뒷문) — 칩셋에 북벽 문 그림이 없다(보고됨).
+  장소 견본(`builders/interiorVenues.ts`): 이름·구역 낱말이 천문대면 『폴른 스타』 r28 관측 홀(둥근 지붕·큰 망원경), 선술집·주점·여관이면 통나무 벽·널마루 홀(바·벽난로·식탁·계단).
+  견본 고르기는 그 방 종류 맵 → 이국 맵(zozo·카지노·광산…) 아닌 것 순(선술집이 zozo 돌바닥으로 지어졌다).
+  북쪽 출구(`exits:["north"]`·「북쪽 뒷문」): 맨 북쪽 방 북벽 발치에 `locked door`(쇠띠 나무문, 서 있는 문 그림)를 놓고 작은 뒷방을 지어 양방향으로 잇는다. 동·서 출구는 못 함(보고됨).
+  요청한 주인공 물건이 최종 맵에 없으면 `anchor-missing` 실패 검사로 센다(되돌리기·완료 관문에 걸린다).
 - 마을(`village.ts` → `author_beodeul_town`), 던전·동굴(`dungeon.ts` → `author_dungeon`), 일본 도시 거리·집(`jpCity.ts` → `compose_jp_city_street`·`compose_jp_region`·jp 실내).
   마을 도구가 시작 칸을 옮기지 않아 `fixPlayerStart` 가 큰 땅으로 옮긴다.
   마을은 집이 서면 「완성된 집 보호」로 AI 가 다시 지을 수 없다 — 그래서 집 수(houseCount)는 짓기 전에 사본 위에서 씨앗 다섯 개를 시험해 고른다.
@@ -49,7 +52,10 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 - 사람(`people.ts` → `place_npc` 두 쪽: 첫 대화 → 자기 스위치 → 다음 대화), 자리 낱말(입구·광장·문 앞)을 걸어 닿고 길을 막지 않는 칸으로.
 - 사건(`events.ts` → `script_cutscene`, 게임 시작 자동 1회), `probeCutscene` 문제를 경고로.
 - 없는 물건(`drawObject.ts` → `generate_missing_object`): 그리기 카드만 띄운다(`draw_object` tool_end 가 카드를 연다 — `aiStoreCard.ts STORE_CARD_TOOLS`). 그린 뒤 후속 지시는 `place_object` 로 놓는다.
-- 이미 있는 실내를 고칠 때 v2 기록이 없으면 맵 장소 꼬리표(`hand-layout-room`)의 방 구성으로 다시 지은 뒤 고친다(손으로 옮긴 가구는 견본으로 돌아간다 — 경고됨).
+- 이미 있는 실내를 고칠 때(v2 기록 없음): ① 방 종류만 / 종류+크기로 다시 지어 네 층 타일이 원래와 **똑같으면** 그 인자에서 고친다(`adoptExactInterior` → `interiorEditFromArgs` — 견본 가구 비키기·뒷문 자리가 된다).
+  ② 다르면 다시 짓지 않고 덧찍는다(`builders/interiorEdit.ts` — 빈 바닥 덩이에 쓰임 한 벌 `stamp_object`, 길 막으면 되돌림). 어느 쪽이든 바닥·벽 재질은 원래 것.
+- 컷신 걷기는 실제 통행 격자에서 런타임 길찾기(`planApproach`)로 따라가 본다 — 3걸음 미만·못 닿음이면 목표를 고치고 `cutscene-walk` 검사로 남긴다. 비평은 걷는 길의 프레임(최대 5장)을 본다(`critiqueStaging`).
+- 자리 낱말(`resolveWhere`): 방 이름(홀·부엌…), 「X 옆/앞/뒤」(칸 이름표로 물건 찾기), 한쪽·벽 쪽·북/남/동/서쪽 벽·구석·창가·가운데.
 
 ## 시험
 
