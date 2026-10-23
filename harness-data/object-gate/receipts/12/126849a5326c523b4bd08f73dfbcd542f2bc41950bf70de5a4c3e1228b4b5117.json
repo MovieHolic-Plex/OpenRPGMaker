@@ -1,0 +1,362 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "126849a5326c523b4bd08f73dfbcd542f2bc41950bf70de5a4c3e1228b4b5117",
+ "width": 32,
+ "height": 32,
+ "kind": "debris",
+ "name": "heap of broken flat concrete floor slabs lying tilted on top of each other, thick slab edges, bent rebar sticking out of the broken edges, dust and small chunks around",
+ "label": "wasteland_ruins/rubble-pile-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 50,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper-left tilted slab",
+      "rows": "10-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper-right tilted slab",
+      "rows": "9-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower front slab",
+      "rows": "20-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bent rebar",
+      "rows": "5-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a low, irregular rubble heap about 30px wide and 25 rows tall. It has no clear flat top band with a front-edge line or eave shadow, no ellipse and no roof plane. The slabs are drawn as light gray faces with dark outlines, seen mostly from above, so the heap reads as a flat scatter. The lower slab (rows 20-29) shows a dark outline along its bottom but no separate vertical front face of 3 or more rows. For debris this is a plausible look, but by the measured rules it has no top surface and no front face, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 13 visible tones per full tile, above prop-hedge (9) and close to prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. The slab faces show roughly 4-5 grey steps, with lighter top faces, darker thick edges and crack and chip speckle. Rebar and dust add contrasting small details. The dark edge pixels are 0% neutral, so the outlines lean cool grey-blue and follow the material rather than forming a black sticker line, and some slab edges separate by value alone. It is slightly less deep than the best references. It has only 14 colours in total, and the slabs' fronts are a little smooth. Overall it holds up next to the references at the same scale, though it is borderline on shading depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14313
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper-left tilted slab",
+      "rows": "9-21",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper-right tilted slab",
+      "rows": "8-20",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower front slab",
+      "rows": "20-27",
+      "evidence": "d",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "28-29"
+     },
+     {
+      "part": "bent rebar sticking out of the slab edges",
+      "rows": "5-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The heap is mostly broad light-grey slab faces seen from above, covering rows 8-27. The upper-left and upper-right slabs are separated by dark outline rows, and the lower slab overlaps them. The only vertical face is a thin dark edge at the bottom, rows 28-29 (about 2 rows, below the 3-row minimum). Slab thickness is not drawn as a real front face, so the pile reads as a flat top-down spread of rubble rather than a volume with a front face. The rebar at the top is decor-like detail."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is about one tile in size. It has 13 visible tones per tile, which sits between prop-hedge (9) and prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%. The dark edge pixels are 0% neutral, so the outlines lean towards the slab's cool grey rather than being a black sticker line. By eye, the slabs show a light top face, a mid face and a dark thick edge, with speckle and small chunks and dust around the base. The rebar is thin and somewhat sparse. That gives about 4 concrete steps against the references' 5-6, a little shallower than the best references. It is not flat or sticker-like, and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17496
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper right tilted slab top",
+      "rows": "10-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "upper left tilted slab top",
+      "rows": "11-18",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower slab top",
+      "rows": "21-26",
+      "evidence": "d",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "28-29"
+     },
+     {
+      "part": "bent rebar sticking out",
+      "rows": "5-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The heap is made of several tilted slabs. The upper right slab has a light top plane at rows 10-17 and a bright edge line at row 18 (x=23, L=189), followed by a darker shadow at row 19 and a thick darker edge below. The lower slab has a wide light top plane at rows 21-26, a bright front edge at row 27, and a dark shadow base at rows 28-29. The rebar and chunks are small details above and around the heap. The silhouette is a lumpy mound about 30 px wide with a dark base, so it reads as a 3/4 heap and not a flat slab. The front faces are short (about 3-4 rows) but present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small rubble heap of tilted grey slabs with slab edges, rebar bits and chunks. It is slightly over one tile in size. The measured facts are in the reference range: 13 visible tones per tile against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, so there are no large flat fills. 0% of the dark edge pixels are near-neutral, so the outlines lean toward the slab tone rather than black. Each slab shows a light top face, a mid body and a darker edge, which gives about 5 lightness steps. That is a little fewer than the 6 on the richer references (well, stall). The total of 14 distinct colours is low next to the stall (40) and well (38) but close to the hedge (11), and the visible texture is comparable. A careful artist would accept it next to the references without it looking like a flat sticker, though it is slightly sparser than the best references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17264
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper left tilted slab",
+      "rows": "9-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper right tilted slab",
+      "rows": "9-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower front slab",
+      "rows": "20-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rebar sticking out",
+      "rows": "5-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The object is an irregular rubble heap with no clear structure. The broken slabs are drawn as light grey tilted planes with dark outlines, so they are not clearly separated into a top surface and a front face. There is no front-edge line and no eave shadow, and no ellipse or roof plane. The slab edge faces are only suggested by thin dark strips, and the bent rebar rises from the pile. For debris this reads as a scattered heap, not a standing volume with a top and front, so I measured no main top surface and no distinct front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small pile of grey slabs with rebar and chunks. By eye, the concrete has about 5 lightness steps (pale top faces, mid grey, dark edge faces, deep shadow), and the slab surfaces carry crack and speckle dots. The pile is broken into several separate slab planes rather than one flat body. Measured facts back this up: 13 visible tones per 16x16 tile, which sits between prop-hedge (9) and prop-stall-cheese (17) and below prop-well-roofed (20). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline leans toward a tinted dark grey instead of a uniform black sticker line. The total palette is only 14 colours, which keeps the ramps a little shallower than the best references, but the density and structure are acceptable beside the hedge and the stall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12442
+  }
+ ],
+ "decidedAt": "2026-10-23T03:18:50.224Z",
+ "cells": {
+  "16": [
+   "46280486b7af0de9",
+   "533dab511c71b114",
+   "8d62f7ab1665ae4c",
+   "e36f24d3b045d778"
+  ],
+  "24": [
+   "01ca3d9bc5479aca",
+   "0c21513312ffdbcd",
+   "0e93083fad886836",
+   "1766008de56badf9",
+   "2fe872f48c26e7bc",
+   "34afab8ca624e0a1",
+   "3e6d823aabd40afa",
+   "3ea50cc638d31c2c",
+   "6e2dcb5bc0eed34a",
+   "8c6560d1b09e0953",
+   "8ca5d1a14433bc61",
+   "9c3689aa75482f74",
+   "9f3fa7ded345006d",
+   "a0b5807e4237995f",
+   "a56343d2b854fadf",
+   "a5a531bbea89c36c",
+   "d6fd5e08abe70109",
+   "dc3861e63e439383",
+   "dfe108b3ed146703",
+   "e3089c4346d01f18",
+   "e6cd416a2d34556a",
+   "e8385a727541a1e2"
+  ],
+  "32": [
+   "b7ef4e6d7272f320"
+  ],
+  "48": [
+   "21983592c33b9783",
+   "23f4fad3610faa39",
+   "50a88c1ebf1e17af",
+   "825cf430fc9cb6f7",
+   "a19386181ddd50b2",
+   "f5694154b1498318"
+  ]
+ }
+}

@@ -36,7 +36,7 @@
   }
  },
  "dev_only_adopted": [],
- "mode": "bundle",
+ "mode": "dev",
  "rejected": [
   {
    "id": "dirt-a",
@@ -62,11 +62,6 @@
    "id": "dirt-b45",
    "status": "skipped",
    "why": "감독 결정으로 키트에서 뺌"
-  },
-  {
-   "id": "asphalt",
-   "status": "pass",
-   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(pass)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
   },
   {
    "id": "asphalt-in-ne",
@@ -177,6 +172,36 @@
    "id": "watchtower",
    "status": "refer",
    "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(refer)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "husk-c",
+   "status": "refer",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(refer)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "husk-d",
+   "status": "fail",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(fail)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "husk-e",
+   "status": "fail",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(fail)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "wall-h2",
+   "status": "refer",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(refer)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "wall-h3",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "rubble-pile-b",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
   },
   {
    "id": "asphalt",
