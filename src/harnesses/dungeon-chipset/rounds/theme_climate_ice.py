@@ -27,164 +27,173 @@ def cv_of(w, h, pieces):
     return cv
 
 
-# ================================================================================================ 고드름 A1 「서리 고드름 다발」(판 2)
-# 판 1 지적(질감 납작·톤 적음·간격 규칙적·흰 띠가 너무 밝고 두꺼움) 반영: 고드름마다 빛 받는 왼 면(e) · 몸(d) · 속 반짝(W) ·
-# 그늘 오른 면(b·a) 네 결, 끝은 옅은 얼음(d → e)으로 비침. 굵기·길이·몰림을 제각각 손으로 찍는다(같은 간격 반복 없음).
-# 뿌리는 흰 띠 대신 서리·얼음 덩이(눈 w·s·S + 얼음 d·c·b, 결 있는 푸른 그늘). 떠 있는 물방울 없음.
-IC1_BIG = [           # 5×15 — 굵은 주인공
-    'edWcb',
-    'edWbB',
-    'eDdca',
-    'eWdbB',
-    '.eDca',
-    '.eWba',
-    '.dcba',
-    '.edba',
-    '.ecb.',
-    '.dWa.',
-    '.dca.',
-    '..cb.',
-    '..db.',
-    '..d..',
-    '..e..',
+# ================================================================================================ 고드름 — 판 3 공통 결
+# 고드름 하나 = 왼 가장자리 1px 어두운 얼음(c, 투명과 닿는 곳) · 빛 받는 면(e) · 흰 반짝 줄(W) · 몸(d) · 그늘 면(b) ·
+# 오른쪽·끝 푸른 재질 윤곽(a·B = ice 0 · water 1, 먹 아님). 끝은 옅은 얼음(d) 한 칸 뒤 b 로 맺힌다. 떠 있는 물방울 없음.
+# 위 처마는 2~3줄 한 덩이(빛 받는 윗입술 · 몸 · 그늘 진 아랫면) — 세로 줄무늬 없이 긴 토막으로.
+# 1칸과 2칸 그림은 서로 다른 배열(같은 무리를 옮겨 붙이지 않는다).
+
+# ---------------------------------------------------------------- 고드름 A1 「눈 처마 고드름」 — 눈 처마 + 가는 고드름, 성기게
+IC1_T13 = [           # 4×13
+    'cWbB',
+    'cWbB',
+    'cdbB',
+    'cWbB',
+    '.cWB',
+    '.cdB',
+    '.cWB',
+    '.cdB',
+    '..cB',
+    '..WB',
+    '..cB',
+    '..dB',
+    '..a.',
 ]
-IC1_BIG2 = [          # 4×13 — 둘째 주인공(조금 가늘고 짧음)
-    'eWdb',
-    'eDca',
-    'eddB',
-    'eWca',
-    '.dcb',
-    '.eba',
-    '.dca',
-    '.cb.',
-    '.Wa.',
-    '.c..',
-    '.d..',
-    '.d..',
-    '.e..',
+IC1_T11 = [           # 4×11 — 굽이 다른 둘째
+    'cWbB',
+    'cWbB',
+    'cdbB',
+    '.cWB',
+    '.cWB',
+    '.cdB',
+    '..WB',
+    '..cB',
+    '..cB',
+    '..dB',
+    '..a.',
 ]
-IC1_MED = [           # 4×10
-    'eWcb',
-    'eDca',
-    'eWbB',
-    'dDba',
-    '.dba',
-    '.eca',
-    '.cb.',
-    '.da.',
-    '.d..',
-    '.e..',
+IC1_T9 = [            # 4×9
+    'cWbB',
+    'cdbB',
+    'cWbB',
+    '.cWB',
+    '.cdB',
+    '..WB',
+    '..cB',
+    '..dB',
+    '..a.',
 ]
-IC1_SHORT = [         # 3×6
-    'edb',
-    'eWa',
-    'dca',
-    '.cb',
-    '.d.',
-    '.e.',
+IC1_T6 = [            # 3×6
+    'cWB',
+    'cdB',
+    'cWB',
+    '.cB',
+    '.dB',
+    '.a.',
 ]
-IC1_THIN = [          # 2×7 — 가는 바늘
-    'eb',
-    'Wa',
-    'db',
-    'ca',
-    'd.',
-    'd.',
-    'e.',
+IC1_T4 = [            # 3×4
+    'cWB',
+    'cdB',
+    '.dB',
+    '.a.',
 ]
-IC1_STUB = [          # 3×3 — 맺힌 혹
-    'edb',
-    'dca',
-    '.d.',
+IC1_LEDGE16 = [       # 눈 처마: 빛 윗입술 W · 몸 w · 푸른 그늘 아랫면 S
+    'sWWWWWwWWWWWWwWs',
+    'SwwwwwwwswwwwwwS',
+    '.SSbSSSSbSSSSSS.',
 ]
-IC1_LUMP16 = [        # 서리·얼음 뿌리 덩이 — 결 있는 푸른 그늘, 테두리 흰 띠보다 어둡고 얇게
-    'sSdwsnsdwSdnSwsd',
-    'SdcnScdSscSdcnSc',
-    '.B.a.bc.Bab.c.aB',
-]
-IC1_LUMP32 = [
-    'sSdwsnsdwSdnSwsdwsSdndsdcwSdnSws',
-    'SdcnScdSscSdcnScdSbcndcSsdcbnScS',
-    '.B.a.bc.Bab.c.aB.a.cB..ab.cBb.B.',
+IC1_LEDGE32 = [
+    'sWWWWWWwWWWWWWWWWWwWWWWWWWWwWWWs',
+    'SwwwwwswwwwwwwwwwwwwwwwswwwwwwwS',
+    '.SSbSSSSbSSSSbSSSSSSSSSSSSSSSSS.',
 ]
 
 
 def icicles_a1():
-    one = cv_of(16, 16, [(IC1_LUMP16, 0, 0), (IC1_STUB, 0, 2), (IC1_BIG, 2, 1), (IC1_THIN, 7, 2), (IC1_MED, 9, 1),
-                         (IC1_SHORT, 13, 2)])
-    two = cv_of(32, 16, [(IC1_LUMP32, 0, 0), (IC1_THIN, 1, 2), (IC1_BIG, 3, 1), (IC1_STUB, 8, 2), (IC1_SHORT, 10, 2),
-                         (IC1_MED, 15, 1), (IC1_THIN, 19, 2), (IC1_BIG2, 21, 1), (IC1_STUB, 26, 2), (IC1_SHORT, 28, 1)])
+    one = cv_of(16, 16, [(IC1_LEDGE16, 0, 0), (IC1_T13, 2, 2), (IC1_T6, 7, 2), (IC1_T9, 10, 2), (IC1_T4, 13, 2)])
+    two = cv_of(32, 16, [(IC1_LEDGE32, 0, 0), (IC1_T6, 1, 2), (IC1_T13, 4, 2), (IC1_T4, 9, 2), (IC1_T9, 12, 2),
+                         (IC1_T4, 18, 2), (IC1_T11, 21, 2), (IC1_T6, 26, 2), (IC1_T4, 29, 2)])
     return one, two
 
 
-# ================================================================================================ 고드름 A2 「유리 고드름」
-# 맑은 푸른 얼음이 덮인 처마(얼음 덩이) 밑에 굵은 원뿔 고드름 몇 개 — 몸 ice 1~2, 왼쪽 흰 줄 빛, 오른쪽 ice 0, 끝에 물방울.
-IC2_FAT = [           # 6×15
-    'Wedcba',
-    'edcbba',
-    'edcbba',
-    '.ecba.',
-    '.ecba.',
-    '.edba.',
-    '.ecba.',
-    '.eca..',
-    '.ecb..',
-    '.dca..',
-    '..ea..',
-    '..db..',
-    '..ca..',
-    '..b...',
-    '..e...',
+# ---------------------------------------------------------------- 고드름 A2 「유리 고드름」 — 얼음 처마 + 굵게 성긴 원뿔
+IC2_FAT = [           # 6×14
+    'ceWdbB',
+    'cewDbB',
+    'ceWdCa',
+    'cDedbB',
+    '.ceWCB',
+    '.cwdba',
+    '.ceDbB',
+    '.cWbB.',
+    '.cdCa.',
+    '..wbB.',
+    '..cDa.',
+    '..cWB.',
+    '..dB..',
+    '..a...',
 ]
 IC2_FAT2 = [          # 5×12
-    'Wedba',
-    'edcba',
-    'ecbba',
-    '.ecba',
-    '.eca.',
-    '.ecb.',
-    '.dca.',
-    '.cb..',
-    '.cb..',
-    '.b...',
-    '.a...',
-    '.e...',
+    'ceWbB',
+    'cwdCB',
+    'ceWba',
+    'cDdbB',
+    '.cWCB',
+    '.cdba',
+    '.cwB.',
+    '.cDa.',
+    '..dB.',
+    '..Wa.',
+    '..dB.',
+    '..a..',
 ]
-IC2_MID = [           # 4×9
-    'Wdca',
-    'edba',
-    'ecba',
-    '.eba',
-    '.eca',
-    '.db.',
-    '.ca.',
-    '.b..',
-    '.e..',
+IC2_MID = [           # 5×10
+    'ceWbB',
+    'cedCa',
+    'cwDbB',
+    '.cWba',
+    '.cdCB',
+    '..wbB',
+    '..cDa',
+    '..dB.',
+    '..da.',
+    '...a.',
 ]
-IC2_SMALL = [         # 3×5
-    'edb',
-    'eca',
-    '.cb',
-    '.b.',
-    '.e.',
+IC2_SMALL = [         # 3×6
+    'cWB',
+    'cDa',
+    'cwB',
+    '.dB',
+    '.da',
+    '.a.',
 ]
-IC2_DROP = ['e', '.', 'd']
-IC2_LIP16 = [         # 얼음 처마 — 흰 반짝 윗줄, 얼음 몸, 아래 그늘
-    'eWeedWeeeWedeWee',
-    'dcdccdcdccdccdcd',
-    'b.ab.a.bab.ab..a',
+IC2_NEEDLE = [        # 3×8
+    'cWB',
+    'cdC',
+    'cwB',
+    '.DB',
+    '.Wa',
+    '.cB',
+    '.da',
+    '.a.',
 ]
-IC2_LIP32 = [
-    'eWeedWeeeWedeWeeWeedeWeeWdeeeWed',
-    'dcdccdcdccdccdcdcdcdccdcdcdccdcc',
-    'b.ab.a.bab.ab..abab.a.ba..ba.ab.',
+IC2_TWIN = [          # 7×9 — 붙어 난 두 고드름
+    'ceWbcWB',
+    'cwDCcdB',
+    'ceWbDwa',
+    '.cdB.cB',
+    '.cWa.dB',
+    '.cDB..a',
+    '..dB...',
+    '..Wa...',
+    '..a....',
+]
+IC2_LEDGE16 = [       # 얼음 처마: 빛 윗입술 e·W · 몸 d · 그늘 아랫면 b
+    'ceeWwWeeeWWweeeb',
+    'cdDddcdDDddcddDa',
+    '.bCbbaCbbbCabbB.',
+]
+IC2_LEDGE32 = [
+    'ceeeWwWeeeeweWWWeeeWweeeWWeeweeb',
+    'cdDddcddDDdddcdDDddcdddDDdcdDdda',
+    '.bbCabbbCbbaCbbbbCabbbCbbaCbbCB.',
 ]
 
 
 def icicles_a2():
-    one = cv_of(16, 16, [(IC2_LIP16, 0, 0), (IC2_FAT, 1, 1), (IC2_SMALL, 8, 1), (IC2_MID, 11, 1), (IC2_DROP, 9, 13)])
-    two = cv_of(32, 16, [(IC2_LIP32, 0, 0), (IC2_MID, 1, 1), (IC2_FAT, 6, 1), (IC2_SMALL, 13, 1), (IC2_FAT2, 17, 1),
-                         (IC2_SMALL, 23, 1), (IC2_MID, 27, 1), (IC2_DROP, 14, 12), (IC2_DROP, 28, 13)])
+    one = cv_of(16, 16, [(IC2_LEDGE16, 0, 0), (IC2_FAT, 1, 2), (IC2_SMALL, 8, 2), (IC2_MID, 11, 2)])
+    two = cv_of(32, 16, [(IC2_LEDGE32, 0, 0), (IC2_MID, 0, 2), (IC2_NEEDLE, 6, 2), (IC2_FAT2, 10, 2),
+                         (IC2_SMALL, 16, 2), (IC2_TWIN, 19, 2), (IC2_FAT, 26, 2)])
     return one, two
 
 
@@ -434,7 +443,8 @@ def drift_a1():
 
 
 # ================================================================================================ 눈 더미 A2 「바람 물결 더미 + 언 땅」
-# 바람에 쓸린 낮은 더미 — 윗면에 물결 줄(s), 남쪽 끝에 드러난 얼음 껍질(d·c)과 박힌 자갈(쇠빛).
+# 바람에 쓸린 낮은 더미(판 3) — 불투명한 눈 다섯 단: 흰 마루 W · 밝은 눈 w · 옅은 푸른 흰 몸 s · 푸른 회색 그늘 S · 바람 그늘 깊은 곳 D(water 3).
+# 물결 마루·골, 푸른 흰 반짝(e), 얼음 껍질 금(c·d). 가장자리 흩어진 알갱이도 눈·얼음 색(회색 없음).
 DR2_V1 = [
     '................',
     '................',
@@ -442,16 +452,16 @@ DR2_V1 = [
     '................',
     '................',
     '................',
-    '..........wWw...',
-    '.......wWseWswW.',
-    '....wWsswWsseWws',
-    '..wWeWsswWsSwWsS',
-    '.sWsSswWwssSsSSn',
-    '.SsSSsSSsSnSnn~.',
-    '..wWse.~n~~n~~.z',
-    'wesWWsw.........',
-    'SswsSsSn....z...',
-    '.nSn.~~~..z.....',
+    '..........wWW...',
+    '.......wWWWeWWw.',
+    '....wWWWeWwwWwws',
+    '..wWWewwwswwswsS',
+    '.wWwwsswsssSsSSD',
+    'wWesssSSSSSDSDD~',
+    'sswSSSSDDDcDD~~.',
+    'SSSDDDD~~~~~~~..',
+    '.~~~~~~~~.......',
+    '..d.......s.....',
 ]
 DR2_V2 = [
     '................',
@@ -461,15 +471,15 @@ DR2_V2 = [
     '................',
     '................',
     '................',
-    '...wWew.........',
-    '.wWsswWeWs......',
-    'wWsSWswWsSWw....',
-    'sWsSWWeWssswWw..',
-    'SswwsswsWssssWws',
-    'nSSsSSnSsssSdcSz',
-    '.nnSnSSnmlSSedcn',
-    's..~~~~~~~~~~~~.',
-    '...z.....s...z..',
+    '...wWWw.........',
+    '.wWWeWWWWw......',
+    'wWWwwWWeWWWw....',
+    'wwswwswWwwwWWw..',
+    'sswsssswsswwwwws',
+    'SSsSSSsSSsSScdSS',
+    'DSDDSDDSDcDDedcD',
+    '.DD~~~~~~~~~~~~.',
+    '..~.....w...s...',
 ]
 
 
@@ -518,7 +528,13 @@ def mk_drift(fn, cand):
         img = hcat(a, b)
         v = scene(cand, [(a, 9, 3, 0, 0), (b, 10, 3, 0, 0), (b, 3, 3, 0, 0), (a, 10, 5, 0, 0), (a, 4, 6, 0, 0),
                          (b, 9, 6, 0, 0)], None)
-        return img, {'kind': 'objects', 'parts': {'변형1': a, '변형2': b}, 'vignette': v}
+        meta = {'kind': 'objects', 'parts': {'변형1': a, '변형2': b}, 'vignette': v}
+        if True:   # 관문 패치(A1·A2 둘 다): 바탕 a 의 맨 회색 얼음굴 바닥(4~7열 9~11행) 4×3칸 위 두 변형, 사람 없음
+            patch = lib.backdrop('ice-cave-backdrop-a').crop(4 * T, 9 * T, 4 * T, 3 * T)
+            for p_, cx, cy in ((a, 0, 0), (b, 2, 1), (b, 1, 2), (a, 3, 2)):
+                patch.paste(p_, cx * T, cy * T)
+            meta['extras'] = [('gate patch', patch, 1)]
+        return img, meta
     return run
 
 
@@ -529,8 +545,8 @@ FNS = {
     'tc.ice_drift': {'A1': mk_drift(drift_a1, 'A1'), 'A2': mk_drift(drift_a2, 'A2')},
 }
 NOTES_BY_ITEM = {
-    'tc.ice_icicles': {'A1': '서리 고드름 다발(판 2) — 결 있는 서리·얼음 뿌리 밑 굵기·길이·몰림 제각각, 면마다 빛·몸·속 반짝·그늘, 비치는 끝',
-                       'A2': '유리 고드름 — 맑은 얼음 처마 밑 굵은 원뿔 고드름 몇 개 + 물방울'},
+    'tc.ice_icicles': {'A1': '눈 처마 고드름(판 3) — 눈 처마 밑 가는 고드름 성기게, 왼 가장자리·오른 윤곽 얼음색, 반짝 줄',
+                       'A2': '유리 고드름(판 3) — 한 덩이 얼음 처마 밑 굵게 성긴 원뿔, 다섯 결(가장자리·빛·반짝·몸·그늘+푸른 윤곽), 옅은 끝'},
     'tc.ice_crystal': {'A1': '눈 둔덕에서 솟은 얼음 결정 셋(가운데 큰 기둥, 좌우로 기운 작은 기둥)',
                        'A2': '서리 앉은 바위 위 큰 결정 하나 + 곁가지 둘(빛 면 눈 흰빛)'},
     'tc.ice_frozen': {'A1': '네모 얼음 덩이 속 투구·방패·세운 칼 전사, 빛줄기가 가로지름',

@@ -352,6 +352,33 @@ def wisp_a2():
     return frames
 
 
+# A2(3판) — 연두 불꽃 다섯 단(% 흰노랑 심 · 7 · 6 연두 · 5 · W 초록) + 짙은 초록 테(V, 오른쪽·아래),
+# 밑 바닥에 누런 연두 빛 웅덩이(가운데 밝고 바깥은 점점이 흩어짐, 3장면 숨쉬기) + 떠도는 불티.
+FLAMEB = [
+    ['....W...', '...W5V..', '...567V.', '..W5675V', '.W567%6V', '.W67%%5V', 'W567%76V', '.W5776V.', '..V55V..', '...VV...'],
+    ['...W....', '..W5V...', '..W667V.', '.W56765V', '.W57%6V.', 'W567%%5V', 'W57%%76V', '.W5776V.', '..V55V..', '...VV...'],
+    ['.....W..', '....5V..', '...W67V.', '..W5776V', '.W56%75V', '.W67%%5V', 'W567%76V', '.W5776V.', '..V55V..', '...VV...'],
+]
+GLOWPOOL = [
+    ['...2.1.2...', '.2.11511.2.', '2.1155511.2', '.2.11511.2.'],
+    ['...........', '...2.1.2...', '..2.151.2..', '...2.1.2...'],
+    ['..2.2.2.2..', '.2.1155112.', '2.1156651.2', '.2.1155112.'],
+]
+SPARKSB = [[(2, 6, '6'), (13, 2, '5')], [(1, 3, '7'), (12, 7, '6')], [(3, 1, '5'), (13, 5, '7')]]
+
+
+def wisp_a2b():
+    frames = []
+    for i, dy in enumerate((0, -1, 0)):
+        f = Cv(T, T)
+        P(f, GLOWPOOL[i], 2, 12)
+        P(f, FLAMEB[i], 4, 1 + dy)
+        for x, y, ch in SPARKSB[i]:
+            P(f, [ch], x, y + dy)
+        frames.append(f)
+    return frames
+
+
 def _wisp(fn):
     def f():
         frames = fn()
@@ -375,20 +402,20 @@ def _wisp(fn):
 # 버들항 늪 널 바닥(ground-deck)과 같은 결: 가로 널 3줄 + 틈 1줄(4px 주기, 틈 = wood 0), 널 윗줄 밝음, 이음 세로 줄 wood 1.
 # A1 끝 = 마지막 널 앞 마구리 + 앞 모서리 말뚝 둘 + 늘어진 밧줄 / 부서짐 = 이 빠진 널, 구멍 밑으로 세로 장선 둘과 물.
 # A2 끝 = 들쭉날쭉 끝 널 + 굵은 계류 말뚝(밧줄 감김)·짧은 말뚝 + 바닥에 감긴 밧줄 / 부서짐 = 큰 구멍과 물에 비스듬히 잠긴 꺾인 널.
-DECK_END1 = [   # 끝 칸 널 바탕(위 칸 널에서 이어 와 마지막 널 앞 마구리에서 끝난다)
-    'eefeeeebeeeeegee',
-    'dddddddbdddddddd',
-    'ddcdddcbdddddcdd',
-    'aaaaaaaaaaaaaaaa',
-    'ffffbffffgffffff',
-    'eeeebeeeeeeeeeee',
-    'eedebeeeeeeedeee',
-    'aaaaaaaaaaaaaaaa',
-    'eeeeeeebeeeeeeee',
-    'dfddddddbddddfdd',
+DECK_END1 = [
+    'eegeeeebeeeeefee',
+    'dcdddddbdddcdddd',
+    'ddcddccbdddddcdd',
+    'a1aaaaaaaaaaa2aa',
+    'gffgbffffgffffgf',
+    'eeeebeeeeeefeeee',
+    'eedebeeeceeedeee',
+    'aaaaaaaa2aaaaaaa',
+    'feeeeeebeeeefeee',
+    'dfddcdddbddcdfdd',
     'dddcddddbddcdddd',
-    'cccccccccccccccc',
-    'bbbbbbbbbbbbbbbb',
+    'edccdcdccdccdccc',
+    'cbbcbbbbbcbbbbbb',
     '~~~~~~~~~~~~~~~~',
 ]
 PILE = ['gf', 'fe', 'ed', 'ed', 'ec', 'dc', 'dc', 'ec', 'dc', 'cb']
@@ -400,21 +427,21 @@ ROPE1 = [
 END1 = None
 BROKEN1 = [
     'eeefeeeebeeeeeee',
-    'dddddcddbddddddd',
-    'ddcdddddbdddcddd',
-    'aaaaaaaaaaaaaaaa',
-    'eeeeeg.....geeee',
-    'dddedc.dc..fdddd',
-    'ddddb..dc...bcdd',
-    'aaaa...dc....aaa',
-    '.....gfeeeebeeee',
-    '..dc.edddddbdddd',
-    '..dc.cdcddddcddd',
-    '..dc.aaaaaaaaaaa',
-    'eeeeeeeefgf..gee',
-    'dddcdddbfdd...dd',
-    'ddddcddbdd...bdd',
-    'aaaaaaaaaa...aaa',
+    'dddcdcddbdddcddd',
+    'ddcdddddbddcdcdd',
+    'aa1aaaaaaaaa2aaa',
+    'efeegfSSSSSgfeee',
+    'ddcedcSdcS0fdcdd',
+    'dcddbS0dc00Sbcdd',
+    'a2aa00Sdc0200a1a',
+    'SSSS0gfeeeebefee',
+    '0Sdc2edcddcbdddd',
+    '00dc0cddcdddcdcd',
+    '20dcSaaaa1aaaaaa',
+    'eeefeedefgfSSgee',
+    'dcdcdddbfddS02dd',
+    'dddccddbdd200bdd',
+    'aa1aaaaaaa0S0aaa',
 ]
 DECK_END2 = [
     'eefeezebeyeeefee',
@@ -474,6 +501,25 @@ def end_a1():
     P(cv, PILE, 13, 6)
     P(cv, ROPE1, 3, 7)
     return cv
+
+
+def _bw1(end, broken):
+    """A1 — 장면(사람) + 관문용 4×3 칸 조각(물·늪 위, 사람 없음, 1배)."""
+    def f():
+        e, b = end(), G(broken)
+        cv = lib.hcat(e, b)
+        sc = ground(['wwwwwww', 'wwddddw', 'wwddddw', 'wwdwwww', 'wwwwwdw', 'wwwwwww'])
+        sc.paste(e, 2 * T, 3 * T)      # 널길 끝(위 칸에서 이어 옴)
+        sc.paste(b, 5 * T, 3 * T)      # 부서진 칸(위·아래 칸이 널, 밑은 늪물)
+        sc.paste(e, 5 * T, 5 * T)
+        lib.put_actor(sc, 3, 2)
+        patch = ground(['bddd', 'wdwd', 'wwwd'])
+        patch.paste(e, 1 * T, 2 * T)
+        patch.paste(b, 2 * T, 1 * T)
+        patch.paste(e, 2 * T, 2 * T)
+        return cv, {'kind': 'objects', 'parts': {'끝': e, '부서짐': b}, 'vignette': sc,
+                    'extras': [('gate patch', patch, 1)]}
+    return f
 
 
 def _bw(end, broken):
@@ -735,6 +781,56 @@ def _snag_scene(fn):
     return f
 
 
+# A2(3판) — 맨 고목 실루엣 유지. 껍질 여섯 단 따뜻한 갈색(g sand3 · f e d c b, wood 0 먹빛 없음)과 세로 결,
+# 이끼는 가지 밑에 매달린 가닥·작은 덩이(5 W 4 2 1 0 + q r 녹회 — 회색 o n 없음), 가지는 드러난 채.
+SNAG2B = [
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '......g.........',
+    '......gf.f......',
+    '......eddc.....e',
+    '......edcb....ed',
+    '...gfedcbb...fc.',
+    'feedccdccbb.ecb.',
+    'ddcbbbbdcbbecb..',
+    'bbb...edcbcb....',
+    '......edcbb.....',
+    '......fdcbbb....',
+    '.......ecbbb....',
+    '.......edcbb....',
+    '.......fcdbb....',
+    '.......edcbb....',
+    '........ecbbb...',
+    '........edcbb...',
+    '........fcdbb...',
+    '........edcbb...',
+    '........ecbbb...',
+    '........edcbb...',
+    '........fdcbb...',
+    '........edcbb...',
+    '.......fedcbbb..',
+    '......ed.dcb.bb.',
+    '.....ed4.dcb.bb.',
+    '....34d4G4cb43b~',
+    '...~3443HG433~~.',
+]
+SNAG2B_MOSS = [(0, 12, '5W21.0'), (1, 12, 'Wr4q2W1.2'), (2, 12, '21'), (3, 12, '5Wq42.q10'), (4, 12, 'q1'),
+               (5, 12, 'Wr2q41.20'), (14, 10, 'q2.1'), (13, 11, 'W42'), (12, 12, '5q1.0'), (11, 12, '2'),
+               (1, 9, 'W'), (4, 8, '5'), (5, 8, 'W'), (2, 9, '2'), (8, 15, 'q'), (10, 21, '2'), (9, 26, 'W')]
+
+
+def moss_a2b():
+    c = [list(r) for r in SNAG2B]
+    for x, y, col in SNAG2B_MOSS:
+        for k, ch in enumerate(col):
+            if ch != '.':
+                c[y + k][x] = ch
+    return G(rows_of(c))
+
+
 def _snag(rows, mossl):
     def f():
         c = [list(r) for r in rows]
@@ -916,11 +1012,11 @@ def _idol(fn):
 
 FNS = {
     'tc.sw_lily': {'A1': _lily(lily_a1b), 'A2': _lily(lily_a2)},
-    'tc.sw_wisp': {'A1': _wisp(wisp_a1b), 'A2': _wisp(wisp_a2)},
+    'tc.sw_wisp': {'A1': _wisp(wisp_a1b), 'A2': _wisp(wisp_a2b)},
     'tc.sw_root_arch': {'A1': _arch(arch_a1), 'A2': _arch(arch_a2)},
-    'tc.sw_moss': {'A1': _snag_scene(moss_a1b), 'A2': _snag(SNAG2, SNAG2_MOSS)},
+    'tc.sw_moss': {'A1': _snag_scene(moss_a1b), 'A2': _snag_scene(moss_a2b)},
     'tc.sw_idol': {'A1': _idol(idol_a1b), 'A2': _idol(idol_a2)},
-    'tc.sw_boardwalk': {'A1': _bw(end_a1, BROKEN1), 'A2': _bw(end_a2, BROKEN2)},
+    'tc.sw_boardwalk': {'A1': _bw1(end_a1, BROKEN1), 'A2': _bw(end_a2, BROKEN2)},
 }
 NOTES_BY_ITEM = {
     'tc.sw_idol': {'A1': '턱까지 늪물에 잠긴 둥근 석상 머리, 이마 물결 새김·깊은 눈두덩, 물에 비친 얼굴과 물결 고리',

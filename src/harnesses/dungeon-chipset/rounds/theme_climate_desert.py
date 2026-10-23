@@ -32,8 +32,8 @@ LS2 = leg(ramp_chars('sand', 'abcdefg'), ramp_chars('void', 'xyz'), b=('sand', 0
 
 
 # 벽 앞면은 바닥보다 한 단 어둡게: 글자를 한 단씩 내려 읽고, 줄눈은 사암의 가장 짙은 단 = wood 2(따뜻한 짙은 갈색, 먹 아님)
-LF1 = leg(ramp_chars('sand', 'abcdefg'), j=('wood', 2), a=('sand', 0), b=('sand', 1), c=('sand', 2), d=('sand', 3),
-          e=('sand', 4))
+LF1 = leg(ramp_chars('sand', 'abcdefg'), j=('wood', 2), a=('sand', 0), b=('sand', 1), k=('wood', 4), c=('sand', 2),
+          d=('sand', 3), e=('sand', 4))
 # A2 벽 = 먼지 앉은 사암: 몸통 sand 2, 줄눈·그늘·턱은 회갈 cfloor — A1 의 붉은 황갈 통돌과 다른 결
 LF2 = leg(ramp_chars('sand', 'abcdefg'), a=('cfloor', 0), b=('cfloor', 1), c=('sand', 2), d=('cfloor', 5),
           e=('sand', 4), f=('sand', 5), g=('sand', 6))
@@ -213,86 +213,88 @@ def floor_fn(n):
 
 
 # ================================================================================================ 벽 앞면
-# A1: 8줄 켜 여섯(이음 0·8열 엇갈림). 글자(LF1): j 줄눈(wood 2, 재료의 가장 짙은 단 — 먹 아님) · a 그늘·패임(sand 0) ·
-# b 몸통(sand 1) · c 결·빛 받는 윗줄(sand 2) · d 턱·반짝(sand 3) · e 드문 반짝(sand 4).
-# 돌마다 윗줄 c(왼끝 d) · 왼 모서리 c · 몸통 b 에 c 결 점과 a 패임 · 아래 a 그늘 · 오른쪽 a — 4~5단. 이음 모서리 몇 곳은 깨져(j·a) 들어감.
+# A1: 8줄 켜 여섯, 켜마다 큰 돌 하나 또는 길이 다른 돌 둘(이음 0 / 4·12 / 8 / 2·10 / 0 / 6·13 — 위아래 이음이 겹치지 않음).
+# 글자(LF1): j 줄눈(wood 2, 재료의 가장 짙은 단 — 먹 아님) · a 그늘(sand 0) · b 짙은 몸통(sand 1) · k 몸통(wood 4) ·
+# c 밝은 몸통·결(sand 2) · d 빛(sand 3) · e 윗변 빛(sand 4).
+# 돌마다 다섯 단: 윗변 빛 → 빛 줄 → 몸통(결 점·줄무늬·패임) → 아래 그늘 → 줄눈. 돌 셋 갈래 — 밝은 돌(e d c k a) · 보통(d c k b a) ·
+# 짙은 돌(c k b a j) — 옆·위아래 이웃 돌이 같은 단으로 겹치지 않게 섞었다. 모서리 몇 곳은 깨져 j 로 패였다.
 M1 = [
-    'dddcddddddcddddd',   # 0 윗단 — 테두리 밑 턱
-    'jdcccdccccccccca',
-    'jcbbcbbbbbbcbbba',
-    'jcbbbbabbbbbbcba',
-    'jcbcbbbbbbabbbba',
-    'jcbbbabbcbbbbaba',
-    'jaaabaaaaaaabaaa',
+    'jeeeeedeeeeeeeda',   # 0 윗단 — 밝은 돌(천장 테두리 밑)
+    'jddcddddddddcdda',
+    'jdccdcccckcccdca',
+    'jdcckkccccdccbca',
+    'jdcdccccckkcccca',
+    'jckkkckkbkkkckka',
+    'jaaabaaaaaaajaaa',
     'jjjjjjjjjjjjjjjj',
-    'ccccdccajdcccccc',   # 8
-    'bbcbbbbajcbbbbcb',
-    'bbbbabbajcbcbbbb',
-    'babbbbcajcbbbbab',
-    'bbbcbbbajcbbabbb',
-    'bbabbbbajcbbbbcb',
-    'aaaaabaajaaaaaba',
+    'dddajjdcdddajddd',   # 8 — 보통 | 짙은 | 보통
+    'ccdajccckccajccc',
+    'kckajckbkkbajckk',
+    'kkbajkkbkbkajcck',
+    'ckkajckkbkaajckc',
+    'bkbajkbabbaajcbb',
+    'abaajaajaaaajaba',
     'jjjjjjjjjjjjjjjj',
-    'jdccccccdccccdca',   # 16 가운데단
-    'jcbbbbcbbbbbbbba',
-    'jcbabbbbbcbbabba',
-    'jcbbbbbbbbbbbcba',
-    'jcbcbbabbbbbbbba',
-    'jcbbbbbbcbabbbba',
-    'jaaaaaabaaaaaaaa',
+    'ddcddddajdddeddd',   # 16 가운데단 — 보통 큰 돌
+    'cdcccccajcccdccc',
+    'kckkbkkajckkkckk',
+    'kkkkkkcajckbkkkk',
+    'kbkckkkajckkkkbk',
+    'bbkbbabajcbbkbbb',
+    'aaaabaaajaaaaaja',
     'jjjjjjjjjjjjjjjj',
-    'cdcccccajdcccdcc',   # 24
-    'bbbbcbbajcbbbbbb',
-    'bcbbbbbajcbbabbb',
-    'bbbabbbajcbbbbbc',
-    'bbbbbbcajcbcbbbb',
-    'babbbbbajcbbbbab',
-    'aaabaaaajaaaaaaa',
+    'dajeedeeeajdjddd',   # 24 — 짙은 | 밝은 | 짙은
+    'cajdddcddajcccdc',
+    'kajdcdcccajkkbkk',
+    'bajdckkccajkkbkk',
+    'kajdccccdajkbkkb',
+    'bajckkbkkajkbbab',
+    'aajaaaabaajaajaa',
     'jjjjjjjjjjjjjjjj',
-    'jcccdcccccccccca',   # 32 아랫단
-    'jcbbbbbbbabbbbba',
-    'jcbabbbcbbbbbaba',
-    'jbbbbbbbbbbabbba',
-    'jcbbabbbbbbbbbba',
-    'jbabbbbabbbbabaa',
-    'jaaaaaaaaaabaaaa',
+    'jddddcdddddddeda',   # 32 아랫단 — 보통 큰 돌
+    'jccdccccccccccba',
+    'jckkckkkkbkkkcka',
+    'jckbkkkkckkkkkka',
+    'jckkkkbkkkkckbka',
+    'jcbbkbbbabbbbkba',
+    'jaaajaaaaaabaaaa',
     'jjjjjjjjjjjjjjjj',
-    'ccccccbajcccccbc',   # 40
-    'bbbbabbajcbbbbbb',
-    'babbbbbajbbbabbb',
-    'bbabbabajbbabbab',
-    'aabaaaaajaaaabaa',
-    'ajaaajaajaajaaaa',
-    'jajjjajjjjjajjja',
-    'jjjjjjajjjjjjjjj',
+    'ddcddajjdcdcajdd',   # 40 — 보통 | 짙은 | 보통, 맨 밑 두 줄 = 바닥 닿는 그늘
+    'cdcccajcckccajcc',
+    'kckkkajkbkkbajck',
+    'kkbkkajkkbkbajck',
+    'bkkkbajbkbbbajck',
+    'babbbajbababajcb',
+    'ajaaaajajaaaajaa',
+    'jjjjjjjjjjjjjjjj',
 ]
-# 끝 기둥 줄(왼끝 0·1열 빛 / 오른끝 14·15열 그늘)
+# 끝 기둥 줄(왼끝 0·1열 빛 / 오른끝 14·15열 그늘) — 켜마다 그 자리 돌의 단에 맞춤
 E1L = [
-    'dd', 'dd', 'dc', 'dc', 'cc', 'dc', 'ca', 'aj',
-    'dd', 'dc', 'dc', 'cc', 'dc', 'dc', 'ca', 'aj',
-    'dd', 'dc', 'dc', 'dc', 'cc', 'dc', 'ca', 'aj',
-    'dd', 'dc', 'cc', 'dc', 'dc', 'cc', 'ca', 'aj',
-    'dc', 'cc', 'cb', 'cc', 'cb', 'cb', 'ba', 'aj',
-    'cc', 'cb', 'cb', 'cb', 'bb', 'ba', 'aj', 'jj',
+    'ee', 'ed', 'dd', 'dd', 'dd', 'dc', 'ca', 'aj',
+    'ed', 'dc', 'dc', 'dk', 'dc', 'ck', 'ca', 'aj',
+    'ed', 'dc', 'dk', 'dc', 'dk', 'ck', 'ca', 'aj',
+    'ed', 'dc', 'ck', 'dc', 'ck', 'ck', 'ka', 'aj',
+    'ed', 'dc', 'dc', 'dc', 'dc', 'cb', 'ba', 'aj',
+    'dd', 'dc', 'ck', 'ck', 'ck', 'kb', 'ba', 'jj',
 ]
 E1R = [
-    'cc', 'ca', 'ba', 'ba', 'ba', 'ba', 'aa', 'jj',
-    'ca', 'ba', 'ba', 'ba', 'ba', 'ba', 'aa', 'jj',
-    'ca', 'ba', 'ba', 'ba', 'ba', 'ba', 'aa', 'jj',
-    'ca', 'ba', 'ba', 'ba', 'ba', 'ba', 'aa', 'jj',
-    'ba', 'ba', 'ba', 'ba', 'ba', 'aa', 'aa', 'jj',
-    'ba', 'ba', 'ba', 'aa', 'aa', 'aj', 'jj', 'jj',
+    'ea', 'da', 'ca', 'ca', 'ca', 'ka', 'aa', 'jj',
+    'da', 'ca', 'ka', 'ka', 'ka', 'ba', 'aa', 'jj',
+    'da', 'ca', 'ka', 'ka', 'ka', 'ba', 'aa', 'jj',
+    'ca', 'ka', 'ba', 'ba', 'ba', 'aa', 'aa', 'jj',
+    'da', 'ca', 'ka', 'ka', 'ka', 'ba', 'aa', 'jj',
+    'da', 'ca', 'ka', 'ka', 'ka', 'ba', 'aa', 'jj',
 ]
-# 아랫단 변형(가운데): 아래에서 둘째 켜를 짧은 돌 셋으로(이음 5·12열), 깨진 모서리·모래 낀 줄눈 — 같은 벽돌 반복을 끊는다.
+# 아랫단 변형(가운데): 아래에서 둘째 켜를 짙은 돌 | 밝은 돌로(이음 5·12열) — 같은 돌 반복을 끊는다.
 BASE1 = [
-    'ccccajdccccajdcc',
-    'bbcbajcbbbbajcbb',
-    'bbbbajcbabbajcbb',
-    'babbajcbbbbajcbc',
-    'bbbbajcbbcbajcbb',
-    'bbabajcbbbbajcab',
-    'aaaaajaaaaaajaaa',
-    'jjjjjdjjjjjjjjjj',
+    'ddcdajeeeeeajddd',
+    'ccccajdddddajccc',
+    'kkbkajdcdccajkkb',
+    'bkkbajdccckajkbk',
+    'kbkkajdckccajkkb',
+    'abbaajkkkkkajbab',
+    'aajaajaaaaaajaja',
+    'jjjjjjjjjjjjjjjj',
 ]
 
 # A2: 5·5·6줄 작은 켜, 이음 자리 제각각, 깨진 모서리, 맨 밑에 모래가 조금 쌓임.
@@ -593,73 +595,73 @@ class FaceSet:
 
 # ================================================================================================ 천장 테두리(47)
 # 몸통 = 어둠(void 0~2 손 무늬). 띠 8줄: 바깥 턱(f, 바닥·앞면에 닿는 쪽) → 사암 윗면 → 안쪽 그늘(c) → 어둠 쪽 가장자리(b).
-BODY1 = [
-    'xxxxxxxxxxxxxxxx',
-    'xxxxxyxxxxxxxxxx',
-    'xxxxxxxxxxxxxyxx',
-    'xxyxxxxxxxxxxxxx',
-    'xxxxxxxxyxxxxxxx',
-    'xxxxxxxxxxxxxxxx',
-    'xxxxxxxxxxxzxxxx',
-    'xyxxxxxxxxxxxxxx',
-    'xxxxxxyxxxxxxxxx',
-    'xxxxxxxxxxxxxxyx',
-    'xxxxxxxxxxxxxxxx',
-    'xxxzxxxxxxyxxxxx',
-    'xxxxxxxxxxxxxxxx',
-    'xxxxxxxxxxxxxxxx',
-    'xxxxxxxyxxxxxxxx',
-    'xxxxxxxxxxxxxyxx',
+BODY1 = [      # 어둠 몸통 — void 0 바탕에 void 1 얼룩·void 2 점(손 무늬, 평평한 검정 판이 되지 않게)
+    'xxyxxxxxyxxxxyxx',
+    'xyxxxzxxxxyxxxxx',
+    'xxxxyxxxxxxxxxyx',
+    'yxxxxxxyxxzxxxxx',
+    'xxyxxxxxxxxyxxxy',
+    'xxxxxyxxyxxxxxxx',
+    'xzxxxxxxxxxxyxzx',
+    'xxxyxxxyxxyxxxxx',
+    'yxxxxxxxxxxxxyxx',
+    'xxxxyxzxxyxxxxxx',
+    'xyxxxxxxxxxxyxxy',
+    'xxxzxxyxxxyxxxxx',
+    'xxxxxxxxyxxxxzxx',
+    'xyxxyxxxxxxyxxxx',
+    'xxxxxxzxxyxxxxyx',
+    'yxxyxxxxxxxxxxxx',
 ]
-# A1 띠 단: 턱 f(g 반짝) → 몸통 e(d 결·f 반짝) → 아래 몸통 d → 안쪽 그늘 c → 어둠 쪽 가장자리 b. 이음 눈금 6·14열(c + 오른쪽 f 턱), 턱 깨짐 몇 곳.
+# A1 띠 단(바깥 → 안): 턱 f(g 반짝) → 윗 빛 f/e → 몸통 e(d·f 결) → e/d → d → d/c → 안쪽 그늘 c → 어둠 쪽 가장자리 b(a 패임).
+# 결은 점과 짧은 눈금만(홈·격자 없음).
 N1 = [
     'ffgfffffgfeffgff',
-    'eefeeecfeeefeecf',
-    'edeeedcedeeedecd',
-    'eeefeeceeefeeece',
-    'deedeedeedeedede',
-    'dddeddddcddedddd',
-    'cccdccccccdccccc',
-    'bbbbcbbbbbbbbcbb',
+    'efffefeeffefefee',
+    'eeefeedeeeefedee',
+    'edeeeeefeedeeeed',
+    'deedeceedeedeede',
+    'dddcddcddddcdddc',
+    'cccdcbccccdccbcc',
+    'bbabbbbbbabbbbbb',
 ]
-# 왼 띠(세로): 턱 0열 · 몸통 1~4열 · 5열 d · 6열 c · 7열 b. 이음 눈금 6·14줄(c, 아랫줄 f 턱).
 W1 = [
-    'feededcb',
-    'gefeedcb',
+    'ffeeddcb',
+    'gfefddcb',
     'feeedccb',
+    'ffeeddca',
+    'feedddcb',
+    'gfeedccb',
     'fedeedcb',
-    'feeefdcb',
+    'ffeeddcb',
+    'feeedcbb',
+    'ffedddcb',
+    'gfeeddca',
+    'feefdccb',
+    'ffeedccb',
+    'fedeedcb',
     'feeeddcb',
-    'fccccdcb',
-    'feffedcb',
-    'gedeedcb',
-    'feeeedcb',
-    'feedeccb',
-    'feeeedcb',
-    'fefeddcb',
-    'feeedecb',
-    'fccccdcb',
-    'feffedcb',
+    'ffeeddcb',
 ]
 ON1 = [        # 바깥 모서리 NW — 턱이 둥글게 돈다, 안쪽 오목 모서리 c·b
     'efffgfff',
-    'feefeeee',
-    'fedeedee',
-    'geeeeefe',
-    'feefeede',
+    'ffefffef',
+    'fefeeeee',
+    'geeeeede',
+    'ffeedede',
     'fedeeddd',
-    'feeeddcc',
-    'feeedccb',
+    'feedddcc',
+    'ffeddccb',
 ]
 IN1 = [        # 안 모서리 NW — 위 띠의 끝줄·왼 띠의 끝칸과 같은 단으로 이어지고, 안쪽 가장자리 ┘ 로 돈다
-    'feffedcb',
-    'feeeedcb',
-    'deedeccb',
-    'eeedeecb',
-    'edeeedcb',
-    'ddedddcb',
-    'cccdcccb',
-    'bbbbbbbb',
+    'ffeeddcb',
+    'eefeddcb',
+    'eeeedccb',
+    'deeeddcb',
+    'eedeedcb',
+    'cdddddcb',
+    'ccccdccb',
+    'bbbbabbb',
 ]
 
 BODY2 = [
@@ -1079,6 +1081,42 @@ TEST = [
 ]
 
 
+STRIP_PLAN = [
+    '########',
+    '########',
+    '########',
+    '########',
+    '........',
+    '........',
+]
+# 천장이 1~3칸 두께뿐인 시험 지도 — 테두리 띠가 주가 되고 어둠 속은 거의 안 보인다(1칸 기둥·안/바깥 모서리 포함).
+GATE_RIM = [
+    '############',
+    '############',
+    '############',
+    '#....#.....#',
+    '#....#..##.#',
+    '#.......##.#',
+    '#.#.....##.#',
+    '#.#.#......#',
+    '#.#.#......#',
+    '############',
+]
+
+
+def gate_face_strip(n=1, floor_n=2):
+    """관문용 띠: 맨 위 천장 테두리 턱 한 줄 · 3단 앞면(새김 판 하나) · 바닥 2줄. 사람·큰 어둠 없음."""
+    fs = face_set(n)
+    cv = pyramid_room(STRIP_PLAN, n, glyphs=False, floor_n=floor_n)
+    cv = cv.crop(0, T // 2, cv.w, cv.h - T // 2)      # 테두리 칸의 어둠 반쪽은 잘라 낸다(턱 띠만)
+    cv.paste(fs.glyph3, 3 * T, T // 2)
+    return cv
+
+
+def gate_rim_map(n=1, floor_n=2):
+    return pyramid_room(GATE_RIM, n, floor_n=floor_n)
+
+
 def room_scene(n, plan=ROOM, actor=(4, 5), who=0, floor_n=None):
     cv = pyramid_room(plan, n, floor_n=floor_n)
     lib.put_actor(cv, actor[0], actor[1], who)
@@ -1110,7 +1148,8 @@ def mk_face(n):
                         fs.face3.crop(16, 0, 16, 48), fs.face3.crop(32, 0, 16, 48))
         meta = {'kind': 'tile', 'parts': parts, 'vignette': room_scene(n, floor_n=fn_),
                 'extras': [('wall run 3h', wall, 3), ('plain room', plain, 2),
-                           ('test map', pyramid_room(TEST, n, floor_n=fn_), 1)]}
+                           ('test map', pyramid_room(TEST, n, floor_n=fn_), 1),
+                           ('gate face strip', gate_face_strip(n, 2), 1), ('gate rim map', gate_rim_map(n, 2), 1)]}
         return img, meta
     return run
 
@@ -1121,7 +1160,8 @@ def mk_rim(n):
         img = lib.atlas47(at)
         fn_ = 2 if n == 1 else None
         meta = {'kind': 'autotile', 'autotiles': {'rim': at}, 'vignette': room_scene(n, floor_n=fn_),
-                'extras': [('body 6x6', dot.mosaic(at, 6, 6), 3), ('test map', pyramid_room(TEST, n, floor_n=fn_), 1)]}
+                'extras': [('body 6x6', dot.mosaic(at, 6, 6), 3), ('test map', pyramid_room(TEST, n, floor_n=fn_), 1),
+                           ('gate face strip', gate_face_strip(n, 2), 1), ('gate rim map', gate_rim_map(n, 2), 1)]}
         return img, meta
     return run
 
