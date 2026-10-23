@@ -26,6 +26,7 @@ import { fetchTextWithProgress, mountBootLoader, readLoadingInfo, type BootLoade
 import { backgroundUrls, enableScenePreload, firstPlayableUrls, preloadUrls } from "@/player/scenePreload";
 import { registerAssetAliases, registerExportAssetBase } from "@/assets/inlineAssetStore";
 import { exportAssetBaseFor } from "@/player/exportAssetBase";
+import { dropOtherVersionPackCaches, loadPacks, startPackServiceWorker, type PreloadPack } from "@/player/preloadPacks";
 import { rebaseRuntimeCssAssetUrls } from "@/player/rebaseCssAssetUrls";
 import { installExportUploadedAssets } from './exportUploadedAssets';
 import { warmPlayGameRuntime } from "@/player/createPlayGame";
@@ -146,6 +147,10 @@ async function prepareFirstScreen(loader: BootLoader, project: Project, autoStar
   // 올린 그림(ref)의 주소는 해석기가 있어야 나온다 — 목록을 만들기 전에 붙인다(startPlayer 도 다시 부른다).
   installExportUploadedAssets(project);
   const urls = firstPlayableUrls(project);
+  // 판본의 파일 목록과 그림 묶음. 묶음이 있으면 서비스 워커를 지금 켜 둔다(시작할 때쯤 이 문서를 맡는다).
+  const versionBase = new URL("./", window.location.href);
+  const plan = readPreloadPlan(versionBase);
+  const packsReady = plan.then((p) => (p.packs.length > 0 ? startPackServiceWorker(versionBase) : false));
   const fonts = typeof document.fonts?.forEach === "function" ? [...document.fonts] : [];
   let fontsDone = 0;
   let last = { doneFiles: 0, totalFiles: urls.length, bytes: 0 };
@@ -170,31 +175,47 @@ async function prepareFirstScreen(loader: BootLoader, project: Project, autoStar
     void (async () => {
       // 판본의 파일 목록(preload-files.json)이 있으면 프로젝트 글자로 안 보이는 것(코드 조각·스킬 효과 시트·코드가 고르는
       // 전투 그림)까지 전부 받는다. 순서: 가까운 맵 → 코드 조각·효과 시트(assets/ 바로 아래) → 나머지.
-      const listed = await readPreloadFileList();
+      // 작은 그림은 묶음으로(요청 수천 → 수십, preloadPacks.ts) — 서비스 워커가 이 문서를 맡았을 때만.
+      const { files: listed, packs } = await plan;
+      const usePacks = packs.length > 0 && (await packsReady);
+      const packed = new Set(usePacks ? packs.flatMap((pack) => pack.files.map((path) => new URL(path, versionBase).href)) : []);
+      if (usePacks) void dropOtherVersionPackCaches(versionBase);
       const buildOutput = listed.filter((url) => /\/assets\/[^/]+$/u.test(url));
       const rest = listed.filter((url) => !/\/assets\/[^/]+$/u.test(url));
+      const single = [...background, ...buildOutput, ...rest].filter((url) => !packed.has(url));
       // 나머지 전부를 낮은 우선순위로. 화면이 부르는 파일은 high 라 이 줄에 밀리지 않는다.
-      const done = await preloadUrls([...background, ...buildOutput, ...rest], { concurrency: 6, priority: "low" });
+      const [done, failed] = await Promise.all([
+        preloadUrls(single, { concurrency: usePacks ? 4 : 6, priority: "low" }),
+        usePacks ? loadPacks(versionBase, packs, { concurrency: 3 }) : Promise.resolve([] as string[]),
+      ]);
+      if (failed.length > 0) await preloadUrls(failed, { concurrency: 6, priority: "low" });
       document.documentElement.dataset.preloadBackgroundDoneAt = String(Math.round(performance.now()));
-      document.documentElement.dataset.preloadBackgroundFiles = `${done.doneFiles}/${done.totalFiles}`;
+      document.documentElement.dataset.preloadBackgroundFiles = `${done.doneFiles + packed.size}/${done.totalFiles + packed.size}`;
+      document.documentElement.dataset.preloadPacks = usePacks ? `${packs.length}` : "0";
     })();
   }, 1500);
 }
 
-/** 판본 폴더의 preload-files.json(스토어 판본만 있다) → 절대 주소 목록. 없거나 이상하면 빈 목록. */
-async function readPreloadFileList(): Promise<string[]> {
+/**
+ * 판본 폴더의 preload-files.json(스토어 판본만 있다) → 절대 주소 목록과 그림 묶음. 없거나 이상하면 빈 값.
+ * 옛 판본(1.7 이전)은 배열 하나, 새 판본은 { v: 2, files, packs }.
+ */
+async function readPreloadPlan(base: URL): Promise<{ readonly files: string[]; readonly packs: PreloadPack[] }> {
+  const safe = (path: unknown): path is string => typeof path === "string" && /^[\w./-]+$/u.test(path) && !path.includes("..");
   try {
-    const base = new URL("preload-files.json", window.location.href);
-    const response = await fetch(base);
-    if (!response.ok) return [];
+    const response = await fetch(new URL("preload-files.json", base));
+    if (!response.ok) return { files: [], packs: [] };
     const raw = (await response.json()) as unknown;
-    if (!Array.isArray(raw)) return [];
-    return raw
-      .filter((path): path is string => typeof path === "string" && /^[\w./-]+$/u.test(path) && !path.includes(".."))
-      .slice(0, 20000)
-      .map((path) => new URL(path, base).href);
+    const record = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as { files?: unknown; packs?: unknown }) : null;
+    const list = Array.isArray(raw) ? raw : Array.isArray(record?.files) ? record.files : [];
+    const files = list.filter(safe).slice(0, 20000).map((path) => new URL(path, base).href);
+    const packs = (Array.isArray(record?.packs) ? record.packs : [])
+      .filter((pack): pack is { path: string; files: unknown[] } => !!pack && typeof pack === "object" && safe((pack as { path?: unknown }).path) && /^packs\/p\d{3,4}\.json$/u.test((pack as { path: string }).path) && Array.isArray((pack as { files?: unknown }).files))
+      .slice(0, 500)
+      .map((pack) => ({ path: pack.path, files: pack.files.filter(safe) }));
+    return { files, packs };
   } catch {
-    return [];
+    return { files: [], packs: [] };
   }
 }
 
