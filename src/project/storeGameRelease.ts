@@ -102,11 +102,23 @@ export async function buildStoreGameFiles(project: Project, options: { readonly 
   const files = new Map<string, Uint8Array>();
   for (const entry of entries) {
     if (entry.name.toLowerCase() === "index.html") continue;
-    files.set(entry.name, entry.bytes);
+    files.set(entry.name, entry.name.endsWith(".css") ? relativeCssAssetUrls(entry.name, entry.bytes) : entry.bytes);
   }
   const entry = files.has("player.html") ? "player.html" : [...files.keys()].find((name) => name.endsWith(".html") && !name.includes("/"));
   if (!entry) throw new Error("플레이어 진입 문서(player.html)가 내보내기 목록에 없습니다.");
   return { files, entry, projectJson: prepared.projectJson, mapCount: prepared.summary.mapCount };
+}
+
+/**
+ * 플레이어 CSS 의 공용 그림·글꼴 주소는 `/assets/…`(사이트 뿌리) 꼴이다. 스토어 판본은 `<slug>/<판본>/` 아래에 놓이므로
+ * 같은 판본 폴더의 assets/ 를 가리키게 상대 주소로 바꾼다(그 파일들은 내보내기 목록에 함께 실린다).
+ */
+export function relativeCssAssetUrls(path: string, bytes: Uint8Array): Uint8Array {
+  const depth = path.split("/").length - 1;
+  const up = depth === 0 ? "./" : "../".repeat(depth);
+  const text = new TextDecoder().decode(bytes);
+  const out = text.replace(/url\(\s*(["']?)\/assets\//g, (_match, quote: string) => `url(${quote}${up}assets/`);
+  return out === text ? bytes : new TextEncoder().encode(out);
 }
 
 /** 표지·장면 그림을 판본 파일에 더할 때 쓰는 경로(게임 그림과 섞이지 않게 store/ 아래). */
