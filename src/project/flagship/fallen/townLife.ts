@@ -29,8 +29,15 @@ const SMITHY_GOODS = [
   "equip_gen_shield_wood", "equip_gen_shield_iron", "equip_gen_helm_leather", "equip_gen_helm_iron",
 ];
 const BAKERY_GOODS = [
-  "fs_bread_warm", "fs_bread_herb", "fs_bread_hearty", "fs_bread_mystery", "fs_bread_stale", "item_bread", "item_potion",
+  "fs_bread_flat", "fs_bread_warm", "fs_bread_herb", "fs_bread_hearty", "fs_bread_mystery", "fs_bread_stale", "item_bread", "item_potion",
+  "fs_bread_starlight", "fs_bread_ember", "fs_bread_wish", "fs_bread_upside",
 ];
+/** 이리스가 합류하기 전, 토마의 가게에는 납작빵과 기존 빵만 나온다(대본 4절). */
+export const FS_BAKERY_PRE_IRIS = ["fs_bread_flat", "fs_bread_warm", "fs_bread_herb", "fs_bread_hearty", "fs_bread_mystery", "fs_bread_stale", "item_bread", "item_potion"];
+export const FS_BREAD_FLAT = "fs_bread_flat";
+export const FS_BREAD_STARLIGHT = "fs_bread_starlight";
+export const FS_SILVER_SPOON = "item_fs_silver_spoon";
+export const FS_FREE_NIGHT = "item_fs_free_night";
 
 function knownIds(project: Project): Set<string> {
   const db = project.database;
@@ -100,6 +107,24 @@ export function ensureFallenTownDatabase(project: Project): void {
   addItem(bread("fs_bread_stale", "묵은 빵", 8, "어제 못 판 딱딱한 빵. 싸고 배는 차지만 가끔 탈이 납니다.", {
     hp: 25, stateEffects: [{ stateId: "state_poison", chance: 35, operation: "add" }],
   }));
+  // 대본 4절·14절 — 토마의 납작빵과 이리스 합류 뒤에 열리는 네 가지 빵.
+  addItem(bread(FS_BREAD_FLAT, "납작빵", 15, "반죽이 안 부풀어서 납작하게 구운 빵. 딱딱하지만 따뜻하다. HP 를 조금 채웁니다.", { hp: 12 }));
+  addItem(bread(FS_BREAD_STARLIGHT, "별빛빵", 30, "꼭대기에 별 모양 홈이 파인 빵. 먹으면 눈이 밝아진다. HP 를 채우고 공격이 오릅니다.", {
+    hp: 30, stateEffects: [{ stateId: "state_attack_up", chance: 100, operation: "add" }],
+  }));
+  addItem(bread("fs_bread_ember", "불씨빵", 45, "화덕에서 막 꺼낸 불씨 같은 빵. 속까지 뜨겁다. 먹고 나면 몇 번의 전투 동안 체력이 차오릅니다.", {
+    hp: 20, stateEffects: [{ stateId: "fs_state_bread_warm", chance: 100, operation: "add" }],
+  }));
+  addItem(bread("fs_bread_wish", "소원빵", 20, "안에 쪽지가 들어 있다. 뭐라고 쓰였는지는 먹어 봐야 안다.", {
+    hp: 15, stateEffects: [{ stateId: "state_attack_up", chance: 50, operation: "add" }],
+  }));
+  addItem(bread("fs_bread_upside", "뒤집힌 빵", 10, "반죽을 거꾸로 굽는 실수에서 태어났다. 이상하게 맛있다.", { hp: 18 }));
+  // 부업(은수저·숙박권)은 팔 수 없는 퀘스트 물건이다.
+  const questThing = (id: string, name: string, description: string) => ({
+    id, name, price: 0, description, scope: "ally" as const, type: "normalGoods" as const, occasion: "never" as const, consumable: false,
+  });
+  addItem(questThing(FS_SILVER_SPOON, "은수저", "여관 마르타의 은수저. 토비가 반짝이는 게 좋아서 가져갔다."));
+  addItem(questThing(FS_FREE_NIGHT, "무료 숙박권", "마르타의 여관에서 하룻밤 공짜. 여관 주인에게 건네면 된다."));
 }
 
 // ───────────────────────── 수납 뒤지기 ─────────────────────────
