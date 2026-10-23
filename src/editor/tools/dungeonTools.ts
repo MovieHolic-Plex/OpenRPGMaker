@@ -77,6 +77,8 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
     route = routeDungeon(draft, {
       type: typeof args.type === "string" ? args.type : undefined, variant: typeof args.variant === "string" ? args.variant : undefined,
       adapter: typeof args.adapter === "string" ? args.adapter : undefined, genre: typeof args.genre === "string" ? args.genre : undefined,
+      // type 을 안 줬으면 이름·참고 말(「덩굴 덮인 고대 유적」「독 늪」)에서 종류를 읽는다
+      text: `${typeof args.name === "string" ? args.name : ""} ${typeof args.inspiration === "string" ? args.inspiration : ""}`.trim() || undefined,
       ...(requestedMapId ? { mapId: requestedMapId } : {}),
     });
     const tileset = route.addTileset ?? draft.tilesets[route.tilesetId]!;
@@ -517,7 +519,7 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   const populate = args.populate !== false && datas.every((d) => d.genre === "rpg");
   const placedTotal = { enemies: 0, chests: 0, boss: 0, guardian: 0, save: 0 };
   if (populate) {
-    const troops = themedTroops(draft, args);
+    const troops = themedTroops(draft, { ...args, type: args.type ?? datas[0]?.type });
     datas.forEach((d, i) => {
       const last = i === datas.length - 1;
       const { line, placed } = populateFloor(draft, mapIds[i]!, d, troops, { boss: last, guardian: !last && i === datas.length - 2, rest: last && (datas.length > 1 || list(d, "rooms").length >= 5) }, baseSeed + i, warnings);
@@ -553,13 +555,13 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
   name: "author_dungeon",
   description:
     "던전 한 층을 한 번에 시공한다. 칩셋 계열이 어댑터를, 장르가 배치·채우기 계획을 정한다 — 같은 「던전 만들어 줘」가 포켓몬풍(몬스터 수집) 프로젝트에서는 짧은 동굴(방 2~4, 야생 조우 구역·시선 트레이너·지름길)이고 버들항 프로젝트에서는 긴 던전(방 6~9, 보스·보물·잠긴 문)이다. " +
-    "종류(type): " + TYPE_LIST + ". 사용자 말 → type: 지하묘지·카타콤·감옥·던전=catacomb · 성 지하·성채·마왕성=castle · 미궁·미로=labyrinth · 하수도·수로=sewer · 동굴·지하 호수=cave · 신전·사원·유적=temple · 광산·갱도=mine · 화산·용암=volcano · 얼음 동굴·빙굴=ice. " +
+    "종류(type): " + TYPE_LIST + ". 사용자 말 → type: 지하묘지·카타콤·감옥·납골당=catacomb · 성·요새·성채·성 지하=castle · 미궁·미로=labyrinth · 하수도·수로=sewer · 동굴·지하 호수=cave · 신전·사원·고대 유적=temple · 광산·갱도=mine · 화산·용암=volcano · 얼음 동굴·빙굴·설산=ice · 숲·정글·세계수=forest · 늪·습지·맹그로브=swamp · 피라미드·사막 왕묘·모래 무덤=pyramid · 마법탑·마도사의 탑=tower · 마계·이세계·지옥·심연=otherworld. 「던전」은 동굴만이 아니다 — 숲·늪(나무 벽 야외 던전, 맵 남쪽 끝 길이 출구)·유적·피라미드·마법탑·마계도 이 도구 한 번이다. 게임 이름(「엘든링 같은」「FF6 광산」「크로노 트리거」)은 inspiration 에 그대로 넣는다 — 종류·배치(layout)·주제 장치(gimmick)를 정한다. 같은 종류를 두 번 지어도 배치 가족(사슬·갈래·고리)·장치가 시드로 달라진다. " +
     "어댑터별 지을 수 있는 종류(여기 없는 종류는 거절 — 다른 칩셋 조각으로 바꿔 칠하지 않는다):\n" + capabilityTableText() + "\n" +
     "거절 응답(code type-unsupported-by-tileset)에는 가장 가까운 지원 종류가 들어 있다 — 사용자에게 알리고 그 종류로 다시 부르거나, 다른 칩셋은 사용자 승인(ask_tileset_change) 뒤에만. 칩셋은 mapId 의 칩셋 → 장르 순으로 고른다(몬스터 수집 프로젝트 = 몬스터 키트, 그 밖 = 버들항). " +
     "genre 로 장르를 바꿀 수 있다: pokemon(" + GENRE_PRESETS.pokemon.blurb + ") · rpg(" + GENRE_PRESETS.rpg.blurb + "). 생략하면 프로젝트 장르(monster-collect → pokemon, 그 밖 → rpg). variant: 몬스터 키트 cave 는 기본 마른 갈색 동굴, variant:'wet' 이면 물웅덩이 있는 바다 동굴. " +
     "좌표를 계산하지 않는다 — 방 목록(종류·크기·어느 방에서 이어지는지, 버들항 방+통로 문법만)을 주거나 rooms 를 생략하고 size 만 줘도 된다. 코드가 방 배치·통로·벽·바닥·장식을 깔고, 물건은 받침이 있는 칸에만 놓되 문과 문 사이 길은 막지 않는다. " +
     "모든 방이 입구에서 걸어 닿고 허공에 뜬 물체가 0 인지 스스로 검사한 뒤에만 맵을 만든다(어기면 맵을 만들지 않고 거부). " +
-    "rooms(버들항 방+통로 문법: catacomb·castle·sewer·temple·mine)는 순서대로 이어진다(첫 방 = 입구, from 생략 = 바로 앞 방 근처, dir 은 문 방향 N·S·W·E, 생략하면 층 모양에 맞게 자동). kind: entrance 입구 홀 · hall 큰 홀 · crypt 묘실 · cell 감방 · shrine 제단 방 · boss 보스방 · storage 창고 · vault 보물 방. cave·volcano·ice·labyrinth 는 rooms 를 주지 않고 size(또는 genre)만. " +
+    "rooms(버들항 방+통로 문법: catacomb·castle·sewer·temple·mine·pyramid·tower)는 순서대로 이어진다(첫 방 = 입구, from 생략 = 바로 앞 방 근처, dir 은 문 방향 N·S·W·E, 생략하면 층 모양에 맞게 자동). kind: entrance 입구 홀 · hall 큰 홀 · crypt 묘실 · cell 감방 · shrine 제단 방 · boss 보스방 · storage 창고 · vault 보물 방. cave·volcano·ice·labyrinth·forest·swamp·otherworld 는 rooms 를 주지 않고 size(또는 genre)만(pyramid·tower 는 방 문법 — tower kind library 서고). 버들항 rpg 던전은 마지막 층에 주제 장치 하나(gimmick)를 스스로 둔다. " +
     "맵 크기는 방 배치로 정해진다(결과 data.width/height). 원하는 크기가 있으면 width·height 를 준다. 던전 층은 이 도구 한 번이면 된다 — stamp_object·paint_tiles 로 벽·천장·소품을 따로 깔지 말 것(받침 규칙이 거절한다). " +
     "결과 data.rooms[].spots 는 적·상자·NPC 이벤트를 둘 수 있는 빈 바닥 칸이다 — 이벤트는 그 좌표에만 둔다. data.stairsUp.front 는 입구 앞 칸(위층으로 가는 이동 지점), data.stairsDown 은 내려가는 구멍·계단 칸. " +
     "data.anchors: boss(보스방 id), treasure(보물 방 id), gate(그 방으로 들어가는 통로 칸 — 잠긴 문·열쇠 이벤트 자리). " +
