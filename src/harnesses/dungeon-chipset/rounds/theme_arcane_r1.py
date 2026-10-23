@@ -861,8 +861,8 @@ GROUND_CRACKS = [
 GROUND_VEIN_A1 = [((6, 4), (9, 7)), ((8, 5), (11, 6)), ((4, 4), (1, 8)), ((6, 9), (10, 8))]
 GROUND_NODES_A2 = [[(9, 7), (8, 11)], [(9, 5)], [(2, 6), (12, 12)], [(6, 9)]]
 
-LGR = {'A1': L('b:ostone2 s:arcane0 c:iron1 k:ostone0 d:ostone1 h:arcane1 g:arcane0 e:ostone1 v:arcane2 V:arcane3'),
-       'A2': L('b:ostone1 s:ostone2 c:ostone3 k:arcane1 d:ostone0 h:ostone3 g:ostone2 e:ostone0 v:arcane1 V:arcane3')}
+LGR = {'A1': L('b:ostone2 m:arcane0 h:arcane1 d:ostone1 k:ostone0 r:ostone3 v:arcane2 V:arcane4'),     # 보라 검은 판 + 보라 핏줄
+       'A2': L('b:ostone1 m:ostone2 h:ostone3 d:ostone0 k:ostone0 r:red0 v:red1 V:fire3')}           # 더 검은 재 판 + 붉은 핏줄
 
 
 def _ground_grain(rows, i):
@@ -889,29 +889,87 @@ def _ground_grain(rows, i):
     return [''.join(r) for r in g]
 
 
-# 몸통 변형 6개 — 금은 칸 안에서 끝나(가장자리에 닿지 않는다) 칸마다 같은 자리에서 이어지는 격자 무늬가 생기지 않는다.
-# 셋은 금 없이 알갱이만(알갱이 씨가 달라 서로 다르다), 셋은 짧은 금 한두 갈래 + 빛 핏줄. 엔진이 해시로 섞으면 금이 드문드문 놓인다.
+# 몸통 = 결이 고르게 얼룩진 판(16 주기 부드러운 잡음 → 세 단 + 윗면 빛). 둘레 3화소 띠는 모든 변형이 같은 잡음이고
+# 가운데만 변형마다 다른 잡음이라 어떤 순서로 붙어도 이음이 없다. 한 화소 외톨이 점은 지운다(알갱이는 2화소 이상 덩이).
+# 금은 칸 안에서 끝나고(가장자리 띠에 닿지 않는다) 모양·방향이 변형마다 다르다. 빛 핏줄은 금 둘 속에만(가운데 밝은 심 → 핏줄 → 붉은 무리).
+# 변형 목록은 맨판을 여러 번 넣어 금 칸이 열 칸에 셋쯤만 나오게 한다(엔진은 목록에서 해시로 고른다).
+GROUND_FREQS = [(3, 2), (2, 4), (4, 3), (5, 1), (1, 5), (3, 5)]
+
+
+def _wave(x, y, ph):
+    """정수 주파수(16 주기) 짧은 물결 여섯의 합 — 덩이가 2~3화소라 변형끼리 아무렇게나 붙어도 잘린 덩이가 눈에 띄지 않는다."""
+    t = 2 * math.pi / 16
+    return sum(math.cos(t * (fx * x + fy * y) + p) for (fx, fy), p in zip(GROUND_FREQS, ph))
+
+
+GROUND_PHASES = [tuple(((i * 7 + j * 13) % 17) * 0.37 + i * 1.3 for j in range(6)) for i in range(6)]
+
+
+def _mottle(i):
+    g = []
+    for y in range(16):
+        r = []
+        for x in range(16):
+            v = _wave(x, y, GROUND_PHASES[i])
+            r.append('d' if v < -1.5 else ('m' if v > 1.6 else 'b'))
+        g.append(r)
+    for _ in range(2):                                   # 외톨이 화소 지우기(4 이웃이 모두 다르면 이웃 다수 색으로)
+        h = [row[:] for row in g]
+        for y in range(16):
+            for x in range(16):
+                nb = [g[(y + dy) % 16][(x + dx) % 16] for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))]
+                if g[y][x] not in nb:
+                    h[y][x] = max(set(nb), key=nb.count)
+        g = h
+    for y in range(16):                                  # 얼룩 윗변이 빛을 받는다(위가 m 아님 → h) · 아랫변 그늘(아래가 m 아님 → e)
+        for x in range(16):
+            if g[y][x] == 'm' and g[(y - 1) % 16][x] not in 'mh' and (x + y + i) % 3:
+                g[y][x] = 'h'
+    return [''.join(r) for r in g]
+
+
 GROUND_INNER_CRACKS = [
-    [],
-    [((3, 4), (6, 6), (9, 6), (12, 9)), ((9, 6), (10, 3))],
-    [],
-    [((5, 12), (7, 9), (11, 8)), ((7, 9), (6, 5))],
-    [],
-    [((9, 3), (11, 5), (12, 8))],
+    [((2, 5), (5, 6), (7, 9), (10, 10), (13, 9)), ((7, 9), (6, 12), (7, 13))],
+    [((3, 12), (5, 11), (6, 8), (9, 7), (10, 4), (12, 3))],                # 빛 핏줄 셋 — 굽이치는 금, 모양이 다 다르다
+    [((3, 11), (6, 9), (9, 9), (12, 11)), ((9, 9), (10, 6), (9, 3))],
+    [((11, 2), (10, 5), (12, 8), (11, 11), (8, 13)), ((10, 5), (6, 4), (3, 5))],
+    [((2, 8), (5, 7), (8, 8), (11, 6), (13, 6))],
+    [((3, 4), (6, 5), (8, 8), (9, 11), (12, 12))],
+    [((12, 9), (9, 10), (7, 8), (4, 9), (3, 12))],
 ]
-GROUND_VEINS = {1: ((6, 6), (9, 6)), 3: ((7, 9), (11, 8)), 5: ((10, 4), (11, 5))}
+GROUND_GLOW = {1, 5, 6}         # 빛 핏줄 셋(스물넷 칸에 하나씩)
+
+
+def ground_body(key, i, crack=None):
+    rows = _mottle(i)
+    if crack is None:
+        return rows
+    pts = [p for seg in GROUND_INNER_CRACKS[crack] for p in poly(*seg)]
+    if crack in GROUND_GLOW:
+        g = [list(r) for r in rows]
+        P = set(pts)
+        for x, y in P:
+            for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                X, Y = x + dx, y + dy
+                if (X, Y) not in P:
+                    g[Y][X] = 'r'
+        for j, (x, y) in enumerate(pts):
+            g[y][x] = 'v'
+        x, y = pts[len(pts) // 2]
+        g[y][x] = 'V'
+        return [''.join(r) for r in g]
+    return carve(rows, pts, dark='k', shade='d', lit='h')
+
+
+# (잡음 변형, 금) — 스물넷 중 여덟이 금(어두운 금 다섯 + 빛 핏줄 셋), 나머지는 맨판
+GROUND_LIST = [(0, None), (1, None), (2, 0), (3, None), (4, None), (5, 3), (1, None), (2, None),
+               (3, 2), (4, None), (5, None), (0, 4), (2, None), (4, 1), (1, None), (3, None), (5, None), (0, None),
+               (2, 5), (1, None), (3, None), (4, 0), (0, None), (5, 6)]
 
 
 def ground_rows(key, i):
-    base = GROUND_BASE[i % 4] if key == 'A1' else tr(GROUND_BASE[i % 4], {'c': 's'})
-    pts = [p for seg in GROUND_INNER_CRACKS[i] for p in poly(*seg)]
-    rows = carve(base, pts, dark='k', shade='d', lit='h') if pts else base
-    g = [list(r) for r in _ground_grain(rows, i)]
-    if i in GROUND_VEINS:
-        seg = poly(*GROUND_VEINS[i])
-        for j, (x, y) in enumerate(seg):
-            g[y % 16][x % 16] = 'V' if j == len(seg) // 2 else 'v'
-    return [''.join(r) for r in g]
+    m, c = GROUND_LIST[i]
+    return ground_body(key, m, c)
 
 
 # 벽·문턱과 만나는 보통 가장자리(허공 아닌 곳): 북 2줄 그늘 · 서 한 열 · 동·남 금 한 열
@@ -925,7 +983,7 @@ GROUND_INNER = ['dd............dk', 'd...............'] + ['................'] *
 
 def ground_at(key):
     leg = LGR[key]
-    bs = [grid(ground_rows(key, i), leg) for i in range(len(GROUND_INNER_CRACKS))]
+    bs = [grid(ground_rows(key, i), leg) for i in range(len(GROUND_LIST))]
     return autotile_cv(bs[0], grid(GROUND_FRAME, leg, 32, 32), grid(GROUND_INNER, leg, 16, 16), bs[1:])
 
 
@@ -950,18 +1008,18 @@ VE_FRAME = [
     'kh............................dk',
     'kh............................dk',
     'kh............................dk',
-    'kkh...........................dk',
-    'kkh..........................dkk',
-    'kkkh.........................dkk',
-    'kkh..........................dkk',
     'kh............................dk',
     'kh............................dk',
     'kh............................dk',
     'kh............................dk',
-    'kkh...........................dk',
-    'kkh...........................dk',
-    'kkh..........................dkk',
-    'kh...........................dkk',
+    'kh............................dk',
+    'kh............................dk',
+    'kh............................dk',
+    'kh............................dk',
+    'kh............................dk',
+    'kh............................dk',
+    'kh............................dk',
+    'kh............................dk',
     'kh............................dk',
     'kh............................dk',
     'kh............................dk',
@@ -975,40 +1033,55 @@ VE_FRAME = [
 ]
 VE_INNER = ['kh............dk', 'h..............d'] + ['................'] * 13 + ['k..............k']
 # 섬 밑 앞면 표본 32×32: s 빛 받는 윗층(ostone 3) · b 몸(2) · d 그늘 층(1) · e 깊은 틈(0) · v·V 흘러내린 빛 줄기 · '.' 허공
-VE_FACE = [
-    '.ssssssssssssssssssssssssssssss.',
-    '.bbsbbbbbbsbbbbbbbbbbsbbbbbbbbd.',
-    '.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbd.',
-    '.dbbbbbbbddbbbbbbbbbbbbdddbbbdd.',
-    '..ddbbbbbbbdddbbbbbbbddbbbbbbd..',
-    '..bbbbbbbbbbbbbbbbbbbbbbbbbbbd..',
-    '..bbvbbbbbbbbbbbbbbbbbbbbbbbbd..',
-    '..bbvbbbbbbbbbbbbbbbbbbsbbbbdd..',
-    '..ddVbbbbbbbbbbbbbbddddbbbbdd...',
-    '...dvddbbbbbddddbbbbbbbbbbbdd...',
-    '...bvbbbbbbbbbbbbbbbbbbbbbbd....',
-    '...bbbbbbbbbbbbbbbbbbbbbbbdd....',
-    '...dbbbbbbbbbbbbbbbbbbbbbbdd....',
-    '...ddddbbbbbbbbbbbdddddbbdd.....',
-    '....ddddddbbbbbbbbbbbbddddd.....',
-    '....dddddddddddddddddddddd......',
-    '....ddddddddddddddddddddddd.....',
-    '....dddddddbddddddddddddvd......',
-    '.....dddddddddddddedddddvd......',
-    '.....deddddddddddddddddVd.......',
-    '.....dddddddddddddddddedv.......',
-    '.....ddddddeddddddddddddd.......',
-    '......dddddddddddddddedd........',
-    '......dddddddddddddeddd.........',
-    '......dde.ddddddddd.ddd.........',
-    '.......dd..dddd.ddd..ed.........',
-    '.......e...ddd..dd...d..........',
-    '...........dd...de..............',
-    '............d...d...............',
-    '................................',
-    '................................',
-    '................................',
-]
+def _ve_face():
+    """섬 밑 앞면 표본 32×32 를 칸 열(tc, 16 주기) 함수로 그린다 — 가운데 조각 어디서 끊어 붙여도 이어진다.
+    0줄 = 턱 밑 그늘(e), 그 밑 층리(b 몸 · 물결 d 층 · 층 위 s 빛), 아래로 갈수록 d → e 로 어두워지고 밑단은 짧은 고드름으로 끊긴다.
+    끝 마구리(0~7 · 24~31)는 아래로 갈수록 안으로 좁아진다. v·V = 바위 틈에서 흘러내린 빛 줄기(가운데 한 줄)."""
+    t = 2 * math.pi / 16
+    wav = lambda tc, k: math.sin(t * tc + k) + 0.5 * math.sin(2 * t * tc + 2 * k)  # noqa: E731
+    bottom = lambda tc: 20 + round(2 * math.sin(t * tc + 0.7) + 1.5 * math.sin(3 * t * tc + 2.1))  # noqa: E731
+    drips = {3: 4, 10: 3, 13: 2}
+    out = []
+    for y in range(32):
+        r = []
+        for c in range(32):
+            tc = c if c < 8 else (c - 8 if c < 24 else c - 16)
+            inset = 0
+            if c < 8:
+                inset = 1 + y // 3
+                ok = c >= inset
+            elif c >= 24:
+                inset = 1 + y // 3
+                ok = c <= 31 - inset
+            else:
+                ok = True
+            bot = bottom(tc) + drips.get(tc, 0)
+            if c < 8 or c >= 24:
+                bot = min(bot, 22 - (7 - c if c < 8 else c - 24))
+            if not ok or y >= bot:
+                r.append('.')
+                continue
+            if y == 0:
+                ch = 'e'
+            elif y >= bot - 1 or (c < 8 and c == inset) or (c >= 24 and c == 31 - inset):
+                ch = 'e'
+            else:
+                band = (y + wav(tc, 0.4) * 1.3) % 5
+                deep = y > 12
+                if band < 1:
+                    ch = 'e' if deep else 'd'
+                elif band < 2 and not deep:
+                    ch = 's' if (tc + y) % 4 else 'b'
+                else:
+                    ch = 'd' if deep else 'b'
+            if (tc, y) in ((3, 6), (12, 11), (8, 15)) and ch != '.':   # 틈에서 새는 빛 몇 점(줄기 대신 — 줄기는 칸마다 같은 자리에 늘어섰다)
+                ch = 'v'
+            r.append(ch)
+        out.append(''.join(r))
+    return out
+
+
+VE_FACE = _ve_face()
 # 허공 몸통 변형 셋: k 바탕(ostone 0) · d 드문 얼룩(1) · a 희미한 티끌(arcane 0) · A 빛 티끌(arcane 2)
 VOID_STARS = [[(12, 2, 'a'), (3, 5, 'd'), (9, 9, 'A'), (14, 13, 'd')],
               [(6, 1, 'a'), (11, 6, 'd'), (1, 11, 'd'), (10, 14, 'a')],
@@ -1023,9 +1096,9 @@ def _void_body(stars):
         r = []
         for x in range(16):
             v = (math.cos(2 * math.pi * (x / 16 + 0.1)) * math.cos(2 * math.pi * (y / 16 + 0.3))
-                 + 0.7 * math.sin(2 * math.pi * ((x - 2 * y) / 16 + 0.15)))
-            c = 'a' if v > 1.35 else 'e' if v > 0.95 else ('e' if v > 0.6 and (x + y) % 2 == 0 else 'k')
-            if c == 'k' and (x * 3 + y * 5) % 7 == 0:   # 성긴 체크 알갱이 — 5×5 안에 한 색만 있는 자리가 없게
+                 + 0.5 * math.cos(2 * math.pi * (2 * x / 16 + 0.6)) * math.cos(2 * math.pi * (y / 16 + 0.8)))
+            c = 'e' if v > 0.9 else ('e' if v > 0.55 and (x + y) % 2 == 0 else 'k')
+            if c == 'k' and ((x * 5 + y * 11) % 13 == 0):   # 성긴 알갱이 — 5×5 안에 한 색만 있는 자리가 없게
                 c = 'e'
             r.append(c)
         rows.append(r)
@@ -1037,8 +1110,8 @@ def _void_body(stars):
 VOID_BODIES = [_void_body(st) for st in VOID_STARS]
 for _r in VE_FRAME + VE_FACE:
     assert len(_r) == 32, _r
-LVE = {'A1': L('k:ostone0 d:ostone2 h:ostone4 H:ostone5 s:ostone4 b:ostone3 e:ostone1 v:arcane2 V:arcane3 a:arcane0 A:arcane2'),
-       'A2': L('k:ostone0 d:ostone1 h:ostone3 H:ostone4 s:ostone3 b:ostone2 e:ostone0 v:arcane1 V:arcane3 a:arcane0 A:arcane2')}
+LVE = {'A1': L('k:vrock0 d:ostone1 h:arcane2 H:arcane3 s:arcane1 b:arcane0 e:ostone0 v:arcane2 V:arcane4 a:arcane0 A:arcane2'),   # 보라 바위 밑면
+       'A2': L('k:vrock0 d:ostone1 h:ostone4 H:ostone5 s:ostone3 b:ostone2 e:ostone0 v:red1 V:fire3 a:ostone1 A:red0')}           # 붉은 재 바위 밑면
 
 
 class VoidEdge:
@@ -1087,7 +1160,7 @@ def void_edge(key):
     gat = ground_at(key)
     at = autotile_cv(gat.body, grid(VE_FRAME, leg, 32, 32), grid(VE_INNER, leg, 16, 16), gat.bodies[1:])
     voids = [grid(b, leg) for b in VOID_BODIES]
-    raw = grid(speckle(bevel(VE_FACE, 'edbsH'), {'b': ('s', 7), 'd': ('e', 6)}, 1), leg, 32, 32)            # 투명 = 허공(그릴 때 칸 자리 허공 몸통 위에 얹는다)
+    raw = grid(VE_FACE, leg, 32, 32)            # 투명 = 허공(그릴 때 칸 자리 허공 몸통 위에 얹는다)
     face_trans = dot.Face(raw)
     block = Cv(32, 32)                         # 관문용 불투명 표본: 표본 열 c → 칸 열(0~7→0~7, 8~15→0~7, 16~23→8~15, 24~31→8~15) 의 허공 0번
     for y in range(32):
