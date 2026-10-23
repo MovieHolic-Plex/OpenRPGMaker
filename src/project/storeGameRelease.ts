@@ -100,10 +100,16 @@ export async function buildStoreGameFiles(project: Project, options: { readonly 
   const deployment = await loadVerifiedPlayerDeployment({ bundleBase: options.bundleBase, adapters: { fetchBytes: options.fetchBytes } });
   const entries = await exactWebExportEntries(prepared, deployment, options.fetchBytes);
   const files = new Map<string, Uint8Array>();
+  const cssAssets = new Set<string>();
   for (const entry of entries) {
     if (entry.name.toLowerCase() === "index.html") continue;
-    files.set(entry.name, entry.name.endsWith(".css") ? relativeCssAssetUrls(entry.name, entry.bytes) : entry.bytes);
+    if (entry.name.endsWith(".css")) {
+      for (const match of new TextDecoder().decode(entry.bytes).matchAll(/url\(\s*["']?\/(assets\/[^"')?#\s]+)/g)) cssAssets.add(match[1]!);
+      files.set(entry.name, relativeCssAssetUrls(entry.name, entry.bytes));
+    } else files.set(entry.name, entry.bytes);
   }
+  // CSS 가 가리키는 공용 그림·글꼴(배틀 배경·메뉴 아이콘·도트 글꼴)도 판본 폴더에 함께 싣는다.
+  for (const path of cssAssets) if (!files.has(path)) files.set(path, await options.fetchBytes(`/${path}`));
   const entry = files.has("player.html") ? "player.html" : [...files.keys()].find((name) => name.endsWith(".html") && !name.includes("/"));
   if (!entry) throw new Error("플레이어 진입 문서(player.html)가 내보내기 목록에 없습니다.");
   return { files, entry, projectJson: prepared.projectJson, mapCount: prepared.summary.mapCount };
