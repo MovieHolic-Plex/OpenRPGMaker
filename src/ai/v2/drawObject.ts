@@ -45,6 +45,7 @@ export function drawObject(run: BuildRun, spec: ObjectSpec): ContentBuildResult 
     mapId, title: what, description, objectKind,
     need: `${what} 을(를) 맵에 놓고 싶다${spec.where ? ` (${spec.where})` : ""}`,
   };
+  if (spec.notThese?.length) args.notThese = [...spec.notThese];
   const wantsSpot = !!(spec.where || spec.at);
   if (wantsSpot) {
     const w = resolveWhere(run.ctx.project, map, spec.where, { at: spec.at });

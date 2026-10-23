@@ -66,9 +66,18 @@ function resolveKind(tilesetId: string, zone: ZoneSpec, notes: string[]): string
 /** 크기 낱말 → 견본 크기 배율. */
 const SCALE: Record<string, number> = { small: 0.85, medium: 1, large: 1.3 };
 
+/** 사람이 흔히 쓰는 말 → 부품 사전의 말(ko 이름은 「깔개」「발깔개」처럼 쓴다). */
+const SYNONYMS: readonly [RegExp, string][] = [
+  [/발\s*매트|도어\s*매트|현관\s*매트/u, "발깔개"], [/러그|카펫|양탄자/u, "깔개 rug"], [/촛불|양초/u, "촛대"],
+  [/테이블/u, "탁자"], [/소파/u, "안락의자"], [/책꽂이/u, "책장"],
+];
+
 /** 부품 사전에서 낱말에 맞는 가구 하나. 「큰/커다란」이면 가장 큰 것, 아니면 이름이 가장 잘 맞는 것. */
 export function findPart(spec: HandInteriorSpec, word: string): { id: string; kind: string; w: number; h: number; stairs?: "up" | "down" } | undefined {
-  const w = word.trim().toLowerCase();
+  let w = word.trim().toLowerCase();
+  // 출입문은 가구가 아니다(손 도트 실내는 남쪽 틈이 문) — 「문」이 「문장 방패」에 걸려 방패가 놓였다(2026-10-23 v2 고치기).
+  if (/^(뒷|앞|옆|나무 |작은 )?문$|^door$|back ?door|뒷문|출입문/u.test(w)) return undefined;
+  for (const [re, to] of SYNONYMS) w = w.replace(re, to);
   const big = /큰|커다란|거대|great|large|big/iu.test(w);
   const core = w.replace(/큰|커다란|거대한?|great|large|big|작은|small/giu, "").trim();
   const tokens = core.split(/[\s,·/]+/u).filter((t) => t.length >= 1);
@@ -81,6 +90,8 @@ export function findPart(spec: HandInteriorSpec, word: string): { id: string; ki
     if (o.ko.toLowerCase().startsWith(core) || id.startsWith(core)) score += 2;
     if (score > 0) scored.push({ id, score, area: o.w * Math.max(1, o.h) });
   }
+  // 한 글자 낱말만 맞은 것(점수 1~2)은 우연이다 — 버린다.
+  for (let i = scored.length - 1; i >= 0; i--) if (scored[i]!.score < 3) scored.splice(i, 1);
   if (!scored.length) return undefined;
   scored.sort((a, b) => (b.score - a.score) || (big ? b.area - a.area : a.area - b.area));
   // 「큰」: 낱말이 맞는 것 중 가장 큰 것(이름이 똑같은 작은 것보다 큰 판을 고른다).

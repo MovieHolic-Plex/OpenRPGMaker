@@ -188,12 +188,14 @@ export function applyPatch(spec: PlaceSpec, patch: PlacePatch): PlaceSpec {
   const removed = new Set(patch.removeZones ?? []);
   let zones = (spec.zones ?? []).filter((z) => !removed.has(z.id ?? z.kind) && !removed.has(z.kind));
   zones = [...zones, ...(patch.addZones ?? [])];
+  const loose: string[] = [];
   for (const add of patch.addAnchors ?? []) {
     const index = zones.findIndex((z) => z.id === add.zone || z.kind === add.zone);
     const at = index >= 0 ? index : 0;
     if (zones[at]) zones[at] = { ...zones[at]!, anchors: [...(zones[at]!.anchors ?? []), add.what] };
+    else loose.push(add.what); // 구역 없는 장소(마을·던전)는 장소 전체의 낱말로
   }
-  const features = [...(spec.features ?? []).filter((f) => !(patch.removeFeatures ?? []).includes(f)), ...(patch.addFeatures ?? [])];
+  const features = [...new Set([...(spec.features ?? []).filter((f) => !(patch.removeFeatures ?? []).includes(f)), ...(patch.addFeatures ?? []), ...loose])];
   const hints = { ...(spec.hints ?? {}), ...(patch.set?.hints ?? {}),
     ...(patch.variant !== undefined ? { variant: patch.variant } : {}), ...(patch.seed !== undefined ? { seed: patch.seed } : {}), ...(patch.dressing !== undefined ? { dressing: patch.dressing } : {}) };
   return { ...spec, ...(patch.set ?? {}), type: spec.type, ...(zones.length ? { zones } : {}), ...(features.length ? { features } : {}), hints };
@@ -232,7 +234,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     return withImages({ ok: result.ok, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, eventIds: result.eventIds,
       ...(seen ? { machineChecks: npcProblems.length ? npcProblems.map((c) => c.detail) : "사람·출입 검사 통과" } : {}),
       next: result.ok ? (npcProblems.length ? "where 낱말이나 at 칸을 바꿔 다시 부른다." : "통과.")
-        : /이미 (칩셋에 )?있다/u.test(result.summary) ? "칩셋에 이미 있는 물건이다 — 요청과 맞으면 그 id 를 place_object({mapId, objectId, where}) 로 놓고, 다른 물건이면 description 을 더 구체적으로 써서 다시 draw_object 한다."
+        : /이미 (칩셋에 )?있다/u.test(result.summary) ? "칩셋에 이름이 비슷한 물건이 있다 — inspect 그림이나 이름으로 보아 요청과 같은 물건이면 그 id 를 place_object 로 놓고, 요청과 다른 물건(재질·장치가 다름)이면 draw_object 에 notThese:[그 id 들] 을 넣어 다시 부른다(새로 그린다). 이름만 바꿔 다시 부르지 않는다."
         : "명세를 고쳐 다시 부르거나 못 하는 것을 보고한다." }, seen, 1);
   };
 
@@ -331,6 +333,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     description: "칩셋에 없는 물건을 공방 원클릭 그리기 경로로 맡긴다. 결과의 summary 가 놓였는지·대기인지를 정직하게 말한다.",
     parameters: { type: "object", properties: { object: { type: "object", properties: {
       what: { type: "string" }, description: { type: "string" }, mapId: { type: "string" }, where: { type: "string" }, at: POINT,
+      notThese: { type: "array", items: { type: "string" }, description: "「이미 있다」로 거부됐지만 그 그림이 요청과 다른 물건일 때 그 id 들" },
     }, required: ["what"] } }, required: ["object"] },
     async execute(id, params) {
       const object = (params as { object: ObjectSpec }).object;

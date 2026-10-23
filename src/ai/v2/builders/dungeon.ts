@@ -11,6 +11,7 @@ export const DUNGEON_CARD =
   "features 낱말: boss(보스방)·chests(보물상자)·enemies(적 배치; 없으면 빈 던전)·flooded(물에 잠긴 방, 동굴 제외)·" +
   "lever(마지막 층 레버 퍼즐)·goblin/lair(고블린 소굴, 동굴만). 입구는 첫 층 시작점, 층 사이 계단은 도구가 잇는다. " +
   "hints 키: type·size·floors·direction(up|down)·seed·variant(씨앗 바꾸기)·width·height·populate·flooded·lair·puzzle. " +
+  "적 종류 낱말(박쥐·해골·고블린·슬라임…)을 features 에 넣으면 이름이 맞는 적 무리를 쓴다. 고치기는 variant(다른 배치)·features 만 — 방 하나하나 꾸미기·소품 지정은 못 한다. " +
   "모르는 키는 무시되고 경고된다. 문·함정·횃불 같은 조각 지정은 못 한다.";
 
 const KNOWN_HINTS = new Set(["type", "size", "floors", "direction", "seed", "variant", "width", "height", "populate", "flooded", "lair", "puzzle", "style"]);
@@ -89,10 +90,17 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const base: Record<string, unknown> = { name: spec.name, ...args };
   const firstCall = run.calls.length;
   // 고치기: 이전 층들을 지우고 같은 id 로 다시 짓는다(여러 층 rebuild 는 첫 층만 되므로).
+  // 요청한 적(박쥐·해골…) → 데이터베이스 적 그룹 이름과 맞는 것을 잡몹으로(없으면 도구가 고른다).
+  const wanted = words(spec);
+  const generic = new Set(["동굴", "떼", "무리", "정찰대", "둘", "수호병", "초원", "숲", "광산", "붉은"]);
+  const field = run.ctx.project.database.troops.filter((t) => String(t.name ?? "").split(/\s+/u).some((w) => w.length >= 2 && !generic.has(w) && wanted.includes(w.toLowerCase()))).map((t) => t.id);
+  if (field.length) base.troops = { field };
+  else if (/박쥐|bat|해골|skeleton|거미|spider|고블린|goblin|슬라임|slime|늑대|wolf|좀비|zombie|유령|ghost/u.test(wanted)) warnings.push("요청한 적과 이름이 맞는 적 그룹이 데이터베이스에 없어 도구가 고른 무리를 놓았다");
+  // 고치기: 첫 층은 author_dungeon rebuild:true 로 그 자리에서(시작 맵은 지울 수 없다), 나머지 층은 지우고 다시 만든다.
   if (previous) {
     const old = prev?.floors ?? previous.result.mapIds;
-    for (const id of [...old].reverse()) if (run.ctx.project.maps[id]) run.call("remove_map", { mapId: id });
-    if (mapId) base.id = mapId;
+    for (const id of [...old].slice(1).reverse()) if (run.ctx.project.maps[id]) run.call("remove_map", { mapId: id });
+    if (mapId) { base.mapId = mapId; base.rebuild = true; }
   } else if (mapId) base.mapId = mapId;
   const result = run.call("author_dungeon", base);
   const calls: BuilderCall[] = run.calls.slice(firstCall);
