@@ -448,6 +448,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     parameters: { type: "object", properties: { event: { type: "object", properties: {
       kind: { type: "string", enum: ["cutscene", "talk", "trigger"] }, mapId: { type: "string" },
       when: { type: "string", enum: ["game-start", "touch", "talk"] }, where: { type: "string" }, at: POINT,
+      after: { type: "string", description: "이 NPC 이름과 대화가 끝나면 이어서 재생(그 NPC 대화 끝에 붙는다, 한 번만)" },
       beats: { type: "array", items: { type: "object", properties: {
         do: { type: "string", enum: ["walk", "say", "appear", "face", "wait", "fade", "tint", "camera", "look", "vanish"] },
         who: { type: "string" }, to: { type: "string", description: "자리 낱말(또는 'x,y')" }, text: { type: "string" },

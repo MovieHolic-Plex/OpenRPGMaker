@@ -27,6 +27,7 @@ import type { BuildRun, ContentBuildResult, EventBeat, EventSpec } from "./types
 
 export const EVENT_CARD =
   "이벤트(events) 명세: {kind:'cutscene'|'talk'|'trigger', when?:'game-start'|'touch'|'talk', mapId?, where?, at?, beats:[…]}. " +
+  "after:'촌장' = 그 NPC 와 대화가 끝나면 이어서(그 NPC 대화 끝에 붙고 한 번만). " +
   "cutscene+game-start = 게임이 시작되면 한 번만 자동 재생(시작 맵, 맵마다 하나 — 다시 부르면 앞 컷신을 바꾼다). 비트 do: " +
   "walk{who,to}=걷기(to=길·광장·입구·문 앞 같은 자리 낱말, 다른 사람 이름이면 그 곁으로 걸어가 마주 선다, {x,y} 는 꼭 필요할 때만) / " +
   "say{who,text}=대사 / appear{who,where?,looks?,talk?}=그 자리에 «팍» 나타남(where 생략 가능 — 뒤에 주인공에게 걸어오면 함수가 4~8칸 떨어진 길 위를 고른다; talk=컷신 뒤 말 걸면 할 말 배열) / " +
@@ -412,6 +413,8 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   refresh();
 
   let actorSeq = 0;
+  const createdActors = new Set<string>();
+  const vanished = new Set<string>();
   const followUps = new Map<string, string[]>();
   /** 아직 맵에 없는 사람을 지금(비트 i 시점) 세운다. */
   const ensureActor = (name: string, beatIndex: number): string | undefined => {
@@ -453,6 +456,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     if (!d.eventId) return undefined;
     const at = { x: d.x ?? cell.x, y: d.y ?? cell.y };
     actorIds.set(name, d.eventId);
+    createdActors.add(d.eventId);
     // 다가오는 사람은 처음부터 보이게 둔다 — 숨겼다가 «팍» 나타나면 어색하고 끝 정리에서 깜빡였다(2026-10-23 6차 눈가림 컷신 v1 8 · v2 6.5).
     const hide = !!ab && !approachesHero;
     sim.actors.set(d.eventId, { cell: at, dir: "down", visible: !hide, name });
@@ -623,6 +627,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
         out.push({ kind: "look", target: idFor(key), alpha: 0 });
         out.push({ kind: "wait", ms: 400 });
         const a = sim.actors.get(key); if (a) a.visible = false;
+        vanished.add(key);
         sim.snapshot(`${b.who} 사라짐`);
         break;
       }
@@ -630,11 +635,31 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   });
   if (out.length === 0) return fail("옮길 수 있는 비트가 하나도 없다.", [mapId]);
   sim.snapshot("끝");
+  // 말 걸기·밟기로 도는 장면이 새로 세운 «나타나는» 사람은 장면 전까지 맵에 서 있으면 안 된다(밤 그림자가 낮부터 보였다).
+  // 그 사람의 페이지에 「장면 시작」 스위치 조건을 걸고, 장면 첫 명령으로 그 스위치를 켠다.
+  const gated = when === "game-start" ? [] : hiddenFromStart.filter((id) => createdActors.has(id));
+  let gateSwitch: string | undefined;
+  if (gated.length > 0) {
+    const key = `v2scene_${(run.calls.length * 7919 + gated.length * 104729 + Date.now()) % 1_000_000}`;
+    const fl = run.call("create_quest_flags", { questKey: key, steps: 1 });
+    gateSwitch = fl.ok ? ((fl.data ?? {}) as { started?: string }).started : undefined;
+    if (gateSwitch) {
+      const cur = findMap(run.ctx.project, mapId);
+      for (const id of gated) {
+        const e = cur ? eventsOf(cur).find((x) => x.id === id) : undefined;
+        if (!e?.pages?.length) continue;
+        run.call("upsert_event", { mapId, replacePages: true, event: { id, pages: e.pages.map((pg) => ({ ...structuredClone(pg), conditions: [...(pg.conditions ?? []), { kind: "switch", switchId: gateSwitch, value: true }] })) } });
+      }
+    } else warnings.push("장면 전 숨김 스위치를 못 만들어 나타나는 사람이 장면 전에도 보인다.");
+  }
   const beats: Record<string, unknown>[] = [
+    ...(gateSwitch ? [{ kind: "switch", switchId: gateSwitch, value: true }] : []),
     ...hiddenFromStart.map((id) => ({ kind: "look", target: id, alpha: 0 })),
     ...(letterbox ? [{ kind: "letterbox", show: true, size: 12, durationMs: 500, wait: true }] : []),
     ...out,
     ...(letterbox ? [{ kind: "letterbox", show: false, durationMs: 400 }] : []),
+    // 장면 전용 사람이 모두 사라졌으면 스위치를 다시 꺼서 맵에서 아주 없앤다(다시 들어와도 안 보이게).
+    ...(gateSwitch && gated.every((id) => vanished.has(id)) ? [{ kind: "switch", switchId: gateSwitch, value: false }] : []),
   ];
 
   // 4) 기계 검사 — 걷기마다 3칸 이상·목적지 도착, 대사는 듣는 사람 곁(2칸)에서.
@@ -693,9 +718,32 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     warnings.push("만든 페이지에서 명령을 못 읽어 probe 를 돌리지 못했다.");
   }
 
+  // 7) 「누구와 대화가 끝나면」 — 만든 장면 명령을 그 NPC 의 말 걸기 페이지 끝에 붙이고(셀프 스위치 D 로 한 번만),
+  //    D 가 켜진 뒤엔 원래 대사만 하는 페이지를 덧붙인다. 장면을 담았던 투명 이벤트는 지운다.
+  let hostEventId = cutId;
+  if (spec.after) {
+    const cur = findMap(run.ctx.project, mapId);
+    const npc = cur ? findNpcByName(cur, spec.after) : undefined;
+    if (!npc || !npc.pages?.length) warnings.push(`after: '${spec.after}' NPC 를 이 맵에서 못 찾아 따로 선 장면 이벤트로 남겼다.`);
+    else if (commands.length === 0) warnings.push("after: 장면 명령을 못 읽어 NPC 에 잇지 못했다.");
+    else {
+      const p0 = npc.pages[0]!;
+      const talked = { ...structuredClone(p0), id: undefined, name: `${p0.name ?? "대화"} (장면 뒤)`, conditions: [...(p0.conditions ?? []), { kind: "selfSwitch", key: "D", value: true }] };
+      delete (talked as { id?: string }).id;
+      const first = { ...structuredClone(p0), commands: [...(p0.commands ?? []), ...structuredClone(commands), { kind: "setSelfSwitch", key: "D", value: true }] };
+      const up = run.call("upsert_event", { mapId, replacePages: true, event: { id: npc.id, pages: [first, ...npc.pages.slice(1).map((pg) => structuredClone(pg)), talked] } });
+      if (!up.ok) warnings.push(`after: NPC 에 잇지 못했다 — ${String(up.summary).slice(0, 160)}`);
+      else {
+        run.call("remove_event", { mapId, eventId: cutId });
+        hostEventId = npc.id;
+        warnings.push(`장면을 '${spec.after}' 대화 끝에 이었다(한 번만 — 그 뒤엔 원래 대사).`);
+      }
+    }
+  }
+
   const walkLine = sim.walks.map((w) => `${w.who} ${w.steps}걸음${w.onRoad ? `(길 ${w.onRoad})` : ""}→(${w.goal.x},${w.goal.y})`).join(", ");
   const bad = checks.filter((c) => !c.ok);
-  const eventIds = [{ mapId, eventId: cutId }, ...[...actorIds.values()].map((eventId) => ({ mapId, eventId }))];
+  const eventIds = [{ mapId, eventId: hostEventId }, ...[...actorIds.values()].map((eventId) => ({ mapId, eventId }))];
   const hero = leaderCharset(run.ctx.project);
   return {
     ok: true,

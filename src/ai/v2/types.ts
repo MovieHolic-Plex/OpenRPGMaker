@@ -148,6 +148,8 @@ export interface EventSpec {
   readonly when?: "game-start" | "touch" | "talk";
   readonly where?: string;
   readonly at?: { readonly x: number; readonly y: number };
+  /** 이 NPC(이름)와 대화가 끝나면 이어서 재생 — 그 NPC 의 말 걸기 끝에 붙는다(한 번만). */
+  readonly after?: string;
   /** 비트 목록 — 사람 낱말(주인공·촌장)·움직임·대사. 빌더가 컷신 도구의 장면 명령으로 옮긴다. */
   readonly beats: readonly EventBeat[];
 }
