@@ -269,6 +269,9 @@ async function main() {
     await writeFile(CATALOG_PATH, `${JSON.stringify({ ...catalog, games: checked }, null, 2)}\n`);
   }
   process.stdout.write(`\n플레이 가능: ${playableCount}/${rows.length}\n리포트: ${join(outRoot, "SUMMARY.md")}\n`);
+  // --no-smoke confirms nothing, so success there means "every game materialized", not "some game is playable".
+  const materialized = rows.filter((row) => row.reason === "스모크 생략(--no-smoke)").length;
+  if (flags["no-smoke"]) process.exit(materialized === rows.length ? 0 : 1);
   process.exit(playableCount > 0 ? 0 : 1);
 }
 
