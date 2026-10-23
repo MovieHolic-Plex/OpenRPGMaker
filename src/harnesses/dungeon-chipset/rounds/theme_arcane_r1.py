@@ -861,7 +861,7 @@ GROUND_CRACKS = [
 GROUND_VEIN_A1 = [((6, 4), (9, 7)), ((8, 5), (11, 6)), ((4, 4), (1, 8)), ((6, 9), (10, 8))]
 GROUND_NODES_A2 = [[(9, 7), (8, 11)], [(9, 5)], [(2, 6), (12, 12)], [(6, 9)]]
 
-LGR = {'A1': L('b:ostone2 s:ostone3 c:iron1 k:ostone0 d:ostone1 h:ostone3 g:ostone3 e:ostone1 v:arcane2 V:arcane3'),
+LGR = {'A1': L('b:ostone2 s:arcane0 c:iron1 k:ostone0 d:ostone1 h:arcane1 g:arcane0 e:ostone1 v:arcane2 V:arcane3'),
        'A2': L('b:ostone1 s:ostone2 c:ostone3 k:arcane1 d:ostone0 h:ostone3 g:ostone2 e:ostone0 v:arcane1 V:arcane3')}
 
 
@@ -877,7 +877,7 @@ def _ground_grain(rows, i):
             if False:
                 pass
             else:
-                hsh = (x * 7 + y * 13 + i * 5 + x * y) % 31
+                hsh = ((x * 73856093) ^ (y * 19349663) ^ (i * 83492791)) % 31
                 if hsh in (0, 17, 5):
                     g[y][x] = 'g'
                     if x + 1 < 16 and rows[y][x + 1] == 'b':
@@ -889,17 +889,28 @@ def _ground_grain(rows, i):
     return [''.join(r) for r in g]
 
 
+# 몸통 변형 6개 — 금은 칸 안에서 끝나(가장자리에 닿지 않는다) 칸마다 같은 자리에서 이어지는 격자 무늬가 생기지 않는다.
+# 셋은 금 없이 알갱이만(알갱이 씨가 달라 서로 다르다), 셋은 짧은 금 한두 갈래 + 빛 핏줄. 엔진이 해시로 섞으면 금이 드문드문 놓인다.
+GROUND_INNER_CRACKS = [
+    [],
+    [((3, 4), (6, 6), (9, 6), (12, 9)), ((9, 6), (10, 3))],
+    [],
+    [((5, 12), (7, 9), (11, 8)), ((7, 9), (6, 5))],
+    [],
+    [((9, 3), (11, 5), (12, 8))],
+]
+GROUND_VEINS = {1: ((6, 6), (9, 6)), 3: ((7, 9), (11, 8)), 5: ((10, 4), (11, 5))}
+
+
 def ground_rows(key, i):
-    pts = [p for seg in GROUND_CRACKS[i] for p in poly(*seg)]
-    rows = carve(GROUND_BASE[i] if key == 'A1' else tr(GROUND_BASE[i], {'c': 's'}), pts, dark='k', shade='d', lit='h')
+    base = GROUND_BASE[i % 4] if key == 'A1' else tr(GROUND_BASE[i % 4], {'c': 's'})
+    pts = [p for seg in GROUND_INNER_CRACKS[i] for p in poly(*seg)]
+    rows = carve(base, pts, dark='k', shade='d', lit='h') if pts else base
     g = [list(r) for r in _ground_grain(rows, i)]
-    if key == 'A1':
-        seg = poly(*GROUND_VEIN_A1[i])
+    if i in GROUND_VEINS:
+        seg = poly(*GROUND_VEINS[i])
         for j, (x, y) in enumerate(seg):
             g[y % 16][x % 16] = 'V' if j == len(seg) // 2 else 'v'
-    else:
-        for x, y in GROUND_NODES_A2[i]:
-            g[y % 16][x % 16] = 'V'
     return [''.join(r) for r in g]
 
 
@@ -914,7 +925,7 @@ GROUND_INNER = ['dd............dk', 'd...............'] + ['................'] *
 
 def ground_at(key):
     leg = LGR[key]
-    bs = [grid(ground_rows(key, i), leg) for i in range(4)]
+    bs = [grid(ground_rows(key, i), leg) for i in range(len(GROUND_INNER_CRACKS))]
     return autotile_cv(bs[0], grid(GROUND_FRAME, leg, 32, 32), grid(GROUND_INNER, leg, 16, 16), bs[1:])
 
 
