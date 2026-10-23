@@ -737,7 +737,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     interludeScale: () => (root.dataset.battleMotion === "retro" ? BATTLE_RETRO_INTERLUDE_SCALE : undefined),
     introHoldMs: () => (root.dataset.battleMotion === "retro" && field.querySelector(".battle-enemy[data-collapse='bossSink']") ? BATTLE_BOSS_INTRO_MS : undefined),
     motionTempo: () => motionTempo,
-    describeEffectiveness: pokemonMotion,
+    // 상성 문장은 모든 스킨이 말한다(포켓몬은 문장만, 그 밖은 피해 숫자 뒤에 덧붙임 — battleDirectorDom.withEffectiveness).
+    describeEffectiveness: true,
     // 도트 측면 전투: 근접 공격은 대상 적 앞까지 실제로 걸어간다. 비트 길이를 걸음 거리에 맞춘다.
     ...(retroMotion ? {
       // 직업 스킬 48종은 타임라인 길이(첫 착탄·대상별 간격·남은 연출)를 비트로 준다. 필살기는 약 2.5초다.

@@ -160,8 +160,8 @@ export function applyFallenBattleItems(project: Project): void {
     }));
   };
   goods(FS_WOLF_FANG, "늑대 송곳니", 35, "숲늑대의 송곳니. 대장간과 상점이 값을 쳐 줍니다.", "cc0-jetrel-gen-fang-beast");
-  goods(FS_SPIDER_SILK, "거미줄 뭉치", 30, "덤불거미의 질긴 거미줄. 상점에 팔 수 있습니다.", "cc0-jetrel-gen-thread-silk");
-  goods(FS_WISP_EMBER, "도깨비불 불씨", 45, "꺼지지 않는 푸른 불씨. 팔면 값이 꽤 나갑니다.", "cc0-jetrel-gen-phoenix-ash");
+  goods(FS_SPIDER_SILK, "거미 비단", 30, "덤불거미가 뽑아낸 질긴 비단실. 상점에 팔 수 있습니다.", "cc0-jetrel-gen-thread-silk");
+  goods(FS_WISP_EMBER, "푸른 불씨", 45, "도깨비불에서 떨어진, 꺼지지 않는 푸른 불씨. 팔면 값이 꽤 나갑니다.", "cc0-jetrel-gen-phoenix-ash");
   goods(FS_STAR_SHARD, "별조각", 400, "떨어진 별의 파편. 아주 드물게 나옵니다. 비싸게 팔립니다.", "cc0-jetrel-crystal");
 
   // ── 드롭 표 ────────────────────────────────────────────────────────────────

@@ -70,6 +70,8 @@ r3:
 
 - 도망 성공 → `grantEscapeGrace`(`playSceneMovement`), 걸음마다 `tickEncounterGuard`(`project/encounterGuard.ts`)가 면제를 깎는다. 세션 필드 `encounterGuard` 하나(저장·불러오기 왕복, 비면 생략). 벌레퇴치 `ItemRecord.repelSteps/repelBelowLead`, 탈출 로프 `escapeTo`(던전 `mapRole` 에서만). 자세한 규칙·조수 경로·화면 증거는 `openwiki/monster-expedition.md` 「야생 조우 보호·필드 도구·낚시」.
 
+- **연막탄(탈출 스킬)** `SkillRecord.type==='escape'`(아이템의 `useSkillId`)는 `applySkillCast` 에서 도망 판정을 거쳐 성공이면 「연기에 몸을 숨기고 무사히 도망쳤다!」, 아니면 「이 싸움에서는 도망칠 수 없다!」(보스전). 아군만 쓴다. 폴른 스타 `skill_fs_smoke_pellet`(`flagship/fallen/battleItems.ts`).
+
 ## 지닌 도구(held item) — 아이템 선언 + 몬스터 개체가 하나 지님 (2026-10-16, poke-depth PR4)
 
 - 데이터: `ItemRecord.heldEffect?: {kind, thresholdPercent?, healPercent?, healFlat?, status?, type?, percent?}`(**선택 필드**, 생략=지닐 수 없는 아이템·저장 바이트 불변)와 `MonsterInstance.heldItemId?`(선택, 세이브 슬롯 검증 `isMonsterInstancesRecord`). 종류 다섯 enum — `healBelow`(HP 가 문턱 이하가 되면 먹고 회복, 1회용)·`cureStatus`(주요 상태가 걸리면 먹고 치료, 1회용)·`boostType`(같은 타입 기술 피해 percent 101~200)·`endureOnce`(가득 찬 HP 에서 쓰러질 피해를 HP 1 로 버팀, 1회용)·`regen`(매 차례 말 최대 HP 의 percent 1~25 회복, 안 사라짐). 순수 규칙·정규화는 `src/battle/heldItems.ts`(`normalizeHeldItemEffect` 는 필수 매개변수가 빠지면 효과를 버린다).
@@ -902,7 +904,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   **HP 숫자도 바와 같이 센다**(`countPokemonHp`; 세는 동안 `data-hp-countdown` 이 `setVitalNode` 의 덮어쓰기를 막는다).
   상성 배율은 타임라인 `effectiveness`(1 이면 생략)로 싣는다 — 일반 경로는 `battleEffectivenessMultiplier`, **몬스터 전투는 Gen1 경로**
   (`applyGen1Skill` → `applyExactGen1Damage` 가 `typeFactors` 곱을 돌려준다)라 둘 다 배선해야 한다. 문장 배율은 **자속 보정(STAB)을 뺀다** —
-  넣으면 물 몬스터의 물 기술이 늘 「굉장」이 된다. `describeEffectiveness`(포켓몬 스킨)일 때만 문장을 붙인다. 테스트 `test/battleEffectivenessMessage.test.ts`.
+  넣으면 물 몬스터의 물 기술이 늘 「굉장」이 된다. `describeEffectiveness` 는 이제 모든 스킨이 켠다(2026-10-24, 폴른 스타 속성 전투) — 포켓몬 스킨은 피해 줄을 문장으로 **대체**하고, 다른 스킨은 피해 줄 뒤에 문장을 **덧붙인다**(`withEffectiveness`, `battleDirectorDom.ts`). 테스트 `test/battleEffectivenessMessage.test.ts`.
   함정(실측): ① 적 HP 상자는 필드의 `.battle-enemy-hud`(포켓몬 스킨에서 숨김)가 아니라 정보 패널 `.battle-enemy-list-row` — 숨은 HUD 를 잡으면 적 HP 가
   착탄 순간 줄고 상자도 안 떤다. ② 아군 몬스터는 런타임 id(`mon:…`)로 맞으므로 대상 노드는 반드시 `findBattlerNode` 로(직접 조회하면 null → 깜빡임 없음).
   ③ 표시 원장 `vitalsFor` 는 `applyFeedback` 이 제자리에서 고치는 객체 — 맞기 전 HP 는 그 전에 떠 둘 것. ④ 바 전환은 타이머보다 한 프레임쯤 늦게 시작한다.

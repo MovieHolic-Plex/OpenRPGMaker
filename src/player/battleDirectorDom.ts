@@ -150,11 +150,13 @@ function effectivenessPhrase(effectiveness: number | undefined): string {
   return effectiveness > 1 ? "효과가 굉장했다!" : "효과가 별로인 듯하다…";
 }
 
-/** 상성 문장이 있으면 결과 줄은 그 문장만 — 피해 숫자를 앞에 붙이면 메시지 창 한 줄을 넘쳐 셋째 줄이 잘렸다(2026-10-02 실측:
- *  「아쿠아링이 2 피해를 입었다! 효과가 별로인 / 듯하다…」). 3세대도 피해 숫자는 말하지 않는다 — 양은 HP 바·숫자가 센다. */
+/** 상성 문장이 있으면 — 포켓몬 스킨은 결과 줄을 그 문장만으로 바꾼다: 피해 숫자를 앞에 붙이면 메시지 창 한 줄을 넘쳐 셋째 줄이 잘렸다(2026-10-02 실측:
+ *  「아쿠아링이 2 피해를 입었다! 효과가 별로인 / 듯하다…」). 3세대도 피해 숫자는 말하지 않는다 — 양은 HP 바·숫자가 센다.
+ *  그 밖의 스킨(도트 측면 등)은 피해 숫자를 지키고 문장을 뒤에 덧붙인다 — 숫자를 말하는 스킨에서 상성이 보이게(폴른 스타 2026-10-24). */
 function withEffectiveness(damageLine: string, critical: boolean | undefined, effectiveness: number | undefined): string {
   const phrase = effectivenessPhrase(effectiveness);
   if (!phrase) return damageLine;
+  if (store.getCurrent().system.battleUiStyle !== "pokemon") return `${damageLine} ${phrase}`;
   return critical ? `급소에 맞았다! ${phrase}` : phrase;
 }
 
