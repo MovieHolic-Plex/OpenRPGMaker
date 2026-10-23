@@ -125,3 +125,17 @@
   .play-viewport:has(.play-stage [data-testid="main-menu"]) > .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-action-btn[data-testid="touch-action-a"] { display: none; }
   .play-viewport:has(.play-stage [data-testid="main-menu"]) > .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-actions { left: max(12px, env(safe-area-inset-left)); right: auto; }
 }
+
+/* 터치 기기: 전투 명령·대상은 키보드 전용 계약(pointer-events: none)에서 풀어 탭으로 고른다.
+   `play-ui` 는 player.ts 가 터치 기기에서만 켠다 — 데스크톱 전투의 키보드 계약은 그대로다. */
+.player-layout[data-play-input-owner="play-ui"] .battle-scene .battle-command,
+.player-layout[data-play-input-owner="play-ui"] .battle-scene .battle-command *,
+.player-layout[data-play-input-owner="play-ui"] .battle-scene [data-battle-targetable="true"] {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.player-layout[data-play-input-owner="play-ui"] .battle-scene .battle-command {
+  min-height: 36px;
+  touch-action: manipulation;
+}
