@@ -27,6 +27,7 @@
 외곽선 규칙(seed rules.outline): 먹 윤곽 없이 재질 명암. 마계 어둠도 void 램프가 아니라 ostone(버들항 설원 s1 의 보라 그늘) 0·1단.
 빛 보라는 선언 램프 arcane(palette.py DECLARED — 공용 시트에 밝은 보라가 없다).
 """
+import math
 import os
 import sys
 
@@ -401,16 +402,16 @@ LSH2 = L('a:wood0 b:wood1 c:wood2 d:wood3 e:wood4 f:wood5 '
          'V:red4 U:red3 T:red1 Z:water3 Y:water2 X:water1 A:moss5 M:moss4 N:moss2 P:ostone5 O:ostone3 '
          'w:bone4 u:bone2 t:bone1 q:gold4 o:gold2 r:gold5 p:gold3 n:gold1 H:ice4 G:ice2 g:ice1 k:iron4 l:iron5 '
          'S:red2 E:arcane4 D:arcane2 B:arcane1 F:arcane3 C:arcane5')
-SCROLLS_1 = [   # 칸막이 d 두 개(8·17열): 두루마리 더미 둘(둥근 끝 4×4 — 빛 w · 속 t · 그늘 u, 붉은 끈 S) · 눕힌 책 위 얼음빛 병
+SCROLLS_1 = [   # 칸막이 d 두 개(8·17열): 두루마리 더미 · 책 위 해골(둥근 끝 4×4 — 빛 w · 속 t · 그늘 u, 붉은 끈 S) · 눕힌 책 위 얼음빛 병
     'aaaaaaaadaaaaaaaadaaaaaaaa',
-    'aaawwaaadaaawwaaadaaaaaaaa',
-    'aawtwuaadaawSSuaadaaaaaaca',
-    'aawwtuaadaawwtuaadaaaaaaka',
-    'aaauuaaadaaauuaaadaaaaaHGg',
-    'awwaawwadawwaawwadPPqqPGGg',
-    'wtwuwtwudwtwuwtwudOOOOOggg',
-    'wwtuwwtudwwtuwSSudUUUUUUUT',
-    'auuaauuadauuaauuadTTTTTTTT',
+    'aaawwaaadaaawwuaadaaaaaaaa',
+    'aawtwuaadaawwwwuadaaaaaaca',
+    'aawwtuaadaawawauadaaaaaaka',
+    'aaauuaaadaawwwwuadaaaaaHGg',
+    'awwaawwadaaauwuaadPPqqPGGg',
+    'wtwuwtwudaPPPPPPadOOOOOggg',
+    'wwtuwwtudaOOOOOOadUUUUUUUT',
+    'auuaauuadqqqqqqqodTTTTTTTT',
 ]
 _FLASK = ['aaaaa', 'aaaaa', 'aacaa', 'aakaa', 'aVUTa', 'VUUTT', 'UUUTT', 'UUTTT', 'aTTTa', 'aaaaa']
 _BOOKS_L = ['aaaaaa', 'ZZaaVV', 'YXAAUT', 'YXMNUT', 'qoMNUT', 'YXMNqo', 'YXqoUT', 'YXMNUT', 'YXMNUT', 'XXNNTT']
@@ -1103,39 +1104,40 @@ def corrupt_crystal(key):
 
 # ================================================================================================ 마왕 옥좌 3×3 (단 위)
 # 왼쪽 반(24열)을 적고 거울로 오른쪽 — 오른쪽 뿔·해골·보석은 그늘 단으로 바꿔 칠한다.
-# 등받이 = 돌 가시 셋이 솟은 돌 틀(e 윗면 빛 · d·c 몸 · b 그늘) 안의 어두운 판 a 에 빛 마름모 새김 D·B · 꼭대기 보석 E·C·D·B · 앉는 자리만 붉은 천(T·R·S).
+# 등받이 = 박공 돌 틀(e 윗면 빛 · d·c 몸 · b 그늘) 안에 단추 박은 천 등판(T 빛 · R 몸 · S 단추·그늘) · 꼭대기 보석 E·C·D·B · 앉는 자리 천(T·R·S).
+# 팔걸이 = 등받이보다 앞(아래)에 놓인 돌 덩이, 앞면에 해골. 등판이 좌석보다 좁아 의자 윤곽이 읽힌다.
 # 뿔 = 뼈(w·u·t), 팔걸이 끝 = 해골. 단 두 층 = 윗면(e·d) + 앞면(c·b 이음), 가운데로 붉은 깔개가 단을 타고 내려온다.
 THRONE_L = [
     '........................',
     '.......................E',
-    '...w...........e.......E',
-    '...wu..........ed.....EC',
-    '....wu........edd.....EC',
-    '....wu..e.....edc....qCD',
-    '.....wued.....edc....qDB',
-    '.....wuedc...eddcc...qoB',
-    '......wedcceeedddcceeqqo',
-    '......wudddddddcccccddqq',
-    '.......tdccbbbbbbbbbbbbb',
-    '........dcbaaaaaaaaaaaaD',
-    '........dcbaaaaaaaaaaaDB',
-    '........dcbaaaaaaaaaaDaa',
-    '........dcbaaaaaaaaaDaaa',
-    '........dcbaaaaaaaaaaDaa',
-    '........dcbaaaaaaaaaaaDB',
-    '........dcbaaaaaaaaaaaaD',
-    '........dcbaaaaaaaaaaaaB',
-    '........dcbaaaaaaaaaaaaa',
-    '........dcbbbbbbbbbbbbbb',
-    '...eeeeeedcbqqqqqqqqqqqq',
-    '..eddddddecbbbbbbbbbbbbb',
-    '..dddddddecTTTTTTTTTTTTT',
-    '..cuwwwucdcRRRRRRRRRRRRR',
-    '..cwtwtwcdcRRRRRRRRRRRRR',
-    '..cwwwwwcdcSSSSSSSSSSSSS',
-    '..cuwuwucdcqqqqqqqqqqqqq',
-    '..bccccccbcccccccccccccc',
-    '..bccccccbccccbcccccbccc',
+    '......................EC',
+    '.........w...........qCD',
+    '.........wu..........qDB',
+    '..........wu.........qqo',
+    '..........wu.......eeeqq',
+    '...........wu...eeeddddd',
+    '...........wueeedddccccc',
+    '............wddcccbbbbbb',
+    '............tdcTTTTTTTTT',
+    '............dcbRRRRRRRRR',
+    '............dcbRRSRRRRSR',
+    '............dcbRRRRRRRRR',
+    '............dcbRSRRRRSRR',
+    '............dcbRRRRRRRRR',
+    '............dcbRRSRRRRSR',
+    '............dcbRRRRRRRRR',
+    '............dcbRRRRRRRRR',
+    '..eeeeeeeee.dcbSSSSSSSSS',
+    '..ddddddddd.dcbbbbbbbbbb',
+    '..cuwwwwwuceeeeTTTTTTTTT',
+    '..cwwawawwcddddRRRRRRRRR',
+    '..cwwwwwwwcddddRRRRRRRRR',
+    '..cuwuwuwucccccSSSSSSSSS',
+    '..cbcccccbccccqqqqqqqqqq',
+    '..cccccccccccbcccccccccc',
+    '..cccbcccccccccccccbcccc',
+    '..cccccccccbcccccccccccc',
+    '..bcccccccbbccccbccccccc',
     '..bbbbbbbbbbbbbbbbbbbbbb',
     '.eeeeeeeeeeeeeeeeeeqTTTT',
     '.edddddddddddddddddqRRRR',
@@ -1289,8 +1291,8 @@ VFLAMES = [   # 9×9, (3, 1) 에 얹는다(맨 밑 줄 = 그릇 속 숯 9행). �
 ]
 LBZ = {'A1': L('l:iron5 k:iron4 j:iron3 i:iron2 h:iron1 q:gold4 o:gold2 n:gold1 '
                'C:arcane5 E:arcane4 F:arcane3 D:arcane2 B:arcane1'),
-       'A2': L('e:ostone5 d:ostone4 c:ostone3 b:ostone2 a:ostone1 '
-               'C:arcane5 E:arcane4 F:arcane3 D:arcane2 B:arcane1')}
+       'A2': L('e:vrock4 d:vrock3 c:vrock2 b:vrock1 a:vrock0 '
+               'C:arcane5 E:arcane4 F:arcane3 D:arcane3 B:arcane1')}
 
 
 def brazier(key, k):
@@ -1382,10 +1384,29 @@ def portal(key, opened, k=0):
         stamp(cv, halves(PORTAL_SEAL, {'E': 'C'}), leg, 0, 0)
         return cv
     sw = SWIRL[key]
-    for i in range(5):
-        leg[str(i)] = L(f'x:{sw[(i + k) % 5]}')['x']
-    leg['9'] = L(f'x:{sw[5]}')['x']
-    return grid(halves(PORTAL_L, {'w': 'u'}), leg)
+    for i in range(6):
+        leg[str(i)] = L(f'x:{sw[i]}')['x']
+    return grid(spiral_rows(halves(PORTAL_L, {'w': 'u'}), k), leg)
+
+
+def spiral_rows(rows, k, arms=2, twist=1.6, frames=3):
+    """열림 소용돌이: 아치 안 숫자 칸을 두 팔 나선 띠(0 어둠~4 빛, 가운데 5)로 다시 칠한다.
+    장면마다 나선을 (한 팔 주기 / frames) 만큼 돌려 3장면이 이음매 없이 돈다. 바깥 가장자리는 한 단 어둡게."""
+    cells = [(x, y) for y, r in enumerate(rows) for x, c in enumerate(r) if c.isdigit()]
+    cx = sum(x for x, y in cells if rows[y][x] == '9') / max(1, sum(1 for x, y in cells if rows[y][x] == '9'))
+    cy = sum(y for x, y in cells if rows[y][x] == '9') / max(1, sum(1 for x, y in cells if rows[y][x] == '9'))
+    out = [list(r) for r in rows]
+    for x, y in cells:
+        dx, dy = (x + 0.5 - cx - 0.5), (y + 0.5 - cy - 0.5) * 0.8
+        r = math.hypot(dx, dy)
+        if r < 2.2:
+            out[y][x] = '5'
+            continue
+        ph = arms * math.atan2(dy, dx) / (2 * math.pi) + twist * math.log(r) - k / frames
+        v = 0.5 + 0.5 * math.cos(2 * math.pi * ph)
+        band = int(v * 3.99) + (1 if r < 6 else 0) - (1 if r > 15 else 0)
+        out[y][x] = str(max(0, min(4, band)))
+    return [''.join(r) for r in out]
 
 
 # ================================================================================================ 장면
