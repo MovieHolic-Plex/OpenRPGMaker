@@ -331,14 +331,13 @@ def c_floor(key):
 
 
 # ================================================================================================ 책장
-# 3/4: 윗면(널빤지 3줄 + 앞 턱 1줄) 아래 앞면 틀(왼 기둥 d·c 빛, 오른 기둥 b·a 그늘) · 칸마다 안쪽 어둠 a 위에 책등.
+# 3/4: 윗면(뒤 모서리 1줄 + 널빤지 3줄 + 밝은 앞 모서리 1줄) + 앞 턱 1줄 아래 앞면 틀(왼 기둥 d·c 빛, 오른 기둥 b·a 그늘) · 칸마다 안쪽 어둠 a 위에 책등.
 # 책등 한 권 = 2열(왼 빛 단 · 오른 그늘 단), 맨 윗줄은 더 밝은 단, 금박 띠 q·o. 눕힌 책 = 가로 띠(윗줄 빛 · 아랫줄 그늘). 선반 = 윗줄 e · 앞 c.
 LSH = L('a:wood0 b:wood1 c:wood2 d:wood3 e:wood4 f:wood5 '
         'V:red4 U:red3 T:red1 Z:water3 Y:water2 X:water1 A:moss5 M:moss4 N:moss2 P:ostone5 O:ostone3 '
         'w:bone4 u:bone2 t:bone1 q:gold4 o:gold2 r:gold5 p:gold3 n:gold1 H:ice4 G:ice2 g:ice1 k:iron4 l:iron5 '
         'S:red2 E:arcane4 D:arcane2 B:arcane1')
-SHELF_BOOKS_1 = [   # 칸 26열 × 9줄(맨 밑 줄이 선반에 닿음)
-    'aaaaaaaaaaaaaaaaaaaaaaaaaa',
+SHELF_BOOKS_1 = [   # 칸 26열 × 8줄(맨 밑 줄이 선반에 닿음)
     'VVaaAAaaaaabbbbwwaaaaaaaaa',
     'UTZZMNaaaaabbbbwuZZaaAAaaa',
     'UTYXMNPPaaabbbbwuYXVVMNaaa',
@@ -388,12 +387,12 @@ def shelf(compartments, top_items=None, frame=('dc', 'ba')):
     rows = []
     if top_items:
         rows += top_items
-    rows += ['.' + 'e' * 30 + '.', '.' + 'f' * 30 + '.', '.fffefffffffffffffeffffffffffff.', '.' + 'd' * 29 + 'c.',
-             '.' + lf + 'c' * 26 + rf + '.']
+    rows += ['.' + 'd' * 30 + '.', '.' + 'e' * 30 + '.', '.eeeefeeeeeeedeeeeeeeeefeeeeeee.', '.' + 'e' * 30 + '.',
+             '.' + 'f' * 30 + '.', '.' + 'd' * 29 + 'c.', '.' + lf + 'c' * 26 + rf + '.']
     for comp in compartments:
         rows += ['.' + lf + r + rf + '.' for r in comp]
         rows += ['.' + lf + 'e' * 26 + rf + '.', '.' + lf + 'c' * 26 + rf + '.']
-    rows += ['.c' + 'b' * 28 + 'a.', '.b' + 'a' * 28 + 'a.', '.' + '~' * 30 + '.', '.' * 32]
+    rows += ['.c' + 'b' * 28 + 'a.', '.b' + 'a' * 28 + 'a.', '.' + '~' * 30 + '.']
     return rows
 
 
@@ -403,7 +402,6 @@ LSH2 = L('a:wood0 b:wood1 c:wood2 d:wood3 e:wood4 f:wood5 '
          'w:bone4 u:bone2 t:bone1 q:gold4 o:gold2 r:gold5 p:gold3 n:gold1 H:ice4 G:ice2 g:ice1 k:iron4 l:iron5 '
          'S:red2 E:arcane4 D:arcane2 B:arcane1 F:arcane3 C:arcane5')
 SCROLLS_1 = [   # 칸막이 d 두 개(8·17열): 두루마리 더미 · 책 위 해골(둥근 끝 4×4 — 빛 w · 속 t · 그늘 u, 붉은 끈 S) · 눕힌 책 위 얼음빛 병
-    'aaaaaaaadaaaaaaaadaaaaaaaa',
     'aaawwaaadaaawwuaadaaaaaaaa',
     'aawtwuaadaawwwwuadaaaaaaca',
     'aawwtuaadaawawauadaaaaaaka',
@@ -421,6 +419,7 @@ _JAR = ['aaa', 'aaa', 'aaa', 'aaa', 'aaa', 'aaa', 'lkl', 'HGg', 'GGg', 'ggg']
 POTIONS_2 = [f + 'a' + bl + 'a' + v + 'a' + br + j for f, bl, v, br, j in zip(_FLASK, _BOOKS_L, _VIAL, _BOOKS_R, _JAR)]
 for _r in SCROLLS_1 + POTIONS_2:
     assert len(_r) == 26, _r
+assert len(SCROLLS_1) == 8
 
 
 def shelf2(compartments, top_items=None):
@@ -428,12 +427,12 @@ def shelf2(compartments, top_items=None):
     rows = []
     if top_items:
         rows += top_items
-    rows += ['.' + 'd' * 30 + '.', '.' + 'e' * 30 + '.', '.ede' + 'e' * 24 + 'dde.', '.q' + 'c' * 27 + 'oq.',
-             '.oc' + 'b' * 26 + 'bo.']
+    rows += ['.' + 'c' * 30 + '.', '.' + 'e' * 30 + '.', '.eeeeeefeeeeeeeeedeeeeeeefeeeee.', '.' + 'e' * 30 + '.',
+             '.' + 'f' * 30 + '.', '.q' + 'c' * 27 + 'oq.', '.oc' + 'b' * 26 + 'bo.']
     for comp in compartments:
         rows += ['.cb' + r + 'ba.' for r in comp]
         rows += ['.cb' + 'd' * 26 + 'ba.', '.cb' + 'b' * 26 + 'ba.']
-    rows += ['.qb' + 'a' * 26 + 'ao.', '.ob' + 'a' * 26 + 'an.', '.' + '~' * 30 + '.', '.' * 32]
+    rows += ['.qb' + 'a' * 26 + 'ao.', '.ob' + 'a' * 26 + 'an.', '.' + '~' * 30 + '.']
     return rows
 
 
@@ -582,7 +581,8 @@ def circle(key, k):
 
 
 # ================================================================================================ 받침 위 수정 1×2 (3장면 빛)
-# 수정 = 곧은 큰 결정(왼 면 L 빛 · 가운데 등 H · 오른 면 M·S 그늘) + 기운 작은 결정 둘. 받침 = 윗면 3줄(f·e) · 앞면 기둥(d·c 빛, b·a 그늘) · 금 띠 · 넓은 발.
+# 수정 = 곧은 큰 결정(왼 면 L 빛 · 가운데 등 H · 오른 면 M·S 그늘) + 기운 작은 결정 둘. 받침 = 기둥 머리 타원 판(윗면 4줄 f·e, 몸통보다 6 넓다) +
+# 금 테 앞면 · 기둥(d·c 빛, b·a 그늘) · 금 띠 · 윗면이 보이는 둥근 발. 근흑 윤곽을 피하려 가장 어두운 단은 cata2.
 # 장면마다 수정 빛 단이 한 단씩 오르내리고(H·L), 둘레에 빛 점 * 이 자리를 바꾼다.
 XTAL_PED = [
     '................',
@@ -596,27 +596,27 @@ XTAL_PED = [
     '..LLSLLHMS.LMS..',
     '...LLSLHMSLLMS..',
     '...LLSLHMSLMS...',
-    '...LLSLHMMLMS...',
-    '..fLLSLHMMSMSe..',
-    '..ffDDLDMDDSee..',
-    '..effffffeeeed..',
-    '...dddddddddb...',
-    '....qqoooooon...',
-    '....dccccccba...',
-    '....dccccccba...',
-    '....dccccccba...',
-    '....dccccccba...',
-    '....dccccccba...',
-    '....dccccccba...',
-    '....qqoooooon...',
-    '....dccccccba...',
-    '...fdddcccccba..',
-    '..feeddddcccbba.',
-    '..eddcccccccbba.',
-    '..dccccccccbbaa.',
-    '...bbbbbbbbbaa~.',
-    '...~~~~~~~~~~~..',
-    '................',
+    '...eDDSLHMMDe...',
+    '..eeeDDDDDDeed..',
+    '.eeeeeeeeeeeeed.',
+    '.eeeeeeeeeeeeed.',
+    '.ffffffffffffff.',
+    '.cqoooooooooonb.',
+    '..cccccccccccb..',
+    '..bccccccccccb..',
+    '...bbcccccbba...',
+    '....dcccccba....',
+    '....dcccccba....',
+    '....qqooooon....',
+    '....dcccccba....',
+    '....dcccccba....',
+    '....dcccccba....',
+    '..ffdcccccbaee..',
+    '.feedcccccbaeed.',
+    '.dddddddddddddc.',
+    '.dccccccccccbbb.',
+    '..bbbbbbbbbbbb..',
+    '...~~~~~~~~~~...',
 ]
 XTAL_SPARK = [   # 장면별 빛 점(행, 열)
     [(3, 3), (9, 14)],
@@ -633,10 +633,10 @@ def crystal_ped(key, k):
     h, l_, m, s_, d = XTAL_BEAT[k]
     if key == 'A1':   # 얼음빛 수정 + 회색 돌 받침 + 금 띠
         leg = L(f'H:ice{h} L:ice{l_} M:ice{m} S:ice{s_} D:ice{d} *:ice4 '
-                'f:stone5 e:cata6 d:cata4 c:cata3 b:cata2 a:cata1 q:gold4 o:gold2 n:gold1')
+                'f:stone5 e:stone4 d:cata5 c:cata3 b:cata2 a:cata1 q:gold4 o:gold2 n:gold1')
     else:             # 보라 빛 수정 + 짙은 나무 받침 + 금 띠
         leg = L(f'H:arcane5 L:arcane{l_ + 1} M:arcane{m + 1} S:arcane{s_ + 1} D:arcane{d} *:arcane5 '
-                'f:wood5 e:wood4 d:wood3 c:wood2 b:wood1 a:wood0 q:gold4 o:gold2 n:gold1')
+                'f:wood5 e:wood4 d:wood3 c:wood2 b:wood1 a:wood1 q:gold4 o:gold2 n:gold1')
     rows = [list(r) for r in XTAL_PED]
     for y, x in XTAL_SPARK[k]:
         if rows[y][x] == '.':
@@ -645,7 +645,7 @@ def crystal_ped(key, k):
 
 
 # ================================================================================================ 촛대 1×2 (불꽃 3장면)
-# A1 = 쇠 촛대(가운데 높은 초 + 팔 둘, 놋쇠 잔, 세 발) · A2 = 넓은 쇠 접시 위 키가 다른 초 다섯(촛농이 흘러내림).
+# A1 = 쇠 촛대: 위에서 보이는 둥근 촛농 쟁반(윗면 4줄, 몸통보다 훨씬 넓다) 위에 키가 다른 초 셋 · 마디 있는 기둥 · 윗면이 보이는 둥근 발 · A2 = 넓은 쇠 접시 위 키가 다른 초 다섯(촛농이 흘러내림).
 # 초 = 밀랍 w(빛)·u(그늘)·v(촛농 자국). 불꽃 = fire 단: 끝 L · 몸 K · 밑 J · 심지 H. 장면마다 불꽃 모양만 바뀐다(받침 같음).
 LCA = L('w:bone4 u:bone3 v:bone2 q:gold4 o:gold2 n:gold1 g:iron0 h:iron1 i:iron2 j:iron3 k:iron4 l:iron5 '
         'F:fire0 G:fire1 H:fire2 J:fire3 K:fire4 L:fire5')
@@ -658,29 +658,29 @@ CANDELABRA_A1 = [
     '.......wu.......',
     '.......wv.......',
     '.......wu.......',
-    '..wu...wu...wu..',
-    '..wu...wu...wu..',
-    '..vu..qoon..wv..',
-    '..wu...kj...wu..',
-    '.qoon..kj..qoon.',
-    '..kj...kj...ki..',
-    '..lkkkkkjjjjji..',
-    '...iiiiiihhhhh..',
+    '...wu..wu.......',
+    '...wu..wu..wu...',
+    '...vu..wu..wv...',
+    '...wullwulllwu..',
+    '.llwukkwukkkwujj',
+    'lkkwujjjjjjjvuih',
+    '.kjvujjjjjjjwuh.',
+    '..ihhhhhhhhhhg..',
+    '.....ihhhhg.....',
     '.......kj.......',
     '.......kj.......',
-    '......lkji......',
+    '.......kj.......',
+    '.......kj.......',
+    '......lkjh......',
     '......kjih......',
     '.......kj.......',
     '.......kj.......',
     '.......kj.......',
-    '.......kj.......',
-    '......qoon......',
-    '.......kj.......',
-    '......lkjh......',
-    '.....lkjjih.....',
-    '....kj.kj.ih....',
-    '...kh..kj..ih...',
-    '..~~~~~~~~~~~~..',
+    '.....lkkjih.....',
+    '...lkkkjjjjih...',
+    '..lkkjjjjjjjih..',
+    '..jiiiiiiiihhg..',
+    '...~~~~~~~~~~...',
     '................',
 ]
 CANDELABRA_A2 = [
@@ -719,7 +719,7 @@ CANDELABRA_A2 = [
 ]
 FLAMES = [['.L.', 'KLK', 'JKJ', '.H.'], ['L..', 'KL.', 'JKJ', '.H.'], ['..L', '.LK', 'JKJ', '.H.']]
 # 불꽃 자리(왼쪽 위 x, y) — 심지 H 가 초 윗줄 바로 위
-FLAME_AT = {'A1': [(6, 0), (1, 4), (11, 4)], 'A2': [(5, 1), (2, 4), (9, 3), (12, 5), (0, 7)]}
+FLAME_AT = {'A1': [(6, 0), (2, 4), (10, 5)], 'A2': [(5, 1), (2, 4), (9, 3), (12, 5), (0, 7)]}
 FLAME_SHIFT = {'A1': [0, 1, 2], 'A2': [0, 2, 1, 0, 2]}   # 불꽃마다 장면 박자를 어긋나게
 for _r in CANDELABRA_A1 + CANDELABRA_A2:
     assert len(_r) == 16, _r
@@ -823,14 +823,38 @@ GROUND_CRACKS = [
 GROUND_VEIN_A1 = [((6, 4), (9, 7)), ((8, 5), (11, 6)), ((4, 4), (1, 8)), ((6, 9), (10, 8))]
 GROUND_NODES_A2 = [[(9, 7), (8, 11)], [(9, 5)], [(2, 6), (12, 12)], [(6, 9)]]
 
-LGR = {'A1': L('b:ostone2 s:ostone3 c:iron1 k:ostone0 d:ostone1 h:ostone3 v:arcane2 V:arcane3'),
-       'A2': L('b:ostone1 s:ostone2 c:ostone3 k:arcane1 d:ostone0 h:ostone3 v:arcane1 V:arcane3')}
+LGR = {'A1': L('b:ostone2 s:ostone3 c:iron1 k:ostone0 d:ostone1 h:ostone3 g:ostone3 e:ostone1 v:arcane2 V:arcane3'),
+       'A2': L('b:ostone1 s:ostone2 c:ostone3 k:arcane1 d:ostone0 h:ostone3 g:ostone2 e:ostone0 v:arcane1 V:arcane3')}
+
+
+def _ground_grain(rows, i):
+    """판 속 알갱이(g 밝은 점 · e 어두운 점, 두 화소 덩이) — 판이 한 색 평면으로 보이지 않게. 금 둘레 빛·그늘은 한 줄만
+    (두 줄로 하면 판마다 테두리가 굵어져 16 칸 격자가 드러난다)."""
+    g = [list(r) for r in rows]
+    at = lambda x, y: rows[y % 16][x % 16]   # noqa: E731
+    for y in range(16):
+        for x in range(16):
+            if rows[y][x] != 'b':
+                continue
+            if False:
+                pass
+            else:
+                hsh = (x * 7 + y * 13 + i * 5 + x * y) % 31
+                if hsh in (0, 17, 5):
+                    g[y][x] = 'g'
+                    if x + 1 < 16 and rows[y][x + 1] == 'b':
+                        g[y][x + 1] = 'g'
+                elif hsh in (9, 24):
+                    g[y][x] = 'e'
+                    if y + 1 < 16 and rows[y + 1][x] == 'b':
+                        g[y + 1][x] = 'e'
+    return [''.join(r) for r in g]
 
 
 def ground_rows(key, i):
     pts = [p for seg in GROUND_CRACKS[i] for p in poly(*seg)]
     rows = carve(GROUND_BASE[i] if key == 'A1' else tr(GROUND_BASE[i], {'c': 's'}), pts, dark='k', shade='d', lit='h')
-    g = [list(r) for r in rows]
+    g = [list(r) for r in _ground_grain(rows, i)]
     if key == 'A1':
         seg = poly(*GROUND_VEIN_A1[i])
         for j, (x, y) in enumerate(seg):
@@ -937,20 +961,28 @@ VE_FACE = [
     '................................',
 ]
 # 허공 몸통 변형 셋: k 바탕(ostone 0) · d 드문 얼룩(1) · a 희미한 티끌(arcane 0) · A 빛 티끌(arcane 2)
-VOID_BODIES = [
-    ['kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkakkk', 'kkkkkkkkkkkkkkkk',
-     'kkkkkkkkkkkkkkkk', 'kkkdkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk',
-     'kkkkkkkkkkkkkkkk', 'kkkkkkkkkAkkkkkk', 'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk',
-     'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkdk', 'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk'],
-    ['kkkkkkkkkkkkkkkk', 'kkkkkkakkkkkkkkk', 'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk',
-     'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkdkkkk', 'kkkkkkkkkkkkkkkk',
-     'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk', 'kdkkkkkkkkkkkkkk',
-     'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkakkkkk', 'kkkkkkkkkkkkkkkk'],
-    ['kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk',
-     'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk', 'kkkkakkkkkkkkkkk',
-     'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk',
-     'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk', 'kkkkkkkkkkkkkkkk'],
-]
+VOID_STARS = [[(12, 2, 'a'), (3, 5, 'd'), (9, 9, 'A'), (14, 13, 'd')],
+              [(6, 1, 'a'), (11, 6, 'd'), (1, 11, 'd'), (10, 14, 'a')],
+              [(4, 7, 'a'), (13, 10, 'A'), (7, 13, 'd')]]
+
+
+def _void_body(stars):
+    """허공 몸통: 16 주기로 감기는 옅은 보라 안개(e 덩이 + 가장자리 체크 무늬 섞기) 위에 드문 별. 안개 무늬는 세 변형이
+    같아 변형끼리 이어지고, 별 자리만 다르다."""
+    rows = []
+    for y in range(16):
+        r = []
+        for x in range(16):
+            v = (math.cos(2 * math.pi * (x / 16 + 0.1)) * math.cos(2 * math.pi * (y / 16 + 0.3))
+                 + 0.7 * math.sin(2 * math.pi * ((x - 2 * y) / 16 + 0.15)))
+            r.append('e' if v > 0.95 else ('e' if v > 0.6 and (x + y) % 2 == 0 else 'k'))
+        rows.append(r)
+    for x, y, c in stars:
+        rows[y][x] = c
+    return [''.join(r) for r in rows]
+
+
+VOID_BODIES = [_void_body(st) for st in VOID_STARS]
 for _r in VE_FRAME + VE_FACE:
     assert len(_r) == 32, _r
 LVE = {'A1': L('k:ostone0 d:ostone2 h:ostone4 H:ostone5 s:ostone4 b:ostone3 e:ostone1 v:arcane2 V:arcane3 a:arcane0 A:arcane2'),
@@ -1016,6 +1048,21 @@ def void_edge(key):
     return ve
 
 
+def speckle(rows, rules, seed=0):
+    """돌·천 결: rules = {바꿀 글자: (새 글자, 주기)}. 화소 해시가 주기로 나눠떨어지는 자리만 한 단 밝게/어둡게 — 넓은 한 색 면을 깬다.
+    거울로 만드는 그림(halves)은 왼쪽 반에 먼저 뿌린다."""
+    out = []
+    for y, r in enumerate(rows):
+        row = list(r)
+        for x, c in enumerate(r):
+            if c in rules:
+                new, n = rules[c]
+                if (x * 37 + y * 101 + seed * 17 + (x ^ y) * 7) % n == 0:
+                    row[x] = new
+        out.append(''.join(row))
+    return out
+
+
 def pad(rows, w):
     """손으로 적은 행의 오른쪽을 투명으로 채운다(넘치면 오류)."""
     for r in rows:
@@ -1026,76 +1073,80 @@ def pad(rows, w):
 # ================================================================================================ 타락한 수정 1×2 · 2×2
 # 결정 = 등 H · 빛 면 L · 가운데 M · 그늘 면 S · 속 금 c(그늘 단의 짧은 틈) · 밑 D. 바위 받침 = o(윗면 빛) r(몸) q(그늘) p(밑 그늘).
 # A1 보라 빛(arcane) · A2 붉은 빛(red·fire) 결정에 보라 검은 속 금.
-XTAL_S = pad([
-    '................',
-    '................',
-    '................',
-    '................',
-    '................',
-    '........H.......',
-    '.......LHS......',
-    '.......LHMS.....',
-    '......LLHMS.....',
-    '......LLHMS.....',
-    '......LcHMS.....',
-    '......LLHcS.....',
-    '.....LLLHMSS....',
-    '.....LLcHMMS....',
-    '.....LLLHMcS....',
-    '.....LcLHMMS....',
-    '.....LLLHMMS....',
-    '..H..LLLHcMS....',
-    '..LH.LcLHMMS....',
-    '.LLHSLLLHMMSS...',
-    '.LLHSLLLHMMSS.H.',
-    '.LcHSLLLHMMSSLHS',
-    '..LHSLLLHMcSSLMS',
-    '..LHSLLcHMMSSLMS',
-    '..LHSLLLHMMSSLMS',
-    '.ooDDLLLHMMSDDDq',
-    '.orroDDDDDDDDrqp',
-    'orrrrooorrrrqqpp',
-    'orrqrrrrrqrrqqp.',
-    '.rrrrqrrrrqqqpp.',
-    '..qqqqqqqqqpppp.',
-    '...~~~~~~~~~~~..',
-], 16)
-XTAL_L = pad([
-    '................................',
-    '................H...............',
-    '...............LHS..............',
-    '..............LLHMS.............',
-    '..............LLHMS.............',
-    '.............LLLHMSS............',
-    '.............LcLHMMS............',
-    '......H......LLLHcMS............',
-    '.....LHS.....LLLHMMS............',
-    '.....LLHS....LLcHMMS.....H......',
-    '.....LLHMS...LLLHMMS....LHS.....',
-    '......LLHMS..LLLHMcS...LLHS.....',
-    '......LcHMS..LcLHMMS...LLHMS....',
-    '......LLLHMS.LLLHMMS..LLcHMS....',
-    '.......LLHMS.LLLHMMS..LLLHMS....',
-    '.......LcLHMSLLLHMMSS.LLHMMS....',
-    '..H.....LLHMSLLcHMMSS.LLHMS.....',
-    '.LHS....LLHMSLLLHMcSS.LcHMS.....',
-    '.LLHS...LLLHMLLLHMMSSLLHMMS..H..',
-    '.LcHS...LcLHMLLLHMMSSLLHMS..LHS.',
-    '..LHMS...LLHMLLLHMMSSLLHMS..LHMS',
-    '..LLHS...LLHMLcLHMMSLLHMMS.LLHMS',
-    '..LLHMS..LLHMLLLHMMSLLHMS..LcHS.',
-    '..LLHMSo.LLHMLLLHMMSLLHMSo.LLHS.',
-    '.ooDDDSoooDDDDDDDDDDDDDDDoooDDDo',
-    '.orrrroorrrrooorrrrrooorrrrrrrq.',
-    'orrqrrrrrrqrrrrrrqrrrrrrqrrrrqqp',
-    'orrrrrqrrrrrrrqrrrrrrrqrrrrqqqpp',
-    '.qrrrrrrrqrrrrrrrrrrqrrrrrqqqpp.',
-    '..qqqqqqqqqqqqqqqqqqqqqqqqqpppp.',
-    '...pppppppppppppppppppppppppp...',
-    '...~~~~~~~~~~~~~~~~~~~~~~~~~~...',
-], 32)
-LXC = {'A1': L('H:arcane5 L:arcane3 M:arcane2 S:arcane1 c:arcane1 D:arcane0 o:ostone4 r:ostone3 q:ostone2 p:ostone1'),
-       'A2': L('H:fire5 L:red3 M:red1 S:red0 c:red0 D:ostone3 o:ostone4 r:ostone3 q:ostone2 p:ostone1')}
+# 결정 = 손으로 정한 조각(밑 가운데 x, 밑 y, 높이, 너비, 기울기)마다 육각 기둥을 3/4 로 깎는다: 왼 면(빛 3) · 앞 면(2) ·
+# 오른 면(그늘 0~1), 면 사이 능선은 한 단 밝게(4), 끝은 두 빗면이 만나는 뾰족 머리(왼 빗면 4 · 오른 빗면 1).
+# 앞 면 속 빛 점(5)과 밑으로 갈수록 한 단 밝아지는 속빛(오염된 결정이 안에서 빛난다). 뒤 조각부터 칠해 앞 조각이 덮는다.
+# 바위 받침 = 윗면이 보이는 둥근 무더기(r·o 윗면, q·p 앞면) + 돌 알갱이 결. 숫자 0~5 = 결정 단, 글자 = 바위.
+XTAL_S_SHARDS = [(10.5, 24, 9, 4, 0.35), (4.5, 25, 8, 4, -0.4), (7.5, 26, 21, 6, 0.05), (12.5, 26, 6, 3, 0.5)]
+XTAL_L_SHARDS = [(16.5, 23, 22, 7, 0.0), (8.5, 24, 15, 5, -0.35), (24.5, 24, 14, 5, 0.3), (12.5, 26, 9, 5, -0.15),
+                 (20.5, 26, 10, 5, 0.2), (3.5, 26, 7, 4, -0.5), (28.5, 26, 6, 4, 0.55)]
+XTAL_GLINTS = {16: [(8, 14), (7, 20), (11, 21)], 32: [(16, 9), (17, 15), (8, 16), (25, 17), (12, 21), (21, 22)]}
+
+
+def _xtal_rock(w, y0):
+    """바위 무더기: 윗면 3줄(o 앞 모서리 빛 · r 윗면 · 알갱이 q) + 앞면 2줄(q·p) + 그림자."""
+    rows = []
+    for i, (inset, fill) in enumerate([(2, 'r'), (1, 'r'), (0, 'r'), (0, 'o'), (0, 'q'), (1, 'p')]):
+        r = ['.'] * w
+        for x in range(inset, w - inset):
+            r[x] = fill
+        rows.append(r)
+    for (yy, xx) in [(0, 4), (1, w - 6), (2, 3), (2, w // 2), (1, w // 2 - 3), (4, 5), (4, w - 5), (0, w - 4)]:
+        if 0 <= xx < w and rows[yy][xx] != '.':
+            rows[yy][xx] = {'r': 'q', 'o': 'r', 'q': 'p', 'p': 'p'}[rows[yy][xx]]
+    for yy in (0, 1, 2):   # 오른쪽 끝은 그늘
+        xs = [x for x in range(w) if rows[yy][x] != '.']
+        if xs:
+            rows[yy][xs[-1]] = 'q'
+            rows[yy][xs[0]] = 'o' if yy < 3 else rows[yy][xs[0]]
+    shadow = ['.'] * w
+    for x in range(2, w - 2):
+        shadow[x] = '~'
+    return rows + [shadow]
+
+
+def xtal_rows(w, shards, glints):
+    g = [['.'] * w for _ in range(32)]
+    rock = _xtal_rock(w, 25)
+    for i, r in enumerate(rock):
+        g[25 + i] = r
+    for cx, by, h, sw, lean in shards:
+        for y in range(by - h, by + 1):
+            t = (by - y) / h
+            c = cx + lean * (by - y)
+            hw = sw / 2 if t < 0.62 else sw / 2 * max(0.0, (1 - t) / 0.38)
+            if hw < 0.5:
+                if t <= 1.0:
+                    g[y][int(round(c - 0.5))] = '4'
+                continue
+            x0, x1 = int(round(c - hw)), int(round(c + hw)) - 1
+            for x in range(x0, x1 + 1):
+                if not 0 <= x < w:
+                    continue
+                u = (x + 0.5 - c) / hw
+                if t >= 0.62:                       # 머리 빗면
+                    tone = 4 if u < -0.1 else (3 if u < 0.35 else 1)
+                elif u < -0.45:
+                    tone = 3
+                elif u < -0.2:
+                    tone = 4                        # 왼 능선
+                elif u < 0.4:
+                    tone = 2
+                else:
+                    tone = 1 if u < 0.8 else 0
+                if t < 0.25 and tone in (2, 1):     # 밑으로 갈수록 속빛
+                    tone += 1
+                g[y][x] = str(tone)
+    for x, y in glints:
+        if g[y][x] in '123':
+            g[y][x] = '5'
+    return [''.join(r) for r in g]
+
+
+XTAL_S = xtal_rows(16, XTAL_S_SHARDS, XTAL_GLINTS[16])
+XTAL_L = xtal_rows(32, XTAL_L_SHARDS, XTAL_GLINTS[32])
+LXC = {'A1': L('5:arcane5 4:arcane4 3:arcane3 2:arcane2 1:arcane1 0:arcane0 o:ostone5 r:ostone4 q:ostone3 p:ostone2'),
+       'A2': L('5:fire5 4:fire3 3:red4 2:red3 1:red1 0:red0 o:ostone5 r:ostone4 q:ostone3 p:ostone2')}
 
 
 def corrupt_crystal(key):
@@ -1166,46 +1217,47 @@ LTH = {'A1': L('w:bone4 u:bone3 t:bone2 v:bone1 a:ostone1 b:ostone2 c:ostone3 d:
 
 
 def throne(key):
-    return grid(halves(THRONE_L, {'w': 'u', 'u': 't', 't': 'v', 'E': 'C', 'C': 'D', 'D': 'B', 'T': 'R'}), LTH[key])
+    return grid(halves(speckle(THRONE_L, {'c': ('d', 9), 'd': ('e', 11), 'b': ('c', 13), 'R': ('T', 10), 'e': ('d', 15)}, 3), {'w': 'u', 'u': 't', 't': 'v', 'E': 'C', 'C': 'D', 'D': 'B', 'T': 'R'}), LTH[key])
 
 
 # ================================================================================================ 가시 뼈 기둥 1×2
-# 등뼈 마디를 쌓은 기둥(마디 윗면 w 빛 · u 몸 · t 그늘, 마디 사이 어두운 틈 v) + 양옆으로 뻗은 뼈 가시, 꼭대기 해골, 보라 검은 바위 받침.
+# 긴 뼈 다발 기둥(뼈마다 왼 빛 w · 몸 u · 그늘 t, 뼈 사이 틈 v, 힘줄 띠 t 두 줄) + 양옆으로 비스듬히 솟은 뼈 가시 ·
+# 기둥 머리 = 몸통보다 6 넓은 보라 검은 돌 판(윗면 r 3줄 + 밝은 앞 모서리 o + 앞면 q·p) 위에 해골 · 같은 돌 둥근 받침(윗면 보임).
 BONE_PILLAR = pad([
     '................',
-    '......wwww......',
-    '.....wwwwuu.....',
+    '......wwwu......',
+    '.....wwwwwu.....',
     '.....wkwwku.....',
-    '.....wwwwuu.....',
+    '.....wwwwwt.....',
     '......wtwt......',
-    '.......uu.......',
-    '.w....wwuu......',
-    '.uw..wuuuut..t..',
-    '..uwwuuuuutuut..',
-    '...tuvvvvvtt....',
-    '.....wwwuu......',
-    '....wuuuuut.....',
-    '...wuvvvvvtt..w.',
-    '.w...wwwuu...wu.',
-    '.uw.wuuuuutuut..',
-    '..uwuvvvvvtt....',
-    '.....wwwuu......',
-    '....wuuuuut.....',
-    '....tvvvvvt.....',
-    '.....wwwuu..w...',
-    '..w.wuuuuutwu...',
-    '..uwuvvvvvtt....',
-    '...tvwwwuu......',
-    '....wuuuuut.....',
-    '...ooovvvvtqq...',
-    '..orrrroorrqqp..',
-    '.orrqrrrrrqrqqp.',
-    '.rrrrrrqrrrrqpp.',
+    '..ooooutwuoooo..',
+    '.orrrrrrrrrrrrq.',
+    '.orrrrrrrrrrrqq.',
+    '.oooooooooooooq.',
     '..qqqqqqqqqqpp..',
+    '....wvwwuuvt....',
+    '.w..wvwwuuvt....',
+    '.uw.wvwwuuvt..t.',
+    '..uwwvwwuuvttu..',
+    '....wvwwuuvt.uw.',
+    '....tttttttt....',
+    '....wvwwuuvt....',
+    '....wvwwuuvt....',
+    '..w.wvwwuuvt....',
+    '..uwwvwwuuvt.t..',
+    '...uwvwwuuvttu..',
+    '....wvwwuuvt.uw.',
+    '....wvwwuuvt....',
+    '....tttttttt....',
+    '....wvwwuuvt....',
+    '..oorwvwwuvtrq..',
+    '.orrrrrrrrrrrqq.',
+    '.oooooooooooooq.',
+    '.qqqqqqqqqqqqpp.',
+    '..pppppppppppp..',
     '...~~~~~~~~~~...',
-    '................',
 ], 16)
-LBP = {'A1': L('w:bone4 u:bone3 t:bone2 v:bone0 k:ostone0 o:ostone4 r:ostone3 q:ostone2 p:ostone1'),
+LBP = {'A1': L('w:bone4 u:bone3 t:bone2 v:bone0 k:ostone0 o:ostone5 r:ostone4 q:ostone2 p:ostone1'),
        'A2': L('w:ostone5 u:ostone4 t:ostone3 v:ostone1 k:arcane4 o:bone3 r:bone2 q:bone1 p:bone0')}
 
 
@@ -1214,7 +1266,8 @@ def bone_pillar(key):
 
 
 # ================================================================================================ 보라 불꽃 화로 1×2 (3장면)
-# A1 = 쇠 그릇 + 세 발 받침(버들항 화산 동굴 돌 화로 비례) · A2 = 보라 검은 돌 기둥 화로(앞면에 빛 새김).
+# A1 = 쇠 그릇 + 세 발 받침 · A2 = 짙은 돌 기둥 화로(앞면에 빛 새김, 윗면이 보이는 둥근 발).
+# 그릇 = 위에서 보이는 타원 아가리(뒤 테 → 숯 3줄 B·D·F·C → 앞 그늘) + 밝은 앞 모서리 + 그릇 앞면. 불꽃은 뒤 테에서 솟는다.
 # 불꽃 = arcane: 끝 C(5) · 몸 E(4) · F(3) · 밑 D(2) · 숯 B(1).
 BRAZIER_A1 = pad([
     '................',
@@ -1225,16 +1278,17 @@ BRAZIER_A1 = pad([
     '................',
     '................',
     '................',
-    '..lllllllllll...',
-    '..kBDBDBDBDBkh..',
-    '..kjjjjjjjjjih..',
-    '...jkkkjjjjih...',
-    '....hiiiiiih....',
-    '......kjh.......',
-    '......kjh.......',
+    '....llllllll....',
+    '..llBBDBDDBBlk..',
+    '.lBDDFDCDFDDDBk.',
+    '.lBBDDBDFBDDBBk.',
+    '..kBBBBBBBBBBk..',
+    '.llllllllllllll.',
+    '.kkjjjjjjjjiih..',
+    '..kjjjjjjjiih...',
+    '...hiiiiiiih....',
     '......kjh.......',
     '.....qoooon.....',
-    '......kjh.......',
     '......kjh.......',
     '......kjh.......',
     '......kjh.......',
@@ -1244,9 +1298,8 @@ BRAZIER_A1 = pad([
     '....lkj.jih.....',
     '...lk..j..ih....',
     '..lk...j...ih...',
-    '..k....j....h...',
+    '.lkl..lkl..lih..',
     '..~~~~~~~~~~~~..',
-    '................',
     '................',
     '................',
 ], 16)
@@ -1259,29 +1312,29 @@ BRAZIER_A2 = pad([
     '................',
     '................',
     '................',
-    '..eeeeeeeeeeee..',
-    '..dBDBDBDBDBDb..',
-    '..dccccccccccb..',
-    '..cbbbbbbbbbba..',
-    '...dcccccccba...',
+    '....eeeeeeee....',
+    '..eeBBDBDDBBed..',
+    '.eBDDFDCDFDDDBd.',
+    '.eBBDDBDFBDDBBd.',
+    '..dBBBBBBBBBBd..',
+    '.ffffffffffffff.',
+    '.ddcccccccccbba.',
+    '..dccDcDcccbba..',
+    '...bbccccccba...',
     '....dcccccba....',
-    '....dcDDccba....',
     '....dcDcccba....',
     '....dcDDccba....',
-    '....dccccDba....',
-    '....dccDDDba....',
+    '....dcccDcba....',
+    '....dccDDcba....',
     '....dcccccba....',
-    '....dccccDba....',
-    '....dcDDccba....',
-    '....dcccccba....',
-    '...edccccccba...',
-    '..eddcccccccba..',
-    '..dccccccccbba..',
-    '..cbbbbbbbbbaa..',
-    '...~~~~~~~~~~~..',
-    '................',
-    '................',
-    '................',
+    '....dcDcccba....',
+    '..ffdcccccbaee..',
+    '.feedcccccbaeed.',
+    '.eeeeeeeeeeeeed.',
+    '.ffffffffffffff.',
+    '.dccccccccccbba.',
+    '..bbbbbbbbbbaa..',
+    '...~~~~~~~~~~...',
     '................',
 ], 16)
 VFLAMES = [   # 9×9, (3, 1) 에 얹는다(맨 밑 줄 = 그릇 속 숯 9행). 바깥 D(어두운 보라) → F → E → 밑 가운데 심 C(가장 밝음)
@@ -1291,87 +1344,90 @@ VFLAMES = [   # 9×9, (3, 1) 에 얹는다(맨 밑 줄 = 그릇 속 숯 9행). �
 ]
 LBZ = {'A1': L('l:iron5 k:iron4 j:iron3 i:iron2 h:iron1 q:gold4 o:gold2 n:gold1 '
                'C:arcane5 E:arcane4 F:arcane3 D:arcane2 B:arcane1'),
-       'A2': L('e:vrock4 d:vrock3 c:vrock2 b:vrock1 a:vrock0 '
-               'C:arcane5 E:arcane4 F:arcane3 D:arcane3 B:arcane1')}
+       'A2': L('f:vrock4 e:vrock3 d:vrock3 c:vrock2 b:vrock1 a:vrock0 '
+               'C:arcane5 E:arcane4 F:arcane3 D:arcane2 B:arcane1')}
 
 
 def brazier(key, k):
-    cv = grid(BRAZIER_A1 if key == 'A1' else BRAZIER_A2, LBZ[key])
-    stamp(cv, VFLAMES[k], LBZ[key], 3, 1)
+    cv = grid(BRAZIER_A1 if key == 'A1' else speckle(BRAZIER_A2, {'c': ('d', 7), 'b': ('c', 9), 'd': ('e', 11)}, 2), LBZ[key])
+    stamp(cv, VFLAMES[k][:8], LBZ[key], 3, 1)   # 숯 줄은 빼고 불꽃만 — 불꽃 밑이 그릇 뒤 테(8행)에 닿고, 그릇 속 숯은 그대로 보인다
     return cv
 
 
 # ================================================================================================ 봉인된 차원문 3×3 (닫힘 · 열림 3장면)
-# 왼쪽 반 24열 + 거울. 돌 기둥(뿔 장식 · 앞면 빛 새김 D) + 뾰족 아치(e 바깥 빛 · d·c 띠 · b·a 안 그늘) + 꼭대기 쐐기돌 보석 + 문턱 3줄.
-# 안쪽 숫자 0~4 = 소용돌이 고리 번호(아치 안을 손으로 매긴 표 — 가운데 9). 닫힘 = 고리 번호를 어두운 돌 두 단(k·K)으로 칠해
-# 굳은 소용돌이 판 + X 자 쇠사슬 + 가운데 봉인 메달. 열림 = 고리 번호를 빛 단으로 칠하고 장면마다 한 고리씩 밀어 안으로 빨려 든다.
-PORTAL_L = [
-    '........................',
-    '..w.....................',
-    '..wu...................e',
-    '...wu................eeq',
-    '...wu..............eedqE',
-    '..eeeee..........eeddcqC',
-    '.eddddde.......eeddccbqD',
-    '.dcccccdc....eeddccbbaao',
-    '.dcccccdcc.eeddccbba4444',
-    '.dcccccdcceddccbba444433',
-    '.dcccccdcdddccbba4443333',
-    '.dcccccdcdccbba044433333',
-    '.dcccccdcdcbba0444333332',
-    '.dcccccdcdcba00444333222',
-    '.dbbbbbdcdba000443332222',
-    '.dcccccdcdba004443322221',
-    '.dcDDDcdcdba004433322211',
-    '.dccDccdcdba004433222111',
-    '.dcDcDcdcdba044433222111',
-    '.dccDccdcdba044333221110',
-    '.dbbbbbdcdba044332221100',
-    '.dcccccdcdba044332211100',
-    '.dcccccdcdba044332211000',
-    '.dcccccdcdba044332211000',
-    '.dcccccdcdba044332211009',
-    '.dcccccdcdba044332211109',
-    '.dbbbbbdcdba044332221109',
-    '.dcccccdcdba044333221119',
-    '.dcccccdcdba044433222111',
-    '.dcccccdcdba004433322222',
-    '.dcccccdcdba004433322222',
-    '.dcccccdcdba004443332222',
-    '.dbbbbbdcdba000444333333',
-    '.dcccccdcdba100444333333',
-    '.dcccccdcdba100044443333',
-    '.dcccccdcdba110004444444',
-    '.dcccccdcdba110004444444',
-    '.dcccccdcdba111000044444',
-    '.dbbbbbdcdba111100000444',
-    '.dcccccdcdba211110000000',
-    '.dcccccdcdba221111000000',
-    '.dcccccdcdba222111110000',
-    '.eeeeeeeeeeeeeeeeeeeeeee',
-    'eddddddddddddddddddddddd',
-    'dcccccccccccccbccccccccc',
-    'cbbbbbbbbbbbbbbbbbbbbbbb',
-    '~~~~~~~~~~~~~~~~~~~~~~~~',
-    '........................',
-]
+# 왼쪽 반 24열을 코드로 쌓고 거울. 3/4: 두꺼운 돌 상인방(윗면 4줄 e — 블록 이음 d · 알갱이 f, 밝은 앞 모서리 f, 앞면 d·c·b 3줄)이
+# 두 돌 기둥(왼 빛 e · 면 d·c · 그늘 b · 안쪽 깊이 a, 7줄마다 블록 이음, 앞면 빛 새김 D)에 얹히고, 가운데 쐐기돌 보석(E·C·D·B, 금 테 q·o).
+# 문턱 = 윗면 2줄 + 밝은 앞 모서리 + 앞면 2줄. 아치 안 숫자 0~4 = 가운데에서 잰 고리 번호(가운데 9). 닫힘 = 고리를 어두운 돌 세 단
+# (K·k·j)으로 칠한 굳은 소용돌이 판 + X 자 쇠사슬 + 가운데 봉인 메달. 열림 = spiral_rows 가 두 팔 나선 띠로 다시 칠해 장면마다 돈다.
+def _portal_half():
+    W, H = 24, 48
+    g = [['.'] * W for _ in range(H)]
+    for y, xs in ((0, {2: 'w'}), (1, {2: 'w', 3: 'u'}), (2, {3: 'w', 4: 'u'})):
+        for x, c in xs.items():
+            g[y][x] = c
+    for y in range(3, 7):                       # 상인방 윗면
+        for x in range(1 if y == 3 else 0, W):
+            g[y][x] = 'f' if y == 6 else 'e'
+        if y < 6:
+            for jx in (8, 16):
+                g[y][jx] = 'd'
+    for y, x in ((4, 4), (5, 12), (3, 19), (4, 21), (5, 6)):
+        g[y][x] = 'f'
+    for y, c in ((7, 'd'), (8, 'c'), (9, 'c'), (10, 'b')):   # 상인방 앞면
+        for x in range(W):
+            g[y][x] = c
+        for jx in (8, 16):
+            g[y][jx] = 'b' if c != 'b' else 'a'
+        g[y][0] = 'e' if c in 'dc' else 'd'
+    for y in range(11, 42):                     # 기둥
+        row = 'edddddcba' if (y - 11) % 7 else 'dbbbbbbba'
+        for x, c in enumerate(row):
+            g[y][x] = c
+    for y, x in ((15, 3), (16, 4), (17, 3), (16, 2), (29, 3), (30, 4), (30, 2), (31, 3), (36, 5), (22, 5)):
+        g[y][x] = 'D'
+    for y, x in ((13, 2), (20, 5), (26, 3), (34, 2), (39, 4)):
+        g[y][x] = 'e'
+    cx, cy = 23.5, 26.0
+    for y in range(11, 42):                     # 아치 안 고리 번호
+        for x in range(9, W):
+            r = math.hypot(x + 0.5 - cx - 0.5, (y - cy) * 0.75)
+            g[y][x] = '9' if r < 1.8 else str(int(r / 2.6) % 5)
+    for y, x0, x1 in ((11, 9, 14), (12, 9, 12), (13, 9, 10), (14, 9, 9)):   # 아치 어깨(둥근 위 모서리)
+        for x in range(x0, x1 + 1):
+            g[y][x] = 'a' if x == x1 else 'b'
+    for y in range(6, 12):                      # 쐐기돌 보석
+        for x in range(20, W):
+            g[y][x] = ['q', 'o', 'q', 'o', 'q', 'o'][y - 6] if x == 20 else g[y][x]
+    for (y, x), c in {(7, 22): 'E', (7, 23): 'C', (8, 21): 'E', (8, 22): 'C', (8, 23): 'D', (9, 21): 'C', (9, 22): 'D',
+                      (9, 23): 'B', (10, 22): 'B', (10, 23): 'D', (6, 23): 'q', (6, 22): 'q', (11, 23): 'o', (11, 22): 'o',
+                      (7, 21): 'q', (10, 21): 'o'}.items():
+        g[y][x] = c
+    for y, c in ((42, 'e'), (43, 'e'), (44, 'f'), (45, 'c'), (46, 'b'), (47, '~')):
+        for x in range(W):
+            g[y][x] = c
+    for y, x in ((42, 5), (43, 13), (42, 19)):
+        g[y][x] = 'd'
+    return [''.join(r) for r in g]
+
+
+PORTAL_L = speckle(_portal_half(), {'c': ('d', 8), 'd': ('e', 12), 'b': ('c', 11), 'e': ('d', 17)}, 5)
 for _r in PORTAL_L:
     assert len(_r) == 24, _r
 # 닫힘 덧칠(왼쪽 반): 쇠사슬 g·h(대각 둘 — 거울로 X) · 봉인 메달 q·o 테 + 빛 새김 B·D·E·C
 PORTAL_SEAL = ['.' * 24] * 48
 _seal = [list(r) for r in PORTAL_SEAL]
 for _t in range(7):
-    for _x, _y in ((12 + _t, 10 + _t), (12 + _t, 11 + _t), (12 + _t, 40 - _t), (12 + _t, 39 - _t)):
+    for _x, _y in ((12 + _t, 14 + _t), (12 + _t, 15 + _t), (12 + _t, 39 - _t), (12 + _t, 38 - _t)):
         _seal[_y][_x] = 'g' if (_t % 2 == 0) else 'h'
 for _i, _r in enumerate(['..qqq', '.qooo', 'qoBBB', 'qoBDE', 'qoBEC', 'qoBDE', 'qoBBB', '.qooo', '..qqq']):
     for _j, _c in enumerate(_r):
         if _c != '.':
             _seal[21 + _i][19 + _j] = _c
 PORTAL_SEAL = [''.join(r) for r in _seal]
-LPO = {'A1': L('w:bone4 u:bone3 e:ostone5 d:ostone4 c:ostone3 b:ostone2 a:ostone1 q:gold4 o:gold2 '
-               'E:arcane5 C:arcane4 D:arcane3 B:arcane2 g:iron4 h:iron2 k:ostone1 K:ostone0'),
+LPO = {'A1': L('w:bone4 u:bone3 f:bone2 e:ostone5 d:ostone4 c:ostone3 b:ostone2 a:ostone1 q:gold4 o:gold2 '
+               'E:arcane5 C:arcane4 D:arcane3 B:arcane2 g:iron4 h:iron2 j:ostone2 k:ostone1 K:ostone0'),
        'A2': L('w:bone4 u:bone3 e:vrock4 d:vrock3 c:vrock2 b:vrock1 a:vrock0 q:gold4 o:gold2 '
-               'E:fire5 C:fire4 D:red3 B:red1 g:iron4 h:iron2 k:vrock1 K:vrock0')}
+               'E:fire5 C:fire4 D:red3 B:red1 g:iron4 h:iron2 f:vrock4 j:vrock2 k:vrock1 K:vrock0')}
 SWIRL = {'A1': ['arcane0', 'arcane1', 'arcane2', 'arcane3', 'arcane4', 'arcane5'],
          'A2': ['red0', 'red1', 'red3', 'fire3', 'fire4', 'fire5']}
 
@@ -1379,7 +1435,7 @@ SWIRL = {'A1': ['arcane0', 'arcane1', 'arcane2', 'arcane3', 'arcane4', 'arcane5'
 def portal(key, opened, k=0):
     leg = dict(LPO[key])
     if not opened:
-        rows = halves(tr(PORTAL_L, {'0': 'k', '1': 'K', '2': 'k', '3': 'K', '4': 'k', '9': 'K'}), {'w': 'u'})
+        rows = halves(tr(PORTAL_L, {'0': 'K', '1': 'k', '2': 'j', '3': 'k', '4': 'j', '9': 'K'}), {'w': 'u'})
         cv = grid(rows, leg)
         stamp(cv, halves(PORTAL_SEAL, {'E': 'C'}), leg, 0, 0)
         return cv

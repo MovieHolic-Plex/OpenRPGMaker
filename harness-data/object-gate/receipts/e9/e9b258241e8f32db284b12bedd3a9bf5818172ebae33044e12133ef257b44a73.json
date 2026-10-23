@@ -1,0 +1,307 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e9b258241e8f32db284b12bedd3a9bf5818172ebae33044e12133ef257b44a73",
+ "width": 96,
+ "height": 96,
+ "kind": "terrain",
+ "name": "arcane.tower_floor",
+ "label": "beodeul_dungeon/arcane.tower_floor",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 13,
+  "darkV5": 62,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 36
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone brick pattern filling the whole 96x96 tile",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round gold-rimmed rune medallion, drawn face-on and flat",
+      "rows": "33-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 96,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 96-wide opaque rectangle on every row (0-95), so this is a seamless tile and not a standing object. Rows repeat a brick pattern: dark mortar lines at rows 3, 11, 19, 27, 35 and so on, a lighter bevel line just below each mortar row, and a darker row beneath. Every brick looks the same and is a flat texture. No brick course ends in an eave or front-edge line, there is no receding side face, and there is no separate south face. The medallion at rows 33-62 is a flat circle seen straight on, with no depth. The tile is a flat floor surface with no front face, so the structural rule decides the result, not me."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a grey brick floor with a rune medallion. Its measured facts match the paving reference: 7 visible tones per tile against 7, and 0% near-flat coverage against 0%. Each brick has a light top edge, a mid face, a darker lower edge and dark mortar, plus a few speckle dots, so it reads as about 5 steps against the paving's 6. The dark edge pixels are 100% neutral against 80% for the paving. Here that comes from the grey stone ramp itself, because the mortar is the dark tone of the adjacent grey brick rather than a black sticker outline. The medallion has a tinted gold and blue rim. The brick rhythm is more regular and mechanical than the hand-shaded stones in the paving reference, so I rate density slightly lower, but it is not shallow and a careful artist could place it next to the reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19995
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone brick floor/wall tile field",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "circular arcane rune medallion inlaid in the tiles",
+      "rows": "33-62",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a full-bleed 96x96 terrain tile: a flat brick-pattern stone surface with mortar lines, filling the whole frame (width 96 on every row). A gold-ringed rune medallion sits in the middle (rows 33-62). It is drawn flat with no raised edge or front face. As a terrain tile it is not a standing object, so there is no separate top surface and front face to measure. The tile repeats seamlessly and has no silhouette, no eave and no ellipse cap."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a grey brick floor with per-brick highlight, mid and dark mortar steps, plus speckle inside the bricks. It measures 7 visible tones per tile, the same as the paving reference (7), and 0% near-flat coverage, so there are no flat fills. The dark edges are 100% neutral, but the material is grey stone and the paving reference is also 80% neutral. The mortar lines are therefore the dark tone of the adjacent stone, not a black sticker outline. The brick rhythm is more regular and less hand-shaded than the reference cobbles, and the cobbles carry slightly more per-stone grain, so I rate density slightly lower. The glowing emblem has a gold rim and a blue-tinted dark core, which adds shaded detail. Overall a careful artist would accept it next to the paving reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15266
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone brick floor field",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "circular rune medallion with gold rim, inlaid in the floor",
+      "rows": "33-62",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 96,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 96x96 tile is a flat, running-bond pattern of stone slabs with dark mortar lines. Every row is the same full width of 96 pixels. There is no front-edge line, no eave shadow and no vertical south face. The gold medallion spans about 29 columns by 30 rows (rows 33-62), so it is a circle seen straight down, not a foreshortened ellipse. It is an inlaid ornament, not a standing part. The tile reads as a plain top-down floor surface with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts put the candidate level with the paving reference at 7 visible tones per tile, with 0% near-flat coverage, so it is not a flat fill. By eye, though, the floor is a regular grid of grey bricks. Each brick has about 4 steps: a light top edge, a mid face, a darker lower edge and a mortar line, with only sparse speckle. The reference paving shades its cobbles one by one, with bright chiselled edges, dark gaps and a grainy surface, which gives about 6 steps. The candidate's dark pixels are 100% neutral grey with no tint, and the mortar lines run as an even uniform grid. That reads as a sticker-like outline rather than the material-tinted, selective edging Beodeul uses. The brick pattern repeats with little variation between bricks. The central medallion is a clean, well-made focal element, but it does not add richness to the floor surface. Next to the reference the floor looks thinner and more mechanical.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20697
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone brick floor/wall tile field",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "circular arcane rune medallion inlaid in the tiles",
+      "rows": "33-62",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The candidate is a full-bleed 96x96 terrain tile of grey stone bricks with mortar lines and a gold-ringed rune medallion in the middle. It is a flat, seamless tile field, not a standing object, so there is no body, top surface, or front face to measure. The brick courses are all drawn at the same flat scale (mortar rows at 3, 11, 19, 27, 35, ...). The medallion is a flat inlay, with a shaded lower-right quadrant for a slight bevel. Because it is terrain, the three-quarter rules do not apply and I classify it as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 7 visible tones per tile, the same as the paving reference and well above the grass reference's 3. Near-flat coverage is 0%, so there are no flat fills. The bricks carry a light top edge, a mid face and a dark mortar or shadow line, which gives roughly 5 steps against about 6 in the reference. The dark edge pixels are 100% neutral, but the reference paving is also mostly neutral (80%). Here they read as grey mortar between grey stone, not a black sticker outline around each shape, so I call it mixed. The brick pattern is more regular and mechanical than the reference's cobbles, with a little less grain. The medallion is detailed, with a tinted gold rim and glowing glyph. Overall it would sit acceptably next to the paving reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13123
+  }
+ ],
+ "decidedAt": "2026-10-23T02:45:58.528Z",
+ "cells": {
+  "16": [
+   "1c8147796ba4c5ba",
+   "1ed158cf40d9e305",
+   "91eb4df492cb0955",
+   "95b78a3575c10611",
+   "96ea5697affeb350",
+   "b34f936f55381a66",
+   "c0c893a2907143c2"
+  ],
+  "24": [
+   "04631261e96d5559",
+   "12d9987998d1e210",
+   "290a3352af9f19a9",
+   "2c59e163ae968bad",
+   "5103ebf329a31728",
+   "5f40e7739fcce6a0",
+   "68ed1a5299f5683c",
+   "6d9348c6e1d85437",
+   "93518484ba4182a1",
+   "9a7867efbe41858c",
+   "c4696644aa1de96f",
+   "d31cfbb22b17417f",
+   "e066d1dc5b6e9183",
+   "e1292c84a96734d6"
+  ],
+  "32": [
+   "0ded4490da06328d",
+   "1fbb0c81c4f7b93f",
+   "5a7dbd598fcc7ff2",
+   "5fefde6de220e2d1",
+   "75cc7b14738c7cfd",
+   "92cd2190cc3ba004",
+   "9afb494c79332f92",
+   "ae0c15b5757654a0",
+   "dbf2b97e34436da1"
+  ],
+  "48": [
+   "0b9a315eaa50cb32",
+   "7d7637f4e590c649",
+   "a3aaa8db2a690639",
+   "bdfaacc4206ade1a"
+  ]
+ }
+}
