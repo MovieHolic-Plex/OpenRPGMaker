@@ -35,6 +35,7 @@ modern 계열이고 팔레트는 modern_city 에 잠겨 있다. 그림은 코드
 - **기물 킷:** `wl-<id>` 형식이다.
   - 건물 껍데기 husk-a/b/tall, 담 wall-h/v/stub
   - 판잣집 shack-a/b/c, lean-to, 컨테이너 집 container-home, 방수포 천막 tent-tarp
+  - 빽빽한 판잣집 촌용 거처(r57, `wl_shanty.py`): 주황 방수포 오두막 hut-sheet(2×2), 문짝·팰릿 움막 lean-doors(3×2), 2층 판잣집 shack-2f(3×3), 연통 아연 오두막 hut-stove(2×2), 천 걸린 장터 쉼막 market-shelter(3×2). 살림 빨랫줄 wash-line·플라스틱 상자 crates-plastic(2×1). 타이어 벽 오두막 hut-tyre 는 검수 FAIL(다시 그리기 3번 소진, 타이어 벽이 돌담으로 읽힘)로 SKIP. 구성기 배선은 아직 없다.
   - 바리케이드·울타리·고물 문
   - 녹슨 차·밴, 급수탑, 발전기, 태양판, 모닥불(3프레임)
   - 노점, 드럼통·타이어·상자, 고철·잔해 더미, 고사목·덤불·담쟁이 벽
@@ -118,7 +119,7 @@ modern 계열이고 팔레트는 modern_city 에 잠겨 있다. 그림은 코드
 - **증거:** `tiledata/wasteland-ruins/_review/`
   - `opus-vqa-r1.json` + `vqa-r1/`
   - `vqa-r2/`, `vqa-r4/`
-  - 조각 재검수 `r24`(아스팔트), `r38`(dirt-c), `r40`~`r51`(아스팔트 반려), `r52`(위상 아스팔트·길 표시·낱귀 PASS), `r53`·`r54`(귀 반려), `r55`(폐허 변형), `r56`(여러 층 껍데기)
+  - 조각 재검수 `r57`(판잣집 촌 거처 여섯·살림 둘, 판마다 `draftN/opus-reviewer-<id>.md`), `r24`(아스팔트), `r38`(dirt-c), `r40`~`r51`(아스팔트 반려), `r52`(위상 아스팔트·길 표시·낱귀 PASS), `r53`·`r54`(귀 반려), `r55`(폐허 변형), `r56`(여러 층 껍데기)
   - 맵 VQA `vqa-r7/`(과반 판정 `pieces-verdict.json`). r9~r11 맵 검수 판정은 `qa-runs/vqa*/review-*.json`(작업 사본, 커밋하지 않음)에서 과반 major 를 뽑아 이 문서 규칙으로 옮겼다.
   - `r18/opus-reviewer-verdict.md`
   - `r20/`

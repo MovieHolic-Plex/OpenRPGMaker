@@ -33,7 +33,7 @@ FLOOR_GROUP_IDS = {'dirt-a', 'dirt-b', 'dirt-c', 'dirt-d', 'slab-a', 'slab-b', '
                    'weeds-a', 'weeds-b', 'weeds-c', 'puddle', 'fence-h', 'fence-v',
                    'road-crack-a', 'road-crack-b', 'road-crack-c', 'pothole-a', 'pothole-b',
                    'asphalt-in-ne', 'asphalt-in-nw', 'asphalt-in-se', 'asphalt-in-sw'}
-BUILDING_IDS = {'husk-a', 'husk-b', 'husk-tall', 'husk-c', 'husk-d', 'husk-e', 'husk-f', 'husk-g', 'husk-h', 'shack-a', 'shack-b', 'lean-to', 'shack-c', 'container-home', 'tent-tarp'}
+BUILDING_IDS = {'husk-a', 'husk-b', 'husk-tall', 'husk-c', 'husk-d', 'husk-e', 'husk-f', 'husk-g', 'husk-h', 'shack-a', 'shack-b', 'lean-to', 'shack-c', 'container-home', 'tent-tarp', 'hut-sheet', 'lean-doors', 'hut-tyre', 'shack-2f', 'hut-stove', 'market-shelter'}
 ANIM_FPS = 6
 
 
@@ -58,7 +58,7 @@ def cell_pcs(p, a):
     return out
 
 
-SKIP = {'dirt-a', 'dirt-b45', 'dirt-b64', 'dirt-c64', 'dirt-d64', 'asphalt-b', 'asphalt-c', 'track', 'slab-edge', 'slab-break'} | {'asphalt-in-' + '-'.join(c) for n in range(1, 5) for c in __import__('itertools').combinations(('ne', 'nw', 'se', 'sw'), n)} | {'wall-h3', 'rubble-pile-b', 'husk-f'}  # r54 실패: 안쪽 귀 15조각 전부 뺌(감독 지시 「귀 없는 편이 낫다」) · r55: 관문 통과지만 검수자 FAIL 이라 굽지 않음 · r56: husk-f 관문 PASS 지만 검수자 FAIL(다시 그리기 3번 소진)          # 키트에서 뺀 조각(감독 결정) — 표본 바탕으로만 남고 굽지 않는다(번호도 새로 잡지 않는다)
+SKIP = {'dirt-a', 'dirt-b45', 'dirt-b64', 'dirt-c64', 'dirt-d64', 'asphalt-b', 'asphalt-c', 'track', 'slab-edge', 'slab-break'} | {'asphalt-in-' + '-'.join(c) for n in range(1, 5) for c in __import__('itertools').combinations(('ne', 'nw', 'se', 'sw'), n)} | {'wall-h3', 'rubble-pile-b', 'husk-f', 'hut-tyre'}  # r57: hut-tyre 검수자 FAIL(다시 그리기 3번 소진, 타이어 벽이 돌담으로 읽힘) · r54 실패: 안쪽 귀 15조각 전부 뺌(감독 지시 「귀 없는 편이 낫다」) · r55: 관문 통과지만 검수자 FAIL 이라 굽지 않음 · r56: husk-f 관문 PASS 지만 검수자 FAIL(다시 그리기 3번 소진)          # 키트에서 뺀 조각(감독 결정) — 표본 바탕으로만 남고 굽지 않는다(번호도 새로 잡지 않는다)
 
 
 def adopt(dev):
