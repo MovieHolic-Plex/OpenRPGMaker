@@ -111,6 +111,7 @@ function m2Title(command: Command): string {
   if (id === "m2-086-erase-event") return "Erase Event";
   if (id === "m2-040-set-event-location") return "Set Event Location";
   if (id === "m2-058-wait-for-all-movement") return "Wait for All Movement";
+  if (id === "m2-225-sprite-look") return "Sprite Look";
   return typeof (command as { title?: unknown }).title === "string" ? String((command as { title?: unknown }).title) : "";
 }
 
@@ -438,7 +439,7 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
     for (const { host, page, commands } of lists) {
       const visitList = (list: readonly Command[], inherited: Stage): void => {
         const st: Stage = { ...inherited };
-        for (const command of list) {
+        for (const [index, command] of list.entries()) {
           if (command.kind === "transfer") return; // 다른 맵으로 넘어가면 이 맵 무대는 끝.
           if (command.kind === "m2Command") {
             const key = `${command.commandId} ${fieldStr(command, "effect")}`;
@@ -469,7 +470,10 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
               report(npc, "Erase Event 로 제자리에서 지워진다");
             } else if (npc && visibleGraphic(pagesOf(npc)[0]) && !excused(st) && st.lastRouteTo === id) reportShort(npc);
           }
-          if (command.kind === "setSwitch" && command.value === true) {
+          // 주인공 대역(앉은 주인공을 위 층으로 그린 이벤트)이 꺼지는 바로 그 자리에서 감춰 둔 주인공이 나타나면 사라짐이 아니라 바통 넘기기다
+          // (첫사랑 수요일: 앉은 서하 대역 → 일어선 주인공). 스위치 바로 뒤 두 명령 안에 주인공 «Sprite Look» 되돌리기가 있어야 한다.
+          const handsToPlayer = list.slice(index + 1, index + 3).some((c) => m2Title(c) === "Sprite Look" && fieldStr(c, "target") === "player" && (c as { fields?: { reset?: unknown } }).fields?.reset === true);
+          if (command.kind === "setSwitch" && command.value === true && !handsToPlayer) {
             for (const npc of goneSwitch.get(command.switchId) ?? []) {
               if (!routedToExit.has(npc.id) && !excused(st)) report(npc, "스위치로 보이는 페이지가 꺼져 방 안에서 사라진다");
               else if (!excused(st)) reportShort(npc);

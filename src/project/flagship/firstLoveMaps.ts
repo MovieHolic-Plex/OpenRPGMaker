@@ -428,7 +428,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   platformPm.defaultLighting = {
     // 지하 승강장은 형광등으로 고르게 밝다 — 바닥의 큰 빛 웅덩이 사이가 구름 그림자처럼 얼룩졌다(VQA r16). 고른 밤색만 얇게 깔고 간판 불만 둔다.
     // 아침 승강장과 같은 밝기로 읽혔다(VQA r23) — 막차 시간의 푸른 밤색을 한 단계 더(얼룩이 생기지 않게 큰 빛은 더하지 않는다).
-    ambient: 0.32, color: "#101836",
+    // 0.32 도 «아침과 같은 밝은 승강장»으로 읽혔다(VQA r31) — 막차 밤색을 0.46 까지.
+    ambient: 0.46, color: "#101836",
     // 승강장에는 가로등이 없다 — 실제로 빛나는 것(발차 LED 판·자판기·매표기·벽시계·역명 간판)만 켠다.
     sources: [
       light("fl_led_a", { x: 10, y: 3 }, 4, "#bfe0ff", 0.8), light("fl_led_b", { x: 24, y: 3 }, 4, "#bfe0ff", 0.8), light("fl_led_c", { x: 38, y: 3 }, 4, "#bfe0ff", 0.8),

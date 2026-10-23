@@ -18,7 +18,7 @@
 | `scene-transfer-pair` | 돌아오는 문형 이동이 있는데 착지가 그 문에서 체비쇼프 2칸 이상 / 방향이 «문 → 착지» 쪽이 아니다 |
 | `scene-transfer-facing` | transfer 에 direction 이 없다(장면 전환 포함) |
 | `scene-stair-direction` | 맵 이름의 층(옥상·N층·지하)으로 위/아래가 갈리는데 계단 이름표가 반대(내려가는·구멍 ↔ 올라가는) |
-| `scene-npc-vanish` | 첫 페이지가 보이는 NPC 가 Erase Event 또는 스위치 «떠남» 빈 투명 페이지로 사라지는데, 바로 앞 경로가 출구(가장자리·이동 이벤트 1칸 안·문 칸) 앞에서 끝나지 않는다. 예외: 검은 화면 뒤, 동료 합류 뒤, 전투 직후 대사 없이(쓰러진 필드 적). 경로 속 불투명도 -200 이하도 같은 판정 |
+| `scene-npc-vanish` | 첫 페이지가 보이는 NPC 가 Erase Event 또는 스위치 «떠남» 빈 투명 페이지로 사라지는데, 바로 앞 경로가 출구(가장자리·이동 이벤트 1칸 안·문 칸) 앞에서 끝나지 않는다. 예외: 검은 화면 뒤, 동료 합류 뒤, 전투 직후 대사 없이(쓰러진 필드 적), 숨김 스위치 바로 뒤 두 명령 안에 주인공 `Sprite Look` 되돌리기(앉은 주인공 대역 → 일어선 주인공 바통 넘기기, 첫사랑 r33). 경로 속 불투명도 -200 이하도 같은 판정 |
 | `scene-dialogue-position-mixed` | text.position·displayTextSettings 위치(preventObscuringPlayer 아래 = auto)가 둘 이상(sign·system·letter 줄 제외). 프로젝트당 1건 |
 | `scene-dialogue-context-mixed` | sign·system·letter 밖의 context 가 둘 이상, 또는 box 밖의 container(말풍선) |
 | `scene-map-no-bgm` | 시작 맵·이동 목적지인데 bgm 이 비었다(명시 `none` 은 의도). 자동/병렬 페이지의 BGM 재생이나 이동 직전 BGM 재생이 있으면 통과 |
