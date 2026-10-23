@@ -106,6 +106,37 @@
               "......E....E....",
               ".....oE....Eo..."
             ]
+          },
+          {
+            "bunbody": true,
+            "at": [
+              21,
+              49
+            ],
+            "pal": {
+              "M": "#9aefb8",
+              "S": "#68c18c",
+              "C": "#f9f3d3",
+              "W": "#ffffff",
+              "A": "#02331a"
+            },
+            "rows": [
+              "...AMMMMMMMMMMMMSA_........",
+              "..AMMMMMMMMMMMMMSSA_.......",
+              ".AMMMMMMCCCCCMMMSSSA.......",
+              ".AMMMMMMCCCCCMMMSSSA.A.....",
+              ".AMMMMMMSCCCSMMMSSSAACCA__.",
+              ".AMMMSSSCCCCCSSSSSSCWWCCA_.",
+              ".AMMMMCCCCCCCCCMSSSWWWWCA__",
+              ".AMMMMCCCCCCCCCMSSSCWWCCA__",
+              "..AMMMCCCCCCCCCMSSACCCCCA__",
+              ".._AMMMCCCCCCCMMSA_AACCA__.",
+              "...AAMMMCCCCCMMMAA___AA___.",
+              "..AMMMMMMSSSMMMMMMA______..",
+              "..AMMMMMMAAAMMMMMMA_.___...",
+              ".._ACCCCA.._ACCCCA_........",
+              "....AAAA...__AAAA.........."
+            ]
           }
         ]
       }
