@@ -1,0 +1,18 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "f18626586b7f7f9f0d8a4f9480ce7720d09b2acebceaf769f766b63976c43b75",
+ "profileHash": "4d8774b517f41638",
+ "kind": "frame",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-23T07:20:31.530Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "tiledata/wasteland-ruins/_review/r57/draft1/opus-reviewer-wash-line.md",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "note": "delegated by user to supervisor 2026-10-23 — wasteland wash-line: gate REFER (front elevation) re-judged by fresh independent Opus adversarial reviewer PASS (r57 draft1)",
+ "sig": "2fc10ef247ca9a873380c70cea4e9e8895e9b665c12acae8e8d499fd40140c45"
+}

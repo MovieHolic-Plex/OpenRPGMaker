@@ -1,0 +1,18 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "e8d6700387a1d18b4f7b0695449dc09e069b2a3e2146df7a46f150d902bd48fe",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-23T07:20:31.520Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "tiledata/wasteland-ruins/_review/r57/draft1/opus-reviewer-market-shelter.md",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "note": "delegated by user to supervisor 2026-10-23 — wasteland market-shelter: gate REFER (front elevation 4/12) re-judged by fresh independent Opus adversarial reviewer PASS (r57 draft1)",
+ "sig": "360e476d8d31e49b4812c6946250e182226dd23e89a5beb8ac9ebeaa680d7a28"
+}

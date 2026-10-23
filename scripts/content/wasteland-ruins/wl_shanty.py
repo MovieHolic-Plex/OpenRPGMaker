@@ -180,7 +180,7 @@ def pallet_face(c, x, y, w, h, seed=0):
 @piece('lean-doors', '문짝·팰릿 움막', 3, 2, STRUCT,
        en='lean-to built from salvaged doors and pallets seen from above: roof of three old paneled doors in faded blue, green and white laid side by side as a sloped top plane, front wall of stood-up wooden pallets with a dark gap entrance hung with a sack',
        group='shacks', tags=['판잣집', '움막'], desc='주워 온 문짝 셋(바랜 파랑·초록·흰색)을 나란히 얹은 지붕, 세워 박은 팰릿 앞벽, 가운데 마대 걸린 틈 입구.',
-       solid=[(0, 1), (2, 1)], door=(1, 1))
+       solid=[(0, 1), (1, 1), (2, 1)], door=(1, 1))
 def _lean_doors(c):
     # 지붕: 동서로 눕힌 문짝 넷을 앞뒤로 계단처럼 겹쳐 덮음(뒤 줄 먼저, 앞 줄이 위), 끝을 동서로 엇갈림
     for (x, y, w, h, m, sd, lo, hi) in ((2, 1, 25, 7, 'blue', 1, 1, 6), (26, 1, 20, 7, 'body', 2, 1, 6), (1, 8, 19, 7, 'army', 3, 1, 6), (19, 8, 27, 7, 'otarp', 4, 1, 4)):
@@ -366,7 +366,7 @@ def _hut_stove(c):
 @piece('market-shelter', '천 걸린 장터 쉼막', 3, 2, STRUCT, style='prop',
        en='open market shelter seen from above: sagging roof sewn from orange and green tarp strips as a top plane on four poles, a row of hanging cloths and rags in pink, yellow, blue and white along the front eave, rolled rugs and bundles on the ground below, no counter',
        group='shacks', tags=['판잣집', '장터', '천막'], desc='주황·초록 방수포 띠를 이어 붙인 처진 지붕을 기둥 넷에 쳤다. 앞 처마에 분홍·노랑·파랑·흰 천이 줄줄이 걸리고, 밑에 말아 둔 깔개와 보따리.',
-       solid=[(0, 1), (2, 1)], door=(1, 1))
+       solid=[(0, 1), (2, 1)])  # 문 없음: 열린 쉼막이라 가운데 앞 칸은 걸어 들어가는 칸(문 칸은 막힌 칸이어야 한다는 정의 검사)
 def _market_shelter(c):
     # 바닥 그늘 + 말아 둔 깔개·보따리(지붕보다 먼저)
     for y in range(17, 30):

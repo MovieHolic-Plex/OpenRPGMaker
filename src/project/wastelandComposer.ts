@@ -70,6 +70,8 @@ class Board {
   readonly keep: boolean[];
   private journal: { layer: 1 | 2 | 3; i: number; prev: number }[] | null = null;
   readonly placed: WlPlaced[] = [];
+  /** 판잣집 촌(r12 전 점검): 거처는 상한·같은 그림 간격을 따로 둔다 — 12칸 간격·상한 1~2로는 덩이가 «빈 흙에 흩어진 집»이었다. */
+  denseIds: ReadonlySet<string> = new Set();
   skipped = 0;
   readonly rng: () => number;
 
@@ -203,14 +205,15 @@ class Board {
   stamp(id: string, x: number, y: number): boolean {
     const k = this.kit(id);
     if (!k) { this.skipped++; return false; }
-    const cap = CAPS[id];
+    const dense = this.denseIds.has(id);
+    const cap = dense ? 3 : CAPS[id];
     if (cap !== undefined && this.countOf(id) >= cap) return false;
     // 같은 큰 조각이 맞붙어(1칸 이내) 서지 않게 — r4: 같은 천막 둘·같은 판잣집 셋이 나란히 «도장»으로 읽혔다. 담·울·바리케이드 같은 이음 조각은 예외.
     // r5: 1칸 띄운 같은 천막 셋·같은 트럭 둘(꼬리 물기)도 도장으로 읽혔다 — 같은 조각 사이는 4칸, 탈것은 10칸 이상.
     if (!TWIN_OK.has(id)) for (const p of this.placed) {
       if (p.id !== id) continue;
       // r8: 같은 판잣집·컨테이너 집이 한 열에 위아래로 서 «복사»로 읽혔다 — 큰 조각끼리는 12칸 띄운다.
-      const g = VEHICLES.has(id) ? 10 : k.width * k.height >= 4 ? 12 : 3;
+      const g = VEHICLES.has(id) ? 10 : dense ? 5 : k.width * k.height >= 4 ? 12 : 3;
       if (x < p.x + k.width + g && p.x < x + k.width + g && y < p.y + k.height + g && p.y < y + k.height + g) return false;
     }
     for (let r = 0; r < k.height; r++) for (let c = 0; c < k.width; c++) {
@@ -933,6 +936,7 @@ function composeShanty(b: Board): { areas: WlArea[]; spawn: Pt; road: boolean[] 
   // 덩이 사이는 2~3칸 흙길(비움). 새 거처(shack-c·container-home·tent-tarp)가 있으면 섞인다.
   // r12: 판잣집 여섯 종만 돌려 써 두 맵이 같은 집 묶음으로 읽혔다 — 함석 오두막·문 짝 차양·2층 판잣집·난로 오두막을 더한다(장터 차양은 장터에).
   const shelters = ["shack-a", "shack-b", "lean-to", "shack-c", "container-home", "tent-tarp", "hut-sheet", "lean-doors", "shack-2f", "hut-stove"].filter((id) => b.kit(id));
+  b.denseIds = new Set(shelters);
   const cols = Wd < 44 ? (b.int(0, 2) === 0 ? 3 : 2) : 3, rows = 2, nC = cols * rows;
   const cw = Math.floor((Wd - 4) / cols), ch = Math.floor((bot - top + 1) / rows);
   // 장터 자리: 덩이 격자 한 칸을 비워 장터로
@@ -950,7 +954,9 @@ function composeShanty(b: Board): { areas: WlArea[]; spawn: Pt; road: boolean[] 
     // 거처 사이사이에 살림 더미(드럼·상자·타이어·고철·태양판·노점)를 끼워 줄이 빽빽한 판자촌 골목으로 읽히게 한다 — 거처 그림은 맵당 몇 장뿐이라(상한·12칸 간격) 거처만으로는 줄이 성겼다.
     const FILL = ["drums", "crates", "tyres", "scrap-heap", "solar-scrap", "stall-a", "stall-b", "lean-to", "generator", "wash-line", "crates-plastic"];
     // r9: 같은 상자 넷이 한 줄에 고른 간격으로 섰다 — 줄마다 살림 더미는 섞은 목록을 돌려 쓰고(같은 것 연달아 금지) 줄당 같은 것 한 번.
-    const pickRow = () => { const dw = noRepeat(Array.from({ length: 4 }, () => (b.int(0, 3) > 0 ? b.pick(lead) : b.pick(shelters))).concat(b.shuffle(shelters.slice())));
+    // r12 전 점검: 주된 거처 둘(lead)을 줄 앞에 몰았더니 같은 그림 12칸 간격 규칙에 막혀 줄이 듬성듬성했다(빈 흙에 흩어진 집) —
+    // 줄은 lead 하나로 시작하고 나머지는 거처 전부를 섞어 돌린다(그림이 열 종이라 한 덩이에 같은 그림 없이 빽빽이 선다).
+    const pickRow = () => { const dw = noRepeat([b.pick(lead), ...b.shuffle(shelters.slice()), ...b.shuffle(shelters.slice())]);
       const fill = b.shuffle(FILL.slice()); let f = 0;
       const out: string[] = []; for (const d of dw) { out.push(d); if (f < fill.length) out.push(fill[f++]!); if (b.int(0, 2) === 0 && f < fill.length) out.push(fill[f++]!); } return out; };
     const backFootY = Math.min(y1 - 4, y0 + 3), frontFootY = Math.min(y1, backFootY + 4 + b.int(0, 1));

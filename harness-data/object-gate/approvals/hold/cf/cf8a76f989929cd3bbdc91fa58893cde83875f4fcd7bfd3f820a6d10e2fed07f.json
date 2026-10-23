@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "cf8a76f989929cd3bbdc91fa58893cde83875f4fcd7bfd3f820a6d10e2fed07f",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-23T04:55:02.752Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "tiledata/wasteland-ruins/_review/r56/draft2/opus-reviewer-husk-g.md",
+ "via": "review-page",
+ "reasons": [],
+ "note": "delegated by user to supervisor 2026-10-23 — wasteland husk-g (5-storey tower): gate PASS (uncalibrated) + fresh independent Opus adversarial reviewer PASS (r56 draft2)",
+ "sig": "07ec057801fffdff97b70b0f3e0a81cbf764f7e4693203f6b88231292bd62af7"
+}
