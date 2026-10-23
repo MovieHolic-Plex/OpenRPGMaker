@@ -481,12 +481,15 @@ function mixedWallH(b: Board, x0: number, x1: number, footY: number, gateX: numb
   const fence = b.cells("fence-h");
   const walls = ["wall-h", "wall-h2", "wall-h3"].filter((id) => b.kit(id));
   let x = x0, last = "";
+  // r11: 한 줄에 같은 바리케이드·담 판이 셋씩 고른 차례로 섰다 — 울·틈 말고는 한 줄에 한 번(담 토막은 두 번).
+  const usedN = new Map<string, number>();
+  const room = (id: string) => id === "fence" || id === "gap" || (usedN.get(id) ?? 0) < (id === "wall-stub" ? 2 : 1);
   while (x <= x1) {
     if (Math.abs(x - gateX) <= 1 || hash2(x, footY, b.seed + 91) < 0.08) { x++; last = ""; continue; }
     // ruin: 무너진 건물 터의 남은 벽 — 울·바리케이드·드럼 대신 담 판·토막·잔해·빈 틈.
     // fenceLine(r10): 길가 방벽 위·아래가 같은 담 판·모래주머니 차례로 읽혔다 — 한 줄은 고철 울 위주(틈마다 드럼·바리케이드)로.
     const opts = b.shuffle(ruin ? [...walls, "wall-stub", "rubble-pile", "rubble-pile-b", "gap"].filter((id) => id === "gap" || b.kit(id))
-      : fenceLine ? ["fence", "fence", "fence", "fence", "drums", "barricade-h", "gap", "wall-stub"] : [...walls, "barricade-h", "fence", "fence", "drums", "tyres", "wall-stub"]).filter((id) => id !== last && !(fenceLine && id === "gap" && last === "gap"));
+      : fenceLine ? ["fence", "fence", "fence", "fence", "drums", "barricade-h", "gap", "wall-stub"] : [...walls, "barricade-h", "fence", "fence", "drums", "tyres", "wall-stub"]).filter((id) => id !== last && room(id) && !(fenceLine && id === "gap" && last === "gap"));
     let done = false;
     for (const id of opts) {
       if (id === "gap") { x += 1 + b.int(0, 1); last = id; done = true; break; }
@@ -498,7 +501,7 @@ function mixedWallH(b: Board, x0: number, x1: number, footY: number, gateX: numb
         x += n; last = id; done = true; break;
       }
       const z = b.kitSize(id); if (!z || x + z.w - 1 > x1) continue;
-      if (b.stampSafe(id, x, footY - z.h + 1, start, must)) { x += z.w; last = id; done = true; break; }
+      if (b.stampSafe(id, x, footY - z.h + 1, start, must)) { x += z.w; last = id; usedN.set(id, (usedN.get(id) ?? 0) + 1); done = true; break; }
     }
     if (!done) x++;
   }
@@ -736,6 +739,8 @@ function composeRoadsideSettlement(b: Board): { areas: WlArea[]; spawn: Pt; road
   // 둘레 방벽(r9: 울·담이 없어 판잣집 촌과 같은 종류로 읽혔다): 뒷줄 거처 바깥 위·아래에 섞은 담 줄(담 판·바리케이드·고철 울·드럼),
   // 좌·우 끝은 길 위아래로 고물 벽 — 길이 지나는 두 끝이 문(검문)이다. 위·아래 담엔 뒷문 틈 하나씩.
   const ty = Math.max(1, nFoot - 4), by = Math.min(Hd - 2, sFoot + 2);
+  // r11: 길 아래 띠 가운데가 빈 흙이었다 — 울 친 폐차장 하나.
+  scrapLot(b, Math.floor(Wd * 0.25), bot + 4, Math.floor(Wd * 0.75), by - 2, spawn, must, areas);
   // r10: 위·아래 담이 같은 차례, 동·서 끝이 거울로 읽혔다 — 한 줄은 담 판 방벽, 다른 줄은 고철 울. 동·서는 한쪽 고물 벽·다른 쪽 세로 담 토막(길 위·아래 서로 바꿈).
   const wallTop = b.int(0, 1) === 0;
   mixedWallH(b, 1, Wd - 2, ty, b.int(6, Wd - 8), spawn, must, false, !wallTop);
