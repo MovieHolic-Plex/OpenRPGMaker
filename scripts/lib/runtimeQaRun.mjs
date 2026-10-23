@@ -41,6 +41,8 @@ export const HOOK_OPS = new Set([
   // 체공 op 은 __oprnDebug / __oprnCharacterSprites 를 직접 읽는다.
   "playerRoute", "waitForLift", "waitForGrounded", "captureShadowSample",
   "waitForFollowers", "waitForLeader",
+  // 맵 축 대기는 __oprnDebug.readState 를 직접 읽는다.
+  "waitForMap",
 ]);
 
 async function freePort() {
@@ -249,6 +251,18 @@ export async function applyOp(page, op, runState) {
         page,
         (state, target) => state.currentMapId === target.mapId && state.x === target.x && state.y === target.y,
         { mapId: op.mapId, x: op.x, y: op.y },
+        op.timeoutMs,
+      );
+      return;
+    case "waitForMap":
+      // 도착 좌표를 모른 채(또는 "틀렸다"를 단정하려고) 맵 전환만 기다린다. waitForPosition 은 정확한
+      // 좌표를 요구하므로, 좌표가 버그인 상황에서는 조건 대기를 표현할 수 없다.
+      await waitForRuntimePredicate(
+        page,
+        (state, target) => (target.not
+          ? state.currentMapId !== target.mapId
+          : state.currentMapId === target.mapId),
+        { mapId: op.mapId, not: op.not === true },
         op.timeoutMs,
       );
       return;

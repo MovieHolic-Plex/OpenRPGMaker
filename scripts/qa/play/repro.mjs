@@ -14,8 +14,9 @@
 // 출력: REPRODUCED / NOT_REPRODUCED, 근거 PNG·state JSON. 비영점 = 재현되지 않음.
 import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { loadOpsSlice } from "../../lib/playOpsLog.mjs";
 import { startPlayerQaServer } from "../../lib/runtimeQaRun.mjs";
 import {
   OBSERVE_ONLY_KINDS,
@@ -52,41 +53,6 @@ function parseArgs(argv) {
     }
   }
   return flags;
-}
-
-/** ops 파일: JSON 배열 · {ops:[…]} · actions.jsonl(한 줄에 한 항목, op 필드 사용). */
-async function loadOps(file, lines, { anchor: useAnchor = true } = {}) {
-  const text = await readFile(file, "utf8");
-  let ops;
-  let rows = null;
-  if (file.endsWith(".jsonl") || text.trimStart().startsWith("{")) {
-    rows = text.split("\n").filter((line) => line.trim()).map((line) => JSON.parse(line));
-    ops = rows.map((row) => (row.op && row.t ? { ...row.op, recordedAt: Date.parse(row.t) } : row.op ?? row));
-  } else {
-    const parsed = JSON.parse(text);
-    ops = Array.isArray(parsed) ? parsed : parsed.ops;
-  }
-  if (!Array.isArray(ops)) fail(`${file}: op 배열을 찾지 못했다`);
-  let anchor = null;
-  if (lines) {
-    const [from, to] = String(lines).split("-").map(Number);
-    const start = (from ?? 1) - 1;
-    // A slice deep into a free-play log cannot be reached by replaying everything before it: wandering NPCs and
-    // real-time scene state make long replays drift. Boot from the last save snapshot qp captured before the slice
-    // (state/shot rows carry `save`), then replay only the slice.
-    if (useAnchor && rows && start > 0) {
-      for (let index = start - 1; index >= 0; index -= 1) {
-        const row = rows[index];
-        if (row?.save) {
-          const snapshot = JSON.parse(await readFile(join(dirname(file), row.save), "utf8"));
-          anchor = { line: index + 1, save: row.save, at: row.at ?? null, checkpoint: { id: `anchor-line-${index + 1}`, snapshot } };
-          break;
-        }
-      }
-    }
-    ops = ops.slice(anchor ? start : 0, to ?? from ?? undefined);
-  }
-  return { ops: ops.filter((op) => op && typeof op === "object" && typeof op.kind === "string"), anchor };
 }
 
 async function resolveGame(spec, { outRoot, gamesDir }) {
@@ -192,7 +158,10 @@ async function main() {
   const outRoot = flags["games-out"] ? resolve(REPO_ROOT, String(flags["games-out"])) : join(REPO_ROOT, "tmp/qp/games");
   const gamesDir = flags["games-dir"] ? resolve(REPO_ROOT, String(flags["games-dir"])) : null;
   const game = await resolveGame(String(flags.game), { outRoot, gamesDir });
-  const { ops, anchor } = await loadOps(resolve(REPO_ROOT, String(flags.ops)), flags.lines, { anchor: flags["no-anchor"] !== true });
+  // 토막 자르기·세이브 앵커는 to-scenario.mjs 와 **같은 모듈**을 쓴다(scripts/lib/playOpsLog.mjs).
+  const { ops, anchor } = await loadOpsSlice(resolve(REPO_ROOT, String(flags.ops)), {
+    lines: flags.lines, anchor: flags["no-anchor"] !== true,
+  });
   if (ops.length === 0) fail("op 이 0개다 — --lines 범위를 확인해라");
   if (anchor) process.stdout.write(`anchor: line ${anchor.line} save ${anchor.save} ${anchor.at ? `${anchor.at.mapId} (${anchor.at.x},${anchor.at.y})` : ""}\n`);
   const expect = JSON.parse(await readFile(resolve(REPO_ROOT, String(flags.expect)), "utf8"));

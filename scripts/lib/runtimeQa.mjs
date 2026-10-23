@@ -52,6 +52,11 @@ export const OP_KINDS = [
   "waitForRuntime",
   "waitForEmote",
   "waitForPosition",
+  // 맵이 바뀌기를 기다린다(`not:true` 면 그 맵이 **아닐** 때까지). 문·transfer 는 발을 디딘 뒤
+  // 다음 틱에 발동하므로, 이동 op 이 끝난 직후에 좌표를 단정하면 아직 옛 맵이다(실측: scarloxy
+  // 유적→초원 transfer — 이동 직후 좌표는 유적 (12,1)). waitForPosition 은 정확한 좌표를 요구해서
+  // "도착 좌표가 틀렸다"를 기다림으로 표현할 수 없다 — 그래서 맵 축만 따로 둔다.
+  "waitForMap",
   // 이벤트(자율 이동 적·NPC)가 그 칸에 도착/이탈할 때까지 조건 대기 — session.eventLocations 를 읽는다(필드 적 QA).
   "waitForEventAt",
   "traceEvent",

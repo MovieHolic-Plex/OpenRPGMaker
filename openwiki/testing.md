@@ -2268,6 +2268,15 @@ ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructur
   `--repeat 2` 로 두 번 다 재현돼야 REPRODUCED.
 - `node scripts/qa/play/to-scenario.mjs` — 같은 op·기대를 `scripts/qa/runtime/<id>.scenario.mjs` 로 굽는다.
   버그가 살아 있는 동안 `npm run qa:runtime -- --scenario <id>` 가 실패하는 것이 회귀 테스트의 뜻이다.
+  `--session <세션폴더> --lines A-B` 로 부으면 **그 토막 앞의 마지막 세이브 스냅샷**을 체크포인트 세트
+  (`scripts/qa/runtime/checkpoints/<id>.json`)로 같이 굽고, 시나리오에 `checkpointSet`+`checkpointBeats` 를 넣는다.
+  그러면 `npm run qa:runtime -- --scenario <id> --checkpoint-set <id> --checkpoint all` 이 타이틀·오프닝을 거치지 않고
+  그 판에서 시작해 실패한다(실측 3건: saesol 야생 몬스터 영문 이름, scarloxy 유적 출구 좌표, 시타마치 실내 출구 없음).
+  기대의 방향이 뒤집힌다 — repro 의 expect 는 증상 서술, 시나리오의 expect 는 고쳐진 뒤의 행동이다(`--symptom-expect`
+  는 글자 축만 뒤집고 좌표 축은 거부한다). 로그의 시간 간격은 `wait` 로 옮기지 않고(게이트 금지) 앞뒤 관측으로
+  조건 대기(`waitFor`/`pressUntil`/`waitForMap`)로 번역하며, 정하지 못한 간격은 버리고 stderr 에 남긴다.
+  프로젝트 재료는 `--fixture` → `scenarioFixture` → 플레이어 데모 분기 `query: { demo }` → `projectGenerator`
+  (실행 시점 생성, `scripts/lib/qaProjectGenerator.mjs`) 순으로 고른다 — 생성기 게임 72MB 는 픽스처로 커밋하지 않는다.
 - 도구는 런타임 QA 의 **같은 op 실행기**(`applyOp`/`readObserved`, `scripts/lib/runtimeQaRun.mjs`)를 쓴다.
   플레이 전용 op(`move`·`clickCanvas`·`waitForBodyText`)는 런타임 op 로 들어가 있어 시나리오로 그대로 옮긴다.
   `expect` 에 `consoleErrorMatches`·`textPresent`·`textAbsent` 를 더했다(페이지 안 오류 버퍼

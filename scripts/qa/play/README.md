@@ -150,15 +150,42 @@ node scripts/qa/play/repro.mjs --game saesol-red \
 ## 4. 회귀 시나리오로 굽기 (to-scenario)
 
 ```bash
+# 세션 로그 토막 → 시나리오 + 체크포인트 세트(그 순간의 실제 세이브)
+node scripts/qa/play/to-scenario.mjs \
+  --session ~/salad/play/runs/main1/tasks/saesol-red__battle --lines 488-494 \
+  --expect tmp/rt/saesol.expect.json --id rt-saesol-wild-troop-english-name
+npm run qa:runtime -- --scenario rt-saesol-wild-troop-english-name \
+  --checkpoint-set rt-saesol-wild-troop-english-name --checkpoint all
+
+# 손으로 쓴 op 목록(체크포인트 없이) — 예전 경로
 node scripts/qa/play/to-scenario.mjs --ops tmp/qp/saesol-red/actions.jsonl --expect expect.json \
   --game saesol-red --id saesol-enter-field
 npm run qa:runtime -- --scenario saesol-enter-field
 ```
 
 - 결과는 `scripts/qa/runtime/<id>.scenario.mjs` — 비트 하나에 op 목록과 expect 가 들어간다.
+  `--session` 이면 **체크포인트 세트 `scripts/qa/runtime/checkpoints/<id>.json` 도 같이** 나온다(체크포인트 하나
+  `anchor` = `--lines` 앞의 마지막 세이브 스냅샷). `repro.mjs` 와 **같은 토막 자르기 모듈**
+  (`scripts/lib/playOpsLog.mjs`)을 쓰므로 앵커·범위가 두 도구에서 갈라지지 않는다. 토막 앞에 `reset`(reload)
+  경계가 있으면 앵커를 만들지 않고 거부한다 — 리로드 뒤의 op 은 타이틀에서 시작한 판을 전제한다.
 - **버그가 살아 있는 동안 그 시나리오는 실패한다.** 고친 뒤 통과하면 회귀가 막힌 것이다.
-- `--game` 은 카탈로그에서 커밋된 픽스처(`scenarioFixture`)를 고른다. 생성기 게임은 `--fixture` 로 직접 준다
-  (tmp 산출물을 커밋된 시나리오가 가리키면 다른 기계에서 안 돈다).
+- **기대의 방향이 뒤집힌다.** repro 의 `expect` 는 증상 서술(`textPresent: "야생 chickadee"`)이고,
+  시나리오의 `expect` 는 **고쳐진 뒤의 행동**(`textAbsent: "야생 chickadee"`, `textPresent: "치카디"`)이다.
+  `--expect` 는 정상 동작을 적는다. 증상 파일을 기계적으로 뒤집으려면 `--symptom-expect`(글자 축만 뒤집는다 —
+  좌표 축은 "고쳐진 좌표"를 사람이 정해야 하므로 거부한다). 증상 서술을 그대로 옮기면 버그가 살아 있는 동안
+  시나리오가 **통과**해 회귀를 못 막는다.
+- **고정 대기는 조건 대기로 바꾼다.** 런타임 게이트는 `wait` op 을 금지한다(`normalizeScenario` 가 던진다).
+  로그의 시간 간격은 간격 앞뒤 관측(`at.screen`/`at.mapId`)으로 번역한다 — 화면이 바뀌면 그 화면의 testid 를
+  기다리고(`pressUntil` 로 접어 초과 입력 없이), 같은 화면에서 맵만 바뀌면 `waitForMap` 을 기다린다(도착 좌표가
+  버그일 수 있으므로 `waitForPosition` 으로 굳히지 않는다). 정하지 못한 간격은 버리고 줄 번호와 함께 stderr 에
+  남긴다. 버려진 간격은 이동 op 의 타일 변화 대기와 다음 조건 대기가 흡수한다.
+- **체크포인트 모드는 시나리오의 `beats` 를 쓰지 않는다** — 실행기 우선순위가 `checkpointBeats` → 체크포인트
+  `beats` → 세트 `defaultBeats` → 기본 「도착 샷」이다. 생성기는 같은 비트를 `checkpointBeats: { anchor: beats }`
+  로도 가리킨다. 이게 없으면 기대를 아예 판정하지 않고 통과한다(조용한 거짓 통과, 실측).
+- **프로젝트 재료 순서:** `--fixture` → `games.json scenarioFixture`(커밋된 픽스처) → 플레이어 데모 분기
+  `query: { demo: <id> }`(`src/player/exportEntry.ts` 의 분기 목록에 있을 때) → `projectGenerator`
+  (`generate-project.mts` 빌더 표에 있을 때, 실행 시점에 제품과 같은 코드 경로로 생성). tmp 산출물은 거부한다 —
+  커밋된 시나리오가 다른 기계에서 안 돌기 때문이다. 생성기 게임은 72MB 급이라 픽스처를 커밋하지 않는다.
 - `expect.stuck` 은 옮길 수 없다 — 런타임 게이트는 고정 대기를 금지하므로 시간 창 판정은 repro 에만 둔다.
 - `--force` 없이는 기존 파일을 덮어쓰지 않는다.
 
@@ -220,7 +247,9 @@ npm run qa:runtime -- --scenario saesol-enter-field
 | `qp.mjs` | 세션 CLI(serve + 명령 클라이언트) |
 | `player-server.mjs` | 여러 세션이 함께 쓰는 player-QA 서버 하나(`ready <url>` 출력 후 유지) |
 | `repro.mjs` | op 목록 재생 + 증상 판정 |
-| `to-scenario.mjs` | 재현 → `scripts/qa/runtime/<id>.scenario.mjs` |
+| `to-scenario.mjs` | 재현 → `scripts/qa/runtime/<id>.scenario.mjs` (+ 체크포인트 세트) |
+| `../../lib/playOpsLog.mjs` | 로그 토막 자르기·세이브 앵커(repro·to-scenario 공용) |
+| `../../lib/qaProjectGenerator.mjs` | 생성기 게임의 프로젝트를 실행 시점에 생성(시나리오 `projectGenerator`) |
 | `build-games.mjs` | 카탈로그 materialize + 부팅 스모크 |
 | `generate-project.mts` | 게임 빌더 실행기(tsx) — 제품과 같은 코드 경로 |
 | `games.json` | 게임 카탈로그 |

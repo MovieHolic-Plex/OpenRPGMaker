@@ -57,6 +57,16 @@ export type RuntimeQaOp =
       readonly y: number;
       readonly timeoutMs?: number;
     }
+  /**
+   * 맵 전환만 기다린다. `not: true` 면 그 맵이 **아닐** 때까지 — 도착 좌표가 기대와 달라도
+   * (그게 버그인 경우에도) "전환은 일어났다"를 조건으로 표현할 수 있다.
+   */
+  | {
+      readonly kind: "waitForMap";
+      readonly mapId: string;
+      readonly not?: boolean;
+      readonly timeoutMs?: number;
+    }
   | {
       readonly kind: "waitForEventAt";
       readonly eventId: string;
@@ -296,6 +306,16 @@ export type RuntimeQaScenario = {
   readonly seed?: number;
   readonly viewport?: RuntimeQaViewport;
   readonly projectFixture?: string;
+  /**
+   * 생성기 게임(`scripts/qa/play/games.json` 의 `kind: "generator"`)을 실행 시점에 만든다.
+   * 커밋된 시나리오가 tmp 산출물을 가리키면 다른 기계에서 안 돌기 때문에, 큰 생성기 게임은
+   * 픽스처를 커밋하는 대신 이 축을 쓴다(scripts/lib/qaProjectGenerator.mjs).
+   */
+  readonly projectGenerator?: { readonly game: string };
+  /** 체크포인트 세트 이름 — `--checkpoint-set` 없이 실행해도 이 세트를 쓴다. */
+  readonly checkpointSet?: string;
+  /** 체크포인트 id → 비트. 체크포인트 실행기는 `beats` 대신 이것을 먼저 본다. */
+  readonly checkpointBeats?: Readonly<Record<string, readonly RuntimeQaBeat[]>> | ((checkpoint: unknown) => readonly RuntimeQaBeat[]);
   /** QA 사본에만 얹는 시스템 설정(예: menuUiStyle 고정). 픽스처 파일은 바꾸지 않는다. */
   readonly systemPatch?: Readonly<Record<string, unknown>>;
   /** player.html 에 붙일 쿼리(예: e2eVitals=1 로 액터 바이탈 훅 개방). */

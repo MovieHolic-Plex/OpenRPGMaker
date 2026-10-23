@@ -21,6 +21,7 @@ import { spawnSync } from "node:child_process";
 import { join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { runRuntimeQa, startPlayerQaServer } from "./lib/runtimeQaRun.mjs";
+import { materializeGeneratedProject } from "./lib/qaProjectGenerator.mjs";
 import {
   loadCheckpointSet,
   resolveOutRoot,
@@ -78,7 +79,12 @@ if (process.argv.includes("--netns") && process.env.OPRN_QA_IN_NETNS !== "1") {
 const args = parseArgs(process.argv.slice(2).filter((arg) => arg !== "--netns"));
 const scenario = await loadScenario(args.scenario);
 // --project 는 픽스처를 갈아끼운다. 시나리오의 기대 좌표/맵은 그 프로젝트에 맞아야 한다.
-const effective = args.project ? { ...scenario, projectFixture: args.project } : scenario;
+let effective = args.project ? { ...scenario, projectFixture: args.project } : scenario;
+// 생성기 게임(kind: generator)은 커밋된 픽스처가 없다(실측 72MB) — 시나리오가 `projectGenerator` 를
+// 들고 있으면 실행 시점에 제품과 같은 코드 경로로 만든다. 그래야 시나리오가 어느 기계에서도 돈다.
+if (!effective.projectFixture && effective.projectGenerator) {
+  effective = { ...effective, projectFixture: await materializeGeneratedProject(effective.projectGenerator.game) };
+}
 
 const browserType = args.browser === "firefox" ? firefox : chromium;
 const launchBrowser = () => browserType.launch({
