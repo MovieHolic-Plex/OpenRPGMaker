@@ -60,7 +60,7 @@ async function loadOps(file, lines) {
   let ops;
   if (file.endsWith(".jsonl") || text.trimStart().startsWith("{")) {
     const rows = text.split("\n").filter((line) => line.trim()).map((line) => JSON.parse(line));
-    ops = rows.map((row) => row.op ?? row);
+    ops = rows.map((row) => (row.op && row.t ? { ...row.op, recordedAt: Date.parse(row.t) } : row.op ?? row));
   } else {
     const parsed = JSON.parse(text);
     ops = Array.isArray(parsed) ? parsed : parsed.ops;
@@ -95,7 +95,9 @@ async function resolveGame(spec, { outRoot, gamesDir }) {
 }
 
 /** 한 번의 재생. 반환값이 판정 근거다. */
-async function replayOnce({ game, boot, ops, expect, attemptDir, viewport, seed, bootTimeoutMs, sharedPlayerUrl }) {
+const MAX_PACE_GAP_MS = 10_000;
+
+async function replayOnce({ game, boot, ops, expect, attemptDir, viewport, seed, bootTimeoutMs, sharedPlayerUrl, pace }) {
   await mkdir(attemptDir, { recursive: true });
   const server = sharedPlayerUrl
     ? { url: sharedPlayerUrl, close: async () => undefined }
@@ -114,15 +116,28 @@ async function replayOnce({ game, boot, ops, expect, attemptDir, viewport, seed,
       bootError = String(error?.message ?? error);
       await page.screenshot({ path: join(attemptDir, "boot-failure.png") }).catch(() => undefined);
     }
+    let previousRecordedAt = null;
+    let previousEndedAt = null;
     for (const op of ops) {
       if (bootError) break;
       if (OBSERVE_ONLY_KINDS.has(op.kind) || op.skip === true) {
         opResults.push({ op, skipped: true });
         continue;
       }
+      // A session log was played by a person-paced agent: dialogue reveal, fades and encounter rolls all advance
+      // in real time between its inputs. Replaying the inputs back-to-back lands them in different scene states,
+      // so keep the recorded gap between inputs (capped) unless --no-pace.
+      if (pace && Number.isFinite(op.recordedAt) && previousRecordedAt !== null) {
+        const recordedGap = op.recordedAt - previousRecordedAt;
+        const spent = Date.now() - previousEndedAt;
+        const pause = Math.min(Math.max(recordedGap - spent, 0), MAX_PACE_GAP_MS);
+        if (pause > 0) await page.waitForTimeout(pause);
+      }
+      if (Number.isFinite(op.recordedAt)) previousRecordedAt = op.recordedAt;
       const startedAt = Date.now();
       try {
         const outcome = await runPlayOp(page, op, runState);
+        previousEndedAt = Date.now();
         opResults.push({ op, ok: true, ms: Date.now() - startedAt, ...(outcome?.note ? { note: outcome.note } : {}) });
       } catch (error) {
         opResults.push({ op, ok: false, ms: Date.now() - startedAt, error: String(error?.message ?? error).split("\n")[0] });
@@ -166,9 +181,16 @@ async function main() {
   const boot = await prepareBoot({
     projectFile: game.file, entry: game.entry, dir: outDir, keepOpening: flags["keep-opening"] === true,
   });
-  const [width, height] = String(flags.viewport ?? "1024x768").split("x").map(Number);
+  // --session <dir>: replay under the session's own viewport and seed (qp.ready) — a different window size changes
+  // the layout and a different seed changes encounter rolls, so a log replayed under defaults is not the same run.
+  const session = flags.session
+    ? JSON.parse(await readFile(join(resolve(REPO_ROOT, String(flags.session)), "qp.ready"), "utf8"))
+    : null;
+  const sessionViewport = session?.viewport ? `${session.viewport.width}x${session.viewport.height}` : null;
+  const [width, height] = String(flags.viewport ?? sessionViewport ?? "1024x768").split("x").map(Number);
   const viewport = { width: width || 1024, height: height || 768 };
-  const seed = Number(flags.seed ?? 1);
+  const seed = Number(flags.seed ?? session?.seed ?? 1);
+  const pace = flags["no-pace"] !== true;
   // 부하가 큰 호스트에서는 부팅이 2~3분 걸린다. 재현 실패의 원인이 «느린 부팅» 인지
   // «증상 없음» 인지 갈리도록 부팅 대기만 따로 늘릴 수 있게 둔다.
   const bootTimeoutMs = Number(flags["boot-timeout"] ?? 240_000);
@@ -182,7 +204,7 @@ async function main() {
   const attempts = [];
   for (let attempt = 1; attempt <= repeat; attempt += 1) {
     attempts.push(await replayOnce({
-      game, boot, ops, expect, attemptDir: join(outDir, `run-${attempt}`), viewport, seed, bootTimeoutMs, sharedPlayerUrl,
+      game, boot, ops, expect, attemptDir: join(outDir, `run-${attempt}`), viewport, seed, bootTimeoutMs, sharedPlayerUrl, pace,
     }));
     process.stdout.write(`run ${attempt}/${repeat}: ${attempts.at(-1).reproduced ? "symptom present" : "symptom absent"}`
       + `${attempts.at(-1).failures.length ? ` — ${attempts.at(-1).failures.slice(0, 3).join(" / ")}` : ""}\n`);

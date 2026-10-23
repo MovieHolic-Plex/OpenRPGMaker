@@ -28,7 +28,7 @@ export const PLAY_BROWSER_ARGS = [
 export const PLAY_PROJECT_PATH = "/__qp/project.json";
 
 /** 게임 상태를 바꾸지 않는 관측 전용 op — actions.jsonl 에는 남지만 재생에서는 건너뛴다. */
-export const OBSERVE_ONLY_KINDS = new Set(["shot", "state", "errors"]);
+export const OBSERVE_ONLY_KINDS = new Set(["shot", "state", "text", "errors"]);
 
 /** 메뉴로 읽을 testid 패턴은 readPlayState 안에서 정의한다(페이지 함수는 모듈 스코프를 못 본다). */
 

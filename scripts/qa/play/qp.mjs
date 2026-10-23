@@ -298,6 +298,13 @@ async function serve(flags) {
         await record({ t: new Date().toISOString(), command: name, op: { kind: "state" }, ok: true, observe: true });
         return { text: formatPlayState(state), data: state };
       }
+      case "text": {
+        // Pixel fonts are easy to misread from a screenshot; quote this DOM text instead (repro textPresent reads the same).
+        const visible = await page.evaluate(() => document.body.innerText);
+        await record({ t: new Date().toISOString(), command: name, op: { kind: "text" }, ok: true, observe: true });
+        const lines = visible.split("\n").map((line) => line.trim()).filter(Boolean);
+        return { text: lines.length ? lines.slice(0, 80).join("\n") : "(no text)" };
+      }
       case "errors": {
         const drained = pageErrors.splice(0, pageErrors.length);
         await record({ t: new Date().toISOString(), command: name, op: { kind: "errors" }, ok: true, observe: true });
@@ -417,7 +424,7 @@ async function main() {
       + "  serve --game <id|path> [--port P] [--player-url URL] [--games-dir DIR] [--out DIR] [--viewport WxH] [--seed N] [--headed] [--keep-opening]\n"
       + "  key <k> | action | face <dir> | hold <k> <ms> | move <up|down|left|right> [n] | click <x> <y> | clickTestid <id>\n"
       + "  wait <ms> | waitText <text> [timeoutMs] | waitTestid <id> [present|absent|visible] [timeoutMs]\n"
-      + "  shot <name> | state | errors | teleport <mapId> <x> <y> | seed <n> | resize <W> <H> | reset | quit\n",
+      + "  shot <name> | state | text | errors | teleport <mapId> <x> <y> | seed <n> | resize <W> <H> | reset | quit\n",
     );
     return;
   }
