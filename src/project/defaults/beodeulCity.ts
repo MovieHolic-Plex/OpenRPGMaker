@@ -52,7 +52,7 @@ export const BEODEUL_DUNGEON_AUTOTILE_IDS: readonly string[] = ["beodeul_dungeon
 export const BEODEUL_TOWN_WALL_BASE = 28544;
 export const BEODEUL_WALL_KIT_PREFIX = "bd-wall-";
 /**
- * 쓰임 마당 바닥(2026-10-22 village-art, scripts/content/beodeul-yard/bake_yard.py · yard_art.py): 성벽 꼬리(~29,567, 3판 8행) 바로 뒤 한 행 128칸(71칸 사용, 29,568~).
+ * 쓰임 마당 바닥(2026-10-22 village-art, scripts/content/beodeul-yard/bake_yard.py · yard_art.py): 성벽 꼬리(~29,567, 3판 8행) 바로 뒤 두 행 256칸(29,568~29,823: 마당 71칸, 포도나무 줄 16칸 29,639~, 판석→흙 가장자리 129칸 29,655~ `beodeul_yard_flag_dirt`).
  * 8방 오토타일 셋 — 자갈 마당 `beodeul_yard_cobble`·다진 흙 마당 `beodeul_yard_dirt`·판석 마당 `beodeul_yard_flag`(속 변형 8, 가장자리·바깥/안쪽 모서리).
  * dress_village_quarter 가 광산·포도원·신전 폐허·성벽 장터 덩이 밑에 깐다. 키트 `bd-yard-*`, 칸 묶음 `beodeul:yard_*`. 번들 소유, 덧붙이기 전용.
  */

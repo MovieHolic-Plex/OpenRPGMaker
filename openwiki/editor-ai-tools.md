@@ -3658,7 +3658,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
         - **둔덕 다듬기(r10):** 한 줄만 삐져나온 둔덕 칸은 「흙 위에 뜬 풀 네모」로 그려져 위·아래 또는 좌·우 이웃이 없는 칸을 두 번 깎는다(갱구는 이웃으로 친다). 둔덕에 셋 이상 둘린 풀 홈은 마당 흙으로 메우고 `shapeYard` 로 다시 맞춘다. 둔덕은 갱구 킷의 빈 윗줄이 아니라 보이는 윗변(갱구 y+1)에 맞춘다. 뒤 칸 윗면에는 고사리·헤더 덤불·자갈 덧칠을 45% 흩는다.
     - 장터 마을은 아직 walled-market 덩이 없이 광장 마을만 짓는다.
   - ~~폐허 셋(포스트아포칼립스·좀비 도시·황무지)은 needs-art~~ → **2026-10-23 ready.** 새 칩셋 `wasteland_ruins` + `compose_wasteland_map` 을 쓴다. `openwiki/wasteland-ruins.md` 참고.
-  - 마당 꼬리 뒤 이식 칸 이동(증명 사본 28800→29696, 2560칸, `verify-shots/beodeul-yard-graft-relocation/proof.json`) 증명은 `scripts/qa/beodeul-graft-relocation-proof.mts` 에 있다. 기존 프로젝트 사본에서 맵 화소가 같은지를 본다.
+  - 마당 꼬리 뒤 이식 칸 이동(증명 사본 28800→29696, 2560칸, `verify-shots/beodeul-yard-graft-relocation/proof.json`; 꼬리가 두 행으로 자란 뒤 29696→29824, `verify-shots/beodeul-yard-graft-relocation-2/proof.json`) 증명은 `scripts/qa/beodeul-graft-relocation-proof.mts` 에 있다. 기존 프로젝트 사본에서 맵 화소가 같은지를 본다.
   - 달 기지 작곡기(`sfStationComposer` composeMoonbase)를 다시 짰다. 지붕을 1줄에 붙인 건물 줄 → 큰길 → 세로 연결 둘 → 설비 길 순서다.
     설비 길 위·아래에 전력·연료·화물·통신 마당과 착륙장을 둔다. 크레이터·바위는 놓인 기물 둘레 1칸을 피한다.
     기본 크기는 38×22, 하한은 34×20 이다.
