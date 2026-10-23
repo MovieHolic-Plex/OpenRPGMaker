@@ -887,6 +887,109 @@
           }
         }
       ]
+    },
+    {
+      "id": "cmp-dg-forest",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "숲 던전 하나 만들어 줘. 나무와 덩굴 사이로 길이 나 있고, 늑대 같은 적이 몇 마리 있고, 맨 안쪽에 숲의 주인인 보스가 있어야 해.",
+      "requires": [
+        "숲 던전",
+        "나무·덩굴 사이 길",
+        "늑대 같은 적",
+        "안쪽 보스"
+      ]
+    },
+    {
+      "id": "cmp-dg-swamp",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "독늪 던전 만들어 줘. 늪 물길 사이로 나무 다리를 건너가고, 도마뱀 인간 같은 적이 있고, 맨 안쪽에 히드라 보스가 있어야 해.",
+      "requires": [
+        "늪 물길",
+        "나무 다리",
+        "도마뱀 인간 적",
+        "히드라 보스"
+      ]
+    },
+    {
+      "id": "cmp-dg-volcano",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "화산 속 던전 만들어 줘. 용암이 흐르는 길을 건너가야 하고, 불 속성 적들이 있고, 맨 안쪽에 붉은 용 보스가 있어야 해.",
+      "requires": [
+        "용암",
+        "불 속성 적",
+        "붉은 용 보스"
+      ]
+    },
+    {
+      "id": "cmp-dg-ice",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "얼음 동굴 던전 만들어 줘. 얼음 바닥과 고드름이 있고, 늑대나 유령 같은 적, 안쪽에 보물상자와 얼음 용 보스가 있으면 좋겠어.",
+      "requires": [
+        "얼음 바닥",
+        "고드름",
+        "늑대·유령 적",
+        "보물상자",
+        "얼음 용 보스"
+      ]
+    },
+    {
+      "id": "cmp-dg-pyramid",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "사막 피라미드 던전을 3층으로 만들어 줘. 미라와 전갈 같은 적, 함정이 있고, 맨 아래층 왕의 묘실에 보스가 있어야 해.",
+      "requires": [
+        "3개 층",
+        "미라·전갈 적",
+        "함정",
+        "왕의 묘실 보스"
+      ]
+    },
+    {
+      "id": "cmp-dg-magic-tower",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마법사의 탑 던전을 3층으로 만들어 줘. 떠다니는 눈알이나 움직이는 갑옷 같은 적이 있고, 층마다 계단으로 이어지고, 꼭대기에 대마법사 보스가 있어야 해.",
+      "requires": [
+        "3개 층",
+        "마법 적",
+        "층 계단",
+        "꼭대기 대마법사"
+      ]
+    },
+    {
+      "id": "cmp-dg-otherworld",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "이세계(마계)로 이어지는 던전 하나 만들어 줘. 보랏빛 이상한 바닥과 균열, 악마 같은 적들, 맨 안쪽에 마계의 군주 보스가 있어야 해.",
+      "requires": [
+        "이세계 분위기",
+        "악마 적",
+        "군주 보스"
+      ]
+    },
+    {
+      "id": "cmp-jp-shotengai",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "jp_city",
+      "prompt": "일본 역 앞 상점가 거리 만들어 줘. 작은 가게 여러 곳, 역 입구, 횡단보도, 자판기와 벤치가 있었으면 해.",
+      "requires": [
+        "작은 가게 여러 곳",
+        "역 입구",
+        "횡단보도",
+        "자판기·벤치"
+      ]
     }
   ],
   "gates": {
