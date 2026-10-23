@@ -257,304 +257,46 @@
    "by": "delegated",
    "delegatedBy": "delegated by user to supervisor 2026-10-23",
    "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-panel-1.json"
+  },
+  {
+   "round": "gap-props-r1",
+   "item": "gap.bone_pile",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "4a7fde0d2db996abf6662cd3ba54549d0e275a744660058782b3f8762c0a2c03",
+   "note": "blind panel 2: {'opus1': 'Y', 'opus2': 'Y', 'opus3': 'Y', 'argon': 'Y'}",
+   "at": "2026-10-23T10:43:37",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-panel-2.json"
+  },
+  {
+   "round": "gap-props-r1",
+   "item": "gap.goblin_tent",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "435b6c8b0eddcb37286cdfa9d6c53eb0476889150fad5e5c3b94c0bdb4722b49",
+   "note": "blind panel 2: {'opus1': 'X', 'opus2': 'X', 'opus3': 'X', 'argon': 'X'}",
+   "at": "2026-10-23T10:43:39",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-panel-2.json"
+  },
+  {
+   "round": "gap-tower-r1",
+   "item": "gap.tower_wall",
+   "line": "*",
+   "letter": "A2",
+   "sha256": "267c7c8d1d4c37790392756bb4d3d612457c15abcc99d11b8b50fb9f8d9d3db2",
+   "note": "blind panel 2: {'opus1': 'Y', 'opus2': 'Y', 'opus3': 'Y', 'argon': 'X'}",
+   "at": "2026-10-23T10:43:42",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-panel-2.json"
   }
  ],
  "rejects": [],
  "runs": [
-  {
-   "round": "gap-tower-r1",
-   "at": "2026-10-23T09:28:39",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "gap.tower_wall": {
-     "A1": "2e363c2549945465ce3b5edf02122154955320581475a29b5a2457538d1844f3",
-     "A2": "ba54ef4f12ace7976a488f340d8c700ce7dd695f0a781f6f7e920fab94893bda"
-    },
-    "gap.tower_stair": {
-     "A1": "522d2e38f16ab92a61b21e91cc43864c00c9b15d2af00489df9ae0f8ba0c7f67",
-     "A2": "73780a2fd54827a296d414ed9bdded089c8b7cce28cc70febfae53713b3583cc"
-    },
-    "gap.tower_window": {
-     "A1": "5134659d6747db10be0f3d5b260b6b6a05bf52a642b8ebe5694062b2f6bbb2f4",
-     "A2": "77046bedf563c9c91113342b0ccd47df7b2a35dabafbdaf6481a58995c818c06"
-    }
-   }
-  },
-  {
-   "round": "gap-tower-r1",
-   "at": "2026-10-23T09:29:48",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "gap.tower_wall": {
-     "A1": "2e363c2549945465ce3b5edf02122154955320581475a29b5a2457538d1844f3",
-     "A2": "267c7c8d1d4c37790392756bb4d3d612457c15abcc99d11b8b50fb9f8d9d3db2"
-    },
-    "gap.tower_stair": {
-     "A1": "522d2e38f16ab92a61b21e91cc43864c00c9b15d2af00489df9ae0f8ba0c7f67",
-     "A2": "73780a2fd54827a296d414ed9bdded089c8b7cce28cc70febfae53713b3583cc"
-    },
-    "gap.tower_window": {
-     "A1": "5134659d6747db10be0f3d5b260b6b6a05bf52a642b8ebe5694062b2f6bbb2f4",
-     "A2": "77046bedf563c9c91113342b0ccd47df7b2a35dabafbdaf6481a58995c818c06"
-    }
-   }
-  },
-  {
-   "round": "gap-tower-r1",
-   "at": "2026-10-23T09:31:14",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "gap.tower_wall": {
-     "A1": "2e363c2549945465ce3b5edf02122154955320581475a29b5a2457538d1844f3",
-     "A2": "267c7c8d1d4c37790392756bb4d3d612457c15abcc99d11b8b50fb9f8d9d3db2"
-    },
-    "gap.tower_stair": {
-     "A1": "522d2e38f16ab92a61b21e91cc43864c00c9b15d2af00489df9ae0f8ba0c7f67",
-     "A2": "73780a2fd54827a296d414ed9bdded089c8b7cce28cc70febfae53713b3583cc"
-    },
-    "gap.tower_window": {
-     "A1": "5134659d6747db10be0f3d5b260b6b6a05bf52a642b8ebe5694062b2f6bbb2f4",
-     "A2": "77046bedf563c9c91113342b0ccd47df7b2a35dabafbdaf6481a58995c818c06"
-    }
-   }
-  },
-  {
-   "round": "gap-props-r1",
-   "at": "2026-10-23T09:31:20",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "gap.door": {
-     "A1": "ed0e96dfd4c7af8775b2fbb2716751fbeac17b75f3aea3ddbdf2f807bc8d3642",
-     "A2": "61686a8629f90314f3c15581b8ba94cfdd5112e51e6f1ed38f51e83d3150696d"
-    },
-    "gap.lever": {
-     "A1": "c05917fafb2fb519b6d8ceb5913b3cca721d01267d8e96547d9b033ee0ecb213",
-     "A2": "406a1e54772aa00859e213aa5c1de49f9e65a004d284d49f69d12dcc3a246b15"
-    },
-    "gap.goblin_tent": {
-     "A1": "292c5a5aa2151bd04ef45034fe9ce68d0e86cd125c067bb1498751db24341781",
-     "A2": "634a9758b6e7a807821bd0e25caaa96ca6833e8a808706913672c75326babac9"
-    },
-    "gap.bone_pile": {
-     "A1": "4a7fde0d2db996abf6662cd3ba54549d0e275a744660058782b3f8762c0a2c03",
-     "A2": "79a5fc6f1535d1d8b3189ca96e0007184fa5186b97aba6bce93b105c255ec770"
-    },
-    "gap.palisade": {
-     "A1": "03ecf7d994914734054c104d24fa8f010f966c70ab0bf2be2b8c65a3a48ff746",
-     "A2": "35b0992791c8bc6634a4576aab8e98b802c106a91ab8b88a74964e8d2cfae13d"
-    },
-    "gap.campfire": {
-     "A1": "5e6d617b6dfab92c3a6149cf8097c3f66469c7739a019b5dfb6cfa834ecfcfe3",
-     "A2": "125f0cbeb5257400a32ebd08afc6e0016bdaf3747bc54606cebfc160f61f2e0f"
-    }
-   }
-  },
-  {
-   "round": "gap-props-r1",
-   "at": "2026-10-23T09:31:57",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "gap.door": {
-     "A1": "ed0e96dfd4c7af8775b2fbb2716751fbeac17b75f3aea3ddbdf2f807bc8d3642",
-     "A2": "61686a8629f90314f3c15581b8ba94cfdd5112e51e6f1ed38f51e83d3150696d"
-    },
-    "gap.lever": {
-     "A1": "c05917fafb2fb519b6d8ceb5913b3cca721d01267d8e96547d9b033ee0ecb213",
-     "A2": "406a1e54772aa00859e213aa5c1de49f9e65a004d284d49f69d12dcc3a246b15"
-    },
-    "gap.goblin_tent": {
-     "A1": "292c5a5aa2151bd04ef45034fe9ce68d0e86cd125c067bb1498751db24341781",
-     "A2": "634a9758b6e7a807821bd0e25caaa96ca6833e8a808706913672c75326babac9"
-    },
-    "gap.bone_pile": {
-     "A1": "4a7fde0d2db996abf6662cd3ba54549d0e275a744660058782b3f8762c0a2c03",
-     "A2": "79a5fc6f1535d1d8b3189ca96e0007184fa5186b97aba6bce93b105c255ec770"
-    },
-    "gap.palisade": {
-     "A1": "f98f05938bf02342b0f8fa8b32def5b42c8c7cdbdc3c1891b0c0004411a35690",
-     "A2": "bfa6333727c4e51bc94badcc2ad51fc572e386f6a51eac18b86db6ac08e53c07"
-    },
-    "gap.campfire": {
-     "A1": "5e6d617b6dfab92c3a6149cf8097c3f66469c7739a019b5dfb6cfa834ecfcfe3",
-     "A2": "125f0cbeb5257400a32ebd08afc6e0016bdaf3747bc54606cebfc160f61f2e0f"
-    }
-   }
-  },
-  {
-   "round": "gap-props-r1",
-   "at": "2026-10-23T09:32:09",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "gap.door": {
-     "A1": "ed0e96dfd4c7af8775b2fbb2716751fbeac17b75f3aea3ddbdf2f807bc8d3642",
-     "A2": "61686a8629f90314f3c15581b8ba94cfdd5112e51e6f1ed38f51e83d3150696d"
-    },
-    "gap.lever": {
-     "A1": "c05917fafb2fb519b6d8ceb5913b3cca721d01267d8e96547d9b033ee0ecb213",
-     "A2": "406a1e54772aa00859e213aa5c1de49f9e65a004d284d49f69d12dcc3a246b15"
-    },
-    "gap.goblin_tent": {
-     "A1": "292c5a5aa2151bd04ef45034fe9ce68d0e86cd125c067bb1498751db24341781",
-     "A2": "634a9758b6e7a807821bd0e25caaa96ca6833e8a808706913672c75326babac9"
-    },
-    "gap.bone_pile": {
-     "A1": "4a7fde0d2db996abf6662cd3ba54549d0e275a744660058782b3f8762c0a2c03",
-     "A2": "79a5fc6f1535d1d8b3189ca96e0007184fa5186b97aba6bce93b105c255ec770"
-    },
-    "gap.palisade": {
-     "A1": "f98f05938bf02342b0f8fa8b32def5b42c8c7cdbdc3c1891b0c0004411a35690",
-     "A2": "bfa6333727c4e51bc94badcc2ad51fc572e386f6a51eac18b86db6ac08e53c07"
-    },
-    "gap.campfire": {
-     "A1": "5e6d617b6dfab92c3a6149cf8097c3f66469c7739a019b5dfb6cfa834ecfcfe3",
-     "A2": "125f0cbeb5257400a32ebd08afc6e0016bdaf3747bc54606cebfc160f61f2e0f"
-    }
-   }
-  },
-  {
-   "round": "gap-props-r1",
-   "at": "2026-10-23T09:32:13",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "gap.door": {
-     "A1": "ed0e96dfd4c7af8775b2fbb2716751fbeac17b75f3aea3ddbdf2f807bc8d3642",
-     "A2": "61686a8629f90314f3c15581b8ba94cfdd5112e51e6f1ed38f51e83d3150696d"
-    },
-    "gap.lever": {
-     "A1": "c05917fafb2fb519b6d8ceb5913b3cca721d01267d8e96547d9b033ee0ecb213",
-     "A2": "406a1e54772aa00859e213aa5c1de49f9e65a004d284d49f69d12dcc3a246b15"
-    },
-    "gap.goblin_tent": {
-     "A1": "292c5a5aa2151bd04ef45034fe9ce68d0e86cd125c067bb1498751db24341781",
-     "A2": "634a9758b6e7a807821bd0e25caaa96ca6833e8a808706913672c75326babac9"
-    },
-    "gap.bone_pile": {
-     "A1": "4a7fde0d2db996abf6662cd3ba54549d0e275a744660058782b3f8762c0a2c03",
-     "A2": "79a5fc6f1535d1d8b3189ca96e0007184fa5186b97aba6bce93b105c255ec770"
-    },
-    "gap.palisade": {
-     "A1": "f98f05938bf02342b0f8fa8b32def5b42c8c7cdbdc3c1891b0c0004411a35690",
-     "A2": "bfa6333727c4e51bc94badcc2ad51fc572e386f6a51eac18b86db6ac08e53c07"
-    },
-    "gap.campfire": {
-     "A1": "5e6d617b6dfab92c3a6149cf8097c3f66469c7739a019b5dfb6cfa834ecfcfe3",
-     "A2": "125f0cbeb5257400a32ebd08afc6e0016bdaf3747bc54606cebfc160f61f2e0f"
-    }
-   }
-  },
-  {
-   "round": "gap-props-r1",
-   "at": "2026-10-23T09:32:40",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "gap.door": {
-     "A1": "ed0e96dfd4c7af8775b2fbb2716751fbeac17b75f3aea3ddbdf2f807bc8d3642",
-     "A2": "61686a8629f90314f3c15581b8ba94cfdd5112e51e6f1ed38f51e83d3150696d"
-    },
-    "gap.lever": {
-     "A1": "c05917fafb2fb519b6d8ceb5913b3cca721d01267d8e96547d9b033ee0ecb213",
-     "A2": "406a1e54772aa00859e213aa5c1de49f9e65a004d284d49f69d12dcc3a246b15"
-    },
-    "gap.goblin_tent": {
-     "A1": "292c5a5aa2151bd04ef45034fe9ce68d0e86cd125c067bb1498751db24341781",
-     "A2": "634a9758b6e7a807821bd0e25caaa96ca6833e8a808706913672c75326babac9"
-    },
-    "gap.bone_pile": {
-     "A1": "4a7fde0d2db996abf6662cd3ba54549d0e275a744660058782b3f8762c0a2c03",
-     "A2": "79a5fc6f1535d1d8b3189ca96e0007184fa5186b97aba6bce93b105c255ec770"
-    },
-    "gap.palisade": {
-     "A1": "f98f05938bf02342b0f8fa8b32def5b42c8c7cdbdc3c1891b0c0004411a35690",
-     "A2": "bfa6333727c4e51bc94badcc2ad51fc572e386f6a51eac18b86db6ac08e53c07"
-    },
-    "gap.campfire": {
-     "A1": "5e6d617b6dfab92c3a6149cf8097c3f66469c7739a019b5dfb6cfa834ecfcfe3",
-     "A2": "125f0cbeb5257400a32ebd08afc6e0016bdaf3747bc54606cebfc160f61f2e0f"
-    }
-   }
-  },
-  {
-   "round": "gap-props-r1",
-   "at": "2026-10-23T09:32:44",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "gap.door": {
-     "A1": "ed0e96dfd4c7af8775b2fbb2716751fbeac17b75f3aea3ddbdf2f807bc8d3642",
-     "A2": "61686a8629f90314f3c15581b8ba94cfdd5112e51e6f1ed38f51e83d3150696d"
-    },
-    "gap.lever": {
-     "A1": "c05917fafb2fb519b6d8ceb5913b3cca721d01267d8e96547d9b033ee0ecb213",
-     "A2": "406a1e54772aa00859e213aa5c1de49f9e65a004d284d49f69d12dcc3a246b15"
-    },
-    "gap.goblin_tent": {
-     "A1": "292c5a5aa2151bd04ef45034fe9ce68d0e86cd125c067bb1498751db24341781",
-     "A2": "634a9758b6e7a807821bd0e25caaa96ca6833e8a808706913672c75326babac9"
-    },
-    "gap.bone_pile": {
-     "A1": "4a7fde0d2db996abf6662cd3ba54549d0e275a744660058782b3f8762c0a2c03",
-     "A2": "79a5fc6f1535d1d8b3189ca96e0007184fa5186b97aba6bce93b105c255ec770"
-    },
-    "gap.palisade": {
-     "A1": "f98f05938bf02342b0f8fa8b32def5b42c8c7cdbdc3c1891b0c0004411a35690",
-     "A2": "bfa6333727c4e51bc94badcc2ad51fc572e386f6a51eac18b86db6ac08e53c07"
-    },
-    "gap.campfire": {
-     "A1": "5e6d617b6dfab92c3a6149cf8097c3f66469c7739a019b5dfb6cfa834ecfcfe3",
-     "A2": "125f0cbeb5257400a32ebd08afc6e0016bdaf3747bc54606cebfc160f61f2e0f"
-    }
-   }
-  },
-  {
-   "round": "gap-liquid-r1",
-   "at": "2026-10-23T09:39:34",
-   "fail": 4,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "gap.water_edge": {
-     "A1": "336e81e6e85f8e248b20e3777b2fb19819119553f7d270f8b4da9a1d79ed69b3",
-     "A2": "8a61efec994446ca7f5c07659ea931b4cea76773007ef657538ec723a968e1d3",
-     "B1": "70b659787708ddf94628d9fe304da8d9f98498b6185382dad2250216bb95e886",
-     "B2": "86df5726b60ba7b20f74f6678c3b396db77c9549488cba0d8ff1f6d04d8a8cff",
-     "C1": "6d8ae66dc4043342feb6b3ab8f6ceda291a21024c5e3ccc3dfb029f4d7d1d4c1",
-     "C2": "625d6899b00daba3d179dd21020a1a2b8fb86ef624c098241560871829ea3740"
-    },
-    "gap.lava_edge": {
-     "B1": "c0654a9bf36d844bb6957e2055a719f247bc6db7c1f2a5bb82c4e73dd4777a02",
-     "B2": "3f3ba5482b7f64a54b0e222912035c7a0ed140cce6838243c1aa86b86a665a86",
-     "C1": "694a26b2b41a43600dd05cae369fa9c716a9676a1cf04faed427c693c82e668f",
-     "C2": "7f647f6b8a5c1daeabf690d62c512c0bdcfde84cba350463e80a22d8fe848b74"
-    }
-   }
-  },
   {
    "round": "gap-props-r1",
    "at": "2026-10-23T09:44:36",
@@ -1333,6 +1075,300 @@
     "gap.tower_window": {
      "A1": "5134659d6747db10be0f3d5b260b6b6a05bf52a642b8ebe5694062b2f6bbb2f4",
      "A2": "77046bedf563c9c91113342b0ccd47df7b2a35dabafbdaf6481a58995c818c06"
+    }
+   }
+  },
+  {
+   "round": "gap-ice-r1",
+   "at": "2026-10-23T10:40:13",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.ice_floor": {
+     "A1": "396213095d2b9595b8ecb50509e0246fc79f0ddec9a2874009cd1d2aaefe5a33",
+     "A2": "afe14ba3252fa35629c5ba8b57f6576ffd9339bb84fa5f1526ea5acc69a51647"
+    },
+    "gap.ice_rock": {
+     "A1": "4a6205dea3f02dfadfae6755e1e123c122c276318f3e0f2ed8ab67e8c22df095",
+     "A2": "9a2bd20ca8c5ab9eb1160545357c3aeaeb72aa0f09f2fd4719db47c6e6ecec85"
+    }
+   }
+  },
+  {
+   "round": "gap-tower-r1",
+   "at": "2026-10-23T10:40:19",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.tower_wall": {
+     "A1": "2e363c2549945465ce3b5edf02122154955320581475a29b5a2457538d1844f3",
+     "A2": "267c7c8d1d4c37790392756bb4d3d612457c15abcc99d11b8b50fb9f8d9d3db2"
+    },
+    "gap.tower_stair": {
+     "A1": "23acfd24370a806707f53af72a48624fc60cd3ba10a7da6c3c234547216a4997",
+     "A2": "73780a2fd54827a296d414ed9bdded089c8b7cce28cc70febfae53713b3583cc"
+    },
+    "gap.tower_window": {
+     "A1": "5134659d6747db10be0f3d5b260b6b6a05bf52a642b8ebe5694062b2f6bbb2f4",
+     "A2": "77046bedf563c9c91113342b0ccd47df7b2a35dabafbdaf6481a58995c818c06"
+    }
+   }
+  },
+  {
+   "round": "gap-ice-r1",
+   "at": "2026-10-23T10:40:47",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.ice_floor": {
+     "A1": "396213095d2b9595b8ecb50509e0246fc79f0ddec9a2874009cd1d2aaefe5a33",
+     "A2": "afe14ba3252fa35629c5ba8b57f6576ffd9339bb84fa5f1526ea5acc69a51647"
+    },
+    "gap.ice_rock": {
+     "A1": "f658c2066e8ff51120852b9586db6fa5cc69abd816bd71ad172e9b9adea49464",
+     "A2": "7279fb0c93a12ac362d34078b4cfc15c109f3dcc1f0266d985e8e1ac37af8874"
+    }
+   }
+  },
+  {
+   "round": "gap-props-r1",
+   "at": "2026-10-23T10:40:58",
+   "fail": 0,
+   "warn": 2,
+   "warnByCode": {
+    "CONTRAST": 2
+   },
+   "polish": [
+    {
+     "item": "gap.palisade",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 서끝(2칸) 그늘 쪽 0.20 vs 바닥 0.46 차 0.27; 가운데(2칸) 그늘 쪽 0.24 vs 바닥 0.46 차 0.22; 가운데2(2칸) 그늘 쪽 0.20 vs 바닥 0.46 차 0.26; 가운데3(2칸) 그늘 쪽 0.19 vs 바닥 0.46 차 0.27; 동끝(2칸) 그늘 쪽 0.21 vs 바닥 0.46 차 0.25; 세로(2칸) 그늘 쪽 0.25 vs 바닥 0.46 차 0.21; 서모서리(2칸) 그늘 쪽 0.17 vs 바닥 0.46 차 0.29; 동모서리(2칸) 그늘 쪽 0.19 vs 바닥 0.46 차 0.27 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 가운데(2칸) 그늘 쪽 0.24 vs 바닥 0.38 차 0.14; 세로(2칸) 그늘 쪽 0.25 vs 바닥 0.38 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 서끝(2칸) 그늘 쪽 0.20 vs 바닥 0.44 차 0.24; 가운데(2칸) 그늘 쪽 0.24 vs 바닥 0.44 차 0.20; 가운데2(2칸) 그늘 쪽 0.20 vs 바닥 0.44 차 0.24; 가운데3(2칸) 그늘 쪽 0.19 vs 바닥 0.44 차 0.25; 동끝(2칸) 그늘 쪽 0.21 vs 바닥 0.44 차 0.23; 세로(2칸) 그늘 쪽 0.25 vs 바닥 0.44 차 0.19; 서모서리(2칸) 그늘 쪽 0.17 vs 바닥 0.44 차 0.27; 동모서리(2칸) 그늘 쪽 0.19 vs 바닥 0.44 차 0.25"
+    },
+    {
+     "item": "gap.palisade",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 서끝(2칸) 그늘 쪽 0.23 vs 바닥 0.46 차 0.23; 가운데(2칸) 그늘 쪽 0.25 vs 바닥 0.46 차 0.22; 가운데2(2칸) 그늘 쪽 0.21 vs 바닥 0.46 차 0.25; 가운데3(2칸) 그늘 쪽 0.23 vs 바닥 0.46 차 0.23; 동끝(2칸) 그늘 쪽 0.23 vs 바닥 0.46 차 0.24; 세로(2칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.21; 서모서리(2칸) 그늘 쪽 0.17 vs 바닥 0.46 차 0.29; 동모서리(2칸) 그늘 쪽 0.16 vs 바닥 0.46 차 0.30 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 서끝(2칸) 그늘 쪽 0.23 vs 바닥 0.38 차 0.15; 가운데(2칸) 그늘 쪽 0.25 vs 바닥 0.38 차 0.14; 세로(2칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 서끝(2칸) 그늘 쪽 0.23 vs 바닥 0.44 차 0.21; 가운데(2칸) 그늘 쪽 0.25 vs 바닥 0.44 차 0.19; 가운데2(2칸) 그늘 쪽 0.21 vs 바닥 0.44 차 0.23; 가운데3(2칸) 그늘 쪽 0.23 vs 바닥 0.44 차 0.21; 동끝(2칸) 그늘 쪽 0.23 vs 바닥 0.44 차 0.21; 세로(2칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18; 서모서리(2칸) 그늘 쪽 0.17 vs 바닥 0.44 차 0.27; 동모서리(2칸) 그늘 쪽 0.16 vs 바닥 0.44 차 0.28"
+    }
+   ],
+   "hashes": {
+    "gap.door": {
+     "A1": "ed0e96dfd4c7af8775b2fbb2716751fbeac17b75f3aea3ddbdf2f807bc8d3642",
+     "A2": "61686a8629f90314f3c15581b8ba94cfdd5112e51e6f1ed38f51e83d3150696d"
+    },
+    "gap.lever": {
+     "A1": "c05917fafb2fb519b6d8ceb5913b3cca721d01267d8e96547d9b033ee0ecb213",
+     "A2": "e594e6df4bf6e6efe19b60f11e8ba799e81fe68188b3782a4d69cc06b88a5034"
+    },
+    "gap.goblin_tent": {
+     "A1": "435b6c8b0eddcb37286cdfa9d6c53eb0476889150fad5e5c3b94c0bdb4722b49",
+     "A2": "634a9758b6e7a807821bd0e25caaa96ca6833e8a808706913672c75326babac9"
+    },
+    "gap.bone_pile": {
+     "A1": "4a7fde0d2db996abf6662cd3ba54549d0e275a744660058782b3f8762c0a2c03",
+     "A2": "79a5fc6f1535d1d8b3189ca96e0007184fa5186b97aba6bce93b105c255ec770"
+    },
+    "gap.palisade": {
+     "A1": "ea1da0cba1042089c364b0c25e233022d0a18ee096a68b622288f3234a4e5533",
+     "A2": "58ec7168039daa977e9ccc111e049b81e530af0cf2f7597190b6ae2f7e850797"
+    },
+    "gap.campfire": {
+     "A1": "5e6d617b6dfab92c3a6149cf8097c3f66469c7739a019b5dfb6cfa834ecfcfe3",
+     "A2": "125f0cbeb5257400a32ebd08afc6e0016bdaf3747bc54606cebfc160f61f2e0f"
+    }
+   }
+  },
+  {
+   "round": "gap-props-r1",
+   "at": "2026-10-23T10:41:20",
+   "fail": 0,
+   "warn": 2,
+   "warnByCode": {
+    "CONTRAST": 2
+   },
+   "polish": [
+    {
+     "item": "gap.palisade",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 서끝(2칸) 그늘 쪽 0.20 vs 바닥 0.46 차 0.27; 가운데(2칸) 그늘 쪽 0.23 vs 바닥 0.46 차 0.23; 가운데2(2칸) 그늘 쪽 0.18 vs 바닥 0.46 차 0.28; 가운데3(2칸) 그늘 쪽 0.19 vs 바닥 0.46 차 0.27; 동끝(2칸) 그늘 쪽 0.19 vs 바닥 0.46 차 0.28; 세로(2칸) 그늘 쪽 0.15 vs 바닥 0.46 차 0.32; 서모서리(2칸) 그늘 쪽 0.17 vs 바닥 0.46 차 0.29; 동모서리(2칸) 그늘 쪽 0.16 vs 바닥 0.46 차 0.30 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 가운데(2칸) 그늘 쪽 0.23 vs 바닥 0.38 차 0.15 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 서끝(2칸) 그늘 쪽 0.20 vs 바닥 0.44 차 0.24; 가운데(2칸) 그늘 쪽 0.23 vs 바닥 0.44 차 0.21; 가운데2(2칸) 그늘 쪽 0.18 vs 바닥 0.44 차 0.26; 가운데3(2칸) 그늘 쪽 0.19 vs 바닥 0.44 차 0.25; 동끝(2칸) 그늘 쪽 0.19 vs 바닥 0.44 차 0.25; 세로(2칸) 그늘 쪽 0.15 vs 바닥 0.44 차 0.29; 서모서리(2칸) 그늘 쪽 0.17 vs 바닥 0.44 차 0.27; 동모서리(2칸) 그늘 쪽 0.16 vs 바닥 0.44 차 0.28"
+    },
+    {
+     "item": "gap.palisade",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 서끝(2칸) 그늘 쪽 0.22 vs 바닥 0.46 차 0.24; 가운데(2칸) 그늘 쪽 0.24 vs 바닥 0.46 차 0.22; 가운데2(2칸) 그늘 쪽 0.21 vs 바닥 0.46 차 0.25; 가운데3(2칸) 그늘 쪽 0.20 vs 바닥 0.46 차 0.27; 동끝(2칸) 그늘 쪽 0.22 vs 바닥 0.46 차 0.25; 세로(2칸) 그늘 쪽 0.15 vs 바닥 0.46 차 0.32; 서모서리(2칸) 그늘 쪽 0.16 vs 바닥 0.46 차 0.30; 동모서리(2칸) 그늘 쪽 0.14 vs 바닥 0.46 차 0.32 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 가운데(2칸) 그늘 쪽 0.24 vs 바닥 0.38 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 서끝(2칸) 그늘 쪽 0.22 vs 바닥 0.44 차 0.22; 가운데(2칸) 그늘 쪽 0.24 vs 바닥 0.44 차 0.20; 가운데2(2칸) 그늘 쪽 0.21 vs 바닥 0.44 차 0.23; 가운데3(2칸) 그늘 쪽 0.20 vs 바닥 0.44 차 0.24; 동끝(2칸) 그늘 쪽 0.22 vs 바닥 0.44 차 0.22; 세로(2칸) 그늘 쪽 0.15 vs 바닥 0.44 차 0.29; 서모서리(2칸) 그늘 쪽 0.16 vs 바닥 0.44 차 0.28; 동모서리(2칸) 그늘 쪽 0.14 vs 바닥 0.44 차 0.30"
+    }
+   ],
+   "hashes": {
+    "gap.door": {
+     "A1": "ed0e96dfd4c7af8775b2fbb2716751fbeac17b75f3aea3ddbdf2f807bc8d3642",
+     "A2": "61686a8629f90314f3c15581b8ba94cfdd5112e51e6f1ed38f51e83d3150696d"
+    },
+    "gap.lever": {
+     "A1": "c05917fafb2fb519b6d8ceb5913b3cca721d01267d8e96547d9b033ee0ecb213",
+     "A2": "e594e6df4bf6e6efe19b60f11e8ba799e81fe68188b3782a4d69cc06b88a5034"
+    },
+    "gap.goblin_tent": {
+     "A1": "435b6c8b0eddcb37286cdfa9d6c53eb0476889150fad5e5c3b94c0bdb4722b49",
+     "A2": "634a9758b6e7a807821bd0e25caaa96ca6833e8a808706913672c75326babac9"
+    },
+    "gap.bone_pile": {
+     "A1": "4a7fde0d2db996abf6662cd3ba54549d0e275a744660058782b3f8762c0a2c03",
+     "A2": "79a5fc6f1535d1d8b3189ca96e0007184fa5186b97aba6bce93b105c255ec770"
+    },
+    "gap.palisade": {
+     "A1": "eca19f4cfc8ef60d6182267ac6b4e81a59566f638400b7689fdba96876472192",
+     "A2": "460ad052015a71b04cd43fd2ac9e7ec6d10a01717f3023caca5fae164382b476"
+    },
+    "gap.campfire": {
+     "A1": "5e6d617b6dfab92c3a6149cf8097c3f66469c7739a019b5dfb6cfa834ecfcfe3",
+     "A2": "125f0cbeb5257400a32ebd08afc6e0016bdaf3747bc54606cebfc160f61f2e0f"
+    }
+   }
+  },
+  {
+   "round": "gap-ice-r1",
+   "at": "2026-10-23T10:41:34",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.ice_floor": {
+     "A1": "396213095d2b9595b8ecb50509e0246fc79f0ddec9a2874009cd1d2aaefe5a33",
+     "A2": "af3713b110e88f2f165c4a187b14b8b4ef4383260c292864c4ade6dbffddb05b"
+    },
+    "gap.ice_rock": {
+     "A1": "f658c2066e8ff51120852b9586db6fa5cc69abd816bd71ad172e9b9adea49464",
+     "A2": "7279fb0c93a12ac362d34078b4cfc15c109f3dcc1f0266d985e8e1ac37af8874"
+    }
+   }
+  },
+  {
+   "round": "gap-props-r1",
+   "at": "2026-10-23T10:41:34",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.door": {
+     "A1": "ed0e96dfd4c7af8775b2fbb2716751fbeac17b75f3aea3ddbdf2f807bc8d3642",
+     "A2": "61686a8629f90314f3c15581b8ba94cfdd5112e51e6f1ed38f51e83d3150696d"
+    },
+    "gap.lever": {
+     "A1": "c05917fafb2fb519b6d8ceb5913b3cca721d01267d8e96547d9b033ee0ecb213",
+     "A2": "e594e6df4bf6e6efe19b60f11e8ba799e81fe68188b3782a4d69cc06b88a5034"
+    },
+    "gap.goblin_tent": {
+     "A1": "435b6c8b0eddcb37286cdfa9d6c53eb0476889150fad5e5c3b94c0bdb4722b49",
+     "A2": "634a9758b6e7a807821bd0e25caaa96ca6833e8a808706913672c75326babac9"
+    },
+    "gap.bone_pile": {
+     "A1": "4a7fde0d2db996abf6662cd3ba54549d0e275a744660058782b3f8762c0a2c03",
+     "A2": "79a5fc6f1535d1d8b3189ca96e0007184fa5186b97aba6bce93b105c255ec770"
+    },
+    "gap.palisade": {
+     "A1": "062c264577824bf62b14eb714e52339a50aed4ce265a50022bc4e77b5fcb8276",
+     "A2": "533b5f581a8743ce6a8cbb0ee1cfaf78356988224e31fee18db0edb2318517a0"
+    },
+    "gap.campfire": {
+     "A1": "5e6d617b6dfab92c3a6149cf8097c3f66469c7739a019b5dfb6cfa834ecfcfe3",
+     "A2": "125f0cbeb5257400a32ebd08afc6e0016bdaf3747bc54606cebfc160f61f2e0f"
+    }
+   }
+  },
+  {
+   "round": "gap-props-r1",
+   "at": "2026-10-23T10:42:06",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.door": {
+     "A1": "ed0e96dfd4c7af8775b2fbb2716751fbeac17b75f3aea3ddbdf2f807bc8d3642",
+     "A2": "61686a8629f90314f3c15581b8ba94cfdd5112e51e6f1ed38f51e83d3150696d"
+    },
+    "gap.lever": {
+     "A1": "c05917fafb2fb519b6d8ceb5913b3cca721d01267d8e96547d9b033ee0ecb213",
+     "A2": "e594e6df4bf6e6efe19b60f11e8ba799e81fe68188b3782a4d69cc06b88a5034"
+    },
+    "gap.goblin_tent": {
+     "A1": "435b6c8b0eddcb37286cdfa9d6c53eb0476889150fad5e5c3b94c0bdb4722b49",
+     "A2": "634a9758b6e7a807821bd0e25caaa96ca6833e8a808706913672c75326babac9"
+    },
+    "gap.bone_pile": {
+     "A1": "4a7fde0d2db996abf6662cd3ba54549d0e275a744660058782b3f8762c0a2c03",
+     "A2": "79a5fc6f1535d1d8b3189ca96e0007184fa5186b97aba6bce93b105c255ec770"
+    },
+    "gap.palisade": {
+     "A1": "062c264577824bf62b14eb714e52339a50aed4ce265a50022bc4e77b5fcb8276",
+     "A2": "533b5f581a8743ce6a8cbb0ee1cfaf78356988224e31fee18db0edb2318517a0"
+    },
+    "gap.campfire": {
+     "A1": "5e6d617b6dfab92c3a6149cf8097c3f66469c7739a019b5dfb6cfa834ecfcfe3",
+     "A2": "125f0cbeb5257400a32ebd08afc6e0016bdaf3747bc54606cebfc160f61f2e0f"
+    }
+   }
+  },
+  {
+   "round": "gap-ice-r1",
+   "at": "2026-10-23T10:42:07",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.ice_floor": {
+     "A1": "396213095d2b9595b8ecb50509e0246fc79f0ddec9a2874009cd1d2aaefe5a33",
+     "A2": "3a8464374f0ca7de7bbc5911bc40998bb1e5a594a605e425dd2d22730b59536c"
+    },
+    "gap.ice_rock": {
+     "A1": "f658c2066e8ff51120852b9586db6fa5cc69abd816bd71ad172e9b9adea49464",
+     "A2": "7279fb0c93a12ac362d34078b4cfc15c109f3dcc1f0266d985e8e1ac37af8874"
+    }
+   }
+  },
+  {
+   "round": "gap-props-r1",
+   "at": "2026-10-23T10:42:10",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.door": {
+     "A1": "ed0e96dfd4c7af8775b2fbb2716751fbeac17b75f3aea3ddbdf2f807bc8d3642",
+     "A2": "61686a8629f90314f3c15581b8ba94cfdd5112e51e6f1ed38f51e83d3150696d"
+    },
+    "gap.lever": {
+     "A1": "c05917fafb2fb519b6d8ceb5913b3cca721d01267d8e96547d9b033ee0ecb213",
+     "A2": "e594e6df4bf6e6efe19b60f11e8ba799e81fe68188b3782a4d69cc06b88a5034"
+    },
+    "gap.goblin_tent": {
+     "A1": "435b6c8b0eddcb37286cdfa9d6c53eb0476889150fad5e5c3b94c0bdb4722b49",
+     "A2": "634a9758b6e7a807821bd0e25caaa96ca6833e8a808706913672c75326babac9"
+    },
+    "gap.bone_pile": {
+     "A1": "4a7fde0d2db996abf6662cd3ba54549d0e275a744660058782b3f8762c0a2c03",
+     "A2": "79a5fc6f1535d1d8b3189ca96e0007184fa5186b97aba6bce93b105c255ec770"
+    },
+    "gap.palisade": {
+     "A1": "062c264577824bf62b14eb714e52339a50aed4ce265a50022bc4e77b5fcb8276",
+     "A2": "533b5f581a8743ce6a8cbb0ee1cfaf78356988224e31fee18db0edb2318517a0"
+    },
+    "gap.campfire": {
+     "A1": "5e6d617b6dfab92c3a6149cf8097c3f66469c7739a019b5dfb6cfa834ecfcfe3",
+     "A2": "125f0cbeb5257400a32ebd08afc6e0016bdaf3747bc54606cebfc160f61f2e0f"
     }
    }
   }
