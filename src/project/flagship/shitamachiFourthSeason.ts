@@ -1,6 +1,7 @@
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { canMove, isPassable } from "@/project/collision";
+import { handInteriorMapExits } from "@/editor/handInterior/exits";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
 import { blankFillTileFor, createStarterMap } from "@/project/defaults/defaultMaps";
@@ -226,6 +227,58 @@ export function createShitamachiFourthSeasonFlagshipDemo(): FlagshipDemoBuildRes
     children: interiorSpecs.map((v) => ({ mapId: v.mapId, children: [] })),
   };
 
+  // 3) 실내 명소에서 아케이드로 돌아오는 문
+  // 서연의 「일상 실내 명소 둘러보기」 선택지는 플레이어를 방 안으로 순간이동시킨다. 그 방들은
+  // 맵 이벤트 0 · mapConnections 0 이라 나가는 문이 하나도 없었다 — 한 번 들어가면 상하좌우 어느
+  // 쪽으로 걸어도 제자리였고 진행이 영구히 막혔다(2026-10-23 필드 QA shitamachi-fourth-season F1).
+  // 방마다 두 곳에 문을 단다: 들어온 자리(순간이동 도착 칸)와 방의 진짜 앞문(손 도트 실내의 남쪽 출구).
+  // 도착 칸에 선 것으로는 발동하지 않는다 — playerTouch 는 걸음이 끝난 칸에서만 발동한다.
+  const venueVisits = [
+    { mapId: "map_venue_council", choice: "학생회실 (mc_council_room)", entry: { x: 9, y: 8 } },
+    // 베이커리 카페는 (9,8) 이 벽 칸이었다 — 도착이 통행 불가라 플레이어가 벽 안에 섰다. 카페 홀 안쪽으로 옮긴다.
+    { mapId: "map_venue_bakery", choice: "아케이드 베이커리 카페 (mc_bakery_cafe)", entry: { x: 9, y: 7 } },
+    { mapId: "map_venue_rooftop", choice: "학교 옥상 노을 전망대 (mc_rooftop)", entry: { x: 10, y: 7 } },
+    { mapId: "map_venue_sento", choice: "시타마치 대중목욕탕 센토 (mc_sento)", entry: { x: 11, y: 8 } },
+  ] as const;
+  const arcadeDoor = (eventId: string, name: string, x: number, y: number): GameEvent => ({
+    id: eventId,
+    name,
+    x,
+    y,
+    trigger: { kind: "playerTouch" },
+    commands: [],
+    pages: [
+      {
+        id: `${eventId}_p`,
+        name: "아케이드로 나가는 문",
+        conditions: [],
+        graphic: { transparent: true },
+        trigger: { kind: "playerTouch" },
+        priority: "below",
+        overlapForbidden: false,
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [{ kind: "transfer", mapId: hubMapId, x: spawn.x, y: spawn.y, direction: "down", fade: "black" }],
+      },
+    ],
+  });
+  for (const visit of venueVisits) {
+    const venue = project.maps[visit.mapId];
+    if (!venue) throw new Error(`[shitamachi-fourth-season] 명소 맵이 없다: ${visit.mapId}`);
+    const cells = new Map<string, { x: number; y: number; name: string }>();
+    cells.set(`${visit.entry.x},${visit.entry.y}`, { x: visit.entry.x, y: visit.entry.y, name: "아케이드로 돌아가는 문" });
+    for (const exit of handInteriorMapExits(project, venue)) {
+      const x = exit.x + Math.floor((exit.width - 1) / 2);
+      if (!cells.has(`${x},${exit.y}`)) cells.set(`${x},${exit.y}`, { x, y: exit.y, name: "아케이드로 나가는 문" });
+    }
+    for (const [index, cell] of [...cells.values()].entries()) {
+      if (!isPassable(project, venue, cell.x, cell.y)) {
+        throw new Error(`[shitamachi-fourth-season] ${visit.mapId} (${cell.x},${cell.y}) 가 통행 불가다 — 아케이드로 나가는 문을 놓을 수 없다`);
+      }
+      const suffix = visit.mapId.replace(/^map_venue_/, "");
+      venue.events.push(arcadeDoor(`ev_shitamachi_arcade_exit_${suffix}${index === 0 ? "" : `_${index}`}`, cell.name, cell.x, cell.y));
+    }
+  }
+
   // Register variables and switches for heroine affection & festival lantern state
   const ensureVar = (id: string, name: string): void => {
     if (!project.variables.some((v) => v.id === id)) project.variables.push({ id, name });
@@ -330,12 +383,10 @@ export function createShitamachiFourthSeasonFlagshipDemo(): FlagshipDemoBuildRes
                   {
                     kind: "choices",
                     prompt: "어느 실내 장소로 이동할까?",
-                    options: [
-                      { text: "학생회실 (mc_council_room)", branch: [{ kind: "transfer", mapId: "map_venue_council", x: 9, y: 8 }] },
-                      { text: "아케이드 베이커리 카페 (mc_bakery_cafe)", branch: [{ kind: "transfer", mapId: "map_venue_bakery", x: 9, y: 8 }] },
-                      { text: "학교 옥상 노을 전망대 (mc_rooftop)", branch: [{ kind: "transfer", mapId: "map_venue_rooftop", x: 10, y: 7 }] },
-                      { text: "시타마치 대중목욕탕 센토 (mc_sento)", branch: [{ kind: "transfer", mapId: "map_venue_sento", x: 11, y: 8 }] },
-                    ],
+                    options: venueVisits.map((visit) => ({
+                      text: visit.choice,
+                      branch: [{ kind: "transfer" as const, mapId: visit.mapId, x: visit.entry.x, y: visit.entry.y }],
+                    })),
                   },
                 ],
               },
