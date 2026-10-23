@@ -2,14 +2,14 @@
 import { rng, WALL_ROWS } from "./grid";
 import { DungeonComposeError } from "./errors";
 import { planMine, planSewer, planTemple } from "./grammar";
-import type { DungeonDir, DungeonLayout, DungeonRoomInput, DungeonRoomKind, DungeonSpec, PlacedCorridor, PlacedRoom, Rect } from "./types";
+import type { DungeonDir, DungeonLayout, DungeonLayoutFamily, DungeonRoomInput, DungeonRoomKind, DungeonSpec, PlacedCorridor, PlacedRoom, Rect } from "./types";
 import { DUNGEON_DIRS } from "./types";
 
 const DEFAULT_SIZE: Record<DungeonRoomKind, [number, number]> = {
   // 2026-10-23: 큰 방을 한 단 줄였다 — 홀·보스방이 맨바닥 넓은 방으로 읽혔다(VQA 「빈 바닥 15% 초과」). 빈 바닥은 메우지 않고 줄인다.
   entrance: [10, 6], hall: [13, 8], crypt: [11, 7], cell: [10, 6], shrine: [11, 8], boss: [13, 9], storage: [9, 6], vault: [9, 6],
   channel: [28, 11], cistern: [13, 10], pump: [10, 8], cavern: [14, 9], lake: [14, 9], grotto: [10, 8], forge: [11, 8], nave: [17, 19],
-  junction: [9, 7], stope: [14, 8], depot: [11, 8],
+  junction: [9, 7], stope: [14, 8], depot: [11, 8], library: [11, 8],
 };
 const MARGIN = 2;
 
@@ -27,7 +27,25 @@ const opposite = (d: DungeonDir): DungeonDir => (d === "N" ? "S" : d === "S" ? "
 
 // ---------- 0. 방 구성(방 목록이 없을 때) ----------
 
-/** size·바라는 넓이 → 방 목록. 입구 → 큰 홀 → 갈래(묘실·감방·창고·제단) → 보스방, 보물 방은 보스방 곁. */
+/** 배치 가족: 주면 그것, 아니면 시드로 linear·hub·loop 중 하나(같은 요청 두 번이 같은 뼈대가 되지 않게 — 시드는 맵 수·이름에서 온다). */
+export function layoutFamilyOf(spec: DungeonSpec): DungeonLayoutFamily {
+  if (spec.layout) return spec.layout;
+  const fams: DungeonLayoutFamily[] = ["linear", "hub", "loop"];
+  return fams[Math.abs((spec.seed ?? 7) * 2654435761 >>> 7) % 3]!;
+}
+
+/** 종류마다 가운데 방들 후보(앞이 자주 나온다). 보스방·보물 방·입구는 따로. */
+const MIDDLE_POOL: Partial<Record<string, DungeonRoomKind[]>> = {
+  catacomb: ["crypt", "cell", "storage", "hall", "shrine", "crypt", "cell", "hall", "storage"],
+  // 성·요새: 대전(hall)·병영 창고(storage)·감옥(cell)·예배당(shrine). 묘실은 드물게.
+  castle: ["hall", "storage", "cell", "shrine", "hall", "storage", "crypt", "cell", "hall"],
+  // 피라미드: 열주 홀·석관 묘실·제물 방·보물 창고
+  pyramid: ["hall", "crypt", "shrine", "storage", "crypt", "hall", "shrine", "crypt", "storage"],
+  // 마법탑 한 층(층을 쌓지 않을 때): 서고·연구실(창고)·마법진 방(제단)
+  tower: ["library", "storage", "shrine", "library", "hall", "storage", "library", "shrine", "hall"],
+};
+
+/** size·바라는 넓이 → 방 목록. 배치 가족(linear·hub·loop)이 뼈대를 정한다 — 입구 → … → 보스방, 보물 방은 보스방 곁. */
 export function planDungeonRooms(spec: DungeonSpec): DungeonRoomInput[] {
   const type = spec.type ?? spec.style ?? "catacomb";
   if (type === "sewer") return planSewer(spec);
@@ -38,17 +56,30 @@ export function planDungeonRooms(spec: DungeonSpec): DungeonRoomInput[] {
   const bySize = { small: 4, medium: 6, large: 9 } as const;
   let n: number = bySize[spec.size ?? "medium"];
   if (area) n = Math.max(3, Math.min(11, Math.round(area / 260)));
-  const pool: DungeonRoomKind[] = ["crypt", "cell", "storage", "hall", "shrine", "crypt", "cell", "hall", "storage"];
+  const pool: DungeonRoomKind[] = [...(MIDDLE_POOL[type] ?? MIDDLE_POOL.catacomb!)];
   for (let i = pool.length - 1; i > 0; i -= 1) { const j = Math.floor(random() * (i + 1)); [pool[i], pool[j]] = [pool[j]!, pool[i]!]; }
-  const rooms: DungeonRoomInput[] = [{ id: "entrance", kind: "entrance" }, { id: "hall", kind: "hall" }];
-  const middle = Math.max(0, n - (n >= 5 ? 4 : 3));
-  for (let i = 0; i < middle; i += 1) {
-    const kind = pool[i % pool.length]!;
-    // 갈래: 셋째 방부터 절반쯤은 큰 홀에서 따로 뻗는다(한 줄 사슬이 아니라 나무 모양).
-    const from = i > 0 && random() < 0.45 ? "hall" : undefined;
-    rooms.push({ id: `${kind}${i + 1}`, kind, ...(from ? { from } : {}) });
+  const fam = layoutFamilyOf(spec);
+  const hubKind: DungeonRoomKind = type === "tower" ? "library" : "hall";
+  const rooms: DungeonRoomInput[] = [{ id: "entrance", kind: "entrance" }];
+  const middle = Math.max(0, n - (n >= 5 ? 3 : 2));
+  if (fam === "hub") {
+    // 바퀴살: 입구 → 큰 가운데 방 → 사방 갈래(보스방도 가운데 방에서). 가운데 방은 한 단 크게.
+    rooms.push({ id: "hub", kind: hubKind, w: 15 + Math.floor(random() * 3), h: 10 + Math.floor(random() * 2) });
+    for (let i = 0; i < Math.max(0, middle - 1); i += 1) { const kind = pool[i % pool.length]!; rooms.push({ id: `${kind}${i + 1}`, kind, from: "hub" }); }
+    rooms.push({ id: "boss", kind: "boss", from: "hub" });
+  } else {
+    // 사슬(linear): 앞 방에 곧장 잇는다. 고리(loop): 같은 사슬이지만 배치가 고리 통로를 둘·셋 더 낸다(layoutOnce).
+    let prev = "entrance";
+    for (let i = 0; i < middle; i += 1) {
+      const kind = i === 0 ? hubKind : pool[i % pool.length]!;
+      const id = i === 0 ? "hall" : `${kind}${i + 1}`;
+      // linear 도 곁방 하나는 둔다(줄 끝 막다른 곁방 = 보물·함정 자리) — 셋째 방.
+      const from = fam === "linear" && i === 2 && middle > 3 ? "hall" : prev;
+      rooms.push({ id, kind, from });
+      if (from === prev) prev = id;
+    }
+    rooms.push({ id: "boss", kind: "boss", from: prev });
   }
-  rooms.push({ id: "boss", kind: "boss" });
   if (n >= 5) rooms.push({ id: "vault", kind: "vault", from: "boss" });
   return rooms.slice(0, Math.max(n, 2));
 }
@@ -175,7 +206,9 @@ function layoutOnce(spec: DungeonSpec, inputs: readonly DungeonRoomInput[], salt
     corridors.push({ ...chosen.corridor, a: parent.id });
   });
   // 고리 통로: 부모·자식이 아닌 두 방이 나란히 가까우면 하나(큰 층은 둘) 더 잇는다 — 막다른 사슬만 있는 층을 피한다.
-  const wantLoops = placed.length >= 7 ? 2 : placed.length >= 4 ? 1 : 0;
+  // 배치 가족: linear 는 고리 없음(한 길), loop 는 고리 둘·셋(지름길로 돌아온다), hub 는 바퀴살 사이 하나.
+  const fam = spec.rooms?.length ? null : layoutFamilyOf(spec);
+  const wantLoops = fam === "linear" ? 0 : fam === "loop" ? (placed.length >= 6 ? 3 : 2) : placed.length >= 7 ? 2 : placed.length >= 4 ? 1 : 0;
   let loops = 0;
   const pairs: [PlacedRoom, PlacedRoom][] = [];
   for (let i = 0; i < placed.length; i += 1) for (let j = i + 1; j < placed.length; j += 1) {

@@ -256,7 +256,9 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
   }
   const depth = new Array<number>(nodes.length).fill(0);
   for (const [a, b] of edges) depth[b] = depth[a]! + 1;
-  const wantLoops = chambers.length >= 8 ? 2 : chambers.length >= 5 ? 1 : 0;
+  // 배치 가족(2026-10-23 dungeon-themes): linear 한 길(고리 없음) · loop 고리 둘·셋 · hub(기본) 방 수에 맞게.
+  const fam = spec.layout ?? (["linear", "hub", "loop"] as const)[Math.abs(seed * 2654435761 >>> 7) % 3]!;
+  const wantLoops = fam === "linear" ? 0 : fam === "loop" ? (chambers.length >= 5 ? 3 : 2) : chambers.length >= 8 ? 2 : chambers.length >= 5 ? 1 : 0;
   let loops = 0;
   const loopPairs: [number, number][] = [];
   for (let a = 1; a < nodes.length; a += 1) for (let b = a + 1; b < nodes.length; b += 1) if (!edges.some(([x, y]) => (x === a && y === b) || (x === b && y === a))) loopPairs.push([a, b]);
@@ -271,7 +273,8 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
   if (vault && vault !== boss) { vault.kind = "vault"; vault.rx = Math.min(vault.rx, 6); vault.ry = Math.min(vault.ry, 5); }
   const rest = chambers.filter((c) => c.kind === "cavern");
   // 소굴(lair)은 사는 굴이라 호수 대신 마른 바닥(야영지)을 남긴다.
-  const lakeWant = profile.liquid && !spec.lair ? (profile.id === "volcano" ? (si === 2 ? 2 : 1) : si === 0 ? 1 : si === 1 ? 2 : 3) : 0;
+  // 얼음은 액체가 없지만 얼어붙은 호수 방(걸을 수 있는 빙판)을 둔다. 숲은 연못 하나(작은 판)~둘.
+  const lakeWant = (profile.liquid || profile.id === "ice") && !spec.lair ? (profile.id === "volcano" ? (si === 2 ? 2 : 1) : profile.id === "forest" ? (si === 0 ? 0 : 1) : si === 0 ? 1 : si === 1 ? 2 : 3) : 0;
   // 작은 판에서 반지름 6 이상 방이 하나도 없어도 액체 종류(화산·동굴)는 못이 하나는 있어야 한다 — 그 땐 가장 큰 방을 쓴다.
   const bySize = [...rest].sort((a, b) => b.rx * b.ry - a.rx * a.ry);
   const lakeCands = bySize.filter((c) => c.rx >= 6).length ? bySize.filter((c) => c.rx >= 6) : bySize;
@@ -327,6 +330,17 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
   }
   fillWallIslands(g, 30);
 
+  // ---- 떠 있는 땅·늪 둔덕(2026-10-23 dungeon-themes): 방 사이 굽은 길을 액체(마계 = 허공, 늪 = 늪물)로 바꾼다.
+  // 방(빈터·둔덕)은 섬이 되고, settle 이 가장 짧은 줄에 다리(마계 돌다리·늪 널판 길)를 놓아 잇는다. 입구 굴 목은 마른 땅으로 둔다.
+  if (profile.liquid === "void" || profile.id === "swamp") {
+    for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+      const i = g.idx(x, y);
+      if (!g.floor[i] || g.roomAt[i] !== -1) continue;
+      if (x >= entX + 4 && x < entX + 9 && y >= stubTop - 1) continue;
+      g.liquid[i] = 1;
+    }
+  }
+
   // ---- 액체(호수·용암 못): 방 안쪽, 가장자리 두 칸은 걸을 수 있게 ----
   if (profile.liquid) {
     const ed = edgeDistance(g, 7);
@@ -347,7 +361,7 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
     }
     // 큰 방에 작은 못 하나씩(화산은 용암 웅덩이가 더 많다)
     // 화산은 작은 웅덩이를 두지 않는다 — 용암 못·줄기로 충분하고, 작은 웅덩이는 가장자리 그림이 없어 「네모 용암 도장」으로 읽혔다(2026-10-23 dg2-r1 VQA).
-    const pools = profile.id === "volcano" ? 0 : spec.lair ? 0 : 0.3;
+    const pools = profile.id === "volcano" ? 0 : spec.lair ? 0 : profile.id === "swamp" ? 0.75 : profile.id === "forest" ? 0.15 : 0.3;
     for (const c of chambers) {
       if (c.kind !== "cavern" && c.kind !== "grotto") continue;
       if (c.rx < 6 || random() > pools) continue;

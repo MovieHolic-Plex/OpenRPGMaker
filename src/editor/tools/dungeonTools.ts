@@ -22,6 +22,10 @@ import { asCell, asRoom, chestLoot, field, list, nested, pickTroops, placeRoamer
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { DUNGEON_ENTRANCE_TAG, ENTRANCE_OPTION_SCHEMA, linkEntranceInDraft, parseEntranceOption } from "./dungeonLinkTools";
 import { dungeonTheme, ensureThemeTroop } from "./dungeonThemeTroops";
+import { beodeulNatureTileset, planBeodeulCanopy, writeBeodeulCanopy } from "./beodeulForest";
+import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
+import { translateTiles } from "@/project/objectStamp";
+import { setLayerTileAt } from "@/project/mapLayers";
 
 const createMapTool = MAP_TOOLS.find((tool) => tool.name === "create_map")!;
 const resizeMapTool = MAP_TOOLS.find((tool) => tool.name === "resize_map")!;
@@ -118,6 +122,41 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
   map.upperTiles = composed.upper.slice();
   for (const layer of ["lowerOverlayTiles", "upperOverlayTiles"] as const) if (map[layer]) map[layer] = new Array<number>(map.width * map.height).fill(-1);
   map.mapRole = "dungeon";
+  // 자연 물가(2026-10-23 dungeon-themes): 물·용암 칸 위 2층에 beodeul_nature 둑(풀·이끼 늪·흑요석)을 얹는다 — 가장자리 없는 네모 물·용암이 「물감 칸」으로 읽혔다.
+  // 2층은 ★(통행 + 위) — 통행은 아래 물·용암 칸이 정한다(막힘). 이웃 = 같은 액체 또는 다리(다리 밑도 물이 이어진다) 또는 맵 밖.
+  if (composed.banks) {
+    const W = map.width, H = map.height;
+    const wet = new Set(composed.banks.cells);
+    const bridge = new Set<number>();
+    composed.picture.forEach((row, y) => { for (let x = 0; x < row.length; x += 1) if (row[x] === "=") bridge.add(y * W + x); });
+    const table = composed.banks.style === "grass" ? BEODEUL_NATURE.bankGrass : composed.banks.style === "bog" ? BEODEUL_NATURE.bankBog : BEODEUL_NATURE.bankLava;
+    const N8 = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]] as const;
+    const want = new Map<number, number>();
+    for (const c of wet) {
+      const x = c % W, y = (c - x) / W; let m = 0;
+      N8.forEach(([dx, dy], b) => { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H || wet.has(ny * W + nx) || bridge.has(ny * W + nx)) m |= 1 << b; });
+      const t = table[m]; if (t !== undefined && t >= 0) want.set(c, t);
+    }
+    if (want.size) {
+      const tr = translateTiles(beodeulNatureTileset(draft), tileset, new Set(want.values()));
+      for (const to of tr.map.values()) { tileset.priority[to] = "upper"; tileset.passability[to] = { up: true, down: true, left: true, right: true }; }
+      for (const [c, t] of want) setLayerTileAt(map, 2, c, tr.map.get(t)!);
+    }
+  }
+  // 야외 던전(숲·늪, 2026-10-23 dungeon-themes): 벽 칸을 버들항 수관 숲 오토타일로 덮는다(2·3층, 막힘). 숲 남쪽 끝 줄엔 줄기·뿌리, 그 아래 빈터엔 숲 그늘.
+  if (composed.canopy) {
+    const forest = new Set(composed.canopy.cells);
+    const plan = planBeodeulCanopy(map.width, map.height, composed.canopy.style, forest, (c) => !forest.has(c));
+    writeBeodeulCanopy(draft, map, tileset, plan);
+    // 수관 그림이 없는 숲 칸(한 칸 폭 틈 — 오토타일이 모양을 못 받는 칸)은 바닥이 걸을 수 있는 잔디라 숲 밖으로 새는 길이 된다 → 막힌 숲 덤불 칸으로.
+    const leak = [...forest].filter((c) => !plan.canopy.has(c));
+    if (leak.length) {
+      const blockTile = plan.canopy.values().next().value;
+      if (blockTile !== undefined) for (const c of leak) { const t = map.upperTiles; t[c] = map.upperTiles[c]! >= 0 ? t[c]! : -1; }
+      notes.push(`수관 오토타일이 받지 못한 숲 칸 ${leak.length}곳`);
+      (composed as { leak?: number[] }).leak = leak;
+    }
+  }
   // 방마다 이름표 + composed-layout 표식: 큰 홀·통로의 빈 바닥은 필드 적이 돌아다닐 용도로 비운 칸이다.
   // 표식이 없으면 조수 실행기의 배치 품질 권고(빈 바닥 ≤30%)가 던전을 「빈 방」으로 보고 clear_map 으로 지우려 했다(2026-10-14 재시험 실측).
   map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes("dungeon-room"));

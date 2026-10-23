@@ -30,12 +30,14 @@ export const ADAPTERS: readonly AdapterCaps[] = [
   {
     id: "beodeul", label: "버들항(beodeul_city, oprn-atlas)", status: "ready", families: ["oprn-atlas"],
     supports: {
-      catacomb: "이끼 낀 회색 석벽 지하묘지·감옥(방+통로 나무)", castle: "다듬은 성 지하·성채", labyrinth: "폭 3 통로 미궁(두꺼운 벽)",
-      sewer: "하수도·수로(물 막힘, 보행로·다리)", cave: "자연 동굴(불규칙 방+호수)", temple: "폐허 신전(좌우 대칭 열주 홀)",
-      mine: "광산 갱도(긴 갱도+채굴장; 선로·갱목 그림이 없어 널판 바닥이 임시)", volcano: "화산 동굴(용암 못·다리; 현무암 벽 그림이 없어 성채 벽이 임시)",
+      catacomb: "이끼 낀 회색 석벽 지하묘지·납골당(방+통로 나무)", castle: "성·요새(대전·병영·감옥·옥좌의 방)", labyrinth: "폭 3 통로 미궁(두꺼운 벽)",
+      sewer: "하수도·수로(물 막힘, 보행로·다리)", cave: "자연 동굴(불규칙 방+호수)", temple: "고대 유적·폐허 신전(좌우 대칭 열주 홀, 덩굴)",
+      mine: "광산 갱도(긴 갱도+채굴장·선로·광차)", volcano: "화산 동굴(용암 못·용암 줄기·다리)",
+      ice: "설산·얼음 동굴(눈 바닥·걷는 빙판 호수·얼음 바위)", forest: "숲 던전(나무 벽 사이 숲길·빈터·연못·고목)", swamp: "늪지대(늪물 사이 둔덕·널판 길)",
+      pyramid: "사막 피라미드·왕묘(사암 회랑·석관 묘실·모래 함정)", tower: "마법탑(서고·마법진, floors+direction up 이면 층을 쌓는다)", otherworld: "마계·이세계(허공에 뜬 땅·돌다리·타락한 수정)",
     },
-    reasons: { ice: "버들항에는 얼음 바닥·벽·고드름 그림이 없다" },
-    missingArt: ["선로 타일(가로·세로·모서리·T)", "갱목 지지대(벽 걸이 1×2·바닥 기둥 1×2)", "광석 박힌 벽/바닥", "현무암·재 바닥 변형·현무암 벽 앞면 3h/2h·용암 식은 껍질 가장자리", "갈색 테두리 동굴 천장 오토타일(지금은 회색 석벽 띠)", "얼음 동굴 일체"],
+    reasons: {},
+    missingArt: ["선로 타일(가로·세로·모서리·T)", "갱목 지지대(벽 걸이 1×2·바닥 기둥 1×2)", "광석 박힌 벽/바닥", "현무암·재 바닥 변형·현무암 벽 앞면 3h/2h·용암 식은 껍질 가장자리", "갈색 테두리 동굴 천장 오토타일(지금은 회색 석벽 띠)", "테마 그림(dungeon-themes 하네스 굽기 대기)"],
   },
   {
     id: "monster", label: "몬스터 수집 키트(monster_overworld + monster_dungeon, oprn-monster)", status: "ready", families: ["oprn-monster", "oprn-monster-emerald"],
@@ -90,6 +92,7 @@ const CLOSEST: Readonly<Record<DungeonType, readonly string[]>> = {
   catacomb: ["castle", "temple", "labyrinth", "cave"], castle: ["catacomb", "temple", "labyrinth", "cave"],
   labyrinth: ["temple", "catacomb", "castle", "cave"], sewer: ["catacomb", "cave:wet", "cave"], cave: ["cave:wet", "volcano", "ice"],
   temple: ["catacomb", "castle", "labyrinth", "cave"], mine: ["cave", "catacomb", "castle"], volcano: ["cave", "cave:wet"], ice: ["cave", "cave:wet"],
+  forest: ["cave", "temple"], swamp: ["cave:wet", "cave", "sewer"], pyramid: ["temple", "catacomb", "labyrinth"], tower: ["castle", "temple", "labyrinth"], otherworld: ["volcano", "cave", "labyrinth"],
 };
 
 export function adapterSupports(adapter: AdapterCaps, type: DungeonType): boolean {
