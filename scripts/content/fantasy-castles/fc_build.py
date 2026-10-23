@@ -512,6 +512,28 @@ def run(sources, data_dir, reset_ledger=False, write=True):
 
 DEFAULT_RUNS = "qa-runs/harnesses/building-kit/fantasy-kingdom"
 DEFAULT_MAPS = [("stormveil", "fc_stormveil", "스톰베일 절벽 성"), ("helms-deep", "fc_helms_deep", "헬름 협곡 요새")]
+REQUIRED_FILES = ("tileset.png", "map.json", "pieces.json", "composite.png")
+
+
+def import_sources(runs_dir, data_dir):
+    """그림 판 산출(tilemap/)을 저장소의 출처 사본(<data>/src/<폴더>/)으로 복사한다 — qa-runs 는 gitignore 라 커밋되지 않는다."""
+    imported = {}
+    for folder, mid, name in DEFAULT_MAPS:
+        src = os.path.join(runs_dir, folder, "tilemap")
+        missing = [f for f in REQUIRED_FILES if not os.path.exists(os.path.join(src, f))]
+        if missing:
+            raise BuildError(f"{src}: {', '.join(missing)} 가 없다")
+        dst = os.path.join(data_dir, "src", folder)
+        os.makedirs(dst, exist_ok=True)
+        for f in os.listdir(src):
+            if f.lower().endswith((".png", ".json", ".md", ".txt")):
+                with open(os.path.join(src, f), "rb") as r, open(os.path.join(dst, f), "wb") as w:
+                    w.write(r.read())
+        imported[mid] = dict(folder=folder, files=sorted(os.listdir(dst)), bytes=sum(os.path.getsize(os.path.join(dst, f)) for f in os.listdir(dst)))
+    with open(os.path.join(data_dir, "source-provenance.json"), "w", encoding="utf-8") as f:
+        json.dump(dict(note="building-kit 3판 Opus 5.5 high 산출 tilemap/ 사본(qa-runs 는 gitignore). fc_build.py import 로 복사했다.", maps=imported), f, ensure_ascii=False, indent=1)
+        f.write("\n")
+    return imported
 
 
 def main(argv=None):
@@ -520,7 +542,15 @@ def main(argv=None):
     ap.add_argument("--data", default="tiledata/fantasy-castles")
     ap.add_argument("--reset-ledger", action="store_true", help="아직 한 칸도 나가지 않은(frozen 0) 장부만 새로 쓴다")
     ap.add_argument("--dry", action="store_true")
+    ap.add_argument("--import", dest="import_from", default=None, help="그림 판 산출 폴더(예: qa-runs/.../fantasy-kingdom)를 <data>/src 로 복사만 한다")
     a = ap.parse_args(argv)
+    if a.import_from:
+        try:
+            print(json.dumps(import_sources(a.import_from, a.data), ensure_ascii=False, indent=1))
+        except BuildError as e:
+            print("FAIL", e)
+            return 1
+        return 0
     if a.map:
         sources = []
         for spec in a.map:
