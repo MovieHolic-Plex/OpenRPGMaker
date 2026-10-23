@@ -1,0 +1,380 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2478e083b4b36f642cedce485a30b9a46d4c94cc648de64b59bed7d4443594b0",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "arcane.crystal_pedestal",
+ "label": "beodeul_dungeon/arcane.crystal_pedestal",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 59,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crystal cluster on pedestal",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal cap plate",
+      "rows": "12-16",
+      "evidence": "b",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "shaft with brown bands",
+      "rows": "17-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flared foot",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 14,
+     "shaft_width": 8,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The crystal on top (rows 1-11) is decor. The pedestal cap runs rows 12-16. Its width goes 12, 14, 14, 14, 12, so it widens and then narrows, and it overhangs the 8-wide shaft. The back rim is partly hidden by the crystal base. A light front-edge line sits at row 16, and the brown band and darker rows at 17-19 act as eave shadow. Below it, the shaft (rows 17-25, width 8-10) and the flared foot (rows 26-30, width 12-14) form a front face of about 14 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small crystal cluster on a grey stone pedestal, about one tile wide. It has 9 visible tones per tile, matching prop-hedge (9) and sitting below the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outlines lean toward the material tone (dark blue/violet beside the crystal, dark grey-brown beside the stone) and are not a uniform black sticker line. The crystal has facets with a light-to-dark ramp and the pedestal has top, face and shadow bands, giving about 4 steps per material against 5-6 in the references. The surface grain is modest and slightly thinner than the stall or well. For a small single-object prop it holds up beside the hedge, bench and lamp without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18927
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crystal cluster on top",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal cap plate (bowl mouth holding the crystal)",
+      "rows": "12-16",
+      "evidence": "b",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "shaft with brown bands",
+      "rows": "17-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stepped base",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 14,
+     "shaft_width": 8,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The crystal on top (rows 1-11) is decor. The pedestal's cap runs rows 12-16 and its width profile goes 12, 14, 14, 14, 12, then narrows to 12, 10 and the 8-wide shaft. This is an ellipse that overhangs the shaft (14 against 8). The light front-edge line at row 16 is followed by a dark brown band at row 17, which acts as the eave shadow. Below that the shaft (rows 20-25, width 8) and the widened base (rows 26-30) give a front face of about 14 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small crystal on a stone pedestal. It measures 9 visible tones per full tile, level with prop-hedge (9) and above the thin bench and lamp references, which measure 0 because few pixels fill a tile. It is below the stall (17) and well (20), which are larger and more complex. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is tinted (dark blue/grey-violet) rather than a black sticker line. It has about 5 steps across the crystal facets, which are lit from light to deep, and about 4 on the stone pedestal, using 14 colours in total. That is similar to the hedge and bench palette sizes. The pedestal is a little plainer than the well's stone, with less per-stone grain, but it is a small, simple prop and would sit acceptably next to the references. I judged the picture by eye at its small scale, so confidence is moderate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18924
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crystal cluster on top",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal cap plate",
+      "rows": "12-16",
+      "evidence": "b",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "pedestal shaft with gold/brown bands",
+      "rows": "17-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal base plinth",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 14,
+     "shaft_width": 8,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The crystal on top is decor and is excluded. The main body is the stone pedestal. Its cap runs from row 12 to row 16, with widths 12, 14, 14, 14, 12. It widens and then narrows again, so it is an ellipse that overhangs the 8-wide shaft below (rows 20-25). A darker line at row 15 reads as the front edge. Row 16 is a light lip, and row 17 is a brown band that acts as eave shadow. The shaft and the flared base (rows 26-30, widths 12-14) form a front face of about 14 rows. The ellipse is not very distinct from the base. It is still a cap with a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small crystal on a stone pedestal, about one tile in size. It has 9 visible tones per tile, level with the hedge reference (9) and below the well (20) and stall (17). Near-flat coverage is 0%, so there are no large flat fills. 0% of its dark edge pixels are neutral, so the outline carries a tint and reads as a dark material tone, not a near-black sticker line. The crystal shows a few facet steps (white, pale blue, mid, dark), and the pedestal has stone-grey shading with a small highlight, so each material has about 3-4 steps against the references' 5-6. It is slightly thinner than the richest references, but it is small and sparse, and a careful artist would probably accept it next to the hedge and bench without it looking like a sticker. The weak points are the shallow ramp on each material and limited grain on the pedestal. It is borderline, but the measured facts and the tinted outline hold up.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15231
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crystal cluster on top",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal cap plate",
+      "rows": "12-16",
+      "evidence": "b",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-19"
+     },
+     {
+      "part": "base flare",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 14,
+     "shaft_width": 8,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The crystal on top (rows 1-11) is decor. The pedestal cap spans rows 12-16 and its width profile goes 12, 14, 14, 14, 12 then narrows to 10 and 8, so it widens and narrows again like an ellipse plate that overhangs the 8px shaft. A light front-edge line sits at row 16, followed by darker shadow and a brown band at rows 17-19. The shaft and base (rows 17-30) give about 14 rows of front face, so the main body has a top and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small crystal on a stone pedestal, about one tile in size. It has 9 visible tones per tile, matching the hedge reference (9) and below the well (20) and cheese stall (17). Near-flat coverage is 0%, so there are no flat fills. Its dark edge pixels are 0% neutral, so the outline is tinted, with a dark blue or violet lean on the crystal and a dark tone on the stone, and not a black sticker line. The crystal shows about 4 steps (highlight, light, mid, dark) with facet separation, and the pedestal has a few stone steps. That is a bit shallower than the 5-6 steps in the well and stall, but the object is small and simple. The thin pedestal base reads somewhat plain next to the well's per-stone shading. It would sit acceptably next to the references, though a little lighter on texture than the best of them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13119
+  }
+ ],
+ "decidedAt": "2026-10-23T03:14:04.257Z",
+ "cells": {
+  "16": [
+   "141e7c25475b808d",
+   "a107d2d451b3cb72"
+  ],
+  "24": [
+   "05e8ce5c841bd6d2",
+   "183a69b3fe15e1ce",
+   "1fdab4175c6c546e",
+   "4c5afd261d0a5d31",
+   "6fc7b8e30335bfb8",
+   "80f482007d8f00a8",
+   "a3e49c3cce79a4db",
+   "b157612e7264abd4",
+   "c44b36c00ca7259f",
+   "cce1ade09ce7214d",
+   "dd3d351aca488212",
+   "ef092cea6659ac10"
+  ],
+  "32": [
+   "5e7d1c42fb59e9c9",
+   "61d174c5e2608236",
+   "bc6d80ebe37b6988"
+  ],
+  "48": [
+   "008b2a4d8902abbc",
+   "0e347aae6b0b06bf",
+   "13a43c6f9e58deb7",
+   "7981f06be29dc775",
+   "f385bcde29903673",
+   "fd5fa76d8614a5f0"
+  ]
+ }
+}

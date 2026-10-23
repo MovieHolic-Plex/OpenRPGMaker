@@ -1,0 +1,372 @@
+{
+ "panel": "theme-arcane-r1-panel-5",
+ "rule": "major counts if raised by >=2 of 4 blind reviewers (3 opus general-purpose + 1 argon)",
+ "mapping": {
+  "other.ground": {
+   "X": {
+    "key": "A1",
+    "sha256": "37ca433e716aa3a9cd8a67dd4fb18c755867afc59363c7b3b40631653f702bcc"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "0858a28cd6a94669e8a0dc05e696297142ef731cbafa03c80076e55bd893ac7f"
+   }
+  },
+  "other.void_edge": {
+   "X": {
+    "key": "A2",
+    "sha256": "0281f0d3b0b0a1662653b016d1cc76dabc7e926c5d7ff146aeaaed6f880ab531"
+   },
+   "Y": {
+    "key": "A1",
+    "sha256": "0abc4934dd38830c18892359ed5bce7e8ed492852a3ae6ffde08944dec029b67"
+   }
+  }
+ },
+ "prompt": "You are a blind pixel-art reviewer. Do not read any code or other files; look ONLY at the PNG boards listed below (open each with the Read tool; they are large, look carefully, zoom by reading them, do not skip any).\n\nContext: 16px-cell hand-pixel chipset for a JRPG dungeon, 3/4 top-down view (you see the top surface of things and their front face; NO side faces / no isometric). Two themes: MAGIC TOWER (wizard tower interior) and OTHERWORLD (demon realm, violet-black). Each board shows: the item description (yellow line at top), a Beodeul reference image from the existing chipset that sets the quality bar (shown 1x and 3x) with an Actor1 person for scale, then two anonymous candidates X and Y: piece at 1x and 3x, the piece placed in a scene (animation frames shown side by side), and sometimes extra sheets (autotile 6x6 mosaics, irregular test maps).\n\nCriteria, judge each candidate against them:\n1. Reads instantly as the described object at 1x game scale.\n2. 3/4 top-down view: top surface + front face visible, no side faces, no isometric skew, perspective consistent with the Beodeul reference and the Actor1 person.\n3. Style matches the Beodeul reference: material shading instead of black ink outlines, similar contrast, detail density and pixel cleanliness (no noise, no orphan pixels, no banding).\n4. Scale vs. the person is plausible; the object sits on the floor (contact shadow/base) rather than floating.\n5. Animation frames (if any): change is visible, smooth, loops, no jitter of the static parts.\n6. Autotiles: no visible seams or repeating grid, edges/corners join correctly in the mosaic and irregular map; floating-island underside hangs only below south edges.\n7. Fits its theme (magic tower / demon realm) and is distinct from generic.\n\nA MAJOR is a problem that would make you reject the piece for shipping (misreads, wrong view, broken seams, clashing style, ugly artefact clearly visible at 1x). A MINOR is a polish note.\n\nBoards (directory /home/main/z-project/rpg-zzu-dt-arcane/qa-runs/dungeon-themes/panel/r5/):\nother.ground.png other.void_edge.png\n\nWrite your answer as JSON to /home/main/z-project/rpg-zzu-dt-arcane/qa-runs/dungeon-themes/panel/r5/answer-1.json (use the Write tool) and also return the same JSON as your final message. Format:\n{\"items\":{\"<item id e.g. arcane.lectern>\":{\"X\":{\"majors\":[{\"problem\":\"...\",\"where\":\"...\"}],\"minors\":[{\"problem\":\"...\",\"where\":\"...\"}]},\"Y\":{...},\"pick\":\"X\"|\"Y\",\"why\":\"one line\"}}}\nCover both items. Be specific and honest; do not invent problems, do not be polite. Do not edit anything else.\n",
+ "answers": {
+  "answer-1.json": {
+   "items": {
+    "other.ground": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Base texture is a uniform per-pixel speckle of light violet dashes over dark violet; busier and noisier than the Beodeul stone's clustered material shading, and reads a bit like carpet at 1x.",
+        "where": "piece 1x/3x and the whole mosaic"
+       },
+       {
+        "problem": "The glow-vein decals are a few identical stamps: the same diagonal stroke appears 3 times and the same small zigzag twice in the bottom-center, so the repetition is easy to spot in the mosaic.",
+        "where": "large mosaic, top-left cluster and bottom-center pair"
+       },
+       {
+        "problem": "The cracks (dark lines with a lighter rim) are faint at 1x and get lost in the speckle. At game scale the floor reads more as 'purple gravel' than 'cracked stone'.",
+        "where": "scene 1x"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Doesn't read as cracked stone. At 1x it's a near-black field of maroon speckle with no readable crack network (the cracks vanish into the noise), so it looks like dark dirt or a rug, and the violet-black stone spec is lost (it shifts to maroon/brown).",
+        "where": "piece 1x, scene 1x/2x, large mosaic"
+       },
+       {
+        "problem": "The orange/yellow glow veins are high-contrast single-pixel-hot stamps on a very low-contrast ground. They pop out as stuck-on decals, not 'faint' veins, and repeat the same few shapes (3 identical diagonals, 2 identical zigzags).",
+        "where": "large mosaic, top-left and bottom-center"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Overall contrast is much lower than the Beodeul reference. Next to the grey brick wall the floor reads as a dark hole.",
+        "where": "scene 2x"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X reads as violet stone with visible cracks and on-theme glow. Y is a muddy maroon noise field whose veins look like pasted decals."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "The mauve/pink rim and maroon surface are low contrast against the void, so the island silhouette is soft at 1x and the walkable edge is less obvious than in Y.",
+        "where": "scene 1x"
+       },
+       {
+        "problem": "Single bright red pixels scattered on the underside read as orphan dots/noise rather than embers.",
+        "where": "underside cones in the scene and small-island sheet"
+       },
+       {
+        "problem": "The surface speckle is noisy, like the ground X, with little material clustering.",
+        "where": "island top in the scene 2x"
+       },
+       {
+        "problem": "1-px drip threads hang off the underside tips and read as stray pixels.",
+        "where": "small-island sheet, under the big island"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "The bright violet south lip is a heavy flat 1-2px stripe that is brighter than anything else in the scene and close to an ink-line outline. A darker front-face band would sit more naturally.",
+        "where": "south edges in the scene and small islands"
+       },
+       {
+        "problem": "The underside strata are evenly banded horizontal stripes, slightly mechanical.",
+        "where": "underside cones"
+       },
+       {
+        "problem": "The same 1-px drip threads hang off the underside tips.",
+        "where": "small-island sheet"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Both join correctly, with underside only below south edges. Y's violet rim and cleaner surface give a much clearer floating-island read and better fit the violet-black demon realm."
+    }
+   }
+  },
+  "answer-2.json": {
+   "items": {
+    "other.ground": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Glow veins are stamped at identical positions/shapes in a fixed pattern; two identical '^' veins stacked one above the other read as copy-paste, and the vein layout repeats when the variants tile",
+        "where": "16x16 mosaic, top-left cluster and the two bottom-centre '^' veins"
+       },
+       {
+        "problem": "Base surface is a dense uniform speckle of lighter violet pixels; at 1x it reads more like carpet/gravel than cracked stone slabs, with less material shading than the Beodeul stone",
+        "where": "piece 1x/3x and the 2x scene floor"
+       },
+       {
+        "problem": "Glow veins are very faint and few, so 'glow veins' barely register at 1x",
+        "where": "scene 1x"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Surface is noisy salt-and-pepper texture (scattered maroon/dark single pixels) with almost no readable crack structure; at 1x it reads as dirty red-brown carpet, not violet-black cracked stone, and the orphan-pixel noise falls below the Beodeul cleanliness bar",
+        "where": "piece 3x, 2x scene floor, 16x16 mosaic"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Bright orange-red veins with yellow hot pixel are much stronger than 'faint' and sit in exactly the same stamped positions as X, including the duplicated stacked '^' pair",
+        "where": "16x16 mosaic veins"
+       },
+       {
+        "problem": "Reddish-brown cast weakens the violet-black demon-realm read and muddies against the purple hue",
+        "where": "whole tile"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X keeps a coherent violet-black stone with readable cracks; Y is muddy pixel noise with overbright stamped veins."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [
+       {
+        "problem": "The N/W/E lip is a dull mauve 1px line almost the same value as the void and the ground; at 1x the island edge barely separates from the void, so the island outline is soft and low-contrast",
+        "where": "1x scene island borders, small island on the right"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Underside cones are tile-aligned trapezoids with flat horizontal wavy stripes (banding); each 16px south-edge run makes its own cone, so the underside reads as a row of repeated stalactite stamps",
+        "where": "2x scene underside below main island and steps"
+       },
+       {
+        "problem": "Red ember dots scattered on the underside and in the void look like noise rather than intentional glow",
+        "where": "underside and void background"
+       },
+       {
+        "problem": "No real front face on the south edge: just a 1px lip line straight into the cone, so the top-surface thickness is not conveyed",
+        "where": "south edges"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Bright violet 1px lip on every edge is a uniform flat line that leans toward an ink outline rather than material shading",
+        "where": "all island edges"
+       },
+       {
+        "problem": "Underside shows strong horizontal banding (evenly spaced bright violet wavy stripes) and tile-repeated cone shapes",
+        "where": "2x scene underside, small-island sheet"
+       },
+       {
+        "problem": "No south front face/thickness band, only the lip then the hanging rock",
+        "where": "south edges"
+       },
+       {
+        "problem": "Ground surface is fairly busy with speckles; cracks are readable but the top is still somewhat noisy at 1x",
+        "where": "island top"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's edges and underside read clearly as floating islands at 1x, and the underside hangs correctly only below south edges; X's lip disappears into the void."
+    }
+   }
+  },
+  "answer-3.json": {
+   "items": {
+    "other.ground": {
+     "X": {
+      "majors": [
+       {
+        "problem": "Reads as uniform violet speckle/gravel or carpet noise, not cracked stone: no slab or plate structure, the texture is evenly scattered single and double light-blue pixels with no material shading. It is far noisier than the Beodeul stone reference.",
+        "where": "piece 1x/3x and the whole 2x scene floor"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "The glow veins are a few identical stamped glyphs: the same '^' zigzag appears twice stacked, and the same short diagonal stroke appears three times. At map scale they look copy-pasted rather than like veins running through cracks, and they do not follow the dark crack lines.",
+        "where": "large mosaic, top-left cluster and bottom-centre pair"
+       },
+       {
+        "problem": "The dark cracks are thin, low-contrast branching lines that disappear under the speckle at 1x. The 'cracked' part of the brief barely reads.",
+        "where": "large mosaic centre, scene floor"
+       },
+       {
+        "problem": "All variant tiles share the same speckle cluster (the 'A'-shaped blob near the top centre of each tile). Edge variants only add a dark border strip, so a large floor risks showing a repeat.",
+        "where": "6x8 variant sheet"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Same structural problem as X: an even field of maroon/brown speckle with no stone plates or shading, so it reads as dirt or carpet. The cracks are even fainter than X's and are essentially invisible at 1x.",
+        "where": "piece 1x/3x, scene floor, large mosaic"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "The glow veins are the same stamped glyphs as X (a repeated '^' pair and three identical diagonal strokes), now in orange-red with a single yellow pixel. They pop harder and look even more pasted-on against the muddy floor.",
+        "where": "large mosaic, top-left and bottom-centre"
+       },
+       {
+        "problem": "The reddish-brown specks on violet make the floor muddy and low-contrast. It feels less 'violet-black demon realm' and more generic brown dungeon dirt.",
+        "where": "scene at 2x"
+       },
+       {
+        "problem": "Every variant reuses the same speckle layout, so there is the same repeat risk as X.",
+        "where": "variant sheet"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both are speckle noise rather than cracked stone. X at least has visible crack lines and a cleaner violet value range that fits the theme, while Y is muddy and its cracks vanish."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [
+       {
+        "problem": "The rim lip is a thin, dull mauve line that barely separates the walkable top from the near-black void. At 1x the island silhouette edge (especially the N and W/E sides) is weak and the walkable boundary is hard to read.",
+        "where": "scene 1x/2x, all island borders"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "The top surface reuses the noisy ground speckle, so the same 'gravel, not stone' issue applies.",
+        "where": "island top"
+       },
+       {
+        "problem": "The underside is decent: it hangs only below the south edges, tapers to points and has strata lines. However, the short south step segments each sprout an identical small triangular tooth, which reads as a repeating comb.",
+        "where": "stepped south edge on the right side of the main island"
+       },
+       {
+        "problem": "The red void dots and red underside flecks are a bit busy, and the starfield competes with the island edge.",
+        "where": "void background"
+       },
+       {
+        "problem": "The N edge is ragged and bumpy with 1px notches, which look like noise rather than a deliberate lip.",
+        "where": "top border of main island and piece 3x"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "The rim lip is a bright 1px violet line, readable but flat and graphic. It looks a little like a UI outline rather than a shaded stone lip, which is cleaner but less painterly than Beodeul.",
+        "where": "all island south and west edges"
+       },
+       {
+        "problem": "The top surface uses the same noisy speckle fill with faint cracks, so the 'stone' does not read strongly.",
+        "where": "island top"
+       },
+       {
+        "problem": "The short south step segments each get an identical small stalactite tooth, which gives the same comb-like repetition as X.",
+        "where": "stepped south/east edge of main island"
+       },
+       {
+        "problem": "The N edge is bumpy and crenellated with 1px notches along the top lip.",
+        "where": "main island top border"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's bright lip and violet underside clearly separate the walkable ground from the void at 1x and fit the violet-black theme. X's dull lip makes the boundary hard to read."
+    }
+   }
+  },
+  "answer-4.json": {
+   "items": {
+    "other.ground": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Texture reads more like fine stippled purple gravel than cracked stone slabs, with a faint diagonal 16px tile repeat visible across the 6x6 mosaic and scene floor.",
+        "where": "in a scene (1x/2x) and 6x6 mosaic extra view"
+       },
+       {
+        "problem": "Glow veins are isolated 3-4px diagonal pink-violet dashes rather than connected fissures following stone cracks.",
+        "where": "piece 3x and 6x6 mosaic extra view"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "In the 6x6 mosaic, several orange glow veins are thick 2px smudges that read like small lava slugs sitting on top of the stone rather than glowing cracks.",
+        "where": "6x6 mosaic extra view (upper-left and bottom cells)"
+       },
+       {
+        "problem": "Subtle horizontal row banding repeats every 16px across the large floor area, and the scene floor only shows a single faint vein so the crack network barely registers at 1x.",
+        "where": "in a scene (1x/2x) and 6x6 mosaic extra view"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X stays true to the violet-black demon-realm palette with cleaner, more understated violet glow veins, whereas Y shifts toward brown-plum with blotchy orange veins."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "The south lip forms a continuous ruler-straight horizontal line across multi-tile runs instead of following the craggy rock contours of the hanging underside.",
+        "where": "in a scene (1x/2x) bottom edge and small islands extra view"
+       },
+       {
+        "problem": "At stepped south edges, each hanging rock triangle ends in an abrupt vertical cut against the adjacent column rather than blending into the neighboring cliff.",
+        "where": "in a scene (2x) left and right stepped south edges"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Harsh, overly bright lavender horizontal bars along every south edge read like flat neon strips or UI underlines at 1x and visually sever the walkable top surface from the hanging rock underside.",
+        "where": "piece 1x/3x, in a scene (1x/2x) south edges, and 47-tile autotile sheet"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Repeating V-notches along multi-tile south undersides and vertical cuts at stepped corners make the 16px column grid obvious.",
+        "where": "in a scene (1x/2x) and small islands extra view"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X integrates the south rim and hanging cliff underside with cohesive dark-violet rocky shading, avoiding Y's jarring neon-lavender horizontal bars along south edges."
+    }
+   }
+  }
+ }
+}

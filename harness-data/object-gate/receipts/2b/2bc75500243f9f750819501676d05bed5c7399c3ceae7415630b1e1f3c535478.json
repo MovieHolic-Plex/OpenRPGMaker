@@ -1,0 +1,372 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2bc75500243f9f750819501676d05bed5c7399c3ceae7415630b1e1f3c535478",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "arcane.bookshelf",
+ "label": "beodeul_dungeon/arcane.bookshelf",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 4 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 2행 < 4 (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 23,
+  "darkV5": 49,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice band",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards at rows 14 and 26 with books and items",
+      "rows": "5-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The top is a 5-row brown band (rows 0-4), with a lighter strip at rows 1-2 and a darker strip at rows 3-4. It has no clear front-edge line and no ellipse. It reads as a front-facing cornice or rim, so I count only about 2 rows as top. Below it (rows 5-29) is a flat face-on view of the open shelves, with books and items shown from the front. The shelf boards are 1-2 row strips, and no horizontal surface is visible. The shelves are not drawn as 3/4 views."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a wooden bookshelf with a skull, books and potions. Its measured facts are close to the references: 17 visible tones per tile, equal to the cheese stall and a little below the well's 20, 3% near-flat coverage, and 0% neutral dark edge pixels. That last figure means the outline is tinted, a dark brown beside the wood, and not a black sticker line. The frame wood has about 3-4 steps, which is somewhat shallower than the 5-6 on the stall and well. The shelf interior and the book spines carry variety, with several colours and small items, so there is no large flat fill. Texture is moderate: the wood grain is limited and the frame reads fairly flat next to the stall's tiles and awning. It is slightly lower than the best references but would be acceptable beside them. It is not a plain sticker.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14603
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top / cornice band",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "3-4"
+     },
+     {
+      "part": "books, skull and potions inside shelf bays",
+      "rows": "5-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-2 are a wood top band: row 0 is the outline and rows 1-2 are lighter brown (L98). The band ends at a front-edge line at row 2. Rows 3-4 are darker eave shadow (L56) above the dark interior. Below it the front face runs from rows 5 to 29, about 25 rows, with two open shelf bays. The shelf ledges at rows 14 and 26 are 1-row lines, and books and potions sit inside the bays. The top surface is short, about 3 rows including the outline, so it is a modest top rather than a deep one. There is no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate matches the stall and well references on the primary facts: 17 visible tones per tile (stall 17, well 20, hedge 9) and only 3% near-flat coverage (stall 13%). Its dark edge pixels are 0% neutral, so the outline is a dark brown tint beside the wood frame rather than a black sticker line. By eye, the wood frame has about 4 steps (highlight, mid, dark, deep). The shelf contents add variety: a skull, potion bottles in several colours, and books with spine highlights. There are no large flat fills; the back panel and shelf boards carry some variation. The total of 33 distinct colours is a bit below the stall (40) and well (38), and the frame grain is less detailed than the references' per-tile highlights, so it has slightly fewer shading steps. It would still sit next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20055
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "3-4"
+     },
+     {
+      "part": "shelf contents (skulls, bottles, books)",
+      "rows": "5-25",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The bookshelf is drawn face-on. Rows 0-2 form a thin wood cap: row 0 is the outline and rows 1-2 are lighter brown. Rows 3-4 are darker, but this reads as a front-facing cornice strip rather than a horizontal surface. There is no distinct front-edge line and the strip is only about 2 rows, which is comparable to the 'rim only: top 2' wrong reference. Below it, rows 5-29 are the open front with the interior and shelf boards at rows 14 and 26, all seen face-on. No ellipse, no roof plane and no receding side face. The cap is too shallow to count as a top surface, so the drawing is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts: the candidate has 17 visible tones per tile, equal to prop-stall-cheese (17) and a little below prop-well-roofed (20). Near-flat coverage is 3% against 0-13% for the references, and 0% of its dark edge pixels are neutral, so the outline is tinted (dark brown beside wood), not near-black. By eye, the wooden frame shows about 3-4 steps, with a light top edge and a darker interior. The shelves carry small clusters of books, skull, bottles and orbs in several tones, which adds real variety. However, the frame sides and the shelf boards are fairly flat, with little grain, no per-plank highlights and no wood texture dots. The overall shading is shallower than the roofed well or the cheese stall, which have 5-6 steps per material and per-element highlights. It is acceptable on density, but the wood ramp is thinner than the references and a careful artist would notice the flatter frame next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15968
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bookshelf top / cornice cap",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "3-4"
+     },
+     {
+      "part": "shelf compartments with books, skulls and potions",
+      "rows": "5-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body is a full 30px-wide rectangle. Rows 0-2 form a lighter brown top band (row 0 outline L=79, rows 1-2 L=98), followed by darker eave-shadow rows 3-4 (L=56) before the dark interior starts at row 5. This is a modest top band, about 3 rows, with a shadow underneath. It is borderline against a cornice strip, but it has a lighter-to-darker transition like the green bookshelf reference. The front face runs from row 5 to row 29 (about 25 rows) and shows two shelf compartments divided by a shelf board at rows 14 and 26. The books, skulls and potions are contents inside the open shelf bays. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small wooden bookshelf with a skull, a red item and colored books. Measured facts: 17 visible tones per tile, matching prop-stall-cheese (17) and a little below prop-well-roofed (20). Near-flat coverage is 3%, close to the references, and 0% of dark edge pixels are neutral, so the outline is tinted dark brown rather than black. By eye, the wood frame has about 3-4 steps (highlight, mid, dark, deep) against 5-6 in the references. The back panel and shelf boards look fairly flat, with little grain or per-plank highlight. The books and the skull are shaded only lightly. The piece is clean and in style, but its material ramps are shallower and its texture thinner than the stall or well, so it would look slightly flatter beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15658
+  }
+ ],
+ "decidedAt": "2026-10-23T02:48:17.977Z",
+ "cells": {
+  "16": [
+   "1c110a3e5247b518",
+   "217c0d773d6cb0ae",
+   "8be5cafb1d416d8f",
+   "abc565a5ed07fe57"
+  ],
+  "24": [
+   "144be479effd6f52",
+   "16837e990c2e156c",
+   "1afaab7e88fb2b6a",
+   "212f4b619abc00de",
+   "46b9dcbb0817db93",
+   "5ae1a1adc5e14a4f",
+   "5d31f5448e95095c",
+   "64fae2bb83705539",
+   "6db0ea9965234b9c",
+   "88cc1a1b28fe4024",
+   "8f5fd2f55eb0ff6c",
+   "912ca03f8cbea7cd",
+   "93a33e3f863cef2f",
+   "acea82f58cc778bb",
+   "b08f50889121b07d",
+   "b4eff49907ef4731",
+   "c526d8013af76deb",
+   "cb3fb1cf7f3eac86",
+   "d69a8ac4073f21f3",
+   "d76a7dab13c390ae",
+   "d8fe9772fb0c5976",
+   "ee87078e6f2ed7af",
+   "f61fecea9e93c1d1",
+   "fb50922ae7bec43e"
+  ],
+  "32": [
+   "b961f91c7ebefa83"
+  ],
+  "48": [
+   "130090b99832d6db",
+   "962b06f2c11c616a",
+   "b0283d2f3ee3dd59",
+   "b6e81c88ffaec6f5",
+   "cf504152efc2a395",
+   "d1630839bc7ba352"
+  ]
+ }
+}

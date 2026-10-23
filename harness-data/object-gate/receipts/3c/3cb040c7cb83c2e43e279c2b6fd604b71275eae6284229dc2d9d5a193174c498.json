@@ -1,0 +1,429 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3cb040c7cb83c2e43e279c2b6fd604b71275eae6284229dc2d9d5a193174c498",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "other.brazier",
+ "label": "beodeul_dungeon/other.brazier",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 윗면 2행 < 4 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 질감 없음 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "윗면 2행 < 4 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "질감 없음 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 35,
+  "nearBlackEdge": 0.26,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "purple flame",
+      "rows": "0-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl mouth / rim with glow",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal shaft and base",
+      "rows": "12-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The brazier is a flame (decor, rows 0-8) over a bowl band that is 12 px wide for rows 8-11. The width profile does not widen and narrow again, so there is no ellipse. The only top evidence is a 2-row dark-purple glow strip at rows 9-10, which sits just above a dark front-edge line at row 11. That is a rim-level strip, not a visible bowl opening with contents. Below it the pedestal shaft (width 8, rows 12-22) and the flared base (rows 23-26) are drawn as a purely vertical front face of about 15 rows, with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey stone pedestal with a purple flame bowl. It has only 9 distinct colours, against 14 for the thin references (bench, lamp) and 38-40 for the well and stall. The stone body shows about 3 tones (light face, mid, dark side) with little per-stone shading or grain. The flame has roughly 3 tones. Beodeul references use 5-6 steps per material and carry texture dots, such as the well's stones shaded one by one. The outline is tinted: 0% of dark edge pixels are neutral, so it reads as a dark bluish-purple material tone and not a black sticker line. There are no large flat fills, since the piece is small and no 5x5 block is flat. The tile-level facts are 0 because the piece is smaller than one tile, so density is judged by eye. By eye the pedestal is simpler and flatter than the well or lamp, with shallow shading and little texture. A careful artist would likely see it as thinner than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21798
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "purple flame",
+      "rows": "1-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brazier bowl mouth with flame inside",
+      "rows": "8-10",
+      "evidence": "d",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "pedestal shaft with rune",
+      "rows": "12-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "23-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-8 hold the purple flame (decor). The bowl is 12 px wide in rows 8-11, with the flame rising from inside it, so contents are visible (d). The dark outline in row 11 acts as the front-edge line, with the rim lines at rows 9-10. The bowl then narrows to a pedestal of width 8 in rows 12-22 and flares to a 12 px base in rows 24-26. The front face is about 15 rows. The top surface is shallow, about 3 rows, but contents plus an edge line are present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small purple-flame brazier on a blue-grey stone pedestal, smaller than one 16x16 tile, so the per-tile facts are 0 and I judged by eye. The measured facts are 0% near-flat coverage and 0% neutral dark edge pixels, so the outline is tinted, not a black sticker line. The whole piece has only 9 distinct colours, against 11-40 for the references; even the thin lamp-crook has 14. The pedestal reads as about 3 steps (light, mid, dark) with little per-stone shading or grain, where the well and stall carry 5-6 steps with stone-by-stone shading and texture dots. The flame has about 3 tones. Next to the references it looks thinner and flatter, and the pedestal is mostly a smooth block. I would not accept it beside the well or stall without more shading steps and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19351
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "purple flame",
+      "rows": "1-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl rim / mouth",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal shaft with rune",
+      "rows": "12-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "23-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The width profile is a constant 12 px across rows 8-11, so there is no ellipse that widens and narrows. The bowl is a 12 px wide band with a dark outline at row 11, and only rows 9-10 could be a rim or mouth, which are mostly covered by the purple flame. No interior is visible from above beyond the flame, which is decor. Below it, rows 12-22 form a vertical shaft 8 px wide with a rune, and rows 23-26 form a base 12 px wide. Both are drawn as plain front faces with no top surface. This is a front elevation with only a 1-2 row rim, not a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small stone pedestal with a purple flame and uses only 9 distinct colours in total. The references use 14 to 40, and the well and stall carry 17 to 20 visible tones per tile. The pedestal has about 3 lightness steps, a base, a mid tone and a dark side, with little per-stone shading, speckle or grain. The flame has about 2-3 tones and no clear clump structure. The dark edge pixels are tinted (0% neutral), so the outline is a dark material tone and not a black sticker line. The 0% near-flat figure is only because the piece is narrower than a full tile, so it says nothing in the candidate's favour. By eye, it looks thinner and flatter than the well-roofed and cheese-stall references, which are shaded stone by stone or tile by tile. Its shading and texture are shallow for the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16881
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "purple flame",
+      "rows": "1-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl rim / top band",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal shaft with rune marks",
+      "rows": "12-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "23-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The width profile is constant at 12 for rows 8-11. It never widens and then narrows, so there is no ellipse mouth. The bowl is a rim band of about 2-3 rows (dark purple rows 9-10, outline row 11) set directly on a narrower 8-wide shaft (rows 12-22), then a 12-wide base (rows 23-26). The inside of the bowl is not seen from above. The purple flame rises straight from the rim as a decor shape and does not show a mouth opening. The body is mostly a front-facing pedestal with only a rim on top, as in the red 'rim only' and 'lid 2px' references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small purple-flame brazier on a grey-blue stone pedestal. The measured facts give 0 visible tones per tile because the piece is smaller than one tile, so I judged by eye. It has only 9 distinct colours in total. Even the thin references (bench and lamp, 14 colours each) have more, and the well and stall have 38-40. The flame has about 3 purple steps, and the pedestal has about 2-3 stone steps with little per-stone shading or grain. The pedestal faces and bowl read as smooth, flat fills, unlike the shaded stones and per-plank grain of the well and bench. The outline is a dark, bluish, tinted tone with no neutral-black line (0% neutral edge pixels), so it is not sticker-like. Overall it looks thinner and flatter than the same-kind references, with less shading depth and texture, and a careful artist would not accept it beside the well or stall. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17381
+  }
+ ],
+ "decidedAt": "2026-10-23T02:51:28.038Z",
+ "cells": {
+  "16": [
+   "117006c16849eec3",
+   "298cecbd846a84e3"
+  ],
+  "24": [
+   "14d4cdddb5670bdb",
+   "1de946b166863e07",
+   "1f66484a845ddb2b",
+   "359624d5411faa19",
+   "65555e7b31af50b6",
+   "73e511e5fd70bb67",
+   "9e067e01a9a8e144",
+   "a13e579fcdbcd36a",
+   "a22542e34d41c03e",
+   "aa33123656d89af4",
+   "bdb569e9e869197e",
+   "c2352f6341475da2"
+  ],
+  "32": [
+   "a01aad2768281da6",
+   "f06d2e2965f49084",
+   "fefda06201c6d4d5"
+  ],
+  "48": [
+   "186f25daa6359aea",
+   "33d9b558082ec37a",
+   "a2b5156c5872424d",
+   "a6946e7a93921a22",
+   "a9b7aaa180ded551",
+   "fe47323a73281198"
+  ]
+ }
+}

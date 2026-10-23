@@ -629,6 +629,186 @@
    "by": "delegated",
    "delegatedBy": "delegated by user to supervisor 2026-10-23",
    "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-gap-lava-r2-panel-5.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "arcane.tower_floor",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "7105c12c839fbc612b8d83c893478dfaeec28e45767af4f96a6aa3d41ad5c537",
+   "note": "",
+   "at": "2026-10-23T13:53:13",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-1.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "arcane.bookshelf",
+   "line": "*",
+   "letter": "A2",
+   "sha256": "ee83f75e91a940d0ff7aebfec6edb9d4359afabcb742b3c85a6ee969f9562213",
+   "note": "",
+   "at": "2026-10-23T13:53:13",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "arcane.bookshelf_tall",
+   "line": "*",
+   "letter": "A2",
+   "sha256": "88beebddd0842539e479d263c5f19e944a985f70982525438b1252c809bd369a",
+   "note": "",
+   "at": "2026-10-23T13:53:14",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "arcane.lectern",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "1e487220d59ba4a760ce319e7cd551ab8fb59787c99d8062095fe60e5ed0ed3c",
+   "note": "",
+   "at": "2026-10-23T13:53:14",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-1.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "arcane.teleport_circle",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "9d7566524d96213ddf113ee24caef863e119c1d4015d1b2b552669d187c04bbc",
+   "note": "",
+   "at": "2026-10-23T13:53:15",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "arcane.crystal_pedestal",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "6bd4686d25fa0a6606afce577cd4abc0625d362733b519b4146da64df7d6c1ab",
+   "note": "",
+   "at": "2026-10-23T13:53:15",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "arcane.candelabra",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "455b4e6543232d482f1bb91de653a98ff0b23e4176f1253e7869ef0d5f331ddc",
+   "note": "",
+   "at": "2026-10-23T13:53:15",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "other.void_edge",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "69a363325aacd134712d8b60b9b73955a041591bfef7a6f60967954c429e9a25",
+   "note": "",
+   "at": "2026-10-23T13:53:16",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-10.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "other.crystal",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "906bea1243981a2a37d89a368d84cf07690d7225a1f5856dd57a4671c6690824",
+   "note": "",
+   "at": "2026-10-23T13:53:16",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-9.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "other.crystal_big",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "2358e115f22dfac64737716a357d07c4f3f32fb3aca769c1027aca32c8360f7e",
+   "note": "",
+   "at": "2026-10-23T13:53:17",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-9.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "other.throne",
+   "line": "*",
+   "letter": "A2",
+   "sha256": "23b1bfa88421bf29e4dd9d6a846a405eb7d08e719433bb9d362f2b958398fb0e",
+   "note": "",
+   "at": "2026-10-23T13:53:17",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "other.bone_pillar",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "17e5f32c0f1a3b441dce83e85ac3ae4aa46230dd61abebfa0c9d90d72660aae0",
+   "note": "",
+   "at": "2026-10-23T13:53:18",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "other.brazier",
+   "line": "*",
+   "letter": "A2",
+   "sha256": "f33d9e09cb08c7f2af0d7fdd0b9c64d6e2417b9d4116cb4e36a727c4cd09ae73",
+   "note": "",
+   "at": "2026-10-23T13:53:18",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "other.portal",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "5ad42b2d57a6d254dc2c4bcb27ba100002084492b595b78a0a57add75ed11ce5",
+   "note": "",
+   "at": "2026-10-23T13:53:19",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r1",
+   "item": "other.ground",
+   "line": "*",
+   "letter": "A2",
+   "sha256": "91dbc23f6164cc54c36188bf529ff5e39787c755920c8d51ea56ce00350e9671",
+   "note": "",
+   "at": "2026-10-23T13:53:52",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-10.json"
   }
  ],
  "rejects": [],
@@ -9245,6 +9425,3964 @@
      "C2": "19d198a4f6aeb17fe1441e0906a54d5f8859bf927ad33780e46407a31543aa19",
      "B1": "fedcc3f691d6ba2ed312ca2b40bf3084f8e68f973d3bc445b628f3bd965016ff",
      "B2": "410b9ee980f349e8a7672ff80f535fae3f562801cb1b82333de905cd51f60286"
+    }
+   }
+  },
+  {
+   "round": "edges-r1",
+   "at": "2026-10-08T10:51:36",
+   "fail": 0,
+   "warn": 5,
+   "hashes": {
+    "edges.water": {
+     "A1": "7f0358cc99b56b9107fe0bc82f416a1b3420a979a33bf782cade8f9589bf9f3c",
+     "A2": "4f68e3103fe6e2d270358f81d31dd1313e8b669ec94a7baec3aa1e36fa1798af",
+     "B1": "3dc65db9ca6370700a4336319ed195dcc220fc1c6bc30269e8e34217926b7fab",
+     "B2": "c399aca5afef52fedb5d9debbc09fab9665d655afe7d12a5955eebd252562d26",
+     "C1": "7f0f8c1e14ba6e3d710ce0744c641eef784f7ce0a0c990c3bbb8409179565a9e",
+     "C2": "c99a28a2fd52ae2001194b6568dda32e1fc736ef7a6f6140ec5c5008a76e3a5a"
+    },
+    "edges.lava": {
+     "B1": "0fcf64c4b89ae85faa9d34961314080f0896770750edd9ca86a15215cc02d5ec",
+     "B2": "7e06213ca51f98eb65c220428aeaeb2195b1a0f6bad36a450b7c07b4a34247df",
+     "C1": "7795f0997fc3389160146cee682a5dd48f3d58fe2c17f3e472ef86ff4d0651f5",
+     "C2": "04ed0ae059af81b3a8927197586b22ceef8f0ced71ae9b0215844f5b37c74fbe"
+    },
+    "edges.ice": {
+     "A1": "50f05acee7e70b44798c5d757f3ed0f07812ef9f5d5d43734979cfe6dec70ea8",
+     "A2": "23c6a371c6ca06382176edc5cd9d89323abebea04ec2b218b402d57edb4e9ac4",
+     "B1": "c8f16b282fa252825942040c88f9147a08868a44b9e38e68eb06d35d0676fc03",
+     "B2": "3fd70ed66b70b5058b2cad6b06fd3a3ad87612914a15cd1d696e5f095dbd4f87",
+     "C1": "b3ec30cd0b43941baf99f7923565cd4b6271540e7c2bfc3aaf34888253f19341",
+     "C2": "0ae463f853fbf7d7bf094becd4a3936c78c098d9a71dd2d22e691cf747bbc4f3"
+    },
+    "edges.chasm": {
+     "A1": "918d3aeabd66421a5af7b4f1c26c218558d7bb2e6ff669a24108f3cc5dac79f4",
+     "A2": "6041251c63926ca7777d0f93bf7be9efece54b590c0cc3e128c187c8d0b54e64",
+     "B1": "2b8ada1b999e39b2af52a380484460959f253d1b442e60d528d525e64ad8d931",
+     "B2": "f2851c0c32ff0b6136b7d8c7ea086fae738dd01c910271ae8de68e6c2d3a3f0b",
+     "C1": "4a98a1d40df4e1a6ea3d6f9369c309dc87b977b0e8eac50757c53e76104cc186",
+     "C2": "a85a1bffd0ddd355dada0cb5d98b554d338a491fc7dc5ddcb3c38e4e1b630153"
+    },
+    "edges.bridge": {
+     "A1": "19229e6485d658a606dd59519c604afe8e48ee741940de3993baa3df8aaacc12",
+     "A2": "49b00fe977c7de693040312a6da7766973d82baa5439d696dd49534608c6d193",
+     "B1": "abeeebd5420d5a576203b68fbdd8d9a8da5f113a1d864f4afb40fcf6c6add3ad",
+     "B2": "c212ac99bb3705a50ec6ce907dd5e4d4df7adaf68814fdc06908932897b756da",
+     "C1": "96da720afcae50cf366b071a1b06ca379e0fd393ced4a351a493820334d73be3",
+     "C2": "d7a31a1848c349b0dd3a9e2d680dac833d4f9c73bac9cf1bf7d49828e8640473"
+    }
+   }
+  },
+  {
+   "round": "edges-r1",
+   "at": "2026-10-08T10:51:54",
+   "fail": 0,
+   "warn": 5,
+   "hashes": {
+    "edges.water": {
+     "A1": "7f0358cc99b56b9107fe0bc82f416a1b3420a979a33bf782cade8f9589bf9f3c",
+     "A2": "4f68e3103fe6e2d270358f81d31dd1313e8b669ec94a7baec3aa1e36fa1798af",
+     "B1": "3dc65db9ca6370700a4336319ed195dcc220fc1c6bc30269e8e34217926b7fab",
+     "B2": "c399aca5afef52fedb5d9debbc09fab9665d655afe7d12a5955eebd252562d26",
+     "C1": "7f0f8c1e14ba6e3d710ce0744c641eef784f7ce0a0c990c3bbb8409179565a9e",
+     "C2": "c99a28a2fd52ae2001194b6568dda32e1fc736ef7a6f6140ec5c5008a76e3a5a"
+    },
+    "edges.lava": {
+     "B1": "0fcf64c4b89ae85faa9d34961314080f0896770750edd9ca86a15215cc02d5ec",
+     "B2": "7e06213ca51f98eb65c220428aeaeb2195b1a0f6bad36a450b7c07b4a34247df",
+     "C1": "7795f0997fc3389160146cee682a5dd48f3d58fe2c17f3e472ef86ff4d0651f5",
+     "C2": "04ed0ae059af81b3a8927197586b22ceef8f0ced71ae9b0215844f5b37c74fbe"
+    },
+    "edges.ice": {
+     "A1": "50f05acee7e70b44798c5d757f3ed0f07812ef9f5d5d43734979cfe6dec70ea8",
+     "A2": "23c6a371c6ca06382176edc5cd9d89323abebea04ec2b218b402d57edb4e9ac4",
+     "B1": "c8f16b282fa252825942040c88f9147a08868a44b9e38e68eb06d35d0676fc03",
+     "B2": "3fd70ed66b70b5058b2cad6b06fd3a3ad87612914a15cd1d696e5f095dbd4f87",
+     "C1": "b3ec30cd0b43941baf99f7923565cd4b6271540e7c2bfc3aaf34888253f19341",
+     "C2": "0ae463f853fbf7d7bf094becd4a3936c78c098d9a71dd2d22e691cf747bbc4f3"
+    },
+    "edges.chasm": {
+     "A1": "918d3aeabd66421a5af7b4f1c26c218558d7bb2e6ff669a24108f3cc5dac79f4",
+     "A2": "6041251c63926ca7777d0f93bf7be9efece54b590c0cc3e128c187c8d0b54e64",
+     "B1": "2b8ada1b999e39b2af52a380484460959f253d1b442e60d528d525e64ad8d931",
+     "B2": "f2851c0c32ff0b6136b7d8c7ea086fae738dd01c910271ae8de68e6c2d3a3f0b",
+     "C1": "4a98a1d40df4e1a6ea3d6f9369c309dc87b977b0e8eac50757c53e76104cc186",
+     "C2": "a85a1bffd0ddd355dada0cb5d98b554d338a491fc7dc5ddcb3c38e4e1b630153"
+    },
+    "edges.bridge": {
+     "A1": "19229e6485d658a606dd59519c604afe8e48ee741940de3993baa3df8aaacc12",
+     "A2": "49b00fe977c7de693040312a6da7766973d82baa5439d696dd49534608c6d193",
+     "B1": "abeeebd5420d5a576203b68fbdd8d9a8da5f113a1d864f4afb40fcf6c6add3ad",
+     "B2": "c212ac99bb3705a50ec6ce907dd5e4d4df7adaf68814fdc06908932897b756da",
+     "C1": "96da720afcae50cf366b071a1b06ca379e0fd393ced4a351a493820334d73be3",
+     "C2": "d7a31a1848c349b0dd3a9e2d680dac833d4f9c73bac9cf1bf7d49828e8640473"
+    }
+   }
+  },
+  {
+   "round": "edges-r1",
+   "at": "2026-10-08T10:52:01",
+   "fail": 0,
+   "warn": 5,
+   "hashes": {
+    "edges.water": {
+     "A1": "7f0358cc99b56b9107fe0bc82f416a1b3420a979a33bf782cade8f9589bf9f3c",
+     "A2": "4f68e3103fe6e2d270358f81d31dd1313e8b669ec94a7baec3aa1e36fa1798af",
+     "B1": "3dc65db9ca6370700a4336319ed195dcc220fc1c6bc30269e8e34217926b7fab",
+     "B2": "c399aca5afef52fedb5d9debbc09fab9665d655afe7d12a5955eebd252562d26",
+     "C1": "7f0f8c1e14ba6e3d710ce0744c641eef784f7ce0a0c990c3bbb8409179565a9e",
+     "C2": "c99a28a2fd52ae2001194b6568dda32e1fc736ef7a6f6140ec5c5008a76e3a5a"
+    },
+    "edges.lava": {
+     "B1": "0fcf64c4b89ae85faa9d34961314080f0896770750edd9ca86a15215cc02d5ec",
+     "B2": "7e06213ca51f98eb65c220428aeaeb2195b1a0f6bad36a450b7c07b4a34247df",
+     "C1": "7795f0997fc3389160146cee682a5dd48f3d58fe2c17f3e472ef86ff4d0651f5",
+     "C2": "04ed0ae059af81b3a8927197586b22ceef8f0ced71ae9b0215844f5b37c74fbe"
+    },
+    "edges.ice": {
+     "A1": "50f05acee7e70b44798c5d757f3ed0f07812ef9f5d5d43734979cfe6dec70ea8",
+     "A2": "23c6a371c6ca06382176edc5cd9d89323abebea04ec2b218b402d57edb4e9ac4",
+     "B1": "c8f16b282fa252825942040c88f9147a08868a44b9e38e68eb06d35d0676fc03",
+     "B2": "3fd70ed66b70b5058b2cad6b06fd3a3ad87612914a15cd1d696e5f095dbd4f87",
+     "C1": "b3ec30cd0b43941baf99f7923565cd4b6271540e7c2bfc3aaf34888253f19341",
+     "C2": "0ae463f853fbf7d7bf094becd4a3936c78c098d9a71dd2d22e691cf747bbc4f3"
+    },
+    "edges.chasm": {
+     "A1": "918d3aeabd66421a5af7b4f1c26c218558d7bb2e6ff669a24108f3cc5dac79f4",
+     "A2": "6041251c63926ca7777d0f93bf7be9efece54b590c0cc3e128c187c8d0b54e64",
+     "B1": "2b8ada1b999e39b2af52a380484460959f253d1b442e60d528d525e64ad8d931",
+     "B2": "f2851c0c32ff0b6136b7d8c7ea086fae738dd01c910271ae8de68e6c2d3a3f0b",
+     "C1": "4a98a1d40df4e1a6ea3d6f9369c309dc87b977b0e8eac50757c53e76104cc186",
+     "C2": "a85a1bffd0ddd355dada0cb5d98b554d338a491fc7dc5ddcb3c38e4e1b630153"
+    },
+    "edges.bridge": {
+     "A1": "19229e6485d658a606dd59519c604afe8e48ee741940de3993baa3df8aaacc12",
+     "A2": "49b00fe977c7de693040312a6da7766973d82baa5439d696dd49534608c6d193",
+     "B1": "abeeebd5420d5a576203b68fbdd8d9a8da5f113a1d864f4afb40fcf6c6add3ad",
+     "B2": "c212ac99bb3705a50ec6ce907dd5e4d4df7adaf68814fdc06908932897b756da",
+     "C1": "96da720afcae50cf366b071a1b06ca379e0fd393ced4a351a493820334d73be3",
+     "C2": "d7a31a1848c349b0dd3a9e2d680dac833d4f9c73bac9cf1bf7d49828e8640473"
+    }
+   }
+  },
+  {
+   "round": "edges-r1",
+   "at": "2026-10-08T10:54:20",
+   "fail": 0,
+   "warn": 5,
+   "hashes": {
+    "edges.water": {
+     "A1": "7f0358cc99b56b9107fe0bc82f416a1b3420a979a33bf782cade8f9589bf9f3c",
+     "A2": "4f68e3103fe6e2d270358f81d31dd1313e8b669ec94a7baec3aa1e36fa1798af",
+     "B1": "3dc65db9ca6370700a4336319ed195dcc220fc1c6bc30269e8e34217926b7fab",
+     "B2": "c399aca5afef52fedb5d9debbc09fab9665d655afe7d12a5955eebd252562d26",
+     "C1": "7f0f8c1e14ba6e3d710ce0744c641eef784f7ce0a0c990c3bbb8409179565a9e",
+     "C2": "c99a28a2fd52ae2001194b6568dda32e1fc736ef7a6f6140ec5c5008a76e3a5a"
+    },
+    "edges.lava": {
+     "B1": "0fcf64c4b89ae85faa9d34961314080f0896770750edd9ca86a15215cc02d5ec",
+     "B2": "7e06213ca51f98eb65c220428aeaeb2195b1a0f6bad36a450b7c07b4a34247df",
+     "C1": "7795f0997fc3389160146cee682a5dd48f3d58fe2c17f3e472ef86ff4d0651f5",
+     "C2": "04ed0ae059af81b3a8927197586b22ceef8f0ced71ae9b0215844f5b37c74fbe"
+    },
+    "edges.ice": {
+     "A1": "50f05acee7e70b44798c5d757f3ed0f07812ef9f5d5d43734979cfe6dec70ea8",
+     "A2": "23c6a371c6ca06382176edc5cd9d89323abebea04ec2b218b402d57edb4e9ac4",
+     "B1": "c8f16b282fa252825942040c88f9147a08868a44b9e38e68eb06d35d0676fc03",
+     "B2": "3fd70ed66b70b5058b2cad6b06fd3a3ad87612914a15cd1d696e5f095dbd4f87",
+     "C1": "b3ec30cd0b43941baf99f7923565cd4b6271540e7c2bfc3aaf34888253f19341",
+     "C2": "0ae463f853fbf7d7bf094becd4a3936c78c098d9a71dd2d22e691cf747bbc4f3"
+    },
+    "edges.chasm": {
+     "A1": "918d3aeabd66421a5af7b4f1c26c218558d7bb2e6ff669a24108f3cc5dac79f4",
+     "A2": "6041251c63926ca7777d0f93bf7be9efece54b590c0cc3e128c187c8d0b54e64",
+     "B1": "2b8ada1b999e39b2af52a380484460959f253d1b442e60d528d525e64ad8d931",
+     "B2": "f2851c0c32ff0b6136b7d8c7ea086fae738dd01c910271ae8de68e6c2d3a3f0b",
+     "C1": "4a98a1d40df4e1a6ea3d6f9369c309dc87b977b0e8eac50757c53e76104cc186",
+     "C2": "a85a1bffd0ddd355dada0cb5d98b554d338a491fc7dc5ddcb3c38e4e1b630153"
+    },
+    "edges.bridge": {
+     "A1": "19229e6485d658a606dd59519c604afe8e48ee741940de3993baa3df8aaacc12",
+     "A2": "49b00fe977c7de693040312a6da7766973d82baa5439d696dd49534608c6d193",
+     "B1": "abeeebd5420d5a576203b68fbdd8d9a8da5f113a1d864f4afb40fcf6c6add3ad",
+     "B2": "c212ac99bb3705a50ec6ce907dd5e4d4df7adaf68814fdc06908932897b756da",
+     "C1": "96da720afcae50cf366b071a1b06ca379e0fd393ced4a351a493820334d73be3",
+     "C2": "d7a31a1848c349b0dd3a9e2d680dac833d4f9c73bac9cf1bf7d49828e8640473"
+    }
+   }
+  },
+  {
+   "round": "edges-r1",
+   "at": "2026-10-08T11:12:32",
+   "fail": 0,
+   "warn": 2,
+   "hashes": {
+    "edges.water": {
+     "A1": "ba09485e3cd91f672b970e7fa6ad2e8d0f003fe0b3fb3bfbdf7a6df9fb7344b5",
+     "A2": "44d89327037ee1117ec8baaa70aafaf7fc020499676738dd6d8881fcb474b5ca",
+     "B1": "95ba336c150dd2da9a8976b6519a96c1499462bf19d578e067a44a4d6b4ee657",
+     "B2": "11044bfc15bec104e50692f7aef258f3bb56cfea17dc228f147935defaa3d725",
+     "C1": "da4f809cf1536e622117ece134072cc2cebece190645713aa5189299b9c05e9d",
+     "C2": "a49f0662f8970c3013cb4a8c09a22df9bd8c14d37b556931aae12f84b3369c8d"
+    },
+    "edges.lava": {
+     "B1": "1ecffd5333667ba8a22bd20c8f91137a947044389a350490ad6b05ccc64b5182",
+     "B2": "d248032e9b352cd09df681852e3b8328c3c690a68876edb9dbe3aedc0192915b",
+     "C1": "e85fb4bf9d55aa3eee5a6dc2818d5278288768f141cc3ba648ae964d1f128e6f",
+     "C2": "6657335f2464b0ad9cc7fc246028b890f4accdf58d9a2e921e40c3b04fb9ed06"
+    },
+    "edges.ice": {
+     "A1": "5b423e4824c98dd29ee449c78cce86e11e95d2ed51bb5ad6a1a3b805811ffc75",
+     "A2": "e8949bda46050b0998eba4e7f08817cbea41ec8d1c66b63e35714d53dab0b212",
+     "B1": "a9dd2f8a9e1a269910ae8bc8a46a49cb4889820a79fe0f9b5d59e61d18c51b8c",
+     "B2": "2b0ce80a95c16f4f47cc0c243c1978ed1ca94378f7e9b82f8d30948e36216774",
+     "C1": "b8681bb3733d9bf603df0f76856eebc75d85eff35ad2e94f0ef56d62a86e9b72",
+     "C2": "3d80f12b63a06a5e45a4828490eb56d20a6476c17e43ba2968c9e3ce3d2c76b5"
+    },
+    "edges.chasm": {
+     "A1": "a9d2b74f3a3b561c796356b40cdac20f9817c2f04085e92f921bfe410213feb6",
+     "A2": "eabaffb20a01d3d23fe1bb757044ec6a7c463f7910c99cf142dd8a584754d588",
+     "B1": "94ca4d852870eac1da4ea7ec9f8c12b5f61c25e7031e550355e45a24970258e5",
+     "B2": "1939dc186657d0428e1e5e1b98603f393ed37c828a470409e6af7108031c209f",
+     "C1": "21d72a0b872eecc1aea8388dc7f4ba9d1b7e5d5dbbf9ac537e5accd06bed11b9",
+     "C2": "23878382e7d8931404a2e0f60b31c782cfe8daa8d891548c667c7c1ba99caf12"
+    },
+    "edges.bridge": {
+     "A1": "19229e6485d658a606dd59519c604afe8e48ee741940de3993baa3df8aaacc12",
+     "A2": "49b00fe977c7de693040312a6da7766973d82baa5439d696dd49534608c6d193",
+     "B1": "abeeebd5420d5a576203b68fbdd8d9a8da5f113a1d864f4afb40fcf6c6add3ad",
+     "B2": "c212ac99bb3705a50ec6ce907dd5e4d4df7adaf68814fdc06908932897b756da",
+     "C1": "96da720afcae50cf366b071a1b06ca379e0fd393ced4a351a493820334d73be3",
+     "C2": "d7a31a1848c349b0dd3a9e2d680dac833d4f9c73bac9cf1bf7d49828e8640473"
+    }
+   }
+  },
+  {
+   "round": "edges-r1",
+   "at": "2026-10-08T11:13:38",
+   "fail": 0,
+   "warn": 2,
+   "hashes": {
+    "edges.water": {
+     "A1": "ba09485e3cd91f672b970e7fa6ad2e8d0f003fe0b3fb3bfbdf7a6df9fb7344b5",
+     "A2": "44d89327037ee1117ec8baaa70aafaf7fc020499676738dd6d8881fcb474b5ca",
+     "B1": "95ba336c150dd2da9a8976b6519a96c1499462bf19d578e067a44a4d6b4ee657",
+     "B2": "11044bfc15bec104e50692f7aef258f3bb56cfea17dc228f147935defaa3d725",
+     "C1": "da4f809cf1536e622117ece134072cc2cebece190645713aa5189299b9c05e9d",
+     "C2": "a49f0662f8970c3013cb4a8c09a22df9bd8c14d37b556931aae12f84b3369c8d"
+    },
+    "edges.lava": {
+     "B1": "1ecffd5333667ba8a22bd20c8f91137a947044389a350490ad6b05ccc64b5182",
+     "B2": "d248032e9b352cd09df681852e3b8328c3c690a68876edb9dbe3aedc0192915b",
+     "C1": "e85fb4bf9d55aa3eee5a6dc2818d5278288768f141cc3ba648ae964d1f128e6f",
+     "C2": "6657335f2464b0ad9cc7fc246028b890f4accdf58d9a2e921e40c3b04fb9ed06"
+    },
+    "edges.ice": {
+     "A1": "5b423e4824c98dd29ee449c78cce86e11e95d2ed51bb5ad6a1a3b805811ffc75",
+     "A2": "e8949bda46050b0998eba4e7f08817cbea41ec8d1c66b63e35714d53dab0b212",
+     "B1": "a9dd2f8a9e1a269910ae8bc8a46a49cb4889820a79fe0f9b5d59e61d18c51b8c",
+     "B2": "2b0ce80a95c16f4f47cc0c243c1978ed1ca94378f7e9b82f8d30948e36216774",
+     "C1": "b8681bb3733d9bf603df0f76856eebc75d85eff35ad2e94f0ef56d62a86e9b72",
+     "C2": "3d80f12b63a06a5e45a4828490eb56d20a6476c17e43ba2968c9e3ce3d2c76b5"
+    },
+    "edges.chasm": {
+     "A1": "a9d2b74f3a3b561c796356b40cdac20f9817c2f04085e92f921bfe410213feb6",
+     "A2": "eabaffb20a01d3d23fe1bb757044ec6a7c463f7910c99cf142dd8a584754d588",
+     "B1": "94ca4d852870eac1da4ea7ec9f8c12b5f61c25e7031e550355e45a24970258e5",
+     "B2": "1939dc186657d0428e1e5e1b98603f393ed37c828a470409e6af7108031c209f",
+     "C1": "21d72a0b872eecc1aea8388dc7f4ba9d1b7e5d5dbbf9ac537e5accd06bed11b9",
+     "C2": "23878382e7d8931404a2e0f60b31c782cfe8daa8d891548c667c7c1ba99caf12"
+    },
+    "edges.bridge": {
+     "A1": "19229e6485d658a606dd59519c604afe8e48ee741940de3993baa3df8aaacc12",
+     "A2": "49b00fe977c7de693040312a6da7766973d82baa5439d696dd49534608c6d193",
+     "B1": "abeeebd5420d5a576203b68fbdd8d9a8da5f113a1d864f4afb40fcf6c6add3ad",
+     "B2": "c212ac99bb3705a50ec6ce907dd5e4d4df7adaf68814fdc06908932897b756da",
+     "C1": "96da720afcae50cf366b071a1b06ca379e0fd393ced4a351a493820334d73be3",
+     "C2": "d7a31a1848c349b0dd3a9e2d680dac833d4f9c73bac9cf1bf7d49828e8640473"
+    }
+   }
+  },
+  {
+   "round": "edges-r1",
+   "at": "2026-10-08T11:17:04",
+   "fail": 0,
+   "warn": 2,
+   "hashes": {
+    "edges.water": {
+     "A1": "ba09485e3cd91f672b970e7fa6ad2e8d0f003fe0b3fb3bfbdf7a6df9fb7344b5",
+     "A2": "44d89327037ee1117ec8baaa70aafaf7fc020499676738dd6d8881fcb474b5ca",
+     "B1": "95ba336c150dd2da9a8976b6519a96c1499462bf19d578e067a44a4d6b4ee657",
+     "B2": "11044bfc15bec104e50692f7aef258f3bb56cfea17dc228f147935defaa3d725",
+     "C1": "da4f809cf1536e622117ece134072cc2cebece190645713aa5189299b9c05e9d",
+     "C2": "a49f0662f8970c3013cb4a8c09a22df9bd8c14d37b556931aae12f84b3369c8d"
+    },
+    "edges.lava": {
+     "B1": "1ecffd5333667ba8a22bd20c8f91137a947044389a350490ad6b05ccc64b5182",
+     "B2": "d248032e9b352cd09df681852e3b8328c3c690a68876edb9dbe3aedc0192915b",
+     "C1": "e85fb4bf9d55aa3eee5a6dc2818d5278288768f141cc3ba648ae964d1f128e6f",
+     "C2": "6657335f2464b0ad9cc7fc246028b890f4accdf58d9a2e921e40c3b04fb9ed06"
+    },
+    "edges.ice": {
+     "A1": "5b423e4824c98dd29ee449c78cce86e11e95d2ed51bb5ad6a1a3b805811ffc75",
+     "A2": "85e93bd8b9ca495264d848b40afd1ec71ad0e974ded42f081091ecce5863e14c",
+     "B1": "a9dd2f8a9e1a269910ae8bc8a46a49cb4889820a79fe0f9b5d59e61d18c51b8c",
+     "B2": "b919939d4623019c4070ce05d4a688ac134e8dbf78e8799933083bacfa5942a0",
+     "C1": "b8681bb3733d9bf603df0f76856eebc75d85eff35ad2e94f0ef56d62a86e9b72",
+     "C2": "244802c55d2cee910d36a216da543138ad58f96d8eab56d621d6aa4affeb842d"
+    },
+    "edges.chasm": {
+     "A1": "a9d2b74f3a3b561c796356b40cdac20f9817c2f04085e92f921bfe410213feb6",
+     "A2": "eabaffb20a01d3d23fe1bb757044ec6a7c463f7910c99cf142dd8a584754d588",
+     "B1": "94ca4d852870eac1da4ea7ec9f8c12b5f61c25e7031e550355e45a24970258e5",
+     "B2": "1939dc186657d0428e1e5e1b98603f393ed37c828a470409e6af7108031c209f",
+     "C1": "21d72a0b872eecc1aea8388dc7f4ba9d1b7e5d5dbbf9ac537e5accd06bed11b9",
+     "C2": "23878382e7d8931404a2e0f60b31c782cfe8daa8d891548c667c7c1ba99caf12"
+    },
+    "edges.bridge": {
+     "A1": "19229e6485d658a606dd59519c604afe8e48ee741940de3993baa3df8aaacc12",
+     "A2": "49b00fe977c7de693040312a6da7766973d82baa5439d696dd49534608c6d193",
+     "B1": "abeeebd5420d5a576203b68fbdd8d9a8da5f113a1d864f4afb40fcf6c6add3ad",
+     "B2": "c212ac99bb3705a50ec6ce907dd5e4d4df7adaf68814fdc06908932897b756da",
+     "C1": "96da720afcae50cf366b071a1b06ca379e0fd393ced4a351a493820334d73be3",
+     "C2": "d7a31a1848c349b0dd3a9e2d680dac833d4f9c73bac9cf1bf7d49828e8640473"
+    }
+   }
+  },
+  {
+   "round": "edges-r1",
+   "at": "2026-10-08T11:17:24",
+   "fail": 0,
+   "warn": 2,
+   "hashes": {
+    "edges.water": {
+     "A1": "ba09485e3cd91f672b970e7fa6ad2e8d0f003fe0b3fb3bfbdf7a6df9fb7344b5",
+     "A2": "44d89327037ee1117ec8baaa70aafaf7fc020499676738dd6d8881fcb474b5ca",
+     "B1": "95ba336c150dd2da9a8976b6519a96c1499462bf19d578e067a44a4d6b4ee657",
+     "B2": "11044bfc15bec104e50692f7aef258f3bb56cfea17dc228f147935defaa3d725",
+     "C1": "da4f809cf1536e622117ece134072cc2cebece190645713aa5189299b9c05e9d",
+     "C2": "a49f0662f8970c3013cb4a8c09a22df9bd8c14d37b556931aae12f84b3369c8d"
+    },
+    "edges.lava": {
+     "B1": "1ecffd5333667ba8a22bd20c8f91137a947044389a350490ad6b05ccc64b5182",
+     "B2": "d248032e9b352cd09df681852e3b8328c3c690a68876edb9dbe3aedc0192915b",
+     "C1": "e85fb4bf9d55aa3eee5a6dc2818d5278288768f141cc3ba648ae964d1f128e6f",
+     "C2": "6657335f2464b0ad9cc7fc246028b890f4accdf58d9a2e921e40c3b04fb9ed06"
+    },
+    "edges.ice": {
+     "A1": "5b423e4824c98dd29ee449c78cce86e11e95d2ed51bb5ad6a1a3b805811ffc75",
+     "A2": "85e93bd8b9ca495264d848b40afd1ec71ad0e974ded42f081091ecce5863e14c",
+     "B1": "a9dd2f8a9e1a269910ae8bc8a46a49cb4889820a79fe0f9b5d59e61d18c51b8c",
+     "B2": "b919939d4623019c4070ce05d4a688ac134e8dbf78e8799933083bacfa5942a0",
+     "C1": "b8681bb3733d9bf603df0f76856eebc75d85eff35ad2e94f0ef56d62a86e9b72",
+     "C2": "244802c55d2cee910d36a216da543138ad58f96d8eab56d621d6aa4affeb842d"
+    },
+    "edges.chasm": {
+     "A1": "a9d2b74f3a3b561c796356b40cdac20f9817c2f04085e92f921bfe410213feb6",
+     "A2": "eabaffb20a01d3d23fe1bb757044ec6a7c463f7910c99cf142dd8a584754d588",
+     "B1": "94ca4d852870eac1da4ea7ec9f8c12b5f61c25e7031e550355e45a24970258e5",
+     "B2": "1939dc186657d0428e1e5e1b98603f393ed37c828a470409e6af7108031c209f",
+     "C1": "21d72a0b872eecc1aea8388dc7f4ba9d1b7e5d5dbbf9ac537e5accd06bed11b9",
+     "C2": "23878382e7d8931404a2e0f60b31c782cfe8daa8d891548c667c7c1ba99caf12"
+    },
+    "edges.bridge": {
+     "A1": "19229e6485d658a606dd59519c604afe8e48ee741940de3993baa3df8aaacc12",
+     "A2": "49b00fe977c7de693040312a6da7766973d82baa5439d696dd49534608c6d193",
+     "B1": "abeeebd5420d5a576203b68fbdd8d9a8da5f113a1d864f4afb40fcf6c6add3ad",
+     "B2": "c212ac99bb3705a50ec6ce907dd5e4d4df7adaf68814fdc06908932897b756da",
+     "C1": "96da720afcae50cf366b071a1b06ca379e0fd393ced4a351a493820334d73be3",
+     "C2": "d7a31a1848c349b0dd3a9e2d680dac833d4f9c73bac9cf1bf7d49828e8640473"
+    }
+   }
+  },
+  {
+   "round": "style-r1",
+   "at": "2026-10-08T11:19:06",
+   "fail": 0,
+   "warn": 0,
+   "hashes": {
+    "style.cave": {
+     "A": "8e734503aa7ba22f08bfa97e1d1c993911527f17003fe65d250418f21241f393",
+     "B": "b9605cbe4371772832c85cbb7115f28b1244062d79d2147e97770d4e222d6de0",
+     "C": "d6c626455d6c479f90371534da8303e5884d66c56ff24799461ea2e20b917750"
+    },
+    "style.water": {
+     "A": "e560029ad46236ad3254f9398883f6c139f71a6242f08d6f16ca6ab232045371",
+     "B": "cecef180a6343894cc6eae9bb17d5d95b7a489dba90eecfa4ddb1fc8280c76c1",
+     "C": "6d8af3dc03ff3af0320186e613f0cbb80a8ebf6bc7bcf700fb253bccf283f04d"
+    },
+    "style.stairs_down": {
+     "A": "cc933af02d56b4308a3d0f9b6c4b586c17e3f3a9ee29a801cab7a024d996f9e4",
+     "B": "03c469d5a01c2de258e7b40c7297ca01ef4dffa55d0e28471b87fe29628ac63b",
+     "C": "2a70eeb22dcd755a832748aa19e295c4721851c6860105549702c8407eaaccfb"
+    },
+    "style.door": {
+     "A": "a9e26fc5270c7b960363d826d450d5bcb2bdcc285e6e95d107e6a94fff90f5b6",
+     "B": "7e80a6c7c0fcf9dc28fe216fa6a3be7fa5a440ceb76099dfb1ed34abf0867ef8",
+     "C": "d49279c67cfe01f6efa1f0c4c512e61d16cb39db0eb1db32d60f7a48ae0597e4"
+    },
+    "style.chest_torch": {
+     "A": "87bd2cdd7529f6d536c575a76db7dda02a5ec7feaa78baaf4caf771b7ab253a5",
+     "B": "82d1ac592a6b772752bac15db0ce08aeee3192b2024de1f65db2339f7090ac78",
+     "C": "08e1aadb5066a80b5de08ffeb9c2552bb7159ab556180ffbe7caef311f146c8a"
+    }
+   }
+  },
+  {
+   "round": "cave-r1",
+   "at": "2026-10-08T11:19:09",
+   "fail": 0,
+   "warn": 0,
+   "hashes": {
+    "cave.ceiling": {
+     "A1": "599f83ab94b1a9b93aa2823c3dcf479fbd0c12a070afdb4ee48d645b892d30dc",
+     "A2": "8664b43fea2967a7dd045e62c731a242b9e071b7b119f07b11a7f62ec263db9c",
+     "B1": "ce5bde8d820a88629a57cee2098fc848da17bddbe1e57d9fbe0ae84266378722",
+     "B2": "72b36e7a4d7d5b669029314b01d3caaf572d746fcf7f218073b06eea54a66b7d",
+     "C1": "8f56ed86ef72dc2c5a108c08d044adeee7285753d7418ecb002b2ecf1afed5ab",
+     "C2": "1f1f41e5c6515842221a76025ab28893cc9a773432dce2f53c14ddd4db081bd7"
+    },
+    "cave.face": {
+     "A1": "3a637e35a3a010b6b9cd6fb084aa699403c3f9454d4e611ac3ef51488fd79c66",
+     "A2": "15605b1f70c4cb4c6d46c264e36bcd8c6f73f86f6c45ce9bacbededb3869c130",
+     "B1": "72c9ea57ae3870041c05e3a346128c9f6d94b4484f6be35d2a1864e8cf3daf14",
+     "B2": "36bca8abed9226f6fbc3554ad7452278347e819062f90b3c6a4b2ab57bbeac53",
+     "C1": "5f825357f45d2e64d7358af766641e410012c7317b229584439e29f98c8ade13",
+     "C2": "7b494d5539cf737fdc1159d9249c9c9906025a957f2dfef4bf1b7255a946467e"
+    },
+    "cave.floor": {
+     "A1": "fe5a48d5504cfc30b80b726c1abdc85639bc9f5e373dbdda565b11f477740d65",
+     "A2": "4be979acf879a0aeb895410d1aad770469882111225f52ef412021012b659cda",
+     "B1": "a5c40cf7bd1414d18e4e4f8e894e4bc7c747d932923482d14313e952125bef9b",
+     "B2": "6e95ae7ad57eac8fe7eaadd68a8dcc639b02a50e3d08f760eb7a4e57aa2021b2",
+     "C1": "e084944b0d665f3410b9304280b941985a15ca95878a963e82a0901a2cb46223",
+     "C2": "cfc096251db1a3732204e1ef182fd1cefd288ad137b70ebd52398afbca2fa240"
+    },
+    "cave.floor_stone": {
+     "A1": "fb0c8977c3e2722a1d748582cd74852b69012f2135c5c2f86508ccb7b8e330f9",
+     "A2": "cc5948ee956e244d508772ba983268ea4f417ff61e0a2bad58d2a6c06b2ecfcd",
+     "B1": "1d2085bbe2cf4d7f89f25a82215a61e4253c24bd624e3cf27a041c35f723df46",
+     "B2": "632d43203ebba54a9e1e4df3b8984c476114ffcc1337145a7ce10342d8c09a05",
+     "C1": "ed4ea365a231998098063920d310f358582782e828409470e5b2bd4afa294f62",
+     "C2": "1cc8d3c4b45e94014d2a71792c0040838a6f1725e94b26ac4d8ad91679cf5260"
+    },
+    "cave.rubble": {
+     "A1": "7421487ca98bcf8330a0ba337cbf04d041c35b804b5c73fde557d12af0d532e4",
+     "A2": "69a0619c884ccc541c60674001eb06af71521d5f4a15dd0441138713028ab5a6",
+     "B1": "6fb5a4131286e635b31006a1d24d191581a04e5374fc8869acfd184fcef4ad7f",
+     "B2": "fd2f42d7974132c7b58606f68518d7594100930bb585c461931c40890f3951ba",
+     "C1": "5afcca62178f972df8be6c2dd3b9ba8a01631d1fb76dcab8f620a38836a72007",
+     "C2": "eda27dc4651e400df0e5809f1fba627283b3753303b645a4444c4abb60a36934"
+    },
+    "cave.stalagmite": {
+     "A1": "fc0383155f5d0032e3f3aad44a67b809f0b64de501c6a1f3e7be3788e4dde925",
+     "A2": "0bb2825c46933e2f0ae5c184aaee68b46dac20c97739cdd8711feac9f36847cc",
+     "B1": "14730c32b4005923c06ef286cd84c69993e306ac23c7bef530408b9ef5f32d27",
+     "B2": "1792dbcd43bc0133ffedf01af5ee02c13dea9c80b9f27db0090fbbd159985129",
+     "C1": "0ff9ead86f9c2a2f9b53065ed1dc0c05c6c7c26f6dfca697e3b38957da987a80",
+     "C2": "e5d59ab26814d363ce445239310e3bdfb63061aabfde1b1afd66a64ae09a2f19"
+    }
+   }
+  },
+  {
+   "round": "edges-r1",
+   "at": "2026-10-08T11:19:16",
+   "fail": 0,
+   "warn": 2,
+   "hashes": {
+    "edges.water": {
+     "A1": "ba09485e3cd91f672b970e7fa6ad2e8d0f003fe0b3fb3bfbdf7a6df9fb7344b5",
+     "A2": "44d89327037ee1117ec8baaa70aafaf7fc020499676738dd6d8881fcb474b5ca",
+     "B1": "95ba336c150dd2da9a8976b6519a96c1499462bf19d578e067a44a4d6b4ee657",
+     "B2": "11044bfc15bec104e50692f7aef258f3bb56cfea17dc228f147935defaa3d725",
+     "C1": "da4f809cf1536e622117ece134072cc2cebece190645713aa5189299b9c05e9d",
+     "C2": "a49f0662f8970c3013cb4a8c09a22df9bd8c14d37b556931aae12f84b3369c8d"
+    },
+    "edges.lava": {
+     "B1": "1ecffd5333667ba8a22bd20c8f91137a947044389a350490ad6b05ccc64b5182",
+     "B2": "d248032e9b352cd09df681852e3b8328c3c690a68876edb9dbe3aedc0192915b",
+     "C1": "e85fb4bf9d55aa3eee5a6dc2818d5278288768f141cc3ba648ae964d1f128e6f",
+     "C2": "6657335f2464b0ad9cc7fc246028b890f4accdf58d9a2e921e40c3b04fb9ed06"
+    },
+    "edges.ice": {
+     "A1": "5b423e4824c98dd29ee449c78cce86e11e95d2ed51bb5ad6a1a3b805811ffc75",
+     "A2": "85e93bd8b9ca495264d848b40afd1ec71ad0e974ded42f081091ecce5863e14c",
+     "B1": "a9dd2f8a9e1a269910ae8bc8a46a49cb4889820a79fe0f9b5d59e61d18c51b8c",
+     "B2": "b919939d4623019c4070ce05d4a688ac134e8dbf78e8799933083bacfa5942a0",
+     "C1": "b8681bb3733d9bf603df0f76856eebc75d85eff35ad2e94f0ef56d62a86e9b72",
+     "C2": "244802c55d2cee910d36a216da543138ad58f96d8eab56d621d6aa4affeb842d"
+    },
+    "edges.chasm": {
+     "A1": "a9d2b74f3a3b561c796356b40cdac20f9817c2f04085e92f921bfe410213feb6",
+     "A2": "eabaffb20a01d3d23fe1bb757044ec6a7c463f7910c99cf142dd8a584754d588",
+     "B1": "94ca4d852870eac1da4ea7ec9f8c12b5f61c25e7031e550355e45a24970258e5",
+     "B2": "1939dc186657d0428e1e5e1b98603f393ed37c828a470409e6af7108031c209f",
+     "C1": "21d72a0b872eecc1aea8388dc7f4ba9d1b7e5d5dbbf9ac537e5accd06bed11b9",
+     "C2": "23878382e7d8931404a2e0f60b31c782cfe8daa8d891548c667c7c1ba99caf12"
+    },
+    "edges.bridge": {
+     "A1": "19229e6485d658a606dd59519c604afe8e48ee741940de3993baa3df8aaacc12",
+     "A2": "49b00fe977c7de693040312a6da7766973d82baa5439d696dd49534608c6d193",
+     "B1": "abeeebd5420d5a576203b68fbdd8d9a8da5f113a1d864f4afb40fcf6c6add3ad",
+     "B2": "c212ac99bb3705a50ec6ce907dd5e4d4df7adaf68814fdc06908932897b756da",
+     "C1": "96da720afcae50cf366b071a1b06ca379e0fd393ced4a351a493820334d73be3",
+     "C2": "d7a31a1848c349b0dd3a9e2d680dac833d4f9c73bac9cf1bf7d49828e8640473"
+    }
+   }
+  },
+  {
+   "round": "edges-r1",
+   "at": "2026-10-08T11:24:16",
+   "fail": 0,
+   "warn": 2,
+   "hashes": {
+    "edges.water": {
+     "A1": "ba09485e3cd91f672b970e7fa6ad2e8d0f003fe0b3fb3bfbdf7a6df9fb7344b5",
+     "A2": "44d89327037ee1117ec8baaa70aafaf7fc020499676738dd6d8881fcb474b5ca",
+     "B1": "95ba336c150dd2da9a8976b6519a96c1499462bf19d578e067a44a4d6b4ee657",
+     "B2": "11044bfc15bec104e50692f7aef258f3bb56cfea17dc228f147935defaa3d725",
+     "C1": "da4f809cf1536e622117ece134072cc2cebece190645713aa5189299b9c05e9d",
+     "C2": "a49f0662f8970c3013cb4a8c09a22df9bd8c14d37b556931aae12f84b3369c8d"
+    },
+    "edges.lava": {
+     "B1": "1ecffd5333667ba8a22bd20c8f91137a947044389a350490ad6b05ccc64b5182",
+     "B2": "d248032e9b352cd09df681852e3b8328c3c690a68876edb9dbe3aedc0192915b",
+     "C1": "e85fb4bf9d55aa3eee5a6dc2818d5278288768f141cc3ba648ae964d1f128e6f",
+     "C2": "6657335f2464b0ad9cc7fc246028b890f4accdf58d9a2e921e40c3b04fb9ed06"
+    },
+    "edges.ice": {
+     "A1": "5b423e4824c98dd29ee449c78cce86e11e95d2ed51bb5ad6a1a3b805811ffc75",
+     "A2": "85e93bd8b9ca495264d848b40afd1ec71ad0e974ded42f081091ecce5863e14c",
+     "B1": "a9dd2f8a9e1a269910ae8bc8a46a49cb4889820a79fe0f9b5d59e61d18c51b8c",
+     "B2": "b919939d4623019c4070ce05d4a688ac134e8dbf78e8799933083bacfa5942a0",
+     "C1": "b8681bb3733d9bf603df0f76856eebc75d85eff35ad2e94f0ef56d62a86e9b72",
+     "C2": "244802c55d2cee910d36a216da543138ad58f96d8eab56d621d6aa4affeb842d"
+    },
+    "edges.chasm": {
+     "A1": "a9d2b74f3a3b561c796356b40cdac20f9817c2f04085e92f921bfe410213feb6",
+     "A2": "eabaffb20a01d3d23fe1bb757044ec6a7c463f7910c99cf142dd8a584754d588",
+     "B1": "94ca4d852870eac1da4ea7ec9f8c12b5f61c25e7031e550355e45a24970258e5",
+     "B2": "1939dc186657d0428e1e5e1b98603f393ed37c828a470409e6af7108031c209f",
+     "C1": "21d72a0b872eecc1aea8388dc7f4ba9d1b7e5d5dbbf9ac537e5accd06bed11b9",
+     "C2": "23878382e7d8931404a2e0f60b31c782cfe8daa8d891548c667c7c1ba99caf12"
+    },
+    "edges.bridge": {
+     "A1": "19229e6485d658a606dd59519c604afe8e48ee741940de3993baa3df8aaacc12",
+     "A2": "49b00fe977c7de693040312a6da7766973d82baa5439d696dd49534608c6d193",
+     "B1": "abeeebd5420d5a576203b68fbdd8d9a8da5f113a1d864f4afb40fcf6c6add3ad",
+     "B2": "c212ac99bb3705a50ec6ce907dd5e4d4df7adaf68814fdc06908932897b756da",
+     "C1": "96da720afcae50cf366b071a1b06ca379e0fd393ced4a351a493820334d73be3",
+     "C2": "d7a31a1848c349b0dd3a9e2d680dac833d4f9c73bac9cf1bf7d49828e8640473"
+    }
+   }
+  },
+  {
+   "round": "style-r1",
+   "at": "2026-10-08T17:21:55",
+   "fail": 0,
+   "warn": 6,
+   "warnByCode": {
+    "OUTLINE": 6
+   },
+   "polish": [
+    {
+     "item": "style.cave",
+     "key": "A",
+     "code": "OUTLINE",
+     "msg": "가장자리 211화소 중 먹 22% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 왼끝 먹 22%; face 앞면 오른끝 먹 20%; face 앞면 밑 먹 50% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.cave",
+     "key": "B",
+     "code": "OUTLINE",
+     "msg": "가장자리 392화소 중 먹 11% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 밑 먹 38% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.cave",
+     "key": "C",
+     "code": "OUTLINE",
+     "msg": "가장자리 197화소 중 먹 28% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 왼끝 먹 37%; face 앞면 오른끝 먹 36%; face 앞면 밑 먹 50% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.chest_torch",
+     "key": "A",
+     "code": "OUTLINE",
+     "msg": "가장자리 61화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: chest 빛 쪽 먹·0단 100%; torch 빛 쪽 먹·0단 82% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.chest_torch",
+     "key": "B",
+     "code": "OUTLINE",
+     "msg": "가장자리 73화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: chest 빛 쪽 먹·0단 100%; torch 빛 쪽 먹·0단 88% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.chest_torch",
+     "key": "C",
+     "code": "OUTLINE",
+     "msg": "가장자리 61화소 중 먹 75% — 상한(먹 15%·빛 쪽 50%) 넘음: chest 먹 100%·빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "style.cave": {
+     "A": "8e734503aa7ba22f08bfa97e1d1c993911527f17003fe65d250418f21241f393",
+     "B": "b9605cbe4371772832c85cbb7115f28b1244062d79d2147e97770d4e222d6de0",
+     "C": "d6c626455d6c479f90371534da8303e5884d66c56ff24799461ea2e20b917750"
+    },
+    "style.water": {
+     "A": "e560029ad46236ad3254f9398883f6c139f71a6242f08d6f16ca6ab232045371",
+     "B": "cecef180a6343894cc6eae9bb17d5d95b7a489dba90eecfa4ddb1fc8280c76c1",
+     "C": "6d8af3dc03ff3af0320186e613f0cbb80a8ebf6bc7bcf700fb253bccf283f04d"
+    },
+    "style.stairs_down": {
+     "A": "cc933af02d56b4308a3d0f9b6c4b586c17e3f3a9ee29a801cab7a024d996f9e4",
+     "B": "03c469d5a01c2de258e7b40c7297ca01ef4dffa55d0e28471b87fe29628ac63b",
+     "C": "2a70eeb22dcd755a832748aa19e295c4721851c6860105549702c8407eaaccfb"
+    },
+    "style.door": {
+     "A": "a9e26fc5270c7b960363d826d450d5bcb2bdcc285e6e95d107e6a94fff90f5b6",
+     "B": "7e80a6c7c0fcf9dc28fe216fa6a3be7fa5a440ceb76099dfb1ed34abf0867ef8",
+     "C": "d49279c67cfe01f6efa1f0c4c512e61d16cb39db0eb1db32d60f7a48ae0597e4"
+    },
+    "style.chest_torch": {
+     "A": "87bd2cdd7529f6d536c575a76db7dda02a5ec7feaa78baaf4caf771b7ab253a5",
+     "B": "82d1ac592a6b772752bac15db0ce08aeee3192b2024de1f65db2339f7090ac78",
+     "C": "08e1aadb5066a80b5de08ffeb9c2552bb7159ab556180ffbe7caef311f146c8a"
+    }
+   }
+  },
+  {
+   "round": "cave-r1",
+   "at": "2026-10-08T17:21:57",
+   "fail": 0,
+   "warn": 19,
+   "warnByCode": {
+    "OUTLINE": 19
+   },
+   "polish": [
+    {
+     "item": "cave.face",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 196화소 중 먹 25% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 왼끝 먹 20%; face 앞면 오른끝 먹 20%; face 앞면 밑 먹 50% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.face",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 197화소 중 먹 24% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 왼끝 먹 19%; face 앞면 오른끝 먹 18%; face 앞면 밑 먹 50% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.face",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 221화소 중 먹 21% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 왼끝 먹 17%; face 앞면 오른끝 먹 15%; face 앞면 밑 먹 50% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.face",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 249화소 중 먹 14% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 왼끝 먹 17%; face 앞면 오른끝 먹 16% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.face",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 154화소 중 먹 37% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 왼끝 먹 34%; face 앞면 오른끝 먹 33%; face 앞면 밑 먹 50% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.face",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 181화소 중 먹 28% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 왼끝 먹 22%; face 앞면 오른끝 먹 24%; face 앞면 밑 먹 50% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.floor_stone",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 182화소 중 먹 29% — 상한(먹 15%·빛 쪽 50%) 넘음: stone 북변 먹 30%; stone 남변 먹 30%; stone 서변 먹 30%; stone 동변 먹 25% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 93화소 중 먹 99% — 상한(먹 15%·빛 쪽 50%) 넘음: small 먹 96%·빛 쪽 먹·0단 100%; big 먹 100%·빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 115화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 94%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 89화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 103화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 104화소 중 먹 100% — 상한(먹 15%·빛 쪽 50%) 넘음: small 먹 100%·빛 쪽 먹·0단 100%; big 먹 100%·빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 99화소 중 먹 99% — 상한(먹 15%·빛 쪽 50%) 넘음: small 먹 94%·빛 쪽 먹·0단 93%; big 먹 100%·빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 128화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 139화소 중 먹 99% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 먹 97%·빛 쪽 먹·0단 100%; pillar 먹 100%·빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 125화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 104화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 128화소 중 먹 100% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 먹 100%·빛 쪽 먹·0단 100%; pillar 먹 100%·빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 141화소 중 먹 100% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 먹 100%·빛 쪽 먹·0단 100%; pillar 먹 100%·빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "cave.ceiling": {
+     "A1": "599f83ab94b1a9b93aa2823c3dcf479fbd0c12a070afdb4ee48d645b892d30dc",
+     "A2": "8664b43fea2967a7dd045e62c731a242b9e071b7b119f07b11a7f62ec263db9c",
+     "B1": "ce5bde8d820a88629a57cee2098fc848da17bddbe1e57d9fbe0ae84266378722",
+     "B2": "72b36e7a4d7d5b669029314b01d3caaf572d746fcf7f218073b06eea54a66b7d",
+     "C1": "8f56ed86ef72dc2c5a108c08d044adeee7285753d7418ecb002b2ecf1afed5ab",
+     "C2": "1f1f41e5c6515842221a76025ab28893cc9a773432dce2f53c14ddd4db081bd7"
+    },
+    "cave.face": {
+     "A1": "3a637e35a3a010b6b9cd6fb084aa699403c3f9454d4e611ac3ef51488fd79c66",
+     "A2": "15605b1f70c4cb4c6d46c264e36bcd8c6f73f86f6c45ce9bacbededb3869c130",
+     "B1": "72c9ea57ae3870041c05e3a346128c9f6d94b4484f6be35d2a1864e8cf3daf14",
+     "B2": "36bca8abed9226f6fbc3554ad7452278347e819062f90b3c6a4b2ab57bbeac53",
+     "C1": "5f825357f45d2e64d7358af766641e410012c7317b229584439e29f98c8ade13",
+     "C2": "7b494d5539cf737fdc1159d9249c9c9906025a957f2dfef4bf1b7255a946467e"
+    },
+    "cave.floor": {
+     "A1": "fe5a48d5504cfc30b80b726c1abdc85639bc9f5e373dbdda565b11f477740d65",
+     "A2": "4be979acf879a0aeb895410d1aad770469882111225f52ef412021012b659cda",
+     "B1": "a5c40cf7bd1414d18e4e4f8e894e4bc7c747d932923482d14313e952125bef9b",
+     "B2": "6e95ae7ad57eac8fe7eaadd68a8dcc639b02a50e3d08f760eb7a4e57aa2021b2",
+     "C1": "e084944b0d665f3410b9304280b941985a15ca95878a963e82a0901a2cb46223",
+     "C2": "cfc096251db1a3732204e1ef182fd1cefd288ad137b70ebd52398afbca2fa240"
+    },
+    "cave.floor_stone": {
+     "A1": "fb0c8977c3e2722a1d748582cd74852b69012f2135c5c2f86508ccb7b8e330f9",
+     "A2": "cc5948ee956e244d508772ba983268ea4f417ff61e0a2bad58d2a6c06b2ecfcd",
+     "B1": "1d2085bbe2cf4d7f89f25a82215a61e4253c24bd624e3cf27a041c35f723df46",
+     "B2": "632d43203ebba54a9e1e4df3b8984c476114ffcc1337145a7ce10342d8c09a05",
+     "C1": "ed4ea365a231998098063920d310f358582782e828409470e5b2bd4afa294f62",
+     "C2": "1cc8d3c4b45e94014d2a71792c0040838a6f1725e94b26ac4d8ad91679cf5260"
+    },
+    "cave.rubble": {
+     "A1": "7421487ca98bcf8330a0ba337cbf04d041c35b804b5c73fde557d12af0d532e4",
+     "A2": "69a0619c884ccc541c60674001eb06af71521d5f4a15dd0441138713028ab5a6",
+     "B1": "6fb5a4131286e635b31006a1d24d191581a04e5374fc8869acfd184fcef4ad7f",
+     "B2": "fd2f42d7974132c7b58606f68518d7594100930bb585c461931c40890f3951ba",
+     "C1": "5afcca62178f972df8be6c2dd3b9ba8a01631d1fb76dcab8f620a38836a72007",
+     "C2": "eda27dc4651e400df0e5809f1fba627283b3753303b645a4444c4abb60a36934"
+    },
+    "cave.stalagmite": {
+     "A1": "fc0383155f5d0032e3f3aad44a67b809f0b64de501c6a1f3e7be3788e4dde925",
+     "A2": "0bb2825c46933e2f0ae5c184aaee68b46dac20c97739cdd8711feac9f36847cc",
+     "B1": "14730c32b4005923c06ef286cd84c69993e306ac23c7bef530408b9ef5f32d27",
+     "B2": "1792dbcd43bc0133ffedf01af5ee02c13dea9c80b9f27db0090fbbd159985129",
+     "C1": "0ff9ead86f9c2a2f9b53065ed1dc0c05c6c7c26f6dfca697e3b38957da987a80",
+     "C2": "e5d59ab26814d363ce445239310e3bdfb63061aabfde1b1afd66a64ae09a2f19"
+    }
+   }
+  },
+  {
+   "round": "edges-r1",
+   "at": "2026-10-08T17:22:02",
+   "fail": 0,
+   "warn": 8,
+   "warnByCode": {
+    "R": 2,
+    "OUTLINE": 6
+   },
+   "polish": [
+    {
+     "item": "edges.lava",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 317화소 중 먹 29% — 상한(먹 15%·빛 쪽 50%) 넘음: lava 북변 먹 32%; lava 남변 먹 27%; lava 서변 먹 28%; lava 동변 먹 29% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "edges.lava",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 313화소 중 먹 24% — 상한(먹 15%·빛 쪽 50%) 넘음: lava 북변 먹 16%; lava 남변 먹 28%; lava 서변 먹 30%; lava 동변 먹 29% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "edges.ice",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 240화소 중 먹 27% — 상한(먹 15%·빛 쪽 50%) 넘음: ice 북변 먹 28%; ice 남변 먹 25%; ice 서변 먹 28%; ice 동변 먹 26% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "edges.ice",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 283화소 중 먹 24% — 상한(먹 15%·빛 쪽 50%) 넘음: ice 북변 먹 22%; ice 남변 먹 23%; ice 서변 먹 22%; ice 동변 먹 33% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "edges.bridge",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 146화소 중 먹 99% — 상한(먹 15%·빛 쪽 50%) 넘음: 다리 h0 먹 97%; 다리 h1 먹 100%; 다리 h2 먹 97%; 다리 v0 먹 100%; 다리 v1 먹 100%; 다리 v2 먹 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "edges.bridge",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 194화소 중 먹 98% — 상한(먹 15%·빛 쪽 50%) 넘음: 다리 h0 먹 94%; 다리 h1 먹 100%; 다리 h2 먹 94%; 다리 v0 먹 100%; 다리 v1 먹 100%; 다리 v2 먹 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "edges.water": {
+     "A1": "ba09485e3cd91f672b970e7fa6ad2e8d0f003fe0b3fb3bfbdf7a6df9fb7344b5",
+     "A2": "44d89327037ee1117ec8baaa70aafaf7fc020499676738dd6d8881fcb474b5ca",
+     "B1": "95ba336c150dd2da9a8976b6519a96c1499462bf19d578e067a44a4d6b4ee657",
+     "B2": "11044bfc15bec104e50692f7aef258f3bb56cfea17dc228f147935defaa3d725",
+     "C1": "da4f809cf1536e622117ece134072cc2cebece190645713aa5189299b9c05e9d",
+     "C2": "a49f0662f8970c3013cb4a8c09a22df9bd8c14d37b556931aae12f84b3369c8d"
+    },
+    "edges.lava": {
+     "B1": "1ecffd5333667ba8a22bd20c8f91137a947044389a350490ad6b05ccc64b5182",
+     "B2": "d248032e9b352cd09df681852e3b8328c3c690a68876edb9dbe3aedc0192915b",
+     "C1": "e85fb4bf9d55aa3eee5a6dc2818d5278288768f141cc3ba648ae964d1f128e6f",
+     "C2": "6657335f2464b0ad9cc7fc246028b890f4accdf58d9a2e921e40c3b04fb9ed06"
+    },
+    "edges.ice": {
+     "A1": "5b423e4824c98dd29ee449c78cce86e11e95d2ed51bb5ad6a1a3b805811ffc75",
+     "A2": "85e93bd8b9ca495264d848b40afd1ec71ad0e974ded42f081091ecce5863e14c",
+     "B1": "a9dd2f8a9e1a269910ae8bc8a46a49cb4889820a79fe0f9b5d59e61d18c51b8c",
+     "B2": "b919939d4623019c4070ce05d4a688ac134e8dbf78e8799933083bacfa5942a0",
+     "C1": "b8681bb3733d9bf603df0f76856eebc75d85eff35ad2e94f0ef56d62a86e9b72",
+     "C2": "244802c55d2cee910d36a216da543138ad58f96d8eab56d621d6aa4affeb842d"
+    },
+    "edges.chasm": {
+     "A1": "a9d2b74f3a3b561c796356b40cdac20f9817c2f04085e92f921bfe410213feb6",
+     "A2": "eabaffb20a01d3d23fe1bb757044ec6a7c463f7910c99cf142dd8a584754d588",
+     "B1": "94ca4d852870eac1da4ea7ec9f8c12b5f61c25e7031e550355e45a24970258e5",
+     "B2": "1939dc186657d0428e1e5e1b98603f393ed37c828a470409e6af7108031c209f",
+     "C1": "21d72a0b872eecc1aea8388dc7f4ba9d1b7e5d5dbbf9ac537e5accd06bed11b9",
+     "C2": "23878382e7d8931404a2e0f60b31c782cfe8daa8d891548c667c7c1ba99caf12"
+    },
+    "edges.bridge": {
+     "A1": "19229e6485d658a606dd59519c604afe8e48ee741940de3993baa3df8aaacc12",
+     "A2": "49b00fe977c7de693040312a6da7766973d82baa5439d696dd49534608c6d193",
+     "B1": "abeeebd5420d5a576203b68fbdd8d9a8da5f113a1d864f4afb40fcf6c6add3ad",
+     "B2": "c212ac99bb3705a50ec6ce907dd5e4d4df7adaf68814fdc06908932897b756da",
+     "C1": "96da720afcae50cf366b071a1b06ca379e0fd393ced4a351a493820334d73be3",
+     "C2": "d7a31a1848c349b0dd3a9e2d680dac833d4f9c73bac9cf1bf7d49828e8640473"
+    }
+   }
+  },
+  {
+   "round": "style-r1",
+   "at": "2026-10-08T17:26:02",
+   "fail": 0,
+   "warn": 6,
+   "warnByCode": {
+    "OUTLINE": 6
+   },
+   "polish": [
+    {
+     "item": "style.cave",
+     "key": "A",
+     "code": "OUTLINE",
+     "msg": "가장자리 211화소 중 먹 22% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 왼끝 먹 22%; face 앞면 오른끝 먹 20%; face 앞면 밑 먹 50% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.cave",
+     "key": "B",
+     "code": "OUTLINE",
+     "msg": "가장자리 392화소 중 먹 11% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 밑 먹 38% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.cave",
+     "key": "C",
+     "code": "OUTLINE",
+     "msg": "가장자리 197화소 중 먹 28% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 왼끝 먹 37%; face 앞면 오른끝 먹 36%; face 앞면 밑 먹 50% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.chest_torch",
+     "key": "A",
+     "code": "OUTLINE",
+     "msg": "가장자리 61화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: chest 빛 쪽 먹·0단 100%; torch 빛 쪽 먹·0단 82% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.chest_torch",
+     "key": "B",
+     "code": "OUTLINE",
+     "msg": "가장자리 73화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: chest 빛 쪽 먹·0단 100%; torch 빛 쪽 먹·0단 88% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.chest_torch",
+     "key": "C",
+     "code": "OUTLINE",
+     "msg": "가장자리 61화소 중 먹 75% — 상한(먹 15%·빛 쪽 50%) 넘음: chest 먹 100%·빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "style.cave": {
+     "A": "8e734503aa7ba22f08bfa97e1d1c993911527f17003fe65d250418f21241f393",
+     "B": "b9605cbe4371772832c85cbb7115f28b1244062d79d2147e97770d4e222d6de0",
+     "C": "d6c626455d6c479f90371534da8303e5884d66c56ff24799461ea2e20b917750"
+    },
+    "style.water": {
+     "A": "e560029ad46236ad3254f9398883f6c139f71a6242f08d6f16ca6ab232045371",
+     "B": "cecef180a6343894cc6eae9bb17d5d95b7a489dba90eecfa4ddb1fc8280c76c1",
+     "C": "6d8af3dc03ff3af0320186e613f0cbb80a8ebf6bc7bcf700fb253bccf283f04d"
+    },
+    "style.stairs_down": {
+     "A": "cc933af02d56b4308a3d0f9b6c4b586c17e3f3a9ee29a801cab7a024d996f9e4",
+     "B": "03c469d5a01c2de258e7b40c7297ca01ef4dffa55d0e28471b87fe29628ac63b",
+     "C": "2a70eeb22dcd755a832748aa19e295c4721851c6860105549702c8407eaaccfb"
+    },
+    "style.door": {
+     "A": "a9e26fc5270c7b960363d826d450d5bcb2bdcc285e6e95d107e6a94fff90f5b6",
+     "B": "7e80a6c7c0fcf9dc28fe216fa6a3be7fa5a440ceb76099dfb1ed34abf0867ef8",
+     "C": "d49279c67cfe01f6efa1f0c4c512e61d16cb39db0eb1db32d60f7a48ae0597e4"
+    },
+    "style.chest_torch": {
+     "A": "87bd2cdd7529f6d536c575a76db7dda02a5ec7feaa78baaf4caf771b7ab253a5",
+     "B": "82d1ac592a6b772752bac15db0ce08aeee3192b2024de1f65db2339f7090ac78",
+     "C": "08e1aadb5066a80b5de08ffeb9c2552bb7159ab556180ffbe7caef311f146c8a"
+    }
+   }
+  },
+  {
+   "round": "cave-r1",
+   "at": "2026-10-08T17:26:18",
+   "fail": 0,
+   "warn": 19,
+   "warnByCode": {
+    "OUTLINE": 19
+   },
+   "polish": [
+    {
+     "item": "cave.face",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 196화소 중 먹 25% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 왼끝 먹 20%; face 앞면 오른끝 먹 20%; face 앞면 밑 먹 50% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.face",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 197화소 중 먹 24% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 왼끝 먹 19%; face 앞면 오른끝 먹 18%; face 앞면 밑 먹 50% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.face",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 221화소 중 먹 21% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 왼끝 먹 17%; face 앞면 오른끝 먹 15%; face 앞면 밑 먹 50% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.face",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 249화소 중 먹 14% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 왼끝 먹 17%; face 앞면 오른끝 먹 16% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.face",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 154화소 중 먹 37% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 왼끝 먹 34%; face 앞면 오른끝 먹 33%; face 앞면 밑 먹 50% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.face",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 181화소 중 먹 28% — 상한(먹 15%·빛 쪽 50%) 넘음: face 앞면 왼끝 먹 22%; face 앞면 오른끝 먹 24%; face 앞면 밑 먹 50% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.floor_stone",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 182화소 중 먹 29% — 상한(먹 15%·빛 쪽 50%) 넘음: stone 북변 먹 30%; stone 남변 먹 30%; stone 서변 먹 30%; stone 동변 먹 25% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 93화소 중 먹 99% — 상한(먹 15%·빛 쪽 50%) 넘음: small 먹 96%·빛 쪽 먹·0단 100%; big 먹 100%·빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 115화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 94%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 89화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 103화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 104화소 중 먹 100% — 상한(먹 15%·빛 쪽 50%) 넘음: small 먹 100%·빛 쪽 먹·0단 100%; big 먹 100%·빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 99화소 중 먹 99% — 상한(먹 15%·빛 쪽 50%) 넘음: small 먹 94%·빛 쪽 먹·0단 93%; big 먹 100%·빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 128화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 139화소 중 먹 99% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 먹 97%·빛 쪽 먹·0단 100%; pillar 먹 100%·빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 125화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 104화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 128화소 중 먹 100% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 먹 100%·빛 쪽 먹·0단 100%; pillar 먹 100%·빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 141화소 중 먹 100% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 먹 100%·빛 쪽 먹·0단 100%; pillar 먹 100%·빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "cave.ceiling": {
+     "A1": "599f83ab94b1a9b93aa2823c3dcf479fbd0c12a070afdb4ee48d645b892d30dc",
+     "A2": "8664b43fea2967a7dd045e62c731a242b9e071b7b119f07b11a7f62ec263db9c",
+     "B1": "ce5bde8d820a88629a57cee2098fc848da17bddbe1e57d9fbe0ae84266378722",
+     "B2": "72b36e7a4d7d5b669029314b01d3caaf572d746fcf7f218073b06eea54a66b7d",
+     "C1": "8f56ed86ef72dc2c5a108c08d044adeee7285753d7418ecb002b2ecf1afed5ab",
+     "C2": "1f1f41e5c6515842221a76025ab28893cc9a773432dce2f53c14ddd4db081bd7"
+    },
+    "cave.face": {
+     "A1": "3a637e35a3a010b6b9cd6fb084aa699403c3f9454d4e611ac3ef51488fd79c66",
+     "A2": "15605b1f70c4cb4c6d46c264e36bcd8c6f73f86f6c45ce9bacbededb3869c130",
+     "B1": "72c9ea57ae3870041c05e3a346128c9f6d94b4484f6be35d2a1864e8cf3daf14",
+     "B2": "36bca8abed9226f6fbc3554ad7452278347e819062f90b3c6a4b2ab57bbeac53",
+     "C1": "5f825357f45d2e64d7358af766641e410012c7317b229584439e29f98c8ade13",
+     "C2": "7b494d5539cf737fdc1159d9249c9c9906025a957f2dfef4bf1b7255a946467e"
+    },
+    "cave.floor": {
+     "A1": "fe5a48d5504cfc30b80b726c1abdc85639bc9f5e373dbdda565b11f477740d65",
+     "A2": "4be979acf879a0aeb895410d1aad770469882111225f52ef412021012b659cda",
+     "B1": "a5c40cf7bd1414d18e4e4f8e894e4bc7c747d932923482d14313e952125bef9b",
+     "B2": "6e95ae7ad57eac8fe7eaadd68a8dcc639b02a50e3d08f760eb7a4e57aa2021b2",
+     "C1": "e084944b0d665f3410b9304280b941985a15ca95878a963e82a0901a2cb46223",
+     "C2": "cfc096251db1a3732204e1ef182fd1cefd288ad137b70ebd52398afbca2fa240"
+    },
+    "cave.floor_stone": {
+     "A1": "fb0c8977c3e2722a1d748582cd74852b69012f2135c5c2f86508ccb7b8e330f9",
+     "A2": "cc5948ee956e244d508772ba983268ea4f417ff61e0a2bad58d2a6c06b2ecfcd",
+     "B1": "1d2085bbe2cf4d7f89f25a82215a61e4253c24bd624e3cf27a041c35f723df46",
+     "B2": "632d43203ebba54a9e1e4df3b8984c476114ffcc1337145a7ce10342d8c09a05",
+     "C1": "ed4ea365a231998098063920d310f358582782e828409470e5b2bd4afa294f62",
+     "C2": "1cc8d3c4b45e94014d2a71792c0040838a6f1725e94b26ac4d8ad91679cf5260"
+    },
+    "cave.rubble": {
+     "A1": "7421487ca98bcf8330a0ba337cbf04d041c35b804b5c73fde557d12af0d532e4",
+     "A2": "69a0619c884ccc541c60674001eb06af71521d5f4a15dd0441138713028ab5a6",
+     "B1": "6fb5a4131286e635b31006a1d24d191581a04e5374fc8869acfd184fcef4ad7f",
+     "B2": "fd2f42d7974132c7b58606f68518d7594100930bb585c461931c40890f3951ba",
+     "C1": "5afcca62178f972df8be6c2dd3b9ba8a01631d1fb76dcab8f620a38836a72007",
+     "C2": "eda27dc4651e400df0e5809f1fba627283b3753303b645a4444c4abb60a36934"
+    },
+    "cave.stalagmite": {
+     "A1": "fc0383155f5d0032e3f3aad44a67b809f0b64de501c6a1f3e7be3788e4dde925",
+     "A2": "0bb2825c46933e2f0ae5c184aaee68b46dac20c97739cdd8711feac9f36847cc",
+     "B1": "14730c32b4005923c06ef286cd84c69993e306ac23c7bef530408b9ef5f32d27",
+     "B2": "1792dbcd43bc0133ffedf01af5ee02c13dea9c80b9f27db0090fbbd159985129",
+     "C1": "0ff9ead86f9c2a2f9b53065ed1dc0c05c6c7c26f6dfca697e3b38957da987a80",
+     "C2": "e5d59ab26814d363ce445239310e3bdfb63061aabfde1b1afd66a64ae09a2f19"
+    }
+   }
+  },
+  {
+   "round": "edges-r1",
+   "at": "2026-10-08T17:26:34",
+   "fail": 0,
+   "warn": 8,
+   "warnByCode": {
+    "R": 2,
+    "OUTLINE": 6
+   },
+   "polish": [
+    {
+     "item": "edges.lava",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 317화소 중 먹 29% — 상한(먹 15%·빛 쪽 50%) 넘음: lava 북변 먹 32%; lava 남변 먹 27%; lava 서변 먹 28%; lava 동변 먹 29% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "edges.lava",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 313화소 중 먹 24% — 상한(먹 15%·빛 쪽 50%) 넘음: lava 북변 먹 16%; lava 남변 먹 28%; lava 서변 먹 30%; lava 동변 먹 29% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "edges.ice",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 240화소 중 먹 27% — 상한(먹 15%·빛 쪽 50%) 넘음: ice 북변 먹 28%; ice 남변 먹 25%; ice 서변 먹 28%; ice 동변 먹 26% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "edges.ice",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 283화소 중 먹 24% — 상한(먹 15%·빛 쪽 50%) 넘음: ice 북변 먹 22%; ice 남변 먹 23%; ice 서변 먹 22%; ice 동변 먹 33% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "edges.bridge",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 146화소 중 먹 99% — 상한(먹 15%·빛 쪽 50%) 넘음: 다리 h0 먹 97%; 다리 h1 먹 100%; 다리 h2 먹 97%; 다리 v0 먹 100%; 다리 v1 먹 100%; 다리 v2 먹 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "edges.bridge",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 194화소 중 먹 98% — 상한(먹 15%·빛 쪽 50%) 넘음: 다리 h0 먹 94%; 다리 h1 먹 100%; 다리 h2 먹 94%; 다리 v0 먹 100%; 다리 v1 먹 100%; 다리 v2 먹 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "edges.water": {
+     "A1": "ba09485e3cd91f672b970e7fa6ad2e8d0f003fe0b3fb3bfbdf7a6df9fb7344b5",
+     "A2": "44d89327037ee1117ec8baaa70aafaf7fc020499676738dd6d8881fcb474b5ca",
+     "B1": "95ba336c150dd2da9a8976b6519a96c1499462bf19d578e067a44a4d6b4ee657",
+     "B2": "11044bfc15bec104e50692f7aef258f3bb56cfea17dc228f147935defaa3d725",
+     "C1": "da4f809cf1536e622117ece134072cc2cebece190645713aa5189299b9c05e9d",
+     "C2": "a49f0662f8970c3013cb4a8c09a22df9bd8c14d37b556931aae12f84b3369c8d"
+    },
+    "edges.lava": {
+     "B1": "1ecffd5333667ba8a22bd20c8f91137a947044389a350490ad6b05ccc64b5182",
+     "B2": "d248032e9b352cd09df681852e3b8328c3c690a68876edb9dbe3aedc0192915b",
+     "C1": "e85fb4bf9d55aa3eee5a6dc2818d5278288768f141cc3ba648ae964d1f128e6f",
+     "C2": "6657335f2464b0ad9cc7fc246028b890f4accdf58d9a2e921e40c3b04fb9ed06"
+    },
+    "edges.ice": {
+     "A1": "5b423e4824c98dd29ee449c78cce86e11e95d2ed51bb5ad6a1a3b805811ffc75",
+     "A2": "85e93bd8b9ca495264d848b40afd1ec71ad0e974ded42f081091ecce5863e14c",
+     "B1": "a9dd2f8a9e1a269910ae8bc8a46a49cb4889820a79fe0f9b5d59e61d18c51b8c",
+     "B2": "b919939d4623019c4070ce05d4a688ac134e8dbf78e8799933083bacfa5942a0",
+     "C1": "b8681bb3733d9bf603df0f76856eebc75d85eff35ad2e94f0ef56d62a86e9b72",
+     "C2": "244802c55d2cee910d36a216da543138ad58f96d8eab56d621d6aa4affeb842d"
+    },
+    "edges.chasm": {
+     "A1": "a9d2b74f3a3b561c796356b40cdac20f9817c2f04085e92f921bfe410213feb6",
+     "A2": "eabaffb20a01d3d23fe1bb757044ec6a7c463f7910c99cf142dd8a584754d588",
+     "B1": "94ca4d852870eac1da4ea7ec9f8c12b5f61c25e7031e550355e45a24970258e5",
+     "B2": "1939dc186657d0428e1e5e1b98603f393ed37c828a470409e6af7108031c209f",
+     "C1": "21d72a0b872eecc1aea8388dc7f4ba9d1b7e5d5dbbf9ac537e5accd06bed11b9",
+     "C2": "23878382e7d8931404a2e0f60b31c782cfe8daa8d891548c667c7c1ba99caf12"
+    },
+    "edges.bridge": {
+     "A1": "19229e6485d658a606dd59519c604afe8e48ee741940de3993baa3df8aaacc12",
+     "A2": "49b00fe977c7de693040312a6da7766973d82baa5439d696dd49534608c6d193",
+     "B1": "abeeebd5420d5a576203b68fbdd8d9a8da5f113a1d864f4afb40fcf6c6add3ad",
+     "B2": "c212ac99bb3705a50ec6ce907dd5e4d4df7adaf68814fdc06908932897b756da",
+     "C1": "96da720afcae50cf366b071a1b06ca379e0fd393ced4a351a493820334d73be3",
+     "C2": "d7a31a1848c349b0dd3a9e2d680dac833d4f9c73bac9cf1bf7d49828e8640473"
+    }
+   }
+  },
+  {
+   "round": "style-r1",
+   "at": "2026-10-08T17:48:30",
+   "fail": 0,
+   "warn": 5,
+   "warnByCode": {
+    "OUTLINE": 5
+   },
+   "polish": [
+    {
+     "item": "style.cave",
+     "key": "B",
+     "code": "OUTLINE",
+     "msg": "가장자리 392화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ceil 북변 빛 쪽 먹·0단 79%; ceil 서변 빛 쪽 먹·0단 88%; floor 북변 빛 쪽 먹·0단 100%; floor 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.water",
+     "key": "B",
+     "code": "OUTLINE",
+     "msg": "가장자리 160화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: water 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.chest_torch",
+     "key": "A",
+     "code": "OUTLINE",
+     "msg": "가장자리 61화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: chest 빛 쪽 먹·0단 100%; torch 빛 쪽 먹·0단 82% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.chest_torch",
+     "key": "B",
+     "code": "OUTLINE",
+     "msg": "가장자리 73화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: chest 빛 쪽 먹·0단 100%; torch 빛 쪽 먹·0단 88% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.chest_torch",
+     "key": "C",
+     "code": "OUTLINE",
+     "msg": "가장자리 61화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: chest 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "style.cave": {
+     "A": "8e734503aa7ba22f08bfa97e1d1c993911527f17003fe65d250418f21241f393",
+     "B": "b9605cbe4371772832c85cbb7115f28b1244062d79d2147e97770d4e222d6de0",
+     "C": "d6c626455d6c479f90371534da8303e5884d66c56ff24799461ea2e20b917750"
+    },
+    "style.water": {
+     "A": "e560029ad46236ad3254f9398883f6c139f71a6242f08d6f16ca6ab232045371",
+     "B": "cecef180a6343894cc6eae9bb17d5d95b7a489dba90eecfa4ddb1fc8280c76c1",
+     "C": "6d8af3dc03ff3af0320186e613f0cbb80a8ebf6bc7bcf700fb253bccf283f04d"
+    },
+    "style.stairs_down": {
+     "A": "cc933af02d56b4308a3d0f9b6c4b586c17e3f3a9ee29a801cab7a024d996f9e4",
+     "B": "03c469d5a01c2de258e7b40c7297ca01ef4dffa55d0e28471b87fe29628ac63b",
+     "C": "2a70eeb22dcd755a832748aa19e295c4721851c6860105549702c8407eaaccfb"
+    },
+    "style.door": {
+     "A": "a9e26fc5270c7b960363d826d450d5bcb2bdcc285e6e95d107e6a94fff90f5b6",
+     "B": "7e80a6c7c0fcf9dc28fe216fa6a3be7fa5a440ceb76099dfb1ed34abf0867ef8",
+     "C": "d49279c67cfe01f6efa1f0c4c512e61d16cb39db0eb1db32d60f7a48ae0597e4"
+    },
+    "style.chest_torch": {
+     "A": "87bd2cdd7529f6d536c575a76db7dda02a5ec7feaa78baaf4caf771b7ab253a5",
+     "B": "82d1ac592a6b772752bac15db0ce08aeee3192b2024de1f65db2339f7090ac78",
+     "C": "08e1aadb5066a80b5de08ffeb9c2552bb7159ab556180ffbe7caef311f146c8a"
+    }
+   }
+  },
+  {
+   "round": "cave-r1",
+   "at": "2026-10-08T17:48:50",
+   "fail": 0,
+   "warn": 16,
+   "warnByCode": {
+    "OUTLINE": 16
+   },
+   "polish": [
+    {
+     "item": "cave.floor",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 68화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: floor 서변 빛 쪽 먹·0단 62% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.floor",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 65화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: floor 서변 빛 쪽 먹·0단 62% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.floor",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 77화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: floor 북변 빛 쪽 먹·0단 100%; floor 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.floor",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 76화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: floor 북변 빛 쪽 먹·0단 100%; floor 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 93화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 115화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 94%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 89화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 103화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 104화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 99화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 93%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 128화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 139화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 125화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 104화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 128화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 141화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "cave.ceiling": {
+     "A1": "599f83ab94b1a9b93aa2823c3dcf479fbd0c12a070afdb4ee48d645b892d30dc",
+     "A2": "8664b43fea2967a7dd045e62c731a242b9e071b7b119f07b11a7f62ec263db9c",
+     "B1": "ce5bde8d820a88629a57cee2098fc848da17bddbe1e57d9fbe0ae84266378722",
+     "B2": "72b36e7a4d7d5b669029314b01d3caaf572d746fcf7f218073b06eea54a66b7d",
+     "C1": "8f56ed86ef72dc2c5a108c08d044adeee7285753d7418ecb002b2ecf1afed5ab",
+     "C2": "1f1f41e5c6515842221a76025ab28893cc9a773432dce2f53c14ddd4db081bd7"
+    },
+    "cave.face": {
+     "A1": "3a637e35a3a010b6b9cd6fb084aa699403c3f9454d4e611ac3ef51488fd79c66",
+     "A2": "15605b1f70c4cb4c6d46c264e36bcd8c6f73f86f6c45ce9bacbededb3869c130",
+     "B1": "72c9ea57ae3870041c05e3a346128c9f6d94b4484f6be35d2a1864e8cf3daf14",
+     "B2": "36bca8abed9226f6fbc3554ad7452278347e819062f90b3c6a4b2ab57bbeac53",
+     "C1": "5f825357f45d2e64d7358af766641e410012c7317b229584439e29f98c8ade13",
+     "C2": "7b494d5539cf737fdc1159d9249c9c9906025a957f2dfef4bf1b7255a946467e"
+    },
+    "cave.floor": {
+     "A1": "fe5a48d5504cfc30b80b726c1abdc85639bc9f5e373dbdda565b11f477740d65",
+     "A2": "4be979acf879a0aeb895410d1aad770469882111225f52ef412021012b659cda",
+     "B1": "a5c40cf7bd1414d18e4e4f8e894e4bc7c747d932923482d14313e952125bef9b",
+     "B2": "6e95ae7ad57eac8fe7eaadd68a8dcc639b02a50e3d08f760eb7a4e57aa2021b2",
+     "C1": "e084944b0d665f3410b9304280b941985a15ca95878a963e82a0901a2cb46223",
+     "C2": "cfc096251db1a3732204e1ef182fd1cefd288ad137b70ebd52398afbca2fa240"
+    },
+    "cave.floor_stone": {
+     "A1": "fb0c8977c3e2722a1d748582cd74852b69012f2135c5c2f86508ccb7b8e330f9",
+     "A2": "cc5948ee956e244d508772ba983268ea4f417ff61e0a2bad58d2a6c06b2ecfcd",
+     "B1": "1d2085bbe2cf4d7f89f25a82215a61e4253c24bd624e3cf27a041c35f723df46",
+     "B2": "632d43203ebba54a9e1e4df3b8984c476114ffcc1337145a7ce10342d8c09a05",
+     "C1": "ed4ea365a231998098063920d310f358582782e828409470e5b2bd4afa294f62",
+     "C2": "1cc8d3c4b45e94014d2a71792c0040838a6f1725e94b26ac4d8ad91679cf5260"
+    },
+    "cave.rubble": {
+     "A1": "7421487ca98bcf8330a0ba337cbf04d041c35b804b5c73fde557d12af0d532e4",
+     "A2": "69a0619c884ccc541c60674001eb06af71521d5f4a15dd0441138713028ab5a6",
+     "B1": "6fb5a4131286e635b31006a1d24d191581a04e5374fc8869acfd184fcef4ad7f",
+     "B2": "fd2f42d7974132c7b58606f68518d7594100930bb585c461931c40890f3951ba",
+     "C1": "5afcca62178f972df8be6c2dd3b9ba8a01631d1fb76dcab8f620a38836a72007",
+     "C2": "eda27dc4651e400df0e5809f1fba627283b3753303b645a4444c4abb60a36934"
+    },
+    "cave.stalagmite": {
+     "A1": "fc0383155f5d0032e3f3aad44a67b809f0b64de501c6a1f3e7be3788e4dde925",
+     "A2": "0bb2825c46933e2f0ae5c184aaee68b46dac20c97739cdd8711feac9f36847cc",
+     "B1": "14730c32b4005923c06ef286cd84c69993e306ac23c7bef530408b9ef5f32d27",
+     "B2": "1792dbcd43bc0133ffedf01af5ee02c13dea9c80b9f27db0090fbbd159985129",
+     "C1": "0ff9ead86f9c2a2f9b53065ed1dc0c05c6c7c26f6dfca697e3b38957da987a80",
+     "C2": "e5d59ab26814d363ce445239310e3bdfb63061aabfde1b1afd66a64ae09a2f19"
+    }
+   }
+  },
+  {
+   "round": "edges-r1",
+   "at": "2026-10-08T17:49:17",
+   "fail": 0,
+   "warn": 4,
+   "warnByCode": {
+    "OUTLINE": 2,
+    "R": 2
+   },
+   "polish": [
+    {
+     "item": "edges.water",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 257화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: water 서변 빛 쪽 먹·0단 52% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "edges.water",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 260화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: water 서변 빛 쪽 먹·0단 52% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "edges.water": {
+     "A1": "ba09485e3cd91f672b970e7fa6ad2e8d0f003fe0b3fb3bfbdf7a6df9fb7344b5",
+     "A2": "44d89327037ee1117ec8baaa70aafaf7fc020499676738dd6d8881fcb474b5ca",
+     "B1": "95ba336c150dd2da9a8976b6519a96c1499462bf19d578e067a44a4d6b4ee657",
+     "B2": "11044bfc15bec104e50692f7aef258f3bb56cfea17dc228f147935defaa3d725",
+     "C1": "da4f809cf1536e622117ece134072cc2cebece190645713aa5189299b9c05e9d",
+     "C2": "a49f0662f8970c3013cb4a8c09a22df9bd8c14d37b556931aae12f84b3369c8d"
+    },
+    "edges.lava": {
+     "B1": "1ecffd5333667ba8a22bd20c8f91137a947044389a350490ad6b05ccc64b5182",
+     "B2": "d248032e9b352cd09df681852e3b8328c3c690a68876edb9dbe3aedc0192915b",
+     "C1": "e85fb4bf9d55aa3eee5a6dc2818d5278288768f141cc3ba648ae964d1f128e6f",
+     "C2": "6657335f2464b0ad9cc7fc246028b890f4accdf58d9a2e921e40c3b04fb9ed06"
+    },
+    "edges.ice": {
+     "A1": "5b423e4824c98dd29ee449c78cce86e11e95d2ed51bb5ad6a1a3b805811ffc75",
+     "A2": "85e93bd8b9ca495264d848b40afd1ec71ad0e974ded42f081091ecce5863e14c",
+     "B1": "a9dd2f8a9e1a269910ae8bc8a46a49cb4889820a79fe0f9b5d59e61d18c51b8c",
+     "B2": "b919939d4623019c4070ce05d4a688ac134e8dbf78e8799933083bacfa5942a0",
+     "C1": "b8681bb3733d9bf603df0f76856eebc75d85eff35ad2e94f0ef56d62a86e9b72",
+     "C2": "244802c55d2cee910d36a216da543138ad58f96d8eab56d621d6aa4affeb842d"
+    },
+    "edges.chasm": {
+     "A1": "a9d2b74f3a3b561c796356b40cdac20f9817c2f04085e92f921bfe410213feb6",
+     "A2": "eabaffb20a01d3d23fe1bb757044ec6a7c463f7910c99cf142dd8a584754d588",
+     "B1": "94ca4d852870eac1da4ea7ec9f8c12b5f61c25e7031e550355e45a24970258e5",
+     "B2": "1939dc186657d0428e1e5e1b98603f393ed37c828a470409e6af7108031c209f",
+     "C1": "21d72a0b872eecc1aea8388dc7f4ba9d1b7e5d5dbbf9ac537e5accd06bed11b9",
+     "C2": "23878382e7d8931404a2e0f60b31c782cfe8daa8d891548c667c7c1ba99caf12"
+    },
+    "edges.bridge": {
+     "A1": "19229e6485d658a606dd59519c604afe8e48ee741940de3993baa3df8aaacc12",
+     "A2": "49b00fe977c7de693040312a6da7766973d82baa5439d696dd49534608c6d193",
+     "B1": "abeeebd5420d5a576203b68fbdd8d9a8da5f113a1d864f4afb40fcf6c6add3ad",
+     "B2": "c212ac99bb3705a50ec6ce907dd5e4d4df7adaf68814fdc06908932897b756da",
+     "C1": "96da720afcae50cf366b071a1b06ca379e0fd393ced4a351a493820334d73be3",
+     "C2": "d7a31a1848c349b0dd3a9e2d680dac833d4f9c73bac9cf1bf7d49828e8640473"
+    }
+   }
+  },
+  {
+   "round": "cave-r1",
+   "at": "2026-10-08T17:49:57",
+   "fail": 0,
+   "warn": 16,
+   "warnByCode": {
+    "OUTLINE": 16
+   },
+   "polish": [
+    {
+     "item": "cave.floor",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 68화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: floor 서변 빛 쪽 먹·0단 62% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.floor",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 65화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: floor 서변 빛 쪽 먹·0단 62% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.floor",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 77화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: floor 북변 빛 쪽 먹·0단 100%; floor 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.floor",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 76화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: floor 북변 빛 쪽 먹·0단 100%; floor 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 93화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 115화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 94%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 89화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 103화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 104화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 99화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 93%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 128화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 139화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 125화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 104화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 128화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 141화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "cave.ceiling": {
+     "A1": "599f83ab94b1a9b93aa2823c3dcf479fbd0c12a070afdb4ee48d645b892d30dc",
+     "A2": "8664b43fea2967a7dd045e62c731a242b9e071b7b119f07b11a7f62ec263db9c",
+     "B1": "ce5bde8d820a88629a57cee2098fc848da17bddbe1e57d9fbe0ae84266378722",
+     "B2": "72b36e7a4d7d5b669029314b01d3caaf572d746fcf7f218073b06eea54a66b7d",
+     "C1": "8f56ed86ef72dc2c5a108c08d044adeee7285753d7418ecb002b2ecf1afed5ab",
+     "C2": "1f1f41e5c6515842221a76025ab28893cc9a773432dce2f53c14ddd4db081bd7"
+    },
+    "cave.face": {
+     "A1": "3a637e35a3a010b6b9cd6fb084aa699403c3f9454d4e611ac3ef51488fd79c66",
+     "A2": "15605b1f70c4cb4c6d46c264e36bcd8c6f73f86f6c45ce9bacbededb3869c130",
+     "B1": "72c9ea57ae3870041c05e3a346128c9f6d94b4484f6be35d2a1864e8cf3daf14",
+     "B2": "36bca8abed9226f6fbc3554ad7452278347e819062f90b3c6a4b2ab57bbeac53",
+     "C1": "5f825357f45d2e64d7358af766641e410012c7317b229584439e29f98c8ade13",
+     "C2": "7b494d5539cf737fdc1159d9249c9c9906025a957f2dfef4bf1b7255a946467e"
+    },
+    "cave.floor": {
+     "A1": "fe5a48d5504cfc30b80b726c1abdc85639bc9f5e373dbdda565b11f477740d65",
+     "A2": "4be979acf879a0aeb895410d1aad770469882111225f52ef412021012b659cda",
+     "B1": "a5c40cf7bd1414d18e4e4f8e894e4bc7c747d932923482d14313e952125bef9b",
+     "B2": "6e95ae7ad57eac8fe7eaadd68a8dcc639b02a50e3d08f760eb7a4e57aa2021b2",
+     "C1": "e084944b0d665f3410b9304280b941985a15ca95878a963e82a0901a2cb46223",
+     "C2": "cfc096251db1a3732204e1ef182fd1cefd288ad137b70ebd52398afbca2fa240"
+    },
+    "cave.floor_stone": {
+     "A1": "fb0c8977c3e2722a1d748582cd74852b69012f2135c5c2f86508ccb7b8e330f9",
+     "A2": "cc5948ee956e244d508772ba983268ea4f417ff61e0a2bad58d2a6c06b2ecfcd",
+     "B1": "1d2085bbe2cf4d7f89f25a82215a61e4253c24bd624e3cf27a041c35f723df46",
+     "B2": "632d43203ebba54a9e1e4df3b8984c476114ffcc1337145a7ce10342d8c09a05",
+     "C1": "ed4ea365a231998098063920d310f358582782e828409470e5b2bd4afa294f62",
+     "C2": "1cc8d3c4b45e94014d2a71792c0040838a6f1725e94b26ac4d8ad91679cf5260"
+    },
+    "cave.rubble": {
+     "A1": "7421487ca98bcf8330a0ba337cbf04d041c35b804b5c73fde557d12af0d532e4",
+     "A2": "69a0619c884ccc541c60674001eb06af71521d5f4a15dd0441138713028ab5a6",
+     "B1": "6fb5a4131286e635b31006a1d24d191581a04e5374fc8869acfd184fcef4ad7f",
+     "B2": "fd2f42d7974132c7b58606f68518d7594100930bb585c461931c40890f3951ba",
+     "C1": "5afcca62178f972df8be6c2dd3b9ba8a01631d1fb76dcab8f620a38836a72007",
+     "C2": "eda27dc4651e400df0e5809f1fba627283b3753303b645a4444c4abb60a36934"
+    },
+    "cave.stalagmite": {
+     "A1": "fc0383155f5d0032e3f3aad44a67b809f0b64de501c6a1f3e7be3788e4dde925",
+     "A2": "0bb2825c46933e2f0ae5c184aaee68b46dac20c97739cdd8711feac9f36847cc",
+     "B1": "14730c32b4005923c06ef286cd84c69993e306ac23c7bef530408b9ef5f32d27",
+     "B2": "1792dbcd43bc0133ffedf01af5ee02c13dea9c80b9f27db0090fbbd159985129",
+     "C1": "0ff9ead86f9c2a2f9b53065ed1dc0c05c6c7c26f6dfca697e3b38957da987a80",
+     "C2": "e5d59ab26814d363ce445239310e3bdfb63061aabfde1b1afd66a64ae09a2f19"
+    }
+   }
+  },
+  {
+   "round": "props-r1",
+   "at": "2026-10-09T22:06:03",
+   "fail": 0,
+   "warn": 1,
+   "warnByCode": {
+    "CONTRAST": 1
+   },
+   "polish": [
+    {
+     "item": "props.torch_wall",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 장면1(1칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.20; 장면2(1칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.20; 장면3(1칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.20 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(1칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.12; 장면2(1칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.12; 장면3(1칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.12 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 장면1(1칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18; 장면2(1칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18; 장면3(1칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18"
+    }
+   ],
+   "hashes": {
+    "props.chest": {
+     "A1": "532be8fe6b538b1f1f23ce203b94d598dbd1b4e77d93bb47ff7f983bbff7a631"
+    },
+    "props.torch_wall": {
+     "A1": "8cb6d37e4be05a4a44ceadf051fbf58a0a70292d4208af9ea7d19f187fb891db"
+    },
+    "props.brazier": {
+     "A1": "ea58a20df3be039e28e28bcfb33bdda590de665cc6fe09532e4cfa00f531aba5"
+    },
+    "props.skull_pile": {
+     "A1": "e3b7b87a4e5ad42212b0ccedf084de294f3a83401dd927dfddb51ad30c4d1c63"
+    },
+    "props.bones": {
+     "A1": "e39d9def8c7a84fbb7bccda0fca8504e816a2bfb340edd9813270bf39f5b264b"
+    },
+    "props.cobweb": {
+     "A1": "5502b6920f437092d93c2efa84e724bf26a6b7d100c8b54334406061086c02d8"
+    },
+    "props.chains": {
+     "A1": "c7d68b5bda5759e4b986e83e80e0337958d92961776c8f17d26fcc6b2618bd47"
+    },
+    "props.cell_bars": {
+     "A1": "f61b4e7adebcda27831c302546275cc31df7d85cafc07d4cab72c733c0c40d68"
+    },
+    "props.lever": {
+     "A1": "a7a730f253485fe15833288660a45d4749d2c1317745903f883dde2356e60095"
+    },
+    "props.pressure_plate": {
+     "A1": "21546974b1edcb76a15709c915cd0ad093c2ae10c2578c00b83bdc4e8a5d201e"
+    },
+    "props.spike_trap": {
+     "A1": "9c86a89b674a7de1104c39f4c117658476acdd7f9cf6131a567655270b9ef5ce"
+    },
+    "props.magic_circle": {
+     "A1": "3a32446eb6f03c831b2d2aabd52acbc4951f0d4af62a5c1d0a793458312335a6"
+    },
+    "props.barrel": {
+     "A1": "a4a63bac6d9d21f630890f25389d261040d92c3db936191f894944a7a7c4306d"
+    },
+    "props.crate_stack": {
+     "A1": "c18223cb4592cf19050b798346b7d957fb4a8a9797a84c2e7f224c75386e411d"
+    },
+    "props.mine_cart": {
+     "A1": "ff8ab255bd7132c8da29425db53eafb64306720c4b8b4ce12c01eb6b5c5dbcd5"
+    },
+    "props.tools": {
+     "A1": "35d3283c2c3d1191ec41dcc92a26a3b98bff07dbb7450fee0d4f92b7c78e044c"
+    },
+    "props.mushrooms": {
+     "A1": "ed11a2cbe2185085b00b67d3450ef2ccfb0441ad4acb2c5a5f384e88788fc993"
+    },
+    "props.crystal": {
+     "A1": "f965778febf801bd8b0ee0736a10fe92d72c1ecc6a607e85d34c9f6f3248e06e"
+    },
+    "props.roots": {
+     "A1": "64f7e2d8da1996961b2c8333504d2ccee5a6f76c28f6567651a9bc4f5e14f780"
+    },
+    "props.broken_pots": {
+     "A1": "47c63b75e2feceb4a272381af5d391b03097ca24c3025d2ec5b9021e1b5694e3"
+    },
+    "props.pillar_broken": {
+     "A1": "c1ee63e8ea38f049254d98d9f94c004a6f9de56cdcceb92b296d99b39fb58c55",
+     "B1": "2124d8d8c1e2883455a118b8de93a5436632203a24d6aff51c8a3feaa12a5ac9",
+     "C1": "0a8ae7332caebfb333b408270fcb4aeaa96223bbecafc660b9db957797b60245"
+    },
+    "props.statue_fallen": {
+     "A1": "19482da58267181cd991d7dec4df70fcbe31a05620f66904eb879fc47e3b70b3",
+     "B1": "1001a1ceb09775b7e3e31ef76278ff2e4690f831d3b0daf993b33ba37ed6f662",
+     "C1": "9f1094d2c02f3dd0e68c6aed714003b114e1dc3825332891a70eee4f8ce81461"
+    },
+    "props.sarcophagus": {
+     "A1": "3509367a56d82dd1d562fee274b43a20733694d06b1d3f1580cd6a1bcd2774c3",
+     "B1": "a96863e63e51abe39daaac83012d832e10eb31850f278a286cfbb54a95457df7",
+     "C1": "fce65df35981e69cb13f6b7540663e416da7d89d8bd3a9ba8084590dbacb10d2"
+    },
+    "props.tombstones": {
+     "A1": "8893e8a515cfe0dbcbfb9eab0eb1d2bedf8269016bb3d5d58b91ab4635857e51",
+     "B1": "785f0e29268f83bee785c7c505afa6e272cf79ac269df44e4f17f89eba170395",
+     "C1": "1a82319566e33092158ef960ebd8e49f506ddcb3dd37fe5acf5c9d3c9cdb12a6"
+    },
+    "props.fountain": {
+     "A1": "ff506bdf9f18cbd32fb0c80cd5223dc3ee87a0b60d6d15e1b998fdd97a9bbdbe",
+     "B1": "8902de8df4b5cbc7761105959e8cec646d1703ce1df298ca7609dd64d9dfcd25",
+     "C1": "e8cdd573626e8d200666df55935afbc87336943f8be8b1407cde92ec347eb46d"
+    },
+    "props.seal_gate": {
+     "A1": "0aed1ba800ede90e102c3ce94bfbc029e3d5a920d6282e8fd446aa6c7e23c0d3",
+     "B1": "86bbb57e2ebbf6e7ef006fbea29cf47395d90c07db74a80a2d4c8d536b0c01c6",
+     "C1": "75db1029c990fa4667a10e7cd79b92cdcf0b794022058528dc6bb4dc101435e8"
+    },
+    "props.altar_guardians": {
+     "A1": "d161948381bb59b907c9171a68be6259fbdb8d4cbf281be62618b618507f22c7",
+     "B1": "fbe3ee054299c98dda9ec309e72f948d6ddaf6efa9164e3292bedd11035e1dca",
+     "C1": "1eb579a6df7f35c4589a42831beb35fb733c259183294358e58a0bfffb305702"
+    }
+   }
+  },
+  {
+   "round": "props-r1",
+   "at": "2026-10-09T22:06:07",
+   "fail": 0,
+   "warn": 1,
+   "warnByCode": {
+    "CONTRAST": 1
+   },
+   "polish": [
+    {
+     "item": "props.torch_wall",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 장면1(1칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.20; 장면2(1칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.20; 장면3(1칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.20 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(1칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.12; 장면2(1칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.12; 장면3(1칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.12 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 장면1(1칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18; 장면2(1칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18; 장면3(1칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18"
+    }
+   ],
+   "hashes": {
+    "props.chest": {
+     "A1": "532be8fe6b538b1f1f23ce203b94d598dbd1b4e77d93bb47ff7f983bbff7a631"
+    },
+    "props.torch_wall": {
+     "A1": "8cb6d37e4be05a4a44ceadf051fbf58a0a70292d4208af9ea7d19f187fb891db"
+    },
+    "props.brazier": {
+     "A1": "ea58a20df3be039e28e28bcfb33bdda590de665cc6fe09532e4cfa00f531aba5"
+    },
+    "props.skull_pile": {
+     "A1": "e3b7b87a4e5ad42212b0ccedf084de294f3a83401dd927dfddb51ad30c4d1c63"
+    },
+    "props.bones": {
+     "A1": "e39d9def8c7a84fbb7bccda0fca8504e816a2bfb340edd9813270bf39f5b264b"
+    },
+    "props.cobweb": {
+     "A1": "5502b6920f437092d93c2efa84e724bf26a6b7d100c8b54334406061086c02d8"
+    },
+    "props.chains": {
+     "A1": "c7d68b5bda5759e4b986e83e80e0337958d92961776c8f17d26fcc6b2618bd47"
+    },
+    "props.cell_bars": {
+     "A1": "f61b4e7adebcda27831c302546275cc31df7d85cafc07d4cab72c733c0c40d68"
+    },
+    "props.lever": {
+     "A1": "a7a730f253485fe15833288660a45d4749d2c1317745903f883dde2356e60095"
+    },
+    "props.pressure_plate": {
+     "A1": "21546974b1edcb76a15709c915cd0ad093c2ae10c2578c00b83bdc4e8a5d201e"
+    },
+    "props.spike_trap": {
+     "A1": "9c86a89b674a7de1104c39f4c117658476acdd7f9cf6131a567655270b9ef5ce"
+    },
+    "props.magic_circle": {
+     "A1": "3a32446eb6f03c831b2d2aabd52acbc4951f0d4af62a5c1d0a793458312335a6"
+    },
+    "props.barrel": {
+     "A1": "a4a63bac6d9d21f630890f25389d261040d92c3db936191f894944a7a7c4306d"
+    },
+    "props.crate_stack": {
+     "A1": "c18223cb4592cf19050b798346b7d957fb4a8a9797a84c2e7f224c75386e411d"
+    },
+    "props.mine_cart": {
+     "A1": "ff8ab255bd7132c8da29425db53eafb64306720c4b8b4ce12c01eb6b5c5dbcd5"
+    },
+    "props.tools": {
+     "A1": "35d3283c2c3d1191ec41dcc92a26a3b98bff07dbb7450fee0d4f92b7c78e044c"
+    },
+    "props.mushrooms": {
+     "A1": "ed11a2cbe2185085b00b67d3450ef2ccfb0441ad4acb2c5a5f384e88788fc993"
+    },
+    "props.crystal": {
+     "A1": "f965778febf801bd8b0ee0736a10fe92d72c1ecc6a607e85d34c9f6f3248e06e"
+    },
+    "props.roots": {
+     "A1": "64f7e2d8da1996961b2c8333504d2ccee5a6f76c28f6567651a9bc4f5e14f780"
+    },
+    "props.broken_pots": {
+     "A1": "47c63b75e2feceb4a272381af5d391b03097ca24c3025d2ec5b9021e1b5694e3"
+    },
+    "props.pillar_broken": {
+     "A1": "c1ee63e8ea38f049254d98d9f94c004a6f9de56cdcceb92b296d99b39fb58c55",
+     "B1": "2124d8d8c1e2883455a118b8de93a5436632203a24d6aff51c8a3feaa12a5ac9",
+     "C1": "0a8ae7332caebfb333b408270fcb4aeaa96223bbecafc660b9db957797b60245"
+    },
+    "props.statue_fallen": {
+     "A1": "19482da58267181cd991d7dec4df70fcbe31a05620f66904eb879fc47e3b70b3",
+     "B1": "1001a1ceb09775b7e3e31ef76278ff2e4690f831d3b0daf993b33ba37ed6f662",
+     "C1": "9f1094d2c02f3dd0e68c6aed714003b114e1dc3825332891a70eee4f8ce81461"
+    },
+    "props.sarcophagus": {
+     "A1": "3509367a56d82dd1d562fee274b43a20733694d06b1d3f1580cd6a1bcd2774c3",
+     "B1": "a96863e63e51abe39daaac83012d832e10eb31850f278a286cfbb54a95457df7",
+     "C1": "fce65df35981e69cb13f6b7540663e416da7d89d8bd3a9ba8084590dbacb10d2"
+    },
+    "props.tombstones": {
+     "A1": "8893e8a515cfe0dbcbfb9eab0eb1d2bedf8269016bb3d5d58b91ab4635857e51",
+     "B1": "785f0e29268f83bee785c7c505afa6e272cf79ac269df44e4f17f89eba170395",
+     "C1": "1a82319566e33092158ef960ebd8e49f506ddcb3dd37fe5acf5c9d3c9cdb12a6"
+    },
+    "props.fountain": {
+     "A1": "ff506bdf9f18cbd32fb0c80cd5223dc3ee87a0b60d6d15e1b998fdd97a9bbdbe",
+     "B1": "8902de8df4b5cbc7761105959e8cec646d1703ce1df298ca7609dd64d9dfcd25",
+     "C1": "e8cdd573626e8d200666df55935afbc87336943f8be8b1407cde92ec347eb46d"
+    },
+    "props.seal_gate": {
+     "A1": "0aed1ba800ede90e102c3ce94bfbc029e3d5a920d6282e8fd446aa6c7e23c0d3",
+     "B1": "86bbb57e2ebbf6e7ef006fbea29cf47395d90c07db74a80a2d4c8d536b0c01c6",
+     "C1": "75db1029c990fa4667a10e7cd79b92cdcf0b794022058528dc6bb4dc101435e8"
+    },
+    "props.altar_guardians": {
+     "A1": "d161948381bb59b907c9171a68be6259fbdb8d4cbf281be62618b618507f22c7",
+     "B1": "fbe3ee054299c98dda9ec309e72f948d6ddaf6efa9164e3292bedd11035e1dca",
+     "C1": "1eb579a6df7f35c4589a42831beb35fb733c259183294358e58a0bfffb305702"
+    }
+   }
+  },
+  {
+   "round": "props-r1",
+   "at": "2026-10-09T22:06:11",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "props.chest": {
+     "A1": "532be8fe6b538b1f1f23ce203b94d598dbd1b4e77d93bb47ff7f983bbff7a631"
+    },
+    "props.torch_wall": {
+     "A1": "868f1838270c40f158d9a4f51b4c558bf0425e7d2258d33b11bc618627e7dd90"
+    },
+    "props.brazier": {
+     "A1": "ea58a20df3be039e28e28bcfb33bdda590de665cc6fe09532e4cfa00f531aba5"
+    },
+    "props.skull_pile": {
+     "A1": "e3b7b87a4e5ad42212b0ccedf084de294f3a83401dd927dfddb51ad30c4d1c63"
+    },
+    "props.bones": {
+     "A1": "e39d9def8c7a84fbb7bccda0fca8504e816a2bfb340edd9813270bf39f5b264b"
+    },
+    "props.cobweb": {
+     "A1": "5502b6920f437092d93c2efa84e724bf26a6b7d100c8b54334406061086c02d8"
+    },
+    "props.chains": {
+     "A1": "c7d68b5bda5759e4b986e83e80e0337958d92961776c8f17d26fcc6b2618bd47"
+    },
+    "props.cell_bars": {
+     "A1": "f61b4e7adebcda27831c302546275cc31df7d85cafc07d4cab72c733c0c40d68"
+    },
+    "props.lever": {
+     "A1": "a7a730f253485fe15833288660a45d4749d2c1317745903f883dde2356e60095"
+    },
+    "props.pressure_plate": {
+     "A1": "21546974b1edcb76a15709c915cd0ad093c2ae10c2578c00b83bdc4e8a5d201e"
+    },
+    "props.spike_trap": {
+     "A1": "9c86a89b674a7de1104c39f4c117658476acdd7f9cf6131a567655270b9ef5ce"
+    },
+    "props.magic_circle": {
+     "A1": "3a32446eb6f03c831b2d2aabd52acbc4951f0d4af62a5c1d0a793458312335a6"
+    },
+    "props.barrel": {
+     "A1": "a4a63bac6d9d21f630890f25389d261040d92c3db936191f894944a7a7c4306d"
+    },
+    "props.crate_stack": {
+     "A1": "c18223cb4592cf19050b798346b7d957fb4a8a9797a84c2e7f224c75386e411d"
+    },
+    "props.mine_cart": {
+     "A1": "ff8ab255bd7132c8da29425db53eafb64306720c4b8b4ce12c01eb6b5c5dbcd5"
+    },
+    "props.tools": {
+     "A1": "35d3283c2c3d1191ec41dcc92a26a3b98bff07dbb7450fee0d4f92b7c78e044c"
+    },
+    "props.mushrooms": {
+     "A1": "ed11a2cbe2185085b00b67d3450ef2ccfb0441ad4acb2c5a5f384e88788fc993"
+    },
+    "props.crystal": {
+     "A1": "f965778febf801bd8b0ee0736a10fe92d72c1ecc6a607e85d34c9f6f3248e06e"
+    },
+    "props.roots": {
+     "A1": "64f7e2d8da1996961b2c8333504d2ccee5a6f76c28f6567651a9bc4f5e14f780"
+    },
+    "props.broken_pots": {
+     "A1": "47c63b75e2feceb4a272381af5d391b03097ca24c3025d2ec5b9021e1b5694e3"
+    },
+    "props.pillar_broken": {
+     "A1": "c1ee63e8ea38f049254d98d9f94c004a6f9de56cdcceb92b296d99b39fb58c55",
+     "B1": "2124d8d8c1e2883455a118b8de93a5436632203a24d6aff51c8a3feaa12a5ac9",
+     "C1": "0a8ae7332caebfb333b408270fcb4aeaa96223bbecafc660b9db957797b60245"
+    },
+    "props.statue_fallen": {
+     "A1": "19482da58267181cd991d7dec4df70fcbe31a05620f66904eb879fc47e3b70b3",
+     "B1": "1001a1ceb09775b7e3e31ef76278ff2e4690f831d3b0daf993b33ba37ed6f662",
+     "C1": "9f1094d2c02f3dd0e68c6aed714003b114e1dc3825332891a70eee4f8ce81461"
+    },
+    "props.sarcophagus": {
+     "A1": "3509367a56d82dd1d562fee274b43a20733694d06b1d3f1580cd6a1bcd2774c3",
+     "B1": "a96863e63e51abe39daaac83012d832e10eb31850f278a286cfbb54a95457df7",
+     "C1": "fce65df35981e69cb13f6b7540663e416da7d89d8bd3a9ba8084590dbacb10d2"
+    },
+    "props.tombstones": {
+     "A1": "8893e8a515cfe0dbcbfb9eab0eb1d2bedf8269016bb3d5d58b91ab4635857e51",
+     "B1": "785f0e29268f83bee785c7c505afa6e272cf79ac269df44e4f17f89eba170395",
+     "C1": "1a82319566e33092158ef960ebd8e49f506ddcb3dd37fe5acf5c9d3c9cdb12a6"
+    },
+    "props.fountain": {
+     "A1": "ff506bdf9f18cbd32fb0c80cd5223dc3ee87a0b60d6d15e1b998fdd97a9bbdbe",
+     "B1": "8902de8df4b5cbc7761105959e8cec646d1703ce1df298ca7609dd64d9dfcd25",
+     "C1": "e8cdd573626e8d200666df55935afbc87336943f8be8b1407cde92ec347eb46d"
+    },
+    "props.seal_gate": {
+     "A1": "0aed1ba800ede90e102c3ce94bfbc029e3d5a920d6282e8fd446aa6c7e23c0d3",
+     "B1": "86bbb57e2ebbf6e7ef006fbea29cf47395d90c07db74a80a2d4c8d536b0c01c6",
+     "C1": "75db1029c990fa4667a10e7cd79b92cdcf0b794022058528dc6bb4dc101435e8"
+    },
+    "props.altar_guardians": {
+     "A1": "d161948381bb59b907c9171a68be6259fbdb8d4cbf281be62618b618507f22c7",
+     "B1": "fbe3ee054299c98dda9ec309e72f948d6ddaf6efa9164e3292bedd11035e1dca",
+     "C1": "1eb579a6df7f35c4589a42831beb35fb733c259183294358e58a0bfffb305702"
+    }
+   }
+  },
+  {
+   "round": "props-r1",
+   "at": "2026-10-09T22:06:14",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "props.chest": {
+     "A1": "532be8fe6b538b1f1f23ce203b94d598dbd1b4e77d93bb47ff7f983bbff7a631"
+    },
+    "props.torch_wall": {
+     "A1": "868f1838270c40f158d9a4f51b4c558bf0425e7d2258d33b11bc618627e7dd90"
+    },
+    "props.brazier": {
+     "A1": "ea58a20df3be039e28e28bcfb33bdda590de665cc6fe09532e4cfa00f531aba5"
+    },
+    "props.skull_pile": {
+     "A1": "e3b7b87a4e5ad42212b0ccedf084de294f3a83401dd927dfddb51ad30c4d1c63"
+    },
+    "props.bones": {
+     "A1": "e39d9def8c7a84fbb7bccda0fca8504e816a2bfb340edd9813270bf39f5b264b"
+    },
+    "props.cobweb": {
+     "A1": "5502b6920f437092d93c2efa84e724bf26a6b7d100c8b54334406061086c02d8"
+    },
+    "props.chains": {
+     "A1": "c7d68b5bda5759e4b986e83e80e0337958d92961776c8f17d26fcc6b2618bd47"
+    },
+    "props.cell_bars": {
+     "A1": "f61b4e7adebcda27831c302546275cc31df7d85cafc07d4cab72c733c0c40d68"
+    },
+    "props.lever": {
+     "A1": "a7a730f253485fe15833288660a45d4749d2c1317745903f883dde2356e60095"
+    },
+    "props.pressure_plate": {
+     "A1": "21546974b1edcb76a15709c915cd0ad093c2ae10c2578c00b83bdc4e8a5d201e"
+    },
+    "props.spike_trap": {
+     "A1": "9c86a89b674a7de1104c39f4c117658476acdd7f9cf6131a567655270b9ef5ce"
+    },
+    "props.magic_circle": {
+     "A1": "3a32446eb6f03c831b2d2aabd52acbc4951f0d4af62a5c1d0a793458312335a6"
+    },
+    "props.barrel": {
+     "A1": "a4a63bac6d9d21f630890f25389d261040d92c3db936191f894944a7a7c4306d"
+    },
+    "props.crate_stack": {
+     "A1": "c18223cb4592cf19050b798346b7d957fb4a8a9797a84c2e7f224c75386e411d"
+    },
+    "props.mine_cart": {
+     "A1": "ff8ab255bd7132c8da29425db53eafb64306720c4b8b4ce12c01eb6b5c5dbcd5"
+    },
+    "props.tools": {
+     "A1": "35d3283c2c3d1191ec41dcc92a26a3b98bff07dbb7450fee0d4f92b7c78e044c"
+    },
+    "props.mushrooms": {
+     "A1": "ed11a2cbe2185085b00b67d3450ef2ccfb0441ad4acb2c5a5f384e88788fc993"
+    },
+    "props.crystal": {
+     "A1": "f965778febf801bd8b0ee0736a10fe92d72c1ecc6a607e85d34c9f6f3248e06e"
+    },
+    "props.roots": {
+     "A1": "64f7e2d8da1996961b2c8333504d2ccee5a6f76c28f6567651a9bc4f5e14f780"
+    },
+    "props.broken_pots": {
+     "A1": "47c63b75e2feceb4a272381af5d391b03097ca24c3025d2ec5b9021e1b5694e3"
+    },
+    "props.pillar_broken": {
+     "A1": "c1ee63e8ea38f049254d98d9f94c004a6f9de56cdcceb92b296d99b39fb58c55",
+     "B1": "2124d8d8c1e2883455a118b8de93a5436632203a24d6aff51c8a3feaa12a5ac9",
+     "C1": "0a8ae7332caebfb333b408270fcb4aeaa96223bbecafc660b9db957797b60245"
+    },
+    "props.statue_fallen": {
+     "A1": "19482da58267181cd991d7dec4df70fcbe31a05620f66904eb879fc47e3b70b3",
+     "B1": "1001a1ceb09775b7e3e31ef76278ff2e4690f831d3b0daf993b33ba37ed6f662",
+     "C1": "9f1094d2c02f3dd0e68c6aed714003b114e1dc3825332891a70eee4f8ce81461"
+    },
+    "props.sarcophagus": {
+     "A1": "3509367a56d82dd1d562fee274b43a20733694d06b1d3f1580cd6a1bcd2774c3",
+     "B1": "a96863e63e51abe39daaac83012d832e10eb31850f278a286cfbb54a95457df7",
+     "C1": "fce65df35981e69cb13f6b7540663e416da7d89d8bd3a9ba8084590dbacb10d2"
+    },
+    "props.tombstones": {
+     "A1": "8893e8a515cfe0dbcbfb9eab0eb1d2bedf8269016bb3d5d58b91ab4635857e51",
+     "B1": "785f0e29268f83bee785c7c505afa6e272cf79ac269df44e4f17f89eba170395",
+     "C1": "1a82319566e33092158ef960ebd8e49f506ddcb3dd37fe5acf5c9d3c9cdb12a6"
+    },
+    "props.fountain": {
+     "A1": "ff506bdf9f18cbd32fb0c80cd5223dc3ee87a0b60d6d15e1b998fdd97a9bbdbe",
+     "B1": "8902de8df4b5cbc7761105959e8cec646d1703ce1df298ca7609dd64d9dfcd25",
+     "C1": "e8cdd573626e8d200666df55935afbc87336943f8be8b1407cde92ec347eb46d"
+    },
+    "props.seal_gate": {
+     "A1": "0aed1ba800ede90e102c3ce94bfbc029e3d5a920d6282e8fd446aa6c7e23c0d3",
+     "B1": "86bbb57e2ebbf6e7ef006fbea29cf47395d90c07db74a80a2d4c8d536b0c01c6",
+     "C1": "75db1029c990fa4667a10e7cd79b92cdcf0b794022058528dc6bb4dc101435e8"
+    },
+    "props.altar_guardians": {
+     "A1": "d161948381bb59b907c9171a68be6259fbdb8d4cbf281be62618b618507f22c7",
+     "B1": "fbe3ee054299c98dda9ec309e72f948d6ddaf6efa9164e3292bedd11035e1dca",
+     "C1": "1eb579a6df7f35c4589a42831beb35fb733c259183294358e58a0bfffb305702"
+    }
+   }
+  },
+  {
+   "round": "props-r1",
+   "at": "2026-10-09T22:06:18",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "props.chest": {
+     "A1": "532be8fe6b538b1f1f23ce203b94d598dbd1b4e77d93bb47ff7f983bbff7a631"
+    },
+    "props.torch_wall": {
+     "A1": "868f1838270c40f158d9a4f51b4c558bf0425e7d2258d33b11bc618627e7dd90"
+    },
+    "props.brazier": {
+     "A1": "ea58a20df3be039e28e28bcfb33bdda590de665cc6fe09532e4cfa00f531aba5"
+    },
+    "props.skull_pile": {
+     "A1": "e3b7b87a4e5ad42212b0ccedf084de294f3a83401dd927dfddb51ad30c4d1c63"
+    },
+    "props.bones": {
+     "A1": "e39d9def8c7a84fbb7bccda0fca8504e816a2bfb340edd9813270bf39f5b264b"
+    },
+    "props.cobweb": {
+     "A1": "5502b6920f437092d93c2efa84e724bf26a6b7d100c8b54334406061086c02d8"
+    },
+    "props.chains": {
+     "A1": "c7d68b5bda5759e4b986e83e80e0337958d92961776c8f17d26fcc6b2618bd47"
+    },
+    "props.cell_bars": {
+     "A1": "f61b4e7adebcda27831c302546275cc31df7d85cafc07d4cab72c733c0c40d68"
+    },
+    "props.lever": {
+     "A1": "a7a730f253485fe15833288660a45d4749d2c1317745903f883dde2356e60095"
+    },
+    "props.pressure_plate": {
+     "A1": "21546974b1edcb76a15709c915cd0ad093c2ae10c2578c00b83bdc4e8a5d201e"
+    },
+    "props.spike_trap": {
+     "A1": "9c86a89b674a7de1104c39f4c117658476acdd7f9cf6131a567655270b9ef5ce"
+    },
+    "props.magic_circle": {
+     "A1": "3a32446eb6f03c831b2d2aabd52acbc4951f0d4af62a5c1d0a793458312335a6"
+    },
+    "props.barrel": {
+     "A1": "a4a63bac6d9d21f630890f25389d261040d92c3db936191f894944a7a7c4306d"
+    },
+    "props.crate_stack": {
+     "A1": "c18223cb4592cf19050b798346b7d957fb4a8a9797a84c2e7f224c75386e411d"
+    },
+    "props.mine_cart": {
+     "A1": "ff8ab255bd7132c8da29425db53eafb64306720c4b8b4ce12c01eb6b5c5dbcd5"
+    },
+    "props.tools": {
+     "A1": "35d3283c2c3d1191ec41dcc92a26a3b98bff07dbb7450fee0d4f92b7c78e044c"
+    },
+    "props.mushrooms": {
+     "A1": "ed11a2cbe2185085b00b67d3450ef2ccfb0441ad4acb2c5a5f384e88788fc993"
+    },
+    "props.crystal": {
+     "A1": "f965778febf801bd8b0ee0736a10fe92d72c1ecc6a607e85d34c9f6f3248e06e"
+    },
+    "props.roots": {
+     "A1": "64f7e2d8da1996961b2c8333504d2ccee5a6f76c28f6567651a9bc4f5e14f780"
+    },
+    "props.broken_pots": {
+     "A1": "47c63b75e2feceb4a272381af5d391b03097ca24c3025d2ec5b9021e1b5694e3"
+    },
+    "props.pillar_broken": {
+     "A1": "c1ee63e8ea38f049254d98d9f94c004a6f9de56cdcceb92b296d99b39fb58c55",
+     "B1": "2124d8d8c1e2883455a118b8de93a5436632203a24d6aff51c8a3feaa12a5ac9",
+     "C1": "0a8ae7332caebfb333b408270fcb4aeaa96223bbecafc660b9db957797b60245"
+    },
+    "props.statue_fallen": {
+     "A1": "19482da58267181cd991d7dec4df70fcbe31a05620f66904eb879fc47e3b70b3",
+     "B1": "1001a1ceb09775b7e3e31ef76278ff2e4690f831d3b0daf993b33ba37ed6f662",
+     "C1": "9f1094d2c02f3dd0e68c6aed714003b114e1dc3825332891a70eee4f8ce81461"
+    },
+    "props.sarcophagus": {
+     "A1": "3509367a56d82dd1d562fee274b43a20733694d06b1d3f1580cd6a1bcd2774c3",
+     "B1": "a96863e63e51abe39daaac83012d832e10eb31850f278a286cfbb54a95457df7",
+     "C1": "fce65df35981e69cb13f6b7540663e416da7d89d8bd3a9ba8084590dbacb10d2"
+    },
+    "props.tombstones": {
+     "A1": "8893e8a515cfe0dbcbfb9eab0eb1d2bedf8269016bb3d5d58b91ab4635857e51",
+     "B1": "785f0e29268f83bee785c7c505afa6e272cf79ac269df44e4f17f89eba170395",
+     "C1": "1a82319566e33092158ef960ebd8e49f506ddcb3dd37fe5acf5c9d3c9cdb12a6"
+    },
+    "props.fountain": {
+     "A1": "ff506bdf9f18cbd32fb0c80cd5223dc3ee87a0b60d6d15e1b998fdd97a9bbdbe",
+     "B1": "8902de8df4b5cbc7761105959e8cec646d1703ce1df298ca7609dd64d9dfcd25",
+     "C1": "e8cdd573626e8d200666df55935afbc87336943f8be8b1407cde92ec347eb46d"
+    },
+    "props.seal_gate": {
+     "A1": "0aed1ba800ede90e102c3ce94bfbc029e3d5a920d6282e8fd446aa6c7e23c0d3",
+     "B1": "86bbb57e2ebbf6e7ef006fbea29cf47395d90c07db74a80a2d4c8d536b0c01c6",
+     "C1": "75db1029c990fa4667a10e7cd79b92cdcf0b794022058528dc6bb4dc101435e8"
+    },
+    "props.altar_guardians": {
+     "A1": "d161948381bb59b907c9171a68be6259fbdb8d4cbf281be62618b618507f22c7",
+     "B1": "fbe3ee054299c98dda9ec309e72f948d6ddaf6efa9164e3292bedd11035e1dca",
+     "C1": "1eb579a6df7f35c4589a42831beb35fb733c259183294358e58a0bfffb305702"
+    }
+   }
+  },
+  {
+   "round": "props-r1",
+   "at": "2026-10-09T22:06:25",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "props.chest": {
+     "A1": "532be8fe6b538b1f1f23ce203b94d598dbd1b4e77d93bb47ff7f983bbff7a631"
+    },
+    "props.torch_wall": {
+     "A1": "868f1838270c40f158d9a4f51b4c558bf0425e7d2258d33b11bc618627e7dd90"
+    },
+    "props.brazier": {
+     "A1": "ea58a20df3be039e28e28bcfb33bdda590de665cc6fe09532e4cfa00f531aba5"
+    },
+    "props.skull_pile": {
+     "A1": "e3b7b87a4e5ad42212b0ccedf084de294f3a83401dd927dfddb51ad30c4d1c63"
+    },
+    "props.bones": {
+     "A1": "e39d9def8c7a84fbb7bccda0fca8504e816a2bfb340edd9813270bf39f5b264b"
+    },
+    "props.cobweb": {
+     "A1": "5502b6920f437092d93c2efa84e724bf26a6b7d100c8b54334406061086c02d8"
+    },
+    "props.chains": {
+     "A1": "c7d68b5bda5759e4b986e83e80e0337958d92961776c8f17d26fcc6b2618bd47"
+    },
+    "props.cell_bars": {
+     "A1": "f61b4e7adebcda27831c302546275cc31df7d85cafc07d4cab72c733c0c40d68"
+    },
+    "props.lever": {
+     "A1": "a7a730f253485fe15833288660a45d4749d2c1317745903f883dde2356e60095"
+    },
+    "props.pressure_plate": {
+     "A1": "bacd435d165e144b7090db8dd87c6beffb39ae24cb90cfd3b4c339aa6ffd7a9a"
+    },
+    "props.spike_trap": {
+     "A1": "9c86a89b674a7de1104c39f4c117658476acdd7f9cf6131a567655270b9ef5ce"
+    },
+    "props.magic_circle": {
+     "A1": "3a32446eb6f03c831b2d2aabd52acbc4951f0d4af62a5c1d0a793458312335a6"
+    },
+    "props.barrel": {
+     "A1": "a4a63bac6d9d21f630890f25389d261040d92c3db936191f894944a7a7c4306d"
+    },
+    "props.crate_stack": {
+     "A1": "c18223cb4592cf19050b798346b7d957fb4a8a9797a84c2e7f224c75386e411d"
+    },
+    "props.mine_cart": {
+     "A1": "ff8ab255bd7132c8da29425db53eafb64306720c4b8b4ce12c01eb6b5c5dbcd5"
+    },
+    "props.tools": {
+     "A1": "35d3283c2c3d1191ec41dcc92a26a3b98bff07dbb7450fee0d4f92b7c78e044c"
+    },
+    "props.mushrooms": {
+     "A1": "ed11a2cbe2185085b00b67d3450ef2ccfb0441ad4acb2c5a5f384e88788fc993"
+    },
+    "props.crystal": {
+     "A1": "f965778febf801bd8b0ee0736a10fe92d72c1ecc6a607e85d34c9f6f3248e06e"
+    },
+    "props.roots": {
+     "A1": "64f7e2d8da1996961b2c8333504d2ccee5a6f76c28f6567651a9bc4f5e14f780"
+    },
+    "props.broken_pots": {
+     "A1": "47c63b75e2feceb4a272381af5d391b03097ca24c3025d2ec5b9021e1b5694e3"
+    },
+    "props.pillar_broken": {
+     "A1": "c1ee63e8ea38f049254d98d9f94c004a6f9de56cdcceb92b296d99b39fb58c55",
+     "B1": "2124d8d8c1e2883455a118b8de93a5436632203a24d6aff51c8a3feaa12a5ac9",
+     "C1": "0a8ae7332caebfb333b408270fcb4aeaa96223bbecafc660b9db957797b60245"
+    },
+    "props.statue_fallen": {
+     "A1": "19482da58267181cd991d7dec4df70fcbe31a05620f66904eb879fc47e3b70b3",
+     "B1": "1001a1ceb09775b7e3e31ef76278ff2e4690f831d3b0daf993b33ba37ed6f662",
+     "C1": "9f1094d2c02f3dd0e68c6aed714003b114e1dc3825332891a70eee4f8ce81461"
+    },
+    "props.sarcophagus": {
+     "A1": "3509367a56d82dd1d562fee274b43a20733694d06b1d3f1580cd6a1bcd2774c3",
+     "B1": "a96863e63e51abe39daaac83012d832e10eb31850f278a286cfbb54a95457df7",
+     "C1": "fce65df35981e69cb13f6b7540663e416da7d89d8bd3a9ba8084590dbacb10d2"
+    },
+    "props.tombstones": {
+     "A1": "8893e8a515cfe0dbcbfb9eab0eb1d2bedf8269016bb3d5d58b91ab4635857e51",
+     "B1": "785f0e29268f83bee785c7c505afa6e272cf79ac269df44e4f17f89eba170395",
+     "C1": "1a82319566e33092158ef960ebd8e49f506ddcb3dd37fe5acf5c9d3c9cdb12a6"
+    },
+    "props.fountain": {
+     "A1": "ff506bdf9f18cbd32fb0c80cd5223dc3ee87a0b60d6d15e1b998fdd97a9bbdbe",
+     "B1": "8902de8df4b5cbc7761105959e8cec646d1703ce1df298ca7609dd64d9dfcd25",
+     "C1": "e8cdd573626e8d200666df55935afbc87336943f8be8b1407cde92ec347eb46d"
+    },
+    "props.seal_gate": {
+     "A1": "0aed1ba800ede90e102c3ce94bfbc029e3d5a920d6282e8fd446aa6c7e23c0d3",
+     "B1": "86bbb57e2ebbf6e7ef006fbea29cf47395d90c07db74a80a2d4c8d536b0c01c6",
+     "C1": "75db1029c990fa4667a10e7cd79b92cdcf0b794022058528dc6bb4dc101435e8"
+    },
+    "props.altar_guardians": {
+     "A1": "d161948381bb59b907c9171a68be6259fbdb8d4cbf281be62618b618507f22c7",
+     "B1": "fbe3ee054299c98dda9ec309e72f948d6ddaf6efa9164e3292bedd11035e1dca",
+     "C1": "1eb579a6df7f35c4589a42831beb35fb733c259183294358e58a0bfffb305702"
+    }
+   }
+  },
+  {
+   "round": "props-r1",
+   "at": "2026-10-09T22:06:29",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "props.chest": {
+     "A1": "532be8fe6b538b1f1f23ce203b94d598dbd1b4e77d93bb47ff7f983bbff7a631"
+    },
+    "props.torch_wall": {
+     "A1": "868f1838270c40f158d9a4f51b4c558bf0425e7d2258d33b11bc618627e7dd90"
+    },
+    "props.brazier": {
+     "A1": "ea58a20df3be039e28e28bcfb33bdda590de665cc6fe09532e4cfa00f531aba5"
+    },
+    "props.skull_pile": {
+     "A1": "e3b7b87a4e5ad42212b0ccedf084de294f3a83401dd927dfddb51ad30c4d1c63"
+    },
+    "props.bones": {
+     "A1": "e39d9def8c7a84fbb7bccda0fca8504e816a2bfb340edd9813270bf39f5b264b"
+    },
+    "props.cobweb": {
+     "A1": "5502b6920f437092d93c2efa84e724bf26a6b7d100c8b54334406061086c02d8"
+    },
+    "props.chains": {
+     "A1": "c7d68b5bda5759e4b986e83e80e0337958d92961776c8f17d26fcc6b2618bd47"
+    },
+    "props.cell_bars": {
+     "A1": "f61b4e7adebcda27831c302546275cc31df7d85cafc07d4cab72c733c0c40d68"
+    },
+    "props.lever": {
+     "A1": "a7a730f253485fe15833288660a45d4749d2c1317745903f883dde2356e60095"
+    },
+    "props.pressure_plate": {
+     "A1": "bacd435d165e144b7090db8dd87c6beffb39ae24cb90cfd3b4c339aa6ffd7a9a"
+    },
+    "props.spike_trap": {
+     "A1": "9c86a89b674a7de1104c39f4c117658476acdd7f9cf6131a567655270b9ef5ce"
+    },
+    "props.magic_circle": {
+     "A1": "3a32446eb6f03c831b2d2aabd52acbc4951f0d4af62a5c1d0a793458312335a6"
+    },
+    "props.barrel": {
+     "A1": "a4a63bac6d9d21f630890f25389d261040d92c3db936191f894944a7a7c4306d"
+    },
+    "props.crate_stack": {
+     "A1": "c18223cb4592cf19050b798346b7d957fb4a8a9797a84c2e7f224c75386e411d"
+    },
+    "props.mine_cart": {
+     "A1": "ff8ab255bd7132c8da29425db53eafb64306720c4b8b4ce12c01eb6b5c5dbcd5"
+    },
+    "props.tools": {
+     "A1": "35d3283c2c3d1191ec41dcc92a26a3b98bff07dbb7450fee0d4f92b7c78e044c"
+    },
+    "props.mushrooms": {
+     "A1": "ed11a2cbe2185085b00b67d3450ef2ccfb0441ad4acb2c5a5f384e88788fc993"
+    },
+    "props.crystal": {
+     "A1": "f965778febf801bd8b0ee0736a10fe92d72c1ecc6a607e85d34c9f6f3248e06e"
+    },
+    "props.roots": {
+     "A1": "64f7e2d8da1996961b2c8333504d2ccee5a6f76c28f6567651a9bc4f5e14f780"
+    },
+    "props.broken_pots": {
+     "A1": "47c63b75e2feceb4a272381af5d391b03097ca24c3025d2ec5b9021e1b5694e3"
+    },
+    "props.pillar_broken": {
+     "A1": "c1ee63e8ea38f049254d98d9f94c004a6f9de56cdcceb92b296d99b39fb58c55",
+     "B1": "2124d8d8c1e2883455a118b8de93a5436632203a24d6aff51c8a3feaa12a5ac9",
+     "C1": "0a8ae7332caebfb333b408270fcb4aeaa96223bbecafc660b9db957797b60245"
+    },
+    "props.statue_fallen": {
+     "A1": "19482da58267181cd991d7dec4df70fcbe31a05620f66904eb879fc47e3b70b3",
+     "B1": "1001a1ceb09775b7e3e31ef76278ff2e4690f831d3b0daf993b33ba37ed6f662",
+     "C1": "9f1094d2c02f3dd0e68c6aed714003b114e1dc3825332891a70eee4f8ce81461"
+    },
+    "props.sarcophagus": {
+     "A1": "3509367a56d82dd1d562fee274b43a20733694d06b1d3f1580cd6a1bcd2774c3",
+     "B1": "a96863e63e51abe39daaac83012d832e10eb31850f278a286cfbb54a95457df7",
+     "C1": "fce65df35981e69cb13f6b7540663e416da7d89d8bd3a9ba8084590dbacb10d2"
+    },
+    "props.tombstones": {
+     "A1": "8893e8a515cfe0dbcbfb9eab0eb1d2bedf8269016bb3d5d58b91ab4635857e51",
+     "B1": "785f0e29268f83bee785c7c505afa6e272cf79ac269df44e4f17f89eba170395",
+     "C1": "1a82319566e33092158ef960ebd8e49f506ddcb3dd37fe5acf5c9d3c9cdb12a6"
+    },
+    "props.fountain": {
+     "A1": "ff506bdf9f18cbd32fb0c80cd5223dc3ee87a0b60d6d15e1b998fdd97a9bbdbe",
+     "B1": "8902de8df4b5cbc7761105959e8cec646d1703ce1df298ca7609dd64d9dfcd25",
+     "C1": "e8cdd573626e8d200666df55935afbc87336943f8be8b1407cde92ec347eb46d"
+    },
+    "props.seal_gate": {
+     "A1": "0aed1ba800ede90e102c3ce94bfbc029e3d5a920d6282e8fd446aa6c7e23c0d3",
+     "B1": "86bbb57e2ebbf6e7ef006fbea29cf47395d90c07db74a80a2d4c8d536b0c01c6",
+     "C1": "75db1029c990fa4667a10e7cd79b92cdcf0b794022058528dc6bb4dc101435e8"
+    },
+    "props.altar_guardians": {
+     "A1": "d161948381bb59b907c9171a68be6259fbdb8d4cbf281be62618b618507f22c7",
+     "B1": "fbe3ee054299c98dda9ec309e72f948d6ddaf6efa9164e3292bedd11035e1dca",
+     "C1": "1eb579a6df7f35c4589a42831beb35fb733c259183294358e58a0bfffb305702"
+    }
+   }
+  },
+  {
+   "round": "props-r1",
+   "at": "2026-10-09T22:08:23",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "props.chest": {
+     "A1": "532be8fe6b538b1f1f23ce203b94d598dbd1b4e77d93bb47ff7f983bbff7a631"
+    },
+    "props.torch_wall": {
+     "A1": "868f1838270c40f158d9a4f51b4c558bf0425e7d2258d33b11bc618627e7dd90"
+    },
+    "props.brazier": {
+     "A1": "ea58a20df3be039e28e28bcfb33bdda590de665cc6fe09532e4cfa00f531aba5"
+    },
+    "props.skull_pile": {
+     "A1": "e3b7b87a4e5ad42212b0ccedf084de294f3a83401dd927dfddb51ad30c4d1c63"
+    },
+    "props.bones": {
+     "A1": "e39d9def8c7a84fbb7bccda0fca8504e816a2bfb340edd9813270bf39f5b264b"
+    },
+    "props.cobweb": {
+     "A1": "5502b6920f437092d93c2efa84e724bf26a6b7d100c8b54334406061086c02d8"
+    },
+    "props.chains": {
+     "A1": "c7d68b5bda5759e4b986e83e80e0337958d92961776c8f17d26fcc6b2618bd47"
+    },
+    "props.cell_bars": {
+     "A1": "f61b4e7adebcda27831c302546275cc31df7d85cafc07d4cab72c733c0c40d68"
+    },
+    "props.lever": {
+     "A1": "a7a730f253485fe15833288660a45d4749d2c1317745903f883dde2356e60095"
+    },
+    "props.pressure_plate": {
+     "A1": "bacd435d165e144b7090db8dd87c6beffb39ae24cb90cfd3b4c339aa6ffd7a9a"
+    },
+    "props.spike_trap": {
+     "A1": "9c86a89b674a7de1104c39f4c117658476acdd7f9cf6131a567655270b9ef5ce"
+    },
+    "props.magic_circle": {
+     "A1": "3a32446eb6f03c831b2d2aabd52acbc4951f0d4af62a5c1d0a793458312335a6"
+    },
+    "props.barrel": {
+     "A1": "a4a63bac6d9d21f630890f25389d261040d92c3db936191f894944a7a7c4306d"
+    },
+    "props.crate_stack": {
+     "A1": "c18223cb4592cf19050b798346b7d957fb4a8a9797a84c2e7f224c75386e411d"
+    },
+    "props.mine_cart": {
+     "A1": "ff8ab255bd7132c8da29425db53eafb64306720c4b8b4ce12c01eb6b5c5dbcd5"
+    },
+    "props.tools": {
+     "A1": "35d3283c2c3d1191ec41dcc92a26a3b98bff07dbb7450fee0d4f92b7c78e044c"
+    },
+    "props.mushrooms": {
+     "A1": "ed11a2cbe2185085b00b67d3450ef2ccfb0441ad4acb2c5a5f384e88788fc993"
+    },
+    "props.crystal": {
+     "A1": "f965778febf801bd8b0ee0736a10fe92d72c1ecc6a607e85d34c9f6f3248e06e"
+    },
+    "props.roots": {
+     "A1": "64f7e2d8da1996961b2c8333504d2ccee5a6f76c28f6567651a9bc4f5e14f780"
+    },
+    "props.broken_pots": {
+     "A1": "47c63b75e2feceb4a272381af5d391b03097ca24c3025d2ec5b9021e1b5694e3"
+    },
+    "props.pillar_broken": {
+     "A1": "c1ee63e8ea38f049254d98d9f94c004a6f9de56cdcceb92b296d99b39fb58c55",
+     "B1": "2124d8d8c1e2883455a118b8de93a5436632203a24d6aff51c8a3feaa12a5ac9",
+     "C1": "0a8ae7332caebfb333b408270fcb4aeaa96223bbecafc660b9db957797b60245"
+    },
+    "props.statue_fallen": {
+     "A1": "19482da58267181cd991d7dec4df70fcbe31a05620f66904eb879fc47e3b70b3",
+     "B1": "1001a1ceb09775b7e3e31ef76278ff2e4690f831d3b0daf993b33ba37ed6f662",
+     "C1": "9f1094d2c02f3dd0e68c6aed714003b114e1dc3825332891a70eee4f8ce81461"
+    },
+    "props.sarcophagus": {
+     "A1": "3509367a56d82dd1d562fee274b43a20733694d06b1d3f1580cd6a1bcd2774c3",
+     "B1": "a96863e63e51abe39daaac83012d832e10eb31850f278a286cfbb54a95457df7",
+     "C1": "fce65df35981e69cb13f6b7540663e416da7d89d8bd3a9ba8084590dbacb10d2"
+    },
+    "props.tombstones": {
+     "A1": "8893e8a515cfe0dbcbfb9eab0eb1d2bedf8269016bb3d5d58b91ab4635857e51",
+     "B1": "785f0e29268f83bee785c7c505afa6e272cf79ac269df44e4f17f89eba170395",
+     "C1": "1a82319566e33092158ef960ebd8e49f506ddcb3dd37fe5acf5c9d3c9cdb12a6"
+    },
+    "props.fountain": {
+     "A1": "ff506bdf9f18cbd32fb0c80cd5223dc3ee87a0b60d6d15e1b998fdd97a9bbdbe",
+     "B1": "8902de8df4b5cbc7761105959e8cec646d1703ce1df298ca7609dd64d9dfcd25",
+     "C1": "e8cdd573626e8d200666df55935afbc87336943f8be8b1407cde92ec347eb46d"
+    },
+    "props.seal_gate": {
+     "A1": "0aed1ba800ede90e102c3ce94bfbc029e3d5a920d6282e8fd446aa6c7e23c0d3",
+     "B1": "86bbb57e2ebbf6e7ef006fbea29cf47395d90c07db74a80a2d4c8d536b0c01c6",
+     "C1": "75db1029c990fa4667a10e7cd79b92cdcf0b794022058528dc6bb4dc101435e8"
+    },
+    "props.altar_guardians": {
+     "A1": "d161948381bb59b907c9171a68be6259fbdb8d4cbf281be62618b618507f22c7",
+     "B1": "fbe3ee054299c98dda9ec309e72f948d6ddaf6efa9164e3292bedd11035e1dca",
+     "C1": "1eb579a6df7f35c4589a42831beb35fb733c259183294358e58a0bfffb305702"
+    }
+   }
+  },
+  {
+   "round": "props-r1",
+   "at": "2026-10-09T22:08:37",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "props.chest": {
+     "A1": "532be8fe6b538b1f1f23ce203b94d598dbd1b4e77d93bb47ff7f983bbff7a631"
+    },
+    "props.torch_wall": {
+     "A1": "868f1838270c40f158d9a4f51b4c558bf0425e7d2258d33b11bc618627e7dd90"
+    },
+    "props.brazier": {
+     "A1": "ea58a20df3be039e28e28bcfb33bdda590de665cc6fe09532e4cfa00f531aba5"
+    },
+    "props.skull_pile": {
+     "A1": "e3b7b87a4e5ad42212b0ccedf084de294f3a83401dd927dfddb51ad30c4d1c63"
+    },
+    "props.bones": {
+     "A1": "e39d9def8c7a84fbb7bccda0fca8504e816a2bfb340edd9813270bf39f5b264b"
+    },
+    "props.cobweb": {
+     "A1": "5502b6920f437092d93c2efa84e724bf26a6b7d100c8b54334406061086c02d8"
+    },
+    "props.chains": {
+     "A1": "c7d68b5bda5759e4b986e83e80e0337958d92961776c8f17d26fcc6b2618bd47"
+    },
+    "props.cell_bars": {
+     "A1": "f61b4e7adebcda27831c302546275cc31df7d85cafc07d4cab72c733c0c40d68"
+    },
+    "props.lever": {
+     "A1": "a7a730f253485fe15833288660a45d4749d2c1317745903f883dde2356e60095"
+    },
+    "props.pressure_plate": {
+     "A1": "583bef6ebed82261dece169870cb4c0d44159846a49bf9e54585880b3fd6286c"
+    },
+    "props.spike_trap": {
+     "A1": "aa17b598f6fc8d91aa42b32581dad9fe12baa87697deae0c09c30df7bce5113b"
+    },
+    "props.magic_circle": {
+     "A1": "3a32446eb6f03c831b2d2aabd52acbc4951f0d4af62a5c1d0a793458312335a6"
+    },
+    "props.barrel": {
+     "A1": "a4a63bac6d9d21f630890f25389d261040d92c3db936191f894944a7a7c4306d"
+    },
+    "props.crate_stack": {
+     "A1": "c18223cb4592cf19050b798346b7d957fb4a8a9797a84c2e7f224c75386e411d"
+    },
+    "props.mine_cart": {
+     "A1": "ff8ab255bd7132c8da29425db53eafb64306720c4b8b4ce12c01eb6b5c5dbcd5"
+    },
+    "props.tools": {
+     "A1": "35d3283c2c3d1191ec41dcc92a26a3b98bff07dbb7450fee0d4f92b7c78e044c"
+    },
+    "props.mushrooms": {
+     "A1": "ed11a2cbe2185085b00b67d3450ef2ccfb0441ad4acb2c5a5f384e88788fc993"
+    },
+    "props.crystal": {
+     "A1": "f965778febf801bd8b0ee0736a10fe92d72c1ecc6a607e85d34c9f6f3248e06e"
+    },
+    "props.roots": {
+     "A1": "64f7e2d8da1996961b2c8333504d2ccee5a6f76c28f6567651a9bc4f5e14f780"
+    },
+    "props.broken_pots": {
+     "A1": "e929dba3f02d5db33762ba2512cae14541e286e931be9f5a5c3935e4ade84ce8"
+    },
+    "props.pillar_broken": {
+     "A1": "c1ee63e8ea38f049254d98d9f94c004a6f9de56cdcceb92b296d99b39fb58c55",
+     "B1": "2124d8d8c1e2883455a118b8de93a5436632203a24d6aff51c8a3feaa12a5ac9",
+     "C1": "0a8ae7332caebfb333b408270fcb4aeaa96223bbecafc660b9db957797b60245"
+    },
+    "props.statue_fallen": {
+     "A1": "19482da58267181cd991d7dec4df70fcbe31a05620f66904eb879fc47e3b70b3",
+     "B1": "1001a1ceb09775b7e3e31ef76278ff2e4690f831d3b0daf993b33ba37ed6f662",
+     "C1": "9f1094d2c02f3dd0e68c6aed714003b114e1dc3825332891a70eee4f8ce81461"
+    },
+    "props.sarcophagus": {
+     "A1": "3509367a56d82dd1d562fee274b43a20733694d06b1d3f1580cd6a1bcd2774c3",
+     "B1": "a96863e63e51abe39daaac83012d832e10eb31850f278a286cfbb54a95457df7",
+     "C1": "fce65df35981e69cb13f6b7540663e416da7d89d8bd3a9ba8084590dbacb10d2"
+    },
+    "props.tombstones": {
+     "A1": "8893e8a515cfe0dbcbfb9eab0eb1d2bedf8269016bb3d5d58b91ab4635857e51",
+     "B1": "785f0e29268f83bee785c7c505afa6e272cf79ac269df44e4f17f89eba170395",
+     "C1": "1a82319566e33092158ef960ebd8e49f506ddcb3dd37fe5acf5c9d3c9cdb12a6"
+    },
+    "props.fountain": {
+     "A1": "ff506bdf9f18cbd32fb0c80cd5223dc3ee87a0b60d6d15e1b998fdd97a9bbdbe",
+     "B1": "8902de8df4b5cbc7761105959e8cec646d1703ce1df298ca7609dd64d9dfcd25",
+     "C1": "e8cdd573626e8d200666df55935afbc87336943f8be8b1407cde92ec347eb46d"
+    },
+    "props.seal_gate": {
+     "A1": "b6b1589426fe1cc0eb034b824ebaa442f7163de1e76744dcdf4a57f3df3f9f6b",
+     "B1": "0182c3bc784fdf4c264004c74ff0e3abd69e2772e12574a264db74db6f5e105e",
+     "C1": "eb084bcf105a176bbff357b755f33e476f6b170c6dd9d9b5efa088bc77b38949"
+    },
+    "props.altar_guardians": {
+     "A1": "d161948381bb59b907c9171a68be6259fbdb8d4cbf281be62618b618507f22c7",
+     "B1": "fbe3ee054299c98dda9ec309e72f948d6ddaf6efa9164e3292bedd11035e1dca",
+     "C1": "1eb579a6df7f35c4589a42831beb35fb733c259183294358e58a0bfffb305702"
+    }
+   }
+  },
+  {
+   "round": "props-r1",
+   "at": "2026-10-09T22:08:41",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "props.chest": {
+     "A1": "532be8fe6b538b1f1f23ce203b94d598dbd1b4e77d93bb47ff7f983bbff7a631"
+    },
+    "props.torch_wall": {
+     "A1": "868f1838270c40f158d9a4f51b4c558bf0425e7d2258d33b11bc618627e7dd90"
+    },
+    "props.brazier": {
+     "A1": "ea58a20df3be039e28e28bcfb33bdda590de665cc6fe09532e4cfa00f531aba5"
+    },
+    "props.skull_pile": {
+     "A1": "e3b7b87a4e5ad42212b0ccedf084de294f3a83401dd927dfddb51ad30c4d1c63"
+    },
+    "props.bones": {
+     "A1": "e39d9def8c7a84fbb7bccda0fca8504e816a2bfb340edd9813270bf39f5b264b"
+    },
+    "props.cobweb": {
+     "A1": "5502b6920f437092d93c2efa84e724bf26a6b7d100c8b54334406061086c02d8"
+    },
+    "props.chains": {
+     "A1": "c7d68b5bda5759e4b986e83e80e0337958d92961776c8f17d26fcc6b2618bd47"
+    },
+    "props.cell_bars": {
+     "A1": "f61b4e7adebcda27831c302546275cc31df7d85cafc07d4cab72c733c0c40d68"
+    },
+    "props.lever": {
+     "A1": "a7a730f253485fe15833288660a45d4749d2c1317745903f883dde2356e60095"
+    },
+    "props.pressure_plate": {
+     "A1": "583bef6ebed82261dece169870cb4c0d44159846a49bf9e54585880b3fd6286c"
+    },
+    "props.spike_trap": {
+     "A1": "aa17b598f6fc8d91aa42b32581dad9fe12baa87697deae0c09c30df7bce5113b"
+    },
+    "props.magic_circle": {
+     "A1": "3a32446eb6f03c831b2d2aabd52acbc4951f0d4af62a5c1d0a793458312335a6"
+    },
+    "props.barrel": {
+     "A1": "a4a63bac6d9d21f630890f25389d261040d92c3db936191f894944a7a7c4306d"
+    },
+    "props.crate_stack": {
+     "A1": "c18223cb4592cf19050b798346b7d957fb4a8a9797a84c2e7f224c75386e411d"
+    },
+    "props.mine_cart": {
+     "A1": "ff8ab255bd7132c8da29425db53eafb64306720c4b8b4ce12c01eb6b5c5dbcd5"
+    },
+    "props.tools": {
+     "A1": "35d3283c2c3d1191ec41dcc92a26a3b98bff07dbb7450fee0d4f92b7c78e044c"
+    },
+    "props.mushrooms": {
+     "A1": "ed11a2cbe2185085b00b67d3450ef2ccfb0441ad4acb2c5a5f384e88788fc993"
+    },
+    "props.crystal": {
+     "A1": "f965778febf801bd8b0ee0736a10fe92d72c1ecc6a607e85d34c9f6f3248e06e"
+    },
+    "props.roots": {
+     "A1": "64f7e2d8da1996961b2c8333504d2ccee5a6f76c28f6567651a9bc4f5e14f780"
+    },
+    "props.broken_pots": {
+     "A1": "e929dba3f02d5db33762ba2512cae14541e286e931be9f5a5c3935e4ade84ce8"
+    },
+    "props.pillar_broken": {
+     "A1": "c1ee63e8ea38f049254d98d9f94c004a6f9de56cdcceb92b296d99b39fb58c55",
+     "B1": "2124d8d8c1e2883455a118b8de93a5436632203a24d6aff51c8a3feaa12a5ac9",
+     "C1": "0a8ae7332caebfb333b408270fcb4aeaa96223bbecafc660b9db957797b60245"
+    },
+    "props.statue_fallen": {
+     "A1": "19482da58267181cd991d7dec4df70fcbe31a05620f66904eb879fc47e3b70b3",
+     "B1": "1001a1ceb09775b7e3e31ef76278ff2e4690f831d3b0daf993b33ba37ed6f662",
+     "C1": "9f1094d2c02f3dd0e68c6aed714003b114e1dc3825332891a70eee4f8ce81461"
+    },
+    "props.sarcophagus": {
+     "A1": "3509367a56d82dd1d562fee274b43a20733694d06b1d3f1580cd6a1bcd2774c3",
+     "B1": "a96863e63e51abe39daaac83012d832e10eb31850f278a286cfbb54a95457df7",
+     "C1": "fce65df35981e69cb13f6b7540663e416da7d89d8bd3a9ba8084590dbacb10d2"
+    },
+    "props.tombstones": {
+     "A1": "8893e8a515cfe0dbcbfb9eab0eb1d2bedf8269016bb3d5d58b91ab4635857e51",
+     "B1": "785f0e29268f83bee785c7c505afa6e272cf79ac269df44e4f17f89eba170395",
+     "C1": "1a82319566e33092158ef960ebd8e49f506ddcb3dd37fe5acf5c9d3c9cdb12a6"
+    },
+    "props.fountain": {
+     "A1": "ff506bdf9f18cbd32fb0c80cd5223dc3ee87a0b60d6d15e1b998fdd97a9bbdbe",
+     "B1": "8902de8df4b5cbc7761105959e8cec646d1703ce1df298ca7609dd64d9dfcd25",
+     "C1": "e8cdd573626e8d200666df55935afbc87336943f8be8b1407cde92ec347eb46d"
+    },
+    "props.seal_gate": {
+     "A1": "b6b1589426fe1cc0eb034b824ebaa442f7163de1e76744dcdf4a57f3df3f9f6b",
+     "B1": "0182c3bc784fdf4c264004c74ff0e3abd69e2772e12574a264db74db6f5e105e",
+     "C1": "eb084bcf105a176bbff357b755f33e476f6b170c6dd9d9b5efa088bc77b38949"
+    },
+    "props.altar_guardians": {
+     "A1": "d161948381bb59b907c9171a68be6259fbdb8d4cbf281be62618b618507f22c7",
+     "B1": "fbe3ee054299c98dda9ec309e72f948d6ddaf6efa9164e3292bedd11035e1dca",
+     "C1": "1eb579a6df7f35c4589a42831beb35fb733c259183294358e58a0bfffb305702"
+    }
+   }
+  },
+  {
+   "round": "props-r1",
+   "at": "2026-10-09T22:08:57",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "props.chest": {
+     "A1": "532be8fe6b538b1f1f23ce203b94d598dbd1b4e77d93bb47ff7f983bbff7a631"
+    },
+    "props.torch_wall": {
+     "A1": "868f1838270c40f158d9a4f51b4c558bf0425e7d2258d33b11bc618627e7dd90"
+    },
+    "props.brazier": {
+     "A1": "ea58a20df3be039e28e28bcfb33bdda590de665cc6fe09532e4cfa00f531aba5"
+    },
+    "props.skull_pile": {
+     "A1": "e3b7b87a4e5ad42212b0ccedf084de294f3a83401dd927dfddb51ad30c4d1c63"
+    },
+    "props.bones": {
+     "A1": "e39d9def8c7a84fbb7bccda0fca8504e816a2bfb340edd9813270bf39f5b264b"
+    },
+    "props.cobweb": {
+     "A1": "5502b6920f437092d93c2efa84e724bf26a6b7d100c8b54334406061086c02d8"
+    },
+    "props.chains": {
+     "A1": "c7d68b5bda5759e4b986e83e80e0337958d92961776c8f17d26fcc6b2618bd47"
+    },
+    "props.cell_bars": {
+     "A1": "f61b4e7adebcda27831c302546275cc31df7d85cafc07d4cab72c733c0c40d68"
+    },
+    "props.lever": {
+     "A1": "a7a730f253485fe15833288660a45d4749d2c1317745903f883dde2356e60095"
+    },
+    "props.pressure_plate": {
+     "A1": "583bef6ebed82261dece169870cb4c0d44159846a49bf9e54585880b3fd6286c"
+    },
+    "props.spike_trap": {
+     "A1": "aa17b598f6fc8d91aa42b32581dad9fe12baa87697deae0c09c30df7bce5113b"
+    },
+    "props.magic_circle": {
+     "A1": "3a32446eb6f03c831b2d2aabd52acbc4951f0d4af62a5c1d0a793458312335a6"
+    },
+    "props.barrel": {
+     "A1": "a4a63bac6d9d21f630890f25389d261040d92c3db936191f894944a7a7c4306d"
+    },
+    "props.crate_stack": {
+     "A1": "c18223cb4592cf19050b798346b7d957fb4a8a9797a84c2e7f224c75386e411d"
+    },
+    "props.mine_cart": {
+     "A1": "ff8ab255bd7132c8da29425db53eafb64306720c4b8b4ce12c01eb6b5c5dbcd5"
+    },
+    "props.tools": {
+     "A1": "35d3283c2c3d1191ec41dcc92a26a3b98bff07dbb7450fee0d4f92b7c78e044c"
+    },
+    "props.mushrooms": {
+     "A1": "ed11a2cbe2185085b00b67d3450ef2ccfb0441ad4acb2c5a5f384e88788fc993"
+    },
+    "props.crystal": {
+     "A1": "f965778febf801bd8b0ee0736a10fe92d72c1ecc6a607e85d34c9f6f3248e06e"
+    },
+    "props.roots": {
+     "A1": "64f7e2d8da1996961b2c8333504d2ccee5a6f76c28f6567651a9bc4f5e14f780"
+    },
+    "props.broken_pots": {
+     "A1": "e929dba3f02d5db33762ba2512cae14541e286e931be9f5a5c3935e4ade84ce8"
+    },
+    "props.pillar_broken": {
+     "A1": "c1ee63e8ea38f049254d98d9f94c004a6f9de56cdcceb92b296d99b39fb58c55",
+     "B1": "2124d8d8c1e2883455a118b8de93a5436632203a24d6aff51c8a3feaa12a5ac9",
+     "C1": "0a8ae7332caebfb333b408270fcb4aeaa96223bbecafc660b9db957797b60245"
+    },
+    "props.statue_fallen": {
+     "A1": "19482da58267181cd991d7dec4df70fcbe31a05620f66904eb879fc47e3b70b3",
+     "B1": "1001a1ceb09775b7e3e31ef76278ff2e4690f831d3b0daf993b33ba37ed6f662",
+     "C1": "9f1094d2c02f3dd0e68c6aed714003b114e1dc3825332891a70eee4f8ce81461"
+    },
+    "props.sarcophagus": {
+     "A1": "3509367a56d82dd1d562fee274b43a20733694d06b1d3f1580cd6a1bcd2774c3",
+     "B1": "a96863e63e51abe39daaac83012d832e10eb31850f278a286cfbb54a95457df7",
+     "C1": "fce65df35981e69cb13f6b7540663e416da7d89d8bd3a9ba8084590dbacb10d2"
+    },
+    "props.tombstones": {
+     "A1": "8893e8a515cfe0dbcbfb9eab0eb1d2bedf8269016bb3d5d58b91ab4635857e51",
+     "B1": "785f0e29268f83bee785c7c505afa6e272cf79ac269df44e4f17f89eba170395",
+     "C1": "1a82319566e33092158ef960ebd8e49f506ddcb3dd37fe5acf5c9d3c9cdb12a6"
+    },
+    "props.fountain": {
+     "A1": "ff506bdf9f18cbd32fb0c80cd5223dc3ee87a0b60d6d15e1b998fdd97a9bbdbe",
+     "B1": "8902de8df4b5cbc7761105959e8cec646d1703ce1df298ca7609dd64d9dfcd25",
+     "C1": "e8cdd573626e8d200666df55935afbc87336943f8be8b1407cde92ec347eb46d"
+    },
+    "props.seal_gate": {
+     "A1": "b6b1589426fe1cc0eb034b824ebaa442f7163de1e76744dcdf4a57f3df3f9f6b",
+     "B1": "0182c3bc784fdf4c264004c74ff0e3abd69e2772e12574a264db74db6f5e105e",
+     "C1": "eb084bcf105a176bbff357b755f33e476f6b170c6dd9d9b5efa088bc77b38949"
+    },
+    "props.altar_guardians": {
+     "A1": "d161948381bb59b907c9171a68be6259fbdb8d4cbf281be62618b618507f22c7",
+     "B1": "fbe3ee054299c98dda9ec309e72f948d6ddaf6efa9164e3292bedd11035e1dca",
+     "C1": "1eb579a6df7f35c4589a42831beb35fb733c259183294358e58a0bfffb305702"
+    }
+   }
+  },
+  {
+   "round": "theme-arcane-r1",
+   "at": "2026-10-23T11:14:25",
+   "fail": 2,
+   "warn": 14,
+   "warnByCode": {
+    "CONTRAST": 10,
+    "OUTLINE": 4
+   },
+   "polish": [
+    {
+     "item": "arcane.lectern",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.46 차 0.19 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.44 차 0.17"
+    },
+    {
+     "item": "arcane.lectern",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.46 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.38 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.44 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.crystal_pedestal",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.53 vs 바닥 0.46 차 0.06; 장면2(2칸) 그늘 쪽 0.57 vs 바닥 0.46 차 0.10; 장면3(2칸) 그늘 쪽 0.53 vs 바닥 0.46 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.53 vs 바닥 0.38 차 0.14; 장면3(2칸) 그늘 쪽 0.53 vs 바닥 0.38 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.53 vs 바닥 0.44 차 0.09; 장면2(2칸) 그늘 쪽 0.57 vs 바닥 0.44 차 0.13; 장면3(2칸) 그늘 쪽 0.53 vs 바닥 0.44 차 0.09 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.crystal_pedestal",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.32 vs 바닥 0.46 차 0.14; 장면2(2칸) 그늘 쪽 0.36 vs 바닥 0.46 차 0.10; 장면3(2칸) 그늘 쪽 0.32 vs 바닥 0.46 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.32 vs 바닥 0.38 차 0.06; 장면2(2칸) 그늘 쪽 0.36 vs 바닥 0.38 차 0.02; 장면3(2칸) 그늘 쪽 0.32 vs 바닥 0.38 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.32 vs 바닥 0.44 차 0.12; 장면2(2칸) 그늘 쪽 0.36 vs 바닥 0.44 차 0.08; 장면3(2칸) 그늘 쪽 0.32 vs 바닥 0.44 차 0.12 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.candelabra",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.47 vs 바닥 0.46 차 0.00; 장면2(2칸) 그늘 쪽 0.47 vs 바닥 0.46 차 0.00; 장면3(2칸) 그늘 쪽 0.47 vs 바닥 0.46 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.47 vs 바닥 0.38 차 0.08; 장면2(2칸) 그늘 쪽 0.47 vs 바닥 0.38 차 0.08; 장면3(2칸) 그늘 쪽 0.47 vs 바닥 0.38 차 0.08 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.47 vs 바닥 0.44 차 0.03; 장면2(2칸) 그늘 쪽 0.47 vs 바닥 0.44 차 0.03; 장면3(2칸) 그늘 쪽 0.47 vs 바닥 0.44 차 0.03 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.candelabra",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.ground",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 75화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.void_edge",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 289화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: edge 북변 빛 쪽 먹·0단 56%; edge 서변 빛 쪽 먹·0단 58%; underside 앞면 왼끝 빛 쪽 먹·0단 61% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.void_edge",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 286화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: edge 북변 빛 쪽 먹·0단 56%; edge 서변 빛 쪽 먹·0단 59%; underside 앞면 왼끝 빛 쪽 먹·0단 61% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.crystal",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 수정(2칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.21 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 수정(2칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 수정(2칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18"
+    },
+    {
+     "item": "other.crystal_big",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 91화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: 수정 빛 쪽 먹·0단 58% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.bone_pillar",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.55 vs 바닥 0.46 차 0.09 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 기둥(2칸) 그늘 쪽 0.55 vs 바닥 0.38 차 0.17 / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.55 vs 바닥 0.44 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.bone_pillar",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 기둥(2칸) 그늘 쪽 0.31 vs 바닥 0.46 차 0.15 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.31 vs 바닥 0.38 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.31 vs 바닥 0.44 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.brazier",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.37 vs 바닥 0.46 차 0.09; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.46 차 0.10; 장면3(2칸) 그늘 쪽 0.37 vs 바닥 0.46 차 0.09 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.37 vs 바닥 0.38 차 0.01; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.38 차 0.02; 장면3(2칸) 그늘 쪽 0.37 vs 바닥 0.38 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.37 vs 바닥 0.44 차 0.07; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.44 차 0.07; 장면3(2칸) 그늘 쪽 0.37 vs 바닥 0.44 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    }
+   ],
+   "hashes": {
+    "arcane.tower_floor": {
+     "A1": "d6beece9c56be24b2fbf558c9408bdd1d037527c04d622aae5d3d6d4b6fcbc8b",
+     "A2": "b86893f726bc3716c4f1a14f955501a8c6f13eff018c9efcafa6c4f8349f47ff"
+    },
+    "arcane.bookshelf": {
+     "A1": "6995009206bc0256c87c2527bda8388152fcc1364b99d93a4d78ef94cec7c606",
+     "A2": "c4961219669b84fbb81a987bffe209b6f2baeeb3055a8806cf4b8fdd5e55ac97"
+    },
+    "arcane.bookshelf_tall": {
+     "A1": "b15c38aca232d7b166a340b568140a68905fa12acc0bd78557bfa41f8b60ec25",
+     "A2": "c51688a6b898c14e80736deb18463561800b1f4d6c112fa89c88f4863ad0896d"
+    },
+    "arcane.lectern": {
+     "A1": "1e487220d59ba4a760ce319e7cd551ab8fb59787c99d8062095fe60e5ed0ed3c",
+     "A2": "17ff3f8007d5ad9f57073170f37c303c847811cf9e85b515222565d6e8c65a8e"
+    },
+    "arcane.teleport_circle": {
+     "A1": "b886bc3b3abcbdf55c5520f3db6f8ce84d91b57fb38658781395256630d5f29e",
+     "A2": "d34940b46d6390c4ab4cd2a6148278ceb7ed5e164851a4679cd2ea71722c9d53"
+    },
+    "arcane.crystal_pedestal": {
+     "A1": "fde5d4991285e7ba170bf7ddaaa779f5bff2f56a35e1b7acae70741adf86bf39",
+     "A2": "618ac5782d49f99529913bf741830079093bfddf0a09293b07b0117e2bb6cb85"
+    },
+    "arcane.candelabra": {
+     "A1": "51a5a2529098201b6496fda56b371739229c96f678f3f80b1a7a2fc10268b728",
+     "A2": "5de7d08eed243b176b854e10343e97dc02b1ddf96edab316a0383f8b1aa56363"
+    },
+    "other.ground": {
+     "A1": "401f826895b14f031be831a1b16ccbff4896c705ee1e8924580da89022b57026",
+     "A2": "8765d7d3256338e6ba7f61001f5f0595d9c10adc539920457e80ed1ffb1a2bb3"
+    },
+    "other.void_edge": {
+     "A1": "376f04e7fbaf2c63ef9935dd62cda21eb073f001614383f7a9957a1fb55de6b2",
+     "A2": "2e3c635596a14be8e5762ef73490a0d011296b0cd13c91c66e910d0b55045acd"
+    },
+    "other.crystal": {
+     "A1": "dec9dcf23efd864a94d6645aed7f6ed3a529ef74761562cb91e4f6d829458c63",
+     "A2": "fffe27b2ccd088058cc1bf702aa865c6bd3db4c7a9add5d29963ebb948bc2e37"
+    },
+    "other.crystal_big": {
+     "A1": "213e87e1cd5fe36967bfe6f1b5f7cc9975e5eb15b3af5d334ac1cd77c79c0181",
+     "A2": "d4013b6b92a57cfbe0d7e1ead3a6c574d487471411e10129894a86c1bf8af7a4"
+    },
+    "other.throne": {
+     "A1": "f32b1aa410f609be3ee90b67da1ea293df78a2825131d3b64eb23827016613fa",
+     "A2": "b49823d2f85fabea0cd4ac858485f332f9423b0df25a57f4dbaff485010a4663"
+    },
+    "other.bone_pillar": {
+     "A1": "f0143c2d6baad1eecaf9746d77f5a9a950e8377da4ec08e06ec96611f2998c86",
+     "A2": "776d278e5ae6c68bea3126f214fb11f487004b6497b7ad85654ea381cf1f1296"
+    },
+    "other.brazier": {
+     "A1": "e5f83340b5556ddc5419ecbb720bb02367a1cd94f428e0255d6833cf887cc113",
+     "A2": "21a5844cee18bb76e0a04658b09e171bd413fefb24716a3113c49e82e80b31b4"
+    },
+    "other.portal": {
+     "A1": "ccb15f978dced4c2af8c9089ad7f3e6213f828fe1cb82bb5cc9bb8cae216a827",
+     "A2": "d456969237b436ff171bf6affc40529f832fbdde41aaa22b8aeb905c301a2c04"
+    }
+   }
+  },
+  {
+   "round": "theme-arcane-r1",
+   "at": "2026-10-23T11:15:58",
+   "fail": 0,
+   "warn": 14,
+   "warnByCode": {
+    "CONTRAST": 10,
+    "OUTLINE": 4
+   },
+   "polish": [
+    {
+     "item": "arcane.lectern",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.46 차 0.19 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.44 차 0.17"
+    },
+    {
+     "item": "arcane.lectern",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.46 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.38 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.44 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.crystal_pedestal",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.53 vs 바닥 0.46 차 0.06; 장면2(2칸) 그늘 쪽 0.57 vs 바닥 0.46 차 0.10; 장면3(2칸) 그늘 쪽 0.53 vs 바닥 0.46 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.53 vs 바닥 0.38 차 0.14; 장면3(2칸) 그늘 쪽 0.53 vs 바닥 0.38 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.53 vs 바닥 0.44 차 0.09; 장면2(2칸) 그늘 쪽 0.57 vs 바닥 0.44 차 0.13; 장면3(2칸) 그늘 쪽 0.53 vs 바닥 0.44 차 0.09 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.crystal_pedestal",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.32 vs 바닥 0.46 차 0.14; 장면2(2칸) 그늘 쪽 0.36 vs 바닥 0.46 차 0.10; 장면3(2칸) 그늘 쪽 0.32 vs 바닥 0.46 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.32 vs 바닥 0.38 차 0.06; 장면2(2칸) 그늘 쪽 0.36 vs 바닥 0.38 차 0.02; 장면3(2칸) 그늘 쪽 0.32 vs 바닥 0.38 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.32 vs 바닥 0.44 차 0.12; 장면2(2칸) 그늘 쪽 0.36 vs 바닥 0.44 차 0.08; 장면3(2칸) 그늘 쪽 0.32 vs 바닥 0.44 차 0.12 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.candelabra",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.47 vs 바닥 0.46 차 0.00; 장면2(2칸) 그늘 쪽 0.47 vs 바닥 0.46 차 0.00; 장면3(2칸) 그늘 쪽 0.47 vs 바닥 0.46 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.47 vs 바닥 0.38 차 0.08; 장면2(2칸) 그늘 쪽 0.47 vs 바닥 0.38 차 0.08; 장면3(2칸) 그늘 쪽 0.47 vs 바닥 0.38 차 0.08 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.47 vs 바닥 0.44 차 0.03; 장면2(2칸) 그늘 쪽 0.47 vs 바닥 0.44 차 0.03; 장면3(2칸) 그늘 쪽 0.47 vs 바닥 0.44 차 0.03 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.candelabra",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.ground",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 75화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.void_edge",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 289화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: edge 북변 빛 쪽 먹·0단 56%; edge 서변 빛 쪽 먹·0단 58%; underside 앞면 왼끝 빛 쪽 먹·0단 61% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.void_edge",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 286화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: edge 북변 빛 쪽 먹·0단 56%; edge 서변 빛 쪽 먹·0단 59%; underside 앞면 왼끝 빛 쪽 먹·0단 61% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.crystal",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 수정(2칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.21 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 수정(2칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 수정(2칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18"
+    },
+    {
+     "item": "other.crystal_big",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 91화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: 수정 빛 쪽 먹·0단 58% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.bone_pillar",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.55 vs 바닥 0.46 차 0.09 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 기둥(2칸) 그늘 쪽 0.55 vs 바닥 0.38 차 0.17 / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.55 vs 바닥 0.44 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.bone_pillar",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 기둥(2칸) 그늘 쪽 0.31 vs 바닥 0.46 차 0.15 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.31 vs 바닥 0.38 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.31 vs 바닥 0.44 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.brazier",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.37 vs 바닥 0.46 차 0.09; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.46 차 0.10; 장면3(2칸) 그늘 쪽 0.37 vs 바닥 0.46 차 0.09 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.37 vs 바닥 0.38 차 0.01; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.38 차 0.02; 장면3(2칸) 그늘 쪽 0.37 vs 바닥 0.38 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.37 vs 바닥 0.44 차 0.07; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.44 차 0.07; 장면3(2칸) 그늘 쪽 0.37 vs 바닥 0.44 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    }
+   ],
+   "hashes": {
+    "arcane.tower_floor": {
+     "A1": "7105c12c839fbc612b8d83c893478dfaeec28e45767af4f96a6aa3d41ad5c537",
+     "A2": "4d87c5866d8807a7d3b20b8aac56952b29f28df20ad6e22a3b4d81d0d0539f2e"
+    },
+    "arcane.bookshelf": {
+     "A1": "6995009206bc0256c87c2527bda8388152fcc1364b99d93a4d78ef94cec7c606",
+     "A2": "c4961219669b84fbb81a987bffe209b6f2baeeb3055a8806cf4b8fdd5e55ac97"
+    },
+    "arcane.bookshelf_tall": {
+     "A1": "b15c38aca232d7b166a340b568140a68905fa12acc0bd78557bfa41f8b60ec25",
+     "A2": "c51688a6b898c14e80736deb18463561800b1f4d6c112fa89c88f4863ad0896d"
+    },
+    "arcane.lectern": {
+     "A1": "1e487220d59ba4a760ce319e7cd551ab8fb59787c99d8062095fe60e5ed0ed3c",
+     "A2": "17ff3f8007d5ad9f57073170f37c303c847811cf9e85b515222565d6e8c65a8e"
+    },
+    "arcane.teleport_circle": {
+     "A1": "b886bc3b3abcbdf55c5520f3db6f8ce84d91b57fb38658781395256630d5f29e",
+     "A2": "d34940b46d6390c4ab4cd2a6148278ceb7ed5e164851a4679cd2ea71722c9d53"
+    },
+    "arcane.crystal_pedestal": {
+     "A1": "fde5d4991285e7ba170bf7ddaaa779f5bff2f56a35e1b7acae70741adf86bf39",
+     "A2": "618ac5782d49f99529913bf741830079093bfddf0a09293b07b0117e2bb6cb85"
+    },
+    "arcane.candelabra": {
+     "A1": "51a5a2529098201b6496fda56b371739229c96f678f3f80b1a7a2fc10268b728",
+     "A2": "5de7d08eed243b176b854e10343e97dc02b1ddf96edab316a0383f8b1aa56363"
+    },
+    "other.ground": {
+     "A1": "401f826895b14f031be831a1b16ccbff4896c705ee1e8924580da89022b57026",
+     "A2": "8765d7d3256338e6ba7f61001f5f0595d9c10adc539920457e80ed1ffb1a2bb3"
+    },
+    "other.void_edge": {
+     "A1": "376f04e7fbaf2c63ef9935dd62cda21eb073f001614383f7a9957a1fb55de6b2",
+     "A2": "2e3c635596a14be8e5762ef73490a0d011296b0cd13c91c66e910d0b55045acd"
+    },
+    "other.crystal": {
+     "A1": "dec9dcf23efd864a94d6645aed7f6ed3a529ef74761562cb91e4f6d829458c63",
+     "A2": "fffe27b2ccd088058cc1bf702aa865c6bd3db4c7a9add5d29963ebb948bc2e37"
+    },
+    "other.crystal_big": {
+     "A1": "213e87e1cd5fe36967bfe6f1b5f7cc9975e5eb15b3af5d334ac1cd77c79c0181",
+     "A2": "d4013b6b92a57cfbe0d7e1ead3a6c574d487471411e10129894a86c1bf8af7a4"
+    },
+    "other.throne": {
+     "A1": "f32b1aa410f609be3ee90b67da1ea293df78a2825131d3b64eb23827016613fa",
+     "A2": "b49823d2f85fabea0cd4ac858485f332f9423b0df25a57f4dbaff485010a4663"
+    },
+    "other.bone_pillar": {
+     "A1": "f0143c2d6baad1eecaf9746d77f5a9a950e8377da4ec08e06ec96611f2998c86",
+     "A2": "776d278e5ae6c68bea3126f214fb11f487004b6497b7ad85654ea381cf1f1296"
+    },
+    "other.brazier": {
+     "A1": "e5f83340b5556ddc5419ecbb720bb02367a1cd94f428e0255d6833cf887cc113",
+     "A2": "21a5844cee18bb76e0a04658b09e171bd413fefb24716a3113c49e82e80b31b4"
+    },
+    "other.portal": {
+     "A1": "ccb15f978dced4c2af8c9089ad7f3e6213f828fe1cb82bb5cc9bb8cae216a827",
+     "A2": "d456969237b436ff171bf6affc40529f832fbdde41aaa22b8aeb905c301a2c04"
+    }
+   }
+  },
+  {
+   "round": "theme-arcane-r1",
+   "at": "2026-10-23T11:33:42",
+   "fail": 0,
+   "warn": 14,
+   "warnByCode": {
+    "CONTRAST": 10,
+    "OUTLINE": 4
+   },
+   "polish": [
+    {
+     "item": "arcane.lectern",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.46 차 0.19 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.44 차 0.17"
+    },
+    {
+     "item": "arcane.lectern",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.46 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.38 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.44 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.crystal_pedestal",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.53 vs 바닥 0.46 차 0.06; 장면2(2칸) 그늘 쪽 0.57 vs 바닥 0.46 차 0.10; 장면3(2칸) 그늘 쪽 0.53 vs 바닥 0.46 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.53 vs 바닥 0.38 차 0.14; 장면3(2칸) 그늘 쪽 0.53 vs 바닥 0.38 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.53 vs 바닥 0.44 차 0.09; 장면2(2칸) 그늘 쪽 0.57 vs 바닥 0.44 차 0.13; 장면3(2칸) 그늘 쪽 0.53 vs 바닥 0.44 차 0.09 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.crystal_pedestal",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.32 vs 바닥 0.46 차 0.14; 장면2(2칸) 그늘 쪽 0.36 vs 바닥 0.46 차 0.10; 장면3(2칸) 그늘 쪽 0.32 vs 바닥 0.46 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.32 vs 바닥 0.38 차 0.06; 장면2(2칸) 그늘 쪽 0.36 vs 바닥 0.38 차 0.02; 장면3(2칸) 그늘 쪽 0.32 vs 바닥 0.38 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.32 vs 바닥 0.44 차 0.12; 장면2(2칸) 그늘 쪽 0.36 vs 바닥 0.44 차 0.08; 장면3(2칸) 그늘 쪽 0.32 vs 바닥 0.44 차 0.12 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.candelabra",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.47 vs 바닥 0.46 차 0.00; 장면2(2칸) 그늘 쪽 0.47 vs 바닥 0.46 차 0.00; 장면3(2칸) 그늘 쪽 0.47 vs 바닥 0.46 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.47 vs 바닥 0.38 차 0.08; 장면2(2칸) 그늘 쪽 0.47 vs 바닥 0.38 차 0.08; 장면3(2칸) 그늘 쪽 0.47 vs 바닥 0.38 차 0.08 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.47 vs 바닥 0.44 차 0.03; 장면2(2칸) 그늘 쪽 0.47 vs 바닥 0.44 차 0.03; 장면3(2칸) 그늘 쪽 0.47 vs 바닥 0.44 차 0.03 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.candelabra",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.ground",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 75화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.void_edge",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 289화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: edge 북변 빛 쪽 먹·0단 56%; edge 서변 빛 쪽 먹·0단 58%; underside 앞면 왼끝 빛 쪽 먹·0단 61% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.void_edge",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 286화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: edge 북변 빛 쪽 먹·0단 56%; edge 서변 빛 쪽 먹·0단 59%; underside 앞면 왼끝 빛 쪽 먹·0단 61% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.crystal",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 수정(2칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.21 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 수정(2칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 수정(2칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18"
+    },
+    {
+     "item": "other.crystal_big",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 91화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: 수정 빛 쪽 먹·0단 58% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.bone_pillar",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.55 vs 바닥 0.46 차 0.09 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 기둥(2칸) 그늘 쪽 0.55 vs 바닥 0.38 차 0.17 / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.55 vs 바닥 0.44 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.bone_pillar",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 기둥(2칸) 그늘 쪽 0.31 vs 바닥 0.46 차 0.15 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.31 vs 바닥 0.38 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.31 vs 바닥 0.44 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.brazier",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.37 vs 바닥 0.46 차 0.09; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.46 차 0.10; 장면3(2칸) 그늘 쪽 0.37 vs 바닥 0.46 차 0.09 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.37 vs 바닥 0.38 차 0.01; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.38 차 0.02; 장면3(2칸) 그늘 쪽 0.37 vs 바닥 0.38 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.37 vs 바닥 0.44 차 0.07; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.44 차 0.07; 장면3(2칸) 그늘 쪽 0.37 vs 바닥 0.44 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    }
+   ],
+   "hashes": {
+    "arcane.tower_floor": {
+     "A1": "7105c12c839fbc612b8d83c893478dfaeec28e45767af4f96a6aa3d41ad5c537",
+     "A2": "4d87c5866d8807a7d3b20b8aac56952b29f28df20ad6e22a3b4d81d0d0539f2e"
+    },
+    "arcane.bookshelf": {
+     "A1": "6995009206bc0256c87c2527bda8388152fcc1364b99d93a4d78ef94cec7c606",
+     "A2": "b88b1595eda632a16364c753cc73989a7c437af9a100ef9a2d6775041d90a9b6"
+    },
+    "arcane.bookshelf_tall": {
+     "A1": "b15c38aca232d7b166a340b568140a68905fa12acc0bd78557bfa41f8b60ec25",
+     "A2": "845a04ac4e088571b13c7ad2946c557e2e2991336308481cc288b9583abd12e3"
+    },
+    "arcane.lectern": {
+     "A1": "1e487220d59ba4a760ce319e7cd551ab8fb59787c99d8062095fe60e5ed0ed3c",
+     "A2": "17ff3f8007d5ad9f57073170f37c303c847811cf9e85b515222565d6e8c65a8e"
+    },
+    "arcane.teleport_circle": {
+     "A1": "b886bc3b3abcbdf55c5520f3db6f8ce84d91b57fb38658781395256630d5f29e",
+     "A2": "d34940b46d6390c4ab4cd2a6148278ceb7ed5e164851a4679cd2ea71722c9d53"
+    },
+    "arcane.crystal_pedestal": {
+     "A1": "fde5d4991285e7ba170bf7ddaaa779f5bff2f56a35e1b7acae70741adf86bf39",
+     "A2": "618ac5782d49f99529913bf741830079093bfddf0a09293b07b0117e2bb6cb85"
+    },
+    "arcane.candelabra": {
+     "A1": "51a5a2529098201b6496fda56b371739229c96f678f3f80b1a7a2fc10268b728",
+     "A2": "5de7d08eed243b176b854e10343e97dc02b1ddf96edab316a0383f8b1aa56363"
+    },
+    "other.ground": {
+     "A1": "401f826895b14f031be831a1b16ccbff4896c705ee1e8924580da89022b57026",
+     "A2": "8765d7d3256338e6ba7f61001f5f0595d9c10adc539920457e80ed1ffb1a2bb3"
+    },
+    "other.void_edge": {
+     "A1": "376f04e7fbaf2c63ef9935dd62cda21eb073f001614383f7a9957a1fb55de6b2",
+     "A2": "2e3c635596a14be8e5762ef73490a0d011296b0cd13c91c66e910d0b55045acd"
+    },
+    "other.crystal": {
+     "A1": "dec9dcf23efd864a94d6645aed7f6ed3a529ef74761562cb91e4f6d829458c63",
+     "A2": "fffe27b2ccd088058cc1bf702aa865c6bd3db4c7a9add5d29963ebb948bc2e37"
+    },
+    "other.crystal_big": {
+     "A1": "213e87e1cd5fe36967bfe6f1b5f7cc9975e5eb15b3af5d334ac1cd77c79c0181",
+     "A2": "d4013b6b92a57cfbe0d7e1ead3a6c574d487471411e10129894a86c1bf8af7a4"
+    },
+    "other.throne": {
+     "A1": "acfc06e1fa9145d102ecdc6570874e5153918e4d2e94c2c279897e0be91cfac9",
+     "A2": "1a572d8294ed425755cb1ef67a4310d6607e3eb008d1c7862fc80a44983e5fd4"
+    },
+    "other.bone_pillar": {
+     "A1": "f0143c2d6baad1eecaf9746d77f5a9a950e8377da4ec08e06ec96611f2998c86",
+     "A2": "776d278e5ae6c68bea3126f214fb11f487004b6497b7ad85654ea381cf1f1296"
+    },
+    "other.brazier": {
+     "A1": "e5f83340b5556ddc5419ecbb720bb02367a1cd94f428e0255d6833cf887cc113",
+     "A2": "f60a1c8a5d81564b75c476a969c8ef67233c577c9bdf5c2afa26a64a9c9ac2ad"
+    },
+    "other.portal": {
+     "A1": "c1f1cdd4ba84b643b4ee1554d6c2112393e8a4df01d813a2e7e738aca2373dcf",
+     "A2": "9d58bff26f161f5cffb36cafd97ea6af9c20dbe08802eec46e441997b8b22eb4"
+    }
+   }
+  },
+  {
+   "round": "theme-arcane-r1",
+   "at": "2026-10-23T11:56:39",
+   "fail": 0,
+   "warn": 18,
+   "warnByCode": {
+    "CONTRAST": 11,
+    "OUTLINE": 3,
+    "R": 4
+   },
+   "polish": [
+    {
+     "item": "arcane.lectern",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.46 차 0.19 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.44 차 0.17"
+    },
+    {
+     "item": "arcane.lectern",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.46 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.38 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.44 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.crystal_pedestal",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.54 vs 바닥 0.46 차 0.07; 장면2(2칸) 그늘 쪽 0.57 vs 바닥 0.46 차 0.11; 장면3(2칸) 그늘 쪽 0.54 vs 바닥 0.46 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 장면1(2칸) 그늘 쪽 0.54 vs 바닥 0.38 차 0.15; 장면2(2칸) 그늘 쪽 0.57 vs 바닥 0.38 차 0.19; 장면3(2칸) 그늘 쪽 0.54 vs 바닥 0.38 차 0.15 / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.54 vs 바닥 0.44 차 0.10; 장면2(2칸) 그늘 쪽 0.57 vs 바닥 0.44 차 0.13; 장면3(2칸) 그늘 쪽 0.54 vs 바닥 0.44 차 0.10 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.crystal_pedestal",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.33 vs 바닥 0.46 차 0.13; 장면2(2칸) 그늘 쪽 0.36 vs 바닥 0.46 차 0.10; 장면3(2칸) 그늘 쪽 0.33 vs 바닥 0.46 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.33 vs 바닥 0.38 차 0.05; 장면2(2칸) 그늘 쪽 0.36 vs 바닥 0.38 차 0.02; 장면3(2칸) 그늘 쪽 0.33 vs 바닥 0.38 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.33 vs 바닥 0.44 차 0.11; 장면2(2칸) 그늘 쪽 0.36 vs 바닥 0.44 차 0.08; 장면3(2칸) 그늘 쪽 0.33 vs 바닥 0.44 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.candelabra",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.03; 장면2(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.03; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.03 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.05; 장면2(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.05; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00; 장면2(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.candelabra",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.ground",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 74화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.void_edge",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 294화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: edge 북변 빛 쪽 먹·0단 56%; edge 서변 빛 쪽 먹·0단 58%; underside 앞면 왼끝 빛 쪽 먹·0단 54% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.void_edge",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 286화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: edge 북변 빛 쪽 먹·0단 55%; edge 서변 빛 쪽 먹·0단 58%; underside 앞면 왼끝 빛 쪽 먹·0단 61% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.crystal",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 수정(2칸) 그늘 쪽 0.27 vs 바닥 0.46 차 0.19 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 수정(2칸) 그늘 쪽 0.27 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 수정(2칸) 그늘 쪽 0.27 vs 바닥 0.44 차 0.17"
+    },
+    {
+     "item": "other.bone_pillar",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.02 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.bone_pillar",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.33 vs 바닥 0.46 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.33 vs 바닥 0.38 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.33 vs 바닥 0.44 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.brazier",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.02; 장면2(2칸) 그늘 쪽 0.43 vs 바닥 0.46 차 0.03; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.02 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.06; 장면2(2칸) 그늘 쪽 0.43 vs 바닥 0.38 차 0.05; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00; 장면2(2칸) 그늘 쪽 0.43 vs 바닥 0.44 차 0.01; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.brazier",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 장면1(2칸) 그늘 쪽 0.25 vs 바닥 0.46 차 0.21; 장면2(2칸) 그늘 쪽 0.25 vs 바닥 0.46 차 0.21; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.20 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.25 vs 바닥 0.38 차 0.13; 장면2(2칸) 그늘 쪽 0.25 vs 바닥 0.38 차 0.13; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.12 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 장면1(2칸) 그늘 쪽 0.25 vs 바닥 0.44 차 0.19; 장면2(2칸) 그늘 쪽 0.25 vs 바닥 0.44 차 0.19; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18"
+    }
+   ],
+   "hashes": {
+    "arcane.tower_floor": {
+     "A1": "7105c12c839fbc612b8d83c893478dfaeec28e45767af4f96a6aa3d41ad5c537",
+     "A2": "4d87c5866d8807a7d3b20b8aac56952b29f28df20ad6e22a3b4d81d0d0539f2e"
+    },
+    "arcane.bookshelf": {
+     "A1": "186467d8846206414250d69e17377f43723eaff742d5bd8a8fa86fcb6a5569b8",
+     "A2": "ee83f75e91a940d0ff7aebfec6edb9d4359afabcb742b3c85a6ee969f9562213"
+    },
+    "arcane.bookshelf_tall": {
+     "A1": "8181e4ddfded0502ec8078a0c1fb1d7d7c1686ddbc84f25b42ea08247f0ce597",
+     "A2": "34adaeb719d5a33a42eaafc4718db0eec84003ce4cb40b174d7ddfe15ba13537"
+    },
+    "arcane.lectern": {
+     "A1": "1e487220d59ba4a760ce319e7cd551ab8fb59787c99d8062095fe60e5ed0ed3c",
+     "A2": "17ff3f8007d5ad9f57073170f37c303c847811cf9e85b515222565d6e8c65a8e"
+    },
+    "arcane.teleport_circle": {
+     "A1": "b886bc3b3abcbdf55c5520f3db6f8ce84d91b57fb38658781395256630d5f29e",
+     "A2": "d34940b46d6390c4ab4cd2a6148278ceb7ed5e164851a4679cd2ea71722c9d53"
+    },
+    "arcane.crystal_pedestal": {
+     "A1": "d6c26f16e44a1cc72311779592983dfb0483c00c930a53ddc9b0f3663294551e",
+     "A2": "2ef71260eba03af7f31599ef073f23e38f8f97b13a646ee923bacca46a1a3087"
+    },
+    "arcane.candelabra": {
+     "A1": "455b4e6543232d482f1bb91de653a98ff0b23e4176f1253e7869ef0d5f331ddc",
+     "A2": "5de7d08eed243b176b854e10343e97dc02b1ddf96edab316a0383f8b1aa56363"
+    },
+    "other.ground": {
+     "A1": "6cc4fa21cd2c7c2a06a5a3e0c6f7a9fc5650b7b9e7d25f6304989b199bd8fb61",
+     "A2": "c763cf3ba01d9b273e1eeaf0b773726d05fe2ff46c05a98b6e4e51d22b8b7b43"
+    },
+    "other.void_edge": {
+     "A1": "ae57c5bdb881b52c013988a7b3e92265db51b0c09e35798eb10134a74331922b",
+     "A2": "e4bb01a62166c8dca9a408c2a4538c913d2fedaa48d067f61c90645180282665"
+    },
+    "other.crystal": {
+     "A1": "3129203745b08d00b7faff614a87191baa5863a057af309b791c3ab3edd2e693",
+     "A2": "df7cf5392cbc4fd8ca49b21ad2edda602fa1d522194ab3365592f7375914b33a"
+    },
+    "other.crystal_big": {
+     "A1": "e177795181ec6588d703f7206ce4b97699ddac1c4ec45665d8882bb112e0b752",
+     "A2": "53e77689a05800dee4e6dceb2cb86c0511baf7b483ab4db1ca43cd3b44bba9d8"
+    },
+    "other.throne": {
+     "A1": "c0b9e0592edb9a3b7da7551fac24dba9c9cedcdd6dc655a7813ba7173777ce4b",
+     "A2": "96ac5a5b4a107f507489aeb7339bf1a914a45fe68ecca075a7cec74ebef320f0"
+    },
+    "other.bone_pillar": {
+     "A1": "7f60ee828b7400b8856a01c60a7d2d1fd401f5bd6e8d75efa5ae1d5787dac88c",
+     "A2": "6fc6bbb8313676192b811033c8b9ebe343e1b99df84fea3e71dbd6c1429e3f71"
+    },
+    "other.brazier": {
+     "A1": "ccde2f3255f01190e9620f068c6c58c061603d4bee4c662adcab66ab81b80826",
+     "A2": "1c159a3581c1b5af31fda82ad7d4782eb3c7dffbec1b66b14b1a27fedd758749"
+    },
+    "other.portal": {
+     "A1": "d67245d6016af3355153909a389c937ccd307f6c3aeb779a9a5a922fa8e90d1f",
+     "A2": "e85e4d3b543597680fa76bd0c5572019bc8b173d63c86548915c10588a9c1f0b"
+    }
+   }
+  },
+  {
+   "round": "theme-arcane-r1",
+   "at": "2026-10-23T12:12:09",
+   "fail": 0,
+   "warn": 18,
+   "warnByCode": {
+    "CONTRAST": 11,
+    "OUTLINE": 3,
+    "R": 4
+   },
+   "polish": [
+    {
+     "item": "arcane.lectern",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.46 차 0.19 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.44 차 0.17"
+    },
+    {
+     "item": "arcane.lectern",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.46 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.38 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.44 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.crystal_pedestal",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.49 vs 바닥 0.46 차 0.03; 장면2(2칸) 그늘 쪽 0.53 vs 바닥 0.46 차 0.06; 장면3(2칸) 그늘 쪽 0.49 vs 바닥 0.46 차 0.03 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.49 vs 바닥 0.38 차 0.11; 장면2(2칸) 그늘 쪽 0.53 vs 바닥 0.38 차 0.14; 장면3(2칸) 그늘 쪽 0.49 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.49 vs 바닥 0.44 차 0.05; 장면2(2칸) 그늘 쪽 0.53 vs 바닥 0.44 차 0.09; 장면3(2칸) 그늘 쪽 0.49 vs 바닥 0.44 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.crystal_pedestal",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.34 vs 바닥 0.46 차 0.12; 장면2(2칸) 그늘 쪽 0.38 vs 바닥 0.46 차 0.08; 장면3(2칸) 그늘 쪽 0.34 vs 바닥 0.46 차 0.12 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.34 vs 바닥 0.38 차 0.04; 장면2(2칸) 그늘 쪽 0.38 vs 바닥 0.38 차 0.00; 장면3(2칸) 그늘 쪽 0.34 vs 바닥 0.38 차 0.04 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.34 vs 바닥 0.44 차 0.10; 장면2(2칸) 그늘 쪽 0.38 vs 바닥 0.44 차 0.06; 장면3(2칸) 그늘 쪽 0.34 vs 바닥 0.44 차 0.10 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.candelabra",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.03; 장면2(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.03; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.03 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.05; 장면2(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.05; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00; 장면2(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.candelabra",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.ground",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 74화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.void_edge",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 324화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: edge 북변 빛 쪽 먹·0단 56%; edge 서변 빛 쪽 먹·0단 58% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.void_edge",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 316화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: edge 북변 빛 쪽 먹·0단 55%; edge 서변 빛 쪽 먹·0단 58% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.crystal",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 수정(2칸) 그늘 쪽 0.27 vs 바닥 0.46 차 0.19 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 수정(2칸) 그늘 쪽 0.27 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 수정(2칸) 그늘 쪽 0.27 vs 바닥 0.44 차 0.17"
+    },
+    {
+     "item": "other.bone_pillar",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.02 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.bone_pillar",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.33 vs 바닥 0.46 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.33 vs 바닥 0.38 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.33 vs 바닥 0.44 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.brazier",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.02; 장면2(2칸) 그늘 쪽 0.43 vs 바닥 0.46 차 0.03; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.02 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.06; 장면2(2칸) 그늘 쪽 0.43 vs 바닥 0.38 차 0.05; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00; 장면2(2칸) 그늘 쪽 0.43 vs 바닥 0.44 차 0.01; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.brazier",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 장면1(2칸) 그늘 쪽 0.27 vs 바닥 0.46 차 0.20; 장면2(2칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.20; 장면3(2칸) 그늘 쪽 0.27 vs 바닥 0.46 차 0.19 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.27 vs 바닥 0.38 차 0.12; 장면2(2칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.12; 장면3(2칸) 그늘 쪽 0.27 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 장면1(2칸) 그늘 쪽 0.27 vs 바닥 0.44 차 0.17; 장면2(2칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18; 장면3(2칸) 그늘 쪽 0.27 vs 바닥 0.44 차 0.17"
+    }
+   ],
+   "hashes": {
+    "arcane.tower_floor": {
+     "A1": "7105c12c839fbc612b8d83c893478dfaeec28e45767af4f96a6aa3d41ad5c537",
+     "A2": "4d87c5866d8807a7d3b20b8aac56952b29f28df20ad6e22a3b4d81d0d0539f2e"
+    },
+    "arcane.bookshelf": {
+     "A1": "186467d8846206414250d69e17377f43723eaff742d5bd8a8fa86fcb6a5569b8",
+     "A2": "ee83f75e91a940d0ff7aebfec6edb9d4359afabcb742b3c85a6ee969f9562213"
+    },
+    "arcane.bookshelf_tall": {
+     "A1": "34449748ec6d6e2d56c4d20cd8ffa785bbaf671750180f3a0ad1008182e629e5",
+     "A2": "88beebddd0842539e479d263c5f19e944a985f70982525438b1252c809bd369a"
+    },
+    "arcane.lectern": {
+     "A1": "1e487220d59ba4a760ce319e7cd551ab8fb59787c99d8062095fe60e5ed0ed3c",
+     "A2": "17ff3f8007d5ad9f57073170f37c303c847811cf9e85b515222565d6e8c65a8e"
+    },
+    "arcane.teleport_circle": {
+     "A1": "9d7566524d96213ddf113ee24caef863e119c1d4015d1b2b552669d187c04bbc",
+     "A2": "d34940b46d6390c4ab4cd2a6148278ceb7ed5e164851a4679cd2ea71722c9d53"
+    },
+    "arcane.crystal_pedestal": {
+     "A1": "6bd4686d25fa0a6606afce577cd4abc0625d362733b519b4146da64df7d6c1ab",
+     "A2": "548960e9f41a123bd1262b26dc2e8701aea50f474d3fd0c7e05deba6aee2069b"
+    },
+    "arcane.candelabra": {
+     "A1": "455b4e6543232d482f1bb91de653a98ff0b23e4176f1253e7869ef0d5f331ddc",
+     "A2": "5de7d08eed243b176b854e10343e97dc02b1ddf96edab316a0383f8b1aa56363"
+    },
+    "other.ground": {
+     "A1": "6cc4fa21cd2c7c2a06a5a3e0c6f7a9fc5650b7b9e7d25f6304989b199bd8fb61",
+     "A2": "c763cf3ba01d9b273e1eeaf0b773726d05fe2ff46c05a98b6e4e51d22b8b7b43"
+    },
+    "other.void_edge": {
+     "A1": "df8caf981b2d2dd44ba30c31a991973b28874b695f718d11555ba6f79d4da770",
+     "A2": "0b06df9eeb62aa5161396f48f393659041999d731590a31211b5911947cee14d"
+    },
+    "other.crystal": {
+     "A1": "3129203745b08d00b7faff614a87191baa5863a057af309b791c3ab3edd2e693",
+     "A2": "df7cf5392cbc4fd8ca49b21ad2edda602fa1d522194ab3365592f7375914b33a"
+    },
+    "other.crystal_big": {
+     "A1": "e177795181ec6588d703f7206ce4b97699ddac1c4ec45665d8882bb112e0b752",
+     "A2": "53e77689a05800dee4e6dceb2cb86c0511baf7b483ab4db1ca43cd3b44bba9d8"
+    },
+    "other.throne": {
+     "A1": "31d4e21444c9c1827a80d6fcfaa4c84af5d0752e03dc9b4680609afaf41c2fb6",
+     "A2": "a6402f01d6c6faeb86f7693a87c8828357e90ba919e4944ec78c2f2f92dd8174"
+    },
+    "other.bone_pillar": {
+     "A1": "17e5f32c0f1a3b441dce83e85ac3ae4aa46230dd61abebfa0c9d90d72660aae0",
+     "A2": "b9d19607baebbdb800db8bd0d2b02fe0a4f93db4b6052c0d39333d9d8cfa4c7f"
+    },
+    "other.brazier": {
+     "A1": "ccde2f3255f01190e9620f068c6c58c061603d4bee4c662adcab66ab81b80826",
+     "A2": "ec7b0a83857d2f4046ff8331136535615382caaa3f294ef328f83a7c9d663a42"
+    },
+    "other.portal": {
+     "A1": "be0387f1de43f46ea52cd7313b3599d10aa9bba837e2069985327874cc572460",
+     "A2": "253290e18b54b1772a01b745dafc55cd089a640a04004363d113d354c0d5ba81"
+    }
+   }
+  },
+  {
+   "round": "theme-arcane-r1",
+   "at": "2026-10-23T12:36:26",
+   "fail": 0,
+   "warn": 18,
+   "warnByCode": {
+    "CONTRAST": 11,
+    "OUTLINE": 3,
+    "R": 4
+   },
+   "polish": [
+    {
+     "item": "arcane.lectern",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.46 차 0.19 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.44 차 0.17"
+    },
+    {
+     "item": "arcane.lectern",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.46 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.38 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.44 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.crystal_pedestal",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.49 vs 바닥 0.46 차 0.03; 장면2(2칸) 그늘 쪽 0.53 vs 바닥 0.46 차 0.06; 장면3(2칸) 그늘 쪽 0.49 vs 바닥 0.46 차 0.03 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.49 vs 바닥 0.38 차 0.11; 장면2(2칸) 그늘 쪽 0.53 vs 바닥 0.38 차 0.14; 장면3(2칸) 그늘 쪽 0.49 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.49 vs 바닥 0.44 차 0.05; 장면2(2칸) 그늘 쪽 0.53 vs 바닥 0.44 차 0.09; 장면3(2칸) 그늘 쪽 0.49 vs 바닥 0.44 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.crystal_pedestal",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.34 vs 바닥 0.46 차 0.12; 장면2(2칸) 그늘 쪽 0.38 vs 바닥 0.46 차 0.08; 장면3(2칸) 그늘 쪽 0.34 vs 바닥 0.46 차 0.12 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.34 vs 바닥 0.38 차 0.04; 장면2(2칸) 그늘 쪽 0.38 vs 바닥 0.38 차 0.00; 장면3(2칸) 그늘 쪽 0.34 vs 바닥 0.38 차 0.04 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.34 vs 바닥 0.44 차 0.10; 장면2(2칸) 그늘 쪽 0.38 vs 바닥 0.44 차 0.06; 장면3(2칸) 그늘 쪽 0.34 vs 바닥 0.44 차 0.10 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.candelabra",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.03; 장면2(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.03; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.03 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.05; 장면2(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.05; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00; 장면2(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.candelabra",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.ground",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 74화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.void_edge",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 324화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: edge 북변 빛 쪽 먹·0단 56%; edge 서변 빛 쪽 먹·0단 58% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.void_edge",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 316화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: edge 북변 빛 쪽 먹·0단 55%; edge 서변 빛 쪽 먹·0단 58% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.crystal",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 수정(2칸) 그늘 쪽 0.27 vs 바닥 0.46 차 0.19 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 수정(2칸) 그늘 쪽 0.27 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 수정(2칸) 그늘 쪽 0.27 vs 바닥 0.44 차 0.17"
+    },
+    {
+     "item": "other.bone_pillar",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.02 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.bone_pillar",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.33 vs 바닥 0.46 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.33 vs 바닥 0.38 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.33 vs 바닥 0.44 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.brazier",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.43 vs 바닥 0.46 차 0.03; 장면2(2칸) 그늘 쪽 0.42 vs 바닥 0.46 차 0.05; 장면3(2칸) 그늘 쪽 0.43 vs 바닥 0.46 차 0.03 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.43 vs 바닥 0.38 차 0.05; 장면2(2칸) 그늘 쪽 0.42 vs 바닥 0.38 차 0.03; 장면3(2칸) 그늘 쪽 0.43 vs 바닥 0.38 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.43 vs 바닥 0.44 차 0.01; 장면2(2칸) 그늘 쪽 0.42 vs 바닥 0.44 차 0.02; 장면3(2칸) 그늘 쪽 0.43 vs 바닥 0.44 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.brazier",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 장면1(2칸) 그늘 쪽 0.25 vs 바닥 0.46 차 0.21; 장면2(2칸) 그늘 쪽 0.24 vs 바닥 0.46 차 0.22; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.21 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.25 vs 바닥 0.38 차 0.13; 장면2(2칸) 그늘 쪽 0.24 vs 바닥 0.38 차 0.14; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 장면1(2칸) 그늘 쪽 0.25 vs 바닥 0.44 차 0.19; 장면2(2칸) 그늘 쪽 0.24 vs 바닥 0.44 차 0.20; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18"
+    }
+   ],
+   "hashes": {
+    "arcane.tower_floor": {
+     "A1": "7105c12c839fbc612b8d83c893478dfaeec28e45767af4f96a6aa3d41ad5c537",
+     "A2": "4d87c5866d8807a7d3b20b8aac56952b29f28df20ad6e22a3b4d81d0d0539f2e"
+    },
+    "arcane.bookshelf": {
+     "A1": "186467d8846206414250d69e17377f43723eaff742d5bd8a8fa86fcb6a5569b8",
+     "A2": "ee83f75e91a940d0ff7aebfec6edb9d4359afabcb742b3c85a6ee969f9562213"
+    },
+    "arcane.bookshelf_tall": {
+     "A1": "34449748ec6d6e2d56c4d20cd8ffa785bbaf671750180f3a0ad1008182e629e5",
+     "A2": "88beebddd0842539e479d263c5f19e944a985f70982525438b1252c809bd369a"
+    },
+    "arcane.lectern": {
+     "A1": "1e487220d59ba4a760ce319e7cd551ab8fb59787c99d8062095fe60e5ed0ed3c",
+     "A2": "17ff3f8007d5ad9f57073170f37c303c847811cf9e85b515222565d6e8c65a8e"
+    },
+    "arcane.teleport_circle": {
+     "A1": "9d7566524d96213ddf113ee24caef863e119c1d4015d1b2b552669d187c04bbc",
+     "A2": "d34940b46d6390c4ab4cd2a6148278ceb7ed5e164851a4679cd2ea71722c9d53"
+    },
+    "arcane.crystal_pedestal": {
+     "A1": "6bd4686d25fa0a6606afce577cd4abc0625d362733b519b4146da64df7d6c1ab",
+     "A2": "548960e9f41a123bd1262b26dc2e8701aea50f474d3fd0c7e05deba6aee2069b"
+    },
+    "arcane.candelabra": {
+     "A1": "455b4e6543232d482f1bb91de653a98ff0b23e4176f1253e7869ef0d5f331ddc",
+     "A2": "5de7d08eed243b176b854e10343e97dc02b1ddf96edab316a0383f8b1aa56363"
+    },
+    "other.ground": {
+     "A1": "6cc4fa21cd2c7c2a06a5a3e0c6f7a9fc5650b7b9e7d25f6304989b199bd8fb61",
+     "A2": "c763cf3ba01d9b273e1eeaf0b773726d05fe2ff46c05a98b6e4e51d22b8b7b43"
+    },
+    "other.void_edge": {
+     "A1": "df8caf981b2d2dd44ba30c31a991973b28874b695f718d11555ba6f79d4da770",
+     "A2": "0b06df9eeb62aa5161396f48f393659041999d731590a31211b5911947cee14d"
+    },
+    "other.crystal": {
+     "A1": "3129203745b08d00b7faff614a87191baa5863a057af309b791c3ab3edd2e693",
+     "A2": "df7cf5392cbc4fd8ca49b21ad2edda602fa1d522194ab3365592f7375914b33a"
+    },
+    "other.crystal_big": {
+     "A1": "e177795181ec6588d703f7206ce4b97699ddac1c4ec45665d8882bb112e0b752",
+     "A2": "53e77689a05800dee4e6dceb2cb86c0511baf7b483ab4db1ca43cd3b44bba9d8"
+    },
+    "other.throne": {
+     "A1": "bfd1f94941987d8471822bf837a6cfc3be1d67c981be467220c242c05bd89415",
+     "A2": "23b1bfa88421bf29e4dd9d6a846a405eb7d08e719433bb9d362f2b958398fb0e"
+    },
+    "other.bone_pillar": {
+     "A1": "17e5f32c0f1a3b441dce83e85ac3ae4aa46230dd61abebfa0c9d90d72660aae0",
+     "A2": "b9d19607baebbdb800db8bd0d2b02fe0a4f93db4b6052c0d39333d9d8cfa4c7f"
+    },
+    "other.brazier": {
+     "A1": "881fc2b54fa1fe94749a197197d840ed56b63d2d0412e10e00a05bd45af2e0b4",
+     "A2": "f33d9e09cb08c7f2af0d7fdd0b9c64d6e2417b9d4116cb4e36a727c4cd09ae73"
+    },
+    "other.portal": {
+     "A1": "5ad42b2d57a6d254dc2c4bcb27ba100002084492b595b78a0a57add75ed11ce5",
+     "A2": "a436301ea7c04df798331cf07355fec52a98f916a1b95ea745909f2e1f823310"
+    }
+   }
+  },
+  {
+   "round": "theme-arcane-r1",
+   "at": "2026-10-23T13:52:43",
+   "fail": 0,
+   "warn": 19,
+   "warnByCode": {
+    "CONTRAST": 11,
+    "OUTLINE": 4,
+    "R": 4
+   },
+   "polish": [
+    {
+     "item": "arcane.lectern",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.46 차 0.19 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 독서대(2칸) 그늘 쪽 0.27 vs 바닥 0.44 차 0.17"
+    },
+    {
+     "item": "arcane.lectern",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.46 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.38 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 독서대(2칸) 그늘 쪽 0.39 vs 바닥 0.44 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.crystal_pedestal",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.49 vs 바닥 0.46 차 0.03; 장면2(2칸) 그늘 쪽 0.53 vs 바닥 0.46 차 0.06; 장면3(2칸) 그늘 쪽 0.49 vs 바닥 0.46 차 0.03 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.49 vs 바닥 0.38 차 0.11; 장면2(2칸) 그늘 쪽 0.53 vs 바닥 0.38 차 0.14; 장면3(2칸) 그늘 쪽 0.49 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.49 vs 바닥 0.44 차 0.05; 장면2(2칸) 그늘 쪽 0.53 vs 바닥 0.44 차 0.09; 장면3(2칸) 그늘 쪽 0.49 vs 바닥 0.44 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.crystal_pedestal",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.34 vs 바닥 0.46 차 0.12; 장면2(2칸) 그늘 쪽 0.38 vs 바닥 0.46 차 0.08; 장면3(2칸) 그늘 쪽 0.34 vs 바닥 0.46 차 0.12 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.34 vs 바닥 0.38 차 0.04; 장면2(2칸) 그늘 쪽 0.38 vs 바닥 0.38 차 0.00; 장면3(2칸) 그늘 쪽 0.34 vs 바닥 0.38 차 0.04 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.34 vs 바닥 0.44 차 0.10; 장면2(2칸) 그늘 쪽 0.38 vs 바닥 0.44 차 0.06; 장면3(2칸) 그늘 쪽 0.34 vs 바닥 0.44 차 0.10 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.candelabra",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.03; 장면2(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.03; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.03 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.05; 장면2(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.05; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00; 장면2(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00; 장면3(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "arcane.candelabra",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.46 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.38 차 0.07 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02; 장면2(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02; 장면3(2칸) 그늘 쪽 0.45 vs 바닥 0.44 차 0.02 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.ground",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 65화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 북변 빛 쪽 먹·0단 54% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.ground",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 65화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 북변 빛 쪽 먹·0단 100%; ground 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.void_edge",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 263화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: edge 북변 빛 쪽 먹·0단 58%; edge 서변 빛 쪽 먹·0단 53%; underside 앞면 왼끝 빛 쪽 먹·0단 75% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.void_edge",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 269화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: edge 북변 빛 쪽 먹·0단 52%; underside 앞면 왼끝 빛 쪽 먹·0단 67% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.crystal",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 수정(2칸) 그늘 쪽 0.27 vs 바닥 0.46 차 0.19 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 수정(2칸) 그늘 쪽 0.27 vs 바닥 0.38 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 수정(2칸) 그늘 쪽 0.27 vs 바닥 0.44 차 0.17"
+    },
+    {
+     "item": "other.bone_pillar",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.44 vs 바닥 0.46 차 0.02 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.44 vs 바닥 0.38 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.44 vs 바닥 0.44 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.bone_pillar",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.33 vs 바닥 0.46 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.33 vs 바닥 0.38 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 기둥(2칸) 그늘 쪽 0.33 vs 바닥 0.44 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.brazier",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.43 vs 바닥 0.46 차 0.03; 장면2(2칸) 그늘 쪽 0.42 vs 바닥 0.46 차 0.05; 장면3(2칸) 그늘 쪽 0.43 vs 바닥 0.46 차 0.03 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.43 vs 바닥 0.38 차 0.05; 장면2(2칸) 그늘 쪽 0.42 vs 바닥 0.38 차 0.03; 장면3(2칸) 그늘 쪽 0.43 vs 바닥 0.38 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.43 vs 바닥 0.44 차 0.01; 장면2(2칸) 그늘 쪽 0.42 vs 바닥 0.44 차 0.02; 장면3(2칸) 그늘 쪽 0.43 vs 바닥 0.44 차 0.01 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    },
+    {
+     "item": "other.brazier",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 장면1(2칸) 그늘 쪽 0.25 vs 바닥 0.46 차 0.21; 장면2(2칸) 그늘 쪽 0.24 vs 바닥 0.46 차 0.22; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.46 차 0.21 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.25 vs 바닥 0.38 차 0.13; 장면2(2칸) 그늘 쪽 0.24 vs 바닥 0.38 차 0.14; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.38 차 0.13 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 장면1(2칸) 그늘 쪽 0.25 vs 바닥 0.44 차 0.19; 장면2(2칸) 그늘 쪽 0.24 vs 바닥 0.44 차 0.20; 장면3(2칸) 그늘 쪽 0.26 vs 바닥 0.44 차 0.18"
+    }
+   ],
+   "hashes": {
+    "arcane.tower_floor": {
+     "A1": "7105c12c839fbc612b8d83c893478dfaeec28e45767af4f96a6aa3d41ad5c537",
+     "A2": "4d87c5866d8807a7d3b20b8aac56952b29f28df20ad6e22a3b4d81d0d0539f2e"
+    },
+    "arcane.bookshelf": {
+     "A1": "186467d8846206414250d69e17377f43723eaff742d5bd8a8fa86fcb6a5569b8",
+     "A2": "ee83f75e91a940d0ff7aebfec6edb9d4359afabcb742b3c85a6ee969f9562213"
+    },
+    "arcane.bookshelf_tall": {
+     "A1": "34449748ec6d6e2d56c4d20cd8ffa785bbaf671750180f3a0ad1008182e629e5",
+     "A2": "88beebddd0842539e479d263c5f19e944a985f70982525438b1252c809bd369a"
+    },
+    "arcane.lectern": {
+     "A1": "1e487220d59ba4a760ce319e7cd551ab8fb59787c99d8062095fe60e5ed0ed3c",
+     "A2": "17ff3f8007d5ad9f57073170f37c303c847811cf9e85b515222565d6e8c65a8e"
+    },
+    "arcane.teleport_circle": {
+     "A1": "9d7566524d96213ddf113ee24caef863e119c1d4015d1b2b552669d187c04bbc",
+     "A2": "d34940b46d6390c4ab4cd2a6148278ceb7ed5e164851a4679cd2ea71722c9d53"
+    },
+    "arcane.crystal_pedestal": {
+     "A1": "6bd4686d25fa0a6606afce577cd4abc0625d362733b519b4146da64df7d6c1ab",
+     "A2": "548960e9f41a123bd1262b26dc2e8701aea50f474d3fd0c7e05deba6aee2069b"
+    },
+    "arcane.candelabra": {
+     "A1": "455b4e6543232d482f1bb91de653a98ff0b23e4176f1253e7869ef0d5f331ddc",
+     "A2": "5de7d08eed243b176b854e10343e97dc02b1ddf96edab316a0383f8b1aa56363"
+    },
+    "other.ground": {
+     "A1": "4917c268cde382b4180df2c55547ecc64b1744df14cade90121132e4e506d6bb",
+     "A2": "91dbc23f6164cc54c36188bf529ff5e39787c755920c8d51ea56ce00350e9671"
+    },
+    "other.void_edge": {
+     "A1": "69a363325aacd134712d8b60b9b73955a041591bfef7a6f60967954c429e9a25",
+     "A2": "6b38b3abcb692e7627c1c74c84fb62b03f26fef2a74d3f90eab77c49d9d7ea02"
+    },
+    "other.crystal": {
+     "A1": "906bea1243981a2a37d89a368d84cf07690d7225a1f5856dd57a4671c6690824",
+     "A2": "f409ef2d2c15be6ba707d7fe5444e223713c6cb5f62864bb0edbec0488d07e19"
+    },
+    "other.crystal_big": {
+     "A1": "2358e115f22dfac64737716a357d07c4f3f32fb3aca769c1027aca32c8360f7e",
+     "A2": "546d6a8bc6b4da9b51cf114899cd7895c0aa6a4355500daf06708facb7f8c489"
+    },
+    "other.throne": {
+     "A1": "bfd1f94941987d8471822bf837a6cfc3be1d67c981be467220c242c05bd89415",
+     "A2": "23b1bfa88421bf29e4dd9d6a846a405eb7d08e719433bb9d362f2b958398fb0e"
+    },
+    "other.bone_pillar": {
+     "A1": "17e5f32c0f1a3b441dce83e85ac3ae4aa46230dd61abebfa0c9d90d72660aae0",
+     "A2": "b9d19607baebbdb800db8bd0d2b02fe0a4f93db4b6052c0d39333d9d8cfa4c7f"
+    },
+    "other.brazier": {
+     "A1": "881fc2b54fa1fe94749a197197d840ed56b63d2d0412e10e00a05bd45af2e0b4",
+     "A2": "f33d9e09cb08c7f2af0d7fdd0b9c64d6e2417b9d4116cb4e36a727c4cd09ae73"
+    },
+    "other.portal": {
+     "A1": "5ad42b2d57a6d254dc2c4bcb27ba100002084492b595b78a0a57add75ed11ce5",
+     "A2": "a436301ea7c04df798331cf07355fec52a98f916a1b95ea745909f2e1f823310"
     }
    }
   }

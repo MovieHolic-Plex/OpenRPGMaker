@@ -1,0 +1,774 @@
+{
+ "panel": "theme-arcane-r1-panel-2",
+ "rule": "major counts if raised by >=2 of 4 blind reviewers (3 opus general-purpose + 1 argon)",
+ "mapping": {
+  "arcane.bookshelf": {
+   "X": {
+    "key": "A2",
+    "sha256": "b88b1595eda632a16364c753cc73989a7c437af9a100ef9a2d6775041d90a9b6"
+   },
+   "Y": {
+    "key": "A1",
+    "sha256": "6995009206bc0256c87c2527bda8388152fcc1364b99d93a4d78ef94cec7c606"
+   }
+  },
+  "arcane.bookshelf_tall": {
+   "X": {
+    "key": "A1",
+    "sha256": "b15c38aca232d7b166a340b568140a68905fa12acc0bd78557bfa41f8b60ec25"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "845a04ac4e088571b13c7ad2946c557e2e2991336308481cc288b9583abd12e3"
+   }
+  },
+  "other.throne": {
+   "X": {
+    "key": "A1",
+    "sha256": "acfc06e1fa9145d102ecdc6570874e5153918e4d2e94c2c279897e0be91cfac9"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "1a572d8294ed425755cb1ef67a4310d6607e3eb008d1c7862fc80a44983e5fd4"
+   }
+  },
+  "other.brazier": {
+   "X": {
+    "key": "A1",
+    "sha256": "e5f83340b5556ddc5419ecbb720bb02367a1cd94f428e0255d6833cf887cc113"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "f60a1c8a5d81564b75c476a969c8ef67233c577c9bdf5c2afa26a64a9c9ac2ad"
+   }
+  },
+  "other.portal": {
+   "X": {
+    "key": "A1",
+    "sha256": "c1f1cdd4ba84b643b4ee1554d6c2112393e8a4df01d813a2e7e738aca2373dcf"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "9d58bff26f161f5cffb36cafd97ea6af9c20dbe08802eec46e441997b8b22eb4"
+   }
+  }
+ },
+ "prompt": "You are a blind pixel-art reviewer. Do not read any code or other files; look ONLY at the PNG boards listed below (open each with the Read tool; they are large, look carefully, zoom by reading them, do not skip any).\n\nContext: 16px-cell hand-pixel chipset for a JRPG dungeon, 3/4 top-down view (you see the top surface of things and their front face; NO side faces / no isometric). Two themes: MAGIC TOWER (wizard tower interior) and OTHERWORLD (demon realm, violet-black). Each board shows: the item description (yellow line at top), a Beodeul reference image from the existing chipset that sets the quality bar (shown 1x and 3x) with an Actor1 person for scale, then two anonymous candidates X and Y: piece at 1x and 3x, the piece placed in a scene (animation frames shown side by side), and sometimes extra sheets (autotile 6x6 mosaics, irregular test maps).\n\nCriteria, judge each candidate against them:\n1. Reads instantly as the described object at 1x game scale.\n2. 3/4 top-down view: top surface + front face visible, no side faces, no isometric skew, perspective consistent with the Beodeul reference and the Actor1 person.\n3. Style matches the Beodeul reference: material shading instead of black ink outlines, similar contrast, detail density and pixel cleanliness (no noise, no orphan pixels, no banding).\n4. Scale vs. the person is plausible; the object sits on the floor (contact shadow/base) rather than floating.\n5. Animation frames (if any): change is visible, smooth, loops, no jitter of the static parts.\n6. Autotiles: no visible seams or repeating grid, edges/corners join correctly in the mosaic and irregular map; floating-island underside hangs only below south edges.\n7. Fits its theme (magic tower / demon realm) and is distinct from generic.\n\nA MAJOR is a problem that would make you reject the piece for shipping (misreads, wrong view, broken seams, clashing style, ugly artefact clearly visible at 1x). A MINOR is a polish note.\n\nBoards (directory /home/main/z-project/rpg-zzu-dt-arcane/qa-runs/dungeon-themes/panel/r2/):\narcane.bookshelf.png arcane.bookshelf_tall.png other.throne.png other.brazier.png other.portal.png\n\nWrite your answer as JSON to /home/main/z-project/rpg-zzu-dt-arcane/qa-runs/dungeon-themes/panel/r2/answer-1.json (use the Write tool) and also return the same JSON as your final message. Format:\n{\"items\":{\"<item id e.g. arcane.lectern>\":{\"X\":{\"majors\":[{\"problem\":\"...\",\"where\":\"...\"}],\"minors\":[{\"problem\":\"...\",\"where\":\"...\"}]},\"Y\":{...},\"pick\":\"X\"|\"Y\",\"why\":\"one line\"}}}\nCover all 5 items. Be specific and honest; do not invent problems, do not be polite. Do not edit anything else.\n",
+ "answers": {
+  "answer-1.json": {
+   "items": {
+    "arcane.bookshelf": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Top surface is only a 1-2px band; the 3/4 top reads weaker than the Beodeul reference's visible top slab",
+        "where": "top edge of shelf"
+       },
+       {
+        "problem": "Bone pile on top-left cubby is three identical round blobs, reads as eggs/rocks at 1x rather than skulls/bones",
+        "where": "upper shelf, left cubby"
+       },
+       {
+        "problem": "Gold corner brackets are single bright pixels that sparkle at 1x like orphan pixels",
+        "where": "four corners of the frame"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Generic library shelf with only books and one bottle; nothing says wizard tower",
+        "where": "whole piece"
+       },
+       {
+        "problem": "Dark brown rectangles above short book stacks read as holes/blotches rather than shelf-back shadow",
+        "where": "upper shelf centre-left and lower shelf left-centre"
+       },
+       {
+        "problem": "Book spines are a very regular comb of same-height colour stripes with repeated yellow bands, slight barcode feel",
+        "where": "both shelves"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Same build quality, but X's skull/bones/potion cubbies make it unmistakably a magic-tower shelf, Y is a generic bookcase."
+    },
+    "arcane.bookshelf_tall": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "All-books content, no arcane props; bottom shelf is the only one with potions, reads as plain library",
+        "where": "upper two shelves"
+       },
+       {
+        "problem": "Dark-brown void rectangles above short stacks look like blotches",
+        "where": "top shelf centre, middle shelf left"
+       },
+       {
+        "problem": "Books lying on top sit on a 1-2px top band and look perched rather than resting on a top surface",
+        "where": "top of the shelf"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Bone pile reads as eggs/stones at 1x",
+        "where": "top shelf, left cubby"
+       },
+       {
+        "problem": "Thin top surface, same as X; books on top look perched on the edge",
+        "where": "top of shelf"
+       },
+       {
+        "problem": "Bottom shelf is a copy of X's bottom shelf, so placed next to the 2x2 variant the repetition is noticeable",
+        "where": "bottom shelf"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y carries the skull/potion cubby theme (and matches the picked 2x2 shelf), X is a generic bookcase."
+    },
+    "other.throne": {
+     "X": {
+      "majors": [
+       {
+        "problem": "Large flat saturated red cushion and red carpet dominate the violet-black realm and clash with the palette; reads as a royal/castle throne, not demon realm",
+        "where": "seat back and carpet runner"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Cushion and dais faces use a mechanical regular dot grid for texture, looks stamped not shaded",
+        "where": "seat back, dais step fronts"
+       },
+       {
+        "problem": "Maroon dais is close in value to the island rim and loses its step separation at 1x",
+        "where": "dais steps in scene"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Mechanical regular dot grid on cushion and dais fronts, same as X",
+        "where": "seat back, dais step fronts"
+       },
+       {
+        "problem": "Slate grey stone is a little cool/neutral; could use a hint of violet in shadows to sit in the realm",
+        "where": "dais and throne frame"
+       },
+       {
+        "problem": "Skull armrest blocks are flat front faces with only a 1px top cap",
+        "where": "left/right armrests"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's stepped slate dais matches the Beodeul dais reference and the violet seat fits the realm; X's red block clashes."
+    },
+    "other.brazier": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Light grey thin tripod is the brightest thing in the scene and reads as a generic metal lamp/birdbath, not demon-realm",
+        "where": "stand and legs"
+       },
+       {
+        "problem": "Flame animation changes only a few pixels of tip/highlight; motion is faint at 1x",
+        "where": "flame across the 3 frames"
+       },
+       {
+        "problem": "Thin legs and rim with little mass; the bowl's top surface is just a 1px light line",
+        "where": "bowl rim"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "No bowl visible; the flame comes straight out of a flat pillar top, so it reads as a flame pillar more than a brazier",
+        "where": "top of pillar"
+       },
+       {
+        "problem": "Rune glyphs look like the letters E / L / J, slightly text-like",
+        "where": "pillar front"
+       },
+       {
+        "problem": "Flame animation is subtle (tips/highlight only), faint at 1x",
+        "where": "flame across frames"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Dark rune pillar with violet glow is heavier, sits on the floor convincingly and is clearly demon-realm; X looks like a generic grey lamp."
+    },
+    "other.portal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Violet swirl on a violet floor has low contrast; the open portal blends into the scene at 1x",
+        "where": "open frames in scene"
+       },
+       {
+        "problem": "Spiral is a flat 4-tone band swirl with stair-stepped banding, looks procedural",
+        "where": "swirl interior"
+       },
+       {
+        "problem": "Pillars and lintel are pure front faces with no top caps beyond the horn tips (acceptable for a gate, but flatter than the 3/4 dais pieces)",
+        "where": "side pillars and arch"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Orange/yellow fire spiral is off-palette for the violet-black realm and clashes with the violet braziers/throne; reads as a hell/lava gate from another tileset",
+        "where": "open frames"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Same flat banded procedural spiral as X, high-contrast stair-steps more visible",
+        "where": "swirl interior"
+       },
+       {
+        "problem": "Pure front-face pillars without top caps",
+        "where": "side pillars"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both are well built and animate cleanly; X stays inside the violet-black palette while Y's orange swirl clashes with the realm."
+    }
+   }
+  },
+  "answer-2.json": {
+   "items": {
+    "arcane.bookshelf": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "top shelf (skulls, small bottles) gets busy at 1x and the skulls are hard to read as skulls",
+        "where": "upper shelf"
+       },
+       {
+        "problem": "the top surface strip is thin and dark, so the 3/4 top barely shows against the wall",
+        "where": "top edge"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "generic library bookshelf with only books, nothing that says magic tower",
+        "where": "whole piece"
+       },
+       {
+        "problem": "both shelves hold the same book pattern, so it repeats",
+        "where": "both shelves"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both are clean and in the right view. X adds skulls, potions and a red orb, so it reads as a wizard's shelf. Y is a generic bookcase."
+    },
+    "arcane.bookshelf_tall": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "the top two shelves are near-identical book rows, so it reads as repetitive at 1x",
+        "where": "shelves 1-2"
+       },
+       {
+        "problem": "themed only by a few potion bottles on the bottom shelf; mostly generic",
+        "where": "bottom shelf"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "the books and bottles lying on top poke above the cabinet silhouette and look slightly detached at 1x",
+        "where": "top edge items"
+       },
+       {
+        "problem": "the skull shelf is a bit noisy at 1x",
+        "where": "top shelf"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Same construction quality, but Y varies its three shelves (curios, books, potions) and fits the tower. X repeats book rows."
+    },
+    "other.throne": {
+     "X": {
+      "majors": [
+       {
+        "problem": "the maroon dais is almost the same value and hue as the purple-red floor, so the dais steps disappear into the floor at 1x and the throne looks like a red box",
+        "where": "dais, in scene"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "the bright red cushion reads more royal-castle than violet-black demon realm",
+        "where": "backrest"
+       },
+       {
+        "problem": "the seat is not distinguishable from the backrest; it reads as one flat red panel",
+        "where": "throne body"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "the seat is not clearly separated from the backrest (same flat violet panel)",
+        "where": "throne body"
+       },
+       {
+        "problem": "the grey stone dais is slightly cool and plain against the violet floor; it could carry more demon-realm detail",
+        "where": "dais"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's grey stepped dais separates from the floor and echoes the reference dais, and the violet cushion fits the realm. X's maroon dais melts into the floor."
+    },
+    "other.brazier": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "the thin grey tripod has no contact shadow, so it looks spindly and slightly floating on the dark floor",
+        "where": "legs/base"
+       },
+       {
+        "problem": "the metal stand is generic and pale; only the flame says demon realm",
+        "where": "stand"
+       },
+       {
+        "problem": "the flame changes little between frames at 1x",
+        "where": "flame animation"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "the pillar body is dark and close to the floor value, so the runes carry most of the read",
+        "where": "pillar body"
+       },
+       {
+        "problem": "the flame animation is subtle at 1x, though it loops without jitter",
+        "where": "flame"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's rune pillar is solid, grounded, close to the reference pedestal, and themed. X's spindly tripod looks generic and weightless."
+    },
+    "other.portal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "the maroon side pillars and base are low contrast against the purple floor, so the frame edges get lost at 1x",
+        "where": "frame pillars/base"
+       },
+       {
+        "problem": "the gate is drawn fully frontal with no top surface on the pillars or arch, and it stands on the back rim with no wall behind",
+        "where": "frame top, in scene"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "the orange/yellow fire swirl clashes with the violet-black demon-realm palette and reads as a hell/lava portal, off-brief",
+        "where": "open frames"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "the grey stone frame has no top surface on the pillars; it is frontal-only",
+        "where": "pillars"
+       },
+       {
+        "problem": "the high-saturation orange dominates the whole screen",
+        "where": "in scene"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both swirl animations are visible and loop cleanly. X's violet vortex fits the violet-black realm. Y's orange fire swirl is off-palette."
+    }
+   }
+  },
+  "answer-3.json": {
+   "items": {
+    "arcane.bookshelf": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Top surface is only a 1-2px plank; reads almost purely as a front face, little 3/4 depth compared to the Beodeul reference's visible top slab",
+        "where": "top edge of the shelf"
+       },
+       {
+        "problem": "No contact shadow / floor base; bottom just ends at the floor line, slightly pasted-on look",
+        "where": "bottom edge in scene"
+       },
+       {
+        "problem": "Top shelf contents (skull, rock pile, potion) are small and busy at 1x; the bone pile reads as grey noise",
+        "where": "upper shelf, left side"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Same thin-plank top as X, minimal top surface",
+        "where": "top edge"
+       },
+       {
+        "problem": "Only books in uniform rows; generic library shelf, nothing tower/arcane about it",
+        "where": "both shelves"
+       },
+       {
+        "problem": "Book spines are dense saturated stripes that read as colour noise at 1x",
+        "where": "both shelves at 1x"
+       },
+       {
+        "problem": "No contact shadow",
+        "where": "bottom edge in scene"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Equally clean construction, but the skull/potion shelf makes X read as a wizard's shelf instead of a generic bookcase."
+    },
+    "arcane.bookshelf_tall": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Mostly generic books; only a couple of potions on the bottom shelf hint at magic",
+        "where": "all three shelves"
+       },
+       {
+        "problem": "Book spines on top of the case give a top surface hint but front face dominates; no floor shadow",
+        "where": "top and bottom edges"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Bone pile on top shelf is grey speckle at 1x, reads as noise rather than skulls",
+        "where": "top shelf, left"
+       },
+       {
+        "problem": "No contact shadow at the base",
+        "where": "bottom edge in scene"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Same build quality; the skull, red flask and potions mix gives Y a clearer magic-tower identity and more variety per shelf."
+    },
+    "other.throne": {
+     "X": {
+      "majors": [
+       {
+        "problem": "Bright red cushion and red carpet on maroon stone dominate; clashes with the violet-black demon-realm palette and the slate Beodeul reference, looks like a generic royal throne",
+        "where": "seat/back and carpet"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Seat back is one big flat red rectangle with a sparse dot grid; little material shading",
+        "where": "backrest"
+       },
+       {
+        "problem": "Skull blocks on the armrests read as small faces/boxes at 1x",
+        "where": "left/right of seat"
+       },
+       {
+        "problem": "Maroon dais tiers have low top-strip contrast, steps blur together at 1x",
+        "where": "dais steps"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Seat back is a large flat violet panel with a dot grid; reads more as a cushion slab than a carved back",
+        "where": "backrest"
+       },
+       {
+        "problem": "Skull blocks small and ambiguous at 1x",
+        "where": "armrest blocks"
+       },
+       {
+        "problem": "Gold edge line under the seat is a hard single-pixel stripe, slightly banded",
+        "where": "seat front edge"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Slate dais matches the Beodeul reference material and the violet seat/carpet fits the demon realm; X's red reads off-theme."
+    },
+    "other.brazier": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Thin spindly tripod stand has little mass at 1x; on the busy violet floor it almost disappears and reads as a lamp post",
+        "where": "stand/legs in scene"
+       },
+       {
+        "problem": "Plain grey metal + gold band is generic, not demon-realm specific",
+        "where": "stand"
+       },
+       {
+        "problem": "No contact shadow under the splayed legs",
+        "where": "feet"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Flame sits directly on the pillar top with no visible bowl/rim, so the top surface is hidden",
+        "where": "top of pillar"
+       },
+       {
+        "problem": "Rune glyphs are a few blocky violet pixels, slightly crude at 3x",
+        "where": "pillar front"
+       },
+       {
+        "problem": "Only the flame changes between frames (static base stable, good) but the flame motion is small; reads as a subtle flicker",
+        "where": "flame frames"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Stone rune pillar is chunkier, closer to the Beodeul pedestal reference and clearly on-theme; X's thin tripod is weak at 1x."
+    },
+    "other.portal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Violet swirl on dark maroon/violet frame is low contrast against the violet floor; the gate is less of a focal point at 1x",
+        "where": "open frames in scene"
+       },
+       {
+        "problem": "Spiral is drawn as concentric bands with visible stair-step banding",
+        "where": "swirl interior, 3x"
+       },
+       {
+        "problem": "Closed state X-cross with central gem is clear but the X arms are thin single lines",
+        "where": "closed door"
+       },
+       {
+        "problem": "Base slab is a thin flat strip; little contact shadow",
+        "where": "bottom of gate"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Open portal is fiery orange/yellow, which breaks the violet-black demon-realm palette and reads as a fire/hell gate from another set",
+        "where": "open frames"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Strong spiral banding in orange/yellow rings",
+        "where": "swirl interior, 3x"
+       },
+       {
+        "problem": "Slate frame matches the throne Y set but red pillar studs are tiny noise at 1x",
+        "where": "pillar fronts"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both are well built and animate the swirl, but X's violet vortex fits the otherworld palette; Y's orange fire is off-theme."
+    }
+   }
+  },
+  "answer-4.json": {
+   "items": {
+    "arcane.bookshelf": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Top shelf is divided into three cubbies dominated by large white skulls while the bottom shelf has no vertical dividers, making the upper half read more like a skull display rack than a bookshelf at 1x.",
+        "where": "upper shelf compartments"
+       },
+       {
+        "problem": "Top wooden plane of the cabinet is only 2px deep with weak value separation from the front rim compared to the Beodeul reference's distinct 3/4 top surfaces.",
+        "where": "top edge of frame"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Book spine colour sequence on the left half of the upper and lower shelves is nearly identical, creating a slight vertical repetition.",
+        "where": "left half of both shelves"
+       },
+       {
+        "problem": "Aside from the two small vials on the top right, the piece looks like a standard library shelf rather than a distinctly arcane one.",
+        "where": "overall shelf contents"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Reads immediately as a 2x2 bookshelf at 1x with a cleaner 3/4 top plane and cohesive shelving, whereas X gives half its small 2x2 footprint to large white skulls."
+    },
+    "arcane.bookshelf_tall": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Top and middle shelves repeat a very similar rhythm of vertical book spines, only broken up on the bottom alchemy shelf.",
+        "where": "top and middle shelves"
+       },
+       {
+        "problem": "Books lying flat on the top surface are only 2px tall and read slightly flat as thin coloured strips at 1x.",
+        "where": "top surface of bookcase"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Vertical wooden dividers on the top skull shelf stop abruptly and do not align with the open middle and bottom book shelves.",
+        "where": "top shelf dividers"
+       },
+       {
+        "problem": "Books lying on top of the cabinet are 2px flat strips with minimal 3/4 top-plane depth.",
+        "where": "top surface of bookcase"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Combines two full shelves of books with a clear bottom shelf of glowing potion flasks and scrolls, reading unmistakably as a tall wizard-tower bookcase at 1x without the jarring cubby dividers of Y."
+    },
+    "other.throne": {
+     "X": {
+      "majors": [
+       {
+        "problem": "Plum-brown dais stone is nearly identical in hue and value to the otherworld cracked floor tiles, causing the three-step platform to blend into the ground and lose its silhouette at 1x in the scene.",
+        "where": "dais steps against floor in scene"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Skull-carved armrests and tall backrest top edge have only a 1px highlight rather than a clear 3/4 top plane matching the step treads.",
+        "where": "throne armrests and top rim"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Armrest skull blocks and backrest top rim show only a 1px top highlight instead of a deeper 3/4 top surface plane.",
+        "where": "throne armrests and top rim"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Slate-grey stone dais separates cleanly from the violet-black floor at 1x (matching the Beodeul reference value hierarchy) while the purple cushion and gold trim keep the demon-lord theme."
+    },
+    "other.brazier": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Bright silver goblet stem is very spindly (2px wide at the neck) and looks like clean polished steel rather than dark otherworld metalwork or stone.",
+        "where": "central shaft and base"
+       },
+       {
+        "problem": "Top bowl rim lacks a visible interior ember bed plane, going straight from a thin grey line into the purple flame.",
+        "where": "top of bowl"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Top basin shows a flat horizontal collar with horn prongs rather than a tilted 3/4 interior ember bed like the Beodeul reference brazier.",
+        "where": "top basin rim"
+       },
+       {
+        "problem": "Glowing purple rune on the pillar front remains completely static in brightness while the flame above it flickers.",
+        "where": "front face of pillar"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Dark runed stone pillar with horned basin matches the Beodeul reference's weight and fits the demon realm far better than X's thin silver chalice stand."
+    },
+    "other.portal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Outer plum stone pillars and threshold are close in value and hue to the dark violet floor tiles, softening the outer silhouette at 1x.",
+        "where": "outer pillar edges and base threshold in scene"
+       },
+       {
+        "problem": "Single-pixel diagonal chains in the closed state look slightly stair-stepped and thin at 1x, and the arch lintel has minimal 3/4 top-plane depth.",
+        "where": "closed frame center chains and top arch rim"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Fiery orange-yellow vortex reads more like lava/fire magic than the violet-black otherworld theme, though it contrasts strongly with the floor.",
+        "where": "open frames vortex interior"
+       },
+       {
+        "problem": "Single-pixel diagonal chains in the closed state are slightly aliased, and the top arch lintel has only a 1px highlight instead of a clear 3/4 top surface.",
+        "where": "closed frame center chains and top arch rim"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "The swirling violet-indigo vortex and purple seal eye fit the violet-black otherworld portal theme much more cohesively than Y's fiery orange swirl, while the bright inner arch rim keeps the gate readable in the scene."
+    }
+   }
+  }
+ }
+}
