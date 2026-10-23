@@ -2,6 +2,8 @@
 // 명세 낱말만 도구 손잡이로 옮기고, 도구가 못 하는 것(예: 버들항 얼음 동굴)은 missingArt 로 정직하게 보고한다.
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { terrainReachability } from "@/project/terrainReachability";
+import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
+import { createBuildRun } from "../buildRun";
 import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../types";
 
 /** v2 계획 모델에게 주는 유일한 던전 지식(≤900자). */
@@ -102,12 +104,20 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   if (field.length) base.troops = { field };
   else if (/박쥐|bat|해골|skeleton|거미|spider|고블린|goblin|슬라임|slime|늑대|wolf|좀비|zombie|유령|ghost/u.test(wanted)) warnings.push("요청한 적과 이름이 맞는 적 그룹이 데이터베이스에 없어 도구가 고른 무리를 놓았다");
   // 고치기: 첫 층은 author_dungeon rebuild:true 로 그 자리에서(시작 맵은 지울 수 없다), 나머지 층은 지우고 다시 만든다.
+  let result: ReturnType<BuildRun["call"]>;
   if (previous) {
+    // 다시 짓기는 사본 위에서 통째로 — 위층을 지운 뒤 짓기가 무결성 검사로 거부되면 위층만 사라진 반쪽 탑이 남았다(2026-10-23 v2 실조수).
+    const trial = createBuildRun({ ...run.ctx, project: cloneProjectSharingSharedDictionaries(run.ctx.project) });
     const old = prev?.floors ?? previous.result.mapIds;
-    for (const id of [...old].slice(1).reverse()) if (run.ctx.project.maps[id]) run.call("remove_map", { mapId: id });
+    for (const id of [...old].slice(1).reverse()) if (trial.ctx.project.maps[id]) trial.call("remove_map", { mapId: id });
     if (mapId) { base.mapId = mapId; base.rebuild = true; }
-  } else if (mapId) base.mapId = mapId;
-  const result = run.call("author_dungeon", base);
+    result = trial.call("author_dungeon", base);
+    run.calls.push(...trial.calls);
+    if (result.ok) run.ctx.project = trial.ctx.project;
+  } else {
+    if (mapId) base.mapId = mapId;
+    result = run.call("author_dungeon", base);
+  }
   const calls: BuilderCall[] = run.calls.slice(firstCall);
   const data = (result.data ?? {}) as Record<string, unknown>;
   const floors = Array.isArray(data.floors) ? (data.floors as unknown[]).filter((f): f is string => typeof f === "string") : [];

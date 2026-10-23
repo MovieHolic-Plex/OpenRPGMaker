@@ -107,3 +107,9 @@ await scenario("cave-edit", () => {}, [
   { tool: "make_place", args: { spec: { type: "cave", name: "작은 동굴", size: "small", features: ["enemies", "chests"] } } },
   { tool: "edit_place", args: { patch: { mapId: "map_blank_start", addAnchors: [{ what: "박쥐" }], variant: 1 } } },
 ], "박쥐 동굴");
+await scenario("tower-edit", () => {}, [
+  { tool: "make_place", args: { spec: { type: "dungeon", name: "던전 탑", theme: "castle", floors: 3, features: ["tower", "enemies", "chests", "boss"] } } },
+  { tool: "edit_place", args: { patch: { mapId: "map_blank_start", variant: 1 } } },
+  { tool: "edit_place", args: { patch: { mapId: "map_blank_start", dressing: 2, addAnchors: [{ what: "횃불" }] } } },
+  { tool: "inspect", args: {} },
+], "3층 탑");
