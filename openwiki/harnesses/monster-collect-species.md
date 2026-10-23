@@ -329,3 +329,15 @@ R11~R13 은 눈을 `upgrade_all_60_eyes.py` 의 손으로 친 절대 좌표로 �
 - **진화 몸집:** fit 은 단계별 몸집 목표를 앞모습 잉크의 외곽 상자로 맞춘다(`STAGE_SCALE`). 옆으로 넓은 종은 긴 변 상한 56칸에 먼저 걸려 단계마다 같은 크기가 되므로, 다음 단계 디자인 문장에 「더 크고 키가 크다」를 적고 외곽 상자가 앞 단계보다 큰 후보를 고른다.
 - **게이트:** `src/project/monsterSpeciesCoherence.ts` `auditMonsterSpeciesCoherence(project, load)` — 면마다 런타임과 같은 해석으로 원본 묶음(`harness:<id>` / `mx_art:<slug>` / `asset:<id>`)을 정하고 막는다: 다섯 면 묶음이 섞임(`monster-surface-mixed`), 기본 칩 대체(`monster-surface-fallback`), 읽을 수 없는 면(`monster-surface-unreadable`), 뒤·칩·아이콘 색이 앞모습 팔레트 밖(`monster-surface-palette`, Lab ΔE), 칩 12칸 잘림·배경 띠·빈 칸(`monster-chip-clipped/background/empty`), 앞·뒤 외톨이 도트·반투명 잔점(`monster-sprite-noise`), 전투 적 그림이 종 앞모습과 다름(`monster-enemy-art`), 계통 안 생성기 혼합(`monster-line-mixed`)·칩 유무 혼합(`monster-line-field`)·외곽 상자 넓이가 늘지 않음(`monster-line-size`)·팔레트 단절(`monster-line-palette`). 칩이 없는 종은 경고(`monster-surface-missing`).
 - **배선:** `qa-game check` 가 `scripts/qa-game/lib/monsterCoherence.ts`(pngjs 로더)로 부른다. `--no-visual` 로 끈다. 몬스터 수집 게임(`isDeclaredMonsterGame`)이 아니면 아무것도 하지 않는다.
+
+## 아스트라 스타터 다시 그리기 (2026-10-23 — 사용자 「오프닝에서 뜨는 3개의 몬스터 하나도 안 귀여움」)
+
+스타터 셋(leafling → 토리프, sparkit → 숯꼬미, aqualing → 아가핀)을 컨셉부터 새로 잡았다. 진화형은 그대로다 — 정직 여정이 Lv12 남짓이라 게임 안에서 진화(Lv16/34)가 보이지 않는다.
+
+- **컨셉:** 귀가 축 처진 새싹 토끼(풀) · 고리 꼬리 끝에 불꽃을 단 레서판다(불) · 나선 뿔 아기 일각고래(물). 한 마리 한 색, 큰 머리·큰 눈, 1배에서 실루엣이 셋 다 다르게(서 있는 귀 · 네 발 + 꼬리 · 가로 몸 + 뿔). 시드 `style.avoid` 에 닮으면 안 되는 공식 스타터·토끼·수달 계열 이름을 더 적었다.
+- **후보·고르기:** 종마다 컨셉 둘~셋 × 여러 장(약 6장/종) → 블라인드 패널(Opus 셋 + Argon 하나, 번호만 보이는 시트)이 귀여움·끌림·1배 판독·구별을 매겨 과반으로 골랐다. 생성형 후보라 감독이 패널 결과로 고른다(사람 선택 대상 아님).
+- **생성기 대체 경로:** god-tibo(8091)·codex 가 401, agy 가 할당량 소진일 때 편집기 동반 서버 `POST http://mdc-server:9888/v1/images/generations`(헤더 `x-oprn-provider: google-antigravity`, 모델 `gemini-3.1-flash-image`, `referenceImages`)를 썼다. 응답은 JPEG 라 `import --raw` 전에 PNG 로 바꿔야 한다(「unrecognised content」). 이 경로도 할당량이 있다(429 에 재설정 시각이 나온다).
+- **격자 축소가 얼굴을 뭉갤 때:** 생성 그림의 격자가 90칸 남짓이면 64 캔버스로 2배 가까이 줄며 눈·입이 뭉갠다. `import --raw --block 16|18` 로 블록을 바꿔 덜 줄이는 판을 먼저 보고, 남는 뭉갬은 손질 층으로 고친다.
+- **손질 층:** `scripts/content/monsters/astra_starters_touchup.py` + `harness-data/monster-collect-species/astra-starters-touchup.json`. 고른 격자로 구운 번들 그림(해시 `from` 으로 잠금)에 연산을 순서대로 적용한다 — `recolor`(선택 `box`), `clear`/`clean`(상자 안 선을 주변 색으로 메움, `clean` 은 실루엣 가장자리 보존), `{at, rows, pal}`(행 문자열 손 도트, `.` 유지·`_` 투명). `--out-dir` 로 미리 보고 `--apply` 가 `authored/<id>-<면>.png`·장부 `authored/authoredSha256/previousAuthoredSha256`·`eyes.json` 의 `patch` 를 한 번에 쓴다. 그 뒤 `build`. 바탕 그림이 바뀌면(다시 고르면) 해시가 달라 거절한다.
+- **패널이 실제로 잡은 것:** 몸통의 얼룩진 어두운 칸, 공 모양 뿔(막대사탕으로 읽힘), 이마 주름(찡그림으로 읽힘), 앞·뒤 다리 없는 몸, 꼬리와 떨어져 떠 보이는 불꽃, 3/4 얼굴의 너무 작은 먼 눈. 최종 판(패널 7)은 넷 모두 세 마리 다 「귀엽다, 고르겠다」·중대 결함 0.
+- 도감 문장은 공용 로스터(옛 토끼·천산갑·수달 문장)를 두고 `emeraldCrown.ts` 의 `STARTER_NOTES` 가 아스트라 캠페인 `speciesNotes` 만 덮는다.
