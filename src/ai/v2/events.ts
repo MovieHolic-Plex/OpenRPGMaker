@@ -88,6 +88,8 @@ export interface CutsceneStage {
   /** 주인공 칩(그림 틀에 그린다). */
   readonly hero?: { readonly textureKey: string; readonly characterIndex: number };
   readonly letterbox: boolean;
+  /** 장면 그림 틀에는 그려지지 않는 연출(화면 색·실루엣·카메라·사라짐) — 비평가에게 글로 알린다. */
+  readonly effects?: readonly string[];
 }
 export type EventBuildResult = ContentBuildResult & { readonly stage?: CutsceneStage };
 
@@ -414,6 +416,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
 
   let actorSeq = 0;
   const createdActors = new Set<string>();
+  const effects: string[] = [];
   const vanished = new Set<string>();
   const followUps = new Map<string, string[]>();
   /** 아직 맵에 없는 사람을 지금(비트 i 시점) 세운다. */
@@ -592,6 +595,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
         const value = TINT_TONES[b.tone];
         if (value === undefined) { warnings.push(`tint: 모르는 색 '${b.tone}' — night·dusk·dawn·sepia·clear.`); break; }
         out.push({ kind: "tint", value, durationMs: 900, wait: true });
+        effects.push(b.tone === "clear" ? "the screen tint is cleared back to normal" : `the whole screen is tinted ${b.tone === "night" ? "dark night blue" : b.tone} from here on (stays after the scene)`);
         break;
       }
       case "camera": {
@@ -609,6 +613,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
         } else cell = to;
         if (!cell) { warnings.push(`camera: '${String(to)}' 자리를 못 찾았다.`); break; }
         out.push({ kind: "camera", mode: "pan", x: cell.x, y: cell.y, durationMs: 900, wait: true });
+        effects.push(`the camera pans to (${cell.x},${cell.y}) and holds, then returns to the hero`);
         out.push({ kind: "wait", ms: 700 });
         break;
       }
@@ -618,6 +623,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
         out.push(b.as === "shadow" ? { kind: "look", target: idFor(key), tint: "black", tintFill: true }
           : b.as === "ghost" ? { kind: "look", target: idFor(key), pose: "float", alpha: 0.6 }
           : { kind: "look", target: idFor(key), reset: true });
+        if (b.as !== "normal") effects.push(`${b.who} is drawn as ${b.as === "shadow" ? "a solid black silhouette" : "a floating translucent ghost"} in the game (the frames show the plain sprite)`);
         break;
       }
       case "vanish": {
@@ -628,6 +634,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
         out.push({ kind: "wait", ms: 400 });
         const a = sim.actors.get(key); if (a) a.visible = false;
         vanished.add(key);
+        effects.push(`${b.who} vanishes in a puff of smoke and is removed from the map`);
         sim.snapshot(`${b.who} 사라짐`);
         break;
       }
@@ -754,7 +761,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     missingArt: [],
     calls: run.calls.slice(firstCall),
     eventIds,
-    stage: { mapId, hostEventId: cutId, frames: sim.frames, walks: sim.walks, checks, letterbox, ...(hero ? { hero } : {}) },
+    stage: { mapId, hostEventId: cutId, frames: sim.frames, walks: sim.walks, checks, letterbox, effects, ...(hero ? { hero } : {}) },
   };
 }
 
