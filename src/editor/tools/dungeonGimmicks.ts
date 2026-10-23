@@ -242,7 +242,7 @@ function placeTeleporter(c: Ctx): string {
   for (const r of c.rooms) { const keep = r.spots.filter(far); r.spots.splice(0, r.spots.length, ...keep); }
   const pad = (id: string, at: Pt, to: Pt, name: string): GameEvent => puzzleEvent(id, name, at, [makePage({
     id: `${id}_p`, name, graphic: TRANSPARENT, trigger: "playerTouch", priority: "below",
-    commands: [sfx("crystal-ping"), flash("#c9a7ff", 260), textCmd(`${word}이 빛나며 몸이 떠오른다…`), transferCmd(c.map.id, to, "down", "white")],
+    commands: [sfx("crystal-ping"), flash("purple", 260), textCmd(`${word}이 빛나며 몸이 떠오른다…`), transferCmd(c.map.id, to, "down", "white")],
   })]);
   upsertEventIntoMap(c.map, pad(`ev_${c.map.id}_warp_a`, ca, lb, `${word} (${A.id})`));
   upsertEventIntoMap(c.map, pad(`ev_${c.map.id}_warp_b`, cb, la, `${word} (${B.id})`));
@@ -515,11 +515,11 @@ export function placeTowerWarp(draft: Project, bottom: GameMap, bottomData: Reco
     makePage({ id: `ev_${bottom.id}_warp_up_p1`, name: "봉인된 마법진", graphic: TRANSPARENT, trigger: "action", priority: "below",
       commands: [textCmd("희미하게 빛나는 마법진이다. 위쪽 어딘가에서 봉인을 풀어야 움직일 것 같다.")] }),
     makePage({ id: `ev_${bottom.id}_warp_up_p2`, name: "꼭대기로 가는 마법진", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: TRANSPARENT, trigger: "playerTouch", priority: "below",
-      commands: [sfx("crystal-ping"), flash("#c9a7ff", 260), textCmd("마법진이 빛나며 몸이 떠오른다… 탑 꼭대기로!"), transferCmd(top.id, lb, "down", "white")] }),
+      commands: [sfx("crystal-ping"), flash("purple", 260), textCmd("마법진이 빛나며 몸이 떠오른다… 탑 꼭대기로!"), transferCmd(top.id, lb, "down", "white")] }),
   ]));
   upsertEventIntoMap(top, puzzleEvent(`ev_${top.id}_warp_down`, "1층으로 가는 마법진", cb, [
     makePage({ id: `ev_${top.id}_warp_down_p1`, name: "1층으로 가는 마법진", graphic: TRANSPARENT, trigger: "playerTouch", priority: "below",
-      commands: [{ kind: "setSwitch", switchId: sw, value: true } as Command, sfx("crystal-ping"), flash("#c9a7ff", 260), textCmd("마법진의 봉인이 풀렸다! 1층 마법진과 이어졌다."), transferCmd(bottom.id, la, "down", "white")] }),
+      commands: [{ kind: "setSwitch", switchId: sw, value: true } as Command, sfx("crystal-ping"), flash("purple", 260), textCmd("마법진의 봉인이 풀렸다! 1층 마법진과 이어졌다."), transferCmd(bottom.id, la, "down", "white")] }),
   ]));
   return `층 건너 마법진: ${bottom.name} ${roomA.id}(${ca.x},${ca.y}) 봉인 ↔ ${top.name} ${roomB.id}(${cb.x},${cb.y}) — 꼭대기 마법진을 밟으면 봉인이 풀리고 1층으로 내려간다(스위치 ${sw}). 그 뒤로 두 마법진이 오간다.`;
 }
