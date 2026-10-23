@@ -3,13 +3,13 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 1775,
-  "kits_checked": 56,
+  "tiles_checked": 1843,
+  "kits_checked": 58,
   "groups_checked": 25,
   "autotiles_checked": 1
  },
  "reassembly": {
-  "kits": 56,
+  "kits": 58,
   "mismatched": 0,
   "ids": []
  },
@@ -17,19 +17,19 @@
   "cells_off_palette": 0
  },
  "tiles": {
-  "count": 1775,
-  "rows": 37,
-  "kits": 56,
+  "count": 1843,
+  "rows": 39,
+  "kits": 58,
   "groups": 25,
   "autotiles": 1,
   "animationStrips": 1
  },
  "animation_noncontiguous": [],
  "adopted": {
-  "pieces": 57,
+  "pieces": 59,
   "by_group": {
    "ground": 19,
-   "ruins": 8,
+   "ruins": 10,
    "shacks": 6,
    "defense": 3,
    "props": 21
@@ -195,6 +195,11 @@
   },
   {
    "id": "rubble-pile-b",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "husk-f",
    "status": "skipped",
    "why": "감독 결정으로 키트에서 뺌"
   },
