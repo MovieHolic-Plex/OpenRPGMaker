@@ -182,7 +182,6 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       session,
       slots: listSaveSlots(window.localStorage),
       message,
-      elapsedMs: options.getPlayStartedAt() > 0 ? performance.now() - options.getPlayStartedAt() : 0,
       selectedCommand,
       mode,
       inventoryView,

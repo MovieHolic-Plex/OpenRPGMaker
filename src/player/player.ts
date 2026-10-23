@@ -186,7 +186,6 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   let titleConfirmTimer: ReturnType<typeof setTimeout> | undefined;
   let game: Phaser.Game | null = null;
   let startRun = 0;
-  let playStartedAt = 0;
   let titleMenuIndex = 0;
   let titleConfirming = false;
   let loadDetach: (() => void) | null = null;
@@ -243,7 +242,6 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     cleanupPlaySurface?.();
     cleanupPlaySurface = null;
     playStage = null;
-    playStartedAt = 0;
     // 고친 프로젝트 스냅숏은 런과 수명이 같다. LIFO 로 풀어야 호스트(테스트 플레이 창)가
     // 올려 둔 샌드박스 스냅숏이 되돌아온다.
     releaseBootProject?.();
@@ -319,7 +317,6 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     warnIfPlayBootIssues(store.getCurrent());
     const run = ++startRun;
     const startedAt = performance.now();
-    playStartedAt = startedAt;
     clearChildren(layout);
     const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleFor(store.getCurrent()), store.getCurrent().system.displayFilter, { topAlignPortrait: pointerInput });
     playStage = surface.stage;
@@ -768,7 +765,6 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     layout,
     getActiveScene: activeScene,
     getPlayStage: () => playStage,
-    getPlayStartedAt: () => playStartedAt,
     closeMenu,
     closeMenuWithJuice,
     renderTitle: () => renderTitle(),
@@ -890,6 +886,12 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const renderTitle = (titleOptions: { readonly emitEnterJuice?: boolean } = {}): void => {
     titleConfirming = false;
     const firstEnter = titleOptions.emitEnterJuice ?? true;
+    // 타이틀에 **새로 들어올 때** 커서는 언제나 첫 항목(새 게임)에서 시작한다. 이전 판에서 「이어하기」로
+    // 내려 두었던 커서가 남아 있으면, 게임 오버 뒤 타이틀에서 Enter 가 새 게임이 아니라 이어하기를 눌러
+    // 죽은 판의 오토세이브로 되돌아갔다(2026-10-23 실측: 세션 359-364 재현 — 이어하기로 내려간 커서가
+    // 두 번째 게임 오버 뒤에도 남아 있었다). 방향키 이동은 updateTitleSelection 만 쓰고 이 함수를
+    // 다시 부르지 않으므로, 여기서 0 으로 되돌려도 커서 이동 중의 선택은 깨지지 않는다.
+    if (firstEnter) titleMenuIndex = 0;
     const redrawOfTitle = !firstEnter && !!layout.querySelector("[data-testid='title-screen']");
     // 방향키 재렌더가 파티클 canvas/레이어 스택을 파괴하지 않도록, 지우기 전에 기존 fx 노드를
     // 붙잡아 renderTitleScreen 에 넘긴다(설정 서명이 같으면 같은 노드가 새 루트로 move 된다).

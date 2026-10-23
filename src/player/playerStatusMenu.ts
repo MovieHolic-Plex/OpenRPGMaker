@@ -42,7 +42,6 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   const mode = options.mode ?? "main";
   const waitModeEnabled = options.waitModeEnabled ?? true;
   const snapshot = createPlayerStatusMenuSnapshot(options.project, options.session, {
-    elapsedMs: options.elapsedMs,
     waitModeEnabled,
   });
   // 스킨(자료집 → 시스템 → 화면)은 DOM 골격을 바꾸지 않는다 — 루트 속성만 쓰고 CSS 가 배치·색·아이콘을 갈아입는다.
