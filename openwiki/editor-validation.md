@@ -46,6 +46,7 @@
 | `scene-actor-head-under-upper` | 장면 페이지를 차례로 읽어 moveEvent 경로 끝 칸(지나갈 수 있는 칸)마다 바로 위 칸의 upperTiles·upperOverlayTiles 가 ★(항상 위, 계단·foot-dy 제외)이면 경고. 소품이 머리를 덮는다. 첫사랑 r15 편의점 |
 | `scene-bust-side-switch` | 페이지를 차례로 읽어 흉상 changeFace(presentation bust)의 인물(흉상 id 에서 표정 꼬리를 뗀 것)마다 자리를 기억하고, 장소 이동·fadeOut 전에 반대 자리로 나오면 경고. 첫사랑 VQA r16 |
 | `scene-route-through-actor` | 페이지를 차례로 읽어 그 페이지가 움직인 인물의 자리를 기억하고, 다른 인물의 경로 걸음(지나감 구간 제외)이 기다림 없이 서 있는 인물 칸을 밟으면 경고. 기다리지 않는 경로로 걷는 중인 인물은 세지 않는다. 첫사랑 r40 |
+| `scene-exit-blocked` | 페이지를 갈래(선택지·조건)마다 따로 읽어 장면이 움직인 인물과 주인공(이 맵으로 들어오는 이동이 모두 같은 칸이면 그 칸)의 자리를 기억하고, `exitVia` 가 시작하는 순간 문 칸까지 BFS(엔진 `canMove`, 서 있는 인물 칸은 막힘, 기다리지 않는 경로로 걷는 중인 인물은 통과)가 닿지 않으면 경고. 런타임 `expandExitVia` 는 길이 없으면 제자리에서 사라진다. 첫사랑 r34 |
 | `scene-arrival-faces-exit` | 짝 없는 한쪽 이동(문형 왕복 짝은 `scene-transfer-pair` 몫)의 도착 방향 1~2칸 앞에 이동 칸이나 문·계단 그림이 있다 — 막 지나온 문을 보고 선다 |
 
 인물 연출 셋(`src/project/lint/sceneStagingLint.ts`, 2026-10-22): 페이지 조건(스위치·변수·셀프 스위치, 어디서도 안 켜는 스위치는 꺼짐)으로 시작 시점 보이는 인물을 정하고, 주인공 위치는 그 맵으로 오는 유일한 이동 착지 → 조사 트리거 앞 칸 → 시작 위치 순.

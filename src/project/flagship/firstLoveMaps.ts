@@ -432,10 +432,11 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
     ambient: 0.46, color: "#101836",
     // 승강장에는 가로등이 없다 — 실제로 빛나는 것(발차 LED 판·자판기·매표기·벽시계·역명 간판)만 켠다.
     sources: [
-      light("fl_led_a", { x: 10, y: 3 }, 4, "#bfe0ff", 0.8), light("fl_led_b", { x: 24, y: 3 }, 4, "#bfe0ff", 0.8), light("fl_led_c", { x: 38, y: 3 }, 4, "#bfe0ff", 0.8),
-      light("fl_vend_a", { x: 2, y: 4 }, 3, "#d9f4ff", 0.85), light("fl_vend_b", { x: 4, y: 4 }, 3, "#d9f4ff", 0.85),
-      light("fl_kiosk", { x: 19, y: 4 }, 4, "#fff0c8", 0.8),
-      light("fl_sign_a", { x: 11, y: 8 }, 4, "#fff0c8", 0.8), light("fl_sign_b", { x: 25, y: 8 }, 4, "#fff0c8", 0.8), light("fl_sign_c", { x: 39, y: 8 }, 4, "#fff0c8", 0.8),
+      // 둥근 빛 웅덩이 여럿이 바닥에 겹쳐 «지하에 비스듬히 드는 햇살»처럼 읽혔다(VQA r34) — 역명 간판 불(바닥 한가운데 줄)을 빼고,
+      // 발차 LED·자판기·매표기는 그 기계 둘레만 작게 밝힌다.
+      light("fl_led_a", { x: 10, y: 3 }, 2.2, "#bfe0ff", 0.7), light("fl_led_b", { x: 24, y: 3 }, 2.2, "#bfe0ff", 0.7), light("fl_led_c", { x: 38, y: 3 }, 2.2, "#bfe0ff", 0.7),
+      light("fl_vend_a", { x: 2, y: 4 }, 2, "#d9f4ff", 0.8), light("fl_vend_b", { x: 4, y: 4 }, 2, "#d9f4ff", 0.8),
+      light("fl_kiosk", { x: 19, y: 4 }, 2.2, "#fff0c8", 0.7),
     ],
   };
   // 편의점은 밤에만 들른다 — 바깥 광장은 어두운 밤, 가게 안은 형광등이 켜진 밝은 바닥. 거리의 어두운 조명을 물려받지 않게 따로 건다.

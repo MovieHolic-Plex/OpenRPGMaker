@@ -407,6 +407,19 @@ function buildEndingCg(terminal: TerminalScene, project: Project, presentation: 
   return { layer, mode: partnerFigure ? "couple" : "scene", badge: endingBadge(endingId, Boolean(partnerFigure), presentation), epilogue };
 }
 
+/**
+ * 엔딩 그림 카드의 요약 글을 판에 맞는 가장 큰 크기로 — 고정 3.4cqh 는 다섯 줄 요약이 1배 화면에서 8px 로 작았고(첫사랑 VQA r34),
+ * 키우면 여섯 줄 요약이 판 아래로 잘렸다(r31). 큰 크기부터 판(.ending-epilogue)에 다 들어갈 때까지 줄인다. 잴 수 없으면(레이아웃 없음) CSS 값 그대로.
+ */
+function fitEndingMessage(epilogue: HTMLElement): void {
+  const message = epilogue.querySelector<HTMLElement>(".ending-message");
+  if (!message || epilogue.clientHeight <= 0) return;
+  for (let size = 4.6; size >= 3; size -= 0.2) {
+    message.style.fontSize = `${size.toFixed(1)}cqh`;
+    if (epilogue.scrollHeight <= epilogue.clientHeight + 1) return;
+  }
+}
+
 export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string): void {
   const terminal = createTerminalScene(scene, "ending", title || endingText("ending.heading"));
   if (!terminal) return;
@@ -448,6 +461,7 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const body = message || cg?.epilogue;
     if (body) epilogue.append(textNode("div", "ending-message", body));
     terminal.root.append(epilogue);
+    if (cg) fitEndingMessage(epilogue);
     terminal.phase("epilogue");
     if (!await terminal.wait(1800)) return;
     const hint = textNode("div", "game-over-hint", endingText("ending.continue"));

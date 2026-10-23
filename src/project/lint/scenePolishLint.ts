@@ -27,6 +27,7 @@
 //  - scene-tint-clears-fade        화면을 검게 덮은(fadeOut) 뒤 fadeIn 전에 「Tint Screen」 으로 색조를 바꾼다 — 페이드도 같은 색조 칸이라 검은 덮개가 걷혀 다음 장면 전에 화면이 드러난다
 //  - scene-actor-head-under-upper  인물이 걸어가 선 칸 바로 위에 «항상 위» 위층 소품(★, 계산대 위 물건 등)이 있다 — 소품이 머리를 덮은 채 대화한다
 //  - scene-bust-side-switch        한 장면(페이지, 장소 이동·fadeOut 사이) 안에서 같은 인물 흉상이 왼쪽·오른쪽을 오간다
+//  - scene-exit-blocked            exitVia 가 출발하는 순간 서 있는 인물(주인공 포함)에 막혀 문까지 길이 없다 — 런타임은 제자리에서 사라졌다 다시 보인다
 //  - scene-route-through-actor     장면 경로가 그 자리에 서 있는(움직이지 않는) 다른 인물의 칸을 지나간다 — 엔진이 그 걸음을 건너뛰어 엉뚱한 칸에서 멈춘다
 //  - scene-actor-under-furniture   보이는 인물을 «위층(upper)» 가구 칸(의자 등받이·탁자처럼 인물보다 앞에 그려지는 막힌 칸)에 세운다 — 가구가 얼굴을 덮는다(위를 보고 앉힌 인물은 예외)
 //  - scene-route-interrupted       기다리지 않는 긴 경로(퇴장 등)가 도는 인물에게 같은 장면이 다시 이동·돌기를 시킨다 — 뒤 명령이 앞 경로를 갈아 끼워 인물이 길 한가운데 멈춘다
@@ -1395,6 +1396,118 @@ function checkRouteThroughActor(project: Project, issues: LintIssue[]): void {
   }
 }
 
+// ---------------------------------------------------------------------------- 문까지 길이 막힌 퇴장
+
+/** 이 맵으로 들어오는 이동이 모두 같은 칸이면 그 칸이 주인공이 장면을 시작하는 자리다(아니면 모름). */
+function playerArrival(project: Project, mapId: string, gates: readonly Gate[]): Cell | null {
+  const cells = new Set(gates.filter((g) => g.transfer.mapId === mapId).map((g) => `${g.transfer.x},${g.transfer.y}`));
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events ?? []) {
+      for (const page of pagesOf(event)) {
+        for (const c of walk(page.commands)) if (c.kind === "transfer" && c.mapId === mapId) cells.add(`${c.x},${c.y}`);
+      }
+    }
+  }
+  if (cells.size !== 1) return null;
+  const [x, y] = [...cells][0]!.split(",").map(Number);
+  return { x: x!, y: y! };
+}
+
+/**
+ * exitVia 는 출발하는 순간 문까지 길을 찾고, 그때 서 있는 인물(주인공 포함)을 벽으로 본다. 길이 없으면 «가장 가까운 칸에서 사라진다» —
+ * 실제로는 제자리에서 깜박 사라졌다가 다시 보이고 그대로 선다(첫사랑 엔딩 C: 팀장 오른쪽 민호와 회의석 주인공이 유일한 두 길을 막아
+ * 팀장이 0.6초 사라졌다 다시 나타나 문 쪽을 보지도 않고 남았다, VQA r34 중대). 장면 순서대로 인물 칸을 따라가 퇴장 순간 길을 본다.
+ * 기다리지 않는 경로로 함께 걷는 인물은 비켜 가므로 막힘으로 세지 않는다. 문에 가까운 사람부터 내보내면 풀린다.
+ */
+function checkExitBlocked(project: Project, issues: LintIssue[], gates: readonly Gate[]): void {
+  for (const map of Object.values(project.maps)) {
+    const byId = new Map((map.events ?? []).map((e) => [e.id, e] as const));
+    const hiddenBySwitch = switchesThatHide(map, false);
+    const doorOf = doorCellFinder(map, gates);
+    const hero = playerArrival(project, map.id, gates);
+    const W = map.width, H = map.height;
+    for (const host of map.events ?? []) {
+      for (const page of pagesOf(host)) {
+        type St = { pos: Map<string, Cell>; moving: Set<string> };
+        const reported = new Set<string>();
+        const step = (command: Command, { pos, moving }: St): void => {
+          if (m2Title(command) === "Wait for All Movement") { moving.clear(); return; }
+          if (m2Title(command) === "Erase Event") { pos.delete(fieldStr(command, "eventId") || host.id); return; }
+          if (command.kind === "setSwitch" && command.value === true) {
+            for (const npc of hiddenBySwitch.get(command.switchId) ?? []) pos.delete(npc.id);
+            return;
+          }
+          if (command.kind !== "moveEvent") return;
+          const isHero = command.eventId?.trim?.() === "@player";
+          const routeId = isHero ? "@player" : routeTarget(command, host);
+          if (!routeId || (!isHero && !byId.has(routeId))) return;
+          const start = pos.get(routeId) ?? (isHero ? null : { x: byId.get(routeId)!.x, y: byId.get(routeId)!.y });
+          if (!start) return;
+          let cur = { ...start };
+          let gone = false;
+          for (const m of command.route?.moves ?? []) {
+            if (!m || typeof m !== "object") continue;
+            if (m.kind === "move") { cur = { x: cur.x + STEP[m.dir].x, y: cur.y + STEP[m.dir].y }; continue; }
+            if (m.kind === "placeAt" && typeof (m as { x?: number }).x === "number") { cur = { x: (m as { x: number }).x, y: (m as { y: number }).y }; continue; }
+            if (m.kind === "changeOpacity" && m.delta <= -200) { gone = true; continue; }
+            if (m.kind !== "exitVia") continue;
+            gone = true;
+            const door = doorOf(m, cur);
+            if (!door || reported.has(routeId)) break;
+            const blocked = new Set([...pos].filter(([id]) => id !== routeId && !moving.has(id)).map(([, c]) => `${c.x},${c.y}`));
+            const seen = new Set([`${cur.x},${cur.y}`]);
+            const queue: Cell[] = [cur];
+            let found = cur.x === door.x && cur.y === door.y;
+            while (queue.length && !found) {
+              const a = queue.shift()!;
+              for (const d of Object.values(STEP)) {
+                const b = { x: a.x + d.x, y: a.y + d.y };
+                const k = `${b.x},${b.y}`;
+                if (b.x < 0 || b.y < 0 || b.x >= W || b.y >= H || seen.has(k)) continue;
+                const isDoor = b.x === door.x && b.y === door.y;
+                if (!isDoor && (blocked.has(k) || !canMove(project, map, a.x, a.y, b.x, b.y))) continue;
+                if (isDoor) { found = true; break; }
+                seen.add(k);
+                queue.push(b);
+              }
+            }
+            if (!found) {
+              reported.add(routeId);
+              const who = [...pos].filter(([id]) => id !== routeId && !moving.has(id)).map(([id, c]) => `${id === "@player" ? "주인공" : id}(${c.x},${c.y})`).join("·");
+              issues.push({
+                severity: "warning", code: "scene-exit-blocked", mapId: map.id, eventId: host.id, x: cur.x, y: cur.y,
+                message: `이벤트 ${host.id} 의 장면이 ${routeId} 를 (${cur.x},${cur.y}) 에서 문 (${door.x},${door.y}) 으로 내보내는데(exitVia), 그 순간 서 있는 인물 ${who || "—"} 에 막혀 길이 없다 — 런타임은 제자리에서 깜박 사라졌다가 다시 보이고 그대로 선다. 문 쪽 길을 막은 사람을 먼저 내보내거나(기다리지 않는 경로로 먼저 출발), 막은 사람을 비키게 한 뒤 내보낸다.`,
+              });
+            }
+            break;
+          }
+          if (gone) pos.delete(routeId); else pos.set(routeId, cur);
+          if (command.route?.wait === false) moving.add(routeId); else moving.delete(routeId);
+        };
+        // 선택지·조건 갈래는 갈래 앞 무대에서 따로 따라간다(한 줄로 읽으면 앞 갈래의 퇴장·걸음이 뒤 갈래 무대를 어지럽힌다).
+        const replay = (commands: readonly Command[] | undefined, st: St): boolean => {
+          for (const command of commands ?? []) {
+            if (!command || typeof command !== "object") continue;
+            if (command.kind === "transfer") return true;
+            step(command, st);
+            const branches = nestedCommandLists(command);
+            if (!branches.length) continue;
+            let first: St | undefined;
+            for (const branch of branches) {
+              const copy: St = { pos: new Map([...st.pos].map(([k, v]) => [k, { ...v }])), moving: new Set(st.moving) };
+              replay(branch, copy);
+              first ??= copy;
+            }
+            if (first) { st.pos = first.pos; st.moving = first.moving; }
+          }
+          return false;
+        };
+        replay(page.commands, { pos: new Map(hero ? [["@player", { ...hero }]] : []), moving: new Set() });
+      }
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------- 흉상 시선
 
 /**
@@ -1596,6 +1709,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkActorHeadUnderUpper);
   guard(checkBustSideSwitch);
   guard(checkRouteThroughActor);
+  guard(checkExitBlocked);
   guard(checkMapSmallerThanScreen);
   guard(checkLetterboxDialogue);
   guard(checkCommandsAfterTransfer);
