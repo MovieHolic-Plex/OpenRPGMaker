@@ -857,7 +857,7 @@ function dressPyramid(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | nu
   const sarco = pickKit(c, [TK("pharaoh-sarcophagus"), SW("coffin")]);
   const statue = pickKit(c, [TK("jackal-statue"), TP("column-temple")]);
   const gold = pickKit(c, [TK("gold-pile"), DS("jars")]);
-  const drift = pickKit(c, [TK("sand-drift"), DS("bones")]);
+  const drift = pickKit(c, rs() < 0.5 ? [TK("sand-drift-2"), TK("sand-drift"), DS("bones")] : [TK("sand-drift"), DS("bones")]);
   const torch = () => TORCH;
   const sand = (n: number) => sprinkle(c, rs, r, 0.05, () => c.weighted(rs, [[drift, 4], [DS("bones"), 1], [DS("jars"), 1]]), { inset: 1, rad: 2, max: n });
   switch (r.kind) {
@@ -1006,14 +1006,20 @@ function dressOtherworld(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot |
         stand(c, fire, throne[0] - 2, throne[1] + 1); stand(c, fire, throne[0] + w + 1, throne[1] + 1);
         c.seats[r.id] = { x: throne[0] + Math.floor(w / 2), y: throne[1] + 2 };
       }
-      const portal = pickKit(c, [TK("portal-gate")]);
+      // 열린 차원문(소용돌이 3장면) — 마왕이 건너온 문. 없으면 봉인된 문.
+      const portal = pickKit(c, [TK("portal-gate-open"), TK("portal-gate")]);
       if (c.hasKit(portal)) sprinkle(c, rs, r, 0.05, () => portal, { inset: 2, rad: 3, max: 1 });
       for (const [x, y] of [[r.x + 2, r.y + r.h - 3], [r.x + r.w - 3, r.y + r.h - 3]] as const) stand(c, pillar, x, y);
       vinesOnWalls(c, rs, slots, 4, VC("hanging-chain"));
       edgeBits(8);
       return true;
     }
-    case "vault": { edgeBits(5); return true; }
+    case "vault": {
+      const sealed = pickKit(c, [TK("portal-gate")]);
+      if (c.hasKit(sealed)) standNorth(c, r, sealed, 1);
+      edgeBits(5);
+      return true;
+    }
     default: return false;
   }
 }
@@ -1023,7 +1029,7 @@ function dressIce(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null, 
   const rock = () => pickKit(c, rs() < 0.5 ? ["bd-pick-dungeon-gap-ice-rock", SF("rock")] : [SF("rock")]);
   const icicle = pickKit(c, [TK("icicles"), CV("vines-2")]);
   const frozen = pickKit(c, [TK("frozen-warrior"), SF("snowman")]);
-  const drift = pickKit(c, [TK("snow-drift"), SF("mound")]);
+  const drift = pickKit(c, rs() < 0.5 ? [TK("snow-drift-2"), TK("snow-drift"), SF("mound")] : [TK("snow-drift"), SF("mound")]);
   const bits = () => c.weighted(rs, [[drift, 3], [rock(), 2], [CV("stalagmite-1"), 2], [crystal, 2], [SF("mound"), 1]]);
   const e = c.edgeCells(r, rs);
   const edgeBits = (n: number) => { let k = 0; for (const [x, y] of e) { if (k >= n) break; if (rs() < 0.5 && lonely(c, x, y, 1) && stand(c, bits(), x, y)) k += 1; } };

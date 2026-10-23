@@ -356,6 +356,29 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     if (gapWater) { lower[idx(x, y)] = autoCell(gapWater, m, x, y); continue; }
     lower[idx(x, y)] = canal?.variantMap[String(m)] ?? canal?.variantMap["255"] ?? voidTile;
   }
+  // 마계 허공(주제 그림 other.void_edge 가 구워져 있으면): 허공 칸 = 별빛 허공 몸통, 섬 바닥 바로 남쪽 두 칸 = 섬 밑 바위(1·2단),
+  // 허공에 닿는 바닥 칸 = 턱 오토타일(허공 쪽만 열림). 없으면 위 천장 오토타일 어둠 그대로.
+  const voidEdge = voidLiquid ? (ts.autotileGroups ?? []).find((a) => a.id === "beodeul_dungeon_theme_void_edge") : undefined;
+  if (voidEdge && hasKit(TK("void-body")) && hasKit(TK("void-underside"))) {
+    const isVoid = (x: number, y: number) => inb(x, y) && isFloor(x, y) && liquid[idx(x, y)] === 1 && !bridge[idx(x, y)];
+    const isGround = (x: number, y: number) => inb(x, y) && isFloor(x, y) && liquid[idx(x, y)] !== 1;
+    const bodies = kit(TK("void-body")).rows[0]!.tiles;
+    const under = kit(TK("void-underside")).rows;
+    const depth = (x: number, y: number): number => (!isVoid(x, y) ? 0 : isGround(x, y - 1) ? 1 : isVoid(x, y - 1) && isGround(x, y - 2) ? 2 : 0);
+    const bits: [number, number, number][] = [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]];
+    for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+      if (isVoid(x, y)) {
+        const d = depth(x, y);
+        lower[idx(x, y)] = d ? under[d - 1]!.tiles[(depth(x - 1, y) !== d ? 2 : 0) + (depth(x + 1, y) !== d ? 1 : 0)]! : bodies[Math.floor(hash01(x, y, seed * 7 + 11) * bodies.length)]!;
+        continue;
+      }
+      if (!isGround(x, y)) continue;
+      let touches = false;
+      let m = 0;
+      for (const [dx, dy, bit] of bits) { if (isVoid(x + dx, y + dy)) touches = true; else m |= bit; }
+      if (touches) lower[idx(x, y)] = autoCell(voidEdge, m, x, y);
+    }
+  }
   if (liquidCells && profile.liquid === "water" && !canal && !gapWater) warnings.push("이 타일셋 사본에 물 오토타일(beodeul_canal_lake_47)이 없어 물이 그려지지 않았다.");
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
     if (!bridge[idx(x, y)]) continue;

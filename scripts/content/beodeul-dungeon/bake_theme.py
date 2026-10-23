@@ -101,9 +101,9 @@ PART_NAME = {
     "tc.pyr_statue": {"자칼": "jackal-statue", "풍뎅이": "scarab-statue"},
     "tc.sw_boardwalk": {"끝": "boardwalk", "부서짐": "boardwalk-broken"},
     "tc.ice_icicles": {"1칸": "icicles", "2칸": "icicles-2w"},
-    "other.portal": {"닫힘": "portal-gate"},
+    "other.portal": {"닫힘": "portal-gate", "움직임": "portal-gate-open"},
 }
-FRAME_RE = re.compile(r"^(장면|frame)\s*\d+$")
+FRAME_RE = re.compile(r"^(장면|frame|열림)\s*\d+$")
 # 걷는 칸뿐인 바닥 그림(투명 데칼)도 위층에 둔다 — 버들항 깔개·모자이크와 같이 upperTiles + 우선순위 lower(사람 밑).
 PASS_LAYER = {"o": "lower", "★": "upper", "x": "upper"}
 
@@ -324,6 +324,48 @@ def bake_lava_r2(st, p, line, meta, origin):
 
 
 HANDLERS["gap.lava_edge"] = bake_lava_r2
+
+
+def bake_void_edge(st, p, line, meta, origin):
+    """마계 떠 있는 섬: 바닥+턱 오토타일(이웃 = 바닥, 허공 쪽에 턱) · 허공 몸통(섞음) · 섬 밑 앞면 2단×양 끝 4가지(허공 0번 위에 얹음).
+    시공기: 허공 칸 = 허공 몸통, 바닥 바로 남쪽 허공 = 앞면 1단, 그 밑 = 2단 (theme_arcane_r1.VoidEdge.render 와 같은 규칙)."""
+    ve = G.mod(p["round"]).void_edge(p["letter"])
+    gid = "beodeul_dungeon_theme_void_edge"
+    tags = ["주제", "마계", "허공", "바닥", "floor"] + themes_of(p["item"])[2:]
+    def cmeta(m):
+        s_ = G.mask_sides(m)
+        return G.cm("버들항 던전 · 마계 떠 있는 섬 바닥" + (f"({s_} 허공 턱)" if s_ else " 몸통"),
+                    f"마계 바닥 ↔ 허공 턱 오토타일(마스크 {m}, 이웃 = 바닥). 걸음. 그룹 `{gid}`.", tags, "passable", "lower")
+    g = G.bake_autotile(st, ve.at, gid, "버들항 던전 마계 떠 있는 섬 바닥(허공 턱)", origin, cmeta)
+    g["edgeConnects"] = False
+    vtags = ["주제", "마계", "허공", "void", "섞음"] + themes_of(p["item"])[2:]
+    voids = [st.cell(v, G.cm(f"버들항 던전 · 마계 허공 {i}", "별빛이 도는 보라 검은 허공. 막힘.", vtags, "solid", "lower"), origin) for i, v in enumerate(ve.voids)]
+    under = []
+    for level in (0, 1):
+        row = []
+        for lo in (False, True):
+            for ro in (False, True):
+                t = dot.Cv(T, T)
+                t.a[:] = ve.voids[0].a
+                t.paste(ve.face_raw.tile(level, lo, ro), 0, 0)
+                ends = "·".join(n for n, b in (("왼끝", lo), ("오른끝", ro)) if b) or "가운데"
+                row.append(st.cell(t, G.cm(f"버들항 던전 · 마계 섬 밑 바위 {level + 1}단 {ends}", "떠 있는 섬 밑 바위 앞면(허공 위). 막힘.",
+                                           ["주제", "마계", "허공", "섬 밑"] + themes_of(p["item"])[2:], "solid", "lower"), origin))
+        under.append(row)
+    kits = [G.kit(f"{KP}void-body", f"버들항 던전 · 마계 허공 몸통 {len(voids)}×1(섞음)", len(voids), 1, blank(len(voids), 1), [voids],
+                  desc="마계 허공 몸통 변형. 칸마다 섞어 깐다.", rules="허공 칸 전부(막힘).", tags=vtags, role="floor", repeat="repeat",
+                  layer_home="lower", themes=themes_of(p["item"])),
+            G.kit(f"{KP}void-underside", "버들항 던전 · 마계 섬 밑 바위 4×2", 4, 2, blank(4, 2), under,
+                  desc="줄 = 단(1단: 바닥 바로 남쪽 허공, 2단: 그 밑), 열 = 양 끝(가운데 · 오른끝 · 왼끝 · 양끝).",
+                  rules="섬 바닥 남쪽 허공 두 칸.", tags=["주제", "마계", "허공"], role="floor", layer_home="lower", themes=themes_of(p["item"]))]
+    tg = dict(id=f"{G.TILEGROUP_PREFIX}_other_void_edge", name="버들항 던전 주제 마계 허공 가장자리", role="floor", source="bundled-default",
+              defaultLayer="lower", confidence="high", tileIds=sorted(set(g["memberTileIds"]) | set(voids) | {t for r in under for t in r}),
+              description=f"마계 섬 바닥 턱 오토타일 `{gid}` + 허공 몸통 {KP}void-body + 섬 밑 {KP}void-underside. 하네스 {p['round']} {p['letter']}.",
+              placementRules="otherworld 던전의 허공 칸과 그 둘레 바닥. author_dungeon 이 저절로 쓴다.")
+    return [g], [tg], kits
+
+
+HANDLERS["other.void_edge"] = bake_void_edge
 
 
 def current_picks():

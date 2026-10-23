@@ -1013,6 +1013,66 @@
    "by": "delegated",
    "delegatedBy": "delegated by user to supervisor 2026-10-23",
    "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-panel-3.json"
+  },
+  {
+   "round": "theme-arcane-r2",
+   "item": "other.portal",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "5a62f0aeacddf909d05139e08011c05c9a4a766d7b6271498ed8f6dea64c38b9",
+   "note": "",
+   "at": "2026-10-23T15:04:34",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r2-panel-2.json"
+  },
+  {
+   "round": "theme-arcane-r2",
+   "item": "other.void_edge",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "6e4b51582d0c08186eb55ef01c4087be11116fc993ebf205bb76773eb72c26e7",
+   "note": "",
+   "at": "2026-10-23T15:04:35",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r2-panel-2.json"
+  },
+  {
+   "round": "theme-climate-r2",
+   "item": "tc.ice_drift",
+   "line": "*",
+   "letter": "A2",
+   "sha256": "17f424f1283831801b8a1e7cb822881765fe9ea50ef73b3d0faa74ab9500a431",
+   "note": "panel 2 (4/4, 0 counted majors) + object-gate PASS 030705aad130 on the candidate image itself (debris)",
+   "at": "2026-10-23T15:17:11",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r2-panel-2.json"
+  },
+  {
+   "round": "theme-climate-r2",
+   "item": "tc.pyr_drift",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "5a7c02a5e937895a59960fb469d203e32af5bc4ade6d6771e4f3787508715668",
+   "note": "panel 3 (0 counted majors; A2 excluded by object-gate FAIL 02d20e9a5f1d) + object-gate PASS 2d0ebcaaba33 on the candidate image itself (debris)",
+   "at": "2026-10-23T15:17:13",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r2-panel-3.json"
+  },
+  {
+   "round": "theme-climate-r2",
+   "item": "tc.pyr_floor",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "3fb5febf6f6e6158c0fad3c9635fa54c6e3d91e829f8df83c67a09217a8b077f",
+   "note": "panel 4 (4/4, 0 counted majors) + object-gate PASS 604b2ebab286 on the candidate image itself (terrain)",
+   "at": "2026-10-23T15:19:14",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r2-panel-4.json"
   }
  ],
  "rejects": [],
@@ -17515,6 +17575,185 @@
     "earth.statue_head": {
      "A1": "3eed739c6ee5e223c3d94660dd46a993732081057c99e6328b944454a1a595e5",
      "A2": "f04d856c5e88078652ee7fedbee73d5b932aa30a4ed12b8f05d51a4f307f83bd"
+    }
+   }
+  },
+  {
+   "round": "theme-arcane-r2",
+   "at": "2026-10-23T15:03:19",
+   "fail": 0,
+   "warn": 2,
+   "warnByCode": {
+    "OUTLINE": 2
+   },
+   "polish": [
+    {
+     "item": "other.void_edge",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 328화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: underside 앞면 왼끝 빛 쪽 먹·0단 66% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.void_edge",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 316화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: edge 북변 빛 쪽 먹·0단 66%; edge 서변 빛 쪽 먹·0단 67%; underside 앞면 왼끝 빛 쪽 먹·0단 77% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "other.void_edge": {
+     "A1": "6e4b51582d0c08186eb55ef01c4087be11116fc993ebf205bb76773eb72c26e7",
+     "A2": "065383ae7633349d7c0d1963c01706cf9ade619a66feaa56c0178d838785d626"
+    },
+    "other.portal": {
+     "A1": "5a62f0aeacddf909d05139e08011c05c9a4a766d7b6271498ed8f6dea64c38b9",
+     "A2": "45531f6b2ee974645f28b5877bff208d0d26b2c35f144e0955992ada23b7f75a"
+    }
+   }
+  },
+  {
+   "round": "theme-climate-r2",
+   "at": "2026-10-23T14:22:19",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "tc.pyr_floor": {
+     "A1": "48d3124640dfbf30655f8d9edc731abe5467376d0a88ac246b9c66e2fa172657",
+     "A2": "3812e8c23689031c2a88d6321241e2d20df3191ac37c746fc151773db2e26130"
+    },
+    "tc.pyr_drift": {
+     "A1": "acfd24d743a0d10b7e08cba6ff41c7ff43814eb59ca2b92e6c1dfa75beb8f6ef",
+     "A2": "bbf4063cdac7f6300ff7fbc95b3d21dc0d3005e3edbcabe24a947cbfcdfb5d39"
+    },
+    "tc.ice_drift": {
+     "A1": "c4c854b76d7ed2287d5226faa59a28fb7b5fa04440b3e23586dbdbd6539c816a",
+     "A2": "074d9dcb16a6c8274dca9f6ec7b0ca19bc10578268d87fd670e26af526c47880"
+    }
+   }
+  },
+  {
+   "round": "theme-climate-r2",
+   "at": "2026-10-23T14:34:53",
+   "fail": 0,
+   "warn": 1,
+   "warnByCode": {
+    "CONTRAST": 1
+   },
+   "polish": [
+    {
+     "item": "tc.pyr_drift",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 변형1(1칸) 그늘 쪽 0.54 vs 바닥 0.46 차 0.07; 변형2(1칸) 그늘 쪽 0.60 vs 바닥 0.46 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 변형1(1칸) 그늘 쪽 0.54 vs 바닥 0.38 차 0.15; 변형2(1칸) 그늘 쪽 0.60 vs 바닥 0.38 차 0.22 / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 변형1(1칸) 그늘 쪽 0.54 vs 바닥 0.44 차 0.10 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    }
+   ],
+   "hashes": {
+    "tc.pyr_floor": {
+     "A1": "de4b19edc8ba7ed2eff1f7869f909e906a064e24ebbe2522c461aef204a1e929",
+     "A2": "48d3124640dfbf30655f8d9edc731abe5467376d0a88ac246b9c66e2fa172657"
+    },
+    "tc.pyr_drift": {
+     "A1": "e9ad50f2ca095a90238cc38505a847fa4ce2b0e0be1be2d5f36e8647375f381b",
+     "A2": "acfd24d743a0d10b7e08cba6ff41c7ff43814eb59ca2b92e6c1dfa75beb8f6ef"
+    },
+    "tc.ice_drift": {
+     "A1": "c4c854b76d7ed2287d5226faa59a28fb7b5fa04440b3e23586dbdbd6539c816a",
+     "A2": "fad0a0e94e1617b6a8d3f216d821823a852e60b47c71cf55726bbc7c3b69694d"
+    }
+   }
+  },
+  {
+   "round": "theme-climate-r2",
+   "at": "2026-10-23T14:54:46",
+   "fail": 0,
+   "warn": 1,
+   "warnByCode": {
+    "CONTRAST": 1
+   },
+   "polish": [
+    {
+     "item": "tc.pyr_drift",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 변형1(1칸) 그늘 쪽 0.50 vs 바닥 0.46 차 0.04; 변형2(1칸) 그늘 쪽 0.56 vs 바닥 0.46 차 0.10 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 변형1(1칸) 그늘 쪽 0.50 vs 바닥 0.38 차 0.12 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 변형1(1칸) 그늘 쪽 0.50 vs 바닥 0.44 차 0.06; 변형2(1칸) 그늘 쪽 0.56 vs 바닥 0.44 차 0.12 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    }
+   ],
+   "hashes": {
+    "tc.pyr_floor": {
+     "A1": "de4b19edc8ba7ed2eff1f7869f909e906a064e24ebbe2522c461aef204a1e929",
+     "A2": "48d3124640dfbf30655f8d9edc731abe5467376d0a88ac246b9c66e2fa172657"
+    },
+    "tc.pyr_drift": {
+     "A1": "ef4401e9b79b3158e66ba2b8022c02730cc06ba5512ff9d948102b92c6b082a6",
+     "A2": "acfd24d743a0d10b7e08cba6ff41c7ff43814eb59ca2b92e6c1dfa75beb8f6ef"
+    },
+    "tc.ice_drift": {
+     "A1": "c4c854b76d7ed2287d5226faa59a28fb7b5fa04440b3e23586dbdbd6539c816a",
+     "A2": "17f424f1283831801b8a1e7cb822881765fe9ea50ef73b3d0faa74ab9500a431"
+    }
+   }
+  },
+  {
+   "round": "theme-climate-r2",
+   "at": "2026-10-23T15:05:05",
+   "fail": 0,
+   "warn": 1,
+   "warnByCode": {
+    "CONTRAST": 1
+   },
+   "polish": [
+    {
+     "item": "tc.pyr_drift",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 변형1(1칸) 그늘 쪽 0.55 vs 바닥 0.46 차 0.09 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 변형1(1칸) 그늘 쪽 0.55 vs 바닥 0.38 차 0.17; 변형2(1칸) 그늘 쪽 0.62 vs 바닥 0.38 차 0.24 / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 변형1(1칸) 그늘 쪽 0.55 vs 바닥 0.44 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    }
+   ],
+   "hashes": {
+    "tc.pyr_floor": {
+     "A1": "d1db714800df4582e26b5e532235c2aacb20c851051780c01b16333723dcae71",
+     "A2": "48d3124640dfbf30655f8d9edc731abe5467376d0a88ac246b9c66e2fa172657"
+    },
+    "tc.pyr_drift": {
+     "A1": "5a7c02a5e937895a59960fb469d203e32af5bc4ade6d6771e4f3787508715668",
+     "A2": "acfd24d743a0d10b7e08cba6ff41c7ff43814eb59ca2b92e6c1dfa75beb8f6ef"
+    },
+    "tc.ice_drift": {
+     "A1": "c4c854b76d7ed2287d5226faa59a28fb7b5fa04440b3e23586dbdbd6539c816a",
+     "A2": "17f424f1283831801b8a1e7cb822881765fe9ea50ef73b3d0faa74ab9500a431"
+    }
+   }
+  },
+  {
+   "round": "theme-climate-r2",
+   "at": "2026-10-23T15:15:05",
+   "fail": 0,
+   "warn": 1,
+   "warnByCode": {
+    "CONTRAST": 1
+   },
+   "polish": [
+    {
+     "item": "tc.pyr_drift",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 변형1(1칸) 그늘 쪽 0.55 vs 바닥 0.46 차 0.09 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 변형1(1칸) 그늘 쪽 0.55 vs 바닥 0.38 차 0.17; 변형2(1칸) 그늘 쪽 0.62 vs 바닥 0.38 차 0.24 / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 변형1(1칸) 그늘 쪽 0.55 vs 바닥 0.44 차 0.11 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
+    }
+   ],
+   "hashes": {
+    "tc.pyr_floor": {
+     "A1": "3fb5febf6f6e6158c0fad3c9635fa54c6e3d91e829f8df83c67a09217a8b077f",
+     "A2": "48d3124640dfbf30655f8d9edc731abe5467376d0a88ac246b9c66e2fa172657"
+    },
+    "tc.pyr_drift": {
+     "A1": "5a7c02a5e937895a59960fb469d203e32af5bc4ade6d6771e4f3787508715668",
+     "A2": "acfd24d743a0d10b7e08cba6ff41c7ff43814eb59ca2b92e6c1dfa75beb8f6ef"
+    },
+    "tc.ice_drift": {
+     "A1": "c4c854b76d7ed2287d5226faa59a28fb7b5fa04440b3e23586dbdbd6539c816a",
+     "A2": "17f424f1283831801b8a1e7cb822881765fe9ea50ef73b3d0faa74ab9500a431"
     }
    }
   }

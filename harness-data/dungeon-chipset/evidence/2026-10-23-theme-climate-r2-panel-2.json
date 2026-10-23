@@ -1,0 +1,463 @@
+{
+ "panel": "theme-climate-r2 blind panel 2 (3 fresh Opus + 1 Argon), 2026-10-23",
+ "rule": "a major counts only if at least 2 of the 4 judges raise the same problem; pick = candidate with 0 counted majors, majority vote among those",
+ "delegatedBy": "delegated by user to supervisor 2026-10-23",
+ "note": "Votes: floor A1 4/4, pyr_drift A2 4/4, ice_drift A2 4/4. pyr_drift A2 (panel-1 art) and floor A1 (panel-2 art) both failed the object-gate style half in trial runs (shading 3-4 steps < Beodeul 5-6, low colour count), so neither is picked from this panel: floor A1 was redrawn with a 2px bevel (7 colours) and pyr_drift A1 variant 2 was redrawn as a soft low spill with no hard dark lower outline (the 4/4 minor: twin lumps read as rocks/bread). Both go to fresh panel 3. ice_drift A2 is unchanged and is the pick.",
+ "prompt": "# Blind review panel — dungeon chipset pieces\n\nYou are one independent judge. Do not edit or create any files; only open the PNG boards below with the Read tool\n(they are large; read each one fully). No other context is needed.\n\nEach board is one item for an OPRN 16px RPG chipset in 3/4 top-down view (RPG Maker style: tops are visible planes, fronts below them,\nno side faces, light from top-left). At the top of the board are REFERENCE crops from the existing \"Beodeul\" chipset (the quality\nbar) at 1x and 3x and an RPG Maker person for scale. Below are anonymous candidates labelled X and Y for the same item: the piece at 1x and\n3x, its parts, a small scene at 1x and 2x (animated items show all frames side by side), and extras (tile mosaics / test maps) for\nfloors, walls and autotiles.\n\nJudge each candidate against these criteria:\n1. reads correctly in 3/4 top-down at 1x (top planes visible, fronts below, no side/isometric faces, sits on the floor with contact);\n2. sits in the same game as the Beodeul reference (palette harmony, texture density, number of shading steps, no toy/flat/clip-art look,\n   no black ink outlines);\n3. seamless joins: floors/walls/autotiles show no visible 16px repeat or seams; multi-cell objects join without cuts;\n4. reads as its stated purpose and as its theme (the board title says what it is).\n\nA MAJOR problem = something that would make you refuse to ship it (misreads at 1x, wrong view, clearly below the reference's quality,\nvisible seams/grid, does not read as the item). A MINOR problem = worth polishing but shippable.\n\nReply with ONLY a JSON object, no prose before or after:\n{\"<board file name without .png>\": {\"X\": {\"majors\": [{\"problem\": \"...\", \"where\": \"...\"}], \"minors\": [{\"problem\": \"...\", \"where\": \"...\"}]},\n                                    \"Y\": {\"majors\": [...], \"minors\": [...]},\n                                    \"pick\": \"X\" or \"Y\", \"why\": \"one sentence\"}, ...}\n\nBoards:\n- /home/main/z-project/rpg-zzu-dt-fix/qa-runs/tcr2/panel-2/theme-climate-r2__tc.pyr_floor.png\n- /home/main/z-project/rpg-zzu-dt-fix/qa-runs/tcr2/panel-2/theme-climate-r2__tc.pyr_drift.png\n- /home/main/z-project/rpg-zzu-dt-fix/qa-runs/tcr2/panel-2/theme-climate-r2__tc.ice_drift.png\n",
+ "boards": {
+  "theme-climate-r2__tc.pyr_floor": {
+   "item": "tc.pyr_floor",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "48d3124640dfbf30655f8d9edc731abe5467376d0a88ac246b9c66e2fa172657"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "de4b19edc8ba7ed2eff1f7869f909e906a064e24ebbe2522c461aef204a1e929"
+    }
+   },
+   "votes": {
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1",
+    "argon": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": [
+     "crack lines stop/offset at 16px cell edges in the random mix (4/4) — every judge cites the board label seam 2.6/26.1, which was a cross-cell vs in-cell contrast metric; a grid-overlay check (qa-runs/tcr2/a2grid.png) shows joints continuous across edges, but the major is counted as raised"
+    ]
+   },
+   "pick": "A1"
+  },
+  "theme-climate-r2__tc.pyr_drift": {
+   "item": "tc.pyr_drift",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "ef4401e9b79b3158e66ba2b8022c02730cc06ba5512ff9d948102b92c6b082a6"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "acfd24d743a0d10b7e08cba6ff41c7ff43814eb59ca2b92e6c1dfa75beb8f6ef"
+    }
+   },
+   "votes": {
+    "opus1": "A2",
+    "opus2": "A2",
+    "opus3": "A2",
+    "argon": "A2"
+   },
+   "counted": {
+    "A1": [],
+    "A2": []
+   },
+   "pick": "A2"
+  },
+  "theme-climate-r2__tc.ice_drift": {
+   "item": "tc.ice_drift",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "c4c854b76d7ed2287d5226faa59a28fb7b5fa04440b3e23586dbdbd6539c816a"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "17f424f1283831801b8a1e7cb822881765fe9ea50ef73b3d0faa74ab9500a431"
+    }
+   },
+   "votes": {
+    "opus1": "A2",
+    "opus2": "A2",
+    "opus3": "A2",
+    "argon": "A2"
+   },
+   "counted": {
+    "A1": [],
+    "A2": []
+   },
+   "pick": "A2"
+  }
+ },
+ "raw": {
+  "opus1": {
+   "theme-climate-r2__tc.pyr_floor": {
+    "X": {
+     "majors": [
+      {
+       "problem": "cell joins are measurably weaker (seam metric 26.1 against 0.4 for Y); some crack lines stop or offset at the 16px cell edges, so the 2x2 mix shows a faint grid",
+       "where": "X mix 6x6 3x and X test map 1x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "reads more as cracked dry mud than cut sandstone flagstones; less crisp than the Beodeul brick plaza reference",
+       "where": "X piece 3x"
+      },
+      {
+       "problem": "the speckle noise is dense and uniform, which flattens the stones at 1x",
+       "where": "X scene 1x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the flagstones are irregular and organic, so they read slightly as cracked earth rather than dressed pyramid stone",
+       "where": "Y piece 3x"
+      },
+      {
+       "problem": "the crack lines are fairly uniform in width and could use more shading steps on the stone bevels to match the reference's depth",
+       "where": "Y mix 6x6 3x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y tiles cleanly across the mix with no visible cell seams, and its stones read better as laid flagstone."
+   },
+   "theme-climate-r2__tc.pyr_drift": {
+    "X": {
+     "majors": [
+      {
+       "problem": "the second variant reads as a pair of rounded rocks/boulders rather than loose sand",
+       "where": "X part 2 4x and X on floor 4x3 3x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "both variants have hard dark lower outlines that make them look like solid objects instead of drifted sand",
+       "where": "X piece 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the dithered stray grains around the flat mound are slightly noisy at 1x",
+       "where": "Y part 2 4x"
+      },
+      {
+       "problem": "the cone variant is very symmetric, close to a toy pile",
+       "where": "Y part 1 4x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's soft cone and flat spill with stray grains read as sand on the floor, while X's second variant reads as rocks."
+   },
+   "theme-climate-r2__tc.ice_drift": {
+    "X": {
+     "majors": [
+      {
+       "problem": "the drifts read as hard ice chunks or snow-covered rocks with crisp blue outlines, not soft snow drifts",
+       "where": "X part 1 4x, X part 2 4x and X on cave floor 4x3 3x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "both variants are similar elongated blobs, so there is little variety when scattered",
+       "where": "X scene 2x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the scattered small clumps in variant 2 are busy and slightly fragmented at 1x",
+       "where": "Y part 2 4x and Y scene 1x"
+      },
+      {
+       "problem": "the white mounds come close to the snow ground's brightness and lose a little contact shadow on the light cave floor",
+       "where": "Y on cave floor 4x3 3x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's fluffy mounds and scattered clumps read as snow drifted onto the floor and harmonize with the reference snow, while X reads as ice rocks."
+   }
+  },
+  "opus2": {
+   "theme-climate-r2__tc.pyr_floor": {
+    "X": {
+     "majors": [
+      {
+       "problem": "joins are visible: crack lines stop or offset at the 16px cell edges, so the grid shows through in the mix (seam 2.6/26.1)",
+       "where": "X mix 6x6 3x, cell borders"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "reads more as cracked dry earth than cut sandstone flagstones; very little stone-edge shading compared with the ground-plaza reference",
+       "where": "X piece 3x / scene 2x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "slabs are irregular cracked-mud shapes rather than dressed flagstones, so the pyramid theme reads weakly; flatter than the reference bricks",
+       "where": "Y mix 6x6 3x"
+      },
+      {
+       "problem": "dark crack outlines are a little heavy compared with the reference's soft mortar lines",
+       "where": "Y scene 2x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y joins seamlessly into continuous slabs, while X shows broken cracks along the cell grid."
+   },
+   "theme-climate-r2__tc.pyr_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the second variant (twin rounded lumps) reads as small rocks or bread rather than loose sand",
+       "where": "X part 2 4x"
+      },
+      {
+       "problem": "the drifts have no soft, feathered edge where they meet the floor, so they look stuck on top of it",
+       "where": "X on floor 4x3 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the scattered grain pixels around the edge look like noise or dither at 1x",
+       "where": "Y part 1/2 4x edges"
+      },
+      {
+       "problem": "the flat variant is very low contrast against the floor and almost vanishes in the scene",
+       "where": "Y scene 2x, lower-left drift"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's pile and flat spill read as loose sand blending onto the floor, while X's second variant looks like rocks."
+   },
+   "theme-climate-r2__tc.ice_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the angular faceted shapes read as ice chunks or rocks rather than soft snow drifts",
+       "where": "X part 1/2 4x"
+      },
+      {
+       "problem": "a few stray dark specks below the pieces",
+       "where": "X part 1 4x bottom"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the small clumps in the second variant are fragmented and read as scattered pebbles or noise at 1x",
+       "where": "Y part 2 4x / Y on cave floor 3x"
+      },
+      {
+       "problem": "the shadow under the clumps is faint, so they show little contact with the floor",
+       "where": "Y scene 2x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's rounded, soft mounds read as snow drifts in the reference mound style, while X's faceted shards look like ice rocks."
+   }
+  },
+  "opus3": {
+   "theme-climate-r2__tc.pyr_floor": {
+    "X": {
+     "majors": [
+      {
+       "problem": "visible cell seams in the random mix (seam metric 2.6/26.1): crack lines stop at cell edges and the stones misalign, so a grid shows",
+       "where": "X mix 6x6 3x and test map"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "reads as cracked dry mud or crazed clay more than cut sandstone flagstones; the shapes are irregular and organic, unlike the reference's regular brick courses",
+       "where": "X piece 3x / scene 2x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "slabs are irregular crazed-paving shapes, not dressed flagstones, so the floor reads a little like cracked earth",
+       "where": "Y mix 6x6 3x"
+      },
+      {
+       "problem": "the floor's hue is close to the rim and wall tops, so the floor plane separates weakly from the walls",
+       "where": "Y scene 2x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y joins without seams across the random mix (0.4/0.0) and has cleaner stone joints; X shows a visible grid where cells meet."
+   },
+   "theme-climate-r2__tc.pyr_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "variant 2 has a rounded lumpy outline that reads more like a pair of rocks than loose sand",
+       "where": "X part 2 4x"
+      },
+      {
+       "problem": "the drifts are a darker tan than the reference sand, so they harmonise slightly less with ground-sand",
+       "where": "X on floor 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "loose scattered grain pixels around the edges become noise at 1x",
+       "where": "Y part 1/part 2 4x"
+      },
+      {
+       "problem": "variant 2 is a flat low smear with little top-plane volume and is weak at 1x",
+       "where": "Y scene 1x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's lighter sand cones with scattered grains read as drifted sand rather than rocks and sit closer to the reference sand palette."
+   },
+   "theme-climate-r2__tc.ice_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the drifts are hard-edged, slab-like lumps that read a bit like ice chunks or stones rather than soft snow",
+       "where": "X part 1/part 2 4x"
+      },
+      {
+       "problem": "the two variants look nearly identical, so repetition shows in scatter",
+       "where": "X on cave floor 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "variant 2 is fragmented into many small blobs that read as snow clumps or debris at 1x",
+       "where": "Y part 2 4x / Y scene 1x"
+      },
+      {
+       "problem": "stray single pixels around the edges add noise",
+       "where": "Y piece 3x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's soft, rounded snow mounds with blue-shadowed undersides read as snow drifts and match the snowy reference better than X's hard slabs."
+   }
+  },
+  "argon": {
+   "theme-climate-r2__tc.pyr_floor": {
+    "X": {
+     "majors": [
+      {
+       "problem": "Crack lines break visibly at cell borders. Seam metric is 26.1 on the second axis, and the 6x6 mix shows broken stones along the 16px grid",
+       "where": "X mix 6x6, cell boundaries"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "Reads more as cracked dry mud than cut sandstone flagstones. Flatter and less blocky than the ground-plaza reference",
+       "where": "X piece 3x / scene 2x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Irregular cracked slabs read more as crazy-paving or dry earth than dressed pyramid flagstones",
+       "where": "Y piece 3x / scene 2x"
+      },
+      {
+       "problem": "Dark crack lines are a little heavy compared with the softer brick mortar in the reference",
+       "where": "Y mix 6x6"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y tiles without visible seams (0.4/0.0), while X shows crack lines broken at the 16px grid."
+   },
+   "theme-climate-r2__tc.pyr_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The second variant reads as a pair of rounded rocks or bread loaves more than loose sand, because it has firm shaded volumes and a hard outline",
+       "where": "X part 2"
+      },
+      {
+       "problem": "The edges are hard and the pieces barely blend into the floor, so they look like placed objects rather than drifted sand",
+       "where": "X on floor 4x3"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Scattered single-pixel grains around the base read as noise at 1x",
+       "where": "Y part 1/part 2 edges"
+      },
+      {
+       "problem": "The flat second variant is low-contrast against the floor and almost disappears",
+       "where": "Y on floor 4x3"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's soft cone and the spread flat pile with loose grains read as drifted sand, while X's second variant looks like rocks."
+   },
+   "theme-climate-r2__tc.ice_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Both variants are similar tilted slab or blob shapes and read a little like ice chunks or rocks instead of soft snow",
+       "where": "X part 1/part 2"
+      },
+      {
+       "problem": "The blue-shaded underside gives a slightly hard, sticker-like edge",
+       "where": "X on cave floor 4x3"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The second variant breaks into many small clumps that read as noise or cotton puffs at 1x",
+       "where": "Y part 2 / Y on cave floor 4x3"
+      },
+      {
+       "problem": "Stray isolated pixels around the clumps",
+       "where": "Y part 1/part 2 edges"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's soft rounded mound and scattered clumps look more like drifted snow and give two clearly different variants, while X's two pieces look like similar ice slabs."
+   }
+  }
+ }
+}
