@@ -349,7 +349,7 @@ function polishLines(observatory: GameMap, forest: GameMap, vault: GameMap): voi
   replaceLine(observatory, hanel!.id, "자네 덕분에 살았어. 정말 고맙네.", [say(H, "북쪽 하늘탑으로 가거라. 이리스를 부탁한다.")]);
 
   replaceLine(forest, `ev_${FS_PREFIX}_bram`, "고맙네.", [say("숲지기 브람", "북쪽 끝 공터다. 길만 따라가라. 풀숲에선 늑대를 조심하고.")]);
-  replaceLine(forest, `ev_${FS_PREFIX}_main_inspect1`, "확인을 마쳤다.", [narrate("은빛 관은 텅 비었다. 안쪽에 아직 온기가 남아 있다.")]);
+  replaceLine(forest, `ev_${FS_PREFIX}_main_inspect1`, "확인을 마쳤다.", [narrate("은빛 알은 텅 비었다. 안쪽에 아직 온기가 남아 있다.")]);
 
   // 지하 상자 — 기본 표의 「기본 새우」 대신 상급 회복약.
   const chest = vault.events.find((e) => e.id === `ev_${FS_PREFIX}_vault_chest1`);
@@ -1451,20 +1451,47 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   const podOpened = findTextList(M(ids.forest), "치익— 뚜껑이 열리고");
   if (!podOpened) throw new Error("[fallen-star] 떨어진 별 조사 대사를 찾지 못했다");
   const podList = podOpened.list;
+  let irisFacingBack: Command | undefined;
   const keyAt = podList.findIndex((c) => c.kind === "changeItem" && (c as { itemId?: string }).itemId === FS_STAR_KEY_ITEM);
   const keyGain = keyAt >= 0 ? podList.splice(keyAt, 2)[0]! : ({ kind: "changeItem", itemId: FS_STAR_KEY_ITEM, op: "+=", amount: 1 } as Command);
   for (let i = podList.length - 1; i >= 0; i -= 1) if (podList[i]!.kind === "changeTile") podList.splice(i, 1);
   const opened = podList.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("치익— 뚜껑이 열리고"));
+  // 8-5 이리스 깨어남 — 한 박스 한 감정. 가까이 오면 움츠리고(몸을 돌렸다 돌아본다), 손을 내밀고, 처음 땅을 밟는다.
+  const irisRoute = (moves: Array<{ kind: "turn"; dir: string }>): Command =>
+    ({ kind: "moveEvent", eventId: `ev_${FS_PREFIX}_iris_field`, route: { moves, repeat: false, wait: true, skippable: true } } as unknown as Command);
+  const irisTurnBack = irisRoute([{ kind: "turn", dir: "left" }]);
+  irisFacingBack = irisTurnBack;
+  const irisEmote = (emote: string, durationMs: number): Command =>
+    ({ kind: "showEmote", target: { eventId: `ev_${FS_PREFIX}_iris_field` }, emote, durationMs } as unknown as Command);
+  const kaelEmote = (emote: string, durationMs: number): Command => ({ kind: "showEmote", target: "player", emote, durationMs } as unknown as Command);
+  const pause = (ms: number): Command => ({ kind: "wait", ms } as unknown as Command);
   podList.splice(opened + 1, 0,
-    say("이리스", "…여기는, 어디죠? 몸이… 아직 무거워요."),
-    say("카엘", "괜찮아? 너… 저 별 안에 있었던 거야?"),
-    say("이리스", "별이 아니에요. 하늘을 건너는 배예요. 저는 이리스, 기계예요."),
-    say("엘레나", "기계? 말도 하고, 숨도 쉬는데…"),
-    say("이리스", "숨은 흉내예요. 사람들이 덜 무서워하라고요."),
-    say("이리스", "…혹시, 제가 무서우세요?"),
-    say("카엘", "아니. 조금 놀랐을 뿐이야."),
-    say("이리스", "집에 신호를 보내야 해요. 높은 곳, 큰 렌즈가 있는 곳에서요."),
-    say("엘레나", "렌즈라면… 천문대에 있어."),
+    pause(600),
+    say("이리스", "…신호, 수신. 현지 시각 불명.\n저는 중계기 이리스입니다."),
+    kaelEmote("exclamation", 600),
+    say("카엘", "말을 했어. 엘레나, 방금 말했지?"),
+    say("엘레나", "응. 놀라지 마. 놀라면 안 돼."),
+    irisEmote("sweat", 700),
+    irisRoute([{ kind: "turn", dir: "down" }]),
+    pause(400),
+    say("이리스", "오지 마세요. 사람은… 가까이 오면\n무서워해요. 늘 그랬어요."),
+    say("카엘", "안 무서워. 거짓말이야, 조금 무서워.\n근데 너도 떨고 있잖아."),
+    irisTurnBack,
+    say("이리스", "…떨리는 건 흉내예요.\n사람들이 덜 무서워하라고요."),
+    say("카엘", "흉내라도 괜찮아. 이름이 뭐야?"),
+    pause(300),
+    say("이리스", "이리스. 그리고 「집」이 있어요.\n얼굴은 기억 안 나는데, 이름표는 있어요."),
+    say("카엘", "집? 어디에?"),
+    irisEmote("ellipsis", 800),
+    say("이리스", "하늘 위, 라고 생각해요.\n거기서 부르는 소리를 따라왔어요."),
+    narrate("이리스가 유리창 밖으로 손을 내민다. 손끝이 가늘게 떨린다."),
+    say("이리스", "저는 물건이 아니에요.\n집에 돌아가고 싶을 뿐이에요."),
+    say("카엘", "알아. 우리가 도와줄게.\n괜찮아. 우리가 지켜 줄게."),
+    { kind: "playAudio", resourceId: "easyrpg-sound-chime2", loop: false, channel: "se" } as Command,
+    narrate("알이 낮은 소리로 열린다. 이리스가 처음으로 땅을 밟는다."),
+    pause(500),
+    say("이리스", "…땅이 따뜻해요. 카엘, 이게 「아침」이에요?"),
+    say("엘레나", "…그래. 이게 아침이야."),
     say("이리스", "이것도 드릴게요. 배 안에 박혀 있던 거예요."),
     keyGain,
     narrate("「별빛 열쇠」를 얻었다."),
@@ -1562,6 +1589,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       pattern: charsetFrameIndex({ characterIndex: 7, direction, pattern: 1 }),
     });
     const facing = irisAt.x > podSpot.x ? "left" : "right";
+    if (irisFacingBack) ((irisFacingBack as unknown as { route: { moves: Array<{ dir: string }> } }).route.moves[0]!.dir = facing);
     M(ids.forest).events.push({
       id: `ev_${FS_PREFIX}_iris_field`, name: "이리스", x: irisAt.x, y: irisAt.y, trigger: { kind: "action" }, commands: [],
       pages: [
