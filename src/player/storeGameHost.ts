@@ -39,7 +39,7 @@ export const storeGameSaveNamespace = (boot: StoreGameBoot): string => `${boot.s
 /**
  * 품은 쪽이 허락된 스토어인가. 최상위 창(새 창으로 열기)은 언제나 된다.
  * 크로뮴·사파리는 location.ancestorOrigins 로, 그 밖은 document.referrer(스토어가 strict-origin 으로 보낸다)로 본다.
- * 둘 다 알 수 없으면 막지 않는다 — 판단할 수 없을 때 게임을 깨뜨리지 않는다.
+ * 품었는데 둘 다 알 수 없으면 막는다(보안 검토 2026-10-23) — 다른 사이트가 referrer 를 끄고 품는 길을 닫는다.
  */
 export function storeGameEmbedderAllowed(boot: StoreGameBoot, win: Window = window): boolean {
   let framed = false;
@@ -50,8 +50,9 @@ export function storeGameEmbedderAllowed(boot: StoreGameBoot, win: Window = wind
     for (let index = 0; index < ancestors.length; index += 1) if (!boot.embedders.includes(ancestors.item(index) ?? "")) return false;
     return true;
   }
+  // 품은 쪽을 알 수 없으면 막는다(스토어는 strict-origin 으로 출처를 보낸다). 새 창으로 열면 최상위라 위에서 통과한다.
   const referrer = win.document.referrer;
-  if (!referrer) return true;
+  if (!referrer) return false;
   try { return boot.embedders.includes(new URL(referrer).origin); } catch { return false; }
 }
 

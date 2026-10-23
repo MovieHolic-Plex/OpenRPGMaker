@@ -361,9 +361,12 @@ export class AssetStoreClient {
     const mine = await this.json<StoreGameMine>(`/api/v1/games/mine?projectKey=${encodeURIComponent(projectKey)}`);
     let baselineProject: string | null = null;
     if (mine.baseline) {
+      // 서버가 준 주소라도 아무 데나 가지 않는다: https 공개 주소이거나, 스토어가 내부망이면 같은 호스트만. 넘겨주기 금지.
       const url = new URL(mine.baseline.projectUrl);
-      if (url.protocol === "https:" || isPrivateHost(url.hostname)) {
-        const response = await fetch(url, { signal: AbortSignal.timeout(120_000) }).catch(() => null);
+      const storeHost = new URL(this.url).hostname;
+      const allowed = url.protocol === "https:" ? !isPrivateHost(url.hostname) : url.protocol === "http:" && isPrivateHost(storeHost) && url.hostname === storeHost;
+      if (allowed && url.pathname.endsWith("/project.json")) {
+        const response = await fetch(url, { signal: AbortSignal.timeout(120_000), redirect: "error" }).catch(() => null);
         if (response?.ok) baselineProject = new TextDecoder().decode(await readCapped(response, 256 * 1024 * 1024));
       }
     }

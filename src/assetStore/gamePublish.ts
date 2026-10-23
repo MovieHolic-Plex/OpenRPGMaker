@@ -70,7 +70,9 @@ export async function publishStoreGame(
   const missing = new Set<string>();
   const shas = [...unique.keys()];
   for (let start = 0; start < shas.length; start += 2000) {
-    const answer = await transport.json("POST", "/api/v1/games/files/check", { sha256s: shas.slice(start, start + 2000) }) as { missing?: unknown };
+    const slice = shas.slice(start, start + 2000);
+    // 확장자도 보낸다: 같은 바이트가 다른 형식으로 먼저 올라와 있으면 서버가 「없음」으로 알려 준다.
+    const answer = await transport.json("POST", "/api/v1/games/files/check", { sha256s: slice, exts: slice.map((sha) => extOf(unique.get(sha)!.path)) }) as { missing?: unknown };
     for (const sha of Array.isArray(answer.missing) ? answer.missing : []) if (typeof sha === "string") missing.add(sha);
   }
   const queue = [...missing].map((sha) => unique.get(sha)!).filter(Boolean);
