@@ -1,0 +1,329 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9f88b3f0d539f0983873ac5ba164dcd2b084b2a3b51d23e5200bd9711d4ee68f",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "stone sarcophagus north-south",
+ "label": "beodeul_dungeon/earth.sarc_ns",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 94,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lid top with engraved cross",
+      "rows": "1-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "17-20"
+     },
+     {
+      "part": "lid front face / lower band",
+      "rows": "17-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base body with recessed panel",
+      "rows": "21-29",
+      "evidence": "none",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-16 form a large light lid with a cross engraving. In the x=8 column it runs at L~212-215 down to row 16. At row 17 the tone drops to L~174, which marks the front edge of the lid. Rows 17-20 are the darker front face of the lid, and row 21 is a dark separator line (L=124). Rows 22-29 are the base front with a recessed panel and a dark bottom outline. The top surface is clear and the front face is about 13 rows. This matches the green sarcophagus reference, which has a lid on top and a panelled base below."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The sarcophagus is a pale stone block with a carved cross relief. It reads as a lit lid, a mid body and a darker base, about 5 stone steps against roughly 6 on the references. The measured facts back this up. It has 12 visible tones per tile, above the hedge at 9 and the bench and lamp (both 0, thin pieces), and below the well at 20 and the stall at 17. Near-flat coverage is 0%, so there are no flat fills. Half of the dark edge pixels are near-neutral, so the outline is mixed: partly tinted stone-dark and partly grey. That suits a grey stone prop and is not a uniform black sticker line. The piece is simpler than the well and the stall, so density is slightly lower. Its tone count and shading are still comparable to the hedge reference, so a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26603
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sarcophagus lid (cross-engraved top)",
+      "rows": "1-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "21"
+     },
+     {
+      "part": "lid front lip band",
+      "rows": "17-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with recessed panel",
+      "rows": "21-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-16 form a large light lid with a cross engraving, seen from above. The edge line is at row 17 (L=146 at x=4), with a darker lip band at rows 17-20 and a dark shadow line at row 21. Below it, rows 21-29 are a south front face with a recessed panel, about 9 rows. The silhouette is a constant 14 px wide with no side face. The structure matches the green sarcophagus reference, a top plus a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has only 12 distinct colours in the whole piece, against 38-40 for the well and the stall. Its stone ramp reads as about 4 steps (light face, mid, shade, dark edge) plus the carved relief, where the well's stone is shaded stone by stone across 5-6 steps. It does carry 12 visible tones per tile, which is near the hedge (9) and below the well (20) and stall (17). Near-flat coverage is 0%, so it has no large flat fills. The dark edge pixels are 50% neutral, so the outline is split between neutral grey-black and tinted tones, and it leans toward the sticker look instead of consistently using the dark tone of the adjacent stone. The slab faces look smooth, with little chipping, grain or per-block highlights. A careful artist would find it a little thinner and flatter than the well next to it. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18003
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lid top with carved cross",
+      "rows": "1-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "17-20"
+     },
+     {
+      "part": "body front face with recessed panel",
+      "rows": "21-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-16 form a large light lid surface (L about 200-215) with a cross and speckles, seen from above. The north-south orientation makes it long and tall. At rows 17-20 the tone drops to L=174, a darker band for the lid's front lip and edge shadow. Row 21 is a dark line (L=124) where the lid meets the body. Rows 22-29 are the vertical front face, with a recessed panel and a dark base line at row 29. Together the front face is about 13 rows. The top-to-front structure matches the green sarcophagus reference, not the red front-elevation one."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a pale grey stone coffin with a carved cross relief on the lid. It has about 4-5 lightness steps on the stone, a lit top face against a darker side, and a few chip or grain dots. It shows no large flat blocks: near-flat coverage is 0%, the same as the hedge, bench and well. It has 12 visible tones per 16x16 tile, which is above the hedge (9) and below the well (20) and cheese stall (17). Its 12 total colours are close to the hedge (11) and bench (14), which are equally simple props. 50% of its dark edge pixels are near-neutral, which is mixed. This is plausibly the grey of the stone palette rather than a uniform black sticker line, and the bench (44%) and well (33%) show similar values. Shading and texture are a little thinner than the well, but a careful artist would accept it next to the hedge and bench.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19288
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lid with cross",
+      "rows": "1-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-20"
+     },
+     {
+      "part": "chest base with recessed panel",
+      "rows": "21-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-16 form a large light lid band with a cross carved into it. Its columns are light (L about 200-215) and end in a darker front-edge line at row 17 (x=4 L=146, x=11 row 15 L=145). Rows 18-20 are a darker band (L=174) under that line, which reads as the lid's front lip and eave shadow. Row 21 is a dark line (L=124) above the base. Rows 22-29 are the front face with a recessed panel and a dark bottom row (L=83). The silhouette is a constant 14 px wide with no side face. The lid reads as a top surface seen from above, like the green sarcophagus reference, not a rim of 1-2 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small pale stone slab with a carved cross emblem and about 4-5 stone tones (lid highlight, light, mid, shadow side, dark base). The measured facts are 12 visible tones per tile and 0% near-flat coverage. That is above prop-hedge (9) and below prop-well-roofed (20) and prop-stall-cheese (17), so it sits inside the reference range with no flat fills. Half of the dark edge pixels are near-neutral, so the outline is mixed: partly grey-tinted stone tone and partly neutral dark. It is not a uniform black sticker line. Stone grain is modest, and the total of 12 distinct colours is lower than the richer references (38-40), but the per-tile density matches the simpler references. The piece looks slightly leaner than the well, but an artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26425
+  }
+ ],
+ "decidedAt": "2026-10-23T04:02:38.535Z",
+ "cells": {
+  "16": [
+   "5a588580b98e26c0",
+   "821988e8318bb955"
+  ],
+  "24": [
+   "190d796b92f5b5e3",
+   "19e3d6e3528e1ab4",
+   "2091b608617320f4",
+   "2373b9540cdac97b",
+   "3406023af12cbb05",
+   "4b186503567342a0",
+   "61f20d009d8c4b13",
+   "621b0662ad3e3d18",
+   "9c904541cdc6c383",
+   "a03a71b21a282339",
+   "bcb8cf317b275d61",
+   "f19482d0487712a2"
+  ],
+  "32": [
+   "3457598d9c173c15",
+   "692e7890cbcb40b5",
+   "df9748cf1beac74f"
+  ],
+  "48": [
+   "3af7bf940a9b0a06",
+   "590379c323ee9643",
+   "98ea8de66c03d3f2",
+   "e1098bcc0b2c2ccd",
+   "f9edbef97522c7f7",
+   "ff77b8a261beff92"
+  ]
+ }
+}

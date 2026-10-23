@@ -1,0 +1,14 @@
+{
+  "piece": "earth.carpet A2 3-wide runner",
+  "pixelSha256": "518f1f6c3561b08ace8f0f94e6ad78523c7012bef8336b145f2fc926d8163122",
+  "receipt": "/home/main/z-project/rpg-zzu-dt-earth/harness-data/object-gate/receipts/51/518f1f6c3561b08ace8f0f94e6ad78523c7012bef8336b145f2fc926d8163122.json",
+  "verdict": "pass",
+  "sure": true,
+  "view34": "pass — flat floor runner seen in 3/4 top-down view (4/4 gate runs passed view34) with top and bottom gold borders, end fringe tassels, and subtle south fringe contact shadow.",
+  "style": "pass — woven crimson field with staggered highlight knots, 4-tone gold/umber braided border and inner runner stripes, 7 tones per tile, 0% flat fill, and dark warm-brown material outlines with zero black sticker edges.",
+  "reasons": [
+    "Reads clearly as a 3-wide royal carpet runner lying flat on the castle stone floor with distinct fringed top/bottom ends and a repeatable middle section.",
+    "Uses the locked Beodeul palette (4 gold/umber steps #714210-#845c1f-#aa7a08-#fbc10d plus 3 crimson weave steps #a40100-#9e2514-#dd2912 bordered by #714210 umber shadow) with woven texture, no flat fills, and no sticker outline.",
+    "Vertical tiling across row 15->16 and row 31->32 preserves the 1px weave parity and the 4px cadence of gold studs and crimson knots without any seam in the 5-tile room scene."
+  ]
+}

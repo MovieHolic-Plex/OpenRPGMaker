@@ -193,6 +193,31 @@
    "#5b334d",
    "#703f57"
   ],
+  "grass": [
+   "#4b8232",
+   "#618c3b",
+   "#6f9a43",
+   "#8bb14e",
+   "#a8ca5c"
+  ],
+  "marble": [
+   "#615759",
+   "#6c5c4c",
+   "#827a78",
+   "#9e8d83",
+   "#bcaaa0",
+   "#d2c6b0",
+   "#e2d6c0"
+  ],
+  "castle": [
+   "#181b19",
+   "#383d3a",
+   "#575b58",
+   "#5f6360",
+   "#757875",
+   "#909390",
+   "#c4c6c3"
+  ],
   "gold": [
    "#431d00",
    "#714210",
@@ -416,6 +441,30 @@
    "pixels": 633,
    "why": "마계 보라 검은 돌(버들항 설원 s1 저녁 그늘 보라·자주)"
   },
+  "grass": {
+   "from": [
+    "src/assets/beodeulCityTileset.json structureKits bd-pick-temple-ruins-floor-grass"
+   ],
+   "pixels": 996,
+   "why": "폐허 판석 틈으로 솟은 풀(버들항 신전 폐허 풀 바닥 — 조각 파일 floor_grass.png 는 시트와 색이 달라 시트에 구운 키트에서 뽑는다)"
+  },
+  "marble": {
+   "from": [
+    "tiledata/beodeul-variants/temple-ruins/parts/fallen_column_temple.png",
+    "tiledata/beodeul-variants/temple-ruins/parts/column_temple.png",
+    "tiledata/beodeul-variants/temple-ruins/parts/rubble_temple.png"
+   ],
+   "pixels": 684,
+   "why": "신전 폐허 대리석(기둥·쓰러진 기둥·부스러기)"
+  },
+  "castle": {
+   "from": [
+    "tiledata/beodeul-variants/castle-catacombs/parts/face_castle_3h.png",
+    "tiledata/beodeul-variants/castle-catacombs/parts/face_castle_2h.png"
+   ],
+   "pixels": 3840,
+   "why": "성 지하 벽 앞면 돌(성문·옥좌 단)"
+  },
   "gold": {
    "from": [
     "scripts/content/lib/city_v6/palette.py RAMPS_CHIP"
@@ -457,6 +506,7 @@
   "#14101c",
   "#161b23",
   "#16403e",
+  "#181b19",
   "#187878",
   "#1a132a",
   "#1b1024",
@@ -481,6 +531,7 @@
   "#312210",
   "#313b37",
   "#36beaa",
+  "#383d3a",
   "#384454",
   "#393b36",
   "#3a4050",
@@ -497,11 +548,13 @@
   "#463a3a",
   "#47682a",
   "#497f3c",
+  "#4b8232",
   "#4c534f",
   "#525a56",
   "#562945",
   "#565855",
   "#566577",
+  "#575b58",
   "#585a55",
   "#595b58",
   "#595f5c",
@@ -512,18 +565,24 @@
   "#5e3eae",
   "#5e6678",
   "#5f615e",
+  "#5f6360",
   "#604e48",
   "#60a8ac",
+  "#615759",
+  "#618c3b",
   "#626460",
   "#633712",
   "#696f6a",
+  "#6c5c4c",
   "#6c5c54",
   "#6cb4d8",
   "#6e6264",
   "#6f4725",
   "#6f716e",
+  "#6f9a43",
   "#703f57",
   "#714210",
+  "#757875",
   "#757a90",
   "#77703a",
   "#777975",
@@ -533,6 +592,7 @@
   "#7e4a34",
   "#806a5d",
   "#80827f",
+  "#827a78",
   "#828987",
   "#845c1f",
   "#8462d6",
@@ -544,9 +604,11 @@
   "#89976e",
   "#8a8c89",
   "#8b7868",
+  "#8bb14e",
   "#8c94a6",
   "#8d7766",
   "#8e908d",
+  "#909390",
   "#928489",
   "#929491",
   "#94b353",
@@ -560,6 +622,7 @@
   "#a28e76",
   "#a40100",
   "#a6bcdc",
+  "#a8ca5c",
   "#aa7a08",
   "#aa947a",
   "#ab967d",
@@ -579,10 +642,12 @@
   "#cadaee",
   "#cf9558",
   "#cff4f8",
+  "#d2c6b0",
   "#dd2912",
   "#dee0dd",
   "#e0482a",
   "#e2d4fc",
+  "#e2d6c0",
   "#e4e090",
   "#e6f0fa",
   "#e8b672",
@@ -598,5 +663,5 @@
   "#ffec96",
   "#ffffff"
  ],
- "count": 152
+ "count": 168
 }

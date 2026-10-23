@@ -1,0 +1,439 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "594b88ebf3b6d2f690e1b9bc8fde1a1474c5ef1c0239800a69e34d7f6888fe91",
+ "width": 112,
+ "height": 96,
+ "kind": "terrain",
+ "name": "mine wall face with ore veins",
+ "label": "beodeul_dungeon/earth.ore_vein",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 28,
+  "darkV5": 20,
+  "nearBlackEdge": 0.4,
+  "opaqueTiles": 42
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dark void or ceiling strip above the wall",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light stone wall-top ledge",
+      "rows": "9-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "dark green wall face with ore veins",
+      "rows": "18-61",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown dirt floor in front of the wall",
+      "rows": "64-95",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 46,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wall has a light gray ledge in rows 9-16 (lighter speckled stone, about 8 rows). It ends in a darker edge line at row 17 (L=89), followed by darker rows from 18 that read as eave shadow. Below that is a tall dark green wall face, rows 18-63 (about 46 rows), holding gold and silver ore veins. Rows 62-63 form a dark base shadow, and a flat dirt floor fills rows 64-95. The silhouette is a constant 112 px wide, as expected for a terrain tile block. The wall reads as a wall with a top ledge and a front face, not a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has about 10 visible tones per 16x16 tile against 3 for the grass and 7 for the paving reference, so it is at or above both. Near-flat coverage is 7%, and the exact 5x5 flat fill is 0%. The dark rock face is mottled with stone patches, and the gold and iron ore clusters have highlights. The dirt floor strip has dense speckle grain in several browns, and the stone ledge is shaded. The 84% near-neutral share of dark edge pixels is close to the paving reference's 80%, which is neutral grey stone. In the picture the dark edges on the rock face and ore read as slightly tinted, so I call the outline mixed rather than near_black. The candidate does lean on dark tones around the ore and top band, but the material ramps hold about 5 steps each, comparable to the references. Structure and texture are in line with the Beodeul standard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14397
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top ledge (light grey stone band)",
+      "rows": "9-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "ore veins (gold and silver) on wall face",
+      "rows": "22-58",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wall face, dark green stone",
+      "rows": "17-61",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown dirt floor below the wall",
+      "rows": "64-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-8 are a dark void. Rows 9-16 are a lighter grey stone band that works as the wall's top ledge: the highlight on row 14 and the lighter rows 15-16 mark its front edge. Row 17 is a darker edge line, and rows 18-22 are a dark shadow under it. Below that, the dark green wall face runs from row 17 to about row 61, with gold and silver ore veins drawn on it. Rows 62-63 are a dark base line, and a separate brown dirt floor fills rows 64-95. The wall has a top ledge and a tall vertical front face, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 10 visible tones per tile against 7 for the paving reference and 3 for the grass reference, and 7% near-flat coverage against 0% for both references, so it is not shallow on the primary facts. The wall face has a dark base with mottled darker and lighter patches, gold and grey ore clusters with highlights, a light stone cap strip, and a soil strip with speckled grain in several browns. The 84% near-neutral dark edge share is close to the paving reference's 80%, and the paving reference passes with its grey stone. The neutral dark pixels sit mostly in the dark rock and the top void band, not in a uniform sticker outline around each shape. Forms are separated mainly by value, with some dark outlines around the ore. The dark wall face has some larger smooth areas, and the ore veins are small and sparse, so overall texture is some rather than rich. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13122
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top cap (light stone band)",
+      "rows": "9-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "wall front face with ore veins",
+      "rows": "18-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ground floor in front of wall (flat terrain)",
+      "rows": "64-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 46,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-8 are dark void behind the wall. Rows 9-16 are a lighter speckled stone band, the top surface of the wall. It ends in a darker front-edge line at row 17 (L≈89), followed by darker eave shadow in rows 18-19. Below that, rows 18-63 are the dark green vertical front face (46 rows) carrying gold and silver ore veins, ending in a dark base line at rows 62-63. Rows 64-95 are the flat brown floor tile. The wall therefore has a top band plus a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "Measured facts favour the candidate. It has 10 visible tones per tile against 7 for the paving and 3 for the grass. Near-flat coverage is 7% against 0% for both references. The brown soil band is speckled and grained with about 5 lightness steps. The grey top band and the wall face have subtle block variation, and the gold and grey ore nuggets carry several tones each. Dark edge pixels are 84% near-neutral, but the paving reference is 80% neutral on its grey stone, so this does not clearly mark a sticker look. The near-black strip at the top and the dark neutral edges on the ore nuggets pull the outline toward near_black, so I rate it mixed. The wall face is the weakest area. It is a dark, fairly even field with sparse texture and only about 3-4 steps, and the ore clusters sit on it somewhat like stickers. Overall it is about at the reference level for density and texture, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19594
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone ledge / wall-top band",
+      "rows": "9-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-22"
+     },
+     {
+      "part": "dark green wall face with ore veins",
+      "rows": "18-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dirt floor in front of wall",
+      "rows": "64-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 46,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-8 are a dark void or ceiling strip. Rows 9-16 are a light grey stone ledge, 8 rows tall, which is the top surface of the wall. It ends in a darker edge line at row 17 (L=89), followed by darker shadow at rows 18-22. Below it the vertical wall face runs rows 18-63 (about 46 rows) and carries the gold and silver ore veins, with a dark base shadow at rows 62-63. Rows 64-95 are the dirt floor. The ledge, edge line, shadow and tall face together read as a three-quarter wall block."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 10 visible tones per 16x16 tile, against 7 for the paving and 3 for the grass. Near-flat coverage is 7%, so there are no real flat fills. The soil strip has dense grain and speckle in about 5 browns. The wall face is mottled with per-stone variation, and the gold and grey ore clusters carry highlight, mid and dark shading. The stone cap strip is bevelled with light and dark edges. The 84% neutral share of dark edge pixels is close to the paving reference (80%), which is also grey stone. It comes mostly from the near-black void band at the top and the dark separator line, not from a sticker outline around every shape. Forms are mostly separated by value, hence 'mixed' rather than 'near_black'. The weak points are the low-contrast wall ramp, which is about 4 steps, and the sparse ore veins. Neither makes the piece look thinner or flatter than the references, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20226
+  }
+ ],
+ "decidedAt": "2026-10-23T03:18:21.896Z",
+ "cells": {
+  "16": [
+   "02ce57a0534b14e0",
+   "0de8e0c37c054fb0",
+   "0e89aeec5927b079",
+   "17c3e5cad276e7b4",
+   "1d4f8367c75a353a",
+   "26a7787d58ddff3e",
+   "2bdffa63569da9d8",
+   "2d69cceacc377d5e",
+   "3c6a5d9e0b11a26d",
+   "40dd50fc43c2a378",
+   "551e14c3f3aaf591",
+   "73fe2c5dd05051aa",
+   "77e4f637ed1aff4f",
+   "90c3b71b99d09da4",
+   "90f5521e5c16444b",
+   "9b4c750e912a1ecf",
+   "abef57112da7f4f4",
+   "c77e23ba629a6a24",
+   "d1ce49e7e23729b1",
+   "eb250d8dc09670ba",
+   "ecec0f9a8cdda3bb",
+   "efbdd708bf3e307a",
+   "f8807f77488bcaaa"
+  ],
+  "24": [
+   "08c601ff4e1a4c3f",
+   "09988faf3a3f7fd1",
+   "09e721149bab9aff",
+   "0c5f9d77e84f59e1",
+   "170aca0ba50e5311",
+   "1f1aa94c9254cbe1",
+   "21d7bdb5fe7fa081",
+   "234f845fd1f961b0",
+   "299c909dba60bb64",
+   "29def2153365c715",
+   "2a8016f1a21b0aec",
+   "2c41a7bfe2e72e28",
+   "34cc577f33048a78",
+   "36d93b025fb293da",
+   "3be3d70b1bc95217",
+   "3d8468cff97c608b",
+   "3e82df4b26f02c89",
+   "476e2f3d8578ea8a",
+   "483a0873f91f1ac2",
+   "4e987f214dd7e1ce",
+   "4ede4a3e9ac5b6d7",
+   "5200d096788c6c2f",
+   "55de2b17dcf8c950",
+   "5bbc5967ea71d83e",
+   "636c91c9bb51a3d0",
+   "6bcf1f812a01b824",
+   "704fcf5130b1b85c",
+   "7fc9225834fae390",
+   "8f552d94a6658753",
+   "945023ebcf2e2a47",
+   "961600a8eed169b3",
+   "981a5f8a7ec21e49",
+   "a1cbb52f5a6bd4bc",
+   "a3c48a3bf158bd81",
+   "a48f574c9bef816a",
+   "a78c7514d7738ba7",
+   "ab6c9a8cc8c11846",
+   "b20866f7a6891bab",
+   "b2f1629b748d7381",
+   "b619464d4ad0a1ca",
+   "b7171569103a148d",
+   "b878bf6037798fc0",
+   "b8b4d3498ea4fb8e",
+   "c012ffdfb1c5dbe1",
+   "c56c3b5c414614ca",
+   "c71c7d968aa88d05",
+   "cd1abe86069823e5",
+   "ce8b0e9d83f57a36",
+   "d351142269402e45",
+   "d39009cc1b6fb95d",
+   "d3a38704497d3c35",
+   "d6bbdacb0b0b42fa",
+   "e0f8f73f412b5ffd",
+   "f02ddfbe97d05ba3",
+   "f3a3eeeb4748fd76",
+   "fea7da15c6ae87ea"
+  ],
+  "32": [
+   "07063cae867f07ee",
+   "0adc49c305e976ca",
+   "15735c7388a5c268",
+   "1814adf446077293",
+   "26031e5d7d616b01",
+   "2fbb822c0c0a26ec",
+   "3659563688aa4e36",
+   "3a387462a4209bd1",
+   "4d3cbd9c27b39ce8",
+   "4f755e1748bd7e3b",
+   "596eae578b3b108c",
+   "65108b1d707c17b3",
+   "6d606f1a5e81eb86",
+   "6df73ce1d227d695",
+   "815491f5c6d9bfa6",
+   "8b4f542de554185d",
+   "a23af28b95c0ceeb",
+   "a8c6e1b20b0ba5ca",
+   "a8cf79c1f2042712",
+   "aede38274df42982",
+   "b12b422e39710bcb",
+   "b95796dbe5207727",
+   "be31a03e47328d99",
+   "cedae8391700fca4",
+   "d23b4bc53dafc113",
+   "dc1f8df026b9ad4e",
+   "e631cd86a3bf7dbc",
+   "e9e84c4e38948c48",
+   "f385acfb0ed6d4eb",
+   "f67d590636bf324f",
+   "fa15b6093ed8da88"
+  ],
+  "48": [
+   "194d9afb1bae7146",
+   "34890c84dc2f0341",
+   "6f992987bcbbb85a",
+   "7215a899f03650d3",
+   "773fcdd75065c10f",
+   "7db48f65f6ab7e7f",
+   "91c8a68ff1c57254",
+   "9a3bfe293c5053ef",
+   "9abaada5666fc9bf",
+   "9dd24a49b88deefd",
+   "a52d99f37b3217cc",
+   "b686b39aeffff2d0",
+   "bdc1a17bf1c4818a",
+   "de1b3059f87e8a91",
+   "e60b6ebae88a75c4",
+   "ea5beafb2b420562",
+   "f0ed189db8f59f87",
+   "f68df1aa25d64a74"
+  ]
+ }
+}

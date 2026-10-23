@@ -97,6 +97,12 @@ RAMPS = {
     # 2026-10-23 theme-arcane(마계·이세계): 보라 검은 돌. 공용 시트 전체를 색상으로 훑으면 보라는 어두운 단(#140f21~#2b203f)과
     # 자주(#45273a~#703f57)뿐이고, 한 조각에 모여 있는 것은 설원 s1 의 저녁 그늘(9색)이다 — 그 화소로 돌 램프를 만든다.
     'ostone': (['snowfield/s1'], violet, 7, '마계 보라 검은 돌(버들항 설원 s1 저녁 그늘 보라·자주)'),
+    # 2026-10-23 theme-earth(광산·지하묘지·성·유적) 판이 더한 램프 — 덧붙이기만 한다(위 램프 색은 그대로).
+    'grass': (['kit:bd-pick-temple-ruins-floor-grass'], is_green, 6,
+              '폐허 판석 틈으로 솟은 풀(버들항 신전 폐허 풀 바닥 — 조각 파일 floor_grass.png 는 시트와 색이 달라 시트에 구운 키트에서 뽑는다)'),
+    'marble': (['temple-ruins/fallen_column_temple', 'temple-ruins/column_temple', 'temple-ruins/rubble_temple'],
+               lambda c: c[0] >= c[2] and lum(c) > 60, 7, '신전 폐허 대리석(기둥·쓰러진 기둥·부스러기)'),
+    'castle': (['castle-catacombs/face_castle_3h', 'castle-catacombs/face_castle_2h'], None, 7, '성 지하 벽 앞면 돌(성문·옥좌 단)'),
 }
 
 # 공용 시트의 칩 램프(palette.RAMPS_CHIP) 가운데 던전에 쓸 것 — 시트에 실제로 있는지 대조한다.

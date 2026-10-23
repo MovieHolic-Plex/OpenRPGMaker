@@ -1,0 +1,14 @@
+{
+  "piece": "earth.overgrown A2 (assembled floor sample)",
+  "pixelSha256": "72e7dbd37e0e7849f1362fbb8bf3dca357744dd6c028cb1ca8a7c1e185a11d9a",
+  "receipt": "/home/main/z-project/rpg-zzu-dt-earth/harness-data/object-gate/receipts/72/72e7dbd37e0e7849f1362fbb8bf3dca357744dd6c028cb1ca8a7c1e185a11d9a.json",
+  "verdict": "fail",
+  "sure": true,
+  "ground": "Reads as a flat top-down ground surface with no standing elevation, though the 6x2 and 7x2 dark slate horizontal rectangles under each root read like floating UI bars or rigid slots rather than natural slab cracks.",
+  "style": "Fails Beodeul style and organic quality: the overgrowth consists of rigid, mechanical 6x2/7x2 rectangular dark-grey bars paired with repetitive top-left-to-bottom-right stepped brown diagonals and schematic 3x3 plus-shaped leaf clusters, producing an obvious stamped repeat across the floor.",
+  "reasons": [
+    "Dark grey crack/gap shapes are drawn as rigid 6x2 and 7x2 horizontal rectangular bars (rows 8-9, 14-15, 27-28, 30-31, etc.) that look like floating bars or mechanical slots rather than organic stone fissures breaking through slabs.",
+    "Leaves are schematic 3x3 cross/plus stamps and the brown roots follow the same stiff top-left-to-bottom-right diagonal in every instance, creating an obvious repetitive stamped look across the assembled floor.",
+    "Grain and shading integration between the decal growth and the underlying slab joints is synthetic and lacks the organic cluster variation of Beodeul reference terrain."
+  ]
+}

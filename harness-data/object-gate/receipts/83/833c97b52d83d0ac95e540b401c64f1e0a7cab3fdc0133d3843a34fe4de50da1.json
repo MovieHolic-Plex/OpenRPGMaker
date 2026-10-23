@@ -1,0 +1,310 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "833c97b52d83d0ac95e540b401c64f1e0a7cab3fdc0133d3843a34fe4de50da1",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "stone sarcophagus east-west",
+ "label": "beodeul_dungeon/earth.sarc_ew",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 48,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "wrong",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sarcophagus lid top",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "sarcophagus front face/base",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The lid is a wide light slab in rows 3-9. It sits under a dark back rim at row 2 and carries a carved line at row 6. A 1-row edge line at row 10 (L=124) closes it, and the dark band at rows 11-12 (L=95) reads as eave shadow. Below that the front face runs rows 11-15, with a mid line at row 13 and a dark outline at row 15. Silhouette width stays about 26-30 with no receding side face. The layout matches the green 'sarcophagus' reference: a top slab over a front base. The lid is closed, so the kind label 'container' only loosely fits, but the object reads as a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a pale stone sarcophagus with a lid slab, a lit top edge, a mid-tone body, a shadowed lower edge and carved panel lines. I count about 5 lightness steps on the stone, in line with the bench and well references. The measured facts support this: 12 visible tones per tile is above the hedge (9) and below the well (20) and stall (17). Near-flat coverage is 0% and there are no 5x5 flat fills. Only 25% of dark edge pixels are neutral, so the outline leans toward a tinted dark stone tone rather than a uniform black sticker line. Texture is moderate: there are chips and joint dots, but fewer per-stone variations than the well. Total distinct colours (14) match the simpler Beodeul props such as the bench and lamp. It would sit acceptably next to the references and does not look thinner or flatter than the bench or hedge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18914
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sarcophagus lid top (light slab with carved figure)",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "sarcophagus base front face",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The lid is a wide light slab in rows 3-9 (L about 207-215 with a carved figure at rows 6-7) that darkens to gray at rows 8-9. A 1-row edge line at row 10 (L=124) follows, then the dark shadowed base face at rows 11-12 (L=95). The base front is a paneled face with a bottom outline at row 15, 5 rows tall. The silhouette is 28-30 px wide on top and 26 px for the base, so the lid slightly overhangs. The structure matches the green sarcophagus reference: a large top plane over a front base. The lid is closed, so no interior is visible, but the sarcophagus reference is accepted as the right shape."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a stone sarcophagus lid and body with a light top plane, mid-stone faces and darker underside and end shading, about 5 stone steps. The reference props show roughly 5-6. The measured facts support it: 12 visible tones per tile sits between the hedge (9) and the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. Only 25% of dark edge pixels are neutral, so the outline mostly leans toward a tinted dark stone/brown tone and is not a uniform black sticker line. Texture is present as chips, seams and lid-edge highlights, but it is somewhat sparser than the per-stone shading on the well, so density is slightly lower than the richest references. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18251
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sarcophagus lid (top slab with carved effigy)",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "sarcophagus base (front face)",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan shows a dark outline at row 2 and a light lid surface in rows 3-9. Rows 4-5 and 7 are light, row 6 is a carving line, and rows 8-9 are a mid tone. Row 10 (L=124) is a front-edge line. Rows 11-12 (L=95) are a dark eave shadow, and rows 13-15 form the base face with a bottom outline. The lid is a closed slab with no visible interior, so the kind (container with opening) is only loosely matched. The structure matches the green sarcophagus reference: a wide lid top of about 7 rows over a 5-row front base. Silhouette width is 28-30 for the lid and 26 for the base, so the lid overhangs slightly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 12 visible tones per full tile, close to prop-hedge (9) and below prop-well-roofed (20) and prop-stall-cheese (17). Near-flat coverage is 0%, so there are no flat fills. Only 25% of its dark edge pixels are neutral, so most of the outline carries a warm stone tint rather than a black sticker line. The stone body shows about 5 lightness steps across the lid, rim and body, with a carved lid band and grain dots that read as stone rather than a single flat fill. Its total of 14 colours matches the range of the accepted references (hedge 11, bench 14). It is a little plainer than the well and stall, but a careful artist would accept it next to the references. This is a judgement from a small image, not a close read of every pixel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15388
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sarcophagus lid top",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "sarcophagus base front face",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The lid is a wide band at rows 3-9. It has a dark back rim at row 2, light top rows at 3-5 and 7, and a carving line at row 6. Rows 8-9 shade to grey, and row 10 (L=124) is a front-edge line. Rows 11-12 (L=95) are darker eave shadow above the base front face, which runs through rows 11-15 with a line at row 13 and the outline at row 15. The top surface is 7 rows and the front face is 5 rows, similar to the green sarcophagus reference. The lid is closed, so no interior is seen. The top still reads as a horizontal surface, so I counted it as the main top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The sarcophagus has a lid ridge, a body and a base, shaded in about 5 stone steps. The outline is mostly a tinted dark stone tone, and only 25% of dark edge pixels are near-neutral, so it is not a black sticker line. Near-flat coverage is 0%, so there are no large flat fills. It has 12 visible tones per 16x16 tile, above prop-hedge (9) and below prop-well-roofed (20) and prop-stall-cheese (17). That is a little lower than the richest references, but for a plain stone object it is acceptable next to them. Texture is modest, with a few chips and speckle, and could carry more per-block grain. It is still not thinner or flatter than the references of its kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15730
+  }
+ ],
+ "decidedAt": "2026-10-23T03:13:45.034Z",
+ "cells": {
+  "16": [
+   "6152a38aa397b594",
+   "94e1cb68c68fec63"
+  ],
+  "24": [
+   "2ce911073c22d9d3",
+   "2e7d819854a22e98",
+   "4997b8340b045938",
+   "5e64a668cec66d9e",
+   "6e8c7dc96fd8c1d5",
+   "83668da7c710f193",
+   "9b557108cf113490",
+   "b19b55b8f0fd6f0b",
+   "b8297b49013ef640",
+   "ba0da88cb85d2713",
+   "df8252bc5db5594a",
+   "e6b1eecfea8e0b0f"
+  ],
+  "32": [
+   "1b5a8d105d557f35",
+   "8f65cbbdf03f8072"
+  ],
+  "48": [
+   "2297a9d7d768ed3a",
+   "27fbcbc165dc7b33",
+   "292fe18e92e8210f",
+   "465a8129d10cbd52",
+   "90d0e9ac3a64f904",
+   "e0f32f189b39e26a"
+  ]
+ }
+}

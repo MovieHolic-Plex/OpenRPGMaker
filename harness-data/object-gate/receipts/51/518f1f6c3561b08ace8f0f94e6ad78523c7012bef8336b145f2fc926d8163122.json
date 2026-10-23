@@ -1,0 +1,297 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "518f1f6c3561b08ace8f0f94e6ad78523c7012bef8336b145f2fc926d8163122",
+ "width": 48,
+ "height": 48,
+ "kind": "flat",
+ "name": "royal carpet runner",
+ "label": "beodeul_dungeon/earth.carpet",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 113,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "carpet runner field with gold border and fringe, seen from above as a flat plate",
+      "rows": "1-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 46,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a 44px-wide rectangle spanning rows 1-46, with fringe tabs at rows 0-1 and 46-47. The column scan shows a checkered red pattern (alternating #a40100 and #9e2514) from rows 7-8 downward, enclosed by a gold border. There is no front face, eave shadow, or vertical face. It is drawn entirely as a flat plate seen from above, which is correct for a flat object such as a rug."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate has 7 visible tones per tile, equal to the paving reference (7) and above the grass reference (3). Near-flat coverage is 0%, so the red field carries speckle and weave dots instead of flat fills. The dark edge pixels are 0% neutral, which means the outline is a tinted dark red-brown beside the red and gold, not a black sticker line. The red ramp is only about 3 steps (dark, mid, light speckle) and the gold trim about 2-3, so the shading is a little shallower than Beodeul's 5-6 steps per material. The paving reference is built from a similarly small palette, though, and the carpet's gold stripe, border and inner trim give it comparable structure. A careful artist would accept it next to the paving reference without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16381
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "carpet runner plate (red checker field with gold border and trim)",
+      "rows": "1-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 46,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a 44px-wide rectangle from rows 2-45, with fringe tassels at rows 1 and 46. The whole shape is a checkered red field inside a gold border with darker inner trim, seen straight from above. No front face, eave, or vertical face is drawn, and the bottom border (rows ~42-45) is the same flat border as the other sides. This is a flat plate with no front face, which suits the flat kind. Structurally it is a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a red carpet field with a gold braided border and a dark red-brown edge, and the field carries dithered grain and thin gold stripes. Measured facts: 7 visible tones per tile, equal to the paving reference and above the grass reference's 3. Near-flat coverage is 0%, so there are no flat fills. The 0% near-neutral share of dark edge pixels confirms a tinted outline (dark red-brown by the red, dark brown by the gold), not a neutral black sticker line. Each material has only about 3-4 lightness steps (red 3-4, gold 3), a bit fewer than the 5-6 steps Beodeul uses. The paving reference is built from the same 7 colours, so a careful artist would still accept the candidate beside it. The candidate is slightly lower in density but is not shallow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13802
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "carpet body (red checkered field with gold border)",
+      "rows": "1-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a 44-px wide rectangle spanning rows 1-46 with fringe tassels at the top and bottom. It is a flat rug seen straight from above: a checkered red field, a dark brown inner border and a gold outer border. The column scan shows a repeating red checker pattern with no front-edge line, no eave shadow and no vertical front face. No side face is drawn. This matches the flat kind, so kind_matches is true, and it reads as a flat plate with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 7 visible tones per tile, matching the paving reference (7) and above the grass (3). It has 0% near-flat coverage and 0% neutral dark edge pixels, so the outline is tinted. By eye, the red field shows a woven or checker pattern with a gold border and trim lines. The border is dark red-brown and gold, not black. The red field has about 3-4 lightness steps against 5-6 in Beodeul materials. The texture is a regular, repeating dither with no per-element shading and no irregular grain or clumps. The patch reads as a tidy, patterned rug. It is a little more mechanical and flatter than the references, but it is not a sticker and not flat-filled. On the facts it holds up, but it is shallower than the Beodeul bar, so I lean toward fail on shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 10529
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "carpet runner field (red checker pattern with gold border)",
+      "rows": "1-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 46,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a square rug seen from directly above: a gold border with a darker brown inner edge surrounds a red checkerboard field with gold stripes. Columns x=13, 24 and 34 show only the border and the alternating red checker rows from row 7 or 8 downward. There is no front face, no vertical south face, no eave shadow and no side face. The silhouette is a constant 44 px wide for rows 2-45, with only small fringe tabs at rows 1 and 46. This matches the flat kind, a plate seen from above, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts are fine. The candidate has 7 visible tones per tile, matching the paving reference and beating the grass reference's 3. It has 0% near-flat coverage and 0% neutral dark edges, so the outline leans dark red-brown beside the red and is not a black sticker line. The weakness is in the ramps. The whole piece has only 7 distinct colours, so the red field is roughly 3 steps (dark, mid, speckle highlight) and the gold border and stripes are about 2-3 steps. Beodeul materials run 5-6 steps. The field speckle is sparse and regular, and the gold trim reads as thin, flat bands. Compared with the grass and paving tiles, with their clustered tufts and stones shaded one by one, it looks a little thinner and more like a simple graphic. It is clean and not a flat fill, but the shading depth falls short of the standard, so I fail it on shading depth rather than on the measured density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15843
+  }
+ ],
+ "decidedAt": "2026-10-23T04:35:48.497Z",
+ "cells": {
+  "16": [
+   "07bac3c16bc79951",
+   "223d2530a6d49fab",
+   "3bcbfdd8abb58bd7",
+   "3bf53110cf0dbcbb",
+   "6004621939cf801b",
+   "8e0983c0d4ece1a5",
+   "c25c70067df32b57",
+   "de1af43aee80f5ad",
+   "ee3aaa0fa3c0a171"
+  ],
+  "24": [
+   "bb93759d39854d47",
+   "c1f60a0cbb653daa",
+   "cec11949b574e812",
+   "e2a92c6d338dcbb3"
+  ],
+  "32": [
+   "03ce6680f4243228",
+   "09fef1692a76f5da",
+   "0e919951f8c7da60",
+   "0edd24e19d453f67",
+   "17eb78b6e812d29f",
+   "1b2e05a8d08af637",
+   "2b1d3e32a765ac7e",
+   "30556f94d85fcc1c",
+   "326848f0e87f3e68",
+   "3af684b02f77ddeb",
+   "44822839f50933f7",
+   "4f12b88408a1f21c",
+   "5a35b206a0c31b3d",
+   "5db96f7372159d26",
+   "6948553534a3495d",
+   "7b48cdf05f682ba5",
+   "896fe359255bd0cf",
+   "8adf1727f9afc4e9",
+   "922addee45b1899a",
+   "a4e85c1a0c4e2428",
+   "a5221408204644e6",
+   "a7d52b9e67f167ef",
+   "d1dacb9edb3f73f0",
+   "e975366627df309a"
+  ],
+  "48": [
+   "b4e72192c9f3e7e8"
+  ]
+ }
+}
