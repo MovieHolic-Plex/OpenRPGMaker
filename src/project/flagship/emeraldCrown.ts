@@ -1098,6 +1098,16 @@ function varyTackle(project: Project): void {
   }
 }
 
+/**
+ * 아스트라 스타터 세 마리는 2026-10-23 에 새로 그렸다(귀가 처진 새싹 토끼·불꽃 꼬리 레서판다·물줄기 뿔 일각고래).
+ * 공용 탐험 로스터의 도감 문장은 옛 그림(토끼·천산갑·수달)을 말하므로 이 게임에서만 첫 단계 문장을 바꾼다.
+ */
+const STARTER_NOTES: Record<string, string> = {
+  mx_species_spriglet: "축 늘어진 잎사귀 귀로 햇볕을 모은다. 머리의 새싹이 기분 좋을 때 살랑인다.",
+  mx_species_coalbit: "고리 무늬 꼬리 끝에 작은 불꽃을 달고 다닌다. 추운 밤에는 꼬리로 몸을 감싸 잠든다.",
+  mx_species_rivulet: "물줄기를 감아 만든 뿔로 물결을 읽는다. 기쁘면 등에서 물보라를 뿜는다.",
+};
+
 export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   const { project } = createMonsterExpedition({ firstGymType: "grass", gymCount: 1 });
 
@@ -1108,6 +1118,8 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   for (const sp of project.database.monsterSpecies ?? []) {
     const renamed = SPECIES_NAMES[sp.id];
     if (renamed) sp.name = renamed;
+    const note = STARTER_NOTES[sp.id];
+    if (note) sp.description = note;
   }
   for (const enemy of project.database.enemies) {
     const renamed = SPECIES_NAMES[enemy.id];
