@@ -276,6 +276,7 @@ const SHELF_LUMA = kitValue<number>("checks", "SHELF_LUMA");
 const SHELF_MIN_PIXELS = kitValue<number>("checks", "SHELF_MIN_PIXELS");
 const SHELF_MAX = kitValue<number>("checks", "SHELF_MAX");
 const LEAF_PALE_MIN = kitValue<number>("checks", "LEAF_PALE_MIN");
+const UNDERGAP_MAX = kitValue<number>("checks", "UNDERGAP_MAX");
 const DEEP_LUMA = kitValue<number>("checks", "DEEP_LUMA");
 const DEEP_MIN = kitValue<number>("checks", "DEEP_MIN");
 const ORGANIC_LEAF_RAMP = kitValue<readonly string[]>("prompts", "ORGANIC_LEAF_RAMP");
@@ -575,6 +576,21 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
       }
       if (widths.length && lowLeaf > 0.5 && widths.at(-1)! / Math.max(...widths) > LEAF_BASE_MAX) hard.push({ code: "FLATBASE", msg: `the base is cut flat along the ground (lowest row ${widths.at(-1)} of ${Math.max(...widths)} px wide) - let the lower edge come down unevenly: leaves hanging lower in places, gaps, a rounded tuck` });
       if (lv.leafDark < LEAF_DARK_MIN) hard.push({ code: "LEAFLIGHT", msg: `the crown is too light (${Math.round(lv.leafDark * 100)}% dark leaf pixels, Beodeul 22-73%) - more dark interior, shadow under lobes, darker lower right` });
+    }
+    // 원본 checks UNDERGAP: 돌·잔돌 더미(그림자 있음, 잎 아님)의 아래 절반에서 칠한 화소 사이로 바닥이 비치는 열 수. 버들항 바위 0, 「다리로 선 하마」 5~8.
+    if (ogCastsShadow(item) && !leafy && g.rows >= 8) {
+      const W = full.width, H = full.height;
+      let top = -1, bot = -1;
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (solid.data[(y * W + x) * 4 + 3] === 255) { if (top < 0) top = y; bot = y; break; }
+      const mid = (top + bot) / 2;
+      let under = 0;
+      for (let x = 0; x < W; x++) {
+        let first = -1, last = -1;
+        for (let y = 0; y < H; y++) if (solid.data[(y * W + x) * 4 + 3] === 255) { if (first < 0) first = y; last = y; }
+        if (first < 0) continue;
+        for (let y = first; y < last; y++) if (y > mid && full.data[(y * W + x) * 4 + 3] === 0) { under++; break; }
+      }
+      if (under > UNDERGAP_MAX) hard.push({ code: "UNDERGAP", msg: `the ground shows under the stones in ${under} columns - the pile floats or stands on its chips like legs (Beodeul rocks 0) - rest every stone's base on the ground row with a dark contact band, chips beside the boulder, not under it` });
     }
     if (ogCastsShadow(item) && g.rows >= 8 && translucent === 0) hard.push({ code: "NOSHADOW", msg: "no soft ground shadow - put 1-3 rows of the translucent ground-shadow key on the ground under the object's lower right, as under the Beodeul rocks and flower beds (lift the object 1-2 px)" });
   } else if (TOP_KINDS.has(item.gateKind ?? "") && STANDING.has(anchor) && topRows < 3) warn.push({ code: "TOP", msg: `measured top plane is ${topRows} row(s) (column scan) - a 3/4 top needs >= 3 lit rows above the front` });
