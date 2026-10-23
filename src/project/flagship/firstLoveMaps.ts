@@ -375,11 +375,9 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   const lamps: LightSource[] = [];
   const streetLamps: Array<[number, number]> = [[21, 2], [1, 21], [14, 21], [41, 21], [21, 26], [21, 33], [6, 4], [13, 4]];
   // 반지름 5 는 화면 밖 가로등의 빛 웅덩이가 잔디·지붕까지 번져 «광원 없는 빛»으로 읽혔다(VQA r25) — 기둥 둘레만 밝힌다.
-  for (const [i, [x, y]] of streetLamps.entries()) lamps.push(light(`fl_lamp_${i}`, { x, y }, 3.5, "#ffd98a", 0.7)); // 세기 1 은 흰 원반 얼룩(VQA r27)
-  for (const [i, b] of streetData.buildings.entries()) {
-    const d = b.access[0];
-    if (d) lamps.push(light(`fl_shop_${i}`, d, 3, b.kind === "conv" ? "#e8fff4" : "#ffd9a0", 0.8));
-  }
+  // 빛은 기둥 발치(밑칸)에 작게 — 기둥 가운데에 반지름 3.5 로 두면 둥근 웅덩이가 지붕·잔디까지 번져 «아무 데나 뜬 빛»이었다(VQA r30 중대).
+  for (const [i, [x, y]] of streetLamps.entries()) lamps.push(light(`fl_lamp_${i}`, { x, y: y + 1 }, 2.3, "#ffd98a", 0.6));
+  // 가게 문 앞 웅덩이는 뺐다 — 가로등 없는 데 뜬 원반으로 읽혔다(VQA r30). 불 켜진 가게는 편의점 하나다(아래 fl_kb_*).
   // 불 켜진 창(VQA r22: 「밤거리가 밤으로 덜 읽힌다」) — 건물마다 문 위 막힌 덩어리(건물 그림)를 찾아 앞면 아래 두 줄에
   // 한 칸 건너 작은 따뜻한 빛을 둔다. 모든 창이 켜지지 않게 칸 좌표로 정한 절반만(같은 맵이면 늘 같은 창).
   for (const [i, b] of streetData.buildings.entries()) {
@@ -404,12 +402,19 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
     if (bottom - Math.min(...cells.map((c) => c.y)) < 6) continue;
     for (let y = bottom - 3; y <= bottom - 1; y++) for (let x = minX + 1; x < maxX; x += 2) {
       if (x === d.x || !cells.some((c) => c.x === x && c.y === y) || ((x * 7 + y * 3 + i) % 3 === 0)) continue;
-      lamps.push(light(`fl_win_${i}_${x}_${y}`, { x, y }, 1.1, "#ffc86e", 0.75));
+      lamps.push(light(`fl_win_${i}_${x}_${y}`, { x, y }, 0.7, "#ffc86e", 0.7)); // 창 한 칸만(1.1 은 창들이 뭉쳐 앞면에 얼룩, r30)
     }
   }
   lamps.push(light("fl_subway", anchors.street.subway, 3, "#cfe4ff", 0.8));
   // 편의점 문 앞 보도로 새어 나오는 따뜻한 가게 불빛(밤에 들르는 곳이 한눈에 읽히게).
-  lamps.push(light("fl_kb_spill", anchors.street.konbiniOut, 5, "#fff0c4", 1), light("fl_kb_spill2", { x: anchors.street.konbiniOut.x, y: anchors.street.konbiniOut.y + 2 }, 4, "#ffe8b0", 0.7));
+  // 편의점: 가게 앞면(유리창)을 환하게 — «편의점 불빛이 환하다»에 창이 어두웠다(VQA r30). 문 위 두 줄(앞면 유리) 양옆에 흰 빛,
+  // 문 앞 보도에 작은 웅덩이 하나.
+  const kb = anchors.street.konbiniOut;
+  lamps.push(
+    light("fl_kb_front_l", { x: kb.x - 1, y: kb.y - 2 }, 2, "#effff6", 1),
+    light("fl_kb_front_r", { x: kb.x + 2, y: kb.y - 2 }, 2, "#effff6", 1),
+    light("fl_kb_spill", { x: kb.x, y: kb.y + 1 }, 2.6, "#fff0c4", 0.8),
+  );
   streetPm.defaultLighting = { ambient: 0.74, color: "#0b1230", sources: lamps };
   officePm.defaultLighting = {
     // 야근 밤: 너무 어두우면 인물이 안 읽힌다(VQA r3) — 어둠은 한 단계 줄이고 책상·탕비실·회의 자리 불을 넓힌다.

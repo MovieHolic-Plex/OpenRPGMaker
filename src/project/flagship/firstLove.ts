@@ -543,12 +543,13 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
         ...like(1, "ev_fl_jihu_meet"),
       ] },
     ]),
-    bgm(BGM_OFFICE),
     face("@player", dirToward(heroMeet, leadMeetStop)),
     ...sayAt("lead", "right", "base", "서하 씨 자리는 지후 씨 맞은편이에요. 오늘 숙제는 금요일 발표 자료 읽어 두기."),
     ...sayAt("lead", "right", "base", "금요일 오후 세 시에 ‘소리결’ 박 본부장님 앞에서 리뉴얼 시안 발표가 있어요. 신입한테 미안하지만, 첫 주부터 바빠요."),
     face("@player", dirToward(heroMeet, minhoMeetStop)),
     listenTo("seoha"),
+    // 사무실 곡은 재회 직후가 아니라 민호가 분위기를 풀 때 천천히 돌아온다 — 「…지후 선배?」 바로 뒤에 휘파람 곡이 다시 떴다(VQA r30).
+    bgm(BGM_OFFICE, 2500),
     ...sayAt("minho", "right", "happy", "서하 씨, 이따 탕비실로 와요! 커피 머신 쓰는 법 알려 줄게요."),
     // 민호는 팀장 오른쪽에 서 있었다 — 팀장 칸을 뚫고 지나가려다 걸음이 건너뛰어져 엉뚱한 칸에 멈췄다(r40). 팀장·지후 칸을 돌아간다.
     walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoMeetStop, minhoSpot, [heroMeet, leadMeetStop, jihuMeetStop], false, "up"),
@@ -1201,8 +1202,9 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
       { text: "역으로 간다", then: [
         ...sayAt("seoha", "right", "base", "죄송해요, 먼저 가 볼게요!"),
         // 회의실 유리문으로 나가 승강기까지 걸어가 타고 내려간다 — 유리문에서 바로 거리로 옮기면 7층에서 승강기를 건너뛰었다(VQA r21·r22).
-        // 배율 2 그대로 승강기 앞으로 옮겨 서하가 걸어 들어오게 한다 — 배율 1로 되돌리면 2→1 로 끊겼다(VQA r29).
-        panTo(elevatorView.x, elevatorView.y, 900, elevatorView.zoom),
+        // 배율 2 그대로 카메라가 서하를 따라간다 — 배율 1로 되돌리면 2→1 로 끊겼고(VQA r29), 승강기 쪽으로 먼저 옮기면
+        // 서하가 2.7초 동안 화면 밖이었다(r30 중대).
+        m2("Camera Control", { mode: "return", target: "player", x: 0, y: 0, zoom: 2, durationMs: 700, wait: true, easing: "easeInOut" }),
         walkRoute(project, FL_MAP.officeFri, "@player", o.meetingSeat, o.elevatorOut, [leadSpot, minhoSpot, clientSpot], true, "up"),
         quiet(SE_BUTTON), wait(400),
         playSe(SE_ELEVATOR), wait(300),
