@@ -8,6 +8,7 @@ import { renderMapPng } from "../../qa-game/render.mts";
 import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
 import { builderFor } from "../../../src/ai/v2/builders/index.ts";
 import { BUILDER_CASES } from "./builderCases.ts";
+import { measureInteriorBareFloor } from "../../../src/editor/handInterior/bareFloor.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";
 
 const out = process.argv[2] ?? "qa-runs/v2scratch/builders";
@@ -26,7 +27,7 @@ for (const c of BUILDER_CASES) {
     if (!builder) { console.log(`== ${c.id} NO BUILDER`); continue; }
     const res = builder.build(run, c.spec);
     const ms = Math.round(performance.now() - t0);
-    for (const id of res.mapIds) { const m = ctx.project.maps[id]; if (m) fs.writeFileSync(path.join(out, `${c.id}-${id}.png`), renderMapPng(ctx.project, m).png); }
+    for (const id of res.mapIds) { const m = ctx.project.maps[id]; if (m) { fs.writeFileSync(path.join(out, `${c.id}-${id}.png`), renderMapPng(ctx.project, m).png); const b = measureInteriorBareFloor(ctx.project, m); if (b) console.log(`  bare ${id.slice(0, 12)} ${b.pct}% ${b.regions.slice(0, 4).map((r) => `(${r.x},${r.y}) ${r.w}x${r.h}`).join(" ")}`); } }
     fs.writeFileSync(path.join(out, `${c.id}.json`), JSON.stringify({ spec: c.spec, result: { ...res, state: undefined }, calls: run.calls.map((x) => ({ tool: x.tool, ok: x.ok, summary: x.summary, args: x.args })) }, null, 1));
     console.log(`== ${c.id} ${res.ok ? "ok" : "FAIL"} ${ms}ms maps=${res.mapIds.join(",")} — ${res.summary.slice(0, 200)}`);
     if (res.warnings.length) console.log("  warn:", res.warnings.join(" | ").slice(0, 400));

@@ -48,14 +48,14 @@ const OBS_OBJECTS: Obj[] = [
   { id: "great telescope", x: 10, y: 10 }, { id: "wall sconce", x: 13, y: 4 }, { id: "wall sconce", x: 18, y: 4 }, { id: "celestial chart", x: 20, y: 5 },
   { id: "bookshelf 2w", x: 5, y: 9 }, { id: "bookshelf 2w", x: 8, y: 8 }, { id: "cabinet:book+bookb+bookg", x: 11, y: 7 }, { id: "map rolls", x: 20, y: 7 },
   { id: "scroll rack", x: 22, y: 8 }, { id: "bookshelf 2w", x: 25, y: 9 }, { id: "wall sconce", x: 28, y: 8 }, { id: "wall sconce", x: 5, y: 7 }, { id: "wall sconce", x: 26, y: 7 },
-  { id: "chart table", x: 6, y: 11 }, { id: "orrery", x: 9, y: 11 }, { id: "chart table", x: 18, y: 10 }, { id: "globe", x: 21, y: 10 }, { id: "stool", x: 9, y: 10 },
+  { id: "chart table", x: 6, y: 11 }, { id: "orrery", x: 9, y: 11 }, { id: "war map table", x: 17, y: 10 }, { id: "globe", x: 21, y: 10 }, { id: "stool", x: 9, y: 10 },
   { id: "orrery", x: 22, y: 10 }, { id: "desk 2x1", x: 24, y: 11 }, { id: "chair N", x: 25, y: 12 },
 ];
 const OBS_LINES: { id: string; rect: Rect }[] = [
   { id: "rug blue", rect: { x0: 6, y0: 11, x1: 9, y1: 12 } }, { id: "rug brown", rect: { x0: 21, y0: 10, x1: 25, y1: 12 } },
   { id: "rug red", rect: { x0: 16, y0: 10, x1: 19, y1: 12 } }, { id: "rug blue", rect: { x0: 15, y0: 13, x1: 15, y1: 13 } },
 ];
-const OBS_GOODS: Obj[] = [{ id: "papers", x: 18, y: 10 }, { id: "candlestick", x: 19, y: 10 }, { id: "papers", x: 24, y: 11 }, { id: "candlestick", x: 25, y: 11 }];
+const OBS_GOODS: Obj[] = [{ id: "papers", x: 24, y: 11 }, { id: "candlestick", x: 25, y: 11 }];
 
 /** 좌우 뒤집기 — 칸 폭(w)을 알아야 왼쪽 위 기준 x 를 옮긴다. */
 function mirror(spec: HandInteriorSpec, width: number, o: Obj): Obj {

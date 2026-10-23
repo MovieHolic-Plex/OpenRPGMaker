@@ -236,8 +236,10 @@ const SETS: readonly [RegExp, readonly (readonly Obj[])[]][] = [
     [{ id: "tea 2x2", x: 0, y: 0 }, { id: "chair E", x: 2, y: 0 }],
   ]],
   [/corridor|hall|landing/u, [
-    [{ id: "bench 2", x: 0, y: 0 }, { id: "potted fern", x: 3, y: 0 }],
+    // 위층 계단참이 휑한 맨바닥이었다(2026-10-23 눈가림 2차: 「아래 절반이 넓은 맨 널마루」) — 쉬는 자리 한 벌(깔개·안락의자·탁자)부터.
+    [{ id: "rug red", x: 0, y: 0 }, { id: "armchair", x: 0, y: 0 }, { id: "roundtable", x: 1, y: 0 }, { id: "armchair", x: 2, y: 0 }],
     [{ id: "potted fern", x: 0, y: 0 }, { id: "candelabra", x: 2, y: 0 }],
+    [{ id: "bench 2", x: 0, y: 0 }, { id: "potted fern", x: 3, y: 0 }],
   ]],
   [/storeroom|cellar|pantry|kitchen/u, [
     [{ id: "barrel", x: 0, y: 0 }, { id: "crate", x: 1, y: 0 }, { id: "barrel", x: 0, y: 1 }],
@@ -254,28 +256,38 @@ export function roomSetsFor(kind: string): readonly (readonly Obj[])[] {
 /** 빈 바닥 덩이(1배 2×2 이상 맨바닥)를 그 방의 쓰임 한 벌로 메운다. 측정은 v1 의 보정된 자(bareFloor.ts). */
 function fillBare(run: BuildRun, spec: HandInteriorSpec, args: Record<string, unknown>, rb: Rebuild, roomKinds: Map<string, string>, limit: number): { args: Record<string, unknown>; rb: Rebuild; filled: number } {
   let filled = 0;
-  for (let round = 0; round < 12; round++) {
+  // 한 덩이에 한 벌이 안 들어가면(길 막힘·겹침) 다른 벌·다른 자리를 시험하고, 그래도 안 되면 그 덩이는 건너뛰고 다음 덩이로(2026-10-23: 첫 덩이 실패로 멈춰 위층 맨바닥 45%).
+  const tried = new Set<string>();
+  for (let round = 0; round < 16; round++) {
     const map = run.ctx.project.maps[String(args.mapId)];
     if (!map) break;
     const bare = measureInteriorBareFloor(run.ctx.project, map);
     if (!bare || bare.pct <= limit) break;
-    const region = [...bare.regions].sort((a, b) => b.w * b.h - a.w * a.h)[0];
+    const region = [...bare.regions].filter((r) => !tried.has(`${r.x},${r.y},${r.w},${r.h},${r.cells}`)).sort((a, b) => b.w * b.h - a.w * a.h)[0];
     if (!region || region.w < 2 || region.h < 2) break;
+    const key = `${region.x},${region.y},${region.w},${region.h},${region.cells}`;
+    tried.add(key);
     const cx = region.x + Math.floor(region.w / 2) - 1, cy = region.y + Math.floor(region.h / 2) - 1;
     const room = rb.rooms.find((r) => cx >= r.x0 && cx <= r.x1 && cy >= r.y0 && cy <= r.y1);
-    if (!room) break;
+    if (!room) continue;
     const kind = roomKinds.get(room.id) ?? room.id;
     const sets = (SETS.find(([re]) => re.test(kind)) ?? SETS[SETS.length - 1]!)[1];
-    const set = sets[round % sets.length]!.filter((o) => spec.objects[o.id]);
-    if (!set.length) break;
     let placed = false;
-    for (const [dx, dy] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1], [2, 0], [-2, 0]] as const) {
-      const objects = [...rb.objects, ...set.map((o) => ({ id: o.id, x: cx + dx + o.x, y: cy + dy + o.y }))];
-      const next = { ...args, objects };
-      const res = build(run, next);
-      if (reachOk(res) && !(res.data?.warnings as string[] | undefined ?? []).some((w) => /겹|overlap/u.test(w))) { args = next; rb = { ...rb, objects }; filled++; placed = true; break; }
+    for (let k = 0; k < sets.length && !placed; k++) {
+      const set = sets[(filled + k) % sets.length]!.filter((o) => spec.objects[o.id]);
+      if (!set.length) continue;
+      // 덩이 가운데부터 덩이 안 모든 자리(가까운 순 24곳) — 가운데에 계단통·주인공 물건이 있으면 가장자리 쪽에 앉힌다.
+      const spots: [number, number][] = [];
+      for (let y = region.y; y < region.y + region.h; y++) for (let x = region.x; x < region.x + region.w; x++) spots.push([x - cx, y - cy]);
+      spots.sort((a, b) => Math.abs(a[0]) + Math.abs(a[1]) - Math.abs(b[0]) - Math.abs(b[1]));
+      const occupied = (x: number, y: number) => rb.objects.some((o) => { const d = spec.objects[o.id.split(":")[0]!]; return !!d && x >= o.x && x < o.x + d.w && y >= o.y - 1 && y < o.y + Math.max(1, d.h) + 1; });
+      for (const [dx, dy] of spots.filter(([dx, dy]) => set.every((o) => !occupied(cx + dx + o.x, cy + dy + o.y))).slice(0, 24)) {
+        const objects = [...rb.objects, ...set.map((o) => ({ id: o.id, x: cx + dx + o.x, y: cy + dy + o.y }))];
+        const next = { ...args, objects };
+        const res = build(run, next);
+        if (reachOk(res) && !(res.data?.warnings as string[] | undefined ?? []).some((w) => /겹|overlap/u.test(w))) { args = next; rb = { ...rb, objects }; filled++; placed = true; break; }
+      }
     }
-    if (!placed) break;
   }
   // 마지막 시도가 실패했을 수 있다 — 지금 인자로 맵을 맞춘다.
   build(run, args);
@@ -484,6 +496,9 @@ function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: s
       if (placedDown) {
         uargs = placedDown.args; urb = placedDown.rb;
         const d = urb.objects[urb.objects.length - 1]!;
+        // 계단통 바로 둘레(위 한 줄·양옆)의 견본 의자·벤치는 치운다 — 「계단 앞을 벤치가 막고 있다」(눈가림 2차).
+        const near = (o: Obj) => o !== d && o.x >= d.x - 1 && o.x <= d.x + 3 && o.y >= d.y - 1 && o.y <= d.y + 2 && /bench|chair|stool/u.test(o.id);
+        if (urb.objects.some(near)) { urb = { ...urb, objects: urb.objects.filter((o) => !near(o)) }; uargs = { ...uargs, objects: urb.objects }; }
         // 위층 계단통 → 아래층 계단 앞, 아래층 계단 → 위층 계단통 앞. 칸은 도구의 계단 계약(fitStairTransfers)이 맞춘다.
         uargs = { ...uargs, links: [{ x: d.x + 1, y: d.y, toMapId: builtMapId, toX: stairsUp.x + 1, toY: stairsUp.y + 1, direction: "down" }] };
         // 위층 구역의 주인공 물건(침대·옷장…) — 계단 낱말은 이미 계단통으로 놓았다.
@@ -497,7 +512,8 @@ function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: s
           else missing.push(`${what}(위층 ${host.id}) — 놓을 빈 자리가 없다`);
         }
         build(run, uargs);
-        const ufill = fillBare(run, roomSpec, uargs, urb, new Map(urb.rooms.map((r) => [r.id, r.id.replace(/\d+$/u, "")] as const)), INTERIOR_BARE_FLOOR_LIMIT);
+        // 위층은 기준보다 낮게(8%) 메운다 — 객실 벽면이 분모를 키워 15% 안이어도 계단참 아래 절반이 비어 보였다.
+        const ufill = fillBare(run, roomSpec, uargs, urb, new Map(urb.rooms.map((r) => [r.id, r.id.replace(/\d+$/u, "")] as const)), 8);
         uargs = ufill.args; urb = ufill.rb;
         const upFinal = build(run, uargs);
         if (upFinal.ok) {

@@ -8,6 +8,7 @@ export const BUILDER_CASES: BuilderCase[] = [
   { id: "obs-req", spec: { type: "interior", name: "마법사의 천문대", size: "large", zones: [{ kind: "study", purpose: "탑 꼭대기 관측실", anchors: ["큰 망원경", "별자리 지도를 펼친 책상", "책장"] }] } },
   { id: "tavern-req", spec: { type: "interior", name: "선술집", floors: 2, zones: [{ kind: "tavern", purpose: "손님 홀", anchors: ["바 카운터", "식탁", "식탁", "벽난로", "올라가는 계단"] }] } },
   { id: "int-cosy", spec: { type: "interior", name: "아늑한 선술집", zones: [{ kind: "tavern" }, { kind: "kitchen" }], hints: { dressing: 1 } } },
+  { id: "village-farm-req", spec: { type: "village", name: "강가 농촌 마을", size: "small", theme: "river", features: ["river", "riverbank", "plaza", "scatter"], hints: { houseCount: 4, water: "river", roofs: "moss" } } },
   { id: "village-river-small", spec: { type: "village", name: "버들여울", size: "small", theme: "river", features: ["river", "plaza"] } },
   { id: "village-coast", spec: { type: "village", name: "갈매기 포구", size: "medium", theme: "coast", features: ["harbour"] } },
   { id: "village-snow-walls", spec: { type: "village", name: "서리마을", size: "medium", theme: "snow", features: ["walls", "conifer"] } },
