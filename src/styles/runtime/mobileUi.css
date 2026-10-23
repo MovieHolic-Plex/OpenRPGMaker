@@ -65,7 +65,8 @@
   }
 
   /* ── 제목 화면 ── */
-  .play-viewport[data-mobile-ui] .rm-title-menu-button {
+  /* title.css 의 편집형 규칙(.player-layout.system-shell .rm-title-screen-editorial …)이 0,4,0 이라 :is 반복으로 이긴다. */
+  .play-viewport[data-mobile-ui] :is(.title-screen, .title-screen) :is(.rm-title-menu, .rm-title-menu) .rm-title-menu-button {
     min-height: var(--mu-touch);
     font-size: var(--mu-text-l);
     display: flex;
@@ -74,6 +75,16 @@
     touch-action: manipulation;
   }
   .play-viewport[data-mobile-ui] .rm-title-logo-subtitle { font-size: var(--mu-text-s); }
+  /* 메뉴 위치는 titleMenuTop 이 논리 px(작은 버튼 기준)로 정해 둔다 — 항목이 커지면 무대 밖으로 나가므로 아래 끝에 붙인다. */
+  .play-viewport[data-mobile-ui] .title-screen .rm-title-menu[class] {
+    top: auto !important;
+    bottom: calc(6px * var(--mobile-ui-k, 1));
+  }
+  /* 세로: 무대가 219px 뿐이라 네 줄이 44px 면 로고를 덮는다 — 화면 24px 로 줄인다(가로로 돌리면 44px). */
+  .play-viewport[data-mobile-ui="portrait"] :is(.title-screen, .title-screen) :is(.rm-title-menu, .rm-title-menu) .rm-title-menu-button {
+    min-height: calc(24px * var(--mobile-ui-k, 1));
+    font-size: calc(13px * var(--mobile-ui-k, 1));
+  }
 
   /* ── 대사창 ── */
   .play-viewport[data-mobile-ui] .dialogue-overlay {
@@ -82,7 +93,7 @@
   }
   .play-viewport[data-mobile-ui] .dialogue-box {
     min-height: calc(84px * var(--mobile-ui-k, 1));
-    padding: calc(8px * var(--mobile-ui-k, 1)) calc(12px * var(--mobile-ui-k, 1));
+    padding: calc(8px * var(--mobile-ui-k, 1)) calc(22px * var(--mobile-ui-k, 1)) calc(8px * var(--mobile-ui-k, 1)) calc(12px * var(--mobile-ui-k, 1));
     touch-action: manipulation;
   }
   .play-viewport[data-mobile-ui] .dialogue-box.has-speaker { padding-top: calc(var(--runtime-dialogue-speaker-inset, 12px) + 4px); }
@@ -221,6 +232,11 @@
     right: calc(var(--mu-dock-w) + 14px);
   }
   .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu .status-menu-command-icon { display: none; }
+
+/* 세로: 파티 창은 눌러 쓰는 곳이 아니고 무대가 219px 뿐이라, 글자를 키우면 줄이 겹친다 — 높이 강제를 풀고 글자는 10px 로, 상태 줄(정상)은 접는다. */
+.play-viewport[data-mobile-ui="portrait"] .oprn-status-menu .status-menu-overview-row { min-height: 0; font-size: calc(10px * var(--mobile-ui-k, 1)); }
+.play-viewport[data-mobile-ui="portrait"] .oprn-status-menu :is(.status-menu-actor-subline, .status-menu-overview-vital-label, .status-menu-overview-value) { font-size: calc(10px * var(--mobile-ui-k, 1)); }
+.play-viewport[data-mobile-ui="portrait"] .oprn-status-menu .status-menu-overview-states { display: none; }
 
 /* 세로 화면: 무대가 낮아 명령 창 아래 보조 창(장소·시간·장)이 잘린다 — 돈만 남긴다. */
 .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] :is(.status-menu-location, .status-menu-time, .status-menu-chapter) {
