@@ -396,7 +396,10 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   const actorIds = new Map<string, string>(); // 이름 → 이벤트 id
   const hiddenFromStart: string[] = [];
   const used: Cell[] = [];
-  const start = walkStart(project(), map);
+  let start = walkStart(project(), map);
+  // 「누구와 대화가 끝나면」 장면은 주인공이 그 NPC 바로 앞에서 시작한다(말을 건 자리).
+  const afterNpc = spec.after ? findNpcByName(map, spec.after) : undefined;
+  if (afterNpc) start = resolveWhere(project(), map, undefined, { at: { x: afterNpc.x, y: afterNpc.y + 1 }, avoid: [{ x: afterNpc.x, y: afterNpc.y }] }).cell;
   sim.actors.set(PLAYER, { cell: start, dir: "down", visible: true, name: "주인공" });
   used.push(start);
   for (const name of names) {
