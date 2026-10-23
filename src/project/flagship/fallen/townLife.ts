@@ -137,7 +137,7 @@ function findContainers(project: Project, map: GameMap, walkable: (x: number, y:
       for (const layer of layers) {
         const t = layer?.[y * map.width + x] ?? -1;
         if (t < 0) continue;
-        const l = (meta[t]?.label ?? "").replace(/^버들항 · /, "");
+        const l = (meta[t]?.label ?? "").replace(/^버들항 · /, "").replace(/\s*\(\s*\d+\s*,\s*\d+\s*\)\s*/g, " ").replace(/\s+/g, " ").trim();
         if (FURNITURE.test(l) && !NOT_FURNITURE.test(l)) { label = l; break; }
       }
       if (!label) continue;
