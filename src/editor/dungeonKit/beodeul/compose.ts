@@ -14,7 +14,7 @@
 //   · 벽 앞면 위에 천장이 한 줄도 없는 「떠 있는 벽 토막」이 생길 수 있었다 → 배치 간격 규칙 + 검사(stranded-wall)
 //   · 서사 앵커가 없었다 → 입구(올라가는 계단)·보스방(입구에서 가장 먼 방)·보물 방·잠긴 문 자리(gate)를 결과로 돌려준다
 import { checkGroundSupportForStamp, groundSupportIssues, kitSupportKind, supportSurfaceOf } from "@/project/groundSupport";
-import { cellHash } from "@/project/defaults/autotileEngine";
+import { autotileVariantForMask, cellHash } from "@/project/defaults/autotileEngine";
 import type { AutotileGroup, GameMap, StructureKitDef, TilesetDef } from "@/project/types";
 import { DungeonComposeError } from "../errors";
 import { WALL_ROWS, hash01, rng, vnoise } from "../grid";
@@ -64,6 +64,8 @@ export const GAP_KIT = {
 } as const;
 /** 오토타일 한 칸: 8방이 다 이어진 칸은 몸통 변형(interiorVariants[0])을 엔진과 같은 cellHash 로 고른다. */
 function autoCell(g: AutotileGroup, m: number, x: number, y: number): number {
+  // 위치 위상 변형(32×32 몸통 용암 등): 엔진 그리기와 같은 규칙으로 칸 위치가 고른다.
+  if (g.phaseVariants) { const v = autotileVariantForMask(g, m, x, y); if (v !== undefined) return v; }
   const iv = g.interiorVariants?.[0];
   if (m === 255 && iv?.length) return iv[cellHash(x, y) % iv.length]!;
   return g.variantMap[String(m)] ?? g.variantMap["255"]!;

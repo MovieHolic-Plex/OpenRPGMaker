@@ -257,6 +257,14 @@ def bake_autotile(st, at, gid, name, origin, cmeta, connect_extra=()):
 def bake_autotile_anim(st, frames, gid, name, origin, cmeta):
     """4장면 오토타일: 모양·몸통마다 4칸 덩이. variantMap 은 첫 장면 칸."""
     assert len(frames) == FRAMES, len(frames)
+    if getattr(frames[0], 'body32', None) is not None:
+        # 위상 몸통(32×32, 2026-10-23): 위상 넷 × 47 모양마다 4칸 덩이. variantMap = 위상 0, phaseVariants {w:2,h:2} = 엔진이 칸 위치로 고른다.
+        canon = sorted(set(dot.canon(k) for k in range(256)))
+        byp = [{m: st.anim([f.tile(m, p) for f in frames], cmeta(m), origin) for m in canon} for p in range(4)]
+        members = sorted({c for d in byp for c in d.values()})
+        return dict(id=gid, name=name, neighborhood=8, edgeConnects=True, memberTileIds=members, connectTileIds=list(members),
+                    variantMap={str(k): byp[0][dot.canon(k)] for k in range(256)},
+                    phaseVariants=dict(w=2, h=2, maps=[{str(m): d[m] for m in canon} for d in byp]))
     by = {}
     for m in sorted(set(dot.canon(k) for k in range(256))):
         by[m] = st.anim([f.tile(m) for f in frames], cmeta(m), origin)

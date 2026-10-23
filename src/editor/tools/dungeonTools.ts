@@ -11,7 +11,7 @@ import { DUNGEON_DIRS, DUNGEON_LAYOUTS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGE
 import { DungeonComposeError } from "../dungeonKit/errors";
 import { capabilityTableText } from "../dungeonKit/capabilities";
 import { DUNGEON_GENRES, GENRE_PRESETS, genreOfProject, planPopulation } from "../dungeonKit/genres";
-import { DUNGEON_REFERENCES, GRAMMAR, inferDungeonRequest } from "../dungeonKit/grammar";
+import { DUNGEON_REFERENCES, GRAMMAR, inferDungeonRequest, inferDungeonType } from "../dungeonKit/grammar";
 import { DUNGEON_GIMMICKS, GIMMICK_LABEL, THEME_GIMMICKS, placeLever, placeThemeGimmick, wallFirst, type DungeonGimmick } from "./dungeonGimmicks";
 import { composeRouted, routeDungeon } from "../dungeonKit/route";
 import { assertMapIdAvailable } from "./mapHelpers";
@@ -486,6 +486,14 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
     if (args.layout === undefined && req.layout) args.layout = req.layout;
     if (args.gimmick === undefined && args.puzzle === undefined && req.gimmick && (DUNGEON_GIMMICKS as readonly string[]).includes(req.gimmick)) args.gimmick = req.gimmick;
     if (req.reference) refNote.push(`참고 「${req.reference.label}」: ${req.reference.note}.`);
+  }
+  // 「마계 성」「지옥의 신전」: 마계 낱말은 장소(성·신전·동굴)보다 구체적인 주제다 — 모델이 성으로 골라도 마계로 짓는다(2026-10-23 dt-p1 「크로노트리거 같은 마계 성」이 회색 성이 됐다).
+  {
+    const realm = inferDungeonType(`${insp} ${typeof args.name === "string" ? args.name : ""}`);
+    if (realm.type === "otherworld" && (args.type === "castle" || args.type === "temple" || args.type === "cave" || args.type === "catacomb")) {
+      refNote.push(`「마계」 낱말 — ${String(args.type)} 대신 마계(otherworld)로 지었다(허공에 뜬 땅·타락한 수정).`);
+      args.type = "otherworld";
+    }
   }
   // 층을 쌓는 배치(vertical): 층 수를 안 주면 2층(탑·마법탑은 3층 위로).
   if (args.layout === "vertical" && args.floors === undefined && args.rooms === undefined) {
