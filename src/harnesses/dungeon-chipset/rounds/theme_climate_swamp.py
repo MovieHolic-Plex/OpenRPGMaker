@@ -6,7 +6,7 @@
 
 공통 범례: 나무 a~f = wood 0~5 · g = sand 3(널 하이라이트) · 뼈 h~l = bone 0~4 · 이끼 m~r = moss 0~5 · 돌 s~x = stone 0~5
   · 늪 0~7 = bog 0~7 · 물 A~E = tide 0~4 · 웅덩이 F~K = pool 0~5 · 빛 L~Q = glow 0~5 · 잎 R S T U V W Y = leaf 0~6
-  · '*' ice 3 · '@' ice 4 · '^' ice 2 · '!' gold 4 · '%' gold 5 · '~' 접지 그림자.
+  · y = iron 4(못 머리) · z = iron 1 · '*' ice 3 · '@' ice 4 · '^' ice 2 · '!' gold 4 · '%' gold 5 · '~' 접지 그림자.
 """
 import os
 import sys
@@ -19,7 +19,7 @@ from theme_climate_lib import Cv, T  # noqa: E402
 LG = lib.leg(lib.ramp_chars('wood', 'abcdef'), lib.ramp_chars('bone', 'hijkl'), lib.ramp_chars('moss', 'mnopqr'),
              lib.ramp_chars('stone', 'stuvwx'), lib.ramp_chars('bog', '01234567'), lib.ramp_chars('tide', 'ABCDE'),
              lib.ramp_chars('pool', 'FGHIJK'), lib.ramp_chars('glow', 'LMNOPQ'), lib.ramp_chars('leaf', 'RSTUVWY'),
-             g=('sand', 3), **{'*': ('ice', 3), '@': ('ice', 4), '^': ('ice', 2), '!': ('gold', 4), '%': ('gold', 5)})
+             g=('sand', 3), y=('iron', 4), z=('iron', 1), **{'*': ('ice', 3), '@': ('ice', 4), '^': ('ice', 2), '!': ('gold', 4), '%': ('gold', 5)})
 
 
 def G(rows):
@@ -169,6 +169,64 @@ LOTUS = [   # 줄기에 선 연꽃 봉오리(분홍빛 도는 흰 꽃잎 = bone,
 ]
 
 
+# A1(2판) — 잎마다 다섯 단: 6/Y 빛 받는 가장자리 · W 몸 · V 중간 · U 잎맥(홈에서 뻗는 줄) · T/S 물에 닿는 그늘 가장자리,
+# 잎 밑 물그늘(~)·잔물결(2), 꽃잎 l k j i 네 단 + 금빛 꽃술.
+PADB_L = [
+    '...6YYW.YWV.',
+    '.6Y6YWWU.WVU',
+    '6YYWWVWWUWVU',
+    'YYWVUWWVUVWU',
+    'YWVWWUVUWWVT',
+    'UWWVUWVWVVUT',
+    '.TVVWVWVVUT.',
+    '..STTTTTTS..',
+]
+PADB_M = [
+    '.6YW.YV.',
+    '6YWWUWVU',
+    'YWVUWVWT',
+    'UVWUVVUT',
+    '.STTTTS.',
+]
+PADB_S = [
+    '.6Y.W.',
+    '6YWUVU',
+    'UVUVUT',
+    '.STTS.',
+]
+FLOWERB = [
+    '.l.l.',
+    'lkllk',
+    'jk!%j',
+    'ijkji',
+    '.i.i.',
+]
+CURLB = ['.6.', 'YWV', 'WVU', 'VUT', '.S.']
+BUDB = ['.l.', 'lkj', 'jki', '.V.', '.U.']
+
+
+def lily_a1b():
+    v1 = Cv(T, T)
+    P(v1, ['2.~~~~~~~~~~.2', '.22~~~~~~~22.'], 0, 13)
+    P(v1, PADB_L, 1, 6)
+    P(v1, ['.~~~~~~.'], 9, 5)
+    P(v1, PADB_M, 8, 1)
+    P(v1, PADB_S, 10, 11)
+    P(v1, ['~~~~'], 11, 15)
+    P(v1, FLOWERB, 2, 4)
+    P(v1, ['22.'], 0, 2)
+    v2 = Cv(T, T)
+    P(v2, ['.~~~~~~~~.', '2.22...22.'], 0, 7)
+    P(v2, PADB_M, 0, 2)
+    P(v2, ['.~~~~~~~~~~', '.22....222'], 5, 14)
+    P(v2, PADB_L[:-1], 4, 7)
+    P(v2, CURLB, 12, 1)
+    P(v2, BUDB, 9, 0)
+    P(v2, PADB_S[:-1], 1, 11)
+    P(v2, ['.2.2'], 12, 6)
+    return v1, v2
+
+
 def lily_a2():
     v1 = Cv(T, T)
     P(v1, ['..~~~~~~~~~.'], 0, 13)
@@ -249,6 +307,40 @@ SPARKS = [
 ]
 
 
+# A1(2판) — 3/4: 공중 빛 덩이(왼쪽 위 밝음 @Q, 오른쪽 아래 N M) + 몇 px 밑 바닥/물에 비친 빛 웅덩이(위에서 본 납작한 타원, 4줄).
+# 빛 웅덩이는 장면마다 숨 쉬듯 커졌다 작아진다(덩이가 오르면 흐리고 작게, 내려오면 밝고 크게).
+ORBB = [
+    '..NPPN..',
+    '.PQ@QPN.',
+    'NQ@@QPNM',
+    'PQ@QPPNM',
+    'NPQQPNNM',
+    '.NPPNNM.',
+    '..MNNM..',
+]
+ORBB_TAILS = [['...NN...', '...M....'], ['....NN..', '....M...'], ['..NN....', '..M.....']]
+POOLS = [
+    ['...LMMMML...', '.LMNNNNNML..', '.LMNNPNNML..', '..LMMMMML...'],
+    ['....LMML....', '..LMNNNML...', '..LMNNNML...', '...LMMML....'],
+    ['..LMMNMML...', 'LMNNPPPNNML.', 'LMNNPQPNNML.', '.LMMNNNMML..'],
+]
+
+
+def wisp_a1b():
+    frames = []
+    for i, dy in enumerate((0, -1, 0)):
+        f = Cv(T, T)
+        P(f, POOLS[(0, 1, 2)[i]], 2, 12)
+        oy = 1 + dy + (1 if i == 2 else 0)
+        P(f, ORBB_TAILS[i], 4, oy + 7)
+        P(f, ORBB, 4, oy)
+        for (x, y) in ORB_HALO[i]:
+            if y + dy + 1 < 10:
+                P(f, ['L'], x, y + dy + 1)
+        frames.append(f)
+    return frames
+
+
 def wisp_a2():
     frames = []
     for i, dy in enumerate((0, -1, 0)):
@@ -324,20 +416,20 @@ BROKEN1 = [
     'ddddcddbdd...bdd',
     'aaaaaaaaaa...aaa',
 ]
-DECK_END2 = [   # 마지막 널이 짧게 끝나 오른쪽 끝에 물이 보이는 끝 칸
-    'eeeeeeebeeeeefee',
-    'ddcdddddbddddddd',
-    'dddddcddbdddddcd',
-    'aaaaaaaaaaaaaaaa',
-    'fffbffffffgfffff',
-    'eeebeeeeeeeeeeee',
-    'eedbeeeeedeeeeee',
-    'aaaaaaaaaaaacccc',
-    'eeeeeebeeeeebbbb',
-    'dfddddbdddcd~~~~',
-    'ddddcdbddddd....',
-    'cccccccccccc....',
-    'bbbbbbbbbbbb....',
+DECK_END2 = [
+    'eefeezebeyeeefee',
+    'dcdddcddbddccddd',
+    'ddddcddcbdddddcd',
+    'a1aaaaaaaaaaa2aa',
+    'fgffbzfffzfgfffg',
+    'eeeebeedeeeeeede',
+    'edeebeeeeedeeeee',
+    'aa1aaaaaa2aacccc',
+    'eeezebeeeezebb1b',
+    'dfdcddbddcdd~~~~',
+    'ddcdddbdcddc....',
+    'dccccbccccbc....',
+    'b1bbbabb2bab....',
     '~~~~~~~~~~~~~...',
     '................',
     '................',
@@ -357,22 +449,22 @@ def end_a2():
 
 
 BROKEN2 = [
-    'eeeeeefeeebeeeee',
-    'ddddddddddbddcdd',
-    'dcddddcdddbddddd',
-    'aaaaaaaaaaaaaaaa',
-    'eeeg.......gfeee',
-    'ddc~.......~bddd',
-    'dcb.........bcdd',
-    'aa...........aaa',
-    'efe...dfg....gee',
-    'ddc....edf...cdd',
-    'dcb.....ced..bdd',
-    'aa.......bcd.aaa',
-    'eeeeg.....bc.gee',
-    'dddcd......b.ddd',
-    'ddddc........cdd',
-    'aaaaa........aaa',
+    'eeeeeefeyebeeeee',
+    'dcdddcddddbddcdd',
+    'dddcddcdddbdcddd',
+    'aa1aaaaaaaaaa2aa',
+    'eefgf~~~~~~~gfee',
+    'ddcdg.......~bdc',
+    'dcbf.....fg..bcd',
+    'a1.~....efdg.~2a',
+    'efg.....~cedf..g',
+    'ddcf.....~bcef.d',
+    'dcbd......~bcd.c',
+    'a2b........~bc~a',
+    'eeefgf......~b.e',
+    'dcddcg........gd',
+    'dddcdb~......fcd',
+    'aa1aaa.......aaa',
 ]
 
 
@@ -600,6 +692,49 @@ SNAG2_MOSS = [(0, 13, 'rqr4qp3o'), (1, 13, 'po3p.o'), (2, 13, 'rqrq4qrqp4p3o'), 
               (9, 19, 'q'), (8, 13, 'q'), (10, 25, 'r')]
 
 
+# A1(2판) — 덩이 이끼 + 가닥. 이끼 다섯 단: n 깊은 그늘 · o 어두움 · p/4 중간 · q 밝음 · r 끝 하이라이트,
+# 덩이는 오른쪽·아래가 n, 가닥은 길이 들쭉날쭉·사이 틈, 가닥 끝에 물방울(E)·잎 조각(Y W).
+MOSS_CLUMP4 = ['.5q.', '5q4o', 'q43n', '.pn.']
+MOSS_CLUMP3 = ['5q.', 'q4o', '3on']
+SNAG1B_CLUMPS = [(0, 4, MOSS_CLUMP4), (3, 8, MOSS_CLUMP3), (11, 4, MOSS_CLUMP4), (12, 1, MOSS_CLUMP3), (8, 8, MOSS_CLUMP3),
+                 (5, 9, ['5q', '3o'])]
+SNAG1B_STRANDS = [   # (x, 시작 y, 가닥) — '.' 은 틈(건너뜀)
+    (0, 8, 'q4p.on'), (1, 8, 'rq43p4pon.D'), (2, 8, '3on'), (3, 11, 'q4p34o.on'), (4, 11, 'r5q4po3pnon.5'),
+    (5, 11, 'p3n'), (8, 11, 'q43on'), (9, 11, 'rq4p.p43n'), (10, 11, 'pon.n'),
+    (11, 8, 'q43on'), (12, 8, 'r5q4p3op4n.D'), (13, 8, '3o.n'), (14, 8, 'rqr4p3q4on'), (15, 7, 'q43o.on'),
+    (13, 5, 'p'), (14, 4, 'o'),
+]
+SNAG1B_FLECKS = [(1, 4, 'Y'), (2, 5, 'W'), (12, 4, 'Y'), (13, 1, 'W'), (9, 8, 'Y'), (4, 8, 'W'), (6, 9, 'Y'),
+                 (15, 14, 'r'), (7, 13, 'q'), (7, 17, 'p'), (6, 23, 'q'), (8, 26, 'p'), (4, 23, '5'), (14, 17, 'q')]
+
+
+def moss_a1b():
+    c = [list(r) for r in SNAG1]
+    for x, y, rows in SNAG1B_CLUMPS:
+        for dy, r in enumerate(rows):
+            for dx, ch in enumerate(r):
+                if ch != '.':
+                    c[y + dy][x + dx] = ch
+    for x, y, col in SNAG1B_STRANDS:
+        for k, ch in enumerate(col):
+            if ch != '.':
+                c[y + k][x] = ch
+    for x, y, ch in SNAG1B_FLECKS:
+        c[y][x] = ch
+    return G(rows_of(c))
+
+
+def _snag_scene(fn):
+    def f():
+        cv = fn()
+        sc = ground(['bbbbbbb', 'bbbmmbb', 'bbmmwwb', 'bmmwwww', 'bbbwwwb', 'bbbbbbb'])
+        lib.put_actor(sc, 2, 3)
+        sc.paste(cv, 3 * T, 1 * T)
+        sc.paste(lib.bd_kit('bd-pick-swamp-stilt-snag'), 5 * T, 0)
+        return cv, {'kind': 'object', 'parts': {'고목': cv}, 'vignette': sc}
+    return f
+
+
 def _snag(rows, mossl):
     def f():
         c = [list(r) for r in rows]
@@ -656,6 +791,48 @@ IDOL1 = [
     (19, 2, 'W'), (20, 1, '2W'), (19, 29, 'W'), (20, 29, 'W2'), (21, 0, '2'), (21, 31, '2'),
 ]
 IDOL1_VINES = [(8, 4, '12V21'), (9, 5, '2U'), (17, 7, '12'), (6, 6, '2'), (12, 3, '1')]
+
+
+# A1(2판) — 3/4: 머리 정수리를 위에서 본 밝은 윗면(0~7줄, 이끼) → 어두운 꺾임선 → 남쪽 얼굴.
+# 턱 둘레에 반쯤 잠긴 돌 받침 고리 — 윗면(밝은 돌+이끼 3줄)이 보이고 앞면(어두운 돌 2줄)이 물에 닿는다, 둘레 물그늘·잔물결.
+IDOL1B = [
+    (0, 11, 'wxxwW2Ywxw'),
+    (1, 8, 'vwxxxwW2YWxwwvvu'),
+    (2, 7, 'vwxxwxxwq2Wwxwwvut'),
+    (3, 6, 'vwxxwwxxwwxww2Wwwvut'),
+    (4, 5, 'uvwxwwwxwwwwwwwq2wvuut'),
+    (5, 5, 'uvwwqwwxwwwwxwwwwwvuts'),
+    (6, 5, 'tvwwwwwwwvwwwwwvwvvuts'),
+    (7, 5, 'tuvvvvwvvvvvvvvvvvuuts'),
+    (8, 5, 'sttttttttsttttttttttss'),
+    (9, 5, 'uvutstvutstvutstvuts1s'),
+    (10, 4, 'tuvwwwwvuuvwvwwwwvuutt1s'),
+    (11, 4, 'twxxxwwwvuxvvwwwxwwvut1s'),
+    (12, 4, 'uusssssstxwvutssssssttss'),
+    (13, 4, 'uvuvvvvusxwvusuvvvvuutss'),
+    (14, 4, 'vutsssstuxwuttsssstuttss'),
+    (15, 5, 'vvuuuuvuxwvtsuuquuttts'),
+    (16, 6, 'uvvuuvswvussuuttttss'),
+    (17, 1, '.vwxw.tuuutssssssssttttsvwv.'),
+    (18, 0, 'uwxwwvq.ttttttttttttt.vwxwvu'),
+    (19, 0, 'vwxW2wwvwxwwvwxwwvwwxwW2wvwvu'),
+    (20, 0, 'uvwwvwW2wwvwwvwxwvwwvw2Wwvwvut'),
+    (21, 1, 'tuvvuvvuvvuuvvuvvuvvuuvvuuts'),
+    (22, 1, 'stttsttsttstt1tstt2tsttstss'),
+    (23, 2, 'SSssSSsSSs0SSsS0SSsSSsSSS'),
+    (24, 1, '2.W.0SS0SSS00SSS0SS0SSS.W.2'),
+    (25, 3, '22...W22.2W.22.W2..22W'),
+]
+IDOL1B_VINES = [(8, 3, '12V21'), (9, 4, '2U'), (17, 7, '12'), (6, 5, '2'), (26, 9, '1V1')]
+
+
+def idol_a1b():
+    c = _rows(IDOL1B)
+    for x, y, col in IDOL1B_VINES:
+        for k, ch in enumerate(col):
+            if c[y + k][x] != '.':
+                c[y + k][x] = ch
+    return G(rows_of(c))
 
 
 def idol_a1():
@@ -738,11 +915,11 @@ def _idol(fn):
 
 
 FNS = {
-    'tc.sw_lily': {'A1': _lily(lily_a1), 'A2': _lily(lily_a2)},
-    'tc.sw_wisp': {'A1': _wisp(wisp_a1), 'A2': _wisp(wisp_a2)},
+    'tc.sw_lily': {'A1': _lily(lily_a1b), 'A2': _lily(lily_a2)},
+    'tc.sw_wisp': {'A1': _wisp(wisp_a1b), 'A2': _wisp(wisp_a2)},
     'tc.sw_root_arch': {'A1': _arch(arch_a1), 'A2': _arch(arch_a2)},
-    'tc.sw_moss': {'A1': _snag(SNAG1, SNAG1_MOSS), 'A2': _snag(SNAG2, SNAG2_MOSS)},
-    'tc.sw_idol': {'A1': _idol(idol_a1), 'A2': _idol(idol_a2)},
+    'tc.sw_moss': {'A1': _snag_scene(moss_a1b), 'A2': _snag(SNAG2, SNAG2_MOSS)},
+    'tc.sw_idol': {'A1': _idol(idol_a1b), 'A2': _idol(idol_a2)},
     'tc.sw_boardwalk': {'A1': _bw(end_a1, BROKEN1), 'A2': _bw(end_a2, BROKEN2)},
 }
 NOTES_BY_ITEM = {

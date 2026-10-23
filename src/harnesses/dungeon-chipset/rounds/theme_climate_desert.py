@@ -31,9 +31,9 @@ LS = leg(ramp_chars('sand', 'abcdefg'), ramp_chars('void', 'xyz'))
 LS2 = leg(ramp_chars('sand', 'abcdefg'), ramp_chars('void', 'xyz'), b=('sand', 0), a=('sand', 0))
 
 
-# 벽 앞면은 바닥보다 한 단 어둡게: 글자를 한 단씩 내려 읽고, 가장 깊은 줄눈만 cfloor 0(짙은 회갈)
-LF1 = leg(ramp_chars('sand', 'abcdefg'), a=('cfloor', 0), b=('sand', 0), c=('sand', 1), d=('sand', 2), e=('sand', 3),
-          f=('sand', 4), g=('sand', 5))
+# 벽 앞면은 바닥보다 한 단 어둡게: 글자를 한 단씩 내려 읽고, 줄눈은 사암의 가장 짙은 단 = wood 2(따뜻한 짙은 갈색, 먹 아님)
+LF1 = leg(ramp_chars('sand', 'abcdefg'), j=('wood', 2), a=('sand', 0), b=('sand', 1), c=('sand', 2), d=('sand', 3),
+          e=('sand', 4))
 # A2 벽 = 먼지 앉은 사암: 몸통 sand 2, 줄눈·그늘·턱은 회갈 cfloor — A1 의 붉은 황갈 통돌과 다른 결
 LF2 = leg(ramp_chars('sand', 'abcdefg'), a=('cfloor', 0), b=('cfloor', 1), c=('sand', 2), d=('cfloor', 5),
           e=('sand', 4), f=('sand', 5), g=('sand', 6))
@@ -213,73 +213,86 @@ def floor_fn(n):
 
 
 # ================================================================================================ 벽 앞면
-# A1: 8줄 켜 여섯(16칸 주기로 이음 0·8열 엇갈림), 맨 윗줄 = 천장 테두리 밑 밝은 턱, 아래로 갈수록 어둡고 맨 밑 3줄 그늘.
+# A1: 8줄 켜 여섯(이음 0·8열 엇갈림). 글자(LF1): j 줄눈(wood 2, 재료의 가장 짙은 단 — 먹 아님) · a 그늘·패임(sand 0) ·
+# b 몸통(sand 1) · c 결·빛 받는 윗줄(sand 2) · d 턱·반짝(sand 3) · e 드문 반짝(sand 4).
+# 돌마다 윗줄 c(왼끝 d) · 왼 모서리 c · 몸통 b 에 c 결 점과 a 패임 · 아래 a 그늘 · 오른쪽 a — 4~5단. 이음 모서리 몇 곳은 깨져(j·a) 들어감.
 M1 = [
-    'dddddddddddddddd',   # 0 윗단 — 테두리 밑 턱
-    'addddddddddddddb',
-    'adcccccccccccccb',
-    'adccccbcccccdccb',
-    'adcccccccccccccb',
-    'adccdccccccbcccb',
-    'abbbbbbbbbbbbbbb',
-    'aaaaaaaaaaaaaaaa',
-    'dddddddbaddddddd',   # 8
-    'cccccccbadcccccc',
-    'ccccdccbadccccbc',
-    'cccccccbadcccccc',
-    'ccbccccbadccdccc',
-    'cccccccbadcccccc',
-    'bbbbbbbbabbbbbbb',
-    'aaaaaaaaaaaaaaaa',
-    'addddddddddddddb',   # 16 가운데단
-    'adcccccccbcccccb',
-    'adcccccccccccccb',
-    'adccbccccccccdcb',
-    'adcccccccccccccb',
-    'adcccccdccbccccb',
-    'abbbbbbbbbbbbbbb',
-    'aaaaaaaaaaaaaaaa',
-    'dddddddbaddddddd',   # 24
-    'cccccccbadcccccc',
-    'cbcccccbadcccccc',
-    'cccccccbadccbccc',
-    'ccccdccbadcccccc',
-    'cccccccbadccccdc',
-    'bbbbbbbbabbbbbbb',
-    'aaaaaaaaaaaaaaaa',
-    'addddddddddddddb',   # 32 아랫단
-    'adccccccccccbccb',
-    'adcccbcccccccccb',
-    'adcccccccdcccccb',
-    'adcccccccccccbcb',
-    'abbbbbbbbbbbbbbb',
-    'aaaaaaaaaaaaaaaa',
-    'dddddddbaddddddd',   # 39
-    'cccccccbadcccccc',
-    'ccbccccbadcccccc',
-    'cccccccbadcccbcc',
-    'cbcccbcbadcbcccb',
-    'bcbbbcbbabbcbbbb',
-    'bbbbbbbbabbbbbbb',
-    'aaaaaaaaaaaaaaaa',
-    'aaaaaaaaaaaaaaaa',
+    'dddcddddddcddddd',   # 0 윗단 — 테두리 밑 턱
+    'jdcccdccccccccca',
+    'jcbbcbbbbbbcbbba',
+    'jcbbbbabbbbbbcba',
+    'jcbcbbbbbbabbbba',
+    'jcbbbabbcbbbbaba',
+    'jaaabaaaaaaabaaa',
+    'jjjjjjjjjjjjjjjj',
+    'ccccdccajdcccccc',   # 8
+    'bbcbbbbajcbbbbcb',
+    'bbbbabbajcbcbbbb',
+    'babbbbcajcbbbbab',
+    'bbbcbbbajcbbabbb',
+    'bbabbbbajcbbbbcb',
+    'aaaaabaajaaaaaba',
+    'jjjjjjjjjjjjjjjj',
+    'jdccccccdccccdca',   # 16 가운데단
+    'jcbbbbcbbbbbbbba',
+    'jcbabbbbbcbbabba',
+    'jcbbbbbbbbbbbcba',
+    'jcbcbbabbbbbbbba',
+    'jcbbbbbbcbabbbba',
+    'jaaaaaabaaaaaaaa',
+    'jjjjjjjjjjjjjjjj',
+    'cdcccccajdcccdcc',   # 24
+    'bbbbcbbajcbbbbbb',
+    'bcbbbbbajcbbabbb',
+    'bbbabbbajcbbbbbc',
+    'bbbbbbcajcbcbbbb',
+    'babbbbbajcbbbbab',
+    'aaabaaaajaaaaaaa',
+    'jjjjjjjjjjjjjjjj',
+    'jcccdcccccccccca',   # 32 아랫단
+    'jcbbbbbbbabbbbba',
+    'jcbabbbcbbbbbaba',
+    'jbbbbbbbbbbabbba',
+    'jcbbabbbbbbbbbba',
+    'jbabbbbabbbbabaa',
+    'jaaaaaaaaaabaaaa',
+    'jjjjjjjjjjjjjjjj',
+    'ccccccbajcccccbc',   # 40
+    'bbbbabbajcbbbbbb',
+    'babbbbbajbbbabbb',
+    'bbabbabajbbabbab',
+    'aabaaaaajaaaabaa',
+    'ajaaajaajaajaaaa',
+    'jajjjajjjjjajjja',
+    'jjjjjjajjjjjjjjj',
 ]
-# 끝 기둥 줄(왼끝 0·1열, 오른끝 14·15열) — 가운데 칸 위에 찍어 모서리를 둥글게(왼 빛 / 오른 그늘)
+# 끝 기둥 줄(왼끝 0·1열 빛 / 오른끝 14·15열 그늘)
 E1L = [
-    'ed', 'ed', 'ed', 'ed', 'ed', 'ed', 'dc', 'cb',
-    'ed', 'ec', 'ec', 'ec', 'ec', 'ec', 'dc', 'cb',
-    'ed', 'ed', 'ed', 'ed', 'ed', 'ed', 'dc', 'cb',
-    'ed', 'ec', 'ec', 'ec', 'ec', 'ec', 'dc', 'cb',
-    'ed', 'ed', 'ed', 'ed', 'ed', 'dc', 'cb', 'ed',
-    'ec', 'ec', 'ec', 'ec', 'dc', 'cb', 'ba', 'ba',
+    'dd', 'dd', 'dc', 'dc', 'cc', 'dc', 'ca', 'aj',
+    'dd', 'dc', 'dc', 'cc', 'dc', 'dc', 'ca', 'aj',
+    'dd', 'dc', 'dc', 'dc', 'cc', 'dc', 'ca', 'aj',
+    'dd', 'dc', 'cc', 'dc', 'dc', 'cc', 'ca', 'aj',
+    'dc', 'cc', 'cb', 'cc', 'cb', 'cb', 'ba', 'aj',
+    'cc', 'cb', 'cb', 'cb', 'bb', 'ba', 'aj', 'jj',
 ]
 E1R = [
-    'cb', 'cb', 'ba', 'ba', 'ba', 'ba', 'ba', 'aa',
-    'cb', 'ba', 'ba', 'ba', 'ba', 'ba', 'ba', 'aa',
-    'cb', 'cb', 'ba', 'ba', 'ba', 'ba', 'ba', 'aa',
-    'cb', 'ba', 'ba', 'ba', 'ba', 'ba', 'ba', 'aa',
-    'cb', 'cb', 'ba', 'ba', 'ba', 'ba', 'aa', 'cb',
-    'ba', 'ba', 'ba', 'ba', 'ba', 'aa', 'aa', 'aa',
+    'cc', 'ca', 'ba', 'ba', 'ba', 'ba', 'aa', 'jj',
+    'ca', 'ba', 'ba', 'ba', 'ba', 'ba', 'aa', 'jj',
+    'ca', 'ba', 'ba', 'ba', 'ba', 'ba', 'aa', 'jj',
+    'ca', 'ba', 'ba', 'ba', 'ba', 'ba', 'aa', 'jj',
+    'ba', 'ba', 'ba', 'ba', 'ba', 'aa', 'aa', 'jj',
+    'ba', 'ba', 'ba', 'aa', 'aa', 'aj', 'jj', 'jj',
+]
+# 아랫단 변형(가운데): 아래에서 둘째 켜를 짧은 돌 셋으로(이음 5·12열), 깨진 모서리·모래 낀 줄눈 — 같은 벽돌 반복을 끊는다.
+BASE1 = [
+    'ccccajdccccajdcc',
+    'bbcbajcbbbbajcbb',
+    'bbbbajcbabbajcbb',
+    'babbajcbbbbajcbc',
+    'bbbbajcbbcbajcbb',
+    'bbabajcbbbbajcab',
+    'aaaaajaaaaaajaaa',
+    'jjjjjdjjjjjjjjjj',
 ]
 
 # A2: 5·5·6줄 작은 켜, 이음 자리 제각각, 깨진 모서리, 맨 밑에 모래가 조금 쌓임.
@@ -357,61 +370,52 @@ E2R = [
 ]
 
 # ------------------------------------------------------------------------------------------------ 새김(상형 그림, 글자 아님)
-# A1 액자 판: 한 칸 전체가 큰 판석 하나, 테 안쪽에 그림을 파 새김(파인 선 a, 그 아래·오른쪽 빛 받는 턱 d/e).
+# A1 액자 판: 한 칸 전체가 큰 판석 하나(겉면 c, 위·왼 턱 d, 아래·오른 그늘 a), 그 안에 그림을 파 새김
+# (파인 선 j, 파인 속 a, 아래 턱 빛 d) — 1배에서 읽히게 12×12 가득.
 PANEL1 = [
-    'addddddddddddddb',
-    'adeeeeeeeeeeeecb',
-    'adeccccccccccdcb',
-    'adecccccccccdcab',
-    'adecccccccccccab',
-    'adecccccccccccab',
-    'adecccccccccccab',
-    'adecccccccccccab',
-    'adecccccccccccab',
-    'adecccccccccccab',
-    'adecccccccccccab',
-    'adecccccccccccab',
-    'adecccccccccccab',
-    'adebbbbbbbbbbbab',
-    'abaaaaaaaaaaaaaa',
-    'aaaaaaaaaaaaaaaa',
+    'jdddddddddddddaj',
+    'jdccccccccccccaj',
+    'jdccccccccccccaj',
+    'jdccccccccccccaj',
+    'jdccccccccccccaj',
+    'jdccccccccccccaj',
+    'jdccccccccccccaj',
+    'jdccccccccccccaj',
+    'jdccccccccccccaj',
+    'jdccccccccccccaj',
+    'jdccccccccccccaj',
+    'jdccccccccccccaj',
+    'jdccccccccccccaj',
+    'jaaaaaaaaaaaaaaj',
+    'jaaaaabaaaaaabaj',
+    'jjjjjjjjjjjjjjjj',
 ]
-EYE = [        # 눈(호루스의 눈 모양 그림) 10×9
-    'aaaaaaaa..',
-    'dddddddd..',
-    '..aaaaa...',
-    '.a.dbbaa..',
-    'a..bbbb.aa',
-    '.a.dbba.dd',
-    '..aaaaa...',
-    '...a.dad..',
-    '..ad...aa.',
+EYE = [        # 눈(호루스의 눈 모양 그림) 12×10 — 눈썹·아몬드 눈·눈동자·아래 꼬리 둘
+    'jjjjjjjjjjj.',
+    '.ddddddddddd',
+    '..jjjjjjj...',
+    '.j..aaa..j..',
+    'j..aajaa..jj',
+    '.j..aaa..jd.',
+    '..jjjjjjj...',
+    '....j.d.j...',
+    '...jd...jj..',
+    '..jd.....jd.',
 ]
-FALCON = [     # 매(옆모습, 서 있음) 9×10
-    '...aa....',
-    '..aaad...',
-    '..aaa....',
-    '...aaa...',
-    '..aaaaa..',
-    '..aaaaaa.',
-    '..aaaaaaa',
-    '...aaad.a',
-    '...a.a...',
-    '..ad.ad..',
+FALCON = [     # 매(옆모습, 서 있음) 10×12
+    '....jj....',
+    '...jaaj...',
+    '..jaaaad..',
+    '.jjjaaa...',
+    '....jaaa..',
+    '...jaaaaa.',
+    '...jaaaaaa',
+    '...jaaaaaa',
+    '....jaaaad',
+    '.....aa.a.',
+    '....ja..ja',
+    '....d...d.',
 ]
-WAVES = [      # 물결 띠(가로 반복 16) — 아랫단 변형 새김
-    'eeeeeeeeeeeeeeee',
-    'baaaaaaaaaaaaaaa',
-    'cccccccccccccccc',
-    'ccaacccccaacccca',
-    'cadcacccadcaccad',
-    'adcccacadcccacad',
-    'dcccccadcccccadc',
-    'cccccccccccccccc',
-    'aaaaaaaaaaaaaaaa',
-    'dddddddddddddddd',
-]
-
 # A2 가로 띠: 2~13줄 홈 띠가 칸을 가로질러(이웃 새김 칸과 이어진다), 띠 안에 그림을 도드라지게(d·e) 남김.
 BAND2 = [
     'aaaaaaaaaaaaaaaa',
@@ -484,16 +488,16 @@ DRIFT2_L = [   # 왼끝 — 모래가 모서리에서 더 높이
 CRACK1 = [
     '................',
     '................',
-    '.......b........',
-    '.......cb.......',
-    '........cb......',
-    '.......bcd......',
-    '......b.........',
+    '.......j........',
+    '.......aj.......',
+    '........aj......',
+    '.......jad......',
+    '......j.........',
     '................',
     '................',
-    '...........b....',
-    '..........bd....',
-    '...........b....',
+    '...........j....',
+    '..........jd....',
+    '...........j....',
     '................',
     '................',
     '................',
@@ -541,24 +545,17 @@ class FaceSet:
         s.lg = lg
         if n == 1:
             mid = G(M, lg)
-            panel = Cv(16, 16)
-            panel.a[:] = G(PANEL1, lg).a
+            panel = G(PANEL1, lg)
             p3 = Cv(16, 16)
             p3.a[:] = panel.a
-            stamp(p3, EYE, lg, 3, 3)
+            stamp(p3, EYE, lg, 2, 2)
             p2 = Cv(16, 16)
             p2.a[:] = panel.a
-            stamp(p2, FALCON, lg, 4, 2)
+            stamp(p2, FALCON, lg, 3, 1)
             s.glyph3 = vcat(mid.crop(0, 0, 16, 16), p3, mid.crop(0, 32, 16, 16))
             s.glyph2 = vcat(p2, mid.crop(0, 32, 16, 16))
-            bot = _cols(M[32:48], EL[32:48], ER[32:48])
-            cells = [G(r, lg) for r in bot]
-            for c in cells:
-                stamp(c, WAVES, lg, 0, 3)
-            stamp(cells[0], ['e', 'd', 'c', 'c', 'c', 'c', 'c', 'c', 'b', 'd'], lg, 0, 3)
-            stamp(cells[0], ['d', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'b', 'c'], lg, 1, 3)
-            stamp(cells[2], ['b', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'b'], lg, 15, 3)
-            s.base3 = hcat(*cells)
+            bot = _cols(BASE1 + M[40:48], EL[32:48], ER[32:48])
+            s.base3 = hcat(*[G(r, lg) for r in bot])
             alt = G(M[16:32], lg)
             stamp(alt, CRACK1, lg, 0, 0)
             s.alt3 = alt
@@ -614,53 +611,54 @@ BODY1 = [
     'xxxxxxxyxxxxxxxx',
     'xxxxxxxxxxxxxyxx',
 ]
+# A1 띠 단: 턱 f(g 반짝) → 몸통 e(d 결·f 반짝) → 아래 몸통 d → 안쪽 그늘 c → 어둠 쪽 가장자리 b. 이음 눈금 6·14열(c + 오른쪽 f 턱), 턱 깨짐 몇 곳.
 N1 = [
-    'ffffffffffffffff',
-    'eeefeeeeeeefeeee',
-    'eeecedeeeeeceede',
-    'edecee eeedeceeee'.replace(' ', '')[:16],
-    'eeeceeeeeeecdeee',
-    'ddddddddddddddd d'.replace(' ', '')[:16],
-    'cccccccccccccccc',
-    'bbbbbbbbbbbbbbbb',
+    'ffgfffffgfeffgff',
+    'eefeeecfeeefeecf',
+    'edeeedcedeeedecd',
+    'eeefeeceeefeeece',
+    'deedeedeedeedede',
+    'dddeddddcddedddd',
+    'cccdccccccdccccc',
+    'bbbbcbbbbbbbbcbb',
 ]
-# 왼 띠는 위 띠를 돌려 그린 손 조각(가로 이음 3·11줄)
+# 왼 띠(세로): 턱 0열 · 몸통 1~4열 · 5열 d · 6열 c · 7열 b. 이음 눈금 6·14줄(c, 아랫줄 f 턱).
 W1 = [
-    'feeeedcb',
-    'feeeedcb',
+    'feededcb',
+    'gefeedcb',
+    'feeedccb',
     'fedeedcb',
+    'feeefdcb',
+    'feeeddcb',
     'fccccdcb',
+    'feffedcb',
+    'gedeedcb',
     'feeeedcb',
     'feedeccb',
     'feeeedcb',
-    'feeeedcb',
-    'feeeedcb',
-    'feeedccb',
-    'feeeedcb',
-    'fccccdcb',
-    'fefeedcb',
-    'feeeedcb',
+    'fefeddcb',
     'feeedecb',
-    'feeeedcb',
+    'fccccdcb',
+    'feffedcb',
 ]
-ON1 = [        # 바깥 모서리 NW
-    'efffffff',
-    'feeeeeee',
-    'feeedeee',
-    'feeeeeee',
-    'fedeeeee',
-    'feeeeedd',
-    'feeeedcc',
+ON1 = [        # 바깥 모서리 NW — 턱이 둥글게 돈다, 안쪽 오목 모서리 c·b
+    'efffgfff',
+    'feefeeee',
+    'fedeedee',
+    'geeeeefe',
+    'feefeede',
+    'fedeeddd',
+    'feeeddcc',
     'feeedccb',
 ]
-IN1 = [        # 안 모서리 NW
+IN1 = [        # 안 모서리 NW — 위 띠의 끝줄·왼 띠의 끝칸과 같은 단으로 이어지고, 안쪽 가장자리 ┘ 로 돈다
+    'feffedcb',
     'feeeedcb',
-    'eeeeedcb',
-    'eedeedcb',
-    'eeeeedcb',
-    'eeeeedcb',
-    'dddddddb',
-    'cccccccb',
+    'deedeccb',
+    'eeedeecb',
+    'edeeedcb',
+    'ddedddcb',
+    'cccdcccb',
     'bbbbbbbb',
 ]
 
@@ -780,11 +778,12 @@ def _wall_cells(plan):
     return wallB
 
 
-def pyramid_room(plan, n=1, glyphs=True):
+def pyramid_room(plan, n=1, glyphs=True, floor_n=None):
     """plan(행 문자열: '#' 막힘 · 그 밖 바닥) → 피라미드 방 그림 Cv. n=1 → A1 세트, n=2 → A2 세트.
+    floor_n: 바닥만 다른 번호로(판정에서 고른 조합 = 테두리 A1 + 앞면 A1 + 바닥 A2 → pyramid_room(plan, 1, floor_n=2)).
     벽 가운데 칸 몇 곳(칸 해시)에 새김 칸·금 간 돌·아랫단 변형을 섞는다."""
     fs = face_set(n)
-    out = lib.rooms_render(plan, rim_at(n), fs.face3, fs.face2, floor_fn(n))
+    out = lib.rooms_render(plan, rim_at(n), fs.face3, fs.face2, floor_fn(floor_n or n))
     if not glyphs:
         return out
     wall = _wall_cells(plan)
@@ -809,43 +808,7 @@ def pyramid_room(plan, n=1, glyphs=True):
     return out
 
 
-# 바닥 2×2(같은 번호 바닥 0~3칸) 위에 구덩이 테두리(정지) + 모래 면(장면마다 움직임).
-# 테두리: 북쪽 안벽(남향 앞면, 사암 켜 어둡게)이 보이고, 서쪽 안벽 그늘 a · 동쪽 안벽 빛 d, 남쪽 가장자리 = 빛 받는 판석 턱(e·f).
-# 'o' = 모래 면 자리(장면 조각 24×18 을 x4 y9 에 찍어 덮는다 — 덮이지 않으면 오류).
-PIT1 = [
-    '................................',
-    '................................',
-    '................................',
-    '...........bbbbbbbbbb...........',
-    '........bbbccccccccccbbb........',
-    '......bbcccbbbabbbabbcccbb......',
-    '.....bccbbabbbbbabbbbabbccb.....',
-    '....babbabbbbbbabbbbbbabbbcb....',
-    '...baaaaaaaaaaaaaaaaaaaaaaacb...',
-    '...baoooooooooooooooooooooodc...',
-    '...baoooooooooooooooooooooodc...',
-    '...baoooooooooooooooooooooodc...',
-    '...baoooooooooooooooooooooodc...',
-    '...baoooooooooooooooooooooodc...',
-    '...baoooooooooooooooooooooodc...',
-    '...baoooooooooooooooooooooodc...',
-    '...baoooooooooooooooooooooodc...',
-    '...baoooooooooooooooooooooodc...',
-    '...baoooooooooooooooooooooodc...',
-    '...baoooooooooooooooooooooodc...',
-    '...baoooooooooooooooooooooodc...',
-    '...baoooooooooooooooooooooodc...',
-    '...cooooooooooooooooooooooood...',
-    '....dooooooooooooooooooooooe....',
-    '.....eooooooooooooooooooooe.....',
-    '......eooooooooooooooooooe......',
-    '.......efoooooooooooooofe.......',
-    '.........eeffffffffffee.........',
-    '................................',
-    '................................',
-    '................................',
-    '................................',
-]
+# A2 구덩이 정지 조각: 'o' = 모래 면 자리(장면 조각 24×18 을 x4 y9 에 찍어 덮는다 — 덮이지 않으면 오류).
 # A2 테두리: 판석이 깨져 들쭉날쭉, 틈(금)이 바닥으로 뻗는다.
 PIT2 = [
     '................................',
@@ -880,69 +843,6 @@ PIT2 = [
     '......cb...................bc...',
     '.....c......................b...',
     '................................',
-]
-# A1 모래 면: 세 팔 소용돌이(홈 c · 빛 마루 f · 북쪽 그늘 d · 가운데 깔때기 a/b), 장면마다 40° 돈다.
-SWIRL1 = [
-    [
-        '.dddddddddddddddddddddd.',
-        '.dddddccccccccddddddddd.',
-        '.dddddddddddddcccdddddd.',
-        '.deeeeeeeeeeeeffcceeeee.',
-        '.deeeeeccccceeeefcceeee.',
-        '.eeeecccffffcceeefceeee.',
-        '.eeeccffeeeefcceeeceeee.',
-        '.eeccfeeecceefceeeceeee.',
-        '.eecfeecccbaabceeeceeee.',
-        '.ecfeeecffbaabfeeeceeee.',
-        '.eceeeeceeeceeeeccfeeec.',
-        '.eceeeeceeeccccccfeeecc.',
-        '.ecceeecceeffffffeeeccf.',
-        'eefceeefcceeeeeeeeeccfee',
-        '.eecceeeffcccceccccffee.',
-        '..efcceeeefffccffffeee..',
-        '...effceeeeeeffeeeeee...',
-        '.....efeeeeeeeeeeee.....',
-    ],
-    [
-        '.ddddddddddddccdddddddd.',
-        '.ddddddddddddddccdddddd.',
-        '.ddddddddddddddddccdddd.',
-        '.deeeeecccccceeeefcceee.',
-        '.deeeccfffffccceeefceee.',
-        '.eeccffeeeeeffcceeefcee.',
-        '.eccfeeeecceeefceeeecee.',
-        '.ccfeeeccffceeeceeeecee.',
-        '.cfeeecffebaabeceeeecee.',
-        '.ceeecceeebaabcceeeccee.',
-        '.ceeecfeeeceeeffeeccfee.',
-        '.ceeeceeeecceeeeeccfeee.',
-        '.feeefceeefcccccccfeeee.',
-        'eeeeeecceeefffffffeeeeee',
-        '.eeeeefcceeeeeeeeeeecee.',
-        '..eeeeeffccceeeeccccfe..',
-        '...eeeeeefffcccccfffe...',
-        '.....eeeeeeefffffee.....',
-    ],
-    [
-        '.dddddddddddddddddddddd.',
-        '.dddddddddddddddddddddd.',
-        '.ddddcccccccccddddddddd.',
-        '.deeccfffffffccceeeecee.',
-        '.dccffeeeeeeeffcceeefce.',
-        '.ccfeeeecccceeefcceeece.',
-        '.cfeeecccffcceeefceeefc.',
-        '.feeeccffeeffceeeceeeec.',
-        '.eeecffeecbaabeeeceeecc.',
-        '.eeeceeeccbaabeecfeeecf.',
-        '.eeeceeecfeeecccfeeecce.',
-        '.eeeceeecceeefffeeeccfe.',
-        '.eeeceeefcceeeeeeeccfee.',
-        'eeeefceeefcccccccccfeeee',
-        '.eeeecceeefffffffffeeee.',
-        '..eeefcceeeeeeeeeeeeee..',
-        '...eeeffccceeeeeeeeee...',
-        '.....eeefffccceeeee.....',
-    ],
 ]
 # A2 모래 면: 동심 물결 고리(북쪽 홈 c, 남쪽 빛 f)가 장면마다 한 칸씩 안으로 좁혀 든다.
 RINGS2 = [
@@ -1009,16 +909,134 @@ RINGS2 = [
 ]
 
 
+# A1 구덩이(바닥 A2 위): 2×2 안에 둥글고 들쭉날쭉한 구덩이 — 판석은 둘레로 이어지고 북쪽 가장자리만 가는 그늘 선(b),
+# 남쪽은 빛 받는 턱(f). 안은 고운 모래(e, 북쪽 그늘 d), 두 팔 소용돌이(홈 c · 마루 f)가 장면마다 60° 돈다, 가운데 깔때기 a/b.
+# 가장자리 줄은 세 장면이 같다(trap_frames 가 확인).
+TRAP1 = [
+    [
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+        '..........bbbbbbbbbbb...........',
+        '.........bdeeedddddddbb.........',
+        '........bdcdddcceedddddbb.......',
+        '.......becdeeeeedccfddddb.......',
+        '......ccdeeeeeeeeedcfeeeec......',
+        '......cdeeeeeeeeeeedcfeeec......',
+        '.....cceeeeeeefeeeeecfeeeec.....',
+        '.....ceeeeeefddbbeeecfeeeec.....',
+        '....ceeeeeefddbaabeecfeeeec.....',
+        '....ceeeeefcdbaaaabdcfeeeecc....',
+        '....ceeeeecceebaabddceeeeeec....',
+        '....ddeeeecceeebbddffeeeeeed....',
+        '.....deeeefcdeeeeeeeeeeeeedd....',
+        '.....ddeeeefceeeeeeeeeeeedd.....',
+        '......dfeeeecdeeeeeeeeedcd......',
+        '........feeefcdeeeeeedcff.......',
+        '.........feeeeccdddcceff........',
+        '..........feeeeffffeef..........',
+        '...........ffeeeeeeff...........',
+        '.............ffffff.............',
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+    ],
+    [
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+        '..........bbbbbbbbbbb...........',
+        '.........bddddddddcedbb.........',
+        '........bdddddddddddcedbb.......',
+        '.......bdddeeeeeeeeedcedb.......',
+        '......cceeeeeeeeeeeeeeceec......',
+        '......ceeeeefccfeeeeeecfec......',
+        '.....cceeefcccdddfeeeedfeec.....',
+        '.....ceeefcdeeebbdeeeedfeec.....',
+        '....ceeefcdeeebaabeeeedfeec.....',
+        '....ceeecdeeebaaaabeeecfeecc....',
+        '....ceeecdeeeebaabeeedcfeeec....',
+        '....ddeecdeeeedbbeeedcceeeed....',
+        '.....deefdeeeefdddcccfeeeedd....',
+        '.....ddeeceeeeefffffeeeeeed.....',
+        '......dfeeceeeeeeeeeeeeeed......',
+        '........fefdeeeeeeeeeeeff.......',
+        '.........fecdeeeeeeeeeff........',
+        '..........fecdeeeeeeef..........',
+        '...........fffceeeeff...........',
+        '.............ffffff.............',
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+    ],
+    [
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+        '..........bbbbbbbbbbb...........',
+        '.........bdddddddddddbb.........',
+        '........bddddddddddddddbb.......',
+        '.......bdddefffeeeeeddddb.......',
+        '......cceefccdcccfeeeeeedc......',
+        '......ceecceeeeedcfeeeeeec......',
+        '.....ccecdeeeeeeedcfeeeeefc.....',
+        '.....cecdeeeeeebbedfeeeeecc.....',
+        '....cefdeeeeefbaabdfeeeeecc.....',
+        '....ceceeeeefbaaaabfeeeeeccc....',
+        '....ceceeeeefdbaabfeeeeedfec....',
+        '....ddceeeeefdebbeeeeeeeceed....',
+        '.....dceeeeeecdeeeeeeeeccedd....',
+        '.....dddeeeeefcdeeeedccfeed.....',
+        '......dfeeeeeefcccccceeeed......',
+        '........feeeeeeffffeeeeff.......',
+        '.........feeeeeeeeeeeeff........',
+        '..........feeeeeeeeeef..........',
+        '...........ffeeeeeeff...........',
+        '.............ffffff.............',
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+        '................................',
+    ],
+]
+
 def trap_frames(n):
-    lg = LS if n == 1 else LS2
-    pit = PIT1 if n == 1 else PIT2
-    sands = SWIRL1 if n == 1 else RINGS2
+    if n == 1:      # 고른 바닥(A2) 위 — 둘레 판석이 A2 바닥 칸 그대로
+        out = []
+        for fr in TRAP1:
+            f = floor_img(2)
+            stamp(f, fr, LS, 0, 0)
+            out.append(f)
+        for y in range(32):
+            for x in range(32):
+                ring = [fr[y][x] for fr in TRAP1]
+                if len({c == '.' for c in ring}) > 1:
+                    raise AssertionError(('구덩이 자리 다름', x, y))
+        return out
+    lg = LS2
     out = []
-    for sw in sands:
+    for sw in RINGS2:
         f = floor_img(n)
-        stamp(f, [r.replace('o', '.') for r in pit], lg, 0, 0)
+        stamp(f, [r.replace('o', '.') for r in PIT2], lg, 0, 0)
         stamp(f, sw, lg, 4, 9)
-        for y, row in enumerate(pit):     # 모래 면이 구덩이 자리를 빠짐없이 덮는지
+        for y, row in enumerate(PIT2):     # 모래 면이 구덩이 자리를 빠짐없이 덮는지
             for x, ch in enumerate(row):
                 if ch == 'o':
                     assert sw[y - 9][x - 4] != '.', ('모래 면 빈 곳', n, x, y)
@@ -1061,8 +1079,8 @@ TEST = [
 ]
 
 
-def room_scene(n, plan=ROOM, actor=(4, 5), who=0):
-    cv = pyramid_room(plan, n)
+def room_scene(n, plan=ROOM, actor=(4, 5), who=0, floor_n=None):
+    cv = pyramid_room(plan, n, floor_n=floor_n)
     lib.put_actor(cv, actor[0], actor[1], who)
     return cv
 
@@ -1085,12 +1103,14 @@ def mk_face(n):
         img = fs.image()
         parts = {'face3h': fs.face3, 'face2h': fs.face2, 'base3h': fs.base3, 'glyph3h': fs.glyph3,
                  'glyph2h': fs.glyph2, 'alt3h': fs.alt3}
-        plain = pyramid_room(ROOM, n, glyphs=False)
+        fn_ = 2 if n == 1 else None     # A1 은 고른 조합(바닥 A2) 위에서 본다
+        plain = pyramid_room(ROOM, n, glyphs=False, floor_n=fn_)
         wall = lib.hcat(fs.face3.crop(0, 0, 16, 48), fs.face3.crop(16, 0, 16, 48), fs.glyph3, fs.face3.crop(16, 0, 16, 48),
                         fs.alt3 and vcat(fs.face3.crop(16, 0, 16, 16), fs.alt3, fs.base3.crop(16, 0, 16, 16)),
                         fs.face3.crop(16, 0, 16, 48), fs.face3.crop(32, 0, 16, 48))
-        meta = {'kind': 'tile', 'parts': parts, 'vignette': room_scene(n),
-                'extras': [('wall run 3h', wall, 3), ('plain room', plain, 2), ('test map', pyramid_room(TEST, n), 1)]}
+        meta = {'kind': 'tile', 'parts': parts, 'vignette': room_scene(n, floor_n=fn_),
+                'extras': [('wall run 3h', wall, 3), ('plain room', plain, 2),
+                           ('test map', pyramid_room(TEST, n, floor_n=fn_), 1)]}
         return img, meta
     return run
 
@@ -1099,8 +1119,9 @@ def mk_rim(n):
     def run():
         at = rim_at(n)
         img = lib.atlas47(at)
-        meta = {'kind': 'autotile', 'autotiles': {'rim': at}, 'vignette': room_scene(n),
-                'extras': [('body 6x6', dot.mosaic(at, 6, 6), 3), ('test map', pyramid_room(TEST, n), 1)]}
+        fn_ = 2 if n == 1 else None
+        meta = {'kind': 'autotile', 'autotiles': {'rim': at}, 'vignette': room_scene(n, floor_n=fn_),
+                'extras': [('body 6x6', dot.mosaic(at, 6, 6), 3), ('test map', pyramid_room(TEST, n, floor_n=fn_), 1)]}
         return img, meta
     return run
 
@@ -1122,7 +1143,7 @@ def mk_trap(n):
     def run():
         fr = trap_frames(n)
         img = hcat(*fr)
-        base = pyramid_room(TRAP_PLAN, n)
+        base = pyramid_room(TRAP_PLAN, n, floor_n=2)
         anim = []
         for f in fr:
             sc = lib.on(base, (f, 4 * T, 5 * T))

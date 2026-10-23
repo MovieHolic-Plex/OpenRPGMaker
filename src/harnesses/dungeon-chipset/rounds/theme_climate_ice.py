@@ -27,79 +27,93 @@ def cv_of(w, h, pieces):
     return cv
 
 
-# ================================================================================================ 고드름 A1 「서리 고드름 다발」
-# 서리 덩이(눈, 위 밝음·아래 그늘) 밑으로 가늘고 긴 고드름 여럿 — 길이 제각각, 왼쪽 면 흰 빛, 오른쪽 ice 0~1 그늘, 끝 반짝.
-IC1_LONG = [          # 4×14 — 무리의 주인공
+# ================================================================================================ 고드름 A1 「서리 고드름 다발」(판 2)
+# 판 1 지적(질감 납작·톤 적음·간격 규칙적·흰 띠가 너무 밝고 두꺼움) 반영: 고드름마다 빛 받는 왼 면(e) · 몸(d) · 속 반짝(W) ·
+# 그늘 오른 면(b·a) 네 결, 끝은 옅은 얼음(d → e)으로 비침. 굵기·길이·몰림을 제각각 손으로 찍는다(같은 간격 반복 없음).
+# 뿌리는 흰 띠 대신 서리·얼음 덩이(눈 w·s·S + 얼음 d·c·b, 결 있는 푸른 그늘). 떠 있는 물방울 없음.
+IC1_BIG = [           # 5×15 — 굵은 주인공
+    'edWcb',
+    'edWbB',
+    'eDdca',
+    'eWdbB',
+    '.eDca',
+    '.eWba',
+    '.dcba',
+    '.edba',
+    '.ecb.',
+    '.dWa.',
+    '.dca.',
+    '..cb.',
+    '..db.',
+    '..d..',
+    '..e..',
+]
+IC1_BIG2 = [          # 4×13 — 둘째 주인공(조금 가늘고 짧음)
     'eWdb',
-    'eddb',
-    'edcb',
-    '.ecb',
-    '.eca',
+    'eDca',
+    'eddB',
+    'eWca',
     '.dcb',
+    '.eba',
     '.dca',
-    '.ec.',
-    '.db.',
-    '.db.',
     '.cb.',
-    '..b.',
-    '..b.',
-    '..d.',
-]
-IC1_LONG2 = [         # 4×12 — 2칸 묶음의 둘째 주인공(굽이 다름)
-    'Wedb',
-    'edcb',
-    'edca',
-    'ecba',
-    '.eca',
-    '.ecb',
-    '.dca',
-    '.db.',
-    '.cb.',
-    '.ca.',
-    '.b..',
+    '.Wa.',
+    '.c..',
     '.d..',
+    '.d..',
+    '.e..',
 ]
-IC1_MED = [           # 3×9
-    'Wdb',
-    'edb',
-    'ecb',
-    'eca',
-    'dcb',
-    '.cb',
-    '.b.',
-    '.b.',
-    '.d.',
+IC1_MED = [           # 4×10
+    'eWcb',
+    'eDca',
+    'eWbB',
+    'dDba',
+    '.dba',
+    '.eca',
+    '.cb.',
+    '.da.',
+    '.d..',
+    '.e..',
 ]
 IC1_SHORT = [         # 3×6
     'edb',
-    'ecb',
-    'eca',
+    'eWa',
+    'dca',
     '.cb',
-    '.b.',
+    '.d.',
+    '.e.',
+]
+IC1_THIN = [          # 2×7 — 가는 바늘
+    'eb',
+    'Wa',
+    'db',
+    'ca',
+    'd.',
+    'd.',
+    'e.',
+]
+IC1_STUB = [          # 3×3 — 맺힌 혹
+    'edb',
+    'dca',
     '.d.',
 ]
-IC1_TINY = [          # 2×4
-    'db',
-    'cb',
-    'b.',
-    'd.',
-]
-IC1_LUMP16 = [        # 서리 덩이 — 테두리 흰 띠 바로 밑에 붙는다
-    '.wWWWwWWWWWwWWws',
-    'swWWwSwWWwwswWwS',
-    '.SsS.sSs..sS.sS.',
+IC1_LUMP16 = [        # 서리·얼음 뿌리 덩이 — 결 있는 푸른 그늘, 테두리 흰 띠보다 어둡고 얇게
+    'sSdwsnsdwSdnSwsd',
+    'SdcnScdSscSdcnSc',
+    '.B.a.bc.Bab.c.aB',
 ]
 IC1_LUMP32 = [
-    '.wWWWwWWWWWwWWwswWWwwWWWWwsWWWw.',
-    'swWWwSwWWwwswWwSswWsSwWWwsSwWwsS',
-    '.SsS.sSs..sS.sS..Ss.sSsS..s.SsS.',
+    'sSdwsnsdwSdnSwsdwsSdndsdcwSdnSws',
+    'SdcnScdSscSdcnScdSbcndcSsdcbnScS',
+    '.B.a.bc.Bab.c.aB.a.cB..ab.cBb.B.',
 ]
 
 
 def icicles_a1():
-    one = cv_of(16, 16, [(IC1_LUMP16, 0, 0), (IC1_MED, 1, 2), (IC1_TINY, 5, 2), (IC1_LONG, 7, 1), (IC1_SHORT, 12, 2)])
-    two = cv_of(32, 16, [(IC1_LUMP32, 0, 0), (IC1_SHORT, 1, 2), (IC1_LONG2, 4, 1), (IC1_TINY, 9, 2), (IC1_MED, 11, 2),
-                         (IC1_LONG, 15, 1), (IC1_TINY, 20, 2), (IC1_SHORT, 22, 2), (IC1_MED, 26, 2), (IC1_TINY, 29, 2)])
+    one = cv_of(16, 16, [(IC1_LUMP16, 0, 0), (IC1_STUB, 0, 2), (IC1_BIG, 2, 1), (IC1_THIN, 7, 2), (IC1_MED, 9, 1),
+                         (IC1_SHORT, 13, 2)])
+    two = cv_of(32, 16, [(IC1_LUMP32, 0, 0), (IC1_THIN, 1, 2), (IC1_BIG, 3, 1), (IC1_STUB, 8, 2), (IC1_SHORT, 10, 2),
+                         (IC1_MED, 15, 1), (IC1_THIN, 19, 2), (IC1_BIG2, 21, 1), (IC1_STUB, 26, 2), (IC1_SHORT, 28, 1)])
     return one, two
 
 
@@ -429,15 +443,15 @@ DR2_V1 = [
     '................',
     '................',
     '..........wWw...',
-    '.......wWWWWWWw.',
-    '....wWWsWWWWsWWs',
-    '..wWWWWWsWWWwwsS',
-    '.sWWsswwwssssSSn',
-    '.SSSSSSSSSnnnn~.',
-    '..wWWw.~~~~~~~..',
-    'wWWsWWWw........',
-    'SsswwssSn.......',
-    '.SSSnn~~~.......',
+    '.......wWseWswW.',
+    '....wWsswWsseWws',
+    '..wWeWsswWsSwWsS',
+    '.sWsSswWwssSsSSn',
+    '.SsSSsSSsSnSnn~.',
+    '..wWse.~n~~n~~.z',
+    'wesWWsw.........',
+    'SswsSsSn....z...',
+    '.nSn.~~~..z.....',
 ]
 DR2_V2 = [
     '................',
@@ -447,15 +461,15 @@ DR2_V2 = [
     '................',
     '................',
     '................',
-    '...wWWw.........',
-    '.wWWWsWWWw......',
-    'wWsWWWWsWWWWw...',
-    'sWWWsWWWWWsWWWw.',
-    'SswwwsssWWwwswws',
-    'nSSSssSSsssSdcSS',
-    '.nnSSSSnmlSSedcn',
-    '...~~~~~~~~~~~~.',
-    '................',
+    '...wWew.........',
+    '.wWsswWeWs......',
+    'wWsSWswWsSWw....',
+    'sWsSWWeWssswWw..',
+    'SswwsswsWssssWws',
+    'nSSsSSnSsssSdcSz',
+    '.nnSnSSnmlSSedcn',
+    's..~~~~~~~~~~~~.',
+    '...z.....s...z..',
 ]
 
 
@@ -515,7 +529,7 @@ FNS = {
     'tc.ice_drift': {'A1': mk_drift(drift_a1, 'A1'), 'A2': mk_drift(drift_a2, 'A2')},
 }
 NOTES_BY_ITEM = {
-    'tc.ice_icicles': {'A1': '서리 고드름 다발 — 눈 덩이 밑 가늘고 긴 고드름 여럿(길이 제각각, 끝 반짝)',
+    'tc.ice_icicles': {'A1': '서리 고드름 다발(판 2) — 결 있는 서리·얼음 뿌리 밑 굵기·길이·몰림 제각각, 면마다 빛·몸·속 반짝·그늘, 비치는 끝',
                        'A2': '유리 고드름 — 맑은 얼음 처마 밑 굵은 원뿔 고드름 몇 개 + 물방울'},
     'tc.ice_crystal': {'A1': '눈 둔덕에서 솟은 얼음 결정 셋(가운데 큰 기둥, 좌우로 기운 작은 기둥)',
                        'A2': '서리 앉은 바위 위 큰 결정 하나 + 곁가지 둘(빛 면 눈 흰빛)'},
