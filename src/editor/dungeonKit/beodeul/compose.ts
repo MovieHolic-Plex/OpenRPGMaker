@@ -228,9 +228,13 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
       lower[idx(x, y)] = !left && !right && rockSingle ? rockSingle.rows[1 - b]!.tiles[0]! : left && right ? rr[1]! : !left && right ? rr[0]! : left && !right ? rr[2]! : rr[1]!;
       continue;
     }
-    const rows = kit(pick(h >= 3 ? face.h3 : face.h2)).rows;
+    const faceId = pick(h >= 3 ? face.h3 : face.h2);
+    const rows = kit(faceId).rows;
     const row = rows[(h >= 3 ? 3 : 2) - 1 - b]!.tiles;
     const left = x > 0 && wallB[idx(x - 1, y)] === b, right = x + 1 < W && wallB[idx(x + 1, y)] === b;
+    // 새김 가운데 열(`<앞면 키트>-glyph`, 1칸 폭 같은 높이)이 구워져 있으면 벽 가운데 칸을 드문드문 그것으로 — 같은 열의 단끼리는 같은 해시라 새김이 끊기지 않는다.
+    const glyph = left && right && hasKit(`${faceId}-glyph`) && hash01(x, y + b, seed * 13 + 5) < 0.14 ? kit(`${faceId}-glyph`) : undefined;
+    if (glyph && glyph.rows.length === rows.length) { lower[idx(x, y)] = glyph.rows[rows.length - 1 - b]!.tiles[0]!; continue; }
     lower[idx(x, y)] = left && right ? row[1]! : !left && right ? row[0]! : left && !right ? row[2]! : row[1]!;
   }
 

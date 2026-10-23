@@ -119,7 +119,114 @@ def bake_objects(st, p, line, meta, origin):
     return [], [tg], kits
 
 
-HANDLERS = {}   # 오토타일·벽 앞면 항목은 항목별로 여기에 단다(모양이 항목마다 다르다)
+def anim_n(st, cvs, meta, origin):
+    """N장면(N ≤ 4) 한 덩이 → 첫 칸 번호. 덩이는 4의 배수 자리에서 시작하고 남는 자리는 빈 칸(행 경계를 넘지 않는다)."""
+    n = len(cvs)
+    if n == G.FRAMES:
+        return st.anim(cvs, meta, origin)
+    assert 1 < n < G.FRAMES, n
+    arrs = [G.cell_array(c) for c in cvs]
+    key = G.cell_key(arrs, meta)
+    if key in st.index:
+        return st.index[key]
+    while len(st.cells) % G.FRAMES:
+        st.cells.append(None)
+    i = len(st.cells)
+    for k, a in enumerate(arrs):
+        if k == 0:
+            st.cells.append(dict(key=key, origin=origin, anim=dict(frames=n, fps=G.FPS), **meta))
+        else:
+            st.cells.append(dict(frameOf=G.BASE + i, frame=k, origin=origin, **meta))
+        st._put(i + k, a)
+    st.index[key] = G.BASE + i
+    st.added += n
+    return G.BASE + i
+
+
+def lower_cells(st, part, label, desc, tags, passage, origin):
+    w, h = part.w // T, part.h // T
+    return [[st.cell(part.crop(x * T, y * T, T, T), G.cm(label + (f" ({x},{y})" if w * h > 1 else ""), desc, tags, passage, "lower"), origin)
+             for x in range(w)] for y in range(h)]
+
+
+def blank(w, h):
+    return [[-1] * w for _ in range(h)]
+
+
+def bake_pyr_floor(st, p, line, meta, origin):
+    cv = G.render(p)[1]
+    tags = ["주제", "바닥", "floor", "사암"] + themes_of(p["item"])[2:]
+    lo = lower_cells(st, cv, "버들항 던전 · 피라미드 사암 판석 바닥", "피라미드 실내 사암 판석 바닥 — 2×2 네 칸을 칸마다 아무거나 섞어 깔아도 이음이 맞는다. 걸음.", tags, "passable", origin)
+    k = G.kit(f"{KP}sandstone-floor", "버들항 던전 · 피라미드 사암 판석 바닥 2×2(섞음)", 2, 2, blank(2, 2), lo,
+              desc="피라미드 실내 판석 바닥. 네 칸을 칸마다 섞어 깐다(시공기 floor mix).", rules="걷는 바닥 전부. 칸마다 네 칸 중 아무거나.",
+              tags=tags, role="floor", repeat="repeat", layer_home="lower", themes=themes_of(p["item"]))
+    tg = dict(id=f"{G.TILEGROUP_PREFIX}_pyr_floor", name="버들항 던전 주제 피라미드 사암 바닥", role="floor", source="bundled-default", defaultLayer="lower",
+              confidence="high", tileIds=sorted({t for r in lo for t in r}), description=f"피라미드 사암 판석 바닥(키트 {k['id']}). 하네스 {p['round']} {p['letter']}.",
+              placementRules=k["ai"]["placementRules"])
+    return [], [tg], [k]
+
+
+def bake_pyr_face(st, p, line, meta, origin):
+    parts = meta["parts"]
+    tags = ["주제", "벽", "앞면", "wall", "face", "사암"] + themes_of(p["item"])[2:]
+    desc = "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘."
+    kits, ids = [], set()
+    spec = [("face3h", "sandstone-face-3h", "3단"), ("face2h", "sandstone-face-2h", "2단"), ("base3h", "sandstone-face-3h-base", "3단 아랫단 변형"),
+            ("glyph3h", "sandstone-face-3h-glyph", "3단 새김 가운데"), ("glyph2h", "sandstone-face-2h-glyph", "2단 새김 가운데"),
+            ("alt3h", "sandstone-face-3h-alt", "3단 가운데단 변형(금 간 돌)")]
+    for part, name, what in spec:
+        cv = parts.get(part)
+        if cv is None:
+            continue
+        w, h = cv.w // T, cv.h // T
+        lo = lower_cells(st, cv, f"버들항 던전 · 피라미드 사암 벽 앞면 {what}", desc, tags, "solid", origin)
+        ids |= {t for r in lo for t in r}
+        kits.append(G.kit(f"{KP}{name}", f"버들항 던전 · 피라미드 사암 벽 앞면 {what} {w}×{h}", w, h, blank(w, h), lo, desc=f"{desc} {what}.",
+                          rules="천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.", tags=tags, role="wall",
+                          repeat="repeat" if w == 3 else "fixed", layer_home="lower", themes=themes_of(p["item"])))
+    tg = dict(id=f"{G.TILEGROUP_PREFIX}_pyr_face", name="버들항 던전 주제 피라미드 사암 벽 앞면", role="wall", source="bundled-default", defaultLayer="lower",
+              confidence="high", tileIds=sorted(ids), description=f"피라미드 사암 벽 앞면 키트({', '.join(k['id'] for k in kits)}). 하네스 {p['round']} {p['letter']}.",
+              placementRules="천장 테두리 아래 벽 앞면. author_dungeon 이 저절로 쓴다.")
+    return [], [tg], kits
+
+
+def bake_pyr_rim(st, p, line, meta, origin):
+    at = meta["autotiles"]["rim"]
+    gid = "beodeul_dungeon_ceiling_sand"
+    def cmeta(m):
+        s = G.mask_sides(m)
+        return G.cm("버들항 던전 · 피라미드 천장 (사암 테두리)" + (f"({s} 열림)" if s else " 몸통"),
+                    f"피라미드 천장 오토타일 47 모양(마스크 {m}). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `{gid}`.",
+                    ["천장", "wall", "ceiling", "사암"], "solid", "lower")
+    g = G.bake_autotile(st, at, gid, "버들항 던전 피라미드 천장(사암 테두리)", origin, cmeta)
+    tg = dict(id=f"{G.TILEGROUP_PREFIX}_pyr_rim", name="버들항 던전 주제 피라미드 천장 테두리", role="wall", source="bundled-default", defaultLayer="lower",
+              confidence="high", tileIds=list(g["memberTileIds"]), description=f"피라미드 천장(사암 띠) 오토타일 `{gid}`. 하네스 {p['round']} {p['letter']}.",
+              placementRules="방·통로 바깥 칸(천장)을 이 그룹으로 칠한다. author_dungeon 의 pyramid 테마가 저절로 쓴다.")
+    return [g], [tg], []
+
+
+def bake_pyr_sand_trap(st, p, line, meta, origin):
+    frames = [meta["parts"][k] for k in sorted(meta["parts"])]
+    w, h = frames[0].w // T, frames[0].h // T
+    tags = ["주제", "함정", "모래", "바닥"] + themes_of(p["item"])[2:]
+    lo = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            cvs = [f.crop(x * T, y * T, T, T) for f in frames]
+            row.append(anim_n(st, cvs, G.cm(f"버들항 던전 · 모래 구덩이 함정 ({x},{y})", f"판석 바닥이 꺼져 모래가 소용돌이치는 구덩이({len(frames)}장면). 걸음(함정 이벤트 자리).",
+                                            tags, "passable", "lower"), origin))
+        lo.append(row)
+    k = G.kit(f"{KP}sand-pit", f"버들항 던전 · 모래 구덩이 함정 {w}×{h}(움직임)", w, h, blank(w, h), lo,
+              desc=f"모래 구덩이 함정 — 모래만 {len(frames)}장면으로 돈다. 밟으면 떨어지는 이벤트를 단다.", rules="걷는 바닥 위, 피해 갈 길을 남긴다.",
+              tags=tags, role="floor", layer_home="lower", themes=themes_of(p["item"]))
+    tg = dict(id=f"{G.TILEGROUP_PREFIX}_pyr_sand_trap", name="버들항 던전 주제 모래 구덩이 함정", role="object", source="bundled-default", defaultLayer="lower",
+              confidence="high", tileIds=sorted({t for r in lo for t in r}), description=f"모래 구덩이 함정(키트 {k['id']}). 하네스 {p['round']} {p['letter']}.",
+              placementRules=k["ai"]["placementRules"])
+    return [], [tg], [k]
+
+
+HANDLERS = {"tc.pyr_floor": bake_pyr_floor, "tc.pyr_face": bake_pyr_face, "tc.pyr_rim": bake_pyr_rim, "tc.pyr_sand_trap": bake_pyr_sand_trap}
 
 
 def current_picks():
