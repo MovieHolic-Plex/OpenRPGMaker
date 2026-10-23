@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import wl_core as C
 from PIL import Image
 
-MODS = ['wl_ground', 'wl_ruins', 'wl_props', 'wl_ruins_b']
+MODS = ['wl_ground', 'wl_ruins', 'wl_props', 'wl_ruins_b', 'wl_ruins_c']
 for _m in MODS:
     if os.path.exists(os.path.join(C.HERE, _m + '.py')):
         importlib.import_module(_m)
