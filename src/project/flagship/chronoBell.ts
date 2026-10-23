@@ -30,7 +30,11 @@ import { placeFallenStarVessel } from "./fallenStarVessel";
 import { dressObservatoryHall } from "./fallenObservatoryHall";
 import { isFallenRoomRebuilt } from "./fallenRoomOwnership";
 import handInteriorSpec from "@/assets/handInteriorSpec.json";
+
 import type { FlagshipDemoBuildResult } from "./types";
+
+/** 브라우저(출하 플레이어)에는 process 가 없다 — 직접 읽으면 ReferenceError 로 게임이 안 뜬다. */
+const MARCH_DEBUG = typeof process !== "undefined" && Boolean(process.env?.MARCH_DEBUG);
 
 const ENDING_ID = "end_fs_act1";
 const SW_IRIS_JOINED = "sw_fs_iris_joined";
@@ -833,7 +837,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
       if (!ok) return;
       if (p.cells.some((c) => clash(c, ds[k]!))) {
         ok = false;
-        if (process.env.MARCH_DEBUG) for (const [mi, c] of p.cells.entries()) for (const [j, other] of tracks.entries()) for (let t = 0; t < c.length + ds[k]! + 2; t += 1) {
+        if (MARCH_DEBUG) for (const [mi, c] of p.cells.entries()) for (const [j, other] of tracks.entries()) for (let t = 0; t < c.length + ds[k]! + 2; t += 1) {
           const a = posAt(c, ds[k]!, t), b = posAt(other, delays[j]!, t);
           if (a && b && t >= ds[k]! && t >= delays[j]! && Math.abs(a.x - b.x) + Math.abs(a.y - b.y) <= 1) { console.error("  clash pair", k, "m", mi, "vs track", j, "t", t, JSON.stringify(a), JSON.stringify(b)); break; }
         }
@@ -841,7 +845,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
       for (const c of p.cells) { tracks.push(c); delays.push(ds[k]!); }
     });
     if (ok) chosen = ds;
-    if (process.env.MARCH_DEBUG) console.error("march spacing", S, ok ? "ok" : "clash", JSON.stringify(ds));
+    if (MARCH_DEBUG) console.error("march spacing", S, ok ? "ok" : "clash", JSON.stringify(ds));
   }
   if (!chosen) {
     // 고른 간격이 없으면 예전처럼 짝마다 겹침이 풀릴 때까지 늦춘다.
@@ -857,7 +861,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   for (const [k, p] of pairs.entries()) {
     for (const path of p.paths) paths.push(path);
     arrivals.push(chosen[k]! + p.arrive);
-    if (process.env.MARCH_DEBUG) console.error("march", p.members.map((m) => m.id).join("+"), "delay", chosen[k], "steps", p.paths.map((x) => x.length).join("/"),
+    if (MARCH_DEBUG) console.error("march", p.members.map((m) => m.id).join("+"), "delay", chosen[k], "steps", p.paths.map((x) => x.length).join("/"),
       "\n   L", p.cells[0]!.map((c) => `${c.x},${c.y}`).join(" "), "\n   M", p.cells[1]?.map((c) => `${c.x},${c.y}`).join(" "));
   }
   order.forEach(([npc], rank) => {
@@ -1988,7 +1992,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         const kit = k === 2 ? "bd-pick-volcano-cave-coal-pile" : "bd-pick-volcano-cave-ember-a";
         if (!tryStamp(project, M(ids.forest), `kit:beodeul_city/${kit}`, c.x, c.y) && kit !== "bd-pick-volcano-cave-ember-a") tryStamp(project, M(ids.forest), "kit:beodeul_city/bd-pick-volcano-cave-ember-a", c.x, c.y);
       });
-      if (process.env.MARCH_DEBUG) console.error("scorch trail", JSON.stringify(best));
+      if (MARCH_DEBUG) console.error("scorch trail", JSON.stringify(best));
     }
     // 구덩이 북쪽 위로 맵 끝까지 붙은 모랫길 토막 둘은 아무 데로도 안 갔다(VQA r6 m13) — 풀로 되돌린다.
     {
