@@ -95,7 +95,15 @@ export interface StoreGameFiles {
   readonly mapCount: number;
 }
 
-export async function buildStoreGameFiles(project: Project, options: { readonly fetchBytes: FetchBytes; readonly bundleBase: string }): Promise<StoreGameFiles> {
+/**
+ * 판본에 싣기 전에 큰 소리 파일을 줄이는 변환(선택). 경로·바이트를 받아 새 경로·바이트를 돌려준다(못 줄이면 null).
+ * 노드 게시 도구(scripts/store/publish-game.mts)는 ffmpeg 로 WAV 를 MP3 로 바꾼다. 편집기 안 게시는 아직 원본 그대로 싣는다.
+ */
+export type StoreAudioTranscoder = (path: string, bytes: Uint8Array) => Promise<{ readonly path: string; readonly bytes: Uint8Array } | null>;
+/** 이보다 큰 WAV 만 바꾼다(효과음은 작고 바로 디코딩되어야 한다). */
+const TRANSCODE_MIN_BYTES = 2 * 1024 * 1024;
+
+export async function buildStoreGameFiles(project: Project, options: { readonly fetchBytes: FetchBytes; readonly bundleBase: string; readonly transcodeAudio?: StoreAudioTranscoder }): Promise<StoreGameFiles> {
   const prepared = prepareWebExport(project);
   const deployment = await loadVerifiedPlayerDeployment({ bundleBase: options.bundleBase, adapters: { fetchBytes: options.fetchBytes } });
   const entries = await exactWebExportEntries(prepared, deployment, options.fetchBytes);
@@ -110,6 +118,7 @@ export async function buildStoreGameFiles(project: Project, options: { readonly 
   }
   // CSS 가 가리키는 공용 그림·글꼴(배틀 배경·메뉴 아이콘·도트 글꼴)도 판본 폴더에 함께 싣는다.
   for (const path of cssAssets) if (!files.has(path)) files.set(path, await options.fetchBytes(`/${path}`));
+  if (options.transcodeAudio) await transcodeLargeAudio(files, options.transcodeAudio);
   const entry = files.has("player.html") ? "player.html" : [...files.keys()].find((name) => name.endsWith(".html") && !name.includes("/"));
   if (!entry) throw new Error("플레이어 진입 문서(player.html)가 내보내기 목록에 없습니다.");
   return { files, entry, projectJson: prepared.projectJson, mapCount: prepared.summary.mapCount };
@@ -129,3 +138,20 @@ export function relativeCssAssetUrls(path: string, bytes: Uint8Array): Uint8Arra
 
 /** 표지·장면 그림을 판본 파일에 더할 때 쓰는 경로(게임 그림과 섞이지 않게 store/ 아래). */
 export const storeArtPath = (name: string): string => `store/${name.replace(/[^\w.-]+/g, "-")}`;
+
+/** 큰 WAV 를 줄인 파일로 바꾸고, 플레이어가 원래 주소 대신 그 파일을 부르도록 loading.json 의 aliases 에 적는다. */
+async function transcodeLargeAudio(files: Map<string, Uint8Array>, transcode: StoreAudioTranscoder): Promise<void> {
+  const aliases: Record<string, string> = {};
+  for (const [path, bytes] of [...files]) {
+    if (!/^assets\/.+\.wav$/i.test(path) || bytes.byteLength < TRANSCODE_MIN_BYTES) continue;
+    const out = await transcode(path, bytes);
+    if (!out || files.has(out.path) || out.bytes.byteLength >= bytes.byteLength) continue;
+    files.delete(path);
+    files.set(out.path, out.bytes);
+    aliases[path] = out.path;
+  }
+  if (Object.keys(aliases).length === 0) return;
+  const loading = files.get("loading.json");
+  const info = loading ? JSON.parse(new TextDecoder().decode(loading)) as Record<string, unknown> : {};
+  files.set("loading.json", new TextEncoder().encode(JSON.stringify({ ...info, aliases })));
+}

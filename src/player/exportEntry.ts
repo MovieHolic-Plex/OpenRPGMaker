@@ -24,7 +24,7 @@ import { installDesktopShellBridge, type DesktopShellBootConfig } from "@/player
 import { getAudioEngine, stopAllAudio } from "@/player/audio";
 import { fetchTextWithProgress, mountBootLoader, readLoadingInfo, type BootLoader } from "@/player/bootLoader";
 import { backgroundUrls, enableScenePreload, firstPlayableUrls, preloadUrls } from "@/player/scenePreload";
-import { registerExportAssetBase } from "@/assets/inlineAssetStore";
+import { registerAssetAliases, registerExportAssetBase } from "@/assets/inlineAssetStore";
 import { exportAssetBaseFor } from "@/player/exportAssetBase";
 import { rebaseRuntimeCssAssetUrls } from "@/player/rebaseCssAssetUrls";
 import { installExportUploadedAssets } from './exportUploadedAssets';
@@ -115,7 +115,7 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   // 웹 판본: 그림·소리보다 화면이 먼저 뜨지 않게, 타이틀과 첫 맵이 쓰는 파일을 다 받은 뒤 「시작하기」로 연다(bootLoader.ts).
   const loader = mountBootLoader(root, { title: storeGame?.title ?? "" });
   const projectUrl = new URL(boot.projectUrl ?? "project.json", window.location.href);
-  void readLoadingInfo(projectUrl).then((info) => loader.setInfo(storeGame ? { ...info, title: storeGame.title } : info));
+  const loadingInfo = readLoadingInfo(projectUrl).then((info) => { loader.setInfo(storeGame ? { ...info, title: storeGame.title } : info); return info; });
   const bundled = await loadBundledProject(projectUrl, (bytes) => loader.projectProgress(bytes));
   if (!bundled.ok) {
     loader.remove();
@@ -127,6 +127,8 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
     await offerOlderVersionSave(root, storeGame);
     loader.root.style.visibility = "";
   }
+  // 판본이 원본 대신 실은 파일(큰 WAV → MP3 등). 주소를 하나라도 만들기 전에 건다.
+  registerAssetAliases((await loadingInfo).aliases);
   await prepareFirstScreen(loader, bundled.project, autoStartFor(boot));
   void startPlayer(root, boot, bundled.project, "bundled");
 }

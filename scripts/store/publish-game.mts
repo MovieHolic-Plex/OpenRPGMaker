@@ -9,7 +9,9 @@
  * 마지막 줄은 한 줄 JSON 결과다. 그림·BGM 이 이 체크아웃 public/ 에 없으면 OPRN_ASSET_ROOTS(콜론 구분)의 public 폴더에서 찾는다.
  */
 import { createHash } from "node:crypto";
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import type { FlagshipDemoId } from "@/project/flagship";
 import { publishStoreGame, type StoreGameMeta, type StoreGameMine, type StoreGameTransport } from "@/assetStore/gamePublish";
@@ -128,7 +130,29 @@ const started = performance.now();
 const baked = join(root, "dist", "demos", `${demoId}.play.json`);
 // 빌드가 구워 둔 데모(bake-flagship-demos)가 있으면 그것을, 없으면 데모 빌더로 짓는다.
 const project = existsSync(baked) && !process.argv.includes("--rebuild") ? deserialize(readFileSync(baked, "utf8")) : createFlagshipDemoProject(demoId).project;
-const built = await buildStoreGameFiles(project, { fetchBytes, bundleBase: "/export-player/" });
+// 큰 WAV(루프 마스터 40MB 대)는 MP3 192kbps 로 바꿔 싣는다 — 같은 입력이면 같은 바이트(bitexact), 결과는 해시로 캐시.
+const transcodeCache = join(homedir(), ".cache", "oprn-store-transcode");
+const transcodeAudio = async (path: string, input: Uint8Array): Promise<{ path: string; bytes: Uint8Array } | null> => {
+  const sha = createHash("sha256").update(input).digest("hex");
+  const cached = join(transcodeCache, `${sha}.mp3`);
+  if (!existsSync(cached)) {
+    mkdirSync(transcodeCache, { recursive: true });
+    const source = join(transcodeCache, `${sha}.src.wav`);
+    writeFileSync(source, input);
+    const tmp = `${cached}.part.mp3`;
+    try {
+      execFileSync("ffmpeg", ["-hide_banner", "-loglevel", "error", "-y", "-i", source, "-map_metadata", "-1", "-fflags", "+bitexact", "-flags:a", "+bitexact", "-codec:a", "libmp3lame", "-b:a", "192k", tmp]);
+      renameSync(tmp, cached);
+    } catch (error) {
+      console.error(`[publish-game] ${path} 를 MP3 로 바꾸지 못해 원본을 싣습니다:`, error instanceof Error ? error.message : error);
+      return null;
+    } finally {
+      try { (await import("node:fs")).rmSync(source, { force: true }); } catch { /* 임시 파일 */ }
+    }
+  }
+  return { path: path.replace(/\.wav$/i, ".web.mp3"), bytes: new Uint8Array(readFileSync(cached)) };
+};
+const built = await buildStoreGameFiles(project, { fetchBytes, bundleBase: "/export-player/", transcodeAudio });
 const files = new Map(built.files);
 const art: string[] = [];
 for (const frame of builtin.frames) {

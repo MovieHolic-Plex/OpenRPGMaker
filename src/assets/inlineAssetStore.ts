@@ -15,6 +15,15 @@
 let inlineSources = new Map<string,string>();
 let table: Readonly<Record<string, string>> | null = null;
 let exportAssetBase: URL | null = null;
+/**
+ * 웹 판본이 원본 대신 싣는 파일(예: 44MB 루프 WAV → MP3). 판본의 loading.json 이 알려 준다.
+ * 키·값 모두 `assets/...` 상대 경로. URL 을 만드는 쪽(withInlineAsset)에서 바꾸므로 소비처는 모른다.
+ */
+let assetAliases: ReadonlyMap<string, string> = new Map();
+
+export function registerAssetAliases(map: Readonly<Record<string, string>> | null | undefined): void {
+  assetAliases = new Map(Object.entries(map ?? {}).map(([from, to]) => [normalizeAssetKey(from), normalizeAssetKey(to)]));
+}
 
 export function registerExportAssetBase(base: URL | null): void {
   exportAssetBase = base;
@@ -42,6 +51,10 @@ export function inlineAssetUrl(pathOrUrl: string | null | undefined): string | n
 
 /** 내장 에셋을 우선하고, 웹 내보내기의 public 경로만 게임 디렉터리로 옮긴다. */
 export function withInlineAsset(pathOrUrl: string): string {
+  if (assetAliases.size > 0 && !pathOrUrl.includes("://") && !pathOrUrl.startsWith("data:")) {
+    const alias = assetAliases.get(normalizeAssetKey(pathOrUrl));
+    if (alias !== undefined) pathOrUrl = alias;
+  }
   const embedded = inlineAssetUrl(pathOrUrl);
   if (embedded !== null) return embedded;
   if (exportAssetBase === null || !/^(?:\.\/|\/)?assets\//.test(pathOrUrl)) return pathOrUrl;

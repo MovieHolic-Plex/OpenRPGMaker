@@ -9,6 +9,8 @@ export interface BootLoaderInfo {
   readonly cover?: string;
   /** project.json 의 압축 전 크기(바이트). 있으면 «게임 데이터» 단계도 실제 비율로 그린다. */
   readonly projectBytes?: number;
+  /** 원본 대신 실은 파일(`assets/x.wav` → `assets/x.web.mp3`). */
+  readonly aliases?: Readonly<Record<string, string>>;
 }
 
 export interface BootLoader {
@@ -133,11 +135,15 @@ export async function readLoadingInfo(base: string | URL): Promise<BootLoaderInf
     const response = await fetch(new URL("loading.json", base));
     if (!response.ok) return {};
     const raw = (await response.json()) as Record<string, unknown>;
+    const assetPath = (value: unknown): value is string => typeof value === "string" && /^assets\/[\w./-]+$/.test(value) && !value.includes("..");
+    const aliasEntries = raw.aliases && typeof raw.aliases === "object" ? Object.entries(raw.aliases as Record<string, unknown>).filter((pair): pair is [string, string] => assetPath(pair[0]) && assetPath(pair[1])) : [];
+    const aliases = aliasEntries.length > 0 ? Object.fromEntries(aliasEntries.slice(0, 5000)) : undefined;
     const cover = typeof raw.cover === "string" && /^[\w./-]+$/.test(raw.cover) && !raw.cover.includes("..") ? new URL(raw.cover, base).href : undefined;
     return {
       ...(typeof raw.title === "string" ? { title: raw.title.slice(0, 120) } : {}),
       ...(cover ? { cover } : {}),
       ...(typeof raw.projectBytes === "number" && Number.isFinite(raw.projectBytes) ? { projectBytes: raw.projectBytes } : {}),
+      ...(aliases ? { aliases } : {}),
     };
   } catch {
     return {};
