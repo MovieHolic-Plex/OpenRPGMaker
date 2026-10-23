@@ -511,11 +511,13 @@ function tuneTownLife(homeMap: GameMap): void {
     route: {
       repeat: true, skippable: false,
       moves: [
-        { kind: "move", dir: "right" }, { kind: "move", dir: "right" }, { kind: "move", dir: "right" }, { kind: "move", dir: "right" },
+        // 가게 앞을 한 바퀴 — 두 칸 가다 서고, 진열창을 잠깐 들여다보고, 돌아온다. 걸음 길이·멈춤이 고르지 않게.
+        { kind: "move", dir: "right" }, { kind: "move", dir: "right" }, { kind: "wait" },
+        { kind: "move", dir: "right" }, { kind: "move", dir: "right" },
         { kind: "move", dir: "down" },
-        { kind: "move", dir: "left" }, { kind: "move", dir: "left" }, { kind: "move", dir: "left" }, { kind: "move", dir: "left" },
-        { kind: "wait" },
-        { kind: "move", dir: "up" },
+        { kind: "move", dir: "left" }, { kind: "turn", dir: "up" }, { kind: "wait" }, { kind: "wait" },
+        { kind: "move", dir: "left" }, { kind: "move", dir: "left" }, { kind: "move", dir: "left" },
+        { kind: "move", dir: "up" }, { kind: "wait" },
       ],
     },
   });
@@ -541,7 +543,7 @@ function tuneTownLife(homeMap: GameMap): void {
           { kind: "turn", dir: "right" }, { kind: "wait" }, { kind: "wait" }, { kind: "wait" },
           { kind: "turn", dir: "down" }, { kind: "wait" },
           { kind: "turn", dir: "right" }, { kind: "wait" }, { kind: "wait" }, { kind: "wait" }, { kind: "wait" },
-          { kind: "turn", dir: "up" }, { kind: "wait" },
+          { kind: "turn", dir: "down" }, { kind: "turn", dir: "right" }, { kind: "wait" },
         ],
       },
     });

@@ -57,7 +57,10 @@ export function wanderCommand(input: {
       mover.wanderRun = { dir: run.dir, left: run.left - 1 };
       return { kind: "move", dir: run.dir };
     }
+    // 가던 길이 막혔다 — 곧장 다른 쪽(흔히 되돌아가기)으로 걷지 않고 멈춰 둘러본다. 다음 걸음은 멈춤 뒤에.
     mover.wanderRun = undefined;
+    const look = DIRS.filter((dir) => dir !== mover.facing && dir !== run.dir);
+    return { kind: "turn", dir: look[Math.floor(rng() * look.length)] ?? mover.facing };
   }
   // 둘러보기: 서 있는 채로 다른 쪽을 본다.
   if (rng() < 0.3) {

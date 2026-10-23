@@ -48,6 +48,12 @@ const followerHidden = new Set<string>();
 const followerIdleElapsedMs = new Map<string, number>();
 /** 제자리 걸음 한 장의 시간. 걷기(90ms/장)보다 훨씬 느리게 — 숨 쉬는 정도. */
 const FOLLOWER_IDLE_FRAME_MS = 300;
+/**
+ * 문·계단으로 들어와 숨어 있다가 다시 나타나는 몬스터 동료(경과 ms). 주인공 몸이 그 칸을 다 비울 때까지는 그리지 않고,
+ * 비우면 짧게 떠오른다. 바로 그리면 첫 걸음 동안 주인공 다리 위에 겹쳐 「툭 튀어나왔다」(2026-10-23 적대 검수).
+ */
+const followerEmerging = new Map<string, number>();
+const FOLLOWER_EMERGE_FADE_MS = 140;
 
 function isFollowerCharsetTexture(textureKey: string): boolean {
   return isEasyRpgCharsetTextureKey(textureKey) || store.getCurrent().assets.uploaded[textureKey]?.kind === "charset";
@@ -160,6 +166,7 @@ export function syncFollowerSprites(
     const reappearing = !position.hidden && followerHidden.has(key);
     if (position.hidden) followerHidden.add(key);
     else followerHidden.delete(key);
+    if (reappearing && isMonsterFollower(position.follower)) followerEmerging.set(key, 0);
     if (options?.snap || position.hidden || reappearing) {
       followerSlotMotion.delete(key);
       followerWalkElapsedMs.set(key, 0);
@@ -174,8 +181,10 @@ export function syncFollowerSprites(
     // 서 있으면 마지막으로 걸어온 쪽을 그대로 본다 — 장면 중(sceneFacing)만 궤적 계산의 방향을 따른다.
     const walkDir = motion && (motion.from.x !== motion.to.x || motion.from.y !== motion.to.y) ? stepDirection(motion.from, motion.to) : undefined;
     const kept = followerRenderState.get(key)?.direction;
+    // 다시 나타나는 동료는 주인공과 같은 쪽을 본다(주인공을 따라 문을 나서는 중이다).
     const direction = scene.running
       ? position.direction ?? position.follower.graphic.direction ?? "down"
+      : reappearing ? scene.facing
       : walkDir ?? kept ?? position.direction ?? position.follower.graphic.direction ?? "down";
     const charsetFrame = texture && (texture.charset || isFollowerCharsetTexture(texture.texture)) && typeof texture.frame === "number"
       ? texture.frame
@@ -213,7 +222,7 @@ export function syncFollowerSprites(
     setCharacterBaseOrigin(sprite, texture?.origin);
     placeCharacterSprite(sprite, "same");
     keepHeroInFront(scene, sprite, isMonsterFollower(position.follower));
-    sprite.setVisible(!position.hidden);
+    sprite.setVisible(!position.hidden && !followerEmerging.has(key));
   }
   for (const key of [...scene.followerSprites.keys()]) {
     if (!expected.has(key)) destroyFollowerSprite(scene, key);
@@ -280,6 +289,22 @@ export function updateFollowerSpriteMotion(scene: PlaySceneContext, deltaMs: num
   for (const [key, sprite] of ordered) {
     const state = followerRenderState.get(key);
     if (!state) continue;
+    const emerging = followerEmerging.get(key);
+    if (emerging !== undefined) {
+      const hero = bodies.get("hero");
+      if (followerHidden.has(key)) {
+        followerEmerging.delete(key);
+      } else if (emerging === 0 && hero && Math.abs(hero.x - state.slot.x) < 0.9 && Math.abs(hero.y - state.slot.y) < 0.9) {
+        // 주인공 몸이 아직 이 칸 위에 있다 — 기다린다.
+        sprite.setVisible(false);
+      } else {
+        const elapsed = emerging + Math.max(1, deltaMs);
+        sprite.setVisible(true);
+        (sprite as { setAlpha?: (alpha: number) => unknown }).setAlpha?.(Math.min(1, elapsed / FOLLOWER_EMERGE_FADE_MS));
+        if (elapsed >= FOLLOWER_EMERGE_FADE_MS) followerEmerging.delete(key);
+        else followerEmerging.set(key, elapsed);
+      }
+    }
     let motion = followerSlotMotion.get(key);
     // 한 칸 간격(몸 길이 1)이면 비켜 서지 않는다 — 주인공과 같은 박자로 걷는 동료는 모퉁이에서 반 칸 대각으로 스칠 뿐
     // 겹치지 않는다. 여기서 멈추면 모퉁이마다 뒤처졌다가 따라붙는다(2026-10-23).
@@ -332,6 +357,11 @@ export function updateFollowerSpriteMotion(scene: PlaySceneContext, deltaMs: num
       sprite.setFrame(phase < 2 ? charsetIdleFrameIndex(state.baseFrame, state.direction)
         : charsetWalkFrameIndex(state.baseFrame, state.direction, phase % 4));
     }
+    // 주인공 깊이는 매 프레임 바뀐다(걸으며 y 가 바뀜) — 서 있는 동료도 매 프레임 주인공 뒤로 맞춘다.
+    if (state.idleStep) {
+      updateCharacterDepth(sprite, "same");
+      keepHeroInFront(scene, sprite, true);
+    }
     if (sprite.visible && size > 0) bodies.set(key, { x: sprite.x / size - 0.5, y: sprite.y / size - 1 });
     resting.delete(key);
   }
@@ -364,6 +394,7 @@ function destroyFollowerSprite(scene: Pick<PlaySceneContext, "followerSprites">,
   followerWalkElapsedMs.delete(key);
   followerIdleElapsedMs.delete(key);
   followerHidden.delete(key);
+  followerEmerging.delete(key);
 }
 
 function followerSpriteKey(follower: { readonly id?: string; readonly name: string }): string {
@@ -394,4 +425,20 @@ function stepDirection(from: { readonly x: number; readonly y: number }, to: { r
 
 function numericFollowerFrame(frame: string | number | undefined): number {
   return typeof frame === "number" && Number.isFinite(frame) ? frame : 0;
+}
+
+/**
+ * 보이는 동료가 이 칸에 서 있거나 이 칸을 드나드는 중인가. 동료는 통행을 막지 않지만(주인공 뒤를 걷는 장식),
+ * 산책하는 주민이 동료 몸으로 걸어 들어가 겹쳐 서면 어색하다 — 산책 걸음만 이 칸을 피한다(2026-10-23 적대 검수).
+ */
+export function followerOccupiesTile(sprites: ReadonlyMap<string, { readonly visible: boolean }> | undefined, x: number, y: number): boolean {
+  if (!sprites) return false;
+  for (const [key, sprite] of sprites) {
+    if (!sprite.visible || followerHidden.has(key)) continue;
+    const slot = followerRenderState.get(key)?.slot;
+    if (slot && slot.x === x && slot.y === y) return true;
+    const motion = followerSlotMotion.get(key);
+    if (motion && ((motion.to.x === x && motion.to.y === y) || (Math.round(motion.from.x) === x && Math.round(motion.from.y) === y))) return true;
+  }
+  return false;
 }

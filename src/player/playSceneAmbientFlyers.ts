@@ -165,15 +165,19 @@ function facingFor(vx: number, vy: number, previous: Dir): Dir {
   return vx < 0 ? "left" : "right";
 }
 
-/** 앉을 칸을 고른다 — 새에게서 8칸 안, 주인공에게서 3칸 밖, 물은 빼고. 통행 칸이면 땅, 아니면 지붕·나무 위. */
+/** 앉을 칸을 고른다 — 되도록 화면 안, 새에게서 16칸 안, 주인공에게서 4칸 밖, 물은 빼고. 통행 칸이면 땅, 아니면 지붕·나무 위. */
 function pickPerch(state: FlyerState, scene: FlyerSceneContext, tile: number): FlyerState["target"] {
   const project = store.getCurrent();
   const map = scene.map;
   const bx = Math.floor(state.x / tile), by = Math.floor(state.y / tile);
-  for (let attempt = 0; attempt < 14; attempt += 1) {
-    const tx = bx + Math.round(between(state.rng, -8, 8));
-    const ty = by + Math.round(between(state.rng, -6, 6));
+  for (let attempt = 0; attempt < 24; attempt += 1) {
+    // 앞의 절반은 주인공 화면 안(주인공 둘레 가로 8·세로 5칸)에서 고른다 — 화면 밖에 내려앉으면 앉는 모습을 아무도 못 본다.
+    const nearHero = attempt < 16;
+    const cx = nearHero ? scene.tileX : bx, cy = nearHero ? scene.tileY : by;
+    const tx = cx + Math.round(between(state.rng, -8, 8));
+    const ty = cy + Math.round(between(state.rng, nearHero ? -5 : -6, nearHero ? 5 : 6));
     if (tx < 1 || ty < 1 || tx >= map.width - 1 || ty >= map.height - 1) continue;
+    if (Math.abs(tx - bx) + Math.abs(ty - by) > 16) continue;
     if (Math.abs(tx - scene.tileX) + Math.abs(ty - scene.tileY) < 4) continue;
     if (isWaterTagged(project, map, tx, ty)) continue;
     const ground = isPassable(project, map, tx, ty);
@@ -266,12 +270,14 @@ function stepFlyer(state: FlyerState, scene: FlyerSceneContext, tile: number, de
     if (dist < near) {
       state.h = Math.min(state.h, state.cruise * (dist / near));
       state.speed = Math.max(14, 40 * (dist / near));
+      // 마지막 몇 픽셀은 곧장 내려앉는다 — 회전 속도 제한 때문에 착지점 둘레를 맴돌지 않게.
+      if (dist < 6) state.heading = Math.atan2(state.target.y - state.y, state.target.x - state.x);
       state.flapping = true;
     } else {
       state.h += (state.cruise - state.h) * Math.min(1, dt * 2);
     }
-    if (dist < 2.5 || state.modeTimer <= 0 || Math.hypot(heroX - state.target.x, heroY - state.target.y) < tile * 2.5) {
-      if (dist < 2.5) {
+    if (dist < 1.2 || state.modeTimer <= 0 || Math.hypot(heroX - state.target.x, heroY - state.target.y) < tile * 2.5) {
+      if (dist < 1.2) {
         state.x = state.target.x; state.y = state.target.y; state.h = 0;
         state.mode = "perch";
         state.perchRoof = state.target.roof;
