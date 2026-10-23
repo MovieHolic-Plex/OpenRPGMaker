@@ -13,6 +13,31 @@ export const BATTLE_READY_TIMEOUT_MS = 6000;
 /** 무대 밖 이펙트 시트는 첫 행동 전에 받으면 좋을 뿐이라, 무대 그림이 끝난 뒤 이만큼만 더 기다린다. */
 export const BATTLE_EXTRA_GRACE_MS = 800;
 
+const afterReady: Array<() => void> = [];
+let afterReadyTimer = 0;
+
+function flushAfterReady(): void {
+  window.clearTimeout(afterReadyTimer);
+  afterReadyTimer = 0;
+  for (const run of afterReady.splice(0)) {
+    try {
+      run();
+    } catch {
+      /* 예열 실패는 전투를 막지 않는다 */
+    }
+  }
+}
+
+/**
+ * 모든 기술 시트를 한꺼번에 데우는 일처럼 첫 프레임에 필요 없는 요청은 준비 관문이 풀린 뒤에 보낸다.
+ * 먼저 보내면 같은 연결 줄에서 무대 그림보다 앞서 달려 첫 화면을 늦춘다. 관문이 없는 마운트에서도
+ * 막히지 않도록 상한 뒤에는 어차피 실행한다.
+ */
+export function deferUntilBattleReady(run: () => void): void {
+  afterReady.push(run);
+  if (!afterReadyTimer) afterReadyTimer = window.setTimeout(flushAfterReady, BATTLE_READY_TIMEOUT_MS + 1000);
+}
+
 const decodeCache = new Map<string, Promise<HTMLImageElement | null>>();
 
 /** 같은 URL 은 한 번만 받고 디코딩한다. 실패는 null 로 풀려 관문을 막지 않는다. */
@@ -180,5 +205,8 @@ export function whenBattleStageReady(root: HTMLElement, options: BattleReadiness
       resolve();
     }, timeoutMs);
   });
-  return Promise.race([work, cap]).finally(() => window.clearTimeout(timer));
+  return Promise.race([work, cap]).finally(() => {
+    window.clearTimeout(timer);
+    flushAfterReady();
+  });
 }
