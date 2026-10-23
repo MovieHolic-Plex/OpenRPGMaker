@@ -173,6 +173,10 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
 서버 계약은 비공개 저장소 OpenRPGMaker-store `src/games.ts`·`migrations/012_games.sql`, 판본 규칙은 `openwiki/release-and-version.md` 「스토어 바로 플레이 게임 판본」.
 
 **격리(게임 코드는 스토어 출처에서 돌지 않는다).**
+- **게임 진열대는 `play.openrpgmaker.com`(2026-10-24~)**, 에셋 스토어는 `store.openrpgmaker.com`. 같은 스토어 앱이 Host 로 나눠 받고
+  옛 `store…/games…` 는 301. 로그인은 하나 — 호스트마다 `__Host-` 세션 쿠키, play 의 로그인은 스토어 `/sso/authorize` 의 60초 일회용 코드로 이어 받는다.
+  게시 API 는 여전히 스토어 주소(편집기·`store:publish-game`). 새 판본은 play 만 품을 수 있게 굽는다(분리 전 판본은 다시 게시해야 play 에서 열린다).
+  상세: 스토어 저장소 `deploy/README.md` 「게임 진열대」.
 - 판본 파일은 별도 출처에서 나간다. 운영 스토어가 품는 출처는 2026-10-24 부터 **`games-kr.openrpgmaker.com`**(서울 seogo 직접, Cloudflare 안 거침 —
   KT 회선이 Cloudflare LAX 로 붙어 큰 파일이 300초 넘게 걸린 일이 있었다). `games.openrpgmaker.com`(Cloudflare 경유)은 예비로 그대로 둔다.
   고르는 값은 스토어 env `STORE_GAMES_PUBLIC_BASE`. games-kr 은 엣지 잠금 대신 IP 마다 요청·연결 제한(`deploy/nginx-games-kr.conf.template`).
