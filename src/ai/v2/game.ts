@@ -16,7 +16,7 @@ export const V2_GAME_TOOLS: readonly string[] = [
   "upsert_item", "upsert_equipment", "set_shop_stock", "set_sell_prices", "place_chest", "upsert_craft_recipe",
   "upsert_actor", "upsert_class", "upsert_skill", "set_party", "add_companion",
   "upsert_enemy", "upsert_troop", "upsert_troop_battle_page", "set_encounter_table",
-  "find_empty_ground", "place_npc", "upsert_event", "upsert_common_event", "set_npc_schedule", "configure_time_system", "place_savepoint", "set_start_position",
+  "find_empty_ground", "place_npc", "upsert_event", "patch_event_page", "run_scene_test", "upsert_common_event", "set_npc_schedule", "configure_time_system", "place_savepoint", "set_start_position",
 ];
 
 export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전투·파티·스위치] 이 요청에는 v1 게임 도구를 그대로 쓴다(장소·연출은 위 동사).
@@ -27,6 +27,10 @@ export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전�
 - 요청에 숫자(회복량·공격력·가격)가 있으면 그 값을 그대로 쓴다. 아이템에 효과 기술(skillId)을 따로 이으면 그 기술의 위력도 같은 값·분산 0 으로 맞춘다(어긋나면 실제 회복량이 요청과 달라진다).
 - 한 번만 일어나야 하는 것(보상·상자·합류)은 셀프 스위치나 스위치로 다시 안 일어나게 막는다.
 - 시간대(낮·밤)에 따라 NPC 자리·대사가 바뀌면 configure_time_system(시간 켜기) → set_npc_schedule(시간표)·페이지 조건을 쓴다(집 안이 없으면 make_place 로 실내를 짓고 문을 잇는다). 할 수 없으면 묻기 전에 가장 가까운 동작 판을 먼저 만들고 보고에 적는다.
+- 시작 장비를 바꾸면 그 장비가 주인공 직업의 장비 허용(class equipmentPermissions)에 들었는지 확인하고 없으면 upsert_class 로 넣는다. 기존보다 약한 장비로 바꾸지 말 것(요청이 없으면).
+- 대사는 그 인물의 입말로 쓴다 — 퀘스트 요약문(「~를 찾아 소식을 전해 주자」)을 NPC 대사로 쓰지 않는다. 주인공 독백·내레이션은 말하는 사람 이름 없이.
+- 타이머·시간 제한: 페이지 조건 timer 는 «남은 시간 ≤ 초» 하나만 뜻한다(op 를 무시한다 — op:'>' 를 써도 ≤ 로 평가된다). 그래서 「도는 중」은 timer 조건 말고 시작 스위치로 나눈다. 시작 = timer set(초)+start(timer1)+시작 스위치, 성공 = 물건·스위치 조건 페이지에서 timer stop, 실패 = 남은 시간 ≤0 페이지(가장 높은 번호).
+- 다 만든 뒤 run_scene_test 로 핵심 경로를 한 번 돌려 본다(말 걸기 interact·choose → expect switchOn/inventoryCount/goldDelta 등). 실패하면 patch_event_page 로 고치고 다시. 통과한 것만 「됐다」고 보고한다.
 - 도구가 거절하면 이유를 읽고 고쳐 다시 부른다. 할 수 없는 것은 보고에 적는다.`;
 
 export function wantsGameTools(task: string): boolean {
