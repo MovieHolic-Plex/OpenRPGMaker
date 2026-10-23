@@ -862,7 +862,7 @@ GROUND_VEIN_A1 = [((6, 4), (9, 7)), ((8, 5), (11, 6)), ((4, 4), (1, 8)), ((6, 9)
 GROUND_NODES_A2 = [[(9, 7), (8, 11)], [(9, 5)], [(2, 6), (12, 12)], [(6, 9)]]
 
 LGR = {'A1': L('b:ostone2 c:arcane0 m:arcane0 h:arcane1 H:arcane2 d:ostone1 e:ostone0 k:ostone0 r:ostone3 v:arcane2 V:arcane4'),     # 보라 검은 판 + 보라 핏줄
-       'A2': L('b:ostone1 c:ostone2 m:ostone3 h:ostone4 H:ostone5 d:ostone0 e:vrock0 k:ostone0 r:red0 v:red1 V:fire3')}           # 더 검은 재 판 + 붉은 핏줄
+       'A2': L('b:ostone1 c:ostone2 m:ostone3 h:ostone4 H:ostone5 d:ostone0 e:vrock0 k:vrock0 r:red0 v:red1 V:fire3')}           # 더 검은 재 판 + 붉은 핏줄
 
 
 def _ground_grain(rows, i):
@@ -911,7 +911,7 @@ def _mottle(i):
         r = []
         for x in range(16):
             v = _wave(x, y, GROUND_PHASES[i])
-            r.append('d' if v < -1.3 else ('m' if v > 1.5 else ('c' if v > 0.7 else 'b')))
+            r.append('d' if v < -1.2 else ('m' if v > 2.0 else ('c' if v > 0.9 or (v > 0.3 and (x + y) % 2) else 'b')))
         g.append(r)
     deep = [[_wave(x, y, GROUND_PHASES[i]) for x in range(16)] for y in range(16)]
     for _ in range(2):                                   # 외톨이 화소 지우기(4 이웃이 모두 다르면 이웃 다수 색으로)
@@ -943,6 +943,9 @@ GROUND_INNER_CRACKS = [
     [((2, 8), (5, 7), (8, 8), (11, 6), (13, 6))],
     [((3, 4), (6, 5), (8, 8), (9, 11), (12, 12))],
     [((12, 9), (9, 10), (7, 8), (4, 9), (3, 12))],
+    [((2, 3), (5, 4), (7, 7), (11, 8), (13, 12)), ((7, 7), (6, 11), (3, 13))],
+    [((13, 2), (10, 4), (9, 8), (5, 10), (2, 10)), ((9, 8), (12, 12))],
+    [((3, 6), (6, 8), (10, 7), (13, 9)), ((6, 8), (5, 12)), ((10, 7), (11, 3))],
 ]
 GROUND_GLOW = {1, 5, 6}         # 빛 핏줄 셋(스물넷 칸에 하나씩)
 
@@ -965,13 +968,18 @@ def ground_body(key, i, crack=None):
         x, y = pts[len(pts) // 2]
         g[y][x] = 'V'
         return [''.join(r) for r in g]
-    return carve(rows, pts, dark='k', shade='d', lit='h')
+    out = [list(r) for r in carve(rows, pts, dark='k', shade='e', lit='m')]
+    P = set(pts)
+    for x, y in P:                                        # 금 위쪽 두 번째 줄도 그늘(깊이)
+        if 0 <= y - 2 < 16 and (x, y - 1) not in P and (x, y - 2) not in P and out[y - 2][x] in 'bcm':
+            out[y - 2][x] = 'd'
+    return [''.join(r) for r in out]
 
 
-# (잡음 변형, 금) — 스물넷 중 여덟이 금(어두운 금 다섯 + 빛 핏줄 셋), 나머지는 맨판
-GROUND_LIST = [(0, None), (1, None), (2, 0), (3, None), (4, None), (5, 3), (1, None), (2, None),
-               (3, 2), (4, None), (5, None), (0, 4), (2, None), (4, 1), (1, None), (3, None), (5, None), (0, None),
-               (2, 5), (1, None), (3, None), (4, 0), (0, None), (5, 6)]
+# (잡음 변형, 금) — 스물넷 중 열여덟이 금(어두운 금 열다섯 + 빛 핏줄 셋) — 금이 바닥의 큰 결이 된다, 나머지는 맨판
+GROUND_LIST = [(0, None), (1, 2), (2, 0), (3, None), (4, 4), (5, 3), (1, None), (2, 7),
+               (3, 2), (4, None), (5, 8), (0, 4), (2, None), (4, 1), (1, 9), (3, None), (5, 0), (0, 3),
+               (2, 5), (1, None), (3, 7), (4, 0), (0, None), (5, 6)]
 
 
 def ground_rows(key, i):
