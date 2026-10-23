@@ -695,24 +695,106 @@ def frozen_tiles(n):
     return out
 
 
+# ---- r16 경로: 바위는 검수 통과·선택된 gap-rock-r1 바위 채움을 그대로 가져와(읽기만) 얼음굴 범례로 다시 칠한다.
+# A1 = rock_fill C2(현무암 바윗덩이: 윗면 몸통 변형 8 · 옆선 표 · 두꺼운 층 턱 앞면), A2 = rock_fill B2(모난 바윗덩이 · 가로 갈라짐 앞면).
+# 화소 자리는 원본 행 문자열 그대로, 글자 → (램프, 단) 만 바꾼다. 덧붙인 것:
+#   서리 모자 = 덩이의 왼·위 빛 단(H·W·V)을 얼음 단으로 · 북·서 테두리 바깥 단 = 옅은 얼음 · 남 앞턱 = 서리(ice 3) 줄
+#   앞면 끝 마구리 = 고드름(손 덧그림 FACE*_L/R) · 앞면 맨 위 빛 턱 = 서리.
+import gap_rock_r1 as GR  # noqa: E402  읽기 전용
+
+ROCK_SRC = {1: ('C', 2, False), 2: ('B', 2, True)}   # (줄, 번호, 동 변 부드럽게) — gap_rock_r1.make_at 과 같은 조합
+# 원본 범례 글자 → 얼음굴 (램프, 단). 차가운 청회(vrock)·쇠빛(iron) 단, 빛 단만 얼음.
+ICE_ROCK_LEG = {   # 윗면·틀. 덩이 빛 쪽(H) = 서리 낀 밝은 쇠빛, 꼭대기(W·V) = 얼음 흰빛 — 파란 칠 줄이 비처럼 보이지 않게
+    1: legend(x=('vrock', 0), k=('vrock', 1), d=('iron', 1), b=('vrock', 2), c=('iron', 4), m=('vrock', 3), l=('iron', 3),
+              h=('ice', 3), w=('iron', 4), g=('vrock', 2), n=('vrock', 3), y=('iron', 5), e=('vrock', 1),
+              Y=('ice', 2), F=('ice', 3), R=('ice', 4), **{'0': ('iron', 3)}),
+    2: legend(k=('vrock', 1), d=('vrock', 1), b=('iron', 1), c=('iron', 1), m=('vrock', 3), l=('iron', 3),
+              h=('ice', 3), w=('ice', 4), g=('vrock', 2), n=('vrock', 3), y=('iron', 3), e=('vrock', 1), p=('iron', 1),
+              v=('ice', 2), j=('vrock', 2), f=('iron', 1), o=('vrock', 1),
+              Y=('ice', 2), F=('ice', 3), R=('ice', 4), **{'0': ('iron', 1)}),
+}
+# 앞면 범례: 원본 앞면 단(윗면보다 한두 단 어둡다)을 차가운 단으로 — 앞면에는 얼음 빛 단을 쓰지 않는다(파란 층 줄 금지).
+ICE_FACE_LEG = {
+    1: legend(x=('vrock', 0), k=('vrock', 1), d=('iron', 1), b=('vrock', 2), c=('iron', 2), m=('vrock', 3), l=('iron', 3),
+              h=('vrock', 4), w=('iron', 4), g=('vrock', 2), n=('vrock', 3), y=('iron', 5), e=('vrock', 1),
+              F=('ice', 3), **{'0': ('iron', 3)}),
+    2: legend(k=('vrock', 1), d=('iron', 1), b=('vrock', 3), c=('vrock', 3), m=('iron', 2), l=('iron', 3),
+              h=('iron', 4), w=('iron', 5), g=('vrock', 2), n=('vrock', 3), y=('iron', 3), e=('vrock', 1), p=('iron', 1),
+              v=('iron', 3), j=('vrock', 2), f=('iron', 1), o=('vrock', 1),
+              F=('ice', 3), **{'0': ('iron', 1)}),
+}
+# 틀 단: 빛 쪽(바깥 → 안) · 그늘 쪽 · 앞턱(아래 = 앞면 닿는 줄부터). 원본 LIT/SHADE/LIP 의 바깥 단을 서리로.
+ICE_RIM = {1: ('Ycb', 'kd', 'FYb'), 2: ('Ylm', 'pc', 'FYd')}
+
+
+def _ice_sym(rows, lit, sh, lip):
+    tr = {'H': lit[0], 'L': lit[1], 'M': lit[2], 'E': sh[0], 'D': sh[1], 'P': lip[0], 'Q': lip[1], 'R': lip[2]}
+    return [''.join(tr.get(c, c) for c in r) for r in rows]
+
+
+def ice_rock_frame(n):
+    line, k, soft = ROCK_SRC[n]
+    lit, sh, lip = ICE_RIM[n]
+    prof = {1: GR.PROF1, 2: GR.PROF2}[k]
+    N_ = strips(prof['N'], GR._layer(lit), ',')
+    W_ = strips(prof['W'], GR._layer(lit), ',')
+    E_ = strips(prof['E'], GR._layer(sh), '0')
+    S_ = strips(prof['S'], GR._lip(lip), ',')
+    sym = lambda r: _ice_sym(r, lit, sh, lip)  # noqa: E731
+    fr = frame(sym(GR.NW), sym(GR.NE), sym(GR.SW), sym(GR.SE), N_, S_, W_, E_)
+    inner = [a + b for a, b in zip(sym(GR.IN_NW), sym(GR.IN_NE))] + [a + b for a, b in zip(sym(GR.IN_SW), sym(GR.IN_SE))]
+    check_frame(f'A{n} 얼음 바위 틀', fr, inner, strict_inner=False)
+    if soft:
+        fr = GR._soft_east(fr, line)
+    return fr, inner
+
+
 def rock_top(n):
-    g = ground(n)
-    if n == 1:
-        leg, fr_rows, prof, bodies_rows = L1, TOP1_FRAME, WOB_TOP1, TOP1_BODIES
-        tx = {',': g.body, 'R': grid(R1_TEX, leg), 'D': grid(D1R_TEX, leg)}
-    else:
-        leg, fr_rows, prof, bodies_rows = L2, TOP2_FRAME, WOB_TOP2, TOP2_BODIES
-        tx = {',': g.body, 'R': grid(R2_TEX, leg), 'D': grid(D2R_TEX, leg), 'Q': grid(Q2R_TEX, leg)}
-    fr, inn = fill(fr_rows, TOP1_INNER, leg, tx)
-    wobble(fr, g.body, prof)
-    bs = [grid(r, leg) for r in bodies_rows]
-    return autotile_cv(bs[0], fr, inn, bs[1:])
+    from cave_r1 import on_base
+    line, k, _ = ROCK_SRC[n]
+    leg = ICE_ROCK_LEG[n]
+    fr, inner = ice_rock_frame(n)
+    frc, innc = on_base(ground(n).body, fr, inner, leg)
+    bodies = GR.quiet_first(GR.tops(line, k))
+    cvs = [grid(b, leg, 16, 16) for b in bodies]
+    return autotile_cv(cvs[0], frc, innc, cvs[1:])
+
+
+ROCK_FACE_TOP = {1: ('m', 'F'), 2: ('m', 'F')}   # 앞면 맨 위 빛 턱 글자 → 서리
 
 
 def ice_face(n):
-    if n == 1:
-        return face_from(FACE1_MID, FACE1_L, FACE1_R, L1)
-    return face_from(FACE2_MID, FACE2_L, FACE2_R, L2)
+    line, k, _ = ROCK_SRC[n]
+    src = GR.LEG[line]
+    leg = ICE_FACE_LEG[n]
+    # 원본 앞면 화소색 → 원본 글자 → 얼음굴 색(같은 원본 색을 쓰는 글자는 같은 새 색이어야 한다)
+    back = {}
+    for ch, rgb in src.items():
+        if ch in leg:
+            new = leg[ch]
+            assert back.get(tuple(rgb), new) == new, (n, ch)
+            back[tuple(rgb)] = new
+    f = GR.face(line, k).b
+    cv = Cv(32, 32)
+    for y in range(32):
+        for x in range(32):
+            px = tuple(f.a[y, x][:3])
+            cv.a[y, x] = f.a[y, x]
+            if f.a[y, x][3] and px in back:
+                cv.put(x, y, back[px])
+    lit_src, frost = ROCK_FACE_TOP[n]
+    for y in range(3):   # 윗면 앞턱 바로 밑 빛 턱 → 서리(열마다 늘어진 깊이 그대로)
+        for x in range(32):
+            if tuple(f.a[y, x][:3]) == tuple(src[lit_src]):
+                cv.put(x, y, leg[frost])
+    ic_leg = legend(W=('ice', 4), c=('ice', 3), b=('ice', 2), m=('ice', 1))
+    for ox, sps in ((0, FACE1_L if n == 1 else FACE2_L), (24, FACE1_R if n == 1 else FACE2_R)):
+        for sp, x, y in sps:
+            for dy, r in enumerate(sp):
+                for dx, ch in enumerate(r):
+                    if ch != '.':
+                        cv.put(ox + x + dx, y + dy, ic_leg[ch])
+    return dot.Face(cv)
 
 
 # ================================================================================================ 장면 — 얼음 동굴 두 방(18×12)
@@ -763,6 +845,14 @@ NOTES = {
 }
 
 
+ROCK_NOTES = {
+    1: '얼음 현무암 — 선택된 gap-rock C2(덩이·옆선·층 턱 앞면) 화소 자리 그대로, 차가운 청회(vrock)·쇠빛 단으로 다시 칠함. '
+       '덩이 북서 빛면 = 서리(밝은 쇠빛·ice 3 꼭대기), 북·서 테두리 바깥 단 = 옅은 얼음, 남 앞턱 = 서리 줄, 앞면 맨 위 턱 = 서리, 끝 마구리 고드름',
+    2: '얼음 모난 바위 — 선택된 gap-rock B2(모난 바윗덩이·가로 갈라짐 앞면) 화소 자리 그대로, 어두운 쇠빛(iron 1) 바탕으로 다시 칠함 '
+       '(바닥 자갈 iron 4 보다 두 단 어둡다). 덩이 빛면 = 밝은 쇠빛, 꼭대기 = 얼음 흰빛, 서리 앞턱·테두리, 끝 마구리 고드름',
+}
+
+
 def cand_ice_floor(n):
     def fn():
         at = ice_floor(n)
@@ -785,7 +875,7 @@ def cand_ice_rock(n):
         v, g = scene(n)
         return hcat(a2_plus(at), f.b), {
             'kind': 'autotile', 'autotiles': {'ceil': at}, 'faces': {'face': f}, 'vignette': v, 'grid': g, 'rim_check': True,
-            'note': NOTES[f'A{n}'] + ' — 원본 = 바위 윗면 A2(+몸통 변형 4) | 앞면 32×32',
+            'note': ROCK_NOTES[n] + ' — 원본 = 바위 윗면 A2(+몸통 변형 7) | 앞면 32×32',
             'extras': [('윗면 몸통 8×8 (변형 섞음)', dot.mosaic(at, 8, 8), 2), ('앞면 8칸 이어 붙임(끝 마구리 포함)', face_run(f, 8), 3),
                        ('윗면 47 변형', variants_sheet(at), 2)]}
     return fn
