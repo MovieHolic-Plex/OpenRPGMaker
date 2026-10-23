@@ -48,7 +48,7 @@
       "families": [
         "oprn-atlas"
       ],
-      "note": "버들항(beodeul_city) 던전 키트로 지은 석조 던전. 허공에 뜬 기물·고아 벽 조각·떠 있는 횃불을 본다(2026-10-14 사용자 스크린샷). 2026-10-22 dg-* 9건: 조수 던전·동굴 품질 시험(assistant-dungeons)."
+      "note": "버들항(beodeul_city) 던전 키트로 지은 석조 던전. 허공에 뜬 기물·고아 벽 조각·떠 있는 횃불을 본다(2026-10-14 사용자 스크린샷). 2026-10-22 dg-* 9건: 조수 던전·동굴 품질 시험(assistant-dungeons). 2026-10-23 dt-* 24건: 던전 주제 열둘 × 두 요청(dungeon-themes)."
     }
   },
   "forbiddenFamilies": [
@@ -419,6 +419,282 @@
         "보물상자",
         "쉬는 방",
         "보스방"
+      ]
+    },
+    {
+      "id": "dt-forest-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "숲 던전 만들어 줘. 길을 잃기 쉬운 깊은 숲이고, 가장 안쪽에 숲의 주인이 기다려.",
+      "requires": [
+        "나무 벽 숲길",
+        "빈터",
+        "숲의 보스"
+      ]
+    },
+    {
+      "id": "dt-forest-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "메이플스토리 엘리니아 같은 요정 숲 던전 하나 만들어 줘.",
+      "requires": [
+        "숲",
+        "요정 숲 분위기",
+        "보스"
+      ]
+    },
+    {
+      "id": "dt-cave-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "박쥐가 사는 동굴 던전 만들어 줘.",
+      "requires": [
+        "동굴 벽",
+        "박쥐 적"
+      ]
+    },
+    {
+      "id": "dt-cave-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "지하 호수가 있는 큰 동굴 던전 만들어 줘.",
+      "requires": [
+        "지하 호수",
+        "다리 또는 물가 길"
+      ]
+    },
+    {
+      "id": "dt-ruins-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "덩굴에 덮인 고대 유적 던전 만들어 줘.",
+      "requires": [
+        "무너진 기둥",
+        "유적"
+      ]
+    },
+    {
+      "id": "dt-ruins-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "젤다 신전처럼 가운데 홀에서 여러 방으로 갈라지는 고대 유적 던전 만들어 줘.",
+      "requires": [
+        "가운데 홀",
+        "갈래 방",
+        "장치"
+      ]
+    },
+    {
+      "id": "dt-castle-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "흑기사가 지키는 요새 던전 만들어 줘. 마지막에 옥좌의 방이 있어.",
+      "requires": [
+        "요새",
+        "옥좌의 방",
+        "흑기사"
+      ]
+    },
+    {
+      "id": "dt-castle-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "엘든링 레거시 던전 같은 성 던전 하나 만들어 줘.",
+      "requires": [
+        "성",
+        "지름길",
+        "레버"
+      ]
+    },
+    {
+      "id": "dt-catacomb-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "엘든링 같은 지하묘지 만들어 줘.",
+      "requires": [
+        "석관",
+        "묘실",
+        "보스"
+      ]
+    },
+    {
+      "id": "dt-catacomb-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "디아블로 같은 어두운 지하묘지 던전 만들어 줘.",
+      "requires": [
+        "지하묘지",
+        "언데드"
+      ]
+    },
+    {
+      "id": "dt-mine-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "FF6 나르쉐 같은 광산 던전 만들어 줘.",
+      "requires": [
+        "갱도",
+        "광차",
+        "광산 보스"
+      ]
+    },
+    {
+      "id": "dt-mine-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "버려진 광산 갱도 던전 만들어 줘. 광차를 타고 이동할 수 있으면 좋겠어.",
+      "requires": [
+        "갱도",
+        "광차 이동"
+      ]
+    },
+    {
+      "id": "dt-swamp-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "독 안개 낀 늪지대 던전 만들어 줘.",
+      "requires": [
+        "늪물",
+        "둔덕",
+        "널판 다리"
+      ]
+    },
+    {
+      "id": "dt-swamp-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "맹그로브 습지 던전 하나 만들어 줘. 늪 한가운데 가라앉은 우상이 있어.",
+      "requires": [
+        "맹그로브",
+        "우상",
+        "늪"
+      ]
+    },
+    {
+      "id": "dt-volcano-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "용암이 흐르는 화산 던전 만들어 줘.",
+      "requires": [
+        "용암",
+        "다리"
+      ]
+    },
+    {
+      "id": "dt-volcano-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "화산 속 무너진 대장간 던전 만들어 줘. 끝에 불의 용이 있어.",
+      "requires": [
+        "용암",
+        "대장간",
+        "용"
+      ]
+    },
+    {
+      "id": "dt-ice-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "설산의 얼음 동굴 던전 만들어 줘.",
+      "requires": [
+        "얼음 벽·바닥"
+      ]
+    },
+    {
+      "id": "dt-ice-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "얼어붙은 호수를 미끄러져 건너는 빙굴 던전 만들어 줘.",
+      "requires": [
+        "얼음 호수",
+        "미끄럼"
+      ]
+    },
+    {
+      "id": "dt-pyramid-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "사막 피라미드 던전 만들어 줘. 가장 안쪽 묘실에 파라오의 석관이 있어.",
+      "requires": [
+        "사암",
+        "석관",
+        "파라오"
+      ]
+    },
+    {
+      "id": "dt-pyramid-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "툼레이더 같은 모래 함정이 있는 왕묘 던전 만들어 줘.",
+      "requires": [
+        "모래 함정",
+        "왕묘"
+      ]
+    },
+    {
+      "id": "dt-tower-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마법사의 탑 던전 만들어 줘. 서고랑 마법진이 있어.",
+      "requires": [
+        "탑",
+        "서고",
+        "마법진"
+      ]
+    },
+    {
+      "id": "dt-tower-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "크로노트리거 같은 마법 왕국의 탑 던전 만들어 줘.",
+      "requires": [
+        "층 여러 개",
+        "마법진"
+      ]
+    },
+    {
+      "id": "dt-otherworld-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "크로노트리거 같은 마계 성 만들어 줘.",
+      "requires": [
+        "마계",
+        "마왕"
+      ]
+    },
+    {
+      "id": "dt-otherworld-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "허공에 떠 있는 이세계 던전 만들어 줘. 끝에 마왕이 있어.",
+      "requires": [
+        "허공에 뜬 땅",
+        "다리",
+        "마왕"
       ]
     }
   ],
