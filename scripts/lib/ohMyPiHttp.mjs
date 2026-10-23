@@ -51,6 +51,7 @@ export function isCompanionPath(url = "") {
     || path === "/v1/worldmap/build"
     || path === "/v1/workshop/gen"
     || path === "/v1/workshop/gen/cancel"
+    || path === "/v1/workshop/gen/pick"
     || path === "/v1/workshop/gate"
     || path === "/v1/workshop/gate/cancel"
     || path === "/v1/local-agents"

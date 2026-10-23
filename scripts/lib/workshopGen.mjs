@@ -10,7 +10,7 @@
 //   POST /v1/workshop/gen          { generator:"char-gen"|"tile-gen", text, count?, cli?, model?, mode?, tileset?:{png,refs}, photo? } → { ok, jobId }
 //   GET  /v1/workshop/gen?jobId=   → 상태(stage·progress·elapsedMs) · 끝나면 pack:{manifest, blobs:{sha:base64}}
 //                                    · 사진(mode:"photo")은 먼저 state "picking" + photoCandidates(후보마다 걷기 GIF·검사)
-//   POST /v1/workshop/gen/pick     { jobId, rank } → 고른 후보 하나를 묶는다(다시 running → done)
+//   POST /v1/workshop/gen/pick     { jobId, rank, title? } → 고른 후보 하나를 묶는다(다시 running → done)
 //   POST /v1/workshop/gen/cancel   { jobId }
 // 작업은 이 프로세스 메모리에 있다 — 호스트가 다시 뜨면 사라지고, 브라우저는 「못 그림 · 다시」로 보인다.
 import { spawn, execFileSync } from "node:child_process";
@@ -276,8 +276,14 @@ export function pickWorkshopGen(body = {}) {
   job.stage = "packing";
   job.finishedAt = null;
   job.picked = String(chosen.rank);
-  void run(job, "python3", [join(kit, "cli.py"), "pack", join("run", "candidates", chosen.chip), "pack", "--title", title, "--license", "CC-BY-4.0",
-    "--credits", PHOTO_CREDITS, "--chip-method", "procedural"], { cwd: job.dir, timeoutMs: 5 * 60 * 1000 }).then((pack) => {
+  // 고른 칩을 폴더 하나(chip.chr.txt + meta.json)로 — 묶음의 캐릭터 이름이 파일 이름(01-Actor2-7-…) 대신 사람이 붙인 이름이 된다.
+  const pickDir = join(job.dir, "pick");
+  mkdirSync(pickDir, { recursive: true });
+  writeFileSync(join(pickDir, "chip.chr.txt"), readFileSync(join(job.dir, "run", "candidates", chosen.chip)));
+  writeFileSync(join(pickDir, "meta.json"), JSON.stringify({ key: title.slice(0, 40), brief: "photo -> RTP head + body, recoloured (char-gen photo)", head: chosen.head, body: chosen.body }));
+  void run(job, "python3", [join(kit, "cli.py"), "pack", "pick", "pack", "--title", title, "--license", "CC-BY-4.0",
+    // 머리·몸 고르기와 색은 사용자 CLI 모델이 정했다 → 생성 방식 mixed(그 모델) · aiGenerated(묶음 검사가 procedural 이면 거절한다).
+    "--credits", PHOTO_CREDITS, "--chip-model", job.engine || "agent CLI"], { cwd: job.dir, timeoutMs: 5 * 60 * 1000 }).then((pack) => {
     if (job.state === "cancelled") return;
     if (pack.code !== 0 || !existsSync(join(job.dir, "pack", "manifest.json"))) {
       fail(job, `묶음을 만들지 못했어요 — ${(lastJson(pack.stdout)?.error ?? pack.stderr ?? "").toString().trim().slice(-300)}`);
