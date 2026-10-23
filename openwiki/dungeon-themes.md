@@ -1,0 +1,77 @@
+# 던전 주제 열넷 — 숲·늪·피라미드·마법탑·마계까지 (2026-10-23)
+
+조수의 `author_dungeon` 한 호출이 짓는 버들항(`beodeul_city`) 던전의 종류·배치·장치·적을 정리한다.
+배치 문법·벽·천장·받침 규칙 자체는 `openwiki/beodeul-city.md` 의 던전 절(시공기 `src/editor/dungeonKit/`)을 따르고, 이 쪽은 그 위에 얹은 「주제」 층이다.
+
+## 무엇이 바뀌었나
+
+- 사용자는 「던전」을 동굴만으로 말하지 않는다 — 「엘든링 같은 지하묘지」「FF6 광산」「크로노트리거 같은 마계 성」「요정 숲」. 종류가 열넷이 됐다.
+- 같은 종류를 두 번 지어도 복사본이 아니다: 배치 가족(사슬·갈래·고리·층 쌓기)과 주제 장치가 시드로 갈린다.
+- rpg 던전은 마지막 층에 그 주제다운 장치를 하나 둔다(레버 쇠창살만 있던 것을 넓혔다).
+
+## 종류 (`DUNGEON_TYPES`, `src/editor/dungeonKit/types.ts`)
+
+| type | 말 | 문법 | 벽 | 액체 | 주제 장식(dress.ts) |
+|---|---|---|---|---|---|
+| catacomb | 지하묘지·카타콤·감옥·납골당 | rooms | 천장 | — | 관·벽감·제단 |
+| castle | 성·요새·성채·성 지하 | rooms | 천장 | — | 옥좌의 방(옥좌·붉은 카펫·깃발·갑옷), 그 밖 공통 |
+| labyrinth | 미궁·미로 | maze | 천장 | — | 미궁 |
+| sewer | 하수도·수로 | rooms | 천장 | 물 | 하수도 |
+| cave | 동굴·지하 호수 | blob | 천장 | 물 | 동굴(lair=소굴) |
+| temple | 신전·사원·고대 유적 | rooms | 천장 | — | 신전 |
+| mine | 광산·갱도 | rooms | 천장 | — | 광산 |
+| volcano | 화산·용암 | blob | 천장 | 용암(흑요석 둑) | 화산 |
+| ice | 얼음 동굴·빙굴·설산 | blob | 천장(얼음 판 대기) | 물(호수 = 빙판) | 얼음 바위·고드름·얼어붙은 전사 |
+| forest | 숲·정글·세계수 | blob | **수관 숲**(야외) | 물(풀 둑) | 고사리·통나무·나무 섬·버섯 고리·거목 |
+| swamp | 늪·습지·맹그로브 | blob(길 = 늪물) | **수관 숲**(야외) | 늪물(이끼 둑) | 맹그로브·죽은 나무·도깨비불·가라앉은 우상 |
+| pyramid | 피라미드·사막 왕묘 | rooms | 천장(사암 대기) | — | 열주·자칼 석상·석관·금 더미·모래 |
+| tower | 마법탑·마도사의 탑 | rooms(+library) | 천장 | — | 책장·독서대·마법진·수정 받침 |
+| otherworld | 마계·이세계·지옥·심연 | blob(길 = 허공) | 천장 | **허공**(천장으로 그림, 돌다리) | 타락한 수정·뼈 기둥·보랏빛 화로·마왕의 옥좌 |
+
+- **야외 던전(forest·swamp, `GRAMMAR.walls === "canopy"`)**: 벽 앞면 줄이 없다. 벽 칸은 잔디(737)를 깔고 dungeonTools 가 `planBeodeulCanopy`+`writeBeodeulCanopy` 로 수관 숲(2·3층, 막힘)을 덮는다. 수관 오토타일이 모양을 못 받는 한 칸 폭 틈은 숲에서 빼 빈터로 연다(고정점까지 반복 — 안 그러면 그림 없는 잔디 길이 숲을 뚫는다). 출구는 계단 대신 **입구 빈터 아랫변에서 맵 남쪽 끝까지 낸 길**이다(`trailExit`, 표식 「던전 입구」 3×2).
+- **자연 물가(banks)**: 물·용암·늪물 칸 위 2층에 `beodeul_nature` 둑(256 마스크, N8 순서 [-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1])을 얹는다. 이웃 = 같은 액체·다리·맵 밖. 2층 ★·통행(통행은 아래 액체가 막는다).
+- **허공(otherworld)**: 액체 종류 `void` — 그리지 않고 천장으로 칠한다. 허공 위에는 벽 앞면을 세우지 않는다(앞면이 허공을 마주 봐 받침 검사가 막는다). 늪·마계는 layouts 가 방 사이 굽은 길을 액체로 바꿔 방이 섬이 되고, settle 이 가장 짧은 줄에 다리를 놓는다.
+- **바닥 함정**: 늪 바닥 무늬에 `swamp-stilt-ground-bog`(통행 불가 늪물 그림)을 쓰면 섬 사이가 막혀 「입구에서 닿지 않는 방」으로 거부됐다 — 바닥 무늬는 통행 칸만. 숲의 흙 덩이 무늬는 가장자리 그림이 없어 네모 얼룩으로 읽혀 뺐다.
+
+## 새 그림 키트 이름 (`TK(id)` = `bd-pick-dungeon-theme-<id>`)
+
+profiles·dress·gimmick 는 키트를 **후보 목록**(`KitPref`)으로 받는다 — 앞에서부터 이 타일셋에 있는 첫 키트. 새 테마 그림이 굽혀지기 전에는 기존 버들항 키트로 물러선다(옛 프로젝트도 같은 배치로 짓는다).
+굽기는 이 이름을 그대로 써야 살아난다: 벽 `ice/sandstone/tower/otherworld-face-3h|2h`, 바닥 `*-floor`, 천장 그룹 `beodeul_dungeon_ceiling_ice|_sand|_void`, 기물 `giant-tree`·`mushroom-ring`·`sunken-idol`·`lily-pads`·`will-o-wisp`·`obelisk`·`pharaoh-sarcophagus`·`jackal-statue`·`gold-pile`·`sand-drift`·`sand-pit`·`cracked-floor`·`bookshelf(-tall)`·`lectern`·`crystal-pedestal`·`arcane-circle`·`teleport-circle`·`candelabra`·`corrupt-crystal(-big)`·`void-brazier`·`bone-pillar`·`demon-throne`·`portal-gate(-floor)`·`ice-crystal`·`icicles`·`frozen-warrior`·`snow-drift`·`throne`·`carpet-runner`·`royal-banner`·`armor-stand`·`minecart`·`rails-ew`.
+그림은 `dungeon-chipset` 하네스(코드 손 도트, 잠긴 팔레트)로 그리고 object-gate 영수증·위임 pick 뒤에만 굽는다.
+
+## 배치 가족 (`layout`, `layoutRooms.ts`·`layouts.ts`)
+
+`linear` 사슬(곁방 하나, 고리 0) · `hub` 가운데 홀에서 갈래 · `loop` 고리 2~3 · `vertical` 층 쌓기(floors 생략 시 2층, tower 는 3층 위로).
+생략하면 `layoutFamilyOf` 가 시드로 linear/hub/loop 중 하나를 고른다. rooms 문법은 `planDungeonRooms` 가 가족별 방 그래프를, blob 문법은 고리 수를 가족으로 정한다.
+
+## 게임 참고 (`inspiration`, `DUNGEON_REFERENCES` in `grammar.ts`)
+
+`inferDungeonRequest(text)` — 종류 낱말이 있으면 그 낱말(「크로노트리거 같은 마계 성」 → otherworld), 없으면 게임의 대표 던전.
+엘든링·다크소울 → catacomb(성 낱말이면 castle)·loop·lever · FF6 → mine·linear·minecart · 크로노 트리거 → tower·vertical·teleporter(마왕 낱말이면 otherworld) · 젤다 → temple·hub·lever · 툼레이더·미이라 → pyramid·linear·sandpit · 디아블로 → catacomb·hub · 스카이림 → catacomb·linear·lever · 마인크래프트 → mine·loop·minecart · 메이플 → forest.
+명시한 인자가 늘 이긴다. 이름·inspiration 은 `routeDungeon({text})` 에도 들어가 type 을 안 준 요청의 종류를 정한다.
+
+## 주제 장치 (`gimmick`, `src/editor/tools/dungeonGimmicks.ts`)
+
+| gimmick | 기본 종류 | 동작 | 그림 |
+|---|---|---|---|
+| lever | catacomb·castle·temple·sewer·(대체) | 방+통로 문법은 보물/보스 통로를 쇠창살로(`placeLeverGate`), 그 밖은 입구→보스 길의 **좁은 목**(단면 ≤4칸, 막으면 보스에 못 감)을 찾아 쇠창살 + 다른 방 레버(`placeChokeLever`, 레버가 입구 방에 서는 목은 마지막 후보) | 쇠창살·레버 charset |
+| bridge | cave·volcano·swamp | 막으면 가장 많은 방(보스방 가중)이 끊기는 다리 무리(≤12칸)를 걷어 액체로 두고, 다리를 건너지 않고 닿는 가장 깊은 방에 레버 — 당기면 `changeTile` 로 다리 그림을 되돌린다 | 레버 charset + 원래 다리 칸 |
+| teleporter | labyrinth·forest·tower·otherworld | 입구 쪽 방과 깊은 방에 마법진(숲 버섯 고리·마계 차원문) 한 쌍, 밟으면 반대쪽 내려설 칸으로 | `TK teleport-circle`·`arcane-circle`·`mushroom-ring` → 신전 모자이크 5×5 |
+| minecart | mine | 입구 방·깊은 방 정거장 광차, 조사 → 「탄다」 → 반대 정거장 | `TK minecart` → 광산 마을 광차 |
+| iceslide | ice | 얼음 호수 방의 가장 긴 가로 줄(≥8)을 빙판으로, 양 끝을 밟으면 맞은편 끝까지 미끄러진다(`moveEvent @player`, 방향 고정) | `TK ice-floor` → 설원 얼음 바닥 |
+| sandpit | pyramid·(catacomb·castle 둘째) | 보스 길 밖 곁방 가운데(길 위 방이면 구석, 피해 가는 길이 남을 때만)에 구덩이, 밟으면 흔들림 → 입구로 떨어진다 | `TK sand-pit`·`cracked-floor` → 신전 트래버틴 2×2 |
+
+- 장치는 **채우기(populate) 전에** 놓는다(적·상자가 장치 자리를 먼저 먹지 않게). 고른 장치를 못 놓으면 그 종류의 다음 장치 → 레버 순으로 바꾸고 경고한다.
+- 같은 종류 두 요청: 생략 시 `THEME_GIMMICKS[type]` 앞 둘 중 시드로 고른다.
+- `gimmick:"none"` 은 끔. 옛 `puzzle:"lever"` 는 `gimmick:"lever"` 와 같다. 레버를 안 놓았으면 `population.lockedGate` 를 지운다(조수가 「잠긴 문이 있다」고 답했다).
+- **린트**: 레버 다리 건너편 이벤트가 `event-unreachable` 로 울리지 않도록, 이벤트 배치 분석(`eventPlacementRecovery.ts` `openedByChangeTile`)은 이 맵의 이벤트가 `changeTile`(lower)로 넣는 그림을 미리 깐 사본으로 도달을 잰다 — 「저자가 열 방법을 둔 칸」은 지나갈 수 있다고 본다.
+
+## 주제 적 (`dungeonThemeTroops.ts`)
+
+새 주제: forest(늑대·식인초·거대 벌 → 숲의 늙은 트롤) · swamp(리자드맨·독사·도깨비불 → 히드라) · pyramid(미라·전갈 → 왕묘의 수호 거상) · ice(늑대·바람 정령·창백한 유령 → 푸른 용) · magic(떠다니는 눈·나는 검·떠돌이 마법사 → 탑의 대마법사) · abyss(임프·어둠 정령·망령 → 마계의 군주) · castle(해골 기사·살아 있는 갑옷·가고일 → 타락한 성주) · magitek(FF6 광산: 철 골렘·코볼트 → 괴수).
+type 을 안 준 요청은 지은 층의 type 으로 주제를 고른다.
+
+## 시험
+
+- 도구 경로 증명: `bun scripts/qa/dungeons/themes-proof.mts <out> [case...]` — 24 경우(종류 열둘 × 둘), 층 PNG·이벤트·린트·장치 줄.
+- 조수 실경로: space-craft `dt-<theme>-a|b` 24건(`harness-data/space-craft/seed.json`), 판정 brief `harness-data/space-craft/dungeon-vqa-brief.md` 의 M11(주제로 읽히는가)·M12(두 요청이 복사본인가)·M13(장치가 쓰이는가).
