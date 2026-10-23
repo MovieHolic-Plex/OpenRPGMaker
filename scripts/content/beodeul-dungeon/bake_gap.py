@@ -16,7 +16,7 @@
   gap.lever (공통)          → 키트 `bd-dg-lever-up` · `bd-dg-lever-down` (벽걸이 1×1)
   gap.goblin_tent (공통)    → 키트 `bd-dg-goblin-tent` (3×3, 윗줄 ★)
   gap.bone_pile (공통)      → 키트 `bd-dg-goblin-bones` · `bd-dg-goblin-loot`
-  gap.palisade (공통)       → 키트 `bd-dg-palisade-<w-end|mid|mid2|mid3|e-end|vertical|w-corner|e-corner>` (1×2, 위 칸 ★)
+  gap.palisade (공통)       → 키트 `bd-dg-palisade-<w-end|mid|mid2|mid3|e-end>` (1×2, 위 칸 ★; 동서 한 줄만 — 세로·모서리 부품은 있어도 굽지 않는다)
   gap.campfire (공통)       → 키트 `bd-dg-goblin-campfire` (1×1, 4장면)
   gap.tower_window (공통)   → 키트 `bd-dg-tower-window-dark` · `-lit` (벽걸이 1×2)
   gap.tower_wall (공통)     → 키트 `bd-dg-tower-ring-<12|10|8>`(통째) · `bd-dg-tower-<12|10|8>-<nw|ne|sw|se>`(사분면) ·
@@ -397,8 +397,8 @@ def bake_ice_floor(st, p, line, meta, origin):
 
 
 WALK_DOOR = {"닫힘": ["★", "x"], "열림": ["★", "o"]}
-PALISADE_IDS = {"서끝": "w-end", "가운데": "mid", "가운데2": "mid2", "가운데3": "mid3", "동끝": "e-end", "세로": "vertical",
-                "서모서리": "w-corner", "동모서리": "e-corner"}
+# 2026-10-23 씨앗: 동서 한 줄만(size [5,2]). 옛 8부품 모듈(세로·서모서리·동모서리)이 와도 이 다섯만 굽는다.
+PALISADE_IDS = {"서끝": "w-end", "가운데": "mid", "가운데2": "mid2", "가운데3": "mid3", "동끝": "e-end"}
 
 
 def bake_props(st, p, line, meta, origin):
@@ -434,13 +434,19 @@ def bake_props(st, p, line, meta, origin):
             add(kit(f"{KIT_PREFIX}goblin-{kid}", f"버들항 던전 · {nm} 더미", 1, 1, up, desc=f"고블린 야영지의 {nm} 더미.",
                     rules="걷는 바닥 위, 벽가·구석에. 막힘.", tags=["고블린", nm]))
     elif item == "gap.palisade":
-        for nm, part in parts.items():
-            kid = PALISADE_IDS.get(nm) or f"part{list(parts).index(nm)}"
+        missing = [nm for nm in PALISADE_IDS if nm not in parts]
+        if missing:
+            raise SystemExit(f"gap.palisade: 부품 {missing} 이 없다 — 동서 한 줄 다섯 부품(서끝·가운데·가운데2·가운데3·동끝)이 필요하다. 받은 부품: {list(parts)}")
+        skipped = [nm for nm in parts if nm not in PALISADE_IDS]
+        if skipped:
+            print(f"  gap.palisade: 동서 한 줄 밖 부품 {skipped} 는 굽지 않는다")
+        for nm, kid in PALISADE_IDS.items():
+            part = parts[nm]
             up = object_cells(st, part, default_walk(1, part.h // T), origin, f"버들항 던전 · 말뚝 울 {nm}", "끝을 깎은 말뚝을 밧줄로 엮은 울. 아래 칸 막힘, 위 칸 ★.",
                               ["고블린", "울타리", "palisade"])
             add(kit(f"{KIT_PREFIX}palisade-{kid}", f"버들항 던전 · 말뚝 울 {nm} 1×2", 1, part.h // T, up,
-                    desc=f"고블린 말뚝 울 조각 「{nm}」. 가로 줄 = 서끝 + 가운데(가운데·가운데2·가운데3 섞어 반복) + 동끝, 세로 줄 = 세로, 모서리 = 서모서리·동모서리(남북 공용).",
-                    rules="걷는 바닥 위 한 줄로. 아래 칸 막힘 — 야영지 입구 한 칸은 비운다.", tags=["고블린", "울타리"], repeat="repeat" if "가운데" in nm or nm == "세로" else "fixed"))
+                    desc=f"고블린 말뚝 울 조각 「{nm}」. 동서 한 줄 = 서끝 + 가운데(가운데·가운데2·가운데3 섞어 반복) + 동끝. 세로 줄·모서리는 없다.",
+                    rules="걷는 바닥 위 한 줄로. 아래 칸 막힘 — 야영지 입구 한 칸은 비운다.", tags=["고블린", "울타리"], repeat="repeat" if "가운데" in nm else "fixed"))
     elif item == "gap.campfire":
         frames = list(parts.values())
         assert len(frames) == FRAMES, len(frames)
