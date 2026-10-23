@@ -101,17 +101,23 @@ export function planSewer(spec: { size?: "small" | "medium" | "large"; width?: n
   return rooms;
 }
 
-/** 신전: 현관 → 신랑 → 성소(축 위 한 줄) + 신랑 좌우 곁방(대칭) + 성소 좌우 납골실·뒤 보물 방. 모든 곁방은 shift 0 으로 대칭. */
-export function planTemple(spec: { size?: "small" | "medium" | "large"; width?: number; height?: number; seed?: number }): DungeonRoomInput[] {
+/**
+ * 신전: 현관 → 신랑 → 성소(축 위 한 줄) + 신랑 좌우 곁방(대칭) + 성소 좌우 보물 방·납골실. 모든 곁방은 shift 0 으로 대칭.
+ * 2026-10-23(assistant-dungeons-2): 통로를 위아래 4·옆 2칸으로 줄이고 보물 방을 성소 뒤가 아니라 옆에 붙였다 — 세로로 길게 늘어선
+ * 십자형이라 맵의 57%가 검은 허공이었다. 신랑도 17×19 → 15×13(맨바닥이 넓었다).
+ */
+export function planTemple(spec: { size?: "small" | "medium" | "large"; width?: number; height?: number; seed?: number; flooded?: boolean }): DungeonRoomInput[] {
   const n = sized(spec);
+  // 잠긴 신전은 본당·예배실을 한 단 크게 — 물이 차지하는 방이라 맨바닥이 남지 않고, 작은 방 안쪽(회랑 2칸 안)은 둥근 못을 담기에 좁아 네모 수조로 읽혔다(2026-10-23 dg2-r4 VQA).
+  const f = spec.flooded === true;
   const rooms: DungeonRoomInput[] = [
-    { id: "porch", kind: "entrance", w: 15, h: 7 },
-    { id: "nave", kind: "nave", w: 17, h: 19, from: "porch", dir: "N", shift: 0, len: 5 },
-    { id: "sanctum", kind: "boss", w: 17, h: 11, from: "nave", dir: "N", shift: 0, len: 5 },
+    { id: "porch", kind: "entrance", w: 13, h: 6 },
+    { id: "nave", kind: "nave", w: f ? 19 : 15, h: f ? 16 : 13, from: "porch", dir: "N", shift: 0, len: 4 },
+    { id: "sanctum", kind: "boss", w: f ? 17 : 15, h: f ? 12 : 9, from: "nave", dir: "N", shift: 0, len: 4 },
   ];
-  if (n >= 4) { rooms.push({ id: "chapelW", kind: "shrine", w: 11, h: 9, from: "nave", dir: "W", shift: 0, len: 5 }, { id: "chapelE", kind: "shrine", w: 11, h: 9, from: "nave", dir: "E", shift: 0, len: 5 }); }
-  if (n >= 8) { rooms.push({ id: "ossuaryW", kind: "crypt", w: 11, h: 8, from: "sanctum", dir: "W", shift: 0, len: 5 }, { id: "ossuaryE", kind: "crypt", w: 11, h: 8, from: "sanctum", dir: "E", shift: 0, len: 5 }); }
-  if (n >= 6) rooms.push({ id: "vault", kind: "vault", w: 11, h: 7, from: "sanctum", dir: "N", shift: 0, len: 5 });
+  if (n >= 4) { const cw = f ? 12 : 9, ch = f ? 12 : 9; rooms.push({ id: "chapelW", kind: "shrine", w: cw, h: ch, from: "nave", dir: "W", shift: 0, len: 2 }, { id: "chapelE", kind: "shrine", w: cw, h: ch, from: "nave", dir: "E", shift: 0, len: 2 }); }
+  if (n >= 6) rooms.push({ id: "vault", kind: "vault", w: 9, h: 7, from: "sanctum", dir: "W", shift: 0, len: 2 });
+  if (n >= 6) rooms.push({ id: "ossuaryE", kind: "crypt", w: f ? 12 : 9, h: f ? 11 : 7, from: "sanctum", dir: "E", shift: 0, len: 2 });
   return rooms;
 }
 
@@ -120,14 +126,14 @@ export function planMine(spec: { size?: "small" | "medium" | "large"; width?: nu
   const n = sized(spec), random = rng((spec.seed ?? 7) * 6151 + 5);
   const rooms: DungeonRoomInput[] = [
     { id: "adit", kind: "entrance", w: 11, h: 7 },
-    { id: "j1", kind: "junction", w: 9, h: 7, from: "adit", dir: "E", shift: 0, len: 9 + Math.floor(random() * 3) },
+    { id: "j1", kind: "junction", w: 9, h: 7, from: "adit", dir: "E", shift: 0, len: 5 + Math.floor(random() * 3) },
   ];
   const spine = n >= 8 ? 3 : n >= 5 ? 2 : 1;
-  for (let i = 2; i <= spine; i += 1) rooms.push({ id: `j${i}`, kind: "junction", w: 9, h: 7, from: `j${i - 1}`, dir: "E", shift: 0, len: 9 + Math.floor(random() * 4) });
-  rooms.push({ id: "stopeN", kind: "stope", from: "j1", dir: "N", len: 6 });
-  if (n >= 4) rooms.push({ id: "stopeS", kind: "stope", from: spine >= 2 ? "j2" : "j1", dir: "S", len: 6 });
-  if (n >= 7) rooms.push({ id: "depot", kind: "depot", from: `j${spine}`, dir: "N", len: 6 });
-  rooms.push({ id: "deep", kind: "boss", w: 15, h: 10, from: `j${spine}`, dir: "E", shift: 0, len: 9 });
-  if (n >= 6) rooms.push({ id: "vault", kind: "vault", from: "deep", dir: "N", len: 5 });
+  for (let i = 2; i <= spine; i += 1) rooms.push({ id: `j${i}`, kind: "junction", w: 9, h: 7, from: `j${i - 1}`, dir: "E", shift: 0, len: 5 + Math.floor(random() * 3) });
+  rooms.push({ id: "stopeN", kind: "stope", from: "j1", dir: "N", len: 4 });
+  if (n >= 4) rooms.push({ id: "stopeS", kind: "stope", from: spine >= 2 ? "j2" : "j1", dir: "S", len: 4 });
+  if (n >= 7) rooms.push({ id: "depot", kind: "depot", from: `j${spine}`, dir: "N", len: 4 });
+  rooms.push({ id: "deep", kind: "boss", w: 15, h: 10, from: `j${spine}`, dir: "E", shift: 0, len: 5 });
+  if (n >= 6) rooms.push({ id: "vault", kind: "vault", from: "deep", dir: "N", len: 4 });
   return rooms;
 }

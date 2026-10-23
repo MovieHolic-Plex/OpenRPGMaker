@@ -6,10 +6,15 @@ import type { AiConfig } from "./llmClient";
  * gpt-6.1-sol 50분이었고, DB·이벤트·작은 수정은 GPT 가 더 정확했다. 그래서 실행 모델을 일의 종류로 나눈다(src/ai/buildRole.ts).
  */
 export type SpecialistRole = "vision" | "writer" | "deep" | "build";
+/**
+ * pi-ai 의 Effort 와 같은 어휘다. xhigh·max 는 일부 서버(예: InferHub 의 deepseek-v4.1-flash)만 받지만,
+ * 사용자가 그 서버를 골랐을 때 값을 조용히 high 로 낮추면 고른 강도가 사라진다 — 받는 서버가 판정한다.
+ */
+export type ThinkingEffort = "off" | "low" | "medium" | "high" | "xhigh" | "max";
 export interface RoleModel {
   provider: string;
   model: string;
-  thinkingLevel: "off" | "low" | "medium" | "high";
+  thinkingLevel: ThinkingEffort;
 }
 export type SpecialistModels = Partial<Record<SpecialistRole, RoleModel>>;
 
@@ -43,6 +48,7 @@ export function parseRoleModel(raw: unknown): RoleModel | undefined {
     || typeof value.model !== "string" || !value.model.trim()) return undefined;
   return { provider: value.provider.trim(), model: value.model.trim(),
     thinkingLevel: value.thinkingLevel === "off" || value.thinkingLevel === "low" || value.thinkingLevel === "medium"
+      || value.thinkingLevel === "xhigh" || value.thinkingLevel === "max"
       ? value.thinkingLevel : "high" };
 }
 export function parseRoleModels(raw: unknown): SpecialistModels {

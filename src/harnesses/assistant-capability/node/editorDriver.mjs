@@ -107,11 +107,13 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
         const reader=response.clone().body.getReader(),decoder=new TextDecoder();let pending='';
         const consume=line=>{try{
           const outer=JSON.parse(line.replace(/^data:\s*/,'')),event=outer.type==='agent_event'?outer.event:outer;
-          if(['assistant','tool_start','tool_end','error','execution_status','done','cancelled'].includes(event?.type)){
-            // Never persist reasoning, auth headers or system prompt payloads.
+          if(['assistant','tool_start','tool_end','error','execution_status','done','cancelled','prompt_inspection'].includes(event?.type)){
+            // Never persist reasoning, auth headers or system prompt payloads. A prompt_inspection keeps only its
+            // scalar receipt (model·max_tokens·reasoning_effort) — the sections are the whole prompt and stay out.
             window.__capEvents.push({type:event.type,name:event.name??event.toolName,id:event.id,ok:event.ok,
               text:event.type==='assistant'?event.text:undefined,summary:event.summary,message:event.message,args:event.args,
-              data:['charset.image.delivered','charset.image.received','feature_checklist','feature_review','feature_review.critic','feature_review.repair','cutscene.review','cutscene.review.judged'].includes(event.name)?event.data:undefined,
+              data:event.type==='prompt_inspection'?(event.snapshot?{boundary:event.snapshot.boundary,model:event.snapshot.model,scalars:event.snapshot.scalars}:undefined)
+                :['charset.image.delivered','charset.image.received','feature_checklist','feature_review','feature_review.critic','feature_review.repair','cutscene.review','cutscene.review.judged'].includes(event.name)?event.data:undefined,
               runId:outer.runId,usage:event.usage,stats:event.type==='done'?event.stats:undefined,at:Date.now()});
           }
           if(outer.type==='done'&&event.type!=='done')window.__capEvents.push({type:'done',runId:outer.runId,at:Date.now()});

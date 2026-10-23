@@ -43,7 +43,7 @@ export async function makeQuickTerrain(text: string, tilesetId: string): Promise
   const { tiles, strips } = quickTerrainTiles(tileset, group);
   const interior = quickTerrainInteriorTile(group);
   const interiorFrames = tiles.filter((tile) => tile >= interior && tile < interior + (strips.find((s) => tiles[s.base] === interior)?.frames ?? 1));
-  const sheet = recolorQuickTerrain(source.image, size, tiles, interiorFrames.length ? interiorFrames : [interior], material.ramp);
+  const sheet = recolorQuickTerrain(source.image, size, tiles, interiorFrames.length ? interiorFrames : [interior], material.ramp, material.base);
   const dataUrl = env.encodePng(sheet);
   const title = text.trim().slice(0, 24) || material.name;
   const asset = { id: `${QUICK_TERRAIN_ASSET_PREFIX}${hashOf(`${tilesetId}|${group.id}|${dataUrl}`)}_${dataUrl.length.toString(36)}`, dataUrl, width: sheet.width, height: sheet.height };

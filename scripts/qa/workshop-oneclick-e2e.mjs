@@ -20,6 +20,32 @@ const page = await context.newPage();
 page.setDefaultTimeout(120_000);
 const errors = [];
 page.on("pageerror", (error) => errors.push(error.message));
+page.on("console", (message) => { if (message.type() === "error" || message.type() === "warning") console.log(`[console.${message.type()}] ${message.text().slice(0, 400)}`); });
+page.on("response", (response) => { if (/\/v1\/workshop\//.test(response.url()) && response.request().method() === "GET") response.text().then((body) => { if (!/"state":"running"/.test(body)) console.log(`[host] ${new URL(response.url()).pathname} ${body.slice(0, 300)}`); }).catch(() => {}); });
+// 모델 호출 시간표(물건 경로 속도 재기) — 편집기 → 동반 서비스 /v1/chat/completions·/v1/workshop/* 요청마다 시작·끝·종류 꼬리표.
+const calls = [];
+const callLabel = (body) => {
+  try {
+    const json = JSON.parse(body ?? "{}");
+    if (json.png || json.kind) return `gate:${json.kind ?? ""}`;
+    const first = (json.messages ?? []).map((m) => (typeof m.content === "string" ? m.content : (m.content ?? []).map((part) => part.text ?? "").join(" "))).join(" | ");
+    return first.replace(/\s+/g, " ").slice(0, 90);
+  } catch { return "?"; }
+};
+page.on("request", (request) => {
+  const url = request.url();
+  if (!/\/v1\/(chat\/completions|workshop\/gate)/.test(url) || request.method() !== "POST") return;
+  const entry = { path: new URL(url).pathname, label: callLabel(request.postData()), start: Date.now(), end: null, status: null };
+  calls.push(entry);
+  request.response().then((response) => response?.finished().then(async () => {
+    entry.end = Date.now(); entry.status = response.status();
+    const body = await response.text().catch(() => "");
+    entry.answer = body.length > 600 ? `${body.slice(0, 300)} … ${body.slice(-300)}` : body;
+    // 전체 답은 따로(기계 검사가 왜 떨어졌는지 다시 볼 때)
+    try { mkdirSync(resolve(out, `${kind}-calls`), { recursive: true }); writeFileSync(resolve(out, `${kind}-calls`, `${calls.indexOf(entry)}.json`), body); } catch { /* 기록 실패는 시험을 막지 않는다 */ }
+  })).catch(() => { entry.end = Date.now(); });
+});
+page.on("requestfailed", (request) => { const hit = calls.find((entry) => entry.end === null && request.url().endsWith(entry.path)); if (hit) { hit.end = Date.now(); hit.status = "failed"; } });
 const engine = { kind: "local-cli", cli: process.env.ENGINE_CLI ?? "claude", routineModel: process.env.ENGINE_MODEL ?? "sonnet", deepModel: process.env.ENGINE_MODEL ?? "sonnet", effort: "high" };
 await page.addInitScript((engineJson) => {
   localStorage.setItem("oprn:editor-ui-mode", "standard");
@@ -27,6 +53,13 @@ await page.addInitScript((engineJson) => {
   localStorage.setItem("oprn:standard-welcome-seen", "1");
   localStorage.setItem("oprn:ai-studio", "0");
   localStorage.setItem("oprn:assistant-engine", engineJson);
+  // 토스트 기록(저장 토스트가 겹치는지 센다)
+  window.__toastLog = [];
+  new MutationObserver((records) => {
+    for (const record of records) for (const node of record.addedNodes) {
+      if (node instanceof HTMLElement && node.classList.contains("toast")) window.__toastLog.push({ at: Date.now(), text: node.textContent ?? "" });
+    }
+  }).observe(document, { childList: true, subtree: true });
 }, JSON.stringify(engine));
 
 const hold = (ms) => page.waitForTimeout(ms);
@@ -48,6 +81,19 @@ async function canvasBox() {
   return canvas.boundingBox();
 }
 
+/** 판 기록(시도마다 기계 검사 오류·판정·관문) — 어디서 시간이 갔는지 본다 */
+const dumpRounds = () => page.evaluate(() => new Promise((done) => {
+    const req = indexedDB.open("oprn-workshop");
+    req.onsuccess = () => {
+      // 캐릭터·지형만 돈 새 브라우저에는 판 저장소가 없다 — 없는 저장소로 트랜잭션을 열면 던지고 약속이 영영 안 풀려 시험이 멈췄다
+      if (!req.result.objectStoreNames.contains("rounds")) { req.result.close(); done(null); return; }
+      const tx = req.result.transaction("rounds", "readonly").objectStore("rounds").getAll();
+      tx.onsuccess = () => done(tx.result.map((round) => ({ id: round.id, item: round.itemKey, runs: round.runs.map((run) => ({ letter: run.letter, status: run.status, calls: run.calls, error: run.error, gate: run.gate ?? null, attempts: run.attempts.map((a) => ({ attempt: a.attempt, hard: a.hard, verdict: a.verdict?.verdict ?? null, codes: a.verdict?.codes ?? [] })) })) })));
+      tx.onerror = () => done(null);
+    };
+    req.onerror = () => done(null);
+  })).catch(() => null);
+
 try {
   await boot();
   mark("booted");
@@ -59,6 +105,8 @@ try {
   else await click(page.getByTestId("workshop-oneclick-example-0"));
   await hold(600);
   await page.screenshot({ path: resolve(out, `${kind}-1-ready.png`) });
+  // 부팅 직후 AI 연결 확인이 아직 안 끝났으면 물건 단추가 「내 AI 연결하고 만들기」(설정 창)다 — 확인이 끝날 때까지 기다린다(부하 높은 기기에서 실측).
+  await page.waitForFunction(() => document.querySelector("[data-testid=workshop-oneclick-make]")?.textContent?.trim() === "만들기", null, { timeout: 120_000 }).catch(() => {});
   const made = Date.now();
   mark("make");
   await click(page.getByTestId("workshop-oneclick-make"));
@@ -71,9 +119,17 @@ try {
     throw new Error(`${error.message} ${reason ?? ""}`);
   });
   result.firstResultSeconds = Number(((Date.now() - made) / 1000).toFixed(1));
+  result.rounds = await dumpRounds();
   mark("result");
   await hold(1200);
   await page.screenshot({ path: resolve(out, `${kind}-3-done.png`) });
+  if (process.env.PROBE) {
+    await page.evaluate(() => { document.querySelector("canvas").style.visibility = "hidden"; });
+    await page.screenshot({ path: resolve(out, `${kind}-3-done-nocanvas.png`) });
+    await page.evaluate(() => { document.querySelector("canvas").style.visibility = ""; });
+    console.log("[probe-canvas]", JSON.stringify(await page.evaluate(() => { const c = document.querySelector("canvas"); return { w: c.width, h: c.height, cw: c.clientWidth, ch: c.clientHeight, style: c.getAttribute("style") }; })));
+  }
+  if (process.env.PROBE) console.log("[probe]", JSON.stringify(await page.evaluate(() => [[1100, 52], [1390, 893]].map(([x, y]) => document.elementsFromPoint(x, y).slice(0, 4).map((el) => { const cs = getComputedStyle(el); const r = el.getBoundingClientRect(); return `${el.tagName}.${String(el.className).slice(0, 50)} bg=${cs.backgroundColor} bs=${cs.boxShadow.slice(0, 60)} rect=${[r.x, r.y, r.width, r.height].map(Math.round)}`; })))));
   // 부하가 높으면 Playwright 의 「안정」 검사(두 프레임 같은 자리)가 2분 내내 못 맞춘 적이 있다(화면에서는 가만히 있었다) — 그때는 같은 자리를 그대로 누른다
   await toast.click({ timeout: 20_000 }).catch(() => toast.click({ force: true }));
   result.clicks += 1;
@@ -91,6 +147,10 @@ try {
     const dx = kind === "character" ? -160 : 160;
     await page.mouse.move(cx + dx, cy - 20, { steps: 6 });
     await hold(400);
+    if (kind === "character") {
+      result.cursorGhost = await page.getByTestId("map-pick-ghost").isVisible().catch(() => false);
+      await page.screenshot({ path: resolve(out, `${kind}-3b-cursor.png`) });
+    }
     await page.mouse.click(cx + dx, cy - 20);
   }
   result.clicks += 1;
@@ -102,6 +162,7 @@ try {
   await page.keyboard.press("Control+s");
   await hold(4000);
   const status = await page.getByTestId("topbar-save-status").textContent().catch(() => "");
+  result.saveToasts = await page.evaluate(() => (window.__toastLog ?? []).filter((entry) => /저장/.test(entry.text)).map((entry) => entry.text));
   result.saveStatus = status?.trim() ?? "";
   mark("saved");
   await page.reload({ waitUntil: "domcontentloaded" });
@@ -120,13 +181,18 @@ try {
   await page.mouse.move(cx - 40, cy - 20, { steps: 4 });
   await hold(800);
   await page.screenshot({ path: resolve(out, `${kind}-5-reloaded.png`) });
+  // 새로고침 뒤 공방 창의 결과 카드(빠른 지형 카드가 사라졌었다)와 작업 알약
+  result.cardAfterReload = await page.getByTestId("workshop-oneclick-card").first().getAttribute("data-state").catch(() => null);
+  result.pillAfterReload = await page.getByTestId("workshop-queue-pill").isVisible().catch(() => false);
   mark("reloaded");
 } catch (error) {
   result.error = error instanceof Error ? error.message.slice(0, 500) : String(error);
   console.log("FAIL", result.error);
   await page.screenshot({ path: resolve(out, `${kind}-fail.png`) }).catch(() => {});
 } finally {
+  result.rounds ??= await dumpRounds();
   result.marks = marks;
+  result.calls = calls.map((entry) => ({ ...entry, startS: Number(((entry.start - t0) / 1000).toFixed(1)), seconds: entry.end ? Number(((entry.end - entry.start) / 1000).toFixed(1)) : null }));
   result.errors = errors.slice(0, 10);
   const video = page.video();
   await context.close();

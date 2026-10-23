@@ -113,6 +113,8 @@ export type GateAdvice = {
   /** 판정자가 잰 몸통 윗면 행 수 */
   readonly topRows: number | null;
   readonly readsAs: string;
+  /** 조언이 아니라 영수증 판정(round.gate = "receipt")이면 그 결과 — 알아서 고르기는 final = pass 만 받는다. */
+  readonly receipt?: ObjectGateCheck;
 };
 
 export type RunStatus = "queued" | "drawing" | "reviewing" | "done" | "failed" | "cancelled";
@@ -179,6 +181,11 @@ export type WorkshopRound = {
   reference?: RoundReference;
   /** 미리 보기 고치기(look) 상한 — 실행기 looks 보다 작게만. 「한 번에 만들기」는 1(2026-10-23, 첫 결과 시간 줄이기). 옛 판에는 없다. */
   looks?: number;
+  /**
+   * "receipt" = 검수 통과 후보를 3/4 관문 영수증으로 한 번 더 잰다(env.objectGate). 영수증이 통과(final pass)가 아니면 그 장은 불통과(코드 GATE)로 끝난다 —
+   * 엔진 안에서 다시 그리지 않는다(다시 그리기 한 번은 작업 줄이 정한다). 「한 번에 만들기」 알아서 고르기 판(2026-10-23).
+   */
+  gate?: "receipt";
 };
 export type WorkshopPick = { readonly projectKey: string; readonly itemKey: string; readonly roundId: string; readonly letter: string; readonly at: number };
 export type WorkshopFeedback = {
@@ -216,6 +223,8 @@ export type DrawContext = {
   readonly reference?: string | null;
   /** 참고 그림 전부(object-gen 흐름은 2장). 첫 장이 reference 와 같다. */
   readonly references?: readonly string[];
+  /** 이 판의 마지막 관문이 3/4·화풍 영수증(object-gate)이다 — 그리기 지시문이 그 기준(칩셋 소품의 명암 밀도)을 미리 알린다. */
+  readonly gated?: boolean;
   /** 참고 그림의 주된 색을 팔레트 키로 옮긴 것(RoundReference.colors) */
   readonly referenceColors?: readonly ReferenceColor[];
 };
@@ -256,7 +265,25 @@ export interface WorkshopEnv {
   referenceImage?(prompt: string, signal: AbortSignal, options?: { readonly image?: string }): Promise<{ readonly dataUrl: string; readonly source: string } | null>;
   /** 공개 자산 경로(앞 / 없이) → 이 앱에서 쓸 URL */
   assetUrl(path: string): string;
+  /**
+   * 3/4 관문(object-gate) 영수증 판정 — 호스트가 영수증 판정기를 돈다(편집기 scripts/lib/workshopGate.mjs). 판(round.gate = "receipt")이 요구할 때만 부른다.
+   * 돌릴 수 없는 호스트면 `unavailable` 이 참인 오류를 던진다.
+   */
+  objectGate?(input: { readonly png: string; readonly kind: string; readonly name: string; readonly label?: string; readonly chipset?: string }, signal: AbortSignal): Promise<ObjectGateCheck>;
 }
+
+/** 관문 영수증 결과(공방 판에 남기는 몫). final = 영수증 PASS, 또는 REFER 를 적대 검사가 통과시킨 것만 pass. */
+export type ObjectGateCheck = {
+  readonly final: "pass" | "fail";
+  readonly verdict: "pass" | "refer" | "fail";
+  readonly reasons: readonly string[];
+  /** 다시 그릴 때 줄 고칠 점(떨어진 반쪽 판정자의 근거 글) */
+  readonly fix?: string;
+  readonly pixelSha256: string;
+  readonly profileHash: string;
+  /** REFER 였을 때 적대 검사 결과 */
+  readonly refer: { readonly verdict: "pass" | "fail"; readonly judge: string } | null;
+};
 
 export type PerItem<T> = T | ((item: WorkshopItem) => T);
 export const perItem = <T>(value: PerItem<T>, item: WorkshopItem): T => (typeof value === "function" ? (value as (item: WorkshopItem) => T)(item) : value);

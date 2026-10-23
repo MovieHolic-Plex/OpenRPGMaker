@@ -26,8 +26,9 @@ export interface Rgba8Image { readonly width: number; readonly height: number; r
 
 type Ramp = readonly string[];
 /** 재질 색 단계(어두움 → 밝음). 낱말은 앞에서부터 맞춘다. */
-const MATERIALS: readonly { readonly words: RegExp; readonly name: string; readonly liquid: boolean; readonly hard?: boolean; readonly ramp: Ramp }[] = [
-  { words: /(용암|마그마|lava|magma)/iu, name: "용암", liquid: true, ramp: ["#2a0906", "#6e140a", "#b8320c", "#f0780f", "#ffd84a"] },
+const MATERIALS: readonly { readonly words: RegExp; readonly name: string; readonly liquid: boolean; readonly hard?: boolean; readonly ramp: Ramp; readonly base?: number }[] = [
+  // 용암: 굳은 껍질(어두운 붉은 갈색) → 흐르는 주황 → 노란 빛줄기. 바탕은 주황-빨강 칸(3).
+  { words: /(용암|마그마|lava|magma)/iu, name: "용암", liquid: true, base: 3, ramp: ["#3b0d08", "#6b1709", "#9b2a0b", "#c9440e", "#e86e16", "#f7a12a", "#ffd863"] },
   { words: /(독|오염|poison|toxic|산성)/iu, name: "독", liquid: true, ramp: ["#1a0a24", "#46195a", "#77368c", "#a66cc0", "#dab8e8"] },
   { words: /(늪|진흙탕|swamp|bog|marsh)/iu, name: "늪", liquid: true, ramp: ["#1b2210", "#333d1b", "#53572a", "#777340", "#a19a63"] },
   { words: /(피 ?웅덩이|핏물|blood)/iu, name: "핏물", liquid: true, ramp: ["#2a0505", "#560a0b", "#871313", "#b72820", "#e05c4a"] },
@@ -52,7 +53,7 @@ const COLOURS: readonly (readonly [RegExp, Ramp])[] = [
   [/(흰|하얀|white)/iu, ["#8e98a4", "#b3bcc6", "#d3dae1", "#ebeff3", "#ffffff"]],
 ];
 
-export interface QuickMaterial { readonly name: string; readonly liquid: boolean; readonly hard: boolean; readonly ramp: Ramp }
+export interface QuickMaterial { readonly name: string; readonly liquid: boolean; readonly hard: boolean; readonly ramp: Ramp; /** 원본 바탕(가장 많은 명암 단계)이 놓일 색 단계 칸 */ readonly base: number }
 
 /** 글 → 재질(색 단계·물 같은 것인지). 모르는 글은 색 낱말 → 그래도 없으면 흙. */
 /** 「바닥·땅·길」이라고 하면 물가(둑·벽이 있는 웅덩이)가 아니라 땅 모양을 쓴다 — 「용암 바닥」이 벽돌 운하로 나왔다(2026-10-23 UX 검수). */
@@ -61,9 +62,14 @@ const FLOOR_WORDS = /(바닥|땅|길|들판|지면|floor|ground|path|field)/iu;
 export function quickMaterialOf(text: string): QuickMaterial {
   const hit = MATERIALS.find((m) => m.words.test(text));
   const colour = COLOURS.find(([pattern]) => pattern.test(text))?.[1];
-  if (hit) return { name: hit.name, liquid: hit.liquid && !FLOOR_WORDS.test(text), hard: hit.hard === true, ramp: colour && !/(용암|lava|magma)/iu.test(text) ? colour : hit.ramp };
-  if (colour) return { name: "색 바닥", liquid: false, hard: false, ramp: colour };
-  return { name: "흙", liquid: false, hard: false, ramp: MATERIALS.find((m) => m.name === "흙")!.ramp };
+  const mid = (ramp: Ramp) => Math.floor((ramp.length - 1) / 2);
+  if (hit) {
+    const ramp = colour && !/(용암|lava|magma)/iu.test(text) ? colour : hit.ramp;
+    return { name: hit.name, liquid: hit.liquid && !FLOOR_WORDS.test(text), hard: hit.hard === true, ramp, base: ramp === hit.ramp && hit.base !== undefined ? hit.base : mid(ramp) };
+  }
+  if (colour) return { name: "색 바닥", liquid: false, hard: false, ramp: colour, base: mid(colour) };
+  const dirt = MATERIALS.find((m) => m.name === "흙")!.ramp;
+  return { name: "흙", liquid: false, hard: false, ramp: dirt, base: mid(dirt) };
 }
 
 const LIQUID = /(water|canal|lake|river|sea|pond|물|강|바다|호수|운하|연못)/iu;
@@ -109,12 +115,16 @@ const lum = (r: number, g: number, b: number): number => 0.299 * r + 0.587 * g +
 
 /**
  * 원본 칸들을 잘라 재질 색만 바꾼 새 시트(16칸 폭). sheet = 원본 칩셋 바탕 그림(투명색 뺀 것).
- * 재질 색 = 속 칸(+프레임)의 불투명 색. 가장자리 칸은 그 색과 RGB 거리 24 안쪽만 바꾼다.
+ *
+ * 명암 단계 보존(2026-10-23, 「용암이 잡음 같다」 UX 검수): 재질 색(속 칸 + 프레임의 불투명 색)을 밝기로 묶어 원본의
+ * **명암 단계**(예: 모랫길 = 바탕 · 어두운 점 · 밝은 점 셋)를 찾고, 가장 많은 단계(바탕)를 재질 색 단계의 바탕 칸(`base`)에,
+ * 나머지 단계는 바탕에서 몇 단 떨어졌는지 그대로 옮긴다. 전에는 색마다 화소 수 누적 비율로 5단 전체에 흩뿌려서
+ * 잔잔한 모랫길 점무늬가 검정·노랑 양 끝으로 튀어 잡음처럼 보였다.
+ * 가장자리 칸은 재질 색과 RGB 거리 24 안쪽만 그 색의 단계로 바꾸고, 나머지(물가의 풀·흙)는 원본 그대로 둔다.
  */
-export function recolorQuickTerrain(sheet: Rgba8Image, tileSize: number, tiles: readonly number[], interiorTiles: readonly number[], ramp: Ramp): Rgba8Image {
+export function recolorQuickTerrain(sheet: Rgba8Image, tileSize: number, tiles: readonly number[], interiorTiles: readonly number[], ramp: Ramp, base = Math.floor((ramp.length - 1) / 2)): Rgba8Image {
   const perRow = Math.floor(sheet.width / tileSize);
   const at = (tile: number, x: number, y: number) => (((Math.floor(tile / perRow) * tileSize + y) * sheet.width) + (tile % perRow) * tileSize + x) * 4;
-  // 재질 색마다 화소 수 → 밝기 순 누적 비율(가운데)을 색 단계 위치로 쓴다 — 어두운 물 시트도 단계 전체에 고르게 퍼진다.
   const counts = new Map<number, number>();
   for (const tile of interiorTiles) {
     for (let y = 0; y < tileSize; y++) for (let x = 0; x < tileSize; x++) {
@@ -124,25 +134,19 @@ export function recolorQuickTerrain(sheet: Rgba8Image, tileSize: number, tiles: 
       counts.set(key, (counts.get(key) ?? 0) + 1);
     }
   }
-  const keyLum = (key: number) => lum((key >> 16) & 255, (key >> 8) & 255, key & 255);
-  const sorted = [...counts.keys()].sort((a, b) => keyLum(a) - keyLum(b));
-  const total = sorted.reduce((sum, key) => sum + counts.get(key)!, 0) || 1;
-  const rank = new Map<number, number>();
-  let run = 0;
-  for (const key of sorted) { const n = counts.get(key)!; rank.set(key, (run + n / 2) / total); run += n; }
+  const stepOf = quickTerrainShadeSteps(counts, ramp.length, base);
   const steps = ramp.map(hexRgb);
-  const toRamp = (t: number): [number, number, number] => steps[Math.max(0, Math.min(steps.length - 1, Math.round(t * (steps.length - 1))))]!;
-  const materialRgb = sorted.map((key) => [key, (key >> 16) & 255, (key >> 8) & 255, key & 255] as const);
-  /** 가장자리 칸의 색 → 재질이면 단계 위치(0~1), 아니면 null. 재질 색과 RGB 거리 24 안쪽이면 가장 가까운 재질 색의 위치. */
+  const materialRgb = [...stepOf.keys()].map((key) => [key, (key >> 16) & 255, (key >> 8) & 255, key & 255] as const);
+  /** 가장자리 칸의 색 → 재질이면 색 단계 칸, 아니면 null. 재질 색과 RGB 거리 24 안쪽이면 가장 가까운 재질 색의 단계. */
   const near = new Map<number, number | null>();
-  const placeOf = (key: number, r: number, g: number, b: number): number | null => {
-    const exact = rank.get(key);
+  const stepFor = (key: number, r: number, g: number, b: number): number | null => {
+    const exact = stepOf.get(key);
     if (exact !== undefined) return exact;
     if (near.has(key)) return near.get(key)!;
     let best: number | null = null, bestD = 24 * 24 + 1;
     for (const [mk, mr, mg, mb] of materialRgb) {
       const d = (mr - r) ** 2 + (mg - g) ** 2 + (mb - b) ** 2;
-      if (d < bestD) { bestD = d; best = rank.get(mk)!; }
+      if (d < bestD) { bestD = d; best = stepOf.get(mk)!; }
     }
     near.set(key, best);
     return best;
@@ -155,14 +159,38 @@ export function recolorQuickTerrain(sheet: Rgba8Image, tileSize: number, tiles: 
       const i = at(tile, x, y);
       const o = ((oy + y) * out.width + ox + x) * 4;
       const r = sheet.data[i]!, g = sheet.data[i + 1]!, b = sheet.data[i + 2]!, a = sheet.data[i + 3]!;
-      const place = a >= 128 ? placeOf((r << 16) | (g << 8) | b, r, g, b) : null;
-      if (place !== null) {
-        const [nr, ng, nb] = toRamp(place);
-        out.data[o] = nr; out.data[o + 1] = ng; out.data[o + 2] = nb; out.data[o + 3] = a;
-      } else {
-        out.data[o] = r; out.data[o + 1] = g; out.data[o + 2] = b; out.data[o + 3] = a;
-      }
+      const step = a >= 128 ? stepFor((r << 16) | (g << 8) | b, r, g, b) : null;
+      const [nr, ng, nb] = step !== null ? steps[step]! : [r, g, b];
+      out.data[o] = nr; out.data[o + 1] = ng; out.data[o + 2] = nb; out.data[o + 3] = a;
     }
+  });
+  return out;
+}
+
+/**
+ * 원본 재질 색(색 → 화소 수) → 재질 색 단계 칸. 밝기 차가 `gap` 이하인 이웃 색은 한 명암 단계로 묶고,
+ * 가장 많은 단계를 `base` 칸에, 다른 단계는 단계 순서 차만큼 떨어진 칸에 둔다(색 단계 끝을 넘으면 그 쪽을 눌러 담는다).
+ */
+export function quickTerrainShadeSteps(counts: ReadonlyMap<number, number>, rampLength: number, base: number, gap = 10): Map<number, number> {
+  const keyLum = (key: number) => lum((key >> 16) & 255, (key >> 8) & 255, key & 255);
+  const sorted = [...counts.keys()].sort((a, b) => keyLum(a) - keyLum(b));
+  const levels: { keys: number[]; lum: number; n: number }[] = [];
+  for (const key of sorted) {
+    const l = keyLum(key), n = counts.get(key)!;
+    const last = levels.at(-1);
+    if (last && l - last.lum <= gap) { last.lum = (last.lum * last.n + l * n) / (last.n + n); last.n += n; last.keys.push(key); }
+    else levels.push({ keys: [key], lum: l, n });
+  }
+  const out = new Map<number, number>();
+  if (!levels.length) return out;
+  const top = levels.reduce((best, level, index) => (level.n > levels[best]!.n ? index : best), 0);
+  const below = top, above = levels.length - 1 - top;
+  const roomBelow = base, roomAbove = rampLength - 1 - base;
+  levels.forEach((level, index) => {
+    const offset = index - top;
+    const scaled = offset < 0 ? (below > roomBelow ? Math.round((offset * roomBelow) / below) : offset) : (above > roomAbove ? Math.round((offset * roomAbove) / above) : offset);
+    const step = Math.max(0, Math.min(rampLength - 1, base + scaled));
+    for (const key of level.keys) out.set(key, step);
   });
   return out;
 }
