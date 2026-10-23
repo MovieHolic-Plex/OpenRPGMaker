@@ -1,0 +1,15 @@
+{
+  // scripts/qa/play 전용 — 왜 필요한가:
+  // scripts/tsconfig.json 이 ../tsconfig.json 을 extends 하는데, tsx 는 paths 의 상대 기준을
+  // **가까운 설정 파일 위치**로 잡아 `@/x` 를 scripts/src/x 로 풀어 버린다(실측: 파일을
+  // scripts/ 아래에 두면 ERR_MODULE_NOT_FOUND …/scripts/src/project/io). 여기서 paths 를 다시
+  // 선언해 저장소 뿌리 기준으로 되돌린다. 이 폴더의 .mts 는 이 설정으로만 돌린다.
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "paths": {
+      "@/*": ["../../../src/*"]
+    }
+  },
+  "include": ["*.mts"]
+}

@@ -35,12 +35,14 @@ const PROJECT_URL = "/__runtime-qa/project.json";
 const PROJECT_ROUTE = "**/__runtime-qa/project.json";
 
 /** 훅을 요구하는 op — 이들 앞에서는 런타임 훅 설치를 기다린다. */
-const HOOK_OPS = new Set([
+export const HOOK_OPS = new Set([
   "clickTile", "seed", "dir", "hold", "face", "action", "attack", "skill", "teleport",
   "pauseFrames", "stepFrames", "resumeFrames",
   // 체공 op 은 __oprnDebug / __oprnCharacterSprites 를 직접 읽는다.
   "playerRoute", "waitForLift", "waitForGrounded", "captureShadowSample",
   "waitForFollowers", "waitForLeader",
+  // 맵 축 대기는 __oprnDebug.readState 를 직접 읽는다.
+  "waitForMap",
 ]);
 
 async function freePort() {
@@ -117,7 +119,7 @@ export async function performObservedAction(page, trigger, timeoutMs = 10_000) {
   }
 }
 
-async function requireHooks(page) {
+export async function requireHooks(page) {
   await page.evaluate(() => new Promise((resolve, reject) => {
     const finish = () => { observer.disconnect(); clearTimeout(deadline); };
     const check = () => {
@@ -221,7 +223,7 @@ async function waitForRuntimePredicate(page, predicate, argument, timeoutMs = 30
   );
 }
 
-async function applyOp(page, op, runState) {
+export async function applyOp(page, op, runState) {
   switch (op.kind) {
     case "cinematic": {
       const { cinematicQaOp } = await import("./runtimeQaCinematics.mjs");
@@ -249,6 +251,18 @@ async function applyOp(page, op, runState) {
         page,
         (state, target) => state.currentMapId === target.mapId && state.x === target.x && state.y === target.y,
         { mapId: op.mapId, x: op.x, y: op.y },
+        op.timeoutMs,
+      );
+      return;
+    case "waitForMap":
+      // 도착 좌표를 모른 채(또는 "틀렸다"를 단정하려고) 맵 전환만 기다린다. waitForPosition 은 정확한
+      // 좌표를 요구하므로, 좌표가 버그인 상황에서는 조건 대기를 표현할 수 없다.
+      await waitForRuntimePredicate(
+        page,
+        (state, target) => (target.not
+          ? state.currentMapId !== target.mapId
+          : state.currentMapId === target.mapId),
+        { mapId: op.mapId, not: op.not === true },
         op.timeoutMs,
       );
       return;
@@ -294,6 +308,68 @@ async function applyOp(page, op, runState) {
     case "resumeFrames":
       await resumeRuntimeFrames(page);
       return;
+    case "move": {
+      // 한 걸음 = 방향을 밀고 **타일이 바뀔 때까지** 기다린다. 고정 sleep 이 아니다 — 느린 호스트에서
+      // 한 칸이 두 프레임에 걸쳐 움직여도 정확히 한 번만 센다. 막히면 거기서 멈추고 몇 칸 갔는지를 남긴다.
+      const dir = op.dir;
+      if (!["up", "down", "left", "right"].includes(dir)) throw new Error(`move: dir 은 up/down/left/right: ${dir}`);
+      const steps = Math.max(1, Number(op.steps ?? 1));
+      const readPosition = () => page.evaluate(() => {
+        const debug = window.__oprnDebug;
+        const state = debug?.readLive?.() ?? debug?.readState?.() ?? null;
+        return state ? { mapId: state.currentMapId, x: state.x, y: state.y } : null;
+      });
+      let moved = 0;
+      for (let index = 0; index < steps; index += 1) {
+        const before = await readPosition();
+        await page.evaluate((value) => window.__oprnInput.dir(value), dir);
+        let stepped = false;
+        try {
+          await page.waitForFunction(([mapId, x, y]) => {
+            const debug = window.__oprnDebug;
+            const state = debug?.readLive?.() ?? debug?.readState?.() ?? null;
+            return Boolean(state) && (state.currentMapId !== mapId || state.x !== x || state.y !== y);
+          }, [before?.mapId ?? null, before?.x ?? null, before?.y ?? null], { timeout: op.stepTimeoutMs ?? 1200 });
+          stepped = true;
+        } catch {
+          stepped = false;
+        } finally {
+          await page.evaluate(() => window.__oprnInput.dir(null));
+        }
+        if (!stepped) break;
+        moved += 1;
+      }
+      runState.notes ??= [];
+      runState.notes.push(moved === steps ? `moved ${moved} tile(s)` : `moved ${moved}/${steps} tile(s), blocked`);
+      return;
+    }
+    case "clickCanvas": {
+      // 캔버스 좌표 클릭 — 포인터 이동(#32)·터치 표면을 실제 좌표로 누른다.
+      const box = await page.evaluate(() => {
+        const canvas = document.querySelector("canvas");
+        if (!canvas) return null;
+        const rect = canvas.getBoundingClientRect();
+        return { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
+      });
+      if (!box) throw new Error("clickCanvas: canvas 가 없다");
+      if (op.x < 0 || op.y < 0 || op.x > box.width || op.y > box.height) {
+        throw new Error(`clickCanvas: (${op.x},${op.y}) 가 캔버스 밖이다 (${Math.round(box.width)}x${Math.round(box.height)})`);
+      }
+      await page.mouse.click(box.left + op.x, box.top + op.y, { button: "left" });
+      return;
+    }
+    case "waitForBodyText": {
+      const text = String(op.text ?? "").replace(/\s+/g, " ").trim();
+      if (!text) throw new Error("waitForBodyText: text 가 비었다");
+      try {
+        await page.waitForFunction((wanted) =>
+          (document.body?.innerText ?? "").replace(/\s+/g, " ").includes(wanted), text,
+        { timeout: op.timeoutMs ?? 30_000 });
+      } catch (error) {
+        throw new Error(`waitForBodyText: ${op.timeoutMs ?? 30_000}ms 안에 "${text}" 가 화면에 나오지 않았다`, { cause: error });
+      }
+      return;
+    }
     case "key":
       for (let i = 0; i < (op.times ?? 1); i += 1) {
         await page.keyboard.press(op.key, { delay: op.holdMs ?? 0 });
@@ -737,10 +813,10 @@ async function evaluateOnFieldPlacement(page, spec, anchors) {
   return failures;
 }
 
-async function readObserved(page, {
+export async function readObserved(page, {
   auditBattleTextNodes = false, watchedEventIds = [], watchedTestids = [],
   watchedItemIds = [], watchedSpeciesIds = [], watchedPlaceableKeys = [], watchedTestidPrefixes = [],
-  watchedVariableIds = [], watchedSwitchIds = [],
+  watchedVariableIds = [], watchedSwitchIds = [], watchedAssertions = [],
 } = {}) {
   const base = await page.evaluate((watched) => {
     const debug = window.__oprnDebug;
@@ -831,6 +907,13 @@ async function readObserved(page, {
         };
       })(),
       testids: [...document.querySelectorAll("[data-testid]")].map((node) => node.dataset.testid),
+      // 보이는 글자 전량 — 에이전트가 testid 를 모르는 화면에서 "이 낱말이 보인다"를 단정할 때 쓴다.
+      bodyText: (() => {
+        const text = (document.body?.innerText ?? "").replace(/\s+/g, " ").trim();
+        return text.length > 20_000 ? text.slice(0, 20_000) : text;
+      })(),
+      // 페이지 안 오류 버퍼(부트 시 심는 수집기가 채운다). 재현 판정이 패턴으로 읽는다.
+      consoleErrors: Array.isArray(window.__oprnConsoleErrors) ? [...window.__oprnConsoleErrors] : [],
       // 요청받은 testid 만 "보이는 글자" 로 재 온다. 상자·display·visibility·조상 opacity 를 함께
       // 봐야 한다 — 숨은 조상 하나면 자식의 computed style 은 멀쩡한데 화면에는 아무것도 없다.
       visibleText: Object.fromEntries(
@@ -873,10 +956,22 @@ async function readObserved(page, {
       })),
       audioObserved: Array.isArray(window.__oprnAudioObserved) ? [...window.__oprnAudioObserved] : null,
       battlers: window.__oprnReadBattlerGeometry ? window.__oprnReadBattlerGeometry() : null,
+      // 페이지 안 단언 — 시나리오가 준 함수 소스를 인자 없이 평가한다. true = 통과, 문자열 = 실패 사유.
+      // 던진 사유도 실패로 실어야 게이트가 조용히 통과하지 않는다.
+      pageAssertions: Object.fromEntries((watched.assertions ?? []).map((assertion) => {
+        try {
+          const outcome = Function(`return (${assertion.fn})()`)();
+          return [assertion.id, outcome === true
+            ? { ok: true }
+            : { ok: false, reason: String(outcome ?? "함수가 true 도 사유 문자열도 돌려주지 않았다") }];
+        } catch (error) {
+          return [assertion.id, { ok: false, reason: `단언이 던졌다: ${String(error?.message ?? error)}` }];
+        }
+      })),
     };
   }, { eventIds: watchedEventIds, testids: watchedTestids, itemIds: watchedItemIds, speciesIds: watchedSpeciesIds,
      placeableKeys: watchedPlaceableKeys, testidPrefixes: watchedTestidPrefixes,
-     variableIds: watchedVariableIds, switchIds: watchedSwitchIds });
+     variableIds: watchedVariableIds, switchIds: watchedSwitchIds, assertions: watchedAssertions });
   if (!auditBattleTextNodes) return base;
   // 전투 글자 계측은 요청한 비트에서만 돌린다 — 모든 비트에서 트리 전체를 훑을 이유가 없다.
   const battleText = await page.evaluate(auditBattleText, {
@@ -1024,6 +1119,16 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   await page.addInitScript(
     `window.__oprnReadBattlerGeometry = ${readBattlerGeometryInPage.toString()};`,
   );
+  // 콘솔·페이지 오류를 페이지 안에 모아 둔다 — 비트 단위 관측(expect.consoleErrorMatches)이
+  // 읽는다. 러너의 report.errors 는 시나리오 전역이라 패턴 매칭에 쓸 수 없다.
+  await page.addInitScript(`(() => {
+    window.__oprnConsoleErrors = [];
+    const push = (value) => { if (window.__oprnConsoleErrors.length < 200) window.__oprnConsoleErrors.push(String(value)); };
+    window.addEventListener("error", (event) => push(event.message ?? "error"));
+    window.addEventListener("unhandledrejection", (event) => push(event.reason?.message ?? event.reason ?? "unhandledrejection"));
+    const original = console.error;
+    console.error = (...args) => { push(args.map(String).join(" ")); original.apply(console, args); };
+  })();`);
 
   const query = new URLSearchParams(scenario.query ?? {}).toString();
   const playerUrl = `${opts.serverUrl}${opts.entryPath ?? '/player.html'}${query ? `?${query}` : ""}`;
@@ -1053,6 +1158,10 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   const watchedTestids = [
     ...new Set(scenario.beats.flatMap((beat) => Object.keys(beat.expect?.visibleText ?? {}))),
   ];
+  // 페이지 안 단언도 이름을 댄 것을 한 번만 모아 모든 비트에서 같은 식으로 평가한다.
+  const watchedAssertions = [...new Map(
+    scenario.beats.flatMap((beat) => beat.expect?.pageAssertions ?? []).map((entry) => [entry.id, entry]),
+  ).values()];
   // 생활 소유물도 같은 규칙으로 이름을 댄 것만 관측한다. `inventory` 와 `inventoryCounts`
   // 는 서로 다른 expect 축이지만 같은 관측 원천(session.inventory)을 읽으므로 합집합으로 잡는다.
   const watchedItemIds = [
@@ -1093,17 +1202,22 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
         break; // 같은 비트의 남은 op 은 전제가 깨졌으므로 건너뛴다.
       }
     }
-    const observed = await readObserved(page, {
-      auditBattleTextNodes: Boolean(beat.expect?.battleTextClean),
-      watchedEventIds,
-      watchedTestids,
-      watchedItemIds,
-      watchedSpeciesIds: Object.keys(beat.expect?.ownedMonsterCounts ?? {}),
-      watchedPlaceableKeys,
-      watchedTestidPrefixes,
-      watchedVariableIds: Object.keys(beat.expect?.variables ?? {}),
-      watchedSwitchIds: Object.keys(beat.expect?.switches ?? {}),
-    });
+    const observed = {
+      ...await readObserved(page, {
+        auditBattleTextNodes: Boolean(beat.expect?.battleTextClean),
+        watchedEventIds,
+        watchedTestids,
+        watchedItemIds,
+        watchedSpeciesIds: Object.keys(beat.expect?.ownedMonsterCounts ?? {}),
+        watchedPlaceableKeys,
+        watchedTestidPrefixes,
+        watchedVariableIds: Object.keys(beat.expect?.variables ?? {}),
+        watchedSwitchIds: Object.keys(beat.expect?.switches ?? {}),
+        watchedAssertions,
+      }),
+      // 러너가 이미 받은 콘솔·페이지 오류도 같이 본다(버퍼가 부트 전 오류를 놓칠 수 있다).
+      consoleErrors: [...errors],
+    };
     const failures = [...opFailures, ...evaluateExpect(beat.expect ?? {}, observed)];
     if (beat.expect?.onFieldPlacement) failures.push(...await evaluateOnFieldPlacement(page, beat.expect.onFieldPlacement, runState.fieldAnchors));
     let shot = null;
