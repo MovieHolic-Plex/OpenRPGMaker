@@ -63,15 +63,21 @@ RULES = {
 
 ALT_BASE = BASE + PER * len(SURFACES)   # 곧은 가장자리 둘째 벌(자갈·판석)은 세 표면 뒤에 덧붙인다: 자갈 N2 S2 W2 E2, 판석 N2 S2 W2 E2
 assert ALT_BASE + len(A.ALT_ORDER) * len(A.EDGE_ALT_SURFACES) <= BASE + COLS
-VINE_BASE = ALT_BASE + len(A.ALT_ORDER) * len(A.EDGE_ALT_SURFACES)   # 29,639 — 포도나무 줄(vine_art.py) 여덟 칸: 왼쪽 끝 · 가운데 여섯 · 오른쪽 끝
-assert VINE_BASE == 29639 and VINE_BASE + len(V.ORDER) <= BASE + COLS
+VINE_BASE = ALT_BASE + len(A.ALT_ORDER) * len(A.EDGE_ALT_SURFACES)   # 29,639 — 포도나무 줄(vine_art.py 2판, 두 칸 높이) 열여섯 칸
+# 29,639~29,646 = 위 칸 줄(잎 지붕 윗면) 왼쪽 끝 · 가운데 여섯 · 오른쪽 끝, 29,647~29,654 = 아래 칸 줄(앞면·줄기·그늘) 같은 순서.
+# (1판 한 칸 높이 줄이 29,639~29,646 을 썼으나 게시 전이라 2판이 같은 번호를 이어 쓴다.)
+assert VINE_BASE == 29639 and VINE_BASE + len(V.PARTS) * len(V.ORDER) <= BASE + COLS
 VINE_GATE_KIND = "organic"
 VINE_GROUP = "beodeul:vine_row"
 VINE_KO = {"left": "왼쪽 끝(끝 기둥·버팀 철사)", "right": "오른쪽 끝(끝 기둥·버팀 철사)", "mid": "가운데", "mid-post": "가운데(중간 기둥)"}
-VINE_DESC = ("철사에 올려 가꾼 포도나무 한 줄(3/4 탑뷰: 잎 덩이가 솟은 밝은 윗면, 포도송이가 매달린 어두운 앞면, 아래 철사와 굽은 줄기, 흙에 진 그늘). "
+VINE_PART_KO = {"top": "위 칸(잎 지붕 윗면)", "front": "아래 칸(잎 앞면·포도송이·철사·줄기·흙 그늘)"}
+VINE_DESC = ("철사에 올려 가꾼 포도나무 한 줄, 두 칸 높이(3/4 탑뷰: 위 칸은 위에서 내려다본 넓고 밝은 잎 지붕, 칸 경계에서 둥근 잎 덩이 턱으로 "
+             "말려 앞으로 꺾이고, 아래 칸은 짙은 잎 앞면에 높이가 다른 포도송이 · 철사 · 굵은 줄기와 기둥 · 흙에 진 그늘). "
              "다진 흙 마당 위에 위층으로 얹는다.")
-VINE_RULES = ("한 줄 = 왼쪽 끝 + 가운데 여럿 + 오른쪽 끝(가로 한 칸 높이). 가운데는 어떤 순서로 이어도 이음새가 없다 — 같은 칸을 둘 잇지 말고, "
-              "중간 기둥 칸(mid-post)은 두세 칸에 하나만. 줄 사이는 흙 한 칸 길을 둔다. 아래층은 다진 흙 마당(beodeul_yard_dirt) 몸통. 걸음.")
+VINE_RULES = ("한 줄 = 두 칸 높이. 위 칸 줄은 왼쪽 끝 " f"{29639}" " + 가운데 여럿 + 오른쪽 끝 " f"{29646}" ", 바로 아래 칸 줄은 같은 순서로 +8 번호"
+              "(위 칸 t 밑에는 반드시 t+8). 가운데(29,640~29,645)는 어떤 순서로 이어도 이음새가 없다 — 같은 칸을 둘 잇지 말고, "
+              "중간 기둥 칸(29,641·29,644)은 두세 칸에 하나만. 줄 사이는 흙 한 칸 길을 둔다(줄 간격 3칸). 아래층은 다진 흙 마당(beodeul_yard_dirt) 몸통. "
+              "위 칸은 지나가며 가려지는 잎(☆), 아래 칸은 줄기·철사라 막힌다.")
 
 
 def tid(surface, role):
@@ -89,18 +95,19 @@ def cells():
     return {tid(s, r): (A.img_of(S[s][r]), s, r) for s in SURFACES for r in roles_of(s)}
 
 
-def vine_tid(name):
-    return VINE_BASE + V.ORDER.index(name)
+def vine_tid(name, part="top"):
+    return VINE_BASE + V.PARTS.index(part) * len(V.ORDER) + V.ORDER.index(name)
 
 
 def vine_cells():
     t = V.tiles()
-    return {vine_tid(k): (V.img_of(t[k]), k, V.ROLE_OF[k]) for k in V.ORDER}
+    return {vine_tid(k, p): (V.img_of(t[(k, p)]), k, V.ROLE_OF[k], p) for p in V.PARTS for k in V.ORDER}
 
 
-VINE_GATE_NAME = ("vineyard vine rows on packed-earth yard: trained grapevines on a low wire trellis, each row one tile tall, seen 3/4 top-down — "
-                  "leafy canopy top lit from the upper left with leaf clumps, darker front/underside with hanging dark grape bunches, a wire and short "
-                  "gnarled trunks below, shadow on the ground; end posts with brace wires at each row end; dirt paths between rows")
+VINE_GATE_NAME = ("vineyard vine rows on packed-earth yard: trained grapevines on a low wire trellis, each row two tiles tall, seen 3/4 top-down — "
+                  "the upper tile is the broad leafy canopy top plane seen from above (low round leaf clumps, lit from the upper left, lighter at the back) "
+                  "that rolls over into a lip of brighter round clumps across the tile boundary; the lower tile is the darker front face with hanging purple grape bunches (light glint pixel), "
+                  "a wire, thick short trunks and posts, and a shadow on the ground; thick end posts at each row end with their caps above the canopy; dirt paths between rows")
 
 
 def vine_gate_image():
@@ -110,9 +117,9 @@ def vine_gate_image():
 def vine_kit():
     seq = V.row_strip(6, 0)
     W = len(seq)
-    return dict(id="bd-yard-vine-row-sample", kind="section", name=f"버들항 포도나무 줄 표본 {W}×1", width=W, height=1, tileSize=16,
-                rows=[dict(tiles=[-1] * W, upperTiles=[vine_tid(k) for k in seq])], learnedFrom="db-authored",
-                ai=dict(description="포도나무 한 줄(왼쪽 끝 · 가운데 · 오른쪽 끝) 표본. " + VINE_DESC,
+    return dict(id="bd-yard-vine-row-sample", kind="section", name=f"버들항 포도나무 줄 표본 {W}×2", width=W, height=2, tileSize=16,
+                rows=[dict(tiles=[-1] * W, upperTiles=[vine_tid(k, p) for k in seq]) for p in V.PARTS], learnedFrom="db-authored",
+                ai=dict(description="포도나무 한 줄(두 칸 높이: 왼쪽 끝 · 가운데 · 오른쪽 끝) 표본. " + VINE_DESC,
                         placementRules=VINE_RULES, tags=["버들항", "포도밭", "vineyard", "vine"], role="prop", repeatability="repeatable",
                         layerHome="upper", themes=["village", "vineyard", "마을"]))
 
@@ -252,7 +259,7 @@ def main():
     out_sheet.alpha_composite(sheet.crop((0, 0, COLS * T, BASE_ROW * T)), (0, 0))
     C = cells()
     VC = vine_cells()
-    for t, (im, _s, _r) in list(C.items()) + list(VC.items()):
+    for t, im in [(t, v[0]) for t, v in C.items()] + [(t, v[0]) for t, v in VC.items()]:
         i = t - BASE
         out_sheet.alpha_composite(im, ((i % COLS) * T, (BASE_ROW + i // COLS) * T))
     out_sheet.save(SHEET_PATH, optimize=True)
@@ -269,10 +276,14 @@ def main():
         t = BASE + i
         TS["passability"].append(dict(yes)); TS["priority"].append("lower"); TS["terrain"].append(0)
         if t in VC:
-            _im, k, role = VC[t]
-            TS["tileMeta"].append(dict(label=f"버들항 포도나무 줄 · {VINE_KO[role]}",
-                                       description=f"{VINE_DESC} {VINE_KO[role]} 칸({k}). 걸음.",
-                                       tags=["버들항", "포도밭", "vineyard", "vine", role], defaultLayer="upper", passage="passable", source="bundled-default"))
+            _im, k, role, part = VC[t]
+            if part == "front": TS["passability"][-1] = {d: False for d in yes}
+            else: TS["priority"][-1] = "upper"
+            TS["tileMeta"].append(dict(label=f"버들항 포도나무 줄 · {VINE_PART_KO[part]} · {VINE_KO[role]}",
+                                       description=f"{VINE_DESC} {VINE_PART_KO[part]}의 {VINE_KO[role]} 칸({k}). "
+                                                   + ("지나가며 가려지는 잎." if part == "top" else f"막힘. 바로 위에는 {vine_tid(k, 'top')}."),
+                                       tags=["버들항", "포도밭", "vineyard", "vine", role, part], defaultLayer="upper",
+                                       passage="star" if part == "top" else "solid", source="bundled-default"))
             continue
         if t not in C: TS["tileMeta"].append(dict(empty)); continue
         _im, s, r = C[t]
@@ -299,9 +310,10 @@ def main():
              placementRules=RULES[s])
         for s in SURFACES] + [
         dict(id=VINE_GROUP, name="버들항 포도나무 줄", role="prop", source="bundled-default",
-             tileIds=[vine_tid(k) for k in V.ORDER], defaultLayer="upper", confidence="high",
-             description=f"{VINE_DESC} 왼쪽 끝 {vine_tid('left')} · 가운데 {', '.join(str(vine_tid(k)) for k in V.ORDER[1:-1])}"
-                         f"(중간 기둥 {', '.join(str(vine_tid(k)) for k in V.ORDER if V.ROLE_OF[k] == 'mid-post')}) · 오른쪽 끝 {vine_tid('right')}.",
+             tileIds=[vine_tid(k, p) for p in V.PARTS for k in V.ORDER], defaultLayer="upper", confidence="high",
+             description=f"{VINE_DESC} 위 칸 줄: 왼쪽 끝 {vine_tid('left')} · 가운데 {', '.join(str(vine_tid(k)) for k in V.ORDER[1:-1])}"
+                         f"(중간 기둥 {', '.join(str(vine_tid(k)) for k in V.ORDER if V.ROLE_OF[k] == 'mid-post')}) · 오른쪽 끝 {vine_tid('right')}. "
+                         f"아래 칸 줄: 각 위 칸 번호 +8({vine_tid('left', 'front')}~{vine_tid('right', 'front')}).",
              placementRules=VINE_RULES)]
     TS["structureKits"] = [k for k in TS["structureKits"] if not k["id"].startswith("bd-yard-")] + [sample_kit(s) for s in SURFACES] + [vine_kit()]
     TS_PATH.write_text(json.dumps(TS, ensure_ascii=False, separators=(",", ":")) + "\n")
