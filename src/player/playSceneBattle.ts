@@ -273,7 +273,7 @@ export async function playBattle(
       scene.events?.once("shutdown", onShutdown);
       scene.events?.once("destroy", onShutdown);
       scene.events?.on("update", checkOwner);
-      void fieldSnapshot.then(async (fieldBackdropUrl) => { await entryTransition.cover(); return fieldBackdropUrl; }).then((fieldBackdropUrl) => {
+      void fieldSnapshot.then(async (fieldBackdropUrl) => { await entryTransition.cover(); return fieldBackdropUrl; }).then(async (fieldBackdropUrl) => {
         if (!current()) { abort(); return; }
         battleScene = mountBattleScene({
           host, runtime,
