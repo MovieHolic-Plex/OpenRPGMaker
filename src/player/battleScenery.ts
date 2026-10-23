@@ -42,12 +42,12 @@ function usesLayeredScenery(project: Project): boolean {
 }
 
 /** 전투 진입 커버 동안 이 전투의 겹 배경 네 장을 미리 읽어 둔다. 첫 화면부터 겹 배경이 깔리게 한다. */
-export function preloadBattleScenery(project: Project, resourceId?: string): void {
-  if (!usesLayeredScenery(project)) return;
+export function preloadBattleScenery(project: Project, resourceId?: string): Promise<unknown> {
+  if (!usesLayeredScenery(project)) return Promise.resolve();
   // 전투 DOM 과 같은 id 로 지형을 고른다(battleFieldDom effectiveBackdropId: 트룹/시스템 배경 → 스킨 기본 배경).
   const effectiveId = resourceId ?? getBattleSkin(resolveSkinId(project.system.battleUiStyle)).defaultBackdropResourceId;
   const biome = resolveSceneryBiome(project, { backdropResourceId: effectiveId });
-  if (biome) void loadSceneryLayers(biome);
+  return biome ? loadSceneryLayers(biome).catch(() => undefined) : Promise.resolve();
 }
 
 export function clearBattleScenery(backdrop: HTMLElement): void {

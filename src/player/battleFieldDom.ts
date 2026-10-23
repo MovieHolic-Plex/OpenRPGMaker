@@ -216,6 +216,34 @@ function applyPixelEnemySheet(node: HTMLElement, image: HTMLImageElement, resour
 
 const pixelSheetTopPad = new Map<string, number>();
 
+/**
+ * 전투 진입 준비 문(battleReadiness)이 이미지를 다 읽은 직후, 첫 그림 전에 `--battle-sprite-top-pad` 를 채운다.
+ * 비동기 probe 의 load 를 기다리면 첫 프레임 뒤에 배지 위치가 튀므로, 이미 디코드된 이미지에서 같은 값을 동기로 계산한다.
+ */
+export function settleBattleTopPads(root: HTMLElement, decoded: (url: string) => HTMLImageElement | undefined): void {
+  const apply = (node: HTMLElement, rawUrl: string | undefined, cell: number): void => {
+    if (!rawUrl) return;
+    let pad = pixelSheetTopPad.get(rawUrl);
+    if (pad === undefined) {
+      let href = rawUrl;
+      try { href = new URL(rawUrl, document.baseURI).href; } catch { /* keep raw */ }
+      const image = decoded(href) ?? decoded(rawUrl);
+      if (!image) return;
+      pad = measureTopPad(image, cell);
+      pixelSheetTopPad.set(rawUrl, pad);
+    }
+    node.style.setProperty("--battle-sprite-top-pad", `${Math.round(pad * 1000) / 10}%`);
+  };
+  root.querySelectorAll<HTMLElement>("[data-pixel-enemy-cell]").forEach((node) => {
+    const image = node.querySelector<HTMLElement>("[data-pixel-sheet]");
+    const raw = image?.style.getPropertyValue("--pixel-enemy-url").match(/url\(\s*["']?([^"')]+)["']?\s*\)/)?.[1];
+    apply(node, raw, Number(node.dataset.pixelEnemyCell) || 48);
+  });
+  root.querySelectorAll<HTMLElement>("[data-charset-enemy]").forEach((node) => {
+    apply(node, node.querySelector<HTMLElement>("[data-battler-sheet-url]")?.dataset.battlerSheetUrl, BATTLE_SHEET_CELL);
+  });
+}
+
 /** 시트 첫 칸(대기 0번)에서 불투명 픽셀이 시작되는 줄의 비율(0~1). 읽지 못하면 0. */
 function measureTopPad(image: HTMLImageElement, cell: number): number {
   try {

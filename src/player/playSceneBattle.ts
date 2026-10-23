@@ -24,6 +24,7 @@ import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
 import { markBattleEntry } from "@/app/perfMetrics";
+import { BATTLE_READY_TIMEOUT_MS } from "@/player/battleReadiness";
 import { clearAudioState, nextSessionRandom, setAudioState } from "@/project/session";
 import type { MonsterInstance, PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
@@ -234,9 +235,10 @@ export async function playBattle(
       preloadBattleJuiceSamples();
       warmBattleStyles(host, runtime.snapshot());
       // 겹 배경 네 장도 커버 동안 읽는다. 안 그러면 첫 1~2초 단일 배경이 보이다 바뀐다(「전투 도중 배경이 바뀐다」).
+      let sceneryReady: Promise<unknown> = Promise.resolve();
       if (entrySkin.scenery === "layered") {
         const backdropResourceId = runtime.snapshot().backdropResourceId;
-        void import("@/player/battleScenery").then(({ preloadBattleScenery }) => preloadBattleScenery(project, backdropResourceId));
+        sceneryReady = import("@/player/battleScenery").then(({ preloadBattleScenery }) => preloadBattleScenery(project, backdropResourceId)).catch(() => undefined);
       }
       const cleanup = (): void => {
         signal?.removeEventListener("abort", abort);
@@ -394,7 +396,16 @@ export async function playBattle(
             }
           },
         });
+        // 첫 프레임 그림(적·배우·배경·시트·얼굴·창 스킨)이 다 디코드될 때까지 진입 커버를 유지한다(상한 6초).
+        // 인트로·ATB 시계는 커버가 걷힐 때 시작해 보이지 않는 전투가 흘러가지 않는다.
+        const mounted = battleScene;
+        await Promise.race([
+          Promise.all([mounted.ready, sceneryReady]),
+          new Promise<void>((done) => { window.setTimeout(done, BATTLE_READY_TIMEOUT_MS); }),
+        ]);
+        if (!current() || settled || battleScene !== mounted) { abort(); return; }
         markBattleEntry(startedAt);
+        mounted.begin();
         return entryTransition.reveal();
       }).catch(fail);
     });
