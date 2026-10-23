@@ -459,7 +459,7 @@ export function renderAiSettingsForm(options: {
   });
   const setAutonomyDerived = (level: AutonomyLevel): void => {
     const resolved = resolveAutonomy(level);
-    const effort = ({ off: "끔", low: "낮음", medium: "보통", high: "높음" } as const)[resolved.reasoningEffort];
+    const effort = ({ off: "끔", low: "낮음", medium: "보통", high: "높음", xhigh: "매우 높음", max: "최대" } as const)[resolved.reasoningEffort];
     const mode = resolved.agentMode === "auto" ? "자율 모드" : "채팅 모드";
     // 경우마다 한 템플릿으로 쓴다 — 빈 꼬리(${extra}="")를 잇던 옛 문장은 번역 템플릿이 맞지 않아 「추론 낮음」 이
     // 한국어로 남았다(UI 감사 09-ai-07). 옛 키 「→ 추론 {0} · {1}{2}」 와 겹치지 않게 「추론 강도」 로 쓴다.
