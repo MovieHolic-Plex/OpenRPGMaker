@@ -420,6 +420,13 @@
   font-size: 18px;
 }
 
+/* 적 대상 국면에서 커서가 「뒤로」 행으로 건너가면(root `data-battle-target-cursor="cancel"`,
+   battleDom.syncEnemyTargetCursor) 조준 중인 적 행은 ▸ 를 내린다 — 위 규칙은 `.battle-target-selected`
+   만 보고도 ▸ 를 그려 커서가 둘이 됐다(실측: rt-scarloxy-double-target-cursor). */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-target-cursor="cancel"] .battle-target-menu .battle-command.battle-target-selected::before {
+  content: none;
+}
+
 /* ═══════════════ ③ 배경 · 스프라이트 · 타깃 화살표 · 결과 패널 (구 18층) ═══════════════ */
 /* =========================================================================
    포켓몬 스킨 레이아웃 재설계 — 적대적 리뷰 2차(2026-08-02) 반영.

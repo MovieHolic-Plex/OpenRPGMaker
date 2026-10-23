@@ -1058,8 +1058,12 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   죽은 1번이 예고 모션을 하던 결함. `battle-targeted`(피격 플래시)는 `impact` 단계에만 붙고 다른 단계에서 걷는다.
 - **적 대상 국면의 「뒤로」는 순환의 마지막 자리다.** ↓(마지막 적)/↑(첫 적)로 커서가 「뒤로」 행에 가고, 확인키는
   커서가 그 행(또는 포커스)에 있으면 취소를 누른다. 루트는 `data-battle-target-cursor="cancel"` 을 노출하고
-  rm2000 은 그때 선택 대상 행의 강조를 낮춘다. 대상 행의 순번은 `.battle-target-ordinal` 별도 노드라 이름이
-  잘려도 끝에 남는다. 대상 안내 문구는 `disambiguatedBattlerName` 을 쓰고 아군/적 갈래가 같은 어조다.
+  rm2000 은 그때 선택 대상 행의 강조를 낮춘다. **그 국면에서 손·▸ 글리프는 커서 행 하나에만 그린다** —
+  스킨의 손 규칙이 `.battle-target-selected`(조준 중인 적)만 보고도 그리면 커서가 둘로 보인다
+  (실측 2026-10-23: `rt-scarloxy-double-target-cursor` — 「핀스타 2」 + 「뒤로」). 가드는 세 층에 있다:
+  기본 `03-vxace-status-nodes.css` 의 `>` · `_retro2003.css` 의 손 · `20-pokemon-skin.css` 의 ▸,
+  그리고 `_rm2000.css` 의 `opacity: 0.5` 는 `content: none` 으로 바뀌었다(반투명 손도 손이다).
+  대상 행의 순번은 `.battle-target-ordinal` 별도 노드라 이름이 잘려도 끝에 남는다. 대상 안내 문구는 `disambiguatedBattlerName` 을 쓰고 아군/적 갈래가 같은 어조다.
 - **스크롤 큐(▾)는 자기 트랙 높이를 빼고 판정한다** — `contentHeight = scrollHeight − cueHeight`, 끝에 닿으면 끈다.
   포커스: 마운트 직후 씬 루트, 명령 국면 진입 시 커서 버튼, 결과 패널 생성 시 확인 버튼.
 - **결과 카드: 첫 확인 = 보상 전부 공개, 둘째 확인 = 닫기.** `revealAllResultRows` 가 `[data-revealed="false"]`
