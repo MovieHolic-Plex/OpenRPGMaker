@@ -1913,6 +1913,22 @@ RUN1_MID_A2 = [
 RUN1_TOP_A2 = ['................', '...p..p..p..p...', '..oooooooooooo..', '..opppppppppppo.'[:16], '..opnnnnnnnnpo..'] + [r.replace('q', 'T').replace('U', 'T') if 5 <= y < 7 else r for y, r in enumerate(RUN1_MID_A2)][5:]
 RUN1_BOT_A2 = [r.replace('q', 'T').replace('U', 'T') if 9 <= y < 11 else r for y, r in enumerate(RUN1_MID_A2[:11])] + ['..opnnnnnnnnpo..', '..opppppppppppo.'[:16], '..oooooooooooo..', '...p..p..p..p...', '...~..~..~..~...']
 
+# r1 관문: 붉은 바탕이 평면 채움·명암 3단(4/4) → 털결 반점을 손으로 찍는다(16줄 주기, 이음매에서 끊기지 않게 칸 안 좌표만).
+PILE3 = {1: ((3, 'U'), (24, 'S'), (33, 'U')), 2: ((10, 'S'),), 3: ((27, 'U'), (4, 'S')), 5: ((12, 'U'), (31, 'S')),
+         6: ((2, 'U'), (22, 'U')), 7: ((8, 'S'), (34, 'U')), 9: ((14, 'S'), (26, 'U'), (1, 'U')), 10: ((30, 'S'),),
+         11: ((5, 'U'), (21, 'S')), 13: ((11, 'U'), (33, 'S')), 14: ((25, 'S'), (3, 'S')), 15: ((9, 'U'), (28, 'U'))}
+PILE1 = {0: (6, 'U'), 3: (9, 'S'), 6: (7, 'S'), 9: (8, 'U'), 12: (6, 'S'), 14: (9, 'U')}   # 1칸 폭 붉은 줄(6~9열)
+
+
+def _pile1(rows):
+    out = []
+    for y, r in enumerate(rows):
+        x, c = PILE1.get(y % 16, (None, None))
+        if x is not None and r[x] == 'T':
+            r = r[:x] + c + r[x + 1:]
+        out.append(r)
+    return out
+
 
 def _plain(row, a, b):
     """row 의 a~b 열 안 금 무늬(q · U)를 진홍 바탕(T)으로 지운다 — 끝 테두리 옆 사슬 비우기."""
@@ -1939,6 +1955,9 @@ def run3_a2(kind):
             if y % 8 == 0:
                 row[6] = 'U'
                 row[29] = 'U'
+            for x, c in PILE3.get(y, ()):   # 융단 털결(손으로 찍은 자리): 밝은 U · 깊은 S · 금실 o
+                if row[x] == 'T':
+                    row[x] = c
             core.append(''.join(row))
         out = []
         for y, c in enumerate(core):
@@ -2453,7 +2472,7 @@ CANDIDATES = {
     'earth.candelabra': {'A1': c_candle(CANDLE_BASE_A1, CANDLE_FLAMES_A1), 'A2': c_candle(CANDLE_BASE_A2, CANDLE_FLAMES_A2)},
     'earth.throne': {'A1': c_throne(DAIS_A1, THRONE_A1, 2, THRONE_L), 'A2': c_throne(DAIS_A2, THRONE_A2, 6)},
     'earth.carpet': {'A1': c_carpet(RUN1_TOP_A1, RUN1_MID_A1, RUN1_BOT_A1, run3),
-                     'A2': c_carpet(RUN1_TOP_A2, RUN1_MID_A2, RUN1_BOT_A2, run3_a2)},
+                     'A2': c_carpet(_pile1(RUN1_TOP_A2), _pile1(RUN1_MID_A2), _pile1(RUN1_BOT_A2), run3_a2)},
     'earth.banner': {'A1': c_banner(BANNER_A1), 'A2': c_banner(BANNER_A2)},
     'earth.armor_stand': {'A1': c_armor(ARMOR_A1), 'A2': c_armor(ARMOR_A2)},
     'earth.portcullis': {'A1': c_gate(portcullis), 'A2': c_gate(portcullis_a2)},
