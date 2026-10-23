@@ -91,6 +91,7 @@ import {
   type PlayLoadingOverlay,
 } from "@/player/playLoadingOverlay";
 import { warmBundledPlayAssets } from "@/assets/bundledAssetWarmup";
+import { scenePreloadEnabled } from "@/player/scenePreload";
 import { createCinematicAssets } from './cinematicAssets';
 import { warmPlayGameRuntime } from './createPlayGame';
 import { createRuntimeAudioWarmup } from './runtimeAudioWarmup';
@@ -954,7 +955,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       audioWarmup.warm(project, [titleProject.system.titleScreen?.musicResourceId,
         ...Object.values(titleProject.system.titleScreen?.sounds ?? {}),
         field.kind === 'play' ? field.resourceId : undefined]);
-      void warmBundledPlayAssets(project);
+      // 웹 판본은 scenePreload 가 같은 그림을 시작 뒤 뒤에서 받는다 — 두 번 부르지 않는다.
+      if (!scenePreloadEnabled()) void warmBundledPlayAssets(project);
       void warmPlayGameRuntime().catch(() => undefined); // Actual boot retains normal recovery/retry.
     }));
     if (firstEnter) emitTitleJuice("title-enter");

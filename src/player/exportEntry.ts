@@ -21,11 +21,14 @@ import {
 } from "@/player/exportSaveNamespace";
 import { hostExitReturnUrl, parseHostBridge, type HostBridge } from "@/player/hostBridge";
 import { installDesktopShellBridge, type DesktopShellBootConfig } from "@/player/desktopShellBridge";
-import { stopAllAudio } from "@/player/audio";
+import { getAudioEngine, stopAllAudio } from "@/player/audio";
+import { fetchTextWithProgress, mountBootLoader, readLoadingInfo, type BootLoader } from "@/player/bootLoader";
+import { backgroundUrls, enableScenePreload, firstPlayableUrls, preloadUrls } from "@/player/scenePreload";
 import { registerExportAssetBase } from "@/assets/inlineAssetStore";
 import { exportAssetBaseFor } from "@/player/exportAssetBase";
 import { rebaseRuntimeCssAssetUrls } from "@/player/rebaseCssAssetUrls";
 import { installExportUploadedAssets } from './exportUploadedAssets';
+import { warmPlayGameRuntime } from "@/player/createPlayGame";
 import { repairFaceMatches } from "@/project/faceMatchRepair";
 import { installFocusGuard } from "@/player/focusGuard";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
@@ -90,9 +93,12 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   const rawDemoParam = new URLSearchParams(window.location.search).get("demo");
   const demoParam = rawDemoParam === "fallen-star" ? "chrono-bell" : rawDemoParam === "astra-horizon" ? "emerald-crown" : rawDemoParam;
   if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season" || demoParam === "first-love") {
-    const demo = await loadFlagshipDemo(demoParam, assetBase);
-    if (demo.ok) void startPlayer(root, boot, demo.project, "bundled");
-    else renderBootError(root, demo.message);
+    const loader = mountBootLoader(root, { title: document.title });
+    const demo = await loadFlagshipDemo(demoParam, assetBase, (bytes) => loader.projectProgress(bytes));
+    if (!demo.ok) { loader.remove(); renderBootError(root, demo.message); return; }
+    loader.setInfo({ title: demo.project.meta.title });
+    await prepareFirstScreen(loader, demo.project, autoStartFor(boot));
+    void startPlayer(root, boot, demo.project, "bundled");
     return;
   }
   // 단일 HTML 로 내보낸 게임: 프로젝트도 에셋도 이 문서 안에 있다. fetch 가 막히는 file:// 에서
@@ -106,27 +112,79 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
     openGameFilePicker(root, boot, "");
     return;
   }
-  const bundled = await loadBundledProject(boot);
-  if (bundled.ok && storeGame) await offerOlderVersionSave(root, storeGame);
-  if (bundled.ok) {
-    void startPlayer(root, boot, bundled.project, "bundled");
+  // 웹 판본: 그림·소리보다 화면이 먼저 뜨지 않게, 타이틀과 첫 맵이 쓰는 파일을 다 받은 뒤 「시작하기」로 연다(bootLoader.ts).
+  const loader = mountBootLoader(root, { title: storeGame?.title ?? "" });
+  const projectUrl = new URL(boot.projectUrl ?? "project.json", window.location.href);
+  void readLoadingInfo(projectUrl).then((info) => loader.setInfo(storeGame ? { ...info, title: storeGame.title } : info));
+  const bundled = await loadBundledProject(projectUrl, (bytes) => loader.projectProgress(bytes));
+  if (!bundled.ok) {
+    loader.remove();
+    openGameFilePicker(root, boot, bundled.message);
     return;
   }
-  openGameFilePicker(root, boot, bundled.message);
+  if (storeGame) {
+    loader.root.style.visibility = "hidden";
+    await offerOlderVersionSave(root, storeGame);
+    loader.root.style.visibility = "";
+  }
+  await prepareFirstScreen(loader, bundled.project, autoStartFor(boot));
+  void startPlayer(root, boot, bundled.project, "bundled");
+}
+
+function autoStartFor(boot: OpenRpgBootConfig): boolean {
+  return boot.qaInstrumentation === true || boot.desktopShell !== undefined;
+}
+
+/**
+ * 타이틀·오프닝·첫 맵이 쓰는 파일(scenePreload.firstPlayableUrls)과 글꼴을 다 받고 「시작하기」를 기다린다.
+ * 누르는 순간 소리 잠금을 푼다(그 입력이 사용자 제스처다). 나머지 파일은 시작한 뒤 뒤에서 받는다.
+ */
+async function prepareFirstScreen(loader: BootLoader, project: Project, autoStart: boolean): Promise<void> {
+  enableScenePreload();
+  // 올린 그림(ref)의 주소는 해석기가 있어야 나온다 — 목록을 만들기 전에 붙인다(startPlayer 도 다시 부른다).
+  installExportUploadedAssets(project);
+  const urls = firstPlayableUrls(project);
+  const fonts = typeof document.fonts?.forEach === "function" ? [...document.fonts] : [];
+  let fontsDone = 0;
+  let last = { doneFiles: 0, totalFiles: urls.length, bytes: 0 };
+  const report = (): void => loader.filesProgress(last.doneFiles + fontsDone, last.totalFiles + fonts.length, last.bytes);
+  await Promise.all([
+    preloadUrls(urls, { concurrency: 12, priority: "high", retainAudio: true, onProgress: (progress) => { last = progress; report(); } }),
+    ...fonts.map((face) => face.load().catch(() => undefined).finally(() => { fontsDone += 1; report(); })),
+    // 엔진 코드(Phaser·PlayScene 조각)도 시작 전에 받아 둔다 — 「새 게임」 뒤 기다림을 없앤다.
+    warmPlayGameRuntime().catch(() => undefined),
+  ]);
+  // QA 계측 부팅·데스크톱 셸(자동 재생 제한 없음)은 누르기를 기다리지 않는다.
+  if (!autoStart) await loader.waitForStart();
+  document.documentElement.dataset.preloadStartedAt = String(Math.round(performance.now()));
+  // 사용자 입력 안에서 소리 잠금을 푼다 — 타이틀 BGM 이 기다림 없이 처음부터 나온다.
+  getAudioEngine().unlock();
+  loader.remove();
+  // 시작한 뒤: 가까운 맵부터 나머지를 낮은 우선순위로 받는다(맵 이동 때 기다림을 줄인다).
+  const background = backgroundUrls(project, project.startMapId);
+  setTimeout(() => {
+    // QA 가 «뒤에서 받은 것» 과 «화면이 늦게 부른 것» 을 가르는 기준 시각(측정용, 비밀 아님).
+    document.documentElement.dataset.preloadBackgroundAt = String(Math.round(performance.now()));
+    // 나머지 전부(가까운 맵 → 전투·메뉴·엔딩)를 낮은 우선순위로. 화면이 부르는 파일은 high 라 이 줄에 밀리지 않는다.
+    void preloadUrls(background, { concurrency: 6, priority: "low" }).then((done) => {
+      document.documentElement.dataset.preloadBackgroundDoneAt = String(Math.round(performance.now()));
+      document.documentElement.dataset.preloadBackgroundFiles = `${done.doneFiles}/${done.totalFiles}`;
+    });
+  }, 1500);
 }
 
 type BundledProjectLoad =
   | { readonly ok: true; readonly project: Project }
   | { readonly ok: false; readonly message: string };
 
-async function loadBundledProject(boot: OpenRpgBootConfig): Promise<BundledProjectLoad> {
+async function loadBundledProject(projectUrl: URL, onBytes: (bytes: number) => void): Promise<BundledProjectLoad> {
   try {
-    const response = await fetch(boot.projectUrl ?? new URL("project.json", window.location.href));
+    const response = await fetchTextWithProgress(projectUrl, onBytes);
     if (response.status === 404) {
       return { ok: false, message: `이 주소에는 번들된 게임이 없습니다. ${OPRN_EXTENSION} 게임 파일을 열어 주세요.` };
     }
     if (!response.ok) return { ok: false, message: `project.json 로드 실패 (${response.status})` };
-    return { ok: true, project: deserialize(await response.text()) };
+    return { ok: true, project: deserialize(response.text) };
   } catch (error) {
     return { ok: false, message: error instanceof Error ? error.message : String(error) };
   }
@@ -140,15 +198,15 @@ async function loadBundledProject(boot: OpenRpgBootConfig): Promise<BundledProje
  * dev 서버(QA 하네스)에는 구운 파일이 없으므로 그때만 예전처럼 짓는다. 출하 빌드에서는 import.meta.env.DEV 가
  * 거짓이라 빌더 import 가 통째로 빠지고, 내보낸 게임 zip 에도 데모 빌더 청크가 실리지 않는다.
  */
-async function loadFlagshipDemo(id: string, assetBase: URL): Promise<BundledProjectLoad> {
+async function loadFlagshipDemo(id: string, assetBase: URL, onBytes: (bytes: number) => void): Promise<BundledProjectLoad> {
   if (import.meta.env.DEV) {
     const { createFlagshipDemoProject } = await import("@/project/flagship");
     return { ok: true, project: createFlagshipDemoProject(id as Parameters<typeof createFlagshipDemoProject>[0]).project };
   }
   try {
-    const response = await fetch(new URL(`demos/${encodeURIComponent(id)}.play.json`, assetBase));
+    const response = await fetchTextWithProgress(new URL(`demos/${encodeURIComponent(id)}.play.json`, assetBase), onBytes);
     if (!response.ok) return { ok: false, message: `데모 ${id} 를 읽지 못했습니다 (${response.status})` };
-    return { ok: true, project: deserialize(await response.text()) };
+    return { ok: true, project: deserialize(response.text) };
   } catch (error) {
     return { ok: false, message: error instanceof Error ? error.message : String(error) };
   }
