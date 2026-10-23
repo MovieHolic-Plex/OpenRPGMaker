@@ -421,11 +421,12 @@ function crumbleFlag(draft: Project, map: GameMap, box: Box, placed: readonly Bo
   for (const t of flag.interiorVariants?.flat() ?? []) maskOf.set(t, "255");
   const W = map.width;
   const inPiece = (x: number, y: number) => placed.some((p) => x >= p.x && x < p.x + p.w && y >= p.y && y < p.y + p.h + 1);
-  const holes = Array.from({ length: 2 + Math.floor(rnd() * 3) }, () => ({ x: box.x + 1 + rnd() * (box.w - 2), y: box.y + 1 + rnd() * (box.h - 2), r: 0.9 + rnd() * 1.1 }));
+  // r8: 안쪽 «빠진 판석» 덩이가 네모 구멍·一자·ㄱ자로 읽혔다 — 안쪽 구멍은 뺐다. 가장자리만 흙으로 무너뜨리고, 연석은 풀 덮기가 가린다.
   for (let y = box.y - 1; y <= box.y + box.h; y++) for (let x = box.x - 1; x <= box.x + box.w; x++) {
     if (x < 0 || y < 0 || x >= W || y >= map.height || inPiece(x, y)) continue;
     const i = y * W + x; const mask = maskOf.get(map.lowerTiles[i]!); if (mask === undefined) continue;
-    const p = mask !== "255" ? 0.5 : holes.some((h) => Math.hypot(h.x - x, h.y - y) < h.r) ? 0.75 : 0.05;
+    if (mask === "255") continue;
+    const p = 0.4;
     if (rnd() > p) continue;
     const t = dirt.variantMap[mask] ?? (mask === "255" ? dirt.variantMap["255"] : undefined);
     if (t !== undefined) map.lowerTiles[i] = t;
@@ -445,11 +446,17 @@ function overgrowYard(draft: Project, mapId: string, box: Box, placed: readonly 
   const inPiece = (x: number, y: number) => placed.some((p) => x >= p.x && x < p.x + p.w && y >= p.y && y < p.y + p.h + 1);
   // 풀은 마당 가장자리(연석 쪽)에 더 많이, 가운데엔 드물게 — 무너진 판석 사이로 풀이 밀고 들어온 모양.
   const seeds = Array.from({ length: 4 + Math.floor(rnd() * 3) }, () => ({ x: box.x + rnd() * box.w, y: box.y + rnd() * box.h }));
-  for (let y = box.y; y < box.y + box.h; y++) for (let x = box.x; x < box.x + box.w; x++) {
-    if (inPiece(x, y)) continue;
-    const edge = Math.min(x - box.x, box.x + box.w - 1 - x, y - box.y, box.y + box.h - 1 - y);
+  // 가장자리 = 실제 마당 윤곽(깎인 홈 포함). 상자 기준으로 재면 홈 안쪽 연석은 «가운데»로 쳐져 맨살로 남았다(r8).
+  const ts = draft.tilesets[map.tilesetId] as unknown as { autotileGroups?: YardGroup[] };
+  const members = new Set([...(flag?.memberTileIds ?? []), ...(ts.autotileGroups?.find((g) => g.id === "beodeul_yard_dirt")?.memberTileIds ?? [])]);
+  const inYard = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < map.height && members.has(map.lowerTiles[y * W + x]!);
+  const ring = (x: number, y: number, r: number) => { for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (!inYard(x + dx, y + dy)) return true; return false; };
+  for (let y = box.y - 1; y <= box.y + box.h; y++) for (let x = box.x - 1; x <= box.x + box.w; x++) {
+    if (inPiece(x, y) || (members.size && !inYard(x, y))) continue;
+    const edge = !members.size ? Math.min(x - box.x, box.x + box.w - 1 - x, y - box.y, box.y + box.h - 1 - y) : ring(x, y, 1) ? 0 : ring(x, y, 2) ? 1 : 2;
     const near = seeds.some((c) => Math.hypot(c.x - x, c.y - y) < 2.2);
-    const p = (edge <= 0 ? 0.45 : edge === 1 ? 0.25 : 0.08) + (near ? 0.35 : 0);
+    // r8: 연석이 끊김 없이 또렷했다 — 가장자리 풀 덮기를 늘린다.
+    const p = (edge <= 0 ? 0.7 : edge === 1 ? 0.3 : 0.08) + (near ? 0.35 : 0);
     if (rnd() > p) continue;
     const i = y * W + x; if ((up[i] ?? -1) >= 0 || (map.upperOverlayTiles?.[i] ?? -1) >= 0) continue;
     up[i] = pool[Math.floor(rnd() * pool.length)]!;
@@ -632,8 +639,46 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
     const rightSpots = (id: string): [number, number][] => [[adit.x + adit.w, bottom - z(id).h], [adit.x + adit.w, bottom - z(id).h + 1], [adit.x + adit.w + 1, bottom - z(id).h]];
     for (const id of big) { if (used(id)) continue; if (leftSpots(id).some(([x, y]) => heap(id, x, y))) break; }
     for (const id of small) { if (used(id)) continue; if (rightSpots(id).some(([x, y]) => heap(id, x, y))) break; }
-    for (const id of back) { if (used(id)) continue; if ([[adit.x + Math.floor(rnd() * 2), adit.y - z(id).h], [adit.x - 1, adit.y - z(id).h + 1]].some(([x, y]) => heap(id, x, y))) break; }
+    // r8: 양옆 바위만으로는 여전히 «평지에 선 돌 상자»였다 — 갱구 뒤 마당 안쪽을 높이 지형(relief) 2단 둔덕으로 올려, 지형 렌더러가 그리는 절벽 면 앞에 갱구가 서게 한다.
+    if (!raiseAditHill(adit)) for (const id of back) { if (used(id)) continue; if ([[adit.x + Math.floor(rnd() * 2), adit.y - z(id).h], [adit.x - 1, adit.y - z(id).h + 1]].some(([x, y]) => heap(id, x, y))) break; }
     screeAround(adit);
+  };
+  const raiseAditHillDepth = (adit: Box, depth: number): boolean => {
+    const m = draft.maps[map.id]!; const relief = m.relief;
+    if (!relief || relief.width !== W || relief.height !== H) return false;
+    const base = relief.levels[(adit.y + adit.h - 1) * W + adit.x] ?? 0;
+    if (base + 2 > 14) return false;
+    const hitPiece = (x: number, y: number) => placed.some((p) => x >= p.x && x < p.x + p.w && y >= p.y && y < p.y + p.h + 1);
+    const mound = new Set<number>();
+    // 갱구 바로 뒤 줄은 갱구 폭+양옆 1칸, 뒤로 갈수록 좌우를 0~1칸씩 넓히거나 좁혀 울퉁불퉁하게(최대 4줄).
+    let l = adit.x - 1, r = adit.x + adit.w;
+    for (let y = adit.y - 1, k = 0; y >= adit.y - depth && y >= 0; y--, k++) {
+      if (k > 0) { l += Math.floor(rnd() * 3) - 1; r += Math.floor(rnd() * 3) - 1; }
+      let row = 0;
+      for (let x = Math.max(0, l); x <= Math.min(W - 1, r); x++) {
+        const i = y * W + x;
+        // 마당 안(ok) 또는 마당 밖 빈 풀밭(grid — 길·집·나무 칸 제외). 갱구가 마당 윗변에 붙으면 뒤 둔덕은 풀 언덕이 된다.
+        if (!(ok[i] || grid[i]) || hitPiece(x, y) || (relief.levels[i] ?? 0) !== base) continue;
+        mound.add(i); row++;
+      }
+      if (k === 0 && row < adit.w) return false;   // 갱구 바로 뒤가 마당 밖이면(길·마당 끝) 둔덕을 올리지 않는다
+      if (!row) break;
+    }
+    if (mound.size < adit.w + 2) return false;
+    // 둔덕은 걸어 오를 수 없다 — 둔덕 칸을 막힌 칸으로 치고, 둔덕 밖 원래 통행 칸이 하나라도 끊기면 올리지 않는다.
+    const pass = (x: number, y: number) => !mound.has(y * W + x) && isPassable(draft, m, x, y);
+    let from = comp.seed; if (!pass(from.x, from.y)) from = { x: adit.x + 1, y: adit.y + adit.h };
+    const seen = new Set<number>([from.y * W + from.x]); const q = [from.y * W + from.x];
+    while (q.length) { const i = q.pop()!; const x = i % W, y = Math.floor(i / W);
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue; const ni = ny * W + nx; if (seen.has(ni) || !pass(nx, ny)) continue; seen.add(ni); q.push(ni); } }
+    for (const i of comp.cells) { const x = i % W, y = Math.floor(i / W); if (!mound.has(i) && !hitPiece(x, y) && !seen.has(i)) return false; }
+    for (const i of mound) { relief.levels[i] = base + 2; taken[i] = 1; }
+    return true;
+  };
+  // 둔덕이 길을 끊으면 뒤 줄부터 덜어 가며 세 번까지 다시 본다.
+  const raiseAditHill = (adit: Box): boolean => {
+    for (const depth of [4, 3, 2]) if (raiseAditHillDepth(adit, depth)) return true;
+    return false;
   };
   const kitRows = (id: string) => draft.tilesets[quarter.tilesetId]?.structureKits?.find((k) => k.id === id)?.rows ?? [];
   // 갱구 둘레 흙 칸에 산길 돌 부스러기 덧그림(위층) — 바위 땅을 깔았더니 회색 콘크리트 판으로 읽혀(r7 시험) 부스러기만 남겼다.
