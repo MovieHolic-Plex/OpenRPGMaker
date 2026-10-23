@@ -220,7 +220,12 @@ LAVA_KEYS = {   # 사분면 경계(0·7·8·15)는 w. 틈 없음 — 네 변 모
     'B': {'N': 'w' * 16, 'S': 'wwhhhwwwwwwwhwww', 'W': 'wwhwwwwwwwhhhwww', 'E': 'wwwhhwwwwwwhwwww'},
     'C': {'N': 'w' * 16, 'S': 'wwwhwwwwwwhhwwww', 'W': 'wwwhhhwwwwwwhwww', 'E': 'wwhwwwwwwwhhhwww'},
 }
-LAVA_WOB = WOB   # 물가와 같은 굴곡(검수 통과)
+LAVA_WOB = {   # 북은 물가와 같다. B 남·서·동 = 두꺼운 혹(0~+2), C = 열마다 ±1 로 들쭉날쭉.
+    'B': {'N': WOB['B']['N'], 'S': [0, 1, 2, 2, 1, 0, 1, 0, 0, 1, 1, 2, 1, 0, 1, 0],
+          'W': [0, 0, 1, 2, 2, 1, 0, 0, 0, 0, 1, 1, 2, 1, 0, 0], 'E': [0, 1, 1, 0, 1, 2, 1, 0, 0, 1, 2, 2, 1, 0, 1, 0]},
+    'C': {'N': WOB['C']['N'], 'S': [0, -1, 1, 0, -1, 1, -1, 0, 0, 1, -1, 0, 1, -1, 1, 0],
+          'W': [0, 1, -1, 0, 1, 0, -1, 0, 0, -1, 1, -1, 0, 1, -1, 0], 'E': [0, 0, 1, -1, 1, 0, -1, 0, 0, 1, 0, -1, 1, 0, -1, 0]},
+}
 for _ln in 'BC':
     for _s in 'NSWE':
         assert all(LAVA_KEYS[_ln][_s][i] == 'w' for i in (0, 7, 8, 15)), (_ln, _s)
@@ -419,8 +424,51 @@ def _lava_from_water(d):
     return out
 
 
-LAVA_EDGE = _lava_from_water(WATER_DESIGN[1])
-check_design('용암 물가', LAVA_EDGE)
+# 남·서·동 껍질 턱(줄마다 따로): 바닥 쪽 바깥 K(불씨 박힌 검은 현무암 끝) → V(현무암 턱 몸) → r(검붉은 띠) → 녹은 몸통.
+# 기본 깊이 4 = ',KVV' + r — 턱 3px, 굴곡 따라 2~6px. B 는 두껍고 울퉁불퉁(깊을수록 턱이 두꺼워짐),
+# C 는 얇고 들쭉날쭉(깊어도 턱은 3px 이하, 나머지는 바닥이 파고듦). 북쪽은 물가 1 의 둑 앞면 기하(Q·M·L·g).
+_LIP_CORNERS = dict(
+    NW=[',,,,,,,,',
+        ',,,,,QQQ',
+        ',,,,QMMM',
+        ',,,QMMMM',
+        ',,KMMLLL',
+        ',KVLLLLL',
+        ',KVLLggg',
+        ',KVVr...'],
+    SW=[',KVVr...',
+        ',KVVr...',
+        ',KVVVr..',
+        ',,KKVVrr',
+        ',,,KKVVV',
+        ',,,,KKVV',
+        ',,,,,KKK',
+        ',,,,,,,,'],
+    INW=[',KVVr...',
+         'QKVVr...',
+         'MQKVr...',
+         'MMQKr...',
+         'LLMKr...',
+         'LLLrr...',
+         'gggg....',
+         '........'],
+    ISW=['........',
+         '........',
+         '........',
+         'rrr.....',
+         'VVVrr...',
+         'VVKVr...',
+         'KKKVr...',
+         ',KVVr...'])
+_N = _lava_from_water(WATER_DESIGN[1])['N']
+LAVA_EDGE = {
+    'B': dict(N=_N, S=(4, {2: 'K', 3: 'VK', 4: 'VVK', 5: 'VVVK', 6: 'VVVKK'}, {'w': 'r', 'h': 'rG'}),
+              W=(4, {2: 'K', 3: 'VK', 4: 'VVK', 5: 'VVVK', 6: 'VVVKK'}, {'w': 'r', 'h': 'rG'}), **_LIP_CORNERS),
+    'C': dict(N=_N, S=(4, {2: 'K', 3: 'VK', 4: 'VVK'}, {'w': 'r', 'h': 'rG'}),
+              W=(4, {2: 'K', 3: 'VK', 4: 'VVK'}, {'w': 'r', 'h': 'rG'}), **_LIP_CORNERS),
+}
+for _ln, _d in LAVA_EDGE.items():
+    check_design(f'용암 물가 {_ln}', _d)
 
 # 둑·껍질 결(줄마다). B = 따뜻한 검붉은 갈색 화산 껍질(rim·cfloor 어두운 단 + 용암 불씨). C = 푸르스름한 검은 층리(vrock).
 LAVA_FACE = {
@@ -485,132 +533,96 @@ def heat(cv, table, ramp='rim'):
     return out
 
 
-# ------------------------------------------------------------------------------------------------ 몸통: 버들항 lava-strip 결
-# 줄무늬·흐름 줄기를 버렸다. 몸통 = 손으로 그린 16×16 넷(본몸통 + 엔진 interiorVariants 셋, 마스크 255 칸에 cell_hash 로 섞임).
-# 넷은 칸 둘레 띠(행·열 14·15·0)만 같고 안쪽 13×13 은 서로 다른 그림 — 덩이가 칸 경계를 가로질러 이웃 칸 안쪽에서
-# 칸마다 다른 모양으로 끝난다(16px 마다 같은 줄이 서지 않게). 장면은 넷 모두 1px 고리로 흔들려도 띠가 맞물린다.
-#   B 「덩이 들판」(버들항 결): 검붉은 큰 웅덩이(b) · 주황 덩이(c) · 노란 덩이(d)와 그 속 작은 흰 노랑 심(w) · 웅덩이 그늘(a).
-#   C 「껍질 판 들판」: 검푸른 식은 판(P 바탕 · Q 빛 받는 윗·왼 턱 · p 그늘진 아래·오른 턱)이 크기 제각각으로 떠 있고
-#      그 사이 금이 주황·노랑으로 빛난다(금 가장자리 b, 속 c·d, 뜨거운 마디 w).
-# 움직임: 넷 모두 1px 고리로 흔들리고(띠가 맞물리게), 장면마다 손 고침으로 노란 심·검붉은 웅덩이 가장자리가 옮겨 간다.
-BAND = {(x, y) for x in range(16) for y in range(16) if x in (14, 15, 0) or y in (14, 15, 0)}
-FIELD = {
+# ------------------------------------------------------------------------------------------------ 몸통: 버들항 lava-strip 에서 떠낸 결
+# 몸통은 버들항 화산 동굴 용암 띠(tiledata/beodeul-variants/volcano-cave/parts/lava-strip.png, 장면 4 · 32×32, OPRN 자체 그림·같은 잠금 팔레트)
+# 에서 16×16 창 넷을 떠 본몸통 + 엔진 interiorVariants 셋으로 쓴다(마스크 255 칸은 cell_hash 로 섞임, 물가 칸은 본몸통).
+# 창 넷은 장면 넷 모두 같은 자리 — 움직임은 띠 자기 움직임 그대로. 띠는 32px 로 이어지지 않으므로 칸 둘레 1~3px 를 고쳤다:
+#   둘레 띠(위 13~15·0~2 행 = 띠의 잇닿은 여섯 행, 왼·오른 열도 같음)를 넷이 함께 쓰고, 창 안쪽과 둘레 띠의 경계는
+#   열마다(행마다) 1~3px 깊이로 가장 덜 어긋나는 자리를 골라 들쭉날쭉하게 이었다(곧은 칸 금이 서지 않게).
+#   B: 창 [[0, 0], [16, 0], [0, 16], [16, 16]] · 둘레 행 21~ (x 4~) · 둘레 열 26~ (y 0~)
+#   C: 창 [[0, 0], [0, 8], [16, 8], [16, 16]] · 둘레 행 17~ (x 8~) · 둘레 열 11~ (y 16~)
+#   B 는 고른(노랑이 넉넉한) 사분면 넷, C 는 붉은 웅덩이가 많은 창 넷. 본몸통(물가 칸에 깔림)은 넷 중 덩이가 가장 덜 도드라진 창.
+# 글자: a 용암 0단 · b 1단 · c 2단 · d 3단(띠의 네 색 그대로). 줄 하나 = 칸 하나, 행은 '/' 로 나눔.
+STRIP_BODY = {
     'B': [
-        ['cddccccbbbbccdcc', 'cdcccbbbbbbbcccc', 'ccccbbbbbbbbbccc', 'bbcbbbbbbbbbbbbb', 'bbbbbbbbbbbbcbbb', 'bbbbbbbbbbbbccbb',
-         'ccbbbbbbbbbbcccc', 'dcccbbbbbbbccddd', 'ddccbbbbbbaccddd', 'cdccbbbbbaaccccc', 'cddccbbbaccdddcc', 'cdwdccbbcccdwdcc',
-         'cdddcccbccccdddc', 'ccdcccbbbbbccccc', 'cddccccbbbbccdcc', 'cddccccbbbbccdcc'],
-        ['-' * 16, 'cdccccccbbbbcccc', 'cccdddcccbbccdcc', 'bbcdddddcccccddb', 'bbcddwwddcdcccbb', 'bccddwdddddccbbb', 'ccccdddddddcccbc',
-         'cbbccdddddccccdc', 'cbbbccdddccbbcdc', 'cbbbbcccccbbbbdc', 'dbbbbccdccbbbacd', 'dcbaacccddcbaddd', 'ccccccdwdcccccdd', 'ccddccdbbcbbcdcc', '-' * 16, '-' * 16],
-        ['-' * 16, 'cdcccccbbbbbbccc', 'cccccbbbbbbbbbcc', 'bbccbbbbbbbbbbbb', 'bbbcbbbbbbbbbbbb', 'bbbcccbbbbbbbbcb', 'cccccccbbbbbbcdc',
-         'cddcccccbbbbbcdc', 'cdddcccccbbbaccc', 'ccdddccdcbbaacdc', 'dccdccdddcbaccdd', 'ddcccddwddcbcddd', 'cdcccddddcccccdd', 'cccccccbbccbcccc', '-' * 16, '-' * 16],
-        ['-' * 16, 'cdcccdcccbbbcccc', 'ccccdddccbbccdcc', 'bbcccdcccccccddb', 'bbbcccccdcccdddb', 'bbbbcccddddccdcb', 'cbbbbcccdwdcccbc',
-         'ccbbbbccdddccbbc', 'cccbaccccccbbbbc', 'ccdccaccccbbbbbc', 'dddccbbbbbcbbacd', 'ddwdcbbbbacccccd', 'cdddccbbacccddcd', 'ccdcccbbbcccdccc', '-' * 16, '-' * 16],
+        ['cdcccddddccbcddd/ccbcaccddccccddd/ccbbbbbcbdccbcdd/cccbbbbbcccbbcac/ccccccdccccabccc/cdccccdccccccccc/ddccdcddcccccdcc/ddcccccccddddccd/cccccdcccddddcdd/ccdcccbcaccddccc/ccddccbbbbdcdccc/cdccccbbbbbccccc/cccbbbbbbbbbbacc/ccdbbccbbbbbbcdd/dcdbcccccbbbcddd/cccccddddccbdddd',
+         'cdcccddddccbcddd/ccbdcccddcccaddd/ccbcccccddcaacdd/cccccccccdcacccc/cccdcccccdcccccc/cddcccdccdccccdc/ddcdddccdccccddc/dddddccdccccddcd/ccdddcdccccddcdd/ccddcccccccccccc/ccddccdccccccccc/cdcdcddddddccccc/ccdcccddddddcccc/ccdddcddddccdcdd/dcddccddddcccddd/cccccddddccbdddd',
+         'cdcccddddccbcddd/ccbcdccddabccddd/ccbcdcddccccccdd/cccccddddcdcccac/cccdddcccccccccc/cdcdcdcbccdddccc/dccdccbbccdddccc/dccccbbbcdddcccd/cbbbbbbbbbcddddd/ccbbbbbbbadddccc/cbbbbbbbbbcccccc/cbbbbbbbbbcdcccc/cbbbbbbbbbccdccc/ccdbbbccbbccccdd/dcdbbccccacccddd/cccccddddccbdddd',
+         'cdcccddddccbcddd/ccbcaccccccccddd/ccbbcbbbbbabccdd/cccddccabbbbbbac/ccddddcccbbbbbbc/ccddddcccbbbbccc/dddddcccccabaccc/dddddcccccbbbccd/ccdddccccabbbbdd/ccdddcdccbbbbbbc/ccddccdccbbbbbcc/cdcdcdcccbbbbbac/ccccccccbbbbbbac/ccdcdcccbbbbccdd/dcdccccccbbccddd/cccccddddccbdddd'],
+        ['ccccccccdcddddcc/cdcccccccccdddcc/ccdcdbbdbcddcdcc/bbbbbbbbbbbbcccc/bbbbbbbcbbbccccb/bbbbbbcdcbbbddbb/bbcccccccbbbcdcb/cccccccccabccccc/cccdccccccccddcc/dcdccdcccccccccc/ccbcccdcddddccbc/cccbccccccddccbb/bccacdcccdddcccb/bbcccbbdaccdcddc/cccccbbbcbdcdddc/cccccabcccccdddc',
+         'ccccccccdcddddcc/cdcbbccccccdcdcc/ccdbbbbdccdccdcc/bbcbbbbccccccbbc/bbbbbbcddcccbbbb/bbccdccccbbbbbbb/bbccdccccccbbbbb/cccccccccccccccc/cccdccccccdccccc/dcdcdddddccccdcc/ccccddddcdcbccbc/cccddddddcbbbcbb/bccddddcccbbbbcb/bbccddccbbbdbddc/cccccccbbbccdddc/cccccabcccccdddc',
+         'ccccccccdcddddcc/cdccdccccccdddcc/ccdddddcccccddcc/bbbcccdddccccccc/bbccbcdddcccddcb/bbcbbcddccdcddbb/bcbbcdddcddcccbb/cbbbbcddcddccccc/cbbbadddcddccccc/dcbbbccdccccdccc/cbbbbcdcccccccbc/cbbbbcccccdcccbb/bbbbbccddccddcab/bbcbacbbcccdcddc/cccbbbbbccccdddc/cccccabcccccdddc',
+         'ccccccccdcddddcc/cdcccbbbbccdddcc/ccdcbbbbbbbbddcc/bcdcbbbbabbbbbcc/bddccbbbbabbbbbb/bddccbbbbbcbbbbb/bddcccbbcbbcbbbb/ccdcdcbbbccccccc/ccdcdcabaccccccc/dcdcccbbbbcccddc/cccccabbbbbbacbc/cccdcbbbbbbbbccb/bccdcbbbbbbbbcdb/bbcccbbbbbbcdddc/ccccbbbbcaccdddc/cccccabcccccdddc'],
+        ['cccccccddddccccb/ccccdccddddcdccb/cccdcbbccddccccb/cccdcbbbcdccdbbb/ccdccbbcccccdbac/ccbccbbcccccdddc/cdcbccacdcdddddc/ccdcccccdccdddcc/accdcccccccdddcb/bbcdccccdccdddcb/bbcccccdccbcdccb/bbbcddddccbcddbb/bbbdcccdcccccdcb/cbbccccdcccccccc/ccacdcdddcccccca/ccccdccddddccccb',
+         'cccccccddddccccb/cccbcccddddcbccb/cccccdccdbdbbccb/cccdcaaabbbbbccb/ccdccccdccbacccc/ccccdcccccddcccc/cdcdcddddccdccdc/ccddccdddccccccc/abcccddddddcbacb/bbbcccdddddcbbcb/bbbacdcdddccbccb/bbbbcccccccbbbbb/bbccbbbbbbabbbbb/cbbccccabbbcbccc/ccacdcbbbbdcccca/ccccdccddddccccb',
+         'cccccccddddccccb/cccbbccdddccdccb/cccbbcbcddcddccb/cccbbbbcddcddbbb/ccbbbbadddcccdac/ccbbbbbcccccccdc/cbbbbbbcdccdccdc/cbbbbbbccdccdccc/abbbbbbccccccccb/bbabbbaccccccdcb/bbbbbbbcccbacccb/bbbbbbbbcbabccbb/bbbbbbbbaaaccddb/cbbbbbccbbbccccc/ccabbcdddbdcccca/ccccdccddddccccb',
+         'cccccccddddccccb/ccccdcbbbddcdccb/cccddcabacccdccb/cccdcabbbbccccbb/cccccbbbbccdccac/ccccbbbbbbacdcac/cccabbbbbbccccdc/cccbbbbbbbcccccc/accbbbbbbbcdcccb/bbcbbbbbbcdddccb/bbabbbbbbccccccb/bbbbbbbbacdcdddb/bbbbbbbbaccccddb/cbbbbbccbabccccc/ccabbcdddbbcccca/ccccdccddddccccb'],
+        ['cdddccccccddcccc/cdddccccccccddcc/dcdcdcccccccdccc/dccccccccccccccd/dcccccccccdccccc/cccccddddccbbcdc/ccccdddddccbcddd/ddbdddddccccccdd/cdcdcdddcccccddd/dcbccdddcccccddd/ddccdcdcdccccddd/ddbacdccccccdcdd/ccbbbbcbbacccccd/cddbbccbbbbacddc/dddbdccbcbbbdddc/ddddccccccdddcdd',
+         'cdddccccccddcccc/cdddccccccccbdcc/dcddcccccdcccccc/dcddccccccccddcd/dccddccdcccccdcc/cccddddcddddcccc/cccdddcdcddddccd/ddccdddcdcdddddd/cccccdccdcdddcdd/dddccdccdcdddddd/dddccdddccdddddd/ddbcabddccdddddd/cccbbbcccddddccd/cddcbbbccddddddc/dddddabcdcdddddc/ddddccccccdddcdd',
+         'cdddccccccddcccc/cddccccccbccddcc/dcdcccccbbccdccc/dccbbbcbbbcddccd/dcbbbbbbbbbcddcc/ccbbbbbbbbbcdddc/ccbbbbbbbbaddddd/dccbbbbbbbbccddd/ccbbbbbbbbbcccdd/dccbbbbbbbcccddd/dccbbbbbbacccddd/dccbbbabbbbcccdd/ccbbbbbbbbbbaabd/cddbbbcbbbbdbddc/dddbbccbcbdddddc/ddddccccccdddcdd',
+         'cdddccccccddcccc/cdddcddcccccddcc/dcdcdddcccbbcccc/ddddccccdcaacccd/ddddcccccbbbbacc/cddcccccabbbbbcc/cddcdcccbbbbbbdd/ddddcccbbbbbbddd/cdccccbbbbbbccdd/dcbcccabbbbacdcd/ddbcaabbbbbaccdd/ddbbbbbbbbbbbbcd/ccbaabbbbbbbaccd/cddccbcbbbbbdddc/dddccccbcbbddddc/ddddccccccdddcdd'],
     ],
-    'C': None,   # 아래 PLATES 의 손 금으로 판다
+    'C': [
+        ['cccabccdccddddcc/ccccbcbcbaddddcc/cccbbbbbbbcccccc/cbbbbbbbbbcdcbbb/cdbbbbbbbbccdcbc/dcbbbbbbbbcccccc/ccbbbbbbbacccccd/cbbbbbbbbbbccbdc/cabbbbbbbbbbaaac/ccabbbbbbbbbbbbc/ccabbbbbbccbbbcd/cccbbbbbcccbbbcc/cdccccdccccabcba/bbbcccdcccdccccc/bccbbcdbcddccbbb/cccbbbcddccddcca',
+         'cccabccdccddddcc/ccccdcdccabdcdcc/ccccdcddcccccccc/cdcccddddcdccccb/cccdddcccccccccc/dccdcdcbccdddccc/cccdccbbccdddccd/cbcccbbbcdddccdc/cbbbbbbbbbcddddc/cbbbbbbbbadddcdc/ccbbbbbbbbccccdd/cbbbbbbbbbcdcccc/cbbbbbbbbbccdcba/bbbbbbbbbbcccccc/bccbbbcbbadccbbb/cccbbbcddccddcca',
+         'cccabccdccddddcc/ccccccccccccddcc/cccdccdccccccccc/ccddcddddddcccdb/cddcccddddddccbc/dcdddcddddccdccc/ccbcccddddddcccd/cbbbccdddddddddc/ccbbadcdddcccddc/cddabcccccccbbdc/cddccbbbbbabbcdd/cccddccabbbbbccc/ccddddcccbbbbbba/bbbdddbccbbbbccc/bccbbbcbccaccbbb/cccbbbcddccddcca',
+         'cccabccdccddddcc/cccabcccccddbdcc/cccccbbbbbabbccc/cddddccabbbbbbbb/cdcdddcccbbbbabc/dcddddcccbbbbccc/cccddcccccabaccd/cbdddcccccbbbbdc/cbcddccccabbbbbc/ccdddcdccbbbbbbc/ccddccdccbbbbbbd/ccddcdcccbbbbbac/ccccccccbbbbbbba/bbbcdcbccbdabccc/bccccbcbcddccbbb/cccbbbcddccddcca'],
+        ['bbbcccccdddccbbb/cbbbbdcdccdcdbbb/cbbbbcdcccccccbb/dbbbbcccccdccbcc/ccbbbccddccddccc/ddbbaccccccccbdd/ccbbbcccccbacbcd/ccbbbbbccbabcccc/dbbbbbbbaaacccdc/cbbbbbbbbaaacccc/ddbbbbbbbbbbccdc/cbbbbbbbbbbbcccc/cabbbbbcbbbccccc/baabbbcdcbbbdbbb/bbbbccccdccccbbb/bbbbccddccdcbbbb',
+         'bbbcccccdddccbbb/cbbcdccccccccbbb/cbbdddccccccdcbb/ddccccdddcccccdc/cdccbcdddcccddcc/dccbbcddccdcddcd/ccbbcdddcddccccd/ccbbbcddcddccccc/ddbbadddcddcccdc/cbbbbccdccccdccc/ddbbbcdccccccdcc/cbbbbcccccdccdcc/cbbbbccddccddccc/baabaccccccccbbb/bbbbbcdccccccbbb/bbbbccddccdcbbbb',
+         'bbbcccccdddccbbb/cbbbdddddccccbbb/cbbcddddcdcbccbb/ddcddddddcbbbccc/cccddddcccbbbbcc/dddcddccbbbbbbdd/cccccccbbbbbbbcd/cccbbbabbbbbbccc/dbbbbbbbbbbbbcdc/ccbabbbbbbbbbbcc/dcccbbbbbbbbbdcc/ccdcbbbbabbbbdcc/cddccbbbbabbbbcc/baaccbccbbcbbbbb/bbbbccdcdbbcbbbb/bbbbccddccdcbbbb',
+         'bbbcccccdddccbbb/cbbabbbbdddcbbbb/cbbcbbbbbbbbbcbb/ddccbbbbabbbbbcc/ccdccbbbbabbbccc/dddccbbbbbcbbbdd/ccdcccbbcbbcbbcd/ccdcdcbbbccccccc/dddcdcabaccccccc/cdccccbbbbcccddc/ddcccabbbbbbaccc/cdcdcbbbbbbbbccc/cdcdcbbbbbbbbccc/baaccbcccbbadbbb/bbbcbcdcdcccbbbb/bbbbccddccdcbbbb'],
+        ['ccccdddccccccbbb/ccccbdaccccccbbb/dcdbbbbcccbacbbb/dbbbbbbbcbabccdd/dcbbbbbbaaaccddd/dcbbbbbbbbbcccdd/dcbbbcbbbbbccddd/dcacccbbbcccccdd/dbacdcbbbcddddcd/dacdcbbbcddddddd/dccdcbbbcdcccddd/cacdcbbbcdccdddd/cbaccbbcccccddcd/cddccbbcccccdcbb/cdccccaddccddcab/cdccddddcccdcabb',
+         'ccccdddccccccbbb/cccbbcddddccdbbb/dcdbbcbcddcddbbb/dbbbbbbcddcddccd/dbbbbbadddcccdcd/dbbbbbbccccccccd/dcbbbbbcdccdccdd/dcbbbbbccdccdddd/dcbbbbbcccccccdd/dbabbbacccccccdd/dcbbbbbcccbaccdd/cbbbbbbbcbabccdd/cbbbbbbbaaaccdcd/cddbbbdbbbbcccbb/cdcbbdddbbcdccab/cdccddddcccdcabb',
+         'ccccdddccccccbbb/ccccdcdccddcbbbb/dcdacdcdddccbbbb/daabcccccccbbbbd/dcccbbbbbbabbbdd/dcdccccabbbbbcdd/dcdcdcbbbbbbbddd/ddddcccbbbbabddd/dddccccbbbbcbddd/ddccdcbbbcccccdd/dccddcabacccdcdd/cccdcabbbbccccdd/cccccbbbbccdcccd/cddcbbddbbacdcbb/cdcccddddbcddcab/cdccddddcccdcabb',
+         'ccccdddccccccbbb/ccccdcbbcccccbbb/dcdddcabacccdbbb/ddcdcabbbbccccdd/dccccbbbbccdccdd/dcccbbbbbbacdcdd/dccabbbbbbcccddd/dccbbbbbbbccccdd/dccbbbbbbbcdcccd/dccbbbbbbcdddccd/dccbbbbbbccccccd/ccbbbbbbacdcdddd/ccabbbbbaccccdcd/cddbbbdddaccccbb/cdcbbddddccddcab/cdccddddcccdcabb'],
+        ['ccdccdddddddcccc/dccbbcbdbbdccccc/dccbbbbbbacccccc/cccbbbabbbbccccc/ddbbbbbbbbbbaacd/ddabbbbbbbbbbbbc/ddbbbbbbbbbbbbcd/ddabbbbbccbbbccc/dabbbbacdcbbbcdc/cbbccccccabcccdc/cccddcccccccdcdc/ccdcccccccccccdc/cdccccccccdccdcc/cabccddddccbbddc/ccccddddcdddcddc/cccccccdddddcccc',
+         'ccdccdddddddcccc/dccccccccbccdccc/dcccccccbbccdccc/cbbbbbcbbbcdddcc/dcbbbbbbbbbcddcd/dcbbbbbbbbbcddcc/ddbbbbbbbbadddcd/ddcbbbbbbbbccccc/ddbbbbbbbbbccccc/cccbbbbbbbcccccc/cccbbbbbbacccccc/cccbbbabbbbcccdc/ccbbbbbbbbbbaacc/cabbbbdbbbbbbddc/cccbbcddbbddbddc/cccccccdddddcccc',
+         'ccdccdddddddcccc/dccbbdcddcddcccc/dccccdddccdddccc/ccccabddccdddddc/ddcbbbcccddddccd/ddccbbbccddddbbc/ddcdcabcdccccbcd/dcdccccbbbbbbccc/dcccddcccabbbccc/ccccdddcccbbbbcc/cddddddcccbbcccc/cdddccccdcaaccdc/ccddcccccbbbbacc/cabcccdcabbbdddc/ccccdcddcbbddddc/cccccccdddddcccc',
+         'ccdccdddddddcccc/dcccdddcdddcbccc/dccddddcccbbcccc/cdddccccdcaacccc/ddddcccccbbbbccd/dddcccccabbbbbbc/dddcdcccbbbbbbcd/ddddcccbbbbbbdcc/ddccccbbbbbbccdc/ccccccabbbbacdcc/ccccaabbbbbaccdc/cccbbbbbbbbbbbcc/cccaabbbbbbbaccc/cabccbdccbccbddc/ccccccddcddddddc/cccccccdddddcccc'],
+    ],
 }
-
-
-# C 껍질 판: 바탕 P(식은 판) 위에 손으로 적은 금 화소 목록을 판다(16 감김). 금 = 주황 c, 금의 위·왼 = 판 그늘 턱 p,
-# 아래·오른 = 금 빛이 비친 붉은 턱 b. HOT = 금 속 노란 마디 d · 흰 노랑 심 w. 판 위 Q = 빛 받는 윗·왼 모서리(손).
-# 띠(행·열 14·15·0)를 넘는 금은 넷 모두 같다: 세로 금 x=6 (위·아래 변) · 가로 금 y=10 (왼·오른 변).
-_CROSS = [(6, 14), (6, 15), (6, 0), (14, 10), (15, 10), (0, 10)]
-PLATES = [
-    dict(crack=[(6, 1), (7, 2), (7, 3), (8, 4), (9, 5), (10, 6), (10, 7), (11, 8), (12, 9), (13, 10), (1, 10), (2, 11), (3, 12), (4, 13), (5, 13),
-                (9, 8), (8, 9), (7, 9), (6, 10), (2, 12)],
-         hot={(8, 4): 'd', (9, 5): 'w', (12, 9): 'd', (3, 12): 'd'},
-         lit=[(1, 1), (2, 1), (1, 2), (10, 1), (11, 1), (12, 2), (3, 7), (4, 7), (12, 12), (13, 12)]),
-    dict(crack=[(6, 1), (5, 2), (5, 3), (4, 4), (4, 5), (5, 6), (5, 7), (6, 8), (6, 9), (5, 10), (5, 11), (6, 12), (6, 13), (1, 10), (2, 10), (3, 10), (4, 10),
-                (13, 9), (12, 8), (11, 7), (10, 7), (9, 6), (8, 6), (7, 6), (6, 6), (11, 3), (12, 3), (11, 2)],
-         hot={(5, 6): 'd', (6, 6): 'w', (4, 10): 'd', (11, 7): 'd'},
-         lit=[(8, 1), (9, 1), (8, 2), (1, 1), (2, 1), (9, 9), (10, 9), (9, 10), (1, 12), (2, 12)]),
-    dict(crack=[(7, 1), (8, 2), (9, 3), (9, 4), (9, 5), (8, 6), (8, 7), (9, 8), (10, 9), (11, 10), (12, 10), (13, 10), (1, 9), (2, 9), (3, 8), (4, 8), (5, 9),
-                (5, 10), (6, 11), (6, 12), (6, 13), (10, 4), (11, 3), (12, 3)],
-         hot={(9, 4): 'w', (8, 6): 'd', (11, 10): 'd', (3, 8): 'd'},
-         lit=[(1, 1), (2, 1), (11, 1), (12, 1), (10, 11), (11, 12), (1, 12), (7, 9), (6, 4)]),
-    dict(crack=[(6, 1), (6, 2), (7, 3), (8, 3), (9, 4), (9, 5), (8, 6), (7, 7), (6, 8), (5, 9), (4, 10), (3, 10), (2, 10), (1, 10), (13, 11), (12, 11), (11, 12), (10, 12),
-                (9, 13), (8, 13), (7, 13), (10, 6), (11, 6), (12, 5), (13, 4), (7, 9), (8, 10)],
-         hot={(9, 5): 'w', (8, 6): 'd', (7, 13): 'd', (12, 5): 'd'},
-         lit=[(1, 1), (2, 1), (1, 2), (10, 1), (11, 1), (2, 12), (3, 12), (11, 8), (12, 8), (10, 9)]),
-]
-
-
-def _plate_tile(spec, k=0):
-    rows = CR.carve(['P' * 16] * 16, _CROSS + spec['crack'], dark='c', shade='p', lit='b')
-    g = [list(r) for r in rows]
-    cr = spec['crack']
-    for (x, y), ch in spec['hot'].items():   # 장면마다 빛 마디가 제 금을 따라 한 화소씩 옮겨 간다(금 목록 순서)
-        i = cr.index((x, y)) if (x, y) in cr else None
-        if i is not None:
-            j = min(i + k, len(cr) - 1) if i + k < len(cr) else i - (i + k - len(cr) + 1)
-            x, y = cr[j]
-        assert g[y][x] in 'cdw', (x, y)
-        g[y][x] = ch
-    for x, y in spec['lit']:
-        if g[y][x] == 'P':
-            g[y][x] = 'Q'
-    return [''.join(r) for r in g]
-
-
-FIELD['C'] = [_plate_tile(sp) for sp in PLATES]
-
-
-def _band(tiles):
-    t0 = tiles[0]
-    out = [list(t0)]
-    for t in tiles[1:]:
-        assert len(t) == 16 and all(len(r) == 16 for r in t), t
-        g = [list(r) for r in t]
-        for x, y in BAND:
-            g[y][x] = t0[y][x]
-        assert all(ch != '-' for r in g for ch in r)
-        out.append([''.join(r) for r in g])
-    return out
-
-
-for _ln in FIELD:
-    FIELD[_ln] = _band(FIELD[_ln])
-FIELD_K = {'C': [[_band([_plate_tile(sp, k) for sp in PLATES])[vi] for k in range(4)] for vi in range(4)]}
-
-# 장면마다 손 고침(띠 밖 안쪽만): BOIL[줄][변형][장면] = [(x, y, 화소 줄)] — 노란 심이 옮겨 가고 웅덩이 가장자리가 부풀었다 준다.
-BOIL = {'B': [
-    [[], [(2, 11, 'd'), (12, 11, 'd'), (3, 10, 'w'), (11, 10, 'w'), (4, 7, 'c'), (4, 8, 'c'), (8, 12, 'b')],
-     [(2, 11, 'd'), (12, 11, 'd'), (3, 12, 'w'), (13, 10, 'w'), (1, 10, 'd'), (5, 9, 'cc'), (9, 12, 'bb'), (13, 4, 'b')],
-     [(2, 11, 'd'), (12, 11, 'd'), (2, 12, 'w'), (12, 12, 'w'), (4, 8, 'b'), (3, 6, 'c'), (12, 5, 'b'), (7, 12, 'b')]],
-    [[], [(5, 4, 'dd'), (5, 5, 'd'), (7, 5, 'w'), (4, 3, 'c'), (10, 8, 'b'), (7, 12, 'd'), (8, 11, 'w')],
-     [(5, 4, 'dd'), (5, 5, 'd'), (6, 6, 'w'), (7, 6, 'w'), (3, 7, 'c'), (11, 10, 'c'), (7, 12, 'd'), (6, 12, 'w')],
-     [(5, 4, 'dw'), (5, 5, 'd'), (4, 4, 'w'), (9, 5, 'c'), (2, 9, 'c'), (12, 9, 'c'), (7, 12, 'd'), (8, 12, 'w')]],
-    [[], [(7, 11, 'd'), (8, 10, 'w'), (4, 5, 'b'), (2, 8, 'w'), (9, 8, 'c')],
-     [(7, 11, 'd'), (7, 10, 'w'), (6, 11, 'w'), (3, 4, 'b'), (3, 9, 'w'), (12, 6, 'c')],
-     [(7, 11, 'd'), (8, 11, 'w'), (5, 5, 'c'), (2, 7, 'w'), (10, 10, 'c')]],
-    [[], [(9, 6, 'd'), (10, 6, 'w'), (2, 11, 'd'), (2, 10, 'w'), (6, 9, 'b')],
-     [(9, 6, 'd'), (10, 5, 'w'), (8, 7, 'w'), (2, 11, 'd'), (1, 11, 'w'), (4, 7, 'c'), (11, 9, 'c')],
-     [(9, 6, 'd'), (8, 6, 'w'), (2, 11, 'd'), (3, 12, 'w'), (7, 9, 'b'), (12, 7, 'c')]],
-], 'C': [[[] for _ in range(4)] for _ in range(4)]}
-L_LOOP = [(0, 0), (1, 0), (1, 1), (0, 1)]   # 넷 모두 같은 1px 고리(띠 14·15·0 안에서만 둘레가 바뀌어 변형끼리 맞물린다)
+for _ln, _frs in STRIP_BODY.items():
+    assert len(_frs) == NF and all(len(f) == 4 for f in _frs), _ln
+    for _f in _frs:
+        for _t in _f:
+            _rows = _t.split('/')
+            assert len(_rows) == 16 and all(len(x) == 16 and set(x) <= set('abcd') for x in _rows), _ln
+BODY_OF = {1: {'B': 'B', 'C': 'C'}, 2: {'B': 'C', 'C': 'B'}}   # 후보 2 = 다른 줄의 창(둑 재료는 제 줄)
 
 
 def lava_legend(line, n):
-    if line == 'B':
-        if n == 1:
-            return legend(a=('lava', 0), b=('lava', 1), c=('lava', 2), d=('lava', 3), w=('fire', 5))
-        return legend(a=('lava', 1), b=('red', 3), c=('lava', 2), d=('lava', 3), w=('fire', 5))   # 밝고 뜨거운 들판
-    if n == 1:
-        return legend(P=('vrock', 2), Q=('vrock', 3), p=('vrock', 1), b=('lava', 1), c=('lava', 2), d=('lava', 3), w=('fire', 5))
-    return legend(P=('vrock', 1), Q=('vrock', 2), p=('lava', 0), b=('lava', 1), c=('lava', 3), d=('fire', 4), w=('fire', 5))   # 얇고 달아오른 판
+    return legend(a=('lava', 0), b=('lava', 1), c=('lava', 2), d=('lava', 3))
 
 
 def lava_rows(line, n, k, vi=0):
-    g = [list(r) for r in (FIELD_K[line][vi][k] if line in FIELD_K else FIELD[line][vi])]
-    for x, y, run in BOIL[line][vi][k]:
-        for i, ch in enumerate(run):
-            assert (x + i, y) not in BAND, (line, vi, k, x, y)
-            g[y][x + i] = ch
-    ox, oy = L_LOOP[k]
-    return roll_rows([''.join(r) for r in g], ox, oy)
+    return STRIP_BODY[BODY_OF[n][line]][k][vi].split('/')
 
 
 def lava_body(line, n, k, vi=0):
     return grid(lava_rows(line, n, k, vi), lava_legend(line, n), 16, 16)
+
+
+_LIP_K = ['xxyxxxxxxyxxxxxx', 'xxxxzxxyxxxxxyxx', 'yxxxxxxxxxxzxxxx', 'xxxyxxxxyxxxxxxy', 'xzxxxxyxxxxxxzxx', 'xxxxxxxxxxyxxxxx',
+          'xxyxxxzxxxxxyxxx', 'xxxxxxxxxyxxxxxz', 'yxxxzxxxxxxxxxxx', 'xxxxxxxyxxxzxxyx', 'xxyxxxxxxxxxxxxx', 'xxxxxyxxzxxxxyxx',
+          'zxxxxxxxxxyxxxxx', 'xxxyxxxxxxxxxxzx', 'xxxxxxzxxyxxxxxx', 'xyxxxxxxxxxxyxxx']
+_LIP_V = ['xyyxxzyxxyyxxxyx', 'yyxxyyxxyyyxzxxy', 'yxxzyyxxxyxxyyxx', 'xxyyyxxyxxxyyyxz', 'xyyxxxyyyxzxyxxx', 'zyxxyxxyyxxxxyyx',
+          'yxxyyzxxxyyxyyxx', 'xxyyxxyyxxzyyxxy', 'xyyxxxyyxyyxxxzx', 'yyxxzxxxyyxxyyxx', 'xxxyyxxyyxxyyxxy', 'xzyyxxyxxxyyxzyx',
+          'yyxxxyyxzxxyxxyy', 'xxyyxxxyyxxxyyxx', 'xyyxzyxxyyxxxxyz', 'yxxyyxxxxyyzxyyx']
+_LIP_R = ['xxyxxxxyxxxyxxxx', 'xxxxyxxxxxxxxyxx', 'yxxxxxxxyxxxxxxx', 'xxxyxxxxxxyxxxxy', 'xxxxxxyxxxxxxyxx', 'xyxxxxxxxyxxxxxx',
+          'xxxxyxxxxxxxyxxx', 'xxxxxxxyxxxxxxxx', 'yxxxxxxxxxyxxxxy', 'xxxyxxxxxxxxyxxx', 'xxxxxxyxxxxxxxxx', 'xyxxxxxxxyxxxyxx',
+          'xxxxyxxxxxxxxxxx', 'xxxxxxxyxxyxxxxx', 'xxyxxxxxxxxxxxyx', 'xxxxxyxxxxxxxxxx']
+for _g in (_LIP_K, _LIP_V, _LIP_R):
+    assert len(_g) == 16 and all(len(r) == 16 for r in _g)
+# 턱 결(줄마다, 16×16 손 결 — 세로 변에서도 줄무늬가 서지 않게 행마다 다름):
+# K 바깥 끝(x 바탕 · y 덩이 · z 불씨) · V 턱 몸(울퉁불퉁) · r 검붉은 띠. B = 따뜻한 갈색 검정 현무암, C = 차가운 푸른 검정(줄 C 바위).
+LIP_TEX = {
+    'B': lambda: {'K': grid(_LIP_K, legend(x=('wood', 0), y=('wood', 1), z=('lava', 1)), 16, 16),
+                  'V': grid(_LIP_V, legend(x=('wood', 1), y=('wood', 2), z=('rim', 1)), 16, 16),
+                  'r': grid(_LIP_R, legend(x=('lava', 0), y=('red', 1)), 16, 16)},
+    'C': lambda: {'K': grid(_LIP_K, legend(x=('vrock', 1), y=('vrock', 1), z=('lava', 0)), 16, 16),
+                  'V': grid(_LIP_V, legend(x=('vrock', 2), y=('vrock', 1), z=('vrock', 3)), 16, 16),
+                  'r': grid(_LIP_R, legend(x=('lava', 0), y=('red', 1)), 16, 16)},
+}
 
 
 def lava(line, n):
@@ -623,7 +635,8 @@ def lava(line, n):
     if line == 'C':   # 심층굴: 탄 띠 = 바닥 결을 그을린 푸른 검정으로
         tex['z'] = heat(fl, HEAT['z'], 'vrock')
         tex['y'] = fl
-    fr_rows, inn_rows = bank_frame(LAVA_EDGE, LAVA_WOB[line], LAVA_KEYS[line])
+    tex.update(LIP_TEX[line]())
+    fr_rows, inn_rows = bank_frame(LAVA_EDGE[line], LAVA_WOB[line], LAVA_KEYS[line])
     check_frame(f'용암 {line}{n} 틀', fr_rows, inn_rows)
     fr, inn = ER.fill(fr_rows, inn_rows, {}, tex)
     return [autotile_cv(lava_body(line, n, k), fr, inn, [lava_body(line, n, k, vi) for vi in range(1, 4)])
@@ -680,7 +693,7 @@ def cand(kind, line, n):
     def fn():
         fs = water(line, n) if kind == 'water' else lava(line, n)
         anim = scene(fs, line, n)
-        liquid = list(LIQ[line]) if kind == 'water' else ['lava', 'red', 'fire'] + (['vrock'] if line == 'C' else [])
+        liquid = list(LIQ[line]) if kind == 'water' else ['lava', 'red', 'fire']
         return ER.a2_frames(fs), {
             'kind': 'autotile', 'autotiles': {kind: fs[0]}, 'frames': {kind: fs}, 'liquid': liquid,
             'vignette': anim[0], 'anim': anim, 'note': NOTES[kind][f'{line}{n}'],
@@ -701,12 +714,10 @@ NOTES = {
         'C1': '맑은 얕은 물(판석 바닥) — 잠긴 돌, 회색 판석 둑 앞면, 물결이 왼쪽으로 흐름',
         'C2': '깊은 물(판석) — 판석 둑 앞면 3~4줄, 얕은 턱 띠, 너울'},
     'lava': {
-        'B1': '덩이 들판(버들항 lava-strip 결) — 검붉은 큰 웅덩이·주황 덩이·노란 덩이와 흰 노랑 심. 몸통 넷이 칸 둘레 띠만 같고 안쪽이 달라 '
-              '덩이가 칸을 넘어 다른 모양으로 끝난다. 장면마다 1px 고리 + 심과 웅덩이 가장자리가 옮겨 감. 둘레 네 변 모두 검은 현무암 턱 + 안쪽 빛 줄',
-        'B2': '덩이 들판, 더 뜨거운 판 — 웅덩이가 밝은 붉은 주황(red 3), 그늘은 용암 1단',
-        'C1': '껍질 판 들판(심층굴) — 검푸른 식은 판이 크기 제각각, 사이 금이 주황으로 빛남(위·왼 그늘 턱, 아래·오른 붉은 턱). '
-              '장면마다 금 속 노란 마디가 금을 따라 옮겨 감',
-        'C2': '얇고 달아오른 껍질 판 — 판이 더 어둡고 그늘 턱이 검붉게 달아오름, 금은 노랑'}
+        'B1': '버들항 용암 띠에서 떠낸 녹은 몸통(고른 사분면 창 넷, 띠 자기 움직임) — 둑은 따뜻한 갈색 검정 현무암, 두껍고 울퉁불퉁한 턱(2~5px)에 불씨 · 검붉은 띠, 북쪽은 바위 앞면 껍질',
+        'B2': 'B 둑(갈색 현무암 두꺼운 턱)에 붉은 웅덩이가 많은 창 넷(C 의 몸통)',
+        'C1': '버들항 용암 띠에서 떠낸 녹은 몸통(붉은 웅덩이가 많은 창 넷) — 둑은 차가운 푸른 검정 화산암, 얇고 들쭉날쭉한 턱 · 검붉은 띠',
+        'C2': 'C 둑(푸른 검정 얇은 턱)에 고른 사분면 창 넷(B 의 몸통)'}
 }
 
 CANDIDATES = {
