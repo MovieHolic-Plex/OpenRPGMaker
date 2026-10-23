@@ -11,7 +11,7 @@ import type { BattleAnimationRecord, Project } from "@/project/types";
  */
 export const BATTLE_READY_TIMEOUT_MS = 6000;
 /** 무대 밖 이펙트 시트는 첫 행동 전에 받으면 좋을 뿐이라, 무대 그림이 끝난 뒤 이만큼만 더 기다린다. */
-export const BATTLE_EXTRA_GRACE_MS = 1200;
+export const BATTLE_EXTRA_GRACE_MS = 800;
 
 const decodeCache = new Map<string, Promise<HTMLImageElement | null>>();
 
