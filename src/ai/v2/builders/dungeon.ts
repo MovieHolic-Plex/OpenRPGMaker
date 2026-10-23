@@ -49,14 +49,17 @@ const TYPE_WORDS: readonly [DungeonType, RegExp][] = [
   ["cave", /cave|cavern|grotto|동굴|굴/],
 ];
 
-function pickType(spec: PlaceSpec, text: string): DungeonType {
+/** 테마 낱말이 없는 「던전」의 종류 후보 — 늘 지하묘지였다(2026-10-23 사용자 「던전 만들어 줘가 늘 비슷하다」). 무작위로 하나. */
+const PLAIN_TYPES: readonly DungeonType[] = ["catacomb", "castle", "labyrinth", "sewer", "temple", "mine"];
+
+function pickType(spec: PlaceSpec, text: string, keep?: DungeonType): DungeonType {
   const hinted = String(spec.hints?.type ?? "");
   if ((TYPES as readonly string[]).includes(hinted)) return hinted as DungeonType;
   const own = `${spec.theme ?? ""} ${spec.style ?? ""} ${spec.name}`.toLowerCase();
   for (const [t, re] of TYPE_WORDS) if (re.test(own)) return t;
   if (spec.type === "cave") return "cave";
   for (const [t, re] of TYPE_WORDS) if (t !== "cave" && re.test(text)) return t;
-  return "catacomb";
+  return keep ?? PLAIN_TYPES[Math.floor(Math.random() * PLAIN_TYPES.length)]!;
 }
 
 /** 적 낱말 → 데이터베이스 적 id(보이는 잡몹). 「불 속성」처럼 종이 없는 말은 주제 적에 맡긴다. */
@@ -116,12 +119,12 @@ interface DungeonPlan {
 }
 
 /** 명세 → author_dungeon 인자 + 요청한 적·보스 + 표현 못 하는 요청·경고. */
-export function dungeonArgs(spec: PlaceSpec): DungeonPlan {
+export function dungeonArgs(spec: PlaceSpec, keepType?: DungeonType): DungeonPlan {
   const args: Record<string, unknown> = {};
   const missing: string[] = [];
   const warnings: string[] = [];
   const text = words(spec);
-  const type = pickType(spec, text);
+  const type = pickType(spec, text, keepType);
   args.type = type;
   if (spec.size) args.size = spec.size;
   const floors = Math.max(1, Math.min(5, Math.round(spec.floors ?? 1)));
@@ -448,7 +451,7 @@ function layoutScore(data: Record<string, unknown>, type: DungeonType, args: Rec
 }
 
 function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBuildResult {
-  const plan = dungeonArgs(spec);
+  const plan = dungeonArgs(spec, (previous?.result.state as DungeonState | undefined)?.args?.type as DungeonType | undefined);
   const { args, type, missing, warnings } = plan;
   const prev = previous?.result.state as DungeonState | undefined;
   const mapId = targetMapId(run, spec, previous);
@@ -474,7 +477,10 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   // 씨앗 고르기: 같은 명세를 사본 위에서 씨앗 몇 개로 지어 보고 요청에 가장 맞는 배치를 쓴다(늪·화산은 건너는 다리, 요청한 장치가 실제로 놓였나,
   // 보이는 적·상자 수, 너무 넓은 맨바닥). 마을 빌더가 집 수를 고르는 것과 같은 방식이다. 씨앗을 명시하면 건너뛴다.
   if (spec.hints?.seed === undefined) {
-    const seed0 = num(args.seed) ?? [...spec.name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 11) % 90000;
+    // 새로 지을 때는 이름 해시에 무작위를 더한다 — 이름만 쓰면 같은 요청이 늘 같은 던전이었다(2026-10-23 사용자 「던전 만들어 줘가 늘 비슷하다」).
+    // 고치기(prev·variant)는 앞 씨앗에서 밀어 재현된다.
+    const nameHash = [...spec.name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 11);
+    const seed0 = num(args.seed) ?? (nameHash + Math.floor(Math.random() * 90000)) % 90000;
     let best: { seed: number; score: number; gimmick?: unknown } | undefined;
     const requestedLever = /레버|lever/.test(wanted) || spec.hints?.gimmick === "lever" || spec.hints?.puzzle === "lever";
     for (let i = 0; i < (Number(args.floors) > 1 ? SEED_TRIALS - 1 : SEED_TRIALS); i++) {

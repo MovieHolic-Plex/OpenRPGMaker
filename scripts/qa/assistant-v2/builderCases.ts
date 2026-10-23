@@ -14,6 +14,7 @@ export const BUILDER_CASES: BuilderCase[] = [
   { id: "village-snow-walls", spec: { type: "village", name: "서리마을", size: "medium", theme: "snow", features: ["walls", "conifer"] } },
   { id: "village-swamp-scatter", spec: { type: "village", name: "갈대 늪마을", size: "small", theme: "swamp", features: ["scatter"] } },
   { id: "dungeon-tower-boss", spec: { type: "dungeon", name: "회색 탑", size: "medium", floors: 3, theme: "castle", features: ["tower", "boss", "chests", "enemies"] } },
+  { id: "dg-plain", spec: { type: "dungeon", name: "던전", features: ["boss", "enemies", "chests"] } },
   { id: "cave-lair-chest", spec: { type: "cave", name: "고블린 굴", size: "small", features: ["goblin lair", "chests", "enemies"] } },
   { id: "dungeon-flooded-catacomb", spec: { type: "dungeon", name: "수몰 지하묘지", size: "small", floors: 2, theme: "catacomb", features: ["flooded", "boss", "enemies", "lever"] } },
   { id: "cave-ice-refusal", spec: { type: "cave", name: "얼음 동굴", size: "small", theme: "ice cave", features: ["enemies"] } },
