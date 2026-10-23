@@ -658,6 +658,18 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
         if (mound.grass !== undefined) mm.lowerTiles[i] = mound.grass;
         if (hillPool.length && rnd() < 0.45) mm.upperTiles[i] = hillPool[Math.floor(rnd() * hillPool.length)]!;
       }
+      // r10: 마당 가장자리 홈(풀 한 칸)이 둔덕 옆구리에 붙어 «흙 위에 뜬 풀 네모»로 읽혔다 — 둔덕·마당에 셋 이상 둘린 풀 칸은 마당 흙으로 메우고 마당 모양을 다시 맞춘다.
+      if (yardGroup && yardMembers) {
+        const body = yardGroup.variantMap["255"]; let filled = 0;
+        for (let pass = 0; pass < 2 && body !== undefined; pass++) for (const i of [...mound.cells]) for (const j of [i - 1, i + 1, i - W, i + W]) {
+          if (j < 0 || j >= W * H || Math.abs((j % W) - (i % W)) > 1 || mound.cells.has(j) || yardMembers.has(mm.lowerTiles[j]!) || (mm.relief!.levels[j] ?? 0) !== mound.base) continue;
+          const jx = j % W;
+          const around = [j - 1, j + 1, j - W, j + W].filter((k) => k >= 0 && k < W * H && Math.abs((k % W) - jx) <= 1 && (yardMembers.has(mm.lowerTiles[k]!) || mound.cells.has(k))).length;
+          if (around < 3) continue;
+          mm.lowerTiles[j] = body; mm.upperTiles[j] = -1; filled++;
+        }
+        shapeYard(mm, yardGroup); void filled;
+      }
       const spots = rnd() < 0.5 ? leftSpots : rightSpots;
       for (const id of small) { if (used(id)) continue; if (spots(id).some(([x, y]) => heap(id, x, y))) break; }
     } else {
@@ -697,6 +709,13 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
     for (const y of [top, top + 1]) for (const [x, w] of [[adit.x - 1, 1], [adit.x - 2, 0.6], [adit.x + adit.w, 1], [adit.x + adit.w + 1, 0.6]] as const) {
       if (y === top + 1 && rnd() > 0.7) continue;
       if (rnd() < w && can(x, y)) cells.add(y * W + x);
+    }
+    // r10: 줄마다 흔든 끝이 한 줄만 삐져나오면 그 칸이 «흙 위에 뜬 풀 네모»로 그려졌다 — 위·아래 이웃 또는 좌·우 이웃이 없는 칸(갱구는 이웃으로 친다)은 두 번 깎는다.
+    const solid = (k: number) => cells.has(k) || inAdit(k % W, Math.floor(k / W));
+    for (let pass = 0; pass < 2; pass++) for (const c of [...cells]) {
+      const cx = c % W;
+      const vert = solid(c - W) || solid(c + W), horiz = (cx > 0 && solid(c - 1)) || (cx < W - 1 && solid(c + 1));
+      if (!vert || !horiz) cells.delete(c);
     }
     if (cells.size < adit.w + 4) return null;
     const pass = (x: number, y: number) => !cells.has(y * W + x) && !(x >= adit.x && x < adit.x + adit.w && y >= top && y < adit.y + adit.h) && isPassable(draft, m, x, y);
