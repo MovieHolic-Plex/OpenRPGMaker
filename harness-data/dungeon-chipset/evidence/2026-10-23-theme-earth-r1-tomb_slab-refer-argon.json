@@ -1,0 +1,14 @@
+{
+  "piece": "earth.tomb_slab A1",
+  "pixelSha256": "8b594a9c24b25d3bf49ac5c90754f925059ff41f8e7beea215b4d00252f9e11e",
+  "receipt": "/home/main/z-project/rpg-zzu-dt-earth/harness-data/object-gate/receipts/8b/8b594a9c24b25d3bf49ac5c90754f925059ff41f8e7beea215b4d00252f9e11e.json",
+  "verdict": "pass",
+  "sure": true,
+  "view34": "32x32 flat square slab seen from above with top-left bevel highlight, recessed concentric border groove, and incised cross with inner shadow and lower-right catch-light; no vertical front or side faces, matching flat floor geometry.",
+  "style": "Uses 5+ stone and warm-brown shading steps with tinted dark grooves, stone grain/speckles, moss flecks, and a chipped lower-right corner that match the surrounding Beodeul catacomb stone floor tones and mortar lines without looking flat or pasted on.",
+  "reasons": [
+    "Reads clearly as a flush floor-inset engraved tomb slab from a top-down 3/4 view",
+    "Stone mid-tones, bevel highlights, warm dark-brown grooves, and weathering speckles integrate seamlessly with the catacomb brick floor in scene3x",
+    "Gate split was caused by comparing a single carved slab against multi-cobble paving rather than any lack of shading or texture"
+  ]
+}
