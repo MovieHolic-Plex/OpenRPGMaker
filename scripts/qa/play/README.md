@@ -182,10 +182,24 @@ npm run qa:runtime -- --scenario saesol-enter-field
 - **체크포인트 모드는 시나리오의 `beats` 를 쓰지 않는다** — 실행기 우선순위가 `checkpointBeats` → 체크포인트
   `beats` → 세트 `defaultBeats` → 기본 「도착 샷」이다. 생성기는 같은 비트를 `checkpointBeats: { anchor: beats }`
   로도 가리킨다. 이게 없으면 기대를 아예 판정하지 않고 통과한다(조용한 거짓 통과, 실측).
-- **프로젝트 재료 순서:** `--fixture` → `games.json scenarioFixture`(커밋된 픽스처) → 플레이어 데모 분기
-  `query: { demo: <id> }`(`src/player/exportEntry.ts` 의 분기 목록에 있을 때) → `projectGenerator`
-  (`generate-project.mts` 빌더 표에 있을 때, 실행 시점에 제품과 같은 코드 경로로 생성). tmp 산출물은 거부한다 —
-  커밋된 시나리오가 다른 기계에서 안 돌기 때문이다. 생성기 게임은 72MB 급이라 픽스처를 커밋하지 않는다.
+- **프로젝트 재료 순서:** `--fixture` → `games.json scenarioFixture`(커밋된 픽스처) → `projectGenerator`
+  (`generate-project.mts` 빌더 표에 있을 때, 실행 시점에 제품과 같은 코드 경로로 Node 에서 생성) → 플레이어 데모 분기
+  `query: { demo: <id> }`(`src/player/exportEntry.ts`). tmp 산출물은 거부한다 — 커밋된 시나리오가 다른 기계에서
+  안 돌기 때문이다. 생성기 게임은 72MB 급이라 픽스처를 커밋하지 않는다.
+  **생성기가 데모 분기보다 앞인 이유(실측 2026-10-23):** 같은 빌더를 브라우저에서 돌리는 데모 분기는 빌더가
+  브라우저에 없는 것을 만지면 부팅째 죽는다 — `chronoBell.ts` 의 `process.env.MARCH_DEBUG` 로
+  `player.html?demo=fallen-star` 가 `process is not defined` 로 실패했고, 그 실패는 버그 판정 실패와 구분되지 않는다.
+  그래서 `fallen-star` 의 기존 체크포인트 세트(데모 분기 부팅)도 지금은 돌지 않는다 — 별개 결함이다.
+- **판정 축이 부족하면 `expect.pageAssertions` 를 쓴다.** `{ id, fn }` 의 `fn` 은 인자 없는 함수 **소스**이고
+  `true` 면 통과, 문자열이면 그 문자열이 실패 사유다. "커서가 정확히 하나", "시계가 세이브 시간을 잇는다" 처럼
+  고정 축(존재·글자 포함·스칼라 등식)으로 표현할 수 없는 불변식을 페이지 안에서 직접 잰다. 관측이 없으면
+  통과가 아니라 실패다. `testidPresent`·`textPresent` 같은 축으로 **정상 게임도 통과하는** 검사를 적지 마라 —
+  그건 회귀를 못 막는다(실측: 「노린다 (← → 대상 변경)」 문구, 「0:0」 부분 문자열은 정상 게임에서도 통과).
+- **로그에서 유도할 수 없는 판정 지점은 `--until`/`--wait-visible` 로 조건 고정한다.**
+  `--until <key>:<testid>[:<삽입 위치>]` 는 같은 키를 그 testid 가 나타날 때까지만 누른다(`pressUntil`, 초과 입력
+  없음). 삽입 위치가 필요하다 — 기록된 세션은 이미 그 창 **안에서** 화살표를 눌렀으므로, 재생에서 화살표를 창이
+  열리기 전에 보내면 판정 지점에 도달하지 못하고 증상 없이 통과한다(실측: 전투 대상 선택 창).
+  `--wait-visible <testid[,testid…]>` 는 페이드로 들어오는 창(상태 메뉴 180ms)이 실제로 보일 때까지 기다린다.
 - `expect.stuck` 은 옮길 수 없다 — 런타임 게이트는 고정 대기를 금지하므로 시간 창 판정은 repro 에만 둔다.
 - `--force` 없이는 기존 파일을 덮어쓰지 않는다.
 

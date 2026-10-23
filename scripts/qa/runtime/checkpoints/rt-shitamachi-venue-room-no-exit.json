@@ -1,7 +1,7 @@
 {
  "set": "rt-shitamachi-venue-room-no-exit",
- "query": {
-  "demo": "shitamachi-fourth-season"
+ "projectGenerator": {
+  "game": "shitamachi-fourth-season"
  },
  "viewport": {
   "width": 960,

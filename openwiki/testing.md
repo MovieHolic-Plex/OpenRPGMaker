@@ -2275,8 +2275,14 @@ ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructur
   기대의 방향이 뒤집힌다 — repro 의 expect 는 증상 서술, 시나리오의 expect 는 고쳐진 뒤의 행동이다(`--symptom-expect`
   는 글자 축만 뒤집고 좌표 축은 거부한다). 로그의 시간 간격은 `wait` 로 옮기지 않고(게이트 금지) 앞뒤 관측으로
   조건 대기(`waitFor`/`pressUntil`/`waitForMap`)로 번역하며, 정하지 못한 간격은 버리고 stderr 에 남긴다.
-  프로젝트 재료는 `--fixture` → `scenarioFixture` → 플레이어 데모 분기 `query: { demo }` → `projectGenerator`
-  (실행 시점 생성, `scripts/lib/qaProjectGenerator.mjs`) 순으로 고른다 — 생성기 게임 72MB 는 픽스처로 커밋하지 않는다.
+  프로젝트 재료는 `--fixture` → `scenarioFixture` → `projectGenerator`(실행 시점 생성,
+  `scripts/lib/qaProjectGenerator.mjs`) → 플레이어 데모 분기 `query: { demo }` 순으로 고른다 — 생성기 게임 72MB 는
+  픽스처로 커밋하지 않는다. 생성기가 데모 분기보다 앞인 이유는 데모 분기가 같은 빌더를 **브라우저**에서 돌리기
+  때문이다(실측 2026-10-23: `chronoBell.ts` 의 `process.env` → `player.html?demo=fallen-star` 부팅 사망).
+  판정 축이 부족하면 `expect.pageAssertions`(`{ id, fn }`, `true`=통과·문자열=실패 사유)로 페이지 안에서 직접 잰다 —
+  "커서가 정확히 하나", "시계가 세이브 시간을 잇는다" 같은 불변식은 고정 축으로 표현되지 않는다. 정상 게임도
+  통과하는 검사(부분 문자열 「0:0」, 창이 열리면 나오는 문구)는 회귀로 치지 않는다. 로그에서 유도할 수 없는 판정
+  지점은 `--until <key>:<testid>[:<삽입 위치>]`·`--wait-visible <testid>` 로 조건 고정한다.
 - 도구는 런타임 QA 의 **같은 op 실행기**(`applyOp`/`readObserved`, `scripts/lib/runtimeQaRun.mjs`)를 쓴다.
   플레이 전용 op(`move`·`clickCanvas`·`waitForBodyText`)는 런타임 op 로 들어가 있어 시나리오로 그대로 옮긴다.
   `expect` 에 `consoleErrorMatches`·`textPresent`·`textAbsent` 를 더했다(페이지 안 오류 버퍼

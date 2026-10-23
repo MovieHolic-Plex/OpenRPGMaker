@@ -171,6 +171,13 @@ export type RuntimeQaExpect = {
    * 노드(상태 배지 등)는 textContent 가 반드시 비어 있다.
    */
   readonly visibleText?: Readonly<Record<string, string>>;
+  /**
+   * 페이지 안에서 직접 평가하는 불변식. `fn` 은 인자 없는 함수 **소스**이고, `true` 면 통과,
+   * 문자열이면 그 문자열이 실패 사유가 된다. 고정 축(testid 존재·글자 포함)으로 표현할 수 없는
+   * "정확히 하나"·"보이는 것만 센다" 같은 판정에 쓴다(실측: 전투 대상 목록의 커서가 두 개).
+   * 한 비트라도 이름을 댄 단언은 모든 비트에서 같은 방식으로 평가된다(비트 사이 관측 차이 금지).
+   */
+  readonly pageAssertions?: readonly RuntimeQaPageAssertion[];
   readonly playerSpriteResourceNonEmpty?: boolean;
   /** 정수리 이모트 개수 하한(__oprnEmotes 훅). */
   readonly emoteCountAtLeast?: number;
@@ -299,6 +306,13 @@ export type RuntimeQaBeat = {
 };
 
 export type RuntimeQaViewport = { readonly width: number; readonly height: number };
+
+/** 페이지 안 단언 하나 — `fn` 은 인자 없는 함수 소스. true = 통과, 문자열 = 실패 사유. */
+export type RuntimeQaPageAssertion = {
+  readonly id: string;
+  readonly fn: string;
+  readonly note?: string;
+};
 
 export type RuntimeQaScenario = {
   readonly id: string;

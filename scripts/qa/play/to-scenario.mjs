@@ -194,6 +194,8 @@ function toScenarioExpect(expect, { note }) {
   if (expect.textAbsent !== undefined) out.textAbsent = expect.textAbsent;
   if (expect.testidPresent !== undefined) out.testidPresent = expect.testidPresent;
   if (expect.testidAbsent !== undefined) out.testidAbsent = expect.testidAbsent;
+  // 페이지 안 단언은 그대로 옮긴다(함수 소스 문자열 — 고정 축으로 표현할 수 없는 불변식).
+  if (expect.pageAssertions !== undefined) out.pageAssertions = expect.pageAssertions;
   for (const [key, value] of Object.entries(expect.stateEquals ?? {})) {
     // 시나리오 판정이 아는 스칼라 축. screen·dir·dialog 같은 파생값은 판정에 없으므로
     // 실패시키지 않고 버린다 — 버린 축은 stderr 에 남겨 조용히 사라지지 않게 한다.
@@ -234,12 +236,21 @@ function invertSymptomExpect(expect) {
   return out;
 }
 
-/** exportEntry.ts 의 데모 분기 목록에 이 게임이 있는가(추측하지 않고 소스를 읽는다). */
+/**
+ * exportEntry.ts 가 이 게임을 `?demo=<id>` 로 띄우는가. 두 자리를 본다 — 별칭(`rawDemoParam === "fallen-star" ?
+ * "chrono-bell" : …`)과 분기 조건(`demoParam === "chrono-bell" || …`). fallen-star 처럼 별칭으로 들어가는
+ * 게임은 분기 목록에 자기 id 가 없으므로 별칭 줄까지 봐야 한다(추측하지 않고 소스를 읽는다).
+ */
 async function demoBranchFor(gameId) {
   if (!existsSync(PLAYER_ENTRY)) return null;
   const source = await readFile(PLAYER_ENTRY, "utf8");
-  const match = source.match(/demoParam === ([^\n]+)\) \{/);
-  return match?.[1]?.includes(`"${gameId}"`) ? gameId : null;
+  const quoted = JSON.stringify(gameId);
+  const lines = source.split("\n");
+  const aliasLine = lines.find((line) => line.includes("const demoParam =")) ?? "";
+  const branchLine = lines.find((line) => line.includes("if (demoParam ===")) ?? "";
+  return aliasLine.includes(`rawDemoParam === ${quoted}`) || branchLine.includes(`demoParam === ${quoted}`)
+    ? gameId
+    : null;
 }
 
 /** generate-project.mts 의 빌더 표에 이 게임이 있는가. */
@@ -254,8 +265,13 @@ async function generatorFor(gameId) {
  * 커밋된 시나리오가 가리킬 프로젝트 재료를 고른다 — 어느 기계에서도 돌아야 하므로 tmp 산출물은 못 쓴다.
  *   1. --fixture
  *   2. games.json scenarioFixture (커밋된 픽스처)
- *   3. 플레이어의 데모 분기 `player.html?demo=<id>` (src/player/exportEntry.ts)
- *   4. 생성기 실행 시점 생성 `projectGenerator` (scripts/qa/play/generate-project.mts)
+ *   3. 생성기 실행 시점 생성 `projectGenerator` (scripts/qa/play/generate-project.mts)
+ *   4. 플레이어의 데모 분기 `player.html?demo=<id>` (src/player/exportEntry.ts)
+ *
+ * 생성기가 데모 분기보다 앞인 이유: 생성기는 빌더를 **Node** 에서 돌리는데(build-games 와 같은 길),
+ * 데모 분기는 같은 빌더를 **브라우저**에서 돌린다. 빌더가 브라우저에 없는 것을 만지면 데모 부팅이
+ * 통째로 죽는다(실측 2026-10-23: chronoBell.ts 의 `process.env.MARCH_DEBUG` → `process is not defined`).
+ * 부팅 실패는 버그 판정 실패와 구분되지 않으므로, 실제로 돌아가는 쪽을 기본으로 둔다.
  */
 async function resolveProjectSource({ flags, gameId, entry }) {
   if (flags.fixture) {
@@ -266,11 +282,11 @@ async function resolveProjectSource({ flags, gameId, entry }) {
   if (entry?.scenarioFixture) return { fixture: entry.scenarioFixture, reason: `games.json scenarioFixture` };
   if (entry?.file && !entry.file.startsWith("tmp/")) return { fixture: entry.file, reason: "games.json file" };
   if (!gameId) fail("--fixture 또는 --game 이 필요하다");
-  const demo = await demoBranchFor(gameId);
-  if (demo) return { query: { demo }, reason: `player.html?demo=${demo} (src/player/exportEntry.ts)` };
   const generator = await generatorFor(gameId);
   if (generator) return { generator: { game: generator }, reason: `projectGenerator (scripts/qa/play/generate-project.mts: ${generator})` };
-  fail(`${gameId}: 커밋된 픽스처도, 플레이어 데모 분기도, 생성기 빌더도 없다 — --fixture 로 직접 줘라`);
+  const demo = await demoBranchFor(gameId);
+  if (demo) return { query: { demo }, reason: `player.html?demo=${demo} (src/player/exportEntry.ts)` };
+  fail(`${gameId}: 커밋된 픽스처도, 생성기 빌더도, 플레이어 데모 분기도 없다 — --fixture 로 직접 줘라`);
 }
 
 function renderScenario({ id, game, source, viewport, checkpointSet, ops, expect, note, sourceOps, pacingNotes }) {
@@ -376,6 +392,32 @@ async function main() {
   }
   const ops = resolveGaps(steps, rowByLine, report).map(({ line, ...op }) => op);
   if (ops.length === 0) fail("옮길 수 있는 op 이 없다(관측 전용·고정 wait 만 있었다)");
+  // --until <key>:<testid>[:<삽입 위치>] — 재생이 그 상태에 실제로 도달했는지를 조건으로 고정한다.
+  // 로그의 관측 행은 화면 글자를 남기지 않으므로(observe 전용), "이 창이 떠야 한다"를 로그에서
+  // 유도할 수 없는 경우가 있다(실측: 대상 선택 창). 고정 대기 대신 같은 키를 조건이 설 때까지만
+  // 누른다(pressUntil — 매 입력 뒤 조건을 확인해 초과 입력이 없다).
+  //
+  // 삽입 위치가 필요한 이유: 기록된 세션은 이미 그 창 안에서 화살표를 눌렀다. 재생에서 같은 화살표를
+  // 창이 열리기 **전에** 보내면 커맨드 커서만 움직이고 판정 지점(창 안의 커서)에 도달하지 못한다 —
+  // 그러면 증상 없이 통과한다(실측 2026-10-23). 1-based 위치, 기본은 맨 끝.
+  if (flags.until) {
+    const parts = String(flags.until).split(":");
+    if (parts.length < 2) fail(`--until 은 <key>:<testid>[:<삽입 위치>] 형식: ${flags.until}`);
+    const [key, testid, atRaw] = parts;
+    const insertAt = atRaw === undefined ? ops.length : Number(atRaw) - 1;
+    if (!Number.isInteger(insertAt) || insertAt < 0 || insertAt > ops.length) {
+      fail(`--until 삽입 위치는 1..${ops.length + 1}: ${atRaw}`);
+    }
+    ops.splice(insertAt, 0, { kind: "pressUntil", key, testid, state: "present", maxPresses: 12 });
+    report.paced.push({ line: null, from: `--until @${insertAt + 1}`, to: `pressUntil ${key} → ${testid} present` });
+  }
+  // --wait-visible <testid[,testid…]> — 마지막 op 뒤에 "그 노드가 실제로 보인다"를 조건으로 고정한다.
+  // 페이드로 들어오는 창(상태 메뉴 180ms)은 키 입력 직후 alpha 가 아직 0 이라, 그대로 단정하면
+  // 화면에 없는 글자를 읽어 판정이 흔들린다(고정 sleep 대신 waitForVisible).
+  for (const testid of String(flags["wait-visible"] ?? "").split(",").map((value) => value.trim()).filter(Boolean)) {
+    ops.push({ kind: "waitForVisible", testid });
+    report.paced.push({ line: null, from: "--wait-visible", to: `waitForVisible ${testid}` });
+  }
 
   // ── 프로젝트 재료 ──────────────────────────────────────────────────────────
   const gameId = flags.game ? String(flags.game) : session?.game ?? null;
@@ -400,7 +442,7 @@ async function main() {
     ops, expect, note,
     sourceOps: sessionMode ? `${opsPath} ${flags.lines}` : String(flags.ops),
     pacingNotes: [
-      ...report.paced.map((row) => `line ${row.line} ${row.from} → ${row.to}`),
+      ...report.paced.map((row) => (row.line === null ? `${row.from} → ${row.to}` : `line ${row.line} ${row.from} → ${row.to}`)),
       ...report.droppedGaps.map((row) => `line ${row.line} 간격 버림 — ${row.reason}`),
     ],
   }));

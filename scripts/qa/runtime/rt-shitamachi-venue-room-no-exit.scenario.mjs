@@ -17,7 +17,13 @@ const beats =
       {"kind":"move","dir":"right","steps":12},
     ],
     expect: {
-      "mapId": "map_shitamachi_arcade",
+      "pageAssertions": [
+        {
+          "id": "left-venue-room",
+          "note": "학생회실에서 상하좌우 12칸씩 걸어 나가면 그 방을 벗어나야 한다 — 지금은 나가는 문이 없어 map_venue_council 에 갇힌다",
+          "fn": "() => { const debug = window.__oprnDebug; if (!debug || typeof debug.readState !== 'function') return '런타임 훅이 없다 — 현재 맵을 읽을 수 없다'; const map = debug.readState().currentMapId; return map !== 'map_venue_council' ? true : '상하좌우로 걸어도 학생회실을 벗어나지 못했다 (map_venue_council) — 나가는 문이 없다'; }"
+        }
+      ],
       "note": "실내 명소(학생회실)에서 상하좌우로 걸어 나가면 아케이드로 돌아갈 출구가 있어야 한다. 지금은 문이 없어 맵 경계에서 막힌다. findings shitamachi-fourth-season__first-run-small F1"
     },
     shot: true,
@@ -27,7 +33,7 @@ const beats =
 /** @type {import("../../lib/runtimeQa.d.mts").RuntimeQaScenario} */
 export default {
   id: "rt-shitamachi-venue-room-no-exit",
-  query: {"demo":"shitamachi-fourth-season"},
+  projectGenerator: {"game":"shitamachi-fourth-season"},
   checkpointSet: "rt-shitamachi-venue-room-no-exit",
   // 게임: shitamachi-fourth-season (scripts/qa/play/games.json)
   viewport: {"width":960,"height":540},

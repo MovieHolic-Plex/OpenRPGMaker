@@ -563,6 +563,17 @@ export function evaluateExpect(expected, observed) {
     }
   }
 
+  // 페이지 안 단언 — 고정 축으로 표현할 수 없는 불변식("정확히 하나", "보이는 것만 센다").
+  // 관측이 없으면 통과로 읽지 않는다: 러너가 평가하지 않은 단언을 통과로 보면 게이트가 거짓말한다.
+  for (const assertion of expected.pageAssertions ?? []) {
+    const seen = observed.pageAssertions?.[assertion.id];
+    if (!seen) {
+      failures.push(`pageAssertions: ${assertion.id} 관측 없음 — 러너가 이 단언을 평가하지 않았다`);
+      continue;
+    }
+    if (!seen.ok) failures.push(`pageAssertions: ${assertion.id} — ${seen.reason}`);
+  }
+
   // 오디오는 스크린샷에 안 잡힌다. 엔진이 재생 지시를 받은 리소스 id 를 기록하는 훅
   // (src/player/audio/audioEngine.ts 의 window.__oprnAudioObserved)이 유일한 관측 지점이다.
   // 배열이 없으므로 실패 — 훅이 설치되기 전을 「통과」 로 읽으면 게이트가 거짓말을 한다.

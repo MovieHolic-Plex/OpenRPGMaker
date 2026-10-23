@@ -100,6 +100,13 @@ const checkpointSetName = args.checkpointSet ?? (args.checkpoint ? scenario.chec
 if (args.checkpoint || args.checkpointSet) {
   if (!checkpointSetName) throw new Error(`시나리오 ${scenario.id} 에 checkpointSet 이 없다 — --checkpoint-set <세트> 를 줘라`);
   const set = await loadCheckpointSet(checkpointSetName);
+  // 생성기 게임의 부팅 재료는 시나리오뿐 아니라 **세트**에도 실린다(to-scenario 가 둘 다 쓴다).
+  // 여기서 먼저 물질화해야 한다 — 체크포인트마다 scenarioForCheckpoint 가 projectFixture 를 보고
+  // 부팅하고, 없으면 기본 픽스처로 떨어진다(그러면 «없는 맵» 으로 죽는다).
+  const generatedFrom = effective.projectGenerator ?? set.projectGenerator;
+  if (!effective.projectFixture && generatedFrom) {
+    effective = { ...effective, projectFixture: await materializeGeneratedProject(generatedFrom.game) };
+  }
   const checkpoints = selectCheckpoints(set, args.checkpoint ?? "all");
   const outRoot = resolveOutRoot(args.out, scenario.id);
   const server = await startPlayerQaServer();

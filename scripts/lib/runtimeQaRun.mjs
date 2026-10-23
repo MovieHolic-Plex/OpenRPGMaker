@@ -816,7 +816,7 @@ async function evaluateOnFieldPlacement(page, spec, anchors) {
 export async function readObserved(page, {
   auditBattleTextNodes = false, watchedEventIds = [], watchedTestids = [],
   watchedItemIds = [], watchedSpeciesIds = [], watchedPlaceableKeys = [], watchedTestidPrefixes = [],
-  watchedVariableIds = [], watchedSwitchIds = [],
+  watchedVariableIds = [], watchedSwitchIds = [], watchedAssertions = [],
 } = {}) {
   const base = await page.evaluate((watched) => {
     const debug = window.__oprnDebug;
@@ -956,10 +956,22 @@ export async function readObserved(page, {
       })),
       audioObserved: Array.isArray(window.__oprnAudioObserved) ? [...window.__oprnAudioObserved] : null,
       battlers: window.__oprnReadBattlerGeometry ? window.__oprnReadBattlerGeometry() : null,
+      // 페이지 안 단언 — 시나리오가 준 함수 소스를 인자 없이 평가한다. true = 통과, 문자열 = 실패 사유.
+      // 던진 사유도 실패로 실어야 게이트가 조용히 통과하지 않는다.
+      pageAssertions: Object.fromEntries((watched.assertions ?? []).map((assertion) => {
+        try {
+          const outcome = Function(`return (${assertion.fn})()`)();
+          return [assertion.id, outcome === true
+            ? { ok: true }
+            : { ok: false, reason: String(outcome ?? "함수가 true 도 사유 문자열도 돌려주지 않았다") }];
+        } catch (error) {
+          return [assertion.id, { ok: false, reason: `단언이 던졌다: ${String(error?.message ?? error)}` }];
+        }
+      })),
     };
   }, { eventIds: watchedEventIds, testids: watchedTestids, itemIds: watchedItemIds, speciesIds: watchedSpeciesIds,
      placeableKeys: watchedPlaceableKeys, testidPrefixes: watchedTestidPrefixes,
-     variableIds: watchedVariableIds, switchIds: watchedSwitchIds });
+     variableIds: watchedVariableIds, switchIds: watchedSwitchIds, assertions: watchedAssertions });
   if (!auditBattleTextNodes) return base;
   // 전투 글자 계측은 요청한 비트에서만 돌린다 — 모든 비트에서 트리 전체를 훑을 이유가 없다.
   const battleText = await page.evaluate(auditBattleText, {
@@ -1146,6 +1158,10 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   const watchedTestids = [
     ...new Set(scenario.beats.flatMap((beat) => Object.keys(beat.expect?.visibleText ?? {}))),
   ];
+  // 페이지 안 단언도 이름을 댄 것을 한 번만 모아 모든 비트에서 같은 식으로 평가한다.
+  const watchedAssertions = [...new Map(
+    scenario.beats.flatMap((beat) => beat.expect?.pageAssertions ?? []).map((entry) => [entry.id, entry]),
+  ).values()];
   // 생활 소유물도 같은 규칙으로 이름을 댄 것만 관측한다. `inventory` 와 `inventoryCounts`
   // 는 서로 다른 expect 축이지만 같은 관측 원천(session.inventory)을 읽으므로 합집합으로 잡는다.
   const watchedItemIds = [
@@ -1197,6 +1213,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
         watchedTestidPrefixes,
         watchedVariableIds: Object.keys(beat.expect?.variables ?? {}),
         watchedSwitchIds: Object.keys(beat.expect?.switches ?? {}),
+        watchedAssertions,
       }),
       // 러너가 이미 받은 콘솔·페이지 오류도 같이 본다(버퍼가 부트 전 오류를 놓칠 수 있다).
       consoleErrors: [...errors],
