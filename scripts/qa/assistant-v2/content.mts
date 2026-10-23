@@ -185,7 +185,10 @@ if (want("tavern")) {
   const session = new V2Session();
   const task = "이 선술집에 놓을 '놋쇠 태엽 지구본'(태엽 장치가 달린 커다란 지구본) 기물이 칩셋에 없으면 새로 그려서 홀 한쪽에 놓아 줘.";
   const tools = createV2Tools(makeEnv(ctx, task, log), session);
-  const dr = await call(tools, "draw_object", { object: { what: "놋쇠 태엽 지구본", description: "놋쇠 받침 위에 태엽 장치가 달린 커다란 지구본", where: "홀 한쪽" } }, "draw");
+  // 첫 부름은 칩셋의 보통 지구본 때문에 거절된다(요청과 다른 물건) — 모델이 하듯 notThese 로 다시 부른다.
+  const first = await call(tools, "draw_object", { object: { what: "놋쇠 태엽 지구본", description: "놋쇠 받침 위에 태엽 장치가 달린 커다란 지구본", where: "홀 한쪽" } }, "draw0");
+  console.log("first refused:", first.ok === false);
+  const dr = await call(tools, "draw_object", { object: { what: "놋쇠 태엽 지구본", description: "놋쇠 받침 위에 태엽 장치가 달린 커다란 지구본", where: "홀 한쪽", notThese: ["hand-interior:globe", "globe"] } }, "draw");
   const card = (log.find((l) => l.startsWith("record draw_object")) ?? "");
   console.log(card);
   const m = /놓을 자리 \((\d+),(\d+)\)/u.exec(String(dr.summary));
@@ -194,6 +197,9 @@ if (want("tavern")) {
     const bx = Number(m[1]), by = Number(m[2]), w = Number(size[1]), h = Number(size[2]), foot = Number(size[3]);
     fullPng(ctx, "tavern-globe-spot.png", [{ x: bx, y: by - h + 1, w, h, rgb: [255, 220, 40] }, { x: bx, y: by - foot + 1, w, h: foot, rgb: [255, 60, 60] }]);
   }
+  // 그림이 끝났다고 치고(공방 칸 대신 칩셋의 보통 지구본 id 로) where·at 없이 place_object — draw_object 가 정한 자리에 가야 한다.
+  await call(tools, "place_object", { mapId: ctx.project.startMapId, objectId: "hand-interior:globe" }, "place");
+  fullPng(ctx, "tavern-globe-placed.png");
   // 바 옆에 바텐더, 홀 한쪽에 손님 — 사람 자리 낱말.
   await call(tools, "add_people", { people: [
     { role: "바텐더", where: "바 뒤", firstTalk: ["뭘로 드릴까?"] },

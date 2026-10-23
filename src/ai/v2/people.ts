@@ -525,8 +525,8 @@ export function resolveWhere(
     const box = findObjectBox(project, map, intent.object, room, centre);
     if (box) {
       const cx = (box.x0 + box.x1) / 2;
-      const rel = intent.relation ?? "near";
-      const c = pick((b) => {
+      let rel = intent.relation ?? "near";
+      const score = (b: Cell): number => {
         if (!roomOk(b)) return Infinity;
         const feet = footCells(b);
         const fx0 = Math.min(...feet.map((f) => f.x)), fx1 = Math.max(...feet.map((f) => f.x));
@@ -540,7 +540,10 @@ export function resolveWhere(
         else s = Math.max(gapX, gapY) === 0 ? Infinity : Math.max(gapX, gapY) - 1 + (gapX && gapY ? 0.5 : 0);
         if (!Number.isFinite(s) || Math.max(gapX, gapY) > 3) return Infinity;
         return s + (doorDist(b) < 3 ? 6 : 0) + (isObject && touchesLabel(b, SEAT_LABEL) ? 2 : 0) + (touchesLabel(b, STAIR_LABEL) ? 4 : 0);
-      });
+      };
+      let c = pick(score);
+      // 그 쪽(옆·앞·뒤)이 벽·가구로 막혔으면 둘레 아무 쪽(근처)으로 — 부엌 화덕은 옆이 다 조리대다.
+      if (!c && rel !== "near") { rel = "near"; c = pick(score); }
       const relWord = rel === "side" ? "옆" : rel === "front" ? "앞" : rel === "back" ? "뒤" : "근처";
       if (c) return done(c, { anchor: { x: box.x0, y: box.y0 }, how: `${roomName ? `${roomName} ` : ""}${box.label}(${box.x0},${box.y0}) ${relWord}`,
         face: dirTowardCell(c, { x: Math.round(cx), y: Math.round((box.y0 + box.y1) / 2) }) });
