@@ -464,8 +464,11 @@ export function resolveWhere(
     // 물건은 다른 가구(탁자·의자·카운터) 앞의 쓰는 칸을 막지 않는다 — 그 가구 둘레에 걸어 닿는 칸이 하나는 남아야 한다.
     return true;
   };
+  // 바깥 맵의 사람은 길 위가 아니라 길가에 선다(2026-10-23 3차 몬스터 마을: 주민 둘이 큰길 한가운데 서서 길을 좁혔다).
+  const outdoorRoads = !fp && !indoor ? roadCellSet(project, map) : undefined;
+  const roadCost = (c: Cell): number => (outdoorRoads?.has(c.y * w + c.x) ? 8 : 0);
   const pick = (score: (c: Cell) => number): Cell | undefined => {
-    const ranked = cells.map((c) => ({ c, s: score(c) })).filter((r) => Number.isFinite(r.s)).sort((a, b) => a.s - b.s);
+    const ranked = cells.map((c) => ({ c, s: score(c) + roadCost(c) })).filter((r) => Number.isFinite(r.s)).sort((a, b) => a.s - b.s);
     let tries = 0;
     for (const { c } of ranked) {
       if (++tries > 80) break;

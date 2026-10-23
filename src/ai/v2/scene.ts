@@ -12,6 +12,7 @@ import { resolveGraphic } from "@/editor/tools/eventCompile";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { sceneContract } from "@/harnesses/romance-scene/runtime";
 import { ROMANCE_IDS } from "@/harnesses/romance-scene/contract";
+import { startStateOf } from "@/project/session";
 import { findMap, pickPersonGraphic, placeNpcWithGraphic, resolveWhere } from "./people";
 import type { BuildRun, ContentBuildResult } from "./types";
 
@@ -103,6 +104,24 @@ function dressPartner(run: BuildRun, mapId: string, event: GameEvent, spec: Scen
   return `${pick.label}${pick.faceResourceId ? "+얼굴" : ""}`;
 }
 
+/** 현대 무대(일본 도시·학교)인데 주인공이 판타지 기본 그림이면 같은 무대의 사람 칩으로 갈아입힌다(2026-10-23 3차: 옥상 장면의 주인공이
+ * 주황 머리 판타지 용사라 교복 상대와 안 맞았다). 외형 프리셋(appearanceId)을 쓰는 배우는 저자 선택이라 건드리지 않는다. */
+function dressHero(run: BuildRun, mapId: string, partnerKey: string | undefined, warnings: string[]): string | undefined {
+  const project = run.ctx.project;
+  const map = findMap(project, mapId);
+  if (!map || !/jp_city|jp-|modern|campus|school|city16/i.test(map.tilesetId)) return undefined;
+  const leaderId = startStateOf(project).partyActorIds[0];
+  const actor = leaderId ? project.database.actors.find((a) => a.id === leaderId) : undefined;
+  if (!actor || actor.appearanceId) return undefined;
+  const cur = actor.characterResourceId ?? "";
+  if (cur && !/easyrpg-charset-actor|(^|[-_])actor[1-4]\b|^Actor/i.test(cur)) return undefined;
+  const pick = pickPersonGraphic(project, map, "남학생", "교복 남학생");
+  if (!pick || `${pick.textureKey}#${pick.characterIndex}` === partnerKey) { warnings.push("주인공: 현대 무대에 맞는 사람 그림을 못 찾아 기본 그림 그대로 둔다."); return undefined; }
+  const res = run.call("upsert_actor", { actor: { id: actor.id, characterResourceId: pick.textureKey, characterIndex: pick.characterIndex, ...(pick.faceResourceId ? { faceResourceId: pick.faceResourceId } : {}) } });
+  if (!res.ok) { warnings.push(`주인공 그림 바꾸기 실패: ${String(res.summary).slice(0, 160)}`); return undefined; }
+  return pick.label;
+}
+
 export function buildScene(run: BuildRun, spec: SceneSpec): ContentBuildResult & { readonly probe?: unknown } {
   const firstCall = run.calls.length;
   const warnings: string[] = [];
@@ -129,6 +148,9 @@ export function buildScene(run: BuildRun, spec: SceneSpec): ContentBuildResult &
     if (!res.ok) return done(false, [mapId], `연애 장면 작성 실패: ${String(res.summary).slice(0, 400)}`);
     const event = run.ctx.project.maps[mapId]?.events.find((e) => e.id === ROMANCE_IDS.npc);
     const look = event ? dressPartner(run, mapId, event, { ...spec, partner: contract.partner }, warnings) : undefined;
+    const partnerGraphic = run.ctx.project.maps[mapId]?.events.find((e) => e.id === ROMANCE_IDS.npc)?.pages?.[0]?.graphic as { sprite?: { id?: string }; pattern?: number } | undefined;
+    const hero = dressHero(run, mapId, partnerGraphic?.sprite?.id && typeof partnerGraphic.pattern === "number" ? `${partnerGraphic.sprite.id}#${decodeCharsetFrameIndex(partnerGraphic.pattern).characterIndex}` : undefined, warnings);
+    if (hero) warnings.push(`주인공을 무대에 맞는 그림 '${hero}' 으로 갈아입혔다.`);
     const inspected = run.call("inspect_romance_scene", {});
     const data = (inspected.data ?? {}) as { ok?: boolean; blockers?: string[]; paths?: { choice: string; reaction: string; revisit: string }[] };
     if (!data.ok) warnings.push(`inspect_romance_scene 반려: ${(data.blockers ?? [String(inspected.summary)]).join(" / ").slice(0, 400)}`);
@@ -152,6 +174,8 @@ export function buildScene(run: BuildRun, spec: SceneSpec): ContentBuildResult &
   if (!placed.result.ok) return done(false, [mapId], `${spec.partner} 세우기 실패: ${String(placed.result.summary).slice(0, 300)}`);
   const eventId = (placed.result.data as { eventId?: string } | undefined)?.eventId ?? "";
   if (!placed.graphic?.faceResourceId) warnings.push(`${spec.partner}: 짝 얼굴 있는 그림을 못 골라 대화창 초상이 없다.`);
+  const hero = dressHero(run, mapId, placed.graphic ? `${placed.graphic.textureKey}#${placed.graphic.characterIndex}` : undefined, warnings);
+  if (hero) warnings.push(`주인공을 무대에 맞는 그림 '${hero}' 으로 갈아입혔다.`);
   const probe = probeTwoChoices(run.ctx.project, mapId, eventId);
   const ok = probe.length === 2 && probe.every((p) => p.ok) && probe[0]!.reaction !== probe[1]!.reaction && probe[0]!.revisit !== probe[1]!.revisit
     && probe.every((p, i) => p.reaction === choices[i]!.reaction.trim() && p.revisit === choices[i]!.revisit.trim());

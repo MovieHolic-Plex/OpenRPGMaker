@@ -290,6 +290,72 @@ const isFoe = (id: string): boolean => /_foe\d|_v2foe\d/.test(id);
 const isChest = (id: string): boolean => /_chest\d|_v2chest/.test(id);
 const isBoss = (id: string): boolean => /_boss$|_guardian$/.test(id);
 
+/**
+ * 보스를 크게 그린다(2026-10-23 3·4차 눈가림: 두 쪽 다 «붉은 용»·«숲의 주인»이 1칸 잡몹 크기라 보스로 안 읽혔다).
+ * 그림 배율(graphic.scale, 자동 맞춤에 곱함)은 충돌과 따로라, 몸 사각(footprint 3×2, 발밑 한 줄만 막음)을 같이 줘서
+ * 큰 몸이 벽을 뚫고 보이거나 플레이어가 몸 위를 걸어 지나가지 않게 한다. 몸 여섯 칸이 모두 걸을 수 있는 바닥이고 다른 이벤트가 없으며
+ * 발밑 줄을 막아도 전에 닿던 칸이 모두 닿는 자리여야 한다 — 지금 자리가 안 되면 같은 방(없으면 4칸 안)에서 가장 가까운 자리로 옮긴다.
+ */
+function enlargeBoss(run: BuildRun, mapId: string, d: Record<string, unknown> | undefined, eventRe: RegExp, scale: number, warnings: string[], allowMove = true): string | undefined {
+  const project = run.ctx.project;
+  const map = project.maps[mapId];
+  const ev = map?.events.find((e) => eventRe.test(e.id));
+  if (!map || !ev || !(ev.pages ?? []).some((pg) => pg.graphic?.sprite)) return undefined;
+  const w = map.width;
+  const front = (d?.entryStair as { front?: Pt } | null | undefined)?.front ?? (d?.entrance as Pt | undefined);
+  let start: Pt | undefined = project.startMapId === mapId && project.startPos ? { x: project.startPos.x, y: project.startPos.y } : front ? { x: front.x, y: front.y } : undefined;
+  let reach = start ? terrainReachability(project, map, start) : undefined;
+  // 장치(다리·레버·마법진)로만 이어지는 보스방은 입구에서 땅으로 안 닿는다 — 그때는 보스 자리가 속한 덩이 안에서 보스에서 가장 먼 칸을 기준으로 잰다.
+  if (!reach || !reach[ev.y * w + ev.x]) {
+    const local = terrainReachability(project, map, { x: ev.x, y: ev.y });
+    let far: Pt | undefined, best = -1;
+    for (let k = 0; k < local.length; k++) if (local[k]) { const x = k % w, y = Math.floor(k / w), dd = Math.abs(x - ev.x) + Math.abs(y - ev.y); if (dd > best) { best = dd; far = { x, y }; } }
+    start = far; reach = far ? local : undefined;
+  }
+  const occupied = new Set(map.events.filter((e) => e.id !== ev.id).map((e) => e.y * w + e.x));
+  const free = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < map.height && isPassable(project, map, x, y) && !occupied.has(y * w + x)
+    && (map.upperTiles?.[y * w + x] ?? -1) < 0;
+  const stillConnected = (bx: number, by: number): boolean => {
+    if (!reach || !start) return true;
+    const blocked = new Set([bx - 1, bx, bx + 1].map((x) => by * w + x));
+    if (blocked.has(start.y * w + start.x)) return false;
+    const seen = new Uint8Array(reach.length);
+    const q = [start]; seen[start.y * w + start.x] = 1;
+    for (let i = 0; i < q.length; i++) for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const x = q[i]!.x + dx, y = q[i]!.y + dy, k = y * w + x;
+      if (x < 0 || y < 0 || x >= w || y >= map.height || seen[k] || !reach[k] || blocked.has(k)) continue;
+      seen[k] = 1; q.push({ x, y });
+    }
+    // 보스 앞(발밑 줄 아래 한 칸)에 설 수 있어야 싸움을 건다.
+    for (let k = 0; k < reach.length; k++) if (reach[k] && !blocked.has(k) && !seen[k]) return false;
+    return [bx - 1, bx, bx + 1].some((x) => seen[(by + 1) * w + x]) || seen[by * w + bx - 2] === 1 || seen[by * w + bx + 2] === 1;
+  };
+  const fits = (x: number, y: number) => [-1, 0, 1].every((dx) => free(x + dx, y) && free(x + dx, y - 1)) && stillConnected(x, y);
+  const room = roomsOf(d).find((r) => inRoom(r, ev));
+  let at: Pt | undefined = fits(ev.x, ev.y) ? { x: ev.x, y: ev.y } : undefined;
+  if (!at && allowMove) {
+    const cands: (Pt & { dd: number })[] = [];
+    for (let y = 1; y < map.height - 1; y++) for (let x = 1; x < w - 1; x++) {
+      const dd = Math.abs(x - ev.x) + Math.abs(y - ev.y);
+      if ((room ? inRoom(room, { x, y }) && inRoom(room, { x: x - 1, y: y - 1 }) && inRoom(room, { x: x + 1, y }) : dd <= 4) && fits(x, y)) cands.push({ x, y, dd });
+    }
+    cands.sort((a, b) => a.dd - b.dd);
+    for (const c of cands.slice(0, 6)) {
+      const moved = run.call("move_event", { mapId, eventId: ev.id, x: c.x, y: c.y });
+      const now = run.ctx.project.maps[mapId]?.events.find((e) => e.id === ev.id);
+      if (moved.ok && now && now.x === c.x && now.y === c.y) { at = c; break; }
+    }
+  }
+  if (!at) { warnings.push(`보스(${ev.name ?? ev.id}): 3×2 몸이 들어갈 빈 바닥이 없어 1칸 크기 그대로 둔다`); return undefined; }
+  const cur = run.ctx.project.maps[mapId]!.events.find((e) => e.id === ev.id)!;
+  (cur.pages ?? []).forEach((page, pageIndex) => {
+    if (!page.graphic?.sprite) return;
+    const res = run.call("patch_event_page", { mapId, eventId: cur.id, pageIndex, set: { graphic: { ...page.graphic, scale, scaleMode: "auto" }, footprint: { width: 3, height: 2 }, passRows: 1 } });
+    if (!res.ok) warnings.push(`보스 크게 그리기 실패: ${String(res.summary).slice(0, 140)}`);
+  });
+  return `${cur.name ?? cur.id} ${scale}배·몸 3×2 (${at.x},${at.y})`;
+}
+
 /** 층마다 보이는 적 수·가장 깊은 곳 상자를 맞춘다(도구 손잡이가 없는 것만). */
 function topUp(run: BuildRun, floors: readonly string[], floorData: readonly Record<string, unknown>[], fieldTroops: readonly string[], wantsFoes: boolean, wantsChest: boolean, tower: boolean, warnings: string[]): void {
   const project = run.ctx.project;
@@ -458,6 +524,14 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   if (!fieldTroops.length && /박쥐|bat|해골|거미|고블린|슬라임|늑대|좀비|유령/u.test(wanted)) warnings.push("요청한 적 그룹을 찾지 못했다");
   topUp(into, floors, floorData, fieldTroops, wantsFoes, wantsChest, type === "tower" || (args.direction === "up" && floors.length > 1), warnings);
   if (into !== run) { run.calls.push(...into.calls); run.ctx.project = into.ctx.project; }
+  // 보스·수문장을 크게 — 보스 2.5배, 중간 수문장 2배.
+  {
+    const lastIdx = floors.length - 1;
+    const big = enlargeBoss(run, floors[lastIdx]!, floorData[lastIdx], /_boss$/, 2.5, warnings);
+    if (big) warnings.push(`보스를 크게: ${big}`);
+    // 수문장은 길목을 지키므로 옮기지 않는다 — 안 맞으면 조용히 그대로.
+    floors.forEach((id, i) => { const g = enlargeBoss(run, id, floorData[i], /_guardian$/, 2, [], false); if (g) warnings.push(`수문장을 크게: ${g}`); });
+  }
   // 보스 그림 확인: 보스가 잡몹·수문장과 같은 그림이면 보고한다.
   const last = floors[floors.length - 1]!;
   const bossEv = run.ctx.project.maps[last]?.events.find((e) => /_boss$/.test(e.id));

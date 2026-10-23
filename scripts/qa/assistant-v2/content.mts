@@ -228,6 +228,9 @@ if (want("monster")) {
     { role: "할아버지", where: "가운데", looks: "노인", firstTalk: ["몬스터 센터에 들르면 동료들이 금세 기운을 차린단다."] },
   ] }, "mon-people");
   const town = ctx.project.maps[townId]!;
+  const { roadCellSet } = await import("../../../src/ai/v2/people.ts");
+  const roadSet = roadCellSet(ctx.project, town);
+  console.log("road cells", roadSet.size, "people on road:", town.events.filter((e) => /npc|person|people/i.test(e.id) && roadSet.has(e.y * town.width + e.x)).map((e) => `${e.name}(${e.x},${e.y})`).join(", ") || "none");
   for (const e of town.events) console.log("town event", e.id, e.name ?? "", `(${e.x},${e.y})`, e.pages?.[0]?.graphic?.sprite?.id ?? "", (e.pages?.[0]?.commands ?? []).filter((c) => c.kind === "text").map((c) => (c as { body: string }).body).join(" / ").slice(0, 60));
   for (const id of (made.mapIds as string[] | undefined) ?? []) {
     const m = ctx.project.maps[id]!;
@@ -272,6 +275,9 @@ for (const variant of ["romance", "romance-free"] as const) {
   } }, variant);
   const map = ctx.project.maps[(r.mapIds as string[] | undefined)?.[0] ?? ctx.project.startMapId]!;
   for (const e of map.events) for (const [i, p] of (e.pages ?? []).entries()) console.log("page", e.id, e.name, `(${e.x},${e.y})`, i, p.id, p.graphic?.sprite?.id, JSON.stringify(p.commands).slice(0, 700));
+  const { startStateOf } = await import("../../../src/project/session.ts");
+  const lead = ctx.project.database.actors.find((a) => a.id === startStateOf(ctx.project).partyActorIds[0]);
+  console.log("hero chip:", lead?.id, lead?.characterResourceId, lead?.characterIndex, lead?.faceResourceId, "warnings:", JSON.stringify(r.warnings ?? []).slice(0, 400));
   fullPng(ctx, `${variant}-map.png`);
   fs.writeFileSync(path.join(OUT, `${variant}-project.json`), JSON.stringify(ctx.project));
 }
