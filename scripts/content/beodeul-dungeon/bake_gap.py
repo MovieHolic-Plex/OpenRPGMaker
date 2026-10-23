@@ -687,6 +687,21 @@ def write_out(st):
     return count
 
 
+def retail_theme():
+    """gap 꼬리를 다시 쓰면 시트·칸 표가 gap 끝에서 잘린다 — 주제 꼬리(bake_theme.py, 30,848~)를 저장소대로 다시 붙인다."""
+    theme = ROOT / "tiledata/beodeul-dungeon/theme/cells.json"
+    if not theme.exists() or SHEET_PATH != ROOT / "public/assets/beodeul-city/beodeul-city-chipset.png":
+        return
+    if BASE + STORE_ROWS() * COLS > 30848:
+        sys.exit("gap 꼬리가 주제 꼬리 시작(30,848)을 넘었다 — bake_theme.py 의 BASE 를 옮겨야 한다")
+    subprocess.run([sys.executable, str(HERE / "bake_theme.py"), "--from-store"], cwd=ROOT, check=True)
+
+
+def STORE_ROWS():
+    d = json.loads(STORE_JSON.read_text())
+    return max(1, -(-len(d["cells"]) // COLS))
+
+
 # ================================================================================================ 본체
 def main():
     ap = argparse.ArgumentParser()
@@ -717,6 +732,7 @@ def main():
             return
         count = write_out(st)
         print(f"gap 꼬리 다시 씀: {BASE}..{count - 1} (칸 {len(st.cells)}, 키트 {len(st.defs['structureKits'])})")
+        retail_theme()
         return
     if (a.assume_picks or a.no_gate or a.provisional) and not (a.dry or a.test_out):
         sys.exit("--assume-picks · --no-gate · --provisional 은 --dry 와 함께만 쓴다(시험 결과를 번들에 굽지 않는다)")
@@ -775,6 +791,7 @@ def main():
         st.save()
         count = write_out(st)
         print(f"썼다: {SHEET_PATH} · {TS_PATH} (count {count}) · {STORE}/")
+        retail_theme()
     if blocked:
         print("3/4 관문 미통과 — 굽지 않은 항목:", *blocked, sep="\n  ", file=sys.stderr)
         sys.exit(2)

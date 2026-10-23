@@ -59,7 +59,14 @@ export const BEODEUL_WALL_KIT_PREFIX = "bd-wall-";
 export const BEODEUL_DUNGEON_GAP_BASE = 29568;
 export const BEODEUL_DUNGEON_GAP_KIT_PREFIX = "bd-dg-";
 /** gap 오토타일 id(줄마다·얼음). 천장(beodeul_dungeon_ceiling*)과 구별한다. */
-export const isBeodeulDungeonGapAutotile = (id: string): boolean => /^beodeul_dungeon_(rock|water|lava|ice)/.test(id);
+export const isBeodeulDungeonGapAutotile = (id: string): boolean => /^beodeul_dungeon_(rock|water|lava|ice|theme_)/.test(id) || /^beodeul_dungeon_ceiling_(ice|sand|void)$/.test(id);
+/**
+ * 던전 주제 묶음(2026-10-23 dungeon-themes, scripts/content/beodeul-dungeon/bake_theme.py): gap 꼬리(~30,847) 바로 뒤. 숲·늪·피라미드·얼음·마법탑·마계·
+ * 광산·묘지·성 주제 기물 키트 `bd-pick-dungeon-theme-*`(시공기 TK 이름), 오토타일 `beodeul_dungeon_theme_*`·천장 테두리 `beodeul_dungeon_ceiling_(ice|sand|void)`.
+ * gap 꼬리와 같은 막힘 규칙을 따른다(그 자리에 이식 칸이 있는 사본은 둘 다 받지 않는다). 칸 정본 tiledata/beodeul-dungeon/theme/.
+ */
+export const BEODEUL_DUNGEON_THEME_BASE = 30848;
+export const BEODEUL_DUNGEON_THEME_KIT_PREFIX = "bd-pick-dungeon-theme-";
 /** 고른 조각 키트 id 머리. 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
 export const BEODEUL_PICK_KIT_PREFIX = "bd-pick-";
 /**
@@ -235,7 +242,7 @@ function extendPickedParts(tileset: TilesetDef, limit: number = sheet.count): bo
 /** Shipped kits the copy lacks are added (by id); bundle-owned `bd-pick-*` kits are replaced by the shipped ones. Others stay. */
 function mergeShippedKits(tileset: TilesetDef, withWall = true, withGap = true): boolean {
   const shipped = (data().structureKits as unknown as StructureKitDef[]).filter(kit => (withWall || !kit.id.startsWith(BEODEUL_WALL_KIT_PREFIX))
-    && (withGap || !kit.id.startsWith(BEODEUL_DUNGEON_GAP_KIT_PREFIX)));
+    && (withGap || (!kit.id.startsWith(BEODEUL_DUNGEON_GAP_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_DUNGEON_THEME_KIT_PREFIX))));
   const shippedById = new Map(shipped.map(kit => [kit.id, kit]));
   const current = tileset.structureKits ?? [];
   let changed = false;
@@ -273,7 +280,7 @@ function mergeShippedFarm(tileset: TilesetDef, withDungeon = true, withWall = tr
   let groupsChanged = false;
   for (const shipped of data().tileGroups as unknown as TileGroupMetadata[]) {
     if (!shipped.id.startsWith("beodeul:farm") && !(withDungeon && shipped.id === "beodeul:dungeon_ceiling")
-      && !(withWall && shipped.id.startsWith("beodeul:town_wall")) && !(withGap && shipped.id.startsWith("beodeul:dungeon_gap"))) continue;
+      && !(withWall && shipped.id.startsWith("beodeul:town_wall")) && !(withGap && (shipped.id.startsWith("beodeul:dungeon_gap") || shipped.id.startsWith("beodeul:dungeon_theme")))) continue;
     const i = tileGroups.findIndex(group => group.id === shipped.id);
     if (i < 0) { tileGroups.push(structuredClone(shipped)); groupsChanged = true; }
     else if (JSON.stringify(tileGroups[i]) !== JSON.stringify(shipped)) { tileGroups[i] = structuredClone(shipped); groupsChanged = true; }
