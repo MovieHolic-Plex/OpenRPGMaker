@@ -49,6 +49,13 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
   마을은 집이 서면 「완성된 집 보호」로 AI 가 다시 지을 수 없다 — 그래서 집 수(houseCount)는 짓기 전에 사본 위에서 씨앗 다섯 개를 시험해 고른다.
   던전 다시 짓기는 사본 위에서 통째로(위층 지우기 → 1층 `rebuild:true` → 성공할 때만 반영). `variant` 는 씨앗을 민다. 요청한 적 낱말은 적 그룹 이름과 맞춰 `troops.field` 로,
   도구가 보이는 적을 0 마리 놓았으면(작은 동굴) 입구에서 먼 칸에 `place_field_enemy` 로 서너 마리를 세운다.
+- 몬스터 수집 첫 마을(`builders/monsterTown.ts`, `style:'monster'`): v1 `build_monster_game`(빈 프로젝트 전용, 지연 재료는 `PlaceBuilder.prepare` 로 기다림)을 `gymCount` 기본 1(맵 19개)로 부르고,
+  첫 마을 묶음(마을·북쪽 1번길·연구소·센터·집·도구점·2층)만 결과·비평 대상으로 돌려준다. 맵 이름을 「주인공의 집」「몬스터 센터」로, 첫 길 이름을 마을 이름에 맞추고, 생성기 기본 주민 넷을 뺀다(마을 사람은 `add_people`).
+  뒤 캠페인도 함께 생기는 것은 경고로 보고한다. 다시 짓기·고치기는 못 한다. 연구소 겉모습은 일반 집 키트(지붕 색만 다름) — 칩셋에 연구소 건물 키트가 없다.
+- 두 선택 대화 장면(`scene.ts`, 동사 `add_scene`): 확정 연애 기획(romance-scene 계약)이 있으면 `author_romance_scene` → 상대 그림을 짝 얼굴 칩으로 바꾸고 상대 줄 앞에만 얼굴(`withSpeakerFaces`, 주인공 줄은 얼굴 지움) → `inspect_romance_scene`.
+  계약이 없으면 `place_npc` 한 번(첫 대화 + 선택별 반응·자기 스위치 A/B + 선택별 재대화 쪽)을 세우고 `runSceneTest` 로 두 선택·재대화를 돌린다. 출하 플레이어 확인 `scripts/qa/runtime/v2-romance-scene.scenario.mjs`.
+- 조건 카드: 몬스터 마을 카드는 요청 낱말(포켓몬·몬스터 수집·연구소…)이나 보는 맵이 몬스터 계열일 때, 대화 장면 카드는 연애 계약이 있거나 요청에 대화 장면·선택지·고백 낱말이 있을 때만 싣는다(`prompt.ts conditionalCards`, 각 ≈420자).
+- 사람 그림: 장르 잠금이 강제 중이면 허용 칩만 고른다. 「몬스터 수집」 꼬리표는 적 낱말로 보지 않는다(Scarloxy 주민 칩이 통째로 빠져 할아버지가 소년 그림이 됐다). 바깥 맵에서는 같은 부름의 사람끼리 바로 옆에 세우지 않는다.
 - 사람(`people.ts` → `place_npc` 두 쪽: 첫 대화 → 자기 스위치 → 다음 대화), 자리 낱말(입구·광장·문 앞)을 걸어 닿고 길을 막지 않는 칸으로.
 - 사건(`events.ts` → `script_cutscene`, 게임 시작 자동 1회), `probeCutscene` 문제를 경고로.
 - 없는 물건(`drawObject.ts` → `generate_missing_object`): 그리기 카드만 띄운다(`draw_object` tool_end 가 카드를 연다 — `aiStoreCard.ts STORE_CARD_TOOLS`). 그린 뒤 후속 지시는 `place_object` 로 놓는다.
@@ -62,7 +69,7 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 - 모델 없이 빌더: `bun scripts/qa/assistant-v2/builders.mts <out> [caseId]` (사례 `builderCases.ts`).
 - 모델 없이 동사: `bun scripts/qa/assistant-v2/verbs.mts <out> [--critic]`.
 - 사람·사건·물건: `bun scripts/qa/assistant-v2/content.mts`.
-- v1/v2 비교: `space-craft` 하네스의 `compare` 분류 10개(`harness-data/space-craft/seed.json`, `startBuild` 로 「이미 있는 맵」 시작 상태),
+- v1/v2 비교: `space-craft` 하네스의 `compare` 분류(cmp-monster-town·cmp-romance-scene 포함 — 연애 사례는 `startBrief` 로 확정 기획·계약 씨앗까지 심는다)(`harness-data/space-craft/seed.json`, `startBuild` 로 「이미 있는 맵」 시작 상태),
   ai-config `local-claude-sonnet-high.json`(v1) / `local-claude-sonnet-high-v2.json`(v2, `assistantVersion:"v2"` → 하네스가 스위치를 켠다).
 
 ## v1 비교 결과 (2026-10-23, 코드 e06766bd8d)

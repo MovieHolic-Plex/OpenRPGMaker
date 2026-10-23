@@ -15,6 +15,7 @@ import type { ContentBuildResult, EventSpec, ObjectSpec, PersonSpec, PlaceBuildR
 import { buildPeople, findMap, resolveWhere } from "./people";
 import { buildEvent } from "./events";
 import { drawObject } from "./drawObject";
+import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
 // 콘텐츠 동사(컷신 무대·연출 비평·물건 자리 계획) — finishContent·addEvent·drawObjectVerb·placeObject 가 쓴다.
 import { critiqueStaging } from "./critic";
 import { pickStageFrames, stageFrameProject, type EventBuildResult } from "./events";
@@ -339,6 +340,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         return text({ ok: false, summary: `${spec.type}${spec.style ? `(${spec.style})` : ""} 을 짓는 빌더가 없다. 다른 type 으로 바꾸거나 사용자에게 못 한다고 알린다.` });
       }
       env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${builder.id})` });
+      await builder.prepare?.(spec);
       const result = builder.build(run, spec);
       return finishPlace(id, "make_place", params, spec, builder.id, result, 0);
     },
@@ -452,6 +454,16 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
 
+  const addScene: PiToolShape = {
+    name: "add_scene", label: "두 선택 대화 장면", concurrency: "exclusive",
+    description: "상대 한 명과의 짧은 대화 장면 — 도입 대사, 선택지 두 개와 선택별 반응, 다시 말 걸면 하는 말. 확정 연애 기획이 있으면 그 계약대로 쓰고, 함수가 짝 얼굴 그림으로 세워 두 선택을 실제 런타임으로 검사한다.",
+    parameters: { type: "object", properties: { scene: SCENE_SCHEMA }, required: ["scene"] },
+    async execute(id, params) {
+      const scene = (params as { scene: SceneSpec }).scene;
+      return finishContent(id, "add_scene", params, buildScene(run, { ...scene, ...(scene.mapId || !env.ctx.currentMapId ? {} : { mapId: env.ctx.currentMapId }) }));
+    },
+  };
+
   const drawObjectVerb: PiToolShape = {
     name: "draw_object", label: "없는 물건 그리기", concurrency: "exclusive",
     description: "칩셋에 없는 물건을 공방 원클릭 그리기 경로로 맡긴다. 결과의 summary 가 놓였는지·대기인지를 정직하게 말한다.",
@@ -531,7 +543,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  return [makePlace, editPlace, addPeople, addEvent, drawObjectVerb, placeObject, inspect, askUser].map(guard);
+  return [makePlace, editPlace, addPeople, addEvent, addScene, drawObjectVerb, placeObject, inspect, askUser].map(guard);
 }
 
 /** 끝맺음 관문 — 남은 문제가 있으면 한 번 더 돌게 하는 글. 다 통과면 undefined. */

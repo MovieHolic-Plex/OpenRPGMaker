@@ -207,3 +207,71 @@ if (want("tavern")) {
   ] }, "tavern-npc");
   fullPng(ctx, "tavern-npcs.png");
 }
+
+// ── 4. 몬스터 수집 첫 마을(cmp-monster-town): make_place(style monster) → add_people 셋 ──
+if (want("monster")) {
+  const project = createBlankProject();
+  project.maps[project.startMapId]!.tilesetId = "monster_overworld";
+  const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };
+  const log: string[] = [];
+  const session = new V2Session();
+  const task = "포켓몬 같은 몬스터 수집 게임의 첫 마을 만들어 줘. 주인공 집, 박사 연구소, 몬스터 센터가 있고, 마을 사람 NPC 셋이 각자 한마디씩 해 줘. 북쪽으로 풀숲 길이 이어지게.";
+  const tools = createV2Tools(makeEnv(ctx, task, log), session);
+  renders = [];
+  const made = await call(tools, "make_place", { spec: { type: "village", style: "monster", name: "새싹 마을" } }, "mon-place");
+  dumpRenders("mon-place");
+  const townId = ctx.project.startMapId;
+  ctx.currentMapId = townId;
+  await call(tools, "add_people", { mapId: townId, people: [
+    { role: "마을 아주머니", where: "광장", looks: "아줌마", firstTalk: ["연구소 박사님이 오늘 너를 기다리고 계시더라."] },
+    { role: "소년", where: "입구", looks: "소년", firstTalk: ["북쪽 풀숲엔 야생 몬스터가 숨어 있어! 혼자 들어가면 위험해."] },
+    { role: "할아버지", where: "가운데", looks: "노인", firstTalk: ["몬스터 센터에 들르면 동료들이 금세 기운을 차린단다."] },
+  ] }, "mon-people");
+  const town = ctx.project.maps[townId]!;
+  for (const e of town.events) console.log("town event", e.id, e.name ?? "", `(${e.x},${e.y})`, e.pages?.[0]?.graphic?.sprite?.id ?? "", (e.pages?.[0]?.commands ?? []).filter((c) => c.kind === "text").map((c) => (c as { body: string }).body).join(" / ").slice(0, 60));
+  for (const id of (made.mapIds as string[] | undefined) ?? []) {
+    const m = ctx.project.maps[id]!;
+    fs.writeFileSync(path.join(OUT, `mon-${id}.png`), renderMapPng(ctx.project, m, 1).png);
+    console.log("png", `mon-${id}.png`, m.name, `${m.width}×${m.height}`);
+  }
+  console.log("genre", ctx.project.system.genre, "lock", ctx.project.system.genreLock?.preset, "maps", Object.keys(ctx.project.maps).length);
+  console.log("prompt cards:", (await import("../../../src/ai/v2/prompt.ts")).conditionalCards(ctx.project, townId, task).map((c) => c.slice(0, 30)));
+}
+
+// ── 5. 두 선택 대화 장면(cmp-romance-scene): 시작 상태는 fixture 와 같은 길(옥상 짓기 + 확정 기획 씨앗) → add_scene ──
+async function romanceStart(withBrief: boolean): Promise<ToolContext> {
+  const seed = JSON.parse(fs.readFileSync("harness-data/space-craft/seed.json", "utf8")) as { cases: { id: string; startTileset: string; startBuild?: { tool: string; args: Record<string, unknown> }[]; startBrief?: unknown }[] };
+  const c = seed.cases.find((x) => x.id === "cmp-romance-scene")!;
+  let project = createBlankProject();
+  project.maps[project.startMapId]!.tilesetId = c.startTileset;
+  for (const step of c.startBuild ?? []) getTool(step.tool)!.run(project, step.args);
+  if (withBrief && c.startBrief) {
+    const { normalizeGameDesignBrief } = await import("../../../src/project/gameDesignBrief.ts");
+    const { eligibleAuthoringHarnessFor } = await import("../../../src/harnesses/_core/authoringRegistry.ts");
+    project.gameDesignBrief = normalizeGameDesignBrief(c.startBrief);
+    project = eligibleAuthoringHarnessFor(project)!.seed(project)!;
+  }
+  return { project, currentMapId: project.startMapId, assistantRun: true };
+}
+for (const variant of ["romance", "romance-free"] as const) {
+  if (!want(variant)) continue;
+  const ctx = await romanceStart(variant === "romance");
+  const log: string[] = [];
+  const session = new V2Session();
+  const task = "학교 옥상에서 주인공과 소꿉친구 하린이 처음으로 속마음을 이야기하는 짧은 대화 장면 만들어 줘. 선택지 두 개로 하린의 반응이 달라지게.";
+  const tools = createV2Tools(makeEnv(ctx, task, log), session);
+  console.log("prompt cards:", (await import("../../../src/ai/v2/prompt.ts")).conditionalCards(ctx.project, ctx.currentMapId, task).map((c) => c.slice(0, 30)));
+  const r = await call(tools, "add_scene", { scene: {
+    partner: "하린", role: "소꿉친구", looks: "여학생", where: "난간 쪽",
+    opening: ["여기 바람 시원하지? 너한테 꼭 하고 싶은 말이 있어서 불렀어.", "어릴 때부터 늘 옆에 있었는데… 요즘 너를 보면 자꾸 마음이 이상해져."],
+    choices: [
+      { label: "속마음을 털어놓는다", reaction: "…정말? 나만 그런 줄 알았어. 그 말, 오래 기다렸던 것 같아.", revisit: "아까 그 말, 계속 생각나서 수업에 집중이 안 돼." },
+      { label: "웃으며 얼버무린다", reaction: "아, 그렇구나… 응, 괜찮아. 우리 사이가 어색해지는 건 싫으니까.", revisit: "아까 일은 잊어 줘. 우린 소꿉친구니까, 그치?" },
+    ],
+    closing: "오늘 옥상에서 이야기해 줘서 고마워, 하린아.",
+  } }, variant);
+  const map = ctx.project.maps[(r.mapIds as string[] | undefined)?.[0] ?? ctx.project.startMapId]!;
+  for (const e of map.events) for (const [i, p] of (e.pages ?? []).entries()) console.log("page", e.id, e.name, `(${e.x},${e.y})`, i, p.id, p.graphic?.sprite?.id, JSON.stringify(p.commands).slice(0, 700));
+  fullPng(ctx, `${variant}-map.png`);
+  fs.writeFileSync(path.join(OUT, `${variant}-project.json`), JSON.stringify(ctx.project));
+}

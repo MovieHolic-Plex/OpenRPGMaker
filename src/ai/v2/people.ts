@@ -11,6 +11,7 @@ import { terrainReachability } from "@/project/terrainReachability";
 import { queryNpcGraphics } from "@/assets/charsetQuery";
 import { sharedCharsetRow } from "@/project/sharedCharacterFaceResolver";
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
+import { genreLockCharsetCatalogFilter } from "@/project/genreLockCharsets";
 import type { BuildRun, ContentBuildResult, PersonSpec } from "./types";
 
 export const PEOPLE_CARD =
@@ -701,7 +702,7 @@ function wantedGender(looks: string | undefined, role: string | undefined): "mal
 /** 이 맵 화풍에 맞는 칩 계열인가 — 판타지(버들항·손 도트 실내) 맵에는 EasyRPG 사람 칩, 현대 맵에는 현대 칩. */
 function familyFits(map: GameMap, textureKey: string): boolean {
   const modern = /jp_|modern|city_modern|campus|school|office/i.test(map.tilesetId);
-  const fantasyChip = /^tex_easyrpg_charset_(people|actor)|^tex_scarloxy_charset_people/i.test(textureKey);
+  const fantasyChip = /^tex_easyrpg_charset_(people|actor)|^tex_(oprn_charset_)?scarloxy_(charset_)?people/i.test(textureKey);
   return modern ? !fantasyChip : fantasyChip;
 }
 
@@ -720,12 +721,17 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
   }
   const overrides = (project as unknown as { charsetLabels?: Parameters<typeof queryNpcGraphics>[2] }).charsetLabels;
   let best: (PersonGraphic & { score: number }) | undefined;
+  // 장르 잠금(몬스터 수집·현대 연애)이 강제 중이면 허용 칩만 — 막힌 칩을 골라 place_npc 가 거부하던 길을 미리 막는다.
+  const allowed = genreLockCharsetCatalogFilter(project);
   const queries = graphicQueries(looks, role);
   queries.forEach((q, qi) => {
     queryNpcGraphics(q, 30, overrides).forEach((m, rank) => {
       const e = m.entry;
       const text = `${e.label} ${e.tags.join(" ")} ${e.textureKey}`;
-      if (!hostileOk && (HOSTILE.test(text) || /monster/i.test(e.textureKey))) return;
+      // 「몬스터 수집」 장르 꼬리표가 붙은 사람 칩(Scarloxy 트레이너·주민)은 적이 아니다 — 그 낱말을 빼고 적 낱말을 본다.
+      const hostileText = text.replace(/몬스터 ?수집|monster[- ]?collect(ion|ing)?/giu, "");
+      if (!hostileOk && (HOSTILE.test(hostileText) || /monster/i.test(e.textureKey))) return;
+      if (allowed && !allowed(e)) return;
       const row = sharedCharsetRow(e.textureKey, e.characterIndex);
       const face = row?.status === "mapped" && row.faceResourceId ? row.faceResourceId : undefined;
       const key = `${e.textureKey}#${e.characterIndex}`;
@@ -800,7 +806,10 @@ export function buildPeople(run: BuildRun, people: readonly PersonSpec[], mapId?
       failed++;
       continue;
     }
-    const where = resolveWhere(run.ctx.project, map, person.where, { at: person.at, avoid: used });
+    // 바깥 맵에서는 같은 부름의 사람끼리 바로 옆에 붙여 세우지 않는다(마을 광장에 둘이 겹쳐 선 줄처럼 보였다) — 실내는 바 앞 손님처럼 붙어도 된다.
+    const outdoor = (map as unknown as { climate?: { mode?: string } }).climate?.mode !== "indoor";
+    const avoid = outdoor ? used.flatMap((c) => [-1, 0, 1].flatMap((dy) => [-1, 0, 1].map((dx) => ({ x: c.x + dx, y: c.y + dy })))) : used;
+    const where = resolveWhere(run.ctx.project, map, person.where, { at: person.at, avoid });
     if (where.note) warnings.push(`${label}: ${where.note}`);
     const cell = where.cell;
 

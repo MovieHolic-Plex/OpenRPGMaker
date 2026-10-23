@@ -25,6 +25,7 @@ for (const c of BUILDER_CASES) {
   try {
     const builder = builderFor(c.spec);
     if (!builder) { console.log(`== ${c.id} NO BUILDER`); continue; }
+    await builder.prepare?.(c.spec);
     const res = builder.build(run, c.spec);
     const ms = Math.round(performance.now() - t0);
     for (const id of res.mapIds) { const m = ctx.project.maps[id]; if (m) { fs.writeFileSync(path.join(out, `${c.id}-${id}.png`), renderMapPng(ctx.project, m).png); const b = measureInteriorBareFloor(ctx.project, m); if (b) console.log(`  bare ${id.slice(0, 12)} ${b.pct}% ${b.regions.slice(0, 4).map((r) => `(${r.x},${r.y}) ${r.w}x${r.h}`).join(" ")}`); } }

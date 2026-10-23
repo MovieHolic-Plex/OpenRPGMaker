@@ -118,6 +118,8 @@ export interface PlaceBuilder {
   accepts(spec: PlaceSpec): boolean;
   /** 명세 → v1 도구 호출. previous 가 있으면 같은 맵을 그 자리에서 다시 짓는다. */
   build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBuildResult;
+  /** (선택) 짓기 전에 기다릴 지연 재료 — 도구의 async prepare(예: build_monster_game 의 캠페인 모듈). */
+  prepare?(spec: PlaceSpec): Promise<void>;
 }
 
 /** 사람(NPC) 명세 — add_people 의 인자 하나. */

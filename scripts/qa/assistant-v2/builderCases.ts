@@ -22,5 +22,6 @@ export const BUILDER_CASES: BuilderCase[] = [
   { id: "jp-street-station", spec: { type: "street", name: "역전 거리", style: "jp-modern", features: ["station", "konbini", "tokyo tower"] } },
   { id: "jp-house", spec: { type: "house", name: "다다미 집" } },
   { id: "jp-house-2f", spec: { type: "house", name: "2층 단독주택", floors: 2 } },
+  { id: "monster-town", startTileset: "monster_overworld", spec: { type: "village", style: "monster", name: "새싹 마을", features: ["player house", "lab", "monster center", "grass route north"] } },
   { id: "jp-konbini", spec: { type: "house", name: "편의점", style: "jp-modern" } },
 ];
