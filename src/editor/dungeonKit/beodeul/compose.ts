@@ -153,6 +153,26 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const isFloor = (x: number, y: number) => inb(x, y) && floorMask[idx(x, y)] === 1;
   /** 걸을 수 있는 바닥(액체 아님, 다리 포함). 장식·방 안 칸 고르기는 이것만 본다. */
   const isWalk = (x: number, y: number) => inb(x, y) && floorMask[idx(x, y)] === 1 && liquid[idx(x, y)] === 0;
+  // 마계: 허공 위 돌다리 한 칸은 «끊긴 계단»으로 읽힌다(dt r2 otherworld-b M3·M9) — 다리 칸은 섬을 잇는 땅 목으로 둔다.
+  // 바닥 사이에 갇힌 작은 벽 덩이(기둥, ≤40칸)는 떠 있는 ㄱ자 벽 토막으로 읽히므로 허공 구멍으로 바꾼다.
+  if (voidLiquid) {
+    for (let i = 0; i < W * H; i += 1) if (bridge[i]) { bridge[i] = 0; liquid[i] = 0; }
+    const seen = new Uint8Array(W * H);
+    for (let s = 0; s < W * H; s += 1) {
+      if (seen[s] || floorMask[s] === 1) continue;
+      const comp: number[] = [s]; seen[s] = 1; let edge = false;
+      for (let k = 0; k < comp.length; k += 1) {
+        const c = comp[k]!; const x = c % W, y = (c - x) / W;
+        if (x === 0 || y === 0 || x === W - 1 || y === H - 1) edge = true;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+          const X = x + dx, Y = y + dy;
+          if (!inb(X, Y) || seen[idx(X, Y)] || floorMask[idx(X, Y)] === 1) continue;
+          seen[idx(X, Y)] = 1; comp.push(idx(X, Y));
+        }
+      }
+      if (!edge && comp.length <= 40) for (const c of comp) { floorMask[c] = 1; liquid[c] = 1; }
+    }
+  }
 
   // ---- 둥근 탑 링 방(shape "ring", 2026-10-23 dungeon-themes): 방 바닥 w×h 가 링 지름 N=w+2(h=N-4)이면 gap 링 키트를 통째로 찍는다.
   // 바닥 마스크를 링 안 칸으로 바꾸고(벽·천장이 링 둘레에서 유도된다), 장식 전에 키트 그림으로 덮는다. 남쪽 가운데 두 칸 = 통로(bd-dg-tower-pass-s).

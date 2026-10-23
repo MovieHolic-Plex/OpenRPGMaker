@@ -355,7 +355,10 @@ function populateFloor(draft: Project, mapId: string, data: Record<string, unkno
     const foeFree = (c: Pt): boolean => free(c) && !map.events.some((e) => Math.max(Math.abs(e.x - c.x), Math.abs(e.y - c.y)) <= 2);
     planned("enemies").filter((e) => e.room !== bossRoom?.id && e.room !== restRoom?.id && foeFree(e)).slice(0, 4).forEach((e, i) => {
       if (!foeFree(e)) return;
-      if (attempt(`보이는 적 (${e.x},${e.y})`, () => placeRoamer(draft, { mapId, x: e.x, y: e.y, troopId: troops.field[(i + salt) % troops.field.length], behavior: "patrol", id: `ev_${mapId}_foe${i + 1}` }, i % 2 === 1))) foes.push(`(${e.x},${e.y})`);
+      const troopId = troops.field[(i + salt) % troops.field.length]!;
+      // 적 이름을 좌표에 붙인다 — 이름이 없으면 조수가 「박쥐는 없다」고 답했다(dt r2 cave-a, 실제로는 박쥐 둘).
+      const names = (draft.database.troops.find((t) => t.id === troopId)?.members ?? []).map((m) => draft.database.enemies.find((x) => x.id === m.enemyId)?.name).filter(Boolean);
+      if (attempt(`보이는 적 (${e.x},${e.y})`, () => placeRoamer(draft, { mapId, x: e.x, y: e.y, troopId, behavior: "patrol", id: `ev_${mapId}_foe${i + 1}` }, i % 2 === 1))) foes.push(`(${e.x},${e.y})${names.length ? ` ${[...new Set(names)].join("·")}` : ""}`);
     });
   } else warnings.push(`${map.name}: 데이터베이스에 적 그룹이 없어 보이는 적을 두지 않았다 — upsert_troop 뒤 troops 로 다시 짓거나 place_field_enemy.`);
   if (foes.length) out.push(`보이는 적 ${foes.join(" ")}`);
@@ -549,7 +552,7 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   const filled: string[] = [];
   let gimmickPlaced: DungeonGimmick | null = null;
   let gimmickAfter: (() => void) | null = null;
-  const gimmickArg = args.gimmick === "none" ? "none" : (DUNGEON_GIMMICKS as readonly string[]).includes(String(args.gimmick)) ? (args.gimmick as DungeonGimmick) : args.puzzle === "lever" ? "lever" : undefined;
+  const gimmickArg = args.gimmick === "none" ? "none" : (DUNGEON_GIMMICKS as readonly string[]).includes(String(args.gimmick)) ? (args.gimmick as DungeonGimmick) : args.puzzle === "lever" ? "lever" : gimmickCue(`${typeof args.name === "string" ? args.name : ""} ${typeof args.inspiration === "string" ? args.inspiration : ""}`);
   if (gimmickArg !== "none" && datas.every((d) => d.adapter === "beodeul") && (gimmickArg || (args.populate !== false && datas.every((d) => d.genre === "rpg")))) {
     const i = datas.length - 1;
     const m = draft.maps[mapIds[i]!]!;
@@ -629,6 +632,17 @@ function skyAroundTower(draft: Project, map: GameMap): number {
   for (const i of clear) map.lowerTiles[i] = -1;
   map.background = bg;
   return clear.length;
+}
+
+/** 이름·inspiration 낱말 → 장치(인자를 안 줬을 때). 「지하 호수 동굴」은 다리, 「광차」는 광차 — 같은 종류 두 요청이 같은 레버로 끝나던 것(dt r2 cave-a/b). */
+function gimmickCue(text: string): DungeonGimmick | undefined {
+  if (/광차|선로|레일|minecart|mine\s*cart/iu.test(text)) return "minecart";
+  if (/미끄러|빙판|얼어붙은\s*호수|ice\s*slide/iu.test(text)) return "iceslide";
+  if (/마법진|순간\s*이동|워프|차원문|teleport|warp/iu.test(text)) return "teleporter";
+  if (/함정|구덩이|모래\s*늪|trap|pit/iu.test(text)) return "sandpit";
+  if (/레버|쇠창살|lever/iu.test(text)) return "lever";
+  if (/호수|지하\s*강|강물|물줄기|다리|lake|river|bridge/iu.test(text)) return "bridge";
+  return undefined;
 }
 
 export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {

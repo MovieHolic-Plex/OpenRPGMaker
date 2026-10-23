@@ -436,7 +436,7 @@ function placeBridge(c: Ctx): string {
 }
 
 // ---------------------------------------------------------------- lever at a chokepoint (blob·미로 배치 — 방+통로 문법의 잠긴 통로가 없을 때)
-function placeChokeLever(c: Ctx): string {
+function placeChokeLever(c: Ctx, entranceOk = true): string {
   const W = c.map.width, H = c.map.height;
   const bossId = text(field(c.data, "anchors"), "boss") ?? text(field(c.data, "anchors"), "treasure");
   const target = c.rooms.find((r) => r.id === bossId) ?? c.rooms[c.rooms.length - 1];
@@ -463,7 +463,7 @@ function placeChokeLever(c: Ctx): string {
   for (let i = hit; i >= 0; i = prev[i]!) path.push(i);   // 목표 → 입구 순
   // 목표 방 바깥에서, 목표에 가까운 순으로 좁은 목(가로 또는 세로 단면 ≤4칸)을 찾는다
   // 레버가 입구 방에 서는 목은 마지막 후보(들어서자마자 당기는 레버는 퍼즐이 아니다) — 먼저 레버가 더 깊은 방에 서는 목을 찾는다.
-  for (const allowEntrance of [false, true]) for (const i of path) {
+  for (const allowEntrance of entranceOk ? [false, true] : [false]) for (const i of path) {
     const x = i % W, y = (i - x) / W;
     if (inRoom(x, y, target) || c.map.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) continue;
     for (const horiz of [true, false]) {
@@ -556,12 +556,15 @@ export function placeThemeGimmick(draft: Project, map: GameMap, data: Record<str
   for (const g of order) {
     if (tried.has(g)) continue;
     tried.add(g);
-    const line = g === "lever" ? (leverFallback() || placeChokeLever(c)) : g === "bridge" ? placeBridge(c) : g === "teleporter" ? placeTeleporter(c) : g === "minecart" ? placeMinecart(c) : g === "iceslide" ? placeIceSlide(c) : placeSandpit(c);
+    const line = g === "lever" ? (leverFallback() || placeChokeLever(c, false)) : g === "bridge" ? placeBridge(c) : g === "teleporter" ? placeTeleporter(c) : g === "minecart" ? placeMinecart(c) : g === "iceslide" ? placeIceSlide(c) : placeSandpit(c);
     if (line) {
       if (want && g !== want) warnings.push(`${map.name}: ${GIMMICK_LABEL[want]} 자리가 없어 ${GIMMICK_LABEL[g]}(으)로 바꿨다.`);
       return { gimmick: g, line, after };
     }
   }
+  // 마지막: 입구 방에 서는 레버(들어서자마자 당기는 레버) — 다른 장치가 다 안 될 때만(dt r2 cave-a 는 다리 자리가 있는데도 입구 레버였다).
+  const last = placeChokeLever(c, true);
+  if (last) { if (want && want !== "lever") warnings.push(`${map.name}: ${GIMMICK_LABEL[want]} 자리가 없어 ${GIMMICK_LABEL.lever}(으)로 바꿨다.`); return { gimmick: "lever", line: last, after }; }
   warnings.push(`${map.name}: 주제 장치를 둘 자리가 없었다.`);
   return { gimmick: null, line: "", after };
 }
