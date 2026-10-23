@@ -146,7 +146,8 @@
 
   /* 세로: 상점 오버레이는 작은 무대(390x219)가 아니라 화면 아래쪽 전체를 쓴다. 44px 조작이 잘리지 않게 하고,
      그동안 가로 안내 알약은 접어 겹침을 없앤다. */
-  .player-layout .play-viewport[data-mobile-ui="portrait"] > .runtime-shop-overlay {
+  /* 특이도: shop.css 의 .runtime-overlay.runtime-shop-overlay(.preset-pixel) 폭·높이 규칙을 이겨야 한다. */
+  .player-layout .play-viewport[data-mobile-ui="portrait"] > .runtime-shop-overlay:not(.emerald-shop-overlay):is(.runtime-shop-overlay, .runtime-overlay):is(.runtime-shop-overlay, .runtime-overlay):is(.runtime-shop-overlay, .runtime-overlay) {
     top: var(--play-stage-top, 0px);
     left: 0;
     transform: none;
