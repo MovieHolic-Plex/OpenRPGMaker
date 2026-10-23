@@ -86,7 +86,8 @@ async function materialize(game, outRoot) {
     return { ok: true, file: target, bytes: json.length };
   }
   if (game.kind === "generator") {
-    const result = await run("npx", ["--no-install", "tsx", "--import", CSS_STUB, GENERATOR, game.id, dir], {
+    // tsx is not a repo dependency; --no-install only worked where the npx cache already held it. Pin and fetch.
+    const result = await run("npx", ["--yes", "tsx@4.23.15", "--import", CSS_STUB, GENERATOR, game.id, dir], {
       timeoutMs: Number(game.buildTimeoutMs ?? 900_000),
     });
     if (result.code !== 0) {
