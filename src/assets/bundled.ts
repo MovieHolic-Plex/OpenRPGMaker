@@ -60,7 +60,7 @@ import { cropGraphicStages } from "@/project/farmModel";
 import { SCARLOXY_CHIPSET_ASSETS } from "@/assets/scarloxyPack";
 import { EMERALD_MONSTER_KIT_CHIPSET_ASSETS, emeraldMonsterKitSheet } from "@/assets/emeraldMonsterKitAssets";
 import { EMOTE_ASSET_PATH, EMOTE_FRAME_SIZE, EMOTE_KINDS, EMOTE_TEXTURE_KEY } from "@/project/emotes";
-import { PLACEABLE_OVERLAY_TEXTURE_KEYS } from "@/player/placeableOverlayGraphics";
+import { PLACEABLE_OVERLAY_IMAGE_ASSETS, PLACEABLE_OVERLAY_TEXTURE_KEYS, PLACEABLE_TREE_FRAME, PLACEABLE_TREE_TEXTURE_KEY } from "@/player/placeableOverlayGraphics";
 import type { Project } from "@/project/types";
 import { bundledChipsetTileSize, bundledChipsetTilesPerRow } from "./bundledChipsetGeometry";
 export { bundledChipsetTileSize, bundledChipsetTilesPerRow } from "./bundledChipsetGeometry";
@@ -251,6 +251,7 @@ const EXTRA_BUNDLED_IMAGE_ASSETS = [
   ...BUNDLED_EASYRPG_CHIPSET_ASSETS,
   ...BUNDLED_REFERENCE_CHIPSET_ASSETS,
   ...BUNDLED_EASYRPG_CHARSET_ASSETS,
+  ...PLACEABLE_OVERLAY_IMAGE_ASSETS,
 ] as const satisfies readonly BundledImageAsset[];
 
 export const BUNDLED_IMAGE_ASSETS = [
@@ -289,6 +290,10 @@ export function loadBundledAssets(scene: { readonly load: Pick<Phaser.Loader.Loa
     if (usedTextures && !usedTextures.has(asset.id)) continue;
     scene.load.image(asset.id, withInlineAsset(asset.path));
   }
+  for (const asset of PLACEABLE_OVERLAY_IMAGE_ASSETS) {
+    if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
+    scene.load.image(asset.textureKey, withInlineAsset(asset.path));
+  }
   for (const asset of EASYRPG_PICTURE_ASSETS) {
     if (!usedTextures?.has(asset.id)) continue;
     scene.load.image(asset.id, withInlineAsset(asset.path));
@@ -325,6 +330,11 @@ export function registerBundledFrames(scene: Phaser.Scene, project?: Project): v
     return;
   }
   registerTileFrames(scene, TEX_TILESET);
+  if (scene.textures.exists(PLACEABLE_TREE_TEXTURE_KEY)) {
+    const tree = scene.textures.get(PLACEABLE_TREE_TEXTURE_KEY);
+    const f = PLACEABLE_TREE_FRAME;
+    if (!tree.has(f.name)) tree.add(f.name, 0, f.x, f.y, f.width, f.height);
+  }
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
     if (isColorKeyedChipsetTextureKey(asset.textureKey)) {

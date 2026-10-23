@@ -3,7 +3,7 @@ import { BATTLE_SCENERY_CATALOG } from "@/assets/battleSceneryCatalog";
 import { findOpeningStillPackEntry } from "@/assets/openingStillPackRuntime";
 import { openingStillPackUrl } from "@/assets/openingStillPackCdn";
 import { BUNDLED_IMAGE_ASSETS, TEX_DIALOGUE_FRAME, TEX_TILESET } from "@/assets/bundled";
-import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { isKnownRetiredResource, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { sharedPortraitExpressionSiblings } from "@/assets/sharedPortraitAssets";
 import { DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID } from "./cinematicSettings";
 import { battlerIdleAnimation } from "@/assets/battlerIdleAnimations";
@@ -20,6 +20,11 @@ import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import type { ResourceKind } from "@/project/types";
 import { requiredRuntimeAssetPaths } from "@/project/webExportRuntimeAssets";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { PLACEABLE_OVERLAY_TEXTURE_KEYS } from "@/player/placeableOverlayGraphics";
+import { RETRO_PIXEL_FX_KEYS, RETRO_PIXEL_FX_SOUNDS, retroPixelFxResourceId } from "@/assets/retroPixelAnimations";
+import { retroTimelineSoundIds } from "@/battle/retroSkillTimeline";
+import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
+import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { Project } from "@/project/types";
 import type { WebExportAsset } from "@/project/webExportTypes";
 import { webUploadedAssetPath } from './webUploadedAssetPath';
@@ -35,6 +40,28 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   if (Object.values(project.maps).some((map) => map.climate?.mode === "fixed" && map.climate.weather === "snow")) {
     ids.add("scarloxy-backdrop-ice");
   }
+  // Retro (side-view dot) battles swap bundled effects for the pixel-fx sheets and play their sounds from
+  // source tables (retroPixelAnimations, retroSkillTimeline) — none of those ids are in project data.
+  if (getBattleSkin(resolveSkinId(project.system.battleUiStyle)).motionStyle === "retro") {
+    for (const key of RETRO_PIXEL_FX_KEYS) ids.add(retroPixelFxResourceId(key));
+    for (const sound of Object.values(RETRO_PIXEL_FX_SOUNDS)) ids.add(sound);
+    for (const sound of retroTimelineSoundIds()) ids.add(sound);
+  }
+  // Dialogue shows the reviewed face paired with a speaker's walking sprite (dialogue.ts reviewedFaceIdForCharset).
+  for (const actor of project.database.actors) {
+    const face = actor.characterResourceId ? reviewedFaceIdForCharset(actor.characterResourceId, actor.characterIndex ?? 0) : undefined;
+    if (face) ids.add(face);
+  }
+  for (const map of Object.values(project.maps)) for (const event of map.events) for (const page of event.pages ?? []) {
+    const spriteId = page.graphic?.sprite?.id;
+    if (!spriteId) continue;
+    const pattern = typeof page.graphic.pattern === "number" ? page.graphic.pattern : 0;
+    const face = reviewedFaceIdForCharset(spriteId, decodeCharsetFrameIndex(pattern).characterIndex);
+    if (face) ids.add(face);
+  }
+  // The player always loads the placeable overlay textures (rock/gem charset, tree) — see
+  // projectBundledTextureKeys in bundled.ts — so the export must always ship them.
+  for (const key of PLACEABLE_OVERLAY_TEXTURE_KEYS) ids.add(key);
   // 공용 흉상·전신은 대사의 표정에 따라 런타임이 같은 모양의 다른 표정 그림으로 바꾼다 — 참조된 모양의 5표정을 같이 싣는다.
   for (const id of [...ids]) for (const sibling of sharedPortraitExpressionSiblings(id)) ids.add(sibling);
   const usedUploadedIds = collectUsedUploadedAssetIds(project);
@@ -111,6 +138,19 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   // 따라오므로 조건부로 돌리지 않는다 — 타이틀 화면의 라이선스 표기도 이 파일을 연다.
   assets.set("assets/ATTRIBUTION.md", { kind: "public", sourcePath: "assets/ATTRIBUTION.md", zipPath: "assets/ATTRIBUTION.md" });
   return [...assets.values()].sort((left, right) => left.zipPath.localeCompare(right.zipPath));
+}
+
+/**
+ * Resource ids the project still references whose art was deleted (see retiredAssets.ts).
+ * Export skips them; the caller reports them as warnings instead of failing the whole export.
+ */
+export function collectRetiredExportReferences(project: Project): readonly string[] {
+  const authored = new Set<string>();
+  collectStrings({ ...project, audioDescriptions: undefined, monsterMetadata: undefined }, authored);
+  // Only ids the author's data actually references — not the implicit runtime defaults collectProjectStrings adds.
+  return [...authored]
+    .filter((id) => isKnownRetiredResource(id) && !resolveAssetResourceUrl(id, { project }))
+    .sort();
 }
 
 export function collectUsedUploadedAssetIds(project: Project): Set<string> {

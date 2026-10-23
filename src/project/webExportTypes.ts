@@ -21,6 +21,8 @@ export interface WebExportSummary {
   readonly publicAssetCount: number;
   readonly estimatedSizeBytes: number;
   readonly projectJsonBytes: number;
+  /** Referenced resource ids whose art was deleted; skipped instead of failing the export. */
+  readonly skippedRetiredResources: readonly string[];
 }
 
 export interface PreparedWebExport {

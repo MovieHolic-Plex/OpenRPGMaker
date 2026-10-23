@@ -1132,7 +1132,14 @@ async function doExportWebGame(): Promise<void> {
     const project = store.getCurrent();
     const result = await createWebPlayerExportPackage(project);
     downloadBlob(result.blob, webExportFileName(project));
-    toast(`게임 내보내기 완료: 맵 ${result.summary.mapCount}개, 에셋 ${result.summary.assetCount}개`, "ok");
+    const skipped = result.summary.skippedRetiredResources;
+    if (skipped.length > 0) console.warn("[web-export] skipped retired (deleted) art:", skipped);
+    toast(
+      skipped.length === 0
+        ? `게임 내보내기 완료: 맵 ${result.summary.mapCount}개, 에셋 ${result.summary.assetCount}개`
+        : `게임 내보내기 완료(경고): 맵 ${result.summary.mapCount}개, 에셋 ${result.summary.assetCount}개, 삭제된 그림 ${skipped.length}개는 빼고 냈습니다`,
+      skipped.length === 0 ? "ok" : "info",
+    );
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     toast(`게임 내보내기 실패: ${message}`, "error");
@@ -1154,6 +1161,7 @@ async function doExportStandaloneHtml(): Promise<void> {
     downloadBlob(result.blob, result.fileName);
     const size = (result.summary.htmlBytes / 1048576).toFixed(1);
     const missing = result.summary.missingAssets.length;
+    if (missing > 0) console.warn("[standalone-export] skipped retired (deleted) art:", result.summary.missingAssets);
     toast(
       missing === 0
         ? `실행형 HTML 완료: ${size}MB, 에셋 ${result.summary.assetCount}개`

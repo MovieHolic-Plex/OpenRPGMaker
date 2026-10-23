@@ -15,6 +15,7 @@ import {
 import type { Project } from "@/project/types";
 import type { SpatialLibrary } from "@/project/spatial/types";
 import {
+  collectRetiredExportReferences,
   collectUsedUploadedAssetIds,
   collectWebExportAssets,
   estimateAssetBytes,
@@ -120,6 +121,7 @@ export function prepareWebExport(project: Project): PreparedWebExport {
       publicAssetCount: assets.filter((asset) => asset.kind === "public").length,
       estimatedSizeBytes,
       projectJsonBytes,
+      skippedRetiredResources: collectRetiredExportReferences(exportProject),
     },
   };
 }

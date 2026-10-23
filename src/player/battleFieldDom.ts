@@ -1,3 +1,4 @@
+import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { STAT_STAGE_ABBREVIATIONS, STAT_STAGE_KEYS, STAT_STAGE_LABELS } from "@/battle/statStages";
 import { beginEnemyCollapse, markEnemyCollapsed } from "@/player/battleEnemyCollapse";
 import { WEATHER_GLYPHS, WEATHER_LABELS } from "@/battle/weather";
@@ -2223,8 +2224,8 @@ function isGeneratedBattleActor(resourceId: string): boolean {
 function captureThrowerUrl(): string {
   const project = store.getCurrent();
   const id = project.database.troops.find((troop) => troop.trainerSprite?.back)?.trainerSprite?.back ?? "hero_m";
-  if (project.assets.uploaded[id]) return resolveAssetResourceUrl(id, { project }) ?? "/assets/battle-trainers/hero_m/back.png";
-  return /^[a-z][a-z0-9_]*$/u.test(id) ? `/assets/battle-trainers/${id}/back.png` : "/assets/battle-trainers/hero_m/back.png";
+  if (project.assets.uploaded[id]) return resolveAssetResourceUrl(id, { project }) ?? withInlineAsset("/assets/battle-trainers/hero_m/back.png");
+  return withInlineAsset(/^[a-z][a-z0-9_]*$/u.test(id) ? `/assets/battle-trainers/${id}/back.png` : "/assets/battle-trainers/hero_m/back.png");
 }
 
 /** 던지는 사람의 던지기 시트(troop.trainerSprite.backThrow, 정사각 칸 × N, 마지막 칸 = 빈손 마무리). 없으면 undefined.
@@ -2234,7 +2235,7 @@ function captureThrowerSheetUrl(): string | undefined {
   const id = project.database.troops.find((troop) => troop.trainerSprite?.back)?.trainerSprite?.backThrow;
   if (!id) return undefined;
   if (project.assets.uploaded[id]) return resolveAssetResourceUrl(id, { project }) ?? undefined;
-  return /^[a-z][a-z0-9_]*$/u.test(id) ? `/assets/battle-trainers/${id}/throw.png` : undefined;
+  return /^[a-z][a-z0-9_]*$/u.test(id) ? withInlineAsset(`/assets/battle-trainers/${id}/throw.png`) : undefined;
 }
 
 /** 던지는 사람이 미끄러져 들어와 손을 휘두를 때까지(ms). 구슬은 이 뒤에 손에서 떠난다. */
