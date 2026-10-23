@@ -1,7 +1,7 @@
 {
  "kit": "object-gen",
  "repo": "https://github.com/MovieHolic-Plex/object-gen.git",
- "commit": "29037a11be9b73fbffb4a29d15984a69dee5c3ff",
+ "commit": "7d9dd279015016692a33681696acb7015f964af0",
  "constants": {
   "checks": {
    "BROAD_TREE_SIDE_MAX": 6,
@@ -27,6 +27,8 @@
    "SHELF_LUMA": 110,
    "SHELF_MAX": 1.38,
    "SHELF_MIN_PIXELS": 20,
+   "SPUR_MAX": 1,
+   "SPUR_MAX_NARROW": 1.4,
    "STANDING": [
     "floor",
     "outdoor",

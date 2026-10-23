@@ -278,6 +278,8 @@ const SHELF_MAX = kitValue<number>("checks", "SHELF_MAX");
 const LEAF_PALE_MIN = kitValue<number>("checks", "LEAF_PALE_MIN");
 const UNDERGAP_MAX = kitValue<number>("checks", "UNDERGAP_MAX");
 const ROCK_BASE_MAX = kitValue<number>("checks", "ROCK_BASE_MAX");
+const SPUR_MAX = kitValue<number>("checks", "SPUR_MAX");
+const SPUR_MAX_NARROW = kitValue<number>("checks", "SPUR_MAX_NARROW");
 const DEEP_LUMA = kitValue<number>("checks", "DEEP_LUMA");
 const DEEP_MIN = kitValue<number>("checks", "DEEP_MIN");
 const ORGANIC_LEAF_RAMP = kitValue<readonly string[]>("prompts", "ORGANIC_LEAF_RAMP");
@@ -559,6 +561,14 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
       if (g.rows >= GEOMETRIC_MIN_ROWS && g.side > STRAIGHT_SIDE_MAX) hard.push({ code: "STRAIGHTSIDE", msg: `one side of the leafy mass runs straight down ${g.side} rows like a box wall (Beodeul 2-10) - let the side bulge in and out lobe by lobe, the edge moving every 1-3 rows` });
       else if (isTree && g.rows >= GEOMETRIC_MIRROR_ROWS && shown.width >= 32 && g.side > BROAD_TREE_SIDE_MAX) hard.push({ code: "STRAIGHTSIDE", msg: `one side of the crown runs straight down ${g.side} rows like a box wall (broad Beodeul trees 3) - make the crown lopsided and lobed: the edge moves out or in every 1-3 rows, one shoulder higher` });
       if (isTree && g.rows >= GEOMETRIC_MIRROR_ROWS && lv.leafShelf > SHELF_MAX) hard.push({ code: "LEAFSHELF", msg: `the light leaves are 1 px horizontal strokes in tiers (run width/height ${lv.leafShelf}, Beodeul trees 0.74-1.35) - draw the highlights as flecks and small clumps about as tall as wide (2x2, 2x3, an L of 3-4 px)` });
+      // 원본 checks SPURS: 불투명 4-이웃이 1개 이하인 화소(가시 끝·1px 줄·떨어진 점)의 몫(%). 버들항 나무·덤불 0~0.89, 측백 1.35, 「삐져나온 1px 줄」 1.40~1.73.
+      {
+        const W = solid.width, H = solid.height, op = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H && solid.data[(y * W + x) * 4 + 3] === 255;
+        let tips = 0, total = 0;
+        for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (op(x, y)) { total++; if ((op(x + 1, y) ? 1 : 0) + (op(x - 1, y) ? 1 : 0) + (op(x, y + 1) ? 1 : 0) + (op(x, y - 1) ? 1 : 0) <= 1) tips++; }
+        const spur = total ? Math.round((10000 * tips) / total) / 100 : 0;
+        if (g.rows >= GEOMETRIC_MIN_ROWS && spur > (W >= 32 ? SPUR_MAX : SPUR_MAX_NARROW)) hard.push({ code: "SPURS", msg: `${tips} pixels stick out on their own (${spur}% - 1 px streaks, spur tips, loose pixels; Beodeul trees and bushes under 0.9%) - end every clump in a rounded 2-3 px bump, no 1 px streaks or loose pixels along the outline` });
+      }
       if (lv.leafPale < LEAF_PALE_MIN) hard.push({ code: "LEAFDULL", msg: `almost no sunlit leaves (${Math.round(lv.leafPale * 1000) / 10}% of leaf pixels are pale, Beodeul 4-42%) - put the palest keys on the lit upper-left of the clumps as flecks and small 2x2-3x3 clumps, about a tenth of the leaves` });
       if (lv.leafHoles < LEAF_HOLES_MIN) hard.push({ code: "LEAFHOLES", msg: `too few dark holes inside the crown (${lv.leafHoles} per 100 leaf px, Beodeul 0.9-3.2) - break big lobes into many small clusters with 1-3 px dark holes all through the interior` });
       if (lv.leafLone > LEAF_LONE_MAX) hard.push({ code: "LEAFSPECK", msg: `the highlights are single sprinkled pixels (${Math.round(lv.leafLone * 100)}% of the lightest leaf tone stands alone, Beodeul 0-35%) - group the lightest green into 2-4 px dashes on the upper-left lobes only` });
