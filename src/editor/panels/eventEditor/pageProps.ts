@@ -1714,6 +1714,8 @@ function movementTypeChipLabel(type: EventPage["movement"]["type"]): string {
       return "사용자 지정";
     case "living":
       return "생활 이동";
+    case "fly":
+      return "비행";
     default:
       return String(type);
   }

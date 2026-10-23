@@ -6,7 +6,7 @@ import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { characterSpriteX, characterSpriteY, placeCharacterSprite, updateCharacterDepth } from "@/player/characterDepth";
 import { eventSpriteScale, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
-import { followerMinDistance, followerPositions, getFollowerBodySpan, setFollowerBodySpan, type FollowerSlotMotion, type FollowerWorld } from "@/project/followers";
+import { followerMinDistance, followerPositions, getFollowerBodySpan, recordFollowerPlayerStep, setFollowerBodySpan, type FollowerSlotMotion, type FollowerWorld } from "@/project/followers";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
   NPC_MOVE_DURATION_MS,
@@ -36,12 +36,24 @@ type FollowerRenderState = {
   readonly isCharset: boolean;
   readonly direction: Dir;
   readonly slot: { readonly x: number; readonly y: number };
+  /** 서 있을 때 제자리 걸음(몬스터 동료). */
+  readonly idleStep?: boolean;
 };
 const followerRenderState = new Map<string, FollowerRenderState>();
 /** 걷기 주기 위상 — 걷는 동안 연속 누적하고, 서 있으면 0 으로 돌려 정지 프레임을 유지한다. */
 const followerWalkElapsedMs = new Map<string, number>();
 /** 설 칸이 없어 숨겨 둔 동료(followerPositions 의 hidden). */
 const followerHidden = new Set<string>();
+/** 서 있는 몬스터 동료의 제자리 걸음 위상(ms) — HGSS 동료처럼 멈춰 있어도 숨 쉬듯 발을 구른다. */
+const followerIdleElapsedMs = new Map<string, number>();
+/** 제자리 걸음 한 장의 시간. 걷기(90ms/장)보다 훨씬 느리게 — 숨 쉬는 정도. */
+const FOLLOWER_IDLE_FRAME_MS = 300;
+/**
+ * 문·계단으로 들어와 숨어 있다가 다시 나타나는 몬스터 동료(경과 ms). 주인공 몸이 그 칸을 다 비울 때까지는 그리지 않고,
+ * 비우면 짧게 떠오른다. 바로 그리면 첫 걸음 동안 주인공 다리 위에 겹쳐 「툭 튀어나왔다」(2026-10-23 적대 검수).
+ */
+const followerEmerging = new Map<string, number>();
+const FOLLOWER_EMERGE_FADE_MS = 140;
 
 function isFollowerCharsetTexture(textureKey: string): boolean {
   return isEasyRpgCharsetTextureKey(textureKey) || store.getCurrent().assets.uploaded[textureKey]?.kind === "charset";
@@ -56,16 +68,28 @@ function nextFollowerMotion(
   key: string,
   position: { readonly x: number; readonly y: number },
   now: number,
-  durationMs: number
+  durationMs: number,
+  lockToHero = false
 ): FollowerSlotMotion | null {
   const last = followerSlotMotion.get(key);
   if (last && last.to.x === position.x && last.to.y === position.y) {
-    return now - last.startedAt < last.durationMs ? last : null;
+    return last.lockToHero || now - last.startedAt < last.durationMs ? last : null;
   }
-  const from = last ? lerpFollower(last, now) ?? last.to : position;
-  const motion: FollowerSlotMotion = { from, to: position, startedAt: now, durationMs };
+  // 주인공과 함께 걷던 걸음은 주인공 걸음이 끝날 때 함께 끝났다 — 다음 걸음은 도착 칸에서 연다.
+  // 직전 걸음이 이미 끝나 지워졌으면 지금 서 있는 칸(마지막 슬롯)에서 연다 — 새 슬롯에서 열면 한 칸 순간이동이다.
+  const standing = followerRenderState.get(key)?.slot;
+  const from = last ? (last.lockToHero ? last.to : lerpFollower(last, now) ?? last.to) : standing ?? position;
+  // 제자리(주인공이 돌아서기만 함)는 걸음이 아니다 — 0칸 걸음을 열면 320ms 동안 발만 구른다.
+  if (!last && from.x === position.x && from.y === position.y) return null;
+  const motion: FollowerSlotMotion = { from, to: position, startedAt: now, durationMs, ...(lockToHero ? { lockToHero: true } : {}) };
   followerSlotMotion.set(key, motion);
   return motion;
+}
+
+/** 걸음 진행도(0~1). 주인공과 함께 연 걸음은 주인공 걸음 진행도, 아니면 시계. 1 이상이면 끝. */
+function motionProgress(scene: Pick<PlaySceneContext, "moving" | "moveProgress">, motion: FollowerSlotMotion, now: number): number {
+  if (motion.lockToHero) return scene.moving ? Math.max(0, Math.min(1, scene.moveProgress)) : 1;
+  return Math.max(0, (now - motion.startedAt) / motion.durationMs);
 }
 
 /** 진행 중인 걸음의 현재 화면 좌표(타일 단위). 끝났으면 null. */
@@ -76,7 +100,7 @@ function lerpFollower(motion: FollowerSlotMotion, now: number): { x: number; y: 
 }
 
 /** NPC·간판이 선 칸은 동료 자리로 주지 않는다 — 걷는 NPC 와 같은 칸에 겹쳐 서는 것을 막는다. */
-function followerWorldFor(scene: PlaySceneContext, project: Project): FollowerWorld {
+function followerWorldFor(scene: PlaySceneContext, project: Project, heroAt?: { readonly x: number; readonly y: number }): FollowerWorld {
   const map = runtimeMap(scene.map, scene.session);
   return {
     project,
@@ -84,7 +108,31 @@ function followerWorldFor(scene: PlaySceneContext, project: Project): FollowerWo
     blocked: (x, y) => findBlockingRuntimeEventAtInMap(project, map, scene.session, scene.eventPositions, x, y) !== undefined,
     inScene: scene.running,
     playerFacing: scene.facing,
+    ...(heroAt ? { heroAt } : {}),
   };
+}
+
+/** 몬스터만 따라오는 열차인가 — HGSS 처럼 한 칸 뒤에 붙는다(몸 길이로 띄우지 않는다). */
+function monsterOnlyTrain(scene: PlaySceneContext): boolean {
+  const followers = scene.session.followers ?? [];
+  return followers.length > 0 && followers.every((entry) => entry.kind === "monster" || Boolean(entry.monsterInstanceId));
+}
+
+/**
+ * 주인공이 한 칸 걸음을 **시작하는** 순간 — 떠나는 칸을 궤적에 넣고 동료도 같은 시간으로 한 칸 내딛는다.
+ * 예전에는 걸음이 끝난 뒤에 궤적을 늘리고 동료는 NPC 걸음(320ms)으로 걸어서, 주인공(160ms)이 멈춘 뒤에야
+ * 뒤늦게 따라붙고 모퉁이에서는 두 칸씩 순간이동했다(2026-10-23 「따라오는 게 매우 어색함」, 프레임 기록).
+ * HGSS 동료: 주인공이 떠난 칸으로 같은 박자에 들어선다 — 늘 정확히 한 칸 뒤, 따라잡기 질주 없음.
+ */
+export function beginFollowerStep(
+  scene: PlaySceneContext,
+  from: { readonly x: number; readonly y: number },
+  to: { readonly x: number; readonly y: number },
+  durationMs: number,
+): void {
+  if ((scene.session.followers?.length ?? 0) === 0 || boardedVehicleId(scene.session)) return;
+  recordFollowerPlayerStep(scene.session, { x: from.x, y: from.y, direction: scene.facing });
+  syncFollowerSprites(scene, { stepDurationMs: durationMs, heroAt: to });
 }
 
 export function syncFollowerSprites(
@@ -93,6 +141,8 @@ export function syncFollowerSprites(
     readonly stepDurationMs?: number;
     /** 맵 이동·순간이동처럼 궤적을 새로 깐 직후 — 보간 없이 새 칸에 바로 세운다. */
     readonly snap?: boolean;
+    /** 주인공이 지금 걸어 들어가는 칸(beginFollowerStep). */
+    readonly heroAt?: { readonly x: number; readonly y: number };
   },
   respaced = false
 ): void {
@@ -103,7 +153,7 @@ export function syncFollowerSprites(
   // 완료 시점에 정확히 끝나 팔로워가 한 칸 뒤를 걷는다(옵션 없으면 NPC 기본값).
   const stepDurationMs = options?.stepDurationMs ?? NPC_MOVE_DURATION_MS;
   // 탈것에 탄 동안 파티는 탈것 안에 있다 — 동료를 그리지 않는다. 내리면 궤적이 새로 깔리며 돌아온다.
-  const followers = boardedVehicleId(scene.session) ? [] : followerPositions(scene.session, project.system.companions, followerWorldFor(scene, project));
+  const followers = boardedVehicleId(scene.session) ? [] : followerPositions(scene.session, project.system.companions, followerWorldFor(scene, project, options?.heroAt));
   for (const position of followers) {
     const key = followerSpriteKey(position.follower);
     expected.add(key);
@@ -116,17 +166,26 @@ export function syncFollowerSprites(
     const reappearing = !position.hidden && followerHidden.has(key);
     if (position.hidden) followerHidden.add(key);
     else followerHidden.delete(key);
+    if (reappearing && isMonsterFollower(position.follower)) followerEmerging.set(key, 0);
     if (options?.snap || position.hidden || reappearing) {
       followerSlotMotion.delete(key);
       followerWalkElapsedMs.set(key, 0);
     }
-    const motion = options?.snap || position.hidden || reappearing ? null : nextFollowerMotion(key, position, now, stepDurationMs);
-    const progress = motion ? Math.min(1, (now - motion.startedAt) / motion.durationMs) : 0;
+    const motion = options?.snap || position.hidden || reappearing ? null : nextFollowerMotion(key, position, now, stepDurationMs, options?.heroAt !== undefined);
+    const progress = motion ? motionProgress(scene, motion, now) : 0;
     const spriteTile = motion
       ? { x: lerp(motion.from.x, motion.to.x, progress), y: lerp(motion.from.y, motion.to.y, progress) }
       : position;
     const texture = resolveEventSpriteTexture(project, spriteRef.id, position.follower.graphic.pattern);
-    const direction = position.direction ?? position.follower.graphic.direction ?? "down";
+    // 걷는 동안은 걸어가는 쪽을 본다(궤적 점의 방향은 주인공이 그 칸을 **떠난** 방향이라 모퉁이에서 한 칸 일찍 돈다).
+    // 서 있으면 마지막으로 걸어온 쪽을 그대로 본다 — 장면 중(sceneFacing)만 궤적 계산의 방향을 따른다.
+    const walkDir = motion && (motion.from.x !== motion.to.x || motion.from.y !== motion.to.y) ? stepDirection(motion.from, motion.to) : undefined;
+    const kept = followerRenderState.get(key)?.direction;
+    // 다시 나타나는 동료는 주인공과 같은 쪽을 본다(주인공을 따라 문을 나서는 중이다).
+    const direction = scene.running
+      ? position.direction ?? position.follower.graphic.direction ?? "down"
+      : reappearing ? scene.facing
+      : walkDir ?? kept ?? position.direction ?? position.follower.graphic.direction ?? "down";
     const charsetFrame = texture && (texture.charset || isFollowerCharsetTexture(texture.texture)) && typeof texture.frame === "number"
       ? texture.frame
       : undefined;
@@ -137,6 +196,7 @@ export function syncFollowerSprites(
       isCharset: charsetFrame !== undefined,
       direction,
       slot: { x: position.x, y: position.y },
+      idleStep: position.follower.kind === "monster" || Boolean(position.follower.monsterInstanceId),
     });
     let sprite = scene.followerSprites.get(key);
     if (!sprite) {
@@ -147,11 +207,13 @@ export function syncFollowerSprites(
         frame
       );
       placeCharacterSprite(sprite, "same");
+      keepHeroInFront(scene, sprite, isMonsterFollower(position.follower));
       scene.followerSprites.set(key, sprite);
     } else {
       sprite.setTexture(texture?.texture ?? DEFAULT_EASYRPG_CHARSET_ID, frame);
       sprite.setPosition(characterSpriteX(spriteTile.x, mapTileSize(scene.map)), characterSpriteY(spriteTile.y, mapTileSize(scene.map)));
       updateCharacterDepth(sprite, "same");
+      keepHeroInFront(scene, sprite, isMonsterFollower(position.follower));
     }
     // 동료도 배율을 따른다 — 큰 동료가 이벤트로 서 있을 때와 따라올 때 크기가 달라지면
     // 같은 캐릭터로 보이지 않는다. 자동 배율은 현재 맵에서 다시 계산한다.
@@ -159,7 +221,8 @@ export function syncFollowerSprites(
     sprite.setFrame(frame);
     setCharacterBaseOrigin(sprite, texture?.origin);
     placeCharacterSprite(sprite, "same");
-    sprite.setVisible(!position.hidden);
+    keepHeroInFront(scene, sprite, isMonsterFollower(position.follower));
+    sprite.setVisible(!position.hidden && !followerEmerging.has(key));
   }
   for (const key of [...scene.followerSprites.keys()]) {
     if (!expected.has(key)) destroyFollowerSprite(scene, key);
@@ -167,7 +230,7 @@ export function syncFollowerSprites(
   // 그려진 몸 크기로 동료 간격(궤적 칸 수)을 맞춘다. 간격이 바뀌었으면(첫 등장·다른 크기의 동료 합류)
   // 새 간격으로 한 번 더 세운다 — 보간 없이 바로 세워야 한 칸 간격 자리에서 주인공을 가로지르지 않는다.
   if (followers.length > 0) {
-    const span = followerBodySpanTiles(scene);
+    const span = monsterOnlyTrain(scene) ? 1 : followerBodySpanTiles(scene);
     if (span !== getFollowerBodySpan(scene.session)) {
       setFollowerBodySpan(scene.session, span);
       if (!respaced) syncFollowerSprites(scene, { ...options, snap: true }, true);
@@ -211,7 +274,7 @@ export function updateFollowerSpriteMotion(scene: PlaySceneContext, deltaMs: num
   const resting = new Map<string, { x: number; y: number }>();
   for (const [key, sprite] of ordered) {
     const motion = followerSlotMotion.get(key);
-    if (size > 0 && sprite.visible && !(motion && now - motion.startedAt < motion.durationMs)) {
+    if (size > 0 && sprite.visible && !(motion && motionProgress(scene, motion, now) < 1)) {
       resting.set(key, { x: sprite.x / size - 0.5, y: sprite.y / size - 1 });
     }
   }
@@ -226,8 +289,27 @@ export function updateFollowerSpriteMotion(scene: PlaySceneContext, deltaMs: num
   for (const [key, sprite] of ordered) {
     const state = followerRenderState.get(key);
     if (!state) continue;
+    const emerging = followerEmerging.get(key);
+    if (emerging !== undefined) {
+      const hero = bodies.get("hero");
+      if (followerHidden.has(key)) {
+        followerEmerging.delete(key);
+      } else if (emerging === 0 && hero && size > 0
+        && Math.abs(hero.x - (sprite.x / size - 0.5)) < 0.97 && Math.abs(hero.y - (sprite.y / size - 1)) < 0.97) {
+        // 주인공 몸이 아직 이 칸 위에 있다 — 기다린다.
+        sprite.setVisible(false);
+      } else {
+        const elapsed = emerging + Math.max(1, deltaMs);
+        sprite.setVisible(true);
+        (sprite as { setAlpha?: (alpha: number) => unknown }).setAlpha?.(Math.min(1, elapsed / FOLLOWER_EMERGE_FADE_MS));
+        if (elapsed >= FOLLOWER_EMERGE_FADE_MS) followerEmerging.delete(key);
+        else followerEmerging.set(key, elapsed);
+      }
+    }
     let motion = followerSlotMotion.get(key);
-    if (motion && now - motion.startedAt < motion.durationMs && size > 0 && sprite.visible) {
+    // 한 칸 간격(몸 길이 1)이면 비켜 서지 않는다 — 주인공과 같은 박자로 걷는 동료는 모퉁이에서 반 칸 대각으로 스칠 뿐
+    // 겹치지 않는다. 여기서 멈추면 모퉁이마다 뒤처졌다가 따라붙는다(2026-10-23).
+    if (yieldDistance > 0.75 && !motion?.lockToHero && motion && now - motion.startedAt < motion.durationMs && size > 0 && sprite.visible) {
       // 남의 몸 안으로 더 파고드는 걸음이면 이번 프레임은 제자리 — 시계를 미뤄서 나중에 끊김 없이 이어 걷는다.
       // 이미 붙어 있어도 멀어지는 걸음은 그대로 간다.
       const progress = (now - motion.startedAt) / motion.durationMs;
@@ -243,13 +325,15 @@ export function updateFollowerSpriteMotion(scene: PlaySceneContext, deltaMs: num
         followerSlotMotion.set(key, motion);
       }
     }
-    if (motion && now - motion.startedAt < motion.durationMs) {
-      const progress = Math.max(0, (now - motion.startedAt) / motion.durationMs);
+    const progressNow = motion ? motionProgress(scene, motion, now) : 1;
+    if (motion && progressNow < 1) {
+      const progress = progressNow;
       sprite.setPosition(
         characterSpriteX(lerp(motion.from.x, motion.to.x, progress), mapTileSize(scene.map)),
         characterSpriteY(lerp(motion.from.y, motion.to.y, progress), mapTileSize(scene.map))
       );
       updateCharacterDepth(sprite, "same");
+      keepHeroInFront(scene, sprite, state.idleStep === true);
       if (state.isCharset) {
         const walkElapsed = (followerWalkElapsedMs.get(key) ?? 0) + Math.max(0, deltaMs);
         followerWalkElapsedMs.set(key, walkElapsed);
@@ -257,12 +341,27 @@ export function updateFollowerSpriteMotion(scene: PlaySceneContext, deltaMs: num
         sprite.setFrame(charsetWalkFrameIndex(state.baseFrame, state.direction, charsetWalkStepFromElapsedMs(walkElapsed, frameMs)));
       }
     } else if (motion) {
-      // 걸음 완료 — 슬롯 중앙에 정착하고 정지 프레임으로.
+      // 걸음 완료 — 슬롯 중앙에 정착하고 정지 프레임으로. 걷기 위상은 남겨 둔다: 주인공이 곧바로 다음 걸음을 내디디면
+      // 동료도 같은 발로 이어 걷는다(칸마다 같은 발로 다시 시작하면 종종걸음처럼 보인다).
       followerSlotMotion.delete(key);
-      followerWalkElapsedMs.set(key, 0);
+      followerIdleElapsedMs.set(key, 0);
       sprite.setPosition(characterSpriteX(state.slot.x, mapTileSize(scene.map)), characterSpriteY(state.slot.y, mapTileSize(scene.map)));
       updateCharacterDepth(sprite, "same");
+      keepHeroInFront(scene, sprite, state.idleStep === true);
       if (state.isCharset) sprite.setFrame(charsetIdleFrameIndex(state.baseFrame, state.direction));
+    } else if (state.isCharset && state.idleStep && sprite.visible && !scene.moving) {
+      // 서 있는 몬스터 동료: 느린 제자리 걸음(HGSS). 주인공이 멈춘 뒤 한 박자 쉬고 시작한다.
+      const idle = (followerIdleElapsedMs.get(key) ?? 0) + Math.max(0, deltaMs);
+      followerIdleElapsedMs.set(key, idle);
+      followerWalkElapsedMs.set(key, 0);
+      const phase = Math.floor(idle / FOLLOWER_IDLE_FRAME_MS);
+      sprite.setFrame(phase < 2 ? charsetIdleFrameIndex(state.baseFrame, state.direction)
+        : charsetWalkFrameIndex(state.baseFrame, state.direction, phase % 4));
+    }
+    // 주인공 깊이는 매 프레임 바뀐다(걸으며 y 가 바뀜) — 서 있는 동료도 매 프레임 주인공 뒤로 맞춘다.
+    if (state.idleStep) {
+      updateCharacterDepth(sprite, "same");
+      keepHeroInFront(scene, sprite, true);
     }
     if (sprite.visible && size > 0) bodies.set(key, { x: sprite.x / size - 0.5, y: sprite.y / size - 1 });
     resting.delete(key);
@@ -294,7 +393,9 @@ function destroyFollowerSprite(scene: Pick<PlaySceneContext, "followerSprites">,
   followerSlotMotion.delete(key);
   followerRenderState.delete(key);
   followerWalkElapsedMs.delete(key);
+  followerIdleElapsedMs.delete(key);
   followerHidden.delete(key);
+  followerEmerging.delete(key);
 }
 
 function followerSpriteKey(follower: { readonly id?: string; readonly name: string }): string {
@@ -303,6 +404,42 @@ function followerSpriteKey(follower: { readonly id?: string; readonly name: stri
   return `follower:${follower.name}`;
 }
 
+function isMonsterFollower(follower: { readonly kind?: string; readonly monsterInstanceId?: string }): boolean {
+  return follower.kind === "monster" || Boolean(follower.monsterInstanceId);
+}
+
+/**
+ * 몬스터 동료는 주인공을 가리지 않는다. 한 칸 뒤(아래)에 선 24×32 동료는 y 정렬대로면 주인공 다리를 덮어
+ * 둘이 한 덩이로 보였다(2026-10-23 실측) — 주인공을 언제나 앞에 그린다. 동료가 위쪽(뒤)일 때는 원래 그렇다.
+ */
+function keepHeroInFront(scene: PlaySceneContext, sprite: { readonly depth: number; setDepth(depth: number): unknown }, monster: boolean): void {
+  const heroDepth = scene.player?.depth;
+  if (!monster || typeof heroDepth !== "number" || !Number.isFinite(heroDepth)) return;
+  if (sprite.depth >= heroDepth) sprite.setDepth(heroDepth - 0.5);
+}
+
+function stepDirection(from: { readonly x: number; readonly y: number }, to: { readonly x: number; readonly y: number }): Dir {
+  const dx = to.x - from.x, dy = to.y - from.y;
+  if (Math.abs(dx) >= Math.abs(dy)) return dx < 0 ? "left" : "right";
+  return dy < 0 ? "up" : "down";
+}
+
 function numericFollowerFrame(frame: string | number | undefined): number {
   return typeof frame === "number" && Number.isFinite(frame) ? frame : 0;
+}
+
+/**
+ * 보이는 동료가 이 칸에 서 있거나 이 칸을 드나드는 중인가. 동료는 통행을 막지 않지만(주인공 뒤를 걷는 장식),
+ * 산책하는 주민이 동료 몸으로 걸어 들어가 겹쳐 서면 어색하다 — 산책 걸음만 이 칸을 피한다(2026-10-23 적대 검수).
+ */
+export function followerOccupiesTile(sprites: ReadonlyMap<string, { readonly visible: boolean }> | undefined, x: number, y: number): boolean {
+  if (!sprites) return false;
+  for (const [key, sprite] of sprites) {
+    if (!sprite.visible || followerHidden.has(key)) continue;
+    const slot = followerRenderState.get(key)?.slot;
+    if (slot && slot.x === x && slot.y === y) return true;
+    const motion = followerSlotMotion.get(key);
+    if (motion && ((motion.to.x === x && motion.to.y === y) || (Math.round(motion.from.x) === x && Math.round(motion.from.y) === y))) return true;
+  }
+  return false;
 }

@@ -490,7 +490,8 @@ function validatePageShape(label: string, value: unknown): void {
       movementType === "approach" ||
       movementType === "custom" ||
       movementType === "living" ||
-      movementType === "chase",
+      movementType === "chase" ||
+      movementType === "fly",
     `${label}.movement.type이 잘못되었습니다.`
   );
   requireNumber(`${label}.movement.speed`, movement.speed);
