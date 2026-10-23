@@ -117,6 +117,12 @@
     display: flex;
     align-items: center;
   }
+  /* 전투 장면은 논리 무대(480×270)를 한 번 더 0.5625 로 줄인 854×480 이다 — 행 높이를 화면 44px 로 맞추려면
+     k 를 그 배율로 한 번 더 나눈다. 가로 화면만(세로는 무대가 작아 목록이 스크롤로 간다). */
+  .play-viewport[data-mobile-ui="landscape"] .battle-scene[data-testid="battle-scene"][data-battle-layout][data-battle-ui-style][data-battle-skin-family][data-battle-motion] {
+    --battle-command-row-height: calc(44px * var(--mobile-ui-k, 1) / 0.5625);
+    --battle-hud-height: calc(4 * var(--battle-command-row-height) + 28px);
+  }
   .play-viewport[data-mobile-ui] .battle-scene .battle-message-line { font-size: var(--mu-text); }
   .play-viewport[data-mobile-ui] .battle-scene .battle-enemy-name { font-size: var(--mu-text-s); }
 
@@ -138,6 +144,19 @@
   ) { min-height: 44px; min-width: 44px; touch-action: manipulation; }
   .play-viewport[data-mobile-ui] .runtime-shop-overlay .runtime-shop-item-row { min-height: 44px; touch-action: manipulation; }
 
+  /* 세로: 상점 오버레이는 작은 무대(390x219)가 아니라 화면 아래쪽 전체를 쓴다. 44px 조작이 잘리지 않게 하고,
+     그동안 가로 안내 알약은 접어 겹침을 없앤다. */
+  .player-layout .play-viewport[data-mobile-ui="portrait"] > .runtime-shop-overlay {
+    top: var(--play-stage-top, 0px);
+    left: 0;
+    transform: none;
+    width: 100%;
+    height: calc(100% - var(--play-stage-top, 0px));
+    box-sizing: border-box;
+    align-items: stretch;
+  }
+  .play-viewport[data-mobile-ui="portrait"]:has(.runtime-shop-overlay)::after { display: none; }
+
   /* ── 세로 화면: 무대가 390x219 로 작아진다. 안내는 눈에 띄는 알약으로, 메뉴 독은 한 줄 라벨로 ── */
   .play-viewport[data-mobile-ui="portrait"][data-layout="portrait"]::after {
     left: 16px;
@@ -155,6 +174,14 @@
     font-size: 16px;
     line-height: 22px;
     top: calc(var(--play-stage-top) + var(--play-logical-height) * var(--play-scale) + 24px);
+  }
+  /* 가로 ESC 메뉴(픽셀 스킨): 줄이 화면 44px 이므로 독 높이도 줄 수 × 44px 로 키워 명령이 잘리지 않게 한다.
+     장소·시간·장 보조 창은 자리가 없어 접고 돈만 남긴다. */
+  .play-viewport[data-mobile-ui="landscape"] .oprn-status-menu.main-menu[data-menu-skin="pixel"] {
+    --px-dock-h: calc(var(--status-menu-command-count, 6) * var(--mu-touch) + 8px * var(--mobile-ui-k, 1));
+  }
+  .play-viewport[data-mobile-ui="landscape"] .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] :is(.status-menu-location, .status-menu-time, .status-menu-chapter) {
+    display: none;
   }
   /* 세로 ESC 메뉴(픽셀 스킨): 줄 28px·라벨 12px, 독과 파티 창이 겹치지 않게 같이 넓힌다. */
   .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"] {
