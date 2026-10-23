@@ -607,7 +607,9 @@ export function compileCutscene(beats: readonly CutsceneBeat[], options: Cutscen
   const head = lastTransfer >= 0 ? beats.slice(0, lastTransfer) : beats;
   const tail = lastTransfer >= 0 ? beats.slice(lastTransfer) : [];
   const headBody = compileBeats(head.filter((beat) => beat.kind !== "ending"), state, { forceNonBlocking: false });
-  const committedSwitches = head.filter((beat): beat is CutsceneSwitchBeat => beat.kind === "switch").map(compileSwitchBeat);
+  // 같은 스위치를 켰다 끈 경우 착지 뒤에는 끝 값 하나만 다시 건다.
+  const committedSwitches = [...new Map(head.filter((beat): beat is CutsceneSwitchBeat => beat.kind === "switch")
+    .map((beat) => [beat.switchId ? `sw:${beat.switchId}` : `self:${(beat.key ?? "A").toUpperCase()}`, beat] as const)).values()].map(compileSwitchBeat);
   const cleanup = cleanupCommands(state);
   // 옮긴 맵에서는 앞 맵의 카메라·색조·그림을 되돌릴 것이 없다 — 꼬리는 제 상태로 따로 모은다(얼굴 흐름만 이어받는다).
   const tailState: CompileState = { pictures: new Map(), faces: state.faces, looks: [], ...(state.shownFace ? { shownFace: state.shownFace } : {}) };
@@ -1127,7 +1129,16 @@ function cleanupCommands(state: CompileState): Command[] {
       ? { effect: "letterbox", value: String(percent), durationMs: state.letterbox.keep ? 0 : 400 }
       : { effect: "clearLetterbox", value: "", durationMs: 400 }));
   }
-  for (const fields of state.looks) commands.push(m2Command("Sprite Look", fields));
+  // 건너뛰기 착지에서는 대상마다 끝 모습 하나만 다시 건다 — 거쳐 온 모습을 차례로 다 걸면 정상 재생 끝에서도
+  // 불투명 0→100→검정→0 처럼 깜빡였다(2026-10-24 v2 밤 컷신 눈가림 지적).
+  const finalLooks = new Map<string, M2CommandFields>();
+  for (const fields of state.looks) {
+    const key = `${String(fields.target ?? "")}:${String(fields.eventId ?? "")}`;
+    const prev = fields.reset === true ? undefined : finalLooks.get(key);
+    finalLooks.delete(key);
+    finalLooks.set(key, { ...(prev ?? {}), ...fields });
+  }
+  for (const fields of finalLooks.values()) commands.push(m2Command("Sprite Look", fields));
   if (state.weather) {
     commands.push({ kind: "setWeather", weather: state.weather.weather, intensity: state.weather.intensity, transitionMs: 0 });
   }
