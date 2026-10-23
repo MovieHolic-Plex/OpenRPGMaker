@@ -1,0 +1,230 @@
+{
+  "note": "아스트라 새 스타터 64px 얼굴 손질 (scripts/content/monsters/astra_starters_touchup.py). from = 하네스 build 가 고른 격자에서 줄인 번들 그림 해시",
+  "species": {
+    "leafling": {
+      "front": {
+        "from": "ccfa7fef544c7851d990f84c9a2801174f848543c665e29b6cde6801dd54e177",
+        "ops": [
+          {
+            "recolor": [
+              "#3e084b",
+              "#02331a"
+            ]
+          },
+          {
+            "clear": [
+              21,
+              34,
+              38,
+              45
+            ],
+            "keep": [
+              "#9aefb8",
+              "#f9f3d3",
+              "#68c18c"
+            ]
+          },
+          {
+            "at": [
+              23,
+              34
+            ],
+            "pal": {
+              "n": "#121639",
+              "w": "#ffffff",
+              "b": "#2f4fa8",
+              "p": "#f08aa0",
+              "o": "#02331a"
+            },
+            "rows": [
+              ".........nnnn.",
+              "nnn.....nwwnnn",
+              "nwn.....nwwnnn",
+              "nwn.....nnnnnn",
+              "nnn.....nnnnnn",
+              "nbn.....nbbbwn",
+              ".n...pp..nnnn.",
+              "..............",
+              "....o..o......",
+              ".....oo......."
+            ]
+          },
+          {
+            "at": [
+              25,
+              16
+            ],
+            "pal": {
+              "A": "#02331a",
+              "C": "#97fe0e",
+              "E": "#64d82b",
+              "D": "#3ba209"
+            },
+            "rows": [
+              "..........AAAA.",
+              ".AAA....AACCCEA",
+              "ACCEA..ACCCEEEA",
+              "ACEEEADACEEEEA.",
+              ".AEEEADAEEEAA_.",
+              "..AAAADAAA___..",
+              "_____ADA_______"
+            ]
+          }
+        ]
+      }
+    },
+    "sparkit": {
+      "front": {
+        "from": "1d045ea0bda7f8b8d7d4f87b95c6aec7bcf19ac81b4c8d35d0163b045fa6b9c2",
+        "ops": [
+          {
+            "recolor": [
+              "#5c2c2a",
+              "#7a3a30"
+            ]
+          },
+          {
+            "recolor": [
+              "#431421",
+              "#5e2228"
+            ]
+          },
+          {
+            "clear": [
+              11,
+              37,
+              32,
+              46
+            ],
+            "keep": [
+              "#f1e7c4",
+              "#cb4c29",
+              "#e47a52",
+              "#932737",
+              "#ceab8d"
+            ]
+          },
+          {
+            "at": [
+              11,
+              38
+            ],
+            "pal": {
+              "n": "#121639",
+              "w": "#ffffff",
+              "b": "#2f4fa8",
+              "o": "#2a0a0a",
+              "p": "#3a1414"
+            },
+            "rows": [
+              ".nnn.......nnnn.",
+              "nwwnn.....nwwnnn",
+              "nwwnn.....nwwnnn",
+              "nnnnn.....nnnnnn",
+              "nbbwn.....nnnnnn",
+              ".nnn......nbbbwn",
+              ".......pp..nnnn.",
+              ".....o....o.....",
+              "......oooo......"
+            ]
+          },
+          {
+            "at": [
+              36,
+              15
+            ],
+            "pal": {
+              "A": "#010000",
+              "R": "#e8401c",
+              "O": "#fd8e01",
+              "Y": "#febe29",
+              "W": "#fff3b0"
+            },
+            "rows": [
+              "___________________",
+              "________AA_________",
+              "_______ARRA________",
+              "___A___ARRA________",
+              "__ARA_ARRRRA_AA____",
+              "__ARRAARRRRAARRA___",
+              "__ARRRRROORARRRA___",
+              "__ARROOOOORRRRRA___",
+              "__AROOOOOOOOORRA___",
+              "_ARROOOYYYOOOORA___",
+              "_AROOYYYYYYYOORA___",
+              "_AROOYYYYYYYOORA___",
+              "_AROOYYWWWYYOORRA__",
+              "_AROOYYWWWYYOORA___",
+              "_ARROYYWWWYYORRA___",
+              "__AROYYYYYYYORA____",
+              "__ARRYYYYYYYRRA____",
+              "___ARRRYYYRRRA_____",
+              "____AARRRRRAA______"
+            ]
+          }
+        ]
+      }
+    },
+    "aqualing": {
+      "front": {
+        "from": "1cddad0bf0971457d89e9875b1d7af4a529874bb7bbabf708b490f0ef66d3f28",
+        "ops": [
+          {
+            "recolor": [
+              "#f8d9c3",
+              "#75c8fc"
+            ]
+          },
+          {
+            "clear": [
+              12,
+              40,
+              18,
+              43
+            ],
+            "keep": [
+              "#75c8fc",
+              "#c4dff2",
+              "#3f91ca",
+              "#56ace6"
+            ]
+          },
+          {
+            "clear": [
+              11,
+              43,
+              18,
+              49
+            ],
+            "keep": [
+              "#75c8fc",
+              "#c4dff2",
+              "#3f91ca",
+              "#56ace6"
+            ]
+          },
+          {
+            "at": [
+              13,
+              41
+            ],
+            "pal": {
+              "n": "#0a1440",
+              "w": "#ffffff",
+              "b": "#2f6fd0"
+            },
+            "rows": [
+              ".nn.",
+              "nwwn",
+              "nwwn",
+              "nnnn",
+              "nnnn",
+              "nbbn",
+              ".nn."
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

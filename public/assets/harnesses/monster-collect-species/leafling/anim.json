@@ -33,13 +33,13 @@
   "emit": {
     "front": {
       "x": 10,
-      "y": 42,
+      "y": 44,
       "source": "auto"
     },
     "back": {
-      "x": 42,
-      "y": 30,
-      "source": "seed"
+      "x": 56,
+      "y": 14,
+      "source": "auto"
     }
   }
 }
