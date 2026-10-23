@@ -257,7 +257,7 @@ C2 앞면은 이제 짧은 점선 결로 보인다 · B2 석순 그루터기는 
 `gap` 묶음(gap-rock-r1 · gap-liquid-r1 · gap-props-r1 · gap-tower-r1)에서 사람이 고른 조각을 공용 버들항 시트(beodeul_city) 꼬리에 구웠다.
 굽기 `scripts/content/beodeul-dungeon/bake_gap.py`(사용법은 파일 머리말). 칸 그림 정본 `tiledata/beodeul-dungeon/gap/cells.png` + `cells.json`(덧붙이기 전용 칸 저장소, 키 = 화소 해시 + 통행 + 층).
 
-**칸 범위:** 꼬리 29,568(마을 성벽 꼬리 끝, `BEODEUL_DUNGEON_GAP_BASE`) ~ 30,719. 시트 count 30,720(2048×3840). 앞 29,568칸과 그 표는 그대로다.
+**칸 범위:** 꼬리 29,568(마을 성벽 꼬리 끝, `BEODEUL_DUNGEON_GAP_BASE`) ~ 30,847. 시트 count 30,848. 앞 29,568칸과 그 표는 그대로다.
 
 | 항목·줄 | 고름 | 칸 | 정의 |
 |---|---|---|---|
@@ -274,9 +274,16 @@ C2 앞면은 이제 짧은 점선 결로 보인다 · B2 석순 그루터기는 
 | water_edge · A | liquid A1 | 30040–30247 | `beodeul_dungeon_water_A` — 52칸 × 4장면 |
 | water_edge · B | liquid B1 | 30248–30455 | `beodeul_dungeon_water_B` |
 | water_edge · C | liquid C1 | 30456–30663 | `beodeul_dungeon_water_C` |
+| ice_floor · 공통 | ice A1 | 30664–30739 | 오토타일 `beodeul_dungeon_ice`(30664–30714) · `beodeul_dungeon_ice_ground`(30715–30737) · 키트 `bd-dg-ice-frozen-1/2`(30738/30739) |
+| lever · 공통 | props A1 | 30740–30741 | 키트 `bd-dg-lever-up`(30740) · `bd-dg-lever-down`(30741), 위층 벽걸이 1×1 |
 
 타일 묶음 `beodeul:dungeon_gap_<항목>[_줄]`. animationStrips 157개(base 29572 ~ 30660, 4장면 3fps, 4칸 정렬). 나머지 칸은 정렬 채움(null).
-**아직 안 고름:** lava_edge · ice_floor · ice_rock · lever · palisade — 처리기는 있다(`--assume-picks … --no-gate --test-out` 로만 시험). 고른 뒤 아래 재실행.
+**고르기(2026-10-23, 사용자가 감독에게 위임):** 항목마다 블라인드 짝 패널(새 Opus 3 + Argon 1, 과반, 2:2 면 Opus 다수) 또는 남은 합격 후보 하나(소거). 증거 `harness-data/dungeon-chipset/evidence/2026-10-23-pick-*.json`, 번들 허용 `…-bundle-allows-*.json`(object-gate 프로필이 미보정이라 PASS 는 조언 — 18323 위임 허용이 출구).
+**굽지 않고 닫음(다음 테마 리드가 알아야 할 것):**
+- `lava_edge` — 15판. 엔진 오토타일 몸통이 16px 한 칸 + 내부 변형뿐이라 웅덩이에 16px 격자가 남는다(마지막 판은 버들항 용암 띠 창 + 사방 딱지까지 갔으나 3/3 반려). 길: `dot.Autotile` 과 엔진 오토타일 렌더러 둘 다 몸통을 위치로 고르게(`body[(x%2)+2*(y%2)]`) 바꾸면 32×32 버들항 용암 띠를 통째로 쓸 수 있다. 그때까지 화산은 옛 `LAVA_KIT`.
+- `ice_rock` — 4판 반려(벽지 무늬·앞면 줄무늬). 얼음 동굴은 고른 `rock_fill`(줄 B/C) + `ice_floor` A1 로 깐다.
+- `palisade` — 12판 반려 + object-gate FAIL(정면 입면 4/4). 남북 줄·모서리는 시드에서 뺐다(동서 한 줄 5조각). `dress.ts palisadeRun` 은 palisade 고름이 없으면 안 깐다.
+- `tower_stair` A1 · `lever` A2 · `ice_floor` A2 — 반려, 짝(A2/A1/A1)을 소거로 골랐다.
 
 **다시 굽기:**
 ```
