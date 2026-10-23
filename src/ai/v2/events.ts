@@ -356,7 +356,8 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     ok: false, mapIds, summary, warnings, missingArt: [], calls: run.calls.slice(firstCall),
   });
 
-  const when = spec.when ?? (spec.kind === "talk" ? "talk" : spec.kind === "trigger" ? "touch" : "game-start");
+  // after(NPC 대화 뒤)는 언제나 말 걸기 장면이다 — kind:'cutscene' 이어도 게임 시작 컷신으로 만들지 않는다.
+  const when = spec.after ? "talk" : spec.when ?? (spec.kind === "talk" ? "talk" : spec.kind === "trigger" ? "touch" : "game-start");
   const mapId = spec.mapId ?? run.ctx.project.startMapId;
   let map = findMap(run.ctx.project, mapId);
   if (!map) return fail(`맵 '${mapId}' 이 없다.`);
