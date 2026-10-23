@@ -11,7 +11,7 @@ import { kitConstant, objectGenKit } from "./genKits";
 import type { WorkshopStore } from "./store";
 import { perItem } from "./types";
 import type {
-  AnchorSample, ChatFn, DrawContext, Grid, Palette, PaletteEntry, ReferenceColor, RejectedSample, RgbaImage, RoundReference, Verdict, WorkshopEnv, WorkshopItem, WorkshopRound, WorkshopRun,
+  AnchorSample, BaseInfo, ChatFn, DrawContext, Grid, Palette, PaletteEntry, ReferenceColor, RejectedSample, RgbaImage, RoundReference, Verdict, WorkshopEnv, WorkshopItem, WorkshopRound, WorkshopRun,
   WorkshopRunner, WorkshopSurface,
 } from "./types";
 
@@ -438,12 +438,22 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       // 다시 그리기(redrawRun)는 지난 격자를 출발점으로 넘긴다. 지난 판정은 불통과일 때만 「떨어진 이유」로 넘긴다.
       let lastVerdict: Verdict | null = run.verdict?.verdict === "FAIL" ? run.verdict : null;
       const reference = await referenceFor(round, item, run, signal);
+      // 칩셋 출발 그림(object-gen base-from-chipset): 처음 그리는 장이면 그 그림을 출발 격자로 준다. 다시 그리기는 지난 격자에서 출발한다.
+      let base: BaseInfo | null = null;
+      if (!previousGrid && runner.base) {
+        const found = await runner.base(item, env).catch((error) => { console.warn("[workshop] 출발 그림을 못 읽음:", error); return null; });
+        if (found) {
+          previousGrid = found.grid;
+          base = { id: found.id, label: found.label, sources: found.sources };
+          run.base = base;
+        }
+      } else if (run.base) base = run.base;
       const maxAttempts = perItem(runner.maxAttempts ?? MAX_ATTEMPTS, item);
       for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         run.attempt = attempt;
         run.status = "drawing";
         void save(round);
-        const ctx = await contextFor(round, run, item, attempt, previousGrid, lastVerdict, reference);
+        const ctx = { ...(await contextFor(round, run, item, attempt, previousGrid, lastVerdict, reference)), ...(base ? { base } : {}) };
         const drawn = await drawOnce(ctx, run, round, signal);
         if ("error" in drawn) {
           run.attempts.push({ attempt, hard: [drawn.error], verdict: null, grid: null });

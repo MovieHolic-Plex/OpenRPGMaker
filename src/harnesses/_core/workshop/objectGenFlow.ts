@@ -18,7 +18,7 @@ import type { ChatMessage, ContentPart } from "@/ai/llmClient";
 import { footprintClass, isOrganicObject } from "./footprint";
 import { kitConstant, kitFile, objectGenKit } from "./genKits";
 import { gridToAnswer, onBackground, renderGrid, scaleImage } from "./grid";
-import type { DrawContext, Grid, Palette, PaletteEntry, Rgba, RgbaImage, ReviewContext, Verdict, WorkshopEnv, WorkshopItem } from "./types";
+import type { BaseInfo, DrawContext, Grid, Palette, PaletteEntry, Rgba, RgbaImage, ReviewContext, Verdict, WorkshopEnv, WorkshopItem } from "./types";
 
 type KitSection = "prompts" | "reference" | "picker" | "vqa" | "drawer" | "exemplars" | "footprint" | "checks";
 type AnchorSet = { examples?: { file: string; label: string }[]; good: { file: string; label: string; why?: string }[]; bad: { file: string; label: string; why?: string }[]; rejects?: { file: string }[] };
@@ -291,6 +291,73 @@ const SHADOW_WORDS = kitValue<string>("footprint", "SHADOW_WORDS");
 /** 버들항에서 반투명 바닥 그림자 위에 그려지는 자연물(바위·돌무더기·꽃밭·화분) — object-gen footprint.casts_shadow. 나무·덤불은 없다. */
 export const ogCastsShadow = (item: { readonly title: string; readonly description?: string; readonly gateKind?: string | null }): boolean =>
   ogIsOrganic(item) && footprintClass(item.title, item.description ?? "") !== "tree" && new RegExp(SHADOW_WORDS, "iu").test((item.title ?? "").toLowerCase());
+
+// --- 칩셋 출발 그림(원본 bases.py, base-from-chipset 2026-10-23) ------------------------------------------------------
+// 처음부터 그린 자연물은 6판 넘게 버들항 잎 결·수관 짜임에 못 미쳤다(공·상자·줄무늬 수관, 색종이 꽃밭). 나무·덤불·꽃밭·바위는
+// 같은 종류의 칩셋 손 도트 기물(정확한 화소)에서 출발하고, 그리는 쪽은 열매·꽃을 더하고 팔레트 안에서 다시 칠하고 윤곽을 몇 화소 바꾼다.
+
+/** 출발 그림 하나(set.json 한 줄 — 상자 크기·불투명 색은 원본 scripts/make_bases.py 가 잰다) */
+export type OgBase = BaseInfo & { readonly file: string; readonly kind: string; readonly w: number; readonly h: number; readonly colors: readonly string[]; readonly prefer?: string };
+export const OG_BASE_SET = "oprn-beodeul-bases";
+const BASE_KIND_WORDS = kitValue<readonly (readonly [string, string])[]>("footprint", "BASE_KIND_WORDS");
+let baseList: readonly OgBase[] | null = null;
+const ogBases = (): readonly OgBase[] => {
+  if (!baseList) {
+    try { baseList = (JSON.parse(kitFile(objectGenKit, `objectgen/anchors/${OG_BASE_SET}/set.json`)) as { bases: OgBase[] }).bases; } catch { baseList = []; }
+  }
+  return baseList;
+};
+/** 원본 bases.kind_of — 이름이 처음 맞는 종류(꽃밭이 덤불보다, 바위가 나무보다 먼저) */
+export function ogBaseKind(title: string): string | null {
+  for (const [kind, words] of BASE_KIND_WORDS) if (new RegExp(words, "iu").test(title ?? "")) return kind;
+  return null;
+}
+/** 원본 bases.pick — 같은 종류 중 캔버스(가로 × 세로-padTop)에 들어가는 것: prefer 낱말이 맞는 것 먼저, 그다음 가장 큰 것. 자연물이 아니면 null. */
+export function ogPickBase(item: Pick<WorkshopItem, "title" | "width" | "height" | "padTop"> & { readonly gateKind?: string | null }): OgBase | null {
+  if (!ogIsOrganic(item)) return null;
+  const kind = ogBaseKind(item.title);
+  if (!kind) return null;
+  let best: OgBase | null = null, key: [number, number, number] | null = null;
+  ogBases().forEach((b, i) => {
+    if (b.kind !== kind || b.w > item.width || b.h > item.height - (item.padTop ?? 0)) return;
+    const k: [number, number, number] = [b.prefer && new RegExp(b.prefer, "iu").test(item.title) ? 1 : 0, b.w * b.h, -i];
+    if (!key || k[0] > key[0] || (k[0] === key[0] && (k[1] > key[1] || (k[1] === key[1] && k[2] > key[2])))) { best = b; key = k; }
+  });
+  return best;
+}
+/** 원본 bases.with_colors — 팔레트 hex 목록 뒤에 출발 그림의 불투명 색을 붙인다(앞 키의 뜻은 그대로). */
+export function ogPaletteWithBase(hexes: readonly string[], base: OgBase | null): string[] {
+  if (!base) return [...hexes];
+  const have = new Set(hexes.map((h) => h.toLowerCase()));
+  return [...hexes, ...base.colors.filter((c) => !have.has(c.toLowerCase()))];
+}
+/** 원본 bases.grid — 출발 그림을 캔버스 아래 가운데에 놓은 팔레트 격자. 같은 색은 그 키, 다른 불투명 색은 가장 가까운 불투명 키, 반투명은 그림자 키. */
+export async function ogBaseGrid(base: OgBase, item: Pick<WorkshopItem, "width" | "height">, palette: Palette, env: WorkshopEnv): Promise<Grid> {
+  const image = await env.loadImage(env.assetUrl(`assets/gen-kits/object-gen/anchors/${OG_BASE_SET}/${base.file}`));
+  let x0 = image.width, y0 = image.height, x1 = -1, y1 = -1;
+  for (let y = 0; y < image.height; y++) for (let x = 0; x < image.width; x++) if (image.data[(y * image.width + x) * 4 + 3]) { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); }
+  const bw = x1 - x0 + 1, bh = y1 - y0 + 1, W = item.width, H = item.height;
+  const ox = Math.floor((W - bw) / 2), oy = H - bh;
+  const opaque = palette.entries.filter((e) => e.rgba[3] === 255);
+  const shadow = palette.entries.find((e) => e.rgba[3] < 255)?.key ?? null;
+  const nearest = (r: number, g: number, b: number): string => {
+    let best = opaque[0]!.key, bd = Infinity;
+    for (const e of opaque) { const d = (e.rgba[0] - r) ** 2 + (e.rgba[1] - g) ** 2 + (e.rgba[2] - b) ** 2; if (d < bd) { bd = d; best = e.key; } }
+    return best;
+  };
+  const cells: (string | null)[] = new Array(W * H).fill(null);
+  for (let y = 0; y < bh; y++) for (let x = 0; x < bw; x++) {
+    const i = ((y0 + y) * image.width + x0 + x) * 4, a = image.data[i + 3]!;
+    if (!a) continue;
+    const tx = ox + x, ty = oy + y;
+    if (tx < 0 || ty < 0 || tx >= W || ty >= H) continue;
+    const r = image.data[i]!, g = image.data[i + 1]!, b = image.data[i + 2]!;
+    cells[ty * W + tx] = a < 255 ? shadow : palette.byColor.get(`${r},${g},${b},255`)?.key ?? nearest(r, g, b);
+  }
+  return { width: W, height: H, cells };
+}
+/** 원본 bases.provenance — 설명서 provenance.base 한 줄 */
+export const ogBaseProvenance = (base: BaseInfo): string => `${base.id} (${base.label}) from ${base.sources.join(", ")}`.slice(0, 400);
 
 /**
  * 잎 덩이 자연물(나무·덤불·화단) 팔레트의 잎 초록을 견본 잎 단으로 잠근다(object-gen palette.leaf_lock 과 같다).
@@ -728,7 +795,12 @@ export function ogDrawBrief(ctx: DrawContext, opts: { readonly hasReference: boo
     "- After your answer you will be shown your drawing at 8x/1x/2x on the floor next to the references and exemplars,",
     "  with the mechanical checks. Fix every FAIL code; look honestly - would it sit next to the exemplars in the same game, and read at 1x?",
   );
-  if (ctx.previousGrid) lines.push("", "## Your previous grid (start from it)", JSON.stringify(gridToAnswer(ctx.previousGrid)));
+  if (ctx.base && ctx.previousGrid && ctx.attempt === 1) {
+    lines.push("", kitValue<string>("prompts", "BASE_ORGANIC").replace("{label}", ctx.base.label).replace("{id}", ctx.base.id), JSON.stringify(gridToAnswer(ctx.previousGrid)));
+  } else if (ctx.previousGrid) {
+    if (ctx.base) lines.push("", `- This object started from the chipset's ${ctx.base.label} (${ctx.base.id}): keep its pixels wherever you are not changing them.`);
+    lines.push("", "## Your previous grid (start from it)", JSON.stringify(gridToAnswer(ctx.previousGrid)));
+  }
   return lines.join("\n");
 }
 
@@ -741,7 +813,7 @@ export function ogDrawMessages(ctx: DrawContext, env: WorkshopEnv, style: OgStyl
   style.refs.forEach((ref, i) => parts.push(txt(`ref-${i}.png — ${ref.label}`), img(ref.url)));
   forms.forEach((url, i) => parts.push(txt(`reference/ref-${i + 1}.png — FORM only (참고용, 설치 안 됨)`), img(url)));
   if (anchors) parts.push(txt("exemplars.png — drawings the owner called very good (the bar for view, shading and craft) at 6x"), img(env.encodePng(exemplarSheet(anchors, style.floor))));
-  if (ctx.previousGrid) parts.push(txt("your previous grid at 8x"), img(env.encodePng(scaleImage(onBackground(renderGrid(ctx.previousGrid, ctx.palette), style.floor), 8))));
+  if (ctx.previousGrid) parts.push(txt(ctx.base && ctx.attempt === 1 ? `the chipset base (${ctx.base.label}) on your canvas at 8x - start from it` : "your previous grid at 8x"), img(env.encodePng(scaleImage(onBackground(renderGrid(ctx.previousGrid, ctx.palette), style.floor), 8))));
   return [{ role: "user", content: parts }];
 }
 

@@ -154,6 +154,17 @@
   - 남은 한계: 그리는 모델(Opus 5.5 medium, 시도 2번)은 견본 같은 잎 덩이 질감을 안정적으로 못 찍는다. 검사를 하나 맞추면 다른 검사에 걸린다(LEAFFLAT 를 고치면 CROWNFULL 등). 후보가 하나도 안 남는 판이 늘었다.
   - QA 구동기(`scripts/qa/objectgen-assistant/real-input.mjs`)는 「후보를 그리지 못했어요」 때 판(시도마다 걸린 검사와 그림)을 `<id>-nocand-N.json` 으로 남긴다. 다시 그려도 없으면 45분을 기다리지 않고 끝낸다.
 
+## 자연물은 칩셋 기물에서 출발 — base-from-chipset (2026-10-23)
+
+처음부터 그린 나무·덤불·꽃밭은 판마다 6번(m4~m9) 새 Opus 3명 다수결에서 major 1~2 가 남았다(공·상자·버섯·줄무늬 수관, 빽빽한 잎 / 색종이 꽃). 감독 결정으로 출발점을 바꿨다.
+
+- **고르기** `ogPickBase(item)`(= object-gen `bases.pick`): 자연물이고 이름이 `BASE_KIND_WORDS`(꽃밭 → 덤불 → 바위 → 나무 순)에 맞으면, object-gen `anchors/oprn-beodeul-bases/set.json` 에서 같은 종류 중 캔버스(가로 × 세로−padTop)에 들어가는 것을 고른다. `prefer` 낱말이 맞는 것이 먼저이고, 그다음은 큰 것이다. 동물·먹거리처럼 종류가 없으면 처음부터 그린다.
+- **출발 그림**은 버들항 칩셋의 정확한 화소다. 2×3 나무는 버들항 2×2 수관 둘(bd-tree-132848 뒤, bd-tree-47e17a 앞)을 넓은잎나무 B(bd-tree-1e09f0)의 줄기·뿌리 위에 놓은 합성이고, object-gen `scripts/make_bases.py` 가 만든다.
+- **팔레트**: 실행기 `palette(item)` 가 정의 팔레트 뒤에 출발 그림의 색을 붙인다(`ogPaletteWithBase` — 앞 키의 뜻은 그대로).
+- **엔진**: 처음 그리는 장이면 `runner.base(item, env)` 의 격자(`ogBaseGrid`, 아래 가운데에 놓음)가 첫 시도의 `previousGrid` 다. 지시문은 첫 시도에서 「Your previous grid」 대신 원본 `prompts.BASE_ORGANIC` 을 쓴다(고칠 것만 고치고 잎·돌 화소는 그대로, 열매·꽃·다시 칠하기·윤곽 1~3px). 장에는 `run.base` 가 남는다.
+- **출처**: 굽기(`bakeWorkshopPick` 의 `base`)가 설명서 `provenance.base` 에 출발 그림 id 와 칩셋 칸 id 를 적는다(`ObjectSpec` 검사도 이 칸을 받는다).
+- 검사·블라인드 판정·3/4 관문은 그대로다. object-gen 에서는 `new --no-base` 로 끈다.
+
 ## 새 기물 그리기 품질 — 참고 그림 단계 · 크기·윗면 · 1배 읽힘 · 3/4 관문 조언 (2026-10-21)
 
 > 아래 크기·윗면 숫자(`sizeProblems`·`topShareGate`)와 한국어 검수 지시문(READ·CONTEXT·looks_like)은 이제 **시트 그림을 고치는 판**에만 쓴다. 새 기물은 위 object-gen 흐름이다.

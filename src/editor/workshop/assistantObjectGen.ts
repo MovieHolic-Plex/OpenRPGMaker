@@ -75,7 +75,7 @@ export async function bakeObjectGenRun(run: ObjectGenRun, letter: string, autoPi
     id: `f${now.toString(36)}${Math.random().toString(36).slice(2, 6)}`, projectKey: session.projectKey, itemKey: item.key, roundId: round.id,
     letter, verdict: "pick", reasons: [], note: autoPicked ? `알아서 고르기${autoReason ? ` — ${autoReason}` : ""}` : "", at: now,
   });
-  const detail = bakeWorkshopPick(item, picked.grid, session.runner.palette(item), session.env, { autoPicked, gate: picked.gate ?? null });
+  const detail = bakeWorkshopPick(item, picked.grid, session.runner.palette(item), session.env, { autoPicked, gate: picked.gate ?? null, base: picked.base ?? null });
   await session.reload();
   return detail;
 }

@@ -11,7 +11,7 @@ import type { AnchorSample, Grid, ItemDefinition, Palette, Rgba, RgbaImage, Work
 import { gateAdviceMessages, parseGateAdvice } from "@/harnesses/_core/workshop/gateAdvice";
 import { refCells, workshopRefDescribe } from "@/harnesses/_core/workshop/referencePrompt";
 import {
-  aspectOf, aspectSheet, kitValue, loadAnchors, ogIsOrganic, ogStyleSetFor, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
+  aspectOf, aspectSheet, kitValue, loadAnchors, ogBaseGrid, ogIsOrganic, ogPaletteWithBase, ogPickBase, ogStyleSetFor, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
 } from "@/harnesses/_core/workshop/objectGenFlow";
 import { parseMapObjectVerdict } from "./checks";
 import { mapItemFromDefinition, paletteFromHexes } from "./items";
@@ -95,12 +95,19 @@ export function createMapObjectRunner(): WorkshopRunner {
     palette(item) {
       let palette = palettes.get(item.key);
       if (!palette) {
-        palette = paletteFromHexes(defs.find((def) => def.key === item.key)?.palette);
+        // 칩셋 출발 그림이 있으면 그 그림의 색을 뒤에 붙인다(object-gen bases.with_colors — 앞 키의 뜻은 그대로)
+        palette = paletteFromHexes(ogPaletteWithBase(defs.find((def) => def.key === item.key)?.palette ?? [], ogPickBase(item)));
         palettes.set(item.key, palette);
       }
       return palette;
     },
     currentGrid: () => null,
+    // 자연물(나무·덤불·꽃밭·바위)은 칩셋의 가장 가까운 손 도트 기물에서 출발한다(object-gen base-from-chipset, 2026-10-23).
+    async base(item, env) {
+      const base = ogPickBase(item);
+      if (!base) return null;
+      return { id: base.id, label: base.label, sources: base.sources, grid: await ogBaseGrid(base, item, runner.palette(item), env) };
+    },
     directions: () => OG_DIRECTIONS,
     anchors(item, picked) {
       // 같은 칩셋에서 사용자가 고른 기물만 기준으로 — 다른 칩셋 것은 색이 다르다
