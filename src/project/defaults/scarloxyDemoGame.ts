@@ -155,6 +155,10 @@ function meadowMap(): GameMap {
 
   stampLower(map, 5, 16, G.SAND_PATCH);
   stampLower(map, 24, 15, G.POND);
+  // 남쪽 사막 유적 출입구로 이어지는 길. 금발 소년이 「남쪽 길로 가면 사막 유적도 있어」라고 안내하는데
+  // 바닥이 전부 풀이라 길이 화면에 없었고, 출입구(15,21)는 보이지 않는 playerTouch 라 우연히 밟기 전에는
+  // 찾을 수 없었다(2026-10-23 필드 QA F1). 길을 칠해 출구가 화면에서 읽히게 한다.
+  for (const y of [13, 16, 19]) stampLower(map, 14, y, G.SAND_PATCH);
 
   stampUpper(map, 3, 3, G.HOUSE_SMALL);
   stampUpper(map, 22, 3, G.HOUSE_SMALL_ALT);
@@ -162,7 +166,9 @@ function meadowMap(): GameMap {
   for (const [x, y] of [[0, 0], [8, 0], [19, 0], [28, 0], [0, 18], [10, 19], [19, 19]] as const) {
     stampUpper(map, x, y, G.GREEN_TREE);
   }
-  for (const [x, y] of [[2, 9], [27, 8], [14, 18]] as const) {
+  // (14,18) 나무는 유적에서 돌아오는 지정 도착 칸 (15,20) 위에 밑동을 얹고 있었다 — 도착 좌표가
+  // 통행 불가라 엔진이 (14,19) 로 밀어냈다(2026-10-23 필드 QA F1). 나무를 남쪽 길 밖으로 옮긴다.
+  for (const [x, y] of [[2, 9], [27, 8], [11, 18]] as const) {
     stampUpper(map, x, y, G.TEAL_TREE);
   }
   stampUpper(map, 9, 10, G.GREEN_TREE_SMALL);
@@ -203,6 +209,10 @@ function ruinsMap(): GameMap {
 
   stampLower(map, 3, 12, W.GRASS_PATCH);
   stampUpper(map, 10, 4, W.RUIN_GATE);
+  // 북쪽 출구 (12,1) 를 두 기둥으로 문처럼 세운다 — 예전에는 출구가 보이지 않는 playerTouch 라
+  // 어디로 나가는지 화면에서 읽을 수 없었다(2026-10-23 필드 QA F1). 기둥은 출구 양옆이라 길을 막지 않는다.
+  stampUpper(map, 11, 1, W.RUIN_PILLAR);
+  stampUpper(map, 13, 1, W.RUIN_PILLAR);
   stampUpper(map, 15, 4, W.RUIN_PILLAR);
   stampUpper(map, 8, 5, W.RUIN_PILLAR_BROKE);
   stampUpper(map, 3, 8, W.ARENA_PLANT);
