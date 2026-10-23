@@ -12,6 +12,8 @@ import { prepareWebExport } from "@/project/webExport";
 import { loadVerifiedPlayerDeployment } from "@/project/playerDeploymentLoader";
 import { exactWebExportEntries } from "@/project/webExportZip";
 import type { FetchBytes } from "@/project/playerDeploymentTypes";
+import { buildStoreGamePacks, PRELOAD_SW_NAME, PRELOAD_SW_SOURCE } from "@/project/storeGamePacks";
+import { firstPlayableUrls, mapSceneUrls, mapsByDistance } from "@/player/scenePreload";
 
 export interface StoreGameChangeSet { readonly added: readonly string[]; readonly changed: readonly string[]; readonly removed: readonly string[] }
 export type StoreGameChanges = Readonly<Record<"maps" | "events" | "characters", StoreGameChangeSet>>;
@@ -119,7 +121,16 @@ export async function buildStoreGameFiles(project: Project, options: { readonly 
   // CSS 가 가리키는 공용 그림·글꼴(배틀 배경·메뉴 아이콘·도트 글꼴)도 판본 폴더에 함께 싣는다.
   for (const path of cssAssets) if (!files.has(path)) files.set(path, await options.fetchBytes(`/${path}`));
   if (options.transcodeAudio) await transcodeLargeAudio(files, options.transcodeAudio);
-  files.set(PRELOAD_FILES_NAME, new TextEncoder().encode(JSON.stringify(preloadFileList(files))));
+  // 작은 그림 묶음(요청 수천 → 수십). 첫 화면 파일은 불러오기 화면이 낱개로 받으므로 빼고, 시작 맵에서 가까운 맵의 그림부터 담는다.
+  const toPath = (url: string): string => url.replace(/^[a-z][\w+.-]*:\/\/[^/]+\//iu, "").replace(/^\.?\//u, "");
+  const allFiles = preloadFileList(files);
+  const { plan, packFiles } = buildStoreGamePacks(files, {
+    skip: new Set(firstPlayableUrls(project).map(toPath)),
+    priority: mapsByDistance(project, project.startMapId).flatMap((mapId) => [...mapSceneUrls(project, mapId)].map(toPath)),
+  });
+  for (const [path, bytes] of packFiles) files.set(path, bytes);
+  if (plan.packs.length > 0) files.set(PRELOAD_SW_NAME, new TextEncoder().encode(PRELOAD_SW_SOURCE));
+  files.set(PRELOAD_FILES_NAME, new TextEncoder().encode(JSON.stringify({ v: 2, files: allFiles, packs: plan.packs })));
   const entry = files.has("player.html") ? "player.html" : [...files.keys()].find((name) => name.endsWith(".html") && !name.includes("/"));
   if (!entry) throw new Error("플레이어 진입 문서(player.html)가 내보내기 목록에 없습니다.");
   return { files, entry, projectJson: prepared.projectJson, mapCount: prepared.summary.mapCount };

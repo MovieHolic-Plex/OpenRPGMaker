@@ -193,6 +193,13 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
   + 시작 맵(타일셋·화자 얼굴·BGM) + 시작 파티. 소리는 받은 바이트를 blob 으로 쥐고 있다(`preloadedAudio.ts`, 큰 WAV 가 캐시에 안 남는 문제).
 - 시작한 뒤 뒤에서 **판본의 모든 파일**: 가까운 맵 → 코드 조각·스킬 효과 시트 → 나머지. 목록은 판본에 실린 `preload-files.json`(게시 때 생성).
   맵 이동은 페이드 뒤에서 새 맵 파일을 기다린다(`holdForMapAssets`, 300ms 넘으면 「불러오는 중…」). 전투 첫 화면은 #3306 관문이 기다린다.
+- **그림 묶음**(`project/storeGamePacks.ts`·`player/preloadPacks.ts`): 512KB 이하 그림을 2MB 안팎 `packs/pNNN.json`({v:1, files:[[경로, base64]]})
+  으로 묶어 싣고(첫 화면 파일 제외, 가까운 맵 순), `preload-files.json` 은 `{v:2, files, packs}`. 플레이어가 묶음을 풀어 Cache Storage
+  `oprn-pack:/<slug>/<판본>/` 에 넣고, 판본 폴더 범위 서비스 워커 `preload-sw.js`(공식 파일, 신뢰 해시)가 그림 GET 만 캐시에서 준다.
+  요청 3,500 → 약 200, 전체 미리 받기 32~39초 → 13~18초(운영, 서울). 서비스 워커를 못 쓰면(보안 문맥 아님·사파리 일부) 낱개로 받는다.
+  보안(적대 검수 반영): 목록에 적힌 그림 경로만·`..`·다른 출처 거부, 매직 넘버 확인, 묶음 4MB 상한, 서비스 워커는 캐시 응답 몸통만 꺼내
+  확장자 형식·nosniff·`CSP: sandbox` 로 새로 만든다. 옛 판본 묶음 캐시는 지운다. http 스테이징(mdc-server)은 보안 문맥이 아니라 묶음이 꺼진다 —
+  localhost 로 포워딩해 잰다.
 - 받기는 파일마다 12초 동안 바이트가 없으면 끊고 다시 받는다(최대 4번). 없는 파일(404)은 건너뛴다.
 - 게시 도구(노드)는 2MB 넘는 WAV 를 MP3 192k 로 바꿔 싣고 `loading.json` 의 `aliases` 에 적는다 — 주소를 만드는 `withInlineAsset` 이 바꿔 부른다.
   편집기 안 게시는 아직 원본 WAV 를 싣는다(ffmpeg 없음).

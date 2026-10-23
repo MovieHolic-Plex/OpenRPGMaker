@@ -261,6 +261,16 @@ async function readWithStallGuard(url: string, priority: "high" | "low", onBytes
   throw lastError ?? new Error("preload failed");
 }
 
+/** 한 파일을 몸통까지 받아 Blob 으로(멈추면 다시 받는다). 없으면 null. 묶음(preloadPacks.ts)이 쓴다. */
+export async function fetchBlobWithRetry(url: string, priority: "high" | "low", onBytes: (bytes: number) => void = () => undefined): Promise<Blob | null> {
+  return (await readWithStallGuard(url, priority, onBytes, true))?.blob ?? null;
+}
+
+/** 다른 길(묶음)로 이미 캐시에 넣은 주소를 «받음» 으로 적는다 — 맵 이동 대기·뒤 받기가 다시 받지 않게. */
+export function markUrlsReady(urls: Iterable<string>): void {
+  for (const url of urls) if (!entries.get(url)?.done) entries.set(url, { promise: Promise.resolve(0), done: true });
+}
+
 function fetchOne(url: string, priority: "high" | "low", onBytes: (bytes: number) => void, retain = false): Promise<number> {
   const existing = entries.get(url);
   if (existing) return existing.promise;
