@@ -13,6 +13,7 @@
 // «나타남»은 컷신 비트에 따로 없다 — 처음에 투명(look alpha 0)으로 두었다가 그 순간 alpha 1 로 켠다(걸어 들어오는 게 아니라 «팍» 나타남).
 import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types";
 import { canMove } from "@/project/collision";
+import { startStateOf } from "@/project/session";
 import { chebyshev, planApproach, type ApproachWorld } from "@/project/staging/approach";
 import { probeCutscene } from "@/editor/cutscenePreview/probe";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
@@ -314,6 +315,17 @@ function leaderCharset(project: Project): { textureKey: string; characterIndex: 
   return textureKey ? { textureKey, characterIndex: leader?.characterIndex ?? 0 } : undefined;
 }
 
+function npcFace(map: GameMap, eventId: string): string | undefined {
+  const ev = (map.events ?? []).find((e) => e.id === eventId);
+  for (const c of ev?.pages?.[0]?.commands ?? []) if ((c as { kind?: string }).kind === "changeFace") return (c as { resourceId?: string }).resourceId || undefined;
+  return undefined;
+}
+function heroFace(project: Project): string | undefined {
+  const lead = startStateOf(project).partyActorIds[0];
+  const actor = lead ? project.database.actors.find((a) => a.id === lead) : undefined;
+  return actor?.faceResourceId || undefined;
+}
+
 /** 역할로 정한 «컷신 뒤 말 걸면» 한 줄(appear.talk 이 없을 때). */
 function defaultFollowUp(name: string, looks: string | undefined): string[] {
   const t = `${name} ${looks ?? ""}`;
@@ -437,8 +449,10 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     if (!d.eventId) return undefined;
     const at = { x: d.x ?? cell.x, y: d.y ?? cell.y };
     actorIds.set(name, d.eventId);
-    sim.actors.set(d.eventId, { cell: at, dir: "down", visible: !ab, name });
-    if (ab) hiddenFromStart.push(d.eventId);
+    // 다가오는 사람은 처음부터 보이게 둔다 — 숨겼다가 «팍» 나타나면 어색하고 끝 정리에서 깜빡였다(2026-10-23 6차 눈가림 컷신 v1 8 · v2 6.5).
+    const hide = !!ab && !approachesHero;
+    sim.actors.set(d.eventId, { cell: at, dir: "down", visible: !hide, name });
+    if (hide) hiddenFromStart.push(d.eventId);
     used.push(at);
     refresh();
     return d.eventId;
@@ -543,6 +557,9 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
         if (!key) { warnings.push(`say: 누군지 모르는 '${b.who}'.`); break; }
         const beat: Record<string, unknown> = { kind: "say", text: b.text, actor: idFor(key) };
         if (key !== PLAYER) beat.speaker = b.who;
+        // 말하는 사람 얼굴 — NPC 는 그 이벤트 첫 쪽의 얼굴(place_npc 가 그림에 맞춰 넣은 것), 주인공은 파티 맨 앞 배우의 얼굴.
+        const faceId = key === PLAYER ? heroFace(project()) : npcFace(map!, idFor(key));
+        if (faceId) beat.face = { resourceId: faceId, position: "left" };
         out.push(beat);
         break;
       }
