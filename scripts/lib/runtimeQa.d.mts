@@ -4,6 +4,15 @@
 export type RuntimeQaDir = "up" | "down" | "left" | "right";
 
 export type RuntimeQaOp =
+  /**
+   * 한 걸음 = 방향을 밀고 **타일이 바뀔 때까지** 기다린다. 플레이 세션(scripts/qa/play/qp.mjs move)과
+   * 재현이 같은 실행기를 쓰도록 런타임 op 로 둔다.
+   */
+  | { readonly kind: "move"; readonly dir: RuntimeQaDir; readonly steps?: number; readonly stepTimeoutMs?: number }
+  /** 캔버스 좌표 클릭(포인터 이동·터치 표면). */
+  | { readonly kind: "clickCanvas"; readonly x: number; readonly y: number }
+  /** 화면 글자(innerText)에 이 문자열이 나올 때까지 기다린다 — testid 를 모르는 화면용. */
+  | { readonly kind: "waitForBodyText"; readonly text: string; readonly timeoutMs?: number }
   | { readonly kind: "cinematic"; readonly action: "key"; readonly key: string; readonly selector: string; readonly absent?: boolean }
   | { readonly kind: "cinematic"; readonly action: "input"; readonly beforeMap?: boolean }
   | { readonly kind: "cinematic"; readonly action: "reduced-motion" | "video-error" | "video-end" | "detach" | "reject-autoplay" | "geometry" }
@@ -133,6 +142,15 @@ export type RuntimeQaExpect = {
   readonly battleResult?: "victory" | "defeat" | "escape" | null;
   readonly testidPresent?: readonly string[];
   readonly testidAbsent?: readonly string[];
+  /**
+   * 콘솔·페이지 오류 중 하나가 이 패턴과 맞아야 한다(증상 재현). `"/정규식/플래그"` 면 정규식,
+   * 아니면 부분 문자열. 관측은 페이지 안 버퍼(window.__oprnConsoleErrors)와 러너의 오류 목록을 합친다.
+   */
+  readonly consoleErrorMatches?: string | readonly string[];
+  /** 화면 글자(innerText)에 이 패턴이 있어야 한다. 정규식 표기는 consoleErrorMatches 와 같다. */
+  readonly textPresent?: string | readonly string[];
+  /** 화면 글자에 이 패턴이 없어야 한다. */
+  readonly textAbsent?: string | readonly string[];
   /**
    * testid → 그 노드에 **화면에 보이는 상태로** 들어 있어야 하는 부분 문자열.
    * {@link RuntimeQaExpect.testidPresent} 는 DOM 존재만 본다 — 클래식 전투 스킨은 적 HP 목록

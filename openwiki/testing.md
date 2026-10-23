@@ -2250,3 +2250,33 @@ ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructur
 - 런타임 시각 QA `romance-vn-ui2`(ko·en): 대화로 CG 1장을 열고 → ESC 갤러리(잠긴 칸)·뷰어·엔딩 회상·엔딩 목록·저장·불러오기를 원 해상도로 본다. 이 기기에서 본 엔딩은 `scenario.localStorageSeed` 로 심는다. 타이틀 불러오기 카드는 같은 페이지에서 저장소를 덤프해 다시 심고 `page.reload` 하는 일회용 탐침으로 확인(`/tmp` 스크립트, 보존 안 함 — 증거는 `verify-shots/runtime-qa/romance-vn-ui2/17-title-load-card.png`).
 - 함정: 타이틀로 돌아가기는 ESC 에서 한 번 더 `→` 로 확인 줄에 들어가야 한다. 타이틀 「불러오기」 단추는 오버레이에 가려 Playwright `click` 이 막히니 DOM `click()` 으로.
 - 자료집 「메뉴·시스템」 탭(2026-10-17): 집중 테스트 `node scripts/run-vitest.mjs test/menuSystem.test.ts`(공용 규칙·탭 렌더·되돌리기·SQLite 재로드). 시각 QA 는 `scripts/capture-menu-system-tab.mjs`(편집기 UI 라 `qa:runtime` 이 아니다). `databaseSidebarKeyboard.test.ts` 는 이 환경에서 `window is not defined`(phaser import)로 스위트가 시작하지 못한다 — 탭 맵에 한 줄을 넣었지만 직접 돌리지 못했다.
+
+## 에이전트 플레이 세션 · 재현 · 게임 카탈로그 (2026-10-22)
+
+런타임 QA 가 «한 번 돌고 끝나는 시나리오» 라면, 에이전트가 게임을 **대화처럼 플레이**하며 버그를 잡는 경로는
+`scripts/qa/play/` 다. 정본 문서는 `scripts/qa/play/README.md` — 명령·op/expect 어휘·함정이 전부 거기 있다.
+
+- `node scripts/qa/play/build-games.mjs --out tmp/qp/games` — `games.json` 의 게임을 project.json 으로
+  물질화하고 **부팅 스모크**(타이틀→새 게임→필드)를 돌려 `playable`/`reason` 을 카탈로그에 되쓴다.
+  게임 빌더는 `generate-project.mts` 가 제품과 같은 코드 경로(`createFlagshipDemoProject`,
+  `createProjectStartSeed` …)로 만든다 — 손으로 JSON 을 흉내 내지 않는다.
+- `node scripts/qa/play/qp.mjs serve --game <id>` — 출하 플레이어 + Chromium 을 살려 두고 `state`·`move`·
+  `action`·`shot`·`errors` 같은 짧은 명령을 HTTP 로 받는다. 모든 op 은 `DIR/actions.jsonl` 에 남아
+  **세션이 곧 재생 스크립트**가 된다.
+- `node scripts/qa/play/repro.mjs --game <id> --ops <file> --expect <file>` — 새 브라우저에서 그 로그 토막을
+  재생하고 증상(consoleErrorMatches·textPresent/Absent·stateEquals·testidPresent·stuck)을 판정한다.
+  `--repeat 2` 로 두 번 다 재현돼야 REPRODUCED.
+- `node scripts/qa/play/to-scenario.mjs` — 같은 op·기대를 `scripts/qa/runtime/<id>.scenario.mjs` 로 굽는다.
+  버그가 살아 있는 동안 `npm run qa:runtime -- --scenario <id>` 가 실패하는 것이 회귀 테스트의 뜻이다.
+- 도구는 런타임 QA 의 **같은 op 실행기**(`applyOp`/`readObserved`, `scripts/lib/runtimeQaRun.mjs`)를 쓴다.
+  플레이 전용 op(`move`·`clickCanvas`·`waitForBodyText`)는 런타임 op 로 들어가 있어 시나리오로 그대로 옮긴다.
+  `expect` 에 `consoleErrorMatches`·`textPresent`·`textAbsent` 를 더했다(페이지 안 오류 버퍼
+  `window.__oprnConsoleErrors` 를 계측 부팅에서 심는다).
+- 실측 함정: (1) 타이틀 입장 시퀀스가 있는 게임은 Enter 가 **시퀀스 건너뛰기**로 먼저 소비된다 —
+  폴른 스타는 세 번째 Enter 에 필드가 떴다. 스모크는 "메뉴가 보이나"를 보고 누른다. (2) `scripts/` 아래
+  `.mts` 는 `scripts/tsconfig.json` 의 paths 기준 때문에 `@/x` 가 `scripts/src/x` 로 풀린다 —
+  `scripts/qa/play/tsconfig.json` 이 기준을 되돌린다. (3) `page.evaluate` 안에서는 모듈 스코프 상수를 못 본다.
+- **런타임이 노출하지 않는 것**: 저장/불러오기 명령이 없다(메인 메뉴 ESC → 저장 칸을 키 순서로 골라야 하고
+  행에 testid 가 없다). 맵·이벤트 목록 조회도 없다(프로젝트 JSON 에서 읽어라). 대사는 «지금 떠 있는 창» 글자만
+  보인다. 재현 계획을 세울 때 이 제약을 전제로 잡아라.
+

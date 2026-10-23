@@ -16,6 +16,11 @@ export const DEFAULT_SEED = 1;
 /** 시나리오가 쓸 수 있는 op 종류. 목록 밖은 정규화 단계에서 거부한다. */
 export const OP_KINDS = [
   "audioAction",
+  // 플레이 세션(scripts/qa/play)이 쓰는 op. 시나리오로 그대로 옮길 수 있도록 런타임 op 로 둔다 —
+  // 세션 도구가 따로 실행기를 두면 재현과 회귀 시나리오가 서로 다른 동작을 검증하게 된다.
+  "move",
+  "clickCanvas",
+  "waitForBodyText",
   // 맵 타일을 실제 캔버스 위에서 누른다(클릭 이동 #32, masterpiece-field).
   "clickTile",
   // 키를 누르며 JS 조건이 설 때까지 되풀이(first-love 시나리오).
@@ -500,6 +505,36 @@ export function evaluateExpect(expected, observed) {
   }
   for (const testid of expected.testidAbsent ?? []) {
     if (testids.includes(testid)) failures.push(`testid 잔존: ${testid}`);
+  }
+
+  // ── 에이전트 재현용 일반 축 ───────────────────────────────────────────────
+  // 재현 도구(scripts/qa/play)가 세션 로그의 증상을 그대로 시나리오로 옮긴다. 기존 축은
+  // 화면 구조(testid)·상태 스칼라만 볼 수 있어, "이 오류가 콘솔에 난다"·"이 낱말이 화면에 있다"를
+  // 표현할 수 없었다. 문자열이 `/…/플래그` 모양이면 정규식, 아니면 부분 문자열이다.
+  const matches = (text, pattern) => {
+    if (typeof pattern !== "string") return false;
+    const regex = /^\/(.*)\/([a-z]*)$/.exec(pattern);
+    if (!regex) return text.includes(pattern);
+    try { return new RegExp(regex[1], regex[2]).test(text); } catch { return text.includes(pattern); }
+  };
+  if (expected.consoleErrorMatches !== undefined) {
+    const patterns = [].concat(expected.consoleErrorMatches);
+    const seen = Array.isArray(observed.consoleErrors) ? observed.consoleErrors : [];
+    for (const pattern of patterns) {
+      if (seen.some((error) => matches(String(error), pattern))) continue;
+      failures.push(`consoleErrorMatches: ${pattern} 와 맞는 오류가 없다 — 실제 ${seen.length}건: ${seen.slice(0, 3).join(" | ") || "없음"}`);
+    }
+  }
+  const bodyText = typeof observed.bodyText === "string" ? observed.bodyText : "";
+  if (expected.textPresent !== undefined) {
+    for (const pattern of [].concat(expected.textPresent)) {
+      if (!matches(bodyText, pattern)) failures.push(`textPresent: 화면 글자에 ${pattern} 가 없다`);
+    }
+  }
+  if (expected.textAbsent !== undefined) {
+    for (const pattern of [].concat(expected.textAbsent)) {
+      if (matches(bodyText, pattern)) failures.push(`textAbsent: 화면 글자에 ${pattern} 가 있다`);
+    }
   }
 
   // 보이는 글자 단정 — testidPresent 는 DOM 존재만 본다. 숨은 패널(display:none) 속 숫자도
