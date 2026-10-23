@@ -131,6 +131,8 @@ try {
   const chooser = page.waitForEvent("filechooser");
   await menu(page, "menu-project-import");
   await (await chooser).setFiles(fixturePath);
+  // Import asks before replacing the open project (menu.ts confirmAndImport).
+  await page.getByRole("button", { name: "가져오기", exact: true }).click();
   await page.getByTestId("menu-project").filter({ hasText: project.meta.title }).waitFor({ state: "visible" });
   console.log("QA editor: fixture imported, download web ZIP and HTML");
   if (publicationMode) {
