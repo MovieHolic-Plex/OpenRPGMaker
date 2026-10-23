@@ -38,6 +38,18 @@ export async function dropOtherVersionPackCaches(base: URL): Promise<void> {
   } catch { /* 캐시를 못 쓰면 그만 */ }
 }
 
+/** 묶음 하나의 상한(만드는 쪽은 2MB 안팎, base64 로 ~2.7MB). 넘으면 풀지 않고 낱개로 받는다. */
+const PACK_MAX_BYTES = 4 * 1024 * 1024;
+
+function looksLikeImage(b: Uint8Array, ext: string): boolean {
+  const at = (i: number, ...v: number[]): boolean => v.every((x, k) => b[i + k] === x);
+  if (ext === "png") return at(0, 0x89, 0x50, 0x4e, 0x47);
+  if (ext === "jpg" || ext === "jpeg") return at(0, 0xff, 0xd8, 0xff);
+  if (ext === "gif") return at(0, 0x47, 0x49, 0x46, 0x38);
+  if (ext === "webp") return at(0, 0x52, 0x49, 0x46, 0x46) && at(8, 0x57, 0x45, 0x42, 0x50);
+  return false;
+}
+
 function decodeBase64(text: string): Uint8Array {
   const binary = atob(text);
   const out = new Uint8Array(binary.length);
@@ -59,6 +71,7 @@ export async function loadPacks(base: URL, packs: readonly PreloadPack[], option
       try {
         const blob = await fetchBlobWithRetry(new URL(pack.path, base).href, "low");
         if (!blob) throw new Error("묶음이 없습니다");
+        if (blob.size > PACK_MAX_BYTES) throw new Error("묶음이 너무 큽니다");
         const body = JSON.parse(await blob.text()) as { v?: unknown; files?: unknown };
         if (body.v !== 1 || !Array.isArray(body.files)) throw new Error("묶음 형식이 아닙니다");
         const listed = new Set(pack.files);
@@ -71,7 +84,9 @@ export async function loadPacks(base: URL, packs: readonly PreloadPack[], option
           const ext = path.slice(path.lastIndexOf(".") + 1).toLowerCase();
           const url = new URL(path, base);
           if (url.origin !== base.origin) continue;
-          const response = new Response(decodeBase64(item[1]) as BlobPart, { headers: { "content-type": MIME[ext] ?? "application/octet-stream", "x-content-type-options": "nosniff" } });
+          const bytes = decodeBase64(item[1]);
+          if (!looksLikeImage(bytes, ext)) continue; // 낱개 파일은 서버가 매직 넘버를 보지만 묶음 속은 안 본다 — 여기서 본다.
+          const response = new Response(bytes as BlobPart, { headers: { "content-type": MIME[ext] ?? "application/octet-stream", "x-content-type-options": "nosniff" } });
           puts.push(cache.put(url.origin + url.pathname, response));
         }
         await Promise.all(puts);

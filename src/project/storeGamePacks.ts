@@ -81,6 +81,12 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin || !url.pathname.startsWith(SCOPE) || !IMAGE.test(url.pathname)) return;
-  event.respondWith(caches.open(CACHE).then((cache) => cache.match(url.origin + url.pathname)).then((hit) => hit || fetch(request)).catch(() => fetch(request)));
+  event.respondWith(caches.open(CACHE).then((cache) => cache.match(url.origin + url.pathname)).then((hit) => (hit ? image(hit, url.pathname) : fetch(request))).catch(() => fetch(request)));
 });
+// 캐시에 든 응답을 그대로 내주지 않는다 — 몸통만 꺼내 형식은 주소 확장자로, nosniff·sandbox 를 붙여 새로 만든다.
+const MIME = { png: "image/png", webp: "image/webp", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif" };
+function image(hit, pathname) {
+  const ext = pathname.slice(pathname.lastIndexOf(".") + 1).toLowerCase();
+  return hit.arrayBuffer().then((body) => new Response(body, { headers: { "content-type": MIME[ext] || "application/octet-stream", "x-content-type-options": "nosniff", "content-security-policy": "sandbox" } }));
+}
 `;
