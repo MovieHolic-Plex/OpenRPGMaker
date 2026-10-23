@@ -16,7 +16,7 @@ export const V2_GAME_TOOLS: readonly string[] = [
   "upsert_item", "upsert_equipment", "set_shop_stock", "set_sell_prices", "place_chest", "upsert_craft_recipe",
   "upsert_actor", "upsert_class", "upsert_skill", "set_party", "add_companion",
   "upsert_enemy", "upsert_troop", "upsert_troop_battle_page", "set_encounter_table",
-  "find_empty_ground", "place_npc", "upsert_event", "upsert_common_event", "set_npc_schedule", "place_savepoint", "set_start_position",
+  "find_empty_ground", "place_npc", "upsert_event", "upsert_common_event", "set_npc_schedule", "configure_time_system", "place_savepoint", "set_start_position",
 ];
 
 export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전투·파티·스위치] 이 요청에는 v1 게임 도구를 그대로 쓴다(장소·연출은 위 동사).
@@ -26,7 +26,7 @@ export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전�
 - 상태가 바뀌는 대화(의뢰→진행→완료, 선택 기억)는 페이지마다 조건(스위치·변수·셀프 스위치)을 다르게 둔다. 보상·아이템 증감·골드·파티 변경은 명령으로 넣는다.
 - 요청에 숫자(회복량·공격력·가격)가 있으면 그 값을 그대로 쓴다. 아이템에 효과 기술(skillId)을 따로 이으면 그 기술의 위력도 같은 값·분산 0 으로 맞춘다(어긋나면 실제 회복량이 요청과 달라진다).
 - 한 번만 일어나야 하는 것(보상·상자·합류)은 셀프 스위치나 스위치로 다시 안 일어나게 막는다.
-- 시간대(낮·밤)에 따라 NPC 자리·대사가 바뀌면 set_npc_schedule(시간표)과 페이지 조건을 쓴다. 할 수 없으면 묻기 전에 가장 가까운 동작 판을 먼저 만들고 보고에 적는다.
+- 시간대(낮·밤)에 따라 NPC 자리·대사가 바뀌면 configure_time_system(시간 켜기) → set_npc_schedule(시간표)·페이지 조건을 쓴다(집 안이 없으면 make_place 로 실내를 짓고 문을 잇는다). 할 수 없으면 묻기 전에 가장 가까운 동작 판을 먼저 만들고 보고에 적는다.
 - 도구가 거절하면 이유를 읽고 고쳐 다시 부른다. 할 수 없는 것은 보고에 적는다.`;
 
 export function wantsGameTools(task: string): boolean {
