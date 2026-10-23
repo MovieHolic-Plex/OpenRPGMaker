@@ -280,6 +280,8 @@ const UNDERGAP_MAX = kitValue<number>("checks", "UNDERGAP_MAX");
 const ROCK_BASE_MAX = kitValue<number>("checks", "ROCK_BASE_MAX");
 const SPUR_MAX = kitValue<number>("checks", "SPUR_MAX");
 const SPUR_MAX_NARROW = kitValue<number>("checks", "SPUR_MAX_NARROW");
+const CLEFT_MAX = kitValue<number>("checks", "CLEFT_MAX");
+const SPECKLE_MAX = kitValue<number>("checks", "SPECKLE_MAX");
 const DEEP_LUMA = kitValue<number>("checks", "DEEP_LUMA");
 const DEEP_MIN = kitValue<number>("checks", "DEEP_MIN");
 const ORGANIC_LEAF_RAMP = kitValue<readonly string[]>("prompts", "ORGANIC_LEAF_RAMP");
@@ -568,6 +570,31 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
         for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (op(x, y)) { total++; if ((op(x + 1, y) ? 1 : 0) + (op(x - 1, y) ? 1 : 0) + (op(x, y + 1) ? 1 : 0) + (op(x, y - 1) ? 1 : 0) <= 1) tips++; }
         const spur = total ? Math.round((10000 * tips) / total) / 100 : 0;
         if (g.rows >= GEOMETRIC_MIN_ROWS && spur > (W >= 32 ? SPUR_MAX : SPUR_MAX_NARROW)) hard.push({ code: "SPURS", msg: `${tips} pixels stick out on their own (${spur}% - 1 px streaks, spur tips, loose pixels; Beodeul trees and bushes under 0.9%) - end every clump in a rounded 2-3 px bump, no 1 px streaks or loose pixels along the outline` });
+      }
+      // 원본 checks CLEFT·SPECKLE: 윗선의 가장 깊은 V 홈(높이 대비, 버들항 0~0.09)과 네 이웃 모두와 색이 다른 안쪽 화소 몫(버들항 0.10~0.20).
+      {
+        const W = solid.width, H = solid.height, d = solid.data, op = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H && d[(y * W + x) * 4 + 3] === 255;
+        const top: number[] = [];
+        for (let x = 0; x < W; x++) { let t = -1; for (let y = 0; y < H; y++) if (op(x, y)) { t = y; break; } if (t >= 0) top.push(t); }
+        let cleft = 0;
+        for (let i = 1; i < top.length - 1; i++) {
+          let l = Infinity, r = Infinity;
+          for (let j = 0; j < i; j++) l = Math.min(l, top[j]);
+          for (let j = i + 1; j < top.length; j++) r = Math.min(r, top[j]);
+          cleft = Math.max(cleft, top[i] - Math.max(l, r));
+        }
+        const cleftRatio = g.rows ? Math.round((1000 * cleft) / g.rows) / 1000 : 0;
+        if (g.rows >= GEOMETRIC_MIN_ROWS && cleft > 2 && cleftRatio > CLEFT_MAX) hard.push({ code: "CLEFT", msg: `a notch ${cleft} px deep splits the top (${cleftRatio} of the height, Beodeul 0-0.09) - keep ONE mass: the top is a row of small bumps 1-2 px deep, never a V cleft into two clumps` });
+        const same = (a: number, b: number) => d[a] === d[b] && d[a + 1] === d[b + 1] && d[a + 2] === d[b + 2];
+        let inner = 0, lone = 0;
+        for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+          if (!(op(x, y) && op(x + 1, y) && op(x - 1, y) && op(x, y + 1) && op(x, y - 1))) continue;
+          inner++;
+          const i = (y * W + x) * 4;
+          if (!same(i, i + 4) && !same(i, i - 4) && !same(i, i + W * 4) && !same(i, i - W * 4)) lone++;
+        }
+        const speckle = inner ? Math.round((1000 * lone) / inner) / 1000 : 0;
+        if (g.rows >= GEOMETRIC_MIN_ROWS && speckle > SPECKLE_MAX) hard.push({ code: "SPECKLE", msg: `${Math.round(speckle * 100)}% of the pixels differ from all four neighbours (Beodeul 10-20%) - per-pixel noise, not leaves: paint clumps as patches of 3-8 same-colour pixels, a lit patch on top, a dark pocket under` });
       }
       if (lv.leafPale < LEAF_PALE_MIN) hard.push({ code: "LEAFDULL", msg: `almost no sunlit leaves (${Math.round(lv.leafPale * 1000) / 10}% of leaf pixels are pale, Beodeul 4-42%) - put the palest keys on the lit upper-left of the clumps as flecks and small 2x2-3x3 clumps, about a tenth of the leaves` });
       if (lv.leafHoles < LEAF_HOLES_MIN) hard.push({ code: "LEAFHOLES", msg: `too few dark holes inside the crown (${lv.leafHoles} per 100 leaf px, Beodeul 0.9-3.2) - break big lobes into many small clusters with 1-3 px dark holes all through the interior` });
