@@ -1,0 +1,418 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f4f332fd8b1a92f53e63b19187b9a33c4cf4a7eb60c1db92b065d1bed7e2d9cf",
+ "width": 48,
+ "height": 48,
+ "kind": "seat",
+ "name": "other.throne",
+ "label": "beodeul_dungeon/other.throne",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 17,
+  "darkV5": 39,
+  "nearBlackEdge": 0.03,
+  "opaqueTiles": 7
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest panel (purple)",
+      "rows": "9-19",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests with face ornaments",
+      "rows": "19-30",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion (purple band with gold front trim)",
+      "rows": "21-25",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26-28"
+     },
+     {
+      "part": "gem and crest on top of backrest",
+      "rows": "1-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stepped base with carpet",
+      "rows": "31-45",
+      "evidence": "a",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": "34-38"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is the purple band at rows 21-24. It ends in a gold front-edge line at row 25, followed by dark shadow rows 26-28 and a front face down to row 30. The stepped base below has a lighter top edge at rows 31-32 and a carpet running down the front to row 45. The backrest (rows 9-19) and the armrests are drawn as vertical faces, which is allowed for a seat. The seat band is only 4 rows and has the same purple as the backrest, so the call is borderline, but the gold edge line and shadow below it read as a top surface with a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The throne is a stone seat with a purple cushion, a purple runner and a red gem on top. The stone base shows brick or block segmentation with several grey steps (highlight, light, mid, dark), and the cushion has about 4-5 purple steps, which is close to the Beodeul 5-6 per material. Measured facts: 11 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well, so it sits in the reference range though below the richest. Near-flat coverage is 0% and the near-neutral share of dark edge pixels is 0%, so the outlines carry a colour tint (dark purple or blue-grey beside the stone) and are not a uniform black sticker line. Texture comes from the stone block shading and the cushion tufting, but the large back panels are somewhat smooth, so it is 'some' rather than 'rich'. Density is a little below the stall and well but comparable to the hedge, and a careful artist would likely accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16294
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gem and finial ornament",
+      "rows": "1-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest panel",
+      "rows": "8-19",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests with face blocks",
+      "rows": "19-30",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion",
+      "rows": "20-24",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26-27"
+     },
+     {
+      "part": "dais/base with carpet",
+      "rows": "31-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a purple band at rows 20-24, with a dark back edge at row 20. It ends in a gold front-edge line at row 25, followed by dark shadow rows 26-30 and a front face. That gives a seat surface of about 5 rows and a front face of about 20 rows, from the dark apron down through the dais with its carpet. The backrest (rows 9-19) and armrests are exempt as seat_back. The gem on top is decor. The dais below is drawn as a front face only, but it is secondary to the seat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts favour the candidate: 11 visible tones per tile against 9 for the hedge, 0% near-flat coverage, and 0% neutral dark edge pixels, so its outline is tinted (dark purple/blue-grey) rather than black. By eye the throne is a small, clean silhouette. The stone base has some block shading, the purple back and carpet are two or three steps, and the gold and red gem accents are tiny. Material ramps run about 3-4 steps against the references' 5-6. The well and the cheese stall show more per-tile grain: per-stone shading, per-tile roof highlights, and varied small objects. Much of the throne's back panel and carpet looks smooth, with only slight dotting. The piece is competent and not sticker-like, but it is a bit shallower than the best references (well 20 tones, stall 17). A careful artist would probably want more texture on the purple back and the stone before accepting it beside the well and the stall.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15518
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest panel (purple)",
+      "rows": "9-19",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests with face ornaments",
+      "rows": "19-30",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "horns and gem on top of backrest",
+      "rows": "1-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top",
+      "rows": "21-24",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26-27"
+     },
+     {
+      "part": "stone dais with carpet",
+      "rows": "31-45",
+      "evidence": "none",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a lighter purple band at rows 21-24 (4 rows). A gold front-edge line sits at row 25 and dark shadow rows 26-30 follow, with the stone front face and carpeted dais below down to row 45. This matches evidence (a) for the sitting surface. The backrest (rows 9-19) and the armrests are vertical faces, which is exempt for a seat. The horns and gem are decor. The seat top is short, but it has an edge line and a shadow, and the front face is more than 3 rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate throne is a stone seat with a purple cushion and runner, a red gem and horned finial. Measured facts: 11 visible tones per full tile, which is above the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outline is tinted (dark blue-grey/purple) rather than black. By eye the stone blocks at the base are shaded individually with light and dark faces, and the back has some highlight and shadow steps. The purple cushion and runner are shaded in about 3-4 steps with a gold trim line. Shading is slightly shallower than the well and stall, and the large dark back panel reads a bit uniform. Overall it sits comfortably next to the references and does not look like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14567
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crown gem and ring on top of backrest",
+      "rows": "1-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest panel (purple, face-on)",
+      "rows": "7-19",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests with beige face blocks",
+      "rows": "19-30",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion",
+      "rows": "21-24",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26-27"
+     },
+     {
+      "part": "stepped base with carpet",
+      "rows": "31-45",
+      "evidence": "a",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": "34-38"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is the purple band at rows 21-24 (4 rows). It ends in a gold front-edge line at row 25 and is followed by dark shadow and front face at rows 26-30. Below it the stepped base (rows 31-45) has a lighter top edge at row 32 and a front face under it, so the front face is about 20 rows. The backrest (rows 7-19) and armrests are drawn face-on, which is exempt for a seat. The seat top is thin and borderline, but it has an edge line and shadow and is not just a 1-3 row strip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The throne reads as a dark stone seat with a purple cushion, a gold trim and a red gem finial. Measured facts: 11 visible tones per full tile (hedge reference 9, stall 17, well 20), 0% near-flat coverage and 0% neutral dark edge pixels, so the outlines carry a tint rather than being a neutral black line. By eye the stone base shows brick blocks with highlights and shadow, and the purple back has a few lightness steps with a gold carpet strip. Texture is moderate rather than rich: the stone is shaded block by block, but the cushion and carpet areas are fairly smooth. It sits comfortably next to the hedge and bench references, and does not look like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16880
+  }
+ ],
+ "decidedAt": "2026-10-23T03:27:10.548Z",
+ "cells": {
+  "16": [
+   "12ac90d321d36516",
+   "1edcf18b9af083ec",
+   "562817155bf21f49",
+   "69025a38caca0f57",
+   "73631ddd5fcc72e3",
+   "852601d72acee4d8",
+   "c86e088ce676aa9c",
+   "ce13268b8c5db178",
+   "d1f3da06f489789c"
+  ],
+  "24": [
+   "7ca72365eb73c72d",
+   "85787db70ec01b60",
+   "efaca36c0f46e985",
+   "fd6951e2447ed1fc"
+  ],
+  "32": [
+   "030d9537015ca231",
+   "19b84de3d3a984f7",
+   "47f16f1827c6fd6e",
+   "480c1d4fa55baca9",
+   "4836233cd544c857",
+   "5f506a13287406a6",
+   "6c3288c62c1b7cd0",
+   "73d67333a49df061",
+   "77a602daba47338a",
+   "81662bc124829611",
+   "87bce7e247e95f16",
+   "8835fc6df919373d",
+   "8f589b2b35c7b1cf",
+   "8f84691432aaaab6",
+   "914b6af5f7d8c756",
+   "95f706de16b7a1bc",
+   "a19d0d7c5d9cd856",
+   "a6a4a9f22763c813",
+   "a9b338b82cc369af",
+   "b4486f1ab203c575",
+   "c2daeaf323f9576a",
+   "de7f87e3e55e2eda",
+   "e7275638fe1b4f06",
+   "fab596d06ff32237"
+  ],
+  "48": [
+   "9357644a769f8210"
+  ]
+ }
+}

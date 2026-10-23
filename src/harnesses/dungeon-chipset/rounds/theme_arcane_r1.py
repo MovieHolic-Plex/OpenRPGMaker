@@ -1124,6 +1124,89 @@ def bevel(rows, ramp, min_run=3):
     return [''.join(r) for r in out]
 
 
+def hbevel(rows, ramp, min_run=4):
+    """bevel 의 가로판: 같은 글자가 가로로 min_run 칸 이상 이어진 덩이의 왼쪽 끝 = 한 단 밝게, 오른쪽 끝 = 한 단 어둡게
+    (빛은 왼쪽 위). 블록마다 모서리 빛·그늘이 생겨 돌을 한 장씩 칠한 결이 된다."""
+    out = [list(r) for r in rows]
+    for y, r in enumerate(rows):
+        x = 0
+        while x < len(r):
+            c = r[x]
+            x2 = x
+            while x2 + 1 < len(r) and r[x2 + 1] == c:
+                x2 += 1
+            if c in ramp and x2 - x + 1 >= min_run:
+                i = ramp.index(c)
+                out[y][x] = ramp[min(i + 1, len(ramp) - 1)]
+                out[y][x2] = ramp[max(i - 1, 0)]
+            x = x2 + 1
+    return [''.join(r) for r in out]
+
+
+def edge_tone(rows, inner, outer):
+    """inner 글자 중 투명(.)과 맞닿은 화소를 outer 로 — 불꽃 가장자리를 한 단 어둡게."""
+    H, W = len(rows), len(rows[0])
+    out = [list(r) for r in rows]
+    for y in range(H):
+        for x in range(W):
+            if rows[y][x] == inner and any(not (0 <= y + dy < H and 0 <= x + dx < W) or rows[y + dy][x + dx] == '.'
+                                           for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0))):
+                out[y][x] = outer
+    return [''.join(r) for r in out]
+
+
+def noise(rows, ramp, density=5, seed=0):
+    """재질 알갱이: ramp 글자 화소의 약 1/density 를 해시로 골라 한 단 밝게(짝) 또는 어둡게(홀). 가로로 이웃한 두 화소가
+    같은 쪽으로 바뀌지 않게 열마다 해시를 섞는다 — 돌·천 면이 매끈한 띠로 보이지 않게."""
+    out = [list(r) for r in rows]
+    for y, r in enumerate(rows):
+        for x, c in enumerate(r):
+            if c not in ramp:
+                continue
+            h = (x * 73856093 ^ y * 19349663 ^ seed * 83492791) & 0xffff
+            if h % density:
+                continue
+            i = ramp.index(c)
+            out[y][x] = ramp[min(i + 1, len(ramp) - 1)] if (h >> 4) % 2 == 0 else ramp[max(i - 1, 0)]
+    return [''.join(r) for r in out]
+
+
+def stone_blocks(rows, letters, ramp, seed=0, y0=0, y1=None):
+    """돌 한 장씩 칠하기: letters 글자의 4-이웃 덩이(이음 줄로 갈린 돌 한 장)마다 해시로 한 단 밝게/그대로/어둡게 바탕을 고르고,
+    덩이의 맨 윗줄·왼쪽 열은 한 단 더 밝게, 맨 밑줄·오른쪽 열은 한 단 더 어둡게. y0~y1 행만 다룬다."""
+    H, W = len(rows), len(rows[0])
+    y1 = H if y1 is None else y1
+    out = [list(r) for r in rows]
+    seen = set()
+    for sy in range(y0, y1):
+        for sx in range(W):
+            c = rows[sy][sx]
+            if c not in letters or (sx, sy) in seen:
+                continue
+            comp, stack = [], [(sx, sy)]
+            seen.add((sx, sy))
+            while stack:
+                x, y = stack.pop()
+                comp.append((x, y))
+                for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+                    if y0 <= ny < y1 and 0 <= nx < W and (nx, ny) not in seen and rows[ny][nx] == c:
+                        seen.add((nx, ny))
+                        stack.append((nx, ny))
+            if len(comp) < 6:
+                continue
+            ys = [y for _, y in comp]
+            xs = [x for x, _ in comp]
+            t = ((min(xs) * 31 + min(ys) * 17 + seed * 7) % 3) - 1
+            for x, y in comp:
+                i = ramp.index(c) + t
+                if y == min(ys) or x == min(xs):
+                    i += 1
+                elif y == max(ys) or x == max(xs):
+                    i -= 1
+                out[y][x] = ramp[max(0, min(len(ramp) - 1, i))]
+    return [''.join(r) for r in out]
+
+
 def pad(rows, w):
     """손으로 적은 행의 오른쪽을 투명으로 채운다(넘치면 오류)."""
     for r in rows:
@@ -1278,7 +1361,8 @@ LTH = {'A1': L('w:bone4 u:bone3 t:bone2 v:bone1 a:ostone1 b:ostone2 c:ostone3 d:
 
 
 def throne(key):
-    rows = bevel(bevel(THRONE_L, 'abcdekl'), 'MSRTNZ')
+    rows = hbevel(bevel(bevel(THRONE_L, 'abcdekl'), 'MSRTNZ'), 'abcdekl')
+    rows = noise(noise(rows, 'abcdekl', 6, 21), 'MSRTNZ', 5, 22)
     return grid(halves(speckle(rows, {'c': ('d', 9), 'd': ('e', 11), 'b': ('c', 13), 'R': ('T', 10), 'e': ('k', 15)}, 3), {'w': 'u', 'u': 't', 't': 'v', 'E': 'C', 'C': 'D', 'D': 'B', 'T': 'R'}), LTH[key])
 
 
@@ -1405,14 +1489,15 @@ VFLAMES = [   # 9×9, (3, 1) 에 얹는다(맨 밑 줄 = 그릇 속 숯 9행). �
     ['...D.....', '...DF..D.', '..DFFD.F.', '..DFEFDF.', '.DFEEEFD.', '.DFECEEFD', 'DFECCCEFD', 'DFEECCEFD', 'DDBDBDBDD'],
 ]
 LBZ = {'A1': L('l:iron5 k:iron4 j:iron3 i:iron2 h:iron1 q:gold4 o:gold2 n:gold1 '
-               'C:arcane5 E:arcane4 F:arcane3 D:arcane2 B:arcane1'),
+               'C:arcane5 E:arcane4 F:arcane3 D:arcane2 B:arcane1 G:arcane1'),
        'A2': L('g:iron4 f:vrock4 e:vrock4 d:vrock3 c:vrock2 b:vrock1 a:vrock0 '
-               'C:arcane5 E:arcane4 F:arcane3 D:arcane2 B:arcane1')}
+               'C:arcane5 E:arcane4 F:arcane3 D:arcane2 B:arcane1 G:arcane1')}
 
 
 def brazier(key, k):
-    cv = grid(BRAZIER_A1 if key == 'A1' else speckle(bevel(BRAZIER_A2, 'abcdeg', 4), {'c': ('d', 7), 'b': ('c', 9), 'd': ('e', 11)}, 2), LBZ[key])
-    stamp(cv, VFLAMES[k][:8], LBZ[key], 3, 1)   # 숯 줄은 빼고 불꽃만 — 불꽃 밑이 그릇 뒤 테(8행)에 닿고, 그릇 속 숯은 그대로 보인다
+    cv = grid(BRAZIER_A1 if key == 'A1' else speckle(hbevel(bevel(BRAZIER_A2, 'abcdeg', 4), 'abcdeg', 3),
+                                                       {'c': ('d', 7), 'b': ('c', 9), 'd': ('e', 11)}, 2), LBZ[key])
+    stamp(cv, edge_tone(VFLAMES[k][:8], 'D', 'G'), LBZ[key], 3, 1)   # 숯 줄은 빼고 불꽃만 — 불꽃 밑이 그릇 뒤 테(8행)에 닿고, 그릇 속 숯은 그대로 보인다
     return cv
 
 
@@ -1422,78 +1507,115 @@ def brazier(key, k):
 # 문턱 = 윗면 3줄 + 밝은 앞 모서리 + 앞면 2줄. 아치 안 숫자 0~4 = 가운데에서 잰 고리 번호(가운데 9). 닫힘 = 고리를 어두운 돌 세 단
 # (K·k·j)으로 칠한 굳은 소용돌이 판 + X 자 쇠사슬 + 가운데 봉인 메달. 열림 = spiral_rows 가 두 팔 나선 띠로 다시 칠해 장면마다 돈다.
 def _portal_half():
+    """왼쪽 반 24×48. 둥근 돌 단(위에서 본 타원 윗면 + 밝은 앞 모서리 + 앞면) 뒤쪽 절반 위에 문이 선다:
+    두꺼운 돌 머리(위에서 본 판석 윗면 + 앞면) · 두 기둥 · 아치 안 고리 번호."""
     W, H = 24, 48
     g = [['.'] * W for _ in range(H)]
-    for y, c in ((0, 'd'), (1, 'e'), (2, 'e'), (3, 'e'), (4, 'f'), (5, 'd'), (6, 'c')):   # 기둥 머리(상인방 위로 솟음)
-        for x in range(0, 9):
-            g[y][x] = c
-        g[y][0] = 'd' if c in 'ef' else 'e' if c == 'd' else 'd'
-    g[0][0] = '.'
-    for y, c in ((3, 'd'), (4, 'e'), (5, 'e'), (6, 'e'), (7, 'e'), (8, 'f'), (9, 'd'), (10, 'c'), (11, 'c'), (12, 'b')):   # 상인방
-        for x in range(9, W):
-            g[y][x] = c
-        if c in 'de':
-            for jx in (15, 21):
-                g[y][jx] = 'd' if c == 'e' else 'c'
-        if c in 'cd' and y > 8:
-            for jx in (15,):
-                g[y][jx] = 'b'
-    for y, x in ((5, 12), (6, 18), (4, 22), (2, 3), (1, 6), (3, 5)):
+    # 둥근 돌 단 — 타원 중심 (24, 37.5), 반지름 가로 23.5 · 세로 6.5
+    low = {}
+    for y in range(30, 45):
+        dy = (y + 0.5 - 37.5) / 6.5
+        if abs(dy) >= 1:
+            continue
+        hw = 23.5 * math.sqrt(1 - dy * dy)
+        for x in range(W):
+            if 24 - (x + 0.5) <= hw:
+                g[y][x] = 'e'
+                low[x] = y
+    for x, y in low.items():                    # 앞 모서리 + 앞면 3줄 + 그림자
         g[y][x] = 'f'
-    for y in range(7, 41):                      # 기둥 앞면
-        row = 'edddddcba' if (y - 7) % 7 else 'dbbbbbbba'
-        for x, c in enumerate(row):
+        for k, c in enumerate('ccb'):
+            if y + 1 + k < H:
+                g[y + 1 + k][x] = c
+        if y + 4 < H:
+            g[y + 4][x] = '~'
+    for y in range(30, 45):                     # 단 윗면 판석 이음(동심 고리 하나 + 바퀴살 둘) · 알갱이
+        for x in range(W):
+            if g[y][x] != 'e':
+                continue
+            dy = (y + 0.5 - 37.5) / 4.0
+            r = math.hypot((24 - (x + 0.5)) / 15.0, dy)
+            if abs(r - 1) < 0.07 or (x in (8, 16) and y > 37):
+                g[y][x] = 'd'
+    for y, x in ((39, 4), (41, 12), (40, 19), (43, 9), (38, 21)):
+        if g[y][x] == 'e':
+            g[y][x] = 'f'
+    # 문 — 돌 머리 윗면(판석) 0~5행, 앞 모서리 6행, 앞면 7~9행
+    for y in range(0, 6):
+        for x in range(2 if y == 0 else 1, W):
+            g[y][x] = 'd' if y == 0 else 'e'
+    for x in range(1, W):
+        g[3][x] = 'd'
+    for y in (1, 2):
+        for jx in (7, 15, 23):
+            g[y][jx] = 'd'
+    for y in (4, 5):
+        for jx in (3, 11, 19):
+            g[y][jx] = 'd'
+    for y, x in ((1, 4), (2, 12), (4, 8), (5, 16), (1, 19)):
+        g[y][x] = 'f'
+    for x in range(1, W):
+        g[6][x] = 'f'
+    for y, c in ((7, 'd'), (8, 'c'), (9, 'b')):
+        for x in range(1, W):
             g[y][x] = c
-    for y, x in ((15, 3), (16, 4), (17, 3), (16, 2), (29, 3), (30, 4), (30, 2), (31, 3), (36, 5), (22, 5)):
+        for jx in (9, 17):
+            g[y][jx] = 'b' if c != 'b' else 'a'
+        g[y][1] = 'e' if c in 'dc' else 'd'
+    for y in range(10, 36):                     # 기둥 앞면(단 뒤쪽 위에 선다)
+        row = 'edddddcba' if (y - 10) % 7 else 'dbbbbbbba'
+        for x, c in enumerate(row):
+            g[y][2 + x] = c
+    for y, x in ((13, 5), (14, 6), (15, 5), (14, 4), (26, 5), (27, 6), (27, 4), (28, 5), (21, 7)):
         g[y][x] = 'D'
-    for y, x in ((10, 2), (19, 5), (26, 3), (34, 2), (38, 4)):
-        g[y][x] = 'e'
-    cx, cy = 23.5, 27.0
-    for y in range(13, 41):                     # 아치 안 고리 번호
-        for x in range(9, W):
-            r = math.hypot(x - cx + 0.5, (y - cy) * 0.75)
-            g[y][x] = '9' if r < 1.8 else str(int(r / 2.6) % 5)
-    for y, x0, x1 in ((13, 9, 13), (14, 9, 11), (15, 9, 10), (16, 9, 9)):   # 아치 어깨(둥근 위 모서리)
+    cx, cy = 23.5, 22.0
+    for y in range(10, 36):                     # 아치 안 고리 번호
+        for x in range(11, W):
+            r = math.hypot(x - cx + 0.5, (y - cy) * 0.8)
+            g[y][x] = '9' if r < 1.8 else str(int(r / 2.4) % 5)
+    for y, x0, x1 in ((10, 11, 14), (11, 11, 12), (12, 11, 11)):   # 아치 어깨
         for x in range(x0, x1 + 1):
             g[y][x] = 'a' if x == x1 else 'b'
-    for (y, x), c in {(8, 21): 'q', (8, 22): 'q', (8, 23): 'q', (9, 21): 'q', (9, 22): 'E', (9, 23): 'C', (10, 21): 'o',
-                      (10, 22): 'C', (10, 23): 'D', (11, 21): 'o', (11, 22): 'D', (11, 23): 'B', (12, 21): 'o', (12, 22): 'o',
-                      (12, 23): 'o'}.items():
+    for (y, x), c in {(6, 21): 'q', (6, 22): 'q', (6, 23): 'q', (7, 21): 'q', (7, 22): 'E', (7, 23): 'C', (8, 21): 'o',
+                      (8, 22): 'C', (8, 23): 'D', (9, 21): 'o', (9, 22): 'o', (9, 23): 'o'}.items():
         g[y][x] = c
-    for y, c in ((41, 'e'), (42, 'e'), (43, 'e'), (44, 'f'), (45, 'c'), (46, 'b'), (47, '~')):   # 문턱
-        for x in range(W):
-            g[y][x] = c
-    for y, x in ((41, 5), (42, 13), (43, 19), (41, 20)):
-        g[y][x] = 'd'
     return [''.join(r) for r in g]
 
 
-PORTAL_L = speckle(_portal_half(), {'c': ('d', 8), 'd': ('e', 12), 'b': ('c', 11), 'e': ('d', 17)}, 5)
+def _portal_shade(rows):
+    """기둥·머리 앞면(7~35행)만 블록 명암·알갱이 — 윗면 판석(머리·단)은 고르게 두어야 위에서 본 판으로 읽힌다."""
+    rows = stone_blocks(rows, 'edc', 'abcdemn', 7)
+    top, front, base = rows[:7], rows[7:36], rows[36:]
+    front = noise(speckle(front, {'c': ('d', 8), 'd': ('e', 12), 'b': ('c', 11)}, 5), 'abcdemn', 7, 32)
+    return top + front + base
+
+
+PORTAL_L = _portal_shade(_portal_half())
 for _r in PORTAL_L:
     assert len(_r) == 24, _r
 # 닫힘 덧칠(왼쪽 반): 쇠사슬 g·h(대각 둘 — 거울로 X) · 봉인 메달 q·o 테 + 빛 새김 B·D·E·C
 PORTAL_SEAL = ['.' * 24] * 48
 _seal = [list(r) for r in PORTAL_SEAL]
 for _t in range(7):
-    for _x, _y in ((12 + _t, 16 + _t), (12 + _t, 17 + _t), (12 + _t, 39 - _t), (12 + _t, 38 - _t)):
+    for _x, _y in ((13 + _t, 12 + _t), (13 + _t, 13 + _t), (13 + _t, 32 - _t), (13 + _t, 31 - _t)):
         _seal[_y][_x] = 'g' if (_t % 2 == 0) else 'h'
 for _i, _r in enumerate(['..qqq', '.qooo', 'qoBBB', 'qoBDE', 'qoBEC', 'qoBDE', 'qoBBB', '.qooo', '..qqq']):
     for _j, _c in enumerate(_r):
         if _c != '.':
-            _seal[21 + _i][19 + _j] = _c
+            _seal[18 + _i][19 + _j] = _c
 PORTAL_SEAL = [''.join(r) for r in _seal]
-LPO = {'A1': L('w:bone4 u:bone3 f:bone2 e:ostone5 d:ostone4 c:ostone3 b:ostone2 a:ostone1 q:gold4 o:gold2 '
-               'E:arcane5 C:arcane4 D:arcane3 B:arcane2 g:iron4 h:iron2 j:ostone2 k:ostone1 K:ostone0'),
-       'A2': L('w:bone4 u:bone3 e:vrock4 d:vrock3 c:vrock2 b:vrock1 a:vrock0 q:gold4 o:gold2 '
-               'E:fire5 C:fire4 D:red3 B:red1 g:iron4 h:iron2 f:vrock4 j:vrock2 k:vrock1 K:vrock0')}
-SWIRL = {'A1': ['arcane0', 'arcane1', 'arcane2', 'arcane3', 'arcane4', 'arcane5'],
+LPO = {'A1': L('w:bone4 u:bone3 n:iron5 m:iron4 f:iron5 e:vrock4 d:vrock3 c:vrock2 b:vrock1 a:vrock0 q:gold4 o:gold2 '
+               'E:arcane5 C:arcane4 D:arcane3 B:arcane2 g:iron4 h:iron2 Z:arcane0 Y:vrock1 X:vrock0 W:vrock2'),
+       'A2': L('w:bone4 u:bone3 n:bone2 m:ostone5 f:bone1 e:ostone5 d:ostone4 c:ostone3 b:ostone2 a:ostone1 q:gold4 o:gold2 '
+               'E:fire5 C:fire4 D:red3 B:red1 g:iron4 h:iron2 Z:ostone2 Y:ostone1 X:ostone0 W:ostone3')}
+SWIRL = {'A1': ['arcane0', 'arcane1', 'arcane2', 'arcane3', 'arcane4', 'arcane5'],   # A1 = 푸른 회색 돌 틀 + 보라 소용돌이
          'A2': ['red0', 'red1', 'red3', 'fire3', 'fire4', 'fire5']}
 
 
 def portal(key, opened, k=0):
     leg = dict(LPO[key])
     if not opened:
-        rows = halves(tr(PORTAL_L, {'0': 'K', '1': 'k', '2': 'j', '3': 'k', '4': 'j', '9': 'K'}), {'w': 'u'})
+        rows = halves(noise(tr(PORTAL_L, {'0': 'X', '1': 'Y', '2': 'W', '3': 'Z', '4': 'W', '9': 'X'}), 'XZYW', 4, 31), {'w': 'u'})
         cv = grid(rows, leg)
         stamp(cv, halves(PORTAL_SEAL, {'E': 'C'}), leg, 0, 0)
         return cv
