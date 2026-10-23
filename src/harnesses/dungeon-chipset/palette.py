@@ -64,6 +64,7 @@ RAMPS = {
     'cata':  (['castle-catacombs/floor_cata'], None, 7, '지하묘지 판석 바닥'),
     'brick': (['castle-catacombs/face_cata_3h', 'castle-catacombs/face_cata_2h'], None, 7, '지하묘지 벽돌 앞면'),
     'water': (['sea-cave/water_sea'], is_blue, 6, '동굴 바닷물'),
+    'tide':  (['sea-cave/water_tide'], lambda c: c[1] > c[0] and c[2] > c[0], 5, '동굴 고인 물(버들항 바다 동굴 웅덩이 청록 — 렌더의 웅덩이가 이 조각)'),
     'pool':  (['aqueduct-sewer/water_sew'], lambda c: c[1] > c[0] and lum(c) < 140, 6, '하수 수로 물(검푸른 청록)'),
     'lava':  (['volcano-cave/lava-strip', 'volcano-cave/fire_crystal'], warm, 6, '용암(화산 동굴)'),
     'ice':   (['snowfield/ground-ice'], None, 5, '얼음판(설원)'),
@@ -77,6 +78,15 @@ RAMPS = {
               lambda c: c[0] >= c[2] and lum(c) > 60, 6, '뼈'),
     'moss':  (['temple-ruins/face_temple_3h', 'aqueduct-sewer/face_sewer_3h', 'temple-ruins/vines_2'], is_green, 6, '이끼·덩굴'),
     'glow':  (['sea-cave/glow_moss_floor', 'sea-cave/glow_mushroom'], is_teal, 6, '발광 이끼·수정 청록'),
+    # 기후 테마(2026-10-23, theme-climate 판 — 피라미드·얼음굴·늪·숲 던전). 모두 버들항 실제 조각/키트 화소에서 뽑는다.
+    'sand':  (['desert-oasis/ground-cliff', 'desert-oasis/wall', 'desert-oasis/temple', 'desert-oasis/n6', 'desert-oasis/ground-sand'],
+              lambda c: warm(c) and lum(c) > 60, 9, '사암·모래(버들항 사막 오아시스 절벽·담·신전·집 벽·모래) — 피라미드 벽·바닥'),
+    'snow':  (['snowfield/ground-snow', 'snowfield/mound', 'snowfield/snowman', 'snowfield/e1'],
+              lambda c: lum(c) > 150 and c[2] >= c[0], 6, '눈(버들항 설원 눈밭·눈 둔덕·지붕 눈) — 눈 더미·서리'),
+    'bog':   (['swamp-stilt/ground-bog', 'swamp-stilt/ground-mud', 'swamp-stilt/ground-water', 'swamp-stilt/ground-reedbed'],
+              None, 10, '늪 풀·진흙·검푸른 늪물(버들항 늪 마을 바닥) — 단 0~2 녹색 그늘, 3~ 올리브 진흙·풀빛'),
+    'leaf':  (['kit:bd-tree-d43edd', 'kit:bd-tree-b1d104', 'kit:bd-tree-1a786c'], is_green, 8,
+              '활엽수 잎(버들항 bd-tree 큰 나무 수관) — 숲 던전 거목·가시덤불'),
 }
 
 # 공용 시트의 칩 램프(palette.RAMPS_CHIP) 가운데 던전에 쓸 것 — 시트에 실제로 있는지 대조한다.
@@ -87,7 +97,26 @@ CHIP_EXTRA = {
 SHADOW = {'rgb': [12, 14, 20], 'alpha': 88, 'why': '버들항 조각에서 가장 흔한 반투명 바닥 그림자(윗층 기물 전용)'}
 
 
+TILESET = os.path.join(REPO, 'src', 'assets', 'beodeulCityTileset.json')
+
+
+def kit_image(kid):
+    """버들항 구조 키트(structureKits, 공용 시트 칸 번호)를 아래·위 층 겹쳐 그린 그림 — 키트에만 있는 그림(나무)의 출처."""
+    kit = next(k for k in json.load(open(TILESET, encoding='utf-8'))['structureKits'] if k['id'] == kid)
+    sheet = Image.open(SHEET).convert('RGBA')
+    rows = kit['rows']
+    im = Image.new('RGBA', (16 * max(len(r['tiles']) for r in rows), 16 * len(rows)))
+    for y, r in enumerate(rows):
+        for key in ('tiles', 'upperTiles'):
+            for x, c in enumerate(r.get(key) or []):
+                if c is not None and c >= 0:
+                    im.alpha_composite(sheet.crop(((c % 128) * 16, (c // 128) * 16, (c % 128) * 16 + 16, (c // 128) * 16 + 16)), (x * 16, y * 16))
+    return im
+
+
 def part(name):
+    if name.startswith('kit:'):
+        return kit_image(name[4:])
     place, file = name.split('/')
     return os.path.join(VAR, place, 'parts', file + '.png')
 
@@ -95,7 +124,8 @@ def part(name):
 def ramp_from(sources, pred, k):
     cnt = collections.Counter()
     for s in sources:
-        a = np.array(Image.open(part(s)).convert('RGBA'))
+        src = part(s)
+        a = np.array((src if isinstance(src, Image.Image) else Image.open(src)).convert('RGBA'))
         op = a[a[:, :, 3] == 255][:, :3]
         for c in map(tuple, op):
             c = tuple(int(v) for v in c)
@@ -131,7 +161,8 @@ def build():
     for name, (sources, pred, k, why) in RAMPS.items():
         cols, npx = ramp_from(sources, pred, k)
         ramps[name] = [hx(c) for c in cols]
-        srcs[name] = {'from': [f'tiledata/beodeul-variants/{s.split("/")[0]}/parts/{s.split("/")[1]}.png' for s in sources],
+        srcs[name] = {'from': [(f'src/assets/beodeulCityTileset.json structureKits {s[4:]}' if s.startswith('kit:') else
+                                f'tiledata/beodeul-variants/{s.split("/")[0]}/parts/{s.split("/")[1]}.png') for s in sources],
                       'pixels': npx, 'why': why}
         missing += [(name, hx(c)) for c in cols if tuple(c) not in sheet_cols]
     for name, (cols, why) in CHIP_EXTRA.items():
