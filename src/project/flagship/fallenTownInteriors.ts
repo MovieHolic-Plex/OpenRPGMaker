@@ -279,7 +279,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
         for (let i = 0; i < layer.length; i += 1) if (layer[i]! >= 0 && drop.test(metaX[layer[i]!]?.label ?? "")) layer[i] = -1;
       }
     }
-    for (const [kit, x, y] of home.dress ?? []) {
+    for (const [kit, x, y] of [...(home.dress ?? []), ...(EXTRA_STORAGE[home.mapId] ?? [])]) {
       const ctx = { project, assistantRun: false };
       try {
         // 방 배치가 바뀌면 고정 좌표 가구가 벽 너머 어둠(천장·허공)에 찍혔다(VQA r12 major, 약방 바구니·별지기 침실 찻상) —
@@ -570,6 +570,28 @@ function counterSpot(project: Project, map: GameMap, exit: Cell): { counter: Cel
   options.sort((p, q) => Number(reach.has(`${p.behind.x},${p.behind.y}`)) - Number(reach.has(`${q.behind.x},${q.behind.y}`)) || p.d - q.d);
   return options[0];
 }
+
+/**
+ * 집마다 수납(궤짝·여행 가방·통·자루·바구니)을 더 둔다 — 뒤지기 이벤트는 townLife.ts 가 가구 라벨로 자동으로 단다(주인 시야·경고 규칙 적용).
+ * 방 배치가 바뀌어 바닥이 아닌 칸이면 아래 stamp 가드가 되돌리므로 후보를 넉넉히 적는다.
+ */
+const EXTRA_STORAGE: Record<string, readonly (readonly [string, number, number])[]> = {
+  fs_lisa_home: [
+    ["chest", 17, 6], ["basket:herb", 11, 6], ["luggage trunk", 21, 6], ["chest", 2, 14], ["luggage trunk", 11, 14],
+    ["basket:herb", 15, 14], ["chest", 25, 14], ["luggage trunk", 27, 13], ["barrel", 7, 3],
+  ],
+  fs_stargazer_home: [
+    ["book pile", 2, 13], ["chest", 11, 13], ["chest", 20, 4], ["luggage trunk", 26, 4], ["chest", 24, 4],
+    ["crate", 11, 5], ["basket:herb", 15, 13], ["chest", 24, 13],
+  ],
+  fs_bakery_home: [
+    ["sack", 10, 4], ["sack", 11, 4], ["barrel", 15, 4], ["barrel", 23, 4], ["crate", 26, 4], ["sack", 24, 4],
+    ["barrel", 19, 4], ["chest", 2, 4], ["basket:loaf", 21, 12], ["sack", 3, 12],
+  ],
+  fs_apothecary: [["chest", 20, 5], ["basket:herb", 7, 6], ["luggage trunk", 3, 12], ["crate", 12, 4]],
+  fs_inn: [["barrel", 25, 4], ["crate", 27, 4], ["chest", 3, 4], ["luggage trunk", 5, 12], ["sack", 12, 4]],
+  fs_smithy: [["crate", 3, 4], ["barrel", 5, 4], ["chest", 10, 4], ["sack", 12, 6]],
+};
 
 /**
  * 가게 앞 — 여관·약방·빵집이 바깥에서 그냥 집으로 보였고, 늙은 별지기의 집만 간판·차양을 달아 가게로 읽혔다(VQA r6 major).
