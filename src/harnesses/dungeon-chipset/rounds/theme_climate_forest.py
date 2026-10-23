@@ -4,7 +4,7 @@
 덩이의 밝기 단은 글자 바꾸기(한 단 내리기)로만 바꾼다 — 잡음 함수·도형 마스크 본체 없음.
 범례(기물마다 공통 약속):
   잎 '0'~'6' = leaf 0~6 · 나무 p q r s t u = wood 0~5 · 돌 A B C D E F = stone 0~5 · 바위 G H I J K L M = crock 0~6
-  · 이끼 a b c d e f = moss 0~5 · 늪 g h i = bog 0~2 · 붉은 S T U V W = red 0~4 · 뼈 v w x y z = bone 0~4
+  · 이끼 a b c d e f = moss 0~5 · 늪 g h i = bog 0~2 · 이끼꽃(지의류) X Y = bog 5~6 · 붉은 S T U V W = red 0~4 · 뼈 v w x y z = bone 0~4
   · 빛 N O P Q R Z = glow 0~5 · 쇠 j k l = iron 1,3,5 · 불 m n o = fire 2,4,5 · 공허 ; : = void 0,1 · '~' 접지 그림자
 """
 import os
@@ -21,7 +21,7 @@ _B = {}
 for _r, _c in (('leaf', '0123456'), ('wood', 'pqrstu'), ('stone', 'ABCDEF'), ('crock', 'GHIJKLM'), ('moss', 'abcdef'),
                ('bog', 'ghi'), ('red', 'STUVW'), ('bone', 'vwxyz'), ('glow', 'NOPQRZ')):
     _B.update(L.ramp_chars(_r, _c))
-_B.update(j=('iron', 1), k=('iron', 3), l=('iron', 5), m=('fire', 2), n=('fire', 4), o=('fire', 5),
+_B.update(X=('bog', 5), Y=('bog', 6), j=('iron', 1), k=('iron', 3), l=('iron', 5), m=('fire', 2), n=('fire', 4), o=('fire', 5),
           **{';': ('void', 0), ':': ('void', 1)})
 LG = L.legend(**_B)
 
@@ -151,56 +151,6 @@ def preview(cv, path, k=4, bg=(60, 62, 70, 255)):
 
 
 # ================================================================================================ 거목 6×7 (96×112)
-# A1 줄기: 넓은 참나무, 판근이 양옆으로 퍼지고 가운데 뿌리 아치 굴(문 칸 = 열 3, 맨 아래 줄).
-TRUNK_A1 = [
- '......................................tusrqtsrqqtusrqsrqtsrqqrqpqp',
- '......................................tusrqtsrqqtusrqsrqtsrqqrqpqp',
- '......................................utsrqtssrqqtusrqsrqtsrqrqpqp',
- '......................................utsrqqtsrqqutsrqsrqtsrqrqpqp',
- '.....................................tusrrqqtsrqqutsrqsrqqtsrqrqpqp',
- '.....................................tusrqqtssrqqutsrqqsrqtsrqqrqpp',
- '.....................................utsrqqtsrqqputsrqqsrqtsrqqrqpp',
- '.....................................utssrqqtsrqqputsrqsrrqtsrqrqpp',
- '....................................utssrqqtsrrqqputsrqsrqqtsrqrqqpp',
- '....................................utsrqtusrrqqputssrqqsrqtsrqrqqpp',
- '....................................tusrqtussrqpputssrqqsrqtsrqqrqpp',
- '...................................tusrqqtusrrqputtssrqqsrqqtsrqrqqpp',
- '...................................tusrqqtusrqrqputssrrqqsrqtsrqqrqqpp',
- '..................................utssrqqtusrqrqputssrrqqsrqtsrqqrqqqpp',
- '..................................utsrrqqtusrqrp;:putsrqqssrqtsrqqrqqqpp',
- '.................................uttsrqqtussrqp;::;pusrqqsrrqtsrqqrqqqpp',
- '.................................utssrqqtusrrp;:00:;ptsrqqsrqtsrqqrqqqqpp',
- '................................uttsrqqtussrp;:0000:;ptsrqsrrqtsrqqrqqqpp',
- '................................utssrqqtusrqp;:0000:;pusrqqsrqtsrqqrqqqqpp',
- '...............................uttsrqqtussrup;:000000:;utsrqsrrqtsrqqrqqqpp',
- '...............................utssrqqtusrrup;:000000:;utsrqqsrqqtsrqrqqqqpp',
- '..............................uttsrqqtussrrup;:000000:;utssrqsrrqtsrqqrqqqpp',
- '.............................uutssrqqtusrrup;:00000000:;utsrqqsrqtssrqqrqqqqpp',
- '............................uutsrrqqtussrrup;:00000000:;utssrqqsrqtsrqqrqqqqqpp',
- '...........................uuttsrrqqtusrrqup;:00000000:;utsrrqqssrqtsrqqrqqqqqpp',
- '.........................uuttssrrqqtussrrqup;:00000000:;utssrqqsrrqtsrqqqrqqqqqppp',
- '......................uuuttsssrrqqtusssrrqup;:00000000:;utssrqqqssrqtsrrqqrqqqqqqppp',
- '..................45uuuttssrrrqqqtussrrrqqup;:00000000:;utssrrqqssrrqtssrqqqrqqqqqqqpp',
- '...............4554uttssrrqqqqqtusrrrqqqup;:0000000000:;utsrrqqqssrrqqtsrqqqqrqqqqqqqpp45',
- '............455uuttssrrqqppp..tusrrqqqpup;:0000000000:;utsrqqp.qsrrqqqtssrqqqqqqqqqqqp545',
- '.........4554uutssrrqqppp....utsrrqqpputp;:0000000000:;uusrqp...qsrrrqqqtsrrqqqqqqqqqqqpp',
- '......45554uuttsrrqqppp.....utssrqqpp.up;:0000000000:;uusrqp.....qqssrrqqqtsrrqqqqqqqqqpp',
- '....455uuuttsrrqqqpp.......utsrrqqp..utp;:0000000000:;ussrqp......qqsssrrqqqtsrrqqqqqqppp',
- '...45uuttssrrqqppp........uttsrrqp..uutp;:0000000000:;utsrqqp.......qqsssrrqqqtsrrqqqqpppp',
- '..4uuttsrrqqpp.........45uttsrqqp..uutsp;:0000000000:;utssrqqp.........qqssrrqqqqtsrqqqppp',
- '.4uttsrqqpp..........455uutssrqp..uuttsp;:0000000000:;uttsrqqp...........qqssrrqqqqsrqqpp',
- '.utsrqqp...........45uuttsrrqp...uttssp;:0000000000:;uttssrqqp.............qqsrrqqqqrqqp',
- '.qqpp............45uuttssrqqp...uttsrqp;:0000000000:;uttssrrqqp...............qqsrqqqpp.',
- '...............45uuttssrrqp...uuttsrrqp;:0000000000:;uttsrrqqqqp................qqqqpp..',
- '.............45uuttsrrqqpp...uuttsrrqqp;:0000000000:;utssrrqqqqqpp.................pp...',
- '...........4uuttssrrqqpp...uuttssrrqqp;;:0000000000:;;utssrrqqqqqqpp...................',
- '..........uuttsrrqqpp.......pqqqqqqqp;;::00000000::;;pqqqqqqqqqqpp.....................',
-]
-SHADOW_A1 = [
- '.........~~~~~~~~..........~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~..............~~',
- '..............~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.............',
-]
-
 # A2 줄기: 비틀린 고목(나선 결), 문틀 자리 — 위에 나무 문(DOOR_A2)을 얹는다.
 TRUNK_A2 = [
  '........................................tsrqqtsrrqtusrqqpqrqpp',
@@ -250,69 +200,281 @@ SHADOW_A2 = [
  '.............~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.......',
 ]
 
-# 굴 언저리 이끼(빛 쪽 판근 윗면) — 이미지 좌표에 얹는 손 조각
-MOSS_A1 = [  # (x, y, 행)
-    (22, 92, ['..45.', '4554.', '.43..']),
-    (8, 99, ['.45', '454', '3..']),
-    (36, 86, ['45', '54', '4.']),
-    (64, 90, ['.4', '45', '43']),
-    (84, 93, ['45.', '544', '.3.']),
-    (42, 100, ['4', '5', '3']),
-]
-SIL_A1 = [  # 4px 덩이로 깐 수관 바탕(가장 어두운 잎) — 위 덩이들이 덮는다
-    '........................',
-    '........................',
-    '........XXXXXXX.........',
-    '......XXXXXXXXXXXX......',
-    '....XXXXXXXXXXXXXXXX....',
-    '..XXXXXXXXXXXXXXXXXXXX..',
-    '.XXXXXXXXXXXXXXXXXXXXXX.',
-    '.XXXXXXXXXXXXXXXXXXXXXX.',
-    '.XXXXXXXXXXXXXXXXXXXXXX.',
-    '.XXXXXXXXXXXXXXXXXXXXXX.',
-    '.XXXXXXXXXXXXXXXXXXXXXX.',
-    '.XXXXXXXXXXXXXXXXXXXXXX.',
-    '.XXXXXXXXXXXXXXXXXXXXXX.',
-    '..XXXXXXXXXXXXXXXXXXXX..',
-    '..XXXXXXXXXXXXXXXXXXXX..',
-    '...XXXXXXXXXXXXXXXXXX...',
-    '....XXXXXXXXXXXXXXXX....',
-    '.....XXXXXXXXXXXXXX.....',
-]
-PLAN_A1 = (
-    # 뒤 테두리(두 단 어둡게)
-    [('F' if (x + y) % 3 == 0 else 'A', 1, x, y) for x, y in (
-        (2, 60), (16, 64), (32, 66), (48, 66), (64, 63), (78, 58), (0, 46), (80, 44), (0, 32), (82, 30),
-        (6, 18), (76, 16), (18, 6), (36, 0), (54, 2), (66, 8), (0, 20), (82, 18))]
-    # 가운데(한 단)
-    + [(n, 1 if x >= 56 or y >= 50 else 0, x, y) for n, x, y in (
-        ('A', 6, 50), ('A', 22, 54), ('A', 40, 56), ('A', 58, 52), ('A', 72, 46),
-        ('F', 4, 38), ('A', 20, 42), ('A', 38, 44), ('A', 56, 40), ('A', 70, 34),
-        ('A', 8, 26), ('A', 26, 30), ('F', 44, 28), ('A', 62, 24),
-        ('A', 14, 14), ('A', 32, 16), ('A', 50, 12), ('B', 66, 14), ('B', 26, 4), ('B', 42, 2))]
-    # 앞 밝은 덩이(위·왼 쪽으로 몰림)
-    + [(n, 0, x, y) for n, x, y in (
-        ('C', 10, 46), ('B', 28, 48), ('C', 48, 48), ('D', 66, 44),
-        ('B', 8, 34), ('A', 24, 34), ('B', 46, 34), ('C', 64, 30),
-        ('A', 12, 20), ('A', 30, 20), ('B', 50, 18), ('B', 22, 8), ('A', 34, 4), ('C', 52, 6))]
-    # 빛 받는 판(위·왼) — 한 단 밝게
-    + [(n, -1, x, y) for n, x, y in (('C', 16, 22), ('D', 34, 8), ('C', 26, 36), ('D', 12, 36), ('C', 40, 20))]
-)
-
-
 def _sil(cv, sil, x0=0, y0=0, ch='1'):
     rows = [''.join((ch if c == 'X' else '.') * 4 for c in r) for r in sil for _ in range(4)]
     put(cv, rows, x0, y0)
 
 
+# ------------------------------------------------------------------ A1 (round 2): 버들항 d43edd 처럼 잎 송이 덩이 여럿 + 틈에 가지
+# 큰 덩이 셋(MA·MB·MC)과 잔 송이(ROSETTES)를 손으로 고른 자리에 겹친다. 뒤 층은 두 단 어둡게(틈 = 어두운 잎 + 가지).
+MA = [
+ '.......5..5.....5.......',
+ '.....4.65.66..4.65......',
+ '....456665665.4666.5....',
+ '..5.566666566545665654..',
+ '.4656665665666566656544.',
+ '..566656666566656665654.',
+ '.4566665656665566565543.',
+ '456656655666565655655443',
+ '.4565565556556556545543.',
+ '45555545655455545554443.',
+ '.4545554555444554544443.',
+ '.34544454544454444343432',
+ '..343444343444434433332.',
+ '.3.3344333443343333322..',
+ '..2.333.333.333.33222...',
+ '....2.22.222.22.22......',
+]
+MB = [
+ '.....5....5..5......',
+ '...4.66.4.665.65....',
+ '..46665466566566....',
+ '.5666656666656665.4.',
+ '45665665656665665654',
+ '.5666566565566566543',
+ '4565656655665565554.',
+ '.455655455455545543.',
+ '45545454454445454433',
+ '.3454444344434443432',
+ '..34334343343433322.',
+ '.3.33.3332.333.22...',
+ '...2..2.2...2.......',
+]
+MC = [
+ '....5..5......',
+ '..4.665.65....',
+ '.466656665.4..',
+ '45666566665654',
+ '.566565565654.',
+ '45565545554543',
+ '.4545454445433',
+ '.3443434343432',
+ '..33.333.3322.',
+ '..2..2.2..2...',
+]
+
+# 잎 송이(작은 잎 다발) — 톱니 잎끝, 속에 잎 무늬. 밝은 판. 3=어두운 아래, 6=빛.
+ROSETTES = {
+'a': [  # 8x7
+ '..5..5..',
+ '.4565.4.',
+ '45666654',
+ '.566565.',
+ '45656543',
+ '.345443.',
+ '..3.33..',
+],
+'b': [  # 6x5
+ '.5.4..',
+ '45665.',
+ '.56654',
+ '345543',
+ '.3.3..',
+],
+'c': [  # 10x8
+ '...5...5..',
+ '..4664.45.',
+ '.456665654',
+ '45666656643',
+ '.5665566543',
+ '4565545543.',
+ '.34544433..',
+ '..3.333.3..',
+],
+'d': [  # 7x6
+ '.4..5..',
+ '.4565..',
+ '4566654',
+ '.456553',
+ '3455443',
+ '.3.33..',
+],
+'e': [  # 12x8 큰 송이(혹 둘)
+ '..5.....5...',
+ '.4664..4664.',
+ '456665456654',
+ '.56656666553',
+ '45665565654.',
+ '.4556545543.',
+ '..34454433..',
+ '...3.3.33...',
+],
+'f': [  # 5x4 잔 잎
+ '.5.5.',
+ '45654',
+ '34543',
+ '.3.3.',
+],
+}
+
+LEAF = {'A': MA, 'B': MB, 'C': MC}
+LEAF.update(ROSETTES)
+LEAF = {k: _norm(v) for k, v in LEAF.items()}
+BRANCH_Y = ['q....q', 'sq..qs', '.tq.s.', '..tsq.', '..ts..', '..tq..', '.tsq..']
+BRANCH_D = ['qs....', '.tsq..', '..tsq.', '...tsq', '....tq']
+CANOPY_A1_BACK = [('A',2,4,46),('A',2,30,52),('A',2,60,48),('B',2,0,30),('B',2,74,30),('A',2,20,30),('A',2,46,32),('B',2,14,14),('B',2,58,12),('A',2,34,4),('B',2,36,20),('B',2,54,20),('C',2,22,40),('B',2,44,44),('A',2,66,44),('A',2,8,56),('B',2,34,62),('B',2,62,60),('C',2,82,40),('C',2,80,20),('C',2,4,18),('C',2,28,0),('C',2,50,0),('C',2,66,2),('C',2,0,40),('C',2,84,54),('C',2,36,40),('C',2,52,52),('C',2,24,22)]
+CANOPY_A1_BRANCHES = [(BRANCH_Y, 40, 22), (BRANCH_D, 22, 40), (BRANCH_Y, 48, 40), (BRANCH_D, 64, 36), (BRANCH_Y, 40, 58)]
+CANOPY_A1_FRONT = [('A',1,0,54),('B',1,22,62),('C',1,46,62),('A',1,60,56),('B',1,76,50),
+       ('B',0,2,40),('C',1,22,46),('A',0,62,40),('C',1,82,38),('C',0,44,46),
+       ('A',0,8,24),('C',0,32,30),('B',0,50,26),('A',0,70,24),
+       ('B',0,16,10),('A',0,34,12),('C',0,62,10),('B',1,76,14),
+       ('C',0,26,2),('B',0,42,0),('f',0,58,4),
+       ('a',0,88,30),('b',1,90,46),('d',0,0,32),('f',1,6,64),('b',1,84,62),('a',0,20,6),('f',0,70,6),('a',1,28,24),('b',0,58,22),('f',1,40,40),('a',1,74,36),('b',1,16,38),('f',0,50,58),('d',1,32,56),('b',0,8,20),('f',1,62,52),('a',0,52,8)]
+
+# 새 줄기 A1: (x, 행) — 손으로 쓴 껍질 행을 그 줄 시작 x 에 찍는다
+TRUNK3 = [
+ (40, 'utsrsqrtssrqsrtsrsqqrsrqsqqrqp'),
+ (40, 'tusrqrtsrrqssrsrqqsrsqrqsqrqqp'),
+ (40, 'utsrsqrtsrqqstsrqsqrsrqqsrqrqp'),
+ (39, 'uttsrsqrstsrqsrssrqqsrrqsqqrqqp'),
+ (39, 'utsrrqsrtsqrqstsrqsrsrqqsqrqrqp'),
+ (39, 'tusrsrqsrtssqrsrtsqrsrqqsqrqqrqp'),
+ (38, 'uttsrrqsrtsrqprstsrqsrsrqsqqrqqqp'),
+ (38, 'utssrqsrtsrqpqsrtsqsrqqsrqsqrqqqp'),
+ (38, 'tusrrqssrtsrrqsrtssqrsrqqsrqsqrqqp'),
+ (37, 'uttsrqsrtssrqrstsrqqsrsqrsqqrqrqqqp'),
+ (37, 'utsrrqsrtsqpqrsttsrqsrrqsqqrqsqrqqqp'),
+ (36, 'uttsrqssrtsqrprsrtssqrsrqqsqrqqrqqqqp'),
+ (36, 'utssrrqssrtsrqrsrtsrqqsrsqqsrqqrqqqqp'),
+ (35, 'uttsrrqssrtsrrqqsrtssrqsrsqqrqsqqrqqqp'),
+ (34, 'uuttssrqsrtssrqpqsrtsrqqsrrqsqqrqqrqqqpp'),
+ (33, 'uutssrrqssrtsrrqsqrsttsrqsrsqqrqsqrqqqqpp'),
+ (32, 'uuttssrqssrtssrqqsrtsrrqsrqsqqrqqrqqrqqqpp'),
+ (31, 'uutssrrqsssrtsrrqqsrtsrqsrsqrqsqqrqqrqqqqqpp'),
+ (30, 'uuttssrrqssrtsrrqpqsrtssrqsrsqqrqsqrqqrqqqqqpp'),
+ (29, 'uutsssrrqsssrtsrqqqsrtssrqqsrsqrqqsqrqqrqqqqqqpp'),
+ (28, 'uuttssrrqqsssrtsrrqqsrtsrrqsrsqqrqsqrqqrqqqqqqqpp'),
+ (27, 'uutssrrqqssssrtsrqqqsrtssrqqsrsqrqqsqrqqrqqqqqqqqpp'),
+ (26, 'uuttssrqqsssrrtsrrqqqsrtssrqsrsqqrqsqqrqqrqqqqqqqqqpp'),
+ (26, 'utsssrqqssrrtsrrqqqsrtsrrqqsrsqrqqsqrqqrqqqqqqqqqqpp'),
+ (25, 'uttsrrqqsssrrtsrqqqsrtssrqqsrsqqrqsqrqqrqqqqqqqqqqqpp'),
+ (25, 'utssrqqssrrtsrrqqqsrtsrrqqsrsqrqqsqqrqqrqqqqqqqqqqqpp'),
+ (24, 'uttsrrqssrrtsrrqqqsrtssrqqsrsqqrqsqrqqrqqqqqqqqqqqqqpp'),
+ (24, 'utssrqqsrrtsrrqqqqsrtsrrqqsrsqrqqsqqrqqrqqqqqqqqqqqqpp'),
+ (24, 'pqqsrqqqrrqsrqqqqqqrqsrqqqqsrqqqqqqqqqrqqqqqqqqqqqqqpp'),
+ (26, 'ppqqqppqqqqpqqpppqqqqqppqqqqppqqqqppqqpqqqqppqqqqppp'),
+]
+TRUNK3_TOP = [
+ (34, 'tsq.....utsrsqrtsrqsrqq.....qsrq'),
+ (35, 'tsq....tusrqrtsrrqssrqq...qsrqp'),
+ (36, 'tsrq..utsrsqrtsrqqstsrqq.qsrqp'),
+ (37, 'tssrqutsrrqsrtsqrqstsrqqsrqqp'),
+ (38, 'utsrrtsrsqrstsrqsrssrqqsrqp'),
+ (39, 'utsrsrqsrtssqrsrtsqrsrqqsqp'),
+ (40, 'utsrqsrtsrqprstsrqsrsrqqsqqp'),
+ (40, 'tusrqsrtsrqpqsrtsqsrqqsrqsqp'),
+ (40, 'utsrssrtsrrqsrtssqrsrqqsrqsqp'),
+ (40, 'utsrqsrtssrqrstsrqqsrsqrsqqrqp'),
+ (40, 'tusrqsrtsqpqrsttsrqsrrqsqqrqsqp'),
+ (40, 'utsrssrtsqrprsrtssqrsrqqsqrqqrqp'),
+ (40, 'utsrrqssrtsrqrsrtsrqqsrsqqsrqqrqp'),
+ (40, 'tusrrqssrtsrrqqsrtssrqsrsqqrqsqqrp'),
+]
+# 굴(문 칸): 빛 쪽 바깥 입술, 그늘진 왼 안벽, 빛 받는 오른 안벽, 위가 가장 깊고 아래로 흙바닥, 문턱 뿌리
+HOLLOW3 = [
+ '......tusrrq......',
+ '.....tup;;;pqq....',
+ '....tup;;;;;;rqq..',
+ '....up;;;;;;;:sq..',
+ '...tup;;;;;;;::sq.',
+ '...up;;;;;;;;::rq.',
+ '..tup;;;;;;;;:::sq',
+ '..up;;;;;;;;;:::rq',
+ '..up;;;;;;;;;::0sq',
+ '..up;;;;;;;;::00rq',
+ '..up;;;;;;;;:::0sq',
+ '..tp;;;;;;;;::00rq',
+ '..up;;;;;;;:::00sq',
+ '..up;;;;;;;::00prq',
+ '..tp;;;;;;:::0ppsq',
+ '..up;;;;;;::0ppqrq',
+ '..up;;;;;:::0pqqsq',
+ '..tp;;;;:::0ppqqrq',
+ '..up;;;::0ppqqqrsq',
+ '..up;;::0pppqqrrsq',
+ '.4tp;::0ppqqqrrssq',
+ '45up::0ppqqrrssrqq',
+ '.uttsstsrrqqrrsstq',
+ 'utsrrqrqqpqqrssttqq',
+ '.pqqpp~ppppqqqqqp.',
+]
+# 판근(울퉁불퉁, 가늘어짐) — 왼쪽 큰 뿌리
+ROOT_L1 = [
+ '...........................45uts',
+ '......................4..tuutssr',
+ '..................45.tutsrrsqqrq',
+ '...............4.tuutssrqqqqpqqp',
+ '............45tuutssrqqpp.ppp...',
+ '..........4tuttsrqqpp~..........',
+ '.........tutssrqqpp~............',
+ '.......45tuusqqp~...............',
+ '.....4tuuttsrqp~................',
+ '....tutsrqqqp~~.................',
+ '...tusqpp~~.....................',
+ '..tsqp~.........................',
+ '..pp~...........................',
+]
+ROOT_L2 = [
+ '...........tuts',
+ '.......45tuutsr',
+ '....4tuttsrqqqp',
+ '..tuusrqqpp~~..',
+ '.tsqqp~~.......',
+ '.pp~...........',
+]
+ROOT_R1 = [
+ 'srrq.................',
+ 'tsrrqq4..............',
+ 'tssrrqqrq4...........',
+ '.qsrrqqqrrqq.........',
+ '..pqqsrqqqrrqq4......',
+ '....ppqqtsrqqqqq.....',
+ '.......pqssrqqqqqp...',
+ '.........pqqsrqqqqp4.',
+ '...........ppqsrqqqp.',
+ '.............~pqqqqp4',
+ '...............~ppp~.',
+]
+ROOT_R2 = [
+ 'srq.........',
+ 'tsrrq4......',
+ '.qsrrqqq....',
+ '..pqtsrqqp..',
+ '...~ppqqqp4.',
+ '......~pp~..',
+]
+GRASS_TUFTS = [  # (x, y, 행) 밑동 풀 다발
+ (4, 104, ['.5.', '454', '.4.']),
+ (20, 108, ['5.5', '454']),
+ (84, 104, ['.6.', '545', '.4.']),
+ (70, 108, ['.5', '45']),
+ (40, 108, ['5.', '45']),
+]
+
+
+def _leaves(cv, plan):
+    for n, k, x, y in plan:
+        put(cv, dim(LEAF[n], k) if k else LEAF[n], x, y)
+
+
 def tree_a1():
     cv = Cv(96, 112)
-    put(cv, SHADOW_A1, 3, 108)
-    put(cv, TRUNK_A1, 3, 66)
-    for x, y, rows in MOSS_A1:
+    put(cv, ['~' * 60], 18, 109)
+    put(cv, ['~' * 44], 26, 110)
+    for i, (x, r) in enumerate(TRUNK3_TOP + TRUNK3):
+        put(cv, [r], x, 66 + i)
+    put(cv, ROOT_L1, 2, 96)
+    put(cv, ROOT_L2, 14, 103)
+    put(cv, ROOT_R1, 74, 95)
+    put(cv, ROOT_R2, 66, 103)
+    put(cv, HOLLOW3, 46, 85)
+    put(cv, LANTERN, 64, 86)
+    for x, y, rows in GRASS_TUFTS:
         put(cv, rows, x, y)
-    _sil(cv, SIL_A1)
-    canopy(cv, PLAN_A1)
+    _leaves(cv, CANOPY_A1_BACK)
+    for rows, x, y in CANOPY_A1_BRANCHES:
+        put(cv, rows, x, y)
+    _leaves(cv, CANOPY_A1_FRONT)
     return cv
 
 
@@ -498,66 +660,101 @@ BOULDER_A2 = [
  '........56i56656i5MM............',
  '......5i6i5iii5i4LMMLL..........',
  '.....5ii5i4ii4i4LLMLMLLK........',
- '....5i5ii4i44h4LMLLLMLLLK.......',
+ '....5i5ii4i44h4LMLLYLMLLK.......',
  '...5ii4i44h4LLLLMLLLLLLKKK......',
- '...i5i44h43LLMLLLLLMLLLKLKK.....',
- '..5i4i4h4LLLLLLLLLLLLKLLKKKJ....',
- '..i4h443KKLKKLLKKLKKKKKKKKJJ....',
- '..4h43KJKKKKKKKKKKKKKKKKKJJJI...',
- '..43KJJKKKJKKKKJKKKKKJJJJJJJI...',
- '..4KJJKKKJJKKKKJJKKKJJJJJJJIIH..',
- '..3JJJJKJJJJKKJJJJJJJJIJJJIIIH..',
- '..JJKJJJJHJJJJJJIJJJJJIJJJIIIH..',
+ '...i5i44h43LLMLLKLLMLLLKLKK.....',
+ '..5i4i4h4LLLLLLLLLXLLKLLKKKJ....',
+ '..i4h443KKLKKLLKKLKKKKKJKKJJ....',
+ '..4h43KJKKLKKKKKKKLKKKKKKJJJI...',
+ '..43KJJKKKJKKXKJKKKKKJJJJJJJI...',
+ '..4KJJKLKJJKKKKJJKKKJJLJJJJIIH..',
+ '..3JJJJKJHJJKKJJJJJJJJIJJJIIIH..',
+ '..JJKJJJJHJJJJJJIJKJJJIJXJIIIH..',
  '..4JKJJJJJHIJJJJIIJJKJIJJIIIHH..',
- '.43IJJJJJJKJHJJJJJIJJKJHJIIIHH5.',
- '.3IIJJKJJJJJHIJJJJJIJJJHIIIHH54i',
+ '.43IJJXJJJKJHJJJJJIJJKJHJIIIHH5.',
+ '.3IIJJKJJJJJHIJJKJJIJJJHIIIHH54i',
  '..IIIJJJJJJJJIHHJJJJIIHIIIHHHi43',
- '..IIIIIJJJJJJJJIIJJJJIIIIIHHG.3.',
- '..HIIIIIIIJJJJJJJIIIIIIIIHHHG~..',
- '.KHHIIIIIIIIIIIIIIIIIIIIHHHGG~..',
- 'LMKHGHHIIIIIIIIIIIIIIHHHHHGG~~..',
- 'KLJHG~GHHHHHHHHHHHHHHHHGGGG~~...',
- '.JHG~~~GGGGGGGGGGGGGGGG~~~~~....',
+ '..IIIKIJJJJJJJJIIJJJJIIIIIHHH.3.',
+ '..HIIIIIIIJJJJJJJIIIKIIIIHHHH~..',
+ '.KHHIIJIIIIIIIIIIIIIIIIIHHHHH~..',
+ 'LMKHIHHIIIIIIIIIIIIIIHHHHHHH~~..',
+ 'KLJHH~HHHHHHHHHHHHHHHHHHHHH~~...',
+ '.JHH~~~HHHHHHHHHHHHHHHHH~~~~....',
  '..~~~~~~~~~~~~~~~~~~~~~~~~~.....',
- '.....~~~~~~~~~~~~~~~~~~~........',
- '................................',
+ '.....~~~~~~~~~~~~~~~~~~~~.......',
+ '........~~~~~~~~~~~~~~..........',
  '................................',
 ]
 
-RING_A1 = [
+# A1 (round 2): 갓 다섯 단(빛 윗면·몸·그늘 테·짙은 테·갓 밑 주름 그늘)+점, 줄기 그늘 쪽, 사이 풀 다발·떨어진 잎, 바랜 고리
+MUSH_L = [
+ '..WWV..',
+ '.WzWWVU',
+ 'VWWVzVT',
+ 'UVVVUUT',
+ '.SSTSS.',
+ '..yxw..',
+ '..yxw..',
+ '.~yxv~.',
+]
+MUSH_M = [
+ '.WWV.',
+ 'WzWVU',
+ 'UVzUT',
+ '.STS.',
+ '.yw..',
+ '~yv~.',
+]
+MUSH_S = [
+ '.WV.',
+ 'WzVT',
+ '.SS.',
+ '.yw.',
+ '~xv~',
+]
+RING_BAND = [  # 바랜 짙은 풀 고리(접지 그림자 점묘)
  '................................',
  '................................',
  '................................',
- '.........VW...VWW..VW...........',
- '........VzVU.VWzWVVzVU..........',
- '........STTS.UVVUTSTTS..........',
- '.........yx..STTTS.yx...........',
- '....VW..~xw~..wyx.~xw~.VW.......',
- '...VzVU......~xw~.....VzVU......',
- '...STTS....4..........STTS......',
- '....yx...4.3.....4.4...yx.......',
- '...~xw~...........3.4.~xw~......',
- '..VWW.....................VWW...',
- '.VWzWV...4.4.......4.....VWzWV..',
- '.UVVUT....3.........3....UVVUT..',
- '.SUTTS..................SUTTS...',
- '..wyx.......4.4..........wyx....',
- '.~xxw~.......3..........~xxw~...',
- '....VWW...........4.4.....VW....',
- '...VWzWV...........3.....VzWV...',
- '...UVVUT...VWW...VWW....UVVUT...',
- '...SUTTS..VWzWV.VWWzWV..SUTTS...',
- '....wyx...UVVUT.UVVVUT...wyx....',
- '...~xxw~..SUTTS.SUTTTS..~xxw~...',
- '...........wyx...wyyx...........',
- '..........~xxw~.~xxxw~..........',
  '................................',
- '................................',
- '................................',
- '................................',
- '................................',
+ '..........~.~.~.~.~.~...........',
+ '.......~.~...........~.~........',
+ '.....~.~...............~.~......',
+ '....~.....................~.....',
+ '...~.~...................~.~....',
+ '..~.......................~.....',
+ '...~.......................~....',
+ '..~.~.....................~.~...',
+ '...~.......................~....',
+ '..~.~.....................~.~...',
+ '...~.......................~....',
+ '....~.~..................~.~....',
+ '.....~...................~......',
+ '......~.~..............~.~......',
+ '........~.~.~.......~.~.........',
+ '...........~.~.~.~.~............',
  '................................',
 ]
+RING_TUFTS = [  # (x, y, 행) 풀·이끼 다발, 떨어진 잎 점
+ (12, 12, ['5.4', '.4.']), (19, 14, ['.5', '43']), (14, 18, ['4.5', '.3.']), (21, 19, ['5', '4']),
+ (2, 23, ['.5', '45']), (28, 9, ['5.', '43']), (8, 4, ['4', '3']),
+ (17, 12, ['t']), (11, 16, ['s']), (23, 15, ['r']), (6, 27, ['t']), (26, 27, ['s']), (15, 21, ['h']),
+]
+# (도장, 발끝 x, 발끝 y) — 뒤(위)부터 앞(아래)으로
+RING_MUSH = [('S', 10, 8), ('M', 16, 7), ('S', 22, 8), ('M', 5, 13), ('S', 27, 13), ('L', 4, 20), ('M', 28, 19),
+             ('M', 9, 24), ('L', 23, 25), ('L', 16, 27)]
+
+
+def ring_a1():
+    cv = Cv(32, 32)
+    put(cv, RING_BAND, 0, 4)
+    for x, y, rows in RING_TUFTS:
+        put(cv, rows, x, y)
+    stamps = {'L': MUSH_L, 'M': MUSH_M, 'S': MUSH_S}
+    for n, fx, fy in RING_MUSH:
+        rows = stamps[n]
+        put(cv, rows, fx - len(rows[0]) // 2, fy - len(rows) + 1)
+    return cv
 
 RING_A2 = [
  '................................',
@@ -614,57 +811,57 @@ BRAMBLE_A1 = [
 ]
 
 BRAMBLE_A2 = [
+ '......s.........s.......s.......',
+ '...s.tsts....s.tsts..s.tsts.....',
+ '....tsqqss..s.tsqpsts.tspqss.s..',
+ '..utsq43qss.tsq33.qstsq3.qpss...',
+ '..tsq4554qstsq4554tsps4553.pss..',
+ '.usq45tsqtsqs4554tsp.qs5542.qq..',
+ '.tq45tsq4sqtqq54tsq3.3qs543tsps.',
+ 'utq3tsq454qq.tsqsq453.4qtsqsp.qq',
+ 'tsp.sq4565tsqs43qq45654tsq45qsqs',
+ 'sq3tsq4554sq4tsp.q34554sq4554qsp',
+ 'q3tsq34543q34sq34q334543q34543pp',
+ 'p3sq3432p3443pp3442p34433p34433p',
+ '.pp332p.p322p.pq22.p3322p.33p2p.',
+ '..~pp~.~pp~.~~pp~~.~pp~.~~pp~...',
+ '...~~~..~~~..~~.~~~...~~~.~~~...',
  '................................',
- '....xrTTr.........rTTr.x........',
- '...rTq..qTr.....x.rq..qTr.......',
- '..rT.x...qqT...rTTr..x.qrT......',
- '.xT.4..p..rTrxrTq.qTr....qTrTr..',
- '.rq434.prTq.pqTr.p.qTrp..prTq.qr',
- 'xTq.4.rTqpp.rTqpp45pSqrTprTqpp.T',
- '.rqpprTqpSprTqp4544Sp.qTrTqpp4q.',
- '.TqprTqpSSrTqppS4pSSppqTrqp.434x',
- '.rqpTqpSSrTqppSprTTrpSprqTqSp4.r',
- '.qSrTqpSrTqpSSrTqpqTrSrTqSSprrq.',
- 'xqSrqpqSrTqpSSrTqppSqTrTqSSSrTq.',
- '.pqSqpqSpqSpqSpqSppSpqSqpqSSpqp.',
- '.~ppqppqppqppqppqpppqppqppqpqp~.',
- '..~~~~~~~~~~~~~~~~~~~~~~~~~~~~..',
- '....~~~~~~~~~~~~~~~~~~~~~~~~....',
 ]
 
 WAY_A1 = [
  '................',
  '................',
- '.......EF.......',
- '......DFFC......',
- '.....DEFFEDB....',
- '.....DEEEEDB....',
- '....45EEEDDCA...',
- '...4i5DDDDCCA...',
- '...i4CEDDDCCA...',
- '...4CEDDDDCCB4..',
- '...3EDDDDDDCB3..',
- '...CEDQRZRCCBA..',
- '...CEPDDDDQCBA..',
- '...CEZDRZDPCBA..',
- '...CERDQDPDCBA..',
- '...CEQDDRDQCBA..',
- '...CEDPDDDZCBA..',
- '...CEDDQRZPCBA..',
- '...CEDDDDDDCBA..',
- '...CEDDCDDCCBA..',
- '...CEDDDBDCCBA..',
- '...CDDDDCBDCBA..',
- '...4EDDDDDCCBA..',
- '..4iCDDDDDCCBA..',
- '..i45DDDDCDCBA..',
- '..44CDDDDDCCBAA.',
- '.DE3CDDDDDCCBBCA',
- 'DEECBCDDDDCCBABA',
- 'BDDBACCCCCCBBAAA',
- '.AAA~BBBBBBBAA~~',
- '..~~~AAAAAAAA~~.',
+ '.....D5iEEB.....',
+ '...D5i6FFEEDB...',
+ '..DEi5FEFEEEDB..',
+ '.CEFEEEEEEEDDCA.',
+ '.CDEEEEEDEDDDCA.',
+ '.ACDDDDDDDDCCBA.',
+ '..ABCCCCCCCBBA..',
+ '...ABBBBBBBBA...',
+ '...BEDDDDDDCA...',
+ '...CEDQRZRDCA...',
+ '..4CEPDDDDQCA...',
+ '..3CEZDRZDPCA...',
+ '...CERDQDPDCA...',
+ '...CEQDDRDQCA...',
+ '...CEDPDDDZCA...',
+ '...CEDDQRZPCA...',
+ '...CEDDDDDDCA...',
+ '...CEDDCDDCCA...',
+ '...CEDDDBDCCA...',
+ '..EFCEDDDDCCBB..',
+ '.EFEECDDDDCBDDB.',
+ '.EEFEEEDEEDDDDB.',
+ '.DEEDEDDEDDDDCA.',
+ '.CDDCDDDDCDDCCA.',
+ '.BCCCCCBCCCCBBA.',
+ '4BABBBBBBBBBBAA3',
+ '43~AAAAAAAAAAA~3',
+ '.~~~~~~~~~~~~~~.',
  '...~~~~~~~~~~...',
+ '................',
 ]
 
 WAY_A2 = [
@@ -718,7 +915,7 @@ def _part(name, x, y):
 
 
 def ring(rows):
-    return _small(g(rows), 8, 6, (3, 2), (6, 5), _TREES_S, [_part('fern_a', 1, 4), _part('stump', 6, 3)])
+    return _small(rows if isinstance(rows, Cv) else g(rows), 8, 6, (3, 2), (6, 5), _TREES_S, [_part('fern_a', 1, 4), _part('stump', 6, 3)])
 
 
 def boulder(rows):
@@ -737,7 +934,7 @@ def waystone(rows):
 
 
 FNS_SMALL = {
-    'tc.fo_ring': {'A1': lambda: ring(RING_A1), 'A2': lambda: ring(RING_A2)},
+    'tc.fo_ring': {'A1': lambda: ring(ring_a1()), 'A2': lambda: ring(RING_A2)},
     'tc.fo_boulder': {'A1': lambda: boulder(BOULDER_A1), 'A2': lambda: boulder(BOULDER_A2)},
     'tc.fo_bramble': {'A1': lambda: bramble(BRAMBLE_A1), 'A2': lambda: bramble(BRAMBLE_A2)},
     'tc.fo_waystone': {'A1': lambda: waystone(WAY_A1), 'A2': lambda: waystone(WAY_A2)},
