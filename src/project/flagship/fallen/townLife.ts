@@ -290,6 +290,109 @@ function findGate(hub: GameMap, toMapId: string): GameMap["events"][number] | un
   return hub.events.find((e) => has(e.commands as Command[]) || (e.pages ?? []).some((p) => has(p.commands as Command[])));
 }
 
+// ───────────────────────── 거리 수납(통·상자·자루) ─────────────────────────
+
+/** 버들항 번들 그림 — [칸 번호, 라벨]. 24168·26606·27120·25804 는 막히고 26607·24380 은 걸어갈 수 있는 그림이다(이벤트가 막는다). */
+const HUB_ART: Record<string, readonly [number, string]> = {
+  barrel: [24168, "통"], crate: [26606, "나무 상자"], chest: [27120, "선원 궤짝"],
+  fish: [25804, "생선 상자"], stack: [26607, "쌓인 상자"], sack: [24380, "곡식 자루"],
+};
+const SHOP_ART = ["barrel", "crate", "sack", "stack"] as const;
+const DOCK_ART = ["fish", "chest", "stack", "barrel", "fish", "crate", "chest", "sack"] as const;
+
+/**
+ * 거리 곳곳(가게 문 곁·남쪽 부두와 창고 둘레)에 버들항 통·상자·자루를 자연스럽게 놓고 한 번 뒤지는 이벤트를 단다.
+ * 격자로 박지 않는다 — 해시로 섞은 후보를 간격 3 이상으로 고르고, 길·문 앞·이벤트 옆은 피한다.
+ * 문 앞 칸끼리 이어진 길이 놓은 뒤에도 그대로 이어지는지(BFS), 각 수납 옆에 닿을 수 있는 빈 칸이 있는지 확인하고 아니면 뺀다.
+ */
+function placeStreetContainers(project: Project, hubId: string): number {
+  const hub = project.maps[hubId];
+  if (!hub) return 0;
+  const tileset = project.tilesets[hub.tilesetId];
+  if (!tileset) return 0;
+  const W = hub.width, H = hub.height;
+  const at = (x: number, y: number) => y * W + x;
+  const hasTransfer = (e: GameMap["events"][number]) =>
+    [...((e.commands as Command[] | undefined) ?? []), ...(e.pages ?? []).flatMap((pg) => (pg.commands as Command[] | undefined) ?? [])].some((c) => c.kind === "transfer");
+  const gates = hub.events.filter(hasTransfer);
+  const shopGates = ["fs_inn", "fs_apothecary", "fs_bakery_home", "fs_smithy"].map((id) => findGate(hub, id)).filter((g): g is NonNullable<typeof g> => !!g);
+  const fronts = gates.map((g) => ({ x: g.x, y: g.y + 1 })).filter((c) => c.y < H && isPassable(project, hub, c.x, c.y));
+
+  const placed = new Set<string>();
+  const blockedNow = (x: number, y: number) => placed.has(`${x},${y}`) || !isPassable(project, hub, x, y) || hub.events.some((e) => e.x === x && e.y === y && !hasTransfer(e) && (e.pages?.[0]?.priority ?? "same") === "same" && e.id.startsWith("ev_fs_box_"));
+  const reach = (start: Cell): Set<string> => {
+    const seen = new Set<string>([`${start.x},${start.y}`]);
+    const q = [start];
+    while (q.length) {
+      const c = q.shift()!;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const nx = c.x + dx, ny = c.y + dy, k = `${nx},${ny}`;
+        if (nx < 0 || ny < 0 || nx >= W || ny >= H || seen.has(k) || blockedNow(nx, ny)) continue;
+        seen.add(k); q.push({ x: nx, y: ny });
+      }
+    }
+    return seen;
+  };
+  const start = fronts[0];
+  if (!start) return 0;
+  const baseReach = reach(start);
+  const connectedFronts = fronts.filter((f) => baseReach.has(`${f.x},${f.y}`));
+
+  const free = (x: number, y: number): boolean => {
+    if (x < 2 || y < 2 || x >= W - 2 || y >= H - 2) return false;
+    if (!isPassable(project, hub, x, y)) return false;
+    for (const g of gates) if (Math.abs(g.x - x) <= 1 && y >= g.y - 1 && y <= g.y + 3) return false; // 문 앞 길
+    const i = at(x, y);
+    for (const t of [hub.lowerTiles[i], hub.lowerOverlayTiles?.[i], hub.upperTiles[i], hub.upperOverlayTiles?.[i]]) {
+      if (t === undefined || t < 0) continue;
+      if (/길|포석|광장|road|plaza|물|water|바다/i.test(tileset.tileMeta?.[t]?.label ?? "")) return false;
+    }
+    if ((hub.upperTiles[i] ?? -1) >= 0 || (hub.upperOverlayTiles?.[i] ?? -1) >= 0) return false; // 이미 무언가 서 있다
+    return !hub.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1);
+  };
+
+  const pickZone = (cands: Cell[], kinds: readonly (keyof typeof HUB_ART)[], count: number, label: string): number => {
+    const sorted = [...cands].sort((a, b) => hashCell(`${hubId}:${label}`, a.x, a.y) - hashCell(`${hubId}:${label}`, b.x, b.y));
+    let n = 0;
+    for (const c of sorted) {
+      if (n >= count) break;
+      if (!free(c.x, c.y)) continue;
+      if (Array.from(placed).some((k) => { const [px, py] = k.split(",").map(Number); return Math.max(Math.abs(px! - c.x), Math.abs(py! - c.y)) < 3; })) continue;
+      const key = kinds[n % kinds.length]!;
+      const [tile, name] = HUB_ART[key]!;
+      placed.add(`${c.x},${c.y}`);
+      const after = reach(start);
+      const sideOpen = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => after.has(`${c.x + dx!},${c.y + dy!}`));
+      if (!sideOpen || !connectedFronts.every((f) => after.has(`${f.x},${f.y}`))) { placed.delete(`${c.x},${c.y}`); continue; }
+      hub.upperTiles[at(c.x, c.y)] = tile;
+      const h = hashCell(hubId, c.x, c.y);
+      const loot = rollLoot(project, hubId, c, h % 9 === 0);
+      hub.events.push(containerEvent(project, hubId, c, name, loot, null, null));
+      n++;
+    }
+    return n;
+  };
+
+  let total = 0;
+  // 가게 문 곁: 문에서 3~7칸 안쪽, 문 아래쪽 앞길 둘레.
+  for (const g of shopGates) {
+    const cands: Cell[] = [];
+    for (let y = g.y - 1; y <= g.y + 6; y += 1) for (let x = g.x - 7; x <= g.x + 7; x += 1) {
+      if (x < 0 || y < 0 || x >= W || y >= H) continue;
+      if (Math.max(Math.abs(x - g.x), Math.abs(y - g.y)) >= 2) cands.push({ x, y });
+    }
+    total += pickZone(cands, SHOP_ART, 2, `shop_${g.id}`);
+  }
+  // 남쪽 부두·창고: 아랫 3분의 1.
+  const dock: Cell[] = [];
+  for (let y = Math.floor(H * 0.62); y < H - 3; y += 1) for (let x = 2; x < W - 2; x += 1) dock.push({ x, y });
+  total += pickZone(dock, DOCK_ART, 8, "dock");
+  // 부두의 한 켠 — 창고 그늘(남서쪽 둘레)과 동쪽 선착장에도 한 무더기씩.
+  total += pickZone(dock.filter((c) => c.x < W / 2), ["barrel", "crate"], 2, "dock_w");
+  total += pickZone(dock.filter((c) => c.x >= W / 2), ["fish", "stack"], 2, "dock_e");
+  return total;
+}
+
 export type TownLifeResult = { containers: Record<string, number>; bannedGate: Cell | null; bannedGates: Record<string, Cell> };
 
 export function buildFallenTownLife(project: Project, hubId: string): TownLifeResult {
@@ -329,5 +432,6 @@ export function buildFallenTownLife(project: Project, hubId: string): TownLifeRe
       bannedGates[mapId] = { x: gate.x, y: gate.y };
     }
   }
+  containers[hubId] = placeStreetContainers(project, hubId);
   return { containers, bannedGate: bannedGates["fs_lisa_home"] ?? null, bannedGates };
 }
