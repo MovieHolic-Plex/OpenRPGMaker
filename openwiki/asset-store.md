@@ -166,3 +166,43 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
 - 받기: 상세(`item`)·`/bundle`·`/manifest` 모두 토큰을 붙인다. 받을 때 상세가 `pending` 이면 `installed.json` 기록에 `draft: true`(선택 필드 — 옛 기록은 그대로 읽힌다).
 - 표시: 받아 둔 것·상세·내 프로젝트 줄에 배지 「초안 · 나만 보임 · 공유 안 됨」(`store-draft-badge`). 받은 목록을 새로 볼 때(1분에 한 번, 로그인 승인 직후 바로) `refreshDrafts` 가 상태를 다시 보고, 공개(`visible`)되면 `draft` 를 떼어 배지가 사라진다.
 - 공유 차단: 넣기는 초안이어도 같은 `applyPackToProject` 라 모든 에셋에 스토어 `origin` 이 남는다. `storePublishBlockReason` 이 `origin` 이 있는 에셋과 그 에셋을 그림으로 쓰는 타일셋을 막으므로 다시 올리거나 나눌 수 없다(`test/assetStoreDeepLink.test.ts` 「keeps store origin on an applied draft」).
+
+## 바로 플레이 게임 (2026-10-23)
+
+스토어의 「게임」 칸(`/games`, `/games/<slug>`, `/games/<slug>/play?v=<판본>`)에서 게임을 브라우저로 바로 플레이한다.
+서버 계약은 비공개 저장소 OpenRPGMaker-store `src/games.ts`·`migrations/012_games.sql`, 판본 규칙은 `openwiki/release-and-version.md` 「스토어 바로 플레이 게임 판본」.
+
+**격리(게임 코드는 스토어 출처에서 돌지 않는다).**
+- 판본 파일은 별도 출처에서 나간다. 운영 스토어가 품는 출처는 2026-10-24 부터 **`games-kr.openrpgmaker.com`**(서울 seogo 직접, Cloudflare 안 거침 —
+  KT 회선이 Cloudflare LAX 로 붙어 큰 파일이 300초 넘게 걸린 일이 있었다). `games.openrpgmaker.com`(Cloudflare 경유)은 예비로 그대로 둔다.
+  고르는 값은 스토어 env `STORE_GAMES_PUBLIC_BASE`. games-kr 은 엣지 잠금 대신 IP 마다 요청·연결 제한(`deploy/nginx-games-kr.conf.template`).
+  경로는 `<출처>/<slug>/<판본>/`. 운영은 seogo 의 nginx 가상 호스트가 디스크
+  `/var/lib/oprn-store/games` 를 그대로 내보낸다(스토어 앱으로 가지 않음, 쿠키 없음, nosniff, 확장자별 형식, 판본 파일 immutable,
+  html 은 `frame-ancestors` 를 스토어로 제한, Cloudflare 엣지 밖 직접 접속 403). 템플릿: 스토어 저장소 `deploy/nginx-games.conf.template`.
+  스테이징은 같은 규칙의 `scripts/games-host.mjs`(http://mdc-server:18322).
+- 스토어 쪽은 `<iframe sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-fullscreen">` 으로 품는다. 출처가 달라서
+  allow-same-origin 은 게임 출처 자신의 저장소(세이브)만 연다. 스토어 페이지 CSP `frame-src` 는 게임 출처 하나.
+- 스토어 세션 쿠키는 https 에서 `__Host-oprn_store_session`(Secure·Path=/·Domain 없음). 옛 이름은 2026-11-23 까지 한 번 받아 새 이름으로 다시 준다.
+  상태를 바꾸는 요청은 Origin 이 스토어가 아니면 403(형제 하위 도메인 games.* 포함) + 기존 CSRF 토큰.
+- 진입 문서 index.html 은 서버가 공식 플레이어 틀로 쓴다: meta CSP(부팅 스크립트 해시), `__OPENRPG_BOOT__.storeGame`(slug·판본·세이브 이름·품을 수 있는 출처).
+  플레이어는 품은 쪽이 스토어가 아니면 부팅하지 않는다(`src/player/storeGameHost.ts`).
+
+**불러오기(2026-10-24).** 웹 판본 부팅(`src/player/exportEntry.ts`)은 화면을 띄우기 전에 받는다:
+- 「불러오는 중」 화면(`bootLoader.ts`): 표지·이름·진행 막대(project.json 바이트 → 첫 화면 파일 수), 끝나면 「시작하기」(첫 입력 = 소리 잠금 해제).
+- 첫 화면 목록(`scenePreload.ts` `firstPlayableUrls`): 타이틀·오프닝·system 글자·메뉴 효과음 + 엔진 부팅 텍스처(가짜 로더로 `loadBundledAssets` 를 그대로 받아 적음)
+  + 시작 맵(타일셋·화자 얼굴·BGM) + 시작 파티. 소리는 받은 바이트를 blob 으로 쥐고 있다(`preloadedAudio.ts`, 큰 WAV 가 캐시에 안 남는 문제).
+- 시작한 뒤 뒤에서 **판본의 모든 파일**: 가까운 맵 → 코드 조각·스킬 효과 시트 → 나머지. 목록은 판본에 실린 `preload-files.json`(게시 때 생성).
+  맵 이동은 페이드 뒤에서 새 맵 파일을 기다린다(`holdForMapAssets`, 300ms 넘으면 「불러오는 중…」). 전투 첫 화면은 #3306 관문이 기다린다.
+- 받기는 파일마다 12초 동안 바이트가 없으면 끊고 다시 받는다(최대 4번). 없는 파일(404)은 건너뛴다.
+- 게시 도구(노드)는 2MB 넘는 WAV 를 MP3 192k 로 바꿔 싣고 `loading.json` 의 `aliases` 에 적는다 — 주소를 만드는 `withInlineAsset` 이 바꿔 부른다.
+  편집기 안 게시는 아직 원본 WAV 를 싣는다(ffmpeg 없음).
+- QA 표지: `<html data-preload-started-at / -background-at / -background-done-at / -background-files>`. 「늦게 뜬 파일」 = 시작 뒤 fetch 가 아닌 네트워크 자원.
+
+**올리기는 데이터만.** 작가 업로드는 그림·소리·글꼴·json·md·txt 뿐이고 파일 앞 바이트(매직 넘버)까지 본다. html·js·css·svg·wasm 은
+운영자가 올린 공식 플레이어 빌드의 sha256 만 받는다(`store_game_trusted_files`). project.json 은 모양 검사, 크기·개수·속도 제한, 판본 폴더 덮어쓰기 금지.
+
+**게시.**
+- 편집기(데스크톱 앱): 발행 대화상자 「스토어에서 바로 플레이」 칸 — 다음 판본(자동)·「큰 갱신」·바뀐 점(자동으로 채움)·「스토어에 올리기」.
+  다리: `window.oprn.store.gameMine/gamePublish/gameCurrent`(`electron/main/assetStoreClient.ts`), 순서는 `src/assetStore/gamePublish.ts`.
+- 대표 데모: `npm run store:publish-game -- --demo chrono-bell|emerald-crown|first-love --dry | --target staging | --target production --confirm <contentHash>`,
+  되돌리기 `--rollback <slug>@<판본>`. 플레이어는 먼저 `npm run build:player`. 공용 그림·BGM 이 체크아웃 public/ 에 없으면 `OPRN_ASSET_ROOTS`.

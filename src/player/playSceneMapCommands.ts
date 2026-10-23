@@ -26,6 +26,7 @@ import { maybeAutosave } from "@/player/autosave";
 import { fireLocationTransitionTriggersAfterTransfer } from "@/player/playSceneLocationTransitions";
 import { worldAtlasForMap, atlasNodeForMap, atlasCanTravel } from '@/project/worldAtlas';
 import { abortHop } from "@/player/characterHopRuntime";
+import { holdForMapAssets } from "@/player/scenePreload";
 import { clearFurniturePush, furniturePushPosition } from "@/player/furniturePushAnimation";
 
 type FlashScreenStep = Extract<StepResult, { kind: "flashScreen" }>;
@@ -90,6 +91,8 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   } else if (fadeColor) {
     await fadeCamera(scene, "out", fadeColor);
   }
+  // 웹 판본: 새 맵 그림·소리가 다 오기 전에는 화면을 밝히지 않는다(어두운 채로 기다린다, scenePreload.ts).
+  await holdForMapAssets(dialogueHost(scene), project, request.mapId);
   // Resolve once against destination runtime terrain and destination-scoped event positions.
   // Queue this final landing, not the requested tile or the source map's position overlay.
   const destinationMap = runtimeMap(targetMap, scene.session);

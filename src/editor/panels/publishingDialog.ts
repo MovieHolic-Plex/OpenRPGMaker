@@ -10,7 +10,8 @@ import {
 import { installedRuntimeTarget, RUNTIME_ARCHIVE_BASE } from "../../project/publicationExport";
 import { parseRuntimeManifest, type RuntimeManifest } from "../../project/gameRelease";
 import { defaultFetchBytes } from "../../project/webExportZip";
-import { prepareWebExport } from "../../project/webExport";
+import { prepareWebExport, WEB_PLAYER_BUNDLE_BASE } from "../../project/webExport";
+import { createStoreGameSection } from "./storeGameSection";
 import {
   DESKTOP_PLATFORM_SPECS,
   createDesktopSteamExportPackage,
@@ -171,7 +172,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
 
   const updatePackagePreview = () => {
     const slug = desktopExportSlug(options.project);
-    const ver = version.value.trim() || draft?.versionLabel || "1.0.0";
+    const ver = effectiveVersion();
     const zipName = desktopSteamExportFileName(options.project, {
       platform: selectedPlatform,
       versionLabel: ver,
@@ -416,9 +417,21 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
   };
 
   const gameId = input("게임 고유 ID", "game-id", true);
-  const version = input("출시 버전 (Version)", "version");
+  // 출시 버전은 자동이다(스토어가 아는 다음 번호, 아니면 지난 번 번호). 칸에 적으면 그 번호로 덮어쓴다.
+  const version = input("출시 버전 — 비우면 자동, 적으면 그 번호", "version");
   version.maxLength = 80;
-  version.addEventListener("input", updatePackagePreview);
+  const autoVersion = (): string => storeSection?.autoVersion() ?? draft?.versionLabel ?? "1.0";
+  const effectiveVersion = (): string => version.value.trim() || autoVersion();
+  const storeSection = createStoreGameSection({
+    project: options.project,
+    projectKey: () => draft?.gameId ?? `title:${options.project.meta.title}`,
+    versionOverride: () => version.value,
+    fetchBytes: options.fetchBytes ?? defaultFetchBytes,
+    bundleBase: WEB_PLAYER_BUNDLE_BASE,
+  });
+  const showAutoVersion = () => { version.placeholder = `자동: ${autoVersion()}`; updatePackagePreview(); };
+  storeSection?.onAutoVersion(showAutoVersion);
+  version.addEventListener("input", () => { showAutoVersion(); storeSection?.onVersionInput(); });
   const target = input("선택된 런타임 해시", "runtime", true);
   const lineage = input("세이브 호환 계보 ID", "lineage", true);
   const selectedCollector = input("선택 엔진 수집 계약", "selected-collector", true);
@@ -457,11 +470,11 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
   const refresh = () => {
     refreshCollectors();
     gameId.value = draft?.gameId ?? "아직 준비하지 않음";
-    version.value = draft?.versionLabel ?? "1.0";
+    version.value = "";
+    version.placeholder = `자동: ${autoVersion()}`;
     target.value = draft?.runtimeTarget ?? "";
     lineage.value = draft?.saveCompatibilityId ?? "";
     predecessors.value = draft?.acceptedSaveCompatibilityIds.join(", ") ?? "";
-    version.disabled = !draft;
     predecessors.disabled = !draft;
     prepare.disabled = !installed || !!draft;
     upgrade.disabled = !installed || !draft || draft.runtimeTarget === installed;
@@ -474,7 +487,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
     if (!draft) throw new Error("먼저 배포를 준비해 주세요.");
     return parsePublication({
       ...draft,
-      versionLabel: version.value,
+      versionLabel: effectiveVersion(),
       acceptedSaveCompatibilityIds: predecessors.value
         .split(",")
         .map((value) => value.trim())
@@ -555,7 +568,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
       packAssetsArchive,
       enableSteamAutoCloud,
       enableSteamInputGamepad,
-      versionLabel: version.value.trim() || draft?.versionLabel || "1.0.0",
+      versionLabel: effectiveVersion(),
     };
     close();
     if (options.exportDesktopSteam) {
@@ -606,6 +619,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
     platformGrid,
     desktopConfigPanel,
     fields,
+    ...(storeSection ? [storeSection.element] : []),
     el("div", {
       class: "app-modal-choices",
       attrs: { style: "display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding-top: 2px;" },

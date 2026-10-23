@@ -20,6 +20,7 @@ import {
 import { isLoopingChannel, volumeGroupForChannel, type AudioVolumeGroup } from "./audioResources";
 
 import { WeatherAudio } from "./weatherAudio";
+import { preloadedAudioUrl } from "@/player/preloadedAudio";
 
 const DEFAULT_FADE_MS = 600;
 const FADE_TICK_MS = 40;
@@ -385,7 +386,8 @@ export class AudioEngine {
   }
 
   private createElement(url: string, loop: boolean, playbackRate: number, pan: number): HTMLAudioElement {
-    const audio = new Audio(url);
+    // 웹 판본이 시작 전에 받아 쥔 소리(scenePreload.ts)면 그 바이트로 바로 재생한다.
+    const audio = new Audio(preloadedAudioUrl(url) ?? url);
     audio.loop = loop;
     audio.preload = "auto";
     audio.playbackRate = playbackRate;

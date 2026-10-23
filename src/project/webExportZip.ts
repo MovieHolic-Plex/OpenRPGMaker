@@ -17,6 +17,8 @@ export async function exactWebExportEntries(
   const entries = new Map<string, ZipEntry>();
   const collisionIndex = new Map<string, string>();
   addExactEntry({ entries, collisionIndex, entry: textEntry("project.json", prepared.projectJson) });
+  // 웹 플레이어의 «불러오는 중» 화면(player/bootLoader.ts)이 project.json 보다 먼저 읽는 작은 안내: 이름·표지·데이터 크기.
+  addExactEntry({ entries, collisionIndex, entry: textEntry("loading.json", JSON.stringify(loadingInfo(prepared))) });
   for (const file of deployment.bundleFiles) {
     addExactEntry({ entries, collisionIndex, entry: { name: file.zipPath, bytes: file.bytes } });
   }
@@ -35,6 +37,18 @@ export async function exactWebExportEntries(
     addExactEntry({ entries, collisionIndex, entry });
   }
   return Object.freeze([...entries.values()].sort((left, right) => left.name.localeCompare(right.name)));
+}
+
+/** 표지는 타이틀 배경 그림(판본에 실리는 경로). 없으면 이름과 크기만. */
+export function loadingInfo(prepared: PreparedWebExport): { readonly title: string; readonly cover?: string; readonly projectBytes: number } {
+  const system = prepared.project.system;
+  const coverIds = [system.titleScreen?.backgroundResourceId, system.titleResourceId].filter((id): id is string => typeof id === "string" && id.length > 0);
+  const cover = coverIds.map((id) => prepared.assets.find((asset) => (asset.kind === "public" ? asset.resourceId : asset.asset.id) === id && /\.(png|jpe?g|webp|gif)$/i.test(asset.zipPath))?.zipPath).find(Boolean);
+  return {
+    title: prepared.project.meta.title || "",
+    ...(cover ? { cover } : {}),
+    projectBytes: encoder.encode(prepared.projectJson).byteLength,
+  };
 }
 
 export async function defaultFetchBytes(path: string): Promise<Uint8Array> {
