@@ -789,6 +789,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     },
     ...(options.renderToolImage ? { render: async (mapId: string, x: number, y: number, w: number, h: number) => `data:image/png;base64,${await renderMapRegionImage(ctx.project, { mapId, x, y, w, h }, options.renderToolImage!, options.signal)}` } : {}),
     ...(options.signal ? { signal: options.signal } : {}),
+    toolsetOptions: { referenceGate, charsetGate, findToolsCallable, eventAssistChat: eventAssistChat as never, ...scopeGuard },
   } : undefined;
   if (options.v2 && v2Env) tools.push(...options.v2.tools(v2Env).map(wrapTool));
   for (const tool of tools) exposed.add(tool.name);

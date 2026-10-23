@@ -2086,7 +2086,10 @@ const upsertActor: ToolDefinition = {
         !draft.database.battleCommands?.some((entry) => entry.id === id) && !klass?.battleCommands.some((entry) => entry.id === id));
       if (unknown.length > 0) warnings.push(`battleCommandIds 중 전역·직업 명령에 없는 id 는 전투 메뉴에서 빠집니다: ${unknown.join(", ")}`);
     }
-    const twin = actorCurveTwin(draft.database.actors, record);
+    // 쌍둥이 곡선 갈아끼우기는 새 배우에만 — 이미 있는 배우의 이름만 고치는 부분 수정이 곡선을 바꾸면 안 된다
+    // (2026-10-24 비교: {id,name} 만 보낸 개명이 주인공 maxHp 514→560 으로 바꿨다).
+    const existed = draft.database.actors.some((entry) => entry.id === record.id);
+    const twin = existed ? undefined : actorCurveTwin(draft.database.actors, record);
     if (twin && !("parameterCurves" in actorPatch)) {
       const roleHint = `${record.id} ${record.classId} ${record.name} ${record.nickname ?? ""}`;
       const preset = record.id === "actor_hero" || record.classId === "class_hero"
