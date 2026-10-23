@@ -28,6 +28,8 @@ export interface ZoneSpec {
   readonly floor?: number;
   /** 고치기에서 가리킬 이름(생략하면 kind). */
   readonly id?: string;
+  /** (빌더 내부) 이미 지어진 방을 고칠 때 원래 크기·재질을 지킨다 — 모델 스키마에는 없다. */
+  readonly keep?: { readonly w?: number; readonly h?: number; readonly floor?: string; readonly wall?: string };
 }
 
 /** 짓기 명세 — make_place 의 인자 하나. */

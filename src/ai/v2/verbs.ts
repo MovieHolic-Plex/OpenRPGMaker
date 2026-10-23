@@ -6,7 +6,8 @@ import type { PiAssistantV2Env } from "./env";
 import { roomSpecOf } from "@/editor/handInterior/builder";
 import { createBuildRun, type RecordingBuildRun } from "./buildRun";
 import { builderFor } from "./builders";
-import { interiorAddAnchors, interiorBuilder } from "./builders/interior";
+import { adoptExactInterior, interiorAddAnchors, interiorBuilder, interiorEditFromArgs, roomMaterials } from "./builders/interior";
+import { interiorStampEdit, type StampEditState } from "./builders/interiorEdit";
 import { fixPlayerStart, runMachineChecks, summarizeChecks, type MachineCheck } from "./checks";
 import { critique } from "./critic";
 import type { CriticVerdict } from "@/ai/piAgent/featureReview";
@@ -182,7 +183,10 @@ function adoptInterior(run: RecordingBuildRun, mapId: string): PlaceRecord | und
   const rooms = (map.locations ?? []).filter((l) => (l.tags ?? []).includes(HAND_LAYOUT_ROOM_TAG));
   if (!rooms.length) return undefined;
   const style = map.tilesetId === "atlas_biome_interior" ? undefined : map.tilesetId;
-  const spec: PlaceSpec = { type: "interior", name: map.name, mapId, ...(style ? { style } : {}), zones: rooms.map((r) => ({ kind: r.name })) };
+  // 원래 방 크기·바닥·벽면 재질을 지킨다 — 크기를 안 주면 다른 견본(돌바닥)이 골라져 「아늑하게」가 오히려 차가워졌다(2026-10-23 비교, v1 7.5 · v2 3.5).
+  const roomSpec = roomSpecOf(project.tilesets[map.tilesetId])!;
+  const spec: PlaceSpec = { type: "interior", name: map.name, mapId, ...(style ? { style } : {}),
+    zones: rooms.map((r) => ({ kind: r.name, keep: { w: r.w ?? 0, h: r.h ?? 0, ...roomMaterials(roomSpec, map, { x: r.x, y: r.y, w: r.w ?? 1, h: r.h ?? 1 }) } })) };
   const result = interiorBuilder.build(run, spec);
   return result.ok ? { builder: interiorBuilder.id, spec, result: { ...result, warnings: [...result.warnings, "v2 기록이 없던 방이라 같은 방 구성(layout)으로 다시 지은 뒤 고쳤다 — 손으로 옮긴 가구는 견본 가구로 돌아간다"] }, rounds: 0 } : undefined;
 }
@@ -232,7 +236,10 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     for (const mapId of [...session.places.keys()]) if (!env.ctx.project.maps[mapId]) { session.places.delete(mapId); session.seen.delete(mapId); }
     // 첫 짓기를 비평 전에 편집기에 싣는다 — 사용자는 비평을 기다리지 않고 지어지는 것을 본다.
     await env.checkpoint(verb);
-    const seen = await see(env, session, task, spec.type, result.mapIds, result.entrance, true);
+    const seen0 = await see(env, session, task, spec.type, result.mapIds, result.entrance, true);
+    // 요청한 주인공 물건이 못 놓였거나 밀려났으면 기계 실패로 센다 — 되돌리기·끝맺음 관문이 이것을 본다(「큰 망원경」이 빠진 채 끝났다).
+    const anchorFails: MachineCheck[] = result.missingArt.filter((m) => /놓을 빈 자리가 없다|최종 맵에 없다/u.test(m)).map((m) => ({ id: "anchor-missing", mapId: result.mapIds[0]!, ok: false, detail: m }));
+    const seen: Seen = anchorFails.length ? { ...seen0, checks: [...seen0.checks, ...anchorFails] } : seen0;
     for (const mapId of result.mapIds) session.seen.set(mapId, seen);
     // 고친 결과가 앞보다 나쁘면(기계 실패 + 비평 major 가 늘면) 앞 상태로 되돌린다 — 천문대 고치기가 방을 하나 더 붙여 맨바닥 52% 가 됐다(2026-10-23 v2 실조수).
     if (before) {
@@ -302,6 +309,31 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       // 모델이 mapId 를 patch 바깥에 두기도 한다(2026-10-23 실조수) — 둘 다 받는다.
       const patch: PlacePatch = { ...raw.patch, mapId: raw.patch?.mapId ?? raw.mapId ?? env.ctx.currentMapId ?? "" };
       let record = session.places.get(patch.mapId);
+      // 이미 있는 방(이 실행이 짓지 않은 방)의 「아늑하게·물건 더하기·뒷문」은 다시 짓지 않고 덧찍는다 — 다시 지으면 원래 바닥·가구가 바뀐다(2026-10-23 비교).
+      const doorWord = /뒷문|출입문|back ?door|^문$|^door$/iu;
+      const north = (patch.set?.exits ?? []).includes("north") || (patch.addAnchors ?? []).some((a) => doorWord.test(a.what.trim()));
+      const stampOnly = !patch.addZones?.length && !patch.removeZones?.length && patch.variant === undefined && patch.seed === undefined && !patch.addFeatures?.length && !patch.removeFeatures?.length
+        && Object.keys(patch.set ?? {}).every((k) => k === "exits");
+      const prevStamp = record?.result.state as StampEditState | undefined;
+      const existing = env.ctx.project.maps[patch.mapId];
+      const layoutRoom = !!existing && !!roomSpecOf(env.ctx.project.tilesets[existing.tilesetId]) && (existing.locations ?? []).some((l) => (l.tags ?? []).includes(HAND_LAYOUT_ROOM_TAG));
+      const prevAdoptedState = (record?.result.state as { adopted?: unknown } | undefined)?.adopted;
+      if ((!record || prevStamp?.stampEdit || prevAdoptedState) && stampOnly && layoutRoom) {
+        const rounds = record?.rounds ?? 0;
+        if (rounds >= V2_MAX_REPAIR_ROUNDS) return text({ ok: false, summary: `고치기 상한(${V2_MAX_REPAIR_ROUNDS}바퀴)에 닿았다. 남은 문제를 사용자에게 보고한다.` });
+        const spec: PlaceSpec = { ...(record?.spec ?? { type: "interior", name: existing!.name, mapId: patch.mapId }), ...(north ? { exits: ["south", "north"] as const } : {}) };
+        env.emit({ type: "execution_status", name: "v2.repair", ok: true, summary: `${spec.name} 덧찍어 고치는 중(${rounds + 1}바퀴)` });
+        const before = record ? { project: env.ctx.project, record, seen: new Map(record.result.mapIds.map((m) => [m, session.seen.get(m)!] as const).filter(([, v]) => !!v)) } : undefined;
+        const editReq = { dressing: patch.dressing ?? 0, adds: (patch.addAnchors ?? []).filter((a) => !doorWord.test(a.what.trim())), north };
+        // 원래 방을 «똑같이» 다시 지을 인자를 찾으면 그 인자에서 고친다(가구 비키기·뒷문 자리 만들기가 된다). 못 찾으면 덧찍기.
+        const prevAdopted = (record?.result.state as { adopted?: Parameters<typeof interiorEditFromArgs>[2] } | undefined)?.adopted;
+        const exact = prevAdopted ?? (prevStamp?.stampEdit ? undefined : adoptExactInterior(run, patch.mapId));
+        const result = exact
+          ? interiorEditFromArgs(run, spec, exact, editReq, prevAdopted ? record!.result.state as never : undefined)
+          : interiorStampEdit(run, spec, patch.mapId, { ...editReq, north: north && !prevStamp?.backMapId }, prevStamp);
+        return finishPlace(id, "edit_place", params, spec, interiorBuilder.id, result, rounds + 1, before?.seen.size ? before : undefined);
+      }
+      if (prevStamp?.stampEdit || prevAdoptedState) record = undefined;
       if (!record) {
         record = adoptInterior(run, patch.mapId);
         if (record) for (const mapId of record.result.mapIds) session.places.set(mapId, record);
