@@ -1976,6 +1976,21 @@ Completed runtime timelines persist into bounded session reports accessible from
 적 이름에 소유자 이름이 있다는 이유만으로 트레이너라고 추정하지 않는다. 포획 차단 조건은 그대로다.
 새솔 라이벌 실전에서 몬스터 종족만 보고 「야생의 세린의 …」로 소개하던 불일치를 확인했다.
 
+### 야생 도입 문구의 이름 출처와 「야생」 접두 (2026-10-23)
+
+「야생의 ○○이 나타났다!」의 ○○는 **트룹 이름이 아니라 살아 있는 적 배틀러의 이름**이다
+(`enemyBattlers` 가 `normalizeEnemyRecord(...).name` 을 싣고 `introDirectorState` 가 그것을 쓴다).
+그래서 저자가 적 이름에 영문 id 를 넣으면 화면에 그대로 나온다 — 새솔 RED 예제는
+`enemy_sr_wild_chickadee` 이름이 「야생 chickadee」 였다(수정: 종 이름 치카디·퍼즐·하울러,
+트룹 이름 「야생의 치카디」). 「야생의」는 이 문장이 소유하므로, 적 이름이 이미
+「야생 」/「야생의 」로 시작하면 인트로에서만 그 접두를 떼어 낸다(`monsterCollection.stripWildNamePrefix`;
+뒤에 공백이 올 때만 — 「야생화 꿀」은 그대로). 같은 접두를 붙이는 3세대 호칭
+`emeraldBattlerName`(「야생 ○○」·「상대 ○○」)도 같은 함수로 뗀다 — 프리셋 생성기
+`playableSegment.ts` 가 적 이름을 「야생 슬라임」으로 저작하고 monster-collect 팩은
+`oprnMonsterStyle: emerald` 이므로, 이 처리가 없으면 생성된 게임의 첫 조우가
+「야생의 야생 슬라임이 나타났다!」·행동 줄이 「야생 야생 슬라임」 으로 읽혔다.
+회귀: `npm run qa:runtime -- --scenario rt-saesol-wild-troop-english-name --checkpoint-set rt-saesol-wild-troop-english-name --checkpoint all`.
+
 ### Emerald trainer portraits (2026-10-04)
 
 `introDirectorState` marks only the first trainer sentence with the local
