@@ -27,6 +27,7 @@ import { beodeulNatureTileset, planBeodeulCanopy, writeBeodeulCanopy } from "./b
 import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { translateTiles } from "@/project/objectStamp";
 import { setLayerTileAt } from "@/project/mapLayers";
+import { mapBackgroundFromPanoramaSet } from "@/assets/oprnPanoramas";
 
 const createMapTool = MAP_TOOLS.find((tool) => tool.name === "create_map")!;
 const resizeMapTool = MAP_TOOLS.find((tool) => tool.name === "resize_map")!;
@@ -581,6 +582,9 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   }
   // 주제 장치가 채우기 뒤로 미룬 맵 변경(다리 걷기)
   (gimmickAfter as (() => void) | null)?.();
+  // 탑(위로 쌓은 여러 층): 둥근 방 바깥 깊은 천장(8 이웃도 천장)을 비우고 구름 바다 배경을 빈 칸에 비친다 — 검은 허공이 화면 반을 넘었다(dt r2 tower-b 55%).
+  // 벽에 닿는 천장 띠는 남아 탑 외벽 두께로 읽힌다. 「하늘 위의 탑」(크로노 트리거 지일 왕국·FF 의 탑).
+  if (floors > 1 && direction === "up") for (const id of mapIds) skyAroundTower(draft, draft.maps[id]!);
   // 레버 쇠창살을 안 놓았으면 잠긴 문 계획을 지운다 — 남겨 두면 조수가 「열쇠로 여는 잠긴 문이 있다」로 답했다(2026-10-23 VQA boss-run).
   if (gimmickPlaced !== "lever") for (const d of datas) { const pop = field(d, "population"); if (pop && typeof pop === "object") delete (pop as Record<string, unknown>).lockedGate; }
   const floorWarnings = results.flatMap((r) => r.warnings ?? []);
@@ -599,6 +603,32 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
     data: results.length === 1 ? { ...datas[0], floors: [mapIds[0]], populated: populate, gimmick: gimmickPlaced } : { ...datas[0], floors: mapIds, floorData: datas, links, populated: populate, gimmick: gimmickPlaced },
     ...(all.length ? { warnings: all } : {}),
   };
+}
+
+/** 탑 층 바깥: 깊은 천장 칸을 비우고 구름 바다 배경(빈 칸에 보이기)을 건다. 비운 칸 수를 돌려준다. */
+function skyAroundTower(draft: Project, map: GameMap): number {
+  const ts = draft.tilesets[map.tilesetId];
+  const bg = mapBackgroundFromPanoramaSet("oprn-clouds");
+  if (!ts || !bg) return 0;
+  const ceil = new Set<number>();
+  for (const g of ts.autotileGroups ?? []) if (/ceiling/.test(g.id)) {
+    for (const v of Object.values(g.variantMap ?? {})) ceil.add(Number(v));
+    for (const row of g.interiorVariants ?? []) for (const v of row) ceil.add(Number(v));
+  }
+  const W = map.width, H = map.height;
+  const ev = new Set(map.events.map((e) => e.y * W + e.x));
+  const isCeil = (x: number, y: number) => x < 0 || y < 0 || x >= W || y >= H || (ceil.has(map.lowerTiles[y * W + x]!) && (map.upperTiles[y * W + x] ?? -1) < 0);
+  const clear: number[] = [];
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+    if (ev.has(y * W + x) || !isCeil(x, y) || !ceil.has(map.lowerTiles[y * W + x]!)) continue;
+    let deep = true;
+    for (let dy = -1; dy <= 1 && deep; dy += 1) for (let dx = -1; dx <= 1; dx += 1) if (!isCeil(x + dx, y + dy)) { deep = false; break; }
+    if (deep) clear.push(y * W + x);
+  }
+  if (clear.length === 0) return 0;
+  for (const i of clear) map.lowerTiles[i] = -1;
+  map.background = bg;
+  return clear.length;
 }
 
 export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
