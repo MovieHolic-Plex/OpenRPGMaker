@@ -21,8 +21,8 @@ const beats =
       "pageAssertions": [
         {
           "id": "status-clock-continues-save",
-          "note": "세이브의 playTimeSeconds(391초 = 6:31)가 상태 메뉴 시계(h:mm)에 이어져야 한다 — 불러온 판이 0:0x 로 되돌아가면 실패",
-          "fn": "() => { const node = document.querySelector(\"[data-testid='status-menu-time']\"); if (!node) return '상태 메뉴 시계 노드가 없다 — 메뉴가 열려 있지 않다'; const text = (node.textContent || '').trim(); const m = text.match(/^(?:(\\d+):)?(\\d{1,2}):(\\d{2})$/); if (!m) return '시계 글자를 시:분(:초) 로 읽지 못했다: ' + JSON.stringify(text); const total = m[1] !== undefined ? Number(m[1]) * 3600 + Number(m[2]) * 60 + Number(m[3]) : Number(m[2]) * 60 + Number(m[3]); return total >= 360 ? true : '상태 메뉴 시계가 세이브 시간을 잇지 못했다: ' + JSON.stringify(text) + ' (' + total + '초, 세이브 391초)'; }"
+          "note": "세이브의 playTimeSeconds(391초 = 6:31)가 상태 메뉴 시계(h:mm)에 이어져야 한다 — 불러온 판이 0:0x 로 되돌아가면 실패. 시계 글자는 h:mm 두 마디다(formatPlayClock: 391초 → \"0:06\") — 두 마디를 분:초로 읽으면 6초로 오독한다.",
+          "fn": "() => { const node = document.querySelector(\"[data-testid='status-menu-time']\"); if (!node) return '상태 메뉴 시계 노드가 없다 — 메뉴가 열려 있지 않다'; const text = (node.textContent || '').trim(); const parts = text.split(':'); if (parts.length < 2 || parts.length > 3 || parts.some((part) => !/^\\d{1,3}$/.test(part))) return '시계 글자를 h:mm(:ss) 로 읽지 못했다: ' + JSON.stringify(text); const nums = parts.map(Number); const total = nums.length === 2 ? nums[0] * 3600 + nums[1] * 60 : nums[0] * 3600 + nums[1] * 60 + nums[2]; return total >= 360 ? true : '상태 메뉴 시계가 세이브 시간을 잇지 못했다: ' + JSON.stringify(text) + ' (' + total + '초, 세이브 391초)'; }"
         }
       ],
       "note": "불러온 세이브(6:31) 뒤 상태 메뉴 시계가 0:00 부근에 머문다 — findings fallen-star__save-load F1"
