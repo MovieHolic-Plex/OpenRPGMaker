@@ -10,6 +10,8 @@ import type { BattleAnimationRecord, Project } from "@/project/types";
  * 적·배경·초상이 하나씩 늦게 떠올랐다. 상한을 넘으면 경고만 남기고 걷는다(전투를 막지 않는다).
  */
 export const BATTLE_READY_TIMEOUT_MS = 6000;
+/** 무대 밖 이펙트 시트는 첫 행동 전에 받으면 좋을 뿐이라, 무대 그림이 끝난 뒤 이만큼만 더 기다린다. */
+export const BATTLE_EXTRA_GRACE_MS = 1200;
 
 const decodeCache = new Map<string, Promise<HTMLImageElement | null>>();
 
@@ -130,24 +132,40 @@ export function whenBattleStageReady(root: HTMLElement, options: BattleReadiness
   const timeoutMs = options.timeoutMs ?? BATTLE_READY_TIMEOUT_MS;
   const requested = new Set<string>();
   const settled = new Set<string>();
+  const extras = new Set(options.extraUrls ?? []);
   const work = (async (): Promise<void> => {
+    const extraWork: Promise<unknown>[] = [];
     // 그림을 디코딩하는 동안 새로 붙는 URL(시트 대체·프로브)이 있어 스캔을 몇 번 되풀이한다.
     for (let pass = 0; pass < 4; pass += 1) {
       const wanted = collectBattleStageImageUrls(root);
-      for (const url of options.extraUrls ?? []) wanted.add(url);
       const fresh = [...wanted].filter((url) => !requested.has(url));
-      if (fresh.length === 0) break;
       for (const url of fresh) requested.add(url);
+      const load = async (url: string): Promise<void> => {
+        remember(url, await decodeImageUrl(url));
+        settled.add(url);
+      };
+      if (pass === 0) {
+        for (const url of extras) {
+          if (requested.has(url)) continue;
+          requested.add(url);
+          extraWork.push(load(url));
+        }
+      }
+      if (fresh.length === 0) break;
       const imageNodes = [...root.querySelectorAll("img")].filter((img) => img.src && !img.complete);
       await Promise.all([
-        ...fresh.map(async (url) => {
-          remember(url, await decodeImageUrl(url));
-          settled.add(url);
-        }),
+        ...fresh.map(load),
         ...imageNodes.map((img) => img.decode().catch(() => undefined)),
       ]);
     }
     options.settle?.(decodedImageLookup);
+    // 이펙트 시트는 짧게만 더 기다린다 — 못 받아도 전투는 시작하고 시트는 계속 받는다.
+    if (extraWork.length > 0) {
+      await Promise.race([
+        Promise.all(extraWork),
+        new Promise<void>((resolve) => window.setTimeout(resolve, Math.min(BATTLE_EXTRA_GRACE_MS, timeoutMs))),
+      ]);
+    }
   })();
   let timer = 0;
   const cap = new Promise<void>((resolve) => {
