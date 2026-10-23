@@ -1,6 +1,8 @@
 // 조수 v2 마을 빌더 — PlaceSpec(village) → v1 author_beodeul_town 인자. 모델은 칸·좌표를 쓰지 않는다.
 // 명세의 낱말(size·theme·style·features·hints)만 도구 손잡이로 옮기고, 도구가 못 하는 것은 missingArt 로 정직하게 보고한다.
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
+import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
+import { createBuildRun } from "../buildRun";
 import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../types";
 
 /** v2 계획 모델에게 주는 유일한 마을 지식(≤900자). */
@@ -12,7 +14,7 @@ export const VILLAGE_CARD =
   "highland·hillside·basin·ridge·terraces·flat(땅 모양). 우물·밭·방앗간·여관(광장 북쪽 앵커)은 도구가 알아서 놓는다. " +
   "교회·시장 건물·특정 건물 지정은 못 한다(보고됨). hints 키: houseCount(3~5)·roofs(red|slate|moss|log)·" +
   "water(river|none)·woods(edge|dense)·form·terrain·theme·forestType(broadleaf|conifer|mixed)·walls·wallGate(S|N|NS)·" +
-  "width·height·seed·variant(씨앗 바꾸기). 모르는 키는 무시되고 경고된다. 모양 취향이 없으면 비워 두면 씨앗이 고른다.";
+  "width·height·seed·variant(씨앗 바꾸기). 집이 선 마을은 AI 가 다시 지을 수 없다(완성된 집 보호) — 처음 make_place 에 원하는 것을 다 넣는다. 모르는 키는 무시되고 경고된다. 모양 취향이 없으면 비워 두면 씨앗이 고른다.";
 
 const KNOWN_HINTS = new Set(["houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "width", "height", "seed", "variant", "harbour"]);
 const BEODEUL_TILESET = "beodeul_city";
@@ -85,6 +87,23 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   if (prev) {
     // 고치기: 같은 씨앗으로 같은 마을(명세만 바꾼 부분이 반영됨). seed·variant 를 바꾸면 다른 배치.
     if (args.seed === undefined && prev.seed !== undefined) args.seed = prev.seed + (variant !== undefined && variant !== prev.variant ? variant : 0);
+  }
+  // 집 수 맞추기: 씨앗을 정하지 않았으면 사본 위에서 씨앗 몇 개를 미리 지어 보고 요청한 집 수에 가장 가까운 것을 고른다.
+  // 실제 맵에 한 번 지으면 「완성된 집 보호」로 AI 가 다시 지을 수 없어서(2026-10-23 v2), 고르기는 짓기 전에 끝낸다.
+  const wantHouses = num(args.houseCount);
+  if (!prev && args.seed === undefined && wantHouses !== undefined) {
+    let best: { seed: number; houses: number } | undefined;
+    const salt = [...spec.name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+    for (let i = 0; i < 5; i++) {
+      const seed = (salt + i * 7919) % 100000;
+      const trial = createBuildRun({ ...run.ctx, project: cloneProjectSharingSharedDictionaries(run.ctx.project) });
+      const r = trial.call("author_beodeul_town", { name: spec.name, ...args, seed, ...(mapId ? { mapId } : {}) });
+      const houses = num((r.data as Record<string, unknown> | undefined)?.houses);
+      if (!r.ok || houses === undefined) continue;
+      if (!best || Math.abs(houses - wantHouses) < Math.abs(best.houses - wantHouses)) best = { seed, houses };
+      if (houses >= wantHouses) break;
+    }
+    if (best) args.seed = best.seed;
   }
   const base: Record<string, unknown> = { name: spec.name, ...args };
   if (mapId) base.mapId = mapId;

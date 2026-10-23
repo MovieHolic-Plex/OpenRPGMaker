@@ -159,7 +159,10 @@ function withImages(payload: unknown, seen: Seen | undefined, maxImages = 2): Pi
 }
 
 /** 쓰기 기록 하나: 시공 재생 단계를 실어 다음 체크포인트가 편집기에서 다시 튼다. */
+const recorded = new WeakMap<PiAssistantV2Env, Set<string>>();
 function recordWrite(env: PiAssistantV2Env, run: RecordingBuildRun, toolCallId: string, name: string, args: unknown, ok: boolean, summary: string, data?: unknown): void {
+  if (!recorded.has(env)) recorded.set(env, new Set());
+  recorded.get(env)!.add(toolCallId);
   const logs = run.takeConstructionLogs();
   env.record({ toolCallId, name, args, result: { ok, summary, ...(data !== undefined ? { data } : {}) }, ...(logs.length ? { constructionLogs: logs } : {}) });
 }
@@ -184,13 +187,19 @@ function adoptInterior(run: RecordingBuildRun, mapId: string): PlaceRecord | und
   return result.ok ? { builder: interiorBuilder.id, spec, result: { ...result, warnings: [...result.warnings, "v2 기록이 없던 방이라 같은 방 구성(layout)으로 다시 지은 뒤 고쳤다 — 손으로 옮긴 가구는 견본 가구로 돌아간다"] }, rounds: 0 } : undefined;
 }
 
-export function applyPatch(spec: PlaceSpec, patch: PlacePatch): PlaceSpec {
+export function applyPatch(spec: PlaceSpec, patch: PlacePatch, floor = 1): PlaceSpec {
   const removed = new Set(patch.removeZones ?? []);
   let zones = (spec.zones ?? []).filter((z) => !removed.has(z.id ?? z.kind) && !removed.has(z.kind));
-  zones = [...zones, ...(patch.addZones ?? [])];
+  zones = [...zones, ...(patch.addZones ?? []).map((z) => (floor > 1 && !z.floor ? { ...z, floor } : z))];
+  // 위층 맵을 고치는 패치: 물건은 그 층 구역으로(없으면 객실 구역을 만든다) — 1층 홀에 침대가 들어갔다(2026-10-23 v2 실조수).
+  if (floor > 1 && patch.addAnchors?.length && !zones.some((z) => z.floor === floor)) zones = [...zones, { kind: "inn_room", floor }];
   const loose: string[] = [];
   for (const add of patch.addAnchors ?? []) {
-    const index = zones.findIndex((z) => z.id === add.zone || z.kind === add.zone);
+    const index = floor > 1
+      ? zones.findIndex((z) => z.floor === floor && (!add.zone || z.id === add.zone || z.kind === add.zone)) >= 0
+        ? zones.findIndex((z) => z.floor === floor && (!add.zone || z.id === add.zone || z.kind === add.zone))
+        : zones.findIndex((z) => z.floor === floor)
+      : zones.findIndex((z) => (z.floor ?? 1) === 1 && (z.id === add.zone || z.kind === add.zone));
     const at = index >= 0 ? index : 0;
     if (zones[at]) zones[at] = { ...zones[at]!, anchors: [...(zones[at]!.anchors ?? []), add.what] };
     else loose.push(add.what); // 구역 없는 장소(마을·던전)는 장소 전체의 낱말로
@@ -259,7 +268,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     name: "edit_place", label: "장소 고치기", concurrency: "exclusive",
     description: "지은(또는 이미 있는) 장소의 명세 일부만 바꿔 같은 빌더로 다시 짓는다. 비평 major 의 좌표는 addAnchors.near 로 넘긴다. 맵당 3바퀴까지.",
     parameters: { type: "object", properties: { patch: { type: "object", properties: {
-      mapId: { type: "string" },
+      mapId: { type: "string", description: "고칠 맵 id(patch 안에)" },
       set: { type: "object", properties: { name: { type: "string" }, style: { type: "string" }, theme: { type: "string" }, size: SIZE, floors: { type: "number" }, features: { type: "array", items: { type: "string" } }, exits: { type: "array", items: { type: "string", enum: ["south", "north", "east", "west"] } }, hints: HINTS_SCHEMA } },
       addZones: { type: "array", items: ZONE_SCHEMA },
       removeZones: { type: "array", items: { type: "string" } },
@@ -269,7 +278,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       variant: { type: "number" }, seed: { type: "number" }, dressing: { type: "number" },
     }, required: ["mapId"] } }, required: ["patch"] },
     async execute(id, params) {
-      const patch = (params as { patch: PlacePatch }).patch;
+      const raw = params as { patch: PlacePatch; mapId?: string };
+      // 모델이 mapId 를 patch 바깥에 두기도 한다(2026-10-23 실조수) — 둘 다 받는다.
+      const patch: PlacePatch = { ...raw.patch, mapId: raw.patch?.mapId ?? raw.mapId ?? env.ctx.currentMapId ?? "" };
       let record = session.places.get(patch.mapId);
       if (!record) {
         record = adoptInterior(run, patch.mapId);
@@ -278,8 +289,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       if (!record) return text({ ok: false, summary: `${patch.mapId} 는 v2 가 지은 기록이 없고 다시 지을 방 구성도 읽지 못했다. make_place(spec.mapId=${patch.mapId}) 로 그 자리에 새로 짓거나 못 한다고 알린다.` });
       if (record.rounds >= V2_MAX_REPAIR_ROUNDS) return text({ ok: false, summary: `고치기 상한(${V2_MAX_REPAIR_ROUNDS}바퀴)에 닿았다. 남은 문제를 사용자에게 보고한다.` });
       const builder = builderFor(record.spec)!;
-      const onlyAnchors = !!patch.addAnchors?.length && !patch.set && !patch.addZones?.length && !patch.removeZones?.length && !patch.addFeatures?.length && !patch.removeFeatures?.length && patch.variant === undefined && patch.seed === undefined && patch.dressing === undefined;
-      const spec = applyPatch(record.spec, patch);
+      const floor = Math.max(1, record.result.mapIds.indexOf(patch.mapId) + 1);
+      const onlyAnchors = floor === 1 && !!patch.addAnchors?.length && !patch.set && !patch.addZones?.length && !patch.removeZones?.length && !patch.addFeatures?.length && !patch.removeFeatures?.length && patch.variant === undefined && patch.seed === undefined && patch.dressing === undefined;
+      const spec = applyPatch(record.spec, patch, floor);
       env.emit({ type: "execution_status", name: "v2.repair", ok: true, summary: `${spec.name} 고치는 중(${record.rounds + 1}바퀴)` });
       const result = onlyAnchors && builder.id === interiorBuilder.id ? interiorAddAnchors(run, record, patch.addAnchors!) : builder.build(run, spec, record);
       return finishPlace(id, "edit_place", params, spec, builder.id, result, record.rounds + 1);
@@ -390,7 +402,20 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
 
-  return [makePlace, editPlace, addPeople, addEvent, drawObjectVerb, placeObject, inspect, askUser];
+  // 기록 없이 끝난 실패(빌더 없음·맵 없음·상한)와 예외도 tool_end 에 ok:false·이유가 실리게 한다 — 안 그러면 편집기에 빈 「성공」 줄이 남는다.
+  const guard = (tool: PiToolShape): PiToolShape => ({ ...tool, async execute(id, params, signal) {
+    let result: PiToolExecResult;
+    try { result = await tool.execute(id, params, signal); }
+    catch (error) { result = text({ ok: false, summary: `${tool.name} 실패: ${error instanceof Error ? error.message : String(error)}` }); }
+    if (!recorded.get(env)?.has(id)) {
+      const first = result.content.find((c) => c.type === "text") as { text: string } | undefined;
+      let parsed: { ok?: boolean; summary?: string } = {};
+      try { parsed = first ? JSON.parse(first.text) as { ok?: boolean; summary?: string } : {}; } catch { /* 글 */ }
+      env.record({ toolCallId: id, name: tool.name, args: params, result: { ok: parsed.ok !== false, summary: String(parsed.summary ?? (parsed.ok === false ? "실패" : `${tool.label} 완료`)) } });
+    }
+    return result;
+  } });
+  return [makePlace, editPlace, addPeople, addEvent, drawObjectVerb, placeObject, inspect, askUser].map(guard);
 }
 
 /** 끝맺음 관문 — 남은 문제가 있으면 한 번 더 돌게 하는 글. 다 통과면 undefined. */

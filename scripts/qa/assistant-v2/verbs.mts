@@ -13,6 +13,7 @@ import { LOCAL_CLI_ADAPTERS, localCliBinary } from "../../lib/localCliAgent/regi
 
 const out = process.argv[2] ?? "qa-runs/v2scratch/verbs";
 const realCritic = process.argv.includes("--critic");
+const onlyScenarios = process.argv.slice(3).filter((a) => !a.startsWith("--"));
 fs.mkdirSync(out, { recursive: true });
 
 function crop(project: ToolContext["project"], mapId: string): string {
@@ -36,6 +37,7 @@ async function sideChat(messages: readonly unknown[]): Promise<string> {
 }
 
 async function scenario(name: string, setup: (ctx: ToolContext) => void, calls: { tool: string; args: unknown }[], task: string) {
+  if (onlyScenarios.length && !onlyScenarios.includes(name)) return;
   const project = createBlankProject();
   const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };
   setup(ctx);
@@ -93,3 +95,15 @@ await scenario("people-event", (ctx) => {
   { tool: "add_event", args: { event: { kind: "cutscene", when: "game-start", beats: [{ do: "appear", who: "촌장", where: "광장", looks: "노인" }, { do: "walk", who: "촌장", to: "주인공" }, { do: "say", who: "촌장", text: "드디어 왔구나, 기다리고 있었네" }] } } },
   { tool: "draw_object", args: { object: { what: "놋쇠 태엽 지구본", description: "놋쇠 받침 위 태엽 지구본", where: "광장" } } },
 ], "마을 입구에 문지기를 세우고, 게임 시작하면 촌장이 다가와 말 거는 장면");
+
+await scenario("village-edit", () => {}, [
+  { tool: "make_place", args: { spec: { type: "village", name: "강가 마을", size: "small", theme: "river", hints: { houseCount: 4 } } } },
+  { tool: "edit_place", args: { patch: { mapId: "map_blank_start", variant: 1 } } },
+], "강가 마을");
+await scenario("tavern-upper-edit", () => {}, [
+  { tool: "make_place", args: { spec: { type: "interior", name: "선술집", floors: 2, zones: [{ kind: "tavern", anchors: ["바 카운터", "벽난로", "올라가는 계단"] }, { kind: "inn_room", floor: 2, anchors: ["침대"] }] } } },
+], "선술집");
+await scenario("cave-edit", () => {}, [
+  { tool: "make_place", args: { spec: { type: "cave", name: "작은 동굴", size: "small", features: ["enemies", "chests"] } } },
+  { tool: "edit_place", args: { patch: { mapId: "map_blank_start", addAnchors: [{ what: "박쥐" }], variant: 1 } } },
+], "박쥐 동굴");

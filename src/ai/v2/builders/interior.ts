@@ -222,6 +222,7 @@ const SETS: readonly [RegExp, readonly Obj[]][] = [
   [/tavern|dining|great_hall|inn/u, [{ id: "dining 2x1", x: 0, y: 1 }, { id: "chair S", x: 0, y: 0 }, { id: "chair S", x: 1, y: 0 }, { id: "chair N", x: 0, y: 2 }, { id: "chair N", x: 1, y: 2 }]],
   [/library|study/u, [{ id: "desk 2x1", x: 0, y: 1 }, { id: "chair N", x: 0, y: 2 }, { id: "round rug", x: 0, y: 1 }]],
   [/bedroom|inn_room|living/u, [{ id: "round rug", x: 0, y: 0 }, { id: "armchair", x: 2, y: 0 }]],
+  [/corridor|hall|landing/u, [{ id: "bench 2", x: 0, y: 0 }, { id: "potted fern", x: 3, y: 0 }]],
   [/storeroom|cellar|pantry|kitchen/u, [{ id: "barrel", x: 0, y: 0 }, { id: "crate", x: 1, y: 0 }, { id: "barrel", x: 0, y: 1 }]],
   [/.*/u, [{ id: "rug red", x: 0, y: 0 }, { id: "armchair", x: 3, y: 0 }]],
 ];
@@ -262,7 +263,7 @@ export const INTERIOR_CARD = `[실내 interior] make_place({type:"interior", nam
 - zones = 방 하나하나(칸막이로 나뉜 방). kind 낱말: tavern(선술집 홀)·kitchen·storeroom·cellar·bedroom·inn_room(객실)·study(서재)·library(서고)·living·dining·forge(대장간)·workshop·alchemy·chapel·treasury·armory·throne_room·great_hall·entrance·corridor·bathroom·cell. 한국어 낱말도 된다.
 - anchors = 그 방의 주인공 물건(낱말): 「큰 망원경」「벽난로」「바 카운터」「책장」「별자리표」「올라가는 계단」. 크면 「큰」을 붙인다. 함수가 부품 사전에서 찾아 빈 자리에 놓고, 못 찾으면 없다고 알려 준다.
 - 「2층·위층 계단」이 필요하면 anchors 에 "올라가는 계단"을 넣고 floors:2 — 위층을 짓고 계단끼리 이어 준다.
-- style: fantasy(기본) · wizarding(마법 학교) · sengoku(전국·에도) · modern(현대 도시). 일본 현대 집은 type:"house".
+- style: fantasy(기본 — 마법사의 탑·연금술 공방·천문대 같은 판타지도 여기, 망원경·연금술 부품이 이 칩셋에 있다) · wizarding(호그와트풍 마법 «학교» 건물만) · sengoku(전국·에도) · modern(현대 도시). 일본 현대 집은 type:"house".
 - 천문대는 kind "study" 하나(size large) + anchors ["큰 망원경","별자리표","책장"] 처럼 쓴다.`;
 
 export const interiorBuilder: PlaceBuilder = {
@@ -272,7 +273,15 @@ export const interiorBuilder: PlaceBuilder = {
     const notes: string[] = [];
     const missing: string[] = [];
     const prev = previous?.result.state as InteriorState | undefined;
-    const tilesetId = prev?.tilesetId ?? tilesetFor(spec.style);
+    let tilesetId = prev?.tilesetId ?? tilesetFor(spec.style);
+    // 주인공 물건이 고른 칩셋에 없고 기본 판타지 실내(v5)에는 있으면 v5 로 — 「마법사의 천문대」를 마법 학교 칩셋으로 지어 망원경·책장이 하나도 없었다(2026-10-23 v2 실조수).
+    if (!prev && tilesetId !== HAND_INTERIOR_TILESET_ID) {
+      const own = roomSpecOf(run.ctx.project.tilesets[tilesetId]);
+      const base = roomSpecOf(run.ctx.project.tilesets[HAND_INTERIOR_TILESET_ID]);
+      const words = (spec.zones ?? []).flatMap((z) => z.anchors ?? []);
+      const hits = (rs: typeof own) => (rs ? words.filter((w) => findPart(rs, w)).length : -1);
+      if (base && words.length && hits(base) > hits(own)) { notes.push(`주인공 물건(${words.join("·")})이 ${tilesetId} 에 ${Math.max(0, hits(own))}개, 기본 판타지 실내에 ${hits(base)}개 있어 기본 판타지 실내로 지었다`); tilesetId = HAND_INTERIOR_TILESET_ID; }
+    }
     const roomSpec = roomSpecOf(run.ctx.project.tilesets[tilesetId]);
     if (!roomSpec) return { ok: false, mapIds: [], summary: `실내 칩셋 ${tilesetId} 이 이 프로젝트에 없다`, warnings: [], missingArt: [spec.name], calls: run.calls };
     const mapId = prev?.mapId ?? spec.mapId ?? run.ctx.currentMapId ?? run.ctx.project.startMapId;
@@ -373,8 +382,23 @@ export const interiorBuilder: PlaceBuilder = {
         upKinds = [...upKinds, "corridor"];
       }
       const upBase: Record<string, unknown> = { tileset: tilesetId, ...(upperMapId ? { mapId: upperMapId, replace: true } : {}), name: `${spec.name} 2층`,
-        layout: { rooms: (upKinds.length ? upKinds : ["bedroom"]).map((kind, i) => ({ id: `${kind}${i + 1}`, kind })) } };
-      const up = build(run, upBase);
+        // 복도는 방 수에 맞춘 작은 계단참(방마다 4칸 + 1, 높이 5) — 견본 크기 그대로면 38칸짜리 빈 홀이 됐다.
+        layout: { rooms: (upKinds.length ? upKinds : ["bedroom"]).map((kind, i, all) => ({ id: `${kind}${i + 1}`, kind, ...(/corridor/u.test(kind) ? { w: Math.max(9, 4 * (all.length - 1) + 1), h: 5 } : {}) })) } };
+      // 위층은 배치 후보 넷 중 맵 틀 안 검은 바깥이 가장 적은 것(방 넓이 ÷ 맵 넓이 최대) — 객실 둘 + 긴 복도가 ㄱ자로 앉아 왼쪽 위가 통째로 검었다(비평 major).
+      let up = build(run, upBase);
+      const fill = (a: Attempt) => {
+        const rr = (a.data?.rebuild as Rebuild | undefined)?.rooms ?? [];
+        const m = run.ctx.project.maps[String(a.data?.mapId)];
+        return m ? rr.reduce((n, r) => n + (r.x1 - r.x0 + 1) * (r.y1 - r.y0 + 3), 0) / (m.width * m.height) : 0;
+      };
+      if (up.ok) {
+        let best = { v: 0, f: fill(up) };
+        for (let v = 1; v <= 3; v++) {
+          const alt = build(run, { ...upBase, mapId: String(up.data?.mapId), replace: true, layout: { ...(upBase.layout as object), variant: v } });
+          if (alt.ok && fill(alt) > best.f + 0.02) best = { v, f: fill(alt) };
+        }
+        up = build(run, { ...upBase, mapId: String(up.data?.mapId), replace: true, layout: { ...(upBase.layout as object), ...(best.v ? { variant: best.v } : {}) } });
+      }
       if (up.ok) {
         upperMapId = String(up.data?.mapId);
         let urb = up.data?.rebuild as Rebuild;
@@ -391,6 +415,16 @@ export const interiorBuilder: PlaceBuilder = {
           const d = urb.objects[urb.objects.length - 1]!;
           // 위층 계단통 → 아래층 계단 앞, 아래층 계단 → 위층 계단통 앞. 칸은 도구의 계단 계약(fitStairTransfers)이 맞춘다.
           uargs = { ...uargs, links: [{ x: d.x + 1, y: d.y, toMapId: builtMapId, toX: stairsUp.x + 1, toY: stairsUp.y + 1, direction: "down" }] };
+          // 위층 구역의 주인공 물건(침대·옷장…) — 계단 낱말은 이미 계단통으로 놓았다.
+          for (const zone of upperZones) for (const what of zone.anchors ?? []) {
+            if (/계단|stair/iu.test(what)) continue;
+            const part = findPart(roomSpec, what);
+            if (!part) { missing.push(`${what}(위층) — 부품 사전에 없다`); continue; }
+            const host = urb.rooms.find((r) => r.id.startsWith(resolveKind(tilesetId, zone, []))) ?? urb.rooms[0]!;
+            const done = placeAnchor(run, roomSpec, uargs, urb, host.id, part, undefined, true, new Set(), openingColumns(urb, up.data));
+            if (done) { uargs = done.args; urb = done.rb; placed.push({ zone: `2층 ${host.id}`, what, id: part.id }); }
+            else missing.push(`${what}(위층 ${host.id}) — 놓을 빈 자리가 없다`);
+          }
           build(run, uargs);
           const ufill = fillBare(run, roomSpec, uargs, urb, new Map(urb.rooms.map((r) => [r.id, r.id.replace(/\d+$/u, "")] as const)), INTERIOR_BARE_FLOOR_LIMIT);
           uargs = ufill.args; urb = ufill.rb;
