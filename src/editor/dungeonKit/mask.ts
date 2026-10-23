@@ -165,38 +165,74 @@ export function carveFlood(g: Grid, rooms: readonly PlacedRoom[], seed: number):
       const d = Math.abs(cov / (iw * ih) - 0.72);
       if (d < bestCov) { bestCov = d; blobs = cand; }
     }
-    for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
-      const i = g.idx(x, y);
-      if (!g.floor[i] || g.roomAt[i] !== ri || g.protect[i]) continue;
-      // 벽 둘레 두 칸은 마른 회랑으로 남기고(문·벽가 길), 물은 방 가운데 둥근 덩이로 고인다. 둑길로 방을 가르면 물이 벽에 붙은 곧은 띠 둘이 되어
-      // 「돌 테 수조」로 읽혔다(2026-10-23 dg2-r1·r4 VQA). 회랑이 늘 이어지므로 다리 없이도 모든 문에 닿는다.
-      if (ed[i]! < 1 || y < fy0 + 2) continue;
-      // 물은 방 안에 겹친 둥근 덩이 여럿(메타볼)의 합집합이다 — 한 타원·두 잎은 직사각형 방 안에서 곧은 변이 생겨 「돌 테 수조」로 읽혔다
-      // (2026-10-23 dg2-r1·r4 VQA). 덩이 가장자리 흔들림은 ≤0.15(PR #1450). 같은 운하 오토타일로 동굴 호수는 불규칙하게 읽혔다.
-      if (!inBlob(blobs, x, y)) continue;
-      g.liquid[i] = 1; cells += 1;
-    }
-    // 한 칸 폭 물줄(물 이웃이 하나 이하)은 마른 바닥으로 — 덩이 가장자리 잡음이 남긴 실선 물길(두 번).
-    for (let pass = 0; pass < 2; pass += 1) for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
-      const i0 = g.idx(x, y);
-      if (!g.liquid[i0] || g.roomAt[i0] !== ri) continue;
-      const nb = [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => g.inb(x + dx!, y + dy!) && g.liquid[g.idx(x + dx!, y + dy!)]).length;
-      const hz = (g.inb(x - 1, y) && g.liquid[g.idx(x - 1, y)]) || (g.inb(x + 1, y) && g.liquid[g.idx(x + 1, y)]);
-      const vt = (g.inb(x, y - 1) && g.liquid[g.idx(x, y - 1)]) || (g.inb(x, y + 1) && g.liquid[g.idx(x, y + 1)]);
-      if (nb <= 1 || !hz || !vt) { g.liquid[i0] = 0; cells -= 1; }
-    }
-    // 한두 칸짜리 웅덩이(6칸 미만)는 마른 바닥으로 — 「외딴 한 칸 물웅덩이」(2026-10-23 dg2-r4 VQA).
-    const seenL = new Set<number>();
-    for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
-      const i0 = g.idx(x, y);
-      if (!g.liquid[i0] || seenL.has(i0) || g.roomAt[i0] !== ri) continue;
-      const comp = [i0]; seenL.add(i0);
-      for (let k = 0; k < comp.length; k += 1) {
-        const c = comp[k]!, X = c % g.W, Y = (c / g.W) | 0;
-        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const n = g.idx(X + dx, Y + dy); if (g.inb(X + dx, Y + dy) && g.liquid[n] && !seenL.has(n)) { seenL.add(n); comp.push(n); } }
+    // 물은 벽까지 차오르게(minEd 0) 먼저 해 보고, 마른 바닥이 문들 사이에서 갈리면(다리가 필요하면) 벽가 길 한 칸(1)·두 칸(2)으로 물러난다.
+    // 다리 칸은 계단처럼 읽혀 「물속 가짜 계단」이 됐고(2026-10-23 dg2-r7 VQA M3), 벽가 마른 길이 늘 둘러 있으면 「가운데 장식 못」으로 읽혔다(M6).
+    const clearRoom = () => { for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) { const i = g.idx(x, y); if (g.roomAt[i] === ri) g.liquid[i] = 0; } };
+    const carve = (minEd: number) => {
+      for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
+        const i = g.idx(x, y);
+        if (!g.floor[i] || g.roomAt[i] !== ri || g.protect[i]) continue;
+        // 벽 둘레 두 칸은 마른 회랑으로 남기고(문·벽가 길), 물은 방 가운데 둥근 덩이로 고인다. 둑길로 방을 가르면 물이 벽에 붙은 곧은 띠 둘이 되어
+        // 「돌 테 수조」로 읽혔다(2026-10-23 dg2-r1·r4 VQA). 회랑이 늘 이어지므로 다리 없이도 모든 문에 닿는다.
+        if (ed[i]! < minEd || y < fy0 + 2) continue;
+        // 물은 방 안에 겹친 둥근 덩이 여럿(메타볼)의 합집합이다 — 한 타원·두 잎은 직사각형 방 안에서 곧은 변이 생겨 「돌 테 수조」로 읽혔다
+        // (2026-10-23 dg2-r1·r4 VQA). 덩이 가장자리 흔들림은 ≤0.15(PR #1450). 같은 운하 오토타일로 동굴 호수는 불규칙하게 읽혔다.
+        if (!inBlob(blobs, x, y)) continue;
+        g.liquid[i] = 1;
       }
-      if (comp.length < 6) for (const c of comp) { g.liquid[c] = 0; cells -= 1; }
-    }
+      // 한 칸 폭 물줄(물 이웃이 하나 이하)은 마른 바닥으로 — 덩이 가장자리 잡음이 남긴 실선 물길(두 번).
+      for (let pass = 0; pass < 2; pass += 1) for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
+        const i0 = g.idx(x, y);
+        if (!g.liquid[i0] || g.roomAt[i0] !== ri) continue;
+        const nb = [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => g.inb(x + dx!, y + dy!) && g.liquid[g.idx(x + dx!, y + dy!)]).length;
+        const hz = (g.inb(x - 1, y) && g.liquid[g.idx(x - 1, y)]) || (g.inb(x + 1, y) && g.liquid[g.idx(x + 1, y)]);
+        const vt = (g.inb(x, y - 1) && g.liquid[g.idx(x, y - 1)]) || (g.inb(x, y + 1) && g.liquid[g.idx(x, y + 1)]);
+        if (nb <= 1 || !hz || !vt) { g.liquid[i0] = 0; }
+      }
+      // 한두 칸짜리 웅덩이(6칸 미만)는 마른 바닥으로 — 「외딴 한 칸 물웅덩이」(2026-10-23 dg2-r4 VQA).
+      const seenL = new Set<number>();
+      for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
+        const i0 = g.idx(x, y);
+        if (!g.liquid[i0] || seenL.has(i0) || g.roomAt[i0] !== ri) continue;
+        const comp = [i0]; seenL.add(i0);
+        for (let k = 0; k < comp.length; k += 1) {
+          const c = comp[k]!, X = c % g.W, Y = (c / g.W) | 0;
+          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const n = g.idx(X + dx, Y + dy); if (g.inb(X + dx, Y + dy) && g.liquid[n] && !seenL.has(n)) { seenL.add(n); comp.push(n); } }
+        }
+        if (comp.length < 6) for (const c of comp) g.liquid[c] = 0;
+      }
+    };
+    const dryConnected = (): boolean => {
+      // 문턱(방 밖 바닥과 닿는 칸·보호 칸)이 모두 한 마른 덩이에 있으면 통과. 문이 없는 마른 주머니(물에 갇힌 벽가 띠)는 물로 채운다 — 벽까지 찬 물.
+      const isDry = (i: number) => g.floor[i] && g.roomAt[i] === ri && !g.liquid[i];
+      const comp = new Int32Array(g.W * g.H).fill(-1);
+      const doorComps = new Set<number>();
+      let nc = 0;
+      for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
+        const s0 = g.idx(x, y);
+        if (!isDry(s0) || comp[s0]! >= 0) continue;
+        const q = [s0]; comp[s0] = nc;
+        for (let k = 0; k < q.length; k += 1) {
+          const c = q[k]!, X = c % g.W, Y = (c / g.W) | 0;
+          if (g.protect[c]) doorComps.add(nc);
+          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+            if (!g.inb(X + dx, Y + dy)) continue;
+            const n = g.idx(X + dx, Y + dy);
+            if (g.floor[n] && g.roomAt[n] !== ri) doorComps.add(nc);
+            if (isDry(n) && comp[n]! < 0) { comp[n] = nc; q.push(n); }
+          }
+        }
+        nc += 1;
+      }
+      if (doorComps.size !== 1) return false;
+      const keep = [...doorComps][0]!;
+      for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) { const i = g.idx(x, y); if (comp[i]! >= 0 && comp[i] !== keep && !g.protect[i]) g.liquid[i] = 1; }
+      return true;
+    };
+    let ok = false;
+    for (const minEd of [0, 1, 2]) { clearRoom(); carve(minEd); if (dryConnected()) { ok = true; break; } }
+    if (!ok) clearRoom();
+    for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) if (g.liquid[g.idx(x, y)] && g.roomAt[g.idx(x, y)] === ri) cells += 1;
   });
   return cells;
 }
