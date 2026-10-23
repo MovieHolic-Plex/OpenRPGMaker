@@ -292,7 +292,7 @@ const DIRT = ["dirt-b", "dirt-c", "dirt-d"];
 // r3: 같은 무너진 건물·같은 캠핑카가 한 맵에 서너 번 찍혀 «복사해 붙인 도시»로 읽혔다 — 큰 건물·차는 2·1 까지.
 // r6: 같은 건물 껍데기 3~4채·같은 천막 5채·같은 표지판 둘이 «도장»으로 읽혔다 — 큰 조각은 맵당 2~3, 작은 소품도 상한을 둔다.
 // r7: 같은 차 둘(한 길 위·한 공터 안)이 어디서든 «복사»로 읽혔다 — 탈것은 그림마다 맵당 하나. 판잣집 a·b·c·컨테이너 집도 둘(붉은 판잣집 다섯이 한 덩이로 읽혔다).
-const CAPS: Record<string, number> = { "car-rust-h": 1, "car-rust-v": 1, "van-rust": 1, "scrap-heap": 2, "rubble-pile": 3, "water-tank": 2, "generator": 2, "solar-scrap": 3, "husk-tall": 2, "husk-a": 2, "husk-b": 2, "dead-tree": 3, "bush-wild": 4, "shack-a": 2, "shack-b": 2, "stall-a": 2, "stall-b": 2, "lean-to": 3, "tyres": 4, "shack-c": 2, "container-home": 2, "tent-tarp": 2, "sign-blank": 1, "drums": 5, "crates": 5, "lamp-broken": 5 };
+const CAPS: Record<string, number> = { "car-rust-h": 1, "car-rust-v": 1, "van-rust": 1, "scrap-heap": 2, "rubble-pile": 3, "water-tank": 2, "generator": 2, "solar-scrap": 3, "husk-tall": 2, "husk-a": 2, "husk-b": 2, "husk-c": 2, "husk-d": 2, "husk-e": 2, "rubble-pile-b": 3, "dead-tree": 3, "bush-wild": 4, "shack-a": 2, "shack-b": 2, "stall-a": 2, "stall-b": 2, "lean-to": 3, "tyres": 4, "shack-c": 2, "container-home": 2, "tent-tarp": 2, "sign-blank": 1, "drums": 5, "crates": 5, "lamp-broken": 5 };
 const VEHICLES = new Set(["car-rust-h", "car-rust-v", "van-rust", "car-burnt"]);
 const TWIN_OK = new Set(["wall-h", "wall-v", "wall-stub", "fence-h", "barricade-h", "jersey-barrier", "gate-scrap", "log-seat", "campfire"]);
 const SLAB = ["slab-a", "slab-b", "slab-c"];
@@ -417,6 +417,8 @@ function noRepeat(ids: string[]): string[] {
  * 덩이 중심 n/3 곳을 먼저 잡고 그 둘레(가로 ±4·세로 ±3)에 모은다. 풀·고사목은 판석 위에 서지 않는다.
  */
 const PLANTS = new Set(["dead-tree", "bush-wild"]);
+/** 선 건물 껍데기 — r55 에서 c·d·e 가 더해졌다(그림이 번들에 없으면 b.kit 로 걸러진다). */
+const HUSKS = ["husk-tall", "husk-a", "husk-b", "husk-c", "husk-d", "husk-e"];
 function sprinkle(b: Board, ids: readonly string[], n: number, x0: number, y0: number, x1: number, y1: number, start: Pt, must: Pt[]): number {
   let k = 0;
   const centres = Array.from({ length: Math.max(1, Math.ceil(n / 3)) }, () => ({ x: b.int(x0, Math.max(x0, x1)), y: b.int(y0, Math.max(y0, y1)) }));
@@ -528,7 +530,7 @@ function composeSettlement(b: Board): { areas: WlArea[]; spawn: Pt; road: boolea
   const foot = ry - 2;
   b.markKeep(0, ry - 1, Wd, 1);
   // r7: 같은 2층 껍데기 둘이 윗줄에 «복사»로 읽혔다 — 껍데기는 이 틀에서 그림마다 한 번, 두 줄이 나눠 쓴다.
-  const husks = b.shuffle(["husk-tall", "husk-a", "husk-b"]);
+  const husks = b.shuffle(HUSKS.filter((id) => b.kit(id)));
   const ruinName = (id: string) => (id.startsWith("husk") ? "무너진 건물" : "무너진 벽");
   rowOf(b, b.shuffle([husks[0]!, husks[1]!, "wall-h", "rubble-pile", "wall-h"]), 1 + b.int(0, 3), rx - 2, foot, spawn, must, [1, 4], areas, ruinName);
   rowOf(b, b.shuffle([husks[2]!, "wall-h", "scrap-heap"]), rx + 4 + b.int(0, 3), Wd - 2, foot, spawn, must, [1, 4], areas, ruinName);
@@ -775,8 +777,8 @@ function composeRuinedCity(b: Board): { areas: WlArea[]; spawn: Pt; road: boolea
       let standing = 0;
       for (const lot of b.shuffle(lots)) {
         const front = lot.y + lot.h >= y1 - 1;
-        if (theme === "buildings" && front && standing < 2) {
-          const ids = b.shuffle(["husk-tall", "husk-a", "husk-b"]).filter((id) => b.countOf(id) < (CAPS[id] ?? 9));
+        if (theme === "buildings" && front && standing < HUSKS.filter((id) => b.kit(id)).length - 1) {
+          const ids = b.shuffle(HUSKS.slice()).filter((id) => b.kit(id) && b.countOf(id) < (CAPS[id] ?? 9));
           const got = rowOf(b, ids.slice(0, 1), lot.x, lot.x + lot.w - 1, lot.y + lot.h - 1, spawn, must, [0, 1], areas, () => `무너진 건물 ${block}`);
           for (const p of got) { const d = b.door(p.id, p.x, p.y); if (b.inb(d.x, d.y + 1)) b.markKeep(d.x, d.y + 1); }
           if (got.length) { standing++; continue; }
