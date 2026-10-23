@@ -29,6 +29,7 @@ export const BUILDER_CASES: BuilderCase[] = [
   { id: "cmp-dg-cave-bats", spec: { type: "cave", name: "작은 동굴", size: "small", features: ["박쥐 같은 적", "맨 안쪽 보물상자"] } },
   { id: "jp-street-shops", spec: { type: "street", name: "상점가 골목", style: "jp-modern", features: ["shops", "vending machine", "houses"] } },
   { id: "jp-street-park", spec: { type: "street", name: "공원 옆 주택가", style: "jp-modern", size: "medium", features: ["houses", "park", "crosswalk", "bus stop"] } },
+  { id: "jp-alley-homes", spec: { type: "street", name: "주택가 골목", style: "jp-modern", size: "small", features: ["houses", "주택가", "alley", "골목", "vending", "자판기", "park", "공원", "bench", "lamp", "post box"], hints: { region: "residential" } } },
   { id: "jp-street-station", spec: { type: "street", name: "역전 거리", style: "jp-modern", features: ["station", "konbini", "tokyo tower"] } },
   { id: "jp-house", spec: { type: "house", name: "다다미 집" } },
   { id: "jp-house-2f", spec: { type: "house", name: "2층 단독주택", floors: 2 } },

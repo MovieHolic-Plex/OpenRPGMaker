@@ -268,13 +268,18 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
     // 씨앗 고르기: 같은 크기·짜임·가게로 계획을 미리 보고(순수 함수) 요청 소품이 다 들어가는 첫 씨앗. 공원은 주택가 짜임에서 더 잘 나온다.
     let bestSeed = baseSeed, bestScore = -1, bestStyle = style;
     // 요청 소품이 다 안 들어가면 다른 짜임(상가↔주택가)도 본다 — 바꿨으면 경고로 알린다.
-    const styles: JpStreetStyle[] = [style, ...(["residential", "shopping"] as const).filter((st) => st !== style)];
+    // 주택가·골목 요청은 상가 짜임으로 넘어가지 않는다(2026-10-23 3차: 「주택가 골목」이 이자카야·사무소 거리로 바뀌어 «집 서너 채»를 못 지켰다).
+    // 소품 하나를 못 넣는 쪽이 집 거리를 상가로 바꾸는 쪽보다 낫다 — 못 넣은 소품은 missingArt 로 정직하게 알린다.
+    const homey = !has(text, /shops?|shopping|store|상점|상가|가게|market|shotengai|arcade|商店街/i) && (wantHouses || style === "residential" || style === "shitamachi");
+    const styles: JpStreetStyle[] = homey
+      ? [style, ...(["residential", "shitamachi"] as const).filter((st) => st !== style)]
+      : [style, ...(["residential", "shopping"] as const).filter((st) => st !== style)];
     outer: for (const st of styles) {
       for (let s = baseSeed; s < baseSeed + 40; s++) {
         const view = planView(mapId, w, h, s, st, shopsFor(st));
-        const score = [...checks.values()].filter((f) => f(view)).length;
+        const score = [...checks].reduce((n, [what, f]) => n + (f(view) ? (what === "공원" ? 3 : 1) : 0), 0); // 공원은 구획 하나라 소품보다 무겁다
         if (score > bestScore) { bestScore = score; bestSeed = s; bestStyle = st; }
-        if (score === checks.size) break outer;
+        if (score === checks.size + (checks.has("공원") ? 2 : 0)) break outer;
       }
     }
     if (bestStyle !== style) warnings.push(`요청 소품이 ${style} 짜임에는 함께 안 들어가 ${bestStyle} 짜임으로 짰다`);
