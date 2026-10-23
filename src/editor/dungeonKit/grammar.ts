@@ -224,14 +224,44 @@ export function planTemple(spec: { size?: "small" | "medium" | "large"; width?: 
 }
 
 /** 광산: 갱구(입구) → 동쪽으로 주 갱도(갈림 방 junction 줄) → 위·아래 채굴장(stope) → 끝 심부(보스) + 보물. */
-export function planMine(spec: { size?: "small" | "medium" | "large"; width?: number; height?: number; seed?: number }): DungeonRoomInput[] {
+export function planMine(spec: { size?: "small" | "medium" | "large"; width?: number; height?: number; seed?: number; layout?: "linear" | "hub" | "loop" | "vertical" }): DungeonRoomInput[] {
   const n = sized(spec), random = rng((spec.seed ?? 7) * 6151 + 5);
+  // 2026-10-23 dungeon-themes: 두 광산 요청이 같은 동쪽 한 줄 갱도였다 — 배치 가족으로 뼈대를 가른다.
+  //   linear = 동쪽 주 갱도 + 위아래 채굴장 · hub = 큰 갈림 방에서 사방 갱도(심부는 북쪽 끝) · loop = 위·아래 두 갱도가 동쪽 끝에서 만나는 고리(심부는 남쪽).
+  const fam = spec.layout && spec.layout !== "vertical" ? spec.layout : (["linear", "hub", "loop"] as const)[Math.abs(((spec.seed ?? 7) * 2654435761) >>> 7) % 3]!;
+  const L = () => 5 + Math.floor(random() * 3);
+  if (fam === "hub") {
+    const rooms: DungeonRoomInput[] = [
+      { id: "adit", kind: "entrance", w: 11, h: 7 },
+      { id: "hub", kind: "junction", w: 13, h: 9, from: "adit", dir: "E", shift: 0, len: L() },
+      { id: "stopeS", kind: "stope", from: "hub", dir: "S", len: 4 },
+      { id: "shaft", kind: "junction", w: 9, h: 7, from: "hub", dir: "N", shift: 0, len: 4 },
+      { id: "deep", kind: "boss", w: 15, h: 10, from: "shaft", dir: "N", shift: 0, len: 4 },
+    ];
+    if (n >= 4) rooms.push({ id: "stopeE", kind: "stope", from: "hub", dir: "E", len: L() });
+    if (n >= 6) rooms.push({ id: "vault", kind: "vault", from: "deep", dir: random() < 0.5 ? "W" : "E", len: 3 });
+    if (n >= 7) rooms.push({ id: "depot", kind: "depot", from: "shaft", dir: random() < 0.5 ? "W" : "E", len: 3 });
+    return rooms;
+  }
+  if (fam === "loop") {
+    const rooms: DungeonRoomInput[] = [
+      { id: "adit", kind: "entrance", w: 11, h: 7 },
+      { id: "j1", kind: "junction", w: 9, h: 7, from: "adit", dir: "E", shift: 0, len: L() },
+      { id: "upper", kind: "stope", from: "j1", dir: "N", len: 4 },
+      { id: "j2", kind: "junction", w: 9, h: 7, from: "upper", dir: "E", shift: 0, len: L() },
+      { id: "j3", kind: "junction", w: 9, h: 7, from: "j1", dir: "E", shift: 0, len: L() + 4 },
+      { id: "deep", kind: "boss", w: 15, h: 10, from: "j3", dir: "S", shift: 0, len: 4 },
+    ];
+    if (n >= 6) rooms.push({ id: "vault", kind: "vault", from: "j2", dir: "N", len: 4 });
+    if (n >= 7) rooms.push({ id: "depot", kind: "depot", from: "j3", dir: "E", len: 3 });
+    return rooms;
+  }
   const rooms: DungeonRoomInput[] = [
     { id: "adit", kind: "entrance", w: 11, h: 7 },
-    { id: "j1", kind: "junction", w: 9, h: 7, from: "adit", dir: "E", shift: 0, len: 5 + Math.floor(random() * 3) },
+    { id: "j1", kind: "junction", w: 9, h: 7, from: "adit", dir: "E", shift: 0, len: L() },
   ];
   const spine = n >= 8 ? 3 : n >= 5 ? 2 : 1;
-  for (let i = 2; i <= spine; i += 1) rooms.push({ id: `j${i}`, kind: "junction", w: 9, h: 7, from: `j${i - 1}`, dir: "E", shift: 0, len: 5 + Math.floor(random() * 3) });
+  for (let i = 2; i <= spine; i += 1) rooms.push({ id: `j${i}`, kind: "junction", w: 9, h: 7, from: `j${i - 1}`, dir: "E", shift: 0, len: L() });
   rooms.push({ id: "stopeN", kind: "stope", from: "j1", dir: "N", len: 4 });
   if (n >= 4) rooms.push({ id: "stopeS", kind: "stope", from: spine >= 2 ? "j2" : "j1", dir: "S", len: 4 });
   if (n >= 7) rooms.push({ id: "depot", kind: "depot", from: `j${spine}`, dir: "N", len: 4 });
