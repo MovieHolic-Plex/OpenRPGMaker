@@ -295,7 +295,7 @@ export function updateFollowerSpriteMotion(scene: PlaySceneContext, deltaMs: num
       if (followerHidden.has(key)) {
         followerEmerging.delete(key);
       } else if (emerging === 0 && hero && size > 0
-        && Math.abs(hero.x - (sprite.x / size - 0.5)) < 0.9 && Math.abs(hero.y - (sprite.y / size - 1)) < 0.9) {
+        && Math.abs(hero.x - (sprite.x / size - 0.5)) < 0.97 && Math.abs(hero.y - (sprite.y / size - 1)) < 0.97) {
         // 주인공 몸이 아직 이 칸 위에 있다 — 기다린다.
         sprite.setVisible(false);
       } else {

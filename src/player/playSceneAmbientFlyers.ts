@@ -92,7 +92,8 @@ const FLYING_DEPTH = 390_000;
 const SHADOW_DEPTH = 150_000;
 const FLAP_FRAME_MS = 90;
 const TAKEOFF_FLAP_FRAME_MS = 60;
-const WALK_PATTERN_STEPS = 4;
+/** 날갯짓 걸음 단계(charsetWalkFrameIndex 의 0·1·2·1 순환에서 0 → 패턴 0, 1 → 패턴 1). */
+const FLAP_STEPS: readonly number[] = [0, 1];
 
 /** 표면 갱신(registerPageMoveRoutes)이 이번 맵의 비행 이벤트를 알려 준다. */
 export function noteAmbientFlyers(scene: object, map: GameMap, views: readonly RuntimeEventView[]): void {
@@ -185,7 +186,9 @@ function pickPerch(state: FlyerState, scene: FlyerSceneContext, tile: number): F
     let occupied = false;
     for (const sprite of scene.eventSprites.values()) {
       if (!sprite.visible) continue;
-      if (Math.floor(sprite.x / tile) === tx && Math.floor((sprite.y - 1) / tile) === ty) { occupied = true; break; }
+      // 사람 발밑 칸과 그 둘레(키 큰 칩은 머리가 위 칸까지 온다)는 피한다 — 발치에 새가 붙어 앉지 않게.
+      const sx = Math.floor(sprite.x / tile), sy = Math.floor((sprite.y - 1) / tile);
+      if (Math.abs(sx - tx) <= 1 && ty >= sy - 2 && ty <= sy + 1) { occupied = true; break; }
     }
     if (occupied) continue;
     return { x: characterSpriteX(tx, tile), y: characterSpriteY(ty, tile) - 3, roof: !ground };
@@ -266,12 +269,13 @@ function stepFlyer(state: FlyerState, scene: FlyerSceneContext, tile: number, de
     state.modeTimer -= deltaMs;
     const dist = Math.hypot(state.target.x - state.x, state.target.y - state.y);
     const near = tile * 3;
-    // 내려앉는 마지막 세 칸: 고도와 속도를 거리에 맞춰 줄인다. 날갯짓은 빠르게(제동).
+    // 내려앉는 마지막 세 칸: 착지점으로 곧장(회전 제한 때문에 둘레를 맴돌며 낮게 스치지 않게) 날고, 높이는 끝까지 남겨 두다가
+    // 마지막 6px 에서 내려앉는다 — 땅 위를 미끄러지는 새처럼 보이지 않게(2026-10-23 적대 검수). 날갯짓은 빠르게(제동).
     if (dist < near) {
-      state.h = Math.min(state.h, state.cruise * (dist / near));
-      state.speed = Math.max(14, 40 * (dist / near));
-      // 마지막 몇 픽셀은 곧장 내려앉는다 — 회전 속도 제한 때문에 착지점 둘레를 맴돌지 않게.
-      if (dist < 6) state.heading = Math.atan2(state.target.y - state.y, state.target.x - state.x);
+      state.heading = Math.atan2(state.target.y - state.y, state.target.x - state.x);
+      const glide = (Math.max(6, dist) / near) ** 0.6 * (dist < 6 ? dist / 6 : 1);
+      state.h = Math.min(state.h, state.cruise * glide);
+      state.speed = Math.max(20, 40 * (dist / near));
       state.flapping = true;
     } else {
       state.h += (state.cruise - state.h) * Math.min(1, dt * 2);
@@ -316,7 +320,8 @@ function drawFlyer(state: FlyerState, entry: FlyerEntry, sprite: FlyerSprite): v
   sprite.setDepth(FLYING_DEPTH + state.y);
   if (state.flapping) {
     const frameMs = state.mode === "takeoff" ? TAKEOFF_FLAP_FRAME_MS : FLAP_FRAME_MS;
-    sprite.setFrame(charsetWalkFrameIndex(entry.baseFrame, state.dir, Math.floor(state.flapPhaseMs / frameMs) % WALK_PATTERN_STEPS));
+    // 날갯짓은 위(패턴 0)·편 날개(1)만 오간다. 패턴 2(접은 날개)는 앉은 그림이라 공중에서 쓰면 「앉은 새가 떠 있는」 것처럼 보인다.
+    sprite.setFrame(charsetWalkFrameIndex(entry.baseFrame, state.dir, FLAP_STEPS[Math.floor(state.flapPhaseMs / frameMs) % FLAP_STEPS.length]!));
   } else {
     sprite.setFrame(charsetIdleFrameIndex(entry.baseFrame, state.dir));
   }
