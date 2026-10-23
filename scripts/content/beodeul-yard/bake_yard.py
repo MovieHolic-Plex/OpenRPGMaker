@@ -22,6 +22,7 @@ from PIL import Image
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import yard_art as A  # noqa: E402
+import vine_art as V  # noqa: E402
 
 ROOT = HERE.parents[2]
 sys.path.insert(0, str(ROOT / "src/harnesses/_core"))
@@ -62,6 +63,15 @@ RULES = {
 
 ALT_BASE = BASE + PER * len(SURFACES)   # 곧은 가장자리 둘째 벌(자갈·판석)은 세 표면 뒤에 덧붙인다: 자갈 N2 S2 W2 E2, 판석 N2 S2 W2 E2
 assert ALT_BASE + len(A.ALT_ORDER) * len(A.EDGE_ALT_SURFACES) <= BASE + COLS
+VINE_BASE = ALT_BASE + len(A.ALT_ORDER) * len(A.EDGE_ALT_SURFACES)   # 29,639 — 포도나무 줄(vine_art.py) 여덟 칸: 왼쪽 끝 · 가운데 여섯 · 오른쪽 끝
+assert VINE_BASE == 29639 and VINE_BASE + len(V.ORDER) <= BASE + COLS
+VINE_GATE_KIND = "organic"
+VINE_GROUP = "beodeul:vine_row"
+VINE_KO = {"left": "왼쪽 끝(끝 기둥·버팀 철사)", "right": "오른쪽 끝(끝 기둥·버팀 철사)", "mid": "가운데", "mid-post": "가운데(중간 기둥)"}
+VINE_DESC = ("철사에 올려 가꾼 포도나무 한 줄(3/4 탑뷰: 잎 덩이가 솟은 밝은 윗면, 포도송이가 매달린 어두운 앞면, 아래 철사와 굽은 줄기, 흙에 진 그늘). "
+             "다진 흙 마당 위에 위층으로 얹는다.")
+VINE_RULES = ("한 줄 = 왼쪽 끝 + 가운데 여럿 + 오른쪽 끝(가로 한 칸 높이). 가운데는 어떤 순서로 이어도 이음새가 없다 — 같은 칸을 둘 잇지 말고, "
+              "중간 기둥 칸(mid-post)은 두세 칸에 하나만. 줄 사이는 흙 한 칸 길을 둔다. 아래층은 다진 흙 마당(beodeul_yard_dirt) 몸통. 걸음.")
 
 
 def tid(surface, role):
@@ -77,6 +87,34 @@ def roles_of(surface):
 def cells():
     S = A.surfaces()
     return {tid(s, r): (A.img_of(S[s][r]), s, r) for s in SURFACES for r in roles_of(s)}
+
+
+def vine_tid(name):
+    return VINE_BASE + V.ORDER.index(name)
+
+
+def vine_cells():
+    t = V.tiles()
+    return {vine_tid(k): (V.img_of(t[k]), k, V.ROLE_OF[k]) for k in V.ORDER}
+
+
+VINE_GATE_NAME = ("vineyard vine rows on packed-earth yard: trained grapevines on a low wire trellis, each row one tile tall, seen 3/4 top-down — "
+                  "leafy canopy top lit from the upper left with leaf clumps, darker front/underside with hanging dark grape bunches, a wire and short "
+                  "gnarled trunks below, shadow on the ground; end posts with brace wires at each row end; dirt paths between rows")
+
+
+def vine_gate_image():
+    return V.sample()
+
+
+def vine_kit():
+    seq = V.row_strip(6, 0)
+    W = len(seq)
+    return dict(id="bd-yard-vine-row-sample", kind="section", name=f"버들항 포도나무 줄 표본 {W}×1", width=W, height=1, tileSize=16,
+                rows=[dict(tiles=[-1] * W, upperTiles=[vine_tid(k) for k in seq])], learnedFrom="db-authored",
+                ai=dict(description="포도나무 한 줄(왼쪽 끝 · 가운데 · 오른쪽 끝) 표본. " + VINE_DESC,
+                        placementRules=VINE_RULES, tags=["버들항", "포도밭", "vineyard", "vine"], role="prop", repeatability="repeatable",
+                        layerHome="upper", themes=["village", "vineyard", "마을"]))
 
 
 def mask_role(m):
@@ -176,7 +214,13 @@ def main():
     args = ap.parse_args()
 
     if args.gate_export:
-        for l in A.gate_export(args.gate_export): print(l["png"])
+        lines = A.gate_export(args.gate_export)
+        d = pathlib.Path(args.gate_export)
+        vp = d / "vine_rows.png"
+        vine_gate_image().save(vp)
+        lines.append(dict(png=str(vp.resolve()), kind=VINE_GATE_KIND, name=VINE_GATE_NAME, label="beodeul_yard/vine_rows"))
+        (d / "items.jsonl").write_text("\n".join(json.dumps(l, ensure_ascii=False) for l in lines) + "\n")
+        for l in lines: print(l["png"])
         return
     if args.samples:
         write_samples(args.samples); print("samples ->", args.samples)
@@ -191,6 +235,8 @@ def main():
     for name, im, _label, s in gate_items():
         r = OG.refusal(im, kind=GATE_KIND, context="bundle")
         if r: why[s] = r
+    vr = OG.refusal(vine_gate_image(), kind=VINE_GATE_KIND, context="bundle")
+    if vr: why["vine_rows"] = vr
     if why:
         print("3/4 관문 미통과:", file=sys.stderr)
         for k, v in why.items(): print("  ", k, "←", v, file=sys.stderr)
@@ -205,7 +251,8 @@ def main():
     out_sheet = Image.new("RGBA", (COLS * T, (BASE_ROW + ROWS_ADDED) * T), (0, 0, 0, 0))
     out_sheet.alpha_composite(sheet.crop((0, 0, COLS * T, BASE_ROW * T)), (0, 0))
     C = cells()
-    for t, (im, _s, _r) in C.items():
+    VC = vine_cells()
+    for t, (im, _s, _r) in list(C.items()) + list(VC.items()):
         i = t - BASE
         out_sheet.alpha_composite(im, ((i % COLS) * T, (BASE_ROW + i // COLS) * T))
     out_sheet.save(SHEET_PATH, optimize=True)
@@ -221,6 +268,12 @@ def main():
     for i in range(ROWS_ADDED * COLS):
         t = BASE + i
         TS["passability"].append(dict(yes)); TS["priority"].append("lower"); TS["terrain"].append(0)
+        if t in VC:
+            _im, k, role = VC[t]
+            TS["tileMeta"].append(dict(label=f"버들항 포도나무 줄 · {VINE_KO[role]}",
+                                       description=f"{VINE_DESC} {VINE_KO[role]} 칸({k}). 걸음.",
+                                       tags=["버들항", "포도밭", "vineyard", "vine", role], defaultLayer="upper", passage="passable", source="bundled-default"))
+            continue
         if t not in C: TS["tileMeta"].append(dict(empty)); continue
         _im, s, r = C[t]
         TS["tileMeta"].append(dict(label=f"버들항 마당 · {KO[s]} · {r}",
@@ -239,13 +292,18 @@ def main():
                            interiorVariants=[[tid(s, v) for v in ["body"] + A.VARIANTS]],
                            **(dict(phaseVariants=phase_variants(s)) if s in A.EDGE_ALT_SURFACES else {})))
     TS["autotileGroups"] = [g for g in TS["autotileGroups"] if g["id"] not in GROUP_ID.values()] + groups
-    TS["tileGroups"] = [g for g in TS["tileGroups"] if not g["id"].startswith("beodeul:yard_")] + [
+    TS["tileGroups"] = [g for g in TS["tileGroups"] if not g["id"].startswith("beodeul:yard_") and g["id"] != VINE_GROUP] + [
         dict(id=f"beodeul:yard_{s}", name=f"버들항 마당 · {KO[s]}", role="ground", source="bundled-default",
              tileIds=[tid(s, r) for r in roles_of(s)], defaultLayer="lower", confidence="high",
              description=f"{DESC[s]} 8이웃 오토타일 `{GROUP_ID[s]}`(가장자리 바깥은 잔디 737 화소, 몸통 변형 여덟). 대표 몸통 {tid(s, 'body')}.",
              placementRules=RULES[s])
-        for s in SURFACES]
-    TS["structureKits"] = [k for k in TS["structureKits"] if not k["id"].startswith("bd-yard-")] + [sample_kit(s) for s in SURFACES]
+        for s in SURFACES] + [
+        dict(id=VINE_GROUP, name="버들항 포도나무 줄", role="prop", source="bundled-default",
+             tileIds=[vine_tid(k) for k in V.ORDER], defaultLayer="upper", confidence="high",
+             description=f"{VINE_DESC} 왼쪽 끝 {vine_tid('left')} · 가운데 {', '.join(str(vine_tid(k)) for k in V.ORDER[1:-1])}"
+                         f"(중간 기둥 {', '.join(str(vine_tid(k)) for k in V.ORDER if V.ROLE_OF[k] == 'mid-post')}) · 오른쪽 끝 {vine_tid('right')}.",
+             placementRules=VINE_RULES)]
+    TS["structureKits"] = [k for k in TS["structureKits"] if not k["id"].startswith("bd-yard-")] + [sample_kit(s) for s in SURFACES] + [vine_kit()]
     TS_PATH.write_text(json.dumps(TS, ensure_ascii=False, separators=(",", ":")) + "\n")
     SHEET_JSON.write_text(json.dumps(dict(count=COUNT, tilesPerRow=COLS)) + "\n")
     print(json.dumps(dict(count=COUNT, cells=len(C), groups=list(GROUP_ID.values()), gateBlocked=sorted(why), dev=args.dev), ensure_ascii=False))
