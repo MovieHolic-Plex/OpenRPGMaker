@@ -114,6 +114,31 @@ function syncPlaySurfaceMetrics(
   viewport.style.setProperty("--play-stage-left", cssPx(placement.left));
   viewport.style.setProperty("--play-stage-top", cssPx(stageTop));
   viewport.dataset.scale = scale.toFixed(3);
+  syncMobileUiMetrics(viewport, bounds.width, bounds.height, scale);
+}
+
+/**
+ * 폰(거친 포인터 + 짧은 변 900px 미만)이면 `data-mobile-ui` 를 켠다. 무대가 작게 줄어 UI 글자가 6px 로 보이는 문제를
+ * CSS(mobileUi.css)가 `--mobile-ui-z`(UI 확대 배율)로 겹침 층을 화면 px 좌표계로 다시 깔아 푼다(무대 배율 `--play-scale` 로 나눠 상쇄).
+ * 데스크톱(마우스)은 속성 자체가 없어 모양이 그대로다.
+ */
+function syncMobileUiMetrics(viewport: HTMLElement, width: number, height: number, scale: number): void {
+  viewport.style.setProperty("--play-viewport-width", cssPx(width));
+  viewport.style.setProperty("--play-viewport-height", cssPx(height));
+  const coarse = typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(pointer: coarse)").matches;
+  const phone = coarse && Math.min(width, height) < 900;
+  if (!phone) {
+    delete viewport.dataset.mobileUi;
+    viewport.style.removeProperty("--mobile-ui-z");
+    viewport.style.removeProperty("--mobile-ui-k");
+    return;
+  }
+  const portrait = width < height;
+  viewport.dataset.mobileUi = portrait ? "portrait" : "landscape";
+  // UI 확대 배율 z: 겹침 층을 "화면 px × z" 좌표계로 다시 깔아, 논리 6.5px 글자가 화면에서 읽히는 크기(약 12~13px)가 되게 한다.
+  const z = Math.min(2.4, Math.max(1.5, Math.min(width, height) / (portrait ? 195 : 215)));
+  viewport.style.setProperty("--mobile-ui-z", String(Math.round(z * 1000) / 1000));
+  viewport.style.setProperty("--mobile-ui-k", String(Math.round((1 / Math.max(scale, 0.01)) * 1000) / 1000));
 }
 
 const PORTRAIT_TOP_MARGIN = 12;
