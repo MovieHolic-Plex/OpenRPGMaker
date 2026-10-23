@@ -305,78 +305,34 @@
    "by": "delegated",
    "delegatedBy": "delegated by user to supervisor 2026-10-23",
    "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-tower-stair-by-elimination.json"
+  },
+  {
+   "round": "gap-props-r1",
+   "item": "gap.lever",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "c05917fafb2fb519b6d8ceb5913b3cca721d01267d8e96547d9b033ee0ecb213",
+   "note": "only eligible candidate",
+   "at": "2026-10-23T11:09:55",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-lever-by-elimination.json"
+  },
+  {
+   "round": "gap-ice-r1",
+   "item": "gap.ice_floor",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "396213095d2b9595b8ecb50509e0246fc79f0ddec9a2874009cd1d2aaefe5a33",
+   "note": "only eligible candidate",
+   "at": "2026-10-23T11:09:55",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-23",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-ice_floor-by-elimination.json"
   }
  ],
  "rejects": [],
  "runs": [
-  {
-   "round": "gap-props-r1",
-   "at": "2026-10-23T09:44:36",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "gap.door": {
-     "A1": "ed0e96dfd4c7af8775b2fbb2716751fbeac17b75f3aea3ddbdf2f807bc8d3642",
-     "A2": "61686a8629f90314f3c15581b8ba94cfdd5112e51e6f1ed38f51e83d3150696d"
-    },
-    "gap.lever": {
-     "A1": "c05917fafb2fb519b6d8ceb5913b3cca721d01267d8e96547d9b033ee0ecb213",
-     "A2": "406a1e54772aa00859e213aa5c1de49f9e65a004d284d49f69d12dcc3a246b15"
-    },
-    "gap.goblin_tent": {
-     "A1": "8a86d9a417119c3742a9e47f08532701dfe95c9dff317d9a33bfe37663c08a8a",
-     "A2": "634a9758b6e7a807821bd0e25caaa96ca6833e8a808706913672c75326babac9"
-    },
-    "gap.bone_pile": {
-     "A1": "4a7fde0d2db996abf6662cd3ba54549d0e275a744660058782b3f8762c0a2c03",
-     "A2": "79a5fc6f1535d1d8b3189ca96e0007184fa5186b97aba6bce93b105c255ec770"
-    },
-    "gap.palisade": {
-     "A1": "f98f05938bf02342b0f8fa8b32def5b42c8c7cdbdc3c1891b0c0004411a35690",
-     "A2": "bfa6333727c4e51bc94badcc2ad51fc572e386f6a51eac18b86db6ac08e53c07"
-    },
-    "gap.campfire": {
-     "A1": "5e6d617b6dfab92c3a6149cf8097c3f66469c7739a019b5dfb6cfa834ecfcfe3",
-     "A2": "125f0cbeb5257400a32ebd08afc6e0016bdaf3747bc54606cebfc160f61f2e0f"
-    }
-   }
-  },
-  {
-   "round": "gap-props-r1",
-   "at": "2026-10-23T09:44:54",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "gap.door": {
-     "A1": "ed0e96dfd4c7af8775b2fbb2716751fbeac17b75f3aea3ddbdf2f807bc8d3642",
-     "A2": "61686a8629f90314f3c15581b8ba94cfdd5112e51e6f1ed38f51e83d3150696d"
-    },
-    "gap.lever": {
-     "A1": "c05917fafb2fb519b6d8ceb5913b3cca721d01267d8e96547d9b033ee0ecb213",
-     "A2": "406a1e54772aa00859e213aa5c1de49f9e65a004d284d49f69d12dcc3a246b15"
-    },
-    "gap.goblin_tent": {
-     "A1": "8a86d9a417119c3742a9e47f08532701dfe95c9dff317d9a33bfe37663c08a8a",
-     "A2": "634a9758b6e7a807821bd0e25caaa96ca6833e8a808706913672c75326babac9"
-    },
-    "gap.bone_pile": {
-     "A1": "4a7fde0d2db996abf6662cd3ba54549d0e275a744660058782b3f8762c0a2c03",
-     "A2": "79a5fc6f1535d1d8b3189ca96e0007184fa5186b97aba6bce93b105c255ec770"
-    },
-    "gap.palisade": {
-     "A1": "f98f05938bf02342b0f8fa8b32def5b42c8c7cdbdc3c1891b0c0004411a35690",
-     "A2": "bfa6333727c4e51bc94badcc2ad51fc572e386f6a51eac18b86db6ac08e53c07"
-    },
-    "gap.campfire": {
-     "A1": "5e6d617b6dfab92c3a6149cf8097c3f66469c7739a019b5dfb6cfa834ecfcfe3",
-     "A2": "125f0cbeb5257400a32ebd08afc6e0016bdaf3747bc54606cebfc160f61f2e0f"
-    }
-   }
-  },
   {
    "round": "gap-tower-r1",
    "at": "2026-10-23T09:48:20",
@@ -1381,6 +1337,42 @@
     "gap.campfire": {
      "A1": "5e6d617b6dfab92c3a6149cf8097c3f66469c7739a019b5dfb6cfa834ecfcfe3",
      "A2": "125f0cbeb5257400a32ebd08afc6e0016bdaf3747bc54606cebfc160f61f2e0f"
+    }
+   }
+  },
+  {
+   "round": "gap-ice-r1",
+   "at": "2026-10-23T10:52:22",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.ice_floor": {
+     "A1": "396213095d2b9595b8ecb50509e0246fc79f0ddec9a2874009cd1d2aaefe5a33",
+     "A2": "3a8464374f0ca7de7bbc5911bc40998bb1e5a594a605e425dd2d22730b59536c"
+    },
+    "gap.ice_rock": {
+     "A1": "f658c2066e8ff51120852b9586db6fa5cc69abd816bd71ad172e9b9adea49464",
+     "A2": "7279fb0c93a12ac362d34078b4cfc15c109f3dcc1f0266d985e8e1ac37af8874"
+    }
+   }
+  },
+  {
+   "round": "gap-ice-r1",
+   "at": "2026-10-23T10:52:23",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.ice_floor": {
+     "A1": "396213095d2b9595b8ecb50509e0246fc79f0ddec9a2874009cd1d2aaefe5a33",
+     "A2": "3a8464374f0ca7de7bbc5911bc40998bb1e5a594a605e425dd2d22730b59536c"
+    },
+    "gap.ice_rock": {
+     "A1": "f658c2066e8ff51120852b9586db6fa5cc69abd816bd71ad172e9b9adea49464",
+     "A2": "7279fb0c93a12ac362d34078b4cfc15c109f3dcc1f0266d985e8e1ac37af8874"
     }
    }
   }
