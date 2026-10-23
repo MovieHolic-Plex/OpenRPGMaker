@@ -73,7 +73,7 @@ async function loadOps(file, lines) {
   return ops.filter((op) => op && typeof op === "object" && typeof op.kind === "string");
 }
 
-async function resolveGame(spec, { outRoot }) {
+async function resolveGame(spec, { outRoot, gamesDir }) {
   const asPath = resolve(REPO_ROOT, spec);
   if (existsSync(asPath) && !existsSync(join(asPath, "project.json"))) {
     return { id: spec.replace(/\.(json|gz)$/, ""), file: asPath, entry: null };
@@ -82,6 +82,7 @@ async function resolveGame(spec, { outRoot }) {
   const entry = (catalog.games ?? []).find((game) => game.id === spec);
   if (!entry) fail(`모르는 게임: ${spec} — games.json 에 없거나 경로가 아니다`);
   const candidates = [
+    gamesDir ? join(gamesDir, entry.id, "project.json") : null,
     join(outRoot, entry.id, "project.json"),
     // build-games 의 기본 산출물 자리 — 재현을 다른 --out 으로 돌려도 게임은 여기 있다.
     join(REPO_ROOT, "tmp/qp/games", entry.id, "project.json"),
@@ -94,9 +95,11 @@ async function resolveGame(spec, { outRoot }) {
 }
 
 /** 한 번의 재생. 반환값이 판정 근거다. */
-async function replayOnce({ game, boot, ops, expect, attemptDir, viewport, seed, bootTimeoutMs }) {
+async function replayOnce({ game, boot, ops, expect, attemptDir, viewport, seed, bootTimeoutMs, sharedPlayerUrl }) {
   await mkdir(attemptDir, { recursive: true });
-  const server = await startPlayerQaServer();
+  const server = sharedPlayerUrl
+    ? { url: sharedPlayerUrl, close: async () => undefined }
+    : await startPlayerQaServer();
   const browser = await launchPlayBrowser();
   const context = await browser.newContext({ viewport });
   const page = await context.newPage();
@@ -155,7 +158,8 @@ async function main() {
   const outDir = resolve(REPO_ROOT, String(flags.out ?? `tmp/qp/repro-${Date.now()}`));
   await mkdir(outDir, { recursive: true });
   const outRoot = flags["games-out"] ? resolve(REPO_ROOT, String(flags["games-out"])) : join(REPO_ROOT, "tmp/qp/games");
-  const game = await resolveGame(String(flags.game), { outRoot });
+  const gamesDir = flags["games-dir"] ? resolve(REPO_ROOT, String(flags["games-dir"])) : null;
+  const game = await resolveGame(String(flags.game), { outRoot, gamesDir });
   const ops = await loadOps(resolve(REPO_ROOT, String(flags.ops)), flags.lines);
   if (ops.length === 0) fail("op 이 0개다 — --lines 범위를 확인해라");
   const expect = JSON.parse(await readFile(resolve(REPO_ROOT, String(flags.expect)), "utf8"));
@@ -168,11 +172,17 @@ async function main() {
   // 부하가 큰 호스트에서는 부팅이 2~3분 걸린다. 재현 실패의 원인이 «느린 부팅» 인지
   // «증상 없음» 인지 갈리도록 부팅 대기만 따로 늘릴 수 있게 둔다.
   const bootTimeoutMs = Number(flags["boot-timeout"] ?? 240_000);
+  // 공유 서버: 세션 여러 개를 한 상자에서 돌릴 때 vite dev 서버를 재현마다 새로 띄우면
+  // node_modules/.vite 캐시를 서로 덮어쓴다. player-server.mjs 가 띄운 서버에 붙인다.
+  const sharedPlayerUrl = flags["player-url"] ? String(flags["player-url"]).replace(/\/$/, "") : null;
+  if (sharedPlayerUrl && !/^http:\/\/127\.0\.0\.1:\d+$/.test(sharedPlayerUrl)) {
+    fail(`--player-url 은 http://127.0.0.1:<port> 여야 한다: ${sharedPlayerUrl}`);
+  }
 
   const attempts = [];
   for (let attempt = 1; attempt <= repeat; attempt += 1) {
     attempts.push(await replayOnce({
-      game, boot, ops, expect, attemptDir: join(outDir, `run-${attempt}`), viewport, seed, bootTimeoutMs,
+      game, boot, ops, expect, attemptDir: join(outDir, `run-${attempt}`), viewport, seed, bootTimeoutMs, sharedPlayerUrl,
     }));
     process.stdout.write(`run ${attempt}/${repeat}: ${attempts.at(-1).reproduced ? "symptom present" : "symptom absent"}`
       + `${attempts.at(-1).failures.length ? ` — ${attempts.at(-1).failures.slice(0, 3).join(" / ")}` : ""}\n`);

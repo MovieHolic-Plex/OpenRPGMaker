@@ -9,7 +9,8 @@
       "file": "examples/saesol-red/project.json.gz",
       "scenarioFixture": "examples/saesol-red/project.json.gz",
       "startMap": "map_variety_ridge",
-      "note": "마을·동굴·길 3맵. 도트 캐릭터 걷기·조사 이벤트·전투 없음(탐험 위주). 스모크 시나리오의 기본 픽스처."
+      "note": "마을·동굴·길 3맵. 도트 캐릭터 걷기·조사 이벤트·전투 없음(탐험 위주). 스모크 시나리오의 기본 픽스처.",
+      "playable": true
     },
     {
       "id": "fallen-star",
@@ -17,7 +18,8 @@
       "kind": "generator",
       "startMap": "fs_hub",
       "buildTimeoutMs": 900000,
-      "note": "타이틀·오프닝·마을·숲·금고·보스·엔딩 10단계. 전투·상점·여관·저장. 체크포인트 세트 fallen-star."
+      "note": "타이틀·오프닝·마을·숲·금고·보스·엔딩 10단계. 전투·상점·여관·저장. 체크포인트 세트 fallen-star.",
+      "playable": true
     },
     {
       "id": "astra-horizon",
@@ -25,7 +27,8 @@
       "kind": "generator",
       "startMap": "mx_map_home_house_2f",
       "buildTimeoutMs": 900000,
-      "note": "몬스터 수집 캠페인 19맵. 스타터 선택·야생 조우·포획·체육관·리그. 체크포인트 세트 astra-horizon."
+      "note": "몬스터 수집 캠페인 19맵. 스타터 선택·야생 조우·포획·체육관·리그. 체크포인트 세트 astra-horizon.",
+      "playable": true
     },
     {
       "id": "first-love",
@@ -36,7 +39,8 @@
       "note": "연애/대화 중심 비주얼노블 10맵. 선택지·호감 변수·엔딩 3종. 체크포인트 세트 first-love. 82MB 라 파일 스트리밍으로도 렌더러가 죽는다 — 제품 데모 분기(?demo=first-love)로 띄운다.",
       "query": {
         "demo": "first-love"
-      }
+      },
+      "playable": true
     },
     {
       "id": "shitamachi-fourth-season",
@@ -44,14 +48,16 @@
       "kind": "generator",
       "startMap": "map_shitamachi_arcade",
       "buildTimeoutMs": 900000,
-      "note": "일본 골목 회상극 9맵. 컷신·대화 위주."
+      "note": "일본 골목 회상극 9맵. 컷신·대화 위주.",
+      "playable": true
     },
     {
       "id": "scarloxy-demo",
       "title": "Scarloxy 몬스터 초원 데모",
       "kind": "generator",
       "startMap": "map_scarloxy_meadow",
-      "note": "Scarloxy 팩 타일·캐릭셋·몬스터·전투 배경 조합 예시. 전투·몬스터 조우."
+      "note": "Scarloxy 팩 타일·캐릭셋·몬스터·전투 배경 조합 예시. 전투·몬스터 조우.",
+      "playable": true
     },
     {
       "id": "monster-expedition",
@@ -59,63 +65,72 @@
       "kind": "generator",
       "startMap": "mx_map_home",
       "buildTimeoutMs": 900000,
-      "note": "본래 90맵·60종 캠페인을 앞에서 잘라 만든다. 스타터 선택·야생 조우·포획·상점·저장."
+      "note": "본래 90맵·60종 캠페인을 앞에서 잘라 만든다. 스타터 선택·야생 조우·포획·상점·저장.",
+      "playable": true
     },
     {
       "id": "preset-adventure-jrpg",
       "title": "모험 JRPG 시작 예제",
       "kind": "generator",
       "startMap": "map_blank_start",
-      "note": "새 프로젝트 「모험 JRPG」의 시작 예제(마을+숲길). 촌장 의뢰·파티·전투."
+      "note": "새 프로젝트 「모험 JRPG」의 시작 예제(마을+숲길). 촌장 의뢰·파티·전투.",
+      "playable": true
     },
     {
       "id": "preset-monster-collect",
       "title": "몬스터 수집 시작 예제",
       "kind": "generator",
       "startMap": null,
-      "note": "새 프로젝트 「몬스터 수집」의 시작 예제(버들항 마을+풀숲). 첫 파트너 선택·조우·포획."
+      "note": "새 프로젝트 「몬스터 수집」의 시작 예제(버들항 마을+풀숲). 첫 파트너 선택·조우·포획.",
+      "playable": true
     },
     {
       "id": "preset-story-cutscene",
       "title": "회상 스토리 시작 예제",
       "kind": "generator",
       "startMap": "map_blank_start",
-      "note": "새 프로젝트 「회상 스토리」의 시작 예제. 기억 조사·장면 이동."
+      "note": "새 프로젝트 「회상 스토리」의 시작 예제. 기억 조사·장면 이동.",
+      "playable": true
     },
     {
       "id": "preset-farm-life",
       "title": "농장 생활 빈 시작",
       "kind": "generator",
       "startMap": null,
-      "note": "시작 예제가 없는 장르라 빈 시작 맵(blank). 밭·도구 도구는 DB에 있지만 맵은 비어 있다."
+      "note": "시작 예제가 없는 장르라 빈 시작 맵(blank). 밭·도구 도구는 DB에 있지만 맵은 비어 있다.",
+      "playable": true
     },
     {
       "id": "preset-action-rpg",
       "title": "2D 액션 RPG 빈 시작",
       "kind": "generator",
       "startMap": null,
-      "note": "빈 시작 맵. 액션 전투 시스템(actionCombat)이 켜져 있지만 적은 없다."
+      "note": "빈 시작 맵. 액션 전투 시스템(actionCombat)이 켜져 있지만 적은 없다.",
+      "playable": true
     },
     {
       "id": "preset-horror-gallery",
       "title": "갤러리 호러 빈 시작",
       "kind": "generator",
       "startMap": null,
-      "note": "빈 시작 맵. 호러 시스템 프리셋(추격·은신)이 켜져 있다."
+      "note": "빈 시작 맵. 호러 시스템 프리셋(추격·은신)이 켜져 있다.",
+      "playable": true
     },
     {
       "id": "preset-school-horror",
       "title": "학교 호러 빈 시작",
       "kind": "generator",
       "startMap": null,
-      "note": "빈 시작 맵. horror-chase 팩의 변형."
+      "note": "빈 시작 맵. horror-chase 팩의 변형.",
+      "playable": true
     },
     {
       "id": "preset-partner-raise",
       "title": "파트너 육성 빈 시작",
       "kind": "generator",
       "startMap": null,
-      "note": "빈 시작 맵. monster-collect 팩의 변형(육성 톤)."
+      "note": "빈 시작 맵. monster-collect 팩의 변형(육성 톤).",
+      "playable": true
     }
   ]
 }

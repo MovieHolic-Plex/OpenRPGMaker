@@ -35,11 +35,19 @@ node scripts/qa/play/build-games.mjs --out tmp/qp/games --no-update-catalog  # g
 ## 2. 세션 (qp)
 
 ```bash
+# 0) 상자 하나에 세션을 여러 개 띄울 때: player-QA 서버를 **하나만** 띄우고 세션들이 붙는다.
+#    세션마다 vite dev 서버를 띄우면 같은 node_modules/.vite 캐시를 서로 덮어쓴다(AGENTS.md 실측).
+node scripts/qa/play/player-server.mjs --port 43100     # ready http://127.0.0.1:43100
+
 # 1) 세션을 띄운다 — 이 명령이 살아 있는 동안이 곧 플레이 세션이다(백그라운드로 띄워라).
 node scripts/qa/play/qp.mjs serve --game saesol-red --out tmp/qp/saesol-red
-#    ready: … control=http://127.0.0.1:<port> session=…/tmp/qp/saesol-red
+node scripts/qa/play/qp.mjs serve --game saesol-red --player-url http://127.0.0.1:43100 --out tmp/qp/s1
+node scripts/qa/play/qp.mjs serve --game fallen-star  --player-url http://127.0.0.1:43100 --out tmp/qp/s2
+#    --player-url URL   이미 떠 있는 player-QA 서버를 같이 쓴다(세션 수만큼 vite 를 띄우지 않는다)
+#    --games-dir DIR    build-games 를 다른 자리에 돌렸을 때 그 산출물에서 <DIR>/<id>/project.json 을 찾는다
 #    --viewport 1024x768 (기본) · --seed 1 · --headed (눈으로 보기) · --keep-opening (오프닝 유지)
-#    --game 은 게임 id 이거나 project.json 경로다. --port 는 player 서버 포트(기본 빈 포트).
+#    --game 은 게임 id 이거나 project.json 경로다. --port 는 자기 player 서버를 띄울 때만 쓴다.
+```
 
 # 2) 짧은 명령. 세션 디렉터리는 --out · QP_OUT · tmp/qp/last 순으로 찾는다.
 node scripts/qa/play/qp.mjs state
@@ -68,7 +76,7 @@ menus=[]
 
 | 명령 | 뜻 |
 |---|---|
-| `serve --game <id\|path> [--port P] [--out DIR] [--viewport WxH] [--seed N] [--headed] [--keep-opening]` | 세션 시작. `DIR/qp.ready`(포트·게임·경로)를 쓰고 `DIR/actions.jsonl` 을 비운 뒤 기록 시작 |
+| `serve --game <id\|path> [--port P] [--player-url URL] [--games-dir DIR] [--out DIR] [--viewport WxH] [--seed N] [--headed] [--keep-opening]` | 세션 시작. `DIR/qp.ready`(포트·게임·경로·공유 여부)를 쓰고 `DIR/actions.jsonl` 을 비운 뒤 기록 시작 |
 | `key <k>` | 키 한 번(`Enter`, `ArrowUp`, `z`, …) |
 | `hold <k> <ms>` | 키를 그 시간만큼 누르고 있다 뗀다. 방향키는 런타임 `hold` op |
 | `move <up\|down\|left\|right> [n]` | n 걸음. **타일이 바뀔 때까지** 기다리며 센다(고정 sleep 아님). 막히면 `moved k/n, blocked` |
@@ -105,6 +113,7 @@ node scripts/qa/play/repro.mjs --game saesol-red \
   --ops tmp/qp/saesol-red/actions.jsonl --lines 3-7 \
   --expect expect.json --out tmp/qp/repro-1
 # → REPRODUCED / NOT_REPRODUCED, run-1/evidence.png, run-1/state.json, REPRO.json
+# 공유 서버를 쓰려면 --player-url http://127.0.0.1:43100, 산출물 위치를 바꿨으면 --games-dir DIR
 ```
 
 - `--ops` 는 **JSON 배열 · `{ops:[…]}` · actions.jsonl** 셋 다 받는다. `--lines 3-7` 로 로그 토막을 그대로 재생한다.
@@ -172,6 +181,10 @@ npm run qa:runtime -- --scenario saesol-enter-field
   --disable-features=NetworkChangeNotifier`)를 그대로 써라. 빼면 긴 세션에서 백지가 산발한다.
 - **세션을 백그라운드로 띄워라.** `serve` 는 살아 있는 동안만 유효하다. 셸이 끝나면 함께 죽으므로
   `setsid nohup … &` 또는 백그라운드 세션으로 띄운다. `qp.ready` 가 없으면 붙을 수 없다.
+- **한 상자에 세션을 여러 개 띄울 때는 `player-server.mjs` 하나 + `--player-url`.** 세션마다 vite dev
+  서버를 띄우면 10개가 같은 `node_modules/.vite` 캐시를 서로 덮어쓰며 죽는다. 실측: 공유 서버 하나 +
+  saesol-red 세션 둘 동시 → 둘 다 필드(`map_variety_ridge` 13,26) 도달, `errors: none`.
+  공유 서버를 죽이면 붙어 있던 세션은 다음 명령에서 실패한다 — 먼저 띄우고 마지막에 내려라.
 - **타이틀 부팅은 30~60초 걸린다.** 첫 `state` 가 `screen=title` 인 것은 정상이다. 필드 진입은
   `key Enter` → `waitTestid runtime-state-json present 60000` 순서로 확인해라(고정 `wait` 로 넘기지 마라).
 - **타이틀 입장 시퀀스가 있는 게임은 Enter 를 두 번 눌러야 한다.** 첫 입력은 메뉴 확정이 아니라 시퀀스
@@ -198,6 +211,7 @@ npm run qa:runtime -- --scenario saesol-enter-field
 | 파일 | 역할 |
 |---|---|
 | `qp.mjs` | 세션 CLI(serve + 명령 클라이언트) |
+| `player-server.mjs` | 여러 세션이 함께 쓰는 player-QA 서버 하나(`ready <url>` 출력 후 유지) |
 | `repro.mjs` | op 목록 재생 + 증상 판정 |
 | `to-scenario.mjs` | 재현 → `scripts/qa/runtime/<id>.scenario.mjs` |
 | `build-games.mjs` | 카탈로그 materialize + 부팅 스모크 |

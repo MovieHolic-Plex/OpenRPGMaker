@@ -74,7 +74,7 @@ async function readCatalog() {
 }
 
 /** --game 은 게임 id 이거나 프로젝트 파일 경로다. */
-async function resolveGame(spec, { outRoot }) {
+async function resolveGame(spec, { outRoot, gamesDir }) {
   if (!spec) fail("--game <id|path> 가 필요하다");
   const asPath = resolve(REPO_ROOT, spec);
   if (existsSync(asPath) && !existsSync(join(asPath, "project.json"))) {
@@ -84,6 +84,8 @@ async function resolveGame(spec, { outRoot }) {
   const entry = (catalog.games ?? []).find((game) => game.id === spec);
   if (!entry) fail(`모르는 게임: ${spec} — scripts/qa/play/games.json 을 보거나 경로를 줘라`);
   const candidates = [
+    // --games-dir: build-games 를 다른 자리에 돌렸을 때 그 산출물에서 찾는다.
+    gamesDir ? join(gamesDir, entry.id, "project.json") : null,
     join(outRoot, entry.id, "project.json"),
     // build-games 의 기본 산출물 자리 — 세션을 다른 --out 으로 띄워도 게임은 여기 있다.
     join(REPO_ROOT, "tmp/qp/games", entry.id, "project.json"),
@@ -117,8 +119,27 @@ function sanitize(name) {
 
 async function serve(flags) {
   const outRoot = flags.out ? resolve(REPO_ROOT, String(flags.out)) : DEFAULT_OUT_ROOT;
-  const game = await resolveGame(flags.game, { outRoot });
+  const gamesDir = flags["games-dir"] ? resolve(REPO_ROOT, String(flags["games-dir"])) : null;
+  const game = await resolveGame(flags.game, { outRoot, gamesDir });
   const dir = sessionDirFor(flags, game.id);
+  // 같은 세션 디렉터리에 살아 있는 세션이 있으면 그 actions.jsonl 을 지우지 않는다 — 로그가 곧
+  // 재생 스크립트라 덮어쓰면 증거가 사라진다. 동시 세션은 각자 --out 을 준다.
+  const readyPath = join(dir, "qp.ready");
+  if (existsSync(readyPath)) {
+    try {
+      const previous = JSON.parse(await readFile(readyPath, "utf8"));
+      if (previous.pid && previous.pid !== process.pid) {
+        let alive = true;
+        try { process.kill(previous.pid, 0); } catch { alive = false; }
+        if (alive) {
+          fail(`${dir} 에 이미 살아 있는 세션이 있다(pid ${previous.pid}) — --out 을 다르게 주거나 그 세션을 quit 해라`);
+        }
+      }
+    } catch (error) {
+      if (String(error?.message ?? error).includes("이미 살아 있는")) throw error;
+      // 깨진 qp.ready 는 그냥 덮어쓴다.
+    }
+  }
   await mkdir(join(dir, "shots"), { recursive: true });
   const actionsPath = join(dir, "actions.jsonl");
   await writeFile(actionsPath, "");
@@ -128,7 +149,20 @@ async function serve(flags) {
   const boot = await prepareBoot({
     projectFile: game.file, entry: game.entry, dir, keepOpening: flags["keep-opening"] === true,
   });
-  const playerServer = await startPlayerQaServer(flags.port ? { port: Number(flags.port) } : {});
+  // 공유 서버: 한 상자에서 세션 여러 개를 띄울 때 vite dev 서버를 세션마다 만들면 같은
+  // node_modules/.vite 캐시를 서로 덮어쓴다. --player-url 로 이미 떠 있는 서버에 붙는다.
+  const sharedUrl = flags["player-url"] ? String(flags["player-url"]).replace(/\/$/, "") : null;
+  if (sharedUrl && !/^http:\/\/127\.0\.0\.1:\d+$/.test(sharedUrl)) {
+    fail(`--player-url 은 http://127.0.0.1:<port> 여야 한다: ${sharedUrl}`);
+  }
+  if (sharedUrl) {
+    // 죽은 주소에 붙이면 부팅 180초를 기다린 뒤 알 수 없는 오류로 끝난다 — 지금 확인한다.
+    const probe = await fetch(`${sharedUrl}/player.html`, { method: "HEAD" }).catch(() => null);
+    if (!probe?.ok) fail(`--player-url 에 플레이어 서버가 없다(${sharedUrl}) — player-server.mjs 를 먼저 띄워라`);
+  }
+  const playerServer = sharedUrl
+    ? { url: sharedUrl, port: Number(sharedUrl.split(":").pop()), shared: true, close: async () => undefined }
+    : await startPlayerQaServer(flags.port ? { port: Number(flags.port) } : {});
   const browser = await launchPlayBrowser({ headless: flags.headed !== true });
   const context = await browser.newContext({ viewport });
   const page = await context.newPage();
@@ -337,6 +371,7 @@ async function serve(flags) {
     pid: process.pid,
     port: controlPort,
     playerUrl: playerServer.url,
+    playerServerShared: playerServer.shared === true,
     viewport,
     seed,
     startedAt: new Date().toISOString(),
@@ -379,7 +414,7 @@ async function main() {
   if (!subcommand || subcommand === "--help" || subcommand === "help") {
     process.stdout.write(
       "qp — 출하 플레이어 세션 CLI\n"
-      + "  serve --game <id|path> [--port P] [--out DIR] [--viewport WxH] [--seed N] [--headed] [--keep-opening]\n"
+      + "  serve --game <id|path> [--port P] [--player-url URL] [--games-dir DIR] [--out DIR] [--viewport WxH] [--seed N] [--headed] [--keep-opening]\n"
       + "  key <k> | action | face <dir> | hold <k> <ms> | move <up|down|left|right> [n] | click <x> <y> | clickTestid <id>\n"
       + "  wait <ms> | waitText <text> [timeoutMs] | waitTestid <id> [present|absent|visible] [timeoutMs]\n"
       + "  shot <name> | state | errors | teleport <mapId> <x> <y> | seed <n> | resize <W> <H> | reset | quit\n",
