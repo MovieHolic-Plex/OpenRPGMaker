@@ -631,12 +631,12 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
   const extras: string[] = []; for (let n = 2 + Math.floor(rnd() * 3); n > 0 && extraPool.length; n--) extras.push(extraPool.splice(Math.floor(rnd() * extraPool.length), 1)[0]!);
   let basePieces = [face, ...quarter.pieces.slice(1), ...extras];
   // r11: 광산 두 seed 가 같은 제련 오두막·둔덕·광석 더미 «거울 도장»이었다 — 집은 넷(제련 오두막·판자 광부집·돌 기초 창고·통나무 오두막) 중 하나,
-  // 나머지 마당 조각은 맵마다 4~6개만 섞어 고른다(갱구는 늘).
+  // 나머지 마당 조각은 맵마다 7~9개를 섞어 고른다(갱구는 늘; r12 전 점검: 4~6개면 20×12 마당이 빈 흙판으로 읽혔다).
   if (plazaBox && quarterId === "mining") {
     const homes = ["bd-pick-mining-valley-smelt", "bd-pick-mining-valley-d2", "bd-pick-mining-valley-s2", "bd-pick-mining-valley-d1"].filter((id) => kitSize(draft, quarter.tilesetId, id));
-    const rest = basePieces.slice(1).filter((id) => id !== "bd-pick-mining-valley-smelt");
+    const rest = [...new Set(basePieces.slice(1))].filter((id) => !homes.includes(id));
     for (let i = rest.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [rest[i], rest[j]] = [rest[j]!, rest[i]!]; }
-    basePieces = [face, ...(homes.length ? [homes[Math.floor(rnd() * homes.length)]!] : []), ...rest.slice(0, 4 + Math.floor(rnd() * 3))];
+    basePieces = [face, ...(homes.length ? [homes[Math.floor(rnd() * homes.length)]!] : []), ...rest.slice(0, 7 + Math.floor(rnd() * 3))];
   }
   const order = plazaBox
     ? [face, ...basePieces.slice(1).map((id) => { const z = kitSize(draft, quarter.tilesetId, id); return { id, r: (z ? z.w * z.h : 0) * (0.4 + 1.2 * rnd()) }; }).sort((a, b) => b.r - a.r).map((o) => o.id)]
@@ -644,7 +644,8 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
   // 되풀이 조각(포도밭 이랑 둘)은 맵마다 하나 또는 둘 — 같은 덩이가 늘 같은 구성으로 읽히지 않게(빈자리는 압착기·통 선반이 쓴다).
   if (plazaBox && quarter.yard?.pack === "corner" && oneOfDup) { const dup = order.findIndex((id, i) => order.indexOf(id) !== i); if (dup > 0) order.splice(dup, 1); }
   // 마당이 있는 다른 덩이(신전 폐허): 되풀이 조각 몇 개를 맵마다 다르게 뺀다 — r2 에서 두 맵이 같은 도장으로 읽혔다.
-  if (plazaBox && quarter.yard?.pack !== "corner") {
+  // r12 전 점검: 광산은 위에서 이미 맵마다 골라 섞었다 — 여기서 또 빼면 집(제련 오두막 등)까지 빠져 마당이 빈 흙판이 됐다.
+  if (plazaBox && quarter.yard?.pack !== "corner" && quarterId !== "mining") {
     for (let n = 0; n < 2; n++) if (rnd() < 0.6) { const dups = order.map((id, i) => (i > 0 && order.indexOf(id) !== i ? i : -1)).filter((i) => i > 0); if (dups.length) order.splice(dups[Math.floor(rnd() * dups.length)]!, 1); }
     // r5: 두 맵이 같은 조각 묶음이었다 — 얼굴(첫 조각) 말고 1~3개를 맵마다 다르게 더 뺀다.
     for (let n = 1 + Math.floor(rnd() * 3); n > 0 && order.length > 6; n--) order.splice(1 + Math.floor(rnd() * (order.length - 1)), 1);
