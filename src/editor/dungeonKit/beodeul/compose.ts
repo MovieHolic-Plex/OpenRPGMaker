@@ -675,10 +675,9 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         else warnings.push("입구 방 바닥에 내려가는 계단을 놓을 자리가 없다.");
       } else {
         s = flatWall(r, centerFirst);
-        if (s && entryKind === "door") {
-          entryStair = wallDoor(s);
-          if (!entryStair) s = null;
-        } else if (s) {
+        if (s && entryKind === "door") entryStair = wallDoor(s);
+        // 문 그림을 못 걸면 계단으로 — 입구가 아예 없는 것보다 낫다.
+        if (s && entryKind === "door" && entryStair) { /* 문 */ } else if (s) {
           entryStair = wallStairs(s);
           stairsUp = { x: entryStair.x, y: entryStair.y, front: entryStair.front };
           counts["stairs-up"] = 1;

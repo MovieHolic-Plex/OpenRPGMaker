@@ -50,7 +50,7 @@ const TYPE_WORDS: readonly [DungeonType, RegExp][] = [
 ];
 
 /** 테마 낱말이 없는 「던전」의 종류 후보 — 늘 지하묘지였다(2026-10-23 사용자 「던전 만들어 줘가 늘 비슷하다」). 무작위로 하나. */
-const PLAIN_TYPES: readonly DungeonType[] = ["catacomb", "castle", "labyrinth", "sewer", "temple", "mine"];
+const PLAIN_TYPES: readonly DungeonType[] = ["catacomb", "castle", "sewer", "temple", "mine"]; // 미궁은 판이 늘 같은 틀이라 뺐다
 
 function pickType(spec: PlaceSpec, text: string, keep?: DungeonType): DungeonType {
   const hinted = String(spec.hints?.type ?? "");
