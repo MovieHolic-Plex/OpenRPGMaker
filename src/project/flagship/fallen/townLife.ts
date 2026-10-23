@@ -137,7 +137,7 @@ function findContainers(project: Project, map: GameMap, walkable: (x: number, y:
       for (const layer of layers) {
         const t = layer?.[y * map.width + x] ?? -1;
         if (t < 0) continue;
-        const l = (meta[t]?.label ?? "").replace(/^버들항 · /, "").replace(/\s*\(\s*\d+\s*,\s*\d+\s*\)\s*/g, " ").replace(/\s+/g, " ").trim();
+        const l = (meta[t]?.label ?? "").replace(/^버들항 · /, "").replace(/\s*\(\s*\d+\s*,\s*\d+\s*\)\s*/g, " ").replace(/\s*\([^)]*\)/g, "").replace(/\s*\d+\s*[×x]\s*\d+/g, "").replace(/\s+/g, " ").trim();
         if (FURNITURE.test(l) && !NOT_FURNITURE.test(l)) { label = l; break; }
       }
       if (!label) continue;
@@ -151,16 +151,22 @@ function findContainers(project: Project, map: GameMap, walkable: (x: number, y:
   return found;
 }
 
+/** 받침 유무로 조사를 고른다(을/를·은/는·이/가). */
+function josa(word: string, withBatchim: string, without: string): string {
+  const ch = word.trim().charCodeAt(word.trim().length - 1);
+  const hangul = ch >= 0xac00 && ch <= 0xd7a3;
+  return hangul && (ch - 0xac00) % 28 !== 0 ? withBatchim : without;
+}
 const narrate = (body: string): Command => ({ kind: "text", body, context: "narration", position: "bottom" } as Command);
 const say = (speaker: string, body: string): Command => ({ kind: "text", speaker, body } as Command);
 
 function lootCommands(project: Project, loot: Loot, label: string): Command[] {
-  if (loot.kind === "empty") return [narrate(`${label}을(를) 뒤져 봤지만 먼지뿐이다. 비어 있다.`)];
+  if (loot.kind === "empty") return [narrate(`${label}${josa(label, "을", "를")} 뒤져 봤지만 먼지뿐이다. 비어 있다.`)];
   if (loot.kind === "gold") {
     return [narrate(`${label} 바닥에서 ${loot.amount}G 를 찾았다.`), { kind: "changeGold", op: "+=", amount: loot.amount } as Command];
   }
   const name = project.database.items?.find((i) => i.id === loot.itemId)?.name ?? loot.itemId;
-  return [narrate(`${label}에서 「${name}」을(를) 찾았다.`), { kind: "changeItem", itemId: loot.itemId, op: "+=", amount: 1 } as Command];
+  return [narrate(`${label}에서 「${name}」${josa(name, "을", "를")} 찾았다.`), { kind: "changeItem", itemId: loot.itemId, op: "+=", amount: 1 } as Command];
 }
 
 function ensureSwitch(project: Project, id: string, name: string): void {
@@ -206,7 +212,7 @@ function containerEvent(
       {
         id: `${id}_p1`, name: "이미 뒤짐", conditions: [{ kind: "selfSwitch", key: "A", value: true }], graphic: { transparent: true },
         movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "same", trigger: { kind: "action" },
-        commands: [narrate(`${label}은(는) 이미 뒤져 봤다. 더 나올 것이 없다.`)],
+        commands: [narrate(`${label}${josa(label, "은", "는")} 이미 뒤져 봤다. 더 나올 것이 없다.`)],
       },
     ],
   } as unknown as GameMap["events"][number];

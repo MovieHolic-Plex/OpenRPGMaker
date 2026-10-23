@@ -20,7 +20,7 @@ const HERO_CHECKPOINT = {
   id: "fs-townlife-start",
   mapId: "fs_hub", x: 32, y: 22, facing: "up",
   switches: { sw_fs_main_started: true, sw_fs_main_step0: true },
-  party: [{ actorId: "actor_hero", level: 6 }, { actorId: "actor_fs_elena", level: 6 }],
+  party: [{ actorId: "actor_hero", level: 6 }],
   gold: 100,
 };
 
@@ -48,7 +48,9 @@ async function boot(browser, serverUrl, checkpoint, { video = false } = {}) {
   await page.waitForTimeout(2500);
   const intro = [];
   await drain(page, intro, { pace: 300 });
-  if (intro.length) facts.boots[facts.boots.length - 1].introDrained = intro;
+  const settled = await settle(page);
+  facts.boots[facts.boots.length - 1].introDrained = intro;
+  facts.boots[facts.boots.length - 1].settleIters = settled;
   return { page, context, startedAt: t0 };
 }
 
@@ -73,7 +75,7 @@ async function drain(page, texts, { pace = 350, max = 80 } = {}) {
     if (info.shop) return "shop";
     if (info.box === null || info.choices) {
       await page.waitForTimeout(500);
-      const again = await page.evaluate(() => !!document.querySelector('[data-testid="dialogue-box"]') || !!document.querySelector('[data-testid="shop-scene"]'));
+      const again = await page.evaluate(() => !!document.querySelector('[data-testid="dialogue-box"]') || !!document.querySelector('[data-testid="shop-scene"]') || window.__oprnHooksScene?.running === true);
       if (!again) return "done";
       continue;
     }
@@ -86,7 +88,36 @@ async function drain(page, texts, { pace = 350, max = 80 } = {}) {
   return "max";
 }
 
+// 이벤트(시작 포고문 등)가 끝날 때까지 Enter 로 넘긴다. scene.running 이 true 면 action 이 조용히 버려진다.
+async function settle(page, max = 200) {
+  for (let i = 0; i < max; i++) {
+    const info = await page.evaluate(() => ({
+      running: window.__oprnHooksScene?.running === true,
+      box: !!document.querySelector('[data-testid="dialogue-box"]'),
+      shop: !!document.querySelector('[data-testid="shop-scene"]'),
+    }));
+    if (!info.running || info.shop) return i;
+    if (info.box) await page.keyboard.press("Enter", { delay: 200 });
+    await page.waitForTimeout(400);
+  }
+  return -1;
+}
+
+// 방향키를 눌러 걷는다(playerRoute 는 닿음(playerTouch) 문을 못 건드린다). stopOn 이 참이 되거나 ms 가 지나면 뗀다.
+async function walkKey(page, key, ms, stopOnMapChange = false) {
+  const from = await page.evaluate(() => window.__oprnDebug.readState().currentMapId);
+  await page.keyboard.down(key);
+  const t0 = Date.now();
+  while (Date.now() - t0 < ms) {
+    await page.waitForTimeout(80);
+    if (stopOnMapChange && (await page.evaluate(() => window.__oprnDebug.readState().currentMapId)) !== from) break;
+    if (await page.evaluate(() => !!document.querySelector('[data-testid="dialogue-box"]'))) break;
+  }
+  await page.keyboard.up(key);
+}
+
 async function placeAt(page, mapId, x, y, dir) {
+  await settle(page);
   await page.evaluate(([m, px, py, d]) => { window.__oprnInput.face(d); window.__oprnDebug.teleport(m, px, py); }, [mapId, x, y, dir]);
   await page.waitForTimeout(700);
   await page.evaluate((d) => window.__oprnInput.face(d), dir);
@@ -227,7 +258,7 @@ try {
     await page.waitForTimeout(1500);
     mark("tStart");
     const hubBefore = await state(page);
-    await page.evaluate(() => window.__oprnDebug.playerRoute([{ kind: "move", dir: "up" }, { kind: "move", dir: "up" }]));
+    await walkKey(page, "ArrowUp", 4000, true);
     await page.waitForFunction(() => window.__oprnDebug.readState().currentMapId === "fs_lisa_home", null, { timeout: 20_000 });
     await page.waitForTimeout(1500);
     facts.caught.enterLisa = await state(page).then((s) => [s.map, s.x, s.y]);
@@ -258,7 +289,7 @@ try {
     const refusal = [];
     await placeAt(page, "fs_hub", 32, 22, "up");
     await page.waitForTimeout(1000);
-    await page.evaluate(() => window.__oprnDebug.playerRoute([{ kind: "move", dir: "up" }]));
+    await walkKey(page, "ArrowUp", 1000);
     await page.waitForTimeout(900);
     await drain(page, refusal, { pace: 1700 });
     await page.waitForTimeout(1500);
@@ -287,7 +318,7 @@ try {
     // 문 거절 재확인
     const refusal = [];
     await placeAt(page, "fs_hub", 32, 22, "up");
-    await page.evaluate(() => window.__oprnDebug.playerRoute([{ kind: "move", dir: "up" }]));
+    await walkKey(page, "ArrowUp", 1000);
     await page.waitForTimeout(900);
     await drain(page, refusal, { pace: 350 });
     const s1 = await state(page);
@@ -344,8 +375,17 @@ try {
     // 여관 — 든든한 빵의 「휴식 때까지」 효과가 풀리는지
     facts.inn.before = (await stateIds(page)).actor_hero ?? [];
     await placeAt(page, "fs_inn", 16, 14, "up");
+    for (let k = 0; k < 4; k++) { await page.keyboard.press("Escape", { delay: 100 }); await page.waitForTimeout(250); }
+    await settle(page);
     await page.evaluate(() => window.__oprnInput.action());
-    await page.waitForSelector('[data-testid="inn-stay"]', { timeout: 20_000 });
+    for (let k = 0; k < 40; k++) {
+      const st = await page.evaluate(() => ({ stay: !!document.querySelector('[data-testid="inn-stay"]'), box: !!document.querySelector('[data-testid="dialogue-box"]') }));
+      if (st.stay) break;
+      if (st.box) await page.keyboard.press("Enter", { delay: 200 });
+      await page.waitForTimeout(500);
+    }
+    await page.screenshot({ path: resolve(out, "inn.png") }).catch(() => {});
+    await page.waitForSelector('[data-testid="inn-stay"]', { timeout: 5_000 });
     await page.evaluate(() => document.querySelector('[data-testid="inn-stay"]').click());
     await page.waitForTimeout(1500);
     facts.inn.after = (await stateIds(page)).actor_hero ?? [];
