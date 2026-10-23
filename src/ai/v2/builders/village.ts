@@ -81,6 +81,14 @@ const num = (v: unknown): number | undefined => (typeof v === "number" && Number
 
 function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBuildResult {
   const { args, missing, warnings } = villageArgs(spec);
+  // 같은 요청 세 번이 같은 마을이 되지 않게(2026-10-23 다양성 검수: 강가 마을 세 판이 같은 강·다리·방앗간 자리 8/10).
+  // 요청이 정하지 않은 땅 모양·숲 종류는 make_place 의 salt 로 고른다. 고치기는 명세에 남은 salt 로 같은 값을 다시 고른다.
+  if (spec.salt !== undefined && (args.theme === undefined || args.theme === "river" || args.theme === "coast")) {
+    if (args.terrain === undefined && spec.salt % 3 === 0) args.terrain = "terraces";
+    if (args.forestType === undefined) args.forestType = (["broadleaf", "conifer", "mixed"] as const)[Math.floor(spec.salt / 3) % 3];
+    // 맵 크기가 블록 격자를 정한다 — 같은 형태라도 가로·세로가 다르면 집·광장·밭 자리가 달라진다.
+    if (args.width === undefined && args.height === undefined) { const [w, h] = ([[42, 34], [50, 32], [38, 40]] as const)[Math.floor(spec.salt / 9) % 3]!; args.width = w; args.height = h; }
+  }
   const prev = previous?.result.state as VillageState | undefined;
   const mapId = targetMapId(run, spec, previous);
   const variant = num(spec.hints?.variant);
