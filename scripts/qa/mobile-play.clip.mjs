@@ -20,7 +20,7 @@ const W = 844, H = 390;
 mkdirSync(OUT, { recursive: true });
 const cps = JSON.parse(readFileSync(join(REPO, "scripts/qa/runtime/checkpoints/fallen-star.json"), "utf8")).checkpoints;
 const cp = (id) => cps.find((c) => c.id === id);
-const SHOP = { ...cp("hub-start"), id: "shop-apothecary", mapId: "fs_apothecary", x: 15, y: 14, facing: "up", items: { item_potion: 2 } };
+const SHOP = { ...cp("hub-start"), id: "shop-apothecary", mapId: "fs_apothecary", x: 15, y: 14, facing: "up", items: { item_potion: 2 }, gold: 500 };
 const SEGS = [["1-title", null], ["2-dialogue", cp("hub-start")], ["3-shop", SHOP], ["4-battle", cp("boss")]];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const has = (page, sel) => page.evaluate((s) => !!document.querySelector(s), sel);
@@ -83,17 +83,24 @@ async function seg(browser, server, name, checkpoint) {
       for (let i = 0; i < 8 && !(await has(page, "[data-testid='shop-scene']")); i++) await tapSel(page, "[data-testid='dialogue-box']", "dialogue");
       await sleep(1200);
       console.log("shop ids:", JSON.stringify(await page.evaluate(() => [...document.querySelectorAll("[data-testid^='shop-']")].map((e) => e.dataset.testid).slice(0, 30))));
-      await tapText(page, /potion|포션|회복약/i); await sleep(900);
-      await tapText(page, /buy|구매|구입|사기/i); await sleep(1200);
-      await tapSel(page, "[data-testid='shop-confirm']", "confirm"); await sleep(1500);
+      await sleep(1500);
+      const ids = async () => JSON.stringify(await page.evaluate(() => [...document.querySelectorAll("[data-testid^='shop-'], .runtime-shop-item-row")].filter((e) => e.getBoundingClientRect().width > 4).map((e) => e.dataset.testid || e.className).slice(0, 24)));
+      console.log("shop rows:", await ids());
+      await tapSel(page, "[data-testid='shop-mode-buy']", "buy tab"); await sleep(1500);
+      console.log("after buy tab:", await ids());
+      await tapSel(page, ".runtime-shop-item-row", "row"); await sleep(1000);
+      console.log("after row:", await ids());
+      await tapSel(page, ".runtime-shop-item-row", "row again"); await sleep(1200);
+      console.log("after row2:", await ids());
+      await tapSel(page, "[data-testid='shop-confirm'], [data-testid='shop-qty-confirm'], .runtime-shop-confirm", "confirm"); await sleep(1500);
     }
     if (name === "4-battle") {
       await tapSel(page, "[data-testid='dialogue-box']", "dialogue");
       for (let i = 0; i < 30 && !(await has(page, "[data-testid='battle-scene']")); i++) await tapSel(page, "[data-testid='dialogue-box']", "dialogue");
       await sleep(3500);
       console.log("battle cmds:", JSON.stringify(await page.evaluate(() => [...document.querySelectorAll("[data-testid^='battle-']")].map((e) => e.dataset.testid).slice(0, 30))));
-      await tapText(page, /attack|공격|싸운다|싸우기/i); await sleep(1200);
-      await tapText(page, /goblin|slime|enemy|적|보스/i); await sleep(4500);
+      await tapSel(page, "[data-testid='actor-command-attack']", "attack"); await sleep(1200);
+      await tapSel(page, "[data-testid^='battle-target-']", "target"); await sleep(5000);
     }
   }
   await sleep(1200);
@@ -104,6 +111,6 @@ async function seg(browser, server, name, checkpoint) {
 }
 const server = await startPlayerQaServer();
 const browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
-try { for (const [n, c] of SEGS) { try { await seg(browser, server, n, c); } catch (e) { console.log("seg", n, "FAIL", String(e.message ?? e).slice(0, 160)); } } }
+try { for (const [n, c] of SEGS.filter(([n]) => !arg("only", "") || arg("only", "").split(",").includes(n))) { try { await seg(browser, server, n, c); } catch (e) { console.log("seg", n, "FAIL", String(e.message ?? e).slice(0, 160)); } } }
 finally { await browser.close(); await server.close(); }
 console.log("done", OUT);
