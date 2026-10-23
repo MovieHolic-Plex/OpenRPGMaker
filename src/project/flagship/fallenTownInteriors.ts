@@ -8,6 +8,7 @@
 import { runTool } from "@/editor/tools/toolRunner";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { GameMap, Project } from "@/project/types";
+import { fallenBakeryStock, fallenSmithyStock } from "./fallen/townLife";
 import { isPassable } from "@/project/collision";
 
 type Cell = { x: number; y: number };
@@ -32,6 +33,8 @@ type Home = {
     readonly behindCounter?: boolean;
     /** 서 있을 칸을 정해 둔다(쓰임 있는 자리 — 별지기는 별 렌즈 곁). 걸을 수 없거나 막히면 무시하고 빈 칸을 고른다. */
     readonly at?: Cell;
+    /** 제자리에 서 있다(주변을 살피는 파수 — 리사가 서랍을 뒤지는 손님을 지켜본다). */
+    readonly fixed?: boolean;
     readonly lines: readonly string[]; readonly after: readonly string[];
     readonly commands?: readonly Record<string, unknown>[];
   }[];
@@ -134,6 +137,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
           id: "ev_fs_baker_husband", name: "빵집 아저씨 토마", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people1", 4], behindCounter: true,
           lines: ["아내는 광장에 나가 있어요. 별이 떨어진 밤엔 반죽이 안 부푼다던데… 미신이겠죠.", "그래도 오늘 새벽 반죽은 정말 안 부풀었어요."],
           after: ["기계 아가씨가 빵을 먹나요? …먹는 흉내라도 낸다면 하나 싸 줄게요."],
+          commands: [{ kind: "shop", shopType: "normal", itemIds: fallenBakeryStock(project), allowSell: true }],
         },
       ],
     },
@@ -185,9 +189,23 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
         ["roundtable", 15, 14], ["stool", 14, 14], ["stool", 16, 14]],
       people: [
         {
-          id: "ev_fs_lisa", name: "리사", query: "젊은 여성", chip: ["tex_easyrpg_charset_people3", 3],
-          lines: ["심문관 발렌이 왔다면서요. 교단은 그 별을 「불경한 하늘의 물건」이라 부른대요.", "우리 애가 밤새 창밖만 보더라고요. 별이 노래를 부른다나요."],
+          id: "ev_fs_lisa", name: "리사", query: "젊은 여성", chip: ["tex_easyrpg_charset_people3", 3], at: { x: 9, y: 14 }, fixed: true,
+          lines: ["심문관 발렌이 왔다면서요. 교단은 그 별을 「불경한 하늘의 물건」이라 부른대요.", "우리 애가 밤새 창밖만 보더라고요. 별이 노래를 부른다나요.", "…그리고 손님, 서랍이나 옷장은 건드리지 마세요. 이 방은 내가 계속 보고 있으니까요."],
           after: ["그 은빛 머리 아가씨, 숨기는 게 좋을 거예요. 심문관은 한 번 본 얼굴은 잊지 않는대요."],
+        },
+      ],
+    },
+    {
+      door: { x: 29, y: 42 }, mapId: "fs_smithy", name: "아스텔 · 대장간", bgm: "cc0-bgm-rtp-caf-001",
+      // 무기 진열 가게(검·창 걸이·계산대) + 불 때는 대장간 방(모루·화로).
+      layout: { rooms: [{ kind: "weapon_shop", w: 14, h: 6 }, { kind: "forge" }], seed: 33, variant: 0, styleVariant: "A" },
+      people: [
+        {
+          id: "ev_fs_smith", name: "대장장이 로한", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people1", 0], behindCounter: true,
+          lines: ["…뭘 보나. 검이든 창이든 쓸 놈으로만 골라 놨다. 검은 다루기 쉽고, 창은 한 걸음 더 멀리 닿지.",
+            "심문회가 칼을 갈러 왔었지. 나는 이제 그쪽 일은 안 한다. 쇠 값은 아침마다 오르는 판이다."],
+          after: ["…그 아이, 사람이 아니라지. 쇳소리가 난다. 고장난 쇳소리는 아니구나. 목숨 걸 거면 제대로 된 걸 들어라."],
+          commands: [{ kind: "shop", shopType: "normal", itemIds: fallenSmithyStock(project), allowSell: true }],
         },
       ],
     },
@@ -347,7 +365,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
         };
         const direction = counter ? "down" : toward();
         page.graphic = { ...page.graphic, sprite: { type: "bundled", id: person.chip[0] }, direction, pattern: charsetFrameIndex({ characterIndex: person.chip[1], direction, pattern: 1 }) };
-        if (counter) page.movement = { type: "fixed", speed: 3, frequency: 3 };
+        if (counter || person.fixed) page.movement = { type: "fixed", speed: 3, frequency: 3 };
       }
       if (counter) {
         // 계산대 칸에 투명한 대리 이벤트 — 손님이 계산대를 보고 말을 걸면 주인의 대사·가게가 열린다.
@@ -488,6 +506,7 @@ function dressShopFronts(project: Project, hubId: string, homes: readonly Home[]
     fs_inn: ["bd-prop-table_mugs", "bd-prop-sword_barrel"],
     fs_apothecary: ["bd-pick-wizard-tower-herb-rack", "bd-pick-wizard-tower-bed-herb"],
     fs_bakery_home: ["bd-prop-bread_rack", "bd-prop-sandwich_board"],
+    fs_smithy: ["bd-prop-sword_barrel", "bd-pick-castle-catacombs-anvil-table"],
   };
   const HANGING_SIGN = 23605;
   // 잠긴 집이 가게 간판(걸이 간판 10287)·차양 진열창(6046)을 달고 있으면 손님은 그 문을 두드리고 「굳게 잠겨 있다」를 듣는다 —

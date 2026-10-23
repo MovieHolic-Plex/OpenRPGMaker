@@ -69,6 +69,7 @@ export function playInn(scene: PlaySceneContext, step: InnStep): Promise<InnOutc
         recoverPartyVitals(scene.session.actorVitals, scene.session.partyActorIds, {
           recoverMp: step.recoverMp !== false,
         });
+        clearRestEndedStates(scene);
         scene.syncRuntimeState();
         void playInnRest(scene, overlay, step, text, () => resolve("stayed"));
       },
@@ -345,4 +346,17 @@ function delay(scene: PlaySceneContext, ms: number): Promise<void> {
   return new Promise((resolve) => {
     scene.time.delayedCall(ms, () => resolve());
   });
+}
+
+/** 상태의 해제 조건에 「휴식」이 들어 있으면(빵의 힘이 오른다 등) 여관에서 묵을 때 풀린다 — 상태 정의가 정한다. */
+function clearRestEndedStates(scene: { session: { actorStateIds?: Record<string, string[]>; partyActorIds: string[] } }): void {
+  const held = scene.session.actorStateIds;
+  if (!held) return;
+  const states = store.getCurrent().database.states ?? [];
+  const ending = new Set(states.filter((st) => /휴식/.test(st.removalCondition ?? "")).map((st) => st.id));
+  if (!ending.size) return;
+  for (const actorId of scene.session.partyActorIds) {
+    const list = held[actorId];
+    if (list?.length) held[actorId] = list.filter((id) => !ending.has(id));
+  }
 }
