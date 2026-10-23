@@ -175,18 +175,51 @@ export function planSewer(spec: { size?: "small" | "medium" | "large"; width?: n
  * 2026-10-23(assistant-dungeons-2): 통로를 위아래 4·옆 2칸으로 줄이고 보물 방을 성소 뒤가 아니라 옆에 붙였다 — 세로로 길게 늘어선
  * 십자형이라 맵의 57%가 검은 허공이었다. 신랑도 17×19 → 15×13(맨바닥이 넓었다).
  */
-export function planTemple(spec: { size?: "small" | "medium" | "large"; width?: number; height?: number; seed?: number; flooded?: boolean }): DungeonRoomInput[] {
+export function planTemple(spec: { size?: "small" | "medium" | "large"; width?: number; height?: number; seed?: number; flooded?: boolean; layout?: "linear" | "hub" | "loop" | "vertical" }): DungeonRoomInput[] {
   const n = sized(spec);
   // 잠긴 신전은 본당·예배실을 한 단 크게 — 물이 차지하는 방이라 맨바닥이 남지 않고, 작은 방 안쪽(회랑 2칸 안)은 둥근 못을 담기에 좁아 네모 수조로 읽혔다(2026-10-23 dg2-r4 VQA).
   const f = spec.flooded === true;
+  // 2026-10-23 dungeon-themes: 「고대 유적」「덩굴 덮인 신전」 두 요청이 칸 하나 다르지 않은 같은 신전이었다 — 배치 가족과 시드로 뼈대·크기를 가른다.
+  //   hub = 십자(본당 양옆 예배실) · linear = 긴 참배 축(전실 → 본당 → 지성소, 곁방은 한쪽씩 엇갈려) · loop = 무너진 회랑(지성소가 축에서 비켜나고 한쪽 날개가 묘실).
+  const random = rng((spec.seed ?? 7) * 7349 + 11);
+  const fam = spec.layout && spec.layout !== "vertical" ? spec.layout : (["linear", "hub", "loop"] as const)[Math.abs(((spec.seed ?? 7) * 2654435761) >>> 7) % 3]!;
+  const j = (b: number) => b + 2 * Math.floor(random() * 3) - 2;
+  const side = random() < 0.5 ? "W" : "E", other = side === "W" ? "E" : "W";
+  const naveW = f ? 19 : j(15), naveH = f ? 16 : j(13), sanW = f ? 17 : j(15), sanH = f ? 12 : j(9);
+  const cw = f ? 12 : j(9), ch = f ? 12 : j(9);
+  if (fam === "linear") {
+    const rooms: DungeonRoomInput[] = [
+      { id: "porch", kind: "entrance", w: j(11), h: 6 },
+      { id: "antechamber", kind: "hall", w: j(11), h: j(7), from: "porch", dir: "N", shift: 0, len: 4 },
+      { id: "nave", kind: "nave", w: naveW, h: naveH, from: "antechamber", dir: "N", shift: 0, len: 4 },
+      { id: "sanctum", kind: "boss", w: sanW, h: sanH, from: "nave", dir: "N", shift: 0, len: 4 },
+    ];
+    if (n >= 4) rooms.push({ id: "chapel", kind: "shrine", w: cw, h: ch, from: "nave", dir: side, shift: 0, len: 2 });
+    if (n >= 6) rooms.push({ id: "vault", kind: "vault", w: 9, h: 7, from: "antechamber", dir: other, shift: 0, len: 2 });
+    if (n >= 6) rooms.push({ id: "ossuary", kind: "crypt", w: f ? 12 : j(9), h: f ? 11 : 7, from: "sanctum", dir: other, shift: 0, len: 2 });
+    return rooms;
+  }
+  if (fam === "loop") {
+    const off = (random() < 0.5 ? -1 : 1) * (3 + Math.floor(random() * 2));
+    const rooms: DungeonRoomInput[] = [
+      { id: "porch", kind: "entrance", w: 13, h: 6 },
+      { id: "nave", kind: "nave", w: naveW, h: naveH, from: "porch", dir: "N", shift: 0, len: 4 },
+      { id: "sanctum", kind: "boss", w: sanW, h: sanH, from: "nave", dir: "N", shift: off, len: 4 },
+    ];
+    if (n >= 4) rooms.push({ id: "chapel", kind: "shrine", w: cw, h: ch, from: "nave", dir: side, shift: 0, len: 2 }, { id: "ossuary", kind: "crypt", w: f ? 12 : j(10), h: f ? 12 : j(8), from: "nave", dir: other, shift: 2, len: 2 });
+    if (n >= 6) rooms.push({ id: "vault", kind: "vault", w: 9, h: 7, from: "chapel", dir: "N", shift: 0, len: 4 });
+    if (n >= 9) rooms.push({ id: "cloister", kind: "hall", w: j(11), h: 7, from: "porch", dir: other, shift: 0, len: 2 });
+    return rooms;
+  }
   const rooms: DungeonRoomInput[] = [
     { id: "porch", kind: "entrance", w: 13, h: 6 },
-    { id: "nave", kind: "nave", w: f ? 19 : 15, h: f ? 16 : 13, from: "porch", dir: "N", shift: 0, len: 4 },
-    { id: "sanctum", kind: "boss", w: f ? 17 : 15, h: f ? 12 : 9, from: "nave", dir: "N", shift: 0, len: 4 },
+    { id: "nave", kind: "nave", w: naveW, h: naveH, from: "porch", dir: "N", shift: 0, len: 4 },
+    { id: "sanctum", kind: "boss", w: sanW, h: sanH, from: "nave", dir: "N", shift: 0, len: 4 },
   ];
-  if (n >= 4) { const cw = f ? 12 : 9, ch = f ? 12 : 9; rooms.push({ id: "chapelW", kind: "shrine", w: cw, h: ch, from: "nave", dir: "W", shift: 0, len: 2 }, { id: "chapelE", kind: "shrine", w: cw, h: ch, from: "nave", dir: "E", shift: 0, len: 2 }); }
+  if (n >= 4) rooms.push({ id: "chapelW", kind: "shrine", w: cw, h: ch, from: "nave", dir: "W", shift: 0, len: 2 }, { id: "chapelE", kind: "shrine", w: cw, h: ch, from: "nave", dir: "E", shift: 0, len: 2 });
   if (n >= 6) rooms.push({ id: "vault", kind: "vault", w: 9, h: 7, from: "sanctum", dir: "W", shift: 0, len: 2 });
   if (n >= 6) rooms.push({ id: "ossuaryE", kind: "crypt", w: f ? 12 : 9, h: f ? 11 : 7, from: "sanctum", dir: "E", shift: 0, len: 2 });
+  if (n >= 9) rooms.push({ id: "cloisterW", kind: "hall", w: j(11), h: 7, from: "porch", dir: "W", shift: 0, len: 2 }, { id: "cloisterE", kind: "storage", w: 9, h: 7, from: "porch", dir: "E", shift: 0, len: 2 });
   return rooms;
 }
 

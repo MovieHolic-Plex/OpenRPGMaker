@@ -74,6 +74,8 @@ function depthOf(rooms: FloorRoom[], id: string): number {
 }
 
 interface Ctx {
+  /** 채우기(populate) 뒤에 할 맵 변경 — 다리를 걷는 일처럼, 미리 하면 채우기가 건너편 칸을 「닿지 않는 칸」으로 본다. */
+  after?: (() => void)[];
   draft: Project; map: GameMap; ts: TilesetDef; data: Record<string, unknown>; rooms: FloorRoom[]; type: DungeonType; warnings: string[];
   start: Pt;
 }
@@ -398,7 +400,9 @@ function placeBridge(c: Ctx): string {
   const placedLever = placeLever(c.draft, c.map, wallFirst(c.draft, c.map, roomCells.length ? roomCells : [leverAt]), `ev_${c.map.id}_bridge_lever`, "다리 레버", sw,
     [shake(3, 800), ...restore, sfx("stone-push"), textCmd(`쿠르릉… ${what} 위로 다리가 내려왔다!`)], `쇠사슬이 감긴 레버다. ${what} 건너편으로 다리를 내리는 장치 같다. 힘껏 당겼다!`, "레버는 이미 당겨져 있다. 다리가 내려와 있다.");
   if (!placedLever) return "";
-  for (const [i, t] of swaps) c.map.lowerTiles[i] = t;   // 레버가 선 뒤에만 다리를 걷는다(못 놓으면 맵을 건드리지 않는다)
+  // 레버가 선 뒤에만 다리를 걷는다(못 놓으면 맵을 건드리지 않는다). 걷기는 채우기 뒤로 미룬다 — 미리 걷으면 건너편 적·상자가 「닿지 않는 칸」 경고를 받았다.
+  const lift = () => { for (const [i, t] of swaps) c.map.lowerTiles[i] = t; };
+  if (c.after) c.after.push(lift); else lift();
   const xs = best.g.map((i) => `(${i % W},${(i / W) | 0})`).join(" ");
   return `${what} 다리 장치: 다리 ${xs} 는 처음엔 걷혀 있고(${best.cut ? `건너편 방 ${best.cut > 5 ? "— 보스방 포함" : `${best.cut}곳`}` : "지름길"}) ${leverRoom.id}(${placedLever.at.x},${placedLever.at.y}) ${placedLever.wall ? "벽 " : ""}레버를 당기면 내려온다(스위치 ${sw}).`;
 }
@@ -476,10 +480,12 @@ function placeChokeLever(c: Ctx): string {
 
 /** 주제 장치 하나를 놓는다. 고른 장치를 못 놓으면 그 주제의 다음 장치로. 놓은 장치와 요약 한 줄. lever 는 호출자가 placeLeverGate 로 놓는다. */
 export function placeThemeGimmick(draft: Project, map: GameMap, data: Record<string, unknown>, type: DungeonType, want: DungeonGimmick | undefined, seed: number,
-  warnings: string[], leverFallback: () => string): { gimmick: DungeonGimmick | null; line: string } {
+  warnings: string[], leverFallback: () => string): { gimmick: DungeonGimmick | null; line: string; after: () => void } {
   const ts = draft.tilesets[map.tilesetId]!;
   const entry = asCell(field(field(data, "entryStair"), "front")) ?? asCell(field(data, "entrance")) ?? { x: 0, y: 0 };
-  const c: Ctx = { draft, map, ts, data, rooms: roomsOf(data), type, warnings, start: entry };
+  const later: (() => void)[] = [];
+  const after = () => { for (const f of later.splice(0)) f(); };
+  const c: Ctx = { draft, map, ts, data, rooms: roomsOf(data), type, warnings, start: entry, after: later };
   const theme = THEME_GIMMICKS[type] ?? ["lever"];
   const order: DungeonGimmick[] = want ? [want, ...theme.filter((g) => g !== want)] : [theme[seed % Math.min(2, theme.length)]!, ...theme];
   if (!order.includes("lever")) order.push("lever");
@@ -490,9 +496,9 @@ export function placeThemeGimmick(draft: Project, map: GameMap, data: Record<str
     const line = g === "lever" ? (leverFallback() || placeChokeLever(c)) : g === "bridge" ? placeBridge(c) : g === "teleporter" ? placeTeleporter(c) : g === "minecart" ? placeMinecart(c) : g === "iceslide" ? placeIceSlide(c) : placeSandpit(c);
     if (line) {
       if (want && g !== want) warnings.push(`${map.name}: ${GIMMICK_LABEL[want]} 자리가 없어 ${GIMMICK_LABEL[g]}(으)로 바꿨다.`);
-      return { gimmick: g, line };
+      return { gimmick: g, line, after };
     }
   }
   warnings.push(`${map.name}: 주제 장치를 둘 자리가 없었다.`);
-  return { gimmick: null, line: "" };
+  return { gimmick: null, line: "", after };
 }
