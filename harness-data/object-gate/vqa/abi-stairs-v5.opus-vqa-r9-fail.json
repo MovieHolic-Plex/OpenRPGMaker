@@ -1,0 +1,16 @@
+{
+ "round": 9,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "abi-stairs-v5",
+ "images": "http://mdc-server:18301/jp-stairs-1/interior-v5/r9/kits-4x.png (+ scene 1x/3x and before/)",
+ "pieces": [
+  "stairs up stone",
+  "stairs up wood",
+  "stairs down",
+  "stairwell down"
+ ],
+ "rubric": "axis 2 (style/palette/3/4 fit) + axis 6 (1x readability incl. up/down direction)",
+ "majors": 2,
+ "verdict": "FAIL",
+ "summary": "P1 up stone yes/yes: minors (shutter-like uniform banding, cheek blocks plinth-like, rails faint).\nP2 up wood yes/yes: minors (tread/riser values close mid-flight, knot dots noise).\nP3 stairs down NO (direction yes): [major] reads as floor grate/drain at 1x — too much black, only 3 thin tread bars. minors: N rail floats over void; corner caps read as hatch frame.\nP4 stairwell down NO (direction yes): [major] reads as sideboard/balustrade at 1x, rail sits on black band. minor: first tread flat brown strip, no plank grain.\nSCENE minors: dungeon cheek merges with west wall; manor 2F stairwell flush under wainscot.\nAXIS2 7, AXIS6 5. MAJORS 2\n"
+}

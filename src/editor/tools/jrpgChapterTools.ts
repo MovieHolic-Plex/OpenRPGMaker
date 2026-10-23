@@ -1281,7 +1281,7 @@ export function buildJrpgChapter(
       gateCells.set(site.key, { from: fromKey, cell: gate.cell });
       if ("dungeon" in site) {
         // 던전 어댑터는 버들항 칩셋에만 있다 — 거점이 고딕·선사 칩셋이어도 던전 층은 버들항으로 짓는다(장마다 칩셋이 바뀌는 JRPG 지역 구성).
-        const made = nested(draft, "author_dungeon", { id: mapId, name: site.name, type: site.dungeon, size: "medium", genre: "rpg", adapter: "beodeul", seed, entrance: { fromMapId: fromId, x: gate.cell.x, y: gate.cell.y } });
+        const made = nested(draft, "author_dungeon", { id: mapId, name: site.name, type: site.dungeon, size: "medium", genre: "rpg", adapter: "beodeul", seed, populate: false, entrance: { fromMapId: fromId, x: gate.cell.x, y: gate.cell.y } });
         const rooms = list(made.data, "rooms").map(asRoom).filter((r): r is Room => !!r);
         const planned = (k: string): Cell[] => list(field(made.data, "population"), k).map(asCell).filter((c): c is Cell => !!c);
         const rects = list(made.data, "rooms").flatMap((r): RoomRect[] => {

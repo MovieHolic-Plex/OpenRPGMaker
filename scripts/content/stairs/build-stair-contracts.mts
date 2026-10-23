@@ -92,9 +92,13 @@ const SIDE_KO: Record<Side, string> = { N: "북쪽", S: "남쪽", E: "동쪽", W
 const FACING: Record<Exclude<Side, "any">, string> = { N: "북(up)", S: "남(down)", E: "동(right)", W: "서(left)" };
 function note(c: Contract): string {
   const cells = (l: Rel[]) => l.map(([x, y]) => `(${x},${y})`).join(" ");
-  const lead = c.leads === "up" ? "위층으로 오른다" : c.leads === "down" ? "아래층으로 내려간다" : "같은 맵 안의 단(층 이동 없음)";
+  const lead = c.leads === "up" ? "올라가는 계단 — 위층으로 오른다" : c.leads === "down" ? "내려가는 계단 — 아래층으로 내려간다" : "올라가는 계단 — 같은 맵 안의 단(층 이동 없음)";
+  const OPP: Record<Exclude<Side, "any">, Exclude<Side, "any">> = { N: "S", S: "N", E: "W", W: "E" };
+  const verb = c.leads === "down" ? "내려갈" : "오를";
+  const facing = c.side === "any" ? `${verb} 때 앞 칸에서 계단 쪽을 본다` : `${verb} 때 ${FACING[OPP[c.side]]}을 보고 들어선다`;
+  const arrive = c.leads === "same" ? (c.exit?.length ? "도착: 위 끝 바닥(아래 좌표)" : "도착: 단 위") : "도착: 이동 이벤트가 정한 " + (c.leads === "up" ? "위층" : "아래층") + " 칸";
   const how = c.leads === "same" ? "걸어서 올라선다" : c.mode === "walk" ? "이동 이벤트는 이동 칸(계단 그림 칸)에" : "이동 칸이 막힌 그림이라 이벤트를 이동 칸에 priority same 으로 두고 앞 칸에서 부딪힌다";
-  return `${lead}. 들어서는 쪽 ${SIDE_KO[c.side]}: 앞 칸 ${cells(c.approach)} 은 비운 바닥이어야 한다. `
+  return `${lead}. 들어서는 쪽 ${SIDE_KO[c.side]}: 앞 칸 ${cells(c.approach)} 은 비운 바닥이어야 한다. ${facing}. ${arrive}. `
     + (c.trigger.length ? `이동 칸 ${cells(c.trigger)} — ${how}. ` : `${how}. `)
     + (c.exit?.length ? `위 끝 ${cells(c.exit)} 이 이어지는 바닥. ` : "")
     + (c.leads === "same" ? "" : `다른 층에서 도착하면 앞 칸에 내려 계단을 등지고 ${c.side === "any" ? "앞 칸 쪽" : FACING[c.side]}을 본다. `)

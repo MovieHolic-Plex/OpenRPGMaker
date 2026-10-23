@@ -1,0 +1,351 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d051e523a0a4674ac020966616bfb53c29be8ad0d5591455c057d3525bede1cb",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "Astra mart kit cell 2 (r0 c2)",
+ "label": "monster_overworld/astra-mart-kit-2 (칸 2242)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (3/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (3/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 18,
+  "darkV5": 88,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "purple-blue awning or roof band",
+      "rows": "0-4",
+      "evidence": "c",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "4-4"
+     },
+     {
+      "part": "orange trim under the awning",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cream wall or shopfront face",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan at x=4, 8 and 11 is identical for rows 0-6. Row 0 is a dark outline. Rows 1-3 are a blue-purple band. Row 4 is a dark line that acts as eave shadow. Row 5 is a lighter orange edge line, and row 6 is a darker orange trim row. Below that, rows 7-15 form a cream front face 9 rows tall. The top band reads as a sloped awning or roof plane above an edge line (evidence c), with a front wall below it. The dark vertical strip on the right edge is a frame, not a receding side face. This cell is a fragment of a larger kit, so only part of the structure is visible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny, roughly one-tile sprite: a purple-ish top band, a cream/white body and a small blue accent. It shows no roof tile scallops, no wall material with grain, and no door or windows, so it does not read as a whole building like the two references. The measured facts do not count against it: 18 visible tones per tile is above the references' 12 and 10, near-flat coverage is 12% against 0%, and 0% of dark edge pixels are neutral, so the outline is tinted. By eye, though, the cream body has only about 3-4 lightness steps and the roof has no per-tile highlights. The references use 5-6 steps per material with tile and stone texture. At this size the piece cannot be judged against a full building, and it looks like a fragment or icon rather than a roof-and-wall structure. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17630
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof/awning band (blue-purple plane with dark outline)",
+      "rows": "0-4",
+      "evidence": "c",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "cream front wall/panel",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Columns x=4, 8 and 11 all show the same sequence. Row 0 is a dark outline. Rows 1-3 are a blue/purple sloped roof or awning plane. Row 4 is dark. Row 5 is a lighter orange edge line, and row 6 is a darker orange eave shadow. Rows 7-15 are a cream front face of 9 rows. The top band is about 5 rows (0-4) with a defined front-edge line and eave shadow, so it is more than a rim. The silhouette is a full 16 wide in every row. A darker strip on the right edge reads as a wall edge, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny sprite, roughly 20x20 source pixels, about one tile. It reads as a small awning-and-sign fragment of a kit, not a whole building with roof, walls and door. The references are full houses with 5-6 step tile roofs, timber framing and per-stone shading. The measured facts favour the candidate: 18 visible tones per tile against 12 and 10, 12% near-flat coverage, and 0% neutral dark edges, so the outline is tinted. By eye, though, the cream body is a broad, almost flat plane. The purple top has only about 3 steps, with no roof-tile scallops, no plaster speckle and no per-element highlights. The small blue item at lower left is crude. Because the piece is tiny, the per-tile tone count is inflated by edges and a few small details. Next to the references it looks flatter and more sticker-like, and it does not match the building kind, so I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18758
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof/awning plane (blue-purple band)",
+      "rows": "0-4",
+      "evidence": "c",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "3-4"
+     },
+     {
+      "part": "orange lintel/trim strip",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column scan shows a blue-purple band in rows 0-4 (outline in row 0, blue in rows 1-2, darker purple in row 3, dark line in row 4). It darkens toward the bottom like a roof plane ending in an edge line and shadow. Below it, orange trim in rows 5-6 reads as a front-facing lintel strip. The cream front face runs from row 7 to row 15 (9 rows), with a dark frame on the right and small items at the lower left. No receding side face is drawn. The top surface is a 5-row band, so this is a roof slope above the front face and not just a rim. This is a borderline call, because the orange trim sits below the dark line rather than directly under the roof edge."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, roughly 1-tile-wide icon-like cell: a purple awning strip over a cream block with a small blue element in the corner. It has no real roof, walls, door or windows, so it does not read as a whole building next to the references, which are full houses with scalloped tile roofs, timber framing, plaster speckle and shaded stones. It has about 3 lightness steps on the main materials against about 6 on the references. Its cream body and awning are mostly flat fills with little grain or per-tile highlight. The measured 18 tones per tile and 12% near-flat coverage look decent, but they come from a very small, compact piece with only 18 distinct colours in total. By eye it is clearly thinner and flatter than the references, and the 0% near-neutral edge share only means the outline is tinted, which does not offset the missing structure. A careful artist would not accept it beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 18917
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof band (blue/purple tiles)",
+      "rows": "0-4",
+      "evidence": "c",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "orange/brown fascia beam",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cream wall with frame",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan shows a roof band in rows 0-4: a dark outline at row 0, blue tile rows 1-2, a purple row 3 and a dark edge line at row 4. Rows 5-6 are an orange/brown fascia. Rows 7-15 are a cream wall face of 9 rows, with a dark frame on the right edge. The tile band reads as a sloped roof plane above the eave line, so the cell has a top surface and a front face. This is a cell of a larger kit, so the roof read is moderately confident."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny object, about 22x20 px on the board, roughly one tile. It reads as a small box or sign with a purple top band, a pale body and a blue corner. It is not a whole building with roof, walls and door/windows like the references, so it does not match the kind. Its measured 18 tones per tile and 0% neutral dark edges look fine, but the numbers come from a single dense tile. They do not show the structure the references carry: a scalloped tile roof with per-tile highlights, timber framing, speckled plaster and individually shaded stones. The candidate has only about 3 visible steps on its main materials, and the pale body is a fairly flat fill. The outline is tinted (purple/brown) rather than black. Because the piece is not a building, it cannot be accepted next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15879
+  }
+ ],
+ "decidedAt": "2026-10-20T22:08:46.668Z",
+ "cells": {
+  "16": [
+   "60d95a883e07b757"
+  ],
+  "24": [
+   "04c341e04b727934",
+   "189415bbefa13537",
+   "54a9db8e996fd9f0",
+   "5de76563610a3524",
+   "7236a13149f07d72",
+   "c8885d050bda3a41"
+  ],
+  "32": [
+   "012e6d7a3114b59e",
+   "1d3cdc0479c93d27",
+   "5ab23a0efb8c01b5",
+   "61fff6fa6cdfa413",
+   "d0cb95c83d0dc3bc",
+   "f092ca95b56eabd0"
+  ],
+  "48": [
+   "0056d7e43c2ddb8b",
+   "1bd4a16eed50054f",
+   "713b2407086cc13f",
+   "84d2d3dde30a4896",
+   "9005a5f815b505d9",
+   "df39f0277fa434d1"
+  ]
+ }
+}

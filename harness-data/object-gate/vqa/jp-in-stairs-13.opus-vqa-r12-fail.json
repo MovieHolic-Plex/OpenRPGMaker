@@ -1,0 +1,4 @@
+{"queue":"jp-in-stairs-13","round":12,"judge":"claude-opus-5.5 (fresh subagent, no prior scores)","date":"2026-10-22","verdict":"fail","majors":9,"axis2":7,"axis6":6,
+ "majorFindings":["all 6 stairwells: flat-black hole, no inner side walls, only 1-2 lit treads (dark box/crib/vent)","wood well: side posts stop short of the hole corners (floating stubs)","mc/of 1-cell up stairs: even grey/black stripes read as ladder/rack"],
+ "minorFindings":["wood up treads too saturated, grain noise","west edge stringer","as rubble unshaded","cs up side walls thin","cs cones on wall row"],
+ "action":"well ramp: 4 lit treads (L, L-1, L-2, L-3) then dark purple, 2px inner side walls, newels end at the hole's south corners; up: stronger foreshortening (9,8,6,5,4,3,2), 1-cell stairs drop the west stringer, wood treads on the floor ita ramp, sparser grain"}

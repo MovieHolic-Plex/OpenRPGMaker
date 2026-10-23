@@ -1,0 +1,16 @@
+{
+ "round": 7,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "abi-stairs-v5",
+ "images": "http://mdc-server:18301/jp-stairs-1/interior-v5/r7/kits-4x.png (+ scene 1x/3x and before/)",
+ "pieces": [
+  "stairs up stone",
+  "stairs up wood",
+  "stairs down",
+  "stairwell down"
+ ],
+ "rubric": "axis 2 (style/palette/3/4 fit) + axis 6 (1x readability incl. up/down direction)",
+ "majors": 5,
+ "verdict": "FAIL",
+ "summary": "P1 up stone partly: [major] equal treads read as shutter/grille, brightest object; minors light symmetry, top fade, dots.\nP2 up wood yes: minors (sill band, salmon caps, stringers).\nP3 stairs down weak: [major] grated box/vent: thick black lines, little foreshortening, no far wall/shaft walls; [major] first tread plinth.\nP4 stairwell weak: [major] low-contrast brown block / bench.\nMAJORS 5 (one dup)\n"
+}

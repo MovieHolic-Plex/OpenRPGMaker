@@ -1,0 +1,22 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "wz-stairs-r6",
+ "title": "마법 학교 계단 r6 (내려가는 계단통 2)",
+ "explainImage": "/tmp/wzst/g13/wz-stairs-r6.png",
+ "explainText": "wz-stairs-r5 다음 판: 내려가는 계단통 둘레의 밝은 돌 턱을 없애 방 바닥이 구멍 가장자리까지 오게 하고, 난간은 바닥 위의 얇은 손잡이로만 그렸다. 남쪽에서 들어서 북쪽을 보며 내려간다.",
+ "createdAt": "2026-10-22T11:52:19.815Z",
+ "items": [
+  {
+   "sha": "bc33d35f9610c46ff6b71321fc727d2faa1455ee1d348090ca00151393a40f20",
+   "kind": "flat",
+   "label": "wizarding_world stairs wz-castle-stair-down (DOWN)",
+   "source": "/tmp/wzst/g13/wz-castle-stair-down.png"
+  },
+  {
+   "sha": "4eef2f01e55ae5c64a6a452f5fc972c930fea064e4bd6b7b82bf37af2144cee3",
+   "kind": "flat",
+   "label": "wizarding_world stairs wz-owl-stair-down (DOWN)",
+   "source": "/tmp/wzst/g13/wz-owl-stair-down.png"
+  }
+ ]
+}

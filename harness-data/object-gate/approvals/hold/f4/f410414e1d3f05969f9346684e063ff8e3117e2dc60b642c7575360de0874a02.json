@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "f410414e1d3f05969f9346684e063ff8e3117e2dc60b642c7575360de0874a02",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated)",
+ "decidedAt": "2026-10-22T17:04:00.760Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-town-wall-3e-r21/opus-vqa-r21.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "delegated by user to supervisor 2026-10-23; gate PASS (advisory, uncalibrated profile) + fresh Opus adversarial VQA r21 PASS 0 majors",
+ "sig": "869b8a7ca79687f0fdbef3c9c9d7fdfd89c4023374c9965a7e6c1c2c5f1cccb3"
+}

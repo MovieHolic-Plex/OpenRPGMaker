@@ -8,6 +8,12 @@ export interface PromptInspection {
   toolNames: string[];
   estimatedTokens: number;
   truncation: string;
+  /**
+   * Top-level scalar request fields (model, max_tokens, reasoning_effort, stream …). They are the receipt of
+   * what was sent, and they must survive the display budget: messages and tools alone exhaust MAX_DISPLAY_CHARS,
+   * which used to truncate these small fields to empty strings.
+   */
+  scalars: Record<string, string | number | boolean | null>;
 }
 const MAX_DISPLAY_CHARS = 80000;
 const SECRET_FIELD = /^(?:authorization|proxy.authorization|(?:x.)?api.?key|token|client.?secret|access.?token|refresh.?token|id.?token|password|secret|credentials?|cookie|set.cookie)$/iu;
@@ -52,7 +58,12 @@ export function inspectPromptPayload(payload: unknown, boundary: string, model: 
     }
   };
   visitTools(clean);
-  return { at: Date.now(), boundary, model: redactPromptText(model, secrets), sections, toolNames: [...toolNames],
+  const scalars: Record<string, string | number | boolean | null> = {};
+  for (const [key, value] of Object.entries(root)) {
+    if (typeof value === 'string') scalars[key] = redactPromptText(value.slice(0, 200), secrets);
+    else if (typeof value === 'number' || typeof value === 'boolean' || value === null) scalars[key] = value;
+  }
+  return { at: Date.now(), boundary, model: redactPromptText(model, secrets), sections, toolNames: [...toolNames], scalars,
     estimatedTokens: Math.ceil(characters / 3),
     truncation: '전송 직전 본문을 관측했습니다. 상위 단계의 맥락 압축·제거량은 이 경계에서 알 수 없습니다. 표시 생략은 각 절에 별도로 표시합니다. 이미지 토큰·제공자 내부 처리는 추정에 포함되지 않습니다.' };
 }

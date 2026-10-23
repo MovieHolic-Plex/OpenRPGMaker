@@ -48,7 +48,12 @@
       "families": [
         "oprn-atlas"
       ],
-      "note": "버들항(beodeul_city) 던전 키트로 지은 석조 던전. 허공에 뜬 기물·고아 벽 조각·떠 있는 횃불을 본다(2026-10-14 사용자 스크린샷)."
+      "note": "버들항(beodeul_city) 던전 키트로 지은 석조 던전. 허공에 뜬 기물·고아 벽 조각·떠 있는 횃불을 본다(2026-10-14 사용자 스크린샷). 2026-10-22 dg-* 9건: 조수 던전·동굴 품질 시험(assistant-dungeons). 2026-10-23 dt-* 24건: 던전 주제 열둘 × 두 요청(dungeon-themes)."
+    },
+    "compare": {
+      "label": "v1·v2 비교 10과제",
+      "families": [],
+      "note": "조수 v2(판단은 AI, 짓기는 함수, 검수는 다른 눈) 비교용 고정 10과제(2026-10-23). 장소·사람·사건·없는 기물·기존 맵 편집을 고루 덮는다. 같은 모델로 v1·v2 를 돌리고 묶음마다 블라인드 Opus 리뷰어가 1배 그림을 채점한다."
     }
   },
   "forbiddenFamilies": [
@@ -103,6 +108,19 @@
         "모루",
         "무기 진열대",
         "작업대"
+      ]
+    },
+    {
+      "id": "fantasy-magic-library",
+      "category": "fantasy-interior",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마법 학교의 오래된 마법 도서관 실내를 지어 줘. 높은 책장이 줄지어 선 서가, 가운데 열람 탁자들, 금서를 모아 둔 잠긴 구역, 마법진이 그려진 연구 자리가 있었으면 해.",
+      "requires": [
+        "높은 책장 서가",
+        "열람 탁자",
+        "잠긴 금서 구역",
+        "마법진 연구 자리"
       ]
     },
     {
@@ -302,6 +320,572 @@
         "북쪽 렌즈 성소",
         "가운데 홀",
         "곁방"
+      ]
+    },
+    {
+      "id": "dg-small-cave",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "작은 동굴 하나 만들어 줘.",
+      "requires": [
+        "동굴 벽",
+        "입구"
+      ]
+    },
+    {
+      "id": "dg-goblin-den",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "고블린들이 사는 굴을 만들어 줘. 고블린 몇 마리가 돌아다니고 안쪽에 고블린 대장이 있었으면 해.",
+      "requires": [
+        "동굴",
+        "돌아다니는 적",
+        "대장 방"
+      ]
+    },
+    {
+      "id": "dg-tower3",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "3층짜리 탑 던전을 만들어 줘. 층마다 계단으로 올라가고 꼭대기 층에 보스가 있어.",
+      "requires": [
+        "층 3개",
+        "층 사이 계단",
+        "보스"
+      ]
+    },
+    {
+      "id": "dg-catacomb",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "지하 묘지 던전 만들어 줘. 석관이 놓인 묘실들과 복도가 있고, 가장 안쪽에 보물 방이 있었으면 해.",
+      "requires": [
+        "석관",
+        "복도",
+        "보물 방"
+      ]
+    },
+    {
+      "id": "dg-ice-cave",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "얼음 동굴 던전 만들어 줘.",
+      "requires": [
+        "얼음 바닥·벽"
+      ]
+    },
+    {
+      "id": "dg-lava-cave",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "용암이 흐르는 화산 동굴 던전 만들어 줘.",
+      "requires": [
+        "용암",
+        "다리"
+      ]
+    },
+    {
+      "id": "dg-flooded-temple",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "물에 잠긴 옛 신전 던전을 만들어 줘.",
+      "requires": [
+        "신전 기둥",
+        "물",
+        "걸을 길"
+      ]
+    },
+    {
+      "id": "dg-puzzle",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "레버를 당겨서 닫힌 문을 여는 퍼즐 던전 만들어 줘.",
+      "requires": [
+        "레버",
+        "닫힌 문",
+        "퍼즐 뒤 보상"
+      ]
+    },
+    {
+      "id": "dg-boss-run",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "입구부터 보스방까지 이어지는 던전 하나 만들어 줘. 중간에 보물상자랑 쉬어 가는 방도 있고, 마지막 방에서 보스가 기다려.",
+      "requires": [
+        "보물상자",
+        "쉬는 방",
+        "보스방"
+      ]
+    },
+    {
+      "id": "dt-forest-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "숲 던전 만들어 줘. 길을 잃기 쉬운 깊은 숲이고, 가장 안쪽에 숲의 주인이 기다려.",
+      "requires": [
+        "나무 벽 숲길",
+        "빈터",
+        "숲의 보스"
+      ]
+    },
+    {
+      "id": "dt-forest-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "메이플스토리 엘리니아 같은 요정 숲 던전 하나 만들어 줘.",
+      "requires": [
+        "숲",
+        "요정 숲 분위기",
+        "보스"
+      ]
+    },
+    {
+      "id": "dt-cave-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "박쥐가 사는 동굴 던전 만들어 줘.",
+      "requires": [
+        "동굴 벽",
+        "박쥐 적"
+      ]
+    },
+    {
+      "id": "dt-cave-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "지하 호수가 있는 큰 동굴 던전 만들어 줘.",
+      "requires": [
+        "지하 호수",
+        "다리 또는 물가 길"
+      ]
+    },
+    {
+      "id": "dt-ruins-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "덩굴에 덮인 고대 유적 던전 만들어 줘.",
+      "requires": [
+        "무너진 기둥",
+        "유적"
+      ]
+    },
+    {
+      "id": "dt-ruins-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "젤다 신전처럼 가운데 홀에서 여러 방으로 갈라지는 고대 유적 던전 만들어 줘.",
+      "requires": [
+        "가운데 홀",
+        "갈래 방",
+        "장치"
+      ]
+    },
+    {
+      "id": "dt-castle-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "흑기사가 지키는 요새 던전 만들어 줘. 마지막에 옥좌의 방이 있어.",
+      "requires": [
+        "요새",
+        "옥좌의 방",
+        "흑기사"
+      ]
+    },
+    {
+      "id": "dt-castle-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "엘든링 레거시 던전 같은 성 던전 하나 만들어 줘.",
+      "requires": [
+        "성",
+        "지름길",
+        "레버"
+      ]
+    },
+    {
+      "id": "dt-catacomb-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "엘든링 같은 지하묘지 만들어 줘.",
+      "requires": [
+        "석관",
+        "묘실",
+        "보스"
+      ]
+    },
+    {
+      "id": "dt-catacomb-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "디아블로 같은 어두운 지하묘지 던전 만들어 줘.",
+      "requires": [
+        "지하묘지",
+        "언데드"
+      ]
+    },
+    {
+      "id": "dt-mine-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "FF6 나르쉐 같은 광산 던전 만들어 줘.",
+      "requires": [
+        "갱도",
+        "광차",
+        "광산 보스"
+      ]
+    },
+    {
+      "id": "dt-mine-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "버려진 광산 갱도 던전 만들어 줘. 광차를 타고 이동할 수 있으면 좋겠어.",
+      "requires": [
+        "갱도",
+        "광차 이동"
+      ]
+    },
+    {
+      "id": "dt-swamp-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "독 안개 낀 늪지대 던전 만들어 줘.",
+      "requires": [
+        "늪물",
+        "둔덕",
+        "널판 다리"
+      ]
+    },
+    {
+      "id": "dt-swamp-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "맹그로브 습지 던전 하나 만들어 줘. 늪 한가운데 가라앉은 우상이 있어.",
+      "requires": [
+        "맹그로브",
+        "우상",
+        "늪"
+      ]
+    },
+    {
+      "id": "dt-volcano-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "용암이 흐르는 화산 던전 만들어 줘.",
+      "requires": [
+        "용암",
+        "다리"
+      ]
+    },
+    {
+      "id": "dt-volcano-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "화산 속 무너진 대장간 던전 만들어 줘. 끝에 불의 용이 있어.",
+      "requires": [
+        "용암",
+        "대장간",
+        "용"
+      ]
+    },
+    {
+      "id": "dt-ice-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "설산의 얼음 동굴 던전 만들어 줘.",
+      "requires": [
+        "얼음 벽·바닥"
+      ]
+    },
+    {
+      "id": "dt-ice-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "얼어붙은 호수를 미끄러져 건너는 빙굴 던전 만들어 줘.",
+      "requires": [
+        "얼음 호수",
+        "미끄럼"
+      ]
+    },
+    {
+      "id": "dt-pyramid-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "사막 피라미드 던전 만들어 줘. 가장 안쪽 묘실에 파라오의 석관이 있어.",
+      "requires": [
+        "사암",
+        "석관",
+        "파라오"
+      ]
+    },
+    {
+      "id": "dt-pyramid-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "툼레이더 같은 모래 함정이 있는 왕묘 던전 만들어 줘.",
+      "requires": [
+        "모래 함정",
+        "왕묘"
+      ]
+    },
+    {
+      "id": "dt-tower-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마법사의 탑 던전 만들어 줘. 서고랑 마법진이 있어.",
+      "requires": [
+        "탑",
+        "서고",
+        "마법진"
+      ]
+    },
+    {
+      "id": "dt-tower-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "크로노트리거 같은 마법 왕국의 탑 던전 만들어 줘.",
+      "requires": [
+        "층 여러 개",
+        "마법진"
+      ]
+    },
+    {
+      "id": "dt-otherworld-a",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "크로노트리거 같은 마계 성 만들어 줘.",
+      "requires": [
+        "마계",
+        "마왕"
+      ]
+    },
+    {
+      "id": "dt-otherworld-b",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "허공에 떠 있는 이세계 던전 만들어 줘. 끝에 마왕이 있어.",
+      "requires": [
+        "허공에 뜬 땅",
+        "다리",
+        "마왕"
+      ]
+    },
+    {
+      "id": "cmp-village",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "강가에 있는 작은 농촌 마을 하나 만들어 줘. 집 몇 채랑 밭, 우물, 사람들이 모이는 작은 광장이 있으면 좋겠어.",
+      "requires": [
+        "집 여러 채",
+        "밭",
+        "우물",
+        "광장"
+      ]
+    },
+    {
+      "id": "cmp-tavern",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "판타지 마을 선술집 1층 실내 만들어 줘. 바 카운터, 손님 식탁 여러 개, 벽난로, 2층으로 올라가는 계단이 있어야 해.",
+      "requires": [
+        "바 카운터",
+        "식탁 여러 개",
+        "벽난로",
+        "2층 계단"
+      ]
+    },
+    {
+      "id": "cmp-observatory",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "탑 꼭대기에 있는 마법사의 천문대 실내를 만들어 줘. 커다란 망원경, 별자리 지도를 펼친 책상, 책장이 있었으면 좋겠어.",
+      "requires": [
+        "커다란 망원경",
+        "별자리 지도 책상",
+        "책장"
+      ]
+    },
+    {
+      "id": "cmp-dungeon-floors",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "3층짜리 던전 탑을 만들어 줘. 층마다 계단으로 이어지고, 중간중간 몬스터와 보물상자가 있고, 맨 위층에 보스가 있어야 해.",
+      "requires": [
+        "3개 층",
+        "층을 잇는 계단",
+        "몬스터",
+        "보물상자",
+        "맨 위층 보스"
+      ]
+    },
+    {
+      "id": "cmp-cave",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "작은 동굴 하나 만들어 줘. 박쥐 같은 적이 좀 있고 맨 안쪽에 보물상자가 있으면 돼.",
+      "requires": [
+        "동굴",
+        "적",
+        "안쪽 보물상자"
+      ]
+    },
+    {
+      "id": "cmp-jp-street",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "jp_city",
+      "prompt": "일본 주택가 골목 하나 만들어 줘. 집 서너 채, 자판기, 작은 공원이 있으면 좋겠어.",
+      "requires": [
+        "집 서너 채",
+        "자판기",
+        "작은 공원"
+      ]
+    },
+    {
+      "id": "cmp-npc",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "이 마을 입구에 문지기 NPC 하나 세워 줘. 처음 말을 걸면 '해가 지면 성문을 닫는다네'라고 경고하고, 두 번째부터는 '조심해서 다녀오게'라고만 말하게 해 줘.",
+      "requires": [
+        "마을 입구의 문지기",
+        "첫 대화 경고",
+        "두 번째부터 다른 대사"
+      ],
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        }
+      ]
+    },
+    {
+      "id": "cmp-cutscene",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "게임을 시작하면 주인공이 마을 길로 걸어 나오고, 촌장이 다가와서 '드디어 왔구나, 기다리고 있었네' 하고 말하는 짧은 컷신을 넣어 줘.",
+      "requires": [
+        "시작 시 자동 재생",
+        "주인공 걸어 나옴",
+        "촌장이 다가옴",
+        "대사"
+      ],
+      "startBuild": [
+        {
+          "tool": "author_beodeul_town",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "버들 마을",
+            "houseCount": 4,
+            "theme": "river",
+            "seed": 11
+          }
+        }
+      ]
+    },
+    {
+      "id": "cmp-draw-object",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "이 선술집에 놓을 '놋쇠 태엽 지구본'(태엽 장치가 달린 커다란 지구본) 기물이 칩셋에 없으면 새로 그려서 홀 한쪽에 놓아 줘.",
+      "requires": [
+        "새로 그린 태엽 지구본",
+        "홀에 배치"
+      ],
+      "startBuild": [
+        {
+          "tool": "build_hand_interior_room",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "선술집",
+            "layout": {
+              "rooms": [
+                {
+                  "kind": "tavern"
+                },
+                {
+                  "kind": "kitchen"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cmp-edit-room",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "이 방을 좀 더 아늑하게 꾸며 주고, 뒤쪽(북쪽 벽)에 뒷문도 하나 내 줘.",
+      "requires": [
+        "더 아늑해짐",
+        "북쪽 뒷문",
+        "기존 방 보존"
+      ],
+      "startBuild": [
+        {
+          "tool": "build_hand_interior_room",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "선술집",
+            "layout": {
+              "rooms": [
+                {
+                  "kind": "tavern"
+                },
+                {
+                  "kind": "kitchen"
+                }
+              ]
+            }
+          }
+        }
       ]
     }
   ],

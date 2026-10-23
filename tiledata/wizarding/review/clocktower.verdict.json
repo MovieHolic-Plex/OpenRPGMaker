@@ -1,6 +1,6 @@
 {
  "module": "clocktower",
- "sealed": "2026-10-07T10:21:06.374455+09:00",
+ "sealed": "2026-10-23T02:09:47.658796+09:00",
  "reviewer": "sonnet adversarial",
  "pieces": {
   "wz-clock-gear-l": {
@@ -90,8 +90,8 @@
   },
   "wz-clock-stair": {
    "verdict": "PASS",
-   "hash": "25ae4fc114943c6021a14cd78b16edb9d6ee6faec659f4c0b36fd7ed7a9c3374",
-   "reason": "칸당 8px 디딤판 2단(밝은 디딤면+어두운 챌면에 볼트). 좌우 옆판이 있다. 북쪽으로 오르는 3/4 계단으로 읽히고 FF/FF 로 통행된다."
+   "hash": "eddfcd4e76cd0028683262d4eb43403f12a24d3470b772e8f39cb37a5cc57a79",
+   "reason": "2026-10-23 다시 그림(원근 디딤판·얇은 챌판/계단통 얇은 내림 단). Opus 적대 검수 r2 3명 중 다수 major 0 — 올라가는/내려가는 계단으로 1배·3배에서 읽힘, 3/4 윗면 일관, wizarding_world 화풍. {'wz-clock-stair': 'object-gate PASS (wizarding_world refs)', 'wz-castle-stair-up': 'object-gate PASS (wizarding_world refs)', 'wz-hd-stairs-down': 'object-gate PASS (wizarding_world refs)', 'wz-owl-stair-down': 'object-gate PASS (wizarding_world refs, kind flat)', 'wz-owl-stair-up': 'object-gate REFER → fresh Argon adversarial PASS → delegated allow 2026-10-23', 'wz-castle-stair-down': 'object-gate REFER (style split) → fresh Argon adversarial PASS → delegated "
   },
   "wz-clock-door-closed": {
    "verdict": "PASS",

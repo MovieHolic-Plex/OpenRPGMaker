@@ -47,7 +47,9 @@
 }
 
 /* database/tabs-b-assistant-panel/08-studio-mode-start-screen.css:634-644 */
-body.ai-studio-open .canvas-area .ai-studio-monitor-stage .editor-canvas-scroll-shell {
+/* 스튜디오가 오른쪽 도크(.ai-right-dock)에 앉으면 .canvas-area 밖이다 — 그 경우에도 채워야 캔버스 높이가 0 이 되지 않는다. */
+body.ai-studio-open .canvas-area .ai-studio-monitor-stage .editor-canvas-scroll-shell,
+body.ai-studio-open .ai-studio-monitor-stage .editor-canvas-scroll-shell {
   --editor-canvas-chrome-top: 0px;
   --editor-canvas-chrome-bottom: 0px;
   bottom: 0;

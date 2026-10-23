@@ -9,18 +9,18 @@
 //   · 단 위에 마법진(flat) → 지워졌다 — 빌더가 단 위 바닥 무늬를 3층으로 올려 얹도록 고쳤다(builder.ts base).
 // 거부하지 않는다 — 경고에 좌표와 고치는 법을 붙여 다음 짓기에서 고치게 한다.
 import type { GameMap, Project } from "@/project/types";
-import { measureLayoutQuality } from "@/ai/piAgent/layoutQuality";
+import { INTERIOR_BARE_FLOOR_LIMIT, measureInteriorBareFloor } from "./bareFloor";
 import type { HandInteriorInput, HandInteriorSpec } from "./builder";
 
 /** 실내 빈 바닥 한도(%) — 검수 기준(vqa-rubric 축 1: 빈 바닥·허공 ≤ 화면의 15%)에 맞춘다. 끝 검사(layoutQuality 30%)보다 엄하다. */
-export const INTERIOR_BARE_FLOOR_MAX = 15;
+export const INTERIOR_BARE_FLOOR_MAX = INTERIOR_BARE_FLOOR_LIMIT;
 
 /**
  * 같은 걸이가 이만큼 넘으면 벽지 무늬처럼 읽힌다(창·횃불·깃발은 예외). 바닥 가구 반복은 묻지 않는다 —
  * 검수 합격 판(폴른 r28)도 쓰임별 묶음 안에서 도표 탁자 셋·유물 진열장 여섯을 반복했다. 「작은 주인공 물건을 여럿 흩뿌려 크기를 대신하기」는 스킬 규칙이다.
  */
 const HANG_REPEAT_MAX = 3;
-const HANG_REPEATABLE = /^(window|wall torch|wall sconce|banner|tapestry|lantern|sconce|torch)/u;
+const HANG_REPEATABLE = /^(window|wall torch|wall sconce|banner|tapestry|lantern|sconce|torch|dome cornice|dome shell)/u;
 
 /** 방 밖 허공 한도(%). 검수 합격 판(폴른 r28) 화로 방·지하 방 10%, 돔 그림으로 덮은 관측 홀 24%. */
 const VOID_MAX = 20;
@@ -88,8 +88,15 @@ export function handInteriorCompositionLint(project: Project, map: GameMap, inpu
   // ⑥ 방 밖 허공 — 실내에 닿지 않는 막힌 칸(천장 띠도 벽면도 아닌 검은 칸)의 비율. 큰 덩이는 맵을 줄이거나 곁방으로 쓴다.
   let voidCells = 0;
   const seen = new Uint8Array(W * H);
+  // 걸이 그림이 덮은 천장 칸(dome vault 처럼 천장 띠 전체를 그리는 조각)은 검은 허공이 아니다 — 세면 r28 관측 홀이 40% 로 「맵을 줄여라」를 받는다.
+  const painted = new Uint8Array(W * H);
+  for (const o of objects) {
+    const so = spec.objects[o.id];
+    if (so?.kind !== "hang") continue;
+    for (const [dx, dy] of so.cells) { const x = o.x + dx, y = o.y + dy; if (x >= 0 && y >= 0 && x < W && y < H) painted[y * W + x] = 1; }
+  }
   const isVoid = (x: number, y: number) => {
-    if (plan[y]![x] !== "#") return false;
+    if (plan[y]![x] !== "#" || painted[y * W + x]) return false;
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (inner(x + dx, y + dy)) return false;
     return true;
   };
@@ -143,14 +150,15 @@ export function handInteriorCompositionLint(project: Project, map: GameMap, inpu
   }
 
   // ④ 빈 바닥 — 구성기(layout program·rooms 견본) 맵은 복도·동선의 빈칸이 쓰임이라 묻지 않는다.
+  //    자는 bareFloor.ts(1배 화면에서 사람이 세는 빈 덩이) — 옛 3×3 이웃 자는 조수 판을 9~21% 로, 검수자는 25~30% 로 봤다.
   let bareFloor: number | undefined;
   if (!options.composed) {
-    const q = measureLayoutQuality(project, map);
+    const q = measureInteriorBareFloor(project, map);
     if (q && q.floorCells >= 40) {
-      bareFloor = q.empty;
-      if (q.empty > INTERIOR_BARE_FLOOR_MAX) {
-        const where = q.emptiestWindows.map((r) => `(${r.x},${r.y}) ${r.w}×${r.h}칸 중 빈 칸 ${r.emptyCells}`).join(" · ");
-        warnings.push(`빈 바닥 ${q.empty}% (실내 기준 ≤${INTERIOR_BARE_FLOOR_MAX}% — 가구·깔개 3×3 안에 아무것도 없는 바닥)${where ? ` — 가장 빈 곳: ${where}` : ""}${q.square > 4 && q.squareAt ? `, 소품 없는 빈 정사각형 ${q.square}×${q.square} (왼위 ${q.squareAt.x},${q.squareAt.y})` : ""}. 낱개 소품을 흩뿌려 메우지 마라. 고치는 법 둘 중 하나: ① 그 빈 띠를 plan 에서 '#' 로 들여 쌓는다(방 가장자리 빈 줄을 벽으로, 깊은 알코브는 얕게, 넓은 홀은 칸막이로 두 방) ② 그 구역에 쓰임 하나를 정하고 그 쓰임의 가구 한 벌(앵커 + 짝 2점 이상, 깔개·탁상 물건 포함)을 둔다. 통로·주인공 물건 앞 한두 줄은 비워도 된다`);
+      bareFloor = q.pct;
+      if (q.pct > INTERIOR_BARE_FLOOR_MAX) {
+        const where = q.regions.map((r) => `(${r.x},${r.y}) ${r.w}×${r.h} 안 빈 칸 ${r.cells}`).join(" · ");
+        warnings.push(`빈 바닥 ${q.pct}% (실내 기준 ≤${INTERIOR_BARE_FLOOR_MAX}% — 깔개·가구·바닥 무늬 없는 맨바닥이 2×2 이상 이어진 넓이 ÷ 방과 그 위 벽면)${where ? ` — 큰 빈 덩이: ${where}` : ""}. 낱개 소품을 흩뿌려 메우지 마라. 고치는 법 둘 중 하나: ① 그 빈 띠를 plan 에서 '#' 로 들여 쌓는다(방 가장자리 빈 줄을 벽으로, 깊은 알코브는 얕게, 넓은 홀은 칸막이로 두 방) ② 그 구역에 쓰임 하나를 정하고 그 쓰임의 가구 한 벌(앵커 + 짝 2점 이상, 깔개·탁상 물건 포함)을 둔다. 통로·주인공 물건 앞 한두 줄은 비워도 된다`);
       }
     }
   }

@@ -149,7 +149,7 @@ function openActorParameterDialog(actor: ActorRecord, initialKey: ActorParameter
           ] }),
         ] }),
         el("footer", { children: [
-          el("button", { class: "btn", text: "OK", dataset: { testid: "db-actor-parameter-close" }, attrs: { type: "button" }, on: { click: () => {
+          el("button", { class: "btn", text: "확인", dataset: { testid: "db-actor-parameter-close" }, attrs: { type: "button" }, on: { click: () => {
             commitDraft();
             close();
           } } }),
@@ -218,7 +218,7 @@ function openActorExperienceDialog(actor: ActorRecord, refresh: () => void = () 
           dialogNumberLabel("가속", accelerationInput),
         ] }),
         el("footer", { children: [
-          el("button", { class: "btn", text: "OK", dataset: { testid: "db-actor-exp-close" }, attrs: { type: "button" }, on: { click: () => {
+          el("button", { class: "btn", text: "확인", dataset: { testid: "db-actor-exp-close" }, attrs: { type: "button" }, on: { click: () => {
             commitDraft();
             close();
           } } }),

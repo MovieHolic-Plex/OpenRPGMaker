@@ -30,6 +30,14 @@ const SCAN_ROOTS = [
   "src/battle/skins/registry.ts",
   "src/project/battleMethod.ts",
   "src/player/menuSkins/registry.ts",
+  // 화면에 그대로 나가는 문구가 src/ai·src/player 에 있는 파일(조수 탭·제안 카드·맵 성격 사유·런타임 디버그 패널).
+  "src/ai/autonomyLevels.ts",
+  "src/ai/mapPlacementContext.ts",
+  "src/ai/piAgent/teamSpec.ts",
+  "src/ai/projectSuggestions.ts",
+  "src/player/runtimeDebugPanel.ts",
+  // 새 게임 인터뷰의 질문·선택지 데이터(JSON). 문자열 값만 뽑는다.
+  "src/editor/projectInterviewScenes.json",
 ];
 // 저작 콘텐츠(기본 맵·예제 이름)와 AI 도구 본문은 화면 문구가 아니라 데이터·모델 입력이다.
 const EXCLUDED_DIRS = ["src/editor/content", "src/editor/tools"];
@@ -51,7 +59,7 @@ function listFiles(dir, out) {
     const path = join(dir, name);
     if (isExcluded(path)) continue;
     if (statSync(path).isDirectory()) listFiles(path, out);
-    else if (path.endsWith(".ts") && !path.endsWith(".test.ts") && !path.endsWith(".d.ts")) out.push(path);
+    else if ((path.endsWith(".ts") || path.endsWith(".json")) && !path.endsWith(".test.ts") && !path.endsWith(".d.ts")) out.push(path);
   }
   return out;
 }
@@ -127,6 +135,15 @@ export function extractUiStrings() {
     return statSync(path).isDirectory() ? listFiles(path, []) : [path];
   });
   for (const path of files) {
+    if (path.endsWith(".json")) {
+      const walk = (value) => {
+        if (typeof value === "string") add(value);
+        else if (Array.isArray(value)) value.forEach(walk);
+        else if (value && typeof value === "object") Object.values(value).forEach(walk);
+      };
+      walk(JSON.parse(readFileSync(path, "utf8")));
+      continue;
+    }
     const source = ts.createSourceFile(path, readFileSync(path, "utf8"), ts.ScriptTarget.Latest, true);
     const visit = (node) => {
       if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) return;

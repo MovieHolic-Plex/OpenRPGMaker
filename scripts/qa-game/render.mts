@@ -13,6 +13,7 @@ import jpeg from "jpeg-js";
 import { drawCharsetPreview, type CharsetPreviewCandidate } from '../../src/ai/charsetPreview.ts';
 import { charsetFrameSource, decodeCharsetFrameIndex } from '../../src/assets/easyrpgRtp.ts';
 import { findCharsetAsset } from '../../src/assets/charsetCatalog.ts';
+import { generatedMonsterSpriteUrl } from '../../src/assets/generatedMonsterSprites.ts';
 import { resolveAssetResourceUrl } from '../../src/assets/generatedAssetResourceResolver.ts';
 import { drawMapTileLayer } from "../../src/editor/mapTileDraw.ts";
 import { reliefMapView } from "../../src/editor/reliefMapView.ts";
@@ -296,6 +297,15 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSourc
 }
 
 
+/**
+ * 검수용 맵 그림 — 편집기 전용 시작 위치 표시(초록 테두리)를 뺀다. 하네스 검수 그림의 기본(space-craft·assistant-capability).
+ * 2026-10-22 적대 검수자가 시작 표시를 이동 칸·출구로 읽어 점수가 기울었다. HARNESS_START_MARKER=1 이면 표시를 둔다.
+ */
+export function renderReviewMapPng(project: Project, map: GameMap, scale = 1): { png: Buffer; note?: string } {
+  return renderMapPng(process.env.HARNESS_START_MARKER === "1" ? project : { ...project, startMapId: "" } as Project, map, scale);
+}
+
+
 function drawEventCharset(context: PngContext, project: Project, event: GameMap["events"][number], ex: number, ey: number, size: number): boolean {
   const evName = `${event.name ?? ""} ${event.pages?.[0]?.name ?? ""}`;
   const pageGraphic = event.pages?.[0]?.graphic;
@@ -336,6 +346,14 @@ function drawEventCharset(context: PngContext, project: Project, event: GameMap[
     // RTP 캐릭터셋은 좌상단(0,0) 배경색이 투명 키색이다.
     if (raster.data[3] === 255) {
       applyTransparentColorKey(raster.data, [raster.data[0]!, raster.data[1]!, raster.data[2]!]);
+    }
+    // 필드 적의 생성 몬스터 그림(generated-enemy-*): 런타임은 초상 한 장을 32px(2칸) 상자에 맞춰 발밑 가운데로 그린다(eventSpriteResources fitSize 32).
+    // 칩 칸으로 자르면 투명 구석만 잘려 적이 안 보였다(2026-10-23 assistant-dungeons VQA 「투명 적」).
+    if (!asset && !uploaded && generatedMonsterSpriteUrl(spriteId)) {
+      const scale = (size * 2) / Math.max(raster.width, raster.height);
+      const dw = Math.max(1, Math.round(raster.width * scale)), dh = Math.max(1, Math.round(raster.height * scale));
+      context.drawImage(raster, 0, 0, raster.width, raster.height, ex + Math.round((size - dw) / 2), ey + size - dh, dw, dh);
+      return true;
     }
     const rawPattern = pageGraphic?.pattern ?? event.graphic?.pattern;
     const selection = typeof rawPattern === "number" && rawPattern >= 3

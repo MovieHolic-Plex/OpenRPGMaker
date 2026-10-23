@@ -324,7 +324,7 @@ export interface AutotileArea {
 }
 
 /** Position hash for variant choice: stable across repaints, no per-call randomness. */
-function cellHash(x: number, y: number): number {
+export function cellHash(x: number, y: number): number {
   let n = Math.imul(x, 374761393) ^ Math.imul(y, 668265263) ^ 0x2f6b1d;
   n = Math.imul(n ^ (n >>> 13), 1274126177);
   return (n ^ (n >>> 16)) >>> 0;

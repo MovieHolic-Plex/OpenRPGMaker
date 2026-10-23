@@ -1,0 +1,742 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5640fd43f224bc84565cff8525ecf2a0fffeb42592518f03a714ce67d7932893",
+ "width": 128,
+ "height": 224,
+ "kind": "structure",
+ "name": "small Roman-style stone town wall ring, 3/4 top-down: walkable wall-walk tops with crenellated parapets, north and south walls with front faces, west and east walls seen from above, a road passing through a gap in the east wall closed by end caps with their end faces",
+ "label": "beodeul_town_wall/wall_east_gap",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 14,
+  "darkV5": 63,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 62
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "north wall crenellated parapet and wall-walk top",
+      "rows": "1-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "north wall front face (brick)",
+      "rows": "15-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "west wall walk seen from above",
+      "rows": "48-175",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "east wall upper segment with end cap and end face",
+      "rows": "48-95",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "east wall lower segment walk",
+      "rows": "128-175",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south wall crenellated walk top",
+      "rows": "176-190",
+      "evidence": "a",
+      "front_edge_line_row": 191,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south wall front face (brick)",
+      "rows": "192-223",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cobble road through east gap",
+      "rows": "96-127",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "North wall has a crenellated parapet and pink brick wall-walk top (rows 3-14) ending in a light front-edge line at row 14 (L=197), then a dark eave shadow at row 15 (L=81), then a brick front face (rows 15-47, 33 rows). The south wall has a crenellated walk top (rows ~176-190) above a brick front face of about 32 rows (192-223). The west and east walls are drawn as brick wall-walk tops seen from above. The east wall is cut at rows 96-127 by the cobble road, and its cut ends have end caps with their end faces. Every major wall part shows a top surface, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a wall ring, not a house, but it is built from the same stone and masonry vocabulary as the stone-house reference, so the comparison holds. Measured facts: 8 visible tones per 16x16 tile against 12 and 10 for the references, which is slightly lower but not shallow. Near-flat coverage is 0%, matching the references. Only 7% of dark edge pixels are neutral, so the outlines lean toward the material (grey-violet beside stone) and are not a uniform black sticker line. By eye, the brick courses are shaded individually with light top edges, dark mortar and speckle. The crenellated parapet and the front-face base band carry about 5 grey steps. The gravel road gap is a noisy multi-tone fill, not flat. The weaker points are that the wall-top borders are somewhat uniform and the palette is narrow, which accounts for the slightly lower tone count. A careful artist would still accept it next to the stone-house reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20923
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "north wall walk top with crenellated parapet",
+      "rows": "0-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-15"
+     },
+     {
+      "part": "north wall front face (stone brick)",
+      "rows": "15-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "west and east wall-walk tops seen from above",
+      "rows": "3-175",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "east wall upper end cap with end face",
+      "rows": "48-95",
+      "evidence": "a",
+      "front_edge_line_row": 95,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "east wall lower end cap",
+      "rows": "128-175",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south wall walk top with crenellated parapet",
+      "rows": "176-190",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south wall front face (stone brick)",
+      "rows": "191-223",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "road through the east gap",
+      "rows": "96-127",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The north wall has a pinkish brick wall-walk top over rows 1-14 with a crenellated parapet at rows 0-4. It ends in a lighter front-edge line at row 14 (L=197) and a dark eave shadow at row 15 (L=81). Below that is a 33-row stone brick front face (rows 15-47). The south wall repeats the pattern, with its top band and crenellations above a brick front face from about row 191. The west and east walls are drawn as narrow tops seen from above, and the end caps at the east gap have an end face with a lip line. The road is flat ground. The ring reads as a 3/4 structure with tops and front faces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a wall ring, not a roofed house, so the reference kind only loosely matches. Its stone ramp has about 4 visible steps (light cap, mid stone, a darker joint line and a deep base shadow). The references have about 6 steps on their roof tiles and plaster. The measured visible tones per tile are 8, against 12 and 10 for the references. Near-flat coverage is 0%, so there are no large flat fills. The stone blocks carry brick joints and speckle, and the road gap has a dithered cobble texture. Dark edge pixels are only 7% neutral, matching the references, so the outlines lean toward the stone and are not near-black. The wall is clean but fairly uniform: every block looks alike, with little per-stone shading or weathering. That is thinner than the roof scallops and per-tile highlights on the Beodeul houses. The wall-walk, parapet and end faces also read somewhat repetitive. It is competent, but it is a little lower in density and shading depth than the references, and the kind comparison is weak.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19335
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "north wall crenellated parapet and wall-walk top",
+      "rows": "1-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "11-13"
+     },
+     {
+      "part": "north wall front face (brick)",
+      "rows": "15-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "west and east wall-walk tops seen from above (pink stone)",
+      "rows": "1-185",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "east wall end cap above the road gap, with its brick end face",
+      "rows": "63-95",
+      "evidence": "a",
+      "front_edge_line_row": 92,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south wall crenellated parapet and wall-walk top",
+      "rows": "176-190",
+      "evidence": "a",
+      "front_edge_line_row": 190,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south wall front face (brick)",
+      "rows": "191-223",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cobbled road through the gap in the east wall",
+      "rows": "96-127",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The north wall has a wall-walk top with a crenellated parapet at rows 1-4. Pink walk rows 7-10 and shaded rows 11-13 lead to a light front-edge line at row 14, then a 33-row brick front face (rows 15-47). The south wall repeats this in rows 176-223, with parapet and walk rows above a brick face about 33 rows tall. The west and east walls show their tops seen from above, and the east wall end caps at the road gap show an edge line with a brick end face below. The road itself is a flat cobble patch. Every major part has a top surface and the walls have 3+ row front faces, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 8 visible tones per tile against 10-12 for the references, and 0% near-flat coverage, so it has no large flat fills. Its dark edge pixels are only 7% neutral, so the outline is tinted grey-violet stone rather than black. That matches the references' 7-9%. The stone wall has about 4 lightness steps (light cap, mid block, shadow joint, dark base) against 5-6 in the references' roofs and masonry. The blocks are individually drawn with mortar lines and the parapet has crenellation notches, which gives texture. Block faces are fairly uniform, though, with only light speckle and little per-stone highlight or shadow shading. The road gap is a dark noisy cobble patch with a hard rectangular edge and no transition to the wall ends. The end caps are thin, and the end faces are barely distinguishable. Overall it is clean and consistent but a step shallower than the references, which have roof tile scallops, plaster speckle and timber detail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21432
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "north wall wall-walk top with crenellated parapet",
+      "rows": "0-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "north wall front face (brick)",
+      "rows": "15-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "west wall wall-walk top",
+      "rows": "15-190",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "east wall wall-walk top (north and south segments)",
+      "rows": "15-47",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "east wall end cap with end face at road gap",
+      "rows": "63-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south wall wall-walk top with crenellated parapet",
+      "rows": "176-190",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south wall front face (brick)",
+      "rows": "191-223",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The north wall has a walkway top band in rows 0-14. It ends in a light front-edge line at row 14, followed by a dark shadow at row 15, and a 33-row brick front face below (rows 15-47). The south wall repeats this, with a crenellated walk top at about rows 176-190 and a front face from about row 191 to 223. The west and east walls are shown as top-down walkway tops, which is correct for walls running north-south. The east wall's end caps at the road gap show their end faces. The structure therefore has top surfaces and front faces and reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate uses only about 19 colours in total, against 66 and 185 for the references. Its stone material has about 4 steps: a pale pink-grey wall-walk top, light grey brick, a mid tone, and a dark mortar and base line. The references run to about 6 steps on roof tiles, plaster and stone. Visible tones per tile are 8, against 10 and 12 for the references, so density is lower but not drastically. The outlines are tinted rather than neutral, with only 7% near-neutral dark edge pixels, so they read as dark material tone and not a sticker line. Measured flat coverage is 0%, but by eye the brick faces and the pink wall-walk rims are quite uniform. Each brick is a single tone with a light top edge, and there are no per-stone highlights or speckle like the references' per-tile scallops and stone shading. Only the cobble road has real grain. The crenellations and brick rows are clean, but the whole piece looks thinner and flatter than the references next to it, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20820
+  }
+ ],
+ "decidedAt": "2026-10-22T06:46:56.046Z",
+ "cells": {
+  "16": [
+   "11909ff931e413cd",
+   "147302b43901be27",
+   "17cda7e199b24810",
+   "25b8120c9973d535",
+   "3bfb8b0ecd238d93",
+   "6a360c74c674413a",
+   "6de0b5c05712ed9d",
+   "776a4fdb2d32330b",
+   "7a7f603910e946ef",
+   "7c6fbed2876f2105",
+   "7e39f689a7c5a3fc",
+   "838fe20b8feab545",
+   "9a3e667f511a81e5",
+   "9adabe19e8fd48dc",
+   "a44c27ae658ede39",
+   "c06dc8f891266edc",
+   "c23f040925c8d164",
+   "c9d505c77d4a512b",
+   "cccc5baccd6d28cf",
+   "d0fa7bb3e9cf599f",
+   "d3e2446b4c3a5eba",
+   "da69ab0f0f03d63b",
+   "e171f6ca91768f4a",
+   "e3a6811f63e6454b",
+   "f1546fddfa6af9f7",
+   "fad7d4c095183225",
+   "fb1350199428f8aa"
+  ],
+  "24": [
+   "05078e0c4a41f051",
+   "06b0da02f0cbf3bc",
+   "076889306080fb34",
+   "0a3d99c237e75acd",
+   "0a68cceed9e24489",
+   "0af5ffb01add19db",
+   "0b1f58dc30c00f6e",
+   "0c7c73c1d65c36d0",
+   "0e6c7ab00e256bc9",
+   "0f8dc24d28a78384",
+   "0fdcef13e4f190f2",
+   "12791cfe8edc832f",
+   "1353a136f2365cfb",
+   "154c27a77cf34ba4",
+   "16ee6a2e16d4eca6",
+   "16f9924ea7762863",
+   "17dad2a01fe33b76",
+   "192dbbcd9dbdc024",
+   "1acd793a7981a5fc",
+   "210ace0f25b41f5a",
+   "2140b34e4e19843e",
+   "239de83e69f8ca93",
+   "2410de9393462d63",
+   "2434a4f127732deb",
+   "24cd753142bbaf7b",
+   "254cc0c3bd826e52",
+   "280b37860abcc91f",
+   "28b8ece75bfa1056",
+   "29cd7baf7340bb29",
+   "2a3b015c55507d5e",
+   "2b35c4d1211c199a",
+   "2c2cf3a1bfdee58c",
+   "2f320e610aaaa7d8",
+   "2ff0e679f0de826f",
+   "30c69abf08078507",
+   "33a987260fd2ec9f",
+   "35e2b6e55ec2ae8c",
+   "3715cead47846436",
+   "37ada31e8f17d854",
+   "3a8ec94a1947e099",
+   "3b524a1ab9577559",
+   "3e3df767f556f420",
+   "3f1645e7dbb73d75",
+   "3f8cd51a834dd4d5",
+   "40703e6be49bb178",
+   "407f19d2e922f693",
+   "41008a7f61cfdebe",
+   "43a46cd3db00f5ec",
+   "43f939b855a44932",
+   "4974d7c117cdb59f",
+   "4a1f6007d420223b",
+   "4a5df8d89e4140eb",
+   "4ce8e21ca98c93bd",
+   "4e1c42090202ed4a",
+   "4e354d73cce86343",
+   "4e924bddd2628a85",
+   "4faf7ecf3f361949",
+   "55a2f051df06e692",
+   "563263902d12c3e7",
+   "568712638428d76e",
+   "56f2a22b6ff4a215",
+   "5966fbc2e4071cb9",
+   "5bc1d0034f7aa97b",
+   "5cc4094796413d20",
+   "5d03c01bbcdda240",
+   "5ea6cbe7254e2a2b",
+   "6027ac0fb1046e09",
+   "61b4440a97f10810",
+   "640e8699a926ddee",
+   "67badd2f6d0fbcf7",
+   "67f41998a2202b86",
+   "68d2becc01e2f2b0",
+   "69ec9d7b3f134804",
+   "6d5d659fc7e13c1d",
+   "6d70a983b12f1c46",
+   "6de812149e13633b",
+   "6e4aab7cefe06db0",
+   "70bc6e18569ee1a9",
+   "70c028af1e5d6c1c",
+   "7106f04b8894fffa",
+   "7165c773c2e155ab",
+   "7506785ac5eabb87",
+   "76fa2f2123b8b04b",
+   "777cfdae3027b9b4",
+   "77b2709e6c910f7f",
+   "78cb906f8eba51db",
+   "7a22537453f866c7",
+   "7ccf1f1efd11bd2f",
+   "7de2fef3ed6d83f6",
+   "7f71522064f21a38",
+   "7febdac96ceda826",
+   "82f276cb988ef382",
+   "83adf36046981ff3",
+   "842a7aa2bfd4dfa4",
+   "84ace17139f70160",
+   "8570ca392b08e764",
+   "869f8054c523236a",
+   "86b442f114fed712",
+   "870cff0d0cf33240",
+   "8a9b8996c63b03a8",
+   "8d4dd45fe9a11c41",
+   "8ea0f4bd3c2055d1",
+   "8f52660edccd553d",
+   "8f6094547ec9ba00",
+   "8fb3e00528c1caf5",
+   "8ff4da13f0fa6679",
+   "92299440f03e9bd4",
+   "92fdc62180273739",
+   "939ab8db84e00aea",
+   "9491a6d7242a708e",
+   "960dbdf34a8e4955",
+   "9686c832e5f6ce47",
+   "98581f452cf7e2f0",
+   "9b0034bc320d6bb7",
+   "9bf75d4e5d93b801",
+   "9c766fbd3179e944",
+   "a00da36947d8c7e5",
+   "a044104e967d3a8c",
+   "a0684d651150db66",
+   "a35509fc036a074b",
+   "a5fa222d33b18136",
+   "a6c6f6ba1cca3af9",
+   "ab71936110cb31be",
+   "acba1ca1837538f1",
+   "acf3fb068f0fb591",
+   "ae19e998219d29dc",
+   "af4265803ba5da61",
+   "b2e68e863ff303bb",
+   "b935c9fb5d06bf36",
+   "b9e0d479863c81b8",
+   "b9fdf07c39519033",
+   "ba391b8a22fe927f",
+   "bb0416483c3fdeee",
+   "bb3fcba9574f2e05",
+   "be09d7534fcf7bc6",
+   "bef476316c5344c6",
+   "bf843669f8949a56",
+   "c413189506c2793a",
+   "c43aaef65718553d",
+   "c54e9799e401c7bd",
+   "c9cd405eeec3e140",
+   "cc5bc016de1db3f4",
+   "cf8e6a62dbcd51c9",
+   "d09a22afcf857a30",
+   "d0a3ce2d37fcba6e",
+   "d5c6c768d5eaeb71",
+   "d8d619ffe936f589",
+   "d9404d26bb86611a",
+   "d9cd520f184acbc4",
+   "dd930a9c70ba64df",
+   "df2970715d2bd7f8",
+   "e099b7e5f7dea55e",
+   "e4987fd68028c76d",
+   "e49948251dff3607",
+   "e5afdefdec72aaa6",
+   "e7dfa08d90880d66",
+   "e86523e9076660fc",
+   "e8e4dcee28129bb6",
+   "ea844c0026a582fd",
+   "ea9fd1342b920ba8",
+   "eac69d6f886c8a5b",
+   "ebcb6a82f773c5f8",
+   "ed895d47bef4bbef",
+   "ee5e5dc2c1137eb8",
+   "ef1b6aa5e3851dc4",
+   "efbdacc24cd3868d",
+   "f04fd1c4cde442ad",
+   "f09ef90e4e832f43",
+   "f71a68423f988e20",
+   "f973f796d04f1f25",
+   "fc7e2ea33ac17bdb",
+   "fea93618a9c2a89b",
+   "ff18199b93b88797",
+   "ff2d5efae6f628b4"
+  ],
+  "32": [
+   "0030e4e5e2d9f79a",
+   "0218d074305091b5",
+   "0677ad2f45cf72b2",
+   "3a380644791e7c11",
+   "3d4959207660b595",
+   "59fb6d6e90642743",
+   "5e38e2d1d67680cb",
+   "64d88070722fd3d4",
+   "692047ba1a4a5555",
+   "71e03641d1a67e32",
+   "7b24563af82d84f0",
+   "7f8887b1c52fbf2f",
+   "9b10069265fcf1c8",
+   "a09c3a7a779009ee",
+   "a209de3aa9a3947d",
+   "a3ce14f031e5b245",
+   "af03762be33c1a39",
+   "bb97bfb015c2dbbd",
+   "c5588703f7be6238",
+   "dc9ddaf8148750bc"
+  ],
+  "48": [
+   "005b8b5f55c82da6",
+   "078e2c76990a19f3",
+   "0e6d56322cec8483",
+   "103eb0123ffe3526",
+   "18bdaf1ccc4cfe72",
+   "197f8e4081da72aa",
+   "1a38a5240f387130",
+   "1e3cded38c2a5e5f",
+   "1e47c28008b2a596",
+   "2a9a20be5ee9f089",
+   "2ce71312da60cffd",
+   "3359d92ad5fd6d2f",
+   "3b104968a8a77c3f",
+   "3ce5cc40e6d0b71a",
+   "3e98977b5bea0621",
+   "40fabab43fe91c99",
+   "4212d5f2b5941f67",
+   "4c554ff9bdd60a5c",
+   "5288c5a56fd26601",
+   "52fd20c10f00ff9d",
+   "5a449d937de7357d",
+   "5d7b190a33548559",
+   "5da8754f5f9e9304",
+   "6e791a02957865f7",
+   "6f5f75ed79c3d9a3",
+   "724ab3cd0e91667a",
+   "77f6ba726c4006ac",
+   "7c0c4dbb24152b83",
+   "88791b64ca032b89",
+   "8afda0152412400f",
+   "8bb96c7bb25465aa",
+   "8c6476aae30eecbe",
+   "8c7824bec8c25908",
+   "913af549fee96919",
+   "9195f6d4920acaf0",
+   "957e97b0645bcbf6",
+   "986771791b0e884d",
+   "9a7b7142d1ba0899",
+   "a12bec87e64df243",
+   "a7150987d3464838",
+   "a7483c6175fdc9c5",
+   "a935782c830f23cb",
+   "ac5366cb3345bb05",
+   "ac7d622e07edb11e",
+   "b0808be8aeb3b75a",
+   "b66c3d49a920c24b",
+   "b96b30de98568fcd",
+   "ba505390ee36e37a",
+   "bb89ff0ca355f9ba",
+   "bd5dd2bd31daddf4",
+   "be4a8a0371161a2b",
+   "beb438a6217937d3",
+   "c043ef2fc221de57",
+   "c2c271a4ed4db669",
+   "c82813efcdb3cb0d",
+   "c8d3b89ff4184d0f",
+   "cb79a89d616a2cfe",
+   "d0fdf15c60e35dd2",
+   "d3745eb53ce56a61",
+   "d4a2d7ba10da2b14",
+   "d6078dc72c9755b9",
+   "d69a03cd3567b80d",
+   "d735762252c573c6",
+   "d86dbfd2bf0cec70",
+   "dafce0a48724bd12",
+   "e48dea6524616329",
+   "e49e45641009abd8",
+   "e5982466137ef8e8",
+   "ef495e7c45cb3be4",
+   "f08d6dc1b9091cba",
+   "f341260670f1010a",
+   "f4a0317a04966a94"
+  ]
+ }
+}

@@ -1,5 +1,12 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 조수 v2 스위치 (2026-10-23, 기본 꺼짐)
+
+`?assistant=v2` 또는 `localStorage['oprn:assistant-v2']='1'` 이면 이 패널의 평범한 요청 턴(`plainPiTurn` → `runPiCommand`)이
+의도 분류·계획 턴·조화 검수를 건너뛰고 워커의 `runAssistantV2` 로 간다(동사 8개, 결정론 빌더, 독립 비평가).
+맵 소유권·맵별 대기열·체크포인트·되돌리기·정본 저장·시공 재생은 v1 과 같은 실행기를 지난다. 팀·목표·다듬기 모드는 v1 그대로.
+설계·한계·v1 비교: `openwiki/assistant-v2.md`.
+
 ## 로컬 에이전트 CLI 엔진 — `local-cli:claude|codex|gemini` (2026-10-20, opt-in)
 
 방향: 조수 LLM 루프를 우리가 구독 OAuth 로 중계하지 않는다. 사용자가 직접 로그인한 순정 `claude -p` · `codex exec` · `gemini` 가 돈다.

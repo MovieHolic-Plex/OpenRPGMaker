@@ -36,6 +36,7 @@ import { describeDatabaseChanges, renderDatabaseChangeCards } from "@/editor/pan
 import { buildSvgIcon, type SvgNodeSpec } from "@/editor/panels/tileToolbarIcons";
 import { diffDatabaseRecords, type DatabaseRecordChange } from "@/project/databaseRecordDiff";
 import { el } from "@/util/dom";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { toast } from "@/util/toast";
 import { sourceTextOf } from "@/i18n/domTranslator";
 
@@ -743,7 +744,20 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
     input.focus();
   });
 
+  // 오버레이가 열려 있는 동안 Escape 층을 점유한다 — 안 그러면 문서 capture 의 모달 스택이
+  // 아래 자료집 창을 대신 닫는다(입력칸 keydown 은 그보다 늦다).
+  let releaseEscapeLayer: (() => void) | null = null;
   const setOpen = (open: boolean): void => {
+    if (open && !releaseEscapeLayer) {
+      releaseEscapeLayer = registerModal(bar, () => {
+        releaseEscapeLayer = null;
+        setOpen(false);
+        toggle.focus();
+      });
+    } else if (!open && releaseEscapeLayer) {
+      releaseEscapeLayer = null;
+      unregisterModal(bar);
+    }
     bar.hidden = !open;
     toggle.setAttribute("aria-expanded", String(open));
     toggle.title = open ? "AI 어시스턴트 닫기" : "AI 어시스턴트 열기";

@@ -21,13 +21,14 @@ export function supportSurfaceOf(ts: TilesetDef, tile: number): SupportSurface {
   if (tile < 0) return "empty";
   const meta = ts.tileMeta?.[tile];
   const tags = meta?.tags ?? [];
-  if (tags.includes("wall")) return /천장|ceiling/i.test(meta?.label ?? "") ? "ceiling" : "wall";
+  // 천장 태그(ceiling·천장)도 천장이다 — gap 탑 링 바깥 어둠(29775)은 이름표가 「탑 바깥 어둠」이라 이름만 보면 벽으로 셌다(2026-10-23).
+  if (tags.includes("wall")) return tags.includes("ceiling") || tags.includes("천장") || /천장|ceiling/i.test(meta?.label ?? "") ? "ceiling" : "wall";
   return "ground";
 }
 
 const isDungeonKit = (kit: StructureKitDef): boolean => (kit.ai?.themes ?? []).some((t) => t === "dungeon" || t === "던전");
 /** 벽 앞면에 붙는 물건 — 바닥 위에 서면 허공에 걸린 것처럼 보인다. */
-const WALL_MOUNT = /torch-wall|banner|niche|chains|sconce|wall-lamp|vines|hanging-chain/;
+const WALL_MOUNT = /torch-wall|banner|niche|chains|sconce|wall-lamp|vines|hanging-chain|tower-window|lever-(up|down)/;
 /** 물·용암 위에 놓여도 되는 물건(배·말뚝·유목·그물). 그 밖은 액체 칸 위에 서면 걸을 수 없는 칸에 물건이 뜬 것이다. */
 const LIQUID_OK = /boat|dock|driftwood|fish-net|bridge|lily|raft/;
 const isLiquidTile = (ts: TilesetDef, tile: number): boolean => tile >= 0 && (ts.tileMeta?.[tile]?.tags ?? []).includes("water");

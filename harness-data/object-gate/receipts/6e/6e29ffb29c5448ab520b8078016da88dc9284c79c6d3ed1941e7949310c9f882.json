@@ -1,0 +1,328 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6e29ffb29c5448ab520b8078016da88dc9284c79c6d3ed1941e7949310c9f882",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "Astra centre kit cell 5 (r1 c1)",
+ "label": "monster_overworld/astra-centre-kit-5 (칸 2229)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 88,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "framed panel with cream interior and pink flower motif",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cell fills the full 16x16 square (width 16 on every row). It looks like a corner of a flat framed panel: a teal strip on the left, a navy and brown frame running along the top and left, and a cream interior holding a pink flower and green leaf. The column scans show only vertical stacks of frame bands and interior fill. There is no ellipse, no sloped roof or awning plane, and no edge line followed by eave shadow. Rows 2-3 are the brown frame's top edge, which is a 1-2 row rim rather than a top surface. The whole cell reads as a face-on vertical panel with no horizontal surface, so it is a front elevation. It does not look like a gate, pavilion or building with a roof or lintel top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate on the right of the magenta bar is a tiny fragment, about one tile (roughly 18x20 source px). It shows a teal strip beside a pink/white patch, with no roof, walls, door or windows. The references are whole buildings with scalloped tile roofs, timber or stone walls and doors, so this is not the same kind at the same scale. The measured facts do not fault it: 17 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% near-neutral dark edges, which means tinted outlines. But the whole piece uses only 17 distinct colours, against 185 and 66 for the references. At this size I can see only about 3 distinct shading steps on any material, against about 6 on the references' roof ramps. I cannot confirm per-tile roof highlights, plaster speckle or stone-by-stone shading. A single cell cannot be judged as a complete building, and when in doubt the rule is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14960
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "teal left strip",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown-framed white panel with pink flower and leaf",
+      "rows": "2-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tile is 16 px wide for all 16 rows. The scan shows a teal strip at x=4, a navy line at rows 0-1, a brown frame at rows 2-3, then a white interior with a pink flower and green leaf. This reads as a flat face-on framed panel, like a picture or window insert. No horizontal band ends in a front-edge line with eave shadow, no ellipse is visible, there is no sloped roof or awning, and no contents are visible inside an open container. The brown rows 2-3 are a frame border, not a top surface. The cell is not a gate, pavilion or building with a roof or lintel top slope, so the structure kind fits poorly. Overall it is a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 3,
+    "evidence": "The candidate on the right of the magenta bar is a tiny icon-sized sprite: a teal bar beside a small pink and white block with a green mark. It has no readable roof, walls, door or windows, so it is not a whole building like the references, which show tiled roofs with per-tile highlights, timber framing, plaster speckle and stone shaded one by one. The measured facts are 17 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage and 0% neutral dark edges, so the outline is tinted. These numbers look fine, but at this size they come from a few distinct palette pixels and do not show the multi-step material ramps, roof scallops or wall texture of a building. By eye the piece is much thinner and flatter than either reference, and I cannot accept it as a building next to them. Failing as the wrong kind and structurally shallow, since the numbers alone cannot show it carries the same richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15969
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "framed panel tile with teal left border, navy and brown frame, white interior holding a pink flower and green leaf",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The full 16x16 tile is a flat framed picture. Every row has width 16, so the silhouette never narrows or steps. The column scan shows only concentric frame bands (navy, brown, cream) around a white field with a flower. There is no roof, awning or lintel slope, and no front-edge line with eave shadow. There is also no ellipse or open-container contents, and no separate south face under a top surface. Nothing reads as a gate, pavilion, door or building, so the structure kind does not fit. It reads as a flat decorative tile or panel."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate on the right of the magenta bar is only a tiny icon-like fragment, about one tile (roughly 16x16 source px, 17 colours in total), with a teal bar and a pink/white block carrying a small green mark. It has no roof, no walls and no door or window, so it is not a whole building and does not match the reference kind. The references are full houses with scalloped roof tiles shaded in about 5-6 steps, plaster or stone texture, and doors. The 17 visible tones per tile and 0% flat coverage do not offset the missing structure. At this size the shading ramps are too shallow to judge against the references, and the outline tint cannot be read reliably. Nothing here can be compared with the building references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13156
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "framed flat panel with pink flower and green leaf on white",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile fills the full 16x16 square with a constant width of 16 on every row. It is a teal strip at the left, a navy and brown frame, and a white interior with a flower motif. There is no roof, eave line, ellipse or contents, so no top surface is drawn. There is no south face or legs either, so the front face is under 3 rows. The brown frame and flower read as a flat face-on picture or floor tile, not a standing gate, pavilion or building."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a single 16x16 tile (about 32px wide at 2x). It has 17 distinct colours in total, which equals the per-tile count. The references are whole buildings of roughly 8-10 tiles across, with a tiled roof, timber or stone walls and a door. The candidate has no roof ramp, no wall and door structure, and no scalloped tile rows. The pink/white patch with a teal edge and a small plus mark reads as an icon or fragment, not a building. The measured facts are fine on their own: 17 visible tones against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edges, so the outline is tinted. But those numbers come from one tile, not from a building's roof, wall and door ramps, so they do not make up for the missing structure. I could not judge shading steps per material because there is nothing to compare, and I estimate about 3. It is the wrong kind and scale for this comparison, and it would look far thinner than the references beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15262
+  }
+ ],
+ "decidedAt": "2026-10-20T22:08:46.598Z",
+ "cells": {
+  "16": [
+   "42dda2c4ddf1e6a8"
+  ],
+  "24": [
+   "3040ac3d51168ec1",
+   "39757634542a3830",
+   "c1547dad544177ef",
+   "c891741799691a72",
+   "ca06405a77b8c341",
+   "d4e140570c1e5a30"
+  ],
+  "32": [
+   "4e5a6c862a46e481",
+   "5a0a3e2cd9e7d2ca",
+   "ba0897e78aa3f46d",
+   "bed29523cd42bd4a",
+   "dcda957acb088fba",
+   "f8d51aeccb48d869"
+  ],
+  "48": [
+   "2d6a51cab0a33f33",
+   "5828a698e8caee5a",
+   "6c8a21e27d2ed988",
+   "8fb41d55c5f035c5",
+   "d9b96f7462d5e5cc",
+   "de552189368f017f"
+  ]
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "f11604f22a2f433d83a23f59690162d409be3d3018eb3fcd868cf72d17213d70",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-22T06:44:42.183Z",
+ "by": "delegated",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "note": "town wall r4 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/beodeul-town-wall-r4/receipt.json | 기록 정정 2026-10-22: by human → delegated (위임 허용을 옛 서버가 사람 클릭으로 적었다)",
+ "delegatedBy": "user (2026-10-21, gate decisions delegated to supervisor)",
+ "evidence": "harness-data/object-gate/vqa/beodeul-town-wall-r4/receipt.json",
+ "supersededBy": "beodeul town wall 3rd edition r21 (gate18 18 images, vqa/beodeul-town-wall-3e-r21)",
+ "supersededAt": "2026-10-22T17:04:51.259Z",
+ "sig": "bcaa2e97e596b60637c4caa71bd332c598dd002482af0d8c1d5656d724a8e470"
+}

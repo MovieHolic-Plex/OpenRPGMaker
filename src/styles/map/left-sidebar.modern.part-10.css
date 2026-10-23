@@ -117,7 +117,7 @@
 .editor-layout .left-panel-stack .palette-catalog-search {
   font-size: 12px;
   height: 26px;
-  padding: 0 8px;
+  padding: 0 26px 0 8px;
 }
 
 /* 「이웃 연결」「구조 보조」 행의 72px 라벨 칸(.tile-brush-row grid)은 네 글자 라벨에

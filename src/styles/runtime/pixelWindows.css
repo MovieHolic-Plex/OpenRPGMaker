@@ -207,6 +207,8 @@
   --status-edge-amber: var(--px-accent);
   --status-edge-amber-soft: var(--px-accent-soft);
   --status-edge-border: var(--px-line);
+  /* 이름·수치·상태 줄은 색을 따로 정하지 않아 밝은 테마의 짙은 글자색을 물려받았다 — 창 잉크를 루트에서 준다(VQA SA02). */
+  color: var(--px-ink);
   font: 400 7.5px/1.3 var(--runtime-pixel-font);
   text-shadow: var(--px-shadow);
 }

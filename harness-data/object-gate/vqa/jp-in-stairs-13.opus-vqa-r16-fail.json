@@ -1,0 +1,4 @@
+{"queue":"jp-in-stairs-13","round":16,"judge":"claude-opus-5.5 (fresh subagent, no prior scores)","date":"2026-10-22","verdict":"fail","majors":3,"axis2":7,"axis6":6,
+ "majorFindings":["sc-stairs-up at 1x: pure-white even stripes between bright posts read as a metal shelf","cs-stairs-up-bare: grey slats between light posts read as a rolling shutter","scene school-2f: same sc-stairs-up finding"],
+ "minorFindings":["wood risers cold blue-grey","south outline under the first tread closes the entrance","wells: south lip, template sameness","as damage confetti","cs cones on wainscot"],
+ "action":"grey treads one step below white (tr conc 1 / nose conc 2), side stringer tops not white, cs walls = 2px top face + 2px dark inner face, wood shadow lines in warm ita, no south outline"}

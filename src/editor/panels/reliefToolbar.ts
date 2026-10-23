@@ -24,6 +24,7 @@ import { RELIEF_MAX_LEVEL } from "@/project/relief/types";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
+import { t } from "@/i18n";
 import { terrainMaterialTile, MATERIAL_LABEL, type TerrainMaterial } from "@/editor/terrainMaterials";
 import { deleteDoodadGroup } from "@/editor/terrainClusters";
 import { mountTerrainDesignPanel } from "./terrainDesignPanel";
@@ -557,7 +558,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
       button.classList.toggle("is-active", on);
       button.setAttribute("aria-pressed", String(on));
     }
-    levelValue.textContent = `${state.reliefLevel}단`;
+    levelValue.textContent = t("{0}단").replace("{0}", String(state.reliefLevel));
     const levelModeLabel = state.reliefMode === "set" ? "맞출 단" : state.reliefMode === "flatten" ? "기준 단" : state.reliefMode === "canyon" ? "바닥 단" : "최대 단";
     levelLabel.textContent = levelModeLabel;
     level.title = state.reliefMode === "flatten" ? "처음 누른 칸의 높이로 맞춘다" : state.reliefMode === "set" ? "고른 단으로 맞춘다" : state.reliefMode === "canyon" ? "골짜기는 0단까지 판다" : "올리기·산은 이 단을 넘지 않는다";

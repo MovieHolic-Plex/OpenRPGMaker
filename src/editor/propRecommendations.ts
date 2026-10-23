@@ -1,3 +1,4 @@
+import { t } from "@/i18n";
 import { isDefaultTilesetTexture } from "@/editor/chipsetComposition";
 import { comboBrushStampFromCatalog, curatedComboBrushesForTileset } from "@/editor/comboBrushCatalog";
 import { paletteStampFromCells, paletteStampFromKit } from "@/editor/harnessSuggestion/structureKitModel";
@@ -127,7 +128,9 @@ export function filterProps(entries: readonly PropRecommendation[], category: Pr
   const tokens = query.normalize("NFKC").toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
   return entries.filter(({ choice }) => {
     if (category && choice.category !== category) return false;
-    const text = [choice.name, choice.id, ...choice.terms].join(" ").normalize("NFKC").toLocaleLowerCase();
+    // 현재 언어로 보이는 이름·종류 라벨도 색인한다 — 자리표시가 현지어 검색을 안내한다.
+    const kindLabel = PROP_CATEGORIES.find(kind => kind.id === choice.category)?.label ?? "";
+    const text = [choice.name, t(choice.name), t(kindLabel), choice.id, ...choice.terms].join(" ").normalize("NFKC").toLocaleLowerCase();
     return tokens.every(token => text.includes(token));
   });
 }

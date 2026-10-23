@@ -431,6 +431,9 @@ const VAULT_ROOM: RoomSpec = {
 
 /** 네 화로(퍼즐 프리셋 순서: 0 북서 · 1 북동 · 2 남서 · 3 남동)의 발밑 왼쪽 칸. 큰 돌 화로는 2칸 폭 — 꺼짐은 발밑 + 위 1줄, 켜짐은 위 2줄(불꽃).
  * 방 VQA r8~r11: 1칸 버들항 돌 화로는 1배에서 사발 속이 2~3px 라 꺼졌을 때 검은 말뚝으로 읽혔다. 이벤트는 오른쪽 칸에도 복제한다(어느 칸에서 말 걸어도 켠다). */
+/** 세 방 평면(코딩 에이전트 28바퀴 합격 판) — 조수 실내 빈 바닥 측정의 보정 기준으로도 읽는다(scripts/qa/interior-bare-floor-calibrate.mts). */
+export const FALLEN_ROOM_SPECS: Readonly<Record<"observatory" | "gate" | "vault", Readonly<RoomSpec>>> = { observatory: OBS_ROOM, gate: GATE_ROOM, vault: VAULT_ROOM };
+
 const BRAZIERS: readonly Cell[] = [{ x: 12, y: 8 }, { x: 18, y: 8 }, { x: 12, y: 11 }, { x: 18, y: 11 }];
 const BRAZIER_W = 2;
 const PORTCULLIS: Cell = { x: 15, y: 1 };          // 2×2, 벽면 두 줄
@@ -685,7 +688,9 @@ export function rebuildFallenRooms(project: Project, exec: Exec, ids: { hub: str
   const exit = vault.events.find((e) => transfersIn(e).some((t) => t.mapId === ids.observatory || t.mapId === ids.gate));
   if (!exit) throw new Error("[fallen-star] 옛 별지기의 방 출구를 찾지 못했다");
   exit.x = 15; exit.y = 26;
-  for (const rec of transfersIn(exit)) if (rec.mapId === ids.observatory || rec.mapId === ids.gate) Object.assign(rec, { mapId: ids.gate, x: 15, y: 3, direction: "down" });
+  // 착지는 쇠창살 문(15,1) 바로 앞 칸 — 한 칸 더 아래(15,3)면 돌아오는 문에서 두 칸 떨어져 내렸다(scene-transfer-pair). 퍼즐을 풀어야
+  // 이 방에 오므로 (15,2) 창살 칸은 늘 열림 페이지(아래 층)다.
+  for (const rec of transfersIn(exit)) if (rec.mapId === ids.observatory || rec.mapId === ids.gate) Object.assign(rec, { mapId: ids.gate, x: 15, y: 2, direction: "down" });
   const spots: Record<string, Cell> = {
     ev_fs_vault_foe1: { x: 23, y: 24 },   // 남쪽 곁방 식당 — 식탁 남쪽 줄(좌우로 두 칸씩 돈다). VQA r14: 홀 한가운데 늑대는 곁방 밖을 돌았다 · VQA r23: 빵 화덕 앞(27,23)은 화덕·물독과 겹쳐 보였다
     ev_fs_vault_foe2: { x: 5, y: 17 },    // 서쪽 납골실 — 석관 앞 트인 칸(석관 뒤에 숨지 않게). VQA r25: 18줄은 벽(남벽 계단)이라 허공에 떠 보였다
@@ -704,9 +709,23 @@ export function rebuildFallenRooms(project: Project, exec: Exec, ids: { hub: str
   const boss = vault.events.find((e) => (e.pages ?? []).some((p) => JSON.stringify(p.commands).includes("battleProcessing")) && e.id.includes("kill"));
   if (boss) { boss.x = FS_VAULT_BOSS.x; boss.y = FS_VAULT_BOSS.y; }
 
+  // 별자리표(1×3) 맨 아래 칸은 액자 아랫테 한 줄뿐인데, 벽면이 두 줄이라 그 칸이 바닥에 놓여 액자가 바닥에 선 깃발처럼 읽혔다
+  // (scene-hang-on-floor). 바닥 칸에 떨어진 아랫테 칸만 걷는다 — 액자 몸통 두 칸은 벽면에 그대로 남는다.
+  {
+    const chartFoot = kitTile(project, "star chart", 0, 2);
+    const meta = (project.tilesets[TILESET] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+    for (const id of rooms) {
+      const map = M(id);
+      for (const layer of [map.upperTiles, map.upperOverlayTiles]) {
+        if (!layer) continue;
+        for (let i = 0; i < layer.length; i += 1) if (layer[i] === chartFoot && (meta[map.lowerTiles[i]!]?.label ?? "").startsWith("바닥")) layer[i] = -1;
+      }
+    }
+  }
+
   // 이 세 방 사이·광장에서 들어오는 이동 도착 칸(문 앞 첫 바닥, 문을 등진 방향).
   pointTransfers(M(ids.gate), ids.vault, { x: 15, y: 25, direction: "up" });
-  pointTransfers(M(ids.vault), ids.gate, { x: 15, y: 3, direction: "down" });
+  pointTransfers(M(ids.vault), ids.gate, { x: 15, y: 2, direction: "down" });
   pointTransfers(M(ids.observatory), ids.gate, { x: 26, y: 4, direction: "down" });
   pointTransfers(M(ids.gate), ids.observatory, { x: 3, y: 21, direction: "down" });
 }

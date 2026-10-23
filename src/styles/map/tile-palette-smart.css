@@ -59,13 +59,51 @@
   width: 100%;
 }
 
+.palette-smart-search {
+  position: relative;
+}
+
+/* 기본 취소(✕)는 숨기고 편집기 자체 지우기 단추를 쓴다. */
+.palette-catalog-search::-webkit-search-cancel-button {
+  appearance: none;
+  display: none;
+}
+
+.palette-catalog-search {
+  padding-right: 26px;
+}
+
+.palette-catalog-clear {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-3);
+  font: 700 14px/1 var(--font-ui, sans-serif);
+  cursor: pointer;
+}
+
+.palette-catalog-clear:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.palette-catalog-clear[hidden] {
+  display: none;
+}
+
 .palette-smart-chips {
   display: flex;
   flex: 0 0 auto;
-  flex-wrap: nowrap;
+  /* 한 줄 가로 스크롤은 막대도 휠도 없어 뒤쪽 분류에 닿을 수 없었다 — 줄바꿈으로 모두 보인다. */
+  flex-wrap: wrap;
   gap: 3px;
-  overflow-x: auto;
-  scrollbar-width: thin;
   min-width: 0;
 }
 

@@ -1,0 +1,9 @@
+{
+ "atlas_interior": "atlas_biome_interior",
+ "hand-interior": "atlas_biome_interior",
+ "interior-v5": "atlas_biome_interior",
+ "joseon": "joseon_baram",
+ "jp-city": "jp_city",
+ "modern3": "modern_city",
+ "wizarding": "wizarding_world"
+}

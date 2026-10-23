@@ -243,8 +243,9 @@ function checkTransfers(project: Project, issues: LintIssue[], gates: readonly G
 function simulateRoute(start: Cell, moves: readonly MoveCommand[] | undefined, map: GameMap, doorOf?: (m: Extract<MoveCommand, { kind: "exitVia" | "enterVia" }>, from: Cell) => Cell | null): { end: Cell; fades: boolean; viaDoor: boolean } {
   let cur = { ...start };
   let fades = false;
-  let opacity = 0; // 여러 번 나눠 흐려지는 퇴장(−64 ×4)도 끝에는 사라진다.
   let viaDoor = false;
+  // 여러 번에 나눠 옅어지는 퇴장(-85 ×3)도 사라짐이다 — 누적으로 본다.
+  let fade = 0;
   for (const m of moves ?? []) {
     if (!m || typeof m !== "object") continue;
     // 문으로 나가기: 문 칸 위로 걸어 들어가 사라진다 — 문을 못 찾으면(런타임도 제자리에서 사라진다) 제자리.
@@ -253,7 +254,7 @@ function simulateRoute(start: Cell, moves: readonly MoveCommand[] | undefined, m
     if (m.kind === "move") cur = { x: cur.x + STEP[m.dir].x, y: cur.y + STEP[m.dir].y };
     else if (m.kind === "moveDiagonal") cur = { x: cur.x + (m.horizontal === "left" ? -1 : 1), y: cur.y + (m.vertical === "up" ? -1 : 1) };
     else if (m.kind === "jump") cur = { x: cur.x + (m.dx || 0), y: cur.y + (m.dy || 0) };
-    else if (m.kind === "changeOpacity") { opacity += m.delta; if (m.delta <= -200 || opacity <= -200) fades = true; }
+    else if (m.kind === "changeOpacity") { fade = Math.min(0, fade + m.delta); if (fade <= -200) fades = true; }
     else if (m.kind === "npcTransfer") return { end: cur, fades: true, viaDoor: false };
   }
   cur = { x: Math.max(0, Math.min(map.width - 1, cur.x)), y: Math.max(0, Math.min(map.height - 1, cur.y)) };
@@ -773,7 +774,8 @@ function checkHangOnFloor(project: Project, issues: LintIssue[]): void {
       if (!grid) continue;
       for (let i = 0; i < grid.length; i += 1) {
         const name = tiles.get(grid[i]!);
-        if (!name) continue;
+        // 아치·문틀은 벽 틈(통로) 위에 거는 것이 제자리다 — 가운데 칸이 걸을 수 있는 통로 칸이어도 바닥에 선 깃발이 아니다.
+        if (!name || /문틀|door ?frame|arch/iu.test(name)) continue;
         const x = i % map.width, y = Math.floor(i / map.width);
         if (!isPassable(project, map, x, y) || seen.has(name)) continue;
         seen.add(name);
@@ -803,8 +805,13 @@ function ceilingTiles(tileset: TilesetDef | undefined): Set<number> {
     ? meta.map((m, i) => [i, m as TileMetaLike])
     : meta && typeof meta === "object" ? Object.entries(meta as Record<string, TileMetaLike>).map(([k, m]) => [Number(k), m]) : [];
   for (const [tile, m] of entries) {
-    if (!m || typeof m !== "object" || (m.passage && m.passage !== "solid")) continue;
-    if (CEILING_WORDS.test(`${m.label ?? ""} ${(m.tags ?? []).join(" ")}`)) out.add(tile);
+    if (!m || typeof m !== "object") continue;
+    // 천장 띠에 거는 그림(천문대 둥근 지붕·처마 띠 — 이름표 「천장 띠」「천장 줄」)은 위 층 걸이라 통행이 «passable» 이어도
+    // 천장 그 자체다(Fallen fs_observatory 둥근 지붕 30×8 이 천장 구역의 「천장 아닌 칸」으로 잡혔다).
+    const label = `${m.label ?? ""} ${(m.tags ?? []).join(" ")}`;
+    if (/천장 ?띠|천장 ?줄/u.test(m.label ?? "")) { out.add(tile); continue; }
+    if (m.passage && m.passage !== "solid") continue;
+    if (CEILING_WORDS.test(label)) out.add(tile);
   }
   if (ceilingTileCache.size > 64) ceilingTileCache.clear();
   ceilingTileCache.set(key, out);

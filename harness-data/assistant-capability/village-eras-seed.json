@@ -1,0 +1,268 @@
+{
+ "id": "assistant-capability-village-eras-v1",
+ "version": 1,
+ "purpose": "시대·세계별 마을 요청(선사·고대·중세·동아시아·근대·오늘날·미래·판타지)을 실제 입력창 경로로 지어, 맞는 칩셋·시공기·선택지로 가는지와 그림이 없는 종류를 정직하게 말하는지 본다. 한 과제 = 빈 프로젝트 하나 + 자연어 한 번. 표 정본 src/ai/villageTypeCatalog.ts.",
+ "internalAi": "조수 엔진은 제품의 로컬 CLI 엔진 스위치(src/ai/localCliEngine.ts) — Claude Code + claude-sonnet-5-5, effort high. 기본 Argon 이 한도 소진이라 대용이다. Argon 점수와 직접 비교하지 않는다.",
+ "assistantEngine": {
+  "kind": "local-cli",
+  "cli": "claude",
+  "routineModel": "claude-sonnet-5-5",
+  "deepModel": "claude-sonnet-5-5",
+  "effort": "high"
+ },
+ "maximumConcurrentEditors": 2,
+ "turnDeadlineMs": 2400000,
+ "maximumRepairTurns": 0,
+ "panoramaCoveredElsewhere": "배경·파노라마(노을 옥상·바다·별밤 창·흐르는 구름·붉은 달 성·모래폭풍·모호한 '배경 예쁘게'·한 화면 시차·다리 밑 물)는 별도 파노라마 시험이 맡는다.",
+ "cases": [
+  {
+   "id": "era-prehistoric",
+   "label": "원시 움집 마을",
+   "port": 19640,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "원시 시대 움집 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-roman",
+   "label": "고대 로마 도시",
+   "port": 19641,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "고대 로마풍 도시 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-oasis",
+   "label": "사막 오아시스",
+   "port": 19642,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "사막 오아시스 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-fishing",
+   "label": "중세 어촌",
+   "port": 19643,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "바닷가 어촌 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-mountain",
+   "label": "중세 산골",
+   "port": 19644,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "깊은 산속 산골 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-viking",
+   "label": "북방 바이킹 마을",
+   "port": 19645,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "북방 바이킹 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-joseon-market",
+   "label": "조선 장터 마을",
+   "port": 19646,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "조선 시대 장터 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-edo",
+   "label": "에도 성하마을",
+   "port": 19647,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "에도 시대 성하마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-onsen",
+   "label": "일본 온천 마을",
+   "port": 19648,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "일본 온천 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-newtown",
+   "label": "신도시 아파트 단지",
+   "port": 19649,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "신도시 아파트 단지 동네 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-steampunk",
+   "label": "스팀펑크 공장 도시",
+   "port": 19650,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "스팀펑크 공장 도시 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-cyberpunk",
+   "label": "사이버펑크 마을",
+   "port": 19651,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "사이버펑크 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-moon",
+   "label": "달 정착지",
+   "port": 19652,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "달 위의 정착지 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-sky",
+   "label": "하늘섬 마을",
+   "port": 19653,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "구름 위 하늘섬 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-pirate",
+   "label": "해적 항구",
+   "port": 19654,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "해적 항구 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "gap-elf",
+   "label": "엘프 숲 마을(그림 없음)",
+   "port": 19655,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "엘프 숲 마을 맵을 만들어 줘.",
+   "requirements": [
+    "no map built; the answer says clearly which art is missing and offers the nearest buildable type"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "gap-postapoc",
+   "label": "폐허 마을(그림 없음)",
+   "port": 19656,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "포스트아포칼립스 폐허 마을 맵을 만들어 줘.",
+   "requirements": [
+    "no map built; the answer says clearly which art is missing and offers the nearest buildable type"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "gap-undersea",
+   "label": "해저 돔(그림 없음)",
+   "port": 19657,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "해저 돔 도시 맵을 만들어 줘.",
+   "requirements": [
+    "no map built; the answer says clearly which art is missing and offers the nearest buildable type"
+   ],
+   "lint0": []
+  }
+ ]
+}

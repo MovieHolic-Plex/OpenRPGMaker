@@ -1,0 +1,34 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "abi-stairs-v5",
+ "title": "손 도트 실내 v5 계단 다시 그림 4 (올라가는/내려가는)",
+ "explainImage": "abi-stairs-v5-explain.png",
+ "explainText": "손 도트 실내(atlas_biome_interior) 계단 넷을 다시 그렸다. 올라가는 돌·나무 계단은 북쪽 벽 앞에서 남쪽에서 들어서 북쪽 천장 구멍으로 오른다. 내려가는 계단(돌 2x2)과 계단통(나무 3x2)은 바닥 구멍으로, 남쪽에서 들어서 북쪽 어둠으로 내려간다. 허용하면 칩셋의 같은 칸에 다시 굽고, 거절하면 옛 그림을 그대로 둔다.",
+ "createdAt": "2026-10-22T11:43:58.192Z",
+ "items": [
+  {
+   "sha": "a37cec066b5c25cb4705dda6a082c174a51930c93a1b2e6b667937fcff8b6163",
+   "kind": "structure",
+   "label": "abi-stairs-v5:stairs up stone",
+   "source": "scripts/content/hand-interior/stairs/draw.py → stairs-up-stone.png"
+  },
+  {
+   "sha": "d83a5423c68df2e5b15b87d5be9974e30f3c3354197e39a5f6dc97c0a6bc7a38",
+   "kind": "structure",
+   "label": "abi-stairs-v5:stairs up wood",
+   "source": "scripts/content/hand-interior/stairs/draw.py → stairs-up-wood.png"
+  },
+  {
+   "sha": "43710588c76bcf968bda39ab0d23921f8a48caf95c8366425eebac2413904c9b",
+   "kind": "flat",
+   "label": "abi-stairs-v5:stairs down",
+   "source": "scripts/content/hand-interior/stairs/draw.py → stairs-down.png"
+  },
+  {
+   "sha": "bc05701165e5d112a6270925f8476996900894fca0ed7a0e42533e0e4f78dab4",
+   "kind": "flat",
+   "label": "abi-stairs-v5:stairwell down",
+   "source": "scripts/content/hand-interior/stairs/draw.py → stairwell-down.png"
+  }
+ ]
+}

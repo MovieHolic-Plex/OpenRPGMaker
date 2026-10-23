@@ -1,0 +1,1297 @@
+{
+ "panel": "theme-climate-r1 blind panel 6 (3 fresh Opus + 1 Argon), 2026-10-23",
+ "rule": "a major counts only if at least 2 of the 4 judges raise the same problem; pick = candidate with 0 counted majors, majority vote among those (Opus majority on ties)",
+ "delegatedBy": "delegated by user to supervisor 2026-10-23",
+ "prompt": "# Blind review panel — dungeon chipset pieces\n\nYou are one independent judge. Do not edit or create any files; only open the PNG boards below with the Read tool\n(they are large; read each one fully). No other context is needed.\n\nEach board is one item for an OPRN 16px RPG chipset in 3/4 top-down view (RPG Maker style: tops are visible planes, fronts below them,\nno side faces, light from top-left). At the top of the board are REFERENCE crops from the existing \"Beodeul\" chipset (the quality\nbar) at 1x and 3x and an RPG Maker person for scale. Below are anonymous candidates labelled X and Y for the same item: the piece at 1x and\n3x, its parts, a small scene at 1x and 2x (animated items show all frames side by side), and extras (tile mosaics / test maps) for\nfloors, walls and autotiles.\n\nJudge each candidate against these criteria:\n1. reads correctly in 3/4 top-down at 1x (top planes visible, fronts below, no side/isometric faces, sits on the floor with contact);\n2. sits in the same game as the Beodeul reference (palette harmony, texture density, number of shading steps, no toy/flat/clip-art look,\n   no black ink outlines);\n3. seamless joins: floors/walls/autotiles show no visible 16px repeat or seams; multi-cell objects join without cuts;\n4. reads as its stated purpose and as its theme (the board title says what it is).\n\nA MAJOR problem = something that would make you refuse to ship it (misreads at 1x, wrong view, clearly below the reference's quality,\nvisible seams/grid, does not read as the item). A MINOR problem = worth polishing but shippable.\n\nReply with ONLY a JSON object, no prose before or after:\n{\"<board file name without .png>\": {\"X\": {\"majors\": [{\"problem\": \"...\", \"where\": \"...\"}], \"minors\": [{\"problem\": \"...\", \"where\": \"...\"}]},\n                                    \"Y\": {\"majors\": [...], \"minors\": [...]},\n                                    \"pick\": \"X\" or \"Y\", \"why\": \"one sentence\"}, ...}\n\nBoards:\n- /home/main/.cache/dungeon-themes/climate-panel/r3-mixed/theme-climate-r1__tc.fo_ancient_tree.png\n- /home/main/.cache/dungeon-themes/climate-panel/r3-mixed/theme-climate-r1__tc.ice_drift.png\n- /home/main/.cache/dungeon-themes/climate-panel/r3-mixed/theme-climate-r1__tc.ice_icicles.png\n- /home/main/.cache/dungeon-themes/climate-panel/r3-mixed/theme-climate-r1__tc.pyr_drift.png\n- /home/main/.cache/dungeon-themes/climate-panel/r3-mixed/theme-climate-r1__tc.pyr_face.png\n- /home/main/.cache/dungeon-themes/climate-panel/r3-mixed/theme-climate-r1__tc.pyr_obelisk.png\n- /home/main/.cache/dungeon-themes/climate-panel/r3-mixed/theme-climate-r1__tc.pyr_rim.png\n- /home/main/.cache/dungeon-themes/climate-panel/r3-mixed/theme-climate-r1__tc.pyr_sarcophagus.png\n- /home/main/.cache/dungeon-themes/climate-panel/r3-mixed/theme-climate-r1__tc.pyr_statue.png\n",
+ "boards": {
+  "theme-climate-r1__tc.pyr_statue": {
+   "item": "tc.pyr_statue",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "e075b70a940400e818d834f665d44447a4b5e176f96bbbf682ae88f51e790424"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "4d90a9611222e99273406c6478826deb77c26fca0ddba4ecc8165f4b4b8b22b9"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": [
+     "jackal tiny/lying, does not read as guardian (4/4)"
+    ]
+   },
+   "pick": "A1"
+  },
+  "theme-climate-r1__tc.fo_ancient_tree": {
+   "item": "tc.fo_ancient_tree",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "9346739a1ba94b02c30fec7c9c1cbb779047f1d1ca0f553d529d46d6ebca71ca"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "2860b66512e05112e2dbada2ed5cd918c722a689be6ed6d62b9f7e984649f687"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": [
+     "canopy too dark / flat next to Beodeul trees (opus1, opus2, opus3)"
+    ]
+   },
+   "pick": "A1"
+  },
+  "theme-climate-r1__tc.pyr_sarcophagus": {
+   "item": "tc.pyr_sarcophagus",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "8872f50cf78623f7e6aa1e13e721c6381a42cf50ceb5e703b8e04ed6b0b3f501"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "6e3e725498661e9715d007ea1674f5aabeb0ddcfeea1254eb17d8db986426ba0"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": []
+   },
+   "pick": "A1"
+  },
+  "theme-climate-r1__tc.pyr_obelisk": {
+   "item": "tc.pyr_obelisk",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "4d0c7abc6e44c6979e6854fe8012f35e397e84aaac6c75d0426d2497002cd0cf"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "be692cc2a1d590dd1e6aaddbacb8a7d7054bbae9fa8e9b457aa3af5879a74579"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A2",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": [
+     "grey shaft clashes with the sandstone room (argon, opus2, opus3)"
+    ]
+   },
+   "pick": "A1"
+  },
+  "theme-climate-r1__tc.pyr_drift": {
+   "item": "tc.pyr_drift",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "151fbbcec6596ab8b3063d766534ca41759c6e604cec9386eaa743aab5b976f4"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "400bfa86ccde923370084a4c59e5beedbff8e86ebebcc90bca2199bc086f77de"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": [
+     "fuzzy dithered/spiky fringe reads as stains or bursts, not raised sand (argon, opus3)"
+    ]
+   },
+   "pick": "A1",
+   "note": "4/4 votes A1; the A1 plank-like diagonal variant was raised as a minor only this panel"
+  },
+  "theme-climate-r1__tc.pyr_face": {
+   "item": "tc.pyr_face",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "daa988070bbbcb92770992315a66fd3d7f1683f6b7f4355d85fdf7094aeeee58"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "684e15ca0e5af4c4aa4f801316647532e2d9d8f7b957b5cf8ca9d1e099392453"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": [
+     "grey stone clashes with warm sandstone (4/4)"
+    ]
+   },
+   "pick": "A1"
+  },
+  "theme-climate-r1__tc.pyr_rim": {
+   "item": "tc.pyr_rim",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "b36aefdffc61fe9fe8e642e20a17d92d2dced8295778ec5f6240e4a802a7dea0"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "0e6ea24fa7f0a92dde7f0f43224afaf8aaea2e79e2276b76f1bf1424ca0045cf"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": [
+     "busy grid/maze lines show tile seams (argon, opus3)"
+    ]
+   },
+   "pick": "A1"
+  },
+  "theme-climate-r1__tc.ice_icicles": {
+   "item": "tc.ice_icicles",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "5ad63e0879dbe642845b9cdcc8da59e277985a64edabb369b192017dece1ec22"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "cc2214559471f99e525fe25bef1fff37d20d7c26f88ac37e106ecbe083716d00"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A2",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": []
+   },
+   "pick": "A1",
+   "note": "3-1 for A1"
+  },
+  "theme-climate-r1__tc.ice_drift": {
+   "item": "tc.ice_drift",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "b9105f8997d7643836e86539b2f77bac73ba3dfe222615826a093c97546d23bd"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "9614a4266766560e3f640f4c031669fcb6465eeb129de068b12dfd2ce4acbaec"
+    }
+   },
+   "votes": {
+    "argon": "A2",
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": []
+   },
+   "pick": "A1",
+   "note": "3 Opus A1, argon A2"
+  }
+ },
+ "raw": {
+  "argon": {
+   "theme-climate-r1__tc.fo_ancient_tree": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Foliage lobes are slightly repetitive and rounded compared to the crisper, irregular leaf clusters of the Beodeul tree reference.",
+       "where": "X piece 3x canopy"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "Lower canopy ends in a hard horizontal shelf with thin, stiff diagonal branches and floating vertical vine lines that look artificial at 1x.",
+       "where": "Y piece 1x and 3x middle section between trunk and foliage"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "Wooden plank door with metal hinges looks more like a cottage door than a natural hollow in an ancient dungeon tree.",
+       "where": "Y piece 3x trunk base"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X integrates the trunk, branches, and layered foliage organically with an inviting hollow entrance that reads much better at 1x than Y's stiff branches and flat-bottomed canopy."
+   },
+   "theme-climate-r1__tc.ice_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Small detached snow specks along the bottom edge look slightly noisy against the stone floor.",
+       "where": "X part 1 and part 2 bottom edge"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Interior shading is very smooth and pillow-like, lacking some of the crisp facet texture of the snowfield reference.",
+       "where": "Y piece 3x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X has crisper internal snow facets and better surface texture matching the reference, whereas Y looks overly smooth and pillowy."
+   },
+   "theme-climate-r1__tc.ice_icicles": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Top frost rim is a continuous bright band that slightly overpowers the existing wall-top rim when placed in the scene.",
+       "where": "X scene 2x along the north wall top"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Top attachment clusters are slightly blocky where the icicle bases meet the wall lip.",
+       "where": "Y piece 3x top row"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X has sharper, more varied icicle tapers and cleaner icy highlights that read more naturally at 1x than Y's heavier, more uniform spikes."
+   },
+   "theme-climate-r1__tc.pyr_drift": {
+    "X": {
+     "majors": [
+      {
+       "problem": "Radiating spiky fringe around the entire perimeter makes the sand heaps read like fuzzy bursts or hay splatters rather than drifted sand.",
+       "where": "X part 1 and part 2 edges, X scene 1x"
+      }
+     ],
+     "minors": []
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Part 2 diagonal ridge could use a slightly softer lower transition into the floor bricks.",
+       "where": "Y part 2 3x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y reads as wind-drifted sand mounds with clear 3/4 top and shadow planes, while X looks like spiky starbursts."
+   },
+   "theme-climate-r1__tc.pyr_face": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Carved glyph panels are subtle in contrast and blend closely into the surrounding warm sandstone courses at 1x.",
+       "where": "X test map 1x and X wall run 3h"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "Wall face uses a cold grey stone palette that clashes with the warm sandstone floor, rim, and desert temple reference.",
+       "where": "Y scene 2x and Y test map 1x"
+      },
+      {
+       "problem": "Base wall variant has a baked-in bright yellow sand heap that repeats conspicuously across wall runs.",
+       "where": "Y part 3 base3h and Y test map 1x"
+      }
+     ],
+     "minors": []
+    },
+    "pick": "X",
+    "why": "X matches the warm sandstone palette of the pyramid set and tiles cleanly across 2-high and 3-high walls, whereas Y shifts to cold grey stone with repetitive baked-in sand blobs."
+   },
+   "theme-climate-r1__tc.pyr_obelisk": {
+    "X": {
+     "majors": [
+      {
+       "problem": "Shaft is colored cool grey while the pyramidion tip is bright yellow, making it clash with the sandstone room and look like a grey pillar with a gold cap.",
+       "where": "X piece 3x and X scene 2x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "Bright yellow hieroglyph pixels on the grey shaft look noisy at 1x.",
+       "where": "X piece 1x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Pedestal base is slightly wide relative to the shaft.",
+       "where": "Y piece 3x bottom cell"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y has a cohesive sandstone palette, clear tapered obelisk silhouette, and legible engraved hieroglyphs that fit the pyramid room at 1x."
+   },
+   "theme-climate-r1__tc.pyr_rim": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Inner dark border against the black ceiling is slightly soft compared to the crisp stone blocks of the catacombs reference.",
+       "where": "X piece 3x inner edges"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "Heavy dark grid lines across the rim create a busy railway-track pattern and visible 16px tile seams around corners and T-junctions.",
+       "where": "Y piece 3x and Y test map 1x"
+      }
+     ],
+     "minors": []
+    },
+    "pick": "X",
+    "why": "X forms a clean, continuous sandstone wall-top band around the dark ceiling, while Y is cluttered with harsh dark grid lines and corner seams."
+   },
+   "theme-climate-r1__tc.pyr_sarcophagus": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Open variant mummy wrappings are very bright white and slightly crowd the side rim of the stone basin.",
+       "where": "X part 2 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Closed lid face is tiny and less distinct as a pharaoh mask than X, and the open mummy lacks wrapping detail.",
+       "where": "Y piece 3x and 1x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X has a much clearer pharaoh nemes headdress, richer blue-and-gold royal striping, and a better-defined open basin with mummy wrappings."
+   },
+   "theme-climate-r1__tc.pyr_statue": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Jackal ears are very tall and narrow, nearly touching the top of the 2-cell frame.",
+       "where": "X part 1 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "Jackal is drawn in tiny side profile like a small dog on a striped box, and the scarab has a floating red ball on a stick that misreads as a potion bottle or bomb at 1x.",
+       "where": "Y piece 1x and 3x"
+      }
+     ],
+     "minors": []
+    },
+    "pick": "X",
+    "why": "X clearly reads at 1x as an imposing seated Anubis jackal statue and a golden scarab on matching sandstone pedestals in proper 3/4 view."
+   }
+  },
+  "opus1": {
+   "theme-climate-r1__tc.fo_ancient_tree": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "canopy clumps repeat the same round bubble shape, so the crown looks a bit stamped",
+       "where": "upper canopy at 3x"
+      },
+      {
+       "problem": "long thin root flares spread wide and look slightly stringy",
+       "where": "trunk base left and right"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "very dark, low-value canopy that does not match the bright, many-step greens of the Beodeul tree; it looks out of place next to the scene trees",
+       "where": "whole canopy at 1x and in scene"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "split, forked trunk with a plank house door reads more like a treehouse than a hollow in an ancient trunk",
+       "where": "trunk and door"
+      },
+      {
+       "problem": "hanging lanterns and vines float loosely with no clear attachment",
+       "where": "under the canopy"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's bright canopy matches the reference tree, and its dark hollow door reads clearly as the landmark entrance at 1x."
+   },
+   "theme-climate-r1__tc.ice_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "heavy speckled dithering makes the drifts look noisy and gravelly rather than soft snow",
+       "where": "both variants at 3x"
+      },
+      {
+       "problem": "weak contact with the floor, with no soft shadow under the drift",
+       "where": "drift bottoms"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "rather smooth, cloud-like shapes with few shading steps, slightly flat",
+       "where": "both variants at 3x"
+      },
+      {
+       "problem": "two variants are very similar in silhouette",
+       "where": "part 1 vs part 2"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's clean white mounds with blue shading read as snow and match the reference's snow treatment better than X's noisy speckle."
+   },
+   "theme-climate-r1__tc.ice_icicles": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "icicles are spaced at a near-regular comb rhythm, so the repeat shows when 3 cells run along a wall",
+       "where": "3x1 piece and scene wall run"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "spacing is still fairly regular, so it looks comb-like over long runs",
+       "where": "3x1 piece"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "The two are nearly identical; Y has slightly more varied lengths and brighter highlights, so it reads a touch more natural on the wall top."
+   },
+   "theme-climate-r1__tc.pyr_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "speckled, sponge-like dither with a hard rim makes the round heap look like a cookie or biscuit rather than loose sand",
+       "where": "part 1 at 3x"
+      },
+      {
+       "problem": "texture is noisier than the reference's smooth sand",
+       "where": "both variants"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "diagonal elongated variant reads like a slab or loaf more than a drift",
+       "where": "part 2"
+      },
+      {
+       "problem": "a little low contrast against the sandstone floor at 1x",
+       "where": "scene 1x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's smooth, softly shaded heaps sit in the floor more naturally and match the reference sand texture better than X's noisy speckle."
+   },
+   "theme-climate-r1__tc.pyr_face": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "brick pattern is very regular, so the course repeat is visible on long wall runs",
+       "where": "wall run 3h at 3x"
+      },
+      {
+       "problem": "wall face and floor have similar value, so the face separates only modestly from the floor at 1x",
+       "where": "test map 1x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "grey-mauve, desaturated bricks do not read as sandstone and clash with the warm sandstone floor and the reference desert temple",
+       "where": "all face parts, plain room and test map"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "sand piles baked into the base band repeat identically along the wall",
+       "where": "base3h and wall run"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's warm sandstone face with carved jackal and eye glyphs reads as a pyramid interior and harmonises with the floor; Y's grey bricks look like a different material."
+   },
+   "theme-climate-r1__tc.pyr_obelisk": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "bright gold glyphs are zigzag-like and read a bit like lightning bolts",
+       "where": "shaft at 3x"
+      },
+      {
+       "problem": "shaft is thin at 1x",
+       "where": "piece 1x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "sandstone obelisk has low contrast against the sandstone wall and floor, so it almost disappears at 1x",
+       "where": "scene 1x"
+      },
+      {
+       "problem": "stepped wide base makes it read slightly as a stacked pillar",
+       "where": "lower third"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's darker stone shaft on a sandstone base stands out clearly at 1x and still reads as an Egyptian obelisk."
+   },
+   "theme-climate-r1__tc.pyr_rim": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "band has few shading steps and is fairly flat compared with the reference rim",
+       "where": "piece 3x"
+      },
+      {
+       "problem": "inner corners are slightly blunt",
+       "where": "piece 3x concave corners"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "double inset grooves make the sheet look like pipes or a maze, and they are busier than the reference rim",
+       "where": "piece 3x"
+      },
+      {
+       "problem": "rooms pair it with grey face bricks, which weakens the sandstone read",
+       "where": "scene 2x and test map"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's simple sandstone band joins seamlessly in the test map and fits the warm wall face, while Y's grooved band is busier for no gain."
+   },
+   "theme-climate-r1__tc.pyr_sarcophagus": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "sarcophagus stands upright on a base, so in a 3/4 room it reads close to a statue",
+       "where": "both states in scene"
+      },
+      {
+       "problem": "gold and blue striping is dense and slightly noisy at 1x",
+       "where": "closed state 1x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "open state has no coffin case, just a freestanding mummy figure, so it does not read as an open sarcophagus",
+       "where": "part 2 / open state"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "closed state is narrow and small at 1x",
+       "where": "piece 1x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X keeps the gold case around the exposed mummy, so closed and open clearly read as two states of the same sarcophagus."
+   },
+   "theme-climate-r1__tc.pyr_statue": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "jackal body is a dark, flat grey with few shading steps",
+       "where": "jackal at 3x"
+      },
+      {
+       "problem": "pedestals are plain and nearly identical",
+       "where": "both pedestals"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "jackal is lying flat on its pedestal (not seated) and reads as a small dark blob at 1x",
+       "where": "jackal statue at 1x and in scene"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "saturated red sun disk on the scarab pops out of the palette",
+       "where": "scarab top"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's upright seated jackal and gold scarab both read clearly as guardian statues at 1x, matching the brief."
+   }
+  },
+  "opus2": {
+   "theme-climate-r1__tc.fo_ancient_tree": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "trunk hollow is a flat black hole with little depth shading, so it reads more as a cavity than an entrance",
+       "where": "trunk base doorway"
+      },
+      {
+       "problem": "the single bright lantern next to the hole is very small and reads as noise at 1x",
+       "where": "right of hollow"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "the canopy is mostly one dark green with few highlight steps, so it looks flatter and heavier than the Beodeul tree",
+       "where": "canopy"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "the hanging vines and lanterns are tiny scattered specks that are hard to read at 1x",
+       "where": "under canopy"
+      },
+      {
+       "problem": "the thin split trunk under the huge crown looks weak and sits awkwardly",
+       "where": "trunk"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X has the lighter, multi-step leaf clusters that match the reference tree, and its hollow door in a massive trunk reads clearly as a landmark."
+   },
+   "theme-climate-r1__tc.ice_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the drift is lumpy, with speckled blue-grey shading that comes close to noise at 1x",
+       "where": "both variants"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "both variants are close in silhouette, so they repeat noticeably when scattered",
+       "where": "part 1 vs part 2"
+      },
+      {
+       "problem": "the white tops are very bright and slightly flat against the pale floor",
+       "where": "drift top"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's soft rounded mounds have clean top-lit shading and contact shadow, and they read as snow on the floor at 1x more cleanly than X's noisy clumps."
+   },
+   "theme-climate-r1__tc.ice_icicles": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the icicle lengths are fairly regular, giving a slight comb-like rhythm along long runs",
+       "where": "wall top run"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the icicles are bulkier and denser, which crowds the wall face a little",
+       "where": "wall top run"
+      },
+      {
+       "problem": "the shapes are nearly identical to X, so it brings no distinct advantage",
+       "where": "piece"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "Both read correctly, but X's slimmer, sparser icicles sit more naturally on the reference ice-cave wall lip."
+   },
+   "theme-climate-r1__tc.pyr_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the heaps are round dithered blobs with a speckled edge that looks noisy and slightly fuzzy at 1x",
+       "where": "both variants"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the second variant is a diagonal wedge that reads more like a slab or ramp than a heap",
+       "where": "part 2"
+      },
+      {
+       "problem": "low value contrast against the sandstone floor, so the drift almost disappears in the scene",
+       "where": "scene 2x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's smooth, top-lit wind-drift shapes match the clean reference sand texture better than X's noisy dithered blobs."
+   },
+   "theme-climate-r1__tc.pyr_face": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the wall face and floor bricks share nearly the same hue and pattern, so the wall-to-floor break is weak",
+       "where": "wall base / floor join in scene"
+      },
+      {
+       "problem": "the glyph panels (bird, eye) are small and murky at 1x",
+       "where": "glyph variants"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "the grey-blue mortar and desaturated bricks clash with the warm sandstone floor and rim, so it looks like a different material and palette",
+       "where": "whole wall face"
+      },
+      {
+       "problem": "the face looks semi-transparent or washed over, with a visible lighter band at the wall ends",
+       "where": "scene 2x, wall left and right ends"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "the sand heaps baked into the wall base repeat with the tile",
+       "where": "base3h / wall run"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X stays in the warm sandstone palette with clean seamless brick runs, while Y's grey mortar breaks palette harmony with the room."
+   },
+   "theme-climate-r1__tc.pyr_obelisk": {
+    "X": {
+     "majors": [
+      {
+       "problem": "the grey stone shaft does not read as a sandstone or Egyptian obelisk and clashes with the warm room palette",
+       "where": "shaft"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "the yellow glyph marks are crude blobs",
+       "where": "shaft face"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the shaft and floor are the same sandstone tone, so the obelisk blends into the floor at 1x",
+       "where": "scene 1x"
+      },
+      {
+       "problem": "the glyph column is a fine dark noise pattern rather than legible carvings",
+       "where": "shaft face"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's sandstone body with a gold pyramidion clearly reads as an obelisk that belongs in the pyramid."
+   },
+   "theme-climate-r1__tc.pyr_rim": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the rim band is a plain smooth sand gradient with little texture, a bit flatter than the brick walls",
+       "where": "rim pieces"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the carved inner border line adds busy detail, which makes the piece sheet look cluttered",
+       "where": "rim pieces 3x"
+      },
+      {
+       "problem": "the in-scene walls use the grey-mortar face, which clashes with the rim",
+       "where": "scene / test map"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "Both autotiles join seamlessly in the test maps, but X's cleaner band matches the reference wall-top style and its scene stays in one palette."
+   },
+   "theme-climate-r1__tc.pyr_sarcophagus": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the open variant's mummy reads mostly as a grey-beige oval, and the lid is not shown",
+       "where": "open variant"
+      },
+      {
+       "problem": "it is upright like a standing case rather than a floor-lying sarcophagus, though it is still readable in 3/4 view",
+       "where": "both"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the open variant has no box or case, only a standalone mummy, so 'open sarcophagus' is not clear",
+       "where": "open variant"
+      },
+      {
+       "problem": "the closed case is narrower and thinner at 1x, with less presence",
+       "where": "closed variant"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X keeps a visible case and pedestal in both states, so closed and open read as the same sarcophagus."
+   },
+   "theme-climate-r1__tc.pyr_statue": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the jackal is a standing bust rather than clearly seated",
+       "where": "jackal statue"
+      },
+      {
+       "problem": "the scarab's gold front is a little flat",
+       "where": "scarab"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "the jackal is a tiny low lump on a blue-striped box and does not read as a seated jackal guardian at 1x",
+       "where": "jackal statue"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "the red orb on the scarab is a saturated, toy-like accent",
+       "where": "scarab top"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's upright black jackal and gold scarab on matched sandstone pedestals both read clearly as guardian statues at 1x."
+   }
+  },
+  "opus3": {
+   "theme-climate-r1__tc.fo_ancient_tree": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Canopy is busy and noisy, with many small light-green clumps, so it reads less cleanly than the reference tree's large masses",
+       "where": "canopy 3x"
+      },
+      {
+       "problem": "The hollow is a plain black hole and reads more as a cave mouth than a usable door; the lantern is tiny",
+       "where": "trunk base"
+      },
+      {
+       "problem": "The ground contact shadow is thin, and the roots splay flat to the left more than to the right",
+       "where": "root base"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "The canopy is much darker than the reference and the surrounding trees, so it sits heavily and close to black-green next to the Beodeul trees",
+       "where": "canopy in scene 1x/2x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The trunk forks into two thin limbs, leaving a big gap of background under the canopy so the tree looks top-heavy",
+       "where": "trunk/canopy join"
+      },
+      {
+       "problem": "The hanging vines and lanterns float as isolated pixels",
+       "where": "under canopy"
+      },
+      {
+       "problem": "The door reads as a house door stuck on the trunk rather than a hollow",
+       "where": "trunk base"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's palette and canopy massing match the Beodeul reference trees and the scene, while Y's dark canopy and thin forked trunk look out of place."
+   },
+   "theme-climate-r1__tc.ice_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The drifts are small and thin at 1x and partly lost against the grey speckled floor",
+       "where": "scene 1x"
+      },
+      {
+       "problem": "Variant 1 has a slightly lumpy outline with a dark underside that reads a bit like a rock",
+       "where": "part 1"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The shapes are smooth blobs with a simple 3-step shade, slightly soft and clip-art-like compared with the textured reference",
+       "where": "piece 3x"
+      },
+      {
+       "problem": "The two variants are very similar in silhouette",
+       "where": "parts 1/2"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's drifts read more clearly as snow on the light cave floor at 1x and sit naturally with the reference ice cave."
+   },
+   "theme-climate-r1__tc.ice_icicles": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The icicle row repeats regularly across the wall run, so the 1x pattern shows a slight rhythm",
+       "where": "scene 2x wall top"
+      },
+      {
+       "problem": "Some icicles are long enough to cover a lot of the wall face",
+       "where": "piece 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The icicles are dense, uniform and comb-like, with a slightly stiffer rhythm than the reference's sparse icicles",
+       "where": "piece 3x / scene 2x"
+      },
+      {
+       "problem": "The demo scene uses a darker, noisier floor that clashes with the reference ice cave",
+       "where": "scene 2x floor"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's icicles are a little more irregular and its scene matches the reference ice cave."
+   },
+   "theme-climate-r1__tc.pyr_drift": {
+    "X": {
+     "majors": [
+      {
+       "problem": "The heaps are fuzzy, dithered blobs with no top/front shading or contact shadow, so at 1x they read as stains or holes rather than raised sand",
+       "where": "scene 2x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "Noisy speckled edges with no clear outline",
+       "where": "parts 1/2"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The variants are flat, low-contrast wedges that barely read as heaps at 1x",
+       "where": "scene 1x"
+      },
+      {
+       "problem": "The diagonal variant 2 looks like a slanted plank or ramp",
+       "where": "part 2"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's heaps have a lit top and shaded underside that read as drifted sand, while X looks like noisy stains."
+   },
+   "theme-climate-r1__tc.pyr_face": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The glyphs (bird, eye) are few and small and get lost at 1x",
+       "where": "glyph variants"
+      },
+      {
+       "problem": "The wall-face brick and the floor brick are very similar in colour, so the boundary between face and floor is soft",
+       "where": "plain room 2x"
+      },
+      {
+       "problem": "The 3-high base row has a slightly repetitive block pattern",
+       "where": "wall run 3h"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "The wall face is grey-mauve brick that clashes with the warm sandstone floor and rim, so it does not read as sandstone and breaks palette harmony",
+       "where": "piece 3x / test map"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "Sand piles baked into the base cells repeat visibly along wall runs",
+       "where": "part 3 base3h / test map"
+      },
+      {
+       "problem": "Uniform brick grid with an obvious 16px repeat",
+       "where": "wall run 3h"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X stays in a warm sandstone palette that matches the floor and theme, while Y's grey bricks clash."
+   },
+   "theme-climate-r1__tc.pyr_obelisk": {
+    "X": {
+     "majors": [
+      {
+       "problem": "The grey stone shaft clashes with the sandstone room and reads more like a gravestone or lamp post than an Egyptian obelisk",
+       "where": "piece 3x / scene"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The gold glyph marks are crude blobs",
+       "where": "shaft"
+      },
+      {
+       "problem": "The shaft is very thin with no visible top plane",
+       "where": "piece 1x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The shaft blends into the sandstone floor and wall and needs more value contrast",
+       "where": "scene 2x"
+      },
+      {
+       "problem": "The glyph marks are dark noise",
+       "where": "shaft 3x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y reads as a sandstone obelisk with a gold cap that fits the pyramid theme, while X's grey shaft looks out of place."
+   },
+   "theme-climate-r1__tc.pyr_rim": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The band edges are fairly soft, with a dithered sand texture",
+       "where": "piece 3x"
+      },
+      {
+       "problem": "Some inner-corner shapes show slight notches",
+       "where": "test map corners"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "The rim tiles carry an inner line/border pattern that, when tiled, makes a visible maze-like grid of lines around the ceiling at 1x",
+       "where": "piece 3x / test map"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "It pairs with grey wall faces that clash in the scene",
+       "where": "scene 2x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's rim band is clean, joins seamlessly and stays warm sandstone, while Y's busy inner lines show a grid."
+   },
+   "theme-climate-r1__tc.pyr_sarcophagus": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "It reads as an upright standing coffin on a pedestal rather than a lid seen from a 3/4 top view; this is acceptable but ambiguous",
+       "where": "piece 3x"
+      },
+      {
+       "problem": "In the open variant, the white mummy shape is low-contrast against the coffin interior",
+       "where": "part 2"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The open variant is a bare grey mummy with almost no coffin rim, so it reads as a standing mummy rather than an open sarcophagus",
+       "where": "part 2"
+      },
+      {
+       "problem": "The pedestal base is thin and contact is weak",
+       "where": "base"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X keeps the coffin shell and pedestal in both states, so closed and open both read as a sarcophagus."
+   },
+   "theme-climate-r1__tc.pyr_statue": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The jackal is upright and bust-like and reads only partly as seated",
+       "where": "part 1"
+      },
+      {
+       "problem": "The scarab is drawn front-on on a block; the shading is fine but the tall pedestals look identical",
+       "where": "part 2"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "The jackal is a tiny lying figure on a striped blue box and does not read as a guardian statue at 1x",
+       "where": "part 1 / scene 1x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The red orb on the scarab looks like a toy",
+       "where": "part 2"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's jackal and scarab both read clearly as statues on pedestals at 1x, while Y's jackal is illegible."
+   }
+  }
+ }
+}

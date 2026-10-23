@@ -487,7 +487,8 @@ body.ai-studio-open .authoring-journey-host {
   align-items: center;
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 6px 12px;
   justify-content: space-between;
   min-height: 44px;
   padding: 6px 10px 6px 14px;
@@ -526,11 +527,16 @@ body.ai-studio-open .authoring-journey-host {
   white-space: nowrap;
 }
 
+/* 좌우 열이 고정된 1024 이하에서 도구 묶음이 머리띈보다 길면 줄을 바꿔 「편집기로」가 옪 패널 뒤로 넘어가지 않게 한다. */
 .ai-studio-monitor-tools {
   align-items: center;
   display: flex;
-  flex: 0 0 auto;
-  gap: 8px;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  justify-content: flex-end;
+  margin-left: auto;
+  min-width: 0;
 }
 
 /* 입양한 줌 툴바 — 캔버스 위 유리 알약이 아니라 머리띠의 평범한 컨트롤이 된다. */
@@ -549,9 +555,11 @@ body.ai-studio-open .authoring-journey-host {
   font: inherit;
   font-size: 13px;
   font-weight: 600;
+  flex: 0 0 auto;
   gap: 6px;
   height: 30px;
   padding: 0 10px 0 8px;
+  white-space: nowrap;
   transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
 }
 

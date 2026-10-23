@@ -22,6 +22,7 @@ import {
 } from "../../project/desktopGameExport";
 import { downloadBlob } from "../../util/downloadBlob";
 import { toast } from "../../util/toast";
+import { t } from "../../i18n";
 import type { FetchBytes } from "../../project/playerDeploymentTypes";
 import type { Project } from "../../project/types";
 
@@ -570,12 +571,12 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
         downloadBlob(result.blob, result.fileName);
         const mb = (result.summary.pakArchiveBytes / 1048576).toFixed(1);
         toast(
-          `Steam · 데스크톱 빌드 완료: ${result.fileName} (game.pak ${mb}MB, 에셋 ${result.summary.assetCount}개)`,
+          t(`Steam · 데스크톱 빌드 완료: ${result.fileName} (game.pak ${mb}MB, 에셋 ${result.summary.assetCount}개)`),
           "ok",
         );
       } catch (error) {
         toast(
-          `데스크톱 빌드 실패: ${error instanceof Error ? error.message : String(error)}`,
+          t(`데스크톱 빌드 실패: ${error instanceof Error ? error.message : String(error)}`),
           "error",
         );
       }

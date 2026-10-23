@@ -1868,7 +1868,8 @@ export interface MonsterCampaignConfig {
    */
   badges: { id: string; name: string; switchId: string; cityMapId: string; iconResourceId?: string }[];
   locations: { mapId: string; name: string; x: number; y: number; kind: "town" | "route" | "dungeon" | "league" }[];
-  objectives: { id: string; title: string; switchId: string; requiresSwitchId?: string }[];
+  /** summary = 목록 한 줄용 짧은 이름(생략하면 title). 긴 문장 title 은 「다음 목표」 칸과 설명에만 쓴다. */
+  objectives: { id: string; title: string; summary?: string; switchId: string; requiresSwitchId?: string }[];
   /** 선택 규칙 — 생략 = 꺼짐(기존 프로젝트·저장 바이트 불변). */
   obedienceLevelCaps?: ObedienceLevelCaps;
 }

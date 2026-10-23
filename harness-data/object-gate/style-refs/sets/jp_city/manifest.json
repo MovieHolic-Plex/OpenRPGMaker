@@ -1,0 +1,161 @@
+{
+ "_meta": {
+  "chipset": "jp_city",
+  "sheet": "public/assets/jp-city/jp-city-chipset.png",
+  "tileset": "src/assets/jpCityTileset.json"
+ },
+ "building": {
+  "house-hip2": {
+   "h": 140,
+   "kit": "jp-bldg-house-hip2",
+   "rows": null,
+   "sha256": "a1a7e1d2bb1074ff0b3b4fa1b10d1d50b52bd88986b630675e778d5d7a4f77c7",
+   "w": 122
+  },
+  "house-machiya": {
+   "h": 118,
+   "kit": "jp-bldg-house-machiya",
+   "rows": null,
+   "sha256": "bcce7810a12816fadfb17335af0fbae1fb68edc4d047efeb0c959c414cc1b8c9",
+   "w": 92
+  }
+ },
+ "ground": {
+  "floor-flooring": {
+   "group": "jp:interior-floor-flooring",
+   "h": 48,
+   "sha256": "a4237de0176078a556db9718c118877099ed4f1799a13d9eb8d541969aa422a4",
+   "tiles": [
+    8768,
+    8769,
+    8770,
+    8771,
+    8772,
+    8773,
+    8774,
+    8775,
+    8776,
+    8777,
+    8778,
+    8779
+   ],
+   "w": 64
+  },
+  "floor-tatami": {
+   "group": "jp:interior-floor-tatami",
+   "h": 48,
+   "sha256": "a7c8c49af8a79287004b599234a388a341a819a0a6f38ef53ed2235dbbe858cb",
+   "tiles": [
+    9014,
+    9015,
+    9016,
+    9017,
+    9018,
+    9019,
+    9020,
+    9021,
+    9022,
+    9023,
+    9024,
+    9025
+   ],
+   "w": 64
+  }
+ },
+ "prop": {
+  "in-cv-back-shelf": {
+   "h": 29,
+   "kit": "jp-in-cv-back-shelf",
+   "rows": null,
+   "sha256": "0c7b9b5c6b17ced07af6bf4b7b304f45f4f80cba9cd16e4ccf2e91ea3b3f1421",
+   "w": 30
+  },
+  "in-desk-study": {
+   "h": 32,
+   "kit": "jp-in-desk-study",
+   "rows": null,
+   "sha256": "98c2c8e950be2ff9c8d377c42db860c1fae30554c1b2b9d75e19e5b6d2127219",
+   "w": 32
+  },
+  "in-kitchen-worktop": {
+   "h": 18,
+   "kit": "jp-in-kitchen-worktop",
+   "rows": null,
+   "sha256": "57b39fa5560c153678877bb7ebac9b26e7ff26e538659230d554aa3b18aba026",
+   "w": 16
+  },
+  "in-tansu": {
+   "h": 32,
+   "kit": "jp-in-tansu",
+   "rows": null,
+   "sha256": "9f233bd4942c94b71d2fb78258dcece0f33cf17953cda5deeef518266ddf5cec",
+   "w": 16
+  },
+  "vending-aka": {
+   "h": 32,
+   "kit": "jp-prop-vending-aka",
+   "rows": null,
+   "sha256": "fb312b0bdb3955f5ffb55ab084b075921ec24222697dc8382528437307d2176b",
+   "w": 26
+  }
+ },
+ "roof": {
+  "roof-kawara-5": {
+   "h": 64,
+   "kit": "jp-roof-kawara-5",
+   "rows": null,
+   "sha256": "02ea2dd57dcb0599775d76a9656f2c1fb7d0daff6a50cea30dceb6b1d8d02b8e",
+   "w": 80
+  }
+ },
+ "tree": {
+  "tree-sakura": {
+   "h": 93,
+   "kit": "jp-prop-tree-sakura",
+   "rows": null,
+   "sha256": "1400d895066745da69990c8e8c42c0f55567820e4ceaba5cf674862d98fafd4b",
+   "w": 62
+  },
+  "tree-zelkova": {
+   "h": 93,
+   "kit": "jp-prop-tree-zelkova",
+   "rows": null,
+   "sha256": "430e84f157ba0264d0a7929cd67144422ea0bac9c7f2e4f43ae0c4d25cddc001",
+   "w": 62
+  }
+ },
+ "wall": {
+  "wall-cloth": {
+   "group": "jp:interior-wall-cloth",
+   "h": 32,
+   "sha256": "b4cb4768fae9616c818dd72cac4ea44a8853ad02419732cdb6c3df3aa0337c4b",
+   "tiles": [
+    9274,
+    9275,
+    9276,
+    9277,
+    9278,
+    9279,
+    9280,
+    9281
+   ],
+   "w": 64
+  },
+  "wall-sc": {
+   "group": "jp:interior-wall-sc-wall",
+   "h": 32,
+   "sha256": "4bcc1eb1dd20a1e412d5aae2159f32941f79f4d06c67ecdc7aa62d6f52a1b009",
+   "tiles": [
+    10911,
+    10912,
+    10913,
+    10914,
+    10915,
+    10916,
+    10917,
+    10918
+   ],
+   "w": 64
+  }
+ }
+}

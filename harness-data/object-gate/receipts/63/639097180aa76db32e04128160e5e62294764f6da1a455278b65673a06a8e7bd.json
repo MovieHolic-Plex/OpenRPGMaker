@@ -1,0 +1,423 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "639097180aa76db32e04128160e5e62294764f6da1a455278b65673a06a8e7bd",
+ "width": 32,
+ "height": 112,
+ "kind": "structure",
+ "name": "small square stone wall tower projecting slightly in front of the wall line, 3/4 top-down: terracotta tiled pyramid roof, stone front face with corner quoins, an arched window and a cross arrow slit",
+ "label": "beodeul_town_wall/tower",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 12,
+  "darkV5": 63,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 10
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "terracotta pyramid roof",
+      "rows": "6-35",
+      "evidence": "c",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "34-35"
+     },
+     {
+      "part": "stone front face with quoins, arched window and arrow slit",
+      "rows": "36-101",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 66,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 2 px at row 6 to 32 px at row 32. This is a sloped pyramid roof drawn as tile rows (rows 6-35). It ends in dark eave shadow at rows 34-35 and a dark edge line at row 36. Below it a stone front face runs from row 36 to row 101, 66 rows tall, with quoins, a window and an arrow slit. No receding side face is drawn. The roof is a clear top plane above a tall front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has 7 visible tones per tile against 12 and 10 in the references, and 15 distinct colours in total against 185 and 66. Its roof is a small pyramid with only about 3 terracotta steps and no per-tile scallops or highlights, where the references show 5-6 steps with scalloped tile rows. The stone face has block lines and quoins, but the stones are not shaded one by one and most of the wall is one grey with a few joint lines. The window and arrow slit are tiny dark marks. The outline is tinted dark grey-brown (0% neutral dark edge pixels), so it is not a black sticker line. Even so, the piece is thinner, flatter and more simplified than the references and would look sticker-like next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14030
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "terracotta tiled pyramid roof",
+      "rows": "6-35",
+      "evidence": "c",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "34-35"
+     },
+     {
+      "part": "stone front face with quoins, arched window, arrow slit",
+      "rows": "36-101",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 66,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The pyramid roof spans rows 6-35, widening from 2 to 32 px, with tile rows and a dark eave shadow at rows 34-35 above the stone front face. This is a sloped roof plane (evidence c). The stone front face runs rows 36-101 (about 66 rows) with quoins, window and slit, and no isometric side face is drawn. The roof shows its top slope and the wall shows its south face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 7 visible tones per tile against 12 and 10 in the references, so it is lower but not extremely so. Near-flat coverage is 0%, and its dark edge pixels are 0% neutral, so the outline is tinted. By eye, the roof is a smooth pyramid with only about 3 terracotta steps and none of the per-tile scallops or highlights that Beodeul roofs have. The stone face is a grey block pattern with quoins, but each stone is the same light grey with a thin darker joint, so it is not shaded stone by stone like the reference stonework. The window and arrow slit are tiny dark marks. Overall it reads as cleaner and flatter than the references, closer to a sticker, with a dark outline that runs around the whole silhouette. Roof and wall each have about 3-4 steps against the 5-6 in the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10366
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "terracotta tiled pyramid roof",
+      "rows": "6-35",
+      "evidence": "c",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "34-35"
+     },
+     {
+      "part": "stone front face with quoins, arched window and arrow slit",
+      "rows": "36-101",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 66,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 2 px at row 6 to 32 px at row 32. Tile rows with highlight dots form a sloped roof plane (evidence c) over rows 6-35. Rows 34-35 are dark eave shadow, and a grey edge line sits at row 36. Below it is a stone front face of 66 rows (36-101) with mortar courses, an arched window and a cross slit. No receding side face is drawn, and the tower reads as a roof plus a south face, so it is three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate tower reads clearly, with a pyramid roof, quoins, an arched window and a cross slit. Its shading is shallow, though. The roof has about 3 to 4 tile tones, with a flat-looking hip and few per-tile highlights or scallops. The stone face is mostly one grey with a light block outline and little per-stone shading. There are 7 visible tones per tile against 10-12 in the references, and only 15 distinct colours in total against 66-185 in the references. Outlines are tinted, with 0% near-neutral dark edge pixels, but the dark edge around the base and the window slits is fairly uniform. The references have richer roof tile scallops, plaster and stone speckle, and varied stones. The candidate has no 5x5 flat blocks, but its texture is sparse and regular. It would look flatter and thinner next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14272
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "terracotta tiled pyramid roof",
+      "rows": "6-35",
+      "evidence": "c",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "34-35"
+     },
+     {
+      "part": "finial at roof apex",
+      "rows": "6-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front face with quoins, arched window, arrow slit",
+      "rows": "36-101",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 66,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 2px at row 6 to 32px at row 32, forming a sloped pyramid roof with tile rows and scale highlights. A dark eave line and shadow at rows 34-35 (#462033) separate the roof from the stone face below. The roof is the top surface (evidence c). The stone front face runs from row 36 to row 101 (about 66 rows), with mortar courses, quoins, an arched window and a cross slit. No receding side face is drawn, and the south face is flat and front-on. The roof slope reads as the top surface, so this is three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The outline is tinted: 0% of dark edge pixels are neutral, and it reads as a dark grey-blue beside the stone and a dark red-brown beside the roof, so it is not a sticker line. The measured facts are weaker than the references: 7 visible tones per tile against 12 and 10, and only 15 distinct colours in total against 185 and 66. The 0% near-flat coverage comes from the stone block joints and a few speckles, not from varied shading. The roof is a smooth pyramid of two or three red tones. It has no per-tile scallops or highlights, unlike the references' rows of lit and shaded tiles. The stone face has only about 3 lightness steps, with uniform blocks and plain quoins. Stones are not shaded one by one, and there is no plaster or grain variation. The window and arrow slit are simple dark marks. Next to the references this reads as thinner and flatter, with shallow ramps, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12186
+  }
+ ],
+ "decidedAt": "2026-10-22T06:43:33.578Z",
+ "cells": {
+  "16": [
+   "199ddaff695e67a3",
+   "21c2ff0d8b65a6f3",
+   "2ad7fa79a6d71f3e",
+   "3292ffe4c6a876a7",
+   "3bf161241269c72e",
+   "4f4e7ac07ec47f62",
+   "507ac9a132df6321",
+   "5a24b39fedd333ab",
+   "74e76ab43a922031",
+   "8f905b0b0f81cd9c",
+   "cf039f2511d3ed86",
+   "d4c37bd844b88f74",
+   "dc38767cdc70cf2d",
+   "fab840576698594f"
+  ],
+  "24": [
+   "00a376d64ba8f4c2",
+   "07f1dfe1c2ab7d7f",
+   "10f873ede6128284",
+   "14fa60e117ae46ce",
+   "1aa473c578b5b145",
+   "1c6ba600b3ea4856",
+   "1daeda147ff8d0f6",
+   "1e1b3cfef5278add",
+   "21a2b1231e41ae31",
+   "22bf459e313220dc",
+   "2fc573ff3b738299",
+   "316697107e705a2f",
+   "32d9bc47ec8b7e76",
+   "3340cec87859e6ed",
+   "37d09bd45a980a57",
+   "3d1ee0a9603470d5",
+   "43b573e06799643e",
+   "4dac18dab2f9706b",
+   "53dc74a656f14d89",
+   "56fc57d725b0c9e4",
+   "5b1fbedcd5b0638a",
+   "5b53159fb76d2d24",
+   "5bf1152a1b4ea860",
+   "5e94a0300faa37bb",
+   "5e9f1735b36b12ca",
+   "6142426154d67047",
+   "622bfd345c0dd412",
+   "698b04bc37856c4e",
+   "6a46d82c65838e91",
+   "6c4edeb3ea4f41f3",
+   "6c5e3339c1aef58c",
+   "6e6a81a7ef37ed2d",
+   "76020bd21b0b9647",
+   "77e8c59850aab417",
+   "78f36ea19f7a2818",
+   "7aa4a642c6742048",
+   "7e1b640a8005c086",
+   "7f4e16ed43dbb0b4",
+   "80573ab400b88e0a",
+   "8499d9cd4f1af052",
+   "883d6f7b0f148710",
+   "91357802615bea84",
+   "946c5b46dfe6a616",
+   "a684848d3dec9c22",
+   "a86ad5bd703fb173",
+   "bab1369e8052cc98",
+   "c6fd8cd89f64b1a5",
+   "cd2868533aa6fce1",
+   "cee9b74713f4869b",
+   "d3fff17f4cea1e8d",
+   "d865adeb1b4de2e5",
+   "daaf3ff11755638a",
+   "e7dc755f9180d347",
+   "e9e19cdeb43a620b",
+   "ee1fde038db703c6",
+   "efe78251d604f007",
+   "f8f6a9bc62260296",
+   "ff84ee7e7ca4d000"
+  ],
+  "32": [
+   "2f008f3d3b5b4d3a",
+   "3adb81675228aa88",
+   "69b4d0504515a901",
+   "6c01cf8fc98575c9",
+   "8dc5db75a6fc56bc",
+   "a145b5b6a5738775",
+   "a4cf1cb4e159363b",
+   "e95a0f712a4be255"
+  ],
+  "48": [
+   "01c302e3606127e6",
+   "04e30a0c1e4a9f2e",
+   "2723e31d38b8cc65",
+   "280e757de9a3997e",
+   "4bd5b164b4c1b195",
+   "5dceddda4660e686",
+   "73ee529583dec1ef",
+   "7b715e7dc334e812",
+   "8799a25ce20d0314",
+   "9ff0b3692ae51332",
+   "b2fc180b3bf5d5a7",
+   "bb6861544e249938",
+   "c1ca27d9e5d27d8d",
+   "cac895f6f4456f4c",
+   "cc540e66981f048a",
+   "d9dee37769fb360f",
+   "e88465290063ca64",
+   "fae4079c3142a3a2"
+  ]
+ }
+}

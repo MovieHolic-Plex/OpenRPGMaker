@@ -1,0 +1,4 @@
+{"queue":"jp-in-stairs-13","round":18,"judge":"claude-opus-5.5 (fresh subagent, no prior scores)","date":"2026-10-22","verdict":"fail","majors":7,"axis2":7,"axis6":5,
+ "majorFindings":["sc/mc/of/as/cs stairwells: light south lip with outline reads as a raised box/vent/radiator/planter","mc-stairs-up and of-stairs-up (1 cell): slatted shelf/ladder"],
+ "minorFindings":["newel cuts the bottom treads","even pitch","wood well south tread band","as debris noise"],
+ "note":"last single-reviewer round; supervisor switched to 3 parallel reviewers with majority from r19"}

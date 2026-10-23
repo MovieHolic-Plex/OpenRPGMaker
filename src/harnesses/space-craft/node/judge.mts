@@ -9,7 +9,7 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import { loadHeadlessProject } from '../../../headless/index';
-import { addRenderAssetRoot, renderMapPng } from '../../../../scripts/qa-game/render.mts';
+import { addRenderAssetRoot, renderReviewMapPng } from '../../../../scripts/qa-game/render.mts';
 import { store } from '../../../project/store';
 import { completeProvider } from '../../../../scripts/lib/ohMyPiPiAiRuntime.ts';
 import { resolveRequestApiKey } from '../../../../scripts/lib/aiAuthRuntime.ts';
@@ -38,7 +38,7 @@ const readProject = (file: string): Project => {
 function renderForJudge(project: Project, map: GameMap): Buffer {
   const tile = project.tilesets[map.tilesetId]?.tileSize ?? 16;
   const scale = Math.max(1, Math.min(4, Math.floor(1100 / (Math.max(map.width, map.height) * tile))));
-  return renderMapPng(project, map, scale).png;
+  return renderReviewMapPng(project, map, scale).png;
 }
 
 /** 망가뜨린 사본. 정답이 분명한 비교만 만든다 — 판정자가 이것도 못 가르면 미감 점수는 의미가 없다. */

@@ -639,7 +639,8 @@ function pokemonFightSubmenu(snapshot: BattleSnapshot, options: BattleCommandPan
     const slot = String(infoNodes.length + 1);
     button.dataset.moveSlot = slot;
     nodes.push(button);
-    infoNodes.push(moveInfoBox(slot, project, skill?.elementId, pp, skill?.maxPp, reason));
+    // PP 0 은 우측 상자의 붉은 「PP 0/N」 이 이미 말한다 — 같은 뜻의 긴 문장을 또 쓰면 「뒤로」 와 겹쳤다(2026-10-21 PP-empty overlap). 버튼의 reason(title/aria)은 그대로.
+    infoNodes.push(moveInfoBox(slot, project, skill?.elementId, pp, skill?.maxPp, ppFailure ? undefined : reason));
   }
   // 3세대 화면의 우측 정보 상자: 커서가 선 기술의 PP·타입. 커서 연동은 CSS(형제 선택자)가 한다.
   nodes.push(...infoNodes);

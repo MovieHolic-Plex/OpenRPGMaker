@@ -5,6 +5,39 @@
 
 <!-- releases -->
 
+## 0.325.0 — 2026-10-22
+
+### 기능
+
+- **jp-city** — hand-pixel street stairs (overpass, side stairs + stage, wall ladder) and explicit stair notes (#3263) (`c4edf79`)
+- **ai** — polish mode — opt-in longer 1x review/critic/fix loop from the checklist panel (#3261) (`363a31f`)
+- **workshop** — object-gen footprint decision, better reference pictures, multi-cell objects (#3260) (`70edc7c`)
+
+## 0.324.0 — 2026-10-22
+
+### 기능
+
+- **beodeul** — village and brush forests use the joined canopy autotile (#3259) (`016546a`)
+- **ai** — per-feature 1x review loop with an independent rubric critic for built interiors (#3258) (`ac9c8f8`)
+
+### 수정
+
+- **beodeul** — existing projects get town wall cells (graft relocation), delegated hold records, walled-village leftovers (#3255) (`445429c`)
+
+## 0.323.1 — 2026-10-22
+
+### 수정
+
+- **stairs** — shipped stairwells no longer face the south wall; school 2F lands at the 3F down-stairwell (#3256) (`daa1f6e`)
+- **fallen-star** — move a roaming townsperson out of the east-gate throat so the knight and Valen can march out (#3253) (`f18785c`)
+
+## 0.323.0 — 2026-10-22
+
+### 기능
+
+- **beodeul** — hand-pixel town wall kit + walled villages (walls:true, wallGate) (#3250) (`14d9fc9`)
+- **stairs** — stair entrance contract, lint and contract-driven placement (#3247) (`bee4306`)
+
 ## 0.322.0 — 2026-10-22
 
 ### 기능

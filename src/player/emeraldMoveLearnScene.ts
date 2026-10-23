@@ -164,7 +164,8 @@ export async function playEmeraldMoveLearns(host: HTMLElement, project: Project,
       let forgetting = true;
       while (forgetting && !controller.signal.aborted) {
         await typeText(`${withJosa(newName, '을/를')} 배우려면\n다른 기술을 잊어야 한다. 잊게 할까?`);
-        const yes = await pick([{ label: '예' }, { label: '아니오' }], 1);
+        // 3세대처럼 커서는 「예」에서 시작한다 — 「아니오」 기본이면 확인키만 누르는 플레이어가 Lv10 위력 55 기술을 늘 놓쳤다(2026-10-21 아스트라 적대 검수 r9).
+        const yes = await pick([{ label: '예' }, { label: '아니오' }], 0);
         if (yes !== 0) break;
         await typeText('어떤 기술을 잊게 할까?');
         const rows: MenuRow[] = moves.map((moveId) => ({

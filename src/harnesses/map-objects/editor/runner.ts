@@ -9,14 +9,15 @@ import type { ContentPart } from "@/ai/llmClient";
 import { onBackground, renderGrid, scaleImage } from "@/harnesses/_core/workshop/grid";
 import type { AnchorSample, Grid, ItemDefinition, Palette, Rgba, RgbaImage, WorkshopEnv, WorkshopItem, WorkshopRunner, WorkshopTilesetSource } from "@/harnesses/_core/workshop/types";
 import { gateAdviceMessages, parseGateAdvice } from "@/harnesses/_core/workshop/gateAdvice";
-import { workshopRefDescribe } from "@/harnesses/_core/workshop/referencePrompt";
+import { refCells, workshopRefDescribe } from "@/harnesses/_core/workshop/referencePrompt";
 import {
-  kitValue, loadAnchors, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
+  aspectOf, aspectSheet, kitValue, loadAnchors, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
 } from "@/harnesses/_core/workshop/objectGenFlow";
 import { parseMapObjectVerdict } from "./checks";
 import { mapItemFromDefinition, paletteFromHexes } from "./items";
 import { reviewBrief, reviewSystemPrompt } from "./prompts";
-import { dominantColor, sheetExcerpt, similarObjects } from "./sheet";
+import { classObjects, dominantColor, sheetExcerpt, similarObjects } from "./sheet";
+import { footprintClass } from "@/harnesses/_core/workshop/footprint";
 
 const FALLBACK_BACKGROUND: Rgba = [96, 96, 96, 255];
 const ANCHOR_LIMIT = 3;
@@ -123,6 +124,26 @@ export function createMapObjectRunner(): WorkshopRunner {
       return [{ role: "system", content: reviewSystemPrompt() }, { role: "user", content: parts }];
     },
     referenceDescribe: workshopRefDescribe,
+    // 참고 그림 견본(원본 reference 흐름의 exemplar_sheet + job refs, 물체 비율 캔버스): 이름이 맞는 칩셋 물체 ≤2(대상 게임의 시점·결) + object-gen 견본.
+    // 이름이 안 맞는 칩셋 물체는 넣지 않는다 — 2026-10-22 A/B 에서 아무 화분이나 붙였더니 나무 참고 그림이 화분을 베꼈다.
+    async referenceAnchor(item, env) {
+      const anchors = await anchorsFor(env);
+      const id = item.tilesetId ?? "";
+      const source = id && env.tilesetSource ? await env.tilesetSource(id) : null;
+      // 칩셋 안 같은 종류(이름이 맞거나 크기 사전 종류가 같은 것) → 없으면 칩셋의 여러 칸 물체. 실내 예시(침대·옷장)는 칩셋이 없을 때만 —
+      // 야외 짐마차·분수 견본에 침대·옷장이 붙어 비율만 흐렸다(2026-10-22 VQA).
+      const own = source ? similarObjects(source, item.title, item.description, 2, true) : [];
+      const cls = footprintClass(item.title, item.description);
+      if (source && cls && own.length < 2) {
+        for (const object of classObjects(source, cls, 2)) if (own.length < 2 && !own.some((o) => o.name === object.name)) own.push(object);
+      }
+      if (source && !own.length) own.push(...similarObjects(source, item.title, item.description, 2, false));
+      const pictures = own.length ? own.map((object) => object.image) : (anchors?.examples.map((anchor) => anchor.image) ?? []);
+      if (!pictures.length) return null;
+      const cells = refCells(item);
+      const sheet = aspectSheet(pictures, aspectOf(cells.w, cells.h), source ? dominantColor(source.image) : FALLBACK_BACKGROUND);
+      return sheet ? env.encodePng(sheet) : null;
+    },
     adviseMessages: gateAdviceMessages,
     parseAdvice: parseGateAdvice,
     // 원본 checks.check 의 FAIL 코드만 막는다(WARN 은 미리보기에서 보여 준다). 판정은 블라인드 검수 다수결이 정한다.

@@ -47,6 +47,14 @@ export type WorkshopItem = {
   readonly setting?: string;
   /** 3/4 관문(object-gate) 종류(조언 배지용). 없으면 놓는 방식으로 정한다(hang → wall_mounted, flat → flat, 그 밖 other). */
   readonly gateKind?: string;
+  /** 크기 결정(footprint.ts)이 정한 칸 통행: 위→아래 줄마다 X 막힘 · * 위에 그려짐(지나감). 칩셋에 구울 때 칸마다 쓴다. 없으면 발밑 줄 전부 막힘. */
+  readonly passage?: readonly string[];
+  /** 크기 결정의 윗면 낱말(참고 그림 지시문 {top}) */
+  readonly refTop?: string;
+  /** 크기 결정 한 줄(왜 이 칸 수인가) — 카드·그리기 지시문에 보인다 */
+  readonly footprintNote?: string;
+  /** 참고 그림을 만들지 않는다(크기 사전 reference:false — 가는 기둥) */
+  readonly noReference?: boolean;
 };
 
 /** 사용자가 공방에서 정의한 새 기물 */
@@ -70,6 +78,14 @@ export type ItemDefinition = {
   readonly setting?: string;
   /** 3/4 관문 종류(조언 배지용). */
   readonly gateKind?: string;
+  /** 크기 결정의 칸 통행(위→아래, X 막힘 · * 위에 그려짐). 조수 요청이 footprint.ts 로 정한다. */
+  readonly passage?: readonly string[];
+  /** 크기 결정의 윗면 낱말(참고 그림 지시문) */
+  readonly refTop?: string;
+  /** 크기 결정 한 줄 */
+  readonly footprintNote?: string;
+  /** 참고 그림을 만들지 않는다(가는 기둥) */
+  readonly noReference?: boolean;
 };
 
 export type Direction = { readonly letter: string; readonly text: string };
@@ -97,6 +113,8 @@ export type GateAdvice = {
   /** 판정자가 잰 몸통 윗면 행 수 */
   readonly topRows: number | null;
   readonly readsAs: string;
+  /** 조언이 아니라 영수증 판정(round.gate = "receipt")이면 그 결과 — 알아서 고르기는 final = pass 만 받는다. */
+  readonly receipt?: ObjectGateCheck;
 };
 
 export type RunStatus = "queued" | "drawing" | "reviewing" | "done" | "failed" | "cancelled";
@@ -128,6 +146,8 @@ export type WorkshopRun = {
  * 판의 「참고 그림」(object-gen ref 단계, referencePrompt.ts). 판 임시 기록에만 있고 그리는 모델만 본다 — 칩셋·스토어로 가지 않는다.
  * none = 그림 계정이 없거나 이 기물은 참고 단계가 없다(「참고 그림 없이 그림」) · failed = 만들었지만 시점 검사를 못 넘었거나 오류.
  */
+/** 참고 그림의 주된 색 → 팔레트 키(share = 물체 화소 중 몫, %) */
+export type ReferenceColor = { readonly key: string; readonly hex: string; readonly share: number };
 export type RoundReference = {
   readonly status: "ok" | "none" | "failed";
   /** 통과한 참고 그림(줄인 PNG data URL). status ok 일 때만. */
@@ -143,6 +163,10 @@ export type RoundReference = {
   readonly note: string;
   /** 시점 검사를 넘은 다음 참고 그림들(object-gen 흐름은 2장을 만든다). dataUrl 이 첫 장. */
   readonly more?: readonly { readonly dataUrl: string; readonly view: { readonly view: string; readonly topShare: number; readonly why: string; readonly ok: boolean; readonly minTop: number } }[];
+  /** 붙인 시점·화풍 견본(작게, 기록용). 없으면 견본 없이 만들었다. */
+  readonly anchor?: string;
+  /** 첫 참고 그림의 물체 색을 가장 가까운 팔레트 키로 옮긴 몫(큰 순). 그리는 쪽이 색을 바래지 않게. */
+  readonly colors?: readonly ReferenceColor[];
 };
 
 export type WorkshopRound = {
@@ -155,6 +179,13 @@ export type WorkshopRound = {
   runs: WorkshopRun[];
   /** 참고 그림 단계 결과(실행기가 referenceDescribe 를 주고 env 에 그림 경로가 있을 때). 옛 판에는 없다. */
   reference?: RoundReference;
+  /** 미리 보기 고치기(look) 상한 — 실행기 looks 보다 작게만. 「한 번에 만들기」는 1(2026-10-23, 첫 결과 시간 줄이기). 옛 판에는 없다. */
+  looks?: number;
+  /**
+   * "receipt" = 검수 통과 후보를 3/4 관문 영수증으로 한 번 더 잰다(env.objectGate). 영수증이 통과(final pass)가 아니면 그 장은 불통과(코드 GATE)로 끝난다 —
+   * 엔진 안에서 다시 그리지 않는다(다시 그리기 한 번은 작업 줄이 정한다). 「한 번에 만들기」 알아서 고르기 판(2026-10-23).
+   */
+  gate?: "receipt";
 };
 export type WorkshopPick = { readonly projectKey: string; readonly itemKey: string; readonly roundId: string; readonly letter: string; readonly at: number };
 export type WorkshopFeedback = {
@@ -192,6 +223,10 @@ export type DrawContext = {
   readonly reference?: string | null;
   /** 참고 그림 전부(object-gen 흐름은 2장). 첫 장이 reference 와 같다. */
   readonly references?: readonly string[];
+  /** 이 판의 마지막 관문이 3/4·화풍 영수증(object-gate)이다 — 그리기 지시문이 그 기준(칩셋 소품의 명암 밀도)을 미리 알린다. */
+  readonly gated?: boolean;
+  /** 참고 그림의 주된 색을 팔레트 키로 옮긴 것(RoundReference.colors) */
+  readonly referenceColors?: readonly ReferenceColor[];
 };
 export type ReviewContext = {
   readonly item: WorkshopItem;
@@ -227,10 +262,28 @@ export interface WorkshopEnv {
    * 참고 그림 한 장(사용자 자기 그림 계정). null = 그림을 만들 수 있는 계정이 없다(참고 없이 그린다). 오류는 던진다.
    * 돌려받은 그림은 판 임시 기록에만 두고 칩셋·스토어로 보내지 않는다.
    */
-  referenceImage?(prompt: string, signal: AbortSignal): Promise<{ readonly dataUrl: string; readonly source: string } | null>;
+  referenceImage?(prompt: string, signal: AbortSignal, options?: { readonly image?: string }): Promise<{ readonly dataUrl: string; readonly source: string } | null>;
   /** 공개 자산 경로(앞 / 없이) → 이 앱에서 쓸 URL */
   assetUrl(path: string): string;
+  /**
+   * 3/4 관문(object-gate) 영수증 판정 — 호스트가 영수증 판정기를 돈다(편집기 scripts/lib/workshopGate.mjs). 판(round.gate = "receipt")이 요구할 때만 부른다.
+   * 돌릴 수 없는 호스트면 `unavailable` 이 참인 오류를 던진다.
+   */
+  objectGate?(input: { readonly png: string; readonly kind: string; readonly name: string; readonly label?: string; readonly chipset?: string }, signal: AbortSignal): Promise<ObjectGateCheck>;
 }
+
+/** 관문 영수증 결과(공방 판에 남기는 몫). final = 영수증 PASS, 또는 REFER 를 적대 검사가 통과시킨 것만 pass. */
+export type ObjectGateCheck = {
+  readonly final: "pass" | "fail";
+  readonly verdict: "pass" | "refer" | "fail";
+  readonly reasons: readonly string[];
+  /** 다시 그릴 때 줄 고칠 점(떨어진 반쪽 판정자의 근거 글) */
+  readonly fix?: string;
+  readonly pixelSha256: string;
+  readonly profileHash: string;
+  /** REFER 였을 때 적대 검사 결과 */
+  readonly refer: { readonly verdict: "pass" | "fail"; readonly judge: string } | null;
+};
 
 export type PerItem<T> = T | ((item: WorkshopItem) => T);
 export const perItem = <T>(value: PerItem<T>, item: WorkshopItem): T => (typeof value === "function" ? (value as (item: WorkshopItem) => T)(item) : value);
@@ -261,6 +314,11 @@ export interface WorkshopRunner {
   reviewMessages(ctx: ReviewContext, env: WorkshopEnv): Promise<ChatMessage[]>;
   /** 있으면 판을 시작할 때 참고 그림을 한 번 만든다(object-gen ref 단계). 돌려준 글은 물건 설명(영어 지시문 끝의 Object:). null = 이 기물은 참고 단계 없음. */
   referenceDescribe?(item: WorkshopItem): string | null;
+  /**
+   * 참고 그림에 붙이는 시점·화풍 견본(object-gen exemplar_sheet, 물체 비율 캔버스) data URL. 그림 경로는 붙인 그림의 비율로 답한다.
+   * 없거나 null 이면 견본 없이 만들고, 「붙인 그림」을 말하는 STYLE_NOTE 도 붙이지 않는다.
+   */
+  referenceAnchor?(item: WorkshopItem, env: WorkshopEnv): Promise<string | null>;
   /** 있으면 다 그린 후보마다 3/4 관문 조언 호출을 한 번 더 한다(굽기를 막지 않는 배지). */
   adviseMessages?(item: WorkshopItem, grid: Grid, palette: Palette, env: WorkshopEnv): Promise<ChatMessage[]>;
   parseAdvice?(item: WorkshopItem, text: string): GateAdvice;

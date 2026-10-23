@@ -382,7 +382,7 @@ const expandJrpgCampaignVolume: ToolDefinition = {
       dungeonId = freshId(`${prefix}_dungeon`);
       const type = dungeonTypeArg || DUNGEON_BY_LOOK[look ?? "none"];
       const name = dungeonNameArg || `${hub.name.replace(/\s*\(.*\)\s*$/u, "")} 너머의 ${type === "temple" ? "고대 신전" : type === "catacomb" ? "무너진 지하묘지" : type === "castle" ? "마도 연구소" : "동굴"}`;
-      const made = nested(draft, "author_dungeon", { id: dungeonId, name, type, size: "medium", genre: "rpg", seed, entrance: { fromMapId: routeId, x: routeFar.x, y: routeFar.y } });
+      const made = nested(draft, "author_dungeon", { id: dungeonId, name, type, size: "medium", genre: "rpg", seed, populate: false, entrance: { fromMapId: routeId, x: routeFar.x, y: routeFar.y } });
       const rooms = list(made.data, "rooms").map(asRoom).filter((r): r is Room => !!r);
       const bossId = text(field(made.data, "anchors"), "boss");
       const population = field(made.data, "population");

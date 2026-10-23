@@ -5,7 +5,7 @@
       "repo": "https://github.com/MovieHolic-Plex/object-gen.git",
       "visibility": "public",
       "branch": "main",
-      "commit": "7ebb92adbb9fc2300adb07bea1c9583c65b3b182",
+      "commit": "8979bbce97b5d55d1df84746ee7160c04abd1225",
       "vendor": {
         "out": "src/harnesses/_core/workshop/genKits/object-gen.json",
         "modules": [
@@ -19,7 +19,8 @@
           "objectgen/spec.py",
           "objectgen/palette.py",
           "objectgen/project34.py",
-          "objectgen/exemplars.py"
+          "objectgen/exemplars.py",
+          "objectgen/footprint.py"
         ],
         "files": [
           "objectgen/palettes/*.pal",

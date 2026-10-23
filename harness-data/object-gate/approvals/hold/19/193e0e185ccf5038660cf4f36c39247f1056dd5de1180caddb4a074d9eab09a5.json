@@ -1,0 +1,20 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "193e0e185ccf5038660cf4f36c39247f1056dd5de1180caddb4a074d9eab09a5",
+ "profileHash": "4d8774b517f41638",
+ "kind": "flat",
+ "decision": "allow",
+ "decidedBy": "supervisor",
+ "decidedAt": "2026-10-22T17:08:51.222Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/wz-stairs-6.argon-r2.json",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (2/4)"
+ ],
+ "note": "delegated by user to supervisor 2026-10-23 — fresh Argon adversarial PASS; receipt receipts/19/193e0e185ccf5038660cf4f36c39247f1056dd5de1180caddb4a074d9eab09a5.json",
+ "sig": "b538d29de7d7c4634e127a0dbdcbedf05773e0f3af218a526f8e7613afee0620"
+}

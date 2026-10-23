@@ -1,0 +1,4 @@
+{"queue":"jp-in-stairs-13","round":11,"judge":"claude-opus-5.5 (fresh subagent, no prior scores)","date":"2026-10-22","verdict":"fail","majors":1,"axis2":7,"axis6":6,
+ "majorFindings":["stairwell-down-wood: north 60% flat near-black, solid brown north rail over the cream wall reads as a headboard (crib/crate)"],
+ "minorFindings":["up stairs: even tread heights, saturated wood highlight, pale bottom slab","wells: far treads indistinct, pale south lip","1-cell mc/of ladder-ish","as rust dots noise","cs up side walls thin","cs bar hides far treads","rails need floor shadow"],
+ "action":"wood well treads lighter ramp (ita 2..-2 then yoru -1), far drop lines one shade above black, wood north rail 1px with spindles every 3px"}

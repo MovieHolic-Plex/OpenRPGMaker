@@ -16,6 +16,7 @@ import math, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'interior'))
 from ikit import Registry, K, OL, run_block, ROOT   # noqa: E402
+import stairart as SA   # noqa: E402
 
 BLOCK = 'interior_school'
 R = Registry(BLOCK, '학교')
@@ -750,58 +751,23 @@ def _urinal(c):
 
 # ══ 계단 ══════════════════════════════════════════════════════════════════════
 def _conc_stairs(c, w):
-    """북쪽 벽으로 올라가는 콘크리트 계단(나무 계단 _stairs 와 같은 짜임). 디딤판 밝은 회색 + 앞 끝 어두운 미끄럼 방지 줄,
-    왼쪽 벽 쇠 손잡이, 오른쪽 트인 쪽 쇠 난간."""
-    pw = w * 16
-    R0 = pw - 5
-    c.R(0, 0, pw, 48, OL)
-    c.R(1, 0, pw - 2, 5, K('yoru', -2)); c.R(1, 4, pw - 2, 2, K('yoru', 0))
-    tx, tw = 3, R0 - 3
-    for i in range(8):
-        yb = 46 - 5 * i
-        dim = 1 if i >= 6 else 0
-        c.R(tx, yb - 4, tw, 2, K('conc', 2 - dim)); c.HL(tx, yb - 4, tw, K('conc', 3 - dim))
-        c.HL(tx, yb - 2, tw, K('yoru', 0))                                     # 미끄럼 방지 줄
-        c.R(tx, yb - 1, tw, 2, K('conc', -1)); c.HL(tx, yb + 1, tw, K('conc', -3))
-    c.R(1, 6, 2, 41, K('conc', -1)); c.VL(2, 6, 41, K('conc', 0)); c.VL(1, 8, 34, ST(2))
-    for y in (14, 26, 38): c.P(2, y, ST(0))
-    NT = 30
-    c.R(R0, 6, 1, NT - 6, K('conc', -2))
-    for y in range(8, NT - 1, 4): c.R(R0 + 1, y, 2, 1, ST(1))                 # 난간 살
-    c.R(R0 + 1, 6, 1, NT - 6, ST(-1))
-    c.R(R0 + 3, 6, 1, NT - 6, ST(2)); c.P(R0 + 3, 6, ST(3))                    # 손잡이 쇠파이프
-    c.R(R0, NT, 5, 2, OL); c.R(R0 + 1, NT, 3, 1, ST(3))
-    c.R(R0 + 1, NT + 2, 3, 47 - NT - 2, K('conc', 1)); c.VL(R0 + 1, NT + 2, 47 - NT - 2, K('conc', 3)); c.VL(R0 + 3, NT + 2, 47 - NT - 2, K('conc', -2))
-    c.R(R0, NT + 2, 1, 47 - NT - 2, OL); c.R(pw - 1, 0, 1, 48, OL); c.HL(0, 47, pw, OL)
+    """북쪽 벽 앞에서 오르는 콘크리트 계단 — interior/stairart.py up_stairs(2026-10-22 다시 그림). 디딤판 코마다 미끄럼 방지 줄, 오른쪽 쇠파이프 난간."""
+    SA.up_stairs(c, w, 'conc', left='wall', right='pipe')
 
 
-@R.obj('sc-stairs-up', '학교 콘크리트 계단(위)', w=2, h=1, up=32, kind='wall', walk=[(0, 0), (1, 0)], stairs='up', use=('travel',),
+@R.obj('sc-stairs-up', '학교 콘크리트 계단(올라가는)', w=2, h=1, up=32, kind='wall', walk=[(0, 0), (1, 0)], stairs='up', use=('travel',),
        tags=('계단', '학교', '階段'),
        place='복도 북쪽 벽 바로 아래(벽 가구 자리) — 위층 계단통과 같은 x',
-       desc='학교 2칸 폭 콘크리트 계단 — 북쪽 벽 속으로 오르는 밝은 회색 디딤판, 단마다 앞 끝 어두운 미끄럼 방지 줄. 왼쪽 벽 쇠 손잡이, 오른쪽 쇠 난간과 아래 기둥. 발칸 두 칸에서 위층으로 이동.')
+       desc='학교 2칸 폭 콘크리트 계단 — 북쪽 벽 앞에서 천장 구멍으로 오른다. 밝은 회색 디딤판 코마다 어두운 미끄럼 방지 줄, 어두운 챌판, 위 단일수록 어둡다. 왼쪽 벽 쇠 손잡이, 오른쪽 쇠파이프 난간·아래 기둥. 올라가는 계단 — 들어서는 쪽: 남쪽 앞 칸(발칸 바로 아래 바닥). 오를 때 보는 방향: 북쪽(화면 위). 발칸에서 북쪽으로 걸으면 위층으로 이동하고, 위층 sc-stairwell-down(학교 내려가는 계단통) 남쪽 앞 칸에 계단을 등지고 남쪽(아래)을 보고 선다.')
 def _sc_stairs(c): _conc_stairs(c, 2)
 
 
 @R.obj('sc-stairwell-down', '학교 내려가는 계단통(쇠 난간)', w=2, h=2, up=16, kind='floor', use=('travel',), stairs='down', walk=((0, 1), (1, 1)),
        tags=('계단', '학교', '階段', '난간'),
        place='위층 복도 한쪽 — 아래층 올라가는 계단과 같은 x',
-       desc='위층 바닥에 뚫린 내려가는 콘크리트 계단통 2×2 — 북·동·서는 쇠 난간, 남쪽이 열린 입구. 윗줄 난간은 막히고 아랫줄 두 칸은 밟는다 — 그 칸에 아래층으로 가는 이동.')
+       desc='위층 바닥에 뚫린 2×2 콘크리트 계단통 — 북·동·서 쇠 난간, 남쪽만 열린 입구. 디딤판이 북쪽으로 한 단씩 낮아지며 어두워지고 북쪽 끝은 검은 구멍 벽. 윗줄(구멍)은 막히고 아랫줄 두 칸을 밟는다. 내려가는 계단 — 들어서는 쪽: 남쪽 앞 칸(키트 바로 아래 바닥, 북·동·서는 난간·턱으로 막힘). 내려갈 때 보는 방향: 북쪽(화면 위, 구멍 속 어둠 쪽). 아랫줄 두 칸(밟는 칸)에 들어서면 아래층으로 이동하고, 아래층 sc-stairs-up(학교 올라가는 계단) 남쪽 앞 칸에 계단을 등지고 남쪽(아래)을 보고 선다. 바닥 세 줄(구멍 줄·밟는 줄·앞 칸)이 필요하다 — 벽면 아랫줄 바로 아래 첫 바닥 줄부터 놓는다(난간 윗부분이 벽면 아랫줄 위로 솟는다).')
 def _sc_well(c):
-    c.R(1, 18, 30, 29, OL)
-    c.R(3, 20, 26, 24, K('yoru', -2))
-    for i in range(6):
-        y = 22 + i * 4
-        t = 2 - i
-        c.R(4, y, 24, 2, K('conc', t)); c.HL(4, y, 24, K('conc', t + 1)); c.HL(4, y + 1, 24, K('yoru', 0) if i < 4 else K('yoru', -1))
-        c.R(4, y + 2, 24, 2, K('yoru', -2))
-    c.R(1, 44, 30, 3, K('conc', 1)); c.HL(1, 44, 30, K('conc', 3)); c.HL(1, 46, 30, K('conc', -2)); c.HL(1, 47, 30, K('conc', -3))
-    c.R(2, 16, 28, 2, ST(2)); c.HL(2, 16, 28, ST(3)); c.HL(2, 18, 28, ST(-2))         # 북쪽 쇠 난간
-    for x in (6, 11, 16, 21, 26): c.R(x, 18, 1, 3, ST(0))
-    for x in (1, 29):
-        c.R(x, 18, 2, 26, K('conc', 0)); c.VL(x, 18, 26, K('conc', 2))
-        c.R(x, 5, 2, 40, ST(-2)); c.VL(x, 6, 38, ST(1))
-        c.R(x, 4, 2, 2, ST(3))
-        for y in range(9, 40, 6): c.P(x + (1 if x == 1 else 0), y, ST(2))
+    SA.down_well(c, 'conc')
 
 
 # ══ 옥상 ══════════════════════════════════════════════════════════════════════

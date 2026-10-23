@@ -1,0 +1,304 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a4c22b7271cf5c5d5855ddd998f8d9fb90717f18fd6731ffbcef1dbb0b542b79",
+ "width": 16,
+ "height": 48,
+ "kind": "wall_mounted",
+ "name": "jp-wall-ladder",
+ "label": "jp_city street_stairs jp-wall-ladder",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 10,
+  "darkV5": 38,
+  "nearBlackEdge": 0.6,
+  "opaqueTiles": 3
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ladder rails and rungs (flat, mounted on wall)",
+      "rows": "0-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom base strip with yellow highlights",
+      "rows": "43-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The ladder is drawn flat against the wall, as a vertical elevation with two rails and evenly spaced rungs (rungs at rows 6, 11, 16, 21, 26 and so on, each a 1-row light line followed by a darker shadow row). Row 1 is a light top edge, but it is a 1-row outline and not a top surface. The width profile has no ellipse and no widening and narrowing that would suggest a top plane. Rows 43-46 form a base or floor strip. Since the kind is wall_mounted, a flat drawing is acceptable. No top surface is shown, so main_top_rows is 0."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a thin, sparse prop, so I judged it by eye as well as by the numbers. It shows 7 visible tones per tile with 0% near-flat coverage, which is close to the hedge (9 tones, 0%, 11 total colours) and well clear of the sparse bench and lamp, which measure 0 tones. Only 3% of its dark edge pixels are neutral, so the outline leans toward a tint of the neighbouring material rather than a black sticker line. The rails and rungs carry a few value steps, roughly 4, with highlight and shadow on the rungs and no big flat patches. It is still a little simpler than the stall and well, which have 17-20 tones, and the grain is modest. A careful artist would still accept it next to the hedge and bench without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14194
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ladder frame with rails and rungs, mounted flat on wall",
+      "rows": "0-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top cap bar of rails",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold bracket feet at base",
+      "rows": "43-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "A ladder mounted flat on a wall, drawn in pure front elevation: two vertical rails with horizontal rungs (rungs at rows 6-8, 11-13, 16-18, etc., each a light highlight row, a mid row and a shadow row). The rungs are only 3 rows each and show no receding top plane. Rows 0-2 are a flat outline and highlight band, not a top surface. No ellipse, roof or contents are visible, and no side face is drawn. For a flat wall-mounted object this is a flat elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The ladder is a narrow, tall prop with a dark frame, lighter rails and rungs, and small highlight and shadow dots at the ends. It reads as about 5 lightness steps. The measured facts back this up: 7 visible tones per full tile against 9 for the hedge, which is the closest simple-material reference, and 0% near-flat coverage, so there are no large flat fills. Only 3% of dark edge pixels are neutral, so the outline leans toward a tinted frame tone rather than a uniform black sticker line. Its 11 distinct colours match the hedge's 11 and are fewer than the bench's 14 and the lamp's 14. It is lower than the stall (17 tones) and well (20 tones), but those are far more complex objects. For a thin, simple object like this, a careful artist would accept it next to the bench and hedge. It is slightly less rich than the best references but not flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14279
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ladder rails (two vertical side rails)",
+      "rows": "3-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ladder rungs (thin horizontal bars every 5 rows, lit top edge)",
+      "rows": "6-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom yellow highlight/base strip",
+      "rows": "43-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 44,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The ladder is drawn flat against the wall in a straight-on front view. Two vertical rails run from row 3 to row 42, with rungs every 5 rows (rows 6, 11, 16, 21, 26, 31, 36). Each rung is a 3-row unit: a light highlight row, then a mid row, then a dark row. It reads as a thin bar with its own shading, not a horizontal surface seen from above. There is no ellipse, roof, or contents. The only wider rows are the 1-row outline and small pegs at rows 12-13 and 28. That fits a flat wall-mounted piece, so a missing top surface is acceptable for this kind. The result is front_elevation with no main top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin, sparse prop: a ladder with dark rails, lighter rungs and small warm accents at the ends. It reads as about 4 lightness steps against roughly 5 for the references. Only 3% of its dark edge pixels are neutral, so the outline leans toward the material tone rather than a black sticker line. It has 0% near-flat coverage and no large single-colour areas. It has 7 visible tones per tile against 9 for the hedge and 17-20 for the larger stall and well. The 11 distinct colours match the hedge's 11. It is simpler than the stall and well, but those are much larger objects. Next to the hedge and lamp it looks equally crafted and not noticeably thinner or flatter, so I accept it despite the slightly lower density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15820
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ladder rails and rungs (flat face-on, mounted on wall)",
+      "rows": "0-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom ledge/feet strip with highlights",
+      "rows": "43-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The ladder is drawn face-on and flat against a wall. Two vertical rails run rows 0-43 with evenly spaced rungs (rows 6-8, 11-13, 16-18 and so on), each a light highlight row over darker rows. No band ends in a front-edge line with eave shadow, no ellipse, and no contents are visible. Rows 43-46 show a small base strip with yellow highlights, which is a front-facing detail. The object has no top surface, which is acceptable for a flat wall-mounted piece, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 7 visible tones per 16x16 tile, close to the hedge reference (9) and well above the thin bench and lamp references, which measure 0 because they are sparse. Near-flat coverage is 0%, so there are no flat fills. Only 3% of its dark edge pixels are neutral, so the outline carries a tint of the adjacent material rather than the near-black sticker line. By eye, the side rails have a lit edge and a darker inner tone, and the rungs have highlight and shadow with small accent pixels at the base. That is about 5 lightness steps, a little under the 5-6 that Beodeul uses. It is a thin, simple prop, and a careful artist would accept it beside the bench and lamp without it looking flatter or more sticker-like. The wide stall and well carry more texture, but they are not the same kind of object, so the shortfall is only slight.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15002
+  }
+ ],
+ "decidedAt": "2026-10-22T10:40:19.788Z",
+ "cells": {
+  "16": [
+   "2260afedcd88619f",
+   "44f5f287c4c4199f",
+   "d2ebff03d47c9caf"
+  ],
+  "24": [
+   "12597df827779ee0",
+   "5057d31006774e30",
+   "5077d8b6cabeca8f",
+   "585c7a5cfd898544",
+   "67ca094be1fa513d",
+   "c1caf6d5e4c6f0fa"
+  ],
+  "32": [
+   "2c6a2154110d5e6b",
+   "3afcbfcbb5e9ced0",
+   "67a5461d53c741a1",
+   "6ba38f6058130fb9",
+   "73043c0779ade0b7",
+   "828b435734b97280",
+   "aad3e5f9d696305f",
+   "b68e51dfa783d81f",
+   "dc4c3fd5268f1e82",
+   "e6e493f5d0232700",
+   "e81d55e3dafda413",
+   "e9db67b283542d6f"
+  ],
+  "48": [
+   "0c926346bba2fe75",
+   "139462c3756244ee",
+   "fc75318c0fa8a1d1"
+  ]
+ }
+}

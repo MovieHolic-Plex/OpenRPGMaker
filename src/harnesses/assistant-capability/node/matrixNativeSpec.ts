@@ -29,9 +29,9 @@ export type JudgeInput = { original: Project; before: Project; after: Project; t
 export type Verdict = { ok: boolean; note: string };
 export type Setup = { select?: Rect; event?: string; prior?: { prompt: string; select?: Rect } };
 
-const clone = <T>(value: T): T => structuredClone(value);
-const pass = (note: string): Verdict => ({ ok: true, note });
-const fail = (note: string): Verdict => ({ ok: false, note });
+export const clone = <T>(value: T): T => structuredClone(value);
+export const pass = (note: string): Verdict => ({ ok: true, note });
+export const fail = (note: string): Verdict => ({ ok: false, note });
 
 // ── fixture ────────────────────────────────────────────────────────────────
 
@@ -43,9 +43,10 @@ export const AREA = {
   barrels: { x: 2, y: 11, w: 5, h: 4 } as Rect,   // barrels + one crate that must survive
   trail: { x: 2, y: 15, w: 10, h: 2 } as Rect,    // room for a small forest path
 };
-const inside = (rect: Rect, x: number, y: number) => x >= rect.x && x < rect.x + rect.w && y >= rect.y && y < rect.y + rect.h;
+export const inside = (rect: Rect, x: number, y: number) => x >= rect.x && x < rect.x + rect.w && y >= rect.y && y < rect.y + rect.h;
 
-function runOn(project: Project, tool: string, args: Record<string, unknown>): any {
+/** Fixture content built through the same tool path the assistant uses, so a family's reference is what the editor would hold. */
+export function runOn(project: Project, tool: string, args: Record<string, unknown>): any {
   const context: any = { project, currentMapId: MAP, assistantRun: false };
   const result: any = runTool(context, tool, args);
   if (!result.ok) throw new Error(`native fixture: ${tool} failed: ${result.summary}`);
@@ -122,6 +123,13 @@ export function nativeProject(): Project {
   return project;
 }
 
+/** The fixture is deterministic but expensive (a 30k-tile bundled tileset); the self-check builds it once and clones per family. */
+let pristine: Project | null = null;
+export function cachedNativeProject(): Project {
+  pristine ??= nativeProject();
+  return clone(pristine);
+}
+
 // ── editor state a person would have set before typing the prompt ──────────
 
 const NPC = 'ev_utility_npc', DOOR = 'ev_test_door', SHOP = 'ev_test_shop', CUT = 'ev_test_cutscene';
@@ -157,33 +165,35 @@ export function setupFor(id: string): Setup {
 
 // ── judges ─────────────────────────────────────────────────────────────────
 
-const EVENT_FIELDS = ['lowerTiles', 'upperTiles', 'lowerOverlayTiles', 'upperOverlayTiles', 'shadowBits', 'lowerTileStacks', 'upperTileStacks', 'doodadGroups', 'terrainDesign', 'relief'] as const;
-const TILE_LAYERS = ['lowerTiles', 'upperTiles', 'lowerOverlayTiles', 'upperOverlayTiles', 'shadowBits'] as const;
+export const EVENT_FIELDS = ['lowerTiles', 'upperTiles', 'lowerOverlayTiles', 'upperOverlayTiles', 'shadowBits', 'lowerTileStacks', 'upperTileStacks', 'doodadGroups', 'terrainDesign', 'relief'] as const;
+export const TILE_LAYERS = ['lowerTiles', 'upperTiles', 'lowerOverlayTiles', 'upperOverlayTiles', 'shadowBits'] as const;
 
 /** Boot normalization and bundled dictionaries are infrastructure, not the command's result. */
 export function normalizeContent(project: Project): any {
+  // A deep clone, not a shallow spread: judges blank parts on the copy (withoutEvent replaces map.events),
+  // and a shared map object would rewrite the document they are comparing against.
   const copy: any = clone(project);
   delete copy.meta; delete copy.tilesets; delete copy.assets;
   return copy;
 }
-const mapOf = (project: Project, id = MAP): any => (project as any).maps[id];
-const eventOf = (project: Project, id: string): any => mapOf(project).events.find((event: any) => event.id === id);
-const commandsOf = (project: Project, eventId: string, page = 0): any[] => eventOf(project, eventId)?.pages?.[page]?.commands ?? [];
+export const mapOf = (project: Project, id = MAP): any => (project as any).maps[id];
+export const eventOf = (project: Project, id: string): any => mapOf(project).events.find((event: any) => event.id === id);
+export const commandsOf = (project: Project, eventId: string, page = 0): any[] => eventOf(project, eventId)?.pages?.[page]?.commands ?? [];
 /** A renamed NPC's dialogue speaker label follows the rename; the lines themselves must not change. */
-const speakerless = (command: any) => (command.kind === 'text' ? { ...command, speaker: undefined } : command);
-const kinds = (commands: any[]) => commands.map(command => command.kind);
+export const speakerless = (command: any) => (command.kind === 'text' ? { ...command, speaker: undefined } : command);
+export const kinds = (commands: any[]) => commands.map(command => command.kind);
 
 /** Document equality with some parts blanked on both sides: "everything else is preserved". */
-function sameExcept(a: Project, b: Project, blank: (doc: any) => void): boolean {
+export function sameExcept(a: Project, b: Project, blank: (doc: any) => void): boolean {
   const left = normalizeContent(a), right = normalizeContent(b);
   blank(left); blank(right);
   return isDeepStrictEqual(left, right);
 }
-const withoutEvent = (...ids: string[]) => (doc: any) => { for (const map of Object.values<any>(doc.maps)) map.events = (map.events ?? []).filter((event: any) => !ids.includes(event.id)); };
-const withoutTiles = (doc: any) => { const map = doc.maps[MAP]; for (const key of EVENT_FIELDS) delete map[key]; };
-const withoutDatabaseItems = (doc: any) => { doc.database.items = []; };
+export const withoutEvent = (...ids: string[]) => (doc: any) => { for (const map of Object.values<any>(doc.maps)) map.events = (map.events ?? []).filter((event: any) => !ids.includes(event.id)); };
+export const withoutTiles = (doc: any) => { const map = doc.maps[MAP]; for (const key of EVENT_FIELDS) delete map[key]; };
+export const withoutDatabaseItems = (doc: any) => { doc.database.items = []; };
 
-function changedCells(before: Project, after: Project): Array<{ x: number; y: number }> {
+export function changedCells(before: Project, after: Project): Array<{ x: number; y: number }> {
   const a = mapOf(before), b = mapOf(after);
   if (a.width !== b.width || a.height !== b.height) return [{ x: -1, y: -1 }];
   const cells = new Set<number>();
@@ -193,12 +203,12 @@ function changedCells(before: Project, after: Project): Array<{ x: number; y: nu
   }
   return [...cells].map(i => ({ x: i % a.width, y: Math.floor(i / a.width) }));
 }
-const tileAt = (project: Project, key: typeof TILE_LAYERS[number], x: number, y: number): number => {
+export const tileAt = (project: Project, key: typeof TILE_LAYERS[number], x: number, y: number): number => {
   const map = mapOf(project);
   return map[key]?.[y * map.width + x] ?? (key === 'shadowBits' ? 0 : -1);
 };
 
-function blockedCells(project: Project, rect: Rect): Array<{ x: number; y: number }> {
+export function blockedCells(project: Project, rect: Rect): Array<{ x: number; y: number }> {
   const context: any = { project: clone(project), currentMapId: MAP, assistantRun: false };
   const result: any = runTool(context, 'get_map_region', { mapId: MAP, x: rect.x, y: rect.y, w: rect.w, h: rect.h });
   const grid: string[] = result.data?.grid ?? [];
@@ -207,17 +217,81 @@ function blockedCells(project: Project, rect: Rect): Array<{ x: number; y: numbe
   return cells;
 }
 
+/** One map's blocked cells, read from the editor's own region grid for that map. */
+export function blockedOn(project: Project, mapId: string): Set<string> {
+  const map = mapOf(project, mapId);
+  if (!map) return new Set();
+  const context: any = { project, currentMapId: mapId, assistantRun: false };
+  const result: any = runTool(context, 'get_map_region', { mapId, x: 0, y: 0, w: map.width, h: map.height });
+  const grid: string[] = result.data?.grid ?? [];
+  const blocked = new Set<string>();
+  grid.forEach((row, dy) => [...row].forEach((glyph, dx) => { if (glyph === '#') blocked.add(`${dx},${dy}`); }));
+  return blocked;
+}
+
+/** Walkable cells of one map, reached on foot from `from` (4-directional, blocked cells excluded). */
+export function walkableFrom(project: Project, mapId: string, from: { x: number; y: number }): Set<string> {
+  const map = mapOf(project, mapId);
+  const blocked = blockedOn(project, mapId);
+  const seen = new Set<string>();
+  if (!map || blocked.has(`${from.x},${from.y}`)) return seen;
+  const queue = [`${from.x},${from.y}`];
+  seen.add(queue[0]!);
+  while (queue.length) {
+    const [x, y] = queue.pop()!.split(',').map(Number) as [number, number];
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height) continue;
+      const key = `${nx},${ny}`;
+      if (seen.has(key) || blocked.has(key)) continue;
+      seen.add(key);
+      queue.push(key);
+    }
+  }
+  return seen;
+}
+
+/**
+ * Maps a player can actually enter from the start position. A door only links when its own cell is walkable
+ * from where the player arrives — the fixture's south gate is sealed off, so the map behind it is unreachable
+ * even though the transfer command exists.
+ */
+export function reachableMaps(project: Project): Set<string> {
+  const start = (project as any).startMapId ?? MAP;
+  const seen = new Set<string>([start]);
+  const queue: Array<{ mapId: string; from: { x: number; y: number } }> = [
+    { mapId: start, from: (project as any).startPos ?? { x: 0, y: 0 } },
+  ];
+  while (queue.length) {
+    const current = queue.shift()!;
+    const map = mapOf(project, current.mapId);
+    if (!map) continue;
+    const cells = walkableFrom(project, current.mapId, current.from);
+    for (const event of map.events ?? []) {
+      if (!cells.has(`${event.x},${event.y}`)) continue;
+      for (const page of event.pages ?? []) for (const command of page.commands ?? []) {
+        if (command?.kind !== 'transfer' || typeof command.mapId !== 'string' || seen.has(command.mapId)) continue;
+        seen.add(command.mapId);
+        queue.push({ mapId: command.mapId, from: { x: command.x ?? 0, y: command.y ?? 0 } });
+      }
+    }
+  }
+  return seen;
+}
+
+export const orphanMaps = (project: Project): string[] => Object.keys((project as any).maps).filter(id => !reachableMaps(project).has(id));
+
 /** "(3,2)", "3,2", "x=3, y=2", "(3, 2)" → coordinate pairs. */
-function coordinatesIn(text: string): Array<{ x: number; y: number }> {
+export function coordinatesIn(text: string): Array<{ x: number; y: number }> {
   const pairs: Array<{ x: number; y: number }> = [];
   for (const match of text.matchAll(/\(?\s*(\d{1,2})\s*[,，]\s*(\d{1,2})\s*\)?/g)) pairs.push({ x: Number(match[1]), y: Number(match[2]) });
   for (const match of text.matchAll(/x\s*[=:]\s*(\d{1,2})\D{1,6}y\s*[=:]\s*(\d{1,2})/gi)) pairs.push({ x: Number(match[1]), y: Number(match[2]) });
   return pairs;
 }
-const mentions = (answer: string, ...needles: string[]) => needles.some(needle => answer.includes(needle));
-const called = (tools: ToolRecord[], ...names: string[]) => tools.some(tool => tool.ok === true && names.includes(tool.name ?? ''));
+export const mentions = (answer: string, ...needles: string[]) => needles.some(needle => answer.includes(needle));
+export const called = (tools: ToolRecord[], ...names: string[]) => tools.some(tool => tool.ok === true && names.includes(tool.name ?? ''));
 
-function readOnly(input: JudgeInput, label: string, check: () => Verdict): Verdict {
+export function readOnly(input: JudgeInput, label: string, check: () => Verdict): Verdict {
   if (!isDeepStrictEqual(normalizeContent(input.before), normalizeContent(input.after))) return fail(`${label}: 읽기 명령이 문서를 바꿨다`);
   if (!input.tools.some(tool => tool.ok === true)) return fail(`${label}: 성공한 조회 도구 호출이 없다`);
   if (!input.answer.trim()) return fail(`${label}: 답변이 비었다`);
@@ -225,14 +299,14 @@ function readOnly(input: JudgeInput, label: string, check: () => Verdict): Verdi
 }
 
 /** An empty top-level `branch: []` the model adds to a `choices` command is an ignored field, not a behavior change. */
-function tidyEvent(event: any): any {
+export function tidyEvent(event: any): any {
   if (!event) return event;
   const copy = clone(event);
   for (const page of copy.pages ?? []) for (const command of page.commands ?? []) if (command.kind === 'choices' && Array.isArray(command.branch) && command.branch.length === 0) delete command.branch;
   return copy;
 }
 
-function eventEdit(input: JudgeInput, id: string, check: (before: any, after: any) => Verdict, allowSystem = false): Verdict {
+export function eventEdit(input: JudgeInput, id: string, check: (before: any, after: any) => Verdict, allowSystem = false): Verdict {
   const blank = (doc: any) => { withoutEvent(id)(doc); if (allowSystem) delete doc.system; };
   if (!sameExcept(input.before, input.after, blank)) return fail(`${id} 밖의 내용이 바뀌었다`);
   const before = tidyEvent(eventOf(input.before, id)), after = tidyEvent(eventOf(input.after, id));
@@ -240,7 +314,7 @@ function eventEdit(input: JudgeInput, id: string, check: (before: any, after: an
   return check(before, after);
 }
 /** The original commands survive in order; new ones may be interleaved. */
-const keepsInOrder = (original: any[], next: any[]) => {
+export const keepsInOrder = (original: any[], next: any[]) => {
   let at = 0;
   for (const command of next) if (at < original.length && isDeepStrictEqual(command, original[at])) at++;
   return at === original.length;

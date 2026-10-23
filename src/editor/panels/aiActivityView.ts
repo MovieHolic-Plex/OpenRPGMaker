@@ -3,6 +3,7 @@ import { createBetweenTurnLogSection } from "./aiBetweenTurnLog";
 import { createActivityMedia } from "./aiActivityMedia";
 import { buildRichToolExtras, createPipelineHeader } from "./aiActivityTelemetry";
 import { el } from "@/util/dom";
+import { getLocale } from "@/i18n";
 import { ACTIVITY_APPLIED_SUMMARY, ACTIVITY_APPLYING_SUMMARY, activityText, type ActivityEntry, type ActivityTrace } from "@/ai/activityTrace";
 import { activityArchiveFailed, readActivityArchive, retainActivityTrace } from "@/ai/activityTraceArchive";
 import { bindActivityLevel, createActivityLevelControl, getActivityLevel } from "./aiActivityPreference";
@@ -284,7 +285,7 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
               } else {
                 for (const [caption, value] of [["입력", entry.input], ["결과 / 상태", entry.output]] as const) if (value !== undefined) body.append(el("strong", { text: caption }), el("pre", { text: JSON.stringify(value, null, 2) }));
                 if (!body.childElementCount) body.append(el("p", { text: "추가 데이터 없음" }));
-                body.append(el("p", { class: "ai-activity-receipt-meta", text: `${detail} · ${new Date(entry.at).toLocaleString()} · ${entry.name}\n실행 ID ${current.id}` }));
+                body.append(el("p", { class: "ai-activity-receipt-meta", text: `${detail} · ${new Date(entry.at).toLocaleString(getLocale())} · ${entry.name}\n실행 ID ${current.id}` }));
               }
             };
             const details = el("details", { children: [summary, body] }) as HTMLDetailsElement;
@@ -359,7 +360,7 @@ export function createActivityToolbar(getProjectId: () => string): HTMLElement {
       const view = createActivityView({ archive: false, historical: true });
       historyBody.replaceChildren(el("p", { class: "ai-activity-meta", text: "이 기기에서 최근 7일 · 최대 20개 실행을 보관해요. 수집 전 기록은 복원하지 않아요." }));
       if (!traces.length) historyBody.append(el("p", { text: "아직 보관된 실행 기록이 없어요." }));
-      for (const trace of traces) historyBody.append(el("button", { attrs: { type: "button" }, text: `${new Date(trace.startedAt).toLocaleString()} · ${trace.title.slice(0, 70)} · ${trace.phase}`, on: { click: () => { view.update(trace); } } }));
+      for (const trace of traces) historyBody.append(el("button", { attrs: { type: "button" }, text: `${new Date(trace.startedAt).toLocaleString(getLocale())} · ${trace.title.slice(0, 70)} · ${trace.phase}`, on: { click: () => { view.update(trace); } } }));
       historyBody.append(view.root);
     }, () => { if (token === generation) historyBody.replaceChildren(el("p", { text: "이 기기의 실행 기록을 읽을 수 없어요." })); });
   });

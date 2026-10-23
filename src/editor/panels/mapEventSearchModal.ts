@@ -246,7 +246,7 @@ export function openMapEventSearchModal(options: OpenMapEventSearchOptions = {})
           el("span", {
             class: "map-event-search-result-copy",
             children: [
-              el("strong", { class: "map-event-search-result-name", text: result.name }),
+              el("strong", { class: "map-event-search-result-name", text: result.name, attrs: { translate: "no" } }),
               el("span", { class: "map-event-search-result-location", text: result.location }),
             ],
           }),
@@ -277,7 +277,7 @@ export function openMapEventSearchModal(options: OpenMapEventSearchOptions = {})
           el("span", {
             class: "map-event-search-result-copy",
             children: [
-              el("strong", { class: "map-event-search-result-name", text: reference.name }),
+              el("strong", { class: "map-event-search-result-name", text: reference.name, attrs: { translate: "no" } }),
               el("span", { class: "map-event-search-result-location", text: reference.location }),
             ],
           }),

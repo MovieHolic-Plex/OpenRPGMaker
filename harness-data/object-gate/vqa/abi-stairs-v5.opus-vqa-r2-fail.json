@@ -1,0 +1,16 @@
+{
+ "round": 2,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "abi-stairs-v5",
+ "images": "http://mdc-server:18301/jp-stairs-1/interior-v5/r2/kits-4x.png (+ scene 1x/3x and before/)",
+ "pieces": [
+  "stairs up stone",
+  "stairs up wood",
+  "stairs down",
+  "stairwell down"
+ ],
+ "rubric": "axis 2 (style/palette/3/4 fit) + axis 6 (1x readability incl. up/down direction)",
+ "majors": 10,
+ "verdict": "FAIL",
+ "summary": "P1 up stone yes/yes: minors only (jaggy cheeks/rails, newel stubs, mauve treads, bottom near-black row).\nP2 up wood yes/yes: minors (jaggy, rail hue mismatch, nail dots).\nP3 stairs down NO: [major] nearest tread lighter than floor = raised slab; [major] banding = up-stair riser/nosing pattern, narrowing like up; [major] furniture silhouette (legs, headboard, closed rect).\nP4 stairwell NO: [major] bench/bed/fireplace; [major] bright south nosing = up cue.\nP5 spiral NO: [major] no helix, fins on pole; [major] entry tread darkest/detached; [major] rail barely visible.\nSCENE: [major] cellar box with legs; [major] manor 2F bench against wainscot / floors alignment.\nAXIS2 6, AXIS6 4. MAJORS 10\n"
+}

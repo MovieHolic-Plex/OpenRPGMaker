@@ -604,7 +604,8 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
 .ai-deck > .ai-lock-scrim, .ai-chat-body > .ai-lock-scrim {
   position: absolute;
   inset: 0;
-  z-index: 6;
+  /* 레일에 붙는 ⋯·성향·맥락 팝오버(z-index 6, assistant-deck.part-3.css)보다 아래 — 같은 6 이면 DOM 순서상 막이 이겨 메뉴 항목이 막에 먹혔다(2026-10-22 VQA B03). */
+  z-index: 5;
   display: flex;
   align-items: center;
   justify-content: center;

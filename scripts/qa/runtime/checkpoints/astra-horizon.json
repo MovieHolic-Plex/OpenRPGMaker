@@ -98,7 +98,7 @@
           "monster_1": {
             "instanceId": "monster_1",
             "speciesId": "mx_species_spriglet",
-            "nickname": "Spriglet",
+            "nickname": "토리프",
             "level": 6,
             "exp": 0,
             "skillIds": [
@@ -143,7 +143,7 @@
           "monster_1": {
             "instanceId": "monster_1",
             "speciesId": "mx_species_spriglet",
-            "nickname": "Spriglet",
+            "nickname": "토리프",
             "level": 7,
             "exp": 0,
             "skillIds": [
@@ -164,6 +164,107 @@
           "monster_1"
         ]
       }
+    },
+    {
+      "id": "route-trainer",
+      "label": "1번 길 트레이너전 (연구원)",
+      "note": "emeraldCrown.ts:761 meadow trainer_1 (10,14) action, facing down; stand below it at (10,15) facing up. troop mx_troop_mx_map_meadow_trainer_1 → astra_researcher (emeraldCrownCast genericFront)",
+      "mapId": "mx_map_meadow",
+      "x": 10,
+      "y": 15,
+      "facing": "up",
+      "switches": {
+        "mx_starter": true,
+        "mx_starter_mx_species_spriglet": true
+      },
+      "items": {
+        "item_capture_orb": 10,
+        "item_potion": 5,
+        "mx_revive": 1,
+        "mx_candy": 1
+      },
+      "sessionPatch": {
+        "monsterInstances": {
+          "monster_1": {
+            "instanceId": "monster_1",
+            "speciesId": "mx_species_spriglet",
+            "nickname": "토리프",
+            "level": 6,
+            "exp": 0,
+            "skillIds": [
+              "mx_skill_normal_1_grass",
+              "mx_skill_grass_1",
+              "mx_skill_flying_1_spriglet",
+              "mx_skill_psychic_1"
+            ],
+            "friendship": 70,
+            "caughtAt": {
+              "mapId": "mx_map_lab",
+              "x": 7,
+              "y": 7
+            }
+          }
+        },
+        "monsterParty": [
+          "monster_1"
+        ]
+      },
+      "beats": [
+        {
+          "id": "face-npc",
+          "ops": [
+            {
+              "kind": "face",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "id": "talk",
+          "ops": [
+            {
+              "kind": "action"
+            },
+            {
+              "kind": "waitFor",
+              "testid": "dialogue-box",
+              "state": "present",
+              "timeoutMs": 20000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "battle",
+          "ops": [
+            {
+              "kind": "pressUntil",
+              "key": "Enter",
+              "testid": "battle-scene",
+              "state": "present",
+              "maxPresses": 40,
+              "timeoutMs": 3000
+            }
+          ]
+        },
+        {
+          "id": "command",
+          "note": "트레이너 소개(미끄러져 들어옴 → 상대 내보냄 → 주인공 던지기 → 내 몬스터)가 끝나 명령 상자가 실제로 보일 때까지 — 영상(QA_RECORD_VIDEO)이 소개 전체를 담는다",
+          "ops": [
+            {
+              "kind": "waitForVisible",
+              "testid": "actor-command-fight",
+              "timeoutMs": 30000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1200
+            }
+          ],
+          "shot": true
+        }
+      ]
     },
     {
       "id": "gym-entrance",
@@ -188,7 +289,7 @@
           "monster_1": {
             "instanceId": "monster_1",
             "speciesId": "mx_species_spriglet",
-            "nickname": "Spriglet",
+            "nickname": "토리프",
             "level": 8,
             "exp": 0,
             "skillIds": [
@@ -234,7 +335,7 @@
           "monster_1": {
             "instanceId": "monster_1",
             "speciesId": "mx_species_spriglet",
-            "nickname": "Spriglet",
+            "nickname": "토리프",
             "level": 10,
             "exp": 0,
             "skillIds": [
@@ -299,6 +400,23 @@
             }
           ],
           "shot": true
+        },
+        {
+          "id": "command",
+          "note": "트레이너 소개(미끄러져 들어옴 → 상대 내보냄 → 주인공 던지기 → 내 몬스터)가 끝나 명령 상자가 실제로 보일 때까지 — 영상(QA_RECORD_VIDEO)이 소개 전체를 담는다",
+          "ops": [
+            {
+              "kind": "waitForVisible",
+              "testid": "actor-command-fight",
+              "timeoutMs": 30000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1200
+            }
+          ],
+          "shot": true
         }
       ]
     },
@@ -327,7 +445,7 @@
           "monster_1": {
             "instanceId": "monster_1",
             "speciesId": "mx_species_spriglet",
-            "nickname": "Spriglet",
+            "nickname": "토리프",
             "level": 13,
             "exp": 0,
             "skillIds": [
@@ -348,6 +466,116 @@
           "monster_1"
         ]
       }
+    },
+    {
+      "id": "temple-boss",
+      "label": "신전 보스 무영",
+      "note": "observatory boss (11,4) gated mx_badge_1; trainer intro → command box",
+      "mapId": "mx_map_observatory",
+      "x": 11,
+      "y": 5,
+      "facing": "up",
+      "switches": {
+        "mx_starter": true,
+        "mx_starter_mx_species_spriglet": true,
+        "mx_gym_1_puzzle": true,
+        "mx_badge_1": true
+      },
+      "items": {
+        "item_capture_orb": 10,
+        "item_potion": 5,
+        "mx_revive": 1,
+        "mx_candy": 1
+      },
+      "sessionPatch": {
+        "monsterInstances": {
+          "monster_1": {
+            "instanceId": "monster_1",
+            "speciesId": "mx_species_spriglet",
+            "nickname": "토리프",
+            "level": 11,
+            "exp": 0,
+            "skillIds": [
+              "mx_skill_flying_1_spriglet",
+              "mx_skill_psychic_1",
+              "mx_skill_grass_2",
+              "mx_skill_grass_6"
+            ],
+            "friendship": 70,
+            "caughtAt": {
+              "mapId": "mx_map_lab",
+              "x": 7,
+              "y": 7
+            }
+          }
+        },
+        "monsterParty": [
+          "monster_1"
+        ]
+      },
+      "beats": [
+        {
+          "id": "face-npc",
+          "ops": [
+            {
+              "kind": "face",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "id": "talk",
+          "ops": [
+            {
+              "kind": "action"
+            },
+            {
+              "kind": "waitFor",
+              "testid": "dialogue-box",
+              "state": "present",
+              "timeoutMs": 20000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "battle",
+          "ops": [
+            {
+              "kind": "pressUntil",
+              "key": "Enter",
+              "testid": "battle-scene",
+              "state": "present",
+              "maxPresses": 40,
+              "timeoutMs": 30000
+            },
+            {
+              "kind": "waitFor",
+              "testid": "actor-command-fight",
+              "state": "present",
+              "timeoutMs": 30000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "command",
+          "note": "트레이너 소개(미끄러져 들어옴 → 상대 내보냄 → 주인공 던지기 → 내 몬스터)가 끝나 명령 상자가 실제로 보일 때까지 — 영상(QA_RECORD_VIDEO)이 소개 전체를 담는다",
+          "ops": [
+            {
+              "kind": "waitForVisible",
+              "testid": "actor-command-fight",
+              "timeoutMs": 30000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1200
+            }
+          ],
+          "shot": true
+        }
+      ]
     },
     {
       "id": "league-entrance",
@@ -375,7 +603,7 @@
           "monster_1": {
             "instanceId": "monster_1",
             "speciesId": "mx_species_spriglet",
-            "nickname": "Spriglet",
+            "nickname": "토리프",
             "level": 15,
             "exp": 0,
             "skillIds": [
@@ -423,7 +651,7 @@
           "monster_1": {
             "instanceId": "monster_1",
             "speciesId": "mx_species_spriglet",
-            "nickname": "Spriglet",
+            "nickname": "토리프",
             "level": 16,
             "exp": 0,
             "skillIds": [
@@ -488,6 +716,23 @@
             }
           ],
           "shot": true
+        },
+        {
+          "id": "command",
+          "note": "트레이너 소개(미끄러져 들어옴 → 상대 내보냄 → 주인공 던지기 → 내 몬스터)가 끝나 명령 상자가 실제로 보일 때까지 — 영상(QA_RECORD_VIDEO)이 소개 전체를 담는다",
+          "ops": [
+            {
+              "kind": "waitForVisible",
+              "testid": "actor-command-fight",
+              "timeoutMs": 30000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1200
+            }
+          ],
+          "shot": true
         }
       ]
     },
@@ -517,7 +762,7 @@
           "monster_1": {
             "instanceId": "monster_1",
             "speciesId": "mx_species_spriglet",
-            "nickname": "Spriglet",
+            "nickname": "토리프",
             "level": 60,
             "exp": 0,
             "skillIds": [

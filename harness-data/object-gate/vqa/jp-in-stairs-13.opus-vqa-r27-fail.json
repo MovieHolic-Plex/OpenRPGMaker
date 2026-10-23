@@ -1,0 +1,35 @@
+{
+ "queue": "jp-in-stairs-13",
+ "round": 27,
+ "judges": "3x claude-opus-5.5 fresh subagents in parallel, no prior scores; a major counts only if >=2 of 3 raise it",
+ "date": "2026-10-22",
+ "verdict": "fail",
+ "perReviewer": {
+  "A": {
+   "majors": 2,
+   "axis2": 6,
+   "axis6": 6
+  },
+  "B": {
+   "majors": 2,
+   "axis2": 7,
+   "axis6": 6
+  },
+  "C": {
+   "majors": 4,
+   "axis2": 7,
+   "axis6": 5
+  }
+ },
+ "majorityMajors": [
+  "sc-stairwell-down (A+C): radiator/stove grille at 1x — vertical inner side strips like a cabinet frame, weak floor lip",
+  "of-stairwell-down (A+C): oven/appliance grille in the small office room"
+ ],
+ "minorityMajors": [
+  "mc/as stairwell-down (C only)",
+  "stairwell-down-wood (B only)"
+ ],
+ "upStairs": "no major on any up stair (cs-stairs-up-bare cleared)",
+ "majoritycount": 2,
+ "action": "grey wells: nearest tread at full tread value, inner pit walls widen northward as wedges (1->5px), 1px light floor lip outside the dark W/E cut line"
+}

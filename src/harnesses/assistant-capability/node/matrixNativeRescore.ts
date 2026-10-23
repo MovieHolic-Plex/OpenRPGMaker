@@ -2,6 +2,7 @@ import { readFileSync, readdirSync, existsSync, writeFileSync, rmSync } from 'no
 import { resolve } from 'node:path';
 import { writeRuntimeProject } from './editorDriver.mjs';
 import { judge } from './matrixNativeSpec';
+import { allFamilies } from './families';
 import type { Project } from '../../../project/types';
 
 /**
@@ -24,12 +25,20 @@ export function rescoreNativeRun(root: string): Array<{ id: string; n: number; w
     return { ...saved, ...heavy } as Project;
   };
   const rows: Array<{ id: string; n: number; was: boolean; now: boolean; note: string }> = [];
+  const families = allFamilies();
+  const judgeOf = (id: string) => {
+    const family = families.find(entry => id.startsWith(`${entry.id}__`));
+    if (!family) return (input: any) => judge(id, input);
+    const variant = family.variants.find(entry => entry.key === id.slice(family.id.length + 2));
+    if (!variant) throw new Error(`${id}: 가족 ${family.id} 에 변형이 없다`);
+    return (input: any) => family.judge(input, variant.args ?? {});
+  };
   try {
     for (const id of readdirSync(root)) {
       const dir = resolve(root, id), resultFile = resolve(dir, 'native-result.json');
       if (!existsSync(resultFile) || !existsSync(resolve(dir, 'after.json'))) continue;
       const result = JSON.parse(readFileSync(resultFile, 'utf8'));
-      const verdict = judge(id, {
+      const verdict = judgeOf(id)({
         original: expand(resolve(dir, existsSync(resolve(dir, 'original.json')) ? 'original.json' : 'before.json')),
         before: expand(resolve(dir, 'before.json')),
         after: expand(resolve(dir, 'after.json')),

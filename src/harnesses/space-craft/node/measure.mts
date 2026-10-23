@@ -6,9 +6,10 @@ import { gunzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
 import { PNG } from 'pngjs';
 import { loadHeadlessProject } from '../../../headless/index';
-import { addRenderAssetRoot, renderMapPng } from '../../../../scripts/qa-game/render.mts';
+import { addRenderAssetRoot, renderMapPng, renderReviewMapPng } from '../../../../scripts/qa-game/render.mts';
 import { store } from '../../../project/store';
 import { measureLayoutQuality } from '../../../ai/piAgent/layoutQuality';
+import { measureInteriorBareFloor } from '../../../editor/handInterior/bareFloor';
 import { computeReachableCells } from '../../../project/lint/reachability';
 import { isPassable } from '../../../project/collision';
 import { tilesetFamily } from '../../../project/tilesetFamily';
@@ -107,10 +108,19 @@ for (const attempt of attempts) {
     const map = current.maps[mapId]!;
     const family = tilesetFamily(current, map.tilesetId);
     const layout = measureLayoutQuality(current, map);
+    // 실내 빈 바닥(1배 눈 기준 자, bareFloor.ts) — 기록만. 옛 empty 와 나란히 둔다.
+    const bareFloor = measureInteriorBareFloor(current, map);
     const reach = reachability(current, map);
-    const { png } = renderMapPng(current, map, 1);
+    // 검수용 그림(기본) — 편집기 전용 표시(시작 위치 초록 테두리)를 뺀다. 2026-10-22 적대 검수자 둘이 초록 시작 표시를 이동 칸으로 읽어
+    // 「출구가 문이 아니라 방 한가운데」 major 를 매겼다. 이동 이벤트(파란 테두리)는 문 자리 판정에 쓰므로 둔다.
+    // render.file·사분면·시트가 모두 이 그림을 쓴다. 시작 표시가 있는 그림은 render.marker 로만 남긴다(HARNESS_START_MARKER=1 이면 주 그림도 표시 포함).
+    const withMarker = renderMapPng(current, map, 1).png;
+    const png = renderReviewMapPng(current, map, 1).png;
     const file = `render/${mapId}.png`;
     writeFileSync(resolve(dir, file), png);
+    const clean = file;
+    const marker = `render/${mapId}.marker.png`;
+    writeFileSync(resolve(dir, marker), withMarker);
     const decoded = PNG.sync.read(png);
     const hw = Math.floor(decoded.width / 2), hh = Math.floor(decoded.height / 2);
     const quadrants = [[0, 0], [hw, 0], [0, hh], [hw, hh]].map(([x, y], i) => {
@@ -133,7 +143,7 @@ for (const attempt of attempts) {
       ] : []),
     ];
     return { mapId, name: map.name, tilesetId: map.tilesetId, family, size: [map.width, map.height], events: map.events.length, npcs,
-      layout, reach, render: { file, sha256: sha(png), width: decoded.width, height: decoded.height }, quadrants, checks,
+      layout, ...(bareFloor ? { bareFloor } : {}), reach, render: { file, clean, marker, startMarkerHidden: process.env.HARNESS_START_MARKER !== '1', sha256: sha(png), width: decoded.width, height: decoded.height }, quadrants, checks,
       pass: checks.every(check => check.ok || ('advisory' in check && check.advisory)) };
   });
   const measure = { schemaVersion: 1, attempt, caseId: result.caseId, category: result.category, measuredAt: new Date().toISOString(),

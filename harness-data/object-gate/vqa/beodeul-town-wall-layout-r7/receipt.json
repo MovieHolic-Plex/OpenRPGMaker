@@ -1,0 +1,74 @@
+{
+  "reviewer": "opus fresh adversarial VQA",
+  "date": "2026-10-22",
+  "coordinate_convention": "tile (x,y), 16px tiles, origin top-left of the 1x PNG",
+  "images": [
+    {
+      "path": "/tmp/bw2-walls3/river-11.png",
+      "verdict": "FAIL",
+      "defects": [
+        "(b) 2-wide violated on protected gate routes: the only links from the gate are 1-wide: row 34 x18-23, row 33 x21-29, row 34 x29-35, row 35 x35-39",
+        "(b) 1-wide protected spines: column x18 y24-34; column x15 y12-22 (the only route to the north house at x23-26, door ~(25,11)); column x39 y22-35",
+        "row 35 x35-39 runs along the inner foot of the south wall (hugs the wall, does not dead-end)",
+        "OK: no river; 6 houses; no stubs into the wall; spur (7-8,23-24) ends at the well plaza (acceptable); gate (22-23,36-38) is open and connected"
+      ]
+    },
+    {
+      "path": "/tmp/bw2-walls3/river-33873-44x32.png",
+      "verdict": "FAIL",
+      "defects": [
+        "(a) OK: requested 44x32, output is 52x38 (rebuilt larger); 6 houses inside",
+        "(b) the ONLY gate route is a 1-wide snake: row 32 x23-28, column x28 y25-32, column x27 y22-24 up to the main street at rows 21-22",
+        "pointless 1-wide loop with no house on it: column x17 y11-20, row 11 x17-25, row 10 x25-36, column x36 y10-21 (it only encloses haystacks and millstones)",
+        "OK: no river; no stubs into the wall"
+      ]
+    },
+    {
+      "path": "/tmp/bw2-walls3/river-7.png",
+      "verdict": "FAIL",
+      "defects": [
+        "(b) gate trunk x21-22 y31-35 is 2-wide (good), but the route to the lower-left house (door ~(9,27)) is a 1-wide staircase: row 29 x6-13, then row 30 x13-25",
+        "(b) other 1-wide links: column x25 y21-29; column x39 y20-27; column x6 y20-29",
+        "pointless loop serving no house: row 6 x12-19 + row 7 x19-28 + column x28-29 y7-18; it hugs the north wall",
+        "(6) a flower prop is drawn over a road bulge at (23,31)-(23,32), next to the gate trunk",
+        "OK: no river; 6 houses; gate not blocked"
+      ]
+    },
+    {
+      "path": "/tmp/bw2-walls3/river-29.png",
+      "verdict": "PASS (minor)",
+      "defects": [
+        "gate trunk x22-23 y31-35 and the main house routes (rows 18-21, 29-31) are 2-wide",
+        "minor: north loop serves no house: column x21 y9-18 (1-wide) + rows 9-10 x21-35 + column x34-35",
+        "minor: the doorstep connector of the top-right house is 1-wide at (38,19)",
+        "minor: the left loop column x4-5 y18-31 is redundant",
+        "OK: no river; 6 houses; no stubs into the wall"
+      ]
+    },
+    {
+      "path": "/tmp/bw2-walls3/snow-77.png",
+      "verdict": "FAIL",
+      "defects": [
+        "(b) gate trunk x9-10 y25-38 is 2-wide, but the house links are 1-wide: column x5 y18-25, row 18 x5-10, row 19 x10-20, column x34 y17-26, row 26 x28-38",
+        "(4) empty snow padding at lower-left x2-8 y27-35 and lower-right x36-43 y28-35",
+        "frozen pond x29-43 y6-15 touches the inner face of the north wall at y6 but does not cross it (not a river)",
+        "out of scope: snow-kit door columns sit one tile off the path (known door-metadata issue)",
+        "OK: 6 houses; gate open"
+      ]
+    },
+    {
+      "path": "/tmp/bw2-walls3/desert-5150.png",
+      "verdict": "FAIL",
+      "defects": [
+        "(b) gate trunk x22-23 y29-35 is 2-wide, but the onward routes are 1-wide: column x19 y20-28, row 21 x9-19, column x31 y20-29, row 29 x31-36",
+        "(4) barren sand bands across nearly the full width at y30-35 (x2-20 and x25-43): the map looks padded",
+        "(6) a red rug prop sits on or against the path at (29-30,20)",
+        "oasis pond x30-43 y6-19 touches the north wall inner face at y6; it does not cross the wall",
+        "out of scope: desert-kit door columns sit one tile off the path",
+        "OK: 6 houses; no river crossing"
+      ]
+    }
+  ],
+  "overall": "FAIL",
+  "notes": "(a) PASS: 44x32 was rebuilt to 52x38, and every image has at least 5 (6) houses inside the wall. (c) PASS: no image has water crossing the wall; ponds/oases only touch the north wall's inner face. (b) stub peeling mostly works: no road dead-ends into the wall and no pointless stubs. The 'protected routes stay 2 cells wide' claim FAILS in 5 of 6 images: gate-to-door routes contain 1-wide staircase or column segments (worst in river-33873, where the only gate road is 1-wide). There are also loops that serve no house (river-33873, river-7, river-29). Wall art and house art were not judged."
+}

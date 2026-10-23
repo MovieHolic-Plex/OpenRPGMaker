@@ -798,6 +798,12 @@ function renderModalFooter(
   return footer;
 }
 
+/** 한글 마지막 글자에 받침이 있으면 true — 조사 은/는 선택용. */
+function hasFinalConsonant(text: string): boolean {
+  const code = text.charCodeAt(text.length - 1) - 0xac00;
+  return code >= 0 && code <= 11171 && code % 28 !== 0;
+}
+
 function validateForModalAction(request: OpenEventEditorRequest, actionLabel: string): EventDraftValidation {
   const validation = validateEventDraft(store.getCurrent(), request.mapId, request.eventId);
   if (!validation.canCommit) {
@@ -807,7 +813,7 @@ function validateForModalAction(request: OpenEventEditorRequest, actionLabel: st
     return validation;
   }
   if (validation.warningCount > 0) {
-    toast(`경고 ${validation.warningCount}개를 확인하세요. ${actionLabel}은 계속 진행합니다.`, "info");
+    toast(`경고 ${validation.warningCount}개를 확인하세요. ${actionLabel}${hasFinalConsonant(actionLabel) ? "은" : "는"} 계속 진행합니다.`, "info");
   }
   return validation;
 }

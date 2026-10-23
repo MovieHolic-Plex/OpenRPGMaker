@@ -58,6 +58,19 @@
   gap: 2px;
 }
 
+/* 좁은 패널(영어 1024px 등)에서는 제목이 아니라 액션 줄이 양보한다 — 숨긴 보조 버튼이 opacity:0 으로 자리를 차지해
+   「Map 1」이 「Ma」에서 잘렸다. 제목·개수는 줄지 않고, 액션은 오른쪽(새 맵)을 지키며 왼쪽 보조 버튼부터 잘린다. */
+.map-tree-panel .map-tree-header h3 {
+  flex: 0 0 auto;
+  min-width: max-content;
+}
+
+.map-tree-panel .map-tree-header .map-tree-header-actions {
+  flex: 1 1 0;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
 .map-tree-panel .map-tree-header-actions .map-tree-action {
   background: transparent;
   border-color: transparent;

@@ -1,3 +1,10 @@
+## 카메라 스크롤은 캔버스 픽셀 격자에 맞춘다 (2026-10-23)
+
+`playSceneCamera.ts` `snapCameraScrollToCanvasPixels` 가 맵 카메라의 `clampX/clampY` 를 감싸 스크롤을 `1/zoom` 세계 픽셀 단위로 반올림한다.
+따라가기 러프(0.2)가 남기는 소수 스크롤이 캔버스 반 픽셀에 떨어지면(zoom 2, 스크롤 x.25) 타일 층이 반 픽셀 밀려 칸 줄마다 1px 실선이 생겼다.
+Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 부르고, 경계는 `syncRuntimeCameraBounds` 가 늘 건다. 경계를 끄는 경로를 만들면 이 반올림도 빠진다.
+재현·확인: `node scripts/qa/astra-horizon/seam-probe.mjs <out> route-1-meadow mx_map_home 9 9` (`SEAM_STEPS` 로 스크롤 값 지정, 결과 PNG 의 칸 경계 가로줄을 센다).
+
 ## 지상 격자 위로 돌출한 원본 구조 (2026-10-06)
 
 `GameMap.visualTopOverhangPx`는 지상 y=0보다 북쪽으로 그려지는 실제 구조의 여유(원본 픽셀)다.

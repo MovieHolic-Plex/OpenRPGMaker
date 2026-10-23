@@ -1,3 +1,4 @@
+import { t } from "@/i18n";
 import { reliefCellLiftPx } from "@/player/reliefStrips";
 import { terrainPreviewSees } from "@/player/terrainVision";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -242,7 +243,8 @@ export function renderEventLayerClickFeedback(
   context.overlayLayer.add(marker);
 
   const labelY = Math.max(0, worldY - 14);
-  const action = feedback.mode === "edit" ? "편집 위치" : "새 이벤트 위치";
+  // 캔버스(Phaser) 글자는 DOM 번역 계층이 닿지 않으므로 직접 t() 를 부른다.
+  const action = t(feedback.mode === "edit" ? "편집 위치" : "새 이벤트 위치");
   // overlayLayer는 카메라 zoom이 적용되므로 zoom까지 반영해 고해상도로 래스터화한다.
   // 12px + 배경(#0a246a) 대비로 가독성을 확보하며, 캔버스에서 뭉개지는 bold는 쓰지 않는다.
   const label = context.scene.add.text(worldX + 2, labelY, `${action} ${feedback.x},${feedback.y}`, {

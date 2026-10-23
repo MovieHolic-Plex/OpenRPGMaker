@@ -5,6 +5,7 @@ import { PARTY_PIXEL_SHEETS } from "./partyPixelSheets";
 import { BATTLE_SCENERY_CATALOG } from "./battleSceneryCatalog";
 import { RETRO_PIXEL_FX_URLS } from "./retroPixelAnimations";
 import { EMERALD_OPENING_BACKDROP_URLS } from "./emeraldOpeningBackdrops";
+import { ASTRA_CAST_URLS } from "./astraCast";
 import { FALLEN_STAR_BACKDROP_URLS } from "./fallenStarOpeningBackdrops";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { withInlineAsset } from "./inlineAssetStore";
@@ -54,6 +55,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   ...RETRO_PIXEL_FX_URLS,
   // 몬스터 수집 오프닝 애니메틱의 맵 배경(별빛섬 맵을 1:1 로 구운 그림).
   ...EMERALD_OPENING_BACKDROP_URLS,
+  // 아스트라 호라이즌 등장인물 흉상·전신(char-gen, 감독 선택, 원래 도트 크기).
+  ...ASTRA_CAST_URLS,
   // 『폴른 스타』 오프닝·타이틀 배경(게임 맵을 1:1 로 구운 그림).
   ...FALLEN_STAR_BACKDROP_URLS,
   hero: null,

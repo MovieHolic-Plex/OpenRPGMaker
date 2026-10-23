@@ -1,0 +1,600 @@
+{
+ "panel": "theme-climate-r1 blind panel 1 (3 fresh Opus + 1 Argon), 2026-10-23",
+ "rule": "a major counts only if at least 2 of the 4 judges raise the same problem; pick = candidate with 0 counted majors, majority vote among those (Opus majority on ties)",
+ "delegatedBy": "delegated by user to supervisor 2026-10-23",
+ "prompt": "# Blind review panel — dungeon chipset pieces\n\nYou are one independent judge. Do not edit or create any files; only open the PNG boards below with the Read tool\n(they are large; read each one fully). No other context is needed.\n\nEach board is one item for an OPRN 16px RPG chipset in 3/4 top-down view (RPG Maker style: tops are visible planes, fronts below them,\nno side faces, light from top-left). At the top of the board are REFERENCE crops from the existing \"Beodeul\" chipset (the quality\nbar) at 1x and 3x and an RPG Maker person for scale. Below are anonymous candidates labelled X and Y for the same item: the piece at 1x and\n3x, its parts, a small scene at 1x and 2x (animated items show all frames side by side), and extras (tile mosaics / test maps) for\nfloors, walls and autotiles.\n\nJudge each candidate against these criteria:\n1. reads correctly in 3/4 top-down at 1x (top planes visible, fronts below, no side/isometric faces, sits on the floor with contact);\n2. sits in the same game as the Beodeul reference (palette harmony, texture density, number of shading steps, no toy/flat/clip-art look,\n   no black ink outlines);\n3. seamless joins: floors/walls/autotiles show no visible 16px repeat or seams; multi-cell objects join without cuts;\n4. reads as its stated purpose and as its theme (the board title says what it is).\n\nA MAJOR problem = something that would make you refuse to ship it (misreads at 1x, wrong view, clearly below the reference's quality,\nvisible seams/grid, does not read as the item). A MINOR problem = worth polishing but shippable.\n\nReply with ONLY a JSON object, no prose before or after:\n{\"<board file name without .png>\": {\"X\": {\"majors\": [{\"problem\": \"...\", \"where\": \"...\"}], \"minors\": [{\"problem\": \"...\", \"where\": \"...\"}]},\n                                    \"Y\": {\"majors\": [...], \"minors\": [...]},\n                                    \"pick\": \"X\" or \"Y\", \"why\": \"one sentence\"}, ...}\n\nBoards:\n- /home/main/.cache/dungeon-themes/climate-panel/r1-ice/theme-climate-r1__tc.ice_crystal.png\n- /home/main/.cache/dungeon-themes/climate-panel/r1-ice/theme-climate-r1__tc.ice_drift.png\n- /home/main/.cache/dungeon-themes/climate-panel/r1-ice/theme-climate-r1__tc.ice_frozen.png\n- /home/main/.cache/dungeon-themes/climate-panel/r1-ice/theme-climate-r1__tc.ice_icicles.png\n",
+ "boards": {
+  "theme-climate-r1__tc.ice_icicles": {
+   "item": "tc.ice_icicles",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "7a9c080e48b5e64ac3b3e05cba8e55490c24916494c0d81399262acbc0ee0053"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "288032e15ce6125d112764bfa26ff1014cd40c1d44ddea54fbee4adf4ca1dfc0"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": [
+     "floating single drip pixels below the icicle tips read as noise (opus2, opus3 major; opus1, argon minor)"
+    ]
+   },
+   "pick": "A1",
+   "note": "A1 0 counted majors, 4/4 votes"
+  },
+  "theme-climate-r1__tc.ice_crystal": {
+   "item": "tc.ice_crystal",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "b4ead1f45ebcf4278915aa9d2ec54623e81e05d49be026bbf319793744ddcb6e"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "8c363ac5d3565bb37d3686c02a749b6dbdf723342884a31c467d1fd946889512"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A2",
+    "opus2": "A2",
+    "opus3": "A2"
+   },
+   "counted": {
+    "A1": [],
+    "A2": []
+   },
+   "pick": "A2",
+   "note": "A1 snow-cushion base raised as major by opus2 only (minor by opus1, opus3); A2 0 majors; votes A2 3, A1 1"
+  },
+  "theme-climate-r1__tc.ice_frozen": {
+   "item": "tc.ice_frozen",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "e58f7d00d262db9a475df631d053d5c93675813031add92309caca4a44104efc"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "5ce4c492d561c9fdf9961c36c8d9327714e7096aacd7661bd27e31b091f88a94"
+    }
+   },
+   "votes": {
+    "argon": "A2",
+    "opus1": "A2",
+    "opus2": "A2",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": []
+   },
+   "pick": "A2",
+   "note": "A1 figure-blob raised as major by argon only; A2 0 majors; votes A2 3, A1 1. Consensus minor: figure low contrast at 1x"
+  },
+  "theme-climate-r1__tc.ice_drift": {
+   "item": "tc.ice_drift",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "4ef2db94eac0fee5f839118515b99db9795c81c6ecf43629164f7db1fa54d7f3"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "9614a4266766560e3f640f4c031669fcb6465eeb129de068b12dfd2ce4acbaec"
+    }
+   },
+   "votes": {
+    "argon": "A2",
+    "opus1": "A2",
+    "opus2": "A2",
+    "opus3": "A2"
+   },
+   "counted": {
+    "A1": [
+     "puffy rounded drifts read as cartoon clouds, not snow lying on the floor (opus1, opus2 major)"
+    ],
+    "A2": []
+   },
+   "pick": "A2",
+   "note": "A2 0 majors, 4/4 votes"
+  }
+ },
+ "raw": {
+  "argon": {
+   "theme-climate-r1__tc.ice_crystal": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Crystal tips taper to flat front-facing triangles without distinct 3/4 top facets",
+       "where": "X piece 3x upper half"
+      },
+      {
+       "problem": "Light grey snow base blends into the grey cave floor at 1x",
+       "where": "X scene 1x top-right crystal base"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Reads as a single central spire flanked by two dark stones rather than a multi-crystal cluster",
+       "where": "Y piece 3x"
+      },
+      {
+       "problem": "Dark grey rock base contrasts starkly and looks pasted onto the bright cyan ice floor",
+       "where": "Y scene 2x lower-left crystal"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X reads clearly as a three-spire ice crystal cluster at 1x and harmonizes better with both the ice patch and cave floor palettes than Y's single spire on dark rocks."
+   },
+   "theme-climate-r1__tc.ice_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Dark bottom contact shadow line is slightly heavy when placed over the bright cyan ice tile",
+       "where": "X scene 2x lower-left drift on ice"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Isolated single-pixel specks around the snow mounds read as stray pixel noise at 1x",
+       "where": "Y part 1 3x, Y part 2 3x, and Y scene 1x"
+      },
+      {
+       "problem": "Dark bottom contact shadow line is slightly heavy over the bright cyan ice tile",
+       "where": "Y scene 2x lower-left drift on ice"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X has clean, cohesive snow mound silhouettes matching the Beodeul reference without Y's noisy stray single pixels."
+   },
+   "theme-climate-r1__tc.ice_frozen": {
+    "X": {
+     "majors": [
+      {
+       "problem": "Interior figure is a flat, featureless dark grey blob that fails to read as a warrior at 1x",
+       "where": "X piece 1x and X scene 1x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "Ice block has a thin flat top strip and rigid vertical sides with weak 3/4 volume",
+       "where": "X piece 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Warrior silhouette is still somewhat low-contrast against the mid-blue ice interior at 1x",
+       "where": "Y scene 1x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y has a clearer 3/4 top plane on the ice block, a grounded frosty base, and a much more legible warrior silhouette with weapon and helmet details."
+   },
+   "theme-climate-r1__tc.ice_icicles": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Top cyan-white lip is slightly thicker than the built-in cave wall rim, creating a minor step where the overlay ends",
+       "where": "X scene 2x right end of upper wall"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Static floating 1px drip dots below the icicle tips look like repetitive stray pixel noise across the wall face",
+       "where": "Y piece 3x and Y scene 1x/2x"
+      },
+      {
+       "problem": "Top cyan-white lip is slightly thicker than the built-in cave wall rim where the overlay ends",
+       "where": "Y scene 2x right end of upper wall"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X provides clean, well-shaded icicle overhangs that integrate naturally with the cave wall, whereas Y's static mid-air drip pixels look like repetitive noise."
+   }
+  },
+  "opus1": {
+   "theme-climate-r1__tc.ice_crystal": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The white snow-mound base is bright and puffy. At 1x it reads a little like cotton and does not quite sit in the floor's grey tones.",
+       "where": "base of the cluster, X scene 1x/2x"
+      },
+      {
+       "problem": "The crystal shafts are thin with few shading steps, so at 1x they look sparse next to the denser Beodeul wall and ice texture.",
+       "where": "crystal shafts, X piece 1x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The dark rock base is close in value to the dark wall and floor shadows. It loses some edge definition on the grey floor.",
+       "where": "rock base, Y scene 2x"
+      },
+      {
+       "problem": "The cluster is narrow and fills only part of the 1x2 footprint, so at 1x it reads as a small prop.",
+       "where": "Y piece 1x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's faceted shafts on a rock base look grounded and match the cave palette better than X's bright cotton-like snow base."
+   },
+   "theme-climate-r1__tc.ice_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The two variants are similar lumpy mounds, so repeated placement may look samey.",
+       "where": "X part 1 vs part 2"
+      },
+      {
+       "problem": "The highlight is very white with little mid-tone, a slightly flat look next to the reference snow.",
+       "where": "top of the drifts, X piece 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "The puffy, rounded, billowing outline reads as cartoon clouds rather than snow drifts lying on the floor. The mounds look like they float instead of settling into the ground.",
+       "where": "Y piece 3x and the drifts on the floor in Y scene 2x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The mounds are large and bright and dominate the floor at 1x.",
+       "where": "Y scene 1x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's low, flatter mounds with a soft underside sit on the floor as drifts, while Y's billowing shapes look like clouds."
+   },
+   "theme-climate-r1__tc.ice_frozen": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The top plane of the block is only a thin light line, so it reads mostly as a front-facing glass pane rather than a 3/4 block with a visible top.",
+       "where": "top of the ice block, X piece 3x"
+      },
+      {
+       "problem": "The frozen figure is a vague grey silhouette and is hard to recognise as a warrior at 1x.",
+       "where": "figure inside, X piece 1x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The snow cap on top is bright and lumpy and slightly cotton-like.",
+       "where": "top cap, Y piece 3x"
+      },
+      {
+       "problem": "The figure is still a low-contrast silhouette at 1x, although the raised weapon helps.",
+       "where": "Y piece 1x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's capped top gives a clearer 3/4 block with a visible top plane, and its weapon-raised figure reads more as a warrior."
+   },
+   "theme-climate-r1__tc.ice_icicles": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The icicle row repeats in a fairly regular rhythm, and along a long wall the 16px repeat is faintly noticeable.",
+       "where": "wall top, X scene 2x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Stray single drip pixels float below the icicle tips. At 1x they read as noise or dirt on the wall face.",
+       "where": "below the tips, Y piece 3x and part 1/2"
+      },
+      {
+       "problem": "The icicles are longer and denser and cover much of the wall face texture.",
+       "where": "Y scene 2x wall"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X hangs cleanly from the wall top with varied lengths, while Y's floating drip pixels add noise."
+   }
+  },
+  "opus2": {
+   "theme-climate-r1__tc.ice_crystal": {
+    "X": {
+     "majors": [
+      {
+       "problem": "The base is a puffy pure-white snow cushion that reads as a cloud or cotton pad, not ground contact. It looks clip-art next to the Beodeul ice and stone.",
+       "where": "base of the piece at 1x and in both scene placements"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The crystal shafts are pale with few shading steps. They wash out against the pale ice floor and lack a clear top-left light.",
+       "where": "crystal shafts at 1x on the ice patch"
+      },
+      {
+       "problem": "The shafts are thin and spindly for a 1x2 cluster. The piece looks sparse.",
+       "where": "upper cell"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The dark rock base is a little heavy and boxy, and its lower edge is a hard horizontal line.",
+       "where": "bottom of the lower cell"
+      },
+      {
+       "problem": "The side shards are small and read weakly at 1x. The cluster is mostly one central spike.",
+       "where": "left and right shards"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's crystal sits on a shaded rock base with proper floor contact and stronger shading steps, while X's snow-cushion base looks like a cloud and floats."
+   },
+   "theme-climate-r1__tc.ice_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The small detached snow scraps under the main mounds read as stray noise at 1x.",
+       "where": "lower left of part 1 and the edges of part 2"
+      },
+      {
+       "problem": "The mounds are close to cloud shapes. The bottom contact shadow is weak on the light floor.",
+       "where": "bottom edge of both variants"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "The rounded, almost pure-white blobs with minimal blue shading read as cartoon clouds rather than drifts. This is below the reference's texture density.",
+       "where": "both variants at 1x and 3x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The two variants are near mirror copies of the same blob, so there is little variety.",
+       "where": "part 1 vs part 2"
+      },
+      {
+       "problem": "The flat cut bottom edge has no blend into the floor.",
+       "where": "base of both mounds"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X has textured, blue-shaded, irregular drifts that sit in the floor better, while Y's smooth white blobs read as clouds."
+   },
+   "theme-climate-r1__tc.ice_frozen": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The silhouette inside is a flat single grey with no internal shading. It reads only vaguely as a warrior (hunched figure with a staff).",
+       "where": "figure inside the block"
+      },
+      {
+       "problem": "The top plane is only a thin light strip. The block reads somewhat as a flat front panel at 1x.",
+       "where": "top of the upper cell"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The figure is a flat grey blob. The raised sword helps, but the body and limbs merge at 1x.",
+       "where": "figure inside the block"
+      },
+      {
+       "problem": "The snow cap is bright and lumpy and slightly cartoonish compared with the reference.",
+       "where": "top of the block"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's snow-capped top gives a clearer 3/4 top plane, and the raised-sword pose reads more clearly as a frozen warrior at 1x."
+   },
+   "theme-climate-r1__tc.ice_icicles": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The icicle spacing and lengths are fairly regular, so the strip repeats visibly along a long wall.",
+       "where": "the full 3x1 strip on the long wall in the scene"
+      },
+      {
+       "problem": "The bright white rim is slightly heavier than the reference's wall-top frost line.",
+       "where": "top row of the strip"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "Isolated white drip dots float below the icicle tips. At 1x they read as stray noise or dead pixels on the wall face.",
+       "where": "lower half of every part, visible on the wall in the scene"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The icicles are longer and denser and cover much of the wall face, which competes with the wall texture.",
+       "where": "wall face in the scene at 1x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's icicles hang cleanly from the wall top and read well at 1x, while Y has stray floating drip pixels that look like noise."
+   }
+  },
+  "opus3": {
+   "theme-climate-r1__tc.ice_crystal": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The snow mound base is a flat white blob with almost no shading steps. It looks pasted on top of the floor instead of grounded, and it is brighter and flatter than the Beodeul snow/rock pieces.",
+       "where": "base of the cluster (bottom ~5px)"
+      },
+      {
+       "problem": "The shards have no visible top facets. They read as flat front-facing spikes, so the 3/4 volume is weak.",
+       "where": "crystal shards"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The dark rock base is very dark and heavy against the pale cave floor, and the pale snow cap on it makes a hard band.",
+       "where": "rock base under the crystals"
+      },
+      {
+       "problem": "The right-hand small shard floats detached from the base.",
+       "where": "right small crystal"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's crystals have a clear left-light/right-shadow split with more shading steps and a rock base that grounds them like the reference props, while X's flat white snow blob looks toy-like."
+   },
+   "theme-climate-r1__tc.ice_frozen": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The block top is only a thin pale band, so the 3/4 top plane barely reads.",
+       "where": "top of the ice block"
+      },
+      {
+       "problem": "The diagonal light streak cuts across the figure and slightly confuses the silhouette at 1x.",
+       "where": "upper-left inside the block"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The snow cap is a flat white lump with little shading and reads slightly clip-art.",
+       "where": "top snow cap"
+      },
+      {
+       "problem": "The figure is small and blobby; it reads less clearly as a warrior than in X, though the raised weapon helps.",
+       "where": "frozen figure"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's frozen warrior silhouette with sword and shield reads more clearly at 1x, and its right-side shadow face fits the 3/4 lighting, while Y's flat snow cap looks pasted on."
+   },
+   "theme-climate-r1__tc.ice_icicles": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The white snow line along the top edge is brighter and thicker than the reference wall's icicle lip.",
+       "where": "top edge band"
+      },
+      {
+       "problem": "The icicles repeat at a fairly regular spacing, giving a slight pattern feel when tiled.",
+       "where": "across the 2x1/3x1 strip"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "Stray single pixels (drips) float detached below the icicles. At 1x they read as dust or noise on the wall face, not as part of the icicles.",
+       "where": "below the icicle tips across all parts"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The icicles are dense and long and cover a large part of the wall face, which competes with the wall texture.",
+       "where": "whole strip"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X hangs cleanly from the wall top with varied lengths and matches the reference icicle style, while Y has floating stray pixels that read as noise."
+   },
+   "theme-climate-r1__tc.ice_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The drifts are puffy, cloud-like lumps that read slightly like clouds rather than wind-packed snow.",
+       "where": "both variants"
+      },
+      {
+       "problem": "A small cyan stray pixel cluster sits at the bottom-right of a part.",
+       "where": "part 2, bottom right"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The drifts are larger, brighter and very uniform. They look more like clouds or cotton and have weaker contact shadow on the floor.",
+       "where": "both variants"
+      },
+      {
+       "problem": "A stray pixel sits below the left drift.",
+       "where": "piece, bottom left"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's drifts are lower and flatter with a darker contact edge, so they sit on the floor better and match the reference snow scale, while Y's big bright puffs read as clouds."
+   }
+  }
+ }
+}

@@ -1,0 +1,316 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b512db92ef7739e2cf9c2a38cbf138b32168691675ecc570fca2a52da452494c",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "apple tree",
+ "label": "workshop-objectgen-4/c3-tree",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 63,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leafy canopy (round crown with apples)",
+      "rows": "8-35",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk with flared root base",
+      "rows": "36-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy is a round, sphere-like mass. Its silhouette widens from 10 px at row 8 to 28 px at rows 18-25, then narrows to 14 px at row 34, which is an ellipse width profile. The upper rows 9-17 are lighter greens, so the crown reads as a lit top. The lower rows 27-34 are darker, with a dark outline at row 34-35, which reads as the shaded underside and front of the crown. Below it, a 6 px wide trunk (rows 36-47) flares to 12 px at the roots and gives a clear front face. The crown has no hard front-edge line, so the top surface comes from the rounded volume shading rather than a flat band. The apples and the leaf patches are small details."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, near-perfect round canopy on a short trunk. Its outline is a tinted dark green and brown, not black, and the measured 0% neutral dark edges agrees. It has about 3-4 greens plus red apple dots, with a few lighter leaf speckles. The references have 5-6 steps, with irregular leaf clumps, a broken silhouette and visible branches and roots. The candidate's canopy has a smooth, regular circular edge and little clump structure, which reads as a sticker-like icon beside the references. Its 8 visible tones per tile are about equal to tree-1a786c (7) but far below tree-d43edd (29). The numbers come from a small, simple piece, so they do not show real richness. The apples add some texture, but the leaf mass has shallow shading and no clustered highlights or shadow pockets. A careful artist would see it as flatter and simpler than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19034
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy (round crown with apples)",
+      "rows": "8-35",
+      "evidence": "b",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "31-35"
+     },
+     {
+      "part": "trunk with flared root base",
+      "rows": "36-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The crown is a rounded volume. Its width profile widens from 10 px at row 8 to 28 px at rows 18-25, then narrows to 10 px at row 35, which gives an ellipse-like silhouette. The upper rows 9-19 are lighter, with highlight and leaf clusters facing up. The lower rows 27-34 are darker and shaded, and a dark outline closes the underside at row 34-35. The underside and trunk (rows 36-47, a 6 px shaft flaring to 12 px at the roots) form the front face, so the tree reads as a 3D crown on a trunk. The trunk is hidden under the crown, so no separate top is expected. Apples are detail on the crown."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small round-canopy apple tree with a simple trunk. The canopy has about 4 green steps (highlight, light, mid, dark) plus red apple dots. The references use 5-6+ steps with clumped leaf masses, a ragged silhouette, and branches showing through. The candidate's silhouette is a near-perfect circle and reads as a sticker/icon next to them. Its dark edge pixels are tinted green/brown (0% neutral), so the outline is material-toned. Its 8 visible tones per tile are above tree-1a786c (7) but far below tree-d43edd (29). Texture is limited to scattered apple dots and a little leaf mottling, with no distinct leaf clumps or per-clump shading. The trunk is flat, with 2-3 browns. It carries less structure and clump detail than either reference, so it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 23794
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage canopy (round crown with apples)",
+      "rows": "8-35",
+      "evidence": "b",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "32-35"
+     },
+     {
+      "part": "trunk",
+      "rows": "36-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 28,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The crown's width profile grows from 10 px at row 8 to 28 px at rows 18-25, then narrows to 10 px at row 35. This is a closed round volume (ellipse/sphere) and not a flat front-facing disc. Light foliage on rows 9-17 reads as the lit upper surface, and darker foliage with a dark outline at rows 27-35 reads as the underside. The trunk below (rows 36-47, 6 px wide, flaring to 12 px at the base) gives a front face of about 12 rows. The trunk has no visible top because it is hidden under the crown. The crown is rounded and shaded rather than showing a flat top plane, so the top-surface evidence is moderate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small round canopy with a simple trunk. The canopy has about 3 green steps (light, mid, dark) plus red apple dots, and its edge reads as a fairly uniform dark green rim that looks like a sticker outline. The apples give some texture, but there are no leaf clumps in several greens and no per-clump highlights, so the silhouette is a plain circle. The trunk is a flat brown block with little grain. The measured facts (8 visible tones per tile, 0% flat) are close to tree-1a786c (7), but tree-d43edd has 29 visible tones, clustered leaf edges and a detailed root flare. Beside those references the candidate looks thinner, flatter and more sticker-like. Its tinted dark edges (0% neutral) keep it from being near_black, but the shading is shallow compared with the 5-6 steps per material of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14654
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy (round crown with apples)",
+      "rows": "8-35",
+      "evidence": "b",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "33-35"
+     },
+     {
+      "part": "trunk with flared root base",
+      "rows": "36-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 28,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy is the main volume. Its width profile grows from 10 px at row 8 to 28 px at rows 18-25, then narrows to 10 px at row 35, so it forms a full ellipse or sphere. Its top rows (9-17) are lighter and its bottom rows (33-35) have a dark underside outline. This reads as a rounded volume seen from above and the front, not a flat disc. The trunk (rows 36-47, 6 px wide, flaring to 12 px at the base) is a vertical front face of 12 rows. It carries no top surface of its own, and none is expected because it is hidden under the canopy. There is no isometric side face, since the shading is a plain sphere gradient. The apples are small details on the canopy."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small round-canopy apple tree with a simple trunk. The canopy reads as about 4 greens (light, mid, dark, outline green) plus red apple dots, so the ramp is shallower than the 5-6 steps in the references. The outline is dark green beside the leaves and dark brown beside the trunk, which is tinted (0% near-neutral edge pixels), so it is not a sticker line. Texture is limited to scattered apple dots and a few highlight clumps; the silhouette is a near-perfect circle with little clumping, unlike the irregular, leafy edges of both references. Measured facts: 8 visible tones per tile is above tree-1a786c (7) but far below tree-d43edd (29), and near-flat coverage is 0%. That is not enough to call it flat, but the candidate is clearly simpler and more iconic than the references, so it would look thinner next to the richer reference. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14281
+  }
+ ],
+ "decidedAt": "2026-10-22T09:29:37.700Z",
+ "cells": {
+  "16": [
+   "00ba24917513e9cd",
+   "10b67dd231c64dc2",
+   "5403a3556e2a947d",
+   "5e238ed04f79f881",
+   "b33a8f9af43b9e47",
+   "c04a6d83efc16d61"
+  ],
+  "24": [
+   "236a7d1064c605f1",
+   "3ed10b3126891832",
+   "535bfe77734383bc",
+   "8b20ccae9a5aa7c1",
+   "8e6d77dd8d550154",
+   "9d299549acf804da",
+   "aa976d4867bd1b92",
+   "ab3460a78b6f10b0",
+   "ccce174ea1b6a998",
+   "d64d074c22592746",
+   "e54262941bbe9f10",
+   "ff3cf37540b2dc1e"
+  ],
+  "32": [
+   "3d09a08697370f86",
+   "5924806725afa151",
+   "a5f1e5bdab8f90e8",
+   "c891b4ab72b9a0ca"
+  ],
+  "48": [
+   "3569ca0d3d30e3c2",
+   "37d17c8661214151",
+   "7f17330de9d0c343"
+  ]
+ }
+}

@@ -189,11 +189,20 @@ function renderLoginModal(mode: LoginMode, onIdentityChanged?: () => void): void
             dataset: { testid: "login-guest" },
             on: { click: () => completeMockLogin("게스트", "guest", onIdentityChanged) },
           }),
+          // 신원을 바꾸지 않고 나가는 길 — Escape 와 같은 close 를 쓴다.
+          el("button", {
+            class: "team-login-guest",
+            text: "닫기",
+            attrs: { type: "button" },
+            dataset: { testid: "login-close" },
+            on: { click: () => closeLoginModal() },
+          }),
         ],
       }),
     ],
   });
   document.body.append(modal);
+  const closeLoginModal = registerModal(modal, () => modal.remove());
   primaryInput.focus();
 }
 

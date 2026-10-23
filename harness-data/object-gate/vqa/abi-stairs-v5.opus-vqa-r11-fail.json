@@ -1,0 +1,16 @@
+{
+ "round": 11,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "abi-stairs-v5",
+ "images": "http://mdc-server:18301/jp-stairs-1/interior-v5/r11/kits-4x.png (+ scene 1x/3x and before/)",
+ "pieces": [
+  "stairs up stone",
+  "stairs up wood",
+  "stairs down",
+  "stairwell down"
+ ],
+ "rubric": "axis 2 (style/palette/3/4 fit) + axis 6 (1x readability incl. up/down direction)",
+ "majors": 2,
+ "verdict": "FAIL",
+ "summary": "P1 up stone yes/yes: minors (uniform treads, plinths wide/light, post light cue).\nP2 up wood yes/yes: minors (uniform treads, mid crossbar on posts).\nP3 stairs down NO / ambiguous: [major] even grey slats + equal dark bands read as floor vent / slatted crate; dark bands read as south-facing risers (= up). Fix: value ramp from floor value, 1px nosing shadow lines only, top rows near-black. minors: rails same value as frame, test placement flush to table.\nP4 stairwell down NO(weak) / ambiguous: [major] same — slatted bench/grate under wainscot. minor: N rail merges with wainscot trim.\nSCENE: DOWN pieces lack a cast shadow from the rails into the hole.\nAXIS2 7, AXIS6 5. MAJORS 2\n"
+}

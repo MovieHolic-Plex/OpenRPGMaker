@@ -3,6 +3,7 @@
 // true 를 돌려주면 그 방은 이 파일이 다 꾸민 것이고, false 면 compose 의 공통 방 규칙(홀·묘실·감방·제단·창고·보물 방)이 그 종류의 테마 키트로 이어서 꾸민다.
 import type { StructureKitDef } from "@/project/types";
 import type { DungeonType, PlacedCorridor, PlacedRoom } from "../types";
+import { TK } from "./profiles";
 
 export interface DressCtx {
   W: number; H: number;
@@ -29,6 +30,10 @@ export interface DressCtx {
   upper: number[]; lower: number[];
   counts: Record<string, number>;
   litter: readonly (readonly [string, number])[];
+  /** spec.lair — 무리가 사는 소굴 장식. */
+  lair?: boolean;
+  /** 방 id → 보스가 설 자리(우두머리 자리·제단 앞). 이벤트 자리(spots)를 이 칸에서 가까운 순으로 고른다. */
+  seats: Record<string, { x: number; y: number }>;
 }
 
 type Slot = { x: number; y: number };
@@ -92,6 +97,13 @@ export function dressTyped(c: DressCtx, type: DungeonType, r: PlacedRoom, rs: ()
     case "cave": return dressCave(c, r, rs, stairs, slots);
     case "volcano": return dressVolcano(c, r, rs, stairs, slots);
     case "labyrinth": return dressMaze(c, r, rs, stairs);
+    case "forest": return dressForest(c, r, rs);
+    case "swamp": return dressSwamp(c, r, rs);
+    case "pyramid": return dressPyramid(c, r, rs, stairs, slots, centerFirst);
+    case "tower": return dressTower(c, r, rs, stairs, slots, centerFirst);
+    case "otherworld": return dressOtherworld(c, r, rs, stairs, slots);
+    case "ice": return dressIce(c, r, rs, stairs, slots);
+    case "castle": return dressCastle(c, r, rs, slots, centerFirst);
     default: return false;
   }
 }
@@ -102,13 +114,16 @@ export function dressTyped(c: DressCtx, type: DungeonType, r: PlacedRoom, rs: ()
  */
 export function dressCorridor(c: DressCtx, type: DungeonType, cor: PlacedCorridor, rs: () => number): boolean {
   const r = cor.rect;
-  if (type === "cave" || type === "volcano") {
+  if (type === "cave" || type === "volcano" || type === "ice" || type === "otherworld" || type === "forest" || type === "swamp") {
+    const bit = type === "volcano" ? VC("ember-a") : type === "ice" ? pickKit(c, [TK("snow-drift"), CV("rubble-cave")]) : type === "otherworld" ? VC("ember-a")
+      : type === "forest" ? FF("heath-a") : type === "swamp" ? FF("toadstools-b") : CV("rubble-cave");
     for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
       if (hashDoor(c, x, y) || rs() > 0.05) continue;
-      stand(c, type === "volcano" ? VC("ember-a") : CV("rubble-cave"), x, y);
+      stand(c, bit, x, y);
     }
     return true;
   }
+  if (type === "pyramid" || type === "tower") return true;   // 사암·탑 통로는 맨바닥(하수구 창살·뼈가 주제와 안 맞는다)
   if (type !== "mine") return false;
   const horizontal = cor.dir === "E" || cor.dir === "W";
   if (!horizontal) {
@@ -255,6 +270,15 @@ function dressTemple(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | nul
         c.put(SW("candles"), altar[0] - 1, altar[1] + 1); c.put(SW("candles"), altar[0] + 2, altar[1] + 1);
         mirrorPut(c, SW("brazier"), altar[0] + 1, 3, altar[1] + 2);
       }
+      // 보스가 설 무대: 가운데 의식 원(모자이크) — 둥근 탑 방처럼 북벽이 통로로 갈려 제단이 못 서면 화로 한 쌍이 원을 감싼다.
+      // 「왕좌 방인데 맨 체크무늬 바닥」(2026-10-23 dg2-r5 VQA 탑 3층).
+      {
+        const my = r.y + Math.floor(r.h / 2) - 1;
+        if (c.put(P("temple-ruins", "mosaic-medallion-5x5"), cx - 2, my)) {
+          c.seats[r.id] = { x: cx, y: my + 2 };
+          if (!altar) { c.put(SW("brazier"), cx - 4, my + 2); c.put(SW("brazier"), cx + 4, my + 2); }
+        }
+      }
       for (const d of [5, 7]) mirrorPut(c, TEMPLE_COL, cx, d, r.y + r.h - 3);
       c.hangAlong(slots, rs, 3, () => TORCH, 4);
       ruin(r, 1);
@@ -357,6 +381,76 @@ function vinesOnWalls(c: DressCtx, rs: () => number, slots: Slot[], n: number, k
   for (const q of c.shuffle(rs, slots)) { if (k >= n) break; if (lonely(c, q.x, q.y, 1) && c.put(kitId, q.x, q.y)) k += 1; }
 }
 
+/** 소굴 야영지: 방 바닥 가운데 쪽 모닥불, 벽가 가죽 걸이·궤짝·통·자루 무더기, 흩어진 뼈. 보스방(chief)은 무더기를 더 쌓는다. */
+/** gap 고블린 야영 조각(bake_gap.py, 하네스 dungeon-chipset gap-props-r1). 없으면 다른 버들항 장소 조각으로 물러선다. */
+const GOBLIN = { fire: "bd-dg-goblin-campfire", tent: "bd-dg-goblin-tent", bones: "bd-dg-goblin-bones", loot: "bd-dg-goblin-loot" } as const;
+const PALISADE = { w: "bd-dg-palisade-w-end", e: "bd-dg-palisade-e-end", mids: ["bd-dg-palisade-mid", "bd-dg-palisade-mid2", "bd-dg-palisade-mid3"] } as const;
+
+/** 말뚝 울 한 줄(서끝 + 가운데 섞음 + 동끝, 1×2 조각). 한 조각이라도 못 놓으면(길을 막음·자리 없음) 그 줄을 통째로 걷는다. */
+function palisadeRun(c: DressCtx, rs: () => number, r: PlacedRoom, len: number): boolean {
+  if (!c.hasKit(PALISADE.w) || !c.hasKit(PALISADE.e)) return false;
+  const mids = PALISADE.mids.filter((k) => c.hasKit(k));
+  if (!mids.length) return false;
+  const ys = c.shuffle(rs, Array.from({ length: Math.max(0, r.h - 4) }, (_, k) => r.y + 2 + k));
+  for (const y of ys) {
+    for (const x0 of c.shuffle(rs, Array.from({ length: Math.max(0, r.w - len - 1) }, (_, k) => r.x + 1 + k))) {
+      if (!Array.from({ length: len }, (_, k) => x0 + k).every((x) => free(c, x, y) && free(c, x, y - 1) && free(c, x, y + 1) && lonely(c, x, y, 0))) continue;
+      const snap = Array.from({ length: len }, (_, k) => [y - 1, y].map((yy) => [c.lower[c.idx(x0 + k, yy)]!, c.upper[c.idx(x0 + k, yy)]!] as const));
+      let placed = 0;
+      for (let k = 0; k < len; k += 1) {
+        const id = k === 0 ? PALISADE.w : k === len - 1 ? PALISADE.e : mids[Math.floor(rs() * mids.length)]!;
+        if (!stand(c, id, x0 + k, y, { label: "palisade" })) break;
+        placed += 1;
+      }
+      if (placed === len) return true;
+      for (let k = 0; k < placed; k += 1) [y - 1, y].forEach((yy, j) => { c.lower[c.idx(x0 + k, yy)] = snap[k]![j]![0]; c.upper[c.idx(x0 + k, yy)] = snap[k]![j]![1]; });
+      c.counts["palisade"] = (c.counts["palisade"] ?? placed) - placed;
+    }
+  }
+  return false;
+}
+
+function lairCamp(c: DressCtx, r: PlacedRoom, rs: () => number, edge: [number, number][], chief: boolean): void {
+  const FIRE = c.hasKit(GOBLIN.fire) ? GOBLIN.fire : c.hasKit("bd-pick-deep-forest-path-campfire") ? "bd-pick-deep-forest-path-campfire" : "bd-pick-shipwreck-reef-campfire";
+  const inner = c.shuffle(rs, c.floorCells(r, 3));
+  // 큰 방(우두머리 방·넓은 굴)엔 천막 하나 — 「누가 사는 곳」이 한눈에 읽힌다. gap 고블린 가죽 천막(3×3)이 있으면 그것.
+  const TENT = c.hasKit(GOBLIN.tent) ? GOBLIN.tent : "bd-pick-desert-oasis-tent";
+  if ((chief || r.w * r.h >= 150) && c.hasKit(TENT)) {
+    const tw = c.kit(TENT).width;
+    for (const [x, y] of inner) if (lonely(c, x, y, 3) && lonely(c, x + tw - 1, y, 2) && stand(c, TENT, x, y)) break;
+  }
+  // 모닥불 둘레 야영 무더기: 불 한 칸 + 곁에 자루·궤짝·가죽 걸이.
+  let fires = 0;
+  for (const [x, y] of inner) {
+    if (fires >= (chief ? 2 : 1)) break;
+    if (!lonely(c, x, y, 2) || !stand(c, FIRE, x, y)) continue;
+    fires += 1;
+    const around: [number, number][] = [[x - 2, y], [x + 2, y], [x, y - 2], [x - 2, y + 1], [x + 2, y - 1]];
+    let k = 0;
+    for (const [ax, ay] of c.shuffle(rs, around)) { if (k >= 2) break; if (lonely(c, ax, ay, 0) && stand(c, c.weighted(rs, [["bd-pick-walled-market-sack-pile", 2], [SW("crate"), 2], ["bd-pick-deep-forest-path-hide-rack", 1], [SW("barrel"), 2]]), ax, ay)) k += 1; }
+  }
+  const goods: readonly (readonly [string, number])[] = [["bd-pick-deep-forest-path-hide-rack", 2], [SW("crate-stack"), 3], [SW("barrel"), 3], ["bd-pick-walled-market-sack-pile", 2], [SW("bone-heap"), chief ? 2 : 1],
+    ...(c.hasKit(GOBLIN.bones) ? [[GOBLIN.bones, 3] as const] : []), ...(c.hasKit(GOBLIN.loot) ? [[GOBLIN.loot, chief ? 3 : 2] as const] : [])];
+  let n = 0;
+  for (const [x, y] of edge) { if (n >= (chief ? 6 : 4)) break; if (rs() < 0.55 && lonely(c, x, y, 1) && stand(c, c.weighted(rs, goods), x, y)) n += 1; }
+  sprinkle(c, rs, r, 0.03, () => c.weighted(rs, [[SW("bones"), 3], [SW("skulls"), 1], ...(c.hasKit(GOBLIN.bones) ? [[GOBLIN.bones, 2] as const] : [])]), { inset: 2, max: chief ? 4 : 2 });
+  // 큰 야영지는 말뚝 울 한 줄(gap 고블린 울) — 우두머리 방은 더 길게.
+  if (chief || r.w * r.h >= 150) palisadeRun(c, rs, r, chief ? 6 : 4);
+  c.counts["lair-camp"] = (c.counts["lair-camp"] ?? 0) + 1;
+}
+
+/** 입구 앵커: 먼저 온 이들의 야영 흔적(모닥불 + 자루·궤짝) — 동굴·화산 입구 굴이 맨바닥으로 읽혔다(2026-10-23 dg2-r1 VQA). 계단 앞 세로 길(계단 x±2)은 비운다. */
+function entranceCamp(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null): void {
+  const FIRE = c.hasKit("bd-pick-deep-forest-path-campfire") ? "bd-pick-deep-forest-path-campfire" : "bd-pick-shipwreck-reef-campfire";
+  const inner = c.shuffle(rs, c.floorCells(r, 1)).filter(([x]) => !s || Math.abs(x - s.x) >= 3);
+  for (const [x, y] of inner) {
+    if (!lonely(c, x, y, 2) || !stand(c, FIRE, x, y)) continue;
+    for (const [ax, ay] of c.shuffle(rs, [[x - 2, y], [x + 2, y], [x - 1, y + 1], [x + 1, y - 1]] as [number, number][]).slice(0, 2)) if (lonely(c, ax, ay, 0)) stand(c, c.weighted(rs, [["bd-pick-walled-market-sack-pile", 2], [SW("crate"), 2], [SW("barrel"), 1]]), ax, ay);
+    c.counts["entrance-camp"] = (c.counts["entrance-camp"] ?? 0) + 1;
+    return;
+  }
+}
+
 function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null, slots: Slot[]): boolean {
   const spikes = () => c.weighted(rs, [[CV("stalagmite-1"), 4], [CV("rock-pillar-2"), 1], [CV("rubble-cave"), 3]]);
   const glow = () => c.weighted(rs, [[MUSH, 4], [CV("glow-moss-floor"), 2]]);
@@ -372,13 +466,15 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
       const e = c.edgeCells(r, rs);
       for (const [x, y] of e.slice(0, 8)) if (rs() < 0.45 && lonely(c, x, y, 1)) stand(c, spikes(), x, y);
       mossPatch(e, 3);
+      entranceCamp(c, r, rs, s);
       return true;
     }
     case "cavern": {
       const e = c.edgeCells(r, rs);
+      if (c.lair) lairCamp(c, r, rs, e, false);
       let n = 0; for (const [x, y] of e) { if (n >= 7) break; if (rs() < 0.5 && lonely(c, x, y, 1) && stand(c, spikes(), x, y)) n += 1; }
       sprinkle(c, rs, r, 0.03, spikes, { inset: 2, rad: 2, max: 3 });
-      mossPatch(e, 4); mossPatch(c.floorCells(r, 2), 3);
+      if (!c.lair) { mossPatch(e, 4); mossPatch(c.floorCells(r, 2), 3); }
       if (rs() < 0.7) { for (const [x, y] of shoreCells(c, r).slice(0, 3)) stand(c, MUSH, x, y); }
       vinesOnWalls(c, rs, slots, 3);
       c.hangAlong(slots, rs, 7, () => TORCH, 1);
@@ -398,6 +494,7 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
     }
     case "grotto": {
       const e = c.edgeCells(r, rs);
+      if (c.lair) { lairCamp(c, r, rs, e, false); return true; }
       mossPatch(e, 6); mossPatch(c.floorCells(r, 1), 5);
       for (const [x, y] of e.slice(0, 6)) if (rs() < 0.5 && lonely(c, x, y, 1)) stand(c, glow(), x, y);
       sprinkle(c, rs, r, 0.04, () => c.weighted(rs, [[SW("bones"), 2], [SW("skulls"), 1], [CV("rubble-cave"), 2]]), { max: 3 });
@@ -406,9 +503,30 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
     }
     case "boss": {
       // 보스 동굴: 가장자리 석순 둘레, 뼈 더미, 가운데는 비움, 벽 덩굴
+      // (석순보다 먼저 — 석순이 깃발 자리를 먼저 차지했다) 보스 자리 앵커: 북쪽 벽 앞 가운데 — 소굴은 우두머리 깃발 한 쌍 사이 약탈품 더미, 그 밖은 뼈 더미 제단. 가운데 맨바닥이
+      // 「보스방인지 안 읽힌다」·「우두머리가 졸개와 구별되지 않는다」(2026-10-23 dg2-r1 VQA 작은 동굴·고블린 굴).
+      {
+        const fc = c.floorCells(r, 1).filter(([x, y]) => c.isWall(x, y - 1) && c.isWall(x, y - 2));
+        const mid = r.x + Math.floor(r.w / 2);
+        fc.sort((a, b) => Math.abs(a[0] - mid) - Math.abs(b[0] - mid));
+        for (const [x, y] of fc) {
+          if (c.lair && c.hasKit("bd-pick-walled-market-banner-red")) {
+            // 깃발 둘이 다 설 자리에서만(한쪽만 서면 짝 잃은 깃발이 됐다)
+            if (!lonely(c, x, y, 1) || !lonely(c, x - 2, y, 0) || !lonely(c, x + 2, y, 0) || !c.isWalk(x - 2, y) || !c.isWalk(x + 2, y)) continue;
+            if (!stand(c, "bd-pick-walled-market-sack-pile", x, y)) continue;
+            stand(c, "bd-pick-walled-market-banner-red", x - 2, y); stand(c, "bd-pick-walled-market-banner-red", x + 2, y);
+            stand(c, SW("crate-stack"), x - 1, y); stand(c, SW("barrel"), x + 1, y);
+            c.counts["chief-seat"] = (c.counts["chief-seat"] ?? 0) + 1;
+            c.seats[r.id] = { x, y: y + 2 };
+            break;
+          }
+          if (lonely(c, x, y, 1) && stand(c, SW("bone-heap"), x, y)) { stand(c, SW("skulls"), x - 2, y); stand(c, SW("skulls"), x + 2, y); c.seats[r.id] = { x, y: y + 2 }; break; }
+        }
+      }
       const e = c.edgeCells(r, rs);
       for (const [x, y] of e.slice(0, 12)) if (rs() < 0.6 && lonely(c, x, y, 1)) stand(c, c.weighted(rs, [[CV("stalagmite-1"), 4], [CV("rock-pillar-2"), 2]]), x, y);
       if (e[0]) stand(c, SW("bone-heap"), e[0][0], e[0][1]);
+      if (c.lair) lairCamp(c, r, rs, e.slice(1), true);
       sprinkle(c, rs, r, 0.04, () => c.weighted(rs, [[SW("bones"), 2], [SW("skulls"), 2]]), { inset: 2, max: 5 });
       vinesOnWalls(c, rs, slots, 4);
       c.hangAlong(slots, rs, 5, () => TORCH, 2);
@@ -440,6 +558,7 @@ function dressVolcano(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | nu
       const e = c.edgeCells(r, rs);
       for (const [x, y] of e.slice(0, 8)) if (rs() < 0.4 && lonely(c, x, y, 1)) stand(c, spikes(), x, y);
       heat(e.slice(4), 2);
+      entranceCamp(c, r, rs, s);
       return true;
     }
     case "cavern": {
@@ -525,4 +644,386 @@ function dressMaze(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null)
   }
   for (let k = 0; k < walk.length * 0.012; k += 1) { const w = walk[Math.floor(rs() * walk.length)]!; if (free(c, w[0], w[1])) c.put(SW("grate-floor"), w[0], w[1], { free: true }); }
   return false;     // 입구 방 자체는 공통 규칙(계단 옆 상자 모둠)으로 이어서
+}
+
+
+// ================================================================ 2026-10-23 dungeon-themes: 새 주제 장식
+// 새 그림(TK(...))은 구워져 있을 때만 놓이고(pickKit·hasKit), 없으면 기존 버들항 키트로 물러선다 — 옛 사본도 같은 배치로 짓는다.
+
+const FF = (id: string) => P("deep-forest-path", id);
+const SP = (id: string) => P("swamp-stilt", id);
+const DS = (id: string) => P("desert-oasis", id);
+const SF = (id: string) => P("snowfield", id);
+const WZ = (id: string) => P("wizard-tower", id);
+/** 후보 중 이 타일셋에 있는 첫 키트. */
+function pickKit(c: DressCtx, ids: readonly string[]): string { return ids.find((id) => c.hasKit(id)) ?? ids[ids.length - 1]!; }
+const TREES_S = ["bd-tree-f4f319", "bd-tree-e9d9b3", "bd-tree-37f48b", "bd-tree-47e17a", "bd-tree-d105b2", "bd-tree-0f7ed1"];
+const TREES_M = ["bd-tree-03a8f7", "bd-tree-3e8732", "bd-tree-a80c85", "bd-tree-7ecdb8"];
+const TREES_L = ["bd-tree-d43edd", "bd-tree-5844f6", "bd-tree-b1d104"];
+const FOREST_BITS: readonly (readonly [string, number])[] = [[FF("fern-a"), 3], [FF("fern-b"), 3], [FF("fern-c"), 2], [FF("heath-a"), 2], [FF("heath-b"), 2], [FF("wild-a"), 2], [FF("wild-b"), 1], [FF("stones-a"), 1], [FF("toadstools-a"), 1]];
+
+/** 방 북쪽 끝 가운데(보스 자리·큰 기물): 바닥 첫 줄 근처, 가운데에 가까운 순. */
+function northCenter(c: DressCtx, r: PlacedRoom, w: number, inset = 1): [number, number][] {
+  const mid = r.x + Math.floor(r.w / 2) - Math.floor(w / 2);
+  return c.floorCells(r, inset).filter(([, y]) => y <= r.y + Math.max(2, Math.floor(r.h / 3))).sort((a, b) => a[1] - b[1] || Math.abs(a[0] - mid) - Math.abs(b[0] - mid));
+}
+/** 큰 기물을 북쪽 가운데에 세운다(맨 아랫줄 기준). 놓인 기물의 왼쪽 x·아랫줄 y. */
+function standNorth(c: DressCtx, r: PlacedRoom, kitId: string, inset = 1): [number, number] | null {
+  if (!c.hasKit(kitId)) return null;
+  const def = c.kit(kitId);
+  for (const [x, y] of northCenter(c, r, def.width, inset).slice(0, 40)) {
+    const fy = y + def.height - 1;
+    if (stand(c, kitId, x, fy)) return [x, fy];
+  }
+  return null;
+}
+/** 나무 덤불 한두 덩이(빈터 안 섬) — 숲이 빈터 안까지 들어와 「풀밭 한 장」이 아니게. */
+function treeIslands(c: DressCtx, r: PlacedRoom, rs: () => number, n: number): void {
+  let placed = 0;
+  for (const [x, y] of c.shuffle(rs, c.floorCells(r, 3))) {
+    if (placed >= n) break;
+    if (!lonely(c, x, y, 3)) continue;
+    const pool = rs() < 0.5 ? TREES_M : TREES_S;
+    const id = pool[Math.floor(rs() * pool.length)]!;
+    if (stand(c, id, x, y)) {
+      placed += 1;
+      for (const [dx, dy] of [[-1, 0], [2, 0], [0, 1], [1, 1]] as const) if (rs() < 0.5) stand(c, c.weighted(rs, FOREST_BITS), x + dx, y + dy);
+    }
+  }
+}
+
+function dressForest(c: DressCtx, r: PlacedRoom, rs: () => number): boolean {
+  const bits = () => c.weighted(rs, FOREST_BITS);
+  const e = c.edgeCells(r, rs);
+  const edgeBits = (n: number) => { let k = 0; for (const [x, y] of e) { if (k >= n) break; if (rs() < 0.55 && lonely(c, x, y, 1) && stand(c, bits(), x, y)) k += 1; } };
+  switch (r.kind) {
+    case "entrance": {
+      entranceCamp(c, r, rs, null);
+      stand(c, FF("hunter-post"), r.x + 1, r.y + r.h - 1); stand(c, FF("cairn"), r.x + r.w - 2, r.y + r.h - 1);
+      edgeBits(6);
+      return true;
+    }
+    case "cavern": {
+      treeIslands(c, r, rs, r.w * r.h > 120 ? 2 : 1);
+      // 쓰러진 통나무·그루터기·바위 — 빈터가 길이 아니라 숲속 공터로 읽히게
+      sprinkle(c, rs, r, 0.03, () => c.weighted(rs, [[FF("log-fallen"), 2], [FF("stump"), 3], [P("mountain-pass", "boulder-m"), 1], [pickKit(c, [TK("mossy-boulder"), FF("stones-b")]), 2]]), { inset: 2, rad: 2, max: 3 });
+      edgeBits(9);
+      return true;
+    }
+    case "lake": {
+      // 연못: 물가 갈대·돌, 물 위 연잎
+      for (const [x, y] of c.shuffle(rs, shoreCells(c, r)).slice(0, 8)) if (rs() < 0.6 && lonely(c, x, y, 1)) stand(c, c.weighted(rs, [[FF("fern-b"), 2], [FF("stones-c"), 1], [FF("wild-c"), 1], [SP("reed-stack"), 1]]), x, y);
+      let lily = 0;
+      for (const [x, y] of c.shuffle(rs, c.floorCells(r, 0).concat(waterCells(c, r)))) { if (lily >= 4) break; if (c.liquid[c.idx(x, y)] && rs() < 0.2 && c.put(pickKit(c, [TK("lily-pads"), DS("lily")]), x, y, { liquidOk: true })) lily += 1; }
+      edgeBits(6);
+      return true;
+    }
+    case "grotto": {
+      // 버섯 고리(요정 고리) — 숲 던전의 「장소」. 순간이동 장치가 있으면 장치가 따로 그 자리를 쓴다.
+      const cells = c.floorCells(r, 2);
+      const mid = cells[Math.floor(cells.length / 2)];
+      if (mid) { const ring = pickKit(c, [TK("mushroom-ring")]); if (c.hasKit(ring)) stand(c, ring, mid[0] - 1, mid[1]); else for (const [dx, dy] of [[-1, -1], [1, -1], [-1, 1], [1, 1], [0, -1], [0, 1]] as const) stand(c, rs() < 0.5 ? FF("toadstools-a") : FF("toadstools-c"), mid[0] + dx, mid[1] + dy); }
+      stand(c, FF("hide-rack"), r.x + 1, r.y + 2);
+      edgeBits(7);
+      return true;
+    }
+    case "boss": {
+      // 거대한 고목(보스 자리): 새 그림이 있으면 그것, 없으면 큰 나무 셋 사이 옛 숲 문(돌 아치).
+      const giant = standNorth(c, r, TK("giant-tree"), 0);
+      if (giant) c.seats[r.id] = { x: giant[0] + Math.floor(c.kit(TK("giant-tree")).width / 2), y: giant[1] + 2 };
+      else {
+        const gate = standNorth(c, r, FF("ruin-gate"), 0);
+        if (gate) {
+          stand(c, TREES_L[0]!, gate[0] - 4, gate[1]); stand(c, TREES_L[1]!, gate[0] + 4, gate[1]);
+          c.seats[r.id] = { x: gate[0] + 1, y: gate[1] + 2 };
+        }
+      }
+      edgeBits(10);
+      sprinkle(c, rs, r, 0.03, () => c.weighted(rs, [[FF("toadstools-b"), 2], [SW("bones"), 1], [FF("stump"), 1]]), { inset: 2, max: 4 });
+      return true;
+    }
+    case "vault": {
+      standNorth(c, r, FF("cairn"), 1);
+      stand(c, FF("stones-a"), r.x + 1, r.y + r.h - 2); stand(c, FF("stones-b"), r.x + r.w - 2, r.y + r.h - 2);
+      edgeBits(5);
+      return true;
+    }
+    default: return false;
+  }
+}
+/** 방 상자 안의 물 칸(연못 안쪽 — floorCells 는 걸을 수 있는 칸만 준다). */
+function waterCells(c: DressCtx, r: PlacedRoom): [number, number][] {
+  const out: [number, number][] = [];
+  for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) if (c.inb(x, y) && c.liquid[c.idx(x, y)]) out.push([x, y]);
+  return out;
+}
+
+function dressSwamp(c: DressCtx, r: PlacedRoom, rs: () => number): boolean {
+  const bits = () => c.weighted(rs, [[SP("reed-stack"), 2], [FF("fern-c"), 2], [FF("toadstools-b"), 2], [SP("crab-trap"), 1], [SW("bones"), 1], [MUSH, 2]]);
+  const e = c.edgeCells(r, rs);
+  const edgeBits = (n: number) => { let k = 0; for (const [x, y] of e) { if (k >= n) break; if (rs() < 0.5 && lonely(c, x, y, 1) && stand(c, bits(), x, y)) k += 1; } };
+  const wisp = pickKit(c, [TK("will-o-wisp"), MUSH]);
+  const trees = () => (rs() < 0.6 ? SP("mangrove") : SP("snag"));
+  switch (r.kind) {
+    case "entrance": {
+      stand(c, SP("lantern"), r.x + 1, r.y + r.h - 1); stand(c, SP("lantern"), r.x + r.w - 2, r.y + r.h - 1);
+      stand(c, SP("moss-log"), r.x + 2, r.y + 1);
+      edgeBits(5);
+      return true;
+    }
+    case "cavern": case "grotto": {
+      let t = 0; for (const [x, y] of c.shuffle(rs, c.floorCells(r, 2))) { if (t >= (r.w * r.h > 110 ? 2 : 1)) break; if (lonely(c, x, y, 3) && stand(c, trees(), x, y)) t += 1; }
+      if (r.kind === "grotto") { const root = pickKit(c, [TK("mangrove-roots")]); if (c.hasKit(root)) sprinkle(c, rs, r, 0.05, () => root, { inset: 2, rad: 2, max: 1 }); stand(c, SP("snag"), r.x + 1, r.y + 3); }
+      sprinkle(c, rs, r, 0.03, () => wisp, { inset: 2, rad: 2, max: 2 });
+      sprinkle(c, rs, r, 0.03, () => SP("moss-log"), { inset: 2, rad: 2, max: 1 });
+      edgeBits(8);
+      return true;
+    }
+    case "lake": {
+      let boat = false;
+      for (const [x, y] of c.shuffle(rs, waterCells(c, r))) {
+        if (!boat && c.liquid[c.idx(x + 1, y)] && c.put(SP("rowboat"), x, y, { liquidOk: true })) { boat = true; continue; }
+        if (rs() < 0.08) c.put(pickKit(c, [TK("lily-pads"), DS("lily")]), x, y, { liquidOk: true });
+      }
+      for (const [x, y] of c.shuffle(rs, shoreCells(c, r)).slice(0, 5)) if (rs() < 0.5 && lonely(c, x, y, 1)) stand(c, c.weighted(rs, [[SP("pilings"), 2], [SP("reed-stack"), 2], [SP("ducks"), 1]]), x, y);
+      edgeBits(5);
+      return true;
+    }
+    case "boss": {
+      // 가라앉은 우상(새 그림) — 없으면 늪 사당. 그 앞이 보스 자리.
+      const idol = standNorth(c, r, pickKit(c, [TK("sunken-idol"), CC("altar-stone")]), 0);
+      if (idol) c.seats[r.id] = { x: idol[0] + 1, y: idol[1] + 2 };
+      for (const side of [-1, 1]) { const at = idol ? [idol[0] + (side < 0 ? -2 : 4), idol[1]] as const : null; if (at) stand(c, SP("lantern"), at[0], at[1]); }
+      sprinkle(c, rs, r, 0.04, () => wisp, { inset: 2, rad: 2, max: 3 });
+      edgeBits(9);
+      return true;
+    }
+    case "vault": { stand(c, SP("snag"), r.x + 1, r.y + 3); edgeBits(4); return true; }
+    default: return false;
+  }
+}
+
+function dressPyramid(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null, slots: Slot[], _centerFirst: Slot[]): boolean {
+  const cx = r.x + Math.floor(r.w / 2);
+  const obelisk = pickKit(c, [TK("obelisk"), TP("column-temple-tall")]);
+  const sarco = pickKit(c, [TK("pharaoh-sarcophagus"), SW("coffin")]);
+  const statue = pickKit(c, [TK("jackal-statue"), TP("column-temple")]);
+  const gold = pickKit(c, [TK("gold-pile"), DS("jars")]);
+  const drift = pickKit(c, [TK("sand-drift"), DS("bones")]);
+  const torch = () => TORCH;
+  const sand = (n: number) => sprinkle(c, rs, r, 0.05, () => c.weighted(rs, [[drift, 4], [DS("bones"), 1], [DS("jars"), 1]]), { inset: 1, rad: 2, max: n });
+  switch (r.kind) {
+    case "entrance": {
+      if (s) { c.put(TORCH, s.x - 2, s.y); c.put(TORCH, s.x + 2, s.y); if (stand(c, obelisk, s.x - 3, s.y + 4)) stand(c, obelisk, s.x + 3, s.y + 4); }
+      sand(3);
+      return true;
+    }
+    case "hall": {
+      // 열주 홀: 두 줄 기둥(간격 흔들기) 사이 가운데 길, 벽에 횃불, 기둥 사이 짐승 석상
+      const rowsY = r.h >= 8 ? [r.y + 2, r.y + r.h - 2] : [r.y + Math.floor(r.h / 2)];
+      for (let x = r.x + 2 + Math.floor(rs() * 2); x < r.x + r.w - 2; x += 3 + Math.floor(rs() * 2)) for (const y of rowsY) stand(c, TP("column-temple"), x, y);
+      if (r.h >= 7) { const my = r.y + Math.floor(r.h / 2); if (stand(c, statue, cx - 3, my)) stand(c, statue, cx + 3, my); }
+      c.hangAlong(slots, rs, 4, torch);
+      sand(3);
+      return true;
+    }
+    case "crypt": {
+      // 석관 묘실: 석관 줄 + 벽 앞 항아리
+      const want = Math.max(2, Math.round((r.w * r.h) / 24));
+      let n = 0;
+      for (let y = r.y + 2; y < r.y + r.h - 1 && n < want; y += 3) for (let x = r.x + 1; x < r.x + r.w - 2 && n < want; x += 3) if (rs() < 0.8 && stand(c, sarco, x, y)) n += 1;
+      for (const q of slots.slice(0, 6)) if (rs() < 0.4) c.put(TORCH, q.x, q.y);
+      for (const [x, y] of c.edgeCells(r, rs).slice(0, 6)) if (rs() < 0.5 && lonely(c, x, y, 1)) stand(c, c.weighted(rs, [[DS("jars"), 2], [DS("bones"), 2], [drift, 2]]), x, y);
+      return true;
+    }
+    case "shrine": {
+      const altar = c.putAny(CC("altar-stone"), [0, 1, -1].map((d) => [cx - 1 + d, r.y] as [number, number]));
+      if (altar) { stand(c, VC("brazier"), altar[0] - 2, altar[1] + 2); stand(c, VC("brazier"), altar[0] + 3, altar[1] + 2); stand(c, statue, altar[0] - 2, altar[1] + 1); }
+      c.hangAlong(slots, rs, 4, torch, 2);
+      sand(2);
+      return true;
+    }
+    case "storage": case "vault": {
+      const e = c.edgeCells(r, rs);
+      for (const [x, y] of e.slice(0, 8)) if (rs() < 0.55 && lonely(c, x, y, 1)) stand(c, c.weighted(rs, [[DS("jars"), 3], [gold, r.kind === "vault" ? 3 : 1], [DS("bales"), 1]]), x, y);
+      c.hangAlong(slots, rs, 4, torch, 2);
+      return true;
+    }
+    case "boss": {
+      // 파라오 묘실: 가운데 큰 석관 + 의식 원, 양옆 오벨리스크·화로, 벽 횃불
+      put5(c, TP("mosaic-medallion-5x5"), cx - 2, r.y + Math.floor(r.h / 2) - 2);
+      const sar = standNorth(c, r, sarco, 1);
+      if (sar) { stand(c, obelisk, sar[0] - 3, sar[1]); stand(c, obelisk, sar[0] + 3 + (c.hasKit(sarco) ? c.kit(sarco).width - 1 : 0), sar[1]); c.seats[r.id] = { x: sar[0], y: sar[1] + 3 }; }
+      for (const [x, y] of [[r.x + 1, r.y + r.h - 2], [r.x + r.w - 2, r.y + r.h - 2]] as const) stand(c, VC("brazier"), x, y);
+      c.hangAlong(slots, rs, 3, torch);
+      sand(3);
+      return true;
+    }
+    default: return false;
+  }
+}
+function put5(c: DressCtx, id: string, x: number, y: number): void { if (c.hasKit(id)) c.put(id, x, y, { free: true }); }
+
+function dressTower(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null, slots: Slot[], _centerFirst: Slot[]): boolean {
+  const cx = r.x + Math.floor(r.w / 2);
+  const shelf = pickKit(c, [TK("bookshelf"), WZ("herb-rack")]);
+  const tall = pickKit(c, [TK("bookshelf-tall"), shelf]);
+  const lectern = pickKit(c, [TK("lectern"), WZ("globe")]);
+  const crystal = pickKit(c, [TK("crystal-pedestal"), VC("fire-crystal")]);
+  const circle = pickKit(c, [TK("arcane-circle"), TP("mosaic-medallion-5x5")]);
+  const candles = pickKit(c, [TK("candelabra"), SW("candles")]);
+  const ring = r.shape === "ring";
+  /** 링 방 안쪽 첫 둘레: 링 그림(안벽 그늘·띠)이 덮지 않은 바닥 중 이웃이 링 그림·벽인 칸 — 링 그림 칸 위에는 물건이 못 앉는다. */
+  const ringEdge = (): [number, number][] => c.floorCells(r, 0).filter(([x, y]) => c.upper[c.idx(x, y)]! < 0
+    && [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => !c.isWalk(x + dx!, y + dy!) || c.upper[c.idx(x + dx!, y + dy!)]! >= 0));
+  /** 링 방 둘레(동·서 호 밑 바닥 칸): 촛대·수정·지구의를 드문드문(링 방은 북쪽 벽 칸 장식이 없어 둘레가 비었다). */
+  const ringRim = (n: number) => {
+    if (!ring) return;
+    const cells = ringEdge().filter(([, y]) => y >= r.y + 2);
+    let k = 0;
+    for (const [x, y] of c.shuffle(rs, cells)) { if (k >= n) break; if (lonely(c, x, y, 1) && stand(c, c.weighted(rs, [[candles, 3], [crystal, 2], [WZ("globe"), 1], [WZ("lamppost"), 1]]), x, y)) k += 1; }
+  };
+  /** 북쪽 벽에 붙은 첫 바닥 줄을 따라 책장을 세운다(앞길 한 칸씩 비움). */
+  const shelves = (max: number) => {
+    let n = 0;
+    // 둥근 탑 링 방(shape ring): 북쪽 안벽이 키트 그림이라 벽 칸 표시가 없다 — 북쪽 이웃이 걷지 못하는 칸이면 안벽 밑이다.
+    const row = (ring ? ringEdge().filter(([, y]) => y < r.y + Math.floor(r.h / 2)) : c.floorCells(r, 0).filter(([x, y]) => c.isWall(x, y - 1))).sort((a, b) => a[0] - b[0]);
+    for (const [x, y] of row) { if (n >= max) break; if (s && Math.abs(x - s.x) <= 1) continue; if (rs() < 0.7 && stand(c, rs() < 0.4 ? tall : shelf, x, y + (c.hasKit(tall) ? c.kit(tall).height - 1 : 0))) n += 1; }
+    return n;
+  };
+  switch (r.kind) {
+    case "entrance": {
+      if (s) { c.put(TORCH, s.x - 2, s.y); c.put(TORCH, s.x + 2, s.y); }
+      stand(c, WZ("globe"), r.x + 1, r.y + r.h - 2); stand(c, WZ("lamppost"), r.x + r.w - 2, r.y + r.h - 2);
+      return true;
+    }
+    case "library": case "hall": {
+      shelves(r.kind === "library" ? 6 : 3);
+      const mid = c.floorCells(r, 2);
+      if (mid.length) { const [x, y] = mid[Math.floor(mid.length / 2)]!; stand(c, lectern, x, y); stand(c, candles, x + 2, y); }
+      stand(c, r.kind === "library" ? DS("rug") : WZ("starmap"), cx - 1, r.y + r.h - 2);
+      if (r.kind === "hall" && !ring) { stand(c, WZ("orrery"), r.x + 1, r.y + r.h - 2); stand(c, WZ("armillary"), r.x + r.w - 3, r.y + r.h - 1); }
+      if (r.kind === "hall" && ring) { stand(c, WZ("orrery"), r.x + r.w - 3, r.y + r.h - 3); }
+      ringRim(4);
+      c.hangAlong(slots, rs, 5, () => TORCH, 2);
+      return true;
+    }
+    case "shrine": case "boss": {
+      // 마법진 방: 가운데 마법진(보스방은 그 위가 탑 주인의 자리), 둘레 수정 받침·달돌 표석
+      const k = c.hasKit(circle) ? c.kit(circle) : null;
+      if (k) put5(c, circle, cx - Math.floor(k.width / 2), r.y + Math.floor(r.h / 2) - Math.floor(k.height / 2));
+      for (const [dx, dy] of [[-4, -1], [4, -1], [-4, 3], [4, 3]] as const) if (rs() < 0.85) stand(c, r.kind === "boss" && dy < 0 ? WZ("moon-obelisk") : crystal, cx + dx, r.y + Math.floor(r.h / 2) + dy);
+      if (r.kind === "boss") { c.seats[r.id] = { x: cx, y: r.y + Math.floor(r.h / 2) }; shelves(3); }
+      ringRim(3);
+      c.hangAlong(slots, rs, 4, () => TORCH, 3);
+      return true;
+    }
+    case "storage": {
+      stand(c, WZ("athanor"), r.x + 1, r.y + 2); stand(c, WZ("herb-rack"), r.x + 4, r.y + 1);
+      for (const [x, y] of c.edgeCells(r, rs).slice(0, 6)) if (rs() < 0.5 && lonely(c, x, y, 1)) stand(c, c.weighted(rs, [[SW("crate"), 2], [SW("barrel"), 2], [crystal, 1]]), x, y);
+      return true;
+    }
+    case "vault": { for (const [x, y] of c.edgeCells(r, rs).slice(0, 5)) if (rs() < 0.6 && lonely(c, x, y, 1)) stand(c, c.weighted(rs, [[crystal, 2], [WZ("globe"), 1]]), x, y); return true; }
+    default: return false;
+  }
+}
+
+function dressOtherworld(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null, slots: Slot[]): boolean {
+  const crystal = () => pickKit(c, rs() < 0.5 ? [TK("corrupt-crystal"), VC("fire-crystal")] : [TK("corrupt-crystal-big"), TK("corrupt-crystal"), VC("spike-wide")]);
+  const fire = pickKit(c, [TK("void-brazier"), VC("brazier")]);
+  const pillar = pickKit(c, [TK("bone-pillar"), VC("spike-tall")]);
+  const bits = () => c.weighted(rs, [[crystal(), 3], [VC("spike-small"), 2], [SW("bones"), 2], [SW("skulls"), 1], [pillar, 1]]);
+  const e = c.edgeCells(r, rs);
+  const edgeBits = (n: number) => { let k = 0; for (const [x, y] of e) { if (k >= n) break; if (rs() < 0.5 && lonely(c, x, y, 1) && stand(c, bits(), x, y)) k += 1; } };
+  switch (r.kind) {
+    case "entrance": {
+      if (s) { stand(c, fire, s.x - 2, s.y + 3); stand(c, fire, s.x + 2, s.y + 3); }
+      edgeBits(5);
+      return true;
+    }
+    case "cavern": case "lake": case "grotto": {
+      edgeBits(8);
+      sprinkle(c, rs, r, 0.03, crystal, { inset: 2, rad: 2, max: 2 });
+      vinesOnWalls(c, rs, slots, 3, VC("hanging-chain"));
+      if (r.kind === "grotto") { const a = standNorth(c, r, SW("altar-cult"), 1); if (a) { stand(c, fire, a[0] - 2, a[1]); stand(c, fire, a[0] + 3, a[1]); } }
+      return true;
+    }
+    case "boss": {
+      // 마왕의 옥좌(새 그림) — 없으면 교단 제단 + 깃발 + 보랏빛 화로. 둘레 뼈 기둥.
+      const throne = standNorth(c, r, pickKit(c, [TK("demon-throne"), SW("altar-cult")]), 1);
+      if (throne) {
+        const w = c.kit(pickKit(c, [TK("demon-throne"), SW("altar-cult")])).width;
+        stand(c, fire, throne[0] - 2, throne[1] + 1); stand(c, fire, throne[0] + w + 1, throne[1] + 1);
+        c.seats[r.id] = { x: throne[0] + Math.floor(w / 2), y: throne[1] + 2 };
+      }
+      const portal = pickKit(c, [TK("portal-gate")]);
+      if (c.hasKit(portal)) sprinkle(c, rs, r, 0.05, () => portal, { inset: 2, rad: 3, max: 1 });
+      for (const [x, y] of [[r.x + 2, r.y + r.h - 3], [r.x + r.w - 3, r.y + r.h - 3]] as const) stand(c, pillar, x, y);
+      vinesOnWalls(c, rs, slots, 4, VC("hanging-chain"));
+      edgeBits(8);
+      return true;
+    }
+    case "vault": { edgeBits(5); return true; }
+    default: return false;
+  }
+}
+
+function dressIce(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null, slots: Slot[]): boolean {
+  const crystal = pickKit(c, [TK("ice-crystal"), VC("fire-crystal")]);
+  const rock = () => pickKit(c, rs() < 0.5 ? ["bd-pick-dungeon-gap-ice-rock", SF("rock")] : [SF("rock")]);
+  const icicle = pickKit(c, [TK("icicles"), CV("vines-2")]);
+  const frozen = pickKit(c, [TK("frozen-warrior"), SF("snowman")]);
+  const drift = pickKit(c, [TK("snow-drift"), SF("mound")]);
+  const bits = () => c.weighted(rs, [[drift, 3], [rock(), 2], [CV("stalagmite-1"), 2], [crystal, 2], [SF("mound"), 1]]);
+  const e = c.edgeCells(r, rs);
+  const edgeBits = (n: number) => { let k = 0; for (const [x, y] of e) { if (k >= n) break; if (rs() < 0.5 && lonely(c, x, y, 1) && stand(c, bits(), x, y)) k += 1; } };
+  const icicles = (n: number) => { if (c.hasKit(TK("icicles"))) c.hangAlong(slots, rs, 3, () => icicle, n); };
+  switch (r.kind) {
+    case "entrance": {
+      if (s) { c.put(TORCH, s.x - 2, s.y); c.put(TORCH, s.x + 2, s.y); }
+      entranceCamp(c, r, rs, s);
+      edgeBits(5); icicles(3);
+      return true;
+    }
+    case "cavern": case "grotto": {
+      edgeBits(9); icicles(4);
+      sprinkle(c, rs, r, 0.03, () => crystal, { inset: 2, rad: 2, max: 2 });
+      return true;
+    }
+    case "lake": {
+      // 얼어붙은 호수: 가운데는 빙판(미끄럼 장치 자리)이라 비우고, 둘레에 얼음 바위·얼음 구멍
+      for (const [x, y] of c.shuffle(rs, e).slice(0, 10)) if (rs() < 0.5 && lonely(c, x, y, 1)) stand(c, c.weighted(rs, [[rock(), 2], [drift, 2], [SF("ice-hole"), 1]]), x, y);
+      icicles(4);
+      return true;
+    }
+    case "boss": {
+      const mid = r.x + Math.floor(r.w / 2);
+      for (const dx of [-3, 3]) stand(c, frozen, mid + dx, r.y + 2);
+      const cr = standNorth(c, r, crystal, 1);
+      if (cr) c.seats[r.id] = { x: cr[0], y: cr[1] + 2 };
+      edgeBits(10); icicles(5);
+      return true;
+    }
+    case "vault": { edgeBits(5); sprinkle(c, rs, r, 0.05, () => crystal, { max: 2 }); return true; }
+    default: return false;
+  }
+}
+
+/** 성·요새: 옥좌의 방만 따로 — 북쪽 가운데 옥좌, 문에서 옥좌까지 붉은 카펫, 양옆 깃발·갑옷. 나머지 방은 공통 규칙(성 벽돌). */
+function dressCastle(c: DressCtx, r: PlacedRoom, rs: () => number, slots: Slot[], centerFirst: Slot[]): boolean {
+  if (r.kind !== "boss") return false;
+  const cx = r.x + Math.floor(r.w / 2);
+  const throneId = pickKit(c, [TK("throne"), CC("altar-stone")]);
+  const tw = c.hasKit(throneId) ? c.kit(throneId).width : 2;
+  // 카펫 먼저(바닥 그림이라 길을 막지 않는다): 새 그림 줄이 있으면 그것, 없으면 사막 카펫 깔개 2×2 를 이어 깐다.
+  const runner = pickKit(c, [TK("carpet-runner"), DS("rug")]);
+  if (c.hasKit(runner)) { const rw = c.kit(runner).width; for (let y = r.y + 2; y < r.y + r.h; y += c.kit(runner).height) c.put(runner, cx - Math.floor(rw / 2), y, { free: true, label: "carpet" }); }
+  const t = standNorth(c, r, throneId, 0);
+  if (t) c.seats[r.id] = { x: t[0] + Math.floor(tw / 2), y: t[1] + 2 };
+  const banner = pickKit(c, [TK("royal-banner"), SW("banner-cult")]);
+  for (const d of [3, 5]) { const l = centerFirst.find((q) => q.x === cx - d), rr = centerFirst.find((q) => q.x === cx + d); if (l && rr && c.put(banner, l.x, l.y)) c.put(banner, rr.x, rr.y); }
+  const armor = pickKit(c, [TK("armor-stand"), CC("iron-maiden")]);
+  for (let y = r.y + 3; y < r.y + r.h - 1; y += 3) { stand(c, armor, cx - 4, y); stand(c, armor, cx + 4, y); }
+  c.hangAlong(slots, rs, 4, () => TORCH, 4);
+  return true;
 }

@@ -1,0 +1,142 @@
+{
+ "_meta": {
+  "chipset": "joseon_baram",
+  "sheet": "public/assets/joseon-baram/joseon-baram-chipset.png",
+  "tileset": "src/assets/joseonBaramTileset.json"
+ },
+ "building": {
+  "giwa-house-5": {
+   "h": 96,
+   "kit": "jb-giwa_house_5",
+   "rows": null,
+   "sha256": "855724dfd4724fc01c4c77b3d34730ba5fb3c82164c7596d6dfd7f4208fc9ac8",
+   "w": 96
+  },
+  "thatch-house-4": {
+   "h": 81,
+   "kit": "jb-thatch_house_4",
+   "rows": null,
+   "sha256": "247dc7414f23acf9444d1147783eb9800318402d8433fa4c7b3d869aec68711d",
+   "w": 84
+  }
+ },
+ "ground": {
+  "floor-maru": {
+   "group": "jb:in_floor_maru",
+   "h": 48,
+   "sha256": "897b7b207c943a4b9dc4eb307fcfd7111ea0bb20bbe6343e58423eda47eb90c5",
+   "tiles": [
+    15592,
+    15593,
+    15594,
+    15595,
+    15596,
+    15597,
+    15598,
+    15599,
+    15600,
+    15592,
+    15593,
+    15594
+   ],
+   "w": 64
+  },
+  "grass": {
+   "group": "jb:grass",
+   "h": 48,
+   "sha256": "483365c3b56b58855fb3e3adba9fa3301d037a6257887e916680486396e3593c",
+   "tiles": [
+    0,
+    1,
+    2,
+    3,
+    0,
+    1,
+    2,
+    3,
+    0,
+    1,
+    2,
+    3
+   ],
+   "w": 64
+  }
+ },
+ "prop": {
+  "jars": {
+   "h": 25,
+   "kit": "jb-jars",
+   "rows": null,
+   "sha256": "d6804bf84ad4d0ad847b3de654e059f4b94676edb924626704bed031474d1a8d",
+   "w": 31
+  },
+  "market-stall-thatch": {
+   "h": 46,
+   "kit": "jb-market_stall_thatch",
+   "rows": null,
+   "sha256": "2c769025459ff3d8f6f5bb20aae48a33c247cc6605a5b12f6539eaca958bcc3f",
+   "w": 48
+  },
+  "stone-pagoda": {
+   "h": 48,
+   "kit": "jb-stone_pagoda",
+   "rows": null,
+   "sha256": "932e28730417978a7d31e2c786fe97c4329b7b6902de90e3d7a240300470f508",
+   "w": 30
+  }
+ },
+ "tree": {
+  "pine-a": {
+   "h": 73,
+   "kit": "jb-pine_a",
+   "rows": null,
+   "sha256": "354f6915b4ce0316d807dab30e787c9485c5a7ca66586ce04bef654c318d7b21",
+   "w": 62
+  },
+  "zelkova": {
+   "h": 79,
+   "kit": "jb-zelkova_a",
+   "rows": null,
+   "sha256": "32eaafc756b28dcf3bafd9da05473d1865f42d42f3fbcdbe562e801625a1e9ca",
+   "w": 62
+  }
+ },
+ "wall": {
+  "fort-wall-h": {
+   "h": 78,
+   "kit": "jb-fort_wall_h",
+   "rows": null,
+   "sha256": "73a2dfc0e0a2b473200806c12b8e53859d91182a11f3417a27b54382226ed7a5",
+   "w": 16
+  },
+  "wall-h": {
+   "h": 32,
+   "kit": "jb-wall_h",
+   "rows": null,
+   "sha256": "750309305c8c39bed64a842fcd399c8ae3e655eca17fc858398260b532cae29d",
+   "w": 16
+  }
+ },
+ "water": {
+  "water-deep": {
+   "group": "jb:water_deep",
+   "h": 48,
+   "sha256": "fd050b87481b9c6fcb4276a815bda16be651385c05a4c596395e755d7505548f",
+   "tiles": [
+    8820,
+    8821,
+    8822,
+    8823,
+    8824,
+    8825,
+    8826,
+    8827,
+    8820,
+    8821,
+    8822,
+    8823
+   ],
+   "w": 64
+  }
+ }
+}

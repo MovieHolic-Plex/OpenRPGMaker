@@ -102,7 +102,8 @@ function openClaudeSession(options: LocalCliSessionOptions, toolsEnabled = true)
         const newRequest = id !== lastMessageId;
         if (newRequest) calls += 1;
         lastMessageId = id;
-        options.onEvent({ kind: "assistant", messageId: id, newRequest, blocks: blocksOf(message?.content) });
+        const usage = usageOf((message as { usage?: unknown } | undefined)?.usage, 1);
+        options.onEvent({ kind: "assistant", messageId: id, newRequest, blocks: blocksOf(message?.content), ...(usage ? { usage } : {}) });
       } else if (line.type === "user") {
         // 모델에게 실제로 넘어간 도구 결과(글·그림 원문, Anthropic tool_result 모양 그대로).
         const content = Array.isArray(message?.content) ? message!.content as unknown[] : [];
@@ -199,6 +200,7 @@ export const claudeAdapter: LocalCliAdapter = {
       ...(options.model ? { model: options.model } : {}), ...(options.signal ? { signal: options.signal } : {}), ...(options.binary ? { binary: options.binary } : {}),
       onEvent: (event) => {
         if (event.kind === "assistant") for (const block of event.blocks) if (block.type === "text") text += block.text;
+        if (event.kind === "result" && event.usage) options.onUsage?.(event.usage, event.costUsd);
       },
     }, false);
     try { await session.prompt(prompt, options.images); } finally { await session.close(); }

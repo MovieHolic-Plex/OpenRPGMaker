@@ -12,6 +12,7 @@ import { generateProviderImage } from "./lib/ohMyPiImageRuntime.ts";
 import { generateCodexImage } from "./lib/codexImageRuntime.ts";
 import { CODEX_PROVIDER_ID } from "../src/ai/oauth/credentials.ts";
 import { runPiAgent } from "./lib/piAgentRuntime.ts";
+import { runAssistantV2 } from "./lib/assistantV2Runtime.ts";
 import { isMonsterRequestTurn } from "../src/ai/piAgent/monsterGameRequest.ts";
 import { runPiTeam } from "./lib/piTeamRuntime.ts";
 import { createPiAgentNdjsonStream } from "./lib/piAgentStream.ts";
@@ -147,7 +148,7 @@ const server = Bun.serve({
         await preparePiWorkerSharedContent();
         await preparePiWorkerAudio();
         const held = holdWorkerKeys(body.providerApiKeys, agentRequest.provider, apiKey);
-        const stream = createPiAgentNdjsonStream((onEvent) => (agentRequest.mode === "team" ? runPiTeam : runPiAgent)(agentRequest, {
+        const stream = createPiAgentNdjsonStream((onEvent) => (agentRequest.assistantVersion === "v2" ? runAssistantV2 : agentRequest.mode === "team" ? runPiTeam : runPiAgent)(agentRequest, {
           apiKey,
           providerApiKeys: held.keys,
           codexApiKey: body.codexApiKey,

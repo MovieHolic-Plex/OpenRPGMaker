@@ -18,7 +18,8 @@ interface Line { id: number; orient: "h" | "v"; cells: number[]; len: number; fr
 
 export interface CityFormReport {
   /** 막다른 길: 끝이 아무 데도 이어지지 않는 길 (좌표는 끝 칸). */
-  deadEnds: { at: Pt; kind: "cell" | "street"; width: number }[];
+  /** cells = 그 끝 줄 칸(폭 2~3 토막이면 가로 또는 세로 한 줄) — 토막을 한 줄씩 걷어 낼 때 쓴다. */
+  deadEnds: { at: Pt; kind: "cell" | "street"; width: number; cells?: Pt[] }[];
   lines: { count: number; longStraight: { orient: "h" | "v"; from: Pt; to: Pt; len: number }[]; longestLen: number };
   /** 축선 그래프 — 깊이가 클수록 도심에서 멀다(통합도 지표의 대리). */
   graph: { meanDepth: number; maxDepth: number; components: number; isolated: { from: Pt; to: Pt; len: number }[] };
@@ -135,7 +136,7 @@ export function analyzeCityForm(project: Project, map: GameMap): CityFormReport 
       const [ax, ay] = run[0]!, [bx, by] = run[run.length - 1]!;
       if (paved(ax - px, ay - py) || paved(bx + px, by + py)) continue;
       if (run.some(([rx, ry]) => !inMap(rx + dx, ry + dy) || doorFronts.has(idx(rx, ry)) || water(rx + dx, ry + dy))) continue;
-      deadEnds.push({ at: run[0]!, kind: "street", width: run.length });
+      deadEnds.push({ at: run[0]!, kind: "street", width: run.length, cells: run });
     }
   }
 

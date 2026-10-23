@@ -1,0 +1,5462 @@
+{
+"base": 30848,
+"cells": [
+{
+"key": "c17661a27519e3522a27baa6",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (1,0)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "54963c4140fbb53c0e8a99d3",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (2,0)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "94f49560177c1f58368d4272",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (3,0)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "4e0fa1a72a3589a20f717c52",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (4,0)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "b1b5f5474fc4f538c3ea4eb4",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (5,0)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "b480c7606d7a8c2836f6140d",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (0,1)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "a3a987294abf158827f5556f",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (1,1)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "442e0c7a243ea9d61505e415",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (2,1)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "c33c19e52c7d905fc56fbde5",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (3,1)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "c44947ed07301577998d296d",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (4,1)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "6ceb33e3b1dfcf52534c2760",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (5,1)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "5d75a7b332e1bbf5e94636b4",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (0,2)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "1b76a5a28d0ca135fd0c5fef",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (1,2)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "0157fbbd3daef6c7b5751470",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (2,2)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "18f42e06e25ae608846a8688",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (3,2)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "2b2c24b127e5876ecb762255",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (4,2)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "484b8817b0347eea8d3edbfe",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (5,2)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "8d508d76c9f21c6f6453936e",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (0,3)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "2a484bf65af5f9f0ae8bbce8",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (1,3)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "3f7e8b22b1ec8d8abb1cf608",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (2,3)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "d6d693b3b4d87c71852c94f2",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (3,3)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "2eab6d0876fc3a30f2dd176d",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (4,3)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "108210c0f1fbc1bb1e0dafb0",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (5,3)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "b5bbe24ff358126aa9bc6a84",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (0,4)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "dfe588982d541c7a00ed74eb",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (1,4)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "ac7da931182769cad2b09c73",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (2,4)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "6c75a8be2def6e57a5e61af5",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (3,4)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "773fdbe045dae8db439c8437",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (4,4)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "30a689acf1a48a8c0639c87d",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (5,4)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "9968acaf1daee306c7e94003",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (2,5)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "a51f4ca03b6fb33c6fd258ad",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (3,5)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "8c3917356437d6df0939d133",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (4,5)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "758e615b79bb7367738cf143",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (0,6)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "41df4e5421b899f07dde6b4e",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (1,6)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "f9edb33de6b7871b519d580f",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (2,6)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "715a5e9e968d92d0474b7403",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (3,6)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "passable",
+"layer": "upper"
+},
+{
+"key": "b8aa37fd9acc54fbffdaf015",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (4,6)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "25269db965b7e2a2102fce47",
+"origin": "tc.fo_ancient_tree/*/theme-climate-r1:A1@9346739a",
+"label": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree (5,6)",
+"description": "버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "79c5e707786a732c3df2a167",
+"origin": "tc.fo_boulder/*/theme-climate-r1:A2@d4bae7a1",
+"label": "버들항 던전 · 이끼 바위 2×2 piece (0,0)",
+"description": "윗면에 이끼 덮인 큰 둥근 바위, 앞면 회색.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"mossy-boulder",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "9e79a73eefa1a2402308d991",
+"origin": "tc.fo_boulder/*/theme-climate-r1:A2@d4bae7a1",
+"label": "버들항 던전 · 이끼 바위 2×2 piece (1,0)",
+"description": "윗면에 이끼 덮인 큰 둥근 바위, 앞면 회색.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"mossy-boulder",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "3a3e6f6ab9eb223b265b4b9d",
+"origin": "tc.fo_boulder/*/theme-climate-r1:A2@d4bae7a1",
+"label": "버들항 던전 · 이끼 바위 2×2 piece (0,1)",
+"description": "윗면에 이끼 덮인 큰 둥근 바위, 앞면 회색.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"mossy-boulder",
+"forest",
+"숲"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "276ce595b59b8ee2e28790ce",
+"origin": "tc.fo_boulder/*/theme-climate-r1:A2@d4bae7a1",
+"label": "버들항 던전 · 이끼 바위 2×2 piece (1,1)",
+"description": "윗면에 이끼 덮인 큰 둥근 바위, 앞면 회색.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"mossy-boulder",
+"forest",
+"숲"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "cdae83cf74a77600d25e1684",
+"origin": "tc.fo_bramble/*/theme-climate-r1:A2@84a38f9e",
+"label": "버들항 던전 · 가시덤불 2×1(막음) piece (0,0)",
+"description": "길을 막는 가시 줄기 덤불(검붉은 줄기·가시·잎 조금).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"bramble",
+"forest",
+"숲"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "8d589f6be60bc2f2e8e80858",
+"origin": "tc.fo_bramble/*/theme-climate-r1:A2@84a38f9e",
+"label": "버들항 던전 · 가시덤불 2×1(막음) piece (1,0)",
+"description": "길을 막는 가시 줄기 덤불(검붉은 줄기·가시·잎 조금).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"bramble",
+"forest",
+"숲"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "879df42fa3a4f30b2273829f",
+"origin": "tc.fo_ring/*/theme-climate-r1:A1@48eb1d29",
+"label": "버들항 던전 · 버섯 고리 2×2 piece (0,0)",
+"description": "풀밭 위 작은 버섯들이 둥글게 난 요정 고리(가운데 빈 풀).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"mushroom-ring",
+"forest",
+"숲"
+],
+"passage": "passable",
+"layer": "upper"
+},
+{
+"key": "6c4d387bdf7b58af739b8808",
+"origin": "tc.fo_ring/*/theme-climate-r1:A1@48eb1d29",
+"label": "버들항 던전 · 버섯 고리 2×2 piece (1,0)",
+"description": "풀밭 위 작은 버섯들이 둥글게 난 요정 고리(가운데 빈 풀).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"mushroom-ring",
+"forest",
+"숲"
+],
+"passage": "passable",
+"layer": "upper"
+},
+{
+"key": "b6990b6a5a7001812552a171",
+"origin": "tc.fo_ring/*/theme-climate-r1:A1@48eb1d29",
+"label": "버들항 던전 · 버섯 고리 2×2 piece (0,1)",
+"description": "풀밭 위 작은 버섯들이 둥글게 난 요정 고리(가운데 빈 풀).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"mushroom-ring",
+"forest",
+"숲"
+],
+"passage": "passable",
+"layer": "upper"
+},
+{
+"key": "b8f0acaaa6fb074f5c2ddb12",
+"origin": "tc.fo_ring/*/theme-climate-r1:A1@48eb1d29",
+"label": "버들항 던전 · 버섯 고리 2×2 piece (1,1)",
+"description": "풀밭 위 작은 버섯들이 둥글게 난 요정 고리(가운데 빈 풀).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"mushroom-ring",
+"forest",
+"숲"
+],
+"passage": "passable",
+"layer": "upper"
+},
+{
+"key": "22c8f825126adf3d8a23eb29",
+"origin": "tc.fo_waystone/*/theme-climate-r1:A1@57373602",
+"label": "버들항 던전 · 숲 길돌(룬 선돌) 1×2 piece (0,0)",
+"description": "이끼 낀 선돌, 앞면에 빛나는 무늬(글자 아님). 저장·표지 자리.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"waystone",
+"forest",
+"숲"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "34f1260abef31cb0fa7ca55c",
+"origin": "tc.fo_waystone/*/theme-climate-r1:A1@57373602",
+"label": "버들항 던전 · 숲 길돌(룬 선돌) 1×2 piece (0,1)",
+"description": "이끼 낀 선돌, 앞면에 빛나는 무늬(글자 아님). 저장·표지 자리.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"waystone",
+"forest",
+"숲"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "6d06b7b080fa8a7195936687",
+"origin": "tc.ice_crystal/*/theme-climate-r1:A2@8c363ac5",
+"label": "버들항 던전 · 얼음 수정 덩이 1×2 기본 (0,0)",
+"description": "바닥에서 솟은 얼음 결정 무리(빛 받는 면 흰색).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ice-crystal",
+"ice",
+"얼음"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "e9d484081df9987405189ef1",
+"origin": "tc.ice_crystal/*/theme-climate-r1:A2@8c363ac5",
+"label": "버들항 던전 · 얼음 수정 덩이 1×2 기본 (0,1)",
+"description": "바닥에서 솟은 얼음 결정 무리(빛 받는 면 흰색).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ice-crystal",
+"ice",
+"얼음"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "08fef26a0b6325f746d1197f",
+"origin": "tc.ice_frozen/*/theme-climate-r1:A2@5ce4c492",
+"label": "버들항 던전 · 얼음에 갇힌 전사 1×2 기본 (0,0)",
+"description": "얼음 덩이(윗면+앞면) 안에 흐릿하게 보이는 갑옷 전사.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"frozen-warrior",
+"ice",
+"얼음"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "271871f3584110be7feebf4c",
+"origin": "tc.ice_frozen/*/theme-climate-r1:A2@5ce4c492",
+"label": "버들항 던전 · 얼음에 갇힌 전사 1×2 기본 (0,1)",
+"description": "얼음 덩이(윗면+앞면) 안에 흐릿하게 보이는 갑옷 전사.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"frozen-warrior",
+"ice",
+"얼음"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "d4c18cf8e2118949b3aaac5b",
+"origin": "tc.ice_icicles/*/theme-climate-r1:A2@6eae35ea",
+"label": "버들항 던전 · 고드름(벽 앞면 걸이) 1×1·2×1 1칸",
+"description": "벽 앞면 윗단(천장 테두리 바로 밑)에 매달린 고드름. 그림 = [1칸|2칸]. 투명 바탕 — 얼음 벽·돌 벽 어디에나 얹힌다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"icicles",
+"ice",
+"얼음"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "b0dcf6175df219d299b45136",
+"origin": "tc.ice_icicles/*/theme-climate-r1:A2@6eae35ea",
+"label": "버들항 던전 · 고드름(벽 앞면 걸이) 1×1·2×1 2칸 (0,0)",
+"description": "벽 앞면 윗단(천장 테두리 바로 밑)에 매달린 고드름. 그림 = [1칸|2칸]. 투명 바탕 — 얼음 벽·돌 벽 어디에나 얹힌다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"icicles",
+"ice",
+"얼음"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "edc292760d50a58f8cf1e94f",
+"origin": "tc.ice_icicles/*/theme-climate-r1:A2@6eae35ea",
+"label": "버들항 던전 · 고드름(벽 앞면 걸이) 1×1·2×1 2칸 (1,0)",
+"description": "벽 앞면 윗단(천장 테두리 바로 밑)에 매달린 고드름. 그림 = [1칸|2칸]. 투명 바탕 — 얼음 벽·돌 벽 어디에나 얹힌다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"icicles",
+"ice",
+"얼음"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "ecf7b23a863265dac7a6138d",
+"origin": "tc.pyr_face/*/theme-climate-r1:A1@daa98807",
+"label": "버들항 던전 · 피라미드 사암 벽 앞면 3단 (0,0)",
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "64d651bfcc5430c015475cef",
+"origin": "tc.pyr_face/*/theme-climate-r1:A1@daa98807",
+"label": "버들항 던전 · 피라미드 사암 벽 앞면 3단 (1,0)",
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "6e366f51be69c76afb750ddd",
+"origin": "tc.pyr_face/*/theme-climate-r1:A1@daa98807",
+"label": "버들항 던전 · 피라미드 사암 벽 앞면 3단 (2,0)",
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "80302ced75f2cc4a514b6d16",
+"origin": "tc.pyr_face/*/theme-climate-r1:A1@daa98807",
+"label": "버들항 던전 · 피라미드 사암 벽 앞면 3단 (0,1)",
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "13bcf592832827c79337728a",
+"origin": "tc.pyr_face/*/theme-climate-r1:A1@daa98807",
+"label": "버들항 던전 · 피라미드 사암 벽 앞면 3단 (1,1)",
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "baa781885fa60db50cf2d7c3",
+"origin": "tc.pyr_face/*/theme-climate-r1:A1@daa98807",
+"label": "버들항 던전 · 피라미드 사암 벽 앞면 3단 (2,1)",
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "7ab2b3f5694127ed67a1f355",
+"origin": "tc.pyr_face/*/theme-climate-r1:A1@daa98807",
+"label": "버들항 던전 · 피라미드 사암 벽 앞면 3단 (0,2)",
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "5f470b07b144853c83e829ba",
+"origin": "tc.pyr_face/*/theme-climate-r1:A1@daa98807",
+"label": "버들항 던전 · 피라미드 사암 벽 앞면 3단 (1,2)",
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "dfd98098e414f45607685fde",
+"origin": "tc.pyr_face/*/theme-climate-r1:A1@daa98807",
+"label": "버들항 던전 · 피라미드 사암 벽 앞면 3단 (2,2)",
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "cbbf58ed806614a4ede9d846",
+"origin": "tc.pyr_face/*/theme-climate-r1:A1@daa98807",
+"label": "버들항 던전 · 피라미드 사암 벽 앞면 3단 아랫단 변형 (0,0)",
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "ddfedfcdbc59b2e67b6a9142",
+"origin": "tc.pyr_face/*/theme-climate-r1:A1@daa98807",
+"label": "버들항 던전 · 피라미드 사암 벽 앞면 3단 아랫단 변형 (1,0)",
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "5677dcf489119555812158ea",
+"origin": "tc.pyr_face/*/theme-climate-r1:A1@daa98807",
+"label": "버들항 던전 · 피라미드 사암 벽 앞면 3단 아랫단 변형 (2,0)",
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "452efb3f3e1b23d98674eb9b",
+"origin": "tc.pyr_face/*/theme-climate-r1:A1@daa98807",
+"label": "버들항 던전 · 피라미드 사암 벽 앞면 3단 새김 가운데 (0,1)",
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "a010cc225d21aa120cc60efb",
+"origin": "tc.pyr_face/*/theme-climate-r1:A1@daa98807",
+"label": "버들항 던전 · 피라미드 사암 벽 앞면 2단 새김 가운데 (0,0)",
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "cba8b3e067a89106f1ceca14",
+"origin": "tc.pyr_face/*/theme-climate-r1:A1@daa98807",
+"label": "버들항 던전 · 피라미드 사암 벽 앞면 3단 가운데단 변형(금 간 돌)",
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "c431dd0b3b2a5a4b727b71b5",
+"origin": "tc.pyr_gold/*/theme-climate-r1:A1@5bd06d03",
+"label": "버들항 던전 · 금 보물 더미 2×1 기본 (0,0)",
+"description": "금화 더미 + 잔·항아리·보석. 바닥에 접지 그림자.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"gold-pile",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "3ae31a7c3996324e10b24ef5",
+"origin": "tc.pyr_gold/*/theme-climate-r1:A1@5bd06d03",
+"label": "버들항 던전 · 금 보물 더미 2×1 기본 (1,0)",
+"description": "금화 더미 + 잔·항아리·보석. 바닥에 접지 그림자.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"gold-pile",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "81b6bc28d1a17c9f47a4f991",
+"origin": "tc.pyr_obelisk/*/theme-climate-r1:A1@752ef2fd",
+"label": "버들항 던전 · 오벨리스크 1×3 기본 (0,0)",
+"description": "사암 오벨리스크, 금 뾰족 머리, 앞면 상형 새김(글자 아님), 받침.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"obelisk",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "b78def635903957bf234b2a1",
+"origin": "tc.pyr_obelisk/*/theme-climate-r1:A1@752ef2fd",
+"label": "버들항 던전 · 오벨리스크 1×3 기본 (0,1)",
+"description": "사암 오벨리스크, 금 뾰족 머리, 앞면 상형 새김(글자 아님), 받침.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"obelisk",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "55f8eec02fb69540dc5d08c3",
+"origin": "tc.pyr_obelisk/*/theme-climate-r1:A1@752ef2fd",
+"label": "버들항 던전 · 오벨리스크 1×3 기본 (0,2)",
+"description": "사암 오벨리스크, 금 뾰족 머리, 앞면 상형 새김(글자 아님), 받침.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"obelisk",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "a429b055de1f825144909eda",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(북동남서 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 0). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "0e8e3d3ed2b99e0d219ccb39",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(동남서 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 1). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "5731e788955e9e260dd963c1",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(북남서 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 2). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "0367aa319a2bee3152eb2fb1",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(남서 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 3). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "6b55ec0bcb8cc5f0bb62ab78",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(북동서 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 4). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "abb927cd09f6e7816f630bbb",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(동서 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 5). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "93d7ef9b3dc907b02da8d366",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(북서 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 6). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "281e111b51f42734fbec858c",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(서 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 7). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "e539f952971236cbd40d1877",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(북동남 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 8). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "60ce4835c18a8c50e4e6c687",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(동남 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 9). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "c9c53336b971b0e8e0858163",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(북남 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 10). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "7a2be8fbea8fc6122df9c421",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(남 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 11). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "a68c476a7ad9bc78135755e0",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(북동 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 12). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "e7960ed79545a6820b9c17f1",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(동 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 13). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "8f1beb8381fc92c70c609934",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(북 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 14). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "c5387f3f357d87d6d49fce25",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리) 몸통",
+"description": "피라미드 천장 오토타일 47 모양(마스크 15). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "a9e9a69151c96c01268afaaf",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(남서 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 19). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "9c78ad8a03242bb9b9516da5",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(서 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 23). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "165194428f3fdbd975e988e3",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(남 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 27). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "3e9ec1cea97d7777467bf2db",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리) 몸통",
+"description": "피라미드 천장 오토타일 47 모양(마스크 31). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "4fac648d95701898d0e36dbf",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(북서 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 38). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "067fc15bf0de0e976993b8ab",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(서 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 39). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "810970d6e7cefec560d78401",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(북 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 46). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "a7489edbe2fce63d3486b2fb",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리) 몸통",
+"description": "피라미드 천장 오토타일 47 모양(마스크 47). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "1c8fb413ad1803cc262f0a03",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(서 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 55). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "b01d6fdebd2ffa50c47a64ff",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리) 몸통",
+"description": "피라미드 천장 오토타일 47 모양(마스크 63). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "0f8ad6e7d4e0c6aa941024d4",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(북동 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 76). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "89830e84140da7a49f28a126",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(동 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 77). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "a4ef02aa3d24d15d21ac5aa1",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(북 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 78). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "4d1c770db4dc7987f9789cc5",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리) 몸통",
+"description": "피라미드 천장 오토타일 47 모양(마스크 79). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "d6adb7c9f3b18d87661284bb",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리) 몸통",
+"description": "피라미드 천장 오토타일 47 모양(마스크 95). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "3d3460a7777a4842a2f7159d",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(북 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 110). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "433872a6e9bdb1870503cd6b",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리) 몸통",
+"description": "피라미드 천장 오토타일 47 모양(마스크 111). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "cafa7dbc725d6f3def399895",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리) 몸통",
+"description": "피라미드 천장 오토타일 47 모양(마스크 127). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "d36c084fb012b31d5443c680",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(동남 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 137). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "5dee41c94e7d5f6134cac0b9",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(남 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 139). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "d1834c1d0aab933be0c8aed5",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(동 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 141). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "a192e137fcd3439985bea650",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리) 몸통",
+"description": "피라미드 천장 오토타일 47 모양(마스크 143). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "de651cdebd83f5b5e8ff3e69",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(남 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 155). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "676e23c74e4efc01e8c6ea7b",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리) 몸통",
+"description": "피라미드 천장 오토타일 47 모양(마스크 159). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "eea6c647bde9916cbe7bcaf8",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리) 몸통",
+"description": "피라미드 천장 오토타일 47 모양(마스크 175). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "8eea373737a5a2290faf1504",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리) 몸통",
+"description": "피라미드 천장 오토타일 47 모양(마스크 191). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "fbeff53c42eb3aefbbbf5cc8",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리)(동 열림)",
+"description": "피라미드 천장 오토타일 47 모양(마스크 205). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "b98d9298efa12c2fa4853028",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리) 몸통",
+"description": "피라미드 천장 오토타일 47 모양(마스크 207). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "3a96e9e44e6336ee97666800",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리) 몸통",
+"description": "피라미드 천장 오토타일 47 모양(마스크 223). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "7da9d9dbd220e481bd4d77c4",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리) 몸통",
+"description": "피라미드 천장 오토타일 47 모양(마스크 239). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "91ac2760ad7993a2e43966cb",
+"origin": "tc.pyr_rim/*/theme-climate-r1:A1@b36aefdf",
+"label": "버들항 던전 · 피라미드 천장 (사암 테두리) 몸통",
+"description": "피라미드 천장 오토타일 47 모양(마스크 255). 바닥·벽 앞면과 닿는 쪽에 사암 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `beodeul_dungeon_ceiling_sand`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"천장",
+"wall",
+"ceiling",
+"사암"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "5cb6d9c4db20a3dbc287b37a",
+"origin": "tc.pyr_sand_trap/*/theme-climate-r1:A1@261b7f78",
+"anim": {
+"frames": 3,
+"fps": 3
+},
+"label": "버들항 던전 · 모래 구덩이 함정 (0,0)",
+"description": "판석 바닥이 꺼져 모래가 소용돌이치는 구덩이(3장면). 걸음(함정 이벤트 자리).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"함정",
+"모래",
+"바닥",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"frameOf": 30972,
+"frame": 1,
+"origin": "tc.pyr_sand_trap/*/theme-climate-r1:A1@261b7f78",
+"label": "버들항 던전 · 모래 구덩이 함정 (0,0)",
+"description": "판석 바닥이 꺼져 모래가 소용돌이치는 구덩이(3장면). 걸음(함정 이벤트 자리).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"함정",
+"모래",
+"바닥",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"frameOf": 30972,
+"frame": 2,
+"origin": "tc.pyr_sand_trap/*/theme-climate-r1:A1@261b7f78",
+"label": "버들항 던전 · 모래 구덩이 함정 (0,0)",
+"description": "판석 바닥이 꺼져 모래가 소용돌이치는 구덩이(3장면). 걸음(함정 이벤트 자리).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"함정",
+"모래",
+"바닥",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+null,
+{
+"key": "7c46916eb27f738baa8199e1",
+"origin": "tc.pyr_sand_trap/*/theme-climate-r1:A1@261b7f78",
+"anim": {
+"frames": 3,
+"fps": 3
+},
+"label": "버들항 던전 · 모래 구덩이 함정 (1,0)",
+"description": "판석 바닥이 꺼져 모래가 소용돌이치는 구덩이(3장면). 걸음(함정 이벤트 자리).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"함정",
+"모래",
+"바닥",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"frameOf": 30976,
+"frame": 1,
+"origin": "tc.pyr_sand_trap/*/theme-climate-r1:A1@261b7f78",
+"label": "버들항 던전 · 모래 구덩이 함정 (1,0)",
+"description": "판석 바닥이 꺼져 모래가 소용돌이치는 구덩이(3장면). 걸음(함정 이벤트 자리).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"함정",
+"모래",
+"바닥",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"frameOf": 30976,
+"frame": 2,
+"origin": "tc.pyr_sand_trap/*/theme-climate-r1:A1@261b7f78",
+"label": "버들항 던전 · 모래 구덩이 함정 (1,0)",
+"description": "판석 바닥이 꺼져 모래가 소용돌이치는 구덩이(3장면). 걸음(함정 이벤트 자리).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"함정",
+"모래",
+"바닥",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+null,
+{
+"key": "f51a73b159773746b39a4230",
+"origin": "tc.pyr_sand_trap/*/theme-climate-r1:A1@261b7f78",
+"anim": {
+"frames": 3,
+"fps": 3
+},
+"label": "버들항 던전 · 모래 구덩이 함정 (0,1)",
+"description": "판석 바닥이 꺼져 모래가 소용돌이치는 구덩이(3장면). 걸음(함정 이벤트 자리).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"함정",
+"모래",
+"바닥",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"frameOf": 30980,
+"frame": 1,
+"origin": "tc.pyr_sand_trap/*/theme-climate-r1:A1@261b7f78",
+"label": "버들항 던전 · 모래 구덩이 함정 (0,1)",
+"description": "판석 바닥이 꺼져 모래가 소용돌이치는 구덩이(3장면). 걸음(함정 이벤트 자리).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"함정",
+"모래",
+"바닥",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"frameOf": 30980,
+"frame": 2,
+"origin": "tc.pyr_sand_trap/*/theme-climate-r1:A1@261b7f78",
+"label": "버들항 던전 · 모래 구덩이 함정 (0,1)",
+"description": "판석 바닥이 꺼져 모래가 소용돌이치는 구덩이(3장면). 걸음(함정 이벤트 자리).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"함정",
+"모래",
+"바닥",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+null,
+{
+"key": "6b1d1d955d0f0f51a7fe1fff",
+"origin": "tc.pyr_sand_trap/*/theme-climate-r1:A1@261b7f78",
+"anim": {
+"frames": 3,
+"fps": 3
+},
+"label": "버들항 던전 · 모래 구덩이 함정 (1,1)",
+"description": "판석 바닥이 꺼져 모래가 소용돌이치는 구덩이(3장면). 걸음(함정 이벤트 자리).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"함정",
+"모래",
+"바닥",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"frameOf": 30984,
+"frame": 1,
+"origin": "tc.pyr_sand_trap/*/theme-climate-r1:A1@261b7f78",
+"label": "버들항 던전 · 모래 구덩이 함정 (1,1)",
+"description": "판석 바닥이 꺼져 모래가 소용돌이치는 구덩이(3장면). 걸음(함정 이벤트 자리).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"함정",
+"모래",
+"바닥",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"frameOf": 30984,
+"frame": 2,
+"origin": "tc.pyr_sand_trap/*/theme-climate-r1:A1@261b7f78",
+"label": "버들항 던전 · 모래 구덩이 함정 (1,1)",
+"description": "판석 바닥이 꺼져 모래가 소용돌이치는 구덩이(3장면). 걸음(함정 이벤트 자리).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"함정",
+"모래",
+"바닥",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "0835eabb81cecd402c314cfc",
+"origin": "tc.pyr_sarcophagus/*/theme-climate-r1:A1@8872f50c",
+"label": "버들항 던전 · 파라오 석관 1×2 닫힘·열림 닫힘 (0,0)",
+"description": "금·청금 줄무늬 사람 모양 관. 그림 = [닫힘|열림]. 열림 = 뚜껑이 비켜나 붕대 감은 미라.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"pharaoh-sarcophagus",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "72d30fd82b596ae96054d647",
+"origin": "tc.pyr_sarcophagus/*/theme-climate-r1:A1@8872f50c",
+"label": "버들항 던전 · 파라오 석관 1×2 닫힘·열림 닫힘 (0,1)",
+"description": "금·청금 줄무늬 사람 모양 관. 그림 = [닫힘|열림]. 열림 = 뚜껑이 비켜나 붕대 감은 미라.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"pharaoh-sarcophagus",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "466e863bf85b4b24c5c0b7d5",
+"origin": "tc.pyr_sarcophagus/*/theme-climate-r1:A1@8872f50c",
+"label": "버들항 던전 · 파라오 석관 1×2 닫힘·열림 열림 (0,0)",
+"description": "금·청금 줄무늬 사람 모양 관. 그림 = [닫힘|열림]. 열림 = 뚜껑이 비켜나 붕대 감은 미라.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"pharaoh-sarcophagus",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "0eab376d26e6ce8d3d890b7a",
+"origin": "tc.pyr_sarcophagus/*/theme-climate-r1:A1@8872f50c",
+"label": "버들항 던전 · 파라오 석관 1×2 닫힘·열림 열림 (0,1)",
+"description": "금·청금 줄무늬 사람 모양 관. 그림 = [닫힘|열림]. 열림 = 뚜껑이 비켜나 붕대 감은 미라.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"pharaoh-sarcophagus",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "bc4a965cacc410f92ad45922",
+"origin": "tc.pyr_statue/*/theme-climate-r1:A1@e075b70a",
+"label": "버들항 던전 · 자칼·풍뎅이 석상 1×2 자칼 (0,0)",
+"description": "받침 위 앉은 자칼 수호상(검은 몸·금 장식) 또는 풍뎅이 석상. 그림 = 후보마다 두 조각[자칼|풍뎅이].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"jackal-statue",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "5c622dfdeee4bb3cb74f7539",
+"origin": "tc.pyr_statue/*/theme-climate-r1:A1@e075b70a",
+"label": "버들항 던전 · 자칼·풍뎅이 석상 1×2 자칼 (0,1)",
+"description": "받침 위 앉은 자칼 수호상(검은 몸·금 장식) 또는 풍뎅이 석상. 그림 = 후보마다 두 조각[자칼|풍뎅이].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"jackal-statue",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "541a03f2a44ee0849bbfa17c",
+"origin": "tc.pyr_statue/*/theme-climate-r1:A1@e075b70a",
+"label": "버들항 던전 · 자칼·풍뎅이 석상 1×2 풍뎅이 (0,0)",
+"description": "받침 위 앉은 자칼 수호상(검은 몸·금 장식) 또는 풍뎅이 석상. 그림 = 후보마다 두 조각[자칼|풍뎅이].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"jackal-statue",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "b6cf90dcd134a4bb0adcbe6d",
+"origin": "tc.pyr_statue/*/theme-climate-r1:A1@e075b70a",
+"label": "버들항 던전 · 자칼·풍뎅이 석상 1×2 풍뎅이 (0,1)",
+"description": "받침 위 앉은 자칼 수호상(검은 몸·금 장식) 또는 풍뎅이 석상. 그림 = 후보마다 두 조각[자칼|풍뎅이].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"jackal-statue",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "b1ab5b255b3791d1e533fdb5",
+"origin": "tc.sw_boardwalk/*/theme-climate-r1:A2@2b30c1db",
+"label": "버들항 던전 · 부서진 널길 끝·조각 1×1 끝",
+"description": "늪 위 널길의 끝(말뚝 둘) / 부서져 널이 빠진 조각. 투명 사이로 물이 보인다. 그림 = [끝|부서짐].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"boardwalk",
+"swamp",
+"늪"
+],
+"passage": "passable",
+"layer": "upper"
+},
+{
+"key": "35e80fc8ad695511be53f8cf",
+"origin": "tc.sw_boardwalk/*/theme-climate-r1:A2@2b30c1db",
+"label": "버들항 던전 · 부서진 널길 끝·조각 1×1 부서짐",
+"description": "늪 위 널길의 끝(말뚝 둘) / 부서져 널이 빠진 조각. 투명 사이로 물이 보인다. 그림 = [끝|부서짐].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"boardwalk",
+"swamp",
+"늪"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "2541d54c04dc88f588083402",
+"origin": "tc.sw_idol/*/theme-climate-r1:A1@24165bd5",
+"label": "버들항 던전 · 가라앉은 석상 2×2 석상 (0,0)",
+"description": "늪물·진흙에 반쯤 잠긴 이끼 낀 석상 머리(얼굴 새김, 글자 없음).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"sunken-idol",
+"swamp",
+"늪"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "608a038717f2b971836c0d5e",
+"origin": "tc.sw_idol/*/theme-climate-r1:A1@24165bd5",
+"label": "버들항 던전 · 가라앉은 석상 2×2 석상 (1,0)",
+"description": "늪물·진흙에 반쯤 잠긴 이끼 낀 석상 머리(얼굴 새김, 글자 없음).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"sunken-idol",
+"swamp",
+"늪"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "1d187cf417e7b6ac54f0f013",
+"origin": "tc.sw_idol/*/theme-climate-r1:A1@24165bd5",
+"label": "버들항 던전 · 가라앉은 석상 2×2 석상 (0,1)",
+"description": "늪물·진흙에 반쯤 잠긴 이끼 낀 석상 머리(얼굴 새김, 글자 없음).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"sunken-idol",
+"swamp",
+"늪"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "7f9eb0b36a50b7036073c5ec",
+"origin": "tc.sw_idol/*/theme-climate-r1:A1@24165bd5",
+"label": "버들항 던전 · 가라앉은 석상 2×2 석상 (1,1)",
+"description": "늪물·진흙에 반쯤 잠긴 이끼 낀 석상 머리(얼굴 새김, 글자 없음).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"sunken-idol",
+"swamp",
+"늪"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "714fa25456b227e3ab60424b",
+"origin": "tc.sw_lily/*/theme-climate-r1:A2@d5aee77b",
+"label": "버들항 던전 · 물 위 연잎 무리 1×1(두 변형) 변형1",
+"description": "늪물 위 연잎 무리(+꽃 하나). 투명 바탕. 그림 = [변형1|변형2].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"lily-pads",
+"swamp",
+"늪"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "bf7b8addb3bfc08e79f338c1",
+"origin": "tc.sw_lily/*/theme-climate-r1:A2@d5aee77b",
+"label": "버들항 던전 · 물 위 연잎 무리 1×1(두 변형) 변형2",
+"description": "늪물 위 연잎 무리(+꽃 하나). 투명 바탕. 그림 = [변형1|변형2].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"lily-pads",
+"swamp",
+"늪"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "2c6a9553c1cff0f6c56bdc38",
+"origin": "tc.sw_moss/*/theme-climate-r1:A2@7fd48aa0",
+"label": "버들항 던전 · 이끼 늘어진 죽은 가지 1×2 고목 (0,0)",
+"description": "죽은 나무 그루터기·가지에 늘어진 회녹색 수염 이끼.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"swamp-moss",
+"swamp",
+"늪"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "abd2f9af6c792f7505edea42",
+"origin": "tc.sw_moss/*/theme-climate-r1:A2@7fd48aa0",
+"label": "버들항 던전 · 이끼 늘어진 죽은 가지 1×2 고목 (0,1)",
+"description": "죽은 나무 그루터기·가지에 늘어진 회녹색 수염 이끼.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"swamp-moss",
+"swamp",
+"늪"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "c5f7cb3a641cb43018159f73",
+"origin": "tc.sw_root_arch/*/theme-climate-r1:A1@999f1c1e",
+"label": "버들항 던전 · 맹그로브 뿌리 아치 2×2(밑으로 지나감) 아치 (0,0)",
+"description": "굽은 뿌리들이 아치를 이룬 통로. 위층 — 사람이 밑으로 지나간다. 양 끝 뿌리는 칸 가장자리에 가늘게.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"mangrove-roots",
+"swamp",
+"늪"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "53c9db7d89ec1d81e9d24d5c",
+"origin": "tc.sw_root_arch/*/theme-climate-r1:A1@999f1c1e",
+"label": "버들항 던전 · 맹그로브 뿌리 아치 2×2(밑으로 지나감) 아치 (1,0)",
+"description": "굽은 뿌리들이 아치를 이룬 통로. 위층 — 사람이 밑으로 지나간다. 양 끝 뿌리는 칸 가장자리에 가늘게.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"mangrove-roots",
+"swamp",
+"늪"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "0c055e7f7a3812e18f8744cf",
+"origin": "tc.sw_root_arch/*/theme-climate-r1:A1@999f1c1e",
+"label": "버들항 던전 · 맹그로브 뿌리 아치 2×2(밑으로 지나감) 아치 (0,1)",
+"description": "굽은 뿌리들이 아치를 이룬 통로. 위층 — 사람이 밑으로 지나간다. 양 끝 뿌리는 칸 가장자리에 가늘게.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"mangrove-roots",
+"swamp",
+"늪"
+],
+"passage": "passable",
+"layer": "upper"
+},
+{
+"key": "6bf3dddfb5824889c8939911",
+"origin": "tc.sw_root_arch/*/theme-climate-r1:A1@999f1c1e",
+"label": "버들항 던전 · 맹그로브 뿌리 아치 2×2(밑으로 지나감) 아치 (1,1)",
+"description": "굽은 뿌리들이 아치를 이룬 통로. 위층 — 사람이 밑으로 지나간다. 양 끝 뿌리는 칸 가장자리에 가늘게.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"mangrove-roots",
+"swamp",
+"늪"
+],
+"passage": "passable",
+"layer": "upper"
+}
+],
+"defs": {
+"autotileGroups": {
+"beodeul_dungeon_ceiling_sand": {
+"id": "beodeul_dungeon_ceiling_sand",
+"name": "버들항 던전 피라미드 천장(사암 테두리)",
+"neighborhood": 8,
+"edgeConnects": true,
+"memberTileIds": [
+30925,
+30926,
+30927,
+30928,
+30929,
+30930,
+30931,
+30932,
+30933,
+30934,
+30935,
+30936,
+30937,
+30938,
+30939,
+30940,
+30941,
+30942,
+30943,
+30944,
+30945,
+30946,
+30947,
+30948,
+30949,
+30950,
+30951,
+30952,
+30953,
+30954,
+30955,
+30956,
+30957,
+30958,
+30959,
+30960,
+30961,
+30962,
+30963,
+30964,
+30965,
+30966,
+30967,
+30968,
+30969,
+30970,
+30971
+],
+"connectTileIds": [
+30925,
+30926,
+30927,
+30928,
+30929,
+30930,
+30931,
+30932,
+30933,
+30934,
+30935,
+30936,
+30937,
+30938,
+30939,
+30940,
+30941,
+30942,
+30943,
+30944,
+30945,
+30946,
+30947,
+30948,
+30949,
+30950,
+30951,
+30952,
+30953,
+30954,
+30955,
+30956,
+30957,
+30958,
+30959,
+30960,
+30961,
+30962,
+30963,
+30964,
+30965,
+30966,
+30967,
+30968,
+30969,
+30970,
+30971
+],
+"variantMap": {
+"0": 30925,
+"1": 30926,
+"2": 30927,
+"3": 30928,
+"4": 30929,
+"5": 30930,
+"6": 30931,
+"7": 30932,
+"8": 30933,
+"9": 30934,
+"10": 30935,
+"11": 30936,
+"12": 30937,
+"13": 30938,
+"14": 30939,
+"15": 30940,
+"16": 30925,
+"17": 30926,
+"18": 30927,
+"19": 30941,
+"20": 30929,
+"21": 30930,
+"22": 30931,
+"23": 30942,
+"24": 30933,
+"25": 30934,
+"26": 30935,
+"27": 30943,
+"28": 30937,
+"29": 30938,
+"30": 30939,
+"31": 30944,
+"32": 30925,
+"33": 30926,
+"34": 30927,
+"35": 30928,
+"36": 30929,
+"37": 30930,
+"38": 30945,
+"39": 30946,
+"40": 30933,
+"41": 30934,
+"42": 30935,
+"43": 30936,
+"44": 30937,
+"45": 30938,
+"46": 30947,
+"47": 30948,
+"48": 30925,
+"49": 30926,
+"50": 30927,
+"51": 30941,
+"52": 30929,
+"53": 30930,
+"54": 30945,
+"55": 30949,
+"56": 30933,
+"57": 30934,
+"58": 30935,
+"59": 30943,
+"60": 30937,
+"61": 30938,
+"62": 30947,
+"63": 30950,
+"64": 30925,
+"65": 30926,
+"66": 30927,
+"67": 30928,
+"68": 30929,
+"69": 30930,
+"70": 30931,
+"71": 30932,
+"72": 30933,
+"73": 30934,
+"74": 30935,
+"75": 30936,
+"76": 30951,
+"77": 30952,
+"78": 30953,
+"79": 30954,
+"80": 30925,
+"81": 30926,
+"82": 30927,
+"83": 30941,
+"84": 30929,
+"85": 30930,
+"86": 30931,
+"87": 30942,
+"88": 30933,
+"89": 30934,
+"90": 30935,
+"91": 30943,
+"92": 30951,
+"93": 30952,
+"94": 30953,
+"95": 30955,
+"96": 30925,
+"97": 30926,
+"98": 30927,
+"99": 30928,
+"100": 30929,
+"101": 30930,
+"102": 30945,
+"103": 30946,
+"104": 30933,
+"105": 30934,
+"106": 30935,
+"107": 30936,
+"108": 30951,
+"109": 30952,
+"110": 30956,
+"111": 30957,
+"112": 30925,
+"113": 30926,
+"114": 30927,
+"115": 30941,
+"116": 30929,
+"117": 30930,
+"118": 30945,
+"119": 30949,
+"120": 30933,
+"121": 30934,
+"122": 30935,
+"123": 30943,
+"124": 30951,
+"125": 30952,
+"126": 30956,
+"127": 30958,
+"128": 30925,
+"129": 30926,
+"130": 30927,
+"131": 30928,
+"132": 30929,
+"133": 30930,
+"134": 30931,
+"135": 30932,
+"136": 30933,
+"137": 30959,
+"138": 30935,
+"139": 30960,
+"140": 30937,
+"141": 30961,
+"142": 30939,
+"143": 30962,
+"144": 30925,
+"145": 30926,
+"146": 30927,
+"147": 30941,
+"148": 30929,
+"149": 30930,
+"150": 30931,
+"151": 30942,
+"152": 30933,
+"153": 30959,
+"154": 30935,
+"155": 30963,
+"156": 30937,
+"157": 30961,
+"158": 30939,
+"159": 30964,
+"160": 30925,
+"161": 30926,
+"162": 30927,
+"163": 30928,
+"164": 30929,
+"165": 30930,
+"166": 30945,
+"167": 30946,
+"168": 30933,
+"169": 30959,
+"170": 30935,
+"171": 30960,
+"172": 30937,
+"173": 30961,
+"174": 30947,
+"175": 30965,
+"176": 30925,
+"177": 30926,
+"178": 30927,
+"179": 30941,
+"180": 30929,
+"181": 30930,
+"182": 30945,
+"183": 30949,
+"184": 30933,
+"185": 30959,
+"186": 30935,
+"187": 30963,
+"188": 30937,
+"189": 30961,
+"190": 30947,
+"191": 30966,
+"192": 30925,
+"193": 30926,
+"194": 30927,
+"195": 30928,
+"196": 30929,
+"197": 30930,
+"198": 30931,
+"199": 30932,
+"200": 30933,
+"201": 30959,
+"202": 30935,
+"203": 30960,
+"204": 30951,
+"205": 30967,
+"206": 30953,
+"207": 30968,
+"208": 30925,
+"209": 30926,
+"210": 30927,
+"211": 30941,
+"212": 30929,
+"213": 30930,
+"214": 30931,
+"215": 30942,
+"216": 30933,
+"217": 30959,
+"218": 30935,
+"219": 30963,
+"220": 30951,
+"221": 30967,
+"222": 30953,
+"223": 30969,
+"224": 30925,
+"225": 30926,
+"226": 30927,
+"227": 30928,
+"228": 30929,
+"229": 30930,
+"230": 30945,
+"231": 30946,
+"232": 30933,
+"233": 30959,
+"234": 30935,
+"235": 30960,
+"236": 30951,
+"237": 30967,
+"238": 30956,
+"239": 30970,
+"240": 30925,
+"241": 30926,
+"242": 30927,
+"243": 30941,
+"244": 30929,
+"245": 30930,
+"246": 30945,
+"247": 30949,
+"248": 30933,
+"249": 30959,
+"250": 30935,
+"251": 30963,
+"252": 30951,
+"253": 30967,
+"254": 30956,
+"255": 30971
+}
+}
+},
+"tileGroups": {
+"beodeul:dungeon_theme_tc_fo_ancient_tree": {
+"id": "beodeul:dungeon_theme_tc_fo_ancient_tree",
+"name": "버들항 던전 주제 숲 던전 거목(밑동 굴 문) 6×7",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+30848,
+30849,
+30850,
+30851,
+30852,
+30853,
+30854,
+30855,
+30856,
+30857,
+30858,
+30859,
+30860,
+30861,
+30862,
+30863,
+30864,
+30865,
+30866,
+30867,
+30868,
+30869,
+30870,
+30871,
+30872,
+30873,
+30874,
+30875,
+30876,
+30877,
+30878,
+30879,
+30880,
+30881,
+30882,
+30883,
+30884,
+30885
+],
+"description": "숲 던전 거목(밑동 굴 문) 6×7(키트 bd-pick-dungeon-theme-giant-tree). 하네스 theme-climate-r1 A1.",
+"placementRules": "통행: 수관 ★ · 밑동 막힘 · 굴 문 칸 걸음(이벤트)"
+},
+"beodeul:dungeon_theme_tc_fo_boulder": {
+"id": "beodeul:dungeon_theme_tc_fo_boulder",
+"name": "버들항 던전 주제 이끼 바위 2×2",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+30886,
+30887,
+30888,
+30889
+],
+"description": "이끼 바위 2×2(키트 bd-pick-dungeon-theme-mossy-boulder). 하네스 theme-climate-r1 A2.",
+"placementRules": "통행: 막힘"
+},
+"beodeul:dungeon_theme_tc_fo_bramble": {
+"id": "beodeul:dungeon_theme_tc_fo_bramble",
+"name": "버들항 던전 주제 가시덤불 2×1(막음)",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+30890,
+30891
+],
+"description": "가시덤불 2×1(막음)(키트 bd-pick-dungeon-theme-bramble). 하네스 theme-climate-r1 A2.",
+"placementRules": "통행: 막힘"
+},
+"beodeul:dungeon_theme_tc_fo_ring": {
+"id": "beodeul:dungeon_theme_tc_fo_ring",
+"name": "버들항 던전 주제 버섯 고리 2×2",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+30892,
+30893,
+30894,
+30895
+],
+"description": "버섯 고리 2×2(키트 bd-pick-dungeon-theme-mushroom-ring). 하네스 theme-climate-r1 A1.",
+"placementRules": "통행: 걸음"
+},
+"beodeul:dungeon_theme_tc_fo_waystone": {
+"id": "beodeul:dungeon_theme_tc_fo_waystone",
+"name": "버들항 던전 주제 숲 길돌(룬 선돌) 1×2",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+30896,
+30897
+],
+"description": "숲 길돌(룬 선돌) 1×2(키트 bd-pick-dungeon-theme-waystone). 하네스 theme-climate-r1 A1.",
+"placementRules": "통행: 아래 칸 막힘"
+},
+"beodeul:dungeon_theme_tc_ice_crystal": {
+"id": "beodeul:dungeon_theme_tc_ice_crystal",
+"name": "버들항 던전 주제 얼음 수정 덩이 1×2",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+30898,
+30899
+],
+"description": "얼음 수정 덩이 1×2(키트 bd-pick-dungeon-theme-ice-crystal). 하네스 theme-climate-r1 A2.",
+"placementRules": "통행: 아래 칸 막힘"
+},
+"beodeul:dungeon_theme_tc_ice_frozen": {
+"id": "beodeul:dungeon_theme_tc_ice_frozen",
+"name": "버들항 던전 주제 얼음에 갇힌 전사 1×2",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+30900,
+30901
+],
+"description": "얼음에 갇힌 전사 1×2(키트 bd-pick-dungeon-theme-frozen-warrior). 하네스 theme-climate-r1 A2.",
+"placementRules": "통행: 아래 칸 막힘"
+},
+"beodeul:dungeon_theme_tc_ice_icicles": {
+"id": "beodeul:dungeon_theme_tc_ice_icicles",
+"name": "버들항 던전 주제 고드름(벽 앞면 걸이) 1×1·2×1",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+30902,
+30903,
+30904
+],
+"description": "고드름(벽 앞면 걸이) 1×1·2×1(키트 bd-pick-dungeon-theme-icicles, bd-pick-dungeon-theme-icicles-2). 하네스 theme-climate-r1 A2.",
+"placementRules": "통행: 막힘(벽 앞면 위 덧칠 — 2칸 조각은 칸마다 x)"
+},
+"beodeul:dungeon_theme_pyr_face": {
+"id": "beodeul:dungeon_theme_pyr_face",
+"name": "버들항 던전 주제 피라미드 사암 벽 앞면",
+"role": "wall",
+"source": "bundled-default",
+"defaultLayer": "lower",
+"confidence": "high",
+"tileIds": [
+30905,
+30906,
+30907,
+30908,
+30909,
+30910,
+30911,
+30912,
+30913,
+30914,
+30915,
+30916,
+30917,
+30918,
+30919
+],
+"description": "피라미드 사암 벽 앞면 키트(bd-pick-dungeon-theme-sandstone-face-3h, bd-pick-dungeon-theme-sandstone-face-2h, bd-pick-dungeon-theme-sandstone-face-3h-base, bd-pick-dungeon-theme-sandstone-face-3h-glyph, bd-pick-dungeon-theme-sandstone-face-2h-glyph, bd-pick-dungeon-theme-sandstone-face-3h-alt). 하네스 theme-climate-r1 A1.",
+"placementRules": "천장 테두리 아래 벽 앞면. author_dungeon 이 저절로 쓴다."
+},
+"beodeul:dungeon_theme_tc_pyr_gold": {
+"id": "beodeul:dungeon_theme_tc_pyr_gold",
+"name": "버들항 던전 주제 금 보물 더미 2×1",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+30920,
+30921
+],
+"description": "금 보물 더미 2×1(키트 bd-pick-dungeon-theme-gold-pile). 하네스 theme-climate-r1 A1.",
+"placementRules": "통행: 막힘"
+},
+"beodeul:dungeon_theme_tc_pyr_obelisk": {
+"id": "beodeul:dungeon_theme_tc_pyr_obelisk",
+"name": "버들항 던전 주제 오벨리스크 1×3",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+30922,
+30923,
+30924
+],
+"description": "오벨리스크 1×3(키트 bd-pick-dungeon-theme-obelisk). 하네스 theme-climate-r1 A1.",
+"placementRules": "통행: 아래 칸 막힘"
+},
+"beodeul:dungeon_theme_pyr_rim": {
+"id": "beodeul:dungeon_theme_pyr_rim",
+"name": "버들항 던전 주제 피라미드 천장 테두리",
+"role": "wall",
+"source": "bundled-default",
+"defaultLayer": "lower",
+"confidence": "high",
+"tileIds": [
+30925,
+30926,
+30927,
+30928,
+30929,
+30930,
+30931,
+30932,
+30933,
+30934,
+30935,
+30936,
+30937,
+30938,
+30939,
+30940,
+30941,
+30942,
+30943,
+30944,
+30945,
+30946,
+30947,
+30948,
+30949,
+30950,
+30951,
+30952,
+30953,
+30954,
+30955,
+30956,
+30957,
+30958,
+30959,
+30960,
+30961,
+30962,
+30963,
+30964,
+30965,
+30966,
+30967,
+30968,
+30969,
+30970,
+30971
+],
+"description": "피라미드 천장(사암 띠) 오토타일 `beodeul_dungeon_ceiling_sand`. 하네스 theme-climate-r1 A1.",
+"placementRules": "방·통로 바깥 칸(천장)을 이 그룹으로 칠한다. author_dungeon 의 pyramid 테마가 저절로 쓴다."
+},
+"beodeul:dungeon_theme_pyr_sand_trap": {
+"id": "beodeul:dungeon_theme_pyr_sand_trap",
+"name": "버들항 던전 주제 모래 구덩이 함정",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "lower",
+"confidence": "high",
+"tileIds": [
+30972,
+30976,
+30980,
+30984
+],
+"description": "모래 구덩이 함정(키트 bd-pick-dungeon-theme-sand-pit). 하네스 theme-climate-r1 A1.",
+"placementRules": "걷는 바닥 위, 피해 갈 길을 남긴다."
+},
+"beodeul:dungeon_theme_tc_pyr_sarcophagus": {
+"id": "beodeul:dungeon_theme_tc_pyr_sarcophagus",
+"name": "버들항 던전 주제 파라오 석관 1×2 닫힘·열림",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+30987,
+30988,
+30989,
+30990
+],
+"description": "파라오 석관 1×2 닫힘·열림(키트 bd-pick-dungeon-theme-pharaoh-sarcophagus, bd-pick-dungeon-theme-pharaoh-sarcophagus-2). 하네스 theme-climate-r1 A1.",
+"placementRules": "통행: 막힘(조사 이벤트)"
+},
+"beodeul:dungeon_theme_tc_pyr_statue": {
+"id": "beodeul:dungeon_theme_tc_pyr_statue",
+"name": "버들항 던전 주제 자칼·풍뎅이 석상 1×2",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+30991,
+30992,
+30993,
+30994
+],
+"description": "자칼·풍뎅이 석상 1×2(키트 bd-pick-dungeon-theme-jackal-statue, bd-pick-dungeon-theme-jackal-statue-2). 하네스 theme-climate-r1 A1.",
+"placementRules": "통행: 아래 칸 막힘"
+},
+"beodeul:dungeon_theme_tc_sw_boardwalk": {
+"id": "beodeul:dungeon_theme_tc_sw_boardwalk",
+"name": "버들항 던전 주제 부서진 널길 끝·조각 1×1",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+30995,
+30996
+],
+"description": "부서진 널길 끝·조각 1×1(키트 bd-pick-dungeon-theme-boardwalk, bd-pick-dungeon-theme-boardwalk-2). 하네스 theme-climate-r1 A2.",
+"placementRules": "통행: 걸음(끝 칸)·막힘(부서진 칸)"
+},
+"beodeul:dungeon_theme_tc_sw_idol": {
+"id": "beodeul:dungeon_theme_tc_sw_idol",
+"name": "버들항 던전 주제 가라앉은 석상 2×2",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+30997,
+30998,
+30999,
+31000
+],
+"description": "가라앉은 석상 2×2(키트 bd-pick-dungeon-theme-sunken-idol). 하네스 theme-climate-r1 A1.",
+"placementRules": "통행: 막힘"
+},
+"beodeul:dungeon_theme_tc_sw_lily": {
+"id": "beodeul:dungeon_theme_tc_sw_lily",
+"name": "버들항 던전 주제 물 위 연잎 무리 1×1(두 변형)",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+31001,
+31002
+],
+"description": "물 위 연잎 무리 1×1(두 변형)(키트 bd-pick-dungeon-theme-lily-pads, bd-pick-dungeon-theme-lily-pads-2). 하네스 theme-climate-r1 A2.",
+"placementRules": "통행: 막힘(물)"
+},
+"beodeul:dungeon_theme_tc_sw_moss": {
+"id": "beodeul:dungeon_theme_tc_sw_moss",
+"name": "버들항 던전 주제 이끼 늘어진 죽은 가지 1×2",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+31003,
+31004
+],
+"description": "이끼 늘어진 죽은 가지 1×2(키트 bd-pick-dungeon-theme-swamp-moss). 하네스 theme-climate-r1 A2.",
+"placementRules": "통행: 아래 칸 막힘"
+},
+"beodeul:dungeon_theme_tc_sw_root_arch": {
+"id": "beodeul:dungeon_theme_tc_sw_root_arch",
+"name": "버들항 던전 주제 맹그로브 뿌리 아치 2×2(밑으로 지나감)",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+31005,
+31006,
+31007,
+31008
+],
+"description": "맹그로브 뿌리 아치 2×2(밑으로 지나감)(키트 bd-pick-dungeon-theme-mangrove-roots). 하네스 theme-climate-r1 A1.",
+"placementRules": "통행: 아래 줄 걸음(뿌리 밑)"
+}
+},
+"structureKits": {
+"bd-pick-dungeon-theme-giant-tree": {
+"id": "bd-pick-dungeon-theme-giant-tree",
+"kind": "object",
+"name": "버들항 던전 · 숲 던전 거목(밑동 굴 문) 6×7 tree 6×7",
+"width": 6,
+"height": 7,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+],
+"upperTiles": [
+-1,
+30848,
+30849,
+30850,
+30851,
+30852
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+],
+"upperTiles": [
+30853,
+30854,
+30855,
+30856,
+30857,
+30858
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+],
+"upperTiles": [
+30859,
+30860,
+30861,
+30862,
+30863,
+30864
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+],
+"upperTiles": [
+30865,
+30866,
+30867,
+30868,
+30869,
+30870
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+],
+"upperTiles": [
+30871,
+30872,
+30873,
+30874,
+30875,
+30876
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+],
+"upperTiles": [
+-1,
+-1,
+30877,
+30878,
+30879,
+-1
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+],
+"upperTiles": [
+30880,
+30881,
+30882,
+30883,
+30884,
+30885
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "숲 던전 거목(밑동 굴 문) 6×7 — tree. 버들항 bd-tree 와 같은 잎 화법의 아주 큰 고목. 수관(위층)·굵은 줄기·드러난 뿌리, 밑동에 들어갈 수 있는 굴(문) — 보스·표지 장소.",
+"placementRules": "통행: 수관 ★ · 밑동 막힘 · 굴 문 칸 걸음(이벤트)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"giant-tree",
+"forest",
+"숲"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"forest",
+"숲"
+]
+}
+},
+"bd-pick-dungeon-theme-mossy-boulder": {
+"id": "bd-pick-dungeon-theme-mossy-boulder",
+"kind": "object",
+"name": "버들항 던전 · 이끼 바위 2×2 piece 2×2",
+"width": 2,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+30886,
+30887
+]
+},
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+30888,
+30889
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "이끼 바위 2×2 — piece. 윗면에 이끼 덮인 큰 둥근 바위, 앞면 회색.",
+"placementRules": "통행: 막힘",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"mossy-boulder",
+"forest",
+"숲"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"forest",
+"숲"
+]
+}
+},
+"bd-pick-dungeon-theme-bramble": {
+"id": "bd-pick-dungeon-theme-bramble",
+"kind": "object",
+"name": "버들항 던전 · 가시덤불 2×1(막음) piece 2×1",
+"width": 2,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+30890,
+30891
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "가시덤불 2×1(막음) — piece. 길을 막는 가시 줄기 덤불(검붉은 줄기·가시·잎 조금).",
+"placementRules": "통행: 막힘",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"bramble",
+"forest",
+"숲"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"forest",
+"숲"
+]
+}
+},
+"bd-pick-dungeon-theme-mushroom-ring": {
+"id": "bd-pick-dungeon-theme-mushroom-ring",
+"kind": "object",
+"name": "버들항 던전 · 버섯 고리 2×2 piece 2×2",
+"width": 2,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+30892,
+30893
+]
+},
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+30894,
+30895
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "버섯 고리 2×2 — piece. 풀밭 위 작은 버섯들이 둥글게 난 요정 고리(가운데 빈 풀).",
+"placementRules": "통행: 걸음",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"mushroom-ring",
+"forest",
+"숲"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"forest",
+"숲"
+]
+}
+},
+"bd-pick-dungeon-theme-waystone": {
+"id": "bd-pick-dungeon-theme-waystone",
+"kind": "object",
+"name": "버들항 던전 · 숲 길돌(룬 선돌) 1×2 piece 1×2",
+"width": 1,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30896
+]
+},
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30897
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "숲 길돌(룬 선돌) 1×2 — piece. 이끼 낀 선돌, 앞면에 빛나는 무늬(글자 아님). 저장·표지 자리.",
+"placementRules": "통행: 아래 칸 막힘",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"waystone",
+"forest",
+"숲"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"forest",
+"숲"
+]
+}
+},
+"bd-pick-dungeon-theme-ice-crystal": {
+"id": "bd-pick-dungeon-theme-ice-crystal",
+"kind": "object",
+"name": "버들항 던전 · 얼음 수정 덩이 1×2 기본 1×2",
+"width": 1,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30898
+]
+},
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30899
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "얼음 수정 덩이 1×2 — 기본. 바닥에서 솟은 얼음 결정 무리(빛 받는 면 흰색).",
+"placementRules": "통행: 아래 칸 막힘",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"ice-crystal",
+"ice",
+"얼음"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"ice",
+"얼음"
+]
+}
+},
+"bd-pick-dungeon-theme-frozen-warrior": {
+"id": "bd-pick-dungeon-theme-frozen-warrior",
+"kind": "object",
+"name": "버들항 던전 · 얼음에 갇힌 전사 1×2 기본 1×2",
+"width": 1,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30900
+]
+},
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30901
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "얼음에 갇힌 전사 1×2 — 기본. 얼음 덩이(윗면+앞면) 안에 흐릿하게 보이는 갑옷 전사.",
+"placementRules": "통행: 아래 칸 막힘",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"frozen-warrior",
+"ice",
+"얼음"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"ice",
+"얼음"
+]
+}
+},
+"bd-pick-dungeon-theme-icicles": {
+"id": "bd-pick-dungeon-theme-icicles",
+"kind": "object",
+"name": "버들항 던전 · 고드름(벽 앞면 걸이) 1×1·2×1 1칸 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30902
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "고드름(벽 앞면 걸이) 1×1·2×1 — 1칸. 벽 앞면 윗단(천장 테두리 바로 밑)에 매달린 고드름. 그림 = [1칸|2칸]. 투명 바탕 — 얼음 벽·돌 벽 어디에나 얹힌다.",
+"placementRules": "통행: 막힘(벽 앞면 위 덧칠 — 2칸 조각은 칸마다 x)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"icicles",
+"ice",
+"얼음"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"ice",
+"얼음"
+]
+}
+},
+"bd-pick-dungeon-theme-icicles-2": {
+"id": "bd-pick-dungeon-theme-icicles-2",
+"kind": "object",
+"name": "버들항 던전 · 고드름(벽 앞면 걸이) 1×1·2×1 2칸 2×1",
+"width": 2,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+30903,
+30904
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "고드름(벽 앞면 걸이) 1×1·2×1 — 2칸. 벽 앞면 윗단(천장 테두리 바로 밑)에 매달린 고드름. 그림 = [1칸|2칸]. 투명 바탕 — 얼음 벽·돌 벽 어디에나 얹힌다.",
+"placementRules": "통행: 막힘(벽 앞면 위 덧칠 — 2칸 조각은 칸마다 x)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"icicles",
+"ice",
+"얼음"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"ice",
+"얼음"
+]
+}
+},
+"bd-pick-dungeon-theme-sandstone-face-3h": {
+"id": "bd-pick-dungeon-theme-sandstone-face-3h",
+"kind": "section",
+"name": "버들항 던전 · 피라미드 사암 벽 앞면 3단 3×3",
+"width": 3,
+"height": 3,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+30905,
+30906,
+30907
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+30908,
+30909,
+30910
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+30911,
+30912,
+30913
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 3단.",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"role": "wall",
+"repeatability": "repeat",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"pyramid",
+"피라미드",
+"사막"
+]
+}
+},
+"bd-pick-dungeon-theme-sandstone-face-2h": {
+"id": "bd-pick-dungeon-theme-sandstone-face-2h",
+"kind": "section",
+"name": "버들항 던전 · 피라미드 사암 벽 앞면 2단 3×2",
+"width": 3,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+30905,
+30906,
+30907
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+30911,
+30912,
+30913
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 2단.",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"role": "wall",
+"repeatability": "repeat",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"pyramid",
+"피라미드",
+"사막"
+]
+}
+},
+"bd-pick-dungeon-theme-sandstone-face-3h-base": {
+"id": "bd-pick-dungeon-theme-sandstone-face-3h-base",
+"kind": "section",
+"name": "버들항 던전 · 피라미드 사암 벽 앞면 3단 아랫단 변형 3×1",
+"width": 3,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+30914,
+30915,
+30916
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 3단 아랫단 변형.",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"role": "wall",
+"repeatability": "repeat",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"pyramid",
+"피라미드",
+"사막"
+]
+}
+},
+"bd-pick-dungeon-theme-sandstone-face-3h-glyph": {
+"id": "bd-pick-dungeon-theme-sandstone-face-3h-glyph",
+"kind": "object",
+"name": "버들항 던전 · 피라미드 사암 벽 앞면 3단 새김 가운데 1×3",
+"width": 1,
+"height": 3,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+30906
+],
+"upperTiles": [
+-1
+]
+},
+{
+"tiles": [
+30917
+],
+"upperTiles": [
+-1
+]
+},
+{
+"tiles": [
+30912
+],
+"upperTiles": [
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 3단 새김 가운데.",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"role": "wall",
+"repeatability": "fixed",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"pyramid",
+"피라미드",
+"사막"
+]
+}
+},
+"bd-pick-dungeon-theme-sandstone-face-2h-glyph": {
+"id": "bd-pick-dungeon-theme-sandstone-face-2h-glyph",
+"kind": "object",
+"name": "버들항 던전 · 피라미드 사암 벽 앞면 2단 새김 가운데 1×2",
+"width": 1,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+30918
+],
+"upperTiles": [
+-1
+]
+},
+{
+"tiles": [
+30912
+],
+"upperTiles": [
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 2단 새김 가운데.",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"role": "wall",
+"repeatability": "fixed",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"pyramid",
+"피라미드",
+"사막"
+]
+}
+},
+"bd-pick-dungeon-theme-sandstone-face-3h-alt": {
+"id": "bd-pick-dungeon-theme-sandstone-face-3h-alt",
+"kind": "object",
+"name": "버들항 던전 · 피라미드 사암 벽 앞면 3단 가운데단 변형(금 간 돌) 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+30919
+],
+"upperTiles": [
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "피라미드 사암 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 3단 가운데단 변형(금 간 돌).",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"사암",
+"pyramid",
+"피라미드",
+"사막"
+],
+"role": "wall",
+"repeatability": "fixed",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"pyramid",
+"피라미드",
+"사막"
+]
+}
+},
+"bd-pick-dungeon-theme-gold-pile": {
+"id": "bd-pick-dungeon-theme-gold-pile",
+"kind": "object",
+"name": "버들항 던전 · 금 보물 더미 2×1 기본 2×1",
+"width": 2,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+30920,
+30921
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "금 보물 더미 2×1 — 기본. 금화 더미 + 잔·항아리·보석. 바닥에 접지 그림자.",
+"placementRules": "통행: 막힘",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"gold-pile",
+"pyramid",
+"피라미드",
+"사막"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"pyramid",
+"피라미드",
+"사막"
+]
+}
+},
+"bd-pick-dungeon-theme-obelisk": {
+"id": "bd-pick-dungeon-theme-obelisk",
+"kind": "object",
+"name": "버들항 던전 · 오벨리스크 1×3 기본 1×3",
+"width": 1,
+"height": 3,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30922
+]
+},
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30923
+]
+},
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30924
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "오벨리스크 1×3 — 기본. 사암 오벨리스크, 금 뾰족 머리, 앞면 상형 새김(글자 아님), 받침.",
+"placementRules": "통행: 아래 칸 막힘",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"obelisk",
+"pyramid",
+"피라미드",
+"사막"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"pyramid",
+"피라미드",
+"사막"
+]
+}
+},
+"bd-pick-dungeon-theme-sand-pit": {
+"id": "bd-pick-dungeon-theme-sand-pit",
+"kind": "object",
+"name": "버들항 던전 · 모래 구덩이 함정 2×2(움직임)",
+"width": 2,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+30972,
+30976
+],
+"upperTiles": [
+-1,
+-1
+]
+},
+{
+"tiles": [
+30980,
+30984
+],
+"upperTiles": [
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "모래 구덩이 함정 — 모래만 3장면으로 돈다. 밟으면 떨어지는 이벤트를 단다.",
+"placementRules": "걷는 바닥 위, 피해 갈 길을 남긴다.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"함정",
+"모래",
+"바닥",
+"pyramid",
+"피라미드",
+"사막"
+],
+"role": "floor",
+"repeatability": "fixed",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"pyramid",
+"피라미드",
+"사막"
+]
+}
+},
+"bd-pick-dungeon-theme-pharaoh-sarcophagus": {
+"id": "bd-pick-dungeon-theme-pharaoh-sarcophagus",
+"kind": "object",
+"name": "버들항 던전 · 파라오 석관 1×2 닫힘·열림 닫힘 1×2",
+"width": 1,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30987
+]
+},
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30988
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "파라오 석관 1×2 닫힘·열림 — 닫힘. 금·청금 줄무늬 사람 모양 관. 그림 = [닫힘|열림]. 열림 = 뚜껑이 비켜나 붕대 감은 미라.",
+"placementRules": "통행: 막힘(조사 이벤트)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"pharaoh-sarcophagus",
+"pyramid",
+"피라미드",
+"사막"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"pyramid",
+"피라미드",
+"사막"
+]
+}
+},
+"bd-pick-dungeon-theme-pharaoh-sarcophagus-2": {
+"id": "bd-pick-dungeon-theme-pharaoh-sarcophagus-2",
+"kind": "object",
+"name": "버들항 던전 · 파라오 석관 1×2 닫힘·열림 열림 1×2",
+"width": 1,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30989
+]
+},
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30990
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "파라오 석관 1×2 닫힘·열림 — 열림. 금·청금 줄무늬 사람 모양 관. 그림 = [닫힘|열림]. 열림 = 뚜껑이 비켜나 붕대 감은 미라.",
+"placementRules": "통행: 막힘(조사 이벤트)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"pharaoh-sarcophagus",
+"pyramid",
+"피라미드",
+"사막"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"pyramid",
+"피라미드",
+"사막"
+]
+}
+},
+"bd-pick-dungeon-theme-jackal-statue": {
+"id": "bd-pick-dungeon-theme-jackal-statue",
+"kind": "object",
+"name": "버들항 던전 · 자칼·풍뎅이 석상 1×2 자칼 1×2",
+"width": 1,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30991
+]
+},
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30992
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "자칼·풍뎅이 석상 1×2 — 자칼. 받침 위 앉은 자칼 수호상(검은 몸·금 장식) 또는 풍뎅이 석상. 그림 = 후보마다 두 조각[자칼|풍뎅이].",
+"placementRules": "통행: 아래 칸 막힘",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"jackal-statue",
+"pyramid",
+"피라미드",
+"사막"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"pyramid",
+"피라미드",
+"사막"
+]
+}
+},
+"bd-pick-dungeon-theme-jackal-statue-2": {
+"id": "bd-pick-dungeon-theme-jackal-statue-2",
+"kind": "object",
+"name": "버들항 던전 · 자칼·풍뎅이 석상 1×2 풍뎅이 1×2",
+"width": 1,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30993
+]
+},
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30994
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "자칼·풍뎅이 석상 1×2 — 풍뎅이. 받침 위 앉은 자칼 수호상(검은 몸·금 장식) 또는 풍뎅이 석상. 그림 = 후보마다 두 조각[자칼|풍뎅이].",
+"placementRules": "통행: 아래 칸 막힘",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"jackal-statue",
+"pyramid",
+"피라미드",
+"사막"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"pyramid",
+"피라미드",
+"사막"
+]
+}
+},
+"bd-pick-dungeon-theme-boardwalk": {
+"id": "bd-pick-dungeon-theme-boardwalk",
+"kind": "object",
+"name": "버들항 던전 · 부서진 널길 끝·조각 1×1 끝 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30995
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "부서진 널길 끝·조각 1×1 — 끝. 늪 위 널길의 끝(말뚝 둘) / 부서져 널이 빠진 조각. 투명 사이로 물이 보인다. 그림 = [끝|부서짐].",
+"placementRules": "통행: 걸음(끝 칸)·막힘(부서진 칸)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"boardwalk",
+"swamp",
+"늪"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"swamp",
+"늪"
+]
+}
+},
+"bd-pick-dungeon-theme-boardwalk-2": {
+"id": "bd-pick-dungeon-theme-boardwalk-2",
+"kind": "object",
+"name": "버들항 던전 · 부서진 널길 끝·조각 1×1 부서짐 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+30996
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "부서진 널길 끝·조각 1×1 — 부서짐. 늪 위 널길의 끝(말뚝 둘) / 부서져 널이 빠진 조각. 투명 사이로 물이 보인다. 그림 = [끝|부서짐].",
+"placementRules": "통행: 걸음(끝 칸)·막힘(부서진 칸)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"boardwalk",
+"swamp",
+"늪"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"swamp",
+"늪"
+]
+}
+},
+"bd-pick-dungeon-theme-sunken-idol": {
+"id": "bd-pick-dungeon-theme-sunken-idol",
+"kind": "object",
+"name": "버들항 던전 · 가라앉은 석상 2×2 석상 2×2",
+"width": 2,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+30997,
+30998
+]
+},
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+30999,
+31000
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "가라앉은 석상 2×2 — 석상. 늪물·진흙에 반쯤 잠긴 이끼 낀 석상 머리(얼굴 새김, 글자 없음).",
+"placementRules": "통행: 막힘",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"sunken-idol",
+"swamp",
+"늪"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"swamp",
+"늪"
+]
+}
+},
+"bd-pick-dungeon-theme-lily-pads": {
+"id": "bd-pick-dungeon-theme-lily-pads",
+"kind": "object",
+"name": "버들항 던전 · 물 위 연잎 무리 1×1(두 변형) 변형1 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+31001
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "물 위 연잎 무리 1×1(두 변형) — 변형1. 늪물 위 연잎 무리(+꽃 하나). 투명 바탕. 그림 = [변형1|변형2].",
+"placementRules": "통행: 막힘(물)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"lily-pads",
+"swamp",
+"늪"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"swamp",
+"늪"
+]
+}
+},
+"bd-pick-dungeon-theme-lily-pads-2": {
+"id": "bd-pick-dungeon-theme-lily-pads-2",
+"kind": "object",
+"name": "버들항 던전 · 물 위 연잎 무리 1×1(두 변형) 변형2 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+31002
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "물 위 연잎 무리 1×1(두 변형) — 변형2. 늪물 위 연잎 무리(+꽃 하나). 투명 바탕. 그림 = [변형1|변형2].",
+"placementRules": "통행: 막힘(물)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"lily-pads",
+"swamp",
+"늪"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"swamp",
+"늪"
+]
+}
+},
+"bd-pick-dungeon-theme-swamp-moss": {
+"id": "bd-pick-dungeon-theme-swamp-moss",
+"kind": "object",
+"name": "버들항 던전 · 이끼 늘어진 죽은 가지 1×2 고목 1×2",
+"width": 1,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+31003
+]
+},
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+31004
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "이끼 늘어진 죽은 가지 1×2 — 고목. 죽은 나무 그루터기·가지에 늘어진 회녹색 수염 이끼.",
+"placementRules": "통행: 아래 칸 막힘",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"swamp-moss",
+"swamp",
+"늪"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"swamp",
+"늪"
+]
+}
+},
+"bd-pick-dungeon-theme-mangrove-roots": {
+"id": "bd-pick-dungeon-theme-mangrove-roots",
+"kind": "object",
+"name": "버들항 던전 · 맹그로브 뿌리 아치 2×2(밑으로 지나감) 아치 2×2",
+"width": 2,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+31005,
+31006
+]
+},
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+31007,
+31008
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "맹그로브 뿌리 아치 2×2(밑으로 지나감) — 아치. 굽은 뿌리들이 아치를 이룬 통로. 위층 — 사람이 밑으로 지나간다. 양 끝 뿌리는 칸 가장자리에 가늘게.",
+"placementRules": "통행: 아래 줄 걸음(뿌리 밑)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"mangrove-roots",
+"swamp",
+"늪"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"swamp",
+"늪"
+]
+}
+}
+}
+},
+"baked": {
+"tc.fo_ancient_tree|*": {
+"round": "theme-climate-r1",
+"letter": "A1",
+"sha256": "9346739a1ba94b02c30fec7c9c1cbb779047f1d1ca0f553d529d46d6ebca71ca",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_fo_ancient_tree"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-giant-tree"
+]
+}
+},
+"tc.fo_boulder|*": {
+"round": "theme-climate-r1",
+"letter": "A2",
+"sha256": "d4bae7a16ca586d6a7b276689dedd5d73643c219d89480fc54577cd0a4b64425",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_fo_boulder"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-mossy-boulder"
+]
+}
+},
+"tc.fo_bramble|*": {
+"round": "theme-climate-r1",
+"letter": "A2",
+"sha256": "84a38f9e8484f1d858fb6f4b51efe91bd3f332075ad6ae1fdd84dc8835578282",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_fo_bramble"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-bramble"
+]
+}
+},
+"tc.fo_ring|*": {
+"round": "theme-climate-r1",
+"letter": "A1",
+"sha256": "48eb1d29eb9297c5ca686b177d94ebcb97dbecc3f6577dc2b87f86c774cb584d",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_fo_ring"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-mushroom-ring"
+]
+}
+},
+"tc.fo_waystone|*": {
+"round": "theme-climate-r1",
+"letter": "A1",
+"sha256": "57373602cdc0a21a693eaa356506f147ab35abc7e843c4727e371ff9ddbf99db",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_fo_waystone"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-waystone"
+]
+}
+},
+"tc.ice_crystal|*": {
+"round": "theme-climate-r1",
+"letter": "A2",
+"sha256": "8c363ac5d3565bb37d3686c02a749b6dbdf723342884a31c467d1fd946889512",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_ice_crystal"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-ice-crystal"
+]
+}
+},
+"tc.ice_frozen|*": {
+"round": "theme-climate-r1",
+"letter": "A2",
+"sha256": "5ce4c492d561c9fdf9961c36c8d9327714e7096aacd7661bd27e31b091f88a94",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_ice_frozen"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-frozen-warrior"
+]
+}
+},
+"tc.ice_icicles|*": {
+"round": "theme-climate-r1",
+"letter": "A2",
+"sha256": "6eae35ea2a3ff7fc3ab792905d0e973f0d62df61f5e4160b31c7413705327d71",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_ice_icicles"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-icicles",
+"bd-pick-dungeon-theme-icicles-2"
+]
+}
+},
+"tc.pyr_face|*": {
+"round": "theme-climate-r1",
+"letter": "A1",
+"sha256": "daa988070bbbcb92770992315a66fd3d7f1683f6b7f4355d85fdf7094aeeee58",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_pyr_face"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-sandstone-face-3h",
+"bd-pick-dungeon-theme-sandstone-face-2h",
+"bd-pick-dungeon-theme-sandstone-face-3h-base",
+"bd-pick-dungeon-theme-sandstone-face-3h-glyph",
+"bd-pick-dungeon-theme-sandstone-face-2h-glyph",
+"bd-pick-dungeon-theme-sandstone-face-3h-alt"
+]
+}
+},
+"tc.pyr_gold|*": {
+"round": "theme-climate-r1",
+"letter": "A1",
+"sha256": "5bd06d0397769936233d3d9c4775419c4e9472207e9e4902b43ecd60191ea2b3",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_pyr_gold"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-gold-pile"
+]
+}
+},
+"tc.pyr_obelisk|*": {
+"round": "theme-climate-r1",
+"letter": "A1",
+"sha256": "752ef2fd337e1cd80467e9ba0009d4fde44b48e21c5b65c6e1341dad1cb7dcfd",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_pyr_obelisk"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-obelisk"
+]
+}
+},
+"tc.pyr_rim|*": {
+"round": "theme-climate-r1",
+"letter": "A1",
+"sha256": "b36aefdffc61fe9fe8e642e20a17d92d2dced8295778ec5f6240e4a802a7dea0",
+"gate": "pass",
+"defs": {
+"autotileGroups": [
+"beodeul_dungeon_ceiling_sand"
+],
+"tileGroups": [
+"beodeul:dungeon_theme_pyr_rim"
+],
+"structureKits": []
+}
+},
+"tc.pyr_sand_trap|*": {
+"round": "theme-climate-r1",
+"letter": "A1",
+"sha256": "261b7f780aa21d4fa8ab73716f350e045b0edcf84694a89769a6205117b8a57f",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_pyr_sand_trap"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-sand-pit"
+]
+}
+},
+"tc.pyr_sarcophagus|*": {
+"round": "theme-climate-r1",
+"letter": "A1",
+"sha256": "8872f50cf78623f7e6aa1e13e721c6381a42cf50ceb5e703b8e04ed6b0b3f501",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_pyr_sarcophagus"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-pharaoh-sarcophagus",
+"bd-pick-dungeon-theme-pharaoh-sarcophagus-2"
+]
+}
+},
+"tc.pyr_statue|*": {
+"round": "theme-climate-r1",
+"letter": "A1",
+"sha256": "e075b70a940400e818d834f665d44447a4b5e176f96bbbf682ae88f51e790424",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_pyr_statue"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-jackal-statue",
+"bd-pick-dungeon-theme-jackal-statue-2"
+]
+}
+},
+"tc.sw_boardwalk|*": {
+"round": "theme-climate-r1",
+"letter": "A2",
+"sha256": "2b30c1db3abf85f3781c845d761b2268baaaebfc625ba047c443f545fd30459e",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_sw_boardwalk"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-boardwalk",
+"bd-pick-dungeon-theme-boardwalk-2"
+]
+}
+},
+"tc.sw_idol|*": {
+"round": "theme-climate-r1",
+"letter": "A1",
+"sha256": "24165bd5633034591d83b6cb9f1a4f1acf31bcf0624b90f2968040222ee11730",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_sw_idol"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-sunken-idol"
+]
+}
+},
+"tc.sw_lily|*": {
+"round": "theme-climate-r1",
+"letter": "A2",
+"sha256": "d5aee77ba5aee72137be0b3debbe05a747fe7ad03242d4cfeb636245c3d74112",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_sw_lily"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-lily-pads",
+"bd-pick-dungeon-theme-lily-pads-2"
+]
+}
+},
+"tc.sw_moss|*": {
+"round": "theme-climate-r1",
+"letter": "A2",
+"sha256": "7fd48aa0d0df1dc0da7bf5bb2dddc71c17c851af5dab4fdef1130d9791b5f741",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_sw_moss"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-swamp-moss"
+]
+}
+},
+"tc.sw_root_arch|*": {
+"round": "theme-climate-r1",
+"letter": "A1",
+"sha256": "999f1c1ed74a56c627f594aa66bb48d4ac9156498b7caf8a7e88da06b164b3ea",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_sw_root_arch"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-mangrove-roots"
+]
+}
+}
+}
+}

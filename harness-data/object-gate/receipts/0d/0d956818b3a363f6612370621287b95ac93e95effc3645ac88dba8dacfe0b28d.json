@@ -1,0 +1,404 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d956818b3a363f6612370621287b95ac93e95effc3645ac88dba8dacfe0b28d",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "Astra centre kit cell 13 (r3 c1)",
+ "label": "monster_overworld/astra-centre-kit-13 (칸 2237)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 0행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 0행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 87,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "window pane area with frame and central dark divider",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown sill strip",
+      "rows": "11-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base ledge, drawn as stacked front-facing bands",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cell is a flat front view of a window or wall panel. Rows 0-10 are sky-blue panes with a pale frame and a dark vertical divider (x=8). Row 11 is a 1-row brown sill. Rows 12-14 are a light, mid and dark stone strip that reads as a front-facing base. The width is 16 on every row, so no ellipse or widening appears. There is no roof, awning or slope plane, no eave line followed by shadow, and no visible contents. The sill and base strips are 1-3 row bands, not top surfaces. Only a front face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny window-like fixture, roughly one tile in size, with pale blue panes and a white frame. It has no roof, walls or door, so it is not a whole building and does not match the reference kind. The references are full houses with scalloped roof tiles, timber framing, plaster speckle and per-stone shading, each with about 5-6 steps per material. The candidate shows only about 3 lightness steps and has no roof or wall texture. The measured facts (13 visible tones per tile, 0% near-flat, 0% near-neutral dark edges) are on par with the references, but a single small tile cannot be compared to a full building, and the numbers do not offset the missing structure. Dark edge pixels are tinted rather than neutral, but there are too few of them to judge the outline reliably, so I report 'mixed'. Fail: the piece is the wrong kind and far less developed than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12918
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "window glass panes with dark center mullion and frame",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown sill strip",
+      "rows": "11-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey base or ledge strip (light row 12, mid row 13, dark row 14)",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole 16x15 tile is a face-on wall or window section. Rows 0-10 are blue glass panes split by a dark vertical divider (x=8 is a uniform dark column over rows 0-11), with a light frame at the sides. Row 11 is a brown sill, row 12 a light line, row 13 a grey strip and row 14 a dark base. The width is a constant 16 in every row, so there is no ellipse, no roof or awning plane, no receding side face and no visible contents. The thin light, grey and dark strips at the bottom are a 1-3 row ledge or base, not a horizontal top surface. The piece is a flat front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny window-like object of pale blue and white panes with a grey-blue frame. It is not a whole building with a roof, walls and a door, so it does not match the reference kind. The references are full houses with scalloped tile roofs, timber framing, plaster speckle and stonework, each shaded in about 5-6 steps. The candidate has only about 3 lightness steps on its frame and glass. Its measured facts (13 visible tones per tile, 0% flat coverage, 0% neutral edge pixels) are not worse than the references, but they come from a very small sprite and do not make it a building. Its outline is tinted rather than near-black, which is fine. As a building cell it fails because the content is missing: no roof, no wall, no door and no tile or plaster texture. Next to the references it reads as a stray fragment.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12608
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "window glass panes with dark central mullion",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown window sill strip",
+      "rows": "11-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base ledge (light line, mid, dark)",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tile is a flat front view of a window. Rows 0-10 are glass panes (columns x=4 and x=11) split by a dark mullion (x=8, rows 0-11). Row 11 is a brown sill line, and rows 12-14 are a stone strip that shades from a light line to mid to dark. The width is a constant 16 across rows 0-14. There is no roof, lintel slope, ellipse, or top band with an edge line and eave shadow. The 3-row base strip is a front-facing ledge or shading, not a foreshortened top surface. The whole piece reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is not a whole building. It is a tiny window or shutter fragment, about one tile in size, with no roof, walls or door. The references are full houses with scalloped tile roofs, timber framing, plaster speckle and stone courses, so the kind does not match. The 13 visible tones per tile are on par with the references' 12 and 10, and the 0% near-neutral dark edges and 0% flat coverage show tinted outlines and no flat fills. But those numbers come from one small pane. There is no roof, wall or door ramp to compare, only about 3 lightness steps on the pane and frame. As a stand-in for a building cell it is far thinner than the references, so I fail it on kind mismatch and lack of material structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14679
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "window glass and dark frame",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown sill",
+      "rows": "11-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light stone ledge strip",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base",
+      "rows": "14-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tile is a flat, face-on window wall section. Rows 0-10 are glass panes and a dark frame (x=8 is dark #383c58 for rows 0-11). Row 11 is a 1-row brown sill. Rows 12-13 are a 2-row light-to-mid strip, which is a lip and not a top surface. Row 14 is a dark base. The silhouette is a constant 16 wide for rows 0-14, so there is no ellipse, roof or awning plane, no eave shadow and no visible contents. The whole drawing is a vertical face, so it reads as front elevation. It is also a wall or window tile rather than a gate, pavilion or building with a roof, so the kind matches only loosely."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny window-like sprite of about one tile, with pale blue glass and a white frame. It has no roof, walls or door, so it is not a whole building and does not match the reference kind. The measured facts are fine on their own: 13 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edges, so the outline is tinted. But those numbers come from a few pixels of a small part. By eye it has only about 3 lightness steps on the frame and glass, and none of the roof tile scallops, plaster speckle or stone shading that the references carry. As a building it is far thinner than either reference, and a careful artist would not accept it next to them. This is a cell or content mismatch, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21646
+  }
+ ],
+ "decidedAt": "2026-10-20T22:08:46.646Z",
+ "cells": {
+  "16": [
+   "6f718c986b4a792e"
+  ],
+  "24": [
+   "18373e70eda4f8b2",
+   "624dbbcb4d3e7f0d",
+   "66b5efadfdecefb9",
+   "67e4455a7f14b670",
+   "7a29c46c151b6793",
+   "f5a4cf00dbc4d638"
+  ],
+  "32": [
+   "146010ccfe5b49b8",
+   "14cb006496c7b2e6",
+   "509bff79705b2fb4",
+   "81eab45255fa334b",
+   "9b7a838f1525e45d",
+   "d92a327009162c2e"
+  ],
+  "48": [
+   "0b43540f3e4706e1",
+   "657343e98734444f",
+   "9dd2b6ae33601fec",
+   "a9d57cd518a55bc2",
+   "d097ff49a3a69688",
+   "f233b42759c73e14"
+  ]
+ }
+}

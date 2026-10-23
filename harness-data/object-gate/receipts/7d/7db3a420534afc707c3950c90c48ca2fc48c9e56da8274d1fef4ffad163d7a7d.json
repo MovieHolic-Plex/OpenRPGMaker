@@ -1,0 +1,468 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7db3a420534afc707c3950c90c48ca2fc48c9e56da8274d1fef4ffad163d7a7d",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "wz-clock-stair",
+ "label": "wizarding_world stairs wz-clock-stair (UP)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (1/4)",
+  "3/4: 윗면 2행 < 3 (1/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+   "투영이 3/4 아님(front_elevation) (1/4)",
+   "윗면 2행 < 3 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "wall",
+  "refs": [
+   "wall-h104_0-timber",
+   "wall-h106_1-stone"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 13,
+  "darkV5": 35,
+  "nearBlackEdge": 0.56,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel/cornice strip",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair tread 1 (top, gold)",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "stair tread 2",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "stair tread 3",
+      "rows": "21-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "stair tread 4",
+      "rows": "29-35",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36-37"
+     },
+     {
+      "part": "stair tread 5",
+      "rows": "38-44",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-47"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a stack of stair treads. Each one is a 5-7 row brown band ending in a 1-row light front-edge line (rows 12, 18, 26, 35, 44) and followed by 2-3 rows of dark shadow or riser. This is evidence (a) repeated down the object. The dark frame and pillars at the sides are vertical faces, and the cornice at rows 0-2 is a front-facing strip. The risers are short (2-3 rows), so the front face is thin, but the treads clearly read as foreshortened horizontal surfaces seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small framed staircase/clock panel, with a dark frame and wooden steps. Its outer outline is neutral near-black (68% of dark edge pixels are near-neutral, against 12-13% for the references), which gives the sticker look rather than the tinted material-tone edges of Beodeul. The wooden steps show only about 3 lightness steps, with a few rivet dots and some grain, which is shallower than the 5-6 steps in the references. Visible tones per tile are 12, against 17 and 13 for the references, so density is slightly lower. Near-flat coverage is 8%, against 0% for the references, which points to a few flat areas in the dark frame. The neutral outline and the shallow ramps together make this fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19001
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel band with studs",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper gold step slab",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "stacked brown step panels (x4) each ending in a light line",
+      "rows": "15-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side pillars/frame",
+      "rows": "3-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a face-on stack of brown panels. Rows 15-18, 21-26, 29-35 and 38-44 each end in a 1-row light line (rows 18, 26, 35, 44) followed by 2 dark rows. Each panel is a flat vertical face with a lip and shadow, not a receding tread, and the panels have no foreshortened depth. The top of the structure (rows 0-2) is a front-facing lintel strip with studs and no edge line or eave shadow. Only the gold band at rows 10-12 (edge line row 12, shadow 13-14) hints at a small top surface of about 3 rows, which is far too small for the whole body. The side pillars are drawn as flat vertical strips with no top surfaces. Overall it reads as a front elevation, not a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small stair-like prop (dark frame with studs, wooden steps) rather than a full wall face, so the comparison is approximate. Measured: 12 visible tones per tile against 17 and 13 in the references, which is slightly lower. Near-flat coverage is 8% against 0% in both references. 68% of its dark edge pixels are near-neutral, against 12-13% in the references, so the outer frame reads as a neutral black sticker line, while the references use tinted dark-material outlines. The wooden steps show only about 3 lightness steps (light, mid, dark) with little grain or per-plank variation, where the references have 5-6 steps with speckle and stone-by-stone shading. The result is cleanly drawn but flatter and more outlined than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20628
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top stone cornice",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top step tread (gold)",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "second step tread",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "third step tread",
+      "rows": "21-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "fourth step tread",
+      "rows": "29-35",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36-37"
+     },
+     {
+      "part": "fifth step tread",
+      "rows": "38-44",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-47"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stair is seen from the south as a stack of steps. Each step has a 4-7 row tread band that ends in a light front-edge line (rows 12, 18, 26, 35, 44), followed by 2-3 rows of dark eave shadow (rows 13-14, 19-20, 27-28, 36-37, 45-47). The main treads, such as rows 21-25 and 30-34, are 5 rows tall, similar to the green cabinet reference with its top band, edge line and eave. The top gold step (rows 10-12) is thinner at 3 rows. A dark frame and side piers surround the steps, and the 3-row stone cornice at rows 0-2 is a front-facing strip. The stack of steps and dark frame gives a front face well over 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small framed stair/clock panel with a dark, nearly colourless frame. The measured near-neutral share of dark edge pixels is 68%, against 12-13% for the references, so the outline reads as a uniform near-black sticker line rather than a dark material tone. It has 12 visible tones per tile against 17 and 13 for the references, which is slightly lower, and it has some stripe grain and rivet dots. Near-flat coverage is 8% against 0%. Each material ramp (the wood steps, the frame) shows only about 3 lightness steps, where the references show 5-6 with per-stone and per-grain variation. The references' dark edges lean brown or purple, and the candidate's do not. It would look flatter and more sticker-like next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19926
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel band",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top step tread (gold)",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "second step tread",
+      "rows": "15-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "third step tread",
+      "rows": "21-25",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "fourth step tread",
+      "rows": "29-34",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36-37"
+     },
+     {
+      "part": "bottom step tread",
+      "rows": "38-43",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-47"
+     },
+     {
+      "part": "side frame pillars",
+      "rows": "3-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 44,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each stair tread is a brown band of 5-6 rows. It ends in a light front-edge line (rows 12, 18, 26, 35, 44) and is followed by 2-3 rows of dark shadow (rows 13-14, 19-20, 27-28, 36-37, 45-47), which meets evidence (a). The tall side frame pillars form the vertical front face (rows 3-47). The top lintel (rows 0-2) is only a front-facing strip with no edge line, so it is not counted as a top surface. This makes the reading borderline between three_quarter and front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small dark stair/shelf frame with a near-black outer border and rivet dots. 68% of its dark edge pixels are neutral, against 12-13% for the references, which carry tinted outlines, so the outline reads as a uniform near-black sticker line instead of a dark material tone. It shows 12 visible tones per tile against 17 and 13 for the references, which is lower than the timber reference and close to the stone one. The interior steps are orange-brown bands with only about 3 lightness steps each, a shallower ramp than the 5-6 steps Beodeul uses. There is little per-tile grain or speckle beyond the rivets, so texture is only moderate. Near-flat coverage is 8% against 0% for both references. A careful artist would likely find it thinner and more sticker-like beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21704
+  }
+ ],
+ "decidedAt": "2026-10-22T11:24:21.433Z",
+ "cells": {
+  "16": [
+   "04ec6feafb396c9a",
+   "1b799d9a45a46586",
+   "2d9e0811e5b7ba30",
+   "70a4ecf79270f01e",
+   "72608b30deb90784",
+   "ce0175ae9b34fb65"
+  ],
+  "24": [
+   "119183674858a21e",
+   "329e01cbf4807394",
+   "35a48bd77ef4ab47",
+   "4cc4f54ba3ba649d",
+   "4e039f53c08aadb2",
+   "6026ff0acda4d513",
+   "774ce65bc5d51bac",
+   "90b8c155e097cf1a",
+   "cc23189b36b5cc4e",
+   "ce9c65982188af37",
+   "e12cdeefe5ab09e5",
+   "ec1518672735d9fc"
+  ],
+  "32": [
+   "10a9eece542c09c3",
+   "19c818580892b46c",
+   "f833c21bd29f419c",
+   "ff29ea2713ab9ec7"
+  ],
+  "48": [
+   "39ff448dfdb20aac",
+   "7edec1320636cdeb",
+   "b1736c761379fe2a"
+  ]
+ }
+}
