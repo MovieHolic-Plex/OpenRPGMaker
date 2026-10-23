@@ -1,0 +1,315 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eaa836027d1e17a5d401f7763eb5a3da900147fb7428953876f2a723d866b09f",
+ "width": 48,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "castle portcullis gate set in the wall",
+ "label": "beodeul_dungeon/earth.portcullis",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 15,
+  "darkV5": 48,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "portcullis grate with iron bars and cross bands, set flat in the wall opening",
+      "rows": "4-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone wall surround with a lighter coping row at the top",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat wall-mounted portcullis drawn face-on. Iron bars run vertically between horizontal cross bands at rows 10 and 17, inside a dark frame with a rounded top. The stone wall surrounds it, with a light coping strip at row 0. There is no top surface, no ellipse and no roof or eave shadow, and no side face is visible. Rows 0-3 are a flat wall course, not a horizontal surface. This is a flat wall-mounted piece, so a front elevation is expected for this kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 13 visible tones per 16x16 tile. That is above the hedge (9) and close to the cheese stall (17) and roofed well (20). Near-flat coverage is 0%. Only 21% of its dark edge pixels are neutral, so the outline leans toward a tinted dark stone tone rather than a uniform black sticker line. The stone wall has individually shaded blocks with light top edges and darker joints, in about 4 steps. That is slightly fewer than the references' 5-6, but it is not a flat body with one shade and an outline. The arch interior is dark, with iron bars in two or three tones. Total colours are low (15), but the hedge reference is similarly economical (11) and reads as rich. The piece sits acceptably next to the references and does not look thinner or flatter. The bars are somewhat uniform, which is the main weakness.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15121
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone wall coping strip across the top",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "portcullis grille with vertical bars and two horizontal crossbars (rows 10 and 17)",
+      "rows": "4-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone wall blocks on both sides of the gate",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole 48x32 sprite is a flat front view of a wall. The portcullis is an arched opening in rows 4-27 with vertical iron bars, crossbars at rows 10 and 17, and a dark frame on the left. No horizontal surface is drawn: the lighter strip at rows 0-3 is a front-facing coping band with no edge line or eave shadow, and the gate has no sill or ledge showing a top. No receding side face is drawn either. For a wall-mounted piece that may be flat, this is a flat elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 13 visible tones per 16x16 tile, which falls between the hedge (9) and the cheese stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. Only 21% of its dark edge pixels are near-neutral, so the outline leans toward a tinted dark grey-blue stone tone rather than a uniform black sticker line. The wall is built from individually shaded stone blocks with a highlight, mid and dark step each, plus mortar and a dark arch recess. The iron bars are light on a dark recess and read clearly. The stone ramp has about 4 steps against roughly 5 on the references, and the bars are slightly simpler than the references' richest materials. It would sit acceptably next to the well and stall without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16516
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone wall coping highlight at top edge",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "portcullis grate with arched dark frame",
+      "rows": "4-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone wall face on both sides of the gate",
+      "rows": "3-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a flat front view of a stone wall (48 px wide, rows 0-31) with a portcullis in the middle. Row 0 is a light 1-row highlight with a short lighter gradient in rows 1-2, which is a lip and not a top surface. The grate, rows 4-29, has an arched dark frame, vertical bars, and horizontal crossbars at rows 10 and 17. There is no ellipse, no roof plane, and no receding side face. The gate has no depth and is flush with the wall, which is acceptable for a wall_mounted object. The whole thing is a vertical face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate measures 13 visible tones per 16x16 tile and 0% near-flat coverage. That is above the hedge (9) and below the well (20) and stall (17), and well clear of the 0-tone bench and lamp, which are too thin to count. Only 21% of its dark edge pixels are neutral, so the outline leans toward a dark blue-grey stone tone rather than a uniform black line. The wall stones are shaded one by one with highlight, mid and dark faces, and the portcullis bars have highlight and shadow against a dark gate interior. Shading is about 4 steps on the stone and fewer on the iron bars, a little under Beodeul's 5-6. Total distinct colours (15) are low next to the well (38) and stall (40), so there is less fine grain such as speckle and per-stone variation. No large flat fills, and it would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18002
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone wall frame with portcullis set flush in it",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top coping strip of wall",
+      "rows": "0-0",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "portcullis grille with horizontal crossbars",
+      "rows": "4-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat wall-mounted portcullis seen face-on. The 1-row light coping at row 0 is an outline or rim, not a top surface. The grille has vertical bars (x=24 and x=35 columns) with crossbars at rows 10 and 17, all vertical faces. The dark inner edge at rows 6-9 on the left and the arched top at rows 3-5 are an opening frame, not a horizontal surface. There is no ellipse, roof or contents visible, and no side face. This is a flat front elevation, which is acceptable for a wall_mounted kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate's 13 visible tones per tile sit inside the reference range (hedge 9, cheese stall 17, well 20). Near-flat coverage is 0%, so there are no large flat fills. Only 21% of its dark edge pixels are near-neutral, so the outline leans towards a tinted dark stone tone rather than a uniform black sticker line. The stone blocks are shaded individually with light and dark faces, and the portcullis bars have highlight and shadow against a dark gap. That gives roughly 5 steps on the stone ramp, against about 6 on the references. The piece uses only 15 colours in total, so it is a little simpler than the richest references (the well and cheese stall). It still reads as a careful, textured stone gate that would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12570
+  }
+ ],
+ "decidedAt": "2026-10-23T04:23:38.475Z",
+ "cells": {
+  "16": [
+   "0857881d82b26bfc",
+   "5148d0654344b1c1",
+   "ad416007b9370882",
+   "af70464355442c4b",
+   "d987ee4bd05869af",
+   "df81270920dd519d"
+  ],
+  "24": [
+   "19a5d4666b01063a",
+   "37c9b4701c0165cf",
+   "53fdbcf42f5e9896",
+   "981dc3a0acdd2ea8",
+   "a118c99c55fe5818",
+   "a60f6638e64bc8c9",
+   "dea239d4970c1e49",
+   "df80b53aff6c73b2"
+  ],
+  "32": [
+   "5f2781e3281987ab",
+   "6f051ea7b260db95",
+   "93c832294e535617",
+   "a3f8d21455939bff",
+   "c53cda429bba16f6",
+   "d5ffe18c9b6b38d6"
+  ],
+  "48": [
+   "0a3fb478799029ee",
+   "58347d08e326475f"
+  ]
+ }
+}
