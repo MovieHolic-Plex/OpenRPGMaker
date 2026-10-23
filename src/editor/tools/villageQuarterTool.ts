@@ -421,15 +421,23 @@ function crumbleFlag(draft: Project, map: GameMap, box: Box, placed: readonly Bo
   for (const t of flag.interiorVariants?.flat() ?? []) maskOf.set(t, "255");
   const W = map.width;
   const inPiece = (x: number, y: number) => placed.some((p) => x >= p.x && x < p.x + p.w && y >= p.y && y < p.y + p.h + 1);
-  // r8: 안쪽 «빠진 판석» 덩이가 네모 구멍·一자·ㄱ자로 읽혔다 — 안쪽 구멍은 뺐다. 가장자리만 흙으로 무너뜨리고, 연석은 풀 덮기가 가린다.
+  // r9: 가장자리 판석 칸을 드문드문 흙으로 바꾸면 «네모 구멍»으로, 남은 연석은 «끊김 없는 또렷한 테두리»로 읽혔다 —
+  // 연석 고리(마스크 255 아닌 칸)는 전부 같은 마스크의 흙 마당 칸으로 바꿔 연석을 없애고, 한 칸 안쪽 판석은 이미 흙인 이웃이 둘 이상일 때만 35% 로 무너뜨린다
+  // (가장자리를 따라 깎여 들어간 모양 — 외딴 네모 구멍은 생기지 않는다).
+  const isFlag = (i: number) => maskOf.has(map.lowerTiles[i]!);
+  const ring: number[] = [];
   for (let y = box.y - 1; y <= box.y + box.h; y++) for (let x = box.x - 1; x <= box.x + box.w; x++) {
     if (x < 0 || y < 0 || x >= W || y >= map.height || inPiece(x, y)) continue;
-    const i = y * W + x; const mask = maskOf.get(map.lowerTiles[i]!); if (mask === undefined) continue;
-    if (mask === "255") continue;
-    const p = 0.4;
-    if (rnd() > p) continue;
-    const t = dirt.variantMap[mask] ?? (mask === "255" ? dirt.variantMap["255"] : undefined);
-    if (t !== undefined) map.lowerTiles[i] = t;
+    const i = y * W + x; const mask = maskOf.get(map.lowerTiles[i]!);
+    if (mask === undefined || mask === "255") continue;
+    const t = dirt.variantMap[mask]; if (t !== undefined) { map.lowerTiles[i] = t; ring.push(i); }
+  }
+  const dirtSet = new Set(ring);
+  const body = dirt.variantMap["255"];
+  for (let pass = 0; pass < 2 && body !== undefined; pass++) for (let y = box.y; y < box.y + box.h; y++) for (let x = box.x; x < box.x + box.w; x++) {
+    const i = y * W + x; if (!isFlag(i) || inPiece(x, y)) continue;
+    const n = [i - 1, i + 1, i - W, i + W].filter((j) => dirtSet.has(j)).length;
+    if (n >= (pass === 0 ? 1 : 2) && rnd() < (pass === 0 ? 0.25 : 0.2)) { map.lowerTiles[i] = body; dirtSet.add(i); }
   }
 }
 
@@ -450,7 +458,10 @@ function overgrowYard(draft: Project, mapId: string, box: Box, placed: readonly 
   const ts = draft.tilesets[map.tilesetId] as unknown as { autotileGroups?: YardGroup[] };
   const members = new Set([...(flag?.memberTileIds ?? []), ...(ts.autotileGroups?.find((g) => g.id === "beodeul_yard_dirt")?.memberTileIds ?? [])]);
   const inYard = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < map.height && members.has(map.lowerTiles[y * W + x]!);
-  const ring = (x: number, y: number, r: number) => { for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (!inYard(x + dx, y + dy)) return true; return false; };
+  // 가장자리 = 판석이 끝나는 곳(흙으로 무너진 고리·바깥 풀밭과 맞닿은 판석 칸, 그리고 흙 고리 칸 자신).
+  const flagSet = new Set(flag?.memberTileIds ?? []);
+  const isFlagAt = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < map.height && flagSet.has(map.lowerTiles[y * W + x]!);
+  const ring = (x: number, y: number, r: number) => { if (flagSet.size && !isFlagAt(x, y)) return true; for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (!(flagSet.size ? isFlagAt(x + dx, y + dy) : inYard(x + dx, y + dy))) return true; return false; };
   for (let y = box.y - 1; y <= box.y + box.h; y++) for (let x = box.x - 1; x <= box.x + box.w; x++) {
     if (inPiece(x, y) || (members.size && !inYard(x, y))) continue;
     const edge = !members.size ? Math.min(x - box.x, box.x + box.w - 1 - x, y - box.y, box.y + box.h - 1 - y) : ring(x, y, 1) ? 0 : ring(x, y, 2) ? 1 : 2;
@@ -629,57 +640,65 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
     };
     // r7: 같은 버력 더미 셋이 갱구 양옆·아래에 대칭으로 서서 «도장»으로 읽혔다 — 더미는 id 마다 한 번, 양옆은 서로 다른 것.
     const used = (id: string) => placed.some((p) => p.objectId.endsWith(`/${id}`));
-    const big = rnd() < 0.5 ? ["bd-pick-mining-valley-slagheap", "bd-pick-mountain-pass-boulder-l"] : ["bd-pick-mountain-pass-boulder-l", "bd-pick-mining-valley-slagheap"];
-    const small = rnd() < 0.5 ? ["bd-pick-mining-valley-ore", "bd-pick-mountain-pass-boulder-m", "bd-pick-mining-valley-slagrock"] : ["bd-pick-mountain-pass-boulder-m", "bd-pick-mining-valley-slagrock", "bd-pick-mining-valley-ore"];
-    const back = ["bd-pick-mountain-pass-boulder-m", "bd-pick-mining-valley-slagrock", "bd-pick-mining-valley-ore"];
-    // 갱구에 맞붙여(틈 없이) 양옆·뒤를 서로 다른 바위로 감싼다 — 한 칸 띄운 더미는 «갱구 옆에 따로 놓인 돌»로 읽혔다(r7). 맞붙일 수 없으면 한 칸 띄운다.
     const z = (id: string) => kitSize(draft, quarter.tilesetId, id) ?? { w: 2, h: 2 };
     const bottom = adit.y + adit.h - 1;
-    const leftSpots = (id: string): [number, number][] => [[adit.x - z(id).w, bottom - z(id).h], [adit.x - z(id).w, bottom - z(id).h + 1], [adit.x - z(id).w - 1, bottom - z(id).h]];
-    const rightSpots = (id: string): [number, number][] => [[adit.x + adit.w, bottom - z(id).h], [adit.x + adit.w, bottom - z(id).h + 1], [adit.x + adit.w + 1, bottom - z(id).h]];
-    for (const id of big) { if (used(id)) continue; if (leftSpots(id).some(([x, y]) => heap(id, x, y))) break; }
-    for (const id of small) { if (used(id)) continue; if (rightSpots(id).some(([x, y]) => heap(id, x, y))) break; }
-    // r8: 양옆 바위만으로는 여전히 «평지에 선 돌 상자»였다 — 갱구 뒤 마당 안쪽을 높이 지형(relief) 2단 둔덕으로 올려, 지형 렌더러가 그리는 절벽 면 앞에 갱구가 서게 한다.
-    if (!raiseAditHill(adit)) for (const id of back) { if (used(id)) continue; if ([[adit.x + Math.floor(rnd() * 2), adit.y - z(id).h], [adit.x - 1, adit.y - z(id).h + 1]].some(([x, y]) => heap(id, x, y))) break; }
+    const leftSpots = (id: string): [number, number][] => [[adit.x - z(id).w, bottom - z(id).h + 1], [adit.x - z(id).w, bottom - z(id).h], [adit.x - z(id).w - 1, bottom - z(id).h + 1]];
+    const rightSpots = (id: string): [number, number][] => [[adit.x + adit.w, bottom - z(id).h + 1], [adit.x + adit.w, bottom - z(id).h], [adit.x + adit.w + 1, bottom - z(id).h + 1]];
+    const small = rnd() < 0.5 ? ["bd-pick-mining-valley-ore", "bd-pick-mountain-pass-boulder-m", "bd-pick-mining-valley-slagrock"] : ["bd-pick-mountain-pass-boulder-m", "bd-pick-mining-valley-slagrock", "bd-pick-mining-valley-ore"];
+    if (mound) {
+      // r9: 둔덕(풀 언덕)이 갱구 뒤와 양 어깨를 감싼다 — 발치 한쪽에만 작은 버력 하나(양옆 같은 자리 바위 둘은 대칭 도장으로 읽혔다).
+      const mm = draft.maps[map.id]!;
+      // 어깨 칸(갱구 옆 두 줄)은 지형 다듬기가 낮출 수 있어 풀로 덮지 않는다 — 풀 칸이 땅바닥에 남아 네모 풀 조각으로 보였다.
+      for (const i of mound.cells) { mm.relief!.levels[i] = mound.base + 2; taken[i] = 1; if (mound.grass !== undefined && Math.floor(i / W) < adit.y) mm.lowerTiles[i] = mound.grass; mm.upperTiles[i] = -1; }
+      const spots = rnd() < 0.5 ? leftSpots : rightSpots;
+      for (const id of small) { if (used(id)) continue; if (spots(id).some(([x, y]) => heap(id, x, y))) break; }
+    } else {
+      // 둔덕을 올릴 수 없는 맵(relief 없음·자리 없음): 갱구에 맞붙인 서로 다른 바위 둘.
+      const big = rnd() < 0.5 ? ["bd-pick-mining-valley-slagheap", "bd-pick-mountain-pass-boulder-l"] : ["bd-pick-mountain-pass-boulder-l", "bd-pick-mining-valley-slagheap"];
+      for (const id of big) { if (used(id)) continue; if (leftSpots(id).some(([x, y]) => heap(id, x, y))) break; }
+      for (const id of small) { if (used(id)) continue; if (rightSpots(id).some(([x, y]) => heap(id, x, y))) break; }
+    }
     screeAround(adit);
   };
-  const raiseAditHillDepth = (adit: Box, depth: number): boolean => {
+  // 맵에서 가장 흔한 바닥(풀) — 둔덕 윗면을 풀로 덮어 «흙 받침대»가 아니라 «풀 언덕»으로 읽히게(r9: 오각형 흙 상자·받침대로 읽혔다).
+  const grassTile = (() => { const c = new Map<number, number>(); for (const t of map.lowerTiles) if (t >= 0) c.set(t, (c.get(t) ?? 0) + 1); let best = -1, n = 0; for (const [t, k] of c) if (k > n) { best = t; n = k; } return best >= 0 ? best : undefined; })();
+  /**
+   * 갱구 둔덕 계획(적용하지 않는다): 갱구 뒤 2~depth 줄 + 갱구 위 두 줄 높이의 양 어깨(좌우 1~2칸)를 relief 2단으로 올릴 칸.
+   * 둔덕 칸과 갱구 상자를 막힌 칸으로 친 BFS 로 원래 통행 칸이 하나도 끊기지 않을 때만 돌려준다.
+   */
+  const planMound = (adit: Box, depth: number): { cells: Set<number>; base: number; grass?: number } | null => {
     const m = draft.maps[map.id]!; const relief = m.relief;
-    if (!relief || relief.width !== W || relief.height !== H) return false;
+    if (!relief || relief.width !== W || relief.height !== H) return null;
     const base = relief.levels[(adit.y + adit.h - 1) * W + adit.x] ?? 0;
-    if (base + 2 > 14) return false;
-    const hitPiece = (x: number, y: number) => placed.some((p) => x >= p.x && x < p.x + p.w && y >= p.y && y < p.y + p.h + 1);
-    const mound = new Set<number>();
-    // 갱구 바로 뒤 줄은 갱구 폭+양옆 1칸, 뒤로 갈수록 좌우를 0~1칸씩 넓히거나 좁혀 울퉁불퉁하게(최대 4줄).
-    let l = adit.x - 1, r = adit.x + adit.w;
+    if (base + 2 > 14) return null;
+    const inAdit = (x: number, y: number) => x >= adit.x && x < adit.x + adit.w && y >= adit.y && y < adit.y + adit.h + 1;
+    const hitPiece = (x: number, y: number) => inAdit(x, y) || placed.some((p) => x >= p.x && x < p.x + p.w && y >= p.y && y < p.y + p.h + 1);
+    const can = (x: number, y: number) => { if (x < 0 || y < 0 || x >= W || y >= H) return false; const i = y * W + x; return !!(ok[i] || grid[i]) && !hitPiece(x, y) && (relief.levels[i] ?? 0) === base; };
+    const cells = new Set<number>();
+    let l = adit.x - 2, r = adit.x + adit.w + 1;
     for (let y = adit.y - 1, k = 0; y >= adit.y - depth && y >= 0; y--, k++) {
       if (k > 0) { l += Math.floor(rnd() * 3) - 1; r += Math.floor(rnd() * 3) - 1; }
       let row = 0;
-      for (let x = Math.max(0, l); x <= Math.min(W - 1, r); x++) {
-        const i = y * W + x;
-        // 마당 안(ok) 또는 마당 밖 빈 풀밭(grid — 길·집·나무 칸 제외). 갱구가 마당 윗변에 붙으면 뒤 둔덕은 풀 언덕이 된다.
-        if (!(ok[i] || grid[i]) || hitPiece(x, y) || (relief.levels[i] ?? 0) !== base) continue;
-        mound.add(i); row++;
-      }
-      if (k === 0 && row < adit.w) return false;   // 갱구 바로 뒤가 마당 밖이면(길·마당 끝) 둔덕을 올리지 않는다
+      for (let x = Math.max(0, l); x <= Math.min(W - 1, r); x++) if (can(x, y)) { cells.add(y * W + x); row++; }
+      if (k === 0 && row < adit.w + 2) return null;
       if (!row) break;
     }
-    if (mound.size < adit.w + 2) return false;
-    // 둔덕은 걸어 오를 수 없다 — 둔덕 칸을 막힌 칸으로 치고, 둔덕 밖 원래 통행 칸이 하나라도 끊기면 올리지 않는다.
-    const pass = (x: number, y: number) => !mound.has(y * W + x) && isPassable(draft, m, x, y);
+    // 어깨: 갱구 윗부분 두 줄 높이에서 좌우로 1~2칸 — 둔덕이 갱구를 앞으로 감싸 «언덕에 판 굴»로 읽히게.
+    for (const y of [adit.y, adit.y + 1]) for (const [x, w] of [[adit.x - 1, 1], [adit.x - 2, 0.6], [adit.x + adit.w, 1], [adit.x + adit.w + 1, 0.6]] as const) {
+      if (y === adit.y + 1 && rnd() > 0.7) continue;
+      if (rnd() < w && can(x, y)) cells.add(y * W + x);
+    }
+    if (cells.size < adit.w + 4) return null;
+    const pass = (x: number, y: number) => !cells.has(y * W + x) && !(x >= adit.x && x < adit.x + adit.w && y >= adit.y && y < adit.y + adit.h) && isPassable(draft, m, x, y);
     let from = comp.seed; if (!pass(from.x, from.y)) from = { x: adit.x + 1, y: adit.y + adit.h };
+    if (!pass(from.x, from.y)) return null;
     const seen = new Set<number>([from.y * W + from.x]); const q = [from.y * W + from.x];
     while (q.length) { const i = q.pop()!; const x = i % W, y = Math.floor(i / W);
       for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue; const ni = ny * W + nx; if (seen.has(ni) || !pass(nx, ny)) continue; seen.add(ni); q.push(ni); } }
-    for (const i of comp.cells) { const x = i % W, y = Math.floor(i / W); if (!mound.has(i) && !hitPiece(x, y) && !seen.has(i)) return false; }
-    for (const i of mound) { relief.levels[i] = base + 2; taken[i] = 1; }
-    return true;
+    for (const i of comp.cells) { const x = i % W, y = Math.floor(i / W); if (!cells.has(i) && !hitPiece(x, y) && !seen.has(i)) return null; }
+    return { cells, base, ...(grassTile !== undefined ? { grass: grassTile } : {}) };
   };
-  // 둔덕이 길을 끊으면 뒤 줄부터 덜어 가며 세 번까지 다시 본다.
-  const raiseAditHill = (adit: Box): boolean => {
-    for (const depth of [4, 3, 2]) if (raiseAditHillDepth(adit, depth)) return true;
-    return false;
-  };
+  let mound: { cells: Set<number>; base: number; grass?: number } | null = null;
   const kitRows = (id: string) => draft.tilesets[quarter.tilesetId]?.structureKits?.find((k) => k.id === id)?.rows ?? [];
   // 갱구 둘레 흙 칸에 산길 돌 부스러기 덧그림(위층) — 바위 땅을 깔았더니 회색 콘크리트 판으로 읽혀(r7 시험) 부스러기만 남겼다.
   const screeAround = (adit: Box): void => {
@@ -689,22 +708,42 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
     const inPlaced = (x: number, y: number) => placed.some((p) => x >= p.x && x < p.x + p.w && y >= p.y && y < p.y + p.h + 1);
     for (let y = adit.y - 3; y <= adit.y + adit.h + 1; y++) for (let x = adit.x - 5; x <= adit.x + adit.w + 4; x++) {
       if (x < 0 || y < 0 || x >= W || y >= H) continue;
-      const i = y * W + x; if (!ok[i] || inPlaced(x, y) || (m.upperTiles[i] ?? -1) >= 0) continue;
+      const i = y * W + x; if (!ok[i] || mound?.cells.has(i) || inPlaced(x, y) || (m.upperTiles[i] ?? -1) >= 0) continue;
       if (rnd() > 0.3) continue;
       m.upperTiles[i] = scree[Math.floor(rnd() * scree.length)]!;
     }
   };
   const UNIQUE_SPOIL = new Set(["bd-pick-mining-valley-slagheap", "bd-pick-mining-valley-slagrock", "bd-pick-mining-valley-ore"]);
+  // r9: 갱구가 마당 윗변(길 목) 바로 아래에 서면 뒤에 둔덕을 올릴 수 없어 평지에 홀로 섰다 — 갱구는 둔덕을 올릴 수 있는 자리부터 찾는다.
+  const aditSlots = (w: number, h: number): Box[] => {
+    const out: Box[] = [];
+    for (let y = 0; y + h < H; y++) for (let x = 0; x + w <= W; x++) {
+      let fit = true;
+      for (let yy = y; yy < y + h + 1 && fit; yy++) for (let xx = x; xx < x + w && fit; xx++) { const i = yy * W + xx; if (!ok[i] || taken[i]) fit = false; }
+      if (fit) out.push({ x, y, w, h });
+    }
+    return out.sort(() => rnd() - 0.5).slice(0, 60);
+  };
   for (const piece of pieces) {
     if (UNIQUE_SPOIL.has(piece.id) && placed.some((p) => p.objectId.endsWith(`/${piece.id}`))) continue;
-    for (let attempt = 0; attempt < 6; attempt++) {
+    const isAdit = quarterId === "mining" && piece.id === "bd-pick-mining-valley-adit";
+    const aditQueue: Box[] = [];
+    if (isAdit) {
+      for (const cand of aditSlots(piece.size.w, piece.size.h)) {
+        let pm: ReturnType<typeof planMound> = null;
+        for (const d of [4, 3, 2]) { pm = planMound(cand, d); if (pm) break; }
+        if (pm) { aditQueue.push(cand); if (aditQueue.length >= 6) break; }
+      }
+    }
+    for (let attempt = 0; attempt < 6 + aditQueue.length; attempt++) {
+      const queued = isAdit && attempt < aditQueue.length ? aditQueue[attempt]! : null;
       const outside = quarter.yard?.outside?.includes(piece.id) ?? false;
-      const b = !outside && plazaBox && quarter.yard?.pack === "corner"
+      const b = queued ?? (!outside && plazaBox && quarter.yard?.pack === "corner"
         ? packSlot(ok, walk, taken, W, H, piece.size.w, piece.size.h, plazaBox, attempt, fromRight, fromBottom)
         : nearestSlot(outside ? outsideOk : ok, walk, taken, W, H, piece.size.w, piece.size.h,
           outside && plazaBox ? plazaBox.x + Math.floor(plazaBox.w / 2) : anchor.x, outside && plazaBox ? plazaBox.y + Math.floor(plazaBox.h / 2) : anchor.y, attempt, outside && plazaBox ? 20 : CLUSTER)
           // 마당 안 아무 자리에서 자라게 했더니 귀퉁이 기준점이면 반경 밖 빈 마당을 못 썼다 — 마당 안 남은 자리를 훑어 채운다.
-          ?? (!outside && plazaBox && yardFreeAnchor ? packSlot(ok, walk, taken, W, H, piece.size.w, piece.size.h, plazaBox, attempt, fromRight) : null);
+          ?? (!outside && plazaBox && yardFreeAnchor ? packSlot(ok, walk, taken, W, H, piece.size.w, piece.size.h, plazaBox, attempt, fromRight) : null));
       if (!b) break;
       const objectId = `kit:${quarter.tilesetId}/${piece.id}`;
       const snapshot = structuredClone(draft.maps[map.id]!);
@@ -731,9 +770,10 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
         mark(taken, W, H, { ...b, w: 1, h: 1 });
         continue;
       }
+      if (isAdit) { mound = null; for (const d of [4, 3, 2]) { mound = planMound(b, d); if (mound) break; } }
       mark(taken, W, H, b);
       placed.push({ objectId, ...b });
-      if (quarterId === "mining" && piece.id === "bd-pick-mining-valley-adit") wrapAdit(b);
+      if (isAdit) wrapAdit(b);
       break;
     }
   }
