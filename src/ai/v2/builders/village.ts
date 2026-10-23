@@ -4,7 +4,6 @@ import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { createBuildRun } from "../buildRun";
 import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../types";
-import { runMachineChecks } from "../checks";
 
 /** v2 계획 모델에게 주는 유일한 마을 지식(≤900자). */
 export const VILLAGE_CARD =
@@ -80,47 +79,6 @@ function targetMapId(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): st
 
 const num = (v: unknown): number | undefined => (typeof v === "number" && Number.isFinite(v) ? v : undefined);
 
-/** 농촌 요청이면 밭을 더한다 — 도구는 밭을 둘까지 맵 가장자리에 둬서 「농사 쪽이 빈약하다」(2026-10-23 눈가림 2차).
- *  열린 풀밭(타일 무리 beodeul:grass + bd-ground-lawn 키트 칸, 위층 비어 있음, 둘레 한 칸 포함)에만, 맵 가운데에 가까운 자리부터
- *  울타리 밭·작물 밭 키트를 stamp_object 로 찍는다. 찍을 때마다 도달 검사를 다시 하고 길을 막으면 되돌린다. */
-function addFarmFields(run: BuildRun, mapId: string, want: number): number {
-  const project0 = run.ctx.project;
-  const map0 = project0.maps[mapId];
-  const tileset = map0 ? project0.tilesets[map0.tilesetId] as unknown as { id: string; tileGroups?: { id: string; tileIds: number[] }[]; structureKits?: { id: string; width: number; height: number; rows: { tiles: number[]; upperTiles?: number[] }[] }[] } : undefined;
-  if (!map0 || !tileset) return 0;
-  const lawn = new Set<number>();
-  for (const g of tileset.tileGroups ?? []) if (g.id === "beodeul:grass") for (const t of g.tileIds) lawn.add(t);
-  for (const k of tileset.structureKits ?? []) if (/^bd-ground-lawn-/u.test(k.id)) for (const r of k.rows) for (const t of r.tiles) if (t >= 0) lawn.add(t);
-  const kits = new Map((tileset.structureKits ?? []).map((k) => [k.id, k] as const));
-  const order = ["bd-farm-fenced-plot", "bd-farm-plot-wheat", "bd-farm-plot-cabbage", "bd-farm-plot-tomato", "bd-farm-plot-sowing"].filter((id) => kits.has(id));
-  let added = 0;
-  for (let n = 0; n < want && order.length; n++) {
-    const kit = kits.get(order[n % order.length]!)!;
-    const m = run.ctx.project.maps[mapId]!;
-    const free = (x: number, y: number) => {
-      for (let j = -1; j <= kit.height; j++) for (let i = -1; i <= kit.width; i++) {
-        const cx = x + i, cy = y + j;
-        if (cx < 1 || cy < 1 || cx >= m.width - 1 || cy >= m.height - 1) return false;
-        const idx = cy * m.width + cx;
-        if ((m.upperTiles[idx] ?? -1) >= 0 || (m.lowerOverlayTiles?.[idx] ?? -1) >= 0 || !lawn.has(m.lowerTiles[idx]!)) return false;
-      }
-      return !(m.events ?? []).some((e) => e.x >= x - 1 && e.x <= x + kit.width && e.y >= y - 1 && e.y <= y + kit.height);
-    };
-    const cands: { x: number; y: number; d: number }[] = [];
-    for (let y = 1; y < m.height - kit.height; y++) for (let x = 1; x < m.width - kit.width; x++) if (free(x, y)) cands.push({ x, y, d: Math.abs(x + kit.width / 2 - m.width / 2) + Math.abs(y + kit.height / 2 - m.height / 2) });
-    cands.sort((a, b) => a.d - b.d);
-    let ok = false;
-    for (const c of cands.slice(0, 6)) {
-      const snap = run.ctx.project;
-      const res = run.call("stamp_object", { objectId: `kit:${tileset.id}/${kit.id}`, mapId, x: c.x, y: c.y });
-      if (res.ok && runMachineChecks(run.ctx.project, [mapId]).every((ch) => ch.id !== "reach" || ch.ok)) { ok = true; break; }
-      run.ctx.project = snap;
-    }
-    if (ok) added++;
-  }
-  return added;
-}
-
 function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBuildResult {
   const { args, missing, warnings } = villageArgs(spec);
   const prev = previous?.result.state as VillageState | undefined;
@@ -164,10 +122,6 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   }
   const seed = num(data.seed);
   const houses = num(data.houses);
-  if (!prev && /농촌|농가|농장|농사|farm|밭|경작/u.test(words(spec))) {
-    const more = addFarmFields(run, builtId, spec.size === "large" ? 3 : 2);
-    if (more) warnings.push(`농촌이라 밭 ${more}곳을 더 일궜다(마을 가운데 쪽 열린 풀밭)`);
-  }
   const asked = num(args.houseCount);
   if (asked !== undefined && houses !== undefined && houses < asked - 1) warnings.push(`집 ${asked}채 요청, 집 ${houses}채만 앉음(앵커 건물 별도) — 지형이 좁으면 size 를 키우거나 variant 를 바꿔 본다`);
   warnings.push(...(result.warnings ?? []));
