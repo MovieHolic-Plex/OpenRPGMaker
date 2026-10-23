@@ -259,12 +259,30 @@ function placeMinecart(c: Ctx): string {
   const cartId = firstKit(c.ts, [TK("minecart"), "bd-pick-mining-valley-cart-h", "bd-pick-mining-valley-cart"]);
   if (!cartId) return "";
   const railId = firstKit(c.ts, [TK("rails-ew"), TK("rails-straight")]);
+  // 주제 선로(rails-ew·끝막이)가 있으면 광차 아랫줄로 방 안을 가로지르는 선로를 깐다(양쪽 최대 8칸, 끝은 끝막이) — 걷는 칸 위 2층 데칼.
+  const railTile = (id: string): number | undefined => { const k = kitOf(c.ts, id); const t = k?.rows[0]?.upperTiles?.[0]; return t !== undefined && t >= 0 ? t : undefined; };
+  const layTrack = (r: FloorRoom, at: Pt, w: number, h: number): boolean => {
+    const mid = railTile(TK("rails-ew"));
+    if (mid === undefined) return false;
+    const y = at.y + h - 1, W = c.map.width;
+    const ok = (x: number) => x > r.x && x < r.x + r.w - 1 && isPassable(c.draft, c.map, x, y) && (c.map.upperTiles?.[y * W + x] ?? -1) < 0 && !c.map.events.some((e) => e.x === x && e.y === y);
+    const run = (dx: number) => { const xs: number[] = []; for (let x = dx < 0 ? at.x - 1 : at.x + w; xs.length < 8 && ok(x); x += dx) xs.push(x); return xs; };
+    const west = run(-1), east = run(1);
+    if (west.length + east.length < 2) return false;
+    const put = (x: number, t: number) => { if (c.map.upperTiles) c.map.upperTiles[y * W + x] = t; };
+    for (const x of [...west, ...east]) put(x, mid);
+    const endW = railTile(TK("rails-end-w")), endE = railTile(TK("rails-end-e"));
+    if (west.length && endW !== undefined) put(west[west.length - 1]!, endW);
+    if (east.length && endE !== undefined) put(east[east.length - 1]!, endE);
+    return true;
+  };
   const place = (r: FloorRoom): Pt | null => {
     const spots = centerSpots(r).filter((p) => free(c, p));
     for (const p of spots) {
       const at = stampFlat(c, cartId, [p]);
       if (!at) continue;
-      if (railId) stampFlat(c, railId, [{ x: at.x - 1, y: at.y + (kitOf(c.ts, cartId)!.height) }]);
+      const ck = kitOf(c.ts, cartId)!;
+      if (!layTrack(r, at, ck.width, ck.height) && railId) stampFlat(c, railId, [{ x: at.x - 1, y: at.y + ck.height }]);
       return at;
     }
     return null;

@@ -36768,6 +36768,1018 @@ null,
 ],
 "passage": "passable",
 "layer": "lower"
+},
+{
+"key": "b0dd28763986e9bcb6423a0e",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 금 2×2 (0,0)",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "281d0cf8a2ebe0e42f2220bf",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 금 2×2 (1,0)",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "16931df6bef3e9668e269bfb",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 금 2×2 (0,1)",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "95dac088d3ac2f392140acc4",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 금 2×2 (1,1)",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "7f97d7b957b073d009f26ca3",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 쇠 2×2 (0,0)",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "21899336705c660c2fbffee8",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 쇠 2×2 (1,0)",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "c7005c88649899f1b30157cd",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 쇠 2×2 (0,1)",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "76061adb82773584ef87ce4b",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 쇠 2×2 (1,1)",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "96780300de0b3f4e181ab404",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 금 1×1",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "9e52b667c7734b03f567f3c2",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 쇠 1×1",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "42769553123ebd7c55ea551a",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (0,0)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "d1e8891ae833289abaceb0bd",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (1,0)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "4e7a195691b600fb62779447",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (2,0)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "f6af670673168ed61e7bd86e",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (0,1)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "150ee575cad6cb965d64f775",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (1,1)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "c9a11b5fb547bd7c09811631",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (2,1)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "1b72881783eb8b05fd22a1f6",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (0,2)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "5039aa52f33d638893c73e86",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (1,2)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "c4ebb15081acfc45e84beda8",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (2,2)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "08e733f80855b9169b0333b3",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 2단 (0,0)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "dcfcd3ca5a7c5bde4f9967c8",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 2단 (1,0)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "1d818034c221fa9064cef9bd",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 2단 (2,0)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "6e0936f349f79dd42c902d2e",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 2단 (0,1)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "e7354586e9389ac4e0dc6d29",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 2단 (1,1)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "f884aee9b24f040804e08a26",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 2단 (2,1)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "02411b13d6d7fdc828fd9e0b",
+"origin": "earth.overgrown/*/theme-earth-r2:A2@3cacb983",
+"label": "버들항 던전 · 풀·뿌리가 뚫고 나온 판석(덧그림 2×2) 풀 난 판석 (0,0)",
+"description": "버들항 신전 폐허 바닥(floor-ruin) 위에 얹는 풀·뿌리·깨진 자리. 판석 결은 버들항 그대로 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"overgrown",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "9fb38de228d0434fb749c9ec",
+"origin": "earth.overgrown/*/theme-earth-r2:A2@3cacb983",
+"label": "버들항 던전 · 풀·뿌리가 뚫고 나온 판석(덧그림 2×2) 풀 난 판석 (1,0)",
+"description": "버들항 신전 폐허 바닥(floor-ruin) 위에 얹는 풀·뿌리·깨진 자리. 판석 결은 버들항 그대로 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"overgrown",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "30f6d554a16edeefc01404ef",
+"origin": "earth.overgrown/*/theme-earth-r2:A2@3cacb983",
+"label": "버들항 던전 · 풀·뿌리가 뚫고 나온 판석(덧그림 2×2) 풀 난 판석 (0,1)",
+"description": "버들항 신전 폐허 바닥(floor-ruin) 위에 얹는 풀·뿌리·깨진 자리. 판석 결은 버들항 그대로 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"overgrown",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "8206ade2ed4a0c54ae922707",
+"origin": "earth.overgrown/*/theme-earth-r2:A2@3cacb983",
+"label": "버들항 던전 · 풀·뿌리가 뚫고 나온 판석(덧그림 2×2) 풀 난 판석 (1,1)",
+"description": "버들항 신전 폐허 바닥(floor-ruin) 위에 얹는 풀·뿌리·깨진 자리. 판석 결은 버들항 그대로 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"overgrown",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "e8ecfda48bf4e9ea906515f2",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 H",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "85546ef714e61a9ac3d13eaa",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 V",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "f8d6275cbd7497661da93604",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 NE",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "0d9992c4b25d345f9afc228d",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 NW",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "e056f50de6e6b609961108ff",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 SE",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "06a85e25bdd9614026024627",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 SW",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "7b072cb977930cded1f1276c",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 X",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "ebb058ef6aa9bf5ca2c1cd1b",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 TN",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "414a9a5a573f37f802375da3",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 TS",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "f5dd0d6c03de299dd4c9f8eb",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 TE",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "5443c227286d7386752a720d",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 TW",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "99703f9ceadd6277fe049ad6",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 EN",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "0f13894800ddb443cfeb87b6",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 ES",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "79d05d419c57fe4e30db0f3f",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 EE",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "0222687f3a9b4554f5eb7e27",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 EW",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
 }
 ],
 "defs": {
@@ -40289,6 +41301,71 @@ null,
 "description": "왕실 양탄자 1칸 폭·3칸 폭(세로)(키트 bd-pick-dungeon-theme-carpet-runner, bd-pick-dungeon-theme-carpet-runner-3w). 하네스 theme-earth-r1 A2.",
 "placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)"
 },
+"beodeul:dungeon_theme_earth_ore_vein": {
+"id": "beodeul:dungeon_theme_earth_ore_vein",
+"name": "버들항 던전 주제 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+32905,
+32906,
+32907,
+32908,
+32909,
+32910,
+32911,
+32912,
+32913,
+32914
+],
+"description": "광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1(키트 bd-pick-dungeon-theme-ore-vein-gold, bd-pick-dungeon-theme-ore-vein-iron, bd-pick-dungeon-theme-ore-vein-gold-1, bd-pick-dungeon-theme-ore-vein-iron-1). 하네스 theme-earth-r2 A2.",
+"placementRules": "통행: 벽 앞면 위(이미 막힘)"
+},
+"beodeul:dungeon_theme_earth_ossuary": {
+"id": "beodeul:dungeon_theme_earth_ossuary",
+"name": "버들항 던전 주제 납골 벽(벽 앞면 덧그림) 3단·2단",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+32915,
+32916,
+32917,
+32918,
+32919,
+32920,
+32921,
+32922,
+32923,
+32924,
+32925,
+32926,
+32927,
+32928,
+32929
+],
+"description": "납골 벽(벽 앞면 덧그림) 3단·2단(키트 bd-pick-dungeon-theme-ossuary-3h, bd-pick-dungeon-theme-ossuary-2h). 하네스 theme-earth-r2 A1.",
+"placementRules": "통행: 벽 앞면 위(이미 막힘)"
+},
+"beodeul:dungeon_theme_earth_overgrown": {
+"id": "beodeul:dungeon_theme_earth_overgrown",
+"name": "버들항 던전 주제 풀·뿌리가 뚫고 나온 판석(덧그림 2×2)",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+32930,
+32931,
+32932,
+32933
+],
+"description": "풀·뿌리가 뚫고 나온 판석(덧그림 2×2)(키트 bd-pick-dungeon-theme-overgrown). 하네스 theme-earth-r2 A2.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)"
+},
 "beodeul:dungeon_theme_earth_portcullis": {
 "id": "beodeul:dungeon_theme_earth_portcullis",
 "name": "버들항 던전 주제 내리닫이 쇠창살문 3×2 닫힘·올림",
@@ -40312,6 +41389,33 @@ null,
 ],
 "description": "내리닫이 쇠창살문 3×2 닫힘·올림(키트 bd-pick-dungeon-theme-portcullis, bd-pick-dungeon-theme-portcullis-open). 하네스 theme-earth-r1 A1.",
 "placementRules": "통행: 상태별 통행 격자(올림 = 아래 줄 가운데 걸음, 이동 이벤트)"
+},
+"beodeul:dungeon_theme_earth_rails": {
+"id": "beodeul:dungeon_theme_earth_rails",
+"name": "버들항 던전 주제 광산 선로 이음 세트 15칸",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+32934,
+32935,
+32936,
+32937,
+32938,
+32939,
+32940,
+32941,
+32942,
+32943,
+32944,
+32945,
+32946,
+32947,
+32948
+],
+"description": "광산 선로 이음 세트 15칸(키트 bd-pick-dungeon-theme-rails-ew, bd-pick-dungeon-theme-rails-ns, bd-pick-dungeon-theme-rails-ne, bd-pick-dungeon-theme-rails-nw, bd-pick-dungeon-theme-rails-se, bd-pick-dungeon-theme-rails-sw, bd-pick-dungeon-theme-rails-x, bd-pick-dungeon-theme-rails-tn, bd-pick-dungeon-theme-rails-ts, bd-pick-dungeon-theme-rails-te, bd-pick-dungeon-theme-rails-tw, bd-pick-dungeon-theme-rails-end-n, bd-pick-dungeon-theme-rails-end-s, bd-pick-dungeon-theme-rails-end-e, bd-pick-dungeon-theme-rails-end-w). 하네스 theme-earth-r2 A1.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)"
 },
 "beodeul:dungeon_theme_earth_rubble_heap": {
 "id": "beodeul:dungeon_theme_earth_rubble_heap",
@@ -42329,6 +43433,450 @@ null,
 ]
 }
 },
+"bd-pick-dungeon-theme-ore-vein-gold": {
+"id": "bd-pick-dungeon-theme-ore-vein-gold",
+"kind": "object",
+"name": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 금 2×2 2×2",
+"width": 2,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+32905,
+32906
+]
+},
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+32907,
+32908
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 — 금 2×2. 광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"placementRules": "통행: 벽 앞면 위(이미 막힘)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-ore-vein-iron": {
+"id": "bd-pick-dungeon-theme-ore-vein-iron",
+"kind": "object",
+"name": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 쇠 2×2 2×2",
+"width": 2,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+32909,
+32910
+]
+},
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+32911,
+32912
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 — 쇠 2×2. 광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"placementRules": "통행: 벽 앞면 위(이미 막힘)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-ore-vein-gold-1": {
+"id": "bd-pick-dungeon-theme-ore-vein-gold-1",
+"kind": "object",
+"name": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 금 1×1 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32913
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 — 금 1×1. 광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"placementRules": "통행: 벽 앞면 위(이미 막힘)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-ore-vein-iron-1": {
+"id": "bd-pick-dungeon-theme-ore-vein-iron-1",
+"kind": "object",
+"name": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 쇠 1×1 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32914
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 — 쇠 1×1. 광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"placementRules": "통행: 벽 앞면 위(이미 막힘)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-ossuary-3h": {
+"id": "bd-pick-dungeon-theme-ossuary-3h",
+"kind": "object",
+"name": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 3×3",
+"width": 3,
+"height": 3,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+32915,
+32916,
+32917
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+32918,
+32919,
+32920
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+32921,
+32922,
+32923
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "납골 벽(벽 앞면 덧그림) 3단·2단 — 3단. 카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"placementRules": "통행: 벽 앞면 위(이미 막힘)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-ossuary-2h": {
+"id": "bd-pick-dungeon-theme-ossuary-2h",
+"kind": "object",
+"name": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 2단 3×2",
+"width": 3,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+32924,
+32925,
+32926
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+32927,
+32928,
+32929
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "납골 벽(벽 앞면 덧그림) 3단·2단 — 2단. 카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"placementRules": "통행: 벽 앞면 위(이미 막힘)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-overgrown": {
+"id": "bd-pick-dungeon-theme-overgrown",
+"kind": "object",
+"name": "버들항 던전 · 풀·뿌리가 뚫고 나온 판석(덧그림 2×2) 풀 난 판석 2×2",
+"width": 2,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+32930,
+32931
+],
+"upperTiles": [
+-1,
+-1
+]
+},
+{
+"tiles": [
+32932,
+32933
+],
+"upperTiles": [
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "풀·뿌리가 뚫고 나온 판석(덧그림 2×2) — 풀 난 판석. 버들항 신전 폐허 바닥(floor-ruin) 위에 얹는 풀·뿌리·깨진 자리. 판석 결은 버들항 그대로 비친다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"overgrown",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "floor",
+"repeatability": "fixed",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
 "bd-pick-dungeon-theme-portcullis": {
 "id": "bd-pick-dungeon-theme-portcullis",
 "kind": "object",
@@ -42439,6 +43987,786 @@ null,
 "던전",
 "주제",
 "portcullis",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-ew": {
+"id": "bd-pick-dungeon-theme-rails-ew",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 H 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32934
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — H. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-ns": {
+"id": "bd-pick-dungeon-theme-rails-ns",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 V 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32935
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — V. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-ne": {
+"id": "bd-pick-dungeon-theme-rails-ne",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 NE 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32936
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — NE. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-nw": {
+"id": "bd-pick-dungeon-theme-rails-nw",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 NW 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32937
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — NW. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-se": {
+"id": "bd-pick-dungeon-theme-rails-se",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 SE 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32938
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — SE. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-sw": {
+"id": "bd-pick-dungeon-theme-rails-sw",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 SW 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32939
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — SW. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-x": {
+"id": "bd-pick-dungeon-theme-rails-x",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 X 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32940
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — X. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-tn": {
+"id": "bd-pick-dungeon-theme-rails-tn",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 TN 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32941
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — TN. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-ts": {
+"id": "bd-pick-dungeon-theme-rails-ts",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 TS 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32942
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — TS. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-te": {
+"id": "bd-pick-dungeon-theme-rails-te",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 TE 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32943
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — TE. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-tw": {
+"id": "bd-pick-dungeon-theme-rails-tw",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 TW 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32944
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — TW. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-end-n": {
+"id": "bd-pick-dungeon-theme-rails-end-n",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 EN 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32945
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — EN. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-end-s": {
+"id": "bd-pick-dungeon-theme-rails-end-s",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 ES 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32946
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — ES. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-end-e": {
+"id": "bd-pick-dungeon-theme-rails-end-e",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 EE 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32947
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — EE. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-end-w": {
+"id": "bd-pick-dungeon-theme-rails-end-w",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 EW 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32948
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — EW. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
 "mine",
 "catacomb",
 "castle",
@@ -46276,6 +48604,84 @@ null,
 ],
 "structureKits": [
 "bd-pick-dungeon-theme-sandstone-floor"
+]
+}
+},
+"earth.ore_vein|*": {
+"round": "theme-earth-r2",
+"letter": "A2",
+"sha256": "16deec320b6ab290da94e17169b21aad711e0d3d802d6ab49b3627c501122ec2",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_earth_ore_vein"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-ore-vein-gold",
+"bd-pick-dungeon-theme-ore-vein-iron",
+"bd-pick-dungeon-theme-ore-vein-gold-1",
+"bd-pick-dungeon-theme-ore-vein-iron-1"
+]
+}
+},
+"earth.ossuary|*": {
+"round": "theme-earth-r2",
+"letter": "A1",
+"sha256": "b6836069eb76b71e0306a3155e23a3bb43b48db1045d7d3050197ae6270bfbaf",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_earth_ossuary"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-ossuary-3h",
+"bd-pick-dungeon-theme-ossuary-2h"
+]
+}
+},
+"earth.overgrown|*": {
+"round": "theme-earth-r2",
+"letter": "A2",
+"sha256": "3cacb983887efb381e91fca2f6c63262555fc0ac6ce4b4de448c396748286be2",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_earth_overgrown"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-overgrown"
+]
+}
+},
+"earth.rails|*": {
+"round": "theme-earth-r2",
+"letter": "A1",
+"sha256": "ef83645adf4fc109aa02b460e859dcc6a16e06087218c8f6be3970aba35df626",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_earth_rails"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-rails-ew",
+"bd-pick-dungeon-theme-rails-ns",
+"bd-pick-dungeon-theme-rails-ne",
+"bd-pick-dungeon-theme-rails-nw",
+"bd-pick-dungeon-theme-rails-se",
+"bd-pick-dungeon-theme-rails-sw",
+"bd-pick-dungeon-theme-rails-x",
+"bd-pick-dungeon-theme-rails-tn",
+"bd-pick-dungeon-theme-rails-ts",
+"bd-pick-dungeon-theme-rails-te",
+"bd-pick-dungeon-theme-rails-tw",
+"bd-pick-dungeon-theme-rails-end-n",
+"bd-pick-dungeon-theme-rails-end-s",
+"bd-pick-dungeon-theme-rails-end-e",
+"bd-pick-dungeon-theme-rails-end-w"
 ]
 }
 }

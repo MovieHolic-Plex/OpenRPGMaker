@@ -502,6 +502,17 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   };
 
   /** 방의 북쪽 벽 가운데 줄(b=1) 칸 중 양옆도 같은 줄 벽인 칸(벽 끝 마구리 칸에는 걸지 않는다). */
+  /** 납골 벽 n 개: 벽 앞면이 3단이면 3×3(가운데 줄 한 칸 위부터), 2단이면 3×2. 5칸 간격. */
+  const ossuaryWalls = (slots: { x: number; y: number }[], rs: () => number, n: number): void => {
+    if (!hasKit(TK("ossuary-2h"))) return;
+    let k = 0, last = -99;
+    for (const q of shuffle(rs, slots)) {
+      if (k >= n) break;
+      if (Math.abs(q.x - last) < 5) continue;
+      const tall = hasKit(TK("ossuary-3h")) && [-1, 0, 1].every((d) => wallB[idx(q.x + d, q.y - 1)] === 1);
+      if (tall ? put(TK("ossuary-3h"), q.x - 1, q.y - 1) : put(TK("ossuary-2h"), q.x - 1, q.y)) { k += 1; last = q.x; }
+    }
+  };
   const wallSlots = (r: PlacedRoom): { x: number; y: number }[] => {
     const out: { x: number; y: number }[] = [];
     for (let x = r.x - 1; x <= r.x + r.w; x += 1) {
@@ -718,6 +729,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         const e = edgeCells(r, rs);
         for (let c = 0; c < 2 + Math.floor(rs() * 2); c += 1) { const p = e[c * 5]; if (p) cluster(rs, p[0], p[1], 2 + Math.floor(rs() * 2), litter); }
         // 지하묘지 홀: 벽가에 동서 석관 두엇(주제 그림) — 홀이 그냥 기둥 방으로 읽혔다.
+        if (type === "catacomb") ossuaryWalls(slots, rs, 1);
         if (type === "catacomb" && hasKit(TK("sarcophagus-ew"))) { let n = 0; for (const [x, y] of e.slice(10)) { if (n >= 2) break; if (put(rs() < 0.2 && hasKit(TK("sarcophagus-ew-open")) ? TK("sarcophagus-ew-open") : TK("sarcophagus-ew"), x, y)) n += 1; } }
         break;
       }
@@ -725,6 +737,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         // 묘실: 벽감 줄(종류 섞고 군데군데 비움) + 관 줄(빈자리 흔들기) + 구석 뼈 더미·촛불
         // 주제 그림(theme-earth, 2026-10-23)이 있으면 관 줄은 남북 석관(가끔 뚜껑 열린 것), 바닥에 묘석 판 한두 장.
         const niches = [K.nicheSkull, K.nicheUrn, K.nicheShroud];
+        // 납골 벽(theme-earth r2): 벽 앞면을 뼈로 채운 판 하나둘 — 벽감보다 먼저(벽감이 그 자리를 먹지 않게).
+        if (type === "catacomb") ossuaryWalls(slots, rs, 1 + (r.w >= 12 ? 1 : 0));
         for (const s of slots) if (rs() < 0.55) put(niches[Math.floor(rs() * 3)]!, s.x, s.y);
         hangAlong(slots, rs, 5, torch, 2);
         // 관: 3칸 간격 격자 자리를 섞어 넓이에 맞는 수만큼(줄이 반듯하되 군데군데 빈다)

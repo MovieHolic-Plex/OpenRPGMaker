@@ -479,6 +479,42 @@
    "gate": "pass",
    "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r2-panel-4.json",
    "referRuling": null
+  },
+  {
+   "pixelSha256": "f356b27a39bb1df60f953b7bb75177d995ed332cfcb13e4df9fd514bb8a8997d",
+   "kind": "wall_mounted",
+   "name": "earth.ore_vein A2",
+   "round": "theme-earth-r2",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r2-panel-6.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "cd554fb4309a0e35fb71da710e4277c3bcd53896f9ac03718102ff47b6e6e657",
+   "kind": "terrain",
+   "name": "earth.ossuary A1",
+   "round": "theme-earth-r2",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r2-panel-3.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "881593b6bc57ce5a6e316a472c62fe78f78cff18993a1bfee018918dab411ec0",
+   "kind": "terrain",
+   "name": "earth.overgrown A2",
+   "round": "theme-earth-r2",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r2-panel-4.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "5b44dcdfd1ef402d361781ff701c829e255fba04234b40cc5d2ee000841f0b0b",
+   "kind": "terrain",
+   "name": "earth.rails A1",
+   "round": "theme-earth-r2",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r2-panel-1.json",
+   "referRuling": null
   }
  ]
 }
