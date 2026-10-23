@@ -30,7 +30,9 @@ export const EVENT_CARD =
   "cutscene+game-start = 게임이 시작되면 한 번만 자동 재생(시작 맵, 맵마다 하나 — 다시 부르면 앞 컷신을 바꾼다). 비트 do: " +
   "walk{who,to}=걷기(to=길·광장·입구·문 앞 같은 자리 낱말, 다른 사람 이름이면 그 곁으로 걸어가 마주 선다, {x,y} 는 꼭 필요할 때만) / " +
   "say{who,text}=대사 / appear{who,where?,looks?,talk?}=그 자리에 «팍» 나타남(where 생략 가능 — 뒤에 주인공에게 걸어오면 함수가 4~8칸 떨어진 길 위를 고른다; talk=컷신 뒤 말 걸면 할 말 배열) / " +
-  "face{who,toward}=바라봄 / wait{ms} / fade{dir:'in'|'out'}. " +
+  "face{who,toward}=바라봄 / wait{ms} / fade{dir:'in'|'out'} / " +
+  "tint{tone:'night'|'dusk'|'dawn'|'sepia'|'clear'}=화면 색(밤이 되면 컷신 뒤에도 밤으로 남는다, 되돌리려면 clear) / camera{to}=카메라를 자리 낱말·사람·'x,y' 로 옮겨 보여 줌, to:'back' 이면 주인공에게 복귀(빠뜨려도 끝에 돌아온다) / " +
+  "look{who,as:'shadow'|'ghost'|'normal'}=검은 실루엣·반투명 유령·원래 모습 / vanish{who}=연기처럼 사라짐. " +
   "who: 주인공·player·hero = 플레이어, 그 밖의 이름 = 컷신에 나타나는 사람(appear 로 먼저 등장시키거나 맵에 이미 있는 NPC 이름). " +
   "함수가 모든 걸음을 실제 통행 격자로 모의해 3칸 미만·못 닿는 걷기를 고치고, 레터박스·마주 보기를 넣고, 장면 그림 몇 장을 비평가가 본다.";
 
@@ -43,6 +45,8 @@ const PLAYER = "player";
 const START_HOST_ID = "ev_v2cut_start";
 const START_ACTOR_PREFIX = "ev_v2cut_a_";
 const MIN_WALK = 3;
+/** tint 비트의 화면 색 — 'r,g,b,알파' 덮개(밤은 푸른 어둠), sepia 는 회상 필터, clear 는 원래대로. */
+const TINT_TONES: Record<string, string> = { night: "20,30,80,0.5", dusk: "170,80,40,0.28", dawn: "255,190,150,0.18", sepia: "sepia", clear: "" };
 
 function isHero(who: string): boolean {
   return HERO.test(who.trim());
@@ -373,7 +377,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   const noteName = (n: string): void => { if (!isHero(n) && !names.includes(n)) names.push(n); };
   for (const b of spec.beats) {
     if (b.do === "appear") { noteName(b.who); if (!appearBeat.has(b.who)) appearBeat.set(b.who, b); }
-    else if (b.do === "say" || b.do === "walk" || b.do === "face") noteName(b.who);
+    else if (b.do === "say" || b.do === "walk" || b.do === "face" || b.do === "look" || b.do === "vanish") noteName(b.who);
   }
   const knownName = (s: string): boolean => names.includes(s) || !!findNpcByName(map!, s);
   for (const b of spec.beats) {
@@ -580,6 +584,48 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
       case "fade":
         out.push({ kind: "fade", direction: b.dir, durationMs: 600, wait: true });
         break;
+      case "tint": {
+        const value = TINT_TONES[b.tone];
+        if (value === undefined) { warnings.push(`tint: 모르는 색 '${b.tone}' — night·dusk·dawn·sepia·clear.`); break; }
+        out.push({ kind: "tint", value, durationMs: 900, wait: true });
+        break;
+      }
+      case "camera": {
+        const to = b.to;
+        if (typeof to === "string" && /^(back|return|복귀|돌아옴|주인공)$/iu.test(to.trim())) { out.push({ kind: "camera", mode: "return", durationMs: 600, wait: true }); break; }
+        let cell: Cell | undefined;
+        if (typeof to === "string") {
+          const key = keyOf(to) ?? (knownName(to.trim()) ? ensureActor(to.trim(), i) : undefined);
+          if (key) cell = sim.actors.get(key)?.cell;
+          else {
+            const r = resolveWhere(project(), map!, to.trim(), { avoid: [] });
+            if (r.note) warnings.push(`camera: ${r.note}`);
+            cell = r.cell;
+          }
+        } else cell = to;
+        if (!cell) { warnings.push(`camera: '${String(to)}' 자리를 못 찾았다.`); break; }
+        out.push({ kind: "camera", mode: "pan", x: cell.x, y: cell.y, durationMs: 900, wait: true });
+        out.push({ kind: "wait", ms: 700 });
+        break;
+      }
+      case "look": {
+        const key = keyOf(b.who) ?? ensureActor(b.who, i);
+        if (!key) { warnings.push(`look: 누군지 모르는 '${b.who}'.`); break; }
+        out.push(b.as === "shadow" ? { kind: "look", target: idFor(key), tint: "black", tintFill: true }
+          : b.as === "ghost" ? { kind: "look", target: idFor(key), pose: "float", alpha: 0.6 }
+          : { kind: "look", target: idFor(key), reset: true });
+        break;
+      }
+      case "vanish": {
+        const key = keyOf(b.who) ?? actorIds.get(b.who);
+        if (!key || key === PLAYER) { warnings.push(`vanish: 사라지게 할 사람 '${b.who}' 이 없다(주인공은 못 사라진다).`); break; }
+        out.push({ kind: "particles", preset: "smoke", target: idFor(key), durationMs: 700 });
+        out.push({ kind: "look", target: idFor(key), alpha: 0 });
+        out.push({ kind: "wait", ms: 400 });
+        const a = sim.actors.get(key); if (a) a.visible = false;
+        sim.snapshot(`${b.who} 사라짐`);
+        break;
+      }
     }
   });
   if (out.length === 0) return fail("옮길 수 있는 비트가 하나도 없다.", [mapId]);

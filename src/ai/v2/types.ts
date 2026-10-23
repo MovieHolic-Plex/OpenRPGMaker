@@ -157,7 +157,15 @@ export type EventBeat =
   | { readonly do: "appear"; readonly who: string; readonly where: string | { readonly x: number; readonly y: number }; readonly looks?: string }
   | { readonly do: "face"; readonly who: string; readonly toward: string }
   | { readonly do: "wait"; readonly ms: number }
-  | { readonly do: "fade"; readonly dir: "in" | "out" };
+  | { readonly do: "fade"; readonly dir: "in" | "out" }
+  /** 화면 색 — 밤·저녁·새벽·회상(세피아)·clear(원래대로). 컷신 뒤에도 남는다(밤이 되면 밤으로 남음). */
+  | { readonly do: "tint"; readonly tone: "night" | "dusk" | "dawn" | "sepia" | "clear" }
+  /** 카메라 — to=자리 낱말·사람 이름·'x,y' 로 옮겨 보여 주고, 'back' 이면 주인공에게 돌아온다(안 돌려도 끝에 돌아온다). */
+  | { readonly do: "camera"; readonly to: string | { readonly x: number; readonly y: number } }
+  /** 인물 모습 — shadow=검은 실루엣, ghost=반투명으로 뜸, normal=되돌림. */
+  | { readonly do: "look"; readonly who: string; readonly as: "shadow" | "ghost" | "normal" }
+  /** 인물이 연기처럼 사라진다(그 뒤 맵에서 안 보임). */
+  | { readonly do: "vanish"; readonly who: string };
 
 /** 없는 기물 — draw_object 의 인자. */
 export interface ObjectSpec {

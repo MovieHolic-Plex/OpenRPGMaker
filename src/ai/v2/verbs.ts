@@ -444,14 +444,15 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
 
   const addEvent: PiToolShape = {
     name: "add_event", label: "사건·컷신", concurrency: "exclusive",
-    description: "컷신·대화 사건을 비트 목록으로 만든다(walk/say/appear/face/wait/fade). 함수가 걸을 수 있는 길·자리를 정하고 미리보기 탐침으로 검사한다.",
+    description: "컷신·대화 사건을 비트 목록으로 만든다(walk/say/appear/face/wait/fade/tint/camera/look/vanish). 함수가 걸을 수 있는 길·자리를 정하고 미리보기 탐침으로 검사한다.",
     parameters: { type: "object", properties: { event: { type: "object", properties: {
       kind: { type: "string", enum: ["cutscene", "talk", "trigger"] }, mapId: { type: "string" },
       when: { type: "string", enum: ["game-start", "touch", "talk"] }, where: { type: "string" }, at: POINT,
       beats: { type: "array", items: { type: "object", properties: {
-        do: { type: "string", enum: ["walk", "say", "appear", "face", "wait", "fade"] },
+        do: { type: "string", enum: ["walk", "say", "appear", "face", "wait", "fade", "tint", "camera", "look", "vanish"] },
         who: { type: "string" }, to: { type: "string", description: "자리 낱말(또는 'x,y')" }, text: { type: "string" },
         where: { type: "string" }, looks: { type: "string" }, toward: { type: "string" }, ms: { type: "number" }, dir: { type: "string", enum: ["in", "out"] },
+        tone: { type: "string", enum: ["night", "dusk", "dawn", "sepia", "clear"] }, as: { type: "string", enum: ["shadow", "ghost", "normal"] },
       }, required: ["do"] } },
     }, required: ["kind", "beats"] } }, required: ["event"] },
     async execute(id, params) {
