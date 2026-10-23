@@ -207,11 +207,11 @@
   .play-viewport[data-mobile-ui="landscape"] .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] :is(.status-menu-location, .status-menu-time, .status-menu-chapter) {
     display: none;
   }
-  /* 세로 ESC 메뉴(픽셀 스킨): 줄 33px·라벨 13px, 독과 파티 창이 겹치지 않게 같이 넓힌다. */
+  /* 세로 ESC 메뉴(픽셀 스킨): 줄 29px(6줄이 무대 202px 안에 들어가는 한도)·라벨 13px, 독과 파티 창이 겹치지 않게 같이 넓힌다. */
   .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"] {
-    --mu-row: calc(33px * var(--mobile-ui-k, 1));
+    --mu-row: calc(29px * var(--mobile-ui-k, 1));
     --mu-dock-w: calc(76px * var(--mobile-ui-k, 1));
-    --px-dock-h: calc(var(--status-menu-command-count, 6) * var(--mu-row) + 8px);
+    --px-dock-h: calc(var(--status-menu-command-count, 6) * var(--mu-row) + 8px * var(--mobile-ui-k, 1));
   }
   .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-primary-dock {
     width: var(--mu-dock-w);
