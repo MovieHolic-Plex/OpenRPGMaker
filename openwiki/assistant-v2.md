@@ -21,6 +21,18 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 여전히 고정인 것: 역전 상점가(지역 문법 station_plaza 가 씨앗을 안 탄다)·일본 집 예제 구성·컷신 무대 자리. 눈가림 「같아 보임」 점수와 빌더 표본은 보고서(`~/claude-viz/assistant-v2-report.html`) 다양성 절.
 빌더 증명에서 같은 명세를 다른 salt 로: `SALT=<n> CHECKS=1 bun scripts/qa/assistant-v2/builders.mts <out> <case>`.
 
+## 게임 요소 — 퀘스트·아이템·전투·파티·스위치 (2026-10-24)
+
+v2 동사는 장소·사람·연출만 다뤘다. 그래서 「심부름 퀘스트」「상점에 새 무기」「보스 전투 뒤 감사」를 옮길 길이 없었다.
+`src/ai/v2/game.ts` 는 요청에 게임 낱말(`GAME_WORDS`: 퀘스트·아이템·상점·전투·파티·스위치·여관·낮/밤 …)이 있을 때만 v1 결정론 도구 30개를 그대로 싣는다.
+도구는 `V2_GAME_TOOLS`: 읽기 → DB(upsert_item·enemy·troop·actor…) → 붙이기(place_npc·upsert_event·set_shop_stock·place_chest·set_encounter_table·create_quest·configure_time_system·set_npc_schedule).
+그와 함께 `GAME_CARD` 를 지시에 싣는다. 맵 요청의 첫 턴은 가볍게 남는다.
+연출 비트에는 `tint`(밤·저녁·새벽·세피아·clear — 컷신 뒤에도 남는다)·`camera`(자리·사람으로 옮겨 보여 주고 back 으로 복귀)·`look`(shadow·ghost·normal)·`vanish` 가 더해졌다.
+v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
+비교 사례 40개는 `harness-data/space-craft/seed.json` 의 `game` 분류다(id `g-*`, 시작은 모두 같은 마을 + 촌장·대장장이).
+출하 플레이어에서 이벤트마다 세 번 말 걸기·선택·전투·상점을 자동으로 해 본 뒤 상태 변화와 대사로 눈가림 채점한다. 결과는 보고서 「게임 요소 비교」 절에 있다.
+못 하는 것: 이미 있는 마을에 강·다리 같은 지형 덧그리기(맵을 새로 짓지 않으면 못 한다).
+
 ## 켜는 법
 
 - 편집기 주소 `?assistant=v2`, 또는 `localStorage['oprn:assistant-v2'] = '1'`(`src/ai/v2/switch.ts`). `?assistant=v1` 이나 `'0'` 이면 끈다. **기본은 v1** — 기본을 바꾸는 것은 사용자 결정이다.
