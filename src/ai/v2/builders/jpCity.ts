@@ -226,7 +226,7 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
   const { region, others } = pickRegion(spec, text);
   for (const id of others) missing.push(`${jpRegionById(id)?.ko ?? id}(한 맵에 지역 하나 — 따로 make_place 로 짓는다)`);
   const variant = num(spec.hints?.variant) ?? 0;
-  const baseSeed = (num(spec.hints?.seed) ?? prev?.baseSeed ?? 0) + variant * 101;
+  const baseSeed = (num(spec.hints?.seed) ?? prev?.baseSeed ?? (spec.salt ?? 0) % 9973) + variant * 101;
   const sizeKey = spec.size ?? "medium";
   const words = requestedWords(spec);
 
@@ -334,7 +334,7 @@ function buildHouse(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pla
   for (const key of Object.keys(spec.hints ?? {})) if (!KNOWN_HINTS.has(key)) warnings.push(`알 수 없는 hints.${key} 는 무시했다`);
   const text = textOf(spec);
   const variant = num(spec.hints?.variant) ?? 0;
-  const baseSeed = Math.max(1, (num(spec.hints?.seed) ?? prev?.baseSeed ?? 1) + variant * 101);
+  const baseSeed = Math.max(1, (num(spec.hints?.seed) ?? prev?.baseSeed ?? 1 + (spec.salt ?? 0) % 9973) + variant * 101);
   // 방 직접 지정(zones.kind 가 일본 집 방 종류) — 아니면 낱말로 예제 구성을 고른다.
   const roomZones = (spec.zones ?? []).filter((z) => z.floor === undefined || z.floor === 1).map((z) => ROOM_ALIASES[z.kind.toLowerCase()] ?? z.kind.toLowerCase());
   const customRooms = roomZones.length > 0 && roomZones.every((k) => ROOM_KINDS.has(k));

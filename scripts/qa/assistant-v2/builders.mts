@@ -14,8 +14,10 @@ import type { ToolContext } from "../../../src/editor/tools/types.ts";
 const out = process.argv[2] ?? "qa-runs/v2scratch/builders";
 const only = process.argv.slice(3);
 fs.mkdirSync(out, { recursive: true });
-for (const c of BUILDER_CASES) {
-  if (only.length && !only.includes(c.id)) continue;
+for (const c0 of BUILDER_CASES) {
+  if (only.length && !only.includes(c0.id)) continue;
+  // SALT=<n> → make_place 가 넣는 무작위 값을 흉내 낸다(같은 요청 여러 번 = 다른 맵인지 보기).
+  const c = process.env.SALT ? { ...c0, spec: { ...c0.spec, salt: Number(process.env.SALT) } } : c0;
   const project = createBlankProject();
   if (c.startTileset) project.maps[project.startMapId]!.tilesetId = c.startTileset;
   const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };

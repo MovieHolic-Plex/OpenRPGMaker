@@ -36,6 +36,8 @@ export interface ZoneSpec {
 export interface PlaceSpec {
   readonly type: PlaceType;
   readonly name: string;
+  /** make_place 가 처음 지을 때 넣는 무작위 값 — 같은 요청이 늘 같은 맵이 되지 않게 빌더가 씨앗·배치 변형에 섞는다. 고치기는 같은 값을 물려받는다. 모델은 쓰지 않는다. */
+  readonly salt?: number;
   /** 화풍·문화권 낱말: fantasy(기본) · jp-modern · wizarding · sengoku · modern-city … 카드가 고를 수 있는 값을 준다. */
   readonly style?: string;
   /** 던전·동굴 주제: cave · catacomb · castle · temple · volcano · ice · mine … */

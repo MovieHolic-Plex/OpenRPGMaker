@@ -363,7 +363,7 @@ function applyStamps(run: BuildRun, tilesetId: string, mapId: string, stamps: re
 
 /** 장소 견본(천문대 등)으로 짓기. 요청 앵커 중 견본이 갖춘 것은 그대로, 없는 것은 평면 빈 자리에 더한다. */
 function buildVenue(run: BuildRun, spec: PlaceSpec, venue: InteriorVenue, roomSpec: HandInteriorSpec, tilesetId: string, mapId: string, prev: InteriorState | undefined): PlaceBuildResult | undefined {
-  const variant = typeof spec.hints?.variant === "number" ? spec.hints.variant : 0;
+  const variant = typeof spec.hints?.variant === "number" ? spec.hints.variant : (spec.salt ?? 0) % 4;
   const words = (spec.zones ?? []).flatMap((z) => z.anchors ?? []);
   const withStairs = !!venue.stairs && ((spec.floors ?? 1) >= 2 || words.some((w) => /계단|stair|2층|위층/iu.test(w)) || (spec.zones ?? []).some((z) => z.floor === 2));
   const vb = venue.build(variant, withStairs);
@@ -661,10 +661,11 @@ export const interiorBuilder: PlaceBuilder = {
       return { id: zone.id ?? (n > 1 ? `${kind}${n}` : kind), kind, ...sized, ...(zone.keep?.floor ? { floor: zone.keep.floor } : {}), ...(zone.keep?.wall ? { wall: zone.keep.wall } : {}), zone };
     });
     const hints = spec.hints ?? {};
-    const variant = typeof hints.variant === "number" ? hints.variant : 0;
+    const variant = typeof hints.variant === "number" ? hints.variant : (spec.salt ?? 0) % 4;
     const seed = typeof hints.seed === "number" ? hints.seed : undefined;
+    const layoutSeed = seed ?? (spec.salt ? 1 + (spec.salt % 99991) : undefined);
     const base: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: true,
-      layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall })), ...(variant ? { variant } : {}), ...(seed ? { seed } : {}) } };
+      layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}) } };
     let first = build(run, base);
     if (!first.ok) {
       // 맵이 다른 칩셋의 살아 있는 맵이면 새 맵으로 짓는다(덮어쓰지 않는다).

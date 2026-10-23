@@ -91,9 +91,10 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   // 집 수 맞추기: 씨앗을 정하지 않았으면 사본 위에서 씨앗 몇 개를 미리 지어 보고 요청한 집 수에 가장 가까운 것을 고른다.
   // 실제 맵에 한 번 지으면 「완성된 집 보호」로 AI 가 다시 지을 수 없어서(2026-10-23 v2), 고르기는 짓기 전에 끝낸다.
   const wantHouses = num(args.houseCount);
+  if (!prev && args.seed === undefined && wantHouses === undefined && spec.salt !== undefined) args.seed = spec.salt % 100000;
   if (!prev && args.seed === undefined && wantHouses !== undefined) {
     let best: { seed: number; houses: number } | undefined;
-    const salt = [...spec.name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+    const salt = ([...spec.name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) + (spec.salt ?? 0)) >>> 0;
     for (let i = 0; i < 5; i++) {
       const seed = (salt + i * 7919) % 100000;
       const trial = createBuildRun({ ...run.ctx, project: cloneProjectSharingSharedDictionaries(run.ctx.project) });
