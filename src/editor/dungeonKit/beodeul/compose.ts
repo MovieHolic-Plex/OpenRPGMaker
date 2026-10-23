@@ -13,7 +13,7 @@
 //   · 계단·아치가 벽 끝(마구리) 칸에 반쯤 걸렸다 → 양옆이 같은 줄 벽인 칸에만
 //   · 벽 앞면 위에 천장이 한 줄도 없는 「떠 있는 벽 토막」이 생길 수 있었다 → 배치 간격 규칙 + 검사(stranded-wall)
 //   · 서사 앵커가 없었다 → 입구(올라가는 계단)·보스방(입구에서 가장 먼 방)·보물 방·잠긴 문 자리(gate)를 결과로 돌려준다
-import { checkGroundSupportForStamp, groundSupportIssues, kitSupportKind } from "@/project/groundSupport";
+import { checkGroundSupportForStamp, groundSupportIssues, kitSupportKind, supportSurfaceOf } from "@/project/groundSupport";
 import { cellHash } from "@/project/defaults/autotileEngine";
 import type { AutotileGroup, GameMap, StructureKitDef, TilesetDef } from "@/project/types";
 import { DungeonComposeError } from "../errors";
@@ -60,6 +60,7 @@ export const GAP_ROCK_LINE: Partial<Record<DungeonType, "A" | "B" | "C">> = { ca
 export const GAP_KIT = {
   door: "bd-dg-door-closed", doorOpen: "bd-dg-door-open", leverUp: "bd-dg-lever-up", leverDown: "bd-dg-lever-down",
   windowDark: "bd-dg-tower-window-dark", windowLit: "bd-dg-tower-window-lit",
+  towerRing: "bd-dg-tower-ring-", towerPassS: "bd-dg-tower-pass-s",
 } as const;
 /** 오토타일 한 칸: 8방이 다 이어진 칸은 몸통 변형(interiorVariants[0])을 엔진과 같은 cellHash 로 고른다. */
 function autoCell(g: AutotileGroup, m: number, x: number, y: number): number {
@@ -149,6 +150,41 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   /** 걸을 수 있는 바닥(액체 아님, 다리 포함). 장식·방 안 칸 고르기는 이것만 본다. */
   const isWalk = (x: number, y: number) => inb(x, y) && floorMask[idx(x, y)] === 1 && liquid[idx(x, y)] === 0;
 
+  // ---- 둥근 탑 링 방(shape "ring", 2026-10-23 dungeon-themes): 방 바닥 w×h 가 링 지름 N=w+2(h=N-4)이면 gap 링 키트를 통째로 찍는다.
+  // 바닥 마스크를 링 안 칸으로 바꾸고(벽·천장이 링 둘레에서 유도된다), 장식 전에 키트 그림으로 덮는다. 남쪽 가운데 두 칸 = 통로(bd-dg-tower-pass-s).
+  // 다음 층으로 올라가는 방(가장 깊은 방)은 12칸 계단 링 — 계단 끝 칸이 이동 칸이다. 키트가 없으면 mask 의 팔각(round)으로 남는다.
+  const ringExitRoom = spec.exitStair === "up" ? (rooms.find((r) => r.kind === "boss") ?? (rooms.length > 2 ? [...rooms].filter((r) => r.kind !== "vault" && r.kind !== "entrance").sort((a, b) => b.depth - a.depth)[0] : undefined) ?? (rooms.length > 1 ? rooms[rooms.length - 1] : undefined)) : undefined;
+  const rings: { r: PlacedRoom; def: StructureKitDef; ox: number; oy: number; N: number; stair: boolean; walk: Uint8Array }[] = [];
+  const kitWalk = (t: number) => t < 0 || (() => { const p = ts.passability[t]; return !!p && Object.values(p).some(Boolean); })();
+  for (const r of rooms) {
+    if (r.shape !== "ring") continue;
+    const N = r.w + 2;
+    const stair = r === ringExitRoom && N === 12 && hasKit(`${GAP_KIT.towerRing}12-stair`);
+    const id = stair ? `${GAP_KIT.towerRing}12-stair` : `${GAP_KIT.towerRing}${N}`;
+    if (r.h + 4 !== N || !hasKit(id)) continue;
+    const def = kit(id);
+    const ox = r.x - 1, oy = r.y - 3;
+    const walk = new Uint8Array(N * N);
+    for (let y = 0; y < N; y += 1) for (let x = 0; x < N; x += 1) {
+      const lo = def.rows[y]!.tiles[x]!, up = def.rows[y]!.upperTiles?.[x] ?? -1;
+      walk[y * N + x] = kitWalk(lo) && kitWalk(up) ? 1 : 0;
+    }
+    // 남쪽 통로 두 칸(통로가 링 아래 띠를 지난다)
+    const pc = Math.floor(N / 2) - 1;
+    const south = corridors.some((c) => c.rect.y === oy + N - 1 && c.rect.x <= ox + pc && c.rect.x + c.rect.w >= ox + pc + 2);
+    if (south) for (const dx of [0, 1]) { walk[(N - 2) * N + pc + dx] = 1; walk[(N - 1) * N + pc + dx] = 1; }
+    for (let y = 0; y < N; y += 1) for (let x = 0; x < N; x += 1) {
+      const X = ox + x, Y = oy + y;
+      if (!inb(X, Y)) continue;
+      const inRoom = X >= r.x && X < r.x + r.w && Y >= r.y && Y < r.y + r.h;
+      if (!inRoom && !(south && y >= N - 2 && (x === pc || x === pc + 1))) continue;
+      floorMask[idx(X, Y)] = walk[y * N + x]!;
+      roomAt[idx(X, Y)] = walk[y * N + x] ? (inRoom ? rooms.indexOf(r) : -1) : -1;
+      liquid[idx(X, Y)] = 0; bridge[idx(X, Y)] = 0;
+    }
+    rings.push({ r, def, ox, oy, N, stair, walk });
+  }
+
   // ---- 벽 앞면 = 바닥 북쪽 변 위 세 줄(위에 천장이 한 줄 이상 남게). 둘이면 두 줄. ----
   const wallB = new Int8Array(W * H).fill(-1);
   const wallH = new Int8Array(W * H).fill(0);
@@ -196,6 +232,10 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     lower[idx(x, y)] = left && right ? row[1]! : !left && right ? row[0]! : left && !right ? row[2]! : row[1]!;
   }
 
+  // 둥근 탑 링 둘레는 키트 그림이 벽이다 — 시공기 벽 앞면을 지워 링 위·옆 천장에 테두리가 새지 않게 한다(링 위 가운데 돌 조각).
+  for (const g0 of rings) for (let y = 0; y < g0.N; y += 1) for (let x = 0; x < g0.N; x += 1) {
+    if (!g0.walk[y * g0.N + x] && inb(g0.ox + x, g0.oy + y)) wallB[idx(g0.ox + x, g0.oy + y)] = -1;
+  }
   // ---- 천장: 바닥·벽이 아닌 칸. 오토타일 47 모양(벽 두께 띠), 결 두 가지를 칸마다 섞는다. ----
   const findGroups = (ids: readonly string[]) => ids.map((id) => (ts.autotileGroups ?? []).find((g) => g.id === id)).filter((g): g is AutotileGroup => !!g);
   // 테마 테두리(사암·얼음·보랏빛 허공)가 구워져 있으면 그것, 없으면 기본 회색 테두리.
@@ -222,6 +262,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     lower[idx(x, y)] = ceilingTile(g, m) ?? voidTile;
     if (m !== 255) rimmed += 1;
   }
+  /** 천장 한가운데 칸(사방이 천장) — 링 바깥 어둠 자리를 둘레 천장과 같은 결로 채운다. */
+  const ceilAt = (x: number, y: number): number => useRock ? autoCell(rockGroup!, 255, x, y) : groups.length ? (ceilingTile(groups[groups.length > 1 && hash01(x, y, seed) < 0.5 ? 1 : 0]!, 255) ?? voidTile) : voidTile;
   if (!groups.length && !useRock) warnings.push("이 타일셋 사본에 천장 테두리 오토타일(beodeul_dungeon_ceiling)이 없어 천장을 테두리 없는 허공으로 깔았다 — 프로젝트를 다시 열면 번들 꼬리가 붙는다.");
 
   // ---- 바닥 칸: 종류별 바닥 키트(2×2·3×3 무늬) + 잡음 덩이 변형 + 칸마다 흩뿌림 + 물가 바닥. 액체·다리는 따로 칠한다. ----
@@ -314,9 +356,33 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     lower[idx(x, y)] = kit(ew ? "bd-pick-aqueduct-sewer-bridge-ew-stone" : "bd-pick-aqueduct-sewer-bridge-ns-stone").rows[0]!.tiles[0]!;
   }
 
+  // 둥근 탑 링: 키트 그림을 통째로. 남쪽 통로 칸은 pass-s 키트로 덮는다.
+  for (const g0 of rings) {
+    const { def, ox, oy, N } = g0;
+    for (let y = 0; y < N; y += 1) for (let x = 0; x < N; x += 1) {
+      const X = ox + x, Y = oy + y;
+      if (!inb(X, Y)) continue;
+      const lo = def.rows[y]!.tiles[x]!, up = def.rows[y]!.upperTiles?.[x] ?? -1;
+      // 바깥 어둠 칸도 키트 그림(어둠)으로 — 둘레 천장 테두리가 링 모서리 밑 벽 윗단에 돌 조각처럼 떠 보였다(10칸 링).
+      // 링 바깥 어둠(29775)은 둘레 천장과 같은 결로 — 평평한 어둠이 링 둘레에 네모로 떠 보였다.
+      const dark = !g0.walk[y * N + x] && supportSurfaceOf(ts, lo) === "ceiling";
+      lower[idx(X, Y)] = dark ? ceilAt(X, Y) : lo; upper[idx(X, Y)] = up;
+    }
+    const pc = Math.floor(N / 2) - 1;
+    if (g0.walk[(N - 1) * N + pc] && hasKit(GAP_KIT.towerPassS)) {
+      const ps = kit(GAP_KIT.towerPassS);
+      for (let y = 0; y < 2; y += 1) for (let x = 0; x < 2; x += 1) {
+        const X = ox + pc + x, Y = oy + N - 2 + y;
+        if (!inb(X, Y)) continue;
+        lower[idx(X, Y)] = ps.rows[y]!.tiles[x]!; upper[idx(X, Y)] = ps.rows[y]!.upperTiles?.[x] ?? -1;
+      }
+    }
+  }
+
   // ---- 장식 ----
   const pseudo = { id: "compose", name: "compose", width: W, height: H, tilesetId: ts.id, events: [], lowerTiles: lower, upperTiles: upper } as unknown as GameMap;
   const counts: Record<string, number> = {};
+  if (rings.length) counts["tower-ring"] = rings.length;
   const blocked = new Uint8Array(W * H);
   const passTile = (tile: number) => { const pass = ts.passability[tile]; return !!pass && Object.values(pass).some(Boolean); };
   const stand = (x: number, y: number) => isFloor(x, y) && !blocked[idx(x, y)] && passTile(lower[idx(x, y)]!) && (upper[idx(x, y)]! < 0 || passTile(upper[idx(x, y)]!));
@@ -559,7 +625,16 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
       }
     }
     // 탑: 다음 층으로 올라가는 계단은 가장 깊은 방 북쪽 벽(장식보다 먼저 자리를 잡는다).
-    if (exitKind === "up" && r === deepRoomPre && r.kind !== "entrance") {
+    const ringHere = rings.find((g0) => g0.r === r);
+    if (exitKind === "up" && ringHere?.stair) {
+      // 12칸 계단 링: 안벽을 따라 오르는 돌계단 끝 칸(링 원점 +2,+4)이 이동 칸, 바로 아래 계단 칸이 도착 칸. 계단 칸에는 물건을 두지 않는다.
+      const { ox, oy } = ringHere;
+      exitStair = { x: ox + 2, y: oy + 4, front: { x: ox + 2, y: oy + 5 }, kind: "up" };
+      // 계단 칸은 위층 그림이 차 있어 물건이 못 앉는다. 계단 앞 칸을 길 지킴 칸에 넣어 물건이 계단 발치를 막지 않게 한다.
+      keyCells.push([ox + 2, oy + 5]);
+      blocked[idx(ox + 3, oy + 7)] = 1;
+      counts["stairs-up"] = (counts["stairs-up"] ?? 0) + 1;
+    } else if (exitKind === "up" && r === deepRoomPre && r.kind !== "entrance") {
       const q = flatWall(r, centerFirst);
       if (q) { exitStair = wallStairs(q); counts["stairs-up"] = (counts["stairs-up"] ?? 0) + 1; }
       else warnings.push(`${r.id} 북쪽 벽에 다음 층으로 올라가는 계단을 놓을 평평한 벽이 없다.`);

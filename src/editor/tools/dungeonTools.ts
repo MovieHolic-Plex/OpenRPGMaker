@@ -401,13 +401,23 @@ const FLOOR_NAME = (base: string, dir: "down" | "up", k: number, n: number): str
  * 탑 한 층(성 문법, 좁은 둥근 층): 아래 둥근 층계참 → 위 둥근 큰 방(북쪽 벽에 다음 층 계단). 꼭대기 층은 둥근 보스방 + 곁의 작은 보물 방.
  * 2026-10-23(assistant-dungeons-2): 옛 층은 홀 양옆으로 곁방을 단 43×32 판이라 「탑이 아니라 넓은 지하 감옥」으로 읽혔다(VQA). 층마다 크기·계단 쪽을 바꾼다.
  */
-function towerRooms(top: boolean, k: number): DungeonRoomInput[] {
-  // 2026-10-23 r1: 둥근 방이 15×11 이라 가운데가 맨바닥이었다(조수 비평·VQA) — 한 단 줄인다. 공간이 남으면 방이 너무 큰 것이다.
-  const hallW = 13 + (k % 2) * 2, hallH = 9 + ((k + 1) % 2);
-  return top
-    // 꼭대기 층은 계단참 → 왕좌 방 둘뿐 — 왕좌 위 7×5 보물 방은 좁은 방 둘레가 허공·맨바닥인 화면이 됐다(2026-10-23 dg2-r5 VQA). 상자는 왕좌 방 곁에 둔다.
-    ? [{ id: "landing", kind: "entrance", w: 9, h: 6, shape: "round" }, { id: "throne", kind: "boss", w: 13, h: 10, from: "landing", dir: "N", shift: 0, len: 4, shape: "round" }]
-    : [k === 1 ? { id: "gate", kind: "entrance", w: 13, h: 6, shape: "apse" } : { id: "landing", kind: "entrance", w: 9, h: 6, shape: "round" }, { id: "hall", kind: "hall", w: hallW, h: hallH, from: k === 1 ? "gate" : "landing", dir: "N", shift: 0, len: 4, shape: "round" }];
+function towerRooms(top: boolean, k: number, seed = 0): DungeonRoomInput[] {
+  // 2026-10-23 dungeon-themes: 위 큰 방은 gap 둥근 탑 링(12칸, 바닥 10×8 — 다음 층으로 가는 방은 안벽 계단 링)이다. 아래 층계참에서 남쪽 통로(pass-s)로 들어간다.
+  // 같은 탑을 두 번 지어도 판박이가 아니게: 시드로 층계참 곁 서고(동·서)·꼭대기 링 크기(12·10)·층계참 너비가 바뀐다.
+  const h = (n: number) => {
+    let x = (Math.imul(seed, 1000003) + Math.imul(n, 7919)) | 0;
+    x ^= x >>> 15; x = Math.imul(x, 0x2c1b3c6d); x ^= x >>> 12; x = Math.imul(x, 0x297a2d39); x ^= x >>> 15;
+    return (x >>> 0) / 4294967296;
+  };
+  const landW = 9 + (h(k) < 0.5 ? 0 : 2);
+  const landing: DungeonRoomInput = k === 1 && !top ? { id: "gate", kind: "entrance", w: 13, h: 6, shape: "apse" } : { id: "landing", kind: "entrance", w: landW, h: 6, shape: "round" };
+  const from = landing.id!;
+  const study: DungeonRoomInput[] = h(k + 7) < 0.55 ? [{ id: "study", kind: h(k + 3) < 0.5 ? "library" : "storage", w: 7, h: 6, from, dir: h(k + 11) < 0.5 ? "W" : "E", shape: "round" }] : [];
+  if (top) {
+    const big = h(99) < 0.6;
+    return [landing, { id: "throne", kind: "boss", w: big ? 10 : 8, h: big ? 8 : 6, from, dir: "N", shift: 0, len: 4, shape: "ring" }, ...study];
+  }
+  return [landing, { id: "hall", kind: "hall", w: 10, h: 8, from, dir: "N", shift: 0, len: 4, shape: "ring" }, ...study];
 }
 
 /** 채우기 적 그룹: 준 것은 그대로, 안 준 역할은 던전 주제(dungeonThemeTroops.ts)의 그림으로 만든다 — 세기는 원래 고르던 그룹에 맞춘다. */
@@ -505,7 +515,7 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
     const floorArgs: Record<string, unknown> = { ...args, name: FLOOR_NAME(baseName, direction, k, floors) };
     delete floorArgs.floors; delete floorArgs.direction; delete floorArgs.populate; delete floorArgs.troops; delete floorArgs.seed; delete floorArgs.sourceMapId;
     if (!first) { delete floorArgs.entrance; delete floorArgs.mapId; floorArgs.id = baseId ? `${baseId}_f${k}` : undefined; }
-    if (floors > 1 && direction === "up" && !args.rooms) { floorArgs.rooms = towerRooms(last, k); floorArgs.type = args.type ?? "castle"; }
+    if (floors > 1 && direction === "up" && !args.rooms) { floorArgs.rooms = towerRooms(last, k, baseSeed); floorArgs.type = args.type ?? "castle"; }
     else if (floors > 1 && !args.rooms && !args.size) floorArgs.size = last ? "medium" : "small";
     results.push(buildFloor(draft, floorArgs, { seed: baseSeed + (k - 1) * 101, entry, exit }));
   }

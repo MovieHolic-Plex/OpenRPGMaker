@@ -200,6 +200,10 @@ function layoutOnce(spec: DungeonSpec, inputs: readonly DungeonRoomInput[], salt
     }
     if (!chosen) throw new DungeonComposeError(`방 ${id} 를 이을 자리가 없다(모든 방의 네 쪽 문이 다 쓰였거나 다른 방과 겹친다). 방 수·크기를 줄여라.`, "layout-failed");
     const parent = chosen.parent;
+    // 둥근 탑 링 방: 링 키트의 남쪽 통로(bd-dg-tower-pass-s)가 가운데 두 칸이다 — 세로 통로를 그 두 칸에 맞춘다.
+    if (input.shape === "ring" && chosen.corridor.dir === "N") {
+      chosen.corridor = { ...chosen.corridor, rect: { ...chosen.corridor.rect, x: chosen.room.x + Math.floor(chosen.room.w / 2) - 1, w: 2 } };
+    }
     used.get(parent.id)!.add(chosen.corridor.dir);
     placed.push({ ...chosen.room, from: parent.id, dir: chosen.corridor.dir, depth: parent.depth + 1, ...(input.shape ? { shape: input.shape } : {}) });
     used.set(id, new Set<DungeonDir>([opposite(chosen.corridor.dir)]));

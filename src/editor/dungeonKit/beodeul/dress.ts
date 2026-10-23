@@ -872,10 +872,22 @@ function dressTower(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null
   const crystal = pickKit(c, [TK("crystal-pedestal"), VC("fire-crystal")]);
   const circle = pickKit(c, [TK("arcane-circle"), TP("mosaic-medallion-5x5")]);
   const candles = pickKit(c, [TK("candelabra"), SW("candles")]);
+  const ring = r.shape === "ring";
+  /** 링 방 안쪽 첫 둘레: 링 그림(안벽 그늘·띠)이 덮지 않은 바닥 중 이웃이 링 그림·벽인 칸 — 링 그림 칸 위에는 물건이 못 앉는다. */
+  const ringEdge = (): [number, number][] => c.floorCells(r, 0).filter(([x, y]) => c.upper[c.idx(x, y)]! < 0
+    && [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => !c.isWalk(x + dx!, y + dy!) || c.upper[c.idx(x + dx!, y + dy!)]! >= 0));
+  /** 링 방 둘레(동·서 호 밑 바닥 칸): 촛대·수정·지구의를 드문드문(링 방은 북쪽 벽 칸 장식이 없어 둘레가 비었다). */
+  const ringRim = (n: number) => {
+    if (!ring) return;
+    const cells = ringEdge().filter(([, y]) => y >= r.y + 2);
+    let k = 0;
+    for (const [x, y] of c.shuffle(rs, cells)) { if (k >= n) break; if (lonely(c, x, y, 1) && stand(c, c.weighted(rs, [[candles, 3], [crystal, 2], [WZ("globe"), 1], [WZ("lamppost"), 1]]), x, y)) k += 1; }
+  };
   /** 북쪽 벽에 붙은 첫 바닥 줄을 따라 책장을 세운다(앞길 한 칸씩 비움). */
   const shelves = (max: number) => {
     let n = 0;
-    const row = c.floorCells(r, 0).filter(([x, y]) => c.isWall(x, y - 1)).sort((a, b) => a[0] - b[0]);
+    // 둥근 탑 링 방(shape ring): 북쪽 안벽이 키트 그림이라 벽 칸 표시가 없다 — 북쪽 이웃이 걷지 못하는 칸이면 안벽 밑이다.
+    const row = (ring ? ringEdge().filter(([, y]) => y < r.y + Math.floor(r.h / 2)) : c.floorCells(r, 0).filter(([x, y]) => c.isWall(x, y - 1))).sort((a, b) => a[0] - b[0]);
     for (const [x, y] of row) { if (n >= max) break; if (s && Math.abs(x - s.x) <= 1) continue; if (rs() < 0.7 && stand(c, rs() < 0.4 ? tall : shelf, x, y + (c.hasKit(tall) ? c.kit(tall).height - 1 : 0))) n += 1; }
     return n;
   };
@@ -890,7 +902,9 @@ function dressTower(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null
       const mid = c.floorCells(r, 2);
       if (mid.length) { const [x, y] = mid[Math.floor(mid.length / 2)]!; stand(c, lectern, x, y); stand(c, candles, x + 2, y); }
       stand(c, r.kind === "library" ? DS("rug") : WZ("starmap"), cx - 1, r.y + r.h - 2);
-      if (r.kind === "hall") { stand(c, WZ("orrery"), r.x + 1, r.y + r.h - 2); stand(c, WZ("armillary"), r.x + r.w - 3, r.y + r.h - 1); }
+      if (r.kind === "hall" && !ring) { stand(c, WZ("orrery"), r.x + 1, r.y + r.h - 2); stand(c, WZ("armillary"), r.x + r.w - 3, r.y + r.h - 1); }
+      if (r.kind === "hall" && ring) { stand(c, WZ("orrery"), r.x + r.w - 3, r.y + r.h - 3); }
+      ringRim(4);
       c.hangAlong(slots, rs, 5, () => TORCH, 2);
       return true;
     }
@@ -900,6 +914,7 @@ function dressTower(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null
       if (k) put5(c, circle, cx - Math.floor(k.width / 2), r.y + Math.floor(r.h / 2) - Math.floor(k.height / 2));
       for (const [dx, dy] of [[-4, -1], [4, -1], [-4, 3], [4, 3]] as const) if (rs() < 0.85) stand(c, r.kind === "boss" && dy < 0 ? WZ("moon-obelisk") : crystal, cx + dx, r.y + Math.floor(r.h / 2) + dy);
       if (r.kind === "boss") { c.seats[r.id] = { x: cx, y: r.y + Math.floor(r.h / 2) }; shelves(3); }
+      ringRim(3);
       c.hangAlong(slots, rs, 4, () => TORCH, 3);
       return true;
     }
