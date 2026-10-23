@@ -9,6 +9,7 @@
 // 그림: 새 테마 그림(TK)이 구워져 있으면 그것, 없으면 기존 버들항 키트로 물러선다(아무 그림 없이 보이지 않는 장치를 두지 않는다).
 
 import { isPassable } from "@/project/collision";
+import { checkGroundSupportForStamp } from "@/project/groundSupport";
 import type { Command, GameEvent, GameMap, Project, TilesetDef } from "@/project/types";
 import type { DungeonType } from "../dungeonKit/types";
 import { TK } from "../dungeonKit/beodeul/profiles";
@@ -154,6 +155,58 @@ function landingNear(c: Ctx, cells: readonly Pt[]): Pt | null {
   return null;
 }
 
+// ---------------------------------------------------------------- 벽 레버(gap 레버 그림, #3283)
+/** 벽걸이 레버 키트 칸(위 칸 그림). 없으면 null(옛 캐릭터 레버로 물러선다). */
+function leverTiles(ts: TilesetDef): { up: number; down: number } | null {
+  const one = (id: string) => { const k = kitOf(ts, id); const r = k?.rows[0]; const t = r ? ((r.upperTiles ?? [])[0] ?? -1) >= 0 ? r.upperTiles![0]! : r.tiles[0]! : -1; return t >= 0 ? t : null; };
+  const up = one("bd-dg-lever-up"), down = one("bd-dg-lever-down");
+  return up !== null && down !== null ? { up, down } : null;
+}
+
+/**
+ * 레버를 놓는다. gap 레버 그림이 있으면 바닥 후보 칸 바로 북쪽 **벽 앞면**(막힌 칸, 위층이 빈 칸)에 벽걸이 레버를 걸고 이벤트를 그 벽 칸에 둔다(벽을 보고 조사) —
+ * 당기면 changeTile(upper) 로 내린 그림. 그림이 없거나 걸 벽이 없으면 바닥 칸에 옛 캐릭터 레버.
+ * 반환: 이벤트 칸·레버 앞 바닥 칸.
+ */
+export function placeLever(draft: Project, map: GameMap, floorCands: readonly Pt[], id: string, name: string, sw: string, pull: readonly Command[], idleText: string, doneText: string): { at: Pt; floor: Pt; wall: boolean } | null {
+  const ts = draft.tilesets[map.tilesetId]!;
+  const W = map.width;
+  const lv = leverTiles(ts);
+  const evAt = (p: Pt) => map.events.some((e) => e.x === p.x && e.y === p.y);
+  if (lv) for (const f of floorCands) {
+    const w = { x: f.x, y: f.y - 1 };
+    if (w.y < 0 || isPassable(draft, map, w.x, w.y) || !isPassable(draft, map, f.x, f.y) || evAt(w) || evAt(f)) continue;
+    const i = w.y * W + w.x;
+    if ((map.upperTiles[i] ?? -1) >= 0) continue;
+    // 벽 앞면 칸만(천장·수관·물에 걸면 허공에 뜬다) — 받침 규칙(벽걸이 = 벽 칸)으로 확인한다
+    if (checkGroundSupportForStamp(map, ts, kitOf(ts, "bd-dg-lever-up")!, w.x, w.y)) continue;
+    map.upperTiles[i] = lv.up;
+    upsertEventIntoMap(map, { id, name, x: w.x, y: w.y, trigger: { kind: "action" }, commands: [], pages: [
+      { id: `${id}_p1`, name, conditions: [], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixedMove,
+        commands: [textCmd(idleText), sfx("switch-clack"), { kind: "changeTile", mapId: map.id, layer: "upper", x: w.x, y: w.y, tile: lv.down } as Command, { kind: "setSwitch", switchId: sw, value: true } as Command, ...pull] },
+      { id: `${id}_p2`, name: `당긴 ${name}`, conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixedMove,
+        commands: [textCmd(doneText)] },
+    ] } as GameEvent);
+    return { at: w, floor: f, wall: true };
+  }
+  const f = floorCands.find((p) => isPassable(draft, map, p.x, p.y) && !evAt(p));
+  if (!f) return null;
+  const lever = resolveGraphic({ textureKey: "tex_easyrpg_charset_object2", characterIndex: 0 } as never);
+  upsertEventIntoMap(map, { id, name, x: f.x, y: f.y, trigger: { kind: "action" }, commands: [], pages: [
+    { id: `${id}_p1`, name, conditions: [], graphic: { ...lever, direction: "down" }, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixedMove,
+      commands: [textCmd(idleText), sfx("switch-clack"), { kind: "setSwitch", switchId: sw, value: true } as Command, ...pull] },
+    { id: `${id}_p2`, name: `당긴 ${name}`, conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { ...lever, direction: "up" }, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixedMove,
+      commands: [textCmd(doneText)] },
+  ] } as GameEvent);
+  return { at: f, floor: f, wall: false };
+}
+
+/** 북쪽 벽에 붙은 바닥 칸을 먼저(벽 레버 자리), 그다음 나머지. */
+export function wallFirst(draft: Project, map: GameMap, cells: readonly Pt[]): Pt[] {
+  // 안정 정렬: 북쪽이 막힌 칸이 먼저, 그 안에서는 받은 순서(가까운 순) 그대로
+  return [...cells].sort((a, b) => Number(isPassable(draft, map, a.x, a.y - 1)) - Number(isPassable(draft, map, b.x, b.y - 1)));
+}
+
 // ---------------------------------------------------------------- teleporter
 function placeTeleporter(c: Ctx): string {
   const bossId = text(field(c.data, "anchors"), "boss");
@@ -240,7 +293,10 @@ function placeIceSlide(c: Ctx): string {
   }
   if (!best) return "";
   // 얼음 줄: 미끄럼 칸 그림(새 그림이 없으면 설원 얼음 바닥)을 깐다
-  const ice = firstKit(c.ts, [TK("ice-floor"), "bd-pick-snowfield-ground-ice"]);
+  // gap 빙판 오토타일이 이미 호수를 덮었으면(얼음굴 바닥) 덧칠하지 않는다 — 가장자리가 끊긴다.
+  const sheet = (c.ts.autotileGroups ?? []).find((g) => g.id === "beodeul_dungeon_ice");
+  const onSheet = !!sheet && Array.from({ length: best.x1 - best.x0 + 1 }, (_, k) => c.map.lowerTiles[best!.y * W + best!.x0 + k]!).every((t) => sheet.memberTileIds.includes(t) || (sheet.interiorVariants ?? []).some((v) => v.includes(t)));
+  const ice = onSheet ? undefined : firstKit(c.ts, [TK("ice-floor"), "bd-pick-snowfield-ground-ice"]);
   if (ice) { const k = kitOf(c.ts, ice)!; for (let x = best.x0; x <= best.x1; x += 1) { const t = k.rows[best.y % k.height]!.tiles[x % k.width]!; if (t >= 0) c.map.lowerTiles[best.y * W + x] = t; } }
   const n = best.x1 - best.x0;
   const slide = (id: string, at: Pt, dir: "left" | "right", name: string): GameEvent => puzzleEvent(id, name, at, [makePage({
@@ -323,6 +379,7 @@ function placeBridge(c: Ctx): string {
   if (!leverAt) return "";
   // 다리 칸을 물(용암·허공)로: 이웃 액체 칸의 1층 그림을 빌린다. 다리 그림은 레버의 changeTile 이 되돌린다.
   const restore: Command[] = [];
+  const swaps: [number, number][] = [];
   for (const i of best.g) {
     const x = i % W, y = (i - x) / W;
     const gset = new Set(best.g);
@@ -331,23 +388,19 @@ function placeBridge(c: Ctx): string {
     const own = c.map.lowerTiles[i]!;
     if (liquidTile < 0) return "";
     restore.push({ kind: "changeTile", mapId: c.map.id, layer: "lower", x, y, tile: own } as Command);
-    c.map.lowerTiles[i] = liquidTile;
+    swaps.push([i, liquidTile]);
   }
   const sw = `sw_${c.map.id}_bridge`;
   ensureNamedSwitch(c.draft, sw, `${c.map.name}: 다리 내림`);
-  const lever = resolveGraphic({ textureKey: "tex_easyrpg_charset_object2", characterIndex: 0 } as never);
   const what = c.type === "volcano" ? "용암" : c.type === "otherworld" ? "허공" : c.type === "swamp" ? "늪" : "물";
-  upsertEventIntoMap(c.map, {
-    id: `ev_${c.map.id}_bridge_lever`, name: "다리 레버", x: leverAt.x, y: leverAt.y, trigger: { kind: "action" }, commands: [],
-    pages: [
-      { id: `ev_${c.map.id}_bridge_lever_p1`, name: "다리 레버", conditions: [], graphic: { ...lever, direction: "down" }, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixedMove,
-        commands: [textCmd(`쇠사슬이 감긴 레버다. ${what} 건너편으로 다리를 내리는 장치 같다.`), sfx("switch-clack"), shake(3, 800), ...restore, { kind: "setSwitch", switchId: sw, value: true } as Command, sfx("stone-push"), textCmd(`쿠르릉… ${what} 위로 다리가 내려왔다!`)] },
-      { id: `ev_${c.map.id}_bridge_lever_p2`, name: "당긴 다리 레버", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { ...lever, direction: "up" }, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixedMove,
-        commands: [textCmd("레버는 이미 당겨져 있다. 다리가 내려와 있다.")] },
-    ],
-  } as GameEvent);
+  const roomCells: Pt[] = [];
+  for (let yy = leverRoom.y; yy < leverRoom.y + leverRoom.h; yy += 1) for (let xx = leverRoom.x; xx < leverRoom.x + leverRoom.w; xx += 1) if (best.seen[yy * W + xx] && free(c, { x: xx, y: yy })) roomCells.push({ x: xx, y: yy });
+  const placedLever = placeLever(c.draft, c.map, wallFirst(c.draft, c.map, roomCells.length ? roomCells : [leverAt]), `ev_${c.map.id}_bridge_lever`, "다리 레버", sw,
+    [shake(3, 800), ...restore, sfx("stone-push"), textCmd(`쿠르릉… ${what} 위로 다리가 내려왔다!`)], `쇠사슬이 감긴 레버다. ${what} 건너편으로 다리를 내리는 장치 같다. 힘껏 당겼다!`, "레버는 이미 당겨져 있다. 다리가 내려와 있다.");
+  if (!placedLever) return "";
+  for (const [i, t] of swaps) c.map.lowerTiles[i] = t;   // 레버가 선 뒤에만 다리를 걷는다(못 놓으면 맵을 건드리지 않는다)
   const xs = best.g.map((i) => `(${i % W},${(i / W) | 0})`).join(" ");
-  return `${what} 다리 장치: 다리 ${xs} 는 처음엔 걷혀 있고(${best.cut ? `건너편 방 ${best.cut > 5 ? "— 보스방 포함" : `${best.cut}곳`}` : "지름길"}) ${leverRoom.id}(${leverAt.x},${leverAt.y}) 레버를 당기면 내려온다(스위치 ${sw}).`;
+  return `${what} 다리 장치: 다리 ${xs} 는 처음엔 걷혀 있고(${best.cut ? `건너편 방 ${best.cut > 5 ? "— 보스방 포함" : `${best.cut}곳`}` : "지름길"}) ${leverRoom.id}(${placedLever.at.x},${placedLever.at.y}) ${placedLever.wall ? "벽 " : ""}레버를 당기면 내려온다(스위치 ${sw}).`;
 }
 
 // ---------------------------------------------------------------- lever at a chokepoint (blob·미로 배치 — 방+통로 문법의 잠긴 통로가 없을 때)
@@ -396,13 +449,14 @@ function placeChokeLever(c: Ctx): string {
       // 레버: 막힌 쪽이 아닌, 닿는 방 중 가장 깊은 방의 북쪽 자리
       const leverRoom = c.rooms.filter((r) => r.kind !== "entrance" && r.id !== target.id && r.spots.some((s) => seen[s.y * W + s.x] && free(c, s)))
         .sort((a, b) => depthOf(c.rooms, b.id) - depthOf(c.rooms, a.id))[0] ?? c.rooms[0];
-      const leverAt = leverRoom?.spots.filter((s) => seen[s.y * W + s.x] && free(c, s) && !blocked.has(s.y * W + s.x)).sort((a, b) => a.y - b.y)[0];
-      if (!leverRoom || !leverAt) continue;
+      if (!leverRoom) continue;
       if (leverRoom.kind === "entrance" && !allowEntrance) continue;
+      const roomCells: Pt[] = [];
+      for (let yy = leverRoom.y; yy < leverRoom.y + leverRoom.h; yy += 1) for (let xx = leverRoom.x; xx < leverRoom.x + leverRoom.w; xx += 1) if (seen[yy * W + xx] && !blocked.has(yy * W + xx) && free(c, { x: xx, y: yy })) roomCells.push({ x: xx, y: yy });
+      if (!roomCells.length) continue;
       const sw = `sw_${c.map.id}_lever`;
       ensureNamedSwitch(c.draft, sw, `${c.map.name}: 레버 당김(쇠창살 열림)`);
       const bars = resolveGraphic({ textureKey: "tex_easyrpg_charset_object1", characterIndex: 5 } as never);
-      const lever = resolveGraphic({ textureKey: "tex_easyrpg_charset_object2", characterIndex: 0 } as never);
       cells.forEach((p, k) => {
         const gid = k === 0 ? `ev_${c.map.id}_lever_gate` : `ev_${c.map.id}_lever_gate_${p.x}_${p.y}`;
         upsertEventIntoMap(c.map, { id: gid, name: "쇠창살", x: p.x, y: p.y, trigger: { kind: "action" }, commands: [], pages: [
@@ -410,12 +464,10 @@ function placeChokeLever(c: Ctx): string {
           { id: `${gid}_p2`, name: "열린 쇠창살", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", overlapForbidden: false, movement: fixedMove, commands: [] },
         ] } as GameEvent);
       });
-      upsertEventIntoMap(c.map, { id: `ev_${c.map.id}_lever`, name: "레버", x: leverAt.x, y: leverAt.y, trigger: { kind: "action" }, commands: [], pages: [
-        { id: `ev_${c.map.id}_lever_p1`, name: "레버", conditions: [], graphic: { ...lever, direction: "down" }, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixedMove,
-          commands: [textCmd("녹슨 레버가 있다. 힘껏 당겼다!"), sfx("switch-clack"), { kind: "setSwitch", switchId: sw, value: true } as Command, shake(3, 500), textCmd("어디선가 쇠창살이 올라가는 소리가 울렸다.")] },
-        { id: `ev_${c.map.id}_lever_p2`, name: "당긴 레버", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { ...lever, direction: "up" }, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixedMove,
-          commands: [textCmd("레버는 이미 당겨져 있다.")] },
-      ] } as GameEvent);
+      const placed = placeLever(c.draft, c.map, wallFirst(c.draft, c.map, roomCells), `ev_${c.map.id}_lever`, "레버", sw,
+        [shake(3, 500), textCmd("어디선가 쇠창살이 올라가는 소리가 울렸다.")], "녹슨 레버가 있다. 힘껏 당겼다!", "레버는 이미 당겨져 있다.");
+      if (!placed) return "";
+      const leverAt = placed.at;
       return `레버 퍼즐: 레버 ${leverRoom.id}(${leverAt.x},${leverAt.y}) → ${target.id} 앞 좁은 목 쇠창살 ${cells.map((p) => `(${p.x},${p.y})`).join(" ")} 스위치 ${sw}.`;
     }
   }

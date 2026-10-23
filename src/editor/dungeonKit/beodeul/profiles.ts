@@ -42,6 +42,8 @@ export interface TypeProfile extends GrammarInfo {
   readonly bank?: "grass" | "bog" | "lava";
   /** 얼어붙은 호수 방(ice 의 lake)의 걷는 빙판 바닥. */
   readonly lakeFloor?: KitPref;
+  /** 오토타일 바닥(gap 얼음굴, 2026-10-23): ground = 걷는 바닥 전체, sheet = 호수 방·잡음 덩이에 까는 빙판(가장자리는 이웃 빙판 칸으로). 그룹이 없으면 키트 바닥. */
+  readonly autoFloor?: { readonly ground: string; readonly sheet?: string; readonly sheetAt?: number; readonly sheetScale?: number };
 }
 
 const S = (id: string) => `bd-pick-aqueduct-sewer-${id}`;
@@ -104,6 +106,8 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
     floor: { base: SN("ground-snow"), patches: [{ kit: SN("ground-ice"), at: 0.78, scale: 5 }, { kit: SN("ground-plat"), at: 0.86, scale: 3 }], mix: true },
     ceiling: ["beodeul_dungeon_ceiling_ice"],
     lakeFloor: [TK("ice-floor"), SN("ground-ice")],
+    // gap 얼음굴 바닥(ice_floor A1, #3283): 얼음굴 돌바닥 오토타일 + 호수 방·덩이는 빙판 오토타일. 벽·천장은 검푸른 심층굴 바위(줄 C).
+    autoFloor: { ground: "beodeul_dungeon_ice_ground", sheet: "beodeul_dungeon_ice", sheetAt: 0.74, sheetScale: 5 },
   },
   forest: {
     ...GRAMMAR.forest,

@@ -56,7 +56,7 @@ export const DUNGEON_CEILING_GROUPS = ["beodeul_dungeon_ceiling", "beodeul_dunge
  * `beodeul_dungeon_rock_<줄>` + 앞면 2단(`bd-dg-rock-<줄>-face`)으로 채우고, 물·용암도 그 줄 오토타일(`beodeul_dungeon_water_<줄>` · `_lava_<줄>`, 4장면)로 칠한다.
  * 키트가 없는 옛 사본은 예전 천장·운하 물·용암 무늬로 물러선다(경고 없음 — 기본 동작). spec.rockLine 으로 줄을 고르거나 none 으로 끈다.
  */
-export const GAP_ROCK_LINE: Partial<Record<DungeonType, "A" | "B" | "C">> = { cave: "A", mine: "B", volcano: "C" };
+export const GAP_ROCK_LINE: Partial<Record<DungeonType, "A" | "B" | "C">> = { cave: "A", mine: "B", volcano: "C", ice: "C" };
 export const GAP_KIT = {
   door: "bd-dg-door-closed", doorOpen: "bd-dg-door-open", leverUp: "bd-dg-lever-up", leverDown: "bd-dg-lever-down",
   windowDark: "bd-dg-tower-window-dark", windowLit: "bd-dg-tower-window-lit",
@@ -248,6 +248,31 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     if (fl.tile !== undefined && id === pick(fl.base)) { lower[idx(x, y)] = fl.tile; continue; }
     if (fl.mix) { const rows = kit(id).rows; lower[idx(x, y)] = rows[Math.floor(hash01(x, y, seed * 5 + 3) * rows.length)]!.tiles[Math.floor(hash01(y, x, seed * 7 + 1) * rows[0]!.tiles.length)]!; }
     else lower[idx(x, y)] = tileOf(id, x, y);
+  }
+  // 오토타일 바닥(얼음굴): 걷는 바닥 = ground 오토타일(이웃 = 걷는 바닥·다리), 호수 방 + 잡음 덩이 = 빙판 오토타일(이웃 = 빙판 칸).
+  const af = profile.autoFloor;
+  const afGround = af ? autos.get(af.ground) : undefined;
+  if (af && afGround) {
+    const afSheet = af.sheet ? autos.get(af.sheet) : undefined;
+    const sheetCell = new Uint8Array(W * H);
+    if (afSheet) for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+      if (!isWalk(x, y) || bridge[idx(x, y)]) continue;
+      const ri = roomAt[idx(x, y)]!;
+      const lake = ri >= 0 && rooms[ri]!.kind === "lake";
+      if (lake || vnoise(x, y, af.sheetScale ?? 5, seed * 13 + 3) > (af.sheetAt ?? 0.75)) sheetCell[idx(x, y)] = 1;
+    }
+    const bits: [number, number, number][] = [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]];
+    for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+      if (!isWalk(x, y) || bridge[idx(x, y)]) continue;
+      let m = 0;
+      if (sheetCell[idx(x, y)]) {
+        for (const [dx, dy, bit] of bits) if (!inb(x + dx, y + dy) || sheetCell[idx(x + dx, y + dy)]) m |= bit;
+        lower[idx(x, y)] = autoCell(afSheet!, m, x, y);
+      } else {
+        for (const [dx, dy, bit] of bits) if (!inb(x + dx, y + dy) || isWalk(x + dx, y + dy) || bridge[idx(x + dx, y + dy)]) m |= bit;
+        lower[idx(x, y)] = autoCell(afGround, m, x, y);
+      }
+    }
   }
   // 광산: 갱도 한가운데 줄을 널판 선로 바닥으로(입구·갈림 방은 가로지르는 줄, 그 밖 방은 통로 구간만). 선로 그림이 따로 없어 널판 바닥이 임시다.
   if (type === "mine" && hasKit("bd-pick-aqueduct-sewer-floor-plank")) {
