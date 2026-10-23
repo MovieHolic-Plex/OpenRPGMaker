@@ -58,6 +58,17 @@ export type AutonomousMover = {
    * 예전에는 칸마다 같은 발로 다시 시작했다(2026-10-22 「NPC 걷는 게 이상함」).
    */
   walkPhase?: number;
+  /**
+   * 페이지 자율 이동(custom·random)의 산책 리듬(@/player/npcStroll): 같은 방향 걸음은 이어 걷고, 방향이 바뀔 때만
+   * 흔들린 길이로 멈춘다. 명령 경로·시간표·생활 이동·추격에는 켜지 않는다.
+   */
+  naturalStroll?: boolean;
+  /** 무작위 산책의 지금 걷기 묶음 — 이 방향으로 left 칸 더. */
+  wanderRun?: { readonly dir: Dir; readonly left: number };
+  /** 마지막으로 시작한 한 칸 걸음의 방향(막히면 지운다). */
+  lastStepDir?: Dir;
+  /** 이번 멈춤의 길이 배율(빈도 간격에 곱함). */
+  pauseScale?: number;
   /** 명령 경로: 앞 걸음이 끝나며 남은 시간(ms). 다음 걸음이 이만큼 앞서 시작해 칸 경계에서 프레임을 잃지 않는다. */
   carryMs?: number;
   /** 명령 경로: 다음 명령 전에 쉴 시간(ms). 경로 안 `wait` 명령이 빈도 간격만큼 건다. 없으면 바로 다음 명령. */

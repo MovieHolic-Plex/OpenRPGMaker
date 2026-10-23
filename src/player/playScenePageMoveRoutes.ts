@@ -5,6 +5,7 @@ import { yieldingLivingMovers, livingRouteKeyTarget, livingRouteTargetKey, route
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 import { terrainRevision } from "@/project/tilePassabilityComponents";
 import { clampNpcSetting, npcMoveDurationMs, npcPageMoveIntervalMs } from "@/project/characterMotion";
+import { noteAmbientFlyers } from "@/player/playSceneAmbientFlyers";
 
 type PageMoveRouteSceneContext = Pick<
   PlaySceneContext,
@@ -28,7 +29,10 @@ export function registerPageMoveRoutes(scene: PageMoveRouteSceneContext): void {
   const activeKeys = new Set<string>();
   const activePageRouteEventIds = new Set<string>();
   const project = store.getCurrent();
-  for (const view of runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)) {
+  const views = runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions);
+  // 하늘을 나는 장식(movement.type "fly")은 칸 무버가 아니라 비행 갱신기가 맡는다.
+  noteAmbientFlyers(scene, scene.map, views);
+  for (const view of views) {
     if (scene.commandMoveRouteEventIds?.has(view.event.id)) continue;
     const movement = view.movement;
     const reusedLivingKey = movement.type === "living" ? reusableLivingRouteKey(scene, project, view) : undefined;
@@ -175,6 +179,8 @@ function routeForPageMovement(
         ? { moves: [...movement.route.moves], repeat: movement.route.repeat, strategy: "sequence" }
         : null;
     case "living":
+    case "fly":
+      // 비행은 칸 걸음 무버가 아니다 — 장식 비행체 갱신기(playSceneAmbientFlyers)가 그린다.
       return null;
   }
 }
@@ -190,6 +196,7 @@ function configurePageMover(
   mover.preserveBlockedSteps = movement.type === "custom" && movement.route?.skippable === false;
   mover.retryBlockedSteps = movement.type === "living" || mover.preserveBlockedSteps;
   mover.livingRoute = movement.type === "living";
+  mover.naturalStroll = movement.type === "custom" || movement.type === "random";
   mover.directionFix = animationType === "fixedDirection" || animationType === "fixedDirectionStep";
   mover.speedRank = clampNpcSetting(movement.speed);
   mover.frequencyRank = clampNpcSetting(movement.frequency);

@@ -679,7 +679,11 @@ export type Command =
   | { kind: "fuseMonsters"; instanceIdA: string; instanceIdB: string };
 
 export type EventPriority = "below" | "same" | "above";
-export type AutonomousMovement = "fixed" | "random" | "approach" | "custom" | "living" | "chase";
+/**
+ * fly: 하늘을 자유롭게 나는 장식(새·나비·박쥐). 칸에 묶이지 않고 픽셀 좌표로 곡선을 그리며 맵 위를 날고,
+ * 가끔 지붕·땅에 내려앉았다 다시 난다(@/player/playSceneAmbientFlyers). 길을 막지 않고 저장하지 않는다.
+ */
+export type AutonomousMovement = "fixed" | "random" | "approach" | "custom" | "living" | "chase" | "fly";
 /** 페이지 애니메이션 유형의 단일 진실 소스 — 툴 스키마 enum 과 로더 정규화도 여기서 가져간다.
  * 2026-09-24 갤러리 도그푸딩: 유니온에 없는 "none" 이 32페이지에 저장돼 런타임 canActionTurn 의
  * exhaustiveness 트립와이어가 첫 조작에서 씬을 통째로 죽였다(브라우저 완주 막힘). */

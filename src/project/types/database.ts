@@ -2209,6 +2209,11 @@ export interface CompanionConfig {
    * ㄴ자 두 줄 대형. 장면이 끝나고 주인공이 걸으면 궤적 자리로 돌아온다(폴른 스타 가혹 검수 r11). 생략 = 기존 동작.
    */
   fanOutInScenes?: boolean;
+  /**
+   * false 면 파티 몬스터가 필드에서 주인공을 따라 걷지 않는다(HGSS 식 동행 끄기). 생략 = 따라온다 — 몬스터 동료는 주인공이
+   * 떠난 칸으로 같은 박자에 한 칸 뒤를 걷는다(@/player/playSceneFollowers beginFollowerStep).
+   */
+  monsterFollowers?: boolean;
 }
 
 export interface MonsterCareConfig {

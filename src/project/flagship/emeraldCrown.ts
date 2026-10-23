@@ -291,15 +291,13 @@ function retargetReturnPortal(map: GameMap | undefined, toMapId: string, x: numb
   });
 }
 
-/** 하늘을 나는 장식 새 — 위층(above)이라 길을 막지 않고, 두 칸을 오가며 난다. */
+/**
+ * 하늘을 나는 장식 새 — 위층(above)이라 길을 막지 않는다. 비행(fly)이라 칸에 묶이지 않고 맵 위를 호를 그리며 날다가
+ * 가끔 지붕·땅에 앉는다(@/player/playSceneAmbientFlyers). 예전에는 두 칸을 오가는 칸 걸음이라 상자에 갇힌 새처럼 보였다
+ * (2026-10-23 「새들이 공중에 있다기보다 어딘가에 갇혀 있음」).
+ */
 function createSkybirdEvent(id: string, name: string, x: number, y: number, characterIndex: number, direction: "up" | "right" | "down" | "left"): GameEvent {
-  const opposite = { up: "down", down: "up", left: "right", right: "left" } as const;
-  const movement: EventPageMovement = {
-    type: "custom",
-    speed: 3,
-    frequency: 5,
-    route: { repeat: true, skippable: true, moves: [{ kind: "move", dir: direction }, { kind: "move", dir: opposite[direction] }] },
-  };
+  const movement: EventPageMovement = { type: "fly", speed: 3, frequency: 3 };
   return {
     id,
     name,
@@ -485,12 +483,82 @@ function rebuildDawningCity(project: Project): GameMap {
       },
     ],
   });
+  tuneTownLife(homeMap);
   homeMap.events.push(
     createSkybirdEvent("ev_dawning_skybird_gull", "광장 연못 여명갈매기", 18, 13, 0, "left"),
     createSkybirdEvent("ev_dawning_skybird_swallow", "광장 창공제비", 13, 7, 1, "right"),
     createSkybirdEvent("ev_dawning_skybird_flock", "여명의 날개 새떼", 20, 5, 3, "left"),
   );
   return homeMap;
+}
+
+/**
+ * 다우닝 시티 주민 셋이 같은 박자로 「한 칸 걷고 1.5초 서기」를 오른쪽 둘·왼쪽 둘로 되풀이했다(2026-10-23 「NPC 걷는 게
+ * 자연스럽지 않다」). 사람마다 다른 하루를 준다 — 걸음은 보통 빠르기(주인공의 절반, 칸당 320ms)로 이어 걷고
+ * 방향을 바꿀 때만 멈춘다(엔진 산책 리듬 @/player/npcStroll).
+ *  - 마을 주민(6,10): 집 앞 마당을 느긋하게 거닐며 가끔 멈춰 둘러본다(무작위 산책, 처음 자리에서 3칸 안).
+ *  - 주민 1(7,16): 광장 앞길을 한 바퀴 — 오른쪽 넷 · 아래 하나 · 왼쪽 넷 · 위 하나, 모퉁이마다 잠깐 선다.
+ *  - 주민 2: 카페 앞에서 바리스타와 이야기한다 — 마주 보고 서서 가끔 고개를 돌렸다 돌아본다.
+ */
+function tuneTownLife(homeMap: GameMap): void {
+  const byId = (id: string) => homeMap.events.find((event) => event.id === id);
+  const setMovement = (id: string, movement: EventPageMovement): void => {
+    for (const page of byId(id)?.pages ?? []) page.movement = movement;
+  };
+  setMovement("mx_map_home_local", { type: "random", speed: 3, frequency: 3, moveIntervalMs: 1700 });
+  setMovement("mx_map_home_ambient_resident_1", {
+    type: "custom", speed: 3, frequency: 3, moveIntervalMs: 1100,
+    route: {
+      repeat: true, skippable: false,
+      moves: [
+        { kind: "move", dir: "right" }, { kind: "move", dir: "right" }, { kind: "move", dir: "right" }, { kind: "move", dir: "right" },
+        { kind: "move", dir: "down" },
+        { kind: "move", dir: "left" }, { kind: "move", dir: "left" }, { kind: "move", dir: "left" }, { kind: "move", dir: "left" },
+        { kind: "wait" },
+        { kind: "move", dir: "up" },
+      ],
+    },
+  });
+  const chatter = byId("mx_map_home_ambient_resident_2");
+  const barista = byId("ev_dawning_cafe_barista");
+  if (chatter && barista) {
+    chatter.x = barista.x - 1;
+    chatter.y = barista.y;
+    const face = (event: GameEvent, direction: "left" | "right"): void => {
+      for (const page of event.pages ?? []) {
+        if (!page.graphic) continue;
+        const { characterIndex } = decodeCharsetFrameIndex(page.graphic.pattern ?? 0);
+        page.graphic = { ...page.graphic, direction, pattern: charsetFrameIndex({ characterIndex, direction, pattern: 1 }) };
+      }
+    };
+    face(chatter, "right");
+    face(barista, "left");
+    setMovement("mx_map_home_ambient_resident_2", {
+      type: "custom", speed: 3, frequency: 3, moveIntervalMs: 1300,
+      route: {
+        repeat: true, skippable: true,
+        moves: [
+          { kind: "turn", dir: "right" }, { kind: "wait" }, { kind: "wait" }, { kind: "wait" },
+          { kind: "turn", dir: "down" }, { kind: "wait" },
+          { kind: "turn", dir: "right" }, { kind: "wait" }, { kind: "wait" }, { kind: "wait" }, { kind: "wait" },
+          { kind: "turn", dir: "up" }, { kind: "wait" },
+        ],
+      },
+    });
+    for (const page of barista.pages ?? []) {
+      page.movement = {
+        type: "custom", speed: 3, frequency: 3, moveIntervalMs: 1500,
+        route: {
+          repeat: true, skippable: true,
+          moves: [
+            { kind: "turn", dir: "left" }, { kind: "wait" }, { kind: "wait" }, { kind: "wait" }, { kind: "wait" },
+            { kind: "turn", dir: "down" }, { kind: "wait" },
+            { kind: "turn", dir: "left" }, { kind: "wait" }, { kind: "wait" }, { kind: "wait" },
+          ],
+        },
+      };
+    }
+  }
 }
 
 function rescaleEnemy(enemy: Project["database"]["enemies"][number], level: number): void {
