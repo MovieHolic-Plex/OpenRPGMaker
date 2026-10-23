@@ -887,6 +887,199 @@
           }
         }
       ]
+    },
+    {
+      "id": "cmp-dg-forest",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "숲 던전 하나 만들어 줘. 나무와 덩굴 사이로 길이 나 있고, 늑대 같은 적이 몇 마리 있고, 맨 안쪽에 숲의 주인인 보스가 있어야 해.",
+      "requires": [
+        "숲 던전",
+        "나무·덩굴 사이 길",
+        "늑대 같은 적",
+        "안쪽 보스"
+      ]
+    },
+    {
+      "id": "cmp-dg-swamp",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "독늪 던전 만들어 줘. 늪 물길 사이로 나무 다리를 건너가고, 도마뱀 인간 같은 적이 있고, 맨 안쪽에 히드라 보스가 있어야 해.",
+      "requires": [
+        "늪 물길",
+        "나무 다리",
+        "도마뱀 인간 적",
+        "히드라 보스"
+      ]
+    },
+    {
+      "id": "cmp-dg-volcano",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "화산 속 던전 만들어 줘. 용암이 흐르는 길을 건너가야 하고, 불 속성 적들이 있고, 맨 안쪽에 붉은 용 보스가 있어야 해.",
+      "requires": [
+        "용암",
+        "불 속성 적",
+        "붉은 용 보스"
+      ]
+    },
+    {
+      "id": "cmp-dg-ice",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "얼음 동굴 던전 만들어 줘. 얼음 바닥과 고드름이 있고, 늑대나 유령 같은 적, 안쪽에 보물상자와 얼음 용 보스가 있으면 좋겠어.",
+      "requires": [
+        "얼음 바닥",
+        "고드름",
+        "늑대·유령 적",
+        "보물상자",
+        "얼음 용 보스"
+      ]
+    },
+    {
+      "id": "cmp-dg-pyramid",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "사막 피라미드 던전을 3층으로 만들어 줘. 미라와 전갈 같은 적, 함정이 있고, 맨 아래층 왕의 묘실에 보스가 있어야 해.",
+      "requires": [
+        "3개 층",
+        "미라·전갈 적",
+        "함정",
+        "왕의 묘실 보스"
+      ]
+    },
+    {
+      "id": "cmp-dg-magic-tower",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마법사의 탑 던전을 3층으로 만들어 줘. 떠다니는 눈알이나 움직이는 갑옷 같은 적이 있고, 층마다 계단으로 이어지고, 꼭대기에 대마법사 보스가 있어야 해.",
+      "requires": [
+        "3개 층",
+        "마법 적",
+        "층 계단",
+        "꼭대기 대마법사"
+      ]
+    },
+    {
+      "id": "cmp-dg-otherworld",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "이세계(마계)로 이어지는 던전 하나 만들어 줘. 보랏빛 이상한 바닥과 균열, 악마 같은 적들, 맨 안쪽에 마계의 군주 보스가 있어야 해.",
+      "requires": [
+        "이세계 분위기",
+        "악마 적",
+        "군주 보스"
+      ]
+    },
+    {
+      "id": "cmp-jp-shotengai",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "jp_city",
+      "prompt": "일본 역 앞 상점가 거리 만들어 줘. 작은 가게 여러 곳, 역 입구, 횡단보도, 자판기와 벤치가 있었으면 해.",
+      "requires": [
+        "작은 가게 여러 곳",
+        "역 입구",
+        "횡단보도",
+        "자판기·벤치"
+      ]
+    },
+    {
+      "id": "cmp-monster-town",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "monster_overworld",
+      "prompt": "포켓몬 같은 몬스터 수집 게임의 첫 마을 만들어 줘. 주인공 집, 박사 연구소, 몬스터 센터가 있고, 마을 사람 NPC 셋이 각자 한마디씩 해 줘. 북쪽으로 풀숲 길이 이어지게.",
+      "requires": [
+        "주인공 집",
+        "박사 연구소",
+        "몬스터 센터",
+        "마을 사람 3명 각자 한마디",
+        "북쪽으로 이어지는 풀숲 길"
+      ]
+    },
+    {
+      "id": "cmp-romance-scene",
+      "category": "compare",
+      "mode": "balanced",
+      "startTileset": "jp_city",
+      "prompt": "학교 옥상에서 주인공과 소꿉친구 하린이 처음으로 속마음을 이야기하는 짧은 대화 장면 만들어 줘. 선택지 두 개로 하린의 반응이 달라지게.",
+      "requires": [
+        "학교 옥상 무대",
+        "하린(소꿉친구)과의 대화",
+        "선택지 두 개",
+        "선택마다 다른 하린의 반응"
+      ],
+      "startBuild": [
+        {
+          "tool": "build_hand_interior_room",
+          "args": {
+            "mapId": "map_blank_start",
+            "name": "학교 옥상",
+            "tileset": "jp_city",
+            "layout": {
+              "program": "school-roof",
+              "variant": 2
+            }
+          }
+        }
+      ],
+      "startBrief": {
+        "version": 1,
+        "presetId": "story-cutscene",
+        "summary": "학교 옥상에서 주인공과 소꿉친구 하린이 처음으로 속마음을 이야기하는 짧은 대화 장면. 상대 이름은 하린. 만나는 장소는 학교 옥상. 두 선택지는 속마음을 털어놓는다 / 웃으며 얼버무린다. 선택에 따라 하린의 반응이 달라진다.",
+        "answers": {
+          "experience": {
+            "question": "마지막에 어떤 감정이 남기를 바라나요?",
+            "label": "핵심 감정",
+            "text": "설렘과 따뜻함",
+            "source": "user"
+          },
+          "activity": {
+            "question": "이야기를 어떻게 알아가게 할까요?",
+            "label": "플레이 행동",
+            "text": "대화를 선택",
+            "source": "user"
+          },
+          "progression": {
+            "question": "이야기는 어떻게 나아가나요?",
+            "label": "진행",
+            "text": "한 장면",
+            "source": "user"
+          },
+          "detail": {
+            "question": "플레이어의 선택은 무엇을 바꾸나요?",
+            "label": "선택의 영향",
+            "text": "하린의 반응",
+            "source": "user"
+          },
+          "scope": {
+            "question": "첫 초안에서 어떤 이야기 단위를 완성할까요?",
+            "label": "첫 제작 범위",
+            "text": "짧은 대화 장면 하나",
+            "source": "user"
+          }
+        },
+        "interview": {
+          "version": 1,
+          "genre": "romance",
+          "concept": "학교 옥상에서 소꿉친구와 처음 속마음을 나누는 장면",
+          "protagonist": "아직 정하지 않음",
+          "notes": "상대 이름은 하린(소꿉친구). 대화 중심 한 장면.",
+          "choiceIds": {
+            "scope": "scene",
+            "activity": "talk",
+            "progression": "single"
+          }
+        }
+      }
     }
   ],
   "gates": {

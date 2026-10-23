@@ -4,8 +4,9 @@ import { interiorBuilder } from "./interior";
 import { VILLAGE_BUILDER } from "./village";
 import { DUNGEON_BUILDER } from "./dungeon";
 import { JP_CITY_BUILDER } from "./jpCity";
+import { MONSTER_TOWN_BUILDER } from "./monsterTown";
 
-export const PLACE_BUILDERS: PlaceBuilder[] = [interiorBuilder, JP_CITY_BUILDER, VILLAGE_BUILDER, DUNGEON_BUILDER];
+export const PLACE_BUILDERS: PlaceBuilder[] = [interiorBuilder, MONSTER_TOWN_BUILDER, JP_CITY_BUILDER, VILLAGE_BUILDER, DUNGEON_BUILDER];
 
 export function builderFor(spec: PlaceSpec): PlaceBuilder | undefined {
   return PLACE_BUILDERS.find((builder) => builder.accepts(spec));
