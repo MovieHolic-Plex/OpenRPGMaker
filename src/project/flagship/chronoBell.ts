@@ -1769,10 +1769,9 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       ].join("\n"),
     },
   });
-  const reported = findTextList(M(ids.observatory), "이리스를 집에 데려다주거라");
-  if (!reported) throw new Error("[fallen-star] 보고 대사를 찾지 못했다");
   // 13-2·13-3 — 제1막 끝: 이리스가 숨겼던 한 줄, 그리고 붉은 못.
-  reported.list.push(
+  // 하넬 1페이지는 applyFallenLoreAndHanel 이 다시 짜므로, 줄은 거기서 triggerEnding 앞에 끼운다(아래).
+  const endingBeats: Command[] = [
     narrate("(천문대 위층. 렌즈 가운데에서 하늘탑 방향 신호가 깜빡인다.)"),
     say("카엘", "그럼 거기까지 가 보자. 같이."),
     narrate("(이리스는 대답하지 않고 일지를 가슴에 안는다.)"),
@@ -1788,8 +1787,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     narrate("(북쪽 하늘에서 별 하나가 천천히 붉게 깜빡인다.)"),
     narrate("(지도의 북쪽 끝. 붉은 못 하나가 박힌다.\n검은 장갑의 손이 못을 누른다.)"),
     narrate("그 시각, 심문관은 지도의 북쪽 끝에 못을 박았다."),
-  );
-  reported.list.push({ kind: "triggerEnding", endingId: ENDING_ID } as Command);
+  ];
 
   // 숲길 — 보이는 적 셋(부딪히면 전투). 입구에서 공터까지 고르게 둔다.
   const forestEntry = M(ids.forest).events.find((e) => JSON.stringify(e).includes(`"mapId":"${M(ids.hub).id}"`));
@@ -2341,6 +2339,29 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   const actorFace = (id: string): string => project.database.actors.find((a) => a.id === id)?.faceResourceId ?? "";
   // 이야기 장면(하넬·브람·지하의 발렌)은 말을 걸면 한 칸 물러서 마주 선다.
   applyFallenLoreAndHanel(project, ids);
+  {
+    // 13-2~13-4: 다시 짜인 하넬 1페이지의 「보고 끝」 목록(main_done 꺼짐 분기)에서 triggerEnding 바로 앞에 끼운다.
+    const hanel = M(ids.observatory).events.find((e) => e.id === `ev_${FS_PREFIX}_hanel`);
+    let done = false;
+    const visit = (cmds: Command[]): void => {
+      for (const c of cmds) {
+        const f = c as unknown as { kind: string; condition?: { kind?: string; switchId?: string; value?: boolean }; then?: Command[]; else?: Command[] };
+        if (f.kind !== "fork") continue;
+        if (!done && f.condition?.kind === "switch" && f.condition.switchId === "sw_fs_main_done" && f.condition.value === false && f.then) {
+          const at = f.then.findIndex((x) => x.kind === "triggerEnding");
+          if (at >= 0) {
+            f.then.splice(at, 0, ...endingBeats);
+            done = true;
+            return;
+          }
+        }
+        visit(f.then ?? []);
+        visit(f.else ?? []);
+      }
+    };
+    for (const page of hanel?.pages ?? []) visit(page.commands);
+    if (!done) throw new Error("[fallen-star] 제1막 끝 대사를 끼울 자리를 찾지 못했다");
+  }
   stageTalk(M(ids.observatory).events.find((e) => e.id === `ev_${FS_PREFIX}_hanel`));
   stageTalk(M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_bram`));
   // bossEvent 는 앞에서 잡은 옛 맵 객체일 수 있다(도구를 부를 때마다 맵이 새로 만들어진다) — id 로 다시 찾는다.
