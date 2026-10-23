@@ -48,6 +48,7 @@ const Q1_OSBORN = "sw_fs_q_bread_osborn";
 const Q1_RINO = "sw_fs_q_bread_rino";
 const Q1_BRAM = "sw_fs_q_bread_bram";
 const Q1_COUNT = "var_fs_q_bread_given";
+const Q1_HEARD = "sw_fs_q_bread_heard";
 // Q2 — 마르타의 은수저
 const Q2_ON = "sw_fs_q_spoon_on";
 const Q2_DONE = "sw_fs_q_spoon_done";
@@ -117,6 +118,21 @@ function mustEvent(project: Project, mapId: string, id: string): GameEvent {
   if (!event?.pages?.[0]) throw new Error(`[fallen-quests] ${mapId}/${id} 이벤트가 없다`);
   return event;
 }
+/**
+ * 계산대 뒤 주인은 계산대 칸의 투명한 대리 이벤트(<id>_counter, fallenTownInteriors.ts)로 말을 받는다 —
+ * 주인의 페이지를 바꾼 뒤 대리 이벤트에도 같은 페이지를 다시 입힌다(투명·고정). 셀프 스위치는 둘이 따로라 쓰지 않는다.
+ */
+function syncCounter(project: Project, mapId: string, id: string): void {
+  const map = project.maps[mapId];
+  const npc = findEvent(map, id);
+  const proxy = findEvent(map, `${id}_counter`);
+  if (!npc || !proxy) return;
+  proxy.pages = structuredClone(npc.pages ?? []).map((page) => ({
+    ...page, id: `${page.id}_counter`, graphic: { transparent: true }, priority: "same",
+    movement: { type: "fixed", speed: 3, frequency: 3 },
+  })) as EventPage[];
+}
+
 /** 사람 이벤트의 페이지를 통째로 바꾼다. specs 는 뒤에 올수록 우선(마지막으로 조건이 맞는 페이지가 켜진다). */
 function rewritePages(event: GameEvent, specs: { name: string; conditions: Condition[]; commands: Command[] }[]): void {
   const base = event.pages![0]!;
@@ -283,11 +299,11 @@ function toma(project: Project): void {
     { name: "기본", conditions: [], commands: [
       say(TOMA, "아내는 광장에 나가 있어요.\n별이 떨어진 밤엔 반죽이 안 부푼다던데…"),
       say(TOMA, "그래도 오늘 새벽 반죽은 정말 안 부풀었어요."),
-      selfOn("B"),
+      setSw(Q1_HEARD),
       preGreeting,
       shop(pre),
     ] },
-    { name: "의뢰(Q1)", conditions: [self("B")], commands: [
+    { name: "의뢰(Q1)", conditions: [sw(Q1_HEARD)], commands: [
       say(TOMA, "오늘 새벽 반죽이 안 부풀었어요…\n이걸 가져가서 아침을 못 먹은 이들한테 좀 줘요."),
       say(TOMA, "동문 문지기, 오스본 어르신,\n심문회 기사님… 숲지기 브람도요."),
       choices([
@@ -672,7 +688,7 @@ export type TownQuestResult = { clues: Record<string, string>; scoldedBoxes: num
 /** 마을 대사·잔 일 셋·꾸지람·일지. buildFallenTownLife(수납) 뒤, 행렬 길을 잰 뒤에 부른다. */
 export function applyFallenTownQuests(project: Project, ids: { hub: string; forest: string }): TownQuestResult {
   for (const [id, name] of [
-    [Q1_ON, "Q1 토마의 납작빵 수락"], [Q1_DONE, "Q1 토마의 납작빵 완료"], [Q1_GATE, "Q1 문지기에게 건넴"], [Q1_OSBORN, "Q1 오스본에게 건넴"],
+    [Q1_HEARD, "Q1 토마의 사정을 들었다"], [Q1_ON, "Q1 토마의 납작빵 수락"], [Q1_DONE, "Q1 토마의 납작빵 완료"], [Q1_GATE, "Q1 문지기에게 건넴"], [Q1_OSBORN, "Q1 오스본에게 건넴"],
     [Q1_RINO, "Q1 리노에게 건넴"], [Q1_BRAM, "Q1 브람에게 건넴"],
     [Q2_ON, "Q2 마르타의 은수저 수락"], [Q2_DONE, "Q2 마르타의 은수저 완료"], [Q2_INN, "Q2 여관 저장고 흔적"], [Q2_SACK, "Q2 약방 자루 흔적"],
     [Q2_FLOUR, "Q2 밀가루 통 은수저"], [Q2_FOUND, "Q2 토비에게서 은수저"],
@@ -691,6 +707,9 @@ export function applyFallenTownQuests(project: Project, ids: { hub: string; fore
   marta(project);
   oden(project);
   rohan(project);
+  for (const [mapId, id] of [["fs_bakery_home", "ev_fs_baker_husband"], ["fs_inn", "ev_fs_inn_keeper"], ["fs_apothecary", "ev_fs_apothecary"], ["fs_smithy", "ev_fs_smith"]] as const) {
+    syncCounter(project, mapId, id);
+  }
   journal(project);
   const hub = project.maps[ids.hub]!;
   const at = (id: string) => { const e = findEvent(hub, id); return e ? { x: e.x, y: e.y } : null; };
