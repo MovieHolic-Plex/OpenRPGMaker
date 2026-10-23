@@ -42,8 +42,9 @@ export function wantsGameTools(task: string): boolean {
 export const TERRAIN_WORDS = /다리를|다리가|다리 위|다리에|돌다리|강을|강이|강물|강 상류|강 하류|개울|냇물|시냇|연못을|물길|폭포|레버|팻말|표지판|간판|bridge|lever|signpost/iu;
 export const V2_TERRAIN_TOOLS: readonly string[] = ["list_spatial_designs", "stamp_object", "fill_region"];
 export const TERRAIN_CARD = `[이미 있는 맵에 덧그리기 — 물길·다리·작은 물건] 맵을 새로 짓지 않고 고칠 때(이미 지은 마을에 강·다리·레버·팻말).
-- 물: fill_region{mapId, material:'물', rect:{x,y,w,h}, shape?:'ellipse'} — 굽은 강은 rect 여러 개. 집·완성 구역은 피하고, 길이 물을 건너는 자리를 남겨 다리를 놓는다.
-- 물건(다리·레버·팻말·표지판·우물): list_spatial_designs{kind:'object', query:'다리'|'레버'|'팻말'|'sign'} 로 id 를 찾아 stamp_object{mapId, objectId:'kit:…', x, y}. 찾아도 없을 때만 draw_object.
+- 물: fill_region{mapId, material:'물', rect:{x,y,w,h}, shape?:'ellipse', referencePurpose} — 버들항 칩셋(beodeul_city)은 referencePurpose:'beodeul-city-water' 가 꼭 있어야 한다. 굽은 강은 rect 여러 개. 집·완성 구역은 피하고, 길이 물을 건너는 자리를 남겨 다리를 놓는다.
+- 물건: list_spatial_designs{kind:'object', query} 로 id 를 찾아 stamp_object{mapId, objectId:'kit:…', x, y}. 버들항에서 자주 쓰는 것: 다리 'kit:beodeul_city/bd-bridge-arch', 표지판 'kit:beodeul_city/bd-out-signpost',
+  바닥에 세우는 레버 'kit:shared_hand_interior_harness/shared_hand-interior:floor lever'(벽 레버 'wall lever'·던전 레버는 벽 앞면에만 걸린다). 찾아도 없을 때만 draw_object. 묻기 전에 먼저 놓아 본다.
 - 이벤트(조사·밟기)는 그 물건 칸에 둔다(좌표는 방금 놓은 x,y). 다 놓은 뒤 inspect 로 1배 그림을 본다.`;
 export function wantsTerrainTools(task: string): boolean {
   return TERRAIN_WORDS.test(task);
