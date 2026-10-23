@@ -347,6 +347,14 @@ export function monsterDisplayName(project: Project, instance: MonsterInstance |
   return monsterSpeciesById(project, instance.speciesId)?.name ?? instance.speciesId;
 }
 
+/** 적 이름에 저자가 먼저 붙여 둔 「야생」/「야생의」 접두를 떼어 낸다.
+ *  전투 인트로·3세대 호칭은 접두를 문장이 직접 붙이므로, 이름에 이미 있으면
+ *  「야생의 야생 슬라임이 나타났다!」·「야생 야생 슬라임」으로 두 번 읽혔다.
+ *  접두 뒤 공백을 요구하므로 「야생화 꿀」처럼 접두가 아닌 낱말은 그대로다. */
+export function stripWildNamePrefix(name: string): string {
+  return name.replace(/^야생(?:의)?\s+/u, "") || name;
+}
+
 export function monsterMaxHp(project: Project, instance: MonsterInstance | undefined): number {
   if (!instance) return 1;
   const species = monsterSpeciesById(project, instance.speciesId);
