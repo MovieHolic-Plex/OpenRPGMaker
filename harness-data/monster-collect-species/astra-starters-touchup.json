@@ -137,6 +137,40 @@
               ".._ACCCCA.._ACCCCA_........",
               "....AAAA...__AAAA.........."
             ]
+          },
+          {
+            "forehead": true,
+            "recolor": [
+              "#f9f3d3",
+              "#9aefb8"
+            ],
+            "box": [
+              26,
+              28,
+              28,
+              30
+            ]
+          },
+          {
+            "fareye": true,
+            "at": [
+              22,
+              34
+            ],
+            "pal": {
+              "K": "#121639",
+              "W": "#ffffff",
+              "B": "#2f4fa8"
+            },
+            "rows": [
+              ".KK.",
+              "KWWK",
+              "KWKK",
+              "KKKK",
+              "KKKK",
+              "KBBK",
+              ".KK."
+            ]
           }
         ]
       }
@@ -441,26 +475,56 @@
             ]
           },
           {
-            "flipper": true,
+            "brow": true,
+            "recolor": [
+              "#3f91ca",
+              "#75c8fc"
+            ],
+            "box": [
+              17,
+              37,
+              24,
+              41
+            ]
+          },
+          {
+            "nubclear": true,
             "at": [
-              27,
-              51
+              15,
+              59
             ],
             "pal": {
-              "M": "#56ace6",
+              "A": "#031045"
+            },
+            "rows": [
+              "AAAAAA",
+              "_____A",
+              "_____.",
+              "_____."
+            ]
+          },
+          {
+            "fins": true,
+            "at": [
+              9,
+              55
+            ],
+            "pal": {
+              "M": "#75c8fc",
+              "m": "#56ace6",
               "D": "#3f91ca",
               "A": "#031045"
             },
             "rows": [
-              "....AAA.",
-              "...ADMMA",
-              "..ADDMMA",
-              ".ADDMMMA",
-              ".ADMMMA.",
-              "ADDMMMA.",
-              "ADMMMA..",
-              "AMMMA...",
-              ".AAA...."
+              "......AA.",
+              "....AADmA",
+              "..AADDmmA",
+              ".ADDmmmMA",
+              ".ADmmMMA.",
+              "ADmmMMMA.",
+              "AmmMMAA..",
+              ".AMAA....",
+              "..A......"
             ]
           }
         ]
