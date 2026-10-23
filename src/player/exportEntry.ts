@@ -23,6 +23,7 @@ import { hostExitReturnUrl, parseHostBridge, type HostBridge } from "@/player/ho
 import { installDesktopShellBridge, type DesktopShellBootConfig } from "@/player/desktopShellBridge";
 import { stopAllAudio } from "@/player/audio";
 import { registerExportAssetBase } from "@/assets/inlineAssetStore";
+import { exportAssetBaseFor } from "@/player/exportAssetBase";
 import { installExportUploadedAssets } from './exportUploadedAssets';
 import { repairFaceMatches } from "@/project/faceMatchRepair";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
@@ -56,10 +57,10 @@ void bootExportedPlayer(app);
 
 async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   const boot = await withDevCheckpointParam(readBootConfig());
-  // The private editor probe loads the shipped player bundle, but public game
-  // resources belong to the editor host, one directory above that bundle.
+  // The private editor probe and any hosted build (player under /export-player/) read public game
+  // resources from the editor host, one directory above that bundle — see exportAssetBase.ts.
   const probeAssets = boot.qaInstrumentation === true && boot.actionCombatProbe !== undefined;
-  registerExportAssetBase(new URL(probeAssets ? "../" : ".", document.baseURI));
+  registerExportAssetBase(exportAssetBaseFor(document.baseURI, { editorProbe: probeAssets }));
   const rawDemoParam = new URLSearchParams(window.location.search).get("demo");
   const demoParam = rawDemoParam === "fallen-star" ? "chrono-bell" : rawDemoParam === "astra-horizon" ? "emerald-crown" : rawDemoParam;
   if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season" || demoParam === "first-love") {
