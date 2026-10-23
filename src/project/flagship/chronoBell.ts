@@ -29,6 +29,7 @@ import { applyFallenBattleItems, FS_SPEAR_PIKE, FS_SWORD_GALE } from "./fallen/b
 import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX, ensureFallenValenChip } from "./fallenValenChip";
 import { buildFallenTownInteriors } from "./fallenTownInteriors";
 import { buildFallenTownLife, ensureFallenTownDatabase } from "./fallen/townLife";
+import { applyFallenTownQuests, FS_QUEST_FACE_ALIASES } from "./fallen/townQuests";
 import { placeFallenStarVessel } from "./fallenStarVessel";
 import { dressObservatoryHall } from "./fallenObservatoryHall";
 import { isFallenRoomRebuilt } from "./fallenRoomOwnership";
@@ -2189,6 +2190,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 길은 모든 소품·표지를 찍은 뒤에 잰다 — 앞에서 재면 뒤에 선 표지·자리 옮김이 길을 막았다.
   marchOffAfterProclamation(project, M(ids.hub));
   clearDoorFronts(project, M(ids.hub));
+  // 마을 대사·잔 일 셋(납작빵·은수저·창)·꾸지람·의뢰 일지 — 대본 3·4·5·14·15·16·18절 (fallen/townQuests.ts).
+  applyFallenTownQuests(project, { hub: ids.hub, forest: ids.forest });
   // 실내 맵의 방 밖은 전부 어둠(game-scene-polish 3-7·11-6, 사용자 지적 「방 사이가 회색 바닥 띠로 읽힌다」) — 회색 디더·바위 천장은
   // 같은 이웃 번호의 어두운 천장으로, 여백을 메운 바위벽 조각은 공허 칸으로.
   // 천문대 윗 홀 — 오프닝 컷처럼 둥근 단 위 큰 망원경·혼천의·태양계의·별 지도 탁자(VQA r3 「집처럼 보인다」).
@@ -2221,7 +2224,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       }
     }
   }
-  applySpeakerFaces(project, {
+  const speakerFaces: Record<string, string> = {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),
     이리스: actorFace("actor_fs_iris"),
@@ -2232,7 +2235,9 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     "광장의 할머니": "easyrpg-faceset-people1-07",
     "꼬마 토비": "easyrpg-faceset-people1-00",
     "빵집 아주머니": "easyrpg-faceset-people1-03",
-  });
+  };
+  for (const [alias, of] of Object.entries(FS_QUEST_FACE_ALIASES)) if (speakerFaces[of]) speakerFaces[alias] = speakerFaces[of]!;
+  applySpeakerFaces(project, speakerFaces);
 
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
