@@ -8,7 +8,7 @@
 // 규칙(페이지 movement.type 이 custom·random 인 NPC 만 — 명령 경로·시간표·생활 이동·추격 순찰은 그대로):
 //  - 같은 방향 걸음이 이어지면 그 사이에 서지 않는다(한 번에 걸어 간다). 멈춤은 방향이 바뀔 때·`wait` 에서만.
 //  - 멈춤 길이는 빈도 간격의 0.6~1.5배로 흔든다 — 여러 사람이 같은 박자로 서고 걷지 않는다.
-//  - 무작위 이동은 「한 방향 1~3칸 걷기 → 멈춤」 묶음이다. 멈춘 자리에서 가끔 둘러보기만 하고, 막 걸어온 쪽으로
+//  - 무작위 이동은 「한 방향 1~3칸(1칸 25%·2칸 40%·3칸 35%) 걷기 → 멈춤」 묶음이다. 멈춘 자리에서 가끔 둘러보기만 하고, 막 걸어온 쪽으로
 //    바로 되돌아가는 일(제자리 왔다 갔다)은 드물게, 막힌 쪽(벽·사람)은 고르지 않는다. 처음 자리에서 3칸 넘게
 //    멀어지면 돌아오는 쪽을 고른다.
 import type { Dir } from "@/player/input";
@@ -90,7 +90,7 @@ export function wanderCommand(input: {
     if (pick <= 0) { dir = entry.dir; break; }
   }
   const roll = rng();
-  const length = roll < 0.4 ? 1 : roll < 0.8 ? 2 : 3;
+  const length = roll < 0.25 ? 1 : roll < 0.65 ? 2 : 3;
   mover.wanderRun = { dir, left: length - 1 };
   return { kind: "move", dir };
 }

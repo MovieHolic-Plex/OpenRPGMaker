@@ -182,6 +182,9 @@ function pickPerch(state: FlyerState, scene: FlyerSceneContext, tile: number): F
     if (Math.abs(tx - scene.tileX) + Math.abs(ty - scene.tileY) < 4) continue;
     if (isWaterTagged(project, map, tx, ty)) continue;
     const ground = isPassable(project, map, tx, ty);
+    // 지붕은 막힌 칸이 아래로 두 칸 더 이어지는 곳만 — 막힌 칸 바로 아래가 땅이면 그 칸은 건물 앞벽(3/4 시점)이다.
+    // 벽에 앉으면 새가 벽 한가운데 붙고 그림자가 벽을 타고 내려온다(2026-10-23 적대 검수).
+    if (!ground && (isPassable(project, map, tx, ty + 1) || isPassable(project, map, tx, ty + 2) || ty + 2 >= map.height)) continue;
     // 사람·간판이 선 칸은 피한다(이벤트 스프라이트 위치로 본다).
     let occupied = false;
     for (const sprite of scene.eventSprites.values()) {
@@ -275,7 +278,8 @@ function stepFlyer(state: FlyerState, scene: FlyerSceneContext, tile: number, de
       state.heading = Math.atan2(state.target.y - state.y, state.target.x - state.x);
       const glide = (Math.max(6, dist) / near) ** 0.6 * (dist < 6 ? dist / 6 : 1);
       state.h = Math.min(state.h, state.cruise * glide);
-      state.speed = Math.max(20, 40 * (dist / near));
+      // 3/4 시점에서 북쪽으로 내려앉으면 앞으로 나아감과 내려옴이 화면에서 서로 지워져 제자리 정지비행처럼 보인다 — 속도를 늦추지 않는다.
+      state.speed = Math.max(30, 40 * (dist / near));
       state.flapping = true;
     } else {
       state.h += (state.cruise - state.h) * Math.min(1, dt * 2);
@@ -314,7 +318,8 @@ function drawFlyer(state: FlyerState, entry: FlyerEntry, sprite: FlyerSprite): v
   if (state.mode === "perch") {
     sprite.setDepth(state.perchRoof ? 300_000 + state.y : 200_000 + state.y);
     // 앉은 새: 날개 접은 그림(패턴 2), 가끔 짧게 날개를 턴다.
-    sprite.setFrame(charsetWalkFrameIndex(entry.baseFrame, state.dir, Math.floor(state.flapPhaseMs / 2600) % 7 === 0 ? 0 : 2));
+    // 앉은 새: 날개 접은 그림(패턴 2, 몸 아랫줄이 착지점에 닿는 그림)만. 쉬는 동안의 움직임은 고개 돌리기로 준다.
+    sprite.setFrame(charsetWalkFrameIndex(entry.baseFrame, state.dir, 2));
     return;
   }
   sprite.setDepth(FLYING_DEPTH + state.y);
@@ -355,7 +360,9 @@ export function updateAmbientFlyers(scene: FlyerSceneContext, deltaMs: number): 
     if (graphics && sprite.visible && !(state.mode === "perch" && state.perchRoof)) {
       // 높을수록 작고 옅은 그림자. 앉으면 발밑에 작게.
       const lift = Math.min(1, state.h / 40);
-      graphics.fillStyle(0x1b2a24, 0.28 - lift * 0.14);
+      // 지붕에 내려앉는 중이면 그림자를 거리에 따라 지운다(지붕 칸 아래 땅 그림자는 앉고 나면 없다).
+      const roofFade = state.mode === "approach" && state.target?.roof ? Math.min(1, Math.hypot(state.target.x - state.x, state.target.y - state.y) / (tile * 3)) : 1;
+      graphics.fillStyle(0x1b2a24, (0.28 - lift * 0.14) * roofFade);
       graphics.fillEllipse(Math.round(state.x), Math.round(state.y + 1), Math.max(4, 11 - lift * 5), Math.max(2, 4 - lift * 1.5));
     }
   }
