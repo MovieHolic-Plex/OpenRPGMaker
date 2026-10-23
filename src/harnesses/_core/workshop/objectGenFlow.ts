@@ -277,6 +277,7 @@ const SHELF_MIN_PIXELS = kitValue<number>("checks", "SHELF_MIN_PIXELS");
 const SHELF_MAX = kitValue<number>("checks", "SHELF_MAX");
 const LEAF_PALE_MIN = kitValue<number>("checks", "LEAF_PALE_MIN");
 const UNDERGAP_MAX = kitValue<number>("checks", "UNDERGAP_MAX");
+const ROCK_BASE_MAX = kitValue<number>("checks", "ROCK_BASE_MAX");
 const DEEP_LUMA = kitValue<number>("checks", "DEEP_LUMA");
 const DEEP_MIN = kitValue<number>("checks", "DEEP_MIN");
 const ORGANIC_LEAF_RAMP = kitValue<readonly string[]>("prompts", "ORGANIC_LEAF_RAMP");
@@ -590,6 +591,10 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
         if (first < 0) continue;
         for (let y = first; y < last; y++) if (y > mid && full.data[(y * W + x) * 4 + 3] === 0) { under++; break; }
       }
+      // 원본 checks FLATBASE(돌): 맨 아래 불투명 줄 폭 / 가장 넓은 줄. 버들항 바위 0.36~0.67, 「붙인 받침대」 1.0.
+      let widest = 0, lowest = 0;
+      for (let y = top; y >= 0 && y <= bot; y++) { let w = 0; for (let x = 0; x < W; x++) if (solid.data[(y * W + x) * 4 + 3] === 255) w++; if (w > widest) widest = w; if (y === bot) lowest = w; }
+      if (widest && lowest / widest > ROCK_BASE_MAX) hard.push({ code: "FLATBASE", msg: `the pile is cut flat along the ground (lowest row ${lowest} of ${widest} px wide, Beodeul rocks at most 67%) - round the stones' lower edges off; the translucent shadow key does the grounding, never a band or plinth` });
       if (under > UNDERGAP_MAX) hard.push({ code: "UNDERGAP", msg: `the ground shows under the stones in ${under} columns - the pile floats or stands on its chips like legs (Beodeul rocks 0) - rest every stone's base on the ground row with a dark contact band, chips beside the boulder, not under it` });
     }
     if (ogCastsShadow(item) && g.rows >= 8 && translucent === 0) hard.push({ code: "NOSHADOW", msg: "no soft ground shadow - put 1-3 rows of the translucent ground-shadow key on the ground under the object's lower right, as under the Beodeul rocks and flower beds (lift the object 1-2 px)" });
