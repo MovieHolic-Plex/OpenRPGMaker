@@ -190,6 +190,12 @@ function standUp(eventId: string, chair: Cell, floor: Cell, upSw?: string): Comm
   ];
 }
 
+/** 페이지 그림을 배율로 그린다(문간처럼 «안쪽에 선» 사람). */
+function scaledPage(p: ReturnType<typeof page>, scale: number): ReturnType<typeof page> {
+  (p as unknown as { graphic: { scale?: number } }).graphic.scale = scale;
+  return p;
+}
+
 /** 문 칸: 밟으면 단계에 따라 옮기거나 막는다. */
 function door(id: string, at: Cell, conditionsToGo: Parameters<typeof page>[1], go: Command[], blocked: Command[], back: Dir = "up"): GameEvent {
   return event(id, id, at, [
@@ -732,6 +738,8 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
     event("ev_fl_jihu_kon", "강지후", k.door, [page("jk", [swOn("sw_fl_jihu_in_konbini")], [], { who: "jihu", dir: "up" })]),
   );
   add(kon, scene("ev_fl_kon_enter", { x: 1, y: 1 }, S.EVENING, [
+    // 점원은 들어오는 손님(문) 쪽을 보며 맞는다 — 왼쪽을 보고 인사했다(VQA r31).
+    faceHero("ev_fl_clerk"),
     ...call("clerk", "happy", "어서 오세요~"),
     ...think("(냉장고 쪽을 보자.)"),
     stage(S.KONBINI),
@@ -1122,7 +1130,8 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     ...fadeIn(800),
     bgm(BGM_MEETING),
     ...caption("금요일 오후 3시. 회의실."),
-    ...sayAt("lead", "left", "base", "지후 씨, 본부장님 앞인데 오늘도 후드예요?"),
+    ...faceEachOther("ev_fl_f_lead", "ev_fl_f_jihu"),
+    ...toWhom("ev_fl_f_jihu", sayAt("lead", "left", "base", "지후 씨, 본부장님 앞인데 오늘도 후드예요?")),
     ...say("jihu", "embarrassed", "…재킷은 가방에 있어요. 이게 머리가 더 잘 돌아가서요."),
     ...emote("ev_fl_f_minho", "sweat"),
     // 탁자 머리의 본부장이 말을 열면 발표자 둘(서하·지후)이 그쪽을 본다.
@@ -1224,7 +1233,8 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
       { text: "회식에 간다", then: [
         ...think("발을 떼지 못했다. 10년 전에도, 오늘도."),
         ...sayAt("minho", "left", "happy", "좋아요! 오늘은 내가 쏩니다. …아, 법카로요."),
-        ...sayAt("lead", "left", "happy", "민호 씨."),
+        ...faceEachOther("ev_fl_f_lead", "ev_fl_f_minho"),
+        ...toWhom("ev_fl_f_minho", sayAt("lead", "left", "happy", "민호 씨.")),
         ...emote("ev_fl_f_minho", "sweat"),
         face("@player", dirToward(o.meetingSeat, leadSpot)),
         ...sayAt("lead", "left", "base", "서하 씨, 첫 주 수고했어요. 가요, 다 같이."),
@@ -1238,7 +1248,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
         // 둘은 회의실 유리문 쪽으로 걸어 나간다 — 일어서기만 하고 컷되면 «아무도 안 나간다»였다(VQA r29). 서하는 남아 정리한다.
         walkRoute(project, FL_MAP.officeFri, "ev_fl_f_lead", { x: leadSpot.x, y: leadSpot.y + 1 }, o.meeting, [o.meetingSeat], false),
         walkRoute(project, FL_MAP.officeFri, "ev_fl_f_minho", { x: minhoSpot.x, y: minhoSpot.y + 1 }, { x: o.meeting.x - 1, y: o.meeting.y }, [o.meetingSeat], false),
-        wait(2200),
+        waitMoves(), // 둘이 회의실 문에 닿은 뒤에 어두워진다(VQA r31: 방 한가운데서 끊겼다)
         // 엔딩 C 의 비(VQA r8: 「비가 오기 시작했다」는 말뿐 비가 없다) — 검은 화면에서 빌딩 앞 밤거리로 옮기고, 비는 거기 장면이 내린다.
         // 실내에 비를 뿌리지 않는다. 옮긴 뒤의 명령은 이 맵 이벤트에서 돌지 않으므로 이어지는 연출은 밤거리의 ev_fl_dinner_rain 이 한다.
         ...fadeOut(700),
@@ -1302,7 +1312,9 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   add(plat, event("ev_fl_p_jihu", "강지후", jihuSpot, [
     page("pj", [swOff("sw_fl_jihu_boarded")], [], { who: "jihu", dir: "down" }),
     // 열린 문 안(차량 옆면 칸)에 선 동안은 열차 그림 위(above)에 그린다.
-    page("pj_door", [swOff("sw_fl_jihu_boarded"), swOn("sw_fl_jihu_in_door")], [], { who: "jihu", dir: "down", priority: "above" } as Parameters<typeof page>[3]),
+    // 문간의 지후는 3/4 크기로 — 원래 크기면 문(14×21px)보다 커서 «차량 옆면 창문 위에 붙여 그렸다»로 읽혔다(VQA r31 중대).
+    // 작게 그리면 열린 문 안쪽(한 걸음 들어간 자리)에 선 사람으로 읽힌다.
+    scaledPage(page("pj_door", [swOff("sw_fl_jihu_boarded"), swOn("sw_fl_jihu_in_door")], [], { who: "jihu", dir: "down", priority: "above" } as Parameters<typeof page>[3]), 0.72),
   ]));
   const meet = { x: jihuSpot.x - 1, y: jihuSpot.y };
   // 지후가 탄다 — 막차는 장면이 부르고(FL_TRAIN_CALL) 문을 연 채 붙잡아 둔다(FL_TRAIN_GO 가 꺼진 동안). 지후가 안전선을 지나
