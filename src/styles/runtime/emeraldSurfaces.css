@@ -703,6 +703,13 @@
   background-position: center bottom;
   image-rendering: pixelated;
 }
+/* 아스트라 인물 2판(2026-10-23 「징그럽다」): 64x64 원래 격자 흉상(전투 트레이너 64x64 와 같은 화소 크기)을 2배 = 128x128 칸에 세운다.
+   44x46 칸에서는 눈이 2~3화소라 얼굴이 죽어 보였다(눈가림 검수 4명 공통 원인 1위). */
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-face.dialogue-face-bust[data-bust-large="1"] {
+  width: 136px;
+  height: 132px;
+  background-size: 128px 128px;
+}
 /* 3세대 상자는 초상이 하나다 — 앞 화자(듣는 쪽)를 같은 자리에 겹쳐 그리지 않는다. */
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-portrait-listener { display: none; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box.bust-right .dialogue-face.dialogue-face-bust { left: auto; right: 12px; }
