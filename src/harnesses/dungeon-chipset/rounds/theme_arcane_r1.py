@@ -1132,7 +1132,7 @@ def _void_body(stars, i=0):
 VOID_BODIES = [_void_body(st, i) for i, st in enumerate(VOID_STARS)]
 for _r in VE_FRAME + VE_FACE:
     assert len(_r) == 32, _r
-LVE = {'A1': L('k:vrock0 N:arcane0 n:ostone1 d:ostone1 h:arcane2 H:arcane3 s:arcane1 b:arcane0 e:ostone0 v:arcane2 V:arcane4 a:arcane0 A:arcane2'),   # 보라 바위 밑면
+LVE = {'A1': L('k:vrock0 N:arcane0 n:ostone1 d:ostone1 h:arcane1 H:arcane2 s:arcane0 b:arcane0 e:ostone0 v:arcane2 V:arcane4 a:arcane0 A:arcane2'),   # 보라 바위 밑면
        'A2': L('k:vrock0 N:ostone2 n:ostone1 d:ostone1 h:ostone4 H:ostone5 s:ostone3 b:ostone2 e:ostone0 v:red1 V:fire3 a:ostone1 A:red0')}           # 붉은 재 바위 밑면
 
 
@@ -1179,7 +1179,7 @@ class VoidEdge:
 
 def void_edge(key):
     leg = LVE[key]
-    gat = ground_at(key)
+    gat = ground_at('A2')          # 섬 윗면 = 패널이 고른 마계 바닥(A2, 검붉은 재 판 + 불씨 핏줄)과 같은 몸통 — 섞어 깔아도 이어진다
     at = autotile_cv(gat.body, grid(noise(VE_FRAME, 'shH', 4, 41), leg, 32, 32), grid(noise(VE_INNER, 'shH', 4, 42), leg, 16, 16), gat.bodies[1:])
     voids = [grid(b, leg) for b in VOID_BODIES]
     raw = grid(noise(VE_FACE, 'edbs', 7, 31), leg, 32, 32)            # 투명 = 허공(그릴 때 칸 자리 허공 몸통 위에 얹는다)
