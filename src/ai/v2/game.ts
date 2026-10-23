@@ -54,5 +54,5 @@ export function wantsTerrainTools(task: string): boolean {
 export function createGameTools(env: PiAssistantV2Env, task = ""): PiToolShape[] {
   const want = [...(wantsGameTools(task) ? V2_GAME_TOOLS : []), ...(wantsTerrainTools(task) ? V2_TERRAIN_TOOLS : [])];
   const names = [...new Set(want)].filter((name) => getTool(name));
-  return createPiToolset(env.ctx, { toolNames: names, onCall: env.record });
+  return createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record });
 }
