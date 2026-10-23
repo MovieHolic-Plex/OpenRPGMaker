@@ -170,7 +170,7 @@ async function dumpRound(harnessId, file) {
       item: item ? { title: item.title, description: item.description, width: item.width, height: item.height, padTop: item.padTop, footRows: item.footRows, risePx: item.risePx, kind: item.kind, passage: item.passage ?? null, footprintNote: item.footprintNote ?? null, refTop: item.refTop ?? null } : null,
       reference: round.reference ?? null,
       runs: round.runs.map((run) => ({
-        letter: run.letter, status: run.status, verdict: run.verdict, error: run.error,
+        letter: run.letter, status: run.status, verdict: run.verdict, error: run.error, base: run.base ?? null,
         png8: run.grid && palette ? gridDataUrl(run.grid, palette, 8, [150, 120, 90, 255]) : null,
         png1: run.grid && palette ? gridDataUrl(run.grid, palette, 1) : null,
         // 시도마다 걸린 검사와 그림 — 후보가 하나도 안 남을 때 무엇이 막았는지 본다.

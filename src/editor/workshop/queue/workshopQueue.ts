@@ -395,7 +395,7 @@ class WorkshopQueue {
         const round = session.rounds.find((candidate) => candidate.id === job.roundId);
         const run = round?.runs.find((candidate) => candidate.letter === letter);
         if (!item || !round || !run?.grid) throw new Error("고른 후보를 찾지 못했어요.");
-        baked = bakeWorkshopPick(item, run.grid, session.runner.palette(item), session.env, { autoPicked: auto, gate: run.gate ?? null });
+        baked = bakeWorkshopPick(item, run.grid, session.runner.palette(item), session.env, { autoPicked: auto, gate: run.gate ?? null, base: run.base ?? null });
         const at = now();
         await session.store.putPick({ projectKey: session.projectKey, itemKey: item.key, roundId: round.id, letter, at });
         await session.store.addFeedback({

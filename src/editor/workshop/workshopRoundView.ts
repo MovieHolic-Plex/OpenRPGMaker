@@ -124,7 +124,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
       })
       : el("button", {
         class: "workshop-primary", text: `고른 ${pick!.letter} 를 프로젝트 칩셋에 넣기`, attrs: { type: "button" }, dataset: { testid: "workshop-bake" },
-        on: { click: () => act(async () => { bakeWorkshopPick(item, grid, palette, session.env, { gate: pickedRun?.gate ?? null }); rerender(); }) },
+        on: { click: () => act(async () => { bakeWorkshopPick(item, grid, palette, session.env, { gate: pickedRun?.gate ?? null, base: pickedRun?.base ?? null }); rerender(); }) },
       });
     return [el("div", {
       class: "workshop-bake" + (baked ? " is-baked" : ""), dataset: { testid: "workshop-bake-row", baked: String(baked) },
