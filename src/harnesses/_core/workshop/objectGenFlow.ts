@@ -273,6 +273,24 @@ const STRAIGHT_SIDE_MAX = kitValue<number>("checks", "STRAIGHT_SIDE_MAX");
 const DEEP_LUMA = kitValue<number>("checks", "DEEP_LUMA");
 const DEEP_MIN = kitValue<number>("checks", "DEEP_MIN");
 const ORGANIC_LEAF_RAMP = kitValue<readonly string[]>("prompts", "ORGANIC_LEAF_RAMP");
+
+/**
+ * 잎 덩이 자연물(나무·덤불·화단) 팔레트의 잎 초록을 견본 잎 단으로 잠근다(object-gen palette.leaf_lock 과 같다).
+ * 칩셋에 실제로 있는 잎 단 색은 넣고, 그 밖의 잎 초록(잔디·올리브·이끼)은 뺀다. 잎 단 색이 하나도 없는 칩셋은 그대로.
+ * 「이 키로만 칠하라」고 해도 수관의 61% 를 올리브·잔디 키로 칠해 세 검수자가 「탁하다, 다른 세트」로 떨어뜨렸다(2026-10-23).
+ */
+export function leafLockHexes(hexes: readonly string[], sheet: RgbaImage): string[] {
+  const rgb = (h: string): [number, number, number] => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  const isLeaf = ([r, g, b]: [number, number, number]) => g >= r + 10 && g >= b;
+  const have = new Set<number>();
+  for (let i = 0; i < sheet.data.length; i += 4) if (sheet.data[i + 3] === 255) have.add((sheet.data[i]! << 16) | (sheet.data[i + 1]! << 8) | sheet.data[i + 2]!);
+  const present = ORGANIC_LEAF_RAMP.map((h) => h.toLowerCase()).filter((h) => { const [r, g, b] = rgb(h); return have.has((r << 16) | (g << 8) | b); });
+  if (!present.length) return [...hexes];
+  const keep = hexes.map((h) => h.toLowerCase()).filter((h) => !isLeaf(rgb(h)) || present.includes(h));
+  for (const h of present) if (!keep.includes(h)) keep.push(h);
+  const luma = (h: string) => { const [r, g, b] = rgb(h); return 0.299 * r + 0.587 * g + 0.114 * b; };
+  return keep.sort((a, b) => luma(a) - luma(b) || (a < b ? -1 : a > b ? 1 : 0));
+}
 const ORGANIC_LEAF_SHARES = kitValue<readonly number[]>("prompts", "ORGANIC_LEAF_SHARES");
 
 /**

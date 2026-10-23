@@ -8,6 +8,7 @@ import type { WorkshopEnv } from "@/harnesses/_core/workshop/types";
 import { ATLAS_BIOME_INTERIOR_ID } from "@/project/defaults/atlasBiomeInterior";
 import { store } from "@/project/store";
 import { footprintClass } from "@/harnesses/_core/workshop/footprint";
+import { leafLockHexes, ogIsOrganic } from "@/harnesses/_core/workshop/objectGenFlow";
 import { classObjects, paletteFromImages, similarObjects } from "@/harnesses/map-objects/editor/sheet";
 
 export type DrawTarget =
@@ -42,7 +43,9 @@ export async function mapObjectPalette(env: WorkshopEnv, tilesetId: string, titl
   const cls = footprintClass(title, description);
   if (cls) for (const object of classObjects(source, cls, 6)) if (picked.length < 8 && !picked.some((o) => o.name === object.name)) picked.push(object);
   const similar = (picked.length ? picked : similarObjects(source, title, description, 6)).map((object) => ({ image: object.image, weight: 8 }));
-  return paletteFromImages([...similar, { image: source.image, weight: 1 }]);
+  const hexes = paletteFromImages([...similar, { image: source.image, weight: 1 }]);
+  // 잎 덩이 자연물은 잎 초록을 견본 잎 단으로 잠근다(잔디·올리브 키 제거)
+  return ogIsOrganic({ title }) && (cls === "tree" || cls === "plant") ? leafLockHexes(hexes, source.image) : hexes;
 }
 
 /** 「물건·가구」 카드가 쓰는 두 실행기 — 손 도트 실내 칩셋(실내 가구)과 지금 맵 칩셋(맵 물건). */
