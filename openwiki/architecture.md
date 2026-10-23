@@ -49,6 +49,15 @@
   ⑤ 공용 자료 304 는 본문을 만들기 전에 판본(SELECT)만으로 판정한다 — 새 호스트 프로세스(데스크톱은 매 실행)의 첫 요청이 304 로 끝날 일에 읽기·gzip 1s 를 쓰던 것.
   ⑥ 창 닫기는 창을 바로 숨기고 저장을 60s 까지 기다린다 — 예전 10s 상한이 새 빌드 첫 실행 뒤의 큰 자동 저장(71MB 프로젝트 13~16s)을 끊어, 다음 실행이 또 «첫 부팅»(+10~15s)이 됐다.
   남은 것: 편집기 진입은 여전히 번들 타일셋 JSON 67MB 를 동기로 싣는다(정규화·소유 참고문서 복원이 동기로 쓴다) — 지연 로드는 부팅 경로 비동기화가 필요하다. 웜 부팅 편집기 입력 가능까지 클릭 뒤 약 5~7s(부하 40).
+- **게임 플레이어 로딩 (2026-10-23, 측정기 `scripts/qa/perf/game-load.mjs`·`export-formats.mts`·`editor-demo-load.mjs`):** 대표 데모(`player.html?demo=<id>`·런처 「플레이」 `/index.html?demo=<id>&play=1`)가
+  브라우저에서 `createFlagshipDemoProject` 로 모든 맵을 지었다 — 타이틀까지 chrono-bell 134s(메인 스레드 131s)·shitamachi 33s·first-love 23s·emerald 11s, 편집기 「플레이」 chrono-bell 142s.
+  이제 `npm run build` 의 `bake:demos`(`scripts/content/bake-flagship-demos.mts`)가 빌드 때 한 번 지어 `dist/demos/<id>.play.json`(웹 내보내기와 같은 투영)과
+  `<id>.project.json`(편집기용 전체)을 쓰고, 출하 플레이어는 에셋 기준 주소(`exportAssetBase.ts`)의 `demos/` 를 읽는다. 빌더 import 는 `import.meta.env.DEV`(QA dev 서버) 분기에만 남아
+  플레이어 번들에서 데모 빌더 청크가 빠졌다(dist/export-player 124MB → 65MB = 모든 웹 내보내기 zip). 굽기는 vite.config 를 타므로 `OPRN_ASSUME_ALL_BGM_INSTALLED=1`(입구 `.mjs` 가 넣는다)로 BGM 설치 define 을 끈다.
+  데모 타이틀까지(루프백) 5~7s. **형식은 원인이 아니었다:** 같은 게임을 웹 ZIP(정적 호스트) 5~6s, 실행형 HTML 7.5~10.5s(100~230MB 한 장 파싱), 50Mbps 회선에서 웹+gzip 7~8s·웹 무압축 17~22s·HTML 14~42s.
+  남은 비용은 모든 게임이 받는 플레이어 묶음 청크 약 50MB(번들 타일셋 정의 JSON — tileMeta 설명·이름표가 대부분, gzip 2.8MB)와 project.json 파싱이다. 호스트는 gzip 이 필수다.
+  같이 고친 것: 칩셋 카탈로그 행(resourceProfiles kind chipset)을 «사용»으로 세지 않는다 — 저작권 정리로 지운 합본 마을 칩셋 행 때문에 빈 프로젝트까지 웹·HTML 내보내기가 실패했다.
+  실행형 HTML 은 iife 의 `import.meta.url`(`{}.url`) 때문에 «Invalid base URL» 로 빈 화면이었다 — `vite.standalone.config.ts` 가 상수로 define 한다.
 - **시작 스플래시·입구 분리 (2026-10-21):** 아이콘을 누르면 app ready 직후 작은 스플래시 창(`electron/main/splash.ts` — data: 문서, 앱 아이콘·이름·진행 막대, 번들·프리로드 없음)이 뜬다.
   `dist-electron/main.cjs` 는 이제 가벼운 입구 `electron/main/boot.ts`(12KB, 빌드가 200KB 상한 검사)다 — 스킴 권한·한 번만 실행 잠금·링크 받아 두기를 하고, ready 에서 스플래시를 띄운 뒤(그려지길 최대 400ms 기다림) 본체 `app.cjs`(옛 main.ts, `startApp(boot)`)를 require 한다. 본체를 먼저 평가하면 ready 가 약 0.3s 늦었다.
   큰 창은 숨긴 채 만들고(`fullscreen` 은 보일 때 건다 — 리눅스는 생성자 fullscreen 이면 show:false 여도 창을 띄워 빈 화면이 스플래시를 덮었다), 시작 화면이 카드를 그린 뒤 `oprn:start.screenReady`(preload `startScreenReady`)를 보내면 보이고 스플래시를 닫는다. 신호는 rAF 없이 바로 보낸다(숨은 창은 프레임이 안 돈다). 신호가 없으면 문서 로드 6s 뒤 그래도 보인다.

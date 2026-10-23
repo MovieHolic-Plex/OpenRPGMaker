@@ -161,6 +161,11 @@ const USAGE_WALK_SKIPPED_KEYS: readonly string[] = ["uploaded"];
 //   함께 나간다" 를 현재 계약으로 못 박아 뒀고, 그 이유("저작 중 고른 얼굴이 빠지는 사고를
 //   막는다")가 타당하다. 전량이 0.37MB 라 이걸 뒤집어 벌 이득도 없다.
 //
+// - 칩셋: 맵이 쓰는 칩셋 그림은 타일셋(tilesets[*].image)으로 이미 잡힌다. 카탈로그 행까지 세면 모든 번들 칩셋
+//   시트(수십 MB)가 모든 게임에 실렸고, 2026-10-07 저작권 정리로 파일이 지워진 합본 마을 칩셋 행
+//   (tex_easyrpg_chipset_combined_town, 모든 새 프로젝트의 기본 카탈로그) 때문에 빈 프로젝트까지
+//   «runtime-asset-unavailable» 로 웹·HTML 내보내기가 실패했다(2026-10-23 실측).
+//
 // 어느 쪽이든 카탈로그 행 자체는 project.json 에 그대로 남으므로 id→파일 해석은 계속 동작한다.
 const USAGE_WALK_CATALOG_KEY = "resourceProfiles";
 
@@ -217,6 +222,10 @@ export function isAudioCatalogRow(row: unknown): boolean {
   return typeof kind === "string" && getResourceProfileSpec(kind as ResourceKind).media === "audio";
 }
 
+function isChipsetCatalogRow(row: unknown): boolean {
+  return typeof row === "object" && row !== null && (row as { readonly kind?: unknown }).kind === "chipset";
+}
+
 function collectStrings(value: unknown, out: Set<string>): void {
   if (typeof value === "string") {
     out.add(value);
@@ -230,7 +239,7 @@ function collectStrings(value: unknown, out: Set<string>): void {
   for (const [key, child] of Object.entries(value)) {
     if (USAGE_WALK_SKIPPED_KEYS.includes(key)) continue;
     if (key === USAGE_WALK_CATALOG_KEY && Array.isArray(child)) {
-      collectStrings(child.filter((row) => !isAudioCatalogRow(row)), out);
+      collectStrings(child.filter((row) => !isAudioCatalogRow(row) && !isChipsetCatalogRow(row)), out);
       continue;
     }
     collectStrings(child, out);
