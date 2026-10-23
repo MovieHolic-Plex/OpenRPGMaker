@@ -294,14 +294,15 @@ def wall_with_towers():
 
 
 def watergate_scene(side):
-    """성벽 한 토막(10칸)에 운하 수문 + 네모 망루 하나, 운하가 성벽 밑으로 흘러 나와 풀밭 사이로 간다.
-    N = 북쪽 성벽(마을 쪽 앞면, 마을 = 아래), S = 남쪽 성벽(바깥 앞면, 바깥 = 아래)."""
+    """성벽 한 토막(10칸)에 운하 수문, 운하가 성벽 밑으로 흘러 나와 풀밭 사이로 간다.
+    N = 북쪽 성벽(마을 쪽 앞면, 마을 = 아래), S = 남쪽 성벽(바깥 앞면, 바깥 = 아래).
+    운하는 성벽 윗면 칸 밑까지 깔아 물이 성벽에 바로 닿는다(성가퀴 틈으로 풀이 비치지 않는다). 성벽은 열 칸 내내 같은 켜로 이어진다."""
     BW = _bw()
     W, H = 10, 12
     im = _grass(W, H)
     yw = 3
-    cx0 = 2
-    _canal(im, cx0, 0, yw)
+    cx0 = 3
+    _canal(im, cx0, 0, yw + 2)
     _canal(im, cx0, yw + 6, H)
     k = "hn" if side == "N" else "hs"
     up = {}
@@ -310,15 +311,11 @@ def watergate_scene(side):
         up[(x, yw)] = f"{k}{v}_a"; up[(x, yw + 1)] = f"{k}{v}_b"
         if not (cx0 <= x < cx0 + 4):
             for i, r in enumerate(BW.FACE_ROWS): up[(x, yw + 2 + i)] = f"f_{r}_{'abefgh'[(x * 5) % 6]}"
-    for cy in range(BW.GT):
-        for cx in range(3): up[(7 + cx, yw - 2 + cy)] = f"tower_{cx}_{cy}"
-    g = _sheet_tile(GRASS)
     for (x, y), n in up.items():
         if not (cx0 <= x < cx0 + 4) or y < yw + 2: im.alpha_composite(BW.img(n), (x * T, y * T))
     _paste_cells(im, {(cx, cy): f"wg{side}_{cx}_{cy}" for cx in range(4) for cy in range(4)}, cx0, yw + 2)
     for x in range(W):
-        if not (cx0 <= x < cx0 + 4) and x < 7: im.alpha_composite(BW.img("sh_s"), (x * T, (yw + 6) * T))
-    for x in range(7, 10): im.alpha_composite(BW.img("sh_s"), (x * T, (yw + 7) * T))
+        if not (cx0 <= x < cx0 + 4): im.alpha_composite(BW.img("sh_s"), (x * T, (yw + 6) * T))
     return im
 
 

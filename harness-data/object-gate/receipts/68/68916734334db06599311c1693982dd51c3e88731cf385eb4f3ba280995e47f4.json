@@ -1,0 +1,482 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "68916734334db06599311c1693982dd51c3e88731cf385eb4f3ba280995e47f4",
+ "width": 192,
+ "height": 192,
+ "kind": "structure",
+ "name": "town wall section, 3/4 top-down: wall-walk top seen from above, ashlar front face pierced by a double round-arched canal water gate (voussoirs, keystones, raised iron portcullis teeth in the arch heads, dark water tunnel), canal water flowing out below",
+ "label": "beodeul_city/capital/capital_watergate_n",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 6/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 평면 채움 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 6/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "평면 채움 (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 18,
+  "darkV5": 59,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 144
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "borderline",
+   "right",
+   "wrong",
+   "right",
+   "wrong",
+   "wrong",
+   "right",
+   "right",
+   "wrong",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall-walk top with crenellated parapet",
+      "rows": "49-58",
+      "evidence": "a",
+      "front_edge_line_row": 59,
+      "eave_shadow_rows": "59"
+     },
+     {
+      "part": "pink brick upper wall band (front face)",
+      "rows": "60-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ashlar front face with double arched water gate and portcullis",
+      "rows": "79-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ivy vines on wall",
+      "rows": "105-138",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 84,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wall-walk top is a light stone band at rows 49-58 (10 rows, with crenellation teeth). It ends in a dark front-edge line at row 59, which also acts as the eave shadow. Below it is a tall front face of about 84 rows, running from the brick band at rows 60-78 through the cornice line and ashlar courses to the plinth at about row 143. The double arched gate is drawn on that face, so the top and front face together read as a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a stone wall with a water gate rather than a roofed house, but it is the closest equivalent to the stone reference. Its stone has about 4 lightness steps: pale ashlar, a lighter top edge, grey mortar and a dark arch interior. The references carry 5-6 steps per material (tiles, plaster, cobble). Visible tones per tile are 9, against 12 and 10 for the references, so it is slightly below. Near-flat coverage is 12% against 0% for both references, which shows up as the smooth pink wall-walk band, the plain water and the sparse crenellation. Dark edge pixels are 44% near-neutral against 7-9% for the references. The grey stone outlines and the arch voids lean neutral rather than carrying a dark tint of the neighbouring material, so the outline reads as mixed. The grass tufts, the vines and the per-stone variation are good craft, and there are no big flat fills. Overall the piece is cleanly drawn but a little thinner and greyer in shading than Beodeul, and with the neutral outlines I would not accept it beside the references as it stands.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19596
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall-walk top with crenellated parapet band",
+      "rows": "49-58",
+      "evidence": "a",
+      "front_edge_line_row": 59,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brick parapet face and ashlar front face with double arched water gate",
+      "rows": "59-142",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "canal water flowing out below the gate",
+      "rows": "120-143",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 84,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wall-walk is a light band at rows 49-58, about 10 rows, with merlon notches at its top edge. It ends in a dark front-edge line at row 59, with no separate eave-shadow rows. Below it the front face runs from row 59 to about row 142. That face is a pink brick parapet, a cornice ledge near rows 79-82, then an ashlar face with two round-arched water gates, voussoirs, portcullis teeth and a dark tunnel, and water at the base. The walk top shows as a horizontal surface above a clear vertical south face, so it reads as three-quarter. This is judged on the wall body, not on the surrounding grass and canal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The ashlar face has about 5 grey steps (highlight, light, mid, mortar shadow, deep), with per-block variation, voussoirs, keystones, portcullis teeth, a dark tunnel, ivy and foam at the water edge. This is close to the references' 6 steps. Visible tones per tile are 9, against 12 and 10 for the references, so density is near the stone reference. Near-flat coverage is 12% against 0% for the references, which comes from the pale wall-walk band and the grass and water areas. Those areas still carry tuft marks and rain streaks, so the flat fills are modest. The 44% neutral share of dark edge pixels is higher than the references' 7-9%, but the stone is naturally grey and the arch shadows lean teal-dark. I read the outlines as mixed, not a uniform black sticker line, because forms are mostly separated by value. The piece is a little thinner than the references but would sit acceptably beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22786
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall-walk top with crenellated parapet",
+      "rows": "49-58",
+      "evidence": "a",
+      "front_edge_line_row": 59,
+      "eave_shadow_rows": "59"
+     },
+     {
+      "part": "pink brick upper wall band and cornice line",
+      "rows": "60-83",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ashlar front face with double arched water gate and portcullis",
+      "rows": "84-142",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 83,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The grass ends at row 48 with an outline. Rows 49-58 are a light grey wall-walk top (L about 216) with crenellation notches. Row 59 is a dark line (L=63) that acts as a front-edge line and eave shadow. Below it the south face runs from about row 60 to row 142: pink brick band, a light cornice line near rows 80-83, ashlar blocks with the two round-arched gates (voussoirs, keystones, portcullis teeth, dark tunnel), and a plinth. The top band is 10 rows, well above a 1-2 row rim, and the front face is far over 3 rows. The canal water above and below is ground, not a part of the structure. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 9 visible tones per tile against 12 and 10 for the references, so it is slightly lower. Its near-flat coverage is 12% against 0% for both references, which matches what I see: the grass fields, the pink-beige wall-walk band and the dark water tunnel are big areas with little grain. The stone ashlar has about 4 grey steps with per-block variation and some ivy, but the blocks are mostly a single light grey with thin joint lines. The references use about 5-6 steps with per-stone and per-tile dots. 44% of the candidate's dark edge pixels are neutral, against 7-9% for the references. This matches the grey-black joints and arch outlines I see, so the outline is mixed and leans toward the sticker look instead of tinted material-tone edges. The arches, portcullis teeth, voussoirs and water ripples are well drawn, but the piece sits below the Beodeul references in shading depth, grain and outline tint.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 20285
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall-walk top with crenellated parapet",
+      "rows": "49-58",
+      "evidence": "a",
+      "front_edge_line_row": 59,
+      "eave_shadow_rows": "59"
+     },
+     {
+      "part": "pink brick upper wall band / string course",
+      "rows": "60-82",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ashlar front face with double arched water gate and portcullis",
+      "rows": "83-142",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 83,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=48 and x=96, rows 49-58 form a 10-row light band (L about 216) with merlon notches along its top. It ends in a dark front-edge line at row 59 (L=63), so this is the wall-walk top. Below it, rows 60-142 are the vertical south face: pink brick, a ledge line at about row 80, then ashlar with the two arched gates, portcullis teeth and the dark water tunnel. The water around and below the wall is flat ground decoration, not a roof. The wall is a low, long structure, so the 10-row top plus an 83-row front face reads as a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 9 visible tones per tile against 10-12 in the references, so it is close, and its near-flat coverage is 12% against 0% in the references. The flat areas are visible in the grass fields and the teal water channel, which are broad, lightly varied fills with only sparse speckle. The ashlar stone has individually shaded blocks in about 4 grey steps, but the tones are narrow and the wall-walk band is a fairly uniform pink-beige. The arch voussoirs and portcullis are small and pale, with a dark tunnel that reads as near-black. Only 44% of dark edge pixels are neutral, against 7-9% in the references, so the outline is partly neutral-dark rather than consistently tinted by material. The ramps are shallower than the roof and stone ramps of 5-6 steps in the references, and the grass and water use few steps. The piece is competent, but it is flatter and more sticker-like than the references, with large flat fills and a partly neutral outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 19198
+  }
+ ],
+ "decidedAt": "2026-10-23T01:44:13.362Z",
+ "cells": {
+  "16": [
+   "01d2d4709737eeed",
+   "046ca1bec279dcf4",
+   "06ef55e76e8e394f",
+   "070e695471f04319",
+   "070ff31a3656f1b5",
+   "0ff1209741f9c992",
+   "10bae4219f331c08",
+   "1419e42e5658bc12",
+   "20466239c0c43869",
+   "3218ff94e58d2e93",
+   "37baca91cccc2a19",
+   "3b7c0cd9058cd35c",
+   "40ba313496ec23df",
+   "424f29f1e12a430d",
+   "451c6a08e9e13ed6",
+   "468a0d095eb194ba",
+   "48f5fdfcd9f1cd48",
+   "4b410f00a50d5b36",
+   "4df5c1f41f35a27d",
+   "58633ceb8e6c8c29",
+   "58d897d9e09e01d0",
+   "5da15eb838c6e3e0",
+   "61ca120d6ad6926f",
+   "6f4f55ab1911d851",
+   "6fee45854827bbeb",
+   "774b19b97d8a2cdb",
+   "79abad7c94561951",
+   "89667aeb92b37556",
+   "a4164db59d3f17fd",
+   "a46c808ee14d478e",
+   "b0be086ef73433bd",
+   "b70571eeff30423d",
+   "b8a6ca46de83dbcd",
+   "bebf0cc33a9eee00",
+   "c496bbb56e53059f",
+   "c5fd5e692ca48084",
+   "c7f010138410716f",
+   "d0ce96d9bfd244bb",
+   "d6a25a3cb33d7ee6",
+   "d73b13671461ab26",
+   "d9930af8fd310782",
+   "dc0bc4df8bc048b4",
+   "dd736ee820e6c6af",
+   "e1e329f32c6a890d",
+   "e4edee4f12147d07",
+   "e7a3853dd51b0e51",
+   "e8f13afa7f0942db",
+   "eb75b2d2ceb1b153",
+   "ec491ec65c2cb2e2",
+   "ed2c6cd13e5fe82c",
+   "f0196d810031b322"
+  ],
+  "24": [
+   "0100ab9c7083f8a7",
+   "0e90034ed67ac2d1",
+   "0fe6b049425e3b28",
+   "10b83cc453eae1e8",
+   "19d27f0fe1aeceb2",
+   "1dc5b41231c37299",
+   "211a6916e72e737e",
+   "21a3f12fa9995546",
+   "23ff5a3c08f82669",
+   "28410da74fae5e91",
+   "2db06c8640050d7c",
+   "33649748a61a9af3",
+   "384cba2aadaaa708",
+   "3a67d578e905dff2",
+   "3b05e783538b0db4",
+   "40a490e9d7c4eaae",
+   "40ae103e2af2799c",
+   "48a0fcefda0910b6",
+   "568e1db19571b8e7",
+   "5dcc098f2cba0886",
+   "603fc5d6c385b2df",
+   "64514b79c4ae9f0b",
+   "65085434fe1899f0",
+   "652a12821e0a790d",
+   "680a7a08ca96737d",
+   "6ace0377f4d797b4",
+   "70f0b06b3574026c",
+   "7cbb653abd2e0790",
+   "7fe5038ee3014e9d",
+   "85993c23b8d19e19",
+   "86d48f1ce6413991",
+   "adc45f891536dce5",
+   "b1761040ffc86f91",
+   "bbc77bfb37c3fc2f",
+   "c0a7cd1d001b8d1e",
+   "c0b6bb208eedcde1",
+   "cc86a26cbba59879",
+   "cd47094b857b0018",
+   "cd82cf1d546774f6",
+   "d24abf575bbf9ab6",
+   "d3f032acbe42dc47",
+   "d6bbfe2a71c15fb0",
+   "dfb1bb426c1bbba7",
+   "e279572d66e62faa",
+   "e705446a4d524240",
+   "ead0928507c75b35",
+   "f4289ebbede154ac"
+  ],
+  "32": [
+   "11c344d37d5e6721",
+   "23904f3fa4ac8353",
+   "23aa59d9232e15f9",
+   "301cca38dfa2ea88",
+   "314cea276f3f6414",
+   "34c67a2aed484be7",
+   "3994f67ece389808",
+   "4979f944b2774070",
+   "584b5fb401c44047",
+   "65d05c8cab11f416",
+   "69bade4cdfdd635a",
+   "727ef7eda88d8a83",
+   "7676909271dc60e9",
+   "7fb95075d96a1223",
+   "87f19ba1395c26dc",
+   "9564cea11683dd93",
+   "a3d929bf6c7f274a",
+   "a82dc6e34db26360",
+   "b309610fa367b57d",
+   "badd9dda482a52db",
+   "c63a0bfebd43d4a1",
+   "d938a4f6d90f41cb",
+   "e8e3723144e6bd8f",
+   "ee0b7e949b86bdaf",
+   "eebee66163dac49a"
+  ],
+  "48": [
+   "02858f43b19f84ac",
+   "0a03e476549c1139",
+   "19d2b5b7a5d8c2f3",
+   "1f2e25196e78cd58",
+   "4996bbfda8b55db1",
+   "5194a9e6be59be0e",
+   "53286eee0124d73d",
+   "5fe68ec89c0697b9",
+   "862d87eeed72518f",
+   "92ec26545c9a2eaf",
+   "b48f44b2c1d42ed7",
+   "cfa44ea82a6194df",
+   "d9e4b74247102434",
+   "dcc25ad050bc2e2e"
+  ]
+ }
+}

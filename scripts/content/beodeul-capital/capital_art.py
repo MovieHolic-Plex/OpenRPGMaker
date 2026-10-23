@@ -21,6 +21,7 @@ T = 16
 # ================================================================ 색 (모두 버들항 시트 앞 칸에 있는 값)
 # 원뿔 지붕: 버들항 마법사의 탑 원뿔 램프(오프닝 천문대와 같은 파랑) + 슬레이트 회청 한 단
 CONE = [hx(c) for c in ("#131a40", "#1f2b5e", "#2f4a8f", "#446295", "#4470bd", "#6e9fdb", "#a9cbf0")]
+CONE_RIM = hx("#1d2d61")   # 버들항 마법사의 탑 원뿔 그늘 윤곽
 # 왕실 파랑(문장 바탕): 같은 램프의 짙은 쪽
 ROYAL = [hx(c) for c in ("#131a40", "#1f2b5e", "#2f4a8f", "#4470bd", "#6e9fdb")]
 GOLD = [hx(c) for c in ("#513915", "#694b05", "#aa7a08", "#ec9900", "#fbc10d", "#ecdb95")]
@@ -58,6 +59,12 @@ BASE_Y = 160           # 굽도리 시작(가장자리 기준)
 def _sag(dx, r, b):
     u = max(-1.0, min(1.0, dx / r))
     return b * math.sqrt(max(0.0, 1 - u * u))
+
+
+def _csag(dx, r, b):
+    """원통 켜 줄의 처짐: 포물선 반올림 — 가운데로 갈수록 1px 씩 고르게 처져 켜 줄이 원통 호를 따라 휜다(타원 int 는 가운데가 평평했다)."""
+    u = max(-1.0, min(1.0, dx / r))
+    return int(round(b * (1 - u * u)))
 
 
 def _cyl_shade(u):
@@ -105,7 +112,9 @@ def cone(cv, ox=0, oy=0, apex=APEX_Y, eave_y=EAVE_Y, r=EAVE_R, b=EAVE_B, cx=T_CX
             elif within < 0.3 and fx < 0.5: k += 1            # 비늘 윗머리 빛
             if u < 0.1 and 0.25 < within < 0.5 and 0.2 < fx < 0.45 and h(seed, row, col, "gl") % 2 == 0: k += 2   # 반짝 점
             k = max(0, min(len(CONE) - 2, k))
-            if abs(dx) > (r * (y + 0.5 - apex) / H if y <= eave_y else r) - 0.9 and y < eave_y: k = 0 if dx > 0 else 1   # 윤곽
+            if abs(dx) > (r * (y + 0.5 - apex) / H if y <= eave_y else r) - 0.9 and y < eave_y:
+                # 윤곽: 버들항 마법사의 탑처럼 빛 받는 왼쪽은 중간 파랑, 그늘 오른쪽은 짙은 남청(검정 계단 대신 물든 윤곽)
+                cv.set(ox + x, oy + y, CONE_RIM if dx > 0 else CONE[3]); continue
             cv.set(ox + x, oy + y, CONE[k])
     # 처마 테: 앞쪽 호 1px 밝은 테 + 그 밑 짙은 선
     for x in range(int(cx - r), int(cx + r) + 1):
@@ -144,15 +153,15 @@ def drum(cv, top=DRUM_TOP, bottom=TH - 1, cx=T_CX, r=DRUM_R, b=DRUM_B, seed="dru
         dx = x + 0.5 - cx
         if abs(dx) > r: continue
         u = dx / r
-        sag = _sag(dx, r, b)
+        sag = _csag(dx, r, b)
         sh = _cyl_shade(u)
-        ylo = top + int(sag)
-        yb = BASE_Y + int(sag)
-        yend = bottom - b + int(sag)
+        ylo = top + sag
+        yb = BASE_Y + sag
+        yend = bottom - b + sag
         # 켜 찾기
         y = top
         for yy in range(ylo, yend + 1):
-            rel = yy - int(sag) - top          # 처짐을 걷어낸 높이
+            rel = yy - sag - top          # 처짐을 걷어낸 높이
             if yy >= yb:
                 # 굽도리: 내민 턱 2 + 큰 돌 + 짙은 밑
                 k = yy - yb
@@ -203,15 +212,16 @@ def drum(cv, top=DRUM_TOP, bottom=TH - 1, cx=T_CX, r=DRUM_R, b=DRUM_B, seed="dru
             if h(seed, x, yy, "sp") % 9 == 0 and 0 < ry < ch - 1: c = step(c, -1)
             c = step_any(c, sh)
             cv.set(x, yy, c)
-    # 윤곽(실루엣 좌우)
+    # 윤곽(실루엣 좌우): 검은 줄 대신 그 자리 돌을 한 번 더 어둡게 — 빛 받는 왼쪽은 두 단, 그늘 오른쪽은 세 단(버들항 마법사의 탑처럼).
+    # 성벽·성문루가 탑 옆에 붙을 때 1px 검은 이음줄이 생기지 않는다
     for yy in range(top, bottom + 1):
-        for x in (x0, x1):
-            dx = x + 0.5 - cx
-            if cv.get(x, yy)[3]: cv.set(x, yy, EDGE)
+        for x, n in ((x0, -2), (x1, -3)):
+            c = cv.get(x, yy)
+            if c[3] and c not in (OUT, OUT2): cv.set(x, yy, step_any(c, n))
     # 밑 처진 선
     for x in range(x0, x1 + 1):
         dx = x + 0.5 - cx
-        yend = bottom - b + int(_sag(dx, r, b))
+        yend = bottom - b + _csag(dx, r, b)
         cv.set(x, yend, OUT)
 
 
@@ -246,7 +256,7 @@ def corbel_ring(cv, y0, cx=T_CX, r=DRUM_R, b=DRUM_B, seed="cor"):
         if abs(dx) > r: continue
         u = dx / r
         sh = _cyl_shade(u)
-        yy = y0 + int(_sag(dx, r, b))
+        yy = y0 + _csag(dx, r, b)
         ang = (math.asin(max(-1, min(1, u))) / math.pi + 0.5) * 11
         k = ang - int(ang)
         for i in range(6):
@@ -277,7 +287,7 @@ def round_tower(var=0, lit=False):
     else:
         spots = [(16, 92), (30, 104), (21, 132)]
     for i, (x, y) in enumerate(spots):
-        slit(cv, x, y + int(_sag(x + 0.5 - T_CX, DRUM_R, DRUM_B)), 9, lit=lit and i == 1)
+        slit(cv, x, y + _csag(x + 0.5 - T_CX, DRUM_R, DRUM_B), 9, lit=lit and i == 1)
     return cv
 
 
@@ -349,21 +359,17 @@ def water_gate(side="N"):
                     if r is None: continue
                     ang, rem = r
                     # 홍예돌: 각도 18°마다 이음, 쐐기돌(가운데)은 넓고 밝다
-                    key = abs(ang) < 9
-                    seg = int((ang + 99) // 18)
-                    tone = COOL[10] if key else [COOL[9], COOL[8], COOL[9], COOL[8], WARM[6]][h(seed, cx, seg) % 5]
-                    if not key and (ang + 99) % 18 < 2.2: c = MORT
+                    key = abs(ang) < 10
+                    seg = int((ang + 100) // 20)                      # 20° 쐐기 열 개, 가운데(-10~10°) = 쐐기돌
+                    # 깨끗한 쐐기돌: 돌마다 한 색(번갈아 두 톤), 이음은 반지름 방향 1줄, 바깥 테 1줄 빛 · 안쪽 테 1줄 그늘, 잡점 없음
+                    tone = COOL[10] if key else COOL[9] if ang < 0 else COOL[8]
+                    if (ang + 100) % 20 < 1.6 and abs(ang) < 89: c = MORT
                     elif rem < 0.9: c = MORT if not key else COOL[8]
                     else:
                         c = tone
-                        f = ((ang + 99) % 18) / 18                        # 돌 안 위치(0 = 왼쪽 이음)
-                        if rem > WG_RING - 1.2: c = step_any(tone, -2 if ang > 10 else 1)    # 안쪽 테: 왼쪽 빛 · 오른쪽 그늘
-                        elif rem < 1.6: c = step_any(tone, 1 if ang < 0 else 0)            # 바깥 테
-                        if f < 0.25 and not key: c = step_any(c, 1)
-                        elif f > 0.8 and not key: c = step_any(c, -1)
-                        if ang > 40: c = step_any(c, -1)
-                        if ang < -40 and rem > 1.5: c = step_any(c, 1)
-                        c = speck(c, seed, x, y, 5)
+                        if ang > 40: c = step_any(c, -1)                                   # 오른쪽 어깨 그늘
+                        if rem > WG_RING - 1.1: c = step_any(tone, -2 if ang > 10 else -1)   # 안쪽 테(터널 쪽으로 꺾인 면)
+                        elif rem < 1.8 and ang < 30: c = step_any(c, 1)                    # 바깥 테 빛(왼쪽 위 빛)
                     cv.set(x, y, c)
         # 쐐기돌 머리(링 위로 한 켜 솟는다)
         kx = int(cx)
@@ -487,12 +493,13 @@ def fountain(frame=0):
         if abs(dx) > F_A: continue
         u = dx / F_A
         ybot = F_CY + F_B * math.sqrt(max(0.0, 1 - u * u))
+        # 테 윗면 타원이 이 열에서 실제로 끝나는 줄 — 앞면을 거기 바로 밑에서 시작해 테와 앞면 사이 빈 점(구멍)이 없다
+        ylast = max((yy for yy in range(64) if _ell(x, yy, F_A, F_B) <= 1.0), default=int(ybot))
         sh = _cyl_shade(u)
         ang = (math.asin(max(-1, min(1, u))) / math.pi + 0.5) * 9
-        for y in range(int(ybot) - 1, int(ybot) + F_FACE + 1):
+        for y in range(ylast + 1, int(ybot) + F_FACE + 1):
             if y >= 64: continue
-            k = y - int(ybot)
-            if k <= 0: continue
+            k = max(1, y - int(ybot))
             if k == F_FACE: c = OUT
             elif k == 1: c = COOL[9]
             elif k == 4:
@@ -534,7 +541,9 @@ def fountain(frame=0):
                     if dx > F_A * 0.55: c = step_any(c, -1)
                     if dx < -F_A * 0.5 and dy < 0: c = step_any(c, 1)
                     c = speck(c, seed, x, y, 6)
-                if e > 0.965: c = EDGE if dy < 0 else COOL[9] if dx < 0 else COOL[7]
+                # 바깥 윤곽: 4이웃 중 하나라도 타원 밖인 점만(두께 1px — 두꺼운 계단 덩어리가 생기지 않는다)
+                if any(_ell(x + ax, y + ay, F_A, F_B) > 1.0 for ax, ay in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                    c = EDGE if dy < 0 else COOL[9] if dx < 0 else COOL[7]
                 cv.set(x, y, c)
             else:
                 # 물: 뒤쪽(위)은 테 그늘로 짙고, 앞쪽으로 밝다. 기둥 둘레 물결 고리(frame 마다 퍼진다)
@@ -549,28 +558,52 @@ def fountain(frame=0):
                 ring = (rr - frame * 2.0) % 6.0
                 if 4 < rr < ia and ring < 1.0 and h(seed, x, y, "rp") % 3: c = WATER[8] if dx < 0 else WATER[7]
                 if d < 0.18: c = WATER[1]
+                # 뒤(북쪽) 테 안벽: 물 위로 보이는 얇은 돌 앞면 두 줄(위 = 그늘 돌, 아래 = 물에 젖은 짙은 돌) — 그 밑에 물 가장자리 짙은 선
+                if dy < 0:
+                    above = sum(1 for j in (1, 2, 3) if _ell(x, y - j, ia, ib) > 1.0)
+                    if above:
+                        su = max(-1.0, min(1.0, dx / ia))
+                        if above >= 2: c = step_any(COOL[6] if h(seed, "iw", int((dx + 40) // 5)) % 3 else COOL[5], min(0, _cyl_shade(su)) - 1)
+                        else: c = COOL[3] if abs(su) < 0.9 else WATER[1]
+                        if above >= 2 and int(dx + 40) % 5 == 0: c = MORT
+                        if above == 1: c = COOL[3] if (x + y) % 2 else WATER[0]
                 cv.set(x, y, c)
     # 기둥 그림자(물 위, 오른쪽)
     for y in range(33, 47):
         for x in range(33, 38):
             if _ell(x, y, ia, ib) < 1.0 and cv.get(x, y) in WATER: cv.set(x, y, WATER[max(0, WATER.index(cv.get(x, y)) - 2)])
     # 가운데 기둥(원통): 물에서 아래 그릇까지
-    def shaft(xa, xb, ya, yb):
+    def shaft(xa, xb, ya, yb, band=6, sag=1.6, foot=0.0):
+        """원통 기둥: 돌 이음 띠가 앞쪽으로 처지는 호(3/4 원통) — 곧은 가로줄이 아니다. foot 이면 밑끝도 같은 호로 처진다."""
         for x in range(xa, xb + 1):
             u = (x + 0.5 - F_CX) / ((xb - xa + 1) / 2)
             sh = _cyl_shade(u)
-            for y in range(ya, yb + 1):
-                c = COOL[8] if (y - ya) % 6 else MORT
+            s_ = int(round(sag * (1 - min(1.0, u * u))))
+            yend = yb + int(round(foot * (1 - min(1.0, u * u))))
+            for y in range(ya, yend + 1):
+                c = COOL[8] if (y - ya - s_) % band or y - s_ <= ya else MORT
+                if (y - ya - s_) % band == 1 and y - s_ > ya: c = COOL[9]
                 if x in (xa, xb): c = EDGE
                 else: c = step_any(c, sh)
                 cv.set(x, y, c)
-    shaft(28, 35, 26, 42)
-    # 기둥 밑 받침(물 위로 둥근 턱)
-    for x in range(26, 38):
-        u = (x + 0.5 - F_CX) / 6
-        cv.set(x, 42, step_any(COOL[9], _cyl_shade(u))); cv.set(x, 43, step_any(COOL[7], _cyl_shade(u)))
-        cv.set(x, 44, OUT2)
-
+    # 기둥 밑 받침: 물 위로 내민 둥근 턱 — 윗면 타원(빛) + 앞으로 처진 앞면 두 줄 + 물 닿는 짙은 호
+    fa, fb, fy = 6.8, 2.7, 41.5
+    for x in range(24, 40):
+        dx = x + 0.5 - F_CX
+        if abs(dx) > fa: continue
+        u = dx / fa
+        sh = _cyl_shade(u)
+        dip = fb * math.sqrt(max(0.0, 1 - u * u))
+        ytop = int(round(fy - dip))          # 윗면 타원 뒤 호
+        ymid = int(round(fy + dip))          # 윗면 타원 앞 호(= 앞면 시작)
+        for y in range(ytop, ymid + 3):
+            if y < ymid: c = step_any(COOL[10] if y == ytop else COOL[9], sh)
+            elif y == ymid: c = step_any(COOL[8], sh)
+            else: c = step_any(COOL[6], sh)
+            if abs(u) > 0.88: c = EDGE if y >= ymid else OUT2 if y == ytop else c
+            cv.set(x, y, c)
+        cv.set(x, ymid + 3, OUT2)
+    shaft(28, 35, 26, 40, foot=1.6)
     def bowl(cy, a, b, depth, frame_off):
         """받침 그릇: 테 윗면 타원 고리 + 안 물 + 앞 테 앞면(depth 줄) + 밑으로 좁아지는 받침."""
         for y in range(int(cy - b) - 1, int(cy + b) + depth + 2):
@@ -603,8 +636,15 @@ def fountain(frame=0):
     shaft(30, 33, 13, 22)
     bowl(13.5, 5.5, 2.2, 2, frame + 1)
     # 꼭지: 금빛 팔방 별(가는 줄기 위)
-    for y in range(6, 12): cv.set(31, y, GOLD[2]); cv.set(32, y, GOLD[1])
-    star8(cv, 31, 5, big=True)
+    # 꼭지: 기둥 축(x 31.5)에 맞춘 짝수 폭 금빛 팔방 별 + 2px 줄기(왼쪽 빛 · 오른쪽 그늘)
+    for y in range(7, 12): cv.set(31, y, GOLD[2]); cv.set(32, y, GOLD[1])
+    for xx in (31, 32): cv.set(xx, 1, GOLD[2]); cv.set(xx, 2, GOLD[3]); cv.set(xx, 3, GOLD[3]); cv.set(xx, 6, GOLD[3])
+    for yy in (4, 5):
+        for xx in (29, 30, 33, 34): cv.set(xx, yy, GOLD[3])
+        cv.set(28, yy, GOLD[2]); cv.set(35, yy, GOLD[2])
+    cv.set(31, 4, GOLD[5]); cv.set(32, 4, GOLD[4]); cv.set(31, 5, GOLD[4]); cv.set(32, 5, GOLD[3])
+    for (xx, yy) in ((30, 3), (33, 3), (30, 6), (33, 6)): cv.set(xx, yy, GOLD[3])
+    for (xx, yy) in ((29, 2), (34, 2), (29, 7), (34, 7)): cv.set(xx, yy, GOLD[2])
     # 넘쳐 떨어지는 물줄기: 아래 그릇 테에서 수반 물로, 위 그릇에서 아래 그릇으로
     for (sx, y0, y1) in ((19, 26, 41), (20, 26, 38), (43, 26, 41), (44, 26, 38), (25, 15, 23), (38, 15, 23)):
         for y in range(y0, y1):
@@ -651,21 +691,35 @@ def dais():
     seed = "dais3"
     cv.rect(0, 0, 63, 31, MORT)
     TOP = [COOL[9], COOL[10], WARM[6], COOL[9], COOL[8], COOL[10]]
-    # 테 돌: 뒤(1~3) · 앞(16~18) · 양끝(4~15)
-    for (ya, yb, key) in ((1, 3, "b"), (16, 18, "f")):
-        x = 0; i = 0
-        while x < 64:
-            w = 7 + h(seed, key, "w", i) % 5
-            slab(cv, x, ya, min(63, x + w - 1), yb, TOP[h(seed, key, "t", i) % 6], (seed, key, i)); x += w + 1; i += 1
-    for (xa, xb) in ((0, 4), (59, 63)):
-        slab(cv, xa, 5, xb, 9, TOP[xa % 5], (seed, "sa", xa)); slab(cv, xa, 11, xb, 14, TOP[(xa + 2) % 5], (seed, "sb", xa))
-    # 안 판석: 엇갈린 세 줄
-    for row, (ya, yb, off) in enumerate(((5, 7, 0), (9, 11, 6), (13, 14, 3))):
-        x = 6 - off; i = 0
-        while x < 58:
-            w = 8 + h(seed, "iw", row, i) % 6
-            slab(cv, max(6, x), ya, min(57, x + w - 1), yb, TOP[h(seed, "it", row, i) % 6], (seed, "in", row, i), crack=h(seed, "ic", row, i) % 6 == 0)
-            x += w + 1; i += 1
+    # 윗면: 버들항 광장 우물터처럼 크기가 제각각인 자연 판석(엇갈린 덩이 · 부드러운 갈색 줄눈) — 곧은 벽돌 켜가 아니다.
+    # 씨앗을 흔든 격자에 뿌리고 가장 가까운 씨앗으로 칸을 나눈다(세로는 3/4 로 눌려 1.6 배로 잰다).
+    FLAGT = [COOL[9], COOL[10], WARM[6], COOL[8], WARM[5], COOL[9], COOL[7]]
+    seeds = []
+    for gy, yc in enumerate((3.0, 9.5, 15.5)):
+        x = -3 + (h(seed, "gx", gy) % 5); i = 0
+        while x < 70:
+            w = 9 + h(seed, "fw", gy, i) % 6
+            seeds.append((x + w / 2 + (h(seed, "jx", gy, i) % 3) - 1, yc + (h(seed, "jy", gy, i) % 3) - 1,
+                          FLAGT[h(seed, "ft", gy, i) % len(FLAGT)]))
+            x += w; i += 1
+    sid = {}
+    for y in range(1, 19):
+        for x in range(1, 63):
+            ds = sorted(((sx - x - 0.5) ** 2 + (1.6 * (sy - y - 0.5)) ** 2, k) for k, (sx, sy, _t) in enumerate(seeds))
+            sid[(x, y)] = ds[0][1]
+    JOINT = FLAG[4]
+    for y in range(1, 19):
+        for x in range(1, 63):
+            k = sid[(x, y)]
+            tone = seeds[k][2]
+            right = sid.get((x + 1, y), k); down = sid.get((x, y + 1), k)
+            left = sid.get((x - 1, y), k); up = sid.get((x, y - 1), k)
+            if right != k or down != k: c = JOINT                     # 줄눈 1px(오른쪽·아래)
+            elif left != k or up != k: c = step_any(tone, 1)          # 판석 왼쪽 위 머리 빛
+            elif sid.get((x + 1, y + 1), k) != k or sid.get((x + 2, y), k) != k: c = step_any(tone, -1)   # 오른쪽 아래 그늘
+            else: c = speck(tone, seed, x, y, 9)
+            if x > 50 and c != JOINT: c = step_any(c, -1)                # 오른쪽 끝은 빛에서 멀다
+            cv.set(x, y, c)
     # 뒤 가장자리(바닥에서 솟은 선) · 양 옆 윤곽
     for x in range(64): cv.set(x, 0, EDGE if x % 11 else OUT2)
     for y in range(0, 20): cv.set(0, y, EDGE); cv.set(63, y, OUT2)
@@ -696,15 +750,15 @@ def dais():
     for x in range(64):
         cv.set(x, 20, step_any(cv.get(x, 20), -2) if cv.get(x, 20) != MORT else OUT2)
         cv.set(x, 27, OUT if x % 6 else OUT2)
-    # 단이 드리운 그늘 진 바닥 판석(28~31): 위가 가장 어둡다
-    x = 0; i = 0
-    while x < 64:
-        w = 10 + h(seed, "gw", i) % 6
-        xb = min(63, x + w - 1)
-        for xx in range(x, xb + 1):
-            for yy, c in ((28, COOL[3]), (29, COOL[4]), (30, COOL[6]), (31, COOL[7])):
-                cv.set(xx, yy, speck(c, seed, xx, yy, 6) if xx != xb else MORT2)
-        x = xb + 2; i += 1
+    # 단 밑 디딤 턱(28~31): 이어진 낮은 디딤돌 한 단 — 윗면(위에서 본다, 단 그늘로 위가 어둡다) + 짙은 앞 끝선. 반쪽 벽돌 없이 끝난다.
+    joints = [0]
+    while joints[-1] < 63: joints.append(joints[-1] + 18 + h(seed, "tj", len(joints)) % 7)
+    for x in range(64):
+        for yy, c in ((28, COOL[4]), (29, COOL[6]), (30, COOL[7]), (31, COOL[3])):
+            if yy < 31 and x in joints[1:]: c = MORT2 if yy > 28 else COOL[3]
+            elif yy in (29, 30): c = speck(c, seed, x, yy, 7)
+            cv.set(x, yy, c)
+    for yy in range(28, 32): cv.set(0, yy, OUT2 if yy < 31 else OUT); cv.set(63, yy, OUT)
     for y in range(20, 27):
         cv.set(0, y, OUT2); cv.set(63, y, OUT)
         for x in (61, 62):
@@ -713,7 +767,7 @@ def dais():
 
 
 # ================================================================ 왕실 깃발 · 방패
-def _royal_cloth(cv, x, y, w, hgt, tail=True, seed="cloth"):
+def _royal_cloth(cv, x, y, w, hgt, tail=True, seed="cloth", shadow=True):
     """파란 천: 세로 주름(밝은 둥 · 짙은 골이 번갈아 다섯 단) · 금 테(세 단) · 금 왕관 · 그 밑 금 팔방 별 · 제비꼬리 · 밑 금술."""
     fold = [1, 0, -1, -1, 0, 1, 1, 0, -1, -2, -1, 0]
     for yy in range(hgt):
@@ -734,7 +788,7 @@ def _royal_cloth(cv, x, y, w, hgt, tail=True, seed="cloth"):
                 if h(seed, i, yy) % 9 == 0: c = ramp_step(ROYAL, c, -1)
             if yy == hgt - 1 and c in ROYAL: c = GOLD[2]
             cv.set(x + i, y + yy, c)
-        if not (tail and yy >= hgt - 4): cv.set(x + w, y + yy, SH2)
+        if shadow and not (tail and yy >= hgt - 4): cv.set(x + w, y + yy, SH2)   # 벽에 걸 때만 벽에 지는 그늘(허공 깃대엔 없다)
     crown(cv, x + w // 2 - 2, y + 3, small=True)
     star8(cv, x + w // 2 - (0 if w % 2 else 1), y + 10)
 
@@ -772,16 +826,33 @@ def stone_foot(cv, x0, x1, y0, top=4, face=5, seed="foot"):
 def banner_pole():
     """왕실 깃대 1×3(16×48): 금빛 창끝 꼭지 · 가로대 · 파란 깃발(금 테 · 왕관 · 별 · 제비꼬리) · 나무 장대(쇠띠) · 네모 돌 굽."""
     cv = Canvas(16, 48)
-    stone_foot(cv, 2, 13, 36, top=5, face=6, seed="bpf")
-    for y in range(3, 38):
+    fy0 = 35                     # 굽 윗면 첫 줄 — 밑 그림자 두 줄이 칸 안(46·47)에 들어간다
+    x0, x1, top, face = 2, 13, 5, 6
+    stone_foot(cv, x0, x1, fy0, top=top, face=face, seed="bpf")
+    # 굽 윗면 뒤 테: 한 줄 전체를 짙은 윤곽으로 이어(모서리에만 튀어나온 검은 점이 없다), 그 밑 줄이 빛 받는 뒤 턱
+    for x in range(x0, x1 + 1):
+        cv.set(x, fy0, EDGE if x < x1 - 1 else OUT2)
+        if x0 < x < x1: cv.set(x, fy0 + 1, COOL[11] if x < x1 - 2 else COOL[9])
+    # 땅 그림자(빛 왼쪽 위): 오른쪽 옆 한 열 + 밑 두 줄, 칸 안에서 끝까지 이어진다
+    for y in range(fy0 + 2, fy0 + top + face):
+        cv.set(x1 + 1, y, SH2)
+    for x in range(x0 + 2, x1 + 2):
+        cv.set(x, fy0 + top + face, SH2)
+        if x > x0 + 2: cv.set(x, fy0 + top + face + 1, SH3)
+    cv.set(x1 + 1, fy0 + top + face, SH3)
+    for y in range(3, fy0 + 2):
         g = h("pole", y) % 4
         cv.set(7, y, (WOOD[5], WOOD[6], WOOD[5], WOOD[4])[g] if y % 7 else GOLD[3]); cv.set(8, y, (WOOD[3], WOOD[4], WOOD[3], WOOD[2])[g] if y % 7 else GOLD[1])
-    for x in (6, 9): cv.set(x, 37, IRON[2] if x == 6 else IRON[1]); cv.set(x, 38, IRON[1] if x == 6 else WOOD[1])
-    for x in range(5, 11): cv.set(x, 39, SH1 if x > 7 else COOL[8])
+    # 장대 밑 쇠 고리(굽 윗면에 박힌다) + 장대가 굽 윗면에 드리운 그늘(돌을 어둡게 — 반투명으로 칠하면 구멍이 된다)
+    for x in (6, 9): cv.set(x, fy0 + 1, IRON[2] if x == 6 else IRON[1]); cv.set(x, fy0 + 2, IRON[1] if x == 6 else WOOD[1])
+    for x in (7, 8): cv.set(x, fy0 + 2, WOOD[2] if x == 7 else WOOD[1])
+    for x in range(9, 12):
+        c = cv.get(x, fy0 + 3)
+        if c[3] == 255: cv.set(x, fy0 + 3, step_any(c, -2))
     cv.set(7, 0, GOLD[5]); cv.set(7, 1, GOLD[4]); cv.set(8, 1, GOLD[2]); cv.set(6, 2, GOLD[3]); cv.set(7, 2, GOLD[4]); cv.set(8, 2, GOLD[2]); cv.set(9, 2, GOLD[1])
     for x in range(2, 14): cv.set(x, 4, WOOD[5] if x < 8 else WOOD[4] if x < 12 else WOOD[3]); cv.set(x, 5, WOOD[2])
     cv.set(1, 4, GOLD[4]); cv.set(14, 4, GOLD[2]); cv.set(1, 5, GOLD[2]); cv.set(14, 5, GOLD[1])
-    _royal_cloth(cv, 3, 6, 10, 24)
+    _royal_cloth(cv, 3, 6, 10, 24, shadow=False)
     return cv
 
 
@@ -795,6 +866,32 @@ def banner_wall():
 
 
 # ================================================================ 왕실 가로등
+def lantern_small(cv, cx, y):
+    """작은 팔각 등롱(9×16, 홑 가로등용 — 버들항 가로등 등 크기에 맞춤): 파랑 뿔 지붕 세 줄 · 금 처마 테 · 쇠살 유리 다섯 줄 · 받침판 · 깔때기."""
+    cv.set(cx, y, GOLD[5]); cv.set(cx, y + 1, GOLD[3])
+    for j in range(3):
+        half = 1 + j
+        for x in range(cx - half, cx + half + 1):
+            if x == cx: c = GOLD[3] if j < 2 else GOLD[2]
+            elif x < cx: c = ROYAL[4] if x == cx - 1 and j > 0 else ROYAL[3]
+            else: c = ROYAL[1] if x > cx + 1 else ROYAL[2]
+            if x in (cx - half, cx + half): c = ROYAL[0] if x > cx else ROYAL[2]
+            cv.set(x, y + 2 + j, c)
+    for x in range(cx - 4, cx + 5):
+        cv.set(x, y + 5, GOLD[4] if x < cx else GOLD[3] if x < cx + 3 else GOLD[2])
+        cv.set(x, y + 6, GOLD[2] if x < cx + 2 else GOLD[1])
+    for yy in range(y + 7, y + 12):
+        for x in range(cx - 3, cx + 4):
+            if x in (cx - 3, cx + 3): c = IRON[2] if x < cx else ROYAL[0]
+            elif x == cx: c = IRON[1] if (yy - y) % 3 else ROYAL[1]
+            elif x < cx: c = GLASS[2] if (x == cx - 1 and y + 8 <= yy <= y + 9) else GLASS[1] if x == cx - 1 else GLASS[0]
+            else: c = GLASS[1] if x == cx + 1 and yy < y + 10 else GLASS[0]
+            cv.set(x, yy, c)
+    for x in range(cx - 4, cx + 5):
+        cv.set(x, y + 12, IRON[2] if x < cx + 2 else IRON[1]); cv.set(x, y + 13, ROYAL[0] if x % 2 else IRON[1])
+    cv.set(cx - 1, y + 14, IRON[2]); cv.set(cx, y + 14, IRON[1]); cv.set(cx + 1, y + 14, IRON[0]); cv.set(cx, y + 15, GOLD[2])
+
+
 def lantern(cv, cx, y, seed="ln", glow=True):
     """팔각 등롱(11×17): 위에서 본 파랑 뿔 지붕(왼쪽 빛 · 오른쪽 그늘 · 금 마룻대) + 금 꼭지 · 금 처마 테(윗면 한 줄 + 앞 한 줄) ·
     쇠살 유리 세 쪽(따뜻한 불빛, 가운데 밝다) · 밑 받침판(윗면이 보인다) · 깔때기 · 불빛 점."""
@@ -839,10 +936,14 @@ def lamp():
     """왕실 가로등 1×3: 네모 돌 받침(윗면이 보인다, 파랑 판) · 금띠 두른 쇠기둥 · 말린 쇠 받침대 · 파랑 뿔 지붕 팔각 등롱."""
     cv = Canvas(16, 48)
     stone_foot(cv, 2, 13, 36, top=4, face=6, seed="lpf")
+    # 받침 윗면 뒤 테를 한 줄로 닫는다(모서리 두 점만 짙어 「뿔」처럼 튀던 것), 그 밑 줄이 빛 받는 뒤 턱
+    for x in range(2, 14):
+        cv.set(x, 36, EDGE if x < 12 else OUT2)
+        if 2 < x < 13: cv.set(x, 37, COOL[11] if x < 11 else COOL[9])
     for yy in range(42, 45): cv.set(7, yy, ROYAL[2]); cv.set(8, yy, ROYAL[1])
     cv.set(7, 43, GOLD[3])
     _iron_post(cv, 7, 18, 37)
-    lantern(cv, 7, 0, glow=False)
+    lantern_small(cv, 7, 2)
     return cv
 
 

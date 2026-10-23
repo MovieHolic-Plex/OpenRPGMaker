@@ -1610,6 +1610,10 @@ DB 시스템 화면: 「보기 범위」(`db-field-system-view-preset`)가 해�
 『폴른 스타』(`createChronoBellFlagshipDemo`, `flagship/chronoBell.ts`, `CHRONO_BELL_STYLE_LOCK`)는 480×270 · 배율 1(30×17칸, 코드 생성이라 저장본 없음 — 640×360·2 는 너무 좁다는 판정).
 - 1막 재구성(2026-10-20, 감사 `~/claude-viz/fallen-star-audit-1.html`): 이야기·대사 사양은 `flagship/fallenStarStory.ts`(장 구성기 `buildJrpgChapter` 입력), 짓기·후처리는 `chronoBell.ts`.
   맵 5장 = 왕도 → 천문대 → 숲길(`author_wild_route` 막다른 길+공터) → 화로의 방(20×15, `brazier_ignition_order`) → 지하.
+- 왕도 아스텔(2026-10-23, `flagship/fallenAstel.ts` — 옛 `fallenTown.ts` 덧댐 패치를 지우고 처음부터): 오프닝 그림을 설계도로 한 64×69 왕도. 계획·구역 `tiledata/fallen-astel/PLAN.md`·`zones.py`.
+  장 구성기가 만든 fs_hub 를 `resize_map` 뒤 `buildAstel` 이 모든 층을 지우고 다시 짓는다(운하·다리·성벽 고리·둥근 탑·수문·천문대·왕성·저택·예배당·광장, 새 조각은 `bd-capital-*` — beodeul-city.md).
+  좌표는 `ASTEL` 상수 하나가 정본(문·숲 출구·포고 무대·군중 14칸·호위 줄). 포고·행진은 `chronoBell.ts` `marchOffAfterProclamation` 이 칸 좌표로 짠다(호위 둘씩 네 줄, 속도 2, 성문 통로로 곧게 나가 옅어짐).
+  실내 다섯 집 문은 `ASTEL.doors` 로 `buildFallenTownInteriors` 에 넘긴다. 저택 둘은 잠긴 문. 녹화 `scripts/qa/runtime/fallen-astel.record.mjs`, 정본 저장·재로드 `scripts/content/fallen-astel/save-reload.mts`.
 - 타이틀·오프닝(3차, 2026-10-21 사용자 「생성 이미지로 제대로」): 이미지 모델(god-tibo-imagen, 유료 대체 끔) 후보를 컷마다 셋 만들어 감독이 골랐고(`by: supervisor`),
   원본을 화면 배율 64색 도트로 누른 그림이다(`src/assets/fallenStarOpeningBackdrops.ts` — 타이틀 480×270, 오프닝 컷 528×297). 사람·관·별똥별은 그림 안에 있어
   칩을 얹지 않고, `fallenStarOpening.ts` 는 빛(glow·flicker)·입자·카메라만 준다(관 클로즈업만 정수 2배). 타이틀은 `moonlitCastle` 프리셋 + 그림 좌표에 맞춘 효과

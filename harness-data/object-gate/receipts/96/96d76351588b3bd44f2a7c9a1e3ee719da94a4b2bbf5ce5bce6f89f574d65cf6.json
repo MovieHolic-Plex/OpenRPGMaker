@@ -1,0 +1,570 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "96d76351588b3bd44f2a7c9a1e3ee719da94a4b2bbf5ce5bce6f89f574d65cf6",
+ "width": 64,
+ "height": 80,
+ "kind": "other",
+ "name": "royal double street lamp, 3/4 top-down: square stone pedestal (top face seen from above), iron post with gold bands and a gold star finial, a curled crossarm with a crowned lantern hanging at each end (warm lit glass)",
+ "label": "beodeul_city/capital/capital_lamp_double",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 질감 없음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "질감 없음 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 4,
+  "tileColorsP90": 14,
+  "darkV5": 75,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 20
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal",
+      "rows": "54-56",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal front face with blue panel",
+      "rows": "57-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron post with gold bands",
+      "rows": "27-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossarm",
+      "rows": "24-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "two crowned lanterns",
+      "rows": "29-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold star finial",
+      "rows": "18-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The pedestal is the only base volume. It is about 10 px wide and spans rows 54-62. Its light top (rows 54-56, about 2-3 rows) is a flat light band with no clear front-edge line or eave shadow, and no ellipse. It reads as a rim or the upper part of the face. The front face is rows 57-62 with a blue panel. The post and crossarm are drawn only as thin vertical or front-facing strips. The lanterns (rows 29-42) are front-facing, with a gold crown and a blue band at rows 31-33 but no visible top plane. Nothing shows a horizontal surface seen from above, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The lamp is thin and small, and the board image is low-resolution, so this is a judgment by eye. The post is a dark line with only a hint of a highlight. The gold bands and star finial are each one or two pixels of a single tone. Each lantern has about three tones (dark frame, orange glass, yellow core) with no per-pixel highlight or shading. The stone pedestal is a light grey block with a shaded side, about 3 steps, and no stone grain or per-stone shading. Dark edge pixels are 0% neutral, so the outline is not pure black, but it reads as a uniform dark line rather than tinted material tones. The 4 visible tones per tile are mostly the grass background (8% near-flat), not the prop. Beside the references (the stall at 17 and the well at 20 tones per tile, with scalloped roofs, grain and stones shaded one by one), the lamp looks like a thin sticker-like silhouette with shallow ramps and little texture. The crook lamp reference is also sparse but carries a cleaner, longer ramp. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20639
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal",
+      "rows": "54-55",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal front face with blue panel",
+      "rows": "56-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron post with gold bands",
+      "rows": "24-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossarm",
+      "rows": "24-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right hanging lanterns",
+      "rows": "29-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold star finial",
+      "rows": "18-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The pedestal is the only part that could show a top face. Rows 54-55 are a light band of about 2 rows at the top of the block, with no front-edge line and no eave shadow, and no ellipse. Below it is a flat front face (rows 56-62) with a blue panel. The post, crossarm and lanterns are all drawn as vertical faces in front elevation. The lantern crowns are small peaked caps, not horizontal surfaces. Nothing shows a clear top surface, so the whole object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin lamp on a grass background. It measures 4 visible tones per full tile, against 9-20 for the richer references (hedge, stall, well). Its pedestal is a small grey block with a single light face and a dark keyhole, about 3 steps. The iron post is a 1-2 px line in one dark tone with a few gold dots for bands. The lanterns are small, with about 3 tones (dark frame, orange glass, yellow core), and they have no per-pane shading or crown detail. The crossarm and finial read as thin dark lines, so the whole piece looks like a flat sticker beside the shaded references. The dark edges are tinted rather than neutral (0% near-neutral), which counts in its favour, but the pedestal shows no stone texture, grain, or per-stone shading. Because the object is thin, density is judged by eye, and it looks clearly thinner and flatter than the lamp-crook and well references. The stone pedestal and the lantern bodies are the areas that most need more tonal steps and texture. The 8% near-flat coverage is low only because the piece is small.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15482
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal top",
+      "rows": "54-55",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal front face with blue panel",
+      "rows": "56-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron post with gold bands",
+      "rows": "27-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossarm",
+      "rows": "24-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lanterns with crowns",
+      "rows": "29-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "star finial",
+      "rows": "18-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The pedestal is the only part with a body, and its top is a light strip of about 2 rows (54-55) with no clear front-edge line or eave shadow. Below it a flat front face runs to row 62, carrying a vertical blue panel. The post, crossarm and lanterns are all drawn as flat vertical faces. The lanterns' crowns and the crossarm show no horizontal surface, so the drawing reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin, sparse prop, so the per-tile tone count is not held against it. By eye, though, it looks thinner and flatter than the references. The pedestal is a small grey block with about 2-3 stone tones and no per-stone shading or speckle. The post is a 1-2 px dark line with little visible ramp, and the gold bands and star finial are only a few pixels each. The lanterns read as small yellow/orange blobs with a dark frame and show little glass or crown detail. The dark edge pixels are 0% neutral, so the outlines do carry some tint, but they are nearly absent on the thin post and the pedestal edge looks like a uniform dark line. Against prop-lamp-crook, prop-well-roofed and prop-stall-cheese, which have 5-6 shading steps, grain and per-part highlights, the candidate looks like a simplified sticker-style icon, not a Beodeul-quality piece. The brief calls for a royal double lamp with curled arms and crowned lanterns, but that ornament is not visible at this scale. The grass backdrop is textured, but it is not the object.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15956
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal top",
+      "rows": "54-55",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal front face with blue plaque",
+      "rows": "56-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron post with gold bands",
+      "rows": "24-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossarm",
+      "rows": "25-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right lanterns with crowns",
+      "rows": "29-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold star finial",
+      "rows": "18-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the stone pedestal at rows 54-62, about 10 px wide. Its top is only a 1-2 row light strip, with no ellipse and no distinct front-edge line plus eave shadow. The rest is a flat front face with a blue plaque, so the top reads as a rim. The post, crossarm and both lanterns are drawn as flat vertical faces. The lantern crowns are small front-facing caps with no visible top plane. The star finial is decor. Overall it is a front elevation, not a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are of little use here. The lamp is thin and sparse, and the candidate's 4 tones per tile mostly come from the grass backdrop. Judged by eye against the references, the lamp itself is shallow. The post and crossarm are a near-flat dark line with little highlight/shadow banding. The stone pedestal is a flat grey block with only a small glyph, about 2-3 steps and no per-stone shading. The lanterns carry only a few warm tones, and the gold bands and star finial are tiny, with no separate light and dark steps. The dark outlines look close to neutral charcoal rather than a clear dark tint of the adjacent material. Beodeul pieces such as the well and the cheese stall show 5-6 steps per material with grain and dot texture. This lamp would look thinner and more sticker-like next to them, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18892
+  }
+ ],
+ "decidedAt": "2026-10-23T01:32:12.611Z",
+ "cells": {
+  "16": [
+   "14d32c8755daee5f",
+   "27d89db96d925bd1",
+   "3d09b5947e670e79",
+   "d05acd052eac7d7c",
+   "d1be748c3d317515",
+   "d9930af8fd310782",
+   "f2fedaa9fbc73619"
+  ],
+  "24": [
+   "008e2e9fea53f792",
+   "01d611f8488e2bb2",
+   "036f6f90c9272639",
+   "10b83cc453eae1e8",
+   "13c42f7d98bb22ca",
+   "1d13be7465ed3ef5",
+   "21436bb94436e110",
+   "21f44fb0977eb53c",
+   "256da00d0da1d146",
+   "2910a6e74c0346a1",
+   "30f46b678aa961f2",
+   "315d6e433b154773",
+   "39dc3bc6a67aeb50",
+   "3c3fbeaad67b4638",
+   "413a4d339248fe5f",
+   "414e5b362c512c85",
+   "428f19ff7f640a9f",
+   "4635ac10b2395de6",
+   "498c17e26ac39414",
+   "4a17c9cc64344a32",
+   "4cf8475e92378607",
+   "51961eb33b52202d",
+   "5482c699a57ba2dc",
+   "5e4321a84bf3899b",
+   "5fe1fe7543621334",
+   "609148be89d95a3f",
+   "648b7466754fb382",
+   "7a7968b8eab4ee34",
+   "7b6d2513531bdcf7",
+   "7f5bc8d133b07b4e",
+   "8687f916814e0a8f",
+   "86d48f1ce6413991",
+   "97455f357fbf8cdc",
+   "983b61d840be1bd6",
+   "9f84fc7f068d7dc7",
+   "9ff39acc1bd21467",
+   "a0331ab1eb374d30",
+   "a37ccbe6a3e2e8d4",
+   "a921ba07e561b286",
+   "b2301762b5dcd57d",
+   "b7c5d187aad5bb8c",
+   "c0a7cd1d001b8d1e",
+   "c0e0b163c1e5506a",
+   "c9e6eac8e5a9eb8b",
+   "ca2c5b430daef9df",
+   "d24abf575bbf9ab6",
+   "d411e1f69915415b",
+   "d478a71dedd64348",
+   "d98c96ca3cdea126",
+   "e47b4c7bc441578a",
+   "e67ffb93a866aeb8",
+   "edca0ebade4ba6af",
+   "ee110f308bf84a32",
+   "f02bc84f70d2123f",
+   "f3b67afcaf14f32b",
+   "fe883225a1038087"
+  ],
+  "32": [
+   "08edb73f50ec4f55",
+   "4f9ae0610045cc5d",
+   "6cadf0472a8ec736",
+   "750bd95d0ea4c0ff",
+   "aefb092016f3a19c",
+   "b410ac2d83ba2c4d",
+   "bb81392700efca7d",
+   "ed1435b7ebabc091",
+   "f2c7a8591eab174f",
+   "fe666ec450a353ae"
+  ],
+  "48": [
+   "07e999c391905eca",
+   "0c22a6b9a893a929",
+   "1111bcc50ddcb2f4",
+   "1e1c83f3eef0d5ca",
+   "24de9389b661fdf6",
+   "29df179e79a77a72",
+   "359210a08e1caa67",
+   "3e31f5e30ff94a38",
+   "3e7b0f14b21623dd",
+   "42bd1dcd38dbf97e",
+   "56c076db6367efe2",
+   "6f6a75dbe34aaa28",
+   "79d67b1d235fa044",
+   "8ea11a2f3547e992",
+   "993adc0f9dc35bc0",
+   "da46e00694e4c212",
+   "dabcaa4cfa6f05ca",
+   "db4f91e18b3d01ea",
+   "e0c40b22dbc22edf",
+   "e26324eaa1d1bd0a",
+   "e999220b75fa8582",
+   "f6edb166e0119dc1"
+  ]
+ }
+}

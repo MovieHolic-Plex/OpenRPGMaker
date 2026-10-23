@@ -120,7 +120,9 @@ export default {
       // 포고 뒤 행렬이 성문으로 행진하고 화면이 따라간다 — 발렌(맨 뒤)이 통로로 사라질 때까지 기다린 뒤 엘레나의 대사를 닫는다.
       { kind: "evalToFile", out: "/tmp/fs-marched.json",
         fn: `async () => { for (let i = 0; i < 240; i++) { if (window.__oprnDebug.readState().switches.sw_fs_valen_marched) return true; await new Promise((r) => setTimeout(r, 250)); } return false; }` },
-      { kind: "hold", dir: null, ms: 1500 },
+      // 화면이 주인공에게 돌아오고 주인공이 두 걸음 비켜선 뒤에야 엘레나가 말한다 — 대사가 뜰 때까지 기다렸다 닫는다.
+      { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 15000 },
+      { kind: "hold", dir: null, ms: 600 },
       ...closeDialogue(20),
     ], shot: true },
     { id: "to-observatory", note: "천문대 문을 밟는다", ops: [...stepInto("fs_hub", 27, 25, "up")], shot: true },

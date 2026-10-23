@@ -75,9 +75,16 @@ try {
     marks.posAfterElena = await state();
     if (walk.length) {
       mark('walkStart');
-      await page.evaluate((moves) => window.__oprnDebug.playerRoute(moves.map((dir) => ({ kind: 'move', dir }))), [...walk, 'up', 'up']);
-      for (let i = 0; i < 400 && (await state()).map === 'fs_hub'; i++) await page.waitForTimeout(250);
-      await page.waitForTimeout(1500);
+      await page.evaluate((moves) => window.__oprnDebug.playerRoute(moves.map((dir) => ({ kind: 'move', dir }))), walk);
+      // 경로 끝(천문대 문 앞)에 닿을 때까지 — 자리가 1.5초 동안 그대로면 닿은 것이다.
+      let last = '', still = 0;
+      for (let i = 0; i < 400 && still < 6; i++) { const s = await state(); const k = `${s.x},${s.y}`; still = k === last ? still + 1 : 0; last = k; await page.waitForTimeout(250); }
+      mark('walkArrived');
+      // 문은 밟아 들어간다(경로 이동은 문 이벤트를 부르지 않는다) — 위 화살표를 누르고 있는다.
+      await page.keyboard.down('ArrowUp');
+      for (let i = 0; i < 40 && (await state()).map === 'fs_hub'; i++) await page.waitForTimeout(100);
+      await page.keyboard.up('ArrowUp');
+      await page.waitForTimeout(2000);
       mark('walkEnd');
       marks.posAfterWalk = await state();
     }
@@ -94,6 +101,7 @@ try {
   await clip('proclamation', marks.firstLine ?? marks.hub, marks.marchStart + 1);
   await clip('march', marks.marchStart - 0.5, marks.marched + 2.5);
   await clip('walk', marks.walkStart - 0.5, marks.walkEnd);
+  await clip('opening-full', marks.openingStart - 0.5, (marks.firstLine ?? marks.hub) + 3);
   await writeFile(join(out, 'marks.json'), JSON.stringify({ marks, errors, raw }, null, 1));
   console.log(JSON.stringify({ marks, errors: errors.map((e) => e.slice(0, 300)) }));
 } finally { await browser?.close(); await server?.close(); }

@@ -180,6 +180,16 @@ SQLite revision 7 저장·재로드와 전용 플레이어 8비트(모든 집 �
   Opus VQA 뒤 「delegated by user to supervisor 2026-10-21」 허용을 18323 API 로 기록했다. 3/4 관문 정식 통과(보정 프로필 영수증)는 아니다.
 - 화면: http://mdc-server:18301/beodeul-town-wall-1.html
 
+## 왕도 아스텔 조각 bd-capital (2026-10-23) — 칸 32,768~, 『폴른 스타』 왕도
+
+- **그림**: `scripts/content/beodeul-capital/capital_art.py`(코드 손 도트, 버들항 시트 색만, 빛 왼쪽 위). **굽기**: `bake_capital.py`(관문 확인) · `--gate-export DIR`(관문 그림+items.jsonl) · `--no-gate`(개발 시험만).
+- **실은 조각(`SHIPPED`)**: 파란 원뿔 둥근 성벽 탑 3×11(보통·창 불빛·북 모서리 서/동, 0행 = 성벽 길 윗줄 − 4), 운하 수문 북 4×4, 광장 분수 4×4(물결 띠), 포고 단 4×2(3판 — 2판은 윗면이 짧아 벽 앞면으로 읽혔다), 왕실 깃발 장대 1×3, 왕실 가로등 1×3(2판 — 떠 있는 받침 곡선·빛 점 지움). 키트 `bd-capital-*`, 칸 묶음 `beodeul:capital_wall`·`beodeul:capital_plaza`.
+- **안 실은 것**: 선착 계단·갑문(관문 FAIL 두 번 — 다시 그리기 전까지 없음), 쌍 가로등(REFER), 남쪽 수문·벽걸이 깃발·방패(이번 맵에 안 씀). `capital_art.py` 에 함수는 남아 있다.
+- **관문**: object-gate 영수증(미보정 — 조언) + 독립 Opus·Argon 적대 VQA(숨긴 반려 표본) 통과분만 18323 위임 허용(`by: "delegated"`). 굽기는 그 허용을 확인한다.
+- **꼬리 사슬**: `bake_wall.py` → `bake_gap.py`(던전 gap, 29,568~) → `bake_capital.py`. 앞 스크립트는 시트를 자기 끝에서 자르므로 `bake_gap.py` 가 끝에서 이 스크립트를 다시 부른다. 30,848~32,767 은 gap 이 자랄 빈 자리 — gap 이 32,768 에 닿으면 `bake_gap.py` 가 멈춘다(두 꼬리 자리를 먼저 다시 정한다).
+- **기존 사본**: `ensureBeodeulCityTileset` 이 꼬리 칸 표와 `bd-capital-*` 키트·`beodeul:capital*` 묶음을 더한다. 그 자리(32,768~)에 이식 칸이 있는 사본은 받지 않는다(`capitalBlocked`).
+- **쓰는 곳**: `src/project/flagship/fallenAstel.ts`(왕도 fs_hub 빌더). 칸 번호가 아니라 키트 이름으로 찍는다.
+
 ## 민가·성당 외장: 원본 보존 보정 (2026-10-04 사용자 정정)
 
 사용자 조건은 모든 집의 기초, 창문 다양화, 문 하나, 집별 벽 콘셉트 하나와 교회다.
