@@ -649,7 +649,15 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
       // r9: 둔덕(풀 언덕)이 갱구 뒤와 양 어깨를 감싼다 — 발치 한쪽에만 작은 버력 하나(양옆 같은 자리 바위 둘은 대칭 도장으로 읽혔다).
       const mm = draft.maps[map.id]!;
       // 어깨 칸(갱구 옆 두 줄)은 지형 다듬기가 낮출 수 있어 풀로 덮지 않는다 — 풀 칸이 땅바닥에 남아 네모 풀 조각으로 보였다.
-      for (const i of mound.cells) { mm.relief!.levels[i] = mound.base + 2; taken[i] = 1; if (mound.grass !== undefined && Math.floor(i / W) < adit.y) mm.lowerTiles[i] = mound.grass; mm.upperTiles[i] = -1; }
+      // r10: 풀 윗면만으로는 얇은 테두리 친 «유리판»으로 읽혔다 — 뒤 칸 윗면에 고사리·헤더 덤불·자갈 덧칠을 흩어 언덕 결을 준다.
+      const hillMeta = (draft.tilesets[map.tilesetId] as unknown as { tileMeta?: readonly TileMetaRow[] }).tileMeta ?? [];
+      const hillPool = [27542, 27542, 27511, 27512, 27513, 27598].filter((t) => hillMeta[t]?.tags?.[2] === "decal");
+      for (const i of mound.cells) {
+        mm.relief!.levels[i] = mound.base + 2; taken[i] = 1; mm.upperTiles[i] = -1;
+        if (Math.floor(i / W) >= mound.top) continue;
+        if (mound.grass !== undefined) mm.lowerTiles[i] = mound.grass;
+        if (hillPool.length && rnd() < 0.45) mm.upperTiles[i] = hillPool[Math.floor(rnd() * hillPool.length)]!;
+      }
       const spots = rnd() < 0.5 ? leftSpots : rightSpots;
       for (const id of small) { if (used(id)) continue; if (spots(id).some(([x, y]) => heap(id, x, y))) break; }
     } else {
@@ -666,17 +674,19 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
    * 갱구 둔덕 계획(적용하지 않는다): 갱구 뒤 2~depth 줄 + 갱구 위 두 줄 높이의 양 어깨(좌우 1~2칸)를 relief 2단으로 올릴 칸.
    * 둔덕 칸과 갱구 상자를 막힌 칸으로 친 BFS 로 원래 통행 칸이 하나도 끊기지 않을 때만 돌려준다.
    */
-  const planMound = (adit: Box, depth: number): { cells: Set<number>; base: number; grass?: number } | null => {
+  const planMound = (adit: Box, depth: number): { cells: Set<number>; base: number; top: number; grass?: number } | null => {
     const m = draft.maps[map.id]!; const relief = m.relief;
+    // r10: 갱구 킷 윗줄(3×4 의 첫 줄)은 빈 칸이다 — 둔덕을 상자 윗변에 맞추면 보이는 아치 위에 흙 한 줄이 비어 «둔덕 앞에 따로 선 돌집»으로 읽혔다. 보이는 윗변(top)에 맞춘다.
+    const top = adit.y + 1;
     if (!relief || relief.width !== W || relief.height !== H) return null;
     const base = relief.levels[(adit.y + adit.h - 1) * W + adit.x] ?? 0;
     if (base + 2 > 14) return null;
-    const inAdit = (x: number, y: number) => x >= adit.x && x < adit.x + adit.w && y >= adit.y && y < adit.y + adit.h + 1;
+    const inAdit = (x: number, y: number) => x >= adit.x && x < adit.x + adit.w && y >= top && y < adit.y + adit.h + 1;
     const hitPiece = (x: number, y: number) => inAdit(x, y) || placed.some((p) => x >= p.x && x < p.x + p.w && y >= p.y && y < p.y + p.h + 1);
     const can = (x: number, y: number) => { if (x < 0 || y < 0 || x >= W || y >= H) return false; const i = y * W + x; return !!(ok[i] || grid[i]) && !hitPiece(x, y) && (relief.levels[i] ?? 0) === base; };
     const cells = new Set<number>();
     let l = adit.x - 2, r = adit.x + adit.w + 1;
-    for (let y = adit.y - 1, k = 0; y >= adit.y - depth && y >= 0; y--, k++) {
+    for (let y = top - 1, k = 0; y >= top - depth && y >= 0; y--, k++) {
       if (k > 0) { l += Math.floor(rnd() * 3) - 1; r += Math.floor(rnd() * 3) - 1; }
       let row = 0;
       for (let x = Math.max(0, l); x <= Math.min(W - 1, r); x++) if (can(x, y)) { cells.add(y * W + x); row++; }
@@ -684,21 +694,21 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
       if (!row) break;
     }
     // 어깨: 갱구 윗부분 두 줄 높이에서 좌우로 1~2칸 — 둔덕이 갱구를 앞으로 감싸 «언덕에 판 굴»로 읽히게.
-    for (const y of [adit.y, adit.y + 1]) for (const [x, w] of [[adit.x - 1, 1], [adit.x - 2, 0.6], [adit.x + adit.w, 1], [adit.x + adit.w + 1, 0.6]] as const) {
-      if (y === adit.y + 1 && rnd() > 0.7) continue;
+    for (const y of [top, top + 1]) for (const [x, w] of [[adit.x - 1, 1], [adit.x - 2, 0.6], [adit.x + adit.w, 1], [adit.x + adit.w + 1, 0.6]] as const) {
+      if (y === top + 1 && rnd() > 0.7) continue;
       if (rnd() < w && can(x, y)) cells.add(y * W + x);
     }
     if (cells.size < adit.w + 4) return null;
-    const pass = (x: number, y: number) => !cells.has(y * W + x) && !(x >= adit.x && x < adit.x + adit.w && y >= adit.y && y < adit.y + adit.h) && isPassable(draft, m, x, y);
+    const pass = (x: number, y: number) => !cells.has(y * W + x) && !(x >= adit.x && x < adit.x + adit.w && y >= top && y < adit.y + adit.h) && isPassable(draft, m, x, y);
     let from = comp.seed; if (!pass(from.x, from.y)) from = { x: adit.x + 1, y: adit.y + adit.h };
     if (!pass(from.x, from.y)) return null;
     const seen = new Set<number>([from.y * W + from.x]); const q = [from.y * W + from.x];
     while (q.length) { const i = q.pop()!; const x = i % W, y = Math.floor(i / W);
       for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue; const ni = ny * W + nx; if (seen.has(ni) || !pass(nx, ny)) continue; seen.add(ni); q.push(ni); } }
     for (const i of comp.cells) { const x = i % W, y = Math.floor(i / W); if (!cells.has(i) && !hitPiece(x, y) && !seen.has(i)) return null; }
-    return { cells, base, ...(grassTile !== undefined ? { grass: grassTile } : {}) };
+    return { cells, base, top, ...(grassTile !== undefined ? { grass: grassTile } : {}) };
   };
-  let mound: { cells: Set<number>; base: number; grass?: number } | null = null;
+  let mound: { cells: Set<number>; base: number; top: number; grass?: number } | null = null;
   const kitRows = (id: string) => draft.tilesets[quarter.tilesetId]?.structureKits?.find((k) => k.id === id)?.rows ?? [];
   // 갱구 둘레 흙 칸에 산길 돌 부스러기 덧그림(위층) — 바위 땅을 깔았더니 회색 콘크리트 판으로 읽혀(r7 시험) 부스러기만 남겼다.
   const screeAround = (adit: Box): void => {
@@ -731,7 +741,7 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
     if (isAdit) {
       for (const cand of aditSlots(piece.size.w, piece.size.h)) {
         let pm: ReturnType<typeof planMound> = null;
-        for (const d of [4, 3, 2]) { pm = planMound(cand, d); if (pm) break; }
+        for (const d of [3, 2]) { pm = planMound(cand, d); if (pm) break; }
         if (pm) { aditQueue.push(cand); if (aditQueue.length >= 6) break; }
       }
     }
@@ -770,7 +780,7 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
         mark(taken, W, H, { ...b, w: 1, h: 1 });
         continue;
       }
-      if (isAdit) { mound = null; for (const d of [4, 3, 2]) { mound = planMound(b, d); if (mound) break; } }
+      if (isAdit) { mound = null; for (const d of [3, 2]) { mound = planMound(b, d); if (mound) break; } }
       mark(taken, W, H, b);
       placed.push({ objectId, ...b });
       if (isAdit) wrapAdit(b);

@@ -52,6 +52,7 @@ for (const c of arg("cases", "mining:7,vineyard:3,temple-ruins:5,settlement:1,ru
   }
   const map = ctx.project.maps[mapId];
   if (map) fs.writeFileSync(`${OUT}/${kind}-${seed}.png`, renderMapPng(ctx.project, map).png);
+  if (map && process.env.VA_DUMP) fs.writeFileSync(`${OUT}/${kind}-${seed}.map.json`, JSON.stringify(map));
   rows.push({ c, log }); console.log(c, log.join(" | "));
 }
 fs.writeFileSync(`${OUT}/report.json`, JSON.stringify(rows, null, 1));
