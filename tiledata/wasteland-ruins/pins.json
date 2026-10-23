@@ -1,7 +1,7 @@
 {
 "version": 1,
 "tilesPerRow": 48,
-"count": 1749,
+"count": 1775,
 "cells": {
 "dirt-a/0.0": 1,
 "dirt-b/0.0": 2,
@@ -1750,6 +1750,32 @@
 "asphalt-in-ne-sw/0.0": 1745,
 "asphalt-in-nw-se/0.0": 1746,
 "asphalt-in-ne-nw-se/0.0": 1747,
-"asphalt-in-nw-se-sw/0.0": 1748
+"asphalt-in-nw-se-sw/0.0": 1748,
+"husk-e/0.0": 1749,
+"husk-e/1.0": 1750,
+"husk-e/2.0": 1751,
+"husk-e/3.0": 1752,
+"husk-e/0.1": 1753,
+"husk-e/1.1": 1754,
+"husk-e/2.1": 1755,
+"husk-e/3.1": 1756,
+"husk-e/0.2": 1757,
+"husk-e/1.2": 1758,
+"husk-e/2.2": 1759,
+"husk-e/3.2": 1760,
+"husk-e/0.3": 1761,
+"husk-e/1.3": 1762,
+"husk-e/2.3": 1763,
+"husk-e/3.3": 1764,
+"husk-e/0.4": 1765,
+"husk-e/1.4": 1766,
+"husk-e/2.4": 1767,
+"husk-e/3.4": 1768,
+"wall-h2/0.0": 1769,
+"wall-h2/1.0": 1770,
+"wall-h2/2.0": 1771,
+"wall-h2/0.1": 1772,
+"wall-h2/1.1": 1773,
+"wall-h2/2.1": 1774
 }
 }

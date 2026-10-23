@@ -3,13 +3,13 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 1749,
-  "kits_checked": 54,
+  "tiles_checked": 1775,
+  "kits_checked": 56,
   "groups_checked": 25,
   "autotiles_checked": 1
  },
  "reassembly": {
-  "kits": 54,
+  "kits": 56,
   "mismatched": 0,
   "ids": []
  },
@@ -17,26 +17,26 @@
   "cells_off_palette": 0
  },
  "tiles": {
-  "count": 1749,
+  "count": 1775,
   "rows": 37,
-  "kits": 54,
+  "kits": 56,
   "groups": 25,
   "autotiles": 1,
   "animationStrips": 1
  },
  "animation_noncontiguous": [],
  "adopted": {
-  "pieces": 55,
+  "pieces": 57,
   "by_group": {
    "ground": 19,
-   "ruins": 6,
+   "ruins": 8,
    "shacks": 6,
    "defense": 3,
    "props": 21
   }
  },
  "dev_only_adopted": [],
- "mode": "dev",
+ "mode": "bundle",
  "rejected": [
   {
    "id": "dirt-a",
@@ -62,6 +62,11 @@
    "id": "dirt-b45",
    "status": "skipped",
    "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt",
+   "status": "pass",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(pass)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
   },
   {
    "id": "asphalt-in-ne",
@@ -182,16 +187,6 @@
    "id": "husk-d",
    "status": "fail",
    "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(fail)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
-  },
-  {
-   "id": "husk-e",
-   "status": "fail",
-   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(fail)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
-  },
-  {
-   "id": "wall-h2",
-   "status": "refer",
-   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(refer)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
   },
   {
    "id": "wall-h3",
