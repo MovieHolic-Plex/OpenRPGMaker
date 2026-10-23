@@ -12,7 +12,7 @@ import { DungeonComposeError } from "../dungeonKit/errors";
 import { capabilityTableText } from "../dungeonKit/capabilities";
 import { DUNGEON_GENRES, GENRE_PRESETS, genreOfProject, planPopulation } from "../dungeonKit/genres";
 import { DUNGEON_REFERENCES, GRAMMAR, inferDungeonRequest, inferDungeonType } from "../dungeonKit/grammar";
-import { DUNGEON_GIMMICKS, GIMMICK_LABEL, THEME_GIMMICKS, placeLever, placeThemeGimmick, wallFirst, type DungeonGimmick } from "./dungeonGimmicks";
+import { DUNGEON_GIMMICKS, GIMMICK_LABEL, THEME_GIMMICKS, placeLever, placeThemeGimmick, placeTowerWarp, wallFirst, type DungeonGimmick } from "./dungeonGimmicks";
 import { composeRouted, routeDungeon } from "../dungeonKit/route";
 import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS } from "./mapTools";
@@ -350,8 +350,10 @@ function populateFloor(draft: Project, mapId: string, data: Record<string, unkno
   const out: string[] = [];
   const foes: string[] = [];
   if (troops.field.length) {
-    planned("enemies").filter((e) => e.room !== bossRoom?.id && e.room !== restRoom?.id).slice(0, 4).forEach((e, i) => {
-      if (!free(e)) return;
+    // 보이는 적은 다른 이벤트(이동·순간이동·함정·표지) 2칸 안에 못 선다(place_field_enemy 규칙) — 미리 걸러 경고·빈자리를 줄인다.
+    const foeFree = (c: Pt): boolean => free(c) && !map.events.some((e) => Math.max(Math.abs(e.x - c.x), Math.abs(e.y - c.y)) <= 2);
+    planned("enemies").filter((e) => e.room !== bossRoom?.id && e.room !== restRoom?.id && foeFree(e)).slice(0, 4).forEach((e, i) => {
+      if (!foeFree(e)) return;
       if (attempt(`보이는 적 (${e.x},${e.y})`, () => placeRoamer(draft, { mapId, x: e.x, y: e.y, troopId: troops.field[(i + salt) % troops.field.length], behavior: "patrol", id: `ev_${mapId}_foe${i + 1}` }, i % 2 === 1))) foes.push(`(${e.x},${e.y})`);
     });
   } else warnings.push(`${map.name}: 데이터베이스에 적 그룹이 없어 보이는 적을 두지 않았다 — upsert_troop 뒤 troops 로 다시 짓거나 place_field_enemy.`);
@@ -548,10 +550,16 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   if (gimmickArg !== "none" && datas.every((d) => d.adapter === "beodeul") && (gimmickArg || (args.populate !== false && datas.every((d) => d.genre === "rpg")))) {
     const i = datas.length - 1;
     const m = draft.maps[mapIds[i]!]!;
-    const { gimmick, line, after } = placeThemeGimmick(draft, m, datas[i]!, datas[i]!.type as DungeonType, gimmickArg, baseSeed, warnings, () => placeLeverGate(draft, m, datas[i]!, []));
-    gimmickAfter = after;
-    gimmickPlaced = gimmick;
-    if (line) filled.push(`${m.name}: ${line}`);
+    // 탑(여러 층)의 순간이동: 꼭대기 층은 방이 둘뿐이라 층 안 마법진 쌍 자리가 없다 — 1층 ↔ 꼭대기 층 건너 마법진을 먼저 해 본다.
+    const towerWarp = datas.length > 1 && datas[i]!.type === "tower" && (gimmickArg === "teleporter" || (!gimmickArg && THEME_GIMMICKS.tower?.[baseSeed % 2] === "teleporter"))
+      ? placeTowerWarp(draft, draft.maps[mapIds[0]!]!, datas[0]!, m, datas[i]!, "tower") : "";
+    if (towerWarp) { gimmickPlaced = "teleporter"; filled.push(towerWarp); }
+    else {
+      const { gimmick, line, after } = placeThemeGimmick(draft, m, datas[i]!, datas[i]!.type as DungeonType, gimmickArg, baseSeed, warnings, () => placeLeverGate(draft, m, datas[i]!, []));
+      gimmickAfter = after;
+      gimmickPlaced = gimmick;
+      if (line) filled.push(`${m.name}: ${line}`);
+    }
   }
   // 채우기(rpg): 생략하면 켠다. 몬스터 수집(pokemon)은 야생 조우 구역이 정본이라 건너뛴다.
   const populate = args.populate !== false && datas.every((d) => d.genre === "rpg");

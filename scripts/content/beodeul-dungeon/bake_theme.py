@@ -87,31 +87,74 @@ def walk_for(item_def, name, part):
     return G.default_walk(w, h)
 
 
+# 부품 이름 → 키트 이름(없으면 첫 부품 = KIT_NAME, 나머지 = 「-2」「-3」…).
+PART_NAME = {
+    "earth.carpet": {"한 칸 폭": "carpet-runner", "세 칸 폭": "carpet-runner-3w"},
+    "earth.ossuary": {"3단": "ossuary-3h", "2단": "ossuary-2h"},
+    "earth.portcullis": {"닫힘": "portcullis", "올림": "portcullis-open"},
+    "earth.sarc_ns": {"닫힘": "sarcophagus-ns", "열림": "sarcophagus-ns-open"},
+    "earth.sarc_ew": {"닫힘": "sarcophagus-ew", "열림": "sarcophagus-ew-open"},
+    "earth.ore_vein": {"금 2×2": "ore-vein-gold", "쇠 2×2": "ore-vein-iron", "금 1×1": "ore-vein-gold-1", "쇠 1×1": "ore-vein-iron-1"},
+    "earth.rails": {"H": "rails-ew", "V": "rails-ns", "NE": "rails-ne", "NW": "rails-nw", "SE": "rails-se", "SW": "rails-sw", "X": "rails-x",
+                    "TN": "rails-tn", "TS": "rails-ts", "TE": "rails-te", "TW": "rails-tw", "EN": "rails-end-n", "ES": "rails-end-s", "EE": "rails-end-e", "EW": "rails-end-w"},
+    "tc.pyr_sarcophagus": {"닫힘": "pharaoh-sarcophagus", "열림": "pharaoh-sarcophagus-open"},
+    "tc.pyr_statue": {"자칼": "jackal-statue", "풍뎅이": "scarab-statue"},
+    "tc.sw_boardwalk": {"끝": "boardwalk", "부서짐": "boardwalk-broken"},
+    "tc.ice_icicles": {"1칸": "icicles", "2칸": "icicles-2w"},
+    "other.portal": {"닫힘": "portal-gate"},
+}
+FRAME_RE = re.compile(r"^(장면|frame)\s*\d+$")
+# 걷는 칸뿐인 바닥 그림(투명 데칼)도 위층에 둔다 — 버들항 깔개·모자이크와 같이 upperTiles + 우선순위 lower(사람 밑).
+PASS_LAYER = {"o": "lower", "★": "upper", "x": "upper"}
+
+
+def cells_of(st, part, walk, origin, label, desc, tags, frames=None):
+    """part(Cv)(또는 장면 목록) → (아래층 행렬, 위층 행렬). 걷는 칸은 사람 밑(lower 우선순위), ★ 는 사람 위, x 는 막힘.
+    불투명하고 전부 걷는 바닥 그림(묘석·판석)은 아래층 칸으로 바닥을 바꿔 깐다."""
+    src = frames or [part]
+    w, h = src[0].w // T, src[0].h // T
+    assert src[0].w % T == 0 and src[0].h % T == 0, (label, src[0].w, src[0].h)
+    opaque_floor = all(f.a[:, :, 3].min() == 255 for f in src) and all(c == "o" for r in walk for c in r)
+    lo, up = [[-1] * w for _ in range(h)], [[-1] * w for _ in range(h)]
+    for y in range(h):
+        for x in range(w):
+            cs = [f.crop(x * T, y * T, T, T) for f in src]
+            if not any(c.a[:, :, 3].any() for c in cs):
+                continue
+            wch = walk[y][x]
+            passage = {"x": "solid", "o": "passable", "★": "star"}[wch]
+            layer = "lower" if opaque_floor else PASS_LAYER[wch]
+            meta = G.cm(label + (f" ({x},{y})" if w * h > 1 else ""), desc, tags, passage, layer)
+            t = anim_n(st, cs, meta, origin) if frames else st.cell(cs[0], meta, origin)
+            (lo if opaque_floor else up)[y][x] = t
+    return lo, up, opaque_floor
+
+
 def bake_objects(st, p, line, meta, origin):
-    """기물 항목(부품 dict) → 키트. 장면N 부품은 4장면 한 덩이(1칸짜리만), 나머지는 부품마다 키트."""
+    """기물 항목(부품 dict) → 키트. 「장면N」 부품들은 한 덩이 움직임(N장면, 칸마다 animationStrips), 나머지는 부품마다 키트."""
     item = p["item"]
     idef = H.items_by_id().get(item, {})
     base = KIT_NAME.get(item) or item.split(".", 1)[-1].replace("_", "-")
+    names = PART_NAME.get(item, {})
     parts = meta["parts"]
     title = idef.get("title", base)
     tags = ["주제", base] + themes_of(item)[2:]
+    groups = []
+    frames = [v for k, v in parts.items() if FRAME_RE.match(k)]
+    if len(frames) >= 2:
+        groups.append(("움직임", frames, frames))
+    groups += [(k, v, None) for k, v in parts.items() if not FRAME_RE.match(k)]
     kits = []
-    frames = [v for k, v in parts.items() if re.match(r"^(장면|frame)\s*\d+$", k)]
-    if frames and len(frames) == G.FRAMES and all(f.w == T and f.h == T for f in frames):
-        walk = walk_for(idef, "기본", frames[0])[0][0]
-        passage = {"x": "solid", "o": "passable", "★": "star"}[walk]
-        head = st.anim(frames, G.cm(f"버들항 던전 · {title}", f"{title} — 4장면 3fps.", tags, passage, "upper"), origin)
-        kits.append(G.kit(f"{KP}{base}", f"버들항 던전 · {title}(움직임)", 1, 1, [[head]], desc=f"{title}. 칸 하나가 4장면 animationStrips 로 움직인다.",
-                          rules="걷는 바닥 위에.", tags=tags, themes=themes_of(item)))
-        rest = {k: v for k, v in parts.items() if v not in frames}
-    else:
-        rest = parts
-    for n, (name, part) in enumerate(rest.items()):
-        w, h = part.w // T, part.h // T
-        up = G.object_cells(st, part, walk_for(idef, name, part), origin, f"버들항 던전 · {title} {name}", idef.get("brief", title), tags)
-        kid = f"{KP}{base}" if n == 0 and not kits else f"{KP}{base}-{len(kits) + 1}"
-        kits.append(G.kit(kid, f"버들항 던전 · {title} {name} {w}×{h}", w, h, up, desc=f"{title} — {name}. {idef.get('brief', '')}",
-                          rules=f"통행: {idef.get('walk', '')}", tags=tags, themes=themes_of(item)))
+    for n, (name, part, fr) in enumerate(groups):
+        first = fr[0] if fr else part
+        w, h = first.w // T, first.h // T
+        walk = walk_for(idef, name if name in (idef.get("walk_grid") or {}) else "기본", first)
+        lo, up, floor = cells_of(st, part, walk, origin, f"버들항 던전 · {title} {name}", idef.get("brief", title), tags, frames=fr)
+        kid = KP + (names.get(name) or (base if n == 0 else f"{base}-{n + 1}"))
+        kits.append(G.kit(kid, f"버들항 던전 · {title} {name} {w}×{h}" + (f"({len(fr)}장면)" if fr else ""), w, h, up, lo,
+                          desc=f"{title} — {name}. {idef.get('brief', '')}" + (f" {len(fr)}장면 animationStrips." if fr else ""),
+                          rules=f"통행: {idef.get('walk', '')}", tags=tags, themes=themes_of(item),
+                          role="floor" if floor else "prop", layer_home="lower" if floor else ("perCell" if any(c == "o" for r in walk for c in r) else "upper")))
     ids = sorted({t for k in kits for r in k["rows"] for t in r["upperTiles"] + r["tiles"] if t >= 0})
     tg = dict(id=f"{G.TILEGROUP_PREFIX}_{item.replace('.', '_')}", name=f"버들항 던전 주제 {title}", role="object", source="bundled-default",
               defaultLayer="upper", confidence="high", tileIds=ids, description=f"{title}(키트 {', '.join(k['id'] for k in kits)}). 하네스 {p['round']} {p['letter']}.",
@@ -155,7 +198,7 @@ def blank(w, h):
 
 def bake_pyr_floor(st, p, line, meta, origin):
     cv = G.render(p)[1]
-    tags = ["주제", "바닥", "floor", "사암"] + themes_of(p["item"])[2:]
+    tags = ["주제", "바닥", "floor", "사암", "섞음"] + themes_of(p["item"])[2:]
     lo = lower_cells(st, cv, "버들항 던전 · 피라미드 사암 판석 바닥", "피라미드 실내 사암 판석 바닥 — 2×2 네 칸을 칸마다 아무거나 섞어 깔아도 이음이 맞는다. 걸음.", tags, "passable", origin)
     k = G.kit(f"{KP}sandstone-floor", "버들항 던전 · 피라미드 사암 판석 바닥 2×2(섞음)", 2, 2, blank(2, 2), lo,
               desc="피라미드 실내 판석 바닥. 네 칸을 칸마다 섞어 깐다(시공기 floor mix).", rules="걷는 바닥 전부. 칸마다 네 칸 중 아무거나.",
@@ -226,13 +269,70 @@ def bake_pyr_sand_trap(st, p, line, meta, origin):
     return [], [tg], [k]
 
 
-HANDLERS = {"tc.pyr_floor": bake_pyr_floor, "tc.pyr_face": bake_pyr_face, "tc.pyr_rim": bake_pyr_rim, "tc.pyr_sand_trap": bake_pyr_sand_trap}
+def bake_auto_floor(gid, kid, title, desc, rune_kid=None):
+    def run(st, p, line, meta, origin):
+        at = next(iter(meta["autotiles"].values()))
+        tags = ["주제", "바닥", "floor", "섞음"] + themes_of(p["item"])[2:]
+        def cmeta(m):
+            s_ = G.mask_sides(m)
+            return G.cm(f"버들항 던전 · {title}" + (f"({s_} 열림)" if s_ else " 몸통"), f"{desc} 오토타일(마스크 {m}). 걸음. 그룹 `{gid}`.", tags, "passable", "lower")
+        g = G.bake_autotile(st, at, gid, f"버들항 던전 {title}", origin, cmeta)
+        bodies = [g["variantMap"]["255"]] + [b for b in (g.get("interiorVariants") or [[]])[0] if b != g["variantMap"]["255"]]
+        cols = 6 if len(bodies) >= 12 else len(bodies)
+        rows_ = [bodies[i:i + cols] for i in range(0, len(bodies), cols)]
+        rows_ = [r for r in rows_ if len(r) == cols]
+        kits = [G.kit(f"{KP}{kid}", f"버들항 던전 · {title} 몸통 {cols}×{len(rows_)}(섞음)", cols, len(rows_), blank(cols, len(rows_)), rows_,
+                      desc=f"{desc} — 몸통 변형 {len(bodies)}칸. 칸마다 섞어 깐다(시공기 floor mix).", rules="걷는 바닥 전부. 칸마다 아무 칸이나.",
+                      tags=tags, role="floor", repeat="repeat", layer_home="lower", themes=themes_of(p["item"]))]
+        for nm, t in (meta.get("tiles") or {}).items():
+            cv = t if t.w > T or t.h > T else t
+            lo = lower_cells(st, cv, f"버들항 던전 · {title} {nm}", f"{desc} — {nm}(몸통 칸 대신 깐다).", tags, "passable", origin)
+            w, h = cv.w // T, cv.h // T
+            kits.append(G.kit(f"{KP}{rune_kid or kid + '-' + nm}", f"버들항 던전 · {title} {nm} {w}×{h}", w, h, blank(w, h), lo,
+                              desc=f"{desc} — {nm}.", rules="바닥 몸통 한가운데에 드문드문.", tags=tags, role="floor", layer_home="lower", themes=themes_of(p["item"])))
+        tg = dict(id=f"{G.TILEGROUP_PREFIX}_{p['item'].replace('.', '_')}", name=f"버들항 던전 주제 {title}", role="floor", source="bundled-default",
+                  defaultLayer="lower", confidence="high", tileIds=sorted(set(g["memberTileIds"]) | {t for k in kits for r in k["rows"] for t in r["tiles"] if t >= 0}),
+                  description=f"{title} 오토타일 `{gid}` + 몸통 섞음 키트 {KP}{kid}. 하네스 {p['round']} {p['letter']}.", placementRules="걷는 바닥 전부.")
+        return [g], [tg], kits
+    return run
+
+
+HANDLERS = {"arcane.tower_floor": bake_auto_floor("beodeul_dungeon_theme_tower_floor", "tower-floor", "마법탑 돌 바닥", "마법탑의 다듬은 돌 바닥", "tower-rune"),
+            "other.ground": bake_auto_floor("beodeul_dungeon_theme_otherworld_ground", "otherworld-floor", "마계 검은 돌 바닥", "마계의 갈라진 보라 검은 돌 바닥"),
+            "tc.pyr_floor": bake_pyr_floor, "tc.pyr_face": bake_pyr_face, "tc.pyr_rim": bake_pyr_rim, "tc.pyr_sand_trap": bake_pyr_sand_trap}
+
+
+# gap 물결이지만 주제 꼬리에 굽는 고름 — 32px 위상 몸통 용암(gap-lava-r2)은 칸이 많아 gap 꼬리(30,848 앞)에 들어가지 않는다.
+THEME_TAIL_ROUNDS = {("gap.lava_edge", "gap-lava-r2")}
+
+
+def bake_lava_r2(st, p, line, meta, origin):
+    frames = meta["frames"]["lava"]
+    gid = f"beodeul_dungeon_theme_lava_{line}"
+    what = f"용암 {line}({G.LINE_NAME[line]})"
+    def cmeta(m):
+        s_ = G.mask_sides(m)
+        return G.cm(f"버들항 던전 · {what}" + (f" 가장자리({s_} 열림)" if s_ else " 몸통"),
+                    f"동굴 바닥 ↔ {what} 가장자리 오토타일(마스크 {m}, 4장면 3fps, 32px 위상 몸통). 막힘. 그룹 `{gid}`.",
+                    ["lava", "용암", "water"], "solid", "lower")
+    g = G.bake_autotile_anim(st, frames, gid, f"버들항 던전 {what}(32px 몸통)", origin, cmeta)
+    tg = dict(id=f"{G.TILEGROUP_PREFIX}_lava_{line}", name=f"버들항 던전 {what}", role="water", source="bundled-default", defaultLayer="lower",
+              confidence="high", tileIds=list(g["memberTileIds"]),
+              description=f"{what} 웅덩이 오토타일 `{gid}` — 32×32 몸통을 칸 위치(2×2 위상)로 골라 16px 반복이 안 보인다. 4장면. 하네스 {p['round']} {p['letter']}.",
+              placementRules="용암 칸을 이 그룹으로 칠한다(이웃이 용암이면 연결). 걸을 수 없다.")
+    return [g], [tg], []
+
+
+HANDLERS["gap.lava_edge"] = bake_lava_r2
 
 
 def current_picks():
     items = H.items_by_id()
     out, void = [], []
     for (item, line), (p, st) in sorted(H.pick_state().items()):
+        if (item, p["round"]) in THEME_TAIL_ROUNDS:
+            (out if st == "current" else void).append((p, line))
+            continue
         if not str(items.get(item, {}).get("wave", "")).startswith("theme"):
             continue
         (out if st == "current" else void).append((p, line))
@@ -285,6 +385,10 @@ def main():
         if not handler and "parts" not in meta:
             report.append(f"  건너뜀 {p['item']:24} {p['letter']} — 부품 없는 항목(오토타일·벽)은 HANDLERS 에 손을 달아야 굽는다")
             continue
+        prev = st.baked.get(f"{p['item']}|{line}")
+        for kind_, ids in ((prev or {}).get("defs") or {}).items():
+            for i in ids:
+                st.defs[kind_].pop(i, None)
         groups, tgs, kits = (handler or bake_objects)(st, p, line, meta, origin)
         for g in groups:
             st.defs["autotileGroups"][g["id"]] = g

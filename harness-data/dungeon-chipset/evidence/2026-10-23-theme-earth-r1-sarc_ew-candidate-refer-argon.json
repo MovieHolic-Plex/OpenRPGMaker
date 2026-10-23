@@ -1,0 +1,9 @@
+{
+  "item": "earth.sarc_ew",
+  "candidate": "A1",
+  "pixelSha256": "15d7d5b47aa169b193180397b38aa52e983fe79c3600ac960fa475dc11832646",
+  "verdict": "pass",
+  "sure": true,
+  "problems": [],
+  "reason": "At 1x and in-scene, this 16px-tall (15 opaque rows) east-west stone sarcophagus clearly separates into a ~7px horizontal lid top plane (cream stone slab with carved cross/sword relief and bright front lip) and a ~7-8px vertical front face (dark eave shadow beneath the lid overhang plus three recessed panels), with no side faces and cohesive Beodeul dungeon stone shading; the open state slides the lid forward to expose a dark back cavity while keeping both planes legible, and the gate split was merely a 1px boundary count (7 vs 8 front rows inside a 15px single-row height)."
+}

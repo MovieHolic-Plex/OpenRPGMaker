@@ -218,7 +218,7 @@ function placeTeleporter(c: Ctx): string {
   const A = near.find((r) => r.kind !== "entrance") ?? near[0];
   const B = deep.find((r) => r.id !== A?.id && (on.has(r.id) || deep.length < 3)) ?? deep.find((r) => r.id !== A?.id);
   if (!A || !B) return "";
-  const art = c.type === "forest" ? [TK("mushroom-ring"), TK("teleport-circle"), "bd-pick-temple-ruins-mosaic-medallion-5x5"]
+  const art = c.type === "forest" || c.type === "swamp" ? [TK("mushroom-ring"), TK("teleport-circle"), "bd-pick-temple-ruins-mosaic-medallion-5x5"]
     : c.type === "otherworld" ? [TK("portal-gate-floor"), TK("teleport-circle"), TK("arcane-circle"), "bd-pick-temple-ruins-mosaic-medallion-5x5"]
     : [TK("teleport-circle"), TK("arcane-circle"), "bd-pick-temple-ruins-mosaic-medallion-5x5"];
   const kitId = firstKit(c.ts, art);
@@ -230,7 +230,16 @@ function placeTeleporter(c: Ctx): string {
   const mid = (p: Pt) => ({ x: p.x + Math.floor(k.width / 2), y: p.y + Math.floor(k.height / 2) });
   const ca = mid(pa), cb = mid(pb);
   const la = landingNear(c, [ca]) ?? ca, lb = landingNear(c, [cb]) ?? cb;
-  const word = c.type === "forest" ? "버섯 고리" : c.type === "otherworld" ? "차원의 문" : "마법진";
+  const word = kitId.includes("mushroom-ring") ? "버섯 고리" : c.type === "otherworld" ? "차원의 문" : "마법진";
+  // 순간이동 자리 2칸 안은 이벤트 자리에서 뺀다 — 채우기가 그 곁에 적을 세우려다 「출입구 곁」 경고를 냈다(2026-10-23 themes p9).
+  const far = (s: Pt) => Math.max(Math.abs(s.x - ca.x), Math.abs(s.y - ca.y)) > 2 && Math.max(Math.abs(s.x - cb.x), Math.abs(s.y - cb.y)) > 2;
+  for (const v of list(c.data, "rooms")) {
+    const sp = (v as Record<string, unknown>)["spots"];
+    if (!Array.isArray(sp)) continue;
+    const keep = sp.filter((q) => { const p = asCell(q); return !p || far(p); });
+    if (keep.length < sp.length) sp.splice(0, sp.length, ...keep);
+  }
+  for (const r of c.rooms) { const keep = r.spots.filter(far); r.spots.splice(0, r.spots.length, ...keep); }
   const pad = (id: string, at: Pt, to: Pt, name: string): GameEvent => puzzleEvent(id, name, at, [makePage({
     id: `${id}_p`, name, graphic: TRANSPARENT, trigger: "playerTouch", priority: "below",
     commands: [sfx("crystal-ping"), flash("#c9a7ff", 260), textCmd(`${word}이 빛나며 몸이 떠오른다…`), transferCmd(c.map.id, to, "down", "white")],
@@ -317,7 +326,8 @@ function placeSandpit(c: Ctx): string {
   const on = routeRooms(c.rooms, bossId);
   const side = c.rooms.filter((r) => !on.has(r.id) && r.kind !== "vault" && r.kind !== "entrance");
   const cands = [...side, ...c.rooms.filter((r) => on.has(r.id) && r.kind !== "entrance" && r.kind !== "boss")];
-  const art = firstKit(c.ts, c.type === "pyramid" ? [TK("sand-pit"), TK("cracked-floor"), "bd-pick-temple-ruins-floor-trav"] : [TK("cracked-floor"), TK("sand-pit"), "bd-pick-temple-ruins-floor-trav"]);
+  // 모래 구덩이 그림은 모래 주제(피라미드·숲 모래땅)에만 — 성·묘지 돌바닥에 모래 소용돌이는 엉뚱했다(2026-10-23 themes p8).
+  const art = firstKit(c.ts, c.type === "pyramid" || c.type === "forest" ? [TK("sand-pit"), TK("cracked-floor"), "bd-pick-temple-ruins-floor-trav"] : [TK("cracked-floor"), "bd-pick-temple-ruins-floor-trav"]);
   if (!art) return "";
   const entry = (field(c.data, "entryStair") ?? field(c.data, "entrance")) as Record<string, unknown> | undefined;
   const land = asCell(field(entry, "front")) ?? asCell(entry) ?? c.start;
@@ -479,6 +489,41 @@ function placeChokeLever(c: Ctx): string {
 }
 
 /** 주제 장치 하나를 놓는다. 고른 장치를 못 놓으면 그 주제의 다음 장치로. 놓은 장치와 요약 한 줄. lever 는 호출자가 placeLeverGate 로 놓는다. */
+/**
+ * 탑의 층 건너 마법진(2026-10-23 dungeon-themes): 1층 계단참 마법진은 봉인돼 있고, 꼭대기 계단참 마법진을 밟으면 봉인이 풀리며 1층으로 내려간다.
+ * 그 뒤로는 1층 ↔ 꼭대기를 오간다(되돌아가는 지름길). 꼭대기 층은 방이 둘뿐이라 한 층 안 마법진 쌍은 자리가 없었다(tower-b).
+ */
+export function placeTowerWarp(draft: Project, bottom: GameMap, bottomData: Record<string, unknown>, top: GameMap, topData: Record<string, unknown>, type: DungeonType): string {
+  const mk = (map: GameMap, data: Record<string, unknown>): Ctx => ({ draft, map, ts: draft.tilesets[map.tilesetId]!, data, rooms: roomsOf(data), type, warnings: [], start: { x: 0, y: 0 } });
+  const a = mk(bottom, bottomData), b = mk(top, topData);
+  const kitId = firstKit(a.ts, [TK("teleport-circle"), TK("arcane-circle"), "bd-pick-temple-ruins-mosaic-medallion-5x5"]);
+  if (!kitId) return "";
+  const roomA = a.rooms.find((r) => r.kind !== "entrance" && r.kind !== "boss") ?? a.rooms.find((r) => r.kind === "entrance");
+  const roomB = b.rooms.find((r) => r.kind === "entrance") ?? b.rooms[0];
+  if (!roomA || !roomB) return "";
+  const pa = stampFlat(a, kitId, centerSpots(roomA), { needPassable: true });
+  if (!pa) return "";
+  const pb = stampFlat(b, kitId, centerSpots(roomB), { needPassable: true });
+  if (!pb) return "";
+  const k = kitOf(a.ts, kitId)!;
+  const mid = (p: Pt) => ({ x: p.x + Math.floor(k.width / 2), y: p.y + Math.floor(k.height / 2) });
+  const ca = mid(pa), cb = mid(pb);
+  const la = landingNear(a, [ca]) ?? ca, lb = landingNear(b, [cb]) ?? cb;
+  const sw = `sw_${bottom.id}_tower_warp`;
+  ensureNamedSwitch(draft, sw, `${bottom.name}: 꼭대기 마법진 봉인 풀림`);
+  upsertEventIntoMap(bottom, puzzleEvent(`ev_${bottom.id}_warp_up`, "봉인된 마법진", ca, [
+    makePage({ id: `ev_${bottom.id}_warp_up_p1`, name: "봉인된 마법진", graphic: TRANSPARENT, trigger: "action", priority: "below",
+      commands: [textCmd("희미하게 빛나는 마법진이다. 위쪽 어딘가에서 봉인을 풀어야 움직일 것 같다.")] }),
+    makePage({ id: `ev_${bottom.id}_warp_up_p2`, name: "꼭대기로 가는 마법진", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: TRANSPARENT, trigger: "playerTouch", priority: "below",
+      commands: [sfx("crystal-ping"), flash("#c9a7ff", 260), textCmd("마법진이 빛나며 몸이 떠오른다… 탑 꼭대기로!"), transferCmd(top.id, lb, "down", "white")] }),
+  ]));
+  upsertEventIntoMap(top, puzzleEvent(`ev_${top.id}_warp_down`, "1층으로 가는 마법진", cb, [
+    makePage({ id: `ev_${top.id}_warp_down_p1`, name: "1층으로 가는 마법진", graphic: TRANSPARENT, trigger: "playerTouch", priority: "below",
+      commands: [{ kind: "setSwitch", switchId: sw, value: true } as Command, sfx("crystal-ping"), flash("#c9a7ff", 260), textCmd("마법진의 봉인이 풀렸다! 1층 마법진과 이어졌다."), transferCmd(bottom.id, la, "down", "white")] }),
+  ]));
+  return `층 건너 마법진: ${bottom.name} ${roomA.id}(${ca.x},${ca.y}) 봉인 ↔ ${top.name} ${roomB.id}(${cb.x},${cb.y}) — 꼭대기 마법진을 밟으면 봉인이 풀리고 1층으로 내려간다(스위치 ${sw}). 그 뒤로 두 마법진이 오간다.`;
+}
+
 export function placeThemeGimmick(draft: Project, map: GameMap, data: Record<string, unknown>, type: DungeonType, want: DungeonGimmick | undefined, seed: number,
   warnings: string[], leverFallback: () => string): { gimmick: DungeonGimmick | null; line: string; after: () => void } {
   const ts = draft.tilesets[map.tilesetId]!;

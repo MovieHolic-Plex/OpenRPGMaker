@@ -1,0 +1,439 @@
+{
+ "date": "2026-10-23",
+ "delegatedBy": "delegated by user to supervisor 2026-10-23",
+ "basis": "object-gate review on these exact pixels under uncalibrated profile 4d8774b517f41638 (advisory PASS, or REFER resolved PASS by a fresh adversarial Argon reviewer); 0 counted majors from the blind panel (3 fresh Opus + 1 Argon, a major counts when 2+ raise it); pick recorded in the dungeon-chipset ledger bound to the art hash. No calibrated final profile exists, so the exit is the signed delegated allow.",
+ "items": [
+  {
+   "pixelSha256": "db552460b377513a647f22e3362a8a54a91f7105d525c5b5b7ac5ef602b7d065",
+   "kind": "organic",
+   "name": "tc.fo_ancient_tree A1",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-6.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "5d1b7882d3681639041772dcfb8f1d854a343a9bb37248828656c417ef9047d9",
+   "kind": "organic",
+   "name": "tc.fo_boulder A2",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-8.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "2a9644f4a16864ea723468818daaefe0af9fcb782a06dc3abfeabbcbd0bdea5f",
+   "kind": "organic",
+   "name": "tc.fo_bramble A2",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-7.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "7730f3fa1e3d937a70cc98806a3977df433bf2cecd43794c0bdf30ab1235929b",
+   "kind": "terrain",
+   "name": "tc.fo_ring A1",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-8.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "a8566c21a48c219195da932aef6368b1093260f0b2ec3e7d39e2897f8f71666c",
+   "kind": "column",
+   "name": "tc.fo_waystone A1",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-7.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "e732d4739e2e4af0e161286cab85eea79d40b4ef34651f8fe7f22afcde813022",
+   "kind": "organic",
+   "name": "tc.ice_crystal A2",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-1.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "6003b3cb5faa6de8a5af6e9cfaf6ca88b682627255b17e63148df27565525531",
+   "kind": "box",
+   "name": "tc.ice_frozen A2",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-1.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "c92068077807379609cbd688b9abbcca5ac36005469e67196b959ca2ed5c3d2c",
+   "kind": "wall_mounted",
+   "name": "tc.ice_icicles A2",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-7.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "f38eafebc19aececa2d724b82a2d90f24acf1d815b299e4d35949f6e9e7b36be",
+   "kind": "debris",
+   "name": "tc.pyr_gold A1",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-2.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "53933d8a531b0fa7b8f2fad58542e0b9ef0b7200a280279f59a2975fcb305624",
+   "kind": "other",
+   "name": "tc.pyr_obelisk A1",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-7.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "a9bf3e023e22c4346b9d66f6a9475528b3f42f6fd3c1df24ccb36bc4e3b65997",
+   "kind": "terrain",
+   "name": "tc.pyr_sand_trap A1",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-4.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "dd58495c36f2f1f24b945638a212de8ab82b1e725a2f1df8bf9e71356d38fc72",
+   "kind": "box",
+   "name": "tc.pyr_sarcophagus A1",
+   "round": "theme-climate-r1",
+   "gate": "refer",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-6.json",
+   "referRuling": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-refer-pyr_sarcophagus.json"
+  },
+  {
+   "pixelSha256": "b91b2d8cba8133add6ea95274943f5e3405bfcefc897ac3e0f3e7f3bb31effa0",
+   "kind": "figure",
+   "name": "tc.pyr_statue A1",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-6.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "6c07d9b76ec9cdd8ada764972fffc35ceaeab1c02b051c2af948b0767d93e569",
+   "kind": "flat",
+   "name": "tc.sw_boardwalk A2",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-7.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "032dd90c8ef2b28bb29734ee859f1f74f15b921c7ce5736c027140976108f0fc",
+   "kind": "figure",
+   "name": "tc.sw_idol A1",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-5.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "77e773ee257192cbf89536a92564929eecb6426e0a399d64170d53b41cce4690",
+   "kind": "flat",
+   "name": "tc.sw_lily A2",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-5.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "726080cd72fe8eafc04e0531c6ef67f7f442e59248de5e2d4cedae7aaadbd0c5",
+   "kind": "organic",
+   "name": "tc.sw_moss A2",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-7.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "657ed576aeb15242d2e0dde80f5717a0d2005f14fa84047f78f686bc1f10ab09",
+   "kind": "organic",
+   "name": "tc.sw_root_arch A1",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-3.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "d1e1d7af6e801278f87cac774ea1714e5551aa648a50f81b29a573205fec8b3f",
+   "kind": "terrain",
+   "name": "tc.pyr_face A1",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-6.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "4c97f948adaf1b2c66cd0f5ed43900ec277d56f48b9c0d395578ef2b6b115dcd",
+   "kind": "terrain",
+   "name": "tc.pyr_rim A1",
+   "round": "theme-climate-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r1-panel-6.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "9fa991bc4f570461132588e55657d465b35793c17991cc48061b73ad17642d1f",
+   "kind": "tall_furniture",
+   "name": "arcane.bookshelf A2",
+   "round": "theme-arcane-r1",
+   "gate": "refer",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json",
+   "referRuling": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-refer-arcane.bookshelf.json"
+  },
+  {
+   "pixelSha256": "eb09772edf43549d56c33879083a3c4041d85b84d440724cf25313bea97dda73",
+   "kind": "tall_furniture",
+   "name": "arcane.bookshelf_tall A2",
+   "round": "theme-arcane-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "1c890301c93ac8df5f4a2320650fd2db19af9d126ffe24d9eda4a0f0cbca76f4",
+   "kind": "low_furniture",
+   "name": "arcane.lectern A1",
+   "round": "theme-arcane-r1",
+   "gate": "refer",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-1.json",
+   "referRuling": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-refer-arcane.lectern.json"
+  },
+  {
+   "pixelSha256": "b6c35dd1b575f2d22a2eb74aee20147be1bd3db9a90c0095ae577da23454cd97",
+   "kind": "column",
+   "name": "other.bone_pillar A1",
+   "round": "theme-arcane-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "454ab91f62bd76d601d09b46d641df78641f289a6cac1ba1b5189329dd960c21",
+   "kind": "organic",
+   "name": "other.crystal A1",
+   "round": "theme-arcane-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-9.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "4dec554f060d527e04b54f0a2c1244f6aa45a686f08d5d68bc14335a17dc2ec3",
+   "kind": "organic",
+   "name": "other.crystal_big A1",
+   "round": "theme-arcane-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-9.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "f4f332fd8b1a92f53e63b19187b9a33c4cf4a7eb60c1db92b065d1bed7e2d9cf",
+   "kind": "seat",
+   "name": "other.throne A2",
+   "round": "theme-arcane-r1",
+   "gate": "refer",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json",
+   "referRuling": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-refer-other.throne.json"
+  },
+  {
+   "pixelSha256": "579ae592ef26b7091700690cebef1c30eecdaa32098d5ebccca3907545ab0a02",
+   "kind": "figure",
+   "name": "earth.armor_stand A2",
+   "round": "theme-earth-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-panel-3.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "df22e82ce250ac6e2f3ed39d81dc8b3f07f70800119260c765a303af897bc7eb",
+   "kind": "wall_mounted",
+   "name": "earth.banner A1",
+   "round": "theme-earth-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-panel-1.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "26052457430a9f0b3173bbcb636a7e4cc2ae06e7d1a450ad2a30e54bb7d94236",
+   "kind": "debris",
+   "name": "earth.rubble_heap A1",
+   "round": "theme-earth-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-panel-3.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "33083909411c80e8e4db7282b5baf163c9d42961569e3882698dcc2e03c06498",
+   "kind": "debris",
+   "name": "earth.statue_head A1",
+   "round": "theme-earth-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-panel-3.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "50201ce35d3b0c6921ab9bb586aa1fe61240f359c72e4223e92ea2382b7a6e15",
+   "kind": "seat",
+   "name": "earth.throne A1",
+   "round": "theme-earth-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-panel-9.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "88d605b57d78b7ccdc80dabfd6d2f29869fee267e75f56489bad9497f34306ef",
+   "kind": "wall_mounted",
+   "name": "earth.timber_frame A1",
+   "round": "theme-earth-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-panel-1.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "7508f93bcff4ef351c49dbfd6b48c8759285438db3aac839401a97fc6b1cf40f",
+   "kind": "other",
+   "name": "earth.timber_post A2",
+   "round": "theme-earth-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-panel-6.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "8b594a9c24b25d3bf49ac5c90754f925059ff41f8e7beea215b4d00252f9e11e",
+   "kind": "flat",
+   "name": "earth.tomb_slab A1",
+   "round": "theme-earth-r1",
+   "gate": "refer",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-panel-3.json",
+   "referRuling": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-tomb_slab-refer-argon.json"
+  },
+  {
+   "pixelSha256": "d6ff4f4ea1ba94ee6059d709ff207e001176e1cfa0136b9a10875f254ff0a6cd",
+   "kind": "column",
+   "name": "arcane.candelabra A1",
+   "round": "theme-arcane-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "22cfc82d9d461b7d38b5fbd52f048c40412f97b7a3edadab1a8cd12c72607059",
+   "kind": "column",
+   "name": "arcane.crystal_pedestal A1",
+   "round": "theme-arcane-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "78af8e804b6a7b2b304fe96e08cbb340558f43b82df34e1217fe562ee7f1099c",
+   "kind": "flat",
+   "name": "arcane.teleport_circle A1",
+   "round": "theme-arcane-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "c16b9c4e21499fabc09a0e892aba1efceeb9378d628ef8c7694b2347980c1abe",
+   "kind": "terrain",
+   "name": "arcane.tower_floor A1",
+   "round": "theme-arcane-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-1.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "d803b4e15731a65086476676b231a0f801be9521e61698a768461595ec03190b",
+   "kind": "container",
+   "name": "other.brazier A2",
+   "round": "theme-arcane-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-3.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "d28dffa457357d55b15296110f7f34ca883d8a3f763e66207e5fbcfc284d9420",
+   "kind": "terrain",
+   "name": "other.ground A2",
+   "round": "theme-arcane-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r1-panel-10.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "695a275523607217b862d1ba7870eab57a656b7a6a8ba033eb538af888c8ae16",
+   "kind": "other",
+   "name": "earth.candelabra A2",
+   "round": "theme-earth-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-panel-3.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "1f3e6a63ef847ba09ddf3e7f92f0ddb4cdd6f1823e71a529860caa8e66fd4f9d",
+   "kind": "flat",
+   "name": "earth.carpet A2",
+   "round": "theme-earth-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-panel-5.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "c1f5eb63822673545e0b9ce91556b0a8df66ee351f65b566cd0bd5438708754c",
+   "kind": "terrain",
+   "name": "gap.lava_edge B2",
+   "round": "gap-lava-r2",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-gap-lava-r2-panel-5.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "4a93152843eaa18252245fdaae9045d5ae642043dd8ca657db300da34e73911d",
+   "kind": "terrain",
+   "name": "gap.lava_edge C2",
+   "round": "gap-lava-r2",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-gap-lava-r2-panel-5.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "e410ddafd01d00090571326e5bf16c33e31a8aad3c108cb432955db34e2e1859",
+   "kind": "wall_mounted",
+   "name": "earth.portcullis A1",
+   "round": "theme-earth-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-panel-4.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "5ab926aecb580fb3650d47eb668fe3367d92c39d0f0ac9f220fb4fb0233648b6",
+   "kind": "box",
+   "name": "earth.sarc_ns A1",
+   "round": "theme-earth-r1",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-panel-4.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "15d7d5b47aa169b193180397b38aa52e983fe79c3600ac960fa475dc11832646",
+   "kind": "box",
+   "name": "earth.sarc_ew A1",
+   "round": "theme-earth-r1",
+   "gate": "refer",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-panel-3.json",
+   "referRuling": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-sarc_ew-candidate-refer-argon.json"
+  }
+ ]
+}

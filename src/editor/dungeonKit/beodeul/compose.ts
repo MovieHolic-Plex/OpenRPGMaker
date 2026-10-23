@@ -21,7 +21,7 @@ import { WALL_ROWS, hash01, rng, vnoise } from "../grid";
 import { layoutBlob, layoutMaze } from "../layouts";
 import { layoutDungeon } from "../layoutRooms";
 import { buildMask } from "../mask";
-import { PROFILES, type KitPref } from "./profiles";
+import { PROFILES, TK, type KitPref } from "./profiles";
 import { dressCorridor, dressTyped, type DressCtx } from "./dress";
 import { DUNGEON_DIRS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES } from "../types";
 import type { DungeonCompose, DungeonStairCell, DungeonDir, DungeonLayout, DungeonRoomInput, DungeonRoomKind, DungeonSize, DungeonSpec, DungeonStyle, DungeonType, PlacedCorridor, PlacedRoom } from "../types";
@@ -124,7 +124,9 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const useRock = !!(rockGroup && rockFace);
   const WR = useRock ? 2 : WALL_ROWS;
   const gapWater = useRock && gapLine ? autos.get(`beodeul_dungeon_water_${gapLine}`) : undefined;
-  const gapLava = (gapLine ? autos.get(`beodeul_dungeon_lava_${gapLine}`) : undefined) ?? autos.get("beodeul_dungeon_lava_C") ?? autos.get("beodeul_dungeon_lava_B");
+  // 32px 위상 몸통 용암(gap-lava-r2, 주제 꼬리)이 있으면 그것 — 16px 몸통 반복이 안 보인다. 없으면 gap 용암.
+  const gapLava = (gapLine ? autos.get(`beodeul_dungeon_theme_lava_${gapLine}`) ?? autos.get(`beodeul_dungeon_lava_${gapLine}`) : undefined)
+    ?? autos.get("beodeul_dungeon_theme_lava_C") ?? autos.get("beodeul_dungeon_theme_lava_B") ?? autos.get("beodeul_dungeon_lava_C") ?? autos.get("beodeul_dungeon_lava_B");
   /** 키트 후보 목록에서 이 타일셋에 있는 첫 키트(새 테마 그림 → 기존 키트 순). */
   const pick = (v: KitPref): string => (typeof v === "string" ? v : v.find(hasKit) ?? v[v.length - 1]!);
   /** 야외 던전(숲·늪): 벽 앞면 줄이 없고 벽 칸은 수관 숲으로 덮는다(dungeonTools 가 writeBeodeulCanopy 로 2·3층에 쓴다). */
@@ -294,7 +296,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     }
     if (fl.shore && hasKit(fl.shore) && nearLiquid(x, y) && hash01(x, y, seed + 71) < 0.8) id = fl.shore;
     if (fl.tile !== undefined && id === pick(fl.base)) { lower[idx(x, y)] = fl.tile; continue; }
-    if (fl.mix) { const rows = kit(id).rows; lower[idx(x, y)] = rows[Math.floor(hash01(x, y, seed * 5 + 3) * rows.length)]!.tiles[Math.floor(hash01(y, x, seed * 7 + 1) * rows[0]!.tiles.length)]!; }
+    if (fl.mix || kit(id).ai?.tags?.includes("섞음")) { const rows = kit(id).rows; lower[idx(x, y)] = rows[Math.floor(hash01(x, y, seed * 5 + 3) * rows.length)]!.tiles[Math.floor(hash01(y, x, seed * 7 + 1) * rows[0]!.tiles.length)]!; }
     else lower[idx(x, y)] = tileOf(id, x, y);
   }
   // 오토타일 바닥(얼음굴): 걷는 바닥 = ground 오토타일(이웃 = 걷는 바닥·다리), 호수 방 + 잡음 덩이 = 빙판 오토타일(이웃 = 빙판 칸).
@@ -692,10 +694,13 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         rs();
         const e = edgeCells(r, rs);
         for (let c = 0; c < 2 + Math.floor(rs() * 2); c += 1) { const p = e[c * 5]; if (p) cluster(rs, p[0], p[1], 2 + Math.floor(rs() * 2), litter); }
+        // 지하묘지 홀: 벽가에 동서 석관 두엇(주제 그림) — 홀이 그냥 기둥 방으로 읽혔다.
+        if (type === "catacomb" && hasKit(TK("sarcophagus-ew"))) { let n = 0; for (const [x, y] of e.slice(10)) { if (n >= 2) break; if (put(rs() < 0.2 && hasKit(TK("sarcophagus-ew-open")) ? TK("sarcophagus-ew-open") : TK("sarcophagus-ew"), x, y)) n += 1; } }
         break;
       }
       case "crypt": {
         // 묘실: 벽감 줄(종류 섞고 군데군데 비움) + 관 줄(빈자리 흔들기) + 구석 뼈 더미·촛불
+        // 주제 그림(theme-earth, 2026-10-23)이 있으면 관 줄은 남북 석관(가끔 뚜껑 열린 것), 바닥에 묘석 판 한두 장.
         const niches = [K.nicheSkull, K.nicheUrn, K.nicheShroud];
         for (const s of slots) if (rs() < 0.55) put(niches[Math.floor(rs() * 3)]!, s.x, s.y);
         hangAlong(slots, rs, 5, torch, 2);
@@ -706,8 +711,10 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         let coffins = 0;
         for (const [x, y] of shuffle(rs, grid)) {
           if (coffins >= want) break;
-          if (put(K.coffin, x, y - 1)) { coffins += 1; if (rs() < 0.35) put(K.candles, x + 2, y); }
+          const coffinId = hasKit(TK("sarcophagus-ns")) && rs() < 0.75 ? (hasKit(TK("sarcophagus-ns-open")) && rs() < 0.15 ? TK("sarcophagus-ns-open") : TK("sarcophagus-ns")) : K.coffin;
+          if (put(coffinId, x, y - 1)) { coffins += 1; if (rs() < 0.35) put(K.candles, x + 2, y); }
         }
+        if (hasKit(TK("tomb-slab"))) { let n = 0; for (const [x, y] of shuffle(rs, floorCells(r, 1))) { if (n >= 1 + (r.w * r.h > 60 ? 1 : 0)) break; if (put(TK("tomb-slab"), x, y)) n += 1; } }
         const e = edgeCells(r, rs);
         if (e[0]) put(K.boneHeap, e[0][0], e[0][1] - 1);
         for (const [x, y] of e.slice(1, 9)) if (rs() < 0.5) put(weighted(rs, [[K.skulls, 2], [K.bones, 3], [K.candles, 1]]), x, y);
@@ -743,7 +750,9 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         if (altar) {
           for (const d of [2, 3]) { const l = slots.find((s) => s.x === altar[0] - d), rr = slots.find((s) => s.x === altar[0] + 1 + d); if (l && rr) { if (put(K.banner, l.x, l.y)) put(K.banner, rr.x, rr.y); break; } }
           put(K.candles, altar[0] - 1, altar[1] + 1); put(K.candles, altar[0] + 2, altar[1] + 1);
-          put(K.brazier, altar[0] - 2, altar[1] + 2); put(K.brazier, altar[0] + 3, altar[1] + 2);
+          // 묘지·성 제단 곁은 쇠 촛대(주제 그림)가 있으면 그것 — 하수도 화로는 묘실에 어울리지 않았다.
+          const stand2 = (type === "catacomb" || type === "castle") && hasKit(TK("iron-candelabra")) ? TK("iron-candelabra") : K.brazier;
+          put(stand2, altar[0] - 2, altar[1] + 2); put(stand2, altar[0] + 3, altar[1] + 2);
         }
         hangAlong(slots, rs, 3, torch);
         if (isBoss) {
