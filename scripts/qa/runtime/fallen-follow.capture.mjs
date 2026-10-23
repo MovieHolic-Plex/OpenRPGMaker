@@ -1,5 +1,5 @@
 // 동료 따라다니기 — 한 번 부팅해 모퉁이·멈춤·되돌아가기·문 통과를 걷고, 프레임마다 주인공/동료 위치를 표본으로 남기고 영상을 굽는다.
-//   node scripts/qa/runtime/fallen-follow.capture.mjs <project.json> <outDir> [--demo]   (진단 전용 · 게이트 아님)
+//   node scripts/qa/runtime/fallen-follow.capture.mjs <project.json|-> <outDir>   (FOLLOW_DEMO=astra-horizon FOLLOW_CP=<체크포인트 JSON> 로 다른 데모도 걷는다)   (진단 전용 · 게이트 아님)
 // 판정: samples.json 의 동료-주인공 거리(칸)·동료 한 프레임 이동량(점프) · video.webm 1배 재생(구간 offsets.json).
 import { chromium } from "@playwright/test";
 import { mkdir, readFile, writeFile, rename } from "node:fs/promises";
@@ -9,7 +9,7 @@ import { startPlayerQaServer } from "../../lib/runtimeQaRun.mjs";
 const [projectArg, outArg] = process.argv.slice(2);
 if (!projectArg) throw new Error("usage: fallen-follow.capture.mjs <project.json> <outDir>");
 process.env.VITE_CACHE_DIR ??= resolve(".vite-cache/fallen-follow");
-const projectJson = await readFile(resolve(projectArg), "utf8");
+const projectJson = projectArg === "-" ? "{}" : await readFile(resolve(projectArg), "utf8");
 const out = resolve(outArg ?? "tmp/fs-follow");
 await mkdir(out, { recursive: true });
 const MAP = process.env.FOLLOW_MAP ?? "fs_hub";
@@ -22,7 +22,8 @@ const context = await browser.newContext({ viewport: { width: 480, height: 270 }
 const t0 = Date.now();
 const page = await context.newPage();
 page.on("pageerror", (e) => report.errors.push(String(e?.message ?? e)));
-const CP = { id: "hub-start", mapId: "fs_hub", x: 26, y: 23, facing: "down", party: [{ actorId: "actor_hero", level: 6 }, { actorId: "actor_fs_elena", level: 6 }] };
+const DEMO = process.env.FOLLOW_DEMO ?? "fallen-star";
+const CP = process.env.FOLLOW_CP ? JSON.parse(process.env.FOLLOW_CP) : { id: "hub-start", mapId: "fs_hub", x: 26, y: 23, facing: "down", party: [{ actorId: "actor_hero", level: 6 }, { actorId: "actor_fs_elena", level: 6 }] };
 await page.addInitScript((cp) => { try { localStorage.clear(); } catch {} window.__OPENRPG_BOOT__ = { projectUrl: "/__runtime-qa/project.json", saveNamespace: "runtime-qa:fallen-follow", qaInstrumentation: true, qaCheckpoint: cp }; }, CP);
 await page.route("**/__runtime-qa/project.json", (route) => route.fulfill({ status: 200, contentType: "application/json", body: projectJson }));
 const present = (id) => page.locator(`[data-testid="${id}"]`).count().then((n) => n > 0);
@@ -60,7 +61,7 @@ const stopSampler = () => page.evaluate(() => { window.__sampling = false; retur
 const hold = (ms) => page.waitForTimeout(ms);
 
 try {
-  await page.goto(`${server.url}/player.html?demo=fallen-star&e2eVitals=1`, { waitUntil: "domcontentloaded", timeout: 300000 });
+  await page.goto(`${server.url}/player.html?demo=${DEMO}&e2eVitals=1`, { waitUntil: "domcontentloaded", timeout: 300000 });
   await page.waitForSelector("[data-testid='runtime-state-json']", { state: "attached", timeout: 420000 }).catch(async (e) => { await page.screenshot({ path: join(out, "stuck.png") }); throw e; });
   await page.waitForFunction(() => window.__oprnDebug?.readState?.()?.currentMapId, undefined, { timeout: 60000 });
   let quiet = 0;
