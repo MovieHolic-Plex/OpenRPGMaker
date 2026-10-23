@@ -269,7 +269,7 @@ export function buildFallenTownLife(project: Project, hubId: string): TownLifeRe
         narrate("문 안쪽에서 리사의 목소리가 날카롭게 울린다. 「남의 서랍 뒤지는 사람은 들이지 않아요! 돌아가요!」"),
         { kind: "transfer", mapId: exit.mapId, x: exit.x, y: exit.y, direction: "down", fade: "none" } as Command,
       ],
-    } as unknown as NonNullable<GameMap["events"][number]["pages"]>[number]);
+    } as never);
     bannedGate = { x: lisaGate.x, y: lisaGate.y };
   }
   return { containers, bannedGate };
