@@ -37,6 +37,7 @@ export function createPlaySurface(
     dataset: { testid: "play-canvas" },
   });
   applyPlaySurfaceResolution(viewport, stage, phaserContainer, resolution);
+  if (topAlignPortrait) viewport.dataset.rotateHint = rotateHintText();
   stage.append(phaserContainer);
   viewport.append(stage);
   syncDisplayFilter(stage, displayFilter);
@@ -116,6 +117,15 @@ function syncPlaySurfaceMetrics(
 }
 
 const PORTRAIT_TOP_MARGIN = 12;
+
+/** 세로 화면 안내문 — 브라우저 언어(ko/ja/zh/그 외 en)로. 게임 글자는 아니므로 프로젝트 언어와 무관하다. */
+function rotateHintText(): string {
+  const lang = (typeof navigator !== "undefined" ? navigator.language : "en").toLowerCase();
+  if (lang.startsWith("ko")) return "가로로 돌리면 더 크게 보여요";
+  if (lang.startsWith("ja")) return "横向きにすると大きく表示されます";
+  if (lang.startsWith("zh")) return "横屏显示画面更大";
+  return "Rotate your phone for a bigger screen";
+}
 
 /** 가로 폭이 무대를 겨우 덮고 세로가 한참 남을 때만 세로 배치(남는 높이가 무대의 절반 이상). */
 function isPortraitViewport(w: number, h: number, logicalW: number, logicalH: number, scale: number): boolean {

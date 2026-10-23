@@ -29,6 +29,7 @@ import { installExportUploadedAssets } from './exportUploadedAssets';
 import { repairFaceMatches } from "@/project/faceMatchRepair";
 import { installFocusGuard } from "@/player/focusGuard";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { isTouchDevice } from "@/player/touchPad";
 import type { ActionCombatRuntimeResult } from "@/testing/actionCombatProof";
 
 const app = document.getElementById("app");
@@ -205,6 +206,7 @@ async function startPlayer(
       // 해상도를 안 정한 옛 320×240 프로젝트는 창에 맞춤. 저작자는 DB 시스템 「화면 맞춤」으로 바꾼다.
       // 마우스·터치로도 메뉴·전투를 연다(D15). 몬스터 수집 게임만 — 다른 게임은 기존 키보드 전용 계약을 지킨다.
       pointerInput: isEmeraldMonsterStyle(project),
+      touchInput: isTouchDevice(),
       saveIsolationScope: resolveCommunitySaveScope(window.location.pathname),
       qaInstrumentation: boot.qaInstrumentation === true,
       hostBridge: host,

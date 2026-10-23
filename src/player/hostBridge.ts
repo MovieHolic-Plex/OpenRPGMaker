@@ -63,6 +63,8 @@ export type FullscreenToggleOptions = {
   readonly viewport: HTMLElement;
   /** requestFullscreen 대상 — 플레이어 루트 컨테이너. */
   readonly fullscreenRoot: HTMLElement;
+  /** 터치 기기 자동 노출 — 호스트가 hostFeatures 를 안 줘도 document.fullscreenEnabled 가 true 면 버튼을 붙인다. */
+  readonly autoOnTouch?: boolean;
 };
 
 /**
@@ -73,8 +75,11 @@ export type FullscreenToggleOptions = {
  */
 export function mountHostFullscreenToggle(options: FullscreenToggleOptions): (() => void) | null {
   const { bridge, viewport, fullscreenRoot } = options;
-  if (!bridge || !bridge.hostFeatures.includes("fullscreen")) return null;
   const doc = viewport.ownerDocument;
+  const hostAsked = Boolean(bridge && bridge.hostFeatures.includes("fullscreen"));
+  // iframe 에 allow="fullscreen" 이 없으면 fullscreenEnabled=false → 자동 노출하지 않는다.
+  const autoAllowed = options.autoOnTouch === true && (doc as { fullscreenEnabled?: boolean }).fullscreenEnabled === true;
+  if (!hostAsked && !autoAllowed) return null;
   if (
     typeof (fullscreenRoot as { requestFullscreen?: unknown }).requestFullscreen !== "function"
     || typeof (doc as { exitFullscreen?: unknown }).exitFullscreen !== "function"
