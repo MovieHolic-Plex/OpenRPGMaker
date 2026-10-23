@@ -38,12 +38,14 @@ export function namesSnowNorthTileset(text: string | undefined): boolean {
 /** 북방 설원 풍경을 말한 문장인가. onBeodeul = 지금 맵이 버들항 칩셋이다. */
 export function describesSnowNorth(text: string | undefined, onBeodeul = false): boolean {
   if (!text) return false;
+  // «얼어붙은 호수를 건너는 빙굴 던전» 같은 던전 요청은 author_dungeon(type ice) 몫 — 설원 한 장 맵으로 가로채지 않는다(dt r2 ice-b).
+  if (DUNGEON_RE.test(text)) return false;
   if (NORTH_RE.test(text)) return true;
   if (BEODEUL_RE.test(text)) return false;
   // 버들항 맵 위의 «눈 마을»은 버들항 마을 문법(theme:"snow") 몫 — 호수 낚시터·동굴 입구·장터처럼 마을이 아닌 설원 풍경은 여기서 짓는다.
   if (onBeodeul && SETTLEMENT_RE.test(text)) return false;
   if (SNOW_RE.test(text)) return true;
-  return ICE_CAVE_RE.test(text) && !DUNGEON_RE.test(text);
+  return ICE_CAVE_RE.test(text);
 }
 export function hasSnowNorthTileset(project: Pick<Project, "tilesets">): boolean {
   const def = project.tilesets[SNOW_NORTH_TILESET_ID];

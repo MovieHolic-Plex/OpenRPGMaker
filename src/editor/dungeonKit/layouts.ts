@@ -146,7 +146,9 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
   for (let salt = 0; salt < 32; salt += 1) {
     let layout: DungeonLayout & { grid: Grid };
     try { layout = layoutBlobOnce(spec, profile, salt); } catch (error) { lastError = error; continue; }
-    const score = blobVoidScore(layout.grid);
+    // 화산: 흐르는 용암 줄기가 없는 판은 크게 깎는다 — 줄기 없이 못 하나만 남은 판이 골라져 「도장 찍은 용암·다리 없음·장치 없음」이었다(dt r2 volcano-b).
+    const streams = (layout.grid as Grid & { streams?: number }).streams;
+    const score = blobVoidScore(layout.grid) + (profile.id === "volcano" && streams !== undefined ? (streams === 0 ? 1 : streams === 1 ? 0.12 : 0) : 0);
     if (!best || score < best.score - 1e-9) best = { layout, score };
   }
   if (!best) throw lastError;
@@ -386,7 +388,9 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
     }
     // 흐르는 용암(2026-10-22 VQA 「흐르는 용암인데 고인 못 셋뿐」): 용암 못에서 가장 먼 일반 방까지 굽이치는 폭 2 용암 줄기를 판다.
     // 통로를 가로지르면 settle 이 가장 짧은 곳에 다리를 놓는다. 입구 방·보스방·보물 방·문 앞은 건드리지 않는다.
-    if (profile.id === "volcano") {
+    // 동굴(호수가 있는 판): 지하 물줄기 하나 — 호수에서 먼 방으로 흐르고 settle 이 다리를 놓는다(다리 장치 자리, 같은 동굴 두 요청이 같은 레버로만 끝나던 것 dt r2 cave-b).
+    const streamy = profile.id === "volcano" || (profile.id === "cave" && !spec.lair && chambers.some((c) => c.kind === "lake"));
+    if (streamy) {
       const ban = new Set(chambers.filter((c) => c.kind === "boss" || c.kind === "vault").map((c) => c.index));
       const lakes = chambers.filter((c) => c.kind === "lake");
       const plain = chambers.filter((c) => c.kind === "cavern" || c.kind === "grotto" || c.kind === "lake");
@@ -431,7 +435,8 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
       pairs.sort((p, q) => Number(q[1].kind === "lake") - Number(p[1].kind === "lake") || Math.hypot(q[1].cx - q[0].cx, q[1].cy - q[0].cy) - Math.hypot(p[1].cx - p[0].cx, p[1].cy - p[0].cy));
       // 줄기 둘(작은 판은 하나): 못에서 먼 방들로 흘러 나간다.
       let streams = 0;
-      for (const [a, b] of pairs) { if (streams >= (si === 0 ? 1 : 2)) break; if (tryStream(a, b)) streams += 1; }
+      for (const [a, b] of pairs) { if (streams >= (profile.id === "cave" ? 1 : si === 0 ? 1 : 2)) break; if (tryStream(a, b)) streams += 1; }
+      (g as Grid & { streams?: number }).streams = streams;
     }
   }
   // 문 앞 칸은 액체가 아니다
@@ -462,6 +467,7 @@ function cropToContent(layout: DungeonLayout & { grid: Grid }): DungeonLayout & 
   const nx0 = Math.max(0, x0 - MARGIN - 1), ny0 = y0 - (MARGIN + 4), nx1 = Math.min(g.W - 1, x1 + MARGIN + 1), ny1 = Math.min(g.H - 1, y1 + MARGIN + 1);
   const W = nx1 - nx0 + 1, H = ny1 - ny0 + 1;
   const out = new Grid(W, H);
+  (out as Grid & { streams?: number }).streams = (g as Grid & { streams?: number }).streams;
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
     const sx = x + nx0, sy = y + ny0;
     if (sy < 0 || !g.inb(sx, sy)) continue;

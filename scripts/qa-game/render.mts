@@ -6,6 +6,7 @@
 // 타일은 에디터 캔버스 렌더러와 같은 함수(`editor/mapTileDraw.drawMapTileLayer`: 받침 타일·4분면 오토타일·호수·겹침 스택)로
 // 그린다. 캔버스 대신 pngjs 버퍼 위에 drawImage 만 구현한 작은 2D 컨텍스트를 넘긴다. 이벤트는 스프라이트 대신 표식(문·전투·엔딩·기타).
 
+import { resolveOprnPanoramaAssetUrl } from "../../src/assets/oprnPanoramas.ts";
 import fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
@@ -232,6 +233,16 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSourc
     const dark = ((Math.floor(x / (size / 2)) + Math.floor(y / (size / 2))) % 2) === 0;
     const i = (y * target.width + x) * 4;
     target.data[i] = dark ? 42 : 51; target.data[i + 1] = dark ? 42 : 51; target.data[i + 2] = dark ? 46 : 58; target.data[i + 3] = 255;
+  }
+  // 빈 칸에 비치는 맵 배경(showInEmptyCells, OPRN 파노라마) — 게임처럼 빈 칸에 배경 그림이 보이게 바닥에 깐다(층 그림이 덮는다).
+  const bgUrl = map.background?.showInEmptyCells ? resolveOprnPanoramaAssetUrl(map.background.imageId ?? "") : null;
+  const bgFile = bgUrl ? path.join("public", bgUrl.replace(/^\//u, "")) : "";
+  if (bgFile && fs.existsSync(bgFile)) {
+    const bg = PNG.sync.read(fs.readFileSync(bgFile));
+    for (let y = 0; y < target.height; y += 1) for (let x = 0; x < target.width; x += 1) {
+      const s = (((y % bg.height) * bg.width) + (x % bg.width)) * 4, d = (y * target.width + x) * 4;
+      target.data[d] = bg.data[s]!; target.data[d + 1] = bg.data[s + 1]!; target.data[d + 2] = bg.data[s + 2]!; target.data[d + 3] = 255;
+    }
   }
   let note: string | undefined;
   if (!tileset || !image) note = `타일셋 이미지를 읽지 못했습니다(${map.tilesetId})`;

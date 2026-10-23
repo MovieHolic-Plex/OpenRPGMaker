@@ -1,0 +1,29 @@
+{
+ "round": "theme-earth-r2",
+ "item": "earth.ore_vein",
+ "candidate": "A2",
+ "art_sha8": "d720ae65",
+ "date": "2026-10-23",
+ "gate_receipt": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/5b/5b183e641cdc81d921d472bc9145720e788b2450d9da57081e949ea29d0150ea.json",
+ "gate_verdict": "REFER (style split 2/4)",
+ "referee": "fresh argon agent a5bcfde0, adversarial, pass only if sure",
+ "inputs": [
+  "qa-runs/harnesses/dungeon-chipset/theme-earth-r2/earth.ore_vein/A2.png",
+  "qa-runs/harnesses/dungeon-chipset/theme-earth-r2/earth.ore_vein/A2-x8.png",
+  "qa-runs/r2/board-earth.ore_vein-p5.png",
+  "receipt above"
+ ],
+ "ruling": {
+  "verdict": "FAIL",
+  "rock_steps": 5,
+  "ore_steps": 4,
+  "edge": "tinted",
+  "density": "slightly_lower",
+  "reasons": [
+   "Silhouette has 1px spiky comb-like teeth along the bottom/top edges and a hollow 1px outline loop artifact on the upper-left of both 2x2 pieces, reading like a jagged strip rather than stone facets.",
+   "In the cave wall scene, the cold blue-slate diagonal band clashes with the olive-grey horizontal wall courses and floats like a pasted patch instead of reading as an ore seam set into the wall.",
+   "Ore nuggets are tiny isolated 2x2-3x3 blobs with limited facet structure compared to the Beodeul ore rock reference."
+  ]
+ },
+ "outcome": "FAIL stands (never overridden); A2 redrawn and re-gated"
+}

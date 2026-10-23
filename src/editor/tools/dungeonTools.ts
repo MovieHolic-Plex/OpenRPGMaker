@@ -27,6 +27,7 @@ import { beodeulNatureTileset, planBeodeulCanopy, writeBeodeulCanopy } from "./b
 import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { translateTiles } from "@/project/objectStamp";
 import { setLayerTileAt } from "@/project/mapLayers";
+import { mapBackgroundFromPanoramaSet } from "@/assets/oprnPanoramas";
 
 const createMapTool = MAP_TOOLS.find((tool) => tool.name === "create_map")!;
 const resizeMapTool = MAP_TOOLS.find((tool) => tool.name === "resize_map")!;
@@ -354,7 +355,10 @@ function populateFloor(draft: Project, mapId: string, data: Record<string, unkno
     const foeFree = (c: Pt): boolean => free(c) && !map.events.some((e) => Math.max(Math.abs(e.x - c.x), Math.abs(e.y - c.y)) <= 2);
     planned("enemies").filter((e) => e.room !== bossRoom?.id && e.room !== restRoom?.id && foeFree(e)).slice(0, 4).forEach((e, i) => {
       if (!foeFree(e)) return;
-      if (attempt(`보이는 적 (${e.x},${e.y})`, () => placeRoamer(draft, { mapId, x: e.x, y: e.y, troopId: troops.field[(i + salt) % troops.field.length], behavior: "patrol", id: `ev_${mapId}_foe${i + 1}` }, i % 2 === 1))) foes.push(`(${e.x},${e.y})`);
+      const troopId = troops.field[(i + salt) % troops.field.length]!;
+      // 적 이름을 좌표에 붙인다 — 이름이 없으면 조수가 「박쥐는 없다」고 답했다(dt r2 cave-a, 실제로는 박쥐 둘).
+      const names = (draft.database.troops.find((t) => t.id === troopId)?.members ?? []).map((m) => draft.database.enemies.find((x) => x.id === m.enemyId)?.name).filter(Boolean);
+      if (attempt(`보이는 적 (${e.x},${e.y})`, () => placeRoamer(draft, { mapId, x: e.x, y: e.y, troopId, behavior: "patrol", id: `ev_${mapId}_foe${i + 1}` }, i % 2 === 1))) foes.push(`(${e.x},${e.y})${names.length ? ` ${[...new Set(names)].join("·")}` : ""}`);
     });
   } else warnings.push(`${map.name}: 데이터베이스에 적 그룹이 없어 보이는 적을 두지 않았다 — upsert_troop 뒤 troops 로 다시 짓거나 place_field_enemy.`);
   if (foes.length) out.push(`보이는 적 ${foes.join(" ")}`);
@@ -498,6 +502,8 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
     }
   }
   // 층을 쌓는 배치(vertical): 층 수를 안 주면 2층(탑·마법탑은 3층 위로).
+  // 탑(type tower)은 층·방 목록·배치를 안 줘도 층을 쌓는다 — 「마법사의 탑」이 한 층 넓은 던전으로 지어졌다(dt r2 tower-a).
+  if (args.type === "tower" && args.floors === undefined && args.rooms === undefined && args.layout === undefined) args.layout = "vertical";
   if (args.layout === "vertical" && args.floors === undefined && args.rooms === undefined) {
     args.floors = args.type === "tower" ? 3 : 2;
     if (args.direction === undefined && args.type === "tower") args.direction = "up";
@@ -546,7 +552,7 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   const filled: string[] = [];
   let gimmickPlaced: DungeonGimmick | null = null;
   let gimmickAfter: (() => void) | null = null;
-  const gimmickArg = args.gimmick === "none" ? "none" : (DUNGEON_GIMMICKS as readonly string[]).includes(String(args.gimmick)) ? (args.gimmick as DungeonGimmick) : args.puzzle === "lever" ? "lever" : undefined;
+  const gimmickArg = args.gimmick === "none" ? "none" : (DUNGEON_GIMMICKS as readonly string[]).includes(String(args.gimmick)) ? (args.gimmick as DungeonGimmick) : args.puzzle === "lever" ? "lever" : gimmickCue(`${typeof args.name === "string" ? args.name : ""} ${typeof args.inspiration === "string" ? args.inspiration : ""}`);
   if (gimmickArg !== "none" && datas.every((d) => d.adapter === "beodeul") && (gimmickArg || (args.populate !== false && datas.every((d) => d.genre === "rpg")))) {
     const i = datas.length - 1;
     const m = draft.maps[mapIds[i]!]!;
@@ -579,6 +585,9 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   }
   // 주제 장치가 채우기 뒤로 미룬 맵 변경(다리 걷기)
   (gimmickAfter as (() => void) | null)?.();
+  // 탑(위로 쌓은 여러 층): 둥근 방 바깥 깊은 천장(8 이웃도 천장)을 비우고 구름 바다 배경을 빈 칸에 비친다 — 검은 허공이 화면 반을 넘었다(dt r2 tower-b 55%).
+  // 벽에 닿는 천장 띠는 남아 탑 외벽 두께로 읽힌다. 「하늘 위의 탑」(크로노 트리거 지일 왕국·FF 의 탑).
+  if (floors > 1 && direction === "up") for (const id of mapIds) skyAroundTower(draft, draft.maps[id]!);
   // 레버 쇠창살을 안 놓았으면 잠긴 문 계획을 지운다 — 남겨 두면 조수가 「열쇠로 여는 잠긴 문이 있다」로 답했다(2026-10-23 VQA boss-run).
   if (gimmickPlaced !== "lever") for (const d of datas) { const pop = field(d, "population"); if (pop && typeof pop === "object") delete (pop as Record<string, unknown>).lockedGate; }
   const floorWarnings = results.flatMap((r) => r.warnings ?? []);
@@ -597,6 +606,43 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
     data: results.length === 1 ? { ...datas[0], floors: [mapIds[0]], populated: populate, gimmick: gimmickPlaced } : { ...datas[0], floors: mapIds, floorData: datas, links, populated: populate, gimmick: gimmickPlaced },
     ...(all.length ? { warnings: all } : {}),
   };
+}
+
+/** 탑 층 바깥: 깊은 천장 칸을 비우고 구름 바다 배경(빈 칸에 보이기)을 건다. 비운 칸 수를 돌려준다. */
+function skyAroundTower(draft: Project, map: GameMap): number {
+  const ts = draft.tilesets[map.tilesetId];
+  const bg = mapBackgroundFromPanoramaSet("oprn-clouds");
+  if (!ts || !bg) return 0;
+  const ceil = new Set<number>();
+  for (const g of ts.autotileGroups ?? []) if (/ceiling/.test(g.id)) {
+    for (const v of Object.values(g.variantMap ?? {})) ceil.add(Number(v));
+    for (const row of g.interiorVariants ?? []) for (const v of row) ceil.add(Number(v));
+  }
+  const W = map.width, H = map.height;
+  const ev = new Set(map.events.map((e) => e.y * W + e.x));
+  const isCeil = (x: number, y: number) => x < 0 || y < 0 || x >= W || y >= H || (ceil.has(map.lowerTiles[y * W + x]!) && (map.upperTiles[y * W + x] ?? -1) < 0);
+  const clear: number[] = [];
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+    if (ev.has(y * W + x) || !isCeil(x, y) || !ceil.has(map.lowerTiles[y * W + x]!)) continue;
+    let deep = true;
+    for (let dy = -1; dy <= 1 && deep; dy += 1) for (let dx = -1; dx <= 1; dx += 1) if (!isCeil(x + dx, y + dy)) { deep = false; break; }
+    if (deep) clear.push(y * W + x);
+  }
+  if (clear.length === 0) return 0;
+  for (const i of clear) map.lowerTiles[i] = -1;
+  map.background = bg;
+  return clear.length;
+}
+
+/** 이름·inspiration 낱말 → 장치(인자를 안 줬을 때). 「지하 호수 동굴」은 다리, 「광차」는 광차 — 같은 종류 두 요청이 같은 레버로 끝나던 것(dt r2 cave-a/b). */
+function gimmickCue(text: string): DungeonGimmick | undefined {
+  if (/광차|선로|레일|minecart|mine\s*cart/iu.test(text)) return "minecart";
+  if (/미끄러|빙판|얼어붙은\s*호수|ice\s*slide/iu.test(text)) return "iceslide";
+  if (/마법진|순간\s*이동|워프|차원문|teleport|warp/iu.test(text)) return "teleporter";
+  if (/함정|구덩이|모래\s*늪|trap|pit/iu.test(text)) return "sandpit";
+  if (/레버|쇠창살|lever/iu.test(text)) return "lever";
+  if (/호수|지하\s*강|강물|물줄기|다리|lake|river|bridge/iu.test(text)) return "bridge";
+  return undefined;
 }
 
 export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {

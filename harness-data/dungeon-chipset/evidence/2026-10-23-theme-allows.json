@@ -434,6 +434,87 @@
    "gate": "refer",
    "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-panel-3.json",
    "referRuling": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r1-sarc_ew-candidate-refer-argon.json"
+  },
+  {
+   "pixelSha256": "9fe865402962c632ccf41c33aea6def60d4f78bc8061253425ca10cdc6eeaf0d",
+   "kind": "structure",
+   "name": "other.portal A1",
+   "round": "theme-arcane-r2",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r2-panel-2.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "b2aaf280a082d4ccd626cf5bb112fd0e5f91a1d20047d21c5ec385354b3b5ebc",
+   "kind": "terrain",
+   "name": "other.void_edge A1",
+   "round": "theme-arcane-r2",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-arcane-r2-panel-2.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "030705aad1302988b275ac5dc197c79a537b40f4fb989ceab3d308253a460ba9",
+   "kind": "debris",
+   "name": "tc.ice_drift A2",
+   "round": "theme-climate-r2",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r2-panel-2.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "2d0ebcaaba336d09537c600517a81ea71ecf535af271b7768f0c1f153c5eed9b",
+   "kind": "debris",
+   "name": "tc.pyr_drift A1",
+   "round": "theme-climate-r2",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r2-panel-3.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "604b2ebab2869e6b845675452d53bf61617c351d12f5c9212bb68e30b5c5234b",
+   "kind": "terrain",
+   "name": "tc.pyr_floor A1",
+   "round": "theme-climate-r2",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-climate-r2-panel-4.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "f356b27a39bb1df60f953b7bb75177d995ed332cfcb13e4df9fd514bb8a8997d",
+   "kind": "wall_mounted",
+   "name": "earth.ore_vein A2",
+   "round": "theme-earth-r2",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r2-panel-6.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "cd554fb4309a0e35fb71da710e4277c3bcd53896f9ac03718102ff47b6e6e657",
+   "kind": "terrain",
+   "name": "earth.ossuary A1",
+   "round": "theme-earth-r2",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r2-panel-3.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "881593b6bc57ce5a6e316a472c62fe78f78cff18993a1bfee018918dab411ec0",
+   "kind": "terrain",
+   "name": "earth.overgrown A2",
+   "round": "theme-earth-r2",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r2-panel-4.json",
+   "referRuling": null
+  },
+  {
+   "pixelSha256": "5b44dcdfd1ef402d361781ff701c829e255fba04234b40cc5d2ee000841f0b0b",
+   "kind": "terrain",
+   "name": "earth.rails A1",
+   "round": "theme-earth-r2",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-theme-earth-r2-panel-1.json",
+   "referRuling": null
   }
  ]
 }
