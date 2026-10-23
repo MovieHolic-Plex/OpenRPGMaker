@@ -543,6 +543,7 @@ function pageConditionSummary(condition: EventPageCondition): string {
     case "relativeFacing":
     case "hiding":
     case "pursuitActive":
+    case "eventSeesPlayer":
     case "clearCount":
     case "endingSeen":
     case "newGamePlus":
@@ -1649,6 +1650,7 @@ function pageConditionBadgeText(condition: EventPageCondition): string {
     case "relativeFacing":
     case "hiding":
     case "pursuitActive":
+    case "eventSeesPlayer":
     case "clearCount":
     case "endingSeen":
     case "newGamePlus":

@@ -127,7 +127,7 @@ export const CONDITION_KINDS = [
   "relationshipAtLeast",
   "battleResult",
   "run",
-  "actorStat", "actorState", "partyLeader", "partyKnowsSkill", "badgeCount", "partySize", "facing", "relativeFacing", "hiding", "pursuitActive", "clearCount", "endingSeen", "newGamePlus", "weekday", "stringVariable",
+  "actorStat", "actorState", "partyLeader", "partyKnowsSkill", "badgeCount", "partySize", "facing", "relativeFacing", "hiding", "pursuitActive", "eventSeesPlayer", "clearCount", "endingSeen", "newGamePlus", "weekday", "stringVariable",
   "difficulty",
   "itemUsed",
   "all",

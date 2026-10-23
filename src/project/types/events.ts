@@ -136,6 +136,13 @@ export type ActorQueryCondition =
   | { kind: "hiding"; value: boolean }
   /** 추격자 추격 중 여부. eventId 생략 = 누구든. */
   | { kind: "pursuitActive"; eventId?: string; value: boolean }
+  /**
+   * 이 이벤트(eventId)가 지금 주인공을 볼 수 있는가(집주인이 도둑을 본다·경비가 침입자를 본다).
+   * range = 칸 수(체비셰프, 기본 5), sameRoom = 이 맵의 명명 로케이션 중 같은 방일 때만(기본 켜짐 — 방 경계가 벽),
+   * requireFacing = 이벤트가 바라보는 정면 90° 안일 때만(기본 켜짐; 끄면 「가까이 있다」 소리 판정에 쓴다).
+   * value=false 면 「못 본다」. 위치를 모르는 이벤트는 못 본다.
+   */
+  | { kind: "eventSeesPlayer"; eventId: string; range?: number; sameRoom?: boolean; requireFacing?: boolean; value?: boolean }
   /** 이 기기에서 엔딩을 본 횟수(서로 다른 엔딩 수가 아니라 클리어 횟수). */
   | { kind: "clearCount"; op: ConditionCompareOp; value: number }
   | { kind: "endingSeen"; endingId: string; value: boolean }

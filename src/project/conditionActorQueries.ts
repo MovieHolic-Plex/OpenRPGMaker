@@ -8,6 +8,7 @@ import { compareVariableValue } from "@/project/conditionEvaluation";
 import type { ActorQueryCondition, ConditionCompareOp, Dir } from "@/project/types";
 import type { GameTime } from "@/project/gameTime";
 import { SEASONS } from "@/project/gameTime";
+import { eventSeesPlayer, type SightLocation, type SightPoint } from "@/project/conditionEventSight";
 
 /** 조건 평가에 필요한 세션 조각. PlaySession 이 구조적으로 만족한다. */
 export interface ActorQuerySession {
@@ -131,6 +132,13 @@ export interface ActorQueryOptions {
    * 생략하면 세션 스위치 중 `mx_badge_N` 규약 스위치를 센다.
    */
   readonly badgeSwitchIds?: () => readonly string[];
+  /** eventSeesPlayer: 현재 맵의 명명 로케이션(방 사각형). 호출측이 맵으로 넘긴다. 생략하면 같은 방 판정은 거짓. */
+  readonly locations?: () => readonly SightLocation[] | undefined;
+  /**
+   * eventSeesPlayer: 이벤트의 런타임 위치. 걷는 NPC 의 실시간 칸은 장면의 eventPositions 에 있어
+   * 세션 eventLocations 만으로는 모른다 — 호출측이 장면 위치를 넘긴다. 생략하면 eventLocations 를 본다.
+   */
+  readonly eventPosition?: (eventId: string) => SightPoint | undefined;
 }
 
 /** 세션만으로 아는 스킬(프로젝트 없이): 배우가 배운 actorSkillIds 와 몬스터 파티 인스턴스의 명시 skillIds. */
@@ -191,6 +199,12 @@ export function evalActorQueryCondition(
       }
       return false;
     }
+    case "eventSeesPlayer": {
+      const live = options.eventPosition?.(condition.eventId);
+      const loc = session.eventLocations?.[condition.eventId];
+      const point: SightPoint | undefined = live ?? (loc && loc.mapId === session.currentMapId ? { x: loc.x, y: loc.y, direction: loc.direction } : undefined);
+      return eventSeesPlayer(point, { x: session.x, y: session.y }, condition, options.locations?.()) === (condition.value !== false);
+    }
     case "hiding":
       return Boolean(session.horror?.hiding) === condition.value;
     case "pursuitActive": {
@@ -240,6 +254,7 @@ export const ACTOR_QUERY_CONDITION_KINDS = [
   "relativeFacing",
   "hiding",
   "pursuitActive",
+  "eventSeesPlayer",
   "clearCount",
   "endingSeen",
   "newGamePlus",

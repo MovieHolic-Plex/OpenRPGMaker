@@ -1330,7 +1330,13 @@ function resolveOpenChestId(state: InterpreterState): string {
  * 프로젝트를 부채로 돌리는 잡트리(단위 테스트 등)에서는 해석 불가 = 거짓이다.
  */
 function locationEvalContext(state: InterpreterState): ConditionEvalContext {
-  return { map: state.project?.maps[state.session.currentMapId], ...partySkillContext(state.project, state.session) };
+  const positions = state.eventPositions;
+  return {
+    map: state.project?.maps[state.session.currentMapId],
+    ...partySkillContext(state.project, state.session),
+    // 걷는 NPC 의 실시간 칸은 장면 eventPositions 에 있다(eventSeesPlayer 가 읽는다).
+    ...(positions ? { eventPosition: (eventId: string) => positions[eventId] } : {}),
+  };
 }
 
 /** 조건 트리가 host 의 characterId 를 읽는가(호감도·관계). evalCondition 의 hostSocial 사용처와 맞춘다. */
