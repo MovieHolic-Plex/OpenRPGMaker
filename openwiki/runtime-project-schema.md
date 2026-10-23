@@ -1613,6 +1613,8 @@ DB 시스템 화면: 「보기 범위」(`db-field-system-view-preset`)가 해�
 - 왕도 아스텔(2026-10-23, `flagship/fallenAstel.ts` — 옛 `fallenTown.ts` 덧댐 패치를 지우고 처음부터): 오프닝 그림을 설계도로 한 64×69 왕도. 계획·구역 `tiledata/fallen-astel/PLAN.md`·`zones.py`.
   장 구성기가 만든 fs_hub 를 `resize_map` 뒤 `buildAstel` 이 모든 층을 지우고 다시 짓는다(운하·다리·성벽 고리·둥근 탑·수문·천문대·왕성·저택·예배당·광장, 새 조각은 `bd-capital-*` — beodeul-city.md).
   좌표는 `ASTEL` 상수 하나가 정본(문·숲 출구·포고 무대·군중 14칸·호위 줄). 포고·행진은 `chronoBell.ts` `marchOffAfterProclamation` 이 칸 좌표로 짠다(호위 둘씩 네 줄, 속도 2, 성문 통로로 곧게 나가 옅어짐).
+  새 게임은 `ASTEL.stage.heroStart`(54,32)에서 시작하고 포고 첫 명령이 주인공을 오른쪽 둘·위 둘 걸려 단 앞(56,30)에 세운다 — 세션 시작 동료는 기본 방향(아래)의 뒤 = 북쪽에 깔리므로, 곧장 위로 걸으면 동료가 앞장서 주인공과 단 사이를 가린다. 옆으로 먼저 걸어야 동료가 발자국을 따라 뒤에 선다(시작 방향 필드는 없다).
+  성문루 옆기둥(×, 비통행)은 `bake_wall.py` 가 `foot-dy:N` 태그를 붙여 성문루 바닥 줄 기준으로 깊이를 잡는다 — 통로를 지나는 호위가 기둥 위에 그려지지 않는다.
   실내 다섯 집 문은 `ASTEL.doors` 로 `buildFallenTownInteriors` 에 넘긴다. 저택 둘은 잠긴 문. 녹화 `scripts/qa/runtime/fallen-astel.record.mjs`, 정본 저장·재로드 `scripts/content/fallen-astel/save-reload.mts`.
 - 타이틀·오프닝(3차, 2026-10-21 사용자 「생성 이미지로 제대로」): 이미지 모델(god-tibo-imagen, 유료 대체 끔) 후보를 컷마다 셋 만들어 감독이 골랐고(`by: supervisor`),
   원본을 화면 배율 64색 도트로 누른 그림이다(`src/assets/fallenStarOpeningBackdrops.ts` — 타이틀 480×270, 오프닝 컷 528×297). 사람·관·별똥별은 그림 안에 있어

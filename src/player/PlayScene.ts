@@ -403,7 +403,14 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   update(_time: number, deltaMs: number): void {
-    if (this.game.registry.get('initialPresentationPending') === true) return;
+    if (this.game.registry.get('initialPresentationPending') === true) {
+      // 오프닝 덮개가 걷히는 동안에도 화면에 보일 타일 창은 맞춘다 — 시간·이벤트·입력은 그대로 멈춘다.
+      // 맵을 그릴 때(카메라가 시작 자리로 오기 전) 맞춘 창만 있으면 덮개가 옅어지는 0.5초 동안 캐릭터만 검은 바탕에 떠 보였다.
+      const pendingView = runtimeCameraTileView(this.cameras.main);
+      syncRuntimeTileWindow(this, pendingView);
+      syncTileCulling(this, pendingView, mapTileSize(this.map));
+      return;
+    }
     this.worldAtlasController?.update();
     if (this.worldAtlasController?.isOpen) {
       this.input_.resetEdges();

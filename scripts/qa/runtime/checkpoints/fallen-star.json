@@ -25,11 +25,11 @@
   {
    "id": "hub-start",
    "label": "마을 광장 — 새 게임 시작",
-   "note": "fallenAstel.ts ASTEL.stage.hero (56,30) — 포고 광장 앞줄; 포고 auto 이벤트가 곧 돈다",
+   "note": "fallenAstel.ts ASTEL.stage.heroStart (54,32) — 새 게임 시작 자리; 포고 auto 이벤트가 주인공을 오른쪽 둘·위 둘 걸려 단 앞(56,30)에 세운다",
    "mapId": "fs_hub",
-   "x": 56,
-   "y": 30,
-   "facing": "up",
+   "x": 54,
+   "y": 32,
+   "facing": "down",
    "party": [
     {
      "actorId": "actor_hero",

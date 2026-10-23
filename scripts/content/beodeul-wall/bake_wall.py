@@ -20,7 +20,7 @@ bake_dungeon_ceiling.py(28,416~)가 시트를 다시 쓰면 이 꼬리가 사라
   기후 변형: 같은 이름 앞에 snow: · desert: (눈 덮인 성벽 · 사막 사암 성벽).
   땅 그림자 sh_* 는 2층(앞면 밑 줄, 세로 성벽 오른쪽 열).
 """
-import argparse, json, pathlib, subprocess, sys
+import argparse, json, pathlib, re, subprocess, sys
 
 from PIL import Image
 
@@ -449,7 +449,12 @@ def write_tables():
         passage = "star" if p["star"] else ("solid" if not p["pass_"] else "passable")
         dirs = "".join(n for c, n in (("U", "북"), ("D", "남"), ("L", "서"), ("R", "동")) if c in p["pass_"])
         desc = p["desc"] + (f". 걸음 방향: {dirs}" if p["pass_"] and not p["star"] else (". 사람 위에 그려진다(★)" if p["star"] else ". 막힘")) + f". 조각 `{p['name']}`."
-        TS["tileMeta"].append(meta(f"버들항 성벽 · {p['name']}", desc, [p["name"].split("_")[0]], passage, p["layer"]))
+        tags = [p["name"].split("_")[0]]
+        # 성문루 양옆 기둥 열(cx 0·3, 막힌 × 조각)은 성문루 밑동 줄 기준으로 캐릭터와 y 정렬한다 — 제 줄 기준이면 통로를 지나는 사람(칩 24px 폭)이
+        # 기둥·깃발 위에 그려졌다(폴른 스타 행렬, 2026-10-23 판정). 밑동 줄 = 성문루 맨 아래 줄(GH−1).
+        gm = re.match(r"^gate\w*_([03])_(\d+)$", p["name"])
+        if gm and not p["star"]: tags.append(f"foot-dy:{GH - 1 - int(gm.group(2))}")
+        TS["tileMeta"].append(meta(f"버들항 성벽 · {p['name']}", desc, tags, passage, p["layer"]))
     TS["count"] = COUNT
     ids = lambda pred: [tid(p["name"]) for p in PIECES if p["name"] not in RETIRED and pred(p["name"].split(":")[-1])]
     TS["tileGroups"] = [g for g in TS["tileGroups"] if not g["id"].startswith("beodeul:town_wall")] + [

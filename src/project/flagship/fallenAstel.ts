@@ -46,6 +46,10 @@ export const ASTEL = {
     valen: { x: 55, y: 26 }, knight: { x: 57, y: 26 },
     escortRows: [18, 20, 22, 24],    // 호위 두 줄(x55·56) — 줄 사이 한 칸 비움
     hero: { x: 56, y: 30 },
+    // 새 게임은 궁전 거리 왼쪽 아래(heroStart)에서 시작해 오른쪽 두 칸·위 두 칸을 걸어 단 앞에 선다. 새 게임의 동료는 기본 방향(아래)의
+    // 뒤 = 북쪽에 깔리므로, 곧장 위로 걸으면 동료가 앞장서 주인공과 단 사이를 가렸다(최종 판정 r1 major). 옆으로 먼저 걸으면 동료가
+    // 주인공 발자국을 밟아 따라와 끝에 뒤(남쪽)에 선다.
+    heroStart: { x: 54, y: 32 },
     heroAside: [{ x: 57, y: 30 }, { x: 58, y: 30 }],
     gatekeeper: { x: 59, y: 22 },
     elder: { x: 52, y: 30 },
@@ -58,7 +62,7 @@ export const ASTEL = {
       { x: 59, y: 24, dir: "left" }, { x: 60, y: 26, dir: "left" }, { x: 59, y: 28, dir: "left" }, { x: 60, y: 30, dir: "left" },
     ] as { x: number; y: number; dir: "up" | "down" | "left" | "right" }[],
   },
-  baker: { x: 12, y: 19 }, kid: { x: 34, y: 27 },
+  baker: { x: 12, y: 17 }, kid: { x: 33, y: 32 },
   proclamationTrigger: { x: 3, y: 61 },
 } as const;
 

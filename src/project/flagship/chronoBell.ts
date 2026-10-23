@@ -632,14 +632,22 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   for (const c of list.slice(0, after + 1)) if (c.kind === "text" && /발렌/.test(String((c as { speaker?: string }).speaker ?? ""))) (c as { autoFace?: boolean }).autoFace = false;
   // 포고 동안 주인공은 단 위 발렌을(위를) 보고, 광장의 할머니·문지기도 발렌 쪽을 본다.
   const begin = list.findIndex((c) => c.kind === "cutsceneControl");
-  list.splice(begin + 1, 0, turn("@player", "up", true), turn(`ev_${FS_PREFIX}_elder`, "up"), turn(`ev_${FS_PREFIX}_gate`, "left"));
+  // 주인공은 시작 자리(heroStart)에서 단 앞 자리(hero)까지 걸어 올라와 위를 본다 — 걸음을 따라 동료가 뒤(남쪽)에 선다.
+  // 옆(오른쪽)으로 먼저 걸어 동료가 발자국을 따라오게 한 뒤 위로 — 끝에 동료가 주인공 바로 뒤(남쪽)에 선다.
+  const walkUp = { kind: "moveEvent", eventId: "@player", route: { moves: [
+    ...Array.from({ length: st.hero.x - st.heroStart.x }, () => ({ kind: "move", dir: "right" })),
+    ...Array.from({ length: st.heroStart.y - st.hero.y }, () => ({ kind: "move", dir: "up" })), { kind: "turn", dir: "up" },
+  ], repeat: false, wait: true, skippable: true } } as unknown as Command;
+  list.splice(begin + 1, 0, walkUp, turn(`ev_${FS_PREFIX}_elder`, "up"), turn(`ev_${FS_PREFIX}_gate`, "left"));
   // 엘레나가 말하면 주인공이 오른쪽으로 두 걸음 비켜서고(heroAside, 비워 둔 칸) 뒤따르던 엘레나가 곁에 와 서로 마주 본다.
   const elenaLine = list.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("들었지, 카엘"));
   if (elenaLine >= 0) list.splice(elenaLine, 0, { kind: "moveEvent", eventId: "@player",
     route: { moves: [{ kind: "move", dir: "right" }, { kind: "move", dir: "right" }, { kind: "turn", dir: "left" }], repeat: false, wait: true, skippable: true } } as unknown as Command);
   // 포고 넉 줄 동안 화면은 호위 줄·단·앞줄 군중이 함께 드는 곳(대화 상자 위)에 둔다.
   const box = list.findIndex((c) => c.kind === "m2Command" && (c as { commandId?: string }).commandId === "m2-202-screen-effect");
-  if (box >= 0) list.splice(box + 1, 0, camera({ mode: "panTo", target: "screen", x: String(ASTEL.gate.x - 1), y: String(st.valen.y - 1), durationMs: "700", wait: "true" }));
+  // 화면 가운데는 주인공 한 줄 위(레터박스·아래 대화 상자를 빼면 상자 바로 위에 주인공·뒤따르는 동료, 그 위로 단·발렌·호위 줄) — 아래 대화 상자 위로 단·발렌·앞줄 군중·주인공이 모두 든다(최종 판정 r1 minor: 상자가 군중을 가림).
+  // 상자를 위로 올리면 장면마다 창이 위아래로 튀어(scene-polish-lint) 아래 그대로 둔다.
+  if (box >= 0) list.splice(box + 1, 0, camera({ mode: "panTo", target: "screen", x: String(ASTEL.gate.x), y: String(st.hero.y - 1), durationMs: "700", wait: "true" }));
 }
 
 /**
@@ -1734,7 +1742,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   }
   // 시작 — 포고 광장 군중 앞줄, 단 위 발렌을 올려다보는 자리(ASTEL.stage.hero).
   project.startMapId = M(ids.hub).id;
-  project.startPos = { x: ASTEL.stage.hero.x, y: ASTEL.stage.hero.y };
+  project.startPos = { x: ASTEL.stage.heroStart.x, y: ASTEL.stage.heroStart.y };
 
   // 빈 시작 맵 정리 + 맵 나무.
   for (const blankId of initialBlankMapIds) {

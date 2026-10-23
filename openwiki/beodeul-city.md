@@ -188,6 +188,7 @@ SQLite revision 7 저장·재로드와 전용 플레이어 8비트(모든 집 �
 - **관문**: object-gate 영수증(미보정 — 조언) + 독립 Opus·Argon 적대 VQA(숨긴 반려 표본) 통과분만 18323 위임 허용(`by: "delegated"`). 굽기는 그 허용을 확인한다.
 - **꼬리 사슬**: `bake_wall.py` → `bake_gap.py`(던전 gap, 29,568~) → `bake_capital.py`. 앞 스크립트는 시트를 자기 끝에서 자르므로 `bake_gap.py` 가 끝에서 이 스크립트를 다시 부른다. 30,848~32,767 은 gap 이 자랄 빈 자리 — gap 이 32,768 에 닿으면 `bake_gap.py` 가 멈춘다(두 꼬리 자리를 먼저 다시 정한다).
 - **기존 사본**: `ensureBeodeulCityTileset` 이 꼬리 칸 표와 `bd-capital-*` 키트·`beodeul:capital*` 묶음을 더한다. 그 자리(32,768~)에 이식 칸이 있는 사본은 받지 않는다(`capitalBlocked`).
+- **성문루 깊이**: `bake_wall.py` 가 성문루 옆기둥 칸(비통행 ×)에 `foot-dy:N`(성문루 바닥 줄까지의 칸 수)을 단다. 없으면 기둥이 자기 줄로 정렬돼 통로를 지나는 캐릭터가 기둥 위에 그려졌다.
 - **쓰는 곳**: `src/project/flagship/fallenAstel.ts`(왕도 fs_hub 빌더). 칸 번호가 아니라 키트 이름으로 찍는다.
 
 ## 민가·성당 외장: 원본 보존 보정 (2026-10-04 사용자 정정)

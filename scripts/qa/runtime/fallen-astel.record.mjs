@@ -54,7 +54,7 @@ try {
     let quiet = 0, lines = 0;
     for (let i = 0; i < 400; i++) {
       const s = await state();
-      if (s.dialogue) { if (!marks.firstLine) mark('firstLine'); quiet = 0; await page.waitForTimeout(1800); await page.keyboard.press('Enter'); lines += 1; await page.waitForTimeout(250); continue; }
+      if (s.dialogue) { if (!marks.firstLine) { mark('firstLine'); marks.sprites = await page.evaluate(() => { const st = window.__oprnDebug.readState(); const c = window.__oprnCharacterSprites?.(); return { player: { x: st.x, y: st.y, facing: st.facing }, sprites: c }; }).catch(() => null); } quiet = 0; await page.waitForTimeout(1800); await page.keyboard.press('Enter'); lines += 1; await page.waitForTimeout(250); continue; }
       quiet += 1;
       if (lines > 0 && quiet >= 4) break;
       await page.waitForTimeout(200);

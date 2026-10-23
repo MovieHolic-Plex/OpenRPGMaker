@@ -397,7 +397,7 @@ piano/bell/strings/bass, gain/pan과 MIDI pitch36..96·beat·duration·velocity�
 
 ## 실제 첫 맵을 오프닝 뒤에서 준비 (2026-10-05)
 
-`player.bootRun`은 한 play surface에서 시네마틱과 **실제 Phaser 게임 생성/텍스처 디코드/첫 맵 구성**을 함께 시작한다. `createPlayGame.initialPresentationPending` registry 경계를 통해 `PlayScene.update`의 시간·이동·병렬 이벤트를 멈추고, 시작 autorun/테스트 이벤트·NPC 일정·맵 BGM 재개는 `activateInitialPresentation()`의 1회 경계로 미룬다. 입력은 비활성화하고 전환 시 눌림/edge를 비운다. 준비 중 세션이 뒤에서 진행되면 실패다.
+`player.bootRun`은 한 play surface에서 시네마틱과 **실제 Phaser 게임 생성/텍스처 디코드/첫 맵 구성**을 함께 시작한다. `createPlayGame.initialPresentationPending` registry 경계를 통해 `PlayScene.update`의 시간·이동·병렬 이벤트를 멈추고, 시작 autorun/테스트 이벤트·NPC 일정·맵 BGM 재개는 `activateInitialPresentation()`의 1회 경계로 미룬다. 입력은 비활성화하고 전환 시 눌림/edge를 비운다. 준비 중 세션이 뒤에서 진행되면 실패다. 멈춘 동안에도 `update` 는 타일 창(`syncRuntimeTileWindow`·`syncTileCulling`)만은 맞춘다 — 안 그러면 첫 맵 칸이 그려지지 않은 채 캐릭터만 검은 바탕에 떠 오프닝→맵 넘김 첫 장면에 보였다(2026-10-23 『폴른 스타』 최종 판정).
 
 일반 오프닝 부팅은 단계 카드가 보이지 않는다. 오프닝이 먼저 끝나거나 빨리 건너뛰면 마지막 합성 그림을 `opening-map-handoff`로 보존해 준비를 기다린다. 준비 후 그 표면을 페이드하고 게임을 활성화한다. 기존 엔진 timeout/실패는 시네마틱을 중단하고 실제 복구 패널을 보여 준다. 새 게임/재시작/종료의 run 세대 경계가 늦은 게임·전환을 폐기한다. 저장 불러오기/여기서 테스트/오프닝 없는 부팅은 기존 부팅 경로다. 타이틀에서는 기존 배경·엔진 import 워밍을 유지한다.
 
