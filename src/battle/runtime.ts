@@ -3917,6 +3917,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const skill = lookupSkill(skillId);
     if (skill?.comboSwitchId && comboActorIdsOf(skill)) battleEventState.switches[skill.comboSwitchId] = true;
     if (skill && prepareGimmickCast(user, targets, skill)) return;
+    // 연막·도주 기술(type "escape"): 아군이 쓰면 확률 굴림 없이 전투에서 빠져나간다. 도주 불가 전투는 소모만 하고 막힌다.
+    if (skill?.type === "escape" && battlerSide(user) === "actor") {
+      if (options.canEscape) {
+        recordSpecial(user, user, `${skill.name}! 연기에 몸을 숨기고 무사히 도망쳤다!`, skill.id, commandKind);
+        escaped = true;
+      } else {
+        recordSpecial(user, user, `${skill.name}: 이 싸움에서는 도망칠 수 없다!`, skill.id, commandKind);
+      }
+      return;
+    }
     // 흉내·춤·슬롯: 후보 중 하나를 굴려 그 기술로 바꿔 쓴다. 자원은 원래 기술 몫만 소비했다.
     if (skill?.effect.kind === "randomSkillFrom") {
       const picked = pickRandomSkill(options.project, skill.effect.skillIds, rng);
