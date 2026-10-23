@@ -268,7 +268,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
     // 견본(시점·화풍, 물체 비율 캔버스)을 붙일 때만 「붙인 그림」을 말하는 STYLE_NOTE 를 붙인다 — 예전에는 그림 없이 그 문장만 갔다.
     const anchor = runner.referenceAnchor ? await runner.referenceAnchor(item, env).catch(() => null) : null;
     const styleNote = anchor && runner.referenceStyleNote !== undefined ? perItem(runner.referenceStyleNote, item) : undefined;
-    const prompt = refPrompt(describe, item.gateKind, styleNote, item.refTop);
+    const prompt = refPrompt(describe, item.gateKind, styleNote, item.refTop, item.title);
     const anchorNote = anchor ? env.encodePng(shrinkImage(await env.loadImage(anchor), ANCHOR_STORE_PX)) : undefined;
     const names = refPromptNames(prompt);
     if (names.length) {
