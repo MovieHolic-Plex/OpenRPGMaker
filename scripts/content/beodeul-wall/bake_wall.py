@@ -20,7 +20,7 @@ bake_dungeon_ceiling.py(28,416~)가 시트를 다시 쓰면 이 꼬리가 사라
   기후 변형: 같은 이름 앞에 snow: · desert: (눈 덮인 성벽 · 사막 사암 성벽).
   땅 그림자 sh_* 는 2층(앞면 밑 줄, 세로 성벽 오른쪽 열).
 """
-import argparse, json, pathlib, sys
+import argparse, json, pathlib, subprocess, sys
 
 from PIL import Image
 
@@ -531,3 +531,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # 성벽 꼬리 뒤(29,568~)의 던전 gap 칸은 이 스크립트가 시트를 다시 쓰면 사라진다 — 저장소 그대로 다시 붙인다(멱등, 관문·고름을 다시 보지 않는다).
+    if not any(a.startswith(("--gate-export", "--samples")) for a in sys.argv[1:]) and (HERE.parent / "beodeul-dungeon" / "bake_gap.py").exists():
+        subprocess.run([sys.executable, str(HERE.parent / "beodeul-dungeon" / "bake_gap.py"), "--from-store"], check=True)

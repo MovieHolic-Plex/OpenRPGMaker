@@ -68,10 +68,19 @@ export interface DungeonSpec {
   readonly flooded?: boolean;
   /** 무리가 사는 소굴(고블린·도적·짐승): 동굴 방에 모닥불·가죽 걸이·궤짝·뼈 무더기를 깐다(버들항 cave). */
   readonly lair?: boolean;
+  /**
+   * 버들항 gap 바위 줄(2026-10-23, bake_gap.py): 방 사이를 검은 허공 대신 결 있는 바위 윗면 + 앞면 2단으로 채우고, 물·용암도 그 줄 오토타일로 칠한다.
+   * A 해안 흙굴 · B 산속 바위굴 · C 검푸른 심층굴 · none 옛 검은 천장. 생략하면 종류 기본(cave A · mine B · volcano C, 그 밖 none).
+   */
+  readonly rockLine?: "A" | "B" | "C" | "none";
 }
 
 /** 층 계단·문 하나: x,y = 이동 이벤트를 둘 칸(계단 그림 칸), front = 들어서는 앞 칸(도착 칸). */
-export interface DungeonStairCell { x: number; y: number; front: { x: number; y: number }; kind: "up" | "down" | "door" }
+export interface DungeonStairCell {
+  x: number; y: number; front: { x: number; y: number }; kind: "up" | "down" | "door";
+  /** 문 그림 상태(버들항 bd-dg-door-*): 위층 칸 [윗칸, 아랫칸] 번호 — 이벤트가 changeTile(layer upper)로 열고 닫는다. 윗칸 = (x, y-1). */
+  doorTiles?: { closed: [number, number]; open: [number, number] };
+}
 
 export interface Rect { x: number; y: number; w: number; h: number }
 export interface PlacedRoom extends Rect { id: string; kind: DungeonRoomKind; from: string | null; dir: DungeonDir | null; depth: number }

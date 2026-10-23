@@ -252,3 +252,50 @@ C2 앞면은 이제 짧은 점선 결로 보인다 · B2 석순 그루터기는 
 ## 다음 판
 줄마다 그 글자 화법으로 cave → edges → built → deco 묶음 판을 연다. 불규칙 동굴 **빌더**(격자를 만드는 쪽)는 그다음 일.
 고른 것을 번들에 굽고(`bundled.ts`·타일셋 정의·`ensureBundledTilesets`), 참고문서를 번들 소유로 붙이는 일은 하네스 밖 별도 작업.
+
+## gap bake handoff (2026-10-23)
+`gap` 묶음(gap-rock-r1 · gap-liquid-r1 · gap-props-r1 · gap-tower-r1)에서 사람이 고른 조각을 공용 버들항 시트(beodeul_city) 꼬리에 구웠다.
+굽기 `scripts/content/beodeul-dungeon/bake_gap.py`(사용법은 파일 머리말). 칸 그림 정본 `tiledata/beodeul-dungeon/gap/cells.png` + `cells.json`(덧붙이기 전용 칸 저장소, 키 = 화소 해시 + 통행 + 층).
+
+**칸 범위:** 꼬리 29,568(마을 성벽 꼬리 끝, `BEODEUL_DUNGEON_GAP_BASE`) ~ 30,719. 시트 count 30,720(2048×3840). 앞 29,568칸과 그 표는 그대로다.
+
+| 항목·줄 | 고름 | 칸 | 정의 |
+|---|---|---|---|
+| bone_pile · 공통 | props A1 | 29568–29569 | 키트 `bd-dg-goblin-bones` · `bd-dg-goblin-loot` |
+| campfire · 공통 | props A1 | 29572–29575 (4장면) | 키트 `bd-dg-goblin-campfire` (strip base 29572) |
+| door · 공통 | props A2 | 29576–29579 | 키트 `bd-dg-door-closed` (29576/29577) · `bd-dg-door-open` (29578/29579), 1×2 위 칸 ★ |
+| goblin_tent · 공통 | props A1 | 29580–29588 | 키트 `bd-dg-goblin-tent` 3×3 (윗줄 ★) |
+| rock_fill · A | rock A1 | 29589–29650 | 오토타일 `beodeul_dungeon_rock_A` · 키트 `bd-dg-rock-A-face`(3×2) · `-face-single`(1×2) |
+| rock_fill · B | rock B2 | 29651–29712 | `beodeul_dungeon_rock_B` · `bd-dg-rock-B-face(-single)` |
+| rock_fill · C | rock C2 | 29713–29774 | `beodeul_dungeon_rock_C` · `bd-dg-rock-C-face(-single)` |
+| tower_wall · 공통 | tower A2 | 29775–30032 | `bd-dg-tower-ring-<12\|10\|8>` · `bd-dg-tower-<12\|10\|8>-<nw\|ne\|sw\|se>` · `bd-dg-tower-seam-<n\|s\|w\|e>` · `bd-dg-tower-door-n` · `bd-dg-tower-pass-s` |
+| tower_stair · 공통 | tower A2 | 29775–30032 안 | `bd-dg-tower-ring-12-stair` (링과 칸 공유) |
+| tower_window · 공통 | tower A2 | 30033–30036 | `bd-dg-tower-window-dark` · `-lit` (벽걸이 1×2) |
+| water_edge · A | liquid A1 | 30040–30247 | `beodeul_dungeon_water_A` — 52칸 × 4장면 |
+| water_edge · B | liquid B1 | 30248–30455 | `beodeul_dungeon_water_B` |
+| water_edge · C | liquid C1 | 30456–30663 | `beodeul_dungeon_water_C` |
+
+타일 묶음 `beodeul:dungeon_gap_<항목>[_줄]`. animationStrips 157개(base 29572 ~ 30660, 4장면 3fps, 4칸 정렬). 나머지 칸은 정렬 채움(null).
+**아직 안 고름:** lava_edge · ice_floor · ice_rock · lever · palisade — 처리기는 있다(`--assume-picks … --no-gate --test-out` 로만 시험). 고른 뒤 아래 재실행.
+
+**다시 굽기:**
+```
+OBJECT_GATE_DATA=/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate \
+  python3 scripts/content/beodeul-dungeon/bake_gap.py          # --dry 로 먼저 확인
+```
+- 기본이 엄격 관문(`object-gate` `refusal`, 판 `bundle`)이다. 막힌 항목이 있으면 pixelSha256·라벨을 찍고 그 항목의 옛 정의를 빼고 종료 코드 2 — 사람(또는 위임) 허용을 받은 뒤 다시 돌린다.
+  `--provisional`·`--no-gate`·`--assume-picks` 는 `--dry`/`--test-out` 에서만 받는다.
+- 멱등: 같은 고름이면 바이트까지 같다. ledger 의 현재 고름 중 그림 해시가 고른 해시와 같은 것만, VOID 는 건너뛴다.
+- **다시 고른 조각은 새 칸을 받는다.** 옛 칸은 시트에 남고(옛 맵이 칠했을 수 있다) 키트·오토타일 id 만 새 칸을 가리킨다.
+- `bake_wall.py`(성벽 꼬리 재굽기)는 시트를 자기 BASE 에서 자르므로 끝에서 `bake_gap.py --from-store` 를 불러 저장소에서 꼬리를 다시 붙인다(관문·ledger 를 다시 보지 않는다).
+- 기존 프로젝트: `ensureBeodeulCityTileset` 이 gap 꼬리가 비었거나(이식 칸 없음) 맞을 때만 오토타일 `beodeul_dungeon_(rock|water|lava|ice)*` · 키트 `bd-dg-*` · 묶음 `beodeul:dungeon_gap*` 을 번들 것으로 바꾼다.
+
+**시공기(compose.ts) 연결:**
+- 바위: `spec.rockLine`(A/B/C/none, 도구 `author_beodeul_dungeon` 인자 `rockLine`) — 비우면 `GAP_ROCK_LINE` = cave→A · mine→B · volcano→C. 바위가 있으면 벽은 2줄 바위 앞면(`bd-dg-rock-<줄>-face`, 외톨이는 `-single`), 천장은 바위 오토타일. `none` 이면 옛 3줄 돌벽.
+- 물: 바위 줄이 있고 `beodeul_dungeon_water_<줄>` 이 있으면 그것, 아니면 옛 운하 물. 용암: `beodeul_dungeon_lava_<줄>`(없으면 C·B 순) → 없으면 옛 LAVA_KIT.
+- 문: `bd-dg-door-closed/open` 둘 다 있으면 벽 문(입구 문·곁문)이 gap 문을 쓰고 `DungeonStairCell.doorTiles = { closed:[위,아래], open:[위,아래] }`(위 = y-1) 를 싣는다 — 이벤트가 changeTile(upper) 로 바꿔 끼울 수 있다(아직 자동 이벤트는 안 붙인다).
+- 고블린 야영(`lair:true`, dress.ts `lairCamp`): 모닥불·천막·뼈/전리품이 gap 키트, 큰 방엔 말뚝 울 한 줄(palisade 고름 뒤부터).
+- 탑 층(출구 `up` 또는 입구 `down`/`door`): 방 북쪽 벽에 화살 구멍 창 0~2개(dark/lit).
+- 탑 링 키트는 구웠지만 시공기가 아직 자동으로 놓지 않는다.
+
+증거: `verify-shots/dungeon-gap-bake/`(`compose-proof.mts` → `render-proof.py`, 장면 f0~f3, `castle-tower-door-door-open.png`).
