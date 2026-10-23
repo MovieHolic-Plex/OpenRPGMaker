@@ -371,12 +371,42 @@ function vinesOnWalls(c: DressCtx, rs: () => number, slots: Slot[], n: number, k
 }
 
 /** 소굴 야영지: 방 바닥 가운데 쪽 모닥불, 벽가 가죽 걸이·궤짝·통·자루 무더기, 흩어진 뼈. 보스방(chief)은 무더기를 더 쌓는다. */
+/** gap 고블린 야영 조각(bake_gap.py, 하네스 dungeon-chipset gap-props-r1). 없으면 다른 버들항 장소 조각으로 물러선다. */
+const GOBLIN = { fire: "bd-dg-goblin-campfire", tent: "bd-dg-goblin-tent", bones: "bd-dg-goblin-bones", loot: "bd-dg-goblin-loot" } as const;
+const PALISADE = { w: "bd-dg-palisade-w-end", e: "bd-dg-palisade-e-end", mids: ["bd-dg-palisade-mid", "bd-dg-palisade-mid2", "bd-dg-palisade-mid3"] } as const;
+
+/** 말뚝 울 한 줄(서끝 + 가운데 섞음 + 동끝, 1×2 조각). 한 조각이라도 못 놓으면(길을 막음·자리 없음) 그 줄을 통째로 걷는다. */
+function palisadeRun(c: DressCtx, rs: () => number, r: PlacedRoom, len: number): boolean {
+  if (!c.hasKit(PALISADE.w) || !c.hasKit(PALISADE.e)) return false;
+  const mids = PALISADE.mids.filter((k) => c.hasKit(k));
+  if (!mids.length) return false;
+  const ys = c.shuffle(rs, Array.from({ length: Math.max(0, r.h - 4) }, (_, k) => r.y + 2 + k));
+  for (const y of ys) {
+    for (const x0 of c.shuffle(rs, Array.from({ length: Math.max(0, r.w - len - 1) }, (_, k) => r.x + 1 + k))) {
+      if (!Array.from({ length: len }, (_, k) => x0 + k).every((x) => free(c, x, y) && free(c, x, y - 1) && free(c, x, y + 1) && lonely(c, x, y, 0))) continue;
+      const snap = Array.from({ length: len }, (_, k) => [y - 1, y].map((yy) => [c.lower[c.idx(x0 + k, yy)]!, c.upper[c.idx(x0 + k, yy)]!] as const));
+      let placed = 0;
+      for (let k = 0; k < len; k += 1) {
+        const id = k === 0 ? PALISADE.w : k === len - 1 ? PALISADE.e : mids[Math.floor(rs() * mids.length)]!;
+        if (!stand(c, id, x0 + k, y, { label: "palisade" })) break;
+        placed += 1;
+      }
+      if (placed === len) return true;
+      for (let k = 0; k < placed; k += 1) [y - 1, y].forEach((yy, j) => { c.lower[c.idx(x0 + k, yy)] = snap[k]![j]![0]; c.upper[c.idx(x0 + k, yy)] = snap[k]![j]![1]; });
+      c.counts["palisade"] = (c.counts["palisade"] ?? placed) - placed;
+    }
+  }
+  return false;
+}
+
 function lairCamp(c: DressCtx, r: PlacedRoom, rs: () => number, edge: [number, number][], chief: boolean): void {
-  const FIRE = c.hasKit("bd-pick-deep-forest-path-campfire") ? "bd-pick-deep-forest-path-campfire" : "bd-pick-shipwreck-reef-campfire";
+  const FIRE = c.hasKit(GOBLIN.fire) ? GOBLIN.fire : c.hasKit("bd-pick-deep-forest-path-campfire") ? "bd-pick-deep-forest-path-campfire" : "bd-pick-shipwreck-reef-campfire";
   const inner = c.shuffle(rs, c.floorCells(r, 3));
-  // 큰 방(우두머리 방·넓은 굴)엔 천막 하나 — 「누가 사는 곳」이 한눈에 읽힌다.
-  if ((chief || r.w * r.h >= 150) && c.hasKit("bd-pick-desert-oasis-tent")) {
-    for (const [x, y] of inner) if (lonely(c, x, y, 3) && lonely(c, x + 3, y, 2) && stand(c, "bd-pick-desert-oasis-tent", x, y)) break;
+  // 큰 방(우두머리 방·넓은 굴)엔 천막 하나 — 「누가 사는 곳」이 한눈에 읽힌다. gap 고블린 가죽 천막(3×3)이 있으면 그것.
+  const TENT = c.hasKit(GOBLIN.tent) ? GOBLIN.tent : "bd-pick-desert-oasis-tent";
+  if ((chief || r.w * r.h >= 150) && c.hasKit(TENT)) {
+    const tw = c.kit(TENT).width;
+    for (const [x, y] of inner) if (lonely(c, x, y, 3) && lonely(c, x + tw - 1, y, 2) && stand(c, TENT, x, y)) break;
   }
   // 모닥불 둘레 야영 무더기: 불 한 칸 + 곁에 자루·궤짝·가죽 걸이.
   let fires = 0;
@@ -388,10 +418,13 @@ function lairCamp(c: DressCtx, r: PlacedRoom, rs: () => number, edge: [number, n
     let k = 0;
     for (const [ax, ay] of c.shuffle(rs, around)) { if (k >= 2) break; if (lonely(c, ax, ay, 0) && stand(c, c.weighted(rs, [["bd-pick-walled-market-sack-pile", 2], [SW("crate"), 2], ["bd-pick-deep-forest-path-hide-rack", 1], [SW("barrel"), 2]]), ax, ay)) k += 1; }
   }
-  const goods: readonly (readonly [string, number])[] = [["bd-pick-deep-forest-path-hide-rack", 2], [SW("crate-stack"), 3], [SW("barrel"), 3], ["bd-pick-walled-market-sack-pile", 2], [SW("bone-heap"), chief ? 2 : 1]];
+  const goods: readonly (readonly [string, number])[] = [["bd-pick-deep-forest-path-hide-rack", 2], [SW("crate-stack"), 3], [SW("barrel"), 3], ["bd-pick-walled-market-sack-pile", 2], [SW("bone-heap"), chief ? 2 : 1],
+    ...(c.hasKit(GOBLIN.bones) ? [[GOBLIN.bones, 3] as const] : []), ...(c.hasKit(GOBLIN.loot) ? [[GOBLIN.loot, chief ? 3 : 2] as const] : [])];
   let n = 0;
   for (const [x, y] of edge) { if (n >= (chief ? 6 : 4)) break; if (rs() < 0.55 && lonely(c, x, y, 1) && stand(c, c.weighted(rs, goods), x, y)) n += 1; }
-  sprinkle(c, rs, r, 0.03, () => c.weighted(rs, [[SW("bones"), 3], [SW("skulls"), 1]]), { inset: 2, max: chief ? 4 : 2 });
+  sprinkle(c, rs, r, 0.03, () => c.weighted(rs, [[SW("bones"), 3], [SW("skulls"), 1], ...(c.hasKit(GOBLIN.bones) ? [[GOBLIN.bones, 2] as const] : [])]), { inset: 2, max: chief ? 4 : 2 });
+  // 큰 야영지는 말뚝 울 한 줄(gap 고블린 울) — 우두머리 방은 더 길게.
+  if (chief || r.w * r.h >= 150) palisadeRun(c, rs, r, chief ? 6 : 4);
   c.counts["lair-camp"] = (c.counts["lair-camp"] ?? 0) + 1;
 }
 

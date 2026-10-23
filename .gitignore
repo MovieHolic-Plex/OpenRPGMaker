@@ -282,3 +282,6 @@ harness-data/object-gate/calibration/answers/eye-*/
 /.worldmap-kit/
 # 생성기 저장소 bare 사본(정본 = object-gen·char-gen·tile-gen 저장소, npm run gen-kits:sync)
 /.gen-kits/
+
+# dungeon-chipset 관문 실행 기록 잠금 파일
+/harness-data/dungeon-chipset/ledger.json.lock

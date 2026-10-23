@@ -64,6 +64,7 @@ RAMPS = {
     'cata':  (['castle-catacombs/floor_cata'], None, 7, '지하묘지 판석 바닥'),
     'brick': (['castle-catacombs/face_cata_3h', 'castle-catacombs/face_cata_2h'], None, 7, '지하묘지 벽돌 앞면'),
     'water': (['sea-cave/water_sea'], is_blue, 6, '동굴 바닷물'),
+    'tide':  (['sea-cave/water_tide'], lambda c: c[1] > c[0] and c[2] > c[0], 5, '동굴 고인 물(버들항 바다 동굴 웅덩이 청록 — 렌더의 웅덩이가 이 조각)'),
     'pool':  (['aqueduct-sewer/water_sew'], lambda c: c[1] > c[0] and lum(c) < 140, 6, '하수 수로 물(검푸른 청록)'),
     'lava':  (['volcano-cave/lava-strip', 'volcano-cave/fire_crystal'], warm, 6, '용암(화산 동굴)'),
     'ice':   (['snowfield/ground-ice'], None, 5, '얼음판(설원)'),
