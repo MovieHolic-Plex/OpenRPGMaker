@@ -135,6 +135,11 @@ function syncMobileUiMetrics(viewport: HTMLElement, width: number, height: numbe
   }
   const portrait = width < height;
   viewport.dataset.mobileUi = portrait ? "portrait" : "landscape";
+  // 노치·다이내믹 아일랜드: 세로에서는 무대를 위쪽 안전 영역 아래로 내린다(무대 위 12px 여백만으로는 노치에 가린다).
+  if (portrait && viewport.dataset.layout === "portrait") {
+    const stageTop = Number.parseFloat(viewport.style.getPropertyValue("--play-stage-top")) || PORTRAIT_TOP_MARGIN;
+    viewport.style.setProperty("--play-stage-top", `max(${stageTop}px, env(safe-area-inset-top, 0px))`);
+  }
   // UI 확대 배율 z: 겹침 층을 "화면 px × z" 좌표계로 다시 깔아, 논리 6.5px 글자가 화면에서 읽히는 크기(약 12~13px)가 되게 한다.
   const z = Math.min(2.4, Math.max(1.5, Math.min(width, height) / (portrait ? 195 : 215)));
   viewport.style.setProperty("--mobile-ui-z", String(Math.round(z * 1000) / 1000));
