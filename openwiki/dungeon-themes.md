@@ -66,6 +66,22 @@ profiles·dress·gimmick 는 키트를 **후보 목록**(`KitPref`)으로 받는
 - `gimmick:"none"` 은 끔. 옛 `puzzle:"lever"` 는 `gimmick:"lever"` 와 같다. 레버를 안 놓았으면 `population.lockedGate` 를 지운다(조수가 「잠긴 문이 있다」고 답했다).
 - **린트**: 레버 다리 건너편 이벤트가 `event-unreachable` 로 울리지 않도록, 이벤트 배치 분석(`eventPlacementRecovery.ts` `openedByChangeTile`)은 이 맵의 이벤트가 `changeTile`(lower)로 넣는 그림을 미리 깐 사본으로 도달을 잰다 — 「저자가 열 방법을 둔 칸」은 지나갈 수 있다고 본다.
 
+## gap 조각 배선 (#3283 꼬리 29568~30847)
+
+- **둥근 탑 층(`shape: "ring"`)**: 탑(floors>1, direction up)의 위 큰 방(hall·throne)은 방 바닥 w×h = 링 지름 N-2 × N-4 로 잡고, 시공기(`compose.ts` 링 절)가 `bd-dg-tower-ring-<N>` 을 통째로 찍는다. 바닥 마스크를 링 안 칸으로 바꾼 뒤 벽·천장을 유도하고(링 둘레 벽 앞면은 지운다 — 링 위 천장에 테두리 조각이 새던 것), 장식 전에 키트 그림으로 덮는다. 링 바깥 어둠(29775)은 둘레 천장과 같은 결의 천장 칸으로 바꾼다(평평한 어둠이 네모로 떠 보였다).
+  - 링은 **남쪽 가운데 두 칸으로만** 드나든다(`bd-dg-tower-pass-s`). 그래서 링 방은 아래 방에서 북쪽(dir N)으로만 잇고, `layoutOnce` 가 그 통로를 링 가운데 두 칸 폭으로 맞춘다. 동·서·북에서 들어오는 링은 그림이 없다.
+  - 다음 층으로 가는 방(가장 깊은 방, 지름 12)은 `bd-dg-tower-ring-12-stair` — 안벽 계단 끝 칸(링 원점 +2,+4)이 이동 칸, 바로 아래(+2,+5)가 도착 칸이다. 계단 칸은 위층 그림이 차 있어 물건이 못 앉고, 계단 앞 칸은 길 지킴 칸(`keyCells`)이라 물건이 계단 발치를 막지 않는다.
+  - 링 안 장식(`dressTower` `ringEdge`): 링 그림(안벽 그늘·띠)이 덮은 바닥 칸에는 물건이 못 앉는다 — 그 안쪽 첫 둘레에 책장·촛대·수정을 둔다.
+  - 층 변화(`towerRooms(top, k, seed)`): 시드로 층계참 너비(9·11)·곁 서고/창고(동·서, 55%)·꼭대기 링 크기(12·10)가 바뀐다 — 같은 탑 두 요청이 판박이가 아니다.
+  - 키트가 없는 타일셋 사본은 mask 의 팔각(round)으로 남는다.
+- **얼음굴 바닥(`profile.autoFloor`)**: ice 는 바위 줄 C(어두운 청색) + 걷는 바닥 `beodeul_dungeon_ice_ground` 오토타일, 호수 방과 잡음 덩이(vnoise>0.74)는 빙판 `beodeul_dungeon_ice` 오토타일(이웃 = 빙판 칸). 얼음 미끄럼 장치는 이미 빙판인 줄은 다시 칠하지 않는다.
+- **벽 레버**: `placeLever` 가 방 북쪽 벽 칸(바닥 첫 줄 위)에 `bd-dg-lever-up` 을 받침 검사(`checkGroundSupportForStamp`) 통과할 때만 걸고, 이벤트를 그 벽 칸에(투명·같은 높이) 둔다 — 당기면 `changeTile`(upper) 로 `lever-down` 그림 + 스위치. 바위 앞면(동굴·화산)은 벽 태그가 없어 바닥 charset 레버로 물러선다.
+- **문 여는 이벤트**: 벽 문(`DungeonStairCell.doorTiles`)이 있는 계단 이벤트는 이동 전에 문 소리 + `changeTile`(upper, 문 위·아래 칸 → open 그림) + 250ms 를 먼저 한다.
+- **천장 태그**: `supportSurfaceOf` 는 이름표뿐 아니라 태그(ceiling·천장)도 천장으로 센다 — 29775 「탑 바깥 어둠」이 이름만 보면 벽이라 「허공을 향한 벽」 경고가 났다.
+- **위상 몸통(32×32)**: 용암처럼 16px 몸통이 격자로 보이는 오토타일을 위해 `dot.Autotile(body32=…)` 가 칸 위치 `(x%2)+2*(y%2)` 로 몸통 쪽을 고르고 가장자리·모서리도 그 칸 몸통 위에 얹는다. 관문은 32px 반복 이음과 그 안 16px 경계(튀면 격자)를 본다. `bake_gap.py` 는 위상 넷 × 47 모양을 굽고 `phaseVariants {w:2,h:2}` 를 쓴다 — 엔진(`autotileVariantForMask`)·시공기(`autoCell`)가 같은 규칙으로 고른다. 화산 용암 다시 그리기는 이 길로 한다.
+- **마계 낱말**: `inspiration`·이름에 마계·이세계·지옥·심연이 있으면 모델이 castle·temple·cave·catacomb 로 골라도 otherworld 로 짓는다(「크로노트리거 같은 마계 성」이 회색 성이 됐다, dt-p1).
+- **닫힌 조각**: palisade·ice_rock 은 반려로 닫혔다. 열두 주제에는 필요 없다(얼음굴은 바위 C + 얼음 바닥, 고블린 소굴은 주제 밖).
+
 ## 주제 적 (`dungeonThemeTroops.ts`)
 
 새 주제: forest(늑대·식인초·거대 벌 → 숲의 늙은 트롤) · swamp(리자드맨·독사·도깨비불 → 히드라) · pyramid(미라·전갈 → 왕묘의 수호 거상) · ice(늑대·바람 정령·창백한 유령 → 푸른 용) · magic(떠다니는 눈·나는 검·떠돌이 마법사 → 탑의 대마법사) · abyss(임프·어둠 정령·망령 → 마계의 군주) · castle(해골 기사·살아 있는 갑옷·가고일 → 타락한 성주) · magitek(FF6 광산: 철 골렘·코볼트 → 괴수).
