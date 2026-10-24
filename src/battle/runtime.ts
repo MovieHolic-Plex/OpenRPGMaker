@@ -476,9 +476,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     actionCounter += 1;
     currentActionId = actionCounter;
   }
-  // 맞아서 깬 상태(수면 등)는 그 타격 엔트리 「뒤」에 기록한다 — 판정은 피해 기록 전에 일어나서
-  // 「숲늑대의 수면이 풀렸다」가 「카엘의 공격!」보다 먼저 떴다(2026-10-24 실측). 같은 대상의 피해 엔트리는 지나 보내고,
-  // 다른 기록이 오거나 명령이 바뀌거나 스냅숏을 뜰 때 내보낸다.
+  // 맞아서 깬 상태(수면 등)는 그 타격 엔트리 바로 「뒤」에 기록한다 — 판정은 피해 기록 전에 일어나서
+  // 「숲늑대의 수면이 풀렸다」가 「카엘의 공격!」보다 먼저 떴다(2026-10-24 실측). 같은 대상의 피해 엔트리가 오면 그 뒤에,
+  // 다른 기록이 먼저 오거나 명령이 바뀌거나 스냅숏을 뜨면 그 앞에 내보낸다.
   const pendingHitWakes: Omit<BattleTimelineEntrySnapshot, "sequence">[] = [];
   function flushHitWakes(): void {
     for (const wake of pendingHitWakes.splice(0)) timeline.push({ ...wake, sequence: timeline.length });
@@ -489,11 +489,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       && pendingHitWakes.length > 0 && pendingHitWakes.every((wake) => wake.targetId === stamped.targetId);
     if (!strikesWoken) flushHitWakes();
     timeline.push({ ...stamped, sequence: timeline.length });
+    if (strikesWoken) flushHitWakes();
   }
   /** 방금 기록된 타임라인 엔트리에 애니메이션을 붙인다. 스킬/아이템 실행부가
    *  recordAction 직후 lastAnimation 을 세팅하므로, 그 시점에 호출해 엔트리와 짝을 맞춘다. */
   function attachAnimationToLatestTimeline(animation: BattleAnimationSnapshot): void {
-    const latest = timeline[timeline.length - 1];
+    // 타격 뒤에 붙은 「맞아서 깸」 엔트리는 건너뛴다 — 애니메이션은 그 타격의 것이다.
+    let at = timeline.length - 1;
+    while (at > 0 && timeline[at]!.kind === "stateRemoved" && timeline[at]!.reason === "hit") at -= 1;
+    const latest = timeline[at];
     if (latest) (latest as { animation?: BattleAnimationSnapshot }).animation = animation;
   }
 
@@ -716,7 +720,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function recoverHitStates(battler: MutableBattler): void {
     const removed = recoverStatesWhenHit(options.project, battler, rng);
-    for (const stateId of removed) {
+    // 그 타격에 쓰러졌으면 깸을 말하지 않는다 — 「쓰러뜨렸다!」 뒤 「수면이 풀렸다」가 붙었다.
+    if (battler.hp > 0) for (const stateId of removed) {
       pendingHitWakes.push({ kind: "stateRemoved", side: battlerSide(battler), targetId: battler.id, stateId, reason: "hit", ...(currentActionId !== undefined ? { actionId: currentActionId } : {}) });
     }
     refreshAfterStateChange(battler, removed);

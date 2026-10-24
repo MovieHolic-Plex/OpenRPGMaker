@@ -35,6 +35,9 @@ async function readBattleUi(page) {
       busy: scene?.dataset.battleSequenceBusy === "true",
       targetPrompt: Boolean(document.querySelector('[data-testid="battle-target-prompt"]')),
       menu: buttons.map((n) => n.dataset.testid ?? ""),
+      // 아군 대상 단추는 레트로 스킨에서 화면 밖(커서로 고름)이라 보이지 않아도 센다.
+      targets: [...document.querySelectorAll('button[data-testid^="battle-target-"]')]
+        .filter((n) => !n.disabled && n.dataset.testid !== "battle-target-cancel").map((n) => n.dataset.testid),
       active: document.querySelector(".battle-actor-status.is-active-actor")?.getAttribute("data-record-id") ?? null,
       resultConfirm: Boolean(document.querySelector('[data-testid="battle-result-confirm"]')),
       // 전투 중 이벤트 대사(발렌의 소환 외침 등)는 .dialogue-box 로 뜨고, 그동안 장면은 busy 다.
@@ -116,13 +119,14 @@ export async function battleQaOp(page, op) {
     }
     if (ui.busy) { await sleep(120); continue; }
     if (ui.targetPrompt) {
-      const targets = ui.menu.filter((id) => id.startsWith("battle-target-") && id !== "battle-target-cancel");
+      const targets = ui.targets;
       const want = pendingTarget ?? op.target;
       pendingTarget = undefined;
       const pick = typeof want === "number" ? targets[want] ?? targets[0]
         : want === "last" ? targets.at(-1)
           : typeof want === "string" ? targets.find((id) => id.endsWith(want)) ?? targets[0]
             : targets[0];
+      await page.evaluate((row) => window.__qaBattleLog?.push(row), { t: -1, pick: pick ?? null, want: want ?? null, targets });
       if (pick) await press(page, pick);
       else await page.keyboard.press("Enter");
       await sleep(300);
