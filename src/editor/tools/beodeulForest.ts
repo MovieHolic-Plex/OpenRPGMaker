@@ -11,6 +11,7 @@ import type { AutotileGroup, GameMap, Project, TilesetDef, TreeComposerDef, Tree
 import { composeTreesPlaced, treeComposerOwnTiles, treeHash, type TreePlacement } from "@/project/defaults/treeComposer";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import { BEODEUL_NATURE, BEODEUL_NATURE_ID, createBeodeulNatureTileset } from "@/project/defaults/beodeulNature";
+import { BEODEUL_FOREST_TRUNKS, BEODEUL_FOREST_TRUNKS_ID, createBeodeulForestTrunksTileset } from "@/project/defaults/beodeulForestTrunks";
 
 export const BEODEUL_FOREST_TYPES = ["broadleaf", "conifer", "mixed"] as const;
 export type BeodeulForestType = (typeof BEODEUL_FOREST_TYPES)[number];
@@ -30,9 +31,29 @@ export const BEODEUL_DARK_GRASS_GROUP: Record<BeodeulDarkGrassFamily, string> = 
  * 대상 칩셋(beodeul_city 계열)에서 쓸 composer 정의. r5(2026-10-21 사용자 정정): 코드가 그린 그늘 칸(접지 ground)은 쓰지 않는다 —
  * 나무 밑 땅은 원본 「짙은 풀」 오토타일(ensureBeodeulDarkGrass)이 맡는다. 그래서 def.ground 가 없고 composer 는 2~4층 나무만 쌓는다.
  */
-export function beodeulForestComposer(_project: Project, _target: TilesetDef, type: BeodeulForestType): TreeComposerDef {
+export function beodeulForestComposer(project: Project, target: TilesetDef, type: BeodeulForestType): TreeComposerDef {
   const { groundShadeCover: _c, groundShadeRows: _r, ...rest } = structuredClone(data.types[type]);
-  return rest as unknown as TreeComposerDef;
+  const def = rest as unknown as TreeComposerDef;
+  def.sprites = withRedrawnTrunks(project, target, def.sprites);
+  return def;
+}
+
+/**
+ * 활엽수 줄기 T3(나무껍질 대비, 2026-10-24 사용자 선택·허용 — 「줄기가 안 보여 풀 덩이 같다」): 원본 나무 키트에서 줄기·뿌리 칸만
+ * beodeul_forest_trunks 칸으로 바꿔 이식한다. 수관 칸은 원본 칸 번호 그대로. 표에 없는 나무(덤불·침엽수)는 손대지 않는다.
+ */
+function withRedrawnTrunks(project: Project, target: TilesetDef, sprites: TreeComposerSprite[]): TreeComposerSprite[] {
+  const table = BEODEUL_FOREST_TRUNKS.cells;
+  if (!sprites.some((s) => table[s.name]) || target.tileSize !== 16) return sprites;
+  const source = project.tilesets[BEODEUL_FOREST_TRUNKS_ID] ??= createBeodeulForestTrunksTileset();
+  const wanted = new Set(sprites.flatMap((s) => (table[s.name] ?? []).filter((n) => n >= 0)));
+  const map = translateTiles(source, target, wanted).map;
+  return sprites.map((s) => {
+    const cells = table[s.name];
+    if (!cells || cells.length !== s.tiles.length) return s;
+    return { ...s, tiles: s.tiles.map((t, i) => (cells[i] === -1 ? t : cells[i] === -2 ? -1 : map.get(cells[i]!) ?? t)),
+      cover: BEODEUL_FOREST_TRUNKS.cover[s.name] ?? s.cover };
+  });
 }
 
 /** 숲 장면 잔디(737 채도 ×0.84, r4 B) 를 대상 칩셋으로 이식한 칸 번호. 공용 잔디 737 은 바꾸지 않는다. */
@@ -152,6 +173,23 @@ const CONIFER_ART = /fir|eef4bc|28ad5e|c27062/u;
 export interface BeodeulForestPlan { readonly placements: TreePlacement[]; readonly shade: Uint8Array; readonly dark: ReadonlySet<number> }
 
 /**
+ * 숲 모양 시안(2026-10-24 폴른 스타 「나무 줄기가 안 보여 풀 덩이 같다」, forest-trunks-1). 기본은 지금 규칙 그대로.
+ * front: 숲 남쪽 끝 칸(줄기가 보이는 앞줄) 밑동에 쓸 모양 — 줄기 있는 T3·T4 만 주면 앞줄에 덤불(B2·D2)이 서지 않는다.
+ * alternate: 속 칸을 2×2 바둑판으로 나눠 밝은 수관(T3·T4)과 짙은 수관(D3)을 번갈아 — 이웃 수관이 한 덩이로 섞이지 않게.
+ * gx·gy: 밑동 사이 최소 간격(기본 2·2).
+ */
+export interface BeodeulForestLook {
+  readonly front?: Shapes;
+  readonly rim?: Shapes;
+  readonly core?: Shapes;
+  readonly alternate?: { readonly light: Shapes; readonly dark: Shapes };
+  readonly gx?: number;
+  readonly gy?: number;
+  /** 나무 그림 정의를 바꿔 끼운다(줄기 다시 그린 시안 — 같은 이름·모양·칸 크기, 칸 번호만 다르다). */
+  readonly sprites?: TreeComposerSprite[];
+}
+
+/**
  * 밑동 자리 고르기. 지키는 것:
  *  · 그림의 보이는 칸(덮개 > 2%)이 모두 맵 안 — 맵 위쪽 끝에 수관 없는 줄기·잘린 꼭대기가 남지 않는다(D1·D2).
  *  · 칸마다 앞에서부터 불투명 칸이 나올 때까지 쌓인 조각 수 ≤ 그 칸에 쓸 수 있는 층 수(숲 3, 숲 밖 2 — 둘레 그늘이 2층을 쓴다).
@@ -161,7 +199,7 @@ export interface BeodeulForestPlan { readonly placements: TreePlacement[]; reado
  * 그늘 덮개: 줄기 칸(침엽) 또는 아랫줄 덮개 칸(활엽, shadeRows) + 숲 가장자리에서 2~3칸 들어간 속 칸(D4 — 숲 속 바닥은 단색 그늘 덩이, 가장자리는 들쭉날쭉).
  */
 export function planBeodeulForest(map: GameMap, def: TreeComposerDef, type: BeodeulForestType,
-  forest: (x: number, y: number) => boolean, hold: (x: number, y: number) => boolean, seed: number): BeodeulForestPlan {
+  forest: (x: number, y: number) => boolean, hold: (x: number, y: number) => boolean, seed: number, look: BeodeulForestLook = {}): BeodeulForestPlan {
   const W = map.width, H = map.height, own = treeComposerOwnTiles(def), sd = seed * 131 + 7;
   const inMap = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H;
   const isF = (x: number, y: number) => inMap(x, y) && forest(x, y);
@@ -172,7 +210,8 @@ export function planBeodeulForest(map: GameMap, def: TreeComposerDef, type: Beod
   };
   const byShape = new Map<string, TreeComposerSprite[]>();
   for (const sp of def.sprites) if (!sp.dark) byShape.set(sp.shape, [...(byShape.get(sp.shape) ?? []), sp]);
-  const rule = PLANT[type];
+  const base = PLANT[type];
+  const rule = { gx: look.gx ?? base.gx, gy: look.gy ?? base.gy, rim: look.rim ?? base.rim, core: look.core ?? base.core };
   // 숲 밖(맵 밖은 숲으로 본다)까지 체비쇼프 거리(1~3)
   const depth = new Uint8Array(W * H);
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -222,7 +261,10 @@ export function planBeodeulForest(map: GameMap, def: TreeComposerDef, type: Beod
   for (const { x, y } of cand) {
     if (placed.some((p) => Math.abs(p.ax - x) < rule.gx && Math.abs(p.ay - y) < rule.gy)) continue;
     const r = treeHash(x, y, sd + 17) / 4294967296;
-    const shapes = depth[y * W + x]! <= 1 ? rule.rim : rule.core;
+    const isFront = !isF(x, y + 1);
+    const shapes = isFront && look.front ? look.front
+      : depth[y * W + x]! <= 1 ? rule.rim
+      : look.alternate ? ((((x >> 1) + (y >> 1)) & 1) ? look.alternate.light : look.alternate.dark) : rule.core;
     let acc = 0, first = shapes.length - 1;
     for (let i = 0; i < shapes.length; i++) { acc += shapes[i]![1]; if (r < acc) { first = i; break; } }
     const order = [first, ...shapes.map((_, i) => i).filter((i) => i !== first)];
@@ -282,11 +324,14 @@ export function planBeodeulForest(map: GameMap, def: TreeComposerDef, type: Beod
  */
 export function composeBeodeulForest(project: Project, map: GameMap, target: TilesetDef, type: BeodeulForestType,
   forest: (x: number, y: number) => boolean, hold: (x: number, y: number) => boolean, seed: number,
-  write: (x: number, y: number) => boolean = hold, family: BeodeulDarkGrassFamily = "plain"): TreeComposerDef {
+  write: (x: number, y: number) => boolean = hold, family: BeodeulDarkGrassFamily = "plain", look: BeodeulForestLook = {},
+  planOut?: (plan: BeodeulForestPlan) => void): TreeComposerDef {
   const def = beodeulForestComposer(project, target, type);
-  const plan = planBeodeulForest(map, def, type, forest, hold, seed);
+  if (look.sprites) def.sprites = look.sprites;
+  const plan = planBeodeulForest(map, def, type, forest, hold, seed, look);
   composeTreesPlaced(map, def, plan.placements, plan.shade, forest, hold, write);
   paintBeodeulDarkGrass(project, map, target, family, plan.dark, write);
+  planOut?.(plan);
   return def;
 }
 

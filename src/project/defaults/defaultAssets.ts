@@ -7,6 +7,7 @@ import {BEODEUL_FORMS_TEXTURE,createBeodeulFormsTileset,ensureBeodeulFormsTilese
 import {BEODEUL_REVIEWED_TEXTURE,createBeodeulReviewedTileset,ensureBeodeulReviewedTileset,ensureBeodeulReviewed} from './beodeulReviewed';
 import { BEODEUL_DOOR_TEXTURE, createBeodeulDoorTileset, ensureBeodeulDoorReferences } from "./beodeulDoor";
 import { BEODEUL_GROUND_TEXTURE, createBeodeulGroundTileset, ensureBeodeulGroundReferences } from "./beodeulGround";
+import { BEODEUL_FOREST_TRUNKS_TEXTURE, createBeodeulForestTrunksTileset } from "./beodeulForestTrunks";
 import { BEODEUL_NATURE_TEXTURE, createBeodeulNatureTileset } from "./beodeulNature";
 import { BEODEUL_WARM_TREES_TEXTURE, createBeodeulWarmTreesTileset } from './beodeulWarmTrees';
 import { BEODEUL_ARCHITECTURE_TEXTURE, createBeodeulArchitectureTileset, ensureBeodeulArchitectureTileset } from './beodeulArchitecture';
@@ -444,6 +445,7 @@ function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[nu
 function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
   if (asset.textureKey === BEODEUL_DOOR_TEXTURE) return createBeodeulDoorTileset();
   if (asset.textureKey === BEODEUL_GROUND_TEXTURE) return createBeodeulGroundTileset();
+  if (asset.textureKey === BEODEUL_FOREST_TRUNKS_TEXTURE) return createBeodeulForestTrunksTileset();
   if (asset.textureKey === BEODEUL_NATURE_TEXTURE) return createBeodeulNatureTileset();
   if (asset.textureKey === BEODEUL_WARM_TREES_TEXTURE) return createBeodeulWarmTreesTileset();
   if (asset.textureKey === BEODEUL_ARCHITECTURE_TEXTURE) return createBeodeulArchitectureTileset();
