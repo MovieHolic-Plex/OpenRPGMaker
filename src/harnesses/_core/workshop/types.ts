@@ -141,7 +141,11 @@ export type WorkshopRun = {
   finishedAt: number | null;
   /** 3/4 관문 조언(실행기가 adviseMessages 를 주면 다 그린 뒤 한 번). 없으면 아직 안 쟀거나 그 하네스는 재지 않는다. */
   gate?: GateAdvice | null;
+  /** 칩셋 출발 그림(object-gen base-from-chipset, 2026-10-23) — 자연물이 이 칩셋 기물에서 출발했으면 그 id·출처 칸. 설명서 provenance.base 로 간다. */
+  base?: BaseInfo | null;
 };
+/** 출발 그림 정보(object-gen anchors/oprn-beodeul-bases/set.json 한 줄) */
+export type BaseInfo = { readonly id: string; readonly label: string; readonly sources: readonly string[] };
 /**
  * 판의 「참고 그림」(object-gen ref 단계, referencePrompt.ts). 판 임시 기록에만 있고 그리는 모델만 본다 — 칩셋·스토어로 가지 않는다.
  * none = 그림 계정이 없거나 이 기물은 참고 단계가 없다(「참고 그림 없이 그림」) · failed = 만들었지만 시점 검사를 못 넘었거나 오류.
@@ -227,6 +231,8 @@ export type DrawContext = {
   readonly gated?: boolean;
   /** 참고 그림의 주된 색을 팔레트 키로 옮긴 것(RoundReference.colors) */
   readonly referenceColors?: readonly ReferenceColor[];
+  /** 칩셋 출발 그림. 첫 시도의 previousGrid 가 이 그림이다. */
+  readonly base?: BaseInfo | null;
 };
 export type ReviewContext = {
   readonly item: WorkshopItem;
@@ -305,6 +311,8 @@ export interface WorkshopRunner {
   items(defs: readonly ItemDefinition[]): WorkshopItem[];
   palette(item: WorkshopItem): Palette;
   currentGrid(item: WorkshopItem): Grid | null;
+  /** 있으면 장을 시작할 때 한 번 부른다: 자연물이 칩셋의 가장 가까운 손 도트 기물에서 출발한다(object-gen bases). null = 처음부터 그린다. */
+  base?(item: WorkshopItem, env: WorkshopEnv): Promise<(BaseInfo & { readonly grid: Grid }) | null>;
   directions(item: WorkshopItem): Direction[];
   /** picked = 이 프로젝트에서 사용자가 고른 후보들 */
   anchors(item: WorkshopItem, picked: readonly AnchorSample[]): AnchorSample[];
