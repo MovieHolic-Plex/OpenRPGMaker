@@ -65,11 +65,11 @@
   },
   {
    "id": "forest-entry",
-   "label": "깊은 숲 입구(사당 터에서 올라옴)",
-   "note": "fallen/forestMaps.ts shrine->deep 착지 (8,25); 숲은 여섯 맵(어귀·옛 수로·가시덤불 샛길·사당 터·사냥꾼 쉼터·깊은 숲)",
+   "label": "깊은 숲 입구(사당 터에서 북쪽으로 올라옴)",
+   "note": "fallen/forestMaps.ts shrine->deep 착지 (14,34) — 추락지까지 굽은 길, 브람 (14,18), 숨은 물건 (21,28)",
    "mapId": "fs_forest",
-   "x": 8,
-   "y": 25,
+   "x": 14,
+   "y": 34,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -94,11 +94,11 @@
   },
   {
    "id": "forest-edge-entry",
-   "label": "숲 어귀(왕도 동문에서 들어옴)",
-   "note": "fallen/forestMaps.ts hub->edge 착지 (14,24) — 갈림목: 동 옛 수로 · 북 가시덤불 샛길",
+   "label": "숲 어귀(왕도 북문에서 들어옴)",
+   "note": "hub->edge 착지 (15,38) — 갈림목 (16,20): 북서 가시덤불 샛길 · 북동 옛 수로, 숨은 물건 (14,11)",
    "mapId": "fs_forest_edge",
-   "x": 14,
-   "y": 24,
+   "x": 15,
+   "y": 38,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -123,12 +123,12 @@
   },
   {
    "id": "forest-stream-entry",
-   "label": "옛 수로(어귀 동쪽에서 들어옴)",
-   "note": "edge->stream 착지 (1,11) — 돌다리 (10,10)",
+   "label": "옛 수로(어귀 북동에서 들어옴)",
+   "note": "edge->stream 착지 (7,30) — 굽은 개울 돌다리 (20,14), 숨은 물건 (6,19)",
    "mapId": "fs_forest_stream",
-   "x": 1,
-   "y": 11,
-   "facing": "right",
+   "x": 7,
+   "y": 30,
+   "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_valen_marched": true
@@ -152,11 +152,11 @@
   },
   {
    "id": "forest-thicket-entry",
-   "label": "가시덤불 샛길(어귀 북쪽에서 들어옴)",
-   "note": "edge->thicket 착지 (12,30) — 갈림 (18,15), 막다른 곁길 상자 (6,7)",
+   "label": "가시덤불 샛길(어귀 북서에서 들어옴)",
+   "note": "edge->thicket 착지 (17,38) — 서쪽 곁길 끝 상자 (4,11)",
    "mapId": "fs_forest_thicket",
-   "x": 12,
-   "y": 30,
+   "x": 17,
+   "y": 38,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -182,10 +182,10 @@
   {
    "id": "forest-shrine-entry",
    "label": "별지기 사당 터(옛 수로에서 올라옴)",
-   "note": "stream->shrine 착지 (20,26) — 조우 없음, 사당 공물 상자",
+   "note": "stream->shrine 착지 (30,28) — 조우 없음, 회복 세이브·사당 공물 상자",
    "mapId": "fs_forest_shrine",
-   "x": 20,
-   "y": 26,
+   "x": 30,
+   "y": 28,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -210,11 +210,11 @@
   },
   {
    "id": "forest-glade-entry",
-   "label": "사냥꾼 쉼터(옛 수로 남동 곁길)",
-   "note": "stream->glade 착지 (1,9) — 막다른 곳 상자 (23,8)",
+   "label": "사냥꾼 쉼터(옛 수로 동쪽 곁길)",
+   "note": "stream->glade 착지 (1,13) — 막다른 곳 상자 (26,11)",
    "mapId": "fs_forest_glade",
    "x": 1,
-   "y": 9,
+   "y": 13,
    "facing": "right",
    "switches": {
     "sw_fs_main_started": true,
@@ -239,11 +239,11 @@
   },
   {
    "id": "forest-chase",
-   "label": "추격 — 옛 수로 남쪽 길의 거미 앞",
+   "label": "추격 — 숲 어귀 갈림목 아래, 남북으로 순찰하는 늑대 앞",
    "note": "makeFieldEnemyChase: 시야 부채꼴에 들면 「!」 → 달려듦 → 닿으면 전투",
-   "mapId": "fs_forest_stream",
-   "x": 20,
-   "y": 19,
+   "mapId": "fs_forest_edge",
+   "x": 18,
+   "y": 22,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,

@@ -1,48 +1,43 @@
 /**
- * 폴른 스타 · 속삭이는 숲을 여러 맵으로 나눈다 (2026-10-24 사용자 「숲은 탐험하는 느낌이어야 한다」).
+ * 폴른 스타 · 속삭이는 숲 — 여섯 맵 (2026-10-24 r2: 숲은 왕도 북쪽, 굽은 숲길, B1 활엽 composer 나무).
  *
- * 예전 숲은 남쪽 입구 → 북쪽 추락지 공터까지 한 줄 길 한 장(30×40)이었다. 이제 여섯 장이 이어진다.
+ *                          ⑤ 깊은 숲(브람·추락지, 원래 숲 맵 fs_forest)
+ *                                  │ 북
+ *                          ④ 별지기 사당 터(쉼터·회복 세이브·공물 상자, 짐승 없음)
+ *                         ╱ 북서                ╲ 북동
+ *   ③ 가시덤불 샛길(서쪽 곁길 끝 상자)      ② 옛 수로(굽은 개울·돌다리) ─ 동 ─ ⑥ 사냥꾼 쉼터(막다른 곳·상자)
+ *                         ╲                     ╱
+ *                          ① 숲 어귀(갈림목·이정표)
+ *                                  │ 남
+ *                             왕도 성문
  *
- *   왕도 동문 ─ ① 숲 어귀(봉화·이정표 갈림목) ─┬─ 동 ─ ② 옛 수로(돌다리) ─┬─ 북 ─ ④ 별지기 사당 터 ─ 북 ─ ⑤ 깊은 숲(브람·추락지)
- *                                            │                         └─ 남동 ─ ⑥ 사냥꾼 쉼터(막다른 곳·상자)
- *                                            └─ 북 ─ ③ 가시덤불 샛길(갈림길·막다른 곁길 상자) ─ 동 ─ ④
- *
- * ①→②→④ 와 ①→③→④ 는 고리다(어느 쪽으로 가도 사당 터에서 만난다). 막다른 곳(③ 곁길 끝·⑥)에는 반드시 상자가 있다.
- * ④ 사당 터는 짐승이 들지 않는 쉼터(조우 없음)이고 사당 앞 공물 상자가 있다.
- * ⑤ 는 원래 숲 맵(fs_forest)의 북쪽 27줄이다 — 관·이리스·브람·표지석·불씨 자국·연기 같은 이야기 장치는 그 자리에 그대로 둔다.
- * 남쪽 굽은 숲길 토막(27~39줄)은 잘라 내고, 그 길이만큼의 걸음은 앞 맵들이 맡는다.
- *
- * 칠하기는 원래 숲과 같은 버들항 시공(wildRouteBeodeul.paintBeodeulWildRoute — author_wild_route 의 몸통)이다:
- * 모랫길 오토타일 → 버들항 수관 오토타일 숲 벽(#3259 planBeodeulCanopy, 2026-10-24 plantBeodeulForestWall) → 길섶 소품 → 숲 바닥 잔디.
- * 길 계획기(planRouteCorridor)는 출구를 차례로 잇는 한 줄 길만 그어 갈림길·막다른 곁길·광장을 못 만들어, 길 모양만 여기서 손으로 정한다.
+ * ①→②→④ 와 ①→③→④ 는 고리다. 막다른 곳(③ 곁길 끝·⑥)에는 상자가 있고, 나무 사이 틈에 숨은 물건이 셋(①·②·⑤) 있다.
+ * 땅 모양은 forestSpecs.ts, 칠하기는 woodland.ts(굽은 길·들쭉날쭉 숲 덩이·빈터·자연 둑 개울·B1 composer 나무).
+ * 깊은 숲은 추락지(DEEP_KEEP) 바닥·장식을 지키고 그 밖을 같은 방식으로 다시 칠한다.
+ * 눈에 보이는 짐승·조우 표는 구역 트룹(#3335 battleRoles 의 FS_AREA_ENCOUNTERS 와 같은 id)을 먼저 쓰고, 아직 없으면 옛 셋(늑대·거미·도깨비불)으로.
  */
 import { runTool } from "@/editor/tools/toolRunner";
 import { pickSpot, placeRoamer } from "@/editor/tools/jrpgVolumeTools";
-import { BEODEUL_PLAIN_GRASS, paintBeodeulWildRoute } from "@/editor/tools/wildRouteBeodeul";
+import { BEODEUL_PLAIN_GRASS } from "@/editor/tools/wildRouteBeodeul";
+import { beodeulNatureTileset } from "@/editor/tools/beodeulForest";
+import { lootGrantCommands } from "@/editor/lootFeedback";
+import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { isPassable } from "@/project/collision";
+import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
-import { mulberry32 } from "@/util/rng";
 import { FS_PREFIX } from "../fallenStarStory";
-import { FS_FIRE_FLASK, FS_HI_POTION, FS_STAR_SCENT } from "./battleItems";
+import { FS_FIRE_FLASK, FS_HI_POTION, FS_SMOKE_PELLET, FS_STAR_SCENT, FS_TONIC, FS_WATER_FLASK } from "./battleItems";
+import { DEEP_KEEP, DEEP_SIZE, DEEP_SPEC, EDGE_SPEC, FOREST_SPECS, FS_FOREST_MAP_IDS, GLADE_SPEC, SHRINE_SPEC, STREAM_SPEC, THICKET_SPEC } from "./forestSpecs";
+import { paintWoodland, paintWoodlandOnto } from "./woodland";
 
-export const FS_FOREST_MAP_IDS = {
-  edge: "fs_forest_edge",
-  stream: "fs_forest_stream",
-  thicket: "fs_forest_thicket",
-  shrine: "fs_forest_shrine",
-  glade: "fs_forest_glade",
-} as const;
-
-/** 깊은 숲(원래 숲 맵)을 이 높이로 자른다 — 0~26줄(추락지·브람·표지석)만 남는다. */
-const DEEP_GROVE_HEIGHT = 27;
+export { FS_FOREST_MAP_IDS } from "./forestSpecs";
 
 type Cell = { x: number; y: number };
-type Rect = { x: number; y: number; w: number; h: number };
 type Dir = "up" | "down" | "left" | "right";
 type Encounter = { troopId: string; weight: number };
 
 export interface FallenForestHelpers {
-  /** chronoBell.ts 의 숲 바닥 덮개(고사리·히스 덩이) — 원래 숲과 같은 밀도로. */
+  /** chronoBell.ts 의 숲 바닥 덮개(고사리·히스 덩이). r2 숲은 woodland 가 길섶을 꾸미므로 쓰지 않는다(호출부 호환을 위해 남김). */
   readonly understory: (mapId: string) => void;
 }
 
@@ -98,73 +93,6 @@ function inward(map: GameMap, at: Cell): { cell: Cell; dir: Dir } {
   if (at.x === 0) return { cell: { x: 1, y: at.y }, dir: "right" };
   if (at.x === map.width - 1) return { cell: { x: at.x - 1, y: at.y }, dir: "left" };
   return { cell: { x: at.x, y: at.y + 1 }, dir: "down" };
-}
-
-/**
- * 숲 맵 한 장의 설계. 길은 두 칸 폭 꺾은선(점 = 길의 왼쪽 위 칸; 세로 토막은 x·x+1, 가로 토막은 y·y+1).
- * 수관 마스크는 4칸보다 좁은 숲 띠를 버린다(shapeBeodeulCanopyMask minExtent 4) — 길섶 1칸씩을 더해 나란한 길 사이·길과 맵 끝 사이는
- * 6칸 이상 띄운다. 모자라면 그 띠가 맨 풀밭으로 열려 벽이 사라진다. 아래 좌표는 모두 그 간격을 지킨다.
- */
-interface ForestSpec {
-  readonly id: string;
-  readonly name: string;
-  readonly width: number;
-  readonly height: number;
-  readonly seed: number;
-  readonly paths: readonly (readonly Cell[])[];
-  /** 가장자리 출구 칸(문이 설 칸 — 두 칸 폭 길의 왼쪽/위쪽 칸). */
-  readonly exits: readonly Cell[];
-  /** 나무를 심지 않는 풀밭(소품·사건 자리). */
-  readonly clearings?: readonly Rect[];
-  /** 물(버들항 강·운하 물) — 길보다 먼저 칠해 숲이 물가에서 멈춘다. */
-  readonly water?: readonly Rect[];
-  /** 길이 지나가도 모랫길을 칠하지 않는 칸(다리 밑 물). */
-  readonly bridges?: readonly Rect[];
-  readonly encounters: readonly Encounter[];
-}
-
-function carve(width: number, height: number, paths: ForestSpec["paths"]): Set<number> {
-  const out = new Set<number>();
-  for (const line of paths) for (let k = 0; k + 1 < line.length; k += 1) {
-    const a = line[k]!, b = line[k + 1]!;
-    if (a.x !== b.x && a.y !== b.y) throw new Error(`[fallen-forest] 길 토막은 곧아야 한다: (${a.x},${a.y})→(${b.x},${b.y})`);
-    for (let y = Math.min(a.y, b.y); y <= Math.max(a.y, b.y) + 1; y += 1) for (let x = Math.min(a.x, b.x); x <= Math.max(a.x, b.x) + 1; x += 1) {
-      if (x >= 0 && y >= 0 && x < width && y < height) out.add(y * width + x);
-    }
-  }
-  return out;
-}
-
-const inRects = (rects: readonly Rect[] | undefined, x: number, y: number): boolean =>
-  (rects ?? []).some((r) => x >= r.x && y >= r.y && x < r.x + r.w && y < r.y + r.h);
-
-function createForest(project: Project, spec: ForestSpec): GameMap {
-  tool(project, "create_map", { id: spec.id, name: spec.name, width: spec.width, height: spec.height, themeScene: "beodeul_field", seed: spec.seed });
-  {
-    // 구성기가 깐 기본 길을 걷어 낸다(author_wild_route replace 와 같은 초기화).
-    const map = project.maps[spec.id]!;
-    const size = map.width * map.height;
-    map.lowerTiles = Array.from({ length: size }, () => BEODEUL_PLAIN_GRASS);
-    map.upperTiles = Array.from({ length: size }, () => -1);
-    delete map.lowerTileStacks;
-    delete map.upperTileStacks;
-    if (map.lowerOverlayTiles) map.lowerOverlayTiles = Array.from({ length: size }, () => -1);
-    if (map.upperOverlayTiles) map.upperOverlayTiles = Array.from({ length: size }, () => -1);
-    if (map.shadowBits) map.shadowBits = Array.from({ length: size }, () => 0);
-    map.mapRole ??= "field";
-  }
-  for (const r of spec.water ?? []) tool(project, "fill_region", { mapId: spec.id, rect: r, material: "버들항 강·운하 물" });
-  const map = project.maps[spec.id]!;
-  const tileset = project.tilesets[map.tilesetId]!;
-  const road = new Set([...carve(map.width, map.height, spec.paths)].filter((i) => !inRects(spec.bridges, i % map.width, Math.floor(i / map.width))));
-  paintBeodeulWildRoute({
-    project, map, tileset, road, grass: new Set(), patches: [], exits: spec.exits,
-    clearings: [...(spec.clearings ?? []), ...(spec.bridges ?? [])], rng: mulberry32(spec.seed ^ 0x5eed17), forestType: "mixed",
-  });
-  const live = project.maps[spec.id]!;
-  live.encounterTable = spec.encounters.map((e) => ({ troopId: e.troopId, weight: e.weight }));
-  live.encounterRate = spec.encounters.length ? 1.0 : 0;
-  return live;
 }
 
 /** 소품 키트를 둘 수 있는 자리(전부 걸을 수 있고 길이 아니고 이벤트와 한 칸 넘게 떨어진)를 가까운 데부터 찾아 찍는다. */
@@ -296,76 +224,122 @@ function widenEdgeDoors(project: Project, mapIds: readonly string[]): void {
 export interface FallenForestResult {
   readonly mapIds: string[];
   readonly chests: Array<{ mapId: string; x: number; y: number; contents: Record<string, unknown> }>;
+  readonly hidden: Array<{ mapId: string; x: number; y: number; itemId: string }>;
+}
+
+/** 구역 트룹(#3335 FS_AREA_ENCOUNTERS 와 같은 id·무게) — 데이터베이스에 있는 것만. 하나도 없으면 옛 셋으로. */
+const AREA_TROOPS: Record<string, ReadonlyArray<readonly [string, number]>> = {
+  fs_forest_edge: [["troop_fs_wolves", 3], ["troop_fs_edge_boar", 2], ["troop_fs_edge_hornets", 2]],
+  fs_forest_stream: [["troop_fs_stream_crabs", 3], ["troop_fs_stream_eels", 2], ["troop_fs_wolves", 1]],
+  fs_forest_thicket: [["troop_fs_spiders", 3], ["troop_fs_thicket_moths", 2], ["troop_fs_thicket_flytrap", 2]],
+  fs_forest_glade: [["troop_fs_glade_poachers", 3], ["troop_fs_edge_hornets", 1], ["troop_fs_edge_boar", 1]],
+  fs_forest: [["troop_fs_wisps", 3], ["troop_fs_deep_ghosts", 2], ["troop_fs_spiders", 1]],
+};
+
+function areaEncounters(project: Project, mapId: string, fallback: readonly Encounter[]): Encounter[] {
+  const have = new Set(project.database.troops.map((t) => t.id));
+  const rows = (AREA_TROOPS[mapId] ?? []).filter(([id]) => have.has(id)).map(([troopId, weight]) => ({ troopId, weight }));
+  // 구역 트룹이 하나뿐이면(아직 #3335 전) 옛 표를 그대로 쓴다 — 늑대 한 종만 남으면 숲이 단조롭다.
+  return rows.length >= 2 ? rows : fallback.filter((e) => have.has(e.troopId));
+}
+
+/** 나무 사이 틈의 숨은 물건 — 투명 조사 이벤트(한 번), 곁 칸에 버섯 덤불 한 포기(눈치챌 만한 작은 표시). */
+function hiddenItem(project: Project, mapId: string, at: Cell, key: string, itemId: string, gold: number): void {
+  const map = project.maps[mapId]!;
+  const id = `ev_${FS_PREFIX}_forest_${key}`;
+  const item = project.database.items.find((i) => i.id === itemId);
+  const name = item?.name?.trim() || itemId;
+  map.events = map.events.filter((e) => e.id !== id);
+  map.events.push({
+    id, name: "나무 사이 틈", x: at.x, y: at.y, trigger: { kind: "action" }, commands: [],
+    pages: [
+      { id: `${id}_p0`, name: "숨은 물건", conditions: [{ kind: "selfSwitch", key: "A", value: false }], graphic: { transparent: true }, trigger: { kind: "action" },
+        priority: "below", overlapForbidden: false, movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [
+          { kind: "text", body: "나무뿌리 사이에 무언가 끼어 있다." } as Command,
+          ...lootGrantCommands({ itemId, gold }),
+          { kind: "text", body: `${name}${/[가-힣]$/.test(name) && ((name.charCodeAt(name.length - 1) - 0xac00) % 28) ? "을" : "를"} 주웠다. 금화 ${gold}닢도 함께.` } as Command,
+          { kind: "setSelfSwitch", key: "A", value: true } as Command,
+        ] },
+      { id: `${id}_p1`, name: "빈 틈", conditions: [{ kind: "selfSwitch", key: "A", value: true }], graphic: { transparent: true }, trigger: { kind: "action" },
+        priority: "below", overlapForbidden: false, movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [] },
+    ] as unknown as EventPage[],
+  } as unknown as GameEvent);
+  // 작은 표시 — 주머니 옆 칸(오른쪽·아래)에 버섯 한 포기.
+  const hint = (project.tilesets[map.tilesetId]?.structureKits ?? []).find((k) => k.id === "bd-pick-deep-forest-path-toadstools-b");
+  const t = hint?.rows[0]?.upperTiles?.[0] ?? -1;
+  if (t >= 0) for (const [dx, dy] of [[1, 0], [0, 1], [1, 1]] as const) {
+    const x = at.x + dx, y = at.y + dy, c = y * map.width + x;
+    if (x < map.width && y < map.height && isPassable(project, map, x, y) && layerTileAt(map, 3, c) < 0) { setLayerTileAt(map, 3, c, t); break; }
+  }
+}
+
+/** 깊은 숲의 옛 수관 오토타일(beodeul_nature 수관·그늘) 칸 번호 — 이 칩셋에 이식된 칸. */
+function natureCanopyTiles(project: Project, map: GameMap): { canopy: Set<number>; shade: Set<number> } {
+  const tileset = project.tilesets[map.tilesetId]!;
+  const natureChip = beodeulNatureTileset(project).image.id;
+  const canopySrc = new Set(Object.values(BEODEUL_NATURE.forestCanopy).flat(2));
+  const shadeSrc = new Set(Object.values(BEODEUL_NATURE.forestShade).flat());
+  const canopy = new Set<number>(), shade = new Set<number>();
+  for (const g of tileset.tileGrafts ?? []) {
+    if (g.sourceChipset !== natureChip) continue;
+    if (canopySrc.has(g.sourceTile)) canopy.add(g.targetTile);
+    else if (shadeSrc.has(g.sourceTile)) shade.add(g.targetTile);
+  }
+  return { canopy, shade };
+}
+
+/** 깊은 숲 다시 칠하기 — 추락지 사각형은 바닥·장식을 두고 수관만 걷는다(그 자리는 composer 숲으로 다시 선다). 그 밖은 풀밭에서 새로. */
+function regrowDeepGrove(project: Project, mapId: string): ReturnType<typeof paintWoodlandOnto> {
+  const map = project.maps[mapId]!;
+  const W = map.width, H = map.height;
+  const keep = (x: number, y: number) => x >= DEEP_KEEP.x && y >= DEEP_KEEP.y && x < DEEP_KEEP.x + DEEP_KEEP.w && y < DEEP_KEEP.y + DEEP_KEEP.h;
+  const { canopy, shade } = natureCanopyTiles(project, map);
+  const keepForest = new Set<number>();
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+    const c = y * W + x;
+    if (keep(x, y)) {
+      for (const L of [2, 3, 4] as const) {
+        const t = layerTileAt(map, L, c);
+        if (canopy.has(t)) { keepForest.add(c); setLayerTileAt(map, L, c, -1); } else if (shade.has(t)) setLayerTileAt(map, L, c, -1);
+      }
+      continue;
+    }
+    map.lowerTiles[c] = BEODEUL_PLAIN_GRASS;
+    for (const L of [2, 3, 4] as const) setLayerTileAt(map, L, c, -1);
+    if (map.lowerTileStacks) delete map.lowerTileStacks[c];
+    if (map.upperTileStacks) delete map.upperTileStacks[c];
+    if (map.shadowBits) map.shadowBits[c] = 0;
+  }
+  return paintWoodlandOnto(project, map, DEEP_SPEC(mapId, map.name), (x, y) => !keep(x, y), keepForest);
 }
 
 export function buildFallenForestMaps(project: Project, ids: { hub: string; forest: string }, troops: readonly string[], helpers: FallenForestHelpers): FallenForestResult {
+  void helpers;
   const deep0 = project.maps[ids.forest];
   if (!deep0) throw new Error("[fallen-forest] 깊은 숲 맵이 없다");
   const [wolves, spiders, wisps] = [troops[0] ?? "troop_fs_wolves", troops[1] ?? "troop_fs_spiders", troops[2] ?? "troop_fs_wisps"];
   const enc = (w: number, s: number, p: number): Encounter[] => [{ troopId: wolves, weight: w }, { troopId: spiders, weight: s }, { troopId: wisps, weight: p }].filter((e) => e.weight > 0);
   const M = FS_FOREST_MAP_IDS;
   const chests: FallenForestResult["chests"] = [];
+  const hidden: FallenForestResult["hidden"] = [];
   const chest = (mapId: string, at: Cell, contents: Record<string, unknown>, name: string): void => {
     tool(project, "place_chest", { mapId, x: at.x, y: at.y, contents, name, id: `ev_${mapId}_chest` });
     const ev = project.maps[mapId]!.events.find((e) => e.id === `ev_${mapId}_chest`);
     chests.push({ mapId, x: ev?.x ?? at.x, y: ev?.y ?? at.y, contents });
   };
 
-  // 깊은 숲 — 왕도로 가던 문은 ① 어귀로 옮기고, 자를 줄 아래의 이벤트(남쪽 굽은 길의 짐승)는 뺀다.
+  // 깊은 숲 — 왕도로 가던 문은 ① 어귀로 옮기고, 자를 줄 아래 이벤트·떠도는 짐승은 뺀다(짐승은 아래에서 구역 트룹으로 다시 둔다).
   const hubDoor = deep0.events.find((e) => transfersIn(e).some((t) => t.mapId === ids.hub));
   if (!hubDoor) throw new Error("[fallen-forest] 숲 → 왕도 문이 없다");
-  deep0.events = deep0.events.filter((e) => e !== hubDoor && e.y < DEEP_GROVE_HEIGHT);
+  deep0.events = deep0.events.filter((e) => e !== hubDoor && e.y < DEEP_SIZE.height - 2 && !/_foe\d+$/.test(e.id));
   const mood = { lighting: deep0.defaultLighting, atmosphere: deep0.atmosphereEffects, bgm: deep0.bgm, battleBackground: deep0.battleBackground };
 
-  // ① 숲 어귀 30×26 — 남쪽 성문 길에서 올라와 갈림목: 동쪽은 옛 수로, 북쪽은 가시덤불 샛길.
-  const edge: ForestSpec = {
-    id: M.edge, name: "속삭이는 숲 · 어귀", width: 30, height: 26, seed: 41,
-    paths: [[{ x: 14, y: 25 }, { x: 14, y: 16 }, { x: 29, y: 16 }], [{ x: 14, y: 16 }, { x: 14, y: 8 }, { x: 8, y: 8 }, { x: 8, y: 0 }]],
-    exits: [{ x: 14, y: 25 }, { x: 29, y: 16 }, { x: 8, y: 0 }],
-    encounters: enc(3, 1, 1),
-  };
-  // ② 옛 수로 36×27 — 별지기가 숲에 끌어 온 돌 둑 물길을 돌다리로 건넌다. 북쪽은 사당 터, 남동 곁길은 사냥꾼 쉼터.
-  const stream: ForestSpec = {
-    id: M.stream, name: "속삭이는 숲 · 옛 수로", width: 36, height: 27, seed: 91,
-    paths: [[{ x: 0, y: 11 }, { x: 26, y: 11 }, { x: 26, y: 0 }], [{ x: 20, y: 11 }, { x: 20, y: 19 }, { x: 35, y: 19 }]],
-    exits: [{ x: 0, y: 11 }, { x: 26, y: 0 }, { x: 35, y: 19 }],
-    water: [{ x: 10, y: 0, w: 5, h: 27 }],
-    bridges: [{ x: 10, y: 11, w: 5, h: 2 }],
-    clearings: [{ x: 5, y: 7, w: 4, h: 3 }],
-    encounters: enc(2, 2, 1),
-  };
-  // ③ 가시덤불 샛길 40×32 — 굽이진 덤불 길. 둘째 굽이에서 갈린다: 북쪽은 사당 터로 빠지고, 서쪽은 막다른 곁길 끝 상자.
-  const thicket: ForestSpec = {
-    id: M.thicket, name: "속삭이는 숲 · 가시덤불 샛길", width: 40, height: 32, seed: 53,
-    paths: [[{ x: 12, y: 31 }, { x: 12, y: 24 }, { x: 30, y: 24 }, { x: 30, y: 15 }, { x: 6, y: 15 }, { x: 6, y: 8 }], [{ x: 18, y: 15 }, { x: 18, y: 6 }, { x: 39, y: 6 }]],
-    exits: [{ x: 12, y: 31 }, { x: 39, y: 6 }],
-    encounters: enc(1, 3, 2),
-  };
-  // ④ 별지기 사당 터 34×28 — 세 길이 만나는 숲속 공터. 무너진 성문·사당·부러진 기둥. 짐승이 들지 않는다.
-  const shrine: ForestSpec = {
-    id: M.shrine, name: "속삭이는 숲 · 별지기 사당 터", width: 34, height: 28, seed: 67,
-    paths: [[{ x: 20, y: 27 }, { x: 20, y: 13 }], [{ x: 0, y: 13 }, { x: 20, y: 13 }], [{ x: 14, y: 13 }, { x: 14, y: 0 }]],
-    exits: [{ x: 20, y: 27 }, { x: 0, y: 13 }, { x: 14, y: 0 }],
-    clearings: [{ x: 8, y: 6, w: 18, h: 14 }],
-    encounters: [],
-  };
-  // ⑥ 사냥꾼 쉼터 30×20 — 옛 수로에서 갈라진 막다른 곁길 끝, 모닥불 자리와 상자.
-  const glade: ForestSpec = {
-    id: M.glade, name: "속삭이는 숲 · 사냥꾼 쉼터", width: 30, height: 20, seed: 79,
-    paths: [[{ x: 0, y: 9 }, { x: 21, y: 9 }]],
-    exits: [{ x: 0, y: 9 }],
-    clearings: [{ x: 17, y: 4, w: 9, h: 11 }],
-    encounters: enc(2, 0, 2),
-  };
-  for (const spec of [edge, stream, thicket, shrine, glade]) createForest(project, spec);
-  // 옛 수로 돌다리 — 마을 강 다리와 같은 산길 개울 돌다리(5×4: 난간·바닥 두 줄·아래 난간), 바닥 두 줄이 길 두 줄에 얹힌다.
-  // 바닥 덮개를 먼저 깐다 — 다리를 먼저 얹으면 걸을 수 있는 다리 바닥에 고사리 덩이가 앉았다. 다리는 잇기 전에 있어야 한다(물 건너 출구가 닿는다).
-  helpers.understory(M.stream);
-  tool(project, "stamp_object", { objectId: "kit:beodeul_city/bd-pick-mountain-pass-stone-bridge", mapId: M.stream, x: 10, y: 10 });
+  for (const spec of FOREST_SPECS) paintWoodland(project, spec);
 
   // ── 잇기 ───────────────────────────────────────────────────────────────
-  // 왕도 동문 → 어귀 남쪽. 숲에 있던 왕도행 문(도착 칸·방향 그대로)을 어귀 남쪽 출구로 옮긴다.
-  const edgeSouth = edge.exits[0]!;
+  // 왕도 성문 → 어귀 남쪽. 숲에 있던 왕도행 문(도착 칸·방향 그대로)을 어귀 남쪽 출구로 옮긴다.
+  const edgeSouth = EDGE_SPEC.exits[0]!;
   {
     const map = project.maps[M.edge]!;
     hubDoor.x = edgeSouth.x; hubDoor.y = edgeSouth.y;
@@ -374,59 +348,58 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
     const land = inward(map, edgeSouth);
     for (const event of project.maps[ids.hub]!.events) for (const t of transfersIn(event)) if (t.mapId === ids.forest) { t.mapId = M.edge; t.x = land.cell.x; t.y = land.cell.y; t.direction = land.dir; }
   }
-  // 왕도가 더는 숲 남쪽 끝(15,38)을 가리키지 않으니 이제 자른다.
-  tool(project, "resize_map", { mapId: ids.forest, width: deep0.width, height: DEEP_GROVE_HEIGHT });
+  // 왕도가 더는 숲 남쪽 끝을 가리키지 않으니 깊은 숲을 30×36 으로 맞추고 추락지 밖을 다시 칠한다.
+  tool(project, "resize_map", { mapId: ids.forest, width: DEEP_SIZE.width, height: DEEP_SIZE.height });
   project.maps[ids.forest]!.name = "속삭이는 숲 · 깊은 곳";
-  const deep = project.maps[ids.forest]!;
-  const deepSouth = [...trailOf(project, deep)].filter((i) => Math.floor(i / deep.width) === deep.height - 1).map((i) => i % deep.width).sort((a, b) => a - b)[0];
-  if (deepSouth === undefined) throw new Error("[fallen-forest] 깊은 숲 남쪽 끝에 길이 없다");
+  const deepPaint = regrowDeepGrove(project, ids.forest);
+  const deepSouth = DEEP_SPEC(ids.forest, "").exits[0]!;
 
-  link(project, { mapId: M.edge, ...edge.exits[1]! }, { mapId: M.stream, ...stream.exits[0]! });
-  link(project, { mapId: M.edge, ...edge.exits[2]! }, { mapId: M.thicket, ...thicket.exits[0]! });
-  link(project, { mapId: M.stream, ...stream.exits[1]! }, { mapId: M.shrine, ...shrine.exits[0]! });
-  link(project, { mapId: M.thicket, ...thicket.exits[1]! }, { mapId: M.shrine, ...shrine.exits[1]! });
-  link(project, { mapId: M.stream, ...stream.exits[2]! }, { mapId: M.glade, ...glade.exits[0]! });
-  link(project, { mapId: M.shrine, ...shrine.exits[2]! }, { mapId: ids.forest, x: deepSouth, y: DEEP_GROVE_HEIGHT - 1 });
+  link(project, { mapId: M.edge, ...EDGE_SPEC.exits[1]! }, { mapId: M.thicket, ...THICKET_SPEC.exits[0]! });
+  link(project, { mapId: M.edge, ...EDGE_SPEC.exits[2]! }, { mapId: M.stream, ...STREAM_SPEC.exits[0]! });
+  link(project, { mapId: M.thicket, ...THICKET_SPEC.exits[1]! }, { mapId: M.shrine, ...SHRINE_SPEC.exits[0]! });
+  link(project, { mapId: M.stream, ...STREAM_SPEC.exits[1]! }, { mapId: M.shrine, ...SHRINE_SPEC.exits[1]! });
+  link(project, { mapId: M.stream, ...STREAM_SPEC.exits[2]! }, { mapId: M.glade, ...GLADE_SPEC.exits[0]! });
+  link(project, { mapId: M.shrine, ...SHRINE_SPEC.exits[2]! }, { mapId: ids.forest, ...deepSouth });
 
   // ── 맵마다 표지·보상 ─────────────────────────────────────────────────────────
-  // ① 어귀: 길 양옆 봉화 둘·길가 십자(예전 숲 입구 장식), 갈림목 이정표.
+  // ① 어귀: 성문 길 들머리 봉화 둘·길가 십자, 갈림목 이정표, 북쪽 숲덩이 틈의 숨은 물건.
   {
     const id = M.edge, guard = pathGuard(project, project.maps[id]!);
-    placeKit(project, id, "bd-pick-mountain-pass-brazier", { x: 13, y: 22 }, new Set(), 0);
-    placeKit(project, id, "bd-pick-mountain-pass-brazier", { x: 16, y: 22 }, new Set(), 0);
-    placeKit(project, id, "bd-pick-mountain-pass-wayside-cross", { x: 13, y: 18 }, new Set(), 1);
-    const post = placeKit(project, id, "bd-pick-mountain-pass-trail-post", { x: 16, y: 18 }, new Set(), 1);
+    placeKit(project, id, "bd-pick-mountain-pass-brazier", { x: 12, y: 35 }, guard, 2);
+    placeKit(project, id, "bd-pick-mountain-pass-brazier", { x: 19, y: 35 }, guard, 2);
+    placeKit(project, id, "bd-pick-mountain-pass-wayside-cross", { x: 18, y: 30 }, guard, 2);
+    const post = placeKit(project, id, "bd-pick-mountain-pass-trail-post", { x: 19, y: 21 }, guard, 2);
     if (post) readable(project.maps[id]!, "signpost", "이정표", { x: post.x, y: post.y + 1 }, [
-      narrate("(이정표) 북 — 가시덤불 샛길. 짐승 잦음.\n동 — 옛 수로 돌다리."),
-      narrate("(이정표) 두 길은 별지기 사당 터에서 다시 만난다.\n떨어진 별은 그 너머 깊은 숲. — 숲지기 브람"),
+      narrate("(이정표) 북서 — 가시덤불 샛길. 짐승 잦음.\n북동 — 옛 수로 돌다리."),
+      narrate("(이정표) 두 길은 북쪽 별지기 사당 터에서 다시 만난다.\n떨어진 별은 그 너머 깊은 숲. — 숲지기 브람"),
     ]);
-    void guard;
   }
-  // ② 옛 수로: 다리 서쪽 공터의 이끼 낀 비석.
+  // ② 옛 수로: 다리 서쪽 빈터의 이끼 낀 비석.
   {
-    const id = M.stream;
-    const stone = placeKit(project, id, "bd-pick-deep-forest-path-cairn", { x: 6, y: 7 }, new Set(), 1);
+    const id = M.stream, guard = pathGuard(project, project.maps[id]!);
+    const stone = placeKit(project, id, "bd-pick-deep-forest-path-cairn", { x: 13, y: 11 }, guard, 2);
     if (stone) readable(project.maps[id]!, "canal_stone", "이끼 낀 비석", { x: stone.x, y: stone.y + 1 }, [
       narrate("(비석) 별지기의 물길.\n별을 비추려고 숲 한가운데까지 물을 끌었다."),
       say("엘레나", "천문대 사람들이 이런 걸 만들었다고?\n선생님은 한 번도 말씀 안 하셨는데."),
     ]);
-    placeKit(project, id, "bd-pick-deep-forest-path-log-fallen", { x: 7, y: 8 }, new Set(), 1);
+    placeKit(project, id, "bd-pick-deep-forest-path-log-fallen", { x: 15, y: 13 }, guard, 2);
   }
-  // ③ 가시덤불 샛길: 막다른 곁길 끝 상자(불꽃 병 — 거미줄에 잘 든다).
-  chest(M.thicket, { x: 6, y: 7 }, { itemId: FS_FIRE_FLASK, gold: 60 }, "덤불 속 상자");
-  // ④ 사당 터: 무너진 성문·사당·부러진 기둥, 사당 앞 상자. 짐승이 들지 않는 쉼터(조우 없음).
+  // ③ 가시덤불 샛길: 서쪽 곁길 끝 작은 빈터의 상자(불꽃 병 — 거미줄에 잘 든다).
+  chest(M.thicket, { x: 4, y: 11 }, { itemId: FS_FIRE_FLASK, gold: 60 }, "덤불 속 상자");
+  // ④ 사당 터: 무너진 성문·별 무늬 바닥·사당·부러진 기둥, 사당 앞 상자, 회복 세이브. 짐승이 들지 않는 쉼터(조우 없음).
   {
     const id = M.shrine, guard = pathGuard(project, project.maps[id]!);
-    const gate = placeKit(project, id, "bd-pick-deep-forest-path-ruin-gate", { x: 9, y: 7 }, guard, 2);
-    // 별지기의 별 무늬 바닥 — 공터 북동, 사당 앞마당.
-    placeKit(project, id, "bd-pick-temple-ruins-mosaic-medallion-5x5", { x: 17, y: 7 }, guard, 1);
-    const shrineAt = placeKit(project, id, "bd-pick-mountain-pass-shrine", { x: 23, y: 7 }, guard, 2);
-    placeKit(project, id, "bd-pick-temple-ruins-column-temple-broken", { x: 10, y: 17 }, guard, 2);
-    placeKit(project, id, "bd-pick-temple-ruins-fallen-column-temple", { x: 16, y: 17 }, guard, 2);
-    placeKit(project, id, "bd-pick-temple-ruins-rubble-temple", { x: 24, y: 17 }, guard, 2);
-    placeKit(project, id, "bd-pick-temple-ruins-column-temple-broken", { x: 24, y: 12 }, guard, 2);
-    placeKit(project, id, "bd-pick-temple-ruins-rubble-temple", { x: 17, y: 9 }, guard, 2);
-    const lights: Array<Record<string, unknown>> = [];
+    const mosaic = placeKit(project, id, "bd-pick-temple-ruins-mosaic-medallion-5x5", { x: 13, y: 9 }, guard, 2);
+    // 무너진 성문(4×4) — 빈터 가장자리 몇 곳 중 들어가는 자리. 별 무늬 바닥(걸을 수 있는 칸이라 막힘 판정에 안 걸린다)과 그 둘레 한 칸은 비킨다.
+    const keepOff = new Set(guard);
+    if (mosaic) for (let dy = -1; dy <= 5; dy += 1) for (let dx = -1; dx <= 5; dx += 1) keepOff.add((mosaic.y + dy) * project.maps[id]!.width + mosaic.x + dx);
+    const gate = [{ x: 25, y: 17 }, { x: 9, y: 16 }, { x: 26, y: 5 }, { x: 12, y: 4 }].reduce<Cell | undefined>((got, at) => got ?? placeKit(project, id, "bd-pick-deep-forest-path-ruin-gate", at, keepOff, 3), undefined);
+    const shrineAt = placeKit(project, id, "bd-pick-mountain-pass-shrine", { x: 25, y: 9 }, keepOff, 3);
+    placeKit(project, id, "bd-pick-temple-ruins-column-temple-broken", { x: 13, y: 17 }, keepOff, 2);
+    placeKit(project, id, "bd-pick-temple-ruins-fallen-column-temple", { x: 15, y: 19 }, keepOff, 2);
+    placeKit(project, id, "bd-pick-temple-ruins-rubble-temple", { x: 27, y: 13 }, keepOff, 2);
+    placeKit(project, id, "bd-pick-temple-ruins-column-temple-broken", { x: 22, y: 9 }, keepOff, 2);
+    const lights: Array<Record<string, unknown>> = [{ id: `light_${id}_gap`, at: { x: 20, y: 13 }, radius: 6, intensity: 0.45, color: "#fff1c4", flicker: false }];
     if (shrineAt) {
       readable(project.maps[id]!, "shrine", "별지기 사당", { x: shrineAt.x, y: shrineAt.y + 2 }, [
         narrate("(사당) 이끼 낀 돌 사당. 지붕 밑에 별 무늬가 새겨져 있다."),
@@ -437,31 +410,70 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
       lights.push({ id: `light_${id}_shrine`, at: { x: shrineAt.x, y: shrineAt.y + 1 }, radius: 3, intensity: 0.8, color: "#a0c8ff", flicker: true });
     }
     if (gate) lights.push({ id: `light_${id}_gate`, at: { x: gate.x + 1, y: gate.y + 2 }, radius: 2, intensity: 0.5, color: "#c8dcff", flicker: false });
+    // 쉼터 — 사당 곁 맑은 샘(세이브 포인트, 체력·마력 회복). 길이 아니고 장식과 겹치지 않는 공터 칸.
+    const map = project.maps[id]!;
+    const restAt = [{ x: 17, y: 12 }, { x: 22, y: 12 }, { x: 16, y: 15 }, { x: 24, y: 14 }, { x: 18, y: 17 }]
+      .find((c) => isPassable(project, map, c.x, c.y) && !guard.has(c.y * map.width + c.x) && !map.events.some((e) => Math.abs(e.x - c.x) + Math.abs(e.y - c.y) <= 1)) ?? { x: 17, y: 12 };
+    tool(project, "place_savepoint", { mapId: id, x: restAt.x, y: restAt.y, heal: true, name: "별지기 쉼터", id: `ev_${id}_rest` });
+    lights.push({ id: `light_${id}_rest`, at: restAt, radius: 2, intensity: 0.6, color: "#bfe8ff", flicker: true });
     setMood(project, id, mood, lights);
   }
   // ⑥ 사냥꾼 쉼터: 모닥불·사냥 표지 기둥, 막다른 끝 상자와 브람의 쪽지.
   {
-    const id = M.glade;
-    chest(id, { x: 23, y: 8 }, { itemId: FS_HI_POTION, gold: 120 }, "사냥꾼의 상자");
-    placeKit(project, id, "bd-pick-deep-forest-path-campfire", { x: 20, y: 12 }, new Set(), 1);
-    const post = placeKit(project, id, "bd-pick-deep-forest-path-hunter-post", { x: 24, y: 6 }, new Set(), 1);
-    placeKit(project, id, "bd-pick-deep-forest-path-log-fallen", { x: 18, y: 6 }, new Set(), 1);
+    const id = M.glade, guard = pathGuard(project, project.maps[id]!);
+    chest(id, { x: 26, y: 11 }, { itemId: FS_HI_POTION, gold: 120 }, "사냥꾼의 상자");
+    placeKit(project, id, "bd-pick-deep-forest-path-campfire", { x: 21, y: 15 }, guard, 2);
+    const post = placeKit(project, id, "bd-pick-deep-forest-path-hunter-post", { x: 24, y: 9 }, guard, 2);
+    placeKit(project, id, "bd-pick-deep-forest-path-log-fallen", { x: 19, y: 10 }, guard, 2);
+    placeKit(project, id, "bd-pick-deep-forest-path-hide-rack", { x: 18, y: 15 }, guard, 2);
     if (post) readable(project.maps[id]!, "hunter_note", "사냥꾼의 쪽지", { x: post.x, y: post.y + 1 }, [
       narrate("(쪽지) 별 떨어진 밤부터 늑대가 북쪽으로 몰린다.\n당분간 쉼터는 비워 둔다. 필요한 건 가져가라. — 브람"),
     ]);
   }
+  // ⑤ 깊은 숲: 브람 곁 모닥불, 두 번째 별 표지석(돌무덤), 숨은 물건.
+  {
+    const id = ids.forest;
+    const map = project.maps[id]!;
+    const bram = map.events.find((e) => e.id === `ev_${FS_PREFIX}_bram`);
+    if (bram) placeKit(project, id, "bd-pick-deep-forest-path-campfire", { x: bram.x - 2, y: bram.y + 1 }, pathGuard(project, map), 2);
+    const marker = project.maps[id]!.events.find((e) => e.id === `ev_${FS_PREFIX}_lore_l7_marker`);
+    if (marker) try { tool(project, "stamp_object", { objectId: "kit:beodeul_city/bd-pick-deep-forest-path-cairn", mapId: id, x: marker.x, y: marker.y - 1 }); } catch { /* 자리 없음 — 표지석은 조사로만 */ }
+  }
+  // 나무 사이 틈의 숨은 물건 — 세 맵에 하나씩(어귀·옛 수로·깊은 숲).
+  const pocketsOf = (spec: { nooks?: readonly { to: Cell }[] }): Cell[] => (spec.nooks ?? []).map((n) => n.to);
+  const stash = (mapId: string, at: Cell | undefined, key: string, itemId: string, gold: number): void => {
+    if (!at) return;
+    hiddenItem(project, mapId, at, key, itemId, gold);
+    hidden.push({ mapId, x: at.x, y: at.y, itemId });
+  };
+  stash(M.edge, pocketsOf(EDGE_SPEC)[0], "edge_hidden", FS_TONIC, 30);
+  stash(M.stream, pocketsOf(STREAM_SPEC)[0], "stream_hidden", FS_WATER_FLASK, 40);
+  stash(ids.forest, deepPaint.pockets[0], "deep_hidden", FS_SMOKE_PELLET, 50);
 
-  // 분위기·떠도는 짐승(부딪히면 전투) — 원래 숲과 같은 조우율 1.0, 짐승은 맵마다 하나~둘.
+  // 분위기·조우·떠도는 짐승(부딪히면 전투) — 조우율 1.0, 짐승은 그 구역 트룹. 사당 터는 조우 없음.
   for (const id of [M.edge, M.stream, M.thicket, M.glade]) setMood(project, id, mood);
+  const tables: Record<string, Encounter[]> = {
+    [M.edge]: areaEncounters(project, M.edge, enc(3, 1, 1)),
+    [M.stream]: areaEncounters(project, M.stream, enc(2, 2, 1)),
+    [M.thicket]: areaEncounters(project, M.thicket, enc(1, 3, 2)),
+    [M.glade]: areaEncounters(project, M.glade, enc(2, 0, 2)),
+    [ids.forest]: areaEncounters(project, ids.forest, enc(1, 1, 3)),
+  };
+  for (const [mapId, rows] of Object.entries(tables)) {
+    const map = project.maps[mapId]!;
+    map.encounterTable = rows.map((e) => ({ troopId: e.troopId, weight: e.weight }));
+    map.encounterRate = rows.length ? 1.0 : 0;
+  }
+  project.maps[M.shrine]!.encounterTable = [];
+  project.maps[M.shrine]!.encounterRate = 0;
   const entryOf = (mapId: string, at: Cell): Cell => inward(project.maps[mapId]!, at).cell;
-  roamers(project, M.edge, entryOf(M.edge, edgeSouth), [wolves], [0.6]);
-  roamers(project, M.stream, entryOf(M.stream, stream.exits[0]!), [spiders, wolves], [0.45, 0.8]);
-  roamers(project, M.thicket, entryOf(M.thicket, thicket.exits[0]!), [spiders, wisps], [0.35, 0.7]);
-  roamers(project, M.glade, entryOf(M.glade, glade.exits[0]!), [wisps], [0.5]);
+  const foes = (mapId: string): string[] => [...tables[mapId]!].sort((a, b) => b.weight - a.weight).map((e) => e.troopId);
+  roamers(project, M.edge, entryOf(M.edge, edgeSouth), foes(M.edge), [0.45, 0.8]);
+  roamers(project, M.stream, entryOf(M.stream, STREAM_SPEC.exits[0]!), foes(M.stream), [0.35, 0.7]);
+  roamers(project, M.thicket, entryOf(M.thicket, THICKET_SPEC.exits[0]!), foes(M.thicket), [0.35, 0.75]);
+  roamers(project, M.glade, entryOf(M.glade, GLADE_SPEC.exits[0]!), foes(M.glade), [0.45, 0.8]);
+  roamers(project, ids.forest, entryOf(ids.forest, deepSouth), foes(ids.forest), [0.4]);
 
-  // 바닥 덮개 — 원래 숲과 같은 고사리·히스 덩이.
-  // 사당 터 공터는 덮지 않는다 — 공터에 덤불 덩이가 줄지어 앉아 밭처럼 읽혔다(유적·모자이크만 둔다).
-  for (const id of [M.edge, M.thicket, M.glade]) helpers.understory(id);
   widenEdgeDoors(project, [M.edge, M.stream, M.thicket, M.shrine, M.glade, ids.forest]);
 
   // 맵 나무 — 숲 맵들을 어귀 아래에 묶는다.
@@ -471,11 +483,11 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
     tree.children.push({
       mapId: M.edge,
       children: [
-        { mapId: M.stream, children: [{ mapId: M.glade, children: [] }] },
         { mapId: M.thicket, children: [] },
+        { mapId: M.stream, children: [{ mapId: M.glade, children: [] }] },
         { mapId: M.shrine, children: [{ mapId: ids.forest, children: [] }] },
       ],
     });
   }
-  return { mapIds: [M.edge, M.stream, M.thicket, M.shrine, M.glade, ids.forest], chests };
+  return { mapIds: [M.edge, M.stream, M.thicket, M.shrine, M.glade, ids.forest], chests, hidden };
 }

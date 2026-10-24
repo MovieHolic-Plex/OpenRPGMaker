@@ -70,7 +70,7 @@ export default {
       { kind: "teleport", mapId: "fs_forest", x: 15, y: 9 }, { kind: "face", dir: "up" }, { kind: "hold", dir: null, ms: 2200 },
     ], shot: true },
     { id: "back-to-town", note: "숲 어귀 → 성문 앞 도착(성문을 등지고)", ops: [
-      { kind: "teleport", mapId: "fs_forest_edge", x: 14, y: 24 }, { kind: "hold", dir: null, ms: 500 },
+      { kind: "teleport", mapId: "fs_forest_edge", x: 15, y: 38 }, { kind: "hold", dir: null, ms: 500 },
       { kind: "hold", dir: "down", ms: 700 }, { kind: "hold", dir: null, ms: 1500 },
     ], shot: true },
   ],
