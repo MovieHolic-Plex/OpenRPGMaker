@@ -13,6 +13,7 @@ import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { battleLookFields } from "@/editor/panels/databaseBattleLook";
 import { battleStudioHeading } from "@/editor/panels/databaseBattleStudio";
 import { field, selectField, toggleSwitch } from "@/editor/panels/databaseControls";
+import { BATTLE_COMBO_CUT_INS, BATTLE_COMBO_CUT_IN_LABELS, BATTLE_COMBO_FXS, BATTLE_COMBO_FX_LABELS, BATTLE_ENEMY_LUNGES, BATTLE_ENEMY_LUNGE_LABELS, BATTLE_SKILL_HINTS, BATTLE_SKILL_HINT_LABELS, normalizeBattleStaging, resolveBattleStaging, type BattleComboCutIn, type BattleComboFx, type BattleEnemyLunge, type BattleSkillHint, type BattleStagingSettings } from "@/project/battleStaging";
 import { BATTLE_FANFARE_STYLES, BATTLE_FANFARE_STYLE_LABELS, isBattleFanfareStyle, normalizeBattleFanfare, resolveBattleFanfare, type BattleFanfareSettings } from "@/project/battleFanfare";
 import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import { BATTLE_HIT_FEEL_DESCRIPTIONS, BATTLE_HIT_FEEL_IDS, BATTLE_HIT_FEEL_LABELS, DEFAULT_BATTLE_HIT_FEEL, resolveBattleHitFeel } from "@/project/battleHitFeel";
@@ -116,6 +117,30 @@ function fanfareCard(project: Project, rerender: () => void): HTMLElement {
   });
 }
 
+/** 전투 연출(system.battleStaging) — 적 달려들기 속도·연계기 컷인·연계기 화려함·기술 한 줄 도움말. */
+function stagingCard(project: Project, rerender: () => void): HTMLElement {
+  const current = resolveBattleStaging(project.system.battleStaging);
+  const save = (patch: Partial<BattleStagingSettings>): void => {
+    updateSystem((draft) => {
+      const next = normalizeBattleStaging({ ...resolveBattleStaging(draft.system.battleStaging), ...patch });
+      if (next) draft.system.battleStaging = next;
+      else delete draft.system.battleStaging;
+    });
+    rerender();
+  };
+  return sectionCard({
+    title: "전투 연출",
+    hint: "적 달려들기 · 연계기 · 기술 도움말",
+    testid: "db-battle-staging-card",
+    children: [
+      selectField("적이 달려드는 속도", "db-battle-staging-lunge", current.enemyLunge, BATTLE_ENEMY_LUNGES.map((id) => ({ id, name: BATTLE_ENEMY_LUNGE_LABELS[id] })), (value) => save({ enemyLunge: value as BattleEnemyLunge })),
+      selectField("연계기 컷인", "db-battle-staging-cutin", current.comboCutIn, BATTLE_COMBO_CUT_INS.map((id) => ({ id, name: BATTLE_COMBO_CUT_IN_LABELS[id] })), (value) => save({ comboCutIn: value as BattleComboCutIn })),
+      selectField("연계기 화려함", "db-battle-staging-fx", current.comboFx, BATTLE_COMBO_FXS.map((id) => ({ id, name: BATTLE_COMBO_FX_LABELS[id] })), (value) => save({ comboFx: value as BattleComboFx })),
+      selectField("기술 도움말", "db-battle-staging-hint", current.skillHint, BATTLE_SKILL_HINTS.map((id) => ({ id, name: BATTLE_SKILL_HINT_LABELS[id] })), (value) => save({ skillHint: value as BattleSkillHint })),
+    ],
+  });
+}
+
 export function renderBattleScreenTab(host: HTMLElement): void {
   const project = store.getCurrent();
   const rerender = (): void => {
@@ -134,6 +159,7 @@ export function renderBattleScreenTab(host: HTMLElement): void {
         battleMethodCard(project, rerender),
         sectionCard({ title: "타격감", testid: "db-battle-hit-feel-card", children: [hitFeelField(project)] }),
         fanfareCard(project, rerender),
+        stagingCard(project, rerender),
         sectionCard({
           title: "전투 화면 꾸미기",
           hint: "도트 측면 전투에 적용됩니다",

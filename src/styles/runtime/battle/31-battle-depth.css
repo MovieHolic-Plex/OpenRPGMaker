@@ -414,7 +414,9 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  background: linear-gradient(90deg, transparent, rgb(6 4 18 / 0.82) 14%, rgb(6 4 18 / 0.82) 86%, transparent);
   left: 50%;
+  padding: 6px 70px 8px;
   position: absolute;
   top: 50%;
   translate: -50% -50%;
@@ -434,8 +436,8 @@
   font-size: 46px;
   font-weight: 900;
   letter-spacing: 3px;
-  -webkit-text-stroke: 2px color-mix(in srgb, var(--combo-tint) 70%, black);
-  text-shadow: 0 0 14px var(--combo-tint), 0 0 34px var(--combo-tint), 4px 4px 0 rgb(0 0 0 / 0.7);
+  -webkit-text-stroke: 1px rgb(0 0 0 / 0.6);
+  text-shadow: 0 0 10px var(--combo-tint), 0 0 26px color-mix(in srgb, var(--combo-tint) 60%, transparent), 3px 3px 0 rgb(0 0 0 / 0.85);
   white-space: nowrap;
 }
 @keyframes battle-combo-title {

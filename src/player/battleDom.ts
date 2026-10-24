@@ -23,7 +23,7 @@ import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import type { BattleAnimationPlayback } from "@/player/battleAnimationDom";
 import { battleAnimationImpactMs, battleAnimationLeadPlan, preloadAllBattleAnimationSounds, preloadBattleAnimationSounds, syncBattleAnimationLayer } from "@/player/battleAnimationDom";
 import { createPresentationLedger, type BattlePresentationLedger } from "@/player/battlePresentation";
-import { comboImpact, endComboAction, playComboCutIn } from "@/player/battleComboCutIn";
+import { comboImpact, endComboAction, playComboCutIn, preloadComboBusts } from "@/player/battleComboCutIn";
 import { commandPanel, enemyListPanel, syncEnemyListPanel, syncBattleSkillHelp, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import {
   advanceBattleResultLevelUps,
@@ -256,6 +256,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let lastDamageFeedback: DamageFeedback | undefined;
   /** 연계기 컷인이 행동 앞에 둘 시간(onTimelineEntry 가 정하고 시퀀서 entryLeadMs 가 한 번 읽는다). */
   let comboLeadMs = 0;
+  preloadComboBusts(store.getCurrent(), options.runtime.snapshot().actors.map((actor) => actor.recordId));
   /** 지금 걸려 있는 히트스톱의 타격. 정지가 풀리는 순간 이 대상을 깜빡인다. */
   // 히트스톱이 잡고 있는 타격들 — 광역기는 한 번의 정지에 여러 대상이 함께 맞는다(풀릴 때 모두 깜빡인다).
   let hitStopFeedbacks: DamageFeedback[] = [];
@@ -778,8 +779,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       actorRecoverMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs((setBattleMotionContext(field, options.runtime.snapshot()), field), entry, "recover", options.runtime.snapshot().timeline, weight)
         ?? retroSkillForEntry(entry,field)?.recoverMs ?? retroWalk(field, entry)?.recoverMs,
       // 몬스터 스킬 42종은 같은 타임라인 훅(첫 착탄·대상별 간격·남은 연출). 그 밖의 도트 적 근접은 대상 아군 앞까지 뛰어/날아간다.
-      enemyApproachMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs((setBattleMotionContext(field, options.runtime.snapshot()), field), entry, "approach", options.runtime.snapshot().timeline, weight)
-        ?? retroEnemyReach(field, entry)?.approachMs,
+      enemyApproachMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => {
+        const ms = retroClassSkillBeatMs((setBattleMotionContext(field, options.runtime.snapshot()), field), entry, "approach", options.runtime.snapshot().timeline, weight)
+          ?? retroEnemyReach(field, entry)?.approachMs;
+        // QA 흔적: 최근 적 달려들기 시간 12개(「늑대가 고블린보다 느리다」 실측) — data-enemy-lunges="적 id:ms …".
+        if (ms !== undefined) {
+          const row = `${entry.userRecordId ?? entry.userId}:${Math.round(ms)}`;
+          root.dataset.enemyLunges = [...(root.dataset.enemyLunges ?? "").split(" ").filter(Boolean).slice(-11), row].join(" ");
+        }
+        return ms;
+      },
       enemyRecoverMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs((setBattleMotionContext(field, options.runtime.snapshot()), field), entry, "recover", options.runtime.snapshot().timeline, weight)
         ?? retroEnemyReach(field, entry)?.recoverMs,
       // 연출 레코드의 무게 손잡이(light/normal/heavy) — 접근·멈춤·회복 배율이 같이 바뀐다.

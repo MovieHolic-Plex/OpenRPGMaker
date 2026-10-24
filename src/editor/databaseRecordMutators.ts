@@ -164,7 +164,7 @@ export function updateEnemyRecord(database: DatabaseRecords, id: string, patch: 
   if ("skillIds" in patch && patch.skillIds !== undefined) record.skillIds = patch.skillIds;
   if ("monsterResourceId" in patch) record.monsterResourceId = patch.monsterResourceId;
   if ("battleScalePercent" in patch) record.battleScalePercent = patch.battleScalePercent;
-  if ("lungeSpeedPercent" in patch) record.lungeSpeedPercent = patch.lungeSpeedPercent;
+  if ("lungeSpeedPercent" in patch) { if (typeof patch.lungeSpeedPercent === "number" && patch.lungeSpeedPercent !== 100) record.lungeSpeedPercent = patch.lungeSpeedPercent; else delete record.lungeSpeedPercent; }
   if ("collapseEffect" in patch) record.collapseEffect = patch.collapseEffect;
   if ("hideHp" in patch) { if (patch.hideHp === true) record.hideHp = true; else delete record.hideHp; }
   if ("damageTypeRates" in patch) { if (patch.damageTypeRates) record.damageTypeRates = patch.damageTypeRates; else delete record.damageTypeRates; }

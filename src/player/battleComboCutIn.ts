@@ -19,7 +19,7 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { findSharedPortrait, resolveSharedPortraitUrl, sharedExpressionSetIdOf, sharedPortraitId, sharedPortraitWithExpression } from "@/assets/sharedPortraitAssets";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
-import { resolveBattleStaging, type ComboShake, type ResolvedBattleStaging } from "@/project/battleStaging";
+import { COMBO_ELEMENT_TINT, comboTint, resolveBattleStaging, type ComboShake, type ResolvedBattleStaging } from "@/project/battleStaging";
 import { resolveAppearancePortrait } from "@/project/characterAppearances";
 import type { Project, SkillRecord } from "@/project/types";
 import { playBattleSfx } from "@/player/battleSfx";
@@ -28,13 +28,6 @@ import { playBattleSfx } from "@/player/battleSfx";
 const FACES_LEAD_MS = 1650;
 const BAND_LEAD_MS = 900;
 const MEMBER_MS = 1300;
-
-/** 속성 색 — 번쩍임·오라·제목. 모르는 속성은 별빛 금색. */
-const ELEMENT_TINT: Readonly<Record<string, string>> = {
-  fire: "#ff7a3d", ice: "#7fe3ff", thunder: "#ffe14d", water: "#4fa8ff", wind: "#7dffb0", earth: "#c8955a",
-  holy: "#fff2a8", dark: "#b47bff", poison: "#9be05a", sword: "#dfe7f2", spear: "#c2d2e8", bow: "#a6f08a", hit: "#ffb066",
-};
-const FALLBACK_TINT = "#ffd76a";
 
 export interface ComboCutInContext {
   readonly project: Project;
@@ -50,15 +43,11 @@ function skillOf(project: Project, entry: BattleTimelineEntrySnapshot): SkillRec
   return entry.skillId ? project.database.skills.find((skill) => skill.id === entry.skillId) : undefined;
 }
 
-export function comboTint(skill: SkillRecord | undefined): string {
-  return skill?.comboStaging?.tint ?? (skill?.elementId ? ELEMENT_TINT[skill.elementId] : undefined) ?? FALLBACK_TINT;
-}
-
 /** 참가자 한 사람의 색 — 그 사람이 이 연계기 해금 조건으로 배운 기술의 속성 색(없으면 연계기 색). */
 function memberTint(project: Project, skill: SkillRecord | undefined, actorId: string): string {
   const requiredId = skill?.comboRequires?.find((row) => row.actorId === actorId)?.skillId;
   const required = requiredId ? project.database.skills.find((record) => record.id === requiredId) : undefined;
-  return (required?.elementId ? ELEMENT_TINT[required.elementId] : undefined) ?? comboTint(skill);
+  return (required?.elementId ? COMBO_ELEMENT_TINT[required.elementId] : undefined) ?? comboTint(skill);
 }
 
 /**
@@ -361,4 +350,20 @@ function slowMotion(stage: HTMLElement, ms: number): void {
     for (const animation of slowed) if (animation.playbackRate === 0.3) animation.playbackRate = 1;
     delete stage.dataset.comboSlowMo;
   }, ms);
+}
+
+const preloaded = new Set<string>();
+/** 이 전투 파티로 쓸 수 있는 연계기의 흉상을 미리 받아 둔다 — 컷인 첫 장면에 빈 판이 보이지 않게. */
+export function preloadComboBusts(project: Project, partyActorIds: readonly string[]): void {
+  for (const skill of project.database.skills) {
+    const members = skill.comboActorIds;
+    if (!members || members.length < 2 || !members.every((id) => partyActorIds.includes(id))) continue;
+    for (const actorId of members) {
+      const url = actorBustImage(project, actorId)?.url;
+      if (!url || preloaded.has(url)) continue;
+      preloaded.add(url);
+      const image = new Image();
+      image.src = url;
+    }
+  }
 }

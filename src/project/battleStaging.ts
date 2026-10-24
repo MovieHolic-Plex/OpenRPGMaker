@@ -130,3 +130,14 @@ export function pixelEnemyLungeProfile(lunge: BattleEnemyLunge, motion: string |
   const pxPerMs = (motion === "dash" ? 1.7 : motion === "stomp" ? 1.1 : hovering ? 1.4 : 1.25) * (fast ? 1 : 0.7);
   return { holdMs: (motion === "stomp" ? 170 : 90) * (fast ? 1 : 1.6), pxPerMs, minMs: fast ? 140 : 200, maxMs: fast ? 420 : 560 };
 }
+
+/** 연계기 색 — 속성 색(번쩍임·오라·제목). 모르는 속성은 별빛 금색. 컷인·자료집 색 칸이 같이 쓴다. */
+export const COMBO_ELEMENT_TINT: Readonly<Record<string, string>> = {
+  fire: "#ff7a3d", ice: "#7fe3ff", thunder: "#ffe14d", water: "#4fa8ff", wind: "#7dffb0", earth: "#c8955a",
+  holy: "#fff2a8", dark: "#b47bff", poison: "#9be05a", sword: "#dfe7f2", spear: "#c2d2e8", bow: "#a6f08a", hit: "#ffb066",
+};
+export const COMBO_FALLBACK_TINT = "#ffd76a";
+
+export function comboTint(skill: { readonly elementId?: string; readonly comboStaging?: ComboStaging } | undefined): string {
+  return skill?.comboStaging?.tint ?? (skill?.elementId ? COMBO_ELEMENT_TINT[skill.elementId] : undefined) ?? COMBO_FALLBACK_TINT;
+}
