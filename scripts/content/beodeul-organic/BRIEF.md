@@ -61,5 +61,5 @@ same tone count, same clumping? Fix silhouette first, then values, then detail. 
 - **Shading = blocky 2-4 px clusters**, never long 1 px horizontal/vertical stripes (bark rows, grain lines, bristle grass) and never smooth
   concentric/diagonal bands (soap/pillow look).
 - **No mechanical spacing:** berries, blossoms and ring mushrooms at different heights, sizes and gaps; never an even row or a geometric oval.
-- Passed pieces are frozen (qa/frozen/hashes.txt): rock-s, moss-stone, bush-s, shrub-tall, fern-cluster, grass-tuft-a, flowers-yellow,
+- (r3, superseded by qa/protocol.md + qa/ledger.json) passed pieces were frozen: rock-s, moss-stone, bush-s, shrub-tall, fern-cluster, grass-tuft-a, flowers-yellow,
   flowers-white, stump-l, shroom-red. Use them as the model for their family.
