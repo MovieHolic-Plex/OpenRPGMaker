@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.335.0 — 2026-10-25
+
+### 기능
+
+- **ai** — assistant picks installed store music by scene and mood (#3416) (`ee02f97`)
+- **harness** — whole-game session driver, shipped-player launcher, seq de-dupe in the capability fetch hook (#3413) (`fbe26da`)
+
+### 수정
+
+- **ai** — v2 keeps a place it already built instead of rebuilding over it; dungeon edit after linked doors rebuilds and relinks; per-day lines checked per person (#3415) (`fea74e0`)
+
 ## 0.334.2 — 2026-10-25
 
 ### 수정
