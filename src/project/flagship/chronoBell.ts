@@ -2436,6 +2436,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenStoryPass(project, ids);
   // 마을 사람 칩·대장간 재고(이리스·엘레나 몫)·뛰노는 아이·숨은 목걸이·대사 표정(fallen/townCast.ts).
   applyFallenTownCast(project);
+  // 이야기·마을 사람 단계가 단 보상 수납(초소 보급 상자·이끼 낀 상자·서랍)도 같은 「여는」 연출로 — 두 번 불러도 같다.
+  applyFallenInteractiveProps(project);
   // 제1막 새 뼈대 — 추락지 발렌·지하 미궁(3·4층)·달비늘 용·「달의 아이」 패널·광장 포위 끝(fallen/act1Finale.ts). 얼굴 앞.
   applyFallenAct1Finale(project, execTool, ids);
   const speakerFaces: Record<string, string> = {

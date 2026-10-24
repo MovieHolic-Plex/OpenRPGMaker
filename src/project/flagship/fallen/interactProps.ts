@@ -6,7 +6,13 @@
 //  - 집주인 시야 분기(eventSeesPlayer)가 있으면: 보면 돌아보고 「!」, 시끄러운 수납은 벽 너머에서 들으면 「?」.
 //  - 「옆방 기척」 대사는 집주인이 지금 실제로 있는 방 이름으로 고른다(예전엔 「부엌 쪽에서」 로 고정이었다).
 // 문 여는 연출은 엔진 기본(문 칸에서 떠나는 이동)이라 여기서 할 일이 없다.
-import { containerStyleForLabel } from "@/project/containerFx";
+//
+// 수납 줄이기(사용자 2026-10-24 「상자가 너무 많다」): 방마다 살림 이치로 하나면 된다.
+//  - 보상·잔 일(페이지가 덧붙은) 수납은 그대로 둔다. 「살펴보기」 한 줄뿐인 살림 수납(townLife)만 줄인다.
+//  - 방에 보상·잔 일 수납이 있으면 살림 수납은 모두 뺀다. 없으면 여닫는 것(궤짝·상자·가방·서랍·옷장·찬장·화장대·협탁) 하나만 남긴다.
+//    방(로케이션)이 없는 맵(거리)은 살림 수납을 남기지 않는다. 그림은 가구로 그대로 둔다 — 이벤트만 뺀다.
+//  - 남은 수납은 모두 「여는」 연출(뚜껑 소리·반짝임, 흔들림·파편 없음)로 연다. 통·자루를 흔들어 뒤지는 연출은 쓰지 않는다.
+import { containerFxId, type ContainerStyle } from "@/project/containerFx";
 import { applyContainerSearchPattern, roomAwareCommands } from "@/project/containerSearchPattern";
 import type { Command, GameEvent, GameMap, Project } from "@/project/types";
 
@@ -76,15 +82,68 @@ function roomAwareCue(event: GameEvent, map: GameMap, ownerId: string, name: str
   return changed;
 }
 
-export type FallenInteractPropsResult = { containers: number; watched: number; cues: number };
+/** 살림 한 줄뿐인 수납(townLife 의 「살펴보기」 한 페이지) — 보상도 잔 일도 없다. */
+function isFlavorOnly(event: GameEvent): boolean {
+  const pages = event.pages ?? [];
+  if (!String(event.id).startsWith("ev_fs_box_") || pages.length !== 1 || pages[0]!.name !== "살펴보기") return false;
+  return !/"kind":"change(Item|Gold)"/.test(JSON.stringify(pages[0]!.commands ?? []));
+}
+
+const OPENABLE = /궤짝|상자|가방|서랍|옷장|찬장|화장대|협탁/;
+
+function roomOf(map: GameMap, event: GameEvent): string | null {
+  const room = (map.locations ?? []).find((l) => event.x >= l.x && event.x < l.x + l.w && event.y >= l.y && event.y < l.y + l.h);
+  return room ? room.id : null;
+}
+
+/** 방마다 수납 하나 — 살림 수납만 뺀다(위 머리말). 뺀 수를 돌려준다. */
+function trimContainers(map: GameMap): number {
+  const boxes = map.events.filter(isContainer);
+  const drop = new Set<string>();
+  const rooms = new Map<string | null, GameEvent[]>();
+  for (const box of boxes) { const key = roomOf(map, box); rooms.set(key, [...(rooms.get(key) ?? []), box]); }
+  for (const [room, list] of rooms) {
+    const flavor = list.filter(isFlavorOnly);
+    const keepOne = room !== null && flavor.length === list.length
+      ? flavor.filter((e) => OPENABLE.test(String(e.name))).sort((a, b) => Number(/궤짝|가방/.test(String(b.name))) - Number(/궤짝|가방/.test(String(a.name))) || a.y - b.y || a.x - b.x)[0]
+      : undefined;
+    for (const e of flavor) if (e !== keepOne) drop.add(e.id);
+  }
+  if (drop.size) map.events = map.events.filter((e) => !drop.has(e.id));
+  return drop.size;
+}
+
+/** 이미 다른 종류의 여는 연출이 붙어 있으면 「여는」 연출로 갈아 끼운다(두 번 불러도 같다). */
+function retargetFx(event: GameEvent, style: ContainerStyle): void {
+  const fx = containerFxId(style);
+  for (const page of event.pages ?? []) {
+    const interaction = (page as { interaction?: { kind?: string; style?: string } }).interaction;
+    if (interaction?.kind === "container") interaction.style = style;
+    for (const command of (page.commands ?? []) as Array<Command & { animationId?: string }>) {
+      if (command.kind === "showAnimation" && String(command.animationId ?? "").startsWith("fx:container:")) command.animationId = fx;
+    }
+  }
+}
+
+/** 뒤지는 칸의 버들항 「나무 상자」(못 박힌 짐 상자)는 뚜껑 달린 「선원 궤짝」 그림으로 — 여는 것으로 읽히게(같은 번들 칸). */
+const NAILED_CRATE = 26606, LIDDED_CHEST = 27120;
+function lidOnBox(map: GameMap, event: GameEvent): void {
+  const i = event.y * map.width + event.x;
+  if (map.upperTiles[i] === NAILED_CRATE) map.upperTiles[i] = LIDDED_CHEST;
+}
+
+export type FallenInteractPropsResult = { containers: number; watched: number; cues: number; trimmed: number };
 
 export function applyFallenInteractiveProps(project: Project): FallenInteractPropsResult {
-  const result: FallenInteractPropsResult = { containers: 0, watched: 0, cues: 0 };
+  const result: FallenInteractPropsResult = { containers: 0, watched: 0, cues: 0, trimmed: 0 };
   for (const map of Object.values(project.maps)) {
+    result.trimmed += trimContainers(map);
     for (const event of map.events) {
       if (!isContainer(event)) continue;
-      const label = String(event.name ?? "").replace(/^수납 · /, "");
-      const style = containerStyleForLabel(label);
+      // 통·자루·상자를 흔들어 뒤지지 않는다 — 남은 수납은 모두 뚜껑을 여는 연출(흔들림·파편 없음).
+      const style: ContainerStyle = "chest";
+      retargetFx(event, style);
+      lidOnBox(map, event);
       const ownerId = ownerOf(event);
       const name = ownerId ? shortName(map, ownerId) : "";
       if (ownerId && roomAwareCue(event, map, ownerId, name)) result.cues++;
