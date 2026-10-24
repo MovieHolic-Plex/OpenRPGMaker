@@ -5,6 +5,64 @@
 
 <!-- releases -->
 
+## 0.330.0 — 2026-10-24
+
+### 기능
+
+- **party** — FF6-style companion display (leader only on field, companions in story scenes) (`6936cfc`)
+- **battle** — boss HP hiding, element exceptions in damage-type rates, enemiesAlive/enemyState battle conditions, humanoid enemy walk timing (`0c9c470`)
+- **player** — portrait window panel for menu/shop at 1x, 1.5x scale step for iPad-class screens (#3359) (`0583779`)
+- **fallen-star** — Valen intro boot/sword SFX; act-1 recorder maps WebAudio/blob SFX and plays the first battle rounds (`93710b8`)
+- **player** — device-independent game UI — windows in game px scaled with the stage, integer scale on touch, portrait dialogue dock, shop in a logical frame (#3353) (`0731902`)
+- **battle** — damage-type taken rates (physical/magic) with state overrides + enemyState troop condition (#3350) (`e03a34a`)
+- **fallen-star** — tune crash Valen and moon dragon from headless sims; act-1 checkpoints, SQLite round-trip and play-recording scripts (`28f4023`)
+- **player** — field enemies without a walking chip get a sprite derived from their battle dot art (#3349) (`95eb80c`)
+- **fallen-star** — act 1 restructure — crash-site Valen mid-boss, vault labyrinth B3/B4, moon-scale dragon (pierce opens magic x3), 'Child of the Moon' panel lore, siege ending (`94ffe6d`)
+- **battle** — damage prediction honours damage-type taken rates (auto-battle AI and target hints) (`c665dd6`)
+- **fallen-star** — vault labyrinth floors B3/B4 room specs, star seal in vault, room preview scripts (`432f4f8`)
+- **battle** — damage-type taken rates (physical/magic) on enemies, state overrides, enemyState troop condition (`083f500`)
+- **fallen** — dawnwell necklace gives +30% damage dealt (new equipment trait) instead of ATK/MND approximation (`366d573`)
+- **fallen-star** — town cast pass — adult smith chip, speaker busts with emotions, Iris/Elena gear at the smithy, running kids, hidden Dawnwell necklace, Valen no longer lingers in town after marching to the forest (`f211d4b`)
+- **fallen-star** — act 1 dialogue flow, Iris join choice, Valen smoke exit, cult fanatics in the vault, curated house loot, missing scold lines (`563737e`)
+- **fallen-star** — container fx, owner turn + ! / ? reactions and room-aware owner cues on whatever containers exist (`fd13504`)
+- **fallen-star** — Valen phase 2 sheds armour (agility up + defence down) instead of attack x2; HP 2100 / atk 112 (sim: 95% win, ~17 actions, 1.4 potions); finale QA plan heals (`e39eed8`)
+- **fallen-star** — act-1 roster by forest area (12 new foes, each one role) + per-area encounter tables; Iris becomes the Starlight Gunner with a star rod (bow-type) and beam skills; class names for Kael/Elena (`787e000`)
+- **fallen-star** — battle QA checkpoints (weapon bonus, armored beetle, sleep, crit, ether/meditate, Valen finale); snipe text names its line pierce (`ef93daa`)
+- **fallen-star** — Valen HP 1600 / atk 108 after headless sim (win 100%, ~16 actions, ~1.3 potions); add sim script (`c52c0d7`)
+- **fallen-star** — distinct skill roles, armored/healer/swarm foes, Valen boss phases+summons+signature blade, MP recovery (`5db04e3`)
+- **fallen-star** — cinematic 39 s cold open — parallax night sky, star cracks, fireball over the forest, bell, title with god rays (`1bc04ac`)
+
+### 수정
+
+- **player** — door-open fx only on real doors (no city gate/passages/map edges), no hitch; editor 문 열림 연출 자동/켜기/끄기 (#3363) (`aeb44d4`)
+- **player** — pixel shop party cards share the window width — names no longer cut to 「엘…」 at game-px text (#3362) (`094429f`)
+- **fallen-star** — dragon battle BGM uses a catalog mp3 (store rejects .mid) (`19536ed`)
+- **assistant-v2** — 92-task suite fixes — real screen effects, visible objects, kept/linked new maps, one-shot rewards, NPC reuse, arg aliases, farm barn (#3352) (`192d074`)
+- **fallen-star** — the star fell in the NORTH forest everywhere — proclamation, credits, quest summary, telescope, bard, witness, gate guard, knight, store/home blurbs (`e5646d7`)
+- **qa** — fallen-star report/ending checkpoints talk to Hanel at the telescope (12,13); he moved there in #3314 (`9e15c05`)
+- **fallen-star** — the forest is north of town — 'east forest' / 'east gate' become north in dialogue, readables, quest text and switch names (opening cinematic and the brazier puzzle excluded); Hanel's sky tower lies beyond the forest (`993e707`)
+- **fallen-star** — Valen keeps his 48px face (the shared bust wears a jester hat his chip lost); face-cell expressions on his angry/sad lines (`726e5e5`)
+- **fallen-star** — elder's dusk line notes Valen left for the forest; kids capture frames the tag loop (`2751ccd`)
+- **fallen-star** — Valen's smoke builds up before he fades; shorter flash; capture waits through the vanish (`2276ad6`)
+- **fallen-star** — knight-post crate finds a wall corner by Rino's post; story2 capture + store round-trip scripts (`0e36403`)
+- **fallen-star** — opening fall lands in the north forest; crisp integer upscale, skip button visible from frame 1, slower first pan (`b42bf2f`)
+
+### 문서
+
+- **openwiki** — Fallen Star cinematic opening recipe, camera-offset trap, tap skip, handoff tile window (`ed303df`)
+
+### 테스트
+
+- **fallen-star** — defeat checkpoint advances in-battle dialogue before defending (`6fc28b1`)
+- **fallen-star** — battle checkpoints start on the forest edge map (six-map forest) (`fe043e0`)
+- **fallen-star** — ether checkpoint drains MP first so the ether shows (`f425e93`)
+- **fallen-star** — ether checkpoint targets Elena by id (`8dbd75b`)
+
+### 잡무
+
+- **deps-dev** — bump the development-dependencies group across 1 directory with 7 updates (#3310) (`1a4f46f`)
+- **deps** — bump zod from 4.6.5 to 4.6.6 (#3319) (`df18bd7`)
+
 ## 0.329.0 — 2026-10-24
 
 ### 기능
