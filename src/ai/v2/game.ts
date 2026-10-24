@@ -7,11 +7,11 @@ import { createPiToolset, type PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { getTool } from "@/editor/tools/toolRegistry";
 import type { PiAssistantV2Env } from "./env";
 
-export const GAME_WORDS = /퀘스트|의뢰|심부름|부탁|아이템|회복약|포션|무기|갑옷|방패|장비|장신구|상점|가게|팔게|팔기|열쇠|잠긴|보물|상자|제작|만들어 주는|주인공|이름|직업|레벨|능력치|체력|동료|파티|합류|떠나|스킬|기술|전투|싸우|보스|적\b|몬스터|무리|선택지|호감|기억|스위치|변수|횟수|레버|여관|묵으|저장|회복|치료|신부|골드|돈|엔딩|결말|게임|일지|제한 시간|타이머|낮에|밤에|시간대|아침|저녁|팻말|표지판|우물|동전|암호|비밀번호|통행료|경비|문지기|함정|독|중독|마비|수면|상태 ?이상|날씨|비가|비 ?오|무작위|랜덤|인카운터|조우|마주치|늑대|멧돼지|슬라임|고블린|얻게|얻는|얻을|모으|모았|모아|줍|주워|개수|몇 개|조사하면|조사할|입력|자물쇠|숫자|비밀번호|옮겨|옮기|묘비|회상|따라오|따라와|따라다|도망|사라지|나타나|말 걸|말을 걸|대사|다가가|밟으면|들어가면|문을|잇|이어 줘|이어줘|연결|follow|random|encounter|지진|흔들|번쩍|번개|음악|배경음|bgm|약초|광맥|이동석|눈이|눈 ?내|폭풍|안개|대화|표정|얼굴|초상|흉상|웃으|걱정|장면|뛰어다|돌아다|걸어 다|순찰|쫓아|쫓다|추격|발견|뒤지|뒤져|뒤질|수납|항아리|서랍|옷장|들키|들켜|몰래|숲|사당|오프닝|제목|타이틀|레터박스|검은 띠|카메라|연기|막 끝|막이|제\s*\d+\s*막|카드|페이즈|소환|불러|예고|힘을 모|꿰뚫|속성|약하게|약점|치명타|반지|목걸이|마나|에테르|\bMP\b|화상|기절|잠 |잠은|책장|비석|역사|망원경|이름을|줄여|절반|추가해|quest|item|shop|weapon|armor|battle|enemy|party|skill|inn|save|gold|ending|poison|weather/iu;
+export const GAME_WORDS = /퀘스트|의뢰|심부름|부탁|아이템|회복약|포션|무기|갑옷|방패|장비|장신구|상점|가게|팔게|팔기|열쇠|잠긴|보물|상자|제작|만들어 주는|주인공|이름|직업|레벨|능력치|체력|동료|파티|합류|떠나|스킬|기술|전투|싸우|보스|적\b|몬스터|무리|선택지|호감|기억|스위치|변수|횟수|레버|여관|묵으|저장|회복|치료|신부|골드|돈|엔딩|결말|게임|일지|제한 시간|타이머|낮에|밤에|시간대|아침|저녁|팻말|표지판|우물|동전|암호|비밀번호|통행료|경비|문지기|함정|독|중독|마비|수면|상태 ?이상|날씨|비가|비 ?오|무작위|랜덤|인카운터|조우|마주치|늑대|멧돼지|슬라임|고블린|얻게|얻는|얻을|모으|모았|모아|줍|주워|개수|몇 개|조사하면|조사할|입력|자물쇠|숫자|비밀번호|옮겨|옮기|묘비|회상|따라오|따라와|따라다|도망|사라지|나타나|말 걸|말을 걸|대사|다가가|밟으면|들어가면|문을|잇|이어 줘|이어줘|연결|follow|random|encounter|지진|흔들|번쩍|번개|음악|배경음|bgm|약초|광맥|이동석|눈이|눈 ?내|폭풍|안개|대화|표정|얼굴|초상|흉상|웃으|걱정|장면|뛰어다|돌아다|걸어 다|순찰|쫓아|쫓다|추격|발견|뒤지|뒤져|뒤질|수납|항아리|서랍|옷장|들키|들켜|몰래|숲|사당|오프닝|제목|타이틀|레터박스|검은 띠|카메라|연기|막 끝|막이|제\s*\d+\s*막|카드|페이즈|소환|불러|예고|힘을 모|꿰뚫|속성|약하게|약점|치명타|반지|목걸이|마나|에테르|\bMP\b|화상|기절|잠 |잠은|책장|비석|역사|망원경|이름을|줄여|절반|추가해|연계|합체|협동|콤보|레벨 ?업|팡파레|습득|달려들|돌진|느릿|컷인|도움말|말투|존댓말|반말|다듬|윤문|호칭|대화창|넘치|줄거리|대본|휴대폰|모바일|폰에서|터치|탭하면|탭해서|진동|조이스틱|달리기 단추|들판|초원|필드|바위|버섯|들꽃|고사리|그루터기|통나무|덤불|풀숲|행인|오가|출근|지나다니|옥상|내려다|전망|황무지|문 열리|여는 효과|문 효과|combo|touch|mobile|quest|item|shop|weapon|armor|battle|enemy|party|skill|inn|save|gold|ending|poison|weather/iu;
 
 
 /** 폴른 스타 제작에서 나온 일 묶음 — 요청 낱말이 있을 때만 그 도구를 더 싣는다(첫 턴을 무겁게 하지 않는다). */
-export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: readonly string[] }[] = [
+export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: readonly string[]; readonly card?: string }[] = [
   { words: /숲|들판|필드|초원|forest|woods?\b|field|meadow/iu, tools: ["author_forest_route"] },
   { words: /뒤지|뒤져|뒤질|수납|항아리|통을|통이랑|통과 상자|서랍|옷장|들키|들켜|몰래|search/iu, tools: ["place_search_containers"] },
   { words: /숨겨|숨긴|숨은|조사하면|조사할|비석|책장|망원경|표지판|팻말|일지/u, tools: ["place_examine_hotspots"] },
@@ -21,9 +21,22 @@ export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: re
   { words: /오프닝|시작할 때|게임 시작|타이틀|제목|영화처럼|opening|title/iu, tools: ["plan_opening", "set_opening", "edit_opening", "create_opening_animatic_shot", "upsert_opening_layer", "animate_opening_camera", "animate_opening_layer", "set_opening_transition", "upsert_opening_audio_cue", "set_title_screen"] },
   { words: /순찰|돌아다|뛰어다|걸어 다|patrol/iu, tools: ["configure_npc_patrol"] },
   { words: /문을 열|문 열|성문|잠긴|창고 문|뒷문|door/iu, tools: ["place_door"] },
+  // 2026-10-25 데모(폴른 스타 전투·대사 책상·모바일·첫사랑 거리)에서 일반 기능으로 연 것 — 낱말이 맞을 때만.
+  { words: /연계|합체|협동|콤보|두 사람이 같이|셋이 같이|combo|dual tech/iu, tools: ["list_combo_techs", "upsert_combo_tech", "set_project_settings"], card: "· 연계기(두세 사람이 같이 쓰는 기술): upsert_combo_tech{id:'skill_combo_<영문>', name, actorIds:[주 시전자, 동료], mpCosts:[{actorId,mp}…](MP 나눠 내기), scope:'allEnemies'|'enemy', power, elementId, description(한 줄)} — 전투 명령 「연계」에 뜬다. 참가 배우가 시작 파티에 없으면 set_party/add_companion 으로 넣는다. 일반 skill 에 comboActorIds 를 손으로 쓰지 않는다. 컷인·화려함은 set_project_settings{battle:{staging:{comboCutIn:'faces', comboFx:'spectacular'}}}, 이 연계기만의 흔들림·색은 upsert_combo_tech 의 staging{shake:'heavy', tint}." },
+  { words: /레벨 ?업|팡파레|습득|배너|달려들|돌진|느릿|컷인|도움말|한 줄 설명|설명이 (뜨|나오)|전투 연출|lunge|fanfare/iu, tools: ["set_project_settings"], card: "· 전투 연출·결과 화면: set_project_settings{battle:{fanfare:{levelUp:true, skillLearned:true, comboUnlocked:true, style:'burst'}, staging:{enemyLunge:'fast'|'normal'|'classic', skillHint:'line'|'window'}}}. 적 하나만 빠르게/느리게 = upsert_enemy lungeSpeedPercent(늑대 150, 거북 50; 25~300) — 전역 값은 건드리지 않는다. 기술 설명 = upsert_skill description(한 줄, 효과와 맞게). 「~한 적에게 +50%」 = upsert_skill exploitStates{stateIds:['state_poison'], bonusPercent:50}. 기본값이 이미 켜져 있으면 바뀌는 것이 없어도 된다 — 그렇다고 보고한다." },
+  { words: /말투|존댓말|반말|다듬|윤문|호칭|통일|대화창|넘치|줄거리|이야기 순서|순서대로|대본|대사를 (전부|모두|정리)|대사 (전부|모두)|screenplay|polish/iu, tools: ["list_dialogue", "get_dialogue_context", "rewrite_dialogue", "set_speaker_voice", "get_story_outline", "read_story_script", "set_scene_summaries"], card: "· 대사 다듬기·말투·호칭 통일·넘치는 줄·이야기 정리: patch_event_page 로 대사를 하나씩 다시 쓰지 않는다. list_dialogue{speaker, overflowOnly} 또는 read_story_script 로 읽고 → rewrite_dialogue{edits:[{id|ref, hash, text, reason}], instruction:요청 원문} 로 고친 줄만 낸다(기본 propose = 사용자가 자료집 「대사」 탭에서 줄마다 받는다 — 보고에 «제안으로 남겼다»고 쓴다, 사용자가 «바로 바꿔»라 했으면 mode:'apply'). 넘치는 줄은 대화창에 맞게 줄바꿈·두 줄로 나눠 낸다. 인물 말투를 «기억해 둬» = set_speaker_voice{speaker, note}. 이야기 순서 요약은 get_story_outline/read_story_script 를 읽고 답만(아무것도 바꾸지 않는다)." },
+  { words: /휴대폰|모바일|폰에서|터치|탭하면|탭해서|탭으로|진동|조이스틱|달리기 단추|화면 단추|touch|mobile|haptic/iu, tools: ["set_project_settings"], card: "· 휴대폰 조작: set_project_settings{touchControls:{tapToMove:true(맵 탭 걷기·사람 탭 말 걸기), stick:'auto'|'fixed'|'floating'(누른 자리 = floating), haptics:true(진동), runButton:true}}. 상하좌우만 = 조이스틱은 이미 네 방향 쪽으로 붙는다(설정 칸 없음 — 그렇다고 보고). 기본이 이미 켜짐이면 바뀌는 것이 없어도 된다." },
+  { words: /행인|오가|출근|퇴근|지나다니|사람들이 (걸|다니|오|지나)|walkers?\b|pedestrian/iu, tools: ["add_street_walkers"], card: "· 거리를 오가는 행인: add_street_walkers{mapId, walkers:[{name, graphic:{query:'회사원'}, stops:[{x,y},{x,y,waitSec}](들를 칸 2곳 이상 — 정류장·횡단보도 건너편·건물 문 앞·지하철 계단), speed 2~4 를 사람마다 다르게}]} — 길찾기·차 양보는 함수가 한다. 좌표는 read_npc_layout/find_empty_ground 나 거리 도구 결과(문·정류장·출구 칸)에서." },
+  { words: /회사 거리|오피스|빌딩 거리|지하철 출구|도시 거리|도심|modern city|office street/iu, tools: ["resize_map", "create_map", "compose_modern_city_street", "link_modern_city_interior", "add_street_walkers", "set_map_properties"], card: "· 현대 도시 거리(modern_city 칩셋): compose_modern_city_street{mapId, seed, shops, landmark:'tower10'(큰 빌딩), subwayExits:1~4(번호 출구), korean:true(한국 거리)} — 맵은 60×50 권장(작으면 먼저 resize_map{mapId,width:60,height:50}; 새 거리 맵이면 create_map{tilesetId:'modern_city',width:60,height:50}). 결과 data.subwayExits·buildings 의 칸으로 행인 stops·이동 이벤트를 단다." },
+  { words: /옥상|내려다|전망대|전망|아래 거리|배경으로|rooftop/iu, tools: ["set_map_properties"], card: "· 옥상·전망대에서 아래 동네가 보이는 배경: set_map_properties{mapId:옥상 맵, background:{fromMap:{mapId:아래 거리 맵, scale:0.33, haze:0.3}, showInEmptyCells:true}} — 그림을 지어내지 않는다. 옥상 맵 가장자리(울타리 밖)는 빈 칸으로 둬야 배경이 보인다." },
 ];
 export function fallenTierTools(task: string): string[] {
   return FALLEN_TIERS.filter((tier) => tier.words.test(task)).flatMap((tier) => tier.tools);
+}
+/** 맞는 묶음의 사용법 한 줄씩(게임 카드 끝에 붙는다) — 도구만 싣고 쓰는 법을 안 주면 조수가 손으로 조립한다. */
+export function fallenTierCard(task: string): string {
+  const lines = [...new Set(FALLEN_TIERS.filter((tier) => tier.card && tier.words.test(task)).map((tier) => tier.card!))];
+  return lines.length ? `[이 요청에 맞는 도구 — 손으로 조립하지 말고 이것을 쓴다]\n${lines.join("\n")}` : "";
 }
 
 /** v1 도구 중 게임 요소에 쓰는 것(읽기 먼저). 레지스트리에 없는 이름은 빠진다. */
@@ -84,6 +97,8 @@ export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전�
   · 연기와 함께 사라지기: add_scene 의 vanish 비트(연기+투명) 뒤 다시 안 나오게 셀프 스위치/스위치 페이지.
   · 막 끝·「제N막 끝」「제2막으로 이어집니다」 카드 = define_ending{id:'ending_act1',presentation:{finalTitle:'제1막 끝', badge:'제2막으로 이어집니다'}} + 그 자리에서 {kind:'triggerEnding',endingId} — 대사·그림으로 흉내 내지 않는다.
   · 순찰·뛰어다니기: configure_npc_patrol(닫힌 경로) 또는 add_people movement:'wander'. 문 열리는 연출 + 실내 = create_transfer_pair(doorAt) 또는 place_door.
+  · 문 열림 연출을 «꼭 나오게/나오지 않게»: 그 이동 이벤트의 transfer 명령에 door:true(켜기)|false(끄기)를 patch_event_page 로 넣는다(생략 = 자동: 문 그림 칸만). 페이드만 = door:false + fade.
+  · 숲·들판 자연 기물(바위·이끼 돌·쓰러진 통나무·그루터기·버섯·고사리·들꽃·덤불·억새·이끼 사당 돌): list_spatial_designs{kind:'object', query:'버들항 자연'} 의 「버들항 자연 · …」 물건(bd-org-*)을 쓴다 — 사막·설원·바다 동굴 바위는 다른 장소용. 길·문 앞·이벤트 칸을 피해 덩이로 흩어 찍는다(한 줄로 늘어놓지 않는다).
 - 도구가 거절하면 이유를 읽고 고쳐 다시 부른다. 같은 거절이 두 번이면 방법을 바꾼다. 할 수 없는 것은 보고에 적는다.`;
 
 export function wantsGameTools(task: string): boolean {
