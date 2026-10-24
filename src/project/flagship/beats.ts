@@ -308,7 +308,7 @@ export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBe
       { id: "npc_rival_naru", name: "나루", role: "소꿉친구 라이벌 · 챔피언 전당의 마지막 상대", assetId: "oprn_emerald_trainer_hero_f_front" },
       { id: "npc_leader_yurim", name: "유림", role: "실바나 체육관 관장", assetId: "oprn_emerald_trainer_leader_grass" },
       { id: "mx_species_spriglet", name: "토리프", role: "풀 스타터 (토리프→실바리온→벨데로드)", assetId: "harness-monster-leafling-front" },
-      { id: "mx_species_coalbit", name: "숯꼬미", role: "불/격투 스타터 (숯꼬미→가마발톱→마그렉스)", assetId: "harness-monster-sparkit-front" },
+      { id: "mx_species_coalbit", name: "숯꼬미", role: "불/격투 스타터 (숯꼬미→불박치→마그렉스)", assetId: "harness-monster-sparkit-front" },
       { id: "mx_species_rivulet", name: "아가핀", role: "물 스타터 (아가핀→마린웨이→네레이드)", assetId: "harness-monster-aqualing-front" },
     ],
     beats: EMERALD_CROWN_BEATS,

@@ -1,0 +1,230 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "beodeul-organic-r14",
+ "title": "버들항 자연 기물 37종 (바위·덤불·통나무·버섯·고사리·풀·들꽃·이끼 돌·고목·사당 돌)",
+ "createdAt": "2026-10-24T13:25:06.536Z",
+ "items": [
+  {
+   "sha": "5f3cc7e695ffcc9fb9f88f065b6066e31e0ca1d25ed89b50651e84653e85e151",
+   "kind": "organic",
+   "label": "beodeul_organic/rock-boulder-l",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/rock-boulder-l.png"
+  },
+  {
+   "sha": "008c004abc0ed5886c14678c15b4c8a0275e3c5859aa42edd5360e2ca61a0297",
+   "kind": "organic",
+   "label": "beodeul_organic/rock-boulder-m",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/rock-boulder-m.png"
+  },
+  {
+   "sha": "77c06fd1328ca30e0130bda59f9cfc897deddbf8081af478c93cacf6a90f67f6",
+   "kind": "organic",
+   "label": "beodeul_organic/rock-pair",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/rock-pair.png"
+  },
+  {
+   "sha": "3572cb91ee76e9f8c118c88dc42b9f486067be659e5f737af7ec34e9beabc1aa",
+   "kind": "organic",
+   "label": "beodeul_organic/rock-slab",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/rock-slab.png"
+  },
+  {
+   "sha": "6a2a2faa83e0331225fb13550f6c5f6a78c8a50084f0b56187592be15c8a576e",
+   "kind": "organic",
+   "label": "beodeul_organic/rock-s",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/rock-s.png"
+  },
+  {
+   "sha": "5fe28b27bdedc1a9fabb8b136aa2c90c3fc624304f5bb50feedf950412456e0a",
+   "kind": "debris",
+   "label": "beodeul_organic/rock-pebbles",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/rock-pebbles.png"
+  },
+  {
+   "sha": "cd921cb7684b05c90d344744f83c857a48c31fffe58c6c0ac594594df01e67b3",
+   "kind": "organic",
+   "label": "beodeul_organic/moss-boulder",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/moss-boulder.png"
+  },
+  {
+   "sha": "77ca3b123dc95ff271ce66dd434282816dcb0b3f578c56803055bbaa1f81ea35",
+   "kind": "organic",
+   "label": "beodeul_organic/moss-stone",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/moss-stone.png"
+  },
+  {
+   "sha": "109b1741b50601d0d9fea1bbcca884055ab0f8d9150a22a695d26856dd1a17da",
+   "kind": "terrain",
+   "label": "beodeul_organic/moss-stones-flat",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/moss-stones-flat.png"
+  },
+  {
+   "sha": "2518ea4950fcaff00ec7e782f298710b835005705e7a4d5631b63ea39d697a42",
+   "kind": "organic",
+   "label": "beodeul_organic/bush-s",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/bush-s.png"
+  },
+  {
+   "sha": "1de0053a46b4198f5afa5642c8d75376efde67186955f42acc6259d86da8f30a",
+   "kind": "organic",
+   "label": "beodeul_organic/bush-m",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/bush-m.png"
+  },
+  {
+   "sha": "c0d664ea70cb24349f047dd3e8fb284bc0bf3ce79ee5af7790f832c0d24938a6",
+   "kind": "organic",
+   "label": "beodeul_organic/bush-berry",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/bush-berry.png"
+  },
+  {
+   "sha": "be2deaf7e2ffe2e48f39189807e9eff8879b6187ce98764c078d48a08dc7655d",
+   "kind": "organic",
+   "label": "beodeul_organic/shrub-tall",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/shrub-tall.png"
+  },
+  {
+   "sha": "6485c7b02277a049d678cee4d524d2ad7c0d2f688fe207324a0d41d02d11b024",
+   "kind": "organic",
+   "label": "beodeul_organic/bramble",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/bramble.png"
+  },
+  {
+   "sha": "ff9f5904d77b4e58e95a4f98a2a79501192b53b4613df3819123b7d168f174d4",
+   "kind": "organic",
+   "label": "beodeul_organic/log-long",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/log-long.png"
+  },
+  {
+   "sha": "6ac925d383b4281440971599d83017dcbb95f675e671999888e0cecfa2fe69da",
+   "kind": "organic",
+   "label": "beodeul_organic/log-short",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/log-short.png"
+  },
+  {
+   "sha": "d10235f551507253a427264e98d9d1a81a5592c47d49faaeab9cefcce162240f",
+   "kind": "organic",
+   "label": "beodeul_organic/log-mossy",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/log-mossy.png"
+  },
+  {
+   "sha": "01f2967b3720b6d78be8d227cf4d83e50f08d36794c19748626ec7997e5d19c3",
+   "kind": "organic",
+   "label": "beodeul_organic/stump-l",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/stump-l.png"
+  },
+  {
+   "sha": "b315ba684c237d482181910d9f6b36fd26138f3a264b028c8bc243a74f66befa",
+   "kind": "organic",
+   "label": "beodeul_organic/stump-s",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/stump-s.png"
+  },
+  {
+   "sha": "20946b567586d93623487beec93d387c698b3a962ec677f39464608ae134e02f",
+   "kind": "organic",
+   "label": "beodeul_organic/stump-shelf",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/stump-shelf.png"
+  },
+  {
+   "sha": "bbb0a5b2eef81cb60c967b3cdfb7cfee39ae6de9861019079f5a2a2457fe8837",
+   "kind": "organic",
+   "label": "beodeul_organic/shroom-red",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/shroom-red.png"
+  },
+  {
+   "sha": "1c3b5545cc94a9aecd52abc64a85e076c04718243232104fbb74e3210c0648fc",
+   "kind": "organic",
+   "label": "beodeul_organic/shroom-brown",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/shroom-brown.png"
+  },
+  {
+   "sha": "b5acea708442b906aad3059b843ffa0b13158537d6017d9b894cd197296eb2b9",
+   "kind": "organic",
+   "label": "beodeul_organic/shroom-pale",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/shroom-pale.png"
+  },
+  {
+   "sha": "8ecfbd05424128e743be45bd55d96628d0f7bad9b61b8b9996d80b51c5c285f1",
+   "kind": "organic",
+   "label": "beodeul_organic/shroom-ring",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/shroom-ring.png"
+  },
+  {
+   "sha": "fc93014f65a8fae222d815a188880ade9b5aaa90603a9ff62a54a49c545ed131",
+   "kind": "organic",
+   "label": "beodeul_organic/fern-s",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/fern-s.png"
+  },
+  {
+   "sha": "0adc414e9834fd3304f382faf5940a3c00602382d6c5b892b3c3f2bab42d2a53",
+   "kind": "organic",
+   "label": "beodeul_organic/fern-l",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/fern-l.png"
+  },
+  {
+   "sha": "2e38f3da7f7e7c3161d5d066bff16d13eb4d1bb4fcfecfb306b02476208f9e57",
+   "kind": "organic",
+   "label": "beodeul_organic/fern-cluster",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/fern-cluster.png"
+  },
+  {
+   "sha": "410bbddfb1c69f8cbb1af0c49f1c6c28012af2a294f6912f532ee0dd7cb0712e",
+   "kind": "organic",
+   "label": "beodeul_organic/grass-tuft-a",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/grass-tuft-a.png"
+  },
+  {
+   "sha": "23291ad794fc954a61c58282e871538c5a769f25c377c80b10fe4f3cfce06269",
+   "kind": "organic",
+   "label": "beodeul_organic/grass-tuft-b",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/grass-tuft-b.png"
+  },
+  {
+   "sha": "cd71c0fac5f58771d6d8ae4638ffaf715df799d78f0afbae15d50bfdcbd9cf53",
+   "kind": "organic",
+   "label": "beodeul_organic/grass-reeds",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/grass-reeds.png"
+  },
+  {
+   "sha": "3bd7547323a246e2d8656fe04f37354efbb1931ff77c2164fc7a102583ec718c",
+   "kind": "organic",
+   "label": "beodeul_organic/flowers-yellow",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/flowers-yellow.png"
+  },
+  {
+   "sha": "a02460bc7cb07abb69b7c5982c8da35bad158fa309ab183027867b87b94e1b22",
+   "kind": "organic",
+   "label": "beodeul_organic/flowers-blue",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/flowers-blue.png"
+  },
+  {
+   "sha": "fed775c1f50f97bd590b766dc4cf8ac14f474f9fc4390114c80513ecd203cbe9",
+   "kind": "organic",
+   "label": "beodeul_organic/flowers-white",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/flowers-white.png"
+  },
+  {
+   "sha": "00f1ff8fb495dfb5304144671e3d5a57f7498f907e0a10540a0f0a6f0b6cdb15",
+   "kind": "organic",
+   "label": "beodeul_organic/flowers-pink",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/flowers-pink.png"
+  },
+  {
+   "sha": "466df98a17af19e0d2f57a171bf046218e3dbc8e108914038fc42fa9fd465809",
+   "kind": "organic",
+   "label": "beodeul_organic/flowers-patch",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/flowers-patch.png"
+  },
+  {
+   "sha": "6b441f579bef4bd7a4dc815a8884b64ce282f69bf67fd9f3eb667543e4aab486",
+   "kind": "organic",
+   "label": "beodeul_organic/hollow-tree",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/hollow-tree.png"
+  },
+  {
+   "sha": "a9653802d12b59453d9344f306071cb68db55739135f7cd7901ba2810399b218",
+   "kind": "organic",
+   "label": "beodeul_organic/shrine-stone",
+   "source": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/shrine-stone.png"
+  }
+ ]
+}

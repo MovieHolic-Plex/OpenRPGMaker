@@ -1,0 +1,334 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3bd7547323a246e2d8656fe04f37354efbb1931ff77c2164fc7a102583ec718c",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "yellow wildflowers (wildflowers), natural map prop for the Beodeul 16px chipset, 1x1 tiles, walk-over ground decor (2nd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/flowers-yellow",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 명암 3단 < 4 (2/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)",
+   "명암 3단 < 4 (2/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 32,
+  "nearBlackEdge": 0.17,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "yellow flower heads (three small blossoms)",
+      "rows": "4-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green stems and leaves cluster",
+      "rows": "8-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a small clump of wildflowers: thin stems and leaves in rows 8-14 with yellow blossoms in rows 4-8. The silhouette is 2-9 px wide and has no band, ellipse, canopy plane or front-edge line that reads as a horizontal top surface. The blossoms are tiny dots on stems, so they are treated as decor. The plant is drawn as a vertical elevation, with stems and leaves seen from the front and no top-surface evidence. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a tiny sparse sprite, under one tile (about 10x10 source px), so the per-tile facts read 0 and I judged by eye. It uses 9 distinct colours, about the same as tree-1a786c (10). It shows a few green steps on the blades and stems, plus two or three yellow tones on the flower heads. The dark edge pixels are 0% neutral, so the outline is a dark green tint rather than a black sticker line. There are no large flat fills: near-flat coverage is 0%, and the blades and blooms are broken up by value. It is a little thinner than the dense tree canopies, but that is expected for a small ground-decor tuft. A careful artist would accept it next to the references, so I am not failing it for sparseness.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15254
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "yellow flower heads",
+      "rows": "4-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small yellow flower bud left",
+      "rows": "8-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stems and leaves",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The object is a sparse cluster of thin stems, leaves and small yellow blooms (silhouette 2-9 px wide, rows 4-14) on a transparent ground. It has no solid body, so there is no top surface, front-edge line, eave shadow, ellipse or front face to measure. It is an organic ground-decor plant that shows no built volume, so I measured no top rows or front face rows and gave it the neutral reading 'other'."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny wildflower sprite, smaller than one 16x16 tile (9 distinct colours in total), so the per-tile facts read 0 and I judged by eye. At 2x it shows a few yellow blossoms on thin green stems with a couple of leaf tones. That is about 3 visible steps, against 6 or more on the reference canopies. I can't clearly tell whether its darkest pixels lean green or neutral, so the outline reads as mixed. There is no flat fill, but it is sparse and small. Even allowing for a thin prop, it looks thinner and flatter than the references. It has no leaf clumps in several greens, no grass tufts or soil grain around the base, and the flowers have little highlight/shadow structure. A careful artist would not accept it next to the references without it looking like a sticker, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 9287
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "yellow flower heads",
+      "rows": "4-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left small yellow flower",
+      "rows": "8-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right orange-brown flower bud",
+      "rows": "7-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stems and leaves cluster",
+      "rows": "8-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The object is a small cluster of thin wildflower stems, leaves and tiny yellow blossoms on a transparent background, spanning rows 4-14 and 9 px wide at most. It has no built volume, no top surface with a front-edge line, no ellipse and no front face. The flower heads are 2-3 px blobs, and the leaves are drawn as diagonal strokes. It is a flat sprite of organic ground decor, so it reads as neither a 3/4 volume nor a front-elevation of a body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tiny sprite, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It is a small clump of green stems and leaves with three yellow blooms. It uses 9 distinct colours, about the same as reference tree-1a786c (10 total), which Beodeul treats as an acceptable low-colour sprite. The ramps are roughly 3 greens and 2-3 yellows, which is shallower than the 5-6 steps on the big canopies, but a one-tile walk-over flower decor does not need a full canopy ramp. Dark edge pixels are 0% neutral. The tiny outline leans dark green rather than black, so it reads as a dark material tone, not a sticker line. There is no 5x5 flat fill (0% near-flat). The bloom-and-leaf cluster shows some grain and variation, though it is a bit sparse next to the references. It would sit acceptably on grass beside the trees, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14980
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "yellow flower heads (three blooms at the stem tips)",
+      "rows": "4-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stems and leaves, with dark clump at the base",
+      "rows": "8-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sprite is three thin stems with small yellow blooms and green leaves, drawn in a frontal silhouette on rows 4-14. The width profile is irregular (2-9 px) and has no band ending in a front-edge line, no eave shadow, no ellipse and no roof plane. The flower heads are 2-3 px blobs, not horizontal surfaces. The darker green clump at rows 11-14 is leaf mass, not a ground-plane top. There is no receding side face. As a walk-over plant prop it has no top surface to measure, so I report 0 top rows with about 11 rows of upright, frontal plant."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny sprite, smaller than one tile, so the per-tile facts read 0 and I judged by eye. It has only 9 distinct colours in total, against 10 for tree-1a786c and 567 for tree-d43edd. The greens look like about 3 steps (dark, mid, light) and the yellow blossoms about 2 steps, which is shallower than the references' 5-6 steps per material. The dark edge pixels are not neutral (0% near-neutral), so the outline is tinted dark green, which is correct, and no 5x5 area is flat. However, the stems and blossoms are only a few pixels each, with no leaf clumps, grass tufts or per-petal highlights. Next to the references it looks thinner and flatter, a simple sticker-like scatter with little tonal variation. A careful artist would want more shading steps and texture before accepting it beside the reference trees, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16982
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.305Z",
+ "cells": {
+  "16": [
+   "71cd1df8af52e37d"
+  ],
+  "24": [
+   "355aca6a255c596c",
+   "448cc6b7943796d6",
+   "5236d918fee44bd1",
+   "6c1b172945f48923",
+   "706c281cf7a7c8be",
+   "e26876e186b93c50"
+  ],
+  "32": [
+   "042fb3519afcd0ad",
+   "07b141c7cdd54265",
+   "201c9fd66c46b711",
+   "25b93388372179b5",
+   "416b10b48dffa2c0",
+   "abbce83c3be03765"
+  ],
+  "48": [
+   "74a55a57d4e19e9b",
+   "74e368107f35f2b1",
+   "8f5f10933460b665",
+   "dda442738444d11b",
+   "f39b8bc5fcfce675",
+   "fb6160fa0d6a9cb7"
+  ]
+ }
+}

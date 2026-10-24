@@ -32,14 +32,14 @@
   },
   "emit": {
     "front": {
-      "x": 10,
-      "y": 42,
+      "x": 6,
+      "y": 36,
       "source": "auto"
     },
     "back": {
-      "x": 42,
-      "y": 30,
-      "source": "seed"
+      "x": 59,
+      "y": 22,
+      "source": "auto"
     }
   }
 }

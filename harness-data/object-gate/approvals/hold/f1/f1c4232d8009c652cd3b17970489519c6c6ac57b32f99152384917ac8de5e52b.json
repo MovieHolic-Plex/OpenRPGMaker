@@ -1,0 +1,14 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "f1c4232d8009c652cd3b17970489519c6c6ac57b32f99152384917ac8de5e52b",
+ "profileHash": "4d8774b517f41638",
+ "kind": "organic",
+ "decision": "allow",
+ "decidedBy": "user",
+ "decidedAt": "2026-10-24T13:25:52.340Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [],
+ "note": "forest-trunks T3 r8 — user approved directly 2026-10-24 (\"이건 이제 통과\"), relayed by coordinator; Argon VQA 7/7 PASS: harness-data/object-gate/vqa/forest-trunks-t3r8.argon-vqa.json",
+ "sig": "287e98659c9aaa32c80b0f49c35dd2488fa100dc965fc9e5d8622fbd2b8a964e"
+}

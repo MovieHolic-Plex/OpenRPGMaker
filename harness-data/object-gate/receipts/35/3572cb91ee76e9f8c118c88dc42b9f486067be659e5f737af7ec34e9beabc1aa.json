@@ -1,0 +1,315 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3572cb91ee76e9f8c118c88dc42b9f486067be659e5f737af7ec34e9beabc1aa",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "low flat rock slab (rock), natural map prop for the Beodeul 16px chipset, 2x1 tiles, standing object (3rd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/rock-slab",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 38,
+  "nearBlackEdge": 0.42,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rock slab top",
+      "rows": "4-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "rock front face",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 5 px at row 3 to 28 px at rows 9-12, which is a rounded rock mass. In the column scans (x=7, 15, 22), the light top plane (L≈148) covers rows 5-9 or 6-10, depending on the column. It ends in a 1-row edge line (L=111) at row 10 or 11. Below that, darker steps (L 79, 51, 31) form the shaded front face and eave shadow over rows 11-14, about 4 rows. This gives a top plane of about 6 rows over a 4-row front face, so it reads as three-quarter view. The green grass tuft at the left edge is minor and not part of the rock."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small gray rock about 2x1 tiles with a tiny green tuft at the left. It has only about 4 lightness steps (a light top, a mid body, a dark underside and a dark edge). Beodeul uses 5-6 per material, and the tree-d43edd reference shows far more variation. It measures 10 visible tones per tile, above tree-1a786c (7) but far below tree-d43edd (29). Near-flat coverage is 0%, so there are no large flat fills. But the body reads as a smooth blob with little per-facet shading, cracks, speckle or grain, so it looks like a sticker rather than a stone shaded one by one. Its dark edge pixels are 40% near-neutral, while both references are at 0%, so the outline is a mix of neutral grey and tinted lines and is not consistently the dark tone of the adjacent material. Overall it is thinner and flatter than the references, and the call is a fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16180
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rock slab top (light stone plane)",
+      "rows": "4-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "rock front face (dark underside)",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tuft at left edge",
+      "rows": "10-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In all three scanned columns a light top plane (#a09088) runs from about row 4-5 to row 9. Row 10 is a mid-tone edge line (#7a6a6c), and rows 11-14 step down through darker shadow (#584a52, #3a2e38, #231c26) as the south face. The silhouette widens from 5px at row 3 to 28px at rows 9-12, then narrows to 13px at row 14. That is a flat slab with a top surface of about 6 rows and a front face of about 4 rows, so it reads as three-quarter view, not a flat slab or an elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small grey rock slab about 2x1 tiles with a tiny grass tuft at its left. It shows roughly 4 lightness steps on the stone (highlight, light grey, mid, dark underside) and about 10 visible tones per tile, which is above tree-1a786c (7) and below tree-d43edd (29). Near-flat coverage is 0%, so there are no large flat fills, but the stone body looks fairly smooth, with little per-stone grain or cracks. 40% of its dark edge pixels are near-neutral, so the outline is partly neutral grey-black and partly tinted, which makes it mixed, whereas the references have 0% and use tinted dark material tones. The rock reads as somewhat soft and sticker-like next to the richly clumped canopies. Because it is a small, simple prop it is not penalised much for size, but the neutral outline share and the lack of texture detail put it a little below the reference standard. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12039
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rock slab top",
+      "rows": "4-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scans show a light top band (L about 148) at rows 5-9 or 6-10, depending on the column. It ends in a front-edge line of L=111 at row 10 (row 11 at x=7). Row 11 is a darker shadow step (L about 79-111). Below it is a dark front face at rows 11-14 (L 51 down to 31), about 4 rows. The silhouette widens from 5 px at row 3 to 28 px at rows 9-12, then narrows to 25 px and 13 px at rows 13-14, which is a lumpy slab shape. A small green grass tuft sits at the left edge and counts as decor, not as the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small grey rock slab with a tuft of green at its left edge. By eye it shows about 5 lightness steps: a light top highlight, mid grey, a darker underside and a shadowed base. A few speckle and crack pixels break up the surface. The measured facts support this: 10 visible tones per tile is above tree-1a786c (7) and well below tree-d43edd (29). Near-flat coverage is 0%, so there are no flat fills. Only 40% of dark edge pixels are near-neutral, so the outline is mixed. Part of it leans toward a tinted dark grey-green and is used selectively rather than as a uniform black sticker line. It is simpler and less textured than the richer reference, but a rock slab is naturally a low-detail object. It is roughly at the level of the simpler Beodeul tree reference, so a careful artist could accept it beside it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15819
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rock slab top",
+      "rows": "4-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "dark front face of slab",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tuft at left",
+      "rows": "10-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In the column scans, the light top (L about 148) runs from about row 5 to row 9, with a slightly darker highlight at the back rim. Row 10 (L=111) is the front-edge line. Row 11 (L=79) is the eave shadow, followed by dark front-face rows 12-14 (L 51 down to 31). The silhouette widens from 5 px at row 3 to 28 px at rows 9-12, then narrows at rows 13-14. That is a flat slab with a top surface of about 6 rows over a 4-row front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small grey slab with a lighter top, a mid body and a dark underside, plus a tiny grass tuft. That reads as about 4 distinct grey steps, against 5-6 on the reference canopies and trunks. The measured facts are not bad: 10 visible tones per tile is above tree-1a786c (7) but far below tree-d43edd (29), and near-flat coverage is 0%. The dark edge pixels are 40% near-neutral, while both references are 0%. So part of the outline is a plain grey-black line rather than a dark tint of the stone or grass beside it, which gives a mild sticker look. Per-stone cracks, speckle and facet highlights are sparse, so the slab looks thinner and flatter than the references next to it. A rock is naturally simpler than a tree, but with the neutral outline and few steps it does not clearly match the Beodeul craft level, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16609
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.220Z",
+ "cells": {
+  "16": [
+   "18ae2af0e0cd2378",
+   "48a392c25f1d94bb"
+  ],
+  "24": [
+   "01dcf17b062c1cbc",
+   "0e561f8f73107f8a",
+   "2a7b8f0adaeb0265",
+   "50cc1de55e95a05b",
+   "697d8a9c017f834d",
+   "8677eaee5f6c17cf",
+   "c1740350a8c8887e",
+   "c189b98020848df7",
+   "cfa8b888bc98dd04",
+   "d6bd9b18791a431d",
+   "e4ab1069fa4a12de",
+   "ec17c2fe0999ed32"
+  ],
+  "32": [
+   "693f8e5aae6d2d35",
+   "fd7a4527f0af4134"
+  ],
+  "48": [
+   "27aae6ea9d3ddb1d",
+   "365ed740f09d2ca8",
+   "4eaedda51c06532f",
+   "a5f42d7a3e8d2481",
+   "ebfa609c0574c1a9",
+   "f805c05a03dc8534"
+  ]
+ }
+}

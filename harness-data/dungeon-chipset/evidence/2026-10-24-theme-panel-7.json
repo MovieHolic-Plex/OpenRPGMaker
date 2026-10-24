@@ -1,0 +1,46 @@
+{
+ "round": "theme-walls-r7 / theme-props-r4 / theme-props-r2",
+ "panel": 7,
+ "date": "2026-10-24",
+ "boards": [
+  "qa-runs/walls/theme-walls-r7/board-wall.other_face-p7.png",
+  "qa-runs/walls/theme-walls-r7/board-wall.tower_face-p7.png",
+  "qa-runs/walls/theme-walls-r7/board-wall.other_rim-p7.png",
+  "qa-runs/walls/theme-props-r4/board-prop.minecart-p4.png",
+  "qa-runs/walls/theme-props-r2/board-prop.cracked_floor-p2c.png",
+  "qa-runs/walls/theme-props-r4/board-wall.ice_face-p4.png"
+ ],
+ "reviewers": {
+  "klb-sonnet-5-5": "a6db481310d59df33",
+  "argon": "a502b29871bf4528c"
+ },
+ "count_rule": "an item passes only when neither blind reviewer raises a major against the candidate",
+ "tally": {
+  "wall.other_face": {
+   "A1": "sonnet PASS borderline (domino two-dot repeat minor); argon FAIL (1px dotted crack, confetti specks)",
+   "A2": "sonnet FAIL (red-black crack no glow); argon PASS (minor: crack 1px line across bricks, 2-tile repeat)"
+  },
+  "wall.tower_face": {
+   "A1": "sonnet PASS borderline; argon FAIL (window flat sticker without recessed embrasure, star confetti, slit on baseboard)",
+   "A2": "FAIL both"
+  },
+  "wall.other_rim": {
+   "A1": "FAIL both (thin band, curb/neon frame, soft halo)",
+   "A2": "FAIL both"
+  },
+  "prop.minecart": {
+   "A1": "sonnet PASS (no wheels visible minor); argon FAIL (oversized vs person, flat side view)",
+   "A2": "sonnet PASS borderline; argon FAIL"
+  },
+  "prop.cracked_floor": {
+   "A1": "FAIL both (patch seam, flat ellipse, north thickness weak)",
+   "A2": "sonnet PASS borderline; argon FAIL (patch seam, missing north thickness)"
+  },
+  "wall.ice_face": {
+   "A1": "FAIL both",
+   "A2": "sonnet PASS borderline; argon FAIL (pasted icicle valance, 16px repeat, no ice glaze on stone)"
+  }
+ },
+ "picks": {},
+ "outcome": "no item cleared both reviewers; redraw in the next rounds"
+}

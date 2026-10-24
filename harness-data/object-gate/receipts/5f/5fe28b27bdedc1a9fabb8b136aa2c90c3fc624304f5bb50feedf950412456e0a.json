@@ -1,0 +1,361 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5fe28b27bdedc1a9fabb8b136aa2c90c3fc624304f5bb50feedf950412456e0a",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "scattered pebbles (rock), natural map prop for the Beodeul 16px chipset, 1x1 tiles, walk-over ground decor (2nd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/rock-pebbles",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 질감 없음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "질감 없음 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 38,
+  "nearBlackEdge": 0.37,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large pebble (right)",
+      "rows": "4-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small pebble (left)",
+      "rows": "7-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tiny stones (bottom)",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The main body is a dome-shaped pebble cluster in rows 4-10. The width grows 4, 6, 9, then 13 in rows 7-9, and falls to 7 at row 10, which is the dark ground shadow. The lighter highlight in rows 5-6 (L about 148 and 111) is the lit crown of a rounded stone. It has no front-edge line and no eave shadow, and the width profile is not an ellipse. Below it the tone steps down to near-black by row 10 (#584a52, #3a2e38, #231c26), which gives a shaded rounded body of about 4 rows. This is a rounded natural lump with a shaded body and a small highlight, not a flat-topped box with a front face. Small separate stones sit in rows 12-14, and the left pebble covers rows 7-10."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small cluster of 2-3 grey-violet pebbles smaller than one tile, so the per-tile facts read 0 and I judged by eye. It has only 6 distinct colours in total, against 14 for the bench and lamp and 38-40 for the stall and well. Each stone shows about 3 steps (dark rim, mid body, one highlight), where Beodeul shades stones one by one with 5-6 steps and grain dots. The outline is mixed: 56% of dark edge pixels are near-neutral, so part of it leans toward a neutral dark line rather than a darker tint of the stone. There are no large flat fills, but the stones look slightly thinner and more sticker-like than a careful Beodeul rock. With no clearly equal craft and the rule to fail when in doubt, this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17036
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large pebble (right)",
+      "rows": "4-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small pebble (left)",
+      "rows": "7-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tiny pebble (bottom)",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Scattered pebbles are low rounded stones. The largest pebble (rows 4-10, widths 4,6,9,13,13,13,7) has a lighter highlighted dome on top (rows 4-7, L about 111-148) and then darkens to a shadowed underside (rows 8-10, L 79, 51, 31) that sits on the ground. The silhouette widens from the top and narrows at row 10, so it has a rounded top plus a dark front/shadow base. The small left pebble and the tiny pebble at rows 12-14 are drawn the same way. There is no ellipse cap or edge line. Debris is meant to lie flat, so this reads as stones with a lit top and a shaded front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny cluster of 3-4 grey pebbles, a sparse prop, so the per-tile density fact (0) can't be used against it. By eye, each pebble has only about 3 tones: a dark rim, a mid grey and a light top spot. The whole piece uses just 6 distinct colours, against 14 for the bench and lamp and 38-40 for the stall and well. The outline is mixed: 56% of dark edge pixels are neutral, so it leans toward a near-black sticker rim rather than a dark tint of the stone. There are no flat 5x5 fills, but there is also no per-stone grain, speckle or cast-shadow detail, and no grass or soil contact to blend the pebbles into the ground. Beside the references it looks thinner and flatter than a careful artist would accept for a Beodeul piece, so I am failing it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12054
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large pebble/rock (right) lit upper mound",
+      "rows": "4-7",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "large pebble front/shadow side",
+      "rows": "8-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "small pebble (left)",
+      "rows": "7-10",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "tiny pebble bits",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main pebble is a rounded mound whose width profile goes 4,6,9,13,13,13,7 over rows 4-10, widening and then narrowing like an ellipse. Its lit upper rows 4-7 (L about 111-148) form the top surface. Rows 8-10 darken steadily (L 79, 51, 31) into a shaded front face of 3 rows with a dark base. There is no hard front-edge line, because the shading is a smooth gradient, but the lit top and dark front are distinct. The smaller pebble to the left follows the same pattern, and a few tiny bits sit at rows 12-14. This is organic debris, so a 4-row lit top over a 3-row shaded front reads as a 3/4 view rather than a flat slab or a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny cluster of 3-4 grey pebbles with only 6 distinct colours in total, against 14-40 for the references. Each stone reads as a dark rim, one or two body tones and a small highlight, so about 3 shading steps against the references' 5-6. The dark edge pixels are 56% near-neutral, so the rim leans grey/black rather than a clearly tinted darker version of the stone. Stones are not shaded one by one with grain or speckle, and there is no soil or grass contact detail around them. The 16x16 tile facts are 0 because the piece is sparse, so density is judged by eye. It looks thinner and more sticker-like than the bench or lamp references. It is clean and fits the kind, but a careful artist would not accept it as equal to Beodeul stone work.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16478
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large pebble top (lit dome)",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "small left pebble",
+      "rows": "7-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tiny stray chips",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the large pebble at right (rows 4-10). Its width grows 4, 6, 9, 13 over rows 4-7, so the top is a lit dome (about 4 rows, lightness up to 148). Below it, rows 8-10 darken steadily (79, 51, 31) and form a shaded front face before the width drops to 7 at row 10. The transition at row 8 is a gradient rather than a crisp edge line, so the top-surface evidence is weak. The small left pebble (rows 7-10) has the same light-top, dark-bottom shading. The two stray chips at rows 12-14 are minor detail. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small sparse cluster of 3-4 grey pebbles, so the per-tile facts (0 visible tones, 0% flat) can't be used against it and I judged by eye. It has only 6 distinct colours in total, against 14 for the bench and lamp references and 38-40 for the stall and well. Each pebble reads as roughly 3 lightness steps: a dark rim, a mid grey and a light top highlight. Beodeul shades stones one by one with about 5-6 steps. Its dark edge pixels are 56% near-neutral, so the outline sits between a neutral black and a tinted material tone. That makes it a mixed outline leaning slightly toward the sticker look, compared with the tinted outlines on the hedge, stall and well. The pebbles have no grain, speckle, or grass or soil contact with the ground. Their form is clean but thinner and flatter than the references, so a careful artist would likely ask for more ramp steps and a tinted outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17105
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.232Z",
+ "cells": {
+  "16": [
+   "5aa0e38c6e2ec5df"
+  ],
+  "24": [
+   "0b8dfcb8404df330",
+   "20b1d4e7acbcdc26",
+   "2b5b60402450af12",
+   "3d9cd2ddfd3a19b6",
+   "cc09240f0a4a1f40",
+   "d371557f39ec96c0"
+  ],
+  "32": [
+   "2a705b2af2ad5104",
+   "7859b2861c2bb536",
+   "7a681bcde7adb7b6",
+   "a29a16eeffafde23",
+   "b91e4c1a8ecea8b7",
+   "eb8d2873ba8491f4"
+  ],
+  "48": [
+   "01008a4a8020caa7",
+   "08a88ba4b1d75512",
+   "4da85867678d23f3",
+   "5a26594b92226f7b",
+   "d97a6acce0aecf8f",
+   "e4c740af5d606d05"
+  ]
+ }
+}

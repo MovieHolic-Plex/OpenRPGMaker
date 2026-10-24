@@ -1,0 +1,291 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "23291ad794fc954a61c58282e871538c5a769f25c377c80b10fe4f3cfce06269",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "tall grass tuft (grass tuft), natural map prop for the Beodeul 16px chipset, 1x1 tiles, walk-over ground decor (2nd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/grass-tuft-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 명암 3단 < 4 (3/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "명암 3단 < 4 (3/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 32,
+  "nearBlackEdge": 0.11,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass blades fan",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tuft is a fan of vertical blades. The silhouette widens from 2 px at row 1 to 14 px at row 11. The lightest pixels are at the blade tips (rows 1-2). The darkest pixels are at the base (rows 11-14). There is no band ending in a front-edge line, no ellipse, no sloped roof plane and no contents of an open container. Only the blades are seen in elevation, with no horizontal surface. The object is organic ground decor, so the lack of a top surface is expected for a plant, but it still reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a very small tuft, about 10x12 px, so it is smaller than one tile and the per-tile facts read 0. I judged it by eye. It has only 6 distinct colours in total and about 3 visible green steps (dark, mid, light blade tips). The references show 7 visible tones per tile (tree-1a786c) and 29 (tree-d43edd). Those have layered clumps, several greens, and tinted dark-green shading. The candidate's blades are thin and spiky with little clump structure and no per-blade highlight variety. The outline is not near-neutral (0% neutral edge pixels) and leans dark green, but it is only a thin dark edge with no inner shading, so it reads as a simple sticker. Next to the references the tuft looks thinner, flatter and shallower. It has no 5x5 flat areas, but that is only because the object is tiny. A tall grass tuft can be simple, but it would need 4-5 greens with blade-by-blade highlights to match Beodeul's richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 9723
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass blade fan (whole tuft)",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tuft is a fan of upright blades. The width profile grows steadily from 2 px at row 1 to 14 px at row 11, then narrows to 7 px at row 14. It never widens and then narrows again, so there is no ellipse. No row band ends in a front-edge line or eave shadow, and no contents are visible. The column scans show only vertical blade runs, with dark green at the base in rows 11-14. The whole body is a vertical silhouette with no horizontal top surface, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny grass tuft, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It has only 6 distinct colours and about 3 visible green steps (dark, mid, light blades). Its blades are separated by value, with a dark green edge rather than a black line, so the outline is dark_material_tone (0% neutral dark edge pixels, matching the references). It has no flat fills, but the clump is sparse and simple. The references use 6 or more steps with clustered leaf texture. A tuft is naturally small and thin, so I did not fail it for size. Against the reference tiles, though, it looks flatter and thinner: few blades, little tonal variation, no highlight clusters. A careful artist would likely want more blade layering and a highlight step before placing it beside these trees.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10617
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass blades fan (whole tuft)",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The tuft is a fan of pointed blade shapes. It widens from a 2px tip at row 1 to 14px at row 11, then narrows to 7px at row 14, and is darker toward the base. It has no horizontal surface, no front-edge line, no eave shadow and no ellipse. It is an organic plant silhouette seen from the front, so the box-like top and front-face rules do not apply. There is no isometric side face. Column x=8 runs rows 1-14 from light tip to dark base, which shows blade shading and not a top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny tuft, smaller than one 16x16 tile, with only 6 distinct colours, so the per-tile facts are 0 and I judged it by eye. It has about 3 green steps (dark, mid, light) in a few blades, while the references show 5-6 steps with leaf clumps and per-leaf highlights. Its dark edge pixels are tinted dark green (0% neutral), which matches Beodeul, and there are no flat fills. But the blades are sparse and thin, with little clustering, grain or highlight variation. Next to the references it looks flatter and thinner. A grass tuft is a sparse prop, so I did not fail it for size alone. Even so, the shading is shallow, with no blade-by-blade highlights or soil grain at the base, and a careful artist would not accept it beside the references as equally rich.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 8969
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass blade clump (whole tuft)",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The tuft is a fan of pointed blades. Its silhouette widens steadily from 2 px at row 1 to 14 px at row 11, then narrows to 7 px at row 14. The column scans show vertical blade strokes with no front-edge line, no eave shadow, no ellipse and no contents. Dark shadow pixels sit at the base in rows 11-14. It is a free-form plant with no built top or front face, so it fits none of the box-like structural categories."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small tuft, under one tile, so the per-tile facts read 0 and I judged by eye. It has 6 distinct colours. The reference tree-1a786c has only 10 colours in total and 7 visible tones per tile, so the candidate is in the same range. By eye, the blades step through about 5 greens, from dark base to bright tips, with several separate blade tips and no large flat fill (near-flat coverage 0%). The dark edge pixels are tinted dark green rather than neutral (0% near-neutral), which matches the Beodeul habit of using the adjacent material's dark tone. It is thinner than the big tree-d43edd canopy, but that is expected for a sparse single-tile ground prop. It does not look flatter or more sticker-like than the references, so a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15201
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.301Z",
+ "cells": {
+  "16": [
+   "7864a62e9c6f3463"
+  ],
+  "24": [
+   "124affbfb64e2dcc",
+   "1f84599ec26c8149",
+   "3e073b82fe785ca1",
+   "bc12e59cf07265eb",
+   "ce2c108ee7a505ea",
+   "e9cfe736ccf817be"
+  ],
+  "32": [
+   "02d0191533d2078e",
+   "8a67bf48f909da94",
+   "a3478931efa18a36",
+   "b6c46d7ca63d1692",
+   "cba11074e6cc1ab4",
+   "ef8fae2325506d36"
+  ],
+  "48": [
+   "2274293517969e84",
+   "267c329cfced9946",
+   "4c791d9e7fe81226",
+   "867951172cc94eca",
+   "8a3ae188cc00df00",
+   "fec88ec1502c7a6f"
+  ]
+ }
+}

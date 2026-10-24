@@ -1,3 +1,4 @@
+import { isTouchUiHost } from "@/player/touchTap";
 import { stepStopReason, stopsReading } from "@/project/dialogueSystem";
 import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
 import { playQuickTimeEvent, playTeleportMenu, playTimedChoice } from "@/player/playSceneMinigames";
@@ -25,6 +26,7 @@ import { resolveEventPage } from "@/project/io";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
 import type { Interpreter } from "@/player/interpreter";
 import { applyDialogueFacing } from "@/player/playSceneDialogueFacing";
+import { stageBusts } from "@/player/playSceneBustStage";
 import { playInn, playShop } from "@/player/playSceneCommerce";
 import { playOpenChest } from "@/player/playSceneChest";
 import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
@@ -307,7 +309,7 @@ export async function runCommands(
     // 다시 깔면서 쓰레기 수거까지 겹쳐, 문 칸을 밟는 순간 한 프레임이 100ms 넘게 멈췄다(2026-10-24 프로파일).
     if (!(result.kind === "transfer" && result.mapId !== scene.map.id)) scene.refreshRuntimeSurfaces();
     while (result.kind !== "done" && current()) {
-      if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", "Esc Esc: 컷신 건너뛰기");
+      if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", isTouchUiHost(scene.game?.canvas) ? "B 두 번: 컷신 건너뛰기" : "Esc Esc: 컷신 건너뛰기");
       const step = result;
       if (step.kind === "changeTile") changedTerrainMaps.add(step.mapId);
       result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current, () => { handledFailure = true; });
@@ -418,6 +420,8 @@ async function consumeBlockingStep(
       markCompanionSpeaking(project, scene, speaker);
       // 말하는 인물이 듣는 인물 쪽으로 돈다(둘 다 맵에 있고 가까울 때, text.autoFace=false 면 안 돈다).
       applyDialogueFacing(scene, step, currentEventId);
+      // 흉상 좌우·듣는 흉상을 맵 위 자리로(text.bustSide = "stage").
+      const staged = stageBusts(scene, step);
       await dialogue.showText({
         speaker,
         look: resolveDialogueLook(project, {
@@ -430,7 +434,8 @@ async function consumeBlockingStep(
         }),
         ...dialogueSceneHooks(scene, { speaker, currentEventId }),
         body: step.body,
-        face: step.face,
+        face: staged ? staged.face : step.face,
+        ...(staged ? { stageListener: true, ...(staged.listenerFace ? { listenerFace: staged.listenerFace } : {}) } : step.listenerFace ? { listenerFace: step.listenerFace } : {}),
         settings: textWindowSettings(scene.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS, step.position),
         textContext: { session: scene.session, project: store.getCurrent() },
         playerTileY: scene.tileY,

@@ -1,0 +1,317 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cd71c0fac5f58771d6d8ae4638ffaf715df799d78f0afbae15d50bfdcbd9cf53",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "pale seed-head grass clump (grass tuft), natural map prop for the Beodeul 16px chipset, 1x1 tiles, walk-over ground decor (2nd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/grass-reeds",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 32,
+  "nearBlackEdge": 0.08,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seed heads (three pale golden tufts on stalks)",
+      "rows": "2-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass blade clump (main body)",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a grass tuft: thin vertical blades (rows 6-14) fan out from a base, topped by three small seed heads (rows 2-5, widths 1-7). It has no band ending in an edge line, no ellipse, no roof plane and no visible contents. The silhouette widens steadily from 5 px at rows 6-8 to 12 px at rows 11-12, so there is no lid or cap profile. Blades are drawn as an elevation view with no horizontal surface. The seed heads are decor-like organic tips and are not expected to show a top. As an organic walk-over ground decor it has no top surface (main_top_rows 0), so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The tuft is smaller than one tile, so the per-tile facts read 0 and I judged by eye. It is a sparse, thin sprite of a few green blades with yellow seed heads and a dark base. Dark edge pixels are 0% neutral and the lean looks greenish-brown, so the outline is a dark material tone and not a black sticker line. Nothing is flat-filled, but at about 10 total colours each material gets only about 2-3 steps: the greens are only 2-3 shades and the seed heads only 2 yellows. The references carry 5-6 steps per material and 7 to 29 visible tones per tile, with clumped leaf masses and per-clump highlights. Beside them the tuft looks thinner and simpler, with little blade-to-blade shading or grain at the base, and it does not reach the Beodeul level of detail. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12939
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seed heads (three pale tan tufts on stalks)",
+      "rows": "2-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass blade clump (main body)",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a clump of grass blades (rows 6-14, widening from 5 to 12 px) with three seed heads on stalks above (rows 2-5), which I treat as decor. The blades are drawn as vertical strokes with no horizontal top surface, no front-edge line, no eave shadow and no ellipse. The silhouette widens steadily toward the base (width 5 at rows 6-8, 12 at rows 11-12) and then ends, with no narrowing that would indicate a mound top. It is a natural organic tuft, so a flat elevation with no top is expected, but it is still measured as having no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny sparse tuft, roughly 8x10 source pixels, smaller than one tile, so the per-tile facts read 0 and I judged by eye. Its dark edge pixels are 0% neutral and the outline leans dark green, so it is not a sticker outline. It has no flat fills, but its only ramps are about 3 greens plus a yellow/orange seed-head pair across 10 colours. Beodeul references show 5-6 steps per material, with clumped leaf masses and grain. The blades are thin single strokes with little per-blade highlight or shadow, and the seed heads are just a few dots. Next to the references it looks thinner and flatter. A careful artist would want a fuller clump with more blade tones and seed-head variation before accepting it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 11578
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seed heads (three golden tufts on stalks)",
+      "rows": "2-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass blade clump (main body)",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a tuft of grass blades fanning upward from a base, with three seed heads on thin stalks at rows 2-5. The clump spans rows 6-14 and is drawn as overlapping vertical blades. It has no band ending in a front-edge line, no ellipse, no roof plane, and no visible contents. Widths grow from 5 at rows 6-8 to 12 at rows 11-12 and then taper. That is a plain blade silhouette, not a horizontal surface. The seed heads count as decor on the stalks. Because no top surface is drawn, it reads as a front-elevation silhouette."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny tuft, about 12px wide and smaller than one tile, so the per-tile facts are 0 and I judged by eye. Its 10 distinct colours match tree-1a786c's total, but that reference shows 7 visible tones per tile and tree-d43edd shows 29. The candidate's green blades have only about 3 lightness steps (dark, mid, light), plus a few yellow and orange seed-head dots. Dark edge pixels are 0% neutral, so the outline is dark green and brown, not near-black. There are no flat fills because the piece is too small to have any. The blades are short, simple strokes with little grain or per-blade highlight variation, and the clump has little internal clustering. Next to the references it reads thinner and simpler than a Beodeul plant, closer to a minimal sprite than a fully shaded one. This is borderline for a sparse prop, and with the shallow green ramp I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14936
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seed heads (three golden tufts on stalks)",
+      "rows": "2-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass blade clump (main body)",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a grass clump: three seed heads on thin stalks (rows 2-5) above a fan of blades (rows 6-14). The width profile widens from 5 to 12 px toward the base (rows 6-12) and then narrows (rows 13-14), which is a leafy silhouette and not an ellipse cap. No band ends in a front-edge line, there is no eave shadow, and no contents or opening are visible. The blades are vertical strokes, so no horizontal top surface is shown. As an organic tuft it has no built structure that needs a top, so all_major_parts_have_top is true, but the main body reads as a front elevation with main_top_rows 0."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a sub-tile tuft, so the per-tile facts read 0 and I judged by eye. It is a sparse object, so I do not count the density fact against it. It has 10 distinct colours in total, the same as tree-1a786c. Its blades show only about 2-3 greens plus 1-2 seed-head tones, which is about 4 steps against the 5-6 of the references. It has no 5x5 flat fills, and the near-neutral dark-edge share is 0%, so the dark edge pixels are tinted rather than black. The tuft is only a few blades with no clumping, grain or highlight variation, so it looks thinner and more sticker-like than the references' leaf-clump shading. A careful artist would likely want more tonal steps and blade layering, and I cannot confirm it matches the reference quality, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22219
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.304Z",
+ "cells": {
+  "16": [
+   "8fa538db6e90e217"
+  ],
+  "24": [
+   "5bc16b3e61f3d4a9",
+   "7529e631fb80a478",
+   "79565f9988a0f14e",
+   "8f42940f5f49b31c",
+   "aa16017078f1b7b2",
+   "ec9a591e511c5b45"
+  ],
+  "32": [
+   "113365d5c27de077",
+   "3dba97ad49995f22",
+   "8955d52e753b96f6",
+   "ba6c039e9381694f",
+   "be6ec4d9c42356fd",
+   "eb16002b2e85fc24"
+  ],
+  "48": [
+   "13cf915591eecb46",
+   "3ce703df0028bc2c",
+   "6f7ed3eefc76c8a8",
+   "7a2049dd5116694e",
+   "c55854ce7d927204",
+   "fb18618e5aa4caa1"
+  ]
+ }
+}

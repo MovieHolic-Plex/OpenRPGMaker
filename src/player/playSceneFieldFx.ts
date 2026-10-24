@@ -526,7 +526,9 @@ export async function playFieldFx(scene: PlaySceneContext, fx: FieldFx, target: 
       const project = store.getCurrent();
       if (doorTileAt(project, scene.map, cell.x, cell.y)) {
         playSe(DOOR_OPEN_SE);
-        void swingDoorOpen(scene, project, scene.map, cell);
+        const textureKey = tilesetTextureKeyFor(scene, project, scene.map);
+        const plan = textureKey ? tileDoorPlan(scene, project, scene.map, cell, textureKey, mapTileSize(scene.map)) : null;
+        if (plan?.kind === "tile") void swingDoorOpen(scene, plan);
       }
       break;
     }

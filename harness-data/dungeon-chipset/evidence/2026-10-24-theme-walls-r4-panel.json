@@ -1,0 +1,32 @@
+{
+ "round": "theme-walls-r4",
+ "panel": "r4",
+ "date": "2026-10-24",
+ "boards": [
+  "qa-runs/walls/theme-walls-r4/board-wall.tower_rim-p4.png"
+ ],
+ "criteria": "(1) reads in 3/4 top-down at 1x as top thickness of a heavy wall; (2) same game as Beodeul reference (palette, 4-6 steps, material-tone dark edges, no glow/toy look); (3) seamless, no 16px repeat; (4) fits theme. Blind: only PNG paths and criteria given.",
+ "count_rule": "a major counts when either reviewer raises it as a major",
+ "tally": {
+  "wall.tower_rim": {
+   "A1": "0 majors (klb-sonnet-5-5 PASS marginal, argon PASS)",
+   "A2": "argon FAIL (neon purple outer border)"
+  }
+ },
+ "picks": {
+  "wall.tower_rim": {
+   "A1": [
+    "klb-sonnet-5-5",
+    "argon"
+   ]
+  }
+ },
+ "gate": {
+  "wall.tower_rim A1": "PASS 380bee36eb7f (terrain)"
+ },
+ "answers_source": "verbatim result blocks of blind reviewer agents a03981e88e3d50e5b (klb-sonnet-5-5) and a3b8cd331e2d352cf (argon)",
+ "answers": {
+  "klb-sonnet-5-5": "Tower rim A1: PASS (marginal). MAJOR: none that I can confirm. MINOR: band is single tile wide with rounded beaded edge, reads somewhat like path curb; lilac halo fading into void. Better: A1.",
+  "argon": "wall.tower_rim Candidate A1: PASS. MAJOR: None. Slate-blue tones and dark material edges harmonize with tower_face A1 and Beodeul shading rules. MINOR: Slight 16px periodic dark seam along the left and right vertical rims. Candidate A2: FAIL (bright saturated purple outer border reads as neon outline). Better: A1."
+ }
+}

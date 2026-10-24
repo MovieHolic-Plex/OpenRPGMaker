@@ -1016,6 +1016,7 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
       tags.push(effectiveness <= 0 ? { kind: "immune", text: "무효" } : effectiveness > 1 ? { kind: "weak", text: "약점!" } : { kind: "resist", text: "저항" });
     }
     if (feedback.weaponAffinity) tags.push({ kind: "affinity", text: "무기↑" });
+    if (feedback.exploit) tags.push({ kind: "exploit", text: "공략!" });
     if (tags.length > 0) {
       const tag = document.createElement("span");
       tag.className = "battle-damage-popup-tag";
