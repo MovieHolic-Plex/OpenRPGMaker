@@ -126,6 +126,8 @@ const bridge = {
     gameMine: invoke(OPRN_CHANNELS.storeGameMine),
     gamePublish: invoke(OPRN_CHANNELS.storeGamePublish),
     gamePost: invoke(OPRN_CHANNELS.storeGamePost),
+    gameReviews: invoke(OPRN_CHANNELS.storeGameReviews),
+    reviewReply: invoke(OPRN_CHANNELS.storeReviewReply),
     gameCurrent: invoke(OPRN_CHANNELS.storeGameCurrent),
     report: invoke(OPRN_CHANNELS.storeReport),
     concepts: invoke(OPRN_CHANNELS.storeConcepts),

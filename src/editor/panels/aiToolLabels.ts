@@ -63,6 +63,8 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   store_set_visibility: inspect("스토어 상품 숨기기 제안", "box"),
   store_game_changes: inspect("스토어 업데이트 재료 읽기", "box"),
   store_game_post: inspect("스토어 소식 글 제안", "box"),
+  store_game_reviews: inspect("스토어 평가 읽기", "box"),
+  store_review_reply: inspect("평가 답글 제안", "box"),
   resize_map: build("맵 크기 바꾸기", "map"),
   remove_map: build("맵 삭제", "map"),
   duplicate_map: build("맵 복제", "map"),
