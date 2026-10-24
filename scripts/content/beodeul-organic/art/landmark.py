@@ -306,8 +306,8 @@ def hollow_tree_r12():
     W, Hh = 48, 64
     g = grid(W, Hh)
     # trunk span per row: steps of 1-2px every 4-6 rows on each side, slight lean, flare into roots
-    LST = {9: 18, 14: 17, 19: 18, 24: 16, 30: 17, 35: 18, 40: 17, 45: 16, 48: 15}
-    RST = {9: 29, 13: 30, 18: 29, 23: 31, 29: 30, 34: 29, 39: 30, 44: 31, 48: 32}
+    LST = {9: 18, 12: 17, 15: 18, 18: 17, 21: 16, 24: 17, 27: 16, 30: 17, 33: 18, 36: 17, 39: 16, 42: 17, 45: 16, 48: 15}
+    RST = {9: 29, 11: 30, 14: 29, 17: 30, 20: 31, 23: 32, 26: 33, 29: 32, 32: 31, 35: 30, 38: 31, 41: 30, 44: 31, 47: 32}
     def step(tab, y):
         v = None
         for k in sorted(tab):
@@ -340,6 +340,14 @@ def hollow_tree_r12():
                 g[y][x] = up[g[y][x]]
             elif hv > 0.75:
                 g[y][x] = dn[g[y][x]]
+    for (x, y, c) in ((33, 24, "m"), (33, 25, "d"), (34, 25, "d"), (33, 26, "d"), (34, 26, "D"), (34, 27, "D"), (33, 27, "D"), (33, 28, "D")):
+        g[y][x] = c
+    for (x, y) in ((31, 24), (32, 24)): g[y][x] = "l"
+    # no isolated dark knots above the hollow: lighten plate cracks that form 2x2 dark blobs in rows 18-38
+    for y in range(18, 39):
+        for x in range(17, 31):
+            if all(g[y + dy][x + dx] == "D" for dx in (0, 1) for dy in (0, 1)):
+                g[y][x + 1] = "d"; g[y + 1][x] = "d"
     # broken top in 3/4: ragged rim, dark rotten opening, lit rim in the trunk's light brown (no orange)
     a, b = sp(9)
     rim = [3, 1, 0, 1, 2, 2, 1, 0, 1, 2, 3, 2]
@@ -403,7 +411,7 @@ def hollow_tree_r12():
     # outline: dark on bottom/right, trunk-dark on lit edges
     outline(g, "o", "D", "hlmdDkq")
     # moss clumps (woodland ramp), 2x2 and 3x2
-    for (x0, y0, pat) in ((17, 26, ["GM", "gG"]), (18, 34, ["MG", "Gg"]), (10, 51, ["GMG", "gGg"]), (35, 51, ["MG", "gG"]), (19, 10, ["G", "g"])):
+    for (x0, y0, pat) in ((17, 30, ["GM", "gG"]), (10, 51, ["GMG", "gGg"]), (35, 51, ["MG", "gG"]), (19, 10, ["G", "g"])):
         for j, r in enumerate(pat):
             for i2, c in enumerate(r):
                 if g[y0 + j][x0 + i2] not in ".kq": g[y0 + j][x0 + i2] = c

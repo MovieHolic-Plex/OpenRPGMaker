@@ -69,21 +69,17 @@ LEANL = [" aef", "efbfd", "mgnd", " ji", "pq", "SSS"]
 
 def ring():
     c = canvas(32, 32)
-    # trampled darker grass inside the arc: loose 2-4px clumps (lower-left inner side)
-    for x, y, r in ((9, 15, ["TT", "TTT"]), (13, 14, ["TT"]), (12, 18, ["TTT", " TT"]),
-                    (16, 17, ["TT", "T"]), (8, 19, ["TT"]), (15, 21, ["TT"])):
-        stamp(c, x, y, r)
-    # arc ~ a third of a circle around (16,14), from left (west) down to south-south-west
-    # cluster A (3 overlapping, different sizes) on the west side, back to front
-    stamp(c, 4, 9, SML)
-    stamp(c, 6, 11, MID)
-    stamp(c, 2, 13, BIG)
-    # cluster B (2) at the south-west, one leaning left
-    stamp(c, 12, 23, LEANL)
-    stamp(c, 15, 25, SML)
-    # lone small caps off the arc
-    stamp(c, 7, 22, TNY)
-    stamp(c, 21, 26, TNY)
+    # 3 soft dark-grass clumps inside the arc (no single specks)
+    stamp(c, 12, 15, ["TTT", "TTT"])
+    stamp(c, 15, 18, ["TT", "TTT"])
+    stamp(c, 11, 19, ["TT", "TT"])
+    # continuous arc from north-west down to south: cluster A (3), lone cap, cluster B (2)
+    stamp(c, 6, 8, SML)
+    stamp(c, 8, 10, MID)
+    stamp(c, 4, 12, BIG)
+    stamp(c, 6, 19, TNY)
+    stamp(c, 10, 22, LEANL)
+    stamp(c, 14, 24, SML)
     return done(c)
 
 K.update({"T": "#2e5022", "U": "#264d2c"})
