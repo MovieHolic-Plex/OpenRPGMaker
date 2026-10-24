@@ -305,6 +305,21 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     }
     if (fixed.length) return `m2Command ${command.commandId} 의 ${fixed.join(",")} 숫자를 글자로 바꿨습니다.`;
   }
+  // 함정·독초 이벤트가 showAnimation/showEmote 에 target 을 빠뜨려 「target가 객체가 아닙니다」로 거절됐다(2026-10-24 g2-poison-trap·g3-sleep-gas).
+  //   빠졌거나 "party"·"hero" 같은 주인공 낱말이면 주인공("player")으로 받는다. showEmote 의 text 는 emote 별칭.
+  if ((command.kind === "showAnimation" || command.kind === "showEmote") && (command.target === undefined || (typeof command.target === "string" && command.target !== "player"))) {
+    const was = command.target;
+    if (was === undefined || /^(party|hero|actor|주인공|파티|self|me)$/iu.test(String(was))) {
+      command.target = "player";
+      const emoteFix = command.kind === "showEmote" && command.emote === undefined && typeof command.text === "string" ? (command.emote = command.text, delete command.text, " text 를 emote 로 옮겼습니다.") : "";
+      return `${command.kind}.target ${was === undefined ? "이 없어" : `"${String(was)}" 를`} 주인공("player")으로 받았습니다.${emoteFix}`;
+    }
+  }
+  // 전직 명령에 classId 로 쓴 사례(2026-10-24 g3-class-change) — 런타임은 toClassId 만 읽어 기본 전직으로 갔다.
+  if (command.kind === "promoteActor" && command.toClassId === undefined && typeof command.classId === "string") {
+    command.toClassId = command.classId; delete command.classId;
+    return "promoteActor.classId 를 toClassId 로 옮겼습니다(전직할 직업 칸은 toClassId).";
+  }
   if (command.kind === "changeParty") {
     const actorFix = canonicalizePartyActorAlias(command);
     if (command.action === "add" || command.action === "remove" || command.action === "lead") {

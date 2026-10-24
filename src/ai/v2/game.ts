@@ -7,12 +7,12 @@ import { createPiToolset, type PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { getTool } from "@/editor/tools/toolRegistry";
 import type { PiAssistantV2Env } from "./env";
 
-export const GAME_WORDS = /퀘스트|의뢰|심부름|부탁|아이템|회복약|포션|무기|갑옷|방패|장비|장신구|상점|가게|팔게|팔기|열쇠|잠긴|보물|상자|제작|만들어 주는|주인공|이름|직업|레벨|능력치|체력|동료|파티|합류|떠나|스킬|기술|전투|싸우|보스|적\b|몬스터|무리|선택지|호감|기억|스위치|변수|횟수|레버|여관|묵으|저장|회복|치료|신부|골드|돈|엔딩|결말|게임|일지|제한 시간|타이머|낮에|밤에|시간대|아침|저녁|팻말|표지판|우물|동전|암호|비밀번호|통행료|경비|문지기|함정|독|중독|마비|수면|상태 ?이상|날씨|비가|비 ?오|지진|흔들|번쩍|번개|음악|배경음|bgm|약초|광맥|이동석|눈이|눈 ?내|폭풍|안개|quest|item|shop|weapon|armor|battle|enemy|party|skill|inn|save|gold|ending|poison|weather/iu;
+export const GAME_WORDS = /퀘스트|의뢰|심부름|부탁|아이템|회복약|포션|무기|갑옷|방패|장비|장신구|상점|가게|팔게|팔기|열쇠|잠긴|보물|상자|제작|만들어 주는|주인공|이름|직업|레벨|능력치|체력|동료|파티|합류|떠나|스킬|기술|전투|싸우|보스|적\b|몬스터|무리|선택지|호감|기억|스위치|변수|횟수|레버|여관|묵으|저장|회복|치료|신부|골드|돈|엔딩|결말|게임|일지|제한 시간|타이머|낮에|밤에|시간대|아침|저녁|팻말|표지판|우물|동전|암호|비밀번호|통행료|경비|문지기|함정|독|중독|마비|수면|상태 ?이상|날씨|비가|비 ?오|무작위|랜덤|인카운터|조우|마주치|늑대|멧돼지|슬라임|고블린|얻게|얻는|얻을|모으|모았|모아|줍|주워|개수|몇 개|조사하면|조사할|입력|자물쇠|숫자|비밀번호|옮겨|옮기|묘비|회상|따라오|따라와|따라다|도망|사라지|나타나|말 걸|말을 걸|대사|다가가|밟으면|들어가면|문을|잇|이어 줘|이어줘|연결|follow|random|encounter|지진|흔들|번쩍|번개|음악|배경음|bgm|약초|광맥|이동석|눈이|눈 ?내|폭풍|안개|quest|item|shop|weapon|armor|battle|enemy|party|skill|inn|save|gold|ending|poison|weather/iu;
 
 /** v1 도구 중 게임 요소에 쓰는 것(읽기 먼저). 레지스트리에 없는 이름은 빠진다. */
 export const V2_GAME_TOOLS: readonly string[] = [
   "get_database_records", "find_events", "get_event", "get_story_state", "find_switch_usage",
-  "create_quest", "create_quest_flags",
+  "create_quest",
   "upsert_item", "upsert_equipment", "set_shop_stock", "set_sell_prices", "place_chest", "upsert_craft_recipe",
   "upsert_actor", "upsert_class", "upsert_skill", "set_party", "add_companion",
   "upsert_enemy", "upsert_troop", "upsert_troop_battle_page", "set_encounter_table",
@@ -45,6 +45,10 @@ export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전�
 - 날씨(비·눈·폭풍·안개): 실제 날씨 명령 {kind:'setWeather',weather:'rain'|'storm'|'snow'|'fog'|'none',intensity:0~1} 을 쓴다(또는 add_event 의 weather 비트, 맵 전체 기본 날씨는 set_scene_mood). tint(화면 색)는 날씨가 아니다.
 - 흔들림·지진은 add_event 의 shake 비트(또는 m2Command m2-048-shake-screen), 번쩍·번개는 flash 비트(m2-047-flash-screen), 음악 바꾸기는 music 비트({do:'music',action:'bgm',query:'festival'} 또는 {kind:'playAudio',resourceId,loop:true}) — 카메라 이동·페이드로 흉내 내지 않는다.
 - 플레이어가 «조사하는» 물건(이동석·약초 자리·광맥·표지판·문·덤불)은 눈에 보여야 한다: 그 이벤트에 graphic.query 로 물건 그림을 주거나 이미 있는 물건 타일 칸에 둔다. 투명 이벤트를 맨땅에 두지 않는다(숨기라는 요청만 예외).
+- 꼭 맞는 그림이 없는 물건(사과나무·묘비·상자 더미)은 draw_object 카드만 남기고 멈추지 않는다: 가장 비슷한 기존 물건(나무·돌·표지판) 칸 위에 조사 이벤트를 두고 아이템·대사·스위치는 그대로 만든다. 그림이 대체물이면 보고에 적는다.
+- 숫자 자물쇠·암호 입력은 {kind:'inputNumber',variableId,digits:4} 로 변수에 받고 fork 조건 {kind:'var',id,op:'==',value:1024} 으로 연다. 자물쇠가 달린 창고·문이 없으면 그 건물·문을 먼저 만든다(add_event·create_transfer_pair).
+- 새 맵(실내·필드)을 만들면 반드시 들어가는 길을 단다: 집 문 칸 ↔ 실내 입구는 create_transfer_pair, 마을 가장자리 ↔ 필드도 create_transfer_pair. 무작위로 나오는 적은 set_encounter_table(보이는 적 이벤트가 아니다).
+- 한 번만 주는 보상·동료(addFollower)·회상은 셀프 스위치를 켜고 그 조건의 「이미 했다」 페이지를 둔다. 머리 위 「!」 같은 감정은 add_event 의 emote 비트(대사로 쓰지 않는다).
 - 이미 있는 NPC 는 add_people 로 다시 세우지 않는다(같은 이름이면 함수가 그 NPC 를 그대로 쓴다) — 그 그림·얼굴·자리는 바꾸지 않는다.
 - 엔딩·결말: list_endings 로 보고 define_ending(id·name·epilogue)으로 엔딩을 정의한 뒤 선택지 갈래에 {kind:'triggerEnding',endingId} 를 넣는다. 내레이션 + returnToTitle 만으로 엔딩을 흉내 내지 않는다. «마지막에» 묻는 선택이면 그 앞 조건(보스 처치·완료 스위치)을 페이지 조건으로 건다.
 - 요청이 가리키는 자리(다리 앞·강가·우물 옆…)가 맵에 없으면 묻지 않는다: 그 물건·지형을 만들어(stamp_object·fill_region 덧그리기, 없으면 가장 그럴듯한 길목) 짓고 보고에 「~가 없어 ~에 만들었다」고 쓴다.

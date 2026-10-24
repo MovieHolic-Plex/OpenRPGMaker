@@ -32,7 +32,7 @@ export const EVENT_CARD =
   "walk{who,to}=걷기(to=길·광장·입구·문 앞 같은 자리 낱말, 다른 사람 이름이면 그 곁으로 걸어가 마주 선다, {x,y} 는 꼭 필요할 때만) / " +
   "say{who,text}=대사 / appear{who,where?,looks?,talk?}=그 자리에 «팍» 나타남(where 생략 가능 — 뒤에 주인공에게 걸어오면 함수가 4~8칸 떨어진 길 위를 고른다; talk=컷신 뒤 말 걸면 할 말 배열) / " +
   "face{who,toward}=바라봄 / wait{ms} / fade{dir:'in'|'out'} / " +
-  "tint{tone:'night'|'dusk'|'dawn'|'sepia'|'clear'}=화면 색(밤이 되면 컷신 뒤에도 밤으로 남는다, 되돌리려면 clear) / weather{weather:'rain'|'storm'|'snow'|'fog'|'none',intensity?:0~1}=실제 날씨(비가 오기 시작한다 → weather rain; tint 로 흉내 내지 않는다, 컷신 뒤에도 남는다) / shake{strength?:'weak'|'medium'|'strong',axis?:'vertical'(지진·쿵)|'horizontal'(부딪힘),ms?}=화면 흔들림(지진은 camera 로 흉내 내지 않는다) / flash{color?:'white'|'#rrggbb',ms?}=번쩍(번개·폭발 — fade 로 흉내 내지 않는다) / music{action:'bgm'|'se'|'stop'|'fade',query}=배경 음악 바꾸기(축제·전투 음악 등)·효과음 — query 는 음원 낱말 / camera{to}=카메라를 자리 낱말·사람·'x,y' 로 옮겨 보여 줌, to:'back' 이면 주인공에게 복귀(빠뜨려도 끝에 돌아온다) / " +
+  "tint{tone:'night'|'dusk'|'dawn'|'sepia'|'clear'}=화면 색(밤이 되면 컷신 뒤에도 밤으로 남는다, 되돌리려면 clear) / weather{weather:'rain'|'storm'|'snow'|'fog'|'none',intensity?:0~1}=실제 날씨(비가 오기 시작한다 → weather rain; tint 로 흉내 내지 않는다, 컷신 뒤에도 남는다) / shake{strength?:'weak'|'medium'|'strong',axis?:'vertical'(지진·쿵)|'horizontal'(부딪힘),ms?}=화면 흔들림(지진은 camera 로 흉내 내지 않는다) / flash{color?:'white'|'#rrggbb',ms?}=번쩍(번개·폭발 — fade 로 흉내 내지 않는다) / music{action:'bgm'|'se'|'stop'|'fade',query}=배경 음악 바꾸기(축제·전투 음악 등)·효과음 — query 는 음원 낱말 / emote{who,emote:'!'|'?'|'♥'|'땀'|'화'|'…'|'zzz'}=머리 위 감정 표시(놀람 «!»은 대사로 쓰지 않고 이것) / camera{to}=카메라를 자리 낱말·사람·'x,y' 로 옮겨 보여 줌, to:'back' 이면 주인공에게 복귀(빠뜨려도 끝에 돌아온다) / " +
   "look{who,as:'shadow'|'ghost'|'normal'}=검은 실루엣·반투명 유령·원래 모습 / vanish{who}=연기처럼 사라짐(«지나가는» 그림자는 등장한 반대쪽 자리 낱말로 걸어가 사라진다 — 다른 사람 곁으로 걸으면 «찾아온» 장면이 된다). " +
   "대사 속 마을·사람 이름은 맵 이름·기존 NPC 대사에 있는 것을 그대로 쓴다(새로 짓지 않는다). " +
   "who: 주인공·player·hero = 플레이어, 그 밖의 이름 = 컷신에 나타나는 사람(appear 로 먼저 등장시키거나 맵에 이미 있는 NPC 이름). " +
@@ -659,6 +659,16 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
         const durationMs = Math.min(2000, Math.max(100, Number.isFinite(b.ms) ? Math.round(Number(b.ms)) : 400));
         out.push({ kind: "flash", color, durationMs });
         effects.push(`the screen flashes ${color}`);
+        break;
+      }
+      case "emote": {
+        const key = keyOf(b.who) ?? ensureActor(b.who, i);
+        if (!key) { warnings.push(`emote: 누군지 모르는 '${b.who}'.`); break; }
+        const raw = String(b.emote ?? "").trim();
+        const table: [RegExp, string][] = [[/^!|놀|exclam|surpri/iu, "exclamation"], [/^\?|물음|question|confus/iu, "question"], [/♥|하트|heart|love|사랑/iu, "heart"], [/땀|sweat|당황/iu, "sweat"], [/화|분노|anger|angry|💢/iu, "anger"], [/…|\.\.\.|ellipsis|말없/iu, "ellipsis"], [/z{2,}|잠|sleep/iu, "sleep"], [/반짝|sparkle|✨/iu, "sparkle"], [/전구|idea|생각났/iu, "idea"], [/♪|노래|music/iu, "music"], [/미소|smile|웃/iu, "smile"]];
+        const emote = table.find(([re]) => re.test(raw))?.[1] ?? "exclamation";
+        out.push({ kind: "emote", target: idFor(key), emote, durationMs: 900 });
+        effects.push(`a '${emote}' balloon pops over ${b.who}'s head`);
         break;
       }
       case "music": {
