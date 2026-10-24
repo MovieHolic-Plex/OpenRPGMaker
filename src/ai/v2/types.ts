@@ -150,6 +150,8 @@ export interface EventSpec {
   readonly at?: { readonly x: number; readonly y: number };
   /** 이 NPC(이름)와 대화가 끝나면 이어서 재생 — 그 NPC 의 말 걸기 끝에 붙는다(한 번만). */
   readonly after?: string;
+  /** after 장면 뒤 그 NPC 가 하는 말(없으면 원래 대사). */
+  readonly afterTalk?: readonly string[];
   /** 비트 목록 — 사람 낱말(주인공·촌장)·움직임·대사. 빌더가 컷신 도구의 장면 명령으로 옮긴다. */
   readonly beats: readonly EventBeat[];
 }
