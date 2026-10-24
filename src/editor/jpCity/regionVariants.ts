@@ -90,7 +90,10 @@ export function stationPlazaOps(seed: number, layout: StationPlazaLayout = {}): 
     const hw = j(r, 0.15, 0.04);
     ops.push({ op: "band", mat: M.road, dir: "v", at: roadX, size: pick(r, [3, 4] as const), span: [0.4, roadY] });
     ops.push({ op: "area", mat: pick(r, [M.pave, M.pave, M.lawn]), box: [cx - hw, 0.43, cx + hw, 0.58], clear: true, zone: "plaza" });
-    if (r() < 0.5) ops.push({ op: "line", kit: pick(r, ["jp-prop-tree-zelkova", "jp-prop-tree-ginkgo", "jp-prop-tree-sakura"]), dir: "h", at: 0.47, span: [roadX < 0.5 ? roadX + 0.08 : 0.06, roadX < 0.5 ? 0.94 : roadX - 0.08], step: 9 + Math.floor(r() * 4) });
+    // 광장 쪽 반은 가로수 줄 + 벤치 줄로 틀을 세운다(2026-10-24 검수: 교차로 판의 광장이 비어 보였다).
+    const side: [number, number] = [roadX < 0.5 ? roadX + 0.08 : 0.06, roadX < 0.5 ? 0.94 : roadX - 0.08];
+    ops.push({ op: "line", kit: pick(r, ["jp-prop-tree-zelkova", "jp-prop-tree-ginkgo", "jp-prop-tree-sakura"]), dir: "h", at: 0.46, span: side, step: 8 + Math.floor(r() * 4) });
+    ops.push({ op: "line", kit: "jp-prop-bench", dir: "h", at: 0.57, span: side, step: 7 + Math.floor(r() * 3), onPath: true });
     ops.push({ op: "put", kit: lk, at: [cx, 0.5], onPath: true });
     extras.forEach((k, i) => ops.push({ op: "put", kit: k, at: [cx + (i ? 0.11 : -0.11), 0.49], onPath: true }));
     ops.push({ op: "line", kit: "jp-prop-planter", dir: "h", at: 0.44, span: [cx - 0.14, cx + 0.14], step: 6, onPath: true });
@@ -98,15 +101,20 @@ export function stationPlazaOps(seed: number, layout: StationPlazaLayout = {}): 
     ops.push({ op: "put", kit: "jp-prop-bench", at: [cx - 0.08, 0.57], onPath: true });
   } else {
     // 너른 광장: 차로 없이 판석 광장 전체, 랜드마크 둘레로 나무와 벤치.
+    // 2026-10-24 블라인드 검수: 흩뿌리기만으로는 「빈 판석 들판」이 됐다 — 가로수 줄·화분 줄·벤치 줄로 광장 틀을 세우고 그 안에 랜드마크.
     ops.push({ op: "area", mat: M.pave, box: [0.06, 0.42, 0.94, 0.6], clear: false, zone: "plaza" });
-    ops.push({ op: "put", kit: lk, at: [cx, 0.5], onPath: true });
-    extras.forEach((k, i) => ops.push({ op: "put", kit: k, at: [i ? j(r, 0.78, 0.05) : j(r, 0.22, 0.05), 0.5], onPath: true }));
-    ops.push({ op: "scatter", kits: ["jp-prop-tree-zelkova", "jp-prop-tree-ginkgo"], n: 2 + Math.floor(r() * 3), box: [0.08, 0.43, 0.92, 0.58] });
-    ops.push({ op: "scatter", kits: ["jp-prop-bench", "jp-prop-planter"], n: 3 + Math.floor(r() * 3), box: [0.1, 0.44, 0.9, 0.59], onPath: true });
+    const tree = pick(r, ["jp-prop-tree-zelkova", "jp-prop-tree-ginkgo", "jp-prop-tree-sakura"]);
+    ops.push({ op: "line", kit: tree, dir: "h", at: 0.46, span: [0.08, 0.92], step: 8 + Math.floor(r() * 3) });
+    ops.push({ op: "put", kit: lk, at: [cx, 0.52], onPath: true });
+    extras.forEach((k, i) => ops.push({ op: "put", kit: k, at: [i ? j(r, 0.76, 0.04) : j(r, 0.24, 0.04), 0.52], onPath: true }));
+    ops.push({ op: "line", kit: "jp-prop-planter", dir: "h", at: 0.43, span: [0.12, 0.88], step: 6 + Math.floor(r() * 3), onPath: true });
+    ops.push({ op: "line", kit: "jp-prop-bench", dir: "h", at: 0.57, span: [0.14, 0.86], step: 7 + Math.floor(r() * 3), onPath: true });
+    if (r() < 0.6) ops.push({ op: "area", mat: M.lawn, box: [cx - 0.08, 0.49, cx + 0.08, 0.55], clear: false });
   }
   // 곁 소품: 후보 자리 여섯에 씨앗 순서로 몇 개만.
   const sideKits = shuffle(r, ["jp-prop-metro-exit", "jp-prop-vend-trio", "jp-prop-bike-cluster", "jp-prop-smoking-area", "jp-postbox-red", "jp-prop-vend-pair", "jp-prop-a-frame"]).slice(0, 3 + Math.floor(r() * 3));
-  const slots = shuffle(r, [[0.07, 0.48], [0.93, 0.48], [0.07, 0.57], [0.93, 0.57], [0.36, 0.42], [0.64, 0.42]] as const);
+  // 역 바로 앞(0.36·0.64, 0.42)은 비운다 — 지하철 출구가 역 입구를 막았다(2026-10-24 검수).
+  const slots = shuffle(r, [[0.07, 0.48], [0.93, 0.48], [0.07, 0.57], [0.93, 0.57], [0.15, 0.42], [0.85, 0.42]] as const);
   sideKits.forEach((kit, i) => { const s = slots[i]; if (s) ops.push({ op: "put", kit, at: [s[0], s[1]], onPath: true }); });
   if (plaza !== "square") {
     // 원래 판만큼 차게: 가로수 둘·화분 둘·벤치 둘(자리는 씨앗).
@@ -123,7 +131,9 @@ export function stationPlazaOps(seed: number, layout: StationPlazaLayout = {}): 
   // 앞길: 차 종류·자리는 씨앗.
   ops.push({ op: "band", mat: M.road, dir: "h", at: roadY, size: 4 });
   const cars = shuffle(r, ["jp-prop-bus", "jp-prop-car-taxi", "jp-prop-car-taxi-r", "jp-prop-car-red-r", "jp-prop-car-blue", "jp-prop-car-silver-r", "jp-prop-bus-r"]).slice(0, 2 + Math.floor(r() * 2));
-  cars.forEach((kit, i) => ops.push({ op: "put", kit, at: [j(r, 0.2 + i * 0.28, 0.06), /-r$/.test(kit) ? roadY + 0.02 : roadY - 0.01], onPath: true }));
+  // 차는 길 가운데(0.4~0.6)를 비운다 — 가운데가 막히면 횡단보도가 안 그려진다(2026-10-24 검수: 「역으로 건너는 길이 없다」).
+  const carX = shuffle(r, [0.12, 0.26, 0.72, 0.86]);
+  cars.forEach((kit, i) => ops.push({ op: "put", kit, at: [j(r, carX[i]!, 0.03), /-r$/.test(kit) ? roadY + 0.02 : roadY - 0.01], onPath: true }));
   ops.push({ op: "band", mat: M.walk, dir: "h", at: roadY + 0.09, size: 2 });
   ops.push({ op: "row", kits: shops.map((s) => STATION_SHOP_POOL[s]!), foot: 0.96, span: [0.01, 0.99], gap: r() < 0.5 ? 0 : 1 });
 
