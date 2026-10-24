@@ -34,7 +34,7 @@ import { buildFallenTownLife, ensureFallenTownDatabase } from "./fallen/townLife
 import { applyFallenTownQuests, FS_QUEST_FACE_ALIASES } from "./fallen/townQuests";
 import { buildFallenForestMaps } from "./fallen/forestMaps";
 import { applyFallenStoryPass } from "./fallen/storyPass";
-import { applyFaceCellEmotions, applyFallenTownCast, fallenSpeakerBusts } from "./fallen/townCast";
+import { applyFaceCellEmotions, applyFallenTownCast, applyNorthForest, fallenSpeakerBusts } from "./fallen/townCast";
 import { placeFallenStarVessel } from "./fallenStarVessel";
 import { dressObservatoryHall } from "./fallenObservatoryHall";
 import { isFallenRoomRebuilt } from "./fallenRoomOwnership";
@@ -2445,6 +2445,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 말하는 사람마다 흉상 — 칩의 짝 얼굴 → 공용 표정 세트 흉상(fallenSpeakerBusts). 대사 표정이 같은 세트 안에서 바꾼다.
   applySpeakerFaces(project, fallenSpeakerBusts(project, speakerFaces));
   applyFaceCellEmotions(project);
+  // 숲은 마을 북쪽 — 「동쪽 숲」「동문」을 북쪽으로(오프닝 연출·화로 퍼즐 방향은 제외, fallen/townCast.ts).
+  applyNorthForest(project);
 
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);

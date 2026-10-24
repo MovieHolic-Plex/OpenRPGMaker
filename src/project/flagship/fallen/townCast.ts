@@ -377,6 +377,51 @@ export function applyFaceCellEmotions(project: Project): number {
   return n;
 }
 
+/**
+ * 숲은 마을 **북쪽**이다(2026-10-24 결정 — 마을의 숲 출구가 북쪽 성문이다). 예전 대사·읽을거리·의뢰 글·스위치 이름이 「동쪽 숲」
+ * 「동문」이라 했던 것을 모두 북쪽으로 맞춘다. 이야기 파일들이 각자 문구를 들고 있어(여러 작업이 나눠 고친다) 맨 끝에 한 번 고친다.
+ * 건드리지 않는 곳: 지하 입구 화로 퍼즐(fs_vault_gate — 「첫 불은 동쪽」은 화로 방향이다)·오프닝 연출(system 의 cinematic/presentation,
+ * 오프닝 담당이 따로 고친다).
+ */
+const NORTH: readonly [RegExp, string][] = [
+  [/동쪽 숲/g, "북쪽 숲"],
+  [/동문/g, "북문"],
+  [/동쪽은 이틀 안에/g, "북쪽은 이틀 안에"],
+  // 렌즈가 가리키는 하늘탑도 북쪽이다 — 숲과 섞이지 않게 「숲 너머」로 못 박는다.
+  [/북쪽이라… 옛 별지기들이 마지막으로 세운\n하늘탑이 그쪽에 있다\./g, "북쪽이라… 숲 너머 산맥 끝에, 옛 별지기들이\n마지막으로 세운 하늘탑이 있다."],
+];
+export function applyNorthForest(project: Project): number {
+  let n = 0;
+  const fix = (value: string): string => {
+    let out = value;
+    for (const [re, to] of NORTH) out = out.replace(re, to);
+    if (out !== value) n += 1;
+    return out;
+  };
+  const walk = (node: unknown): unknown => {
+    if (typeof node === "string") return fix(node);
+    if (Array.isArray(node)) { for (let i = 0; i < node.length; i += 1) node[i] = walk(node[i]); return node; }
+    if (node && typeof node === "object") {
+      for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
+        if (k === "dataUrl" || k === "lowerTiles" || k === "upperTiles" || k === "lowerOverlayTiles" || k === "upperOverlayTiles") continue;
+        (node as Record<string, unknown>)[k] = walk(v);
+      }
+    }
+    return node;
+  };
+  for (const [id, map] of Object.entries(project.maps)) {
+    if (id === "fs_vault_gate") continue;
+    walk(map.events);
+    map.name = fix(map.name);
+  }
+  walk(project.switches);
+  walk(project.variables);
+  walk((project as unknown as { quests?: unknown }).quests);
+  walk(project.commonEvents);
+  for (const list of [project.database.items, project.database.equipment]) walk(list);
+  return n;
+}
+
 export type FallenTownCastResult = { kidsLoop: Cell[] | null; necklace: Cell | null; emotions: number };
 
 export function applyFallenTownCast(project: Project): FallenTownCastResult {
