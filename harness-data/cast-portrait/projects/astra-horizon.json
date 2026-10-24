@@ -1,0 +1,153 @@
+{
+ "project": "astra-horizon",
+ "title": "Astra Horizon dialogue busts (emerald-monster cast)",
+ "note": "User-approved spec (2026-10-25 「이거는 꽤 규격이 괜찮네. 앞으로 이렇게 하도록 하네싱을 꽉 잡도록」). Every new Astra cast bust goes through this.",
+ "lineup": [
+  {
+   "id": "hero",
+   "dir": "public/assets/emerald-monster/cast/hero",
+   "resource": "oprn_astra_cast_hero_bust_{expr}"
+  },
+  {
+   "id": "mom",
+   "dir": "public/assets/emerald-monster/cast/mom",
+   "resource": "oprn_astra_cast_mom_bust_{expr}"
+  },
+  {
+   "id": "nurse",
+   "dir": "public/assets/emerald-monster/cast/nurse",
+   "resource": "oprn_astra_cast_nurse_bust_{expr}"
+  },
+  {
+   "id": "naru",
+   "dir": "public/assets/emerald-monster/cast/naru",
+   "resource": "oprn_astra_cast_naru_bust_{expr}"
+  },
+  {
+   "id": "yurim",
+   "dir": "public/assets/emerald-monster/cast/yurim",
+   "resource": "oprn_astra_cast_yurim_bust_{expr}"
+  },
+  {
+   "id": "muyeong",
+   "dir": "public/assets/emerald-monster/cast/muyeong",
+   "resource": "oprn_astra_cast_muyeong_bust_{expr}"
+  }
+ ],
+ "expressions": [
+  "base",
+  "happy",
+  "sad",
+  "angry",
+  "surprised"
+ ],
+ "openEyeExpressions": [
+  "base",
+  "sad",
+  "angry",
+  "surprised"
+ ],
+ "dialogueExpressions": [
+  "base",
+  "happy",
+  "surprised",
+  "sad"
+ ],
+ "canvas": [
+  64,
+  64
+ ],
+ "displayScale": 2,
+ "rules": {
+  "maxColours": 16,
+  "headTop": [
+   1,
+   4
+  ],
+  "bottomCoverMin": 0.75,
+  "outlineDarkMin": 0.7,
+  "headWidthTolerance": 0.12,
+  "headCentreMaxOffset": 3,
+  "nativeGrid": [
+   58,
+   66
+  ],
+  "faceBox": [
+   0.22,
+   0.3,
+   0.78,
+   0.8
+  ],
+  "faceOnlyExpressions": true,
+  "eyeTolerance": {
+   "w": 2,
+   "h": 1,
+   "y": 1,
+   "colourBase": 2,
+   "colourOther": 6
+  }
+ },
+ "pipeline": {
+  "kind": "chargen-busts64",
+  "engine": "char-gen `command` image engine -> private codex image route (scripts/content/monsters/astra_professor_chargen/kaykai_cmd.py)",
+  "baker": "scripts/content/monsters/bake_astra_busts64.py (native grid recovery -> 64x64 place -> face-only expression edits -> one shared 16-colour palette)",
+  "styleRefs": [
+   "hero",
+   "nurse"
+  ],
+  "variants": {
+   "nat": "Draw it as a REAL low-resolution pixel-art sprite: the whole square picture is a grid of exactly 48 x 48 art pixels, each art pixel a solid flat square of one colour about 21 screen pixels wide (no anti-aliasing, no gradients, no dithering, no texture, no sub-pixel detail). At this tiny size every feature is placed pixel by pixel like a Game Boy Advance dialogue portrait: each eye about 4 art pixels wide and 5 tall (dark lash row on top, coloured iris, one white highlight pixel, a white pixel at the outer corner), eyebrows 3-4 pixels, the mouth 3-4 pixels, the nose one shadow pixel, a 1-pixel dark outline around the silhouette. The head (hair top to chin) is about 36 art pixels tall and fills the frame; shoulders run off the bottom edge.",
+   "sml": "Draw it as a REAL low-resolution pixel-art sprite: the whole square picture is a grid of exactly 40 x 40 art pixels, each art pixel a solid flat square of one colour about 26 screen pixels wide (no anti-aliasing, no gradients, no dithering, no texture, no sub-pixel detail). At this tiny size every feature is placed pixel by pixel like a Game Boy Advance dialogue portrait: each eye about 4 art pixels wide and 5 tall (dark lash row on top, coloured iris, one white highlight pixel, a white pixel at the outer corner), eyebrows 3-4 pixels, the mouth 3-4 pixels, the nose one shadow pixel, a 1-pixel dark outline around the silhouette. The whole head INCLUDING all of the hair fits inside the picture with a 1-pixel margin at the top and sides; the head is about 30 art pixels tall; the collar and the top of the shoulders show at the bottom."
+  },
+  "defaultVariant": "nat",
+  "baseTemplate": "A dialogue portrait (head and shoulders, bust) of ONE character for a cute, friendly handheld monster-collecting RPG. {style}\nLook: friendly, warm, appealing, a little cute (not realistic, not semi-real, no detailed skin, no nose bridge, no lips, no teeth, no cheekbones, no beard stubble). Rounded soft face with a short rounded chin and a short neck. Head large in the frame (the head fills the top two thirds; the top of the hair is fully inside the picture with a small margin; shoulders run off the bottom edge). FRONT view, facing the viewer, at most a very slight turn, both eyes the same size and level. Big, friendly eyes (each about a fifth of the face width and taller than wide): dark upper lash line, a clearly coloured iris, a small white of the eye, and ONE white highlight; both eyes fully visible, no hair covering the eyes or brows; simple short eyebrows; nose = at most one tiny shadow mark; mouth = a short simple line, closed, gently smiling. Skin: one flat light tone and one flat shadow tone only. Hair: a few big solid locks with 3 tones and a dark outline. Clothes simple flat shapes, same colours as the reference.\nReference picture: the LEFT TWO portraits are other characters from the SAME game - copy their drawing style exactly (pixel size, outline colour and weight, eye construction, hair locks, flat shading, framing and head size); do NOT copy their identity. The small walking sprite on the RIGHT is THIS person - match his hair, colours and clothes.\nIdentity: {identity}\nBackground: flat solid pure magenta #FF00FF everywhere outside the character. Square picture, the character centred. No text, no frame, no border, no props, nothing in the hands, no extra characters.",
+  "expressionTemplate": "Edit the attached pixel-art dialogue portrait. Return the SAME picture: identical square size, identical pixel grid (same art-pixel size), identical framing and position, identical hair, clothes, colours and the same flat magenta #FF00FF background. Change ONLY the facial expression - the eyebrows, the eyes and the mouth - to: {expression}.\nKeep the same clean, friendly Game Boy Advance style: each feature drawn with a few solid square pixels, no extra lines, no shading noise, no tears, no sweat drops, no symbols, no text.",
+  "expressionPrompts": {
+   "happy": "HAPPY: a big cheerful smile with the mouth open (a small open D-shaped mouth showing a little red inside), the eyes closed into happy upward arcs (^ ^), eyebrows raised and relaxed, a light blush on the cheeks",
+   "sad": "SAD: eyebrows slanted up toward the middle of the forehead, the eyes half-lidded and looking a little down, the mouth a small downturned frown",
+   "angry": "ANGRY / DETERMINED: eyebrows slanted sharply down toward the nose, narrowed eyes with the iris still visible, the mouth a tense frown, set jaw",
+   "surprised": "SURPRISED: eyebrows raised high, the eyes wide open and round with small pupils and more white showing, the mouth a small open round \"O\"",
+   "serious": "SERIOUS: flat straight eyebrows lowered slightly, calm steady eyes, the mouth a short firm straight line (not smiling)"
+  }
+ },
+ "dialogue": {
+  "dump": "scripts/content/monsters/astra_professor_chargen/dump-project.ts",
+  "projectJson": "tmp/astra-pres/astra.project.json",
+  "map": "mx_map_home_house_2f",
+  "eventIdSuffix": "_opening",
+  "afterSwitch": "mx_intro",
+  "disableOpening": true,
+  "viewport": [
+   480,
+   320
+  ],
+  "castLines": {
+   "hero": "오늘부터 나도 트레이너야!",
+   "mom": "조심해서 다녀오렴. 저녁엔 꼭 들어오고.",
+   "nurse": "어서 오세요! 몬스터를 쉬게 해 드릴게요.",
+   "naru": "나도 오늘 첫 동료를 받았어. 승부하자!",
+   "yurim": "숲의 약속을 지킬 각오가 있나?",
+   "muyeong": "별빛은 우리 밤막회사가 가져간다."
+  },
+  "neighbours": [
+   "mom",
+   "hero"
+  ]
+ },
+ "roles": {
+  "professor": {
+   "name": "천문박사",
+   "identity": "the professor, a kind, gentle scientist about 50 years old, clean-shaven (NO beard, NO stubble, NO moustache), NO glasses. Medium brown hair in a few big soft messy locks with one small cowlick on top, light grey hair at both temples, blue eyes, a warm calm smile, one or two tiny smile-line pixels at the outer eye corners (that is the only sign of age; no wrinkles elsewhere). White lab coat with wide lapels over a dark navy shirt, a small gold star badge on the chest. He must read clearly as a middle-aged father figure, older than the mother in the reference, never as a teenager: a slightly longer face and a squarer jaw than the young characters, eyes a little narrower and calmer (iris 3 pixels tall, not 5), thicker straight eyebrows, the grey at the temples clearly visible, a relaxed gentle closed-mouth smile.",
+   "identityImage": "harness-data/cast-portrait/astra-horizon/identity-professor.png",
+   "lines": {
+    "base": "왔구나! 기다리고 있었단다.",
+    "happy": "하하, 축하한다! 좋은 동료를 만났구나.",
+    "sad": "미안하구나… 등대의 빛이 약해지고 있어.",
+    "surprised": "뭐라고?! 벌써 배지를 모았니?",
+    "angry": "그건 안 된다. 별을 함부로 다루면 안 돼."
+   },
+   "installDir": "public/assets/emerald-monster/cast/professor-{candidate}",
+   "selectableIn": "src/assets/astraCast.ts ASTRA_PROFESSOR_BUST_VARIANTS / ASTRA_PROFESSOR_BUST"
+  }
+ }
+}

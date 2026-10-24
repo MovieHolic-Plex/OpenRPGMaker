@@ -27,6 +27,7 @@
 | `object-gate` | 공용 오브젝트 게이트 (3/4 시점 + 버들항 화풍) | 장르 무관 | `harness-data/object-gate/seed.json` | `openwiki/harnesses/object-gate.md` |
 | `interview-scene-bank` | 인터뷰 선택 배경 | 장르 무관 | `harness-data/interview-scene-bank/seed.json` | `openwiki/harnesses/interview-scene-bank.md` |
 | `battle-trainer-sprites` | 전투 트레이너 스프라이트 (생성형 → 도트화) | 장르 무관 | `harness-data/battle-trainer-sprites/seed.json` | `openwiki/harnesses/battle-trainer-sprites.md` |
+| `cast-portrait` | 캐스트 대사 흉상 (기존 캐스트와 같은 규격) | 장르 무관 | `harness-data/cast-portrait/seed.json` | `openwiki/harnesses/cast-portrait.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
 
@@ -285,6 +286,9 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 **단계** (`npm run harness -- assistant-capability <단계>`):
 - `genre-prepare` — 장르별 격리 정본: 빈 프로젝트 여덟 개와 공용 SQLite 판본을 분리해 준비한다. 콘텐츠는 조수가 실제 입력창에서 만든다.
 - `genre-run` — 장르별 실제 제작: 전용 포트·입력창으로 장르 게임을 제작하고 최초/보수 시도·모델 요청·엄격한 저장 재로드를 각각 보존한다.
+- `scene-score` — 장면 교훈 기계 채점: scene-lessons-seed 시도(genre-run)의 도구 호출·실패 호출·scene-* 경고·qa-game 막힘·저장 재로드를 채점하고 1배 맵 렌더를 남긴다. 시각 판정은 아니다.
+- `scene-film` — 장면 교훈 실제 플레이 영상: 저장본을 출하 player.html 에서 실제 걷기·결정 키로 돌며 MP4 와 4초 간격 프레임을 남긴다. 순간이동·상태 주입 없음.
+- `scene-judge-input` — 장면 교훈 판정 입력: 새 판정자에게 줄 요청·요구·그림 목록(해시)을 만든다. 판정 결과는 그 해시와 함께 visual.json 에 남긴다.
 - `portals` — 출입구 실제 수행: 격리된 빈 맵에서 집·문·실내·마을 출구를 실제 입력창으로 저작하고 통행·왕복·보존·SQLite 재로드와 PNG를 남긴다.
 - `portal-controls` — 출입구 결함 반례: 막힌 문앞·닿지 않는 맵 끝·연결 재실행을 실제 도구로 검사한다. 실모델 성적과 별도로 남긴다.
 - `portal-recheck` — 저장 출입구 플레이 재관측: 모델 재실행·결과 수선 없이 같은 저장본의 플레이 관측을 다시 남기고 최초 판정을 보존한다.
@@ -306,6 +310,8 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - `matrix-tools` — 작은 명령 50개 도구 계약: 격리된 결정론적 fixture에서 50개 명령의 canonical editor tool 호출, 읽기 불변·쓰기 변경 커밋을 각각 검사한다. 모델·SQLite·플레이·독립 시각 검수와 별도 집계한다.
 - `matrix-live` — 작은 명령 50개 자연어 입력: 실제 에디터 입력창에 50개 프롬프트를 순서대로 넣고 scripted agent transport로 응답을 고정해 적용·저장·새 context 재로드·대표 플레이를 검사한다. native provider 성공률·독립 시각 검수와 별도 집계한다.
 - `matrix-native` — 작은 명령 50개 실제 모델 수행: 50개 프롬프트를 실제 입력창과 실제 provider에 제출하고 tool 호출·정본 SQLite 저장·새 context 재로드를 명령별로 확인한다. scripted transport와 모델 품질 점수는 통과로 세지 않는다.
+- `matrix500-spec` — 명령 가족 500개 명세 생성: families/ 의 가족 100 × 변형 5 로 command-matrix-500.json 을 쓰고 가족·행 수를 센다. 100 가족이 다 구현되기 전에는 complete=false 로 그만큼만 실행한다.
+- `matrix500-selfcheck` — 명령 가족 판정기 자기검사: 모델·브라우저 없이 가족마다 정답은 통과, 오답 전부와 무변경 문서는 실패하는지 검사한다. 판정기가 정답/오답을 구분하지 못하면 실모델 점수도 의미가 없다.
 - `matrix-score` — 작은 명령 50개 모델 품질 점수: 실제 모델의 자연어 해석·도구 판단과 전후 화면 쌍의 시각 품질을 50개 모두 채점한다. 모델 호출 누락은 정적 점수로 대체하지 않는다.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
@@ -486,5 +492,30 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - `sheet` — 고르기 시트: 참고 샘플 옆에 같은 배율로 나란히, 전투 합성 미리보기 포함 자체완결 HTML 을 ~/claude-viz 에 쓴다.
 - `pick` — 고르기 기록: 사용자가 고른 역할=글자를 현재 그림 해시에 묶어 기록한다.
 - `bake` — 번들 굽기: 고른 후보만 public/assets/battle-trainers/<역할>/ 와 index.json 으로 굽는다. 고르기 전에는 거절한다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## cast-portrait — 캐스트 대사 흉상 (기존 캐스트와 같은 규격)
+
+프로젝트마다 캐스트 규격(harness-data/cast-portrait/projects/<project>.json: 기존 흉상 줄, 캔버스, 규칙, 생성 경로, 대사창 픽스처)을 두고 새 흉상을 그 캐스트와 같은 경로로 만든다(아스트라: char-gen command 엔진 + bake_astra_busts64, 64×64·16색·투명·머리 위 1~4화소·어깨 아래로 잘림·인접색 윤곽·얼굴만 바꾸는 표정). 원본은 줄이거나 자르지 않는다(원래 격자가 캔버스에 안 맞으면 버림). 기계 검사(크기·색 수·자리·윤곽 어둠 ≥70%·두 눈 대칭·캐스트 대비 머리 폭·얼굴 밖 변화 0) → 캐스트 줄 1·3배와 실제 대사창 → 눈가림 Argon 「같은 작가?」 순위와 표정별 결함 → 사람 선택(현재 그림 해시) → 설치. 에이전트는 고르지 않는다.
+
+**이럴 때 쓴다:**
+- 대사 흉상·초상(포트레잇)을 새로 만들거나 다시 그릴 때 — 아스트라 호라이즌 등 캐스트가 있는 프로젝트
+- 「다른 포트레잇과 안 어울린다」「괴물같다」는 흉상을 고칠 때
+- 다른 데모(첫사랑·떨어진 별)는 자기 캐스트 규격 파일로 calibrate·check·lineup·verdict 를 쓴다(생성 경로는 규격에 있을 때만)
+
+**단계** (`npm run harness -- cast-portrait <단계>`):
+- `list` — 규격 목록: 프로젝트별 캐스트 규격(줄·생성 경로·역할)을 보여 준다.
+- `calibrate` — 캐스트 측정: 기존 캐스트 흉상을 같은 측정기로 재서 baseline.json 에 쓴다(크기·색·머리 위치·윤곽 어둠·머리 폭·눈 대칭).
+- `draw` — 후보 그리기: 규격의 생성 경로(아스트라: char-gen + bake_astra_busts64)로 역할 후보 N개와 표정을 만든다. 원래 격자가 캔버스에 맞지 않으면 버린다(축소·자르기 금지).
+- `import` — 가져오기: 같은 경로로 이미 만든 흉상 폴더를 후보로 등록한다. 캔버스와 다른 크기는 거절한다.
+- `fix` — 손 보정: 표정 하나의 화소를 고치고 기록·해시를 다시 잡는다(이전 판정은 무효가 된다).
+- `check` — 기계 검사: 캔버스·색 수·투명 배경·머리 위 여백·어깨 잘림·윤곽 어둠·두 눈 대칭·캐스트 대비 머리 폭·얼굴 밖 변화·원래 격자를 표정마다 검사한다. 실패는 종료 코드 1.
+- `lineup` — 캐스트 줄 세우기: 후보마다 기존 캐스트 줄 안(4번째)에 1·3배, 표정 띠 4배를 만들고 글자로 가린 눈가림 묶음과 검수 지시문을 쓴다.
+- `dialogue` — 실제 대사창: qa:runtime 으로 진짜 대사창에서 캐스트 대사와 후보 표정(기본·기쁨·놀람·슬픔)을 한 장씩 찍어 눈가림 묶음에 넣는다.
+- `verdict` — 눈가림 판정 기록: 독립 Argon 검수자의 JSON(순위·같은 작가 여부·표정별 결함)을 묶음을 만든 그림 해시에 묶어 기록한다.
+- `pick` — 사람 선택: 검사 통과 + 눈가림 「같은 작가, 결함 없음」이 현재 해시에 있을 때만, 사람이 고른 후보를 기록한다.
+- `install` — 설치: 현재 해시에 사람 선택이 있는 후보만 규격의 설치 폴더로 복사하고 출처를 남긴다.
+- `status` — 현황: 판·후보마다 검사·판정·선택 상태.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
