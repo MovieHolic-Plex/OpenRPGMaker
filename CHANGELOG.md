@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.334.2 — 2026-10-25
+
+### 수정
+
+- **ai** — v2 finish check catches instant endings, skippable clues, one-shot chasers and duplicate maps; v2 can delete maps; set_scene_mood takes flat light x,y (#3411) (`fd4c7c3`)
+
 ## 0.334.1 — 2026-10-25
 
 ### 수정
