@@ -78,7 +78,8 @@ export function selectScenes(story: Story, selection: ScriptSelection): StorySce
   const chapters = selection.chapterId ? story.chapters.filter((chapter) => chapter.id === selection.chapterId) : story.chapters;
   const result: StoryScene[] = [];
   for (const chapter of chapters) {
-    const ids = [...chapter.mainIds, ...(selection.includeSide || wanted ? chapter.sideIds : [])];
+    // 화자로 고르면 곁가지도 본다 — NPC(대장장이·여관 주인)는 대개 곁가지에만 나온다.
+    const ids = [...chapter.mainIds, ...(selection.includeSide || wanted || selection.speaker ? chapter.sideIds : [])];
     for (const id of ids) {
       const scene = story.scenes.get(id);
       if (!scene) continue;

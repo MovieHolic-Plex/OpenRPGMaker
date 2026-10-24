@@ -213,7 +213,8 @@ const rewriteDialogue: ToolDefinition = {
   name: "rewrite_dialogue",
   description:
     "대사 여러 줄을 한 번에 고친다(윤문·말투 맞추기·줄이기). edits 는 {ref 또는 id, hash, text, reason} 배열(최대 80). " +
-    "read_story_script 로 읽었으면 줄 끝 꼬리표 ⟨S12.3·a1b2c3⟩ 를 ref:\"S12.3\", hash:\"a1b2c3\" 로 넘긴다 — 한 장면을 한 번에 고쳐 내면 된다. " +
+    "read_story_script 로 읽었으면 줄 끝 꼬리표 ⟨S12.3·a1b2c3⟩ 를 ref:\"S12.3\", hash:\"a1b2c3\" 로 넘긴다. " +
+    "한 번에 한두 장면(30줄 안팎)씩 나눠 부른다 — 수십 줄을 한 호출에 몰면 응답이 길어져 끊길 수 있다. 고칠 필요가 없는 줄은 넣지 않는다. " +
     "기본 mode:\"propose\" 는 게임 대사를 바꾸지 않고 «윤문 제안» 으로 남긴다 — 사람이 자료집 「대사」 탭에서 바꾸기 전·후를 보고 줄마다 받거나 버린다. " +
     "사람이 «바로 바꿔» 라고 분명히 말했을 때만 mode:\"apply\" 로 곧장 쓴다. " +
     "거절: 낡은 hash(원문이 바뀜)·없는 id·이벤트 편집기에서 열린 이벤트·제어 코드가 빠지거나 새로 생김·대화창 한 장을 원문보다 더 넘김(allowOverflow 로만 허용). " +
@@ -385,7 +386,7 @@ const readStoryScript: ToolDefinition = {
   description:
     "장면 본문을 대본처럼 읽는다: 장면 머리(장소·발동·조건) · 「화자: 대사」 · [지문](이동·전투·아이템·진행) · [선택지] 와 > 갈래 · {조건 분기}. " +
     "줄 끝 꼬리표 ⟨S12.3·a1b2c3⟩ 는 rewrite_dialogue 의 ref·hash 다. 대사가 똑같은 쌍둥이 장면은 «S2 와 같다» 로 줄인다. " +
-    "chapter(막 하나), from/to(본줄 번호 범위, 그 사이 곁가지는 includeSide 일 때), scenes([\"S12\",\"B4\"]), speaker(그 인물이 나오는 장면만) 로 고른다. " +
+    "chapter(막 하나), from/to(본줄 번호 범위, 그 사이 곁가지는 includeSide 일 때), scenes([\"S12\",\"B4\"]), speaker(그 인물이 나오는 장면만 — 곁가지 포함) 로 고른다. " +
     "글이 maxChars 를 넘으면 잘라 nextFrom 을 준다 — 이어서 from:nextFrom 으로 부른다.",
   mode: "read",
   parameters: {
