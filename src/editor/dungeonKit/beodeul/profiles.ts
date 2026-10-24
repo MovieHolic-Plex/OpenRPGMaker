@@ -132,7 +132,8 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
   pyramid: {
     ...GRAMMAR.pyramid,
     face: { h3: [TK("sandstone-face-3h"), T("face-temple-3h")], h2: [TK("sandstone-face-2h"), T("face-temple-2h")] },
-    floor: { base: D("ground-camp"), patches: [{ kit: D("ground-road"), at: 0.68, scale: 7 }], byKind: { boss: [TK("sandstone-floor"), D("ground-plaza")], shrine: [TK("sandstone-floor"), D("ground-plaza")], crypt: [TK("sandstone-floor"), D("ground-plaza")] } },
+    // 모래 바닥: 칸 0·3·6 = 밝은 세로 줄(3칸마다 되풀이) — 나머지 칸만 섞는다.
+    floor: { base: D("ground-camp"), mix: true, mixCells: [1, 2, 4, 5, 7, 8], patches: [{ kit: D("ground-road"), at: 0.68, scale: 7 }], byKind: { boss: [TK("sandstone-floor"), D("ground-plaza")], shrine: [TK("sandstone-floor"), D("ground-plaza")], crypt: [TK("sandstone-floor"), D("ground-plaza")] } },
     ceiling: ["beodeul_dungeon_ceiling_sand"],
   },
   tower: {
@@ -144,7 +145,7 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
   otherworld: {
     ...GRAMMAR.otherworld,
     face: { h3: [TK("otherworld-face-3h"), C("face-cave-3h")], h2: [TK("otherworld-face-2h"), C("face-cave-2h")] },
-    floor: { base: [TK("otherworld-floor"), M("ground-slagg")], patches: [], mix: true, mixCells: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17] },   // 칸 13 = 붉은 사선 금
+    floor: { base: [TK("otherworld-floor"), M("ground-slagg")], patches: [], mix: true, mixCells: [1, 5, 7, 10, 14, 17] },   // 분홍 점이 가장 적은 칸(6~7점)만 — 칸 13 붉은 사선 금·점 많은 칸은 「분홍 소금·후추」로 읽혔다(2026-10-25 floor VQA r1)
     ceiling: ["beodeul_dungeon_ceiling_void"],
   },
 };

@@ -134,7 +134,8 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
     const wet = new Set(composed.banks.cells);
     const bridge = new Set<number>();
     composed.picture.forEach((row, y) => { for (let x = 0; x < row.length; x += 1) if (row[x] === "=") bridge.add(y * W + x); });
-    const table = composed.banks.style === "grass" ? BEODEUL_NATURE.bankGrass : composed.banks.style === "bog" ? BEODEUL_NATURE.bankBog : BEODEUL_NATURE.bankLava;
+    // 늪: 진흙 둑(bankMud) — 이끼 둑(bankBog)의 외톨이·가장자리 칸이 진흙 바닥 위 밝은 초록 16px 네모로 읽혔다(2026-10-25 floor VQA r0·r1).
+    const table = composed.banks.style === "grass" ? BEODEUL_NATURE.bankGrass : composed.banks.style === "bog" ? BEODEUL_NATURE.bankMud : BEODEUL_NATURE.bankLava;
     const N8 = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]] as const;
     const want = new Map<number, number>();
     for (const c of wet) {
