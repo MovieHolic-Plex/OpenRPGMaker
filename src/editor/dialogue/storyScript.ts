@@ -657,8 +657,9 @@ function buildStoryUncached(project: Project): Story {
   for (let round = 0; round < 3; round += 1) {
     drafts.forEach((draft, position) => { if (draft.scope !== "map" && [...callers[position]!].some((caller) => mainSet.has(caller))) mainSet.add(position); });
   }
-  // 본줄 장면은 그 맵에 들어가는 길 뒤에 온다(순서용 간선).
-  for (const position of mainSet) {
+  // 장면은 그 맵에 들어가는 길 뒤에 온다(순서용 간선). 곁가지도 — 동굴 안 광부는 동굴로 들어가는 장면 뒤에 닻을 둔다.
+  for (let position = 0; position < drafts.length; position += 1) {
+    if (drafts[position]!.scope !== "map") continue;
     const mapId = drafts[position]!.mapId;
     if (!mapId || mapId === startMap) continue;
     for (const entrant of entrants.get(mapId) ?? []) edge(entrant, position);
