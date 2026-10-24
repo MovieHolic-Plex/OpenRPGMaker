@@ -1010,7 +1010,8 @@ function dressOtherworld(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot |
   const crystal = () => pickKit(c, rs() < 0.5 ? [TK("corrupt-crystal"), VC("fire-crystal")] : [TK("corrupt-crystal-big"), TK("corrupt-crystal"), VC("spike-wide")]);
   const fire = pickKit(c, [TK("void-brazier"), VC("brazier")]);
   const pillar = pickKit(c, [TK("bone-pillar"), VC("spike-tall")]);
-  const bits = () => c.weighted(rs, [[crystal(), 3], [VC("spike-small"), 2], [SW("bones"), 2], [SW("skulls"), 1], [pillar, 1]]);
+  // 뼈는 가끔만 — 길가 곳곳의 흰 뼈가 「바닥이 지저분하다」로 읽혔다(2026-10-25 floor VQA r0·r1).
+  const bits = () => c.weighted(rs, [[crystal(), 3], [VC("spike-small"), 2], [SW("bones"), 1], [pillar, 1]]);
   const e = c.edgeCells(r, rs);
   const edgeBits = (n: number) => { let k = 0; for (const [x, y] of e) { if (k >= n) break; if (rs() < 0.5 && lonely(c, x, y, 1) && stand(c, bits(), x, y)) k += 1; } };
   switch (r.kind) {
