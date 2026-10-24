@@ -405,8 +405,8 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
       // 발렌은 병사 뒤 순서 — 1단계에 기본 대상 커서가 무적인 발렌이 아니라 병사에게 간다.
       ...soldiers.map(([enemyId, x, y]) => ({ enemyId, x, y, hidden: false })),
       { enemyId: FS_VALEN_ENEMY, x: 60, y: 110, hidden: false },
-      { enemyId: FS_VALEN_GOLEM, x: 110, y: 70, hidden: true },
-      { enemyId: FS_VALEN_GOLEM, x: 110, y: 160, hidden: true },
+      { enemyId: FS_VALEN_GOLEM, x: 200, y: 55, hidden: true },
+      { enemyId: FS_VALEN_GOLEM, x: 200, y: 170, hidden: true },
     ],
     autoAlign: false, uncapturable: true,
     backdropLayers: [{ preset: "fog", opacity: 45 }, { preset: "embers", opacity: 40 }, { preset: "stars", opacity: 40 }],

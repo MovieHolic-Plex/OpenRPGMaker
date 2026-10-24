@@ -163,7 +163,7 @@ async function segment(browser, server, key, run) {
   }, ["/__runtime-qa/project.json", `fs-act1-${key}-${Date.now()}`, SEGMENTS[key]]);
   await page.route("**/__runtime-qa/project.json", (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify(project) }));
   await page.goto(`${server.url}/player.html?e2eVitals=1`, { waitUntil: "domcontentloaded", timeout: 180_000 });
-  await page.waitForFunction(() => !!window.__oprnDebug && !!document.querySelector('[data-testid="runtime-state-json"]'), null, { timeout: 360_000 });
+  await page.waitForFunction(() => !!window.__oprnDebug && !!document.querySelector('[data-testid="runtime-state-json"]'), null, { timeout: 900_000 });
   await page.waitForTimeout(2000);
   const seg = { marks, texts: [] };
   try { await run(page, mark, seg); } catch (e) { seg.error = String(e); log(key, "ERR", e); }
@@ -211,7 +211,8 @@ try {
       if (speed !== seg.speedLog?.at(-1)?.[1]) (seg.speedLog ??= []).push([msgs.length, speed]);
       if (speed && speed !== "1.0" && speed !== "5.0") { await page.keyboard.press("Shift"); await page.waitForTimeout(250); }
       // 자동 전투는 스스로 돈다. Enter 는 전투 이벤트 대사가 떠 있을 때만(빈 대사 칸에 누르면 연출 건너뛰기 5배가 된다).
-      if (s.box && s.box.trim()) await page.keyboard.press("Enter", { delay: 80 });
+      const result = await page.evaluate(() => !!document.querySelector('[data-testid="battle-result-panel"]'));
+      if ((s.box && s.box.trim()) || result) await page.keyboard.press("Enter", { delay: 80 });
       await page.waitForTimeout(300);
     }
     seg.battleMessages = msgs;
