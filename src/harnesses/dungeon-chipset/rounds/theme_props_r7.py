@@ -21,7 +21,7 @@ T = 16
 L = P1.L
 G = P1.G
 
-LIF = L('j:void1 a:vrock0 b:vrock1 c:vrock2 d:vrock3 e:iron4 A:iron0 B:iron1 C:iron2 D:iron3 E:iron5 1:void1 2:water0 3:iron1 4:water1 5:iron3 v:ice0 w:ice1 x:ice2 y:ice3 z:ice4 o:water0 k:water1')
+LIF = L('j:void1 a:vrock0 b:vrock1 c:vrock2 d:vrock3 e:iron4 A:iron0 B:iron1 C:iron2 D:iron3 E:iron5 1:void2 2:vrock1 3:iron1 4:crock3 5:crock5 v:ice0 w:ice1 x:ice2 y:ice3 z:ice4 o:water0 k:water1')
 LIF2 = L('j:vrock0 a:crock1 b:crock2 c:crock3 d:crock4 e:crock5 A:cata0 B:cata1 C:cata3 D:cata5 E:cata6 1:crock0 2:crock2 3:crock3 4:crock4 5:crock6 v:ice0 w:ice1 x:ice2 y:ice3 z:ice4 o:water0 k:vrock1')
 
 # 켜 경계(위 → 아래) 기준 행 · 열마다 오르내림(16 주기) · 켜 몸 단
@@ -51,9 +51,9 @@ def rock(seed=0):
             if 0 < k:
                 if (k - 1) in ICE_SEAM:
                     hh = ((x + seed * 5) * 2246822519 ^ k * 3266489917) & 0xffff
-                    rows[y0][x] = 'o' if hh % 5 else 'j'      # r7b: 틈에 낀 얼음 = 짙은 물빛(채도 낮춤), 밝은 얼음은 드문드문
+                    rows[y0][x] = 'j' if hh % 7 else 'o'      # r7d: 틈 = 바위 어둠, 얼음은 일곱에 하나 반짝(패널 10 「코발트 채도·16px 반복」) · r7b: 틈에 낀 얼음 = 짙은 물빛(채도 낮춤), 밝은 얼음은 드문드문
                     if y0 - 1 >= 0:
-                        rows[y0 - 1][x] = 'v' if hh % 11 == 3 else ('k' if hh % 3 == 0 else 'a')
+                        rows[y0 - 1][x] = 'v' if hh % 13 == 3 else 'a'
                 else:
                     rows[y0][x] = 'j'
                     if y0 - 1 >= 0:
@@ -72,7 +72,7 @@ def rock(seed=0):
             c = rows[y][x]
             if c not in 'bcd':
                 continue
-            if h % 29 == 0:
+            if h % 17 == 0:
                 ln = 3 + (h >> 4) % 4
                 for i in range(ln):
                     xx = (x + i) % 16
@@ -101,11 +101,21 @@ def rock(seed=0):
                     continue
                 i = max(0, min(4, 'abcde'.index(c) + shift))
                 if x in cuts:
-                    i = max(0, i - 1)     # r7b: 판 금 = 두 단 그늘(먹 줄 아님 — 16px 세로줄로 읽혔다)
+                    pass     # r7d: 금 자리도 몸 단 그대로(색 줄만 바뀐다) · r7b: 판 금 = 두 단 그늘(먹 줄 아님 — 16px 세로줄로 읽혔다)
                 rows[y][x] = ramp[i]
     rows = [''.join(r) for r in rows]
-    # r7c: 밝은 알갱이 덩이(speck3) 없음 — 버들항 동굴 줄 C 처럼 조용한 켜. 같은 줄 ±1 알갱이만(칸 정보량)
-    return W8.pit_speck(rows, 41 + seed, top=5)
+    # r7c: 밝은 알갱이 덩이(speck3) 없음 — 버들항 동굴 줄 C 처럼 조용한 켜. 같은 줄 ±1 알갱이(r7e: 두 번 — 칸 정보량)
+    rows = W8.pit_speck(W8.pit_speck(rows, 41 + seed, top=5), 77 + seed, top=5)
+    # r7f: 켜 윗턱(경계 바로 아래 빛 줄)에 서리 — 넷에 하나 옅은 얼음 w, 그 옆 드물게 짙은 얼음 v (얼음굴 주제 · 칸 정보량)
+    out = [list(r) for r in rows]
+    for x in range(16):
+        bs = [BOUND[0]] + [BOUND[i + 1] + WAVY[i][(x + seed * 5) % 16] for i in range(4)] + [48]
+        for k in range(1, 5):
+            y = bs[k] + 1
+            h = ((x + seed * 5) * 2654435761 ^ k * 97) & 0xff
+            if y < 48 and out[y][x] not in 'jovwxyz.':
+                out[y][x] = 'w' if h % 4 == 0 else ('v' if h % 9 == 1 else out[y][x])
+    return [''.join(r) for r in out]
 
 
 def ends(mid):

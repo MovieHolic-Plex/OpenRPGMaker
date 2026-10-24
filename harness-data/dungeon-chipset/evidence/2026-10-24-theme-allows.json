@@ -42,6 +42,14 @@
    "round": "theme-props-r6",
    "gate": "pass",
    "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-9.json"
+  },
+  {
+   "pixelSha256": "5e97fb5a06e1875d6fb4c49c2c8b53f3fad4de0a4efb78c92f74659017b7f773",
+   "kind": "column",
+   "name": "prop.wisp A1",
+   "round": "theme-props-r8",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-10.json"
   }
  ]
 }

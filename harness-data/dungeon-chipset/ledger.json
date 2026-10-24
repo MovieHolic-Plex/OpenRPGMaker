@@ -1181,124 +1181,22 @@
    "by": "delegated",
    "delegatedBy": "delegated by user to supervisor 2026-10-24",
    "evidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-9.json"
+  },
+  {
+   "round": "theme-props-r8",
+   "item": "prop.wisp",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "45f7bbc2ed493bf035bb883475d0f992579c7180306b5535ea3c961c272d5838",
+   "note": "panel 0 majors; object-gate PASS receipt 5e97fb5a06e1 (column)",
+   "at": "2026-10-24T23:50:33",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-24",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-10.json"
   }
  ],
  "rejects": [],
  "runs": [
-  {
-   "round": "theme-walls-r8",
-   "at": "2026-10-24T22:23:42",
-   "fail": 0,
-   "warn": 4,
-   "warnByCode": {
-    "R": 4
-   },
-   "polish": [],
-   "hashes": {
-    "wall.other_face": {
-     "A1": "a042f1ea7a68c89f6cfefef501da48f8e857f72feb1c383e2e07ed106a4c9e34",
-     "A2": "e3f244036de6852d921f0ecee436d30d225eb0497a420dcc84615985bc758769"
-    },
-    "wall.other_rim": {
-     "A1": "7ceaee72c087ec96a599cb009b87571540328ec2d969211847cf48fb1644eeb0",
-     "A2": "82a8647ba08f5e423ab552d288543c137e22ee9bf669d85acf771420f2f5d28e"
-    },
-    "wall.tower_face": {
-     "A1": "9607a4fce223f1a44772172d25bc8088e5ed6bdd989009d347740eb7971c6254",
-     "A2": "93d33c044adea85f446a342d1a978d0843bbbe4de8d096d914ac676cb9350670"
-    },
-    "wall.tower_rim": {
-     "A1": "8190a22505eaba6e792a626141d30d09dd35abc1252a1cb55a225fd1e9f7bc39",
-     "A2": "58162f7ee17d705dd96ed32df73a94a7a8d6c6e97ee2a6dec717c45a7024bf5b"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r5",
-   "at": "2026-10-24T22:25:08",
-   "fail": 0,
-   "warn": 4,
-   "warnByCode": {
-    "R": 2,
-    "CONTRAST": 2
-   },
-   "polish": [
-    {
-     "item": "prop.minecart",
-     "key": "A1",
-     "code": "CONTRAST",
-     "msg": "줄 A 바닥: 광차(2칸) 그늘 쪽 0.24 vs 바닥 0.46 차 0.22 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 광차(2칸) 그늘 쪽 0.24 vs 바닥 0.38 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 광차(2칸) 그늘 쪽 0.24 vs 바닥 0.44 차 0.20"
-    },
-    {
-     "item": "prop.minecart",
-     "key": "A2",
-     "code": "CONTRAST",
-     "msg": "줄 A 바닥: 광차(2칸) 그늘 쪽 0.24 vs 바닥 0.46 차 0.22 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 광차(2칸) 그늘 쪽 0.24 vs 바닥 0.38 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 광차(2칸) 그늘 쪽 0.24 vs 바닥 0.44 차 0.20"
-    }
-   ],
-   "hashes": {
-    "prop.minecart": {
-     "A1": "b0ab749f85df5693866b92472566fe28ef8756b15a83db254eed5d727d80b250",
-     "A2": "28bd0c4e385ff0f6cc8285deed14c5a07792bcd3646ee7f12fb0066a0ae93750"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r5",
-   "at": "2026-10-24T22:26:31",
-   "fail": 0,
-   "warn": 2,
-   "warnByCode": {
-    "R": 2
-   },
-   "polish": [],
-   "hashes": {
-    "prop.minecart": {
-     "A1": "78920d23b927a97f4fe932e70f2abe3415f21b1dc4e43b13bb8cb88e920c0771",
-     "A2": "c8f04593d89424f931bca279364d8dd95dd0d2ce2a83cd4b7b433ee0047fbc47"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r5",
-   "at": "2026-10-24T22:29:11",
-   "fail": 0,
-   "warn": 2,
-   "warnByCode": {
-    "R": 2
-   },
-   "polish": [],
-   "hashes": {
-    "prop.minecart": {
-     "A1": "78920d23b927a97f4fe932e70f2abe3415f21b1dc4e43b13bb8cb88e920c0771",
-     "A2": "c8f04593d89424f931bca279364d8dd95dd0d2ce2a83cd4b7b433ee0047fbc47"
-    },
-    "wall.ice_face": {
-     "A1": "3f521ec5c0c3ba93b4f1f83c47f982a3e45fbf5767541e6c74ac73123efaa43e",
-     "A2": "555764eb6e85d4907e3a9ed1a97004322656ec067aede304dcb1adc2504fa1d5"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r5",
-   "at": "2026-10-24T22:29:46",
-   "fail": 0,
-   "warn": 2,
-   "warnByCode": {
-    "R": 2
-   },
-   "polish": [],
-   "hashes": {
-    "prop.minecart": {
-     "A1": "78920d23b927a97f4fe932e70f2abe3415f21b1dc4e43b13bb8cb88e920c0771",
-     "A2": "c8f04593d89424f931bca279364d8dd95dd0d2ce2a83cd4b7b433ee0047fbc47"
-    },
-    "wall.ice_face": {
-     "A1": "e26e75314dfe91f78f965e39afa03b5f726cce8a76d7e8cc0c23781f781cfe93",
-     "A2": "7ddcb5ba6369684edd96d092e9a672ef02eaba4ad07c8d973a7db2cc614803bd"
-    }
-   }
-  },
   {
    "round": "theme-props-r2",
    "at": "2026-10-24T22:32:26",
@@ -1996,6 +1894,76 @@
     "wall.other_rim": {
      "A1": "f2a995a651c06d1680ea60fb79f694439c981cd441acd38392645282161a5d01",
      "A2": "baefd72fbc90563ec4e9116131c071485aa2e72f4c8e189ec5ead333ff73b49e"
+    }
+   }
+  },
+  {
+   "round": "theme-walls-r10",
+   "at": "2026-10-24T23:52:08",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "wall.other_rim": {
+     "A1": "f2a995a651c06d1680ea60fb79f694439c981cd441acd38392645282161a5d01",
+     "A2": "c21a8d0e5cb827962cb02669bf968e18eacb6604c91847f77617c66f1223c1ff"
+    }
+   }
+  },
+  {
+   "round": "theme-props-r7",
+   "at": "2026-10-24T23:53:14",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "wall.ice_face": {
+     "A1": "a63ccd8e339c8ed6ede8ae11f008709cfd6cbf10a0aa972e6f11041315a1f3ae",
+     "A2": "0c5184a4024bb3c9cf3c2d7531d0ccd88b0b4c9bec1815517a021ae1e23f504d"
+    }
+   }
+  },
+  {
+   "round": "theme-props-r7",
+   "at": "2026-10-24T23:54:52",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "wall.ice_face": {
+     "A1": "c4891d76430b8634980ebac19003bb563c6909b2206e678030a758aabd43fca9",
+     "A2": "7148a602c8b236d4b7989392aa37df22ac8ea1a42412775c09208d99c5e9c736"
+    }
+   }
+  },
+  {
+   "round": "theme-props-r7",
+   "at": "2026-10-24T23:56:24",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "wall.ice_face": {
+     "A1": "769fafb03ccbf1ebbfcc45589b8b07631a4fe1effe968f7f9d765436da08a8d2",
+     "A2": "a017fb65d3456846967810a2d2a37beb02abf32c271e0e652fc0ed1c28a68099"
+    }
+   }
+  },
+  {
+   "round": "theme-props-r7",
+   "at": "2026-10-24T23:57:40",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "wall.ice_face": {
+     "A1": "f8e19dff632dcceb7e661b65b453891ea2a1dc33759d69447f5752234e7b5a79",
+     "A2": "9934508fd975dad708ec569249812200de99581d72ad2c58cef5021d57b2d3be"
     }
    }
   }

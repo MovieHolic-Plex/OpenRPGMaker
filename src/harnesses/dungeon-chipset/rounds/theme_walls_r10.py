@@ -14,7 +14,7 @@ L = W9.L
 # r10b(object-gate 화풍 2/4 「4단·8색, 깨끗한 줄」): 단을 한 칸씩 올리고(갓돌 c=ostone2 d=ostone3 턱 e=ostone5),
 # 갓돌마다(이음 사이) 둘째 색 줄(C D = 같은 밝기의 남보라 arcane) — 탑 갓돌처럼 돌마다 결이 다르다. 윗켜 결에 한 단 위 알갱이 f.
 LOR = L('j:void1 a:void2 b:ostone1 c:ostone2 d:ostone3 e:ostone5 f:ostone4 n:arcane0 C:arcane0 D:arcane1 F:arcane2 x:void1 y:void2 z:ostone0')
-LOR2 = L('j:void1 a:void2 b:ostone1 c:ostone2 d:ostone4 e:ostone5 f:ostone5 n:ostone0 C:ostone1 D:ostone3 F:ostone4 x:void1 y:void2 z:ostone0')
+LOR2 = L('j:void1 a:void2 b:ostone1 c:ostone2 d:ostone4 e:ostone5 f:ostone5 n:ostone0 C:ostone1 D:ostone3 F:ostone4 w:ostone1 x:void1 y:void2 z:ostone0')
 
 
 def _alt(v, seed):
@@ -50,8 +50,14 @@ def _grain(v, seed):
 OR_GRAIN = {k: _grain(_alt(v, k), k + 7) for k, v in W9.TR_GRAIN.items()}
 
 
+# r10d: 천장 몸통 = 허공 어둠에 흑요석 알갱이(x 바탕 · y/z 짙은 결 · w 한 단 밝은 결) — 화풍 판정 「몸통이 한 빛 덩이」
+BODY2 = []
+for _y, _r in enumerate(W9.RIM_BODY):
+    BODY2.append(''.join(('w' if ((_x * 2654435761 ^ _y * 40503) & 0xff) % 9 == 0 else c) for _x, c in enumerate(_r)))
+
+
 def other_rim(n=1):
-    return W9.rim_autotile(W9.TR_TONE, OR_GRAIN, W9.RIM_BODY, LOR if n == 1 else LOR2)
+    return W9.rim_autotile(W9.TR_TONE, OR_GRAIN, W9.RIM_BODY if n == 1 else BODY2, LOR if n == 1 else LOR2)
 
 
 W9.other_rim = other_rim   # room()/mk_rim 이 이 모듈 함수를 부른다
