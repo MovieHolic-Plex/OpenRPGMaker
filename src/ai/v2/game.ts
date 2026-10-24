@@ -7,7 +7,7 @@ import { createPiToolset, type PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { getTool } from "@/editor/tools/toolRegistry";
 import type { PiAssistantV2Env } from "./env";
 
-export const GAME_WORDS = /퀘스트|의뢰|심부름|부탁|아이템|회복약|포션|무기|갑옷|방패|장비|장신구|상점|가게|팔게|팔기|열쇠|잠긴|보물|상자|제작|만들어 주는|주인공|이름|직업|레벨|능력치|체력|동료|파티|합류|떠나|스킬|기술|전투|싸우|보스|적\b|몬스터|무리|선택지|호감|기억|스위치|변수|횟수|레버|여관|묵으|저장|회복|치료|신부|골드|돈|엔딩|게임|일지|제한 시간|타이머|낮에|밤에|시간대|아침|저녁|팻말|표지판|우물|동전|quest|item|shop|weapon|armor|battle|enemy|party|skill|inn|save|gold/iu;
+export const GAME_WORDS = /퀘스트|의뢰|심부름|부탁|아이템|회복약|포션|무기|갑옷|방패|장비|장신구|상점|가게|팔게|팔기|열쇠|잠긴|보물|상자|제작|만들어 주는|주인공|이름|직업|레벨|능력치|체력|동료|파티|합류|떠나|스킬|기술|전투|싸우|보스|적\b|몬스터|무리|선택지|호감|기억|스위치|변수|횟수|레버|여관|묵으|저장|회복|치료|신부|골드|돈|엔딩|결말|게임|일지|제한 시간|타이머|낮에|밤에|시간대|아침|저녁|팻말|표지판|우물|동전|암호|비밀번호|통행료|경비|문지기|함정|독|중독|마비|수면|상태 ?이상|날씨|비가|비 ?오|눈이|눈 ?내|폭풍|안개|quest|item|shop|weapon|armor|battle|enemy|party|skill|inn|save|gold|ending|poison|weather/iu;
 
 /** v1 도구 중 게임 요소에 쓰는 것(읽기 먼저). 레지스트리에 없는 이름은 빠진다. */
 export const V2_GAME_TOOLS: readonly string[] = [
@@ -17,6 +17,9 @@ export const V2_GAME_TOOLS: readonly string[] = [
   "upsert_actor", "upsert_class", "upsert_skill", "set_party", "add_companion",
   "upsert_enemy", "upsert_troop", "upsert_troop_battle_page", "set_encounter_table",
   "find_empty_ground", "place_npc", "upsert_event", "patch_event_page", "run_scene_test", "upsert_common_event", "set_npc_schedule", "configure_time_system", "place_savepoint", "set_start_position",
+  // 2026-10-24 새 12 사례 비교: v1 이 쓰고 v2 에 없던 것 — 칩 고르기(없으면 그림 관문이 막는다)·이야기 깃발·엔딩·필드 적·이벤트 옮기기/지우기·문 잇기·날씨.
+  "list_npc_graphics", "list_resources", "read_npc_layout", "declare_story_flag", "list_endings", "define_ending", "place_field_enemy",
+  "move_event", "remove_event", "create_transfer_pair", "set_scene_mood",
 ];
 
 export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전투·파티·스위치] 이 요청에는 v1 게임 도구를 그대로 쓴다(장소·연출은 위 동사).
@@ -34,14 +37,22 @@ export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전�
 - 대사는 그 인물의 입말로 쓴다 — 퀘스트 요약문(「~를 찾아 소식을 전해 주자」)을 NPC 대사로 쓰지 않는다. 주인공 독백·내레이션은 말하는 사람 이름 없이.
 - 타이머·시간 제한: 페이지 조건 timer 는 {timerId:"timer1"|"timer2", seconds, op?} — op 를 빼면 «남은 시간 ≤ 초»(">" 등도 된다, 다른 timerId 는 안 된다). 시작 = timer set(초)+start(timer1)+시작 스위치, 성공 = 물건·스위치 조건 페이지에서 timer stop, 실패 = 남은 시간 ≤0 페이지(가장 높은 번호).
 - 다 만든 뒤 run_scene_test 로 핵심 경로를 한 번 돌려 본다(말 걸기 interact·choose → expect switchOn/inventoryCount/goldDelta 등). 실패하면 patch_event_page 로 고치고 다시. 통과한 것만 「됐다」고 보고한다.
-- 도구가 거절하면 이유를 읽고 고쳐 다시 부른다. 할 수 없는 것은 보고에 적는다.`;
+- 사람 그림: 새 NPC·새 페이지·배우 그림은 list_npc_graphics(query:외형)로 후보 그림을 보고 그 selectionId 를 쓴다(칸 번호를 지어내면 그림 관문이 거절한다). 이미 있는 NPC 의 페이지를 더할 때는 그 NPC 의 기존 graphic 을 그대로 복사한다. 늑대·박쥐처럼 짐승·적은 list_npc_graphics 에 없으면 place_field_enemy(필드 적) 또는 그림 없는 밟기 이벤트로 — 같은 검색어로 되풀이하지 않는다.
+- 플래그: 새 스위치·변수는 declare_story_flag(이름·뜻)로 먼저 선언하고, 켠 스위치는 반드시 어떤 페이지 조건이나 분기가 읽게 한다(켜기만 하고 안 읽는 깃발 = 「이미 했다」 페이지가 빠졌다는 뜻). 선언만 하고 안 쓰는 깃발은 만들지 않는다.
+- 한 번만 통과·한 번만 주는 관문(암호·통행료·보상·열쇠)은 «이미 통과/이미 받음» 페이지를 꼭 둔다: 통과 스위치(또는 셀프 스위치) 조건의 더 높은 번호 페이지에 짧은 대사(「지나가게」)와 통과 동작만.
+- 물건 보여 주기·내기(presentItem·아이템 고르기)는 그 물건을 가졌을 때만 뜨게 한다: 그 페이지 조건에 {kind:'item',itemId,present:true}(또는 fork 로 감싸기) — 물건이 없을 때는 평소 대사 페이지가 나와야 한다.
+- 상태 이상(독·마비·수면…): 화면 효과·소리만으로 흉내 내지 말고 실제 상태를 건다 — {kind:'m2Command',commandId:'m2-019-change-state',fields:{target:'party'(또는 배우 id),operation:'add',value:'state_poison'}}. 상태 id 는 get_database_records(states)로 확인. 효과음·번쩍임은 그 위에 덧붙인다.
+- 날씨(비·눈·폭풍·안개): 실제 날씨 명령 {kind:'setWeather',weather:'rain'|'storm'|'snow'|'fog'|'none',intensity:0~1} 을 쓴다(또는 add_event 의 weather 비트, 맵 전체 기본 날씨는 set_scene_mood). tint(화면 색)는 날씨가 아니다.
+- 엔딩·결말: list_endings 로 보고 define_ending(id·name·epilogue)으로 엔딩을 정의한 뒤 선택지 갈래에 {kind:'triggerEnding',endingId} 를 넣는다. 내레이션 + returnToTitle 만으로 엔딩을 흉내 내지 않는다. «마지막에» 묻는 선택이면 그 앞 조건(보스 처치·완료 스위치)을 페이지 조건으로 건다.
+- 요청이 가리키는 자리(다리 앞·강가·우물 옆…)가 맵에 없으면 묻지 않는다: 그 물건·지형을 만들어(stamp_object·fill_region 덧그리기, 없으면 가장 그럴듯한 길목) 짓고 보고에 「~가 없어 ~에 만들었다」고 쓴다.
+- 도구가 거절하면 이유를 읽고 고쳐 다시 부른다. 같은 거절이 두 번이면 방법을 바꾼다. 할 수 없는 것은 보고에 적는다.`;
 
 export function wantsGameTools(task: string): boolean {
   return GAME_WORDS.test(task);
 }
 
 /** 이미 있는 맵에 물길·다리·작은 물건을 덧그리는 요청(맵을 새로 짓지 않는다) — v1 결정론 덧그리기 도구 셋. */
-export const TERRAIN_WORDS = /다리를|다리가|다리 위|다리에|돌다리|강을|강이|강물|강 상류|강 하류|개울|냇물|시냇|연못을|물길|폭포|레버|팻말|표지판|간판|bridge|lever|signpost/iu;
+export const TERRAIN_WORDS = /다리\s*(를|가|위|에|앞|옆|건너|밑|아래|목)|돌다리|나무다리|강을|강이|강물|강 상류|강 하류|개울|냇물|시냇|연못을|물길|폭포|레버|팻말|표지판|간판|bridge|lever|signpost/iu;
 export const V2_TERRAIN_TOOLS: readonly string[] = ["list_spatial_designs", "stamp_object", "fill_region"];
 export const TERRAIN_CARD = `[이미 있는 맵에 덧그리기 — 물길·다리·작은 물건] 맵을 새로 짓지 않고 고칠 때(이미 지은 마을에 강·다리·레버·팻말).
 - 물: fill_region{mapId, material, rect:{x,y,w,h}, shape?:'ellipse', referencePurpose} — 버들항 칩셋(beodeul_city)은 material:'버들항 물'(그냥 '물'은 물 준 밭흙이 된다)·referencePurpose:'beodeul-city-water'. 굽은 강은 rect 여러 개. 집·완성 구역은 피하고, 길이 물을 건너는 자리를 남겨 다리를 놓는다.

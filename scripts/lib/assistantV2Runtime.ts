@@ -20,7 +20,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     toolNames: ["__assistant_v2__"],
     v2: {
       tools: (env) => createV2Tools(env, session),
-      afterMain: () => v2FinishGate(session),
+      afterMain: (env) => v2FinishGate(session, env),
     },
   });
   options.onEvent?.({ type: "execution_status", name: "v2.summary", ok: done.ok, at: Date.now(), summary: `v2 요약: 장소 ${new Set([...session.places.values()]).size}·사람/사건 ${session.content.length}·비평 ${session.criticCalls}회(${Math.round(session.criticMs / 1000)}초)·남은 문제 ${session.unresolved().length}·그림 없음 ${session.missingArt.size} · 전체 ${Math.round((Date.now() - started) / 1000)}초`,
