@@ -77,20 +77,25 @@ def ground_tone(x, y):
             mx, my = max(p[0] for p in pts), max(p[1] for p in pts)
             x0 = cx * 16 + (r >> 8) % (16 - mx); y0 = cy * 16 + h2(k, 19, 6103) % (16 - my)
             light = k % 5 == 0
-            deep = not light and k % 4 == 1                 # 깊은 골재(두 단 어둠) — 덩이 가운데 한 화소
+            deep = False                                    # r60b: 외톨이 짙은 알은 후추처럼 읽혀 뺐다
             bright = light and k % 3 == 0                   # 밝은 골재 알(두 단 밝음) — 덩이 가운데 한 화소
             for j, (dx, dy) in enumerate(pts):
                 p = (x0 + dx, y0 + dy)
                 if _GT[p] == G_BASE: _GT[p] = (G_BASE + (2 if bright and j == 0 else 1)) if light else (G_BASE - 2 if deep and j == 0 else G_BASE - 1)
-        for k in range(60):                                 # 닳은 자리: 칸 안 4~6화소 두 줄 덩이, 한 단 밝음(선이 아니라 닳은 면)
-            r = h2(k, 23, 6107)
-            cx, cy = (r % 64) % 8, (r % 64) // 8
-            ln = 4 + (r >> 6) % 3
-            x0 = cx * 16 + 1 + (r >> 8) % (14 - ln); y0 = cy * 16 + 1 + h2(k, 29, 6109) % 12
-            for i in range(ln):
-                for j in (0, 1):
-                    if j == 1 and (i == 0 or i == ln - 1): continue
-                    _GT[(x0 + i, y0 + j)] = G_BASE + 1
+        for cell in range(64):                              # 칸마다 둥근 얼룩 1~2개(닳아 밝은 자리 · 젖어 어두운 자리), 가장자리는 디더 — 칸 안에 갇힌다
+            cx0, cy0 = (cell % 8) * 16, (cell // 8) * 16
+            for k in range(1 + h2(cell, 31, 6111) % 2):
+                r = h2(cell * 3 + k, 37, 6113)
+                bx, by = cx0 + 3 + r % 10, cy0 + 3 + (r >> 4) % 10
+                rad = 2.5 + ((r >> 8) % 4) * 0.7
+                up = (r >> 11) % 3 != 0
+                for yy in range(cy0 + 1, cy0 + 15):
+                    for xx in range(cx0 + 1, cx0 + 15):
+                        d = ((xx - bx) ** 2 + (yy - by) ** 2) ** 0.5
+                        if d > rad: continue
+                        if d > rad - 1.2 and (xx + yy) % 2: continue
+                        v = _GT[(xx, yy)]
+                        _GT[(xx, yy)] = min(G_BASE + 2, v + 1) if up else max(G_BASE - 2, v - 1)
     return _GT[(x % SP, y % SP)]
 
 
@@ -270,14 +275,14 @@ def _spall(c, J, js, seed):
     아래·오른 테는 깨진 밝은 판 끝, 바깥 둘레 몇 화소는 금 간 판(한 단 어둠). 3/4: 위쪽 벽이 보이고 아래 벽은 테만."""
     r = h2(seed, 5, 43)
     along_h = js & 1 and (not js & 2 or r % 2)
-    w, hh = 7 + (r >> 4) % 4, 4 + (r >> 6) % 3
+    w, hh = 9 + (r >> 4) % 3, 5 + (r >> 6) % 2
     if along_h: x0, y0 = 3 + r % (12 - w + 1 if w < 12 else 1), 2
     else: x0, y0 = 2, 4 + r % (12 - hh)
     hole = set()
     for k in range(4 + (r >> 9) % 2):                      # 둥근 덩이 네댓 개를 합친 패임 — 네모·뚜껑 모양이 아니다
         q = h2(k, r, seed + 2)
         bx, by = x0 + q % w, y0 + 1 + (q >> 4) % max(1, hh - 1)
-        rad = 1.6 + ((q >> 8) % 3) * 0.5
+        rad = 2.4 + ((q >> 8) % 3) * 0.4
         for y in range(int(by - rad) - 1, int(by + rad) + 2):
             for x in range(int(bx - rad) - 1, int(bx + rad) + 2):
                 if (x - bx) ** 2 + (y - by) ** 2 <= rad * rad and _in(x, y, 1): hole.add((x, y))
@@ -289,13 +294,8 @@ def _spall(c, J, js, seed):
         else:                                              # 패인 바닥 = 드러난 굵은 골재(회색 알), 흙은 드문 알갱이만
             q = h2(x, y, seed + 3) % 10
             c.P(x, y, GR[3] if q < 2 else GR[2] if q < 4 else GR[0] if q < 6 else DIRT[3] if q == 6 else GR[1])
-    for (x, y) in hole:
-        for (nx, ny, col) in ((x, y + 1, GR[6]), (x + 1, y, GR[5]), (x - 1, y, GR[2])):
-            if (nx, ny) not in hole and (nx, ny) not in J and _in(nx, ny, 1): c.P(nx, ny, col)
-    for k in range(3):
-        q = h2(k, r, seed + 8)
-        p = (x0 + w + q % 2, y0 + hh // 2 + k - 1) if along_h else (x0 + (q % w), y0 + hh + q % 2)
-        if p not in hole and p not in J and _in(*p, 1): c.P(p[0], p[1], GR[1])
+    for (x, y) in hole:                                    # 아래 테만 밝게(깨진 판 끝이 빛을 받는다) — 옆 테·외톨이 화소는 다리처럼 읽혀 뺐다
+        if (x, y + 1) not in hole and (x, y + 1) not in J and _in(x, y + 1, 1): c.P(x, y + 1, GR[6])
 
 
 def _weed(c, J, js, seed):
