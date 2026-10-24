@@ -225,21 +225,21 @@ def shrine_stone():
                     nb = [src[y+dy][x+dx] for dx, dy in ((1,0),(-1,0),(0,1),(0,-1)) if src[y+dy][x+dx] in stone]
                     if len(nb) >= 3 and c not in nb:
                         g[y][x] = max(set(nb), key=nb.count)
-    for (x0, y0, w0, h0, c) in ((12,30,2,3,"m"),(13,33,2,2,"m"),(7,26,2,2,"m"),(15,37,3,2,"D"),(9,14,2,3,"T")):
+    for (x0, y0, w0, h0, c) in ((15,37,3,2,"D"),(9,14,2,3,"T")):
         for y in range(y0, y0 + h0):
             for x in range(x0, x0 + w0):
                 if g[y][x] in "bBmdDT": g[y][x] = c
     despeckle()
-    # carved star recess: fill "D", upper-left inner edge "o", lower-right lip "B" (lip and edge kept as joined runs)
+    # shallow relief star: mid-tone face, thin dark edge on its upper-left, light lip on its lower-right
     star = ["....xx....", "....xx....", "...xxxx...", "xxxxxxxxxx", ".xxxxxxxx.", "..xxxxxx..", "..xxx.xxx.", ".xxx...xxx", ".xx.....xx"]
-    ox, oy = 8, 18
+    ox, oy = 6, 25
     pts = {(ox + i, oy + j) for j, r in enumerate(star) for i, ch in enumerate(r) if ch == "x"}
-    for (x, y) in pts: g[y][x] = "D"
-    for (x, y) in pts:                      # upper-left inner shadow: whole top half of the recess darkest
-        g[y][x] = "o" if (y < oy + 4 or (x - 1, y) not in pts) else "k"
-    for (x, y) in pts:                      # lit lip: the shifted copy below-right, outside the recess
-        q = (x + 1, y + 1)
-        if q not in pts and g[q[1]][q[0]] in "bmdDT": g[q[1]][q[0]] = "B"
+    for (x, y) in pts: g[y][x] = "m"
+    for (x, y) in pts:
+        if (x - 1, y) not in pts or (x, y - 1) not in pts: g[y][x] = "d"
+    for (x, y) in pts:
+        for q in ((x + 1, y), (x, y + 1)):
+            if q not in pts and g[q[1]][q[0]] in "bmdDT": g[q[1]][q[0]] = "B"
     STAR_ZONE.update(pts | {(x + 1, y) for x, y in pts} | {(x, y + 1) for x, y in pts})
     # moss: on the crown and the left shoulder, flowing down a little
     for (x, y, c) in ((12,6,"G"),(13,6,"M"),(11,7,"G"),(12,7,"M"),(13,7,"L"),(14,8,"M"),(10,8,"g"),(11,8,"G"),
@@ -299,3 +299,73 @@ def _clean(t, protect=()):
     return out, k
 
 ART = {"hollow-tree": _clean(hollow_tree()), "shrine-stone": _clean(shrine_stone())}
+
+# hollow-tree frozen at its judged r7 pixels (commit 245edfb857); do not regenerate
+HOLLOW_TREE_R7 = ([
+"................................................",
+"................................................",
+"................................................",
+"................................................",
+"................................................",
+"................................................",
+"................................................",
+"...................AA...........................",
+"..................BBB...........................",
+"..................BBB...........................",
+"..................BBB...........................",
+"..................BCCC..........................",
+".................DCCCCCCC.......................",
+".................DCCCCCCCC......................",
+"..............AEEBBCCCCCBBFF....................",
+"..............AEEGECCCCCHAF.....................",
+"..............AEEGEGGIHHHAF.....................",
+"...............EEEEGGIHHHAF.....................",
+"...............AEEEGGIHHAAF..AA.................",
+"...............AEEEGGIHHHAAAAGGF................",
+"................EEEEGGIHHAAAAIIF................",
+"................AEEEHIIHHHAHHH..................",
+"................AEEEHIIIHHHHHH..................",
+"..........AFF..AAEEEGIHHHHHAF...................",
+"..........AFGGGEEEEGGIHHHAAAF...................",
+"...........FIIGGEEEGIIIHHAAA....................",
+".............IIIEEHGGGIIHHAAF...................",
+"..............HHEGHGGIIHHHAAF...................",
+"...............EEGGGGIIHHHAAF...................",
+"...............EEEEGGIIIHHHAF...................",
+"...............AEEEGGIIHHHHF....................",
+"...............AEEEGGHIHHHHF....................",
+"................EEEEGHIIHAAF....................",
+".................EEEEGGIIHAAF...................",
+".................EEEEGGIIHAAF...................",
+".................AEEEGGIIHAAF...................",
+".................AEEGGGIHHAAF...................",
+".................AEEGGGGHHHHAF..................",
+"................AEEEGGGIHHHHAF..................",
+"................AEEEGGIIIIHHAF..................",
+".................EEEECCCDIIHHAF.................",
+"................AEEEACCCDIIHHAF.................",
+"................AEEEACCCDIIIAHAF................",
+"................AEECCCCCDIIIAHAF................",
+"................AEECCCCCDIHHHAF.................",
+".................CCCCCCCCDIHAAF.................",
+".................CCCCCCCCDIHAAF.................",
+".................ACCCCCCCDIAAA..................",
+"................AACCCCCCCDIHAAF.................",
+".................ACCCCCCDIHHAAF.................",
+"...........AAA..AACCCCCCDIHHHAAAA..AA...........",
+"........AAAGGGEEEAEEEEEGGIHIIHHAAAAIIFFF........",
+"......FFGGFHHHEEEEGGEGGGIIHIIHHAAAAHHFHIIFFFF...",
+"......GGHHFHHHEEEEGGGGGGIIHIIIHHAAAHHFHHHFHII...",
+"......FFHH..FFFEFEEGGGFGIIIFFFHHAHAAAFFHFFHFF...",
+"............FHHHFFFsFFFFFSSSSSFFHHHFFssssss.....",
+".............HHHFsssSSSFSSSSSSSFHHHFSSSsssss....",
+"..............FFsssSSSFHFSSSSSSSFFFSSSSSssss....",
+"...............sssssSSFHFSSSSSSSSSSSSSSsssss....",
+".................sssssFFSSSSSSSSSSSSSsssss......",
+"....................sssssssssssssssssss.........",
+"................................................",
+"................................................",
+"................................................"
+],
+{"A": "#2a1a0f", "B": "#b77541", "C": "#190e0d", "D": "#3a261c", "E": "#885a26", "F": "#1e150a", "G": "#6f4725", "H": "#452a17", "I": "#543719", "s": "s", "S": "S"})
+ART["hollow-tree"] = HOLLOW_TREE_R7

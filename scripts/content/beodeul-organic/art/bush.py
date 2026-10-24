@@ -213,3 +213,45 @@ BRAM7 = [
 ]
 ART["bramble"] = (outline(BRAM7, mid="2", dark="o"), TH7)
 _b = list(ART["bramble"][0]); _b[15] = _b[15].replace("g", "S"); ART["bramble"] = (_b, TH7)  # art ends by row 14
+
+# ---- r8 bush-s: small leafy shrub, four leaf clumps at different heights (tall back-left, mid back-right,
+# low front-left, low front-right), each with a lit top cluster and a dark underside, notched outline.
+BS8 = [
+ "................",
+ "................",
+ "................",
+ "......2.2.......",
+ ".....254452.....",
+ "....25544431..2.",
+ "...2.54433212541",
+ "...2544321o54431",
+ "..25543o1o544321",
+ ".25443321o44331o",
+ ".2544o21543321o.",
+ ".244321o5443o1o.",
+ "..3321o1o3321o..",
+ "..o1o1oo1o11oSS.",
+ "...o.oo.o1oSSs..",
+ "................",
+]
+ART["bush-s"] = (BS8, WD)
+# ---- r8 bramble: one big lobe, one medium, one small low lobe; uneven gaps; three short 2px cane tips; undulating base
+BRAM8 = [
+ "................................",
+ "................................",
+ "................................",
+ "......tT........................",
+ ".......tT...........uT..........",
+ "....2..2tT2.........Tu..........",
+ "...25525443.2......2.u2.........",
+ "..2554454431252...25445.2.......",
+ ".2554432544332542.2544321452....",
+ ".25443r2154432r4325443o154431...",
+ ".2544321o5443o1o32544321o4431.2.",
+ "..44332o154321o1o14432o1o4321ut.",
+ "..3321o1o33211o1o1o33211o1o3425.",
+ "...o1oo1o1o1oo1o.oo1o1oo1o12221.",
+ "....o.oo.oo..oo...o.oo..oo.11o1.",
+ "...........SSSSSs.....SSSSSSSs..",
+]
+ART["bramble"] = (BRAM8, TH7)
