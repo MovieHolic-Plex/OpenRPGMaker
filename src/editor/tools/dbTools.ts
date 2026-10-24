@@ -552,7 +552,6 @@ const stateRuntimeEffectsSchema = objectSchema({
   damageTypeRates: { ...damageTypeRatesSchema, description: "이 상태인 동안 받는 피해 계열 %를 적의 기본 damageTypeRates 대신 쓴다(갈아 끼움, 여러 상태면 큰 값). 예: 「관통상」 { magic: 300 } · 변신 기계 형태 { physical: 0, magic: 25, elements: { thunder: 200 } }(transformResourceId 와 함께)" },
   invertHealing: booleanSchema("좀비 — 이 상태인 동안 받는 HP 회복(회복 스킬·회복 아이템·재생)이 같은 양의 피해가 된다. 기본 상태 id state_zombie"),
   maxTurns: integerSchema("최대 지속 1~9 — 걸린 뒤 자기 턴이 이만큼 지나면 회복 굴림과 상관없이 풀린다(「독은 최대 3턴」)"),
-  damageTypeRates: objectSchema({ physical: integerSchema("공격력 계열 받는 피해 %(0 무효·100 보통·300 세 배)"), magic: integerSchema("마력 계열 받는 피해 %(0 무효·300 세 배)") }, "이 상태인 동안 받는 피해 계열 %를 바꿔 쓴다 — 적의 기본 damageTypeRates 를 대신한다. 예: 「꿰뚫림」 {magic:300} = 마법 무효인 용도 이 상태 동안 마법 ×3"),
 });
 
 const heldEffectSchema = objectSchema({
@@ -642,7 +641,6 @@ const enemyRecordSchema = objectSchema({
   stealItems: arrayOf(objectSchema({ itemId: stringSchema(), rate: integerSchema("훔치기 확률 0~100") }), "훔치기 표. 위에서부터 굴려 첫 성공 하나. 빈 배열이면 해제"),
   stateRates: rateMapSchema,
   elementRates: rateMapSchema,
-  damageTypeRates: objectSchema({ physical: integerSchema("공격력 계열 받는 피해 %(0 무효·100 보통·300 세 배)"), magic: integerSchema("마력 계열 받는 피해 %(0 무효·300 세 배)") }, "피해 계열별 받는 피해 %(생략 100). {magic:0} = 마법 무효. 상태의 runtimeEffects.damageTypeRates 가 걸리면 그 값이 대신한다(「꿰뚫림 동안만 마법 ×3」)"),
 }) as RecordSchema;
 
 const troopRecordSchema = objectSchema({
