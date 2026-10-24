@@ -180,7 +180,8 @@ async function tapRowTwice(page, seg, step, re, screenSig) {
     note(seg, `${step}-tap-selected-confirms`, hit && sig1 !== sig0, `screen ${sig0} -> ${sig1}`);
     return sig1 !== sig0;
   }
-  const moved = await rowSelected(page, re);
+  let moved = await rowSelected(page, re);
+  for (let i = 0; i < 8 && !moved; i++) { await sleep(250); moved = await rowSelected(page, re); if (moved && flag("debug")) console.log("LATE-MOVE", step, (i + 1) * 250); }
   note(seg, `${step}-first-tap-moves`, hit && moved && sig0 === sig1, `hit=${hit} selected=${moved} screen ${sig0} -> ${sig1}`);
   await tapRowText(page, re);
   await sleep(900);
@@ -584,7 +585,7 @@ const SEGMENTS = {
       await tapSel(page, "[data-testid='shop-confirm'], [data-testid='shop-qty-confirm'], .runtime-shop-confirm", 1500);
       const gold1 = await gameFrame(page).evaluate(() => document.querySelector(".runtime-shop-overlay")?.textContent?.match(/(\d[\d,]*)\s*(G|골드)/)?.[1]);
       note("shop", "buy", goldStart !== gold1 || gold0 !== gold1, `${goldStart} -> ${gold0} -> ${gold1}`);
-      if (flag("diag")) console.log("SHOPDIAG", await gameFrame(page).evaluate(() => { const o = document.querySelector(".runtime-shop-overlay"); const sh = o?.querySelector(".runtime-shop-items-shell"); return JSON.stringify({ fit: document.querySelector(".play-viewport")?.dataset.shopFit, cls: o?.className, cols: sh && getComputedStyle(sh).gridTemplateColumns, side: [...(sh?.children ?? [])].map((c) => `${c.className.split(" ")[0]}:${getComputedStyle(c).display}:${Math.round(c.getBoundingClientRect().width)}`), font: o && getComputedStyle(o.querySelector(".runtime-shop-item-row") ?? o).fontSize, ow: o && o.offsetWidth, oh: o && o.offsetHeight, tf: o && getComputedStyle(o).transform, scopes: [...document.styleSheets].flatMap((ss) => { const all = []; const walk = (rs) => { for (const r of rs) { all.push(r); if (r.cssRules) walk(r.cssRules); } }; try { walk(ss.cssRules); } catch {} return all; }).filter((r) => r.constructor.name === "CSSScopeRule").map((r) => `${r.start}|${r.cssRules.length}|${o?.matches(r.start)}`) }); }));
+      if (flag("diag")) console.log("SHOPDIAG", await gameFrame(page).evaluate(() => { const o = document.querySelector(".runtime-shop-overlay"); const sh = o?.querySelector(".runtime-shop-items-shell"); return JSON.stringify({ fit: document.querySelector(".play-viewport")?.dataset.shopFit, cls: o?.className, cols: sh && getComputedStyle(sh).gridTemplateColumns, side: [...(sh?.children ?? [])].map((c) => `${c.className.split(" ")[0]}:${getComputedStyle(c).display}:${Math.round(c.getBoundingClientRect().width)}`), font: o && getComputedStyle(o.querySelector(".runtime-shop-item-row") ?? o).fontSize, pad: o && getComputedStyle(o).padding, sideRow: o && (() => { const sd = o.querySelector(".runtime-shop-side"); return sd ? getComputedStyle(sd).gridRow + "/" + getComputedStyle(sd).display : null; })(), shellCls: sh?.className, ow: o && o.offsetWidth, oh: o && o.offsetHeight, tf: o && getComputedStyle(o).transform, scopes: [...document.styleSheets].flatMap((ss) => { const all = []; const walk = (rs) => { for (const r of rs) { all.push(r); if (r.cssRules) walk(r.cssRules); } }; try { walk(ss.cssRules); } catch {} return all; }).filter((r) => r.constructor.name === "CSSScopeRule").map((r) => `${r.start.slice(0,40)}|${r.cssRules.length}|${o?.matches(r.start)}`).filter((x) => x.endsWith("true")) }); }));
       await shot(page, "shop", "2-bought");
       for (let i = 0; i < 6 && (await has(page, ".runtime-shop-overlay")); i++) await tapSel(page, "[data-testid='touch-action-b']", 800);
       note("shop", "shop-closed-by-B", !(await has(page, ".runtime-shop-overlay")));

@@ -553,8 +553,9 @@
   ) { display: none; }
   }
 }
-/* 플레이어 안: 같은 규칙을 화면 크기가 아니라 논리 해상도(data-shop-fit, playSurface)로 고른다. */
-@scope (.player-layout .play-viewport:is([data-shop-fit="compact"], [data-shop-fit="tiny"]) > .runtime-shop-overlay:not(.emerald-shop-overlay)) {
+/* 플레이어 안: 같은 규칙을 화면 크기가 아니라 논리 해상도(data-shop-fit, playSurface)로 고른다. 뿌리는 뷰포트다 —
+   @scope 안 선택자는 뿌리의 자손만 잡으므로 뿌리를 상점 창으로 두면 창 자신을 겨눈 규칙이 안 걸린다. 에메랄드 상점은 자기 판형이라 뺀다. */
+@scope (.player-layout .play-viewport:is([data-shop-fit="compact"], [data-shop-fit="tiny"])) to (.emerald-shop-overlay) {
   .runtime-shop-overlay {
     --shop-art-row: 32px;
     --shop-art-display: 96px;
@@ -690,8 +691,9 @@
   .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-keyhint-label { display: none; }
   }
 }
-/* 플레이어 안: 같은 규칙을 화면 크기가 아니라 논리 해상도(data-shop-fit, playSurface)로 고른다. */
-@scope (.player-layout .play-viewport[data-shop-fit="tiny"] > .runtime-shop-overlay:not(.emerald-shop-overlay)) {
+/* 플레이어 안: 같은 규칙을 화면 크기가 아니라 논리 해상도(data-shop-fit, playSurface)로 고른다. 뿌리는 뷰포트다 —
+   @scope 안 선택자는 뿌리의 자손만 잡으므로 뿌리를 상점 창으로 두면 창 자신을 겨눈 규칙이 안 걸린다. 에메랄드 상점은 자기 판형이라 뺀다. */
+@scope (.player-layout .play-viewport[data-shop-fit="tiny"]) to (.emerald-shop-overlay) {
   .runtime-shop-overlay {
     --shop-text-small: 10px;
     --shop-text-title: 14px;
@@ -1142,8 +1144,9 @@
   .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-statement-portrait { display: none; }
   }
 }
-/* 플레이어 안: 같은 규칙을 화면 크기가 아니라 논리 해상도(data-shop-fit, playSurface)로 고른다. */
-@scope (.player-layout .play-viewport:is([data-shop-fit="compact"], [data-shop-fit="tiny"]) > .runtime-shop-overlay:not(.emerald-shop-overlay)) {
+/* 플레이어 안: 같은 규칙을 화면 크기가 아니라 논리 해상도(data-shop-fit, playSurface)로 고른다. 뿌리는 뷰포트다 —
+   @scope 안 선택자는 뿌리의 자손만 잡으므로 뿌리를 상점 창으로 두면 창 자신을 겨눈 규칙이 안 걸린다. 에메랄드 상점은 자기 판형이라 뺀다. */
+@scope (.player-layout .play-viewport:is([data-shop-fit="compact"], [data-shop-fit="tiny"])) to (.emerald-shop-overlay) {
   /* 공용 압축 규칙(.runtime-shop-party-panel { display: none })을 이긴다 — 이 프리셋의 비교는 파티 창이 주인공이다. */
   .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-panel { display: block; }
   .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-walker { zoom: 1; }
@@ -1247,8 +1250,9 @@
   .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-row.rm-nav-item { padding: 0 6px 0 22px; min-height: var(--shop-art-row); }
   }
 }
-/* 플레이어 안: 같은 규칙을 화면 크기가 아니라 논리 해상도(data-shop-fit, playSurface)로 고른다. */
-@scope (.player-layout .play-viewport[data-shop-fit="tiny"] > .runtime-shop-overlay:not(.emerald-shop-overlay)) {
+/* 플레이어 안: 같은 규칙을 화면 크기가 아니라 논리 해상도(data-shop-fit, playSurface)로 고른다. 뿌리는 뷰포트다 —
+   @scope 안 선택자는 뿌리의 자손만 잡으므로 뿌리를 상점 창으로 두면 창 자신을 겨눈 규칙이 안 걸린다. 에메랄드 상점은 자기 판형이라 뺀다. */
+@scope (.player-layout .play-viewport[data-shop-fit="tiny"]) to (.emerald-shop-overlay) {
   .runtime-shop-overlay.runtime-shop-preset-pixel { --shop-gap: 2px; padding: 2px; }
   .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-walker { zoom: 0.75; }
   .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-items-shell { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto auto; }
@@ -1349,3 +1353,7 @@
   left: calc(var(--play-stage-left, 0px) + var(--play-logical-half-width) * var(--play-scale-x, 1));
   top: calc(var(--play-stage-top, 0px) + var(--play-logical-half-height) * var(--play-scale-y, 1));
 }
+/* 압축 배치(480×270 급)의 입구 창 — 예전엔 화면 px 압축 규칙만 걸려 넓은 여백(32px)이 270 높이를 넘겼다. 작은 배치와 같은 간격을 쓴다. */
+.player-layout .play-viewport[data-shop-fit="compact"] > .runtime-shop-overlay:not(.emerald-shop-overlay) .runtime-shop-greeting-panel { padding: var(--shop-space-3); }
+.player-layout .play-viewport[data-shop-fit="compact"] > .runtime-shop-overlay:not(.emerald-shop-overlay) .runtime-shop-menu { gap: var(--shop-space-3); }
+.player-layout .play-viewport[data-shop-fit="compact"] > .runtime-shop-overlay:not(.emerald-shop-overlay) .runtime-shop-menu-choice { padding-block: var(--shop-space-2); }

@@ -31,4 +31,17 @@ describe("calculateTouchLayout (mobile touch play, 2026-10-24)", () => {
     expect(layout.stageLeft + 480 * layout.scale).toBeLessThanOrEqual(w - layout.gutter + 1);
     expect(layout.stageTop + 270 * layout.scale).toBeLessThanOrEqual(h - safe.bottom + 0.5);
   });
+
+  it("portrait phones below 1x get the 320x300 window panel at 1x", () => {
+    const layout = calculateTouchLayout(393, 659, 480, 270, zero, { scaleMode: "integer" });
+    expect(layout.scale).toBeLessThan(1);
+    expect(layout.panel?.scale).toBe(1);
+    expect(layout.panel!.top).toBeGreaterThanOrEqual(layout.stageTop);
+  });
+
+  it("iPad mini uses the 1.5x step in portrait and landscape", () => {
+    expect(calculateTouchLayout(768, 1024, 480, 270, zero, { scaleMode: "integer" }).scale).toBe(1.5);
+    expect(calculateTouchLayout(1024, 768, 480, 270, zero, { scaleMode: "integer" }).scale).toBe(1.5);
+    expect(calculateTouchLayout(1024, 768, 480, 270, zero, { scaleMode: "integer" }).panel).toBeNull();
+  });
 });
