@@ -18,6 +18,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 import "@/editor/tools/toolRegistry";
 import { buildJrpgChapter } from "@/editor/tools/jrpgChapterTools";
 import { pickSpot, placeRoamer } from "@/editor/tools/jrpgVolumeTools";
+import { makeFieldEnemyChase } from "@/editor/tools/fieldEnemyTools";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import { buildFallenStarOpening, FALLEN_STAR_TITLE_BACKGROUND } from "./fallenStarOpening";
 import { clearOrphanShadows, rimPit } from "./fallenStarMapPolish";
@@ -31,6 +32,7 @@ import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX, ensureFallenValenChip } fr
 import { buildFallenTownInteriors } from "./fallenTownInteriors";
 import { buildFallenTownLife, ensureFallenTownDatabase } from "./fallen/townLife";
 import { applyFallenTownQuests, FS_QUEST_FACE_ALIASES } from "./fallen/townQuests";
+import { buildFallenForestMaps } from "./fallen/forestMaps";
 import { placeFallenStarVessel } from "./fallenStarVessel";
 import { dressObservatoryHall } from "./fallenObservatoryHall";
 import { isFallenRoomRebuilt } from "./fallenRoomOwnership";
@@ -2389,6 +2391,12 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   if (!roomsOwned(ids.observatory)) dressObservatoryHall(project, M(ids.observatory), "ev_fs_scope");
   if (!roomsOwned("fs_vault_gate")) unifyPuzzleFloor(project, M("fs_vault_gate"));
   joinForestTrail(project, ids.forest);
+  // 숲을 여섯 맵으로 나눈다 — 어귀·옛 수로·가시덤불 샛길·별지기 사당 터·사냥꾼 쉼터·깊은 숲(원래 숲의 북쪽 27줄).
+  // 왕도 동문은 어귀로 이어지고, 깊은 숲은 사당 터에서 들어간다(fallen/forestMaps.ts). 모든 숲 손질이 끝난 뒤에 자른다.
+  buildFallenForestMaps(project, { hub: ids.hub, forest: ids.forest }, troops.field, { understory: (mapId) => fillForestUnderstory(project, mapId) });
+  // 보이는 짐승은 보면 달려든다(사용자 2026-10-24) — 모든 맵의 떠도는 적(…_foeN)에 시야 추격을 건다: 앞쪽 부채꼴에 들면 「!」,
+  // 순찰보다 빠르게 쫓아와 닿으면 전투, 놓치면 잠깐 뒤지다 제자리로 돌아가 순찰한다(fieldEnemyTools.makeFieldEnemyChase). 보스·수호자는 그대로.
+  for (const map of Object.values(project.maps)) for (const event of map.events) if (/_foe\d+$/.test(event.id)) makeFieldEnemyChase(project, map, event);
   for (const map of Object.values(project.maps)) if (map.tilesetId === "atlas_biome_interior" && !isFallenRoomRebuilt(project, map.id)) { darkenInteriorMargins(map); dropFloorHangs(project, map); }
   // 둘레를 덧댄 실내(천문대·화로의 방)는 남쪽 출구가 맵 가장자리가 아니라 벽 틈 맨바닥이었다(scene-transfer-off-door) —
   // 틈에 열린 쇠창살 문틀 윗칸(상인방)을 세워(아랫칸 기둥은 바깥 천장 칸이라 얹지 않는다) 출구로 읽히게 한다.
