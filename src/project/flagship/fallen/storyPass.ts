@@ -397,7 +397,7 @@ function cultists(project: Project, vault: GameMap): void {
 // ── 10. 빠졌던 꾸지람 넷 ────────────────────────────────────────────────
 
 /** 걷는 길·출입구를 막지 않는 빈 칸(anchor 가까운 순). 놓은 뒤 출입구끼리 길이 끊기면 되돌린다. */
-function placeCrate(project: Project, hub: GameMap, anchor: { x: number; y: number }, tile: number, avoid: { x: number; y: number }[]): { x: number; y: number } | null {
+export function placeCrate(project: Project, hub: GameMap, anchor: { x: number; y: number }, tile: number, avoid: { x: number; y: number }[]): { x: number; y: number } | null {
   const meta = (project.tilesets[hub.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
   const W = hub.width, H = hub.height;
   const isGate = (e: GameEvent) => JSON.stringify(e.pages ?? e.commands ?? []).includes('"kind":"transfer"');
@@ -422,16 +422,20 @@ function placeCrate(project: Project, hub: GameMap, anchor: { x: number; y: numb
   const before = reach();
   const gatesReached = gates.filter((g) => before.has(`${g.x},${g.y}`));
   const openSides = (x: number, y: number): number => [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => isPassable(project, hub, x + dx!, y + dy!)).length;
+  // 마주 보는 두 쪽만 트인 칸은 한 줄 통로다 — 모서리(직각으로 트인 칸)만 쓴다.
+  const corridor = (x: number, y: number): boolean =>
+    (isPassable(project, hub, x - 1, y) && isPassable(project, hub, x + 1, y) && !isPassable(project, hub, x, y - 1) && !isPassable(project, hub, x, y + 1))
+    || (isPassable(project, hub, x, y - 1) && isPassable(project, hub, x, y + 1) && !isPassable(project, hub, x - 1, y) && !isPassable(project, hub, x + 1, y));
   for (let r = 1; r <= 6; r += 1) {
     for (let dy = -r; dy <= r; dy += 1) for (let dx = -r; dx <= r; dx += 1) {
       if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
       const x = anchor.x + dx, y = anchor.y + dy;
-      if (x < 2 || y < 2 || x >= W - 2 || y >= H - 2 || !isPassable(project, hub, x, y)) continue;
+      if (x < 1 || y < 1 || x >= W - 1 || y >= H - 1 || !isPassable(project, hub, x, y)) continue;
       const i = y * W + x;
       if ((hub.upperTiles[i] ?? -1) >= 0 || (hub.upperOverlayTiles?.[i] ?? -1) >= 0) continue;
-      // 길 위는 막다른 한 칸(옆이 하나만 트인 벽감)일 때만 — 지나다니는 길을 막지 않는다.
+      // 길 위는 벽 모서리·벽감(옆이 둘 이하로 트인 칸)일 때만 — 지나다니는 길 한복판은 막지 않는다(끊김은 아래 BFS 가 따로 본다).
       if (/다리|물|바다|water/i.test(meta[hub.lowerTiles[i] ?? -1]?.label ?? "")) continue;
-      if (/길|포석|광장|road|plaza/i.test(meta[hub.lowerTiles[i] ?? -1]?.label ?? "") && openSides(x, y) > 1) continue;
+      if (/길|포석|광장|road|plaza/i.test(meta[hub.lowerTiles[i] ?? -1]?.label ?? "") && (openSides(x, y) > 2 || corridor(x, y))) continue;
       if (hub.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) continue;
       if (avoid.some((a) => Math.abs(a.x - x) + Math.abs(a.y - y) <= 2)) continue;
       const old = hub.upperTiles[i]!;
