@@ -3793,7 +3793,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const transform = gimmicks.get(user.id, "transform");
     const vulnerable = pendingCharges.has(target.id) ? 1.25 : 1;
     const counter = gimmicks.get(target.id, "counter") ? 0.65 : 1;
+    // 장비 「주는 피해 ±%」·「받는 피해 ±%」 — 통상 공격·기술(물리·마법) 피해가 모두 이 곱을 지난다. 0.1 아래로는 내리지 않는다.
+    const dealt = Math.max(0.1, 1 + (user.equipmentEffects?.damageDealtPercent ?? 0) / 100);
+    const taken = Math.max(0.1, 1 + (target.equipmentEffects?.damageTakenPercent ?? 0) / 100);
     return (
+      dealt *
+      taken *
       vulnerable *
       counter *
       (transform ? 1 + (transform.config.powerMultiplier ?? 0.35) : 1)

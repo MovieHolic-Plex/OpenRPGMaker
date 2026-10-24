@@ -21,6 +21,7 @@ const EFFECT_LABELS = {
   doubleAttack: "연속 공격", attackAll: "전체 공격", attackElementIds: "공격 속성",
   elementalDefenseIds: "속성 방어", stateDefenseIds: "상태 방어", accuracy: "명중률",
   criticalRate: "치명타율", stateResistanceChance: "상태 저항 확률", stateDefenseMode: "상태 방어 방식",
+  damageDealtPercent: "주는 피해(%)", damageTakenPercent: "받는 피해(%)",
 } as const;
 const signed = (value: number) => `${value >= 0 ? "+" : ""}${value}`;
 const equipmentName = (project: Project, id: string | undefined) =>
