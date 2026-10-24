@@ -867,6 +867,8 @@ export interface Project {
   audioDescriptions?: AudioDescriptionOverrides;
   /** Editor-only monster overrides, keyed by raw resource ID. */
   monsterMetadata?: MonsterMetadataOverrides;
+  /** 「대사」 책상 — 화자별 말투 메모와 조수 윤문 제안(project/dialogueDesk.ts). optional이라 마이그레이션 불필요. */
+  dialogueDesk?: import("../dialogueDesk").DialogueDesk;
   mapTree: MapTreeNode;
   startMapId: MapId;
   startPos: { x: number; y: number };
