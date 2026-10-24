@@ -745,7 +745,7 @@ function floorB4(project: Project): GameMap {
   const dragonGfx = { ...chip(DRAGON_CHIP[0], DRAGON_CHIP[1], "down"), scale: 2, scaleMode: "manual" };
   const dragonFight = (): Command[] => [
     setSw(SW_DRAGON_CRACK, false),
-    battleBgm("easyrpg-music-boss-3"),
+    battleBgm("cc0-bgm-rtp-btl-001"),
     battle(FS_DRAGON_TROOP, true),
     battleBgmReset(),
     won([
