@@ -1,0 +1,900 @@
+{
+ "id": "beodeul_organic",
+ "texture": "tex_beodeul_organic",
+ "tileSize": 16,
+ "tilesPerRow": 16,
+ "count": 91,
+ "source": "scripts/content/beodeul-organic (code pixel art, Beodeul locked palette)",
+ "items": [
+  {
+   "id": "rock-boulder-l",
+   "name": "큰 바위",
+   "en": "large boulder",
+   "family": "rock",
+   "kind": "organic",
+   "layer": 3,
+   "width": 2,
+   "height": 2,
+   "rows": [
+    [
+     0,
+     1
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "sha256": "8878ecd31c02d4faeb96a21f32f61d4b0a21f05cf27248149a4b1ae1a79dc1e8"
+  },
+  {
+   "id": "rock-boulder-m",
+   "name": "중간 바위",
+   "en": "medium boulder",
+   "family": "rock",
+   "kind": "organic",
+   "layer": 3,
+   "width": 2,
+   "height": 1,
+   "rows": [
+    [
+     4,
+     5
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "sha256": "ed179cf7002f5a0e67f240311bd4994be12d9081899b84d2e71c4101a13001d9"
+  },
+  {
+   "id": "rock-pair",
+   "name": "겹친 바위 둘",
+   "en": "two leaning boulders",
+   "family": "rock",
+   "kind": "organic",
+   "layer": 3,
+   "width": 2,
+   "height": 2,
+   "rows": [
+    [
+     6,
+     7
+    ],
+    [
+     8,
+     9
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "sha256": "85fce445b740d42bd04fa6fd4b469149e8adc05a32007ff38e9dd82333cbb5b6"
+  },
+  {
+   "id": "rock-slab",
+   "name": "넓적 바위",
+   "en": "low flat rock slab",
+   "family": "rock",
+   "kind": "organic",
+   "layer": 3,
+   "width": 2,
+   "height": 1,
+   "rows": [
+    [
+     10,
+     11
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "sha256": "6f540764b1eb6bf3c592071707b5bf576e858dcd10d91935285741fa3343de41"
+  },
+  {
+   "id": "rock-s",
+   "name": "작은 바위",
+   "en": "small rock",
+   "family": "rock",
+   "kind": "organic",
+   "layer": 3,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     12
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "sha256": "eb42f8649e42727e50b2cc22912557c1b9945d62306295edb608ad2b71b52e28"
+  },
+  {
+   "id": "rock-pebbles",
+   "name": "자갈",
+   "en": "scattered pebbles",
+   "family": "rock",
+   "kind": "debris",
+   "layer": 2,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     13
+    ]
+   ],
+   "block": [],
+   "sha256": "4c6d92d01468bdd6fa8ae54031bd82cf6f2bd4be6e56c3c6b2ced72af511a6a5"
+  },
+  {
+   "id": "moss-boulder",
+   "name": "이끼 바위",
+   "en": "moss-covered boulder",
+   "family": "mossy",
+   "kind": "organic",
+   "layer": 3,
+   "width": 2,
+   "height": 2,
+   "rows": [
+    [
+     14,
+     15
+    ],
+    [
+     16,
+     17
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "sha256": "117d7a8ea82ac6d465ae8754297c0122076ffa65ff3a330dc6be07b31c7006df"
+  },
+  {
+   "id": "moss-stone",
+   "name": "이끼 돌",
+   "en": "small mossy stone",
+   "family": "mossy",
+   "kind": "organic",
+   "layer": 3,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     18
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "sha256": "8b9c617fd11f671e9376155f71daf12a620336015cb234debb99946ad7998603"
+  },
+  {
+   "id": "moss-stones-flat",
+   "name": "이끼 낀 납작돌",
+   "en": "flat mossy stones in the grass",
+   "family": "mossy",
+   "kind": "terrain",
+   "layer": 2,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     19
+    ]
+   ],
+   "block": [],
+   "sha256": "2b8c8c3995aff043c717bb0355d3ca73a37d1c4ade3085090d955ce380f4dd74"
+  },
+  {
+   "id": "bush-s",
+   "name": "작은 덤불",
+   "en": "small bush",
+   "family": "bush",
+   "kind": "organic",
+   "layer": 3,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     20
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "sha256": "990609d8515f62e49a93e7c6c4248bb2af87de831248b34f717145ea32179378"
+  },
+  {
+   "id": "bush-m",
+   "name": "덤불",
+   "en": "wide bush",
+   "family": "bush",
+   "kind": "organic",
+   "layer": 3,
+   "width": 2,
+   "height": 2,
+   "rows": [
+    [
+     21,
+     22
+    ],
+    [
+     23,
+     24
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "sha256": "3b29b7679278c464f0d4130ffaa69ac7aae57fe17b3bf395c547026ab340989d"
+  },
+  {
+   "id": "bush-berry",
+   "name": "열매 덤불",
+   "en": "berry bush with red berries",
+   "family": "bush",
+   "kind": "organic",
+   "layer": 3,
+   "width": 2,
+   "height": 2,
+   "rows": [
+    [
+     25,
+     26
+    ],
+    [
+     27,
+     28
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "sha256": "07a3b05928a3bc2a0c41bfa4a4db03fc201969bb50cc98959d061d5363ac9000"
+  },
+  {
+   "id": "shrub-tall",
+   "name": "키 큰 관목",
+   "en": "tall narrow shrub",
+   "family": "bush",
+   "kind": "organic",
+   "layer": 3,
+   "width": 1,
+   "height": 2,
+   "rows": [
+    [
+     29
+    ],
+    [
+     30
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "sha256": "f33450bc91d9e93b36fda8c421cab0b8617eddd353774195910947862292d9b8"
+  },
+  {
+   "id": "bramble",
+   "name": "가시덤불",
+   "en": "low bramble thicket",
+   "family": "bush",
+   "kind": "organic",
+   "layer": 3,
+   "width": 2,
+   "height": 1,
+   "rows": [
+    [
+     31,
+     32
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "sha256": "e6e316ac089b4a3644d9a1ac79a99351c3245a1daa8c6beafb53d0426c252738"
+  },
+  {
+   "id": "log-long",
+   "name": "쓰러진 큰 통나무",
+   "en": "long fallen log with moss",
+   "family": "wood",
+   "kind": "organic",
+   "layer": 3,
+   "width": 3,
+   "height": 1,
+   "rows": [
+    [
+     33,
+     34,
+     35
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ]
+   ],
+   "sha256": "ba0ae754cfbdf744e674c249016ca35d58b77012044553658c315e233cc2f775"
+  },
+  {
+   "id": "log-short",
+   "name": "짧은 통나무",
+   "en": "short log section",
+   "family": "wood",
+   "kind": "organic",
+   "layer": 3,
+   "width": 2,
+   "height": 1,
+   "rows": [
+    [
+     36,
+     37
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "sha256": "360e78d411d276eb2101670c1e53411c8b42ba1a619c4b358aebc1f7fff04d46"
+  },
+  {
+   "id": "log-mossy",
+   "name": "썩은 이끼 통나무",
+   "en": "rotting mossy log with ferns",
+   "family": "wood",
+   "kind": "organic",
+   "layer": 3,
+   "width": 3,
+   "height": 2,
+   "rows": [
+    [
+     38,
+     39,
+     40
+    ],
+    [
+     41,
+     42,
+     43
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "sha256": "6d9869e8ab41ea9aab93f131598a1b3b0f2dd1c4a44b509d038a9a67f878d398"
+  },
+  {
+   "id": "stump-l",
+   "name": "큰 그루터기",
+   "en": "big stump with roots",
+   "family": "wood",
+   "kind": "organic",
+   "layer": 3,
+   "width": 2,
+   "height": 2,
+   "rows": [
+    [
+     44,
+     45
+    ],
+    [
+     46,
+     47
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "sha256": "33245b7687789cc9f38a5c7444d70b05783dcf4352099d0fa215f9dde71f1d55"
+  },
+  {
+   "id": "stump-s",
+   "name": "작은 그루터기",
+   "en": "small stump",
+   "family": "wood",
+   "kind": "organic",
+   "layer": 3,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     48
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "sha256": "495ffff65cec2899ed8d9d14936a029bb67960b59ec17d12f89b1a0c9ddac9df"
+  },
+  {
+   "id": "stump-shelf",
+   "name": "버섯 그루터기",
+   "en": "stump with shelf fungus",
+   "family": "wood",
+   "kind": "organic",
+   "layer": 3,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     49
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "sha256": "8c2b69ff1c28bab4274be140d2d7d61a2508e5755b10a23dd9ec3d81ede93a04"
+  },
+  {
+   "id": "shroom-red",
+   "name": "붉은 버섯 무리",
+   "en": "red toadstool cluster",
+   "family": "mushroom",
+   "kind": "organic",
+   "layer": 2,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     50
+    ]
+   ],
+   "block": [],
+   "sha256": "7a238bd55bc931d4d8498ff587b3a2746fa7168f61d1789c9c1007aa93ab9951"
+  },
+  {
+   "id": "shroom-brown",
+   "name": "갈색 버섯 무리",
+   "en": "brown mushroom cluster",
+   "family": "mushroom",
+   "kind": "organic",
+   "layer": 2,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     51
+    ]
+   ],
+   "block": [],
+   "sha256": "56ba33df22bbeb1bec6987ccc80016e22628187e7bf86fa50f19dda3f75648ca"
+  },
+  {
+   "id": "shroom-pale",
+   "name": "흰 버섯 무리",
+   "en": "pale white mushroom cluster",
+   "family": "mushroom",
+   "kind": "organic",
+   "layer": 2,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     52
+    ]
+   ],
+   "block": [],
+   "sha256": "66414ddda669ced7b69e121bd05e9a6b1ab7b9543a66074a9a1a8f946d927215"
+  },
+  {
+   "id": "shroom-ring",
+   "name": "버섯 고리",
+   "en": "fairy ring of small mushrooms",
+   "family": "mushroom",
+   "kind": "organic",
+   "layer": 2,
+   "width": 2,
+   "height": 2,
+   "rows": [
+    [
+     53,
+     54
+    ],
+    [
+     55,
+     56
+    ]
+   ],
+   "block": [],
+   "sha256": "79510c5daec8c8cd3c45aaee3f8b32fc8814cb21dc4f8432386df9c376b23e7f"
+  },
+  {
+   "id": "fern-s",
+   "name": "작은 고사리",
+   "en": "small fern",
+   "family": "fern",
+   "kind": "organic",
+   "layer": 2,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     57
+    ]
+   ],
+   "block": [],
+   "sha256": "e6ac24571afa91773e1b6654b17728b191a9a2b059d23afeabb6fa8e0e323137"
+  },
+  {
+   "id": "fern-l",
+   "name": "큰 고사리",
+   "en": "large fern",
+   "family": "fern",
+   "kind": "organic",
+   "layer": 3,
+   "width": 2,
+   "height": 2,
+   "rows": [
+    [
+     58,
+     59
+    ],
+    [
+     60,
+     61
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "sha256": "d02da66a792e450bffb6d561becdcad098a4d0025f99888b66992c62585310b7"
+  },
+  {
+   "id": "fern-cluster",
+   "name": "고사리 덤불",
+   "en": "fern clump",
+   "family": "fern",
+   "kind": "organic",
+   "layer": 2,
+   "width": 2,
+   "height": 1,
+   "rows": [
+    [
+     62,
+     63
+    ]
+   ],
+   "block": [],
+   "sha256": "20594022dede8724d4e0c00f4bc2bbeff11a2a5c11a31cc3e8a961de01241b1e"
+  },
+  {
+   "id": "grass-tuft-a",
+   "name": "풀포기 A",
+   "en": "grass tuft",
+   "family": "grass",
+   "kind": "organic",
+   "layer": 2,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     64
+    ]
+   ],
+   "block": [],
+   "sha256": "bc73bda5030555d13cd9cb28e67cbb3039c16c747b3bb0697aaa067c5c80f902"
+  },
+  {
+   "id": "grass-tuft-b",
+   "name": "풀포기 B",
+   "en": "tall grass tuft",
+   "family": "grass",
+   "kind": "organic",
+   "layer": 2,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     65
+    ]
+   ],
+   "block": [],
+   "sha256": "1f82b32ea5455f11b5e0513ff9f0be13f7a7db1f58882e2f815eda1c9af0b85d"
+  },
+  {
+   "id": "grass-reeds",
+   "name": "억새",
+   "en": "pale seed-head grass clump",
+   "family": "grass",
+   "kind": "organic",
+   "layer": 2,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     66
+    ]
+   ],
+   "block": [],
+   "sha256": "8126f5369fa7ae8e343151e67d3b99df0a2d6083713f89ffd11ffb330e97f596"
+  },
+  {
+   "id": "flowers-yellow",
+   "name": "노란 들꽃",
+   "en": "yellow wildflowers",
+   "family": "flower",
+   "kind": "organic",
+   "layer": 2,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     67
+    ]
+   ],
+   "block": [],
+   "sha256": "f00742790335fc78e0cb1ec783353b5ad0ee74e90dc31fa0372b9a9b24cf4840"
+  },
+  {
+   "id": "flowers-blue",
+   "name": "파란 들꽃",
+   "en": "blue wildflowers",
+   "family": "flower",
+   "kind": "organic",
+   "layer": 2,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     68
+    ]
+   ],
+   "block": [],
+   "sha256": "2d0b7dbfdba9c2e88b66b846ab003802e4cf84a1c6279af5915e747068cfe82d"
+  },
+  {
+   "id": "flowers-white",
+   "name": "흰 들꽃",
+   "en": "white daisies",
+   "family": "flower",
+   "kind": "organic",
+   "layer": 2,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     69
+    ]
+   ],
+   "block": [],
+   "sha256": "df0c6cb616d1313d973765125cb6e5afcf99dd53a9db9b13f44906af61ec3693"
+  },
+  {
+   "id": "flowers-pink",
+   "name": "분홍 들꽃",
+   "en": "pink wildflowers",
+   "family": "flower",
+   "kind": "organic",
+   "layer": 2,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     70
+    ]
+   ],
+   "block": [],
+   "sha256": "2dec9894598df0f8d9ba7ab964c8cba42a929b8d3757f19bb2e9878147f897b3"
+  },
+  {
+   "id": "flowers-patch",
+   "name": "들꽃 무더기",
+   "en": "mixed wildflower patch",
+   "family": "flower",
+   "kind": "organic",
+   "layer": 2,
+   "width": 2,
+   "height": 1,
+   "rows": [
+    [
+     71,
+     72
+    ]
+   ],
+   "block": [],
+   "sha256": "18f5f6214bf966e37ef065fdd33a5e4bf67a639eb8187f02f6d640a7d4eb5d0f"
+  },
+  {
+   "id": "hollow-tree",
+   "name": "속 빈 고목",
+   "en": "old hollow dead tree trunk (broken top, no canopy), dark hollow at its foot",
+   "family": "landmark",
+   "kind": "organic",
+   "layer": 3,
+   "width": 3,
+   "height": 4,
+   "rows": [
+    [
+     73,
+     74,
+     75
+    ],
+    [
+     76,
+     77,
+     78
+    ],
+    [
+     79,
+     80,
+     81
+    ],
+    [
+     82,
+     83,
+     84
+    ]
+   ],
+   "block": [
+    [
+     0,
+     3
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "sha256": "7e1f049258015da6e5248cffac7d4fc95a65eb24af41d336cc040b0e86bf5c34"
+  },
+  {
+   "id": "shrine-stone",
+   "name": "이끼 사당 돌",
+   "en": "mossy standing shrine stone with a carved star mark and a small offering at its foot",
+   "family": "landmark",
+   "kind": "organic",
+   "layer": 3,
+   "width": 2,
+   "height": 3,
+   "rows": [
+    [
+     85,
+     86
+    ],
+    [
+     87,
+     88
+    ],
+    [
+     89,
+     90
+    ]
+   ],
+   "block": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "sha256": "d461cce974397352e4f6b090037c131feeb423be87fb09008828c51e4459737b"
+  }
+ ]
+}

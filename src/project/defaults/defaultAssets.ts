@@ -3,6 +3,7 @@ import { WORLDMAP_SELECTED_TEXTURE, createWorldmapSelectedTileset, ensureWorldma
 import { WORLDMAP_AUTHORING_TEXTURE, WORLDMAP_AUTHORING_ID, createWorldmapAuthoringTileset, ensureWorldmapAuthoringBrushes } from './worldmapAuthoring';
 import { BEODEUL_CITY_TEXTURE, createBeodeulCityTileset, ensureBeodeulCityReferences, ensureBeodeulCityTileset, beodeulCityBundledReferenceDocuments } from "./beodeulCity";
 import {ensureBeodeulFacilityKits} from './beodeulFacilities';
+import {BEODEUL_ORGANIC_TEXTURE,createBeodeulOrganicTileset,ensureBeodeulOrganicTileset,ensureBeodeulOrganic} from './beodeulOrganic';
 import {BEODEUL_FORMS_TEXTURE,createBeodeulFormsTileset,ensureBeodeulFormsTileset,ensureBeodeulForms} from './beodeulForms';
 import {BEODEUL_REVIEWED_TEXTURE,createBeodeulReviewedTileset,ensureBeodeulReviewedTileset,ensureBeodeulReviewed} from './beodeulReviewed';
 import { BEODEUL_DOOR_TEXTURE, createBeodeulDoorTileset, ensureBeodeulDoorReferences } from "./beodeulDoor";
@@ -208,6 +209,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (asset.textureKey === BEODEUL_ARCHITECTURE_TEXTURE) changed = ensureBeodeulArchitectureTileset(project.tilesets[id]) || changed;
       if (asset.textureKey === BEODEUL_FORMS_TEXTURE) changed = ensureBeodeulFormsTileset(project.tilesets[id]) || changed;
       if (asset.textureKey === BEODEUL_REVIEWED_TEXTURE) changed = ensureBeodeulReviewedTileset(project.tilesets[id]) || changed;
+      if (asset.textureKey === BEODEUL_ORGANIC_TEXTURE) changed = ensureBeodeulOrganicTileset(project.tilesets[id]) || changed;
       if (asset.textureKey === BEODEUL_GROUND_TEXTURE || asset.textureKey === BEODEUL_CITY_TEXTURE)
         changed = ensureBeodeulGroundReferences(project.tilesets[id]) || changed;
       // 버들항 v6 (tiledata/beodeul-city): the shipped city guidance for older copies.
@@ -217,6 +219,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
         changed = ensureBeodeulFacilityKits(project.tilesets[id]) || changed;
         changed = ensureBeodeulForms(project.tilesets[id]) || changed;
         changed = ensureBeodeulReviewed(project.tilesets[id]) || changed;
+        changed = ensureBeodeulOrganic(project.tilesets[id]) || changed;
       }
       // 조선 · 바람의나라풍 (tiledata/joseon-village): 번들 칸 표와 참고문서를 옛 사본에도 맞춘다.
       if (asset.textureKey === JOSEON_BARAM_TEXTURE) {
@@ -448,6 +451,7 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === BEODEUL_WARM_TREES_TEXTURE) return createBeodeulWarmTreesTileset();
   if (asset.textureKey === BEODEUL_ARCHITECTURE_TEXTURE) return createBeodeulArchitectureTileset();
   if (asset.textureKey === BEODEUL_FORMS_TEXTURE) return createBeodeulFormsTileset();
+  if (asset.textureKey === BEODEUL_ORGANIC_TEXTURE) return createBeodeulOrganicTileset();
   if (asset.textureKey === BEODEUL_REVIEWED_TEXTURE) return createBeodeulReviewedTileset();
   if (asset.textureKey === BEODEUL_CITY_TEXTURE) return createBeodeulCityTileset();
   if (asset.textureKey === JOSEON_BARAM_TEXTURE) return createJoseonBaramTileset();

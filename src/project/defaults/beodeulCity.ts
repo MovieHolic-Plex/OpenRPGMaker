@@ -12,6 +12,7 @@ import references from "@/assets/beodeulCityReferences.json";
 import { beodeulGroundReferences } from './beodeulGround';
 import {beodeulFacilityReferences,ensureBeodeulFacilityKits} from './beodeulFacilities';
 import {beodeulFormsHostReferences,ensureBeodeulForms} from './beodeulForms';
+import {ensureBeodeulOrganic} from './beodeulOrganic';
 import {beodeulReviewedHostReferences,ensureBeodeulReviewed} from './beodeulReviewed';
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
@@ -121,6 +122,7 @@ export function createBeodeulCityTileset(): TilesetDef {
   ensureBeodeulFacilityKits(tileset);
   ensureBeodeulForms(tileset);
   ensureBeodeulReviewed(tileset);
+  ensureBeodeulOrganic(tileset);
   return tileset;
 }
 
