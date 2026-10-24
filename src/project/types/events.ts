@@ -82,8 +82,10 @@ export type Condition =
    * 로케이션 기하는 `GameMap.locations` 가 소유하므로 좌표를 여기에 복사하지 않는다 —
    * 로케이션을 옮기거나 넓히면 이 조건도 함께 따라온다.
    * 평가에는 로케이션 해석자가 필요하다(`evalCondition` 의 `context.locations`).
+   * eventId 를 주면 주인공 대신 그 이벤트(걷는 NPC 는 실시간 칸)가 로케이션 안에 있는지 본다 —
+   * 「집주인이 지금 어느 방에 있나」로 기척 대사를 고를 때. 위치를 모르는 이벤트는 거짓.
    */
-  | { kind: "insideLocation"; locationId: string; inside: boolean }
+  | { kind: "insideLocation"; locationId: string; inside: boolean; eventId?: string }
   | { kind: "friendshipAtLeast"; npcKey?: string; value: number }
   | RelationshipCondition
   | { kind: "battleResult"; result: "victory" | "defeat" | "escape" }
@@ -141,9 +143,10 @@ export type ActorQueryCondition =
    * 이 이벤트(eventId)가 지금 주인공을 볼 수 있는가(집주인이 도둑을 본다·경비가 침입자를 본다).
    * range = 칸 수(체비셰프, 기본 5), sameRoom = 이 맵의 명명 로케이션 중 같은 방일 때만(기본 켜짐 — 방 경계가 벽),
    * requireFacing = 이벤트가 바라보는 정면 90° 안일 때만(기본 켜짐; 끄면 「가까이 있다」 소리 판정에 쓴다).
-   * value=false 면 「못 본다」. 위치를 모르는 이벤트는 못 본다.
+   * value=false 면 「못 본다」. 위치를 모르는 이벤트는 못 본다. 벽(시선 광선)은 늘 막는다 — 다른 방·벽 너머는 못 본다.
+   * hearRange = 소리로 알아차리는 거리(칸; 벽 하나당 +3). 상자 부수기처럼 시끄러운 행동에만. 생략·0 = 듣지 않는다.
    */
-  | { kind: "eventSeesPlayer"; eventId: string; range?: number; sameRoom?: boolean; requireFacing?: boolean; value?: boolean }
+  | { kind: "eventSeesPlayer"; eventId: string; range?: number; sameRoom?: boolean; requireFacing?: boolean; hearRange?: number; value?: boolean }
   /** 이 기기에서 엔딩을 본 횟수(서로 다른 엔딩 수가 아니라 클리어 횟수). */
   | { kind: "clearCount"; op: ConditionCompareOp; value: number }
   | { kind: "endingSeen"; endingId: string; value: boolean }
