@@ -5,8 +5,8 @@
  "reviewers": {
   "argon": {
    "agents": [
-    "A: castle..mine",
-    "B: otherworld..volcano"
+    "B: otherworld..volcano",
+    "A: castle..mine (pending)"
    ],
    "verdicts": {
     "otherworld": "FAIL — majors: high-frequency speckled cracks over every floor tile, no rest areas (R1); blue circle half over the south cliff/void; bone pillar over a brick wall face; bones poking into the void (R4/R7); triangular wedge pieces and per-tile vertical cuts in the south cliff face (R3); minors: brick wall orange cracks cut at tile top/bottom; stepped wall sides lack end trim",
@@ -14,13 +14,7 @@
     "ruins": "FAIL — majors: moss flagstone repeats the same moss/brown dots at the same spot in every tile, strong 16px grid; sharp 2x2 green patch in the checker marble room (R1/R5); white rubble over the star mosaic and dense rubble in corridors (R4/R7); minors: marble/flagstone doorway cut straight; pillar overlaps a cross slab; dark cult altar off-tone",
     "swamp": "FAIL — majors: bright teal/white dots on a 16px grid across pond water; broken 1x1 diagonal shoreline tile at a pond neck; lily pads on dry bank (R1/R5/R7); wooden bridge on dry ground; stump without canopy, post and water-dinosaur on bare ground; dark 16px square patches at the forest edge (R1/R4/R7); minors: lamp posts and crystal goblets read as a park",
     "tower": "PASS — majors: none; minors: asymmetric top trim where round upper and lower rooms meet; missing ceiling trim over the left window; door without lintel; daytime clouds outside with starry windows; bookshelf touching the circle",
-    "volcano": "FAIL — majors: lava lake and river one high-contrast 16px tile with no variants, heavy grid; no inner-corner rim tiles so the grey stone rim breaks and lava is cut at right angles (R1/R5/R7); stepped grey rock walls lack side end tiles (R3); minors: three spaced grates in the left corridor; vertical bridge pieces over N-S lava; grey-purple rock off-palette",
-    "castle": "PASS — majors: none; minors: light brick repeat; plain grey rooms",
-    "catacomb": "PASS — majors: none; minors: gold crypt floor deliberate; niches repeat",
-    "mine": "PASS — majors: none; minors: repeated ore groups; long plank walkway",
-    "cave": "FAIL — majors: rock wall face 16px vertical seams on stepped walls (R3); minors: plain floor, pale pebble litter",
-    "forest": "FAIL — majors: dark grass under canopy meets lawn with hard square corners in places (R1); minors: repeated props",
-    "ice": "FAIL — majors: deep-rock wall face repeats on a visible 16px grid (R3/R5); snow floor faint speckle (R1); minors: repeated crystals"
+    "volcano": "FAIL — majors: lava lake and river one high-contrast 16px tile with no variants, heavy grid; no inner-corner rim tiles so the grey stone rim breaks and lava is cut at right angles (R1/R5/R7); stepped grey rock walls lack side end tiles (R3); minors: three spaced grates in the left corridor; vertical bridge pieces over N-S lava; grey-purple rock off-palette"
    }
   }
  },
@@ -29,9 +23,6 @@
   "pyramid": "partly (c62206d2b9): cracked sandstone only in the pharaoh boss room; walls/caps not touched (wall art, out of floor scope)",
   "otherworld": "no: the speckle is the base floor art itself (already limited to the 6 calmest cells); needs a hand-dot redraw through the gate — not done this round. Circle/bones/cliff = gimmick and wall art, not touched",
   "swamp": "no: water dot pattern, shoreline neck tile and bridge placement are water/gimmick art, out of floor scope",
-  "volcano": "no: lava tile and rim corners are lava art (gap lava autotile), out of floor scope; floor itself not flagged",
-  "cave": "no: wall face art (gap rock line A), out of floor scope",
-  "forest": "no: dark-grass autotile corners are canopy art",
-  "ice": "no: ice wall stays parked on the cave line C face; snow speckle is the snow ground art (busy 1.7-2.6, calmest snow on the sheet)"
+  "volcano": "no: lava tile and rim corners are lava art (gap lava autotile), out of floor scope; floor itself not flagged"
  }
 }
