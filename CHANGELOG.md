@@ -5,6 +5,25 @@
 
 <!-- releases -->
 
+## 0.331.0 — 2026-10-25
+
+### 기능
+
+- **assistant** — Fallen Star work reachable by the assistant — forest route, search containers, text replace, schema fields, tool tiers (#3382) (`1d5d243`)
+- **fallen-star** — act-1 follow-up — 3-phase Valen, defeat continues via Bram, circuit, dragon sprite, short fable (#3364) (`f2ece51`)
+- **workshop** — 캐릭터 「사진으로 만들기」 — 사진에서 후보를 만들고 하나 골라 추가 (#3330) (`20e694f`)
+- **store** — structured game changelog lines (+ new, ~ improved, ! fixed) and --changelog-file (#3381) (`0658ebc`)
+- **battle** — staging editor cards, touch landscape battle scale, combo bust preload, lunge QA trace and checkpoints; wiki (`f7abc13`)
+- **battle** — staging settings — fast enemy lunge baseline with per-enemy speed, crossing-bust combo cut-in with finisher/shake/slow-mo/number burst, one-line skill hint in the prompt line; Fallen Star role growth curves (`9e52ebb`)
+
+### 수정
+
+- **ci** — restore FaceGraphic and drop names the first-love merge left unused (`8f90ff5`)
+
+### 문서
+
+- **battle** — landscape battle uses the general mobile landscape layout; measured sizes (`45058f0`)
+
 ## 0.330.0 — 2026-10-25
 
 ### 기능
