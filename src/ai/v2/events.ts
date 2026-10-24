@@ -49,6 +49,8 @@ const START_ACTOR_PREFIX = "ev_v2cut_a_";
 const MIN_WALK = 3;
 /** 장면에만 나오는 사람이 한 장면에서 걷는 걸음 상한(한 걸음 약 ¼초 — 24걸음이면 6초 남짓). */
 const SCENE_WALK_BUDGET = 24;
+/** 그중 한 번 걷기 상한 — 첫 걷기가 예산을 다 먹지 않게. */
+const SCENE_WALK_LEG = 14;
 /** tint 비트의 화면 색 — 'r,g,b,알파' 덮개(밤은 푸른 어둠), sepia 는 회상 필터, clear 는 원래대로. */
 const TINT_TONES: Record<string, string> = { night: "20,30,80,0.5", dusk: "170,80,40,0.28", dawn: "255,190,150,0.18", sepia: "sepia", clear: "" };
 
@@ -577,9 +579,15 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
         // 장면에만 나오는 사람은 장면 전체 24걸음까지만 걷는다 — 넘으면 같은 길 위 그 걸음째 칸에서 멈춘다
         // (2026-10-24 밤 컷신: 그림자가 52~62걸음을 걸어 한 번 말 걸기 안에 장면이 안 끝나 보였다).
         if (createdActors.has(key)) {
-          const room = SCENE_WALK_BUDGET - (sceneSteps.get(key) ?? 0);
+          const room = Math.min(SCENE_WALK_LEG, SCENE_WALK_BUDGET - (sceneSteps.get(key) ?? 0));
           const total2 = legs.reduce((n, l) => n + l.steps, 0);
-          if (total2 > room && room >= MIN_WALK) {
+          if (room < MIN_WALK) {
+            // 걸음 예산을 다 썼다 — 이 걷기는 빼고 그 자리에 둔다.
+            Object.assign(sim.actors.get(key)!, { ...keep, cell: { ...keep.cell } });
+            warnings.push(`${b.who}: 장면 걸음 상한(${SCENE_WALK_BUDGET})을 다 써서 '${intent}' 걷기는 뺐다.`);
+            break;
+          }
+          if (total2 > room) {
             const flat = legs.flatMap((l, li) => (li === 0 ? l.path : l.path.slice(1)));
             const cut = flat[room]!;
             Object.assign(sim.actors.get(key)!, { ...keep, cell: { ...keep.cell } });
