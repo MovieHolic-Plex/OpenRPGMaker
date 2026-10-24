@@ -25,8 +25,9 @@ G = P1.G
 MW = 48     # 가운데 덩이 폭(3칸)
 # 0 깊은 속 · 1 금 · 몸 단 a~e(물빛 얼음) / A~E(청회) · 6 빛 가장자리 · 7 가장 밝은 가장자리 · 8 반짝 · d/e/f/g 고드름(r9 과 같음)
 LG = L('0:vrock0 1:water0 a:water1 b:water2 c:ice0 d:water2 e:ice1 '
-       '6:ice2 7:ice3 8:ice4 f:ice2 g:ice3 h:ice1 5:ice1 2:water1 3:water2 4:ice0 9:tide0 x:water3 y:ice2')
-LAD = '91abcexy7'    # 짙은 속 → water0 · water1 · water2 · ice0 · ice1 · (x 옅은 청회) · ice2 · ice3
+       '6:ice2 7:ice3 8:ice4 f:ice2 g:ice3 h:ice1 5:ice1 2:water1 3:water2 4:ice0 9:tide0 x:water3 y:ice2 A:tide0 B:tide1 C:tide2 D:water2 E:tide3 F:ice1')
+LAD = '91abcexy7'
+LAD2 = '9ABCDEFy7'  # r10d: 청록 얼음(tide)   # r10c: 채도 낮은 청회 얼음(iron 사이) — 면 셋에 하나, 칸당 색 수(화풍 판정 「칸 8색 < 13」)    # 짙은 속 → water0 · water1 · water2 · ice0 · ice1 · (x 옅은 청회) · ice2 · ice3
 
 
 def _h(*a):
@@ -89,9 +90,10 @@ def body(n):
             else:
                 d = dist[y][x]
                 k = t + (1 if d == 1 else 0) - (1 if d >= 7 else 0)   # 면은 평평하게 — 빛 가장자리 밑 한 줄 · 깊은 안쪽만 한 단
-                if _h(x, y, n, 13) % 37 == 0:
-                    k += 1
-            rows[y][x] = LAD[max(0, min(len(LAD) - 1, k))]
+                g = _h(x, y, n, 13) % 11
+                k += 1 if g == 0 else (-1 if g == 1 else 0)
+            lad = LAD2 if _h(i, n, 21) % 3 == 0 else LAD
+            rows[y][x] = lad[max(0, min(len(lad) - 1, k))]
     # 서리 줄(면 하나 안을 비스듬히) · 반짝
     for (x0, y0, ln) in ([(4, 22, 4), (27, 13, 3), (39, 35, 4)] if n == 1 else [(9, 18, 4), (33, 31, 4)]):
         for k in range(ln):
@@ -128,19 +130,19 @@ def cut(rows, x0):
 
 
 def ends(mid):
-    el = [('1' if y < 47 else '0') + mid[y][1] for y in range(48)]
-    er = [mid[y][MW - 2] + ('1' if y < 47 else '0') for y in range(48)]
-    el[0], er[0] = '6' + mid[0][1], mid[0][MW - 2] + '6'
+    el = [('1' if y < 47 else '0') + mid[y][33] for y in range(48)]
+    er = [mid[y][30] + ('1' if y < 47 else '0') for y in range(48)]
+    el[0], er[0] = '6' + mid[0][33], mid[0][30] + '6'
     return el, er
 
 
 LEDGE = [
     '................',
-    '..66......66....',
-    '.6776.66.6776.66',
-    '6c44c76674cc4776',
-    'c4bbccc4cbb4c4cc',
-    'b4abbbab4aabbb4a',
+    '................',
+    '....66..........',
+    '.66c776.....667.',
+    '6cb4cc7666.6c4c7',
+    'b4aab4cc4c6cbab4',
     '1111111111111111',
 ]
 CRYSTAL = R9.CRYSTAL
@@ -160,8 +162,9 @@ def ice_kit(n):
     m_ = cut(m48, 0)
     k = Kit()
     # 왼끝·오른끝 칸: 덩이 왼쪽 첫 칸·오른쪽 끝 칸 그림(끝 2열 = 짙은 끝선)
-    l_rows = [e + r[2:16] for r, e in zip(cut(m48, 0), el)]
-    r_rows = [r[:14] + e for r, e in zip(cut(m48, 32), er)]
+    # r10c(패널 14 sonnet 「덩이 세로 이음」): 왼끝·가운데·오른끝 = 덩이 32~47 · 0~15 · 16~31 — 덩이에서 이어진 순서라 3칸 앞면에 이음이 없다
+    l_rows = [e + r[2:16] for r, e in zip(cut(m48, 32), el)]
+    r_rows = [r[:14] + e for r, e in zip(cut(m48, 16), er)]
     k.face3 = W5.hcat(G(l_rows, LG), G(m_, LG), G(r_rows, LG))
     T2 = W5.TWO
     k.face2 = W5.hcat(G([l_rows[i] for i in T2], LG), G([m_[i] for i in T2], LG), G([r_rows[i] for i in T2], LG))

@@ -257,6 +257,9 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     // 새김 가운데 열(`<앞면 키트>-glyph`, 1칸 폭 같은 높이)이 구워져 있으면 벽 가운데 칸을 드문드문 그것으로 — 같은 열의 단끼리는 같은 해시라 새김이 끊기지 않는다.
     const glyph = left && right && hasKit(`${faceId}-glyph`) && hash01(x, y + b, seed * 13 + 5) < 0.14 ? kit(`${faceId}-glyph`) : undefined;
     if (glyph && glyph.rows.length === rows.length) { lower[idx(x, y)] = glyph.rows[rows.length - 1 - b]!.tiles[0]!; continue; }
+    // 가운데 덩이(`<앞면 키트>-mid`, 3칸 폭 같은 높이)가 구워져 있으면 벽 가운데 칸은 그 덩이의 x % 3 열 — 반복 주기 48px(얼음굴 큰 면이 칸 경계를 넘는다).
+    const midKit = left && right && hasKit(`${faceId}-mid`) ? kit(`${faceId}-mid`) : undefined;
+    if (midKit && midKit.rows.length === rows.length) { lower[idx(x, y)] = midKit.rows[rows.length - 1 - b]!.tiles[x % midKit.rows[0]!.tiles.length]!; continue; }
     lower[idx(x, y)] = left && right ? row[1]! : !left && right ? row[0]! : left && !right ? row[2]! : row[1]!;
   }
 
