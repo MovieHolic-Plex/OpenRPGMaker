@@ -17,6 +17,7 @@ import { startStateOf } from "@/project/session";
 import { chebyshev, planApproach, type ApproachWorld } from "@/project/staging/approach";
 import { probeCutscene } from "@/editor/cutscenePreview/probe";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
+import { searchResources } from "@/assets/resourceSearch";
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { MachineCheck } from "./checks";
 import {
@@ -674,7 +675,16 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
       case "music": {
         const action = b.action ?? "bgm";
         if ((action === "bgm" || action === "se") && !b.query?.trim()) { warnings.push("music: bgm·se 는 query(음원 낱말)가 필요하다."); break; }
-        out.push(action === "stop" || action === "fade" ? { kind: "music", action } : { kind: "music", action, resourceId: b.query!.trim() });
+        // 음원 낱말을 실제 음원 id 로 — 없는 낱말(sad·ghost)은 장면 전체를 «없는 리소스»로 실패시켰다(2026-10-24 h-fog-ghost).
+        let resourceId: string | undefined;
+        if (action === "bgm" || action === "se") {
+          const q = b.query!.trim().toLowerCase();
+          const SYN: [RegExp, string[]][] = [[/sad|sorrow|슬픈|슬픔|비극|애도|tear/u, ["mystery", "night", "town"]], [/ghost|horror|유령|공포|귀신|scary|eerie|으스스/u, ["mystery", "dungeon", "night"]], [/festival|party|축제|잔치|celebrat/u, ["축제", "festival", "town"]], [/battle|fight|전투|싸움|boss|보스/u, ["battle"]], [/thunder|천둥|번개|lightning/u, ["explosion", "폭발", "boom"]], [/calm|peace|평화|잔잔|town|마을/u, ["town"]]];
+          const tries = [q, ...(SYN.find(([re]) => re.test(q))?.[1] ?? [])];
+          for (const t of tries) { const hit = searchResources(action, t)[0]; if (hit) { resourceId = hit.id.replace(/^(?:bgm|se):/u, ""); break; } }
+          if (!resourceId) { warnings.push(`music: '${b.query}' 에 맞는 ${action} 음원을 못 찾아 이 비트는 뺐다 — list_resources 로 음원 id 를 찾아 다시 준다.`); break; }
+        }
+        out.push(action === "stop" || action === "fade" ? { kind: "music", action } : { kind: "music", action, resourceId: resourceId! });
         effects.push(action === "bgm" ? `the background music changes to a '${b.query}' track (stays after the scene)` : action === "se" ? `a '${b.query}' sound effect plays` : "the music stops");
         break;
       }
@@ -728,7 +738,9 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     const key = `v2scene_${(run.calls.length * 7919 + gated.length * 104729 + Date.now()) % 1_000_000}`;
     // 스위치 하나만 선언한다 — create_quest_flags 는 안 쓰는 _done·_progress 까지 만들어 「선언만 하고 안 쓰는 깃발」이 됐다(2026-10-24 스위트).
     const fl = run.call("declare_story_flag", { action: "declare", id: key.replace(/_/gu, "-"), kind: "switch", targetId: `sw_${key}_shown`, description: "장면 전에는 숨겨 둔 사람(장면이 켠다)" });
-    gateSwitch = fl.ok ? ((fl.data ?? {}) as { flag?: { targetId?: string } }).flag?.targetId : undefined;
+    gateSwitch = fl.ok ? ((fl.data ?? {}) as { flag?: { targetId?: string } }).flag?.targetId
+      // 앞서 실패한 장면이 같은 스위치를 이미 선언했으면 그것을 그대로 쓴다(「이미 등록되어 있습니다」로 장면이 깨졌다 — h-fog-ghost).
+      : /이미 등록/u.test(String(fl.summary)) ? `sw_${key}_shown` : undefined;
     if (gateSwitch) {
       const cur = findMap(run.ctx.project, mapId);
       for (const id of gated) {

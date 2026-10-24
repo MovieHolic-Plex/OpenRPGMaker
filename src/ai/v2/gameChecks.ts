@@ -100,9 +100,9 @@ function readsOf(project: Project): { switches: Set<string>; variables: Set<stri
   return { switches, variables, selfKeys };
 }
 
-const WEATHER_WORDS = /비가|비\s*(가\s*)?오|빗방울|빗줄기|소나기|폭우|장마|눈이\s*(오|내|와|쌓)|눈\s*내리|함박눈|폭풍|폭설|안개|날씨|천둥|번개|rain|snow|storm|fog|weather/iu;
+const WEATHER_WORDS = /비가|비\s*(가\s*)?오|빗방울|빗줄기|소나기|폭우|장마|눈이\s*(오|내|와|쌓)|눈\s*내리|함박눈|폭풍|폭설|안개|날씨|천둥 ?(이|소리|번개)|rain|snow|storm|fog|weather/iu;
 const SHAKE_WORDS = /흔들리|흔들린|흔들려|흔들어|지진|진동|쿵\s*(하|소리)|earthquake|tremor|shake/iu;
-const FLASH_WORDS = /번쩍|섬광|번개|빛이\s*터|flash|lightning/iu;
+const FLASH_WORDS = /번쩍|섬광|번개(?!\s*(의\s*서|마법|기술|스킬|주문|책|의\s*검))(?!['’」』])|빛이\s*터|flash|lightning/iu;
 const MUSIC_WORDS = /음악|배경음|브금|bgm|music/iu;
 const HIDDEN_WORDS = /숨겨|숨은|몰래|보이지\s*않|투명|비밀|hidden|secret|invisible/iu;
 const ENDING_WORDS = /엔딩|결말|ending/iu;
@@ -169,7 +169,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     problems.push("[게임 검사 상점] 요청에 사고파는 상점이 있는데 바꾼 이벤트에 상점 명령(kind:'shop')이 없다 — set_shop_stock 으로 그 NPC 에 상점을 달거나, 시간대 페이지라면 열린 시간 페이지에 {kind:'shop',goods,allowSell:true} 를 넣는다.");
   }
   // 1e) 시간표: 「밤에는 집에·낮에는 가게에」처럼 시간대마다 자리가 바뀌는 사람 — 시간표(schedule)나 시간대 페이지(timePhase)가 있어야 한다.
-  if (/(밤|저녁|아침|낮|새벽|시간)[^.!?]{0,12}(에는|엔|이 되면|마다|동안)[^.!?]{0,30}(집|가게|광장|여관|들어가|돌아가|나와|나가|옮|있)/u.test(task)) {
+  if (/(밤|저녁|아침|낮|새벽|시간)[^.!?]{0,12}(에는|엔|이 되면|마다|동안)[^.!?]{0,20}(집|가게|광장|여관|방)\s*(안|밖)?\s*(에|으로|로)\s*(있|가|들어가|돌아가|나와|서)/u.test(task)) {
     const scheduled = Object.values(after.maps).some((m) => (m.events ?? []).some((e) => {
       const prev = before.maps[m.id]?.events?.find((b) => b.id === e.id) as unknown as Obj | undefined;
       const sch = (e as unknown as Obj).schedule;
