@@ -2,6 +2,7 @@
 // place_npc 등이 받는 고수준 입력(SimplePage/graphic.query)을 EventPage/graphic으로 컴파일한다.
 // graphic.query 해석은 charsetQuery의 별칭/자유 질의 매처에 위임한다.
 
+import { fixVarConditions } from "@/project/eventCommands/commandFieldAliases";
 import { canonicalizeCommandFieldAlias } from "@/project/eventCommands/commandFieldAliases";
 import { sharedFaceFromEventGraphic, sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import { EASYRPG_RTP_ASSETS, charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
@@ -501,6 +502,7 @@ function normalizeCondition(raw: unknown, path: string, warnings: string[] | und
   if (!isRecord(raw)) throw simplePageFieldError(path, "EventPageCondition object", raw);
   const condition: RecordValue = { ...raw };
   if (typeof condition.kind !== "string") throw simplePageFieldError(`${path}.kind`, "string", condition.kind);
+  if (condition.kind === "var" && fixVarConditions(condition)) warnings?.push(`SimplePage 정규화: ${path} 의 {kind:"var",id} 를 {kind:"variable",variableId} 로 고쳤습니다.`);
   if (!CONDITION_KIND_SET.has(condition.kind)) {
     throw simplePageFieldError(`${path}.kind`, "known condition kind string", condition.kind);
   }

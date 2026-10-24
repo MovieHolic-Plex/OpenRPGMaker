@@ -315,6 +315,11 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
       return `${command.kind}.target ${was === undefined ? "이 없어" : `"${String(was)}" 를`} 주인공("player")으로 받았습니다.${emoteFix}`;
     }
   }
+  // fork 조건에 setVariable 피연산자 모양 {kind:'var',id,...} 을 쓴 사례(2026-10-24 g3-number-lock·h-fishing-spot) — 조건의 kind 는 variable·variableId 다.
+  if (command.kind === "fork" && command.condition && typeof command.condition === "object") {
+    const fixed = fixVarConditions(command.condition);
+    if (fixed) return `fork 조건의 {kind:"var",id} 를 {kind:"variable",variableId} 로 고쳤습니다(${fixed}곳).`;
+  }
   // 전직 명령에 classId 로 쓴 사례(2026-10-24 g3-class-change) — 런타임은 toClassId 만 읽어 기본 전직으로 갔다.
   if (command.kind === "promoteActor" && command.toClassId === undefined && typeof command.classId === "string") {
     command.toClassId = command.classId; delete command.classId;
@@ -473,4 +478,21 @@ export function canonicalizeCommandFieldAliases(commands: readonly unknown[] | u
       for (const branch of branches) canonicalizeCommandFieldAliases(branch as readonly unknown[], onFix);
     }
   }
+}
+
+/** 조건 나무 안의 {kind:"var", id} → {kind:"variable", variableId}(all·any·not 안쪽까지). 고친 수를 돌려준다. */
+export function fixVarConditions(node: unknown): number {
+  if (Array.isArray(node)) return node.reduce((n: number, c) => n + fixVarConditions(c), 0);
+  if (!node || typeof node !== "object") return 0;
+  const c = node as RecordValue;
+  let n = 0;
+  if (c.kind === "var" && (typeof c.id === "string" || typeof c.variableId === "string") && (c.op !== undefined || c.value !== undefined)) {
+    c.kind = "variable";
+    if (c.variableId === undefined) { c.variableId = c.id; delete c.id; }
+    if (c.op === undefined) c.op = "==";
+    n++;
+  }
+  if (Array.isArray(c.conditions)) n += fixVarConditions(c.conditions);
+  if (c.condition) n += fixVarConditions(c.condition);
+  return n;
 }

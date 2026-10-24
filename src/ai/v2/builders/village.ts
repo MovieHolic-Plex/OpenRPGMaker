@@ -196,36 +196,44 @@ function farmAddons(run: BuildRun, mapId: string, text: string, warnings: string
       const t = upper[y * map.width + x] ?? -1;
       return t >= 0 && /나무·덤불/.test(tileLabel(run.ctx.project, map, t));
     };
-    // 붙은 「나무·덤불」 칸이 둘 이하(덤불 한 칸·외줄기 측백 두 칸)면 통째로 걷어도 반쪽 나무가 남지 않는다.
+    // 붙은 「나무·덤불」 덩이가 16칸 이하면(덤불·측백·작은 나무) 통째로 걷을 수 있다 — 걷을 때 덩이 전체가 걷는 칸 안에 들어야 한다(아래 후보 검사).
     const loneCache = new Map<number, boolean>();
+    const compOf = new Map<number, Set<number>>();
     const loneBush = (x: number, y: number): boolean => {
       if (!bushy(x, y)) return false;
       const k = y * map.width + x;
       const hit = loneCache.get(k);
       if (hit !== undefined) return hit;
       const seen = new Set<number>([k]); const stack = [[x, y]];
-      while (stack.length && seen.size <= 2) {
+      while (stack.length && seen.size <= 16) {
         const [cx0, cy0] = stack.pop()!;
         for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
           const nx = cx0! + dx!, ny = cy0! + dy!, nk = ny * map.width + nx;
           if (!seen.has(nk) && bushy(nx, ny)) { seen.add(nk); stack.push([nx, ny]); }
         }
       }
-      const ok = seen.size <= 2;
-      for (const c of seen) loneCache.set(c, ok);
+      const ok = seen.size <= 16;
+      for (const c of seen) { loneCache.set(c, ok); if (ok) compOf.set(c, seen); }
       return ok;
     };
     const inStamp = (x: number, y: number) => stamps.some((sp) => x >= sp.x && x < sp.x + sp.w && y >= sp.y && y < sp.y + sp.h);
     const free = (x: number, y: number): boolean => {
       if (x < 1 || y < 1 || x >= map.width - 1 || y >= map.height - 1) return false;
       const i = y * map.width + x;
-      return grass(i) && ((upper[i] ?? -1) < 0 || deco(upper[i]!) || loneBush(x, y)) && !roads.has(i) && !evCells.has(i) && !taken.has(i) && !inStamp(x, y) && isPassable(run.ctx.project, map, x, y);
+      if (!grass(i) || roads.has(i) || evCells.has(i) || taken.has(i) || inStamp(x, y)) return false;
+      // 빈 칸은 실제로 걸을 수 있어야 하고, 걷을 장식·덤불 칸은 풀밭 바닥이면 걷은 뒤 걸을 수 있다(덤불이 막던 칸).
+      return (upper[i] ?? -1) < 0 ? isPassable(run.ctx.project, map, x, y) : deco(upper[i]!) || loneBush(x, y);
     };
     const cands: { x: number; y: number; d: number }[] = [];
     const cx = map.width / 2, cy = map.height / 2;
     for (let y = 1; y + h + 1 < map.height; y++) for (let x = 1; x + w + 1 < map.width; x++) {
       let ok = true;
       for (let yy = y - 1; yy <= y + h && ok; yy++) for (let xx = x - 1; xx <= x + w && ok; xx++) if (!free(xx, yy)) ok = false;
+      // 걷을 덤불 덩이가 걷는 칸(키트+둘레 한 칸) 밖으로 삐져나가면 반쪽 덤불이 남는다 — 그런 자리는 뺀다.
+      if (ok) for (let yy = y - 1; yy <= y + h && ok; yy++) for (let xx = x - 1; xx <= x + w && ok; xx++) {
+        const comp = compOf.get(yy * map.width + xx);
+        if (comp) for (const c of comp) { const cx2 = c % map.width, cy2 = Math.floor(c / map.width); if (cx2 < x - 1 || cx2 > x + w || cy2 < y - 1 || cy2 > y + h) { ok = false; break; } }
+      }
       if (ok) cands.push({ x, y, d: Math.abs(x + w / 2 - cx) + Math.abs(y + h / 2 - cy) });
     }
     // 마을 가까이(가운데 쪽)부터 — 맵 끝 구석에 홀로 떨어진 헛간이 되지 않게.
