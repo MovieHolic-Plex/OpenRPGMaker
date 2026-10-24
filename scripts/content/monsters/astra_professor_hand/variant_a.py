@@ -56,28 +56,28 @@ BASE = [
     ".............kghglhhglhhhglhhhhgghhhhlghhhlghhlghgk.............",
     "...........kkghglhhhglhhhghhhhgkkghhhhghhhlghhhlghgkk...........",
     "..........kgghhglhhhglhhhghhhgkSSkghhhghhhlghhhlghhggk..........",
-    "............kwwwwwcghlhhghhhhgkSSkghhhhghhlhgcwwwwwk............",
-    ".............kwwwwcghlhhghhhgkSssSkghhhghhlhgcwwwwk.............",
-    ".............kwwwchghhlhghhhgkSssSkghhhghlhhghcwwwk.............",
-    "...........kkwwwwchghhhlghhgkSssssSkghhglhhhghcwwwwkk...........",
-    "..........kggwwwchwghhhgkhhgkSssssSkghhkghhhgwhcwwwggk..........",
-    "............kwwwchwghhhkSghkSssssssSkhgSkhhhgwhcwwwk............",
-    ".............kwchwwkhhgkskgkSssssssSkgkskghhkwwhcwk.............",
-    ".............kwchwhkghkSsskSssssssssSkssSkhgkhwhcwk.............",
-    ".............kchwwkSkgkSssssssssssssssssSkgkSkwwhck.............",
-    ".............kchwhkSSkSssssssssssssssssssSkSSkhwhck.............",
-    ".............khwhksssSggggggssssssssggggggSssskhwhk.............",
+    "............kghlhhlghlhhghhhhgkSSkghhhhghhlhglhhlhgk............",
+    ".............kghhlhghlhhghhhgkSssSkghhhghhlhghlhhgk.............",
+    ".............kghhhwghhlhghhhgkSssSkghhhghlhhgwhhhgk.............",
+    "...........kkghhwcwhwwhlghhgkSssssSkghhglhwwhwcwhhgkk...........",
+    "..........kgghhwcwwhwcwgkhhgkSssssSkghhkgwcwhwwcwhhggk..........",
+    "............kghwwcwhwwhkSghkSssssssSkhgSkhwwhwcwwhgk............",
+    ".............khwcwwkwwhkskgkSssssssSkgkskhwwkwwcwhk.............",
+    ".............kgwcwhkhwkSsskSssssssssSkssSkwhkhwcwgk.............",
+    ".............khwwhkSkhkSssssssssssssssssSkhkSkhwwhk.............",
+    ".............kghwgkSSkSssssssssssssssssssSkSSkgwhgk.............",
+    ".............kghgksssSggggggssssssssggggggSssskghgk.............",
     "..............khggsssgssssssssssssssssssssgsssgghk..............",
-    ".............kSSSwSssssssssssssssssssssssssssSwSSSk.............",
-    ".............ksSSwSSsssSSSSssssssssssSSSSsssSSwSSsk.............",
-    ".............ksSSwSSsskkkkksssssssssskkkkkssSSwSSsk.............",
+    ".............kSSShSssssssssssssssssssssssssssShSSSk.............",
+    ".............ksSSgSSsssSSSSssssssssssSSSSsssSSgSSsk.............",
+    ".............ksSSgSSsskkkkksssssssssskkkkkssSSgSSsk.............",
     ".............ksSqhSSskkcNNcksssssssskcNNckksSShqSsk.............",
     ".............ksSqkSSSskcNkecsssssssscekNcksSSSkqSsk.............",
     ".............ksSqkSSSssceEecssssssssceEecssSSSkqSsk.............",
     ".............ksSSkSSSssSeeSsssSssssssSeeSssSSSkSSsk.............",
     ".............kSsskSSSssSSSSsssSssssssSSSSssSSSkssSk.............",
-    "..............kkkkkSSSsssssSssSsssssSsssssSSSkkkkk..............",
-    ".................kkSSSssssSsssSqqSsssSssssSSSkk.................",
+    "..............kkkkkSSSssssssssSsssssssssssSSSkkkkk..............",
+    ".................kkSSSssssssssSqqSssssssssSSSkk.................",
     "...................kSSSsssSssssssssssSsssSSSk...................",
     "....................kqSSssSSssssssssSSssSSqk....................",
     ".....................kqSSsssqssssssqsssSSqk.....................",
@@ -93,8 +93,8 @@ BASE = [
     "........NNNCCCCCCCBccccccknnNnNssNnNnnkccccccBCCCCCCCNNN........",
     "......NNCCCCCCCCCCCBcccccNnnnnnNNnnnnnNcccccBCCCCCCCCCCCNN......",
     ".....NCCCCCCCCCCCCCBcccccNnnnnnnnnnnnnNcccccBCCCCCCCCCCCCCN.....",
-    "....NCCCCCCCCCCCCCCCBccccNnnnnnyynnnnnNccccBCCCCCCCCCCCCCCCN....",
-    "...NCCCCCCCCCCCCCCCCBccccNnnnnyyyynnnnNccccBCCCCCCCCCCCCCCCCN...",
+    "....NCCCCCCCCCCCCCCCBccccNnnnnnnnnnnnnNccccBCCCCCCCCCCCCCCCN....",
+    "...NCCCCCCCCCCCCCCCCBccccNnnnnnyynnnnnNccccBCCCCCCCCCCCCCCCCN...",
     "..NBCCCCCCCCCCCCCCCCBcccccNnnyyyyyynnNcccccBCCCCCCCCCCCCCCCCBN..",
     "..NBCCCCCBCCCCCCCCCCCBccccNnnnyyyynnnNccccBCCCCCCCCCCCBCCCCCBN..",
     "..NBCCCCCBCCCCCCCCCCCBccccNnnnynnynnnNccccBCCCCCCCCCCCBCCCCCBN..",
@@ -110,71 +110,72 @@ BASE = [
 # viewer-left side and are mirrored (x -> 63-x). MOUTH patches are stamped as-is.
 EYE_X, EYE_Y = 20, 29      # box x20..28, y29..36 (fully explicit: replaces the base eye)
 BROW_X, BROW_Y = 20, 26    # box x20..28, y26..29 (' ' keeps hair tips)
-MOUTH_X, MOUTH_Y = 26, 39  # box x26..37, y39..43 (fully explicit)
+MOUTH_X, MOUTH_Y = 26, 39  # box x26..37, y39..44 (fully explicit)
 
 EYES = {
-    # calm: lid crease, lash arc, 3px iris with a glint, soft lower lid, crow's foot (q)
+    # calm, older: lid crease, heavy lash line, short 2-row iris with glint, crow's feet (S), short under-eye crease
     'base': [
-        "sssSSSSss",
-        "ssskkkkss",
+        "sssssssss",
+        "SssSSSSss",
         "sskkkkkks",
         "SkkcNcNks",
-        "sskcekecs",
-        "SssceEecs",
-        "sssSEEESs",
-        "ssssSSSss",
+        "sssSeEeSs",
+        "sssssssss",
+        "ssssSSsss",
+        "sssssssss",
     ],
-    # warm smile: cheeks lift the lower lid into a soft arc, crow's feet deepen
+    # closed smiling arcs (^ ^) under a lid crease, crow's feet at the outer corner
     'happy': [
+        "sssssssss",
         "sssSSSSss",
         "ssskkkkss",
-        "sskkkkkks",
-        "qkkcNcNks",
-        "qsSceEeSs",
-        "qssSSSSss",
+        "sskkSSkks",
+        "Sksssssks",
+        "sssssssss",
         "sssssssss",
         "sssssssss",
     ],
-    # tired: lid lowered one row, eyes looking a little down
+    # inner lid raised, outer lid drooping, half-covered iris
     'sad': [
         "sssssssss",
         "sssssssss",
         "sssSSSSss",
-        "skkkkkkks",
-        "sskcNNNcs",
-        "ssscekecs",
-        "sssSEEESs",
-        "ssssSSSss",
+        "sssskkkks",
+        "sskkNNcks",
+        "sssSeEeSs",
+        "sssssssss",
+        "sssssssss",
     ],
-    # stern: heavy flat lid pressing the eye narrower
+    # flat heavy lid pressing the eye narrow (lash kept inside the eye width)
     'angry': [
         "sssssssss",
         "sssssssss",
-        "ssskkkkks",
-        "skkkkkkks",
-        "sskcNkNcs",
-        "ssscEeEcs",
-        "ssssSSSss",
+        "sssssssss",
+        "sskkkkkks",
+        "ssscNkNks",
+        "sssSeEeSs",
+        "sssssssss",
         "sssssssss",
     ],
-    # widened evenly: lid raised, white all round, small iris
+    # round open eye, white on every side of a small iris
     'surprised': [
         "sssssssss",
         "ssskkkkss",
-        "sskcccc" + "ks",
+        "sskccccks",
         "sskcNNcks",
         "sskceEcks",
-        "ssScEEcSs",
-        "sssSccSss",
+        "sssccccss",
         "ssssSSsss",
+        "sssssssss",
     ],
 }
 
 BROWS = {
+    # thick calm straight brows
     'base': [
-        "  ssgggss",
+        "  sgggggs",
         "sSggggggs",
-        "sgsssssss",
+        "sssssssss",
         "         ",
     ],
     'happy': [
@@ -186,15 +187,15 @@ BROWS = {
     # inner end raised, outer end dropped
     'sad': [
         "  ssssggs",
-        "sSssggsss",
-        "sggssssss",
+        "sSssgggss",
+        "sgggsssss",
         "         ",
     ],
     # inner end pressed down
     'angry': [
         "  sssssss",
         "sSgggssss",
-        "sssssggss",
+        "sssggggss",
         "sssssssgS",
     ],
     'surprised': [
@@ -206,19 +207,23 @@ BROWS = {
 }
 
 MOUTHS = {
+    # single gentle closed smile
     'base': [
-        "SssssssssssS",
-        "SssssssssssS",
+        "ssssssssssss",
+        "ssssssssssss",
         "sqssssssssqs",
         "ssqqqqqqqqss",
         "ssssSSSSssss",
+        "SSssssssssSS",
     ],
+    # open warm smile: dark mouth, row of teeth, tongue
     'happy': [
-        "SssssssssssS",
-        "SqssssssssqS",
+        "ssssssssssss",
+        "sqssssssssqs",
         "sskkkkkkkkss",
-        "ssskgqqgksss",
-        "sssskkkkssss",
+        "sskcccccckss",
+        "ssskqqqqksss",
+        "SSsskkkkssSS",
     ],
     'sad': [
         "ssssssssssss",
@@ -226,6 +231,7 @@ MOUTHS = {
         "ssssssssssss",
         "ssssqqqqssss",
         "sssqssssqsss",
+        "SSssssssssSS",
     ],
     'angry': [
         "ssssssssssss",
@@ -233,13 +239,16 @@ MOUTHS = {
         "ssssssssssss",
         "ssqqqqqqqqss",
         "sssssSSsssss",
+        "SSssssssssSS",
     ],
+    # small round 'o'
     'surprised': [
         "ssssssssssss",
-        "sssssqqsssss",
-        "ssssqggqssss",
-        "ssssqggqssss",
-        "sssssqqsssss",
+        "ssssssssssss",
+        "ssssskksssss",
+        "sssskggkssss",
+        "ssssskksssss",
+        "SSssssssssSS",
     ],
 }
 

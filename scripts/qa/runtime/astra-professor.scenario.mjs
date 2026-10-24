@@ -11,7 +11,7 @@ const lines = Array.from({ length: 5 }, (_, i) => ({
 export default {
   id: "astra-professor",
   checkpointSet: "astra-horizon",
-  viewport: { width: 960, height: 540 },
+  viewport: process.env.ASTRA_VP ? { width: Number(process.env.ASTRA_VP.split("x")[0]), height: Number(process.env.ASTRA_VP.split("x")[1]) } : { width: 480, height: 320 },
   beats: [],
   checkpointBeats: {
     "starter-pick": [
