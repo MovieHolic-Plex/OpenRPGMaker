@@ -478,6 +478,11 @@ export function createBattleSequencer(
     hooks.onTimelineEntry?.(entry);
     const continueNext = (): void =>
       playTimelineEntries(entries, snapshot, done, firstDirector, entryOffset + 1, firstDirectorIndex);
+    // 쓰러져 남은 대상의 상태 해제(전투 끝·죽음 정리)는 말하지 않는다 — 승리 직전 「도깨비불 1의 민첩 하락이 풀렸다」가 떴다(2026-10-24).
+    if (entry.kind === "stateRemoved" && entry.targetId && staysDown(entries, entryOffset, snapshot, entry.targetId)) {
+      continueNext();
+      return;
+    }
     // 배틀 이벤트 wait: strict 흐름은 라운드를 동기로 해결하고 일시정지를 이 사실로 넘긴다.
     // 진짜 연출 지연은 여기서만 생긴다 — 잡고 있는 화면/대사는 그대로 유지한다.
     if (entry.kind === "wait") {
@@ -685,7 +690,7 @@ export function createBattleSequencer(
     const targets = new Set(hits.map((row) => row.targetId)).size;
     const onEnemies = hits.every((row) => snapshot.enemies.some((enemy) => enemy.id === row.targetId)
       || snapshot.departedEnemies?.some((enemy) => enemy.id === row.targetId));
-    if (healing) return `${onEnemies ? "적" : "아군"} ${targets}${onEnemies ? "체" : "명"}이 합계 ${total} 회복했다!`;
+    if (healing) return `${onEnemies ? "적" : "아군"} ${targets}${onEnemies ? "체가" : "명이"} 합계 ${total} 회복했다!`;
     const base = onEnemies ? `적 ${targets}체에게 합계 ${total} 피해!` : `아군 ${targets}명이 합계 ${total} 피해를 입었다!`;
     const rates = hits.map((row) => row.effectiveness).filter((rate): rate is number => rate !== undefined && rate > 0);
     const weak = rates.some((rate) => rate > 1);
@@ -804,6 +809,13 @@ export function createBattleSequencer(
       else stampAndContinue();
     };
     playWave(0);
+  }
+
+  /** 이 대상이 지금 스냅숏에서 쓰러져 있고, 뒤 엔트리가 다시 건드리지 않는가(부활·회복 없음). */
+  function staysDown(entries: readonly BattleTimelineEntrySnapshot[], offset: number, snapshot: BattleSnapshot, targetId: string): boolean {
+    const battler = [...snapshot.enemies, ...snapshot.actors].find((row) => row.id === targetId);
+    if (!battler || battler.hp > 0) return false;
+    return !entries.slice(offset + 1).some((later) => later.targetId === targetId && (later.kind === "healing" || later.kind === "damage"));
   }
 
   /** 광역기가 남긴 상태 변화를 같은 상태끼리 한 줄로 — 대상 위 글자는 함께 뜬다. */
