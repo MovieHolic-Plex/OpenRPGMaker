@@ -110,9 +110,10 @@ function syncPlaySurfaceMetrics(
     syncTouchLayout(viewport, bounds.width, bounds.height, resolution, scaleMode);
     return;
   }
-  const scale = calculatePlaySurfaceScale(bounds.width, bounds.height, resolution.width, resolution.height, scaleMode);
+  const dpr = typeof window === "undefined" ? 1 : window.devicePixelRatio || 1;
+  const scale = calculatePlaySurfaceScale(bounds.width, bounds.height, resolution.width, resolution.height, scaleMode, dpr);
   const crop = calculatePlaySurfaceCropMetrics(bounds.width, bounds.height, scale, resolution.width, resolution.height);
-  const placement = calculatePlaySurfacePlacement(bounds.width, bounds.height, scale, resolution.width, resolution.height);
+  const placement = calculatePlaySurfacePlacement(bounds.width, bounds.height, scale, resolution.width, resolution.height, dpr);
   let stageTop = placement.top;
   // 세로로 긴 화면(폰 세로): 무대를 위쪽에 붙이고 아래 띠는 터치 패드·여백에 남긴다. 가운데 두면 위아래 검은 띠 둘로 갈라져 둘 다 못 쓴다(D16).
   if (topAlignPortrait) {
