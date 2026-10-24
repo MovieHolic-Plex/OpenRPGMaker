@@ -1,0 +1,40 @@
+{
+ "source": "char-gen command image engine, cast nat prompt (scripts/content/monsters/astra_professor_chargen/gen.py)",
+ "base": "nat10",
+ "nativeGrid": [
+  63,
+  62
+ ],
+ "place": {
+  "f": 1.0,
+  "x0": 0.0,
+  "y0": -2.0
+ },
+ "pictures": {
+  "bust-base.png": {
+   "source": "professor-nat10.png",
+   "sourceSha256": "0daa70bd44e81524562faae1bfa5fa9e5ffdc790cf61755c26fdeb718d9c7c11",
+   "pixelSha256": "42bf8cdffd312f380c4f999ec910f0ca5d8f14cd2f9646ce6e79d3762fe9900c"
+  },
+  "bust-happy.png": {
+   "source": "professor-nat10-happy-t1.png",
+   "sourceSha256": "7cf79c9095e155856da11a7b15009d23ee64ea5cce208d3c8de18204045eed7c",
+   "pixelSha256": "f91d3d267bddfac993a8043339e6b5b5887fa06b304903e73afe4b5a2192ee3c"
+  },
+  "bust-sad.png": {
+   "source": "professor-nat10-sad-t1.png",
+   "sourceSha256": "4ffe97ceb9600d13741565d44bcf6b53c1d060f90a95c32b096297bfa827a98b",
+   "pixelSha256": "7191afd7255bd909934449dd131680e60623031cac4b0c57c7961037eae6f574"
+  },
+  "bust-angry.png": {
+   "source": "professor-nat10-angry-t1.png",
+   "sourceSha256": "c198042a2424bc3d4b9d912b5ca22abdf331f2953c716e3a01b9d1abca306b55",
+   "pixelSha256": "03b21f1bc18a23dd42fd8972a861b979ae10419ed92b9dc7b652cacdf9c15458"
+  },
+  "bust-surprised.png": {
+   "source": "professor-nat10-surprised-t1.png",
+   "sourceSha256": "94fe454c335229bec57922d2e063820be7cfa24316934d93194bb99505a8adf9",
+   "pixelSha256": "01a78ebe052d5da27d48f11f2157ac8f446aabca0ecad474ac0bf64ab79dc268"
+  }
+ }
+}
