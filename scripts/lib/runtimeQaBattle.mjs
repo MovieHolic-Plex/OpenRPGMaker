@@ -8,6 +8,8 @@
 //     "target": 0 | "last" | "enemy-2",
 //     "timeoutMs": 90000 }
 // 배우별 큐는 앞에서부터 하나씩 쓰고, 마지막 하나는 계속 되풀이한다.
+// 명령 뒤에 「@대상」을 붙이면 그 명령만 대상을 따로 고른다: "item:item_ether@1"(두 번째 아군), "skill_x@enemy-2", "attack@last".
+// 고른 기술·아이템이 막혀 있으면(MP 부족·다 씀) 하위 목록을 닫고 fallback 명령으로 바꾼다.
 // 버튼은 DOM click 으로 누른다(느린 상자에서 키 반복이 씹히는 것을 피한다 — fallen-battle-items.probe 와 같은 이유).
 
 import { appendFile, mkdir } from "node:fs/promises";
@@ -35,7 +37,8 @@ async function readBattleUi(page) {
       menu: buttons.map((n) => n.dataset.testid ?? ""),
       active: document.querySelector(".battle-actor-status.is-active-actor")?.getAttribute("data-record-id") ?? null,
       resultConfirm: Boolean(document.querySelector('[data-testid="battle-result-confirm"]')),
-      dialogue: Boolean(document.querySelector('[data-testid="dialogue-box"]')),
+      // 전투 중 이벤트 대사(발렌의 소환 외침 등)는 .dialogue-box 로 뜨고, 그동안 장면은 busy 다.
+      dialogue: [...document.querySelectorAll('.dialogue-box, [data-testid="dialogue-box"]')].some((n) => n.offsetParent !== null),
     };
   });
 }
@@ -80,6 +83,8 @@ export async function battleQaOp(page, op) {
   const maxCommands = op.commands ?? Number.POSITIVE_INFINITY;
   let issued = 0;
   let wanted = null;
+  let pendingTarget;
+  let forceFallback = false;
   await page.waitForSelector('[data-testid="battle-scene"]', { timeout: op.sceneTimeoutMs ?? 60_000 });
   await installBattleLog(page);
   const nextFor = (actor) => {
@@ -102,12 +107,15 @@ export async function battleQaOp(page, op) {
       await sleep(500);
       continue;
     }
+    if (ui.dialogue && ui.menu.length === 0) { await page.keyboard.press("Enter"); await sleep(400); continue; }
     if (ui.busy) { await sleep(120); continue; }
     if (ui.targetPrompt) {
       const targets = ui.menu.filter((id) => id.startsWith("battle-target-") && id !== "battle-target-cancel");
-      const pick = typeof op.target === "number" ? targets[op.target] ?? targets[0]
-        : op.target === "last" ? targets.at(-1)
-          : typeof op.target === "string" ? targets.find((id) => id.endsWith(op.target)) ?? targets[0]
+      const want = pendingTarget ?? op.target;
+      pendingTarget = undefined;
+      const pick = typeof want === "number" ? targets[want] ?? targets[0]
+        : want === "last" ? targets.at(-1)
+          : typeof want === "string" ? targets.find((id) => id.endsWith(want)) ?? targets[0]
             : targets[0];
       if (pick) await press(page, pick);
       else await page.keyboard.press("Enter");
@@ -117,7 +125,16 @@ export async function battleQaOp(page, op) {
     const submenu = ui.menu.filter((id) => id.startsWith("actor-skill-") || id.startsWith("actor-item-"));
     if (submenu.length > 0 && wanted) {
       const id = wanted.startsWith("item:") ? `actor-item-${wanted.slice(5)}` : `actor-skill-${wanted}`;
-      if (!(await press(page, id))) throw new Error(`battle op: ${id} 를 고를 수 없다 (보이는 것: ${submenu.join(", ")})`);
+      if (!(await press(page, id))) {
+        if (!submenu.includes(id) && !(await page.$(`[data-testid="${id}"]`))) throw new Error(`battle op: ${id} 를 고를 수 없다 (보이는 것: ${submenu.join(", ")})`);
+        // 막힌 칸(MP 부족 등) — 목록을 닫고 다음 바퀴에서 fallback 으로 다시 고른다.
+        await page.keyboard.press("Escape");
+        wanted = null;
+        forceFallback = true;
+        issued -= 1;
+        await sleep(300);
+        continue;
+      }
       wanted = null;
       await sleep(300);
       continue;
@@ -128,7 +145,11 @@ export async function battleQaOp(page, op) {
         await dumpLog(page, op, issued);
         return { issued, ended: false };
       }
-      const choice = nextFor(ui.active);
+      const raw = forceFallback ? fallback : nextFor(ui.active);
+      forceFallback = false;
+      const at = raw.lastIndexOf("@");
+      const choice = at > 0 ? raw.slice(0, at) : raw;
+      if (at > 0) { const t = raw.slice(at + 1); pendingTarget = /^\d+$/.test(t) ? Number(t) : t; }
       let ok = false;
       if (choice === "attack") ok = await press(page, "actor-command-attack");
       else if (choice === "defend") ok = await press(page, "actor-command-defend");

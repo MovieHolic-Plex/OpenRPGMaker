@@ -1017,7 +1017,8 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
       tag.textContent = tags.map((row) => row.text).join(" ");
       const effective = tags.find((row) => row.kind === "weak" || row.kind === "resist" || row.kind === "immune");
       if (effective) popup.dataset.effectiveness = effective.kind;
-      popup.prepend(tag);
+      // 숫자 아래에 단다 — 위에 달면 화면 위쪽 적에서 메시지 창 뒤로 숨었다(2026-10-24 영상 실측).
+      popup.append(tag);
     }
   }
   const anchor = findBattlerNode(field, feedback.targetId);

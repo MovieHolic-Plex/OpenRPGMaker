@@ -782,7 +782,13 @@ export function createBattleSequencer(
       if (allies.length) lines.push(`${withJosa(allies.join(", "), "이/가")} 쓰러졌다!`);
       const decisive = Boolean(lines.length && snapshot.result && !entries.slice(group.end)
         .some((later) => later.kind === "damage" || later.kind === "healing" || later.kind === "miss"));
-      const toStates = (): void => playGroupStates(group.states, snapshot, next);
+      // 이 광역기로 쓰러진 대상의 상태 변화(걸림→죽어서 풀림)는 말하지 않는다 — 「쓰러뜨렸다」 뒤에 「민첩이 내려갔다/풀렸다」가 붙었다(2026-10-24 실측).
+      const fallenIds = new Set(fallen.map((row) => row.target.id));
+      const toStates = (): void => {
+        const live = group.states.filter((row) => !fallenIds.has(row.targetId ?? ""));
+        for (const row of group.states) if (fallenIds.has(row.targetId ?? "")) hooks.onTimelineEntry?.(row);
+        playGroupStates(live, snapshot, next);
+      };
       if (lines.length === 0) {
         toStates();
         return;

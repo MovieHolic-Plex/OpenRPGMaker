@@ -472,11 +472,22 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let actionCounter = 0;
   let currentActionId: number | undefined;
   function beginTimelineAction(): void {
+    flushHitWakes();
     actionCounter += 1;
     currentActionId = actionCounter;
   }
+  // 맞아서 깬 상태(수면 등)는 그 타격 엔트리 「뒤」에 기록한다 — 판정은 피해 기록 전에 일어나서
+  // 「숲늑대의 수면이 풀렸다」가 「카엘의 공격!」보다 먼저 떴다(2026-10-24 실측). 같은 대상의 피해 엔트리는 지나 보내고,
+  // 다른 기록이 오거나 명령이 바뀌거나 스냅숏을 뜰 때 내보낸다.
+  const pendingHitWakes: Omit<BattleTimelineEntrySnapshot, "sequence">[] = [];
+  function flushHitWakes(): void {
+    for (const wake of pendingHitWakes.splice(0)) timeline.push({ ...wake, sequence: timeline.length });
+  }
   function recordTimeline(entry: Omit<BattleTimelineEntrySnapshot, "sequence">): void {
     const stamped = currentActionId !== undefined && entry.actionId === undefined ? { ...entry, actionId: currentActionId } : entry;
+    const strikesWoken = (stamped.kind === "damage" || stamped.kind === "miss")
+      && pendingHitWakes.length > 0 && pendingHitWakes.every((wake) => wake.targetId === stamped.targetId);
+    if (!strikesWoken) flushHitWakes();
     timeline.push({ ...stamped, sequence: timeline.length });
   }
   /** 방금 기록된 타임라인 엔트리에 애니메이션을 붙인다. 스킬/아이템 실행부가
@@ -706,7 +717,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function recoverHitStates(battler: MutableBattler): void {
     const removed = recoverStatesWhenHit(options.project, battler, rng);
     for (const stateId of removed) {
-      recordTimeline({ kind: "stateRemoved", side: battlerSide(battler), targetId: battler.id, stateId, reason: "hit" });
+      pendingHitWakes.push({ kind: "stateRemoved", side: battlerSide(battler), targetId: battler.id, stateId, reason: "hit", ...(currentActionId !== undefined ? { actionId: currentActionId } : {}) });
     }
     refreshAfterStateChange(battler, removed);
   }
@@ -2288,6 +2299,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function finishStrictRoundLog(round: number): void {
+    flushHitWakes();
     roundLogs.push({
       round,
       actions: [...strictCurrentRoundActions],
