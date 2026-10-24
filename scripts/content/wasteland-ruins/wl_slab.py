@@ -101,8 +101,8 @@ def ground_cell(x, y, seed):
 
 @piece('slab-ground', '깨진 콘크리트 판 바탕 (단 셋)', 8, 24, TERRAIN,
        en='old city concrete ground seen from above, shown on a sample board as it is used: the joint-free poured concrete texture (light grey with small 2-3 px '
-          'aggregate clumps and a few soft worn spots, in three slightly different greys, one per slab) laid as plazas and sidewalks on dirt beside an asphalt road, '
-          'with its separate joint/crack/broken-edge decal layer drawn on top for context',
+          'aggregate clumps and a few soft worn spots, in three slightly different greys, one per slab) laid as plazas and sidewalks on dirt beside an asphalt road; '
+          'its separate joint/crack/broken-edge decal layer is drawn on top for context (judge the concrete texture and how it sits as ground)',
        group='ground', tags=['콘크리트', '광장', '보도', '바닥'],
        desc='깨진 콘크리트 판의 아래층(줄눈 없음). 8×8칸 결 판을 단 셋(rows 0~7 어두움 · 8~15 가운데 · 16~23 밝음)으로 둔다. '
             '칸 64개는 서로 독립(골재 덩이가 칸 경계를 넘지 않음). 맵 칸 (x,y) 에는 판 단 t 와 n = ground_cell(x,y) 로 rows[n//8 + 8t].tiles[n%8] — 주기 없음. 줄눈으로 둘린 판마다 단 하나. 위 평면층에 slab-joints.',
@@ -458,7 +458,7 @@ SAMPLE_PLAN_B = [
 ]
 
 
-def board_sample(plan=SAMPLE_PLAN, seed=5):
+def board_sample(plan=SAMPLE_PLAN, seed=5, decal=True):
     H, W = len(plan), len(plan[0])
     slab = lambda x, y: 0 <= x < W and 0 <= y < H and plan[y][x] == '#'
     road = lambda x, y: 0 <= x < W and 0 <= y < H and plan[y][x] == 'R'
@@ -474,6 +474,7 @@ def board_sample(plan=SAMPLE_PLAN, seed=5):
             if not slab(x, y): continue
             t, n = L.tone(x, y), ground_cell(x, y, seed)
             blk[:] = G[(t * 8 + n // 8) * 16:(t * 8 + n // 8) * 16 + 16, (n % 8) * 16:(n % 8) * 16 + 16]
+            if not decal: continue
             i = cell_tile(slab, road, L, x, y, seed)
             src = Jm[(i // COLS) * 16:(i // COLS) * 16 + 16, (i % COLS) * 16:(i % COLS) * 16 + 16]
             op = src[..., 3] == 255
