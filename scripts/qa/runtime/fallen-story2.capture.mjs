@@ -98,7 +98,7 @@ try {
           await page.waitForTimeout(450);
         }
         mark("victory-start");
-        await read({ quietNeeded: 6 });
+        await read({ quietNeeded: 14 });
         mark("victory-end");
         await page.waitForTimeout(1500);
         await shot("after");
