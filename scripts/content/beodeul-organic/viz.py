@@ -25,8 +25,8 @@ def main(map_png, html):
     m = Image.open(map_png).convert("RGB")
     W, H = m.size
     crops = []
-    for (cx, cy, w, h, label) in [(0.08, 0.40, 300, 200, "서쪽 빈터"), (0.62, 0.40, 300, 200, "동쪽 빈터"), (0.38, 0.0, 300, 170, "북쪽 빈터"),
-                                  (0.32, 0.30, 300, 200, "사당 빈터 가운데")]:
+    for (cx, cy, w, h, label) in [(0.05, 0.58, 300, 200, "서쪽 빈터 · 고목"), (0.52, 0.10, 300, 200, "동쪽 빈터"), (0.22, 0.08, 300, 200, "북서 빈터 · 사당 돌"),
+                                  (0.55, 0.55, 300, 200, "남동 길가")]:
         x0, y0 = int(cx * W), int(cy * H)
         c = m.crop((x0, y0, min(W, x0 + w), min(H, y0 + h)))
         crops.append((label, c.resize((c.width * 3, c.height * 3), Image.NEAREST)))
