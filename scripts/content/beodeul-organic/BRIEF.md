@@ -34,3 +34,23 @@ Code pixel art only: no generated images, no copying a Beodeul kit's pixels as a
 ## Self-check before you report
 Compare every piece to the Beodeul references at 6x and at 1x. Ask for each: does it read as the named thing? Same outline darkness,
 same tone count, same clumping? Fix silhouette first, then values, then detail. Do not report numbers as quality; report what you saw.
+
+## Round-1 adversarial QA lessons (0/37 passed) — apply to every piece
+1. **Lit edges have no black outline.** Beodeul bushes, crowns, caps and rock/log tops end in the material's own mid/dark tone on the
+   upper-left (lit) side; only the lower-right/shadow side gets the darkest tone. A full dark ring makes a sticker.
+2. **Warm materials.** Rocks: use the slag/warm ramp (#231c26 #3a2e38 #584a52 #7a6a6c #a09088) or the warm cool-mix of the snowfield rock
+   (#262729 #3e403d #595b58 #929491 #c4c6c3) — not a cold charcoal. Cut wood / stump tops: warm cream-tan (#b77541 #bcaaa0 #d9d2be with
+   #885a26 rings), never chalk-white or grey. Pale mushrooms: warm cream (#ecd6c6 #d9d2be #bcaaa0) with brown/violet shade (#8f6b61 #562945).
+3. **Moss = the darker woodland leaf ramp** (#063328 #104c2f #296535 #497f3c, lit #94b353 sparingly), never the bright #96c254/#8cbf5f everywhere.
+4. **No 1px noise, no 1px parallel lines.** Detail is 2-4 px clusters. No checkerboard leaflets, no comb/railing of 1px blades,
+   no straight 1px vertical bark stripes, no isolated single highlight pixels, no stray floating pixels or green spikes on tops.
+5. **Shadows/bases:** soft s/S shadow lies on the ground under the lower-right; no dark pillar under a stone, no flat black base line
+   under mushrooms or grass, no flat-cut straight bottom.
+6. **3/4 view:** rocks and slabs show a broad lit top plane flowing into a darker front with 2-3 intermediate tones (no hard horizontal
+   split = "snow cap"). Stumps show a foreshortened warm ring top. Logs show a lit top band and a bark front, cut end warm (not a
+   black-ringed eyeball).
+7. **No templates/recolours.** Each flower colour gets its own blossom shape and stem layout (no 3x3 '+' stamp), grass-reeds is its own
+   drawing with warm brown/ochre seed heads (#856234 #9b753d #cf9558), flowers-patch is an irregular overlapping clump, not a row.
+8. **Silhouettes:** no egg/pill/ball/sausage/cucumber shapes. Asymmetric lumps with notches. Beodeul bushes: 3-4 px lobes, open edges.
+9. **Scale:** hollow-tree trunk at most ~1.5x a Beodeul tree trunk wide... it may be stout but must not be a 3-cell-wide pillar of stripes;
+   stump-l no wider than a big Beodeul tree base.
