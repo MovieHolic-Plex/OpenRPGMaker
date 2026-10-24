@@ -151,7 +151,8 @@ function syncMobileUiMetrics(viewport: HTMLElement, width: number, height: numbe
   // UI 확대 배율 z: 겹침 층을 "화면 px × z" 좌표계로 다시 깔아, 논리 6.5px 글자가 화면에서 읽히는 크기(약 12~13px)가 되게 한다.
   const z = Math.min(2.4, Math.max(1.5, Math.min(width, height) / (portrait ? 195 : 215)));
   viewport.style.setProperty("--mobile-ui-z", String(Math.round(z * 1000) / 1000));
-  viewport.style.setProperty("--mobile-ui-k", String(Math.round((1 / Math.max(scale, 0.01)) * 1000) / 1000));
+  // k 는 화면 px 를 논리 px 로 바꾼다 — 도트 글꼴을 화면 12px 에 정확히 맞추려고 소수 여섯 자리까지 둔다.
+  viewport.style.setProperty("--mobile-ui-k", String(Math.round((1 / Math.max(scale, 0.01)) * 1e6) / 1e6));
 }
 
 const PORTRAIT_TOP_MARGIN = 12;
@@ -261,6 +262,12 @@ function syncTouchLayout(viewport: HTMLElement, width: number, height: number, r
   viewport.style.setProperty("--touch-stick", cssPx(layout.stick));
   viewport.style.setProperty("--touch-safe-left", cssPx(safe.left));
   viewport.style.setProperty("--touch-safe-right", cssPx(safe.right));
+  // 세로: 무대 아래부터 메뉴 단추 줄 위까지 남는 높이 — 메뉴·창이 열리면 이만큼 아래로 늘려 쓴다(mobileUi.css).
+  const menuRowTop = layout.controlsY - layout.stick / 2 - 44 - 8;
+  viewport.style.setProperty("--touch-window-extra", cssPx(layout.mode === "portrait" ? Math.max(0, Math.floor(menuRowTop - layout.bandTop)) : 0));
+  // 무대가 작게 그려지는 폰(배율 1.5 미만)은 창 글자를 화면 px 로 다시 맞춘다 — 논리 6~7px 글자가 화면 5~6px 로 읽히지 않았다.
+  if (scale < 1.5) viewport.dataset.touchNarrow = "true";
+  else delete viewport.dataset.touchNarrow;
   viewport.dataset.scale = scale.toFixed(3);
   syncMobileUiMetrics(viewport, width, height, scale, true);
 }

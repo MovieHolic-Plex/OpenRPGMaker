@@ -51,6 +51,7 @@ import { resolvePlaySurfaceScaleMode } from "@/project/playSurfaceScaleMode";
 import type { Project } from "@/project/types";
 import { createTouchPad, isTouchDevice, type TouchPadHandle } from "@/player/touchPad";
 import { installTapConfirm } from "@/player/touchTap";
+import { installTouchListTap } from "@/player/touchListTap";
 import { renderPlayerLoadPanel } from "@/player/playerLoadPanel";
 import { createPlayerStatusMenuController } from "@/player/playerStatusMenuController";
 import { currentStatusMenu } from "@/player/playerStatusMenuControllerDom";
@@ -234,6 +235,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   if (pointerInput) { layout.dataset.pointerInput = "true"; if (emeraldStyle) layout.dataset.monsterStyle = "emerald"; }
   const cleanupPointerBlocker = installPlayPointerBlocker(layout);
   const cleanupRightClickCancel = pointerInput ? installRightClickCancel(layout) : () => {};
+  // 목록 창: 첫 탭은 커서 이동, 커서가 있는 줄을 탭하면 결정.
+  const cleanupListTap = touchUi ? installTouchListTap(layout) : () => {};
   const cleanupTapConfirm = touchUi ? installTapConfirm(layout, { pointerMovement: () => store.getCurrent().system.pointerMovement === true }) : () => {};
   main.append(layout);
 
@@ -1210,6 +1213,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     cleanupPointerBlocker();
     cleanupRightClickCancel();
     cleanupTapConfirm();
+    cleanupListTap();
     stopGame();
     audioEngine.setQaInstrumentation(false);
     clearChildren(layout);
