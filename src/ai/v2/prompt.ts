@@ -4,6 +4,7 @@ import { INTERIOR_CARD } from "./builders/interior";
 import { VILLAGE_CARD } from "./builders/village";
 import { DUNGEON_CARD } from "./builders/dungeon";
 import { JP_CITY_CARD } from "./builders/jpCity";
+import { MODERN_KR_CARD } from "./builders/modernCity";
 import { PEOPLE_CARD } from "./people";
 import { EVENT_CARD } from "./events";
 import { DRAW_OBJECT_CARD } from "./drawObject";
@@ -25,7 +26,7 @@ export const V2_CORE_PROMPT = [
   "- 보고는 한국어 3~6줄: 지은 것(맵 이름), 검사 결과(통과/남은 문제), 못 한 것.",
 ].join("\n");
 
-export const V2_CARDS: readonly string[] = [INTERIOR_CARD, VILLAGE_CARD, DUNGEON_CARD, JP_CITY_CARD, PEOPLE_CARD, EVENT_CARD, DRAW_OBJECT_CARD];
+export const V2_CARDS: readonly string[] = [INTERIOR_CARD, VILLAGE_CARD, DUNGEON_CARD, JP_CITY_CARD, MODERN_KR_CARD, PEOPLE_CARD, EVENT_CARD, DRAW_OBJECT_CARD];
 
 /** 지금 프로젝트를 모델이 알 만큼만 — 맵(이름·칩셋·크기·사람 수·비었는지), 지금 보는 맵, 시작 맵. */
 export function projectBrief(project: Project, currentMapId?: string): string {
