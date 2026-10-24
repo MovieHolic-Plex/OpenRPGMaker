@@ -1,4 +1,5 @@
 import { terrainLineOfSight, terrainVisionRange } from "@/project/terrainGameplay";
+import { inViewCone } from '@/project/conditionEventSight';
 import { isPassable } from '@/project/collision';
 import { pointRect } from '@/project/footprint';
 import { findBlockingEventOverlappingRect, type RuntimeEventView } from '@/project/runtimeEventState';
@@ -16,6 +17,8 @@ export function npcSeesPoint(world: PursuitWorld, view: RuntimeEventView, target
       : facing === 'right' ? dy === 0 && dx >= 0 : dy === 0 && dx <= 0;
     if (!forward) return false;
   }
+  // 부채꼴 — 이벤트 시선 조건(eventSeesPlayer)과 같은 90° 앞쪽 판정을 쓴다.
+  if (sight.facing === 'cone' && !inViewCone(view, facing, target)) return false;
   if (!terrainLineOfSight(world.map, view, target, world.project.tilesets[world.map.tilesetId])) return false;
   if (!sight.lineOfSight) return true;
   const blocked = (x: number, y: number): boolean => {

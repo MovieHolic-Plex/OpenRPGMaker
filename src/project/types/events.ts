@@ -760,8 +760,11 @@ export interface NpcScheduleEntry {
 export interface NpcSight {
   range: number;
   lineOfSight: boolean;
-  /** Forward is a same-row/column ray, not a cone. */
-  facing: "any" | "forward";
+  /**
+   * Forward is a same-row/column ray, not a cone. Cone is the 90° view cone of eventSeesPlayer
+   * (conditionEventSight.inViewCone) — a field monster sees what is in front of it, not behind.
+   */
+  facing: "any" | "forward" | "cone";
 }
 export interface DetectionEncounter {
   sight: NpcSight;
