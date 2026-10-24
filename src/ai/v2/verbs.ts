@@ -13,6 +13,7 @@ import { critique } from "./critic";
 import type { CriticVerdict } from "@/ai/piAgent/featureReview";
 import type { ContentBuildResult, EventSpec, ObjectSpec, PersonSpec, PlaceBuildResult, PlacePatch, PlaceRecord, PlaceSpec, PlaceType } from "./types";
 import { buildPeople, findMap, resolveWhere } from "./people";
+import { mapBundleIds } from "@/ai/piAgent/mapBundle";
 import { buildEvent } from "./events";
 import { drawObject } from "./drawObject";
 import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
@@ -249,6 +250,21 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     recordWrite(env, run, toolCallId, verb, args, result.ok, result.summary, { mapIds: result.mapIds });
     for (const m of result.missingArt) session.missingArt.add(m);
     if (!result.ok) return text({ ok: false, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, next: "명세를 바꿔 다시 하거나(다른 type·style), 할 수 없으면 사용자에게 그대로 알린다." });
+    // 맵 범위가 있는 실행은 체크포인트가 범위 맵의 «트리 묶음»만 싣는다 — 트리 맨 위에 따로 생긴 새 맵(마을 옆 들판)은
+    // 다음 체크포인트에서 통째로 사라졌다(2026-10-24 g3-random-field: make_place 성공 → 맵 목록에 없음 → 잇기·조우 모두 실패).
+    // 새 맵을 범위 맵 아래로 옮겨 묶음에 넣는다.
+    {
+      const roots = [...(env.toolsetOptions?.scopeMapIds ?? (env.request as { mapIds?: readonly string[] }).mapIds ?? [])].filter((id) => env.ctx.project.maps[id]);
+      const parent = roots[0];
+      if (parent) {
+        const inBundle = new Set(roots.flatMap((r) => mapBundleIds(env.ctx.project, r)));
+        for (const mapId of result.mapIds) {
+          if (inBundle.has(mapId) || !env.ctx.project.maps[mapId]) continue;
+          const moved = run.call("manage_map_tree", { operation: "move", mapId, parentId: parent });
+          if (!moved.ok) result = { ...result, warnings: [...result.warnings, `새 맵 ${mapId} 를 ${parent} 아래로 옮기지 못했다 — 저장에서 빠질 수 있다: ${String(moved.summary).slice(0, 120)}`] };
+        }
+      }
+    }
     if (spec.type !== "interior" && spec.type !== "house") {
       const fixed = fixPlayerStart(env.ctx.project, result.mapIds);
       if (fixed.note) { env.ctx.project = fixed.project; result = { ...result, warnings: [...result.warnings, fixed.note], ...(result.entrance && result.entrance.mapId === fixed.project.startMapId ? { entrance: { mapId: fixed.project.startMapId, x: fixed.project.startPos.x, y: fixed.project.startPos.y } } : {}) }; }
