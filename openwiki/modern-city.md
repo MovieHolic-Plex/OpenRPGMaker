@@ -45,6 +45,9 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
 - 공원(블록 셋 이상일 때 모든 띠의 넉넉한 블록 중 씨앗으로 하나): 잔디·벽돌 길·분수·벤치·공원 등·나무. 소품: 남쪽 보도 가로수·가로등 번갈아, 버스 정류장 하나, 북쪽 보도 둘째 줄 소화전·볼라드·화분, 세로 도로 보도 가로등·가로수, 교차로 남쪽 모서리 신호등, 지하철 입구 하나. 차: 가로 도로 차선마다 0~2대(교차로 2칸 안 금지, 북쪽 차선 동향).
 - 도구는 시작 칸 → 모든 문 접근칸 도달·문 칸 막힘을 엔진 통행으로 다시 재고, 실패하면 맵을 안 바꾼다. 건물 이름표(`locations`, 태그 `modern-city-building`)에 문·접근칸·맞는 실내 방 구성(program)을 적는다.
 - QA: `qa/compose-street.mts OUT.json [W H seed …]` → `qa/render_map.py OUT.json DIR`.
+- **업무 지구 옵션 `district` (2026-10-24):** `landmark`(예: `tower10` — 가장 넓은 블록 왼쪽에 먼저 세움·공원 제외), `subwayExits`(1~4, 블록마다 5칸 틈을 비워 지하철 입구 키트 + 출구 번호 표지 `mc-prop-kr-exit-N`, 다른 블록 먼저), `korean:true`(점자 블록 줄 `mc-in-mci-tactile`·가로수 보호판·버스 쉘터·자전거 거치대·종류별 세로 간판 `mc-prop-kr-sign-*`). 결과 `subwayExits[{n,at,stair,step}]`·`propList`. 출구 번호 표지·세로 간판·보호판 그림은 `art_kr.py`/`bake_kr.py`(덧붙이기, 핀 `kr:<키트>:<x>,<y>`) — **3/4 관문 통과 전에는 굽지 않는다**(굽지 않은 키트는 구성기가 건너뛴다).
+- **행인 `add_street_walkers` (2026-10-24, `src/editor/tools/streetWalkersTool.ts`):** 사람마다 `stops`(2~8칸, `waitSec`·`face`·`vanish`)를 주면 지형 BFS 로 반복 custom 경로를 짠다. `vanish` 칸(문·계단 그림, 막힌 칸)은 마지막 걸음 전에 통과를 켜고 들어가 투명해졌다가 돌아 나온다. 그림은 charset `selectionId`/query(사람 생성 없음). 이벤트 id 머리 `ev_walker_`, `replace` 는 같은 이름만 지운다. 걷는 사람 앞에서 차가 서고(`playSceneTransit` playerBlocksCell 에 보이는 자율 NPC 칸), NPC 는 차 몸 칸으로 안 들어간다(`canNpcMove` → `transitBlocksCell`).
+
 
 ## 거리 녹지 — 버들항 화풍 맞추기 (2026-10-14 quality-b, `scripts/content/modern-city-street/`)
 

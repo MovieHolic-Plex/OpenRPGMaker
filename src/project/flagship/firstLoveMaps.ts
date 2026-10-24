@@ -259,9 +259,9 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
     const streetMap = project.maps[FL_MAP.street];
     const bg = roofRoom.background;
     if (streetMap && bg) {
-      const scale = 0.4;
-      // 거리 북쪽 건물 줄 아랫단(6~10행)과 차도(11~18행)만 띠로: 차도가 난간 바로 뒤, 건물 줄이 그 위. 띠 위로는 하늘·먼 빌딩이 남는다.
-      const region = { x: 0, y: 6, width: streetMap.width, height: 13 };
+      const scale = 1 / 3;
+      // 거리 북쪽 건물 줄(타워 0~12행)과 큰길(13~20행)을 띠로: 차도가 난간 바로 뒤, 타워·가게 줄이 그 위. 띠 위로는 하늘·먼 빌딩이 남는다.
+      const region = { x: 0, y: 1, width: streetMap.width, height: 20 };
       const cell = streetMap.tileSize * scale;
       const railScreenY = 108; // 도착 화면의 난간 윗줄(논리 px, 480×270)
       const bandTop = railScreenY - region.height * cell;
@@ -269,7 +269,7 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       const layers = (bg.layers ?? []).filter((layer) => !layer.imageId.endsWith("-near"));
       roofRoom.background = {
         ...bg,
-        layers: [...layers, { imageId: "", fromMap: { mapId: FL_MAP.street, scale, haze: 0.3, desaturate: 0.35, focusY, region, feather: 0.18 }, loopX: true, loopY: false, cameraFollow: 0.4 }],
+        layers: [...layers, { imageId: "", fromMap: { mapId: FL_MAP.street, scale, haze: 0.3, desaturate: 0.35, focusY, region, feather: 0.1 }, loopX: true, loopY: false, cameraFollow: 0.4 }],
       };
     }
   }
@@ -538,24 +538,25 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
  * 밤: 퇴근길 몇 명(더 적고 느리게). 빠르기는 사람마다 다르다. 그림은 현대 인물 칩(Actor/People 바탕, charset-actor 하네스) 중 주인공 넷이 아닌 칸.
  */
 function addStreetWalkers(project: Project, exec: ExecTool, data: { propList: { kit: string; x: number; y: number }[] },
-  office: { access: Cell[] }, conv: { access: Cell[] }, exits: readonly { n: number; stair: Cell; step: Cell }[]): void {
+  office: { access: Cell[]; doors: Cell[] }, conv: { access: Cell[]; doors: Cell[] }, exits: readonly { n: number; stair: Cell; step: Cell }[]): void {
   const street = project.maps[FL_MAP.street]!;
   const free = (map: GameMap, c: Cell): Cell => nearestFree(project, map, c, 4);
   const shelter = data.propList.find((p) => p.kit.startsWith("mc-prop-bus-shelter"));
   const sel = (sheet: number, index: number) => ({ selectionId: `charset:tex_oprn_charset_modern${sheet}:${index}` });
   const SUIT_M = sel(3, 0), SUIT_W = sel(3, 2), STUDENT_M = sel(1, 1), STUDENT_W = sel(1, 4), CASUAL_M = sel(2, 3), CASUAL_W = sel(2, 4), CASUAL_W2 = sel(2, 5), STUDENT_W2 = sel(1, 7);
-  const tower = office.access[0]!, kon = conv.access[0]!;
+  // 들어가는 사람은 문 그림 칸(막힌 칸)에서 사라진다 — 접근칸에서 사라지면 투명한 채 서하의 길을 막는다.
+  const tower = office.access[0]!, towerDoor = office.doors[1] ?? office.doors[0]!, konDoor = conv.doors[0]!;
   const W = street.width;
   // 가로 도로 두 줄의 보도: 북쪽 보도 바깥 줄 = 접근칸 줄(타워·편의점 앞), 남쪽 보도.
   const nWalk = tower.y, sWalk = nWalk + 10;
   const ex = (i: number) => exits[i] ?? exits[0]!;
   const morning = [
     // 출근: 먼 출구에서 나와 큰길을 건너 타워 앞까지, 들어가서(사라졌다가) 다시 나와 출구로 돌아간다.
-    { name: "출근하는 회사원", graphic: SUIT_M, speed: 4, stops: [{ ...ex(0).step }, { ...free(street, { x: 22, y: sWalk }) }, { ...free(street, { x: 22, y: nWalk + 1 }) }, { ...tower, vanish: true, waitSec: 9 }] },
-    { name: "커피를 든 회사원", graphic: SUIT_W, speed: 3, stops: [{ ...free(street, { x: 27, y: nWalk + 1 }) }, { ...tower, vanish: true, waitSec: 6 }, { ...free(street, { x: 30, y: nWalk }) }, { ...kon, vanish: true, waitSec: 5 }] },
+    { name: "출근하는 회사원", graphic: SUIT_M, speed: 4, stops: [{ ...ex(0).step }, { ...free(street, { x: 22, y: sWalk }) }, { ...free(street, { x: 22, y: nWalk + 1 }) }, { ...towerDoor, vanish: true, waitSec: 9 }] },
+    { name: "커피를 든 회사원", graphic: SUIT_W, speed: 3, stops: [{ ...free(street, { x: 27, y: nWalk + 1 }) }, { ...towerDoor, vanish: true, waitSec: 6 }, { ...free(street, { x: 30, y: nWalk }) }, { ...konDoor, vanish: true, waitSec: 5 }] },
     { name: "바쁜 직장인", graphic: CASUAL_M, speed: 5, stops: [{ ...ex(1).step }, { ...free(street, { x: W - 3, y: nWalk + 1 }) }, { ...free(street, { x: 2, y: nWalk + 1 }) }, { ...ex(1).stair, vanish: true, waitSec: 8 }] },
     // 정류장: 쉘터 앞에서 버스 쪽(위, 차도)을 보고 한참 기다렸다가 다른 데로.
-    ...(shelter ? [{ name: "버스를 기다리는 학생", graphic: STUDENT_W, speed: 2, stops: [{ ...free(street, { x: shelter.x + 1, y: shelter.y + 2 }), waitSec: 28, face: "up" as const }, { ...free(street, { x: 12, y: sWalk + 1 }) }, { ...ex(2).stair, vanish: true, waitSec: 10 }, { ...ex(2).step }] }] : []),
+    ...(shelter ? [{ name: "정류장에서 기다리는 학생", graphic: STUDENT_W, speed: 2, stops: [{ ...free(street, { x: shelter.x + 1, y: shelter.y + 2 }), waitSec: 28, face: "up" as const }, { ...free(street, { x: 12, y: sWalk + 1 }) }, { ...ex(2).stair, vanish: true, waitSec: 10 }, { ...ex(2).step }] }] : []),
     { name: "가방을 멘 학생", graphic: STUDENT_M, speed: 3, stops: [{ ...free(street, { x: 4, y: sWalk + 1 }) }, { ...free(street, { x: 19, y: sWalk + 1 }) }, { ...free(street, { x: 19, y: sWalk + 12 }), waitSec: 2 }, { ...free(street, { x: 4, y: sWalk + 11 }) }] },
     { name: "산책하는 사람", graphic: CASUAL_W, speed: 2, stops: [{ ...free(street, { x: 34, y: sWalk + 1 }) }, { ...free(street, { x: W - 3, y: sWalk + 1 }), waitSec: 4 }, { ...free(street, { x: 33, y: sWalk }) }] },
     { name: "통화하며 걷는 회사원", graphic: SUIT_W, speed: 3, stops: [{ ...free(street, { x: 33, y: nWalk }) }, { ...free(street, { x: 33, y: nWalk + 11 }) }, { ...free(street, { x: 45, y: nWalk + 10 }), waitSec: 3 }, { ...free(street, { x: 45, y: nWalk + 1 }) }] },
@@ -565,7 +566,7 @@ function addStreetWalkers(project: Project, exec: ExecTool, data: { propList: { 
   const night = [
     { name: "퇴근하는 회사원", graphic: SUIT_M, speed: 3, stops: [{ ...free(project.maps[FL_MAP.streetPm]!, { x: 26, y: nWalk + 1 }) }, { ...ex(1).stair, vanish: true, waitSec: 10 }, { ...ex(1).step }, { ...free(project.maps[FL_MAP.streetPm]!, { x: 8, y: nWalk + 1 }) }] },
     { name: "늦게 퇴근하는 사람", graphic: STUDENT_W2, speed: 2, stops: [{ ...free(project.maps[FL_MAP.streetPm]!, { x: 34, y: sWalk + 1 }) }, { ...free(project.maps[FL_MAP.streetPm]!, { x: W - 3, y: sWalk + 1 }), waitSec: 5 }, { ...free(project.maps[FL_MAP.streetPm]!, { x: 34, y: sWalk }) }] },
-    ...(shelter ? [{ name: "막차 버스를 기다리는 사람", graphic: CASUAL_M, speed: 2, stops: [{ ...free(project.maps[FL_MAP.streetPm]!, { x: shelter.x + 1, y: shelter.y + 2 }), waitSec: 40, face: "up" as const }, { ...free(project.maps[FL_MAP.streetPm]!, { x: 44, y: sWalk + 1 }) }] }] : []),
+    ...(shelter ? [{ name: "정류장의 늦은 퇴근객", graphic: CASUAL_M, speed: 2, stops: [{ ...free(project.maps[FL_MAP.streetPm]!, { x: shelter.x + 1, y: shelter.y + 2 }), waitSec: 40, face: "up" as const }, { ...free(project.maps[FL_MAP.streetPm]!, { x: 44, y: sWalk + 1 }) }] }] : []),
   ];
   exec("add_street_walkers", { mapId: FL_MAP.streetPm, walkers: night, replace: true });
 }

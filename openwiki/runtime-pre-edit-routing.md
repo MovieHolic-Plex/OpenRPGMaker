@@ -858,6 +858,14 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 - **남은 한계:** `show_map_region` 은 배경을 그리지 못해(설계상 거부) 조수가 배경을 눈으로 검수하지 못한다 — 생성 도구는 그림을 첨부해 대신한다.
   Pi 경로는 되묻기를 건너뛰므로(`executionRoute.ts clarifyBypassed`) 「배경 좀 예쁘게」 는 묻지 않고 해석한다. 칸을 비운 가장자리는 여전히 각지다. 견본 바다·구름 바다는 흐릿한 얼룩 질감이고 노을 견본의 해는 7줄 바닥선에 반쯤 잘린다(견본 그림 문제, 이번 변경 밖). 다리 상판 타일(버들항 3640)은 자기 그림에 물이 있어 다리 밑으로 배경이 비치지 않는다.
 
+## 맵 배경 「다른 맵 보기」 층 `fromMap` (2026-10-24)
+
+- 배경·배경 층에 `fromMap: { mapId, scale?, haze?, desaturate?, hazeColor?, focusX?, focusY?, region?, feather? }` 를 주면 **다른 맵을 줄여 그린 그림**이 그 층이 된다(옥상에서 내려다본 거리, 창밖 마을 등). 타입 `src/project/types/project.ts` 의 `MapBackgroundMapView`, 정규화 `normalizeMapBackgroundMapView`(`src/project/mapBackground.ts`, scale 0.15~1·기본 0.4, feather 0~0.5).
+- 렌더 `src/player/mapBackgroundMapView.ts`: 대상 맵(아래층·위층 타일)을 캔버스에 `scale` 배로 그리고 `region`(칸 사각형) 만 자른다. `haze`(안개색 섞기)·`desaturate`·`feather`(위아래 가장자리 알파 페이드)를 화소에 굽는다. 텍스처 키에 맵 id·배율·범위·페더가 들어간다. 이벤트·사람은 그리지 않는다(정지 그림).
+- 자리 `playSceneMapBackground.ts` `mapViewFocusOffset`: focus 칸(기본 = 범위 가운데)이 화면 가운데에 오게 민다. `loopY:false` 로 세로 한 장, `cameraFollow` 로 시차. `fromMap` 층은 `showInEmptyCells` 로 친다(편집기 `EditScene` 와 런타임 둘 다).
+- 조수: `set_map_properties.background{,layers[]}.fromMap`(`mapTools.ts` `MAP_VIEW_SCHEMA`) — 자기 자신·없는 맵은 거부. 참조 검사 `src/project/io/references.ts`.
+- 쓰임: 「첫사랑」 옥상(`firstLoveMaps.ts`) — 거리 맵 북쪽 줄·큰길을 1/3 배로, 난간 바로 뒤에 오게 focusY 계산.
+
 ## 8차 맵 진입 (2026-09-28)
 
 `playSceneMapRuntime.renderTiles`의 **한 번의 동기 패스**가 `TileRenderPass`를 소유한다.

@@ -19,7 +19,7 @@ export const WALKER_ID_PREFIX = "ev_walker_";
 
 const DIRS: readonly [Dir, number, number][] = [["up", 0, -1], ["down", 0, 1], ["left", -1, 0], ["right", 1, 0]];
 
-/** 칸 a 에서 b 까지 걸음(4방향 BFS, 지형 통행). 길이 없으면 null. */
+/** 칸 a 에서 b 까지 걸음(4방향 BFS, 지형 통행 — 목표 칸 자체는 막혀 있어도 된다). 길이 없으면 null. */
 export function walkPath(project: Project, map: GameMap, a: Cell, b: Cell, blocked?: (c: Cell) => boolean): Dir[] | null {
   const W = map.width, H = map.height;
   if (a.x === b.x && a.y === b.y) return [];
@@ -34,7 +34,8 @@ export function walkPath(project: Project, map: GameMap, a: Cell, b: Cell, block
       const [, dx, dy] = DIRS[d]!; const nx = x + dx, ny = y + dy;
       if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
       const nk = ny * W + nx; if (prev[nk] !== -1) continue;
-      if (!isPassable(project, map, nx, ny) || (nk !== goal && blocked?.({ x: nx, y: ny }))) continue;
+      // 목표 칸은 막힌 칸이어도 된다(문·계단 그림 칸에 닿아 사라지는 vanish) — 걸을 칸 검사는 호출자가 한다.
+      if (nk !== goal && (!isPassable(project, map, nx, ny) || blocked?.({ x: nx, y: ny }))) continue;
       prev[nk] = k; how[nk] = d; q.push(nk);
     }
   }
@@ -61,9 +62,15 @@ export function walkerRoute(project: Project, map: GameMap, stops: readonly Walk
     const from = stops[i]!, to = stops[(i + 1) % stops.length]!;
     const path = walkPath(project, map, from, to);
     if (!path) return null;
-    for (const dir of path) moves.push({ kind: "move", dir });
+    // 사라지는 곳(문·계단 그림 칸)은 막힌 칸이다 — 마지막 한 걸음 전에 통과를 켜야 들어선다.
+    const last = to.vanish ? path.length - 1 : path.length;
+    for (let k = 0; k < path.length; k++) {
+      if (k === last) moves.push({ kind: "setThrough", enabled: true });
+      moves.push({ kind: "move", dir: path[k]! });
+    }
     if (to.vanish) {
-      moves.push({ kind: "setThrough", enabled: true }, { kind: "changeOpacity", delta: -255 }, ...waits(to.waitSec ?? 6, intervalMs), { kind: "changeOpacity", delta: 255 }, { kind: "setThrough", enabled: false });
+      if (last < 0) moves.push({ kind: "setThrough", enabled: true });
+      moves.push({ kind: "changeOpacity", delta: -255 }, ...waits(to.waitSec ?? 6, intervalMs), { kind: "changeOpacity", delta: 255 }, { kind: "setThrough", enabled: false });
     } else {
       if (to.face) moves.push({ kind: "turn", dir: to.face });
       moves.push(...waits(to.waitSec ?? 0, intervalMs));

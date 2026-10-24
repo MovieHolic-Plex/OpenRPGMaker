@@ -61,10 +61,10 @@
   {
    "id": "d1-street",
    "label": "월요일 아침 거리",
-   "note": "ARRIVED 1: ev_fl_street_am auto; arrive=subwayStep (18,11) after ev_fl_plat_exit",
+   "note": "ARRIVED 1: ev_fl_street_am auto; arrive=main exit step (3,34) after ev_fl_plat_exit",
    "mapId": "fl_street",
-   "x": 18,
-   "y": 11,
+   "x": 3,
+   "y": 34,
    "facing": "down",
    "switches": {},
    "variables": {
@@ -251,10 +251,10 @@
   {
    "id": "d1-street-pm",
    "label": "월요일 퇴근길 거리",
-   "note": "ROOF 5: ev_fl_street_pm auto; arrive (3,34) from rooftop",
+   "note": "ROOF 5: ev_fl_street_pm auto; arrive konbiniOut (41,13) from office",
    "mapId": "fl_street_pm",
-   "x": 3,
-   "y": 34,
+   "x": 41,
+   "y": 13,
    "facing": "down",
    "switches": {},
    "variables": {
@@ -773,10 +773,10 @@
   {
    "id": "d5-run",
    "label": "금요일 역으로 달리기",
-   "note": "FRI 11: ev_fl_run auto (stage==FRI) in fl_street_pm; arrive (41,11) down",
+   "note": "FRI 11: ev_fl_run auto (stage==FRI) in fl_street_pm; arrive officeOut (9,13) down",
    "mapId": "fl_street_pm",
-   "x": 41,
-   "y": 11,
+   "x": 9,
+   "y": 13,
    "facing": "down",
    "switches": {},
    "variables": {
