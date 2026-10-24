@@ -1885,3 +1885,157 @@ def _puddle(c):
             if (x, y) in water:
                 if y + 1 < 16 and (x, y + 1) not in water and h2(x, y, 709) % 3 == 0: c.P(x, y + 1, K('dirt', 3))
                 break
+
+
+# ------------------------------------------------------------------ r61: 기름 얼룩 · 불탄 자리 · 텃밭 이랑 (흙 위 덧그림)
+def _blob_mask(cx, cy, rx, ry, seed, wob=0.35):
+    out = {}
+    for y in range(16):
+        for x in range(16):
+            d = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 + (field(x * 2, y * 2, seed, 32) - 0.5) * wob * 2
+            out[(x, y)] = d
+    return out
+
+
+def _oil(v):
+    """기름 얼룩: 흙에 밴 짙은 갈흑(파란 덩이 아님) — 속 dirt 0 · soot 1 섞임, 테는 dirt 1 → 드문 dirt 2 로 흙에 녹는다. 빛은 굽은 2화소 한 줄."""
+    def draw(c):
+        cx, cy, rx, ry = (7.5, 8.5, 7.0, 5.0) if v == 0 else (8.0, 7.5, 6.0, 5.6)
+        D = _blob_mask(cx, cy, rx, ry, 901 + v * 7, 0.55)
+        for (x, y), d in D.items():
+            r = h2(x, y, 903 + v) % 8
+            if d < 0.3: t = K('soot', 1) if r < 3 else K('dirt', 0)
+            elif d < 0.65: t = K('dirt', 0) if r < 6 else K('soot', 1)
+            elif d < 0.95: t = K('dirt', 1) if r < 6 else K('dirt', 0)
+            elif d < 1.3 and r < 3: t = K('dirt', 1)
+            elif d < 1.3 and r == 3: t = K('dirt', 2)
+            else: continue
+            c.P(x, y, t)
+        if v == 0:
+            for (x, y, col) in ((5, 7, ('roof', 1)), (6, 7, ('oil', 3)), (7, 6, ('oil', 4))): c.P(x, y, K(*col))
+            for (x, y) in ((14, 10), (15, 11)): c.P(x, y, K('dirt', 1))
+        else:
+            for (x, y) in ((2, 3), (13, 13)): c.P(x, y, K('dirt', 0)); c.P(x + 1, y, K('dirt', 1))
+            c.P(7, 6, K('roof', 1)); c.P(8, 6, K('oil', 3))
+    return draw
+
+
+for _v, _l in enumerate('ab'):
+    piece('oil-stain-' + _l, '기름 얼룩 ' + 'AB'[_v], 1, 1, FLAT,
+          en=['a dark spilled engine-oil stain soaked into packed earth, irregular blot with a faint rainbow sheen and a thin run-off trail',
+              'a rounder dark oil stain soaked into packed earth with two stray drips and a tiny sheen spot'][_v],
+          group='ground', tags=['기름', '얼룩', '덧그림'], desc='흙에 밴 기름 얼룩 덧그림 — 폐차·발전기·드럼통 곁에. 걷는다.',
+          sample=decal_sample('oil-stain-' + _l))(_oil(_v))
+
+
+def _scorch(v):
+    """불탄 자리: 그을린 흙(dirt 0·1 갈흑)이 크게, 한가운데만 숯 soot 0, 둘레는 dithered 로 흙에 녹는다. 흰 재 알 · 숯 막대."""
+    def draw(c):
+        D = _blob_mask(8.0, 8.0, 7.4 - v, 6.0 - v * 0.6, 931 + v * 5, 0.5)
+        for (x, y), d in D.items():
+            r = h2(x, y, 933 + v) % 9
+            if d < 0.22: t = K('soot', 0) if r < 5 else K('dirt', 0)
+            elif d < 0.55: t = K('dirt', 0) if r < 6 else K('soot', 1)
+            elif d < 0.9: t = K('dirt', 1) if r < 6 else K('dirt', 0)
+            elif d < 1.25 and r < 4: t = K('dirt', 1) if r < 2 else K('dirt', 2)
+            else: continue
+            c.P(x, y, t)
+        for (x, y) in ((6, 6), (10, 8), (5, 10), (11, 5), (8, 11), (3, 7)) if v == 0 else ((7, 7), (9, 10), (5, 9)):   # 흰 재 알
+            c.P(x, y, K('roof', 4)); c.P(x + 1, y, K('roof', 2))
+        sticks = (((4, 9), (8, 7)), ((9, 11), (12, 9))) if v == 0 else (((6, 8), (9, 7)),)
+        for (a, b) in sticks:
+            c.line(a[0], a[1], b[0], b[1], K('soot', 0)); c.line(a[0], a[1] - 1, b[0], b[1] - 1, K('wood', 2))
+    return draw
+
+
+for _v, _l in enumerate('ab'):
+    piece('scorch-' + _l, '불탄 자리 ' + 'AB'[_v], 1, 1, FLAT,
+          en=['a scorched burnt patch on packed earth: blackened soot centre fading to darkened soil, white ash flecks and two charred sticks',
+              'a smaller scorched burnt patch on packed earth with ash flecks and one charred stick'][_v],
+          group='ground', tags=['불탄', '재', '덧그림'], desc='흙 위 불탄 자리 덧그림 — 모닥불·불탄 차·무너진 건물 곁에. 걷는다.',
+          sample=decal_sample('scorch-' + _l))(_scorch(_v))
+
+
+def big_decal_sample(pid, at, grid=('aaaaa', 'aaaaa', 'aaaaa', 'aaaaa')):
+    """여러 칸 덧그림 표본: 흙 판을 깔고 at 칸 자리에 조각 그림 전체를 얹는다."""
+    def mk(f=0):
+        a = tiled(DIRT_IDS, list(grid))(f)
+        d = render(PIECES[pid], f); op = d[..., 3] == 255
+        x0, y0 = at[0] * 16, at[1] * 16
+        blk = a[y0:y0 + d.shape[0], x0:x0 + d.shape[1]]
+        blk[op] = d[op]
+        return a
+    return mk
+
+
+def _crop_bed(v):
+    """텃밭 이랑(48×32): 판자 테(판마다 윗면 빛·결·옹이·못) 안에 가로 이랑 넷 — 이랑마다 빛 마루(6)·몸(5·3)·그늘(2)·고랑(1·0) 6단.
+    a = 잎채소(겹잎 포기: 바깥 잎 어둡게 → 속 밝게, 5단) · b = 콩 줄기(막대 + 감긴 잎). 위에서 내려다본 평면(바닥 덧그림)."""
+    def draw(c):
+        W, H = 48, 32
+        for y in range(3, H - 3):
+            for x in range(2, W - 2):
+                ry = (y - 3) % 7
+                t = (4, 4, 3, 3, 2, 1, 0)[ry]                              # 갈아엎은 흙(회색 단 없는 bark 램프): 마루 빛 → 고랑 그늘
+                r = h2(x, y, 951 + v) % 12
+                if r == 0 and ry < 4: t = max(0, t - 1)
+                elif r == 1 and 0 < ry < 4: t = min(4, t + 1)
+                elif r == 2 and ry == 6: t = 1
+                c.P(x, y, K('bark', t))
+                if ry == 0 and h2(x, y, 959) % 5 == 0: c.P(x, y, K('wood', 5))       # 마른 마루 흙 알(빛)
+        for x in range(W):                                               # 판자 테 위·아래: 윗면 빛 2행 + 앞 그늘 1행, 판 이음 홈, 결
+            for (y, t) in ((0, 5), (1, 4), (2, 2), (H - 3, 5), (H - 2, 3), (H - 1, 1)):
+                tt = t
+                if x % 12 == 11: tt = 0
+                elif h2(x, y, 955) % 7 == 0: tt = max(0, t - 1)
+                elif h2(x, y, 956) % 9 == 0: tt = min(5, t + 1)
+                c.P(x, y, K('wood', tt))
+        for y in range(H):
+            for (x, t) in ((0, 5), (1, 3), (W - 2, 4), (W - 1, 2)):
+                tt = 0 if y % 10 == 9 else max(0, t - (1 if h2(x, y, 957) % 6 == 0 else 0))
+                c.P(x, y, K('wood', tt))
+        for (x, y) in ((1, 0), (W - 2, 0), (1, H - 2), (W - 2, H - 2), (13, 0), (36, H - 2)): c.P(x, y, K('metal', 6))
+        rows = [3, 10, 17, 24]
+        if v == 0:
+            def cabbage(x, y, seed, wilt=False):
+                m = 'dry' if wilt else 'plant'
+                pts = [(dx, dy) for dy in range(-2, 3) for dx in range(-3, 4) if (dx / 3.4) ** 2 + (dy / 2.4) ** 2 <= 1]
+                for (dx, dy) in pts:
+                    d = (dx / 3.4) ** 2 + (dy / 2.4) ** 2
+                    lit = (-dx - dy) * 0.25
+                    t = 2 if d > 0.7 else 4 if d > 0.35 else 6
+                    t = int(max(0, min(8, t + lit + (h2(x + dx, y + dy, seed) % 3 - 1) * 0.6)))
+                    if wilt: t = max(0, min(5, t // 2 + 1))
+                    c.P(x + dx, y + dy, K(m, t))
+                if not wilt:
+                    c.P(x, y, K('plant', 8)); c.P(x - 1, y, K('plant', 7)); c.P(x + 1, y - 1, K('plant', 7))
+                for dx in range(-2, 3): c.P(x + dx, y + 3, K('dirt', 1 if abs(dx) < 2 else 2))
+            for j, ry in enumerate(rows):
+                x = 6 + (j * 3) % 5
+                while x < W - 6:
+                    if h2(x, ry, 961) % 7 == 0: x += 7; continue
+                    cabbage(x, ry + 1, x + j * 13, wilt=h2(x, ry, 963) % 11 == 0)
+                    x += 7 + h2(x, ry, 965) % 2
+        else:
+            for j, ry in enumerate(rows):
+                x = 4 + (j * 2) % 4
+                while x < W - 5:
+                    if h2(x, ry, 971) % 6 == 0: x += 5; continue
+                    for k in range(5):
+                        c.P(x, ry + 2 - k, K('wood', 2 if k < 3 else 4))
+                    for (dx, dy, t) in ((-1, 0, 4), (1, -1, 6), (-1, -2, 5), (1, -3, 7), (0, -4, 6)):
+                        if h2(x + dx, ry + dy, 973) % 5: c.P(x + dx, ry + 2 + dy, K('plant', t))
+                    c.P(x + 1, ry + 3, K('dirt', 1))
+                    x += 5 + h2(x, ry, 975) % 3
+            for (x, y) in ((30, 21), (31, 21), (30, 22)): c.P(x, y, K('dry', 3))
+        c.P(44, 5, K('metal', 6)); c.P(45, 5, K('metal', 4)); c.P(44, 6, K('metal', 2))
+    return draw
+
+
+for _v, _l in enumerate('ab'):
+    piece('crop-bed-' + _l, '텃밭 이랑 ' + 'AB'[_v], 3, 2, FLAT,
+          en=['a small vegetable garden bed seen from above: a weathered plank frame around four tilled soil ridges with leafy cabbage-like plants in rows, a few gaps and one wilted plant',
+              'a small garden bed seen from above: a weathered plank frame around four tilled soil ridges with bean plants climbing short stakes in rows, some empty spots'][_v],
+          group='ground', tags=['텃밭', '밭', '덧그림'], desc='생존자 정착지 텃밭 이랑 — 판자 테 안 고랑·마루와 작물. 울 안에 두세 판을 붙여 둔다. 걷는다.',
+          sample=big_decal_sample('crop-bed-' + _l, (1, 1)))(_crop_bed(_v))
+

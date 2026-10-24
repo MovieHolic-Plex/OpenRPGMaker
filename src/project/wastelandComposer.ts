@@ -81,6 +81,7 @@ class Board {
     this.taken = new Array<boolean>(this.w * this.h).fill(false);
     this.keep = new Array<boolean>(this.w * this.h).fill(false);
     this.slab = new Array<boolean>(this.w * this.h).fill(false);
+    this.track = new Array<boolean>(this.w * this.h).fill(false);
     this.rng = rngOf(seed);
   }
 
@@ -174,6 +175,8 @@ class Board {
   /** 길 표시(road)는 그대로 두고 오토타일만 깐다 — 판잣집 촌 발길(track)처럼 «길 위에 기물 금지»가 아닌 바닥. */
   /** 판석 칸(fillSlab) — 맵을 다 짠 뒤 가장자리 오토타일을 덮는다. */
   slab: boolean[] = [];
+  /** 발길 칸(r61) — 문 앞에서 길·광장으로 닳은 흙길. 덧그림은 두지 않는다. */
+  track: boolean[] = [];
   hasAutotile(key: string): boolean { return (this.ts.autotileGroups ?? []).some((group) => group.id.startsWith("wl") && group.id.includes(key)); }
   paint(key: string, cells: readonly boolean[], edgesOnly = false, joinAlso?: readonly boolean[]): void {
     const g = (this.ts.autotileGroups ?? []).find((group) => group.id.startsWith("wl") && group.id.includes(key));
@@ -207,6 +210,7 @@ class Board {
     const k = this.kit(id);
     if (!k) { this.skipped++; return false; }
     const dense = this.denseIds.has(id);
+    // r61(C): 같은 판잣집이 한 맵에 너덧 번·같은 높이에 둘 — 빽빽한 거처도 그림마다 둘, 같은 발 줄(±1)엔 한 번.
     const cap = dense ? 3 : CAPS[id];
     if (cap !== undefined && this.countOf(id) >= cap) return false;
     // 같은 큰 조각이 맞붙어(1칸 이내) 서지 않게 — r4: 같은 천막 둘·같은 판잣집 셋이 나란히 «도장»으로 읽혔다. 담·울·바리케이드 같은 이음 조각은 예외.
@@ -214,7 +218,8 @@ class Board {
     if (!TWIN_OK.has(id)) for (const p of this.placed) {
       if (p.id !== id) continue;
       // r8: 같은 판잣집·컨테이너 집이 한 열에 위아래로 서 «복사»로 읽혔다 — 큰 조각끼리는 12칸 띄운다.
-      const g = VEHICLES.has(id) ? 10 : dense ? 5 : k.width * k.height >= 4 ? 12 : 3;
+      const g = VEHICLES.has(id) ? 10 : dense ? 7 : k.width * k.height >= 4 ? 12 : 3;
+      if (dense && Math.abs(p.y - y) <= 1) return false;
       if (x < p.x + k.width + g && p.x < x + k.width + g && y < p.y + k.height + g && p.y < y + k.height + g) return false;
     }
     for (let r = 0; r < k.height; r++) for (let c = 0; c < k.width; c++) {
@@ -298,10 +303,14 @@ const DIRT = ["dirt-b", "dirt-c", "dirt-d"];
 // r7: 같은 차 둘(한 길 위·한 공터 안)이 어디서든 «복사»로 읽혔다 — 탈것은 그림마다 맵당 하나. 판잣집 a·b·c·컨테이너 집도 둘(붉은 판잣집 다섯이 한 덩이로 읽혔다).
 const CAPS: Record<string, number> = { "car-rust-h": 1, "car-rust-v": 1, "van-rust": 1, "scrap-heap": 2, "rubble-pile": 3, "water-tank": 2, "generator": 2, "solar-scrap": 3, "husk-tall": 1, "husk-a": 2, "husk-b": 2, "husk-c": 2, "husk-d": 2, "husk-e": 2, "husk-g": 1, "husk-h": 1, "rubble-pile-b": 3, "dead-tree": 3, "bush-wild": 4, "shack-a": 2, "shack-b": 2, "stall-a": 2, "stall-b": 2, "lean-to": 3, "tyres": 4, "shack-c": 2, "container-home": 2, "tent-tarp": 2, "sign-blank": 1, "hut-sheet": 2, "lean-doors": 2, "shack-2f": 1, "hut-stove": 2, "market-shelter": 1, "wash-line": 2, "crates-plastic": 2, "drums": 4, "crates": 4, "lamp-broken": 5,
   // r10: 같은 창 난 낮은 담 판이 한 맵에 너덧 번(좀비 도시·길가 방벽) — 담 판은 그림마다 둘, 바리케이드 셋.
-  "wall-h": 2, "wall-h2": 2, "wall-h3": 2, "barricade-h": 3 };
+  // r61(C): 같은 회색 담 판(벙커처럼 읽힘)이 길 양쪽에 거울로 — wall-h 는 맵에 하나.
+  "wall-h": 1, "wall-h2": 2, "wall-h3": 2, "barricade-h": 3 };
 const VEHICLES = new Set(["car-rust-h", "car-rust-v", "van-rust", "car-burnt"]);
-const TWIN_OK = new Set(["wall-h", "wall-v", "wall-stub", "fence-h", "barricade-h", "jersey-barrier", "gate-scrap", "log-seat", "campfire"]);
+const TWIN_OK = new Set(["wall-v", "wall-stub", "fence-h", "barricade-h", "jersey-barrier", "gate-scrap", "log-seat", "campfire", "crop-bed-a", "crop-bed-b"]);
 const SLAB = ["slab-a", "slab-b", "slab-c"];
+/** 종류별 거처(r61): 정착지 = 판잣집 a·b·컨테이너 집·천막, 판잣집 촌 = 함석·문짝·2층·난로 오두막·차양·판잣집 c. */
+const SETTLE_HOMES = ["shack-a", "shack-b", "container-home", "tent-tarp", "shack-a", "container-home"];
+const SHANTY_HOMES = ["shack-c", "lean-to", "hut-sheet", "lean-doors", "shack-2f", "hut-stove"];
 const RUBBLE = ["rubble-a", "rubble-b", "rubble-c"];
 const ROAD_MARKS = ["road-crack-a", "road-crack-b", "road-crack-c", "pothole-a", "pothole-b"];
 const WEEDS = ["weeds-a", "weeds-b", "weeds-c"];
@@ -324,7 +333,13 @@ function slabAt(b: Board, x: number, y: number): number {
   return b.field(SLAB, x, y, alts.length ? [2, 4, 4] : [6, 2, 2]);
 }
 function fillDirt(b: Board): void {
-  for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) b.setLower(x, y, b.field(DIRT, x, y, [4, 6, 6]));
+  // r61(C): 칸 해시로 b·c·d 를 고르게 섞어 «한 장의 밋밋한 갈색 벽지»로 읽혔다 — 부드러운 덩이로 자갈 땅(c)·마른 풀 땅(d)·맨흙(b) 구역을 나눈다.
+  const zone = (x: number, y: number) => { const g = blobNoise(x, y, b.seed + 401, 7), d = blobNoise(x, y, b.seed + 433, 9); return g > 0.6 ? "dirt-c" : d > 0.58 ? "dirt-d" : "dirt-b"; };
+  for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) {
+    const k = b.kit(zone(x, y)) ?? b.kit("dirt-b");
+    const t = k?.rows[y % k.height]?.tiles[x % k.width] ?? -1;
+    b.setLower(x, y, t >= 0 ? t : b.field(DIRT, x, y, [4, 6, 6]));
+  }
 }
 function fillSlab(b: Board, x0: number, y0: number, w: number, h: number): void {
   // 판석 깨짐 덧칠(wl-…slab-break…)이 있으면 판은 곧은 네모로 깔고, 맵을 다 짠 뒤 finishSlab 이 둘레 칸 위층 덧칠로 흙에 먹힌 끝을 그린다
@@ -487,6 +502,26 @@ function scatterDecals(b: Board, density: number, road: readonly boolean[]): voi
     }
   }
   let rubN = 0; const rubCap = Math.round(b.w * b.h * density * 0.12);
+  // r61(C): 잔해 낱칸이 맵 가장자리에 홀로 한 줄로 떠 있었다 — 잔해는 건물·담 둘레 2~3칸 안에만(맞붙은 1칸은 비운다), 맵 테두리 칸 금지.
+  const nearBuilt = (x: number, y: number, r: number) => { for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (b.inb(x + dx, y + dy) && b.taken[b.idx(x + dx, y + dy)]) return true; return false; };
+  // 기름 얼룩·불탄 자리(r61): 바닥 닳음이 없어 «벽지 위 기물»로 읽혔다 — 차·발전기·드럼통 곁엔 기름, 모닥불·불탄 차·무너진 건물 곁엔 그을음.
+  const oil = ["oil-stain-a", "oil-stain-b"].flatMap((id) => b.cells(id)), scorch = ["scorch-a", "scorch-b"].flatMap((id) => b.cells(id));
+  const OILY = new Set(["car-rust-h", "car-rust-v", "van-rust", "car-burnt", "generator", "drums", "scrap-heap"]), SOOTY = new Set(["campfire", "car-burnt", "husk-a", "husk-b", "husk-e", "rubble-pile"]);
+  const stainAt = (pool: number[], ids: Set<string>, salt: number) => {
+    if (!pool.length) return;
+    for (const p of b.placed) {
+      if (!ids.has(p.id) || hash2(p.x, p.y, b.seed + salt) < 0.35) continue;
+      const z = b.kitSize(p.id); if (!z) continue;
+      for (let t = 0; t < 8; t++) {
+        const x = p.x + b.int(-1, z.w), y = p.y + z.h - 1 + b.int(-1, 1);
+        if (!b.inb(x, y)) continue;
+        const i = b.idx(x, y);
+        if (b.taken[i] || b.slab[i] || b.track[i] || (road[i] && !ids.has("drums")) || layerTileAt(b.map, 2, i) >= 0) continue;
+        b.setDecal(x, y, pool[Math.floor(hash2(x * 3, y * 7, b.seed + salt) * pool.length)]!); break;
+      }
+    }
+  };
+  stainAt(oil, OILY, 503); stainAt(scorch, SOOTY, 509);
   // r11: 값 잡음 덩이는 격자 축을 따라 가늘게 남아 잡초가 «한 칸 폭 곧은 기둥·ㄱ자»로 섰다 — 무작위 중심의 흔들린 타원 덩이로.
   const patches: { x: number; y: number; rx: number; ry: number }[] = [];
   for (let k = Math.max(3, Math.round(b.w * b.h * density * 0.03)); k > 0; k--) patches.push({ x: b.int(1, b.w - 2), y: b.int(1, b.h - 2), rx: 1.3 + b.int(0, 12) / 10, ry: 1 + b.int(0, 8) / 10 });
@@ -494,7 +529,7 @@ function scatterDecals(b: Board, density: number, road: readonly boolean[]): voi
   const nearTaken = (x: number, y: number) => { for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (b.inb(x + dx, y + dy) && b.taken[b.idx(x + dx, y + dy)]) return true; return false; };
   for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) {
     const i = b.idx(x, y);
-    if (b.taken[i] || layerTileAt(b.map, 2, i) >= 0) continue;
+    if (b.taken[i] || b.track[i] || layerTileAt(b.map, 2, i) >= 0) continue;
     const onRoad = road[i];
     if (onRoad && !roadEdge(x, y)) continue;
     // r9: 덩이가 작고 고르게 퍼져 «고르게 뿌린 잔해»로 읽혔다 — 덩이를 키우고(잡초 7, 잔해 10) 드물게.
@@ -506,7 +541,7 @@ function scatterDecals(b: Board, density: number, road: readonly boolean[]): voi
     // r10: 덩이 안에서도 낱칸이 띄엄띄엄(대각 바둑판·세로 줄)이라 «고르게 뿌린 잔해»였다 — 덩이 속만, 속에선 빽빽이(낱칸 대신 작은 무더기).
     else if (weedAt(x, y) && r < 0.7 * (onRoad ? 0.3 : 1)) pool = weeds;
     // 잔해 낱칸 그림은 두세 가지뿐이라 빽빽하면 «같은 돌 깔개»가 된다(r10 시험) — 덩이 한가운데만, 기물 둘레 1칸은 비우고, 맵당 상한.
-    else if (rubZ > 0.9 && r < 0.35 && !onRoad && rubN < rubCap && !nearTaken(x, y)) { pool = rubble; rubN++; }
+    else if (rubZ > 0.75 && r < 0.4 && !onRoad && rubN < rubCap && !nearTaken(x, y) && nearBuilt(x, y, 3) && x > 0 && y > 0 && x < b.w - 1 && y < b.h - 1) { pool = rubble; rubN++; }
     if (pool.length) b.setDecal(x, y, pool[Math.floor(hash2(x + 3, y + 7, b.seed) * pool.length)]!);
   }
 }
@@ -549,7 +584,8 @@ function noRepeat(ids: string[]): string[] {
 const PLANTS = new Set(["dead-tree", "bush-wild"]);
 /** 선 건물 껍데기 — r55 에서 c·d·e 가 더해졌다(그림이 번들에 없으면 b.kit 로 걸러진다). */
 // r10: 여러 층 껍데기 husk-g(5층 골조 탑)·husk-h(3층 상가)를 더했다 — 좀비 도시가 «낮은 담만 남은 교외»로 읽혔다.
-const HUSKS = ["husk-tall", "husk-g", "husk-h", "husk-a", "husk-b", "husk-c", "husk-d", "husk-e"];
+const HUSKS_ALL = ["husk-tall", "husk-g", "husk-h", "husk-a", "husk-b", "husk-c", "husk-d", "husk-e"];
+const HUSKS = HUSKS_ALL;
 function sprinkle(b: Board, ids: readonly string[], n: number, x0: number, y0: number, x1: number, y1: number, start: Pt, must: Pt[]): number {
   let k = 0;
   const centres = Array.from({ length: Math.max(1, Math.ceil(n / 3)) }, () => ({ x: b.int(x0, Math.max(x0, x1)), y: b.int(y0, Math.max(y0, y1)) }));
@@ -558,7 +594,8 @@ function sprinkle(b: Board, ids: readonly string[], n: number, x0: number, y0: n
     const c = centres[tries % centres.length]!;
     const x = Math.min(Math.max(x0, x1 - s.w + 1), Math.max(x0, c.x + b.int(-4, 4))), y = Math.min(Math.max(y0, y1 - s.h + 1), Math.max(y0, c.y + b.int(-3, 3)));
     if (!b.free(x - 1, y - 1, s.w + 2, s.h + 2)) continue;
-    let onRoad = false; for (let dy = 0; dy < s.h && !onRoad; dy++) for (let dx = 0; dx < s.w; dx++) if (b.road[b.idx(x + dx, y + dy)] || (PLANTS.has(id) && b.slab[b.idx(x + dx, y + dy)])) { onRoad = true; break; }
+    // r61(C): 길 갓길(길에 맞붙은 칸)에 헛간·더미가 서 «길 위 기물»로 읽혔다 — 흩뿌리는 조각은 길에서 한 칸 띄운다.
+    let onRoad = false; for (let dy = -1; dy <= s.h && !onRoad; dy++) for (let dx = -1; dx <= s.w; dx++) { if (!b.inb(x + dx, y + dy)) continue; const j = b.idx(x + dx, y + dy); if (b.road[j] || (PLANTS.has(id) && dx >= 0 && dy >= 0 && dx < s.w && dy < s.h && b.slab[j])) { onRoad = true; break; } }
     if (onRoad) continue;
     if (b.stampSafe(id, x, y, start, must)) k++;
   }
@@ -578,6 +615,9 @@ function wrecksOnRoad(b: Board, lanes: { x0: number; y0: number; x1: number; y1:
     const y = lane.horizontal ? (b.int(0, 1) ? lane.y0 : Math.max(lane.y0, lane.y1 - s.h + 1)) : b.int(lane.y0, Math.max(lane.y0, lane.y1 - s.h + 1));
     let clash = false;
     for (let dy = -1; dy <= s.h; dy++) for (let dx = -1; dx <= s.w; dx++) if (b.inb(x + dx, y + dy) && b.taken[b.idx(x + dx, y + dy)]) clash = true;
+    // r61(C): 교차로 한복판에 차가 비스듬히 서 «까닭 없이 막힌 길»로 읽혔다 — 교차로(네 방향 2칸 모두 길) 3칸 안엔 두지 않는다(사고 난 교차로 더미는 따로).
+    const isRoad = (xx: number, yy: number) => b.inb(xx, yy) && b.road[b.idx(xx, yy)];
+    for (let dy = -3; dy < s.h + 3 && !clash; dy++) for (let dx = -3; dx < s.w + 3; dx++) { const X = x + dx, Y = y + dy; if (isRoad(X, Y - 2) && isRoad(X, Y + 2) && isRoad(X - 2, Y) && isRoad(X + 2, Y) && isRoad(X, Y)) { clash = true; break; } }
     if (clash) continue;
     // 길 칸은 keep 이 아니다(차가 길 위에 선다) — 대신 통행 검사가 길을 끊지 않게 한다.
     if (b.stampSafe(id, x, y, start, must)) { k++; used.set(id, (used.get(id) ?? 0) + 1); }
@@ -622,7 +662,10 @@ function mixedWallH(b: Board, x0: number, x1: number, footY: number, gateX: numb
         let n = 0; for (let k = 0, kn = fenceLine ? 3 + b.int(0, 4) : 3; k < kn && x + k <= x1 && Math.abs(x + k - gateX) > 1; k++) { const i = b.idx(x + k, footY); if (b.taken[i] || b.keep[i] || b.road[i]) break; n++; }
         if (n < 2) continue;
         for (let k = 0; k < n; k++) { const i = b.idx(x + k, footY); setLayerTileAt(b.map, 3, i, fence[(x + k) % fence.length]!); b.taken[i] = true; }
-        x += n; last = id; done = true; break;
+        x += n; last = id; done = true;
+        // r61(C): 고철 울 토막이 빈 흙에서 그냥 끝났다 — 끝에 담 토막·드럼(기둥)을 세운다.
+        if (x <= x1 && Math.abs(x - gateX) > 1) for (const post of b.shuffle(["wall-stub", "drums"])) { const z = b.kitSize(post); if (z && b.stampSafe(post, x, footY - z.h + 1, start, must)) { x += z.w; last = post; break; } }
+        break;
       }
       const z = b.kitSize(id); if (!z || x + z.w - 1 > x1) continue;
       if (b.stampSafe(id, x, footY - z.h + 1, start, must)) { x += z.w; last = id; usedN.set(id, (usedN.get(id) ?? 0) + 1); done = true; break; }
@@ -664,7 +707,153 @@ function scrapLot(b: Board, qx0: number, qy0: number, qx1: number, qy1: number, 
   areas.push({ name: "폐차장", x: lx, y: ly, w, h, tag: "junkyard" });
 }
 
-function composeSettlement(b: Board): { areas: WlArea[]; spawn: Pt; road: boolean[] } {
+
+// ─────────────────────────────── r61: 발길·텃밭·살림 붙이기·길가 자갈 (검수 C: 빈 흙 벽지 위에 기물만 흩어졌다)
+/** 거처 문 앞에서 가장 가까운 길·판석·발길까지 닳은 흙길(track 오토타일)을 낸다. 18칸 넘게 걸어야 닿으면 내지 않는다. */
+function wearPaths(b: Board, areas: readonly WlArea[], road: readonly boolean[]): void {
+  // 발길 오토타일(track)은 관문 화풍 fail 로 굽지 않는다 — 없으면 닳은 자리를 자갈 흙(dirt-c) 덩이로 깐다.
+  const trackTiles = b.hasAutotile("track");
+  const grit = b.kit("dirt-c");
+  if (!trackTiles && !grit) return;
+  const goal = (i: number) => road[i] || b.slab[i] || b.track[i];
+  const dirtSet = new Set<number>(); for (const id of DIRT) for (const r of b.kit(id)?.rows ?? []) for (const t of r.tiles) if (t >= 0) dirtSet.add(t);
+  const doors = areas.filter((a) => a.door && a.w * a.h < 60).map((a) => ({ x: a.door!.x, y: a.door!.y + 1 }));
+  for (const d of b.shuffle(doors)) {
+    if (!b.inb(d.x, d.y) || goal(b.idx(d.x, d.y))) continue;
+    const prev = new Map<number, number>(); const start = b.idx(d.x, d.y); prev.set(start, -1);
+    let q = [start], hit = -1;
+    for (let depth = 0; depth < 18 && q.length && hit < 0; depth++) {
+      const nq: number[] = [];
+      for (const i of q) {
+        const x = i % b.w, y = (i - x) / b.w;
+        for (const [nx, ny] of [[x, y + 1], [x, y - 1], [x + 1, y], [x - 1, y]] as const) {
+          if (!b.inb(nx, ny)) continue; const j = b.idx(nx, ny);
+          if (prev.has(j) || b.taken[j] || !b.walkable(nx, ny) || !dirtSet.has(b.map.lowerTiles[j] ?? -1)) continue;
+          prev.set(j, i);
+          if (goal(j)) { hit = j; break; }
+          nq.push(j);
+        }
+        if (hit >= 0) break;
+      }
+      q = nq;
+    }
+    if (hit < 0) continue;
+    for (let i = prev.get(hit)!; i >= 0; i = prev.get(i)!) b.track[i] = true;
+  }
+  // 밟힌 마당(r61): 덩이·광장·야영지·장터 가운데에 흔들린 타원으로 다져진 흙 — 기물 밑 흙 칸도 바꾼다(바닥만, 기물 그림은 그대로).
+  for (const a of areas) {
+    if (!["shanty-cluster", "plaza", "camp", "market", "utility", "farm"].includes(a.tag) || a.w * a.h > 400) continue;
+    const cx = a.x + a.w / 2 + b.int(-2, 2), cy = a.y + a.h / 2 + b.int(-1, 1), rx = Math.max(2, a.w * 0.32), ry = Math.max(1.6, a.h * 0.3);
+    for (let y = Math.floor(cy - ry - 2); y <= cy + ry + 2; y++) for (let x = Math.floor(cx - rx - 2); x <= cx + rx + 2; x++) {
+      if (!b.inb(x, y)) continue; const i = b.idx(x, y);
+      if (road[i] || b.slab[i] || !dirtSet.has(b.map.lowerTiles[i] ?? -1)) continue;
+      const d = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 + (blobNoise(x, y, b.seed + 467, 3) - 0.5) * 0.9;
+      if (d < 1) b.track[i] = true;
+    }
+  }
+  // 외톨이 낱칸(이웃 발길 없음)은 지운다 — 흙에 박힌 밝은 점으로 읽힌다.
+  for (let i = 0; i < b.track.length; i++) if (b.track[i]) {
+    const x = i % b.w, y = (i - x) / b.w;
+    const n = [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => b.inb(x + dx!, y + dy!) && (b.track[b.idx(x + dx!, y + dy!)] || goal(b.idx(x + dx!, y + dy!)))).length;
+    if (!n) b.track[i] = false;
+  }
+  if (trackTiles) { b.paint("track", b.track); return; }
+  for (let i = 0; i < b.track.length; i++) if (b.track[i]) {
+    const x = i % b.w, y = (i - x) / b.w;
+    const t = grit!.rows[y % grit!.height]?.tiles[x % grit!.width] ?? -1; if (t >= 0) b.setLower(x, y, t);
+  }
+}
+
+/** 길가 1~2칸 흙은 덩이째 자갈 흙(dirt-c)으로 — 길 둘레가 맨흙과 같은 결이라 길이 «벽지에 그은 띠»로 읽혔다. */
+function roadsideGravel(b: Board, road: readonly boolean[]): void {
+  const base = b.kit("dirt-b"), grit = b.kit("dirt-c");
+  if (!base || !grit) return;
+  const bset = new Set<number>(); for (const r of base.rows) for (const t of r.tiles) if (t >= 0) bset.add(t);
+  for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) {
+    const i = b.idx(x, y); if (road[i] || b.slab[i] || !bset.has(b.map.lowerTiles[i] ?? -1)) continue;
+    let near = 9; for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) if (b.inb(x + dx, y + dy) && road[b.idx(x + dx, y + dy)]) near = Math.min(near, Math.abs(dx) + Math.abs(dy));
+    if (near > 2 || blobNoise(x, y, b.seed + 457, 4) < (near === 1 ? 0.3 : 0.55)) continue;
+    const t = grit.rows[y % grit.height]?.tiles[x % grit.width] ?? -1; if (t >= 0) b.setLower(x, y, t);
+  }
+}
+
+/** 텃밭(정착지 표지, r61): 울 친 터 안에 이랑 판(crop-bed, 3×2) 2~4장을 1칸 고랑을 두고 붙이고, 한쪽에 물통·연장 헛간. */
+function farmPlot(b: Board, x0: number, y0: number, x1: number, y1: number, spawn: Pt, must: Pt[], areas: WlArea[]): boolean {
+  const beds = ["crop-bed-b", "crop-bed-a"].filter((id) => b.kit(id));
+  if (!beds.length) return false;
+  const cols = b.int(2, 3), rows = b.int(1, 2), w = cols * 4 + 3, h = rows * 3 + 3;
+  for (let t = 0; t < 60; t++) {
+    const fx = b.int(x0, Math.max(x0, x1 - w + 1)), fy = b.int(y0, Math.max(y0, y1 - h + 1));
+    if (!b.free(fx - 1, fy - 1, w + 2, h + 2)) continue;
+    let bad = false; for (let y = fy; y < fy + h && !bad; y++) for (let x = fx; x < fx + w; x++) if (b.road[b.idx(x, y)] || b.slab[b.idx(x, y)]) { bad = true; break; }
+    if (bad) continue;
+    const fence = b.cells("fence-h"); const gate = fx + 2 + b.int(0, w - 5);
+    for (let x = fx; x < fx + w; x++) for (const y of [fy, fy + h - 1]) {
+      if (y === fy + h - 1 && (x === gate || x === gate + 1)) continue;
+      if (!fence.length) break; const i = b.idx(x, y); setLayerTileAt(b.map, 3, i, fence[(x + y) % fence.length]!); b.taken[i] = true;
+    }
+    if (!b.reachesAll(spawn, must)) { for (let x = fx; x < fx + w; x++) for (const y of [fy, fy + h - 1]) { const i = b.idx(x, y); if (b.taken[i] && layerTileAt(b.map, 3, i) >= 0) { setLayerTileAt(b.map, 3, i, -1); b.taken[i] = false; } } continue; }
+    b.stampSafe("wall-stub", fx, fy + 1, spawn, must); b.stampSafe("wall-stub", fx + w - 1, fy + 1, spawn, must);
+    let k = 0;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const id = beds[(r + c + b.int(0, 1)) % beds.length]!;
+      if (b.stamp(id, fx + 1 + c * 4 + (r % 2), fy + 1 + r * 3)) k++;
+      for (let dx = 0; dx < 3; dx++) for (let dy = 0; dy < 2; dy++) b.markKeep(fx + 1 + c * 4 + (r % 2) + dx, fy + 1 + r * 3 + dy);
+    }
+    b.stampSafe(b.pick(["drums", "crates-plastic", "tyres"]), fx + w - 2, fy + h - 2, spawn, must);
+    areas.push({ name: "텃밭", x: fx, y: fy, w, h, tag: "farm", door: { x: gate, y: fy + h - 1 } });
+    must.push({ x: gate, y: fy + h });
+    return k > 0;
+  }
+  return false;
+}
+
+/**
+ * 빈 땅 채우기(r61, 검수 C: «블록 하나에 건물 하나, 나머지는 큰 빈 흙»): 9×7 칸 창 안에 기물·길·판·지킬 칸이 하나도 없으면
+ * 그 가운데 닻 조각 하나 + 둘레 잡동사니 2~3 개(덩이)를 둔다. 종류마다 닻·잡동사니 묶음이 다르다.
+ */
+const VOID_KITS: Record<WastelandKind, { anchor: string[]; clutter: string[] }> = {
+  settlement: { anchor: ["dead-tree", "scrap-heap", "rubble-pile", "solar-scrap", "tent-tarp", "bush-wild"], clutter: ["drums", "tyres", "crates", "bush-wild", "crates-plastic"] },
+  "ruined-city": { anchor: ["husk-b", "husk-a", "rubble-pile", "scrap-heap", "car-burnt", "dead-tree"], clutter: ["rubble-pile", "tyres", "bush-wild", "vine-wall", "drums"] },
+  shanty: { anchor: ["scrap-heap", "lean-to", "hut-sheet", "tent-tarp", "dead-tree"], clutter: ["drums", "tyres", "crates", "wash-line", "crates-plastic"] },
+};
+function fillVoids(b: Board, kind: WastelandKind, spawn: Pt, must: Pt[]): void {
+  const kit = VOID_KITS[kind];
+  const empty = (x0: number, y0: number, w: number, h: number) => {
+    for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) { if (!b.inb(x, y)) return false; const i = b.idx(x, y); if (b.taken[i] || b.road[i] || b.slab[i]) return false; }
+    return true;
+  };
+  const spots: Pt[] = [];
+  for (let y = 0; y + 6 <= b.h; y++) for (let x = 0; x + 8 <= b.w; x++) if (empty(x, y, 8, 6)) spots.push({ x: x + 4, y: y + 3 });
+  // 문 앞·광장 통로(keep) 칸은 지운 채로 둔다 — 닻이 그 위에 서면 stamp 가 막는다.
+  let n = 0;
+  for (const c of b.shuffle(spots)) {
+    if (n >= 6 || !empty(c.x - 4, c.y - 3, 8, 6)) continue;
+    let placed = false;
+    for (const id of b.shuffle(kit.anchor)) { const z = b.kitSize(id); if (z && b.stampSafe(id, c.x - (z.w >> 1), c.y - (z.h >> 1), spawn, must)) { placed = true; break; } }
+    if (!placed) continue;
+    n++;
+    sprinkle(b, kit.clutter, b.int(2, 3), c.x - 4, c.y - 2, c.x + 4, c.y + 3, spawn, must);
+  }
+}
+
+/** 건물 곁 살림(r61): 집·껍데기 한 채에 기물 하나 덩그러니 — 옆구리 발 줄에 드럼·상자·타이어 한두 개를 붙여 덩이로 읽히게. */
+function dressBuildings(b: Board, spawn: Pt, must: Pt[]): void {
+  const homes = new Set(["shack-a", "shack-b", "shack-c", "container-home", "tent-tarp", "lean-to", "hut-sheet", "lean-doors", "shack-2f", "hut-stove"]);
+  for (const p of b.shuffle(b.placed.slice())) {
+    const house = homes.has(p.id), husk = p.id.startsWith("husk");
+    if ((!house && !husk) || b.chance(0.3)) continue;
+    const z = b.kitSize(p.id); if (!z) continue;
+    const ids = husk ? ["rubble-pile", "tyres", "drums", "crates"] : ["drums", "crates", "tyres", "crates-plastic", "wash-line", "solar-scrap"];
+    for (const id of b.shuffle(ids).slice(0, b.int(1, 2))) {
+      const s = b.kitSize(id); if (!s) continue;
+      const side = b.chance(0.5) ? p.x - s.w : p.x + z.w;
+      b.stampSafe(id, side, p.y + z.h - s.h, spawn, must);
+    }
+  }
+}
+
+function composeSettlement(b: Board): { areas: WlArea[]; spawn: Pt; road: boolean[]; must: Pt[] } {
   const { w: Wd, h: Hd } = b;
   const areas: WlArea[] = [];
   fillDirt(b);
@@ -684,8 +873,10 @@ function composeSettlement(b: Board): { areas: WlArea[]; spawn: Pt; road: boolea
   // r7: 같은 2층 껍데기 둘이 윗줄에 «복사»로 읽혔다 — 껍데기는 이 틀에서 그림마다 한 번, 두 줄이 나눠 쓴다.
   const husks = b.shuffle(HUSKS.filter((id) => b.kit(id)));
   const ruinName = (id: string) => (id.startsWith("husk") ? "무너진 건물" : "무너진 벽");
-  rowOf(b, b.shuffle([husks[0]!, husks[1]!, "wall-h", "rubble-pile", "wall-h"]), 1 + b.int(0, 3), rx - 2, foot, spawn, must, [1, 4], areas, ruinName);
-  rowOf(b, b.shuffle([husks[2]!, "wall-h", "scrap-heap"]), rx + 4 + b.int(0, 3), Wd - 2, foot, spawn, must, [1, 4], areas, ruinName);
+  // r61(C): 같은 회색 담 판이 세로 길 양쪽에 거울로 섰다 — 한쪽 줄에만 담 판, 다른 쪽은 담 판 2·고철·고사목.
+  const wallLeft = b.chance(0.5);
+  rowOf(b, b.shuffle([husks[0]!, husks[1]!, wallLeft ? "wall-h" : "wall-h2", "rubble-pile"]), 1 + b.int(0, 3), rx - 2, foot, spawn, must, [1, 4], areas, ruinName);
+  rowOf(b, b.shuffle([husks[2]!, wallLeft ? "wall-h2" : "wall-h", "scrap-heap", "dead-tree"]), rx + 4 + b.int(0, 3), Wd - 2, foot, spawn, must, [2, 5], areas, ruinName);
   // 남서 거주지: 바리케이드·고철 울 사각형, 북쪽 문(큰길에서 2줄 흙길)
   const cx0 = east ? Math.max(rx + 5, Wd - 2 - 26) : 2, cy0 = ry + 5 + b.int(0, 2), cx1 = east ? Wd - 3 : Math.min(rx - 3, 2 + 26), cy1 = Hd - 2;
   // r7: 문이 울 한가운데·남북 틈이 마주 보면서 거주지가 좌우 거울로 읽혔다 — 문을 30~70% 자리로.
@@ -706,7 +897,8 @@ function composeSettlement(b: Board): { areas: WlArea[]; spawn: Pt; road: boolea
   for (let y = inner.y0; y < plazaY0; y++) for (const dx of [0, 1]) b.markKeep(gateX + dx, y);
   // 판잣집 줄(안쪽 위) — 문은 아래(광장 쪽)
   // r7: 같은 간격 판잣집 줄 + 양옆 같은 판잣집이 거울로 읽혔다 — 줄 시작·간격을 흔들고 천막·차양·컨테이너 집을 섞는다.
-  const shacks = rowOf(b, noRepeat(b.shuffle(["shack-a", "shack-b", "lean-to", "container-home", "tent-tarp", "shack-c"])), inner.x0 + 1 + b.int(0, 3), inner.x1 - 1, plazaY0 - 1, spawn, must, [1, 3], areas, () => "판잣집");
+  // r61(C): 정착지와 판잣집 촌이 같은 판잣집 묶음이라 구분되지 않았다 — 정착지는 판잣집 a·b·컨테이너 집·방수포 천막만(판잣집 촌은 함석·문짝·2층 오두막).
+  const shacks = rowOf(b, noRepeat(b.shuffle(SETTLE_HOMES.slice())), inner.x0 + 1 + b.int(0, 3), inner.x1 - 1, plazaY0 - 1, spawn, must, [1, 3], areas, () => "판잣집");
   for (const s of shacks) { const d = b.door(s.id, s.x, s.y); must.push({ x: d.x, y: d.y + 1 }); b.markKeep(d.x, d.y + 1); }
   // 광장: 모닥불 + 통나무 의자, 장터 노점 둘~셋
   const fx = Math.floor((inner.x0 + inner.x1) / 2) + b.int(-3, 3), fy = Math.floor((plazaY0 + plazaY1) / 2);
@@ -751,18 +943,22 @@ function composeSettlement(b: Board): { areas: WlArea[]; spawn: Pt; road: boolea
   // 큰길: 녹슨 차·검문(분리대)
   wrecksOnRoad(b, [{ x0: 2, y0: ry, x1: rx - 3, y1: ry + 2, horizontal: true }, { x0: rx + 4, y0: ry, x1: Wd - 3, y1: ry + 2, horizontal: true }, { x0: rx, y0: 1, x1: rx + 2, y1: ry - 3, horizontal: false }, { x0: rx, y0: ry + 4, x1: rx + 2, y1: Hd - 3, horizontal: false }],
     b.int(4, 6), spawn, must, { h: ["car-rust-h", "car-rust-h", "scrap-heap", "van-rust", "van-rust"], v: ["car-rust-v"] });
-  b.stampSafe("jersey-barrier", gateX - 1, ry + 2, spawn, must);
+  // r61(C): 차선 한가운데 홀로 선 분리대가 «까닭 없는 기물»이었다 — 문 길 어귀 양옆 갓길에 분리대·드럼(검문)으로.
+  if (b.stampSafe("jersey-barrier", gateX - 3, ry + 3, spawn, must)) b.stampSafe("drums", gateX - 4, ry + 3, spawn, must);
+  b.stampSafe(b.chance(0.5) ? "jersey-barrier" : "tyres", gateX + 2, ry + 3, spawn, must);
   // 남동: 폐차장·고사목·덤불·잔해 더미
   // r8: 빈 들판에 꺾인 가로등이 홀로 서 있었다 — 가로등은 길가에만. 들판은 나무·덤불·잔해 덩이 몇.
+  // r61(C): 정착지가 판잣집 촌과 구분되지 않았다 — 울 친 텃밭(정착지 표지)을 빈 사분면에.
+  farmPlot(b, 2, ry + 5, Wd - 3, Hd - 2, spawn, must, areas) || farmPlot(b, 2, 2, Wd - 3, ry - 3, spawn, must, areas);
   sprinkle(b, ["dead-tree", "bush-wild", "rubble-pile", "dead-tree", "sign-blank"], Math.floor(Wd / 9), 0, 0, Wd - 1, Hd - 1, spawn, must);
-  return { areas, spawn, road };
+  return { areas, spawn, road, must };
 }
 
 /**
  * 정착지 둘째 틀(짝수 seed): 울 친 거주지 대신 «길가 장터 정착지» — 굽은 옛 국도 하나를 따라 판잣집·노점이 양쪽에 붙고,
  * 길 두 끝은 분리대·바리케이드 검문, 길 가운데 급수탑 마당. 무너진 건물은 길에서 떨어진 곳에 몇 채. (r2: 두 seed 가 같은 틀로 읽혔다)
  */
-function composeRoadsideSettlement(b: Board): { areas: WlArea[]; spawn: Pt; road: boolean[] } {
+function composeRoadsideSettlement(b: Board): { areas: WlArea[]; spawn: Pt; road: boolean[]; must: Pt[] } {
   const { w: Wd, h: Hd } = b;
   const areas: WlArea[] = [];
   fillDirt(b);
@@ -780,8 +976,8 @@ function composeRoadsideSettlement(b: Board): { areas: WlArea[]; spawn: Pt; road
   for (let x = 0; x < Wd; x++) { let top = Hd, bot = -1; for (let y = 0; y < Hd; y++) if (road[b.idx(x, y)]) { top = Math.min(top, y); bot = Math.max(bot, y); }
     if (top > 0) b.markKeep(x, top - 1, 1, 1); if (bot < Hd - 1) b.markKeep(x, bot + 1, 1, 1); }
   // 길 북쪽: 판잣집·노점 줄(발 = 보도 위), 남쪽: 노점·판잣집 줄(머리 = 보도 아래) — 구간마다 따로 세워 굽은 길을 따른다
-  const north = b.shuffle(["shack-a", "stall-a", "shack-b", "lean-to", "stall-b", "shack-a", "lean-to", "stall-a"]);
-  const south = b.shuffle(["stall-b", "shack-b", "lean-to", "stall-a", "shack-a", "lean-to", "stall-b"]);
+  const north = noRepeat(b.shuffle(["shack-a", "stall-a", "shack-b", "container-home", "stall-b", "tent-tarp", "stall-a"]));
+  const south = noRepeat(b.shuffle(["stall-b", "shack-b", "tent-tarp", "stall-a", "shack-a", "container-home", "stall-b"]));
   let midX = Math.floor(Wd / 2) + b.int(-3, 3);
   if (Math.abs(midX - jog) < 6) midX = jog + (jog < Wd / 2 ? 8 : -8);
   let x = 4, k = 0;
@@ -842,8 +1038,10 @@ function composeRoadsideSettlement(b: Board): { areas: WlArea[]; spawn: Pt; road
     if (fy < 1 || fy > Hd - 2) continue;
     let clear = true; for (let x = a.x - 1; x <= a.x + a.w; x++) { if (!b.inb(x, fy)) { clear = false; break; } const i = b.idx(x, fy); if (b.taken[i] || b.keep[i] || road[i]) clear = false; }
     if (!clear) continue;
-    for (let x = a.x - 1; x <= a.x + a.w; x++) { const i = b.idx(x, fy); setLayerTileAt(b.map, 3, i, fenceH[x % fenceH.length]!); b.taken[i] = true; }
-    b.stampSafe("wall-stub", a.x - 1, Math.min(iy, fy + 1), spawn, must); b.stampSafe("wall-stub", a.x + a.w, Math.min(iy, fy + 1), spawn, must);
+    // r61(C): 울이 끝 기둥 없이 빈 흙에서 끝났다 — 두 끝 담 토막이 다 서야 울을 남긴다.
+    const okL = b.stampSafe("wall-stub", a.x - 1, Math.min(iy, fy + 1), spawn, must), okR = okL && b.stampSafe("wall-stub", a.x + a.w, Math.min(iy, fy + 1), spawn, must);
+    if (!okL || !okR) { if (okL) { const q = b.placed.pop()!; const z = b.kitSize(q.id)!; for (let r = 0; r < z.h; r++) { const i = b.idx(q.x, q.y + r); setLayerTileAt(b.map, 3, i, -1); b.taken[i] = false; } } continue; }
+    for (let x = a.x - 1; x <= a.x + a.w; x++) { const i = b.idx(x, fy); if (b.taken[i]) continue; setLayerTileAt(b.map, 3, i, fenceH[x % fenceH.length]!); b.taken[i] = true; }
     b.stampSafe(b.pick(["crates", "drums", "solar-scrap", "tyres"]), a.x + b.int(0, Math.max(0, a.w - 2)), iy, spawn, must);
   }
   // 보도: 길 네 방향 둘레 한 줄을 판석으로(꺾인 곳까지 따라간다 — r6: 꺾인 길에 연석이 끊겼다)
@@ -852,7 +1050,7 @@ function composeRoadsideSettlement(b: Board): { areas: WlArea[]; spawn: Pt; road
     if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => b.inb(x + dx!, y + dy!) && road[b.idx(x + dx!, y + dy!)])) { b.setLower(x, y, slabAt(b, x, y)); b.slab[i] = true; }
   }
   // 둘째 줄 거처: 길가 줄 뒤(뒷마당 너머)에 판잣집·컨테이너 집·천막 한 줄씩 — 길에서 먼 땅이 텅 비었다(조수 시험·r6).
-  const back = noRepeat(b.shuffle(["shack-c", "container-home", "tent-tarp", "lean-to", "shack-a", "shack-b", "container-home", "tent-tarp"]));
+  const back = noRepeat(b.shuffle(["container-home", "tent-tarp", "shack-a", "shack-b", "tent-tarp", "container-home"]));
   const nFoot = top - 8;
   if (nFoot >= 5) rowOf(b, back, 2 + b.int(0, 4), Wd - 3, nFoot, spawn, must, [2, 4], areas, () => "뒷줄 거처");
   const sFoot = bot + 12;
@@ -875,13 +1073,17 @@ function composeRoadsideSettlement(b: Board): { areas: WlArea[]; spawn: Pt; road
   sprinkle(b, ["drums", "tyres", "crates"], 2, junkW ? Wd - 5 : 1, ty + 2, junkW ? Wd - 2 : 4, by - 2, spawn, must);
   areas.push({ name: "정착지 방벽", x: 1, y: ty, w: Wd - 2, h: by - ty + 1, tag: "wall" });
   // 방벽 밖: 무너진 건물 한 채·고사목·폐차 몇
+  farmPlot(b, 2, ty + 2, Wd - 3, top - 3, spawn, must, areas) || farmPlot(b, 2, bot + 3, Wd - 3, by - 2, spawn, must, areas);
   sprinkle(b, ["husk-b", "dead-tree", "scrap-heap", "car-rust-h", "rubble-pile", "sign-blank"], Math.floor(Wd / 8), 1, 1, Wd - 2, Hd - 2, spawn, must);
-  return { areas, spawn, road };
+  return { areas, spawn, road, must };
 }
 
 // ─────────────────────────────── ruined-city
-function composeRuinedCity(b: Board): { areas: WlArea[]; spawn: Pt; road: boolean[] } {
+function composeRuinedCity(b: Board): { areas: WlArea[]; spawn: Pt; road: boolean[]; must: Pt[] } {
   const { w: Wd, h: Hd } = b;
+  // r61(C): 크림색 상가·옅은 청록 탑이 시드마다 같은 두 채로 섰다 — 키 큰 껍데기 셋 중 하나는 이 맵에서 쓰지 않는다.
+  const dropTall = b.pick(["husk-g", "husk-h", "husk-tall"]);
+  const HUSKS = HUSKS_ALL.filter((id) => id !== dropTall);
   const areas: WlArea[] = [];
   fillDirt(b);
   const road = new Array<boolean>(Wd * Hd).fill(false);
@@ -937,7 +1139,8 @@ function composeRuinedCity(b: Board): { areas: WlArea[]; spawn: Pt; road: boolea
       let lotY1 = y1 - 1;
       if (theme === "buildings") {
         const ids = b.shuffle(HUSKS.slice()).filter((id) => b.kit(id) && b.countOf(id) < (CAPS[id] ?? 9));
-        const tallFirst = [...ids.filter((id) => (b.kitSize(id)?.h ?? 0) >= 6), ...ids.filter((id) => (b.kitSize(id)?.h ?? 0) < 6)];
+        const talls = ids.filter((id) => (b.kitSize(id)?.h ?? 0) >= 6);
+        const tallFirst = [...talls.slice(0, 1), ...b.shuffle([...talls.slice(1), ...ids.filter((id) => (b.kitSize(id)?.h ?? 0) < 6)])];
         const row = rowOf(b, tallFirst.slice(0, 3), x0 + 1 + b.int(0, 1), x1 - 1, y1 - 1, spawn, must, [1, 2], areas, () => `무너진 건물 ${block}`);
         for (const p of row) { const d = b.door(p.id, p.x, p.y); if (b.inb(d.x, d.y + 1)) b.markKeep(d.x, d.y + 1); }
         if (row.length) lotY1 = Math.min(...row.map((p) => p.y)) - 2;
@@ -974,7 +1177,7 @@ function composeRuinedCity(b: Board): { areas: WlArea[]; spawn: Pt; road: boolea
       const cx = x0 + Math.floor(bw / 2), cy = y0 + Math.floor(bh / 2);
       b.stampSafe("campfire", cx, cy, spawn, must);
       b.stampSafe("log-seat", cx - 2, cy + 1, spawn, must); b.stampSafe("log-seat", cx + 1, cy + 1, spawn, must);
-      rowOf(b, b.shuffle(["shack-a", "lean-to", "shack-b"]).slice(0, 2), x0 + 1, x1 - 1, Math.max(y0 + 4, cy - 2), spawn, must, [1, 3], areas, () => `폐허 속 야영 ${block}`);
+      rowOf(b, b.shuffle(["tent-tarp", "lean-to", "shack-c"]).slice(0, 2), x0 + 1, x1 - 1, Math.max(y0 + 4, cy - 2), spawn, must, [1, 3], areas, () => `폐허 속 야영 ${block}`);
       sprinkle(b, ["drums", "crates", "tyres", "barricade-h", "jersey-barrier"], Math.max(3, Math.floor(bw * bh / 35)), x0, y0, x1, y1, spawn, must);
       areas.push({ name: `생존자 야영지 ${block}`, x: x0, y: y0, w: bw, h: bh, tag: "camp", door: { x: cx, y: cy + 2 } });
     } else {
@@ -1009,17 +1212,19 @@ function composeRuinedCity(b: Board): { areas: WlArea[]; spawn: Pt; road: boolea
     }
   }
   // 꺾인 가로등 — 가로 길 윗 보도 줄
-  for (const y0 of ys) for (let x = 2; x < Wd - 2; x += b.int(7, 11)) {
+  // r61(C): 꺾인 가로등이 고른 간격으로 줄지어 «도장»으로 읽혔다 — 간격을 크게 흔들고 셋에 하나는 비운다(쓰러져 없어진 자리).
+  for (const y0 of ys) for (let x = 2 + b.int(0, 4); x < Wd - 2; x += b.int(5, 14)) {
     const s = b.kitSize("lamp-broken"); if (!s) break;
+    if (b.chance(0.35)) continue;
     const y = y0 - s.h; if (y < 0) continue;
     const save = b.keep[b.idx(x, y0 - 1)]; b.keep[b.idx(x, y0 - 1)] = false;
     if (!b.stampSafe("lamp-broken", x, y, spawn, must)) b.keep[b.idx(x, y0 - 1)] = save;
   }
-  return { areas, spawn, road };
+  return { areas, spawn, road, must };
 }
 
 // ─────────────────────────────── shanty
-function composeShanty(b: Board): { areas: WlArea[]; spawn: Pt; road: boolean[] } {
+function composeShanty(b: Board): { areas: WlArea[]; spawn: Pt; road: boolean[]; must: Pt[] } {
   const { w: Wd, h: Hd } = b;
   const areas: WlArea[] = [];
   fillDirt(b);
@@ -1036,7 +1241,7 @@ function composeShanty(b: Board): { areas: WlArea[]; spawn: Pt; road: boolean[] 
   // 덩이(빽빽한 판잣집 무리) 4~6 개: 덩이마다 앞줄·뒷줄 두 줄을 0~1칸 사이로 붙여 세우고, 두 줄 사이 1칸 골목, 덩이 마당엔 드럼통·모닥불.
   // 덩이 사이는 2~3칸 흙길(비움). 새 거처(shack-c·container-home·tent-tarp)가 있으면 섞인다.
   // r12: 판잣집 여섯 종만 돌려 써 두 맵이 같은 집 묶음으로 읽혔다 — 함석 오두막·문 짝 차양·2층 판잣집·난로 오두막을 더한다(장터 차양은 장터에).
-  const shelters = ["shack-a", "shack-b", "lean-to", "shack-c", "container-home", "tent-tarp", "hut-sheet", "lean-doors", "shack-2f", "hut-stove"].filter((id) => b.kit(id));
+  const shelters = SHANTY_HOMES.filter((id) => b.kit(id));
   b.denseIds = new Set(shelters);
   const cols = Wd < 44 ? (b.int(0, 2) === 0 ? 3 : 2) : 3, rows = 2, nC = cols * rows;
   const cw = Math.floor((Wd - 4) / cols), ch = Math.floor((bot - top + 1) / rows);
@@ -1053,7 +1258,7 @@ function composeShanty(b: Board): { areas: WlArea[]; spawn: Pt; road: boolean[] 
     // 두 줄 사이 1~2칸이 골목이 되게 한다. 덩이마다 주된 거처 둘을 정해 그쪽을 많이 쓴다(같은 그림은 12칸 안에 다시 못 선다).
     const lead = b.shuffle(shelters.slice()).slice(0, 2);
     // 거처 사이사이에 살림 더미(드럼·상자·타이어·고철·태양판·노점)를 끼워 줄이 빽빽한 판자촌 골목으로 읽히게 한다 — 거처 그림은 맵당 몇 장뿐이라(상한·12칸 간격) 거처만으로는 줄이 성겼다.
-    const FILL = ["drums", "crates", "tyres", "scrap-heap", "solar-scrap", "stall-a", "stall-b", "lean-to", "generator", "wash-line", "crates-plastic"];
+    const FILL = ["drums", "crates", "tyres", "scrap-heap", "solar-scrap", "stall-a", "stall-b", "generator", "wash-line", "crates-plastic", "tent-tarp"];
     // r9: 같은 상자 넷이 한 줄에 고른 간격으로 섰다 — 줄마다 살림 더미는 섞은 목록을 돌려 쓰고(같은 것 연달아 금지) 줄당 같은 것 한 번.
     // r12 전 점검: 주된 거처 둘(lead)을 줄 앞에 몰았더니 같은 그림 12칸 간격 규칙에 막혀 줄이 듬성듬성했다(빈 흙에 흩어진 집) —
     // 줄은 lead 하나로 시작하고 나머지는 거처 전부를 섞어 돌린다(그림이 열 종이라 한 덩이에 같은 그림 없이 빽빽이 선다).
@@ -1070,7 +1275,7 @@ function composeShanty(b: Board): { areas: WlArea[]; spawn: Pt; road: boolean[] 
     // r11: 덩이 뒤 담 판·벙커 줄과 고물 기둥이 정착지 방벽과 같은 조각이라 두 종류가 하나로 읽혔다 — 판자촌은 담을 치지 않는다.
     // 대신 덩이 뒤에 방수포 천막·차양·판잣집 셋째 줄을 한 줄 더 반쯤 붙여 덩이를 더 두껍게(골목 하나).
     if (rows.flat().length >= 3 && backFootY - 4 >= top + 1)
-      rowOf(b, noRepeat(b.shuffle(["tent-tarp", "lean-to", "shack-c", "crates", "drums", "hut-sheet", "hut-stove", "wash-line"].filter((id) => b.kit(id)))), x0 + b.int(1, 3), x1 - b.int(0, 3), backFootY - 4, spawn, must, [0, 1], areas, dwell, 1);
+      rowOf(b, noRepeat(b.shuffle(["lean-to", "shack-c", "crates", "drums", "hut-sheet", "hut-stove", "wash-line", "lean-doors"].filter((id) => b.kit(id)))), x0 + b.int(1, 3), x1 - b.int(0, 3), backFootY - 4, spawn, must, [0, 1], areas, dwell, 1);
     const backFoot = backFootY;
     // 덩이 살림: 골목 끝 드럼통·상자, 덩이 앞 모닥불이나 발전기
     sprinkle(b, b.shuffle(["drums", "crates", "tyres", "solar-scrap", "generator", "scrap-heap", "lean-to"]).slice(0, 4), b.int(3, 5), x0, y0, x1, y1, spawn, must);
@@ -1095,7 +1300,7 @@ function composeShanty(b: Board): { areas: WlArea[]; spawn: Pt; road: boolean[] 
   // 덩이 사이 빈 땅: 고철 더미·타이어·고사목 몇(길은 비운 채)
   sprinkle(b, ["scrap-heap", "rubble-pile", "car-rust-h", "dead-tree", "bush-wild", "sign-blank"], Math.floor(Wd / 7), 0, top, Wd - 1, bot, spawn, must);
   wrecksOnRoad(b, [{ x0: 1, y0: ry, x1: Wd - 2, y1: ry + 2, horizontal: true }], b.int(1, 3), spawn, must, { h: b.shuffle(["van-rust", "car-rust-h", "scrap-heap", "tyres", "drums"]).slice(0, 3), v: [] });
-  return { areas, spawn, road };
+  return { areas, spawn, road, must };
 }
 
 /** 맵 한 장을 짠다. 땅·2층·3층을 덮어쓴다(이벤트는 건드리지 않는다). tileset 은 번들 wasteland_ruins 사본. */
@@ -1103,7 +1308,11 @@ export function composeWastelandMap(map: GameMap, tileset: TilesetDef, kind: Was
   const b = new Board(map, tileset, seed + (kind === "settlement" ? 0 : kind === "ruined-city" ? 7919 : 15887));
   for (let i = 0; i < map.width * map.height; i++) { setLayerTileAt(map, 2, i, -1); setLayerTileAt(map, 3, i, -1); setLayerTileAt(map, 4, i, -1); }
   const out = kind === "settlement" ? ((seed & 1) === 0 ? composeRoadsideSettlement(b) : composeSettlement(b)) : kind === "ruined-city" ? composeRuinedCity(b) : composeShanty(b);
+  fillVoids(b, kind, out.spawn, out.must);
+  dressBuildings(b, out.spawn, out.must);
+  roadsideGravel(b, out.road);
   finishSlab(b, out.road);
+  wearPaths(b, out.areas, out.road);
   scatterDecals(b, kind === "ruined-city" ? 0.09 : kind === "settlement" ? 0.045 : 0.045, out.road);
   const counts = new Map<string, number>();
   for (const p of b.placed) counts.set(p.id, (counts.get(p.id) ?? 0) + 1);
