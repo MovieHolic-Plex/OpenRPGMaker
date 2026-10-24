@@ -39,6 +39,12 @@ try {
     dragonTroopPages: db.troops.find((t) => t.id === "troop_fs_dragon")?.battleEventPages?.length ?? 0,
     pierceSkill: db.skills.find((s) => s.id === "skill_hero_rush_pierce")?.stateEffects?.map((e) => e.stateId) ?? [],
     questSteps: (p.quests?.find((q) => (q as { key?: string }).key === "fs_main") as { steps?: unknown[] } | undefined)?.steps?.length ?? 0,
+    valenHideHp: db.enemies.find((e) => e.id === "enemy_fs_valen")?.hideHp ?? null,
+    valenTroop: db.troops.find((t) => t.id === "troop_fs_valen_crash")?.members.length ?? 0,
+    valenPages: db.troops.find((t) => t.id === "troop_fs_valen_crash")?.battleEventPages?.length ?? 0,
+    machine: db.states.find((s) => s.id === "state_fs_valen_machine")?.runtimeEffects?.damageTypeRates ?? null,
+    circuit: db.items.some((i) => i.id === "item_fs_circuit"),
+    companions: (p.system as { companions?: { display?: string } }).companions?.display ?? null,
     ending: (p.endings?.find((e) => e.id === "end_fs_act1") as { presentation?: { kicker?: string } } | undefined)?.presentation?.kicker ?? null,
   };
   console.log(JSON.stringify({ reloaded: true, projectDir, ...checks }, null, 1));
