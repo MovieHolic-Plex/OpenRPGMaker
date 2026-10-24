@@ -402,8 +402,9 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
     id: FS_VALEN_CRASH_TROOP, name: "심문관 발렌",
     enemyIds: [FS_VALEN_ENEMY, ...soldiers.map((m) => m[0]), FS_VALEN_GOLEM, FS_VALEN_GOLEM],
     members: [
-      { enemyId: FS_VALEN_ENEMY, x: 40, y: 100, hidden: false },
+      // 발렌은 병사 뒤 순서 — 1단계에 기본 대상 커서가 무적인 발렌이 아니라 병사에게 간다.
       ...soldiers.map(([enemyId, x, y]) => ({ enemyId, x, y, hidden: false })),
+      { enemyId: FS_VALEN_ENEMY, x: 60, y: 110, hidden: false },
       { enemyId: FS_VALEN_GOLEM, x: 110, y: 70, hidden: true },
       { enemyId: FS_VALEN_GOLEM, x: 110, y: 160, hidden: true },
     ],
@@ -418,6 +419,8 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
         conditions: [{ kind: "enemiesAlive", atMost: 1 }],
         commands: [setSw(SW_VALEN_P2), text("…쓸모없는 것들.", VALEN), anim(FS_VALEN_ENEMY, "anim_gen_power_aura"),
           st(FS_VALEN_ENEMY, "remove", FS_VALEN_STANDBY_STATE),
+          // 병사들이 서 있던 한가운데로 걸어 나온다(뒷줄 가장자리에 걸려 잘려 보이지 않게).
+          m2("m2-218-move-enemy", { target: FS_VALEN_ENEMY, x: 150, y: 110, durationMs: 900 }),
           text("심문관이 장검을 고쳐 쥐고 걸어 나온다.")] },
       { id: "troop_fs_valen_crash_summon1", name: "2단계 — 골렘 하나", span: "battle", runOnce: true,
         conditions: [sw(SW_VALEN_P2), { kind: "enemyHpBelow", enemyId: FS_VALEN_ENEMY, percent: 85 }],
@@ -949,7 +952,7 @@ function floorB4(project: Project): GameMap {
   // 용 — 잠든 모습 / 깨어 쓰러짐.
   const dragonId = `ev_${FS_PREFIX}_b4_dragon`;
   // 필드에도 전투 그림 그대로(걷기 칩이 없는 적은 전투 도트에서 필드 그림을 얻는다) — 보스답게 2.2배.
-  const dragonGfx = { sprite: { type: "bundled", id: "generated-enemy-dragon-blue" }, direction: "down", pattern: 0, scale: 2.2, scaleMode: "manual" };
+  const dragonGfx = { sprite: { type: "uploaded", id: "generated-enemy-dragon-blue" }, direction: "down", pattern: 0, scale: 2.2, scaleMode: "manual" };
   const dragonFight = (): Command[] => [
     setSw(SW_DRAGON_CRACK, false),
     battleBgm("cc0-bgm-rtp-btl-001"),
@@ -992,6 +995,8 @@ function floorB4(project: Project): GameMap {
         letterbox(),
         stopBgm(),
         narrate("발밑의 뼈가 바스락 부서졌다."),
+        // 홀 북쪽 끝에 잠든 용을 화면에 담는다(깨우는 줄에서는 화면 위 밖이다).
+        m2("m2-201-camera-control", { mode: "panTo", targetEventId: dragonId, durationMs: "1100", wait: "true" }),
         wait(600),
         se("cc0-se-ors-creature-roar-02"),
         shake(4, 900),
@@ -1001,6 +1006,7 @@ function floorB4(project: Project): GameMap {
         say(IRIS, "저 뒤에 기계가 있어요.\n신호는 거기서 나와요."),
         say(KAEL, "창으로 비늘을 가르고,\n엘레나가 바로 친다. 간다!"),
         setSw(SW_DRAGON_MET),
+        m2("m2-201-camera-control", { mode: "return", durationMs: "500", wait: "true" }),
         cutLabel(),
         clearLetterbox(),
         cutEnd(),

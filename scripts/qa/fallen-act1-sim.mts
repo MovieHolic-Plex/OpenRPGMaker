@@ -57,7 +57,7 @@ function run(troopId: string, level: number, policy: Policy, rng: Rng, inventory
     actions += 1;
     const boss = foes.find((e) => e.recordId === "enemy_fs_moon_dragon") ?? foes.find((e) => e.recordId === "enemy_fs_valen" && e.stateIds.includes(MACHINE)) ?? foes[0]!;
     let cmd: ActorCommand | undefined;
-    const potion = (inv.item_hi_potion ?? 0) > 0 ? "item_hi_potion" : (inv.item_potion ?? 0) > 0 ? "item_potion" : undefined;
+    const potion = process.env.FS_SIM_NOITEMS ? undefined : (inv.item_hi_potion ?? 0) > 0 ? "item_hi_potion" : (inv.item_potion ?? 0) > 0 ? "item_potion" : undefined;
     const lowest = [...snap.actors].filter((a) => !a.defeated && a.hp > 0).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
     if (lowest && lowest.hp <= lowest.maxHp * 0.3 && potion) {
       cmd = { kind: "item", itemId: potion, targetEnemyId: boss.id, targetActorId: lowest.recordId } as unknown as ActorCommand;
@@ -98,7 +98,7 @@ function run(troopId: string, level: number, policy: Policy, rng: Rng, inventory
 }
 
 const cases: Array<{ troopId: string; level: number; policy: Policy; inv: Record<string, number> }> = [
-  ...([6, 7] as const).flatMap((level) => (["aware", "auto", "nothunder"] as Policy[]).map((policy) => ({ troopId: "troop_fs_valen_crash", level, policy, inv: { item_potion: 5, item_hi_potion: 1, item_ether: 2 } }))),
+  ...((process.env.FS_SIM_LEVELS ? process.env.FS_SIM_LEVELS.split(",").map(Number) : [6, 7])).flatMap((level) => (["aware", "auto", "nothunder"] as Policy[]).map((policy) => ({ troopId: "troop_fs_valen_crash", level, policy, inv: { item_potion: 5, item_hi_potion: 1, item_ether: 2 } }))),
   ...([8, 9] as const).flatMap((level) => (["aware", "auto", "nopierce"] as Policy[]).map((policy) => ({ troopId: "troop_fs_dragon", level, policy, inv: { item_potion: 6, item_hi_potion: 3, item_ether: 4 } }))),
 ];
 for (const c of cases.filter((x) => !only || x.troopId.endsWith(only))) {
