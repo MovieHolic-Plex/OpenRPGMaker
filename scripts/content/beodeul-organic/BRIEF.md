@@ -54,3 +54,12 @@ same tone count, same clumping? Fix silhouette first, then values, then detail. 
 8. **Silhouettes:** no egg/pill/ball/sausage/cucumber shapes. Asymmetric lumps with notches. Beodeul bushes: 3-4 px lobes, open edges.
 9. **Scale:** hollow-tree trunk at most ~1.5x a Beodeul tree trunk wide... it may be stout but must not be a 3-cell-wide pillar of stripes;
    stump-l no wider than a big Beodeul tree base.
+
+## Round-3 QA lessons (10/37 passed)
+- **No ruler-straight bottom.** The base of every rock/log/landmark breaks into 2-4 px steps and bumps; the ground shadow fills under it. No run of
+  more than 4 px on any outline of a natural object, including the bottom.
+- **Shading = blocky 2-4 px clusters**, never long 1 px horizontal/vertical stripes (bark rows, grain lines, bristle grass) and never smooth
+  concentric/diagonal bands (soap/pillow look).
+- **No mechanical spacing:** berries, blossoms and ring mushrooms at different heights, sizes and gaps; never an even row or a geometric oval.
+- Passed pieces are frozen (qa/frozen/hashes.txt): rock-s, moss-stone, bush-s, shrub-tall, fern-cluster, grass-tuft-a, flowers-yellow,
+  flowers-white, stump-l, shroom-red. Use them as the model for their family.
