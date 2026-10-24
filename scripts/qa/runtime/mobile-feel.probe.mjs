@@ -113,10 +113,19 @@ async function boot(browser, deviceId, outDir) {
   return { context, page, cdp, errors };
 }
 
+/** 떠 있는 대사(마을 사람 말·행렬 뒤 대사)를 다 닫고 1.5초 조용할 때까지. */
+async function quiet(page) {
+  for (let calm = 0, i = 0; calm < 6 && i < 120; i += 1) {
+    const open = await page.evaluate(() => !!document.querySelector('[data-testid="dialogue-box"], [data-testid="main-menu"]'));
+    if (open) { calm = 0; const menu = await page.evaluate(() => !!document.querySelector('[data-testid="main-menu"]')); await page.keyboard.press(menu ? "Escape" : "Enter"); } else calm += 1;
+    await sleep(250);
+  }
+}
+
 /** 체크포인트 직후 자동 컷신(포고·행진)이 끝나 자유롭게 걸을 때까지: 대사는 Enter, 컷신은 Esc 두 번, 걸어서 확인. */
 async function settle(page) {
   const deadline = Date.now() + 240_000;
-  const SPOTS = [[28, 33], [30, 33], [36, 27], [33, 31], [26, 23], [44, 30]];
+  const SPOTS = [[30, 33], [31, 33], [36, 27], [33, 31], [26, 23], [44, 30]];
   let spot = -1;
   while (Date.now() < deadline) {
     const ui = await page.evaluate(() => ({ dialogue: !!document.querySelector('[data-testid="dialogue-box"]'), menu: !!document.querySelector('[data-testid="main-menu"]') }));
@@ -134,6 +143,7 @@ async function settle(page) {
       const after = await page.evaluate(() => window.__oprnPlayerSprite?.());
       if (before && after && (before.x !== after.x || before.y !== after.y)) {
         if (process.env.MF_SCAN) await scanOpen(page);
+        await quiet(page);
         return true;
       }
     }
@@ -213,7 +223,7 @@ async function geometry(page) {
       const sx = r.width / cam.width;
       const wvx = cam.scrollX + (cam.width * (1 - 1 / cam.zoom)) / 2;
       const wvy = cam.scrollY + (cam.height * (1 - 1 / cam.zoom)) / 2;
-      hero = { x: Math.round(r.left + (sprite.x - wvx) * cam.zoom * sx), y: Math.round(r.top + (sprite.y - wvy) * cam.zoom * sx), scale: +(cam.zoom * sx).toFixed(3) };
+      hero = { x: Math.round(r.left + (sprite.x - wvx) * cam.zoom * sx), y: Math.round(r.top + (sprite.y - 8 - wvy) * cam.zoom * sx), scale: +(cam.zoom * sx).toFixed(3) };
     }
     const meta = document.querySelector('meta[name="viewport"]')?.getAttribute("content") ?? null;
     return {
@@ -291,6 +301,7 @@ async function runDevice(browser, deviceId) {
     try { result.steps[name] = await fn(); } catch (e) { result.steps[name] = { error: String(e?.message ?? e) }; }
   };
   const teleport = async (x, y, facing = "down") => {
+    await quiet(page);
     await page.evaluate(([x, y, f]) => { window.__oprnDebug.teleport("fs_hub", x, y); window.__oprnInput.face(f); }, [x, y, facing]);
     await sleep(500);
   };
@@ -305,13 +316,13 @@ async function runDevice(browser, deviceId) {
   await step("latency", async () => {
     const trials = [];
     for (let i = 0; i < 3; i += 1) {
-      await teleport(28, 33, "down");
+      await teleport(30, 33, "down");
       const h = await pressHold(page, touch, [sc[0] + r * 0.6, sc[1]], 600);
       trials.push({ heldMs: h.heldMs, ...analyzeMove(h.log, h.pressT, h.releaseT), keys: h.log.keys.map((k) => `${k.type}:${k.key}@${(k.t - h.pressT).toFixed(0)}`) });
     }
     const taps = [];
     for (let i = 0; i < 2; i += 1) {
-      await teleport(28, 33, "down");
+      await teleport(30, 33, "down");
       const h = await pressHold(page, touch, [sc[0] + r * 0.6, sc[1]], 70);
       taps.push({ heldMs: h.heldMs, ...analyzeMove(h.log, h.pressT, h.releaseT), keys: h.log.keys.map((k) => `${k.type}:${k.key}@${(k.t - h.pressT).toFixed(0)}`), trace: h.log.frames.filter((f) => f.t >= h.pressT - 40 && f.t <= h.pressT + 500).map((f) => `${(f.t - h.pressT).toFixed(0)}:${f.x},${f.y}${f.moving ? "m" : ""}`).join(" ") });
     }
@@ -320,7 +331,7 @@ async function runDevice(browser, deviceId) {
 
   // 1b) 떠다니는 조이스틱: 조이스틱 밖(영역 안) 첫 누름이 바로 방향을 내는가
   await step("offBaseFirstTouch", async () => {
-    await teleport(28, 33, "down");
+    await teleport(30, 33, "down");
     const zone = g0.zone;
     // 조이스틱 오른쪽 위 빈자리(영역 안)를 엄지로 누르고 600ms 버틴다 — 손가락은 안 움직인다.
     const p = [Math.min(zone.x + zone.w - 10, sc[0] + r * 1.4), sc[1] - r * 0.2];
@@ -344,14 +355,14 @@ async function runDevice(browser, deviceId) {
     return out;
   });
   await step("diagonal", async () => {
-    await teleport(28, 33, "down");
+    await teleport(30, 33, "down");
     const p = [sc[0] + r * 0.5, sc[1] + r * 0.5];
     const h = await pressHold(page, touch, p, 700);
     const s = await state(page);
     return { keys: h.log.keys.filter((k) => k.type === "keydown").map((k) => k.key), ...analyzeMove(h.log, h.pressT, h.releaseT), end: s };
   });
   await step("slide", async () => {
-    await teleport(28, 33, "down");
+    await teleport(30, 33, "down");
     await resetLog(page);
     const right = [sc[0] + r * 0.6, sc[1]];
     const up = [sc[0], sc[1] - r * 0.6];
@@ -367,7 +378,7 @@ async function runDevice(browser, deviceId) {
     return { mid, end: s, keys: log.keys.map((k) => `${k.type}:${k.key}`), turnedUp: s.y < mid.y };
   });
   await step("drift", async () => {
-    await teleport(28, 33, "down");
+    await teleport(30, 33, "down");
     await resetLog(page);
     const start = [sc[0] + r * 0.6, sc[1]];
     await touch.start([start]);
@@ -397,7 +408,7 @@ async function runDevice(browser, deviceId) {
     return { farPoint: far.map(Math.round), keysHeldFar: keysHeld, movedWhileFar: s2.x !== s1.x || s2.y !== s1.y, keysAfterReturnLeft: heldBack };
   });
   await step("multitouch", async () => {
-    await teleport(28, 33, "down");
+    await teleport(30, 33, "down");
     await resetLog(page);
     const dir = [sc[0] + r * 0.6, sc[1]];
     const a = center(g0.a);
@@ -433,7 +444,7 @@ async function runDevice(browser, deviceId) {
   });
   // 2c) 떨림: 오른쪽 축에서 ±22° 로 흔들며 걸을 때 키가 몇 번 바뀌는가
   await step("jitter", async () => {
-    await teleport(28, 33, "down");
+    await teleport(30, 33, "down");
     await resetLog(page);
     const at = (deg) => [sc[0] + Math.cos((deg * Math.PI) / 180) * r * 0.6, sc[1] + Math.sin((deg * Math.PI) / 180) * r * 0.6];
     await touch.start([at(0)]);
@@ -450,7 +461,7 @@ async function runDevice(browser, deviceId) {
     const rb = center(g0.run);
     await touch.tap(rb[0], rb[1], 60);
     await sleep(300);
-    await teleport(28, 33, "down");
+    await teleport(30, 33, "down");
     const h = await pressHold(page, touch, [sc[0] + r * 0.6, sc[1]], 600);
     await touch.tap(rb[0], rb[1], 60);
     await sleep(300);
@@ -459,7 +470,7 @@ async function runDevice(browser, deviceId) {
   // 6b) 문·사람 탭: 멀리서 잠긴 문을 탭하면 곁으로 걸어가 말을 거는가
   await step("tapInteract", async () => {
     // 광장 길(28,33)에서 2~6칸 떨어진 사람(이벤트)을 하나 골라 탭한다 → 곁으로 걸어가 말을 거는가.
-    await teleport(28, 33, "down");
+    await teleport(30, 33, "down");
     // 앞서 뜬 대사(마을 사람 혼잣말 등)를 다 닫고 1.5초 조용할 때까지
     for (let quiet = 0, i = 0; quiet < 6 && i < 80; i += 1) {
       const open = await page.evaluate(() => !!document.querySelector('[data-testid="dialogue-box"]'));
@@ -483,7 +494,7 @@ async function runDevice(browser, deviceId) {
     const g = await geometry(page);
     const tilePx = 16 * g.hero.scale;
     // 사람 그림의 가운데(발에서 12px 위)를 탭한다 — 손가락이 실제로 누르는 곳.
-    const p = [g.hero.x + tilePx * (target.x - here.x), g.hero.y + tilePx * (target.y - here.y) - 12 * g.hero.scale];
+    const p = [g.hero.x + tilePx * (target.x - here.x), g.hero.y + tilePx * (target.y - here.y) - 4 * g.hero.scale];
     const idleOverlay = await page.evaluate(() => [...document.querySelectorAll(".dialogue-overlay")].map((o) => ({ cls: o.className, kids: o.children.length, box: o.querySelector(".dialogue-box")?.outerHTML.slice(0, 300) ?? null, vis: getComputedStyle(o).display + "/" + getComputedStyle(o).visibility + "/" + getComputedStyle(o).opacity })));
     await resetLog(page);
     await touch.tap(p[0], p[1], 60);
@@ -500,7 +511,7 @@ async function runDevice(browser, deviceId) {
 
   // 6) 맵 탭으로 걷기: 주인공 오른쪽 3칸을 탭
   await step("tapToMove", async () => {
-    await teleport(28, 33, "down");
+    await teleport(30, 33, "down");
     await sleep(1200);
     const g = await geometry(page);
     const s0 = await state(page);
@@ -573,7 +584,7 @@ async function runDevice(browser, deviceId) {
 
   // 4b) 메뉴: 메뉴 단추 → 첫 줄이 아닌 줄을 탭 → 무엇이 일어나는가, 목록 끌어 스크롤
   await step("menu", async () => {
-    await teleport(28, 33, "down");
+    await teleport(30, 33, "down");
     const m = center(g0.menu);
     await touch.tap(m[0], m[1], 60);
     await sleep(900);
@@ -617,7 +628,7 @@ async function recordWalk(browser, deviceId) {
   const descriptor = DEVICES[deviceId];
   const { context, page, cdp } = await boot(browser, deviceId, outDir);
   const touch = touchApi(cdp);
-  await page.evaluate(() => { window.__oprnDebug.teleport("fs_hub", 28, 33); window.__oprnInput.face("down"); });
+  await page.evaluate(() => { window.__oprnDebug.teleport("fs_hub", 30, 33); window.__oprnInput.face("down"); });
   await sleep(800);
   const g = await geometry(page);
   const sc = center(g.stick);
@@ -651,7 +662,7 @@ async function recordWalk(browser, deviceId) {
   if (npc) {
     g2 = await geometry(page);
     t = 16 * g2.hero.scale;
-    await touch.tap(g2.hero.x + t * (npc.x - here.x), g2.hero.y + t * (npc.y - here.y) - 12 * g2.hero.scale, 60);
+    await touch.tap(g2.hero.x + t * (npc.x - here.x), g2.hero.y + t * (npc.y - here.y) - 4 * g2.hero.scale, 60);
     for (let i = 0; i < 24; i += 1) { await sleep(250); if (await page.evaluate(() => !!document.querySelector('[data-testid="dialogue-box"]'))) break; }
     await sleep(1500);
     // 대사는 화면 아무 데나 탭해서 넘긴다
