@@ -233,19 +233,20 @@ def _stain(c, J, seed, light=False):
                 c.P(x, y, GR[1] if edge and (y == y0 - 1 or x == x0 - 1) else GR[2] if edge else
                     GR[5] if (y == y0 or x == x0) else GR[4] if h2(x, y, seed + 2) % 5 else GR[3])
         return
-    pts = {}
-    for k in range(4 + (r >> 6) % 3):                     # 젖은 얼룩: 둥근 덩이 여럿, 가운데로 갈수록 어둡다
-        q = h2(k, r, seed + 1)
-        bx, by = 5 + q % 6, 5 + (q >> 4) % 6
-        rad = 2.0 + ((q >> 8) % 3) * 0.6
-        for y in range(16):
-            for x in range(16):
-                d = ((x - bx) ** 2 + (y - by) ** 2) ** 0.5
-                if d <= rad: pts[(x, y)] = max(pts.get((x, y), 0), 2 if d <= rad - 1.4 else 1)
-    for (x, y), v in pts.items():
-        if (x, y) in J or not _in(x, y, 3): continue
-        if v == 1 and h2(x, y, seed + 4) % 4 == 0: continue
-        c.P(x, y, GR[1] if v == 2 else GR[2])
+    # 젖은 얼룩: 비스듬한 타원 하나(변형마다 크기·기울기·자리가 다르다) + 가장자리 디더, 가운데 한 단 더 어둡다. 여러 원을 겹친 하트·X 꼴은 도장으로 읽혔다(검수).
+    import math
+    cx, cy = 5.5 + r % 5, 5.5 + (r >> 3) % 5
+    ax, ay = 2.6 + ((r >> 6) % 4) * 0.7, 1.6 + ((r >> 8) % 3) * 0.5
+    th = ((r >> 10) % 6) * math.pi / 6
+    ct, st = math.cos(th), math.sin(th)
+    for y in range(16):
+        for x in range(16):
+            if (x, y) in J or not _in(x, y, 3): continue
+            u, v = (x - cx) * ct + (y - cy) * st, -(x - cx) * st + (y - cy) * ct
+            e = (u / ax) ** 2 + (v / ay) ** 2 + ((h2(x, y, seed + 6) % 100) / 100 - 0.5) * 0.5
+            if e > 1.0: continue
+            if e > 0.65 and (x + y + (r >> 12)) % 2: continue
+            c.P(x, y, GR[1] if e < 0.3 else GR[2])
 
 
 def _unused_stain_tail(c, J, pts):
@@ -447,7 +448,7 @@ def draw_tile(c, ox, oy, spec):
         seed = 9501 + sum(q * 3 ** i for i, q in enumerate(sides)) * 17 + js * 5 + v * 211
         J = _joints(sub, js, v == 1, seed)
         if v == 1:                                          # 둘레 칸 변형 1: 판 얼굴에 얼룩이나 금 하나(보도 띠가 맨 판으로만 이어지지 않게)
-            if seed % 2: _stain(sub, J, seed + 2)
+            pass                                            # r60b: 둘레 칸은 같은 변 조합마다 같은 그림이라 얼룩을 얹으면 줄지어 찍혔다(검수) — 둘레 변화는 테 모양 셋으로만
         _draw_edges(sub, sides, seed)
     c.a[oy:oy + 16, ox:ox + 16] = sub.a
 
