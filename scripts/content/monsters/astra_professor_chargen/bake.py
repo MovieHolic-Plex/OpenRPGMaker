@@ -26,12 +26,22 @@ FIXES = {
         'angry': {(27, 42): SKIN},                                       # leftover nasolabial pixel left of the mouth
         'surprised': {(31, 43): DARK, (32, 43): DARK, (31, 44): MOUTH, (32, 44): MOUTH},  # open mouth read as a flat brown button
     },
+    # 2026-10-25 cast-portrait harness review (fresh blind Argon): right eye mirrored from the left (iris 4 vs 3 px),
+    # angry keeps base's smile-line age pixels, mouths get a dark rim all round, base loses its chin bar.
+    # Applied in order (later pixels win); same edits as qa-runs/harnesses/cast-portrait/astra-horizon/r3-chargen/professor-cg-nat10/fixes.json.
+    'cg-nat10-r2': {
+        'base': {(30, 44): '#f9c485', (31, 44): '#f9c485', (32, 44): '#f9c485', (33, 44): '#f9c485', (35, 32): '#f3f5f4', (36, 32): '#0f1330', (38, 33): '#2f467e', (39, 33): '#0f1330', (39, 34): '#2f467e', (39, 35): '#2f467e'},
+        'sad': {(36, 33): '#0f1330', (37, 40): '#b36434', (38, 33): '#f3f5f4', (38, 34): '#2f467e', (39, 34): '#0f1330', (39, 35): '#2f467e'},
+        'angry': {(25, 41): '#b36434', (25, 42): '#b36434', (26, 40): '#b36434', (36, 32): '#0f1330', (37, 29): '#4e2315', (37, 30): '#4e2315', (37, 40): '#b36434', (38, 33): '#2f467e', (38, 41): '#b36434', (38, 42): '#b36434', (39, 34): '#2f467e', (39, 35): '#f9c485'},
+        'surprised': {(30, 45): '#f9c485', (31, 44): '#ec4e38', (32, 44): '#ec4e38', (32, 45): '#662f1a', (33, 44): '#662f1a'},
+        'happy': {(28, 42): '#2e140f', (35, 41): '#2e140f', (35, 42): '#2e140f', (39, 34): '#1d0e0d'},
+    },
 }
 
 
 def fix(key, name, im):
     im = im.copy(); px = im.load()
-    for (x, y), hexc in FIXES.get(key, {}).get(name, {}).items():
+    for (x, y), hexc in {**FIXES.get(key, {}).get(name, {}), **FIXES.get(key + '-r2', {}).get(name, {})}.items():
         px[x, y] = (int(hexc[1:3], 16), int(hexc[3:5], 16), int(hexc[5:7], 16), 255)
     return im
 

@@ -69,9 +69,17 @@ npm run harness -- cast-portrait install astra-horizon professor r4 <후보>
 | hand-a (1차) | FAIL 머리 꼭대기 y0 | 반려 |
 | 옛 박사(chargen) | FAIL 윤곽 29%·눈 비대칭·얼굴 밖 변화 13~20화소 | 「괴물같다」 |
 
+(위 표의 check 는 처음 검사 기준이다. 뒤에 두 눈 색 개수 비교(정면 base ±2, 다른 표정 ±6)를 더했더니 cg-nat10 원래 그림도
+홍채 4화소/3화소로 걸려 손 보정했다 — 아래 이력.)
+
 기계 통과는 합격이 아니다. 같은 작가인지·표정마다 결함이 없는지는 눈가림 검수자가 본다(`verdict`).
 `pick` 은 현재 그림 해시에 check PASS 와 「sameArtist + 모든 표정 none」 판정이 둘 다 있을 때만 받고, `--by` 에 고른 사람을 적어야 한다(에이전트·감독 불가).
-`fix` 로 화소를 고치면 해시가 바뀌어 이전 판정이 무효가 된다 — lineup·dialogue·검수를 다시 한다.
+기계 검사는 절대 면제되지 않는다. 눈가림 판정만은 **그림을 직접 본 사람**이 `--override "<본 것과 이유>"` 로 뒤집을 수 있고, 그 사실이 picks.json 에 그대로 남는다.
+`fix` 로 화소를 고치면 해시가 바뀌어 이전 판정이 무효가 된다 — lineup(새 `--seed` 로 글자도 섞는다)·dialogue·검수를 다시 한다.
+
+**검수자 편차(실측, 같은 cg-nat10):** 2026-10-24 묶음 9.5·같은 작가 → 하네스 묶음 세 번 5·7·5, 같은 작가 아님. 같은 화소에도 점수가 4점 넘게 흔들리고
+매번 다른 결함을 짚는다. 그래서 (1) 검수자가 짚은 결함 중 **화소로 확인되는 것만** 고치고(좌표를 열어 확인), (2) 화풍 판단(팔자 주름, 홍채 두 톤,
+놀람 눈 크기)은 사람에게 넘긴다. 검수 지시문에는 「캐스트 자체가 보이는 차이는 결함이 아니다 — 주장마다 cast-only-3x 로 확인하라」를 넣었다.
 
 ## 기록 위치
 
@@ -89,4 +97,9 @@ npm run harness -- cast-portrait install astra-horizon professor r4 <후보>
 - 1차(2026-10-24): hand-a·hand-b·shared-elder·shared-moustache → 사용자 전부 반려.
 - 2차 = 하네스 r3-chargen: cg-nat10·9·1·12, Argon 순위 nat10 > nat9 > nat1 > nat12, nat10 손 보정 3곳(기쁨 볼 얼룩, 화남 잔점, 놀람 입 속) →
   같은 작가 판정 → 사용자 허용(「이거는 꽤 규격이 괜찮네」), 기본 흉상(`src/assets/astraCast.ts` `ASTRA_PROFESSOR_BUST`). 다른 후보도 id 로 고를 수 있다.
+  스토어 1.16 은 이 그림.
+- 하네스로 다시 돌림(2026-10-25): 새 눈가림 묶음 세 번(5·7·5, 같은 작가 아님). 화소로 확인된 결함 31화소를 `fix` 로 고침 — 오른쪽 눈을 왼쪽 눈 거울로
+  (홍채 4/3화소), 화남에 base 의 팔자 주름 유지, 기쁨·놀람 입에 어두운 테두리, base 에만 있던 턱 아래 줄 제거, 슬픔 주름 한 화소.
+  check PASS. 눈가림 판정은 통과 못 함 → 사용자 허용을 근거로 `pick --override` 로 기록(harness-data/cast-portrait/astra-horizon/picks.json), `install`.
+  같은 보정은 `scripts/content/monsters/astra_professor_chargen/bake.py` 의 `cg-nat10-r2` 에도 있어 다시 구워도 같은 화소가 나온다. 스토어 1.17.
 - object-gate(3/4 시점 관문)는 흉상에 해당하지 않아 돌리지 않았다.

@@ -73,7 +73,7 @@ def rules_of(spec, project):
     s = b['summary']
     return {'maxColours': s['colours'][1], 'headTop': s['top'], 'bottomCoverMin': round(s['bottomCover'][0] - 0.05, 3),
             'outlineDarkMin': round(s['outlineDark'][0] - 0.05, 3), 'headWidthRelRange': s['headWidthRel'], 'headWidthTolerance': 0.12,
-            'faceBox': [0.22, 0.30, 0.78, 0.80], 'faceOnlyExpressions': False, 'eyeTolerance': {'w': 2, 'h': 1, 'y': 1},
+            'faceBox': [0.22, 0.30, 0.78, 0.80], 'faceOnlyExpressions': False, 'eyeTolerance': {'w': 2, 'h': 1, 'y': 1, 'colourBase': 2, 'colourOther': 6},
             # the pixel eye detector only means something when it reads the existing cast; illustration casts skip it
             'requireEyeSymmetry': all(v is True for v in s['eyesSymmetric'].values())}
 
@@ -202,8 +202,12 @@ def check_one(spec, rules, project, rnd, cand):
             rel = m['headWidth'] / im.size[0]; lo, hi = s['headWidthRel']
             if not (lo * (1 - tol) <= rel <= hi * (1 + tol)): f.append(f'head width {m["headWidth"]}px ({rel:.2f}) outside cast {lo:.2f}..{hi:.2f} ±{tol:.0%}')
         if e in spec['openEyeExpressions'] and rules.get('requireEyeSymmetry', True):
-            if m['eyesSymmetric'] is None: f.append('eyes not found (open-eye expression)')
-            elif not m['eyesSymmetric']: f.append(f'eyes not symmetric {m["eyes"]}')
+            t = rules['eyeTolerance']; ec = t.get('colourBase', 2) if e == 'base' else t.get('colourOther', 6)
+            if m['eyes'] is None: f.append('eyes not found (open-eye expression)')
+            else:
+                (lw, lh, lt, lb), (rw, rh, rt, rb) = m['eyes']
+                if abs(lw - rw) > t['w'] or abs(lh - rh) > t['h'] or abs(lt - rt) > t['y'] or abs(lb - rb) > t['y']: f.append(f'eyes not symmetric {m["eyes"]}')
+                if m['eyeColourGap'] > ec: f.append(f'eyes differ in colour counts by {m["eyeColourGap"]} px (> {ec}; e.g. iris 4 px on one side, 3 on the other)')
         if e != 'base' and rules.get('faceOnlyExpressions'):
             v = face_only_violation(base, im, tuple(rules['faceBox']))
             if v: f.append(f'{v} px changed outside the face box (expressions must edit the face only)')
@@ -220,7 +224,7 @@ def check(a):
     spec = spec_of(a.project); rules = rules_of(spec, a.project)
     if not rd(DATA / a.project / 'baseline.json'): print('no baseline yet — running calibrate first'); calibrate(a)
     out = {c: check_one(spec, rules, a.project, a.round, c) for c in (a.candidates or cands(a.project, a.round))}
-    wr(round_dir(a.project, a.round) / 'checks.json', out)
+    wr(round_dir(a.project, a.round) / 'checks.json', {**rd(round_dir(a.project, a.round) / 'checks.json', {}), **out})
     bad = 0
     for c, r in out.items():
         print(('PASS ' if r['pass'] else 'FAIL ') + c)
@@ -258,6 +262,9 @@ def lineup(a):
 Files in {bdir.relative_to(ROOT)}: cast-only-3x.png (the existing cast, all by one artist), and for each candidate letter
 lineup-<L>-1x/3x.png (the candidate placed 4th inside the cast), expressions-<L>-4x.png ({', '.join(spec['expressions'])}),
 and ingame-<L>-*.png (the real dialogue box, if present). You do not know how any candidate was made.
+Judge against what the existing cast actually does: check each claim on cast-only-3x.png (are the cast's eyes and brows perfectly
+mirrored? which outline colours do they use? how big are their surprised eyes?). A difference the cast itself also shows is not a defect.
+"sameArtist": true only if the candidate would not stand out as a different hand in this lineup.
 For EVERY candidate answer:
 1. Cast fit 1-10, and "indistinguishable in style from the cast (same artist)": yes/no, with the concrete differences
    (outline colour/weight, palette and shading steps, eye and mouth construction, framing and head size).
@@ -353,8 +360,13 @@ def passes(spec, project, rnd, cand):
 
 def pick(a):
     spec = spec_of(a.project); ok, why = passes(spec, a.project, a.round, a.candidate)
-    if not ok: print(f'refused: {why}'); return 1
-    if not a.by or a.by.lower() in ('agent', 'claude', 'supervisor'): print('refused: a pick needs the human who chose (--by "<user, quote>")'); return 1
+    if not a.by or a.by.lower() in ('agent', 'claude', 'supervisor', 'argon'): print('refused: a pick needs the human who chose (--by "<user, quote>")'); return 1
+    if not ok:
+        # the machine check is never waived; a failing blind verdict can only be overruled by the human who looked, and it is recorded
+        chk = rd(round_dir(a.project, a.round) / 'checks.json', {}).get(a.candidate)
+        if not chk or chk['hashes'] != hashes(a.project, a.round, a.candidate, spec) or not chk['pass']: print(f'refused: {why}'); return 1
+        if not a.override: print(f'refused: {why}\n(only the human who chose can overrule the blind verdict: --override "<what they saw and why>")'); return 1
+        why = f'HUMAN OVERRIDE of the blind verdict ({why}): {a.override}'
     rd_ = round_dir(a.project, a.round)
     rec = {'project': a.project, 'role': a.role, 'round': a.round, 'candidate': a.candidate, 'by': a.by, 'at': now(), 'basis': why,
            'hashes': hashes(a.project, a.round, a.candidate, spec),
@@ -370,10 +382,13 @@ def install(a):
     spec = spec_of(a.project); cur = hashes(a.project, a.round, a.candidate, spec)
     pk = [p for p in rd(DATA / a.project / 'picks.json', []) if p['role'] == a.role and p['candidate'] == a.candidate and p['hashes'] == cur]
     if not pk: print('refused: no human pick on the current pixels'); return 1
-    dst = ROOT / spec['roles'][a.role]['installDir'].format(candidate=a.candidate); dst.mkdir(parents=True, exist_ok=True)
+    key = a.candidate[len(a.role) + 1:] if a.candidate.startswith(a.role + '-') else a.candidate   # professor-cg-nat10 -> cg-nat10
+    dst = ROOT / spec['roles'][a.role]['installDir'].format(candidate=key); dst.mkdir(parents=True, exist_ok=True)
     src = round_dir(a.project, a.round) / a.candidate
     for e in spec['expressions']: shutil.copyfile(src / f'bust-{e}.png', dst / f'bust-{e}.png')
-    prov = rd(src / 'provenance.json', {}); prov['castPortraitHarness'] = {'pick': pk[-1], 'fixes': rd(src / 'fixes.json', [])}
+    prov = rd(src / 'provenance.json', {}); prov['castPortraitHarness'] = {'pick': {k: v for k, v in pk[-1].items() if k not in ('verdict', 'check')}, 'fixes': rd(src / 'fixes.json', [])}
+    for e in spec['expressions']:   # the pixel hashes of what is actually installed (after any harness fixes)
+        prov.setdefault('pictures', {}).setdefault(f'bust-{e}.png', {})['pixelSha256'] = pix_sha(dst / f'bust-{e}.png')
     wr(dst / 'provenance.json', prov)
     print(f'installed -> {dst.relative_to(ROOT)}; wire the id in {spec["roles"][a.role].get("selectableIn", "the project")}'); return 0
 
@@ -407,7 +422,7 @@ def main():
     q = sp.add_parser('verdict'); q.add_argument('project'); q.add_argument('round'); q.add_argument('file'); q.add_argument('--reviewer', required=True); q.add_argument('--source', default='')
     for n in ('pick', 'install'):
         q = sp.add_parser(n); q.add_argument('project'); q.add_argument('role'); q.add_argument('round'); q.add_argument('candidate')
-        if n == 'pick': q.add_argument('--by', required=True)
+        if n == 'pick': q.add_argument('--by', required=True); q.add_argument('--override')
     a = ap.parse_args()
     return {'list': list_, 'calibrate': calibrate, 'draw': draw, 'import': import_, 'fix': fix, 'check': check, 'lineup': lineup, 'dialogue': dialogue,
             'verdict': verdict, 'pick': pick, 'install': install, 'status': status}[a.stage](a)

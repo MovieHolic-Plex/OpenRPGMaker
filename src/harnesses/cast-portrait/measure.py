@@ -77,13 +77,24 @@ def eyes(a):
     L = [c for c in comps if (c[1] + c[2]) / 2 < w / 2]; R = [c for c in comps if (c[1] + c[2]) / 2 >= w / 2]
     if not L or not R: return None
     l, r = max(L), max(R)
-    return (l[2] - l[1] + 1, l[4] - l[3] + 1, l[3], l[4]), (r[2] - r[1] + 1, r[4] - r[3] + 1, r[3], r[4])
+    def hist(c):
+        blk = a[c[3]:c[4] + 1, c[1]:c[2] + 1]; m = blk[..., 3] >= 128
+        cols, cnt = np.unique(blk[m][:, :3], axis=0, return_counts=True)
+        return {'#%02x%02x%02x' % tuple(k): int(n) for k, n in zip(cols, cnt)}
+    return (l[2] - l[1] + 1, l[4] - l[3] + 1, l[3], l[4], hist(l)), (r[2] - r[1] + 1, r[4] - r[3] + 1, r[3], r[4], hist(r))
 
 
-def eyes_symmetric(e, tol_w=2, tol_h=1, tol_y=1):
+def eye_colour_gap(e):
+    """pixels that differ between the two eyes' colour counts (iris 4 px wide on one side and 3 on the other shows up here)."""
+    hl, hr = e[0][4], e[1][4]
+    return sum(abs(hl.get(k, 0) - hr.get(k, 0)) for k in set(hl) | set(hr))
+
+
+def eyes_symmetric(e, tol_w=2, tol_h=1, tol_y=1, tol_colour=2):
     if e is None: return None
-    (lw, lh, lt, lb), (rw, rh, rt, rb) = e
-    return abs(lw - rw) <= tol_w and abs(lh - rh) <= tol_h and abs(lt - rt) <= tol_y and abs(lb - rb) <= tol_y
+    (lw, lh, lt, lb, _), (rw, rh, rt, rb, _) = e
+    return (abs(lw - rw) <= tol_w and abs(lh - rh) <= tol_h and abs(lt - rt) <= tol_y and abs(lb - rb) <= tol_y
+            and eye_colour_gap(e) <= tol_colour)
 
 
 def eye_symmetry(a, box=(0.22, 0.30, 0.78, 0.62)):
@@ -117,7 +128,8 @@ def measure(im):
              cornersTransparent=bool(a[0, 0, 3] == 0 and a[0, -1, 3] == 0),
              outlineDark=round(outline_dark_ratio(a), 3), mirrorScore=eye_symmetry(a))
     e = eyes(a)
-    m['eyes'] = [list(e[0]), list(e[1])] if e else None
+    m['eyes'] = [list(e[0][:4]), list(e[1][:4])] if e else None
+    m['eyeColourGap'] = eye_colour_gap(e) if e else None
     m['eyesSymmetric'] = eyes_symmetric(e)
     m.update(frame(a))
     return m
