@@ -28,7 +28,7 @@ function out(value: object, code = 0): never {
 const DEMOS: Record<string, { readonly slug: string; readonly builtin: string; readonly description: string; readonly pointer?: boolean }> = {
   "chrono-bell": {
     slug: "fallen-star", builtin: "chrono-bell",
-    description: "OPRN 에디터의 대표 데모 JRPG 입니다. 동쪽 숲에 떨어진 별, 그 속에서 깨어난 기계 소녀, 그리고 별을 쫓는 심문관.\n제1막(약 20분)을 처음부터 끝까지 플레이할 수 있습니다. 전투·대화·컷신·세이브가 모두 들어 있습니다.",
+    description: "OPRN 에디터의 대표 데모 JRPG 입니다. 북쪽 숲에 떨어진 별, 그 속에서 깨어난 기계 소녀, 그리고 별을 쫓는 심문관.\n제1막(약 20분)을 처음부터 끝까지 플레이할 수 있습니다. 전투·대화·컷신·세이브가 모두 들어 있습니다.",
   },
   "emerald-crown": {
     slug: "astra-horizon", builtin: "emerald-crown", pointer: true,
