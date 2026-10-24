@@ -230,3 +230,21 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
   다리: `window.oprn.store.gameMine/gamePublish/gameCurrent`(`electron/main/assetStoreClient.ts`), 순서는 `src/assetStore/gamePublish.ts`.
 - 대표 데모: `npm run store:publish-game -- --demo chrono-bell|emerald-crown|first-love --dry | --target staging | --target production --confirm <contentHash>`,
   되돌리기 `--rollback <slug>@<판본>`. 플레이어는 먼저 `npm run build:player`. 공용 그림·BGM 이 체크아웃 public/ 에 없으면 `OPRN_ASSET_ROOTS`.
+
+**바뀐 점 쓰는 법(2026-10-25, 스토어 PR #22).** 판본의 `changelog` 는 여전히 글 한 덩어리(최대 4000자)이고 서버는 그대로 저장한다.
+게임 화면(play.openrpgmaker.com/games/<slug>)이 보여 줄 때만 나눈다 — 옛 글도 그대로 읽힌다(뒤 호환).
+
+| 줄 | 화면 |
+|---|---|
+| 첫 일반 줄 | 판본 카드의 한 줄 제목 |
+| `+ 내용` | 새 기능 |
+| `~ 내용` | 개선 |
+| `! 내용` | 버그 수정 |
+| `- 내용` | 바로 위 묶음(없으면 「바뀐 점」) |
+| `새 기능:` `개선:` `버그 수정:` (en/ja/zh 도), `feat:` `fix:` 머리 | 그 묶음 |
+
+- 표시 없는 한 줄 글은 `;` 또는 문장 끝에서 끊어 첫 토막을 제목, 나머지를 항목으로 보인다.
+- PR 번호·브랜치 이름·커밋 해시·uuid·`ev_gate_…` 같은 내부 id 는 **화면에서만** 걷어 낸다. 그래도 플레이어가 읽을 말로 쓴다.
+- `changes`(맵·이벤트·캐릭터 더함/바꿈/뺌)는 따로 「게임 내용 변화」 개수로 보이고 이름은 접어 둔다 — 바뀐 점 글에 같은 목록을 다시 쓸 필요 없다.
+- 명령줄: `--changelog "1막 개편\n+ 용 보스\n! 저장 오류"`(글자 `\n` = 줄바꿈) 또는 `--changelog-file notes.txt`. 편집기 칸은 여러 줄 그대로.
+- 스토어 쪽 구현: OpenRPGMaker-store `src/web/changelog.ts`(`parseChangelog`·`softenJargon`, 테스트 `test/changelog.test.ts`).
