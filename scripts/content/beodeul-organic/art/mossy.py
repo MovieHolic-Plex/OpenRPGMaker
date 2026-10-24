@@ -79,3 +79,6 @@ FLAT4 = [
 "........s21S1321"]
 ART = {"moss-boulder": (MB4, KEYS), "moss-stone": (MS, KEYS), "moss-stones-flat": (FLAT4, KEYS)}
 _X = {"moss-boulder": (MB, KEYS), "moss-stone": (MS, KEYS), "moss-stones-flat": (FLAT, KEYS)}
+
+from art.rock import lift
+ART["moss-stones-flat"] = (lift(ART["moss-stones-flat"][0]), KEYS)

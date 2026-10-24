@@ -1,144 +1,132 @@
-"""Bushes, hand-written rows. Tones: 5 lit, 4, 3, 2, 1, o darkest, g ground-dark rim. Lit top/left edges end in 5/4;
-dark gaps (1/o) run between leaf masses; lower-right edge and base are dark and ragged."""
+"""Bushes. Each bush = hand-placed irregular leaf lobes painted back to front. A lobe mask is hand-drawn:
+'L' lit rim (upper-left), 'M' body, 'm' body shade clump, 'D' lower-right shade. Where a lobe's bottom/right edge
+lies over an earlier lobe, a deep gap (o/1) is drawn, so masses read as separate clusters. Lit top/left edges
+keep their light tone (no outline); only lower-right exterior and base get the darkest tone."""
 WD = {"5":"#94b353","4":"#497f3c","3":"#296535","2":"#104c2f","1":"#063328","o":"#071d1b","g":"#0c2222","s":"s","S":"S"}
 BR = {"5":"#8cbf5f","4":"#418640","3":"#226b39","2":"#0a5134","1":"#08372c","o":"#071f1d","g":"#0c2222","s":"s","S":"S",
       "r":"#9e2514","R":"#61160d","h":"#dd2912"}
-TH = dict(WD, t="#6f4725", T="#452a17", u="#885a26")
-E16 = "."*16; E32 = "."*32
-BS = [E16]*4 + [
- "......55........",
- ".....5443.55....",
- "....54431544....",
- "..55433o14432...",
- ".5443321o3321...",
- ".54432o154421o..",
- "..4321o44332111.",
- ".5431o5443211o1.",
- ".43321443321oo1g",
- "..321o3221o1oog.",
- "...g1oo1oogoggS.",
- "....gg.gg.ggSs..",
-]
-BM = [E32]*7 + [
- "...........55.....555...........",
- "..........5443.55443............",
- ".........5544435443321..........",
- "........545434154433221.........",
- ".....55.55455421443o32221.......",
- "...5544554455431o3221o1555......",
- "..554555545543321o1o154443......",
- ".5555554443331o455544432121.....",
- ".55545443331o3155443o43211o1....",
- "..55o55311o5543354o1543211oo1...",
- ".5545554455434o4434254321o11o...",
- ".5o55554443344o4334321o221111o..",
- "..5554443332o111243o3221211oog..",
- "..55555333113224112o1221111oog..",
- ".55555331123o1223112211211oog...",
- "5552o2o1121o2o112o2221o1o2ooog..",
- "o445o2o4o222o112o2o1o2oooooooog.",
- ".42oo44211o1o222o211oo2oo2ooog..",
- ".2224o221o111o2112o2ooooggoog...",
- "..gg22gg2o4o22o2ooooooog..ggSS..",
- "....gg..g22gg22g22gg22ggSSSSs...",
- ".........gg..gg.gg..ggSSs.......",
- "................................",
- "................................",
- "................................",
-]
-# berry bush: brighter ramp, taller rounder lobes, berries as 1-2px drupes scattered in shade, not in a row
-BB = ['................................',
- '................................',
- '................................',
- '................................',
- '................................',
- '................................',
- '............55..55..............',
- '..........554435443.............',
- '.........544433544321...........',
- '......55.5443o154433215.........',
- '.....5443544321o44331o443.......',
- '....54433r443o21o3321o14432.....',
- '...5443321R1o5543o11o5443321....',
- '..5544o1o1o55443321o544r33211...',
- '..54433155443433211o443R32111...',
- '.544332154433r3o1o5443321o1o1...',
- '.54331o1o4433R1o15443321o1oo1o..',
- '..4321o554433211o54333211r1o1o..',
- '.5o1o15443o11o1o54432o1o1Ro11o..',
- '.543215443211o554432211o111oog..',
- '.5432o4332r1o15443o3211o1o1oog..',
- '..4321o321R1o1443211o11oooooog..',
- '.54321o1o11o1o3321o1r1oooooog...',
- '.4432o1o221o11o2211oR1ooooooog..',
- '..322o221o11o1o211o1oooooooog...',
- '...g21o11o1ooo1o11oo1ooooogg....',
- '....gg1oog.ggoo1ogg.oogggSSSS...',
- '.....g..g...gg.gg...ggSSSSs.....',
- '................................',
- '................................',
- '................................',
- '................................']
-# tall shrub: irregular leaning column of separate clumps, wide ragged skirt
-ST = [E16]*2 + [
- ".......5........",
- "......544.......",
- ".....5443.......",
- "....54431o......",
- ".....331o5......",
- "...5o21o544.....",
- "..5443o54432....",
- "..44321443321...",
- "...321o3321o1...",
- ".....o1o1o1o....",
- "....5443o55.....",
- "...5443315443...",
- "..54432o144321..",
- "..4332o5443211..",
- "...21o544332o1..",
- "..55o1443321o...",
- ".5443o13321o1o..",
- ".44321o1211o5...",
- "..321o55o1o5443.",
- "..1o154431o44321",
- ".5o5443321o43211",
- "5443433211o3211o",
- "4332o3221o1o11og",
- ".2211o211oo1oog.",
- ".g11o1o1oo1oogS.",
- "..gg.gg.ogg.gSs.",
- "............Ss..",
- "................",
- "................",
- "................",
-]
-# bramble: low tangled thicket, canes of different lengths and directions, leaf clumps uneven
-BRAM = [
- "................................",
- "................................",
- "................................",
- "................................",
- "..........uT.....................",
- ".........u..T.........ut........"[:32],
- "...ut...u....T.......u..t.......",
- "..u..T..u5.5.4T....5u...T..u....",
- ".u..5Tu5443443.t..54431..T.u.T..",
- "....54t4433o2213.5443o1o..u...t.",
- "..5443321o1544321t433215443o....",
- ".54321o154432o1o5443211o4432o...",
- ".4321o54432211o154321o1o3221o1..",
- "..21oo1332o1o1o1o321oo1o1o11oog.",
- "..gg11oog1oogg1oo1gg1oo1oog.gSS.",
- "....gg..g..gg.ggSSSgg.gg.gSSSs..",
-]
-BRAM = [r[:32].ljust(32, ".") for r in BRAM]
-ART = {"bush-s":(BS,WD),"bush-m":(BM,WD),"bush-berry":(BB,BR),"shrub-tall":(ST,WD),"bramble":(BRAM,TH)}
+TH = dict(WD, t="#885a26", T="#543719", u="#2a1a0f")
+from importlib import import_module as _im
+LOBE = {
+ "A": ["..LL.L...",
+       ".LLLLLL..",
+       "LLMMMmMD.",
+       "LMMMmMmDD",
+       ".MMmmmDD.",
+       "..mDDDD..",
+       "...D....."],
+ "B": [".LLL...",
+       "LLLLL..",
+       "LLMMmD.",
+       "LMMmmDD",
+       ".mmDDD.",
+       "..DD..."],
+ "C": ["...LL...",
+       ".LLLLL..",
+       "LLLMmMD.",
+       "LMMmMmDD",
+       "MMmmDDD.",
+       ".mDDD...",],
+ "d": [".LL..",
+       "LMML.",
+       "MmMD.",
+       ".MDD.",
+       "..D.."],
+}
+TONE = [("5","4","3","2"), ("4","3","2","1"), ("3","2","1","o"), ("2","1","1","o")]
 
-# round-4 fixes (bush-s and shrub-tall frozen above)
-BM_FRONT = ['.5545554455434o4434254321o11o...', '.5o55443o1544o4334321o221111o...', '..54321o554431o243o3221211oog...', '.54321o54433211o5443o1221o1oog..', '.4321o5443o21o154432o1543211og..', '5432o154432o1o5443321o54321o1og.', 'o321o14332o1o5443221o14332o11og.', '.2o1o5o321o154432o1o54321o1oog..', '.21o5443o1o14332o1o1443211oog...', '..g1o3321oo1o21og1oo3221oogSS...', '...gg1o1oogg1oog.gg1o1ogSSSSs...', '.....gg..g..gg.....gg.gSSs......']
-BM[17:29] = BM_FRONT
-BB = ['................................', '................................', '................................', '................................', '................................', '................................', '............55..55..............', '..........554435443.............', '.........544433544321...........', '......55.5443o154433215.........', '.....5443544321o44r31o443.......', '....54433h443o21o3321o14432.....', '...544332Rr1o5543o11o5443321....', '..5544o1o1o55443321o544Rr3211...', '..54433155443R33211o443r32111...', '.54433hR5443323o1o5443321o1o1...', '.54331oRo443311r15443321o1oo1o..', '..4321o554433211o5433321121o1o..', '.5o1o15443o11o1o54432o1o1rr11o..', '.543215443211o554432r11o111oog..', '.5432o433221h15443o3211o1o1oog..', '..43R1o3211rR1443211o11oooooog..', '.54321o1o11o1o33r1o121oooooog...', '.4432o1o221o11o2R11o11ooooooog..', '..322o221o11o1o211o1oooooooog...', '...g21o11o1ooo1o11oo1ooooogg....', '....gg1oog.ggoo1ogg.oogggSSSS...', '.....g..g...gg.gg...ggSSSSs.....', '................................', '................................', '................................', '................................']
-BRAM = ['................................', '................................', '................................', '................................', '..........T.....................', '.........u.T..............t.....', '...t....uu..T............u.T....', '..u.T..uu....t.....T....u...T...', '.u...T.u5.54..T...u.T..u.....t..', '.u..5Tu5443443..t.u..T.u.54.u...', '....54t4433o2213.5443o1o5443u...', '..5443321o1544321t433215443o1o..', '.54321o154432o1o5443211o4432o1..', '.4321o54432211o154321o1o3221o1..', '..21oo1332o1o1o1o321oo1o1o11oog.', '....gg..g..gg.ggSSSgg.gg.gSSSs..']
-ART = {"bush-s":(BS,WD),"bush-m":(BM,WD),"bush-berry":(BB,BR),"shrub-tall":(ST,WD),"bramble":(BRAM,TH)}
-BRAM = ['................................', '................................', '................................', '....................uT..........', '......uT...........uT...........', '.......uT.........uT.......u....', '..T.....uT.......uT.ut....uT....', '..uT.....uTu....uT...uT..uT.....', '...uT.5.5uT.T..uT..5..uT.T..T...', '....uT443uT44..T.5443.4uT..uT...', '.u..54uTu33o2213.5443o1oT.5uT...', '..5443321o1544321t433215443o1o..', '.54321o154432o1o5443211o4432o1..', '.4321o54432211o154321o1o3221o1..', '..21oo1332o1o1o1o321oo1o1o11oog.', '....gg..g..gg.ggSSSgg.gg.gSSSs..']
-ART["bramble"] = (BRAM, TH)
+def paint(W, H, lobes):
+    g = [["."] * W for _ in range(H)]
+    for (x, y, sh, lv) in lobes:
+        L, M, m, D = TONE[lv]
+        mask = LOBE[sh]
+        for j, row in enumerate(mask):
+            for i, ch in enumerate(row):
+                if ch == ".": continue
+                X, Y = x + i, y + j
+                if 0 <= X < W and 0 <= Y < H:
+                    g[Y][X] = {"L": L, "M": M, "m": m, "D": D}[ch]
+        # deep gap just outside this lobe's lower/right edge, where an earlier lobe shows
+        for j, row in enumerate(mask):
+            for i, ch in enumerate(row):
+                if ch not in "D": continue
+                for ax, ay in ((0, 1), (1, 0), (1, 1)):
+                    jj, ii = j + ay, i + ax
+                    inside = jj < len(mask) and ii < len(mask[jj]) and mask[jj][ii] != "."
+                    X, Y = x + ii, y + jj
+                    if not inside and 0 <= X < W and 0 <= Y < H and g[Y][X] not in ".":
+                        g[Y][X] = "o" if g[Y][X] in "12o" else "1"
+    # exterior: dark only lower-right; base broken with ground-dark and shadow
+    out = [r[:] for r in g]
+    for Y in range(H):
+        for X in range(W):
+            if g[Y][X] == ".": continue
+            below = Y + 1 >= H or g[Y + 1][X] == "."
+            right = X + 1 >= W or g[Y][X + 1] == "."
+            if below and Y > H * 0.5:
+                out[Y][X] = "o" if X > W * 0.3 else "1"
+            elif right and X > W * 0.6:
+                out[Y][X] = "o" if out[Y][X] in "12" else "1"
+    for X in range(W):
+        col = [Y for Y in range(H) if out[Y][X] != "."]
+        if not col: continue
+        b = max(col)
+        if b + 1 < H and X >= W * 0.3: out[b + 1][X] = "S" if X > W * 0.45 else "s"
+        if b + 2 < H and X >= W * 0.6: out[b + 2][X] = "s"
+    return out
+
+def fin(g): return ["".join(r) for r in g]
+
+# bush-s: three lobes split by gaps, back pair + low front-right lobe, uneven base
+BS = paint(16, 16, [
+ (1, 6, "B", 0), (6, 5, "C", 1),
+ (0, 9, "d", 1), (3, 9, "B", 1), (8, 9, "A", 2)])
+# bush-m: woodland bush, irregular lobes in 4 depth rows
+BM = paint(32, 32, [
+ (6, 9, "B", 0), (12, 7, "C", 0), (20, 10, "A", 1),
+ (2, 13, "C", 0), (10, 12, "d", 0), (14, 12, "A", 1), (24, 13, "B", 2),
+ (6, 15, "A", 1), (19, 15, "C", 2), (1, 18, "d", 1), (12, 18, "B", 2), (25, 18, "d", 3),
+ (4, 20, "C", 2), (17, 20, "A", 3), (9, 22, "d", 3), (23, 22, "B", 3)])
+# bush-berry: brighter, taller rounded lobes, berries bunched in shade
+BB = paint(32, 32, [
+ (10, 6, "A", 0), (17, 7, "C", 0),
+ (5, 9, "B", 0), (13, 10, "d", 1), (21, 11, "A", 1),
+ (2, 13, "C", 0), (9, 13, "A", 1), (16, 14, "B", 1), (24, 15, "B", 2),
+ (4, 18, "A", 1), (12, 18, "C", 2), (19, 19, "A", 2), (25, 20, "d", 3),
+ (2, 22, "B", 2), (8, 23, "A", 3), (16, 23, "B", 3), (21, 23, "C", 3)])
+for x, y, pat in [(8, 12, ["r.", "Rr"]), (15, 13, ["r"]), (5, 17, ["rR"]), (20, 17, [".r", "rR"]),
+                  (11, 21, ["r", "R"]), (25, 18, ["r"]), (17, 25, ["rR", ".R"]), (13, 16, ["R"]), (23, 13, ["r"])]:
+    for j, row in enumerate(pat):
+        for i, c in enumerate(row):
+            if c != "." and BB[y + j][x + i] not in ".gsS5": BB[y + j][x + i] = c
+BB[12][8] = "h"; BB[18][21] = "h"
+# bramble: low leaf clumps, curved canes (2px where they arch forward) weaving in and out of the leaves
+BRAM = paint(32, 16, [
+ (0, 8, "d", 1), (3, 7, "B", 1), (10, 8, "C", 2), (17, 7, "B", 1), (23, 8, "C", 2), (28, 9, "d", 2),
+ (6, 10, "d", 3), (14, 10, "d", 3), (21, 10, "d", 3)])
+def cane(pts, thick=()):
+    """pts: control points; joined with 8-connected steps. thick: indices of points after which the cane is 2px (front)."""
+    path = [pts[0]]
+    for (x1, y1) in pts[1:]:
+        x0, y0 = path[-1]
+        while (x0, y0) != (x1, y1):
+            x0 += (x1 > x0) - (x1 < x0); y0 += (y1 > y0) - (y1 < y0); path.append((x0, y0))
+    seg = 0
+    for k, (x, y) in enumerate(path):
+        if k and path[k] in pts: seg += 1
+        lit = y <= 6
+        BRAM[y][x] = "t" if lit else "T"
+        if seg in thick and y + 1 < 16 and BRAM[y + 1][x] in ".12345o":
+            BRAM[y + 1][x] = "T" if lit else "u"
+    for (x, y) in path[3::5]:
+        if y > 0 and BRAM[y - 1][x] == ".": BRAM[y - 1][x] = "T"
+cane([(1, 11), (2, 8), (4, 5), (7, 4), (10, 5), (12, 8), (13, 10)], thick=(2, 3))
+cane([(11, 10), (13, 6), (16, 4), (19, 5), (20, 7)], thick=(1,))
+cane([(18, 11), (20, 7), (23, 3), (26, 3), (29, 6), (30, 10)], thick=(2, 3))
+cane([(25, 9), (24, 7), (22, 6)])
+cane([(6, 9), (8, 8)])
+FS_FROZEN = ['................', '................', '................', '................', '................', '................', '......4.........', '.......3........', '.....5322.......', '..5.4432..5.4...', '4.33553444.33.5.', '.32.4345543.23..', '..2.225323.22...', '.....4.23.2.....', '....111o1o.1....', '.....ssSSSSS....']
+ST_FROZEN = ['................', '................', '.......5........', '......544.......', '.....5443.......', '....54431o......', '.....331o5......', '...5o21o544.....', '..5443o54432....', '..44321443321...', '...321o3321o1...', '.....o1o1o1o....', '....5443o55.....', '...5443315443...', '..54432o144321..', '..4332o5443211..', '...21o544332o1..', '..55o1443321o...', '.5443o13321o1o..', '.44321o1211o5...', '..321o55o1o5443.', '..1o154431o44321', '.5o5443321o43211', '5443433211o3211o', '4332o3221o1o11og', '.2211o211oo1oog.', '.g11o1o1oo1oogS.', '..gg.gg.ogg.gSs.', '............Ss..', '................', '................', '................']
+# shrub-tall passed both blind judges: frozen as literal rows
+ART = {"bush-s": (fin(BS), WD), "bush-m": (fin(BM), WD), "bush-berry": (fin(BB), BR),
+       "shrub-tall": (ST_FROZEN, WD), "bramble": (fin(BRAM), TH)}

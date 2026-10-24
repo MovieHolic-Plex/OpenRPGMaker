@@ -93,17 +93,22 @@ PATCH = [
 "................................",
 "................................",
 "................................",
-"...................w............",
-"..................wEw...........",
-"...........Pp......WH...........",
-"..........pppc......Hg......bB..",
-"...yY......ccH......H.......dbH.",
-"..yYo........Hg..LHHg..bBa..Hg..",
-"...Hg.....LH.H..LHMa...db...H...",
-"...H..bB..HMaHg.ga....LHHg..Hg..",
-"..LHg.db...gaHMa...pP.HMa...LHMa",
-"..HMa..HgLH...ga..pppc.ga..ww.ga",
-"...ga..HMaHMa......ccH....wEWH..",
+".............w..................",
+"............wEw.....Pp..........",
+"..........bB.WH....pppc.........",
+"..........dbHgH....cc.H.........",
+"...........HLHg..pP..LHg........",
+".......yY..HMa..pppcLHMa.bB.....",
+"......yYo.LHg.bB.ccHMa.H.db.....",
+".......HgLHMa.dbLHMaHgLHgH......",
+"......LHMaHgLHMaHgLHMaHMa.......",
+".......ga.ga.ga.ga..gaga........",
+"................................",
 ]
 ART["flowers-patch"] = (PATCH, K(y="#eac24d", Y="#fbc10d", o="#9b753d", b="#8bb9dc", B="#a6bcdc", d="#071528",
                                  w="#dee0dd", W="#d5e0bd", E="#eac24d", c="#8f6b61", C="#9b753d", p="#e8a8b9", P="#ecd6c6"))
+
+# lift blue and pink 1px so the bottom row stays empty
+for _k in ("flowers-blue", "flowers-pink"):
+    _r, _keys = ART[_k]
+    ART[_k] = (_r[1:] + ["." * 16], _keys)

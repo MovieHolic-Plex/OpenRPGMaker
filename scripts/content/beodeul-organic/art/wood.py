@@ -86,7 +86,7 @@ def body(c, x0, x1, top, H, seed, moss):
 def log_long():
     c = canvas(48, 16)
     body(c, 5, 44, 5, 8, 21, (8, 42, .75))
-    stamp(c, 1, 5, ["   lk", "  lkrk", " lkrmrm", " krmrrm", "lkrrmrk", "lkrmmrk", " lkrrk", "  lkkm", "   ll"])
+    stamp(c, 0, 5, ["    lk", "   lkrk", "  lkrrrm", " lkrmmrm", " krmrrkm", "lkrrrmk", "lkkrk", "llk", ""])
     stamp(c, 32, 1, ["    bd", "   dmb", "  dmi ", " bdu  "])
     stamp(c, 44, 5, ["d  ", "sd ", "mud", "suub", "uva", "uvb", "va ", "ux ", "x  "])
     return done(c), K
@@ -108,7 +108,7 @@ def log_mossy():
     x = 8
     while x < 41:
         w = rnd.randint(3, 5)
-        d = rnd.choice([2, 3, 3, 4, 5]) if x < 30 else rnd.choice([1, 2, 2])
+        d = rnd.choice([2, 3, 3, 4]) if x < 28 else rnd.choice([0, 1, 1])
         for q in range(w):
             if x + q > 40: break
             i = x + q - 7
@@ -117,15 +117,15 @@ def log_mossy():
             for k in range(dd + 1):
                 put(c, x + q, tops[i] + k, "4" if k == 0 and q < 2 else ("3" if k < 2 else ("2" if k < dd else "1")))
         if rnd.random() < .5: put(c, x + 1, tops[x + 1 - 7] - 1, "5")
-        x += w + rnd.choice([0, 1, 1, 2])
-    for dx in (9, 23):  # drapes down to the grass
-        i = dx - 7
-        for y in range(tops[i] + 2, bots[i] + 2):
-            put(c, dx, y, "2"); put(c, dx + 1, y, "3" if y < bots[i] - 2 else "1")
-        stamp(c, dx - 1, bots[i] + 1, ["1221", " 11"])
+        x += w + (rnd.choice([0, 1, 1, 2]) if x < 28 else rnd.choice([2, 3]))
+    # lobed clumps hanging from the moss over the front (2-4px lobes, notched edges), one spilling to the ground left
+    for lx, ly, lobe in ((9, 22, [" 23", "2331", "1221", " 1 "]), (16, 21, ["33", "232", " 1"]),
+                         (24, 22, [" 332", "23221", " 12 1", "  1"]), (8, 25, ["12", "221", " 11"])):
+        stamp(c, lx, ly, lobe)
+    stamp(c, 6, 27, [" 1221", "1211"])
     stamp(c, 10, 9, ["     33  ", "  33 443 ", " 3443432 ", "344 2342 3", " 23 1243 ", "  1212 2 ", "   1121  "])
     stamp(c, 33, 15, [" 3 33", "34342", " 2121"])
-    stamp(c, 3, 18, ["   lk", "  lkrrk", " lkrmrkm", " krrkmrr", "lkrmrrk", " lkrrkm", "  lkkm", "   lk"])
+    stamp(c, 3, 17, ["    d ", "   dsd", "  dlkm", " dkrkm", "dlrmku", " dkkmu", "  dlks", " d  du", "    x"])
     stamp(c, 41, 18, ["db", "sub", "suu ", "uvub", "uva", "uvb", "vva", "ux ", "x "])
     return done(c), K
 

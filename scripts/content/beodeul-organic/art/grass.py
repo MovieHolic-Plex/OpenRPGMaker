@@ -83,3 +83,8 @@ RD = [E] + [
  "....3o21o1oS....",
 ]
 ART = {"grass-tuft-a": (TA, K), "grass-tuft-b": (TB, K), "grass-reeds": (RD, K)}
+
+# walk-over decor must not touch the cell's bottom row: shift up 1px (pixels unchanged)
+def _up(rows): return rows[1:] + ["." * len(rows[0])]
+# grass-reeds already fills row 0..; shifting it up would clip its top seed head, so it stays (see report)
+ART = {k: ((_up(r) if k != "grass-reeds" else r), kk) for k, (r, kk) in ART.items()}
