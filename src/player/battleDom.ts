@@ -254,7 +254,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let eventSurfaceOpen = false;
   let lastDamageFeedback: DamageFeedback | undefined;
   /** 지금 걸려 있는 히트스톱의 타격. 정지가 풀리는 순간 이 대상을 깜빡인다. */
-  let hitStopFeedback: DamageFeedback | undefined;
+  // 히트스톱이 잡고 있는 타격들 — 광역기는 한 번의 정지에 여러 대상이 함께 맞는다(풀릴 때 모두 깜빡인다).
+  let hitStopFeedbacks: DamageFeedback[] = [];
+  // 광역기 착탄에서 함께 맞는 대상(맞는 포즈). 단일 대상은 lastDamageFeedback 하나로 충분하다.
+  let impactGroupIds: readonly string[] | undefined;
   let activeAnimation: BattleAnimationPlayback | undefined;
   // 프레젠테이션 HP 원장 — 시퀀스가 도는 동안 화면은 이 원장을 본다.
   // 런타임 스냅샷(즉시 최종 상태)이 연출을 앞지르는 결함의 단일 수정 지점.
@@ -626,15 +629,17 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         }
       }
     },
+    onImpactGroup(targetIds) {
+      impactGroupIds = targetIds && targetIds.length > 0 ? targetIds : undefined;
+    },
     onHitFeel(active, feedback) {
       if (retroMotion) holdRetroSkillPlayback(field, active);
       impactContact.hold(active);
       // 정지(히트스톱)가 풀리는 순간 맞은 쪽이 세 번 깜빡인다. 정지 중에는 22-hit-feel.css 가
       // 대상을 흰 실루엣으로 붙잡고 있으므로, 점멸은 그 뒤의 "반응" 이다.
-      if (active) hitStopFeedback = feedback;
-      else if (hitStopFeedback) {
-        const struck = hitStopFeedback;
-        hitStopFeedback = undefined;
+      if (active) {
+        if (feedback && !hitStopFeedbacks.includes(feedback)) hitStopFeedbacks.push(feedback);
+      } else for (const struck of hitStopFeedbacks.splice(0)) {
         const node = findBattlerNode(field, struck.targetId);
         if (retroMotion && node && ownsRetroHurtFrame(node)) retroHitRelease(node);
         // 사람 적(걷기 칩 시트)은 아군처럼 맞은 칸을 풀고, 적이므로 평소처럼 세 번 깜빡이기도 한다.
@@ -1330,6 +1335,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       hitTargetId: lastDamageFeedback && !lastDamageFeedback.healing && !lastDamageFeedback.miss && !lastDamageFeedback.label
         ? lastDamageFeedback.targetId
         : undefined,
+      ...(impactGroupIds ? { hitTargetIds: impactGroupIds } : {}),
       onField: options.fieldBackdropUrl ? options.onField : undefined,
       rollingHp,
       stateView: sequenceBusy ? pendingStateView(snapshot) : undefined,

@@ -1,4 +1,5 @@
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { withCloudStatus } from "@/player/cloudOtherSaves";
 import { captureConditionLabel } from "@/battle/captureBalls";
 import { roJosa, withJosa } from "@/util/josa";
 import { repelStepsLeft } from "@/project/encounterGuard";
@@ -696,7 +697,7 @@ function saveText(project: Project): (key: VnUiKey, ...args: readonly (string | 
 function saveDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const text = saveText(options.project);
   return {
-    title: text("save.title"),
+    title: withCloudStatus(text("save.title")),
     entries: options.slots.map((slot) => ({
       label: text("save.slot", slot.slot),
       ...saveSlotEntryParts(slot, options.confirmSaveSlot === slot.slot, vnSaveCards(options.project), text),
@@ -715,7 +716,7 @@ function saveDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
 function loadDetail(slots: readonly SaveSlotReadResult[], onLoadSlot: ((slot: SaveSlotIndex) => void) | undefined, project: Project): StatusMenuDetail {
   const text = saveText(project);
   return {
-    title: text("load.title"),
+    title: withCloudStatus(text("load.title")),
     entries: slots.map((slot) => ({
       label: text("save.slot", slot.slot),
       ...saveSlotEntryParts(slot, false, vnSaveCards(project), text),

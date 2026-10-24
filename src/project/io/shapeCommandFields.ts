@@ -175,6 +175,7 @@ function validateCommandShape(label: string, value: unknown): void {
     case "transfer":
       if (command.direction !== undefined) requireTransferDirection(`${label}.direction`, command.direction);
       if (command.fade !== undefined) requireTransferFade(`${label}.fade`, command.fade);
+      if (command.door !== undefined) requireBoolean(`${label}.door`, command.door);
       return;
     case "moveEvent":
       validateMoveRoute(`${label}.route`, command.route);
@@ -700,6 +701,7 @@ export function validateConditionShape(label: string, value: unknown): void {
       const locationId = requireString(`${label}.locationId`, condition.locationId);
       if (locationId.trim().length === 0) break;
       requireBoolean(`${label}.inside`, condition.inside);
+      if (condition.eventId !== undefined) requireString(`${label}.eventId`, condition.eventId);
       return;
     }
     case "friendshipAtLeast":
@@ -796,6 +798,7 @@ export function validateConditionShape(label: string, value: unknown): void {
       if (condition.range !== undefined) requireNumber(`${label}.range`, condition.range);
       if (condition.sameRoom !== undefined) requireBoolean(`${label}.sameRoom`, condition.sameRoom);
       if (condition.requireFacing !== undefined) requireBoolean(`${label}.requireFacing`, condition.requireFacing);
+      if (condition.hearRange !== undefined) requireNumber(`${label}.hearRange`, condition.hearRange);
       if (condition.value !== undefined) requireBoolean(`${label}.value`, condition.value);
       return;
     case "pursuitActive":

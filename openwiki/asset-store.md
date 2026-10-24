@@ -191,6 +191,19 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
 - 진입 문서 index.html 은 서버가 공식 플레이어 틀로 쓴다: meta CSP(부팅 스크립트 해시), `__OPENRPG_BOOT__.storeGame`(slug·판본·세이브 이름·품을 수 있는 출처).
   플레이어는 품은 쪽이 스토어가 아니면 부팅하지 않는다(`src/player/storeGameHost.ts`).
 
+**클라우드 세이브(2026-10-24).** 로그인한 사람의 세이브를 계정에 둔다 — 브라우저·기기를 바꿔도 이어서 한다.
+- 게임 iframe(games-* 출처)은 쿠키·csrf·토큰을 절대 받지 않는다. 플레이어(`src/player/storeCloudBridge.ts`)가 부모(play 화면)에
+  postMessage 로 「목록/이 칸 쓰기」를 부탁하고, 부모 `public/cloudsave.js`(스토어 저장소)가 같은 출처 API `GET/PUT /api/v1/saves/<slug>[/<칸>]` 을
+  play 세션 + `x-csrf-token` 으로 부른다. 양쪽 다 `event.source`(바로 그 창) + `event.origin`(부팅값 embedders / iframe 출처) + slug 를 확인하고,
+  보낼 때 targetOrigin 을 고정한다(`*` 없음). 부모는 자기 화면의 게임 slug 만 다룬다 — 같은 games 출처의 다른 게임은 남의 세이브를 못 본다.
+- 서버(스토어 `src/gameSaves.ts`, `migrations/016_game_saves.sql`): (사용자, 게임, 칸 1·2·3·auto·clear) 한 줄. 판(revision) compare-and-swap —
+  낡은 판으로 쓰면 409 + 지금 값. 칸 2MB·사람 64MB, JSON 객체만, 사람·IP 분당 요청과 시간당 바이트 한도.
+- 맞추기(`src/player/storeCloudSync.ts`): 브라우저에 먼저 쓰고(지금과 같음) `Storage.setItem` 훅이 디바운스로 올린다. 판본이 아니라 게임에 묶이고,
+  판본별 이어하기(`storeGameHost.ts`)는 그대로다. 칸마다 「이 계정과 마지막으로 맞춘 판·내용 해시」를 `oprn-export:store:<slug>:cloud-sync:v1` 에 둔다.
+  한쪽만 바뀜 → 그쪽, 둘 다 바뀜 → 저장 시각이 늦은 쪽이 칸, 다른 쪽은 「다른 기기 세이브」(`…:cloud-other:v1:<칸>`)로 남아 불러오기 화면에서 맞바꿔 고른다.
+  클리어 기록은 합친다. 이 계정과 처음인 브라우저의 세이브는 **묻고** 올린다(공용 PC). 로그아웃·새 창·내보낸 zip·데스크톱은 지금과 똑같다(다리 없음).
+- 표시: play 화면 아래 한 줄(클라우드 저장됨 / 이 브라우저에만 — 로그인), 게임 저장·불러오기 제목 뒤 상태.
+
 **불러오기(2026-10-24).** 웹 판본 부팅(`src/player/exportEntry.ts`)은 화면을 띄우기 전에 받는다:
 - 「불러오는 중」 화면(`bootLoader.ts`): 표지·이름·진행 막대(project.json 바이트 → 첫 화면 파일 수), 끝나면 「시작하기」(첫 입력 = 소리 잠금 해제).
 - 첫 화면 목록(`scenePreload.ts` `firstPlayableUrls`): 타이틀·오프닝·system 글자·메뉴 효과음 + 엔진 부팅 텍스처(가짜 로더로 `loadBundledAssets` 를 그대로 받아 적음)

@@ -69,6 +69,7 @@ import {
   setRoguelikeRunFlag,
   startRoguelikeRun,
 } from "@/project/roguelikeRun";
+import { cachedSightBlocker } from "@/project/sightBlockers";
 import { roguelikeRoomId } from "@/project/roguelikeRooms";
 
 import { setRelationshipState } from "@/project/relationshipState";
@@ -692,7 +693,7 @@ export function executeCommand(
       if (!breakLoop(state)) return resumeNext(frame);
       return { kind: "continue" };
     case "transfer":
-      return pause("transfer", { kind: "transfer", mapId: command.mapId, x: command.x, y: command.y, direction: command.direction, fade: command.fade, transition: command.transition });
+      return pause("transfer", { kind: "transfer", mapId: command.mapId, x: command.x, y: command.y, direction: command.direction, fade: command.fade, transition: command.transition, ...(command.door === false ? { door: false } : {}) });
     case "wait": {
       const ms =
         command.variableId && command.variableId.trim()
@@ -1331,8 +1332,11 @@ function resolveOpenChestId(state: InterpreterState): string {
  */
 function locationEvalContext(state: InterpreterState): ConditionEvalContext {
   const positions = state.eventPositions;
+  const map = state.project?.maps[state.session.currentMapId];
+  const blocksSight = cachedSightBlocker(state.project, map);
   return {
-    map: state.project?.maps[state.session.currentMapId],
+    map,
+    ...(blocksSight ? { blocksSight } : {}),
     ...partySkillContext(state.project, state.session),
     // 걷는 NPC 의 실시간 칸은 장면 eventPositions 에 있다(eventSeesPlayer 가 읽는다).
     ...(positions ? { eventPosition: (eventId: string) => positions[eventId] } : {}),

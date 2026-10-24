@@ -1,3 +1,35 @@
+## 광역기 한 번에 맞기 · 숫자 꼬리표 · 무기 보너스 · 상태 상한 · 장비 드롭 (2026-10-24, fs-battle)
+
+**광역기 묶음 (`src/player/battleSequencer.ts`).** 한 행동(`actionId`·쪽·사용자·명령·기술이 같고 `aside` 없는 damage/healing/miss)이
+서로 다른 대상 둘 이상을 치면 `collectTargetGroup` 이 한 묶음으로 잡는다. 같은 actionId 의 stateAdded/stateRemoved 도 함께 들어온다.
+`playTargetGroup` 은 머리 항목 애니메이션을 **한 번** 틀고, 접근 박자 뒤 한 타이밍에 모든 대상의 숫자·HP·번쩍임을 같은 작업에서 올린다
+(`BATTLE_GROUP_IMPACT_STAGGER_MS = 0` — 30ms 타이머 간격은 부하에서 49~144ms 로 벌어져 차례로 맞는 것처럼 보였다).
+메시지는 「적 N체에게 합계 X 피해! 약점을 찔렀다!」 한 줄, 쓰러짐은 「A, B, C을 쓰러뜨렸다!」 한 줄, 상태는 종류별 한 줄(`playGroupStates`).
+`battleDom` 은 `onImpactGroup` 으로 맞는 대상 전체를 `hitTargetIds` 로 표시하고 히트스톱 해제 때 모두 깜빡인다.
+**단일 대상 경로는 그대로다** — `planEntryBeats` 로 뽑아낸 같은 박자를 쓴다. 에메랄드 문장 경로(`emeraldNarrationActive`)와
+보조형 광역(「action」 항목)은 묶지 않는다(차례 재생, 알려진 한계).
+
+**숫자 꼬리표 (`battleFieldDom.showDamageFeedback`).** 팝업 앞에 `.battle-damage-popup-tag` — 치명타! · 약점! · 저항 · 무효 · 무기↑.
+`data-effectiveness` 로 약점(주황)·저항 색. 레트로 스킨 덮어쓰기는 `27-retro-motion.css`.
+
+**무기 보너스 `SkillRecord.weaponAffinity { elementIds?, bonusPercent }`.** 사용자의 장비 `attackElementIds` 에 그 속성이 있으면 피해 ×(1+bonus/100).
+`elementIds` 가 비면 기술 자신의 `elementId`. 결과·타임라인에 `weaponAffinity: true` → 「무기↑」 꼬리표. 정규화 1~300%, 속성 8개까지.
+
+**상태 상한 `StateRuntimeEffects.maxTurns` (0~9).** 자연 회복 굴림과 별개로 그 차례 수가 차면 반드시 풀린다(보스 수면·정지 무한 사슬 방지).
+
+**장비 드롭.** `rewards.drops[].itemId` 에 장비 id 를 써도 된다 — `combatReferences` 가 장비도 받고, 결과 창 이름은 장비 이름으로 찾는다.
+소지품은 `session.inventory` 하나라 그대로 들어간다(보스 고유 무기). 편집기 드롭 칸 선택기는 아직 아이템만 보여 준다.
+
+**QA.** `scripts/lib/runtimeQaBattle.mjs` 의 `battle` op 가 전투 DOM 을 계획대로 누른다(`plan` 배우별 큐, `명령@대상`, 막힌 칸은 fallback,
+`logPath` 에 팝업·문장 시각 JSONL). 폴른 스타 체크포인트 `checkpoints/fallen-battle.json` + 픽스처 `scripts/qa/runtime/fallen-battle-fixture.mjs`.
+
+**맞아서 깸의 기록 순서 (`runtime.ts` `pendingHitWakes`).** 피격 해제(수면 등 `recoverWhenHitChance`)는 피해 판정 직후 일어나지만
+타임라인에는 그 타격 엔트리 **뒤**에 넣는다. 같은 대상의 damage/miss 는 지나 보내고, 다른 기록·다음 명령·스냅숏·라운드 로그에서 내보낸다.
+같은 대상의 damage/miss 바로 뒤에 붙고(애니메이션은 `attachAnimationToLatestTimeline` 이 그 타격에 단다), 그 타격으로 쓰러졌으면 기록하지 않는다.
+광역기로 쓰러진 대상의 상태 변화(걸림→죽어서 풀림)는 묶음 상태 줄에서 말하지 않고, 쓰러져 남은 대상의 stateRemoved(전투 끝 정리 등)는
+시퀀서가 건너뛴다(`staysDown` — 뒤에 그 대상의 damage/healing 이 없을 때만).
+QA battle op 는 전투 중 대사(.dialogue-box)를 1.6초, 결과 창 쪽마다 2.2초 두고 넘긴다(영상에서 읽히게).
+
 ## 전투 진입 그림 준비 관문 battle readiness gate (2026-10-24)
 
 원인: `playSceneBattle` 이 진입 연출 덮개 직후 전투를 얹고 그림을 기다리지 않고 열었다. `mountBattleScene` 은 소리만 미리 받았고

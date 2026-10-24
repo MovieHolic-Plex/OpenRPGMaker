@@ -6,7 +6,8 @@ export function enemyCombatConditions(enemy: EnemyRecord): EnemyActionCondition[
 }
 
 export function combatReferenceIssues(project: Project): string[] {
-  const items = new Set(project.database.items.map(item => item.id));
+  // 드롭은 아이템뿐 아니라 장비도 될 수 있다 — 소지품(session.inventory)이 둘을 같은 칸에 담는다(보스의 고유 무기).
+  const items = new Set([...project.database.items.map(item => item.id), ...(project.database.equipment ?? []).map(entry => entry.id)]);
   const states = new Set(project.database.states.map(state => state.id));
   const switches = new Set(project.switches.map(entry => entry.id));
   const issues: string[] = [];

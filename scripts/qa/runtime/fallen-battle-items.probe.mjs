@@ -140,7 +140,7 @@ try {
     const page = await boot(fixture({ rate: 3000, table: ["troop_fs_wolves"] }));
     const dump0 = async (l) => console.log(l, JSON.stringify(await page.evaluate(() => { const sc = window.__oprnHooksScene; return { running: sc.running, inputEnabled: sc.inputEnabled, dialog: !!document.querySelector('[data-testid*="dialogue"],[data-testid*="message"]'), ids: [...document.querySelectorAll("[data-testid]")].map((n) => n.dataset.testid).slice(0, 25) }; })));
     await dump0("hub");
-    await page.evaluate(() => window.__oprnDebug.teleport("fs_forest", 8, 30));
+    await page.evaluate(() => window.__oprnDebug.teleport("fs_forest", 8, 23));
     await page.waitForTimeout(3000);
     await dump0("forest@3s");
     await shot(page, "diag0");

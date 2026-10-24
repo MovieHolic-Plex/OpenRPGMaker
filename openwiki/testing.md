@@ -83,6 +83,10 @@ GitHub `ubuntu-latest` 도 16GB 라 같은 1×12288 예산이 걸린다. 그 한
 `ci-full.yml` 은 vitest 를 `--shard 1/4`…`4/4` 로 러너 네 대에 나눈다. 힙은 그대로 12GB 다.
 샤드는 자기 실패 파일만 기준선과 대조한다. `--save-baseline` 과 `--shard` 는 함께 쓸 수 없다.
 
+PR 브랜치의 전체 vitest 는 그 브랜치로 수동 실행한다: `gh workflow run ci-full.yml --ref <브랜치>`.
+수동 실행은 브랜치마다 concurrency 그룹이 따로(`ci-full-<브랜치>`)라 main 푸시에 밀려 취소되지 않는다.
+main 푸시·야간 스케줄은 `ci-full-main` 하나를 같이 쓴다(2026-10-24, run 40055350951 이 main 푸시에 밀려 취소된 뒤).
+
 CSS 축은 그 한 잡이 vitest 에서 240분을 넘겨 한 번도 도달하지 못했다. 기준선은 파일 285장 시절에
 멈춰 있었고, 현재 트리는 408장이라 예산·표면·승자·실사용·죽은 클래스 래칫이 전부 빨갰다.
 2026-10-12 에 그 바닥을 현재 트리로 다시 찍었다. 고아 두 장(`tileset-ai-workspace.css`,

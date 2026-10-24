@@ -362,6 +362,8 @@ export interface BattleActionResultSnapshot {
   readonly comboActorIds?: readonly string[];
   /** 속성·타입 상성 배율(감정 배율 제외). 1 이면 생략 — 표시 계층이 「효과가 굉장했다」·상성별 타격음을 고른다. */
   readonly effectiveness?: number;
+  /** 장비한 무기 계열이 기술과 맞아 위력이 올랐다(SkillRecord.weaponAffinity). */
+  readonly weaponAffinity?: boolean;
 }
 
 export type BattleTimelineEntryKind =
@@ -405,6 +407,8 @@ export interface BattleTimelineEntrySnapshot {
   readonly skillId?: SkillId;
   /** 속성·타입 상성 배율(감정 배율 제외). 1 이면 생략 — 표시 계층이 「효과가 굉장했다」·상성별 타격음을 고른다. */
   readonly effectiveness?: number;
+  /** 장비한 무기 계열이 기술과 맞아 위력이 오른 타격(SkillRecord.weaponAffinity). */
+  readonly weaponAffinity?: boolean;
   /** 한 명령(배우 명령 1회·적 행동 1회)의 번호. 같은 행동의 엔트리(대상 여럿 × 타수)를 연출 하나로 묶는 열쇠다. */
   readonly actionId?: number;
   /** 시전자 자신에게 붙는 부수 엔트리 — HP 대가(hpCost)·흡수 회복(drain). 연출의 대상·타수로 세지 않는다. */

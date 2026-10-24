@@ -47,6 +47,18 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
 
 처치 상태는 스위치라서 저장·맵 재진입에서도 유지된다. 스위치 id 를 안 주면 도구가 새로 만든다(`clearSwitchId` 로 한 스위치에 여럿을 묶을 수 있다).
 
+## 이미 놓인 적을 「보면 달려드는」 적으로 — `makeFieldEnemyChase` (2026-10-24)
+
+`src/editor/tools/fieldEnemyTools.ts` 의 `makeFieldEnemyChase(project, map, event, options)` 는 이미 놓인 필드 적(순찰·보초)의 `_fight` 페이지를
+추격으로 바꾸는 다시 쓰는 묶음이다(도구 인자 아님 — 데모·생성기 코드용). 순찰 경로(custom route)는 걸음마다 두 박자 쉬는 시야 밖 걸음으로 살리고,
+추격은 `pace`(기본 fast: speed 5·frequency 6)로 순찰보다 눈에 띄게 빠르다(그래도 주인공 걷기보다는 느리다).
+
+- 시야 `sight.facing:'cone'` — `NpcSight` 의 새 값. 이벤트 시선 조건 `eventSeesPlayer` 와 같은 90° 앞쪽 부채꼴(`conditionEventSight.inViewCone`)을
+  `npcPerception.npcSeesPoint` 가 쓴다(거리는 맨해튼, 벽 가림 lineOfSight 그대로). 등 뒤로는 못 본다. 편집기 「정면 부채꼴」.
+- 들면 `sightAlert`(기본 exclamation, 0.7초) → 쫓다 닿으면 전투 → 놓치면 `pursuit.searchMs`(기본 2500) 두리번 뒤 `onLost:'return'` 으로 제자리 → 순찰.
+- 입구(`entryCells`)가 시야+1 안이면 시야를 줄이고, 2칸 밑이면 바꾸지 않는다(들어서자마자 덮치지 않게, `field-enemy-ambush` 와 같은 규칙).
+- 폴른 스타는 모든 맵의 `…_foeN` 에 건다(chronoBell.ts — 숲 여섯 맵 포함). 보스·수호자는 제자리.
+
 ## 안전 장치 (도구가 거절하는 것)
 
 - 문·시작 위치·착지 칸·표지판 등 보호 칸(`protectedCells`) 맨해튼 거리 2 이내: `field-enemy-unsafe-spot`.
