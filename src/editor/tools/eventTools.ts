@@ -543,6 +543,17 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
     if (typeof movement.speed !== "number" || !Number.isFinite(movement.speed)) { movement.speed = PASSIVE.speed; missing.push("speed"); }
     if (typeof movement.frequency !== "number" || !Number.isFinite(movement.frequency)) { movement.frequency = PASSIVE.frequency; missing.push("frequency"); }
     if (missing.length > 0) filled.push(`movement.${missing.join("/")}`);
+    // 이동 경로 꼴 바로잡기: route 가 배열이거나 moves 대신 steps·commands 로 오면 후처리가 `route.moves.entries` 에서 죽었다(2026-10-24 g3-patrol).
+    const route = (movement as { route?: unknown }).route;
+    if (Array.isArray(route)) { (movement as { route?: unknown }).route = { moves: route, repeat: true, skippable: true }; filled.push("movement.route.moves"); }
+    else if (route && typeof route === "object" && !Array.isArray((route as { moves?: unknown }).moves)) {
+      const r = route as Record<string, unknown>;
+      const list = [r.steps, r.commands, r.list, r.route].find(Array.isArray);
+      r.moves = list ?? [];
+      delete r.steps; delete r.commands; delete r.list;
+      if (typeof r.repeat !== "boolean") r.repeat = true;
+      filled.push("movement.route.moves");
+    }
   }
   if (isInvisibleTalkablePage(page) && !TILE_HOTSPOT_EVENTS.has(event)) {
     const siblingGraphic = event.pages?.find(

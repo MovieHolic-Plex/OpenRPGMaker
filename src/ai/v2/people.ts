@@ -809,6 +809,23 @@ export function buildPeople(run: BuildRun, people: readonly PersonSpec[], mapId?
       failed++;
       continue;
     }
+    // 이미 이 맵에 같은 이름의 NPC 가 있으면 새로 세우지 않는다(2026-10-24 스위트: 대장장이 그림이 바뀌고 촌장이 둘이 됐다).
+    //   그림·얼굴·자리는 그대로 두고, 대사를 준 경우에만 첫 페이지의 대사를 바꾼다(얼굴 명령은 남김).
+    const existing = person.name ? eventsOf(map).find((e) => (e.name ?? "").trim().toLowerCase() === person.name!.trim().toLowerCase()) : undefined;
+    if (existing && existing.pages?.length) {
+      const lines = [...cleanLines(person.firstTalk), ...cleanLines(person.laterTalk)];
+      if (lines.length) {
+        const p0 = existing.pages[0]!;
+        const keep = (p0.commands ?? []).filter((c) => (c as { kind?: string }).kind !== "text");
+        const firstPage = { ...structuredClone(p0), commands: [...structuredClone(keep), ...lines.map((body) => ({ kind: "text", speaker: existing.name, body }))] };
+        const up = run.call("upsert_event", { mapId: targetMapId, replacePages: true, event: { id: existing.id, pages: [firstPage, ...existing.pages.slice(1).map((pg) => structuredClone(pg))] } });
+        if (!up.ok) warnings.push(`${label}: 기존 NPC 대사 고치기 실패 — ${String(up.summary).slice(0, 160)}`);
+      }
+      eventIds.push({ mapId: targetMapId, eventId: existing.id });
+      mapIds.add(targetMapId);
+      notes.push(`${label} — 이미 있는 NPC(${existing.id}) 를 그대로 씀(그림·자리 유지${lines.length ? ", 대사만 바꿈" : ""})`);
+      continue;
+    }
     // 바깥 맵에서는 같은 부름의 사람끼리 바로 옆에 붙여 세우지 않는다(마을 광장에 둘이 겹쳐 선 줄처럼 보였다) — 실내는 바 앞 손님처럼 붙어도 된다.
     const outdoor = (map as unknown as { climate?: { mode?: string } }).climate?.mode !== "indoor";
     const avoid = outdoor ? used.flatMap((c) => [-1, 0, 1].flatMap((dy) => [-1, 0, 1].map((dx) => ({ x: c.x + dx, y: c.y + dy })))) : used;

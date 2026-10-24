@@ -75,8 +75,12 @@ export class PiCharsetSelectionGate {
   }
   afterWrite(before: Project, after: Project): ToolResult | null {
     const old = graphics(before);
+    // 같은 이벤트(또는 같은 배우)가 이미 쓰던 칩을 새 페이지에 그대로 옮기는 것은 새 선택이 아니다.
+    // 실측(2026-10-24 v2 새 12 사례): 대장장이에게 조건 페이지를 더하며 원래 칩을 복사했는데 「새 페이지 경로」라 거절돼 gift·party 에서 같은 거절이 9~11번 났다.
+    const owner = (path: string) => /^(maps\/[^/]+\/events\/[^/]+|database\/actors\/[^/]+|commonEvents\/[^/]+)/u.exec(path)?.[1] ?? path;
+    const ownedBefore = new Set([...old].map(([path, id]) => `${owner(path)}|${id}`));
     for (const [path, selectionId] of graphics(after)) {
-      if (old.get(path) === selectionId || this.viewed.has(selectionId)) continue;
+      if (old.get(path) === selectionId || this.viewed.has(selectionId) || ownedBefore.has(`${owner(path)}|${selectionId}`)) continue;
       const match = /^charset:(.+):(\d+)$/u.exec(selectionId)!;
       const label = findCharsetSemantic(match[1]!, Number(match[2]))?.label ?? selectionId;
       return { ok: false, summary: `캐릭터 그림 선택을 되돌렸습니다: ${path}의 실제 칩은 「${label}」(${selectionId})입니다. `

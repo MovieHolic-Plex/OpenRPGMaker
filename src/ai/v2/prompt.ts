@@ -10,6 +10,7 @@ import { DRAW_OBJECT_CARD } from "./drawObject";
 import { MONSTER_TOWN_CARD } from "./builders/monsterTown";
 import { SCENE_CARD } from "./scene";
 import { GAME_CARD, TERRAIN_CARD, wantsGameTools, wantsTerrainTools } from "./game";
+import { MAKE_GAME_CARD, makeGameOn, wantsMakeGame } from "./makeGame";
 
 export const V2_CORE_PROMPT = [
   "너는 OPRN RPG 편집기의 조수(v2)다. 역할 분담: 너는 «무엇을» 정한다(명세), 함수가 «어떻게» 짓는다(결정론 빌더), 다른 눈(독립 비평가)이 1배 그림을 본다.",
@@ -43,7 +44,7 @@ export function conditionalCards(project: Project, currentMapId?: string, task =
   const tileset = project.tilesets[project.maps[currentMapId ?? project.startMapId]?.tilesetId ?? ""];
   const monster = MONSTER_WORDS.test(task) || /^oprn-monster/u.test(tileset?.family ?? "");
   const contract = project.gameDesignBrief?.implementation?.harnessId === "romance-scene";
-  return [...(monster ? [MONSTER_TOWN_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(wantsGameTools(task) ? [GAME_CARD] : []), ...(wantsTerrainTools(task) ? [TERRAIN_CARD] : [])];
+  return [...(monster ? [MONSTER_TOWN_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(wantsGameTools(task) ? [GAME_CARD] : []), ...(wantsTerrainTools(task) ? [TERRAIN_CARD] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
 }
 
 export function buildV2SystemPrompt(project: Project, currentMapId?: string, task?: string): string[] {
