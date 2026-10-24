@@ -203,12 +203,10 @@ def _joints(c, js, dirty, seed):
         c.P(x, y, J_COL)                                     # r60b: 홈 속 흙 화소는 「흙이 스며든 틈」으로 읽혀 뺐다
     if H:
         for x in range(2 if V else 0, 16): c.P(x, 2, GR[6])
-        for x in range(3 if V else 0, 16):
-            if h2(x, 3, seed + 9) % 3: c.P(x, 3, GR[5])
+        for x in range(3 if V else 0, 16): c.P(x, 3, GR[5])      # 빛 받은 판 끝 두 줄(한 줄만이면 줄눈이 선 하나로 읽혔다)
     if V:
         for y in range(3 if H else 0, 16): c.P(2, y, GR[5])
-        for y in range(4 if H else 0, 16):
-            if h2(3, y, seed + 9) % 3 == 0: c.P(3, y, GR[4])
+        for y in range(4 if H else 0, 16): c.P(3, y, GR[4])
     if H and V: c.P(0, 0, GR[1]); c.P(1, 0, J_COL); c.P(0, 1, J_COL)
     out = set(J)
     for k in range(4):
