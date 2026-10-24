@@ -64,7 +64,7 @@ function run(troopId: string, level: number, policy: Policy, rng: Rng, inventory
       inv[potion] = (inv[potion] ?? 1) - 1; potions += 1;
     }
     const pierceId = PIERCE[actor.recordId];
-    if (!cmd && policy === "aware" && pierceId && !boss.stateIds.includes(PIERCED) && (actor.skillIds ?? []).includes(pierceId) && actor.mp >= 6) {
+    if (!cmd && policy === "aware" && pierceId && boss.recordId === "enemy_fs_moon_dragon" && !boss.stateIds.includes(PIERCED) && (actor.skillIds ?? []).includes(pierceId) && actor.mp >= 6) {
       cmd = { kind: "skill", skillId: pierceId, targetEnemyId: boss.id } as ActorCommand;
     }
     // 기계 발렌: aware 는 번개 기술이 있으면 그것으로 친다.

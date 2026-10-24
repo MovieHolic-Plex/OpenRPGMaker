@@ -38,6 +38,7 @@ const SW_IRIS_JOINED = "sw_fs_iris_joined";
 const SW_CRASH_ON = "sw_fs_valen_crash_on";
 const SW_CRASH_MET = "sw_fs_valen_crash_met";
 const SW_SOLDIERS_GONE = "sw_fs_valen_soldiers_gone";
+const SW_VALEN_LOST = "sw_fs_valen_lost";
 const SW_STEP2 = "sw_fs_main_step2";
 const SW_STEP3 = "sw_fs_main_step3";
 const SW_DONE = "sw_fs_main_done";
@@ -304,7 +305,7 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
   // 사람 크기(아군과 같은 걷기 칩 비율) · 보스라 HP 를 숨긴다.
   delete (valen as Partial<EnemyRecord>).battleScalePercent;
   (valen as EnemyRecord & { hideHp?: boolean }).hideHp = true;
-  valen.stats = { ...valen.stats, maxHp: 2600, attack: 135, defense: 75, mind: 108, agility: 48 };
+  valen.stats = { ...valen.stats, maxHp: 1800, attack: 115, defense: 70, mind: 100, agility: 48 };
   // 같은 사람 모양 적(광신도·설교자)도 사람 크기로.
   for (const id of ["enemy_fs_fanatic", "enemy_fs_fanatic_preacher"]) {
     const e = db.enemies.find((x) => x.id === id);
@@ -319,13 +320,15 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
   // 기다림 — 병사들이 싸우는 동안 발렌은 뒤에서 지켜본다(행동하지 않고, 어떤 피해도 받지 않는다).
   upsert(db.states as StateRecord[], {
     id: FS_VALEN_STANDBY_STATE, name: "지휘", restriction: "없음", removalCondition: "전투 종료",
+    recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0, recoverWhenHitChance: 0,
     runtimeEffects: { restrictsAction: true, damageTypeRates: { physical: 0, magic: 0 }, removeOnBattleEnd: true },
   } as StateRecord);
   // 금단의 주술 — 기계의 몸. 물리 무효 · 마법 1/4 · 번개(전기)만 두 배로 들어간다.
   upsert(db.states as StateRecord[], {
     id: FS_VALEN_MACHINE_STATE, name: "기계화", restriction: "없음", removalCondition: "전투 종료", battleAura: "paralyze-spark",
+    recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0, recoverWhenHitChance: 0,
     runtimeEffects: {
-      transformResourceId: "generated-enemy-golem-iron", attackMultiplier: 1.15, removeOnBattleEnd: true,
+      transformResourceId: "generated-enemy-golem-iron", removeOnBattleEnd: true,
       damageTypeRates: { physical: 0, magic: 25, elements: { thunder: 200 } },
     },
   } as unknown as StateRecord);
@@ -337,7 +340,7 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
     description: "쇳덩이가 된 팔로 내리친다.", effect: { kind: "damage", statistic: "attack", affects: "hp" },
   } as Partial<SkillRecord>));
   upsert(db.skills, skill("skill_fs_valen_overload", {
-    name: "과부하", scope: "allEnemies", power: 58, chargeTurns: 1, animationId: "anim_gen_thunder_strike", elementId: "thunder",
+    name: "과부하", scope: "allEnemies", power: 46, chargeTurns: 1, animationId: "anim_gen_thunder_strike", elementId: "thunder",
     description: "몸 안의 회로를 한꺼번에 터뜨린다. 모으는 동안 방어하라.", effect: { kind: "damage", statistic: "mind", affects: "hp" },
   } as Partial<SkillRecord>));
   // 이리스 「전격탄」 — 별빛 사수의 전기 탄환(공격력 계열·번개). 기계의 몸을 태운다.
@@ -352,6 +355,9 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
   if (!iris) throw new Error("[fallen-star act1] actor_fs_iris 가 없다");
   iris.learnedSkills = [...(iris.learnedSkills ?? []).filter((l) => l.skillId !== FS_IRIS_SHOCK_SKILL), { level: 1, skillId: FS_IRIS_SHOCK_SKILL }];
 
+  // 엘레나도 번개를 일찍 배운다(연쇄 번개 Lv5) — 기계 발렌의 답이 이리스 혼자가 아니게.
+  const elena = db.actors.find((a) => a.id === "actor_fs_elena") as (ActorRecord & { learnedSkills?: { level: number; skillId: string }[] }) | undefined;
+  if (elena) elena.learnedSkills = [...(elena.learnedSkills ?? []).filter((l) => l.skillId !== "skill_mage_chain_lightning"), { level: 5, skillId: "skill_mage_chain_lightning" }];
   const act3 = (skillId: string, priority: number) => act(skillId, priority, { kind: "status", stateId: FS_VALEN_MACHINE_STATE, present: true });
   valen.skillIds = [...new Set([...(valen.skillIds ?? []), "skill_fs_valen_piston", "skill_fs_valen_overload"])];
   valen.actions = [
@@ -375,11 +381,11 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
     return { ...e, id, name, monsterResourceId: battler, stats, collapseEffect: "pixelBreak",
       rewards: { exp, gold: 12, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 10, quantity: 1, condition: { kind: "always" } }] } } as EnemyRecord;
   };
-  upsert(db.enemies, human(FS_VALEN_SOLDIER, "심문회 병사", "charset-battler-actor1-2", { maxHp: 150, maxMp: 0, attack: 64, defense: 26, mind: 10, agility: 38 }, 28));
-  upsert(db.enemies, human(FS_VALEN_CROSSBOW, "심문회 석궁병", "charset-battler-people3-7", { maxHp: 120, maxMp: 0, attack: 70, defense: 18, mind: 10, agility: 46 }, 28));
+  upsert(db.enemies, human(FS_VALEN_SOLDIER, "심문회 병사", "charset-battler-actor1-2", { maxHp: 100, maxMp: 0, attack: 40, defense: 20, mind: 10, agility: 36 }, 24));
+  upsert(db.enemies, human(FS_VALEN_CROSSBOW, "심문회 석궁병", "charset-battler-people3-7", { maxHp: 85, maxMp: 0, attack: 43, defense: 14, mind: 10, agility: 44 }, 24));
   upsert(db.enemies, {
     ...clone(golem), id: FS_VALEN_GOLEM, name: "심문회 골렘", monsterResourceId: "generated-enemy-golem-stone", battleScalePercent: undefined,
-    stats: { maxHp: 340, maxMp: 0, attack: 78, defense: 70, mind: 20, agility: 20 }, collapseEffect: "pixelBreak",
+    stats: { maxHp: 220, maxMp: 0, attack: 66, defense: 55, mind: 20, agility: 20 }, collapseEffect: "pixelBreak",
     rewards: { exp: 40, gold: 0, dropRatePercent: 0, drops: [] },
   } as unknown as EnemyRecord);
   for (const e of db.enemies) if ([FS_VALEN_SOLDIER, FS_VALEN_CROSSBOW, FS_VALEN_GOLEM].includes(e.id)) e.stateRates = { ...(e.stateRates ?? {}), [FS_PIERCED_STATE]: "E" } as EnemyRecord["stateRates"];
@@ -432,7 +438,7 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
           m2("m2-046-tint-screen", { color: "white", durationMs: 120 }), wait(260),
           st(FS_VALEN_ENEMY, "add", FS_VALEN_MACHINE_STATE),
           anim(FS_VALEN_ENEMY, "anim_gen_thunder_strike"),
-          hp(FS_VALEN_ENEMY, 900),
+          hp(FS_VALEN_ENEMY, 1300),
           m2("m2-046-tint-screen", { color: "neutral", durationMs: 700 }),
           text("살갗이 갈라지고, 그 밑에서\n톱니와 금빛 선이 드러난다."),
           text("저건… 저랑 같은 거예요.\n칼도 주문도 튕겨 나가요!", IRIS),
@@ -499,16 +505,54 @@ function crashSite(project: Project, forestId: string): void {
     say(ELENA, "새벽샘… 선생님 일기장에 있던 이름이야."),
     say(KAEL, "천문대로 가자.\n선생님은 뭔가 알고 계셔."),
   ];
+  // 져도 이야기는 이어진다 — 숲지기 브람이 숲에서 기습해 일행을 빼낸다. 회로는 브람이 줍는다(하넬에게 가는 줄은 같다).
+  const bramId = `ev_${FS_PREFIX}_bram`;
+  const party = ["actor_hero", "actor_fs_elena", "actor_fs_iris"];
+  const rescue: Command[] = [
+    setSw(SW_VALEN_LOST),
+    { kind: "recoverAll" } as unknown as Command,
+    ...party.map((actorId) => ({ kind: "changeActorHp", actorId, op: "=", amount: 25, amountMode: "percent" } as unknown as Command)),
+    cutBegin(),
+    letterbox(),
+    narrate("무릎이 꺾였다. 쇠로 된 손이\n이리스에게 뻗어 오는 순간 ──"),
+    se("cc0-se-orp-battle-swing"),
+    fx("dust", at.x, at.y, 600),
+    emote(id, "exclamation", 700),
+    narrate("숲 쪽에서 화살 한 대가 날아와\n쇠 손등에 박혔다."),
+    se("cc0-se-orp-battle-swing2"),
+    route(bramId, walk(["up", "up", "up"]), true),
+    say("숲지기 브람", "연기 터진다. 숨 참아라!"),
+    se("easyrpg-sound-fog1"),
+    puff(0, 0, 3200), puff(-1, 1, 3000), puff(1, 1, 3000), puff(0, 2, 2800), puff(-1, 3, 2600), puff(0, 4, 2600),
+    wait(500),
+    flash("white", 120),
+    setSw(SW_SOLDIERS_GONE),
+    look(id, { tint: "gray", opacity: 45 }),
+    say(VALEN, "…숲지기인가.\n오늘은 물러나 주지."),
+    look(id, { opacity: 15 }),
+    wait(500),
+    setSw(SW_STEP2),
+    { kind: "setVariable", variableId: "var_fs_main_progress", op: "+=", value: 1 } as unknown as Command,
+    look(id, { reset: true }),
+    wait(1200),
+    narrate("연기가 걷히자 심문회도, 발렌도 없었다."),
+    narrate("브람이 발치에서 무언가를 주워\n카엘에게 던져 준다."),
+    item(FS_CIRCUIT_ITEM),
+    narrate("「회로」를 손에 넣었다."),
+    say("숲지기 브람", "쇳조각이 사람 몸에서 떨어지는 건\n숲을 사십 년 지키며 처음 봤다."),
+    say("숲지기 브람", "하넬한테 가져가라. 그 늙은이라면 알 거다.\n…토마 빵값은 이걸로 퉁치지."),
+    say(KAEL, "고마워요, 브람 아저씨."),
+    say(IRIS, "그 사람 몸 안에서… 저랑 같은 소리가 났어요."),
+    cutLabel(),
+    clearLetterbox(),
+    cutEnd(),
+  ];
   const fight = (): Command[] => [
     setSw(SW_CRASH_MET),
     battleBgm("cc0-bgm-rtp-btl-002"),
     battle(FS_VALEN_CRASH_TROOP, true),
     battleBgmReset(),
-    won([setSw(SW_SOLDIERS_GONE), ...vanish], [
-      { kind: "recoverAll" } as unknown as Command,
-      say(ELENA, "일단 물러서! 숨 고르고 다시 붙자."),
-      route("@player", [{ kind: "turn", dir: "down" }]),
-    ]),
+    won([setSw(SW_SOLDIERS_GONE), ...vanish], rescue),
   ];
   // 병사 넷 — 발렌 뒤를 따라 올라와 길을 막는다(전투의 병사 여덟 중 앞줄). 전투에 이기면 사라진다.
   const soldierWalks: Command[] = [];
@@ -1053,13 +1097,20 @@ function hanelAfterCrash(project: Project, obsId: string): void {
         let insertAt = at;
         if (textsBefore >= 2) { let seen = 0; insertAt = l.findIndex((c) => c.kind === "text" && ++seen === 2) + 1; }
         l.splice(insertAt, 0,
-          say(KAEL, "선생님, 추락지에 심문관이 왔어요.\n발렌이요. 싸워서… 물리쳤어요."),
+          fork(sw(SW_VALEN_LOST), [
+            say(KAEL, "선생님, 추락지에 심문관이 왔어요.\n발렌이요. …브람 아저씨가 아니었으면 끝났을 거예요."),
+          ], [
+            say(KAEL, "선생님, 추락지에 심문관이 왔어요.\n발렌이요. 싸워서… 물리쳤어요."),
+          ]),
           emote(hanel.id, "exclamation", 700),
           say(H, "…발렌이."),
           say(H, "그 아이는 물러설 줄은 알아도\n그만둘 줄은 모른다. 다시 온다."),
           say(ELENA, "새벽샘 얘기를 했어요.\n그 말을 믿은 마을이 있었다고."),
           say(H, "…서른 해 전 일이다.\n돌아오면 다 말하마."),
-          say(KAEL, "발렌이 사라진 자리에 이게 떨어져 있었어요."),
+          fork(sw(SW_VALEN_LOST), [
+            say(H, "브람이? …그 친구, 아직 활을 놓지 않았군."),
+            say(KAEL, "브람 아저씨가 이걸 주워 줬어요.\n발렌한테서 떨어진 거예요."),
+          ], [say(KAEL, "발렌이 사라진 자리에 이게 떨어져 있었어요.")]),
           narrate("카엘이 「회로」를 내밀었다.\n금빛 선이 아직 희미하게 맥박친다."),
           emote(hanel.id, "exclamation", 700),
           say(H, "…회로다. 별지기들이 「옛것」이라 부르던 물건이지.\n지금 이 땅의 누구도 이걸 만들지 못한다."),
@@ -1309,7 +1360,7 @@ export function applyFallenAct1Finale(project: Project, exec: Exec, ids: FallenA
     [SW_MOON_LEVER, "지하 3층: 달 손잡이"], [SW_ALARM, "지하 3층: 경종"], [SW_DRAGON_MET, "지하 4층: 용이 깼다"],
     [SW_DRAGON_DOWN, "지하 4층: 용 쓰러짐"], [SW_DRAGON_CRACK, "전투: 용 비늘 갈라짐"], [SW_LIFTED, "승강 장치로 올라옴"],
     [SW_SIEGE, "광장 포위"], [SW_SIEGE_HANEL, "포위: 하넬 나옴"], [SW_SIEGE_VALEN, "포위: 발렌 등장"],
-    [SW_SOLDIERS_GONE, "추락지: 병사들 물러남"], [SW_VALEN_P2, "전투: 발렌 2단계"], [SW_VALEN_P3, "전투: 발렌 기계화"],
+    [SW_SOLDIERS_GONE, "추락지: 병사들 물러남"], [SW_VALEN_LOST, "추락지: 발렌에게 졌다(브람이 구함)"], [SW_VALEN_P2, "전투: 발렌 2단계"], [SW_VALEN_P3, "전투: 발렌 기계화"],
   ] as const) ensureSwitch(project, id, name);
   database(project);
   crashSite(project, ids.forest);
