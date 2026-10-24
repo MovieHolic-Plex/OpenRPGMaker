@@ -27,7 +27,9 @@
   거절 사유: unknown-line · stale-hash · drafted · control-codes · too-long · overflow · empty · unchanged. 한 줄도 못 받으면 `ToolError dialogue-rewrite-rejected`.
 - `set_speaker_voice` (write) — `{speaker, note}`(빈 note 는 지움, 800자).
 - 스키마: 자유 키 객체·빈 enum 없음, 배열은 `items` 를 단다(Gemini 400 규칙).
-- 도구 창 넘침은 **추정**(9px·한 장 3줄 기준 글자 폭 가중치)이다. 실측은 편집기 탭만 한다(헤드리스에는 DOM 이 없다).
+- 도구 창 넘침: 편집기 안에서 돌면 첫 대사 도구 호출이 런타임 CSS 실측기를 띄우고(`warmDialogueMeasurerForTools`), 준비된 뒤부터 `estimateLineFit`·`checkDialogueEdit`·`read_story_script` 의 «창 넘침 3/2줄» 이 **실측**을 쓴다
+  (`registerMeasuredDialogueFit`, 키 = 해상도·글꼴·대화창 모양). 헤드리스·준비 전에는 **추정**(9px·한 장 3줄 기준 글자 폭 가중치).
+  실측(2026-10-25 폴른 스타): 추정은 한 장 3줄, 실측은 2줄(Galmuri11 12px) — 조수가 추정만 보고 3줄로 줄인 기록 패널 26줄이 실제로는 넘쳤다. 그래서 실측을 도구까지 끌어왔다.
 
 ## 계단 입구 계약 — 조립기·stamp_object·create_transfer_pair (2026-10-22)
 

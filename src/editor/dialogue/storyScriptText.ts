@@ -5,6 +5,7 @@
 import type { Project } from "@/project/types";
 import { speakerVoiceNote } from "@/project/dialogueDesk";
 import type { DialogueLine } from "./dialogueIndex";
+import { estimateLineFit } from "./dialogueEdits";
 import { buildStory, sceneHeading, sceneMeta, sceneSummary, type ScriptNode, type Story, type StoryScene } from "./storyScript";
 
 export const STORY_HASH_PREFIX = 6;
@@ -19,12 +20,21 @@ function oneLine(text: string): string {
   return text.replace(/\n/gu, " / ");
 }
 
+let fitProject: Project | null = null;
+
+/** 대화창 한 장을 넘는 줄에는 꼬리표 뒤에 «창 넘침 3/2줄» 을 붙인다(편집기 안이면 실측, 아니면 추정). */
+function overflowNote(line: DialogueLine): string {
+  if (!fitProject) return "";
+  const fit = estimateLineFit(fitProject, line, line.text);
+  return fit?.overflow ? ` «창 넘침 ${fit.lines}/${fit.maxLines}줄»` : "";
+}
+
 function renderNodes(story: Story, nodes: readonly ScriptNode[], indent: string, out: string[]): void {
   for (const node of nodes) {
     switch (node.k) {
       case "line": {
         const who = node.line.speaker || (node.line.kind === "text" ? "(내레이션)" : "");
-        out.push(`${indent}${who ? `${who}: ` : ""}${oneLine(node.line.text)}${tag(story, node.line)}`);
+        out.push(`${indent}${who ? `${who}: ` : ""}${oneLine(node.line.text)}${tag(story, node.line)}${overflowNote(node.line)}`);
         break;
       }
       case "dir":
@@ -59,7 +69,8 @@ export function renderSceneText(project: Project, story: Story, scene: StoryScen
     const summary = sceneSummary(project, scene);
     out.push(`요약${summary.auto ? "(자동)" : ""}: ${summary.text}`);
   }
-  renderNodes(story, scene.nodes, "", out);
+  fitProject = project;
+  try { renderNodes(story, scene.nodes, "", out); } finally { fitProject = null; }
   return out.join("\n");
 }
 

@@ -4,7 +4,7 @@
 
 import { store } from "@/project/store";
 import { dialogueKindLabel, dialogueLineUsesMessageWindow, type DialogueLine } from "@/editor/dialogue/dialogueIndex";
-import { estimateLineFit } from "@/editor/dialogue/dialogueEdits";
+import { dialogueMeasureKey, estimateLineFit, registerMeasuredDialogueFit } from "@/editor/dialogue/dialogueEdits";
 import { editDialogueLine } from "@/editor/dialogue/dialogueActions";
 import { createDialogueWindowMeasurer, type DialogueWindowMeasurer } from "@/editor/dialogue/dialogueWindowMeasure";
 import { diffText } from "@/editor/dialogue/textDiff";
@@ -32,12 +32,14 @@ export function dialogueMeasurerProject(): Project | null {
 }
 
 export function measurerFor(project: Project): Promise<DialogueWindowMeasurer> {
-  const resolution = JSON.stringify([project.system.playResolution ?? null, project.system.fonts ?? null, project.system.dialogueStyle ?? null, project.system.dialogueFont ?? null]);
+  const resolution = dialogueMeasureKey(project);
   if (measurer && measurer.resolution === resolution) return measurer.promise;
   readyMeasurer?.dispose();
   readyMeasurer = null;
+  registerMeasuredDialogueFit(resolution, null);
   const promise = createDialogueWindowMeasurer(project).then((value) => {
     readyMeasurer = value;
+    registerMeasuredDialogueFit(resolution, (line, text) => value.fit(line, text));
     return value;
   });
   measurer = { project, resolution, promise };
@@ -56,6 +58,12 @@ export function warmDialogueMeasurer(project: Project, rerender: () => void, sti
 export function lineFit(project: Project, line: DialogueLine, text = line.text): DialogueFit | undefined {
   if (!dialogueLineUsesMessageWindow(line)) return undefined;
   return readyMeasurer ? readyMeasurer.fit(line, text) : estimateLineFit(project, line, text);
+}
+
+/** 조수 도구가 부를 때 — 편집기(브라우저)면 실측기를 띄워 둔다. 첫 호출은 추정, 준비된 뒤부터는 실측으로 판정한다. */
+export function warmDialogueMeasurerForTools(project: Project): void {
+  if (typeof document === "undefined") return;
+  void measurerFor(project).catch(() => undefined);
 }
 
 export function fitBadge(fit: DialogueFit | undefined): HTMLElement {
