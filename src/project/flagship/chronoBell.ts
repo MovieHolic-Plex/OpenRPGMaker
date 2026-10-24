@@ -27,7 +27,7 @@ import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./falle
 import { applyFallenLoreAndHanel } from "./fallen/loreAndHanel";
 import { reworkFallenTown } from "./fallenTown";
 import { applyFallenBattleItems, FS_SPEAR_PIKE, FS_SWORD_GALE } from "./fallen/battleItems";
-import { applyFallenBattleRoles } from "./fallen/battleRoles";
+import { applyFallenAreaEncounters, applyFallenBattleRoles } from "./fallen/battleRoles";
 import { swOn, fadeOut } from "./firstLoveKit";
 import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX, ensureFallenValenChip } from "./fallenValenChip";
 import { buildFallenTownInteriors } from "./fallenTownInteriors";
@@ -2439,6 +2439,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   };
   for (const [alias, of] of Object.entries(FS_QUEST_FACE_ALIASES)) if (speakerFaces[of]) speakerFaces[alias] = speakerFaces[of]!;
   applySpeakerFaces(project, speakerFaces);
+  // 숲 구역별 조우 표 — 모든 맵 구성 뒤(숲 맵 작업이 표를 다시 써도 이 표가 이긴다). 지형·이벤트는 건드리지 않는다.
+  applyFallenAreaEncounters(project);
 
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);

@@ -22,12 +22,11 @@ for (const spec of (process.env.FS_SIM_ENEMY ?? "").split(";").filter(Boolean)) 
 const cases0 = process.env.FS_SIM_ONLY;
 const duo = ["actor_hero", "actor_fs_elena"];
 const trio = ["actor_hero", "actor_fs_elena", "actor_fs_iris"];
+const field = ["wolves", "edge_boar", "edge_hornets", "stream_crabs", "stream_eels", "spiders", "thicket_moths", "thicket_flytrap", "glade_poachers", "wisps", "deep_ghosts"];
 const cases: Array<{ troopId: string; level: number; party: string[] }> = [
-  { troopId: "troop_fs_wolves", level: 6, party: duo },
-  { troopId: "troop_fs_spiders", level: 6, party: duo },
-  { troopId: "troop_fs_wisps", level: 6, party: duo },
+  ...field.map((id) => ({ troopId: `troop_fs_${id}`, level: 6, party: duo })),
+  ...field.map((id) => ({ troopId: `troop_fs_${id}`, level: 7, party: trio })),
   { troopId: "troop_fs_finale", level: 8, party: trio },
-  { troopId: "troop_fs_finale", level: 9, party: trio },
 ];
 for (const c of cases.filter((x) => !cases0 || x.troopId.endsWith(cases0))) {
   const result = simulateBattle({

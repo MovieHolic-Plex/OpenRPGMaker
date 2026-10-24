@@ -468,6 +468,79 @@
       }
     },
     {
+      "id": "deep-ghosts",
+      "label": "깊은 곳 — 창백한 유령(빛 약점·물리 저항)과 잎새 정령(치유)",
+      "mapId": "fs_forest",
+      "x": 15,
+      "y": 38,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 7
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 7
+        },
+        {
+          "actorId": "actor_fs_iris",
+          "level": 7
+        }
+      ],
+      "startEventId": "qa_fight_deep_ghosts",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "act",
+          "note": "깊은 곳 — 창백한 유령(빛 약점·물리 저항)과 잎새 정령(치유)",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_fs_iris": [
+                  "skill_gunner_snipe@enemy-1",
+                  "skill_gunner_rapid_fire@enemy-3"
+                ],
+                "actor_hero": [
+                  "skill_sword_slash@enemy-1",
+                  "skill_hero_flame_sword@enemy-3"
+                ],
+                "actor_fs_elena": [
+                  "skill_mage_blizzard"
+                ]
+              },
+              "commands": 7,
+              "logPath": "verify-shots/fs-battle/logs/deep-ghosts.jsonl",
+              "timeoutMs": 200000,
+              "fallback": "attack"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
       "id": "valen-finale",
       "label": "발렌 결전 — 소환·예고·2단계·고유 무기 드롭",
       "mapId": "fs_forest",

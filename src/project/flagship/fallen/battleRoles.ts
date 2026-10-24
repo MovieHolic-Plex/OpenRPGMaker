@@ -9,6 +9,7 @@
  * chronoBell.ts 는 `applyFallenBattleRoles(project)` 한 줄만 부른다(applyFallenBattleItems 다음).
  */
 import { normalizeEquipmentRecord, normalizeSkillRecord } from "@/project/databaseRecordModel";
+import { normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import type { ActorRateGrade, EnemyRecord, EquipmentRecord, ItemRecord, Project, SkillRecord, StateRecord } from "@/project/types";
 import type { Command } from "@/project/types/events";
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
@@ -22,6 +23,9 @@ export const FS_MEDITATE_SKILL = "skill_fs_meditate";
 /** 새 적. */
 export const FS_BEETLE = "enemy_fs_beetle";
 export const FS_MOSS = "enemy_fs_moss";
+/** 이리스의 무기(원거리 = 활 계열). */
+export const FS_STAR_ROD = "equip_fs_star_rod";
+const IRIS = "actor_fs_iris";
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 
@@ -137,23 +141,56 @@ export function applyFallenBattleRoles(project: Project): void {
     mageClass.learnedSkills = [...mageClass.learnedSkills, { level: 1, skillId: FS_MEDITATE_SKILL }];
   }
 
-  // ── 이리스(기계 소녀·총): 급소 · 연사 · 모아 쏘기 · 기절 ────────────────────────
+  // ── 이리스(성광 사수): 별에서 온 기계 소녀가 「별빛 사출봉」으로 빛을 쏜다 ─────────────────────
+  // 사용자 지적(「이리스 직업이 뭐냐 — 기술이 안 맞는다」): 직업은 「총사」, 손에는 정찰 단검(검 계열), 그림은 보랏빛 구슬 봉이었다.
+  // 정체를 하나로 — 직업 「성광 사수」, 무기 「별빛 사출봉」(원거리 계열 = 활 bow), 역할은 「한 대상 정밀 사격 · 기절 · 모아 쏘는 관통 빛」.
+  // 사격 기술은 사출봉(활 계열)을 들면 +40%(무기 공명). 모아 쏘는 빛은 빛(holy) 속성이라 유령에게 약점이다.
+  const rodBond = { elementIds: ["bow"], bonusPercent: 40 } as const;
+  const rod = normalizeEquipmentRecord({
+    ...clone(find<EquipmentRecord>(db.equipment, "equip_scout_dagger")),
+    id: FS_STAR_ROD, name: "별빛 사출봉", slot: "weapon", price: 0,
+    description: "원거리(활 계열) 무기. 사격 기술 +40%.\n별에서 함께 떨어진 봉. 끝의 구슬이 빛을 모아 쏜다.",
+    statBonuses: { attack: 16, defense: 0, mind: 4, agility: 4 },
+    equippableActorIds: [IRIS], twoHanded: false, attackElementIds: ["bow"], criticalRate: 10, accuracy: 100,
+    iconResourceId: undefined, imageResourceId: undefined,
+  } as Partial<EquipmentRecord> & Pick<EquipmentRecord, "id" | "name">);
+  upsert(db.equipment, rod);
+  const gunner = db.classes.find((c) => c.id === "class_gunner");
+  if (gunner) {
+    gunner.name = "성광 사수";
+    const owned = gunner.equipmentPermissions.equipmentIds.filter((id) => id !== "equip_scout_dagger");
+    gunner.equipmentPermissions = { ...gunner.equipmentPermissions, equipmentIds: [FS_STAR_ROD, ...owned.filter((id) => id !== FS_STAR_ROD)] };
+  }
+  const iris = db.actors.find((a) => a.id === IRIS);
+  if (iris) iris.initialEquipment = { ...(iris.initialEquipment ?? {}), weapon: FS_STAR_ROD } as typeof iris.initialEquipment;
   tune("skill_gunner_shot", {
-    power: 56, criticalRate: 50, criticalMultiplier: 2,
-    description: "급소 확률 50%. 운이 좋으면 두 배.",
+    name: "광선 조준", power: 56, elementId: "bow", criticalRate: 50, criticalMultiplier: 2, weaponAffinity: rodBond,
+    description: "급소 50%(두 배). 사출봉을 들면 +40%.",
   });
   tune("skill_gunner_rapid_fire", {
-    power: 26, hitSequence: [1, 1, 1, 1], mpCost: { flat: 4, percentMax: 0 },
-    description: "약한 네 발. 거미 같은 무른 적·수면 깨우기 주의.",
+    name: "광자 연사", power: 26, elementId: "bow", hitSequence: [1, 1, 1, 1], mpCost: { flat: 4, percentMax: 0 }, weaponAffinity: rodBond,
+    description: "약한 빛 네 발(사출봉 +40%). 말벌·나방 같은 무른 적에. 잠든 적은 깬다.",
   });
   tune("skill_gunner_snipe", {
-    power: 120, elementId: "spear", chargeTurns: 1, damageFormula: "power + a.atk * 1.4", mpCost: { flat: 6, percentMax: 0 },
-    description: "한 차례 조준한 뒤 일직선을 꿰뚫는 방어 무시 한 발.",
+    name: "충전 광선포", power: 120, elementId: "holy", animationId: "anim_gen_holy_beam", chargeTurns: 1,
+    damageFormula: "power + a.atk * 1.4", mpCost: { flat: 6, percentMax: 0 },
+    description: "한 차례 빛을 모아 일직선을 꿰뚫는다(방어 무시·빛). 유령 약점.",
   });
   tune("skill_gunner_butt_strike", {
-    power: 50, stateEffects: [{ stateId: "state_stop", chance: 60, operation: "add" }],
-    description: "60% 기절(최대 2차례). 보스·돌 거인은 버틴다.",
+    name: "봉 내려치기", power: 50, elementId: "hit", stateEffects: [{ stateId: "state_stop", chance: 60, operation: "add" }],
+    description: "사출봉으로 내려쳐 60% 기절(최대 2차례). 보스·돌 몸은 버틴다.",
   });
+  // Lv10 이후 기술도 「총·수류탄」이 아니라 사출봉의 빛으로 읽히게 이름과 한 줄 설명을 바꾼다(메커니즘은 그대로).
+  tune("skill_gunner_grenade", { name: "성광탄", weaponAffinity: { elementIds: ["bow"], bonusPercent: 25 },
+    description: "적 전체에 터지는 빛 구슬(사출봉 +25%)." });
+  tune("skill_gunner_flare", { name: "섬광 신호", description: "아군 전체 민첩 상승. 먼저 움직여야 할 때." });
+  tune("skill_gunner_spin_fire", { name: "회전 열선", description: "적 전체 불 속성 열선. 말벌·나방·식충초 약점." });
+  tune("skill_gunner_volley", { name: "유성 일제사격", weaponAffinity: { elementIds: ["bow"], bonusPercent: 25 },
+    description: "필살기. 적 전체에 유성 같은 빛을 쏟는다(사출봉 +25%)." });
+  // 카엘·엘레나도 직업 이름을 역할에 맞춘다 — 카엘은 검이 주 무기, 창으로 바꾸면 찌르기가 세진다. 엘레나는 지팡이로 마력을 올리고 마법은 무기 공명이 없다.
+  const heroClass = db.classes.find((c) => c.id === "class_hero");
+  if (heroClass) heroClass.name = "별지기 검사";
+  if (mageClass) mageClass.name = "천문 마도사";
 
   // ── 적: 역할이 다른 다섯 + 보스 둘 ─────────────────────────────────────────
   const rates = (id: string, elements: Record<string, ActorRateGrade>, states: Record<string, ActorRateGrade> = {}): void => {
@@ -186,19 +223,80 @@ export function applyFallenBattleRoles(project: Project): void {
   const moss = enemyFrom("slime-green", FS_MOSS, "이끼 슬라임", { maxHp: 120, maxMp: 40, attack: 40, defense: 22, mind: 56, agility: 30 }, 40, 16);
   moss.actions = [act("skill_fs_moss_dew", 9), act("skill_attack", 3)];
   rates(FS_MOSS, { fire: "A", water: "D", earth: "D" });
-  // 트룹 구성 — 맵의 조우 표(늑대·거미·도깨비불)는 그대로 두고 구성만 바꾼다(숲 맵은 다른 작업 영역).
+  for (const id of ["enemy_fs_wolf", "enemy_fs_spider", "enemy_fs_wisp"]) rates(id, {}, { state_sleep: "A" });
+
+  // ── 1막 숲 구역별 적(사용자 지적 7): 생김새도 행동도 다르게, 구역마다 따로 ────────────────────
+  // 측면 도트 몬스터 그림(generated-enemy-*)을 그대로 쓴다. 적마다 한 가지 역할 — 떼·단단함·술사·치유·상태·돌격·유리 대포.
+  const drops = (...rows: Array<[string, number]>): NonNullable<EnemyRecord["rewards"]["drops"]> =>
+    rows.map(([itemId, ratePercent]) => ({ itemId, ratePercent, quantity: 1, condition: { kind: "always" } }));
+  const foe = (look: string, id: string, name: string, stats: [number, number, number, number, number], exp: number, gold: number,
+    actions: EnemyRecord["actions"], elements: Record<string, ActorRateGrade>, states: Record<string, ActorRateGrade>, loot: Array<[string, number]>): void => {
+    const [maxHp, attack, defense, mind, agility] = stats;
+    const enemy = enemyFrom(look, id, name, { maxHp, maxMp: 60, attack, defense, mind, agility }, exp, gold);
+    enemy.actions = actions;
+    enemy.skillIds = [...new Set(actions.map((row) => row.skillId))];
+    enemy.rewards = { ...enemy.rewards, drops: drops(...loot) } as EnemyRecord["rewards"];
+    rates(id, elements, states);
+  };
+  make("skill_mon_body_slam", "skill_fs_discharge", {
+    name: "방전", elementId: "thunder", power: 44, stateEffects: [{ stateId: "state_paralysis", chance: 35, operation: "add" }],
+    description: "몸에 모은 전기를 터뜨린다. 35% 마비.",
+  });
+  make("skill_heal", "skill_fs_leaf_hymn", {
+    name: "잎새 노래", scope: "allAllies", power: 30, mpCost: { flat: 0, percentMax: 0 }, stateEffects: [],
+    description: "동료 모두를 조금씩 고친다.",
+  });
+  // 어귀 — 돌격·떼
+  foe("boar-tusk", "enemy_fs_boar", "엄니멧돼지", [240, 66, 30, 20, 22], 48, 18,
+    [act("skill_mon_tusk_charge", 8, { kind: "turn", start: 1, interval: 2 }), act("skill_attack", 5)],
+    { spear: "A", fire: "C" }, { state_sleep: "B", state_stop: "B" }, [["item_potion", 20], ["item_fs_wolf_hide", 30]]);
+  foe("bee-giant", "enemy_fs_hornet", "숲말벌", [62, 50, 8, 20, 64], 18, 6,
+    [act("skill_mon_poison_sting", 7), act("skill_attack", 4)],
+    { fire: "A", wind: "A", bow: "A", ice: "B" }, { state_sleep: "A", state_stop: "A" }, [["item_antidote", 25]]);
+  // 옛 수로 — 단단함·술사·상태
+  foe("crab-rock", "enemy_fs_crab", "바위게", [190, 58, 92, 20, 16], 54, 20,
+    [act("skill_mon_shell_guard", 9, { kind: "turn", start: 1, interval: 3 }), act("skill_mon_body_slam", 6), act("skill_attack", 4)],
+    { thunder: "A", sword: "D", bow: "D", spear: "B", fire: "D" }, { state_sleep: "B", state_paralysis: "B" }, [["item_potion", 25]]);
+  foe("spirit-water", "enemy_fs_undine", "물의 정령", [130, 36, 26, 72, 40], 50, 22,
+    [act("skill_mon_tidal_wave", 8, { kind: "turn", start: 2, interval: 2 }), act("skill_mon_frost_orb", 6)],
+    { thunder: "A", fire: "D", ice: "E", water: "E", sword: "C" }, { state_sleep: "B" }, [["item_ether", 30]]);
+  foe("eel-electric", "enemy_fs_eel", "전기뱀장어", [150, 54, 24, 50, 50], 46, 16,
+    [act("skill_fs_discharge", 8), act("skill_attack", 4)],
+    { spear: "A", thunder: "E", water: "D", earth: "A" }, { state_paralysis: "E" }, [["item_potion", 20]]);
+  // 가시덤불 샛길 — 상태·유리 대포·흡수 탱커
+  foe("moth-dust", "enemy_fs_moth", "가루나방", [96, 40, 14, 56, 54], 36, 12,
+    [act("skill_mon_spore_cloud", 9, { kind: "turn", start: 1, interval: 3 }), act("skill_attack", 4)],
+    { fire: "A", wind: "A", bow: "B" }, { state_sleep: "A" }, [["item_wake_herb", 30]]);
+  foe("mantis-blade", "enemy_fs_mantis", "칼날사마귀", [110, 84, 12, 20, 72], 44, 16,
+    [act("skill_mon_cross_scythe", 7), act("skill_attack", 5)],
+    { fire: "B", ice: "B" }, { state_sleep: "A", state_stop: "A" }, [["item_potion", 20]]);
+  foe("plant-carnivore", "enemy_fs_flytrap", "가시식충초", [320, 58, 44, 50, 10], 70, 26,
+    [act("skill_mon_blood_suck", 8, { kind: "hp", minPercent: 0, maxPercent: 70 }), act("skill_mon_acid_spit", 6), act("skill_attack", 4)],
+    { fire: "A", ice: "B", water: "D", earth: "D" }, { state_poison: "E", state_sleep: "C" }, [["item_hi_potion", 15], ["item_antidote", 20]]);
+  // 사냥꾼 쉼터 — 사람 적: 약화·기습
+  foe("goblin-scout", "enemy_fs_goblin", "고블린 척후", [120, 52, 20, 30, 58], 38, 20,
+    [act("skill_mon_smoke_bomb", 8, { kind: "turn", start: 1, interval: 3 }), act("skill_mon_backstab", 6), act("skill_attack", 4)],
+    { sword: "B", fire: "B" }, { state_sleep: "A" }, [["item_potion", 25]]);
+  foe("bandit-mask", "enemy_fs_bandit", "복면 밀렵꾼", [190, 66, 30, 30, 46], 56, 60,
+    [act("skill_mon_venom_fang", 7, { kind: "turn", start: 2, interval: 2 }), act("skill_mon_backstab", 5), act("skill_attack", 4)],
+    { holy: "B" }, { state_sleep: "B" }, [["item_hi_potion", 20], ["item_ether", 15]]);
+  // 깊은 곳 — 마법이 아니면 안 되는 유령 · 무리를 고치는 잎새 정령
+  foe("ghost-pale", "enemy_fs_ghost", "창백한 유령", [140, 40, 30, 70, 44], 58, 24,
+    [act("skill_mon_banshee_wail", 8, { kind: "turn", start: 2, interval: 3 }), act("skill_mon_blood_suck", 6)],
+    { sword: "D", spear: "D", bow: "D", hit: "D", holy: "A", fire: "B", dark: "E" }, { state_sleep: "E", state_poison: "E", state_stop: "C" }, [["item_ether", 25]]);
+  foe("leafling-01", "enemy_fs_leafling", "잎새 정령", [110, 30, 20, 64, 36], 44, 18,
+    [act("skill_fs_leaf_hymn", 9, { kind: "turn", start: 1, interval: 2 }), act("skill_attack", 3)],
+    { fire: "A", ice: "B", earth: "D", water: "D" }, { state_sleep: "B" }, [["item_potion", 20], ["item_ether", 10]]);
+  // 트룹 — 구역별 묶음. 조우 표는 applyFallenAreaEncounters 가 맵마다 단다.
   const troop = (id: string, name: string, enemyIds: readonly string[]): void => {
-    const record = find(db.troops, id);
+    const record = db.troops.find((t) => t.id === id) ?? normalizeTroopRecord({ id, name, enemyIds: [...enemyIds] });
     record.name = name;
     record.enemyIds = [...enemyIds];
     record.members = enemyIds.map((enemyId, i) => ({ enemyId, x: 80 + i * 56, y: 96, hidden: false })) as typeof record.members;
     record.autoAlign = true;
+    upsert(db.troops, record);
   };
-  troop("troop_fs_wolves", "숲늑대와 이끼 슬라임", ["enemy_fs_wolf", "enemy_fs_wolf", FS_MOSS]);
-  troop("troop_fs_spiders", "덤불거미와 뿔딱정벌레", ["enemy_fs_spider", FS_BEETLE]);
-  troop("troop_fs_wisps", "도깨비불 떼", ["enemy_fs_wisp", "enemy_fs_wisp", "enemy_fs_wisp", "enemy_fs_wisp"]);
-  for (const id of ["enemy_fs_wolf", "enemy_fs_spider", "enemy_fs_wisp"]) rates(id, {}, { state_sleep: "A" });
-
+  for (const [id, name, members] of FS_AREA_TROOP_DEFS) troop(id, name, members);
   // ── 보스: 수호상 · 발렌 ──────────────────────────────────────────────────
   // 수호상: 돌 몸 — 수면·기절 무효, 마비 저항. 창·번개·방어 무시가 답.
   rates("enemy_fs_guardian", {}, { state_sleep: "E", state_stop: "E", state_paralysis: "D", state_poison: "E" });
@@ -275,4 +373,58 @@ export function applyFallenBattleRoles(project: Project): void {
   ether.mpRecovery = { flat: 10, percentMax: 40 };
   ether.price = 90;
   ether.description = "아군 하나의 MP를 10 + 최대 MP의 40% 회복. 약재상 오든이 판다.";
+}
+
+/** 1막 숲 구역별 트룹(id, 이름, 적). 숲 맵이 여섯으로 나뉘면 FS_AREA_ENCOUNTERS 가 맵마다 단다. */
+const FS_AREA_TROOP_DEFS: ReadonlyArray<readonly [string, string, readonly string[]]> = [
+  // 어귀
+  ["troop_fs_wolves", "숲늑대와 이끼 슬라임", ["enemy_fs_wolf", "enemy_fs_wolf", "enemy_fs_moss"]],
+  ["troop_fs_edge_boar", "엄니멧돼지와 숲늑대", ["enemy_fs_boar", "enemy_fs_wolf"]],
+  ["troop_fs_edge_hornets", "숲말벌 떼", ["enemy_fs_hornet", "enemy_fs_hornet", "enemy_fs_hornet"]],
+  // 옛 수로
+  ["troop_fs_stream_crabs", "바위게와 물의 정령", ["enemy_fs_crab", "enemy_fs_undine", "enemy_fs_crab"]],
+  ["troop_fs_stream_eels", "전기뱀장어 둘", ["enemy_fs_eel", "enemy_fs_eel"]],
+  // 가시덤불 샛길
+  ["troop_fs_spiders", "덤불거미와 뿔딱정벌레", ["enemy_fs_spider", "enemy_fs_beetle"]],
+  ["troop_fs_thicket_moths", "가루나방과 칼날사마귀", ["enemy_fs_moth", "enemy_fs_mantis", "enemy_fs_moth"]],
+  ["troop_fs_thicket_flytrap", "가시식충초와 덤불거미", ["enemy_fs_flytrap", "enemy_fs_spider"]],
+  // 사냥꾼 쉼터
+  ["troop_fs_glade_poachers", "밀렵꾼 일당", ["enemy_fs_goblin", "enemy_fs_bandit", "enemy_fs_goblin"]],
+  // 깊은 곳
+  ["troop_fs_wisps", "도깨비불 떼", ["enemy_fs_wisp", "enemy_fs_wisp", "enemy_fs_wisp", "enemy_fs_wisp"]],
+  ["troop_fs_deep_ghosts", "창백한 유령과 잎새 정령", ["enemy_fs_ghost", "enemy_fs_wisp", "enemy_fs_leafling", "enemy_fs_wisp"]],
+];
+
+/** 구역(맵 id) → 조우 표. 숲이 나뉜 판(fs_forest_edge…)과 한 장짜리 숲(fs_forest) 둘 다 받는다. */
+const FS_AREA_ENCOUNTERS: Readonly<Record<string, ReadonlyArray<readonly [string, number]>>> = {
+  fs_forest_edge: [["troop_fs_wolves", 3], ["troop_fs_edge_boar", 2], ["troop_fs_edge_hornets", 2]],
+  fs_forest_stream: [["troop_fs_stream_crabs", 3], ["troop_fs_stream_eels", 2], ["troop_fs_wolves", 1]],
+  fs_forest_thicket: [["troop_fs_spiders", 3], ["troop_fs_thicket_moths", 2], ["troop_fs_thicket_flytrap", 2]],
+  fs_forest_glade: [["troop_fs_glade_poachers", 3], ["troop_fs_edge_hornets", 1], ["troop_fs_edge_boar", 1]],
+  fs_forest: [["troop_fs_wisps", 3], ["troop_fs_deep_ghosts", 2], ["troop_fs_spiders", 1]],
+};
+
+/**
+ * 조우 표만 바꾼다(지형·이벤트는 건드리지 않는다). 모든 맵 구성이 끝난 뒤 부른다 — 숲 맵 작업이 표를 다시 써도 이 표가 이긴다.
+ * 숲이 아직 한 장(fs_forest)이면 그 맵에 모든 구역의 트룹을 섞어 단다. 조우가 꺼진 맵(사당 터 등)은 그대로 둔다.
+ */
+export function applyFallenAreaEncounters(project: Project): void {
+  const split = Boolean(project.maps.fs_forest_edge);
+  const table = (rows: ReadonlyArray<readonly [string, number]>): Array<{ troopId: string; weight: number }> => {
+    const weights = new Map<string, number>();
+    for (const [troopId, weight] of rows) {
+      if (project.database.troops.some((t) => t.id === troopId)) weights.set(troopId, (weights.get(troopId) ?? 0) + weight);
+    }
+    return [...weights].map(([troopId, weight]) => ({ troopId, weight }));
+  };
+  for (const [mapId, rows] of Object.entries(FS_AREA_ENCOUNTERS)) {
+    const map = project.maps[mapId] as unknown as { encounterTable?: unknown[]; encounterRate?: number } | undefined;
+    if (!map) continue;
+    if (mapId === "fs_forest" && !split) {
+      map.encounterTable = table(Object.values(FS_AREA_ENCOUNTERS).flat());
+      continue;
+    }
+    if (!map.encounterTable?.length && !map.encounterRate) continue;
+    map.encounterTable = table(rows);
+  }
 }
