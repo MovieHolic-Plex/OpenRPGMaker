@@ -141,9 +141,9 @@ export const ADD_STREET_WALKERS_TOOL: ToolDefinition = {
     const list = Array.isArray(args.walkers) ? args.walkers as Record<string, unknown>[] : [];
     if (!list.length) throw new ToolError("walkers 가 비었다 — 행인 하나 이상", { code: "invalid-args", mapId });
     const placed: string[] = [], made: GameEvent[] = [];
-    const occupied = new Set((map.events ?? []).map((e) => `${e.x},${e.y}`));
     const names = new Set(list.map((w) => String(w.name ?? "").trim()));
     if (args.replace === true) map.events = (map.events ?? []).filter((e) => !e.id.startsWith(WALKER_ID_PREFIX) || !names.has(e.name ?? ""));
+    const occupied = new Set((map.events ?? []).map((e) => `${e.x},${e.y}`));
     for (const [i, w] of list.entries()) {
       const name = String(w.name ?? "").trim() || `행인 ${i + 1}`;
       const stops = (Array.isArray(w.stops) ? w.stops : []) as WalkerStop[];
