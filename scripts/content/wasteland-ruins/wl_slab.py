@@ -27,7 +27,7 @@ J_COL, J_DEEP = S['slate'][1], S['slate'][0]
 J_DIRT = (S['bark'][1], S['bark'][2])
 CRACK, CRACK_END = S['slate'][2], GR[1]
 DIRT = MAT['dirt']
-DECORS = ('plain0', 'plain1', 'crack0', 'crack1', 'crack2', 'crack3', 'spall0', 'spall1', 'weed0', 'weed1', 'chip', 'heave', 'stain0', 'stain1', 'patch')
+DECORS = ('plain0', 'plain1', 'crack0', 'crack1', 'crack2', 'crack3', 'spall0', 'spall1', 'weed0', 'weed1', 'chip', 'heave', 'stain0', 'stain1', 'patch', 'weed2', 'weed3', 'spall2', 'stain2')
 
 
 def decor_ok(d, js):
@@ -146,14 +146,20 @@ class Layout:
         return 0 if r < 2 else 1 if r < 8 else 2
 
 
+DECOR_N = {'stain': 3, 'crack': 4, 'spall': 3, 'weed': 4}
+
+
 def decor_of(x, y, js, seed):
+    """칸 표시. 종류는 해시, 변형 번호는 칸 자리로 칠한다(4종: (x + 3y + s) mod 4, 3종: (x + y + s) mod 3) —
+    같은 줄·같은 열 두 칸 안의 같은 종류 표시는 늘 다른 그림이다(r60b 검수: 같은 풀 둘이 32px 간격으로 섰다). 표시 유무가 해시라 주기는 보이지 않는다."""
     r = h2(x * 7 + 3, y * 11 + 5, seed + 431) % 100
     q = h2(x * 13 + 1, y * 5 + 9, seed + 433)
     if r < 36: d = 'plain1' if q % 4 == 0 else 'plain0'
-    elif r < 56: d = 'stain%d' % (q % 2)
-    elif r < 74: d = 'crack%d' % (q % 4)
-    elif r < 84: d = 'spall%d' % (q % 2)
-    elif r < 93: d = 'weed%d' % (q % 2)
+    elif r < 93:
+        fam = 'stain' if r < 56 else 'crack' if r < 74 else 'spall' if r < 84 else 'weed'
+        n = DECOR_N[fam]
+        v = (x + 3 * y + seed) % 4 if n == 4 else (x + y + seed) % 3
+        d = '%s%d' % (fam, v)
     else: d = 'chip' if js == 3 else 'heave'
     return d if decor_ok(d, js) else 'plain0'
 
@@ -298,20 +304,32 @@ def _spall(c, J, js, seed):
         if (x, y + 1) not in hole and (x, y + 1) not in J and _in(x, y + 1, 1): c.P(x, y + 1, GR[6])
 
 
-def _weed(c, J, js, seed):
-    """줄눈에서 자란 풀(잎 4~5장, 키 2~4, 비대칭)."""
+def _weed(c, J, js, seed, var=0):
+    """줄눈 틈에 자란 풀 포기: 홈을 따라 낮고 넓게(가로 6~11화소, 키 2~5) — 밑동이 홈에 박히고 잎은 홈 위아래로 삐져나온다.
+    변형 var 0~3 마다 실루엣(잎 수·키·퍼짐)이 다르고 홀수는 좌우 뒤집힘. 잎 끝 밝고 밑동 어둡다. 세로 줄눈이면 가로·세로를 바꿔 그린다."""
     r = h2(seed, 7, 47)
-    if js & 1 and (not js & 2 or r % 2): bx, by = 4 + r % 8, 2
-    else: bx, by = 2, 6 + r % 7
-    blades = [(-4, 2), (-3, 3), (-2, 4), (-1, 5), (0, 6), (1, 5), (2, 4), (3, 3), (4, 2)][(r >> 4) % 2:]
-    for k, (dx, hgt) in enumerate(blades):
-        hgt = max(2, hgt - h2(k, r, seed) % 2)
-        for j in range(hgt):
-            x = bx + dx + (dx * j) // 3; y = by - j + 1
-            if not _in(x, y, 0): continue
-            t = 1 if j == 0 else 2 if j < hgt - 1 else 4
-            if (k + r) % 3 == 0: t = max(1, t - 1)
-            c.P(x, y, K('grass', t))
+    horiz = js & 1 and (not js & 2 or r % 2)
+    # 잎 (밑동 u, 기울기 du, 키): 홈(v=1)에서 위(v<1)·아래(v>1)로 선다
+    sets = ([(0, -1, 3), (1, 0, 4), (2, 1, 3), (3, 0, 2), (-1, -1, 2)],
+            [(0, 0, 5), (2, 1, 3), (-2, -1, 3)],
+            [(-3, -1, 2), (-1, 0, 3), (0, 1, 2), (2, 1, 3), (4, 1, 2), (5, 0, 2)],
+            [(0, 1, 4), (1, 1, 3), (-1, 0, 3), (3, 1, 2)])
+    leaves = sets[var % 4]
+    if var % 2: leaves = [(-u, -du, h) for u, du, h in leaves]
+    u0 = 5 + r % 6
+    pts = {}
+    for k, (u, du, h) in enumerate(leaves):
+        for j in range(h):
+            uu = u0 + u + (du * j + (1 if du > 0 else 0)) // 2
+            vv = 2 - j                                          # 위로 선 잎: 홈(1) 위 판 끝(0)까지
+            pts[(uu, vv)] = max(pts.get((uu, vv), 0), 0 if j == 0 else 4 if j == h - 1 else 2)
+        # 아래로 늘어진 잎 하나(안쪽 판 위로 1~2화소)
+        if k % 2 == 0:
+            pts[(u0 + u, 3)] = max(pts.get((u0 + u, 3), 0), 1)
+            if h >= 3: pts[(u0 + u + (1 if du >= 0 else -1), 4)] = max(pts.get((u0 + u + (1 if du >= 0 else -1), 4), 0), 2)
+    for (uu, vv), t in pts.items():
+        x, y = (uu, vv) if horiz else (vv, uu)
+        if 0 <= x <= 15 and 0 <= y <= 15: c.P(x, y, K('grass', t))
 
 
 def _chip(c, seed):
@@ -396,7 +414,7 @@ def draw_tile(c, ox, oy, spec):
         J = _joints(sub, js, d == 'plain1', seed)
         if d.startswith('crack'): _crack(sub, J, seed + int(d[-1]) * 7)
         elif d.startswith('spall'): _spall(sub, J, js, seed + int(d[-1]) * 11)
-        elif d.startswith('weed'): _weed(sub, J, js, seed + int(d[-1]) * 5)
+        elif d.startswith('weed'): _weed(sub, J, js, seed + int(d[-1]) * 5, int(d[-1]))
         elif d == 'chip': _chip(sub, seed)
         elif d == 'heave': _heave(sub, seed)
         elif d.startswith('stain'): _stain(sub, J, seed + int(d[-1]) * 3)
