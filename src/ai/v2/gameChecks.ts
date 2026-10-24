@@ -364,8 +364,13 @@ export function unaskedChanges(before: Project, after: Project, task: string): s
       // 주인공·동료 요청은 배우 고치기가 정상이다.
       if (section === "actors" && /주인공|동료|파티|합류|이름|직업|레벨|능력치|hero|party/iu.test(task)) continue;
       if (section === "classes" && /직업|레벨|스킬|기술|배우|class|skill|level/iu.test(task)) continue;
+      // 요청이 그 종류를 가리키면(이름을 안 불러도) 고치기가 정상이다 — 「보스는 얼음에 약하게」·「난이도를 맞춰」에서 보스 적을 고친 것을
+      // 부작용이라 해서 조수가 되돌렸고, 힌트 NPC 가 거짓말을 하게 됐다(2026-10-25 조수 단독 게임 G6).
+      if (section === "enemies" && /보스|적|몬스터|약점|약하|약해|내성|강하게|속성|난이도|어렵|쉽|밸런스|이기|체력|공격력|boss|enemy|weak/iu.test(task)) continue;
+      if (section === "skills" && /기술|스킬|마법|위력|MP|마나|공격|회복|skill|spell/iu.test(task)) continue;
+      if ((section === "items" || section === "weapons" || section === "armors") && /가격|값|상점|가게|아이템|장비|무기|방어구|갑옷|회복약|포션|price|item|weapon|armor/iu.test(task)) continue;
       const keys = Object.keys({ ...prev, ...r }).filter((k) => JSON.stringify(prev[k]) !== JSON.stringify(r[k]));
-      out.push(`[게임 검사 부작용] 요청에 없는 기존 ${section} 「${name || String(r.id)}」 를 바꿨다(${keys.slice(0, 4).join(",")}) — 게임 전체 값이 바뀐다. 새 레코드를 만들거나 되돌린다.`);
+      out.push(`[게임 검사 부작용] 요청에 없는 기존 ${section} 「${name || String(r.id)}」 를 바꿨다(${keys.slice(0, 4).join(",")}) — 게임 전체 값이 바뀐다. 요청과 상관없는 변경이면 되돌리고, 요청을 이루려고 바꾼 것이면 그대로 두고 보고에 무엇을 왜 바꿨는지 적는다(요청을 이룬 변경을 되돌리지 않는다).`);
     }
   }
   return out.slice(0, 6);
