@@ -151,7 +151,16 @@ export async function battleQaOp(page, op) {
       await sleep(300);
       continue;
     }
-    const root = ui.menu.filter((id) => id.startsWith("actor-command-"));
+    // 하위 목록이 열렸는데 고를 칸이 하나도 없다(MP 가 바닥이라 기술이 전부 막힘) — 닫고 fallback 으로.
+    if (wanted && submenu.length === 0 && ui.menu.includes("actor-command-back") && !ui.menu.includes("actor-command-attack")) {
+      await press(page, "actor-command-back") || await page.keyboard.press("Escape");
+      wanted = null;
+      forceFallback = true;
+      issued -= 1;
+      await sleep(300);
+      continue;
+    }
+    const root = ui.menu.filter((id) => id.startsWith("actor-command-") && id !== "actor-command-back");
     if (root.length > 0) {
       if (issued >= maxCommands) {
         await dumpLog(page, op, issued);

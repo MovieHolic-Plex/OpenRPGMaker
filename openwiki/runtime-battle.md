@@ -25,7 +25,10 @@
 
 **맞아서 깸의 기록 순서 (`runtime.ts` `pendingHitWakes`).** 피격 해제(수면 등 `recoverWhenHitChance`)는 피해 판정 직후 일어나지만
 타임라인에는 그 타격 엔트리 **뒤**에 넣는다. 같은 대상의 damage/miss 는 지나 보내고, 다른 기록·다음 명령·스냅숏·라운드 로그에서 내보낸다.
-광역기로 쓰러진 대상의 상태 변화(걸림→죽어서 풀림)는 묶음 상태 줄에서 말하지 않는다.
+같은 대상의 damage/miss 바로 뒤에 붙고(애니메이션은 `attachAnimationToLatestTimeline` 이 그 타격에 단다), 그 타격으로 쓰러졌으면 기록하지 않는다.
+광역기로 쓰러진 대상의 상태 변화(걸림→죽어서 풀림)는 묶음 상태 줄에서 말하지 않고, 쓰러져 남은 대상의 stateRemoved(전투 끝 정리 등)는
+시퀀서가 건너뛴다(`staysDown` — 뒤에 그 대상의 damage/healing 이 없을 때만).
+QA battle op 는 전투 중 대사(.dialogue-box)를 1.6초, 결과 창 쪽마다 2.2초 두고 넘긴다(영상에서 읽히게).
 
 ## 전투 진입 그림 준비 관문 battle readiness gate (2026-10-24)
 
