@@ -572,25 +572,15 @@ function counterSpot(project: Project, map: GameMap, exit: Cell): { counter: Cel
 }
 
 /**
- * 집마다 수납(궤짝·여행 가방·통·자루·바구니)을 더 둔다 — 뒤지기 이벤트는 townLife.ts 가 가구 라벨로 자동으로 단다(주인 시야·경고 규칙 적용).
+ * 보상 자리에 수납(여행 가방·상자)을 하나씩 더 둔다 — 뒤지기 이벤트는 townLife.ts 가 가구 라벨로 자동으로 단다(주인 시야·경고 규칙 적용).
  * 방 배치가 바뀌어 바닥이 아닌 칸이면 아래 stamp 가드가 되돌리므로 후보를 넉넉히 적는다.
  */
 const EXTRA_STORAGE: Record<string, readonly (readonly [string, number, number])[]> = {
-  fs_lisa_home: [
-    ["chest", 17, 6], ["basket:herb", 11, 6], ["luggage trunk", 21, 6], ["chest", 2, 14], ["luggage trunk", 11, 14],
-    ["basket:herb", 15, 14], ["chest", 25, 14], ["luggage trunk", 27, 13], ["barrel", 7, 3],
-  ],
-  fs_stargazer_home: [
-    ["book pile", 2, 13], ["chest", 11, 13], ["chest", 20, 4], ["luggage trunk", 26, 4], ["chest", 24, 4],
-    ["crate", 11, 5], ["basket:herb", 15, 13], ["chest", 24, 13],
-  ],
-  fs_bakery_home: [
-    ["sack", 10, 4], ["sack", 11, 4], ["barrel", 15, 4], ["barrel", 23, 4], ["crate", 26, 4], ["sack", 24, 4],
-    ["barrel", 19, 4], ["chest", 2, 4], ["basket:loaf", 21, 12], ["sack", 3, 12],
-  ],
-  fs_apothecary: [["chest", 20, 5], ["basket:herb", 7, 6], ["luggage trunk", 3, 12], ["crate", 12, 4]],
-  fs_inn: [["barrel", 25, 4], ["crate", 27, 4], ["chest", 3, 4], ["luggage trunk", 5, 12], ["sack", 12, 4]],
-  fs_smithy: [["crate", 3, 4], ["barrel", 5, 4], ["chest", 10, 4], ["sack", 12, 6]],
+  // 방마다 수납 하나(사용자 2026-10-24 「상자가 너무 많다」) — 집 꾸밈에 없는 보상 자리만 더한다.
+  // 리사: 옷방 상자(60G) · 오스본: 침실 여행 가방(80G) · 여관: 지하 창고 상자(은수저 단서).
+  fs_lisa_home: [["chest", 25, 14]],
+  fs_stargazer_home: [["luggage trunk", 26, 4]],
+  fs_inn: [["chest", 3, 4]],
 };
 
 /**

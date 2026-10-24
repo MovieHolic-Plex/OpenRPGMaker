@@ -112,9 +112,9 @@ function setupCast(project: Project): void {
   project.system.startActorIds = [hero.id, ELENA_ID];
   // 런타임은 새 게임 파티를 session.partyActorIds 에서 읽는다 — 둘 다 맞춘다(감사 2차: 엘레나가 대사에만 있고 파티에 없었다).
   project.session.partyActorIds = [hero.id, ELENA_ID];
-  // 동료는 맵에서도 뒤따라 걷는다 — 대사에만 있고 화면에 없는 동료가 없게.
-  // 좁은 방·장면 진입에서 설 칸이 없는 동료를 숨기지 않고 가까운 빈 칸에 세운다(가혹 검수 r8·r9 「동료가 사라짐·겹침」).
-  project.system.companions = { ...project.system.companions, fromParty: true, spreadWhenBlocked: true, fanOutInScenes: true };
+  // FF6 식 — 필드에는 선두만 걷고, 동료는 이야기 장면(컷신·동료가 말하는 줄)에서만 주인공 곁에 나타난다
+  // (2026-10-24 「뒤따라오는 동료가 매우 어색하다」). 설 칸이 없으면 가까운 빈 칸, 장면 중 ㄴ자 대형은 그대로 쓴다.
+  project.system.companions = { ...project.system.companions, fromParty: true, display: "scenesOnly", spreadWhenBlocked: true, fanOutInScenes: true } as typeof project.system.companions;
   // 턴제 파티 RPG — 필드에 액션 전투용 하트 HUD 를 띄우지 않는다(감사 2차: 지도 왼쪽 위를 늘 가렸다).
   project.system.fieldHud = JRPG_CLASSIC_FIELD_HUD;
   // 보스전에서 남은 체력이 보이게 — 도트 측면 스킨은 적 체력을 숨긴다(가혹 검수 r1: 「적 HP 표시가 전혀 없음」).
@@ -2436,6 +2436,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenStoryPass(project, ids);
   // 마을 사람 칩·대장간 재고(이리스·엘레나 몫)·뛰노는 아이·숨은 목걸이·대사 표정(fallen/townCast.ts).
   applyFallenTownCast(project);
+  // 이야기·마을 사람 단계가 단 보상 수납(초소 보급 상자·이끼 낀 상자·서랍)도 같은 「여는」 연출로 — 두 번 불러도 같다.
+  applyFallenInteractiveProps(project);
   // 제1막 새 뼈대 — 추락지 발렌·지하 미궁(3·4층)·달비늘 용·「달의 아이」 패널·광장 포위 끝(fallen/act1Finale.ts). 얼굴 앞.
   applyFallenAct1Finale(project, execTool, ids);
   const speakerFaces: Record<string, string> = {
@@ -2443,7 +2445,11 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     엘레나: actorFace("actor_fs_elena"),
     이리스: actorFace("actor_fs_iris"),
     "천문대장 하넬": "easyrpg-faceset-people2-04",
-    "심문관 발렌": "easyrpg-faceset-actor1-04",
+    // 발렌 — 칩 짝 얼굴(푸른 머리띠)의 흉상은 광대 모자라 다른 사람으로 읽힌다. 수염 난 검은 머리 흉상(작은 얼굴 칸 대신).
+    "심문관 발렌": "shared-actor2-mustache-expressions-bust-base",
+    // 두건 쓴 광신도 — 복면 흉상.
+    "교단 광신도": "shared-actor2-masked-expressions-bust-base",
+    "광신도 설교자": "shared-actor2-masked-expressions-bust-base",
     "심문회 기사": "easyrpg-faceset-actor1-02",
     "숲지기 브람": "easyrpg-faceset-actor1-10",
     "광장의 할머니": "easyrpg-faceset-people1-07",
