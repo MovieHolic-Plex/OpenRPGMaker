@@ -101,6 +101,47 @@ function readsOf(project: Project): { switches: Set<string>; variables: Set<stri
   return { switches, variables, selfKeys };
 }
 
+/** 프로젝트 전체에서 켜는(값을 바꾸는)·부르는 쪽. 끄기(value:false)는 켜기로 세지 않는다. */
+function settersOf(project: Project): { switches: Map<string, string>; variables: Map<string, string>; commons: Map<string, string> } {
+  const switches = new Map<string, string>(), variables = new Map<string, string>(), commons = new Map<string, string>();
+  for (const ev of eventsOf(project).values()) for (const { cmd } of allCommands(ev)) {
+    if (cmd.kind === "setSwitch" && typeof cmd.switchId === "string" && cmd.value !== false) switches.set(cmd.switchId, ev.name);
+    if ((cmd.kind === "setSwitchRange" || cmd.kind === "controlSwitches") && typeof cmd.switchId === "string") switches.set(cmd.switchId, ev.name);
+    if (cmd.kind === "setVariable" && typeof cmd.variableId === "string") variables.set(cmd.variableId, ev.name);
+    if (cmd.kind === "callCommonEvent" && typeof cmd.commonEventId === "string") commons.set(cmd.commonEventId, ev.name);
+  }
+  // 엔딩·퀘스트 보상이 켜는 깃발도 켜는 쪽이다.
+  const rest = JSON.stringify({ endings: project.endings ?? [], quests: project.quests ?? [] });
+  for (const m of rest.matchAll(/"switchId":"([^"]+)"/gu)) switches.set(m[1]!, "퀘스트·엔딩");
+  return { switches, variables, commons };
+}
+
+/** 전에는 켜는 곳이 있었는데 지금은 없고, 지금도 그것을 기다리는 곳이 있는 고리(보고 문장). */
+export function lostLinks(before: Project, after: Project): string[] {
+  const was = settersOf(before), now = settersOf(after), reads = readsOf(after);
+  const out: string[] = [];
+  const waiting = (id: string, kind: "switch" | "variable"): string | undefined => {
+    for (const ev of eventsOf(after).values()) {
+      const hit = ev.pages.some((pg) => flatConditions(pg.conditions).some((c) => (kind === "switch" ? c.switchId : c.variableId) === id))
+        || allCommands(ev).some((r) => flatConditions(r.cmd.condition).some((c) => (kind === "switch" ? c.switchId : c.variableId) === id));
+      if (hit) return ev.name;
+    }
+    return undefined;
+  };
+  for (const [id, who] of was.switches) if (!now.switches.has(id) && reads.switches.has(id)) {
+    const reader = waiting(id, "switch");
+    if (reader) out.push(`스위치 ${id} — 전에는 「${who}」가 켰는데 이제 켜는 곳이 없고 「${reader}」가 그 스위치를 기다린다`);
+  }
+  for (const [id, who] of was.variables) if (!now.variables.has(id) && reads.variables.has(id)) {
+    const reader = waiting(id, "variable");
+    if (reader) out.push(`변수 ${id} — 전에는 「${who}」가 바꿨는데 이제 바꾸는 곳이 없고 「${reader}」가 그 값을 본다`);
+  }
+  for (const [id, who] of was.commons) if (!now.commons.has(id) && (after.commonEvents ?? []).some((c) => c.id === id && (!c.trigger || c.trigger === "none"))) {
+    out.push(`공통 이벤트 ${id} — 전에는 「${who}」가 불렀는데 이제 부르는 곳이 없다`);
+  }
+  return out;
+}
+
 const WEATHER_WORDS = /비가|비\s*(가\s*)?오|빗방울|빗줄기|소나기|폭우|장마|눈이\s*(오|내|와|쌓)|눈\s*내리|함박눈|폭풍|폭설|안개|날씨|천둥 ?(이|소리|번개)|rain|snow|storm|fog|weather/iu;
 const SHAKE_WORDS = /흔들리|흔들린|흔들려|흔들어|지진|진동|쿵\s*(하|소리)|earthquake|tremor|shake/iu;
 const FLASH_WORDS = /번쩍|섬광|번개(?!\s*(의\s*서|마법|기술|스킬|주문|책|의\s*검))(?!['’」』])|빛이\s*터|flash|lightning/iu;
@@ -283,6 +324,11 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   if (unread.length) problems.push(`[게임 검사 깃발] 켜기만 하고 어떤 페이지·분기도 읽지 않는 스위치: ${unread.slice(0, 5).map(([id, who]) => `${id}(「${who}」)`).join(", ")} — 한 번만 일어나야 하는 관문이면 그 스위치 조건의 «이미 했다» 페이지를 두고, 필요 없는 깃발이면 지운다.`);
   const unreadVar = [...setVar.entries()].filter(([id]) => !reads.variables.has(id));
   if (unreadVar.length) problems.push(`[게임 검사 깃발] 값만 바꾸고 아무도 읽지 않는 변수: ${unreadVar.slice(0, 5).map(([id, who]) => `${id}(「${who}」)`).join(", ")} — 조건·분기에서 쓰거나 지운다.`);
+  // 고쳐 쓰다 끊긴 고리: 전에는 어떤 이벤트가 켜던(바꾸던·부르던) 스위치·변수·공통 이벤트를 이번 실행 뒤에는 아무도 안 켜는데, 그것을 조건으로 보는
+  // 페이지·분기는 남았다 → 그 내용에 영영 닿지 못한다(2026-10-25 조수 단독 게임 G15: 서연 대사를 날마다 다르게 다시 쓰며 「퇴근길에 같이 걸을래요?」
+  // 초대가 빠졌고, 걷는 장면은 sw_0005 를 기다리는데 켜는 곳이 사라졌다 — 보고는 「못 한 것 없음」).
+  const lost = lostLinks(before, after);
+  if (lost.length) problems.push(`[게임 검사 끊긴 고리] 이번에 고친 이벤트에서 빠진 명령 때문에 닿을 수 없게 된 내용이 있다: ${lost.slice(0, 4).join(" / ")} — 빠뜨린 명령(초대·스위치 켜기·공통 이벤트 부르기)을 새 페이지에 다시 넣거나, 일부러 없앤 것이면 그 조건 페이지도 지우고 보고에 적는다.`);
   // 셀프 스위치: 켰는데 그 이벤트 어느 페이지도 그 키를 조건으로 안 본다.
   for (const ev of changed) {
     const key = `${ev.mapId === "common" ? "common" : ev.mapId}/${ev.id}`;
@@ -387,6 +433,9 @@ export function unaskedChanges(before: Project, after: Project, task: string): s
       if (section === "skills" && /기술|스킬|마법|위력|MP|마나|공격|회복|skill|spell/iu.test(task)) continue;
       if ((section === "items" || section === "weapons" || section === "armors") && /가격|값|상점|가게|아이템|장비|무기|방어구|갑옷|회복약|포션|price|item|weapon|armor/iu.test(task)) continue;
       const keys = Object.keys({ ...prev, ...r }).filter((k) => JSON.stringify(prev[k]) !== JSON.stringify(r[k]));
+      // 장르 기본값(genreDefaults.ts): 판타지 기본 주인공 칩을 현대 칩으로 바꾼 것은 요청한 무대에 맞춘 것이다.
+      if (section === "actors" && keys.every((k) => ["characterResourceId", "characterIndex", "faceResourceId", "name", "nickname"].includes(k))
+        && (prev.characterResourceId === undefined || prev.characterResourceId === "easyrpg-charset-actor1") && /^oprn-charset-modern/u.test(String(r.characterResourceId ?? ""))) continue;
       out.push(`[게임 검사 부작용] 요청에 없는 기존 ${section} 「${name || String(r.id)}」 를 바꿨다(${keys.slice(0, 4).join(",")}) — 게임 전체 값이 바뀐다. 요청과 상관없는 변경이면 되돌리고, 요청을 이루려고 바꾼 것이면 그대로 두고 보고에 무엇을 왜 바꿨는지 적는다(요청을 이룬 변경을 되돌리지 않는다).`);
     }
   }
