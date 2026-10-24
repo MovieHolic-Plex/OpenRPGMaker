@@ -441,7 +441,7 @@
                 "actor_fs_elena": [
                   "skill_mage_blizzard",
                   "skill_fs_meditate",
-                  "item:item_ether@1"
+                  "item:item_ether@actor_fs_elena"
                 ],
                 "actor_hero": [
                   "defend"
