@@ -175,6 +175,7 @@ function validateCommandShape(label: string, value: unknown): void {
     case "transfer":
       if (command.direction !== undefined) requireTransferDirection(`${label}.direction`, command.direction);
       if (command.fade !== undefined) requireTransferFade(`${label}.fade`, command.fade);
+      if (command.door !== undefined) requireBoolean(`${label}.door`, command.door);
       return;
     case "moveEvent":
       validateMoveRoute(`${label}.route`, command.route);
