@@ -445,8 +445,8 @@
   },
   {
    "id": "defeat",
-   "label": "추락지 발렌에게 짐 — 물러서기",
-   "note": "act1Finale.ts crashSite 패배 갈래(recoverAll·엘레나 줄)",
+   "label": "추락지 발렌에게 짐 — 브람의 기습으로 이야기가 이어진다",
+   "note": "act1Finale.ts crashSite 패배 갈래 rescue: sw_fs_valen_lost·체력 25%·브람 연막·회로 획득",
    "mapId": "fs_forest",
    "x": 15,
    "y": 9,
@@ -555,7 +555,7 @@
      "shot": true
     },
     {
-     "id": "retreat",
+     "id": "ambush",
      "ops": [
       {
        "kind": "repeatUntil",
@@ -586,9 +586,41 @@
        "timeoutMs": 8000
       },
       {
+       "kind": "pressUntilText",
+       "key": "Enter",
+       "testid": "dialogue-box",
+       "text": "연기",
+       "maxPresses": 20,
+       "settleMs": 500
+      },
+      {
        "kind": "hold",
        "dir": null,
-       "ms": 1800
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "circuit",
+     "ops": [
+      {
+       "kind": "pressUntilText",
+       "key": "Enter",
+       "testid": "dialogue-box",
+       "text": "회로",
+       "maxPresses": 40,
+       "settleMs": 500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "evalToFile",
+       "fn": "() => { const s = window.__oprnDebug.readState(); return { lost: s.switches.sw_fs_valen_lost === true, circuit: s.inventory.item_fs_circuit ?? 0, map: s.currentMapId }; }",
+       "out": "/tmp/qa-fs-defeat-state.json"
       }
      ],
      "shot": true

@@ -12,7 +12,7 @@ const out = resolve(process.env.QA_OUT_DIR ?? "verify-shots/runtime-qa/fallen-ac
 await mkdir(out, { recursive: true });
 const fixture = JSON.parse(await readFile(resolve(process.env.FS_FIXTURE ?? "dist/demos/chrono-bell.project.json"), "utf8"));
 const project = fixture.project ?? fixture;
-const only = new Set((process.argv[2] ?? "valen,hanel,dragon,panel").split(","));
+const only = new Set((process.argv[2] ?? "valen,lose,hanel,dragon,panel").split(","));
 const withSiege = !process.env.FS_NO_SIEGE;
 const facts = { segments: {}, errors: [] };
 const log = (...a) => console.error("[act1]", ...a);
@@ -23,6 +23,7 @@ const AFTER_CRASH = { ...BASE, sw_fs_valen_crash_on: true, sw_fs_valen_crash_met
 const SEGMENTS = {
   // 세 단계 전부 + 회로까지 보이게 Lv10 로 녹화한다(헤드리스 승률 표는 Lv6~7).
   valen: { id: "fs-act1-valen", mapId: "fs_forest", x: 15, y: 9, facing: "down", switches: { ...BASE, sw_fs_valen_crash_on: true }, party: trio(10), items: { item_potion: 6, item_hi_potion: 3, item_ether: 4 } },
+  lose: { id: "fs-act1-lose", mapId: "fs_forest", x: 15, y: 9, facing: "down", switches: { ...BASE, sw_fs_valen_crash_on: true }, party: trio(6), items: { item_potion: 3 } },
   hanel: { id: "fs-act1-hanel", mapId: "fs_observatory", x: 12, y: 13, facing: "up", switches: { ...BASE, sw_fs_valen_crash_on: true, sw_fs_valen_crash_met: true, sw_fs_valen_soldiers_gone: true, sw_fs_main_step2: true }, variables: { var_fs_main_progress: 3 }, party: trio(8), items: { item_potion: 3, item_fs_star_key: 1, item_fs_circuit: 1 } },
   dragon: { id: "fs-act1-dragon", mapId: "fs_vault_b4", x: 14, y: 26, facing: "up", switches: { ...AFTER_CRASH }, party: trio(8), items: { item_potion: 6, item_hi_potion: 3, item_ether: 4 } },
   panel: { id: "fs-act1-panel", mapId: "fs_vault_b4", x: 14, y: 4, facing: "up", switches: { ...AFTER_CRASH, sw_fs_dragon_met: true, sw_fs_dragon_down: true }, party: trio(9), items: { item_potion: 3 } },
@@ -191,6 +192,41 @@ try {
     shot(page, "valen-circuit", 300);
     await read(page, seg.texts, async () => false, { maxMs: 9_000 });
     mark("valen_end");
+  });
+  if (only.has("lose")) await segment(browser, server, "lose", async (page, mark, seg) => {
+    mark("lose_start");
+    // 진 갈래: 일행 체력을 1 로 깎아 두고 막기만 한다 — 게임 오버 없이 브람의 기습으로 이어지는지 본다.
+    await page.evaluate(() => { for (const id of window.__oprnDebug.readState().partyActorIds) window.__oprnSetActorVitals(id, 1, 999); });
+    await read(page, seg.texts, (s) => s.battle);
+    await page.waitForTimeout(1500);
+    mark("lose_battle");
+    const msgs = [];
+    let idle = 0;
+    const tEnd = Date.now() + 180_000;
+    while (Date.now() < tEnd) {
+      const s = await ui(page);
+      if (!s.battle) break;
+      const line = s.box ? `[대사] ${s.box.replace(/\s+/g, " ").trim()}` : s.msg;
+      if (line && line !== msgs.at(-1)) msgs.push(line);
+      const step = await page.evaluate(() => {
+        const live = [...document.querySelectorAll("button")].filter((n) => !n.disabled && n.offsetParent !== null && n.dataset.previewOnly !== "true");
+        const ok = live.find((n) => n.dataset.testid === "battle-result-confirm"); if (ok) { ok.click(); return "confirm"; }
+        const d = live.find((n) => n.dataset.testid === "actor-command-defend"); if (d) { d.click(); return "defend"; }
+        return null;
+      });
+      if (step) idle = 0; else if (s.box !== null || ++idle > 8) { await page.keyboard.press("Enter", { delay: 80 }); idle = 0; }
+      await page.waitForTimeout(step ? 450 : 300);
+    }
+    seg.battleMessages = msgs;
+    mark("lose_lost");
+    await read(page, seg.texts, (s) => /연기 터진다/.test(s.box ?? ""), { maxMs: 60_000 });
+    mark("lose_ambush");
+    shot(page, "lose-ambush", 400);
+    await read(page, seg.texts, (s) => /회로/.test(s.box ?? "") && /손에 넣었다|하넬/.test(s.box ?? ""), { maxMs: 90_000 });
+    shot(page, "lose-circuit", 300);
+    await read(page, seg.texts, async () => false, { maxMs: 12_000 });
+    seg.after = await page.evaluate(() => { const s = window.__oprnDebug.readState(); return { lost: s.switches.sw_fs_valen_lost === true, circuit: s.inventory.item_fs_circuit ?? 0, map: s.currentMapId, over: !!document.querySelector('[data-testid="game-over-screen"]') }; });
+    mark("lose_end");
   });
   if (only.has("hanel")) await segment(browser, server, "hanel", async (page, mark, seg) => {
     mark("hanel_start");
