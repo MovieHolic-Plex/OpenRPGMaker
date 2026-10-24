@@ -26,75 +26,99 @@ def runs(n, rnd, choices, lo=2, hi=4):
 
 END = ["  ll", " jkkl", "jkrkm", "lrmrr", "lrrmr", "lkrrk", " jkkm", "  ll"]  # warm cut face, brown ring
 
-def log(c, x0, x1, top, seed, moss, H=8, cut=True):
+def body(c, x0, x1, top, H, seed, topbump, botbump, moss):
+    """Log body with an irregular outline: per-column top/bottom offsets from bump lists."""
     rnd = random.Random(seed)
     n = x1 - x0 + 1
-    mossrow = runs(n, rnd, ["o", "o", "p", "f", None, None] if moss else [None])
     lit = runs(n, rnd, ["m", "m", "t", "m", "s"])
     mid = runs(n, rnd, ["s", "s", "s", "m", "u"], 2, 5)
     low = runs(n, rnd, ["u", "u", "u", "v"], 2, 5)
-    for i, x in enumerate(range(x0, x1 + 1)):
-        col = []
-        col.append("d" if mossrow[i] is None else "e")
-        col.append(mossrow[i] or "i")
-        col.append(lit[i] if mossrow[i] is None else ("f" if lit[i] == "s" else "q"))
-        col.append(lit[i] if mossrow[i] is None else lit[i] if lit[i] != "t" else "m")
-        col += [mid[i]] * (H - 6)
-        col.append(low[i]); col.append(low[i] if low[i] == "u" else "u")
-        col[-1] = "v" if low[i] == "v" else "u"
-        col.append("x" if (i // 3) % 3 else "y")
-        for k, ch in enumerate(col): put(c, x, top + k, ch)
-        if i > 3: put(c, x + 1, top + len(col), "S"); put(c, x + 2, top + len(col) + 1, "~")
-    # right end: dark bark cap
-    for k in range(H + 1): put(c, x1 + 1, top + k, "b" if k < H // 2 else "a")
-    put(c, x1 + 1, top, "d")
-    if cut: stamp(c, x0 - 4, top + (H + 1 - len(END)) // 2, END)
+    for i in range(n):
+        x = x0 + i
+        t = top + topbump.get(i, 0); b = top + H + botbump.get(i, 0)
+        for y in range(t, b + 1):
+            k = y - t
+            if y == t: ch = "d"
+            elif k == 1: ch = "i" if lit[i] != "t" else "m"
+            elif k == 2: ch = lit[i]
+            elif y == b: ch = "x" if (i // 3) % 3 else "y"
+            elif y == b - 1: ch = "v" if low[i] == "v" else "u"
+            elif y == b - 2: ch = low[i]
+            else: ch = mid[i]
+            put(c, x, y, ch)
+        if i > 2: put(c, x + 1, b + 1, "S"); put(c, x + 2, b + 2, "~")
+    if moss:
+        x = moss[0]
+        while x < moss[1]:
+            w = rnd.randint(3, 6)
+            if rnd.random() < moss[2]:
+                d = rnd.choice([1, 2, 2, 3])
+                for q in range(w):
+                    if x + q >= moss[1]: break
+                    tt = top + topbump.get(x + q - x0, 0)
+                    dd = d if 0 < q < w - 1 else 1
+                    for k in range(dd + 1):
+                        put(c, x + q, tt + k, "o" if k == 0 else ("f" if k < dd else "q"))
+                    if q in (1, 2): put(c, x + q, tt, "p")
+                    if 0 < q < w - 1: put(c, x + q, tt - 1, "e" if q % 2 else "f")
+            x += w + rnd.randint(1, 4)
 
 def log_long():
     c = canvas(48, 16)
-    log(c, 5, 44, 5, 21, True, H=8)
-    stamp(c, 33, 3, ["  bd", " dmb", "  i "])   # broken branch stub on the top
-    stamp(c, 15, 8, ["uu", "vu"]); stamp(c, 26, 9, ["vvu"])  # knots as 2-3px clusters
+    tb = {0: 1, 1: 1, 2: 0, 9: -1, 10: -1, 11: -1, 22: 1, 23: 1, 30: -1, 31: -1, 37: 1, 38: 1, 39: 1}
+    bb = {0: -1, 13: 1, 14: 1, 26: -1, 27: -1, 28: -1, 38: 1, 39: 1}
+    body(c, 5, 44, 5, 8, 21, tb, bb, (8, 42, .7))
+    # cut end: angled face, warm cream, rings offset
+    stamp(c, 1, 5, ["   lk", "  lkrk", " lkrmrm", " krmrrm", "lkrrmrk", "lkrmmrk", " lkrrk", "  lkkm", "   ll"])
+    # broken branch stub, angled up-right
+    stamp(c, 32, 1, ["    bd", "   dmb", "  dmi ", " bdu  "])
+    # right end: splintered, jagged
+    stamp(c, 44, 5, ["d  ", "sd ", "mud", "suub", "uva", "uvb", "va ", "ux ", "x  "])
     return done(c), K
 
 def log_short():
     c = canvas(32, 16)
-    log(c, 7, 26, 6, 5, False, H=7)
-    # horizontal bark grain: short 2-4px darker runs along the face
-    for x, y, L in ((10, 9, 4), (17, 10, 3), (13, 11, 3), (21, 9, 4), (19, 12, 2)):
-        for i in range(L): put(c, x + i, y, "u")
-    for x, y, L in ((12, 8, 3), (22, 8, 2)):
-        for i in range(L): put(c, x + i, y, "t")
+    tb = {0: 0, 5: -1, 6: -1, 7: -1, 14: 1, 15: 1, 19: -1}
+    bb = {0: -1, 1: -1, 9: 1, 10: 1, 16: -1, 17: -1}
+    body(c, 7, 25, 6, 7, 5, tb, bb, None)
+    for x, y, L in ((10, 9, 4), (17, 10, 3), (13, 11, 3), (21, 9, 3)):
+        for q in range(L): put(c, x + q, y, "u")
+    # cut end on the left: plain, slightly broken rim, ring off-centre
+    stamp(c, 3, 6, ["  lk ", " lkrl", "lkrrk", "kmrrr", "kmmrk", "lkrkl", " lkk", "  l "])
+    # right end: rounded broken bark, short bark stub on the top
+    stamp(c, 25, 6, ["db ", "sub", "suva", "uuva", "uvva", "vva", "xx ", "x  "])
+    stamp(c, 12, 3, [" bd", "dmb", " i "])
     return done(c), K
 
 def log_mossy():
     c = canvas(48, 32)
-    log(c, 6, 42, 18, 33, True, H=8)
+    tb = {0: 1, 6: -1, 7: -1, 8: -1, 18: 1, 19: 1, 27: -1, 28: -1, 33: 1}
+    bb = {4: 1, 5: 1, 20: -1, 21: -1, 30: 1}
+    body(c, 7, 41, 18, 8, 33, tb, bb, None)
     rnd = random.Random(9)
-    # moss blanket: woodland ramp, lobes hanging 1-3 rows down the front, lit clumps upper-left
-    x = 7
-    while x < 42:
-        w = rnd.randint(3, 5); d = rnd.choice([1, 2, 2, 3])
-        for i in range(w):
-            if x + i > 41: break
-            for k in range(2 + (d if 0 < i < w - 1 else max(0, d - 1))):
-                put(c, x + i, 17 + k, "3" if k < 2 else ("2" if k < 3 else "1"))
-            put(c, x + i, 17, "4" if i < w - 1 else "3")
-        if rnd.random() < .5: put(c, x + 1, 17, "5"); put(c, x + 2, 17, "5")
-        x += w
-    x = 8
-    while x < 40:  # irregular raised moss cushions, 3-5px, not a ruler line
-        w = rnd.randint(3, 5)
-        if rnd.random() < .6:
-            for i in range(w): put(c, x + i, 16, "3" if i < w - 1 else "2")
-            put(c, x + 1, 15, "4"); put(c, x + 2, 15, "3")
-        x += w + rnd.randint(1, 3)
-    # fern clumps behind: lobed 2-3px leaflets, no 1px spikes
-    fern = ["    33   ", "  3443 33", " 344 2343", "34 23 42 ", " 2213122 ", "  1121   "]
-    stamp(c, 14, 11, fern)
-    stamp(c, 30, 12, [" 33  33", "3443343", " 23422 ", "  1211 "])
-    # rot hollow on the front, irregular
-    stamp(c, 22, 22, [" xx", "xwwx", " xwx"])
+    # moss blanket flowing over the top and spilling down the left half to the ground
+    # moss blanket: lumpy clumps, larger on the left half, one tongue running down to the ground
+    lobes = [(8, 3, 4), (11, 4, 3), (15, 5, 5), (20, 3, 3), (23, 4, 4), (28, 3, 2), (32, 5, 3), (37, 3, 2)]
+    for lx, w, d in lobes:
+        for q in range(w):
+            x = lx + q; tt = 18 + tb.get(x - 7, 0)
+            dd = d - (1 if q in (0, w - 1) else 0)
+            for k in range(dd + 2):
+                put(c, x, tt - 1 + k, "3" if k < 2 else ("2" if k < dd + 1 else "1"))
+            if q < 2: put(c, x, tt - 1, "4")
+        put(c, lx + 1, 18 + tb.get(lx - 6, 0) - 1, "5")
+    stamp(c, 8, 21, ["2223", "12232", " 1222", " 1121", "  112"])
+    # moss runs into the grass at the left foot
+    stamp(c, 6, 26, ["  1223", " 12211", "1211  "])
+    stamp(c, 3, 27, ["31", " 1"])
+    # one fern on the left, a smaller lower one right (not symmetric)
+    stamp(c, 10, 9, ["     33  ", "  33 443 ", " 3443432 ", "344 2342 3", " 23 1243 ", "  1212 2 ", "   1121  "])
+    stamp(c, 33, 15, [" 3 33", "34342", " 2121"])
+    # cut end: rotten, hollow and broken (dark core, cream only at the rim)
+    stamp(c, 3, 18, ["   lk", "  lkrrk", " lkrmrkm", " krrkmrr", "lkrmrrk", " lkrrkm", "  lkkm", "   lk"])
+    stamp(c, 5, 16, ["4", "3"])
+    # right end splintered
+    stamp(c, 41, 18, ["db", "sub", "suu ", "uvub", "uva", "uvb", "vva", "ux ", "x "])
     return done(c), K
 
 STUMP_L = [
@@ -129,47 +153,48 @@ def stump_l():
     return done(c), K
 
 STUMP_S = [
-    "   idiid   ",
-    "  dtkrrcd  ",
-    " dmrmkrmmd ",
-    " dtrrmmrmd ",
-    " bmmmmuuub ",
-    " bmsmsuvua ",
-    " bmssuuvva ",
-    "dmssvsuvvax",
-    "x xvsxuvx x",
-    "    xx xx  ",
+    "    didd    ",
+    "  ditkkrd   ",
+    " dmrkmmkkd  ",
+    " dtrmkmkmmd ",
+    " bmkrrrmmmb ",
+    " bmmsmsuuvb ",
+    " bmsmsuuvva ",
+    " bmssmsuvva ",
+    "dmmssvsuvvax",
+    "xsx vsuuvxwx",
+    "      xx x  ",
 ]
 def stump_s():
     c = canvas(16, 16)
-    stamp(c, 2, 4, STUMP_S)
-    for x in range(5, 14): put(c, x, 14, "S")
-    for x in range(8, 15): put(c, x, 15, "~")
+    stamp(c, 1, 4, STUMP_S)
+    for x in range(6, 15): put(c, x, 15, "S")
+    put(c, 3, 14, "S"); put(c, 4, 14, "~")
     return done(c), K
 
 STUMP_F = [
-    "    dd     ",
-    "   ditd d  ",
-    "  dtrkmidd ",
-    "  dmrrmkmd ",
-    "  bmmmuuub ",
-    "  bmsmsuva ",
-    "  bmssuuva ",
-    "  bmsmsuva ",
-    "  bmssuvva ",
-    " dmssvsuvax",
-    " x xsvxuvx ",
-    "    xx  x  ",
+    "   ddidd   ",
+    "  ditkrkd  ",
+    " dmrkmmkkd ",
+    " dtkrrrkmd ",
+    " bmmmmmuub ",
+    " bmmsmsuva ",
+    " bmsmsuuva ",
+    " bmsmssuva ",
+    " bmssmsuva ",
+    " bmsssuuva ",
+    "dmmssvsuvva",
+    "xsxxvsxuvxx",
 ]
 def stump_shelf():
     c = canvas(16, 16)
-    stamp(c, 2, 2, STUMP_F)
-    # asymmetric brackets overlapping the front face: big one right-low, small one left-mid
-    stamp(c, 8, 7, [" cch  ", "chhzhz", " zzzaa"])
-    stamp(c, 9, 10, ["chz", " za"])
-    stamp(c, 3, 9, ["ch", "za"])
-    for x in range(6, 15): put(c, x, 14, "S")
-    for x in range(10, 15): put(c, x, 15, "~")
+    stamp(c, 1, 2, STUMP_F)
+    # thin half-disc shelves on the right side, stacked unevenly; one small on the front-left low
+    stamp(c, 9, 6, ["  cch", "chhhzz", "zzzza"])
+    stamp(c, 10, 10, [" ch", "chhz", "zza"])
+    stamp(c, 3, 11, ["ch", "za"])
+    for x in range(5, 15): put(c, x, 14, "S")
+    for x in range(9, 15): put(c, x, 15, "~")
     return done(c), K
 
 ART = {"log-long": log_long(), "log-short": log_short(), "log-mossy": log_mossy(),
