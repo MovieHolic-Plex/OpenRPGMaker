@@ -2357,7 +2357,7 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
   `levelUp`·`skillLearned`·`comboUnlocked`·`style`(burst·classic·minimal)·`sound`. 소리는 합성 `levelUp`·`skillLearned`·`combo`.
 - QA: `scripts/qa/runtime/checkpoints/fallen-battle-depth.json`(데스크톱: 도움말·듀얼·연계 대기→트리플·레벨 업 팡파레), `-mobile`(세로, `context.hasTouch`)·`-landscape`. 새 op `click`(DOM 클릭)·`tap`(터치), 세트 `context` 는 브라우저 컨텍스트 옵션. 전투 op 계획 `combo:<skillId>` 는 「연계」 명령을 누른다(준비 전이면 연계 대기).
 
-## 전투 연출 설정 — 달려드는 속도 · 얼굴 교차 컷인 · 화려한 연계 착탄 · 한 줄 도움말 · 터치 가로 전투 배율 (fs-battle-3, 2026-10-25)
+## 전투 연출 설정 — 달려드는 속도 · 얼굴 교차 컷인 · 화려한 연계 착탄 · 한 줄 도움말 · 성장 곡선 (fs-battle-3, 2026-10-25)
 
 사용자(폴른 스타 시연): 「늑대가 고블린보다 느리네 — 빠른 것을 기준으로」「연계기 할 때 서로의 얼굴이 교차하는 느낌으로」「연계기는 좀 더 화려해야」「기술 도움말은 '카엘은 무엇을 할까?' 자리에 1줄로」「모바일 가로가 너무 작다」「레벨 오르면 왜 체력만 오르냐」.
 
@@ -2369,7 +2369,7 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
   흉상은 `actorBustImage`: 외형 흉상 → `faceResourceId` 의 공용 표정 세트 흉상(「결의」 우선) → 48px 얼굴. 전투 시작 때 `preloadComboBusts` 로 미리 읽는다(첫 프레임 빈 판 방지).
 - **착탄** `comboImpact(root, project, target, amount, critical, speed)` — `root.dataset.battleComboActive` 동안 `onDamageFeedback` 이 부른다. 첫 타: 번쩍임·참가자 색 모임 고리+핵+파편 16·흔들림(`comboStaging.shake`, 생략 = 트리플 heavy / 듀얼 light)·느린 화면(무대 애니메이션 `playbackRate` 0.3, 420ms; `slowMo:false` 로 끔)·합성음 `comboImpact`. 매 타: 피해 숫자 폭발. 적 엔트리나 다른 행동이 오면 `endComboAction`. 색은 `comboTint(skill)`(= `comboStaging.tint` → 속성 색 → 금색). reduced-motion 은 움직임을 끈다.
 - **한 줄 도움말** `skillHelpOneLiner(project, skill, user)`(`src/battle/skillHelp.ts`) — 「MP6 · 적 전체 · 냉기 · 둔화」: 비용(연계는 MP3+5) · 범위 · 속성 · 특징 둘(약점 노림·상태·해제·능력 단계·흡수·행동 지연·N연타·합체·방어 무시·급소↑·무기 공명), 없으면 회복/위력. `battleCommandDom.syncBattleSkillHintLine` 이 메시지 창 맨 위에 `.battle-message-hint`(testid `battle-skill-hint`)로 질문 줄을 대신한다. 큰 도움말 창은 `skillHint: "window"` 일 때만. 필드 메뉴 스킬 화면의 긴 설명은 그대로.
-- **터치 가로 전투 배율** — 전투가 떠 있으면 `playSurface` 의 MutationObserver 가 `viewport.dataset.touchBattle` 을 켜고, `calculateTouchLayout(..., {battle:true})` 가 조이스틱 여백을 빼고 `calculatePlaySurfaceScale(..., dpr, deviceSteps=true)` 로 정수 배율이 화면을 35% 넘게 비우면 기기 화소 단위(k/dpr) 배율을 쓴다. 터치 패드는 전투 가로에서 숨긴다(`touchpad.css`). 전투 밖 일반 모바일 배율은 손대지 않았다.
-  실측: iPhone 15 가로(852×393)·Galaxy(780×360) 전투 장면 480×270 → 640×360(높이 69%/75% → 92%/100%), 명령 단추 86×20 → 114×27.
+- **터치 가로 전투 크기** — 따로 고치지 않는다. 모바일 일반 수정(9e7d458dd7, `landscapeTouchScale`: 가로에서 무대가 화면 높이를 채우고 조작은 반투명하게 겹침 `data-touch-overlay`)이 전투에도 그대로 적용된다. 전투 전용 배율 갈래를 만들었다가 겹쳐서 뺐다.
+  실측(`measureLayout`): iPhone 15 가로(852×393) 전투 장면 480×270 → 698×393, Galaxy(780×360) 480×270 → 640×360, 명령 단추 86×20 → 125×29 / 114×27. 남은 점: 반투명 조이스틱·B 가 명령 창 왼쪽 아래·파티 창 게이지에 조금 겹친다.
 - **성장 곡선**(폴른 스타) `battleDepth.applyFallenGrowthCurves` — 기본 곡선 끝이 평평해 레벨 업에 HP 만 올랐다. 역할별 `FS_GROWTH`(L6 기준, 레벨당 증가가 L16 무렵까지 앞→뒤로 커짐)로 모든 능력치가 오른다. 엔진에 행운·마법 방어 칸은 없다(정신이 마법 공·방). 모의전 n=200: 보스 약 +6%p.
 - QA: `fallen-battle-depth.json` 에 `lunge-wolves`·`lunge-goblins`, 세트 `fallen-battle-landscape-iphone15`·`-galaxy`·`fallen-battle-lunge-classic`. 새 op `measureLayout {selectors, label}` → 로그 `[measureLayout]` 에 요소 상자·글꼴·`enemyLunges`.
