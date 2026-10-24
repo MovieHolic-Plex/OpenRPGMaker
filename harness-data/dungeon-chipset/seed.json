@@ -3476,7 +3476,7 @@
    "id": "prop.cracked_floor",
    "wave": "theme_props",
    "title": "금 간 바닥 함정 2×2",
-   "kind": "tile",
+   "kind": "objects",
    "size": [
     2,
     2
@@ -3485,7 +3485,7 @@
     2,
     2
    ],
-   "layer": "lower",
+   "layer": "upper",
    "walk": "걸음",
    "walk_grid": {
     "기본": [
@@ -3493,7 +3493,7 @@
      "oo"
     ]
    },
-   "brief": "판석이 가운데로 내려앉아 방사로 갈라진 함정 자리(불투명, 바닥 칸 — 바깥 줄눈은 성 바닥 키트와 같은 회색).",
+   "brief": "판석이 가운데로 내려앉아 갈라진 함정 자리(덧그림 — 손상 둘레만 그리고 바깥은 투명, 진짜 바닥 위에 얹힌다. 걷는 칸).",
    "refs": [
     "castle-catacombs:floor_castle"
    ],
