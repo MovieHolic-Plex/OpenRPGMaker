@@ -39535,6 +39535,282 @@ null,
 ],
 "passage": "solid",
 "layer": "upper"
+},
+{
+"key": "5df29c3266ee59dffea876dc",
+"origin": "earth.carpet/*/theme-earth-r1:A2@8e877694",
+"label": "버들항 던전 · 왕실 양탄자 1칸 폭·3칸 폭(세로) 한 칸 폭 (0,0)",
+"description": "세로로 까는 양탄자: 1칸 폭 [위 끝·가운데·아래 끝] + 3칸 폭 [위 줄·가운데 줄·아래 줄 × 왼·가운데·오른]. 가운데는 16px 주기로 몇 칸이든 이어진다. 그림 = [1칸 폭 1×3 | 3칸 폭 3×3].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"carpet-runner",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "094afe5e7d70f02dafb77545",
+"origin": "earth.carpet/*/theme-earth-r1:A2@8e877694",
+"label": "버들항 던전 · 왕실 양탄자 1칸 폭·3칸 폭(세로) 한 칸 폭 (0,1)",
+"description": "세로로 까는 양탄자: 1칸 폭 [위 끝·가운데·아래 끝] + 3칸 폭 [위 줄·가운데 줄·아래 줄 × 왼·가운데·오른]. 가운데는 16px 주기로 몇 칸이든 이어진다. 그림 = [1칸 폭 1×3 | 3칸 폭 3×3].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"carpet-runner",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "e12e30ad306ef3e3c6c4cf8b",
+"origin": "earth.carpet/*/theme-earth-r1:A2@8e877694",
+"label": "버들항 던전 · 왕실 양탄자 1칸 폭·3칸 폭(세로) 한 칸 폭 (0,2)",
+"description": "세로로 까는 양탄자: 1칸 폭 [위 끝·가운데·아래 끝] + 3칸 폭 [위 줄·가운데 줄·아래 줄 × 왼·가운데·오른]. 가운데는 16px 주기로 몇 칸이든 이어진다. 그림 = [1칸 폭 1×3 | 3칸 폭 3×3].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"carpet-runner",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "f4784da61e9e1446b14922c5",
+"origin": "earth.carpet/*/theme-earth-r1:A2@8e877694",
+"label": "버들항 던전 · 왕실 양탄자 1칸 폭·3칸 폭(세로) 세 칸 폭 (0,0)",
+"description": "세로로 까는 양탄자: 1칸 폭 [위 끝·가운데·아래 끝] + 3칸 폭 [위 줄·가운데 줄·아래 줄 × 왼·가운데·오른]. 가운데는 16px 주기로 몇 칸이든 이어진다. 그림 = [1칸 폭 1×3 | 3칸 폭 3×3].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"carpet-runner",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "f474c1406b437a3a1a40e5ad",
+"origin": "earth.carpet/*/theme-earth-r1:A2@8e877694",
+"label": "버들항 던전 · 왕실 양탄자 1칸 폭·3칸 폭(세로) 세 칸 폭 (1,0)",
+"description": "세로로 까는 양탄자: 1칸 폭 [위 끝·가운데·아래 끝] + 3칸 폭 [위 줄·가운데 줄·아래 줄 × 왼·가운데·오른]. 가운데는 16px 주기로 몇 칸이든 이어진다. 그림 = [1칸 폭 1×3 | 3칸 폭 3×3].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"carpet-runner",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "e1838241de41671f7d351b2c",
+"origin": "earth.carpet/*/theme-earth-r1:A2@8e877694",
+"label": "버들항 던전 · 왕실 양탄자 1칸 폭·3칸 폭(세로) 세 칸 폭 (2,0)",
+"description": "세로로 까는 양탄자: 1칸 폭 [위 끝·가운데·아래 끝] + 3칸 폭 [위 줄·가운데 줄·아래 줄 × 왼·가운데·오른]. 가운데는 16px 주기로 몇 칸이든 이어진다. 그림 = [1칸 폭 1×3 | 3칸 폭 3×3].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"carpet-runner",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "3c98e36712dedee8752442f0",
+"origin": "earth.carpet/*/theme-earth-r1:A2@8e877694",
+"label": "버들항 던전 · 왕실 양탄자 1칸 폭·3칸 폭(세로) 세 칸 폭 (0,1)",
+"description": "세로로 까는 양탄자: 1칸 폭 [위 끝·가운데·아래 끝] + 3칸 폭 [위 줄·가운데 줄·아래 줄 × 왼·가운데·오른]. 가운데는 16px 주기로 몇 칸이든 이어진다. 그림 = [1칸 폭 1×3 | 3칸 폭 3×3].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"carpet-runner",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "6aa3d2ca8d4de08c9498232d",
+"origin": "earth.carpet/*/theme-earth-r1:A2@8e877694",
+"label": "버들항 던전 · 왕실 양탄자 1칸 폭·3칸 폭(세로) 세 칸 폭 (1,1)",
+"description": "세로로 까는 양탄자: 1칸 폭 [위 끝·가운데·아래 끝] + 3칸 폭 [위 줄·가운데 줄·아래 줄 × 왼·가운데·오른]. 가운데는 16px 주기로 몇 칸이든 이어진다. 그림 = [1칸 폭 1×3 | 3칸 폭 3×3].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"carpet-runner",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "f7ee16844bceebd03f7a2f17",
+"origin": "earth.carpet/*/theme-earth-r1:A2@8e877694",
+"label": "버들항 던전 · 왕실 양탄자 1칸 폭·3칸 폭(세로) 세 칸 폭 (2,1)",
+"description": "세로로 까는 양탄자: 1칸 폭 [위 끝·가운데·아래 끝] + 3칸 폭 [위 줄·가운데 줄·아래 줄 × 왼·가운데·오른]. 가운데는 16px 주기로 몇 칸이든 이어진다. 그림 = [1칸 폭 1×3 | 3칸 폭 3×3].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"carpet-runner",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "4b80378cc966890762e33ab6",
+"origin": "earth.carpet/*/theme-earth-r1:A2@8e877694",
+"label": "버들항 던전 · 왕실 양탄자 1칸 폭·3칸 폭(세로) 세 칸 폭 (0,2)",
+"description": "세로로 까는 양탄자: 1칸 폭 [위 끝·가운데·아래 끝] + 3칸 폭 [위 줄·가운데 줄·아래 줄 × 왼·가운데·오른]. 가운데는 16px 주기로 몇 칸이든 이어진다. 그림 = [1칸 폭 1×3 | 3칸 폭 3×3].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"carpet-runner",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "ab3145ccd98e80977d2f8934",
+"origin": "earth.carpet/*/theme-earth-r1:A2@8e877694",
+"label": "버들항 던전 · 왕실 양탄자 1칸 폭·3칸 폭(세로) 세 칸 폭 (1,2)",
+"description": "세로로 까는 양탄자: 1칸 폭 [위 끝·가운데·아래 끝] + 3칸 폭 [위 줄·가운데 줄·아래 줄 × 왼·가운데·오른]. 가운데는 16px 주기로 몇 칸이든 이어진다. 그림 = [1칸 폭 1×3 | 3칸 폭 3×3].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"carpet-runner",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "4ac17051104bceb220f9eba9",
+"origin": "earth.carpet/*/theme-earth-r1:A2@8e877694",
+"label": "버들항 던전 · 왕실 양탄자 1칸 폭·3칸 폭(세로) 세 칸 폭 (2,2)",
+"description": "세로로 까는 양탄자: 1칸 폭 [위 끝·가운데·아래 끝] + 3칸 폭 [위 줄·가운데 줄·아래 줄 × 왼·가운데·오른]. 가운데는 16px 주기로 몇 칸이든 이어진다. 그림 = [1칸 폭 1×3 | 3칸 폭 3×3].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"carpet-runner",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
 }
 ],
 "defs": {
@@ -43394,30 +43670,6 @@ null,
 "description": "촛대 1×2 (불꽃 3장면)(키트 bd-pick-dungeon-theme-iron-candelabra). 하네스 theme-earth-r1 A2.",
 "placementRules": "통행: 아래 칸 막힘 · 위 칸 ★"
 },
-"beodeul:dungeon_theme_earth_carpet": {
-"id": "beodeul:dungeon_theme_earth_carpet",
-"name": "버들항 던전 주제 왕실 양탄자 1칸 폭·3칸 폭(세로)",
-"role": "object",
-"source": "bundled-default",
-"defaultLayer": "upper",
-"confidence": "high",
-"tileIds": [
-31143,
-31144,
-31145,
-31146,
-31147,
-31148,
-31149,
-31150,
-31151,
-31152,
-31153,
-31154
-],
-"description": "왕실 양탄자 1칸 폭·3칸 폭(세로)(키트 bd-pick-dungeon-theme-carpet-runner, bd-pick-dungeon-theme-carpet-runner-3w). 하네스 theme-earth-r1 A2.",
-"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)"
-},
 "beodeul:dungeon_theme_earth_ore_vein": {
 "id": "beodeul:dungeon_theme_earth_ore_vein",
 "name": "버들항 던전 주제 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1",
@@ -44938,6 +45190,30 @@ null,
 ],
 "description": "도깨비불 등잔 1×2(3장면)(키트 bd-pick-dungeon-theme-will-o-wisp). 하네스 theme-props-r8 A1.",
 "placementRules": "통행: 막힘"
+},
+"beodeul:dungeon_theme_earth_carpet": {
+"id": "beodeul:dungeon_theme_earth_carpet",
+"name": "버들항 던전 주제 왕실 양탄자 1칸 폭·3칸 폭(세로)",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+33043,
+33044,
+33045,
+33046,
+33047,
+33048,
+33049,
+33050,
+33051,
+33052,
+33053,
+33054
+],
+"description": "왕실 양탄자 1칸 폭·3칸 폭(세로)(키트 bd-pick-dungeon-theme-carpet-runner, bd-pick-dungeon-theme-carpet-runner-3w). 하네스 theme-earth-r1 A2.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)"
 }
 },
 "structureKits": {
@@ -45537,154 +45813,6 @@ null,
 "던전",
 "주제",
 "iron-candelabra",
-"mine",
-"catacomb",
-"castle",
-"temple",
-"광산",
-"묘지",
-"성",
-"유적"
-],
-"role": "prop",
-"repeatability": "fixed",
-"layerHome": "upper",
-"themes": [
-"dungeon",
-"던전",
-"mine",
-"catacomb",
-"castle",
-"temple",
-"광산",
-"묘지",
-"성",
-"유적"
-]
-}
-},
-"bd-pick-dungeon-theme-carpet-runner": {
-"id": "bd-pick-dungeon-theme-carpet-runner",
-"kind": "object",
-"name": "버들항 던전 · 왕실 양탄자 1칸 폭·3칸 폭(세로) 한 칸 폭 1×3",
-"width": 1,
-"height": 3,
-"tileSize": 16,
-"rows": [
-{
-"tiles": [
--1
-],
-"upperTiles": [
-31143
-]
-},
-{
-"tiles": [
--1
-],
-"upperTiles": [
-31144
-]
-},
-{
-"tiles": [
--1
-],
-"upperTiles": [
-31145
-]
-}
-],
-"learnedFrom": "db-authored",
-"ai": {
-"description": "왕실 양탄자 1칸 폭·3칸 폭(세로) — 한 칸 폭. 세로로 까는 양탄자: 1칸 폭 [위 끝·가운데·아래 끝] + 3칸 폭 [위 줄·가운데 줄·아래 줄 × 왼·가운데·오른]. 가운데는 16px 주기로 몇 칸이든 이어진다. 그림 = [1칸 폭 1×3 | 3칸 폭 3×3].",
-"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
-"tags": [
-"버들항",
-"던전",
-"주제",
-"carpet-runner",
-"mine",
-"catacomb",
-"castle",
-"temple",
-"광산",
-"묘지",
-"성",
-"유적"
-],
-"role": "prop",
-"repeatability": "fixed",
-"layerHome": "upper",
-"themes": [
-"dungeon",
-"던전",
-"mine",
-"catacomb",
-"castle",
-"temple",
-"광산",
-"묘지",
-"성",
-"유적"
-]
-}
-},
-"bd-pick-dungeon-theme-carpet-runner-3w": {
-"id": "bd-pick-dungeon-theme-carpet-runner-3w",
-"kind": "object",
-"name": "버들항 던전 · 왕실 양탄자 1칸 폭·3칸 폭(세로) 세 칸 폭 3×3",
-"width": 3,
-"height": 3,
-"tileSize": 16,
-"rows": [
-{
-"tiles": [
--1,
--1,
--1
-],
-"upperTiles": [
-31146,
-31147,
-31148
-]
-},
-{
-"tiles": [
--1,
--1,
--1
-],
-"upperTiles": [
-31149,
-31150,
-31151
-]
-},
-{
-"tiles": [
--1,
--1,
--1
-],
-"upperTiles": [
-31152,
-31153,
-31154
-]
-}
-],
-"learnedFrom": "db-authored",
-"ai": {
-"description": "왕실 양탄자 1칸 폭·3칸 폭(세로) — 세 칸 폭. 세로로 까는 양탄자: 1칸 폭 [위 끝·가운데·아래 끝] + 3칸 폭 [위 줄·가운데 줄·아래 줄 × 왼·가운데·오른]. 가운데는 16px 주기로 몇 칸이든 이어진다. 그림 = [1칸 폭 1×3 | 3칸 폭 3×3].",
-"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
-"tags": [
-"버들항",
-"던전",
-"주제",
-"carpet-runner",
 "mine",
 "catacomb",
 "castle",
@@ -50903,6 +51031,154 @@ null,
 "던전",
 "swamp",
 "늪"
+]
+}
+},
+"bd-pick-dungeon-theme-carpet-runner": {
+"id": "bd-pick-dungeon-theme-carpet-runner",
+"kind": "object",
+"name": "버들항 던전 · 왕실 양탄자 1칸 폭·3칸 폭(세로) 한 칸 폭 1×3",
+"width": 1,
+"height": 3,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+33043
+]
+},
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+33044
+]
+},
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+33045
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "왕실 양탄자 1칸 폭·3칸 폭(세로) — 한 칸 폭. 세로로 까는 양탄자: 1칸 폭 [위 끝·가운데·아래 끝] + 3칸 폭 [위 줄·가운데 줄·아래 줄 × 왼·가운데·오른]. 가운데는 16px 주기로 몇 칸이든 이어진다. 그림 = [1칸 폭 1×3 | 3칸 폭 3×3].",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"carpet-runner",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-carpet-runner-3w": {
+"id": "bd-pick-dungeon-theme-carpet-runner-3w",
+"kind": "object",
+"name": "버들항 던전 · 왕실 양탄자 1칸 폭·3칸 폭(세로) 세 칸 폭 3×3",
+"width": 3,
+"height": 3,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+33046,
+33047,
+33048
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+33049,
+33050,
+33051
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+33052,
+33053,
+33054
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "왕실 양탄자 1칸 폭·3칸 폭(세로) — 세 칸 폭. 세로로 까는 양탄자: 1칸 폭 [위 끝·가운데·아래 끝] + 3칸 폭 [위 줄·가운데 줄·아래 줄 × 왼·가운데·오른]. 가운데는 16px 주기로 몇 칸이든 이어진다. 그림 = [1칸 폭 1×3 | 3칸 폭 3×3].",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"carpet-runner",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
 ]
 }
 }
