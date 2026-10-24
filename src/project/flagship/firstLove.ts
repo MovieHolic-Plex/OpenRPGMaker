@@ -373,7 +373,7 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
 
   // 거리(낮)
   add(street, scene("ev_fl_street_am", { x: 1, y: 1 }, S.ARRIVED, [
-    ...think("늘봄 빌딩. 큰길 건너 오른쪽, 유리문 건물이다."),
+    ...think(`${a.street.exitNo}번 출구. 늘봄 빌딩은 저기, 제일 높은 유리 건물이다.`, "횡단보도만 건너면 된다."),
     ...emote("player", "music"),
     stage(S.STREET),
   ]));
@@ -388,6 +388,8 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     ], think("…"), "down"),
     door("ev_fl_konbini_am", a.street.konbiniDoor, [stageIs(V_STAGE, 999)], [], think("편의점은 나중에. 첫날부터 지각할 순 없다."), "down"),
     door("ev_fl_subway_am", a.street.subway, [stageIs(V_STAGE, 999)], [], think("방금 내렸잖아. 회사는 저쪽이다."), "down"),
+    // 다른 출구(내린 출구가 아닌 계단) — 들어가도 같은 역이다. 말만 한다.
+    ...a.street.otherExits.map((e) => door(`ev_fl_exit${e.n}_am`, e.stair, [stageIs(V_STAGE, 999)], [], think(`${e.n}번 출구. 들어가 봐야 같은 한결역이다.`), "down")),
   );
 }
 
@@ -723,6 +725,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
       // 계단은 승강장 위쪽 — 내려와 선 서하는 계단을 등지고 선로 쪽(아래)을 본다(아침 승강장과 같다).
       [transfer(FL_MAP.platformPm, a.platform.exitOut.x, a.platform.exitOut.y, "down")],
       think("편의점부터 들르자. 저녁을 안 먹었다."), "down"),
+    ...a.street.otherExits.map((e) => door(`ev_fl_exit${e.n}_pm`, e.stair, [stageIs(V_STAGE, 999)], [], think(`${e.n}번 출구로 가면 돌아간다. 아침에 나온 ${a.street.exitNo}번 출구로 가자.`), "down")),
   );
 
   // 편의점: 점원 · 냉장고 · 문.
@@ -1693,8 +1696,7 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
   if (konbiniMap) konbiniMap.doors = [{ x: anchors.konbini.door.x, y: anchors.konbini.door.y, w: 2, h: 1, style: "slide", hinge: "left", interior: "none", frame: { l: 0, r: 0, t: 1, b: 10 }, auto: true, openSe: SE_CHIME }];
 
   resolveRoutes(project);
-  // 움직이는 탈것 금지(사용자 r2: 「돌아다니는 오토바이」) — 거리 구성기가 깐 차량 행렬을 걷어 낸다. 서 있는 차(타일)는 그대로다.
-  for (const id of [FL_MAP.street, FL_MAP.streetPm]) { const m = project.maps[id]; if (m) delete (m as { transit?: unknown }).transit; }
+  // 차는 다닌다(사용자 r3: 업무 지구엔 차량 통행). 다만 오토바이·긴급차는 빼 둔다(r2 「돌아다니는 오토바이」) — firstLoveMaps 거리 후처리.
 
   project.startMapId = FL_MAP.platformAm;
   project.startPos = anchors.platform.arrive;

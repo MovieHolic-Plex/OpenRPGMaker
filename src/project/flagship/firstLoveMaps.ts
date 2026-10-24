@@ -45,6 +45,10 @@ export interface FirstLoveAnchors {
     readonly konbiniDoor: Cell; readonly konbiniOut: Cell;
     readonly subway: Cell; readonly subwayOut: Cell;
     readonly arrive: Cell;
+    /** 다른 지하철 출구(번호·계단 칸) — 들어가지 않는 출구(「여긴 2번 출구다」). */
+    readonly otherExits: readonly { readonly n: number; readonly stair: Cell }[];
+    /** 서하가 나오는 출구 번호. */
+    readonly exitNo: number;
   };
   /** 사무층: 엘리베이터(거리로) · 계단(옥상으로) · 서하 자리 · 지후 자리 · 팀장 자리 · 탕비실 · 회의실. */
   readonly office: {
@@ -196,34 +200,35 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   buildRoom(exec, FL_MAP.broadcast, "성하고 방송실 · 10년 전", ROOMS.broadcast);
 
   // ── 거리 (modern_city 구성기) ──
-  exec("create_map", { id: FL_MAP.street, name: "늘봄 빌딩 앞 거리", width: 48, height: 36, tilesetId: "modern_city" });
-  const composed = exec("compose_modern_city_street", { mapId: FL_MAP.street, seed: 5, shops: ["office", "conv", "cafe"], replace: true });
+  // 사용자 2026-10-24: 「거리를 50×50 정도의 한국 업무 지구로 — 높은 빌딩, 지하철 출구가 여럿, 오가는 사람」.
+  // 늘봄 빌딩 = 랜드마크 유리 오피스 타워(가장 넓은 블록 가운데). 지하철 출구 셋(번호 표지 1·2·3), 보도 점자 블록·가로수 보호판·한글 입간판.
+  exec("create_map", { id: FL_MAP.street, name: "늘봄 빌딩 앞 거리", width: 50, height: 50, tilesetId: "modern_city" });
+  const composed = exec("compose_modern_city_street", { mapId: FL_MAP.street, seed: 5, shops: ["conv", "cafe"], landmark: "tower10", subwayExits: 3, korean: true, replace: true });
   const streetData = composed.data as {
     start: Cell;
     buildings: { kind: string; doors: Cell[]; access: Cell[] }[];
+    subwayExits: { n: number; stair: Cell; step: Cell }[];
+    propList: { kit: string; x: number; y: number }[];
   };
-  const street = project.maps[FL_MAP.street]!;
   // 퇴근길 사무가 거리에 소방차·구급차·경찰차가 도는 것은 이야기와 맞지 않는다 — 민간 차량만 남긴다(데모 전용 후처리).
   const EMERGENCY_VEHICLES = new Set(["mc-veh-ambulance-a", "mc-veh-firetruck-b", "mc-veh-police-a"]);
-  for (const route of street.transit?.routes ?? []) {
-    const civil = route.vehicles.filter((v) => !EMERGENCY_VEHICLES.has(v));
+  // 오토바이·스쿠터도 뺀다(사용자 r2 「돌아다니는 오토바이」). 승용차·택시·버스·트럭만 다닌다.
+  const civilOf = (v: string) => !EMERGENCY_VEHICLES.has(v) && !/scooter|moto|bike/.test(v);
+  for (const id of [FL_MAP.street, FL_MAP.streetPm]) for (const route of project.maps[id]?.transit?.routes ?? []) {
+    const civil = route.vehicles.filter(civilOf);
     if (civil.length > 0) route.vehicles = civil;
   }
-  const office = streetData.buildings.find((b) => b.kind === "office");
-  const conv = streetData.buildings.find((b) => b.kind === "conv");
-  if (!office || !conv) throw new Error("[first-love] 거리에 사무소·편의점 건물이 없다");
-  // 지하철 입구: 구성기가 공원 옆에 둔다(요약 문장 「지하철 입구 (x,y)」). 데이터에 없으면 공원 오른쪽 아래.
-  const subwayMatch = /지하철 입구 \((\d+),(\d+)\)/.exec(String((composed as { summary?: string }).summary ?? ""));
-  const subwayHint: Cell = subwayMatch ? { x: Number(subwayMatch[1]), y: Number(subwayMatch[2]) } : { x: 17, y: 8 };
-  // 요약의 좌표는 입구 덩어리(3칸 폭)의 왼쪽 기둥 칸이다 — 계단이 열린 칸은 아래 줄 가운데(타일 7621, 지붕 처마 3칸 아래)다.
-  // 왼쪽 기둥 칸에 문을 두면 계단 그림이 아닌 벽 모서리에 부딪힌다.
-  const SUBWAY_STAIR_TILE = 7621;
-  const stairIdx = (street.upperTiles ?? []).findIndex((t, i) => t === SUBWAY_STAIR_TILE && Math.abs((i % street.width) - subwayHint.x) <= 2);
-  const subway: Cell = stairIdx >= 0 ? { x: stairIdx % street.width, y: Math.floor(stairIdx / street.width) } : { x: subwayHint.x + 1, y: subwayHint.y };
-  // 지하철 입구 덩어리는 막혀 있고 계단이 아래로 열린다 — 덩어리 바로 아래 첫 통행 칸이 발판.
-  let subwayStepY = subway.y;
-  while (subwayStepY < street.height - 1 && !isPassable(project, street, subway.x, subwayStepY)) subwayStepY += 1;
-  const subwayStep: Cell = { x: subway.x, y: subwayStepY };
+  // 늘봄 빌딩 = 랜드마크 타워(buildings[0]). 편의점은 타워에서 가장 가까운 것.
+  const office = streetData.buildings[0]?.kind === "tower10" ? streetData.buildings[0] : undefined;
+  const near = (c: Cell) => (b: { access: Cell[] }) => Math.abs(b.access[0]!.x - c.x) + Math.abs(b.access[0]!.y - c.y);
+  const conv = office ? [...streetData.buildings.filter((b) => b.kind === "conv")].sort((p, q) => near(office.access[0]!)(p) - near(office.access[0]!)(q))[0] : undefined;
+  if (!office || !conv) throw new Error("[first-love] 거리에 늘봄 빌딩(타워)·편의점이 없다");
+  // 지하철 출구: 서하가 내리는 출구 = 타워에서 가장 먼 출구(큰길을 건너 걸어오게), 나머지는 다른 출구. 계단 칸은 막혀 있고(그림), 바로 아래가 나오는 칸.
+  const exits = [...streetData.subwayExits].sort((p, q) => near(office.access[0]!)({ access: [q.step] }) - near(office.access[0]!)({ access: [p.step] }));
+  const mainExit = exits[0];
+  if (!mainExit) throw new Error("[first-love] 거리에 지하철 출구가 없다");
+  const subway: Cell = mainExit.stair;
+  const subwayStep: Cell = mainExit.step;
 
   const officeRoom = project.maps[FL_MAP.office]!;
   const konbiniRoom = project.maps[FL_MAP.konbini]!;
@@ -311,9 +316,11 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       // 문 칸 = 건물 정면의 문 그림 칸(막혀 있다 — 부딪히면 이동이 발동한다), 나오는 칸 = 그 바로 아래(바깥) 접근칸.
       officeDoor: office.doors[0]!, officeOut: office.access[0]!,
       konbiniDoor: conv.doors[1] ?? conv.doors[0]!, konbiniOut: conv.access[1] ?? conv.access[0]!,
-      subway: { x: subwayStep.x, y: subwayStep.y - 1 }, subwayOut: subwayStep,
+      subway, subwayOut: subwayStep,
       // 내린 사람은 계단 바로 아래 칸(나오는 칸)에 선다 — 문 그림에 붙어 아래를 본다.
       arrive: subwayStep,
+      otherExits: exits.slice(1).map((e) => ({ n: e.n, stair: e.stair })),
+      exitNo: mainExit.n,
     },
     office: {
       // 엘리베이터·계단 그림은 북쪽 벽면에 박혀 있고 그림 칸 자체를 밟을 수 있다 — 문 칸 = 그림 칸, 나오는 칸 = 바로 아래(안쪽) 칸.
@@ -366,10 +373,7 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
 
   // ── 낮·밤 복사 ──
   const streetPm = cloneMap(project, FL_MAP.street, FL_MAP.streetPm, "늘봄 빌딩 앞 거리 · 밤");
-  // 편의점 문 앞(konbiniOut)이 맵 맨 아래 둘째 줄이라 카메라가 서하를 화면 아래 끝 대화창 뒤에 뒀다(VQA r22).
-  // 맨 아랫줄(보도·차도, 위층 없음)을 네 줄 더 이어 거리가 남쪽으로 계속되게 한다 — 카메라가 서하를 화면 가운데 둘 수 있다.
-  const streetH = streetPm.height;
-  padMapBottom(streetPm, 4, () => streetH - 1);
+  // (옛 48×36 거리는 편의점 문 앞이 맵 맨 아래라 아래로 네 줄을 덧댔다(VQA r22). 50×50 거리는 편의점이 북쪽 띠라 덧대지 않는다.)
   const officePm = cloneMap(project, FL_MAP.office, FL_MAP.officePm, "스튜디오 늘봄 · 야근");
   const officeFri = cloneMap(project, FL_MAP.office, FL_MAP.officeFri, "스튜디오 늘봄 · 금요일");
   // 금요일 회의실은 사무층 맨 아래(y 13~20)라 카메라가 맵 끝에 걸려 다섯 사람이 흉상·대화창 사이에 끼었다(VQA r10).
@@ -393,7 +397,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   // 밤 거리: 푸른 어둠 + 실제 가로등(3칸 기둥의 머리 높이)·공원 가로등·간판 빛.
   // 좌표는 거리 맵(modern_city, 시드 5)에 찍힌 mc-prop-lamp-a 기둥 윗칸 + 1 이다.
   const lamps: LightSource[] = [];
-  const streetLamps: Array<[number, number]> = [[21, 2], [1, 21], [14, 21], [41, 21], [21, 26], [21, 33], [6, 4], [13, 4]];
+  // 가로등 = 구성기가 찍은 가로등·공원 가로등 키트(3칸 기둥) 윗칸 + 1 — 거리 배치가 바뀌어도 기둥을 따라간다.
+  const streetLamps: Array<[number, number]> = streetData.propList.filter((p) => /lamp/.test(p.kit)).map((p) => [p.x, p.y + 1]);
   // 반지름 5 는 화면 밖 가로등의 빛 웅덩이가 잔디·지붕까지 번져 «광원 없는 빛»으로 읽혔다(VQA r25) — 기둥 둘레만 밝힌다.
   // 빛은 기둥 발치(밑칸)에 작게 — 기둥 가운데에 반지름 3.5 로 두면 둥근 웅덩이가 지붕·잔디까지 번져 «아무 데나 뜬 빛»이었다(VQA r30 중대).
   for (const [i, [x, y]] of streetLamps.entries()) lamps.push(light(`fl_lamp_${i}`, { x, y: y + 1 }, 2.3, "#ffd98a", 0.6));
@@ -436,6 +441,7 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
     light("fl_kb_spill", { x: kb.x, y: kb.y + 1 }, 2.6, "#fff0c4", 0.8),
   );
   streetPm.defaultLighting = { ambient: 0.74, color: "#0b1230", sources: lamps };
+  addStreetWalkers(project, exec, streetData, office, conv, exits);
   officePm.defaultLighting = {
     // 야근 밤: 너무 어두우면 인물이 안 읽힌다(VQA r3) — 어둠은 한 단계 줄이고 책상·탕비실·회의 자리 불을 넓힌다.
     // 밤 10시대 사무실이 낮과 같은 밝기로 읽혔다(VQA r16) — 한 단계 더 어둡게, 책상 불은 그대로.
@@ -524,4 +530,42 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
     route.speed = 8;
   });
   return anchors;
+}
+
+/**
+ * 거리 행인(사용자 2026-10-24: 「사람들이 돌아다녔으면」) — add_street_walkers(조수도 쓰는 일반 도구)로 놓는다.
+ * 아침: 출근 인파(지하철 출구 → 횡단보도 → 타워·카페), 정류장에서 기다리는 사람, 출구로 들어갔다 나오는 사람, 보도를 오가는 사람.
+ * 밤: 퇴근길 몇 명(더 적고 느리게). 빠르기는 사람마다 다르다. 그림은 현대 인물 칩(Actor/People 바탕, charset-actor 하네스) 중 주인공 넷이 아닌 칸.
+ */
+function addStreetWalkers(project: Project, exec: ExecTool, data: { propList: { kit: string; x: number; y: number }[] },
+  office: { access: Cell[] }, conv: { access: Cell[] }, exits: readonly { n: number; stair: Cell; step: Cell }[]): void {
+  const street = project.maps[FL_MAP.street]!;
+  const free = (map: GameMap, c: Cell): Cell => nearestFree(project, map, c, 4);
+  const shelter = data.propList.find((p) => p.kit.startsWith("mc-prop-bus-shelter"));
+  const sel = (sheet: number, index: number) => ({ selectionId: `charset:tex_oprn_charset_modern${sheet}:${index}` });
+  const SUIT_M = sel(3, 0), SUIT_W = sel(3, 2), STUDENT_M = sel(1, 1), STUDENT_W = sel(1, 4), CASUAL_M = sel(2, 3), CASUAL_W = sel(2, 4), CASUAL_W2 = sel(2, 5), STUDENT_W2 = sel(1, 7);
+  const tower = office.access[0]!, kon = conv.access[0]!;
+  const W = street.width;
+  // 가로 도로 두 줄의 보도: 북쪽 보도 바깥 줄 = 접근칸 줄(타워·편의점 앞), 남쪽 보도.
+  const nWalk = tower.y, sWalk = nWalk + 10;
+  const ex = (i: number) => exits[i] ?? exits[0]!;
+  const morning = [
+    // 출근: 먼 출구에서 나와 큰길을 건너 타워 앞까지, 들어가서(사라졌다가) 다시 나와 출구로 돌아간다.
+    { name: "출근하는 회사원", graphic: SUIT_M, speed: 4, stops: [{ ...ex(0).step }, { ...free(street, { x: 22, y: sWalk }) }, { ...free(street, { x: 22, y: nWalk + 1 }) }, { ...tower, vanish: true, waitSec: 9 }] },
+    { name: "커피를 든 회사원", graphic: SUIT_W, speed: 3, stops: [{ ...free(street, { x: 27, y: nWalk + 1 }) }, { ...tower, vanish: true, waitSec: 6 }, { ...free(street, { x: 30, y: nWalk }) }, { ...kon, vanish: true, waitSec: 5 }] },
+    { name: "바쁜 직장인", graphic: CASUAL_M, speed: 5, stops: [{ ...ex(1).step }, { ...free(street, { x: W - 3, y: nWalk + 1 }) }, { ...free(street, { x: 2, y: nWalk + 1 }) }, { ...ex(1).stair, vanish: true, waitSec: 8 }] },
+    // 정류장: 쉘터 앞에서 버스 쪽(위, 차도)을 보고 한참 기다렸다가 다른 데로.
+    ...(shelter ? [{ name: "버스를 기다리는 학생", graphic: STUDENT_W, speed: 2, stops: [{ ...free(street, { x: shelter.x + 1, y: shelter.y + 2 }), waitSec: 28, face: "up" as const }, { ...free(street, { x: 12, y: sWalk + 1 }) }, { ...ex(2).stair, vanish: true, waitSec: 10 }, { ...ex(2).step }] }] : []),
+    { name: "가방을 멘 학생", graphic: STUDENT_M, speed: 3, stops: [{ ...free(street, { x: 4, y: sWalk + 1 }) }, { ...free(street, { x: 19, y: sWalk + 1 }) }, { ...free(street, { x: 19, y: sWalk + 12 }), waitSec: 2 }, { ...free(street, { x: 4, y: sWalk + 11 }) }] },
+    { name: "산책하는 사람", graphic: CASUAL_W, speed: 2, stops: [{ ...free(street, { x: 34, y: sWalk + 1 }) }, { ...free(street, { x: W - 3, y: sWalk + 1 }), waitSec: 4 }, { ...free(street, { x: 33, y: sWalk }) }] },
+    { name: "통화하며 걷는 회사원", graphic: SUIT_W, speed: 3, stops: [{ ...free(street, { x: 33, y: nWalk }) }, { ...free(street, { x: 33, y: nWalk + 11 }) }, { ...free(street, { x: 45, y: nWalk + 10 }), waitSec: 3 }, { ...free(street, { x: 45, y: nWalk + 1 }) }] },
+    { name: "출구로 내려가는 사람", graphic: CASUAL_W2, speed: 4, stops: [{ ...free(street, { x: 8, y: nWalk + 1 }) }, { ...ex(0).stair, vanish: true, waitSec: 12 }, { ...ex(0).step }, { ...free(street, { x: 14, y: sWalk + 11 }) }] },
+  ];
+  exec("add_street_walkers", { mapId: FL_MAP.street, walkers: morning, replace: true });
+  const night = [
+    { name: "퇴근하는 회사원", graphic: SUIT_M, speed: 3, stops: [{ ...free(project.maps[FL_MAP.streetPm]!, { x: 26, y: nWalk + 1 }) }, { ...ex(1).stair, vanish: true, waitSec: 10 }, { ...ex(1).step }, { ...free(project.maps[FL_MAP.streetPm]!, { x: 8, y: nWalk + 1 }) }] },
+    { name: "늦게 퇴근하는 사람", graphic: STUDENT_W2, speed: 2, stops: [{ ...free(project.maps[FL_MAP.streetPm]!, { x: 34, y: sWalk + 1 }) }, { ...free(project.maps[FL_MAP.streetPm]!, { x: W - 3, y: sWalk + 1 }), waitSec: 5 }, { ...free(project.maps[FL_MAP.streetPm]!, { x: 34, y: sWalk }) }] },
+    ...(shelter ? [{ name: "막차 버스를 기다리는 사람", graphic: CASUAL_M, speed: 2, stops: [{ ...free(project.maps[FL_MAP.streetPm]!, { x: shelter.x + 1, y: shelter.y + 2 }), waitSec: 40, face: "up" as const }, { ...free(project.maps[FL_MAP.streetPm]!, { x: 44, y: sWalk + 1 }) }] }] : []),
+  ];
+  exec("add_street_walkers", { mapId: FL_MAP.streetPm, walkers: night, replace: true });
 }
