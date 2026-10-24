@@ -2342,7 +2342,7 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
   전투 도움말 창·필드 메뉴 스킬 화면(`playerStatusMenuDetails.fieldSkillDescription`)·결과 「새 기술 습득!」 카드·자료집 연계기 미리보기·`list_combo_techs` 가 같은 문장을 쓴다.
   기본 속성 이름(Fire·Sword…)은 `elementDisplayName` 이 한글로 보인다(기술 배지와 같은 표).
 - **전투 도움말 창** `battleCommandDom.syncBattleSkillHelp` — 기술·연계 하위 목록이 열려 있으면 명령 패널 **위**에 뜨고(패널 높이를 뺏지 않는다) 커서를 따라 바뀐다(`battleDom.markMenuCursor`). testid `battle-skill-help`(`-tags`·`-description`).
-  **터치**: 기술 칸을 처음 탭하면 커서만 옮겨 도움말을 보이고, 커서가 이미 있던 칸을 다시 탭해야 쓴다(`battleDom` capture pointerdown/click, `pointerType === "touch"` 만). 마우스·키보드는 그대로 한 번에 쓴다.
+  **터치**: 기술 칸을 처음 탭하면 커서만 옮겨 도움말을 보이고, 커서가 이미 있던 칸을 다시 탭해야 쓴다 — 전역 목록 탭 규칙(`touchListTap`)이 커서를 옮기고, 커서 이동이 `markMenuCursor` → 도움말 창을 갱신한다. 마우스·키보드는 그대로 한 번에 쓴다.
 - **「연계」 명령** — 연계기는 기술 목록에서 빠지고 루트 명령 `actor-command-combo`(아이콘 ✦) 아래 따로 열린다(`listedComboSkillIds`, 포켓몬 UI 제외). 준비된 연계기가 있으면 「N개」.
   **연계 대기**(`runtime.holdForCombo`, gauge 흐름): wait 모드에서는 메뉴 중 게이지가 멈춰 두 사람이 같이 준비되는 일이 게이지가 우연히 같을 때뿐이었다.
   준비된 연계기가 없고 동료가 준비 전(`comboPartnerNotReady`)이면 「연계」 = 「동료 기다리기」 — 그 배우는 게이지 100 그대로 충전 고리에서 빠지고(`heldForCombo`), 다음 아군 차례가 오면 풀려 그 바로 다음 차례를 받는다(차례 시작 처리는 다시 하지 않는다 `resumedFromHold`).
