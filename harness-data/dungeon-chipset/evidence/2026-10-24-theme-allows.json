@@ -50,6 +50,14 @@
    "round": "theme-props-r8",
    "gate": "pass",
    "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-10.json"
+  },
+  {
+   "pixelSha256": "9e4e0b2e9ed1b809e153842af154f0fbd30d0b332b847540e99666419b2dec8b",
+   "kind": "terrain",
+   "name": "wall.other_rim A2",
+   "round": "theme-walls-r10",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-11.json"
   }
  ]
 }

@@ -1193,6 +1193,18 @@
    "by": "delegated",
    "delegatedBy": "delegated by user to supervisor 2026-10-24",
    "evidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-10.json"
+  },
+  {
+   "round": "theme-walls-r10",
+   "item": "wall.other_rim",
+   "line": "*",
+   "letter": "A2",
+   "sha256": "c21a8d0e5cb827962cb02669bf968e18eacb6604c91847f77617c66f1223c1ff",
+   "note": "panel 0 majors; object-gate PASS receipt 9e4e0b2e9ed1 (terrain)",
+   "at": "2026-10-25T00:09:37",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-24",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-11.json"
   }
  ],
  "rejects": [],
