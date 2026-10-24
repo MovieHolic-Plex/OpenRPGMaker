@@ -183,11 +183,27 @@ function placeKit(project: Project, mapId: string, kitId: string, want: Cell, av
       else if (map.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) ok = false;
     }
     if (!ok) continue;
+    // 걸을 수 있는 칸 위의 작은 길섶 소품(고사리·들꽃·돌 — 위층 3·4)은 표지에 자리를 내준다. 수관은 걷지 못하는 칸이라 위에서 이미 걸렀다.
+    const cleared: Array<{ i: number; up: number; uo: number }> = [];
+    for (let dy = 0; dy < kit.height; dy += 1) for (let dx = 0; dx < kit.width; dx += 1) {
+      const i = (y0 + dy) * map.width + x0 + dx;
+      const up = map.upperTiles[i] ?? -1, uo = map.upperOverlayTiles?.[i] ?? -1;
+      if (up < 0 && uo < 0) continue;
+      cleared.push({ i, up, uo });
+      map.upperTiles[i] = -1;
+      if (map.upperOverlayTiles) map.upperOverlayTiles[i] = -1;
+    }
     try {
       tool(project, "stamp_object", { objectId: `kit:beodeul_city/${kitId}`, mapId, x: x0, y: y0 });
       return { x: x0, y: y0 };
-    } catch { /* 이 자리는 도장이 거절했다 — 다음 자리 */ }
+    } catch (error) {
+      const live = project.maps[mapId]!;
+      for (const c of cleared) { live.upperTiles[c.i] = c.up; if (live.upperOverlayTiles) live.upperOverlayTiles[c.i] = c.uo; }
+      // 이 자리는 도장이 거절했다 — 다음 자리
+      if (typeof process !== "undefined" && process.env?.FS_DEBUG) console.error(`[fallen-forest] ${kitId} (${x0},${y0}) 거절: ${String((error as Error).message).replace(/^[^)]*\) 실행 실패: /, '').slice(0, 220)}`);
+    }
   }
+  if (typeof process !== "undefined" && process.env?.FS_DEBUG) console.error(`[fallen-forest] ${kitId} 자리 없음 ${mapId} 근처 (${want.x},${want.y})`);
   return undefined;
 }
 
@@ -330,7 +346,7 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
     id: M.shrine, name: "속삭이는 숲 · 별지기 사당 터", width: 34, height: 28, seed: 67,
     paths: [[{ x: 20, y: 27 }, { x: 20, y: 13 }], [{ x: 0, y: 13 }, { x: 20, y: 13 }], [{ x: 14, y: 13 }, { x: 14, y: 0 }]],
     exits: [{ x: 20, y: 27 }, { x: 0, y: 13 }, { x: 14, y: 0 }],
-    clearings: [{ x: 9, y: 8, w: 16, h: 12 }],
+    clearings: [{ x: 8, y: 6, w: 18, h: 14 }],
     encounters: [],
   };
   // ⑥ 사냥꾼 쉼터 30×20 — 옛 수로에서 갈라진 막다른 곁길 끝, 모닥불 자리와 상자.
@@ -343,6 +359,8 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
   };
   for (const spec of [edge, stream, thicket, shrine, glade]) createForest(project, spec);
   // 옛 수로 돌다리 — 마을 강 다리와 같은 산길 개울 돌다리(5×4: 난간·바닥 두 줄·아래 난간), 바닥 두 줄이 길 두 줄에 얹힌다.
+  // 바닥 덮개를 먼저 깐다 — 다리를 먼저 얹으면 걸을 수 있는 다리 바닥에 고사리 덩이가 앉았다. 다리는 잇기 전에 있어야 한다(물 건너 출구가 닿는다).
+  helpers.understory(M.stream);
   tool(project, "stamp_object", { objectId: "kit:beodeul_city/bd-pick-mountain-pass-stone-bridge", mapId: M.stream, x: 10, y: 10 });
 
   // ── 잇기 ───────────────────────────────────────────────────────────────
@@ -399,8 +417,10 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
   // ④ 사당 터: 무너진 성문·사당·부러진 기둥, 사당 앞 상자. 짐승이 들지 않는 쉼터(조우 없음).
   {
     const id = M.shrine, guard = pathGuard(project, project.maps[id]!);
-    const gate = placeKit(project, id, "bd-pick-deep-forest-path-ruin-gate", { x: 9, y: 8 }, guard, 2);
-    const shrineAt = placeKit(project, id, "bd-pick-mountain-pass-shrine", { x: 22, y: 8 }, guard, 2);
+    const gate = placeKit(project, id, "bd-pick-deep-forest-path-ruin-gate", { x: 9, y: 7 }, guard, 2);
+    // 별지기의 별 무늬 바닥 — 공터 북동, 사당 앞마당.
+    placeKit(project, id, "bd-pick-temple-ruins-mosaic-medallion-5x5", { x: 17, y: 7 }, guard, 1);
+    const shrineAt = placeKit(project, id, "bd-pick-mountain-pass-shrine", { x: 23, y: 7 }, guard, 2);
     placeKit(project, id, "bd-pick-temple-ruins-column-temple-broken", { x: 10, y: 17 }, guard, 2);
     placeKit(project, id, "bd-pick-temple-ruins-fallen-column-temple", { x: 16, y: 17 }, guard, 2);
     placeKit(project, id, "bd-pick-temple-ruins-rubble-temple", { x: 24, y: 17 }, guard, 2);
@@ -440,7 +460,8 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
   roamers(project, M.glade, entryOf(M.glade, glade.exits[0]!), [wisps], [0.5]);
 
   // 바닥 덮개 — 원래 숲과 같은 고사리·히스 덩이.
-  for (const id of [M.edge, M.stream, M.thicket, M.shrine, M.glade]) helpers.understory(id);
+  // 사당 터 공터는 덮지 않는다 — 공터에 덤불 덩이가 줄지어 앉아 밭처럼 읽혔다(유적·모자이크만 둔다).
+  for (const id of [M.edge, M.thicket, M.glade]) helpers.understory(id);
   widenEdgeDoors(project, [M.edge, M.stream, M.thicket, M.shrine, M.glade, ids.forest]);
 
   // 맵 나무 — 숲 맵들을 어귀 아래에 묶는다.
