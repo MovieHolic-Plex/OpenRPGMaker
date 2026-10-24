@@ -35,7 +35,12 @@ export function mountBootLoader(host: HTMLElement, initial: BootLoaderInfo): Boo
   const root = document.createElement("section");
   root.dataset.testid = "boot-loader";
   root.setAttribute("aria-busy", "true");
-  root.style.cssText = "position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:#05060a;color:#e8e6df;font:15px/1.5 system-ui,'Noto Sans KR',sans-serif;";
+  root.className = "oprn-boot-loader";
+  // 가로로 눕힌 폰(스토어 iframe 높이 약 300px)에서도 「시작하기」가 화면 안에 들어오게: 넘치면 스크롤, 낮은 화면은 표지·제목을 줄인다.
+  root.style.cssText = "position:fixed;inset:0;z-index:20;display:grid;place-items:center;overflow-y:auto;padding:8px 0;box-sizing:border-box;background:#05060a;color:#e8e6df;font:15px/1.5 system-ui,'Noto Sans KR',sans-serif;";
+  const shortStyle = document.createElement("style");
+  shortStyle.textContent = "@media (max-height:520px){.oprn-boot-loader>div{gap:8px!important}.oprn-boot-loader img{max-height:28vh!important}.oprn-boot-loader h1{font-size:18px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}}";
+  root.append(shortStyle);
   const box = document.createElement("div");
   box.style.cssText = "width:min(520px,88vw);display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;";
   const cover = document.createElement("img");
@@ -68,7 +73,8 @@ export function mountBootLoader(host: HTMLElement, initial: BootLoaderInfo): Boo
   start.style.cssText = "display:none;font:inherit;font-size:17px;font-weight:700;padding:10px 28px;border-radius:8px;border:1px solid #f0b54a;background:#f0b54a;color:#1b1406;cursor:pointer;";
   const hint = document.createElement("p");
   hint.style.cssText = "margin:0;font-size:12px;color:#7d808b;display:none;";
-  hint.textContent = "클릭하거나 Enter·Space 를 누르세요 (소리가 함께 켜집니다)";
+  const coarse = typeof matchMedia === "function" && (matchMedia("(pointer: coarse)").matches || navigator.maxTouchPoints > 0);
+  hint.textContent = coarse ? "화면 아무 곳이나 누르세요 (소리가 함께 켜집니다)" : "클릭하거나 Enter·Space 를 누르세요 (소리가 함께 켜집니다)";
   box.append(cover, title, bar, label, start, hint);
   root.append(box);
   host.append(root);
@@ -111,6 +117,7 @@ export function mountBootLoader(host: HTMLElement, initial: BootLoaderInfo): Boo
       return new Promise<void>((resolve) => {
         const finish = (): void => {
           document.removeEventListener("keydown", onKey, true);
+          root.removeEventListener("click", finish);
           resolve();
         };
         const onKey = (event: KeyboardEvent): void => {
@@ -120,6 +127,8 @@ export function mountBootLoader(host: HTMLElement, initial: BootLoaderInfo): Boo
           finish();
         };
         start.addEventListener("click", finish, { once: true });
+        // 준비가 끝나면 화면 어디를 눌러도 시작한다 — 낮은 화면에서 단추가 스크롤 밖에 있어도 막히지 않는다.
+        root.addEventListener("click", finish);
         document.addEventListener("keydown", onKey, true);
       });
     },
