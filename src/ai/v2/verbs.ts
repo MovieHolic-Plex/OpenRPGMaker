@@ -95,6 +95,16 @@ const HINTS_SCHEMA = {
     wallGate: { type: "string" },
     width: { type: "number" },
     height: { type: "number" },
+    length: { type: "string", description: "거리 길이 short|medium|long(카드가 말한 빌더만)" },
+    plaza: { type: "string" },
+    landmark: { type: "string" },
+    shops: { type: "string", description: "가게 짧은 이름을 쉼표로, 왼쪽부터 순서대로" },
+    mirror: { type: "boolean" },
+    floorShapes: { type: "string", description: "층마다 꼴을 쉼표로(아래층부터)" },
+    floorGimmicks: { type: "string", description: "층마다 장치를 쉼표로(아래층부터, 없으면 none)" },
+    townSize: { type: "string" },
+    streets: { type: "string" },
+    pond: { type: "boolean" },
   },
 };
 const PLACE_SPEC_SCHEMA = {

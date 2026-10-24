@@ -407,23 +407,64 @@ const FLOOR_NAME = (base: string, dir: "down" | "up", k: number, n: number): str
  * 탑 한 층(성 문법, 좁은 둥근 층): 아래 둥근 층계참 → 위 둥근 큰 방(북쪽 벽에 다음 층 계단). 꼭대기 층은 둥근 보스방 + 곁의 작은 보물 방.
  * 2026-10-23(assistant-dungeons-2): 옛 층은 홀 양옆으로 곁방을 단 43×32 판이라 「탑이 아니라 넓은 지하 감옥」으로 읽혔다(VQA). 층마다 크기·계단 쪽을 바꾼다.
  */
-function towerRooms(top: boolean, k: number, seed = 0): DungeonRoomInput[] {
-  // 2026-10-23 dungeon-themes: 위 큰 방은 gap 둥근 탑 링(12칸, 바닥 10×8 — 다음 층으로 가는 방은 안벽 계단 링)이다. 아래 층계참에서 남쪽 통로(pass-s)로 들어간다.
-  // 같은 탑을 두 번 지어도 판박이가 아니게: 시드로 층계참 곁 서고(동·서)·꼭대기 링 크기(12·10)·층계참 너비가 바뀐다.
-  const h = (n: number) => {
-    let x = (Math.imul(seed, 1000003) + Math.imul(n, 7919)) | 0;
-    x ^= x >>> 15; x = Math.imul(x, 0x2c1b3c6d); x ^= x >>> 12; x = Math.imul(x, 0x297a2d39); x ^= x >>> 15;
-    return (x >>> 0) / 4294967296;
-  };
+export const TOWER_FLOOR_SHAPES = ["ring", "gallery", "cross", "spiral", "twin"] as const;
+export const TOWER_TOP_SHAPES = ["ring", "hall", "observatory"] as const;
+export type TowerFloorShape = (typeof TOWER_FLOOR_SHAPES)[number] | (typeof TOWER_TOP_SHAPES)[number];
+const towerHash = (seed: number, n: number): number => {
+  let x = (Math.imul(seed, 1000003) + Math.imul(n, 7919)) | 0;
+  x ^= x >>> 15; x = Math.imul(x, 0x2c1b3c6d); x ^= x >>> 12; x = Math.imul(x, 0x297a2d39); x ^= x >>> 15;
+  return (x >>> 0) / 4294967296;
+};
+/** 층마다 꼴: 준 것은 그대로, 안 준 층은 씨앗으로 고르되 바로 아래층과 같은 꼴은 피한다(2026-10-24 「3층 탑이 늘 같은 판」). */
+export function towerFloorShapes(floors: number, seed: number, asked: readonly unknown[] = []): TowerFloorShape[] {
+  const out: TowerFloorShape[] = [];
+  for (let k = 1; k <= floors; k++) {
+    const top = k === floors;
+    const pool: readonly TowerFloorShape[] = top ? TOWER_TOP_SHAPES : TOWER_FLOOR_SHAPES;
+    const want = asked[k - 1];
+    if (typeof want === "string" && (pool as readonly string[]).includes(want)) { out.push(want as TowerFloorShape); continue; }
+    const choices = pool.filter((sh) => sh !== out[k - 2]);
+    out.push(choices[Math.floor(towerHash(seed, 31 + k) * choices.length)]!);
+  }
+  return out;
+}
+/**
+ * 탑 한 층(성 문법, 좁은 둥근 층). 다음 층 계단은 가장 깊은 방(링이면 12칸 계단 링)이다.
+ * 2026-10-23(assistant-dungeons-2): 옛 층은 홀 양옆으로 곁방을 단 43×32 판이라 「탑이 아니라 넓은 지하 감옥」으로 읽혔다(VQA).
+ * 2026-10-24: 층 꼴을 고른다 — ring 둥근 큰 방 · gallery 긴 회랑 끝 링 · cross 가운데 홀 사방 곁방 · spiral 돌아 오르는 작은 방 사슬 · twin 양 날개 방.
+ * 꼭대기: ring 둥근 보스방 · hall 긴 알현 회랑 끝 보스방 · observatory 링 보스방 양옆 보물 방.
+ */
+function towerRooms(top: boolean, k: number, seed = 0, shape: TowerFloorShape = "ring"): DungeonRoomInput[] {
+  const h = (n: number) => towerHash(seed, n);
   const landW = 9 + (h(k) < 0.5 ? 0 : 2);
   const landing: DungeonRoomInput = k === 1 && !top ? { id: "gate", kind: "entrance", w: 13, h: 6, shape: "apse" } : { id: "landing", kind: "entrance", w: landW, h: 6, shape: "round" };
   const from = landing.id!;
-  const study: DungeonRoomInput[] = h(k + 7) < 0.55 ? [{ id: "study", kind: h(k + 3) < 0.5 ? "library" : "storage", w: 7, h: 6, from, dir: h(k + 11) < 0.5 ? "W" : "E", shape: "round" }] : [];
+  const side = h(k + 11) < 0.5 ? "W" : "E";
+  const other = side === "W" ? "E" : "W";
   if (top) {
     const big = h(99) < 0.6;
+    if (shape === "hall") return [landing, { id: "gallery", kind: "hall", w: 12, h: 5, from, dir: "N", shift: 0, len: 3 }, { id: "throne", kind: "boss", w: 10, h: 7, from: "gallery", dir: "N", shift: 0, len: 3, shape: "round" }];
+    if (shape === "observatory") return [landing, { id: "throne", kind: "boss", w: 10, h: 8, from, dir: "N", shift: 0, len: 4, shape: "ring" },
+      { id: "vault_w", kind: "vault", w: 6, h: 5, from: "throne", dir: "W", shape: "round" }, { id: "vault_e", kind: "storage", w: 6, h: 5, from: "throne", dir: "E", shape: "round" }];
+    const study: DungeonRoomInput[] = h(k + 7) < 0.55 ? [{ id: "study", kind: h(k + 3) < 0.5 ? "library" : "storage", w: 7, h: 6, from, dir: side, shape: "round" }] : [];
     return [landing, { id: "throne", kind: "boss", w: big ? 10 : 8, h: big ? 8 : 6, from, dir: "N", shift: 0, len: 4, shape: "ring" }, ...study];
   }
-  return [landing, { id: "hall", kind: "hall", w: 10, h: 8, from, dir: "N", shift: 0, len: 4, shape: "ring" }, ...study];
+  const ring = (id: string, parent: string): DungeonRoomInput => ({ id, kind: "hall", w: 10, h: 8, from: parent, dir: "N", shift: 0, len: 4, shape: "ring" });
+  switch (shape) {
+    case "gallery":
+      return [landing, { id: "gallery", kind: "hall", w: 14, h: 5, from, dir: "N", shift: 0, len: 3 }, ring("hall", "gallery")];
+    case "cross":
+      return [landing, { id: "hub", kind: "hall", w: 9, h: 7, from, dir: "N", shift: 0, len: 3, shape: "round" }, ring("hall", "hub"),
+        { id: "study", kind: "library", w: 7, h: 6, from: "hub", dir: side, shape: "round" }, { id: "store", kind: "storage", w: 7, h: 6, from: "hub", dir: other, shape: "round" }];
+    case "spiral":
+      return [landing, { id: "turn1", kind: "storage", w: 7, h: 6, from, dir: side, shape: "round" }, { id: "turn2", kind: "library", w: 7, h: 6, from: "turn1", dir: "N", shape: "round" }, ring("hall", "turn2")];
+    case "twin":
+      return [landing, ring("hall", from), { id: "wing_a", kind: "library", w: 7, h: 6, from, dir: side, shape: "round" }, { id: "wing_b", kind: h(k + 5) < 0.5 ? "storage" : "library", w: 7, h: 6, from, dir: other, shape: "round" }];
+    default: {
+      const study: DungeonRoomInput[] = h(k + 7) < 0.55 ? [{ id: "study", kind: h(k + 3) < 0.5 ? "library" : "storage", w: 7, h: 6, from, dir: side, shape: "round" }] : [];
+      return [landing, ring("hall", from), ...study];
+    }
+  }
 }
 
 /** 채우기 적 그룹: 준 것은 그대로, 안 준 역할은 던전 주제(dungeonThemeTroops.ts)의 그림으로 만든다 — 세기는 원래 고르던 그룹에 맞춘다. */
@@ -523,6 +564,10 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   const warnings: string[] = [];
   const baseName = typeof args.name === "string" && args.name.trim() ? (floors > 1 ? args.name.trim().replace(/\s*(지하\s*)?\d+\s*층$/u, "") || "탑" : args.name.trim()) : direction === "up" && floors > 1 ? "탑" : "지하 던전";
   const baseId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : "";
+  const shapes = floors > 1 && direction === "up" && !args.rooms ? towerFloorShapes(floors, baseSeed, Array.isArray(args.floorShapes) ? args.floorShapes : []) : [];
+  delete args.floorShapes;
+  const floorGimmicks = Array.isArray(args.floorGimmicks) ? args.floorGimmicks : [];
+  delete args.floorGimmicks;
   for (let k = 1; k <= floors; k += 1) {
     const first = k === 1, last = k === floors;
     // 들어오는 계단: 1층은 바깥과 이을 때만(안 이으면 죽은 계단이 된다). 다음 층부터는 아래층(지하)·위층(탑)에서 오는 계단.
@@ -532,7 +577,7 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
     const floorArgs: Record<string, unknown> = { ...args, name: FLOOR_NAME(baseName, direction, k, floors) };
     delete floorArgs.floors; delete floorArgs.direction; delete floorArgs.populate; delete floorArgs.troops; delete floorArgs.seed; delete floorArgs.sourceMapId;
     if (!first) { delete floorArgs.entrance; delete floorArgs.mapId; floorArgs.id = baseId ? `${baseId}_f${k}` : undefined; }
-    if (floors > 1 && direction === "up" && !args.rooms) { floorArgs.rooms = towerRooms(last, k, baseSeed); floorArgs.type = args.type ?? "castle"; }
+    if (floors > 1 && direction === "up" && !args.rooms) { floorArgs.rooms = towerRooms(last, k, baseSeed, shapes[k - 1]); floorArgs.type = args.type ?? "castle"; }
     else if (floors > 1 && !args.rooms && !args.size) floorArgs.size = last ? "medium" : "small";
     results.push(buildFloor(draft, floorArgs, { seed: baseSeed + (k - 1) * 101, entry, exit }));
   }
@@ -568,6 +613,22 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
       if (line) filled.push(`${m.name}: ${line}`);
     }
   }
+  // 탑 중간 층 장치(2026-10-24): 층마다 다른 장치를 고를 수 있다 — floorGimmicks[i](아래층부터, "none" = 끔). 안 주면 1층·꼭대기를 뺀 층에 씨앗으로 마법진.
+  // 1층은 꼭대기와 잇는 건너 마법진 자리라 기본으로는 비운다. 레버 대체는 하지 않는다(좁은 탑 통로에 쇠창살이 떠 보였다).
+  const floorAfter: (() => void)[] = [];
+  if (shapes.length && datas.every((d) => d.adapter === "beodeul")) {
+    for (let i = 0; i + 1 < datas.length; i += 1) {
+      const asked = floorGimmicks[i];
+      const want = typeof asked === "string" && (DUNGEON_GIMMICKS as readonly string[]).includes(asked) ? (asked as DungeonGimmick)
+        : asked === undefined && i > 0 && towerHash(baseSeed, 70 + i) < 0.6 ? "teleporter" : undefined;
+      if (!want) continue;
+      const m = draft.maps[mapIds[i]!]!;
+      const { gimmick, line, after } = placeThemeGimmick(draft, m, datas[i]!, datas[i]!.type as DungeonType, want, baseSeed + 13 * (i + 1), warnings, () => "");
+      floorAfter.push(after);
+      if (gimmick && line) filled.push(`${m.name}: ${line}`);
+      else warnings.push(`${m.name}: 층 장치 ${want} 를 놓을 자리가 없었다.`);
+    }
+  }
   // 채우기(rpg): 생략하면 켠다. 몬스터 수집(pokemon)은 야생 조우 구역이 정본이라 건너뛴다.
   const populate = args.populate !== false && datas.every((d) => d.genre === "rpg");
   const placedTotal = { enemies: 0, chests: 0, boss: 0, guardian: 0, save: 0 };
@@ -586,6 +647,7 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   }
   // 주제 장치가 채우기 뒤로 미룬 맵 변경(다리 걷기)
   (gimmickAfter as (() => void) | null)?.();
+  for (const f of floorAfter) f();
   // 탑(위로 쌓은 여러 층): 둥근 방 바깥 깊은 천장(8 이웃도 천장)을 비우고 구름 바다 배경을 빈 칸에 비친다 — 검은 허공이 화면 반을 넘었다(dt r2 tower-b 55%).
   // 벽에 닿는 천장 띠는 남아 탑 외벽 두께로 읽힌다. 「하늘 위의 탑」(크로노 트리거 지일 왕국·FF 의 탑).
   if (floors > 1 && direction === "up") for (const id of mapIds) skyAroundTower(draft, draft.maps[id]!);
@@ -695,6 +757,8 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
       troops: { type: "object", additionalProperties: false, description: "채우기에 쓸 적 그룹 id(선택). 비우면 이 도구가 던전 주제(이름 낱말·소굴·잠김·탑·종류)에 맞는 적·보스 그룹을 만든다 — 지하 묘지 = 언데드·리치, 탑 = 흑기사, 화산 = 화염 짐승·붉은 용, 고블린 굴 = 고블린·대장. 사용자가 적을 직접 말했을 때만 upsert_troop 으로 만들어 여기 준다. 요청에 없는 용·드래곤 그룹을 보스로 고르지 말 것", properties: { field: { type: "array", items: { type: "string" }, description: "돌아다니는 잡몹 무리" }, midBoss: { type: "string", description: "층 수문장" }, boss: { type: "string", description: "마지막 방 보스" } } },
       gimmick: { type: "string", enum: [...DUNGEON_GIMMICKS, "none"], description: "주제 장치(마지막 층에 하나, 버들항). 생략하면 종류에 맞는 장치를 스스로 고른다(" + Object.entries(THEME_GIMMICKS).map(([t, g]) => `${t}=${g.join("/")}`).join(" · ") + "). " + DUNGEON_GIMMICKS.map((g) => `${g} ${GIMMICK_LABEL[g]}`).join(" · ") + " · none 장치 없음. 자리가 없으면 그 종류의 다음 장치로 바꾸고 경고한다 — 장치 이벤트를 따로 손으로 놓지 말 것." },
       inspiration: { type: "string", description: "사용자가 말한 게임·분위기 그대로(「엘든링 같은」「FF6 광산」「크로노 트리거 마법 왕국」). 종류(type)·배치(layout)·장치(gimmick)를 안 줬을 때 기본값을 정한다: " + DUNGEON_REFERENCES.map((r) => `${r.label} → ${r.type}${r.layout ? `·${r.layout}` : ""}${r.gimmick ? `·${r.gimmick}` : ""}`).join(" / ") + ". 종류 낱말(지하묘지·마계…)이 함께 오면 그 낱말이 이긴다." },
+      floorShapes: { type: "array", maxItems: 5, items: { type: "string", enum: [...new Set([...TOWER_FLOOR_SHAPES, ...TOWER_TOP_SHAPES])] }, description: "위로 쌓는 탑의 층마다 꼴(아래층부터). 중간 층 ring 둥근 큰 방·gallery 긴 회랑 끝 링·cross 가운데 홀 사방 곁방·spiral 돌아 오르는 방 사슬·twin 양 날개 방, 꼭대기 ring·hall 알현 회랑·observatory 링 보스방+양옆 보물 방. 생략한 층은 시드(바로 아래층과 다른 꼴)." },
+      floorGimmicks: { type: "array", maxItems: 5, items: { type: "string", enum: [...DUNGEON_GIMMICKS, "none"] }, description: "탑 중간 층마다 장치(아래층부터, 꼭대기는 gimmick). none = 그 층 장치 없음. 생략하면 씨앗으로 마법진." },
       layout: { type: "string", enum: [...DUNGEON_LAYOUTS], description: "층 배치 가족: linear 한 줄 사슬(곁방 하나) · hub 가운데 홀에서 갈래 · loop 고리로 돌아오는 지름길 · vertical 층을 쌓는다(floors 생략 시 2층, tower 는 3층 위로). 생략하면 시드로 고른다 — 같은 종류 두 번 요청도 배치가 달라진다." },
       puzzle: { type: "string", enum: ["lever"], description: "같은 칩셋 안의 퍼즐(마지막 층): lever = 보물 방(없으면 보스방)으로 들어가는 통로를 닫힌 쇠창살로 막고, 먼 곁방에 레버를 둔다(당기면 열림). 「레버로 문을 여는 퍼즐 던전」은 이것 하나 — 다른 칩셋(손 도트 실내) 퍼즐 방을 따로 만들어 잇지 말 것(화풍이 갈린다)." },
       lair: { type: "boolean", description: "무리가 사는 소굴(고블린·도적·오크·짐승 굴): 버들항 cave 방마다 모닥불·가죽 걸이·궤짝·통·자루·뼈 무더기를 깔아 「누가 사는 굴」로 읽히게 한다. 보스방은 우두머리 자리로 더 쌓는다. 「고블린 굴」은 type cave + lair:true + troops." },

@@ -12,7 +12,7 @@ import { EXPEDITION_TOWNS as allTowns, EXPEDITION_GYMS as gyms, EXPEDITION_ROUTE
 import { campaignLevels, campaignShape, clampGymCount, FULL_GYMS, gymWord } from "./campaignPlan";
 import markerAssets from "./markers.json";
 import templateData from "./mapTemplates.json";
-import { composeTown, START_ROUTES, START_TOWNS, TOWN_SKETCHES, VOLCANO_ROUTE_KEYS, VOLCANO_TOWN_KEYS, volcanoRouteSketch, volcanoTownSketch, type StartTheme } from "./townLayouts";
+import { composeTown, START_ROUTES, START_TOWNS, TOWN_SKETCHES, VOLCANO_ROUTE_KEYS, VOLCANO_TOWN_KEYS, volcanoRouteSketch, volcanoTownSketch, homeTownSketch, type HomeTownLayout, type StartTheme } from "./townLayouts";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { shapeAllAutotileGroupsAround } from "@/project/defaults/autotileEngine";
 import { expeditionEnemyActions } from "./enemyActions";
@@ -81,7 +81,7 @@ const GYM_KEY_BY_TYPE: Readonly<Record<string, string>> = {
   dragon: "dragon", steel: "dragon", flying: "dragon",
 };
 
-export function authorExpeditionWorld(project: Project, options: { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[]; readonly startTheme?: StartTheme; readonly gymCount?: number } = {}): ExpeditionManifest {
+export function authorExpeditionWorld(project: Project, options: { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[]; readonly startTheme?: StartTheme; readonly gymCount?: number; readonly startLayout?: HomeTownLayout } = {}): ExpeditionManifest {
   // 화산 기획의 1관은 불 체육관이다 — 시작 마을이 재 마을 판(둘째 마을 ↔ 잿빛 온천 맞바꿈)이라 풀 관장이 서 있으면 어색하다. 기획서가 첫 관 타입을 정하면 그것이 이긴다.
   if (options.startTheme === "volcano" && !options.firstGymType && options.gymTypes?.[0] === undefined) options = { ...options, firstGymType: "fire" };
   // 규모(체육관 수) — 기본 8관은 아래 모든 값이 본래 그대로다. 0~7관은 마을·길·부속 지역·리그를 앞에서부터 잘라 쓴다.
@@ -166,8 +166,10 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     // 화산 캠페인은 시작 마을·길만이 아니라 뒤의 재 마을·재 길도 같은 재 재료 판이다(항구·도시는 섬의 항구라 그대로).
     const volcanoTown = volcano && role === "town" && key !== "home" && (VOLCANO_TOWN_KEYS as readonly string[]).includes(key);
     const volcanoField = volcano && role === "field" && key !== "meadow" && volcanoRoute(key) > 0;
-    const sketch = volcanoTown ? volcanoTownSketch(towns.findIndex(x => x.key === key) + 1, gymPlanTowns.has(key))
-      : volcanoField ? volcanoRouteSketch(volcanoRoute(key)) : startTown?.sketch ?? TOWN_SKETCHES[look];
+    // 시작 마을 짜임(2026-10-24): 풀밭 시작 마을은 손잡이·씨앗으로 판을 새로 짠다 — 늘 같은 템플릿이었다.
+    const homeLayout = key === "home" && !options.startTheme && options.startLayout ? homeTownSketch(options.startLayout).sketch : undefined;
+    const sketch = homeLayout ?? (volcanoTown ? volcanoTownSketch(towns.findIndex(x => x.key === key) + 1, gymPlanTowns.has(key))
+      : volcanoField ? volcanoRouteSketch(volcanoRoute(key)) : startTown?.sketch ?? TOWN_SKETCHES[look]);
     // 0관 캠페인: 마을 판의 체육관 건물(7×7)은 체육관 문처럼 보이는데 안은 조련사 회관(교실 판 재사용)이었다. 같은 크기의 박공 집으로 바꾼다.
     const gymless = gymCount === 0 && role === "town" && sketch && t.buildings.some(b => b.name === "gable_a");
     if (sketch) composeTown(project, map, t, gymless ? { ...sketch, kits: sketch.kits.map(([n, x, y]) => [n.startsWith("gym_") ? "gable_a" : n, x, y] as [string, number, number]) } : sketch, templates);
@@ -360,6 +362,13 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const spot = wide.find(p => walkable(a, p).size === before - 1) ?? wanted;
     if (a.events.some(e => /_sign_/.test(e.id) && Math.max(Math.abs(e.x - spot.x), Math.abs(e.y - spot.y)) <= 3)) return;
     npc(a, `sign_${b.id}`, "길 안내", `북쪽 길: ${b.name}`, spot, [], 4);
+  }
+
+  /** 문 자리 → 「북동쪽」 같은 방위(마을 가운데 기준). */
+  function compass(map: GameMap, p: Point): string {
+    const ns = p.y < map.height * 0.4 ? "북" : p.y > map.height * 0.6 ? "남" : "";
+    const ew = p.x < map.width * 0.4 ? "서" : p.x > map.width * 0.6 ? "동" : "";
+    return ns || ew ? `${ns}${ew}쪽` : "가운데";
   }
 
   function doorways(map: GameMap): { x: number; y: number; name: string }[] {
@@ -620,7 +629,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const martDoor = doors.find(d => /mart|shop/.test(d.name));
     const others = doors.filter(d => d !== centerDoor && d !== martDoor);
     // 체육관 건물 킷이 있으면 그 문이 체육관이다 — 없으면(옛 판) 두 번째 집.
-    const gymDoor = others.find(d => /^gym_/.test(d.name)) ?? others[1];
+    const gymDoor = others.find(d => /^gym_/.test(d.name)) ?? (i === 0 && options.startLayout ? others.find(d => /^gable_/.test(d.name)) : undefined) ?? others[1];
     const residential = [others.find(d => d !== gymDoor), gymDoor].filter((d): d is NonNullable<typeof d> => d !== undefined);
     if (!centerDoor || !martDoor || residential.length < 2) throw Error(`Current references lack four public building entrances in ${map.id}: ${JSON.stringify(doors)}`);
     attachRoom(map, center, centerDoor); attachRoom(map, mart, martDoor);
@@ -646,7 +655,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     if (i === 0) event(upstairs, "console", { x: 8, y: 3 }, [text("게임기다. 모험에서 돌아오면 또 하자.")], { graphic: invisible });
     else npc(upstairs, "kid", "아이", ["우와, 진짜 몬스터다! 나도 크면 조련사가 될 거야.", "2층 창문으로 보면 길 건너 풀숲이 다 보여.", "밤에는 풀숲에서 다른 몬스터가 나온대. 진짜일까?"][i % 3]!, { x: 6, y: 6 }, [], 1);
     npc(lounge, "traveler", "라운지 손님", ["상대 타입에 강한 기술을 고르면 두 배로 들어가요. 불은 풀에, 물은 불에, 풀은 물에.", "체력이 노란색이 되면 포획구슬이 잘 듣는대요.", "기술 횟수가 떨어지면 1층 직원에게 맡기세요. 모두 채워 줘요."][i % 3]!, { x: 7, y: 6 }, [], 3);
-    npc(map, "guide", "여행 안내원", `${lookTown(t).name}에 온 걸 환영해요. ${i === 0 ? "북동쪽 집이 천문박사의 연구소예요." : "북동쪽 건물에서 지역의 관장에게 도전할 수 있어요."} 북쪽의 안내원이 다음 길을 알려 줍니다.`, mid(map), [], 4);
+    npc(map, "guide", "여행 안내원", `${lookTown(t).name}에 온 걸 환영해요. ${i === 0 ? `${i === 0 && options.startLayout ? compass(map, residential[1]!) : "북동쪽"} 집이 천문박사의 연구소예요.` : "북동쪽 건물에서 지역의 관장에게 도전할 수 있어요."} 북쪽의 안내원이 다음 길을 알려 줍니다.`, mid(map), [], 4);
     npc(map, "local", "마을 주민", lookTown(t).flavor, { x: 3, y: 10 }, [], i % 8);
     // Return travel is earned by reaching a town, with no permanent progress rollback.
     event(map, "visit", entries.get(map.id)!, [sw(`mx_visit_${t.key}`)], { trigger: "auto", below: true,
