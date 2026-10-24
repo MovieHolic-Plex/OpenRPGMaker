@@ -5,6 +5,7 @@ import type { StepResult } from "@/player/interpreter/types";
 import { characterSpriteY } from "@/player/characterDepth";
 import { runtimeMapWorldScale } from "@/player/runtimeViewScale";
 import { screenOverlayHost } from "@/player/playSceneScreenEffects";
+import { syncDoors } from "@/player/playSceneDoors";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
   isEmptySpriteLook,
@@ -410,6 +411,7 @@ export function updateFieldStaging(scene: PlaySceneContext): void {
   const now = scene.time?.now ?? 0;
   for (const [sprite, look] of lookTargets(scene)) applyLook(scene, sprite, look, now);
   syncLetterbox(scene);
+  syncDoors(scene);
 }
 
 /** 테스트·QA 가 파티클 그림 없이 레시피를 대조할 수 있게 내보낸다. */

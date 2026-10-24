@@ -16,6 +16,7 @@ export const DEFAULT_SEED = 1;
 /** 시나리오가 쓸 수 있는 op 종류. 목록 밖은 정규화 단계에서 거부한다. */
 export const OP_KINDS = [
   "audioAction",
+  "measureLayout",
   // 플레이 세션(scripts/qa/play)이 쓰는 op. 시나리오로 그대로 옮길 수 있도록 런타임 op 로 둔다 —
   // 세션 도구가 따로 실행기를 두면 재현과 회귀 시나리오가 서로 다른 동작을 검증하게 된다.
   "move",
@@ -25,6 +26,8 @@ export const OP_KINDS = [
   "clickTile",
   // 키를 누르며 JS 조건이 설 때까지 되풀이(first-love 시나리오).
   "pressUntilJs",
+  // pressUntilJs 처럼 넘기며 대사마다·걷는 동안 0.2초마다 찍고 배우 배치를 적는다(첫사랑 바라보는 방향 검사).
+  "recordUntilJs",
   // 인라인 CSS 사용자 속성 값 대기(ct-engine: 적 이동 뒤 렌더 좌표).
   "waitForStyleVar",
   // 하위 op 묶음을 조건이 설 때까지 되풀이(ct-engine: 적이 쓰러질 때까지 공격).
@@ -78,6 +81,8 @@ export const OP_KINDS = [
   // 타이틀 이어하기처럼 클릭이 자연스러운 표면도 있다. 레일/타이틀 항목은 진짜
   // 클릭 대상이므로 가려짐·비활성·0 크기를 검사한 뒤 보이는 상자 중심을 누른다.
   "pointerClick",
+  "click",
+  "tap",
   "wheel",
   "waitForAttr",
   "pressUntil",

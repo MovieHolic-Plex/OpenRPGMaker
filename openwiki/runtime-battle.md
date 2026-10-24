@@ -2331,3 +2331,45 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
   세 번 닫으면 리스너 3개와 끝나지 않는 Promise 3개가 남았다.
 - **전술 전투 중에도 게임 시계가 멈춘다** — `isGameTimePausedForRuntime` 이 `[data-testid='tactics-battle']` 를 본다. 격자는
   `.play-viewport` 층(`.play-stage` 바깥)에 붙으므로 판정 루트도 `.play-viewport` 로 올렸다(없으면 `.play-stage`).
+
+## 전투 깊이 — 기술 도움말 · 「연계」 명령 · 연계 대기 · 약점 공략 · 결과 팡파레 (fs-battle-2, 2026-10-24)
+
+사용자(폴른 스타 플레이): 「스킬 설명을 볼 수가 없다」「그냥 강하게 때린다가 끝이냐」「배우거나 레벨 업하면 화려하게」「연계기」.
+전부 엔진·자료집·조수 기능이고, 폴른 스타는 데이터로 쓴다(`src/project/flagship/fallen/battleDepth.ts`).
+
+- **기술 도움말 한 벌** `src/battle/skillHelp.ts` — `skillHelp(project, skill, user?)` → 이름·설명·비용(연계기는 「카엘 MP 3 · 엘레나 MP 5」)·꼬리표.
+  꼬리표는 레코드에서 기계적으로 뽑는다(대상 → 속성 → 위력/회복 → 타수 → 급소 → 방어 무시 → 상태(지우기는 셋 넘으면 「외 N종」) → 능력 단계 → 흡수/반동/HP 대가 → 모음 → 행동 지연 → 무기 공명 → 약점 공략 → 재사용 …).
+  전투 도움말 창·필드 메뉴 스킬 화면(`playerStatusMenuDetails.fieldSkillDescription`)·결과 「새 기술 습득!」 카드·자료집 연계기 미리보기·`list_combo_techs` 가 같은 문장을 쓴다.
+  기본 속성 이름(Fire·Sword…)은 `elementDisplayName` 이 한글로 보인다(기술 배지와 같은 표).
+- **전투 도움말 창** `battleCommandDom.syncBattleSkillHelp` — 기술·연계 하위 목록이 열려 있으면 명령 패널 **위**에 뜨고(패널 높이를 뺏지 않는다) 커서를 따라 바뀐다(`battleDom.markMenuCursor`). testid `battle-skill-help`(`-tags`·`-description`).
+  **터치**: 기술 칸을 처음 탭하면 커서만 옮겨 도움말을 보이고, 커서가 이미 있던 칸을 다시 탭해야 쓴다 — 전역 목록 탭 규칙(`touchListTap`)이 커서를 옮기고, 커서 이동이 `markMenuCursor` → 도움말 창을 갱신한다. 마우스·키보드는 그대로 한 번에 쓴다.
+- **「연계」 명령** — 연계기는 기술 목록에서 빠지고 루트 명령 `actor-command-combo`(아이콘 ✦) 아래 따로 열린다(`listedComboSkillIds`, 포켓몬 UI 제외). 준비된 연계기가 있으면 「N개」.
+  **연계 대기**(`runtime.holdForCombo`, gauge 흐름): wait 모드에서는 메뉴 중 게이지가 멈춰 두 사람이 같이 준비되는 일이 게이지가 우연히 같을 때뿐이었다.
+  준비된 연계기가 없고 동료가 준비 전(`comboPartnerNotReady`)이면 「연계」 = 「동료 기다리기」 — 그 배우는 게이지 100 그대로 충전 고리에서 빠지고(`heldForCombo`), 다음 아군 차례가 오면 풀려 그 바로 다음 차례를 받는다(차례 시작 처리는 다시 하지 않는다 `resumedFromHold`).
+  기다릴 동료가 없으면 바로 풀린다. 스냅샷 `heldActorIds`, 배우 노드 `data-combo-held`(빛 맥동).
+- **연계기 발동 연출** `src/player/battleComboCutIn.ts` — 타임라인 엔트리에 `comboActorIds` 가 2명 이상이면(행동당 한 번) 무대에 「연계!」/「트리플 연계!」 띠(참가자 × · 기술 이름), 화면 번쩍, 참가자 발밑 빛 고리와 솟는 별빛, 합성음 `combo`. 기술 그림은 기존 도트 연출(`retroChoreographyId`) 그대로.
+- **연계 MP 나누기** `SkillRecord.comboMpCosts [{actorId, mp}]` — 참가자별 몫. 없는 참가자는 `mpCost`. `battleSkillMpCostFor(skill, user)` 가 단일 권위(장비 절반 적용).
+- **약점 공략** `SkillRecord.exploitStates {stateIds, bonusPercent, consume?}` — 대상이 그 상태면 피해 ×(1+bonus/100), `consume` 이면 그 상태를 지운다(기술 자신의 상태 효과보다 먼저). 타임라인 `exploit:true` → 숫자 아래 「공략!」.
+  「깔기 → 거두기」 짝(둔화 → 십자베기, 기절 → 광선 조준)을 만드는 수단이다.
+- **쓰러뜨린 대상에게 상태를 걸지 않는다** — 피해 기술의 상태 효과는 대상 HP 가 남았을 때만(녹화에서 「쓰러뜨렸다!」 다음 「화상에 걸렸다!」가 떴다).
+- **결과 팡파레** `src/player/battleFanfareDom.ts` + `system.battleFanfare`(`src/project/battleFanfare.ts`, 기본값은 저장 안 함) — 도트 결과 화면의 레벨 업 창 넘기기 줄에:
+  레벨 업 창 머리 「LEVEL UP!」 배너(빛줄기·파티클·능력치 줄 차례 등장) → 그 배우가 배운 기술마다 「새 기술 습득!」 카드(속성색 문장·비용·꼬리표·설명) → 이번에 해금 조건이 채워진 연계기마다 「새 연계기!」 카드(`newlyUnlockedCombos`).
+  `levelUp`·`skillLearned`·`comboUnlocked`·`style`(burst·classic·minimal)·`sound`. 소리는 합성 `levelUp`·`skillLearned`·`combo`.
+- QA: `scripts/qa/runtime/checkpoints/fallen-battle-depth.json`(데스크톱: 도움말·듀얼·연계 대기→트리플·레벨 업 팡파레), `-mobile`(세로, `context.hasTouch`)·`-landscape`. 새 op `click`(DOM 클릭)·`tap`(터치), 세트 `context` 는 브라우저 컨텍스트 옵션. 전투 op 계획 `combo:<skillId>` 는 「연계」 명령을 누른다(준비 전이면 연계 대기).
+
+## 전투 연출 설정 — 달려드는 속도 · 얼굴 교차 컷인 · 화려한 연계 착탄 · 한 줄 도움말 · 성장 곡선 (fs-battle-3, 2026-10-25)
+
+사용자(폴른 스타 시연): 「늑대가 고블린보다 느리네 — 빠른 것을 기준으로」「연계기 할 때 서로의 얼굴이 교차하는 느낌으로」「연계기는 좀 더 화려해야」「기술 도움말은 '카엘은 무엇을 할까?' 자리에 1줄로」「모바일 가로가 너무 작다」「레벨 오르면 왜 체력만 오르냐」.
+
+- **설정 한 벌** `system.battleStaging`(`src/project/battleStaging.ts`, 기본값은 저장 안 함): `enemyLunge` fast(기본)|normal|classic · `comboCutIn` faces(기본)|band|off · `comboFx` spectacular(기본)|simple · `skillHint` line(기본)|window. 읽기는 `resolveBattleStaging`.
+- **달려드는 속도** — `battleRetroMotion.measureEnemyReach`. 도트 괴물은 `pixelEnemyLungeProfile(lunge, motion)` 의 멈춤+px/ms(fast: dash 1.7·hover 1.4·기타 1.25·stomp 1.1, 140~420ms; classic = 예전 0.65/0.34/0.42/0.3·260ms 멈춤, 300~900ms). 사람 적(charset)은 `approachMsFor("dash")`. 둘 다 적 하나의 `EnemyRecord.lungeSpeedPercent`(25~300, 100 은 저장 안 함)로 나눈다. 폴른 스타 늑대 둘은 130%.
+  실측(`data-enemy-lunges` 추적, 「적id:ms」 최근 12개): 전 늑대 939ms / 고블린 289~370ms → 후 늑대 268ms.
+- **연계기 컷인** `battleComboCutIn.playComboCutIn` 이 앞당김 시간(ms)을 돌려준다(faces 1650 · band 900 · off 0). 시퀀서 훅 `entryLeadMs(entry)`(`battleSequencer.playTimelineEntries`)가 `onTimelineEntry` 뒤 그만큼 기다려 컷인이 행동 **전에** 끝난다.
+  faces: 참가자마다 흉상 판(`.battle-combo-face`, `data-from` left/right 번갈아)이 대각으로 들어와 엇갈려 나간다 + 속도선·사선 + 제목 카드(작은 글 「듀얼/트리플 테크」 또는 `comboStaging.kicker` + 기술 이름) + 번쩍임·확대(`battle-combo-zoom`) + 참가자별 오라(그 배우가 해금 조건으로 쓴 기술의 속성 색).
+  흉상은 `actorBustImage`: 외형 흉상 → `faceResourceId` 의 공용 표정 세트 흉상(「결의」 우선) → 48px 얼굴. 전투 시작 때 `preloadComboBusts` 로 미리 읽는다(첫 프레임 빈 판 방지).
+- **착탄** `comboImpact(root, project, target, amount, critical, speed)` — `root.dataset.battleComboActive` 동안 `onDamageFeedback` 이 부른다. 첫 타: 번쩍임·참가자 색 모임 고리+핵+파편 16·흔들림(`comboStaging.shake`, 생략 = 트리플 heavy / 듀얼 light)·느린 화면(무대 애니메이션 `playbackRate` 0.3, 420ms; `slowMo:false` 로 끔)·합성음 `comboImpact`. 매 타: 피해 숫자 폭발. 적 엔트리나 다른 행동이 오면 `endComboAction`. 색은 `comboTint(skill)`(= `comboStaging.tint` → 속성 색 → 금색). reduced-motion 은 움직임을 끈다.
+- **한 줄 도움말** `skillHelpOneLiner(project, skill, user)`(`src/battle/skillHelp.ts`) — 「MP6 · 적 전체 · 냉기 · 둔화」: 비용(연계는 MP3+5) · 범위 · 속성 · 특징 둘(약점 노림·상태·해제·능력 단계·흡수·행동 지연·N연타·합체·방어 무시·급소↑·무기 공명), 없으면 회복/위력. `battleCommandDom.syncBattleSkillHintLine` 이 메시지 창 맨 위에 `.battle-message-hint`(testid `battle-skill-hint`)로 질문 줄을 대신한다. 큰 도움말 창은 `skillHint: "window"` 일 때만. 필드 메뉴 스킬 화면의 긴 설명은 그대로.
+- **터치 가로 전투 크기** — 따로 고치지 않는다. 모바일 일반 수정(9e7d458dd7, `landscapeTouchScale`: 가로에서 무대가 화면 높이를 채우고 조작은 반투명하게 겹침 `data-touch-overlay`)이 전투에도 그대로 적용된다. 전투 전용 배율 갈래를 만들었다가 겹쳐서 뺐다.
+  실측(`measureLayout`): iPhone 15 가로(852×393) 전투 장면 480×270 → 698×393, Galaxy(780×360) 480×270 → 640×360, 명령 단추 86×20 → 125×29 / 114×27. 남은 점: 반투명 조이스틱·B 가 명령 창 왼쪽 아래·파티 창 게이지에 조금 겹친다.
+- **성장 곡선**(폴른 스타) `battleDepth.applyFallenGrowthCurves` — 기본 곡선 끝이 평평해 레벨 업에 HP 만 올랐다. 역할별 `FS_GROWTH`(L6 기준, 레벨당 증가가 L16 무렵까지 앞→뒤로 커짐)로 모든 능력치가 오른다. 엔진에 행운·마법 방어 칸은 없다(정신이 마법 공·방). 모의전 n=200: 보스 약 +6%p.
+- QA: `fallen-battle-depth.json` 에 `lunge-wolves`·`lunge-goblins`, 세트 `fallen-battle-landscape-iphone15`·`-galaxy`·`fallen-battle-lunge-classic`. 새 op `measureLayout {selectors, label}` → 로그 `[measureLayout]` 에 요소 상자·글꼴·`enemyLunges`.

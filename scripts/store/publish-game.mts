@@ -3,7 +3,9 @@
  * 주소·토큰은 환경 변수로만 받는다(storePublish.mts). 플레이어는 먼저 `npm run build:player` 로 dist/export-player 에 만든다.
  *
  *   npm run -s store:publish-game -- --demo chrono-bell --dry
- *   npm run -s store:publish-game -- --demo chrono-bell --target staging [--major] [--changelog "…"] [--version 1.4]
+ *   npm run -s store:publish-game -- --demo chrono-bell --target staging [--major] [--changelog "…" | --changelog-file notes.txt] [--version 1.4]
+ * 바뀐 점은 여러 줄 글이다: 첫 줄 = 한 줄 제목, `+ ` 새 기능 · `~ ` 개선 · `! ` 버그 수정(openwiki/asset-store.md 「바뀐 점 쓰는 법」).
+ * --changelog 안의 글자 `\n` 은 줄바꿈으로 읽는다.
  *   STORE_LINK_TOKEN=… npm run -s store:publish-game -- --demo chrono-bell --target production --confirm <contentHash>
  *   npm run -s store:publish-game -- --rollback fallen-star@1.0 --target staging
  * 마지막 줄은 한 줄 JSON 결과다. 그림·BGM 이 이 체크아웃 public/ 에 없으면 OPRN_ASSET_ROOTS(콜론 구분)의 public 폴더에서 찾는다.
@@ -53,6 +55,8 @@ const CONTROLS = (pointer: boolean) => [
   { keys: "Esc · X", action: "취소 · 메뉴" },
   { keys: "Shift", action: "누르고 있으면 달리기" },
   ...(pointer ? [{ keys: "마우스 클릭", action: "메뉴·전투 명령 고르기 (오른쪽 클릭 = 취소)" }] : []),
+  { keys: "휴대폰: 맵 탭", action: "그곳까지 걷기 · 사람을 탭하면 다가가 말 걸기" },
+  { keys: "휴대폰: 왼쪽 패드 · A · B", action: "이동 · 확인 · 취소 (「달리기」 단추로 걷기/달리기)" },
 ];
 
 /** dist/export-player 는 이 체크아웃에서, 공용 그림·소리는 public/(없으면 OPRN_ASSET_ROOTS). */
@@ -189,7 +193,8 @@ try {
       if (response.ok) previous = await response.json();
     }
     const changes = projectChangeSummary(previous as never, JSON.parse(built.projectJson));
-    const changelog = arg("--changelog") ?? changelogFromChanges(changes, mine.baseline?.version ?? null);
+    const changelogFile = arg("--changelog-file");
+    const changelog = (changelogFile ? readFileSync(resolve(changelogFile), "utf8").trim() : arg("--changelog")?.replace(/\\n/g, "\n")) ?? changelogFromChanges(changes, mine.baseline?.version ?? null);
     let lastLine = 0;
     const result = await publishStoreGame(transport, {
       projectKey, slug: demo.slug, meta, files, entry: built.entry, cover, art, changelog, changes,

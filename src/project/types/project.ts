@@ -190,6 +190,11 @@ export interface GameMap {
    * 노선·칸 규약과 정규화는 `src/project/mapTransit.ts`, 달리기·막기·타기는 `src/player/playSceneTransit.ts`.
    */
   transit?: import("../mapTransit").MapTransit;
+  /**
+   * 타일 그림 문(엘리베이터·유리문·철문). optional — 없으면 문 연출 없음. auto 문은 사람이 다가오면 저절로 열고 닫힌다,
+   * 나머지는 「화면 효과」 doorOpen/doorClose 로 연다. 규약 `src/project/eventCommands/doorAnimation.ts`, 렌더러 `src/player/playSceneDoors.ts`.
+   */
+  doors?: import("../eventCommands/doorAnimation").MapDoorDef[];
   /** Fixed sun; absent/off preserves existing maps. Shared editor/player shadow projection. */
   sunlight?: import("../sunlight").MapSunlight;
   /** Optional map-wide decorative layers; independent of gameplay weather. */
@@ -236,8 +241,10 @@ export interface StructurePlacement {
  * 속도: **60Hz 논리 프레임당 px** (`@/project/mapBackground` 의 상한 참조).
  */
 export interface MapBackground {
-  /** 배경 배경 그림 리소스 ID(예: `easyrpg-backdrop-sky1`). 외부 URL 은 해석되지 않는다. */
+  /** 배경 배경 그림 리소스 ID(예: `easyrpg-backdrop-sky1`). 외부 URL 은 해석되지 않는다. fromMap 을 주면 "". */
   imageId: string;
+  /** 첫 장을 그림 대신 다른 맵을 줄여 그린 모습으로(MapBackgroundMapView). */
+  fromMap?: MapBackgroundMapView;
   /** 수평 스크롤 속도 (px/프레임, 0=고정). */
   scrollX?: number;
   /** 수직 스크롤 속도 (px/프레임, 0=고정). */
@@ -279,10 +286,39 @@ export interface MapBackground {
 /** 배경 그림을 뷰포트에 맞추는 방식. 자세한 뜻은 MapBackground.fit 참고. */
 export type MapBackgroundFit = "native" | "cover";
 
+/**
+ * 배경 층 그림을 그림 파일 대신 **다른 맵을 줄여 그린 모습**으로 만든다(2026-10-24, 첫사랑 옥상).
+ * 높은 곳(옥상·전망대·절벽 위)에서 내려다본 아래 동네를 같은 크기 타일로 깔면 사람·차가 옥상 위 사람만큼 커 보인다 —
+ * 아래 맵을 scale 배로 줄이고 옅은 안개·채도 빼기로 멀게 보이게 해서 배경에 깐다. 걷는 층(옥상 바닥·난간)은 그대로 앞에 있다.
+ * 런타임은 그 맵의 타일 층(아래·위·덧층)을 캔버스로 한 번 그려 텍스처로 쓴다(이벤트·탈것은 그리지 않는다).
+ * 이 층은 기본으로 맵과 함께 움직이되(깊이 = cameraFollow, 생략 시 scale — 멀수록 덜 움직인다) 가로로 반복한다.
+ */
+export interface MapBackgroundMapView {
+  /** 줄여 그릴 맵 id(같은 프로젝트). 자기 자신은 안 된다. */
+  mapId: string;
+  /** 줄이는 배율 0.15~1(기본 0.4). 1/3~1/2 이 «몇 층 아래» 로 읽힌다. */
+  scale?: number;
+  /** 안개 0~1(기본 0.25) — 하늘색 쪽으로 섞는다. */
+  haze?: number;
+  /** 채도 빼기 0~1(기본 0.3). */
+  desaturate?: number;
+  /** 안개 색(기본 #c9d6e3, 밤이면 짙은 남색). */
+  hazeColor?: string;
+  /** 화면 가운데에 올 아래 맵 칸(기본 그린 범위 가운데). 소수 허용, region 밖이어도 된다(그 만큼 밀린다). */
+  focusX?: number;
+  focusY?: number;
+  /** 아래 맵에서 그릴 칸 범위(기본 맵 전체). 「길과 건너편 건물 줄만」 처럼 띠로 자를 때. */
+  region?: { x: number; y: number; width: number; height: number };
+  /** 위·아래 가장자리를 투명으로 녹이는 폭(그림 높이 대비 0~0.5, 기본 0). 반복하지 않는 띠가 뒤 층(먼 빌딩·하늘)에 섞이게. */
+  feather?: number;
+}
+
 /** 맵 배경의 한 레이어. 스크롤 단위·반복 규칙은 MapBackground 와 같다. */
 export interface MapBackgroundLayer {
-  /** 배경 그림 리소스 ID. */
+  /** 배경 그림 리소스 ID. fromMap 을 주면 비워 둔다(""). */
   imageId: string;
+  /** 그림 대신 다른 맵을 줄여 그린 모습(MapBackgroundMapView). */
+  fromMap?: MapBackgroundMapView;
   /** 수평 스크롤 속도 (px/프레임, 0=고정). */
   scrollX?: number;
   /** 수직 스크롤 속도 (px/프레임, 0=고정). */
@@ -867,6 +903,8 @@ export interface Project {
   audioDescriptions?: AudioDescriptionOverrides;
   /** Editor-only monster overrides, keyed by raw resource ID. */
   monsterMetadata?: MonsterMetadataOverrides;
+  /** 「대사」 책상 — 화자별 말투 메모와 조수 윤문 제안(project/dialogueDesk.ts). optional이라 마이그레이션 불필요. */
+  dialogueDesk?: import("../dialogueDesk").DialogueDesk;
   mapTree: MapTreeNode;
   startMapId: MapId;
   startPos: { x: number; y: number };

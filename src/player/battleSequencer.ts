@@ -76,6 +76,8 @@ export interface DamageFeedback {
   readonly effectiveness?: number;
   /** 장비한 무기 계열이 맞아 기술 위력이 오른 타격(SkillRecord.weaponAffinity). 숫자 위 「무기↑」 꼬리표. */
   readonly weaponAffinity?: boolean;
+  /** 약점 공략 타격(SkillRecord.exploitStates). 숫자 아래 「공략!」 꼬리표. */
+  readonly exploit?: boolean;
   /** 숫자 대신 띄울 글자(상태 부여 「스톱」 등). 있으면 HP 원장·타격 연출·효과음을 건드리지 않는
    *  **표시 전용** 팝업이다(battleDom.onDamageFeedback 이 일찍 돌아간다). */
   readonly label?: string;
@@ -111,6 +113,8 @@ export interface BattleSequencerHooks {
   readonly onSequenceBusy: (busy: boolean) => void;
   /** Called once for each newly appended runtime timeline entry, in order. */
   readonly onTimelineEntry?: (entry: BattleTimelineEntrySnapshot) => void;
+  /** 이 엔트리의 행동을 시작하기 전에 둘 연출 시간(ms, 배속 적용 전). onTimelineEntry 직후에 묻는다. 연계기 컷인이 쓴다. */
+  readonly entryLeadMs?: (entry: BattleTimelineEntrySnapshot) => number;
   /** 엔트리 재생 시작 시 그 엔트리의 전투 애니메이션(없으면 undefined — 레이어 정리). */
   readonly onEntryAnimation?: (animation: BattleAnimationSnapshot | undefined) => void;
   /** 포획 시네마틱(구슬 투척·흔들림)을 재생하고 소요 ms를 반환. 미구현이면 0. */
@@ -304,6 +308,7 @@ export function createBattleSequencer(
       resource: entry.resource ?? "hp",
       ...(entry.effectiveness !== undefined && !healing ? { effectiveness: entry.effectiveness } : {}),
       ...(entry.weaponAffinity && !healing ? { weaponAffinity: true } : {}),
+      ...(entry.exploit && !healing ? { exploit: true } : {}),
     };
   }
 
@@ -469,13 +474,22 @@ export function createBattleSequencer(
     firstDirector?: BattleDirectorState,
     entryOffset = 0,
     firstDirectorIndex = 0,
+    leadPlayed = false,
   ): void {
     if (entryOffset >= entries.length) {
       done();
       return;
     }
     const entry = entries[entryOffset];
-    hooks.onTimelineEntry?.(entry);
+    if (!leadPlayed) {
+      hooks.onTimelineEntry?.(entry);
+      // 엔트리 앞 연출 시간(연계기 얼굴 교차 컷인 등) — 표시 계층이 그동안 화면을 차지하고, 행동은 그 뒤에 시작한다.
+      const leadMs = Math.max(0, hooks.entryLeadMs?.(entry) ?? 0);
+      if (leadMs > 0) {
+        delay(() => playTimelineEntries(entries, snapshot, done, firstDirector, entryOffset, firstDirectorIndex, true), leadMs);
+        return;
+      }
+    }
     const continueNext = (): void =>
       playTimelineEntries(entries, snapshot, done, firstDirector, entryOffset + 1, firstDirectorIndex);
     // 쓰러져 남은 대상의 상태 해제(전투 끝·죽음 정리)는 말하지 않는다 — 승리 직전 「도깨비불 1의 민첩 하락이 풀렸다」가 떴다(2026-10-24).

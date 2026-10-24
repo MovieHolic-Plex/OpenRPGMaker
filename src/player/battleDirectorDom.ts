@@ -15,6 +15,7 @@ import { rewardActorIds } from "@/battle/rewardPolicy";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { battleFanfareFor, levelUpBanner, newlyUnlockedCombos, playFanfareCue, skillLearnedCard } from "@/player/battleFanfareDom";
 import { emeraldBattlerName, emeraldMoveLine, emeraldNarrationActive, emeraldOutcomeLine, emeraldResultRows, emeraldShortName, type EmeraldResultRow } from "@/player/emeraldBattleNarration";
 
 export type BattleDirectorStep = "intro" | "command" | "target" | "acting" | "impact" | "result";
@@ -413,8 +414,11 @@ export function syncBattleMessageWindow(windowNode: HTMLElement, state: BattleDi
   }
   // 같은 문장이면 다시 만들지 않는다(단계가 acting→impact 로 바뀌어도) — 새로 만들면 글자 출력이 처음부터 다시 시작한다.
   const key = state.lines.join("\u0002");
-  if (windowNode.dataset.messageKey === key && lines.childElementCount === state.lines.length) return;
+  if (windowNode.dataset.messageKey === key && lines.querySelectorAll(":scope > .battle-message-line:not(.battle-message-hint)").length === state.lines.length) return;
   windowNode.dataset.messageKey = key;
+  // 질문 줄이 바뀌면(다른 사람 차례·행동 문장) 기술 한 줄 도움말을 거둔다(battleCommandDom.syncBattleSkillHintLine).
+  windowNode.querySelector(".battle-message-hint")?.remove();
+  delete windowNode.dataset.skillHint;
   const previous = messageTypers.get(windowNode);
   if (previous) { window.clearInterval(previous.timer); messageTypers.delete(windowNode); delete windowNode.dataset.messageTyping; }
   lines.replaceChildren();
@@ -673,14 +677,45 @@ function syncPixelResultParty(panel: HTMLElement, snapshot: BattleSnapshot, reve
     const title = panel.querySelector<HTMLElement>(".battle-result-title");
     if (title) head.prepend(title);
     panel.append(head, party);
-    if (levelUps.length > 0) {
+    // 팡파레(system.battleFanfare): 레벨 업 창 → 그 사람의 「새 기술 습득!」 카드들 → (마지막에) 「새 연계기!」 카드.
+    // 확인키 한 번에 한 장씩 넘긴다. 레벨 업 창을 끈 프로젝트도 카드는 따로 켤 수 있다.
+    const fanfare = battleFanfareFor(project);
+    const pages: HTMLElement[] = [];
+    for (const { actor, entry } of levelUps) {
+      if (fanfare.levelUp) pages.push(resultLevelUpWindow(project, context, actor, entry, 0, 0, fanfare));
+      if (fanfare.skillLearned) {
+        for (const skillId of entry.learnedSkillIds) {
+          const skill = project.database.skills.find((record) => record.id === skillId);
+          if (skill) pages.push(skillLearnedCard(project, entry.actorName, entry.actorId, skill, fanfare, "skill"));
+        }
+      }
+    }
+    if (fanfare.skillLearned) {
+      for (const tech of snapshot.rewards.techLearned ?? []) {
+        for (const skillId of tech.skillIds) {
+          const skill = project.database.skills.find((record) => record.id === skillId);
+          if (skill) pages.push(skillLearnedCard(project, tech.actorName, tech.actorId, skill, fanfare, "skill"));
+        }
+      }
+    }
+    if (fanfare.comboUnlocked) {
+      for (const { skill, unlockedBy } of newlyUnlockedCombos(project, snapshot)) {
+        const names = (skill.comboActorIds ?? []).map((id) => actors.find((candidate) => candidate.recordId === id)?.name ?? id);
+        pages.push(skillLearnedCard(project, names.join(" × "), unlockedBy, skill, fanfare, "combo", names));
+      }
+    }
+    pages.forEach((page, index) => {
+      const pager = page.querySelector<HTMLElement>(".battle-result-levelup-page");
+      if (pager) pager.textContent = index + 1 < pages.length ? `${index + 1}/${pages.length} ▼` : `${index + 1}/${pages.length} ▼ 닫기`;
+    });
+    if (pages.length > 0) {
       panel.append(el("div", {
         class: "battle-result-levelup-modal",
-        dataset: { testid: "battle-result-levelups", open: "false", index: "-1" },
-        children: levelUps.map(({ actor, entry }, index) => resultLevelUpWindow(project, context, actor, entry, index, levelUps.length)),
+        dataset: { testid: "battle-result-levelups", open: "false", index: "-1", fanfareStyle: fanfare.style },
+        children: pages,
       }));
       const prompt = panel.querySelector<HTMLElement>(".battle-result-next-prompt");
-      if (prompt) prompt.textContent = `레벨 업 ${levelUps.length}명 · ${CONTINUE_KEY_PROMPT}`;
+      if (prompt) prompt.textContent = `${levelUps.length > 0 ? `레벨 업 ${levelUps.length}명` : "새 기술"} · ${CONTINUE_KEY_PROMPT}`;
     }
   }
   syncPixelLoot(panel, snapshot);
@@ -708,6 +743,7 @@ export function advanceBattleResultLevelUps(panel: HTMLElement): boolean {
   modal.dataset.index = String(next);
   modal.dataset.open = "true";
   windows.forEach((windowNode, index) => { windowNode.dataset.active = index === next ? "true" : "false"; });
+  playFanfareCue(windows[next]!, battleFanfareFor(store.getCurrent()));
   return true;
 }
 
@@ -807,6 +843,7 @@ function resultLevelUpWindow(
   entry: NonNullable<BattleSnapshot["rewards"]["levelUps"]>[number],
   index: number,
   total: number,
+  fanfare = battleFanfareFor(project),
 ): HTMLElement {
   const stats = actor.effectiveStats;
   const terms = resolveTerms(project);
@@ -826,8 +863,9 @@ function resultLevelUpWindow(
   return el("article", {
     class: "battle-result-levelup",
     attrs: { "aria-label": `${entry.actorName} 레벨 업` },
-    dataset: { testid: `battle-result-levelup-${entry.actorId}`, active: "false" },
+    dataset: { testid: `battle-result-levelup-${entry.actorId}`, active: "false", fanfareKind: "levelUp", style: fanfare.style },
     children: [
+      levelUpBanner(fanfare),
       el("div", {
         class: "battle-result-levelup-head",
         children: [

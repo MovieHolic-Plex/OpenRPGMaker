@@ -617,6 +617,7 @@ const enemyRecordSchema = objectSchema({
   speciesId: stringSchema(),
   monsterResourceId: stringSchema(),
   battleScalePercent: integerSchema("전투 표시 크기(%). 10~300으로 제한, 기본 100."),
+  lungeSpeedPercent: integerSchema("도트 측면 전투에서 아군에게 달려드는 속도(%). 25~300, 기본 100. 늑대·맹수처럼 날랜 적 120~160, 굼뜬 거인 70~90. 전역 기본 세기는 set_project_settings battle.staging.enemyLunge"),
   collapseEffect: {
     type: "string",
     enum: ["dissolve", "pixelBreak", "bossSink", "flash", "instant"],
@@ -851,6 +852,28 @@ const skillRecordSchema = objectSchema({
     type: "string",
     description: "연계기가 발동하면 켜지는 스위치 id(전투 이벤트 페이지 조건·이후 이야기 분기). 없는 스위치는 자동 등록된다. 빈 문자열이면 해제",
   },
+  comboStaging: objectSchema(
+    {
+      tint: { type: "string", description: "번쩍임·오라·제목 색 #rrggbb(생략 = 속성 색)" },
+      shake: { type: "string", enum: ["none", "light", "heavy"], description: "착탄 흔들림(생략 = 트리플 heavy · 듀얼 light)" },
+      slowMo: booleanSchema("착탄 순간 느린 화면(생략 = 켜기)"),
+      kicker: { type: "string", description: "제목 카드 위 작은 글(예: 「듀얼 테크」). 생략 = 인원수로" },
+    },
+    "연계기 연출(컷인 얼굴 교차 → 참가자별 빛 → 합쳐진 마무리 → 제목 카드). 전역 세기는 set_project_settings battle.staging. 해제 = null",
+  ),
+  comboMpCosts: {
+    type: "array",
+    description: "연계기 비용 나누기: [{actorId, mp}] — 참가자별 MP 고정 몫(주 시전자 4·보조 8 처럼). 목록에 없는 참가자는 mpCost 를 낸다. actorId 는 comboActorIds 안의 배우. 빈 배열이면 해제",
+    items: objectSchema({ actorId: { type: "string" }, mp: integerSchema("0~9999") }, "{actorId, mp} 두 키만"),
+  },
+  exploitStates: objectSchema(
+    {
+      stateIds: stringArraySchema("노리는 상태 id(1~8). 대상이 이 중 하나에 걸려 있으면 보너스"),
+      bonusPercent: integerSchema("피해 +N% (1~300)"),
+      consume: booleanSchema("true 면 맞힌 순간 그 상태를 풀어 버린다(얼어붙은 적을 깨뜨림·잠든 적을 깨움)"),
+    },
+    "약점 공략(준비 → 마무리 콤보): 대상이 stateIds 중 하나에 걸려 있으면 피해 +bonusPercent%. 숫자 아래 「공략!」 꼬리표. 둔화를 거는 기술 + 둔화 대상 +50% 기술처럼 동료끼리 짝을 만든다. 해제 = null",
+  ),
   area: objectSchema(
     {
       shape: { type: "string", enum: ["circle", "line"] },
@@ -1537,6 +1560,34 @@ function validateSkillTechPatch(draft: Project, patch: unknown): void {
       if (!draft.database.skills.some((skill) => skill.id === entry.skillId)) {
         throw new ToolError(`comboRequires[${index}].skillId 가 없는 기술: ${entry.skillId} — 먼저 upsert_skill 로 만드세요.`, { code: "skill-not-found" });
       }
+    }
+  }
+  if (record.comboMpCosts !== undefined && record.comboMpCosts !== null) {
+    const rows = Array.isArray(record.comboMpCosts) ? record.comboMpCosts : null;
+    if (!rows) throw new ToolError("skill.comboMpCosts 는 [{actorId, mp}] 배열이어야 합니다. 예: [{actorId:\"actor_hero\", mp:4}, {actorId:\"actor_mage\", mp:8}]", { code: "invalid-combo-costs" });
+    const comboIds = Array.isArray(record.comboActorIds)
+      ? (record.comboActorIds as string[]).map((id) => String(id).trim())
+      : typeof record.id === "string" ? [...(draft.database.skills.find((skill) => skill.id === record.id)?.comboActorIds ?? [])] : [];
+    for (const [index, row] of rows.entries()) {
+      const entry = row as Record<string, unknown> | null;
+      const unknownKeys = entry && typeof entry === "object" ? Object.keys(entry).filter((key) => key !== "actorId" && key !== "mp") : [];
+      if (!entry || typeof entry !== "object" || typeof entry.actorId !== "string" || typeof entry.mp !== "number" || !Number.isFinite(entry.mp) || entry.mp < 0 || unknownKeys.length > 0) {
+        throw new ToolError(`skill.comboMpCosts[${index}] 는 {actorId, mp(0 이상 정수)} 두 키만 가진 객체여야 합니다${unknownKeys.length ? `(모르는 키: ${unknownKeys.join(", ")})` : ""}.`, { code: "invalid-combo-costs" });
+      }
+      if (!comboIds.includes(entry.actorId)) {
+        throw new ToolError(`comboMpCosts[${index}].actorId ${entry.actorId} 는 연계 참가자(${comboIds.join(", ") || "없음 — comboActorIds 를 먼저 주세요"})가 아닙니다.`, { code: "invalid-combo-costs" });
+      }
+    }
+  }
+  if (record.exploitStates !== undefined && record.exploitStates !== null) {
+    const exploit = record.exploitStates as Record<string, unknown>;
+    const unknownKeys = exploit && typeof exploit === "object" && !Array.isArray(exploit) ? Object.keys(exploit).filter((key) => !["stateIds", "bonusPercent", "consume"].includes(key)) : ["(객체 아님)"];
+    if (unknownKeys.length > 0 || !Array.isArray(exploit.stateIds) || exploit.stateIds.length === 0 || typeof exploit.bonusPercent !== "number" || exploit.bonusPercent < 1 || exploit.bonusPercent > 300) {
+      throw new ToolError(`skill.exploitStates 는 {stateIds:[상태 id 1~8개], bonusPercent:1~300, consume?:boolean} 입니다${unknownKeys.length ? `(모르는 키: ${unknownKeys.join(", ")})` : ""}. 예: {stateIds:["state_agility_down"], bonusPercent:50}`, { code: "invalid-exploit-states" });
+    }
+    const missing = (exploit.stateIds as unknown[]).filter((id) => typeof id !== "string" || !draft.database.states.some((state) => state.id === id));
+    if (missing.length > 0) {
+      throw new ToolError(`exploitStates.stateIds 에 없는 상태: ${missing.map(String).join(", ")} — 허용 예시: ${knownIds(draft.database.states)}`, { code: "state-not-found" });
     }
   }
   if (typeof record.comboSwitchId === "string" && record.comboSwitchId.trim()) {

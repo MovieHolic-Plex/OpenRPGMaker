@@ -27,6 +27,19 @@ function painting(resourceId: string, from: { x: number; y: number; w: number },
   } as AnimaticLayer;
 }
 
+/** 그림 한 부분(사람이 없는 쪽)을 무대 전체로 깔고 천천히 민다 — 빛 한 점 컷도 어디인지는 보이게(VQA r2: 검은 화면 셋). */
+function backdrop(resourceId: string, crop: { x: number; y: number; width: number; height: number }, opacity: readonly [number, number], ms: number, zoom = 1.08): AnimaticLayer {
+  return {
+    id: "backdrop", kind: "image", role: "background", resourceId, sampling: "linear", crop,
+    x: 0, y: 0, width: STAGE.width, height: STAGE.height, opacity: opacity[0],
+    keys: {
+      opacity: [{ atMs: 0, value: opacity[0] }, { atMs: ms, value: opacity[1], ease: "ease-in-out" }],
+      scaleX: [{ atMs: 0, value: 1 }, { atMs: ms, value: zoom, ease: "ease-in-out" }],
+      scaleY: [{ atMs: 0, value: 1 }, { atMs: ms, value: zoom, ease: "ease-in-out" }],
+    },
+  } as AnimaticLayer;
+}
+
 function caption(cues: readonly { atMs: number; text: string }[], y = 0): AnimaticLayer {
   return {
     id: "caption", kind: "caption", x: 0, y, width: STAGE.width, height: 38, color: CAPTION,
@@ -66,7 +79,7 @@ function schoolShot(): OpeningAnimatic {
     painting("oprn-title-romance-school", { x: -60, y: -22, w: 600 }, { x: -110, y: -36, w: 640 }, SHOT_MS),
     dust(3),
     caption([
-      { atMs: 300, text: "열일곱, 금요일 점심. 방송실 스피커에서 그 목소리가 흘러나왔다." },
+      { atMs: 300, text: "열일곱, 금요일. 방송실 스피커에서 그 목소리가 흘러나왔다." },
       { atMs: 3400, text: "“오늘의 마지막 사연. 보낸 사람은… 바나나우유 님.”" },
     ]),
   ], { kind: "fade", durationMs: 1000 });
@@ -75,6 +88,7 @@ function schoolShot(): OpeningAnimatic {
 /** 2. 어둠 속 편지 한 장의 빛 — 마지막 금요일, 처음으로 진짜 이름을 쓴 사연. */
 function letterShot(): OpeningAnimatic {
   return shot([
+    backdrop("oprn-title-romance-school", { x: 0, y: 120, width: 1100, height: 619 }, [0.42, 0.3], SHOT_MS),
     glow("letter", "#fff0c4", 240, 135, 84, { opacity: 1 }),
     glow("letter-halo", "#ffcf9a", 240, 135, 230, { opacity: 0.45 }),
     centerText("name", "‘바나나우유가 아니라, 윤서하가요.’", 600, 5600, 13),
@@ -87,6 +101,7 @@ function letterShot(): OpeningAnimatic {
 /** 3. 꺼지는 빛 — 방송은 나가지 않았다. */
 function silenceShot(): OpeningAnimatic {
   return shot([
+    backdrop("oprn-title-romance-school", { x: 0, y: 120, width: 1100, height: 619 }, [0.3, 0.06], SHOT_MS, 1.14),
     {
       ...glow("letter", "#fff0c4", 240, 135, 84, { opacity: 1 }),
       keys: { opacity: [{ atMs: 0, value: 1 }, { atMs: 3200, value: 0, ease: "ease-in" }] },
@@ -115,7 +130,8 @@ function officeShot(): OpeningAnimatic {
 /** 5. 월요일 아침 — 첫 출근. 게임 첫 장면(아침 승강장)으로 이어진다. */
 function mondayShot(): OpeningAnimatic {
   return shot([
-    glow("dawn", "#ffd9a8", 240, 300, 560, { opacity: 0.6 }),
+    backdrop("oprn-title-romance-office", { x: 0, y: 200, width: 1000, height: 563 }, [0.55, 0.85], SHOT_MS, 1.06),
+    glow("dawn", "#ffd9a8", 240, 300, 560, { opacity: 0.35 }),
     centerText("title", "첫 출근, 월요일 아침.", 300, 5800, 15),
     caption([
       { atMs: 2400, text: "새 회사. 새 자리. 그리고 사수로 배정된, 한 사람." },

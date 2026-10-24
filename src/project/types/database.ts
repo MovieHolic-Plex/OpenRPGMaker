@@ -350,6 +350,13 @@ export interface SkillRecord {
   comboCombinedStats?: boolean;
   /** 연계기가 발동할 때 켜지는 스위치(전투 이벤트 페이지 조건·전투 뒤 이야기 분기에 쓴다). */
   comboSwitchId?: string;
+  /**
+   * 연계기 비용 나누기: 참가 배우별 MP 고정 소모(halfMpCost 장비는 절반). 목록에 없는 참가자는 mpCost 를 그대로 낸다.
+   * 「카엘 MP 4 · 엘레나 MP 8」처럼 주 시전자와 보조가 다른 몫을 낸다. 생략 = 전원이 mpCost.
+   */
+  comboMpCosts?: readonly { readonly actorId: ActorId; readonly mp: number }[];
+  /** 연계기 연출 — 색·착탄 흔들림·느린 화면·제목 위 글(project/battleStaging.ts ComboStaging). 생략 = 속성 색·인원수 기본. */
+  comboStaging?: import("@/project/battleStaging").ComboStaging;
   /** 위치 범위기: 단일 대상 스코프에서 주 대상 둘레의 같은 편도 함께 맞힌다(전투장 픽셀). */
   area?: SkillArea;
   /**
@@ -380,6 +387,11 @@ export interface SkillRecord {
    * elementIds 를 비우면 기술 자신의 elementId 를 계열로 본다. 「검을 든 카엘의 검 기술이 더 세다」. 생략 = 없음.
    */
   weaponAffinity?: { readonly elementIds?: readonly string[]; readonly bonusPercent: number };
+  /**
+   * 약점 공략(set-up → payoff): 맞는 대상이 stateIds 중 하나에 걸려 있으면 피해 +bonusPercent%(1~300).
+   * consume 이면 공략한 상태를 그 타격으로 풀어 버린다(「얼어붙은 적을 깨뜨린다」). 숫자 아래 「공략!」 꼬리표. 생략 = 없음.
+   */
+  exploitStates?: { readonly stateIds: readonly string[]; readonly bonusPercent: number; readonly consume?: boolean };
   /**
    * 반동(0~100): 준 피해의 N% 를 시전자도 입는다(몸통박치기·이판사판). 피해가 1 이상일 때만, 최소 1. 타마다 적용한다.
    * 타임라인에 시전자 자신을 대상으로 한 damage 엔트리(aside recoil)를 남긴다. 생략 = 반동 없음.
@@ -762,6 +774,11 @@ export interface EnemyRecord {
   monsterResourceId?: string;
   /** 전투 이미지 표시 크기(10~300%, 정수). 생략 시 기존 크기 100%. */
   battleScalePercent?: number;
+  /**
+   * 도트 측면 전투에서 아군에게 달려드는 속도 %(생략 = 100, 25~300). 전역 기본은 system.battleStaging.enemyLunge(기본 fast).
+   * 늑대·맹수처럼 날랜 적은 120~160, 굼뜬 거인은 70~90. `project/battleStaging.ts` · `player/battleRetroMotion.measureEnemyReach`.
+   */
+  lungeSpeedPercent?: number;
   /**
    * 피해 계열별 받는 피해 %(생략 = 100). physical = 공격력 계열(statistic attack) 피해, magic = 마력 계열(statistic mind) 피해.
    * 0 = 그 계열 무효(「무효」 꼬리표), 300 = 세 배. 상태의 runtimeEffects.damageTypeRates 가 걸려 있으면 그 값이 이 값을 대신한다
@@ -1945,6 +1962,11 @@ export interface SystemRecords {
   /** 맵을 클릭(탭)하면 주인공이 경로를 찾아 걸어간다(명작 공백 #32). 생략 = 꺼짐. */
   pointerMovement?: boolean;
   /**
+   * 휴대폰·태블릿 조작(터치 UI): 맵 탭 걷기·조이스틱 방식·진동·달리기 단추. 생략 = 기본(모두 켬, 조이스틱 auto).
+   * 데스크톱 플레이는 읽지 않는다. project/touchControls.ts.
+   */
+  touchControls?: import("@/project/touchControls").TouchControlSettings;
+  /**
    * 몸 사각 **하단 몇 행**이 지형·이벤트에 막히는가. 생략하면 몸 높이 전체(= 통행 사각 === 몸 사각).
    * 3x3 주인공에 1 이면 발밑 한 줄만 막혀 상체가 벽을 스치며 지나갈 수 있다.
    */
@@ -1987,6 +2009,10 @@ export interface SystemRecords {
   battleHitFeel?: import("@/project/battleHitFeel").BattleHitFeel;
   /** 전투 화면 꾸미기(project/battleLook.ts) — 프리셋 + 바꾼 칸. 생략 = 「도트 창」 프리셋. 스킨(전투 방식)과 별개 축이다. */
   battleLook?: import("@/project/battleLook").BattleLookSettings;
+  /** 전투 결과 팡파레 — 레벨 업 배너·새 기술/연계기 카드·소리(project/battleFanfare.ts). 생략 = 전부 켜기·화려하게. */
+  battleFanfare?: import("@/project/battleFanfare").BattleFanfareSettings;
+  /** 전투 연출 — 적 달려들기 속도·연계기 컷인·연계기 화려함·기술 한 줄 도움말(project/battleStaging.ts). 생략 = 빠르게·얼굴 교차·화려하게·한 줄. */
+  battleStaging?: import("@/project/battleStaging").BattleStagingSettings;
   /** 화면 표시 필터(project/displayFilter.ts) — 주사선·브라운관. 생략 = 없음. */
   displayFilter?: "scanlines" | "crt";
   /**

@@ -4,7 +4,6 @@ import {
   calculatePlaySurfaceCropMetrics,
   calculatePlaySurfacePlacement,
   calculatePlaySurfaceScale,
-  INTEGER_FILL_MIN,
   type PlaySurfaceScaleMode,
 } from "@/player/playSurfaceScale";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
@@ -110,9 +109,10 @@ function syncPlaySurfaceMetrics(
     syncTouchLayout(viewport, bounds.width, bounds.height, resolution, scaleMode);
     return;
   }
-  const scale = calculatePlaySurfaceScale(bounds.width, bounds.height, resolution.width, resolution.height, scaleMode);
+  const dpr = typeof window === "undefined" ? 1 : window.devicePixelRatio || 1;
+  const scale = calculatePlaySurfaceScale(bounds.width, bounds.height, resolution.width, resolution.height, scaleMode, dpr);
   const crop = calculatePlaySurfaceCropMetrics(bounds.width, bounds.height, scale, resolution.width, resolution.height);
-  const placement = calculatePlaySurfacePlacement(bounds.width, bounds.height, scale, resolution.width, resolution.height);
+  const placement = calculatePlaySurfacePlacement(bounds.width, bounds.height, scale, resolution.width, resolution.height, dpr);
   let stageTop = placement.top;
   // 세로로 긴 화면(폰 세로): 무대를 위쪽에 붙이고 아래 띠는 터치 패드·여백에 남긴다. 가운데 두면 위아래 검은 띠 둘로 갈라져 둘 다 못 쓴다(D16).
   if (topAlignPortrait) {
@@ -253,7 +253,7 @@ export function calculateTouchLayout(
   // 정사각에 가까운 화면(폴드 펼침 가로 1040×930)은 좌우 칸을 떼면 무대가 작아지고 위아래가 빈다 — 아래 띠 배치가 낫다.
   const portrait = height >= width * 0.75;
   if (portrait) {
-    const controlsBlock = stick + 80; // 메뉴 줄(44) + 조이스틱 + 아래 숨 쉴 틈
+    const controlsBlock = stick + 88; // 메뉴 줄(44 단추 + 8 틈) + 조이스틱 + 아래 숨 쉴 틈
     const reserve = controlsBlock + safe.bottom + 16;
     const topPad = Math.max(8, safe.top + 4);
     const availW = width - safe.left - safe.right;
@@ -274,11 +274,11 @@ export function calculateTouchLayout(
       free = Math.max(0, free - dockH - 8);
     }
     const controlsTop = dock ? dock.top + dock.height + 4 : bandTop;
-    const controlsY = controlsTop + free * 0.4 + 44 + stick / 2;
+    const controlsY = controlsTop + free * 0.4 + 52 + stick / 2;
     let panel: TouchLayout["panel"] = null;
     if (options.windowPanel !== false && scale < 1) {
       // 칸은 무대 위쪽부터 메뉴 단추 줄 바로 위까지에 들어간다. 아래(메뉴 단추 쪽)에 붙여 무대 위쪽이 되도록 많이 보이게 한다.
-      const menuRowTop = controlsY - stick / 2 - 44;
+      const menuRowTop = controlsY - stick / 2 - 52;
       const room = { w: availW - 8, h: menuRowTop - 4 - stageTop };
       const panelScale = Math.min(1, room.w / WINDOW_PANEL_WIDTH, room.h / WINDOW_PANEL_HEIGHT);
       if (panelScale > scale) {
@@ -292,26 +292,35 @@ export function calculateTouchLayout(
     }
     return { mode: "portrait", scale, stageLeft, stageTop, bandTop, bandBottom, controlsY, gutter: 0, stick, dock, panel };
   }
+  // 가로(2026-10-25 「모바일 가로 화면이 너무 작게 나온다」): 예전에는 좌우 조작 칸을 먼저 떼고 남은 폭에 정수 배율을 맞춰
+  // 아이폰 15 가로(734×343)에서 무대가 480×270(1배) — 화면 높이의 79%, 폭의 65% 였다. 이제 무대는 화면 높이를 채우고
+  // 조작(조이스틱·A/B·메뉴)은 무대 가장자리 위에 반투명하게 겹친다(data-touch-overlay). 칸 폭은 조작을 놓을 자리로만 쓴다.
   // 칸은 조이스틱보다 넓어야 한다(좁으면 조이스틱이 화면 밖으로 잘린다 — 아이폰 가로 iframe 734px 에서 실측).
-  let gutterBase = Math.round(Math.min(stick + 40, Math.max(stick + 12, width * 0.15)));
+  const gutterBase = Math.round(Math.min(stick + 40, Math.max(stick + 12, width * 0.15)));
   const availH = Math.max(40, height - safe.top - safe.bottom);
-  let scale = calculatePlaySurfaceScale(Math.max(40, width - 2 * gutterBase - safe.left - safe.right), availH, logicalW, logicalH, scaleMode);
-  if (scaleMode === "integer" && scale === 1) {
-    // 칸을 조이스틱이 들어갈 만큼만 좁히면 1.5배가 되는 화면(아이패드 미니 가로)은 그렇게 한다 — 판정은 화면 전체 대비.
-    const narrow = stick + 12;
-    const narrowW = width - 2 * narrow - safe.left - safe.right;
-    const fits = narrowW >= logicalW * 1.5 && availH >= logicalH * 1.5;
-    if (fits && (logicalW * logicalH) / (width * height) < INTEGER_FILL_MIN) { gutterBase = narrow; scale = 1.5; }
-  }
+  const fullW = Math.max(40, width - safe.left - safe.right);
+  const scale = landscapeTouchScale(fullW, availH, logicalW, logicalH, scaleMode);
   const gutterL = gutterBase + safe.left;
   const gutterR = gutterBase + safe.right;
-  const availW = Math.max(40, width - gutterL - gutterR);
   const stageW = logicalW * scale;
   const stageH = logicalH * scale;
-  const stageLeft = Math.round(gutterL + (availW - stageW) / 2);
+  const stageLeft = Math.round(safe.left + (fullW - stageW) / 2);
   const stageTop = Math.round(safe.top + (availH - stageH) / 2);
   const controlsY = safe.top + availH * 0.62;
   return { mode: "landscape", scale, stageLeft, stageTop, bandTop: safe.top, bandBottom: height - safe.bottom, controlsY, gutter: Math.max(gutterL, gutterR), stick, dock: null, panel: null };
+}
+
+/**
+ * 터치 가로 배율: 화면을 채운다. 정수 배율이 채움 배율의 90% 이상이면 정수(도트가 고르다), 아니면 채움 배율 그대로.
+ * 폰은 기기 화소가 3배 안팎이라 비정수 배율의 도트 굵기 차이는 기기 화소 1개(3~4 중 1)로 눈에 거의 안 띈다 —
+ * 정수 1배로 화면 3분의 1을 비우는 것보다 낫다. fit 정책 프로젝트는 원래대로 채움 배율.
+ */
+export function landscapeTouchScale(width: number, height: number, logicalW: number, logicalH: number, scaleMode: PlaySurfaceScaleMode): number {
+  const contain = Math.min(width / logicalW, height / logicalH);
+  if (!(contain > 0)) return 1;
+  if (scaleMode === "fit") return contain;
+  const whole = Math.floor(contain + 1e-6);
+  return whole >= 1 && whole >= contain * 0.9 ? whole : contain;
 }
 
 /** 대사 독 끄기(비교·디버그): localStorage 「oprn-dialogue-dock」=0. */
@@ -379,6 +388,10 @@ function syncTouchLayout(viewport: HTMLElement, width: number, height: number, r
   }
   // 상점 배치: 창 칸 안이면 칸 크기(320×300 = 작은 배치), 아니면 논리 해상도로 고른다.
   viewport.dataset.shopFit = layout.panel ? "tiny" : shopFitFor(resolution);
+  // 가로에서 무대가 조작 칸까지 넓어지면 조작은 무대 위에 반투명하게 겹친다(mobileUi.css).
+  const overlay = layout.mode === "landscape" && (layout.stageLeft < layout.gutter - 1 || layout.stageLeft + resolution.width * scale > width - layout.gutter + 1);
+  if (overlay) viewport.dataset.touchOverlay = "true";
+  else delete viewport.dataset.touchOverlay;
   viewport.dataset.scale = scale.toFixed(3);
   syncMobileUiMetrics(viewport, width, height, scale, true);
 }

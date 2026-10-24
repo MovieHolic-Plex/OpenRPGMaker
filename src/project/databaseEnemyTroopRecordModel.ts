@@ -60,6 +60,8 @@ export function normalizeEnemyRecord(
     level: typeof record.level === "number" && Number.isFinite(record.level) ? clampInteger(record.level, 1, 99) : undefined,
     monsterResourceId: cleanOptionalId(record.monsterResourceId),
     ...(battleScalePercent === 100 ? {} : { battleScalePercent }),
+    ...(typeof record.lungeSpeedPercent === "number" && Number.isFinite(record.lungeSpeedPercent) && Math.round(record.lungeSpeedPercent) !== 100
+      ? { lungeSpeedPercent: Math.round(Math.max(25, Math.min(300, record.lungeSpeedPercent))) } : {}),
     ...(() => {
       const rates = normalizeDamageTypeRates(record.damageTypeRates);
       return rates ? { damageTypeRates: rates } : {};

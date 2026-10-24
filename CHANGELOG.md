@@ -5,6 +5,134 @@
 
 <!-- releases -->
 
+## 0.330.0 — 2026-10-25
+
+### 기능
+
+- **first-love** — Korean business street, numbered subway exits, street walkers, rooftop street view (#3375) (`350cb67`)
+- **dialogue** — 대본 screenplay view in story order + story tools for the assistant (#3377) (`8882615`)
+- **player** — phone landscape fills the screen height — controls overlay the stage translucently; iPhone home-screen hint (`9e7d458`)
+- **astra** — professor bust remade with the cast's char-gen pipeline, cg-nat10 default (`e0a5ed1`)
+- **player** — mobile touch feel — tap-to-walk/talk on by default, cardinal-biased stick with hysteresis, auto stick, run toggle, haptics, 44px buttons (`f8adba2`)
+- **battle** — skill help, distinct skill roles, level-up/learn fanfare, Chrono-style combo techs (Fallen Star) (#3370) (`c0ca99f`)
+- **dungeon** — bake otherworld ceiling rim r10 A2 (panel 11 both PASS + object-gate PASS, delegated allow) (`02c8838`)
+- **dungeon** — bake will-o-wisp fire bowl (panel 10 + object-gate PASS, delegated allow); rim A2 body grain, ice face frosted strata (`0eb8fb6`)
+- **i18n** — 대사 tab labels in en/ja/zh (`01e087e`)
+- **database** — 이야기 › 대사 tab — dialogue table, inline edit, runtime-measured overflow, voice notes, per-line AI proposal review (`e1f82de`)
+- **dialogue** — dialogue index, edit gate, speaker voice desk and assistant tools (`da02b67`)
+- **dungeon** — bake tower wall face (r9) and cracked-floor decal (r6) after panel 9 + object-gate PASS, delegated allows (`43fe640`)
+- **beodeul-organic** — 버들항 자연 기물 37종 — 블라인드 두 판정자 검수, 위임 허용, 관문 굽기 (#3367) (`c3d8981`)
+- **beodeul-forest** — T3 bark-contrast trunks are the shared broadleaf composer default (`4c6a398`)
+- **dungeon** — bake otherworld wall face kits and minecart (delegated allows after blind panel 8 + object-gate PASS) (`0804588`)
+- **astra** — user-approved starter lines (lotus lemur, flame ram, wave orca) (#3365) (`dc61fe8`)
+- **forest-trunks** — T3 r8 bark — Argon VQA 7/7 PASS, user-approved human picks on r8 hashes (`bec301c`)
+- **dungeon** — bake wizard tower ceiling rim (beodeul_dungeon_ceiling_tower), delegated allow after blind panel + object-gate PASS (`84a9c27`)
+- **party** — FF6-style companion display (leader only on field, companions in story scenes) (`6936cfc`)
+- **battle** — boss HP hiding, element exceptions in damage-type rates, enemiesAlive/enemyState battle conditions, humanoid enemy walk timing (`0c9c470`)
+- **player** — portrait window panel for menu/shop at 1x, 1.5x scale step for iPad-class screens (#3359) (`0583779`)
+- **fallen-star** — Valen intro boot/sword SFX; act-1 recorder maps WebAudio/blob SFX and plays the first battle rounds (`93710b8`)
+- **player** — device-independent game UI — windows in game px scaled with the stage, integer scale on touch, portrait dialogue dock, shop in a logical frame (#3353) (`0731902`)
+- **battle** — damage-type taken rates (physical/magic) with state overrides + enemyState troop condition (#3350) (`e03a34a`)
+- **fallen-star** — tune crash Valen and moon dragon from headless sims; act-1 checkpoints, SQLite round-trip and play-recording scripts (`28f4023`)
+- **player** — field enemies without a walking chip get a sprite derived from their battle dot art (#3349) (`95eb80c`)
+- **fallen-star** — act 1 restructure — crash-site Valen mid-boss, vault labyrinth B3/B4, moon-scale dragon (pierce opens magic x3), 'Child of the Moon' panel lore, siege ending (`94ffe6d`)
+- **battle** — damage prediction honours damage-type taken rates (auto-battle AI and target hints) (`c665dd6`)
+- **fallen-star** — vault labyrinth floors B3/B4 room specs, star seal in vault, room preview scripts (`432f4f8`)
+- **battle** — damage-type taken rates (physical/magic) on enemies, state overrides, enemyState troop condition (`083f500`)
+- **fallen** — dawnwell necklace gives +30% damage dealt (new equipment trait) instead of ATK/MND approximation (`366d573`)
+- **fallen-star** — town cast pass — adult smith chip, speaker busts with emotions, Iris/Elena gear at the smithy, running kids, hidden Dawnwell necklace, Valen no longer lingers in town after marching to the forest (`f211d4b`)
+- **fallen-star** — act 1 dialogue flow, Iris join choice, Valen smoke exit, cult fanatics in the vault, curated house loot, missing scold lines (`563737e`)
+- **fallen-star** — container fx, owner turn + ! / ? reactions and room-aware owner cues on whatever containers exist (`fd13504`)
+- **fallen-star** — Valen phase 2 sheds armour (agility up + defence down) instead of attack x2; HP 2100 / atk 112 (sim: 95% win, ~17 actions, 1.4 potions); finale QA plan heals (`e39eed8`)
+- **fallen-star** — act-1 roster by forest area (12 new foes, each one role) + per-area encounter tables; Iris becomes the Starlight Gunner with a star rod (bow-type) and beam skills; class names for Kael/Elena (`787e000`)
+- **fallen-star** — battle QA checkpoints (weapon bonus, armored beetle, sleep, crit, ether/meditate, Valen finale); snipe text names its line pierce (`ef93daa`)
+- **fallen-star** — Valen HP 1600 / atk 108 after headless sim (win 100%, ~16 actions, ~1.3 potions); add sim script (`c52c0d7`)
+- **fallen-star** — distinct skill roles, armored/healer/swarm foes, Valen boss phases+summons+signature blade, MP recovery (`5db04e3`)
+- **fallen-star** — cinematic 39 s cold open — parallax night sky, star cracks, fireball over the forest, bell, title with god rays (`1bc04ac`)
+- **dungeon-themes** — towers stand above a sea of clouds (`9544297`)
+- **dungeon-themes** — redrawn mine rails and ore veins, catacomb ossuary, ruin overgrowth baked and wired (`2b28eec`)
+- **dungeon-themes** — redrawn otherworld portal and void edge, pyramid floor and sand/snow drifts baked and wired (`2819ff7`)
+
+### 수정
+
+- **ci** — clear the six type errors blocking main typecheck (`dc10179`)
+- **dungeon** — carpet runner cells were baked solid (no walk_grid for its parts) and walled off the castle boss room on 2/20 seeds; now passable (`14dd919`)
+- **player** — integer scale snaps to device pixels on fractional DPR screens (125%/150%) (`c469178`)
+- **database** — Escape while editing a line cancels the edit instead of closing the database window (`77b7268`)
+- **database** — hide the empty proposal box for a speaker, label speakerless proposals as narration (`388a021`)
+- **dialogue** — turn a model's double-escaped \\n into real line breaks before checking an edit (`e250844`)
+- **player** — door-open fx only on real doors (no city gate/passages/map edges), no hitch; editor 문 열림 연출 자동/켜기/끄기 (#3363) (`aeb44d4`)
+- **player** — pixel shop party cards share the window width — names no longer cut to 「엘…」 at game-px text (#3362) (`094429f`)
+- **fallen-star** — dragon battle BGM uses a catalog mp3 (store rejects .mid) (`19536ed`)
+- **assistant-v2** — 92-task suite fixes — real screen effects, visible objects, kept/linked new maps, one-shot rewards, NPC reuse, arg aliases, farm barn (#3352) (`192d074`)
+- **fallen-star** — the star fell in the NORTH forest everywhere — proclamation, credits, quest summary, telescope, bard, witness, gate guard, knight, store/home blurbs (`e5646d7`)
+- **qa** — fallen-star report/ending checkpoints talk to Hanel at the telescope (12,13); he moved there in #3314 (`9e15c05`)
+- **fallen-star** — the forest is north of town — 'east forest' / 'east gate' become north in dialogue, readables, quest text and switch names (opening cinematic and the brazier puzzle excluded); Hanel's sky tower lies beyond the forest (`993e707`)
+- **fallen-star** — Valen keeps his 48px face (the shared bust wears a jester hat his chip lost); face-cell expressions on his angry/sad lines (`726e5e5`)
+- **fallen-star** — elder's dusk line notes Valen left for the forest; kids capture frames the tag loop (`2751ccd`)
+- **fallen-star** — Valen's smoke builds up before he fades; shorter flash; capture waits through the vanish (`2276ad6`)
+- **fallen-star** — knight-post crate finds a wall corner by Rino's post; story2 capture + store round-trip scripts (`0e36403`)
+- **fallen-star** — opening fall lands in the north forest; crisp integer upscale, skip button visible from frame 1, slower first pan (`b42bf2f`)
+- **dungeon** — r2 VQA repairs — volcano lava streams survive crop, cave water stream + request cues pick the gimmick, entrance lever only as last resort, enemy names in summary, ice dungeon requests bypass snow-north, otherworld void without stone-bridge stubs or floating pillars (`8f98869`)
+- **ai** — a pyramid dungeon request goes to author_dungeon, not a desert_east tomb room (`5ebc26a`)
+- **dungeon-themes** — teleporter flash uses a catalog colour; towers stack floors by default (`f0140b7`)
+
+### 문서
+
+- **openwiki** — ice face not baked yet (`1d6df7c`)
+- **openwiki** — mobile feel v3 — touch controls settings, tap-to-walk, stick sectors (`771dd29`)
+- **openwiki** — dungeon themes round 2 pieces, style-judge lessons, carpet passability fix, samples script (`81cd928`)
+- **openwiki** — play-surface integer scale snaps to device pixels on fractional DPR (`881ff99`)
+- **openwiki** — 대사 tab, dialogue tools, project.dialogueDesk; narration label for speakerless lines (`94ae0b5`)
+- **openwiki** — Fallen Star cinematic opening recipe, camera-offset trap, tap skip, handoff tile window (`ed303df`)
+- **openwiki** — dungeon themes — r2 assistant-path repairs (`6ad8481`)
+
+### 테스트
+
+- **player** — touch stick sectors and touchControls normalization (`742bf0a`)
+- **fallen-star** — defeat checkpoint advances in-battle dialogue before defending (`6fc28b1`)
+- **fallen-star** — battle checkpoints start on the forest edge map (six-map forest) (`fe043e0`)
+- **fallen-star** — ether checkpoint drains MP first so the ether shows (`f425e93`)
+- **fallen-star** — ether checkpoint targets Elena by id (`8dbd75b`)
+
+### 잡무
+
+- **dungeon** — ledger run log (`15c7ee8`)
+- **dungeon** — panel 12 evidence (ice face not passed; stays on cave C face) (`18a9cc6`)
+- **store** — list touch controls on the store game page (`850fdec`)
+- **qa** — mobile-feel probe — real CDP touch on emulated phones (`252a07e`)
+- **deps-dev** — bump the development-dependencies group across 1 directory with 7 updates (#3310) (`1a4f46f`)
+- **deps** — bump zod from 4.6.5 to 4.6.6 (#3319) (`df18bd7`)
+
+### 기타
+
+- docs(openwiki)+qa: phone landscape fill, overlay controls, landscape probe settles past the march cutscene (`b28a845`)
+- **astra** — professor busts made with the cast's own char-gen pipeline (4 candidates, selectable ids) (`13fcc96`)
+- **dungeon** — ice face r7g dull ice ledge, no bright frost specks, dull embedded ice (`64be8e8`)
+- **dungeon** — otherworld rim r10 (tower coping structure in obsidian), ice face r7c quiet strata, wisp r8b teardrop (`e7d574c`)
+- **astra** — hand-pixel professor bust A fix round after blind review; QA scenarios accept deviceScaleFactor (`ef50b3c`)
+- **astra** — professor bust candidates (2 hand-pixel, 2 recolored shared) as selectable ids (`30fc909`)
+- **dungeon** — wisp fire-bowl redraw (r8), ice face tinted water ramp (`6b58094`)
+- **dungeon** — cracked floor as transparent decal with tinted joints; ice face tinted darks (`08983a0`)
+- **dungeon-chipset** — walls-r9 tower face/rim, props-r7 ice strata (WIP, gate FAIL), panel-8 evidence (`97b29a6`)
+- **dungeon-chipset** — walls-r8 glowing fissure + Beodeul grain, props-r5 Beodeul-size cart + frosted ice, props-r6 angular collapsed slab; panel-7 evidence (`9a378ea`)
+- **dungeon-chipset** — walls-r8 slab-style otherworld rim, tower window without light frame (`adf44bf`)
+- **dungeon-chipset** — walls-r7, props-r4 (low 3/4 cart, ice), tower rim A1 delegated pick, panel-6 evidence (`b81f6b4`)
+- **forest-trunks** — T3 bark-contrast finalize passes r1-r4 — style gate 2/7, not composer default (`bb20a40`)
+- **dungeon-chipset** — walls-r5 clumped grain, recessed crack, calmer second ramps (`bb125d8`)
+- **fallen-forest** — hand-dot trunk redraw round (T1-T5) on the B1 broadleaf trees — 3/4 gate not passed (`db0548d`)
+- **dungeon-chipset** — props-r2 cracked floor per-slab, props-r3 ice face, minecart TK wiring, bake handlers for props/ice face (`cb4ad5a`)
+- **dungeon-chipset** — props-r2 3/4 minecart and sunk cracked floor; walls-r6 otherworld rim (`4aa80fa`)
+- **dungeon-chipset** — theme-walls-r5 per-stone three-ramp faces, plum obsidian otherworld rim (`10603ad`)
+- **fallen-forest** — forest-look prototype knobs (trunk-peek spacing, fringe trees, shadows, skirt) + option renderer (`ffff3a6`)
+- **dungeon-themes** — theme-walls-r4 after r3 VQA (`0ef38d4`)
+- **dungeon-themes** — theme-props-r1 minecart, cracked floor, wisp lantern redraw, ice wall face (`03a53c9`)
+- **dungeon-themes** — walls r3 tower rim joints off the cell seam (`2de5acc`)
+- **dungeon-themes** — theme-walls-r3 redraw after r2 VQA; sample dungeon save/reload script (`73a2ae2`)
+- **dungeon-themes** — theme-walls-r2 redraw after r1 VQA FAIL; face/rim bake handlers; tower ceiling group wired (`73eab84`)
+- **dungeon-themes** — theme-walls-r1 otherworld/tower wall faces and ceiling rims (draft, VQA pending) (`d41ac2d`)
+- **dungeon** — pause (`9f9ab6c`)
+
 ## 0.329.0 — 2026-10-24
 
 ### 기능

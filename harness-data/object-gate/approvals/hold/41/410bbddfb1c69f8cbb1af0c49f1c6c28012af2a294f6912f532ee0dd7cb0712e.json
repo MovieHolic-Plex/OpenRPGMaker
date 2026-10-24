@@ -1,0 +1,19 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "410bbddfb1c69f8cbb1af0c49f1c6c28012af2a294f6912f532ee0dd7cb0712e",
+ "profileHash": "4d8774b517f41638",
+ "kind": "organic",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated)",
+ "decidedAt": "2026-10-24T13:42:20.324Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-organic-r14/blind-vqa.json",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "note": "묶음 허용: 버들항 자연 기물 37종 (바위·덤불·통나무·버섯·고사리·풀·들꽃·이끼 돌·고목·사당 돌) — delegated by user to supervisor 2026-10-23; blind two-judge VQA (argon + klb-sonnet-5-5, 37 new mixed with 16 Beodeul originals) PASS 37/37 under qa/p",
+ "sig": "0f50fd66ff1a40000b35cd8732babe15eba4d4ae447b815187e848d43736d7e7"
+}

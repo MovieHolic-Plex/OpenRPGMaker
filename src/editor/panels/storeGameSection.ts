@@ -47,6 +47,8 @@ export function createStoreGameSection(options: {
   changelog.rows = 4;
   changelog.maxLength = 8000;
   changelog.setAttribute("aria-label", "무엇이 바뀌었나");
+  changelog.placeholder = "첫 줄: 한 줄 제목\n+ 새 기능\n~ 개선\n! 버그 수정";
+  changelog.title = "첫 줄은 스토어 업데이트 기록의 제목이 됩니다. + 새 기능, ~ 개선, ! 버그 수정으로 시작하는 줄은 묶어서 보여 줍니다.";
   changelog.style.cssText = "width: 100%; box-sizing: border-box; font: 12px/1.5 inherit; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px;";
   let changelogEdited = false;
   changelog.addEventListener("input", () => { changelogEdited = true; });

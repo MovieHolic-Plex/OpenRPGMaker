@@ -411,6 +411,22 @@ function buildEndingCg(terminal: TerminalScene, project: Project, presentation: 
   return { layer, mode: partnerFigure ? "couple" : "scene", badge: endingBadge(endingId, Boolean(partnerFigure), presentation), epilogue };
 }
 
+/**
+ * 엔딩 그림 카드의 요약 글을 판에 맞는 가장 큰 크기로 — 고정 3.4cqh 는 다섯 줄 요약이 1배 화면에서 8px 로 작았고(첫사랑 VQA r34),
+ * 키우면 여섯 줄 요약이 판 아래로 잘렸다(r31). 큰 크기부터 판(.ending-epilogue)에 다 들어갈 때까지 줄인다. 잴 수 없으면(레이아웃 없음) CSS 값 그대로.
+ */
+function fitEndingMessage(epilogue: HTMLElement): void {
+  const message = epilogue.querySelector<HTMLElement>(".ending-message");
+  if (!message || epilogue.clientHeight <= 0) return;
+  // 요약 글 상자는 자기 max-height 안에서 스크롤하므로 판만 재면 늘 «들어간다» 로 읽혔다 — 마지막 줄이 상자 안에서 잘렸다(첫사랑 VQA r35).
+  // 판과 글 상자 둘 다 넘치지 않는 가장 큰 크기를 고른다.
+  const fits = (): boolean => epilogue.scrollHeight <= epilogue.clientHeight + 1 && message.scrollHeight <= message.clientHeight + 1;
+  for (let size = 4.6; size >= 3; size -= 0.2) {
+    message.style.fontSize = `${size.toFixed(1)}cqh`;
+    if (fits()) return;
+  }
+}
+
 export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string): void {
   const terminal = createTerminalScene(scene, "ending", title || endingText("ending.heading"));
   if (!terminal) return;
@@ -458,6 +474,11 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const body = message || cg?.epilogue;
     if (body) epilogue.append(textNode("div", "ending-message", body));
     terminal.root.append(epilogue);
+    if (cg) {
+      fitEndingMessage(epilogue);
+      // 글꼴이 늦게 들어오면 줄 높이가 바뀐다 — 들어온 뒤 한 번 더 맞춘다.
+      void document.fonts?.ready.then(() => { if (epilogue.isConnected) fitEndingMessage(epilogue); });
+    }
     terminal.phase("epilogue");
     if (!await terminal.wait(1800)) return;
     const hint = textNode("div", "game-over-hint", endingText("ending.continue"));
@@ -547,7 +568,10 @@ function endingSummaryLine(scene: { session: { partyActorIds?: readonly string[]
     .map((id) => project.database.actors.find((actor) => actor.id === id)?.name)
     .filter((name): name is string => Boolean(name));
   const seconds = Math.max(0, Math.floor(scene.session.playTimeSeconds ?? 0));
-  const time = `${Math.floor(seconds / 3600)}:${String(Math.floor((seconds % 3600) / 60)).padStart(2, "0")}`;
-  const parts = [names.length ? `함께한 이 ${names.join(" · ")}` : "", seconds > 0 ? `플레이 시간 ${time}` : ""].filter(Boolean);
+  // 「0:07」(시:분)은 7초로 읽혔다(첫사랑 VQA r26) — 단위를 붙여 쓴다.
+  const hours = Math.floor(seconds / 3600), minutes = Math.max(1, Math.floor((seconds % 3600) / 60));
+  const time = hours > 0 ? `${hours}시간 ${minutes}분` : `${minutes}분`;
+  // 혼자인 파티(주인공 하나)는 「함께한 이: 주인공」이 된다 — 함께한 사람이 아니라 자기 이름이다(첫사랑 VQA r23). 둘 이상일 때만 쓴다.
+  const parts = [names.length > 1 ? `함께한 이: ${names.join(" · ")}` : "", seconds > 0 ? `플레이 시간: ${time}` : ""].filter(Boolean);
   return parts.join("   ·   ");
 }

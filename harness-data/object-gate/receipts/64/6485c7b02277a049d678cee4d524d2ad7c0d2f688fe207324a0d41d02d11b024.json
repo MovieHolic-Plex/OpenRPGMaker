@@ -1,0 +1,320 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6485c7b02277a049d678cee4d524d2ad7c0d2f688fe207324a0d41d02d11b024",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "low bramble thicket (bush), natural map prop for the Beodeul 16px chipset, 2x1 tiles, standing object (3rd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/bramble",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 29,
+  "nearBlackEdge": 0.32,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bramble foliage top (lit upper mound)",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "bramble front face (dark foliage with red berries)",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dry twigs poking above the mound",
+      "rows": "4-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The mound widens from 2px at row 4 to 28px at row 10 and stays wide until row 14. The upper rows 6-9 are a light yellow-green (L about 159, then 103), which reads as the sunlit top. At x=8 the column drops from L=159 to 103 at row 8, then to 78 at rows 10-12 and 31 at rows 13-15, so the front face is darker with berry spots. The silhouette has no rim line or ellipse, so the top is a lit gradient only, not a hard edge. The front face is at least 3 rows, so it is not a flat slab. The twigs at the top are decor-like details."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate is a small, low bush about 2x1 tiles. It shows roughly 5 green steps, from light highlight clumps along the top down to a dark underside, plus a brownish base. The dark edge pixels are 0% neutral, so the outline is a tinted dark green/brown rather than a black sticker line. There is no flat fill (0% near-flat coverage). It has 9 visible tones per tile, above tree-1a786c at 7, though well below the rich tree-d43edd at 29. That is acceptable for a sparse low prop, and it matches the simpler reference in total colour count (10 each). The leaf clumping is less defined than in the references, but it is not a flat or sticker-like piece, and a careful artist could place it beside tree-1a786c.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18085
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bramble mound lit upper foliage",
+      "rows": "6-9",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bramble mound shaded lower foliage / front",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dead twigs sticking up",
+      "rows": "4-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile grows from 2 to 28 over rows 4-10 and then narrows to 12 at row 15, so it is a rounded mound. Rows 6-9 are light green foliage and read as the upper surface of a heap seen from above. Rows 10-15 are darker green and form the front mass, with red berries scattered across it. There is no hard front-edge line or eave shadow, so the top evidence is only the lighter, heap-like upper foliage (d). The mound is 6 rows tall in front, which is more than 3, so it is not a flat slab. The brown twigs at rows 4-8 are small plant details."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, low 2x1 bramble mound, so it should be judged against the smaller reference tree-1a786c. It has 9 visible tones per tile against 7 for tree-1a786c, 0% near-flat coverage, and 0% neutral dark edge pixels. The dark edge pixels therefore lean green or brown, not black, and the picture agrees: the mass is dark green with small lighter leaf clumps along the top and a few warm accent dots. It reads as about 5 green steps with clustered leaf dots and no sticker outline. It is not as rich as the big tree-d43edd (29 tones), but that piece is a full canopy and not a fair comparison for a low prop. The candidate is a bit dark and compact, yet it holds up next to the smaller reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18677
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bramble foliage mound top (lit light-green canopy)",
+      "rows": "5-9",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bramble front face (darker green mass with red berries)",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown twigs/stems poking up at top left and right",
+      "rows": "4-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a low mound (width 2, 6, 9, 17, 22, 26, then 28 on rows 10-13), which is natural for a bush. The x=8 scan shows a light-green lit crown on rows 6-7 (L=159), stepping to mid green on rows 8-9 (L=103). Below that, rows 10-15 drop to dark green (L=78 then 31), which is the shaded south face. The light upper crown reads as the top surface of the foliage, about 5 rows, over a front face of about 6 rows. There is no crisp front-edge line or eave shadow, only a gradual tonal step near row 10, so the top reading is moderate rather than strong."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a low 2x1 bramble mound. It has a dark green body with lighter leaf clumps and highlight specks along the top, and a few small accent dots on the right. The silhouette is lumpy rather than a flat sticker shape. The measured facts support it: 9 visible tones per tile, above tree-1a786c at 7 and well below tree-d43edd at 29. Near-flat coverage is 0%, and 0% of dark edge pixels are near-neutral, so the edges lean green and are not black. By eye it has about 5 lightness steps against the references' 5-6. It is a little thinner and darker than the references' clumped canopies, but at this small, low scale it sits acceptably next to tree-1a786c.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18196
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage mound top (lit canopy)",
+      "rows": "5-9",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "foliage mound front (shaded lower mass with red berries)",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small brown twigs sticking up",
+      "rows": "4-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a dome-shaped heap. The width grows from 2 at row 4 to 28 at rows 10-13, then narrows to 12 at row 15. The upper rows 5-9 are drawn as a lit leafy heap, with light green (L about 159) at the top of x=8 grading to mid green (L about 103). Rows 10-15 form a much darker front mass (L about 78 down to 31) with berries. There is no crisp front-edge line or eave shadow, so the top evidence is the lit mound surface (a heap, evidence d), not a flat band. The top reads as a rounded canopy over a shaded front of 6 rows. This is a natural organic mound and reads as 3/4 view rather than a flat elevation. The confidence is moderate because the top/front split is a gradient, not a hard edge."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a low 2x1 bramble mound. It reads as a dark green mass with lighter leaf clumps along the top and a few small accent dots, so I count about 5 green steps. It has 9 visible tones per tile, above tree-1a786c at 7 and well below the much denser tree-d43edd at 29. Its raw colour count of 10 matches tree-1a786c. Near-flat coverage is 0%, so there are no flat 5x5 fills. 0% of the dark edge pixels are neutral, so the edge is a tinted dark green rather than a black sticker line. The piece is small and simple, as a low bush should be. It sits next to the simpler reference without looking flatter or more sticker-like, though it is not as rich as the large canopy tree.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17248
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.259Z",
+ "cells": {
+  "16": [
+   "1142dd7d58ae18bc",
+   "cc98aa8cd2b227bb"
+  ],
+  "24": [
+   "03bb1a5fcfe0497b",
+   "18502910c9cf4492",
+   "22e3128de4b75594",
+   "42415b30a899c72c",
+   "665d3002d3680fc4",
+   "68c2eb24c6ef3775",
+   "6ffe1c06e1f3a942",
+   "759e5cab2b35606d",
+   "8dcc9e3fd077757e",
+   "a7795059a63fe867",
+   "b4e5e9c36f12f304",
+   "c04291d69b015403"
+  ],
+  "32": [
+   "964ec59fd93cddc3",
+   "99a43eecbb07b1a4"
+  ],
+  "48": [
+   "010b0c5e539fadd3",
+   "5b0f870d7e2c3286",
+   "9376523566dca5c1",
+   "cda60c17b9cae293",
+   "d3e675cd98f05cb5",
+   "dbe8377c8a2aa294"
+  ]
+ }
+}

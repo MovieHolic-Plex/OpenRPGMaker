@@ -74,6 +74,8 @@
   height: calc(var(--touch-stick) * 0.42);
 }
 .play-viewport[data-touch-layout] > .touch-pad .touch-stick-zone[data-active] .touch-dpad-base { background: rgba(40, 52, 80, 0.55); }
+/* 엄지를 대고 있는 동안 손잡이는 손가락에 바로 붙는다(예전 60ms 따라오기는 화면이 손보다 늦어 보였다). 뗄 때만 부드럽게 돌아간다. */
+.play-viewport[data-touch-layout] > .touch-pad .touch-stick-zone[data-active] .touch-dpad-knob { transition: none; }
 
 .play-viewport[data-touch-layout] > .touch-pad .touch-actions.touch-actions {
   position: absolute;
@@ -118,9 +120,9 @@
   position: absolute;
   width: auto;
   min-width: 64px;
-  height: 36px;
+  height: 44px;
   padding: 0 16px;
-  border-radius: 18px;
+  border-radius: 22px;
   font: 700 14px/1 var(--font-ui, system-ui, sans-serif);
   color: #eef2ff;
   background: rgba(30, 36, 52, 0.62);
@@ -130,7 +132,7 @@
 }
 .play-viewport[data-touch-layout="portrait"] > .touch-pad .touch-menu-btn.touch-menu-btn {
   left: 50%;
-  top: calc(var(--touch-controls-y) - var(--touch-stick) / 2 - 44px);
+  top: calc(var(--touch-controls-y) - var(--touch-stick) / 2 - 52px);
   transform: translateX(-50%);
 }
 .play-viewport[data-touch-layout="landscape"] > .touch-pad .touch-menu-btn.touch-menu-btn {
@@ -141,6 +143,56 @@
 }
 .play-viewport[data-touch-layout] > .touch-pad .touch-menu-btn.active { transform: translateX(-50%) scale(0.94); }
 .play-viewport[data-touch-layout="landscape"] > .touch-pad .touch-menu-btn.active { transform: scale(0.94); }
+
+/* 달리기 단추(누를 때마다 걷기/달리기 — 옵션 「항상 달리기」와 같은 값): 세로는 메뉴 줄 왼쪽, 가로는 왼쪽 칸 아래. */
+.play-viewport[data-touch-layout] > .touch-pad .touch-run-btn {
+  position: absolute;
+  min-width: 64px;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 22px;
+  font: 700 14px/1 var(--font-ui, system-ui, sans-serif);
+  color: #eef2ff;
+  background: rgba(30, 36, 52, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  pointer-events: auto;
+  touch-action: manipulation;
+  z-index: 1;
+}
+.play-viewport[data-touch-layout] > .touch-pad .touch-run-btn.on {
+  background: color-mix(in srgb, var(--accent, #6c79f2) 72%, transparent);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.play-viewport[data-touch-layout="portrait"] > .touch-pad .touch-run-btn {
+  left: calc(var(--touch-safe-left, 0px) + 12px);
+  top: calc(var(--touch-controls-y) - var(--touch-stick) / 2 - 52px);
+}
+.play-viewport[data-touch-layout="landscape"] > .touch-pad .touch-run-btn {
+  left: calc(var(--touch-safe-left, 0px) + 10px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+  min-width: 56px;
+  padding: 0 10px;
+}
+.play-viewport:not([data-touch-layout]) .touch-run-btn { display: none; }
+.play-viewport[data-touch-layout] > .touch-pad .touch-run-btn[hidden] { display: none; }
+
+/* 맵 탭 걷기: 누른 자리에 짧은 고리. */
+.play-viewport .touch-tap-ripple {
+  position: absolute;
+  z-index: 44;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  animation: oprn-tap-ripple 420ms ease-out forwards;
+}
+@keyframes oprn-tap-ripple {
+  from { transform: scale(0.4); opacity: 1; }
+  to { transform: scale(1.2); opacity: 0; }
+}
 
 /* 전체 화면 단추: 터치 배치에서는 무대 안이 아니라 조작 띠·칸 모서리에 둔다(게임 그림을 덮지 않게). */
 .play-viewport[data-touch-layout] > .play-fullscreen-toggle {
@@ -164,7 +216,7 @@
 .play-viewport[data-touch-layout="portrait"] > .play-fullscreen-toggle {
   left: auto;
   right: calc(var(--touch-safe-right, 0px) + 12px);
-  top: calc(var(--touch-controls-y) - var(--touch-stick) / 2 - 44px);
+  top: calc(var(--touch-controls-y) - var(--touch-stick) / 2 - 48px);
 }
 .play-viewport[data-touch-layout="landscape"] > .play-fullscreen-toggle {
   right: auto;
@@ -291,4 +343,38 @@
 .play-viewport[data-window-panel] [data-testid="main-menu"][data-menu-skin="pixel"] .status-menu-stat-delta {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   column-gap: 10px;
+}
+
+/* 가로 겹침(2026-10-25): 무대가 화면 높이를 채우고 조작은 무대 가장자리 위에 반투명하게 얹힌다.
+   누르고 있는 동안만 진해진다. 달리기 단추는 대사 창(무대 아래쪽)을 가리지 않게 왼쪽 위(전체 화면 단추 아래)로 올린다. */
+.play-viewport[data-touch-overlay] > .touch-pad .touch-dpad-base.touch-dpad-base {
+  background: rgba(20, 24, 34, 0.22);
+  border-color: rgba(255, 255, 255, 0.34);
+}
+.play-viewport[data-touch-overlay] > .touch-pad .touch-stick-zone[data-active] .touch-dpad-base { background: rgba(40, 52, 80, 0.4); }
+.play-viewport[data-touch-overlay] > .touch-pad .touch-dpad-knob { opacity: 0.75; }
+.play-viewport[data-touch-overlay] > .touch-pad .touch-actions .touch-action-btn:not(.active),
+.play-viewport[data-touch-overlay] > .touch-pad .touch-menu-btn:not(.active),
+.play-viewport[data-touch-overlay] > .touch-pad .touch-run-btn:not(.on),
+.play-viewport[data-touch-overlay] > .play-fullscreen-toggle { opacity: 0.62; }
+.play-viewport[data-touch-overlay] > .touch-pad .touch-run-btn {
+  bottom: auto;
+  top: calc(env(safe-area-inset-top, 0px) + 56px);
+}
+
+/* 아이폰 「홈 화면에 추가」 안내(전체 화면 단추 자리, Fullscreen API 가 없을 때). */
+.play-viewport > .play-home-screen-hint {
+  position: absolute;
+  z-index: 47;
+  left: 50%;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  transform: translateX(-50%);
+  max-width: min(92%, 440px);
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(8, 10, 18, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #eef2ff;
+  font: 600 13px/1.45 system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  pointer-events: auto;
 }

@@ -1,0 +1,319 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cd921cb7684b05c90d344744f83c857a48c31fffe58c6c0ac594594df01e67b3",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "moss-covered boulder (mossy stone), natural map prop for the Beodeul 16px chipset, 2x2 tiles, standing object (3rd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/moss-boulder",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 38,
+  "nearBlackEdge": 0.49,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "boulder top (moss and lit stone surface)",
+      "rows": "14-22",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-25"
+     },
+     {
+      "part": "boulder front face (dark underside)",
+      "rows": "23-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 3 px at row 13 to 31 px at rows 22-24, then narrows to 19 px at row 27. This is a rounded mound with a ground shadow at row 28. The top is a mix of moss (rows 14-19) and lit gray stone (L about 148 at rows 18-21 in x=24 and rows 20-23 in x=9). The columns show a clear tonal step below the lit top. x=24 goes from 148 to 111 at rows 22-23, then 79, 51 and 31 at rows 24-26. x=16 goes from 111 at rows 21-22 to 79 at row 23, then 51 and 31. That step marks the front edge at about row 23, followed by darker shadow rows 24-25 and a very dark base. The top surface is about 9 rows and the front face about 5 rows, so the boulder shows both a top and a front, as in the green cabinet and barrel references. It is an organic rock, so the lumpy outline is expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The boulder is a small, low shape with only 10 colours in total. The stone has about 3-4 lightness steps (a light top, a mid grey-violet body and a dark base). The moss cap has about 2-3 greens in a few clumps, against the 5-6 steps and many leaf clumps of the references. 61% of the dark edge pixels are near-neutral, while both references measure 0%. By eye, the rim reads as a fairly uniform dark line around the stone, which gives a mild sticker look. The stone face has little per-stone shading, cracks or grain, so it is smoother than the references' clustered detail. The visible-tone count of 10 per tile is above reference 1a786c (7) but far below d43edd (29), and it is inflated by the stone and moss sharing a tile. There are no flat 5x5 fills, since the piece is tiny and every region has some variation. It is clean and readable, but the shading is shallower and the outline less material-tinted than the Beodeul standard, and when in doubt this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18188
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mossy upper surface and light stone top of the boulder",
+      "rows": "13-20",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front face, shaded from mid-grey to near-black",
+      "rows": "21-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 3 px at row 13 to 31 px at rows 22-24. The top is a moss mass with light stone patches, rows 13-20. At x=16 a dark green row at 19 marks the moss edge, and light stone follows at row 20. Below that the front face darkens step by step: x=16 goes from L=111 at rows 21-22 to 79, 51 and 31 by row 25. At x=24 the light stone runs through row 21, then mid, dark and darkest tones follow through row 26. That gives about 6 rows of shaded front face under a roughly 7-row top. The boulder has no sharp ledge. The gradient of the top and the front still reads as a volume seen from the south and above, not a flat elevation or a slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The boulder is small, about 30x12 source px, and reads as a low grey-purple lump with a green moss cap. Stone has about 3-4 lightness steps and moss about 2-3, which is below the 5-6 steps per material in the references. Measured density is acceptable: 10 visible tones per tile beats tree-1a786c (7) but is far below tree-d43edd (29). Near-flat coverage is 0%, so there are no big flat fills. The weak point is the outline: 61% of dark edge pixels are near-neutral, while both references have 0%. The dark rim around the stone looks like a uniform dark sticker line, not a darker tone of the adjacent stone or moss. The stone face has little per-stone grain or facet shading. The moss has only a few clumps and does not show the leaf-clump variety of the references. Next to the references it looks flatter and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17905
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "moss cap and lit stone top of boulder",
+      "rows": "14-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "shaded front face of boulder",
+      "rows": "23-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens gradually from 3px at row 13 to 31px at rows 22-24, which gives a domed heap. The top is a moss mound plus a light stone plane (#a09088, rows 18-21 at x=24, rows 20-23 at x=9). It ends in a mid-tone transition around rows 22-23, then darkens through rows 24-27 (L 79, 51, 31) as the front face. The front face is about 5 rows, and a ground shadow sits below at row 28. The rock reads as a volume with a visible top and a front face, not a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey-violet boulder with a moss cap. It has only 10 distinct colours in total, spread over roughly 4 steps on the stone and 3 on the moss. The references carry about 5-6 steps per material, and tree-d43edd has 29 visible tones per tile against the candidate's 10. The candidate does beat tree-1a786c on visible tones (10 vs 7) and has 0% near-flat coverage, so it is not a flat fill. The stone body is a smooth lump with little per-facet shading, cracks or grain, and the moss is a small, simple cap. The dark edge is 61% near-neutral, so the outline reads partly as a neutral dark sticker line rather than a tint of the adjacent stone or moss, as in the references (0% neutral). Next to the rich, clustered references it looks thinner and more sticker-like, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16441
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "boulder top with moss cover and lit stone plane",
+      "rows": "14-22",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss tufts on the crown",
+      "rows": "13-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a dome. Its width grows from 3 at row 13 to 31 at rows 22-24, then narrows to 29, 27, 19 and 1 by row 28, so the outline widens and narrows like an ellipse. The upper body (rows 14-22) is a moss mantle over a light, upward-facing stone plane (#a09088 at rows 18-21 in x=24 and row 20 in x=16). Below it the tone steps down through mid grey (#7a6a6c) at rows 21-23, then #584a52, #3a2e38 and #231c26 at rows 24-27. That gives a shaded south face of about 5 rows and a dark ground-contact edge. No hard front-edge line is drawn, but the top plane and the darker front face are clearly separated. No isometric side face is shown."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The boulder is a small, low shape with a grey-violet stone body and a moss cap. The stone shows about 3-4 lightness steps and the moss about 3, so the ramps are shallower than the 5-6 steps on the references' foliage. At 10 visible tones per tile it sits between the two references (7 and 29) and is far below tree-d43edd. It has no flat fills (0% near-flat). The dark edge pixels are 61% near-neutral, while both references are at 0% and carry tinted outlines. By eye the lower rim reads as a fairly uniform dark line, which gives a mild sticker look. The stone surface has few per-stone facets, cracks or grain dots, and the moss has little clumping detail. Overall it is clean but simpler and flatter than the Beodeul standard, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17881
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.235Z",
+ "cells": {
+  "16": [
+   "484865f747b3aaf3",
+   "78de27115ae0a4d7",
+   "e2e30da22d68cfde",
+   "ff43892d749f16e1"
+  ],
+  "24": [
+   "0b6e615c3ff1c977",
+   "1553a1671e6e0d7d",
+   "205906b89c40ebaa",
+   "2a3a36822dc304e9",
+   "2ae7857516f20194",
+   "4cfbed202506fe26",
+   "598f7dc6dabeb86a",
+   "6a12835faf78c464",
+   "7d0f55e353221836",
+   "8116721b7d818a88",
+   "89a8afa1c1ad0a3b",
+   "9c99344a8edc6d05",
+   "c59d9dbacc843034",
+   "c7582494672a5965",
+   "e579190b3643bff6",
+   "ee2a5a3a74507ae1",
+   "f55847837478a136",
+   "f85873a1d8c93765"
+  ],
+  "32": [
+   "353e24fac7cbcd43"
+  ],
+  "48": [
+   "31470dd684896a82",
+   "342ef78d28efeabf",
+   "52818208207128e4",
+   "ae0b8bbfa53926eb",
+   "bbf04c3a39713521",
+   "ebb0aec78eb3653e"
+  ]
+ }
+}
