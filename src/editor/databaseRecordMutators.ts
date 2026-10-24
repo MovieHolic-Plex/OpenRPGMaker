@@ -142,6 +142,8 @@ export function updateEquipmentRecord(database: DatabaseRecords, id: string, pat
   if ("stateDefenseIds" in patch && patch.stateDefenseIds !== undefined) record.stateDefenseIds = patch.stateDefenseIds;
   if ("stateDefenseMode" in patch && patch.stateDefenseMode !== undefined) record.stateDefenseMode = patch.stateDefenseMode;
   if ("stateResistanceChance" in patch && patch.stateResistanceChance !== undefined) record.stateResistanceChance = patch.stateResistanceChance;
+  if ("damageDealtPercent" in patch) { if (patch.damageDealtPercent) record.damageDealtPercent = patch.damageDealtPercent; else delete record.damageDealtPercent; }
+  if ("damageTakenPercent" in patch) { if (patch.damageTakenPercent) record.damageTakenPercent = patch.damageTakenPercent; else delete record.damageTakenPercent; }
   if ("actionWeapon" in patch) record.actionWeapon = patch.actionWeapon;
   if ("grantsSkillIds" in patch) record.grantsSkillIds = patch.grantsSkillIds;
   if ("grantsCommand" in patch) record.grantsCommand = patch.grantsCommand;

@@ -874,6 +874,8 @@ export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick
     stateDefenseIds: cleanIds(record.stateDefenseIds),
     stateDefenseMode: record.stateDefenseMode === "inflict" ? "inflict" : "resist",
     stateResistanceChance: clampInteger(record.stateResistanceChance ?? 0, 0, 100),
+    ...(record.damageDealtPercent ? { damageDealtPercent: clampInteger(record.damageDealtPercent, -90, 300) } : {}),
+    ...(record.damageTakenPercent ? { damageTakenPercent: clampInteger(record.damageTakenPercent, -90, 300) } : {}),
     ...(() => {
       const actionWeapon = normalizeActionWeaponProfile(record.actionWeapon);
       return actionWeapon ? { actionWeapon } : {};

@@ -1,3 +1,10 @@
+## 장비 「주는 피해 ±%」·「받는 피해 ±%」 (2026-10-24)
+
+`EquipmentRecord.damageDealtPercent` / `damageTakenPercent`(선택, 정수 -90~300, 0 이면 저장 안 함). 장착한 장비마다 더해
+`EquipmentRuntimeEffects` 에 실린다(`battleBattlers.ts`). 곱은 `runtime.ts` 의 `gimmickDamageMultiplier` 한 곳 —
+통상 공격(아군·적)·기술 피해(물리·마법) 모두 이 곱을 지난다. 배율 하한 0.1. 적은 장비가 없어 영향 없음. 회복에는 안 곱한다.
+편집기 장비 폼 「주는 피해(±%)」「받는 피해(±%)」, 효과 요약·상점 비교 표에 나온다. 헤드리스 확인: 전 장비 +30% → 늑대전 평균 5.5→2.7 차례, 받는 -50% → 남은 HP 911→1038.
+
 ## 광역기 한 번에 맞기 · 숫자 꼬리표 · 무기 보너스 · 상태 상한 · 장비 드롭 (2026-10-24, fs-battle)
 
 **광역기 묶음 (`src/player/battleSequencer.ts`).** 한 행동(`actionId`·쪽·사용자·명령·기술이 같고 `aside` 없는 damage/healing/miss)이
