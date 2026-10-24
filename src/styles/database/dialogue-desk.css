@@ -1,0 +1,130 @@
+/* 자료집 「이야기 › 대사」 탭 — editor/panels/databaseDialogueView.ts */
+.database-modal-backdrop .db-dialogue-workspace .db-dialogue-muted { color: var(--db-studio-text-3); font-size: 12px; }
+
+/* 말투 메모 */
+.database-modal-backdrop .db-dialogue-voice {
+  display: grid; gap: var(--space-2); padding: var(--space-3);
+  border: 1px solid var(--db-studio-border-subtle); border-radius: 10px; background: var(--db-studio-surface);
+}
+.database-modal-backdrop .db-dialogue-voice-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2); }
+.database-modal-backdrop .db-dialogue-voice-input {
+  width: 100%; min-height: 56px; resize: vertical; font: 13px/1.5 var(--font-ui);
+  color: var(--db-studio-text-1); background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-default); border-radius: 8px; padding: 8px 10px;
+}
+.database-modal-backdrop .db-dialogue-voice-actions { display: flex; justify-content: flex-end; }
+
+/* 조수 윤문 제안 */
+.database-modal-backdrop .db-dialogue-proposals {
+  display: grid; gap: var(--space-2); padding: var(--space-3);
+  border: 1px solid var(--db-studio-accent-border); border-radius: 10px;
+  background: color-mix(in srgb, var(--db-studio-accent) 6%, var(--db-studio-surface));
+}
+.database-modal-backdrop .db-dialogue-proposals-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-2); }
+.database-modal-backdrop .db-dialogue-proposals-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2); }
+.database-modal-backdrop .db-dialogue-proposals-actions { display: flex; gap: var(--space-2); }
+.database-modal-backdrop .db-dialogue-instruction {
+  font-size: 12px; color: var(--db-studio-text-2); background: var(--db-studio-inset);
+  border-radius: 999px; padding: 2px 10px;
+}
+.database-modal-backdrop .db-dialogue-proposal-list { display: grid; gap: var(--space-2); max-height: 46vh; overflow: auto; padding-right: 2px; }
+.database-modal-backdrop .db-dialogue-proposal {
+  display: grid; gap: 6px; padding: 10px 12px; border-radius: 8px;
+  border: 1px solid var(--db-studio-border-subtle); background: var(--db-studio-surface);
+}
+.database-modal-backdrop .db-dialogue-proposal.is-stale { opacity: .72; border-style: dashed; }
+.database-modal-backdrop .db-dialogue-proposal-meta { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: baseline; }
+.database-modal-backdrop .db-dialogue-proposal-body { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+.database-modal-backdrop .db-dialogue-proposal-side { display: grid; grid-template-columns: auto 1fr auto; gap: 6px; align-items: start; }
+.database-modal-backdrop .db-dialogue-side-label {
+  font-size: 11px; font-weight: 700; color: var(--db-studio-text-3);
+  border: 1px solid var(--db-studio-border-subtle); border-radius: 4px; padding: 0 5px; margin-top: 2px;
+}
+.database-modal-backdrop .db-dialogue-diff {
+  white-space: pre-wrap; word-break: break-word; font-size: 13px; line-height: 1.55; color: var(--db-studio-text-1);
+}
+.database-modal-backdrop .db-dialogue-diff del {
+  text-decoration: line-through; color: var(--db-studio-danger);
+  background: color-mix(in srgb, var(--db-studio-danger) 14%, transparent); border-radius: 2px;
+}
+.database-modal-backdrop .db-dialogue-diff ins {
+  text-decoration: none; color: var(--db-studio-success);
+  background: color-mix(in srgb, var(--db-studio-success) 16%, transparent); border-radius: 2px;
+}
+.database-modal-backdrop .db-dialogue-reason { margin: 0; font-size: 12px; color: var(--db-studio-text-2); }
+.database-modal-backdrop .db-dialogue-proposal-actions { display: flex; justify-content: flex-end; gap: var(--space-2); }
+.database-modal-backdrop .db-dialogue-stale {
+  font-size: 11px; color: var(--db-studio-warning-strong, var(--db-studio-warning));
+  background: color-mix(in srgb, var(--db-studio-warning) 12%, transparent); border-radius: 4px; padding: 0 6px;
+}
+
+/* 거르개 */
+.database-modal-backdrop .db-dialogue-filters { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.database-modal-backdrop .db-dialogue-filters > :first-child { flex: 1 1 220px; min-width: 180px; }
+.database-modal-backdrop .db-dialogue-select {
+  font: 13px var(--font-ui); color: var(--db-studio-text-1); background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-default); border-radius: 8px; padding: 5px 8px; max-width: 220px;
+}
+.database-modal-backdrop .db-dialogue-check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--db-studio-text-2); }
+.database-modal-backdrop .db-dialogue-count { margin-left: auto; font-size: 12px; color: var(--db-studio-text-3); }
+.database-modal-backdrop .db-dialogue-metrics { font-size: 11px; color: var(--db-studio-text-3); }
+
+/* 표 */
+.database-modal-backdrop .db-dialogue-table { display: grid; gap: var(--space-3); }
+.database-modal-backdrop .db-dialogue-group {
+  display: grid; border: 1px solid var(--db-studio-border-subtle); border-radius: 10px; overflow: hidden; background: var(--db-studio-surface);
+}
+.database-modal-backdrop .db-dialogue-group-head {
+  display: flex; gap: var(--space-2); align-items: center; padding: 6px 12px;
+  background: var(--db-studio-inset); border-bottom: 1px solid var(--db-studio-border-subtle);
+  font-size: 12px; font-weight: 600; color: var(--db-studio-text-2);
+}
+.database-modal-backdrop .db-dialogue-row {
+  display: grid; grid-template-columns: minmax(84px, 128px) 1fr auto auto; gap: var(--space-2); align-items: start;
+  padding: 6px 12px; border-top: 1px solid var(--db-studio-border-subtle);
+}
+.database-modal-backdrop .db-dialogue-group-head + .db-dialogue-row { border-top: 0; }
+.database-modal-backdrop .db-dialogue-row.is-overflow { box-shadow: inset 3px 0 0 var(--db-studio-warning); }
+.database-modal-backdrop .db-dialogue-row.has-proposal { background: color-mix(in srgb, var(--db-studio-accent) 5%, transparent); }
+.database-modal-backdrop .db-dialogue-speaker {
+  font-size: 12px; font-weight: 700; color: var(--db-studio-accent); padding-top: 3px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.database-modal-backdrop .db-dialogue-speaker[data-kind]:not([data-kind="text"]) { color: var(--db-studio-text-3); font-weight: 500; }
+.database-modal-backdrop .db-dialogue-text {
+  all: unset; box-sizing: border-box; display: block; width: 100%; cursor: text;
+  white-space: pre-wrap; word-break: break-word; font: 13px/1.55 var(--font-ui); color: var(--db-studio-text-1);
+  padding: 2px 6px; border-radius: 6px;
+}
+.database-modal-backdrop .db-dialogue-text:hover:not(:disabled),
+.database-modal-backdrop .db-dialogue-text:focus-visible { background: var(--db-studio-inset); outline: 1px solid var(--db-studio-border-default); }
+.database-modal-backdrop .db-dialogue-text:disabled { cursor: not-allowed; color: var(--db-studio-text-3); }
+.database-modal-backdrop .db-dialogue-editor { display: grid; gap: 6px; }
+.database-modal-backdrop .db-dialogue-edit {
+  width: 100%; resize: vertical; font: 13px/1.55 var(--font-ui); color: var(--db-studio-text-1);
+  background: var(--db-studio-inset); border: 1px solid var(--db-studio-accent-border); border-radius: 6px; padding: 6px 8px;
+}
+.database-modal-backdrop .db-dialogue-editor-actions { display: flex; align-items: center; gap: var(--space-2); justify-content: flex-end; }
+.database-modal-backdrop .db-dialogue-editor-actions .db-dialogue-live { margin-right: auto; }
+.database-modal-backdrop .db-dialogue-fit {
+  font-size: 11px; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--db-studio-text-3);
+  border: 1px solid var(--db-studio-border-subtle); border-radius: 999px; padding: 1px 8px; margin-top: 2px;
+}
+.database-modal-backdrop .db-dialogue-fit-over {
+  color: var(--db-studio-warning-strong, var(--db-studio-warning)); font-weight: 700;
+  border-color: var(--db-studio-warning); background: color-mix(in srgb, var(--db-studio-warning) 14%, transparent);
+}
+.database-modal-backdrop .db-dialogue-fit-estimate { border-style: dashed; }
+.database-modal-backdrop .db-dialogue-fit-na { border-color: transparent; }
+.database-modal-backdrop .db-dialogue-jump {
+  font-size: 12px; color: var(--db-studio-text-2); background: transparent; cursor: pointer;
+  border: 1px solid var(--db-studio-border-subtle); border-radius: 6px; padding: 2px 8px;
+}
+.database-modal-backdrop .db-dialogue-jump:hover { color: var(--db-studio-accent); border-color: var(--db-studio-accent-border); }
+.database-modal-backdrop .db-dialogue-more { justify-self: center; }
+
+@media (max-width: 900px) {
+  .database-modal-backdrop .db-dialogue-proposal-body { grid-template-columns: 1fr; }
+  .database-modal-backdrop .db-dialogue-row { grid-template-columns: 1fr auto auto; }
+  .database-modal-backdrop .db-dialogue-row .db-dialogue-speaker { grid-column: 1 / -1; }
+}

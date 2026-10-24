@@ -2,6 +2,7 @@ import { renderGrowthTreeTab } from "@/editor/panels/growthTree/studio";
 import { t } from "@/i18n";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { renderCommonEventsTab } from "@/editor/panels/databaseCommonEventViews";
+import { dialogueTabCount, renderDialogueTab } from "@/editor/panels/databaseDialogueView";
 import { renderCropTab } from "@/editor/panels/databaseCropView";
 import { renderMonsterSpeciesTab } from "@/editor/panels/databaseMonsterSpeciesView";
 import { renderCharactersTab } from "@/editor/panels/databaseCharacterView";
@@ -85,6 +86,7 @@ export type DatabaseTab =
   | "battleCommands"
   | "battleScreen"
   | "commonEvents"
+  | "dialogue"
   | "characters"
   | "characterGraphics"
   | "characterAppearances"
@@ -163,6 +165,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "spatialRegions", label: "지역", testid: "db-tab-spatial-regions" },
   { id: "spatialWorlds", label: "세계", testid: "db-tab-spatial-worlds" },
   { id: "commonEvents", label: "공용 이벤트", testid: "db-tab-common-events" },
+  { id: "dialogue", label: "대사", testid: "db-tab-dialogue" },
   { id: "system", label: "게임 설정", testid: "db-tab-system" },
   { id: "menuSystem", label: "메뉴·시스템", testid: "db-tab-menu-system" },
   { id: "opening", label: "오프닝", testid: "db-tab-opening" },
@@ -191,7 +194,7 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
     label: "이야기",
     slug: "lore",
     description: "무슨 이야기를 쓰나요?",
-    tabs: ["worldCanon", "worldCodex", "characters", "commonEvents", "switches", "variables"],
+    tabs: ["worldCanon", "worldCodex", "characters", "commonEvents", "dialogue", "switches", "variables"],
     subheadings: {
       switches: "진행 값 (고급)",
     },
@@ -742,6 +745,8 @@ function databaseTabCount(tab: DatabaseTab): number | null {
       return project.variables.filter((record) => record.name.trim().length > 0).length;
     case "commonEvents":
       return project.commonEvents.length;
+    case "dialogue":
+      return dialogueTabCount(project);
     case "factions":
       return 2 + new Set((project.factions?.defs ?? [])
         .map((def) => def.id)
@@ -1502,6 +1507,9 @@ function renderActiveTabUnguarded(
       break;
     case "commonEvents":
       renderCommonEventsTab(body, rerender);
+      break;
+    case "dialogue":
+      renderDialogueTab(body, container, rerender);
       break;
     case "tilesets":
     case "tilesetAutotile":

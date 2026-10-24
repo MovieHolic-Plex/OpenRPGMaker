@@ -272,6 +272,11 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "circle", attrs: { cx: "16.6", cy: "16.4", r: "2.2" } },
     { tag: "path", attrs: { d: "M7.5 10.1 14.5 6.5M7.5 11.9l7 3.6" } },
   ],
+  // 대사 — 말풍선과 글줄
+  dialogue: [
+    { tag: "path", attrs: { d: "M4 4.6h14a1.4 1.4 0 0 1 1.4 1.4v8a1.4 1.4 0 0 1-1.4 1.4H9.4L5.6 18.6v-3.2H4A1.4 1.4 0 0 1 2.6 14V6A1.4 1.4 0 0 1 4 4.6z" } },
+    { tag: "path", attrs: { d: "M6.4 8.6h9.2M6.4 11.6h6" } },
+  ],
 
   // ── 시스템 ──
   // 시스템 — 슬라이더

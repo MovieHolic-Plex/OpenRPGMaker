@@ -89,10 +89,13 @@ const listDialogue: ToolDefinition = {
     const all = collectDialogueLines(project);
     const desk = readDialogueDesk(project);
     const pending = new Set(desk.proposals.map((proposal) => proposal.lineId));
+    // 화자 칸은 자유 문자열이다(「심문관 발렌」). 정확히 같은 이름이 없으면 이름에 낱말이 든 화자를 모두 본다.
+    const exactSpeaker = !speaker || all.some((line) => line.speaker === speaker);
+    const speakerMatches = (name: string): boolean => !speaker || (exactSpeaker ? name === speaker : name.includes(speaker));
     let filtered = all.filter((line) =>
       (scope === "all" || line.scope === scope)
       && matchesKind(line, kind)
-      && (!speaker || line.speaker === speaker)
+      && speakerMatches(line.speaker)
       && (!mapId || line.mapId === mapId)
       && (!query || `${line.text}\n${line.speaker}\n${line.groupLabel}`.toLocaleLowerCase().includes(query))
       && Array.from(line.text).length >= minChars);
@@ -113,7 +116,8 @@ const listDialogue: ToolDefinition = {
       }
       : {};
     return {
-      summary: `대사 ${filtered.length}줄 중 ${page.length}줄 (offset ${offset}${nextOffset !== null ? ` → 다음 ${nextOffset}` : ""})`,
+      summary: `대사 ${filtered.length}줄 중 ${page.length}줄 (offset ${offset}${nextOffset !== null ? ` → 다음 ${nextOffset}` : ""})`
+        + (exactSpeaker ? "" : ` — 화자 「${speaker}」가 정확히 없어 이름에 그 낱말이 든 화자(${[...new Set(filtered.map((line) => line.speaker))].slice(0, 6).join("·") || "없음"})를 보였다`),
       data: { total: filtered.length, offset, nextOffset, rows: page.map((line) => compactRow(project, line, pending)), ...head },
     };
   },
