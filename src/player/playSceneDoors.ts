@@ -195,7 +195,6 @@ function hideOriginalArt(scene: PlaySceneContext, view: DoorView): void {
 function applyPose(_scene: PlaySceneContext, view: DoorView): void {
   const p = ease(view.t);
   const { l, r } = view.hole;
-  const mid = (l + r) / 2;
   view.interior.setVisible(view.t > 0);
   view.interiorGlow?.setVisible(view.t > 0);
   if (view.state.style === "slide") {

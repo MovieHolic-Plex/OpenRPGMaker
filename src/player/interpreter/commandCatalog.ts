@@ -15,7 +15,7 @@ import {
   setEffectiveFactionStance,
 } from "@/project/factionRuntime";
 import { resolveFactionTable } from "@/project/factions";
-import type { Command, Condition, EndingDef, GameEvent, M2CommandFields, SwitchValue } from "@/project/types";
+import type { Command, Condition, EndingDef, FaceGraphic, GameEvent, M2CommandFields, SwitchValue } from "@/project/types";
 
 import { clampEmoteDurationMs } from "@/project/emotes";
 import { craftRecipe } from "@/project/craftRecipes";
