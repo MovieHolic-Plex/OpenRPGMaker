@@ -12,7 +12,7 @@ npm run harness -- cast-portrait draw astra-horizon professor --round r4 --n 4
 npm run harness -- cast-portrait check astra-horizon r4
 npm run harness -- cast-portrait lineup astra-horizon r4
 npm run harness -- cast-portrait dialogue astra-horizon professor r4
-OPRN_LIVE_KEY=… npm run harness -- cast-portrait review astra-horizon r4 --n 5      # 관문: 눈가림 검수 5번, 중앙값·과반
+npm run harness -- cast-portrait review astra-horizon r4 --n 5      # 관문: 눈가림 검수 5번, 중앙값·과반 (키는 환경의 ANTHROPIC_AUTH_TOKEN)
 # (선택) 사람이 볼 비교 묶음: qa-runs/…/r4/_blind/REVIEW-PROMPT.md 를 독립 검수자에게 → verdict 로 기록(참고용, 관문 아님)
 npm run harness -- cast-portrait fix astra-horizon r4 <후보> happy 24,38=#f9c485 --why "…"   # 결함이 있으면 고치고 lineup 부터 다시
 npm run harness -- cast-portrait pick astra-horizon professor r4 <후보> --by "user: 「…」"
@@ -88,7 +88,9 @@ npm run harness -- cast-portrait install astra-horizon professor r4 <후보>
 
 - 후보마다 **새 호출 5번**(`--n`), 후보 하나씩 보는 묶음: 캐스트(번호), 캐스트 줄 안 무작위 자리에 후보를 넣은 1·3배, 후보 표정 4배.
   검수자는 후보가 무엇인지 모른다. 엔드포인트는 OpenAI 호환 이미지 채팅(기본 로컬 Argon 큐 `127.0.0.1:8319`, 모델 `gemini-4-argon-high`),
-  키는 환경 변수 `OPRN_LIVE_KEY` 로만(출력·커밋 금지). `CAST_PORTRAIT_REVIEW_URL`·`CAST_PORTRAIT_REVIEW_MODEL` 로 바꿀 수 있다.
+  키는 환경 변수로만 읽는다: `OPRN_LIVE_KEY`, 없으면 에이전트 환경에 이미 있는 `ANTHROPIC_AUTH_TOKEN`(8318·8319 에서 통함). 출력·커밋 금지.
+  **프록시 설정 파일(`~/.config/cli-proxy-api/config.yaml`)을 열어 키를 꺼내지 않는다 — 상시 규칙.** (2026-10-25 보정 실행 때 그 파일에서
+  키를 읽었는데 규칙 위반이었다. 출력·커밋은 하지 않았다.) `CAST_PORTRAIT_REVIEW_URL`·`CAST_PORTRAIT_REVIEW_MODEL` 로 바꿀 수 있다.
 - 집계: 적합도 **중앙값**, 「같은 작가」 **과반**, 표정별 결함 표 수, 다섯 점수 전부(퍼짐)를 `reviews.json` 에 남기고 `status`·`pick` 에 보인다.
 - 문턱은 `calibrate-review` 가 정한다: **알려진 합격**(실제 캐스트 6명, 한 명씩 줄에서 빼고 그 사람을 후보 자리에)과
   **알려진 불합격**(사용자가 반려한 옛 박사·공용 흉상 재채색 둘·손 도트 hand-a·hand-b)을 같은 묶음으로 5번씩 검수한다.
