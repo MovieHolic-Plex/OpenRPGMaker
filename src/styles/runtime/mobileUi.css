@@ -198,10 +198,10 @@
 .play-viewport[data-touch-layout] > .play-fullscreen-toggle {
   position: absolute;
   z-index: 46;
-  width: 36px;
-  height: 36px;
-  font-size: 18px;
-  border-radius: 18px;
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+  border-radius: 22px;
   opacity: 0.85;
   transform: none;
   display: grid;
@@ -216,7 +216,7 @@
 .play-viewport[data-touch-layout="portrait"] > .play-fullscreen-toggle {
   left: auto;
   right: calc(var(--touch-safe-right, 0px) + 12px);
-  top: calc(var(--touch-controls-y) - var(--touch-stick) / 2 - 48px);
+  top: calc(var(--touch-controls-y) - var(--touch-stick) / 2 - 52px);
 }
 .play-viewport[data-touch-layout="landscape"] > .play-fullscreen-toggle {
   right: auto;
@@ -359,8 +359,17 @@
 .play-viewport[data-touch-overlay] > .play-fullscreen-toggle { opacity: 0.62; }
 .play-viewport[data-touch-overlay] > .touch-pad .touch-run-btn {
   bottom: auto;
-  top: calc(env(safe-area-inset-top, 0px) + 56px);
+  top: calc(env(safe-area-inset-top, 0px) + 62px);
 }
+/* 대사가 떠 있거나 전투 중(명령 창·파티 게이지가 무대 아래 모서리에 있다)에는 겹친 조작을 25% 로 옅게 — 대사 글자·이름표·흉상(무대 아래쪽)을 가리지 않는다.
+   대사는 화면 아무 데나 탭해도 넘어가므로 조작을 찾을 필요가 없다. 누르면(.active) 다시 진해진다. */
+.play-viewport[data-touch-overlay]:has(.dialogue-box, [data-testid="battle-scene"]) > .touch-pad :is(.touch-dpad-base, .touch-dpad-knob),
+.play-viewport[data-touch-overlay]:has(.dialogue-box, [data-testid="battle-scene"]) > .touch-pad .touch-actions .touch-action-btn:not(.active),
+.play-viewport[data-touch-overlay]:has([data-testid="battle-scene"]) > .touch-pad :is(.touch-menu-btn, .touch-run-btn) {
+  opacity: 0.25;
+  transition: opacity 120ms ease;
+}
+.play-viewport[data-touch-overlay]:has(.dialogue-box, [data-testid="battle-scene"]) > .touch-pad .touch-stick-zone[data-active] :is(.touch-dpad-base, .touch-dpad-knob) { opacity: 0.6; }
 
 /* 아이폰 「홈 화면에 추가」 안내(전체 화면 단추 자리, Fullscreen API 가 없을 때). */
 .play-viewport > .play-home-screen-hint {
@@ -377,4 +386,38 @@
   color: #eef2ff;
   font: 600 13px/1.45 system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
   pointer-events: auto;
+}
+
+/* ── ESC 메뉴 명령 줄 터치 크기(2026-10-25) ──
+   도트 스킨 명령 창은 줄 간격 14 게임 px 라 폰에서 손가락 하나에 줄 세 개가 걸렸다. 터치 UI 에서는 줄 높이를
+   화면 44px(--touch-menu-row, playSurface 가 메뉴 배율로 나눠 게임 px 로 준다)로 벌린다 — 글자 크기는 그대로다.
+   세로 창 칸은 남는 높이만큼(최대 400) 늘어나 돈·장소·시간 창이 명령 창 아래에 그대로 들어간다.
+   가로는 무대 높이(270)가 모자라 장소·시간을 접고 돈만 남긴다. */
+.play-viewport[data-touch-ui] .oprn-status-menu.main-menu[data-menu-skin="pixel"] {
+  --px-dock-h: max(94px, calc(var(--status-menu-command-count, 6) * var(--touch-menu-row, 14px) + 8px));
+}
+.play-viewport[data-touch-ui] .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-primary-dock > .status-menu-command {
+  flex: 0 0 var(--touch-menu-row, 14px);
+  touch-action: manipulation;
+}
+.play-viewport[data-touch-ui]:not([data-window-panel]) .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] :is(.status-menu-location, .status-menu-time, .status-menu-chapter) { display: none; }
+
+/* 가로 겹침 — 창이 무대 아래쪽을 쓰는 동안(대사 창·흉상, 전투 명령 창·파티 게이지) 조이스틱·A/B 를 위로 올린다(2026-10-25).
+   중심선을 0.68배(화면 높이의 62% → 42%)로 올리고 조이스틱 칸도 그 아래까지만 받아, 창 위의 탭을 조이스틱이 가로채지 않는다.
+   달리기 단추는 올라온 조이스틱과 겹치므로 이 동안 쉰다. */
+.play-viewport[data-touch-overlay]:has(.dialogue-box, [data-testid="battle-scene"]) > .touch-pad .touch-stick-zone {
+  bottom: auto;
+  height: calc(var(--touch-controls-y) * 0.68 + var(--touch-stick) / 2 + 8px);
+}
+.play-viewport[data-touch-overlay]:has(.dialogue-box, [data-testid="battle-scene"]) > .touch-pad .touch-stick-zone .touch-dpad:not([data-floating]),
+.play-viewport[data-touch-overlay]:has(.dialogue-box, [data-testid="battle-scene"]) > .touch-pad .touch-actions.touch-actions {
+  top: calc(var(--touch-controls-y) * 0.68);
+}
+.play-viewport[data-touch-overlay]:has(.dialogue-box, [data-testid="battle-scene"]) > .touch-pad .touch-run-btn { pointer-events: none; opacity: 0.25; }
+
+/* 메뉴·상점이 열린 동안(가로 겹침): 명령 줄·목록이 무대 좌우 끝까지 오므로 조이스틱·A/B 는 25% 로 옅게 두고 탭을 받지 않는다.
+   줄은 손가락으로 바로 고르고, 뒤로/닫기는 「메뉴」 단추(= B, Esc)가 맡는다. */
+.play-viewport[data-touch-overlay]:has([data-testid="main-menu"], .runtime-shop-overlay) > .touch-pad :is(.touch-stick-zone, .touch-actions, .touch-action-btn, .touch-run-btn) {
+  pointer-events: none !important;
+  opacity: 0.25;
 }

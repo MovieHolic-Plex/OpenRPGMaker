@@ -213,8 +213,18 @@ export type TouchLayout = {
    * 칸은 어느 폰이든 같은 논리 크기(WINDOW_PANEL_WIDTH×HEIGHT 게임 px)이고, 들어가면 1배(글자 12px)다.
    * top/left 는 뷰포트 위 화면 px, scale 은 칸 배율. 없으면 null.
    */
-  readonly panel: { readonly top: number; readonly left: number; readonly scale: number } | null;
+  readonly panel: { readonly top: number; readonly left: number; readonly scale: number; readonly height: number } | null;
+  /**
+   * 터치 메뉴 한 줄의 최소 높이(게임 px) — 화면에서 44px 가 되게(2026-10-25). 메뉴가 그려지는 배율(창 칸이면 칸 배율,
+   * 아니면 무대 배율)로 나눈다. CSS(mobileUi.css)가 ESC 메뉴 명령 줄에 쓴다.
+   */
+  readonly menuRow: number;
 };
+
+/** 터치 대상 최소 높이(화면 px) — Apple HIG 44pt, Material 48dp 의 아래쪽. */
+export const TOUCH_TARGET_MIN = 44;
+/** 세로 창 칸의 최대 논리 높이 — 남는 높이가 있으면 칸을 늘려 메뉴 줄을 44px 로 벌릴 자리를 만든다. */
+export const WINDOW_PANEL_MAX_HEIGHT = 400;
 
 /** 세로 창 칸의 논리 크기(게임 px). 도트 메뉴의 원래 설계 폭(320)이고, 375~430px 폭 폰 세로에 1배로 들어간다. */
 export const WINDOW_PANEL_WIDTH = 320;
@@ -282,15 +292,19 @@ export function calculateTouchLayout(
       const room = { w: availW - 8, h: menuRowTop - 4 - stageTop };
       const panelScale = Math.min(1, room.w / WINDOW_PANEL_WIDTH, room.h / WINDOW_PANEL_HEIGHT);
       if (panelScale > scale) {
-        const h = WINDOW_PANEL_HEIGHT * panelScale;
+        // 높이가 남으면 칸을 아래로 늘린다(최대 400) — 메뉴 명령 줄을 44px 로 벌리고 돈·시간 창까지 들어가게.
+        const logicalH = Math.max(WINDOW_PANEL_HEIGHT, Math.min(WINDOW_PANEL_MAX_HEIGHT, Math.floor(room.h / panelScale)));
+        const h = logicalH * panelScale;
         panel = {
           top: Math.round(Math.max(stageTop, menuRowTop - 4 - h)),
           left: Math.round(safe.left + (availW - WINDOW_PANEL_WIDTH * panelScale) / 2),
           scale: panelScale,
+          height: logicalH,
         };
       }
     }
-    return { mode: "portrait", scale, stageLeft, stageTop, bandTop, bandBottom, controlsY, gutter: 0, stick, dock, panel };
+    const menuRow = Math.ceil(TOUCH_TARGET_MIN / (panel ? panel.scale : scale));
+    return { mode: "portrait", scale, stageLeft, stageTop, bandTop, bandBottom, controlsY, gutter: 0, stick, dock, panel, menuRow };
   }
   // 가로(2026-10-25 「모바일 가로 화면이 너무 작게 나온다」): 예전에는 좌우 조작 칸을 먼저 떼고 남은 폭에 정수 배율을 맞춰
   // 아이폰 15 가로(734×343)에서 무대가 480×270(1배) — 화면 높이의 79%, 폭의 65% 였다. 이제 무대는 화면 높이를 채우고
@@ -307,7 +321,7 @@ export function calculateTouchLayout(
   const stageLeft = Math.round(safe.left + (fullW - stageW) / 2);
   const stageTop = Math.round(safe.top + (availH - stageH) / 2);
   const controlsY = safe.top + availH * 0.62;
-  return { mode: "landscape", scale, stageLeft, stageTop, bandTop: safe.top, bandBottom: height - safe.bottom, controlsY, gutter: Math.max(gutterL, gutterR), stick, dock: null, panel: null };
+  return { mode: "landscape", scale, stageLeft, stageTop, bandTop: safe.top, bandBottom: height - safe.bottom, controlsY, gutter: Math.max(gutterL, gutterR), stick, dock: null, panel: null, menuRow: Math.ceil(TOUCH_TARGET_MIN / scale) };
 }
 
 /**
@@ -354,6 +368,7 @@ function syncTouchLayout(viewport: HTMLElement, width: number, height: number, r
   viewport.style.setProperty("--touch-controls-y", cssPx(layout.controlsY));
   viewport.style.setProperty("--touch-gutter", cssPx(layout.gutter));
   viewport.style.setProperty("--touch-stick", cssPx(layout.stick));
+  viewport.style.setProperty("--touch-menu-row", cssPx(layout.menuRow));
   viewport.style.setProperty("--touch-safe-left", cssPx(safe.left));
   viewport.style.setProperty("--touch-safe-right", cssPx(safe.right));
   if (layout.dock) {
@@ -375,13 +390,13 @@ function syncTouchLayout(viewport: HTMLElement, width: number, height: number, r
     const p = layout.panel;
     viewport.dataset.windowPanel = "true";
     viewport.style.setProperty("--panel-w", cssPx(WINDOW_PANEL_WIDTH));
-    viewport.style.setProperty("--panel-h", cssPx(WINDOW_PANEL_HEIGHT));
+    viewport.style.setProperty("--panel-h", cssPx(p.height));
     viewport.style.setProperty("--panel-top", cssPx((p.top - layout.stageTop) / scale));
     viewport.style.setProperty("--panel-left", cssPx((p.left - layout.stageLeft) / scale));
     viewport.style.setProperty("--panel-unscale", String(p.scale / scale));
     viewport.style.setProperty("--panel-scale", String(p.scale));
     viewport.style.setProperty("--panel-cx", cssPx(p.left + (WINDOW_PANEL_WIDTH * p.scale) / 2));
-    viewport.style.setProperty("--panel-cy", cssPx(p.top + (WINDOW_PANEL_HEIGHT * p.scale) / 2));
+    viewport.style.setProperty("--panel-cy", cssPx(p.top + (p.height * p.scale) / 2));
   } else {
     delete viewport.dataset.windowPanel;
     for (const name of ["--panel-w", "--panel-h", "--panel-top", "--panel-left", "--panel-unscale", "--panel-scale", "--panel-cx", "--panel-cy"]) viewport.style.removeProperty(name);

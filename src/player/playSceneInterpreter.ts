@@ -43,7 +43,7 @@ import type { Command, MessageWindowSettings, MoveCommand } from "@/project/type
 import { characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { waitForEventKey } from "@/player/eventInput";
 import { abortHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
-import { applyCameraControl } from "@/player/playSceneCamera";
+import { applyCameraControl, restoreCameraAfterCutsceneSkip } from "@/player/playSceneCamera";
 import { cameraViewOrigin } from "@/player/cameraScreen";
 import { applyLightingStep } from "@/player/playSceneLighting";
 import { playMapAnimation } from "@/player/playSceneMapAnimations";
@@ -367,6 +367,7 @@ function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Inte
     if (!secondEscape) return;
     event.preventDefault();
     result = interpreter.jumpToLabel(CUTSCENE_END_LABEL);
+    restoreCameraAfterCutsceneSkip(scene);
     scene.refreshRuntimeSurfaces();
     notify();
   };
