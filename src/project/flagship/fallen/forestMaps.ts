@@ -402,8 +402,8 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
     const lights: Array<Record<string, unknown>> = [{ id: `light_${id}_gap`, at: { x: 20, y: 13 }, radius: 6, intensity: 0.45, color: "#fff1c4", flicker: false }];
     if (shrineAt) {
       readable(project.maps[id]!, "shrine", "별지기 사당", { x: shrineAt.x, y: shrineAt.y + 2 }, [
-        narrate("(사당) 이끼 낀 돌 사당. 지붕 밑에 별 무늬가 새겨져 있다.\n옛 별지기들의 사당이다."),
-        narrate("(새긴 글) 빌려 받은 불을 꺼뜨리지 말 것.\n달이 아이를 내려보내거든, 물음에 대답할 것.\n──「잘 지내나요?」"),
+        narrate("(사당) 이끼 낀 돌 사당이다.\n지붕 밑에 옛 별지기들의 별 무늬가 새겨져 있다."),
+        narrate("(새긴 글) 빌린 불을 꺼뜨리지 말 것.\n달의 아이가 오거든 답할 것──「잘 지내나요?」"),
         narrate("(새긴 글) 그 아래 몇 줄은 정으로 쪼아 지웠다.\n남은 획은 둘. 「문」, 그리고 「비늘」."),
         say("엘레나", "이 별 무늬, 천문대 서고 바닥에서 본 것 같아.\n누가 일부러 지운 거네."),
         narrate("(사당) 향 주머니가 놓여 있다. 누군가 아직 이곳을 돌본다."),
@@ -430,7 +430,7 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
         { kind: "playAudio", resourceId: "easyrpg-sound-recovery7", loop: false, channel: "se" } as unknown as Command,
         m2("m2-224-particle-effect", { preset: "sparkle", target: "tile", x: crystal.x, y: crystal.y, durationMs: 1000, wait: false }),
         m2("m2-224-particle-effect", { preset: "heal", target: "player", durationMs: 800, wait: false }),
-        narrate("제단 위 별 조각이 푸르게 맥박친다.\n손을 얹자, 지친 몸에 온기가 번진다."),
+        narrate("제단 위 별 조각이 푸르게 맥박친다.\n손을 얹자 지친 몸에 온기가 번진다."),
         { kind: "recoverAll" } as unknown as Command,
         { kind: "checkpointSave", label: "savepoint" } as unknown as Command,
         { kind: "choices", prompt: "별 조각에 여기까지를 새겨 둘까?", cancelBehavior: "branch", options: [
@@ -465,7 +465,7 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
     placeKit(project, id, "bd-pick-deep-forest-path-log-fallen", { x: 19, y: 10 }, guard, 2);
     placeKit(project, id, "bd-pick-deep-forest-path-hide-rack", { x: 18, y: 15 }, guard, 2);
     if (post) readable(project.maps[id]!, "hunter_note", "사냥꾼의 쪽지", { x: post.x, y: post.y + 1 }, [
-      narrate("(쪽지) 별 떨어진 밤부터 늑대가 북쪽으로 몰린다.\n당분간 쉼터는 비워 둔다. 필요한 건 가져가라. — 브람"),
+      narrate("(쪽지) 별 떨어진 밤부터 늑대가 북쪽으로 몰린다.\n당분간 쉼터는 비운다. 필요한 건 챙겨 가라. — 브람"),
     ]);
   }
   // ⑤ 깊은 숲: 브람 곁 모닥불, 두 번째 별 표지석(돌무덤), 숨은 물건.

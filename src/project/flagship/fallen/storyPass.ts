@@ -100,18 +100,18 @@ function ensureVariable(project: Project, id: string, name: string): void {
 
 /** 광장 포고 직후 — 엘레나가 약과 무기를 건네는 줄이 안내문처럼 읽혔다. */
 function plazaLines(hub: GameMap): void {
-  rewordAll(hub, "들었지, 카엘", "…들었지, 카엘? 먼저 본 사람도 이단이래.\n선생님께 가자. 기다리고 계실 거야.");
-  rewordAll(hub, "아, 이것도 챙겨. 숲에 짐승이 많대.", "선생님이 부르신 거면 분명 동쪽 숲 일이야.\n이거 챙겨. 천문대 약장에서 가져왔어.");
+  rewordAll(hub, "들었지, 카엘", "…들었지, 카엘?\n얼른 선생님께 가자. 기다리실 거야.");
+  rewordAll(hub, "아, 이것도 챙겨. 숲에 짐승이 많대.", "이거 챙겨.\n천문대 약장에서 가져왔어.");
   rewordAll(hub, "그리고 이거, 천문대 창고에서 나온 거야.", "창고에 굴러다니던 검이랑 창도.\n손에 붙는 쪽으로 들어.");
 }
 
 /** 하넬 첫 대화 — 「안에 누가 있을지도」를 먼저 깔고, 엘레나가 같이 가는 이유를 스스로 말한다. */
 function hanelAsk(obs: GameMap): void {
   const hanelId = `ev_${FS_PREFIX}_hanel`;
-  const at = findLine(obs, "몰았다는 뜻이다", hanelId);
+  const at = findLine(obs, "무언가가 그걸 몰았다", hanelId);
   at.list.splice(at.index + 1, 0,
-    say(KAEL, "몰았다고요? 그럼 그 안에…\n누가 타고 있었다는 거예요?"),
-    say(H, "그럴지도 모른다. 살아 있다면,\n교단보다 먼저 손을 내밀어 주거라."),
+    say(KAEL, "몰았다고요?\n그럼 안에 누가 타고 있었단 거예요?"),
+    say(H, "그럴지도 모르지. 살아 있다면,\n교단보다 먼저 손을 내밀어 다오."),
     say(ELENA, "저도 갈게요. 별이 방향을 트는 걸\n제 눈으로 확인하고 싶어요."),
   );
   rewordAll(obs, "동문 밖이 숲이야. 숲지기 브람 아저씨부터 찾자.", "숲길은 브람 아저씨가 제일 잘 알아.\n먼저 찾아가 보자.", hanelId);
@@ -122,7 +122,7 @@ function bramLines(forest: GameMap): void {
   const bramId = `ev_${FS_PREFIX}_bram`;
   const at = findLine(forest, "사람 목소리도 들렸다", bramId);
   at.list.splice(at.index + 1, 0,
-    say(KAEL, "…선생님 말씀이 맞나 봐.\n안에 누가 있어."),
+    say(KAEL, "…안에 정말 누가 있나 봐."),
     say(BRAM, "가 볼 거면 서둘러라.\n그 목소리, 밤새 점점 작아졌으니."),
   );
   rewordAll(forest, "『살아 있는 손만 연다』", "자국 둘레에 옛 별지기 글자가 있어.\n『살아 있는 손만 연다』… 선생님 책에서 봤어.");
@@ -158,17 +158,17 @@ function irisJoins(project: Project, forest: GameMap): void {
     turn(irisId, "down"),
     wait(400),
     say(IRIS, "다가오지 마세요. 사람들은 저를 보면\n늘 무서워했어요."),
-    say(KAEL, "솔직히 좀 무서워.\n근데 너도 떨고 있잖아."),
+    say(KAEL, "…너도 떨고 있잖아.\n안 해쳐. 괜찮아."),
     turn(irisId, towardPod),
     say(IRIS, "떨리는 건 흉내예요.\n그래야 사람들이 덜 무서워하니까요."),
-    say(KAEL, "흉내든 뭐든 괜찮아. 난 카엘이야.\n넌 이름이 뭐야?"),
+    say(KAEL, "도망 안 가. 난 카엘이야.\n이쪽은 엘레나고. 넌?"),
     wait(300),
     say(IRIS, "이리스예요. 그리고 돌아갈 「집」이 있어요.\n얼굴은 기억 안 나도, 이름표는 있어요."),
     say(KAEL, "집이 어딘데?"),
     emote(irisId, "ellipsis", 800),
     say(IRIS, "저 위요. 거기서 부르는 소리를 따라\n여기까지 왔어요."),
     say(IRIS, "대답하려면 하늘을 향한 큰 눈이 있어야 해요.\n제 것은 떨어지면서 깨졌어요."),
-    say(ELENA, "큰 눈… 망원경 말이야?\n천문대에 있어. 선생님 렌즈라면 혹시."),
+    say(ELENA, "큰 눈이면… 망원경 말이구나.\n천문대에 선생님 렌즈가 있어."),
     narrate("이리스가 관 가장자리를 붙든 채\n둘을 번갈아 본다."),
     say(IRIS, "…그럼, 저도 데려가 주실래요?\n여기 혼자 남는 건 싫어요."),
     dock(),
@@ -181,8 +181,8 @@ function irisJoins(project: Project, forest: GameMap): void {
         ] },
         { text: "여기 숨어 있는 게 안전해", branch: [
           emote(irisId, "ellipsis", 800),
-          say(ELENA, "카엘, 심문관이 이 숲을 뒤지는 중이야.\n여기 두면 숨기는 게 아니라 버리는 거야."),
-          say(KAEL, "…맞아. 미안, 내가 겁먹었어.\n같이 가자, 이리스."),
+          say(ELENA, "카엘, 심문관이 이 숲을 뒤지는 중이야.\n혼자 두면 금방 잡힐걸."),
+          say(KAEL, "…그래, 내 생각이 짧았어.\n같이 가자, 이리스."),
           say(IRIS, "…네. 이번엔 무섭지 않게\n따라갈게요."),
         ] },
       ],
@@ -196,7 +196,7 @@ function irisJoins(project: Project, forest: GameMap): void {
     keyGain,
     narrate("「별빛 열쇠」를 얻었다."),
     say(ELENA, "이 별 무늬… 서고 바닥 돌뚜껑에\n똑같은 홈이 있어!"),
-    say(KAEL, "그럼 천문대로 가자.\n심문관이 여기 닿기 전에."),
+    say(KAEL, "얼른 천문대로 돌아가자.\n심문관들이 몰려오기 전에."),
     ...joined,
   ];
   list.splice(start.index, endAt + 1 - start.index, ...fresh);
@@ -216,7 +216,7 @@ function hanelMeetsIris(project: Project, obs: GameMap): void {
     say(H, "…그 아이가, 너희가 숲에서 찾은 별이냐."),
     say(IRIS, "이리스예요. 하늘에 대답할 렌즈를\n찾고 있어요."),
     say(H, "렌즈라면 이 아래에 있다.\n서고 바닥 돌뚜껑 밑, 옛 별지기의 방에."),
-    say(H, "그 방은 내가 닫지 않았다.\n…닫은 것은 내 스승이다. 그것만 안다."),
+    say(H, "그 방은 내가 닫지 않았다.\n…내 스승이 닫으셨지. 그것만 안다."),
     say(ELENA, "이리스가 준 열쇠가 그 홈에 맞아요."),
     say(H, "그렇다면 내려가거라. 서두르되, 조심해서."),
     setSw(SW_HANEL_MET_IRIS),
@@ -243,7 +243,7 @@ function elderDusk(hub: GameMap): void {
       conditions: [sw(SW_VALEN_MARCHED)],
       commands: [
         say(ELDER, "발렌 님은 해 질 녘마다 다리에서\n등을 하나 띄우시지."),
-        say(ELDER, "오늘은 숲으로 가셨으니 등도 없겠구먼.\n누굴 위한 건지는… 물어볼 사람도 없고."),
+        say(ELDER, "오늘은 숲으로 가셨으니 등도 안 뜨겠구먼.\n누굴 위한 등인지는… 물어볼 수도 없고."),
       ],
     } as EventPage,
   ];
@@ -260,7 +260,7 @@ function valenScenes(vault: GameMap): void {
   rewordAll(vault, "옛 별지기들이 하늘과 말을 나누던 방이다.", "옛 별지기들이 하늘과 말을 나누던 방이다.\n교단이 봉인한 죄의 방이지.", bossId);
   rewordAll(vault, "그 기계 인형을 넘겨라.", "그 기계 인형을 넘겨라.\n하늘에서 온 것은 교단이 거둔다.", bossId);
   rewordAll(vault, "저는 물건이 아니에요. 집에 돌아가고 싶을 뿐이에요.", "인형이 아니에요. 이리스예요.\n집에 대답만 하면 떠날게요.", bossId);
-  rewordAll(vault, "들었지? 이리스는 우리 동료야.", "못 넘겨요.\n이리스는 저희가 데려온 동료예요.", bossId);
+  rewordAll(vault, "들었지? 이리스는 우리 동료야.", "못 넘겨요.\n갈 거면 그냥 돌아가세요.", bossId);
   const cue = findLine(vault, "그렇다면 여기서 부서져라.", bossId);
   cue.list.splice(cue.index, 1,
     say(VALEN, "이 방을 열면 누군가의 집이 탄다고\n내 스승은 말했다. 나는 그 집에 있었다."),
@@ -287,7 +287,7 @@ function valenScenes(vault: GameMap): void {
   const look = (fields: Record<string, unknown>): Command =>
     m2("m2-225-sprite-look", Object.fromEntries(Object.entries({ target: "this-event", ...fields }).map(([k, v]) => [k, typeof v === "boolean" ? v : String(v)])));
   const vanish: Command[] = [
-    say(VALEN, "삼십 년 전에도 그랬다.\n모두가 자기만 옳다고 믿었지."),
+    say(VALEN, "삼십 년 전에도… 꼭 이랬지."),
     say(VALEN, "…네가 틀렸기를 바란다.\n정말로."),
     narrate("발렌이 장갑 낀 왼손을 바닥으로 내리친다."),
     // 연막이 먼저 차오르고(같은 칸에 여러 줄기를 겹쳐 짙게), 그 속에서 몸이 흐려지다 사라진다. 섬광은 아주 짧게 한 번.
@@ -370,9 +370,9 @@ function cultists(project: Project, vault: GameMap): void {
 
   // 필드에 선 모습 — 전투 시트와 같은 걷기 칩. 마주치면 외치는 한 줄이 셋 다 다르다.
   const plan: Record<string, { troop: string; chip: [string, number]; shout: [string, string] }> = {
-    [`ev_${FS_PREFIX}_vault_foe1`]: { troop: "troop_fs_fanatics", chip: ["tex_easyrpg_charset_actor3", 2], shout: ["교단 광신도", "여기까지 내려오다니!\n심문관님 앞에 무릎 꿇려 주마!"] },
-    [`ev_${FS_PREFIX}_vault_foe2`]: { troop: "troop_fs_fanatic_sermon", chip: ["tex_easyrpg_charset_people2", 2], shout: ["광신도 설교자", "하늘에서 온 것을 감싸는 자여,\n등불 아래에서 참회하라."] },
-    [`ev_${FS_PREFIX}_vault_foe3`]: { troop: "troop_fs_fanatic_cell", chip: ["tex_easyrpg_charset_actor3", 2], shout: ["교단 광신도", "책 냄새 나는 별지기 쥐들이군.\n정화하라!"] },
+    [`ev_${FS_PREFIX}_vault_foe1`]: { troop: "troop_fs_fanatics", chip: ["tex_easyrpg_charset_actor3", 2], shout: ["교단 광신도", "여기까지 내려오다니!\n심문관님 앞에 끌고 가마!"] },
+    [`ev_${FS_PREFIX}_vault_foe2`]: { troop: "troop_fs_fanatic_sermon", chip: ["tex_easyrpg_charset_people2", 2], shout: ["광신도 설교자", "하늘의 것을 감싼 자여,\n등불 아래서 참회하라."] },
+    [`ev_${FS_PREFIX}_vault_foe3`]: { troop: "troop_fs_fanatic_cell", chip: ["tex_easyrpg_charset_actor3", 2], shout: ["교단 광신도", "책 냄새 나는 별지기 쥐들이군.\n모조리 정화하라!"] },
   };
   let changed = 0;
   for (const event of vault.events) {
@@ -492,12 +492,12 @@ function extraScolds(project: Project, ids: { hub: string; observatory: string }
       const id = `ev_${FS_PREFIX}_drawer_hanel`;
       const content = [
         narrate("(서랍) 접힌 정착 확인서가 한 장 들어 있다."),
-        narrate("기록자 란에는 하넬의 이름.\n보증받을 사람의 이름 칸은 비어 있다."),
+        narrate("기록자란엔 하넬의 이름이 적혀 있고,\n보증받을 사람의 이름 칸은 비어 있다."),
       ];
       obs.events = obs.events.filter((e) => e.id !== id);
       obs.events.push(boxEvent(id, { name: "수납 · 목록 서랍장" }, spot.x, spot.y, [page(`${id}_p0`, "서랍", [], [
         ...content,
-        seesFork(`ev_${FS_PREFIX}_hanel`, 30, [emote(`ev_${FS_PREFIX}_hanel`, "ellipsis", 900), scoldOnce("var_fs_scold_hanel", [say(H, "…그 서랍은 열지 않는 게 좋다.")], 0)], [], true),
+        seesFork(`ev_${FS_PREFIX}_hanel`, 30, [emote(`ev_${FS_PREFIX}_hanel`, "ellipsis", 900), scoldOnce("var_fs_scold_hanel", [say(H, "…그 서랍은 열지 마라.")], 0)], [], true),
       ])]));
     }
   }
@@ -517,11 +517,11 @@ function extraScolds(project: Project, ids: { hub: string; observatory: string }
         { kind: "setSelfSwitch", key: "A", value: true } as Command,
       ];
       const scold = scoldOnce("var_fs_scold_rino", [
-        fork(sw(SW_IRIS_JOINED), [say(RINO, "물러서라! …심문관님 안 계실 때 이러면\n혼나는 건 나야.")], [say(RINO, "물러서라!")]),
+        fork(sw(SW_IRIS_JOINED), [say(RINO, "물러서라! …심문관님 안 계실 때 이러면\n혼나는 건 나야.")], [say(RINO, "물러서라! 초소 물건에 손대지 마!")]),
       ], 10);
       hub.events.push(boxEvent(id, { name: "수납 · 초소 보급 상자" }, spot.x, spot.y, [
         page(`${id}_p0`, "뒤지기", [], [fork(sw(SW_KNIGHT_MARCHED), [seesFork(rino.id, 8, [emote(rino.id, "exclamation", 900), ...take, scold], take, true)], take)]),
-        page(`${id}_p1`, "이미 뒤짐", [{ kind: "selfSwitch", key: "A", value: true } as unknown as Condition], [narrate("초소 보급 상자는 이미 뒤져 봤다.")]),
+        page(`${id}_p1`, "이미 뒤짐", [{ kind: "selfSwitch", key: "A", value: true } as unknown as Condition], [narrate("초소 보급 상자는 이미 비어 있다.")]),
       ]));
     }
   }
@@ -545,11 +545,11 @@ function extraScolds(project: Project, ids: { hub: string; observatory: string }
         { kind: "setSelfSwitch", key: "A", value: true } as Command,
       ];
       hub.events.push(boxEvent(id, { name: "수납 · 심문회 상자" }, spot.x, spot.y, [
-        page(`${id}_p0`, "봉인", [], [narrate("붉은 봉인이 찍힌 심문회 상자다.\n기사들 눈이 많아 손댈 수가 없다.")]),
+        page(`${id}_p0`, "봉인", [], [narrate("붉은 봉인이 찍힌 심문회 상자다.\n기사들 눈이 많아 지금은 손댈 수 없다.")]),
         page(`${id}_p1`, "뒤지기", [sw(SW_VALEN_MARCHED)], [seesFork(rino.id, 7, [
           emote(rino.id, "exclamation", 900),
           ...take,
-          scoldOnce("var_fs_scold_inquisition", [say(RINO, "그건 심문관님 압수품이다!\n…못 본 걸로 할 테니, 어서 가.")], 15),
+          scoldOnce("var_fs_scold_inquisition", [say(RINO, "그건 심문관님 압수품이다!\n…못 본 걸로 해 줄 테니, 얼른 비켜.")], 15),
         ], take)]),
         page(`${id}_p2`, "이미 뒤짐", [{ kind: "selfSwitch", key: "A", value: true } as unknown as Condition], [narrate("심문회 상자는 이미 열어 봤다.\n압수 목록의 빈 줄이 마음에 걸린다.")]),
       ]));

@@ -676,7 +676,7 @@ export function rebuildFallenRooms(project: Project, exec: Exec, ids: { hub: str
       id: `ev_fs_vault_gate_bars${dx}`, name: "쇠창살 문", x, y: PORTCULLIS.y + 1, trigger: { kind: "action" }, commands: [],
       pages: [
         quietPage(`ev_fs_vault_gate_bars${dx}_shut`, "닫힘", [], "action", [
-          { kind: "text", body: "굵은 쇠창살이 바닥까지 내려와 있다. 손으로는 꿈쩍도 하지 않는다." } as unknown as Command,
+          { kind: "text", body: "굵은 쇠창살이 바닥까지 내려와 있다.\n손으로는 꿈쩍도 하지 않는다." } as unknown as Command,
         ], "same"),
         quietPage(`ev_fs_vault_gate_bars${dx}_open`, "열림", [solved], "action", []),
       ],

@@ -333,14 +333,14 @@ export function applyFallenBattleRoles(project: Project): void {
   finale.battleEventPages = [
     { id: "troop_fs_finale_summon1", name: "소환 1 — 발렌 둘째 차례", span: "battle", runOnce: true,
       conditions: [{ kind: "enemyTurn", enemyId: "enemy_fs_valen", turn: 2 }],
-      commands: [text("길 잃은 불씨여, 내 등불로 오라."), m2("m2-101-enemy-encounter", { target: "enemy_fs_wisp" })] },
+      commands: [text("길 잃은 불씨여,\n내 등불로 오라."), m2("m2-101-enemy-encounter", { target: "enemy_fs_wisp" })] },
     { id: "troop_fs_finale_summon2", name: "소환 2 — 발렌 다섯째 차례", span: "battle", runOnce: true,
       conditions: [{ kind: "enemyTurn", enemyId: "enemy_fs_valen", turn: 5 }],
       commands: [text("하나 더."), m2("m2-101-enemy-encounter", { target: "enemy_fs_wisp" })] },
     { id: "troop_fs_finale_phase2", name: "2페이즈 — 체력 절반", span: "battle", runOnce: true,
       conditions: [{ kind: "enemyHpBelow", enemyId: "enemy_fs_valen", percent: 50 }],
       commands: [
-        text("…장갑을 벗을 때가 됐군."),
+        text("…왼손을 써야겠군."),
         // 장갑을 벗는다 = 빨라지고(연격) 물러진다. 공격 상승(×2)은 연격과 겹쳐 한 차례 300 가까이 들어가 너무 셌다(QA 영상 실측).
         m2("m2-100-change-enemy-state", { target: "enemy_fs_valen", operation: "add", value: "state_agility_up" }),
         m2("m2-100-change-enemy-state", { target: "enemy_fs_valen", operation: "add", value: "state_defense_down" }),
