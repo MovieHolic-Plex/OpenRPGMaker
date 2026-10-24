@@ -37,7 +37,6 @@ const FANATIC = "교단 광신도";
 const SW_IRIS_JOINED = "sw_fs_iris_joined";
 const SW_CRASH_ON = "sw_fs_valen_crash_on";
 const SW_CRASH_MET = "sw_fs_valen_crash_met";
-const SW_STEP1 = "sw_fs_main_step1";
 const SW_STEP2 = "sw_fs_main_step2";
 const SW_STEP3 = "sw_fs_main_step3";
 const SW_DONE = "sw_fs_main_done";
@@ -78,7 +77,6 @@ const emote = (target: string, kind: string, durationMs = 800): Command =>
   ({ kind: "showEmote", target: target === "player" ? "player" : { eventId: target }, emote: kind, durationMs } as unknown as Command);
 const route = (eventId: string, moves: Rec[], waitFor = true): Command =>
   ({ kind: "moveEvent", eventId, route: { moves, repeat: false, wait: waitFor, skippable: true } } as unknown as Command);
-const turnTo = (eventId: string, dir: Dir): Command => route(eventId, [{ kind: "turn", dir }]);
 const walk = (dirs: Dir[]): Rec[] => dirs.map((dir) => ({ kind: "move", dir }));
 /** 흔들림 세기는 카탈로그 값(1·3·6·10)만 — 1·2 약하게, 3 보통, 4 세게. */
 const shake = (level = 3, durationMs = 500): Command =>
@@ -963,7 +961,7 @@ function siege(project: Project, hubId: string, front: Cell): void {
   if (!valenSpawn) throw new Error("[fallen-star act1] 발렌이 걸어 들어올 칸이 없다");
   const valenPath = pathTo(project, hub, valenSpawn, valenStop, new Set([key(front)]));
   const valenCells = new Set<string>();
-  { let c = { ...valenSpawn }; for (const d of valenPath) { const s = STEPS.find((t) => t[0] === d)!; c = { x: c.x + s[1], y: c.y + s[2] }; valenCells.add(key(c)); } }
+  { let c: { x: number; y: number } = valenSpawn; for (const d of valenPath) { const s = STEPS.find((t) => t[0] === d)!; c = { x: c.x + s[1], y: c.y + s[2] }; valenCells.add(key(c)); } }
   // 에워싸는 자리: 주인공에서 2~4칸, 통행 칸, 발렌 길·이벤트 칸이 아닌 곳을 각도 고르게 24곳.
   const occupied = new Set(hub.events.map((e) => key(e)));
   const ring = [...fromFront.entries()].map(([k, v]) => ({ x: Number(k.split(",")[0]), y: Number(k.split(",")[1]), d: v.d }))

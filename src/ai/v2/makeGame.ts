@@ -8,7 +8,7 @@
 // 비평가는 verbs.ts 의 see 를 맵마다 함께(병렬) 부른다.
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { canMove, isPassable } from "@/project/collision";
-import type { BuildRun, EventSpec, PersonSpec, PlaceBuildResult, PlaceSpec } from "./types";
+import type { EventSpec, PersonSpec, PlaceBuildResult, PlaceSpec } from "./types";
 import { walkReach, walkStart } from "./people";
 
 export interface GamePlace {
