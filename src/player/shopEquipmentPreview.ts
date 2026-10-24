@@ -41,7 +41,7 @@ export interface ShopEquipmentStat extends ShopEquipmentCurrentStat {
 
 const BOOLEAN_EFFECT_KEYS = ["doubleAttack", "attackAll"] as const;
 const SET_EFFECT_KEYS = ["attackElementIds", "elementalDefenseIds", "stateDefenseIds"] as const;
-const NUMBER_EFFECT_KEYS = ["accuracy", "criticalRate", "stateResistanceChance"] as const;
+const NUMBER_EFFECT_KEYS = ["accuracy", "criticalRate", "stateResistanceChance", "damageDealtPercent", "damageTakenPercent"] as const;
 export type ShopEquipmentEffect =
   | { readonly key: typeof BOOLEAN_EFFECT_KEYS[number] }
   | { readonly key: typeof SET_EFFECT_KEYS[number]; readonly id: string };

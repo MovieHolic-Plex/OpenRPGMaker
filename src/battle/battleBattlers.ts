@@ -351,6 +351,10 @@ export interface EquipmentRuntimeEffects {
   readonly grantedSkillIds?: readonly SkillId[];
   /** 장착 중에만 붙는 전투 명령(EquipmentRecord.grantsCommand). */
   readonly grantedCommands?: readonly ClassBattleCommand[];
+  /** 주는 피해 ±% 합(EquipmentRecord.damageDealtPercent). 물리·마법 피해 모두에 곱한다. */
+  readonly damageDealtPercent?: number;
+  /** 받는 피해 ±% 합(EquipmentRecord.damageTakenPercent). */
+  readonly damageTakenPercent?: number;
 }
 
 function totalEquipmentBonuses(project: Project, equipment: ActorInitialEquipment): { attack: number; defense: number; mind: number; agility: number } {
@@ -407,6 +411,8 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
   let criticalRate = 0;
   let stateResistanceChance = 0;
   let halfMpCost = false;
+  let damageDealtPercent = 0;
+  let damageTakenPercent = 0;
   const grantedSkillIds = new Set<SkillId>();
   const grantedCommands: ClassBattleCommand[] = [];
   const stateDefenseMode = "resist" as const;
@@ -417,6 +423,8 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
     if (record.effectFlags.doubleAttack) doubleAttack = true;
     if (record.effectFlags.attackAll) attackAll = true;
     if (record.effectFlags.halfMpCost) halfMpCost = true;
+    damageDealtPercent += record.damageDealtPercent ?? 0;
+    damageTakenPercent += record.damageTakenPercent ?? 0;
     for (const skillId of record.grantsSkillIds ?? []) grantedSkillIds.add(skillId);
     if (record.grantsCommand && !grantedCommands.some((command) => command.id === record.grantsCommand!.id)) {
       grantedCommands.push(record.grantsCommand);
@@ -451,6 +459,8 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
     ...(halfMpCost ? { halfMpCost } : {}),
     ...(grantedSkillIds.size > 0 ? { grantedSkillIds: [...grantedSkillIds] } : {}),
     ...(grantedCommands.length > 0 ? { grantedCommands } : {}),
+    ...(damageDealtPercent !== 0 ? { damageDealtPercent } : {}),
+    ...(damageTakenPercent !== 0 ? { damageTakenPercent } : {}),
   };
 }
 

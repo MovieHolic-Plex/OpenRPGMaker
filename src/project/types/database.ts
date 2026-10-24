@@ -703,6 +703,10 @@ export interface EquipmentRecord {
   stateDefenseIds: StateId[];
   stateDefenseMode: "resist" | "inflict";
   stateResistanceChance: number;
+  /** 주는 피해 ±%(물리·마법 공통, -90~300). 여러 장비면 더한다. 생략 = 0. 예: 30 = 피해 +30%. */
+  damageDealtPercent?: number;
+  /** 받는 피해 ±%(물리·마법 공통, -90~300). 음수면 줄어든다. 생략 = 0. */
+  damageTakenPercent?: number;
   /** 실시간 액션 전투에서 이 무기를 들었을 때의 스윙 프로필. */
   actionWeapon?: ActionWeaponProfile;
   /** 장착 중에만 쓸 수 있는 스킬. 배우지 않아도 전투 스킬 목록에 들어간다. */

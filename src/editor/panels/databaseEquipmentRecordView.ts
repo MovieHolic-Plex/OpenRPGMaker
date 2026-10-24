@@ -103,6 +103,8 @@ export function equipmentEffectStory(project: Project, record: EquipmentRecord):
   const effects = EFFECT_FLAG_FIELDS.filter(({ key }) => record.effectFlags[key]).map(({ label }) => label);
   effects.push(`명중률 ${record.accuracy}%`);
   effects.push(`치명타율 +${record.criticalRate}%p`);
+  if (record.damageDealtPercent) effects.push(`주는 피해 ${signed(record.damageDealtPercent)}%`);
+  if (record.damageTakenPercent) effects.push(`받는 피해 ${signed(record.damageTakenPercent)}%`);
   if (record.twoHanded) effects.push("양손 장비 · 방패 해제");
   if (record.cursed) effects.push("저주 · 장착 후 해제 제한");
   if (record.attackElementIds.length > 0) effects.push(`공격 속성: ${namedIds(record.attackElementIds.slice(0, 1), project.database.elements ?? [])}`);
@@ -204,6 +206,8 @@ export function equipmentEffectSummaryChips(record: EquipmentRecord): EquipmentE
     `명중률 ${record.accuracy}%`,
     `치명타율 +${record.criticalRate}%p`,
   ];
+  if (record.damageDealtPercent) counts.push(`주는 피해 ${signed(record.damageDealtPercent)}%`);
+  if (record.damageTakenPercent) counts.push(`받는 피해 ${signed(record.damageTakenPercent)}%`);
   if (record.attackElementIds.length > 0) counts.push("공격 속성 1");
   if (record.elementalDefenseIds.length > 0) counts.push(`속성 방어 ${record.elementalDefenseIds.length}`);
   if (record.stateInflictIds.length > 0) counts.push(`상태 부여 ${record.stateInflictIds.length}`);
@@ -304,6 +308,8 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
                   children: [
                     combatAxisField(record, "accuracy", "명중률(%)", "db-field-equipment-accuracy", refreshOverview),
                     combatAxisField(record, "criticalRate", "치명타율(%p)", "db-field-equipment-critical-rate", refreshOverview),
+                    damagePercentField(record, "damageDealtPercent", "주는 피해(±%)", "db-field-equipment-damage-dealt", refreshOverview),
+                    damagePercentField(record, "damageTakenPercent", "받는 피해(±%)", "db-field-equipment-damage-taken", refreshOverview),
                   ],
                 }),
                 ...(record.slot === "weapon" ? [selectField("전투 동작 (없음: 캐릭터 기본)", "db-equipment-motion-style",record.battleMotionStyle??"",CHARACTER_MOTION_STYLES.map(id=>({id,name:CHARACTER_MOTION_LABELS[id]})),v=>updateDatabaseRecord("equipment",record.id,{battleMotionStyle:(v||undefined) as CharacterMotionStyle|undefined}))] : []),
@@ -689,6 +695,20 @@ function combatAxisField(
     updateDatabaseRecord("equipment", record.id, { [key]: value });
     onChange?.();
   }, { min: 0, max: 100 });
+}
+
+/** 주는/받는 피해 ±% — 물리·마법 피해 모두에 곱한다(0 = 없음). */
+function damagePercentField(
+  record: EquipmentRecord,
+  key: "damageDealtPercent" | "damageTakenPercent",
+  label: string,
+  testid: string,
+  onChange?: () => void,
+): HTMLElement {
+  return numberField(label, testid, record[key] ?? 0, (value) => {
+    updateDatabaseRecord("equipment", record.id, { [key]: value });
+    onChange?.();
+  }, { min: -90, max: 300 });
 }
 
 function actorChoices(record: EquipmentRecord, onChange?: () => void): HTMLElement[] {
