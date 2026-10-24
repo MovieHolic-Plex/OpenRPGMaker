@@ -222,7 +222,8 @@ export function calculateTouchLayout(
     const controlsY = bandTop + free * 0.4 + 44 + stick / 2;
     return { mode: "portrait", scale, stageLeft: Math.max(safe.left, (width - stageW) / 2), stageTop, bandTop, bandBottom, controlsY, gutter: 0, stick };
   }
-  const gutterBase = Math.round(Math.min(stick + 40, Math.max(stick * 0.75, width * 0.15)));
+  // 칸은 조이스틱보다 넓어야 한다(좁으면 조이스틱이 화면 밖으로 잘린다 — 아이폰 가로 iframe 734px 에서 실측).
+  const gutterBase = Math.round(Math.min(stick + 40, Math.max(stick + 12, width * 0.15)));
   const gutterL = gutterBase + safe.left;
   const gutterR = gutterBase + safe.right;
   const availW = Math.max(40, width - gutterL - gutterR);

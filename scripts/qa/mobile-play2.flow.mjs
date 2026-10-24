@@ -207,9 +207,9 @@ async function closePage(ctx, seg, dir) {
 async function waitBoot(page, checkpoint) {
   for (let i = 0; i < 300; i++) {
     const f = gameFrame(page);
-    const st = await f.evaluate(() => ({ title: !!document.querySelector("[data-testid='title-screen']"), state: !!(window.__oprnDebug && document.querySelector('[data-testid="runtime-state-json"]')), start: [...document.querySelectorAll("button")].find((b) => /시작하기|Start/.test(b.textContent || "")) ? true : false })).catch(() => ({}));
+    const st = await f.evaluate(() => ({ title: !!document.querySelector("[data-testid='title-screen']") && !document.querySelector("[data-testid='boot-loader']"), state: !!(window.__oprnDebug && document.querySelector('[data-testid="runtime-state-json"]')), start: [...document.querySelectorAll("button")].find((b) => /시작하기|Start/.test(b.textContent || "")) ? true : false })).catch(() => ({}));
     if (checkpoint ? st.state : st.title) return true;
-    if (st.start) await tapText(page, /시작하기|Start/);
+    if (st.start) { if (!(await tapSel(page, "[data-testid='boot-loader-start']", 1500))) await tapText(page, /시작하기|Start/); }
     await sleep(1000);
   }
   return false;
