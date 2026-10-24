@@ -389,14 +389,16 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
   // ④ 사당 터: 무너진 성문·별 무늬 바닥·사당·부러진 기둥, 사당 앞 상자, 회복 세이브. 짐승이 들지 않는 쉼터(조우 없음).
   {
     const id = M.shrine, guard = pathGuard(project, project.maps[id]!);
-    placeKit(project, id, "bd-pick-temple-ruins-mosaic-medallion-5x5", { x: 13, y: 9 }, guard, 2);
-    // 무너진 성문(4×4) — 빈터 가장자리 몇 곳 중 들어가는 자리.
-    const gate = [{ x: 24, y: 16 }, { x: 11, y: 14 }, { x: 25, y: 6 }, { x: 13, y: 4 }].reduce<Cell | undefined>((got, at) => got ?? placeKit(project, id, "bd-pick-deep-forest-path-ruin-gate", at, guard, 3), undefined);
-    const shrineAt = placeKit(project, id, "bd-pick-mountain-pass-shrine", { x: 25, y: 9 }, guard, 3);
-    placeKit(project, id, "bd-pick-temple-ruins-column-temple-broken", { x: 13, y: 17 }, guard, 2);
-    placeKit(project, id, "bd-pick-temple-ruins-fallen-column-temple", { x: 15, y: 19 }, guard, 2);
-    placeKit(project, id, "bd-pick-temple-ruins-rubble-temple", { x: 27, y: 13 }, guard, 2);
-    placeKit(project, id, "bd-pick-temple-ruins-column-temple-broken", { x: 22, y: 9 }, guard, 2);
+    const mosaic = placeKit(project, id, "bd-pick-temple-ruins-mosaic-medallion-5x5", { x: 13, y: 9 }, guard, 2);
+    // 무너진 성문(4×4) — 빈터 가장자리 몇 곳 중 들어가는 자리. 별 무늬 바닥(걸을 수 있는 칸이라 막힘 판정에 안 걸린다)과 그 둘레 한 칸은 비킨다.
+    const keepOff = new Set(guard);
+    if (mosaic) for (let dy = -1; dy <= 5; dy += 1) for (let dx = -1; dx <= 5; dx += 1) keepOff.add((mosaic.y + dy) * project.maps[id]!.width + mosaic.x + dx);
+    const gate = [{ x: 25, y: 17 }, { x: 9, y: 16 }, { x: 26, y: 5 }, { x: 12, y: 4 }].reduce<Cell | undefined>((got, at) => got ?? placeKit(project, id, "bd-pick-deep-forest-path-ruin-gate", at, keepOff, 3), undefined);
+    const shrineAt = placeKit(project, id, "bd-pick-mountain-pass-shrine", { x: 25, y: 9 }, keepOff, 3);
+    placeKit(project, id, "bd-pick-temple-ruins-column-temple-broken", { x: 13, y: 17 }, keepOff, 2);
+    placeKit(project, id, "bd-pick-temple-ruins-fallen-column-temple", { x: 15, y: 19 }, keepOff, 2);
+    placeKit(project, id, "bd-pick-temple-ruins-rubble-temple", { x: 27, y: 13 }, keepOff, 2);
+    placeKit(project, id, "bd-pick-temple-ruins-column-temple-broken", { x: 22, y: 9 }, keepOff, 2);
     const lights: Array<Record<string, unknown>> = [{ id: `light_${id}_gap`, at: { x: 20, y: 13 }, radius: 6, intensity: 0.45, color: "#fff1c4", flicker: false }];
     if (shrineAt) {
       readable(project.maps[id]!, "shrine", "별지기 사당", { x: shrineAt.x, y: shrineAt.y + 2 }, [

@@ -239,11 +239,11 @@
   },
   {
    "id": "forest-chase",
-   "label": "추격 — 옛 수로 다리 동쪽 길, 북쪽으로 오르는 짐승 앞",
+   "label": "추격 — 숲 어귀 갈림목 아래, 남북으로 순찰하는 늑대 앞",
    "note": "makeFieldEnemyChase: 시야 부채꼴에 들면 「!」 → 달려듦 → 닿으면 전투",
-   "mapId": "fs_forest_stream",
-   "x": 31,
-   "y": 14,
+   "mapId": "fs_forest_edge",
+   "x": 18,
+   "y": 22,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
