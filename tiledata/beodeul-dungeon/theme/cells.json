@@ -38579,6 +38579,389 @@ null,
 ],
 "passage": "solid",
 "layer": "lower"
+},
+{
+"key": "392ed7555141ae11a32a4ccd",
+"origin": "prop.minecart/*/theme-props-r5:A1@78920d23",
+"label": "버들항 던전 · 광산 광차 2×2 광차 (0,0)",
+"description": "쇠테 두른 나무 광차 + 광석 더미, 선로 위. 윗면(통 테두리·광석) 보임.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"minecart",
+"mine",
+"광산"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "fe28c48850063f1c95de35b3",
+"origin": "prop.minecart/*/theme-props-r5:A1@78920d23",
+"label": "버들항 던전 · 광산 광차 2×2 광차 (1,0)",
+"description": "쇠테 두른 나무 광차 + 광석 더미, 선로 위. 윗면(통 테두리·광석) 보임.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"minecart",
+"mine",
+"광산"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "b88a5e2ec93fd93d619f323c",
+"origin": "prop.minecart/*/theme-props-r5:A1@78920d23",
+"label": "버들항 던전 · 광산 광차 2×2 광차 (0,1)",
+"description": "쇠테 두른 나무 광차 + 광석 더미, 선로 위. 윗면(통 테두리·광석) 보임.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"minecart",
+"mine",
+"광산"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "659487f8580f187332f3d226",
+"origin": "prop.minecart/*/theme-props-r5:A1@78920d23",
+"label": "버들항 던전 · 광산 광차 2×2 광차 (1,1)",
+"description": "쇠테 두른 나무 광차 + 광석 더미, 선로 위. 윗면(통 테두리·광석) 보임.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"minecart",
+"mine",
+"광산"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "8d04bcb01b463b7fc26eb68b",
+"origin": "wall.other_face/*/theme-walls-r8:A1@a042f1ea",
+"label": "버들항 던전 · 마계 벽 앞면 3단 (0,0)",
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "108e60400b536d3e89aa0f06",
+"origin": "wall.other_face/*/theme-walls-r8:A1@a042f1ea",
+"label": "버들항 던전 · 마계 벽 앞면 3단 (1,0)",
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "8838c790d74e61895088dc9a",
+"origin": "wall.other_face/*/theme-walls-r8:A1@a042f1ea",
+"label": "버들항 던전 · 마계 벽 앞면 3단 (2,0)",
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "a826d1d96df2c016f9e6267c",
+"origin": "wall.other_face/*/theme-walls-r8:A1@a042f1ea",
+"label": "버들항 던전 · 마계 벽 앞면 3단 (0,1)",
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "391a894893993a04c557c7e2",
+"origin": "wall.other_face/*/theme-walls-r8:A1@a042f1ea",
+"label": "버들항 던전 · 마계 벽 앞면 3단 (1,1)",
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "74bf57058a55d49faa1f5a52",
+"origin": "wall.other_face/*/theme-walls-r8:A1@a042f1ea",
+"label": "버들항 던전 · 마계 벽 앞면 3단 (2,1)",
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "08ae4f6a3a6e5649bdd8e4ac",
+"origin": "wall.other_face/*/theme-walls-r8:A1@a042f1ea",
+"label": "버들항 던전 · 마계 벽 앞면 3단 (0,2)",
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "9871101c0ddd1e2888111400",
+"origin": "wall.other_face/*/theme-walls-r8:A1@a042f1ea",
+"label": "버들항 던전 · 마계 벽 앞면 3단 (1,2)",
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "43ab1cafca35efe5e291924a",
+"origin": "wall.other_face/*/theme-walls-r8:A1@a042f1ea",
+"label": "버들항 던전 · 마계 벽 앞면 3단 (2,2)",
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "8eac9660323f8a394c8c510b",
+"origin": "wall.other_face/*/theme-walls-r8:A1@a042f1ea",
+"label": "버들항 던전 · 마계 벽 앞면 3단 새김 가운데 (0,0)",
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "fa7d1f3188504443ed4a9051",
+"origin": "wall.other_face/*/theme-walls-r8:A1@a042f1ea",
+"label": "버들항 던전 · 마계 벽 앞면 3단 새김 가운데 (0,1)",
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "a26ce7149f15390dd2910138",
+"origin": "wall.other_face/*/theme-walls-r8:A1@a042f1ea",
+"label": "버들항 던전 · 마계 벽 앞면 3단 새김 가운데 (0,2)",
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "c4571e8f0d1ed753a463bce0",
+"origin": "wall.other_face/*/theme-walls-r8:A1@a042f1ea",
+"label": "버들항 던전 · 마계 벽 앞면 2단 새김 가운데 (0,0)",
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "90192c87e6fec2e8654df79e",
+"origin": "wall.other_face/*/theme-walls-r8:A1@a042f1ea",
+"label": "버들항 던전 · 마계 벽 앞면 2단 새김 가운데 (0,1)",
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "ac6b25b2b6eb72058478d941",
+"origin": "wall.other_face/*/theme-walls-r8:A1@a042f1ea",
+"label": "버들항 던전 · 마계 벽 앞면 3단 가운데단 변형",
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
 }
 ],
 "defs": {
@@ -43388,6 +43771,22 @@ null,
 "description": "마계 섬 바닥 턱 오토타일 `beodeul_dungeon_theme_void_edge` + 허공 몸통 bd-pick-dungeon-theme-void-body + 섬 밑 bd-pick-dungeon-theme-void-underside. 하네스 theme-arcane-r2 A1.",
 "placementRules": "otherworld 던전의 허공 칸과 그 둘레 바닥. author_dungeon 이 저절로 쓴다."
 },
+"beodeul:dungeon_theme_prop_minecart": {
+"id": "beodeul:dungeon_theme_prop_minecart",
+"name": "버들항 던전 주제 광산 광차 2×2",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+32996,
+32997,
+32998,
+32999
+],
+"description": "광산 광차 2×2(키트 bd-pick-dungeon-theme-minecart). 하네스 theme-props-r5 A1.",
+"placementRules": "통행: 막힘"
+},
 "beodeul:dungeon_theme_tc_fo_ancient_tree": {
 "id": "beodeul:dungeon_theme_tc_fo_ancient_tree",
 "name": "버들항 던전 주제 숲 던전 거목(밑동 굴 문) 6×7",
@@ -43821,6 +44220,33 @@ null,
 ],
 "description": "맹그로브 뿌리 아치 2×2(밑으로 지나감)(키트 bd-pick-dungeon-theme-mangrove-roots). 하네스 theme-climate-r1 A1.",
 "placementRules": "통행: 아래 줄 걸음(뿌리 밑)"
+},
+"beodeul:dungeon_theme_otherworld_face": {
+"id": "beodeul:dungeon_theme_otherworld_face",
+"name": "버들항 던전 주제 마계 벽 앞면",
+"role": "wall",
+"source": "bundled-default",
+"defaultLayer": "lower",
+"confidence": "high",
+"tileIds": [
+33000,
+33001,
+33002,
+33003,
+33004,
+33005,
+33006,
+33007,
+33008,
+33009,
+33010,
+33011,
+33012,
+33013,
+33014
+],
+"description": "마계 벽 앞면 키트(bd-pick-dungeon-theme-otherworld-face-3h, bd-pick-dungeon-theme-otherworld-face-2h, bd-pick-dungeon-theme-otherworld-face-3h-base, bd-pick-dungeon-theme-otherworld-face-3h-glyph, bd-pick-dungeon-theme-otherworld-face-2h-glyph, bd-pick-dungeon-theme-otherworld-face-3h-alt). 하네스 theme-walls-r8 A1.",
+"placementRules": "천장 테두리 아래 벽 앞면. author_dungeon 이 저절로 쓴다."
 },
 "beodeul:dungeon_theme_tower_rim": {
 "id": "beodeul:dungeon_theme_tower_rim",
@@ -47235,6 +47661,58 @@ null,
 ]
 }
 },
+"bd-pick-dungeon-theme-minecart": {
+"id": "bd-pick-dungeon-theme-minecart",
+"kind": "object",
+"name": "버들항 던전 · 광산 광차 2×2 광차 2×2",
+"width": 2,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+32996,
+32997
+]
+},
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+32998,
+32999
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 광차 2×2 — 광차. 쇠테 두른 나무 광차 + 광석 더미, 선로 위. 윗면(통 테두리·광석) 보임.",
+"placementRules": "통행: 막힘",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"minecart",
+"mine",
+"광산"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"광산"
+]
+}
+},
 "bd-pick-dungeon-theme-giant-tree": {
 "id": "bd-pick-dungeon-theme-giant-tree",
 "kind": "object",
@@ -49003,6 +49481,342 @@ null,
 "늪"
 ]
 }
+},
+"bd-pick-dungeon-theme-otherworld-face-3h": {
+"id": "bd-pick-dungeon-theme-otherworld-face-3h",
+"kind": "section",
+"name": "버들항 던전 · 마계 벽 앞면 3단 3×3",
+"width": 3,
+"height": 3,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+33000,
+33001,
+33002
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+33003,
+33004,
+33005
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+33006,
+33007,
+33008
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 3단.",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"role": "wall",
+"repeatability": "repeat",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"otherworld",
+"마계"
+]
+}
+},
+"bd-pick-dungeon-theme-otherworld-face-2h": {
+"id": "bd-pick-dungeon-theme-otherworld-face-2h",
+"kind": "section",
+"name": "버들항 던전 · 마계 벽 앞면 2단 3×2",
+"width": 3,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+33000,
+33001,
+33002
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+33006,
+33007,
+33008
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 2단.",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"role": "wall",
+"repeatability": "repeat",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"otherworld",
+"마계"
+]
+}
+},
+"bd-pick-dungeon-theme-otherworld-face-3h-base": {
+"id": "bd-pick-dungeon-theme-otherworld-face-3h-base",
+"kind": "section",
+"name": "버들항 던전 · 마계 벽 앞면 3단 아랫단 변형 3×1",
+"width": 3,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+33006,
+33007,
+33008
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 3단 아랫단 변형.",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"role": "wall",
+"repeatability": "repeat",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"otherworld",
+"마계"
+]
+}
+},
+"bd-pick-dungeon-theme-otherworld-face-3h-glyph": {
+"id": "bd-pick-dungeon-theme-otherworld-face-3h-glyph",
+"kind": "object",
+"name": "버들항 던전 · 마계 벽 앞면 3단 새김 가운데 1×3",
+"width": 1,
+"height": 3,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+33009
+],
+"upperTiles": [
+-1
+]
+},
+{
+"tiles": [
+33010
+],
+"upperTiles": [
+-1
+]
+},
+{
+"tiles": [
+33011
+],
+"upperTiles": [
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 3단 새김 가운데.",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"role": "wall",
+"repeatability": "fixed",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"otherworld",
+"마계"
+]
+}
+},
+"bd-pick-dungeon-theme-otherworld-face-2h-glyph": {
+"id": "bd-pick-dungeon-theme-otherworld-face-2h-glyph",
+"kind": "object",
+"name": "버들항 던전 · 마계 벽 앞면 2단 새김 가운데 1×2",
+"width": 1,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+33012
+],
+"upperTiles": [
+-1
+]
+},
+{
+"tiles": [
+33013
+],
+"upperTiles": [
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 2단 새김 가운데.",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"role": "wall",
+"repeatability": "fixed",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"otherworld",
+"마계"
+]
+}
+},
+"bd-pick-dungeon-theme-otherworld-face-3h-alt": {
+"id": "bd-pick-dungeon-theme-otherworld-face-3h-alt",
+"kind": "object",
+"name": "버들항 던전 · 마계 벽 앞면 3단 가운데단 변형 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+33014
+],
+"upperTiles": [
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "마계 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 3단 가운데단 변형.",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"흑요석",
+"otherworld",
+"마계"
+],
+"role": "wall",
+"repeatability": "fixed",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"otherworld",
+"마계"
+]
+}
 }
 }
 },
@@ -49918,6 +50732,41 @@ null,
 "beodeul:dungeon_theme_tower_rim"
 ],
 "structureKits": []
+}
+},
+"prop.minecart|*": {
+"round": "theme-props-r5",
+"letter": "A1",
+"sha256": "78920d23b927a97f4fe932e70f2abe3415f21b1dc4e43b13bb8cb88e920c0771",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_prop_minecart"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-minecart"
+]
+}
+},
+"wall.other_face|*": {
+"round": "theme-walls-r8",
+"letter": "A1",
+"sha256": "a042f1ea7a68c89f6cfefef501da48f8e857f72feb1c383e2e07ed106a4c9e34",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_otherworld_face"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-otherworld-face-3h",
+"bd-pick-dungeon-theme-otherworld-face-2h",
+"bd-pick-dungeon-theme-otherworld-face-3h-base",
+"bd-pick-dungeon-theme-otherworld-face-3h-glyph",
+"bd-pick-dungeon-theme-otherworld-face-2h-glyph",
+"bd-pick-dungeon-theme-otherworld-face-3h-alt"
+]
 }
 }
 }
