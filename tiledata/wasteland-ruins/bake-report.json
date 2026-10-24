@@ -3,13 +3,13 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 1876,
-  "kits_checked": 65,
-  "groups_checked": 25,
+  "tiles_checked": 2552,
+  "kits_checked": 67,
+  "groups_checked": 27,
   "autotiles_checked": 1
  },
  "reassembly": {
-  "kits": 65,
+  "kits": 67,
   "mismatched": 0,
   "ids": []
  },
@@ -17,18 +17,18 @@
   "cells_off_palette": 0
  },
  "tiles": {
-  "count": 1876,
-  "rows": 40,
-  "kits": 65,
-  "groups": 25,
+  "count": 2552,
+  "rows": 54,
+  "kits": 67,
+  "groups": 27,
   "autotiles": 1,
   "animationStrips": 1
  },
  "animation_noncontiguous": [],
  "adopted": {
-  "pieces": 66,
+  "pieces": 68,
   "by_group": {
-   "ground": 19,
+   "ground": 21,
    "ruins": 10,
    "shacks": 11,
    "defense": 3,
