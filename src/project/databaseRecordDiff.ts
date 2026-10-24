@@ -83,6 +83,7 @@ const FIELD_LABELS: Readonly<Record<string, string>> = {
   transparent: "투명",
   flying: "부양",
   battleScalePercent: "전투 표시 크기",
+  lungeSpeedPercent: "달려드는 속도",
   collapseEffect: "쓰러지는 연출",
   hideHp: "HP 숨김(보스)",
   damageTypeRates: "받는 피해 계열 %",

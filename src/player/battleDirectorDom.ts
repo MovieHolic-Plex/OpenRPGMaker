@@ -414,8 +414,11 @@ export function syncBattleMessageWindow(windowNode: HTMLElement, state: BattleDi
   }
   // 같은 문장이면 다시 만들지 않는다(단계가 acting→impact 로 바뀌어도) — 새로 만들면 글자 출력이 처음부터 다시 시작한다.
   const key = state.lines.join("\u0002");
-  if (windowNode.dataset.messageKey === key && lines.childElementCount === state.lines.length) return;
+  if (windowNode.dataset.messageKey === key && lines.querySelectorAll(":scope > .battle-message-line:not(.battle-message-hint)").length === state.lines.length) return;
   windowNode.dataset.messageKey = key;
+  // 질문 줄이 바뀌면(다른 사람 차례·행동 문장) 기술 한 줄 도움말을 거둔다(battleCommandDom.syncBattleSkillHintLine).
+  windowNode.querySelector(".battle-message-hint")?.remove();
+  delete windowNode.dataset.skillHint;
   const previous = messageTypers.get(windowNode);
   if (previous) { window.clearInterval(previous.timer); messageTypers.delete(windowNode); delete windowNode.dataset.messageTyping; }
   lines.replaceChildren();

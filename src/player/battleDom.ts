@@ -23,7 +23,7 @@ import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import type { BattleAnimationPlayback } from "@/player/battleAnimationDom";
 import { battleAnimationImpactMs, battleAnimationLeadPlan, preloadAllBattleAnimationSounds, preloadBattleAnimationSounds, syncBattleAnimationLayer } from "@/player/battleAnimationDom";
 import { createPresentationLedger, type BattlePresentationLedger } from "@/player/battlePresentation";
-import { playComboCutIn } from "@/player/battleComboCutIn";
+import { comboImpact, endComboAction, playComboCutIn } from "@/player/battleComboCutIn";
 import { commandPanel, enemyListPanel, syncEnemyListPanel, syncBattleSkillHelp, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import {
   advanceBattleResultLevelUps,
@@ -254,6 +254,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let inputPrompt: { press(key: SkillInputKey): void } | undefined;
   let eventSurfaceOpen = false;
   let lastDamageFeedback: DamageFeedback | undefined;
+  /** 연계기 컷인이 행동 앞에 둘 시간(onTimelineEntry 가 정하고 시퀀서 entryLeadMs 가 한 번 읽는다). */
+  let comboLeadMs = 0;
   /** 지금 걸려 있는 히트스톱의 타격. 정지가 풀리는 순간 이 대상을 깜빡인다. */
   // 히트스톱이 잡고 있는 타격들 — 광역기는 한 번의 정지에 여러 대상이 함께 맞는다(풀릴 때 모두 깜빡인다).
   let hitStopFeedbacks: DamageFeedback[] = [];
@@ -534,16 +536,18 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         preloadBattleAnimationSounds(entry.animation?.animationId);
       }
       if (retroMotion) retroTimelineEntry(field, entry);
-      // 연계기: 참가자 띠·뛰어오름·화음(표시 전용). 행동 하나에 한 번.
+      // 연계기: 얼굴 교차 컷인·제목 카드·참가자 빛(표시 전용). 행동 하나에 한 번 — 컷인 시간만큼 행동을 늦춘다(entryLeadMs).
       if (entry.comboActorIds && entry.comboActorIds.length >= 2) {
         const snapshotNow = options.runtime.snapshot();
-        playComboCutIn(root, entry, {
+        comboLeadMs = playComboCutIn(root, entry, {
+          project: store.getCurrent(),
           actorName: (recordId) => snapshotNow.actors.find((actor) => actor.recordId === recordId)?.name
             ?? store.getCurrent().database.actors.find((actor) => actor.id === recordId)?.name ?? recordId,
           skillName: (row) => store.getCurrent().database.skills.find((skill) => skill.id === row.skillId)?.name ?? row.skillName ?? "",
           speed: sequencer.speedMultiplier,
         });
-      }
+      } else if (root.dataset.battleComboActive && entry.side === "enemy") endComboAction(root);
+      else if (root.dataset.battleComboActive && entry.actionId !== undefined && !root.dataset.battleComboActive.startsWith(`${entry.actionId}:`)) endComboAction(root);
       // 훔치기처럼 결과가 특수 메시지 한 줄뿐인 직업 스킬은 시각 비트가 없다 — 그 메시지에서 연출을 시작한다.
       if (retroMotion && entry.kind === "special") {
         const pending = entry.side === "actor" && entry.userRecordId === pendingRetroSkillUserId ? pendingRetroSkillId : undefined;
@@ -554,6 +558,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 연출이 화면에 도달한 반격·부활의 흔적 — QA 와 스킨 CSS 가 읽는다.
       if (entry.kind === "counter") root.dataset.battleCounterSeen = "true";
       if (entry.kind === "revive") root.dataset.battleReviveSeen = "true";
+    },
+    entryLeadMs() {
+      const lead = comboLeadMs;
+      comboLeadMs = 0;
+      return lead;
     },
     onSyncView() {
       syncView();
@@ -597,6 +606,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         const recoil=retroMotion&&targetNode?battleTargetRecoil(field,targetNode):1;
         if(targetNode&&intensity){const px=Number.parseFloat(targetNode.style.getPropertyValue("--hit-knockback"));if(Number.isFinite(px))targetNode.style.setProperty("--hit-knockback",`${px*recoil}px`);}
         if (retroMotion) retroDamage(targetNode, feedback, lethal);
+        // 연계기 착탄: 첫 타 번쩍임·합쳐진 마무리·흔들림·느린 화면, 타마다 피해 숫자 폭발(battleComboCutIn).
+        if (root.dataset.battleComboActive && !feedback.miss && !feedback.healing && feedback.amount > 0) {
+          comboImpact(root, store.getCurrent(), targetNode, feedback.amount, feedback.critical, sequencer.speedMultiplier);
+        }
         if (retroMotion && hitFeel === "impact" && intensity && targetNode && !prefersReducedMotion()) {
           impactContact.strike(targetNode, intensity, recoil);
         }

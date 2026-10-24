@@ -26,6 +26,7 @@ import { normalizePlaySurfaceScale } from "@/project/playSurfaceScaleMode";
 import { normalizeTouchControls } from "@/project/touchControls";
 import { normalizeBattleLook } from "@/project/battleLook";
 import { normalizeBattleFanfare } from "@/project/battleFanfare";
+import { normalizeBattleStaging, normalizeComboStaging } from "@/project/battleStaging";
 import { DEFAULT_MENU_SKIN_ID, isMenuSkinId } from "@/player/menuSkins/registry";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
 import { normalizeActionCombatConfig, normalizeActionSkillProfile, normalizeActionWeaponProfile } from "@/project/actionCombat";
@@ -332,6 +333,9 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   // 결과 팡파레 — 기본(전부 켜기·burst)은 저장하지 않는다(project/battleFanfare.ts).
   const battleFanfare = normalizeBattleFanfare(system.battleFanfare);
   if (battleFanfare) records.battleFanfare = battleFanfare;
+  // 전투 연출(적 달려들기·연계기 컷인·화려함·한 줄 도움말) — 기본은 저장하지 않는다(project/battleStaging.ts).
+  const battleStaging = normalizeBattleStaging(system.battleStaging);
+  if (battleStaging) records.battleStaging = battleStaging;
   // ESC 메뉴 스킨도 같은 계약 — 기본(workbench)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
   if (isMenuSkinId(system.menuUiStyle) && system.menuUiStyle !== DEFAULT_MENU_SKIN_ID) records.menuUiStyle = system.menuUiStyle;
   // 대화창 스타일도 같은 계약 — 기본(glass)과 미등록 값은 저장하지 않는다.
@@ -788,6 +792,10 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
         ...(comboRequires.length > 0 ? { comboRequires } : {}),
         ...(record.comboCombinedStats === true ? { comboCombinedStats: true as const } : {}),
         ...(typeof record.comboSwitchId === "string" && record.comboSwitchId.trim() ? { comboSwitchId: record.comboSwitchId.trim() } : {}),
+        ...(() => {
+          const staging = normalizeComboStaging(record.comboStaging);
+          return staging ? { comboStaging: staging } : {};
+        })(),
         ...(() => {
           const rows = Array.isArray(record.comboMpCosts)
             ? record.comboMpCosts.flatMap((entry) => {
