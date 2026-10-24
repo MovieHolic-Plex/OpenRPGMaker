@@ -294,19 +294,22 @@
       },
       {
        "kind": "waitFor",
-       "testid": "save-file-selection",
+       "testid": "main-menu",
        "state": "present",
        "timeoutMs": 8000
+      },
+      {
+       "kind": "pressUntilText",
+       "key": "Shift",
+       "testid": "main-menu",
+       "text": "저장할 슬롯",
+       "maxPresses": 1,
+       "settleMs": 600
       },
       {
        "kind": "hold",
        "dir": null,
        "ms": 900
-      },
-      {
-       "kind": "evalToFile",
-       "fn": "() => { const s = window.__oprnDebug.readState(); return { vitals: s.partyActorIds.map((id) => window.__oprnDebug.readState().actorVitals?.[id] ?? null), saveKeys: Object.keys(localStorage).filter((k) => /save|slot/i.test(k)).length }; }",
-       "out": "/tmp/qa-fs-shrine-save.json"
       }
      ],
      "shot": true
