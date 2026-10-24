@@ -159,6 +159,50 @@ function fieldEnemyPages(input: {
   ];
 }
 
+export interface FieldEnemyChaseOptions {
+  /** 시야 칸(2..8, 기본 5). 입구가 시야+1 칸 안이면 그만큼 줄인다(들어서자마자 덮치지 않게). */
+  readonly sightRange?: number;
+  /** cone = 앞쪽 90° 부채꼴(이벤트 시선 조건 eventSeesPlayer 와 같은 판정, 기본) · any = 사방. */
+  readonly vision?: 'any' | 'cone';
+  /** 추격 걸음(기본 fast). 순찰은 걸음마다 두 박자 쉬어 추격보다 눈에 띄게 느리다. */
+  readonly pace?: Pace;
+  readonly alert?: Exclude<(typeof ALERTS)[number], 'none'>;
+  /** 시야에서 놓친 뒤 마지막 목격 자리를 뒤지는 시간(기본 2500ms) — 그 뒤 출발 칸으로 돌아가 다시 순찰한다. */
+  readonly searchMs?: number;
+}
+
+/**
+ * 이미 놓인 보이는 적(place_field_enemy 의 「필드 적」 페이지)을 「보면 달려드는」 적으로 바꾼다 — 다시 쓸 수 있는 묶음.
+ * 시야(부채꼴·벽 가림)에 들면 머리 위 느낌표 → 순찰보다 빠른 걸음으로 쫓아와 닿으면 전투, 놓치면 잠깐 뒤지다 돌아가 순찰을 잇는다.
+ * 순찰 경로(custom route)는 그대로 살려 시야 밖 걸음으로 쓴다. 필드 적 페이지가 없거나 입구가 너무 가까우면 바꾸지 않는다.
+ */
+export function makeFieldEnemyChase(project: Project, map: GameMap, event: GameEvent, options: FieldEnemyChaseOptions = {}): { ok: boolean; reason?: string; sightRange?: number } {
+  const fight = (event.pages ?? []).find((page) => page.trigger.kind === 'eventTouch' && page.commands.some((c) => c.kind === 'battleProcessing'));
+  if (!fight) return { ok: false, reason: 'not-field-enemy' };
+  const dirs = (fight.movement.route?.moves ?? []).flatMap((move) => {
+    const rec = move as { kind?: string; dir?: unknown };
+    return rec.kind === 'move' && isDir(rec.dir) ? [rec.dir] : [];
+  });
+  const cells = (dirs.length ? walkRoute(project, map, { x: event.x, y: event.y }, dirs) : null) ?? [{ x: event.x, y: event.y }];
+  const entries = entryCells(project, map);
+  const nearest = Math.min(Infinity, ...cells.flatMap((cell) => entries.map((entry) => Math.abs(entry.x - cell.x) + Math.abs(entry.y - cell.y))));
+  let range = Math.max(2, Math.min(8, Math.round(options.sightRange ?? 5)));
+  while (range >= 2 && nearest <= range + 1) range -= 1;
+  if (range < 2) return { ok: false, reason: 'entry-too-close' };
+  const pace = CHASE_PACE[options.pace ?? 'fast'];
+  fight.movement = {
+    type: 'chase', speed: pace.speed, frequency: pace.frequency, sightRange: range, giveUpRange: range + 4, pathfind: true,
+    sight: { range, lineOfSight: true, facing: options.vision ?? 'cone' },
+    pursuit: { scope: 'map', doorDelayMs: 0, searchMs: options.searchMs ?? 2500, onLost: 'return' },
+    ...(dirs.length ? { route: { repeat: true, skippable: false, moves: dirs.flatMap((dir) => [{ kind: 'move' as const, dir }, { kind: 'wait' as const }, { kind: 'wait' as const }]) } } : {}),
+    sightAlert: { emote: options.alert ?? 'exclamation', holdMs: ALERT_HOLD_MS },
+  };
+  fight.animationType = 'normal';
+  // 시야에 든 순간 이미 놀람을 냈다 — 닿을 때 또 띄우지 않는다(fieldEnemyPages 와 같은 규칙).
+  if (fight.commands[0]?.kind === 'showEmote' && fight.commands[1]?.kind === 'wait') fight.commands.splice(0, 2);
+  return { ok: true, sightRange: range };
+}
+
 const schema = (properties: Record<string, JsonSchema>, required: string[]): JsonSchema => ({ type: 'object', additionalProperties: false, properties, required });
 
 export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
@@ -280,9 +324,10 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
         graphicNote = `필드 그림 「${expected.label}」 — 전투 그림(${lead?.monsterResourceId})과 같은 종류로 자동 선택`;
       } else if (lead?.monsterResourceId && isGeneratedMonsterSprite(lead.monsterResourceId)) {
         // 같은 종류의 걷기 칩이 없는 종(박쥐·늑대·거미 …): 전투에 서는 **같은 도트 그림**을 필드 심볼로 쓴다.
-        // 다른 그림으로 대체하는 것이 아니라 전투 그림 그대로이므로 필드의 모습과 전투가 어긋나지 않는다(정지 그림, 걷는 칸 애니메이션 없음).
+        // 다른 그림으로 대체하는 것이 아니라 전투 그림 그대로이므로 필드의 모습과 전투가 어긋나지 않는다. 플레이어가 이 그림에서
+        // 약 2칸 크기의 걷기 칩(좌우 방향·걸음 통통·그림자·외곽선)을 런타임에 뽑는다(src/player/fieldFoeSprite.ts).
         graphic = { sprite: { type: 'bundled', id: lead.monsterResourceId }, direction: 'down', pattern: 0 };
-        graphicNote = `걷기 칩이 없는 종 — 전투 도트 그림(${lead.monsterResourceId})을 필드 심볼로 그대로 사용(정지 그림)`;
+        graphicNote = `걷기 칩이 없는 종 — 전투 도트 그림(${lead.monsterResourceId})에서 필드 걷기 칩을 자동으로 뽑아 씀(약 2칸, 좌우 방향·걸음·그림자)`;
       } else if (!lead?.monsterResourceId) {
         // 전투 그림이 아직 없는 적 — 이름으로 찾되 못 찾으면 다른 그림으로 대체하지 않고 거절한다.
         for (const name of [lead?.name?.trim(), troop.name?.trim()].filter((entry): entry is string => !!entry)) {

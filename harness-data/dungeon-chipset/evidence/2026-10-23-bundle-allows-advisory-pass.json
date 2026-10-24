@@ -1,0 +1,78 @@
+{
+ "date": "2026-10-23",
+ "delegatedBy": "delegated by user to supervisor 2026-10-23",
+ "basis": "each piece: object-gate review verdict PASS (3/4 ok, style ok) on these exact pixels under profile 4d8774b517f41638, which is uncalibrated so the PASS is advisory; plus 0 majors from 3 fresh adversarial Opus art reviewers; plus the delegated pick (blind panel or elimination). The human/delegated allow on the holds server is the final pass for bundle use.",
+ "receipts": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/<sha2>/<sha>.json",
+ "items": [
+  {
+   "pixelSha256": "1205899c2ae7c8b4d46d567d953aee778fb8ce85219afd89249ad7404e992fd0",
+   "kind": "debris",
+   "name": "gap.bone_pile A1",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-panel-2.json",
+   "objectGate": "pass (advisory)"
+  },
+  {
+   "pixelSha256": "edc9694ca95570a347774fb4703706735b35e8b28a09a1b67eb22fbcc7150b32",
+   "kind": "other",
+   "name": "gap.campfire A1",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-panel-1.json",
+   "objectGate": "pass (advisory)"
+  },
+  {
+   "pixelSha256": "972ad7b9e17d603276ff4758cf0cdac1fd6346b3e01dad1cb3ad5e3afbee95f7",
+   "kind": "wall_mounted",
+   "name": "gap.door A2",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-panel-1.json",
+   "objectGate": "pass (advisory)"
+  },
+  {
+   "pixelSha256": "226e76a29a561be38098716f98325e889df6c3b8415f9e335428cdd428011f28",
+   "kind": "terrain",
+   "name": "gap.rock_fill A1",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-panel-1.json",
+   "objectGate": "pass (advisory)"
+  },
+  {
+   "pixelSha256": "7edda50f9383c34827c1775883113491829f9550a62ebd60f25a23fd6c4fab22",
+   "kind": "terrain",
+   "name": "gap.rock_fill C2",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-panel-1.json",
+   "objectGate": "pass (advisory)"
+  },
+  {
+   "pixelSha256": "75a318361284607e408093cd87956e7a52cad48229ff28aac636aec7fa38cd58",
+   "kind": "other",
+   "name": "gap.tower_stair A2",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-tower-stair-by-elimination.json",
+   "objectGate": "pass (advisory)"
+  },
+  {
+   "pixelSha256": "a68b876a4994caa2d832265e738e108e4d813b8230e0b8ee45ba0626b026fe03",
+   "kind": "terrain",
+   "name": "gap.tower_wall A2",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-panel-2.json",
+   "objectGate": "pass (advisory)"
+  },
+  {
+   "pixelSha256": "476a86edffcf00fe25458c85e05f83552a38661342abe4319247c6e541ccb991",
+   "kind": "wall_mounted",
+   "name": "gap.tower_window A2",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-panel-1.json",
+   "objectGate": "pass (advisory)"
+  },
+  {
+   "pixelSha256": "03e21e875897e071ac13ee222fedccd3ae272cc8f58221afacf8c77104c401aa",
+   "kind": "terrain",
+   "name": "gap.water_edge A1",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-panel-1.json",
+   "objectGate": "pass (advisory)"
+  },
+  {
+   "pixelSha256": "3b0e644d6e44362bbc92e132687271f82185a9ec0403f15e493992a62ed393e4",
+   "kind": "terrain",
+   "name": "gap.water_edge B1",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-23-pick-panel-1.json",
+   "objectGate": "pass (advisory)"
+  }
+ ]
+}

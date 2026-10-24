@@ -1,0 +1,22 @@
+{
+  "judge": "argon",
+  "date": "2026-10-23",
+  "candidates": {
+    "water_edge C1": {
+      "verdict": "pass",
+      "reasons": [
+        "3/4 perspective is properly constructed: the north bank displays a clear vertical stone drop face with top highlight rim, vertical block seams, and waterline shadow undercut, while east/west/south edges remain top-down rims with no isometric side faces.",
+        "Matches Beodeul cave water style and texture density: uses 4+ distinct teal-blue shading steps with crisp surface ripple highlights similar to the sea-cave water_tide reference, and blends organically into the grey rock floor without black ink outlines or flat fills.",
+        "Autotile corners, narrow 1-tile channel, and multi-tile pool joins are seamless across all 4 animation frames and read at scale beside the 24x32 character without looking toy-like."
+      ]
+    },
+    "water_edge C2": {
+      "verdict": "pass",
+      "reasons": [
+        "3/4 perspective is properly constructed: only the north edge shows the vertical rock drop face with top lip highlight and submerged shadow line, with no side or isometric faces on east/west/south banks.",
+        "Palette and pixel density match Line C and the Beodeul reference: layered grey stone rim and 4-tone deep blue-teal water ripples avoid flat fills and black outlines.",
+        "Joins across inner/outer corners, the horizontal channel, and open pool tiles are seamless with low grid repetition and natural cave pool proportions."
+      ]
+    }
+  }
+}

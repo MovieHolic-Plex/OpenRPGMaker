@@ -459,7 +459,7 @@ export const NATIVE_EVENT_PAGE_SCHEMA: JsonSchema = {
     movement: {
       type: "object",
       properties: {
-        type: { type: "string", enum: ["fixed", "random", "approach", "custom", "living", "chase"] },
+        type: { type: "string", enum: ["fixed", "random", "approach", "custom", "living", "chase", "fly"], description: "fly = 새·나비 같은 장식이 칸에 묶이지 않고 맵 위를 자유롭게 날다 가끔 지붕·땅에 앉는다(우선순위 above 권장)." },
         speed: { type: "number" },
         frequency: { type: "number" },
         sightRange: { type: "number" },

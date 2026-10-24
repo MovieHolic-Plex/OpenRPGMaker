@@ -1,8 +1,10 @@
 /**
  * 아스트라 호라이즌(몬스터 수집 기함 데모) 등장인물 흉상·전신 그림.
- * char-gen(OPRN 자체 생성기, main) 에 GBA 대사 초상 화풍으로 그리게 한 그림 중 감독이 고른 후보를 3세대 몬스터 RPG 대사 칸의 원래 격자
- * 44x46(16색 이하·굵은 윤곽·평평한 셀 명암, 눈·입은 손으로 찍음)으로 구웠다. 화면에서는 2배(88x92) — scripts/content/monsters/bake_astra_cast.py,
- * 출처·화소 해시: public/assets/emerald-monster/cast/provenance.json. 플레이어·내보내기는 generatedAssetResourceResolver 가 id 로 찾는다.
+ * 흉상(bust-*)은 2026-10-23 「징그럽다」는 지적으로 다시 만들었다: char-gen(OPRN 자체 생성기) 이미지 엔진에 저해상도 도트 초상을 직접 그리게 하고,
+ * 그 그림의 원래 격자를 되찾아 64x64(인물마다 16색, 표정은 기본 그림의 얼굴 칸만 바꿈)로 구웠다. 화면에서는 2배(128x128, bustPixelate.ts).
+ * 후보는 인물마다 4장 이상을 눈가림 판정단(Opus 3 + Argon 1)이 골랐다 — scripts/content/monsters/bake_astra_busts64.py,
+ * 출처·화소 해시: public/assets/emerald-monster/cast/provenance-busts64.json. 전신(full-*)·카드는 옛 44x46 시절 그림이며 지금 게임 화면에는 쓰지 않는다
+ * (emeraldCrownCast.ts 의 SPOTLIGHTS 가 비어 있다 — 첫 만남 등장은 전투 트레이너 그림이 맡는다). 플레이어·내보내기는 generatedAssetResourceResolver 가 id 로 찾는다.
  */
 export type AstraCastId = 'hero' | 'mom' | 'professor' | 'naru' | 'nurse' | 'yurim' | 'muyeong';
 export type AstraCastExpression = 'base' | 'happy' | 'sad' | 'angry' | 'surprised' | 'serious' | 'determined';

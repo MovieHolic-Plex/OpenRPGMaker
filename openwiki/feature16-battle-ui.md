@@ -10,6 +10,10 @@
 
 `session.actorRows` already existed, including initialization near session.ts:539 and save-slot guards. It is reused, not duplicated. Missing rows mean front. The optional `session.battleReports` stores at most 20 reports with the latest 120 timeline entries per battle, 500 characters per line, and an explicit omitted-line count. Save snapshot creation, parsing and restoration normalize this field; legacy/invalid optional histories become empty. Names and results are captured at battle completion; later editor renaming does not rewrite history. No schema/version bump.
 
+## Report turn count (2026-10-23)
+
+`BattleReport.turns` is `battleRoundCount(snapshot)` in `src/project/battleReports.ts`, not `max(turn, strictRound)`. Gauge `turn` closes only when every living battler has spent one gauge slot, so a party that acted seven times against a slow enemy stayed at `turn: 1` — every recorded battle read 「1턴 · EXP 9」. The runtime now also snapshots `partyCommandRounds`, incremented in `applyActorCommandEffect`, and gauge reports count that. Strict keeps the completed-round count (one round = one command per party member), and snapshots without the field fall back to `turn` so old data still reads. Unit test: `test/battleReportTurnCount.test.ts`.
+
 `playSceneBattle.onResult` appends once at the existing post-transition commit point, after rewards and before victory autosave. Cancelled/replaced scenes cannot append. Records come exclusively from the runtime's actual `timeline`, never guessed HP differences or canned messages. Defeat/escape do not claim victory rewards. No-action battles explicitly have no action log.
 
 Formation is physical-only: ordinary attack and `effect: damage, statistic: attack`. Each back-row participant contributes ×0.75 (attacker outgoing, target incoming). Apply the product once to positive calculated damage, floor, minimum 1. Front/absent rows are unchanged. `mind` skills, healing, support, zero damage and negative absorption are unchanged. Raw attack/defense are unchanged, including equipment/class stat refreshes.

@@ -20,7 +20,7 @@ bake_dungeon_ceiling.py(28,416~)가 시트를 다시 쓰면 이 꼬리가 사라
   기후 변형: 같은 이름 앞에 snow: · desert: (눈 덮인 성벽 · 사막 사암 성벽).
   땅 그림자 sh_* 는 2층(앞면 밑 줄, 세로 성벽 오른쪽 열).
 """
-import argparse, json, pathlib, sys
+import argparse, json, pathlib, subprocess, sys
 
 from PIL import Image
 
@@ -527,10 +527,11 @@ def main():
     _SH.clear()
     write_tables()
     print(json.dumps(dict(count=COUNT, pieces=len(PIECES), kits=[k["id"] for k in kits()]), ensure_ascii=False))
-    # 다음 꼬리: 마당 바닥(row 231, BASE 29568). 성벽이 시트를 다시 쓰면 마당 줄도 이어서 다시 굽는다.
-    import subprocess
-    subprocess.run([sys.executable, str(HERE.parent / "beodeul-yard" / "bake_yard.py")] + (["--dev"] if "--dev" in sys.argv else []), check=True)
+    # 다음 꼬리: 던전 gap(29,568~) → 주제(30,848~) → 마당 바닥(33,024~). 아래 bake_gap --from-store 가 주제를, 주제가 마당을 잇는다.
 
 
 if __name__ == "__main__":
     main()
+    # 성벽 꼬리 뒤(29,568~)의 던전 gap 칸은 이 스크립트가 시트를 다시 쓰면 사라진다 — 저장소 그대로 다시 붙인다(멱등, 관문·고름을 다시 보지 않는다).
+    if not any(a.startswith(("--gate-export", "--samples")) for a in sys.argv[1:]) and (HERE.parent / "beodeul-dungeon" / "bake_gap.py").exists():
+        subprocess.run([sys.executable, str(HERE.parent / "beodeul-dungeon" / "bake_gap.py"), "--from-store"], check=True)

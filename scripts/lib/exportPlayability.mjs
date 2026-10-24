@@ -86,6 +86,9 @@ async function finishDialogue(page, actions) {
     await until(page, `!!document.querySelector('[data-testid="dialogue-box"].page-ready')
       || !!document.querySelector('[data-testid="runtime-choices"]')`);
     const before = await box.textContent();
+    // The runtime drops confirm keys for 300ms after a choice list opens (dialogue.ts CHOICE_CONFIRM_GRACE_MS,
+    // so a mashed Enter cannot pick an unread option). A real player reads first; wait past the grace.
+    if (await page.getByTestId("runtime-choices").count()) await page.waitForTimeout(400);
     actions.push({ key: "Enter", dialogue: before });
     await keyTo(page, "Enter", `document.querySelector('[data-testid="dialogue-box"]')?.textContent !== ${JSON.stringify(before)}`);
   }
@@ -151,7 +154,7 @@ export function requiredRuntimePngPattern(runtime) {
   return `**/runtime-archive/${runtime.runtimeTarget}/public/${png}`;
 }
 
-export async function rejectBadExport(page, pattern, body, status) {
+export async function rejectBadExport(page, pattern, body, status, menuTestId = "menu-project-export-standalone") {
   let downloaded = false;
   let interceptions = 0;
   let onDownload;
@@ -173,12 +176,12 @@ export async function rejectBadExport(page, pattern, body, status) {
     // spend the entire toast deadline waiting for an error that never happened.
     const outcome = Promise.race([error.waitFor({ state: "visible", timeout: 180000 }), invalidDownload]);
     await page.getByTestId("menu-project").click();
-    await page.getByTestId("menu-project-export-standalone").click();
+    await page.getByTestId(menuTestId).click();
     await outcome;
     assert.equal(downloaded, false, `Invalid export downloaded: ${pattern}`);
     assert.ok(interceptions > 0, `Required failure injection was never requested: ${pattern}`);
     const message = await error.textContent();
-    return { pattern, status, message, downloaded, interceptions, pass: true };
+    return { pattern, menu: menuTestId, status, message, downloaded, interceptions, pass: true };
   } finally {
     page.off("download", onDownload);
     await page.unroute(pattern, inject);
@@ -259,13 +262,13 @@ export async function exerciseExport(page, { url, kind, outDir }) {
       await image.decode();
       return { width: image.naturalWidth, height: image.naturalHeight };
     });
-    result.fonts = await page.evaluate(async () => {
-      const fonts = ['16px "NeoDunggeunmo"', '16px "Galmuri9"', '16px "Galmuri11"', '700 16px "Galmuri11"'];
-      return await Promise.all(fonts.map(async (font) => {
-        const faces = await document.fonts.load(font, "RPG 가나다");
-        return { font, loaded: faces.length > 0 && faces.every((face) => face.status === "loaded") };
-      }));
-    });
+    // Every @font-face the runtime CSS declares must load from the export. NeoDunggeunmo/Galmuri11 were
+    // removed in the 2026-10-07 copyright purge (fonts.css); the packaged faces are whatever CSS declares now.
+    result.fonts = await page.evaluate(async () => Promise.all([...document.fonts].map(async (face) => {
+      try { await face.load(); } catch { /* status below records the failure */ }
+      return { font: face.family, loaded: face.status === "loaded" };
+    })));
+    assert.ok(result.fonts.length > 0, "The runtime CSS must declare its packaged fonts");
     assert.ok(result.fonts.every((font) => font.loaded), "Packaged fonts must decode");
     await keyTo(page, "Enter", "!!window.__oprnDebug && !!document.querySelector('canvas')");
     await until(page, `window.__exportQaAudio.some(a => a.loop && !a.paused && a.readyState >= 2 && !a.error)`);
@@ -298,7 +301,14 @@ export async function exerciseExport(page, { url, kind, outDir }) {
     }
     assert.match(await page.getByTestId("battle-message-window").textContent(), /승리/);
     await shot("victory");
-    await keyTo(page, "Enter", `!document.querySelector('[data-testid="battle-scene"]')`);
+    // The result panel's first confirm reveals every reward row at once; later confirms open each level-up
+    // window and finally close the battle (battleDirectorDom.ts). Confirm until the battle scene is gone.
+    for (let press = 0; press < 8 && await page.getByTestId("battle-scene").count(); press += 1) {
+      actions.push({ key: "Enter", battleResult: press });
+      await page.keyboard.press("Enter");
+      await page.waitForTimeout(700);
+    }
+    await until(page, `!document.querySelector('[data-testid="battle-scene"]')`);
     await until(page, `!!document.querySelector('[data-testid="dialogue-box"]')`);
     await finishDialogue(page, actions);
     assert.equal(await page.evaluate(() => window.__oprnDebug.readState().battleResult), "victory");
@@ -323,7 +333,13 @@ export async function exerciseExport(page, { url, kind, outDir }) {
     const options = await page.locator(".rm-title-menu-button").evaluateAll((nodes) => nodes.map((n) => n.dataset.testid));
     for (let index = 0; index < options.indexOf("title-load-game"); index += 1) await page.keyboard.press("ArrowDown");
     await keyTo(page, "Enter", `!!document.querySelector('[data-testid="player-load-window"]')`);
-    await keyTo(page, "ArrowDown", `document.querySelector('[data-testid="save-slot-1"]').classList.contains("selected")`);
+    // The cursor may already rest on slot 1 (latest save) or on the autosave row above it; move only until slot 1 is selected.
+    for (let step = 0; step < 6; step += 1) {
+      if (await page.evaluate(() => document.querySelector('[data-testid="save-slot-1"]')?.classList.contains("selected"))) break;
+      await page.keyboard.press("ArrowDown");
+      await page.waitForTimeout(150);
+    }
+    await until(page, `document.querySelector('[data-testid="save-slot-1"]').classList.contains("selected")`);
     await keyTo(page, "Enter", `!!window.__oprnDebug && !document.querySelector('[data-testid="title-screen"]')`);
     result.loaded = await state(page);
     assert.deepEqual(result.loaded, result.saved);
@@ -333,8 +349,10 @@ export async function exerciseExport(page, { url, kind, outDir }) {
     // Browsers cancel an already-playing media stream when BGM changes or the
     // page reloads. Keep those events visible, but require prior decode/play proof
     // for that exact URL; missing, decode and other network failures remain fatal.
+    // Warmed BGM plays from blob: object URLs (runtimeAudioWarmup); their bytes were already fetched over HTTP,
+    // where a missing file is caught, so an aborted blob stream is a BGM switch, not a missing asset.
     const cancelled = failure => failure.type === "media" && failure.error === "net::ERR_ABORTED"
-      && result.validatedMediaUrls.includes(failure.url);
+      && (failure.url.startsWith("blob:") || result.validatedMediaUrls.includes(failure.url));
     result.cancelledMedia = failures.filter(cancelled);
     result.failures = failures.filter(failure => !cancelled(failure));
     assert.deepEqual(result.failures, [], "Required resources must not fail");

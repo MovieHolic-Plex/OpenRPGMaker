@@ -2,7 +2,7 @@ import {
   charsetIdleFrameIndex,
   charsetWalkFrameIndex,
   charsetWalkStepFromElapsedMs,
-  isEasyRpgCharsetTextureKey,
+  isCharsetLikeTextureKey,
   NPC_MOVE_DURATION_MS,
 } from "@/player/charsetMotion";
 import { npcWalkFrameMsForStep } from "@/project/characterMotion";
@@ -44,7 +44,7 @@ export function setNpcIdleFrame(
 }
 
 function isCharsetSprite(key: string): boolean {
-  return isEasyRpgCharsetTextureKey(key) || store.getCurrent().assets.uploaded[key]?.kind === "charset";
+  return isCharsetLikeTextureKey(key) || store.getCurrent().assets.uploaded[key]?.kind === "charset";
 }
 
 export function applySpriteAlpha(sprite: AutonomousNpcSprite | undefined, opacity: number): void {

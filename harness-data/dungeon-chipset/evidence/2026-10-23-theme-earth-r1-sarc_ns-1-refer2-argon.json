@@ -1,0 +1,14 @@
+{
+  "piece": "earth.sarc_ns A1 open",
+  "pixelSha256": "e342a2a26fcc869f831628c031254c6e0c5028c19b1afd7401b8904b9a56c3ec",
+  "receipt": "/home/main/z-project/rpg-zzu-dt-earth/harness-data/object-gate/receipts/e3/e342a2a26fcc869f831628c031254c6e0c5028c19b1afd7401b8904b9a56c3ec.json",
+  "verdict": "pass",
+  "sure": true,
+  "view34": "pass — clearly reads as a horizontal north-south open sarcophagus lying on the floor in 3/4 top-down view: flat upper rim (rows 1-19), visible inner north wall (rows 3-5) while inner south wall is occluded by the south rim, recessed floor with supine skeleton seen from above (rows 6-18), and a 10px south-facing foot-end front face with inset panel and base moss (rows 20-29).",
+  "style": "pass — multi-step warm stone ramp, bevelled rim, recessed foot panel, moss accents, and non-sticker dark stone edges fit the Beodeul dungeon stone aesthetic.",
+  "reasons": [
+    "Top-down 3/4 geometry is unambiguous: inner north wall is visible below the north rim while the south rim occludes the inner south wall, and the south foot-end face (rows 20-29) anchors it horizontally on the floor.",
+    "Supine skeleton inside the recessed cavity reads clearly as an opened catacomb sarcophagus.",
+    "Stone shading, palette, and weathering match Beodeul references and the paired closed sarcophagus."
+  ]
+}

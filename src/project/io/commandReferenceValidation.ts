@@ -1,4 +1,5 @@
 import { BUILTIN_EQUIPMENT_SLOTS } from "@/project/equipmentSlots";
+import { isBuiltinFieldFxId } from "@/project/containerFx";
 import type {
   BattleEventCondition,
   BattleEventPageRecord,
@@ -360,7 +361,7 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       assert(context.resourceIds.has(command.resourceId), `playAudio: resourceId가 존재하지 않습니다: ${command.resourceId}`);
       return;
     case "showAnimation":
-      assert(context.animationIds.has(command.animationId), `showAnimation: animationId가 존재하지 않습니다: ${command.animationId}`);
+      assert(context.animationIds.has(command.animationId) || isBuiltinFieldFxId(command.animationId), `showAnimation: animationId가 존재하지 않습니다: ${command.animationId}`);
       return;
     case "showEmote":
       return;
@@ -411,6 +412,7 @@ function validatePageCondition(condition: EventPageCondition, context: Reference
     case "relativeFacing":
     case "hiding":
     case "pursuitActive":
+    case "eventSeesPlayer":
     case "clearCount":
     case "endingSeen":
     case "newGamePlus":
@@ -462,6 +464,10 @@ function validateBattleEventCondition(condition: BattleEventCondition, context: 
       return;
     case "enemyTurn":
       assert(context.enemyIds.has(condition.enemyId), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);
+      return;
+    case "enemyState":
+      if (condition.enemyId) assert(context.enemyIds.has(condition.enemyId) || (context.enemySlotIds?.has(condition.enemyId) ?? false), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);
+      assert(typeof condition.stateId === "string" && condition.stateId.length > 0, "battle condition: enemyState 에 stateId 가 없습니다");
       return;
     case "enemyHpBelow":
       if (condition.enemyId) assert(context.enemyIds.has(condition.enemyId) || (context.enemySlotIds?.has(condition.enemyId) ?? false), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);

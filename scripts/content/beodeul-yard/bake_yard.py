@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""버들항 마당 바닥 — 버들항 시트 꼬리(29,568~, 한 행 128칸)에 마당 오토타일 세 벌(자갈·다진 흙·판석)을 덧붙여 굽는다.
+"""버들항 마당 바닥 — 버들항 시트 꼬리(33,024~, 두 행 256칸)에 마당 오토타일 세 벌(자갈·다진 흙·판석)을 덧붙여 굽는다.
 
   python3 scripts/content/beodeul-yard/bake_yard.py --gate-export DIR   # 3/4 관문에 낼 표본 PNG + items.jsonl 만 쓴다
   python3 scripts/content/beodeul-yard/bake_yard.py --samples DIR       # 확인용 표본(1배·3배) + 비교판만 쓴다
@@ -7,7 +7,7 @@
   python3 scripts/content/beodeul-yard/bake_yard.py --dev               # 관문이 막혀도 굽는다(크게 경고) — 감독 로컬 개발 전용, 번들 커밋 금지
 
 입력  yard_art.py (행 문자열 손 도트)
-출력  public/assets/beodeul-city/beodeul-city-chipset.png — 앞 231행(29,568칸)은 그대로, 뒤 1행(128칸)
+출력  public/assets/beodeul-city/beodeul-city-chipset.png — 앞 258행(33,024칸)은 그대로, 뒤 1행(128칸)
       src/assets/beodeulCityTileset.json · beodeulCitySheet.json — 칸 표 + 오토타일 beodeul_yard_* + 칸 묶음 beodeul:yard_* + 키트 bd-yard-*
 덧붙이기 전용: 앞 칸 번호는 바뀌지 않는다. 다시 돌려도 같은 결과(멱등).
 bake_wall.py(28,544~)가 시트를 다시 쓰면 이 꼬리가 사라지므로 그 끝에서 이 스크립트를 다시 부른다.
@@ -32,9 +32,9 @@ TS_PATH = ROOT / "src/assets/beodeulCityTileset.json"
 SHEET_JSON = ROOT / "src/assets/beodeulCitySheet.json"
 T = 16
 COLS = 128
-BASE = 29568          # 성벽 꼬리(28,544~29,567, 3판 8행) 끝 = 마당 시작
+BASE = 33024          # 던전 주제 꼬리(bake_theme.py, 30,848~33,023) 끝 = 마당 시작. 2026-10-24 main 의 gap·주제 꼬리가 29,568~ 를 먼저 차지해 옮겼다
 BASE_ROW = BASE // COLS
-ROWS_ADDED = 2         # 2026-10-23: 판석→흙 가장자리(129칸)를 덧붙이며 한 행 더(29,696~29,823). 이식 칸은 localTailRelocation 이 민다.
+ROWS_ADDED = 2         # 2026-10-23: 판석→흙 가장자리(129칸)를 덧붙이며 한 행 더(BASE+128~BASE+255). 이식 칸은 localTailRelocation 이 민다.
 COUNT = BASE + ROWS_ADDED * COLS
 GATE_KIND = "terrain"
 SURFACES = ["cobble", "dirt", "flag"]
@@ -64,14 +64,14 @@ RULES = {
 
 ALT_BASE = BASE + PER * len(SURFACES)   # 곧은 가장자리 둘째 벌(자갈·판석)은 세 표면 뒤에 덧붙인다: 자갈 N2 S2 W2 E2, 판석 N2 S2 W2 E2
 assert ALT_BASE + len(A.ALT_ORDER) * len(A.EDGE_ALT_SURFACES) <= BASE + COLS
-VINE_BASE = ALT_BASE + len(A.ALT_ORDER) * len(A.EDGE_ALT_SURFACES)   # 29,639 — 포도나무 줄(vine_art.py 2판, 두 칸 높이) 열여섯 칸
+VINE_BASE = ALT_BASE + len(A.ALT_ORDER) * len(A.EDGE_ALT_SURFACES)   # BASE+71 — 포도나무 줄(vine_art.py 2판, 두 칸 높이) 열여섯 칸
 # 29,639~29,646 = 위 칸 줄(잎 지붕 윗면) 왼쪽 끝 · 가운데 여섯 · 오른쪽 끝, 29,647~29,654 = 아래 칸 줄(앞면·줄기·그늘) 같은 순서.
 # (1판 한 칸 높이 줄이 29,639~29,646 을 썼으나 게시 전이라 2판이 같은 번호를 이어 쓴다.)
-assert VINE_BASE == 29639 and VINE_BASE + len(V.PARTS) * len(V.ORDER) <= BASE + COLS
+assert VINE_BASE == BASE + 71 and VINE_BASE + len(V.PARTS) * len(V.ORDER) <= BASE + COLS
 # 판석→다진 흙 가장자리(flag_dirt_art.py r7): 포도나무 줄 뒤 129칸. 몸통 여덟은 판석 몸통 칸을 그대로 쓴다.
-FD_BASE = VINE_BASE + len(V.PARTS) * len(V.ORDER)   # 29,655
+FD_BASE = VINE_BASE + len(V.PARTS) * len(V.ORDER)   # BASE+87
 FD_GROUP = "beodeul_yard_flag_dirt"
-assert FD_BASE == 29655 and FD_BASE + len(FD.NEW_ROLES) <= BASE + ROWS_ADDED * COLS
+assert FD_BASE == BASE + 87 and FD_BASE + len(FD.NEW_ROLES) <= BASE + ROWS_ADDED * COLS
 FD_GATE_NAME = FD.GATE_NAME
 VINE_GATE_KIND = "organic"
 VINE_GROUP = "beodeul:vine_row"
@@ -80,9 +80,9 @@ VINE_PART_KO = {"top": "위 칸(잎 지붕 윗면)", "front": "아래 칸(잎 �
 VINE_DESC = ("철사에 올려 가꾼 포도나무 한 줄, 두 칸 높이(3/4 탑뷰: 위 칸은 위에서 내려다본 넓고 밝은 잎 지붕, 칸 경계에서 둥근 잎 덩이 턱으로 "
              "말려 앞으로 꺾이고, 아래 칸은 짙은 잎 앞면에 높이가 다른 포도송이 · 철사 · 굵은 줄기와 기둥 · 흙에 진 그늘). "
              "다진 흙 마당 위에 위층으로 얹는다.")
-VINE_RULES = ("한 줄 = 두 칸 높이. 위 칸 줄은 왼쪽 끝 " f"{29639}" " + 가운데 여럿 + 오른쪽 끝 " f"{29646}" ", 바로 아래 칸 줄은 같은 순서로 +8 번호"
-              "(위 칸 t 밑에는 반드시 t+8). 가운데(29,640~29,645)는 어떤 순서로 이어도 이음새가 없다 — 같은 칸을 둘 잇지 말고, "
-              "중간 기둥 칸(29,641·29,644)은 두세 칸에 하나만. 줄 사이는 흙 한 칸 길을 둔다(줄 간격 3칸). 아래층은 다진 흙 마당(beodeul_yard_dirt) 몸통. "
+VINE_RULES = ("한 줄 = 두 칸 높이. 위 칸 줄은 왼쪽 끝 " f"{VINE_BASE}" " + 가운데 여럿 + 오른쪽 끝 " f"{VINE_BASE + 7}" ", 바로 아래 칸 줄은 같은 순서로 +8 번호"
+              f"(위 칸 t 밑에는 반드시 t+8). 가운데({VINE_BASE + 1}~{VINE_BASE + 6})는 어떤 순서로 이어도 이음새가 없다 — 같은 칸을 둘 잇지 말고, "
+              f"중간 기둥 칸({VINE_BASE + 2}·{VINE_BASE + 5})은 두세 칸에 하나만. 줄 사이는 흙 한 칸 길을 둔다(줄 간격 3칸). 아래층은 다진 흙 마당(beodeul_yard_dirt) 몸통. "
               "위 칸은 지나가며 가려지는 잎(☆), 아래 칸은 줄기·철사라 막힌다.")
 
 

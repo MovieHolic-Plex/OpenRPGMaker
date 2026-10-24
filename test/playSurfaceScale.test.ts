@@ -114,4 +114,11 @@ describe("calculatePlaySurfacePlacement", () => {
     expect(placement.left).toBeCloseTo(140 / 3);
     expect(placement.top).toBe(0);
   });
+
+  it("keeps an integer-scaled stage on whole screen pixels so pixel text is not shifted half a pixel", () => {
+    // Break named: a 1281×721 window at 2× put the stage at (160.5, 90.5) and blurred the canvas and the dialogue font.
+    const placement = calculatePlaySurfacePlacement(1281, 721, 2, 480, 270);
+    expect(placement.left).toBe(160);
+    expect(placement.top).toBe(90);
+  });
 });

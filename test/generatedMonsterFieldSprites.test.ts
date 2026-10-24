@@ -152,7 +152,7 @@ describe("generated monster field sprites", () => {
     expect(preload(project).mock.calls.some(([key]) => key === monsterId)).toBe(false);
     delete project.assets.sprites[monsterId];
     project.assets.uploaded[monsterId] = { id: monsterId, kind: "monster", name: "custom", dataUrl: "data:image/png;base64,AA==", meta: {} };
-    expect(resolveEventSpriteTexture(project, monsterId, 5)).toEqual({ texture: monsterId, frame: "__BASE", fitSize: 32 });
+    expect(resolveEventSpriteTexture(project, monsterId, 5)).toEqual({ texture: monsterId, frame: "__BASE", fitSize: 32, monster: true });
     expect(preload(project)).toHaveBeenCalledWith(monsterId, "data:image/png;base64,AA==");
     const charset = resolveEventSpriteTexture(project, DEFAULT_EASYRPG_CHARSET_ID, 0);
     expect(charset).toEqual({ texture: DEFAULT_EASYRPG_CHARSET_ID, frame: 0 });

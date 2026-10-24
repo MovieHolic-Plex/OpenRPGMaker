@@ -121,8 +121,13 @@ test("Korean command panels work from the X-key actual play menu", async ({ page
   await expect(page.getByTestId("status-menu-detail")).toContainText("등록된 임무가 없습니다");
 
   await selectCommand(page, "wait", "전투 대기");
+  // 화면을 여는 것만으로는 값이 바뀌지 않는다. 게임 저작 기본(system.atbMode 생략 = wait)은 ON 이라
+  // 안내문도 ON 문장이다. 값은 이 화면의 행에서 Enter 로 바꾼다.
+  await expect(page.getByTestId("status-menu-wait-toggle")).toContainText("ON");
+  await page.keyboard.press("z");
+  await expect(page.getByTestId("status-menu-wait-toggle")).toContainText("OFF");
   await expect(page.getByTestId("status-menu-detail")).toContainText("명령 입력 중에도 시간이 흐릅니다");
-  // 대기 토글 라벨은 레일이 아니라 시스템 트레이 안의 칸에 붙는다.
+  // 대기 라벨은 레일이 아니라 시스템 트레이 안의 칸에 붙는다.
   await focusRailEntry(page, "system-menu");
   await page.keyboard.press("z");
   await expect(page.getByTestId("status-menu-group-command-wait")).toContainText("대기 OFF");

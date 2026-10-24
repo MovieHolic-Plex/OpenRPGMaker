@@ -1,0 +1,316 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4dec554f060d527e04b54f0a2c1244f6aa45a686f08d5d68bc14335a17dc2ec3",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "other.crystal_big",
+ "label": "beodeul_dungeon/other.crystal_big",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 63,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central tall crystal and flanking crystal spikes",
+      "rows": "3-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark rocky base mound",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cluster is a set of faceted crystal spikes drawn face-on. The width profile goes from a 1px tip at rows 3-5 to a broad 30-32px base at rows 23-28, so the silhouette is pointed rather than elliptical. Column x=16 shows facet bands (a highlight at row 9, then lighter and darker steps), and these are vertical facets, not horizontal tops. The only candidate top is the dark mauve strip at rows 25-26 on the base, which is a 1-2 row rim. Below it, rows 27-30 are a dark front face that narrows from 30px to 22px. No crystal has a top plane with a front-edge line or eave shadow, so the object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small purple crystal cluster on a dark rocky base, and it is smaller and simpler than the two trees. Its dark edges are tinted deep purple rather than neutral, which matches the measured 0% near-neutral edge pixels. Each crystal has several lightness steps (bright highlight facet, light, mid, dark, deep shadow) and the base has a few grain pixels. Near-flat coverage is 0%, so there are no flat fills. It has 10 visible tones per tile, above tree-1a786c (7) and far below the rich tree-d43edd (29). Against the closer, simpler reference it is not thinner, flatter or more sticker-like, so it is acceptable as a sparse single prop. It is a little lower than the best reference in richness, since the facets are fairly clean with little speckle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20114
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central crystal spire",
+      "rows": "3-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side crystal spikes (left and right)",
+      "rows": "11-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark rock/soil base mound",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The crystals are drawn as vertical faceted spires with pointed tips (width profile 1 to 3 to 5 to 9 and so on, widening steadily with no ellipse). The left facets are light and the right facets dark, so they read as vertical faces. No row band ends in a front-edge line with an eave shadow. The base mound (rows 25-30) is a dark, flat-shaded wedge whose rows narrow from 32 to 22 pixels. It shows no visible horizontal top surface and no contents. The whole object is a front elevation with no real top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small purple crystal cluster, about one tile wide, set against two leafy trees. It has about 5 lightness steps: pale highlight facets, light and mid violet, dark violet, and a deep base. The dark edge pixels lean purple, with 0% neutral, so the outline is a dark tone of the adjacent material rather than a black sticker line. The facets are split by value, and the rocky base carries a few grain dots. It has 10 visible tones per tile against 7 for tree-1a786c and 29 for tree-d43edd, and 0% near-flat coverage like both references. It is clearly above the first reference on the measured facts and below the richer one, which suits a small hard-surface prop. By eye it would sit acceptably next to the references and does not read as flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20489
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central tall crystal and side crystal spikes",
+      "rows": "3-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark rock base mound",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a cluster of vertical faceted crystal prisms, rows 3-25, that end in pointed tips. Each crystal is shown only by its vertical facets, with a light and dark split. No band, front-edge line, eave shadow or ellipse marks a horizontal top surface. The width profile grows steadily from 1 to 32 px, which is a spiky silhouette and not a lid that widens and then narrows. Rows 26-30 are a dark, flat-looking base mound under the crystals, and its columns are uniformly dark with no edge line, so it adds no readable top plane. The result is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small purple crystal cluster, not a plant, so the tree references are only a loose match for structure. It is about 25x20 source pixels, much smaller than either tree. It has about 5 lightness steps on the purple ramp: pale facet highlights, light and mid violet, dark violet, and a deep base. The facets are shaded individually, not as one flat body. The outline is a dark purple that leans toward the material, with no neutral black ring. This agrees with the 0% near-neutral share of dark edge pixels, and the references also measure 0%. Measured density is 10 visible tones per tile, above tree-1a786c at 7 and below tree-d43edd at 29. Near-flat coverage is 0%, so there are no large flat fills. A rock base with a few lighter facets adds some variation. Next to the references it is somewhat thinner than the big tree but not sticker-like, so it is acceptable for a small mineral prop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20155
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central tall crystal",
+      "rows": "3-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side crystal spikes (left and right)",
+      "rows": "11-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark rock base mound",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cluster is a set of faceted, pointed crystal spikes (rows 3-25) that taper to single-pixel tips. The silhouette widens steadily from 1 px at row 3 to 32 px at row 25. None of the crystals has a flat horizontal top, a front-edge line with eave shadow, or an ellipse. The dark base (rows 26-30, widths 30, 30, 30, 28, 22) is a shaded mound with no distinct top plane or edge line, only a slightly lighter row at 26-27. The whole piece is a front view of facets, with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small purple crystal cluster on a rock base, not a plant, so the reference kind only loosely applies and I judged structure and shading only. It has about 5 lightness steps: pale facet highlights, mid violets, dark violets and a deep base. The outline is a dark purple that leans toward the material, and the measured 0% near-neutral dark edge pixels confirms there is no black sticker line. Near-flat coverage is 0%, so there are no flat fills, and the facets and rocky base carry some variation. It shows 10 visible tones per tile, above tree-1a786c (7) and well below tree-d43edd (29). It is therefore comparable to the simpler reference but clearly thinner than the richer one. It is small and simple, which is acceptable for a single crystal prop. A careful artist would accept it next to tree-1a786c, so I pass it on the primary facts, though the margin is not large.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19175
+  }
+ ],
+ "decidedAt": "2026-10-23T04:36:33.413Z",
+ "cells": {
+  "16": [
+   "3510a3da767b8416",
+   "52f1841e0ae6d26e",
+   "6b3f2603818fac1d",
+   "db34d9b07226f3e5"
+  ],
+  "24": [
+   "0221e5a4ed15b3f7",
+   "07446bc1ab891178",
+   "1ada72b1e7bb9dd0",
+   "2150d62ac33a56c0",
+   "259248f364a115a8",
+   "419c31ba07feab3a",
+   "46cadc75ecc606c6",
+   "4828c690abc5bdf1",
+   "4fdef8c096527014",
+   "51bbe5f52e153d89",
+   "60e6affebfd666a1",
+   "64898edea1d2b5eb",
+   "7920f376910beb92",
+   "80dca148f13d5e75",
+   "82a61e7083774c0e",
+   "8e1188cf9894bfdb",
+   "9707c52a4eaf6bf5",
+   "b1adb43dad460a5a",
+   "b1b85c735b7fd1db",
+   "bf57f81187bbc2da",
+   "c565688baf1e7ace",
+   "d5902b76c991cba0"
+  ],
+  "32": [
+   "6e0b1a57b751de68"
+  ],
+  "48": [
+   "10ed4147afed1026",
+   "1b3d2943ff55df81",
+   "31d76bed9602dc8b",
+   "37ffb289f874d827",
+   "417fd301b13658ef",
+   "dc8ba1c97903d697"
+  ]
+ }
+}

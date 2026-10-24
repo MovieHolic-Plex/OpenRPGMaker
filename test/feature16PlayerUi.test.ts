@@ -24,7 +24,7 @@ function mount(skin: MenuSkinId) {
   const layout = document.createElement('div'); document.body.append(layout);
   const scene = { session, getSession: () => session, syncRuntimeState() {} } as unknown as PlayScene;
   const controller = createPlayerStatusMenuController({ layout, getPlayStage: () => layout,
-    getActiveScene: () => scene, getPlayStartedAt: () => 0, closeMenu() {}, closeMenuWithJuice() {},
+    getActiveScene: () => scene, closeMenu() {}, closeMenuWithJuice() {},
     renderTitle() {}, emitMenuJuice() {}, menuCloseJuiceMs: 0, loadSlot() {},
   });
   const selected = () => layout.querySelector<HTMLElement>('.status-menu-detail-action.selected');

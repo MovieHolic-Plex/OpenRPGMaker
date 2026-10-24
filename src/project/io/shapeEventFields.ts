@@ -490,7 +490,8 @@ function validatePageShape(label: string, value: unknown): void {
       movementType === "approach" ||
       movementType === "custom" ||
       movementType === "living" ||
-      movementType === "chase",
+      movementType === "chase" ||
+      movementType === "fly",
     `${label}.movement.type이 잘못되었습니다.`
   );
   requireNumber(`${label}.movement.speed`, movement.speed);
@@ -527,7 +528,9 @@ function validatePageShape(label: string, value: unknown): void {
   }
   if (page.interaction !== undefined) {
     const interaction = requireRecord(`${label}.interaction`, page.interaction);
-    assert(interaction.kind === "pushable" || interaction.kind === "hiding", `${label}: 물체 상호작용 오류`);
+    assert(interaction.kind === "pushable" || interaction.kind === "hiding" || interaction.kind === "container", `${label}: 물체 상호작용 오류`);
+    if (interaction.style !== undefined) requireString(`${label}.interaction.style`, interaction.style);
+    if (interaction.searched !== undefined) requireBoolean(`${label}.interaction.searched`, interaction.searched);
     if (interaction.directions !== undefined) {
       for (const dir of requireArray(`${label}.interaction.directions`, interaction.directions)) validateDir(label, dir);
     }

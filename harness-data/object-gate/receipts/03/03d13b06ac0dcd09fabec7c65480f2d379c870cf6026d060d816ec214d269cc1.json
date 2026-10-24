@@ -1,0 +1,348 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "03d13b06ac0dcd09fabec7c65480f2d379c870cf6026d060d816ec214d269cc1",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "other.crystal_big",
+ "label": "beodeul_dungeon/other.crystal_big",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 55,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central tall crystal",
+      "rows": "1-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right side crystals",
+      "rows": "9-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark rock base mound",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a cluster of red crystal spikes. They taper to points (widths 1, 3, 5, 7... from rows 1-8) and show only vertical facets: a bright yellow highlight stripe and red and dark-red faces. No row band ends in a front-edge line with eave shadow, and no ellipse or flat plane appears at the crystal tips. The dark purple rock base (rows 24-30, widths 29-32) is a lumpy mound with a slightly lighter top row at row 24. That row is only a rim of about 1-2 rows, not a top surface. Overall the object is a front elevation with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small red-orange crystal cluster on a dark purple base. Measured facts: 8 visible tones per tile, 0% near-flat coverage and 0% neutral dark edges. That matches tree-1a786c (7 tones) but is far below tree-d43edd (29 tones). Outlines are tinted dark red-purple, not black, so the sticker look is avoided. Shading is shallow, though. Each shard has only about 3-4 steps (dark red, red, orange, a yellow highlight stripe), with little per-facet variation. The base is a nearly flat dark blob with almost no grain or stone-by-stone shading. Next to the richly clumped, multi-step reference trees, the piece reads as thinner and flatter. It is a sparse object, so I did not judge it on density alone, but a careful artist would still see it as less crafted than the references, so it fails on shading depth and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15924
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central tall crystal",
+      "rows": "1-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right side crystals",
+      "rows": "9-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark rock base mound",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a cluster of pointed crystal spikes (rows 1-23) shaded with a light vertical stripe at x=16 and a darker right side. The tips taper to a point (width 1, 3, 5, 7...) and there is no band, front-edge line, ellipse or eave shadow, so no horizontal top surface. The dark base mound (rows 24-30) is a flat-shaded rock with no clear top plane, only a slightly lighter row 24 that reads as a rim. The whole object is a front-facing elevation with no visible top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small crystal cluster of about 28x20 source pixels. Its measured facts are acceptable: 8 visible tones per tile against 7 for tree-1a786c, 0% near-flat coverage, and 0% neutral dark edges. The outline is a tinted dark red-purple, so it is not a sticker line. By eye, though, each crystal has only about 3-4 steps (pale core stripe, orange, red, dark red) and reads as a flat facet with one highlight streak. The dark base rock is a near-flat blob with 2 steps and almost no grain, chips or per-stone shading. Beodeul trees carry 5-6 steps per material with clumped texture, and tree-d43edd reaches 29 visible tones. Next to those references the candidate looks thinner and more graphic, with no secondary facets, no glints or sparkle dots, and no ground interaction. It is not a clear match for reference-level craft, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17192
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central crystal spire and side spires",
+      "rows": "1-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark rock/soil mound base",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a cluster of red crystal spires (rows 1-23). They taper to a point at row 1 (width 1, 3, 5, 7...), so there is no horizontal top band, no front-edge line and no ellipse. Each spire is drawn face-on, with a pale highlight stripe (x=16, rows 1-23) and a darker red side shade. The dark mound beneath (rows 24-30, width 26-32) is a flat-topped silhouette with no distinct top surface or edge line, only a slightly lighter back row. Nothing reads as a horizontal surface seen from above, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small crystal cluster on a dark rock base, set against two leafy trees, so the kind match is loose. Measured facts: 8 visible tones per tile against 7 for tree-1a786c and 29 for tree-d43edd. Near-flat coverage is 0% and the dark edge pixels are not neutral (0%), so the outline leans toward a tinted dark red/purple and is not a black sticker line. By eye, each shard has only about 4 steps (pale core, orange, red, dark red) with a clean gradient and little facet or sparkle detail. The base is a nearly flat dark purple blob with almost no grain or stone-by-stone shading. The piece is small and simple and reads thinner and more sticker-like than the richly clumped canopies of both references, especially tree-d43edd. The tone count is only on par with the weaker reference, and a careful artist would not accept it beside the stronger one without more facet shading and base texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16153
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central tall crystal",
+      "rows": "1-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right side crystals",
+      "rows": "9-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark rock base mound",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The crystals are pointed shards drawn face-on with a light highlight stripe and a dark right-hand shade. The tips narrow to a point (width 1 at row 1) with no flat top plane, no front-edge line and no eave shadow. The dark purple rock base (rows 24-30) is a flat-shaded mound with a speckled texture. Its width goes 31, 32, 30, 26, so it has a slight bowl outline, but it has no distinct top band or ellipse. The object is therefore a front elevation with no readable top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small red crystal cluster on a dark rock base, not a tree, so it does not match the reference kind (canopy and trunk). It is much smaller than the references and has only a few facets per crystal, with roughly 3-4 lightness steps on the crystals (pale core, orange, red, dark red). The base is a flat dark purple mass with little grain. The outline is a tinted dark red/purple, not neutral black, which agrees with the 0% neutral edge share. The 8 tones per tile are close to tree-1a786c (7) but far below tree-d43edd (29). By eye the piece is thinner and flatter than the references, which have clumped leaves in many greens, trunk grain and roots. Sparse crystal shapes do not justify a pass when it looks sticker-like next to the richer reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12373
+  }
+ ],
+ "decidedAt": "2026-10-23T02:42:14.008Z",
+ "cells": {
+  "16": [
+   "1dd6e018baa2d9f0",
+   "3179ff05f26917af",
+   "b567fbb7edf778b1",
+   "fa3123338a3dea7d"
+  ],
+  "24": [
+   "0b0d023e05b67b6c",
+   "1f6b97a68c016c49",
+   "22a26b246973bc85",
+   "2848f0454024fdc5",
+   "288c6e6761a591df",
+   "2e74a181b6663d72",
+   "6a132ce2a992fc47",
+   "7469b6060c01c85b",
+   "77da67489c1ea637",
+   "7d464ce24c382a36",
+   "887548ebb481d8fb",
+   "90984aac08256223",
+   "ad36bbdcb0d370de",
+   "b879cb20863ace9c",
+   "bacacf7d84b2d843",
+   "bbf773054149bbd1",
+   "dd9bd7c401bffc2b",
+   "de497fd442a8db8d",
+   "dfc8201177ea73ea",
+   "e4a057650a53732e",
+   "e6be4f95b02abe34",
+   "e8e9ee07e0933d9c",
+   "f7ecec111edc7ded"
+  ],
+  "32": [
+   "3454d76fe31be1a2"
+  ],
+  "48": [
+   "0a073c75cf543771",
+   "30aebdba47685d65",
+   "362aeb75043902eb",
+   "87e0282b73405ca2",
+   "bd67ea9e669b319b",
+   "f835ab023f48cab9"
+  ]
+ }
+}

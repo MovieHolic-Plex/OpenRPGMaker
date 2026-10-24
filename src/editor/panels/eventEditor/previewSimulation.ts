@@ -281,6 +281,7 @@ function conditionNeedsUnsimulatedState(condition: Condition): boolean {
     case "relativeFacing":
     case "hiding":
     case "pursuitActive":
+    case "eventSeesPlayer":
     case "clearCount":
     case "endingSeen":
     case "newGamePlus":

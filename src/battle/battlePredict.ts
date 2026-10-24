@@ -1,5 +1,5 @@
 import { advancePredictedHitStates } from "@/battle/battlePredictStates";
-import { authoredElementMultiplier, battleElementMultiplier } from "@/battle/battleElementModifiers";
+import { authoredElementMultiplier, battleElementMultiplier, damageTypeMultiplier } from "@/battle/battleElementModifiers";
 import { emotionDamageMultiplier } from "@/battle/battleEmotion";
 import { restoreSkillDrain, spendSkillHp } from "@/battle/battleSkillVitals";
 import { consumeBattleSkillResource } from "@/battle/battleSkillUse";
@@ -323,7 +323,8 @@ export function predictSkillDamageFor(project: Project, user: BattleBattlerSnaps
           attackerStatMultiplier: attackMultiplierForStates(project, source, statistic === "mind" || usesMagicalDefense(project, skill.elementId) ? "mind" : "attack"),
           targetDefenseMultiplier,
           elementMultiplier: battleElementMultiplier(project, skill.elementId, source, destination)
-            * emotionDamageMultiplier(project, source, destination),
+            * emotionDamageMultiplier(project, source, destination)
+            * (skill.effect.kind === "damage" ? damageTypeMultiplier(project, statistic === "mind" ? "magic" : "physical", destination) : 1),
           useMagicalDefense: usesMagicalDefense(project, skill.elementId),
         });
         hit = result.amount;

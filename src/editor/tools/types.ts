@@ -116,6 +116,8 @@ export interface ToolDefinition {
    * run(draft,args) 는 ctx 를 받지 못하므로, 「지금 보는 맵」이 필요한 도구(ask_tileset_change)는 이 경로로 받는다.
    */
   readonly fillsCurrentMapId?: boolean;
+  /** 이름을 주면 실행기가 비어 있는 그 인자를 사용자가 보는 맵(ctx.currentMapId)으로 채운다 — 「요청이 온 맵」이 필요한 도구(author_dungeon 의 기본 출구). */
+  readonly fillsCurrentMapIdAs?: string;
   // true 면 Pi 의 캐릭터 그림 선택 검사(charsetSelectionGate)를 건너뛴다 — 사람이 고른 출연진을 통째로 까는 도구(build_monster_game)용.
   // 모델이 칩 번호를 고르지 않으니 「후보 그림을 먼저 봐라」는 계약의 대상이 아니다.
   readonly placesCuratedCast?: boolean;

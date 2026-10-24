@@ -69,6 +69,7 @@ import {
   setRoguelikeRunFlag,
   startRoguelikeRun,
 } from "@/project/roguelikeRun";
+import { cachedSightBlocker } from "@/project/sightBlockers";
 import { roguelikeRoomId } from "@/project/roguelikeRooms";
 
 import { setRelationshipState } from "@/project/relationshipState";
@@ -692,7 +693,7 @@ export function executeCommand(
       if (!breakLoop(state)) return resumeNext(frame);
       return { kind: "continue" };
     case "transfer":
-      return pause("transfer", { kind: "transfer", mapId: command.mapId, x: command.x, y: command.y, direction: command.direction, fade: command.fade, transition: command.transition });
+      return pause("transfer", { kind: "transfer", mapId: command.mapId, x: command.x, y: command.y, direction: command.direction, fade: command.fade, transition: command.transition, ...(command.door === false ? { door: false } : {}) });
     case "wait": {
       const ms =
         command.variableId && command.variableId.trim()
@@ -1330,7 +1331,16 @@ function resolveOpenChestId(state: InterpreterState): string {
  * 프로젝트를 부채로 돌리는 잡트리(단위 테스트 등)에서는 해석 불가 = 거짓이다.
  */
 function locationEvalContext(state: InterpreterState): ConditionEvalContext {
-  return { map: state.project?.maps[state.session.currentMapId], ...partySkillContext(state.project, state.session) };
+  const positions = state.eventPositions;
+  const map = state.project?.maps[state.session.currentMapId];
+  const blocksSight = cachedSightBlocker(state.project, map);
+  return {
+    map,
+    ...(blocksSight ? { blocksSight } : {}),
+    ...partySkillContext(state.project, state.session),
+    // 걷는 NPC 의 실시간 칸은 장면 eventPositions 에 있다(eventSeesPlayer 가 읽는다).
+    ...(positions ? { eventPosition: (eventId: string) => positions[eventId] } : {}),
+  };
 }
 
 /** 조건 트리가 host 의 characterId 를 읽는가(호감도·관계). evalCondition 의 hostSocial 사용처와 맞춘다. */

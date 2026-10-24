@@ -16,6 +16,11 @@ export const DEFAULT_SEED = 1;
 /** 시나리오가 쓸 수 있는 op 종류. 목록 밖은 정규화 단계에서 거부한다. */
 export const OP_KINDS = [
   "audioAction",
+  // 플레이 세션(scripts/qa/play)이 쓰는 op. 시나리오로 그대로 옮길 수 있도록 런타임 op 로 둔다 —
+  // 세션 도구가 따로 실행기를 두면 재현과 회귀 시나리오가 서로 다른 동작을 검증하게 된다.
+  "move",
+  "clickCanvas",
+  "waitForBodyText",
   // 맵 타일을 실제 캔버스 위에서 누른다(클릭 이동 #32, masterpiece-field).
   "clickTile",
   // 키를 누르며 JS 조건이 설 때까지 되풀이(first-love 시나리오).
@@ -40,6 +45,8 @@ export const OP_KINDS = [
   "skill",
   "key",
   "cinematic",
+  // 턴제 전투 명령 카드를 계획대로 누른다(runtimeQaBattle.mjs) — 배우별 스킬·아이템 큐, 명령 수 또는 결과 창까지.
+  "battle",
   "pauseFrames",
   "stepFrames",
   "resumeFrames",
@@ -47,6 +54,11 @@ export const OP_KINDS = [
   "waitForRuntime",
   "waitForEmote",
   "waitForPosition",
+  // 맵이 바뀌기를 기다린다(`not:true` 면 그 맵이 **아닐** 때까지). 문·transfer 는 발을 디딘 뒤
+  // 다음 틱에 발동하므로, 이동 op 이 끝난 직후에 좌표를 단정하면 아직 옛 맵이다(실측: scarloxy
+  // 유적→초원 transfer — 이동 직후 좌표는 유적 (12,1)). waitForPosition 은 정확한 좌표를 요구해서
+  // "도착 좌표가 틀렸다"를 기다림으로 표현할 수 없다 — 그래서 맵 축만 따로 둔다.
+  "waitForMap",
   // 이벤트(자율 이동 적·NPC)가 그 칸에 도착/이탈할 때까지 조건 대기 — session.eventLocations 를 읽는다(필드 적 QA).
   "waitForEventAt",
   "traceEvent",
@@ -502,6 +514,36 @@ export function evaluateExpect(expected, observed) {
     if (testids.includes(testid)) failures.push(`testid 잔존: ${testid}`);
   }
 
+  // ── 에이전트 재현용 일반 축 ───────────────────────────────────────────────
+  // 재현 도구(scripts/qa/play)가 세션 로그의 증상을 그대로 시나리오로 옮긴다. 기존 축은
+  // 화면 구조(testid)·상태 스칼라만 볼 수 있어, "이 오류가 콘솔에 난다"·"이 낱말이 화면에 있다"를
+  // 표현할 수 없었다. 문자열이 `/…/플래그` 모양이면 정규식, 아니면 부분 문자열이다.
+  const matches = (text, pattern) => {
+    if (typeof pattern !== "string") return false;
+    const regex = /^\/(.*)\/([a-z]*)$/.exec(pattern);
+    if (!regex) return text.includes(pattern);
+    try { return new RegExp(regex[1], regex[2]).test(text); } catch { return text.includes(pattern); }
+  };
+  if (expected.consoleErrorMatches !== undefined) {
+    const patterns = [].concat(expected.consoleErrorMatches);
+    const seen = Array.isArray(observed.consoleErrors) ? observed.consoleErrors : [];
+    for (const pattern of patterns) {
+      if (seen.some((error) => matches(String(error), pattern))) continue;
+      failures.push(`consoleErrorMatches: ${pattern} 와 맞는 오류가 없다 — 실제 ${seen.length}건: ${seen.slice(0, 3).join(" | ") || "없음"}`);
+    }
+  }
+  const bodyText = typeof observed.bodyText === "string" ? observed.bodyText : "";
+  if (expected.textPresent !== undefined) {
+    for (const pattern of [].concat(expected.textPresent)) {
+      if (!matches(bodyText, pattern)) failures.push(`textPresent: 화면 글자에 ${pattern} 가 없다`);
+    }
+  }
+  if (expected.textAbsent !== undefined) {
+    for (const pattern of [].concat(expected.textAbsent)) {
+      if (matches(bodyText, pattern)) failures.push(`textAbsent: 화면 글자에 ${pattern} 가 있다`);
+    }
+  }
+
   // 보이는 글자 단정 — testidPresent 는 DOM 존재만 본다. 숨은 패널(display:none) 속 숫자도
   // 통과하므로 "HP 가 18/18 → 0/18 로 줄었다" 를 그 축으로 적으면 화면에 없는 값을 증거로
   // 삼게 된다(실측: 클래식 스킨은 .battle-enemy-list-panel 을 display:none 으로 숨긴다).
@@ -521,6 +563,17 @@ export function evaluateExpect(expected, observed) {
     if (!seen.text.includes(wanted)) {
       failures.push(`visibleText: ${testid} 기대 "${wanted}" 포함, 실제 "${seen.text}"`);
     }
+  }
+
+  // 페이지 안 단언 — 고정 축으로 표현할 수 없는 불변식("정확히 하나", "보이는 것만 센다").
+  // 관측이 없으면 통과로 읽지 않는다: 러너가 평가하지 않은 단언을 통과로 보면 게이트가 거짓말한다.
+  for (const assertion of expected.pageAssertions ?? []) {
+    const seen = observed.pageAssertions?.[assertion.id];
+    if (!seen) {
+      failures.push(`pageAssertions: ${assertion.id} 관측 없음 — 러너가 이 단언을 평가하지 않았다`);
+      continue;
+    }
+    if (!seen.ok) failures.push(`pageAssertions: ${assertion.id} — ${seen.reason}`);
   }
 
   // 오디오는 스크린샷에 안 잡힌다. 엔진이 재생 지시를 받은 리소스 id 를 기록하는 훅

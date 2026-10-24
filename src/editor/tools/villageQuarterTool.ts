@@ -5,6 +5,7 @@
 // 규칙: 조각 칸은 모두 비고(위층 그림·이벤트 없음)·걸을 수 있고 길(흔한 바닥이 아닌 칸)을 덮지 않는다 — 사방 7칸 넘게 트인 흙 마당은 예외.
 // 조각 사이 1칸, 앞줄(아래 한 줄)은 걸을 수 있다. 찍을 때마다 통행을 다시 재서 원래 닿던 칸을 끊으면 되돌린다. 놓기 규칙·높이 단은 stamp_object 가 그대로 본다.
 import { isPassable } from "@/project/collision";
+import { BEODEUL_YARD_BASE } from "@/project/defaults/beodeulCity";
 import type { GameMap, Project } from "@/project/types";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { protectedHouseCells } from "./houseProtection";
@@ -828,18 +829,19 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
   };
   /**
    * 포도밭(r10): 8×4 이랑 키트 넷을 찍던 판은 «넓은 맨흙 마당에 떨군 모듈 격자»로 읽혔다(16px 되풀이·죽은 칸). 조각을 다 놓은 뒤 남은 마당을
-   * 두 칸 높이 포도나무 줄(위 칸 = 잎 지붕 윗면 29639~29646 걸음, 아래 칸 = 앞면 +8 막힘, 둘 다 위층)로 채운다. 줄 사이 한 칸은 고랑 길(3칸 간격),
+   * 두 칸 높이 포도나무 줄(위 칸 = 잎 지붕 윗면 V0~V0+7 걸음(V0 = BEODEUL_YARD_BASE + 71), 아래 칸 = 앞면 +8 막힘, 둘 다 위층)로 채운다. 줄 사이 한 칸은 고랑 길(3칸 간격),
    * 줄 길이 4~10 · 사이 1~2칸, 가운데 칸은 같은 것 연달아 금지 · 기둥 칸은 2~3칸마다. 줄 하나가 통행을 끊으면 그 줄은 걷는다.
    */
   const fillVineRows = (box: Box): void => {
     const mm = draft.maps[map.id]!;
     const meta = (draft.tilesets[map.tilesetId] as unknown as { tileMeta?: readonly TileMetaRow[] }).tileMeta ?? [];
-    if (!meta[29654]?.tags?.includes("vine")) return;
-    const MID = [29640, 29642, 29643, 29645], POST = [29641, 29644];
+    const V0 = BEODEUL_YARD_BASE + 71;
+    if (!meta[V0 + 15]?.tags?.includes("vine")) return;
+    const MID = [V0 + 1, V0 + 3, V0 + 4, V0 + 6], POST = [V0 + 2, V0 + 5];
     const near = (x: number, y: number) => placed.some((p) => x >= p.x - 1 && x < p.x + p.w + 1 && y >= p.y - 1 && y < p.y + p.h + 2);
     const free = (x: number, y: number) => x >= box.x && y >= box.y && x < box.x + box.w && y < box.y + box.h && yardMembers!.has(mm.lowerTiles[y * W + x]!) && mm.upperTiles[y * W + x] === -1 && !near(x, y);
     const seed = comp.seed; const vineCells = new Set<number>();
-    const isFront = (x: number, y: number) => vineCells.has(y * W + x) && (mm.upperTiles[y * W + x] ?? -1) >= 29647;
+    const isFront = (x: number, y: number) => vineCells.has(y * W + x) && (mm.upperTiles[y * W + x] ?? -1) >= V0 + 8;
     // r11: 3칸 고정 간격으로만 줄을 내자 조각 아래 띠가 맨흙으로 남았고(마당 40%), 길이를 4~10 으로 흔든 줄은 «울타리 미로»로 읽혔다 —
     // 줄마다 아래로 한 칸씩 훑어 놓을 수 있는 곳에 놓고(위 칸이 다른 줄 앞면이면 안 된다 = 고랑 길 한 칸), 빈 구간은 12칸 넘으면 고르게 나눠 나란한 줄로.
     for (let y = box.y; y + 1 < box.y + box.h - 1; y++) {
@@ -851,14 +853,14 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
         const parts = Math.ceil((run + 1) / 13), L = Math.floor((run - (parts - 1)) / parts);
         for (let k = 0; k < parts && L >= 4; k++) {
           const sx = x + k * (L + 1);
-          const row: number[] = [29639]; let sincePost = 0, last = -1;
+          const row: number[] = [V0]; let sincePost = 0, last = -1;
           for (let c = 1; c < L - 1; c++) {
             let t: number;
             if (sincePost >= 2 && (sincePost >= 3 || rnd() < 0.5) && c < L - 2) { t = POST[Math.floor(rnd() * 2)]!; sincePost = 0; }
             else { do { t = MID[Math.floor(rnd() * MID.length)]!; } while (t === last); sincePost++; }
             row.push(t); last = t;
           }
-          row.push(29646);
+          row.push(V0 + 7);
           const cells: number[] = [];
           row.forEach((t, c) => { const i = y * W + sx + c; mm.upperTiles[i] = t; mm.upperTiles[i + W] = t + 8; cells.push(i, i + W); });
           const after = reachable(draft, mm, isPassable(draft, mm, seed.x, seed.y) ? seed : { x: box.x, y: box.y + box.h });

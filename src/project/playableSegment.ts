@@ -14,6 +14,9 @@
 // 스토리는 기억 조사 + 이어지는 장면. 셋 다 「핵심 행동 → 문 → 길 → 구간 끝」이고 구간 끝은 핵심 행동의 스위치가 연다.
 
 import { runTool } from "@/editor/tools";
+import { resolveGraphic } from "@/editor/tools/eventCompile";
+import { withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
+import { genreLockCharsetCatalogFilter } from "@/project/genreLockCharsets";
 import { canPaintStoryWalk, paintBeodeulStoryWalk } from "@/editor/tools/storyWalkBeodeul";
 import { runGameCheck } from "@/qa/gameCheck";
 import { canMove, isPassable, isPassableLanding } from "@/project/collision";
@@ -113,8 +116,24 @@ function tool(ctx: { project: Project }, name: string, args: Record<string, unkn
   return (result as { data?: Record<string, unknown> }).data;
 }
 
-function page(id: string, commands: readonly unknown[], conditions: readonly unknown[] = []): Record<string, unknown> {
-  return { id, conditions, trigger: { kind: "action" }, graphic: { transparent: true }, commands };
+function page(id: string, commands: readonly unknown[], conditions: readonly unknown[] = [], graphic: Record<string, unknown> = { transparent: true }): Record<string, unknown> {
+  return { id, conditions, trigger: { kind: "action" }, graphic, commands };
+}
+
+/**
+ * 첫 구간 뼈대의 핵심 행동 NPC 그림. 예전에는 뼈대 페이지가 전부 transparent 라, 이벤트는 있는데
+ * 마을 어디에도 사람이 그려지지 않아 빈 타일을 조사해야 첫 목표를 받을 수 있었다
+ * (2026-10-23 필드 QA F2: JRPG 촌장·몬스터 박사가 화면에 없다). 사람 NPC 는 걷기 칩으로 그린다.
+ * 장르 잠금이 켜져 있으면 허용 칩 안에서만 고르고, 못 고르면 투명으로 물러선다(뼈대를 포기하지 않는다).
+ */
+function starterNpcGraphic(project: Project, query: string, seed: string): Record<string, unknown> {
+  try {
+    const filter = genreLockCharsetCatalogFilter(project);
+    const graphic = withNpcGraphicCatalogFilter(filter, () => resolveGraphic({ query }, { overrides: project.charsetLabels, seed }));
+    return graphic.sprite ? { ...graphic } : { transparent: true };
+  } catch {
+    return { transparent: true };
+  }
 }
 
 /** 길 맵 기하 — 입구는 x=0, 구간 끝 이벤트는 x=width-2. 기본(옛 뼈대)은 24×12 · 입구/끝 줄 6. */
@@ -225,6 +244,25 @@ const SKELETONS: Record<PlayableSegmentGenre, GenreSkeleton> = {
       // 시작 소지품 도구는 없다 — 포획 게임이 포획 도구 없이 시작하지 않게 코드가 직접 넣는다.
       const inventory = project.session.inventory ?? {};
       project.session = { ...project.session, inventory: { ...inventory, [CAPTURE_ITEM_ID]: Math.max(5, inventory[CAPTURE_ITEM_ID] ?? 0) } };
+      // 지도·배지 메뉴는 **실제 캠페인 정의**가 있어야 열린다(menuSystem 의 내재 가용성 관문,
+      // gameSystemAuthoringTools 는 「지도·배지 항목에는 실제 캠페인 정의가 필요합니다」로 거부한다).
+      // 수집 프리셋 메뉴에는 두 항목이 저작돼 있는데 정의가 없어 런타임이 둘 다 숨겼다
+      // (2026-10-23 필드 QA F2: 도감·동료·가방·원정 수첩·저장·설정 6개만 나온다).
+      // 예제가 실제로 가진 장소(마을·1번 길)와 종·목표로 정의를 깔아 두 항목이 진짜 화면을 갖게 한다.
+      const startMap = project.maps[project.startMapId];
+      const routeMap = project.maps[SEGMENT_ROUTE_MAP_ID];
+      project.system.monsterCampaign = {
+        id: "campaign_starter_expedition",
+        name: "첫 원정",
+        speciesIds: (project.database.monsterSpecies ?? []).map((species) => species.id),
+        speciesNotes: {},
+        badges: [],
+        locations: [
+          ...(startMap ? [{ mapId: startMap.id, name: startMap.name, x: startMap.width - 2, y: Math.floor(startMap.height / 2), kind: "town" as const }] : []),
+          ...(routeMap ? [{ mapId: routeMap.id, name: routeMap.name, x: routeMap.width - 2, y: Math.floor(routeMap.height / 2), kind: "route" as const }] : []),
+        ],
+        objectives: [{ id: "objective_first_partner", title: "마을의 박사에게 첫 파트너를 받는다", summary: "첫 파트너 받기", switchId: SEGMENT_KEY_SWITCH_ID }],
+      };
     },
   },
   "adventure-jrpg": {
@@ -237,6 +275,8 @@ const SKELETONS: Record<PlayableSegmentGenre, GenreSkeleton> = {
       tool(ctx, "set_encounter_table", { mapId: SEGMENT_ROUTE_MAP_ID, entries: [{ troopId: SEGMENT_WILD_TROOP_ID, weight: 1 }], encounterRate: 20 });
     },
     placeStarter(ctx, at) {
+      // 촌장은 화면에 서 있어야 한다 — 예전에는 투명 그래픽이라 마을 서쪽 끝 빈 잔디를 조사해야 했다(2026-10-23 필드 QA F2).
+      const look = starterNpcGraphic(ctx.project, "노인", `${at.mapId}:${SEGMENT_STARTER_EVENT_ID}`);
       tool(ctx, "upsert_event", {
         mapId: at.mapId,
         event: {
@@ -245,8 +285,8 @@ const SKELETONS: Record<PlayableSegmentGenre, GenreSkeleton> = {
             page(SEGMENT_STARTER_EVENT_ID + "_ask", [
               { kind: "text", body: "숲길 끝에 괴물이 길을 막고 있네. 부탁하네." },
               { kind: "setSwitch", switchId: SEGMENT_KEY_SWITCH_ID, value: true },
-            ]),
-            page(SEGMENT_STARTER_EVENT_ID + "_asked", [{ kind: "text", body: "숲길은 동쪽 문 너머일세." }], [{ kind: "switch", switchId: SEGMENT_KEY_SWITCH_ID, value: true }]),
+            ], [], look),
+            page(SEGMENT_STARTER_EVENT_ID + "_asked", [{ kind: "text", body: "숲길은 동쪽 문 너머일세." }], [{ kind: "switch", switchId: SEGMENT_KEY_SWITCH_ID, value: true }], look),
           ],
         },
       });

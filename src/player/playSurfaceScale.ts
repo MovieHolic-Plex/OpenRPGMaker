@@ -77,9 +77,12 @@ export function calculatePlaySurfacePlacement(
   const safeLogicalW = positiveFiniteOr(logicalW, PLAY_RESOLUTION.width);
   const safeLogicalH = positiveFiniteOr(logicalH, PLAY_RESOLUTION.height);
   const safeScale = positiveFiniteOr(scale, 1);
+  // 정수 배율이면 무대 왼쪽 위도 정수 화면 px 에 둔다 — 홀수 여백의 반 화소(예: 1281px 창 → 160.5px)에 걸리면
+  // 캔버스와 대화창 도트 글자가 통째로 반 화소 밀려 흐려진다. 맞춤(fit) 배율은 원래대로 가운데 정확히.
+  const snap = Number.isInteger(safeScale) ? Math.floor : (value: number): number => value;
   return {
-    left: Math.max(0, (safeViewportW - safeLogicalW * safeScale) / 2),
-    top: Math.max(0, (safeViewportH - safeLogicalH * safeScale) / 2),
+    left: Math.max(0, snap((safeViewportW - safeLogicalW * safeScale) / 2)),
+    top: Math.max(0, snap((safeViewportH - safeLogicalH * safeScale) / 2)),
   };
 }
 

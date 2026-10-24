@@ -1,0 +1,201 @@
+{
+ "panel": "theme-climate-r2 blind panel 4 (3 fresh Opus + 1 Argon), 2026-10-23",
+ "rule": "a major counts only if at least 2 of the 4 judges raise the same problem; pick = candidate with 0 counted majors, majority vote among those",
+ "delegatedBy": "delegated by user to supervisor 2026-10-23",
+ "note": "Votes A1 4/4, 0 counted majors (minors: crazy-paving rather than squared blocks 4/4, faint grid rhythm 4/4, heavy joints). A1 = panel-3 dressed flagstone joints/bevel + in-slab grain; object-gate PASS 604b2ebab286 (terrain) on the candidate image itself.",
+ "prompt": "# Blind review panel — dungeon chipset pieces\n\nYou are one independent judge. Do not edit or create any files; only open the PNG boards below with the Read tool\n(they are large; read each one fully). No other context is needed.\n\nEach board is one item for an OPRN 16px RPG chipset in 3/4 top-down view (RPG Maker style: tops are visible planes, fronts below them,\nno side faces, light from top-left). At the top of the board are REFERENCE crops from the existing \"Beodeul\" chipset (the quality\nbar) at 1x and 3x and an RPG Maker person for scale. Below are anonymous candidates labelled X and Y for the same item: the piece at 1x and\n3x, its parts, a small scene at 1x and 2x (animated items show all frames side by side), and extras (tile mosaics / test maps) for\nfloors, walls and autotiles.\n\nJudge each candidate against these criteria:\n1. reads correctly in 3/4 top-down at 1x (top planes visible, fronts below, no side/isometric faces, sits on the floor with contact);\n2. sits in the same game as the Beodeul reference (palette harmony, texture density, number of shading steps, no toy/flat/clip-art look,\n   no black ink outlines);\n3. seamless joins: floors/walls/autotiles show no visible 16px repeat or seams; multi-cell objects join without cuts;\n4. reads as its stated purpose and as its theme (the board title says what it is).\n\nA MAJOR problem = something that would make you refuse to ship it (misreads at 1x, wrong view, clearly below the reference's quality,\nvisible seams/grid, does not read as the item). A MINOR problem = worth polishing but shippable.\n\nReply with ONLY a JSON object, no prose before or after:\n{\"<board file name without .png>\": {\"X\": {\"majors\": [{\"problem\": \"...\", \"where\": \"...\"}], \"minors\": [{\"problem\": \"...\", \"where\": \"...\"}]},\n                                    \"Y\": {\"majors\": [...], \"minors\": [...]},\n                                    \"pick\": \"X\" or \"Y\", \"why\": \"one sentence\"}, ...}\n\nBoards:\n- /home/main/z-project/rpg-zzu-dt-fix/qa-runs/tcr2/panel-4/theme-climate-r2__tc.pyr_floor.png\n",
+ "boards": {
+  "theme-climate-r2__tc.pyr_floor": {
+   "item": "tc.pyr_floor",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "3fb5febf6f6e6158c0fad3c9635fa54c6e3d91e829f8df83c67a09217a8b077f"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "48d3124640dfbf30655f8d9edc731abe5467376d0a88ac246b9c66e2fa172657"
+    }
+   },
+   "votes": {
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1",
+    "argon": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": [
+     "reads as cracked dry mud / desert ground, not flagstones (4/4)"
+    ]
+   },
+   "pick": "A1"
+  }
+ },
+ "raw": {
+  "opus1": {
+   "theme-climate-r2__tc.pyr_floor": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Irregular cracked-mud polygons read more like dry earth or crazy paving than dressed pyramid flagstones; there is no cut-stone regularity like the reference plaza bricks",
+       "where": "piece 3x / mix 6x6"
+      },
+      {
+       "problem": "The 16px cell grid shows faintly in the mix, where some joints line up on cell edges",
+       "where": "mix 6x6 random per cell 3x"
+      },
+      {
+       "problem": "Speckle is noisier than the reference's clean stone texture",
+       "where": "piece 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "Reads as cracked dry mud or desert ground, not sandstone flagstones: the thin crack lines on a flat field give no stone slabs or edge shading",
+       "where": "piece 1x / scene 1x / test map"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "Flatter shading with fewer steps than the reference, so it looks less finished",
+       "where": "piece 3x / mix 6x6"
+      },
+      {
+       "problem": "Low contrast makes the floor mushy at 1x next to the rim",
+       "where": "scene 1x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's thicker shaded joints and bevelled slabs read as stone flagstones at 1x, while Y reads as cracked mud ground."
+   }
+  },
+  "opus2": {
+   "theme-climate-r2__tc.pyr_floor": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The stones line up in near-regular rows and columns, so a faint 16px cell rhythm shows across large areas",
+       "where": "X mix 6x6 at 3x and the open floor in the X test map"
+      },
+      {
+       "problem": "Every stone is about the same size with no larger slabs, so it reads as crazy paving rather than cut pyramid flagstones and sits a little apart from the reference's dressed-block look",
+       "where": "X piece 3x and X mix"
+      },
+      {
+       "problem": "The cracks are fairly dark and busy at 1x, making the floor slightly noisier than the reference floors",
+       "where": "X scene 1x and X test map"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "Thin, wandering cracks on a flat, low-contrast fill make it read as dried mud or cracked desert ground, not as sandstone flagstones",
+       "where": "Y piece 3x, Y mix 6x6 and Y test map"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The stones have no edge highlight or bevel shading, so the floor looks flatter than the reference's stepped shading",
+       "where": "Y piece 3x"
+      },
+      {
+       "problem": "Cell-to-cell crack density repeats, leaving a slightly visible tiling pattern",
+       "where": "Y mix 6x6 at 3x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's beveled, lit stones with clear joints read as a sandstone flagstone floor and match the reference's shading depth, while Y reads as cracked mud."
+   }
+  },
+  "opus3": {
+   "theme-climate-r2__tc.pyr_floor": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The irregular crazy-paving reads more like cracked dry mud or organic cobble than cut sandstone flagstones. The reference plaza and castle floors use dressed, rectilinear blocks.",
+       "where": "X mix 6x6 3x, X piece 3x"
+      },
+      {
+       "problem": "There are only about two shading steps per stone, and the dark grout lines are fairly heavy, so the floor looks slightly flatter than the Beodeul floor_cata or ground-plaza texture.",
+       "where": "X piece 3x"
+      },
+      {
+       "problem": "Faint vertical grout alignments hint at the cell grid in places.",
+       "where": "X mix 6x6 3x, columns of joints"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "The stones blur into thin wandering crack lines, so at 1x it reads as cracked desert ground or dry mud rather than a pyramid flagstone floor.",
+       "where": "Y piece 1x, Y scene 1x, Y test map 1x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The low-contrast fill has almost no shading per stone, which makes it look flatter than the reference.",
+       "where": "Y mix 6x6 3x"
+      },
+      {
+       "problem": "Some crack lines are interrupted at cell edges, leaving small dead ends.",
+       "where": "Y mix 6x6 3x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's outlined stones with grout at least read as a laid stone floor at 1x and tile without visible seams, while Y reads as cracked earth."
+   }
+  },
+  "argon": {
+   "theme-climate-r2__tc.pyr_floor": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Stones read more like cracked dry earth or crazy paving than cut sandstone flagstones; the shapes are irregular next to the reference's rectangular coursed slabs",
+       "where": "X piece 3x / X mix 6x6"
+      },
+      {
+       "problem": "The mix shows faint column and row alignment of the joint lines at the 16px cell edges, so the grid rhythm is slightly visible",
+       "where": "X mix 6x6 random per cell 3x"
+      },
+      {
+       "problem": "Stones are fairly flat with only a dark joint and speckle, so there is less bevel and shading depth than in the reference slabs",
+       "where": "X piece 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "Reads as cracked mud or dried clay, not flagstones: there are thin hairline cracks with no slab bevels, so it misses the stated sandstone flagstone purpose",
+       "where": "Y piece 3x / Y mix 6x6 / Y scene 2x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "Low contrast and a single flat tone make it look washed out at 1x next to the reference's texture density",
+       "where": "Y scene 1x / Y test map 1x"
+      },
+      {
+       "problem": "Some crack lines end abruptly at cell edges in the mix",
+       "where": "Y mix 6x6 random per cell 3x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's thick joints and distinct stones read as a laid stone floor at 1x and sit closer to the reference's slab look, while Y reads as cracked mud."
+   }
+  }
+ }
+}

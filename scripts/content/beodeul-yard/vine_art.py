@@ -360,11 +360,17 @@ def preview(out):
 
 
 # ---------------------------------------------------------------- 표본: 다진 흙 마당 위 세 줄(길이 다름) + 낱 조각
-DIRT_BODY = [29589 + i for i in range(8)]     # beodeul_yard_dirt 몸통 + 변형 일곱(bake_yard tid('dirt', body..body8))
+DIRT_BODY = [33024 + 21 + i for i in range(8)]     # 마당 꼬리 BASE(33,024)+21 = beodeul_yard_dirt 몸통 + 변형 일곱(bake_yard tid('dirt', body..body8))
 
 
 def _cell(sh, t):
     return sh.crop(((t % 128) * T, (t // 128) * T, (t % 128) * T + T, (t // 128) * T + T))
+
+
+def _dirt_body(i):
+    """마당 다진 흙 몸통 i(0=body, 1~7=body2~8)를 시트가 아니라 yard_art 원본에서 그린다(시트 굽기 순서와 무관하게 같은 화소)."""
+    import yard_art as A
+    return A.img_of(A.surfaces()["dirt"]["body" if i == 0 else f"body{i + 1}"])
 
 
 def _hh(x, y):
@@ -379,7 +385,7 @@ def sample(rows_spec=((1, 1, 8, 0), (1, 4, 5, 1), (3, 7, 6, 2)), W=13, H=10, sin
     extra = 4 if singles else 0
     im = Image.new("RGBA", (W * T, (H + extra) * T))
     for y in range(H + extra):
-        for x in range(W): im.paste(_cell(sh, DIRT_BODY[_hh(x, y) % 8]), (x * T, y * T))
+        for x in range(W): im.paste(_dirt_body(_hh(x, y) % 8), (x * T, y * T))
     for (x0, y0, n, seed) in rows_spec:
         for i, k in enumerate(row_strip(n, seed)): im.alpha_composite(strip_img(k), ((x0 + i) * T, y0 * T))
     if singles:   # 맨 아래: 가장 짧은 줄(왼쪽 끝 + 오른쪽 끝), 그 옆에 가운데 여섯을 차례로 이은 줄

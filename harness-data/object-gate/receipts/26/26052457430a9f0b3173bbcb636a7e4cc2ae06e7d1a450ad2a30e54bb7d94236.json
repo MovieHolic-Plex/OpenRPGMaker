@@ -1,0 +1,363 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "26052457430a9f0b3173bbcb636a7e4cc2ae06e7d1a450ad2a30e54bb7d94236",
+ "width": 32,
+ "height": 32,
+ "kind": "debris",
+ "name": "collapsed temple rubble heap",
+ "label": "beodeul_dungeon/earth.rubble_heap",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 82,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large upper slab top",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "left rubble block top",
+      "rows": "17-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "25-26"
+     },
+     {
+      "part": "right rubble block top",
+      "rows": "17-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "25-26"
+     },
+     {
+      "part": "small shards at bottom",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The heap is made of three broken stone slabs. Each has a light cream top band (rows 5-8 on the large slab, rows 17-20 on the two lower blocks). A lighter or darker edge row follows each band, then a mid-tone front face and a dark base or shadow at rows 13-14 and 25-26. The large slab's front face is about 7 rows (8-14). The small shards at rows 27-30 are minor details. The scattered-rubble silhouette fits the debris kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 12 visible tones per 16x16 tile, above prop-hedge (9) and below the well (20) and cheese stall (17). Near-flat coverage is 0%, so there are no large flat fills. Each rubble stone is shaded separately with a highlight, a light and mid face, and a darker underside, which gives about 5 steps on the grey ramp. Only 34% of dark edge pixels are neutral, so most of the outline leans taupe or brown against the stone and is not a uniform black sticker line. The surface carries chips and crack dots, though it is a little simpler than the well's stonework, hence 'slightly_lower'. It would sit acceptably next to the hedge and well references at the same scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14666
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large upper rubble slab top",
+      "rows": "5-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left rubble block top",
+      "rows": "15-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right rubble block top",
+      "rows": "17-20",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small fragments at bottom",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main slab (rows 5-14) has a light top band at rows 5-7 (L~210). Below it is a mid-tone front face at rows 8-12, and a dark base at rows 13-14 (L~90). The left block (rows 15-26) has light top rows 15-19 and a front face at rows 20-26. The right block (rows 17-26) has a light top at rows 17-20 and a front face at rows 21-26. Each major block has a lighter top plane over a darker front face, so the heap reads as 3/4 view. The small fragments at rows 27-30 are minor details."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a heap of grey-beige stone blocks with a light top face, a mid face, a shadow side and a darker outline. The measured facts put it in the same range as the references. It has 12 visible tones per tile, against 9 for the hedge and 20 for the well. Near-flat coverage is 0%, so the stones carry crack and grain variation and have no large flat fills. Only 34% of the dark edge pixels are neutral, so most of the outline leans warm and reads as a darker version of the stone, not a uniform black sticker line. It has about 4 shading steps against roughly 5-6 on the richer references, and the stones are a little smooth. It is slightly below the best references but not shallow, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18948
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large upper rubble slab",
+      "rows": "5-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-left rubble block",
+      "rows": "15-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-right rubble block",
+      "rows": "17-20",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small shards at the bottom",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the large upper slab. Rows 5-7 are a pale cream top surface, and the silhouette widens from 21 to 27 px there, which fits a sloped top. Row 8 steps down to mid-grey (L 210 to 145), which marks the front edge. Rows 8-14 form the front face, shading from mid-grey to near-black at the base, so it has more than 3 front rows. The two lower blocks follow the same pattern: a pale top (rows 15-19 on the left, 17-20 on the right) above a grey front face and a dark base row. The scattered chunks at rows 27-30 are small details. Overall it reads as 3/4-view rubble blocks, not a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The rubble heap is built from several stones, each shaded separately: a light top, a mid face and a darker underside, with a few chip and crack dots. That is about 4-5 steps on the stone ramp, close to the hedge reference. The measured facts support it: 12 visible tones per tile against 9 for the hedge and 20 for the well, with 0% near-flat coverage. Dark edges are only 34% neutral, so the outline is partly tinted and partly grey. It reads as mixed, not a uniform black sticker line. The weak point is that the stone faces are fairly smooth, with less grain than the stall or well. Overall it would sit acceptably next to the references and does not look thinner or flatter than the hedge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17362
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large upper rubble slab",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left rubble block",
+      "rows": "15-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right rubble block",
+      "rows": "17-20",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small shards at bottom",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The large upper slab has a cream, speckled top band in rows 5-8 (about 3-4 rows, x=16 L=210 on rows 5-7). Below it is a mid-tone front face in rows 8/9-12 (L=145 then 124) and a dark base shadow in rows 13-14 (L=90), giving about 6 front rows. The left block (top rows 15-19, face 20-24, dark base 25-26) and the right block (top rows 17-20, face 21-24, dark base 25-26) repeat the same light-top, darker-front structure. The silhouette widens gradually from 21 to 30 px as the top slopes, and the lower blocks are stacked in front of the upper slab. Only the tiny shards in rows 27-30 lack a clear top. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a grey stone rubble heap built from separate blocks. Each block is shaded on its own with a light top, a mid face and a darker underside. There are about 4 visible steps per material, against 5-6 on the stall and well references. The measured facts support it: 12 visible tones per tile is above the hedge (9) and below the well (20) and stall (17). Near-flat coverage is 0%, so there are no flat fills. Only 34% of dark edge pixels are neutral, close to the well (33%), so the outlines lean toward a tinted stone-shadow tone rather than a uniform black sticker line. Texture is modest: it has block-by-block shading and a few chips, but little grain or speckle. Overall it is slightly less rich than the best references but acceptable next to them, and it is not a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17126
+  }
+ ],
+ "decidedAt": "2026-10-23T03:40:29.346Z",
+ "cells": {
+  "16": [
+   "1403b17f48e5e960",
+   "92772f70a77e0875",
+   "949061f5060d880f",
+   "d9eec5a1588f366b"
+  ],
+  "24": [
+   "007821827d754711",
+   "03cf40db91ca4b6a",
+   "09999d009dcaa1b0",
+   "24a28e34ea80716b",
+   "251ded8eda9523ea",
+   "2d42df11dd103c0e",
+   "3525d8c70eccf877",
+   "3a86364963255e34",
+   "438e6523443d5a9a",
+   "72185636231164e7",
+   "7c018e98fa5d8071",
+   "8c835168ab6c25b9",
+   "9c190c5d5709b629",
+   "9ff41a1f482108d6",
+   "a82bce920e820304",
+   "a95091af133e0177",
+   "b639b8677f0a7113",
+   "b8e66e45f6bdff0b",
+   "bb57a5acd942d081",
+   "c7938a8f4d44a3a8",
+   "ce2c171a2c5a03df",
+   "f4b887e78e342eae",
+   "fae3b52bc1043f25",
+   "fae5933f0277acd3"
+  ],
+  "32": [
+   "d0a2ae051b5ab298"
+  ],
+  "48": [
+   "05ea44b3683c05dd",
+   "19a9a3a4190f7096",
+   "30f1b5c24481629c",
+   "4a0cc573b22e6aa8",
+   "a536922013387731",
+   "b45b032bc29f1047"
+  ]
+ }
+}

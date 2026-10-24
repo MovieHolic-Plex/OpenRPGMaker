@@ -15,7 +15,7 @@ const record = (v: unknown): v is Record<string, unknown> => typeof v === 'objec
 const integer = (v: unknown, min: number, max: number): v is number => typeof v === 'number' && Number.isInteger(v) && v >= min && v <= max;
 export function isNpcSight(value: unknown): value is NpcSight {
   return record(value) && integer(value.range, 0, 999) && typeof value.lineOfSight === 'boolean'
-    && (value.facing === 'any' || value.facing === 'forward');
+    && (value.facing === 'any' || value.facing === 'forward' || value.facing === 'cone');
 }
 export function isDetectionEncounter(value: unknown): value is DetectionEncounter {
   return record(value) && isNpcSight(value.sight) && (value.emote === null || isEmoteKind(value.emote))

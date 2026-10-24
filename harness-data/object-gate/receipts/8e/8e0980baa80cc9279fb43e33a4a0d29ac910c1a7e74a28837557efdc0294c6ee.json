@@ -1,0 +1,320 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8e0980baa80cc9279fb43e33a4a0d29ac910c1a7e74a28837557efdc0294c6ee",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "other.crystal_big",
+ "label": "beodeul_dungeon/other.crystal_big",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 63,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "flame-like crystal spikes",
+      "rows": "1-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark purple base slab",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a cluster of red/orange spiky shapes (reads like flames or crystals) rising from a dark purple base at rows 25-30. The spikes taper to points (width 1 at rows 1-3) and have no horizontal band, front-edge line, eave shadow or ellipse. The base is a flat strip about 6 rows tall with no distinct top surface. Nothing in the cluster shows a top plane, so this is a front elevation. Kind 'organic' (crystals) loosely fits, but the red-orange coloring reads more like fire."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small crystal cluster, not a tree, so the kind match is loose and I judged craft only. Each spike steps from pale yellow through orange and red to a dark red-brown, giving about 5 lightness steps. The dark base reads as a tinted purple-brown rock, not neutral black. The outline is tinted, which fits the 0% near-neutral edge share. There are no flat fills (0% near-flat coverage). It has 10 visible tones per tile, above tree-1a786c (7) but far below tree-d43edd (29). As a compact prop it holds up beside the simpler reference without looking sticker-like, though it has less grain and fewer facet highlights than the richer tree. That is acceptable at this size.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13999
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crystal spikes cluster",
+      "rows": "1-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark purple base plinth",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The crystal cluster is drawn as pointed vertical spikes whose width grows steadily from 1 px at rows 1-3 to 30 px at row 22. There is no widening-then-narrowing ellipse, no front-edge line and no eave shadow. The dark base at rows 25-30 is a flat stripe of purple tones (rows 25-28 lighter, 29-30 darker) with no distinct top plane. Everything is shown as a front elevation with no horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small red and orange crystal cluster on a dark rock base, about one tile in size. It is not a plant, but it is a single-tile prop, so I judged it on structure and shading against the tree references. The crystal spikes step through roughly 5 tones: dark red, red, orange, yellow and a pale highlight. The base adds a few more tones. Edges are dark red-brown and dark purple-brown, tinted to the neighbouring material, with 0% neutral dark edge pixels. Measured facts support it: 10 visible tones per tile against 7 for tree-1a786c, and 0% near-flat coverage like both references. It is well below tree-d43edd, which has 29 visible tones, and it is much smaller and simpler than either tree, so density is slightly lower. It still has facet shading and a highlighted tip rather than flat fills or a uniform black sticker outline. A careful artist would likely accept it next to tree-1a786c, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19347
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central crystal spire",
+      "rows": "1-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right crystal shards",
+      "rows": "9-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark purple base mound",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The crystal cluster is drawn as pointed vertical shards. The width profile grows steadily from 1 px at the tips to 30-32 px at the base, with no widening-then-narrowing ellipse. No row has a front-edge line or eave shadow, so none of the shards shows a horizontal top. The purple base (rows 25-30, with a slightly lighter band at rows 25-28 and darker rows 29-30) is a flat strip with no ellipse or edge line. It reads as a front elevation, with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small red-orange crystal cluster on a dark rock base, not a plant, so the tree references are only a loose match. It is a sparse prop, so I judged it by eye as well as by the numbers. The shards show about 4-5 lightness steps (pale yellow highlight, orange, red, dark red, deep red-brown) with facet splits, and the base has about 3 dark steps. The outline is a dark red or purple-brown tint matching the adjacent material, not neutral black, and the measured near-neutral edge share is 0%. There are no flat fills (near-flat coverage 0%). It has 10 visible tones per tile, above tree-1a786c at 7 and below the richer tree-d43edd at 29. It is less textured than the lush canopies, but it is not thinner or more sticker-like than tree-1a786c, so it is acceptable next to that reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17492
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central tall crystal spike with flame-like facets",
+      "rows": "1-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right side crystal spikes",
+      "rows": "10-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark purple base or ground band under the crystals",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-30"
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a cluster of pointed crystal spikes, and their silhouette narrows steadily from the base to the tips (width 30 at row 22, 1 at rows 1-3). Each spike is drawn only as a vertical face with facet shading. No spike has a band that ends in a front-edge line, an ellipse, or visible contents. The dark purple base (rows 25-30, width 30-32) is a flat ground mound under the crystals. Its slight lighter line at row 28 (x=16) is not a top surface of the crystals. The object is therefore a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small red/orange crystal cluster on a dark rocky base, not a tree, so the references are only a loose match in kind. Judged on craft alone, the crystals step from a pale yellow-orange highlight through orange and red to a deep red-brown, about 5 steps. The base adds 2-3 darker steps. The outline is a dark red-brown that leans toward the neighbouring crystal and rock, not a neutral black line. The measured facts agree: 0% near-neutral dark edge pixels and 0% near-flat coverage. It has 10 visible tones per tile, above tree-1a786c (7) but far below tree-d43edd (29). It is a compact object with faceted highlights and no large flat fills. Its density is a little lower than the richer reference but comparable to the simpler one, and its size explains most of the gap. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18076
+  }
+ ],
+ "decidedAt": "2026-10-23T02:58:32.038Z",
+ "cells": {
+  "16": [
+   "8dd9d18d9052dddb",
+   "e05cf1cd936733dc",
+   "f149d1bfb1c53e3a",
+   "f862ff1578b4ce12"
+  ],
+  "24": [
+   "03d1aaf5faab81ce",
+   "137664fa807cb06f",
+   "1b32cc7c89a282dc",
+   "1fff7adfa1b77584",
+   "308f949ba6bfacd0",
+   "3889bd71c3449fa5",
+   "5b1b98fc7226d13e",
+   "61b5c61f32dfb204",
+   "68b12e623ba737f8",
+   "6b0e3a09ad0e0d74",
+   "71cf5f7bf19b0ee6",
+   "7f2915c1385897d1",
+   "8254067183c8a56a",
+   "8900c1fa1394e695",
+   "9cebd61afdefca9b",
+   "a52c2dc5ddfa6f71",
+   "a77cc497ca7287db",
+   "c50858545dca3864",
+   "d20c56fdceb2bf3c",
+   "d5a430dacdcfb93c",
+   "e7298ba9f8ddcd1b",
+   "e8bfafdeb14662f8"
+  ],
+  "32": [
+   "2b9669db27158bf2"
+  ],
+  "48": [
+   "38588986c76d801b",
+   "45756cea4f053ecb",
+   "77bf188177248e21",
+   "7cd99e5f59357a8f",
+   "8b72413e9a0c1751",
+   "aa0d2bd56d2a2cd5"
+  ]
+ }
+}

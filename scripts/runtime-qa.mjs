@@ -21,6 +21,7 @@ import { spawnSync } from "node:child_process";
 import { join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { runRuntimeQa, startPlayerQaServer } from "./lib/runtimeQaRun.mjs";
+import { materializeGeneratedProject } from "./lib/qaProjectGenerator.mjs";
 import {
   loadCheckpointSet,
   resolveOutRoot,
@@ -78,7 +79,12 @@ if (process.argv.includes("--netns") && process.env.OPRN_QA_IN_NETNS !== "1") {
 const args = parseArgs(process.argv.slice(2).filter((arg) => arg !== "--netns"));
 const scenario = await loadScenario(args.scenario);
 // --project 는 픽스처를 갈아끼운다. 시나리오의 기대 좌표/맵은 그 프로젝트에 맞아야 한다.
-const effective = args.project ? { ...scenario, projectFixture: args.project } : scenario;
+let effective = args.project ? { ...scenario, projectFixture: args.project } : scenario;
+// 생성기 게임(kind: generator)은 커밋된 픽스처가 없다(실측 72MB) — 시나리오가 `projectGenerator` 를
+// 들고 있으면 실행 시점에 제품과 같은 코드 경로로 만든다. 그래야 시나리오가 어느 기계에서도 돈다.
+if (!effective.projectFixture && effective.projectGenerator) {
+  effective = { ...effective, projectFixture: await materializeGeneratedProject(effective.projectGenerator.game) };
+}
 
 const browserType = args.browser === "firefox" ? firefox : chromium;
 const launchBrowser = () => browserType.launch({
@@ -94,6 +100,13 @@ const checkpointSetName = args.checkpointSet ?? (args.checkpoint ? scenario.chec
 if (args.checkpoint || args.checkpointSet) {
   if (!checkpointSetName) throw new Error(`시나리오 ${scenario.id} 에 checkpointSet 이 없다 — --checkpoint-set <세트> 를 줘라`);
   const set = await loadCheckpointSet(checkpointSetName);
+  // 생성기 게임의 부팅 재료는 시나리오뿐 아니라 **세트**에도 실린다(to-scenario 가 둘 다 쓴다).
+  // 여기서 먼저 물질화해야 한다 — 체크포인트마다 scenarioForCheckpoint 가 projectFixture 를 보고
+  // 부팅하고, 없으면 기본 픽스처로 떨어진다(그러면 «없는 맵» 으로 죽는다).
+  const generatedFrom = effective.projectGenerator ?? set.projectGenerator;
+  if (!effective.projectFixture && generatedFrom) {
+    effective = { ...effective, projectFixture: await materializeGeneratedProject(generatedFrom.game) };
+  }
   const checkpoints = selectCheckpoints(set, args.checkpoint ?? "all");
   const outRoot = resolveOutRoot(args.out, scenario.id);
   const server = await startPlayerQaServer();

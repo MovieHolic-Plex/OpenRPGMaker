@@ -1,0 +1,304 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "786a47169070fff0bd25b7361ec6415b552d034aaecd2daa0b408daa5984abc9",
+ "width": 96,
+ "height": 96,
+ "kind": "terrain",
+ "name": "other.ground",
+ "label": "beodeul_dungeon/other.ground",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 36
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat dark purple ground tile with cracks and speckles",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a seamless 96x96 ground texture: dark purple with a cracked-stone pattern, light purple highlight pixels and scattered speckles. The width is 96 on every row and the column scans show no edge line, eave shadow or front face. It is a flat terrain tile with no standing volume, so it reads as a top-down surface with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a dark purple cracked-stone floor. Cracks are dark violet, and the 0% neutral share of dark edge pixels fits that: the outlines lean purple, not black, so the outline reads as dark material tone. It uses only 7 colours across the whole 4x3 patch, so each plate has about 4 readable steps (base, slightly lighter plate, dark crack, violet glint) against about 6 in the Beodeul paving and grass. Visible tones per tile (7) match the paving and beat the grass (3). Near-flat coverage is 27%, where both references show 0%, and the large plate interiors are visibly smooth single-tone fills. The surface has no per-plate edge highlights or grain, and no clumps or speckle across plate faces. The crack and glint pattern is decent but sparse and repetitive. Overall it is somewhat flatter and shallower than the references, so it falls short of the standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15251
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile (cracked dark purple stone floor, full 96x96 seamless texture)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 96x96 terrain texture of dark purple cracked flagstones with highlight and shadow speckles. It has no silhouette, no standing body, no front face and no eave or ellipse structure. The width profile is a constant 96 for every row. The column scans show only thin crack lines on a uniform dark base. It is a flat terrain tile seen from above, which suits the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a cracked dark-purple stone floor. Its crack lines are a darker, visibly purple-tinted tone of the surface (0% neutral dark edge pixels), so the outline is material-toned rather than a black sticker line. It has 7 visible tones per tile, which matches the paving reference (7) and beats the grass (3). It uses about 5 value steps: base, slightly lighter cell, dark crack, mid purple and bright violet glints. Only 7 colours are used in total, so the ramps are tight. 27% of the surface is near-flat 5x5 blocks, while both references have 0%. The cell interiors are large, nearly uniform dark patches with only occasional speckle, and the grain is sparse next to the references' per-stone or per-tuft shading. It is a clean, coherent piece, but it reads flatter and sparser than the Beodeul references, so with doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14563
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seamless dark purple ground tile with crack lines and speckles",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 96x96 opaque terrain tile, with every row at width 96. It is filled with a dark purple cracked-stone texture, with light purple crack highlights and small speckles. It has no silhouette, no standing body, no front face, no edge line and no eave shadow. It is flat top-down ground texture, which matches the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a cracked dark-purple ground with violet crack highlights. It has 7 visible tones per tile, matching the paving reference (7) and beating the grass reference (3). Its crack edges are tinted, with 0% neutral dark edge pixels, so the outline reads as a dark version of the purple material rather than a black sticker line. The weak points are the 27% near-flat coverage against 0% for both references, and only 7 distinct colours in the whole piece. Visually, the interiors of the crack cells are mostly one dark purple with sparse speckle, and there is little per-cell shading. The paving reference shades each stone separately and has no flat blocks. The ramp is about 4 purples plus 2 highlight accents, which is a bit shallower than the reference's 5-6 steps. With these flat cell interiors it falls slightly short of the reference, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 12567
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dark purple cracked ground tile, full 96x96 fill with thin crack lines and speckles",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless terrain tile that fills the full 96x96 area with a dark purple cracked-stone pattern. There is no silhouette, no standing object, no front-edge line, no eave shadow and no front face. The crack lines and speckles are surface texture on a flat ground plane. This is the expected appearance for a terrain tile, so it reads as a flat top-down surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a dark purple cracked-stone floor. Its crack lines are dark purple-toned (0% neutral edge pixels), so the outline is tinted, not a black sticker line. It shows about 4 body steps: base purple, a darker crack tone, a lighter purple fleck and a bright violet highlight. The 7 visible tones per tile match the paving reference (7) and exceed the grass (3). However, near-flat coverage is 27% against 0% for both references, so there are real flat patches inside the cell interiors with no grain or per-stone shading. The cells are large, uniform and hardly shaded one by one, unlike the paving reference, which has stones with textured speckle. Only 7 raw colours are used, and the lighter glints are sparse. This looks flatter and thinner than the Beodeul references, and the 27% flat fill is a clear shortfall.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 9744
+  }
+ ],
+ "decidedAt": "2026-10-23T02:46:33.941Z",
+ "cells": {
+  "16": [
+   "2da10dcfe281ad6e",
+   "36029f1ec7ce6be1",
+   "7fd64b430e309f3f",
+   "bef10eacfbed6397"
+  ],
+  "24": [
+   "127447aea5fc3d26",
+   "1581570fc31c13fa",
+   "29a60fc175924d58",
+   "465cfc936b5d7bf8",
+   "5231c9874694ebed",
+   "671b4a89d5ede145",
+   "70457c296d2e25e8",
+   "7251d97a4b994838",
+   "7b51d75a640ff864",
+   "7ce44eeb94cb7366",
+   "8ea0850d5e6fef36",
+   "acb670eb91e6a41d",
+   "c262682bab1f84e3",
+   "d2f0930d573afaf0",
+   "ebd7ca9340aebf3b",
+   "fb5b04721ede1c0f"
+  ],
+  "32": [
+   "0d44dc4578c50b5d",
+   "0f693fde46dc50ba",
+   "1f9d6551de7a8a2a",
+   "2cd5f30f2b78e223",
+   "30c7c49a9c039835",
+   "332056a3661fe686",
+   "5c1f03885de62420",
+   "7c23e375f7be7e57",
+   "dc7c6d33d77626b6"
+  ],
+  "48": [
+   "1a913f45a174e487",
+   "34de545c4e08666d",
+   "82cf6320269b8649",
+   "ff283cec46cc48c2"
+  ]
+ }
+}

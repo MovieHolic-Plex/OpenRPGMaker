@@ -376,6 +376,11 @@ export interface SkillRecord {
    */
   drainPercent?: number;
   /**
+   * 무기 공명: 시전자가 이 계열(장비 attackElementIds — sword·spear·bow·hit 등) 무기를 들고 있으면 피해·회복이 bonusPercent% 오른다.
+   * elementIds 를 비우면 기술 자신의 elementId 를 계열로 본다. 「검을 든 카엘의 검 기술이 더 세다」. 생략 = 없음.
+   */
+  weaponAffinity?: { readonly elementIds?: readonly string[]; readonly bonusPercent: number };
+  /**
    * 반동(0~100): 준 피해의 N% 를 시전자도 입는다(몸통박치기·이판사판). 피해가 1 이상일 때만, 최소 1. 타마다 적용한다.
    * 타임라인에 시전자 자신을 대상으로 한 damage 엔트리(aside recoil)를 남긴다. 생략 = 반동 없음.
    */
@@ -698,6 +703,10 @@ export interface EquipmentRecord {
   stateDefenseIds: StateId[];
   stateDefenseMode: "resist" | "inflict";
   stateResistanceChance: number;
+  /** 주는 피해 ±%(물리·마법 공통, -90~300). 여러 장비면 더한다. 생략 = 0. 예: 30 = 피해 +30%. */
+  damageDealtPercent?: number;
+  /** 받는 피해 ±%(물리·마법 공통, -90~300). 음수면 줄어든다. 생략 = 0. */
+  damageTakenPercent?: number;
   /** 실시간 액션 전투에서 이 무기를 들었을 때의 스윙 프로필. */
   actionWeapon?: ActionWeaponProfile;
   /** 장착 중에만 쓸 수 있는 스킬. 배우지 않아도 전투 스킬 목록에 들어간다. */
@@ -753,6 +762,12 @@ export interface EnemyRecord {
   monsterResourceId?: string;
   /** 전투 이미지 표시 크기(10~300%, 정수). 생략 시 기존 크기 100%. */
   battleScalePercent?: number;
+  /**
+   * 피해 계열별 받는 피해 %(생략 = 100). physical = 공격력 계열(statistic attack) 피해, magic = 마력 계열(statistic mind) 피해.
+   * 0 = 그 계열 무효(「무효」 꼬리표), 300 = 세 배. 상태의 runtimeEffects.damageTypeRates 가 걸려 있으면 그 값이 이 값을 대신한다
+   * (예: 마법 무효인 용에 「관통상」이 걸린 동안만 마법 ×3). `battle/battleElementModifiers.damageTypeMultiplier`.
+   */
+  damageTypeRates?: DamageTypeRates;
   graphicHue: number;
   transparent: boolean;
   flying: boolean;
@@ -995,7 +1010,9 @@ export type BattleEventCondition =
   | { kind: "actorHp"; actorId: ActorId; minPercent: number; maxPercent: number }
   | { kind: "enemyTurn"; enemyId: EnemyId; turn: number }
   | { kind: "actorTurn"; actorId: ActorId; turn: number }
-  | { kind: "actorCommand"; actorId: ActorId; commandId: string };
+  | { kind: "actorCommand"; actorId: ActorId; commandId: string }
+  /** 적(생략 = 아무 적)이 이 상태에 걸려 있다(present 생략 = true) / 걸려 있지 않다(false). 쓰러진 적은 세지 않는다. */
+  | { kind: "enemyState"; enemyId?: EnemyId; stateId: string; present?: boolean };
 
 export interface BattleEventPageRecord {
   id: string;
@@ -1132,6 +1149,12 @@ export interface StateRecord {
   battleAura?: string;
 }
 
+/** 피해 계열별 받는 피해 %(100 = 보통, 0 = 무효). */
+export interface DamageTypeRates {
+  physical?: number;
+  magic?: number;
+}
+
 export interface StateEmotion {
   family: string;
   /** 1 부터. 같은 계열에서 클수록 강하다. */
@@ -1157,6 +1180,11 @@ export interface StateRuntimeEffects {
   forcedAction?: "attackRandom" | "rage";
   /** 이 상태인 동안 속성 등급을 덮어쓴다(속성 id → A~E). */
   elementRates?: Record<string, ActorRateGrade>;
+  /**
+   * 이 상태인 동안 피해 계열별 받는 피해 %를 **바꿔 쓴다**(더하거나 곱하지 않는다 — 적의 기본 damageTypeRates 를 대신한다).
+   * 여러 상태가 같은 계열을 정하면 가장 큰 값. 예: 「관통상」 { magic: 300 } — 마법 무효인 용도 이 상태 동안은 마법 피해 ×3.
+   */
+  damageTypeRates?: DamageTypeRates;
   /** 석화처럼 전투 불능으로 친다 — 아군 전원이 쓰러졌거나 이 상태면 패배. 이 상태로는 행동하지 못한다. */
   incapacitates?: boolean;
   /** 받는 HP 피해 중 이 비율(0~1)을 MP 에서 대신 깎는다(MP 가 모자라면 남은 만큼만). */
@@ -1175,6 +1203,8 @@ export interface StateRuntimeEffects {
   reraisePercent?: number;
   /** 선고: 걸린 뒤 자기 턴이 이만큼 지나면 쓰러진다(1~9). */
   doomTurns?: number;
+  /** 최대 지속: 걸린 뒤 자기 턴이 이만큼 지나면 회복 굴림과 상관없이 풀린다(1~9). 수면·마비가 운 나쁘게 끝없이 이어지지 않게. */
+  maxTurns?: number;
   /** 좀비: 이 상태인 동안 받는 HP 회복(회복 스킬·회복 아이템·재생)이 같은 양의 피해가 된다(FF6 좀비). MP 회복은 그대로. */
   invertHealing?: boolean;
   /**
@@ -2209,6 +2239,11 @@ export interface CompanionConfig {
    * ㄴ자 두 줄 대형. 장면이 끝나고 주인공이 걸으면 궤적 자리로 돌아온다(폴른 스타 가혹 검수 r11). 생략 = 기존 동작.
    */
   fanOutInScenes?: boolean;
+  /**
+   * false 면 파티 몬스터가 필드에서 주인공을 따라 걷지 않는다(HGSS 식 동행 끄기). 생략 = 따라온다 — 몬스터 동료는 주인공이
+   * 떠난 칸으로 같은 박자에 한 칸 뒤를 걷는다(@/player/playSceneFollowers beginFollowerStep).
+   */
+  monsterFollowers?: boolean;
 }
 
 export interface MonsterCareConfig {

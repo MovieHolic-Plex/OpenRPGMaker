@@ -22,6 +22,17 @@ import type {
 import { normalizeEnemyCollapseEffect } from "@/project/enemyCollapse";
 import { isTeamSwapCost } from "@/project/battleTeamModel";
 
+/** 피해 계열 받는 피해 %(0~1000 정수). 둘 다 비면 생략 — 옛 JSON 바이트를 바꾸지 않는다. */
+function normalizeDamageTypeRates(value: unknown): EnemyRecord["damageTypeRates"] | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const out: { physical?: number; magic?: number } = {};
+  for (const key of ["physical", "magic"] as const) {
+    const raw = (value as Record<string, unknown>)[key];
+    if (typeof raw === "number" && Number.isFinite(raw)) out[key] = Math.round(Math.max(0, Math.min(1000, raw)));
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
+}
+
 export function normalizeEnemyRecord(
   record: Partial<Omit<EnemyRecord, "actions">> & { actions?: readonly Partial<EnemyActionPattern>[] } & Pick<EnemyRecord, "id" | "name">,
 ): EnemyRecord {
@@ -39,6 +50,10 @@ export function normalizeEnemyRecord(
     level: typeof record.level === "number" && Number.isFinite(record.level) ? clampInteger(record.level, 1, 99) : undefined,
     monsterResourceId: cleanOptionalId(record.monsterResourceId),
     ...(battleScalePercent === 100 ? {} : { battleScalePercent }),
+    ...(() => {
+      const rates = normalizeDamageTypeRates(record.damageTypeRates);
+      return rates ? { damageTypeRates: rates } : {};
+    })(),
     graphicHue: clampInteger(record.graphicHue ?? 0, 0, 360),
     transparent: record.transparent ?? false,
     flying: record.flying ?? false,
