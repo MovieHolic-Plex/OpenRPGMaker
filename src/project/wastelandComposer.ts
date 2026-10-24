@@ -306,7 +306,7 @@ const CAPS: Record<string, number> = { "car-rust-h": 1, "car-rust-v": 1, "van-ru
   // r61(C): 같은 회색 담 판(벙커처럼 읽힘)이 길 양쪽에 거울로 — wall-h 는 맵에 하나.
   "wall-h": 1, "wall-h2": 2, "wall-h3": 2, "barricade-h": 3 };
 const VEHICLES = new Set(["car-rust-h", "car-rust-v", "van-rust", "car-burnt"]);
-const TWIN_OK = new Set(["wall-v", "wall-stub", "fence-h", "barricade-h", "jersey-barrier", "gate-scrap", "log-seat", "campfire", "crop-bed-a", "crop-bed-b"]);
+const TWIN_OK = new Set(["wall-v", "wall-stub", "fence-h", "barricade-h", "jersey-barrier", "gate-scrap", "log-seat", "campfire"]);
 const SLAB = ["slab-a", "slab-b", "slab-c"];
 /** 종류별 거처(r61): 정착지 = 판잣집 a·b·컨테이너 집·천막, 판잣집 촌 = 함석·문짝·2층·난로 오두막·차양·판잣집 c. */
 const SETTLE_HOMES = ["shack-a", "shack-b", "container-home", "tent-tarp", "shack-a", "container-home"];
@@ -513,10 +513,11 @@ function scatterDecals(b: Board, density: number, road: readonly boolean[]): voi
       if (!ids.has(p.id) || hash2(p.x, p.y, b.seed + salt) < 0.35) continue;
       const z = b.kitSize(p.id); if (!z) continue;
       for (let t = 0; t < 8; t++) {
-        const x = p.x + b.int(-1, z.w), y = p.y + z.h - 1 + b.int(-1, 1);
-        if (!b.inb(x, y)) continue;
+        // 맞닿은 칸(발 줄 옆·앞 1칸)만 — r61 검수: 빈 흙·길 위에 떨어진 얼룩이 «웅덩이·구멍»으로 읽혔다.
+        const x = p.x + b.int(-1, z.w), y = p.y + z.h - 1 + b.int(0, 1);
+        if (!b.inb(x, y) || x === 0 || y === 0 || x === b.w - 1 || y === b.h - 1) continue;
         const i = b.idx(x, y);
-        if (b.taken[i] || b.slab[i] || b.track[i] || (road[i] && !ids.has("drums")) || layerTileAt(b.map, 2, i) >= 0) continue;
+        if (b.taken[i] || b.slab[i] || b.track[i] || road[i] || layerTileAt(b.map, 2, i) >= 0) continue;
         b.setDecal(x, y, pool[Math.floor(hash2(x * 3, y * 7, b.seed + salt) * pool.length)]!); break;
       }
     }
@@ -779,9 +780,10 @@ function roadsideGravel(b: Board, road: readonly boolean[]): void {
 
 /** 텃밭(정착지 표지, r61): 울 친 터 안에 이랑 판(crop-bed, 3×2) 2~4장을 1칸 고랑을 두고 붙이고, 한쪽에 물통·연장 헛간. */
 function farmPlot(b: Board, x0: number, y0: number, x1: number, y1: number, spawn: Pt, must: Pt[], areas: WlArea[]): boolean {
-  const beds = ["crop-bed-b", "crop-bed-a"].filter((id) => b.kit(id));
+  // 이랑 판은 관문·검수를 통과한 crop-bed-c 하나뿐(b 는 화풍 fail) — 같은 판이 맞붙어 «도장»으로 읽히지 않게 두 판 사이에 물통·상자 칸을 둔다.
+  const beds = ["crop-bed-c", "crop-bed-b"].filter((id) => b.kit(id));
   if (!beds.length) return false;
-  const cols = b.int(2, 3), rows = b.int(1, 2), w = cols * 4 + 3, h = rows * 3 + 3;
+  const cols = beds.length > 1 ? 2 : 1, rows = 1, w = cols === 2 ? 13 : 9, h = 6;
   for (let t = 0; t < 60; t++) {
     const fx = b.int(x0, Math.max(x0, x1 - w + 1)), fy = b.int(y0, Math.max(y0, y1 - h + 1));
     if (!b.free(fx - 1, fy - 1, w + 2, h + 2)) continue;
@@ -795,12 +797,15 @@ function farmPlot(b: Board, x0: number, y0: number, x1: number, y1: number, spaw
     if (!b.reachesAll(spawn, must)) { for (let x = fx; x < fx + w; x++) for (const y of [fy, fy + h - 1]) { const i = b.idx(x, y); if (b.taken[i] && layerTileAt(b.map, 3, i) >= 0) { setLayerTileAt(b.map, 3, i, -1); b.taken[i] = false; } } continue; }
     b.stampSafe("wall-stub", fx, fy + 1, spawn, must); b.stampSafe("wall-stub", fx + w - 1, fy + 1, spawn, must);
     let k = 0;
-    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
-      const id = beds[(r + c + b.int(0, 1)) % beds.length]!;
-      if (b.stamp(id, fx + 1 + c * 4 + (r % 2), fy + 1 + r * 3)) k++;
-      for (let dx = 0; dx < 3; dx++) for (let dy = 0; dy < 2; dy++) b.markKeep(fx + 1 + c * 4 + (r % 2) + dx, fy + 1 + r * 3 + dy);
+    void rows;
+    for (let c = 0; c < cols; c++) {
+      const id = beds[c % beds.length]!, bx = fx + 2 + c * 6, by = fy + 1 + (c === 1 ? b.int(1, 2) : 0);
+      if (b.stamp(id, bx, by)) k++;
+      for (let dx = 0; dx < 3; dx++) for (let dy = 0; dy < 2; dy++) b.markKeep(bx + dx, by + dy);
     }
-    b.stampSafe(b.pick(["drums", "crates-plastic", "tyres"]), fx + w - 2, fy + h - 2, spawn, must);
+    if (cols === 2) b.stampSafe(b.pick(["drums", "crates-plastic"]), fx + 6, fy + 2, spawn, must);
+    else b.stampSafe(b.pick(["drums", "crates-plastic"]), fx + 6, fy + 1, spawn, must);
+    b.stampSafe(b.pick(["tyres", "crates", "wash-line"]), fx + w - 3, fy + h - 2, spawn, must);
     areas.push({ name: "텃밭", x: fx, y: fy, w, h, tag: "farm", door: { x: gate, y: fy + h - 1 } });
     must.push({ x: gate, y: fy + h });
     return k > 0;
