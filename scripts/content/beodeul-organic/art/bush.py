@@ -255,3 +255,81 @@ BRAM8 = [
  "...........SSSSSs.....SSSSSSSs..",
 ]
 ART["bramble"] = (BRAM8, TH7)
+
+# ---- r9 cleanup helpers: smooth the bottom silhouette (fill 1px notches, trim 1px legs), and merge lone pixels
+def _smooth_bottom(rows):
+    g = [list(r) for r in rows]; H, W = len(g), len(g[0])
+    isart = lambda c: c not in ".sS"
+    for _ in range(3):
+        bot = [max([y for y in range(H) if isart(g[y][x])], default=-1) for x in range(W)]
+        for x in range(1, W - 1):
+            a, b, c = bot[x-1], bot[x], bot[x+1]
+            if min(a, b, c) < 0: continue
+            if b > a and b > c:            # leg: cut it back to the higher neighbour
+                for y in range(max(a, c) + 1, b + 1): g[y][x] = "S" if y == max(a, c) + 1 else "."
+            elif b < a and b < c:          # notch: fill down to the shallower neighbour
+                for y in range(b + 1, min(a, c) + 1): g[y][x] = "o"
+    return ["".join(r) for r in g]
+def _merge_lone(rows):
+    g = [list(r) for r in rows]; H, W = len(g), len(g[0])
+    isart = lambda c: c not in ".sS"
+    for y in range(1, H - 1):
+        for x in range(1, W - 1):
+            c = g[y][x]
+            if not isart(c): continue
+            nb = [g[y+b][x+a] for a, b in ((1,0),(-1,0),(0,1),(0,-1))]
+            if all(isart(n) for n in nb) and all(n != c for n in nb):
+                from collections import Counter
+                g[y][x] = Counter(nb).most_common(1)[0][0]
+    return ["".join(r) for r in g]
+def tidy(rows): return _merge_lone(_smooth_bottom(_merge_lone(rows)))
+# r9 bush-s: one rounded shrub mass, a little wider than tall, in bush-m's language (light lumps top-left, mid body,
+# 1/o shade lower-right), leaf-cluster bumps all round.
+BS9 = [
+ "................",
+ "................",
+ "................",
+ "......55.55.....",
+ "....5555455541..",
+ "...55443544332..",
+ "..554432443323o.",
+ "..54434433332231",
+ ".5543344332322o1",
+ ".54433433322211o",
+ ".4433333232221o.",
+ "..3322332221o1o.",
+ "..1222212111ooS.",
+ "...11o111oooSs..",
+ ".....oooooSSs...",
+ "................",
+]
+BS9[13] = "...11o111ooSSs.."
+BS9[14] = "....ooo.SSSs...."
+ART["bush-s"] = (tidy(BS9), WD)
+# r9 bramble: one continuous low mound, wider/higher on the left, tapering right; irregular top; berries; two cane tips
+BRAM9 = [
+ "................................",
+ "................................",
+ "................................",
+ "................................",
+ ".......tT.......................",
+ "........tT.55...........uT......",
+ "....55..55555.4..........u......",
+ "...55555545443441.55.....u......",
+ "..5544354433r3324455441..T......",
+ ".55443444333232333443332155.....",
+ ".544334433r3222333322r2213441...",
+ ".4433343333222132223221122331...",
+ "..3332223322211222212111112211..",
+ "..112221122111o1111111o1o11oo1..",
+ "...1o11o11o1ooo1oo1o1ooooo1ooSS.",
+ "......ooooSSSSS.oooooSSSoooSSs..",
+]
+BRAM9[14] = "...1o11o11o1ooo1oo1o1ooooo1ooSS."
+BRAM9[13] = "..112221122111o1111111o1o11oo1.."
+ART["bramble"] = (tidy(BRAM9), TH7)
+# berries re-added after tidy as 2px pairs (lone-pixel merge would remove single berries)
+_b = [list(r) for r in ART["bramble"][0]]
+for x, y in ((11, 8), (9, 10), (21, 10), (16, 11)):
+    _b[y][x] = "r"; _b[y][x+1] = "r"
+ART["bramble"] = (["".join(r) for r in _b], TH7)

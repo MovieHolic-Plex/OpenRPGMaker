@@ -224,7 +224,7 @@ def shrine_stone():
                     if c not in stone: continue
                     nb = [src[y+dy][x+dx] for dx, dy in ((1,0),(-1,0),(0,1),(0,-1)) if src[y+dy][x+dx] in stone]
                     if len(nb) >= 3 and c not in nb:
-                        g[y][x] = max(set(nb), key=nb.count)
+                        g[y][x] = max(nb, key=nb.count)
     for (x0, y0, w0, h0, c) in ((15,37,3,2,"D"),(9,14,2,3,"T")):
         for y in range(y0, y0 + h0):
             for x in range(x0, x0 + w0):
@@ -285,7 +285,7 @@ def no_lone(rws):
                 if c == ".": continue
                 nb = [g[y+dy][x+dx] if 0 <= x+dx < w and 0 <= y+dy < h else "." for dx, dy in ((1,0),(-1,0),(0,1),(0,-1))]
                 if c not in nb:
-                    g[y][x] = max(set(nb), key=nb.count); changed += 1
+                    g[y][x] = max(nb, key=nb.count); changed += 1
         if not changed: break
     return ["".join(r) for r in g]
 

@@ -242,3 +242,52 @@ FC8 = [
  "................................",
 ]
 ART["fern-cluster"] = (FC8, K)
+
+# ---- r9 cleanup helpers: smooth the bottom silhouette (fill 1px notches, trim 1px legs), and merge lone pixels
+def _smooth_bottom(rows):
+    g = [list(r) for r in rows]; H, W = len(g), len(g[0])
+    isart = lambda c: c not in ".sS"
+    for _ in range(3):
+        bot = [max([y for y in range(H) if isart(g[y][x])], default=-1) for x in range(W)]
+        for x in range(1, W - 1):
+            a, b, c = bot[x-1], bot[x], bot[x+1]
+            if min(a, b, c) < 0: continue
+            if b > a and b > c:            # leg: cut it back to the higher neighbour
+                for y in range(max(a, c) + 1, b + 1): g[y][x] = "S" if y == max(a, c) + 1 else "."
+            elif b < a and b < c:          # notch: fill down to the shallower neighbour
+                for y in range(b + 1, min(a, c) + 1): g[y][x] = "o"
+    return ["".join(r) for r in g]
+def _merge_lone(rows):
+    g = [list(r) for r in rows]; H, W = len(g), len(g[0])
+    isart = lambda c: c not in ".sS"
+    for y in range(1, H - 1):
+        for x in range(1, W - 1):
+            c = g[y][x]
+            if not isart(c): continue
+            nb = [g[y+b][x+a] for a, b in ((1,0),(-1,0),(0,1),(0,-1))]
+            if all(isart(n) for n in nb) and all(n != c for n in nb):
+                from collections import Counter
+                g[y][x] = Counter(nb).most_common(1)[0][0]
+    return ["".join(r) for r in g]
+def tidy(rows): return _merge_lone(_smooth_bottom(_merge_lone(rows)))
+# r9 fern-cluster in fern-l's language: fronds of 2px leaflet clusters (5/4 lit, 3 rib, 2/1/o shade), dark base cluster.
+FC9 = [
+ "................................",
+ "................................",
+ "..............11................",
+ ".............155o...............",
+ "............14443o..............",
+ "..11.......1o44o3o..............",
+ ".155o.....1155o3o1o.....11......",
+ ".4443o...14443o3o21o..1155o.....",
+ ".o44o3o..o44o3o21o.1155443o.....",
+ "..oo443o11oo43o1o114443o21o..11.",
+ "....o4433o1443o21443o321o..1155o",
+ "......oo44333o3321o321oo.114443o",
+ "........ooo4433321o3221o1144o21o",
+ "...........oo43321o221o4443o21o.",
+ "............ooo2211oooooo1ooooS.",
+ "...............oooSSSoooSSSs....",
+]
+FC9[14] = "............ooo2211ooSooo1ooSS.."
+ART["fern-cluster"] = (tidy(FC9), K)
