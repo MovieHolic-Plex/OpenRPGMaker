@@ -636,6 +636,8 @@ function scolds(project: Project): number {
     for (const box of boxesOf(map)) {
       if (s.only && !s.only.test(String(box.name))) continue;
       const p0 = box.pages![0]!;
+      // 챙길 것 없는 살림 한 줄(townLife 의 flavor)은 들여다보기일 뿐 — 꾸짖지 않는다. 토마의 밀가루처럼 이름으로 정한 수납은 예외.
+      if (!s.only && !/"kind":"change(Gold|Item)"/.test(JSON.stringify(p0.commands))) continue;
       const take = takePart(p0.commands as Command[]);
       p0.commands = [fork({ kind: "eventSeesPlayer", eventId: s.owner, range: 5 } as unknown as Condition, [
         emote(s.owner, "exclamation"),

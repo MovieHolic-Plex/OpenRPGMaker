@@ -632,10 +632,10 @@
   {
    "id": "report",
    "label": "하넬에게 보고",
-   "note": "ev_fs_main_report: 천문대 하넬(24,20) — 서재 벽난로 앞, (24,21) 에서 위로 말 건다, sw_fs_main_step2 뒤",
+   "note": "하넬은 #3314 부터 망원경 곁(12,12) — (12,13) 에서 위로 말 건다, sw_fs_main_step2 뒤(예전 (24,20) 벽난로 자리는 비었다)",
    "mapId": "fs_observatory",
-   "x": 24,
-   "y": 21,
+   "x": 12,
+   "y": 13,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -701,8 +701,8 @@
    "label": "엔딩 카드와 크레딧",
    "note": "ENDING_ID end_fs_act1 — 하넬 보고 대사 끝에 붙어 있다",
    "mapId": "fs_observatory",
-   "x": 24,
-   "y": 21,
+   "x": 12,
+   "y": 13,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,

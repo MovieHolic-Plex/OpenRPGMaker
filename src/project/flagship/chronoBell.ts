@@ -33,6 +33,8 @@ import { buildFallenTownInteriors } from "./fallenTownInteriors";
 import { buildFallenTownLife, ensureFallenTownDatabase } from "./fallen/townLife";
 import { applyFallenTownQuests, FS_QUEST_FACE_ALIASES } from "./fallen/townQuests";
 import { buildFallenForestMaps } from "./fallen/forestMaps";
+import { applyFallenStoryPass } from "./fallen/storyPass";
+import { applyFaceCellEmotions, applyFallenTownCast, applyNorthForest, fallenSpeakerBusts } from "./fallen/townCast";
 import { placeFallenStarVessel } from "./fallenStarVessel";
 import { dressObservatoryHall } from "./fallenObservatoryHall";
 import { isFallenRoomRebuilt } from "./fallenRoomOwnership";
@@ -2423,6 +2425,10 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     }
   }
   addBridgeValenAndScopeScene(project, ids);
+  // 제1막 대사 흐름·이리스 합류 선택·발렌 연막 퇴장·지하 광신도·빠진 꾸지람(fallen/storyPass.ts) — 모든 대사 편집 뒤, 얼굴 앞.
+  applyFallenStoryPass(project, ids);
+  // 마을 사람 칩·대장간 재고(이리스·엘레나 몫)·뛰노는 아이·숨은 목걸이·대사 표정(fallen/townCast.ts).
+  applyFallenTownCast(project);
   const speakerFaces: Record<string, string> = {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),
@@ -2436,7 +2442,11 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     "빵집 아주머니": "easyrpg-faceset-people1-03",
   };
   for (const [alias, of] of Object.entries(FS_QUEST_FACE_ALIASES)) if (speakerFaces[of]) speakerFaces[alias] = speakerFaces[of]!;
-  applySpeakerFaces(project, speakerFaces);
+  // 말하는 사람마다 흉상 — 칩의 짝 얼굴 → 공용 표정 세트 흉상(fallenSpeakerBusts). 대사 표정이 같은 세트 안에서 바꾼다.
+  applySpeakerFaces(project, fallenSpeakerBusts(project, speakerFaces));
+  applyFaceCellEmotions(project);
+  // 숲은 마을 북쪽 — 「동쪽 숲」「동문」을 북쪽으로(오프닝 연출·화로 퍼즐 방향은 제외, fallen/townCast.ts).
+  applyNorthForest(project);
 
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
