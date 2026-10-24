@@ -45,18 +45,17 @@ def arc(x0, y0, steps):
     return pts
 
 FS = plant(16, 16, [
-    arc(7, 13, "wwwlwllv"),        # left frond arching out and down
-    arc(7, 13, "uuuwuuel"[:7]),    # centre frond up, tip curling
-    arc(8, 13, "eeerreff"),        # right frond
-], (7, 14), back=[arc(7, 13, "wuwuuw")])
+    arc(7, 13, "wwlwlv"),
+    arc(7, 13, "uwuuue"),
+    arc(8, 13, "eeerf"),
+], (7, 14))
 
 FL = plant(32, 32, [
-    arc(15, 27, "wwwwlwlwllllvv"),
-    arc(15, 27, "uwuwuwuuuwwl"),
-    arc(16, 27, "ueueuuuueeer"),
-    arc(16, 27, "eeeeereerrrff"),
-    arc(15, 27, "lwlllllvlv"),
-], (15, 28), back=[arc(15, 27, "uuuuuuuuuuuue"), arc(16, 27, "eueueueeeef"), arc(15, 27, "wuwwwwwwlv")])
+    arc(14, 27, "wlwwlwllllvlvv"),        # long low sweep to the left
+    arc(14, 27, "uwuuwuwwwlwlv"),         # tall frond leaning left, tip drooping
+    arc(15, 27, "uueueeueerrfrf"),        # frond over to the right, arching down
+    arc(15, 27, "errerrfr"),              # short low right frond
+], (14, 28), back=[arc(14, 27, "uuuuueuuueer"), arc(14, 27, "wwlwwlvl")])
 
 FC = ["."]
 _a = plant(32, 16, [arc(8, 13, "wwwlwlv"), arc(8, 13, "uuwuuue"), arc(9, 13, "eeerrf")], (8, 14),
@@ -69,4 +68,22 @@ for ra, rb, rc in zip(_a, _b, _c):
     for a, b, c in zip(ra, rb, rc):
         row.append(c if c not in ".sS" else a if a not in ".sS" else b if b != "." else (a if a != "." else c))
     FC.append("".join(row))
-ART = {"fern-s": (FS, K), "fern-l": (FL, K), "fern-cluster": (FC, K)}
+FC_FROZEN = ['................................',
+ '................................',
+ '................................',
+ '................................',
+ '....................4.5.........',
+ '.......5............33..........',
+ '........3...........24324.5.4...',
+ '......4322.321...5.4.534.4.33.5.',
+ '..4.54532.3.2..4.33.44325.3.23.4',
+ '5.334.432445.45.42.3454453222.3.',
+ '.32.34.341413333422.4454332..2..',
+ '..2.2.24354352233..245333221....',
+ '.....14532413343524.4.2322......',
+ '......4323.32.52233151o1o.1.....',
+ '.....1.1o1oo241o1o23ssSSSSS.....',
+ '......ssSSSSSssSSS2S............']
+
+# fern-cluster passed round 3: frozen as literal rows
+ART = {"fern-s": (FS, K), "fern-l": (FL, K), "fern-cluster": (FC_FROZEN, K)}

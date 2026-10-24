@@ -42,7 +42,7 @@ def hollow_tree():
     def root(x, y, dx, ln, drop):
         for i in range(ln):
             xx = int(round(x + dx * i)); yy = y + int(drop * i)
-            th = 2 if i < ln - 2 else 1
+            th = 4 if i < 2 else (3 if i < ln - 2 else 2)
             for k in range(th):
                 if g[yy + k][xx] == ".": g[yy + k][xx] = "l" if (dx < 0 and k == 0) else ("m" if k == 0 else "d")
     a, b = sp(54)
@@ -51,7 +51,9 @@ def hollow_tree():
     root(23, 54, 0.1, 3, 1.0)
     # bottom: not a straight line, ragged by column
     for x in range(W):
-        if g[55][x] != "." and (x % 5 in (0, 3)): g[55][x] = "."
+        for y in range(54, 60):
+            if g[y][x] != "." and H(x, y, 9) < 0.35 and g[y-1][x] != ".": g[y][x] = "."
+
     def stub(x0, y0, dx, ln):
         for i in range(ln):
             x = x0 + dx * i; yc = y0 - i // 2
@@ -70,6 +72,17 @@ def hollow_tree():
             if e < 0.45: g[y][x] = "k"
             elif e < 0.75: g[y][x] = "q" if y <= TOPY + 1 else "w"   # inner wall back: rotten dark; front lip: wood
             elif e < 1.05 and y <= TOPY + 1: g[y][x] = "w" if x < cx else "h"
+    # jagged broken rim: notch the lid edge with uneven teeth so it is not a clean ellipse
+    a, b = sp(TOPY)
+    teeth = {a: 3, a+1: 2, a+2: -1, a+3: -2, a+4: -2, a+5: 0, a+6: 2, a+7: 1, a+8: 0, a+9: 2, a+10: 3, a+11: 2}
+    for x, dt in teeth.items():
+        if dt > 0:
+            for y in range(TOPY - 4, TOPY - 4 + dt + 1):
+                if g[y][x] != ".": g[y][x] = "."
+        elif dt < 0:
+            for y in range(TOPY - 2 + dt, TOPY - 1):
+                g[y][x] = "w" if x < (a + b) / 2 else "h"
+            g[TOPY - 3 + dt][x] = "D"
     # bark: staggered 2-4px dark clusters in plates
     for y in range(TOPY + 5, 52):
         a, b = sp(y)
@@ -177,6 +190,24 @@ def shrine_stone():
         for y in range(y0, y0 + h0):
             for x in range(x0 + (y - y0) % 2 * 0, x0 + w0):
                 if g[y][x] in "bBmdDT": g[y][x] = c
+    # blocky texture clusters over the front face (2-3px lumps, lit and dark)
+    for y in range(14, 41, 3):
+        for x in range(4, 22, 3):
+            if g[y][x] not in "bmdD": continue
+            hv = H(x, y, 4)
+            if hv < 0.33:
+                c = {"b": "B", "m": "b", "d": "m", "D": "d"}[g[y][x]]
+            elif hv < 0.6:
+                c = {"b": "m", "m": "d", "d": "D", "D": "o"}[g[y][x]]
+            else: continue
+            for (dx, dy) in ((0,0),(1,0),(0,1),(1,1)) if hv < 0.45 else ((0,0),(1,0),(0,1)):
+                if g[y+dy][x+dx] in "bmdD": g[y+dy][x+dx] = c
+    # lumpy base: break the flat bottom into steps
+    for x, d in ((5,1),(6,1),(9,0),(10,-1),(11,-1),(14,0),(15,1),(18,0),(19,-1)):
+        if d > 0:
+            g[42][x] = "D"; g[43][x] = "o"
+        elif d < 0:
+            g[42][x] = "o"; g[41][x] = "o" if g[41][x] in "DdoB." else g[41][x]
     # carved star: flat 5-point groove; upper-left inner edge in shadow, lower-right lip lit
     star = ["....x....", "....x....", "...xxx...", "xxxxxxxxx", ".xxxxxxx.", "..xxxxx..", "..xx.xx..", ".xx...xx.", ".x.....x."]
     ox, oy = 9, 18
