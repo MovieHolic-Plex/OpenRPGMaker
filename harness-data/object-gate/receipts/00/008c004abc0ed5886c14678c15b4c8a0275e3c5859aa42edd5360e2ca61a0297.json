@@ -1,0 +1,326 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "008c004abc0ed5886c14678c15b4c8a0275e3c5859aa42edd5360e2ca61a0297",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "medium boulder (rock), natural map prop for the Beodeul 16px chipset, 2x1 tiles, standing object (3rd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/rock-boulder-m",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)",
+  "화풍: 질감 없음 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)",
+   "질감 없음 (2/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 6,
+  "darkV5": 38,
+  "nearBlackEdge": 0.45,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "boulder top / sloped upper rock surface",
+      "rows": "2-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-12"
+     },
+     {
+      "part": "boulder front (south) face, dark shaded base",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 4px at row 2 to 29px at row 10. Rows 3-9 are a light, lit upper surface (L about 145 at x=9, 16 and 23, grading to mid tones at rows 7-9). Below it, rows 10-12 are a darker band and rows 13-14 are the darkest base, so the front face is about 5 rows. The drop in lightness at rows 9-10 acts as the front edge, with shadow below it. The top-to-front structure is clear, though soft for a rock, so it reads as a 3/4 boulder, not a flat slab or a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small grey boulder with about 4 value steps: a light top, a mid body, a dark underside and a dark edge. Its 6 visible tones per tile match tree-1a786c (7) but are far below tree-d43edd (29). The references have leaf clumps in many tones, and the boulder has no comparable clustering. Near-flat coverage is 0%, so there are no literal flat fills. The surface is still smooth, though, with no cracks, speckle, moss, lichen or stone-by-stone facets. No grass tufts or soil grain blend it into the ground, so it reads as a clean sticker-like blob. 34% of its dark edge pixels are neutral, against 0% in both references, so the outline leans toward neutral dark grey instead of a dark tint of the adjacent material. This is a mixed outline. Next to the references it looks thinner and flatter, and a careful artist would want more rock facets, per-face highlights and texture dots.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16870
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "boulder top (lit upper plane)",
+      "rows": "2-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "boulder front face (dark underside)",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a dome that widens from 4px at row 2 to 29px at row 10. The columns show a light top plane (x=9 rows 5-9, x=16 rows 3-7, x=23 rows 6-7) that steps down through mid-tones (rows 8-9, 10-11) into dark shadow. The darkest rows (x=16 rows 10-14, L=51 then 31) form a front face of about 5 rows at the base, so the rock has a foreshortened top and a south face rather than a flat slab or a pure front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small, smooth grey lump with a lighter top plane and a darker underside. It shows about 4 readable lightness steps and 6 visible tones per tile. That is close to tree-1a786c (7), but far below tree-d43edd (29), and Beodeul pieces normally use 5-6 steps per material. The measured flat coverage is 0%, but by eye the surface is smooth, with no cracks, speckle, per-facet highlights or moss/grass tufts at the base, so the rock reads as a simple sticker-like blob. 34% of the dark edge pixels are neutral, so the outline is partly grey-black rather than a consistently tinted dark tone of the stone. The result is thinner and flatter than the references and does not reach the Beodeul bar for a natural prop.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13145
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "boulder top (lit sloped upper surface)",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-12"
+     },
+     {
+      "part": "boulder front face (dark underside)",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 4px at row 2 to 29px at row 10, so it is a mound seen from above. The columns show a light top plane in rows 3-9 (L about 111-148, stepping down to 79 at rows 8-9). Below it, from row 10, is a clearly darker band (L 51 to 31, rows 10-14) that reads as shadowed front face and ground contact. That gives a top of about 6 rows and a front face of about 5 rows. The boulder is a single organic mass, so no separate part lacks a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The boulder is a small grey mound with a lighter top plane, a mid body and a dark underside, which reads as about 4 shading steps. Beodeul uses 5-6 per material. It has no stone-by-stone shading, cracks, speckle, moss or grass tufts at the base, so it looks smooth and sticker-like beside the reference trees. Measured facts: 6 visible tones per tile against 7 for tree-1a786c and 29 for tree-d43edd, so it is level with the sparser reference but far below the richer one. Near-flat coverage is 0%, so there are no large flat fills. 34% of dark edge pixels are neutral, against 0% in both references, so the outline leans toward neutral dark grey rather than a consistent tinted material tone. The piece is simple and small, but it would look thinner and flatter than the references on the same map. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13449
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "boulder top (lit upper plane)",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "boulder front face (dark lower body)",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 4px at row 2 to 29px at row 10, then holds at 28px to row 13, so it is a solid mound and not a flat slab. The columns show a light top plane (L about 144-148, rows 4-9) lit from above. Below it the tone steps down through mid-tone (rows 10-11) to a dark underside (L 31-51, rows 12-14). This marks a clear transition from the top surface to a shaded south front face about 5 rows tall. The top is a gradual lit dome with no crisp edge line, so the front-edge evidence is moderate and not strong."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small grey boulder of about 2x1 tiles with roughly 4 visible lightness steps: a light top, a mid body and a dark underside. The measured 6 visible tones per tile is close to tree-1a786c (7), but far below tree-d43edd (29). The boulder reads as a few smooth planes with little per-stone grain, no cracks, speckle or moss clumps, and no grass tufts at the base, so it looks flatter than the clustered, multi-tone foliage of the references. Its dark edge pixels are 34% near-neutral, so the outline is partly neutral dark grey and partly tinted. The references are 0% neutral, with outlines in the dark tone of the material. This leans toward the sticker look. There are no 5x5 flat blocks, but the surface is simple and lacks the texture dots that Beodeul props carry. Overall the boulder is thinner and shallower than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12178
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.212Z",
+ "cells": {
+  "16": [
+   "18e5111588ce5164",
+   "722b7c12d243d301"
+  ],
+  "24": [
+   "03c499302f409303",
+   "149ed5c34e485a78",
+   "260bfb5fb48d26bf",
+   "2a5f47155f0ca7f1",
+   "35b120e39ea1427c",
+   "6334b6c9a76d0e8e",
+   "7a3e0feed35c3e01",
+   "9ae7ca7005841276",
+   "b1f7d3e48ab7144e",
+   "ddf8a7082cd6eea4",
+   "de58ab54d451b237",
+   "e40a6a42b6e6b54a"
+  ],
+  "32": [
+   "08c511cf22b2c2f3",
+   "7216e8d1c7b5ac12"
+  ],
+  "48": [
+   "199a75ab60eefa82",
+   "223cfaf1b9249ee8",
+   "3579b5cd153d806d",
+   "acf496cb031dd7a2",
+   "ca6f573200b82333",
+   "e7a90aa2465c99fc"
+  ]
+ }
+}

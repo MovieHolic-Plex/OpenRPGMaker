@@ -1,0 +1,354 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "01f2967b3720b6d78be8d227cf4d83e50f08d36794c19748626ec7997e5d19c3",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "big stump with roots (fallen log / stump), natural map prop for the Beodeul 16px chipset, 2x2 tiles, standing object (3rd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/stump-l",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stump cut top with cream growth rings",
+      "rows": "10-17",
+      "evidence": "b",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "green moss tuft on the back rim of the top",
+      "rows": "9-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bark trunk front face with root flare",
+      "rows": "18-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cut top of the stump is an oval of cream and brown ring rows, about rows 10-17. At x=16 the cream and brown ring bands run through rows 10-17, so the cut face is drawn as a foreshortened oval. The brown row 17, #885a26, acts as the front rim line. Below it the trunk drops sharply to dark bark (L about 50-62) from row 18 to row 27, with a root flare widening from 15 to 20 px wide at rows 21-26 and a shadow row at 27-28. That gives a front face of about 11 rows. The silhouette does not narrow again under the top because the trunk continues, but the ring ellipse inside it shows a horizontal top surface. The green moss at rows 9-11 sits on the rim and is decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is smaller than one 16x16 tile (visible tones per tile = 0), so the density fact can't be used against it and I judged by eye. It is meant to be a big 2x2-tile stump but reads as a roughly 20px sprite, much thinner than the tree-d43edd reference. The outline is a tinted dark brown that follows the bark, with no neutral black (0% near-neutral edge pixels), which matches Beodeul. The shading is the weak point. The bark body has about 4 brown steps: a pale cut-top ring with a small highlight, mid brown, dark brown and a deep shadow. The vertical bark grain is sparse, and the side planes and root flares look like broad, smooth shapes. Compared with the references' 6-7 steps and clustered texture dots, it is shallower and more sticker-like. There are no large 5x5 flat blocks (0% near-flat). Because of the small size, the 4-step ramp and the thin grain, a careful artist would not accept it next to the references as equally rich, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17347
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf sprig on top of stump",
+      "rows": "9-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stump cut top with pale growth rings (ellipse)",
+      "rows": "10-16",
+      "evidence": "b",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "bark trunk face with root flare",
+      "rows": "17-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stump has a pale oval cut surface with ring marks at rows 10-16. The silhouette widens from 7 px at row 9 to 15 px at row 13, and the bark rim bounds the oval at the back and front. A darker brown row at 16-17 follows the front rim like an eave shadow. Below it the bark trunk runs rows 17-27, flaring into roots (width 15 to 20). The green leaf at rows 9-11 is decor. The overall structure matches the green 'ellipse top' barrel and column references rather than the rim-only or flat-band cases."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small stump about 20x20 source px, smaller than one tile, and meant to be a 2x2-tile 'big stump with roots'. The tile facts read 0, so I judged by eye. Its outline is a dark brown tint (0% near-neutral edge pixels, same as both references), which is correct. It has only 18 distinct colours. The bark shows about 4 brown steps with a few vertical grain lines, a pale ring-top and a little moss. That is shallower than the references, which show 7 and about 29 visible tones per tile and several shaded clumps and root forms. The root flare is a single dark mass with little per-root shading, and the cut top is nearly flat. Nothing is a large flat fill, but the piece looks thinner and simpler than the references, and it is undersized for a 'big stump with roots'. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15042
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "moss/leaf sprig on top",
+      "rows": "9-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cut stump top with growth rings (elliptical cream face)",
+      "rows": "10-17",
+      "evidence": "b",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "bark trunk front face with flared roots",
+      "rows": "18-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stump has a clear cut top of cream growth rings in rows 10-16. It sits inside a brown bark rim, and the ring band closes with a front rim line at about row 16, followed by darker brown at row 17. The silhouette widens from 7 to 15 px over rows 9-13, which reads as an elliptical top opening. Below it, rows 18-28 are a dark bark front face that flares into roots, widening from 16 to 20 px. The green sprig at rows 9-11 is decor. The top surface is 7 rows, not a 1-2 row rim, and the front face is more than 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small stump, roughly 1 tile wide by 1.5 tall, though it was meant to be a 2x2 prop. It is much smaller than the reference trees, so the measured per-tile facts are 0 and I judged by eye. The stump has about 3-4 brown steps on the bark (light, mid, dark, deep) and a pale cut top with a few ring dots. Compared with the references' 5-6 step canopies and many-toned trunks, this is shallow. The outline is a dark brown that follows the bark, with 0% neutral edge pixels, so it is tinted and not a sticker line. The bark has little grain, only a few vertical streaks. The roots are short and flat-shaded, and the top looks simple. Only 18 distinct colours are used. A careful artist would see it as thinner and flatter than the references, which have clustered leaf and trunk texture and detailed roots. It also falls short of a big 2x2 stump with roots.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13754
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stump cut top (cream growth-ring ellipse with brown rim)",
+      "rows": "10-17",
+      "evidence": "b",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "green leaf or moss tuft on the back of the top",
+      "rows": "9-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bark trunk front face with flared roots",
+      "rows": "18-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stump's cut top shows concentric cream rings inside a brown rim, rows 10-17, in the column scan at x=16 and x=20. The ring band ends in a darker brown front rim around rows 16-17. Below it the bark face runs rows 18-27 in dark brown (L about 50-79), flaring into roots at rows 23-28 (width 15 to 20). The green tuft at rows 9-11 is decor. The silhouette itself does not narrow at the top, but the ring pattern reads as a tilted elliptical top. The front face is 10 rows, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is only about 20x18 source px, smaller than a single 16px tile in practice, so the tile facts read 0 and I judged by eye. It is far smaller than the 2x2 'big stump with roots' it is meant to be, and much smaller than both references. The outline is a dark brown tinted to the bark, with 0% neutral edge pixels, so that part is fine. The bark has only about 4 brown steps and a few vertical grain strokes. The cut top has a light ring and a small green moss patch, but it is a simple, nearly symmetrical shape. The roots are short stubs with little shading. It has just 18 distinct colours, against 567 for tree-d43edd and 10 for the simpler tree-1a786c, so it is closer to the simple reference. Next to the references it looks thinner and more icon-like, with no per-clump or per-root shading and little grass or soil integration. It does not read as a big rooted stump, so a careful artist would not accept it beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16735
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.269Z",
+ "cells": {
+  "16": [
+   "1facfc1b21c42a89",
+   "543397580c65afe1",
+   "5513900072e25421",
+   "dc219b00e406536c"
+  ],
+  "24": [
+   "180d7ad813373aad",
+   "28142c2fdcbb83c0",
+   "369fefbd45743662",
+   "403157d6d08c0412",
+   "5b9381cfe1849a0c",
+   "63ac718ba56155f7",
+   "67323586f968096d",
+   "7cd006cee325d125",
+   "a284c7dc92a8f78a",
+   "aa65a1b7a78653a9",
+   "b1e59a18f29831a0",
+   "b6bed9f2b967ac56",
+   "c0fd91ec5c4587c6",
+   "ccb32db939eff9e6",
+   "df76c028c10ff5fd",
+   "f1635f81117ecd6b",
+   "f31839b606382051"
+  ],
+  "32": [
+   "a1d870c4668b8b97"
+  ],
+  "48": [
+   "13ff03836451b3e5",
+   "564fb4dd67892cd0",
+   "88edd3a5b1c8eda7",
+   "8bff9778218288ef",
+   "942e2ce463add24c",
+   "9d358e0e8aae2912"
+  ]
+ }
+}

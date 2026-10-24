@@ -950,3 +950,14 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 - beodeul: 선로 타일(가로·세로·모서리·T) / 갱목 지지대(벽 걸이 1×2·바닥 기둥 1×2) / 광석 박힌 벽·바닥 / 현무암·재 바닥 변형 · 현무암 벽 앞면 3h/2h · 용암 식은 껍질 가장자리 / 갈색 테두리 동굴 천장 오토타일 / 얼음 동굴 일체.
 - monster: catacomb·castle·sewer·mine 일체 / 마른 동굴 안 물·용암 조각 / 유적 신전 안쪽 칸막이 / 화산 제단·보스 연출 / 얼음 판 퍼즐 문.
 - stub 칩셋: 고딕(지하 벽·석관·감방) · 조선(동굴 벽 앞면·천장·바닥) · 마법 학교(지하 감옥 오토타일) · 해적(동굴 천장·물웅덩이) · 선사(동굴 일체·용암) · 사막동양(지하 무덤 일체) · 그 밖(던전 조각 일체).
+
+## 자연 기물 beodeul_organic (2026-10-24) — 숲·들판의 바위·덤불·통나무·버섯·들꽃·고사리·풀·이끼 돌·고목·사당 돌
+
+버들항 B1 활엽 숲(낙성 숲 화풍) 나무 사이에 놓는 자연 기물 37종. 버들항 잠금 팔레트(원본 키트에서 뽑은 137색) 코드 손 도트다. 생성 이미지·object-gen 은 쓰지 않았다.
+
+- **원본:** `scripts/content/beodeul-organic/` — `spec.json`(37종: id·크기·층·막힌 칸·관문 종류·갈래), `art/<갈래>.py`(행 문자열 그림), `draw.py`→`out/<id>.png`, `check.py`(크기·팔레트·반투명은 그림자색만·윗줄 비움·막힌 칸에 그림), `preview.py`/`scene.py`(버들항 원본 옆 같은 배율), `qa/`(블라인드 검수).
+- **굽기:** `python3 scripts/content/beodeul-organic/bake.py` — 그림마다 `object_gate.require_all(context="bundle")` 를 지나야 `public/assets/beodeul-organic/chipset.png`(16열) + `src/assets/beodeulOrganicCatalog.json` 을 쓴다. `--draft` 는 /tmp 미리보기만.
+- **배선:** `src/project/defaults/beodeulOrganic.ts` — 독립 타일셋 `beodeul_organic`(tex_beodeul_organic) + beodeul_city 에 `translateTiles` 로 이식한 kit `bd-org-<id>`(learnedFrom pack-preset, 조수 `list_tileset_objects`/`stamp_tileset_object` 로 놓는다). 층 3 = 서 있는 기물(upperTiles, 막힌 칸만 통행 금지·priority lower, 나머지 칸은 사람 위), 층 2 = 밟고 지나가는 바닥 꾸미기(lowerOverlayTiles). `bundled.ts`·`bundledChipsetGeometry.ts`·`defaultAssets.ts`(새 프로젝트 + `ensureBundledTilesets` 기존 프로젝트)·`createBeodeulCityTileset` 에 걸렸다. 같은 칸 그림은 한 번만 이식된다(두 번째 호출부터 변화 없음).
+- **견본 지도:** `scripts/content/beodeul-organic/sample-map.mts <out.project.json>` — 빈 프로젝트에 `paintWoodland(SHRINE_SPEC + 빈터 3곳)` 을 칠하고 37종을 한 번씩 + 바닥 꾸미기 40개를 길·출구·물을 피해 놓은 뒤 모든 출구가 서로 닿는지 BFS 로 확인한다. 화면은 `bun scripts/qa-game/render.mts --project … --out …`.
+- **검수(qa/protocol.md):** 판정자 둘(argon, klb-sonnet-5-5)에게 새 그림 37 + 버들항 원본 16 을 이름 없는 번호로 섞은 블라인드 시트(`qa/blind.py <dir> <seed>`, 열쇠는 저장소 밖)를 매 판 새 프로세스로 보인다. 원본도 판정자마다 4~10/16 만 통과한다(엄격함의 대조군). 판정은 같은 화소에도 판마다 흔들려서, 합격 = **지금 화소 해시 그대로 2장 이상 시트에 나와 한 번 이상 두 판정자 모두 통과, 판정자마다 2/3 이상 통과**. 기록 `qa/ledger.json`, 확인 `python3 qa/ledger.py status`. 판정자들이 되풀이 지적한 결함(바닥 빗살 1px 다리·홀로 찍힌 점·자로 그은 듯한 긴 변)은 `qa/edges.py` 로 미리 잰다(합격 판정이 아니다).
+- **함정:** 그림 함수가 `max(set(nb), key=nb.count)` 처럼 set 순서에 기대면 실행마다 화소가 바뀌어 검수가 무효가 된다(사당 돌에서 실측, 고침). 여러 그림이 공유하는 보조 함수를 고치면 이미 합격한 그림의 화소가 바뀔 수 있다 — 고목은 r7 화소를 행 문자열로 얼려 두었다. `qa/blind.py` 는 쪽 넘김에서 줄 하나를 잘라 먹던 결함이 있었고(r8 P38), 이제 모든 카드가 쪽 안에 있는지 단언한다.

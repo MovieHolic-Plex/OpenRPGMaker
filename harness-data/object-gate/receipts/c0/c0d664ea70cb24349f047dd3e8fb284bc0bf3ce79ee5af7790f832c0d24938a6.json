@@ -1,0 +1,331 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c0d664ea70cb24349f047dd3e8fb284bc0bf3ce79ee5af7790f832c0d24938a6",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "berry bush with red berries (bush), natural map prop for the Beodeul 16px chipset, 2x2 tiles, standing object (3rd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/bush-berry",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 31,
+  "nearBlackEdge": 0.27,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bush top foliage (lit leaf lobes)",
+      "rows": "6-19",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bush lower mass in shadow (front face)",
+      "rows": "20-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "20-21"
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a rounded mound, 3px wide at row 6, widening to 26px at rows 15-17 and 22-26, then narrowing to 1px at row 29. The upper rows 6-19 hold lit leaf lobes (L 79-165, light-green highlights at rows 7-12). They form the top canopy surface seen from above. Below them, rows 20-28 shift to dark green (L 24-56), with a dark shadowed underside and a front mass of 9 rows. There is no hard front-edge line; the change from lit canopy to shaded front is a gradual value step around rows 19-21. Red berries are small details on both parts. The shape and shading read as a 3/4 mound with a top and a front, not a flat top-down slab or a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The bush is a small, compact dome with about 4 green steps (highlight, light, mid, dark) plus a few red berry dots. Its dark edge is a tinted dark green, with 0% near-neutral edge pixels, so it is not a sticker outline. There are no flat fills (0% near-flat coverage), and the berries break up the canopy a little. It measures 8 visible tones per tile, above tree-1a786c (7) but far below tree-d43edd (29). By eye the canopy is a smooth blob with little leaf-clump structure, and the interior shading is simple. The reference canopies show distinct leaf clusters with bright highlights and deep shadow pockets, so the bush reads thinner and flatter next to them. It also fills well under the 2x2 tile footprint. It is cleanly drawn, but a careful artist would likely want more clump definition and a wider highlight-to-shadow range before putting it beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17997
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage mound upper canopy (lit leaf clumps with light-green highlights)",
+      "rows": "6-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower shaded foliage front mass",
+      "rows": "18-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red berries",
+      "rows": "11-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bush is an organic mound. Its silhouette widens from 3px at row 6 to 26px by rows 15-17, and it narrows again to 1px at row 29. The upper rows 6-17 are lit with light-green clumps (L 105-165 in the column scan), which suggests a canopy top seen from above. Rows 18-28 are much darker (L 24-56), which gives a shaded front mass of about 11 rows. No hard front-edge line exists, as expected for foliage, but the light-to-dark split reads as a top plus a front face, not a flat slab or a flat front elevation. The berries are small details."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The bush is a compact canopy blob with a dark green outline that leans green, not neutral, which matches the 0% near-neutral edge share. The canopy has about 4-5 green steps: a dark underside, mid greens, and lighter top highlights. Small red berry dots add clustered detail, and there are no flat 5x5 areas (0% near-flat). It has 8 visible tones per tile, level with tree-1a786c at 7 and well below the richer tree-d43edd at 29. Leaf clumping is simpler and less crisp than in either reference, so it reads slightly lower in density. It is still comparable to the simpler Beodeul reference, and a careful artist would accept it next to that one as a small ground-level bush.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16485
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bush canopy top (lit leaf clumps with highlights)",
+      "rows": "6-18",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaded lower foliage / front mass",
+      "rows": "19-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a rounded mound that widens from 3px at row 6 to 26px at rows 15-17 and stays wide to row 26. The upper rows 6-18 are lit foliage clumps with light-green highlights (L=165 at rows 7 and 10) that read as the canopy top seen from above. Rows 19-28 darken progressively (L about 24-56) into a shaded front mass of 10 rows. No hard front-edge line is drawn, as expected for an organic blob, but the lit top and shaded south face are clearly separated by value, so it reads as a 3/4 mound rather than a flat slab or a front elevation. The red berries are decor-like details and are not counted as surfaces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The bush's outline and underside are a dark green that leans visibly toward green, and the measured 0% neutral dark edge pixels agrees, so the outline is a material tone rather than a black sticker line. The canopy has only about 4 green steps plus a red berry accent, with 9 distinct colours in total. The clumps are small and low-contrast, so the mass reads mostly as one mid-dark green with sparse highlights. It has no flat 5x5 fills (0% near-flat coverage), but the leaf-clump structure is much simpler than in the references. Its 8 visible tones per tile roughly match tree-1a786c (7), yet tree-d43edd carries 29 visible tones and shows layered per-leaf clumps with distinct light, mid and dark steps. The candidate is also small and compact for a 2x2 prop. A careful artist would find it shallower and flatter than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16132
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper foliage mass with light-green highlight clumps",
+      "rows": "6-17",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower shaded foliage and front face",
+      "rows": "18-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red berries",
+      "rows": "11-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette grows from 3 px at row 6 to 26 px by rows 15-17, stays wide, then narrows to 11 px at row 28 and 1 px at row 29. This is a rounded mound seen from above and in front. Rows 6-17 hold the light-green top foliage (#8cbf5f and #418640) with several leaf clumps, which reads as a heap of foliage seen from above. Rows 18-28 darken to #226b39, #0a5134 and #071f1d, giving a shaded front face about 11 rows tall. There is no hard front-edge line, because the bush is organic. The light top with a dark front, and the bottom edge curving in, still give a 3/4 volume rather than a flat slab or a front elevation. The red berries are small decor details."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 8 visible tones per tile, against 7 for tree-1a786c and 29 for tree-d43edd. Near-flat coverage is 0%, the same as both references. The dark edge pixels are 0% neutral, so the outline leans dark green rather than black. By eye, the canopy has about 4-5 green steps in rounded clumps with lighter top-left highlights, a darker underside, and scattered red berry dots. That is comparable to tree-1a786c's clump structure, though simpler and less varied than d43edd's leaf-by-leaf shading. As a bush it is smaller and has fewer steps than the trees. It still shows no flat fills, no sticker outline, and grain across the whole mass, so a careful artist could accept it beside tree-1a786c.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16537
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.253Z",
+ "cells": {
+  "16": [
+   "2c022e46b827d6c1",
+   "2cbd0c5550ba9a66",
+   "82cd05ff89b624b2",
+   "932290c0ecbb5d06"
+  ],
+  "24": [
+   "00aa17279c7c64f3",
+   "15dc7fab05f42b7c",
+   "277cf4fa7efd5ab2",
+   "2a43532b2b0a453a",
+   "3f18b4eaa22de65e",
+   "42947a4741143470",
+   "47a74fb93f86e29e",
+   "5b7457a722f138f4",
+   "63af75b729ebd40e",
+   "7902ae20fba08c34",
+   "883f3e133c341e2e",
+   "96d4d27c684374f1",
+   "a006300216202591",
+   "ad51430f4e63b6d5",
+   "c589cc0e7ff81033",
+   "c5dd5e836780e786",
+   "c623622b2227bcd4",
+   "cabcabb2e6867c15",
+   "cbc64e7e848b7e00",
+   "cbd1bc26c4bbe135",
+   "cef33b505e942ce7",
+   "d3db6a19365375e7"
+  ],
+  "32": [
+   "3e0d785bbcd6bd09"
+  ],
+  "48": [
+   "3a0d19248522198a",
+   "611bdc3784331535",
+   "76ff6dabb90d70a0",
+   "9a776b384027a44c",
+   "b9de632f8650ad00",
+   "c39b142ba09afdd1"
+  ]
+ }
+}

@@ -1,0 +1,320 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fed775c1f50f97bd590b766dc4cf8ac14f474f9fc4390114c80513ecd203cbe9",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "white daisies (wildflowers), natural map prop for the Beodeul 16px chipset, 1x1 tiles, walk-over ground decor (2nd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/flowers-white",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 32,
+  "nearBlackEdge": 0.14,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "daisy flower heads (white petals with yellow centers)",
+      "rows": "5-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green stems and leaves",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The sprite is a small cluster of daisies (rows 5-14, max width 11) made of white petal flowers on thin green stems and leaves. It has no solid body, built structure, front face or horizontal top surface. The flower heads are drawn face-on and rows 13-14 hold the leaf and stem base. It reads as flat ground decor, not a volumetric object, so no top surface or front face applies. Reads as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny sprite, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It has only 10 distinct colours in total. It shows about 2-3 green steps on the leaves and stems, plus white petals and yellow centres. The Beodeul references use 5-7 or more visible tones per material, with clustered leaf shading and grain. The dark edge pixels carry a tint (0% neutral), so there is no black sticker outline, and there is no large flat fill. Even so, the leaves are small and flat-ish, with no per-leaf highlights and little grass or soil grain around the flowers. It reads thinner and simpler than the reference, and I could not clearly confirm it would sit next to the tree art without looking sparse. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12760
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "daisy flower heads (white petals with yellow centers)",
+      "rows": "5-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green stems and leaves",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "A small cluster of three white daisies on thin green stems with leaves, rows 5-14. The flower heads are drawn as flat petal stars seen face-on, with yellow/brown centers at rows 8-10. The stems and leaves are thin and have dark outlines at rows 12-14. There is no box-like body, no front-edge line, no eave shadow and no ellipse cap. This is a walk-over ground decor plant, not a standing volume, so top surface and front face rules do not meaningfully apply. The silhouette is irregular and widens to 11 px at row 13, which comes from the leaves. I count it as organic ground decor and classify it as other rather than a slab or a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a sparse ground prop smaller than one tile, so the per-tile tone fact of 0 is not held against it. By eye it has white petals with a shaded tone, yellow centres, and leaves and stems in about 3 greens. That is thinner than the 5-6 step tree canopies, but fair for a walk-over flower prop. The dark edge pixels are 0% neutral, matching both references, so the outline leans green and is not a black sticker line. There are no 5x5 flat fills (0% near-flat). It uses about 10 colours, the same total as reference tree-1a786c. The petals and leaf clusters are broken up and carry some grain, so it would sit acceptably on grass next to the references. I rate density slightly lower only because the object is tiny and simple. I am not fully certain at this size, since the board shows it at only a few pixels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15369
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left daisy flower head (white petals, yellow-brown center)",
+      "rows": "7-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right daisy flower head (white petals, yellow center)",
+      "rows": "5-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stems and leaf clump at the base",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a loose cluster of daisies on thin stems, 10 rows tall (rows 5-14), with a small dark-green leaf clump at the base (rows 12-14, up to 11 px wide). Both flower heads are small diamond or cross-shaped petal clusters seen almost face-on, about 5-7 px wide. They have no front-edge line, no eave shadow and no ellipse profile. The width profile 1,3,5,6,7,6,5 is a petal diamond, not a widen-then-narrow cap. There is no solid body with a horizontal surface and a vertical face. The flowers count as plant decor and the leaves and stems as thin foliage. Because it is a walk-over ground decoration, it fits neither the three-quarter nor the slab pattern cleanly, so I report it as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny sprite, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It has about 10 distinct colours: white petals, yellow centres and a few greens. The dark edge pixels are tinted (0% neutral), so the outline is dark green, not black, and nothing is a flat fill. The weak point is the leaves and stems. They show only about 3 green steps, with no clumping or per-leaf highlight and little grain. That is shallower than the reference canopies (about 6 steps; 7 to 29 visible tones per tile). The reference tree-1a786c also has about 10 distinct colours, but it spends them on far more shape and clustering. Sparseness alone is not the reason for the fail. The leaf ramp is thin and the sprite reads more like a small icon than a Beodeul-grade ground plant. With the doubt, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20460
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "daisy flower heads (white petals with yellow centers)",
+      "rows": "5-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green stems and leaf tufts",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Small walk-over ground decor: three daisies with flat white petal rosettes (rows 5-11) on thin stems, over a dark green leaf tuft (rows 12-14). The flowers are drawn face-on as small flat petal shapes, with no front-edge line, eave shadow or ellipse that would form a horizontal top surface. The leaf and stem mass (rows 12-14) is the only part that could be a front face. The silhouette is 11px wide at its widest (row 13) and 8px at the bottom, so there is no volume with a top and a front. It is a plant sprite shown in elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny sprite, smaller than one 16x16 tile (about 12x10 source pixels), so the per-tile facts read 0 and I judged by eye. It is sparse, so I do not count the density fact against it. It has 10 distinct colours in total. The leaves show about 2-3 green steps, and the petals and yellow centres add only a white and a yellow step. The references show 5-6 steps per material, and tree-d43edd has about 29 visible tones per tile. The dark edge pixels are 0% near-neutral, so the outline leans dark green and is not a black sticker line, and there are no flat fills of 5x5 or larger. Even so, the leaves and stems are thin and show little per-leaf highlight or clumping, and the sprite is flatter and simpler than the references. A careful artist would likely want more green steps and more petal shading before placing it next to the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14022
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.311Z",
+ "cells": {
+  "16": [
+   "4ca4b7878dc900c3"
+  ],
+  "24": [
+   "2a3bc547d11ec7bf",
+   "388afcb309453b63",
+   "a78fddd1772b6911",
+   "b37bc6c8e8996d36",
+   "b6e8698837771ba3",
+   "e842d49e1cfdc3d4"
+  ],
+  "32": [
+   "3023d03c4946ddaf",
+   "38ba3e2e6852d7f7",
+   "60f32a293eebb90a",
+   "977f84ef962dfb97",
+   "aa777acbf830ad4e",
+   "ff256041248d659c"
+  ],
+  "48": [
+   "6e86f9eedba22841",
+   "7eefae1dd5a9139c",
+   "85451586ff1e928d",
+   "da81e8e119095c76",
+   "f267a2c0b880b275",
+   "ff6b6f7deae53b87"
+  ]
+ }
+}
