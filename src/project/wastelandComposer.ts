@@ -390,7 +390,7 @@ class SlabLayout {
 }
 function slabDecorOf(x: number, y: number, js: number, seed: number): string {
   const r = wlH2(x * 7 + 3, y * 11 + 5, seed + 431) % 100, q = wlH2(x * 13 + 1, y * 5 + 9, seed + 433);
-  const d = r < 60 ? (q % 4 === 0 ? "plain1" : "plain0") : r < 72 ? (q % 5 ? `stain${q % 2}` : "patch") : r < 84 ? `crack${q % 4}` : r < 90 ? `spall${q % 2}` : r < 96 ? `weed${q % 2}` : js === 3 ? "chip" : "heave";
+  const d = r < 46 ? (q % 4 === 0 ? "plain1" : "plain0") : r < 62 ? `stain${q % 2}` : r < 77 ? `crack${q % 4}` : r < 85 ? `spall${q % 2}` : r < 93 ? `weed${q % 2}` : js === 3 ? "chip" : "heave";
   return slabDecorOk(d, js) ? d : "plain0";
 }
 function slabJointFinish(b: Board, joints: StructureKitDef, ground: StructureKitDef, road: readonly boolean[]): void {
