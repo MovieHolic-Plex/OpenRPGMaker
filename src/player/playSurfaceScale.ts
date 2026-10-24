@@ -36,8 +36,16 @@ export function calculatePlaySurfaceScale(
   if (safeViewportW === 0 || safeViewportH === 0) return 1;
   const containScale = Math.min(safeViewportW / safeLogicalW, safeViewportH / safeLogicalH);
   if (mode === "fit") return containScale;
-  return containScale < 1 ? containScale : Math.max(1, Math.floor(containScale));
+  if (containScale < 1) return containScale;
+  const whole = Math.max(1, Math.floor(containScale));
+  // 1.5배 단계(2026-10-24): 정수 1배가 화면의 35% 넘게 비우면(아이패드 미니 등) 1.5배를 허용한다 — 최근접 확대라
+  // 도트가 1·2화소로 번갈아 굵어지지만, 작은 1배보다 낫다. 2배 이상은 정수만 쓴다.
+  if (whole === 1 && containScale >= 1.5 && (safeLogicalW * safeLogicalH) / (safeViewportW * safeViewportH) < INTEGER_FILL_MIN) return 1.5;
+  return whole;
 }
+
+/** 정수 배율이 화면을 이만큼은 채워야 한다 — 못 채우면 1.5배 단계를 허용한다. */
+export const INTEGER_FILL_MIN = 0.65;
 
 export function calculatePlaySurfaceCropMetrics(
   viewportW: number,
