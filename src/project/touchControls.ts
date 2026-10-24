@@ -2,7 +2,7 @@
 // 휴대폰·태블릿 조작(터치 UI)의 저작 설정(system.touchControls)과 기본값(2026-10-24 모바일 조작감).
 //
 // 터치 UI 는 기기 판정(isTouchDevice)을 통과한 화면에서만 켜진다 — 데스크톱 플레이는 이 값을 읽지 않는다.
-// 생략한 칸은 기본값이다(모두 켬 + 조이스틱 auto). 기본과 같은 값은 저장하지 않는다(옛 JSON 바이트 유지).
+// 생략한 칸은 기본값이다(탭 걷기·진동 켬, 조이스틱 auto, 따로 달리기 단추 끔). 기본과 같은 값은 저장하지 않는다(옛 JSON 바이트 유지).
 // 플레이어 기기 설정(playerPreferences)이 있으면 그쪽이 이긴다: 기기 설정 > 저작 값 > 기본값.
 
 /**
@@ -32,7 +32,7 @@ export interface ResolvedTouchControls {
   readonly runButton: boolean;
 }
 
-export const DEFAULT_TOUCH_CONTROLS: ResolvedTouchControls = { tapToMove: true, stick: "auto", haptics: true, runButton: true };
+export const DEFAULT_TOUCH_CONTROLS: ResolvedTouchControls = { tapToMove: true, stick: "auto", haptics: true, runButton: false };
 
 export function isTouchStickMode(value: unknown): value is TouchStickMode {
   return value === "auto" || value === "fixed" || value === "floating";
@@ -46,7 +46,7 @@ export function normalizeTouchControls(value: unknown): TouchControlSettings | u
   if (input.tapToMove === false) out.tapToMove = false;
   if (isTouchStickMode(input.stick) && input.stick !== DEFAULT_TOUCH_CONTROLS.stick) out.stick = input.stick;
   if (input.haptics === false) out.haptics = false;
-  if (input.runButton === false) out.runButton = false;
+  if (input.runButton === true) out.runButton = true;
   return Object.keys(out).length > 0 ? out : undefined;
 }
 

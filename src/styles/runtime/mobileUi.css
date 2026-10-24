@@ -421,3 +421,21 @@
   pointer-events: none !important;
   opacity: 0.25;
 }
+
+/* 달리기 고리(2026-10-25): 판 반지름 70% 자리에 옅은 점선 고리 — 손잡이를 이 밖으로 밀면 달린다(touchPad STICK_RUN_ENTER).
+   달리는 동안 고리와 손잡이가 강조색으로 밝아진다. 따로 달리기 단추는 기본으로 없다(system.touchControls.runButton). */
+.play-viewport[data-touch-layout] > .touch-pad .touch-dpad-base::before {
+  content: "";
+  position: absolute;
+  inset: 15%;
+  border-radius: 50%;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+}
+.play-viewport[data-touch-layout] > .touch-pad .touch-stick-zone[data-run] .touch-dpad-base::before {
+  border: 2px solid color-mix(in srgb, var(--accent, #6c79f2) 80%, white);
+}
+.play-viewport[data-touch-layout] > .touch-pad .touch-stick-zone[data-run] .touch-dpad-knob {
+  background: color-mix(in srgb, var(--accent, #6c79f2) 55%, white);
+  border-color: #fff;
+}

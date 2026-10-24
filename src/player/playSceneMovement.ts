@@ -712,7 +712,7 @@ function startPlayerRouteStep(scene: PlaySceneContext, route: PlayerRouteState, 
   // 걸음 완료 부수효과(지형 피해·인카운터·터치)가 의미를 잃는다.
   if (route.through) {
     if (!inBounds(scene.map, nx, ny)) return false;
-    scene.dashing = false;
+    scene.dashing = route.dash === true;
     beginPlayerStep(scene, nx, ny);
     return true;
   }
@@ -725,7 +725,7 @@ function startPlayerRouteStep(scene: PlaySceneContext, route: PlayerRouteState, 
     firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind);
     return false;
   }
-  scene.dashing = false;
+  scene.dashing = route.dash === true;
   beginPlayerStep(scene, nx, ny);
   return true;
 }
