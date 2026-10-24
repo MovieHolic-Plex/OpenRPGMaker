@@ -540,7 +540,9 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
 function addStreetWalkers(project: Project, exec: ExecTool, data: { propList: { kit: string; x: number; y: number }[] },
   office: { access: Cell[]; doors: Cell[] }, conv: { access: Cell[]; doors: Cell[] }, exits: readonly { n: number; stair: Cell; step: Cell }[]): void {
   const street = project.maps[FL_MAP.street]!;
-  const free = (map: GameMap, c: Cell): Cell => nearestFree(project, map, c, 4);
+  // 서하가 들어서는 칸(출구·회사·편의점 나오는 칸)에는 행인을 세우지 않는다.
+  const arrivals: Cell[] = [...exits.map((e) => e.step), ...office.access, ...conv.access];
+  const free = (map: GameMap, c: Cell): Cell => nearestFree(project, map, c, 4, arrivals);
   const shelter = data.propList.find((p) => p.kit.startsWith("mc-prop-bus-shelter"));
   const sel = (sheet: number, index: number) => ({ selectionId: `charset:tex_oprn_charset_modern${sheet}:${index}` });
   const SUIT_M = sel(3, 0), SUIT_W = sel(3, 2), STUDENT_M = sel(1, 1), STUDENT_W = sel(1, 4), CASUAL_M = sel(2, 3), CASUAL_W = sel(2, 4), CASUAL_W2 = sel(2, 5), STUDENT_W2 = sel(1, 7);
@@ -550,17 +552,19 @@ function addStreetWalkers(project: Project, exec: ExecTool, data: { propList: { 
   // 가로 도로 두 줄의 보도: 북쪽 보도 바깥 줄 = 접근칸 줄(타워·편의점 앞), 남쪽 보도.
   const nWalk = tower.y, sWalk = nWalk + 10;
   const ex = (i: number) => exits[i] ?? exits[0]!;
+  // 시작 자리는 서하가 내리는 칸(첫 출구 나오는 칸)을 피한다 — 그 칸에서 시작한 행인과 서하가 한 칸에 겹쳐 서하가 못 움직였다(VQA r39).
   const morning = [
     // 출근: 먼 출구에서 나와 큰길을 건너 타워 앞까지, 들어가서(사라졌다가) 다시 나와 출구로 돌아간다.
-    { name: "출근하는 회사원", graphic: SUIT_M, speed: 4, stops: [{ ...ex(0).step }, { ...free(street, { x: 22, y: sWalk }) }, { ...free(street, { x: 22, y: nWalk + 1 }) }, { ...towerDoor, vanish: true, waitSec: 9 }] },
+    { name: "출근하는 회사원", graphic: SUIT_M, speed: 4, stops: [{ ...free(street, { x: ex(0).step.x + 1, y: ex(0).step.y + 2 }) }, { ...free(street, { x: 22, y: sWalk }) }, { ...free(street, { x: 22, y: nWalk + 1 }) }, { ...towerDoor, vanish: true, waitSec: 9 }] },
     { name: "커피를 든 회사원", graphic: SUIT_W, speed: 3, stops: [{ ...free(street, { x: 27, y: nWalk + 1 }) }, { ...towerDoor, vanish: true, waitSec: 6 }, { ...free(street, { x: 30, y: nWalk }) }, { ...konDoor, vanish: true, waitSec: 5 }] },
-    { name: "바쁜 직장인", graphic: CASUAL_M, speed: 5, stops: [{ ...ex(1).step }, { ...free(street, { x: W - 3, y: nWalk + 1 }) }, { ...free(street, { x: 2, y: nWalk + 1 }) }, { ...ex(1).stair, vanish: true, waitSec: 8 }] },
+    { name: "바쁜 직장인", graphic: CASUAL_M, speed: 5, stops: [{ ...free(street, { x: ex(1).step.x + 2, y: ex(1).step.y + 1 }) }, { ...free(street, { x: W - 3, y: nWalk + 1 }) }, { ...free(street, { x: 2, y: nWalk + 1 }) }, { ...ex(1).stair, vanish: true, waitSec: 8 }] },
     // 정류장: 쉘터 앞에서 버스 쪽(위, 차도)을 보고 한참 기다렸다가 다른 데로.
     ...(shelter ? [{ name: "정류장에서 기다리는 학생", graphic: STUDENT_W, speed: 2, stops: [{ ...free(street, { x: shelter.x + 1, y: shelter.y + 2 }), waitSec: 28, face: "up" as const }, { ...free(street, { x: 12, y: sWalk + 1 }) }, { ...ex(2).stair, vanish: true, waitSec: 10 }, { ...ex(2).step }] }] : []),
     { name: "가방을 멘 학생", graphic: STUDENT_M, speed: 3, stops: [{ ...free(street, { x: 4, y: sWalk + 1 }) }, { ...free(street, { x: 19, y: sWalk + 1 }) }, { ...free(street, { x: 19, y: sWalk + 12 }), waitSec: 2 }, { ...free(street, { x: 4, y: sWalk + 11 }) }] },
     { name: "산책하는 사람", graphic: CASUAL_W, speed: 2, stops: [{ ...free(street, { x: 34, y: sWalk + 1 }) }, { ...free(street, { x: W - 3, y: sWalk + 1 }), waitSec: 4 }, { ...free(street, { x: 33, y: sWalk }) }] },
     { name: "통화하며 걷는 회사원", graphic: SUIT_W, speed: 3, stops: [{ ...free(street, { x: 33, y: nWalk }) }, { ...free(street, { x: 33, y: nWalk + 11 }) }, { ...free(street, { x: 45, y: nWalk + 10 }), waitSec: 3 }, { ...free(street, { x: 45, y: nWalk + 1 }) }] },
-    { name: "출구로 내려가는 사람", graphic: CASUAL_W2, speed: 4, stops: [{ ...free(street, { x: 8, y: nWalk + 1 }) }, { ...ex(0).stair, vanish: true, waitSec: 12 }, { ...ex(0).step }, { ...free(street, { x: 14, y: sWalk + 11 }) }] },
+    // 서하가 내리는 출구(ex 0)로는 드나들지 않는다 — 나오는 칸이 하나뿐이라 서하가 서 있으면 행인이 옆에서 기다리며 길을 막았다(VQA r39).
+    { name: "출구로 내려가는 사람", graphic: CASUAL_W2, speed: 4, stops: [{ ...free(street, { x: 8, y: nWalk + 1 }) }, { ...ex(2).stair, vanish: true, waitSec: 12 }, { ...ex(2).step }, { ...free(street, { x: 14, y: sWalk + 11 }) }] },
   ];
   exec("add_street_walkers", { mapId: FL_MAP.street, walkers: morning, replace: true });
   const night = [

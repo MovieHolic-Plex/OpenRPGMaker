@@ -95,32 +95,70 @@ def digit_mask(n):
     return np.array([[ch == '#' for ch in row] for row in DIGITS[n]])
 
 
+def base_plate(a, y0, rows=4):
+    """땅에 놓인 받침판 — 위에서 본 윗면(뒤 밝게, 좌상 빛)·앞 모서리 한 줄·바닥 그림자."""
+    for j in range(rows):
+        for x in range(0, 16): put(a, x, y0 + j, SLATE[4] if j == 0 else SLATE[3] if x < 8 else SLATE[2])
+        put(a, 0, y0 + j, O); put(a, 15, y0 + j, O)
+    for x in range(16): put(a, x, y0 + rows, SLATE[1])
+    for x in range(16): put(a, x, min(31, y0 + rows + 1), O)
+
+
 # ---------------------------------------------------------------- 지하철 출구 번호 기둥(1×2)
+def ellipse_plate(a, cx, cy, rx, ry, top, back, rim, thick=2):
+    """위에서 본 타원 판: 윗면(뒤쪽 밝게) + 앞 두께 띠(rim) + 윤곽. 반환 = 판 아래 첫 행."""
+    H = a.shape[0]
+    for y in range(H):
+        for x in range(a.shape[1]):
+            dx, dy = (x + .5 - cx) / rx, (y + .5 - cy) / ry
+            d = dx * dx + dy * dy
+            dy2 = (y + .5 - cy - thick) / ry
+            d2 = dx * dx + dy2 * dy2
+            if d <= 1:
+                put(a, x, y, back if dy < -0.35 and dx < 0.3 else top if dx < 0.45 else rim)
+            elif d2 <= 1 and y + .5 > cy:
+                put(a, x, y, INK[2] if dx > 0.5 else rim)
+    # 윤곽
+    m = a[..., 3] > 0
+    reg = np.zeros_like(m)
+    for y in range(H):
+        for x in range(a.shape[1]):
+            dx = (x + .5 - cx) / rx
+            for t in (0, thick):
+                dy = (y + .5 - cy - t) / ry
+                if dx * dx + dy * dy <= 1.0: reg[y, x] = True
+    for y in range(H):
+        for x in range(a.shape[1]):
+            if reg[y, x] and any(not (0 <= y + v < H and 0 <= x + u < a.shape[1]) or not reg[y + v, x + u]
+                                 for u, v in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                put(a, x, y, O)
+    return int(cy + ry + thick) + 1
+
+
 def subway_exit(n):
-    """한국 지하철 출구 표지 기둥 — 네모 기둥(상자) 3/4: 윗면 6줄(밝은 뚜껑, 앞 모서리 그늘)·앞면(청록 띠 + 노란 번호판)·몸통·땅 그림자."""
+    """지하철 출구 기둥 3/4 — 몸통보다 훨씬 넓은 타원 갓(위에서 본 윗판·앞 두께·처마 그늘), 가는 몸통의 청록 띠·노란 번호판, 땅의 타원 받침."""
     a = canvas(16, 32)
-    x0, x1 = 3, 12
-    # 윗면 0..8행: 둥근 모서리 판, 뒤쪽 밝고 앞 모서리 그늘
-    ttop(a, x0, x1, 0, 8, WHITE[0], WHITE[2], SLATE[3])
-    for y in range(3, 6): put(a, x0 + 3, y, WHITE[1]); put(a, x1 - 3, y, SLATE[4])   # 윗판 위 낮은 테(위에서 본 뚜껑 홈)
-    for x in range(x0 + 3, x1 - 2): put(a, x, 2, WHITE[1]); put(a, x, 6, SLATE[4])
-    # 앞면: 청록 띠 8..10, 노란 번호판 11..18, 몸통 19..28
-    for y in range(9, 29): put(a, x0, y, O); put(a, x1, y, O)
-    for y in range(9, 11):
-        for x in range(x0 + 1, x1): put(a, x, y, TEAL[4] if x <= x0 + 2 else TEAL[3] if x < x1 - 2 else TEAL[2])
-    for x, y in ((7, 9), (8, 9), (6, 10), (9, 10)): put(a, x, y, WHITE[2])
-    for y in range(11, 19):
-        for x in range(x0 + 1, x1): put(a, x, y, AMBER[3] if x <= x0 + 1 else AMBER[1] if x < x1 - 2 else AMBER[0])
-    stamp(a, digit_mask(n), 6, 12, INK[1])
-    for x in range(x0 + 1, x1): put(a, x, 19, O)
-    for y in range(20, 29):
-        for x in range(x0 + 1, x1): put(a, x, y, SLATE[3] if x <= x0 + 1 else SLATE[2] if x < x1 - 2 else SLATE[1])
-    for x in range(x0 + 1, x1): put(a, x, 28, SLATE[0])
-    for x in range(x0, x1 + 1): put(a, x, 29, O)
-    for x in range(x0 + 1, x1 + 3):
-        if x < 16: put(a, x, 30, SHADOW)
-    for x in range(x1 + 1, min(16, x1 + 3)):
-        for y in range(9, 30): put(a, x, y, SHADOW) if y > 20 else None
+    x0, x1 = 4, 11
+    # 몸통 먼저(갓이 위를 덮는다)
+    for y in range(9, 27):
+        put(a, x0, y, O); put(a, x1, y, O)
+        for x in range(x0 + 1, x1):
+            if y < 12: c = TEAL[4] if x == x0 + 1 else TEAL[3] if x < x1 - 2 else TEAL[2] if x < x1 - 1 else TEAL[1]
+            elif y < 21: c = AMBER[3] if x == x0 + 1 else AMBER[2] if x == x0 + 2 else AMBER[1] if x < x1 - 1 else AMBER[0]
+            else: c = SLATE[4] if x == x0 + 1 else SLATE[3] if x == x0 + 2 else SLATE[2] if x < x1 - 1 else SLATE[1]
+            put(a, x, y, c)
+    for x in range(x0 + 1, x1): put(a, x, 21, O)
+    stamp(a, digit_mask(n), 6, 14, INK[1])
+    # 받침(타원 판)
+    b = canvas(16, 32); ellipse_plate(b, 8, 27.5, 7.5, 2.6, SLATE[3], SLATE[4], SLATE[1], thick=1)
+    m = b[..., 3] > 0; a[m] = b[m]
+    for x in range(x0, x1 + 1): put(a, x, 26, O)
+    for x in range(x0 + 1, x1): put(a, x, 27, SHADOW[:3] and SLATE[1])
+    # 갓(타원 판, 몸통보다 양옆 4칸씩 넓다)
+    g = canvas(16, 32); yb = ellipse_plate(g, 8, 4.5, 8, 4.4, WHITE[1], WHITE[2], SLATE[3], thick=2)
+    m = g[..., 3] > 0; a[m] = g[m]
+    for (x, y) in ((7, 3), (8, 3), (6, 4), (9, 4), (7, 5), (8, 5)): put(a, x, y, TEAL[3])
+    for x in range(x0 + 1, x1): put(a, x, yb, INK[2])   # 처마 그늘
     return a
 
 
@@ -135,30 +173,26 @@ SIGNS = [
 
 
 def vertical_sign(chars, ramp, ink):
-    """세로로 선 상자형 입간판: 윗면(3줄)·앞면(글자 두 자)·작은 받침. 3/4 — 위 뚜껑이 면으로 보인다."""
+    """원통형 회전 입간판 3/4: 위에서 본 타원 윗판(조명 덮개)·앞 두께·처마 그늘, 둥글게 감기는 몸통(글자 두 자), 타원 받침."""
     a = canvas(16, 32)
     x0, x1 = 1, 14
     dark, mid = ramp[0], ramp[1] if len(ramp) > 1 else ramp[0]
     lite = ramp[2] if len(ramp) > 2 else ramp[-1]
-    top = ramp[-1]
-    # 윗면 0..6행: 같은 상자의 윗판(바탕 램프 밝은 쪽), 둥근 모서리
-    ttop(a, x0, x1, 0, 7, WHITE[0], WHITE[2], BODY[4])
-    for x in range(x0 + 3, x1 - 2): put(a, x, 3, top); put(a, x, 4, lite)   # 윗판 가운데 색 띠(위에서 본 간판 머리)
-    # 앞면 (8..27행)
-    for y in range(8, 28):
+    for y in range(6, 28):
         put(a, x0, y, O); put(a, x1, y, O)
-        for x in range(x0 + 1, x1): put(a, x, y, lite if x == x0 + 1 else mid if x < x1 - 1 else dark)
-    # 테두리 안쪽 밝은 선(빛 방향) + 글자
+        for x in range(x0 + 1, x1):
+            put(a, x, y, ramp[-1] if x == x0 + 1 else lite if x <= x0 + 3 else mid if x < x1 - 2 else dark)
+    b = canvas(16, 32); ellipse_plate(b, 8, 29.0, 7.0, 1.9, mid, lite, dark, thick=1)
+    m = b[..., 3] > 0; a[m] = b[m]
     for i, ch in enumerate(chars):
-        m = glyph_mask(ch); h, w = m.shape
-        stamp(a, m, x0 + 1 + (x1 - x0 - 1 - w) // 2, 9 + i * 10, ink, shade=dark)
-    for x in range(x0, x1 + 1): put(a, x, 28, O)
-    # 받침(앞면 1줄)
-    for x in range(x0 + 1, x1): put(a, x, 29, SLATE[1])
-    put(a, x0, 29, O); put(a, x1, 29, O)
-    for x in range(x0, x1 + 1): put(a, x, 30, O)
-    for x in (x1 + 1, x1 + 2):
-        if x < 16: put(a, x, 29, SHADOW); put(a, x, 30, SHADOW)
+        mk = glyph_mask(ch); h, w = mk.shape
+        stamp(a, mk, x0 + 1 + (x1 - x0 - 1 - w) // 2, 11 + i * 8, ink, shade=dark)
+    g = canvas(16, 32); yb = ellipse_plate(g, 8, 3.6, 8, 3.5, SLATE[3], SLATE[4], SLATE[1], thick=2)
+    m = g[..., 3] > 0; a[m] = g[m]
+    for y in range(2, 5):
+        for x in range(5, 11):
+            if (x - 7.5) ** 2 / 9 + (y - 3.2) ** 2 / 2 <= 1: put(a, x, y, WHITE[1])
+    for x in range(x0 + 1, x1): put(a, x, yb, dark)
     return a
 
 

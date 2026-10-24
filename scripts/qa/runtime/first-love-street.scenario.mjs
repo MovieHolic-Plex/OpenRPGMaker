@@ -11,7 +11,7 @@ const beats = [
   { id: "boot", note: "체크포인트 부팅", ops: [{ kind: "waitForRuntime", timeoutMs: 120000 }, { kind: "evalToFile", out: `${process.env.QA_RECORD_VIDEO ?? "/tmp/fl"}/street-start.json`, fn: "() => ({ startedAt: Date.now() })" }], shot: false },
   { id: "lines", note: "도착 독백 넘기기", ops: [{ kind: "hold", dir: null, ms: 1500 }, { kind: "pressUntilJs", key: "Enter", fn: noBox, maxPresses: 8 }], shot: true },
   { id: "watch", note: "거리 — 행인·차", ops: [{ kind: "hold", dir: null, ms: hold }], shot: true },
-  { id: "walk", note: "서하가 큰길 쪽으로 몇 걸음", ops: [{ kind: "hold", dir: "right", ms: 2000 }, { kind: "hold", dir: "up", ms: 1600 }, { kind: "hold", dir: null, ms: 4000 }], shot: true },
+  { id: "walk", note: "서하가 큰길 쪽으로 몇 걸음", ops: [{ kind: "hold", dir: "right", ms: 2600 }, { kind: "hold", dir: null, ms: 4000 }], shot: true },
 ];
 // 옥상(d1-roof-choice): 장면 시작 화면을 그대로 두고 본다 — 난간 너머 줄여 그린 거리 띠(배경 fromMap).
 const roofBeats = [beats[0], { id: "roof", note: "옥상 — 내려다본 거리", ops: [{ kind: "hold", dir: null, ms: roofHold }], shot: true }];
