@@ -22,7 +22,7 @@ const trio = (level) => ["actor_hero", "actor_fs_elena", "actor_fs_iris"].map((a
 const AFTER_CRASH = { ...BASE, sw_fs_valen_crash_on: true, sw_fs_valen_crash_met: true, sw_fs_main_step2: true, sw_fs_vault_seal_open: true, sw_fs_b3_west_lever: true, sw_fs_b3_sun_lever: true, sw_fs_b3_moon_lever: true };
 const SEGMENTS = {
   // 세 단계 전부 + 회로까지 보이게 Lv10 로 녹화한다(헤드리스 승률 표는 Lv6~7).
-  valen: { id: "fs-act1-valen", mapId: "fs_forest", x: 15, y: 9, facing: "down", switches: { ...BASE, sw_fs_valen_crash_on: true }, party: trio(15), items: { item_potion: 6, item_hi_potion: 3, item_ether: 4 } },
+  valen: { id: "fs-act1-valen", mapId: "fs_forest", x: 15, y: 9, facing: "down", switches: { ...BASE, sw_fs_valen_crash_on: true }, party: trio(12), items: { item_potion: 6, item_hi_potion: 3, item_ether: 4 } },
   lose: { id: "fs-act1-lose", mapId: "fs_forest", x: 15, y: 9, facing: "down", switches: { ...BASE, sw_fs_valen_crash_on: true }, party: trio(6), items: { item_potion: 3 } },
   hanel: { id: "fs-act1-hanel", mapId: "fs_observatory", x: 12, y: 13, facing: "up", switches: { ...BASE, sw_fs_valen_crash_on: true, sw_fs_valen_crash_met: true, sw_fs_valen_soldiers_gone: true, sw_fs_main_step2: true }, variables: { var_fs_main_progress: 3 }, party: trio(8), items: { item_potion: 3, item_fs_star_key: 1, item_fs_circuit: 1 } },
   dragon: { id: "fs-act1-dragon", mapId: "fs_vault_b4", x: 14, y: 26, facing: "up", switches: { ...AFTER_CRASH }, party: trio(8), items: { item_potion: 6, item_hi_potion: 3, item_ether: 4 } },
@@ -163,7 +163,7 @@ async function segment(browser, server, key, run) {
   }, ["/__runtime-qa/project.json", `fs-act1-${key}-${Date.now()}`, SEGMENTS[key]]);
   await page.route("**/__runtime-qa/project.json", (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify(project) }));
   await page.goto(`${server.url}/player.html?e2eVitals=1`, { waitUntil: "domcontentloaded", timeout: 180_000 });
-  await page.waitForFunction(() => !!window.__oprnDebug && !!document.querySelector('[data-testid="runtime-state-json"]'), null, { timeout: 360_000 });
+  await page.waitForFunction(() => !!window.__oprnDebug && !!document.querySelector('[data-testid="runtime-state-json"]'), null, { timeout: 900_000 });
   await page.waitForTimeout(2000);
   const seg = { marks, texts: [] };
   try { await run(page, mark, seg); } catch (e) { seg.error = String(e); log(key, "ERR", e); }
@@ -209,8 +209,10 @@ try {
       // 배속은 전투 이벤트가 멈춰 있는 동안 바뀌지 않는다 — 1배가 될 때까지 Shift 를 다시 누른다.
       const speed = await page.evaluate(() => document.querySelector('[data-testid="battle-scene"]')?.dataset.battleSpeed ?? null);
       if (speed !== seg.speedLog?.at(-1)?.[1]) (seg.speedLog ??= []).push([msgs.length, speed]);
-      if (speed && speed !== "1.0") { await page.keyboard.press("Shift"); await page.waitForTimeout(250); }
-      if (s.box !== null || ++idle > 12) { await page.keyboard.press("Enter", { delay: 80 }); idle = 0; }
+      if (speed && speed !== "1.0" && speed !== "5.0") { await page.keyboard.press("Shift"); await page.waitForTimeout(250); }
+      // 자동 전투는 스스로 돈다. Enter 는 전투 이벤트 대사가 떠 있을 때만(빈 대사 칸에 누르면 연출 건너뛰기 5배가 된다).
+      const result = await page.evaluate(() => !!document.querySelector('[data-testid="battle-result-panel"]'));
+      if ((s.box && s.box.trim()) || result) await page.keyboard.press("Enter", { delay: 80 });
       await page.waitForTimeout(300);
     }
     seg.battleMessages = msgs;

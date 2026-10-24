@@ -209,6 +209,114 @@
    }
   },
   {
+   "id": "shrine-save",
+   "label": "별지기 제단의 별 조각 — 회복·세이브",
+   "note": "forestMaps.ts shrine: ev_fs_forest_shrine_rest (24,11) recoverAll·checkpointSave·openSaveMenu",
+   "mapId": "fs_forest_shrine",
+   "x": 24,
+   "y": 12,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   },
+   "beats": [
+    {
+     "id": "touch",
+     "ops": [
+      {
+       "kind": "evalToFile",
+       "fn": "() => { for (const id of window.__oprnDebug.readState().partyActorIds) window.__oprnSetActorVitals(id, 20, 1); return true; }",
+       "out": "/tmp/qa-fs-shrine-weak.json"
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "pressUntil",
+       "key": "Enter",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxPresses": 8,
+       "timeoutMs": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "save-menu",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "main-menu",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "pressUntilText",
+       "key": "Shift",
+       "testid": "main-menu",
+       "text": "저장할 슬롯",
+       "maxPresses": 1,
+       "settleMs": 600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
    "id": "forest-glade-entry",
    "label": "사냥꾼 쉼터(옛 수로 동쪽 곁길)",
    "note": "stream->glade 착지 (1,13) — 막다른 곳 상자 (26,11)",

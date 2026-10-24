@@ -228,9 +228,7 @@ export const B4_ROOM: RoomSpec = {
     { x0: 9, y0: 1, x1: 20, y1: 6, floor: "grate", wall: "riveted" },
     { x0: 8, y0: 24, x1: 21, y1: 31, floor: "flag", wall: "stone" },
   ],
-  daises: [
-    { id: "dais stone", x: 11, y: 9, w: 8, h: 4 },
-  ],
+  // 용 자리 단상(dais stone)은 뺐다 — 연한 바둑판 무늬가 투명 자리표시처럼 읽혔다(숲 사당 모자이크와 같은 지적).
   objects: [
     // 기계 감실 — 옛 하늘 배의 중계 장치: 콘솔(패널)·눈금판·톱니벽·기관 둘.
     { id: "control console", x: 14, y: 3 },

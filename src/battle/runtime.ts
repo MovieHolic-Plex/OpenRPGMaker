@@ -4796,7 +4796,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
       return;
     }
-    const enemy = enemies.find((entry) => entry.id === target || entry.recordId === target);
+    // 슬롯 id 는 그 칸 하나. 적 레코드 id 로 부르면 아직 숨어 있는 같은 적 중 첫 칸을 드러낸다 —
+    // 같은 적을 두 번 부르는 「하나 더」 소환이 이미 나온(또는 쓰러진) 첫 칸만 다시 집어 아무도 나오지 않았다.
+    const enemy = enemies.find((entry) => entry.id === target)
+      ?? enemies.find((entry) => entry.recordId === target && entry.hidden)
+      ?? enemies.find((entry) => entry.recordId === target);
     if (!enemy?.hidden) return;
     enemy.hidden = false;
     enemy.gauge = 0;
