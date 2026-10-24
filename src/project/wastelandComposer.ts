@@ -344,7 +344,7 @@ function fillSlab(b: Board, x0: number, y0: number, w: number, h: number): void 
  * 맵 단위 «판 짜임»: 가로 줄눈 줄이 y 위로 2~4칸마다, 그 띠마다 세로 줄눈이 2~4칸마다(띠마다 어긋남) — 2~4칸 네모 판.
  * 판마다 바탕 단(slab-ground 8×24 의 단 0·1·2)을 고르고, 위 평면층에 칸 덧그림(줄눈 · 금 · 패임 · 풀 · 흙 쪽 부서짐 · 길 쪽 연석)을 얹는다.
  */
-const SLAB_DECORS = ["plain0", "plain1", "crack0", "crack1", "crack2", "crack3", "spall0", "spall1", "weed0", "weed1", "chip", "heave"];
+const SLAB_DECORS = ["plain0", "plain1", "crack0", "crack1", "crack2", "crack3", "spall0", "spall1", "weed0", "weed1", "chip", "heave", "stain0", "stain1", "patch"];
 function slabDecorOk(d: string, js: number): boolean {
   if (d.startsWith("spall") || d.startsWith("weed")) return js > 0;
   if (d === "chip") return js === 3;
@@ -390,7 +390,7 @@ class SlabLayout {
 }
 function slabDecorOf(x: number, y: number, js: number, seed: number): string {
   const r = wlH2(x * 7 + 3, y * 11 + 5, seed + 431) % 100, q = wlH2(x * 13 + 1, y * 5 + 9, seed + 433);
-  const d = r < 72 ? (q % 4 === 0 ? "plain1" : "plain0") : r < 84 ? `crack${q % 4}` : r < 90 ? `spall${q % 2}` : r < 96 ? `weed${q % 2}` : js === 3 ? "chip" : "heave";
+  const d = r < 60 ? (q % 4 === 0 ? "plain1" : "plain0") : r < 72 ? (q % 5 ? `stain${q % 2}` : "patch") : r < 84 ? `crack${q % 4}` : r < 90 ? `spall${q % 2}` : r < 96 ? `weed${q % 2}` : js === 3 ? "chip" : "heave";
   return slabDecorOk(d, js) ? d : "plain0";
 }
 function slabJointFinish(b: Board, joints: StructureKitDef, ground: StructureKitDef, road: readonly boolean[]): void {

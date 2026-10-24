@@ -27,7 +27,7 @@ J_COL, J_DEEP = S['slate'][1], S['slate'][0]
 J_DIRT = (S['bark'][1], S['bark'][2])
 CRACK, CRACK_END = S['slate'][2], GR[1]
 DIRT = MAT['dirt']
-DECORS = ('plain0', 'plain1', 'crack0', 'crack1', 'crack2', 'crack3', 'spall0', 'spall1', 'weed0', 'weed1', 'chip', 'heave')
+DECORS = ('plain0', 'plain1', 'crack0', 'crack1', 'crack2', 'crack3', 'spall0', 'spall1', 'weed0', 'weed1', 'chip', 'heave', 'stain0', 'stain1', 'patch')
 
 
 def decor_ok(d, js):
@@ -77,9 +77,19 @@ def ground_tone(x, y):
             mx, my = max(p[0] for p in pts), max(p[1] for p in pts)
             x0 = cx * 16 + (r >> 8) % (16 - mx); y0 = cy * 16 + h2(k, 19, 6103) % (16 - my)
             light = k % 5 == 0
-            for dx, dy in pts:
+            deep = not light and k % 9 == 4                 # 드문 깊은 골재(두 단 어둠) — 덩이 가운데 한두 화소만
+            for j, (dx, dy) in enumerate(pts):
                 p = (x0 + dx, y0 + dy)
-                if _GT[p] == G_BASE: _GT[p] = G_BASE + 1 if light else G_BASE - 1
+                if _GT[p] == G_BASE: _GT[p] = G_BASE + 1 if light else (G_BASE - 2 if deep and j == 0 else G_BASE - 1)
+        for k in range(60):                                 # 닳은 자리: 칸 안 4~6화소 두 줄 덩이, 한 단 밝음(선이 아니라 닳은 면)
+            r = h2(k, 23, 6107)
+            cx, cy = (r % 64) % 8, (r % 64) // 8
+            ln = 4 + (r >> 6) % 3
+            x0 = cx * 16 + 1 + (r >> 8) % (14 - ln); y0 = cy * 16 + 1 + h2(k, 29, 6109) % 12
+            for i in range(ln):
+                for j in (0, 1):
+                    if j == 1 and (i == 0 or i == ln - 1): continue
+                    _GT[(x0 + i, y0 + j)] = G_BASE + 1
     return _GT[(x % SP, y % SP)]
 
 
@@ -132,7 +142,8 @@ class Layout:
 def decor_of(x, y, js, seed):
     r = h2(x * 7 + 3, y * 11 + 5, seed + 431) % 100
     q = h2(x * 13 + 1, y * 5 + 9, seed + 433)
-    if r < 72: d = 'plain1' if q % 4 == 0 else 'plain0'
+    if r < 60: d = 'plain1' if q % 4 == 0 else 'plain0'
+    elif r < 72: d = 'stain%d' % (q % 2) if q % 5 else 'patch'
     elif r < 84: d = 'crack%d' % (q % 4)
     elif r < 90: d = 'spall%d' % (q % 2)
     elif r < 96: d = 'weed%d' % (q % 2)
@@ -157,17 +168,48 @@ def _in(x, y, m=0): return m <= x <= 15 - m and m <= y <= 15 - m
 
 
 def _joints(c, js, dirty, seed):
+    """줄눈 = 세 화소 베벨: 위(왼) 판의 그늘진 끝 한 줄(GR1) · 짙은 회청 홈 한 줄 · 이 판의 빛 받은 끝 한 줄(GR5/GR4).
+    셋 다 이 칸 안(윗줄 0~2 · 왼줄 0~2)이라 이웃 칸을 몰라도 줄눈 양쪽 판 끝이 모두 모델링된다."""
     J = set()
-    if js & 1: J |= {(x, 0) for x in range(16)}
-    if js & 2: J |= {(0, y) for y in range(16)}
+    if js & 1:
+        for x in range(16): c.P(x, 0, GR[1])
+    if js & 2:
+        for y in range(16): c.P(0, y, GR[2])
+    if js & 1: J |= {(x, 1) for x in range(16)}
+    if js & 2: J |= {(1, y) for y in range(16)}
     for (x, y) in J:
-        d = dirty and h2(x // 4 if y == 0 else y // 4, 1 if y == 0 else 2, seed + 7) % 3 == 0
+        d = dirty and h2(x // 4 if y == 1 else y // 4, 1 if y == 1 else 2, seed + 7) % 3 == 0
         c.P(x, y, J_DIRT[(x + y) % 2] if d else J_COL)
     if js & 1:
-        for x in range(1 if js & 2 else 0, 16): c.P(x, 1, GR[5])
+        for x in range(2 if js & 2 else 0, 16): c.P(x, 2, GR[5])
     if js & 2:
-        for y in range(2 if js & 1 else 0, 16): c.P(1, y, GR[4])
-    return J
+        for y in range(3 if js & 1 else 0, 16): c.P(2, y, GR[4])
+    if js == 3: c.P(0, 0, GR[1]); c.P(1, 0, GR[1]); c.P(0, 1, J_COL)
+    return J | ({(x, 0) for x in range(16)} if js & 1 else set()) | ({(0, y) for y in range(16)} if js & 2 else set()) \
+        | ({(x, 2) for x in range(16)} if js & 1 else set()) | ({(2, y) for y in range(16)} if js & 2 else set())
+
+
+def _stain(c, J, seed, light=False):
+    """판 위 얼룩: 젖은 그늘(어두운 덩이 둘레 한 단) 또는 덧바른 자리(밝은 네모, 아래·오른 끝 그늘). 칸 안 5~9화소."""
+    r = h2(seed, 9, 53)
+    if light:
+        x0, y0 = 4 + r % 5, 4 + (r >> 3) % 5
+        w, hh = 5 + (r >> 6) % 3, 4 + (r >> 8) % 3
+        for y in range(y0, min(14, y0 + hh)):
+            for x in range(x0, min(14, x0 + w)):
+                if (x, y) in J: continue
+                c.P(x, y, GR[2] if y == min(14, y0 + hh) - 1 or x == min(14, x0 + w) - 1 else GR[5] if y == y0 or x == x0 else GR[4])
+        return
+    cx, cy = 5 + r % 6, 5 + (r >> 3) % 6
+    pts = set()
+    for k in range(5 + (r >> 6) % 3):
+        q = h2(k, r, seed + 1)
+        px, py = cx + q % 5 - 2, cy + (q >> 3) % 4 - 1
+        for dx, dy in ((0, 0), (1, 0), (0, 1), (1, 1)): pts.add((px + dx, py + dy))
+    for (x, y) in pts:
+        if (x, y) in J or not _in(x, y, 3): continue
+        core = sum((x + dx, y + dy) in pts for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))) == 4
+        c.P(x, y, GR[1] if core else GR[2])
 
 
 def _crack(c, J, seed):
@@ -202,9 +244,9 @@ def _spall(c, J, js, seed):
     """줄눈 옆 패임(4~6×3~4): 안쪽 윗벽 가장 어둡고 바닥 흙, 아래 테 밝은 깨진 화소."""
     r = h2(seed, 5, 43)
     if js & 1 and (not js & 2 or r % 2):
-        x0, y0 = 4 + r % 7, 2
+        x0, y0 = 4 + r % 7, 3
     else:
-        x0, y0 = 2, 4 + r % 7
+        x0, y0 = 3, 5 + r % 7
     w, hh = 4 + (r >> 4) % 3, 3 + (r >> 6) % 2
     hole = set()
     for j in range(hh):
@@ -222,9 +264,8 @@ def _spall(c, J, js, seed):
 def _weed(c, J, js, seed):
     """줄눈에서 자란 풀(잎 4~5장, 키 2~4, 비대칭)."""
     r = h2(seed, 7, 47)
-    if js & 1 and (not js & 2 or r % 2): bx, by = 4 + r % 8, 1
-    else: bx, by = 1, 6 + r % 7
-    if by == 1: by = 2
+    if js & 1 and (not js & 2 or r % 2): bx, by = 4 + r % 8, 2
+    else: bx, by = 2, 6 + r % 7
     blades = [(-3, 2), (-2, 3), (-1, 4), (0, 5), (1, 4), (2, 3), (3, 2)][(r >> 4) % 2:]
     for k, (dx, hgt) in enumerate(blades):
         hgt = max(2, hgt - h2(k, r, seed) % 2)
@@ -241,16 +282,16 @@ def _chip(c, seed):
     n = 3 + seed % 2
     for i in range(n):
         for j in range(n - i):
-            x, y = 1 + i, 1 + j
-            c.P(x, y, GR[0] if i + j <= 1 else GR[1])
-    c.P(1 + n, 1, GR[5]); c.P(1, 1 + n, GR[4])
+            x, y = 2 + i, 2 + j
+            c.P(x, y, J_COL if i + j <= 1 else GR[0] if i + j <= 2 else GR[1])
+    c.P(2 + n, 2, GR[5]); c.P(2, 2 + n, GR[4])
 
 
 def _heave(c, seed):
     """들뜬 판 끝: 윗줄 줄눈 6~9화소 토막이 벌어지고 그 밑 판 끝 두 줄이 밝다."""
     a = 2 + seed % 5; b = min(14, a + 6 + (seed >> 3) % 4)
     for x in range(a, b):
-        c.P(x, 0, J_DEEP); c.P(x, 1, GR[6]); c.P(x, 2, GR[5])
+        c.P(x, 1, J_DEEP); c.P(x, 2, GR[6]); c.P(x, 3, GR[5])
 
 
 def _rim_profile(seed, side):
@@ -321,6 +362,8 @@ def draw_tile(c, ox, oy, spec):
         elif d.startswith('weed'): _weed(sub, J, js, seed + int(d[-1]) * 5)
         elif d == 'chip': _chip(sub, seed)
         elif d == 'heave': _heave(sub, seed)
+        elif d.startswith('stain'): _stain(sub, J, seed + int(d[-1]) * 3)
+        elif d == 'patch': _stain(sub, J, seed, light=True)
     else:
         _, sides, js, v = spec
         seed = 9501 + sum(q * 3 ** i for i, q in enumerate(sides)) * 17 + js * 5 + v * 211
@@ -330,9 +373,9 @@ def draw_tile(c, ox, oy, spec):
 
 
 @piece('slab-joints', '깨진 콘크리트 판 줄눈·가장자리 덧그림', COLS, ROWS, FLAT,
-       en='old city concrete pavement seen from above: long straight saw-cut slab joints (thin dark groove with a lit slab edge below or right) laid as 2-4 tile '
-          'panels in staggered rows, thin hairline cracks lighter than the joints, a few spalled holes showing earth along joints, weeds in joints, a chipped corner '
-          'and a heaved slab edge; slab edges crumble into dirt (the south edge shows the slab thickness) and meet the asphalt road as a clean kerb; transparent decal over plain concrete',
+       en='old city concrete pavement seen from above: long straight saw-cut slab joints (a bevel: shaded lip of the upper/left slab, dark groove, lit lip of the lower/right slab) laid as 2-4 tile '
+          'panels in staggered rows, thin dark hairline cracks (finer and more broken than the joints), a few spalled holes showing earth along joints, weeds in joints, a chipped corner '
+          'a heaved slab edge, damp stains and lighter repaired patches; slab edges crumble into dirt (the south edge shows the slab thickness) and meet the asphalt road as a clean kerb; transparent decal over plain concrete',
        group='ground', tags=['콘크리트', '줄눈', '덧그림', '보도', '광장'],
        desc='깨진 콘크리트 판의 줄눈·표시·가장자리 덧그림(위 평면층). 붓으로 찍지 않는다 — 구성기가 맵 판 짜임(가로 줄눈 2~4칸마다, 띠마다 세로 줄눈 2~4칸)과 '
             '네 이웃 종류(판·흙·길)로 칸을 고른다. 아래층은 slab-ground.',
@@ -363,7 +406,7 @@ SAMPLE_PLAN_B = [
     '.###########..........',
     '.###########....###...',
     '.###########....###...',
-    '.#########......###...',
+    '.###########....###...',
     '.#########............',
     '......................',
     '######################',
