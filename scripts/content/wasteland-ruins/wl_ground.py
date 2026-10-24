@@ -1385,510 +1385,125 @@ AUTO['track'] = dict(name='발길', kind=TERRAIN)
 
 
 
-# ------------------------------------------------------------------ 콘크리트 판 (r59)
-# 깨진 옛 도시 콘크리트(보도·광장·도로판). 판 한 장 = 8×8칸(128화소), 짜임표 한 글자 = 4화소(행 문자열 SLAB_LAYOUTS, 글자 하나 = 판 하나).
-# 이음 배치 셋: A(slab-a/b/c 가 같이 쓴다) · D(slab-d) · E(slab-e). 맵(slabAt)은 8×8칸 덩이마다 배치 하나를 해시로 고르고(각 1/3),
-# A 덩이 안 칸은 같은 (x mod 8, y mod 8) 자리의 slab-a/b/c 를 2:4:4 로 섞는다.
-# 덩이 경계 띠(가장자리 8화소)는 세 배치가 화소까지 같다: 경계를 건너는 이음(포트)은 위·아래 x = 4·SLAB_PORTS, 왼·오른 y = 4·SLAB_PORTS 뿐이고
-# 경계를 따라 눕는 이음은 없다(경계를 건너는 판은 이웃 덩이의 판 반쪽과 한 장으로 이어진다 — 128화소 격자 줄이 생기지 않는다).
-# 짜임표 규칙(검사 _slab_check): 0~2행·29~31행·0~2열·29~31열은 포트 자리에서만 글자가 바뀐다. 판은 네모, 안쪽 판은 16화소 이상.
-# 띠 안 얼룩은 공용 씨앗, 띠에 닿는 판의 단 차이는 포트 구간마다 고정(_SEG_TONE) — 덩이가 바뀌어도 경계 양쪽 판 반쪽이 같은 값.
-# 그림: 몸 = body 회색 램프(흙물 든 판은 roof 갈회), 판마다 ±1~2단, 4화소 덩이의 부드러운 얼룩(±1단)·넓게 젖은 자리, 위·왼 모서리 빛, 아래 모서리 그늘.
-# 이음 = roof[1] 따뜻한 짙은 회색(곳곳 2화소·흙 낀 토막). 금 = body[0]/slate[2] 차가운 회색 — 이음 색과 다르다. 낱화소 흰 점·갈색 점 결은 없다.
-# 표시(구멍·기름·잡초·벗겨짐·금·깨진 모서리·들뜬 판)는 모두 한 칸 안(칸 가장자리 1화소 안쪽)에만 — 칸마다 a/b/c 를 바꿔 끼워도 잘리지 않는다.
-SP = 128
-SLAB_PORTS = (4, 12, 20, 28)
-SLAB_BAND = 8
-SLAB_LAYOUTS = {}
-SLAB_LAYOUTS['a'] = [
-    'aaaabbbbbbbbccccccccddddddddeeee', 'aaaabbbbbbbbccccccccddddddddeeee',
-    'aaaabbbbbbbbccccccccddddddddeeee', 'aaaabbbbbbbbccccccccddddddddeeee',
-    'ffffgggggggghhhhhhhhiiiiiiiijjjj', 'ffffgggggggghhhhhhhhiiiiiiiijjjj',
-    'ffffgggggggghhhhhhhhiiiiiiiijjjj', 'ffffgggggggghhhhhhhhiiiiiiiijjjj',
-    'ffffgggggggghhhhhhhhiiiiiiiijjjj', 'ffffgggggggghhhhhhhhiiiiiiiijjjj',
-    'ffffgggggggghhhhhhhhiiiiiiiijjjj', 'ffffgggggggghhhhhhhhiiiiiiiijjjj',
-    'kkkkllllllllmmmmmmmmnnnnnnnnoooo', 'kkkkllllllllmmmmmmmmnnnnnnnnoooo',
-    'kkkkllllllllmmmmmmmmnnnnnnnnoooo', 'kkkkllllllllmmmmmmmmnnnnnnnnoooo',
-    'kkkkllllllllmmmmmmmmnnnnnnnnoooo', 'kkkkllllllllmmmmmmmmnnnnnnnnoooo',
-    'kkkkllllllllmmmmmmmmnnnnnnnnoooo', 'kkkkllllllllmmmmmmmmnnnnnnnnoooo',
-    'ppppqqqqqqqqrrrrrrrrsssssssstttt', 'ppppqqqqqqqqrrrrrrrrsssssssstttt',
-    'ppppqqqqqqqqrrrrrrrrsssssssstttt', 'ppppqqqqqqqqrrrrrrrrsssssssstttt',
-    'ppppqqqqqqqquuuuuuuusssssssstttt', 'ppppqqqqqqqquuuuuuuusssssssstttt',
-    'ppppqqqqqqqquuuuuuuusssssssstttt', 'ppppqqqqqqqquuuuuuuusssssssstttt',
-    'vvvvwwwwwwwwxxxxxxxxyyyyyyyyzzzz', 'vvvvwwwwwwwwxxxxxxxxyyyyyyyyzzzz',
-    'vvvvwwwwwwwwxxxxxxxxyyyyyyyyzzzz', 'vvvvwwwwwwwwxxxxxxxxyyyyyyyyzzzz',
-]
-SLAB_LAYOUTS['d'] = [
-    'aaaabbbbbbbbccccccccddddddddeeee', 'aaaabbbbbbbbccccccccddddddddeeee',
-    'aaaabbbbbbbbccccccccddddddddeeee', 'aaaabbbbbbbbccccccccddddddddeeee',
-    'ffffgggggggghhhhhhhhhhhhhhhhiiii', 'ffffgggggggghhhhhhhhhhhhhhhhiiii',
-    'ffffgggggggghhhhhhhhhhhhhhhhiiii', 'ffffgggggggghhhhhhhhhhhhhhhhiiii',
-    'ffffgggggggghhhhhhhhhhhhhhhhiiii', 'ffffgggggggghhhhhhhhhhhhhhhhiiii',
-    'ffffgggggggghhhhhhhhhhhhhhhhiiii', 'ffffgggggggghhhhhhhhhhhhhhhhiiii',
-    'jjjjkkkkkkkkllllllllmmmmmmmmnnnn', 'jjjjkkkkkkkkllllllllmmmmmmmmnnnn',
-    'jjjjkkkkkkkkllllllllmmmmmmmmnnnn', 'jjjjkkkkkkkkllllllllmmmmmmmmnnnn',
-    'jjjjkkkkkkkkllllllllmmmmmmmmnnnn', 'jjjjkkkkkkkkllllllllmmmmmmmmnnnn',
-    'jjjjkkkkkkkkllllllllmmmmmmmmnnnn', 'jjjjkkkkkkkkllllllllmmmmmmmmnnnn',
-    'ooookkkkkkkkppppppppqqqqqqqqrrrr', 'ooookkkkkkkkppppppppqqqqqqqqrrrr',
-    'ooookkkkkkkkppppppppqqqqqqqqrrrr', 'ooookkkkkkkkppppppppqqqqqqqqrrrr',
-    'ooookkkkkkkkppppppppqqqqqqqqrrrr', 'ooookkkkkkkkppppppppqqqqqqqqrrrr',
-    'ooookkkkkkkkppppppppqqqqqqqqrrrr', 'ooookkkkkkkkppppppppqqqqqqqqrrrr',
-    'ssssttttttttuuuuuuuuvvvvvvvvwwww', 'ssssttttttttuuuuuuuuvvvvvvvvwwww',
-    'ssssttttttttuuuuuuuuvvvvvvvvwwww', 'ssssttttttttuuuuuuuuvvvvvvvvwwww',
-]
-SLAB_LAYOUTS['e'] = [
-    'aaaabbbbbbbbccccccccddddddddeeee', 'aaaabbbbbbbbccccccccddddddddeeee',
-    'aaaabbbbbbbbccccccccddddddddeeee', 'aaaabbbbbbbbccccccccddddddddeeee',
-    'ffffgggghhhhiiiiiiiijjjjjjjjkkkk', 'ffffgggghhhhiiiiiiiijjjjjjjjkkkk',
-    'ffffgggghhhhiiiiiiiijjjjjjjjkkkk', 'ffffgggghhhhiiiiiiiijjjjjjjjkkkk',
-    'ffffgggghhhhiiiiiiiijjjjjjjjkkkk', 'ffffgggghhhhiiiiiiiijjjjjjjjkkkk',
-    'ffffgggghhhhiiiiiiiijjjjjjjjkkkk', 'ffffgggghhhhiiiiiiiijjjjjjjjkkkk',
-    'llllmmmmmmmmnnnnnnnnoooooooopppp', 'llllmmmmmmmmnnnnnnnnoooooooopppp',
-    'llllmmmmmmmmnnnnnnnnoooooooopppp', 'llllmmmmmmmmnnnnnnnnoooooooopppp',
-    'llllmmmmmmmmnnnnnnnnqqqqqqqqpppp', 'llllmmmmmmmmnnnnnnnnqqqqqqqqpppp',
-    'llllmmmmmmmmnnnnnnnnqqqqqqqqpppp', 'llllmmmmmmmmnnnnnnnnqqqqqqqqpppp',
-    'rrrrssssssssnnnnnnnnttttttttuuuu', 'rrrrssssssssnnnnnnnnttttttttuuuu',
-    'rrrrssssssssnnnnnnnnttttttttuuuu', 'rrrrssssssssnnnnnnnnttttttttuuuu',
-    'rrrrssssssssnnnnnnnnttttttttuuuu', 'rrrrssssssssnnnnnnnnttttttttuuuu',
-    'rrrrssssssssnnnnnnnnttttttttuuuu', 'rrrrssssssssnnnnnnnnttttttttuuuu',
-    'vvvvwwwwwwwwxxxxxxxxyyyyyyyyzzzz', 'vvvvwwwwwwwwxxxxxxxxyyyyyyyyzzzz',
-    'vvvvwwwwwwwwxxxxxxxxyyyyyyyyzzzz', 'vvvvwwwwwwwwxxxxxxxxyyyyyyyyzzzz',
-]
-
-BODY = [S['body'][i] for i in range(7)]                                   # 콘크리트 몸(어두움 → 밝음)
-J_CORE, J_DARK, J_DEEP = S['roof'][2], S['roof'][1], S['roof'][0]          # 줄눈(바탕 roof[2], 때 낀 토막·만남 roof[1], 벌어진 틈 roof[0])
-J_DIRT, J_DIRT2 = S['bark'][2], S['bark'][1]                              # 흙 낀 줄눈
-CR_CORE, CR_DEEP = S['body'][0], S['slate'][2]                            # 금(줄눈과 다른 차가운 회색)
-OIL_IN, OIL_CORE = S['slate'][4], S['slate'][3]                           # 기름 얼룩: 조금 어두운 푸른 회색 두 단(반짝이 없음)
-_SEG_TONE = {0: (0, 0), 1: (1, 0), 2: (-1, 0), 3: (0, 0)}                 # 포트 구간 k → (단 차이, 0) — 구간 0 = 모서리(감김)
-
-
-def _seg_of(v):
-    k = sum(1 for p in SLAB_PORTS if v >= p)
-    return 0 if k == len(SLAB_PORTS) else k
-
-
-def _slab_check(L):
-    G = SLAB_LAYOUTS[L]
-    assert len(G) == 32 and all(len(r) == 32 for r in G), L
-    for a, b in ((0, 1), (1, 2), (29, 30), (30, 31)):
-        assert G[a] == G[b] and [r[a] for r in G] == [r[b] for r in G], (L, a, b)
-    for r in (0, 31):
-        assert tuple(x for x in range(1, 32) if G[r][x] != G[r][x - 1]) == SLAB_PORTS, (L, r)
-        assert tuple(y for y in range(1, 32) if G[y][r] != G[y - 1][r]) == SLAB_PORTS, (L, r)
-    for ch in {c for row in G for c in row}:
-        cells = [(i, j) for j in range(32) for i in range(32) if G[j][i] == ch]
-        xs, ys = [c[0] for c in cells], [c[1] for c in cells]
-        assert (max(xs) - min(xs) + 1) * (max(ys) - min(ys) + 1) == len(cells), (L, ch, 'not a rectangle')
-    for row in G:                                                          # 줄눈은 칸 경계(16화소 배수)에만
-        assert all(row[x] == row[x - 1] for x in range(1, 32) if x % 4), (L, 'joint off the cell grid')
-
-
-_SLAB_INFO = {}
-
-
-def _slab_info(L):
-    """배치 L: reg(판 글자) · jt(줄눈 화소 → 색) · jdir(줄눈 화소 → 'v'/'h') · tone(판 → (램프, 바탕 단)) · seed."""
-    if L in _SLAB_INFO: return _SLAB_INFO[L]
-    _slab_check(L)
-    G = SLAB_LAYOUTS[L]
-    reg = [[G[y // 4][x // 4] for x in range(SP)] for y in range(SP)]
-    segs = []
-    for x in range(4, SP, 4):
-        y = 0
-        while y < SP:
-            if reg[y][x - 1] != reg[y][x]:
-                y0 = y
-                while y < SP and reg[y][x - 1] != reg[y][x]: y += 1
-                segs.append(('v', x, y0, y))
-            else: y += 1
-    for y in range(4, SP, 4):
-        x = 0
-        while x < SP:
-            if reg[y - 1][x] != reg[y][x]:
-                x0 = x
-                while x < SP and reg[y - 1][x] != reg[y][x]: x += 1
-                segs.append(('h', y, x0, x))
-            else: x += 1
-    B = SLAB_BAND
-    inband = lambda x, y: x < B or y < B or x >= SP - B or y >= SP - B
-    seed = {'a': 601, 'd': 613, 'e': 629}[L]
-    jt, jdir = {}, {}
-    for k, (o, c0, a, b) in enumerate(segs):
-        for t in range(a, b):
-            x, y = (c0, t) if o == 'v' else (t, c0)
-            band = inband(x, y)
-            sd = 977 if band else seed
-            r = h2(c0 * 5 + t // 6, o == 'v', sd + 3)
-            wide = not band and r % 9 == 0                                 # 6화소 토막째 벌어진 줄눈(2화소)
-            dirt = not band and (r >> 4) % 6 == 0                          # 6화소 토막째 흙 낀 줄눈
-            grime = h2(t // 4, c0, sd + (0 if o == 'v' else 1)) % 7 == 0
-            if (x, y) not in jt or dirt:
-                jt[(x, y)] = J_DIRT if dirt else (J_DARK if grime else J_CORE)
-            jdir.setdefault((x, y), o)
-            if wide:
-                wx, wy = (x - 1, y) if o == 'v' else (x, y - 1)
-                if (wx, wy) not in jt: jt[(wx, wy)] = J_DIRT2 if dirt else J_CORE; jdir[(wx, wy)] = o
-    for (x, y) in list(jt):
-        if jt[(x, y)] == J_CORE and sum(((x + a) % SP, (y + b) % SP) in jt for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1))) >= 3: jt[(x, y)] = J_DARK
-    tone = {}
-    for ch in sorted({c for row in G for c in row}):
-        cells = [(i, j) for j in range(32) for i in range(32) if G[j][i] == ch]
-        key = None
-        for (i, j) in cells:
-            if j <= 2 or j >= 29: key = _seg_of(i); break
-            if i <= 2 or i >= 29: key = _seg_of(j); break
-        if key is not None: sh = _SEG_TONE[key][0]
-        else:
-            r = h2(ord(ch) * 3 + len(cells), cells[0][0] * 32 + cells[0][1], seed + 11) % 20
-            sh = -1 if r < 5 else 0 if r < 14 else 1
-        tone[ch] = (BODY, 3 + sh)
-    box = {}
-    for j in range(32):
-        for i in range(32):
-            ch = G[j][i]; b0 = box.get(ch, (i, j, i, j)); box[ch] = (min(b0[0], i), min(b0[1], j), max(b0[2], i), max(b0[3], j))
-    info = dict(reg=reg, jt=jt, jdir=jdir, tone=tone, seed=seed, segs=segs, box=box)
-    _SLAB_INFO[L] = info
-    return info
-
-
-def _grain(x, y, seed):
-    """콘크리트 결: 넓은 부드러운 닳음·젖음 자리(±1단, 6~16화소) + 거친 자리의 2×2 덩이(±1단) + 드문 낱 골재 알(16×16 에 한둘). 낱화소 점무늬는 없다."""
-    f = wrapnoise(x, y, seed + 7, 32, SP) * 0.6 + wrapnoise(x, y, seed + 9, 16, SP) * 0.4
-    off = -1 if f < 0.28 else 1 if f > 0.76 else 0
-    n8 = wrapnoise(x, y, seed + 13, 8, SP)                                 # 3~6화소 작은 얼룩(점이 아니라 덩이)
-    if n8 < 0.27: off -= 1
-    elif n8 > 0.75 and off <= 0: off += 1
-    gx, gy = (x + (y // 2) % 2) // 2, y // 2
-    r = h2(gx % (SP // 2), gy % (SP // 2), seed) % 10                      # 2×2 덩이 결(거친 자리는 더 촘촘)
-    if wrapnoise(x, y, seed + 30, 16, SP) > 0.55: off -= 1 if r < 3 else 0      # 거친 자리: 드러난 골재(어두운 2×2 덩이만 — 밝은 점은 없다)
-    elif r == 0: off -= 1
-    if h2(x, y, seed + 51) % 160 == 0: off -= 1                            # 골재 알(어두운)
-    return off
-
-
-def _slab_px(I, x, y):
-    """바탕 판 화소 색(표시 없음): 판 단 + 결 + 가로 줄눈 바로 밑 한 줄 빛(판 윗끝)."""
-    jt = I['jt']
-    if (x, y) in jt: return jt[(x, y)]
-    ramp, t = _ramp_t(I, x, y)
-    return ramp[max(0, min(len(ramp) - 1, t))]
-
-
-_CRAZE = {}
-
-
-def _craze(seed):
-    """잔금(map cracking): 3~7화소 짧은 꺾은 선 — 오래된 콘크리트 겉면의 실금. 바탕 결이라 a/b/c 가 같이 쓴다. 128 감김."""
-    if seed in _CRAZE: return _CRAZE[seed]
-    out = set()
-    for k in range(150):
-        r = h2(k, seed, 211)
-        x, y = r % SP, (r >> 7) % SP
-        sx = 1 if (r >> 14) % 2 else -1
-        for i in range(3 + (r >> 15) % 6):
-            out.add((x % SP, y % SP))
-            q = h2(i, k, seed + 5) % 6
-            if q < 2: x += sx
-            elif q < 4: y += 1
-            else: x += sx; y += 1
-    _CRAZE[seed] = out
-    return out
-
-
-def _ramp_t(I, x, y):
-    """바탕 화소의 (램프, 단) — 판 단 + 결 + 가로 줄눈 바로 밑 한 줄 빛(판 윗끝 실선). 표시는 이 단에서 올리고 내린다."""
-    ramp, t = I['tone'][I['reg'][y][x]]
-    B = SLAB_BAND
-    inb = x < B or y < B or x >= SP - B or y >= SP - B
-    sd = 977 if inb else I['seed']
-    t += _grain(x, y, sd)
-    if (x, y) in _craze(sd): t -= 1
-    if I['jdir'].get((x, (y - 1) % SP)) == 'h': t += 1
-    return ramp, t
-
-
-# ---- 칸 안 표시(모두 한 칸 안 — 칸마다 a/b/c 를 바꿔 끼워도 잘리지 않는다. 덩이 경계 띠 8화소도 건드리지 않는다)
-def _body(I, x, y): return (x, y) not in I['jt']
-
-
-_SPAN = [False]                                                            # 덩이 하나짜리 D·E 의 큰 표시: 칸을 넘어도 된다(띠만 피한다)
-
-
-def _in_cell(cx, cy, x, y, m=1):
-    if _SPAN[0]: return SLAB_BAND + 1 <= x < SP - SLAB_BAND - 1 and SLAB_BAND + 1 <= y < SP - SLAB_BAND - 1
-    return cx * 16 + m <= x <= cx * 16 + 15 - m and cy * 16 + m <= y <= cy * 16 + 15 - m and SLAB_BAND <= x < SP - SLAB_BAND and SLAB_BAND <= y < SP - SLAB_BAND
-
-
-def _spots(cx, cy, seed, m=3):
-    pts = [(cx * 16 + m + i, cy * 16 + m + j) for j in range(16 - 2 * m) for i in range(16 - 2 * m)]
-    return sorted(pts, key=lambda p: h2(p[0], p[1], seed))
-
-
-def _ell(cxm, cym, rx, ry, seed, jit=0.07):
-    out = []
-    for y in range(int(cym - ry - 1), int(cym + ry + 2)):
-        for x in range(int(cxm - rx - 1), int(cxm + rx + 2)):
-            d = ((x - cxm) / rx) ** 2 + ((y - cym) / ry) ** 2 + (h2(x, y, seed) % 4) * jit
-            if d < 1: out.append((x, y))
-    return set(out)
-
-
-def _fits(I, cx, cy, pts, pad=1):
-    for (x, y) in pts:
-        if not _in_cell(cx, cy, x, y, 1): return False
-        for dx in range(-pad, pad + 1):
-            for dy in range(-pad, pad + 1):
-                if not _body(I, x + dx, y + dy): return False
-    return True
-
-
-def _put_t(c, I, x, y, d):
-    ramp, t = _ramp_t(I, x, y)
-    c.P(x, y, ramp[max(0, min(6, t + d))])
-
-
-def m_pothole(c, I, cx, cy, s, big=False):
-    """팬 구멍(가로 6~9화소, 들쭉날쭉 · 큰 것 11~14화소): 안쪽 윗벽이 가장 어둡고(3/4 시점), 바닥은 짙은 회색·자갈 알, 테두리엔 드러난 골재 1~2화소."""
-    for (x0, y0) in _spots(cx, cy, s, 5):
-        rx, ry = (6.5 + (s % 2), 4.0) if big else (4.0 + (s % 3) * 0.4, 2.8 + (s >> 2) % 2 * 0.4)
-        hole = _ell(x0, y0, rx, ry, s, 0.16)
-        bite = _ell(x0 + (2 if s % 2 else -2), y0 - ry, 1.6, 1.2, s + 7, 0.1)     # 윗 가장자리 한쪽이 더 깨져 들어갔다
-        hole = (hole | {p for p in bite if p[1] >= y0 - ry - 1}) - {(x0 + (3 if s % 2 else -3), round(y0 + ry))}
-        ring = {(x + dx, y + dy) for (x, y) in hole for dx in (-1, 0, 1) for dy in (-1, 0, 1)} - hole
-        if not _fits(I, cx, cy, hole | ring, 0): continue
-        for (x, y) in hole:
-            if (x, y - 1) not in hole: c.P(x, y, J_DEEP)                  # 안쪽 윗벽
-            elif (x, y - 2) not in hole: c.P(x, y, BODY[0] if h2(x, y, s) % 3 else J_DARK)
-            elif (x, y + 1) not in hole: c.P(x, y, BODY[1])               # 바닥 앞쪽
-            else: c.P(x, y, BODY[1] if h2(x // 2, y, s) % 4 else (BODY[2] if h2(x, y, s + 1) % 2 else J_DIRT))
-        for k, (x, y) in enumerate(sorted(ring, key=lambda p: h2(p[0], p[1], s + 3))):
-            if (x, y - 1) in hole and k < 3: _put_t(c, I, x, y, 2)            # 드러난 골재(밝은 깨진 알)
-            elif (x, y + 1) in hole and (x, y) not in hole and h2(x, y, s + 5) % 2: _put_t(c, I, x, y, -1)
-        return True
-    return False
-
-
-def m_flake(c, I, cx, cy, s):
-    """겉면이 얕게 벗겨진 자리(7~10×3~5): 한 단 밝은 속, 윗 가장자리만 끊긴 1화소 어두운 선."""
-    for (x0, y0) in _spots(cx, cy, s + 1, 4):
-        A = _ell(x0, y0, 3.2 + s % 2, 1.8, s, 0.12) | _ell(x0 + 2 - 4 * (s % 2), y0 + 1, 2.2, 1.5, s + 5, 0.12)
-        if not _fits(I, cx, cy, A, 1): continue
-        for (x, y) in A:
-            top = (x, y - 1) not in A
-            if top: _put_t(c, I, x, y, -2 if h2(x, y, s) % 4 else 0)
-            else: _put_t(c, I, x, y, 1 if h2(x // 2, y // 2, s + 2) % 5 else 0)
-        return True
-    return False
-
-
-def m_oil(c, I, cx, cy, s):
-    """기름 얼룩(7~10×4~6): 조금 어두운 푸른 회색 판판한 덩이, 속 한 단 더, 가장자리는 바탕과 엇갈려 번진다."""
-    for (x0, y0) in _spots(cx, cy, s + 2, 4):
-        A = _ell(x0, y0, 3.4 + s % 2, 2.2, s, 0.12) | _ell(x0 + 2, y0 + 1, 2.4, 1.7, s + 1, 0.12) | _ell(x0 - 2, y0 - 1, 1.8, 1.3, s + 4, 0.1)
-        core = _ell(x0 + 0.5, y0 + 0.3, 1.8, 1.1, s + 3, 0.1)
-        if not _fits(I, cx, cy, A, 0): continue
-        for (x, y) in A:
-            edge = sum((x + a, y + b) not in A for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1)))
-            if edge and (x + y) % 2: _put_t(c, I, x, y, -1); continue
-            c.P(x, y, OIL_CORE if (x, y) in core else OIL_IN)
-        return True
-    return False
-
-
-def m_weed(c, I, cx, cy, s):
-    """세로 줄눈(칸 왼끝)에서 자란 작은 풀 포기(키 3~4) — 칸 안에서만."""
-    x = cx * 16 + 2
-    ys = [y for y in range(cy * 16 + 6, cy * 16 + 14) if (cx * 16, y) in I['jt'] and _in_cell(cx, cy, x, y, 1)]
-    ys.sort(key=lambda v: h2(v, cx, s))
-    for y in ys:
-        fan(c, x, y, 3 + s % 2, 'grass', s, 4, 1)
-        return True
-    return False
-
-
-def m_crack(c, I, cx, cy, s, long=False):
-    """금: 칸을 비스듬히 가로지르는 들쭉날쭉 1화소 선(12~16화소, 차가운 회색 — 줄눈 색 아님) + 한쪽 1화소 빛, 긴 금엔 가지."""
-    for k in range(60):
-        r = h2(k, s, 81)
-        sx = 1 if r % 2 else -1
-        x, y = (cx * 16 + 2 + (r >> 2) % 3) if sx > 0 else (cx * 16 + 13 - (r >> 2) % 3), cy * 16 + 2 + (r >> 4) % 4
-        n = (15 if long else 12) + (r >> 7) % 3
-        pts = [(x, y)]
-        for i in range(n):
-            q = h2(i, k, s + 9) % 10
-            if q < 4: x += sx
-            elif q < 7: y += 1
-            else: x += sx; y += 1
-            if q == 9 and i > 2: x -= sx                               # 꺾임
-            pts.append((x, y))
-        if not all(_in_cell(cx, cy, px, py, 1) and _body(I, px, py) for (px, py) in pts): continue
-        if long:
-            bx, by = pts[len(pts) // 2]
-            br = [(bx - sx * j, by + j + (j // 2)) for j in range(1, 5)]
-            pts += [p for p in br if _in_cell(cx, cy, p[0], p[1], 1) and _body(I, p[0], p[1])]
-        ps = set(pts)
-        for i, (px, py) in enumerate(pts):
-            c.P(px, py, CR_DEEP if long and 4 <= i <= 8 else CR_CORE)
-        for (px, py) in pts:
-            if (px, py + 1) not in ps and _body(I, px, py + 1) and _in_cell(cx, cy, px, py + 1, 1) and h2(px, py, s) % 4: _put_t(c, I, px, py + 1, 1)
-        return True
-    return False
-
-
-def m_bigcrack(c, I, cx, cy, s):
-    """판을 가로지르는 긴 금(26~32화소, D·E 만): 들쭉날쭉, 가운데 깊은 색, 가지 둘, 줄눈은 건너뛴다."""
-    for k in range(60):
-        r = h2(k, s, 83)
-        sx = 1 if r % 2 else -1
-        x, y = cx * 16 + 4 + (r >> 2) % 8, cy * 16 + 2 + (r >> 5) % 6
-        n = 26 + (r >> 8) % 7
-        pts = [(x, y)]
-        for i in range(n):
-            q = h2(i, k, s + 9) % 10
-            if q < 4: x += sx
-            elif q < 7: y += 1
-            else: x += sx; y += 1
-            if q == 9 and i > 2: x -= sx
-            pts.append((x, y))
-        if not all(_in_cell(cx, cy, px, py) for (px, py) in pts): continue
-        for f in (0.35, 0.7):
-            bx, by = pts[int(len(pts) * f)]
-            sg = -sx if f < 0.5 else sx
-            pts += [(bx + sg * j, by + j - (j // 3)) for j in range(1, 5 + (r >> 11) % 3) if _in_cell(cx, cy, bx + sg * j, by + j)]
-        ps = set(pts)
-        for i, (px, py) in enumerate(pts):
-            if _body(I, px, py): c.P(px, py, CR_DEEP if 6 <= i <= n - 6 else CR_CORE)
-        for (px, py) in pts:
-            if (px, py + 1) not in ps and _body(I, px, py) and _body(I, px, py + 1) and h2(px, py, s) % 4: _put_t(c, I, px, py + 1, 1)
-        return True
-    return False
-
-
-def m_corner(c, I, cx, cy, s):
-    """판 귀퉁이 떨어짐: 칸 왼위 줄눈 만남 자리 오른아래 판 귀가 2~3화소 깨져 판 그늘색으로 꺼졌다."""
-    jx, jy = cx * 16, cy * 16
-    if not ((jx, jy) in I['jt'] and (jx + 1, jy) in I['jt'] and (jx, jy + 1) in I['jt']): return False
-    n = 3 + s % 2
-    chip = [(jx + 1 + i, jy + 1 + j) for i in range(n) for j in range(n) if i + j < n - (1 if (i, j) == (n - 2, 0) else 0)]
-    if not all(_body(I, x, y) and _in_cell(cx, cy, x, y, 1) for (x, y) in chip): return False
-    for (x, y) in chip:
-        _put_t(c, I, x, y, -3 if (x - jx) + (y - jy) <= 2 else -2)
-    return True
-
-
-def m_heave(c, I, cx, cy, s):
-    """들뜬 판: 칸 윗줄 가로 줄눈 9~11화소에서 아래 판 윗끝이 들려 틈은 깊게, 들린 앞끝은 밝게."""
-    y = cy * 16
-    xs = [x for x in range(cx * 16 + 2, cx * 16 + 14) if I['jdir'].get((x, y)) == 'h' and _body(I, x, y + 1) and _body(I, x, y + 2)]
-    if len(xs) < 9 or y < SLAB_BAND: return False
-    a = xs[0] + (s % 2); b = min(xs[-1], a + 10)
-    for x in range(a, b + 1):
-        end = x - a < 2 or b - x < 2
-        c.P(x, y, J_DARK if end else J_DEEP)
-        _put_t(c, I, x, y + 1, 2 if end else 3)
-        if not end: _put_t(c, I, x, y + 2, 1)
-    return True
-
-
-def m_stain(c, I, cx, cy, s):
-    """넓게 젖은 얼룩(9~12×6~8): 한 단 어둡고 가장자리는 엇갈려 번진다."""
-    for (x0, y0) in _spots(cx, cy, s + 6, 6):
-        A = _ell(x0, y0, 4.6, 2.8, s, 0.12) | _ell(x0 + 2, y0 + 2, 3.0, 2.0, s + 1, 0.12)
-        if not all(_in_cell(cx, cy, x, y, 1) for (x, y) in A): continue
-        for (x, y) in A:
-            if not _body(I, x, y): continue
-            edge = sum((x + a, y + b) not in A for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1)))
-            if edge and (x + y) % 2: continue
-            _put_t(c, I, x, y, -1)
-        return True
-    return False
-
-
-_MARKS = dict(pothole=m_pothole, flake=m_flake, oil=m_oil, weed=m_weed, crack=m_crack, corner=m_corner, heave=m_heave, stain=m_stain,
-              bigcrack=m_bigcrack, bighole=lambda c, I, cx, cy, s: m_pothole(c, I, cx, cy, s, big=True),
-              lcrack=lambda c, I, cx, cy, s: m_crack(c, I, cx, cy, s, long=True))
-# 칸 (cx, cy) → 표시. b·c 는 서로 다른 칸, 줄눈 박자와 안 맞게 흩었다. 큰 표시(긴 금·들뜬 판·젖은 얼룩)는 slab-a 에만, slab-a 는 표시가 적다.
-SLAB_MARKS = {
-    'a': [(2, 2, 'lcrack'), (5, 5, 'lcrack'), (1, 5, 'crack'), (2, 3, 'heave'), (3, 5, 'corner'), (5, 1, 'corner'), (6, 3, 'stain')],
-    'b': [(1, 2, 'pothole'), (5, 4, 'pothole'), (3, 6, 'pothole'), (3, 1, 'weed'), (5, 6, 'weed'),
-          (6, 2, 'flake'), (2, 4, 'flake'), (4, 5, 'flake'), (4, 2, 'crack'), (6, 5, 'crack')],
-    'c': [(2, 3, 'oil'), (5, 2, 'oil'), (4, 6, 'oil'), (1, 4, 'weed'), (3, 5, 'weed'),
-          (6, 6, 'flake'), (1, 1, 'flake'), (6, 3, 'pothole'), (3, 2, 'crack'), (5, 5, 'crack')],
-    'd': [(1, 4, 'bigcrack'), (5, 2, 'crack'), (4, 5, 'bighole'), (1, 2, 'oil'), (3, 6, 'weed'), (6, 5, 'flake'), (2, 2, 'stain')],
-    'e': [(4, 1, 'bigcrack'), (1, 6, 'crack'), (5, 5, 'oil'), (2, 3, 'bighole'), (5, 1, 'weed'), (3, 4, 'flake'), (6, 2, 'stain')],
-}
-SLAB_MISSED = []
-
-
-def _slab_draw(L, var):
-    def draw(c):
-        I = _slab_info(L)
-        for y in range(SP):
-            for x in range(SP): c.P(x, y, _slab_px(I, x, y))
-        for k, (cx, cy, kind) in enumerate(SLAB_MARKS[var]):
-            _SPAN[0] = kind.startswith('big')
-            try:
-                if not _MARKS[kind](c, I, cx, cy, h2(cx, cy, I['seed'] + 31 * k) % 997 + k):
-                    SLAB_MISSED.append((var, cx, cy, kind))
-            finally: _SPAN[0] = False
-    return draw
+# ------------------------------------------------------------------ 콘크리트 판
+# 깨진 콘크리트 판 이음 판(64×64, 칸 (x mod 4, y mod 4) 자리): 불규칙한 판(감싼 보로노이, 크기 20~34화소) — 이음은 비스듬하고 칸 격자와 안 맞는다.
+SP = 128                                                   # 콘크리트 판 이음 주기(8칸) — 판이 커야 깨진 포장으로 읽힌다(64 주기에선 벽돌처럼 보였다)
+SLAB_BANDS = [(0, [0, 37, 83]), (34, [19, 64, 101]), (79, [8, 51, 90])]     # (띠 시작 y, 세로 이음 x 들) — 띠 높이 34·45·49, 판 폭 37~46
+SLAB_FRACTURES = [[(37, 3), (47, 14), (52, 33)], [(64, 37), (75, 51), (79, 66), (86, 78)], [(8, 82), (22, 96), (31, 112), (40, 127)],
+                  [(101, 40), (110, 47), (128, 52)], [(83, 6), (90, 20), (101, 33)], [(51, 90), (63, 99), (70, 112)], [(0, 55), (10, 62), (19, 64)]]
+SLAB_HOLES = [(84, 34, 7, 4), (19, 79, 5, 3), (52, 126, 6, 4), (101, 80, 4, 3), (36, 34, 3, 2), (1, 1, 5, 3), (70, 60, 4, 3)]
+SLAB_SUNK = [(40, 60), (110, 100)]                                        # 이 화소가 든 판은 내려앉아 한 단 어둡다
+SLAB_CRACKS = [[(6, 14), (13, 18), (22, 17)], [(70, 15), (76, 19), (80, 26)], [(25, 50), (31, 55), (38, 54)], [(108, 60), (114, 66), (120, 66)],
+               [(60, 106), (66, 110), (75, 109)], [(114, 112), (119, 118)]]
 
 
 def _slab_maps():
-    """slab-edge 호환: (이음, 금, 구멍, 내려앉음) — 이음 = A 배치 이음 화소, 나머지는 비었다(표시는 칸 안에만 있다)."""
-    return set(_slab_info('a')['jt']), set(), set(), set()
+    seam, frac, hole = set(), set(), set()
+    for k, (y0, xs) in enumerate(SLAB_BANDS):
+        y1 = SLAB_BANDS[(k + 1) % len(SLAB_BANDS)][0] + (SP if k == len(SLAB_BANDS) - 1 else 0)
+        for x in range(SP):
+            w = 1 if h2(x // 7, y0, 266) % 4 == 0 else 0                     # 가로 이음 살짝 흔들림
+            seam.add((x, (y0 + w) % SP))
+        for vx in xs:
+            for y in range(y0, y1):
+                w = 1 if h2(vx, y // 7, 267) % 4 == 0 else 0
+                seam.add(((vx + w) % SP, y % SP))
+    for pts in SLAB_FRACTURES:
+        for (a, b) in zip(pts, pts[1:]):
+            n = max(abs(b[0] - a[0]), abs(b[1] - a[1]), 1)
+            for i in range(n + 1): frac.add((round(a[0] + (b[0] - a[0]) * i / n) % SP, round(a[1] + (b[1] - a[1]) * i / n) % SP))
+    for (cx, cy, rx, ry) in SLAB_HOLES:
+        for y in range(cy - ry - 1, cy + ry + 2):
+            for x in range(cx - rx - 1, cx + rx + 2):
+                if ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 + (h2(x, y, 265) % 3) * 0.15 < 1: hole.add((x % SP, y % SP))
+    sunk = set()
+    for st in SLAB_SUNK:
+        todo = [st]
+        while todo:
+            p_ = todo.pop()
+            if p_ in sunk or p_ in seam or p_ in frac: continue
+            sunk.add(p_); x, y = p_
+            todo += [((x + 1) % SP, y), ((x - 1) % SP, y), (x, (y + 1) % SP), (x, (y - 1) % SP)]
+    return seam, frac, hole, sunk
 
 
 _SLAB_MAPS = None
 
 
-def slab_board(seed, w=24, h=16):
-    """맵 slabAt 과 같은 섞기: 8×8칸 덩이마다 배치(A 무리 · D · E 각 1/3), A 덩이 안 칸은 slab-a/b/c 를 2:4:4 로."""
-    R = {k: render(PIECES['slab-' + k]) for k in 'abcde'}
-    a = np.zeros((h * 16, w * 16, 4), np.uint8)
-    for y in range(h):
-        for x in range(w):
-            lay = h2(x // 8, y // 8, seed) % 3
-            if lay == 1: k = 'd'
-            elif lay == 2: k = 'e'
-            else:
-                r = h2(x, y, seed + 101) % 10
-                k = 'a' if r < 2 else 'b' if r < 6 else 'c'
-            cx, cy = x % 8, y % 8
-            a[y * 16:(y + 1) * 16, x * 16:(x + 1) * 16] = R[k][cy * 16:(cy + 1) * 16, cx * 16:(cx + 1) * 16]
-    return a
+def slab_field(c, ox, oy):
+    global _SLAB_MAPS
+    if _SLAB_MAPS is None: _SLAB_MAPS = _slab_maps()
+    seam, frac, hole, sunk = _SLAB_MAPS
+    line = lambda x, y: (x % SP, y % SP) in seam or (x % SP, y % SP) in frac
+    for y in range(SP):
+        for x in range(SP):
+            if (x, y) in hole:
+                up = (x, (y - 1) % SP) not in hole
+                c.P(ox + x, oy + y, K('dirt', 1 if up else dirt64_tone(x, y))); continue
+            if (x, y) in seam: c.P(ox + x, oy + y, K('conc', 1)); continue
+            if (x, y) in frac: c.P(ox + x, oy + y, K('conc', 2)); continue
+            f = 0.6 * wrapnoise(x, y, 231, 32, SP) + 0.4 * wrapnoise(x, y, 237, 8, SP)
+            t = 5 + (1 if f > 0.66 else 0) - (1 if f < 0.26 else 0)
+            gx, gy = (x + (y // 2) % 2) // 2, y // 2
+            d = h2(gx % (SP // 2), gy % (SP // 2), 241) % 7
+            if d in (0, 1): t += 1
+            elif d == 2: t -= 1
+            if (x, y) in sunk: t -= 1
+            if line(x, y - 1) or line(x - 1, y): t = 7 if (x, y) not in sunk else 5
+            elif line(x, y + 1) or line(x + 1, y): t = 3
+            if (x, (y - 1) % SP) in hole: t = 7
+            c.P(ox + x, oy + y, K('conc', max(2, min(7, t))))
+    def P(x, y, col): c.P(ox + x % SP, oy + y % SP, col)
+    for pts in SLAB_CRACKS:
+        for (a, b) in zip(pts, pts[1:]):
+            n = max(abs(b[0] - a[0]), abs(b[1] - a[1]), 1)
+            for k in range(n + 1):
+                x = round(a[0] + (b[0] - a[0]) * k / n); y = round(a[1] + (b[1] - a[1]) * k / n)
+                if not line(x, y) and (x % SP, y % SP) not in hole: P(x, y, K('conc', 3))
 
 
-def _board_seed(start):
-    """덩이 6개에 세 배치가 다 나오는 첫 씨앗."""
-    s = start
-    while len({h2(bx, by, s) % 3 for bx in range(3) for by in range(2)}) < 3: s += 1
-    return s
+def _slab_seams_in(cx, cy):
+    global _SLAB_MAPS
+    if _SLAB_MAPS is None: _SLAB_MAPS = _slab_maps()
+    seam, frac = _SLAB_MAPS[0], _SLAB_MAPS[1]
+    return [(x, y) for y in range(cy * 16 + 3, cy * 16 + 14) for x in range(cx * 16 + 2, cx * 16 + 14) if (x, y) in seam or (x, y) in frac]
 
 
-_SLAB_EN = ('broken old city concrete pavement seen from above, flat ground: big rectangular cast slabs of different sizes, '
-            'each slab a slightly different grey with soft damp stains, thin dark joints with dirt in places and a few wider gaps, '
-            'lit top edges, hairline cracks in a lighter grey than the joints, a few broken corners showing earth, a seamless 8x8-tile field')
-_SLAB_SUB = {'a': ', with a few long hairline cracks, one heaved slab edge and two broken corners',
-             'b': ', with a few small potholes showing earth, weeds growing from joints and flaked patches',
-             'c': ', with a few dark oil stains, weeds growing from joints, flaked patches and a small pothole',
-             'd': ' (second joint layout), with two hairline cracks, a weed tuft and a flaked patch',
-             'e': ' (third joint layout), with two hairline cracks, a weed tuft and a flaked patch'}
-_SLAB_KO = {'a': '금 간 콘크리트 판 A', 'b': '금 간 콘크리트 판 B', 'c': '금 간 콘크리트 판 C', 'd': '금 간 콘크리트 판 D(둘째 짜임)', 'e': '금 간 콘크리트 판 E(셋째 짜임)'}
-_SLAB_DESC = {
-    'a': 'A 짜임 바탕 + 큰 표시(긴 금·들뜬 판 끝·깨진 모서리)가 몇 칸에만.',
-    'b': 'A 짜임 + 칸 안 표시(작은 구멍·이음 잡초·벗겨진 자리) — slab-a 와 같은 자리 칸을 바꿔 끼운다.',
-    'c': 'A 짜임 + 칸 안 표시(기름 얼룩·이음 잡초·벗겨진 자리·작은 구멍, B 와 다른 칸) — slab-a 와 같은 자리 칸을 바꿔 끼운다.',
-    'd': '둘째 이음 짜임(변형 없음). 덩이 경계 띠의 이음은 A 와 화소까지 같아 A·D·E 덩이를 아무렇게나 섞어도 이어진다.',
-    'e': '셋째 이음 짜임(변형 없음). 덩이 경계 띠의 이음은 A 와 화소까지 같아 A·D·E 덩이를 아무렇게나 섞어도 이어진다.'}
-for _i, _v in enumerate('abcde'):
-    _L = 'a' if _v in 'abc' else _v
-    piece('slab-' + _v, _SLAB_KO[_v], 8, 8, TERRAIN, en=_SLAB_EN + _SLAB_SUB[_v],
-          group='ground', tags=['콘크리트', '광장', '보도', '바닥'],
-          desc='깨진 옛 도시 콘크리트 판(보도·광장, 8×8칸·주기 128화소). 맵 칸 (x,y) 에는 판의 (x mod 8, y mod 8) 칸을 깐다 — 8×8칸 덩이마다 짜임 하나(A 무리·D·E), '
-               'A 덩이 안 칸은 slab-a/b/c 를 2:4:4 로 섞는다. ' + _SLAB_DESC[_v],
-          sample=(lambda s: (lambda f=0: slab_board(_board_seed(s))))(1100 + 37 * _i))(_slab_draw(_L, _v))
+def _slab64(v):
+    """v=0 바탕 판. v=1 은 이음에서 자란 잡초(칸마다 다른 자리·크기), v=2 는 모양이 제각각인 기름 얼룩 — 같은 자리 칸과 바꿔 끼운다."""
+    def draw(c):
+        slab_field(c, 0, 0)
+        if v == 0: return
+        for cy in range(SP // 16):
+            for cx in range(SP // 16):
+                ox, oy = cx * 16, cy * 16; r = h2(cx, cy, 310 + v)
+                if v == 1:
+                    sm = _slab_seams_in(cx, cy)
+                    if not sm: continue
+                    for k in range(1 + r % 2):
+                        x, y = sm[(r >> (4 * k)) % len(sm)]
+                        fan(c, x, min(y + 1, oy + 14), 4 + (r >> 2) % 3, 'grass' if (k + r) % 3 else 'dry', (r + k) % 97, 6, 2)
+                else:
+                    cxm, cym = ox + 4 + r % 8, oy + 4 + (r >> 4) % 8
+                    rx, ry = 2.5 + (r % 3), 1.6 + ((r >> 2) % 2)
+                    for y in range(int(cym - ry - 1), int(cym + ry + 2)):
+                        for x in range(int(cxm - rx - 1), int(cxm + rx + 2)):
+                            d = ((x - cxm) / rx) ** 2 + ((y - cym) / ry) ** 2 + (h2(x, y, r) % 5) * 0.08
+                            if d < 1 and c.get(x, y) in MAT['conc']:
+                                c.P(x, y, K('soot', 5) if d > 0.6 else K('soot', 4 if (x + y) % 4 else 5))
+    return draw
+
+
+SLAB_IDS = {'a': ('slab-a', None, None), 'b': ('slab-b', None, None), 'c': ('slab-c', None, None)}
+_slab_grid = {'a': ['aaaaaaaaaa'] * 8, 'b': ['aabaaaabaa', 'aaaabaaaab', 'baaaaaaaba', 'aaabaabaaa', 'abaaabaaaa', 'aaaaaaabaa', 'abaaaaaaab', 'aaaabaaaaa'],
+              'c': ['aaacaaaaca', 'caaaaacaaa', 'aaaacaaaac', 'acaaaaaaca', 'aaacaacaaa', 'caaaaaaaca', 'aaaacaaaaa', 'acaaaaacaa']}
+for _v, _l in enumerate('abc'):
+    piece('slab-' + _l, '금 간 콘크리트 판 ' + 'ABC'[_v], 8, 8, TERRAIN,
+          en='broken old concrete pavement: irregular slanted pads of different sizes, raised and sunken edges along the seams, missing chunks showing earth where pads meet, cracks crossing tile borders, a seamless 8x8-tile field' +
+             ['', ', mixed with tiles of weeds in small cracks', ', mixed with tiles of oil stains and grit'][_v],
+          group='ground', tags=['콘크리트', '광장', '바닥'],
+          desc='옛 광장·건물 바닥의 깨진 콘크리트 판 이음 판(8×8칸, 주기 128화소) — 맵 칸 (x,y) 에는 판의 (x mod 8, y mod 8) 칸을 깐다. A 바탕, B 잡초·C 기름 얼룩은 같은 자리 칸을 드물게 바꿔 끼운다.',
+          sample=tiled(SLAB_IDS, _slab_grid[_l]))(_slab64(_v))
 
 
 # ------------------------------------------------------------------ 콘크리트 판 가장자리(오토타일)

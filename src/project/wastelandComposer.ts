@@ -311,6 +311,9 @@ const WEEDS = ["weeds-a", "weeds-b", "weeds-c"];
  * slab-a 짜임 덩이 안에서만 칸마다 a·b·c 변형(같은 줄눈, 얼룩·풀만 다름)을 섞는다.
  */
 function slabAt(b: Board, x: number, y: number): number {
+  // r60: 줄눈 없는 바탕 slab-ground 가 있으면 그것만 깐다 — 줄눈은 finishSlab 이 위 평면층(2층)에 가장자리 맞춤 칸으로 얹는다.
+  const g = b.kit("slab-ground");
+  if (g) { const t = g.rows[y % g.height]?.tiles[x % g.width] ?? -1; if (t >= 0) return t; }
   const alts = ["slab-d", "slab-e"].filter((id) => b.kit(id));
   if (alts.length) {
     const r = hash2(Math.floor(x / 8), Math.floor(y / 8), b.seed + 211);
@@ -336,8 +339,63 @@ function fillSlab(b: Board, x0: number, y0: number, w: number, h: number): void 
   }
 }
 
+/**
+ * r60 줄눈 칸 번호(scripts/content/wasteland-ruins/wl_slab.py 와 같은 규칙). 칸 네 변마다 줄눈이 그 변을 건너는 자리 부호 0~3 을
+ * 변 좌표 해시로 정한다(맞닿은 두 칸이 같은 값을 읽어 줄눈이 이어진다). 속 칸: 조합 N*64+E*16+S*4+W 마다 변형 nv(k) 개를 차례로 둔 순번.
+ * 둘레 칸(흙 쪽 마스크 m, 흙 쪽 부호 0): 속 칸 327 개 뒤에 m = 1..15 마다 나머지 변 부호 조합 순서로, 그 뒤 한 칸 폭 띠(m 5·10)의 가로지르는 이음 둘씩.
+ */
+const SLAB_NV = [6, 2, 2, 1, 1];
+const SLAB_INNER: number[] = (() => { const start: number[] = []; let n = 0; for (let c = 0; c < 256; c++) { start.push(n); const k = [c >> 6, (c >> 4) & 3, (c >> 2) & 3, c & 3].filter((v) => v > 0).length; n += SLAB_NV[k]!; } start.push(n); return start; })();
+const SLAB_RIM: Map<string, number> = (() => {
+  const m2 = new Map<string, number>(); let i = SLAB_INNER[256]!;
+  for (let m = 1; m < 16; m++) {
+    const free = [0, 1, 2, 3].filter((k) => !(m & (1 << k)));
+    for (let c = 0; c < 4 ** free.length; c++) { const code = [0, 0, 0, 0]; free.forEach((k, j) => { code[k] = Math.floor(c / 4 ** j) % 4; }); m2.set(`${code.join("")}|${m}|0`, i++); }
+  }
+  for (const m of [5, 10]) { m2.set(`0000|${m}|1`, i++); m2.set(`0000|${m}|2`, i++); }
+  return m2;
+})();
+/** wl_core h2 와 같은 해시(파이썬 hsh 두 번). */
+function wlHsh(x: number, y: number, s: number): number {
+  let h = (Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(s, 2147483647)) >>> 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0;
+  return (h ^ (h >>> 16)) & 0xffff;
+}
+function wlH2(x: number, y: number, s: number): number { return wlHsh(wlHsh(x, y, s) ^ Math.imul(x, 7919), Math.imul(y, 104729) + x, s + 1); }
+function slabJointFinish(b: Board, joints: StructureKitDef): void {
+  const cols = joints.width, at = (i: number) => joints.rows[Math.floor(i / cols)]?.upperTiles?.[i % cols] ?? joints.rows[Math.floor(i / cols)]?.tiles[i % cols] ?? -1;
+  const on = (x: number, y: number) => b.inb(x, y) && b.slab[b.idx(x, y)]!;
+  const seed = b.seed;
+  const edge = (h: boolean, x: number, y: number) => { const r = wlH2(x * 2 + (h ? 1 : 0), y * 2 + (h ? 0 : 1), seed + 401) % 100; return r < 52 ? 0 : 1 + Math.floor(((r - 52) * 3) / 48); };
+  const hstrip = (x: number, y: number) => on(x, y) && !on(x, y - 1) && !on(x, y + 1);
+  const vstrip = (x: number, y: number) => on(x, y) && !on(x - 1, y) && !on(x + 1, y);
+  const hcode = (x: number, y: number) => (vstrip(x, y) && vstrip(x, y - 1) ? 0 : edge(true, x, y));
+  const vcode = (x: number, y: number) => (hstrip(x, y) && hstrip(x - 1, y) ? 0 : edge(false, x, y));
+  for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) {
+    if (!on(x, y)) continue;
+    const i = b.idx(x, y);
+    if ((layerTileAt(b.map, 2, i) ?? -1) >= 0) continue;
+    const m = (on(x, y - 1) ? 0 : 1) | (on(x + 1, y) ? 0 : 2) | (on(x, y + 1) ? 0 : 4) | (on(x - 1, y) ? 0 : 8);
+    const cd = [hcode(x, y), vcode(x + 1, y), hcode(x, y + 1), vcode(x, y)];
+    let k: number | undefined;
+    if (m) {
+      [1, 2, 4, 8].forEach((bit, j) => { if (m & bit) cd[j] = 0; });
+      let cut = 0;
+      if ((m === 5 || m === 10) && !cd.some((v) => v)) { const r = wlH2(x * 5 + 3, y * 7 + 1, seed + 419) % 10; cut = r < 2 ? 1 : r < 3 ? 2 : 0; }
+      k = SLAB_RIM.get(`${cd.join("")}|${m}|${cut}`);
+    } else {
+      const c = cd[0]! * 64 + cd[1]! * 16 + cd[2]! * 4 + cd[3]!, n = SLAB_INNER[c + 1]! - SLAB_INNER[c]!;
+      k = SLAB_INNER[c]! + (wlH2(x * 3 + 1, y * 5 + 2, seed + 409) % n);
+    }
+    const t = k === undefined ? -1 : at(k);
+    if (t >= 0) setLayerTileAt(b.map, 2, i, t);
+  }
+}
+
 /** 판석 둘레 칸(4방향 중 하나라도 판석 아님)에 깨짐 덧칠(위층 평면) — 아래층 판석 결은 끝까지 이어진다. 위에 기물이 선 칸은 건너뛴다. */
 function finishSlab(b: Board): void {
+  const joints = b.kit("slab-joints");
+  if (joints && b.kit("slab-ground")) { slabJointFinish(b, joints); return; }
   const g = (b.ts.autotileGroups ?? []).find((group) => group.id.startsWith("wl") && group.id.includes("slab-break"));
   if (!g) return;
   const slabTiles = new Set<number>();
