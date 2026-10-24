@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.334.1 — 2026-10-25
+
+### 수정
+
+- **ai** — v2 catches links lost in a page rewrite; modern/romance games start with modern hero and no HP HUD; workshop drawing gets 9 min (#3409) (`459da73`)
+- **fallen-star** — remove the checkerboard stone dais from the brazier (gate) and star-keeper vault rooms (#3408) (`77eefed`)
+
 ## 0.334.0 — 2026-10-25
 
 ### 기능
