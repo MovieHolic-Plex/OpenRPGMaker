@@ -366,7 +366,7 @@ function renderLineRow(line: DialogueLine, project: Project, panelRoot: HTMLElem
   row.append(
     el("span", {
       class: "db-dialogue-speaker",
-      text: line.speaker || dialogueKindLabel(line.kind),
+      text: line.speaker || (line.kind === "text" ? "내레이션" : dialogueKindLabel(line.kind)),
       attrs: { translate: "no", title: line.speaker ? `${dialogueKindLabel(line.kind)} · ${line.speaker}` : dialogueKindLabel(line.kind) },
       dataset: { i18nSkip: "", kind: line.kind },
     }),
