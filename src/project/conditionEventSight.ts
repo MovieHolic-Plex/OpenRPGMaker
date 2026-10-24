@@ -9,7 +9,8 @@
 //  2. 같은 방(sameRoom, 기본 켜짐): 명명 로케이션(`GameMap.locations`)을 방으로 본다. 두 칸이 같은 방에 있어야 한다.
 //     어느 방에도 안 든 칸(방 사이 문틀)은 맞닿은 방 모두에 속한다 — 문간에 선 사람은 양쪽 방에서 보인다.
 //     맵에 로케이션이 하나도 없으면 방 판정을 건너뛰고 아래 시선 광선만 본다(2026-10-24: 예전엔 늘 거짓이었다).
-//  3. 시선 광선: 두 칸 사이 칸(슈퍼커버 광선)에 벽이 없다. 벽 판정은 호출측 `blocksSight`(sightBlockers.ts —
+//  3. 시선 광선(sameRoom 이 꺼지지 않았을 때): 두 칸 사이 칸(슈퍼커버 광선)에 벽이 없다.
+//     sameRoom=false 는 「벽과 무관한 가까움」 판정이다(옆방 기척) — 방도 광선도 보지 않는다. 벽 판정은 호출측 `blocksSight`(sightBlockers.ts —
 //     벽 타일·방 사이 막힌 칸). 가구는 막지 않는다. 넘기지 않으면 광선 검사를 하지 않는다(예전 동작).
 //  4. 바라봄(requireFacing, 기본 켜짐): 이벤트가 보는 방향 90° 부채꼴 안. 바로 옆 칸(체비셰프 1)은 방향과 무관하게 본다.
 //
@@ -127,8 +128,10 @@ export function eventSightOnly(
   const range = Math.max(0, spec.range ?? DEFAULT_SIGHT_RANGE);
   const distance = Math.max(Math.abs(eventPoint.x - player.x), Math.abs(eventPoint.y - player.y));
   if (distance > range) return false;
-  if (spec.sameRoom !== false && (locations?.length ?? 0) > 0 && !shareRoom(locations, eventPoint, player)) return false;
-  if (!hasClearSight(eventPoint, player, blocks)) return false;
+  if (spec.sameRoom !== false) {
+    if ((locations?.length ?? 0) > 0 && !shareRoom(locations, eventPoint, player)) return false;
+    if (!hasClearSight(eventPoint, player, blocks)) return false;
+  }
   if (spec.requireFacing !== false && distance > 1) return inViewCone(eventPoint, eventPoint.direction ?? "down", player);
   return true;
 }
