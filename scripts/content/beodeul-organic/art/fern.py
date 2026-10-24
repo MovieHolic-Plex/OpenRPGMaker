@@ -313,3 +313,212 @@ FC10 = [
  ".........oooSSoooSs...ooSSSSs...",
 ]
 ART["fern-cluster"] = (FC10, K)
+
+# ---- r12 fern-l: 6 broad arching fronds of different lengths. Each frond: a 2px midrib along a hand-listed curve,
+# leaflets as 2-3px clusters placed at uneven intervals (hand-listed per frond), lit upper side 5/4, underside 2/1.
+# Outline only on the outer silhouette (1 lit side, o lower-right), dense dark base, smooth shadow pool.
+import math as _m
+def _fern_l():
+    W = H = 32
+    g = [["."] * W for _ in range(H)]
+    def P(x, y, c):
+        if 1 <= x < W - 1 and 1 <= y < H - 1: g[y][x] = c
+    def curve(x0, y0, ang, L, bend):
+        pts = []; x, y, a = float(x0), float(y0), _m.radians(ang)
+        for i in range(L):
+            pts.append((x, y, a)); x += _m.cos(a); y += _m.sin(a); a += _m.radians(bend)
+        return pts
+    # (root x, root y, start angle deg, length, bend deg/step, leaflet steps)
+    fronds = [
+        (14, 26, -165, 15, 2.6, (3, 6, 8, 11, 13)),    # long low left, droops
+        (14, 25, -130, 16, 2.2, (2, 5, 8, 10, 13)),    # upper left
+        (15, 25, -98, 19, 2.0, (3, 6, 9, 11, 14, 16)), # tall, leaning, tip curling over
+        (16, 25, -60, 15, 3.0, (2, 5, 7, 10, 12)),     # upper right
+        (17, 26, -25, 13, 4.2, (3, 5, 8, 10)),         # right, arching down
+        (17, 26, -3, 8, 6.0, (2, 5)),                  # short low right
+    ]
+    for (rx, ry, ang, L, bend, leaf) in fronds:
+        pts = curve(rx, ry, ang, L, bend)
+        for i, (x, y, a) in enumerate(pts):
+            nx, ny = _m.sin(a), -_m.cos(a)          # normal; make it point up
+            if ny > 0: nx, ny = -nx, -ny
+            t = i / L
+            # 2px midrib: upper pixel mid-lit, lower pixel dark
+            P(round(x), round(y), "4" if t < 0.8 else "3"); P(round(x - nx), round(y - ny), "3" if t < 0.5 else "2")
+            if i in leaf:
+                size = 3 if t < 0.6 else 2
+                side = 1 if (i * 7 + rx) % 3 else -1   # uneven alternation
+                for k in range(1, size + 1):
+                    for along in (0, 1):
+                        px = round(x + side * nx * k + _m.cos(a) * (along - k * 0.4))
+                        py = round(y + side * ny * k + _m.sin(a) * (along - k * 0.4))
+                        if side > 0: c = "5" if (k <= 2 and t < 0.75) else "4"
+                        else:        c = "3" if k == 1 else "2"
+                        P(px, py, c)
+                # opposite smaller leaflet for body
+                for k in (1, 2):
+                    px = round(x - side * nx * k + _m.cos(a) * 0.5); py = round(y - side * ny * k + _m.sin(a) * 0.5)
+                    P(px, py, "4" if side < 0 else "2")
+    # dense dark base cluster
+    for y, row in enumerate(["...2332...", "..213312..", ".21133112.", ".1o1221o1.", "..o1oo1o.."]):
+        for x, c in enumerate(row):
+            if c != ".": P(11 + x, 23 + y, c)
+    rows = ["".join(r) for r in g]
+    rows = _merge_lone(rows)
+    rows = outline(rows, mid="1", dark="o")
+    rows = _merge_lone(_smooth_bottom(rows))
+    # shadow pool under the base, lower-right
+    g = [list(r) for r in rows]
+    for x in range(12, 22):
+        col = [y for y in range(H) if g[y][x] not in ".sS"]
+        if col and max(col) + 1 < H - 1 and g[max(col) + 1][x] == ".": g[max(col) + 1][x] = "S" if x > 13 else "s"
+    return ["".join(r) for r in g]
+ART["fern-l"] = (_fern_l(), K)
+
+# ---- r12b fern-l hand-written in fern-cluster's (passed) language: 2px midribs (33/32), leaflet clusters
+# 2-3px (55/544/443 lit, 21 under), uneven spacing, 6 fronds of different lengths, outer outline 1/o only.
+FL12 = [
+ "................................",
+ "................................",
+ "................................",
+ "..............55................",
+ ".............5443...............",
+ "..........55.4433...............",
+ ".........5443.332.55............",
+ "..........4433332.5443..........",
+ "...55.......23321.4433...55.....",
+ "..5443..55...3321..332..5443....",
+ "..44332544...3321.5433..4433....",
+ "...2233433....332.4432.332......",
+ ".....22333.55.332.433.3321..55..",
+ "..55...2333544.3324332333215443.",
+ ".5443...2333433.33433.332..4433.",
+ ".44332...23333..3333.3321.332...",
+ "..2233322.23333.333.33321332....",
+ "....22332...2333333333332321....",
+ "......2333...23333333333321..55.",
+ ".55....22333..2333333333215.5443",
+ "5443....223333233333333321443321"[:32],
+ "44332.....22333333333332133321..",
+ ".2233322...2233333333321221.....",
+ "...222333322223333333221........",
+ ".......222211223333221.11.......",
+ "..........112o1221121o1.........",
+ "...........o1o11o1o11oSS........",
+ ".............ooSooooSSSs........",
+ "...............SSSSSSs..........",
+ "................................",
+ "................................",
+ "................................",
+]
+FL12 = [r[:32].ljust(32, ".") for r in FL12]
+FL12 = ["." + r[1:31] + "." for r in FL12]   # 1px clear of the cell edges
+ART["fern-l"] = (_merge_lone(outline(FL12, mid="1", dark="o")), K)
+
+# ---- r12c fern-l: fern-cluster's language scaled up, fronds separated by open gaps (lawn shows between them)
+FL12 = [
+ "................................",
+ "................................",
+ "...............55...............",
+ "..............5443..............",
+ "........55....4433..............",
+ ".......5443...2332...55.........",
+ ".......4433....33...5443........",
+ "...55..2332.55.33...4433...55...",
+ "..5443..33.5443.33..2332..5443..",
+ "..4433..33.4433.33...33...4433..",
+ "...2332.33.2332.33..33..552332..",
+ ".....33.33...33.33..33.5443.....",
+ "..55..3333...33.33.33..4433.....",
+ ".5443..333...3333.33..2332..55..",
+ ".4433...33..333333.33.33...5443.",
+ "..2332...33333..3333.33.33.4433.",
+ "....3333..333....33333...332332.",
+ ".55...33333.55....3333..33......",
+ "5443....3333443...3333333.......",
+ "4433......33433..33333...55.....",
+ ".2332......3333.3333....5443....",
+ "...333......333333332..34433....",
+ ".....3333...2333332333332.......",
+ "........3333233333322...........",
+ "...........1233332211...........",
+ "..........112o1221121o..........",
+ "...........o1o11o1o11oSS........",
+ ".............ooSooooSSSs........",
+ "...............SSSSSSs..........",
+ "................................",
+ "................................",
+ "................................",
+]
+FL12 = ["." + r[1:31] + "." for r in FL12]
+ART["fern-l"] = (_merge_lone(outline(FL12, mid="1", dark="o")), K)
+# r12d: no outline pass (it filled the gaps between fronds); same as passed fern-cluster: frond edges carry their own 2/1 shade
+ART["fern-l"] = (_merge_lone(FL12), K)
+# r12e: leaflets along the bare midribs: 2px lit clusters on the upper-left side and 2px shade clusters on the
+# lower-right side, at uneven intervals (hash of position), so the stems read as fronds, not coral.
+def _leaf_ribs(rows):
+    g = [list(r) for r in rows]; H, W = len(g), len(g[0]); src = [r[:] for r in g]
+    for y in range(2, H - 6):
+        for x in range(2, W - 2):
+            if src[y][x] != "3": continue
+            h = (x * 7 + y * 11) % 5
+            if h == 0 and src[y][x-1] == ".":
+                for (a, b, c) in ((-1, 0, "4"), (-2, 0, "5"), (-1, -1, "5"), (-2, -1, "4")):
+                    if g[y+b][x+a] == ".": g[y+b][x+a] = c
+            elif h == 2 and x + 2 < W and src[y][x+1] == ".":
+                for (a, b, c) in ((1, 0, "2"), (2, 0, "2"), (1, 1, "1"), (2, 1, "1")):
+                    if g[y+b][x+a] == ".": g[y+b][x+a] = c
+    return ["".join(r) for r in g]
+ART["fern-l"] = (_merge_lone(_leaf_ribs(FL12)), K)
+ART["fern-l"] = (_merge_lone(_smooth_bottom(ART["fern-l"][0])), K)
+
+# ---- r12f fern-l: 6 tapered feather fronds. Each frond follows a hand-set curve; leaflets fill both sides of a 2px
+# midrib (upper side lit 5/4, lower side 3/2/1), half-width shrinking from 3 to 1 toward a pointed drooping tip.
+# Leaflet notches every other step (side width -1) give the feather edge. Fronds are drawn back to front with a
+# 1px clear margin kept where they would merge, so gaps stay open.
+import math as _m2
+def _feather_l():
+    W = H = 32
+    g = [["."] * W for _ in range(H)]
+    owner = [[-1] * W for _ in range(H)]
+    def P(x, y, c, f):
+        if 1 <= x < W - 1 and 1 <= y < H - 2 and (owner[y][x] in (-1, f)):
+            g[y][x] = c; owner[y][x] = f
+    fr = [  # root x, root y, start angle, length, bend per step, max half-width
+        (15, 25, -96, 21, 2.4, 5),    # tall centre, tip droops right
+        (14, 25, -138, 17, 3.0, 5),   # upper left
+        (14, 26, -170, 13, 4.0, 4),   # low left, droops
+        (16, 25, -58, 17, 3.2, 5),    # upper right
+        (17, 26, -20, 13, 5.0, 4),    # right, arching down
+        (16, 25, -78, 10, 4.0, 3),    # short front frond
+    ]
+    for f, (rx, ry, ang, L, bend, hw) in enumerate(fr):
+        x, y, a = float(rx), float(ry), _m2.radians(ang)
+        if bend and ang < -90: bend = -bend if ang < -120 else bend  # left fronds curl left/down
+        for i in range(L):
+            t = i / (L - 1)
+            nx, ny = _m2.sin(a), -_m2.cos(a)
+            if ny > 0: nx, ny = -nx, -ny
+            w = hw * (1 - t) ** 0.8 + 0.5
+            notch = 2 if i % 3 == 1 else 0
+            up = max(0, round(w) - notch); dn = max(0, round(w * 0.75) - (2 if i % 3 == 2 else 0))
+            dx, dy = _m2.cos(a), _m2.sin(a)
+            for k in range(1, up + 1):
+                c = "5" if (k >= up - 1 and t < 0.75) else "4"
+                P(round(x + nx * k + dx * k * 0.45), round(y + ny * k + dy * k * 0.45), c, f)
+                P(round(x + nx * k + dx * (k * 0.45 + 0.6)), round(y + ny * k + dy * (k * 0.45 + 0.6)), c, f)
+            for k in range(1, dn + 1):
+                c = "2" if k < dn else "1"
+                P(round(x - nx * k + dx * k * 0.45), round(y - ny * k + dy * k * 0.45), c, f)
+                P(round(x - nx * k + dx * (k * 0.45 + 0.6)), round(y - ny * k + dy * (k * 0.45 + 0.6)), c, f)
+            P(round(x), round(y), "3" if t < 0.85 else "4", f)
+            x += _m2.cos(a); y += _m2.sin(a); a += _m2.radians(bend)
+    # base cluster
+    for yy, row in enumerate(["..23332..", ".2133312.", "211322112", ".1o1221o1", "..o1oo1o."]):
+        for xx, c in enumerate(row):
+            if c != "." and 1 <= 11 + xx < W - 1: g[23 + yy][11 + xx] = c
+    for x in range(12, 21):
+        col = [y for y in range(H) if g[y][x] not in ".sS"]
+        if col and max(col) + 1 < H - 1 and g[max(col) + 1][x] == ".": g[max(col) + 1][x] = "S" if x > 13 else "s"
+    return ["".join(r) for r in g]
+ART["fern-l"] = (_merge_lone(_smooth_bottom(_merge_lone(_feather_l()))), K)

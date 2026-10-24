@@ -300,72 +300,122 @@ def _clean(t, protect=()):
 
 ART = {"hollow-tree": _clean(hollow_tree()), "shrine-stone": _clean(shrine_stone())}
 
-# hollow-tree frozen at its judged r7 pixels (commit 245edfb857); do not regenerate
-HOLLOW_TREE_R7 = ([
-"................................................",
-"................................................",
-"................................................",
-"................................................",
-"................................................",
-"................................................",
-"................................................",
-"...................AA...........................",
-"..................BBB...........................",
-"..................BBB...........................",
-"..................BBB...........................",
-"..................BCCC..........................",
-".................DCCCCCCC.......................",
-".................DCCCCCCCC......................",
-"..............AEEBBCCCCCBBFF....................",
-"..............AEEGECCCCCHAF.....................",
-"..............AEEGEGGIHHHAF.....................",
-"...............EEEEGGIHHHAF.....................",
-"...............AEEEGGIHHAAF..AA.................",
-"...............AEEEGGIHHHAAAAGGF................",
-"................EEEEGGIHHAAAAIIF................",
-"................AEEEHIIHHHAHHH..................",
-"................AEEEHIIIHHHHHH..................",
-"..........AFF..AAEEEGIHHHHHAF...................",
-"..........AFGGGEEEEGGIHHHAAAF...................",
-"...........FIIGGEEEGIIIHHAAA....................",
-".............IIIEEHGGGIIHHAAF...................",
-"..............HHEGHGGIIHHHAAF...................",
-"...............EEGGGGIIHHHAAF...................",
-"...............EEEEGGIIIHHHAF...................",
-"...............AEEEGGIIHHHHF....................",
-"...............AEEEGGHIHHHHF....................",
-"................EEEEGHIIHAAF....................",
-".................EEEEGGIIHAAF...................",
-".................EEEEGGIIHAAF...................",
-".................AEEEGGIIHAAF...................",
-".................AEEGGGIHHAAF...................",
-".................AEEGGGGHHHHAF..................",
-"................AEEEGGGIHHHHAF..................",
-"................AEEEGGIIIIHHAF..................",
-".................EEEECCCDIIHHAF.................",
-"................AEEEACCCDIIHHAF.................",
-"................AEEEACCCDIIIAHAF................",
-"................AEECCCCCDIIIAHAF................",
-"................AEECCCCCDIHHHAF.................",
-".................CCCCCCCCDIHAAF.................",
-".................CCCCCCCCDIHAAF.................",
-".................ACCCCCCCDIAAA..................",
-"................AACCCCCCCDIHAAF.................",
-".................ACCCCCCDIHHAAF.................",
-"...........AAA..AACCCCCCDIHHHAAAA..AA...........",
-"........AAAGGGEEEAEEEEEGGIHIIHHAAAAIIFFF........",
-"......FFGGFHHHEEEEGGEGGGIIHIIHHAAAAHHFHIIFFFF...",
-"......GGHHFHHHEEEEGGGGGGIIHIIIHHAAAHHFHHHFHII...",
-"......FFHH..FFFEFEEGGGFGIIIFFFHHAHAAAFFHFFHFF...",
-"............FHHHFFFsFFFFFSSSSSFFHHHFFssssss.....",
-".............HHHFsssSSSFSSSSSSSFHHHFSSSsssss....",
-"..............FFsssSSSFHFSSSSSSSFFFSSSSSssss....",
-"...............sssssSSFHFSSSSSSSSSSSSSSsssss....",
-".................sssssFFSSSSSSSSSSSSSsssss......",
-"....................sssssssssssssssssss.........",
-"................................................",
-"................................................",
-"................................................"
-],
-{"A": "#2a1a0f", "B": "#b77541", "C": "#190e0d", "D": "#3a261c", "E": "#885a26", "F": "#1e150a", "G": "#6f4725", "H": "#452a17", "I": "#543719", "s": "s", "S": "S"})
-ART["hollow-tree"] = HOLLOW_TREE_R7
+
+# ---------------- hollow tree r12: brick bark plates, thick root flares, dark snag ----------------
+def hollow_tree_r12():
+    W, Hh = 48, 64
+    g = grid(W, Hh)
+    # trunk span per row: steps of 1-2px every 4-6 rows on each side, slight lean, flare into roots
+    LST = {9: 18, 14: 17, 19: 18, 24: 16, 30: 17, 35: 18, 40: 17, 45: 16, 48: 15}
+    RST = {9: 29, 13: 30, 18: 29, 23: 31, 29: 30, 34: 29, 39: 30, 44: 31, 48: 32}
+    def step(tab, y):
+        v = None
+        for k in sorted(tab):
+            if y >= k: v = tab[k]
+        return v
+    def sp(y):
+        return step(LST, y), step(RST, y)
+    for y in range(9, 51):
+        a, b = sp(y)
+        for x in range(a, b + 1):
+            n = (x - a) / max(1, b - a)
+            g[y][x] = "h" if n < 0.18 else ("l" if n < 0.42 else ("m" if n < 0.68 else ("d" if n < 0.86 else "D")))
+    # brick bark plates: 4 rows tall, 4 px wide, every other band offset by 2; a dark crack on each plate's top
+    # and left edge, some cracks running diagonally; each plate shifts one tone lighter or darker.
+    up = {"D": "d", "d": "m", "m": "l", "l": "h", "h": "h"}
+    dn = {"h": "l", "l": "m", "m": "d", "d": "D", "D": "D"}
+    for y in range(15, 50):
+        band = (y - 15) // 4; ry = (y - 15) % 4
+        a, b = sp(y)
+        for x in range(a + 1, b):
+            if g[y][x] not in "hlmdD": continue
+            cx = (x - a + (2 if band % 2 else 0))
+            col = cx // 4; rx = cx % 4
+            hv = H(col, band, 11)
+            diag = H(col, band, 12) < 0.35
+            crack = (ry == 0 and rx != 3) or (rx == (ry if diag else 0) and ry != 3)
+            if crack:
+                g[y][x] = "D" if g[y][x] in "mdD" else "d"
+            elif hv < 0.3:
+                g[y][x] = up[g[y][x]]
+            elif hv > 0.75:
+                g[y][x] = dn[g[y][x]]
+    # broken top in 3/4: ragged rim, dark rotten opening, lit rim in the trunk's light brown (no orange)
+    a, b = sp(9)
+    rim = [3, 1, 0, 1, 2, 2, 1, 0, 1, 2, 3, 2]
+    for i, x in enumerate(range(a, b + 1)):
+        t = 9 + rim[i % len(rim)]
+        for y in range(9, t): g[y][x] = "."
+    for y in range(9, 14):
+        for x in range(a, b + 1):
+            if g[y][x] == ".": continue
+            e = ((x - (a + b) / 2) / ((b - a) / 2 - 1)) ** 2 + ((y - 11.5) / 2.4) ** 2
+            if e < 0.5: g[y][x] = "k"
+            elif e < 0.85: g[y][x] = "q" if y < 12 else "m"
+            elif y <= 12: g[y][x] = "h" if x < (a + b) / 2 else "l"
+    # snag: a broken splinter of dark trunk wood rising at the back-left, jagged
+    snag = {(19, 5): "d", (20, 5): "D", (19, 6): "l", (20, 6): "d", (21, 6): "D", (18, 7): "l", (19, 7): "m", (20, 7): "d",
+            (21, 7): "D", (18, 8): "l", (19, 8): "m", (20, 8): "d", (21, 8): "d", (22, 8): "D", (18, 9): "h", (19, 9): "l",
+            (20, 9): "m", (21, 9): "d", (22, 9): "D", (18, 10): "h", (19, 10): "l"}
+    for (x, y), c in snag.items(): g[y][x] = c
+    # branch stubs: thick, cut short, broken tips in dark wood
+    for (x, y, c) in ((15, 22, "l"), (16, 22, "l"), (14, 21, "h"), (15, 21, "h"), (13, 20, "l"), (14, 20, "l"), (16, 23, "m"),
+                      (15, 23, "m"), (14, 22, "m"), (13, 21, "m"), (12, 20, "d"), (12, 19, "D"), (13, 19, "d"),
+                      (31, 18, "m"), (32, 18, "d"), (33, 17, "d"), (34, 17, "D"), (31, 19, "d"), (32, 19, "D"), (33, 18, "D"),
+                      (31, 17, "l"), (32, 17, "l"), (33, 16, "m"), (34, 16, "d")):
+        g[y][x] = c
+    # roots: four thick flares of different length/angle, drawn as tapering discs; lit top, dark underside
+    roots = [((18, 48), (8, 55), 3.0), ((22, 49), (16, 56), 2.4), ((29, 48), (40, 55), 3.2), ((26, 49), (31, 56), 2.2)]
+    mask = set()
+    for (x0, y0), (x1, y1), r0 in roots:
+        n = 24
+        for i in range(n + 1):
+            t = i / n
+            cx, cy = x0 + (x1 - x0) * t, y0 + (y1 - y0) * t
+            r = r0 * (1 - t) + 1.3 * t
+            for yy in range(int(cy - r - 1), int(cy + r + 2)):
+                for xx in range(int(cx - r - 1), int(cx + r + 2)):
+                    if (xx - cx) ** 2 + ((yy - cy) * 1.3) ** 2 <= r * r: mask.add((xx, yy))
+    for y in range(49, 51):
+        a, b = sp(y)
+        for x in range(a - 1, b + 2): mask.add((x, y))
+    for (x, y) in sorted(mask):
+        if g[y][x] in "kq": continue
+        above = (x, y - 1) in mask or (g[y - 1][x] not in ".")
+        below = (x, y + 1) in mask
+        if not above: c = "h" if x < 28 else "l"
+        elif not below: c = "D"
+        elif (x, y + 2) not in mask: c = "d"
+        else: c = "m" if x < 26 else "d"
+        g[y][x] = c
+    # hollow at foot (kept from the passed drawing)
+    for y in range(40, 52):
+        t = (y - 40) / 11
+        cx = 21.0 + 2.0 * (1 - t)
+        r = 1.2 + 2.6 * min(1.0, t * 1.6) - (0.8 if y > 49 else 0)
+        L, R = int(round(cx - r)), int(round(cx + r * 0.8))
+        if y in (43, 46): L -= 1
+        for x in range(L, R + 1): g[y][x] = "k"
+        g[y][R] = "q"
+        if g[y][R + 1] != ".": g[y][R + 1] = "m"
+        g[y][L - 1] = "D"
+    for x in range(18, 25): g[51][x] = "h" if x < 23 else "l"
+    # outline: dark on bottom/right, trunk-dark on lit edges
+    outline(g, "o", "D", "hlmdDkq")
+    # moss clumps (woodland ramp), 2x2 and 3x2
+    for (x0, y0, pat) in ((17, 26, ["GM", "gG"]), (18, 34, ["MG", "Gg"]), (10, 51, ["GMG", "gGg"]), (35, 51, ["MG", "gG"]), (19, 10, ["G", "g"])):
+        for j, r in enumerate(pat):
+            for i2, c in enumerate(r):
+                if g[y0 + j][x0 + i2] not in ".kq": g[y0 + j][x0 + i2] = c
+    # shadow pool under roots, lower right
+    for y in range(52, 62):
+        for x in range(4, 47):
+            if g[y][x] == ".":
+                d = ((x - 27) / 18) ** 2 + ((y - 57) / 4.2) ** 2
+                if d < 0.55: g[y][x] = "S"
+                elif d < 1: g[y][x] = "s"
+    keys = {"o": "#1e150a", "D": "#2a1a0f", "d": "#452a17", "m": "#543719", "l": "#6f4725", "h": "#885a26",
+            "k": "#190e0d", "q": "#3a261c", "g": "#063328", "G": "#104c2f", "M": "#296535", "s": "s", "S": "S"}
+    return rows(g), keys
+
+ART["hollow-tree"] = _clean(hollow_tree_r12())
