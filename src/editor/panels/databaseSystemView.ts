@@ -1979,7 +1979,7 @@ function touchControlFields(project: Project): HTMLElement[] {
     checkboxField("휴대폰: 맵을 탭해서 걷기", "db-field-system-touch-tap-to-move", current.tapToMove, (checked) => patch({ tapToMove: checked })),
     field("휴대폰: 조이스틱", stick),
     checkboxField("휴대폰: 진동", "db-field-system-touch-haptics", current.haptics, (checked) => patch({ haptics: checked })),
-    checkboxField("휴대폰: 달리기 단추", "db-field-system-touch-run-button", current.runButton, (checked) => patch({ runButton: checked })),
+    checkboxField("휴대폰: 따로 달리기 단추(끄면 조이스틱을 끝까지 밀어 달린다)", "db-field-system-touch-run-button", current.runButton, (checked) => patch({ runButton: checked })),
   ];
 }
 

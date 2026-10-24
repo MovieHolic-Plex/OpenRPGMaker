@@ -14,6 +14,22 @@ import { currentTouchControls } from "@/player/touchControlSettings";
 import { isTouchUiHost } from "@/player/touchTap";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { MoveCommand } from "@/project/types";
+import { playerAlwaysRun } from "@/player/playerPreferences";
+
+/**
+ * 탭(클릭)으로 걷는 길이 이 칸 수보다 길면 달린다(2026-10-25). 짧은 길은 걸어서 정확히 멈추고, 먼 길은 빨리 간다.
+ * RPG 쯔꾸르 MZ 는 목적지 이동이면 늘 달리고(Game_Player.updateDashing), FF 픽셀 리마스터 모바일도 탭 이동은 달리기 속도다.
+ * 「항상 달리기」 옵션이 켜져 있으면 짧은 길도 달린다.
+ */
+export const TAP_RUN_MIN_STEPS = 5;
+
+function startPointerRoute(scene: PlaySceneContext, moves: MoveCommand[]): void {
+  startPlayerRoute(scene, moves, false);
+  if (!scene.playerRoute) return;
+  scene.playerRoute.pointer = true;
+  const steps = moves.filter((move) => move.kind === "move" || move.kind === "stepForward").length;
+  scene.playerRoute.dash = playerAlwaysRun() || steps >= TAP_RUN_MIN_STEPS;
+}
 
 /** 화면 좌표 → 타일. 맵 밖이면 undefined. */
 export function pointerTile(scene: PlaySceneContext, worldX: number, worldY: number): { x: number; y: number } | undefined {
@@ -92,8 +108,7 @@ export function handlePointerMove(scene: PlaySceneContext, tile: { x: number; y:
   if (!tappedEvent || !touch) {
     const moves = plan(tile.x, tile.y);
     if (moves && moves.length > 0) {
-      startPlayerRoute(scene, moves, false);
-      if (scene.playerRoute) scene.playerRoute.pointer = true;
+      startPointerRoute(scene, moves);
       return "walking";
     }
     if (!touch) return "noPath";
@@ -108,8 +123,7 @@ export function handlePointerMove(scene: PlaySceneContext, tile: { x: number; y:
   }
   if (!best || !bestNeighbor) return "noPath";
   const turn: MoveCommand = { kind: "turn", dir: faceToward(bestNeighbor, tile) };
-  startPlayerRoute(scene, [...best, turn], false);
-  if (scene.playerRoute) scene.playerRoute.pointer = true;
+  startPointerRoute(scene, [...best, turn]);
   if (tappedEvent) pendingTapActions.add(scene);
   return "approach";
 }

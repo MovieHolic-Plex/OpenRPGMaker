@@ -182,7 +182,7 @@ const setProjectSettings: ToolDefinition = {
           tapToMove: { type: "boolean", description: "맵을 탭하면 그 칸까지 걷고, 사람·물건을 탭하면 곁으로 가서 말을 건다(기본 true)." },
           stick: { type: "string", enum: ["auto", "fixed", "floating"], description: "조이스틱: auto(판 곁은 바로 방향, 먼 곳은 엄지 밑으로 — 기본), fixed(판 고정), floating(누른 자리가 중심)." },
           haptics: { type: "boolean", description: "단추·방향 전환 때 짧은 진동(지원 기기만, 기본 true)." },
-          runButton: { type: "boolean", description: "패드에 달리기 단추를 둔다(기본 true)." },
+          runButton: { type: "boolean", description: "패드에 따로 달리기 단추를 둔다(기본 false — 조이스틱을 끝까지 밀면 달리고, 맵 탭으로 먼 곳에 가면 달린다)." },
         },
         additionalProperties: false,
       },

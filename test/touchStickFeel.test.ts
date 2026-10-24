@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { stickSector, stickSectorKeys } from "@/player/touchPad";
+import { stickRuns, stickSector, stickSectorKeys } from "@/player/touchPad";
 import { normalizeTouchControls, resolveTouchControls } from "@/project/touchControls";
 
 const at = (deg: number, r = 40): [number, number] => [Math.cos((deg * Math.PI) / 180) * r, Math.sin((deg * Math.PI) / 180) * r];
@@ -24,13 +24,23 @@ describe("touch stick sectors (2026-10-24 mobile feel)", () => {
   });
 });
 
+describe("stick deflection runs (2026-10-25, no separate Run button)", () => {
+  it("runs past 70% of the radius, walks again below 60%", () => {
+    expect(stickRuns(30, 58, false)).toBe(false);
+    expect(stickRuns(41, 58, false)).toBe(true);
+    expect(stickRuns(37, 58, true)).toBe(true);
+    expect(stickRuns(34, 58, true)).toBe(false);
+  });
+});
+
 describe("system.touchControls", () => {
   it("stores only non-default fields", () => {
-    expect(normalizeTouchControls({ tapToMove: true, stick: "auto", haptics: true, runButton: true })).toBeUndefined();
+    expect(normalizeTouchControls({ tapToMove: true, stick: "auto", haptics: true, runButton: false })).toBeUndefined();
+    expect(normalizeTouchControls({ runButton: true })).toEqual({ runButton: true });
     expect(normalizeTouchControls({ tapToMove: false, stick: "fixed", bogus: 1 })).toEqual({ tapToMove: false, stick: "fixed" });
   });
   it("device preference beats authored value beats default", () => {
-    expect(resolveTouchControls(undefined)).toEqual({ tapToMove: true, stick: "auto", haptics: true, runButton: true });
+    expect(resolveTouchControls(undefined)).toEqual({ tapToMove: true, stick: "auto", haptics: true, runButton: false });
     expect(resolveTouchControls({ tapToMove: false }).tapToMove).toBe(false);
     expect(resolveTouchControls({ tapToMove: false }, { tapToMove: true }).tapToMove).toBe(true);
   });
