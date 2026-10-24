@@ -324,7 +324,7 @@ export function predictSkillDamageFor(project: Project, user: BattleBattlerSnaps
           targetDefenseMultiplier,
           elementMultiplier: battleElementMultiplier(project, skill.elementId, source, destination)
             * emotionDamageMultiplier(project, source, destination)
-            * (skill.effect.kind === "damage" ? damageTypeMultiplier(project, statistic === "mind" ? "magic" : "physical", destination) : 1),
+            * (skill.effect.kind === "damage" ? damageTypeMultiplier(project, statistic === "mind" ? "magic" : "physical", destination, skill.elementId) : 1),
           useMagicalDefense: usesMagicalDefense(project, skill.elementId),
         });
         hit = result.amount;

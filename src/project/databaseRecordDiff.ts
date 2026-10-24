@@ -84,6 +84,8 @@ const FIELD_LABELS: Readonly<Record<string, string>> = {
   flying: "부양",
   battleScalePercent: "전투 표시 크기",
   collapseEffect: "쓰러지는 연출",
+  hideHp: "HP 숨김(보스)",
+  damageTypeRates: "받는 피해 계열 %",
   faceResourceId: "얼굴 그림",
   characterResourceId: "캐릭터 그림",
   characterIndex: "캐릭터 칸",
