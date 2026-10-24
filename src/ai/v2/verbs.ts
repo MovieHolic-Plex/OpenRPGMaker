@@ -414,6 +414,11 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         record = adoptInterior(run, patch.mapId);
         if (record) for (const mapId of record.result.mapIds) session.places.set(mapId, record);
       }
+      // 다시 짓기로 위층 id 가 바뀌었는데 옛 id 로 고치려 했다(2026-10-24 cmp-dungeon-floors) — 지금 있는 층 id 를 알려 준다.
+      if (!record && !env.ctx.project.maps[patch.mapId]) {
+        const now = [...new Set([...session.places.values()].flatMap((r) => r.result.mapIds))].filter((id) => env.ctx.project.maps[id]).map((id) => `${id}(${env.ctx.project.maps[id]!.name ?? ""})`);
+        return text({ ok: false, summary: `${patch.mapId} 는 이제 없는 맵이다(앞의 다시 짓기로 층이 새 id 로 바뀌었다). 지금 v2 가 지은 맵: ${now.join(", ") || "없음"} — 이 id 로 고친다.` });
+      }
       if (!record) return text({ ok: false, summary: `${patch.mapId} 는 v2 가 지은 기록이 없고 다시 지을 방 구성도 읽지 못했다. make_place(spec.mapId=${patch.mapId}) 로 그 자리에 새로 짓거나 못 한다고 알린다.` });
       if (record.rounds >= V2_MAX_REPAIR_ROUNDS) return text({ ok: false, summary: `고치기 상한(${V2_MAX_REPAIR_ROUNDS}바퀴)에 닿았다. 남은 문제를 사용자에게 보고한다.` });
       const builder = builderFor(record.spec)!;
