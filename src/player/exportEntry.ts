@@ -46,6 +46,8 @@ import {
   storeGameSaveNamespace,
   type StoreGameBoot,
 } from "@/player/storeGameHost";
+import { prepareStoreCloud, startStoreCloudSync } from "@/player/storeCloudSync";
+import { setSavePublication } from "@/player/savePublication";
 
 const app = document.getElementById("app");
 if (!app) {
@@ -85,6 +87,8 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
     renderStoreEmbedBlocked(root, storeGame);
     return;
   }
+  // 스토어 play 화면이 품었으면 클라우드 세이브 다리에 인사하고(로그인했으면 목록도) 프로젝트를 받는 동안 미리 받아 둔다.
+  if (storeGame) prepareStoreCloud(storeGame);
   // The private editor probe and any hosted build (player under /export-player/) read public game
   // resources from the editor host, one directory above that bundle — see exportAssetBase.ts.
   const probeAssets = boot.qaInstrumentation === true && boot.actionCombatProbe !== undefined;
@@ -341,6 +345,15 @@ async function startPlayer(
       adoptLegacyExportSaves(window.localStorage, saveNamespace);
     } catch (error) {
       console.warn("[oprn] 옛 세이브 입양을 건너뜁니다:", error);
+    }
+    // 스토어 웹 게임: 계정 클라우드 세이브와 맞춘다(storeCloudSync.ts). 다리가 없으면(새 창·내보낸 게임) 아무것도 하지 않는다.
+    if (storeGame && source === "bundled") {
+      setSavePublication(project.meta.publication, resolveCommunitySaveScope(window.location.pathname));
+      try {
+        await startStoreCloudSync(root, storeGame, window.localStorage);
+      } catch (error) {
+        console.warn("[oprn] 클라우드 세이브 맞추기를 건너뜁니다:", error);
+      }
     }
     document.title = project.meta.title || `${PRODUCT_BRAND} Player`;
     // 호스트(커뮤니티 사이트)가 주입한 returnUrl/hostFeatures — 잘못된 값은 조용히 무시된다.
