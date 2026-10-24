@@ -440,17 +440,19 @@
               "plan": {
                 "actor_fs_elena": [
                   "skill_mage_blizzard",
+                  "skill_mage_blizzard",
+                  "item:item_ether@actor_fs_elena",
                   "skill_fs_meditate",
-                  "item:item_ether@actor_fs_elena"
+                  "defend"
                 ],
                 "actor_hero": [
                   "defend"
                 ]
               },
-              "commands": 6,
+              "commands": 8,
               "logPath": "verify-shots/fs-battle/logs/ether-meditate.jsonl",
               "timeoutMs": 150000,
-              "fallback": "attack"
+              "fallback": "defend"
             },
             {
               "kind": "hold",
