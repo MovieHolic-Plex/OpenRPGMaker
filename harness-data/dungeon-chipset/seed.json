@@ -4322,6 +4322,15 @@
     "wall.other_rim"
    ],
    "lead": "패널 9 반영: 마계 테두리 = 탑 갓돌 짜임 + 흑요석 색(점박이 결·빛 번짐 없음)."
+  },
+  "theme-props-r9": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_props_r9.py",
+   "wave": "theme_props",
+   "title": "던전 테마 얼음굴 벽 새 출발 theme-props-r9",
+   "items": [
+    "wall.ice_face"
+   ],
+   "lead": "버들항 동굴 앞면 틀 + 얼음 재질: 깨진 면(빙하 면 · 얼음 덮인 바위 · 결정 기둥) 세 안, 가로 띠·벽돌 없음."
   }
  }
 }
