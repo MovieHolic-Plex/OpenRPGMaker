@@ -95,12 +95,19 @@ async function walkKey(page, key, ms, stopOnMapChange = false) {
   await page.keyboard.up(key);
 }
 
-const server = await startPlayerQaServer();
-const browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--autoplay-policy=no-user-gesture-required", "--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
 let videoPath = null;
 let videoT0 = 0;
 const marks = {};
 const mark = (name) => { marks[name] = +((Date.now() - videoT0) / 1000).toFixed(2); log("mark", name, marks[name]); };
+if (process.env.QA_CLIPS_ONLY) {
+  // 이미 찍은 full.webm·facts.json 으로 구간 영상만 다시 만든다(소리 섞기 손볼 때).
+  const old = JSON.parse(await readFile(resolve(out, "facts.json"), "utf8"));
+  Object.assign(marks, old.marks); Object.assign(focus, old.focus); facts.sfx = old.sfx ?? [];
+  Object.assign(facts, old, { marks, focus, sfx: facts.sfx });
+  videoPath = resolve(out, "full.webm");
+} else {
+const server = await startPlayerQaServer();
+const browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--autoplay-policy=no-user-gesture-required", "--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
 try {
   const context = await browser.newContext({ viewport: { width: 960, height: 540 }, recordVideo: { dir: out, size: { width: 960, height: 540 } } });
   videoT0 = Date.now();
@@ -212,8 +219,9 @@ try {
   await server.close?.();
 }
 
+}
 if (videoPath) {
-  await copyFile(videoPath, resolve(out, "full.webm"));
+  if (!process.env.QA_CLIPS_ONLY) await copyFile(videoPath, resolve(out, "full.webm"));
   for (const tag of ["door", "other_room", "same_room", "chest", "crate", "barrel", "sack"]) {
     const a = marks[`${tag}_start`], b = marks[`${tag}_end`];
     if (a === undefined || b === undefined) continue;
@@ -229,7 +237,32 @@ if (videoPath) {
         "-vf", `crop=${cw}:${ch}:${cx}:${cy},scale=960:540:flags=neighbor`,
         "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-an", resolve(out, `zoom-${tag}.mp4`)]);
     }
+    for (const name of [`clip-${tag}.mp4`, `zoom-${tag}.mp4`]) muxSfx(resolve(out, name), start, b + 0.3);
     log("clip", tag, start, b);
   }
 }
 console.error("DONE");
+
+/**
+ * 영상에는 소리가 없다(Playwright 녹화) — 실행 중 기록한 효과음 큐(HTMLMediaElement.play 시각·파일·음량)대로
+ * 실제 SE 파일을 그 시각에 놓아 섞는다. 큐가 없는 구간도 무음 트랙을 넣어 모든 영상에 소리 트랙이 있게 한다.
+ */
+function muxSfx(file, start, end) {
+  const cues = (facts.sfx ?? []).filter((c) => c.t >= start - 0.05 && c.t <= end);
+  const local = (src) => resolve("public", decodeURIComponent(new URL(src).pathname).replace(/^\//, ""));
+  const args = ["-y", "-loglevel", "error", "-i", file];
+  const parts = [];
+  cues.forEach((c, i) => {
+    args.push("-i", local(c.src));
+    const ms = Math.max(0, Math.round((c.t - start) * 1000));
+    parts.push(`[${i + 1}:a]aresample=48000,aformat=channel_layouts=stereo,adelay=${ms}|${ms},volume=${c.volume ?? 1}[a${i}]`);
+  });
+  const dur = (end - start).toFixed(3);
+  const mix = cues.length
+    ? `${parts.join(";")};${cues.map((_, i) => `[a${i}]`).join("")}amix=inputs=${cues.length}:normalize=0:duration=longest,apad,atrim=0:${dur}[aout]`
+    : `anullsrc=r=48000:cl=stereo,atrim=0:${dur}[aout]`;
+  const tmp = file.replace(/\.mp4$/, ".mux.mp4");
+  execFileSync("ffmpeg", [...args, "-filter_complex", mix, "-map", "0:v", "-map", "[aout]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-shortest", "-movflags", "+faststart", tmp]);
+  execFileSync("mv", [tmp, file]);
+  log("mux", file.split("/").pop(), cues.map((c) => `${(c.t - start).toFixed(2)}s ${c.src.split("/").pop()}`).join(", ") || "(silent)");
+}
