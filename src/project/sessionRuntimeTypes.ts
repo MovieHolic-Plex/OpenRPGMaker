@@ -57,6 +57,8 @@ export type M2ScreenRuntimeState = {
   letterbox?: number;
   /** 레터박스 전환 시간(ms). */
   letterboxDurationMs?: number;
+  /** 열려 있거나 막 닫히는 타일 그림 문(키 = `doorKey`). `@/project/eventCommands/doorAnimation`. 세이브에는 남기지 않는다. */
+  doors?: Record<string, import("@/project/eventCommands/doorAnimation").RuntimeDoorState>;
   /**
    * 캐릭터 모습 효과(색·뒤집기·기울기·포즈·잔상). 키 = "player" 또는 "<mapId>/<eventId>"
    * (`spriteLookKey`). 화면에 보이는 지속 상태라 세이브에 함께 남는다.

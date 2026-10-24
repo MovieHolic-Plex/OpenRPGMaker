@@ -1,3 +1,4 @@
+import { isTouchUiHost } from "@/player/touchTap";
 import { animateCinematicText } from '@/player/cinematicText';
 import { resolveCinematicPresentation } from '@/project/cinematicPresentation';
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -336,8 +337,14 @@ export function playCinematicSequence(options: {
       // Book overlays live on the root so they survive page changes.
       if (atmosphere) root.append(atmosphere.layer);
       if (portraitMotion) root.append(portraitMotion.element);
-      if (!isBook && sequence.skippable && !root.querySelector('.cinematic-skip-hint')) root.append(el('div', { class: 'cinematic-skip-hint', text: 'Esc 건너뛰기', attrs: { 'aria-hidden': 'true' } }));
-      if (isBook) frame.append(el('div',{class:'cinematic-book-hint',text:`${index+1} / ${sequence.scenes.length}   Enter 다음${sequence.skippable?' · Esc 건너뛰기':''}`}));
+      // Touch has no Esc — the hint itself is the skip button (tap/click), so a phone can skip the same way.
+      // play-ui owner: the sequence's pointer blocker (installPlayPointerBlocker) lets this one button through.
+      if (!isBook && sequence.skippable && !root.querySelector('.cinematic-skip-hint')) {
+        const skip = el('button', { class: 'cinematic-skip-hint', text: isTouchUiHost(root) ? 'B · 탭 건너뛰기' : 'Esc · 탭 건너뛰기', attrs: { type: 'button', 'aria-label': '건너뛰기', tabindex: '-1', 'data-play-input-owner': 'play-ui' }, dataset: { testid: 'cinematic-skip' } });
+        skip.addEventListener('pointerup', (event) => { event.preventDefault(); event.stopPropagation(); finish('skipped'); }, { signal });
+        root.append(skip);
+      }
+      if (isBook) frame.append(el('div',{class:'cinematic-book-hint',text:`${index+1} / ${sequence.scenes.length}   ${isTouchUiHost(root)?'A 다음':'Enter 다음'}${sequence.skippable?(isTouchUiHost(root)?' · B 건너뛰기':' · Esc 건너뛰기'):''}`}));
       root.dataset.page = String(index + 1);
       if (previous) {
         previous.dataset.previousFrame = 'true';

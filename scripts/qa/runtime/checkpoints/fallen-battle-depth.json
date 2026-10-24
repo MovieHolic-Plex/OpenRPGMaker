@@ -1,0 +1,522 @@
+{
+  "set": "fallen-battle-depth",
+  "note": "fs-battle-2 — 기술 도움말 창·연계 명령(듀얼·트리플·연계 대기)·결과 팡파레. 픽스처는 fallen-battle 과 같다(scripts/qa/runtime/fallen-battle-fixture.mjs).",
+  "projectFixture": ".omo/fs-battle/fixture.json",
+  "viewport": {
+    "width": 960,
+    "height": 540
+  },
+  "checkpoints": [
+    {
+      "id": "help-desktop",
+      "label": "기술 도움말 창 — 커서를 따라 설명·MP·꼬리표",
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 6
+        }
+      ],
+      "startEventId": "qa_fight_wolves",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "skills",
+          "note": "기술 목록을 열고 커서를 내린다",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "actor-command-skill",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 600
+            },
+            {
+              "kind": "click",
+              "testid": "actor-command-skill"
+            },
+            {
+              "kind": "waitFor",
+              "testid": "battle-skill-help",
+              "timeoutMs": 10000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1400
+            },
+            {
+              "kind": "key",
+              "key": "ArrowDown"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1400
+            },
+            {
+              "kind": "key",
+              "key": "ArrowDown"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1400
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "more",
+          "note": "도발·올려베기까지",
+          "ops": [
+            {
+              "kind": "key",
+              "key": "ArrowDown"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1400
+            },
+            {
+              "kind": "key",
+              "key": "ArrowDown"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1400
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "combo-menu",
+          "note": "연계 명령 — 연계기 도움말(참가자·몫)",
+          "ops": [
+            {
+              "kind": "key",
+              "key": "Escape"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 700
+            },
+            {
+              "kind": "click",
+              "testid": "actor-command-combo"
+            },
+            {
+              "kind": "waitFor",
+              "testid": "actor-skill-skill_combo_fs_flame_cross",
+              "timeoutMs": 10000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 2200
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "combo-dual",
+      "label": "불꽃 십자참 — 카엘 × 엘레나",
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 6
+        }
+      ],
+      "startEventId": "qa_fight_wolves",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "combo",
+          "note": "연계 → 불꽃 십자참",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "combo:skill_combo_fs_flame_cross"
+                ],
+                "actor_fs_elena": [
+                  "combo:skill_combo_fs_flame_cross"
+                ]
+              },
+              "commands": 1,
+              "logPath": "verify-shots/fs-battle-2/logs/combo-dual.jsonl",
+              "timeoutMs": 120000,
+              "fallback": "attack"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 450
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "after",
+          "note": "연출 끝",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 3500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "combo-triple-hold",
+      "label": "연계 대기 → 트리플 연계 폴른 스타",
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 7
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 7
+        },
+        {
+          "actorId": "actor_fs_iris",
+          "level": 7
+        }
+      ],
+      "startEventId": "qa_fight_glade_poachers",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "hold",
+          "note": "이리스가 「연계(동료 기다리기)」로 차례를 미룬다",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "actor-command-combo",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            },
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_fs_iris": [
+                  "combo:skill_combo_fs_fallen_star"
+                ]
+              },
+              "commands": 1,
+              "timeoutMs": 60000,
+              "fallback": "attack"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 900
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "triple",
+          "note": "카엘 차례 — 셋 다 준비, 폴른 스타",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "combo:skill_combo_fs_fallen_star"
+                ],
+                "actor_fs_elena": [
+                  "combo:skill_combo_fs_fallen_star"
+                ],
+                "actor_fs_iris": [
+                  "combo:skill_combo_fs_fallen_star"
+                ]
+              },
+              "commands": 1,
+              "logPath": "verify-shots/fs-battle-2/logs/combo-triple.jsonl",
+              "timeoutMs": 120000,
+              "fallback": "attack"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 500
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "after",
+          "note": "연출 끝",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 4000
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "levelup-fanfare",
+      "label": "레벨 업 → 새 기술 습득 → 새 연계기",
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_iris",
+          "level": 7
+        }
+      ],
+      "startEventId": "qa_fight_wolves",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "win",
+          "note": "이겨서 결과 화면까지",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "skill_hero_cross_slash"
+                ],
+                "actor_fs_elena": [
+                  "skill_mage_fireball"
+                ],
+                "actor_fs_iris": [
+                  "skill_gunner_shot"
+                ]
+              },
+              "timeoutMs": 150000,
+              "fallback": "attack",
+              "logPath": "verify-shots/fs-battle-2/logs/levelup.jsonl"
+            },
+            {
+              "kind": "waitFor",
+              "testid": "battle-result-confirm",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "page1",
+          "note": "확인 → 카엘 LEVEL UP",
+          "ops": [
+            {
+              "kind": "click",
+              "testid": "battle-result-confirm"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 2600
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "page2",
+          "note": "(넘김 확인)",
+          "ops": [
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 2600
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "page3",
+          "note": "카엘 새 기술 습득 — 화염검(2/5)",
+          "ops": [
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 2600
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "page4",
+          "note": "엘레나 LEVEL UP(3/5)",
+          "ops": [
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 2600
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "page5",
+          "note": "엘레나 새 기술 습득 — 연쇄 번개(4/5)",
+          "ops": [
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 3000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "page6",
+          "note": "마지막 장 — 새 연계기 폴른 스타",
+          "ops": [
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 3200
+            }
+          ],
+          "shot": true
+        }
+      ],
+      "sessionPatch": {
+        "actorExperience": {
+          "actor_hero": 1570,
+          "actor_fs_elena": 1570,
+          "actor_fs_iris": 1600
+        }
+      }
+    }
+  ]
+}

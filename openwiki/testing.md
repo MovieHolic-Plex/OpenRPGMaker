@@ -1589,6 +1589,21 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
 `@/project/store`, 내보내기 플레이어는 `exportProjectStoreShim` 을 쓰므로 **편집기
 경로로 하는 런타임 QA 는 출하물을 검증하지 않는다.**
 
+### 바라보는 방향 기록 — `recordUntilJs` (2026-10-21)
+
+대사·연출 장면의 «누가 누구를 보는가» 는 비트 끝 한 장으로는 안 보인다. `recordUntilJs` op 은 `pressUntilJs` 처럼 넘기되
+다 나온 대사마다 한 장, 인물이 걷는 동안 `frameMs`(기본 200ms)마다 한 장을 `<out>/<dir>/NNNN.png` 로 찍고,
+그 순간의 배우 배치(맵·카메라·주인공 칸/방향/보임·보이는 이벤트 칸/방향(스프라이트 프레임 줄에서 읽음)/불투명도)를
+`actors.jsonl` 에 한 줄씩 적는다. 선택지가 뜨면 멈추고 부른 쪽이 고른다.
+
+```bash
+FL_PATH=A FL_VP=480x270 node scripts/qa/runtime/fl-play.mjs --scenario first-love-facing --checkpoint d1-arrive --parallel 1 --out verify-shots/runtime-qa/fl-facing-after-A
+node scripts/qa/runtime/facing-audit.mjs verify-shots/runtime-qa/fl-facing-after-A   # 대사 줄마다 화자·곁 사람 방향 판정
+```
+
+`facing-audit.mjs` 는 화자가 무대의 누구도 보지 않거나(6칸 안), 곁(2칸 안) 사람이 화자·주인공·화자가 보는 상대 어느 쪽도 보지 않으면 적는다.
+기계 판정은 시작점일 뿐 — 탁자 회의·뒷모습 연출은 프레임을 눈으로 본다. 정적 짝은 `scene-speaker-faces-away`(`openwiki/editor-validation.md`).
+
 ### 런타임 QA 체크포인트 — 늦은 단계는 타이틀부터 다시 하지 않는다 (2026-10-21, hard rule)
 
 **VQA·런타임 QA 가 게임의 뒤쪽 단계(보스·패배 카드·엔딩·보고 장면·고백·챔피언…)를 볼 때는 체크포인트로

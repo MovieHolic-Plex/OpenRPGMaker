@@ -1,3 +1,4 @@
+import { installTapOrSwipeToClose, isTouchUiHost } from "@/player/touchTap";
 import { getEffectiveReadingPreferences, playerTextDelay, setAuthoredPreferenceDefaults } from '@/player/playerPreferences';
 import { backlogViewIsOpen, backlogRecentlyClosed, closeBacklogView, openBacklogView } from '@/player/dialogueBacklogView';
 import { dialogueUiText } from '@/player/dialogueUiStrings';
@@ -18,7 +19,7 @@ import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 import { applyPixelBust } from "@/player/bustPixelate";
-import { dialogueFaceForEmotion, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId, sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
+import { dialogueFaceForEmotion, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId, sharedPortraitNativeGaze, sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { appearancePortraitForEmotion, faceForDialogueEmotion, resolveActorAppearance, resolveAppearancePortrait } from "@/project/characterAppearances";
 import { facePresentationForResource } from "@/project/facePresentation";
@@ -105,6 +106,10 @@ export type DialogueTextRequest = DialogueSurfaceSettings & {
   readonly speaker?: string;
   readonly body: string;
   readonly face?: FaceGraphic;
+  /** 저작이 대사 앞에 준 듣는 사람 얼굴(화자 반대 자리). 있으면 앞 화자 대신 이 얼굴이 듣는 사람 흉상이다. */
+  readonly listenerFace?: FaceGraphic;
+  /** true 면 듣는 흉상은 listenerFace 하나로만 정한다(없으면 비운다) — 「앞 화자가 남는다」 규칙을 쓰지 않는다(text.bustSide "stage"). */
+  readonly stageListener?: boolean;
   /** true 면 페이지 타이핑 종료 후 키 입력 없이 다음으로. */
   readonly autoAdvance?: boolean;
   /** 엔딩 에필로그의 글. 스킵은 이 글을 절대 건너뛰지 않는다(interpreter text 단계의 endingEpilogue). */
@@ -725,6 +730,13 @@ export function createDialogueUI(
       list.append(item);
     }
     if (logEntries.length === 0) list.append(el("li", { class: "dialogue-log-empty", text: "아직 나눈 대화가 없습니다." }));
+    const closeButton = el("button", {
+      class: "dialogue-log-close",
+      text: "닫기 ✕",
+      attrs: { type: "button", "aria-label": "대화 기록 닫기" },
+      dataset: { testid: "dialogue-log-close" },
+    });
+    closeButton.addEventListener("click", (event) => { event.stopPropagation(); closeLog(); });
     logPanel = el("div", {
       class: "dialogue-log",
       attrs: { role: "dialog", "aria-label": "대화 기록" },
@@ -732,11 +744,14 @@ export function createDialogueUI(
       children: [
         el("div", { class: "dialogue-log-head", children: [
           el("strong", { text: "대화 기록" }),
-          el("span", { text: "L · Esc 닫기 · ↑↓ 넘겨 보기" }),
+          el("span", { class: "dialogue-log-hint", text: isTouchUiHost(host) ? "탭하거나 쓸어서 닫기" : "L · Esc 닫기 · ↑↓ 넘겨 보기" }),
+          closeButton,
         ] }),
         list,
       ],
     });
+    // 폰에는 L·Esc 가 없다 — 보이는 닫기 단추와 탭·쓸기로 닫는다(2026-10-24, 아이폰에서 기록 창에 갇힌 신고).
+    installTapOrSwipeToClose(logPanel, closeLog);
     host.append(logPanel);
     list.scrollTop = list.scrollHeight;
   };
@@ -1019,6 +1034,15 @@ export function createDialogueUI(
           } else {
             if (wasOpen && lastPortrait && lastPortrait.key !== speakerKey) listenerPortrait = lastPortrait;
             else if (!wasOpen || listenerPortrait?.key === speakerKey) listenerPortrait = undefined;
+            // 저작이 고른 듣는 사람(말을 다른 상대에게 돌린 줄) — 앞 화자보다 우선한다.
+            if (request.listenerFace?.resourceId && (request.listenerFace.position === "right") !== (face.position === "right")) {
+              listenerPortrait = { key: `listener:${request.listenerFace.resourceId}`, face: request.listenerFace };
+            } else if (request.stageListener) listenerPortrait = undefined;
+            // 인물은 저작된 자기 자리(왼쪽/오른쪽)를 장면 내내 지킨다. 듣는 사람이 화자와 같은 쪽 사람이면 반대편으로 옮겨
+            // 그리지 않고 비운다 — 옮기면 그 인물이 대사마다 좌우를 맞바꾼다(첫사랑 r4: 오른쪽 자리 인물끼리의 대화).
+            if (listenerPortrait && (listenerPortrait.face.position === "right" ? "right" : "left") === (face.position === "right" ? "right" : "left")) {
+              listenerPortrait = undefined;
+            }
           }
           // Attach to the message box so left/right tracks the window, not the full screen.
           box.classList.add("has-bust-face", `portrait-${portraitMode}`);
@@ -2618,6 +2642,12 @@ function dialoguePortraitMode(face: FaceGraphic | undefined): "face" | "bust" | 
   return face.presentation ?? facePresentationForResource(face.resourceId);
 }
 
+/** 흉상·전신이 그 자리(왼쪽/오른쪽)에서 화면 바깥을 보는가 — 원래 시선을 아는 그림만(모르면 그대로 둔다). */
+function portraitLooksOutward(resourceId: string, side: "left" | "right"): boolean {
+  const gaze = sharedPortraitNativeGaze(resourceId);
+  return gaze !== null && gaze === side;
+}
+
 function renderFace(face: FaceGraphic): HTMLElement {
   const url = safeResourceImageUrl(resolveAssetResourceUrl(face.resourceId, { project: store.getCurrent() }));
   if (!url) {
@@ -2637,6 +2667,8 @@ function renderFace(face: FaceGraphic): HTMLElement {
         `dialogue-face-${mode}`,
         `dialogue-face-side-${side}`,
         face.flipHorizontally ? "flipped" : "",
+        // 그림의 원래 시선이 화면 바깥쪽이면 거울로 뒤집어 대화창 가운데(상대)를 보게 한다. 저작된 flipped 는 그 위에서 한 번 더 뒤집는다.
+        portraitLooksOutward(face.resourceId, side) ? "gaze-mirror" : "",
       ]
         .filter(Boolean)
         .join(" "),

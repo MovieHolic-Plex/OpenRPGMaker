@@ -42,7 +42,16 @@ export interface MCBuilding {
   /** 이 건물에 맞는 실내 방 구성(build_hand_interior_room layout.program) — 없으면 실내 예제 없음. */
   readonly program?: string;
 }
-export interface MCStreetSpec { readonly width: number; readonly height: number; readonly seed?: number; readonly shops?: readonly string[] }
+/**
+ * 업무 지구 꾸밈(선택). 없으면 예전 거리 그대로다.
+ * - landmark: 가장 먼저(가장 넓은 블록 가운데) 세울 건물 종류 — 예 "tower10"(유리 오피스 타워). 그 건물이 buildings[0] 이다.
+ * - subwayExits: 지하철 출구 수(1~4). 출구마다 번호 표지(mc-prop-kr-exit-N, 칩셋에 있으면)를 옆에 세우고 결과 subwayExits 에 번호·계단 칸을 준다.
+ * - korean: 한국 거리 단서 — 보도 점자 블록 줄·가로수 보호판·버스 쉘터·자전거 거치대·한글 세로 입간판(칩셋에 있는 키트만).
+ */
+export interface MCDistrict { readonly landmark?: string; readonly subwayExits?: number; readonly korean?: boolean }
+export interface MCStreetSpec { readonly width: number; readonly height: number; readonly seed?: number; readonly shops?: readonly string[]; readonly district?: MCDistrict }
+/** 지하철 출구 하나: 번호·입구 덩어리 왼쪽 위 칸·계단 칸(막힘, 문 이벤트 자리)·발판(계단 바로 아래 걸을 칸). */
+export interface MCSubwayExit { readonly n: number; readonly at: MCCell; readonly stair: MCCell; readonly step: MCCell }
 export interface MCStreetResult {
   readonly lower: number[];
   readonly upper: number[];
@@ -54,6 +63,7 @@ export interface MCStreetResult {
   readonly park: { x: number; y: number; w: number; h: number } | null;
   readonly notes: string[];
   readonly transit: MapTransit;
+  readonly subwayExits: MCSubwayExit[];
 }
 
 export const MODERN_CITY_STREET_MIN = { w: 40, h: 30 } as const;
@@ -160,13 +170,30 @@ class Board {
 }
 
 /** 띠 한 칸(가로 도로 북쪽) 정면 건물 줄. */
-function frontage(b: Board, r: () => number, x0: number, x1: number, accessY: number, maxH: number, counts: Map<string, number>, queue: string[][], wishes: string[]) {
+function frontage(b: Board, r: () => number, x0: number, x1: number, accessY: number, maxH: number, counts: Map<string, number>, queue: string[][], wishes: string[], landmark?: { type: string; x: number }) {
   const all = b.pal.buildingKits();
   const byType = new Map<string, string[]>();
   for (const id of all) { const t = mcBuildingType(id); if (!MC_BUILDING_TYPES[t]) continue; (byType.get(t) ?? byType.set(t, []).get(t)!).push(id); }
   let x = x0 + (r() < 0.5 ? 0 : 1), prev = "";
   const fitsKit = (id: string, at: number) => { const k = b.kit(id); return k.height <= maxH && at + k.width - 1 <= x1 && b.fits(id, at, accessY - k.height, ["walk", "ground"]); };
+  // 랜드마크: 이 블록에서 정한 자리(landmark.x)까지는 보통 건물로 채우고, 그 자리에 랜드마크를 세운 뒤 이어 간다.
+  let pendingLandmark = landmark;
   while (x <= x1 - 3) {
+    if (pendingLandmark && x >= pendingLandmark.x - 1) {
+      const ids = (byType.get(pendingLandmark.type) ?? []).filter((id) => fitsKit(id, x));
+      if (ids.length) {
+        const id = pick(r, ids); const kit = b.kit(id); const y = accessY - kit.height;
+        b.stamp(id, x, y, "bld");
+        const acc = (kit.access?.length ? kit.access : [{ dx: Math.floor(kit.width / 2), dy: kit.height }]).filter((a, i, all) => all.findIndex((o) => o.dx === a.dx) === i);
+        const access = acc.map((a) => ({ x: x + a.dx, y: y + a.dy }));
+        for (const a of access) for (const dx of [-1, 0, 1]) for (const dy of [0, 1]) if (b.in(a.x + dx, a.y + dy)) b.keep[b.k(a.x + dx, a.y + dy)] = true;
+        const info = MC_BUILDING_TYPES[pendingLandmark.type]!;
+        b.buildings.unshift({ name: info.ko, kind: pendingLandmark.type, kit: id, rect: { x, y, w: kit.width, h: kit.height }, doors: access.map((a) => ({ x: a.x, y: a.y - 1 })), access, ...(info.program ? { program: info.program } : {}) });
+        counts.set(pendingLandmark.type, (counts.get(pendingLandmark.type) ?? 0) + 1); prev = pendingLandmark.type;
+        x += kit.width + 1; pendingLandmark = undefined; continue;
+      }
+      b.notes.push(`랜드마크 ${pendingLandmark.type} 를 (${x},${accessY - 1}) 에 세울 수 없었다`); pendingLandmark = undefined;
+    }
     const room = x1 - x + 1;
     const candTypes = (types: readonly string[]) => types.filter((t) => t !== prev && (counts.get(t) ?? 0) < typeLimit(t) && (byType.get(t) ?? []).some((id) => fitsKit(id, x)));
     let type: string | undefined;
@@ -308,6 +335,51 @@ function roadsideVerge(b: Board, r: () => number, y0: number, y1: number) {
   }
 }
 
+/**
+ * 한국 업무 지구 보도 단서(칩셋에 있는 키트·칸만 쓴다). 소품·건물 위치는 그대로 두고 빈 보도 칸만 고친다.
+ * - 점자 블록(mc-in-mci-tactile 의 칸): 가로 도로 남쪽 보도 안쪽 줄(yy+10)과 북쪽 보도 바깥 줄(yy+1)에 한 줄, 문 앞·소품 칸은 건너뛴다.
+ * - 가로수 보호판(mc-prop-kr-tree-grate): 큰 가로수 줄기 칸의 아래층(보도 포석일 때).
+ * - 버스 쉘터(mc-prop-bus-shelter-a): 정류장 표지 옆, 자전거 거치대(mc-prop-bike-row-a): 북쪽 보도 건물 쪽 빈 3칸.
+ * - 세로 입간판(mc-prop-kr-sign-*): 가게(카페·편의점·식당) 문 옆 북쪽 보도.
+ */
+function koreanStreetCues(b: Board, r: () => number, hz: readonly number[], vt: readonly number[], busStops: readonly { x: number; y: number }[]) {
+  const tactile = b.pal.kit("mc-in-mci-tactile")?.rows[0]?.upperTiles?.[0] ?? b.pal.kit("mc-in-mci-tactile")?.rows[0]?.tiles[0];
+  const nearCross = (x: number, pad: number) => vt.some((v) => x >= v - pad && x < v + 12 + pad);
+  const free = (x: number, y: number) => b.in(x, y) && b.use[b.k(x, y)] === "walk" && b.upper[b.k(x, y)] < 0;
+  if (tactile !== undefined && tactile >= 0) {
+    for (const yy of hz) for (const row of [yy + 1, yy + 10]) for (let x = 0; x < b.W; x++) {
+      if (nearCross(x, 0) || !free(x, row)) continue;
+      b.lower[b.k(x, row)] = tactile;
+    }
+  }
+  const grate = b.pal.kit("mc-prop-kr-tree-grate")?.rows[0]?.tiles[0];
+  if (grate !== undefined && grate >= 0) {
+    for (const p of b.props) {
+      if (!BIG_STREET_TREES.includes(p.kit as (typeof BIG_STREET_TREES)[number])) continue;
+      // 줄기 칸(맨 아랫줄 가운데)의 아래층 — 줄기 그림 둘레로 보호판이 보인다. 보도 포석 칸일 때만.
+      const k = b.kit(p.kit); const tx = p.x + Math.floor(k.width / 2), ty = p.y + k.height - 1;
+      if (b.in(tx, ty) && b.pal.group("mc:sidewalk").includes(b.lower[b.k(tx, ty)]!)) b.lower[b.k(tx, ty)] = grate;
+    }
+  }
+  if (b.pal.kit("mc-prop-bus-shelter-a")) for (const s of busStops) {
+    const y = s.y + 2;   // 정류장 표지 발밑 줄(서행 차선 + 2 = 보도 연석 줄 바로 아래)
+    for (const dx of [2, 3, -3, -4]) if (b.prop("mc-prop-bus-shelter-a", s.x + dx, y, ["walk", "road"])) break;
+  }
+  if (b.pal.kit("mc-prop-bike-row-a")) for (const yy of hz) {
+    let n = 0;
+    for (let tries = 0; tries < 30 && n < 2; tries++) {
+      const x = 1 + Math.floor(r() * (b.W - 4)); if (nearCross(x, 1) || nearCross(x + 2, 1)) continue;
+      if (b.prop("mc-prop-bike-row-a", x, yy, ["walk"], 1)) n++;
+    }
+  }
+  const signFor: Record<string, string> = { cafe: "mc-prop-kr-sign-cafe", conv: "mc-prop-kr-sign-conv", izakaya: "mc-prop-kr-sign-food", bakery: "mc-prop-kr-sign-cafe", shop: "mc-prop-kr-sign-pharm", hospital: "mc-prop-kr-sign-pharm" };
+  for (const d of b.buildings) {
+    const id = signFor[d.kind]; if (!id || !b.pal.kit(id)) continue;
+    const ax = d.access[0]!; const left = d.rect.x - 1, right = d.rect.x + d.rect.w;
+    for (const sx of [right, left, d.rect.x, d.rect.x + d.rect.w - 1]) if (Math.abs(sx - ax.x) >= 2 && b.prop(id, sx, ax.y - 1, ["walk", "ground", "park"])) break;
+  }
+}
+
 export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCStreetResult {
   const W = spec.width, H = spec.height, seed = spec.seed ?? 0;
   if (W < MODERN_CITY_STREET_MIN.w || H < MODERN_CITY_STREET_MIN.h) throw new Error(`맵이 작다(${W}×${H}) — ${MODERN_CITY_STREET_MIN.w}×${MODERN_CITY_STREET_MIN.h} 이상`);
@@ -329,7 +401,14 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
   grow([], free);
   const sumOf = (s: readonly number[]) => s.reduce((a, c) => a + c, 0);
   const filled = splits.filter((s) => sumOf(s) < free);
-  const choices = filled.length ? filled : splits;
+  // 랜드마크(높은 타워)를 원하면 그 키트가 서는 띠(≥ 키트 높이)가 있는 나눔만 고른다 — 없으면 예전 그대로.
+  const district = spec.district ?? {};
+  const landmarkType = district.landmark && MC_BUILDING_TYPES[district.landmark] ? district.landmark : undefined;
+  const landmarkKits = landmarkType ? pal.buildingKits().filter((id) => mcBuildingType(id) === landmarkType) : [];
+  const landmarkH = landmarkKits.length ? Math.min(...landmarkKits.map((id) => pal.kit(id)!.height)) : 0;
+  const tallEnough = (s: readonly number[]) => landmarkH === 0 || s.some((h) => h >= landmarkH);
+  const pool = filled.length ? filled : splits;
+  const choices = pool.some(tallEnough) ? pool.filter(tallEnough) : pool;
   // 8줄 띠도 못 넣는 작은 맵: 옛 균등 분할(띠 ≤ 11, 남는 1~2 줄은 첫 띠로).
   const even = Math.min(11, Math.floor(free / nH)), evenSpare = free - even * nH;
   const split = choices.length ? choices[Math.floor(r() * choices.length)]! : [even + (evenSpare <= 2 ? evenSpare : 0), ...Array<number>(nH - 1).fill(even)];
@@ -367,11 +446,45 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
     }
   }
   // 공원 블록: 모든 띠(맨 위·맨 아래 포함)의 넉넉한 블록 중 씨앗으로 하나 — 늘 둘째 띠 오른쪽에 서던 분수 공원(R6 VQA)을 맵 곳곳으로.
-  const parkable = blocks.filter((k) => k.x1 - k.x0 >= 13 && k.y1 - k.y0 >= 8);
+  // 랜드마크 블록: 띠 높이가 그 건물 키트를 품는 블록 중 가장 넓은 것(같으면 맨 위 띠) — 공원 후보에서 뺀다.
+  const landmarkBlock = landmarkType ? [...blocks].filter((k) => k.accessY - k.y0 >= landmarkH && k.x1 - k.x0 >= 8).sort((p, q) => (q.x1 - q.x0) - (p.x1 - p.x0) || p.y0 - q.y0)[0] : undefined;
+  if (landmarkType && !landmarkBlock) b.notes.push(`랜드마크 ${landmarkType} 가 들어갈 만큼 높은 띠가 없다(키트 높이 ${landmarkH}) — 맵을 높이거나 seed 를 바꾼다`);
+  const parkable = blocks.filter((k) => k !== landmarkBlock && k.x1 - k.x0 >= 13 && k.y1 - k.y0 >= 8);
   const parkBlock = blocks.length >= 3 && parkable.length ? pick(r, parkable) : null;
+  // 지하철 출구 여럿: 건물 줄 사이에 5칸 틈(입구 3 + 번호 표지 1 + 여백 1)을 먼저 비워 둔다 — 출구는 북쪽 보도로 열린다.
+  // 블록을 나눠 건물 줄을 틈 양쪽에 따로 세운다(frontage 는 한 자리에 맞는 건물이 없으면 그 블록을 끝내므로 틈을 건너뛰지 못한다).
+  const wantExits = Math.max(1, Math.min(4, Math.round(district.subwayExits ?? 1)));
+  const gaps = new Map<(typeof blocks)[number], number[]>();
+  if (wantExits > 1) {
+    // 후보 = 각 블록에서 틈(5칸)이 들어갈 x 전부(양 끝 4칸·랜드마크 자리 비움). 이미 고른 틈과 9칸 이상 떨어진 것 중 씨앗으로 고른다.
+    const cands: { k: (typeof blocks)[number]; x: number }[] = [];
+    for (const k of blocks) {
+      if (k === parkBlock || k.accessY - k.y0 < 4) continue;
+      const lmX = k === landmarkBlock ? k.x0 + Math.max(0, Math.floor((k.x1 - k.x0 + 1 - 6) / 2)) : -99;
+      for (let x = k.x0 + 1; x + 4 <= k.x1 - 1; x++) if (!(x + 5 > lmX && x < lmX + 6)) cands.push({ k, x });
+    }
+    const chosen: { k: (typeof blocks)[number]; x: number }[] = [];
+    // 서로 다른 블록을 먼저(출구가 거리 곳곳에), 그다음 같은 블록 안 먼 자리.
+    for (const pass of [0, 1]) for (const c of shuffle(r, [...cands])) {
+      if (chosen.length >= wantExits) break;
+      if (pass === 0 && chosen.some((o) => o.k === c.k)) continue;
+      if (chosen.some((o) => o.k === c.k && Math.abs(o.x - c.x) < 9)) continue;
+      chosen.push(c);
+    }
+    for (const c of chosen) gaps.set(c.k, [...(gaps.get(c.k) ?? []), c.x].sort((p, q) => p - q));
+  }
+  const exitGaps: { x: number; accessY: number }[] = [];
   for (const k of blocks) {
     if (k === parkBlock) { park(b, r, k.x0, k.y0, k.x1, k.y1); continue; }
-    frontage(b, r, k.x0, k.x1, k.accessY, k.accessY - k.y0, counts, queue, wishes);
+    const lmX = k === landmarkBlock && landmarkType ? k.x0 + Math.max(0, Math.floor((k.x1 - k.x0 + 1 - 6) / 2)) : -1;
+    let from = k.x0;
+    for (const gx of [...(gaps.get(k) ?? []), k.x1 + 1]) {
+      const to = gx - 1;
+      const lm = lmX >= from && lmX + 5 <= to && landmarkType ? { type: landmarkType, x: lmX } : undefined;
+      if (to - from + 1 >= 4) frontage(b, r, from, to, k.accessY, k.accessY - k.y0, counts, queue, wishes, lm);
+      if (gx <= k.x1) exitGaps.push({ x: gx, accessY: k.accessY });
+      from = gx + 5;
+    }
   }
   if (bottomRows >= 10) {
     for (let x = 0; x < W; x++) for (const yy of [H - 2, H - 1]) { const i = b.k(x, yy); if (b.use[i] === "ground") b.use[i] = "walk"; }
@@ -418,11 +531,51 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
   // 교차로 모서리 신호등(남쪽 두 모서리 발밑 = 교차로 맨 아래 보도 줄). 움직이는 키트라 시뮬레이션 신호 주기(TRANSIT_SIGNAL)와 같이 바뀐다:
   // 차량 신호는 남쪽을 보고 서서 북쪽행(남북) 차로용, 보행자 신호는 남쪽 횡단보도(남북 길을 가로지른다 = 동서 차량과 함께 건넌다)용.
   for (const yy of hz) for (const xx of vt) { b.prop("mc-anim-signal-ns", xx + 1, yy + 9, ["walk", "road"]); b.prop("mc-anim-ped-signal-ew", xx + 10, yy + 9, ["walk", "road"]); }
-  // 지하철 입구 하나 — 남는 띠·공원 가장자리·건물 사이 넓은 틈 중 3×3 이 비는 곳
-  for (let tries = 0; tries < 200; tries++) {
-    const x = Math.floor(r() * (W - 3)), yy = Math.floor(r() * (H - 3));
-    if (b.fits("mc-prop-subway-a", x, yy, ["walk", "park"], 1) && b.in(x + 1, yy + 3) && b.use[b.k(x + 1, yy + 3)] === "walk") { b.prop("mc-prop-subway-a", x, yy, ["walk", "park"], 1); b.notes.push(`지하철 입구 (${x},${yy}) — 대합실 실내(program concourse)를 잇는다면 그 아래 칸 (${x + 1},${yy + 3})`); break; }
+  // 지하철 입구 — 기본 하나(남는 띠·공원 가장자리·건물 사이 넓은 틈 중 3×3 이 비는 곳). district.subwayExits 면 그 수만큼,
+  // 서로 8칸 이상 떨어지게 흩어 놓고 번호 표지(mc-prop-kr-exit-N)를 입구 옆에 세운다. 보도(가로 도로 남·북 보도 줄)를 먼저 찾는다.
+  const subwayExits: MCSubwayExit[] = [];
+  const subwayKits = ["mc-prop-subway-a", "mc-prop-subway-b", "mc-prop-subway-c"].filter((id) => pal.kit(id));
+  const stairOf = (id: string): number => b.kit(id).rows[2]?.upperTiles?.[1] ?? -1;
+  const farFromExits = (x: number, y: number): boolean => subwayExits.every((e) => Math.abs(e.at.x - x) + Math.abs(e.at.y - y) >= 10);
+  for (let n = 1; n <= wantExits; n++) {
+    const id = subwayKits[(n - 1) % subwayKits.length] ?? "mc-prop-subway-a";
+    const signId = `mc-prop-kr-exit-${n}`;
+    const withSign = wantExits > 1 && !!pal.kit(signId);
+    let placed = false;
+    // 미리 비운 틈(건물 줄 사이, 북쪽 보도로 열림) — 입구 계단이 접근칸 줄로 내려온다.
+    const gap = exitGaps[n - 1];
+    if (gap) {
+      const x = gap.x, yy = gap.accessY - 3;
+      const fitOk = b.fits(id, x, yy, ["walk", "park", "ground"]);
+      if (fitOk && b.in(x + 1, yy + 3) && b.use[b.k(x + 1, yy + 3)] === "walk") {
+        b.prop(id, x, yy, ["walk", "park", "ground"]);
+        if (withSign) b.prop(signId, x + 3, yy + 1, ["walk", "park", "ground"]);
+        for (const dx of [0, 1, 2]) b.keep[b.k(x + dx, yy + 3)] = true;
+        const stair = { x: x + 1, y: yy + 2 };
+        subwayExits.push({ n, at: { x, y: yy }, stair, step: { x: x + 1, y: yy + 3 } });
+        b.notes.push(`지하철 ${n}번 출구 (${x},${yy}) — 계단 칸 (${stair.x},${stair.y}, 타일 ${stairOf(id)}) 에 이동 이벤트, 나오는 칸 (${x + 1},${yy + 3})`);
+        placed = true;
+      }
+    }
+    for (let tries = 0; tries < 400 && !placed; tries++) {
+      const x = Math.floor(r() * (W - 3)), yy = Math.floor(r() * (H - 3));
+      if (!farFromExits(x, yy)) continue;
+      if (!b.fits(id, x, yy, ["walk", "park"], 1) || !b.in(x + 1, yy + 3) || b.use[b.k(x + 1, yy + 3)] !== "walk") continue;
+      // 번호 표지는 입구 오른쪽(없으면 왼쪽) 보도 한 칸, 발밑은 입구 아랫줄과 같은 줄
+      const signX = withSign ? [x + 3, x - 1].find((sx) => b.fits(signId, sx, yy + 1, ["walk", "park"])) : undefined;
+      if (withSign && signX === undefined) continue;
+      b.prop(id, x, yy, ["walk", "park"], 1);
+      if (withSign && signX !== undefined) b.prop(signId, signX, yy + 1, ["walk", "park"]);
+      for (const dx of [0, 1, 2]) b.keep[b.k(x + dx, yy + 3)] = true;
+      const stair = { x: x + 1, y: yy + 2 };
+      subwayExits.push({ n, at: { x, y: yy }, stair, step: { x: x + 1, y: yy + 3 } });
+      b.notes.push(`지하철 ${wantExits > 1 ? `${n}번 출구` : "입구"} (${x},${yy}) — 계단 칸 (${stair.x},${stair.y}, 타일 ${stairOf(id)}) 에 이동 이벤트, 나오는 칸 (${x + 1},${yy + 3})`);
+      placed = true;
+    }
+    if (!placed) b.notes.push(`지하철 ${n}번 출구 자리를 못 찾았다`);
   }
+  // 한국 거리 단서: 보도 점자 블록 줄(가로 도로 남·북 보도 안쪽 줄)·가로수 보호판·버스 쉘터·자전거 거치대·세로 입간판.
+  if (district.korean) koreanStreetCues(b, r, hz, vt, busStops);
   // 시작 칸: 마지막 가로 도로 남쪽 보도(또는 그 아래 띠) 가운데에서 가장 가까운 걸을 칸
   const sy = Math.min(H - 1, (hz.length ? hz[hz.length - 1]! + 10 : H - 2));
   let start = { x: Math.floor(W / 2), y: sy };
@@ -450,7 +603,7 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
       busStops,
     }).routes,
   };
-  return { lower: b.lower, upper: b.upper, upper2: b.upper2, buildings, start, props: b.props, roads: { horizontal: hz, vertical: vt }, park: parkBlock ? { x: parkBlock.x0, y: parkBlock.y0, w: parkBlock.x1 - parkBlock.x0 + 1, h: parkBlock.y1 - parkBlock.y0 + 1 } : null, notes: b.notes, transit };
+  return { lower: b.lower, upper: b.upper, upper2: b.upper2, buildings, start, props: b.props, roads: { horizontal: hz, vertical: vt }, park: parkBlock ? { x: parkBlock.x0, y: parkBlock.y0, w: parkBlock.x1 - parkBlock.x0 + 1, h: parkBlock.y1 - parkBlock.y0 + 1 } : null, notes: b.notes, transit, subwayExits };
 }
 
 /** 번들 정의(또는 그 사본)에서 사전을 만든다. */

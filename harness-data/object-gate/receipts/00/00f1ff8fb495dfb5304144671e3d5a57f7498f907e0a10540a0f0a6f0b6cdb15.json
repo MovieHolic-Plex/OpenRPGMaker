@@ -1,0 +1,317 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "00f1ff8fb495dfb5304144671e3d5a57f7498f907e0a10540a0f0a6f0b6cdb15",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "pink wildflowers (wildflowers), natural map prop for the Beodeul 16px chipset, 1x1 tiles, walk-over ground decor (2nd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/flowers-pink",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "명암 3단 < 4 (4/4)",
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 32,
+  "nearBlackEdge": 0.16,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pink flower heads",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green stems and leaves",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "A low scatter of small pink blossoms on green stems and leaves, rows 4-14, with a ragged silhouette (widths 2-13). There is no built body, no front-edge line, no eave shadow, no ellipse and no container contents. It is a flat ground-decor plant cluster, so top-surface and front-face rules do not apply. The body is not a slab or a front elevation, and I read it as organic scatter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny ground-decor sprite, smaller than one tile, so the per-tile facts read 0 and I judged by eye. It has only 8 distinct colours in total. At 2x I read about 3 green steps plus 2-3 pink steps, against about 6 steps on the reference canopies. The edges look dark-green tinted rather than black, and the 0% neutral edge share supports that. There are no large flat fills, but the leaf tufts are small and show little clump variation, grain or per-leaf highlight. Next to the references (7 and 29 visible tones per tile) it reads thinner and more sticker-like. Since it is a sparse object I did not fail it on sparseness alone, but the shading ramps are shallow and I could not confirm Beodeul-level richness, so it fails on doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13826
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pink flower blossoms",
+      "rows": "4-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green leaves and stems clump",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "A scattered clump of small pink flowers with green stems and leaves, a flat ground-cover plant seen at a slight top-down angle. Silhouette widens from 2 px at row 4 to 13 px at row 13 and ends at a 4 px base at row 14. There is no built structure, no lid, no ellipse and no eave line, so no top-surface band applies. The organic form has no horizontal top plane to measure, so main_top_rows is 0. Blossoms are 2-3 px dabs at rows 4-13, which are decor on the foliage. The plant is walk-over ground decor and does not need a box-like top surface, so it fits neither three_quarter nor a slab; 'other' fits best."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny sprite, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It has only 8 distinct colours in total. That is roughly 3 greens plus 2 or 3 pinks and a dark tone, so each material has about 2-3 steps against the references' 6-7. The dark edge pixels are tinted (0% neutral), so the outline is not near-black. It is dark green beside the leaves, which is a plus. There are no large flat fills. Even so, the petals read as small flat pink dots with little per-petal highlight and shade. The leaf tufts have few clumps and little grain. Next to tree-1a786c, and far more so next to tree-d43edd with 29 visible tones, it looks thinner and shallower in shading. As a sparse prop it is not penalised for being small, but a careful artist would likely want more tonal steps on the petals and foliage to match the Beodeul standard. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14114
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pink flower blossoms",
+      "rows": "4-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green leaves and stems with dark base",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "A small scattered cluster of pink flower heads on green stems and leaves, 12-13 px wide and rows 4-14. It has no solid body, no front-edge line, eave shadow, ellipse or roof plane. It is flat ground decor drawn in a loose natural 3/4 style rather than a box-like volume. The flowers are tiny blobs of 2-5 px. The dark green base at rows 11-14 is shadow and foliage, not a vertical face. Neither a top surface nor a front face applies to this organic ground scatter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny sub-tile sprite of pink blossoms on a few green leaves, so the per-tile facts read 0 and I judged by eye. It uses only 8 distinct colours in total. That is split roughly 3 greens and 2-3 pinks plus a dark tone, so each material has about 3 steps against the references' 5-6 (tree-1a786c has about 7 visible tones per tile and tree-d43edd has 29). The dark edge pixels are tinted rather than neutral (0% near-neutral, same as the references), so the outline is not a black sticker line. There is no flat fill, but the clumps are small and the blossoms are single pink dots with little per-petal highlight or leaf-clump variation. Next to the references it looks thinner and flatter, and when in doubt it fails. It needs more tone steps on the leaves and flowers (highlight, mid, shade) and more varied clusters.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14708
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pink flower blooms",
+      "rows": "4-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green stems and leaves clump",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "A flat ground-cover clump of small pink blooms on short stems and leaves, spread across rows 4-14 (max width 13). There is no solid body, so no top surface, front-edge line, eave shadow or ellipse is visible, and no vertical front face of 3+ rows exists. It is a scattered organic ground decor sprite rather than a volumetric object, so none of the standard structural readings (three_quarter, front_elevation, slab) applies cleanly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tiny ground-cover prop, about 12x10 source pixels and smaller than one tile, so the per-tile tone count is 0 and I judged density by eye. It has 8 distinct colours in total, against 10 for the simple reference tree-1a786c. The 0% neutral share of dark edge pixels means the outline is tinted. The few dark pixels look like dark green beside the leaves and a deeper pink-red beside the blooms, not a black sticker line. There are no flat fills: 0% near-flat coverage. A few pink blooms with two or three light-to-dark steps and green leaf and stem pixels give small-scale texture. Each material has only about 3 steps against the references' 5-6, so it reads a little thinner than the trees. That is acceptable for a sparse single-tile walk-over decor. A careful artist would likely accept it on grass between the broadleaf trees without it looking flat or outlined in black.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14106
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.317Z",
+ "cells": {
+  "16": [
+   "9813aceee82941d5"
+  ],
+  "24": [
+   "55e05e60bf4f1df6",
+   "90ae66e03dae3eb6",
+   "95e6bb8e7cdbf33c",
+   "f4d8e7c4c9642317",
+   "f7214e8a11c4e29f",
+   "fb769af07f88ce94"
+  ],
+  "32": [
+   "481bfd3a12604487",
+   "62b7287f47004ba8",
+   "6c72ec61ad41b561",
+   "c5ed5d159145a2f0",
+   "ddf63e7a12a848f4",
+   "e943351b0498a03c"
+  ],
+  "48": [
+   "2d5385bf1e955d77",
+   "54fc38a334419513",
+   "8de254ccea39df52",
+   "907165a84092fcdd",
+   "a4296516233a614d",
+   "da57e4279fa328cb"
+  ]
+ }
+}

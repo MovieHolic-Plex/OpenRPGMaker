@@ -187,8 +187,10 @@
   --runtime-dialogue-panel-height: 25%;
   --runtime-choice-panel-height: 25%;
   --runtime-dialogue-speaker-inset: 12px;
-  --runtime-dialogue-font: "Galmuri9", "NeoDunggeunmo", monospace;
-  --runtime-dialogue-font-size: 9px;
+  /* 갈무리 11 은 12px 격자 글꼴 — 무대 정수 배율(1·2·4배)에서 획이 화소에 딱 맞는다. 예전 Galmuri9 9px 는 격자(10px) 밖이라
+     2배 무대에서 18px 로 그려져 획이 2·3px 로 들쭉날쭉했다(2026-10-24 폴른 스타 검수 「글자가 깨진다」). 본문 줄 높이 1.5 = 18px. */
+  --runtime-dialogue-font: "Galmuri11 Regular", "Galmuri9", "NeoDunggeunmo", monospace;
+  --runtime-dialogue-font-size: 12px;
   --dlg-bg: rgba(17, 28, 35, 0.82);
   --dlg-border: 1px solid rgb(173, 181, 151);
   --dlg-radius: 0;
@@ -220,7 +222,7 @@
   flex-shrink: 0;
   /* 선택 표식(◆, left 5px)이 첫 글자에 붙지 않게 글 시작을 조금 밀어 준다(romance-loop-1 실측: 「◆한서연으로 한다」 간격 0). */
   padding-inline-start: 18px;
-  line-height: 1.2;
+  line-height: 16px; /* 12px 글꼴 × 1.2 = 14.4px 는 줄마다 반 화소씩 밀려 글자가 흐려진다 — 정수 px. */
   overflow-wrap: anywhere;
 }
 
@@ -889,8 +891,9 @@
 }
 
 /* === 초상 무대 — 앞 화자는 반대쪽에 흐리게 남는다 === */
+/* 0.45 는 머리색까지 검게 바꿔 다른 사람처럼 보였다(첫사랑 VQA r23) — 듣는 쪽은 한발 물러선 정도로만 누른다. */
 .dialogue-box .dialogue-face.dialogue-portrait-listener {
-  filter: brightness(0.45) saturate(0.6);
+  filter: brightness(0.66) saturate(0.78);
   opacity: 0.9;
   z-index: 0;
 }

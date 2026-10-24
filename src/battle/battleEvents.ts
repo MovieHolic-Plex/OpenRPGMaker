@@ -450,6 +450,15 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return options.actors.some((entry) => entry.recordId === condition.actorId) && context.turn === condition.turn;
       case "actorCommand":
         return context.activeActorId === condition.actorId && (!condition.commandId || condition.commandId === context.currentActorCommandKind);
+      case "enemyState": {
+        const living = options.enemies.filter((enemy) => enemy.hp > 0 && (!condition.enemyId || enemy.recordId === condition.enemyId));
+        const has = living.some((enemy) => enemy.stateIds.includes(condition.stateId));
+        return (condition.present ?? true) ? has : living.length > 0 && !has;
+      }
+      case "enemiesAlive": {
+        const alive = options.enemies.filter((enemy) => enemy.hp > 0 && !enemy.hidden && (!condition.enemyId || enemy.recordId === condition.enemyId)).length;
+        return alive <= Math.max(0, Math.trunc(condition.atMost));
+      }
       default:
         // switch/variable/selfSwitch/actor/item/gold/timer/timePhase/season/npcActivity/friendshipAtLeast/
         // battleResult/all/any/not — 모두 Condition 유니온은 evaluateCondition 으로 위임.

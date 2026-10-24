@@ -1,0 +1,379 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "da82dd4fda625a15bfbeb4b5c64d72a3c88d9304fb1d0402ae1c85d2a9a6068b",
+ "width": 64,
+ "height": 96,
+ "kind": "organic",
+ "name": "broadleaf tree with redrawn trunk (bd-tree-d43edd)",
+ "label": "beodeul_city/fallen-forest-trunks/T4r3/bd-tree-d43edd",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 29,
+  "nearBlackEdge": 0.36,
+  "opaqueTiles": 13
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage canopy upper lit mass",
+      "rows": "9-54",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "foliage canopy shaded underside",
+      "rows": "55-80",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "68-80"
+     },
+     {
+      "part": "trunk",
+      "rows": "81-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "81-82"
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 41,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a broad leaf canopy (rows 9-80) that widens from 9 px at the top to about 63 px at row 41, then tapers to about 20 px at row 78. Lit leaf clusters across rows 9-54 read as a heap-like upper surface seen from above. The canopy darkens toward the bottom, with a deep shadow mass at rows 68-80 that works like eave shadow. The trunk (rows 81-95) is a vertical brown face that flares at the base, and it is mostly hidden under the canopy. There is no flat band, front-edge line or ellipse. The volume still reads as a 3/4-view tree: a top-lit canopy over a shaded underside, with the trunk as its front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a broadleaf tree with a clustered canopy in about 5 greens, from highlight to deep shadow, over a brown trunk with a flared base. Its dark edge pixels are 0% neutral, so the outline leans dark green and brown rather than black. That matches the Beodeul approach. Visible tones per tile are 7, the same as tree-1a786c, and near-flat coverage is only 1%, so there are no big flat fills. The canopy has leaf-clump texture, but the clumps are softer and more uniform than in tree-d43edd, which has 29 visible tones, defined leaf clusters and a detailed root flare. The candidate also has only 14 distinct colours against 567. The trunk is a fairly plain brown shape with little bark grain. The result is clean and consistent but less rich than the best reference, and I would call it slightly lower on density rather than much lower. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15290
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leafy canopy upper lit mass (top of crown)",
+      "rows": "9-60",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "canopy shaded underside / front of crown",
+      "rows": "61-80",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "72-80"
+     },
+     {
+      "part": "trunk",
+      "rows": "80-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 50,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the crown. Its silhouette widens from 9 px at row 9 to 63 px at row 41 and then rounds off toward the trunk, which gives a domed, ellipse-like mass. The light is bright on the upper rows (9-60) with many light-green patches, as on a horizontal surface seen from above. The lower crown (rows 61-80) is much darker (L about 25-55 in the scan), which reads as the shaded front or underside. A narrow trunk (10-17 px wide, rows 80-95) supports the crown. There is no edge line or flat band, so this is an organic volume and not a front elevation. It has enough top mass and front depth to read as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a broadleaf tree of the same kind and scale as the references. The canopy has about 5 green steps, with clumped leaf masses, lighter top-left highlights and dark green shadow on the right and bottom. The trunk is brown with a lighter left side. Edge pixels are tinted dark green or brown, with 0% near-neutral, so the outline is a dark material tone and not a sticker line. Visible tones per tile are 7, equal to tree-1a786c (7) but far below tree-d43edd (29). Near-flat coverage is 1%, so there are no big flat fills. However, the canopy reads as softer and more blobby than the references. Leaf clumps are less defined, there are few individual highlight dots, and the trunk is a simple wedge with little bark grain or root detail. With only 14 colours in total, it is clearly thinner than the richer reference tree-d43edd, so it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15522
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy upper mass (lit top)",
+      "rows": "9-55",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "canopy underside shadow (front face)",
+      "rows": "56-80",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "72-80"
+     },
+     {
+      "part": "trunk",
+      "rows": "81-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 46,
+    "front_face_rows": 40,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy is the main volume. Its silhouette widens from 9 px at row 9 to 63 px at row 41, then narrows to 20 px at row 78, giving a rounded blob profile. Rows 9-55 are lit with light highlights on the upper left and read as the upper surface seen from above. Rows 56-80 darken progressively to a near-black underside, which acts as the front/shadow face. The trunk (rows 81-95, about 10-17 px wide) is a small vertical support below the canopy and carries no top of its own, but it is minor. The overall form reads as a volume with a top and a front, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a broadleaf tree with a clumped canopy in about 5 greens, from a pale highlight down to a deep green, plus a brown trunk with a flared base. Its dark edge pixels are 0% neutral, so the outline is tinted dark green and brown, not a black sticker line. It has 7 visible tones per tile, matching tree-1a786c (7), and 1% near-flat coverage, which is negligible. It falls well short of tree-d43edd, which has 29 visible tones and 109 raw colours per tile, with individually shaded leaf clusters, branches and roots. The candidate's canopy clumps are fairly large and soft with little per-leaf highlight, and the trunk is a simple, mostly flat brown shape. It has only 14 colours in total against 567 for the same-named reference. It reads as clean and not sticker-like, but it is thinner than the richest reference, so the pass is doubtful.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14304
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy mass (lit upper dome, shaded underside)",
+      "rows": "9-79",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "75-80"
+     },
+     {
+      "part": "trunk",
+      "rows": "80-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy is the main body. Its width profile widens from 9 px at row 9 to about 63 px at row 41, then narrows to 41 px at row 74 and 20 px at row 78, so it forms a broad ellipse-like volume. Light leaf clusters sit on the upper rows (roughly 9-40), which reads as a lit top surface seen from above. Rows 55-80 darken into a shaded underside that acts as the eave shadow. Below the canopy, a trunk about 10-17 px wide with a flared root base fills rows 80-95 as the front face. The trunk's vertical face is normal for a tree, so the object reads as three-quarter rather than flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The canopy is built from about 5 green steps (highlight, light, mid, dark, deep) in leaf clumps with ragged, dithered edges. The trunk has about 3 browns with a flared base. Edge pixels are 0% near-neutral, and the visible outline is a dark green beside leaves and dark brown beside the trunk, so it is not a sticker line. Near-flat coverage is 1% and no large single-colour areas show. At 7 visible tones per tile it equals tree-1a786c (7) and sits below tree-d43edd (29). The raw count of 14 colours is low, so the canopy shows fewer leaf-level dots than tree-d43edd, and the clumps read slightly broader and smoother. Overall it matches the quality of tree-1a786c and would sit next to it without looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16537
+  }
+ ],
+ "decidedAt": "2026-10-24T12:14:09.653Z",
+ "cells": {
+  "16": [
+   "3290f0b2a6ef8135",
+   "469d0fa11ae8d206",
+   "4c9d187d40692364",
+   "56e56b583abddedc",
+   "649804e03a59da16",
+   "683ef08f662115e4",
+   "6855b18e627bf7ec",
+   "70395ed0d691bde3",
+   "84db4400fd1cbb3d",
+   "88104f8968eefbf3",
+   "a16b12f71cbd4112",
+   "b689924133636a88",
+   "c37d9ca955d5f6d3",
+   "c7c390a90ef896a2",
+   "c95952525a556c33",
+   "ccd14b1b1fc323b8",
+   "d48b55aed34fc29a",
+   "da4f5d003ebea3ea",
+   "e5725d7bf6fdc71c",
+   "ea18bf1e74a46ed5",
+   "eb5001685e868949"
+  ],
+  "24": [
+   "0f1eea3154f1f1ab",
+   "15d46b3aafe950ff",
+   "16c542036af85c36",
+   "1ac4cfcc19d6b96b",
+   "2d97289103734287",
+   "3c9862c26daa7455",
+   "437232a7e9bc547c",
+   "4c8b6d80750e494f",
+   "5188e42da906b9c4",
+   "742f336b974ea59f",
+   "8551c46554c8ad14",
+   "88205527f6c7a7df",
+   "88d65c4f9f36d6e1",
+   "8c709db131d9854f",
+   "8eb276022720ab02",
+   "8f1e9637214dccdb",
+   "90dc43151f3375a9",
+   "94b4fc711e688e2d",
+   "c15d626a04b11feb",
+   "c8f31ce7fcd43ec7",
+   "c95c951a8d9df64b",
+   "ca64bc1171bb2a83",
+   "cbcb89f3242c0e97",
+   "ce22fc64a7a48147",
+   "d21dfb413472827d",
+   "d3f33c735dd94051",
+   "d48f997db1ecc140",
+   "e6a326398b20c45b",
+   "eaae5cd241d9aa8a",
+   "f24a4cf3f13c8bf5",
+   "f2ec2d3589d7e52c",
+   "fa2a6e7b8badc032",
+   "ffada37dfb51c728",
+   "ffb5885471e3b4d3"
+  ],
+  "32": [
+   "7b99e3ed13fefa8c",
+   "83cf905c2c8b231f",
+   "a9e86687ad458ee8",
+   "d88adb344f7e025b",
+   "ebdb730ea4fb0b23",
+   "ff3fcb1eee190c24"
+  ],
+  "48": [
+   "04f5c36ffbcff399",
+   "2a3ef52fc450c0df",
+   "5641e358347ba618",
+   "6722fd8c100a150a",
+   "7712c38e25528afd",
+   "a5301e6ff8bba153",
+   "a7a1391999729316",
+   "ade924da2c0a24a6",
+   "af09bfe190680ca5",
+   "c78b6c61af52ae60",
+   "ce0ee1c46d7eebec",
+   "ff94c8c1a9da4f9f"
+  ]
+ }
+}

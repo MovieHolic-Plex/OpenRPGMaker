@@ -425,6 +425,10 @@ export function findEventOverlappingRect(
   let found: RuntimeEventView | undefined;
   forEachRuntimeEventView(project, map, session, positions, (event) => {
     if (!rectsOverlap(event.bodyRect, rect)) return false;
+    // 페이지가 다 꺼진 이벤트는 맵에 없는 것과 같다 — 조사·접촉 대상도 아니다. 예전에는 걸어와 같은 칸에
+    // 멈춘 뒤 꺼진 인물(이벤트 목록에서 앞)이 같은 칸의 진짜 대상 대신 잡혀, Z 가 빈 명령을 돌리고 끝났다
+    // (첫사랑 r2: 탕비실로 걸어간 지후 뒤 같은 칸의 대화 이벤트가 안 열림 — 안내는 「Z 대화」였다).
+    if (!event.page && (event.event.pages?.length ?? 0) > 0) return false;
     if (!matchesTrigger(event.trigger.kind, triggerKind)) return false;
     found = event;
     return true;

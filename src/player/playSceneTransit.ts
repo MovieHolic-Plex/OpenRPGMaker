@@ -1,7 +1,7 @@
 // 맵 위를 다니는 탈것(승용차 흐름·버스·노면전차·전철·지하철) — 맵의 `transit` 설정을 순수 시뮬레이션
 // (project/mapTransit.ts)으로 돌리고, 탈것마다 스프라이트 하나를 발자국 아래 가장자리에 맞춰 그린다.
 //
-// - 탈것은 주인공을 막고(playerCanStep), 주인공이 길에 서 있으면 그 앞에서 기다린다(stepTransitSim 의 isBlocked).
+// - 탈것은 주인공을 막고(playerCanStep), 주인공·걷는 인물이 길에 서 있으면 그 앞에서 기다린다(stepTransitSim 의 isBlocked).
 // - 정류장에서 문을 연 탈것 옆에서 「조사」하면 정류장의 board 목적지로 이동한다(tryBoardTransit).
 // - 상태는 세이브하지 않는다. 맵에 들어올 때마다 처음부터(미리 90초 돌린 상태로) 시작한다.
 import type Phaser from "phaser";
@@ -61,7 +61,15 @@ export function syncTransitForMap(scene: PlaySceneContext): void {
 /** 주인공이 차지한 칸(통행 사각이 1×1 이 아닐 수도 있어 사각 전체). */
 function playerBlocksCell(scene: PlaySceneContext): (x: number, y: number) => boolean {
   const px = scene.tileX, py = scene.tileY;
-  return (x, y) => x === px && y === py;
+  // 걸어 다니는 인물(자율 이동 NPC)도 차를 세운다 — 횡단보도를 건너는 행인을 차가 뚫고 지나가지 않게.
+  // 서 있는 인물은 세지 않는다(차도 위 고정 인물이 차를 영영 묶지 않게). 칸 집합은 매 갱신 한 번 만든다.
+  const walkers = new Set<number>();
+  const positions = scene.eventPositions ?? {};
+  for (const id of scene.autonomousNPCs?.keys?.() ?? []) {
+    const pos = positions[id];
+    if (pos && scene.eventSprites?.get(id)?.visible !== false) walkers.add(pos.y * 4096 + pos.x);
+  }
+  return (x, y) => (x === px && y === py) || walkers.has(y * 4096 + x);
 }
 
 export function updateTransit(scene: PlaySceneContext, deltaMs: number): void {
@@ -71,8 +79,10 @@ export function updateTransit(scene: PlaySceneContext, deltaMs: number): void {
   if (!sim) return;
   s.transitAccumulatorSec = Math.min(0.5, (s.transitAccumulatorSec ?? 0) + Math.max(0, deltaMs) / 1000);
   const blocked = playerBlocksCell(scene);
+  const switches = scene.session?.switches;
+  const switchOn = (id: string): boolean => switches?.[id] === true;
   while (s.transitAccumulatorSec >= STEP_SEC) {
-    stepTransitSim(sim, STEP_SEC, blocked);
+    stepTransitSim(sim, STEP_SEC, blocked, switchOn);
     s.transitAccumulatorSec -= STEP_SEC;
   }
   syncTransitSprites(scene);

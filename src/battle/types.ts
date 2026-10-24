@@ -364,6 +364,8 @@ export interface BattleActionResultSnapshot {
   readonly effectiveness?: number;
   /** 장비한 무기 계열이 기술과 맞아 위력이 올랐다(SkillRecord.weaponAffinity). */
   readonly weaponAffinity?: boolean;
+  /** 대상이 노린 상태에 걸려 있어 위력이 올랐다(SkillRecord.exploitStates). */
+  readonly exploit?: boolean;
 }
 
 export type BattleTimelineEntryKind =
@@ -405,10 +407,14 @@ export interface BattleTimelineEntrySnapshot {
   readonly skillName?: string;
   /** Stable executed identity; skillName is presentation and legacy fallback only. */
   readonly skillId?: SkillId;
+  /** 연계기 엔트리면 참가 배우 전원(시전자 포함) — 표시 계층이 「연계!」 띠와 참가자 모션을 띄운다. */
+  readonly comboActorIds?: readonly string[];
   /** 속성·타입 상성 배율(감정 배율 제외). 1 이면 생략 — 표시 계층이 「효과가 굉장했다」·상성별 타격음을 고른다. */
   readonly effectiveness?: number;
   /** 장비한 무기 계열이 기술과 맞아 위력이 오른 타격(SkillRecord.weaponAffinity). */
   readonly weaponAffinity?: boolean;
+  /** 약점 공략 타격(SkillRecord.exploitStates) — 숫자 아래 「공략!」. */
+  readonly exploit?: boolean;
   /** 한 명령(배우 명령 1회·적 행동 1회)의 번호. 같은 행동의 엔트리(대상 여럿 × 타수)를 연출 하나로 묶는 열쇠다. */
   readonly actionId?: number;
   /** 시전자 자신에게 붙는 부수 엔트리 — HP 대가(hpCost)·흡수 회복(drain). 연출의 대상·타수로 세지 않는다. */
@@ -612,6 +618,8 @@ export interface BattleSnapshot {
   readonly battleFlow: BattleFlow;
   /** 이번 전투에 실제로 적용된 ATB 방식(플레이어 설정 > 저작 설정 > wait). gauge 흐름에서만 active 가 의미 있다. */
   readonly atbMode: "active" | "wait";
+  /** 연계 대기(holdForCombo)로 게이지를 채운 채 동료를 기다리는 배우 recordId. 비면 생략. */
+  readonly heldActorIds?: readonly string[];
   readonly activeActorId?: ActorId;
   readonly activeSlots: number;
   readonly forcedSwitchActorId?: ActorId;
@@ -675,6 +683,12 @@ export interface BattleRuntime {
   performActorCommand(command: ActorCommand): void;
   /** 팀 교대 전투(system.battleTeams)에서 지금 명령을 고르는 배우의 차례로 활성 팀을 바꾼다. 팀 설정이 없으면 아무 일도 없다. */
   performTeamSwap?(command: TeamSwapCommand): void;
+  /**
+   * 연계 대기(gauge 흐름) — 지금 명령을 고르는 배우가 차례를 미루고 게이지를 채운 채 기다린다.
+   * 다른 아군의 차례가 오면 함께 「준비」 상태라 연계기를 고를 수 있다(크로노 트리거의 「다음 사람으로 넘기기」).
+   * 성공하면 true. strict·연계기 없는 배우·혼자 남은 배우는 false.
+   */
+  holdForCombo?(): boolean;
   chooseAutoCommand(): ActorCommand | undefined;
   executeEquipmentUse(actorId: ActorId, equipmentId: string, target: EquipmentUseTarget): EquipmentUseResult;
   snapshot(): BattleSnapshot;

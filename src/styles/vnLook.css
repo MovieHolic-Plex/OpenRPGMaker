@@ -107,6 +107,17 @@
   top: calc(-1 * var(--vn-name-h) + var(--vn-border-width));
 }
 
+/* 오른쪽 흉상이 말할 때 이름표도 오른쪽 — 왼쪽에 듣는 사람 흉상이 남아 있으면, 왼쪽 이름표는 듣는 사람 이름처럼 읽힌다. */
+.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-box.bust-right .speaker.speaker-nameplate {
+  left: auto;
+  right: 10px;
+}
+.dialogue-overlay[data-vn-name="ribbon"][data-vn-look] .dialogue-box.bust-right .speaker.speaker-nameplate {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 7px 100%);
+  padding-left: 16px;
+  padding-right: 10px;
+}
+
 /* 위쪽 창은 상자 위가 화면 밖이라 이름표를 상자 안쪽 윗줄로 내린다(글 시작점은 reserveSpeakerInset 이 이름표 높이만큼 내려 준다). */
 .dialogue-overlay[data-vn-look][data-vn-look].position-top .dialogue-box .speaker.speaker-nameplate {
   border-radius: 6px;

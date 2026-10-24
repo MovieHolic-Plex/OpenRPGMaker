@@ -1,0 +1,320 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "466df98a17af19e0d2f57a171bf046218e3dbc8e108914038fc42fa9fd465809",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "mixed wildflower patch (wildflowers), natural map prop for the Beodeul 16px chipset, 2x1 tiles, walk-over ground decor (2nd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/flowers-patch",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 명암 3단 < 4 (3/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "명암 3단 < 4 (3/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 32,
+  "nearBlackEdge": 0.18,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flower blooms (white, pink, blue, yellow)",
+      "rows": "5-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "leaf and stem clump",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat ground-decor patch of stems, leaves and small blooms (silhouette rows 5-14, widening from 1 to 19 px). It has no raised body, no front-edge line, no eave shadow, no ellipse and no contents in a container. There is no vertical south face of 3 or more rows, only plant foliage lying on the ground. That fits a walk-over ground decoration, but in structural terms it is a flat top-down form."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny cluster, only about 14x7 source pixels. That is far smaller than the 2x1 (32x16) footprint it is meant to fill, so it reads as a small sprinkle rather than a full patch. It has no full 16x16 tile (0 visible tones measured), so I judged it by eye. It shows about 3 greens for blades and a few pink and white flower dots, against roughly 6 steps and many leaf clumps in the references. No dark outline is visible, and the tinted-edge fact (0% neutral) is consistent with that. The pixels are not flat, but the small mass carries far less visible information than the reference foliage: few distinct clumps, no deep-shadow ramp, and little grass or soil grain. Next to the references it looks thin and sparse, and a careful artist would not accept it as equally rich. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 11992
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flower blossoms (white, pink, blue, yellow)",
+      "rows": "5-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "leaves and stems cluster",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "Low, irregular wildflower clump (silhouette widths 1 to 19 px over rows 5-14) made of scattered blossoms and green leaf and stem pixels with a dark base at rows 13-14. It is organic ground decor with no built structure: no rim, edge line, eave shadow or ellipse, and no distinct front face. It is not a box, slab or elevation, so it fits none of the structural categories and is classed as other. It is a flat, walk-over plant patch."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a sparse ground-decor prop smaller than one 16x16 tile, so the per-tile tone count is 0 and I judged it by eye. It has 16 distinct colours in total, more than reference tree-1a786c (10). Its dark edge pixels are 0% neutral, so the outlines are tinted dark green rather than black, with no sticker line. Near-flat coverage is 0%, with no large flat fills. The grass tufts show about 3-4 green steps plus separate pink and white flower dots, which reads as clumped detail rather than a flat body. It is less deep than the big tree references, which have 6 or more steps per material, but that is expected for a tiny ground-cover prop. A careful artist would accept it next to the reference without it looking like a flat sticker. The tiny size limits how much I can verify, so my confidence is moderate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14454
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wildflower blooms (white, pink, blue, yellow)",
+      "rows": "5-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green stems and leaf clump",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The patch is a scattered cluster of flowers and leaves, 19 px wide and 10 rows tall (rows 5-14), with no solid body. It has no box-like volume, no top plane with a front-edge line, and no distinct vertical front face. It is a walk-over ground decoration drawn as plants seen from a slightly raised angle, so the top-surface rule does not apply. The silhouette widens gradually from 1 px at row 5 to 19 px at row 13, then drops to 12 px at row 14. This is the outline of a plant heap, not an ellipse cap. The dark green base at rows 13-14 acts as ground shadow and foliage mass."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a very small cluster, roughly 17x9 source pixels, so it fills well under the 2x1 tile footprint (32x16) and no full tile is measured. The tile-based facts (0 visible tones, 0% flat) therefore say nothing either way, and I judged by eye. It has 16 distinct colours in total, with a few greens plus pink and white blooms. It has no flat fills, and its dark edge pixels are 0% neutral, so the outline is tinted, not a sticker line. The greens look like only about 3-4 steps, against 6-7 visible tones per tile on tree-1a786c and about 29 on tree-d43edd. At this scale I can't see per-clump highlights or grain, and the patch reads thinner and less layered than the references. I can't confirm it matches the Beodeul craft, so I fail it. A larger redraw filling the 2x1 area, with more leaf-clump greens and shaded flower heads, would likely pass.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14416
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flower heads (white, pink, yellow, blue blossoms)",
+      "rows": "5-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass and leaf clump base",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "A low organic ground-decor patch of grass blades with small flower dots (white at rows 5-8, pink at 6-11, yellow and blue at 8-13). The silhouette grows from 1 px wide at row 5 to 19 px at row 13, then ends at row 14. It has no built structure, no flat horizontal top surface, no front-edge line and no eave shadow. It is a flat walk-over plant cluster rather than a volume, so it does not read as a box with a top and a front face. The plant kind fits, and the flowers are plant detail rather than a surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is only about 20x8 source pixels, well under the 2x1 tile footprint, so the per-tile facts read 0 and I judged by eye. It is a small clump of green leaves with a few pink and white flower dots. The edge pixels look tinted green rather than black, matching the 0% near-neutral measure, and there are no flat fills. The leaves are shallow, with about 3 green steps against 5-6 on the reference canopies. The flowers are 1-2 pixel dots with little shading and no clump structure or grain. Total distinct colours is 16, against 10 and 567 for the references. Next to the rich leaf clumps of tree-d43edd it looks thinner and more sticker-like. Since the brief says to fail when in doubt, this fails: it needs more green tones, more flower and leaf clustering, and a fuller footprint across the 2 tiles.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 11544
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.319Z",
+ "cells": {
+  "16": [
+   "38f7f679df7bd7a7",
+   "97ebf3e8a61f92b8"
+  ],
+  "24": [
+   "064c8880c2087392",
+   "155d975d6a3841ef",
+   "396bdff173a66936",
+   "4252049b55fd6719",
+   "54b86d70dd0bfafa",
+   "57a158631803f315",
+   "5b3e503dc9626521",
+   "7dcb8f6fd7396357",
+   "7e9a113635ee76fc",
+   "a3f9bfe547febeea",
+   "e7ab470f97276084",
+   "fb1c765147be7b15"
+  ],
+  "32": [
+   "069f4a0c6af6f447",
+   "bccd107dcb3537c7"
+  ],
+  "48": [
+   "2a13d7ef93660955",
+   "370450418fb69b6e",
+   "be38a9e8c595c312",
+   "d7e2fe1a5d0f064d",
+   "f568298363587620",
+   "fcdf809d459c9333"
+  ]
+ }
+}

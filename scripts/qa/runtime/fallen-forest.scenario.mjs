@@ -31,40 +31,40 @@ export const fallenForestScenario = {
   checkpointBeats: {
     "forest-edge-entry": [
       arrive,
-      cross("to-stream", "fs_forest_edge", 28, 16, "right", "fs_forest_stream"),
-      cross("to-thicket", "fs_forest_edge", 8, 1, "up", "fs_forest_thicket"),
-      cross("to-hub", "fs_forest_edge", 14, 24, "down", "fs_hub"),
+      cross("to-thicket", "fs_forest_edge", 7, 1, "up", "fs_forest_thicket"),
+      cross("to-stream", "fs_forest_edge", 24, 1, "up", "fs_forest_stream"),
+      cross("to-hub", "fs_forest_edge", 15, 38, "down", "fs_hub"),
     ],
     "forest-stream-entry": [
       arrive,
-      cross("to-shrine", "fs_forest_stream", 26, 1, "up", "fs_forest_shrine"),
-      cross("to-glade", "fs_forest_stream", 34, 19, "right", "fs_forest_glade"),
-      cross("to-edge", "fs_forest_stream", 1, 11, "left", "fs_forest_edge"),
+      cross("to-shrine", "fs_forest_stream", 28, 1, "up", "fs_forest_shrine"),
+      cross("to-glade", "fs_forest_stream", 38, 18, "right", "fs_forest_glade"),
+      cross("to-edge", "fs_forest_stream", 7, 30, "down", "fs_forest_edge"),
     ],
     "forest-thicket-entry": [
       arrive,
-      cross("to-shrine", "fs_forest_thicket", 38, 6, "right", "fs_forest_shrine"),
-      cross("to-edge", "fs_forest_thicket", 12, 30, "down", "fs_forest_edge"),
+      cross("to-shrine", "fs_forest_thicket", 12, 1, "up", "fs_forest_shrine"),
+      cross("to-edge", "fs_forest_thicket", 17, 38, "down", "fs_forest_edge"),
     ],
     "forest-shrine-entry": [
       arrive,
-      cross("to-deep", "fs_forest_shrine", 14, 1, "up", "fs_forest"),
-      cross("to-thicket", "fs_forest_shrine", 1, 13, "left", "fs_forest_thicket"),
-      cross("to-stream", "fs_forest_shrine", 20, 26, "down", "fs_forest_stream"),
+      cross("to-deep", "fs_forest_shrine", 20, 1, "up", "fs_forest"),
+      cross("to-thicket", "fs_forest_shrine", 7, 28, "down", "fs_forest_thicket"),
+      cross("to-stream", "fs_forest_shrine", 30, 28, "down", "fs_forest_stream"),
     ],
     "forest-glade-entry": [
       arrive,
-      cross("to-stream", "fs_forest_glade", 1, 9, "left", "fs_forest_stream"),
+      cross("to-stream", "fs_forest_glade", 1, 13, "left", "fs_forest_stream"),
     ],
     "forest-entry": [
       arrive,
-      cross("to-shrine", "fs_forest", 8, 25, "down", "fs_forest_shrine"),
+      cross("to-shrine", "fs_forest", 14, 34, "down", "fs_forest_shrine"),
     ],
     // 추격 — 순찰하는 거미 앞쪽 시야에 서서 기다린다: 「!」 → 순찰보다 빠르게 다가와 닿으면 전투 화면.
     "forest-chase": [
-      { id: "wait-seen", note: "제자리에서 기다린다 — 순찰이 이쪽을 보면 「!」", ops: [H(null, 2600)], shot: true },
+      { id: "wait-seen", note: "제자리에서 기다린다 — 순찰이 이쪽을 보면 「!」", ops: [H(null, 3200)], shot: true },
       { id: "rush", note: "달려든다", ops: [H(null, 1600)], shot: true },
-      { id: "battle", note: "닿으면 전투", ops: [{ kind: "waitFor", testid: "battle-scene", state: "present", timeoutMs: 9000 }, H(null, 1500)], shot: true },
+      { id: "battle", note: "닿으면 전투", ops: [{ kind: "waitFor", testid: "battle-scene", state: "present", timeoutMs: 14000 }, H(null, 1500)], shot: true },
     ],
   },
 };

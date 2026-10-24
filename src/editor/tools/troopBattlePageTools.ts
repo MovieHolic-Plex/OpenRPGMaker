@@ -32,6 +32,7 @@ const ROUND_CADENCE_KINDS = new Set(["turn", "onRound", "everyRound", "enemyTurn
 /** 전투 전용 조건 kind. 나머지는 일반 이벤트 조건(CONDITION_KINDS)을 그대로 받는다. */
 const BATTLE_CONDITION_KINDS = [
   "turn", "onRound", "everyRound", "enemyHp", "enemyHpBelow", "actorHp", "enemyTurn", "actorTurn", "actorCommand",
+  "enemyState", "enemiesAlive",
 ] as const;
 
 const BATTLE_CONDITION_SCHEMA: JsonSchema = {
@@ -39,7 +40,9 @@ const BATTLE_CONDITION_SCHEMA: JsonSchema = {
   description:
     "전투 이벤트 조건. 전투 전용 kind: turn{start,interval} / onRound{round} / everyRound{start,interval} / " +
     "enemyHp{enemyId,minPercent,maxPercent} / enemyHpBelow{enemyId?,percent} / actorHp{actorId,minPercent,maxPercent} / " +
-    "enemyTurn{enemyId,turn} / actorTurn{actorId,turn} / actorCommand{actorId,commandId}. switch/variable 등 일반 조건도 쓸 수 있다.",
+    "enemyTurn{enemyId,turn} / actorTurn{actorId,turn} / actorCommand{actorId,commandId} / " +
+    "enemyState{enemyId?,stateId,present?} — 적(생략=아무 적)이 그 상태에 걸려 있다(present false = 걸려 있지 않다; 약점 노출·변신 단계 대사) / " +
+    "enemiesAlive{enemyId?,atMost} — 살아 있는 적(enemyId 면 그 적 기록만) 수가 atMost 이하(졸병을 다 쓰러뜨리면 보스 2막). switch/variable 등 일반 조건도 쓸 수 있다.",
   properties: {
     kind: { type: "string", enum: [...new Set<string>([...BATTLE_CONDITION_KINDS, ...CONDITION_KINDS])] },
     enemyId: { type: "string" },
@@ -52,6 +55,9 @@ const BATTLE_CONDITION_SCHEMA: JsonSchema = {
     start: { type: "integer" },
     interval: { type: "integer" },
     commandId: { type: "string" },
+    stateId: { type: "string", description: "enemyState — 상태 id" },
+    present: { type: "boolean", description: "enemyState — false 면 걸려 있지 않을 때(생략 true)" },
+    atMost: { type: "integer", description: "enemiesAlive — 살아 있는 적이 이 수 이하일 때(0 = 모두 쓰러짐)" },
     switchId: { type: "string" },
     variableId: { type: "string" },
     value: { type: "integer" },
@@ -183,6 +189,27 @@ function normalizeBattleCondition(project: Project, troop: TroopRecord, raw: unk
         throw new ToolError(`${label}.commandId(문자열)가 필요합니다.`, { code: "invalid-battle-condition" });
       }
       return { kind: "actorCommand", actorId: requireActor(project, record.actorId, label), commandId };
+    }
+    case "enemyState": {
+      const stateId = record.stateId;
+      if (typeof stateId !== "string" || !project.database.states.some((state) => state.id === stateId)) {
+        throw new ToolError(`${label}.stateId 가 없는 상태입니다: ${String(stateId)} — upsert_state 로 먼저 만드세요.`, { code: "invalid-battle-condition" });
+      }
+      return {
+        kind: "enemyState",
+        ...(record.enemyId === undefined ? {} : { enemyId: requireTroopEnemy(troop, record.enemyId, label, true) }),
+        stateId,
+        ...(record.present === false ? { present: false } : {}),
+      };
+    }
+    case "enemiesAlive": {
+      const atMost = integerField(record, "atMost", label);
+      if (atMost < 0 || atMost > 99) throw new ToolError(`${label}.atMost는 0~99 이어야 합니다: ${atMost}`, { code: "invalid-battle-condition" });
+      return {
+        kind: "enemiesAlive",
+        ...(record.enemyId === undefined ? {} : { enemyId: requireTroopEnemy(troop, record.enemyId, label) }),
+        atMost,
+      };
     }
     default: {
       if (!(CONDITION_KINDS as readonly string[]).includes(kind)) {

@@ -11,7 +11,7 @@ import { advanceBattleSkillCooldowns, startBattleSkillCooldown } from "@/battle/
 import { damageEffectKind, firstLearnableSkill, pickRandomSkill, rageActionSkillIds, rollStealItem, scanMessage, shuffled, sketchableSkills, weaknessElementNames } from "@/battle/battleSpecialEffects";
 import { permanentActorSkillIds } from "@/project/growth/runtime";
 import { inputSequencePowerMultiplier } from "@/battle/battleInputSequence";
-import { battleEffectivenessMultiplier, battleElementMultiplier } from "@/battle/battleElementModifiers";
+import { battleEffectivenessMultiplier, battleElementMultiplier, damageTypeMultiplier } from "@/battle/battleElementModifiers";
 import { restoreSkillDrain, spendSkillHp } from "@/battle/battleSkillVitals";
 import { effectiveActorClassId } from '@/project/sessionClass';
 import { battleTroopError } from '@/project/battleAdmission';
@@ -137,7 +137,7 @@ import {
   normalizeBattleFieldBackgroundId,
 } from "@/project/databaseEnemyTroopRecordModel";
 import { mulberry32, type Rng } from "@/util/rng";
-import { battleActorSkillFailure, battleSkillMpCostFor, battleSkillPartyGaugeCost, battleSkillUseFailure, battlerSkillIdsWithGrants, comboActorIdsOf, consumeBattleSkillResource, type BattleComboParticipant } from "@/battle/battleSkillUse";
+import { battleActorSkillFailure, battleSkillMpCostFor, battleSkillPartyGaugeCost, battleSkillUseFailure, battlerSkillIdsWithGrants, comboActorIdsOf, comboLockedBy, consumeBattleSkillResource, type BattleComboParticipant } from "@/battle/battleSkillUse";
 import { applyBattleHitGauges, clampPartyGauge, initialPartyGauge, seedBattleGauges } from "@/battle/battleGauges";
 import { applyStateEffectsWithEmotion, createWeaknessTracker, emotionDamageMultiplier } from "@/battle/battleEmotion";
 import {
@@ -418,6 +418,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let activeTeamId: string | undefined = battleTeams?.find((team) => team.actorIds.includes(actors[0]?.recordId as ActorId))?.id ?? battleTeams?.[0]?.id;
   // 한 턴 비용으로 들어온 팀은 적이 한 번 행동할 때까지 쉰다(게이지가 차지 않는다).
   const teamResting = new Set<string>();
+  /** 연계 대기 중인 배우(게이지 100 유지·충전 제외). 아군 누군가의 차례가 오면 풀려 resumedFromHold 로 옮긴다. */
+  const heldForCombo = new Set<string>();
+  /** 연계 대기에서 풀려 다시 차례를 받는 배우 — 차례 시작 처리(지속 피해·턴 수)를 두 번 받지 않는다. */
+  const resumedFromHold = new Set<string>();
   let activeActorIds: ActorId[] = battleTeams
     ? (battleTeams.find((team) => team.id === activeTeamId)?.actorIds ?? []).slice(0, activeSlots)
     : actors.slice(0, activeSlots).map((actor) => actor.recordId);
@@ -523,6 +527,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       ...(() => { const combo = comboActorIdsOf(entry.skillId ? lookupSkill(entry.skillId) : undefined); return combo ? { comboActorIds: [...combo] } : {}; })(),
       ...(entry.effectiveness !== undefined && kind === "damage" ? { effectiveness: entry.effectiveness } : {}),
       ...(entry.weaponAffinity ? { weaponAffinity: true } : {}),
+      ...(entry.exploit ? { exploit: true } : {}),
       ...(resource ? { resource } : {}),
     });
   }
@@ -1366,6 +1371,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const enemiesInBattle = visibleEnemies();
     const battlerAgilityMultiplier = (battler: MutableBattler): number =>
       gaugeFrozenByStates(options.project, battler) ? 0 : agilityMultiplierForStates(options.project, battler);
+    if (heldForCombo.size > 0 && !chargingActors().some((actor) => actor.hp > 0)) {
+      // 기다릴 동료가 없다(쓰러짐 등) — 대기를 풀어 차례를 돌려준다.
+      for (const id of heldForCombo) resumedFromHold.add(id);
+      heldForCombo.clear();
+    }
     const chargers = chargingActors();
     const ready = nextReadyBattler(chargers, enemiesInBattle, deltaMs, skinHasteMultiplier, battlerAgilityMultiplier);
     if (!ready) {
@@ -1375,8 +1385,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     chargeBattlers(chargers, enemiesInBattle, ready.timeMs, skinHasteMultiplier, battlerAgilityMultiplier);
     ready.battler.gauge = 100;
     if (ready.kind === "actor") {
+      // 연계 대기가 풀린다 — 기다리던 배우는 게이지 100 그대로 이 배우 다음 차례를 받는다(그 사이 이 배우는 연계기를 고를 수 있다).
+      for (const id of heldForCombo) resumedFromHold.add(id);
+      heldForCombo.clear();
+      const resumed = resumedFromHold.delete(ready.battler.recordId);
       // 턴 시작 상태 처리(지속 피해/자연 회복). 행동 불가(수면 등)면 명령 없이 턴을 넘긴다.
-      if (!gen1) {
+      if (!gen1 && !resumed) {
         rewardTurn = turn + 1;
         applyUpkeep(ready.battler);
         resolveOutcome();
@@ -1434,6 +1448,30 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
    * FF6 식 팀 교대. 지금 명령을 고르는 배우의 차례를 써서 활성 팀을 바꾼다(gauge: 이 행동 슬롯을 소비, strict: 이 라운드 전체를 소비).
    * 물러나는 팀의 이번 라운드 명령은 버린다. ActorCommand 합집합과 분리된 별도 입구다(types.ts TeamSwapCommand).
    */
+  function holdForCombo(): boolean {
+    if (battleFlow !== "gauge" || cancelled || eventChoice || eventPause || result || phase !== "actorCommand" || !activeActorId) return false;
+    if (forcedSwitchActor()) return false;
+    const actor = actors.find((entry) => entry.recordId === activeActorId);
+    if (!actor || actor.hp <= 0) return false;
+    // 기다려서 열릴 연계기가 있어야 한다 — 이 배우가 낀 연계기 중 동료가 모두 참전해 살아 있는 것.
+    const party = activeActors().filter((battler) => battler.hp > 0);
+    // 연계기는 참가자면 배우지 않아도 열린다(comboSkillIdsFor) — 해금 조건(comboRequires)은 실제 고를 때 battleActorSkillFailure 가 본다.
+    const hasCombo = options.project.database.skills.some((skill) => {
+      const combo = comboActorIdsOf(skill);
+      if (!combo || !combo.includes(actor.recordId as ActorId)) return false;
+      if (comboLockedBy(skill, comboParticipants(true)).length > 0) return false;
+      return combo.every((id) => party.some((battler) => battler.recordId === id));
+    });
+    if (!hasCombo) return false;
+    if (!party.some((battler) => battler !== actor && !heldForCombo.has(battler.recordId))) return false;
+    heldForCombo.add(actor.recordId);
+    resumedFromHold.delete(actor.recordId);
+    activeActorId = undefined;
+    targetSelection = undefined;
+    phase = "charging";
+    return true;
+  }
+
   function performTeamSwap(command: TeamSwapCommand): void {
     if (cancelled || eventChoice || eventPause || result || phase !== "actorCommand" || !activeActorId) return;
     if (forcedSwitchActor()) return;
@@ -1729,7 +1767,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const targetMaxHpBefore = target.maxHp;
     const result = redirectDamageToMp(target, hpBefore, applySkillLike(actor, target, {
       power: actor.attackPower,
-      hitMultiplier:gimmickDamageMultiplier(actor,target),
+      hitMultiplier:gimmickDamageMultiplier(actor,target)*damageTypeMultiplier(options.project,"physical",target,actor.equipmentEffects?.attackElementIds?.[0]),
       statistic: "attack",
       effect: "damage",
       criticalRate: criticalRateFor(actor),
@@ -1746,7 +1784,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (result.hit && result.amount > 0) recoverHitStates(target);
     if (result.hit) applyNormalAttackEquipmentStates(actor, target);
     recordAction(
-      { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, ...effectivenessField(result.hit ? battleEffectivenessMultiplier(options.project, actor.equipmentEffects?.attackElementIds?.[0], target) : 1) },
+      { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, ...effectivenessField(result.hit ? battleEffectivenessMultiplier(options.project, actor.equipmentEffects?.attackElementIds?.[0], target) * damageTypeMultiplier(options.project, "physical", target, actor.equipmentEffects?.attackElementIds?.[0]) : 1) },
       result.hit ? "damage" : "miss",
       "attack",
     );
@@ -2377,6 +2415,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       eventPause,
       battleFlow,
       atbMode: activeAtb ? "active" : "wait",
+      ...(heldForCombo.size > 0 ? { heldActorIds: [...heldForCombo] } : {}),
       activeActorId,
       activeSlots,
       forcedSwitchActorId: forcedActor?.recordId,
@@ -2622,7 +2661,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const emotionMultiplier = emotionDamageMultiplier(options.project, enemy, target);
     const result = redirectDamageToMp(target, hpBefore, applySkillLike(enemy, target, {
       power: enemy.attackPower,
-      hitMultiplier:gimmickDamageMultiplier(enemy,target),
+      hitMultiplier:gimmickDamageMultiplier(enemy,target)*damageTypeMultiplier(options.project,"physical",target),
       statistic: "attack",
       effect: "damage",
       criticalRate: criticalRateFor(enemy),
@@ -3793,7 +3832,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const transform = gimmicks.get(user.id, "transform");
     const vulnerable = pendingCharges.has(target.id) ? 1.25 : 1;
     const counter = gimmicks.get(target.id, "counter") ? 0.65 : 1;
+    // 장비 「주는 피해 ±%」·「받는 피해 ±%」 — 통상 공격·기술(물리·마법) 피해가 모두 이 곱을 지난다. 0.1 아래로는 내리지 않는다.
+    const dealt = Math.max(0.1, 1 + (user.equipmentEffects?.damageDealtPercent ?? 0) / 100);
+    const taken = Math.max(0.1, 1 + (target.equipmentEffects?.damageTakenPercent ?? 0) / 100);
     return (
+      dealt *
+      taken *
       vulnerable *
       counter *
       (transform ? 1 + (transform.config.powerMultiplier ?? 0.35) : 1)
@@ -4305,6 +4349,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const targetMaxHpBefore = target.maxHp;
     // 무기 공명(SkillRecord.weaponAffinity): 맞는 계열 무기를 들었으면 피해·회복 배율이 오른다.
     const affinity = weaponAffinityMultiplier(user, skill);
+    // 약점 공략(SkillRecord.exploitStates): 대상이 그 상태에 걸려 있으면 피해가 오른다(피해 기술만).
+    const exploited = effectKind === "damage" ? exploitedStateIds(skill, target) : [];
+    const exploit = exploited.length > 0 ? 1 + (skill!.exploitStates!.bonusPercent / 100) : 1;
     const rawResult = applySkillLike(user, target, {
       power,
       statistic,
@@ -4315,7 +4362,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       // 회피 상태는 물리(공격력 계열) 피해 기술만 피한다.
       hitRate: effectKind === "damage" ? withAccuracyStages(statistic === "attack" ? withEvasion(combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill),
       damageFormula: skill?.damageFormula,
-      hitMultiplier:hitMultiplier*(effectKind==="damage"?gimmickDamageMultiplier(user,target):1)*(affinity?affinity:1),
+      // 피해 계열 받는 피해 %(적 damageTypeRates · 상태 damageTypeRates): 마력 계열 = 마법, 그 밖 = 물리.
+      hitMultiplier:hitMultiplier*(effectKind==="damage"?gimmickDamageMultiplier(user,target)*damageTypeMultiplier(options.project,statistic==="mind"?"magic":"physical",target,skill?.elementId):1)*(affinity?affinity:1)*exploit,
       criticalMultiplier: skill?.criticalMultiplier,
       variance: skill?.variance,
       criticalRate: skill?.criticalRate ?? criticalRateFor(user),
@@ -4346,8 +4394,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     recordAction(
       {
         userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name, skillId: skill?.id,
-        ...(effectKind === "damage" && result.hit ? effectivenessField(battleEffectivenessMultiplier(options.project, skill?.elementId, target)) : {}),
+        ...(effectKind === "damage" && result.hit ? effectivenessField(battleEffectivenessMultiplier(options.project, skill?.elementId, target) * damageTypeMultiplier(options.project, statistic === "mind" ? "magic" : "physical", target, skill?.elementId)) : {}),
         ...(affinity > 1 && result.hit && (effectKind === "damage" || effectKind === "healing") ? { weaponAffinity: true } : {}),
+        ...(exploit > 1 && result.hit ? { exploit: true } : {}),
       },
       timelineKind,
       commandKind,
@@ -4366,7 +4415,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (result.hit && effectKind === "damage" && result.amount > 0) {
       recoverHitStates(target);
     }
-    if (result.hit) {
+    // 공략한 상태를 깨뜨린다(consume) — 기술 자신의 상태 효과보다 먼저(같은 상태를 다시 거는 기술이면 새로 건다).
+    if (result.hit && exploited.length > 0 && skill?.exploitStates?.consume && target.hp > 0) {
+      applyStates(user, target, exploited.map((stateId) => ({ stateId, chance: 100, operation: "remove" as const })));
+    }
+    // 피해 기술로 쓰러뜨린 대상에게는 상태를 걸지 않는다 — 「쓰러뜨렸다!」 다음 「화상에 걸렸다!」가 떴다(fs-battle-2 녹화).
+    if (result.hit && !(effectKind === "damage" && target.hp <= 0)) {
       applyStates(user, target, skill?.stateEffects);
       if (effectKind !== "damage" || result.amount > 0) applyStatStageEffects(user, target, skill);
     }
@@ -4612,6 +4666,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   /** 상성 배율을 결과·타임라인에 싣는다 — 1(보통)이면 싣지 않아 기존 결과 모양이 그대로다. */
   /** 무기 공명 배율 — 기술이 요구하는 계열을 시전자의 장비 공격 속성(attackElementIds)이 갖고 있으면 1 + bonus%. */
+  /** 약점 공략 — 대상이 지금 걸린 상태 중 기술이 노리는 것(exploitStates.stateIds). 없으면 빈 배열. */
+  function exploitedStateIds(skill: SkillRecord | undefined, target: MutableBattler): string[] {
+    const exploit = skill?.exploitStates;
+    if (!exploit || !(exploit.bonusPercent > 0)) return [];
+    return exploit.stateIds.filter((stateId) => target.stateIds.includes(stateId));
+  }
+
   function weaponAffinityMultiplier(user: MutableBattler, skill: SkillRecord | undefined): number {
     const affinity = skill?.weaponAffinity;
     if (!affinity || !(affinity.bonusPercent > 0)) return 1;
@@ -4779,7 +4840,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   /** 게이지가 차는 아군 — 한 턴 비용으로 막 들어온 팀은 적이 한 번 행동할 때까지 쉰다. */
   function chargingActors(): readonly MutableBattler[] {
-    return teamResting.size === 0 ? activeActors() : activeActors().filter((actor) => !teamResting.has(actor.recordId));
+    const rested = teamResting.size === 0 ? activeActors() : activeActors().filter((actor) => !teamResting.has(actor.recordId));
+    return heldForCombo.size === 0 ? rested : rested.filter((actor) => !heldForCombo.has(actor.recordId));
   }
 
   function reserveActors(): readonly MutableBattler[] {
@@ -5138,6 +5200,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     cancelTargetSelection,
     performActorCommand,
     performTeamSwap,
+    holdForCombo,
     chooseAutoCommand,
     executeEquipmentUse,
     snapshot,

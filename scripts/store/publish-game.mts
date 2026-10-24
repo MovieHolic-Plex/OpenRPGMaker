@@ -28,7 +28,7 @@ function out(value: object, code = 0): never {
 const DEMOS: Record<string, { readonly slug: string; readonly builtin: string; readonly description: string; readonly pointer?: boolean }> = {
   "chrono-bell": {
     slug: "fallen-star", builtin: "chrono-bell",
-    description: "OPRN 에디터의 대표 데모 JRPG 입니다. 동쪽 숲에 떨어진 별, 그 속에서 깨어난 기계 소녀, 그리고 별을 쫓는 심문관.\n제1막(약 20분)을 처음부터 끝까지 플레이할 수 있습니다. 전투·대화·컷신·세이브가 모두 들어 있습니다.",
+    description: "OPRN 에디터의 대표 데모 JRPG 입니다. 북쪽 숲에 떨어진 별, 그 속에서 깨어난 기계 소녀, 그리고 별을 쫓는 심문관.\n제1막(약 20분)을 처음부터 끝까지 플레이할 수 있습니다. 전투·대화·컷신·세이브가 모두 들어 있습니다.",
   },
   "emerald-crown": {
     slug: "astra-horizon", builtin: "emerald-crown", pointer: true,
@@ -53,6 +53,8 @@ const CONTROLS = (pointer: boolean) => [
   { keys: "Esc · X", action: "취소 · 메뉴" },
   { keys: "Shift", action: "누르고 있으면 달리기" },
   ...(pointer ? [{ keys: "마우스 클릭", action: "메뉴·전투 명령 고르기 (오른쪽 클릭 = 취소)" }] : []),
+  { keys: "휴대폰: 맵 탭", action: "그곳까지 걷기 · 사람을 탭하면 다가가 말 걸기" },
+  { keys: "휴대폰: 왼쪽 패드 · A · B", action: "이동 · 확인 · 취소 (「달리기」 단추로 걷기/달리기)" },
 ];
 
 /** dist/export-player 는 이 체크아웃에서, 공용 그림·소리는 public/(없으면 OPRN_ASSET_ROOTS). */

@@ -1,4 +1,4 @@
-import { stateElementRateOverride } from "@/battle/battleStates";
+import { resolveDamageTypeRate, stateDamageTypeRateOverride, stateElementRateOverride } from "@/battle/battleStates";
 import { battlerTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import type { MutableBattler } from "@/battle/battleBattlers";
 import type { BattleBattlerSnapshot } from "@/battle/types";
@@ -24,6 +24,20 @@ export function authoredElementMultiplier(project: Project, elementId: string | 
 export function battleEffectivenessMultiplier(project: Project, elementId: string | undefined, target: MutableBattler | BattleBattlerSnapshot): number {
   return authoredElementMultiplier(project, elementId, target.recordId, target)
     * typeChartMultiplierForTypes(project, elementId, [], battlerTypes(project, target));
+}
+
+/**
+ * 피해 계열(physical = 공격력 계열, magic = 마력 계열) 받는 피해 배율. 0 이면 무효 — 효과 꼬리표도 이 배율을 곱해 「무효」·「약점!」이 뜬다.
+ * 우선순위: 걸린 상태가 이 타격에 대해 값을 정하면(그 상태의 elements[속성] ?? 그 상태의 [계열], 여러 상태면 가장 큰 값) 그 값,
+ * 아니면 적 기록의 elements[속성] ?? 적 기록의 [계열], 그것도 없으면 1.
+ * 즉 같은 출처 안에서는 속성 예외가 계열 값을 이기고, 상태는 출처째로 적 기본값을 갈아 끼운다.
+ * elementId = 맞은 기술의 속성(통상 공격은 무기 속성). 생략하면 속성 예외는 보지 않는다.
+ */
+export function damageTypeMultiplier(project: Project, kind: "physical" | "magic", target: Pick<MutableBattler | BattleBattlerSnapshot, "recordId" | "stateIds">, elementId?: string): number {
+  const override = stateDamageTypeRateOverride(project, target, kind, elementId);
+  const base = override ?? resolveDamageTypeRate(project.database.enemies.find((entry) => entry.id === target.recordId)?.damageTypeRates, kind, elementId);
+  if (typeof base !== "number" || !Number.isFinite(base)) return 1;
+  return Math.max(0, base) / 100;
 }
 
 /** RM damage uses the same authored grades, state overrides and type chart in every consumer. */

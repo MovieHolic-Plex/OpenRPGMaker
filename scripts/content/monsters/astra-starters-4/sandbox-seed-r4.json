@@ -1,0 +1,431 @@
+{
+ "version": 1,
+ "style": {
+  "reference": "Pokemon Black and White (Nintendo DS, 2010)",
+  "maxColors": 20,
+  "canvas": 64,
+  "avoid": [
+   "Bulbasaur",
+   "Ivysaur",
+   "Charmander",
+   "Charmeleon",
+   "Squirtle",
+   "Leafeon",
+   "Eevee",
+   "Pidgey",
+   "Pidove",
+   "Torchic",
+   "Rowlet",
+   "Weedle",
+   "Caterpie",
+   "Wurmple",
+   "Venipede",
+   "Pikachu",
+   "Geodude",
+   "Rhyhorn",
+   "Wooloo",
+   "Diglett",
+   "Krabby",
+   "Horsea",
+   "Seadra",
+   "Zigzagoon",
+   "Totodile",
+   "Marill",
+   "Zoroark",
+   "Gligar",
+   "Wooper",
+   "Quagsire",
+   "Fennekin",
+   "Skiddo",
+   "Sceptile",
+   "Oshawott",
+   "Popplio",
+   "Mudkip",
+   "Vaporeon",
+   "Scorbunny",
+   "Buneary",
+   "Growlithe",
+   "Sandshrew",
+   "Deerling",
+   "Chespin",
+   "Sprigatito",
+   "Fuecoco",
+   "Sobble",
+   "Grookey",
+   "Litten",
+   "Cyndaquil",
+   "Chikorita",
+   "Treecko",
+   "Turtwig",
+   "Snivy",
+   "Tepig",
+   "Chimchar",
+   "Piplup",
+   "Froakie",
+   "Quaxly",
+   "Smoochum",
+   "Snorlax",
+   "Raboot",
+   "Cinderace",
+   "Infernape",
+   "Blaziken",
+   "Emboar",
+   "Pignite",
+   "Mareep",
+   "Dubwool",
+   "Lucario",
+   "Walrein",
+   "Dewgong",
+   "Spheal",
+   "Sealeo",
+   "Seel",
+   "Empoleon",
+   "Primarina",
+   "Wailmer",
+   "Sawsbuck",
+   "Sandslash",
+   "Tropius",
+   "Gardevoir",
+   "Nuzleaf",
+   "Shiftry",
+   "Pansage",
+   "Simisage",
+   "Ambipom",
+   "Kangaskhan",
+   "Kyogre",
+   "Flaaffy",
+   "Ampharos",
+   "Bouffalant",
+   "Gogoat",
+   "Arcanine",
+   "Rapidash",
+   "Wailord",
+   "Brionne",
+   "Lapras",
+   "Sharpedo",
+   "Keldeo"
+  ]
+ },
+ "animation": {
+  "idle": {
+   "frames": 4,
+   "frameMs": 220,
+   "loop": true
+  },
+  "direction": {
+   "front": {
+    "x": -1,
+    "y": 1
+   },
+   "back": {
+    "x": 1,
+    "y": -1
+   }
+  },
+  "actions": {
+   "tackle": {
+    "kind": "attack",
+    "frames": 4,
+    "frameMs": 120,
+    "loop": false,
+    "action": "a physical tackle or bite: frame 1 ready stance (the reference pose), frame 2 crouch low and pull back away from the target, frame 3 lunge the head, chest and front legs far toward the target with the mouth open to bite, frame 4 recover halfway back toward the ready stance; the feet stay on the ground",
+    "keys": {
+     "anticipation": 1,
+     "contact": 2,
+     "recover": 3
+    }
+   },
+   "special": {
+    "kind": "attack",
+    "frames": 4,
+    "frameMs": 140,
+    "loop": false,
+    "action": "an elemental special move WITHOUT drawing the element: frame 1 ready stance (the reference pose), frame 2 plant the feet wide and draw the head back inhaling with the chest swelling, frame 3 thrust the head and neck toward the target with the mouth wide open as if blasting a beam out of it (draw NO fire, water, leaves, beam or particles), frame 4 hold the mouth open slightly less; the body stays in place",
+    "keys": {
+     "anticipation": 1,
+     "contact": 2,
+     "recover": 3
+    }
+   },
+   "buff": {
+    "kind": "self",
+    "frames": 4,
+    "frameMs": 140,
+    "loop": false,
+    "action": "powering up: frame 1 ready stance (the reference pose), frame 2 crouch and tense the whole body, frame 3 rear up tall with the chest puffed out and the head raised, roaring, frame 4 settle back toward the ready stance; it stays in place and keeps facing the same way",
+    "keys": {
+     "anticipation": 1,
+     "contact": 2,
+     "recover": 3
+    }
+   },
+   "hurt": {
+    "kind": "hurt",
+    "frames": 3,
+    "frameMs": 120,
+    "loop": false,
+    "action": "taking a hit: frame 1 ready stance (the reference pose), frame 2 recoil away from the attacker, the head knocked back, eyes squeezed shut and the body flinching, frame 3 recovering most of the way back toward the ready stance",
+    "keys": {
+     "contact": 1,
+     "recover": 2
+    }
+   }
+  }
+ },
+ "species": [
+  {
+   "id": "grass-a-1",
+   "name": "잎꼬미",
+   "types": [
+    "grass"
+   ],
+   "stage": 1,
+   "design": "A baby leaf-lemur starter sitting on all fours in a compact round ball shape: a very big round head (half of its height) with a big plain cream face, a round leaf-green body, two big round leaf-shaped ears, short stubby legs.",
+   "signature": "one long thick tail with three broad cream rings curled into a single big round spiral beside its body, as big as its head",
+   "accent": "soft pink (only one small closed flower bud on its forehead)",
+   "palette": "leaf green, cream, dark forest green, soft pink"
+  },
+  {
+   "id": "grass-a-2",
+   "name": "잎원숭",
+   "types": [
+    "grass"
+   ],
+   "stage": 2,
+   "design": "The evolved form: a sturdy young leaf-lemur standing UPRIGHT on two legs in a lively balancing pose, one arm raised, a plump solid body (not skinny), a big round head with a big cream face, larger pointed leaf ears, the forehead bud half open.",
+   "signature": "the long ringed tail rising high above its head and curling into a big spiral like a question mark, taller than its body",
+   "accent": "soft pink (only the half-open forehead flower)",
+   "palette": "leaf green, cream, dark forest green, soft pink",
+   "evolvesFrom": "grass-a-1"
+  },
+  {
+   "id": "grass-a-3",
+   "name": "잎현자",
+   "types": [
+    "grass",
+    "psychic"
+   ],
+   "stage": 3,
+   "design": "The final form: a tall, assertive leaf-lemur sage STANDING UPRIGHT and proud with a broad chest and big shoulders, clearly bigger and heavier than its stage 2, one arm raised with an open palm, a big round head with a big cream face and big eyes, a short cape made of only three big broad leaves over its shoulders (no small leaves, no leaf skirt), two large pointed leaf ears. Its ringed tail is a medium ring behind its back, smaller than its body.",
+   "signature": "a psychic aura: a big round pink-violet gem on its forehead inside the opened flower, and two round pink-violet orbs floating in the air beside its head",
+   "accent": "pink-violet (only the forehead gem and the two floating orbs)",
+   "palette": "leaf green, cream, dark forest green, pink-violet",
+   "evolvesFrom": "grass-a-2"
+  },
+  {
+   "id": "grass-b-1",
+   "name": "잎너구",
+   "types": [
+    "grass"
+   ],
+   "stage": 1,
+   "design": "A baby tanuki (raccoon dog) pup starter sitting on all fours, round and chubby: a very big round head with a cream face and a dark brown eye mask around big bright eyes, small round ears, a round moss-green and brown body, a short fat striped tail.",
+   "signature": "one big broad bright-green leaf balanced on top of its head like a hat, as wide as its head",
+   "accent": "bright lime green (only the big head leaf)",
+   "palette": "moss green, warm brown, cream, dark brown"
+  },
+  {
+   "id": "grass-b-2",
+   "name": "잎둔갑",
+   "types": [
+    "grass"
+   ],
+   "stage": 2,
+   "design": "The evolved form: a chubby young tanuki standing UPRIGHT on two legs with a round belly, holding a big leaf in one paw like a fan, a cream face with the dark eye mask and big eyes, a big fluffy striped tail behind it.",
+   "signature": "the head leaf grown into a wide flat leaf straw-hat shape on its head",
+   "accent": "bright lime green (only the leaf hat and the leaf fan)",
+   "palette": "moss green, warm brown, cream, dark brown",
+   "evolvesFrom": "grass-b-1"
+  },
+  {
+   "id": "grass-b-3",
+   "name": "잎선인",
+   "types": [
+    "grass",
+    "psychic"
+   ],
+   "stage": 3,
+   "design": "The final form: a big wise tanuki sage FLOATING cross-legged above one huge round leaf, a big round belly and a broad body clearly bigger than before, a cream face with the dark eye mask and kind big eyes, a long white beard tuft, a huge fluffy striped tail curling around it.",
+   "signature": "a tall crown of three big upright leaves on its head with one glowing pink-violet orb floating between them",
+   "accent": "pink-violet (only the floating orb) and lime green leaves",
+   "palette": "moss green, warm brown, cream, dark brown",
+   "evolvesFrom": "grass-b-2"
+  },
+  {
+   "id": "fire-a-1",
+   "name": "불양이",
+   "types": [
+    "fire"
+   ],
+   "stage": 1,
+   "design": "A baby lamb starter standing on four short stubby legs: a big round cloud of cream wool covering its head top and body, a round warm orange face with big bright eyes, a small puff tail, dark-red outline.",
+   "signature": "two big curled yellow-orange ram horns on its head, as big as its face",
+   "accent": "bright yellow-orange (only the curled horns)",
+   "palette": "cream wool, orange, dark red, yellow-orange",
+   "motion": {
+    "flicker": "flame"
+   }
+  },
+  {
+   "id": "fire-a-2",
+   "name": "불박치",
+   "types": [
+    "fire",
+    "fighting"
+   ],
+   "stage": 2,
+   "design": "The evolved form: a sturdy young ram that now stands UPRIGHT on two strong hind legs in a forward-leaning charging stance, head lowered to butt, broad chest, cream wool vest over its body, orange face and arms, small dark-red hooves on its fists, big eyes, a brave grin, dark-red outline. A clearly new body plan: upright and stocky, not a bigger lamb.",
+   "signature": "its cream wool burns at the tips: the wool on its shoulders and back ends in a few big crisp flat flame tufts, and the curled horns are bigger and thicker",
+   "accent": "bright yellow-orange (only the flame wool tips and the horns)",
+   "palette": "cream wool, orange, dark red, yellow-orange",
+   "evolvesFrom": "fire-a-1",
+   "motion": {
+    "flicker": "flame"
+   }
+  },
+  {
+   "id": "fire-a-3",
+   "name": "불뿔왕",
+   "types": [
+    "fire",
+    "fighting"
+   ],
+   "stage": 3,
+   "design": "The final form: a big blazing ram KNIGHT standing tall and heavy on two legs, a massive armoured chest with a cream wool mantle like a knight's cloak, orange arms with dark-red gauntlet hooves, one fist raised, a noble brave face with big eyes, dark-red outline. Clearly bigger and more heroic than stage 2.",
+   "signature": "two huge thick spiral horns that blaze with fire like a crown, the flames streaming back from the horns, plus a short flame plume on the wool mantle",
+   "accent": "bright yellow-orange (only the blazing horns and the plume)",
+   "palette": "cream wool, orange, dark red, yellow-orange",
+   "evolvesFrom": "fire-a-2",
+   "motion": {
+    "flicker": "flame"
+   }
+  },
+  {
+   "id": "fire-b-1",
+   "name": "불캥이",
+   "types": [
+    "fire"
+   ],
+   "stage": 1,
+   "design": "A baby kangaroo joey starter SITTING upright in a round compact shape on big feet, a very big round head with a cream face and big bright eyes, SHORT small round ears (not rabbit ears), a warm orange-red body with a cream belly, tiny paws held up in front.",
+   "signature": "a short thick tail tipped with one round crisp flame like a torch",
+   "accent": "bright yellow-orange (only the tail flame)",
+   "palette": "orange-red, cream, dark brown, yellow-orange",
+   "motion": {
+    "flicker": "flame"
+   }
+  },
+  {
+   "id": "fire-b-2",
+   "name": "불권투",
+   "types": [
+    "fire",
+    "fighting"
+   ],
+   "stage": 2,
+   "design": "The evolved form: a chunky young kangaroo boxer HOPPING forward on big feet, leaning in, short round ears, cream bandage wraps on both fists, a big cream belly, a confident grin, big eyes.",
+   "signature": "a long thick tail held out straight behind it with a bigger round flame on the tip",
+   "accent": "bright yellow-orange (only the tail flame)",
+   "palette": "orange-red, cream, dark brown, yellow-orange",
+   "evolvesFrom": "fire-b-1",
+   "motion": {
+    "flicker": "flame"
+   }
+  },
+  {
+   "id": "fire-b-3",
+   "name": "불챔프",
+   "types": [
+    "fire",
+    "fighting"
+   ],
+   "stage": 3,
+   "design": "The final form: a huge HEAVY champion kangaroo with a massive barrel chest and very broad shoulders, thick muscular arms, standing wide and solid like a heavyweight boxer, a broad cream chest and belly, short round ears, a brave face with big eyes, a very thick tail behind it with a small flame tip.",
+   "signature": "two huge round boxing fists wrapped in thick cream bandages, each fist as big as its head, with one crisp flat flame burning only around each fist",
+   "accent": "bright yellow-orange (only the flames around the fists and a small tail-tip flame)",
+   "palette": "orange-red, cream, dark brown, yellow-orange",
+   "evolvesFrom": "fire-b-2",
+   "motion": {
+    "flicker": "flame"
+   }
+  },
+  {
+   "id": "water-a-1",
+   "name": "물범고",
+   "types": [
+    "water"
+   ],
+   "stage": 1,
+   "design": "A baby orca calf starter lying on its belly on two small front flippers, a round bean-shaped navy-blue head-and-body with a white chin, white belly and a white eye patch around each big bright eye, a small happy smile, a tail fluke curled up behind it.",
+   "signature": "a big curling cyan ocean-wave crest growing from the top of its head like a breaking wave, taller than its head",
+   "accent": "bright cyan (only the wave crest)",
+   "palette": "navy blue, white, dark navy, cyan"
+  },
+  {
+   "id": "water-a-2",
+   "name": "물파도",
+   "types": [
+    "water"
+   ],
+   "stage": 2,
+   "design": "The evolved form: a sleek adolescent orca caught mid-LEAP, its whole body arched in a curve as if jumping out of the sea, front flippers spread wide like wings, longer and slimmer than stage 1, navy back with white belly and white eye patches, big bright eyes, an excited open smile. A clearly new pose and body plan: an arched leaping body, not a bigger calf lying down.",
+   "signature": "a bigger curling cyan wave fin that runs from its head down along its back like a surfing wave",
+   "accent": "bright cyan (only the wave fin)",
+   "palette": "navy blue, white, dark navy, cyan",
+   "evolvesFrom": "water-a-1"
+  },
+  {
+   "id": "water-a-3",
+   "name": "얼음고래",
+   "types": [
+    "water",
+    "ice"
+   ],
+   "stage": 3,
+   "design": "The final form: a large powerful tidal orca rearing UPRIGHT out of the water on its tail, a massive broad white chest, big strong flippers raised wide, navy back with white eye patches, calm commanding big eyes. Clearly much bigger and more imposing than stage 2.",
+   "signature": "a towering tsunami crest: a huge curling cyan wave rises from its head and pours down its back and shoulders like a cape, with a few white frost-crystal tips on the crest (water/ice)",
+   "accent": "bright cyan and white frost (only the tsunami crest and its frost tips)",
+   "palette": "navy blue, white, dark navy, cyan",
+   "evolvesFrom": "water-a-2"
+  },
+  {
+   "id": "water-b-1",
+   "name": "물바다코",
+   "types": [
+    "water"
+   ],
+   "stage": 1,
+   "design": "A baby walrus pup starter lying round and plump on its belly, a very big round head with big bright eyes, a big round puffy white muzzle with two tiny rounded tusks, a smooth sky-blue body with a pale belly, two small front flippers.",
+   "signature": "one small water-spout fountain splashing up from the top of its head like a little geyser",
+   "accent": "bright aqua (only the water spout)",
+   "palette": "sky blue, white, navy, aqua"
+  },
+  {
+   "id": "water-b-2",
+   "name": "물분수",
+   "types": [
+    "water"
+   ],
+   "stage": 2,
+   "design": "The evolved form: a chunky young walrus SITTING UP proudly on its tail with its chest out, two long tusks, a white whisker muzzle, broad front flippers on its hips, big eyes, a confident smile.",
+   "signature": "a tall water-spout column on its head ending in a round splash like a crown",
+   "accent": "bright aqua (only the water spout)",
+   "palette": "sky blue, white, navy, aqua",
+   "evolvesFrom": "water-b-1"
+  },
+  {
+   "id": "water-b-3",
+   "name": "얼음분수",
+   "types": [
+    "water",
+    "ice"
+   ],
+   "stage": 3,
+   "design": "The final form: a huge heavy walrus guardian STANDING UPRIGHT on its two hind flippers like a sumo wrestler, a massive round belly and broad chest, thick front flippers held out wide, a white beard muzzle, big calm eyes, clearly much bigger than its stage 2. Its back and shoulders carry three big white-and-pale-cyan ice crystal plates.",
+   "signature": "two very long thick tusks made of pale-cyan ice with white highlights and sharp faceted tips, and a faceted pale-cyan ice crown on its head where the water spout froze",
+   "accent": "pale cyan and white ice (only the tusks, crown and shoulder plates)",
+   "palette": "sky blue, white, navy, pale cyan",
+   "evolvesFrom": "water-b-2"
+  }
+ ]
+}

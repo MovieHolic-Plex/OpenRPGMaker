@@ -12,7 +12,8 @@
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { battleLookFields } from "@/editor/panels/databaseBattleLook";
 import { battleStudioHeading } from "@/editor/panels/databaseBattleStudio";
-import { field } from "@/editor/panels/databaseControls";
+import { field, selectField, toggleSwitch } from "@/editor/panels/databaseControls";
+import { BATTLE_FANFARE_STYLES, BATTLE_FANFARE_STYLE_LABELS, isBattleFanfareStyle, normalizeBattleFanfare, resolveBattleFanfare, type BattleFanfareSettings } from "@/project/battleFanfare";
 import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import { BATTLE_HIT_FEEL_DESCRIPTIONS, BATTLE_HIT_FEEL_IDS, BATTLE_HIT_FEEL_LABELS, DEFAULT_BATTLE_HIT_FEEL, resolveBattleHitFeel } from "@/project/battleHitFeel";
 import { applyBattleMethod, BATTLE_METHOD_LABELS, battleMethodOf, type BattleMethod } from "@/project/battleMethod";
@@ -88,6 +89,33 @@ function hitFeelField(project: Project): HTMLElement {
   return field("타격감", select);
 }
 
+/** 결과 팡파레(system.battleFanfare) — LEVEL UP 배너·「새 기술 습득!」·「새 연계기!」 카드·소리. 도트 결과 화면에 적용된다. */
+function fanfareCard(project: Project, rerender: () => void): HTMLElement {
+  const current = resolveBattleFanfare(project.system.battleFanfare);
+  const save = (patch: Partial<BattleFanfareSettings>): void => {
+    updateSystem((draft) => {
+      const next = normalizeBattleFanfare({ ...resolveBattleFanfare(draft.system.battleFanfare), ...patch });
+      if (next) draft.system.battleFanfare = next;
+      else delete draft.system.battleFanfare;
+    });
+    rerender();
+  };
+  return sectionCard({
+    title: "레벨 업 · 기술 습득 연출",
+    hint: "전투 결과 화면",
+    testid: "db-battle-fanfare-card",
+    children: [
+      selectField("세기", "db-battle-fanfare-style", current.style, BATTLE_FANFARE_STYLES.map((id) => ({ id, name: BATTLE_FANFARE_STYLE_LABELS[id] })), (value) => {
+        if (isBattleFanfareStyle(value)) save({ style: value });
+      }),
+      toggleSwitch("LEVEL UP 배너", "db-battle-fanfare-levelup", current.levelUp, (checked) => save({ levelUp: checked })),
+      toggleSwitch("「새 기술 습득!」 카드", "db-battle-fanfare-skill", current.skillLearned, (checked) => save({ skillLearned: checked })),
+      toggleSwitch("「새 연계기!」 카드", "db-battle-fanfare-combo", current.comboUnlocked, (checked) => save({ comboUnlocked: checked })),
+      toggleSwitch("소리", "db-battle-fanfare-sound", current.sound, (checked) => save({ sound: checked })),
+    ],
+  });
+}
+
 export function renderBattleScreenTab(host: HTMLElement): void {
   const project = store.getCurrent();
   const rerender = (): void => {
@@ -105,6 +133,7 @@ export function renderBattleScreenTab(host: HTMLElement): void {
       children: [
         battleMethodCard(project, rerender),
         sectionCard({ title: "타격감", testid: "db-battle-hit-feel-card", children: [hitFeelField(project)] }),
+        fanfareCard(project, rerender),
         sectionCard({
           title: "전투 화면 꾸미기",
           hint: "도트 측면 전투에 적용됩니다",

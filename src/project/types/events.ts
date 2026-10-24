@@ -394,6 +394,14 @@ export type Command =
       autoFace?: boolean;
       /** 멀리서 부르는 한마디(가게 점원의 인사, 길 건너 이름 부르기). 거리 검사(scene-talk-far)를 하지 않고, 멀어도 듣는 쪽을 돌아본다. */
       calling?: boolean;
+      /**
+       * "stage" 면 흉상 좌우를 맵 위 자리로 정한다 — 말하는 인물이 듣는 인물보다 왼쪽에 서 있으면 흉상도 왼쪽, 오른쪽이면 오른쪽.
+       * 듣는 흉상(흐리게)도 «듣는 인물이 화면에 있고 그 인물의 흉상을 이미 봤으면 늘» 반대편에 세운다(앞 화자 대신 듣는 사람 기준).
+       * 같은 열(위아래로 선 둘)이면 저작한 자리를 지킨다. player/playSceneDialogueFacing.ts.
+       */
+      bustSide?: "stage";
+      /** bustSide "stage" 에서 듣는 인물의 흉상을 아직 못 봤을 때 쓸 흉상 리소스(그 인물이 한 번 말하면 그 흉상을 기억해 쓴다). */
+      listenerBust?: string;
     }
   | ({ kind: "changeFace"; appearanceId?: string } & FaceGraphic)
   | {
@@ -450,7 +458,7 @@ export type Command =
   | { kind: "advanceCropGrowth"; days: number }
   | { kind: "setTime"; hour: number; minute?: number }
   | { kind: "sleepUntilMorning" }
-  /** door=false: 문 칸에서 떠나도 문 여는 연출을 하지 않는다(생략 = 문 칸이면 문짝이 열리고 문 소리 뒤 이동). */
+  /** 문 열림 연출: 생략 = 자동(문 캐릭터 시트이거나 이벤트 칸·바로 윗칸에 여닫는 문 타일일 때만 — 성문·통로·맵 가장자리·계단은 없음), true = 켜기, false = 끄기. */
   | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition; door?: boolean }
   | { kind: "moveEvent"; eventId: string; route: MoveRoute }
   | { kind: "setEventGraphicPattern"; eventId: string; pattern: number }

@@ -465,6 +465,14 @@ function validateBattleEventCondition(condition: BattleEventCondition, context: 
     case "enemyTurn":
       assert(context.enemyIds.has(condition.enemyId), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);
       return;
+    case "enemyState":
+      if (condition.enemyId) assert(context.enemyIds.has(condition.enemyId) || (context.enemySlotIds?.has(condition.enemyId) ?? false), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);
+      assert(typeof condition.stateId === "string" && condition.stateId.length > 0, "battle condition: enemyState 에 stateId 가 없습니다");
+      return;
+    case "enemiesAlive":
+      if (condition.enemyId) assert(context.enemyIds.has(condition.enemyId), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);
+      assert(typeof condition.atMost === "number" && Number.isFinite(condition.atMost) && condition.atMost >= 0, "battle condition: enemiesAlive 의 atMost 는 0 이상 숫자여야 합니다");
+      return;
     case "enemyHpBelow":
       if (condition.enemyId) assert(context.enemyIds.has(condition.enemyId) || (context.enemySlotIds?.has(condition.enemyId) ?? false), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);
       return;

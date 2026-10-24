@@ -4,9 +4,11 @@ import { MAP_BACKGROUND_LAYER_DEPTH } from "@/player/characterDepth";
 import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
-import { decodeMapBackgroundFlow, mapBackgroundCoverCentre } from "@/project/mapBackground";
+import { MAP_VIEW_SCALE_RANGE, decodeMapBackgroundFlow, mapBackgroundCoverCentre } from "@/project/mapBackground";
 import type { MapBackgroundFit, MapBackgroundLayer } from "@/project/types";
 import { store } from "@/project/store";
+import { mapViewRegion, mapViewTextureKey, renderMapViewCanvas } from "@/player/mapBackgroundMapView";
+import type { MapBackgroundMapView } from "@/project/types";
 
 /**
  * 맵 배경(패럴랙스) 레이어 — RM2K3 「배경」 탭의 `map.background`.
@@ -50,7 +52,30 @@ export type MapBackgroundLayerSpec = {
   readonly cameraFollow: number;
   /** 그림 맞추기. native = 1:1, cover = 뷰포트를 덮도록 확대. */
   readonly fit: MapBackgroundFit;
+  /** 그림 대신 다른 맵을 줄여 그린 모습(이때 imageId 는 그 텍스처의 내부 이름). */
+  readonly fromMap?: MapBackgroundMapView;
 };
+
+/** 「다른 맵 보기」 층의 내부 그림 이름 — 서명·텍스처 키가 그림 id 처럼 다뤄지게. */
+function mapViewImageId(view: MapBackgroundMapView): string {
+  return `mapview:${mapViewTextureKey(view)}`;
+}
+
+/** 「다른 맵 보기」 층 기본값: 반복(동네가 화면 밖으로 이어진다)·깊이 = 배율(멀수록 덜 움직인다)·원 크기. */
+function mapViewSpec(view: MapBackgroundMapView, layer: { scrollX?: number; scrollY?: number; loopX?: boolean; loopY?: boolean; cameraFollow?: number }): MapBackgroundLayerSpec {
+  return {
+    imageId: mapViewImageId(view),
+    scrollX: layer.scrollX ?? 0,
+    scrollY: layer.scrollY ?? 0,
+    loopX: layer.loopX !== false,
+    loopY: layer.loopY !== false,
+    opacity: 1,
+    parallax: 1,
+    cameraFollow: layer.cameraFollow ?? (view.scale ?? 0.4),
+    fit: "native",
+    fromMap: view,
+  };
+}
 
 export type MapBackgroundLayout = {
   readonly x: number;
@@ -139,6 +164,8 @@ export function resolveMapBackgroundLayers(
   const overrideMapId = (override?.mapId ?? "").trim();
   const overridden = overrideId !== "" && (overrideMapId === "" || overrideMapId === scene.map?.id);
   const imageId = overridden ? overrideId : (background?.imageId ?? "").trim();
+  const extra = (background?.layers ?? []).map((layer) => layerSpecFromAuthoring(layer)).filter((spec) => spec.imageId !== "");
+  if (!imageId && !overridden && background?.fromMap) return [mapViewSpec(background.fromMap, background), ...extra];
   if (!imageId) return [];
   const base: MapBackgroundLayerSpec = {
     imageId,
@@ -154,11 +181,11 @@ export function resolveMapBackgroundLayers(
   };
   // 추가 레이어(앞이 아래). 명령의 「먼 배경 변경」이 첫 장을 대체할 뿐 추가 레이어는 그대로 유지한다 —
   // 구름과 산을 명령이 지우면 같은 자리가 빈 것이 되어 일부가 어색하게 보이게 된다.
-  const extra = (background?.layers ?? []).map((layer) => layerSpecFromAuthoring(layer));
   return [base, ...extra];
 }
 
 function layerSpecFromAuthoring(layer: MapBackgroundLayer): MapBackgroundLayerSpec {
+  if (layer.fromMap) return mapViewSpec(layer.fromMap, layer);
   return {
     imageId: layer.imageId,
     scrollX: layer.scrollX ?? 0,
@@ -212,22 +239,33 @@ function syncMapBackgroundStack(scene: PlaySceneContext): void {
   scene.mapBackgroundToken = token;
   scene.mapBackgroundPendingSignature = signature;
   const loadable: Array<{ spec: MapBackgroundLayerSpec; url: string }> = [];
+  const mapViews: Promise<unknown>[] = [];
   for (const spec of missing) {
+    if (spec.fromMap) {
+      const view = spec.fromMap;
+      const key = mapBackgroundTextureKey(spec.imageId);
+      mapViews.push(renderMapViewCanvas(store.getCurrent(), view).then((canvas) => {
+        if (canvas && !scene.textures.exists(key)) scene.textures.addCanvas(key, canvas);
+        else if (!canvas) console.warn(`[player] map background view not drawn: ${view.mapId}`);
+      }).catch(() => undefined));
+      continue;
+    }
     const url = resolveAssetResourceUrl(spec.imageId, { project: store.getCurrent() });
     if (url) loadable.push({ spec, url });
     // 저작 경고다 — 로드 게이트가 저작 참조는 보지만 세션 오버라이드는 보지 않는다.
     else console.warn(`[player] map background not found: ${spec.imageId}`);
   }
-  if (loadable.length === 0) {
+  if (loadable.length === 0 && mapViews.length === 0) {
     // 실패도 «정착» 이다 — 정착으로 적지 않으면 매 프레임 다시 시도한다.
     hideMapBackgroundSprites(scene);
     scene.mapBackgroundAppliedSignature = signature;
     scene.mapBackgroundPendingSignature = undefined;
     return;
   }
-  void Promise.all(
-    loadable.map((entry) => ensureSceneImageTexture(scene, mapBackgroundTextureKey(entry.spec.imageId), entry.url)),
-  ).then(() => {
+  void Promise.all([
+    ...loadable.map((entry) => ensureSceneImageTexture(scene, mapBackgroundTextureKey(entry.spec.imageId), entry.url)),
+    ...mapViews,
+  ]).then(() => {
     // 그사이 맵이 바뀌었거나 배경이 교체됐으면 이 결과는 버린다.
     if (scene.mapBackgroundToken !== token || scene.map !== requestedMap) return;
     scene.mapBackgroundPendingSignature = undefined;
@@ -293,17 +331,35 @@ function placeMapBackgroundLayer(
   }
   const anchor = scene.mapBackgroundCameraAnchor;
   const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
-  const centre = mapBackgroundCoverCentre(spec.fit, {
+  const centre = { ...mapBackgroundCoverCentre(spec.fit, {
     width: (camera.width || PLAY_RESOLUTION.width) / zoom,
     height: (camera.height || PLAY_RESOLUTION.height) / zoom,
-  }, sourceSizeOf(scene, sprite));
+  }, sourceSizeOf(scene, sprite)) };
   // 반복하지 않는 축(그림 한 장)은 카메라를 따라가지 않는다 — 따라가면 그 가장자리가 화면에 들어와 검은 띠가 생기거나
   // 지평선 실루엣 층이 맵 바닥선을 떠나 아래 채움 줄이 드러났다(2026-10-22 출하 플레이어 실측). 지평선(loopY:false)은 가로로만 시차를 준다.
+  const focus = mapViewFocusOffset(spec, camera);
+  centre.x += focus.x; centre.y += focus.y;
   const logicalX = centre.x + mapBackgroundLayerOffset(offset.x, camera.scrollX - (anchor?.x ?? Number.NaN), spec.loopX ? spec.cameraFollow : 0);
   const logicalY = centre.y + mapBackgroundLayerOffset(offset.y, camera.scrollY - (anchor?.y ?? Number.NaN), spec.loopY ? spec.cameraFollow : 0);
   sprite.tilePositionX = mapBackgroundTilePosition(logicalX, sprite.tileScaleX || 1);
   sprite.tilePositionY = mapBackgroundTilePosition(logicalY, sprite.tileScaleY || 1);
   applyAxisScroll(sprite, layout, spec);
+}
+
+/** 「다른 맵 보기」 층: 아래 맵의 focus 칸(기본 가운데)이 화면 가운데에 오도록 미는 양(논리 px). 다른 층은 0. */
+function mapViewFocusOffset(spec: MapBackgroundLayerSpec, camera: { width: number; height: number; zoom: number }): { x: number; y: number } {
+  const view = spec.fromMap;
+  if (!view) return { x: 0, y: 0 };
+  const project = store.getCurrent();
+  const map = project.maps[view.mapId];
+  const region = mapViewRegion(project, view);
+  if (!map || !region) return { x: 0, y: 0 };
+  const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
+  const s = (view.scale ?? MAP_VIEW_SCALE_RANGE.default) * map.tileSize;
+  // 칸 좌표 → 그린 그림 안 px. focus 기본은 그린 범위 가운데.
+  const fx = ((view.focusX ?? region.x + region.width / 2 - 0.5) - region.x + 0.5) * s;
+  const fy = ((view.focusY ?? region.y + region.height / 2 - 0.5) - region.y + 0.5) * s;
+  return { x: Math.round(fx - (camera.width || PLAY_RESOLUTION.width) / zoom / 2), y: Math.round(fy - (camera.height || PLAY_RESOLUTION.height) / zoom / 2) };
 }
 
 /** 자동 흐름 누적 + 카메라 스크롤 × 깊이. 깊이 0 이면 카메라를 전혀 보지 않는다(RM2K3 동작). */

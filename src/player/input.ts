@@ -3,6 +3,7 @@
 // 눌림 상태(지속)와 "방금 누름"(엣지)을 구분.
 
 import type Phaser from "phaser";
+import { playerAlwaysRun } from "@/player/playerPreferences";
 
 import {
   type Dir,
@@ -395,7 +396,9 @@ export class Input {
     }
     // 8방향 이동 의도 해석(수평/수직 축 성분 + 수평 우선 facing).
     const intent = resolveMovementIntent(this.priority);
-    const dash = this.runtimeKeys.isDashing() || (!typing && (this.cursors?.shift?.isDown ?? false));
+    const dashKey = this.runtimeKeys.isDashing() || (!typing && (this.cursors?.shift?.isDown ?? false));
+    // 「항상 달리기」(옵션·터치 달리기 단추)면 Shift 는 걷기다 — RPG Maker MZ 와 같다.
+    const dash = playerAlwaysRun() ? !dashKey : dashKey;
 
     // action/confirm 엣지: 이벤트 기반(keydown 리스너) 큐에서 소비.
     // JustDown(폴링)은 headless/프레임 타이밍에 취약하므로 직접 잡은 엣지를 쓴다.

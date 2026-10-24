@@ -146,7 +146,7 @@ describe("uploaded charset transparency", () => {
     const { scene, queued } = fakeScene();
     loadBundledAssets(scene, project);
     expect(queued).toContainEqual({ key: asset.id, url: CHARSET_DATA_URL });
-    expect(resolveEventSpriteTexture(project, asset.id, 0)).toEqual({ texture: asset.id, frame: "__BASE", fitSize: 32 });
+    expect(resolveEventSpriteTexture(project, asset.id, 0)).toEqual({ texture: asset.id, frame: "__BASE", fitSize: 32, monster: true });
   });
   it.each(["preload", "late"])("loads file-backed charsets after SQLite reopen (%s)", (phase) => {
     const ref = { sha256: "a".repeat(64), mime: "image/png", bytes: 100, extension: "png" };

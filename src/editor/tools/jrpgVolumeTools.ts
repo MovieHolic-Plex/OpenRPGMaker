@@ -229,7 +229,9 @@ function shopGoods(project: Project, given: unknown): string[] {
 export function chestLoot(project: Project, salt: number): { itemId?: string; gold?: number } {
   const items = (project.database.items ?? []).filter((i) => (i.price ?? 0) > 0 && (i.type === "medicine" || i.type === "normalGoods")).sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
   const pick = items[Math.min(items.length - 1, 1 + (salt * 3) % Math.max(1, Math.min(items.length, 12)))];
-  return pick && salt % 3 !== 2 ? { itemId: pick.id } : { gold: 150 + 50 * salt };
+  // salt 는 호출자에 따라 시드 해시(수천만)일 수 있다 — 금액은 작은 단계로 접는다(2026-10-24 스위트: 숲 던전 상자 60,685,900G).
+  const step = Math.abs(Math.trunc(salt)) % 8;
+  return pick && Math.abs(salt) % 3 !== 2 ? { itemId: pick.id } : { gold: 150 + 50 * step };
 }
 
 export function sanitizeId(raw: string): string {

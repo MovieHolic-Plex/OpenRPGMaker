@@ -17,6 +17,7 @@ import { startStateOf } from "@/project/session";
 import { chebyshev, planApproach, type ApproachWorld } from "@/project/staging/approach";
 import { probeCutscene } from "@/editor/cutscenePreview/probe";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
+import { searchResources } from "@/assets/resourceSearch";
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { MachineCheck } from "./checks";
 import {
@@ -32,7 +33,7 @@ export const EVENT_CARD =
   "walk{who,to}=걷기(to=길·광장·입구·문 앞 같은 자리 낱말, 다른 사람 이름이면 그 곁으로 걸어가 마주 선다, {x,y} 는 꼭 필요할 때만) / " +
   "say{who,text}=대사 / appear{who,where?,looks?,talk?}=그 자리에 «팍» 나타남(where 생략 가능 — 뒤에 주인공에게 걸어오면 함수가 4~8칸 떨어진 길 위를 고른다; talk=컷신 뒤 말 걸면 할 말 배열) / " +
   "face{who,toward}=바라봄 / wait{ms} / fade{dir:'in'|'out'} / " +
-  "tint{tone:'night'|'dusk'|'dawn'|'sepia'|'clear'}=화면 색(밤이 되면 컷신 뒤에도 밤으로 남는다, 되돌리려면 clear) / camera{to}=카메라를 자리 낱말·사람·'x,y' 로 옮겨 보여 줌, to:'back' 이면 주인공에게 복귀(빠뜨려도 끝에 돌아온다) / " +
+  "tint{tone:'night'|'dusk'|'dawn'|'sepia'|'clear'}=화면 색(밤이 되면 컷신 뒤에도 밤으로 남는다, 되돌리려면 clear) / weather{weather:'rain'|'storm'|'snow'|'fog'|'none',intensity?:0~1}=실제 날씨(비가 오기 시작한다 → weather rain; tint 로 흉내 내지 않는다, 컷신 뒤에도 남는다) / shake{strength?:'weak'|'medium'|'strong',axis?:'vertical'(지진·쿵)|'horizontal'(부딪힘),ms?}=화면 흔들림(지진은 camera 로 흉내 내지 않는다) / flash{color?:'white'|'#rrggbb',ms?}=번쩍(번개·폭발 — fade 로 흉내 내지 않는다) / music{action:'bgm'|'se'|'stop'|'fade',query}=배경 음악 바꾸기(축제·전투 음악 등)·효과음 — query 는 음원 낱말 / emote{who,emote:'!'|'?'|'♥'|'땀'|'화'|'…'|'zzz'}=머리 위 감정 표시(놀람 «!»은 대사로 쓰지 않고 이것) / camera{to}=카메라를 자리 낱말·사람·'x,y' 로 옮겨 보여 줌, to:'back' 이면 주인공에게 복귀(빠뜨려도 끝에 돌아온다) / " +
   "look{who,as:'shadow'|'ghost'|'normal'}=검은 실루엣·반투명 유령·원래 모습 / vanish{who}=연기처럼 사라짐(«지나가는» 그림자는 등장한 반대쪽 자리 낱말로 걸어가 사라진다 — 다른 사람 곁으로 걸으면 «찾아온» 장면이 된다). " +
   "대사 속 마을·사람 이름은 맵 이름·기존 NPC 대사에 있는 것을 그대로 쓴다(새로 짓지 않는다). " +
   "who: 주인공·player·hero = 플레이어, 그 밖의 이름 = 컷신에 나타나는 사람(appear 로 먼저 등장시키거나 맵에 이미 있는 NPC 이름). " +
@@ -639,6 +640,54 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
         effects.push(b.tone === "clear" ? "the screen tint is cleared back to normal" : `the whole screen is tinted ${b.tone === "night" ? "dark night blue" : b.tone} from here on (stays after the scene)`);
         break;
       }
+      case "weather": {
+        const kinds = ["rain", "storm", "snow", "fog", "none"];
+        if (!kinds.includes(b.weather)) { warnings.push(`weather: 모르는 날씨 '${String(b.weather)}' — rain·storm·snow·fog·none.`); break; }
+        const intensity = Math.min(1, Math.max(0.1, Number.isFinite(b.intensity) ? Number(b.intensity) : 0.6));
+        out.push({ kind: "weather", weather: b.weather, intensity, durationMs: 1200 });
+        effects.push(b.weather === "none" ? "the weather clears" : `real ${b.weather} weather starts (particles over the whole map, stays after the scene)`);
+        break;
+      }
+      case "shake": {
+        const intensity = b.strength === "weak" ? 3 : b.strength === "strong" ? 10 : 6;
+        const durationMs = Math.min(4000, Math.max(200, Number.isFinite(b.ms) ? Math.round(Number(b.ms)) : 900));
+        out.push({ kind: "shake", intensity, durationMs, axis: b.axis ?? "both" });
+        effects.push(`the screen shakes (${b.axis ?? "both"}, ${durationMs} ms)`);
+        break;
+      }
+      case "flash": {
+        const color = typeof b.color === "string" && /^#[0-9a-f]{6}$/iu.test(b.color) ? b.color : /red|빨/iu.test(String(b.color ?? "")) ? "#ff4040" : "#ffffff";
+        const durationMs = Math.min(2000, Math.max(100, Number.isFinite(b.ms) ? Math.round(Number(b.ms)) : 400));
+        out.push({ kind: "flash", color, durationMs });
+        effects.push(`the screen flashes ${color}`);
+        break;
+      }
+      case "emote": {
+        const key = keyOf(b.who) ?? ensureActor(b.who, i);
+        if (!key) { warnings.push(`emote: 누군지 모르는 '${b.who}'.`); break; }
+        const raw = String(b.emote ?? "").trim();
+        const table: [RegExp, string][] = [[/^!|놀|exclam|surpri/iu, "exclamation"], [/^\?|물음|question|confus/iu, "question"], [/♥|하트|heart|love|사랑/iu, "heart"], [/땀|sweat|당황/iu, "sweat"], [/화|분노|anger|angry|💢/iu, "anger"], [/…|\.\.\.|ellipsis|말없/iu, "ellipsis"], [/z{2,}|잠|sleep/iu, "sleep"], [/반짝|sparkle|✨/iu, "sparkle"], [/전구|idea|생각났/iu, "idea"], [/♪|노래|music/iu, "music"], [/미소|smile|웃/iu, "smile"]];
+        const emote = table.find(([re]) => re.test(raw))?.[1] ?? "exclamation";
+        out.push({ kind: "emote", target: idFor(key), emote, durationMs: 900 });
+        effects.push(`a '${emote}' balloon pops over ${b.who}'s head`);
+        break;
+      }
+      case "music": {
+        const action = b.action ?? "bgm";
+        if ((action === "bgm" || action === "se") && !b.query?.trim()) { warnings.push("music: bgm·se 는 query(음원 낱말)가 필요하다."); break; }
+        // 음원 낱말을 실제 음원 id 로 — 없는 낱말(sad·ghost)은 장면 전체를 «없는 리소스»로 실패시켰다(2026-10-24 h-fog-ghost).
+        let resourceId: string | undefined;
+        if (action === "bgm" || action === "se") {
+          const q = b.query!.trim().toLowerCase();
+          const SYN: [RegExp, string[]][] = [[/sad|sorrow|슬픈|슬픔|비극|애도|tear/u, ["mystery", "night", "town"]], [/ghost|horror|유령|공포|귀신|scary|eerie|으스스/u, ["mystery", "dungeon", "night"]], [/festival|party|축제|잔치|celebrat/u, ["축제", "festival", "town"]], [/battle|fight|전투|싸움|boss|보스/u, ["battle"]], [/thunder|천둥|번개|lightning/u, ["explosion", "폭발", "boom"]], [/calm|peace|평화|잔잔|town|마을/u, ["town"]]];
+          const tries = [q, ...(SYN.find(([re]) => re.test(q))?.[1] ?? [])];
+          for (const t of tries) { const hit = searchResources(action, t)[0]; if (hit) { resourceId = hit.id.replace(/^(?:bgm|se):/u, ""); break; } }
+          if (!resourceId) { warnings.push(`music: '${b.query}' 에 맞는 ${action} 음원을 못 찾아 이 비트는 뺐다 — list_resources 로 음원 id 를 찾아 다시 준다.`); break; }
+        }
+        out.push(action === "stop" || action === "fade" ? { kind: "music", action } : { kind: "music", action, resourceId: resourceId! });
+        effects.push(action === "bgm" ? `the background music changes to a '${b.query}' track (stays after the scene)` : action === "se" ? `a '${b.query}' sound effect plays` : "the music stops");
+        break;
+      }
       case "camera": {
         const to = b.to;
         if (typeof to === "string" && /^(back|return|복귀|돌아옴|주인공)$/iu.test(to.trim())) { out.push({ kind: "camera", mode: "return", durationMs: 600, wait: true }); break; }
@@ -687,8 +736,11 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   let gateSwitch: string | undefined;
   if (gated.length > 0) {
     const key = `v2scene_${(run.calls.length * 7919 + gated.length * 104729 + Date.now()) % 1_000_000}`;
-    const fl = run.call("create_quest_flags", { questKey: key, steps: 1 });
-    gateSwitch = fl.ok ? ((fl.data ?? {}) as { started?: string }).started : undefined;
+    // 스위치 하나만 선언한다 — create_quest_flags 는 안 쓰는 _done·_progress 까지 만들어 「선언만 하고 안 쓰는 깃발」이 됐다(2026-10-24 스위트).
+    const fl = run.call("declare_story_flag", { action: "declare", id: key.replace(/_/gu, "-"), kind: "switch", targetId: `sw_${key}_shown`, description: "장면 전에는 숨겨 둔 사람(장면이 켠다)" });
+    gateSwitch = fl.ok ? ((fl.data ?? {}) as { flag?: { targetId?: string } }).flag?.targetId
+      // 앞서 실패한 장면이 같은 스위치를 이미 선언했으면 그것을 그대로 쓴다(「이미 등록되어 있습니다」로 장면이 깨졌다 — h-fog-ghost).
+      : /이미 등록/u.test(String(fl.summary)) ? `sw_${key}_shown` : undefined;
     if (gateSwitch) {
       const cur = findMap(run.ctx.project, mapId);
       for (const id of gated) {

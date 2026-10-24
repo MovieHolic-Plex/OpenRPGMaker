@@ -163,6 +163,45 @@ def sky_day(out: Path) -> None:
     save(near, out / "oprn-pano-sky-day-clouds-near.png")
 
 
+# ── 세트 1b: 맑은 하늘 + 낮 도시 (옥상·높은 층 창밖) ──
+# 옥상 둘레가 하늘뿐이면 옥상이 공중에 뜬 상자로 읽혔다(첫사랑 VQA r22). 낮 공기 원근(멀수록 하늘색에 묻힘)으로
+# 먼 빌딩 줄과 가까운 빌딩 줄 두 겹을 그린다. 바닥선은 그림 아래쪽(y≈200) — 맵 가운데(옥상 바닥)는 가리고
+# 옆 빈 칸과 난간 위로 높은 빌딩 머리가 보인다.
+def city_block(img: np.ndarray, rng: random.Random, ground: int, hmin: int, hmax: int,
+               body: str, shade: str, win: str, roof_line: str) -> None:
+    w = img.shape[1]
+    x = rng.randrange(0, 8)
+    while x < w:
+        bw = rng.randrange(18, 46)
+        bh = rng.randrange(hmin, hmax)
+        top = ground - bh
+        for dx in range(bw):
+            for y in range(top, ground):
+                put(img, x + dx, y, hex_rgb(shade if dx >= bw - max(3, bw // 6) else body))
+            put(img, x + dx, top, hex_rgb(roof_line))
+        # 창 줄(낮이라 불은 없다 — 하늘을 비추는 밝은 유리)
+        for wy in range(top + 4, ground - 3, 5):
+            for wx in range(x + 3, x + bw - max(4, bw // 6), 4):
+                put(img, wx, wy, hex_rgb(win))
+                put(img, wx + 1, wy, hex_rgb(win))
+        if rng.random() < 0.35:  # 옥상 물탱크·안테나
+            ax = x + rng.randrange(3, max(4, bw - 4))
+            for y in range(top - rng.randrange(4, 9), top):
+                put(img, ax, y, hex_rgb(roof_line))
+        x += bw + rng.randrange(1, 6)
+
+
+def sky_day_city(out: Path) -> None:
+    w, h = 640, 240
+    rng = random.Random(23)
+    far = blank_rgba(w, h)
+    city_block(far, rng, 214, 70, 150, "#a9c4e2", "#98b5d6", "#c7dcf2", "#8eaacb")
+    save(far, out / "oprn-pano-sky-day-city-far.png")
+    near = blank_rgba(w, h)
+    city_block(near, rng, 236, 40, 110, "#7f98b8", "#6c84a4", "#b4cbe6", "#5e7696")
+    save(near, out / "oprn-pano-sky-day-city-near.png")
+
+
 # ── 세트 2: 노을 (지평선, 640×240) ──
 # 지평선을 y=HORIZON(화면 위쪽 절반)에 둔다. 배경은 화면에 고정되므로, 지붕·절벽 위로 윗줄 몇 칸만 비워도
 # 해와 실루엣이 보여야 한다(2026-10-21: 해가 맨 아래에 있으면 윗줄을 비워도 어두운 보라만 보였다).
@@ -307,6 +346,7 @@ def main() -> None:
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     sky_day(out)
+    sky_day_city(out)
     sunset(out)
     night_stars(out)
     sea(out)

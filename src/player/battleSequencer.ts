@@ -76,6 +76,8 @@ export interface DamageFeedback {
   readonly effectiveness?: number;
   /** 장비한 무기 계열이 맞아 기술 위력이 오른 타격(SkillRecord.weaponAffinity). 숫자 위 「무기↑」 꼬리표. */
   readonly weaponAffinity?: boolean;
+  /** 약점 공략 타격(SkillRecord.exploitStates). 숫자 아래 「공략!」 꼬리표. */
+  readonly exploit?: boolean;
   /** 숫자 대신 띄울 글자(상태 부여 「스톱」 등). 있으면 HP 원장·타격 연출·효과음을 건드리지 않는
    *  **표시 전용** 팝업이다(battleDom.onDamageFeedback 이 일찍 돌아간다). */
   readonly label?: string;
@@ -304,6 +306,7 @@ export function createBattleSequencer(
       resource: entry.resource ?? "hp",
       ...(entry.effectiveness !== undefined && !healing ? { effectiveness: entry.effectiveness } : {}),
       ...(entry.weaponAffinity && !healing ? { weaponAffinity: true } : {}),
+      ...(entry.exploit && !healing ? { exploit: true } : {}),
     };
   }
 

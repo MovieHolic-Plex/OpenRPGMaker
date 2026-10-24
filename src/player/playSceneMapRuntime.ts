@@ -7,7 +7,7 @@ import { projectReferenceTileSize } from "@/project/mapViewScale";
 import { syncPlayerCharacterScale } from "@/player/playerCharacterScale";
 import { resetDetectionForMap } from "./npcDetectionEncounter";
 import { dialogueUi } from "./playSceneDom";
-import { syncContainerSearchedMarks } from "@/player/playSceneFieldFx";
+import { prepareDoorFx, syncContainerSearchedMarks } from "@/player/playSceneFieldFx";
 import { evalCondition } from "@/project/session";
 import { clearFurniturePush, furniturePushPosition } from './furniturePushAnimation';
 import { chipsetAnimationKey } from "@/assets/bundled";
@@ -52,8 +52,9 @@ import { runCommands } from "@/player/playSceneInterpreter";
 import { abortHop, clearAllHopScales, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
 import { destroyCharacterShadow, destroyAllCharacterShadows } from "@/player/characterShadow";
 import { startMapBgm } from "@/player/mapBgm";
-import { eventSpriteFrameForDirection, eventSpriteScale, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
+import { eventSpriteFrameForDirection, eventSpriteScale, resolveEventSpriteTexture, withDerivedFieldFoe } from "@/player/eventSpriteResources";
 import {
+  characterDepth,
   characterSpriteY,
   footprintSpriteX,
   isAlwaysAboveCharacterUpperTile,
@@ -594,6 +595,18 @@ function trackRootYSortTile<TImage extends RenderedTileImage, TSprite extends Re
   rootYSortTiles.set(host, tiles);
 }
 
+/** 칸 (x,y) 의 하층이 막혔고(×) 바로 아래 칸의 하층은 밟을 수 있는가 — 벽면에 박힌 기물의 맨 아래 줄. */
+function isWallFaceCell(map: PlaySceneContext["map"], tileset: TilesetDef, x: number, y: number): boolean {
+  if (y + 1 >= map.height) return false;
+  const lowerAt = (cy: number): number => {
+    const index = cy * map.width + x;
+    return topTileInStack(map, "lower", index) ?? map.lowerTiles[index] ?? -1;
+  };
+  const here = lowerAt(y), below = lowerAt(y + 1);
+  if (here < 0 || below < 0) return false;
+  return passageMarkForTile(tileset, here) === "x" && passageMarkForTile(tileset, below) !== "x";
+}
+
 function placeMapTileImage<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
   scene: RenderTilesSceneContext<TImage, TSprite>,
   image: TImage,
@@ -605,10 +618,16 @@ function placeMapTileImage<TImage extends RenderedTileImage, TSprite extends Ren
   depthOffset: number,
   pass: TileRenderPass,
 ): void {
-  const alwaysAbove = layer === "upper" && cachedTileValue(pass.above, tile, () => isAlwaysAboveCharacterUpperTile(tileset, tile));
+  const aboveTile = layer === "upper" && cachedTileValue(pass.above, tile, () => isAlwaysAboveCharacterUpperTile(tileset, tile));
+  // 벽면 기물(엘리베이터 문·벽에 박힌 문틀): ★ 이어도 막힌 칸에 얹혀 있고 바로 아래가 밟는 칸(문턱)이면 그 앞에 선 사람의
+  // 머리가 그 칸에 걸친다 — 늘 위에 그리면 문턱에 선 사람이 문틀 밑에 짓눌려 보였다(첫사랑 r2 사무실 승강기, #3231 리뷰).
+  // 그런 칸은 제 줄로 캐릭터와 y 정렬한다(같은 줄은 타일이 이긴다 — 문 안쪽 칸에 들어간 사람은 계속 가려진다).
+  const wallFace = aboveTile && isWallFaceCell(scene.map, tileset, x, y);
+  const alwaysAbove = aboveTile && !wallFace;
   bumpPerfCounter(scene, "tileObjectsCreated");
   image.setOrigin(0, 0);
   applyTileDepth(pass.size, image, tileset, tile, y, layer, depthOffset);
+  if (wallFace) image.setDepth(characterDepth("same", characterSpriteY(y, pass.size)) + 0.5 + depthOffset);
   // 높이 지형: 들린 칸의 타일은 그 칸 윗면으로 올리고, 하층·○ 상층은 줄 depth 로 root 에서 캐릭터와 섞는다
   // (playSceneRelief 머리말의 depth 규칙). ★ 수관은 컨테이너에 그대로, 솔리드 × 는 이미 줄 depth 다.
   const liftPx = reliefLiftPx(scene.map, x, y, pass.size);
@@ -659,7 +678,7 @@ function renderEmptyCellCover<TImage extends RenderedTileImage, TSprite extends 
   const upper = topTileInStack(map, "upper", index) ?? map.upperTiles[index];
   if (isPanoramaWindowTile(lower) || isPanoramaWindowTile(upper)) return;
   // 저작자가 「빈 칸에도 배경」 을 켰다 — 창 타일이 없는 칩셋(숲마을·기후 시트)은 이 길뿐이다.
-  if (map.background?.showInEmptyCells === true && (map.background.imageId || map.background.layers?.length)) return;
+  if (map.background?.showInEmptyCells === true && (map.background.imageId || map.background.fromMap || map.background.layers?.length)) return;
   const size = mapTileSize(map);
   if (typeof scene.add.rectangle !== "function") return;
   const cover = scene.add.rectangle(x * size, y * size, size, size, 0x000000);
@@ -877,7 +896,7 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     const overrideFrame = scene.eventGraphicPatternOverrides?.get(event.id);
     const authoredPattern = view.page?.graphic.pattern;
     const pattern = overrideFrame ?? authoredPattern;
-    const spriteTexture = resolveEventSpriteTexture(store.getCurrent(), sprite.id, pattern);
+    const spriteTexture = withDerivedFieldFoe(scene, resolveEventSpriteTexture(store.getCurrent(), sprite.id, pattern));
     if (!spriteTexture) scene.missingResources.add(sprite.id);
     // Static art has one frame. Charset overrides already encode direction/walk.
     const frame =
@@ -949,6 +968,8 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
   syncForageWarnings(scene);
   // 뒤진 수납 칸의 흔적(열린 뚜껑·흘린 짚 …) — 「이미 뒤짐」 페이지가 켜진 이벤트만.
   syncContainerSearchedMarks(scene as unknown as PlaySceneContext);
+  // 문 연출 미리 계산(맵마다 한 번) — 이동하는 순간 화소를 읽지 않게.
+  prepareDoorFx(scene as unknown as PlaySceneContext);
   scene.runtimeDom.syncMissingResourceError(scene.missingResources);
   scene.syncRuntimeState();
 }

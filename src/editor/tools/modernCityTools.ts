@@ -64,6 +64,9 @@ export const COMPOSE_MODERN_CITY_STREET_TOOL: ToolDefinition = {
       seed: { type: "integer", minimum: 0, description: "배치 씨앗(생략 0) — 바꾸면 도로 위치·건물·소품·차가 달라진다" },
       shops: { type: "array", items: { type: "string" }, description: "꼭 넣을 건물(편의점·카페·은행·병원·사무실·호텔·아파트·창고·이자카야·빵집…)" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 깐다" },
+      landmark: { type: "string", description: "가장 넓은 블록 가운데 먼저 세울 랜드마크 건물(예: 오피스 타워 → tower10, 대형 오피스 → office-wide, 호텔·백화점). 결과 buildings[0]. 높이 13칸 타워는 띠가 13줄 이상이어야 서므로 맵 높이 50 이상 권장" },
+      subwayExits: { type: "integer", minimum: 1, maximum: 4, description: "지하철 출구 수(기본 1). 2 이상이면 출구마다 번호 표지(1·2·3…)를 세우고 data.subwayExits[{n, stair, step}] 를 준다 — stair 칸에 이동 이벤트, step 이 나오는 칸" },
+      korean: { type: "boolean", description: "한국 거리 단서: 보도 점자 블록 줄·가로수 보호판·버스 쉘터·자전거 거치대·가게 옆 한글 세로 입간판(지어낸 이름)" },
     },
     additionalProperties: false,
   },
@@ -87,7 +90,10 @@ export const COMPOSE_MODERN_CITY_STREET_TOOL: ToolDefinition = {
     }
     const pal = modernCityPaletteFromTileset(tileset!);
     let r;
-    try { r = composeModernCityStreet({ width: map.width, height: map.height, seed, shops }, pal); }
+    const landmark = typeof args.landmark === "string" && args.landmark.trim() ? shopType(args.landmark) : null;
+    if (typeof args.landmark === "string" && args.landmark.trim() && !landmark) throw new ToolError(`랜드마크 '${args.landmark}' 에 맞는 건물이 없다 — tower10·office-wide·hotel·dept 같은 종류나 「오피스 타워」를 준다`, { code: "invalid-args" });
+    const district = { ...(landmark ? { landmark } : {}), ...(typeof args.subwayExits === "number" ? { subwayExits: args.subwayExits } : {}), ...(args.korean === true ? { korean: true } : {}) };
+    try { r = composeModernCityStreet({ width: map.width, height: map.height, seed, shops, district }, pal); }
     catch (e) { throw new ToolError(`거리를 짜지 못했다 — ${(e as Error).message}`, { code: "compose-failed", mapId }); }
     const next: Project = { ...draft, maps: { ...draft.maps, [mapId]: structuredClone(map) } };
     const target = next.maps[mapId]!;
@@ -98,6 +104,7 @@ export const COMPOSE_MODERN_CITY_STREET_TOOL: ToolDefinition = {
     const W = target.width, errs: string[] = [];
     if (!walkable(next, target, r.start.x, r.start.y)) errs.push(`시작 칸 (${r.start.x},${r.start.y}) 이 막혔다`);
     const seen = walkable(next, target, r.start.x, r.start.y) ? reachable(next, target, r.start) : new Set<number>();
+    for (const e of r.subwayExits) if (!walkable(next, target, e.step.x, e.step.y) || !seen.has(e.step.y * W + e.step.x)) errs.push(`지하철 ${e.n}번 출구 나오는 칸 (${e.step.x},${e.step.y}) 에 시작 칸에서 닿지 못한다`);
     for (const d of r.buildings) {
       for (const c of d.doors) if (walkable(next, target, c.x, c.y)) errs.push(`${d.name} 문 칸 (${c.x},${c.y}) 이 열려 있다`);
       for (const c of d.access) {
@@ -123,10 +130,11 @@ export const COMPOSE_MODERN_CITY_STREET_TOOL: ToolDefinition = {
     const startNote = claimStartIfBlank(draft, mapId, r.start).note;
     return {
       summary: `도쿄풍 거리를 ${map.width}×${map.height} 맵(${mapId})에 짰다(seed ${seed}) — 가로 도로 ${r.roads.horizontal.length}·세로 도로 ${r.roads.vertical.length}, 건물 ${r.buildings.length}채, 소품 ${r.props.length}개, 주행·회전 차량 노선 ${r.transit.routes.length}개${r.park ? `, 공원 (${r.park.x},${r.park.y}) ${r.park.w}×${r.park.h}` : ""}, 시작 칸 (${r.start.x},${r.start.y}) 에서 모든 문 접근칸에 닿음(엔진 통행). `
+        + (r.subwayExits.length > 1 ? `지하철 출구 ${r.subwayExits.map((e) => `${e.n}번 계단(${e.stair.x},${e.stair.y})→나오는 칸(${e.step.x},${e.step.y})`).join(" · ")}. ` : "")
         + `건물: ${r.buildings.map((d) => `${d.name} 문(${d.doors[0]!.x},${d.doors[0]!.y})${d.program ? `→${d.program}` : ""}`).join(" · ")}.`
         + (r.notes.length ? ` 참고: ${r.notes.join(" / ")}.` : "") + (blocked.length ? ` 경고: 막힌 칸 위 이벤트 ${blocked.join(", ")}.` : "") + startNote
         + " 좌표는 도구 인자용이다 — NPC 대사·안내 문구에는 (x,y) 대신 건물 이름·방향(「본사 정문」 「동쪽 끝」)을 쓴다.",
-      data: { mapId, seed, start: r.start, roads: r.roads, park: r.park, transitRoutes: r.transit.routes.length, buildings: r.buildings.map((d) => ({ name: d.name, kind: d.kind, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access, program: d.program ?? null })), props: r.props.length },
+      data: { mapId, seed, start: r.start, roads: r.roads, park: r.park, transitRoutes: r.transit.routes.length, subwayExits: r.subwayExits, buildings: r.buildings.map((d) => ({ name: d.name, kind: d.kind, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access, program: d.program ?? null })), props: r.props.length, propList: r.props },
     };
   },
 };

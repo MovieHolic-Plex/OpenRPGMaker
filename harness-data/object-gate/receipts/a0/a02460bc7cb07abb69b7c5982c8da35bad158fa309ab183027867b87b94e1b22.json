@@ -1,0 +1,325 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a02460bc7cb07abb69b7c5982c8da35bad158fa309ab183027867b87b94e1b22",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "blue wildflowers (wildflowers), natural map prop for the Beodeul 16px chipset, 1x1 tiles, walk-over ground decor (2nd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/flowers-blue",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 32,
+  "nearBlackEdge": 0.11,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass stems and leaf tuft",
+      "rows": "4-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue flower blossoms",
+      "rows": "6-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The sprite is a sparse cluster of thin green stems with a few small blue blossoms at rows 6-11, rising from a leaf tuft at rows 12-14 (width 11-12). The silhouette is irregular and organic, with no lid, ellipse, edge line or eave shadow and no solid body. Stems are 1-2 px wide and there is no flat front face, so it is a flat ground-decor plant, not a box-like volume. Neither a top surface nor a front face can be measured, so it fits no structural category."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny sprite smaller than one tile, so the per-tile tone count is 0 and I judged density by eye. It has 9 distinct colours in total and reads as a few green blades with a handful of pale blue dots. The dark edge pixels are tinted rather than neutral (0% near-neutral, matching the references), so this is not a sticker outline, and there are no flat 5x5 fills. The green ramp has only about 3-4 steps, against 6-7 visible tones per tile on tree-1a786c and about 29 on tree-d43edd. The blue flower heads are only a few pixels and have no highlight/shadow ramp, so the piece reads as a grass tuft more than as wildflowers. It is thinner and flatter than a careful artist would accept next to the Beodeul references, and when in doubt it fails. It needs more flower clusters, more green steps, and per-blossom highlights and shadows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12275
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue flower blossoms",
+      "rows": "4-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green stems and leaf tuft",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "A sparse cluster of thin green stems with small blue blossoms and a leaf tuft at the base (rows 11-14, width 8-12), sitting flat on the ground. The silhouette is irregular and organic (width 2-4 on rows 4-8, widening to 12 at row 12, ending at row 14 with width 4). There is no built volume, no edge line, no eave shadow and no ellipse. It is a walk-over ground plant with no box-like top or front face, so the top/front structure rules do not apply and it fits neither three_quarter nor front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny ground tuft, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. The flat-fill and outline numbers are no help here. Near-flat coverage is 0% and the dark edge pixels are 0% neutral, so the edges lean green rather than black, but there are very few of them. The tuft has only about 9 colours and roughly 3 lightness steps in a few thin green blades with small pale tips. The blue flowers are barely distinguishable, so the 'blue wildflowers' read is weak. Next to the references (tree-1a786c at 7 visible tones per tile, tree-d43edd at 29, each with layered leaf clumps and shaded masses), it looks thin, sparse and under-shaded. It has no clustered blooms, no multi-green leaf layering and no soil or grass grain around the base. A careful artist would not accept it beside these references without wanting more flower clusters and more leaf tones.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13336
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue flower blossoms",
+      "rows": "4-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tuft and stems",
+      "rows": "4-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "A sparse tuft of green stems and leaves with small blue blossoms, rows 4-14. The silhouette is 2-4 px wide in rows 4-8, then widens to 12 px at row 12 and drops to 4 px at row 14. It is a flat, organic ground-cover sprite with no built structure, no horizontal surface, and no distinct front face. Neither a top surface nor a front-elevation face applies, so the top-surface rules do not fit a walk-over plant decor. I classify it as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny tuft of green blades with a few pale blue flower dots, and only 9 distinct colours in total. Its greens show about 3 lightness steps, against 5-6 on the reference canopies. The tuft is not a flat fill and has no near-black outline, so its edge pixels are tinted (0% neutral). It still reads as thin and sparse next to the clumped, multi-tone leaf masses of both references. The flowers are just a few single dots with no per-bloom shading, and the leaves have no highlight/shadow clumping. The tile-density fact (0 visible tones) is not used against it because the piece is smaller than one tile. By eye it still looks flatter and thinner than a Beodeul ground-decor piece, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 11742
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flower blossoms (small blue pixels on stems)",
+      "rows": "6-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass and leaf tuft with stems",
+      "rows": "4-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "A sparse tuft of thin green stems and leaves (rows 4-14, width 2-12) with a few blue blossom pixels at rows 6-11. It is an irregular organic ground-cover sprite with no built volume: no top plane, front-edge line, ellipse, or box-like front face. The silhouette is narrow at the top and widens to 12 px at row 12, then narrows to 4 at row 14, consistent with a plant clump. It does not read as a structured body with a top surface and front face, so 3/4 structure rules do not apply cleanly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The references are two large broadleaf trees. The candidate is a tiny sprig, smaller than one tile, so the per-tile facts read 0 and I judged by eye. It is a thin cluster of green blades with only a few pale or blue pixels. There are about 3 readable tones, and the 9 raw colours mostly collapse into near-identical shades. The flower heads are barely readable as blue wildflowers and there are no clumps of several tones like the references' leaf clusters. No dark outline is visible, so the shapes are separated only by a few tones, and the plant looks sparse and thin next to the reference. Its dark edge pixels are 0% neutral, so it avoids the near-black sticker look, but it is thinner and flatter than a careful artist would accept beside a Beodeul reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12165
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.307Z",
+ "cells": {
+  "16": [
+   "6169445ca1e015bb"
+  ],
+  "24": [
+   "0ebf59323c9387b1",
+   "2d87bb5185912b50",
+   "606be6d33e6a57dd",
+   "83dda91d676da548",
+   "c1d24afbe7bffc23",
+   "de634a00a44fbaf2"
+  ],
+  "32": [
+   "4fd4302153fcb456",
+   "7efc3c51d8960afb",
+   "ab4eb917d56beabb",
+   "deaaaa4a8fe4a482",
+   "e06292f1c797a885",
+   "fb1e06dfe80cc6d3"
+  ],
+  "48": [
+   "294e9ea8959875fb",
+   "5f4197356bb1849f",
+   "82334de12cce2fc6",
+   "902fd522f29add98",
+   "93db6195c28ab0fc",
+   "eca05b7cd13bf605"
+  ]
+ }
+}

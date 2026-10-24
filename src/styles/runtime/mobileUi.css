@@ -1,18 +1,17 @@
-/* runtime/mobileUi.css — 폰(거친 포인터 + 짧은 변 900px 미만)에서만 켜지는 UI 확대 층.
-   playSurface.ts 의 syncMobileUiMetrics 가 `.play-viewport[data-mobile-ui]` 와 두 변수를 켠다.
-     --mobile-ui-k : 무대 안(논리 px) 요소에서 「화면 px N」을 만드는 계수. calc(44px * var(--mobile-ui-k)) = 화면 44px.
-     --mobile-ui-z : UI 확대 배율(참고용).
-   무대 밖(.play-viewport 직속, 예: 상점)은 transform 이 없으므로 화면 px 를 그대로 쓴다.
-   데스크톱에서는 속성이 없으니 이 파일의 어떤 규칙도 적용되지 않는다. */
-  .play-viewport[data-mobile-ui] {
-    --mu-touch: calc(44px * var(--mobile-ui-k, 1));
-    --mu-text: calc(14px * var(--mobile-ui-k, 1));
-    --mu-text-s: calc(12px * var(--mobile-ui-k, 1));
-    --mu-text-l: calc(16px * var(--mobile-ui-k, 1));
-  }
+/* runtime/mobileUi.css — 터치 기기의 조작과 배치(2026-10-24 다시 씀).
+
+   게임 UI(대사·선택지·메뉴·상점·전투 창)는 기기에 따라 바꾸지 않는다. 모두 무대(.play-stage) 안 게임 px 로 그리고
+   무대가 통째로 정수 배율(1배 미만은 비정수)로 커진다 — 어느 폰·방향이든 같은 모양이 크거나 작게 보일 뿐이다.
+   예전에 이 파일이 하던 「폰이면 화면 px 로 다시 깔기」(--mobile-ui-k 로 글자·행 높이·독 폭을 화면 px 에 맞춤)는
+   기기·방향마다 대사창 크기와 메뉴 배치를 다르게 만들어 지웠다.
+
+   여기 남은 것:
+   - 터치 조작(조이스틱·A/B·메뉴 단추·전체 화면 단추·가로 안내) — 무대 밖, 화면 px.
+   - 키보드 안내 숨김(터치에는 Z/X/Esc 가 없다).
+   - 세로 대사 독: 무대가 1배보다 작으면 대사·선택지 창만 무대 아래 띠에 1배로 내린다(playSurface calculateTouchLayout). */
 
   /* ── 키보드 안내(Z/X/Esc)는 터치에서 의미가 없다 ── */
-  .play-viewport[data-mobile-ui] :is(
+  .play-viewport:is([data-mobile-ui], [data-touch-ui]) :is(
     .runtime-shop-keyhints,
     .battle-key-prompts,
     .status-menu-controls,
@@ -20,225 +19,362 @@
     .runtime-shop-key
   ) { display: none !important; }
 
-  /* ── 터치 패드: 안전 영역 + 키운 A/B, 상점·전투·메뉴 안에서는 숨김 ── */
-  .play-viewport[data-mobile-ui] .touch-pad .touch-dpad {
-    left: max(12px, env(safe-area-inset-left));
-    bottom: max(14px, env(safe-area-inset-bottom));
-  }
-  .play-viewport[data-mobile-ui] .touch-pad .touch-actions {
-    right: max(12px, env(safe-area-inset-right));
-    bottom: max(14px, env(safe-area-inset-bottom));
-    gap: 14px;
-  }
-  .play-viewport[data-mobile-ui] .touch-pad .touch-dpad-base {
-    width: 128px;
-    height: 128px;
-    border-width: 2px;
-  }
-  .play-viewport[data-mobile-ui] .touch-pad .touch-dpad-knob {
-    width: 54px;
-    height: 54px;
-  }
-  .play-viewport[data-mobile-ui] .touch-pad .touch-action-btn {
-    width: 60px;
-    height: 60px;
-    font-size: 20px;
-  }
-  .play-viewport[data-mobile-ui] .touch-pad .touch-actions [data-testid="touch-action-a"] {
-    width: 72px;
-    height: 72px;
-  }
-  .play-viewport[data-mobile-ui] .touch-pad .touch-actions [data-testid="touch-action-b"] {
-    margin-bottom: 20px;
-  }
-  .play-viewport[data-mobile-ui]:has(.runtime-shop-overlay) .touch-pad,
-  .play-viewport[data-mobile-ui]:has([data-testid="battle-scene"]) .touch-pad {
-    visibility: hidden !important;
-    pointer-events: none !important;
-  }
-  /* 메뉴: 항목은 직접 탭하고, 닫기(B)만 엄지 자리에 남긴다. 방향·결정은 숨긴다. */
-  .play-viewport[data-mobile-ui]:has([data-testid="main-menu"]) .touch-pad :is(.touch-dpad, [data-testid="touch-action-a"]) {
-    display: none !important;
-  }
-  .play-viewport[data-mobile-ui]:has([data-testid="main-menu"]) .touch-pad .touch-actions [data-testid="touch-action-b"] {
-    margin-bottom: 0;
-  }
-
-  /* ── 제목 화면 ── */
-  /* title.css 의 편집형 규칙(.player-layout.system-shell .rm-title-screen-editorial …)이 0,4,0 이라 :is 반복으로 이긴다. */
-  .play-viewport[data-mobile-ui] :is(.title-screen, .title-screen) :is(.rm-title-menu, .rm-title-menu) .rm-title-menu-button {
-    min-height: var(--mu-touch);
-    font-size: var(--mu-text-l);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    touch-action: manipulation;
-  }
-  .play-viewport[data-mobile-ui] .rm-title-logo-subtitle { font-size: var(--mu-text-s); }
-  /* 메뉴 위치는 titleMenuTop 이 논리 px(작은 버튼 기준)로 정해 둔다 — 항목이 커지면 무대 밖으로 나가므로 아래 끝에 붙인다. */
-  .play-viewport[data-mobile-ui] .title-screen .rm-title-menu[class] {
-    top: auto !important;
-    bottom: calc(6px * var(--mobile-ui-k, 1));
-  }
-  /* 세로: 무대가 219px 뿐이라 네 줄이 44px 면 로고를 덮는다 — 화면 24px 로 줄인다(가로로 돌리면 44px). */
-  .play-viewport[data-mobile-ui="portrait"] :is(.title-screen, .title-screen) :is(.rm-title-menu, .rm-title-menu) .rm-title-menu-button {
-    min-height: calc(24px * var(--mobile-ui-k, 1));
-    font-size: calc(13px * var(--mobile-ui-k, 1));
-  }
-
-  /* ── 대사창 ── */
-  .play-viewport[data-mobile-ui] .dialogue-overlay {
-    --runtime-dialogue-font-size: var(--mu-text);
-    padding-bottom: calc(max(8px, env(safe-area-inset-bottom)) * var(--mobile-ui-k, 1));
-  }
-  .play-viewport[data-mobile-ui] .dialogue-box {
-    min-height: calc(84px * var(--mobile-ui-k, 1));
-    padding: calc(8px * var(--mobile-ui-k, 1)) calc(22px * var(--mobile-ui-k, 1)) calc(8px * var(--mobile-ui-k, 1)) calc(12px * var(--mobile-ui-k, 1));
-    touch-action: manipulation;
-  }
-  .play-viewport[data-mobile-ui] .dialogue-box.has-speaker { padding-top: calc(var(--runtime-dialogue-speaker-inset, 12px) + 4px); }
-  .play-viewport[data-mobile-ui] .speaker-nameplate { font-size: var(--mu-text-s); min-height: calc(24px * var(--mobile-ui-k, 1)); }
-  .play-viewport[data-mobile-ui] .dialogue-page-cursor { font-size: var(--mu-text); }
-  .play-viewport[data-mobile-ui] .dialogue-log-button {
-    min-width: var(--mu-touch);
-    min-height: var(--mu-touch);
-    font-size: var(--mu-text-s);
-  }
-
-  /* ── ESC 메뉴 ── */
-  .play-viewport[data-mobile-ui] .oprn-status-menu .status-menu-command {
-    flex: 0 0 var(--mu-touch);
-    min-height: var(--mu-touch);
-    font-size: var(--mu-text-s);
-    touch-action: manipulation;
-  }
-  .play-viewport[data-mobile-ui] .oprn-status-menu .status-menu-command-label { font-size: var(--mu-text-s); overflow: hidden; text-overflow: ellipsis; }
-  .play-viewport[data-mobile-ui] .oprn-status-menu .status-menu-primary-dock {
-    overflow-y: auto;
-    width: calc(76px * var(--mobile-ui-k, 1));
-    bottom: calc(14px * var(--mobile-ui-k, 1));
-  }
-  .play-viewport[data-mobile-ui] .oprn-status-menu :is(.status-menu-heading, .status-menu-gold, .status-menu-time, .status-menu-location) { font-size: var(--mu-text-s); }
-  /* 상태 패널 보조 글자(9~10px)는 손가락 거리에선 읽히지 않는다 — 화면 12px 이상으로. */
-  .play-viewport[data-mobile-ui] .oprn-status-menu :is(.status-menu-actor-subline, .status-menu-overview-states, .status-menu-overview-vital-label, .status-menu-overview-value, .status-menu-message, .status-menu-controls) { font-size: var(--mu-text-s); }
   /* 전체화면 토글: 보이는 크기는 그대로 두고 눌림 영역만 44px 로. */
-  .play-viewport[data-mobile-ui] > .play-fullscreen-toggle::after { content: ""; position: absolute; inset: -11px; }
-  .play-viewport[data-mobile-ui] .oprn-status-menu .status-menu-overview-row { font-size: var(--mu-text-s); min-height: var(--mu-touch); }
+  .play-viewport[data-touch-ui] > .play-fullscreen-toggle::after { content: ""; position: absolute; inset: -11px; }
 
-  /* ── 전투 ── */
-  .play-viewport[data-mobile-ui] .battle-scene .battle-command {
-    min-height: var(--mu-touch);
-    font-size: var(--mu-text);
-    display: flex;
-    align-items: center;
-  }
-  /* 전투 장면은 논리 무대(480×270)를 한 번 더 0.5625 로 줄인 854×480 이다 — 행 높이를 화면 44px 로 맞추려면
-     k 를 그 배율로 한 번 더 나눈다. 가로 화면만(세로는 무대가 작아 목록이 스크롤로 간다). */
-  /* 세로 전투: 전체 장면이 390px 폭이라 44px 행은 불가능 — 글자 12px·행 32px 까지만 올리고, 가로 전환 안내가 항상 떠 있다. */
-  .play-viewport[data-mobile-ui="portrait"] .battle-scene[data-testid="battle-scene"][data-battle-layout][data-battle-ui-style][data-battle-skin-family][data-battle-motion] {
-    --battle-command-row-height: calc(32px * var(--mobile-ui-k, 1) / 0.5625);
-    --battle-hud-height: calc(4 * var(--battle-command-row-height) + 28px);
-  }
-  .play-viewport[data-mobile-ui="portrait"] .battle-scene[data-testid="battle-scene"][data-battle-layout][data-battle-ui-style][data-battle-skin-family][data-battle-motion] .battle-command :is(.battle-command-text, strong, small) { font-size: calc(12px * var(--mobile-ui-k, 1) / 0.5625); }
-  .play-viewport[data-mobile-ui="portrait"] .battle-scene[data-testid="battle-scene"][data-battle-layout][data-battle-ui-style] .battle-command :is(.battle-command-text, strong),
-  .play-viewport[data-mobile-ui="portrait"] .battle-scene[data-testid="battle-scene"][data-battle-layout][data-battle-ui-style] .battle-command { font-size: calc(12px * var(--mobile-ui-k, 1) / 0.5625); }
-  .play-viewport[data-mobile-ui="landscape"] .battle-scene[data-testid="battle-scene"][data-battle-layout][data-battle-ui-style][data-battle-skin-family][data-battle-motion] {
-    --battle-command-row-height: calc(44px * var(--mobile-ui-k, 1) / 0.5625);
-    --battle-hud-height: calc(4 * var(--battle-command-row-height) + 28px);
-  }
-  .play-viewport[data-mobile-ui] .battle-scene .battle-message-line { font-size: var(--mu-text); }
-  .play-viewport[data-mobile-ui] .battle-scene .battle-enemy-name { font-size: var(--mu-text-s); }
+/* ── 터치 배치(2026-10-24): 조작은 모든 상태(필드·대사·선택지·메뉴·상점·전투·기록·타이틀)에서 보인다 ──
+   playSurface.ts calculateTouchLayout 이 무대를 줄여 조작 자리를 먼저 뗀다 — 세로는 무대 아래 띠, 가로는 좌우 칸.
+   변수: --touch-band-top/bottom(띠), --touch-controls-y(조작 중심선), --touch-gutter(가로 칸 폭), --touch-stick(조이스틱 지름). */
+.play-viewport[data-touch-layout] > .touch-pad.touch-pad:is([data-skin="gba"], [data-skin="touch"]) {
+  position: absolute;
+  inset: 0;
+  z-index: 45;
+  visibility: visible !important;
+}
+.play-viewport[data-touch-layout] > .touch-pad .touch-stick-zone {
+  position: absolute;
+  pointer-events: auto;
+  touch-action: none;
+}
+.play-viewport[data-touch-layout="portrait"] > .touch-pad .touch-stick-zone {
+  left: 0;
+  width: 54%;
+  top: var(--touch-controls-top, var(--touch-band-top));
+  bottom: var(--touch-band-bottom);
+}
+.play-viewport[data-touch-layout="landscape"] > .touch-pad .touch-stick-zone {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: max(var(--touch-gutter), 112px);
+}
+/* 조이스틱: left/top 은 중심점. 떠 있을 때(data-floating)는 touchPad.ts 가 엄지 자리로 옮긴다. */
+.play-viewport[data-touch-layout] > .touch-pad .touch-stick-zone .touch-dpad {
+  position: absolute;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.play-viewport[data-touch-layout="portrait"] > .touch-pad .touch-stick-zone .touch-dpad:not([data-floating]) {
+  left: calc(var(--touch-safe-left, 0px) + 22px + var(--touch-stick) / 2);
+  top: calc(var(--touch-controls-y) - var(--touch-controls-top, var(--touch-band-top)));
+}
+.play-viewport[data-touch-layout="landscape"] > .touch-pad .touch-stick-zone .touch-dpad:not([data-floating]) {
+  left: calc(var(--touch-safe-left, 0px) + (max(var(--touch-gutter), 112px) - var(--touch-safe-left, 0px)) / 2);
+  top: var(--touch-controls-y);
+}
+.play-viewport[data-touch-layout] > .touch-pad .touch-dpad-base.touch-dpad-base {
+  width: var(--touch-stick);
+  height: var(--touch-stick);
+  background: rgba(20, 24, 34, 0.38);
+  border: 2px solid rgba(255, 255, 255, 0.28);
+}
+.play-viewport[data-touch-layout] > .touch-pad .touch-dpad-knob.touch-dpad-knob {
+  width: calc(var(--touch-stick) * 0.42);
+  height: calc(var(--touch-stick) * 0.42);
+}
+.play-viewport[data-touch-layout] > .touch-pad .touch-stick-zone[data-active] .touch-dpad-base { background: rgba(40, 52, 80, 0.55); }
+/* 엄지를 대고 있는 동안 손잡이는 손가락에 바로 붙는다(예전 60ms 따라오기는 화면이 손보다 늦어 보였다). 뗄 때만 부드럽게 돌아간다. */
+.play-viewport[data-touch-layout] > .touch-pad .touch-stick-zone[data-active] .touch-dpad-knob { transition: none; }
 
-  /* ── 상점(무대 밖 · 화면 px) ── */
-  .play-viewport[data-mobile-ui] .runtime-shop-overlay {
-    --shop-text-small: 12px;
-    --shop-text-body: 14px;
-    --shop-text-section: 15px;
-    --shop-text-title: 18px;
-    --shop-text-entry: 22px;
-    --shop-control: 44px;
-    --shop-art-row: 44px;
-    padding-bottom: max(var(--shop-space-2, 6px), env(safe-area-inset-bottom));
-    padding-left: max(var(--shop-space-2, 6px), env(safe-area-inset-left));
-    padding-right: max(var(--shop-space-2, 6px), env(safe-area-inset-right));
-  }
-  .play-viewport[data-mobile-ui] .runtime-shop-overlay :is(
-    .runtime-shop-confirm, .runtime-shop-cancel, .runtime-shop-detail-open, .runtime-shop-tab, .runtime-shop-chip, .runtime-shop-menu-choice
-  ) { min-height: 44px; min-width: 44px; touch-action: manipulation; }
-  .play-viewport[data-mobile-ui] .runtime-shop-overlay .runtime-shop-item-row { min-height: 44px; touch-action: manipulation; }
+.play-viewport[data-touch-layout] > .touch-pad .touch-actions.touch-actions {
+  position: absolute;
+  bottom: auto;
+  left: auto;
+  display: flex;
+  gap: 14px;
+  pointer-events: auto;
+}
+.play-viewport[data-touch-layout="portrait"] > .touch-pad .touch-actions.touch-actions {
+  right: calc(var(--touch-safe-right, 0px) + 18px);
+  top: var(--touch-controls-y);
+  transform: translateY(-50%);
+  flex-direction: row;
+  align-items: flex-start;
+}
+.play-viewport[data-touch-layout="landscape"] > .touch-pad .touch-actions.touch-actions {
+  right: calc(var(--touch-safe-right, 0px) + max(6px, (var(--touch-gutter) - var(--touch-safe-right, 0px) - 120px) / 2));
+  top: var(--touch-controls-y);
+  transform: translateY(-50%);
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 4px;
+}
+.play-viewport[data-touch-layout] > .touch-pad .touch-actions .touch-action-btn[data-testid="touch-action-a"] {
+  width: 74px;
+  height: 74px;
+  margin: 0;
+  font-size: 24px;
+}
+.play-viewport[data-touch-layout] > .touch-pad .touch-actions .touch-action-btn[data-testid="touch-action-b"] {
+  width: 60px;
+  height: 60px;
+  margin: 40px 0 0;
+  font-size: 20px;
+}
+.play-viewport[data-touch-layout="landscape"] > .touch-pad .touch-actions .touch-action-btn[data-testid="touch-action-a"] { width: 64px; height: 64px; }
+.play-viewport[data-touch-layout="landscape"] > .touch-pad .touch-actions .touch-action-btn[data-testid="touch-action-b"] { width: 52px; height: 52px; margin-top: 46px; }
 
-  /* 세로: 상점 오버레이는 작은 무대(390x219)가 아니라 화면 아래쪽 전체를 쓴다. 44px 조작이 잘리지 않게 하고,
-     그동안 가로 안내 알약은 접어 겹침을 없앤다. */
-  /* 특이도: shop.css 의 .runtime-overlay.runtime-shop-overlay(.preset-pixel) 폭·높이 규칙을 이겨야 한다. */
-  .player-layout .play-viewport[data-mobile-ui="portrait"] > .runtime-shop-overlay:not(.emerald-shop-overlay):is(.runtime-shop-overlay, .runtime-overlay):is(.runtime-shop-overlay, .runtime-overlay):is(.runtime-shop-overlay, .runtime-overlay) {
-    top: var(--play-stage-top, 0px);
-    left: 0;
-    transform: none;
-    width: 100%;
-    height: calc(100% - var(--play-stage-top, 0px));
-    box-sizing: border-box;
-    align-items: stretch;
-  }
-  .play-viewport[data-mobile-ui="portrait"]:has(.runtime-shop-overlay)::after { display: none; }
+/* 메뉴 단추: 세로는 무대 바로 아래 가운데, 가로는 오른쪽 칸 위. */
+.play-viewport[data-touch-layout] > .touch-pad .touch-menu-btn.touch-menu-btn {
+  position: absolute;
+  width: auto;
+  min-width: 64px;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 22px;
+  font: 700 14px/1 var(--font-ui, system-ui, sans-serif);
+  color: #eef2ff;
+  background: rgba(30, 36, 52, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+.play-viewport[data-touch-layout="portrait"] > .touch-pad .touch-menu-btn.touch-menu-btn {
+  left: 50%;
+  top: calc(var(--touch-controls-y) - var(--touch-stick) / 2 - 52px);
+  transform: translateX(-50%);
+}
+.play-viewport[data-touch-layout="landscape"] > .touch-pad .touch-menu-btn.touch-menu-btn {
+  right: calc(var(--touch-safe-right, 0px) + 10px);
+  top: 10px;
+  min-width: 56px;
+  padding: 0 10px;
+}
+.play-viewport[data-touch-layout] > .touch-pad .touch-menu-btn.active { transform: translateX(-50%) scale(0.94); }
+.play-viewport[data-touch-layout="landscape"] > .touch-pad .touch-menu-btn.active { transform: scale(0.94); }
 
-  /* ── 세로 화면: 무대가 390x219 로 작아진다. 안내는 눈에 띄는 알약으로, 메뉴 독은 한 줄 라벨로 ── */
-  .play-viewport[data-mobile-ui="portrait"][data-layout="portrait"]::after {
-    left: 16px;
-    right: 16px;
-    margin: 0 auto;
-    width: fit-content;
-    max-width: calc(100% - 32px);
-    box-sizing: border-box;
-    padding: 10px 18px;
-    border-radius: 999px;
-    border: 1px solid #6c7a8c;
-    background: #1b2430;
-    color: #f2f5f8;
-    font-weight: 700;
-    font-size: 16px;
-    line-height: 22px;
-    top: calc(var(--play-stage-top) + var(--play-logical-height) * var(--play-scale) + 24px);
-  }
-  /* 가로 ESC 메뉴(픽셀 스킨): 줄이 화면 44px 이므로 독 높이도 줄 수 × 44px 로 키워 명령이 잘리지 않게 한다.
-     장소·시간·장 보조 창은 자리가 없어 접고 돈만 남긴다. */
-  .play-viewport[data-mobile-ui="landscape"] .oprn-status-menu.main-menu[data-menu-skin="pixel"] {
-    --px-dock-h: calc(var(--status-menu-command-count, 6) * var(--mu-touch) + 8px * var(--mobile-ui-k, 1));
-  }
-  .play-viewport[data-mobile-ui="landscape"] .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] :is(.status-menu-location, .status-menu-time, .status-menu-chapter) {
-    display: none;
-  }
-  /* 세로 ESC 메뉴(픽셀 스킨): 줄 29px(6줄이 무대 202px 안에 들어가는 한도)·라벨 13px, 독과 파티 창이 겹치지 않게 같이 넓힌다. */
-  .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"] {
-    --mu-row: calc(29px * var(--mobile-ui-k, 1));
-    --mu-dock-w: calc(76px * var(--mobile-ui-k, 1));
-    --px-dock-h: calc(var(--status-menu-command-count, 6) * var(--mu-row) + 8px * var(--mobile-ui-k, 1));
-  }
-  .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-primary-dock {
-    width: var(--mu-dock-w);
-    gap: 0;
-    padding: 4px 0;
-  }
-  .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-command {
-    flex: 0 0 var(--mu-row);
-    min-height: var(--mu-row);
-    padding: 0 calc(4px * var(--mobile-ui-k, 1)) 0 calc(8px * var(--mobile-ui-k, 1));
-    font-size: calc(13px * var(--mobile-ui-k, 1));
-  }
-  .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-command-label {
-    white-space: nowrap;
-    font-size: calc(13px * var(--mobile-ui-k, 1));
-  }
-  .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-party-overview {
-    right: calc(var(--mu-dock-w) + 14px);
-  }
-  .play-viewport[data-mobile-ui="portrait"] .oprn-status-menu .status-menu-command-icon { display: none; }
+/* 달리기 단추(누를 때마다 걷기/달리기 — 옵션 「항상 달리기」와 같은 값): 세로는 메뉴 줄 왼쪽, 가로는 왼쪽 칸 아래. */
+.play-viewport[data-touch-layout] > .touch-pad .touch-run-btn {
+  position: absolute;
+  min-width: 64px;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 22px;
+  font: 700 14px/1 var(--font-ui, system-ui, sans-serif);
+  color: #eef2ff;
+  background: rgba(30, 36, 52, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  pointer-events: auto;
+  touch-action: manipulation;
+  z-index: 1;
+}
+.play-viewport[data-touch-layout] > .touch-pad .touch-run-btn.on {
+  background: color-mix(in srgb, var(--accent, #6c79f2) 72%, transparent);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.play-viewport[data-touch-layout="portrait"] > .touch-pad .touch-run-btn {
+  left: calc(var(--touch-safe-left, 0px) + 12px);
+  top: calc(var(--touch-controls-y) - var(--touch-stick) / 2 - 52px);
+}
+.play-viewport[data-touch-layout="landscape"] > .touch-pad .touch-run-btn {
+  left: calc(var(--touch-safe-left, 0px) + 10px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+  min-width: 56px;
+  padding: 0 10px;
+}
+.play-viewport:not([data-touch-layout]) .touch-run-btn { display: none; }
+.play-viewport[data-touch-layout] > .touch-pad .touch-run-btn[hidden] { display: none; }
 
-/* 세로: 파티 창은 눌러 쓰는 곳이 아니고 무대가 219px 뿐이라, 글자를 키우면 줄이 겹친다 — 높이 강제를 풀고 글자는 10px 로, 상태 줄(정상)은 접는다. */
-.play-viewport[data-mobile-ui="portrait"] .oprn-status-menu .status-menu-overview-row { min-height: 0; font-size: calc(10px * var(--mobile-ui-k, 1)); }
-.play-viewport[data-mobile-ui="portrait"] .oprn-status-menu :is(.status-menu-actor-subline, .status-menu-overview-vital-label, .status-menu-overview-value) { font-size: calc(10px * var(--mobile-ui-k, 1)); }
-.play-viewport[data-mobile-ui="portrait"] .oprn-status-menu .status-menu-overview-states { display: none; }
+/* 맵 탭 걷기: 누른 자리에 짧은 고리. */
+.play-viewport .touch-tap-ripple {
+  position: absolute;
+  z-index: 44;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  animation: oprn-tap-ripple 420ms ease-out forwards;
+}
+@keyframes oprn-tap-ripple {
+  from { transform: scale(0.4); opacity: 1; }
+  to { transform: scale(1.2); opacity: 0; }
+}
 
-/* 세로 화면: 무대가 낮아 명령 창 아래 보조 창(장소·시간·장)이 잘린다 — 돈만 남긴다. */
-.play-viewport[data-mobile-ui="portrait"] .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] :is(.status-menu-location, .status-menu-time, .status-menu-chapter) {
-  display: none;
+/* 전체 화면 단추: 터치 배치에서는 무대 안이 아니라 조작 띠·칸 모서리에 둔다(게임 그림을 덮지 않게). */
+.play-viewport[data-touch-layout] > .play-fullscreen-toggle {
+  position: absolute;
+  z-index: 46;
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  border-radius: 18px;
+  opacity: 0.85;
+  transform: none;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: #fff;
+  background: rgba(8, 10, 18, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+.play-viewport[data-touch-layout="portrait"] > .play-fullscreen-toggle {
+  left: auto;
+  right: calc(var(--touch-safe-right, 0px) + 12px);
+  top: calc(var(--touch-controls-y) - var(--touch-stick) / 2 - 48px);
+}
+.play-viewport[data-touch-layout="landscape"] > .play-fullscreen-toggle {
+  right: auto;
+  left: calc(var(--touch-safe-left, 0px) + 10px);
+  top: 10px;
+}
+
+/* 가로 안내: 세로 터치 배치에서 띠 맨 아래 작은 글씨, 6초 뒤 사라진다(돌리지 않아도 충분히 플레이된다). */
+.play-viewport[data-touch-layout="portrait"][data-rotate-hint]::after {
+  top: auto;
+  bottom: calc(var(--touch-band-bottom) + 6px);
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: fit-content;
+  padding: 3px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(27, 36, 48, 0.8);
+  color: #c9d2dc;
+  font: 600 12px/16px system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  animation: oprn-rotate-hint-out 0.6s ease 6s forwards;
+}
+.play-viewport[data-touch-layout="landscape"]::after { display: none; }
+@keyframes oprn-rotate-hint-out { to { opacity: 0; visibility: hidden; } }
+
+/* 대사창의 「기록」 단추는 폰에서 엄지가 대사를 넘기다 잘못 눌러 기록 창에 갇혔다 — 터치에서는 숨기고 메뉴의 「대화 기록」으로 연다. */
+.play-viewport[data-touch-ui] .dialogue-log-button { display: none !important; }
+/* 진행 표시(▼)를 또렷하게 — 「탭하면 넘어간다」는 신호. */
+.play-viewport[data-touch-ui] .dialogue-box.page-ready .dialogue-page-cursor { animation: oprn-tap-cue 0.9s ease-in-out infinite; }
+@keyframes oprn-tap-cue { 50% { transform: translateY(2px); opacity: 0.6; } }
+
+/* 대화 기록·백로그: 보이는 닫기 단추(손가락 크기), 키보드 안내는 숨긴다. */
+.dialogue-log-close {
+  margin-left: auto;
+  font: inherit;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 3px;
+  padding: 1px 6px;
+  cursor: pointer;
+}
+.dialogue-log-head { gap: 8px; }
+.play-viewport[data-touch-ui] .dialogue-log-close,
+.play-viewport[data-touch-ui] .dialogue-backlog-close {
+  min-height: 24px;
+  min-width: 44px;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+.play-viewport[data-touch-ui] .dialogue-log-head { align-items: center; }
+.play-viewport[data-touch-ui] .dialogue-backlog-hint { display: none; }
+.play-viewport[data-touch-ui] :is(.dialogue-log, .dialogue-backlog) { touch-action: pan-y; }
+
+
+/* ── 세로 대사 독(data-dialogue-dock) ──
+   무대가 1배보다 작게 그려지는 폰 세로에서, 대사·선택지 창을 무대 아래 빈 띠(--dock-*)로 옮겨 1배로 그린다.
+   창은 무대의 자식 그대로 두고(코드·포커스·탭 규칙이 그대로 통한다) 무대 좌표로 옮긴 뒤 배율을 되돌린다(--dock-unscale = 1/배율).
+   창 안 치수는 그대로 게임 px 다 — 폭만 독 폭(화면 폭)이고 높이·글자·여백은 무대 안과 같다.
+   말풍선(캐릭터 머리 위)과 가운데 연출 글자는 장면에 붙어 있어야 하므로 무대에 남긴다. */
+.play-viewport:is([data-dialogue-dock], [data-window-panel]) > .play-stage { overflow: visible; }
+.player-layout .play-viewport[data-dialogue-dock] > .play-stage > .dialogue-overlay:is(.position-bottom, .position-top):not(.balloon-active) {
+  top: var(--dock-top) !important;
+  left: var(--dock-left) !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: var(--dock-width) !important;
+  box-sizing: border-box !important;
+  max-height: var(--dock-height) !important;
+  transform: scale(var(--dock-unscale));
+  transform-origin: 0 0;
+}
+.player-layout .play-viewport[data-dialogue-dock] > .play-stage > .dialogue-overlay.choices-active:is(.position-bottom, .position-top):not(.balloon-active) {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+/* ── 세로 창 칸(data-window-panel, 2026-10-24) ──
+   폰 세로는 무대가 1배보다 작아(0.67~0.9배) 메뉴 글자가 8~10px 였다. 무대가 1배 미만이면 ESC 메뉴·상점 창을
+   무대 대신 고정 논리 크기 칸(320×300 게임 px, playSurface WINDOW_PANEL_*)에 그린다 — 칸은 메뉴 단추 줄 바로 위에 붙고
+   폰이 375px 폭 이상이면 1배(글자 12px)다. 칸 크기가 기기와 상관없이 같으니 세로 폰끼리는 같은 배치다.
+   메뉴(무대 자식)는 무대 좌표 + 배율 되돌림, 상점(뷰포트 자식)은 화면 좌표 + 칸 배율. 에메랄드 스킨은 자기 480 판형이라 제외한다. */
+.player-layout .play-viewport[data-window-panel] > .play-stage > .oprn-status-menu.main-menu:not([data-monster-style="emerald"]) {
+  inset: auto !important;
+  top: var(--panel-top) !important;
+  left: var(--panel-left) !important;
+  width: var(--panel-w) !important;
+  height: var(--panel-h) !important;
+  max-width: none !important;
+  max-height: none !important;
+  transform: scale(var(--panel-unscale));
+  transform-origin: 0 0;
+}
+.player-layout .play-viewport[data-window-panel] > .runtime-overlay.runtime-shop-overlay:not(.emerald-shop-overlay) {
+  left: var(--panel-cx);
+  top: var(--panel-cy);
+  width: var(--panel-w);
+  height: var(--panel-h);
+  transform: translate(-50%, -50%) scale(var(--panel-scale));
+}
+/* 칸 폭(320)에서는 목록 옆 128px 쇼케이스 열이 목록 이름을 한두 자로 잘랐다 — 쇼케이스를 목록 아래 전체 폭으로 내리고,
+   능력치 변화는 두 칸씩. 값은 게임 px(칸 안 1배 = 화면 px). */
+.play-viewport[data-window-panel] [data-testid="main-menu"][data-menu-skin="pixel"] .status-menu-detail.has-showcase {
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+}
+.play-viewport[data-window-panel] [data-testid="main-menu"][data-menu-skin="pixel"] .status-menu-detail.has-showcase > .status-menu-detail-showcase {
+  grid-column: 1 !important;
+  grid-row: auto !important;
+  border-left: 0;
+  border-top: 1px solid var(--px-line, rgba(255, 255, 255, 0.25));
+  padding: 4px 0 0;
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 2px;
+  align-content: flex-start;
+  overflow: hidden;
+}
+.play-viewport[data-window-panel] [data-testid="main-menu"][data-menu-skin="pixel"] .status-menu-detail-showcase > :is(.status-menu-showcase-description, .status-menu-stat-delta) { flex: 1 0 100%; }
+.play-viewport[data-window-panel] [data-testid="main-menu"][data-menu-skin="pixel"] .status-menu-detail-showcase .status-menu-showcase-frame { display: none; }
+.play-viewport[data-window-panel] [data-testid="main-menu"][data-menu-skin="pixel"] .status-menu-stat-delta {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  column-gap: 10px;
+}
+
+/* 가로 겹침(2026-10-25): 무대가 화면 높이를 채우고 조작은 무대 가장자리 위에 반투명하게 얹힌다.
+   누르고 있는 동안만 진해진다. 달리기 단추는 대사 창(무대 아래쪽)을 가리지 않게 왼쪽 위(전체 화면 단추 아래)로 올린다. */
+.play-viewport[data-touch-overlay] > .touch-pad .touch-dpad-base.touch-dpad-base {
+  background: rgba(20, 24, 34, 0.22);
+  border-color: rgba(255, 255, 255, 0.34);
+}
+.play-viewport[data-touch-overlay] > .touch-pad .touch-stick-zone[data-active] .touch-dpad-base { background: rgba(40, 52, 80, 0.4); }
+.play-viewport[data-touch-overlay] > .touch-pad .touch-dpad-knob { opacity: 0.75; }
+.play-viewport[data-touch-overlay] > .touch-pad .touch-actions .touch-action-btn:not(.active),
+.play-viewport[data-touch-overlay] > .touch-pad .touch-menu-btn:not(.active),
+.play-viewport[data-touch-overlay] > .touch-pad .touch-run-btn:not(.on),
+.play-viewport[data-touch-overlay] > .play-fullscreen-toggle { opacity: 0.62; }
+.play-viewport[data-touch-overlay] > .touch-pad .touch-run-btn {
+  bottom: auto;
+  top: calc(env(safe-area-inset-top, 0px) + 56px);
+}
+
+/* 아이폰 「홈 화면에 추가」 안내(전체 화면 단추 자리, Fullscreen API 가 없을 때). */
+.play-viewport > .play-home-screen-hint {
+  position: absolute;
+  z-index: 47;
+  left: 50%;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  transform: translateX(-50%);
+  max-width: min(92%, 440px);
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(8, 10, 18, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #eef2ff;
+  font: 600 13px/1.45 system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  pointer-events: auto;
 }

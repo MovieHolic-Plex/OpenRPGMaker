@@ -24,6 +24,13 @@ export type DialogueFacingLine = {
   readonly calling?: boolean;
 };
 
+/** 대사 한 줄의 «누가 누구에게» — 흉상 좌우(text.bustSide = "stage")가 읽는다. 줄마다 applyDialogueFacing 이 새로 쓴다. */
+export type DialogueStage = { readonly speakerId: string; readonly addresseeId: string | null; readonly from: StageCell | null; readonly to: StageCell | null; readonly addresseeNames: readonly string[] };
+const lastStage = new WeakMap<object, DialogueStage | null>();
+export function lastDialogueStage(scene: object): DialogueStage | null {
+  return lastStage.get(scene) ?? null;
+}
+
 /** 장면(이벤트 실행)마다 «방금 말한 NPC» — 주인공 대사의 기본 청자. */
 const recentSpeakers = new WeakMap<object, { runKey: string; ids: string[] }>();
 
@@ -52,6 +59,7 @@ export function visibleStageActors(project: Project, scene: Pick<PlaySceneContex
 
 /** 대사 한 줄 앞에서 부른다. 돌린 인물 id(없으면 null). */
 export function applyDialogueFacing(scene: FacingScene, line: DialogueFacingLine, currentEventId: string | undefined): string | null {
+  lastStage.set(scene, null);
   try {
     const project = store.getCurrent();
     const { views, candidates } = visibleStageActors(project, scene);
@@ -65,17 +73,24 @@ export function applyDialogueFacing(scene: FacingScene, line: DialogueFacingLine
     const recent = memo && memo.runKey === runKey ? memo.ids : [];
     if (speakerId && speakerId !== PLAYER_ACTOR) recentSpeakers.set(scene, { runKey, ids: pushRecentSpeaker(recent, speakerId) });
     else if (!memo || memo.runKey !== runKey) recentSpeakers.set(scene, { runKey, ids: [] });
-    if (line.autoFace === false || !speakerId) return null;
+    if (!speakerId) return null;
     const visibleIds = new Set(views.map((v) => v.event.id));
     const playerPresent = scene.player.visible !== false && scene.player.alpha > 0.05;
     const addresseeId = resolveAddressee({ addressee: line.addressee, speakerActorId: speakerId, recentNpcSpeakers: recent, currentEventId, visibleIds, playerPresent });
-    if (!addresseeId || addresseeId === speakerId) return null;
     const cellOf = (id: string): StageCell | null => {
       if (id === PLAYER_ACTOR) return player;
       const v = views.find((view) => view.event.id === id);
       return v ? { x: v.x, y: v.y } : null;
     };
-    const from = cellOf(speakerId), to = cellOf(addresseeId);
+    const validAddressee = addresseeId && addresseeId !== speakerId ? addresseeId : null;
+    lastStage.set(scene, {
+      speakerId, addresseeId: validAddressee,
+      from: speakerId === PLAYER_ACTOR && !playerPresent ? null : cellOf(speakerId),
+      to: !validAddressee || (validAddressee === PLAYER_ACTOR && !playerPresent) ? null : cellOf(validAddressee),
+      addresseeNames: validAddressee ? (validAddressee === PLAYER_ACTOR ? playerNames(project, scene.session) : candidates.find((c) => c.id === validAddressee)?.names ?? []) : [],
+    });
+    if (line.autoFace === false || !validAddressee) return null;
+    const from = cellOf(speakerId), to = cellOf(validAddressee);
     if (!from || !to || chebyshev(from, to) > (line.calling ? CALLING_FACE_RANGE : AUTO_FACE_RANGE)) return null;
     const dir = dirToward(from, to);
     if (!dir) return null;
@@ -99,7 +114,7 @@ export function applyDialogueFacing(scene: FacingScene, line: DialogueFacingLine
     }
     // 주인공이 듣는 쪽이면 주인공도 말하는 NPC 를 돌아본다 — 주인공 방향은 아무도 관리하지 않아, 여럿이 말하는 장면에서 딴 데를 보고 있었다.
     // NPC 끼리의 대화는 말하는 쪽만 돈다(등 돌린 채 듣기 같은 연출을 지킨다 — 마주 보게 하려면 faceEachOther).
-    if (addresseeId === PLAYER_ACTOR && !line.calling) turnPlayer(dirToward(to, from) ?? scene.facing);
+    if (validAddressee === PLAYER_ACTOR && !line.calling) turnPlayer(dirToward(to, from) ?? scene.facing);
     return busy ? null : speakerId;
   } catch (error) {
     console.warn("[player] dialogue facing skipped", error);

@@ -189,7 +189,7 @@ function plazaPeople(project: Project, hubId: string): void {
   rewritePages(gate, [
     { name: "기본", conditions: [], commands: [
       gateQ1,
-      say(GATE, "문 밖이 바로 동쪽 숲이다.\n심문관들은 남쪽 골짜기부터 뒤진다더군."),
+      say(GATE, "문 밖에서 북쪽으로 돌면 바로 숲이다.\n심문관들은 남쪽 골짜기부터 뒤진다더군."),
       say(GATE, "숲길은 브람 영감이 제일 잘 알아.\n동쪽은 이틀 안에 직접 보신다던데."),
       say(GATE, "별지기가 숲엔 왜? …묻지 않겠다.\n길 벗어나지 마라. 늑대가 사납다."),
     ] },
@@ -242,7 +242,7 @@ function placeRino(project: Project, hub: GameMap): void {
       narrate("납작빵을 하나 건넸다."),
       item(FS_BREAD_FLAT, -1),
       say(KNIGHT, "…고맙다. 아침부터 아무것도 못 먹었어."),
-      say(KNIGHT, "대장님이 이틀 안에 직접 동쪽 숲을 보신다.\n나는 그전에 지도를 외워 두라는 명이고."),
+      say(KNIGHT, "대장님이 이틀 안에 직접 북쪽 숲을 보신다.\n나는 그전에 지도를 외워 두라는 명이고."),
       say(RINO, "…네가 어디로 갔는지는 못 본 걸로 한다.\n이름은 리노다. 잊어라."),
       setSw(named),
       setSw(Q1_RINO),
@@ -636,6 +636,8 @@ function scolds(project: Project): number {
     for (const box of boxesOf(map)) {
       if (s.only && !s.only.test(String(box.name))) continue;
       const p0 = box.pages![0]!;
+      // 챙길 것 없는 살림 한 줄(townLife 의 flavor)은 들여다보기일 뿐 — 꾸짖지 않는다. 토마의 밀가루처럼 이름으로 정한 수납은 예외.
+      if (!s.only && !/"kind":"change(Gold|Item)"/.test(JSON.stringify(p0.commands))) continue;
       const take = takePart(p0.commands as Command[]);
       p0.commands = [fork({ kind: "eventSeesPlayer", eventId: s.owner, range: 5 } as unknown as Condition, [
         emote(s.owner, "exclamation"),

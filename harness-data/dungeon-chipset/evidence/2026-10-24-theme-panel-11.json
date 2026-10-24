@@ -1,0 +1,33 @@
+{
+ "round": "theme-walls-r10 / theme-props-r7",
+ "panel": 11,
+ "date": "2026-10-24",
+ "boards": [
+  "qa-runs/walls/theme-walls-r10/board-wall.other_rim-p11.png",
+  "qa-runs/walls/theme-props-r7/board-wall.ice_face-p7g.png"
+ ],
+ "criteria": "(1) true 3/4 top-down at 1x; (2) same game as Beodeul reference (palette, 4-6 steps, material-tone dark edges, no glow/toy/confetti); (3) no seams/16px repeat; (4) fits theme. A MAJOR = a defect a player would notice at 1x in the room view. Blind: only PNG paths and criteria given.",
+ "reviewers": {
+  "klb-sonnet-5-5": "ab7e63b9e4981ac67",
+  "argon": "ae26226ef26498a12"
+ },
+ "count_rule": "an item passes only when neither blind reviewer raises a major against the candidate",
+ "tally": {
+  "wall.other_rim": {
+   "A1": "FAIL both (violet stud dots read as neon/beads, 16px beaded repeat)",
+   "A2": "PASS both (sonnet minors: pink-mauve drifts from Beodeul grey, noisy dither in ceiling, cluttered piece sheet; argon minors: diagonal stipple in void, uniform joint spacing)"
+  },
+  "wall.ice_face": {
+   "A1": "sonnet PASS (minors: regular rows of blue dots, faint 16px seams on 3x sheet, stacked bands); argon FAIL (cyan/white frost specks confetti, strict 16px repeat, glowing orb piece, bright scalloped trim)",
+   "A2": "FAIL both"
+  }
+ },
+ "result": {
+  "pass": [
+   "wall.other_rim theme-walls-r10 A2 (object-gate PASS 9e4e0b2e9ed1)"
+  ],
+  "redraw": [
+   "wall.ice_face"
+  ]
+ }
+}

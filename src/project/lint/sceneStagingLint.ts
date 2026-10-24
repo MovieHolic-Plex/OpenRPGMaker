@@ -9,6 +9,8 @@
 //  - scene-speaker-absent   대사의 화자(또는 선택지를 받는 NPC)가 이 맵 인물인데 그 순간 무대에 없다(페이지가 꺼짐·지워짐·투명)
 //  - scene-talk-far         화자와 듣는 인물이 TALK_DISTANCE_LIMIT(2) 칸보다 멀다(체비쇼프)
 //  - scene-talk-facing      대사 자동 돌아보기를 적용한 뒤에도 둘이 서로를 보지 않는다
+//  - scene-bust-unstaged     무대 흉상 대사인데 듣는 사람이 안 풀린다(장면 첫마디를 주인공이 연다) — 곁에 사람이 있으면 addressee 로 못박는다
+//  - scene-turn-overridden  말하기 직전에 손으로 돌려 세운 화자를 자동 돌아보기가 다른 상대(최근 화자) 쪽으로 되돌린다 — addressee 누락
 //
 // 되짚기 규칙: 페이지 조건으로 다른 이벤트의 켜진 페이지를 고른다(스위치·변수·셀프 스위치만, 나머지 조건은 «모름» → 그 인물 검사 생략).
 // 걸음은 지형에 막히면 버린다(런타임과 같다), 인물에 막히면 비켜 간다고 본다. 다가가기는 런타임과 같은 planApproach.
@@ -35,6 +37,8 @@ type Replay = {
   playerHidden: boolean;
   recent: string[]; // 최근 NPC 화자(맨 앞이 방금)
   lastSpoken: string | null; // 마지막으로 «소리 내어» 말한 인물(속마음·자막은 건너뜀). 선택지의 상대.
+  /** 다음 대사 직전에 손으로 돌려 둔 방향(turn·turnToward 만 있는 이동). 대사의 자동 돌아보기가 이걸 덮으면 경고한다. */
+  turned?: Map<string, Dir>;
 };
 
 const PLAYER_REFS = new Set(["@player", "player"]);
@@ -143,6 +147,7 @@ function cloneReplay(st: Replay): Replay {
     player: st.player ? { ...st.player } : null,
     playerHidden: st.playerHidden,
     recent: [...st.recent],
+    turned: new Map(st.turned ?? []),
     lastSpoken: st.lastSpoken,
   };
 }
@@ -333,6 +338,16 @@ function checkLine(ctx: Ctx, st: Replay, line: Extract<Command, { kind: "text" }
   const addresseeId = resolveAddressee({ addressee: line.addressee, speakerActorId: speakerId, recentNpcSpeakers: st.recent, currentEventId: ctx.host.id, visibleIds: maybeIds, playerPresent: !st.playerHidden });
   if (speakerId !== PLAYER_ACTOR) st.recent = pushRecentSpeaker(st.recent, speakerId);
   st.lastSpoken = speakerId;
+  // 무대 흉상(bustSide stage)인데 듣는 사람이 풀리지 않는다 — 장면 첫마디를 주인공이 열면(앞서 말한 NPC 가 없어) 흉상이 저작한 쪽에 뜨고,
+  // 상대가 한마디 하는 순간 무대 쪽으로 바뀌어 같은 사람이 대화 도중 좌우를 오간다(첫사랑 수요일 보고, VQA r23 중대).
+  if ((line as { bustSide?: string }).bustSide === "stage" && (!addresseeId || addresseeId === speakerId)) {
+    const me = cellOf(ctx, st, speakerId);
+    const near = me ? visible.filter((v) => v.id !== speakerId).map((v) => ({ v, c: cellOf(ctx, st, v.id) })).filter((x) => x.c && chebyshev(me, x.c) <= TALK_DISTANCE_LIMIT) : [];
+    if (near.length > 0) {
+      report(ctx, "scene-bust-unstaged", `unstaged:${speakerId}:${where}`, me,
+        `${where}: ${nameOf(ctx, speakerId)} 의 대사가 듣는 사람 없이 풀린다(곁에 ${near.map((x) => nameOf(ctx, x.v.id)).join("·")}) — 흉상이 저작한 쪽에 떴다가 상대가 말하면 반대쪽으로 바뀐다. 첫마디에 addressee(sayTo)로 상대를 못박는다.`);
+    }
+  }
   if (line.addressee && addresseeId && addresseeId !== PLAYER_ACTOR) {
     const target = ctx.byId.get(addresseeId);
     if (target && visibleNow(target, st) === false) {
@@ -350,14 +365,22 @@ function checkLine(ctx: Ctx, st: Replay, line: Extract<Command, { kind: "text" }
   stagingLintStats.measured += 1;
   // 자동 돌아보기(런타임과 같은 규칙): 말하는 쪽이 듣는 쪽을 본다.
   if (line.autoFace !== false && dist <= (line.calling ? CALLING_FACE_RANGE : AUTO_FACE_RANGE)) {
-    a.dir = dirToward(a, b) ?? a.dir;
+    const auto = dirToward(a, b) ?? a.dir;
+    const meant = st.turned?.get(speakerId);
+    // 말하기 직전에 일부러 돌려 세운 쪽을 자동 돌아보기가 다른 상대 쪽으로 되돌린다 — 듣는 상대를 못박지 않은 것이다
+    // (첫사랑 편의점: 점원과 말한 뒤 지후 쪽으로 돌려 세웠는데 「선임님, 하나 드세요」가 최근 화자인 점원에게 가서 위로 돌아섰다, VQA r22).
+    if (meant && meant !== auto && !line.addressee) {
+      report(ctx, "scene-turn-overridden", `${speakerId}>${addresseeId}`, a,
+        `${where}: ${nameOf(ctx, speakerId)} 를 ${meant} 로 돌려 세웠는데 이 대사의 듣는 사람이 ${nameOf(ctx, addresseeId)} 로 풀려 ${auto} 로 다시 돈다 — 돌려 세운 상대에게 하는 말이면 addressee(sayTo)로 못박는다.`);
+    }
+    a.dir = auto;
     // 듣는 쪽이 주인공이면 주인공도 돌아본다(런타임 playSceneDialogueFacing 과 같다).
     if (addresseeId === PLAYER_ACTOR && !line.calling) b.dir = dirToward(b, a) ?? b.dir;
   }
   const pair = [speakerId, addresseeId].sort().join("~");
   // 외침·흘림 대사(멀리서 부르기)는 거리를 보지 않는다.
   const calling = line.calling === true || line.context === "shout" || line.container === "bark";
-  if (dist > TALK_DISTANCE_LIMIT && !calling) {
+  if (dist > TALK_DISTANCE_LIMIT && !calling && !acrossFurniture(ctx, a, b, dist)) {
     report(ctx, "scene-talk-far", pair, b,
       `${where}: ${nameOf(ctx, speakerId)} 가 ${dist}칸 떨어진 ${nameOf(ctx, addresseeId)} 에게 말한다 — 말하기 전에 approach{actor,target}(곁으로 걸어가 바라봄)로 붙인다. 걸음을 손으로 늘어놓지 말 것.`);
     return;
@@ -369,6 +392,23 @@ function checkLine(ctx: Ctx, st: Replay, line: Extract<Command, { kind: "text" }
     report(ctx, "scene-talk-facing", pair, b,
       `${where}: ${nameOf(ctx, speakerId)} 와 ${nameOf(ctx, addresseeId)} 가 서로 보지 않는 채로 말한다(${nameOf(ctx, away)} 가 ${(away === speakerId ? a : b).dir} 을 본다) — faceEachOther{a,b} 또는 turnToward 를 넣는다. 손으로 고른 방향(face)은 도착 못 한 인물에게도 그대로 적용된다.`);
   }
+}
+
+/**
+ * 탁자 건너편 — 한 칸 더 먼(TALK_DISTANCE_LIMIT + 1) 두 사람 사이 곧은 줄에 막힌 가구 칸(탁자·의자)이 있으면 마주 앉은 대화로 본다.
+ * 회의 탁자(폭 2)를 사이에 둔 맞은편은 3칸, 탁자 머리에서 반대쪽 끝은 4칸이다(첫사랑 금요일 회의: 발표자는 북쪽에 서고 듣는 셋은 남쪽 의자에 앉는다).
+ * 사이가 빈 바닥이면 그냥 먼 것이다(곁으로 걸어가 말해야 한다).
+ */
+function acrossFurniture(ctx: Ctx, a: StageCell, b: StageCell, dist: number): boolean {
+  // 탁자 길이 방향(머리 ↔ 맞은편 끝)은 네 칸까지 — 탁자 머리의 손님과 반대쪽 끝 발표자(첫사랑 금요일, VQA r23).
+  if (dist <= TALK_DISTANCE_LIMIT || dist > TALK_DISTANCE_LIMIT + 2) return false;
+  let x = a.x, y = a.y;
+  while (x !== b.x || y !== b.y) {
+    x += Math.sign(b.x - x); y += Math.sign(b.y - y);
+    if (x === b.x && y === b.y) break;
+    if (!isPassable(ctx.project, ctx.map, x, y)) return true;
+  }
+  return false;
 }
 
 function checkChoice(ctx: Ctx, st: Replay, where: string): void {
@@ -386,7 +426,7 @@ function checkChoice(ctx: Ctx, st: Replay, where: string): void {
   if (vis !== true || !st.player) return;
   const a = actorOf(ctx, st, npc)!;
   const dist = chebyshev(a, st.player);
-  if (dist > TALK_DISTANCE_LIMIT) {
+  if (dist > TALK_DISTANCE_LIMIT && !acrossFurniture(ctx, a, st.player, dist)) {
     report(ctx, "scene-talk-far", `choice:${npc}`, a,
       `${where}: 선택지가 ${dist}칸 떨어진 ${nameOf(ctx, npc)} 에게 하는 대답이다 — 선택지 앞에서 approach 로 마주 세운다.`);
   }
@@ -403,6 +443,7 @@ function replay(ctx: Ctx, st: Replay, commands: readonly Command[] | undefined, 
         break;
       case "text":
         checkLine(ctx, st, command, where);
+        st.turned?.clear();
         break;
       case "choices":
         checkChoice(ctx, st, where);
@@ -431,7 +472,13 @@ function replay(ctx: Ctx, st: Replay, commands: readonly Command[] | undefined, 
       }
       case "moveEvent": {
         const who = resolveRef(ctx, command.eventId);
-        if (who) simulateRoute(ctx, st, who, command.route?.moves ?? []);
+        if (who) {
+          simulateRoute(ctx, st, who, command.route?.moves ?? []);
+          const moves = command.route?.moves ?? [];
+          const me = cellOf(ctx, st, who);
+          if (me && moves.length > 0 && moves.every((m) => m && (m.kind === "turn" || m.kind === "turnToward"))) (st.turned ??= new Map()).set(who, me.dir);
+          else st.turned?.delete(who);
+        }
         break;
       }
       case "m2Command": {

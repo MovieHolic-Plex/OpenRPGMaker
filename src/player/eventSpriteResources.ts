@@ -7,7 +7,9 @@ import { resolveCc0IconAssetUrl } from "@/assets/cc0IconAssets";
 import { isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
 import type { Project } from "@/project/types";
 import type { Dir } from "@/player/input";
-import { charsetIdleFrameIndex, isEasyRpgCharsetTextureKey } from "@/player/charsetMotion";
+import { charsetIdleFrameIndex, isCharsetLikeTextureKey } from "@/player/charsetMotion";
+import { CHARSET_FRAME_WIDTH } from "@/assets/easyrpgRtp";
+import { DERIVED_FIELD_FOE_BASE_FRAME, ensureDerivedFieldFoeTexture } from "@/player/fieldFoeSprite";
 import { characterRenderScale } from "@/project/characterScale";
 import { normalizeCharacterScale } from "@/project/footprint";
 import type { EventPageGraphic } from "@/project/types";
@@ -19,6 +21,10 @@ export type EventSpriteTexture = {
   readonly origin?: SpriteFrameOrigin;
   /** Static battler art is fitted to a field-sized box before authored scale. */
   readonly fitSize?: number;
+  /** Battle dot art standing in for a field enemy: the scene may swap it for a derived walking sheet (fieldFoeSprite.ts). */
+  readonly monster?: boolean;
+  /** Walking sheet derived from battle art: charset frames, scaled like a 24px walking chip. */
+  readonly derived?: boolean;
 };
 
 /** Spatial overlay graphics may use catalog picture/charset ids. Event sprites stay on resolveEventSpriteTexture. */
@@ -57,7 +63,7 @@ export function resolveEventSpriteTexture(
   if (resolveCc0IconAssetUrl(spriteId)) return { texture: spriteId, frame: '__BASE', fitSize: 16 };
 
   const uploadedKind = project.assets.uploaded[spriteId]?.kind;
-  if (uploadedKind === "monster") return { texture: spriteId, frame: "__BASE", fitSize: 32 };
+  if (uploadedKind === "monster") return { texture: spriteId, frame: "__BASE", fitSize: 32, monster: true };
   if (uploadedKind === "charset") return { texture: spriteId, frame, charset: true };
   if (isSpriteLikeUpload(uploadedKind)) return { texture: spriteId, frame };
   const charset = findCharsetAsset(spriteId);
@@ -71,8 +77,22 @@ export function resolveEventSpriteTexture(
     const base = spriteFrameOrigin(bundledSprite);
     return { texture: spriteId, frame, ...(base ? { origin: base } : {}) };
   }
-  if (!uploadedKind && isGeneratedMonsterSprite(spriteId)) return { texture: spriteId, frame: "__BASE", fitSize: 32 };
+  if (!uploadedKind && isGeneratedMonsterSprite(spriteId)) return { texture: spriteId, frame: "__BASE", fitSize: 32, monster: true };
   return null;
+}
+
+/**
+ * Field-enemy battle art → derived walking sheet (about 2 tiles, facing, step, shadow, outline + light rim).
+ * Explicit charsets never reach here, so a hand-dotted field chip always wins. Falls back to the static battler
+ * when the source texture is not loaded yet or its pixels cannot be read.
+ */
+export function withDerivedFieldFoe(
+  scene: Parameters<typeof ensureDerivedFieldFoeTexture>[0],
+  texture: EventSpriteTexture | null,
+): EventSpriteTexture | null {
+  if (!texture?.monster) return texture;
+  const key = ensureDerivedFieldFoeTexture(scene, texture.texture);
+  return key ? { texture: key, frame: DERIVED_FIELD_FOE_BASE_FRAME, charset: true, derived: true } : texture;
 }
 
 export function isCharsetSpriteTexture(texture: EventSpriteTexture | null): boolean {
@@ -90,7 +110,8 @@ export function eventSpriteScale(
   mapCharacterFactor = 1,
 ): number {
   if (isCharsetSpriteTexture(texture)) {
-    return characterRenderScale(sprite.width, tileSize, { scale: authoredScale, scaleMode }, referenceTileSize) * mapCharacterFactor;
+    // Derived field-foe frames are wider than a 24px chip but must scale exactly like one (never shrink, same on 48px maps).
+    return characterRenderScale(texture?.derived ? CHARSET_FRAME_WIDTH : sprite.width, tileSize, { scale: authoredScale, scaleMode }, referenceTileSize) * mapCharacterFactor;
   }
   const scale = normalizeCharacterScale(authoredScale);
   if (!texture?.fitSize) return scale;
@@ -113,7 +134,7 @@ export function eventSpriteFrameForDirection(
   if (!texture) return undefined;
   if (!direction) return texture.frame;
   if (typeof texture.frame !== "number") return texture.frame;
-  if (!texture.charset && !isEasyRpgCharsetTextureKey(texture.texture)) return texture.frame;
+  if (!texture.charset && !isCharsetLikeTextureKey(texture.texture)) return texture.frame;
   return charsetIdleFrameIndex(texture.frame, direction);
 }
 
