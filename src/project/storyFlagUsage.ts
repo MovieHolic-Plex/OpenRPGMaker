@@ -287,7 +287,7 @@ function scanMoveRoute(
   add: (access: StoryFlagAccess, kind: StoryFlagKind, targetId: string | undefined, location: UsageLocation) => void,
   location: UsageLocation
 ): void {
-  if (!route) return;
+  if (!route || !Array.isArray(route.moves)) return;
   for (const [index, move] of route.moves.entries()) {
     if (move.kind !== "setSwitch") continue;
     add("write", "switch", move.switchId, {

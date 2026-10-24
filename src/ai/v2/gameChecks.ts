@@ -104,6 +104,18 @@ const WEATHER_WORDS = /비가|비\s*(가\s*)?오|빗방울|빗줄기|소나기|�
 const ENDING_WORDS = /엔딩|결말|ending/iu;
 const STATE_WORDS = /독초|독에|독이|독을|독\s*상태|중독|맹독|마비|수면\s*상태|잠\s*상태|상태\s*이상|혼란|침묵|poison|paraly|stun/iu;
 
+/** 데이터베이스에서 새로 생기거나 바뀐 레코드만 JSON 으로(기본 데이터의 독 기술 등이 섞이지 않게). */
+function changedRecordsJson(before: Project, after: Project): string {
+  const out: unknown[] = [];
+  const b = before.database as unknown as Record<string, unknown>, a = after.database as unknown as Record<string, unknown>;
+  for (const [section, value] of Object.entries(a)) {
+    if (!Array.isArray(value)) continue;
+    const old = new Map(((b[section] as Obj[] | undefined) ?? []).map((r) => [String(r.id), JSON.stringify(r)]));
+    for (const r of value as Obj[]) { const j = JSON.stringify(r); if (old.get(String(r.id)) !== j) out.push(r); }
+  }
+  return JSON.stringify(out);
+}
+
 /** 실행이 바꾼 내용에서 요청과 어긋나는 것 — 끝맺음 관문이 고칠 거리로 올린다. 빈 배열이면 문제 없음. */
 export function gameContentProblems(before: Project, after: Project, task: string): string[] {
   const problems: string[] = [];
@@ -123,9 +135,12 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   }
   // 3) 상태 이상: 실제 상태 걸기(m2-019-change-state add) 또는 상태를 거는 데이터(아이템·기술·적의 stateEffects).
   if (STATE_WORDS.test(task)) {
-    const applies = cmds.some((r) => r.cmd.kind === "m2Command" && /m2-019/u.test(String(r.cmd.commandId)) && obj(r.cmd.fields)?.operation !== "remove");
-    const dbBefore = JSON.stringify(before.database), dbAfter = JSON.stringify(after.database);
-    const dataApplies = dbAfter !== dbBefore && /"stateEffects":\[\{[^\]]*"operation":"add"|"addStateIds":\["state_/u.test(dbAfter.replace(dbBefore, ""));
+    // 치료·해독 요청이면 상태를 «지우는» 것도 실제 상태 처리다(g-healer). 아이템의 healStateIds 도.
+    const cures = /치료|고쳐|고치|해독|낫게|cure|heal/iu.test(task);
+    const applies = cmds.some((r) => r.cmd.kind === "m2Command" && /m2-019/u.test(String(r.cmd.commandId)) && (cures || obj(r.cmd.fields)?.operation !== "remove"))
+      || (cures && cmds.some((r) => r.cmd.kind === "recoverAll"));
+    const changedDb = changedRecordsJson(before, after);
+    const dataApplies = /"stateEffects":\[\{[^\]]*"operation":"add"|"addStateIds":\["state_|"stateId":"state_/u.test(changedDb) || (cures && /"healStateIds":\["state_/u.test(changedDb));
     if (!applies && !dataApplies) problems.push("[게임 검사 상태] 요청에 독·마비 같은 상태 이상이 있는데 실제 상태를 거는 명령이 없다(소리·번쩍임·HP 감소만으로는 독이 아니다). {kind:'m2Command',commandId:'m2-019-change-state',fields:{target:'party',operation:'add',value:'state_poison'}} 를 넣는다.");
   }
   // 4) 물건 고르기 창은 그 물건이 있을 때만.
