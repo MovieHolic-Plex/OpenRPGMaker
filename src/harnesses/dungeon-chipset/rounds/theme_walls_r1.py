@@ -649,3 +649,12 @@ CANDIDATES = {item: {k: _noted(fn, NOTES[(item, k)]) for k, fn in c.items()} for
 
 def line_scenes():
     return {}
+
+
+# VQA 보드에 같이 놓는 버들항 기준(같은 용도: 벽 앞면 키트·천장 둘레가 보이는 방)
+BOARD_REFS = {
+    'wall.other_face': ['bd-pick-castle-catacombs-face-castle-3h', 'bd-pick-sea-cave-face-cave-3h'],
+    'wall.tower_face': ['bd-pick-castle-catacombs-face-castle-3h', 'bd-pick-temple-ruins-face-temple-3h'],
+    'wall.other_rim': ['bd-pick-castle-catacombs-face-castle-3h'],
+    'wall.tower_rim': ['bd-pick-castle-catacombs-face-castle-3h'],
+}
