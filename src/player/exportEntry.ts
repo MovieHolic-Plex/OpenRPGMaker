@@ -33,7 +33,7 @@ import { warmPlayGameRuntime } from "@/player/createPlayGame";
 import { repairFaceMatches } from "@/project/faceMatchRepair";
 import { installFocusGuard } from "@/player/focusGuard";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
-import { isTouchDevice } from "@/player/touchPad";
+import { isTouchDevice, rememberTouchInput } from "@/player/touchPad";
 import type { ActionCombatRuntimeResult } from "@/testing/actionCombatProof";
 import {
   askContinueFromOlderVersion,
@@ -78,7 +78,25 @@ function readBootConfig(): OpenRpgBootConfig {
 }
 
 installFocusGuard(app);
+installTouchUpgrade();
 void bootExportedPlayer(app);
+
+/**
+ * 키보드 전용으로 열렸는데 손가락 터치가 들어오면(펜 디지타이저 때문에 정밀 포인터로 보고한 폴드 등),
+ * 「이 기기는 터치」라고 기억하고 한 번 다시 연다. 키보드 전용 화면은 모든 누름을 막아 폰에서 아무것도 못 한다.
+ */
+function installTouchUpgrade(): void {
+  if (isTouchDevice()) return;
+  const onTouch = (event: TouchEvent | PointerEvent): void => {
+    if ("pointerType" in event && event.pointerType !== "touch") return;
+    window.removeEventListener("touchstart", onTouch, true);
+    window.removeEventListener("pointerdown", onTouch, true);
+    rememberTouchInput();
+    window.location.reload();
+  };
+  window.addEventListener("touchstart", onTouch, { capture: true, passive: true });
+  window.addEventListener("pointerdown", onTouch, { capture: true, passive: true });
+}
 
 async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   const boot = await withDevCheckpointParam(readBootConfig());

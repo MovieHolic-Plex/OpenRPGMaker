@@ -113,10 +113,17 @@ export function mountHostFullscreenToggle(options: FullscreenToggleOptions): (()
 
   const onClick = (): void => {
     try {
-      const request = doc.fullscreenElement
-        ? doc.exitFullscreen()
-        : fullscreenRoot.requestFullscreen();
-      void Promise.resolve(request).catch(() => {
+      const entering = !doc.fullscreenElement;
+      const request = entering
+        ? fullscreenRoot.requestFullscreen({ navigationUI: "hide" } as FullscreenOptions)
+        : doc.exitFullscreen();
+      // 폰(안드로이드)은 전체 화면이 된 뒤 가로로 잠근다 — 손으로 돌리지 않아도 된다. iOS·데스크톱은 lock 이 없거나 거절한다(조용히 무시).
+      void Promise.resolve(request).then(() => {
+        if (options.autoOnTouch !== true) return;
+        const orientation = (typeof screen !== "undefined" ? screen.orientation : undefined) as (ScreenOrientation & { lock?: (o: string) => Promise<void>; unlock?: () => void }) | undefined;
+        if (entering) void orientation?.lock?.("landscape")?.catch(() => undefined);
+        else orientation?.unlock?.();
+      }).catch(() => {
         /* 제스처 요건/권한 실패는 조용히 무시 — 게임 진행에 영향 금지 */
       });
     } catch {
