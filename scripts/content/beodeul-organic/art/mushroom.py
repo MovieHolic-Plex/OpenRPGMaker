@@ -61,38 +61,31 @@ PALE = [
     "...YS........S..",
     "................",
 ]
-RING = [
-"................................",
-"................................",
-"................................",
-"................................",
-"................................",
-"................................",
-"................................",
-"................................",
-"............caefbd..............",
-"...........cefbffd..............",
-"............dgnngd..aed.........",
-"......aed.....hij..efbd.........",
-".....efbd.....pqSS.dgd..........",
-".....mgd......SS....pS..........",
-"......hi............SS.....aed..",
-"......pS..................efbfd.",
-"..........................dgngd.",
-"..aed.......................jhi.",
-".efbd.......................pqS.",
-".dgd.........................S..",
-"..pS............................",
-"..SS............................",
-"...........................aed..",
-".....aefbd.................dgd..",
-"....cefbffd.................hS..",
-"....dgnnngd.....................",
-"......jhij..........aed.........",
-"......pqSS.........efbd..aeb....",
-".......SS....aed...dgd..cefbf...",
-"............efd.....pS..dgngd...",
-"............pS......SS...jhi....",
-"............SS...........pqS....",
-]
+BIG = ["  aefg ", " cefbffd", " efbffgd", "  dgngd ", "   jhi  ", "   pqS  ", "  SSSS  "]
+MID = [" aef ", "cefbd", "dgngd", " jhi ", " pqS", " SSS"]
+SML = ["aed", "dgdd", " hi", " pq", "SSS"]
+TNY = ["aef", "dgd", " pq", "SSS"]
+LEANL = [" aef", "efbfd", "mgnd", " ji", "pq", "SSS"]
+
+def ring():
+    c = canvas(32, 32)
+    # trampled darker grass inside the arc: loose 2-4px clumps (lower-left inner side)
+    for x, y, r in ((9, 15, ["TT", "TTT"]), (13, 14, ["TT"]), (12, 18, ["TTT", " TT"]),
+                    (16, 17, ["TT", "T"]), (8, 19, ["TT"]), (15, 21, ["TT"])):
+        stamp(c, x, y, r)
+    # arc ~ a third of a circle around (16,14), from left (west) down to south-south-west
+    # cluster A (3 overlapping, different sizes) on the west side, back to front
+    stamp(c, 4, 9, SML)
+    stamp(c, 6, 11, MID)
+    stamp(c, 2, 13, BIG)
+    # cluster B (2) at the south-west, one leaning left
+    stamp(c, 12, 23, LEANL)
+    stamp(c, 15, 25, SML)
+    # lone small caps off the arc
+    stamp(c, 7, 22, TNY)
+    stamp(c, 21, 26, TNY)
+    return done(c)
+
+K.update({"T": "#2e5022", "U": "#264d2c"})
+RING = ring()
 ART = {"shroom-red": (RED, K), "shroom-brown": (BROWN, K), "shroom-pale": (PALE, K), "shroom-ring": (RING, K)}

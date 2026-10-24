@@ -354,3 +354,53 @@ BS10 = [
  "................",
 ]
 ART["bush-s"] = (_merge_lone(BS10), WD)
+
+# ---- r11 bush-s: low wide shrub (14x10), crown of 6 bumps, brick-offset 2x2/3x2 clumps (lit upper-left,
+# dark gaps, darkest lower-right), outline 2 on the lit side / o lower-right, rounded base on shadow.
+BS11 = [
+ "................",
+ "................",
+ "................",
+ "................",
+ "................",
+ "...255.2552.25..",
+ "..255445544324o.",
+ ".2544332544332o.",
+ ".2543315544321o.",
+ ".4432554433215o.",
+ ".3321443321221o.",
+ ".4321554321121o.",
+ ".2214433211121o.",
+ "..1o2211o111ooS.",
+ "...oo1oooooSSs..",
+ "................",
+]
+ART["bush-s"] = (BS11, WD)
+# r11b: ragged sides (no vertical run > 3px), crown bumps of different sizes
+BS11 = [
+ "................",
+ "................",
+ "................",
+ "................",
+ "................",
+ "....55..255.....",
+ "..2554525443.25.",
+ "..54433544321441",
+ ".254315544332o1.",
+ ".44325543315421o",
+ "..3314433214321o",
+ ".25421332112211.",
+ ".44321o1543211o.",
+ "..21o1o3221o1oS.",
+ "...ooo1ooooSSs..",
+ "................",
+]
+ART["bush-s"] = (BS11, WD)
+# r11c: keep 1px clear of the right cell edge (col 15), merge salt-and-pepper singles
+BS11 = [r[:15] + "." for r in BS11]
+BS11[9] = BS11[9][:14] + "o."; BS11[10] = BS11[10][:14] + "o."; BS11[7] = BS11[7][:14] + "1."
+ART["bush-s"] = (_merge_lone(BS11), WD)
+# r11d: undulating base (no flat bottom run > 4px)
+BS11[14] = "...ooo.SoooSSs.."
+BS11[13] = BS11[13][:6] + "oo" + BS11[13][8:]
+ART["bush-s"] = (_merge_lone(BS11), WD)
