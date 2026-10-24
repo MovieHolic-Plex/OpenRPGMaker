@@ -66,7 +66,7 @@ def main() -> None:
         play_len = min(end, s1) - max(start, s0)
         if play_len <= 0.02:
             continue
-        idx = len(inputs) // 2 + 1
+        idx = inputs.count("-i") + 1  # 반복 입력은 인자가 넷(-stream_loop -1 -i f)이라 len//2 로 세면 어긋난다
         if cue.get("loop"):
             inputs += ["-stream_loop", "-1", "-i", str(f)]
         else:
