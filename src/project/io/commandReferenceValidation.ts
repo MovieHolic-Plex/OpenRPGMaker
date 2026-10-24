@@ -358,7 +358,10 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       assert(context.resourceIds.has(command.resourceId), `showPicture: resourceId가 존재하지 않습니다: ${command.resourceId}`);
       return;
     case "playAudio":
-      assert(context.resourceIds.has(command.resourceId), `playAudio: resourceId가 존재하지 않습니다: ${command.resourceId}`);
+      // 빈 id 는 모델이 음악 이름만 쓰고 id 를 빠뜨린 것이다(2026-10-25 조수 단독 게임 G12: 같은 거절 9번) — 고치는 법을 거절문에 싣는다.
+      assert(context.resourceIds.has(command.resourceId), typeof command.resourceId === "string" && command.resourceId.trim()
+        ? `playAudio: resourceId가 존재하지 않습니다: ${command.resourceId} — list_resources{kind:'bgm'|'se', query:'…'} 결과의 id 를 쓴다`
+        : "playAudio: resourceId 가 비었습니다 — 음악 이름만으로는 재생할 수 없다. list_resources{kind:'bgm'(배경음)|'se'(효과음), query:'잔잔한 카페'} 로 찾은 id 를 {kind:'playAudio', resourceId:'<id>', channel:'bgm'|'se', loop:true|false} 에 넣는다(컷신이면 add_event 의 music 비트 {do:'music',action:'bgm',query:'…'} 가 id 를 대신 고른다)");
       return;
     case "showAnimation":
       assert(context.animationIds.has(command.animationId) || isBuiltinFieldFxId(command.animationId), `showAnimation: animationId가 존재하지 않습니다: ${command.animationId}`);
