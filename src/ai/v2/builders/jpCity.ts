@@ -353,9 +353,12 @@ function buildHouse(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pla
   const baseSeed = Math.max(1, (num(spec.hints?.seed) ?? prev?.baseSeed ?? 1 + (spec.salt ?? 0) % 9973) + variant * 101);
   // 방 직접 지정(zones.kind 가 일본 집 방 종류) — 아니면 낱말로 예제 구성을 고른다.
   const roomZones = (spec.zones ?? []).filter((z) => z.floor === undefined || z.floor === 1).map((z) => ROOM_ALIASES[z.kind.toLowerCase()] ?? z.kind.toLowerCase());
-  const customRooms = roomZones.length > 0 && roomZones.every((k) => ROOM_KINDS.has(k));
+  // 이름이 가게·시설이면(「카페 온기」) 방 종류(ldk…)가 붙어 와도 그 예제 구성으로 짓는다 — 집 거실로 지으면 카운터가 없다(2026-10-25 G9).
+  const shopByName = PROGRAM_RULES.find(([re]) => has(spec.name, re))?.[1];
+  const namedVenue = shopByName !== undefined && shopByName !== "house-1f" && shopByName !== "hiraya";
+  const customRooms = !namedVenue && roomZones.length > 0 && roomZones.every((k) => ROOM_KINDS.has(k));
   if (roomZones.length && !customRooms) for (const k of roomZones) if (!ROOM_KINDS.has(k)) missing.push(`${k} 방(일본 집 방 종류에 없음 — 예제 구성으로 지었다)`);
-  const program = typeof spec.hints?.program === "string" ? spec.hints.program : PROGRAM_RULES.find(([re]) => has(text, re))?.[1] ?? "house-1f";
+  const program = typeof spec.hints?.program === "string" ? spec.hints.program : (namedVenue ? shopByName : undefined) ?? PROGRAM_RULES.find(([re]) => has(text, re))?.[1] ?? "house-1f";
   for (const z of spec.zones ?? []) for (const a of z.anchors ?? []) missing.push(`${a}(주인공 물건 지정은 일본 실내 예제 구성에서 못 함 — 견본 가구 한 벌)`);
   for (const f of spec.features ?? []) if (!PROGRAM_RULES.some(([re]) => has(f, re))) missing.push(`${f}(일본 실내 예제 구성이 모르는 낱말)`);
   if (spec.exits?.some((e) => e !== "south")) missing.push("남쪽 말고 다른 출구(손 도트 실내는 남쪽 출구만)");
