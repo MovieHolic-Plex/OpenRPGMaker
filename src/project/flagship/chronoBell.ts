@@ -32,6 +32,7 @@ import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX, ensureFallenValenChip } fr
 import { buildFallenTownInteriors } from "./fallenTownInteriors";
 import { buildFallenTownLife, ensureFallenTownDatabase } from "./fallen/townLife";
 import { applyFallenTownQuests, FS_QUEST_FACE_ALIASES } from "./fallen/townQuests";
+import { applyFallenInteractiveProps } from "./fallen/interactProps";
 import { buildFallenForestMaps } from "./fallen/forestMaps";
 import { placeFallenStarVessel } from "./fallenStarVessel";
 import { dressObservatoryHall } from "./fallenObservatoryHall";
@@ -2423,6 +2424,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     }
   }
   addBridgeValenAndScopeScene(project, ids);
+  // 수납 뒤지기 연출·집주인 반응(돌아보기·「!」·「?」·방 이름 기척) — 지금 있는 수납만 고친다 (fallen/interactProps.ts).
+  applyFallenInteractiveProps(project);
   const speakerFaces: Record<string, string> = {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),
