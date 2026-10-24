@@ -92,6 +92,7 @@ export const OPRN_CHANNELS = {
   storeGameMine: "oprn:store.gameMine",
   storeGamePublish: "oprn:store.gamePublish",
   storeGameCurrent: "oprn:store.gameCurrent",
+  storeGamePost: "oprn:store.gamePost",
   /** 컨셉 피드(새 게임): 목록 한 쪽·상세·「이걸로 만들었다」 세기. 썸네일은 storeBlob 으로 받는다. */
   storeConcepts: "oprn:store.concepts",
   storeConcept: "oprn:store.concept",

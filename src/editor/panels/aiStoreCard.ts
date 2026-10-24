@@ -17,12 +17,13 @@ import { aiMadeAssets } from "@/assetStore/pack";
 import { WORKSHOP_BAKED_EVENT, type WorkshopBakedDetail } from "@/editor/workshop/workshopEvents";
 import { currentDrawTarget } from "@/editor/workshop/mapObjectTarget";
 import { createObjectGenCard } from "./aiObjectGenCard";
-import { isStoreCardRequest, type MissingTilesQuestion, type StoreCardRequest, type StorePublishProposal, type StoreVisibilityProposal } from "@/editor/tools/storeTools";
+import { isStoreCardRequest, type MissingTilesQuestion, type StoreCardRequest, type StoreGamePostProposal, type StorePublishProposal, type StoreVisibilityProposal } from "@/editor/tools/storeTools";
+import { storeGameProjectKey } from "@/project/storeGameRelease";
 import { getLocale } from "@/i18n";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 
-const STORE_CARD_TOOLS: ReadonlySet<string> = new Set(["ask_missing_tiles", "store_publish", "store_set_visibility", "generate_missing_object", "draw_object"]); // draw_object = 조수 v2 동사(같은 그리기 카드)
+const STORE_CARD_TOOLS: ReadonlySet<string> = new Set(["ask_missing_tiles", "store_publish", "store_set_visibility", "store_game_post", "generate_missing_object", "draw_object"]); // draw_object = 조수 v2 동사(같은 그리기 카드)
 
 /** Pi 이벤트(팀 모드의 agent_event 포장 포함)에서 스토어 카드 요청을 꺼낸다. */
 export function storeCardFromEvent(raw: PiAgentEvent): StoreCardRequest | null {
@@ -293,9 +294,57 @@ function visibilityCard(proposal: StoreVisibilityProposal): HTMLElement {
   return view.root;
 }
 
+/** 소식 글 카드: 조수가 쓴 초안을 사용자가 고치고 「올리기」를 눌러야 스토어 「소식」에 올라간다. */
+function gamePostCard(proposal: StoreGamePostProposal): HTMLElement {
+  const field = "width: 100%; box-sizing: border-box; font: 12px/1.5 inherit; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px;";
+  const title = el("input", { dataset: { testid: "ai-store-post-title" }, attrs: { maxlength: "120", "aria-label": "글 제목", style: field } }) as HTMLInputElement;
+  title.value = proposal.title;
+  const body = el("textarea", { dataset: { testid: "ai-store-post-body" }, attrs: { rows: "8", maxlength: "20000", "aria-label": "글 본문", style: field } }) as HTMLTextAreaElement;
+  body.value = proposal.body;
+  const comment = el("textarea", { dataset: { testid: "ai-store-post-comment" }, attrs: { rows: "2", maxlength: "600", "aria-label": "제작자 코멘트", placeholder: "판본 카드에 붙일 제작자 코멘트(선택)", style: field } }) as HTMLTextAreaElement;
+  comment.value = proposal.comment;
+  const pin = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "ai-store-post-pin" } }) as HTMLInputElement;
+  pin.checked = proposal.pinned;
+  const post = button("소식 올리기", "ai-store-post-apply", () => void run(), true);
+  const cancel = button("올리지 않기", "ai-store-post-cancel", () => finish("올리지 않았어요. 글은 이 카드에 남아 있어요."));
+  const view = shell("스토어 소식", "업데이트 글을 올릴까요?", "ai-store-post-card", [
+    el("p", { class: "ai-tileset-change-detail", text: `스토어 게임 화면 「소식」 탭과 첫 화면 최신 소식에 보여요${proposal.version ? ` (v${proposal.version} 이야기)` : ""}. 올리기 전에 고칠 수 있어요.` }),
+    title, body,
+    el("label", { attrs: { style: "font-size: 12px; font-weight: 700;" }, text: "제작자 코멘트" }), comment,
+    el("label", { attrs: { style: "display: flex; gap: 4px; align-items: center; font-size: 12px;" }, children: [pin, el("span", { text: "맨 위에 고정" })] }),
+  ], [cancel, post]);
+  const finish = (text: string): void => {
+    post.disabled = true;
+    cancel.disabled = true;
+    view.status.textContent = text;
+  };
+  const run = async (): Promise<void> => {
+    const bridge = storeBridge();
+    if (!bridge?.gamePost) return finish("스토어 글은 데스크톱 앱에서만 올릴 수 있어요.");
+    if (!title.value.trim()) { view.status.textContent = "제목을 써 주세요."; return; }
+    post.disabled = true;
+    await ensureLogin(view.status, post.parentElement!, async () => {
+      try {
+        const mine = await bridge.gameMine({ projectKey: storeGameProjectKey(store.getCurrent()) });
+        if (!mine.game) { view.status.textContent = "이 게임은 아직 스토어에 없어요. 발행 창 「스토어에서 바로 플레이」로 먼저 올려 주세요."; post.disabled = false; return; }
+        const result = await bridge.gamePost!({
+          slug: mine.game.slug, title: title.value.trim(), body: body.value, version: proposal.version, pinned: pin.checked,
+          ...(comment.value.trim() ? { comment: comment.value.trim(), commentVersion: proposal.version ?? mine.game.currentVersion } : {}),
+        });
+        finish(result.status === "pending" ? `올렸어요. 운영자 확인 뒤 공개돼요. ${result.url}` : `올렸어요: ${result.url}`);
+      } catch (error) {
+        view.status.textContent = `올리지 못했어요: ${storeFailure(error).message}`;
+        post.disabled = false;
+      }
+    });
+  };
+  return view.root;
+}
+
 export function createStoreCard(request: StoreCardRequest, followUp: StoreCardFollowUp): HTMLElement {
   if (request.kind === "workshop-object-request") return createObjectGenCard(request, followUp);
   if (request.kind === "store-missing-tiles") return missingTilesCard(request, followUp);
   if (request.kind === "store-publish-proposal") return publishCard(request);
+  if (request.kind === "store-game-post-proposal") return gamePostCard(request);
   return visibilityCard(request);
 }

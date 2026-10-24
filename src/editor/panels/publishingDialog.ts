@@ -12,6 +12,7 @@ import { parseRuntimeManifest, type RuntimeManifest } from "../../project/gameRe
 import { defaultFetchBytes } from "../../project/webExportZip";
 import { prepareWebExport, WEB_PLAYER_BUNDLE_BASE } from "../../project/webExport";
 import { createStoreGameSection } from "./storeGameSection";
+import { storeGameProjectKey } from "../../project/storeGameRelease";
 import {
   DESKTOP_PLATFORM_SPECS,
   createDesktopSteamExportPackage,
@@ -424,7 +425,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
   const effectiveVersion = (): string => version.value.trim() || autoVersion();
   const storeSection = createStoreGameSection({
     project: options.project,
-    projectKey: () => draft?.gameId ?? `title:${options.project.meta.title}`,
+    projectKey: () => draft?.gameId ?? storeGameProjectKey(options.project),
     versionOverride: () => version.value,
     fetchBytes: options.fetchBytes ?? defaultFetchBytes,
     bundleBase: WEB_PLAYER_BUNDLE_BASE,
