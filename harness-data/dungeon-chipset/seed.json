@@ -4303,6 +4303,15 @@
     "prop.wisp"
    ],
    "lead": "object-gate 3/4(기둥: 윗면 3행·머리 타원 아님) 반영: 타원 윗면 화반 안에서 솟는 불꽃."
+  },
+  "theme-walls-r10": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_walls_r10.py",
+   "wave": "theme_walls",
+   "title": "던전 테마 벽 다시 그림 theme-walls-r10",
+   "items": [
+    "wall.other_rim"
+   ],
+   "lead": "패널 9 반영: 마계 테두리 = 탑 갓돌 짜임 + 흑요석 색(점박이 결·빛 번짐 없음)."
   }
  }
 }

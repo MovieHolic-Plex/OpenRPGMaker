@@ -43,21 +43,29 @@ BASIN = [
     '....yyyyyyyyy...',
 ]
 # 불꽃(16×16 위 칸 + 화반 안쪽 2행까지). 혀 끝 m, 겉 n o, 안 p q, 심 W. 아랫단은 화반 안쪽 2~4행에 얹힌다.
-FLAMES = [
-    ['........m.......', '.......mn.......', '.......nnm......', '......mnon......', '......nopn......',
-     '.....mnopnm.....', '.....noqpon.....', '....mnpqqpnm....', '....noqWWqon....', '....nopWWqpn....',
-     '...mnoqWWqpnm...', '...noqqWWqqon...', '...nopqWWqpon...', '...mnopqqponm...', '....nnoppoonn...',
-     '.....mnoonnm....', '......mnnm......', '.......mm.......'],
-    ['.......m........', '.......nm.......', '......mnn.......', '......nonm......', '.....mnpon......',
-     '.....nopqn......', '....mnoqpnm.....', '....noqqqpn.....', '....nopWWqnm....', '...mnoqWWqon....',
-     '...nopqWWqpnm...', '...noqWWWqqon...', '...nopqWWqpon...', '...mnopqqponm...', '....nnoppoonn...',
-     '.....mnoonnm....', '......mnnm......', '.......mm.......'],
-    ['.........m......', '........mn......', '........nnm.....', '.......mnon.....', '.......nopnm....',
-     '......mnpqon....', '......noqpon....', '.....mnpqqpnm...', '....mnoqWWqon...', '....nopWWqpnm...',
-     '...mnoqWWqpon...', '...noqqWWqqon...', '...nopqWWqpon...', '...mnopqqponm...', '....nnoppoonn...',
-     '.....mnoonnm....', '......mnnm......', '.......mm.......'],
-]
-SPARKS = [[(12, 3), (2, 7), (13, 10)], [(3, 2), (12, 6), (2, 11)], [(4, 1), (13, 4), (3, 9)]]
+# r8b(패널 9 sonnet 「흰 심 번짐·불티·장면 차이 없음·화반 입이 안 보임」): 불꽃을 화반 입 안쪽 가운데 6열 폭으로 줄이고(입 둘레 어둠·불빛 반사가 보인다)
+# 심 = 가장 밝은 청록 q(흰 빛 없음), 불티 없음. 장면마다 혀가 왼쪽·곧게·오른쪽으로 휘고 높이가 2행씩 다르다.
+_BODY = ['.......m........', '.......nm.......', '......mnn.......', '......nonm......', '.....mnopn......', '.....nopqnm.....',
+         '.....nopqon.....', '....mnpqqon.....', '....nopqqpnm....', '....nopqqpon....', '....mnpqqpnm....', '.....nopqon.....',
+         '.....mnoonm.....', '......mnnm......']
+
+
+def _lean(rows, d, upto=6):
+    out = []
+    for i, r in enumerate(rows):
+        k = d * (upto - i) // upto if i < upto else 0
+        out.append((r[-k:] + r[:-k]) if k > 0 else (r[-k:] + r[:-k] if k < 0 else r) if k else r)
+    return out
+
+
+def _shift(r, k):
+    return ('.' * k + r[:len(r) - k]) if k > 0 else (r[-k:] + '.' * -k) if k < 0 else r
+
+
+FLAMES = [[_shift(r, -(2 * (6 - i)) // 6 if i < 6 else 0) for i, r in enumerate(_BODY)],
+          ['.' * 16, '.' * 16] + _BODY[2:],
+          [_shift(r, (2 * (6 - i)) // 6 if i < 6 else 0) for i, r in enumerate(_BODY)]]
+SPARKS = [[], [], []]
 TOP = 13   # 화반 윗줄 y(32 칸 안). 불꽃 18행 = 0..17 → 안쪽 2~4행(y 15~17)에 아랫단이 닿는다.
 
 
@@ -73,7 +81,7 @@ def frames(n):
         fl = []
         for k, r in enumerate(f):
             y = y0 + k
-            half = {TOP + 1: 4, TOP + 2: 3, TOP + 3: 3, TOP + 4: 2}.get(y, 8) if y > TOP else 8
+            half = {TOP + 1: 3, TOP + 2: 2.5, TOP + 3: 2.5, TOP + 4: 1.5}.get(y, 8) if y > TOP else 8
             fl.append(''.join(c if abs(x - 7.5) <= half else '.' for x, c in enumerate(r)))
         stamp(cv, fl, lg, 0, y0)
         for (x, y) in SPARKS[i]:

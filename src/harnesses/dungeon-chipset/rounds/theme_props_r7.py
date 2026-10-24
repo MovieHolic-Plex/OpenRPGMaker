@@ -21,8 +21,8 @@ T = 16
 L = P1.L
 G = P1.G
 
-LIF = L('j:void1 a:vrock0 b:vrock1 c:vrock2 d:vrock3 e:iron4 A:iron0 B:iron1 C:iron2 D:iron3 E:iron5 1:water0 2:water1 3:water2 4:iron3 5:water3 v:ice0 w:ice1 x:ice2 y:ice3 z:ice4 o:void0')
-LIF2 = L('j:vrock0 a:crock1 b:crock2 c:crock3 d:crock4 e:crock5 A:cata0 B:cata1 C:cata3 D:cata5 E:cata6 1:crock0 2:crock2 3:crock3 4:crock4 5:crock6 v:ice0 w:ice1 x:ice2 y:ice3 z:ice4 o:void0')
+LIF = L('j:void1 a:vrock0 b:vrock1 c:vrock2 d:vrock3 e:iron4 A:iron0 B:iron1 C:iron2 D:iron3 E:iron5 1:void1 2:water0 3:iron1 4:water1 5:iron3 v:ice0 w:ice1 x:ice2 y:ice3 z:ice4 o:water0 k:water1')
+LIF2 = L('j:vrock0 a:crock1 b:crock2 c:crock3 d:crock4 e:crock5 A:cata0 B:cata1 C:cata3 D:cata5 E:cata6 1:crock0 2:crock2 3:crock3 4:crock4 5:crock6 v:ice0 w:ice1 x:ice2 y:ice3 z:ice4 o:water0 k:vrock1')
 
 # 켜 경계(위 → 아래) 기준 행 · 열마다 오르내림(16 주기) · 켜 몸 단
 BOUND = [0, 9, 18, 27, 37, 48]
@@ -50,9 +50,10 @@ def rock(seed=0):
                 rows[y][x] = 'abcde'[max(0, min(4, t))]
             if 0 < k:
                 if (k - 1) in ICE_SEAM:
-                    rows[y0][x] = 'v' if (x + k) % 4 else 'j'      # 틈에 낀 얼음(어두운 얼음, 끊김)
+                    hh = ((x + seed * 5) * 2246822519 ^ k * 3266489917) & 0xffff
+                    rows[y0][x] = 'o' if hh % 5 else 'j'      # r7b: 틈에 낀 얼음 = 짙은 물빛(채도 낮춤), 밝은 얼음은 드문드문
                     if y0 - 1 >= 0:
-                        rows[y0 - 1][x] = 'w' if (x * 3 + k) % 5 < 2 else 'a'
+                        rows[y0 - 1][x] = 'v' if hh % 11 == 3 else ('k' if hh % 3 == 0 else 'a')
                 else:
                     rows[y0][x] = 'j'
                     if y0 - 1 >= 0:
@@ -71,43 +72,39 @@ def rock(seed=0):
             c = rows[y][x]
             if c not in 'bcd':
                 continue
-            if h % 13 == 0:
-                ln = 3 + (h >> 4) % 5
+            if h % 29 == 0:
+                ln = 3 + (h >> 4) % 4
                 for i in range(ln):
                     xx = (x + i) % 16
                     if rows[y][xx] in 'bcd':
                         rows[y][xx] = 'abcde'['abcde'.index(rows[y][xx]) + 1]
                         if y + 1 < 48 and rows[y + 1][xx] in 'bcd':
                             rows[y + 1][xx] = 'abcde'['abcde'.index(rows[y + 1][xx]) - 1]
-            elif h % 17 == 5 and x + 1 < 16 and rows[y][x + 1] in 'bcd':
-                rows[y][x] = rows[y][x + 1] = 'a'
+            # r7c: 짙은 홈 점 두 화소 없음 — 줄무늬와 합쳐 16px 마다 「E」 글자처럼 읽혔다
     # 판 나누기: 켜마다 세로 금 2~3개(자리·기울기가 켜마다 다름) → 판마다 몸 단·색 줄(abcde · ABCDE · 12345)을 해시로, 판 왼끝 빛 · 오른끝 그늘
     sets = ('abcde', 'ABCDE', '12345')
     for k in range(5):
         h0 = (k * 2654435761 ^ seed * 97 ^ 0x51ed) & 0xffff
-        cuts = sorted({(h0 % 7) + 2, (h0 >> 3) % 6 + 9, 15 if (h0 >> 7) % 2 else 13})
+        c1 = (h0 % 5) + 3                      # r7c: 금은 3~7 · 10~13 두 개(붙지 않게 — 붙으면 금·빛 줄이 합쳐 글자처럼 읽혔다)
+        c2 = (h0 >> 3) % 4 + 10
+        cuts = sorted({c1, c2})
         for x in range(16):
             bs = [BOUND[0]] + [BOUND[i + 1] + WAVY[i][(x + seed * 5) % 16] for i in range(4)] + [48]
             y0, y1 = bs[k], bs[k + 1]
             pid = sum(1 for c in cuts if x >= c)
             hp = (k * 40503 ^ pid * 2246822519 ^ seed * 31) & 0xffff
             ramp = sets[hp % 3]
-            shift = (hp >> 4) % 3 - 1
+            shift = 0   # r7c: 판마다 밝기 단은 같고 색 줄만 다르다(판 경계가 16px 세로 띠로 읽히지 않게)
             for y in range(y0 + 1, y1 - 1):
                 c = rows[y][x]
                 if c not in 'abcde':
                     continue
                 i = max(0, min(4, 'abcde'.index(c) + shift))
                 if x in cuts:
-                    rows[y][x] = 'j' if (y + k) % 4 else 'a'
-                    continue
-                if x - 1 in cuts or x == 0 and 0 in cuts:
-                    i = min(4, i + 1)
-                if x + 1 in cuts:
-                    i = max(0, i - 1)
+                    i = max(0, i - 1)     # r7b: 판 금 = 두 단 그늘(먹 줄 아님 — 16px 세로줄로 읽혔다)
                 rows[y][x] = ramp[i]
     rows = [''.join(r) for r in rows]
-    rows = W8.speck3(rows, 41 + seed, top=5)
+    # r7c: 밝은 알갱이 덩이(speck3) 없음 — 버들항 동굴 줄 C 처럼 조용한 켜. 같은 줄 ±1 알갱이만(칸 정보량)
     return W8.pit_speck(rows, 41 + seed, top=5)
 
 
