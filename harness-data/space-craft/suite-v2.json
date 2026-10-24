@@ -1,0 +1,1260 @@
+{
+ "schema": "v2-suite/1",
+ "note": "v2 solve-rate suite (2026-10-24). pass = explicit criteria; judged by playing in the shipped player. holdout cases are not run until after the fixes.",
+ "tasks": [
+  {
+   "id": "g-fetch",
+   "category": "quests",
+   "pass": [
+    "촌장이 의뢰",
+    "약초 3개를 얻는 곳",
+    "건네면 100골드",
+    "완료 뒤 다시 주지 않음"
+   ],
+   "verify": "촌장 대화 → 약초 줍기 ×3 → 촌장 대화(골드+100, 약초 -3) → 다시 대화(보상 없음)",
+   "holdout": false
+  },
+  {
+   "id": "g-chain",
+   "category": "quests",
+   "pass": [
+    "3단계 순서",
+    "단계마다 다른 대사",
+    "순서를 건너뛸 수 없음"
+   ],
+   "verify": "대장장이 먼저(아무 일 없음) → 촌장 → 대장장이(칼) → 촌장(완료) → 다시 대화",
+   "holdout": false
+  },
+  {
+   "id": "g-side-journal",
+   "category": "quests",
+   "pass": [
+    "선택 퀘스트(안 받아도 됨)",
+    "일지에 등록",
+    "완료 표시"
+   ],
+   "verify": "의뢰인 대화 → 일지 확인 → 고양이 찾기 → 보고 → 일지 완료",
+   "holdout": false
+  },
+  {
+   "id": "g-timed",
+   "category": "quests",
+   "pass": [
+    "타이머 시작",
+    "시간 안 성공 분기",
+    "시간 초과 실패 분기"
+   ],
+   "verify": "촌장 → 우물 → 촌장(성공) / 타이머 확인",
+   "holdout": false
+  },
+  {
+   "id": "g-fail-branch",
+   "category": "quests",
+   "pass": [
+    "배달 의뢰",
+    "몰래 읽기 선택지",
+    "읽으면 실패 결말",
+    "안 읽으면 성공 결말"
+   ],
+   "verify": "의뢰 → 선택(읽음/안 읽음) → 받는 사람 대화",
+   "holdout": false
+  },
+  {
+   "id": "g2-wolf-bounty",
+   "category": "quests",
+   "pass": [
+    "의뢰",
+    "늑대 전투",
+    "세 번 세기",
+    "300골드"
+   ],
+   "verify": "대장 → 늑대 ×3 → 대장(+300)",
+   "holdout": false
+  },
+  {
+   "id": "g-mini-collect",
+   "category": "quests",
+   "pass": [
+    "병 5개",
+    "개수 세기",
+    "5개 뒤 축제 결말"
+   ],
+   "verify": "병 ×5 → 촌장",
+   "holdout": false
+  },
+  {
+   "id": "g-shop-new",
+   "category": "items",
+   "pass": [
+    "새 소모품 HP150",
+    "새 무기 공격+12",
+    "대장장이 상점",
+    "가격 30/250"
+   ],
+   "verify": "대장장이 대화 → 상점 목록·가격 확인 → 구매 → 소지품",
+   "holdout": false
+  },
+  {
+   "id": "g-chest-once",
+   "category": "items",
+   "pass": [
+    "상자",
+    "은 반지 방어+3",
+    "한 번만"
+   ],
+   "verify": "상자 열기 → 소지품 → 다시 열기(빈 상자)",
+   "holdout": false
+  },
+  {
+   "id": "g-equip-start",
+   "category": "items",
+   "pass": [
+    "견습 검 장착",
+    "가죽 갑옷 장착",
+    "시작부터"
+   ],
+   "verify": "새 게임 → 장비 창",
+   "holdout": false
+  },
+  {
+   "id": "g-craft",
+   "category": "items",
+   "pass": [
+    "철광석 줍는 곳",
+    "철광석 2 → 철검",
+    "부족하면 거절"
+   ],
+   "verify": "대장장이(부족) → 광석 ×2 → 대장장이(철검)",
+   "holdout": false
+  },
+  {
+   "id": "g-sell-prices",
+   "category": "items",
+   "pass": [
+    "상점",
+    "포션·에테르·해독제",
+    "되팔기 70%"
+   ],
+   "verify": "상점 열기 → 사기·팔기 값",
+   "holdout": false
+  },
+  {
+   "id": "g2-gift",
+   "category": "items",
+   "pass": [
+    "빵 판매",
+    "빵 건네기",
+    "방패 방어+6",
+    "한 번만"
+   ],
+   "verify": "빵 사기 → 대장장이(빵 -1, 방패 +1) → 다시(없음)",
+   "holdout": false
+  },
+  {
+   "id": "g2-stat-fruit",
+   "category": "items",
+   "pass": [
+    "힘의 열매",
+    "공격력 영구 +5",
+    "상자 하나"
+   ],
+   "verify": "상자 → 열매 사용 → 공격력 +5",
+   "holdout": false
+  },
+  {
+   "id": "g2-well-coin",
+   "category": "items",
+   "pass": [
+    "처음 한 번 동전",
+    "동전 있을 때 촌장 이야기",
+    "동전 없으면 평소 대사"
+   ],
+   "verify": "촌장(평소) → 우물(동전) → 우물(없음) → 촌장(옛이야기)",
+   "holdout": false
+  },
+  {
+   "id": "g-inn",
+   "category": "items",
+   "pass": [
+    "여관",
+    "50골드",
+    "완전 회복",
+    "돈 부족 거절"
+   ],
+   "verify": "다치게 → 여관 → 골드-50·회복 / 골드 0 → 거절",
+   "holdout": false
+  },
+  {
+   "id": "g-save-point",
+   "category": "items",
+   "pass": [
+    "저장 지점",
+    "저장",
+    "회복"
+   ],
+   "verify": "조사 → 저장 창 / 회복",
+   "holdout": false
+  },
+  {
+   "id": "g-hero-edit",
+   "category": "party",
+   "pass": [
+    "이름 하늘",
+    "궁수 직업",
+    "레벨 5",
+    "HP 높음",
+    "궁수 외형"
+   ],
+   "verify": "새 게임 → 메뉴 상태 창",
+   "holdout": false
+  },
+  {
+   "id": "g-join",
+   "category": "party",
+   "pass": [
+    "라온 NPC",
+    "선택지",
+    "고르면 파티 합류",
+    "합류 뒤 맵에서 사라짐"
+   ],
+   "verify": "라온 대화 → 같이 가자 → 파티 확인",
+   "holdout": false
+  },
+  {
+   "id": "g-leave",
+   "category": "party",
+   "pass": [
+    "시작 파티에 마법사",
+    "촌장 대화 뒤 이탈",
+    "이탈 대사"
+   ],
+   "verify": "시작 파티 → 촌장 대화 → 파티 확인",
+   "holdout": false
+  },
+  {
+   "id": "g-levelskill",
+   "category": "party",
+   "pass": [
+    "새 스킬 전체 공격",
+    "레벨 3 습득"
+   ],
+   "verify": "DB 확인 → 레벨 올리기 → 스킬 목록",
+   "holdout": false
+  },
+  {
+   "id": "g-party-switch",
+   "category": "party",
+   "pass": [
+    "동료 둘 시작",
+    "순서 바꾸기 수단"
+   ],
+   "verify": "여관 주인 → 순서 바꾸기 → 파티",
+   "holdout": false
+  },
+  {
+   "id": "g2-skill-teacher",
+   "category": "party",
+   "pass": [
+    "노인 마법사",
+    "200골드",
+    "화염구 습득",
+    "중복 판매 없음"
+   ],
+   "verify": "노인(-200, 스킬) → 다시(이미 배움)",
+   "holdout": false
+  },
+  {
+   "id": "g2-party-line",
+   "category": "party",
+   "pass": [
+    "라온 시작 파티",
+    "파티 조건 대사",
+    "없으면 평소 대사"
+   ],
+   "verify": "대장장이(라온 있음 → 특별 대사)",
+   "holdout": false
+  },
+  {
+   "id": "g-portraits",
+   "category": "events",
+   "pass": [
+    "주고받는 대화",
+    "말하는 사람마다 얼굴"
+   ],
+   "verify": "촌장 대화 → 얼굴 확인",
+   "holdout": false
+  },
+  {
+   "id": "g-npc-gossip",
+   "category": "events",
+   "pass": [
+    "다섯 명",
+    "각자 다른 성격",
+    "서로 소문"
+   ],
+   "verify": "다섯 명 대화",
+   "holdout": false
+  },
+  {
+   "id": "g-cutscene-arrival",
+   "category": "events",
+   "pass": [
+    "시작 자동 실행",
+    "주인공 이동",
+    "촌장 마중",
+    "한 번만"
+   ],
+   "verify": "새 게임 → 장면 → 끝나고 조작",
+   "holdout": false
+  },
+  {
+   "id": "g-cutscene-night",
+   "category": "events",
+   "pass": [
+    "대화 뒤 연출",
+    "어두워짐",
+    "그림자 지나감"
+   ],
+   "verify": "촌장 → 연출",
+   "holdout": false
+  },
+  {
+   "id": "g-cutscene-camera",
+   "category": "events",
+   "pass": [
+    "다리 밟으면 시작",
+    "카메라 이동",
+    "복귀"
+   ],
+   "verify": "다리 건너기 → 화면",
+   "holdout": false
+  },
+  {
+   "id": "g-choice-memory",
+   "category": "switches",
+   "pass": [
+    "선택지 둘",
+    "선택 기억",
+    "재대화 대사 다름"
+   ],
+   "verify": "대장장이 → 검 → 다시 대화",
+   "holdout": false
+  },
+  {
+   "id": "g-affinity",
+   "category": "switches",
+   "pass": [
+    "봄이 NPC",
+    "호감 증가",
+    "3번째 특별 대사"
+   ],
+   "verify": "봄이 대화 ×3",
+   "holdout": false
+  },
+  {
+   "id": "g-counter",
+   "category": "switches",
+   "pass": [
+    "횟수 변수",
+    "5번째 보상",
+    "그 뒤 없음"
+   ],
+   "verify": "우물 ×6",
+   "holdout": false
+  },
+  {
+   "id": "g2-two-endings",
+   "category": "endings",
+   "pass": [
+    "선택지",
+    "엔딩 둘",
+    "선택에 따라 다름"
+   ],
+   "verify": "촌장 → 남는다(엔딩A) / 떠난다(엔딩B)",
+   "holdout": false
+  },
+  {
+   "id": "g-mini-quest-game",
+   "category": "endings",
+   "pass": [
+    "의뢰",
+    "동굴 맵",
+    "보스 전투",
+    "귀환 엔딩"
+   ],
+   "verify": "시작 → 의뢰 → 동굴 → 보스 → 엔딩",
+   "holdout": false
+  },
+  {
+   "id": "g-mini-mystery",
+   "category": "endings",
+   "pass": [
+    "사건 제시",
+    "주민 셋 단서",
+    "범인 지목 선택",
+    "정답/오답 결말"
+   ],
+   "verify": "대장장이 → 주민 셋 → 지목",
+   "holdout": false
+  },
+  {
+   "id": "g-enemy-area",
+   "category": "battles",
+   "pass": [
+    "새 적 독버섯",
+    "무리(트룹)",
+    "마을 풀밭 조우"
+   ],
+   "verify": "풀밭 걷기 → 전투 → 적 이름",
+   "holdout": false
+  },
+  {
+   "id": "g-boss-event",
+   "category": "battles",
+   "pass": [
+    "보스 이벤트",
+    "전투 전 대사",
+    "승리 분기",
+    "촌장 감사"
+   ],
+   "verify": "보스 대화 → 전투 → 승리 → 촌장",
+   "holdout": false
+  },
+  {
+   "id": "g-escape-lose",
+   "category": "battles",
+   "pass": [
+    "전투",
+    "패배 분기(게임오버 아님)",
+    "승리 분기"
+   ],
+   "verify": "경비병 → 전투(지기) → 대사 / 다시 → 이기기",
+   "holdout": false
+  },
+  {
+   "id": "g-troop-pages",
+   "category": "battles",
+   "pass": [
+    "슬라임 셋 트룹",
+    "2턴 메시지",
+    "아이 대화로 시작"
+   ],
+   "verify": "아이 대화 → 전투 2턴 메시지",
+   "holdout": false
+  },
+  {
+   "id": "g-healer",
+   "category": "battles",
+   "pass": [
+    "신부 NPC",
+    "독 치료",
+    "무료"
+   ],
+   "verify": "독 걸기 → 신부 → 상태 확인",
+   "holdout": false
+  },
+  {
+   "id": "g2-poison-trap",
+   "category": "battles",
+   "pass": [
+    "밟으면 독",
+    "경고 팻말"
+   ],
+   "verify": "팻말 읽기 → 덤불 밟기 → 독 상태",
+   "holdout": false
+  },
+  {
+   "id": "g2-rain",
+   "category": "weather",
+   "pass": [
+    "대화 뒤 비",
+    "대장장이 대사 바뀜"
+   ],
+   "verify": "촌장 → 비 → 대장장이",
+   "holdout": false
+  },
+  {
+   "id": "g-daynight-npc",
+   "category": "npc",
+   "pass": [
+    "시간대별 위치",
+    "밤 팻말"
+   ],
+   "verify": "낮 확인 → 밤 확인",
+   "holdout": false
+  },
+  {
+   "id": "g-lever-puzzle",
+   "category": "puzzles",
+   "pass": [
+    "레버 셋",
+    "모두 켜야 열림",
+    "일부는 안 열림"
+   ],
+   "verify": "레버 둘 → 문(닫힘) → 셋 → 문(열림)",
+   "holdout": false
+  },
+  {
+   "id": "g2-password",
+   "category": "puzzles",
+   "pass": [
+    "문지기 암호 선택지",
+    "정답 통과",
+    "오답 거절",
+    "노인이 암호 힌트"
+   ],
+   "verify": "노인 → 문지기(달빛) → 통과 / 오답 → 거절",
+   "holdout": false
+  },
+  {
+   "id": "g-key-door",
+   "category": "puzzles",
+   "pass": [
+    "잠긴 문",
+    "열쇠 아이템",
+    "열쇠 없으면 안 열림",
+    "열쇠 있으면 열림"
+   ],
+   "verify": "문 조사(잠김) → 촌장(열쇠) → 문 조사(열림·이동)",
+   "holdout": false
+  },
+  {
+   "id": "g2-toll",
+   "category": "puzzles",
+   "pass": [
+    "경비병",
+    "20골드",
+    "돈 없으면 막음",
+    "한 번 내면 통과"
+   ],
+   "verify": "골드 0 → 막힘 / 골드 있음 → -20 → 다시(무료)",
+   "holdout": false
+  },
+  {
+   "id": "g-edit-rename",
+   "category": "edits",
+   "pass": [
+    "이름 아린",
+    "대사 속 이름도"
+   ],
+   "verify": "메뉴 → 촌장 대화",
+   "holdout": false
+  },
+  {
+   "id": "g-edit-rebalance",
+   "category": "edits",
+   "pass": [
+    "슬라임 HP -30%",
+    "박쥐 HP -30%",
+    "경험치 +50%"
+   ],
+   "verify": "DB 비교",
+   "holdout": false
+  },
+  {
+   "id": "g-edit-shop-stock",
+   "category": "edits",
+   "pass": [
+    "기존 대사 유지",
+    "상점",
+    "철검·강철검·방패"
+   ],
+   "verify": "대장장이 → 대사 → 상점",
+   "holdout": false
+  },
+  {
+   "id": "g-edit-add-town",
+   "category": "edits",
+   "pass": [
+    "우체부",
+    "편지 심부름",
+    "기존 대사 보존"
+   ],
+   "verify": "우체부 → 대장장이 → 우체부",
+   "holdout": false
+  },
+  {
+   "id": "g2-edit-talk",
+   "category": "edits",
+   "pass": [
+    "처음 세 줄",
+    "망치 이야기",
+    "두 번째부터 한 줄"
+   ],
+   "verify": "대장장이 ×2",
+   "holdout": false
+  },
+  {
+   "id": "cmp-village",
+   "category": "maps",
+   "pass": [
+    "마을 맵",
+    "집 여러 채·밭·우물·광장",
+    "시작에서 모두 걸어 닿는다",
+    "강"
+   ],
+   "verify": "",
+   "holdout": false
+  },
+  {
+   "id": "cmp-tavern",
+   "category": "maps",
+   "pass": [
+    "실내",
+    "바 카운터·식탁 여러 개·벽난로·계단",
+    "출구",
+    "걸어 닿음"
+   ],
+   "verify": "",
+   "holdout": false
+  },
+  {
+   "id": "cmp-cave",
+   "category": "maps",
+   "pass": [
+    "동굴",
+    "적(박쥐)",
+    "안쪽 보물상자",
+    "입구에서 상자까지 닿음"
+   ],
+   "verify": "",
+   "holdout": false
+  },
+  {
+   "id": "cmp-dungeon-floors",
+   "category": "maps",
+   "pass": [
+    "3층",
+    "층 사이 계단 이동",
+    "몬스터·상자",
+    "꼭대기 보스",
+    "모두 닿음"
+   ],
+   "verify": "",
+   "holdout": false
+  },
+  {
+   "id": "cmp-jp-street",
+   "category": "maps",
+   "pass": [
+    "일본 골목",
+    "집 3~4채",
+    "자판기",
+    "작은 공원"
+   ],
+   "verify": "",
+   "holdout": false
+  },
+  {
+   "id": "dg-goblin-den",
+   "category": "maps",
+   "pass": [
+    "굴",
+    "고블린 여러",
+    "안쪽 대장",
+    "닿음"
+   ],
+   "verify": "",
+   "holdout": false
+  },
+  {
+   "id": "farm-village",
+   "category": "maps",
+   "pass": [
+    "농장 마을",
+    "밭 여러",
+    "울타리",
+    "헛간",
+    "닿음"
+   ],
+   "verify": "",
+   "holdout": false
+  },
+  {
+   "id": "cmp-dg-forest",
+   "category": "maps",
+   "pass": [
+    "숲 던전",
+    "길",
+    "늑대 적",
+    "안쪽 보스",
+    "닿음"
+   ],
+   "verify": "",
+   "holdout": false
+  },
+  {
+   "id": "g3-escort",
+   "category": "quests",
+   "pass": [
+    "콩이 NPC 가 있고 말 걸면 호위 의뢰를 한다",
+    "수락하면 콩이가 주인공을 따라온다(동행·추종)",
+    "우물에 닿으면 완료 대사 + 50골드",
+    "완료 뒤 다시 받을 수 없다"
+   ],
+   "verify": "콩이 NPC 가 있고 말 걸면 호위 의뢰를 한다 / 수락하면 콩이가 주인공을 따라온다(동행·추종) / 우물에 닿으면 완료 대사 + 50골드 / 완료 뒤 다시 받을 수 없다",
+   "holdout": false
+  },
+  {
+   "id": "g3-kill-slimes",
+   "category": "quests",
+   "pass": [
+    "촌장이 토벌 의뢰를 준다",
+    "남쪽에서 슬라임 전투가 일어난다",
+    "이긴 횟수가 센다(5)",
+    "5회 뒤 보고하면 슬라임 젤리 3개",
+    "중복 보상 없음"
+   ],
+   "verify": "촌장이 토벌 의뢰를 준다 / 남쪽에서 슬라임 전투가 일어난다 / 이긴 횟수가 센다(5) / 5회 뒤 보고하면 슬라임 젤리 3개 / 중복 보상 없음",
+   "holdout": false
+  },
+  {
+   "id": "g3-letter-chain",
+   "category": "quests",
+   "pass": [
+    "대장장이 → 편지 아이템 받음",
+    "촌장 → 편지 없어지고 답장 받음",
+    "대장장이 → 답장 없어지고 수리 망치",
+    "퀘스트 일지에 단계 표시",
+    "단계마다 대사가 바뀐다"
+   ],
+   "verify": "대장장이 → 편지 아이템 받음 / 촌장 → 편지 없어지고 답장 받음 / 대장장이 → 답장 없어지고 수리 망치 / 퀘스트 일지에 단계 표시 / 단계마다 대사가 바뀐다",
+   "holdout": false
+  },
+  {
+   "id": "g3-antidote-shop",
+   "category": "items",
+   "pass": [
+    "잡화점 NPC 상점이 열린다",
+    "해독제 20골드·포션 15골드",
+    "해독제 아이템이 독 상태를 고친다(healStateIds/상태 제거)",
+    "팔기 메뉴가 있다"
+   ],
+   "verify": "잡화점 NPC 상점이 열린다 / 해독제 20골드·포션 15골드 / 해독제 아이템이 독 상태를 고친다(healStateIds/상태 제거) / 팔기 메뉴가 있다",
+   "holdout": false
+  },
+  {
+   "id": "g3-key-item",
+   "category": "items",
+   "pass": [
+    "촌장이 은빛 열쇠를 준다(한 번)",
+    "열쇠 없이 상자를 열면 잠겨 있다",
+    "열쇠가 있으면 열쇠 소모 + 5000골드",
+    "열쇠는 팔 수 없다(가격 0 또는 판매 불가)",
+    "상자는 한 번만"
+   ],
+   "verify": "촌장이 은빛 열쇠를 준다(한 번) / 열쇠 없이 상자를 열면 잠겨 있다 / 열쇠가 있으면 열쇠 소모 + 5000골드 / 열쇠는 팔 수 없다(가격 0 또는 판매 불가) / 상자는 한 번만",
+   "holdout": false
+  },
+  {
+   "id": "g3-armor-shop",
+   "category": "items",
+   "pass": [
+    "방어구 상점 NPC",
+    "세 방어구가 정확한 값과 방어력으로 존재",
+    "상점에서 살 수 있다",
+    "산 것을 장비할 수 있다(직업 허용)"
+   ],
+   "verify": "방어구 상점 NPC / 세 방어구가 정확한 값과 방어력으로 존재 / 상점에서 살 수 있다 / 산 것을 장비할 수 있다(직업 허용)",
+   "holdout": false
+  },
+  {
+   "id": "g3-class-change",
+   "category": "party",
+   "pass": [
+    "견습 기사·기사 직업이 있다",
+    "주인공이 처음에 견습 기사",
+    "촌장과 대화로 기사로 전직",
+    "기사가 HP·방어 곡선이 더 높다",
+    "한 번 전직하면 다시 묻지 않는다"
+   ],
+   "verify": "견습 기사·기사 직업이 있다 / 주인공이 처음에 견습 기사 / 촌장과 대화로 기사로 전직 / 기사가 HP·방어 곡선이 더 높다 / 한 번 전직하면 다시 묻지 않는다",
+   "holdout": false
+  },
+  {
+   "id": "g3-hero-look",
+   "category": "party",
+   "pass": [
+    "주인공 이름이 노을",
+    "걷기 그림이 바뀌었다(소녀)",
+    "얼굴 그림이 바뀌었다",
+    "다른 배우·NPC 는 그대로"
+   ],
+   "verify": "주인공 이름이 노을 / 걷기 그림이 바뀌었다(소녀) / 얼굴 그림이 바뀌었다 / 다른 배우·NPC 는 그대로",
+   "holdout": false
+  },
+  {
+   "id": "g3-temp-member",
+   "category": "party",
+   "pass": [
+    "대장장이 배우가 있다",
+    "대장장이 대화로 파티 합류",
+    "촌장 대화로 파티에서 빠진다",
+    "빠진 뒤 대장장이가 대장간에 다시 있다(또는 대사)"
+   ],
+   "verify": "대장장이 배우가 있다 / 대장장이 대화로 파티 합류 / 촌장 대화로 파티에서 빠진다 / 빠진 뒤 대장장이가 대장간에 다시 있다(또는 대사)",
+   "holdout": false
+  },
+  {
+   "id": "g3-flashback",
+   "category": "events",
+   "pass": [
+    "묘비 조사 이벤트",
+    "세피아 화면 + 회상 대사",
+    "끝나면 원래 화면 색",
+    "한 번 본 뒤 묘비는 짧은 글만"
+   ],
+   "verify": "묘비 조사 이벤트 / 세피아 화면 + 회상 대사 / 끝나면 원래 화면 색 / 한 번 본 뒤 묘비는 짧은 글만",
+   "holdout": false
+  },
+  {
+   "id": "g3-emote-run",
+   "category": "events",
+   "pass": [
+    "고양이 이벤트가 보인다",
+    "다가가면 ! 감정 표시",
+    "고양이가 이동해 사라진다",
+    "다시 나타나지 않는다(또는 원래 자리로)"
+   ],
+   "verify": "고양이 이벤트가 보인다 / 다가가면 ! 감정 표시 / 고양이가 이동해 사라진다 / 다시 나타나지 않는다(또는 원래 자리로)",
+   "holdout": false
+  },
+  {
+   "id": "g3-bgm-festival",
+   "category": "events",
+   "pass": [
+    "촌장 선택지에 축제 시작",
+    "선택하면 BGM 이 바뀐다",
+    "광장에 사람 셋이 나타난다",
+    "사람들이 움직인다(무작위·제자리 걸음)"
+   ],
+   "verify": "촌장 선택지에 축제 시작 / 선택하면 BGM 이 바뀐다 / 광장에 사람 셋이 나타난다 / 사람들이 움직인다(무작위·제자리 걸음)",
+   "holdout": false
+  },
+  {
+   "id": "g3-donation",
+   "category": "switches",
+   "pass": [
+    "거지 NPC 기부 선택지",
+    "기부하면 10골드 감소 + 총액 변수 증가",
+    "대사에 총액이 보인다",
+    "100 넘으면 행운의 부적 한 번",
+    "돈 없으면 기부 못 함"
+   ],
+   "verify": "거지 NPC 기부 선택지 / 기부하면 10골드 감소 + 총액 변수 증가 / 대사에 총액이 보인다 / 100 넘으면 행운의 부적 한 번 / 돈 없으면 기부 못 함",
+   "holdout": false
+  },
+  {
+   "id": "g3-apple-count",
+   "category": "switches",
+   "pass": [
+    "사과나무 넷, 나무마다 한 번",
+    "사과 아이템 증가",
+    "촌장이 모은 개수를 말한다",
+    "같은 나무 두 번은 없음"
+   ],
+   "verify": "사과나무 넷, 나무마다 한 번 / 사과 아이템 증가 / 촌장이 모은 개수를 말한다 / 같은 나무 두 번은 없음",
+   "holdout": false
+  },
+  {
+   "id": "g3-bad-ending",
+   "category": "endings",
+   "pass": [
+    "촌장 의뢰 선택지",
+    "거절 횟수를 센다",
+    "세 번째 거절 → 배드 엔딩(정의된 엔딩)",
+    "수락하면 고맙네 대사"
+   ],
+   "verify": "촌장 의뢰 선택지 / 거절 횟수를 센다 / 세 번째 거절 → 배드 엔딩(정의된 엔딩) / 수락하면 고맙네 대사",
+   "holdout": false
+  },
+  {
+   "id": "g3-good-bad",
+   "category": "endings",
+   "pass": [
+    "덤불에서 망치 아이템",
+    "대장장이에게 돌려주기 → 좋은 엔딩",
+    "상점에 팔기(또는 팔기 선택) → 나쁜 엔딩",
+    "엔딩 두 개가 정의된 엔딩"
+   ],
+   "verify": "덤불에서 망치 아이템 / 대장장이에게 돌려주기 → 좋은 엔딩 / 상점에 팔기(또는 팔기 선택) → 나쁜 엔딩 / 엔딩 두 개가 정의된 엔딩",
+   "holdout": false
+  },
+  {
+   "id": "g3-sleep-gas",
+   "category": "battles",
+   "pass": [
+    "밟기 함정",
+    "실제 수면 상태가 걸린다",
+    "경고 팻말",
+    "가스 연출(효과/메시지)"
+   ],
+   "verify": "밟기 함정 / 실제 수면 상태가 걸린다 / 경고 팻말 / 가스 연출(효과/메시지)",
+   "holdout": false
+  },
+  {
+   "id": "g3-boss-heal",
+   "category": "battles",
+   "pass": [
+    "돌거인 적·무리",
+    "보스 이벤트로 전투 시작",
+    "전투 페이지: HP 50% 이하 조건",
+    "메시지 + 회복 한 번",
+    "이긴 뒤 보스가 사라진다"
+   ],
+   "verify": "돌거인 적·무리 / 보스 이벤트로 전투 시작 / 전투 페이지: HP 50% 이하 조건 / 메시지 + 회복 한 번 / 이긴 뒤 보스가 사라진다",
+   "holdout": false
+  },
+  {
+   "id": "g3-random-field",
+   "category": "battles",
+   "pass": [
+    "새 들판 맵",
+    "마을 동쪽 끝 ↔ 들판 이동",
+    "들판에 무작위 조우(늑대·멧돼지)",
+    "돌아올 수 있다"
+   ],
+   "verify": "새 들판 맵 / 마을 동쪽 끝 ↔ 들판 이동 / 들판에 무작위 조우(늑대·멧돼지) / 돌아올 수 있다",
+   "holdout": false
+  },
+  {
+   "id": "g3-snow-start",
+   "category": "weather",
+   "pass": [
+    "시작부터 눈 날씨(setWeather snow)",
+    "촌장 대사가 바뀐다",
+    "다른 대사는 그대로"
+   ],
+   "verify": "시작부터 눈 날씨(setWeather snow) / 촌장 대사가 바뀐다 / 다른 대사는 그대로",
+   "holdout": false
+  },
+  {
+   "id": "g3-quake",
+   "category": "weather",
+   "pass": [
+    "대장장이 대화 후 화면 흔들림",
+    "화면 번쩍임",
+    "촌장 대사가 그 뒤 바뀐다",
+    "한 번만"
+   ],
+   "verify": "대장장이 대화 후 화면 흔들림 / 화면 번쩍임 / 촌장 대사가 그 뒤 바뀐다 / 한 번만",
+   "holdout": false
+  },
+  {
+   "id": "g3-house-interior",
+   "category": "doors",
+   "pass": [
+    "실내 맵이 생긴다",
+    "집 문 → 실내 이동",
+    "실내 → 문 밖으로 돌아온다",
+    "할머니 대사"
+   ],
+   "verify": "실내 맵이 생긴다 / 집 문 → 실내 이동 / 실내 → 문 밖으로 돌아온다 / 할머니 대사",
+   "holdout": false
+  },
+  {
+   "id": "g3-cellar",
+   "category": "doors",
+   "pass": [
+    "촌장 집 실내",
+    "지하 창고 맵",
+    "계단으로 오가기",
+    "상자: 포션 3개 한 번"
+   ],
+   "verify": "촌장 집 실내 / 지하 창고 맵 / 계단으로 오가기 / 상자: 포션 3개 한 번",
+   "holdout": false
+  },
+  {
+   "id": "g3-warp-stone",
+   "category": "doors",
+   "pass": [
+    "광장 이동석 선택지",
+    "산 정상 맵이 생긴다",
+    "이동석으로 이동",
+    "산 정상에서 돌아온다"
+   ],
+   "verify": "광장 이동석 선택지 / 산 정상 맵이 생긴다 / 이동석으로 이동 / 산 정상에서 돌아온다",
+   "holdout": false
+  },
+  {
+   "id": "g3-patrol",
+   "category": "npc",
+   "pass": [
+    "경비병 NPC",
+    "정해진 길을 오간다(이동 경로)",
+    "말 걸면 대사",
+    "순찰이 벽·집에 막히지 않는다"
+   ],
+   "verify": "경비병 NPC / 정해진 길을 오간다(이동 경로) / 말 걸면 대사 / 순찰이 벽·집에 막히지 않는다",
+   "holdout": false
+  },
+  {
+   "id": "g3-dog-follow",
+   "category": "npc",
+   "pass": [
+    "강아지 NPC",
+    "말 걸면 쓰다듬기 대사",
+    "그 뒤 따라온다(추종·팔로워)"
+   ],
+   "verify": "강아지 NPC / 말 걸면 쓰다듬기 대사 / 그 뒤 따라온다(추종·팔로워)",
+   "holdout": false
+  },
+  {
+   "id": "g3-shop-hours",
+   "category": "npc",
+   "pass": [
+    "시간 시스템 켜짐",
+    "낮: 상점 열림",
+    "밤: 문 닫았네 대사"
+   ],
+   "verify": "시간 시스템 켜짐 / 낮: 상점 열림 / 밤: 문 닫았네 대사",
+   "holdout": false
+  },
+  {
+   "id": "g3-stone-order",
+   "category": "puzzles",
+   "pass": [
+    "돌 셋",
+    "순서 기억(변수)",
+    "틀리면 초기화",
+    "맞으면 상자 등장 + 내용물"
+   ],
+   "verify": "돌 셋 / 순서 기억(변수) / 틀리면 초기화 / 맞으면 상자 등장 + 내용물",
+   "holdout": false
+  },
+  {
+   "id": "g3-number-lock",
+   "category": "puzzles",
+   "pass": [
+    "숫자 입력 창",
+    "1024 → 열림(이동 또는 문 열림)",
+    "틀리면 안 열림",
+    "대장장이 힌트"
+   ],
+   "verify": "숫자 입력 창 / 1024 → 열림(이동 또는 문 열림) / 틀리면 안 열림 / 대장장이 힌트",
+   "holdout": false
+  },
+  {
+   "id": "g3-riddle",
+   "category": "puzzles",
+   "pass": [
+    "석상 선택지",
+    "정답 → 50골드 한 번",
+    "오답 → 다시 묻는다",
+    "정답 뒤 다시 주지 않는다"
+   ],
+   "verify": "석상 선택지 / 정답 → 50골드 한 번 / 오답 → 다시 묻는다 / 정답 뒤 다시 주지 않는다",
+   "holdout": false
+  },
+  {
+   "id": "g3-edit-move",
+   "category": "edits",
+   "pass": [
+    "대장장이 위치가 바뀌었다",
+    "대사 그대로",
+    "그림 그대로",
+    "다른 것은 안 바뀜"
+   ],
+   "verify": "대장장이 위치가 바뀌었다 / 대사 그대로 / 그림 그대로 / 다른 것은 안 바뀜",
+   "holdout": false
+  },
+  {
+   "id": "g3-edit-chief-sign",
+   "category": "edits",
+   "pass": [
+    "촌장 이벤트가 없다",
+    "그 자리 근처 팻말",
+    "팻말 글",
+    "대장장이 그대로"
+   ],
+   "verify": "촌장 이벤트가 없다 / 그 자리 근처 팻말 / 팻말 글 / 대장장이 그대로",
+   "holdout": false
+  },
+  {
+   "id": "h-lost-ring",
+   "category": "quests",
+   "pass": [
+    "반지 찾기 의뢰",
+    "우물 옆 조사 → 반지",
+    "대장장이에게 → 100골드 + 반지 소모",
+    "한 번만"
+   ],
+   "verify": "반지 찾기 의뢰 / 우물 옆 조사 → 반지 / 대장장이에게 → 100골드 + 반지 소모 / 한 번만",
+   "holdout": true
+  },
+  {
+   "id": "h-herb-craft",
+   "category": "items",
+   "pass": [
+    "덤불 셋 각 한 번 약초",
+    "촌장: 약초 2 → 상급 포션",
+    "상급 포션 HP 300",
+    "약초 부족하면 안내"
+   ],
+   "verify": "덤불 셋 각 한 번 약초 / 촌장: 약초 2 → 상급 포션 / 상급 포션 HP 300 / 약초 부족하면 안내",
+   "holdout": true
+  },
+  {
+   "id": "h-rename-npc",
+   "category": "edits",
+   "pass": [
+    "이름 쇠돌이",
+    "첫 줄 추가",
+    "기존 대사 유지",
+    "다른 것 안 바뀜"
+   ],
+   "verify": "이름 쇠돌이 / 첫 줄 추가 / 기존 대사 유지 / 다른 것 안 바뀜",
+   "holdout": true
+  },
+  {
+   "id": "h-fog-ghost",
+   "category": "weather",
+   "pass": [
+    "촌장 대화 → 밤",
+    "안개 날씨",
+    "유령 등장 + 대사",
+    "유령은 반투명/유령 모습"
+   ],
+   "verify": "촌장 대화 → 밤 / 안개 날씨 / 유령 등장 + 대사 / 유령은 반투명/유령 모습",
+   "holdout": true
+  },
+  {
+   "id": "h-party-heal-fountain",
+   "category": "events",
+   "pass": [
+    "분수 조사",
+    "전원 회복",
+    "효과 연출"
+   ],
+   "verify": "분수 조사 / 전원 회복 / 효과 연출",
+   "holdout": true
+  },
+  {
+   "id": "h-guard-gate",
+   "category": "puzzles",
+   "pass": [
+    "경비병이 길을 막는다",
+    "촌장 → 통행증",
+    "통행증 있으면 비켜 줌(이동/사라짐)",
+    "없으면 막음",
+    "한 번 비키면 계속 통과"
+   ],
+   "verify": "경비병이 길을 막는다 / 촌장 → 통행증 / 통행증 있으면 비켜 줌(이동/사라짐) / 없으면 막음 / 한 번 비키면 계속 통과",
+   "holdout": true
+  },
+  {
+   "id": "h-paralysis-bee",
+   "category": "battles",
+   "pass": [
+    "마비벌 적",
+    "공격 스킬이 마비 상태 부여",
+    "꽃밭 진입 → 전투"
+   ],
+   "verify": "마비벌 적 / 공격 스킬이 마비 상태 부여 / 꽃밭 진입 → 전투",
+   "holdout": true
+  },
+  {
+   "id": "h-mayor-schedule",
+   "category": "npc",
+   "pass": [
+    "시간 시스템",
+    "세 시간대 자리",
+    "각 자리에서 대화"
+   ],
+   "verify": "시간 시스템 / 세 시간대 자리 / 각 자리에서 대화",
+   "holdout": true
+  },
+  {
+   "id": "h-inn-interior",
+   "category": "doors",
+   "pass": [
+    "여관 실내 맵",
+    "문 ↔ 실내",
+    "주인 30골드 숙박 회복",
+    "돈 부족 거절"
+   ],
+   "verify": "여관 실내 맵 / 문 ↔ 실내 / 주인 30골드 숙박 회복 / 돈 부족 거절",
+   "holdout": true
+  },
+  {
+   "id": "h-choice-reputation",
+   "category": "switches",
+   "pass": [
+    "세 사람 선택지",
+    "평판 변수 증감",
+    "촌장이 평판 구간별로 다른 대사"
+   ],
+   "verify": "세 사람 선택지 / 평판 변수 증감 / 촌장이 평판 구간별로 다른 대사",
+   "holdout": true
+  },
+  {
+   "id": "h-twin-endings-boss",
+   "category": "endings",
+   "pass": [
+    "그림자 기사 보스 전투",
+    "승리 → 엔딩 A",
+    "패배 → 엔딩 B(게임오버 아님)",
+    "두 엔딩 정의"
+   ],
+   "verify": "그림자 기사 보스 전투 / 승리 → 엔딩 A / 패배 → 엔딩 B(게임오버 아님) / 두 엔딩 정의",
+   "holdout": true
+  },
+  {
+   "id": "h-skill-book",
+   "category": "items",
+   "pass": [
+    "번개의 서 아이템",
+    "사용 → 번개 스킬 습득",
+    "대장장이 상점 300골드"
+   ],
+   "verify": "번개의 서 아이템 / 사용 → 번개 스킬 습득 / 대장장이 상점 300골드",
+   "holdout": true
+  },
+  {
+   "id": "h-fishing-spot",
+   "category": "events",
+   "pass": [
+    "낚시 조사",
+    "확률 분기",
+    "물고기 아이템",
+    "하루 세 번 제한"
+   ],
+   "verify": "낚시 조사 / 확률 분기 / 물고기 아이템 / 하루 세 번 제한",
+   "holdout": true
+  },
+  {
+   "id": "h-moving-platform",
+   "category": "npc",
+   "pass": [
+    "아이 둘",
+    "돌아다님",
+    "각자 대사"
+   ],
+   "verify": "아이 둘 / 돌아다님 / 각자 대사",
+   "holdout": true
+  },
+  {
+   "id": "h-dungeon-key",
+   "category": "maps",
+   "pass": [
+    "던전 맵",
+    "상자 → 열쇠",
+    "열쇠로 감옥 문 열림",
+    "닿음"
+   ],
+   "verify": "던전 맵 / 상자 → 열쇠 / 열쇠로 감옥 문 열림 / 닿음",
+   "holdout": true
+  },
+  {
+   "id": "h-edit-shop-remove",
+   "category": "edits",
+   "pass": [
+    "대장장이 상점",
+    "철검·포션",
+    "원래 대사 유지"
+   ],
+   "verify": "대장장이 상점 / 철검·포션 / 원래 대사 유지",
+   "holdout": true
+  }
+ ]
+}
