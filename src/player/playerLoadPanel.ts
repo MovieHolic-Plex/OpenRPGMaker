@@ -15,6 +15,7 @@ import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { appendPredecessorSaveImports } from "./predecessorSaveImports";
 import { appendSaveFileTransfers } from "./saveFileTransfers";
+import { appendCloudOtherSaves, cloudStatusLine } from "./cloudOtherSaves";
 
 type PlayerLoadPanelOptions = {
   readonly fromTitle: boolean;
@@ -63,6 +64,8 @@ export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElem
   });
   loadWindow.append(el("h2", { class: "oprn-load-title", text: "불러오기" }));
   if (options.message) loadWindow.append(renderSlotMessage(options.message));
+  const cloudLine = cloudStatusLine();
+  if (cloudLine) loadWindow.append(cloudLine);
 
   const slots = el("div", {
     class: "oprn-load-slots",
@@ -98,6 +101,7 @@ export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElem
   );
   panel.append(loadWindow);
   appendPredecessorSaveImports(slots, { project: store.getCurrent(), storage: window.localStorage, onLoadSlot: options.onLoadSlot });
+  appendCloudOtherSaves(slots, { onLoadSlot: options.onLoadSlot, ...(options.onLoadAutosave ? { onLoadAutosave: options.onLoadAutosave } : {}) });
   appendSaveFileTransfers(slots, { project: store.getCurrent(), storage: window.localStorage, onLoadSlot: options.onLoadSlot });
   return panel;
 }
