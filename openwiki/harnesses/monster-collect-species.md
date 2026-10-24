@@ -341,3 +341,12 @@ R11~R13 은 눈을 `upgrade_all_60_eyes.py` 의 손으로 친 절대 좌표로 �
 - **손질 층:** `scripts/content/monsters/astra_starters_touchup.py` + `harness-data/monster-collect-species/astra-starters-touchup.json`. 고른 격자로 구운 번들 그림(해시 `from` 으로 잠금)에 연산을 순서대로 적용한다 — `recolor`(선택 `box`), `clear`/`clean`(상자 안 선을 주변 색으로 메움, `clean` 은 실루엣 가장자리 보존), `{at, rows, pal}`(행 문자열 손 도트, `.` 유지·`_` 투명). `--out-dir` 로 미리 보고 `--apply` 가 `authored/<id>-<면>.png`·장부 `authored/authoredSha256/previousAuthoredSha256`·`eyes.json` 의 `patch` 를 한 번에 쓴다. 그 뒤 `build`. 바탕 그림이 바뀌면(다시 고르면) 해시가 달라 거절한다.
 - **패널이 실제로 잡은 것:** 몸통의 얼룩진 어두운 칸, 공 모양 뿔(막대사탕으로 읽힘), 이마 주름(찡그림으로 읽힘), 앞·뒤 다리 없는 몸, 꼬리와 떨어져 떠 보이는 불꽃, 3/4 얼굴의 너무 작은 먼 눈. 최종 판(패널 7)은 넷 모두 세 마리 다 「귀엽다, 고르겠다」·중대 결함 0.
 - 도감 문장은 공용 로스터(옛 토끼·천산갑·수달 문장)를 두고 `emeraldCrown.ts` 의 `STARTER_NOTES` 가 아스트라 캠페인 `speciesNotes` 만 덮는다.
+
+## 아스트라 스타터 세 계통 전면 교체 (2026-10-24 — 사용자 「좀 더 포켓몬 느낌으로」 → 「이제 괜찮네.. 이거로해」)
+
+스타터 9종(세 계통 × 3단계)을 전부 새 그림으로 바꿨다. 위 2026-10-23 판(토끼·레서판다·일각고래)과 그 손질 층은 이제 쓰지 않는다 — `authored/` 9종 파일을 지웠고 장부 pick 에 `authored` 가 없다.
+
+- **계통:** 풀 = 연꽃 여우원숭이(토리프 → 실바리온 → 벨데로드) · 불 = 불꽃 양털 숫양(숯꼬미 → 불박치 → 마그렉스, 옛 이름 가마발톱/볼케이건 → 불박치) · 물 = 파도 볏 범고래(아가핀 → 마린웨이 → 네레이드). 캠페인 종 id 는 그대로(`mx_species_spriglet` 등).
+- **만든 법:** 단계마다 따로 생성 — 진화형은 고른 앞 단계 격자를 참조로 넣고(`evolvesFrom`) 단계마다 다른 몸 구조·자세 지시를 준다. 블라인드 검수자(klb-sonnet-5-5 / argon)를 판마다 새로 띄웠고, 3단계는 기존 포켓몬(메리프·울루·윈디·고래왕·누리레느 등)과 닮음을 따로 봤다. 불·물 1단계(숫양·범고래)와 풀 3단계는 **사람이 고른 것**이고, 최종 세 계통 전체는 사용자가 `astra-starters-5.html` 화면 그대로 승인했다.
+- **도구:** `scripts/content/monsters/astra-starters-4/` — 프롬프트·`gen.sh`·`blind.py`(번호만 보이는 시트)·`stage_sheet.py`·`line_sheet.py`·`page5.py` 와 모래상자 시드·장부 사본(`sandbox-*-r4.json`). 모래상자는 `MONSTER_HARNESS_SANDBOX` 로 따로 돌렸고, `install.py` 가 모래상자 pick(실행 폴더·격자·원본 해시 확인)을 진짜 id 로 옮겨 장부 `humanApproval`(격자 해시 포함)과 시드 디자인 칸을 쓴다. 그 뒤 `build`.
+- **눈 규칙:** 승인된 그림을 고치지 않으려고 9종을 `eyes.json` 동결 기준종(`style: reference`, 앞·뒤 RGBA 해시)으로 올렸다 — 동결 종은 10종(rootpig 포함). `stageCheck` 는 동결 종의 앞모습 「눈 규칙」 오류를 경고로 낮춘다(`cli.ts` `frozenSpecies()`). 그림이 한 화소라도 바뀌면 V8 해시 시험이 깨지니, 다시 그릴 때는 사람 승인을 새로 받고 해시를 갱신한다.
