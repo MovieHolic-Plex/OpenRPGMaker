@@ -45,6 +45,8 @@ export const OP_KINDS = [
   "skill",
   "key",
   "cinematic",
+  // 턴제 전투 명령 카드를 계획대로 누른다(runtimeQaBattle.mjs) — 배우별 스킬·아이템 큐, 명령 수 또는 결과 창까지.
+  "battle",
   "pauseFrames",
   "stepFrames",
   "resumeFrames",

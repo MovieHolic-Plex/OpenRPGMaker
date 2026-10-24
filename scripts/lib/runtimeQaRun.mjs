@@ -230,6 +230,11 @@ export async function applyOp(page, op, runState) {
       await cinematicQaOp(page, op);
       return;
     }
+    case "battle": {
+      const { battleQaOp } = await import("./runtimeQaBattle.mjs");
+      await battleQaOp(page, op);
+      return;
+    }
     case "audioAction": {
       const evidence = await runAudioAction(page, op);
       runState.audio.push(evidence);

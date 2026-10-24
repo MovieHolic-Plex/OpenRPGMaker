@@ -376,6 +376,11 @@ export interface SkillRecord {
    */
   drainPercent?: number;
   /**
+   * 무기 공명: 시전자가 이 계열(장비 attackElementIds — sword·spear·bow·hit 등) 무기를 들고 있으면 피해·회복이 bonusPercent% 오른다.
+   * elementIds 를 비우면 기술 자신의 elementId 를 계열로 본다. 「검을 든 카엘의 검 기술이 더 세다」. 생략 = 없음.
+   */
+  weaponAffinity?: { readonly elementIds?: readonly string[]; readonly bonusPercent: number };
+  /**
    * 반동(0~100): 준 피해의 N% 를 시전자도 입는다(몸통박치기·이판사판). 피해가 1 이상일 때만, 최소 1. 타마다 적용한다.
    * 타임라인에 시전자 자신을 대상으로 한 damage 엔트리(aside recoil)를 남긴다. 생략 = 반동 없음.
    */

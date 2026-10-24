@@ -154,3 +154,20 @@
     var(--battle-shake-iterations, 1);
 }
 
+
+/* 상성 꼬리표(battleFieldDom.showDamageFeedback) — 숫자 위에 붙는 작은 「약점!」·「저항」. 숫자의 의미를 바꾸지 않고 덧붙인다. */
+.battle-damage-popup-tag {
+  display: block;
+  font-size: 0.5em;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  margin-bottom: 1px;
+  text-align: center;
+  white-space: nowrap;
+}
+.battle-damage-popup-tag[data-effectiveness="weak"] { color: #ffd23f; }
+.battle-damage-popup-tag[data-effectiveness="critical"] { color: #ff6b4a; }
+.battle-damage-popup-tag[data-effectiveness="affinity"] { color: #8fe3ff; }
+.battle-damage-popup-tag[data-effectiveness="resist"] { color: #a9c4d8; }
+.battle-damage-popup-tag[data-effectiveness="immune"] { color: #c0c0c0; }
+.battle-damage-popup[data-effectiveness="weak"] { color: #ffb347; }

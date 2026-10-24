@@ -18,7 +18,7 @@ import { battleTroopError } from '@/project/battleAdmission';
 import { activeItemEffects, isCaptureTool, itemAllowsBattle } from "@/project/itemUsage";
 // SIZE_OK: Battle runtime keeps turn state, troop-event callbacks, and snapshot
 // assembly together so battle-event regressions can verify one state machine.
-import type { ActorId, ActorInitialEquipment, EnemyId, ItemId, ItemRecord, Project, SkillId } from "@/project/types";
+import type { ActorId, ActorInitialEquipment, EnemyId, ItemId, ItemRecord, Project, SkillId, SkillRecord } from "@/project/types";
 import { startStateOf } from "@/project/session";
 import { transitionItemState } from "@/project/itemTransitions";
 import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
@@ -507,6 +507,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       ...(entry.skillId ? { skillId: entry.skillId } : {}),
       ...(() => { const combo = comboActorIdsOf(entry.skillId ? lookupSkill(entry.skillId) : undefined); return combo ? { comboActorIds: [...combo] } : {}; })(),
       ...(entry.effectiveness !== undefined && kind === "damage" ? { effectiveness: entry.effectiveness } : {}),
+      ...(entry.weaponAffinity ? { weaponAffinity: true } : {}),
       ...(resource ? { resource } : {}),
     });
   }
@@ -4284,6 +4285,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const hpBefore = target.hp;
     const mpBefore = target.mp;
     const targetMaxHpBefore = target.maxHp;
+    // 무기 공명(SkillRecord.weaponAffinity): 맞는 계열 무기를 들었으면 피해·회복 배율이 오른다.
+    const affinity = weaponAffinityMultiplier(user, skill);
     const rawResult = applySkillLike(user, target, {
       power,
       statistic,
@@ -4294,7 +4297,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       // 회피 상태는 물리(공격력 계열) 피해 기술만 피한다.
       hitRate: effectKind === "damage" ? withAccuracyStages(statistic === "attack" ? withEvasion(combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill),
       damageFormula: skill?.damageFormula,
-      hitMultiplier:hitMultiplier*(effectKind==="damage"?gimmickDamageMultiplier(user,target):1),
+      hitMultiplier:hitMultiplier*(effectKind==="damage"?gimmickDamageMultiplier(user,target):1)*(affinity?affinity:1),
       criticalMultiplier: skill?.criticalMultiplier,
       variance: skill?.variance,
       criticalRate: skill?.criticalRate ?? criticalRateFor(user),
@@ -4326,6 +4329,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       {
         userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name, skillId: skill?.id,
         ...(effectKind === "damage" && result.hit ? effectivenessField(battleEffectivenessMultiplier(options.project, skill?.elementId, target)) : {}),
+        ...(affinity > 1 && result.hit && (effectKind === "damage" || effectKind === "healing") ? { weaponAffinity: true } : {}),
       },
       timelineKind,
       commandKind,
@@ -4589,6 +4593,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   /** 상성 배율을 결과·타임라인에 싣는다 — 1(보통)이면 싣지 않아 기존 결과 모양이 그대로다. */
+  /** 무기 공명 배율 — 기술이 요구하는 계열을 시전자의 장비 공격 속성(attackElementIds)이 갖고 있으면 1 + bonus%. */
+  function weaponAffinityMultiplier(user: MutableBattler, skill: SkillRecord | undefined): number {
+    const affinity = skill?.weaponAffinity;
+    if (!affinity || !(affinity.bonusPercent > 0)) return 1;
+    const wanted = affinity.elementIds?.length ? affinity.elementIds : skill?.elementId ? [skill.elementId] : [];
+    const held = user.equipmentEffects?.attackElementIds ?? [];
+    return wanted.some((id) => held.includes(id)) ? 1 + affinity.bonusPercent / 100 : 1;
+  }
+
   function effectivenessField(multiplier: number): { effectiveness?: number } {
     return Number.isFinite(multiplier) && multiplier !== 1 ? { effectiveness: multiplier } : {};
   }

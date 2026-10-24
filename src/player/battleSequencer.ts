@@ -74,10 +74,17 @@ export interface DamageFeedback {
   readonly blocked?: boolean;
   /** 상성 배율(엔트리 effectiveness). 1 이면 생략. */
   readonly effectiveness?: number;
+  /** 장비한 무기 계열이 맞아 기술 위력이 오른 타격(SkillRecord.weaponAffinity). 숫자 위 「무기↑」 꼬리표. */
+  readonly weaponAffinity?: boolean;
   /** 숫자 대신 띄울 글자(상태 부여 「스톱」 등). 있으면 HP 원장·타격 연출·효과음을 건드리지 않는
    *  **표시 전용** 팝업이다(battleDom.onDamageFeedback 이 일찍 돌아간다). */
   readonly label?: string;
 }
+
+/** 광역기 착탄에서 대상 사이의 간격(ms). 0 = 한 작업 안에서 모두 함께 맞는다. 30ms 타이머로 벌렸더니 첫 착탄의 그리기 부하로
+ *  실측 간격이 49~144ms 로 늘어 「차례로」 읽혔다(2026-10-24 폴른 스타 블리자드) — 그래서 같은 순간에 친다. */
+export const BATTLE_GROUP_IMPACT_STAGGER_MS = 0;
+const GROUP_HIT_KINDS: ReadonlySet<BattleTimelineEntrySnapshot["kind"]> = new Set(["damage", "healing", "miss"]);
 
 /** 상태 부여 문장·떠오르는 글자가 머무는 시간. 한 줄 메시지 창(retro2003)에서 읽을 수 있어야 한다. */
 export const BATTLE_STATE_LINE_MS = 800;
@@ -96,6 +103,8 @@ export interface BattleSequencerHooks {
   readonly onDamageFeedback: (feedback: DamageFeedback | undefined) => void;
   /** True while the short hit-stop hold is active for a damaging hit. */
   readonly onHitFeel?: (active: boolean, feedback?: DamageFeedback) => void;
+  /** 광역기 한 번의 착탄으로 함께 맞는 대상들(맞는 포즈를 모두에게 준다). undefined 면 해제. 단일 대상 행동에서는 불리지 않는다. */
+  readonly onImpactGroup?: (targetIds: readonly string[] | undefined) => void;
   /** Side-view lunge / knockback motion classes for the current beat. */
   readonly onActionMotion?: (beat: BattleActionBeat | undefined) => void;
   readonly onResultStage: (stage: number) => void;
@@ -294,6 +303,7 @@ export function createBattleSequencer(
       healing,
       resource: entry.resource ?? "hp",
       ...(entry.effectiveness !== undefined && !healing ? { effectiveness: entry.effectiveness } : {}),
+      ...(entry.weaponAffinity && !healing ? { weaponAffinity: true } : {}),
     };
   }
 
@@ -420,6 +430,20 @@ export function createBattleSequencer(
     index: number,
     snapshot: BattleSnapshot,
   ): string | undefined {
+    const fallen = fallenTarget(entries, index, snapshot);
+    if (!fallen) return undefined;
+    if (emeraldNarrationActive()) return emeraldFaintLine(fallen.target, snapshot);
+    return fallen.isEnemy
+      ? `${withJosa(fallen.name, "을/를")} 쓰러뜨렸다!`
+      : `${withJosa(fallen.name, "이/가")} 쓰러졌다!`;
+  }
+
+  /** 이 엔트리가 대상을 쓰러뜨린 마지막 유효타면 그 대상(표시 이름·편). 아니면 undefined. */
+  function fallenTarget(
+    entries: readonly BattleTimelineEntrySnapshot[],
+    index: number,
+    snapshot: BattleSnapshot,
+  ): { readonly target: Parameters<typeof emeraldFaintLine>[0]; readonly name: string; readonly isEnemy: boolean } | undefined {
     const entry = entries[index];
     if (entry.kind !== "damage" || !entry.targetId || (entry.amount ?? 0) <= 0) return undefined;
     const departed = snapshot.departedEnemies?.find((enemy) => enemy.id === entry.targetId);
@@ -434,12 +458,8 @@ export function createBattleSequencer(
       if (later.targetId === entry.targetId && later.kind === "damage" && (later.amount ?? 0) > 0) return undefined;
     }
     const isEnemy = Boolean(departed) || snapshot.enemies.some((enemy) => enemy.id === entry.targetId);
-    if (emeraldNarrationActive()) return emeraldFaintLine(target, snapshot);
     const peers = isEnemy ? snapshot.enemies : snapshot.actors;
-    const targetName = disambiguatedBattlerName(target, peers);
-    return isEnemy
-      ? `${withJosa(targetName, "을/를")} 쓰러뜨렸다!`
-      : `${withJosa(targetName, "이/가")} 쓰러졌다!`;
+    return { target, name: disambiguatedBattlerName(target, peers), isEnemy };
   }
 
   function playTimelineEntries(
@@ -546,12 +566,291 @@ export function createBattleSequencer(
       else continueNext();
       return;
     }
-    const cinematicMs = entry.kind === "capture" && entry.targetId
-      ? hooks.onCaptureCinematic?.(entry.targetId, entry.success === true, entry.shakes) ?? 0
-      : 0;
+    // 광역기: 같은 행동이 둘 이상의 대상을 친 피해·회복·빗나감 엔트리는 한 번에 재생한다 — 연출 한 번, 숫자·깜빡임·HP 감소는
+    // 같은 순간(대상마다 30ms), 격파 대사는 그 뒤 한 줄. 예전엔 대상마다 접근·히트스톱·격파 대사를 따로 돌아 「차례로」 맞았다.
+    const targetGroup = collectTargetGroup(entries, entryOffset);
+    if (targetGroup) {
+      playTargetGroup(targetGroup, entries, snapshot, directorBase, () =>
+        playTimelineEntries(entries, snapshot, done, firstDirector, targetGroup.end, firstDirectorIndex));
+      return;
+    }
     // 격파 대사 비트 — 이 타격이 대상을 쓰러뜨리면, recover 후 대사가 잠시 머문다.
     // 막타에서도 연출이 끝까지 재생된 뒤에야 다음(결과 공개)으로 넘어간다.
     const killLine = killLineFor(entries, entryOffset, snapshot);
+    const { beats, animationOffsetMs } = planEntryBeats(entry, feedback, killLine);
+    if (entry.animation && animationOffsetMs > 0) {
+      hooks.onEntryAnimation?.(undefined);
+      delay(() => hooks.onEntryAnimation?.(entry.animation), animationOffsetMs);
+    } else {
+      hooks.onEntryAnimation?.(entry.animation);
+    }
+    if (entry.kind === "action" && entry.commandKind === "escape" && entry.side === "actor") {
+      hooks.onEscapeOutcome?.(entry.success === true);
+    }
+    // 결판을 내는 막타: 뒤에 남은 피해·회복·빗나감 엔트리가 없고 결과가 이미 정해졌으면, 격파 대사와
+    // 동시에 결과 도장을 찍고 대사 체류를 줄인다 — 대사 660ms + 결과 홀드 900ms 동안 빈 필드만
+    // 보였다(2026-09-25 녹화). finishTurn 의 onResultPending 은 같은 결과면 표시 계층이 무시한다.
+    const decisive = Boolean(killLine && snapshot.result && !entries.slice(entryOffset + 1)
+      .some((later) => later.kind === "damage" || later.kind === "healing" || later.kind === "miss"));
+    const afterBeats = killLine
+      ? (): void => {
+        hooks.onActionMotion?.(undefined);
+        hooks.onDirectorState({ step: "impact", lines: [killLine], targetId: entry.targetId });
+        hooks.onSyncView();
+        // 저작한 쓰러짐 연출(보스 가라앉기 1.8초 등)이 아직 돌면 결과 도장이 그 위를 덮는다 — 끝날 때까지 미룬다.
+        const hold = decisive ? Math.min(BATTLE_COLLAPSE_HOLD_MAX_MS, Math.max(0, hooks.collapseHoldMs?.() ?? 0)) : 0;
+        const stampAndContinue = (): void => {
+          if (decisive && snapshot.result) hooks.onResultPending?.(snapshot.result);
+          delay(continueNext, decisive ? BATTLE_DECISIVE_KILL_LINE_MS : Math.round(BATTLE_KILL_LINE_MS * (hooks.interludeScale?.() ?? 1)));
+        };
+        if (hold > 0) delay(stampAndContinue, hold);
+        else stampAndContinue();
+      }
+      : support?.failLine
+        ? (): void => {
+          hooks.onActionMotion?.(undefined);
+          hooks.onDirectorState({ step: "acting", lines: [support.failLine ?? ""], targetId: entry.targetId });
+          hooks.onSyncView();
+          delay(continueNext, BATTLE_STATE_LINE_MS);
+        }
+        : continueNext;
+    playBeats(beats, directorBase, afterBeats);
+  }
+
+  interface TargetGroup {
+    /** 묶인 타격 엔트리(엔트리 순서). */
+    readonly members: readonly BattleTimelineEntrySnapshot[];
+    /** members 의 entries 안 위치. */
+    readonly indexes: readonly number[];
+    /** 같은 행동이 남긴 상태 부여·해제 — 타격 뒤에 함께 읽힌다. */
+    readonly states: readonly BattleTimelineEntrySnapshot[];
+    /** 묶음 다음 엔트리 위치. */
+    readonly end: number;
+  }
+
+  /**
+   * entries[offset] 에서 시작하는 광역 타격 묶음. 같은 행동 번호·사용자·기술의 피해/회복/빗나감 엔트리가 **서로 다른 대상 둘 이상**을
+   * 칠 때만 묶는다 — 단일 대상(다단 포함)은 undefined 라 옛 경로 그대로다. 대가·흡수·반동(aside)·반격 같은 다른 엔트리가 끼면 거기서 끊는다.
+   * 3세대 문장 규칙(에메랄드)은 대상마다 상성 문장을 따로 읽어야 해 묶지 않는다.
+   */
+  function collectTargetGroup(entries: readonly BattleTimelineEntrySnapshot[], offset: number): TargetGroup | undefined {
+    const head = entries[offset];
+    if (!head || head.actionId === undefined || !head.targetId || head.aside !== undefined || !GROUP_HIT_KINDS.has(head.kind)) return undefined;
+    if (emeraldNarrationActive()) return undefined;
+    const sameStrike = (row: BattleTimelineEntrySnapshot): boolean => row.side === head.side && row.userRecordId === head.userRecordId
+      && row.commandKind === head.commandKind && (row.skillId ?? row.skillName) === (head.skillId ?? head.skillName);
+    const members: BattleTimelineEntrySnapshot[] = [];
+    const indexes: number[] = [];
+    const states: BattleTimelineEntrySnapshot[] = [];
+    let end = offset;
+    for (let i = offset; i < entries.length; i += 1) {
+      const row = entries[i]!;
+      if (row.actionId !== head.actionId) break;
+      if (GROUP_HIT_KINDS.has(row.kind) && row.targetId && row.aside === undefined && sameStrike(row)) {
+        members.push(row);
+        indexes.push(i);
+        end = i + 1;
+        continue;
+      }
+      if ((row.kind === "stateAdded" || row.kind === "stateRemoved") && row.targetId) {
+        states.push(row);
+        end = i + 1;
+        continue;
+      }
+      break;
+    }
+    if (new Set(members.map((row) => row.targetId)).size < 2) return undefined;
+    // 마지막 타격 뒤에 붙은 상태만 묶는다 — 그 뒤 엔트리(다음 행동 등)는 원래 순서대로 간다.
+    return { members, indexes, states, end };
+  }
+
+  /** 묶음을 착탄 차례(대상마다 n 번째 타)로 나눈다. 1타 광역기는 한 차례다. */
+  function groupWaves(group: TargetGroup): { readonly entry: BattleTimelineEntrySnapshot; readonly index: number }[][] {
+    const hitsSoFar = new Map<string, number>();
+    const waves: { entry: BattleTimelineEntrySnapshot; index: number }[][] = [];
+    group.members.forEach((entry, i) => {
+      const target = entry.targetId ?? "";
+      const n = hitsSoFar.get(target) ?? 0;
+      hitsSoFar.set(target, n + 1);
+      (waves[n] ??= []).push({ entry, index: group.indexes[i]! });
+    });
+    return waves;
+  }
+
+  function groupSummaryLine(members: readonly BattleTimelineEntrySnapshot[], snapshot: BattleSnapshot): string {
+    const hits = members.filter((row) => row.kind !== "miss" && row.hit !== false);
+    if (hits.length === 0) return "공격이 모두 빗나갔다!";
+    const healing = hits.every((row) => row.kind === "healing" || (row.amount ?? 0) < 0);
+    const total = hits.reduce((sum, row) => sum + Math.abs(row.amount ?? 0), 0);
+    const targets = new Set(hits.map((row) => row.targetId)).size;
+    const onEnemies = hits.every((row) => snapshot.enemies.some((enemy) => enemy.id === row.targetId)
+      || snapshot.departedEnemies?.some((enemy) => enemy.id === row.targetId));
+    if (healing) return `${onEnemies ? "적" : "아군"} ${targets}${onEnemies ? "체" : "명"}이 합계 ${total} 회복했다!`;
+    const base = onEnemies ? `적 ${targets}체에게 합계 ${total} 피해!` : `아군 ${targets}명이 합계 ${total} 피해를 입었다!`;
+    const rates = hits.map((row) => row.effectiveness).filter((rate): rate is number => rate !== undefined && rate > 0);
+    const weak = rates.some((rate) => rate > 1);
+    const resisted = rates.length === hits.length && rates.every((rate) => rate < 1);
+    return weak ? `${base} 약점을 찔렀다!` : resisted ? `${base} 효과가 별로인 듯하다…` : base;
+  }
+
+  /** 광역 묶음 재생: 연출(이펙트·시전 동작)은 첫 엔트리로 한 번, 착탄은 모두에게 함께, 격파·상태 문장은 그 뒤에 한 줄씩. */
+  function playTargetGroup(
+    group: TargetGroup,
+    entries: readonly BattleTimelineEntrySnapshot[],
+    snapshot: BattleSnapshot,
+    directorBase: BattleDirectorState,
+    next: () => void,
+  ): void {
+    const head = group.members[0]!;
+    const waves = groupWaves(group);
+    const declaration = directorBase.lines.slice(0, 1);
+    const summary = groupSummaryLine(group.members, snapshot);
+    const fallen = group.indexes
+      .map((index) => fallenTarget(entries, index, snapshot))
+      .filter((row): row is NonNullable<typeof row> => Boolean(row));
+    const choreographed = head.side === "enemy" ? hooks.enemyRecoverMs !== undefined : hooks.actorRecoverMs !== undefined;
+    const playWave = (waveIndex: number): void => {
+      if (waveIndex >= waves.length) {
+        afterWaves();
+        return;
+      }
+      const wave = waves[waveIndex]!;
+      const planned = wave.map(({ entry, index }) => {
+        const feedback = feedbackFromTimeline(entry);
+        return { entry, feedback, plan: planEntryBeats(entry, feedback, fallenTarget(entries, index, snapshot) ? "fallen" : undefined) };
+      });
+      const beatOf = (row: (typeof planned)[number], kind: BattleActionBeat["kind"]) => row.plan.beats.find((beat) => beat.kind === kind);
+      const lead = planned[0]!;
+      const approach = waveIndex === 0 ? beatOf(lead, "approach") : undefined;
+      const approachMs = waveIndex === 0 ? approach?.durationMs ?? 0 : Math.max(0, ...planned.map((row) => beatOf(row, "approach")?.durationMs ?? 0));
+      const impactMs = Math.max(0, ...planned.map((row) => beatOf(row, "impact")?.durationMs ?? 0));
+      const recovers = planned.map((row) => beatOf(row, "recover")?.durationMs ?? 0);
+      // 연출 재생기가 시각을 정한 행동(도트 측면 직업·몬스터 기술)은 엔트리별 회복 비트가 「다음 착탄까지」의 간격이라 합이 남은 연출 길이다.
+      const recoverMs = choreographed ? recovers.reduce((sum, ms) => sum + ms, 0) : Math.max(0, ...recovers);
+      const hitBeat = beatOf(lead, "impact");
+      const recoverBeat = beatOf(lead, "recover");
+      if (waveIndex === 0) {
+        if (head.animation && lead.plan.animationOffsetMs > 0) {
+          hooks.onEntryAnimation?.(undefined);
+          delay(() => hooks.onEntryAnimation?.(head.animation), lead.plan.animationOffsetMs);
+        } else {
+          hooks.onEntryAnimation?.(head.animation);
+        }
+      }
+      const strike = (): void => {
+        hooks.onDirectorState({ ...directorBase, step: "impact", lines: [...declaration, summary] });
+        if (hitBeat) hooks.onActionMotion?.(hitBeat);
+        const struck = planned.filter((row) => row.feedback && !row.feedback.miss && !row.feedback.healing && row.feedback.amount > 0)
+          .map((row) => row.entry.targetId!);
+        hooks.onImpactGroup?.(struck);
+        planned.forEach((row, i) => {
+          const land = (): void => {
+            hooks.onDamageFeedback(row.feedback);
+            const damaging = Boolean(row.feedback && !row.feedback.miss && !row.feedback.healing && row.feedback.amount > 0);
+            if (damaging) hooks.onHitFeel?.(true, row.feedback);
+            hooks.onSyncView();
+          };
+          if (i === 0 || BATTLE_GROUP_IMPACT_STAGGER_MS <= 0) land();
+          else delay(land, i * BATTLE_GROUP_IMPACT_STAGGER_MS);
+        });
+        const lastLand = (planned.length - 1) * BATTLE_GROUP_IMPACT_STAGGER_MS;
+        delay(() => {
+          hooks.onHitFeel?.(false);
+          hooks.onImpactGroup?.(undefined);
+          if (recoverBeat) hooks.onActionMotion?.({ ...recoverBeat, durationMs: recoverMs, feedback: undefined });
+          hooks.onDamageFeedback(undefined);
+          hooks.onSyncView();
+          delay(() => playWave(waveIndex + 1), Math.max(0, recoverMs - Math.max(0, lastLand - impactMs)));
+        }, Math.max(impactMs, lastLand));
+      };
+      if (approachMs > 0) {
+        hooks.onDirectorState({ ...directorBase, step: "acting", lines: declaration });
+        if (approach) hooks.onActionMotion?.(approach);
+        else hooks.onActionMotion?.(undefined);
+        hooks.onDamageFeedback(undefined);
+        hooks.onHitFeel?.(false);
+        hooks.onSyncView();
+        delay(strike, approachMs);
+      } else strike();
+    };
+    const afterWaves = (): void => {
+      hooks.onActionMotion?.(undefined);
+      const lines: string[] = [];
+      const enemies = fallen.filter((row) => row.isEnemy).map((row) => row.name);
+      const allies = fallen.filter((row) => !row.isEnemy).map((row) => row.name);
+      if (enemies.length) lines.push(`${withJosa(enemies.join(", "), "을/를")} 쓰러뜨렸다!`);
+      if (allies.length) lines.push(`${withJosa(allies.join(", "), "이/가")} 쓰러졌다!`);
+      const decisive = Boolean(lines.length && snapshot.result && !entries.slice(group.end)
+        .some((later) => later.kind === "damage" || later.kind === "healing" || later.kind === "miss"));
+      const toStates = (): void => playGroupStates(group.states, snapshot, next);
+      if (lines.length === 0) {
+        toStates();
+        return;
+      }
+      hooks.onDirectorState({ step: "impact", lines, targetId: head.targetId });
+      hooks.onSyncView();
+      const hold = decisive ? Math.min(BATTLE_COLLAPSE_HOLD_MAX_MS, Math.max(0, hooks.collapseHoldMs?.() ?? 0)) : 0;
+      const stampAndContinue = (): void => {
+        if (decisive && snapshot.result) hooks.onResultPending?.(snapshot.result);
+        delay(toStates, decisive ? BATTLE_DECISIVE_KILL_LINE_MS : Math.round(BATTLE_KILL_LINE_MS * (hooks.interludeScale?.() ?? 1)));
+      };
+      if (hold > 0) delay(stampAndContinue, hold);
+      else stampAndContinue();
+    };
+    playWave(0);
+  }
+
+  /** 광역기가 남긴 상태 변화를 같은 상태끼리 한 줄로 — 대상 위 글자는 함께 뜬다. */
+  function playGroupStates(states: readonly BattleTimelineEntrySnapshot[], snapshot: BattleSnapshot, next: () => void): void {
+    const buckets = new Map<string, BattleTimelineEntrySnapshot[]>();
+    for (const row of states) {
+      const key = `${row.kind}:${row.stateId ?? ""}`;
+      const bucket = buckets.get(key);
+      if (bucket) bucket.push(row);
+      else buckets.set(key, [row]);
+    }
+    const queue = [...buckets.values()];
+    const step = (): void => {
+      const rows = queue.shift();
+      if (!rows) {
+        hooks.onDamageFeedback(undefined);
+        next();
+        return;
+      }
+      const first = rows[0]!;
+      const names = rows.map((row) => {
+        const peers = snapshot.enemies.some((enemy) => enemy.id === row.targetId) ? snapshot.enemies : snapshot.actors;
+        const target = peers.find((battler) => battler.id === row.targetId);
+        return target ? disambiguatedBattlerName(target, peers) : "대상";
+      });
+      for (const row of rows) hooks.onTimelineEntry?.(row);
+      hooks.onDirectorState({ step: "acting", lines: [stateChangeLine(first.kind as "stateAdded" | "stateRemoved", first.stateId, names.join(", "))], targetId: first.targetId });
+      if (first.kind === "stateAdded") {
+        for (const row of rows) {
+          hooks.onDamageFeedback({ targetId: row.targetId!, amount: 0, critical: false, healing: false, label: stateLabel(row.stateId) });
+          hooks.onSyncView();
+        }
+      } else {
+        hooks.onDamageFeedback(undefined);
+        hooks.onSyncView();
+      }
+      delay(() => {
+        hooks.onDamageFeedback(undefined);
+        step();
+      }, BATTLE_STATE_LINE_MS);
+    };
+    step();
+  }
+
+  /** 엔트리 하나의 비트 계획(접근·착탄·회복)과 이펙트 마운트 지연. 단일 대상 경로와 광역 묶음 경로가 같이 쓴다. */
+  function planEntryBeats(
+    entry: BattleTimelineEntrySnapshot,
+    feedback: DamageFeedback | undefined,
+    killLine: string | undefined,
+  ): { readonly beats: readonly BattleActionBeat[]; readonly animationOffsetMs: number; readonly weight: BattleActionWeight } {
+    const cinematicMs = entry.kind === "capture" && entry.targetId
+      ? hooks.onCaptureCinematic?.(entry.targetId, entry.success === true, entry.shakes) ?? 0
+      : 0;
     // 행동의 무게 — 급소·막타는 heavy(길게 눌러 잡고), 빗나감·0 피해·회복은 light.
     const baseWeight = weightForFeedback(feedback, Boolean(killLine));
     const weight = hooks.actionWeight?.(entry, baseWeight) ?? baseWeight;
@@ -612,43 +911,7 @@ export function createBattleSequencer(
       const hold = CAPTURE_RESULT_HOLD_MS;
       beats = beats.map((beat) => (beat.kind === "recover" && beat.durationMs < hold ? { ...beat, durationMs: hold } : beat));
     }
-    if (entry.animation && animationOffsetMs > 0) {
-      hooks.onEntryAnimation?.(undefined);
-      delay(() => hooks.onEntryAnimation?.(entry.animation), animationOffsetMs);
-    } else {
-      hooks.onEntryAnimation?.(entry.animation);
-    }
-    if (entry.kind === "action" && entry.commandKind === "escape" && entry.side === "actor") {
-      hooks.onEscapeOutcome?.(entry.success === true);
-    }
-    // 결판을 내는 막타: 뒤에 남은 피해·회복·빗나감 엔트리가 없고 결과가 이미 정해졌으면, 격파 대사와
-    // 동시에 결과 도장을 찍고 대사 체류를 줄인다 — 대사 660ms + 결과 홀드 900ms 동안 빈 필드만
-    // 보였다(2026-09-25 녹화). finishTurn 의 onResultPending 은 같은 결과면 표시 계층이 무시한다.
-    const decisive = Boolean(killLine && snapshot.result && !entries.slice(entryOffset + 1)
-      .some((later) => later.kind === "damage" || later.kind === "healing" || later.kind === "miss"));
-    const afterBeats = killLine
-      ? (): void => {
-        hooks.onActionMotion?.(undefined);
-        hooks.onDirectorState({ step: "impact", lines: [killLine], targetId: entry.targetId });
-        hooks.onSyncView();
-        // 저작한 쓰러짐 연출(보스 가라앉기 1.8초 등)이 아직 돌면 결과 도장이 그 위를 덮는다 — 끝날 때까지 미룬다.
-        const hold = decisive ? Math.min(BATTLE_COLLAPSE_HOLD_MAX_MS, Math.max(0, hooks.collapseHoldMs?.() ?? 0)) : 0;
-        const stampAndContinue = (): void => {
-          if (decisive && snapshot.result) hooks.onResultPending?.(snapshot.result);
-          delay(continueNext, decisive ? BATTLE_DECISIVE_KILL_LINE_MS : Math.round(BATTLE_KILL_LINE_MS * (hooks.interludeScale?.() ?? 1)));
-        };
-        if (hold > 0) delay(stampAndContinue, hold);
-        else stampAndContinue();
-      }
-      : support?.failLine
-        ? (): void => {
-          hooks.onActionMotion?.(undefined);
-          hooks.onDirectorState({ step: "acting", lines: [support.failLine ?? ""], targetId: entry.targetId });
-          hooks.onSyncView();
-          delay(continueNext, BATTLE_STATE_LINE_MS);
-        }
-        : continueNext;
-    playBeats(beats, directorBase, afterBeats);
+    return { beats, animationOffsetMs, weight };
   }
 
   /** 도주/방어/교체 커맨드의 "action" 엔트리 전용 대사 — 제네릭 경로(resultFromTimeline →
