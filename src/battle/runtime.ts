@@ -1729,7 +1729,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const targetMaxHpBefore = target.maxHp;
     const result = redirectDamageToMp(target, hpBefore, applySkillLike(actor, target, {
       power: actor.attackPower,
-      hitMultiplier:gimmickDamageMultiplier(actor,target)*damageTypeMultiplier(options.project,"physical",target),
+      hitMultiplier:gimmickDamageMultiplier(actor,target)*damageTypeMultiplier(options.project,"physical",target,actor.equipmentEffects?.attackElementIds?.[0]),
       statistic: "attack",
       effect: "damage",
       criticalRate: criticalRateFor(actor),
@@ -1746,7 +1746,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (result.hit && result.amount > 0) recoverHitStates(target);
     if (result.hit) applyNormalAttackEquipmentStates(actor, target);
     recordAction(
-      { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, ...effectivenessField(result.hit ? battleEffectivenessMultiplier(options.project, actor.equipmentEffects?.attackElementIds?.[0], target) * damageTypeMultiplier(options.project, "physical", target) : 1) },
+      { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, ...effectivenessField(result.hit ? battleEffectivenessMultiplier(options.project, actor.equipmentEffects?.attackElementIds?.[0], target) * damageTypeMultiplier(options.project, "physical", target, actor.equipmentEffects?.attackElementIds?.[0]) : 1) },
       result.hit ? "damage" : "miss",
       "attack",
     );
@@ -4321,7 +4321,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       hitRate: effectKind === "damage" ? withAccuracyStages(statistic === "attack" ? withEvasion(combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill),
       damageFormula: skill?.damageFormula,
       // 피해 계열 받는 피해 %(적 damageTypeRates · 상태 damageTypeRates): 마력 계열 = 마법, 그 밖 = 물리.
-      hitMultiplier:hitMultiplier*(effectKind==="damage"?gimmickDamageMultiplier(user,target)*damageTypeMultiplier(options.project,statistic==="mind"?"magic":"physical",target):1)*(affinity?affinity:1),
+      hitMultiplier:hitMultiplier*(effectKind==="damage"?gimmickDamageMultiplier(user,target)*damageTypeMultiplier(options.project,statistic==="mind"?"magic":"physical",target,skill?.elementId):1)*(affinity?affinity:1),
       criticalMultiplier: skill?.criticalMultiplier,
       variance: skill?.variance,
       criticalRate: skill?.criticalRate ?? criticalRateFor(user),
@@ -4352,7 +4352,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     recordAction(
       {
         userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name, skillId: skill?.id,
-        ...(effectKind === "damage" && result.hit ? effectivenessField(battleEffectivenessMultiplier(options.project, skill?.elementId, target) * damageTypeMultiplier(options.project, statistic === "mind" ? "magic" : "physical", target)) : {}),
+        ...(effectKind === "damage" && result.hit ? effectivenessField(battleEffectivenessMultiplier(options.project, skill?.elementId, target) * damageTypeMultiplier(options.project, statistic === "mind" ? "magic" : "physical", target, skill?.elementId)) : {}),
         ...(affinity > 1 && result.hit && (effectKind === "damage" || effectKind === "healing") ? { weaponAffinity: true } : {}),
       },
       timelineKind,

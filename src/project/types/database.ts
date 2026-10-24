@@ -789,6 +789,11 @@ export interface EnemyRecord {
   stealItems?: EnemyStealItem[];
   /** 쓰러지는 연출(project/enemyCollapse.ts). 생략 = 스킨 기본 소멸. */
   collapseEffect?: "pixelBreak" | "bossSink" | "flash" | "instant";
+  /**
+   * 보스 HP 숨김. true 면 전투 화면에 이 적의 HP 막대·숫자를 끝까지 보이지 않는다(스캔·라이브러·스킨 무관).
+   * 생략 = 스킨 규칙대로 보인다.
+   */
+  hideHp?: boolean;
 }
 
 export interface EnemyStealItem {
@@ -1012,7 +1017,12 @@ export type BattleEventCondition =
   | { kind: "actorTurn"; actorId: ActorId; turn: number }
   | { kind: "actorCommand"; actorId: ActorId; commandId: string }
   /** 적(생략 = 아무 적)이 이 상태에 걸려 있다(present 생략 = true) / 걸려 있지 않다(false). 쓰러진 적은 세지 않는다. */
-  | { kind: "enemyState"; enemyId?: EnemyId; stateId: string; present?: boolean };
+  | { kind: "enemyState"; enemyId?: EnemyId; stateId: string; present?: boolean }
+  /**
+   * 살아 있는(HP>0) · 숨지 않은 적 수가 atMost 이하. enemyId 를 주면 그 적 기록만 센다.
+   * 예: 졸병 8명이 모두 쓰러지면 2막 — { kind: "enemiesAlive", enemyId: "enemy_soldier", atMost: 0 }.
+   */
+  | { kind: "enemiesAlive"; enemyId?: EnemyId; atMost: number };
 
 export interface BattleEventPageRecord {
   id: string;
@@ -1153,6 +1163,12 @@ export interface StateRecord {
 export interface DamageTypeRates {
   physical?: number;
   magic?: number;
+  /**
+   * 속성 예외(속성 id → %). 맞은 기술·공격의 속성이 여기 있으면 physical/magic 값 **대신** 이 값을 쓴다.
+   * 예: 기계 형태 { physical: 0, magic: 25, elements: { thunder: 200 } } — 번개는 물리든 마법이든 정확히 2배.
+   * 속성 등급(elementRates)·상성표 배율과는 따로 곱해진다.
+   */
+  elements?: Record<string, number>;
 }
 
 export interface StateEmotion {

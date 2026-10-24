@@ -13,7 +13,9 @@ export type TroopEventConditionKind =
   | "enemyHp"
   | "enemyHpBelow"
   | "actorHp"
-  | "actorCommand";
+  | "actorCommand"
+  | "enemyState"
+  | "enemiesAlive";
 
 export const TROOP_EVENT_CONDITION_KINDS = [
   "none",
@@ -26,6 +28,8 @@ export const TROOP_EVENT_CONDITION_KINDS = [
   "enemyHpBelow",
   "actorHp",
   "actorCommand",
+  "enemyState",
+  "enemiesAlive",
 ] as const;
 
 export function battleEventConditionControls(
@@ -53,6 +57,10 @@ export function battleEventConditionControls(
       return actorHpControls(record, page, condition);
     case "actorCommand":
       return actorCommandControls(record, page, condition);
+    case "enemyState":
+      return enemyStateControls(record, page, condition);
+    case "enemiesAlive":
+      return enemiesAliveControls(record, page, condition);
     case "none":
       return [];
   }
@@ -79,6 +87,10 @@ export function initialBattleEventConditions(kind: TroopEventConditionKind, troo
       return [{ kind: "actorHp", actorId: project.database.actors[0]?.id ?? "", minPercent: 0, maxPercent: 100 }];
     case "actorCommand":
       return [{ kind: "actorCommand", actorId: project.database.actors[0]?.id ?? "", commandId: "defend" }];
+    case "enemyState":
+      return [{ kind: "enemyState", stateId: project.database.states[0]?.id ?? "", present: true }];
+    case "enemiesAlive":
+      return [{ kind: "enemiesAlive", atMost: 0 }];
     case "none":
       return [];
   }
@@ -166,6 +178,39 @@ function enemyHpBelowControls(record: TroopRecord, page: BattleEventPageRecord, 
       }))),
     numberField("이하 %", "db-field-troop-event-condition-enemy-hp-below-percent", current.percent, (percent) =>
       setFreshCondition(record, page, (stored) => ({ ...(stored?.kind === "enemyHpBelow" ? stored : current), percent })), { min: 0, max: 100 }),
+  ];
+}
+
+function troopEnemyRecordOptions(record: TroopRecord): { id: string; name: string }[] {
+  const enemies = store.getCurrent().database.enemies;
+  return [{ id: "", name: "(아무 적)" }, ...[...new Set(record.enemyIds)].map((id) => ({ id, name: enemies.find((enemy) => enemy.id === id)?.name ?? id }))];
+}
+
+/** 적(생략 = 아무 적)이 이 상태에 걸려 있다 / 걸려 있지 않다. */
+function enemyStateControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
+  const current = condition?.kind === "enemyState"
+    ? condition
+    : { kind: "enemyState" as const, stateId: store.getCurrent().database.states[0]?.id ?? "", present: true };
+  const keep = (stored: BattleEventCondition | undefined) => (stored?.kind === "enemyState" ? stored : current);
+  return [
+    selectField("적 (없음=아무 적)", "db-field-troop-event-condition-enemy-state-target", current.enemyId ?? "", troopEnemyRecordOptions(record), (enemyId) =>
+      setFreshCondition(record, page, (stored) => ({ ...keep(stored), enemyId: enemyId.trim() || undefined }))),
+    selectField("상태", "db-field-troop-event-condition-enemy-state-id", current.stateId, store.getCurrent().database.states.map((state) => ({ id: state.id, name: state.name })), (stateId) =>
+      setFreshCondition(record, page, (stored) => ({ ...keep(stored), stateId }))),
+    selectField("걸림", "db-field-troop-event-condition-enemy-state-present", String(current.present ?? true), [{ id: "true", name: "걸려 있다" }, { id: "false", name: "걸려 있지 않다" }], (value) =>
+      setFreshCondition(record, page, (stored) => ({ ...keep(stored), present: value === "true" }))),
+  ];
+}
+
+/** 살아 있는 적 수(이 적 기록만 / 생략 = 전체)가 N 이하 — 졸병이 모두 쓰러지면 보스 2막 같은 단계 전환. */
+function enemiesAliveControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
+  const current = condition?.kind === "enemiesAlive" ? condition : { kind: "enemiesAlive" as const, atMost: 0 };
+  const keep = (stored: BattleEventCondition | undefined) => (stored?.kind === "enemiesAlive" ? stored : current);
+  return [
+    selectField("셀 적 (없음=전체)", "db-field-troop-event-condition-enemies-alive-target", current.enemyId ?? "", troopEnemyRecordOptions(record), (enemyId) =>
+      setFreshCondition(record, page, (stored) => ({ ...keep(stored), enemyId: enemyId.trim() || undefined }))),
+    numberField("남은 수 이하", "db-field-troop-event-condition-enemies-alive-at-most", current.atMost, (atMost) =>
+      setFreshCondition(record, page, (stored) => ({ ...keep(stored), atMost })), { min: 0, max: 99 }),
   ];
 }
 

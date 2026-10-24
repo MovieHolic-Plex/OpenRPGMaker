@@ -519,6 +519,11 @@ const troopMemberSchema = objectSchema({
   partOf: integerSchema("다부위 적: 본체 멤버의 인덱스(0부터). 본체가 쓰러지면 이 부위도 쓰러진다"),
   partTag: stringSchema("부위 태그. 이 부위가 쓰러지면 본체 행동 중 requiresPart 가 같은 것이 막힌다"),
 });
+const damageTypeRatesSchema = objectSchema({
+  physical: integerSchema("받는 물리(공격력 계열) 피해 % 0~1000. 100 보통, 0 무효"),
+  magic: integerSchema("받는 마법(마력 계열) 피해 % 0~1000. 100 보통, 0 무효"),
+  elements: { type: "object", description: "속성 예외 { 속성 id: % } — 맞은 기술의 속성이 여기 있으면 physical/magic 대신 이 값. 예 { thunder: 200 } = 번개는 물리든 마법이든 2배", additionalProperties: true },
+}, "받는 피해 계열 %. 예: 마법 무효 용 { magic: 0 } · 기계 형태 { physical: 0, magic: 25, elements: { thunder: 200 } }");
 const stateRuntimeEffectsSchema = objectSchema({
   restrictsAction: booleanSchema(),
   blocksSkillUse: booleanSchema(),
@@ -544,6 +549,7 @@ const stateRuntimeEffectsSchema = objectSchema({
   reraisePercent: numberSchema("리레이즈 % 1~100 — 쓰러지면 최대 HP 의 이 비율로 한 번 일어나고 상태는 사라진다(아군만)"),
   transformResourceId: stringSchema("변신 — 이 상태인 동안 전투 그림을 이 리소스 id 로 바꾼다. 아군은 9칸 시트 \"party-pixel-<칩>\"(예 party-pixel-monster4-5 이끼 골렘) 또는 전투 시트 id, 적은 몬스터 그림 id. 능력치는 같은 상태의 공격·방어·민첩 배율로. 풀리면 원래 그림. 빈 문자열이면 해제"),
   doomTurns: numberSchema("선고 1~9 — 걸린 뒤 자기 차례가 이만큼 오면 전투 불능. 상태를 풀면 멈춘다"),
+  damageTypeRates: { ...damageTypeRatesSchema, description: "이 상태인 동안 받는 피해 계열 %를 적의 기본 damageTypeRates 대신 쓴다(갈아 끼움, 여러 상태면 큰 값). 예: 「관통상」 { magic: 300 } · 변신 기계 형태 { physical: 0, magic: 25, elements: { thunder: 200 } }(transformResourceId 와 함께)" },
   invertHealing: booleanSchema("좀비 — 이 상태인 동안 받는 HP 회복(회복 스킬·회복 아이템·재생)이 같은 양의 피해가 된다. 기본 상태 id state_zombie"),
 });
 
@@ -616,6 +622,8 @@ const enemyRecordSchema = objectSchema({
     enum: ["dissolve", "pixelBreak", "bossSink", "flash", "instant"],
     description: "쓰러지는 연출. dissolve 기본 소멸 · pixelBreak FF6 식 보랏빛 픽셀 분해(잡몹) · bossSink 떨며 땅속으로 가라앉음(보스) · flash 하얀 세 번 점멸 · instant 즉시 사라짐(환영·소환수).",
   },
+  hideHp: booleanSchema("보스 HP 숨김 — true 면 전투에서 이 적의 HP 막대·숫자를 보이지 않는다(대상 선택 목록은 「HP ???」). 보스·중간 보스에"),
+  damageTypeRates: damageTypeRatesSchema,
   criticalHit: objectSchema({ enabled: booleanSchema(), oneIn: integerSchema() }),
   attackOptions: objectSchema({ normalAttacksMiss: booleanSchema() }),
   skillIds: stringArraySchema(),
