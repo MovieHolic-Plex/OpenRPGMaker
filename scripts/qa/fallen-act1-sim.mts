@@ -4,6 +4,7 @@
 //   aware    — 용이 관통상이 아니면 카엘 「돌진 찌르기」/이리스 「충전 광선포」로 먼저 가르고, 나머지는 자동 AI(예측이 3배 마법을 고른다).
 //   auto     — 자동 전투 AI 그대로(관통상을 노리지 않는다; 찌르기가 셀 때만 우연히 쓴다).
 //   nopierce — 자동 AI 이되 찌르기·광선포를 금지(기믹 없이).
+//   nothunder — (발렌) 자동 AI 이되 번개 기술 금지 — 기계 발렌을 기믹 없이.
 import { readFileSync } from "node:fs";
 import { chooseAutoBattleCommand } from "@/battle/battleAuto";
 import { createBattleRuntime, headlessBattleSnapshot } from "@/battle/runtime";
@@ -28,9 +29,11 @@ for (const [table, rows] of Object.entries(patch)) for (const [id, fields] of Ob
   Object.assign(rec, fields);
 }
 const PIERCED = "state_fs_pierced";
+const MACHINE = "state_fs_valen_machine";
+const THUNDER = new Set(project.database.skills.filter((sk) => sk.elementId === "thunder").map((sk) => sk.id));
 const PIERCE: Record<string, string> = { actor_hero: "skill_hero_rush_pierce", actor_fs_iris: "skill_gunner_snipe" };
 const trio = ["actor_hero", "actor_fs_elena", "actor_fs_iris"];
-type Policy = "aware" | "auto" | "nopierce";
+type Policy = "aware" | "auto" | "nopierce" | "nothunder";
 
 function run(troopId: string, level: number, policy: Policy, rng: Rng, inventory: Record<string, number>) {
   const levels = Object.fromEntries(trio.map((id) => [id, level]));
@@ -42,7 +45,7 @@ function run(troopId: string, level: number, policy: Policy, rng: Rng, inventory
     captureLocation: { mapId: project.startMapId, x: 0, y: 0 }, rng,
   } as unknown as BattleRuntimeOptions;
   const rt = createBattleRuntime(options);
-  let actions = 0, pierces = 0, magic3x = 0, potions = 0;
+  let actions = 0, pierces = 0, magic3x = 0, potions = 0, bolts = 0, machineActions = 0;
   const uses: Record<string, number> = {};
   for (let step = 0; step < 9000; step += 1) {
     const snap = headlessBattleSnapshot(rt);
@@ -52,7 +55,7 @@ function run(troopId: string, level: number, policy: Policy, rng: Rng, inventory
     const foes = snap.enemies.filter((e) => !e.defeated && e.hp > 0);
     if (!actor || !foes.length) { rt.tick(1000); continue; }
     actions += 1;
-    const boss = foes.find((e) => e.recordId === "enemy_fs_moon_dragon") ?? foes[0]!;
+    const boss = foes.find((e) => e.recordId === "enemy_fs_moon_dragon") ?? foes.find((e) => e.recordId === "enemy_fs_valen" && e.stateIds.includes(MACHINE)) ?? foes[0]!;
     let cmd: ActorCommand | undefined;
     const potion = (inv.item_hi_potion ?? 0) > 0 ? "item_hi_potion" : (inv.item_potion ?? 0) > 0 ? "item_potion" : undefined;
     const lowest = [...snap.actors].filter((a) => !a.defeated && a.hp > 0).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
@@ -64,7 +67,15 @@ function run(troopId: string, level: number, policy: Policy, rng: Rng, inventory
     if (!cmd && policy === "aware" && pierceId && !boss.stateIds.includes(PIERCED) && (actor.skillIds ?? []).includes(pierceId) && actor.mp >= 6) {
       cmd = { kind: "skill", skillId: pierceId, targetEnemyId: boss.id } as ActorCommand;
     }
+    // 기계 발렌: aware 는 번개 기술이 있으면 그것으로 친다.
+    if (!cmd && policy === "aware" && boss.stateIds.includes(MACHINE)) {
+      const bolt = (actor.skillIds ?? []).find((id) => THUNDER.has(id) && (project.database.skills.find((sk) => sk.id === id)?.mpCost?.flat ?? 0) <= actor.mp);
+      if (bolt) cmd = { kind: "skill", skillId: bolt, targetEnemyId: boss.id } as ActorCommand;
+    }
     if (!cmd) cmd = chooseAutoBattleCommand(project, snap, rng);
+    if (cmd?.kind === "skill" && policy === "nothunder" && THUNDER.has(cmd.skillId)) cmd = { kind: "attack", targetEnemyId: boss.id };
+    if (cmd?.kind === "skill" && boss.stateIds.includes(MACHINE) && THUNDER.has(cmd.skillId)) bolts += 1;
+    if (boss.stateIds.includes(MACHINE)) machineActions += 1;
     if (cmd?.kind === "skill" && policy === "nopierce" && Object.values(PIERCE).includes(cmd.skillId)) cmd = { kind: "attack", targetEnemyId: boss.id };
     if (cmd?.kind === "skill" && Object.values(PIERCE).includes(cmd.skillId)) pierces += 1;
     if (cmd?.kind === "skill" && boss.stateIds.includes(PIERCED)) {
@@ -82,22 +93,24 @@ function run(troopId: string, level: number, policy: Policy, rng: Rng, inventory
     const k = `${e.side === "enemy" ? "E" : "A"}.${e.skillName ?? e.commandKind}`;
     if (typeof e.amount === "number") taken[k] = (taken[k] ?? 0) + e.amount;
   }
-  return { uses, taken, win: final.result === "victory", rounds: final.turn, actions, pierces, magic3x, potions, hpLeft: final.actors.reduce((s, a) => s + Math.max(0, a.hp), 0), fired };
+  const reached3 = final.eventLogs.some((l) => l.kind === "fired" && /_p3$/.test(l.pageId));
+  return { bolts, machineActions, reached3, uses, taken, win: final.result === "victory", rounds: final.turn, actions, pierces, magic3x, potions, hpLeft: final.actors.reduce((s, a) => s + Math.max(0, a.hp), 0), fired };
 }
 
 const cases: Array<{ troopId: string; level: number; policy: Policy; inv: Record<string, number> }> = [
-  ...([6, 7] as const).flatMap((level) => (["auto"] as Policy[]).map((policy) => ({ troopId: "troop_fs_valen_crash", level, policy, inv: { item_potion: 5, item_hi_potion: 1, item_ether: 2 } }))),
+  ...([6, 7] as const).flatMap((level) => (["aware", "auto", "nothunder"] as Policy[]).map((policy) => ({ troopId: "troop_fs_valen_crash", level, policy, inv: { item_potion: 5, item_hi_potion: 1, item_ether: 2 } }))),
   ...([8, 9] as const).flatMap((level) => (["aware", "auto", "nopierce"] as Policy[]).map((policy) => ({ troopId: "troop_fs_dragon", level, policy, inv: { item_potion: 6, item_hi_potion: 3, item_ether: 4 } }))),
 ];
 for (const c of cases.filter((x) => !only || x.troopId.endsWith(only))) {
   const rng = mulberry32(11);
-  let wins = 0, rounds = 0, pierces = 0, magic3x = 0, potions = 0, hp = 0;
+  let wins = 0, rounds = 0, pierces = 0, magic3x = 0, potions = 0, hp = 0, bolts = 0, p3 = 0, p3wins = 0, mActs = 0;
   const fired = new Map<string, number>();
   const uses: Record<string, number> = {};
   const taken: Record<string, number> = {};
   for (let i = 0; i < n; i += 1) {
     const r = run(c.troopId, c.level, c.policy, rng, c.inv);
     if (r.win) wins += 1;
+    bolts += r.bolts; mActs += r.machineActions; if (r.reached3) { p3 += 1; if (r.win) p3wins += 1; }
     rounds += r.rounds; pierces += r.pierces; magic3x += r.magic3x; potions += r.potions; hp += r.hpLeft;
     for (const id of r.fired) fired.set(id, (fired.get(id) ?? 0) + 1);
     for (const [k, v] of Object.entries(r.uses)) uses[k] = (uses[k] ?? 0) + v;
@@ -105,6 +118,7 @@ for (const c of cases.filter((x) => !only || x.troopId.endsWith(only))) {
   }
   console.log(JSON.stringify({
     troop: c.troopId, lv: c.level, policy: c.policy, win: Math.round((wins / n) * 100) / 100, rounds: Math.round((rounds / n) * 10) / 10,
+    reached3: Math.round((p3 / n) * 100) / 100, winAfter3: p3 ? Math.round((p3wins / p3) * 100) / 100 : null, bolts: Math.round((bolts / n) * 10) / 10, machineActs: Math.round((mActs / n) * 10) / 10,
     pierces: Math.round((pierces / n) * 10) / 10, magic3x: Math.round((magic3x / n) * 10) / 10, potions: Math.round((potions / n) * 10) / 10, hpLeft: Math.round(hp / n),
     uses: process.env.FS_SIM_VERBOSE ? Object.entries(uses).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, v]) => `${k}:${Math.round(v / n)}`).join(" ") : undefined,
     taken: process.env.FS_SIM_VERBOSE ? Object.entries(taken).map(([k, v]) => `${k}:${Math.round(v / n)}`).join(" ") : undefined,

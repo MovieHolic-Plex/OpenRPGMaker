@@ -12,7 +12,8 @@ const out = resolve(process.env.QA_OUT_DIR ?? "verify-shots/runtime-qa/fallen-ac
 await mkdir(out, { recursive: true });
 const fixture = JSON.parse(await readFile(resolve(process.env.FS_FIXTURE ?? "dist/demos/chrono-bell.project.json"), "utf8"));
 const project = fixture.project ?? fixture;
-const only = new Set((process.argv[2] ?? "valen,dragon,panel").split(","));
+const only = new Set((process.argv[2] ?? "valen,hanel,dragon,panel").split(","));
+const withSiege = !process.env.FS_NO_SIEGE;
 const facts = { segments: {}, errors: [] };
 const log = (...a) => console.error("[act1]", ...a);
 
@@ -20,8 +21,10 @@ const BASE = { sw_fs_main_started: true, sw_fs_main_step0: true, sw_fs_valen_mar
 const trio = (level) => ["actor_hero", "actor_fs_elena", "actor_fs_iris"].map((actorId) => ({ actorId, level }));
 const AFTER_CRASH = { ...BASE, sw_fs_valen_crash_on: true, sw_fs_valen_crash_met: true, sw_fs_main_step2: true, sw_fs_vault_seal_open: true, sw_fs_b3_west_lever: true, sw_fs_b3_sun_lever: true, sw_fs_b3_moon_lever: true };
 const SEGMENTS = {
-  valen: { id: "fs-act1-valen", mapId: "fs_forest", x: 15, y: 9, facing: "down", switches: { ...BASE, sw_fs_valen_crash_on: true }, party: trio(7), items: { item_potion: 3 } },
-  dragon: { id: "fs-act1-dragon", mapId: "fs_vault_b4", x: 14, y: 21, facing: "up", switches: { ...AFTER_CRASH }, party: trio(8), items: { item_potion: 6, item_hi_potion: 3, item_ether: 4 } },
+  // 세 단계 전부 + 회로까지 보이게 Lv10 로 녹화한다(헤드리스 승률 표는 Lv6~7).
+  valen: { id: "fs-act1-valen", mapId: "fs_forest", x: 15, y: 9, facing: "down", switches: { ...BASE, sw_fs_valen_crash_on: true }, party: trio(10), items: { item_potion: 6, item_hi_potion: 3, item_ether: 4 } },
+  hanel: { id: "fs-act1-hanel", mapId: "fs_observatory", x: 12, y: 13, facing: "up", switches: { ...BASE, sw_fs_valen_crash_on: true, sw_fs_valen_crash_met: true, sw_fs_valen_soldiers_gone: true, sw_fs_main_step2: true }, variables: { var_fs_main_progress: 3 }, party: trio(8), items: { item_potion: 3, item_fs_star_key: 1, item_fs_circuit: 1 } },
+  dragon: { id: "fs-act1-dragon", mapId: "fs_vault_b4", x: 14, y: 26, facing: "up", switches: { ...AFTER_CRASH }, party: trio(8), items: { item_potion: 6, item_hi_potion: 3, item_ether: 4 } },
   panel: { id: "fs-act1-panel", mapId: "fs_vault_b4", x: 14, y: 4, facing: "up", switches: { ...AFTER_CRASH, sw_fs_dragon_met: true, sw_fs_dragon_down: true }, party: trio(9), items: { item_potion: 3 } },
 };
 
@@ -65,7 +68,8 @@ async function read(page, texts, until, { maxMs = 240_000 } = {}) {
 const battleStep = (page, plan) => page.evaluate((plan) => {
   const live = [...document.querySelectorAll("button")].filter((n) => !n.disabled && n.offsetParent !== null && n.dataset.previewOnly !== "true");
   const by = (t) => live.find((n) => n.dataset.testid === t);
-  const target = live.find((n) => (n.dataset.testid || "").startsWith("battle-target-") && n.dataset.testid !== "battle-target-cancel");
+  const targets = live.filter((n) => (n.dataset.testid || "").startsWith("battle-target-") && n.dataset.testid !== "battle-target-cancel");
+  const target = (plan.__target && targets.find((n) => (n.innerText || n.getAttribute("aria-label") || "").includes(plan.__target))) ?? targets[0];
   if (target) { target.click(); return "target"; }
   const name = document.querySelector("[data-actor-name]")?.dataset.actorName ?? "";
   const want = plan[name] ?? "attack";
@@ -159,27 +163,48 @@ try {
     // 체크포인트가 「발렌이 올라온다」 스위치를 켠 채로 맵에 들어온다 — 자동 실행 인트로가 곧바로 돈다.
     shot(page, "valen-walk", 4200);
     await read(page, seg.texts, (s) => s.battle);
-    shot(page, "valen-battle", 3000);
-    await page.waitForTimeout(2500);
-    // 첫 두 바퀴 — 소환·예고(심판의 빛)가 보일 만큼만 싸운다.
+    shot(page, "valen-p1", 3500);
+    await page.waitForTimeout(2000);
+    // 1단계 병사 → 2단계 발렌 → 3단계 기계(번개로). 끝나면 연막·회로까지.
+    const plan = { 카엘: "attack", 엘레나: "skill_mage_fireball", 이리스: "attack" };
     const msgs = [];
-    const tEnd = Date.now() + 45_000;
-    let idle = 0;
+    let idle = 0, p2 = false, p3 = false, bolts = 0;
+    const tEnd = Date.now() + 420_000;
     while (Date.now() < tEnd) {
       const s = await ui(page);
+      if (!s.battle) break;
       const line = s.box ? `[대사] ${s.box.replace(/\s+/g, " ").trim()}` : s.msg;
-      if (line && line !== msgs.at(-1)) msgs.push(line);
-      if (/심판의 빛/.test(line ?? "") && !msgs.some((m) => m === "#shot")) { msgs.push("#shot"); shot(page, "valen-judgement", 300); }
-      const step = await battleStep(page, {});
+      if (line && line !== msgs.at(-1)) {
+        msgs.push(line);
+        if (!p2 && /쓸모없는 것들/.test(line)) { p2 = true; mark("valen_p2"); plan.__target = "발렌"; shot(page, "valen-p2", 1200); }
+        if (!p3 && /금단의 주술/.test(line)) { p3 = true; mark("valen_p3"); shot(page, "valen-transform", 2500); }
+        if (p3 && /전기로 태워요/.test(line)) { Object.assign(plan, { 이리스: "skill_fs_iris_shock", 엘레나: "skill_mage_chain_lightning", 카엘: "attack" }); }
+        if (p3 && /전격탄|연쇄 번개/.test(line) && bolts < 3) { bolts += 1; shot(page, `valen-bolt-${bolts}`, 900); }
+      }
+      const step = await battleStep(page, plan);
       if (step) idle = 0; else if (s.box !== null || ++idle > 8) { await page.keyboard.press("Enter", { delay: 80 }); idle = 0; }
       await page.waitForTimeout(step ? 450 : 300);
     }
-    seg.battleMessages = msgs.filter((m) => m !== "#shot");
+    seg.battleMessages = msgs;
+    mark("valen_won");
+    await read(page, seg.texts, (s) => /회로.*손에 넣었다/.test(s.box ?? "") , { maxMs: 120_000 });
+    shot(page, "valen-circuit", 300);
+    await read(page, seg.texts, async () => false, { maxMs: 9_000 });
     mark("valen_end");
+  });
+  if (only.has("hanel")) await segment(browser, server, "hanel", async (page, mark, seg) => {
+    mark("hanel_start");
+    await page.evaluate(() => window.__oprnInput.action());
+    await read(page, seg.texts, (s) => /렌즈가 문을 열거든/.test(s.box ?? ""), { maxMs: 180_000 });
+    shot(page, "hanel-circuit", 300);
+    await page.waitForTimeout(2500);
+    mark("hanel_end");
   });
   if (only.has("dragon")) await segment(browser, server, "dragon", async (page, mark, seg) => {
     mark("dragon_start");
-    await page.keyboard.down("ArrowUp"); await page.waitForTimeout(700); await page.keyboard.up("ArrowUp");
+    shot(page, "dragon-map", 1500);
+    await page.waitForTimeout(2500);
+    await page.keyboard.down("ArrowUp"); await page.waitForTimeout(2200); await page.keyboard.up("ArrowUp");
     await read(page, seg.texts, (s) => s.battle);
     await page.waitForTimeout(2500);
     const plan = { 카엘: "skill_hero_rush_pierce", 엘레나: "skill_mage_fireball", 이리스: "attack" };
@@ -207,6 +232,7 @@ try {
     await page.evaluate(() => window.__oprnInput.action());
     await read(page, seg.texts, async () => (await state(page)).map !== "fs_vault_b4", { maxMs: 300_000 });
     mark("panel_end");
+    if (!withSiege) return;
     mark("siege_start");
     await read(page, seg.texts, (s) => s.ending, { maxMs: 300_000 });
     shot(page, "ending-card", 2500);

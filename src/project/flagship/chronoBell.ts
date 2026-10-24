@@ -2443,7 +2443,11 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     엘레나: actorFace("actor_fs_elena"),
     이리스: actorFace("actor_fs_iris"),
     "천문대장 하넬": "easyrpg-faceset-people2-04",
-    "심문관 발렌": "easyrpg-faceset-actor1-04",
+    // 발렌 — 칩 짝 얼굴(푸른 머리띠)의 흉상은 광대 모자라 다른 사람으로 읽힌다. 수염 난 검은 머리 흉상(작은 얼굴 칸 대신).
+    "심문관 발렌": "shared-actor2-mustache-expressions-bust-base",
+    // 두건 쓴 광신도 — 복면 흉상.
+    "교단 광신도": "shared-actor2-masked-expressions-bust-base",
+    "광신도 설교자": "shared-actor2-masked-expressions-bust-base",
     "심문회 기사": "easyrpg-faceset-actor1-02",
     "숲지기 브람": "easyrpg-faceset-actor1-10",
     "광장의 할머니": "easyrpg-faceset-people1-07",
