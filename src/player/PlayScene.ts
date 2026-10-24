@@ -89,7 +89,7 @@ import { installPlaySceneTestHooks } from "@/player/playSceneTestHooks";
 import { applyStoredCameraState, centerRuntimeCamera, panRuntimeCamera } from "@/player/playSceneCamera";
 import { runtimeMapViewZoom, runtimePixelDensity } from "@/player/runtimeViewScale";
 import { hasSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint, getSessionCheckpoint } from "@/player/checkpoints";
-import { syncFollowerSprites } from "@/player/playSceneFollowers";
+import { syncFollowerSceneVisibility, syncFollowerSprites } from "@/player/playSceneFollowers";
 import { syncPartyFollowers } from "@/project/followers";
 import { seedLocationOccupancyForScene } from "@/player/playSceneLocationTransitions";
 import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
@@ -421,6 +421,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.sunlightLayer?.sync(this.map, store.getCurrent().tilesets[this.map.tilesetId]);
     this.perfCounters.frames += 1;
     updatePlayScene(this, deltaMs);
+    // FF6 식 동료 표시(companions.display "scenesOnly") — 이야기 장면이 열리고 닫힐 때 동료를 세우고 숨긴다.
+    syncFollowerSceneVisibility(this);
     syncTerrainWater(this, this.map);
     syncTerrainVision(this, this.map, this.tileX, this.tileY, store.getCurrent().tilesets[this.map.tilesetId]);
     updateGameTime(this, deltaMs);

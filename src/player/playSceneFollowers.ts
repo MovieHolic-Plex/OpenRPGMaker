@@ -20,6 +20,7 @@ import { boardedVehicleId } from "@/project/vehicles";
 import { findBlockingRuntimeEventAtInMap } from "@/project/runtimeEventState";
 import { runtimeMap } from "@/project/runtimeMap";
 import type { Project } from "@/project/types";
+import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 
 /**
  * 팔로워 슬롯 보간 상태(스프라이트 계층 전용). 슬롯(궤적 칸)은 플레이어 걸음이
@@ -142,9 +143,33 @@ function followerWorldFor(scene: PlaySceneContext, project: Project, heroAt?: { 
     map: scene.map,
     blocked: (x, y) => findBlockingRuntimeEventAtInMap(project, map, scene.session, scene.eventPositions, x, y) !== undefined,
     inScene: scene.running,
+    storyScene: followerStoryScene(scene),
     playerFacing: scene.facing,
     ...(heroAt ? { heroAt } : {}),
   };
+}
+
+/** 세션 플래그 — 도는 이벤트에서 선두가 아닌 파티원이 대사를 했다(이벤트가 끝나면 지운다). companions.display "scenesOnly" 용. */
+export const COMPANION_SCENE_FLAG = "companions:sceneShown";
+
+/** 이야기 장면인가 — 컷신 제어가 켜졌거나, 도는 이벤트에서 동료가 말했다. 이벤트가 끝났으면 동료 대사 플래그를 지운다. */
+function followerStoryScene(scene: PlaySceneContext): boolean {
+  if (!scene.running && scene.session.flags[COMPANION_SCENE_FLAG] === true) delete scene.session.flags[COMPANION_SCENE_FLAG];
+  return isCutsceneInputLocked(scene.session) || (scene.running && scene.session.flags[COMPANION_SCENE_FLAG] === true);
+}
+
+const lastStoryScene = new WeakMap<object, boolean>();
+/**
+ * companions.display "scenesOnly"(FF6 식): 이야기 장면이 시작·끝나는 프레임에 동료를 다시 세운다(걸음이 없어도).
+ * 매 프레임 불러도 장면 상태가 바뀔 때만 syncFollowerSprites 를 돈다.
+ */
+export function syncFollowerSceneVisibility(scene: PlaySceneContext): void {
+  if (store.getCurrent().system.companions?.display !== "scenesOnly") return;
+  if ((scene.session.followers?.length ?? 0) === 0) return;
+  const now = followerStoryScene(scene);
+  if (lastStoryScene.get(scene) === now) return;
+  lastStoryScene.set(scene, now);
+  syncFollowerSprites(scene, { snap: true });
 }
 
 /** 몬스터만 따라오는 열차인가 — HGSS 처럼 한 칸 뒤에 붙는다(몸 길이로 띄우지 않는다). */

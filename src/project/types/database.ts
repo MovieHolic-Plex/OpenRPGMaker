@@ -2256,6 +2256,13 @@ export interface CompanionConfig {
    */
   fanOutInScenes?: boolean;
   /**
+   * 동료 표시 방식. "follow"(기본·생략) = 크로노 트리거식 — 파티 동료가 필드에서 주인공 뒤를 따라 걷는다.
+   * "scenesOnly" = FF6 식 — 필드에서는 선두만 걷고, 동료(fromParty·addFollower)는 숨는다. 이야기 장면
+   * (컷신 제어가 켜졌거나, 도는 이벤트 안에서 선두가 아닌 파티원이 대사를 하는 동안)에만 주인공 바로 옆에 나타났다가
+   * 장면이 끝나면 다시 숨는다. 몬스터 동행(포켓몬식)은 monsterFollowers 로 따로 정한다.
+   */
+  display?: "follow" | "scenesOnly";
+  /**
    * false 면 파티 몬스터가 필드에서 주인공을 따라 걷지 않는다(HGSS 식 동행 끄기). 생략 = 따라온다 — 몬스터 동료는 주인공이
    * 떠난 칸으로 같은 박자에 한 칸 뒤를 걷는다(@/player/playSceneFollowers beginFollowerStep).
    */
