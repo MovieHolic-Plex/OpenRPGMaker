@@ -31,7 +31,7 @@ DECORS = ('plain0', 'plain1', 'crack0', 'crack1', 'crack2', 'crack3', 'spall0', 
 
 
 def decor_ok(d, js):
-    if d.startswith(('spall', 'weed')): return js > 0
+    if d.startswith(('spall', 'weed', 'crack')): return js > 0
     if d == 'chip': return js == 3
     if d == 'heave': return bool(js & 1)
     return True
@@ -46,7 +46,7 @@ def tile_order():
         n, e, s, w = c // 27, (c // 9) % 3, (c // 3) % 3, c % 3
         for jn in ((0, 1) if n == 0 else (0,)):
             for jw in ((0, 1) if w == 0 else (0,)):
-                for v in (0, 1): out.append(('rim', (n, e, s, w), jn | (jw << 1), v))
+                for v in (0, 1, 2): out.append(('rim', (n, e, s, w), jn | (jw << 1), v))
     return out
 
 
@@ -115,7 +115,7 @@ def ground_cell(x, y, seed):
 def _ground(c):
     for t, d in enumerate(TONES):
         for y in range(SP):
-            for x in range(SP): c.P(x, t * SP + y, GR[ground_tone(x, y) + d])
+            for x in range(SP): c.P(x, t * SP + y, GR[max(1, ground_tone(x, y) + d)])   # GR0 은 줄눈 회청과 같은 색 — 바탕에 쓰지 않는다
 
 
 # ------------------------------------------------------------------ 판 짜임(맵 단위, 구성기와 같은 규칙)
@@ -180,7 +180,7 @@ def cell_tile(slab, road, L, x, y, seed):
     sides = (side(0, -1), side(1, 0), side(0, 1), side(-1, 0))
     js = (1 if L.jN(x, y) and sides[0] == 0 else 0) | (2 if L.jW(x, y) and sides[3] == 0 else 0)
     if sides == (0, 0, 0, 0): return IN_INDEX[js][decor_of(x, y, js, seed)]
-    v = h2(x * 5 + 1, y * 3 + 7, seed + 437) % 2
+    v = h2(x * 5 + 1, y * 3 + 7, seed + 437) % 3
     return RIM_INDEX[(sides, js, v)]
 
 
@@ -200,8 +200,7 @@ def _joints(c, js, dirty, seed):
     if H: J |= {(x, 1) for x in range(16)}
     if V: J |= {(1, y) for y in range(16)}
     for (x, y) in J:
-        d = dirty and h2(x // 4 if y == 1 else y // 4, 1 if y == 1 else 2, seed + 7) % 3 == 0
-        c.P(x, y, J_DIRT[(x + y) % 2] if d else J_COL)
+        c.P(x, y, J_COL)                                     # r60b: 홈 속 흙 화소는 「흙이 스며든 틈」으로 읽혀 뺐다
     if H:
         for x in range(2 if V else 0, 16): c.P(x, 2, GR[6])
         for x in range(3 if V else 0, 16):
@@ -256,32 +255,30 @@ def _unused_stain_tail(c, J, pts):
         c.P(x, y, GR[0] if nb == 9 else GR[1] if nb >= 6 else GR[2])
 
 
-def _crack(c, J, seed):
-    """금: 가지 없는 머리카락 금 한 줄 — 칸을 거의 가로(또는 세로)로 11~14화소 흘러가며 2~3화소마다 한 화소 꺾인다.
-    r60a·r60b 첫 판의 Y 자·갈고리 금은 기호로 읽혔다(검수). 줄눈(짙은 회청 곧은 홈)과 달리 판 색보다 두 단 어두운 회색, 빛 테 없음, 양 끝 한 단 옅게."""
+def _crack(c, J, seed, js=3):
+    """금: 줄눈에서 갈라져 판 안쪽으로 11~14화소 흘러가다 잦아드는 머리카락 금(가지 없음, 2~3화소마다 한 화소 꺾임).
+    시작은 늘 줄눈 홈 바로 안쪽(가로 금은 왼줄 줄눈, 세로 금은 윗줄 줄눈) — 판 한가운데 떠 있는 금은 긁힌 자국으로 읽혔다(검수).
+    판 색보다 두 단 어두운 회색(GR0 아님), 끝 두 화소는 한 단 옅게."""
     r = h2(seed, 3, 41)
-    horiz = r % 2 == 0
-    a = 3 + (r >> 1) % 10                 # 가로 금이면 시작 y, 세로 금이면 시작 x
-    u0 = 1 + (r >> 5) % 3
-    n = 11 + (r >> 7) % 4
-    pts, v, drift = [], a, 1 if (r >> 9) % 2 else -1
-    step = 0
+    horiz = bool(js & 2) and (not js & 1 or r % 2 == 0)
+    a = 4 + (r >> 1) % 9
+    n = 10 + (r >> 7) % 4
+    pts, v, drift, step = [], a, 1 if (r >> 9) % 2 else -1, 0
     for k in range(n):
-        u = u0 + k
+        u = 2 + k
         if u > 14: break
         step += 1
         if step >= 2 + h2(k, r, seed + 1) % 2:
             step = 0
             if h2(k, r, seed + 2) % 4 == 0: drift = -drift
             nv = v + drift
-            if 2 <= nv <= 13:
-                pts.append((u, v) if horiz else (v, u))
-                v = nv
+            if 3 <= nv <= 13:
+                pts.append((u, v) if horiz else (v, u)); v = nv
         pts.append((u, v) if horiz else (v, u))
     m = len(pts)
     for k, p in enumerate(pts):
-        if p in J or not _in(*p, 1): continue
-        c.P(p[0], p[1], GR[1] if k in (0, m - 1) else GR[0])
+        if not _in(*p, 1) or (p in J and k > 0): continue
+        c.P(p[0], p[1], GR[2] if k >= m - 2 else GR[1])
 
 
 SPALL_SHAPES = (                       # 줄눈에 붙어 떨어져 나간 덩이 윤곽(행마다 (시작, 끝) — 줄눈 쪽이 첫 행). 다섯 모양.
@@ -313,14 +310,14 @@ def _spall(c, J, js, seed, var=0):
     hole = {p for p in hole if _in(*p, 1)}
     for (x, y) in hole:
         n_out, w_out = (x, y - 1) not in hole, (x - 1, y) not in hole
-        if n_out or w_out: c.P(x, y, GR[0])
-        elif (x, y - 2) not in hole or (x - 2, y) not in hole: c.P(x, y, GR[1])
-        else:
+        if n_out or w_out: c.P(x, y, J_DEEP)                  # 북·서 안벽 = 가장 어두운 그늘
+        elif (x, y - 2) not in hole: c.P(x, y, GR[0])
+        else:                                                  # 패인 바닥 = 판 밑 흙·자갈(어둡게)
             q = h2(x, y, seed + 3) % 6
-            c.P(x, y, GR[3] if q == 0 else GR[1] if q == 1 else GR[2])
-    for (x, y) in hole:
-        for p, col in (((x, y + 1), GR[6]), ((x + 1, y), GR[5])):
-            if p not in hole and p not in J and _in(*p, 1): c.P(p[0], p[1], col)
+            c.P(x, y, DIRT[1] if q < 2 else DIRT[2] if q < 4 else GR[0] if q == 4 else GR[1])
+    for (x, y) in hole:                                        # 밝은 테는 남쪽(아래) 깨진 끝에만
+        p = (x, y + 1)
+        if p not in hole and p not in J and _in(*p, 1): c.P(p[0], p[1], GR[6])
 
 
 def _weed(c, J, js, seed, var=0):
@@ -369,18 +366,21 @@ def _heave(c, seed):
 
 
 def _rim_profile(seed, side):
-    """변 하나의 흙 깊이 16개: 끝(0·15)은 2(이웃 칸과 같다), 속은 4~8화소 덩이마다 1~4."""
+    """변 하나의 흙 깊이 16개: 끝(0·15)은 2(이웃 칸과 같다), 속은 2~6화소 덩이마다 1~3, 덩이 사이는 한 단씩만 바뀐다(네모 이빨 금지)."""
     out, t = [], 0
+    cur = 2
     while t < 16:
-        ln = 3 + h2(t, side, seed) % 5
-        d = 1 + h2(t, side + 5, seed) % 3
+        ln = 2 + h2(t, side, seed) % 5
+        tgt = 1 + h2(t, side + 5, seed) % 3
         for j in range(ln):
-            q = h2(t + j, side + 9, seed) % 7
-            out.append(max(1, min(4, d + (1 if q == 0 else -1 if q == 1 else 0))))
+            if cur < tgt: cur += 1
+            elif cur > tgt: cur -= 1
+            q = h2(t + j, side + 9, seed) % 9
+            out.append(max(1, min(3, cur + (1 if q == 0 else -1 if q == 1 else 0))))
         t += ln
     out = out[:16]
     out[0] = out[15] = 2
-    out[1] = min(3, max(1, out[1])); out[14] = min(3, max(1, out[14]))
+    for i in (1, 14): out[i] = min(3, max(1, out[i]))
     return out
 
 
@@ -435,7 +435,7 @@ def draw_tile(c, ox, oy, spec):
         _, js, d = spec
         seed = 9001 + js * 101 + DECORS.index(d) * 13
         J = _joints(sub, js, d == 'plain1', seed)
-        if d.startswith('crack'): _crack(sub, J, seed + int(d[-1]) * 7)
+        if d.startswith('crack'): _crack(sub, J, seed + int(d[-1]) * 7, js)
         elif d.startswith('spall'): _spall(sub, J, js, seed + int(d[-1]) * 11, int(d[-1]))
         elif d.startswith('weed'): _weed(sub, J, js, seed + int(d[-1]) * 5, int(d[-1]))
         elif d == 'chip': _chip(sub, seed)

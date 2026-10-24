@@ -347,7 +347,7 @@ function fillSlab(b: Board, x0: number, y0: number, w: number, h: number): void 
  */
 const SLAB_DECORS = ["plain0", "plain1", "crack0", "crack1", "crack2", "crack3", "spall0", "spall1", "weed0", "weed1", "chip", "heave", "stain0", "stain1", "patch", "weed2", "weed3", "spall2", "stain2", "spall3", "spall4"];
 function slabDecorOk(d: string, js: number): boolean {
-  if (d.startsWith("spall") || d.startsWith("weed")) return js > 0;
+  if (d.startsWith("spall") || d.startsWith("weed") || d.startsWith("crack")) return js > 0;
   if (d === "chip") return js === 3;
   if (d === "heave") return (js & 1) === 1;
   return true;
@@ -357,7 +357,7 @@ const SLAB_INDEX: Map<string, number> = (() => {
   for (let js = 0; js < 4; js++) for (const d of SLAB_DECORS) if (slabDecorOk(d, js)) m.set(`in|${js}|${d}`, i++);
   for (let c = 1; c < 81; c++) {
     const n = Math.floor(c / 27), e = Math.floor(c / 9) % 3, s = Math.floor(c / 3) % 3, w = c % 3;
-    for (const jn of n === 0 ? [0, 1] : [0]) for (const jw of w === 0 ? [0, 1] : [0]) for (const v of [0, 1]) m.set(`rim|${n}${e}${s}${w}|${jn | (jw << 1)}|${v}`, i++);
+    for (const jn of n === 0 ? [0, 1] : [0]) for (const jw of w === 0 ? [0, 1] : [0]) for (const v of [0, 1, 2]) m.set(`rim|${n}${e}${s}${w}|${jn | (jw << 1)}|${v}`, i++);
   }
   return m;
 })();
@@ -427,7 +427,7 @@ function slabJointFinish(b: Board, joints: StructureKitDef, ground: StructureKit
     const side = (dx: number, dy: number) => (on(x + dx, y + dy) ? 0 : rd(x + dx, y + dy) ? 2 : 1);
     const sd = [side(0, -1), side(1, 0), side(0, 1), side(-1, 0)];
     const js = (L.jN(x, y) && sd[0] === 0 ? 1 : 0) | (L.jW(x, y) && sd[3] === 0 ? 2 : 0);
-    const key = sd.every((v) => v === 0) ? `in|${js}|${slabDecorOf(x, y, js, seed)}` : `rim|${sd.join("")}|${js}|${wlH2(x * 5 + 1, y * 3 + 7, seed + 437) % 2}`;
+    const key = sd.every((v) => v === 0) ? `in|${js}|${slabDecorOf(x, y, js, seed)}` : `rim|${sd.join("")}|${js}|${wlH2(x * 5 + 1, y * 3 + 7, seed + 437) % 3}`;
     const k = SLAB_INDEX.get(key);
     const t = k === undefined ? -1 : at(k);
     if (t >= 0) setLayerTileAt(b.map, 2, i, t);
