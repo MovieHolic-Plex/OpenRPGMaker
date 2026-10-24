@@ -27,7 +27,7 @@ import type { BuildRun, ContentBuildResult, EventBeat, EventSpec } from "./types
 
 export const EVENT_CARD =
   "이벤트(events) 명세: {kind:'cutscene'|'talk'|'trigger', when?:'game-start'|'touch'|'talk', mapId?, where?, at?, beats:[…]}. " +
-  "after:'촌장' = 그 NPC 와 대화가 끝나면 이어서(그 NPC 대화 끝에 붙고 한 번만). " +
+  "after:'촌장' = 그 NPC 와 대화가 끝나면 이어서(그 NPC 대화 끝에 붙고 한 번만), afterTalk:[…] = 장면 뒤 그 NPC 가 할 말(밤이 됐으면 밤 인사처럼 바뀐 상황에 맞게). " +
   "cutscene+game-start = 게임이 시작되면 한 번만 자동 재생(시작 맵, 맵마다 하나 — 다시 부르면 앞 컷신을 바꾼다). 비트 do: " +
   "walk{who,to}=걷기(to=길·광장·입구·문 앞 같은 자리 낱말, 다른 사람 이름이면 그 곁으로 걸어가 마주 선다, {x,y} 는 꼭 필요할 때만) / " +
   "say{who,text}=대사 / appear{who,where?,looks?,talk?}=그 자리에 «팍» 나타남(where 생략 가능 — 뒤에 주인공에게 걸어오면 함수가 4~8칸 떨어진 길 위를 고른다; talk=컷신 뒤 말 걸면 할 말 배열) / " +
@@ -49,6 +49,8 @@ const START_ACTOR_PREFIX = "ev_v2cut_a_";
 const MIN_WALK = 3;
 /** 장면에만 나오는 사람이 한 장면에서 걷는 걸음 상한(한 걸음 약 ¼초 — 24걸음이면 6초 남짓). */
 const SCENE_WALK_BUDGET = 24;
+/** 그중 한 번 걷기 상한 — 첫 걷기가 예산을 다 먹지 않게. */
+const SCENE_WALK_LEG = 14;
 /** tint 비트의 화면 색 — 'r,g,b,알파' 덮개(밤은 푸른 어둠), sepia 는 회상 필터, clear 는 원래대로. */
 const TINT_TONES: Record<string, string> = { night: "20,30,80,0.5", dusk: "170,80,40,0.28", dawn: "255,190,150,0.18", sepia: "sepia", clear: "" };
 
@@ -427,6 +429,10 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   const vanished = new Set<string>();
   const followUps = new Map<string, string[]>();
   const sceneSteps = new Map<string, number>();
+  const lookedEarly = new Set<number>();
+  const lookCommand = (target: string, as: unknown): Record<string, unknown> => (as === "shadow" ? { kind: "look", target, tint: "black", tintFill: true }
+    : as === "ghost" ? { kind: "look", target, pose: "float", alpha: 0.6 }
+    : { kind: "look", target, reset: true });
   /** 아직 맵에 없는 사람을 지금(비트 i 시점) 세운다. */
   const ensureActor = (name: string, beatIndex: number): string | undefined => {
     const have = actorIds.get(name);
@@ -512,6 +518,9 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
           a.visible = true;
           const hero = sim.actors.get(PLAYER)!;
           a.dir = dirTo(a.cell, hero.cell);
+          // 바로 뒤 look(그림자·유령)은 보이기 전에 건다 — 맨 모습이 잠깐 보였다가 검게 바뀌었다(2026-10-24 밤 컷신 눈가림).
+          const nb = spec.beats[i + 1];
+          if (nb && nb.do === "look" && nb.who === b.who && nb.as !== "normal") { out.push(lookCommand(id, nb.as)); lookedEarly.add(i + 1); }
           out.push({ kind: "look", target: id, alpha: 1 });
           out.push({ kind: "faceToward", actor: id, target: PLAYER });
           out.push({ kind: "wait", ms: 300 });
@@ -570,9 +579,15 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
         // 장면에만 나오는 사람은 장면 전체 24걸음까지만 걷는다 — 넘으면 같은 길 위 그 걸음째 칸에서 멈춘다
         // (2026-10-24 밤 컷신: 그림자가 52~62걸음을 걸어 한 번 말 걸기 안에 장면이 안 끝나 보였다).
         if (createdActors.has(key)) {
-          const room = SCENE_WALK_BUDGET - (sceneSteps.get(key) ?? 0);
+          const room = Math.min(SCENE_WALK_LEG, SCENE_WALK_BUDGET - (sceneSteps.get(key) ?? 0));
           const total2 = legs.reduce((n, l) => n + l.steps, 0);
-          if (total2 > room && room >= MIN_WALK) {
+          if (room < MIN_WALK) {
+            // 걸음 예산을 다 썼다 — 이 걷기는 빼고 그 자리에 둔다.
+            Object.assign(sim.actors.get(key)!, { ...keep, cell: { ...keep.cell } });
+            warnings.push(`${b.who}: 장면 걸음 상한(${SCENE_WALK_BUDGET})을 다 써서 '${intent}' 걷기는 뺐다.`);
+            break;
+          }
+          if (total2 > room) {
             const flat = legs.flatMap((l, li) => (li === 0 ? l.path : l.path.slice(1)));
             const cut = flat[room]!;
             Object.assign(sim.actors.get(key)!, { ...keep, cell: { ...keep.cell } });
@@ -646,9 +661,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
       case "look": {
         const key = keyOf(b.who) ?? ensureActor(b.who, i);
         if (!key) { warnings.push(`look: 누군지 모르는 '${b.who}'.`); break; }
-        out.push(b.as === "shadow" ? { kind: "look", target: idFor(key), tint: "black", tintFill: true }
-          : b.as === "ghost" ? { kind: "look", target: idFor(key), pose: "float", alpha: 0.6 }
-          : { kind: "look", target: idFor(key), reset: true });
+        if (!lookedEarly.has(i)) out.push(lookCommand(idFor(key), b.as));
         if (b.as !== "normal") effects.push(`${b.who} is drawn as ${b.as === "shadow" ? "a solid black silhouette" : "a floating translucent ghost"} in the game (the frames show the plain sprite)`);
         break;
       }
@@ -771,6 +784,11 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     else {
       const p0 = npc.pages[0]!;
       const talked = { ...structuredClone(p0), id: undefined, name: `${p0.name ?? "대화"} (장면 뒤)`, conditions: [...(p0.conditions ?? []), { kind: "selfSwitch", key: "D", value: true }] };
+      const afterLines = (spec.afterTalk ?? []).map((t) => String(t).trim()).filter(Boolean);
+      if (afterLines.length) {
+        const face = (p0.commands ?? []).find((c) => (c as { kind?: string }).kind === "changeFace");
+        talked.commands = [...(face ? [structuredClone(face)] : []), ...afterLines.map((body) => ({ kind: "text", speaker: npc.name, body }))] as typeof talked.commands;
+      }
       delete (talked as { id?: string }).id;
       const first = { ...structuredClone(p0), commands: [...(p0.commands ?? []), ...structuredClone(commands), { kind: "setSelfSwitch", key: "D", value: true }] };
       const up = run.call("upsert_event", { mapId, replacePages: true, event: { id: npc.id, pages: [first, ...npc.pages.slice(1).map((pg) => structuredClone(pg)), talked] } });
