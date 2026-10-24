@@ -458,21 +458,43 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const mapId = targetMapId(run, spec, previous);
   // 다시 짓기 전에: 던전 밖 맵(숲·마을)에서 이 던전 층으로 들어오는 이동을 조수가 따로 이었으면, 층을 다시 지으면 크기가 바뀌어
   // 그 이동 좌표가 맵 밖이 되고 커밋이 거부된다(2026-10-25 조수 단독 게임 G5: 「transfer 목적지가 맵 경계 밖 (29,50)」).
+  // 다시 짓기 전에: 던전 밖 맵(숲·마을)에서 이 던전 층으로 들어오는 문이 이미 이어져 있으면, 층을 다시 지을 때 크기가 바뀌어
+  // 그 이동 좌표가 맵 밖이 되고 커밋이 거부된다(2026-10-25 G5). 1층으로 들어오는 바깥 문이 한 맵에서 하나면 그 문을 지우고
+  // 같은 칸에 다시 잇는다(author_dungeon entrance) — 짓기가 문을 잇고 나면 던전을 못 고치던 것(G26)을 푼다. 더 깊은 층으로 들어오는 문은 그대로 거절.
+  let relink: { readonly fromMapId: string; readonly x: number; readonly y: number; readonly eventIds: readonly string[] } | undefined;
   if (previous) {
-    const floors = new Set<string>([...(prev?.floors ?? previous.result.mapIds)]);
-    const linked: string[] = [];
+    const floorList = [...(prev?.floors ?? previous.result.mapIds)];
+    const floors = new Set<string>(floorList);
+    const linked: { mapId: string; mapName: string; event: { id: string; name?: string; x: number; y: number }; floor: string }[] = [];
     for (const m of Object.values(run.ctx.project.maps)) {
       if (floors.has(m.id)) continue;
       for (const ev of m.events) {
         const text = JSON.stringify(ev.pages ?? []);
-        const into = [...text.matchAll(/\{[^{}]*"kind":"transfer"[^{}]*\}/gu)].some((hit) => floors.has(/"mapId":"([^"]+)"/u.exec(hit[0])?.[1] ?? ""));
-        if (into) linked.push(`${m.name}의 ${ev.name ?? ev.id}`);
+        for (const hit of text.matchAll(/\{[^{}]*"kind":"transfer"[^{}]*\}/gu)) {
+          const to = /"mapId":"([^"]+)"/u.exec(hit[0])?.[1] ?? "";
+          if (floors.has(to)) { linked.push({ mapId: m.id, mapName: m.name, event: ev, floor: to }); break; }
+        }
       }
     }
+    const outside = new Set(linked.map((l) => l.mapId));
+    const deep = linked.filter((l) => l.floor !== floorList[0]);
+    if (linked.length && (deep.length || outside.size > 1)) {
+      return { ok: false, mapIds: [...floors], summary: `던전 다시 짓기 안 함: 바깥에서 이 던전으로 들어오는 문(${linked.slice(0, 3).map((l) => `${l.mapName}의 ${l.event.name ?? l.event.id}`).join(", ")})이 ${deep.length ? "아래층으로도" : "여러 맵에서"} 이어져 있다 — 다시 지으면 그 문이 맵 밖을 가리켜 거부된다. 같은 edit_place 를 되풀이하지 말고, 남은 문제는 덧그리기(stamp_object·fill_region)·move_event 로 고치거나 보고에 적는다.`, warnings, missingArt: missing, calls: [], state: prev };
+    }
     if (linked.length) {
-      return { ok: false, mapIds: [...floors], summary: `던전 다시 짓기 안 함: 바깥에서 이 던전으로 들어오는 문(${linked.slice(0, 3).join(", ")})이 이미 이어져 있다 — 다시 지으면 그 문이 맵 밖을 가리켜 거부된다. 같은 edit_place 를 되풀이하지 말고, 남은 문제는 덧그리기(stamp_object·fill_region)·move_event 로 고치거나 보고에 적는다.`, warnings, missingArt: missing, calls: [], state: prev };
+      const gate = linked[0]!.event;
+      relink = { fromMapId: linked[0]!.mapId, x: gate.x, y: gate.y, eventIds: linked.map((l) => l.event.id) };
+      warnings.push(`바깥 ${linked[0]!.mapName}(${gate.x},${gate.y})의 던전 문을 다시 지은 입구와 다시 이었다`);
     }
   }
+  /** 사본에서 바깥 문과 이 던전 층을 가리키는 월드 그래프 연결을 지운다 — 다시 지은 던전에 새로 잇는다(옛 착지 좌표가 새 맵 밖·벽이 된다). */
+  const oldFloors = new Set<string>(previous ? [...(prev?.floors ?? previous.result.mapIds)] : []);
+  const dropOldGate = (trial: BuildRun) => {
+    if (!previous) return;
+    if (relink) { const m = trial.ctx.project.maps[relink.fromMapId]; if (m) m.events = m.events.filter((e) => !relink!.eventIds.includes(e.id)); }
+    const graph = (trial.ctx.project as unknown as { worldGraph?: { edges?: { from?: { mapId?: string }; to?: { mapId?: string } }[] } }).worldGraph;
+    if (graph?.edges) graph.edges = graph.edges.filter((e) => !oldFloors.has(String(e.to?.mapId)) && !oldFloors.has(String(e.from?.mapId)));
+  };
   const variant = num(spec.hints?.variant);
   // 다른 배치(variant): 앞 씨앗이 없으면(도구가 맵 id 로 정함) 이름에서 씨앗을 만들어 variant 만큼 민다 — 안 그러면 세 번 고쳐도 같은 모양이었다(2026-10-23 v2 실조수).
   if (args.seed === undefined && (prev || variant)) {
@@ -506,6 +528,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
       const trial = createBuildRun({ ...run.ctx, project: cloneProjectSharingSharedDictionaries(run.ctx.project) });
       if (previous) {
         for (const id of [...(prev?.floors ?? previous.result.mapIds)].slice(1).reverse()) if (trial.ctx.project.maps[id]) trial.call("remove_map", { mapId: id });
+        dropOldGate(trial);
       }
       const r = exec(trial, { seed, ...(mapId ? { mapId } : {}), ...(previous && mapId ? { rebuild: true } : {}) }, []);
       const score = r.ok ? layoutScore(r.data as Record<string, unknown>, type, args) : -Infinity;
@@ -523,8 +546,20 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     const trial = createBuildRun({ ...run.ctx, project: cloneProjectSharingSharedDictionaries(run.ctx.project) });
     const old = prev?.floors ?? previous.result.mapIds;
     for (const id of [...old].slice(1).reverse()) if (trial.ctx.project.maps[id]) trial.call("remove_map", { mapId: id });
+    dropOldGate(trial);
     if (mapId) { base.mapId = mapId; base.rebuild = true; }
     result = exec(trial);
+    // 지운 바깥 문을 다시 지은 1층 입구와 다시 잇는다 — 짓기(make_game)가 처음 이은 방식(create_transfer_pair, 던전 쪽은 입구 칸) 그대로.
+    if (result.ok && relink) {
+      const d = (result.data ?? {}) as { floors?: string[]; entrance?: { x: number; y: number } };
+      const first = d.floors?.[0];
+      const fm = first ? trial.ctx.project.maps[first] : undefined;
+      if (fm && d.entrance) {
+        fm.events = fm.events.filter((e) => e.id !== `ev_${fm.id}_exit_placeholder`);
+        const pair = trial.call("create_transfer_pair", { a: { mapId: relink.fromMapId, x: relink.x, y: relink.y }, b: { mapId: first, x: d.entrance.x, y: d.entrance.y } });
+        if (!pair.ok) result = { ...result, ok: false, summary: `다시 지은 던전을 바깥 문과 다시 잇지 못했다: ${pair.summary}` };
+      } else result = { ...result, ok: false, summary: "다시 지은 던전의 입구 칸을 몰라 바깥 문과 다시 잇지 못했다" };
+    }
     if (result.ok) into = trial;
     else run.calls.push(...trial.calls);
   } else {

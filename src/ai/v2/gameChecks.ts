@@ -261,6 +261,33 @@ export function duplicateMaps(before: Project, after: Project): string[] {
   return out;
 }
 
+/** 날마다 달라지는 대사: 요청이 부른 사람마다 날짜 변수(호감 변수 말고) 값이 셋 이상 갈리는지(2026-10-25 G13: 서연은 7일 치, 지훈은 그대로). */
+export function flatPerDayPeople(project: Project, task: string): string[] {
+  if (!/날마다|매일|하루하루|하루마다|일차마다|날짜마다|요일마다|날이 바뀔 때마다|\d+\s*일차|each day|every day|per day/iu.test(task)) return [];
+  const people = new Map<string, { values: Set<string>; ids: string[] }>();
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    const pages = (ev.pages ?? []) as unknown as Obj[];
+    if (!pages.some((pg) => { const g = obj(pg.graphic); return !!(g && (g.sprite || g.appearanceId)); })) continue;
+    const base = String(ev.name ?? "").replace(/\s*[(（].*$/u, "").trim();
+    if (base.length < 2 || base.length > 6 || !task.includes(base)) continue;
+    const row = people.get(base) ?? { values: new Set<string>(), ids: [] };
+    row.ids.push(ev.id);
+    const note = (c: Obj) => {
+      const id = String(c.variableId ?? (c.kind === "var" ? c.id : "") ?? "");
+      if (!id || /affection|호감|love|like|heart/iu.test(id)) return;
+      const name = project.variables.find((v) => v.id === id)?.name ?? "";
+      if (/호감|affection/iu.test(name)) return;
+      row.values.add(`${id}:${String(c.value)}`);
+    };
+    for (const pg of pages) {
+      for (const c of flatConditions(pg.conditions)) note(c);
+      walkCommands(pg.commands, (cmd) => { for (const c of flatConditions(cmd.condition)) note(c); });
+    }
+    people.set(base, row);
+  }
+  return [...people.entries()].filter(([, r]) => r.values.size < 3).map(([name, r]) => `${name}(${r.ids.slice(0, 3).join(",")}: 날짜로 갈리는 대사 ${r.values.size}가지)`);
+}
+
 const WEATHER_WORDS = /비가|비\s*(가\s*)?오|빗방울|빗줄기|소나기|폭우|장마|눈이\s*(오|내|와|쌓)|눈\s*내리|함박눈|폭풍|폭설|안개|날씨|천둥 ?(이|소리|번개)|rain|snow|storm|fog|weather/iu;
 const SHAKE_WORDS = /흔들리|흔들린|흔들려|흔들어|지진|진동|쿵\s*(하|소리)|earthquake|tremor|shake/iu;
 const FLASH_WORDS = /번쩍|섬광|번개(?!\s*(의\s*서|마법|기술|스킬|주문|책|의\s*검))(?!['’」』])|빛이\s*터|flash|lightning/iu;
@@ -467,6 +494,11 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   {
     const dups = duplicateMaps(before, after);
     if (dups.length) problems.push(`[게임 검사 맵] 같은 이름·역할의 맵이 둘 있다: ${dups.slice(0, 3).join(" / ")} — 하나만 남기고 그 맵으로 가는 문을 그 하나로 모은 뒤, 남는 맵은 remove_map 으로 지운다(지울 수 없으면 이름을 바꿔 역할을 나눈다).`);
+  }
+  // 날마다 달라지는 대사를 사람마다(G13: 서연만 고치고 지훈은 그대로 두고 「다 했다」).
+  {
+    const flat = flatPerDayPeople(after, task);
+    if (flat.length) problems.push(`[게임 검사 대사] 요청은 날마다 대사가 달라지게인데 이 사람들은 날짜(일차 변수)로 갈리는 대사가 셋 미만이다: ${flat.slice(0, 4).join(" / ")} — 그 사람의 이벤트에 일차 변수 조건 페이지(1일차·2일차·3일차 이상…)를 더해 날마다 다른 말을 하게 한다(호감 단계 페이지는 따로 둔다).`);
   }
   // 셀프 스위치: 켰는데 그 이벤트 어느 페이지도 그 키를 조건으로 안 본다.
   for (const ev of changed) {
