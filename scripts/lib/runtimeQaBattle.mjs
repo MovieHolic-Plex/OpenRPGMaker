@@ -106,6 +106,8 @@ export async function battleQaOp(page, op) {
         await dumpLog(page, op, issued);
         return { issued, ended: true };
       }
+      // 결과 창(전리품·레벨 업)은 영상에서 읽히게 잠깐 둔다(op.resultHoldMs, 기본 2200ms).
+      await sleep(op.resultHoldMs ?? 2200);
       await press(page, "battle-result-confirm") || await page.keyboard.press("Enter");
       await sleep(500);
       continue;
