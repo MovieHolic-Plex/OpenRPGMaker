@@ -679,6 +679,172 @@
           "shot": true
         }
       ]
+    },
+    {
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "id": "weakness-discovery",
+      "label": "약점은 처음 맞힐 때 알게 된다 — 「약점 발견!」 → 다음 대상 고르기에 「약점」",
+      "startEventId": "qa_fight_wolves",
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 9
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 9
+        }
+      ],
+      "beats": [
+        {
+          "id": "before",
+          "note": "처음 대상 고르기 — 아직 모르므로 표시 없음",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "actor-command-skill",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 600
+            },
+            {
+              "kind": "click",
+              "testid": "actor-command-skill"
+            },
+            {
+              "kind": "waitFor",
+              "testid": "actor-skill-skill_hero_flame_sword",
+              "timeoutMs": 10000
+            },
+            {
+              "kind": "key",
+              "key": "ArrowDown"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 300
+            },
+            {
+              "kind": "click",
+              "testid": "actor-skill-skill_hero_flame_sword"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1400
+            },
+            {
+              "kind": "measureLayout",
+              "label": "reveal-before",
+              "selectors": [
+                "[data-testid='battle-weakness-reveal']"
+              ]
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "discover",
+          "note": "화염검이 늑대에 처음 맞는다 — 약점 발견!",
+          "ops": [
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 2600
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "after",
+          "note": "다음 차례 화염검 대상 고르기 — 알아낸 늑대 위에 「약점」",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_fs_elena": [
+                  "defend"
+                ]
+              },
+              "commands": 1,
+              "timeoutMs": 60000,
+              "fallback": "defend"
+            },
+            {
+              "kind": "waitFor",
+              "testid": "actor-command-skill",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 600
+            },
+            {
+              "kind": "click",
+              "testid": "actor-command-skill"
+            },
+            {
+              "kind": "waitFor",
+              "testid": "actor-skill-skill_hero_flame_sword",
+              "timeoutMs": 10000
+            },
+            {
+              "kind": "click",
+              "testid": "actor-skill-skill_hero_flame_sword"
+            },
+            {
+              "kind": "waitFor",
+              "testid": "battle-weakness-reveal",
+              "timeoutMs": 10000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1600
+            },
+            {
+              "kind": "measureLayout",
+              "label": "reveal-after",
+              "selectors": [
+                "[data-testid='battle-weakness-reveal']"
+              ]
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "hit-again",
+          "note": "다시 맞히면 보통 「약점!」",
+          "ops": [
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 2600
+            }
+          ],
+          "shot": true
+        }
+      ]
     }
   ]
 }

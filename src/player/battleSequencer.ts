@@ -78,6 +78,8 @@ export interface DamageFeedback {
   readonly weaponAffinity?: boolean;
   /** 약점 공략 타격(SkillRecord.exploitStates). 숫자 아래 「공략!」 꼬리표. */
   readonly exploit?: boolean;
+  /** 이 적 종류의 약점·저항을 처음 알아낸 타격 — 꼬리표가 「약점 발견!」·「저항 발견!」으로 커진다. */
+  readonly weaknessDiscovered?: boolean;
   /** 숫자 대신 띄울 글자(상태 부여 「스톱」 등). 있으면 HP 원장·타격 연출·효과음을 건드리지 않는
    *  **표시 전용** 팝업이다(battleDom.onDamageFeedback 이 일찍 돌아간다). */
   readonly label?: string;
@@ -309,6 +311,7 @@ export function createBattleSequencer(
       ...(entry.effectiveness !== undefined && !healing ? { effectiveness: entry.effectiveness } : {}),
       ...(entry.weaponAffinity && !healing ? { weaponAffinity: true } : {}),
       ...(entry.exploit && !healing ? { exploit: true } : {}),
+      ...(entry.weaknessDiscovered && !healing ? { weaknessDiscovered: true } : {}),
     };
   }
 

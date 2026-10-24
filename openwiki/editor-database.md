@@ -2656,3 +2656,4 @@ CSS로 접힌 작은 창·도크 상태에서는 참조 변경을 계속 반영�
 - 스킬 「전투 규칙」 카드에 **약점 공략** 셋(`feature16-exploit-state`·`-bonus`·`-consume`). 상태 하나 고르기 UI 이고, 여러 상태는 조수 도구로(카드가 「외 N개」를 보인다).
 - 「전투 화면」 탭에 **레벨 업 · 기술 습득 연출** 카드(`db-battle-fanfare-card`): 세기·LEVEL UP 배너·새 기술 카드·새 연계기 카드·소리 → `system.battleFanfare`.
 - (2026-10-25, fs-battle-3) 「전투 화면」 탭 **전투 연출** 카드(`db-battle-staging-card`): `db-battle-staging-lunge`·`-cutin`·`-fx`·`-hint` → `system.battleStaging`. 적 탭 「달려드는 속도 (%)」 슬라이더(`db-field-enemy-lunge-speed`, 25~300, 100 이면 필드 삭제). 연계기 카드 안 접힌 「컷인 · 착탄 연출」(`db-combo-tint-<id>` 색, 흔들림, 느린 화면, 작은 글) → `SkillRecord.comboStaging`(`updateSkillRecord` 화이트리스트).
+- (2026-10-25) 「전투 연출」 카드에 **적 약점 표시** 고르기(`db-battle-staging-reveal-weakness`: 안 보임 · 알아낸 뒤에만(기본) · 처음부터) → `system.battleStaging.revealWeakness`.

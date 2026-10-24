@@ -154,7 +154,8 @@ export function skillHelpOneLiner(project: Project, skill: SkillRecord, user?: S
   if (skill.elementId) parts.push(elementName(project, skill.elementId));
   const hooks: string[] = [];
   const effect = skill.effect;
-  if (skill.exploitStates?.stateIds.length) hooks.push(`${stateName(project, skill.exploitStates.stateIds[0]!)} 노림`);
+  // 기술 자신의 조건부 위력(「둔해진 적 +50%」)이다 — 지금 대상이 무엇에 약한지는 절대 말하지 않는다(약점은 처음 맞혀서 알게 된다, weaknessDiscovery.ts).
+  if (skill.exploitStates?.stateIds.length) hooks.push(`${stateName(project, skill.exploitStates.stateIds[0]!)} +${skill.exploitStates.bonusPercent}%`);
   const added = (skill.stateEffects ?? []).filter((row) => row.operation === "add");
   const removed = (skill.stateEffects ?? []).filter((row) => row.operation === "remove");
   for (const row of added.slice(0, 2)) hooks.push(stateName(project, row.stateId));

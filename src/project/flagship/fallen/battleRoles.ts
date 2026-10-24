@@ -89,7 +89,7 @@ export function applyFallenBattleRoles(project: Project): void {
   });
   tune("skill_hero_flame_sword", {
     power: 78, elementId: "fire",
-    description: "불 속성 베기. 늑대(약점)·거미·이끼 슬라임에게. 도깨비불엔 무효.",
+    description: "불 속성 베기.",
   });
   tune("skill_focus", {
     description: "자기 공격을 두 배로(공격 상승). 다음 큰 기술 전에.",
@@ -98,11 +98,11 @@ export function applyFallenBattleRoles(project: Project): void {
   // ── 엘레나(마도학자): 광역 · 상태 · 치유/재생 · MP 회복 ───────────────────────
   tune("skill_arcane_bolt", {
     power: 58, mpCost: { flat: 2, percentMax: 0 },
-    description: "MP 2. 가장 싼 공격 마법(무속성 — 저항도 약점도 없다).",
+    description: "MP 2. 가장 싼 공격 마법(무속성).",
   });
   tune("skill_mage_fireball", {
     power: 80, elementId: "fire", mpCost: { flat: 5, percentMax: 0 },
-    description: "불 속성 한 대상 강타. 늑대·이끼 슬라임 약점.",
+    description: "불 속성 한 대상 강타.",
   });
   tune("skill_mage_blizzard", {
     power: 54, elementId: "ice", mpCost: { flat: 10, percentMax: 0 },
@@ -112,7 +112,7 @@ export function applyFallenBattleRoles(project: Project): void {
   tune("skill_mage_chain_lightning", {
     power: 50, elementId: "thunder", mpCost: { flat: 12, percentMax: 0 },
     stateEffects: [{ stateId: "state_paralysis", chance: 25, operation: "add" }],
-    description: "적 전체 번개 + 25% 마비. 딱정벌레·수호상 약점.",
+    description: "적 전체 번개 + 25% 마비.",
   });
   tune("skill_sleep_mist", {
     mpCost: { flat: 4, percentMax: 0 }, stateEffects: [{ stateId: "state_sleep", chance: 85, operation: "add" }],
@@ -169,12 +169,12 @@ export function applyFallenBattleRoles(project: Project): void {
   });
   tune("skill_gunner_rapid_fire", {
     name: "광자 연사", power: 26, elementId: "bow", hitSequence: [1, 1, 1, 1], mpCost: { flat: 4, percentMax: 0 }, weaponAffinity: rodBond,
-    description: "약한 빛 네 발(사출봉 +40%). 말벌·나방 같은 무른 적에. 잠든 적은 깬다.",
+    description: "약한 빛 네 발(사출봉 +40%). 잠든 적은 깬다.",
   });
   tune("skill_gunner_snipe", {
     name: "충전 광선포", power: 120, elementId: "holy", animationId: "anim_gen_holy_beam", chargeTurns: 1,
     damageFormula: "power + a.atk * 1.4", mpCost: { flat: 6, percentMax: 0 },
-    description: "한 차례 빛을 모아 일직선을 꿰뚫는다(방어 무시·빛). 유령 약점.",
+    description: "한 차례 빛을 모아 일직선을 꿰뚫는다(방어 무시·빛).",
   });
   tune("skill_gunner_butt_strike", {
     name: "봉 내려치기", power: 50, elementId: "hit", stateEffects: [{ stateId: "state_stop", chance: 60, operation: "add" }],
@@ -184,7 +184,7 @@ export function applyFallenBattleRoles(project: Project): void {
   tune("skill_gunner_grenade", { name: "성광탄", weaponAffinity: { elementIds: ["bow"], bonusPercent: 25 },
     description: "적 전체에 터지는 빛 구슬(사출봉 +25%)." });
   tune("skill_gunner_flare", { name: "섬광 신호", description: "아군 전체 민첩 상승. 먼저 움직여야 할 때." });
-  tune("skill_gunner_spin_fire", { name: "회전 열선", description: "적 전체 불 속성 열선. 말벌·나방·식충초 약점." });
+  tune("skill_gunner_spin_fire", { name: "회전 열선", description: "적 전체 불 속성 열선." });
   tune("skill_gunner_volley", { name: "유성 일제사격", weaponAffinity: { elementIds: ["bow"], bonusPercent: 25 },
     description: "필살기. 적 전체에 유성 같은 빛을 쏟는다(사출봉 +25%)." });
   // 카엘·엘레나도 직업 이름을 역할에 맞춘다 — 카엘은 검이 주 무기, 창으로 바꾸면 찌르기가 세진다. 엘레나는 지팡이로 마력을 올리고 마법은 무기 공명이 없다.
