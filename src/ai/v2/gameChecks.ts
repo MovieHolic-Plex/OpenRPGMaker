@@ -298,6 +298,12 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     const idle = newDeclared.filter((id) => !/^sw_ev_.+_clear$/u.test(id) && !everywhere.includes(`"${id}"`) && !everywhere.includes(`[${id}]`));
     if (idle.length) problems.push(`[게임 검사 깃발] 선언만 하고 어디서도 쓰지 않는 깃발: ${idle.slice(0, 6).join(", ")} — 쓰거나 지운다.`);
   }
+  // 연계기(두세 사람이 같이 쓰는 기술): 요청에 있는데 새/바뀐 연계 기록(comboActorIds 2명 이상)이 없다 — 평범한 기술 두 개로 흉내 내지 않는다(2026-10-25 데모 과업).
+  if (/연계|합체기|협동 기술|콤보 기술|같이 쓰는 (기술|필살기)|combo/iu.test(task)) {
+    const prior = new Map(before.database.skills.map((sk) => [sk.id, JSON.stringify(sk)]));
+    const combo = after.database.skills.some((sk) => (sk.comboActorIds?.length ?? 0) >= 2 && prior.get(sk.id) !== JSON.stringify(sk));
+    if (!combo) problems.push("[게임 검사 연계기] 요청에 연계기가 있는데 새로 만든 연계 기록이 없다(평범한 기술은 「연계」 명령에 안 뜬다). upsert_combo_tech{id:'skill_combo_…', name, actorIds:[두 배우], mpCosts, scope, power} 로 만들고, 참가 배우가 파티에 없으면 set_party 로 넣는다.");
+  }
   return problems;
 }
 
