@@ -4,7 +4,7 @@
 
 import { store } from "@/project/store";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
-import { readDialogueDesk, removeDialogueProposals, writeSpeakerVoice, type DialogueProposal } from "@/project/dialogueDesk";
+import { readDialogueDesk, removeDialogueProposals, writeSceneNotes, writeSpeakerVoice, type DialogueProposal } from "@/project/dialogueDesk";
 import { applyDialogueEdits, checkDialogueEdit, type DialogueEditVerdict } from "./dialogueEdits";
 import { collectDialogueLines } from "./dialogueIndex";
 
@@ -83,4 +83,14 @@ export function setSpeakerVoiceNote(speaker: string, note: string): "set" | "cle
   recordProjectSnapshot(label);
   store.update((draft) => { result = writeSpeakerVoice(draft, speaker, note); }, { scope: "project", label, origin: "human" });
   return result;
+}
+
+/** 「대본」 장면 한 줄 요약을 사람이 고친다(빈 글이면 지워 자동 요약으로 돌아간다). */
+export function setSceneSummary(sceneId: string, summary: string): boolean {
+  const probe = structuredClone({ dialogueDesk: store.getCurrent().dialogueDesk });
+  if (writeSceneNotes(probe, [{ sceneId, summary }], "human") === 0) return false;
+  const label = `장면 요약: ${preview(summary) || "지움"}`;
+  recordProjectSnapshot(label);
+  store.update((draft) => { writeSceneNotes(draft, [{ sceneId, summary }], "human"); }, { scope: "project", label, origin: "human" });
+  return true;
 }
