@@ -7,7 +7,9 @@ the median cast-fit score, a majority vote on "same artist", and per-expression 
 
 Single-subject packets: the reviewer sees the cast (without the subject), the cast with the subject inserted at a random
 position (1x and 3x), and the subject's expressions at 4x. It is never told what the subject is or how it was made.
-Endpoint: OpenAI-compatible chat completions with images (default the local Argon queue). Key from $OPRN_LIVE_KEY only.
+Endpoint: OpenAI-compatible chat completions with images (default the local Argon queue). Key from the environment only:
+$OPRN_LIVE_KEY, else $ANTHROPIC_AUTH_TOKEN (the bearer agents already have; works against 8318/8319). Never print it, and never
+open the proxy's config file (~/.config/cli-proxy-api/config.yaml) to look for a key — standing rule.
 """
 import base64, concurrent.futures as cf, io, json, os, random, re, statistics, time, urllib.request
 from PIL import Image, ImageDraw
@@ -55,8 +57,8 @@ Reply with JSON only:
 
 
 def call(images, text, timeout=600, tries=3):
-    key = os.environ.get('OPRN_LIVE_KEY')
-    if not key: raise SystemExit('OPRN_LIVE_KEY is not set (key of the local Argon proxy; never print or commit it)')
+    key = os.environ.get('OPRN_LIVE_KEY') or os.environ.get('ANTHROPIC_AUTH_TOKEN')
+    if not key: raise SystemExit('no reviewer key in the environment: set OPRN_LIVE_KEY or ANTHROPIC_AUTH_TOKEN (never print it; do not read the proxy config file)')
     body = {'model': MODEL, 'messages': [{'role': 'user', 'content': [{'type': 'text', 'text': text}] + [{'type': 'image_url', 'image_url': {'url': png_uri(i)}} for i in images]}]}
     last = None
     for k in range(tries):
