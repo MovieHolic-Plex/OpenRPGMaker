@@ -79,13 +79,15 @@ export function mountHostFullscreenToggle(options: FullscreenToggleOptions): (()
   const hostAsked = Boolean(bridge && bridge.hostFeatures.includes("fullscreen"));
   // iframe 에 allow="fullscreen" 이 없으면 fullscreenEnabled=false → 자동 노출하지 않는다.
   const autoAllowed = options.autoOnTouch === true && (doc as { fullscreenEnabled?: boolean }).fullscreenEnabled === true;
-  if (!hostAsked && !autoAllowed) return null;
-  if (
-    typeof (fullscreenRoot as { requestFullscreen?: unknown }).requestFullscreen !== "function"
-    || typeof (doc as { exitFullscreen?: unknown }).exitFullscreen !== "function"
-  ) {
-    return null;
+  const apiMissing = typeof (fullscreenRoot as { requestFullscreen?: unknown }).requestFullscreen !== "function"
+    || typeof (doc as { exitFullscreen?: unknown }).exitFullscreen !== "function";
+  // 아이폰 사파리는 Fullscreen API 가 없다(아이패드만 있다) — 같은 자리에 「홈 화면에 추가」 안내 단추를 둔다.
+  // 홈 화면에서 열면 주소창·도구 막대 없이 화면 전체가 게임이 된다(2026-10-25 가로 화면 작음 신고).
+  if (options.autoOnTouch === true && (apiMissing || (doc as { fullscreenEnabled?: boolean }).fullscreenEnabled !== true) && needsHomeScreenHint(doc)) {
+    return mountHomeScreenHint(viewport);
   }
+  if (!hostAsked && !autoAllowed) return null;
+  if (apiMissing) return null;
 
   const button = el("button", {
     class: "play-fullscreen-toggle",
@@ -141,4 +143,48 @@ export function mountHostFullscreenToggle(options: FullscreenToggleOptions): (()
     doc.removeEventListener("fullscreenchange", syncState);
     button.remove();
   };
+}
+
+/** 홈 화면 앱으로 이미 열려 있으면(standalone) 안내하지 않는다. 아이폰·아이팟 사파리만(안드로이드 크롬은 Fullscreen API 가 있다). */
+function needsHomeScreenHint(doc: Document): boolean {
+  const view = doc.defaultView;
+  if (!view) return false;
+  const nav = view.navigator as Navigator & { standalone?: boolean };
+  if (nav.standalone === true) return false;
+  try { if (view.matchMedia?.("(display-mode: standalone)").matches || view.matchMedia?.("(display-mode: fullscreen)").matches) return false; } catch { /* 옛 브라우저 */ }
+  return /iPhone|iPod/.test(nav.userAgent ?? "");
+}
+
+function hintText(lang: string): string {
+  const l = lang.toLowerCase();
+  if (l.startsWith("ko")) return "주소창 없이 화면 가득 하려면: 사파리 공유 단추 → 「홈 화면에 추가」 → 홈 화면 아이콘으로 여세요.";
+  if (l.startsWith("ja")) return "アドレスバーなしの全画面にするには：Safari の共有ボタン →「ホーム画面に追加」→ ホーム画面のアイコンから開いてください。";
+  if (l.startsWith("zh")) return "要去掉地址栏全屏游玩：Safari 分享按钮 →「添加到主屏幕」→ 从主屏幕图标打开。";
+  return "For full screen without the address bar: Safari Share → \"Add to Home Screen\", then open it from the home-screen icon.";
+}
+
+function mountHomeScreenHint(viewport: HTMLElement): () => void {
+  const doc = viewport.ownerDocument;
+  const lang = doc.defaultView?.navigator.language ?? "en";
+  const button = el("button", {
+    class: "play-fullscreen-toggle",
+    text: "⛶",
+    dataset: { testid: "play-fullscreen-toggle", playInputOwner: "host-fullscreen", hint: "home-screen" },
+    attrs: { type: "button", tabindex: "-1", "aria-label": hintText(lang) },
+  });
+  let toast: HTMLElement | null = null;
+  let timer = 0;
+  const hide = (): void => { toast?.remove(); toast = null; window.clearTimeout(timer); };
+  const onPointerDown = (event: Event): void => { event.preventDefault(); };
+  const onClick = (): void => {
+    if (toast) { hide(); return; }
+    toast = el("div", { class: "play-home-screen-hint", text: hintText(lang), dataset: { testid: "play-home-screen-hint" } });
+    toast.addEventListener("pointerdown", (event) => { event.preventDefault(); hide(); });
+    viewport.append(toast);
+    timer = window.setTimeout(hide, 7000);
+  };
+  button.addEventListener("pointerdown", onPointerDown);
+  button.addEventListener("click", onClick);
+  viewport.append(button);
+  return () => { hide(); button.remove(); };
 }
