@@ -95,7 +95,7 @@ function evalPageCondition(
     case "gold":
       return compareVariableValue(session.gold ?? 0, condition.op, condition.amount);
     case "timer":
-      return ((session.timers ?? {})[condition.timerId] ?? 0) <= condition.seconds;
+      return compareVariableValue((session.timers ?? {})[condition.timerId] ?? 0, condition.op ?? "<=", condition.seconds);
     case "timePhase":
       return conditionMatchesTimePhase(session.gameTime, condition.phase);
     case "season":
