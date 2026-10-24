@@ -179,6 +179,21 @@ async function openPage(browser, seg, checkpoint) {
       await page.goto(`${server.url}/player.html`, { waitUntil: "domcontentloaded", timeout: 240000 });
     }
   } else {
+    const overrides = arg("store-overrides", "");
+    if (overrides) {
+      // 스토어 저장소 작업 트리의 app.css·game.js 와 플레이 페이지 틀 변경(sandbox·viewport)을 운영 페이지에 덧입혀 미리 본다.
+      await page.route(/\/static\/(app\.css|game\.js)/, (route) => {
+        const name = new URL(route.request().url()).pathname.endsWith(".css") ? "app.css" : "game.js";
+        return route.fulfill({ status: 200, contentType: name.endsWith(".css") ? "text/css" : "text/javascript", path: join(overrides, "public", name) });
+      });
+      await page.route((u) => u.href === URL_, async (route) => {
+        const res = await route.fetch();
+        let html = await res.text();
+        html = html.replace('content="width=device-width,initial-scale=1"', 'content="width=device-width,initial-scale=1,viewport-fit=cover"')
+          .replace('sandbox="allow-scripts allow-same-origin allow-pointer-lock"', 'sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-orientation-lock"');
+        return route.fulfill({ response: res, body: html });
+      });
+    }
     await page.goto(URL_, { waitUntil: "domcontentloaded", timeout: 120000 });
   }
   return { ctx, page, dir };
@@ -218,7 +233,8 @@ const SEGMENTS = {
     await closePage(ctx, "title", dir);
   },
   async field(browser) {
-    const { ctx, page, dir } = await openPage(browser, "field", cp("hub-start"));
+    const hub = cp("hub-start");
+    const { ctx, page, dir } = await openPage(browser, "field", { ...hub, items: { ...(hub.items ?? {}), equip_iron_sword: 1 } });
     note("field", "boot", await waitBoot(page, true));
     await sleep(2500);
     const cdp = isWebkit ? null : await ctx.newCDPSession(page);
@@ -295,6 +311,11 @@ const SEGMENTS = {
       for (let i = 0; i < 3; i++) { await tapSel(page, "[data-testid='touch-action-a']", 900); }
       const afterPick = await gameFrame(page).evaluate(() => document.querySelector("[data-testid='main-menu']")?.textContent?.replace(/\s+/g, " "));
       note("field", "equip-changed", before !== afterPick, (afterPick ?? "").slice(0, 200));
+      // 무기 칸 → 철 검 탭으로 장착(목록 줄을 직접 탭).
+      const picked = await tapText(page, /철 검/);
+      await sleep(900);
+      const equipped = await gameFrame(page).evaluate(() => document.querySelector("[data-testid='main-menu']")?.textContent?.replace(/\s+/g, " "));
+      note("field", "equip-iron-sword", picked && /무기\s*철 검/.test(equipped ?? ""), (equipped ?? "").match(/장비:.{0,60}/)?.[0] ?? "");
       await shot(page, "field", "7-equip-pick");
       const sig = await gameFrame(page).evaluate(() => document.querySelector("[data-testid='main-menu']")?.textContent?.replace(/\s+/g, " ").slice(0, 160));
       note("field", "equip-screen", /장비|무기|방어|머리|몸|장신/.test(sig ?? ""), sig);
@@ -302,6 +323,24 @@ const SEGMENTS = {
       note("field", "menu-closed-by-B", !(await has(page, "[data-testid='main-menu']")));
     }
     await closePage(ctx, "field", dir);
+  },
+  async choice(browser) {
+    const { ctx, page, dir } = await openPage(browser, "choice", cp("hanel-h1"));
+    note("choice", "boot", await waitBoot(page, true));
+    await sleep(2500);
+    let r = false;
+    for (let i = 0; i < 6 && r !== "choices"; i++) {
+      await tapSel(page, "[data-testid='touch-action-a']", 1000);
+      r = await advanceDialogue(page, "choice", () => has(page, ".choices-active"), 20);
+      if (await has(page, ".choices-active")) r = "choices";
+    }
+    note("choice", "choices-shown", r === "choices" || r === true);
+    await shot(page, "choice", "1-choices");
+    await padCheck(page, "choice", "choices");
+    const ok = await tapSel(page, ".choices-active [role='menuitem'], .choices-active li, .choices-active button", 1200);
+    note("choice", "choice-tapped-closes", ok && !(await has(page, ".choices-active")));
+    await shot(page, "choice", "2-after-choice");
+    await closePage(ctx, "choice", dir);
   },
   async shop(browser) {
     const { ctx, page, dir } = await openPage(browser, "shop", SHOP);
