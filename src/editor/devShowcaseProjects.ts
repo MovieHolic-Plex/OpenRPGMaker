@@ -1,3 +1,4 @@
+import { loadBakedFlagshipDemo } from "@/editor/flagshipDemoLoader";
 import { createBlankProject } from "@/project/defaults";
 import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import type { FlagshipDemoBuildResult, FlagshipDemoId } from "@/project/flagship/types";
@@ -35,20 +36,6 @@ export async function prepareDevShowcaseProjectFactory(): Promise<() => Project 
   if (baked) return () => baked;
   const { createFlagshipDemoProject } = await import("@/project/flagship");
   return () => createDevShowcaseProjectForLocation(createFlagshipDemoProject);
-}
-
-async function loadBakedFlagshipDemo(id: FlagshipDemoId): Promise<Project | null> {
-  if (import.meta.env.DEV) return null;
-  try {
-    const response = await fetch(new URL(`demos/${id}.project.json`, document.baseURI));
-    // 정적 호스트의 SPA 폴백(HTML 200)은 구운 파일이 아니다.
-    if (!response.ok || !(response.headers.get("content-type") ?? "").includes("json")) return null;
-    const { deserialize } = await import("@/project/io");
-    return deserialize(await response.text());
-  } catch (error) {
-    console.warn("[demo] 구운 데모를 읽지 못해 직접 짓습니다:", error);
-    return null;
-  }
 }
 
 export function createDevShowcaseProjectForLocation(buildFlagship?: FlagshipBuilder): Project | null {

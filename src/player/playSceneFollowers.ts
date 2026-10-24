@@ -63,6 +63,39 @@ function lerp(start: number, end: number, progress: number): number {
   return start + (end - start) * progress;
 }
 
+const VIA_EPS = 1e-3;
+
+/** 두 축이 다 바뀌는 이동이면 한 축씩 꺾어 가는 경유 칸을 돌려준다(걸어온 쪽 축을 먼저). 사방 인접이면 없음. */
+function viaCorner(
+  from: { readonly x: number; readonly y: number },
+  to: { readonly x: number; readonly y: number },
+  facing: Dir | undefined
+): { x: number; y: number } | undefined {
+  if (Math.abs(to.x - from.x) < VIA_EPS || Math.abs(to.y - from.y) < VIA_EPS) return undefined;
+  const horizontalFirst = facing === "left" || facing === "right";
+  return horizontalFirst ? { x: to.x, y: from.y } : { x: from.x, y: to.y };
+}
+
+/** 걸음 경로(직선 또는 from→via→to) 위의 진행도 p 지점과 그 지점에서 걷는 방향. */
+function pathAt(motion: FollowerSlotMotion, progress: number): { x: number; y: number; dir: Dir | undefined } {
+  const p = Math.max(0, Math.min(1, progress));
+  const { from, to, via } = motion;
+  if (!via) {
+    const dir = from.x === to.x && from.y === to.y ? undefined : stepDirection(from, to);
+    return { x: lerp(from.x, to.x, p), y: lerp(from.y, to.y, p), dir };
+  }
+  const len1 = Math.abs(via.x - from.x) + Math.abs(via.y - from.y);
+  const len2 = Math.abs(to.x - via.x) + Math.abs(to.y - via.y);
+  const total = len1 + len2;
+  const d = p * total;
+  if (d <= len1 && len1 > 0) {
+    const t = d / len1;
+    return { x: lerp(from.x, via.x, t), y: lerp(from.y, via.y, t), dir: stepDirection(from, via) };
+  }
+  const t = len2 > 0 ? (d - len1) / len2 : 1;
+  return { x: lerp(via.x, to.x, t), y: lerp(via.y, to.y, t), dir: len2 > 0 ? stepDirection(via, to) : undefined };
+}
+
 /** 슬롯이 그대로면 유지, 바뀌면 직전 슬롯(또는 걷던 자리)에서 이번 슬롯으로 새 걸음을 연다. */
 function nextFollowerMotion(
   key: string,
@@ -81,7 +114,8 @@ function nextFollowerMotion(
   const from = last ? (last.lockToHero ? last.to : lerpFollower(last, now) ?? last.to) : standing ?? position;
   // 제자리(주인공이 돌아서기만 함)는 걸음이 아니다 — 0칸 걸음을 열면 320ms 동안 발만 구른다.
   if (!last && from.x === position.x && from.y === position.y) return null;
-  const motion: FollowerSlotMotion = { from, to: position, startedAt: now, durationMs, ...(lockToHero ? { lockToHero: true } : {}) };
+  const via = viaCorner(from, position, followerRenderState.get(key)?.direction);
+  const motion: FollowerSlotMotion = { from, to: position, startedAt: now, durationMs, ...(via ? { via } : {}), ...(lockToHero ? { lockToHero: true } : {}) };
   followerSlotMotion.set(key, motion);
   return motion;
 }
@@ -96,7 +130,8 @@ function motionProgress(scene: Pick<PlaySceneContext, "moving" | "moveProgress">
 function lerpFollower(motion: FollowerSlotMotion, now: number): { x: number; y: number } | null {
   const progress = (now - motion.startedAt) / motion.durationMs;
   if (progress >= 1) return null;
-  return { x: lerp(motion.from.x, motion.to.x, progress), y: lerp(motion.from.y, motion.to.y, progress) };
+  const at = pathAt(motion, progress);
+  return { x: at.x, y: at.y };
 }
 
 /** NPC·간판이 선 칸은 동료 자리로 주지 않는다 — 걷는 NPC 와 같은 칸에 겹쳐 서는 것을 막는다. */
@@ -173,13 +208,12 @@ export function syncFollowerSprites(
     }
     const motion = options?.snap || position.hidden || reappearing ? null : nextFollowerMotion(key, position, now, stepDurationMs, options?.heroAt !== undefined);
     const progress = motion ? motionProgress(scene, motion, now) : 0;
-    const spriteTile = motion
-      ? { x: lerp(motion.from.x, motion.to.x, progress), y: lerp(motion.from.y, motion.to.y, progress) }
-      : position;
+    const pathNow = motion ? pathAt(motion, progress) : undefined;
+    const spriteTile = pathNow ? { x: pathNow.x, y: pathNow.y } : position;
     const texture = resolveEventSpriteTexture(project, spriteRef.id, position.follower.graphic.pattern);
     // 걷는 동안은 걸어가는 쪽을 본다(궤적 점의 방향은 주인공이 그 칸을 **떠난** 방향이라 모퉁이에서 한 칸 일찍 돈다).
     // 서 있으면 마지막으로 걸어온 쪽을 그대로 본다 — 장면 중(sceneFacing)만 궤적 계산의 방향을 따른다.
-    const walkDir = motion && (motion.from.x !== motion.to.x || motion.from.y !== motion.to.y) ? stepDirection(motion.from, motion.to) : undefined;
+    const walkDir = pathNow?.dir;
     const kept = followerRenderState.get(key)?.direction;
     // 다시 나타나는 동료는 주인공과 같은 쪽을 본다(주인공을 따라 문을 나서는 중이다).
     const direction = scene.running
@@ -287,8 +321,9 @@ export function updateFollowerSpriteMotion(scene: PlaySceneContext, deltaMs: num
     return best;
   };
   for (const [key, sprite] of ordered) {
-    const state = followerRenderState.get(key);
-    if (!state) continue;
+    const initialState = followerRenderState.get(key);
+    if (!initialState) continue;
+    let state: FollowerRenderState = initialState;
     const emerging = followerEmerging.get(key);
     if (emerging !== undefined) {
       const hero = bodies.get("hero");
@@ -313,7 +348,8 @@ export function updateFollowerSpriteMotion(scene: PlaySceneContext, deltaMs: num
       // 남의 몸 안으로 더 파고드는 걸음이면 이번 프레임은 제자리 — 시계를 미뤄서 나중에 끊김 없이 이어 걷는다.
       // 이미 붙어 있어도 멀어지는 걸음은 그대로 간다.
       const progress = (now - motion.startedAt) / motion.durationMs;
-      const nextX = lerp(motion.from.x, motion.to.x, progress), nextY = lerp(motion.from.y, motion.to.y, progress);
+      const nextAt = pathAt(motion, progress);
+      const nextX = nextAt.x, nextY = nextAt.y;
       const hereX = sprite.x / size - 0.5, hereY = sprite.y / size - 1;
       const ahead = nearest(key, nextX, nextY, bodies);
       const rest = nearest(key, nextX, nextY, resting);
@@ -328,12 +364,18 @@ export function updateFollowerSpriteMotion(scene: PlaySceneContext, deltaMs: num
     const progressNow = motion ? motionProgress(scene, motion, now) : 1;
     if (motion && progressNow < 1) {
       const progress = progressNow;
+      const at = pathAt(motion, progress);
       sprite.setPosition(
-        characterSpriteX(lerp(motion.from.x, motion.to.x, progress), mapTileSize(scene.map)),
-        characterSpriteY(lerp(motion.from.y, motion.to.y, progress), mapTileSize(scene.map))
+        characterSpriteX(at.x, mapTileSize(scene.map)),
+        characterSpriteY(at.y, mapTileSize(scene.map))
       );
       updateCharacterDepth(sprite, "same");
       keepHeroInFront(scene, sprite, state.idleStep === true);
+      // 모퉁이(via)를 지나면 두 번째 구간 방향으로 몸을 돌린다 — 대각으로 미끄러지며 엉뚱한 쪽을 보지 않게.
+      if (at.dir && at.dir !== state.direction) {
+        state = { ...state, direction: at.dir };
+        followerRenderState.set(key, state);
+      }
       if (state.isCharset) {
         const walkElapsed = (followerWalkElapsedMs.get(key) ?? 0) + Math.max(0, deltaMs);
         followerWalkElapsedMs.set(key, walkElapsed);

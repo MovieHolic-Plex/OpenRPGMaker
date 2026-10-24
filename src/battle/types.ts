@@ -642,6 +642,9 @@ export interface BattleSnapshot {
   readonly backdropResourceId?: string;
   readonly turn: number;
   readonly strictRound: number;
+  /** 파티가 확정해 실행한 명령 수. gauge 에서 전투 길이의 정본 — turn(사이클)은 적 게이지가 느리면
+   *  한 사이클에 파티가 여러 번 명령하므로 플레이어가 센 「턴」과 어긋난다. */
+  readonly partyCommandRounds?: number;
   readonly strictPendingActorIds: readonly ActorId[];
   readonly strictQueuedActorIds: readonly ActorId[];
   readonly eventState: BattleEventStateSnapshot;

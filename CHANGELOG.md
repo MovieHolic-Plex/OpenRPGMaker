@@ -5,6 +5,72 @@
 
 <!-- releases -->
 
+## 0.326.0 — 2026-10-24
+
+### 기능
+
+- **assistant-v2** — variety — same request no longer gives the same map; dungeon layout spread families and gate/stairs entrance; includes dungeon-themes @9f9ab6c60f (default off) (#3304) (`7752501`)
+- **assistant-v2** — round 6 — speed (one repair round, own-map critics), plain dungeon variety, cutscene staging fix (default off) (#3303) (`6c0be78`)
+- **assistant-v2** — round 4 — bosses drawn 2.5x with a 3x2 body, residential alleys keep a residential layout, outdoor people stand beside the road, modern-stage hero dressed as a schoolboy (default off) (#3298) (`7f2020f`)
+- **assistant-v2** — round 3 — themed dungeons, framed north back door, refused patch costs a round, monster town title hint (default off) (#3294) (`86eec51`)
+- **assistant-v2** — round 2 — interior venues, edit-in-place with north back door, simulated cutscene staging, place words, monster town and romance scene (default off) (#3290) (`8b2c791`)
+- **qa** — agent play sessions on the shipped player + save-anchored regression scenarios (#3289) (`498945e`)
+- **runtime** — natural town life — NPC strolls, free-flying birds, HGSS one-tile monster follower (#3288) (`115531f`)
+- **dungeon-themes** — bake theme art (arcane, earth, r2 lava) and wire it into the builder (#3287) (`9aa0536`)
+- **dungeon-themes** — 12 dungeon themes in the builder + first theme art bake (forest, ice, swamp, pyramid) (#3285) (`7e65f15`)
+- **assistant-v2** — opt-in v2 assistant (spec → deterministic builders → independent critic), default off (#3284) (`90a497d`)
+- **beodeul-dungeon** — gap pieces — rock/water/ice floor/door/lever/goblin camp/tower kit baked and wired (#3283) (`6a71413`)
+- **astra** — redraw NPC dialogue portraits as clean 64x64 GBA-style busts (#3282) (`4406825`)
+- **dungeon** — assistant dungeons 2 — crop void, always an exit, tower/liquid/boss themes, fixed judge brief (#3281) (`c7f21c5`)
+- **assistant-capability** — 500-command family matrix with judge self-check and a pinned OpenAI-compatible model (#3272) (`411bcda`)
+- **workshop** — one-click objects pass the 3/4 gate; faster object path; minor UX fixes (#3280) (`7ab99db`)
+- **dungeon** — assistant builds working multi-floor, populated dungeons (stairs, counts, lever gate, flood, lair) (#3278) (`1cc1a19`)
+- **fallen-star** — playable royal town matching the opening art, proclamation and two-abreast escort, five interiors, crash-site scorch trail (#3277) (`1c72caf`)
+- **workshop** — one-click 공방 — object, character, terrain from one line (#3276) (`2430ced`)
+- **beodeul-wall** — redraw town wall 3rd edition — 3/4 depth, texture, posterns, biome variants (#3273) (`362cf1b`)
+- **astra** — install r5b battle trainer sprites + trainer-intro staging fixes (#3225) (`7ce0c34`)
+- **wizarding** — redraw the six stair kits (up = north-wall doorway, down = floor stairwell) (#3264) (`75e1e01`)
+- **jp-city** — redraw interior stairs (13 kits) with explicit up/down direction (#3270) (`9102060`)
+- **interior-v5** — redraw stairs up stone/wood, stairs down, stairwell down so up/down reads at 1x; descriptions state direction, entry side, facing, arrival (#3267) (`bf743c3`)
+- **ai** — village types by era — catalog, find_village_type, honest needs-art, quarter dressing, moonbase recompose (#3265) (`9497aee`)
+
+### 수정
+
+- **runtime** — followers keep the leader's trail and corner diagonal slot changes with correct facing (#3308) (`74b07b4`)
+- **player** — battle entry waits for first-frame art (readiness gate) + map prefetch of battle assets (#3306) (`f2a01c8`)
+- **player** — keep keyboard focus inside the game when embedded; no page scroll on game keys; release held keys on blur (`cf552ff`)
+- **export** — no dead runtime asset declarations; retired art exports with a warning; guard script (#3302) (`f74203d`)
+- **battle** — wild encounter names read Korean species names (#3301) (`05e2d91`)
+- **shitamachi** — venue rooms get real return doors (#3300) (`aff42c3`)
+- **battle** — only the cursor row paints a target glyph (#3299) (`97a8b52`)
+- **player** — settings rows act, battle reports count party rounds, quest steps read cleanly (#3297) (`4daf827`)
+- **player** — play clock reads the save and the title cursor resets on re-entry (#3296) (`915d0ba`)
+- **field** — visible quest givers, campaign-backed map/badge menu, gated confession, honoured transfer arrival (#3295) (`416b7af`)
+- **player** — hosted player reads public art and BGM from the host root (#3292) (`022693f`)
+- **ai** — accept xhigh and max thinking effort in config types (`994e404`)
+- **fallen-star** — guard MARCH_DEBUG reads so the shipped player doesn't throw ReferenceError: process (#3286) (`675390c`)
+- **ai** — room loop 2 — observatory slit converges, cutscene review renders and judges, faster room runs, hidden start marker (#3275) (`96b896a`)
+- **object-gate** — judge style against the candidate chipset's own shipped art, record the ref set in the receipt (#3271) (`a435a8c`)
+- **editor** — VQA am3685 shell-studio — top bar chips, studio 1024 layout, assistant overlay/menu, team cancel, help text (#3252) (`cff33ce`)
+- **editor** — VQA am3685 database — 자료집 레이아웃·리소스 관리자·타이틀 크레딧 16건 (#3251) (`e239653`)
+- **editor** — VQA am3685 map-tools — 붓 보조·타일 속성·이벤트 툴바·진행 패널·검사 메뉴 등 10건 (#3248) (`e5b6406`)
+- **editor** — VQA am3685 palette-modal — palette/modal Esc layers, toasts, select filter, header overflow (#3245) (`67bb208`)
+- **editor** — VQA am3685 i18n — 번역 누락·문맥 오역·캔버스 0높이 수정 (#3246) (`d5f6fe6`)
+- **ci** — let the desktop builder extract 7z before its own 7zz exists (`b541002`)
+- **ci** — install bun on the hosted desktop builder (`7d82348`)
+
+### 성능
+
+- **player** — bake flagship demos at build time; fix web/HTML export failures (#3293) (`bcb0f1d`)
+
+### CI
+
+- **desktop** — build release packages on GitHub-hosted runners (`11ab6a3`)
+
+### 잡무
+
+- **object-gate** — persist delegated allows and VQA evidence recorded in the shared holds dir (town wall, stairs) (#3274) (`e367b48`)
+
 ## 0.325.0 — 2026-10-22
 
 ### 기능

@@ -13,6 +13,7 @@
 // «나타남»은 컷신 비트에 따로 없다 — 처음에 투명(look alpha 0)으로 두었다가 그 순간 alpha 1 로 켠다(걸어 들어오는 게 아니라 «팍» 나타남).
 import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types";
 import { canMove } from "@/project/collision";
+import { startStateOf } from "@/project/session";
 import { chebyshev, planApproach, type ApproachWorld } from "@/project/staging/approach";
 import { probeCutscene } from "@/editor/cutscenePreview/probe";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
@@ -26,10 +27,14 @@ import type { BuildRun, ContentBuildResult, EventBeat, EventSpec } from "./types
 
 export const EVENT_CARD =
   "이벤트(events) 명세: {kind:'cutscene'|'talk'|'trigger', when?:'game-start'|'touch'|'talk', mapId?, where?, at?, beats:[…]}. " +
+  "after:'촌장' = 그 NPC 와 대화가 끝나면 이어서(그 NPC 대화 끝에 붙고 한 번만), afterTalk:[…] = 장면 뒤 그 NPC 가 할 말(밤이 됐으면 밤 인사처럼 바뀐 상황에 맞게). " +
   "cutscene+game-start = 게임이 시작되면 한 번만 자동 재생(시작 맵, 맵마다 하나 — 다시 부르면 앞 컷신을 바꾼다). 비트 do: " +
   "walk{who,to}=걷기(to=길·광장·입구·문 앞 같은 자리 낱말, 다른 사람 이름이면 그 곁으로 걸어가 마주 선다, {x,y} 는 꼭 필요할 때만) / " +
   "say{who,text}=대사 / appear{who,where?,looks?,talk?}=그 자리에 «팍» 나타남(where 생략 가능 — 뒤에 주인공에게 걸어오면 함수가 4~8칸 떨어진 길 위를 고른다; talk=컷신 뒤 말 걸면 할 말 배열) / " +
-  "face{who,toward}=바라봄 / wait{ms} / fade{dir:'in'|'out'}. " +
+  "face{who,toward}=바라봄 / wait{ms} / fade{dir:'in'|'out'} / " +
+  "tint{tone:'night'|'dusk'|'dawn'|'sepia'|'clear'}=화면 색(밤이 되면 컷신 뒤에도 밤으로 남는다, 되돌리려면 clear) / camera{to}=카메라를 자리 낱말·사람·'x,y' 로 옮겨 보여 줌, to:'back' 이면 주인공에게 복귀(빠뜨려도 끝에 돌아온다) / " +
+  "look{who,as:'shadow'|'ghost'|'normal'}=검은 실루엣·반투명 유령·원래 모습 / vanish{who}=연기처럼 사라짐(«지나가는» 그림자는 등장한 반대쪽 자리 낱말로 걸어가 사라진다 — 다른 사람 곁으로 걸으면 «찾아온» 장면이 된다). " +
+  "대사 속 마을·사람 이름은 맵 이름·기존 NPC 대사에 있는 것을 그대로 쓴다(새로 짓지 않는다). " +
   "who: 주인공·player·hero = 플레이어, 그 밖의 이름 = 컷신에 나타나는 사람(appear 로 먼저 등장시키거나 맵에 이미 있는 NPC 이름). " +
   "함수가 모든 걸음을 실제 통행 격자로 모의해 3칸 미만·못 닿는 걷기를 고치고, 레터박스·마주 보기를 넣고, 장면 그림 몇 장을 비평가가 본다.";
 
@@ -42,6 +47,12 @@ const PLAYER = "player";
 const START_HOST_ID = "ev_v2cut_start";
 const START_ACTOR_PREFIX = "ev_v2cut_a_";
 const MIN_WALK = 3;
+/** 장면에만 나오는 사람이 한 장면에서 걷는 걸음 상한(한 걸음 약 ¼초 — 24걸음이면 6초 남짓). */
+const SCENE_WALK_BUDGET = 24;
+/** 그중 한 번 걷기 상한 — 첫 걷기가 예산을 다 먹지 않게. */
+const SCENE_WALK_LEG = 14;
+/** tint 비트의 화면 색 — 'r,g,b,알파' 덮개(밤은 푸른 어둠), sepia 는 회상 필터, clear 는 원래대로. */
+const TINT_TONES: Record<string, string> = { night: "20,30,80,0.5", dusk: "170,80,40,0.28", dawn: "255,190,150,0.18", sepia: "sepia", clear: "" };
 
 function isHero(who: string): boolean {
   return HERO.test(who.trim());
@@ -82,6 +93,8 @@ export interface CutsceneStage {
   /** 주인공 칩(그림 틀에 그린다). */
   readonly hero?: { readonly textureKey: string; readonly characterIndex: number };
   readonly letterbox: boolean;
+  /** 장면 그림 틀에는 그려지지 않는 연출(화면 색·실루엣·카메라·사라짐) — 비평가에게 글로 알린다. */
+  readonly effects?: readonly string[];
 }
 export type EventBuildResult = ContentBuildResult & { readonly stage?: CutsceneStage };
 
@@ -314,6 +327,17 @@ function leaderCharset(project: Project): { textureKey: string; characterIndex: 
   return textureKey ? { textureKey, characterIndex: leader?.characterIndex ?? 0 } : undefined;
 }
 
+function npcFace(map: GameMap, eventId: string): string | undefined {
+  const ev = (map.events ?? []).find((e) => e.id === eventId);
+  for (const c of ev?.pages?.[0]?.commands ?? []) if ((c as { kind?: string }).kind === "changeFace") return (c as { resourceId?: string }).resourceId || undefined;
+  return undefined;
+}
+function heroFace(project: Project): string | undefined {
+  const lead = startStateOf(project).partyActorIds[0];
+  const actor = lead ? project.database.actors.find((a) => a.id === lead) : undefined;
+  return actor?.faceResourceId || undefined;
+}
+
 /** 역할로 정한 «컷신 뒤 말 걸면» 한 줄(appear.talk 이 없을 때). */
 function defaultFollowUp(name: string, looks: string | undefined): string[] {
   const t = `${name} ${looks ?? ""}`;
@@ -337,7 +361,8 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     ok: false, mapIds, summary, warnings, missingArt: [], calls: run.calls.slice(firstCall),
   });
 
-  const when = spec.when ?? (spec.kind === "talk" ? "talk" : spec.kind === "trigger" ? "touch" : "game-start");
+  // after(NPC 대화 뒤)는 언제나 말 걸기 장면이다 — kind:'cutscene' 이어도 게임 시작 컷신으로 만들지 않는다.
+  const when = spec.after ? "talk" : spec.when ?? (spec.kind === "talk" ? "talk" : spec.kind === "trigger" ? "touch" : "game-start");
   const mapId = spec.mapId ?? run.ctx.project.startMapId;
   let map = findMap(run.ctx.project, mapId);
   if (!map) return fail(`맵 '${mapId}' 이 없다.`);
@@ -361,7 +386,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   const noteName = (n: string): void => { if (!isHero(n) && !names.includes(n)) names.push(n); };
   for (const b of spec.beats) {
     if (b.do === "appear") { noteName(b.who); if (!appearBeat.has(b.who)) appearBeat.set(b.who, b); }
-    else if (b.do === "say" || b.do === "walk" || b.do === "face") noteName(b.who);
+    else if (b.do === "say" || b.do === "walk" || b.do === "face" || b.do === "look" || b.do === "vanish") noteName(b.who);
   }
   const knownName = (s: string): boolean => names.includes(s) || !!findNpcByName(map!, s);
   for (const b of spec.beats) {
@@ -376,7 +401,10 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   const actorIds = new Map<string, string>(); // 이름 → 이벤트 id
   const hiddenFromStart: string[] = [];
   const used: Cell[] = [];
-  const start = walkStart(project(), map);
+  let start = walkStart(project(), map);
+  // 「누구와 대화가 끝나면」 장면은 주인공이 그 NPC 바로 앞에서 시작한다(말을 건 자리).
+  const afterNpc = spec.after ? findNpcByName(map, spec.after) : undefined;
+  if (afterNpc) start = resolveWhere(project(), map, undefined, { at: { x: afterNpc.x, y: afterNpc.y + 1 }, avoid: [{ x: afterNpc.x, y: afterNpc.y }] }).cell;
   sim.actors.set(PLAYER, { cell: start, dir: "down", visible: true, name: "주인공" });
   used.push(start);
   for (const name of names) {
@@ -396,7 +424,15 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   refresh();
 
   let actorSeq = 0;
+  const createdActors = new Set<string>();
+  const effects: string[] = [];
+  const vanished = new Set<string>();
   const followUps = new Map<string, string[]>();
+  const sceneSteps = new Map<string, number>();
+  const lookedEarly = new Set<number>();
+  const lookCommand = (target: string, as: unknown): Record<string, unknown> => (as === "shadow" ? { kind: "look", target, tint: "black", tintFill: true }
+    : as === "ghost" ? { kind: "look", target, pose: "float", alpha: 0.6 }
+    : { kind: "look", target, reset: true });
   /** 아직 맵에 없는 사람을 지금(비트 i 시점) 세운다. */
   const ensureActor = (name: string, beatIndex: number): string | undefined => {
     const have = actorIds.get(name);
@@ -427,8 +463,10 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     }
     if (!ab) warnings.push(`${name}: appear 비트가 없고 맵에도 없어 새로 세우고 처음부터 보이게 둔다.`);
     const talk = (ab as { talk?: unknown } | undefined)?.talk;
-    const lines = Array.isArray(talk) ? talk.map((t) => String(t).trim()).filter(Boolean) : typeof talk === "string" && talk.trim() ? [talk.trim()] : defaultFollowUp(name, ab?.looks);
-    followUps.set(name, lines);
+    // 장면 끝에 사라지는 사람(지나가는 그림자 등)은 다시 말 걸 일이 없다 — 기본 «또 보세» 를 달지 않는다(2026-10-24 눈가림: 그림자가 «또 보세» 라 말한다).
+    const leaves = spec.beats.some((b) => b.do === "vanish" && b.who === name);
+    const lines = Array.isArray(talk) ? talk.map((t) => String(t).trim()).filter(Boolean) : typeof talk === "string" && talk.trim() ? [talk.trim()] : leaves ? [] : defaultFollowUp(name, ab?.looks);
+    if (lines.length) followUps.set(name, lines);
     const base: Record<string, unknown> = { mapId, name, x: cell.x, y: cell.y, movement: "fixed", pages: [{ name, lines }] };
     if (hostId) base.id = `${START_ACTOR_PREFIX}${++actorSeq}`;
     const placed = placeNpcWithGraphic(run, map!, base, name, ab?.looks, name, warnings);
@@ -437,8 +475,11 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     if (!d.eventId) return undefined;
     const at = { x: d.x ?? cell.x, y: d.y ?? cell.y };
     actorIds.set(name, d.eventId);
-    sim.actors.set(d.eventId, { cell: at, dir: "down", visible: !ab, name });
-    if (ab) hiddenFromStart.push(d.eventId);
+    createdActors.add(d.eventId);
+    // 다가오는 사람은 처음부터 보이게 둔다 — 숨겼다가 «팍» 나타나면 어색하고 끝 정리에서 깜빡였다(2026-10-23 6차 눈가림 컷신 v1 8 · v2 6.5).
+    const hide = !!ab && !approachesHero;
+    sim.actors.set(d.eventId, { cell: at, dir: "down", visible: !hide, name });
+    if (hide) hiddenFromStart.push(d.eventId);
     used.push(at);
     refresh();
     return d.eventId;
@@ -477,6 +518,9 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
           a.visible = true;
           const hero = sim.actors.get(PLAYER)!;
           a.dir = dirTo(a.cell, hero.cell);
+          // 바로 뒤 look(그림자·유령)은 보이기 전에 건다 — 맨 모습이 잠깐 보였다가 검게 바뀌었다(2026-10-24 밤 컷신 눈가림).
+          const nb = spec.beats[i + 1];
+          if (nb && nb.do === "look" && nb.who === b.who && nb.as !== "normal") { out.push(lookCommand(id, nb.as)); lookedEarly.add(i + 1); }
           out.push({ kind: "look", target: id, alpha: 1 });
           out.push({ kind: "faceToward", actor: id, target: PLAYER });
           out.push({ kind: "wait", ms: 300 });
@@ -532,6 +576,28 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
             legs = waypoints.map((wp) => sim.walk(key, wp, 0));
           }
         }
+        // 장면에만 나오는 사람은 장면 전체 24걸음까지만 걷는다 — 넘으면 같은 길 위 그 걸음째 칸에서 멈춘다
+        // (2026-10-24 밤 컷신: 그림자가 52~62걸음을 걸어 한 번 말 걸기 안에 장면이 안 끝나 보였다).
+        if (createdActors.has(key)) {
+          const room = Math.min(SCENE_WALK_LEG, SCENE_WALK_BUDGET - (sceneSteps.get(key) ?? 0));
+          const total2 = legs.reduce((n, l) => n + l.steps, 0);
+          if (room < MIN_WALK) {
+            // 걸음 예산을 다 썼다 — 이 걷기는 빼고 그 자리에 둔다.
+            Object.assign(sim.actors.get(key)!, { ...keep, cell: { ...keep.cell } });
+            warnings.push(`${b.who}: 장면 걸음 상한(${SCENE_WALK_BUDGET})을 다 써서 '${intent}' 걷기는 뺐다.`);
+            break;
+          }
+          if (total2 > room) {
+            const flat = legs.flatMap((l, li) => (li === 0 ? l.path : l.path.slice(1)));
+            const cut = flat[room]!;
+            Object.assign(sim.actors.get(key)!, { ...keep, cell: { ...keep.cell } });
+            warnings.push(`${b.who}: 장면에서 ${(sceneSteps.get(key) ?? 0) + total2}걸음은 길어 '${intent}' 쪽으로 ${room}걸음째 (${cut.x},${cut.y}) 에서 멈추게 했다.`);
+            intent = `${intent}→(${cut.x},${cut.y})`;
+            waypoints = [cut];
+            legs = [sim.walk(key, cut, 0)];
+          }
+          sceneSteps.set(key, (sceneSteps.get(key) ?? 0) + legs.reduce((n, l) => n + l.steps, 0));
+        }
         for (const wp of waypoints) out.push({ kind: "approach", actor: idFor(key), x: wp.x, y: wp.y, distance: 0, wait: true });
         const rec = recordWalk(b.who, intent, legs);
         midFrame(key, rec, `${b.who} 걷는 중`);
@@ -543,6 +609,9 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
         if (!key) { warnings.push(`say: 누군지 모르는 '${b.who}'.`); break; }
         const beat: Record<string, unknown> = { kind: "say", text: b.text, actor: idFor(key) };
         if (key !== PLAYER) beat.speaker = b.who;
+        // 말하는 사람 얼굴 — NPC 는 그 이벤트 첫 쪽의 얼굴(place_npc 가 그림에 맞춰 넣은 것), 주인공은 파티 맨 앞 배우의 얼굴.
+        const faceId = key === PLAYER ? heroFace(project()) : npcFace(map!, idFor(key));
+        if (faceId) beat.face = { resourceId: faceId, position: "left" };
         out.push(beat);
         break;
       }
@@ -563,15 +632,80 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
       case "fade":
         out.push({ kind: "fade", direction: b.dir, durationMs: 600, wait: true });
         break;
+      case "tint": {
+        const value = TINT_TONES[b.tone];
+        if (value === undefined) { warnings.push(`tint: 모르는 색 '${b.tone}' — night·dusk·dawn·sepia·clear.`); break; }
+        out.push({ kind: "tint", value, durationMs: 900, wait: true });
+        effects.push(b.tone === "clear" ? "the screen tint is cleared back to normal" : `the whole screen is tinted ${b.tone === "night" ? "dark night blue" : b.tone} from here on (stays after the scene)`);
+        break;
+      }
+      case "camera": {
+        const to = b.to;
+        if (typeof to === "string" && /^(back|return|복귀|돌아옴|주인공)$/iu.test(to.trim())) { out.push({ kind: "camera", mode: "return", durationMs: 600, wait: true }); break; }
+        let cell: Cell | undefined;
+        if (typeof to === "string") {
+          const key = keyOf(to) ?? (knownName(to.trim()) ? ensureActor(to.trim(), i) : undefined);
+          if (key) cell = sim.actors.get(key)?.cell;
+          else {
+            const r = resolveWhere(project(), map!, to.trim(), { avoid: [] });
+            if (r.note) warnings.push(`camera: ${r.note}`);
+            cell = r.cell;
+          }
+        } else cell = to;
+        if (!cell) { warnings.push(`camera: '${String(to)}' 자리를 못 찾았다.`); break; }
+        out.push({ kind: "camera", mode: "pan", x: cell.x, y: cell.y, durationMs: 900, wait: true });
+        effects.push(`the camera pans to (${cell.x},${cell.y}) and holds, then returns to the hero`);
+        out.push({ kind: "wait", ms: 700 });
+        break;
+      }
+      case "look": {
+        const key = keyOf(b.who) ?? ensureActor(b.who, i);
+        if (!key) { warnings.push(`look: 누군지 모르는 '${b.who}'.`); break; }
+        if (!lookedEarly.has(i)) out.push(lookCommand(idFor(key), b.as));
+        if (b.as !== "normal") effects.push(`${b.who} is drawn as ${b.as === "shadow" ? "a solid black silhouette" : "a floating translucent ghost"} in the game (the frames show the plain sprite)`);
+        break;
+      }
+      case "vanish": {
+        const key = keyOf(b.who) ?? actorIds.get(b.who);
+        if (!key || key === PLAYER) { warnings.push(`vanish: 사라지게 할 사람 '${b.who}' 이 없다(주인공은 못 사라진다).`); break; }
+        out.push({ kind: "particles", preset: "smoke", target: idFor(key), durationMs: 700 });
+        out.push({ kind: "look", target: idFor(key), alpha: 0 });
+        out.push({ kind: "wait", ms: 400 });
+        const a = sim.actors.get(key); if (a) a.visible = false;
+        vanished.add(key);
+        effects.push(`${b.who} vanishes in a puff of smoke and is removed from the map`);
+        sim.snapshot(`${b.who} 사라짐`);
+        break;
+      }
     }
   });
   if (out.length === 0) return fail("옮길 수 있는 비트가 하나도 없다.", [mapId]);
   sim.snapshot("끝");
+  // 말 걸기·밟기로 도는 장면이 새로 세운 «나타나는» 사람은 장면 전까지 맵에 서 있으면 안 된다(밤 그림자가 낮부터 보였다).
+  // 그 사람의 페이지에 「장면 시작」 스위치 조건을 걸고, 장면 첫 명령으로 그 스위치를 켠다.
+  const gated = when === "game-start" ? [] : hiddenFromStart.filter((id) => createdActors.has(id));
+  let gateSwitch: string | undefined;
+  if (gated.length > 0) {
+    const key = `v2scene_${(run.calls.length * 7919 + gated.length * 104729 + Date.now()) % 1_000_000}`;
+    const fl = run.call("create_quest_flags", { questKey: key, steps: 1 });
+    gateSwitch = fl.ok ? ((fl.data ?? {}) as { started?: string }).started : undefined;
+    if (gateSwitch) {
+      const cur = findMap(run.ctx.project, mapId);
+      for (const id of gated) {
+        const e = cur ? eventsOf(cur).find((x) => x.id === id) : undefined;
+        if (!e?.pages?.length) continue;
+        run.call("upsert_event", { mapId, replacePages: true, event: { id, pages: e.pages.map((pg) => ({ ...structuredClone(pg), conditions: [...(pg.conditions ?? []), { kind: "switch", switchId: gateSwitch, value: true }] })) } });
+      }
+    } else warnings.push("장면 전 숨김 스위치를 못 만들어 나타나는 사람이 장면 전에도 보인다.");
+  }
   const beats: Record<string, unknown>[] = [
+    ...(gateSwitch ? [{ kind: "switch", switchId: gateSwitch, value: true }] : []),
     ...hiddenFromStart.map((id) => ({ kind: "look", target: id, alpha: 0 })),
     ...(letterbox ? [{ kind: "letterbox", show: true, size: 12, durationMs: 500, wait: true }] : []),
     ...out,
     ...(letterbox ? [{ kind: "letterbox", show: false, durationMs: 400 }] : []),
+    // 장면 전용 사람이 모두 사라졌으면 스위치를 다시 꺼서 맵에서 아주 없앤다(다시 들어와도 안 보이게).
+    ...(gateSwitch && gated.every((id) => vanished.has(id)) ? [{ kind: "switch", switchId: gateSwitch, value: false }] : []),
   ];
 
   // 4) 기계 검사 — 걷기마다 3칸 이상·목적지 도착, 대사는 듣는 사람 곁(2칸)에서.
@@ -580,6 +714,15 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     const ok = w.steps >= MIN_WALK && w.reached;
     checks.push({ id: "cutscene-walk", mapId, ok, at: w.goal,
       detail: `${w.who} (${w.from.x},${w.from.y})→(${w.goal.x},${w.goal.y}) ${w.steps}걸음${w.onRoad ? `(길 위 ${w.onRoad}칸)` : ""} — ${ok ? "통과" : w.reached ? `${MIN_WALK}걸음 미만이라 걷는 장면으로 안 읽힌다` : `목적지 '${w.intent}' 에 닿지 못한다`}` });
+  }
+  {
+    // 장면 길이: 한 사람이 장면 안에서 30걸음 넘게 걸으면(한 걸음 약 ¼초 + 정지) 플레이어가 15초 넘게 서서 본다 —
+    // 2026-10-24 밤 컷신: 그림자 62걸음, 한 번 말 걸기 안에 안 끝나 보였다. 지나가는 사람은 짧은 한 구간으로.
+    const per = new Map<string, number>();
+    for (const w of sim.walks) per.set(w.who, (per.get(w.who) ?? 0) + w.steps);
+    for (const [who, n] of per) if (!isHero(who) && n > 30) {
+      checks.push({ id: "cutscene-length", mapId, ok: false, detail: `${who} 이(가) 장면 안에서 ${n}걸음 걷는다 — 너무 길다(30걸음 이하로: 걷기 비트를 줄이거나 가까운 자리 낱말로)` });
+    }
   }
   {
     // 대사 순간 위치: 모의 마지막 프레임 기준(대사는 걷기 뒤에 온다).
@@ -630,9 +773,37 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     warnings.push("만든 페이지에서 명령을 못 읽어 probe 를 돌리지 못했다.");
   }
 
+  // 7) 「누구와 대화가 끝나면」 — 만든 장면 명령을 그 NPC 의 말 걸기 페이지 끝에 붙이고(셀프 스위치 D 로 한 번만),
+  //    D 가 켜진 뒤엔 원래 대사만 하는 페이지를 덧붙인다. 장면을 담았던 투명 이벤트는 지운다.
+  let hostEventId = cutId;
+  if (spec.after) {
+    const cur = findMap(run.ctx.project, mapId);
+    const npc = cur ? findNpcByName(cur, spec.after) : undefined;
+    if (!npc || !npc.pages?.length) warnings.push(`after: '${spec.after}' NPC 를 이 맵에서 못 찾아 따로 선 장면 이벤트로 남겼다.`);
+    else if (commands.length === 0) warnings.push("after: 장면 명령을 못 읽어 NPC 에 잇지 못했다.");
+    else {
+      const p0 = npc.pages[0]!;
+      const talked = { ...structuredClone(p0), id: undefined, name: `${p0.name ?? "대화"} (장면 뒤)`, conditions: [...(p0.conditions ?? []), { kind: "selfSwitch", key: "D", value: true }] };
+      const afterLines = (spec.afterTalk ?? []).map((t) => String(t).trim()).filter(Boolean);
+      if (afterLines.length) {
+        const face = (p0.commands ?? []).find((c) => (c as { kind?: string }).kind === "changeFace");
+        talked.commands = [...(face ? [structuredClone(face)] : []), ...afterLines.map((body) => ({ kind: "text", speaker: npc.name, body }))] as typeof talked.commands;
+      }
+      delete (talked as { id?: string }).id;
+      const first = { ...structuredClone(p0), commands: [...(p0.commands ?? []), ...structuredClone(commands), { kind: "setSelfSwitch", key: "D", value: true }] };
+      const up = run.call("upsert_event", { mapId, replacePages: true, event: { id: npc.id, pages: [first, ...npc.pages.slice(1).map((pg) => structuredClone(pg)), talked] } });
+      if (!up.ok) warnings.push(`after: NPC 에 잇지 못했다 — ${String(up.summary).slice(0, 160)}`);
+      else {
+        run.call("remove_event", { mapId, eventId: cutId });
+        hostEventId = npc.id;
+        warnings.push(`장면을 '${spec.after}' 대화 끝에 이었다(한 번만 — 그 뒤엔 원래 대사).`);
+      }
+    }
+  }
+
   const walkLine = sim.walks.map((w) => `${w.who} ${w.steps}걸음${w.onRoad ? `(길 ${w.onRoad})` : ""}→(${w.goal.x},${w.goal.y})`).join(", ");
   const bad = checks.filter((c) => !c.ok);
-  const eventIds = [{ mapId, eventId: cutId }, ...[...actorIds.values()].map((eventId) => ({ mapId, eventId }))];
+  const eventIds = [{ mapId, eventId: hostEventId }, ...[...actorIds.values()].map((eventId) => ({ mapId, eventId }))];
   const hero = leaderCharset(run.ctx.project);
   return {
     ok: true,
@@ -643,7 +814,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     missingArt: [],
     calls: run.calls.slice(firstCall),
     eventIds,
-    stage: { mapId, hostEventId: cutId, frames: sim.frames, walks: sim.walks, checks, letterbox, ...(hero ? { hero } : {}) },
+    stage: { mapId, hostEventId: cutId, frames: sim.frames, walks: sim.walks, checks, letterbox, effects, ...(hero ? { hero } : {}) },
   };
 }
 

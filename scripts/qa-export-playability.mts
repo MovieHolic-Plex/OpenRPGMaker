@@ -6,6 +6,8 @@ import { extname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { chromium, type Page } from "@playwright/test";
 import { deserialize, serialize } from "@/project/io";
+import { createStandaloneHtmlExport } from "@/project/standaloneExport";
+import { isKnownRetiredResource } from "@/assets/generatedAssetResourceResolver";
 import { readStoredZipEntry, readStoredZipEntryNames } from "@/project/packageZip";
 import { parseReleaseManifest, releaseManifestFromZip, verifyGameRelease } from "@/project/gameRelease";
 import { readTrustedRuntime, RUNTIME_ARCHIVE_FOLDER } from "./lib/runtimeArchive";
@@ -76,6 +78,38 @@ async function download(page: Page, id: string, name: string): Promise<string> {
   return target;
 }
 
+/**
+ * Single-file HTML. Since #3007 the project menu's old HTML entry ("menu-project-export-standalone") builds the
+ * Windows/Steam depot package instead, and the HTML button lives in the publication dialog, which only works on a
+ * prepared publication. Non-publication QA runs the editor's HTML exporter (createStandaloneHtmlExport) on the
+ * live editor project, fetching the same files from the editor server. It runs in Node, not in the editor tab:
+ * the document is ~130MB of inline base64 (61MB player script alone) and building it in the tab closes the page.
+ */
+async function downloadStandaloneHtml(page: Page, name: string): Promise<string> {
+  const target = join(temp, name);
+  if (publicationMode) {
+    const pending = page.waitForEvent("download", { timeout: 360000 });
+    await menu(page, "menu-project-publication");
+    await page.getByTestId("publication-html").click();
+    await (await pending).saveAs(target);
+    return target;
+  }
+  const projectJson = await page.evaluate(() => {
+    const store = (window as unknown as { __oprnEditorStore: { getCurrent(): unknown } }).__oprnEditorStore;
+    return JSON.stringify(store.getCurrent());
+  });
+  const result = await createStandaloneHtmlExport(deserialize(projectJson), {
+    fetchBytes: async (path) => {
+      const response = await fetch(new URL(path, `${editorUrl}/`));
+      if (!response.ok) throw new Error(`${response.status} ${path}`);
+      return new Uint8Array(await response.arrayBuffer());
+    },
+  });
+  await writeFile(target, Buffer.from(await result.blob.arrayBuffer()));
+  console.log(`QA download ${name}: saved (${(result.summary.htmlBytes / 1048576).toFixed(1)}MB, skipped retired: ${result.summary.missingAssets.length})`);
+  return target;
+}
+
 const browser = await chromium.launch({ args: ["--no-sandbox"] });
 const editorContext = await browser.newContext({ viewport: { width: 1440, height: 900 } });
 const results: Array<Record<string, unknown>> = [];
@@ -121,6 +155,12 @@ try {
   const project = deserialize(await readFile("test/fixtures/projects/editor-authored-demo-v3.json", "utf8"));
   // A deterministic test-only copy; no fixture file or remote project is edited.
   project.system.battleUiStyle = "retro2003"; // This QA requires four visible party artworks (sideview).
+  // The fixture predates the 2026-10-07 copyright purge: its EasyRPG title art was deleted. Export now
+  // skips retired art (retiredAssets.ts), so point the title at the current default title to keep the
+  // "title image decodes" check meaningful.
+  if (isKnownRetiredResource(project.system.titleResourceId ?? "")) project.system.titleResourceId = "oprn-title-field";
+  const titleScreen = project.system.titleScreen;
+  if (titleScreen?.backgroundResourceId && isKnownRetiredResource(titleScreen.backgroundResourceId)) titleScreen.backgroundResourceId = "oprn-title-field";
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
       for (const page of event.pages ?? []) page.movement = { type: "fixed", speed: 2, frequency: 3 };
@@ -142,7 +182,7 @@ try {
     await page.getByTestId("publication-apply").click();
   }
   const zipPath = await download(page, "menu-project-export-web", "game.zip");
-  const htmlPath = await download(page, "menu-project-export-standalone", "game.html");
+  const htmlPath = await downloadStandaloneHtml(page, "game.html");
   await page.screenshot({ path: join(outDir, "editor-downloads.png") });
   results.push({ kind: "editor-downloads", pass: true });
 
@@ -185,7 +225,11 @@ try {
     }
   }
 
-  results.push(await rejectBadExport(page, publicationMode ? "**/runtime-archive/*/standalone/standalone.js" : "**/standalone-player/standalone.js", "<!doctype html><html>Wrong bundle</html>", 200));
+  // Since #3007 "menu-project-export-standalone" is the Steam depot export, which never fetches the standalone
+  // HTML bundle. Off-publication the wrong-bundle injection targets the web ZIP player script instead.
+  results.push(publicationMode
+    ? await rejectBadExport(page, "**/runtime-archive/*/standalone/standalone.js", "<!doctype html><html>Wrong bundle</html>", 200)
+    : await rejectBadExport(page, "**/export-player/player.js", "<!doctype html><html>Wrong bundle</html>", 200, "menu-project-export-web"));
   results.push(await rejectBadExport(page, missingImagePattern, "Missing required image", 404));
   await page.screenshot({ path: join(outDir, "rejected-export.png") });
 

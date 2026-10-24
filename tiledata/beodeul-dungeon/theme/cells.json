@@ -34805,6 +34805,2981 @@ null,
 ],
 "passage": "solid",
 "layer": "upper"
+},
+null,
+null,
+null,
+{
+"key": "43c80fc0e11769c06d19c3b8",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"anim": {
+"frames": 3,
+"fps": 3
+},
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (0,0)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"frameOf": 32796,
+"frame": 1,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (0,0)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"frameOf": 32796,
+"frame": 2,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (0,0)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "star",
+"layer": "upper"
+},
+null,
+{
+"key": "d5baa9707e6095bed72e6aa4",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"anim": {
+"frames": 3,
+"fps": 3
+},
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (1,0)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"frameOf": 32800,
+"frame": 1,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (1,0)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"frameOf": 32800,
+"frame": 2,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (1,0)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "star",
+"layer": "upper"
+},
+null,
+{
+"key": "298b8d85bef402385f3bfd19",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"anim": {
+"frames": 3,
+"fps": 3
+},
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (2,0)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"frameOf": 32804,
+"frame": 1,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (2,0)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"frameOf": 32804,
+"frame": 2,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (2,0)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "star",
+"layer": "upper"
+},
+null,
+{
+"key": "1adc8c5c5c474e6acadb3bac",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"anim": {
+"frames": 3,
+"fps": 3
+},
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (0,1)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"frameOf": 32808,
+"frame": 1,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (0,1)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"frameOf": 32808,
+"frame": 2,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (0,1)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+null,
+{
+"key": "738206de6fb216393ce4e57d",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"anim": {
+"frames": 3,
+"fps": 3
+},
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (1,1)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"frameOf": 32812,
+"frame": 1,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (1,1)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"frameOf": 32812,
+"frame": 2,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (1,1)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+null,
+{
+"key": "56f4ba6979411b30e2ba2dae",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"anim": {
+"frames": 3,
+"fps": 3
+},
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (2,1)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"frameOf": 32816,
+"frame": 1,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (2,1)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"frameOf": 32816,
+"frame": 2,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (2,1)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+null,
+{
+"key": "e0e22857ed95af924b4435ef",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"anim": {
+"frames": 3,
+"fps": 3
+},
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (0,2)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"frameOf": 32820,
+"frame": 1,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (0,2)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"frameOf": 32820,
+"frame": 2,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (0,2)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+null,
+{
+"key": "3be366ad59fb31e38adcef0c",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"anim": {
+"frames": 3,
+"fps": 3
+},
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (1,2)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"frameOf": 32824,
+"frame": 1,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (1,2)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"frameOf": 32824,
+"frame": 2,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (1,2)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+null,
+{
+"key": "783ce05255f1ee00c660775a",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"anim": {
+"frames": 3,
+"fps": 3
+},
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (2,2)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"frameOf": 32828,
+"frame": 1,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (2,2)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"frameOf": 32828,
+"frame": 2,
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 (2,2)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "d8d6a57d15f0ec317b57ab51",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 닫힘 (0,0)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "524c59aa41d678be59e9f3cb",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 닫힘 (1,0)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "04790caf61dd695819c14526",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 닫힘 (2,0)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "05248f1219135b28c7903163",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 닫힘 (0,1)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "dce2f7c5793f10269a75ab76",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 닫힘 (1,1)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "b277f08ed6ea472a128ea6ea",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 닫힘 (2,1)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "9300661ddd0bd7b16ca8cb99",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 닫힘 (0,2)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "341775de61fd9a4f95786bc0",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 닫힘 (1,2)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "275b50693bbcb5cfaf4f4008",
+"origin": "other.portal/*/theme-arcane-r2:A1@5a62f0ae",
+"label": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 닫힘 (2,2)",
+"description": "돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "1421fcbf4b7670d3fd6947a7",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(북동남서 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 0, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "8091e4e7b22fd36e2c61d260",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(동남서 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 1, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "ec68acafca441644fe8dfb5d",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(북남서 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 2, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "09fd102e6d5819f0fa5a49da",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(남서 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 3, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "bdf93592667955592557aaa4",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(북동서 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 4, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "e82f263228947ff98e1a6dce",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(동서 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 5, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "0209f13ff764b684f2d98907",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(북서 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 6, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "5d5e93e637c139a381b9a8d9",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(서 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 7, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "76dd576255c115b5bc3c8852",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(북동남 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 8, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "17858a56ca6bb550e8afdfd0",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(동남 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 9, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "979655815405d8c423ecb164",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(북남 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 10, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "724bd5e3448f8c7bcc7c249e",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(남 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 11, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "e0936ae109207e8f3d04770d",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(북동 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 12, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "f2d1a79dfd91f7e2d7f4add7",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(동 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 13, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "ccdc82baa53db5d943f7357a",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(북 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 14, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "8c673104603d477bb0cd3387",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥 몸통",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 15, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "a0e9cf5e0e5e0c0da099f9a4",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(남서 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 19, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "034a1163a6803d6c8381bc0e",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(서 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 23, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "14a202aeb969bbb9c152b79f",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(남 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 27, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "a02cc753ca7558c500e7771d",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥 몸통",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 31, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "049c22cd0038df34204c1ae7",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(북서 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 38, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "34ac5345b2fc40878dbc1fa7",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(서 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 39, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "59ce857b322919eae454b66b",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(북 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 46, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "8a5066f7134660ef382c34a2",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥 몸통",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 47, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "1701ffbfc108d70f6a5daa66",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(서 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 55, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "0938abd3fe5c79f080f1d228",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥 몸통",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 63, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "48f37eea2058ba10867ab04d",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(북동 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 76, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "d63f773d97fc4d99a8aed079",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(동 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 77, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "d0e86753b7ffa55fcea4e759",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(북 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 78, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "d97bbb1d695f7d2510a205cd",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥 몸통",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 79, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "bf0f3fcedbd0cb273c927a53",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥 몸통",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 95, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "1c5edac61e12e3e1bf8e52e5",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(북 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 110, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "a6527b1800a87b3b4ab6f1c1",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥 몸통",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 111, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "d3fbfcb3c3874f25da5e97e0",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥 몸통",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 127, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "1eb71985828f7dce32c3d656",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(동남 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 137, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "0a985f66dbeb22e35750579c",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(남 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 139, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "e04308dd2c1dfaa93fa6969d",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(동 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 141, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "a28e6b8807d82b815b9b2539",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥 몸통",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 143, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "ce9d269e61cf432a7b1f43b1",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(남 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 155, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "8c6cdef9440f17700698282a",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥 몸통",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 159, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "f15030e429cf6c02d4b1fae7",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥 몸통",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 175, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "5d66230144b4b2119711ada0",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥 몸통",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 191, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "1fca1f46a773c47921abe140",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥(동 허공 턱)",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 205, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "541556ddf9aac7cb776c9615",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥 몸통",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 207, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "fe2ad940cfe0192f20c4f9d8",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥 몸통",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 223, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "66c4795ec03e9097e79f84b9",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 떠 있는 섬 바닥 몸통",
+"description": "마계 바닥 ↔ 허공 턱 오토타일(마스크 239, 이웃 = 바닥). 걸음. 그룹 `beodeul_dungeon_theme_void_edge`.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"바닥",
+"floor",
+"otherworld",
+"마계"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "90e9c9f9870500690ea27ec1",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 허공 0",
+"description": "별빛이 도는 보라 검은 허공. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"void",
+"섞음",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "8af40885b73385c9ddd86afc",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 허공 1",
+"description": "별빛이 도는 보라 검은 허공. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"void",
+"섞음",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "d86ef6aedd686e6468329208",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 허공 2",
+"description": "별빛이 도는 보라 검은 허공. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"void",
+"섞음",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "c1b53f386c99e5739dee9d4b",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 섬 밑 바위 1단 가운데",
+"description": "떠 있는 섬 밑 바위 앞면(허공 위). 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"섬 밑",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "13f551186b4e58acda7cbf05",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 섬 밑 바위 1단 오른끝",
+"description": "떠 있는 섬 밑 바위 앞면(허공 위). 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"섬 밑",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "32570c40046a491a6f000f1e",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 섬 밑 바위 1단 왼끝",
+"description": "떠 있는 섬 밑 바위 앞면(허공 위). 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"섬 밑",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "f8e48760580c02eed5fffd7f",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 섬 밑 바위 1단 왼끝·오른끝",
+"description": "떠 있는 섬 밑 바위 앞면(허공 위). 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"섬 밑",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "130d3da2f9338727caf81566",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 섬 밑 바위 2단 가운데",
+"description": "떠 있는 섬 밑 바위 앞면(허공 위). 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"섬 밑",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "aae362b11732946502acca4e",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 섬 밑 바위 2단 오른끝",
+"description": "떠 있는 섬 밑 바위 앞면(허공 위). 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"섬 밑",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "cfbd2c826e210b28cc7ba683",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 섬 밑 바위 2단 왼끝",
+"description": "떠 있는 섬 밑 바위 앞면(허공 위). 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"섬 밑",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "5cfcdd5db50066a85e6e240f",
+"origin": "other.void_edge/*/theme-arcane-r2:A1@6e4b5158",
+"label": "버들항 던전 · 마계 섬 밑 바위 2단 왼끝·오른끝",
+"description": "떠 있는 섬 밑 바위 앞면(허공 위). 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"마계",
+"허공",
+"섬 밑",
+"otherworld",
+"마계"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "e9138f17c0c2b4e97fbfbcab",
+"origin": "tc.ice_drift/*/theme-climate-r2:A2@17f424f1",
+"label": "버들항 던전 · 눈 더미 흩뿌림 1×1(두 변형, 동굴 바닥 위) 변형1",
+"description": "동굴 바닥에 쌓인 눈 더미. 투명 가장자리. 그림 = [변형1|변형2].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"snow-drift",
+"ice",
+"얼음"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "a793f61876a0126cb76ca662",
+"origin": "tc.ice_drift/*/theme-climate-r2:A2@17f424f1",
+"label": "버들항 던전 · 눈 더미 흩뿌림 1×1(두 변형, 동굴 바닥 위) 변형2",
+"description": "동굴 바닥에 쌓인 눈 더미. 투명 가장자리. 그림 = [변형1|변형2].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"snow-drift",
+"ice",
+"얼음"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "4625cac8439a71903e2760e8",
+"origin": "tc.pyr_drift/*/theme-climate-r2:A1@5a7c02a5",
+"label": "버들항 던전 · 모래 더미 흩뿌림 1×1(두 변형, 바닥 위) 변형1",
+"description": "판석 바닥 위로 흘러든 모래 더미·물결. 투명 가장자리, 어느 바닥에도 얹힌다. 그림 = [변형1|변형2].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"sand-drift",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "9f7f2cd0fa4b5a38ef615364",
+"origin": "tc.pyr_drift/*/theme-climate-r2:A1@5a7c02a5",
+"label": "버들항 던전 · 모래 더미 흩뿌림 1×1(두 변형, 바닥 위) 변형2",
+"description": "판석 바닥 위로 흘러든 모래 더미·물결. 투명 가장자리, 어느 바닥에도 얹힌다. 그림 = [변형1|변형2].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"sand-drift",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "851f0d3e93d1b4ed29f96a7d",
+"origin": "tc.pyr_floor/*/theme-climate-r2:A1@3fb5febf",
+"label": "버들항 던전 · 피라미드 사암 판석 바닥 (0,0)",
+"description": "피라미드 실내 사암 판석 바닥 — 2×2 네 칸을 칸마다 아무거나 섞어 깔아도 이음이 맞는다. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"사암",
+"섞음",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "5c224956bca9f85e1cb5fc51",
+"origin": "tc.pyr_floor/*/theme-climate-r2:A1@3fb5febf",
+"label": "버들항 던전 · 피라미드 사암 판석 바닥 (1,0)",
+"description": "피라미드 실내 사암 판석 바닥 — 2×2 네 칸을 칸마다 아무거나 섞어 깔아도 이음이 맞는다. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"사암",
+"섞음",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "01a3f3f42c402fd278af7bde",
+"origin": "tc.pyr_floor/*/theme-climate-r2:A1@3fb5febf",
+"label": "버들항 던전 · 피라미드 사암 판석 바닥 (0,1)",
+"description": "피라미드 실내 사암 판석 바닥 — 2×2 네 칸을 칸마다 아무거나 섞어 깔아도 이음이 맞는다. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"사암",
+"섞음",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "a637504ab7b9631b6bbfb7f9",
+"origin": "tc.pyr_floor/*/theme-climate-r2:A1@3fb5febf",
+"label": "버들항 던전 · 피라미드 사암 판석 바닥 (1,1)",
+"description": "피라미드 실내 사암 판석 바닥 — 2×2 네 칸을 칸마다 아무거나 섞어 깔아도 이음이 맞는다. 걸음.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"바닥",
+"floor",
+"사암",
+"섞음",
+"pyramid",
+"피라미드",
+"사막"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "b0dd28763986e9bcb6423a0e",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 금 2×2 (0,0)",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "281d0cf8a2ebe0e42f2220bf",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 금 2×2 (1,0)",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "16931df6bef3e9668e269bfb",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 금 2×2 (0,1)",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "95dac088d3ac2f392140acc4",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 금 2×2 (1,1)",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "7f97d7b957b073d009f26ca3",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 쇠 2×2 (0,0)",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "21899336705c660c2fbffee8",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 쇠 2×2 (1,0)",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "c7005c88649899f1b30157cd",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 쇠 2×2 (0,1)",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "76061adb82773584ef87ce4b",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 쇠 2×2 (1,1)",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "96780300de0b3f4e181ab404",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 금 1×1",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "9e52b667c7734b03f567f3c2",
+"origin": "earth.ore_vein/*/theme-earth-r2:A2@16deec32",
+"label": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 쇠 1×1",
+"description": "광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "42769553123ebd7c55ea551a",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (0,0)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "d1e8891ae833289abaceb0bd",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (1,0)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "4e7a195691b600fb62779447",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (2,0)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "f6af670673168ed61e7bd86e",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (0,1)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "150ee575cad6cb965d64f775",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (1,1)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "c9a11b5fb547bd7c09811631",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (2,1)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "1b72881783eb8b05fd22a1f6",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (0,2)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "5039aa52f33d638893c73e86",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (1,2)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "c4ebb15081acfc45e84beda8",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 (2,2)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "08e733f80855b9169b0333b3",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 2단 (0,0)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "dcfcd3ca5a7c5bde4f9967c8",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 2단 (1,0)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "1d818034c221fa9064cef9bd",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 2단 (2,0)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "6e0936f349f79dd42c902d2e",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 2단 (0,1)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "e7354586e9389ac4e0dc6d29",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 2단 (1,1)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "f884aee9b24f040804e08a26",
+"origin": "earth.ossuary/*/theme-earth-r2:A1@b6836069",
+"label": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 2단 (2,1)",
+"description": "카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "02411b13d6d7fdc828fd9e0b",
+"origin": "earth.overgrown/*/theme-earth-r2:A2@3cacb983",
+"label": "버들항 던전 · 풀·뿌리가 뚫고 나온 판석(덧그림 2×2) 풀 난 판석 (0,0)",
+"description": "버들항 신전 폐허 바닥(floor-ruin) 위에 얹는 풀·뿌리·깨진 자리. 판석 결은 버들항 그대로 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"overgrown",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "9fb38de228d0434fb749c9ec",
+"origin": "earth.overgrown/*/theme-earth-r2:A2@3cacb983",
+"label": "버들항 던전 · 풀·뿌리가 뚫고 나온 판석(덧그림 2×2) 풀 난 판석 (1,0)",
+"description": "버들항 신전 폐허 바닥(floor-ruin) 위에 얹는 풀·뿌리·깨진 자리. 판석 결은 버들항 그대로 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"overgrown",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "30f6d554a16edeefc01404ef",
+"origin": "earth.overgrown/*/theme-earth-r2:A2@3cacb983",
+"label": "버들항 던전 · 풀·뿌리가 뚫고 나온 판석(덧그림 2×2) 풀 난 판석 (0,1)",
+"description": "버들항 신전 폐허 바닥(floor-ruin) 위에 얹는 풀·뿌리·깨진 자리. 판석 결은 버들항 그대로 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"overgrown",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "8206ade2ed4a0c54ae922707",
+"origin": "earth.overgrown/*/theme-earth-r2:A2@3cacb983",
+"label": "버들항 던전 · 풀·뿌리가 뚫고 나온 판석(덧그림 2×2) 풀 난 판석 (1,1)",
+"description": "버들항 신전 폐허 바닥(floor-ruin) 위에 얹는 풀·뿌리·깨진 자리. 판석 결은 버들항 그대로 비친다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"overgrown",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "e8ecfda48bf4e9ea906515f2",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 H",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "85546ef714e61a9ac3d13eaa",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 V",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "f8d6275cbd7497661da93604",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 NE",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "0d9992c4b25d345f9afc228d",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 NW",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "e056f50de6e6b609961108ff",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 SE",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "06a85e25bdd9614026024627",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 SW",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "7b072cb977930cded1f1276c",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 X",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "ebb058ef6aa9bf5ca2c1cd1b",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 TN",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "414a9a5a573f37f802375da3",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 TS",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "f5dd0d6c03de299dd4c9f8eb",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 TE",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "5443c227286d7386752a720d",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 TW",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "99703f9ceadd6277fe049ad6",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 EN",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "0f13894800ddb443cfeb87b6",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 ES",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "79d05d419c57fe4e30db0f3f",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 EE",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "0222687f3a9b4554f5eb7e27",
+"origin": "earth.rails/*/theme-earth-r2:A1@ef83645a",
+"label": "버들항 던전 · 광산 선로 이음 세트 15칸 EW",
+"description": "투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
 }
 ],
 "defs": {
@@ -37304,6 +40279,436 @@ null,
 ]
 ]
 },
+"beodeul_dungeon_theme_void_edge": {
+"id": "beodeul_dungeon_theme_void_edge",
+"name": "버들항 던전 마계 떠 있는 섬 바닥(허공 턱)",
+"neighborhood": 8,
+"edgeConnects": false,
+"memberTileIds": [
+32751,
+32752,
+32753,
+32754,
+32755,
+32756,
+32757,
+32758,
+32759,
+32760,
+32761,
+32762,
+32763,
+32764,
+32765,
+32766,
+32767,
+32768,
+32769,
+32770,
+32771,
+32840,
+32841,
+32842,
+32843,
+32844,
+32845,
+32846,
+32847,
+32848,
+32849,
+32850,
+32851,
+32852,
+32853,
+32854,
+32855,
+32856,
+32857,
+32858,
+32859,
+32860,
+32861,
+32862,
+32863,
+32864,
+32865,
+32866,
+32867,
+32868,
+32869,
+32870,
+32871,
+32872,
+32873,
+32874,
+32875,
+32876,
+32877,
+32878,
+32879,
+32880,
+32881,
+32882,
+32883,
+32884,
+32885
+],
+"connectTileIds": [
+32751,
+32752,
+32753,
+32754,
+32755,
+32756,
+32757,
+32758,
+32759,
+32760,
+32761,
+32762,
+32763,
+32764,
+32765,
+32766,
+32767,
+32768,
+32769,
+32770,
+32771,
+32840,
+32841,
+32842,
+32843,
+32844,
+32845,
+32846,
+32847,
+32848,
+32849,
+32850,
+32851,
+32852,
+32853,
+32854,
+32855,
+32856,
+32857,
+32858,
+32859,
+32860,
+32861,
+32862,
+32863,
+32864,
+32865,
+32866,
+32867,
+32868,
+32869,
+32870,
+32871,
+32872,
+32873,
+32874,
+32875,
+32876,
+32877,
+32878,
+32879,
+32880,
+32881,
+32882,
+32883,
+32884,
+32885
+],
+"variantMap": {
+"0": 32840,
+"1": 32841,
+"2": 32842,
+"3": 32843,
+"4": 32844,
+"5": 32845,
+"6": 32846,
+"7": 32847,
+"8": 32848,
+"9": 32849,
+"10": 32850,
+"11": 32851,
+"12": 32852,
+"13": 32853,
+"14": 32854,
+"15": 32855,
+"16": 32840,
+"17": 32841,
+"18": 32842,
+"19": 32856,
+"20": 32844,
+"21": 32845,
+"22": 32846,
+"23": 32857,
+"24": 32848,
+"25": 32849,
+"26": 32850,
+"27": 32858,
+"28": 32852,
+"29": 32853,
+"30": 32854,
+"31": 32859,
+"32": 32840,
+"33": 32841,
+"34": 32842,
+"35": 32843,
+"36": 32844,
+"37": 32845,
+"38": 32860,
+"39": 32861,
+"40": 32848,
+"41": 32849,
+"42": 32850,
+"43": 32851,
+"44": 32852,
+"45": 32853,
+"46": 32862,
+"47": 32863,
+"48": 32840,
+"49": 32841,
+"50": 32842,
+"51": 32856,
+"52": 32844,
+"53": 32845,
+"54": 32860,
+"55": 32864,
+"56": 32848,
+"57": 32849,
+"58": 32850,
+"59": 32858,
+"60": 32852,
+"61": 32853,
+"62": 32862,
+"63": 32865,
+"64": 32840,
+"65": 32841,
+"66": 32842,
+"67": 32843,
+"68": 32844,
+"69": 32845,
+"70": 32846,
+"71": 32847,
+"72": 32848,
+"73": 32849,
+"74": 32850,
+"75": 32851,
+"76": 32866,
+"77": 32867,
+"78": 32868,
+"79": 32869,
+"80": 32840,
+"81": 32841,
+"82": 32842,
+"83": 32856,
+"84": 32844,
+"85": 32845,
+"86": 32846,
+"87": 32857,
+"88": 32848,
+"89": 32849,
+"90": 32850,
+"91": 32858,
+"92": 32866,
+"93": 32867,
+"94": 32868,
+"95": 32870,
+"96": 32840,
+"97": 32841,
+"98": 32842,
+"99": 32843,
+"100": 32844,
+"101": 32845,
+"102": 32860,
+"103": 32861,
+"104": 32848,
+"105": 32849,
+"106": 32850,
+"107": 32851,
+"108": 32866,
+"109": 32867,
+"110": 32871,
+"111": 32872,
+"112": 32840,
+"113": 32841,
+"114": 32842,
+"115": 32856,
+"116": 32844,
+"117": 32845,
+"118": 32860,
+"119": 32864,
+"120": 32848,
+"121": 32849,
+"122": 32850,
+"123": 32858,
+"124": 32866,
+"125": 32867,
+"126": 32871,
+"127": 32873,
+"128": 32840,
+"129": 32841,
+"130": 32842,
+"131": 32843,
+"132": 32844,
+"133": 32845,
+"134": 32846,
+"135": 32847,
+"136": 32848,
+"137": 32874,
+"138": 32850,
+"139": 32875,
+"140": 32852,
+"141": 32876,
+"142": 32854,
+"143": 32877,
+"144": 32840,
+"145": 32841,
+"146": 32842,
+"147": 32856,
+"148": 32844,
+"149": 32845,
+"150": 32846,
+"151": 32857,
+"152": 32848,
+"153": 32874,
+"154": 32850,
+"155": 32878,
+"156": 32852,
+"157": 32876,
+"158": 32854,
+"159": 32879,
+"160": 32840,
+"161": 32841,
+"162": 32842,
+"163": 32843,
+"164": 32844,
+"165": 32845,
+"166": 32860,
+"167": 32861,
+"168": 32848,
+"169": 32874,
+"170": 32850,
+"171": 32875,
+"172": 32852,
+"173": 32876,
+"174": 32862,
+"175": 32880,
+"176": 32840,
+"177": 32841,
+"178": 32842,
+"179": 32856,
+"180": 32844,
+"181": 32845,
+"182": 32860,
+"183": 32864,
+"184": 32848,
+"185": 32874,
+"186": 32850,
+"187": 32878,
+"188": 32852,
+"189": 32876,
+"190": 32862,
+"191": 32881,
+"192": 32840,
+"193": 32841,
+"194": 32842,
+"195": 32843,
+"196": 32844,
+"197": 32845,
+"198": 32846,
+"199": 32847,
+"200": 32848,
+"201": 32874,
+"202": 32850,
+"203": 32875,
+"204": 32866,
+"205": 32882,
+"206": 32868,
+"207": 32883,
+"208": 32840,
+"209": 32841,
+"210": 32842,
+"211": 32856,
+"212": 32844,
+"213": 32845,
+"214": 32846,
+"215": 32857,
+"216": 32848,
+"217": 32874,
+"218": 32850,
+"219": 32878,
+"220": 32866,
+"221": 32882,
+"222": 32868,
+"223": 32884,
+"224": 32840,
+"225": 32841,
+"226": 32842,
+"227": 32843,
+"228": 32844,
+"229": 32845,
+"230": 32860,
+"231": 32861,
+"232": 32848,
+"233": 32874,
+"234": 32850,
+"235": 32875,
+"236": 32866,
+"237": 32882,
+"238": 32871,
+"239": 32885,
+"240": 32840,
+"241": 32841,
+"242": 32842,
+"243": 32856,
+"244": 32844,
+"245": 32845,
+"246": 32860,
+"247": 32864,
+"248": 32848,
+"249": 32874,
+"250": 32850,
+"251": 32878,
+"252": 32866,
+"253": 32882,
+"254": 32871,
+"255": 32751
+},
+"interiorVariants": [
+[
+32751,
+32752,
+32753,
+32754,
+32755,
+32756,
+32757,
+32758,
+32759,
+32760,
+32761,
+32762,
+32763,
+32764,
+32765,
+32754,
+32766,
+32767,
+32768,
+32757,
+32769,
+32770,
+32751,
+32771
+]
+]
+},
 "beodeul_dungeon_ceiling_sand": {
 "id": "beodeul_dungeon_ceiling_sand",
 "name": "버들항 던전 피라미드 천장(사암 테두리)",
@@ -37896,6 +41301,71 @@ null,
 "description": "왕실 양탄자 1칸 폭·3칸 폭(세로)(키트 bd-pick-dungeon-theme-carpet-runner, bd-pick-dungeon-theme-carpet-runner-3w). 하네스 theme-earth-r1 A2.",
 "placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)"
 },
+"beodeul:dungeon_theme_earth_ore_vein": {
+"id": "beodeul:dungeon_theme_earth_ore_vein",
+"name": "버들항 던전 주제 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+32905,
+32906,
+32907,
+32908,
+32909,
+32910,
+32911,
+32912,
+32913,
+32914
+],
+"description": "광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1(키트 bd-pick-dungeon-theme-ore-vein-gold, bd-pick-dungeon-theme-ore-vein-iron, bd-pick-dungeon-theme-ore-vein-gold-1, bd-pick-dungeon-theme-ore-vein-iron-1). 하네스 theme-earth-r2 A2.",
+"placementRules": "통행: 벽 앞면 위(이미 막힘)"
+},
+"beodeul:dungeon_theme_earth_ossuary": {
+"id": "beodeul:dungeon_theme_earth_ossuary",
+"name": "버들항 던전 주제 납골 벽(벽 앞면 덧그림) 3단·2단",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+32915,
+32916,
+32917,
+32918,
+32919,
+32920,
+32921,
+32922,
+32923,
+32924,
+32925,
+32926,
+32927,
+32928,
+32929
+],
+"description": "납골 벽(벽 앞면 덧그림) 3단·2단(키트 bd-pick-dungeon-theme-ossuary-3h, bd-pick-dungeon-theme-ossuary-2h). 하네스 theme-earth-r2 A1.",
+"placementRules": "통행: 벽 앞면 위(이미 막힘)"
+},
+"beodeul:dungeon_theme_earth_overgrown": {
+"id": "beodeul:dungeon_theme_earth_overgrown",
+"name": "버들항 던전 주제 풀·뿌리가 뚫고 나온 판석(덧그림 2×2)",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+32930,
+32931,
+32932,
+32933
+],
+"description": "풀·뿌리가 뚫고 나온 판석(덧그림 2×2)(키트 bd-pick-dungeon-theme-overgrown). 하네스 theme-earth-r2 A2.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)"
+},
 "beodeul:dungeon_theme_earth_portcullis": {
 "id": "beodeul:dungeon_theme_earth_portcullis",
 "name": "버들항 던전 주제 내리닫이 쇠창살문 3×2 닫힘·올림",
@@ -37919,6 +41389,33 @@ null,
 ],
 "description": "내리닫이 쇠창살문 3×2 닫힘·올림(키트 bd-pick-dungeon-theme-portcullis, bd-pick-dungeon-theme-portcullis-open). 하네스 theme-earth-r1 A1.",
 "placementRules": "통행: 상태별 통행 격자(올림 = 아래 줄 가운데 걸음, 이동 이벤트)"
+},
+"beodeul:dungeon_theme_earth_rails": {
+"id": "beodeul:dungeon_theme_earth_rails",
+"name": "버들항 던전 주제 광산 선로 이음 세트 15칸",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+32934,
+32935,
+32936,
+32937,
+32938,
+32939,
+32940,
+32941,
+32942,
+32943,
+32944,
+32945,
+32946,
+32947,
+32948
+],
+"description": "광산 선로 이음 세트 15칸(키트 bd-pick-dungeon-theme-rails-ew, bd-pick-dungeon-theme-rails-ns, bd-pick-dungeon-theme-rails-ne, bd-pick-dungeon-theme-rails-nw, bd-pick-dungeon-theme-rails-se, bd-pick-dungeon-theme-rails-sw, bd-pick-dungeon-theme-rails-x, bd-pick-dungeon-theme-rails-tn, bd-pick-dungeon-theme-rails-ts, bd-pick-dungeon-theme-rails-te, bd-pick-dungeon-theme-rails-tw, bd-pick-dungeon-theme-rails-end-n, bd-pick-dungeon-theme-rails-end-s, bd-pick-dungeon-theme-rails-end-e, bd-pick-dungeon-theme-rails-end-w). 하네스 theme-earth-r2 A1.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)"
 },
 "beodeul:dungeon_theme_earth_rubble_heap": {
 "id": "beodeul:dungeon_theme_earth_rubble_heap",
@@ -38589,6 +42086,36 @@ null,
 "description": "마계 검은 돌 바닥 오토타일 `beodeul_dungeon_theme_otherworld_ground` + 몸통 섞음 키트 bd-pick-dungeon-theme-otherworld-floor. 하네스 theme-arcane-r1 A2.",
 "placementRules": "걷는 바닥 전부."
 },
+"beodeul:dungeon_theme_other_portal": {
+"id": "beodeul:dungeon_theme_other_portal",
+"name": "버들항 던전 주제 봉인된 차원문 3×3 닫힘·열림(열림 3장면)",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+32796,
+32800,
+32804,
+32808,
+32812,
+32816,
+32820,
+32824,
+32828,
+32831,
+32832,
+32833,
+32834,
+32835,
+32836,
+32837,
+32838,
+32839
+],
+"description": "봉인된 차원문 3×3 닫힘·열림(열림 3장면)(키트 bd-pick-dungeon-theme-portal-gate-open, bd-pick-dungeon-theme-portal-gate). 하네스 theme-arcane-r2 A1.",
+"placementRules": "통행: 상태별 통행 격자(열림 = 아래 가운데 이동 이벤트)"
+},
 "beodeul:dungeon_theme_other_throne": {
 "id": "beodeul:dungeon_theme_other_throne",
 "name": "버들항 던전 주제 단 위 마왕 옥좌 3×3",
@@ -38609,6 +42136,96 @@ null,
 ],
 "description": "단 위 마왕 옥좌 3×3(키트 bd-pick-dungeon-theme-demon-throne). 하네스 theme-arcane-r1 A2.",
 "placementRules": "통행: 위 줄 ★ · 아래 두 줄 막힘(보스 이벤트는 앞 칸)"
+},
+"beodeul:dungeon_theme_other_void_edge": {
+"id": "beodeul:dungeon_theme_other_void_edge",
+"name": "버들항 던전 주제 마계 허공 가장자리",
+"role": "floor",
+"source": "bundled-default",
+"defaultLayer": "lower",
+"confidence": "high",
+"tileIds": [
+32751,
+32752,
+32753,
+32754,
+32755,
+32756,
+32757,
+32758,
+32759,
+32760,
+32761,
+32762,
+32763,
+32764,
+32765,
+32766,
+32767,
+32768,
+32769,
+32770,
+32771,
+32840,
+32841,
+32842,
+32843,
+32844,
+32845,
+32846,
+32847,
+32848,
+32849,
+32850,
+32851,
+32852,
+32853,
+32854,
+32855,
+32856,
+32857,
+32858,
+32859,
+32860,
+32861,
+32862,
+32863,
+32864,
+32865,
+32866,
+32867,
+32868,
+32869,
+32870,
+32871,
+32872,
+32873,
+32874,
+32875,
+32876,
+32877,
+32878,
+32879,
+32880,
+32881,
+32882,
+32883,
+32884,
+32885,
+32886,
+32887,
+32888,
+32889,
+32890,
+32891,
+32892,
+32893,
+32894,
+32895,
+32896
+],
+"description": "마계 섬 바닥 턱 오토타일 `beodeul_dungeon_theme_void_edge` + 허공 몸통 bd-pick-dungeon-theme-void-body + 섬 밑 bd-pick-dungeon-theme-void-underside. 하네스 theme-arcane-r2 A1.",
+"placementRules": "otherworld 던전의 허공 칸과 그 둘레 바닥. author_dungeon 이 저절로 쓴다."
 },
 "beodeul:dungeon_theme_tc_fo_ancient_tree": {
 "id": "beodeul:dungeon_theme_tc_fo_ancient_tree",
@@ -38734,6 +42351,20 @@ null,
 "description": "얼음 수정 덩이 1×2(키트 bd-pick-dungeon-theme-ice-crystal). 하네스 theme-climate-r1 A2.",
 "placementRules": "통행: 아래 칸 막힘"
 },
+"beodeul:dungeon_theme_tc_ice_drift": {
+"id": "beodeul:dungeon_theme_tc_ice_drift",
+"name": "버들항 던전 주제 눈 더미 흩뿌림 1×1(두 변형, 동굴 바닥 위)",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+32897,
+32898
+],
+"description": "눈 더미 흩뿌림 1×1(두 변형, 동굴 바닥 위)(키트 bd-pick-dungeon-theme-snow-drift, bd-pick-dungeon-theme-snow-drift-2). 하네스 theme-climate-r2 A2.",
+"placementRules": "통행: 걸음"
+},
 "beodeul:dungeon_theme_tc_ice_frozen": {
 "id": "beodeul:dungeon_theme_tc_ice_frozen",
 "name": "버들항 던전 주제 얼음에 갇힌 전사 1×2",
@@ -38763,6 +42394,20 @@ null,
 "description": "고드름(벽 앞면 걸이) 1×1·2×1(키트 bd-pick-dungeon-theme-icicles, bd-pick-dungeon-theme-icicles-2w). 하네스 theme-climate-r1 A2.",
 "placementRules": "통행: 막힘(벽 앞면 위 덧칠 — 2칸 조각은 칸마다 x)"
 },
+"beodeul:dungeon_theme_tc_pyr_drift": {
+"id": "beodeul:dungeon_theme_tc_pyr_drift",
+"name": "버들항 던전 주제 모래 더미 흩뿌림 1×1(두 변형, 바닥 위)",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+32899,
+32900
+],
+"description": "모래 더미 흩뿌림 1×1(두 변형, 바닥 위)(키트 bd-pick-dungeon-theme-sand-drift, bd-pick-dungeon-theme-sand-drift-2). 하네스 theme-climate-r2 A1.",
+"placementRules": "통행: 걸음"
+},
 "beodeul:dungeon_theme_pyr_face": {
 "id": "beodeul:dungeon_theme_pyr_face",
 "name": "버들항 던전 주제 피라미드 사암 벽 앞면",
@@ -38789,6 +42434,22 @@ null,
 ],
 "description": "피라미드 사암 벽 앞면 키트(bd-pick-dungeon-theme-sandstone-face-3h, bd-pick-dungeon-theme-sandstone-face-2h, bd-pick-dungeon-theme-sandstone-face-3h-base, bd-pick-dungeon-theme-sandstone-face-3h-glyph, bd-pick-dungeon-theme-sandstone-face-2h-glyph, bd-pick-dungeon-theme-sandstone-face-3h-alt). 하네스 theme-climate-r1 A1.",
 "placementRules": "천장 테두리 아래 벽 앞면. author_dungeon 이 저절로 쓴다."
+},
+"beodeul:dungeon_theme_pyr_floor": {
+"id": "beodeul:dungeon_theme_pyr_floor",
+"name": "버들항 던전 주제 피라미드 사암 바닥",
+"role": "floor",
+"source": "bundled-default",
+"defaultLayer": "lower",
+"confidence": "high",
+"tileIds": [
+32901,
+32902,
+32903,
+32904
+],
+"description": "피라미드 사암 판석 바닥(키트 bd-pick-dungeon-theme-sandstone-floor). 하네스 theme-climate-r2 A1.",
+"placementRules": "걷는 바닥 전부. 칸마다 네 칸 중 아무거나."
 },
 "beodeul:dungeon_theme_tc_pyr_gold": {
 "id": "beodeul:dungeon_theme_tc_pyr_gold",
@@ -39772,6 +43433,450 @@ null,
 ]
 }
 },
+"bd-pick-dungeon-theme-ore-vein-gold": {
+"id": "bd-pick-dungeon-theme-ore-vein-gold",
+"kind": "object",
+"name": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 금 2×2 2×2",
+"width": 2,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+32905,
+32906
+]
+},
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+32907,
+32908
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 — 금 2×2. 광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"placementRules": "통행: 벽 앞면 위(이미 막힘)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-ore-vein-iron": {
+"id": "bd-pick-dungeon-theme-ore-vein-iron",
+"kind": "object",
+"name": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 쇠 2×2 2×2",
+"width": 2,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+32909,
+32910
+]
+},
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+32911,
+32912
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 — 쇠 2×2. 광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"placementRules": "통행: 벽 앞면 위(이미 막힘)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-ore-vein-gold-1": {
+"id": "bd-pick-dungeon-theme-ore-vein-gold-1",
+"kind": "object",
+"name": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 금 1×1 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32913
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 — 금 1×1. 광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"placementRules": "통행: 벽 앞면 위(이미 막힘)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-ore-vein-iron-1": {
+"id": "bd-pick-dungeon-theme-ore-vein-iron-1",
+"kind": "object",
+"name": "버들항 던전 · 광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 쇠 1×1 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32914
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광맥 덧그림(벽 걸이) 금·쇠 × 2×2·1×1 — 쇠 1×1. 광산 벽 앞면 위에 얹는 광맥. 그림 = [금 2×2 | 쇠 2×2 | 금 1×1 | 쇠 1×1](1×1 은 위 칸). 투명 바탕 — 버들항 앞면 결이 비친다.",
+"placementRules": "통행: 벽 앞면 위(이미 막힘)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"ore-vein",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-ossuary-3h": {
+"id": "bd-pick-dungeon-theme-ossuary-3h",
+"kind": "object",
+"name": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 3단 3×3",
+"width": 3,
+"height": 3,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+32915,
+32916,
+32917
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+32918,
+32919,
+32920
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+32921,
+32922,
+32923
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "납골 벽(벽 앞면 덧그림) 3단·2단 — 3단. 카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"placementRules": "통행: 벽 앞면 위(이미 막힘)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-ossuary-2h": {
+"id": "bd-pick-dungeon-theme-ossuary-2h",
+"kind": "object",
+"name": "버들항 던전 · 납골 벽(벽 앞면 덧그림) 3단·2단 2단 3×2",
+"width": 3,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+32924,
+32925,
+32926
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+32927,
+32928,
+32929
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "납골 벽(벽 앞면 덧그림) 3단·2단 — 2단. 카타콤 앞면(aqueduct-sewer face-cata 3h/2h) 위에 얹는 3칸 폭 납골 벽 — 해골·뼈를 쌓은 파낸 칸. 그림 = [3단 3×3 | 2단 3×2(아래 정렬)].",
+"placementRules": "통행: 벽 앞면 위(이미 막힘)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"ossuary",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-overgrown": {
+"id": "bd-pick-dungeon-theme-overgrown",
+"kind": "object",
+"name": "버들항 던전 · 풀·뿌리가 뚫고 나온 판석(덧그림 2×2) 풀 난 판석 2×2",
+"width": 2,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+32930,
+32931
+],
+"upperTiles": [
+-1,
+-1
+]
+},
+{
+"tiles": [
+32932,
+32933
+],
+"upperTiles": [
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "풀·뿌리가 뚫고 나온 판석(덧그림 2×2) — 풀 난 판석. 버들항 신전 폐허 바닥(floor-ruin) 위에 얹는 풀·뿌리·깨진 자리. 판석 결은 버들항 그대로 비친다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"overgrown",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "floor",
+"repeatability": "fixed",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
 "bd-pick-dungeon-theme-portcullis": {
 "id": "bd-pick-dungeon-theme-portcullis",
 "kind": "object",
@@ -39882,6 +43987,786 @@ null,
 "던전",
 "주제",
 "portcullis",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-ew": {
+"id": "bd-pick-dungeon-theme-rails-ew",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 H 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32934
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — H. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-ns": {
+"id": "bd-pick-dungeon-theme-rails-ns",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 V 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32935
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — V. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-ne": {
+"id": "bd-pick-dungeon-theme-rails-ne",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 NE 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32936
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — NE. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-nw": {
+"id": "bd-pick-dungeon-theme-rails-nw",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 NW 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32937
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — NW. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-se": {
+"id": "bd-pick-dungeon-theme-rails-se",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 SE 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32938
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — SE. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-sw": {
+"id": "bd-pick-dungeon-theme-rails-sw",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 SW 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32939
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — SW. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-x": {
+"id": "bd-pick-dungeon-theme-rails-x",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 X 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32940
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — X. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-tn": {
+"id": "bd-pick-dungeon-theme-rails-tn",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 TN 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32941
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — TN. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-ts": {
+"id": "bd-pick-dungeon-theme-rails-ts",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 TS 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32942
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — TS. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-te": {
+"id": "bd-pick-dungeon-theme-rails-te",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 TE 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32943
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — TE. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-tw": {
+"id": "bd-pick-dungeon-theme-rails-tw",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 TW 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32944
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — TW. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-end-n": {
+"id": "bd-pick-dungeon-theme-rails-end-n",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 EN 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32945
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — EN. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-end-s": {
+"id": "bd-pick-dungeon-theme-rails-end-s",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 ES 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32946
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — ES. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-end-e": {
+"id": "bd-pick-dungeon-theme-rails-end-e",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 EE 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32947
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — EE. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-rails-end-w": {
+"id": "bd-pick-dungeon-theme-rails-end-w",
+"kind": "object",
+"name": "버들항 던전 · 광산 선로 이음 세트 15칸 EW 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32948
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "광산 선로 이음 세트 15칸 — EW. 투명 덧그림 선로: 가로 H · 세로 V · 굽이 NE NW SE SW · 갈래 TN TS TE TW(줄기 방향) · 십자 X · 끝 막이 EN ES EE EW. 그림 8×2 = 윗줄 H V NE NW SE SW X (빈칸) · 아랫줄 TN TS TE TW EN ES EE EW. 레일 자리 가로 5·6행/11·12행, 세로 3·4열/11·12열 — 모든 칸 변에서 같은 자리로 이어진다. 빌더가 통로 길을 따라 이웃 방향 마스크로 고른다.",
+"placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"rails-ew",
 "mine",
 "catacomb",
 "castle",
@@ -40820,6 +45705,142 @@ null,
 ]
 }
 },
+"bd-pick-dungeon-theme-portal-gate-open": {
+"id": "bd-pick-dungeon-theme-portal-gate-open",
+"kind": "object",
+"name": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 움직임 3×3(3장면)",
+"width": 3,
+"height": 3,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+32796,
+32800,
+32804
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+32808,
+32812,
+32816
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+32820,
+32824,
+32828
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "봉인된 차원문 3×3 닫힘·열림(열림 3장면) — 움직임. 돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3. 3장면 animationStrips.",
+"placementRules": "통행: 상태별 통행 격자(열림 = 아래 가운데 이동 이벤트)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"otherworld",
+"마계"
+]
+}
+},
+"bd-pick-dungeon-theme-portal-gate": {
+"id": "bd-pick-dungeon-theme-portal-gate",
+"kind": "object",
+"name": "버들항 던전 · 봉인된 차원문 3×3 닫힘·열림(열림 3장면) 닫힘 3×3",
+"width": 3,
+"height": 3,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+32831,
+32832,
+32833
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+32834,
+32835,
+32836
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+32837,
+32838,
+32839
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "봉인된 차원문 3×3 닫힘·열림(열림 3장면) — 닫힘. 돌 아치 + 뿔 기둥 + 문턱. 닫힘 = 굳은 판 + X 쇠사슬 + 봉인 메달 · 열림 = 소용돌이(3장면). 그림 = 닫힘|열림1|2|3.",
+"placementRules": "통행: 상태별 통행 격자(열림 = 아래 가운데 이동 이벤트)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"portal-gate",
+"otherworld",
+"마계"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"otherworld",
+"마계"
+]
+}
+},
 "bd-pick-dungeon-theme-demon-throne": {
 "id": "bd-pick-dungeon-theme-demon-throne",
 "kind": "object",
@@ -40880,6 +45901,112 @@ null,
 "role": "prop",
 "repeatability": "fixed",
 "layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"otherworld",
+"마계"
+]
+}
+},
+"bd-pick-dungeon-theme-void-body": {
+"id": "bd-pick-dungeon-theme-void-body",
+"kind": "section",
+"name": "버들항 던전 · 마계 허공 몸통 3×1(섞음)",
+"width": 3,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+32886,
+32887,
+32888
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "마계 허공 몸통 변형. 칸마다 섞어 깐다.",
+"placementRules": "허공 칸 전부(막힘).",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"마계",
+"허공",
+"void",
+"섞음",
+"otherworld",
+"마계"
+],
+"role": "floor",
+"repeatability": "repeat",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"otherworld",
+"마계"
+]
+}
+},
+"bd-pick-dungeon-theme-void-underside": {
+"id": "bd-pick-dungeon-theme-void-underside",
+"kind": "object",
+"name": "버들항 던전 · 마계 섬 밑 바위 4×2",
+"width": 4,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+32889,
+32890,
+32891,
+32892
+],
+"upperTiles": [
+-1,
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+32893,
+32894,
+32895,
+32896
+],
+"upperTiles": [
+-1,
+-1,
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "줄 = 단(1단: 바닥 바로 남쪽 허공, 2단: 그 밑), 열 = 양 끝(가운데 · 오른끝 · 왼끝 · 양끝).",
+"placementRules": "섬 바닥 남쪽 허공 두 칸.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"마계",
+"허공"
+],
+"role": "floor",
+"repeatability": "fixed",
+"layerHome": "lower",
 "themes": [
 "dungeon",
 "던전",
@@ -41288,6 +46415,86 @@ null,
 ]
 }
 },
+"bd-pick-dungeon-theme-snow-drift": {
+"id": "bd-pick-dungeon-theme-snow-drift",
+"kind": "object",
+"name": "버들항 던전 · 눈 더미 흩뿌림 1×1(두 변형, 동굴 바닥 위) 변형1 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32897
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "눈 더미 흩뿌림 1×1(두 변형, 동굴 바닥 위) — 변형1. 동굴 바닥에 쌓인 눈 더미. 투명 가장자리. 그림 = [변형1|변형2].",
+"placementRules": "통행: 걸음",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"snow-drift",
+"ice",
+"얼음"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"ice",
+"얼음"
+]
+}
+},
+"bd-pick-dungeon-theme-snow-drift-2": {
+"id": "bd-pick-dungeon-theme-snow-drift-2",
+"kind": "object",
+"name": "버들항 던전 · 눈 더미 흩뿌림 1×1(두 변형, 동굴 바닥 위) 변형2 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32898
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "눈 더미 흩뿌림 1×1(두 변형, 동굴 바닥 위) — 변형2. 동굴 바닥에 쌓인 눈 더미. 투명 가장자리. 그림 = [변형1|변형2].",
+"placementRules": "통행: 걸음",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"snow-drift",
+"ice",
+"얼음"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"ice",
+"얼음"
+]
+}
+},
 "bd-pick-dungeon-theme-frozen-warrior": {
 "id": "bd-pick-dungeon-theme-frozen-warrior",
 "kind": "object",
@@ -41415,6 +46622,90 @@ null,
 "던전",
 "ice",
 "얼음"
+]
+}
+},
+"bd-pick-dungeon-theme-sand-drift": {
+"id": "bd-pick-dungeon-theme-sand-drift",
+"kind": "object",
+"name": "버들항 던전 · 모래 더미 흩뿌림 1×1(두 변형, 바닥 위) 변형1 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32899
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "모래 더미 흩뿌림 1×1(두 변형, 바닥 위) — 변형1. 판석 바닥 위로 흘러든 모래 더미·물결. 투명 가장자리, 어느 바닥에도 얹힌다. 그림 = [변형1|변형2].",
+"placementRules": "통행: 걸음",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"sand-drift",
+"pyramid",
+"피라미드",
+"사막"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"pyramid",
+"피라미드",
+"사막"
+]
+}
+},
+"bd-pick-dungeon-theme-sand-drift-2": {
+"id": "bd-pick-dungeon-theme-sand-drift-2",
+"kind": "object",
+"name": "버들항 던전 · 모래 더미 흩뿌림 1×1(두 변형, 바닥 위) 변형2 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+32900
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "모래 더미 흩뿌림 1×1(두 변형, 바닥 위) — 변형2. 판석 바닥 위로 흘러든 모래 더미·물결. 투명 가장자리, 어느 바닥에도 얹힌다. 그림 = [변형1|변형2].",
+"placementRules": "통행: 걸음",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"sand-drift",
+"pyramid",
+"피라미드",
+"사막"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"pyramid",
+"피라미드",
+"사막"
 ]
 }
 },
@@ -41756,6 +47047,63 @@ null,
 ],
 "role": "wall",
 "repeatability": "fixed",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"pyramid",
+"피라미드",
+"사막"
+]
+}
+},
+"bd-pick-dungeon-theme-sandstone-floor": {
+"id": "bd-pick-dungeon-theme-sandstone-floor",
+"kind": "section",
+"name": "버들항 던전 · 피라미드 사암 판석 바닥 2×2(섞음)",
+"width": 2,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+32901,
+32902
+],
+"upperTiles": [
+-1,
+-1
+]
+},
+{
+"tiles": [
+32903,
+32904
+],
+"upperTiles": [
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "피라미드 실내 판석 바닥. 네 칸을 칸마다 섞어 깐다(시공기 floor mix).",
+"placementRules": "걷는 바닥 전부. 칸마다 네 칸 중 아무거나.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"바닥",
+"floor",
+"사암",
+"섞음",
+"pyramid",
+"피라미드",
+"사막"
+],
+"role": "floor",
+"repeatability": "repeat",
 "layerHome": "lower",
 "themes": [
 "dungeon",
@@ -43175,6 +48523,165 @@ null,
 "structureKits": [
 "bd-pick-dungeon-theme-sarcophagus-ew",
 "bd-pick-dungeon-theme-sarcophagus-ew-open"
+]
+}
+},
+"other.portal|*": {
+"round": "theme-arcane-r2",
+"letter": "A1",
+"sha256": "5a62f0aeacddf909d05139e08011c05c9a4a766d7b6271498ed8f6dea64c38b9",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_other_portal"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-portal-gate-open",
+"bd-pick-dungeon-theme-portal-gate"
+]
+}
+},
+"other.void_edge|*": {
+"round": "theme-arcane-r2",
+"letter": "A1",
+"sha256": "6e4b51582d0c08186eb55ef01c4087be11116fc993ebf205bb76773eb72c26e7",
+"gate": "pass",
+"defs": {
+"autotileGroups": [
+"beodeul_dungeon_theme_void_edge"
+],
+"tileGroups": [
+"beodeul:dungeon_theme_other_void_edge"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-void-body",
+"bd-pick-dungeon-theme-void-underside"
+]
+}
+},
+"tc.ice_drift|*": {
+"round": "theme-climate-r2",
+"letter": "A2",
+"sha256": "17f424f1283831801b8a1e7cb822881765fe9ea50ef73b3d0faa74ab9500a431",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_ice_drift"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-snow-drift",
+"bd-pick-dungeon-theme-snow-drift-2"
+]
+}
+},
+"tc.pyr_drift|*": {
+"round": "theme-climate-r2",
+"letter": "A1",
+"sha256": "5a7c02a5e937895a59960fb469d203e32af5bc4ade6d6771e4f3787508715668",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_pyr_drift"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-sand-drift",
+"bd-pick-dungeon-theme-sand-drift-2"
+]
+}
+},
+"tc.pyr_floor|*": {
+"round": "theme-climate-r2",
+"letter": "A1",
+"sha256": "3fb5febf6f6e6158c0fad3c9635fa54c6e3d91e829f8df83c67a09217a8b077f",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_pyr_floor"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-sandstone-floor"
+]
+}
+},
+"earth.ore_vein|*": {
+"round": "theme-earth-r2",
+"letter": "A2",
+"sha256": "16deec320b6ab290da94e17169b21aad711e0d3d802d6ab49b3627c501122ec2",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_earth_ore_vein"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-ore-vein-gold",
+"bd-pick-dungeon-theme-ore-vein-iron",
+"bd-pick-dungeon-theme-ore-vein-gold-1",
+"bd-pick-dungeon-theme-ore-vein-iron-1"
+]
+}
+},
+"earth.ossuary|*": {
+"round": "theme-earth-r2",
+"letter": "A1",
+"sha256": "b6836069eb76b71e0306a3155e23a3bb43b48db1045d7d3050197ae6270bfbaf",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_earth_ossuary"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-ossuary-3h",
+"bd-pick-dungeon-theme-ossuary-2h"
+]
+}
+},
+"earth.overgrown|*": {
+"round": "theme-earth-r2",
+"letter": "A2",
+"sha256": "3cacb983887efb381e91fca2f6c63262555fc0ac6ce4b4de448c396748286be2",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_earth_overgrown"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-overgrown"
+]
+}
+},
+"earth.rails|*": {
+"round": "theme-earth-r2",
+"letter": "A1",
+"sha256": "ef83645adf4fc109aa02b460e859dcc6a16e06087218c8f6be3970aba35df626",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_earth_rails"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-rails-ew",
+"bd-pick-dungeon-theme-rails-ns",
+"bd-pick-dungeon-theme-rails-ne",
+"bd-pick-dungeon-theme-rails-nw",
+"bd-pick-dungeon-theme-rails-se",
+"bd-pick-dungeon-theme-rails-sw",
+"bd-pick-dungeon-theme-rails-x",
+"bd-pick-dungeon-theme-rails-tn",
+"bd-pick-dungeon-theme-rails-ts",
+"bd-pick-dungeon-theme-rails-te",
+"bd-pick-dungeon-theme-rails-tw",
+"bd-pick-dungeon-theme-rails-end-n",
+"bd-pick-dungeon-theme-rails-end-s",
+"bd-pick-dungeon-theme-rails-end-e",
+"bd-pick-dungeon-theme-rails-end-w"
 ]
 }
 }

@@ -67,7 +67,8 @@ export interface TouchPadOptions {
   /** 호출부가 켠다(기기 판정 포함). 없으면 env 오버라이드만 따른다. */
   readonly enabled?: boolean;
   /** `gba`: 480×320 스테이지에 맞춘 작은 패드(D15). */
-  readonly skin?: "gba";
+  readonly skin?: "gba" | "touch";
+  /** `touch`: 일반 게임용 — gba 와 같은 뷰포트 배치, 손가락 크기. */
 }
 
 export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): TouchPadHandle {

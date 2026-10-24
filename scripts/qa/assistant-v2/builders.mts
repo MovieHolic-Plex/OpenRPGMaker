@@ -14,8 +14,10 @@ import type { ToolContext } from "../../../src/editor/tools/types.ts";
 const out = process.argv[2] ?? "qa-runs/v2scratch/builders";
 const only = process.argv.slice(3);
 fs.mkdirSync(out, { recursive: true });
-for (const c of BUILDER_CASES) {
-  if (only.length && !only.includes(c.id)) continue;
+for (const c0 of BUILDER_CASES) {
+  if (only.length && !only.includes(c0.id)) continue;
+  // SALT=<n> → make_place 가 넣는 무작위 값을 흉내 낸다(같은 요청 여러 번 = 다른 맵인지 보기).
+  const c = process.env.SALT ? { ...c0, spec: { ...c0.spec, salt: Number(process.env.SALT) } } : c0;
   const project = createBlankProject();
   if (c.startTileset) project.maps[project.startMapId]!.tilesetId = c.startTileset;
   const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };
@@ -29,6 +31,7 @@ for (const c of BUILDER_CASES) {
     const res = builder.build(run, c.spec);
     const ms = Math.round(performance.now() - t0);
     for (const id of res.mapIds) { const m = ctx.project.maps[id]; if (m) { fs.writeFileSync(path.join(out, `${c.id}-${id}.png`), renderMapPng(ctx.project, m).png); const b = measureInteriorBareFloor(ctx.project, m); if (b) console.log(`  bare ${id.slice(0, 12)} ${b.pct}% ${b.regions.slice(0, 4).map((r) => `(${r.x},${r.y}) ${r.w}x${r.h}`).join(" ")}`); } }
+    if (process.env.DUMP_PROJECT) fs.writeFileSync(path.join(out, `${c.id}.project.json`), JSON.stringify(ctx.project));
     fs.writeFileSync(path.join(out, `${c.id}.json`), JSON.stringify({ spec: c.spec, result: { ...res, state: undefined }, calls: run.calls.map((x) => ({ tool: x.tool, ok: x.ok, summary: x.summary, args: x.args })) }, null, 1));
     console.log(`== ${c.id} ${res.ok ? "ok" : "FAIL"} ${ms}ms maps=${res.mapIds.join(",")} — ${res.summary.slice(0, 200)}`);
     if (res.warnings.length) console.log("  warn:", res.warnings.join(" | ").slice(0, 400));

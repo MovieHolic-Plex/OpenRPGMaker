@@ -1,5 +1,5 @@
 // 조수 v2 동사 — 모델이 부르는 도구는 이 열 개 안팎뿐이다. 동사마다: 명세 → 결정론 빌더 → 1배 그림 + 기계 검사 → 독립 비평가.
-// 고치기는 모델이 비평 결과(칸 좌표 major)를 보고 edit_place 패치로 한다(맵당 3바퀴 상한). 끝맺음 관문(afterMain)이
+// 고치기는 모델이 비평 결과(칸 좌표 major)를 보고 edit_place 패치로 한다(맵당 V2_MAX_REPAIR_ROUNDS 바퀴 상한). 끝맺음 관문(afterMain)이
 // 「비평 major 0 + 기계 검사 통과」가 아닌 장소를 남긴 채 「다 됐다」고 말하지 못하게 한다.
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
 import type { PiAssistantV2Env } from "./env";
@@ -18,10 +18,13 @@ import { drawObject } from "./drawObject";
 import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
 // 콘텐츠 동사(컷신 무대·연출 비평·물건 자리 계획) — finishContent·addEvent·drawObjectVerb·placeObject 가 쓴다.
 import { critiqueStaging } from "./critic";
+import { createGameTools, wantsGameTools, wantsTerrainTools } from "./game";
 import { pickStageFrames, stageFrameProject, type EventBuildResult } from "./events";
 import { rememberObjectPlan, takeObjectPlan, type DrawObjectResult } from "./drawObject";
 
-export const V2_MAX_REPAIR_ROUNDS = 3;
+// 2026-10-23 5차: 고치기 3바퀴는 바퀴마다 다시 짓기+비평(20~35초)이라 던전 한 장에 200~250초가 들었다.
+// 속도 우선(6차)으로 1바퀴만 — 첫 비평의 major 를 한 번 고치고 남은 것은 보고한다.
+export const V2_MAX_REPAIR_ROUNDS = 1;
 /** build_hand_interior_room 이 layout 방마다 다는 장소 꼬리표(handInteriorTools.ts 와 같은 값). */
 const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
 
@@ -134,7 +137,8 @@ async function see(env: PiAssistantV2Env, session: V2Session, task: string, type
     env.emit({ type: "execution_status", name: "v2.critic", ok: true, summary: `다른 눈(독립 비평가)이 1배 그림 ${images.length}장을 보는 중` });
     const judged = await Promise.all(images.slice(0, 3).map(async (image) => {
       const map = project.maps[image.mapId]!;
-      const others = images.filter((o) => o.mapId !== image.mapId).map((o) => ({ name: project.maps[o.mapId]?.name ?? o.mapId, image: o.dataUrl }));
+      // 다른 층은 이름만 준다 — 그림까지 주면 층마다 비평가가 그림 3장을 읽어 한 번에 ~6초 더 걸렸다(72회 실측: 1장 23초 · 3장 29초 중앙값).
+      const others = images.filter((o) => o.mapId !== image.mapId).map((o) => ({ name: project.maps[o.mapId]?.name ?? o.mapId, image: "" }));
       try {
         const run = await critique({ task, type, map: { id: map.id, name: map.name, width: map.width, height: map.height }, image: image.dataUrl, others, sideChat: env.sideChat, ...(env.signal ? { signal: env.signal } : {}) });
         session.criticCalls++; session.criticMs += run.ms;
@@ -292,6 +296,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
           ...(stage.letterbox ? ["the scene starts by sliding in cinematic letterbox bars and removes them at the end"] : []),
           ...stage.walks.map((w) => `${w.who} walks ${w.steps} cells from (${w.from.x},${w.from.y}) to (${w.goal.x},${w.goal.y})${w.onRoad ? `, ${w.onRoad} of them on road tiles` : ""}`),
           "after walking up, the two characters turn to face each other; each spoken line is shown in a dialogue box with the speaker's portrait",
+          ...(stage.effects?.length ? ["these frames are plain map renders: screen tint, sprite silhouettes and camera moves are NOT drawn in them but do happen in the game", ...stage.effects] : []),
         ];
         try {
           const ran = await critiqueStaging({ task, map: { id: map.id, name: map.name }, frames, notes, sideChat: env.sideChat, ...(env.signal ? { signal: env.signal } : {}) });
@@ -333,7 +338,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     description: "장소(실내·마을·던전·동굴·거리·집)를 명세 하나로 짓는다. 칸·좌표·타일 번호는 쓰지 않는다 — 함수가 짓고, 1배 그림·기계 검사·독립 비평 결과를 돌려준다.",
     parameters: { type: "object", properties: { spec: PLACE_SPEC_SCHEMA }, required: ["spec"] },
     async execute(id, params) {
-      const spec = (params as { spec: PlaceSpec }).spec;
+      // 같은 요청 → 같은 맵을 막는다(2026-10-23 다양성: 역전 상점가가 v1·v2·4차·5차 모두 화소까지 같았다). 고치기는 기록된 명세의 salt 를 물려받는다.
+      const raw = (params as { spec: PlaceSpec }).spec;
+      const spec: PlaceSpec = { ...raw, salt: Math.floor(Math.random() * 1_000_000) };
       const builder = builderFor(spec);
       if (!builder) {
         session.missingArt.add(`${spec.name}(${spec.type}${spec.style ? `·${spec.style}` : ""}) — 이 종류를 짓는 빌더가 없다`);
@@ -348,7 +355,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
 
   const editPlace: PiToolShape = {
     name: "edit_place", label: "장소 고치기", concurrency: "exclusive",
-    description: "지은(또는 이미 있는) 장소의 명세 일부만 바꿔 같은 빌더로 다시 짓는다. 비평 major 의 좌표는 addAnchors.near 로 넘긴다. 맵당 3바퀴까지.",
+    description: "지은(또는 이미 있는) 장소의 명세 일부만 바꿔 같은 빌더로 다시 짓는다. 비평 major 의 좌표는 addAnchors.near 로 넘긴다. 맵당 1바퀴까지.",
     parameters: { type: "object", properties: { patch: { type: "object", properties: {
       mapId: { type: "string", description: "고칠 맵 id(patch 안에)" },
       set: { type: "object", properties: { name: { type: "string" }, style: { type: "string" }, theme: { type: "string" }, size: SIZE, floors: { type: "number" }, features: { type: "array", items: { type: "string" } }, exits: { type: "array", items: { type: "string", enum: ["south", "north", "east", "west"] } }, hints: HINTS_SCHEMA } },
@@ -400,7 +407,13 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       if (builder.id !== interiorBuilder.id) {
         const effective = !!(patch.set || patch.variant !== undefined || patch.seed !== undefined || patch.addFeatures?.length || patch.removeFeatures?.length || patch.addZones?.length || patch.removeZones?.length
           || (patch.addAnchors ?? []).some((a) => /적|몬스터|박쥐|해골|거미|고블린|슬라임|늑대|좀비|유령|enem|monster|bat|skeleton|spider|goblin|slime|wolf|zombie|ghost|상자|chest|보스|boss|레버|lever|광장|plaza|우물|well|밭|field|자판기|vending|공원|park/iu.test(a.what)));
-        if (!effective) return text({ ok: false, summary: `${builder.id} 빌더는 소품 하나하나·꾸밈(dressing)을 받지 않는다 — 고칠 수 있는 것은 variant(다른 배치)·features·size·floors 뿐이다. 바퀴를 쓰지 않았다. 고칠 수 없는 major 는 보고에 적는다.` });
+        if (!effective) {
+          // 거절도 한 바퀴로 센다 — 바퀴를 안 쓰면 모델이 같은 거절을 열 번 넘게 되풀이했다(2026-10-23 3차 피라미드: edit_place 13번 중 12번 거절).
+          const spent = { ...record, rounds: record.rounds + 1 };
+          for (const mapId of record.result.mapIds) session.places.set(mapId, spent);
+          const left = V2_MAX_REPAIR_ROUNDS - spent.rounds;
+          return text({ ok: false, summary: `${builder.id} 빌더는 소품 하나하나·꾸밈(dressing)·단상·석관 같은 물건 지정을 받지 않는다 — 고칠 수 있는 것은 variant(다른 배치)·features·size·floors 뿐이다. 이 거절도 한 바퀴로 셌다(남은 바퀴 ${Math.max(0, left)}).${left <= 0 ? " 더 고치지 말고 남은 major 를 사용자에게 그대로 보고한다." : " 그 넷으로 못 고치는 major 는 고치려 하지 말고 보고에 적는다."}` });
+        }
       }
       const floor = Math.max(1, record.result.mapIds.indexOf(patch.mapId) + 1);
       const onlyAnchors = floor === 1 && !!patch.addAnchors?.length && !patch.set && !patch.addZones?.length && !patch.removeZones?.length && !patch.addFeatures?.length && !patch.removeFeatures?.length && patch.variant === undefined && patch.seed === undefined && patch.dressing === undefined;
@@ -432,14 +445,17 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
 
   const addEvent: PiToolShape = {
     name: "add_event", label: "사건·컷신", concurrency: "exclusive",
-    description: "컷신·대화 사건을 비트 목록으로 만든다(walk/say/appear/face/wait/fade). 함수가 걸을 수 있는 길·자리를 정하고 미리보기 탐침으로 검사한다.",
+    description: "컷신·대화 사건을 비트 목록으로 만든다(walk/say/appear/face/wait/fade/tint/camera/look/vanish). 함수가 걸을 수 있는 길·자리를 정하고 미리보기 탐침으로 검사한다.",
     parameters: { type: "object", properties: { event: { type: "object", properties: {
       kind: { type: "string", enum: ["cutscene", "talk", "trigger"] }, mapId: { type: "string" },
       when: { type: "string", enum: ["game-start", "touch", "talk"] }, where: { type: "string" }, at: POINT,
+      after: { type: "string", description: "이 NPC 이름과 대화가 끝나면 이어서 재생(그 NPC 대화 끝에 붙는다, 한 번만)" },
+      afterTalk: { type: "array", items: { type: "string" }, description: "after 장면이 끝난 뒤 그 NPC 에게 다시 말 걸면 할 말(밤이 됐다·사건 뒤처럼 상황이 바뀌었으면). 없으면 원래 대사" },
       beats: { type: "array", items: { type: "object", properties: {
-        do: { type: "string", enum: ["walk", "say", "appear", "face", "wait", "fade"] },
+        do: { type: "string", enum: ["walk", "say", "appear", "face", "wait", "fade", "tint", "camera", "look", "vanish"] },
         who: { type: "string" }, to: { type: "string", description: "자리 낱말(또는 'x,y')" }, text: { type: "string" },
         where: { type: "string" }, looks: { type: "string" }, toward: { type: "string" }, ms: { type: "number" }, dir: { type: "string", enum: ["in", "out"] },
+        tone: { type: "string", enum: ["night", "dusk", "dawn", "sepia", "clear"] }, as: { type: "string", enum: ["shadow", "ghost", "normal"] },
       }, required: ["do"] } },
     }, required: ["kind", "beats"] } }, required: ["event"] },
     async execute(id, params) {
@@ -543,7 +559,10 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  return [makePlace, editPlace, addPeople, addEvent, addScene, drawObjectVerb, placeObject, inspect, askUser].map(guard);
+  const verbs = [makePlace, editPlace, addPeople, addEvent, addScene, drawObjectVerb, placeObject, inspect, askUser].map(guard);
+  // 게임 요소(퀘스트·아이템·전투·파티) 요청이면 v1 게임 도구를 덧붙인다 — 기록은 도구 묶음이 env.record 로 직접 남긴다.
+  const t = String(task ?? "");
+  return wantsGameTools(t) || wantsTerrainTools(t) ? [...verbs, ...createGameTools(env, t)] : verbs;
 }
 
 /** 끝맺음 관문 — 남은 문제가 있으면 한 번 더 돌게 하는 글. 다 통과면 undefined. */

@@ -378,6 +378,15 @@
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='12' viewBox='0 0 16 12' shape-rendering='crispEdges'%3E%3Cpath fill='%23080e30' d='M0 4h3V2h4V1h8v1h1v3h-5v5H9v2H3v-1H0z'/%3E%3Cpath fill='%23fff4dc' d='M3 4h2V3h3V2h7v2H8v1h2v5H8v1H3z'/%3E%3Cpath fill='%23a8b6cc' d='M5 6h1v3H5zm2-1h1v4H7zm2 1h1v3H9zM3 10h5v1H3z'/%3E%3Cpath fill='%23ffffff' d='M0 5h3v5H0z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
   image-rendering: pixelated;
 }
+/* 손은 **커서가 놓인 행 하나**에만 그린다. 적 대상 국면에서 화살표가 마지막 적을 지나 「뒤로」
+   행으로 넘어가면 battleDom.syncEnemyTargetCursor 가 root 에 `data-battle-target-cursor="cancel"` 을
+   붙이고 손은 그 행으로 간다 — 그런데 위 손 규칙은 `.battle-target-selected`(조준 중인 적)만 보고도
+   손을 그려, 대상 행과 「뒤로」 행에 손이 **둘** 떴다(실측: rt-scarloxy-double-target-cursor —
+   「핀스타 2」 + 「뒤로」). 조준 표시(금색 띠)는 남기고 손만 내린다. 위 손 규칙보다 속성 선택자를
+   둘 더 써서 확실히 이긴다 — 동률이면 번들 순서에 기대게 된다. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-target-cursor="cancel"] .battle-target-menu .battle-command.battle-target-selected::before {
+  content: none;
+}
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status { position: relative; }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-status.is-active-actor::before {
   content: "";

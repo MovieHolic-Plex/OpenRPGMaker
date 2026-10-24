@@ -3887,6 +3887,41 @@
     "폐허 벽 조각": "bd-pick-temple-ruins-ruined-wall-2"
    },
    "line_notes": "줄 공통 17 항목(테마 조각). 줄 A·B·C 동굴 화풍과 무관하다."
+  },
+  "theme-arcane-r2": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_arcane_r2.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 마계 다시 그리기 theme-arcane-r2",
+   "items": [
+    "other.void_edge",
+    "other.portal"
+   ],
+   "lead": "r1 에서 고른 후보가 object-gate 에서 떨어진 두 항목만 다시 그린다. 차원문 = 넓은 돌 단 윗면·기둥 머릿돌 윗면·상인방 윗면이 보이는 3/4, 허공 가장자리 = 턱 4단·섬 밑 돌 켜 6단. 항목 id·명세는 r1 그대로, 섬 윗면 other.ground A2 는 바꾸지 않는다."
+  },
+  "theme-climate-r2": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_climate_r2.py",
+   "wave": "theme_climate",
+   "title": "기후 테마 다시 그리기 theme-climate-r2",
+   "items": [
+    "tc.pyr_floor",
+    "tc.pyr_drift",
+    "tc.ice_drift"
+   ],
+   "lead": "r1 에서 위임 고름 뒤 object-gate 에서 떨어진 세 항목을 다시 그렸다. 바닥 = 칸 접점 넷(좌우 y10·상하 x5)으로 칸을 건너 이어지는 큰 다각 판석(칸당 1~2장), 더미 = 마루·그늘 면·결·알갱이가 있는 1×1 두 변형. 관문은 후보 그림 그대로(cv.img())에 받는다."
+  },
+  "theme-earth-r2": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_earth_r2.py",
+   "wave": "theme_earth",
+   "title": "땅 계열 테마 theme-earth-r2 — 선로·광맥·풀 난 판석·납골 벽 다시 그림",
+   "lead": "r1 위임 고름 그림(판이 내는 그림 그대로)이 object-gate 화풍 반쪽에서 떨어진 네 항목을 다시 그린 판. 덧그림이 혼자서도 버들항 수준 재질(명암 4단 이상 · 재질 색 어두운 가장자리 · 결)을 품는다 — 선로는 자갈·다진 흙 밑자리, 광맥은 벽 속 광맥 바위, 풀 난 판석은 깨져 들린 판석·흙·이끼, 납골 벽은 석회암 문틀 안 뼈 벽. 장면은 r1 과 같은 빌더 키트 위.",
+   "items": [
+    "earth.rails",
+    "earth.ore_vein",
+    "earth.overgrown",
+    "earth.ossuary"
+   ],
+   "reused": {},
+   "line_notes": "줄 공통 4 항목(테마 조각) — 항목 id·시드 명세는 r1 그대로."
   }
  }
 }

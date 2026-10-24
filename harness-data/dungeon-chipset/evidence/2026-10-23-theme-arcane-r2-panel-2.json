@@ -1,0 +1,430 @@
+{
+ "panel": "theme-arcane-r2-panel-2",
+ "rule": "major counts if raised by >=2 of 4 blind reviewers (3 opus general-purpose + 1 argon); answer-4 = argon; fresh reviewers (not panel 1)",
+ "mapping": {
+  "other.portal": {
+   "X": {
+    "key": "A1",
+    "sha256": "f0adb139dcadb8979ee35a2940f5033a0f7c2f737658f1e46ca5ea7953b657d8"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "e4cd3bb8a6e76f8c4fd47c55385976726457da1e46266759646a5cdddd8e417d"
+   }
+  },
+  "other.void_edge": {
+   "X": {
+    "key": "A1",
+    "sha256": "4f9802d19113b22ff1775fb1539c268ed0baa853a05bb3e43f14f34b7f277428"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "a9cd532209da25cad7dd45d192e4d5325d82ca1a17e067348151a4e2b67ea77b"
+   }
+  }
+ },
+ "prompt": "You are a blind pixel-art reviewer. Do not read any code or other files; look ONLY at the PNG boards listed below (open each with the Read tool; look carefully, do not skip any).\n\nContext: 16px-cell hand-pixel chipset for a JRPG dungeon, 3/4 top-down view (you see the top surface of things and their front face; NO side faces / no isometric). Theme: OTHERWORLD (demon realm, violet-black floating islands over a void). Each board shows: the item description (yellow line at top), Beodeul reference images from the existing chipset that set the quality bar (shown 1x and 3x) with an Actor1 person for scale, then one anonymous candidate (X or Y): piece at 1x and 3x, the piece placed in a scene (animation frames side by side), and for autotiles extra sheets (variants, underside sample, small platform, void mosaic). There are two boards per item, one per candidate.\n\nCriteria, judge each candidate against them:\n1. Reads instantly as the described object at 1x game scale.\n2. 3/4 top-down view: top surfaces visible as planes (caps, lintel, base/dais top) + front faces, no side faces, no isometric skew, perspective consistent with the Beodeul reference and the Actor1 person.\n3. Style matches the Beodeul reference: material shading instead of black ink outlines, similar contrast, 4+ step material ramps, texture density and pixel cleanliness (no noise, no orphan pixels, no banding).\n4. Scale vs. the person is plausible; the object sits on the floor (contact shadow/base) rather than floating.\n5. Animation frames (if any): change is visible, smooth, loops, no jitter of the static parts.\n6. Autotiles: no visible seams or repeating grid, edges/corners join correctly in the variants and irregular map; floating-island underside hangs only below south edges.\n7. Fits its theme (demon realm) and is distinct from generic.\n\nA MAJOR is a problem that would make you reject the piece for shipping (misreads, wrong view, broken seams, clashing style, ugly artefact clearly visible at 1x). A MINOR is a polish note.\n\nBoards (directory /home/main/z-project/rpg-zzu-dt-fix2/qa-runs/fix2/panel-2/):\nother.portal-X.png other.portal-Y.png other.void_edge-X.png other.void_edge-Y.png\n\nWrite your answer as JSON to /home/main/z-project/rpg-zzu-dt-fix2/qa-runs/fix2/panel-2/answer-<k>.json (use the Write tool) and also return the same JSON as your final message. Format:\n{\"items\":{\"<item id e.g. other.portal>\":{\"X\":{\"majors\":[{\"problem\":\"...\",\"where\":\"...\"}],\"minors\":[{\"problem\":\"...\",\"where\":\"...\"}]},\"Y\":{...},\"pick\":\"X\"|\"Y\",\"why\":\"one line\"}}}\nCover both items. Be specific and honest; do not invent problems, do not be polite. Do not edit anything else.\n",
+ "answers": {
+  "answer-1.json": {
+   "items": {
+    "other.portal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Portal opening is only about 20px tall, shorter than the 32px Actor1 sprite, so it reads more like a wall niche than a gate you walk through",
+        "where": "swirl aperture vs person in scene frames"
+       },
+       {
+        "problem": "Opening is a rectangle with rounded top corners, not a real arch; the lintel is just a flat slab",
+        "where": "aperture top / lintel"
+       },
+       {
+        "problem": "Grey stone with violet gems is close to a generic dungeon gate; the only thing that says demon realm is the violet",
+        "where": "pillars and dais material"
+       },
+       {
+        "problem": "Swirl change across open frames 1-3 is subtle at 1x (small rotation of the same spiral), so the animation barely registers",
+        "where": "open frames 1|2|3"
+       },
+       {
+        "problem": "Carved glyph frieze on the dais front repeats as an obvious stamp",
+        "where": "base front face"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Swirl is dithered red/violet/black stripes with stray pixels; at 1x it reads as a noisy target ring rather than a clean vortex",
+        "where": "swirl inside the opening, all open frames"
+       },
+       {
+        "problem": "Blue-grey blocks at the pillar feet are a material that appears nowhere else on the piece and clash with the maroon pillar and pinkish dais",
+        "where": "lower part of both pillars"
+       },
+       {
+        "problem": "Pale pink caps and lintel against near-black maroon pillar shafts give low mid-tone ramp on the shafts; the pillars read as dark slots",
+        "where": "pillar shafts"
+       },
+       {
+        "problem": "Same undersized opening as X (shorter than the person)",
+        "where": "aperture vs Actor1"
+       },
+       {
+        "problem": "Red drip strip under the opening is a nice touch, but it lines up as a regular comb",
+        "where": "dais top edge below swirl"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Cleaner material ramps and a clean vortex at Beodeul quality; Y feels more demonic but its swirl is noisy and its pillar-foot material is off."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Underside rock uses a carved-looking motif that repeats every 16px, so it reads as a brick frieze or stamped band, not raw rock; the grid is visible on long south edges",
+        "where": "underside tier 1 along the long south edge in scene"
+       },
+       {
+        "problem": "Lip uses two hues (bright violet on N/W/E edges, mauve on the S edge); the violet notched highlight on the north lip looks dotted/broken",
+        "where": "lip variants top row, piece 3x top edge"
+       },
+       {
+        "problem": "Underside taper is mostly straight-sided with small stalactite nubs at outer corners only; silhouette is boxy",
+        "where": "small floating platform, scene corners"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Underside is so dark and low-contrast that at 1x it almost vanishes into the void; islands read as flat cut-outs rather than floating rock with depth",
+        "where": "underside in scene and in small floating platform sheet"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Same 16px repeating glyph motif on the underside as X; the grid is visible at 3x",
+        "where": "underside tier 1"
+       },
+       {
+        "problem": "Single mauve lip on all edges is consistent but weakly separates the island top from the void on north edges",
+        "where": "north/west lip variants"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both share the same top and lip, but X's underside clearly reads as a hanging cliff at game scale, while Y's fades into the void."
+    }
+   }
+  },
+  "answer-2.json": {
+   "items": {
+    "other.portal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Grey stone with violet sigils is close to the generic Beodeul gate stone; the demon-realm read comes almost entirely from the violet swirl, so the frame alone looks like a generic dungeon shrine",
+        "where": "pillars and lintel, all frames"
+       },
+       {
+        "problem": "Swirl is a single violet ramp with a flat pale-lilac square core; the core looks blocky at 3x and the rotation between open frames 1-3 is subtle, so the animation reads as a slow shimmer more than a turning vortex",
+        "where": "arch interior, open frames 1-3"
+       },
+       {
+        "problem": "Dais top plane is only a thin strip; the front-face rune carving is busy and slightly noisy compared with the Beodeul stone",
+        "where": "bottom dais, front face"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Cool slate-blue blocks at the pillar bottoms clash with the warm mauve/plum stone of the rest of the gate. It reads like a different material pasted in and is visible at 1x in the scene",
+        "where": "lower third of both pillars, every frame"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Red and violet dithered rings make the swirl noisy, with broken single-pixel red runs. At 1x it reads as a muddy red-purple blob rather than a clean vortex",
+        "where": "arch interior, open frames 1-3"
+       },
+       {
+        "problem": "Red drip fringe under the threshold and red sigils are strongly demonic, which is good, but the drip row is a regular comb pattern",
+        "where": "top edge of dais front"
+       },
+       {
+        "problem": "Same blocky pale core square as X",
+        "where": "swirl centre"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X has a coherent palette and a clean, legible swirl. Y is more demonic in tone, but its slate-blue pillar bases clash and its dithered swirl is noisy at 1x."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "The underside rock has a regular carved-looking motif that repeats every 16px, so a visible grid shows along long south edges and it reads more like a brick frieze than raw rock",
+        "where": "underside band under the long south edge in the scene and the 3x piece"
+       },
+       {
+        "problem": "The lip hue changes from blue-violet on the N/W/E edges to mauve on the S edge. The switch at the SW/SE corners is slightly abrupt",
+        "where": "lip colour at the south corners"
+       },
+       {
+        "problem": "The underside taper is symmetric and similar under every edge segment, so the small stalactite clumps under short steps all look the same",
+        "where": "underside under stepped south edges (right side of scene)"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "The underside is so low in contrast that it fades into the void within about one tier. At 1x the islands read as flat plates with a faint shadow rather than rock hanging below the south edges, so the floating-island effect described in the item is weak",
+        "where": "underside below all south edges, scene and small platform"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Same 16px-repeating carved motif in the underside top row as X, but fainter",
+        "where": "top tier of the underside"
+       },
+       {
+        "problem": "The uniform mauve lip is consistent but thin, and it separates weakly from the dark floor",
+        "where": "north/west/east lips"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both share the same lip layout and variants join cleanly. X's underside reads clearly as hanging rock, while Y's fades into the void and the islands lose their floating mass."
+    }
+   }
+  },
+  "answer-3.json": {
+   "items": {
+    "other.portal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Pale cool-grey stone (near the Beodeul gate grey) is the brightest thing in the scene and pops off the violet-black island; it reads as a generic castle gate dropped into the demon realm rather than belonging to it",
+        "where": "pillars, lintel and dais in the scene frames"
+       },
+       {
+        "problem": "Swirl frames 1-3 are very similar; at 1x the rotation reads as a faint shimmer rather than a clear spin",
+        "where": "open frames 1|2|3, arch interior"
+       },
+       {
+        "problem": "The opening is a flat-lintel doorway with a rounded inner top, not really an arch; the dais top plane is only a 1px light line, so the base reads mostly as a front face",
+        "where": "lintel/opening and dais top edge"
+       },
+       {
+        "problem": "Lower pillar blocks step out with a lighter block next to the opening that briefly reads like an inner side face",
+        "where": "bottom third of both pillars, inner edge"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Slate-teal blocks at the base of each pillar do not match anything else in the piece (plum stone, red runes) and look like a palette leftover",
+        "where": "lower pillar blocks beside the opening, all frames"
+       },
+       {
+        "problem": "The red+violet swirl is busier and slightly noisy, with broken 1px red arcs; at 1x the centre reads as a glowing eye/vortex but edges are speckly",
+        "where": "arch interior, open frames"
+       },
+       {
+        "problem": "Red drip fringe under the opening is a nice demon touch but is the same comb pattern in every frame and reads as a flat stripe at 1x",
+        "where": "bottom edge of opening on dais"
+       },
+       {
+        "problem": "As in X, the dais top plane is thin; the base is mostly front face",
+        "where": "dais"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Same solid 3/4 structure as X, and the static parts hold still in both, but Y's plum stone and red runes/vortex belong to the demon realm and sit in the island palette; X is a clean generic grey gate that clashes in the scene. Y needs the teal pillar blocks recoloured."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "The underside uses a regular repeating key/meander glyph motif every few pixels, so the rock looks like a carved frieze and the tile repeat is visible along long south edges",
+        "where": "underside band below the long south edges (scene bottom, 3x piece)"
+       },
+       {
+        "problem": "Under long edges the underside is a straight rectangular band that fades out rather than a tapering rock mass; only the 1-tile stubs taper into stalactites",
+        "where": "main island bottom underside in the scene"
+       },
+       {
+        "problem": "The lip is only a 1-2px line (violet on N/W, mauve on S/E) with no real edge thickness; it works but is thin compared with the chunky Beodeul edges",
+        "where": "lip variants sheet, island rims"
+       },
+       {
+        "problem": "The interior speckle sits in the same place in every variant tile, so a faint 16px grid shows in the variants sheet",
+        "where": "47 lip variants"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "The underside is so dark and low-contrast that it dissolves into the void; at 1x the islands barely read as floating rock with depth, mostly as flat slabs with a faint smudge below",
+        "where": "underside sample, small platform, scene south edges"
+       },
+       {
+        "problem": "The same repeating meander motif as X sits in the top row of the underside, and again it reads as carving",
+        "where": "underside top tier"
+       },
+       {
+        "problem": "The single mauve rim on every side has no light direction, so the N edge looks the same as the S lip and the 3/4 reading is weaker",
+        "where": "lip variants, island north rims"
+       },
+       {
+        "problem": "Same identical interior speckle per variant tile as X",
+        "where": "47 lip variants"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both join cleanly with correct corners, and both hang the underside only below south edges; X's brighter two-tier underside and lit N/W rim make the islands read as floating, where Y's underside fades into mush. X's underside motif should be de-patterned."
+    }
+   }
+  },
+  "answer-4.json": {
+   "items": {
+    "other.portal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Stone frame palette is a neutral light castle grey rather than demon-realm dark/violet stone, creating a stark value jump where the dais base sits on the dark violet-ash floor.",
+        "where": "in scene with Actor1 (all 4 frames), pillar shafts and base dais"
+       },
+       {
+        "problem": "The portal aperture inside the stone frame is slightly small (roughly 1x1 cell) relative to the Actor1 character height, making the doorway look tight to walk through.",
+        "where": "piece 1x/3x and in scene compared to Actor1"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Broken material unity and poor 1x silhouette readability: the vertical pillar shafts and lintel face are nearly the exact same dark purple-black value as the island floor, while the horizontal cap planes and base step remain bright neutral grey, so at 1x the vertical structure disappears into the ground and the caps read as disconnected floating grey bars.",
+        "where": "piece 1x and in scene with Actor1"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Bright red pixels along the bottom sill/step under the vortex read as noisy clutter at 1x, and the red-plus-purple swirl inside the small aperture is visually busier and less readable than a clean single-hue ramp.",
+        "where": "open frames 1-3 atarch threshold and vortex interior"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X maintains cohesive 3/4 stone volume, clear 1x silhouette readability against the dark floor, and a clean, readable vortex animation ramp."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [
+       {
+        "problem": "Visible horizontal tile seam between Tier 1 and Tier 2 of the south rock underside: Tier 1 is a full-width rectangular rock wall while Tier 2 abruptly angles inward into V-shaped teeth at the 16px row boundary.",
+        "where": "piece 3x, in scene bottom-left 4-cell south edge, and small floating platform"
+       },
+       {
+        "problem": "Void body tiles consist of uniform single-pixel purple/magenta dots scattered over dark indigo that read as repetitive 16x16 television static/noise rather than a smooth cosmic or abyssal void.",
+        "where": "void body 6x6 mosaic and background of in scene"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "The floor lip around north/east/west/south edges is a ruler-straight 2px pink-violet border with sharp 90-degree corners, making the floating island top look boxed-in and artificial.",
+        "where": "47 lip variants, small floating platform, and in scene island perimeter"
+       },
+       {
+        "problem": "Single-cell and two-cell south overhangs repeat the same symmetrical V-shaped stalactite cone, looking cookie-cutter across stepped south edges.",
+        "where": "in scene stepped south edges and underside face sample 32x32"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Identical render to X with the same visible horizontal seam between Tier 1 (flat rectangular wall) and Tier 2 (tapered teeth) of the south underside cliff.",
+        "where": "piece 3x, in scene bottom-left 4-cell south edge, and small floating platform"
+       },
+       {
+        "problem": "Identical single-pixel speckle noise in the void body tiles that repeats visibly on a 16x16 grid.",
+        "where": "void body 6x6 mosaic and background of in scene"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Ruler-straight 2px pink-violet edge lip with rigid 90-degree corners reads as a mechanical box border rather than fractured floating rock.",
+        "where": "47 lip variants, small floating platform, and in scene island perimeter"
+       },
+       {
+        "problem": "Repetitive symmetrical V-cone stalactite silhouettes on narrow south edges.",
+        "where": "in scene stepped south edges and underside face sample 32x32"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X and Y are visually identical on the provided boards; picked X by default while flagging the Tier 1/Tier 2 underside seam and noisy void tile speckles on both."
+    }
+   }
+  }
+ },
+ "counted_majors": {
+  "other.portal": {
+   "X": [],
+   "Y": [
+    "slate-blue pillar-base blocks clash with plum stone (2,4 reviewers raise; majors by 2)"
+   ]
+  },
+  "other.void_edge": {
+   "X": [],
+   "Y": [
+    "underside too dark, fades into void (1,2)"
+   ]
+  }
+ },
+ "single_reviewer_majors_not_counted": {
+  "other.void_edge": {
+   "X": [
+    "argon: tier1/tier2 underside seam; void body speckle reads as static"
+   ]
+  }
+ },
+ "picks": {
+  "other.portal": {
+   "X": 3,
+   "Y": 1
+  },
+  "other.void_edge": {
+   "X": 4,
+   "Y": 0
+  }
+ },
+ "result": {
+  "other.portal": "A1 (X) 0 counted majors",
+  "other.void_edge": "A1 (X) 0 counted majors"
+ },
+ "object_gate": {
+  "other.portal A1": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/9f/9fe865402962c632ccf41c33aea6def60d4f78bc8061253425ca10cdc6eeaf0d.json",
+  "other.void_edge A1": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/b2/b2aaf280a082d4ccd626cf5bb112fd0e5f91a1d20047d21c5ec385354b3b5ebc.json"
+ }
+}

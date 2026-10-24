@@ -21,13 +21,31 @@ import {
 } from "@/player/exportSaveNamespace";
 import { hostExitReturnUrl, parseHostBridge, type HostBridge } from "@/player/hostBridge";
 import { installDesktopShellBridge, type DesktopShellBootConfig } from "@/player/desktopShellBridge";
-import { stopAllAudio } from "@/player/audio";
-import { registerExportAssetBase } from "@/assets/inlineAssetStore";
+import { getAudioEngine, stopAllAudio } from "@/player/audio";
+import { fetchTextWithProgress, mountBootLoader, readLoadingInfo, type BootLoader } from "@/player/bootLoader";
+import { backgroundUrls, enableScenePreload, firstPlayableUrls, preloadUrls } from "@/player/scenePreload";
+import { registerAssetAliases, registerExportAssetBase } from "@/assets/inlineAssetStore";
 import { exportAssetBaseFor } from "@/player/exportAssetBase";
+import { dropOtherVersionPackCaches, loadPacks, startPackServiceWorker, type PreloadPack } from "@/player/preloadPacks";
+import { rebaseRuntimeCssAssetUrls } from "@/player/rebaseCssAssetUrls";
 import { installExportUploadedAssets } from './exportUploadedAssets';
+import { warmPlayGameRuntime } from "@/player/createPlayGame";
 import { repairFaceMatches } from "@/project/faceMatchRepair";
+import { installFocusGuard } from "@/player/focusGuard";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { isTouchDevice } from "@/player/touchPad";
 import type { ActionCombatRuntimeResult } from "@/testing/actionCombatProof";
+import {
+  askContinueFromOlderVersion,
+  continueFromOlderVersion,
+  declineOlderVersion,
+  parseStoreGameBoot,
+  renderStoreEmbedBlocked,
+  shouldOfferContinue,
+  storeGameEmbedderAllowed,
+  storeGameSaveNamespace,
+  type StoreGameBoot,
+} from "@/player/storeGameHost";
 
 const app = document.getElementById("app");
 if (!app) {
@@ -46,6 +64,10 @@ interface OpenRpgBootConfig {
   readonly returnUrl?: unknown;
   readonly hostFeatures?: unknown;
   readonly desktopShell?: DesktopShellBootConfig;
+  /** 스토어에서 바로 플레이하는 판본(storeGameHost.ts). 판본별 세이브·품는 곳 확인·이어서 하기. */
+  readonly storeGame?: unknown;
+  /** "auto": 터치 기기에서 가상 패드를 붙인다(스토어 웹 게임). */
+  readonly touchControls?: unknown;
 }
 
 function readBootConfig(): OpenRpgBootConfig {
@@ -53,21 +75,31 @@ function readBootConfig(): OpenRpgBootConfig {
   return config ?? {};
 }
 
+installFocusGuard(app);
 void bootExportedPlayer(app);
 
 async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   const boot = await withDevCheckpointParam(readBootConfig());
+  const storeGame = parseStoreGameBoot(boot.storeGame);
+  if (storeGame && !storeGameEmbedderAllowed(storeGame)) {
+    renderStoreEmbedBlocked(root, storeGame);
+    return;
+  }
   // The private editor probe and any hosted build (player under /export-player/) read public game
   // resources from the editor host, one directory above that bundle — see exportAssetBase.ts.
   const probeAssets = boot.qaInstrumentation === true && boot.actionCombatProbe !== undefined;
   const assetBase = exportAssetBaseFor(document.baseURI, { editorProbe: probeAssets });
   registerExportAssetBase(assetBase);
+  rebaseRuntimeCssAssetUrls(assetBase);
   const rawDemoParam = new URLSearchParams(window.location.search).get("demo");
   const demoParam = rawDemoParam === "fallen-star" ? "chrono-bell" : rawDemoParam === "astra-horizon" ? "emerald-crown" : rawDemoParam;
   if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season" || demoParam === "first-love") {
-    const demo = await loadFlagshipDemo(demoParam, assetBase);
-    if (demo.ok) void startPlayer(root, boot, demo.project, "bundled");
-    else renderBootError(root, demo.message);
+    const loader = mountBootLoader(root, { title: document.title });
+    const demo = await loadFlagshipDemo(demoParam, assetBase, (bytes) => loader.projectProgress(bytes));
+    if (!demo.ok) { loader.remove(); renderBootError(root, demo.message); return; }
+    loader.setInfo({ title: demo.project.meta.title });
+    await prepareFirstScreen(loader, demo.project, autoStartFor(boot));
+    void startPlayer(root, boot, demo.project, "bundled");
     return;
   }
   // 단일 HTML 로 내보낸 게임: 프로젝트도 에셋도 이 문서 안에 있다. fetch 가 막히는 file:// 에서
@@ -81,26 +113,124 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
     openGameFilePicker(root, boot, "");
     return;
   }
-  const bundled = await loadBundledProject(boot);
-  if (bundled.ok) {
-    void startPlayer(root, boot, bundled.project, "bundled");
+  // 웹 판본: 그림·소리보다 화면이 먼저 뜨지 않게, 타이틀과 첫 맵이 쓰는 파일을 다 받은 뒤 「시작하기」로 연다(bootLoader.ts).
+  const loader = mountBootLoader(root, { title: storeGame?.title ?? "" });
+  const projectUrl = new URL(boot.projectUrl ?? "project.json", window.location.href);
+  const loadingInfo = readLoadingInfo(projectUrl).then((info) => { loader.setInfo(storeGame ? { ...info, title: storeGame.title } : info); return info; });
+  const bundled = await loadBundledProject(projectUrl, (bytes) => loader.projectProgress(bytes));
+  if (!bundled.ok) {
+    loader.remove();
+    openGameFilePicker(root, boot, bundled.message);
     return;
   }
-  openGameFilePicker(root, boot, bundled.message);
+  if (storeGame) {
+    loader.root.style.visibility = "hidden";
+    await offerOlderVersionSave(root, storeGame);
+    loader.root.style.visibility = "";
+  }
+  // 판본이 원본 대신 실은 파일(큰 WAV → MP3 등). 주소를 하나라도 만들기 전에 건다.
+  registerAssetAliases((await loadingInfo).aliases);
+  await prepareFirstScreen(loader, bundled.project, autoStartFor(boot));
+  void startPlayer(root, boot, bundled.project, "bundled");
+}
+
+function autoStartFor(boot: OpenRpgBootConfig): boolean {
+  return boot.qaInstrumentation === true || boot.desktopShell !== undefined;
+}
+
+/**
+ * 타이틀·오프닝·첫 맵이 쓰는 파일(scenePreload.firstPlayableUrls)과 글꼴을 다 받고 「시작하기」를 기다린다.
+ * 누르는 순간 소리 잠금을 푼다(그 입력이 사용자 제스처다). 나머지 파일은 시작한 뒤 뒤에서 받는다.
+ */
+async function prepareFirstScreen(loader: BootLoader, project: Project, autoStart: boolean): Promise<void> {
+  enableScenePreload();
+  // 올린 그림(ref)의 주소는 해석기가 있어야 나온다 — 목록을 만들기 전에 붙인다(startPlayer 도 다시 부른다).
+  installExportUploadedAssets(project);
+  const urls = firstPlayableUrls(project);
+  // 판본의 파일 목록과 그림 묶음. 묶음이 있으면 서비스 워커를 지금 켜 둔다(시작할 때쯤 이 문서를 맡는다).
+  const versionBase = new URL("./", window.location.href);
+  const plan = readPreloadPlan(versionBase);
+  const packsReady = plan.then((p) => (p.packs.length > 0 ? startPackServiceWorker(versionBase) : false));
+  const fonts = typeof document.fonts?.forEach === "function" ? [...document.fonts] : [];
+  let fontsDone = 0;
+  let last = { doneFiles: 0, totalFiles: urls.length, bytes: 0 };
+  const report = (): void => loader.filesProgress(last.doneFiles + fontsDone, last.totalFiles + fonts.length, last.bytes);
+  await Promise.all([
+    preloadUrls(urls, { concurrency: 12, priority: "high", retainAudio: true, onProgress: (progress) => { last = progress; report(); } }),
+    ...fonts.map((face) => face.load().catch(() => undefined).finally(() => { fontsDone += 1; report(); })),
+    // 엔진 코드(Phaser·PlayScene 조각)도 시작 전에 받아 둔다 — 「새 게임」 뒤 기다림을 없앤다.
+    warmPlayGameRuntime().catch(() => undefined),
+  ]);
+  // QA 계측 부팅·데스크톱 셸(자동 재생 제한 없음)은 누르기를 기다리지 않는다.
+  if (!autoStart) await loader.waitForStart();
+  document.documentElement.dataset.preloadStartedAt = String(Math.round(performance.now()));
+  // 사용자 입력 안에서 소리 잠금을 푼다 — 타이틀 BGM 이 기다림 없이 처음부터 나온다.
+  getAudioEngine().unlock();
+  loader.remove();
+  // 시작한 뒤: 가까운 맵부터 나머지를 낮은 우선순위로 받는다(맵 이동 때 기다림을 줄인다).
+  const background = backgroundUrls(project, project.startMapId);
+  setTimeout(() => {
+    // QA 가 «뒤에서 받은 것» 과 «화면이 늦게 부른 것» 을 가르는 기준 시각(측정용, 비밀 아님).
+    document.documentElement.dataset.preloadBackgroundAt = String(Math.round(performance.now()));
+    void (async () => {
+      // 판본의 파일 목록(preload-files.json)이 있으면 프로젝트 글자로 안 보이는 것(코드 조각·스킬 효과 시트·코드가 고르는
+      // 전투 그림)까지 전부 받는다. 순서: 가까운 맵 → 코드 조각·효과 시트(assets/ 바로 아래) → 나머지.
+      // 작은 그림은 묶음으로(요청 수천 → 수십, preloadPacks.ts) — 서비스 워커가 이 문서를 맡았을 때만.
+      const { files: listed, packs } = await plan;
+      const usePacks = packs.length > 0 && (await packsReady);
+      const packed = new Set(usePacks ? packs.flatMap((pack) => pack.files.map((path) => new URL(path, versionBase).href)) : []);
+      if (usePacks) void dropOtherVersionPackCaches(versionBase);
+      const buildOutput = listed.filter((url) => /\/assets\/[^/]+$/u.test(url));
+      const rest = listed.filter((url) => !/\/assets\/[^/]+$/u.test(url));
+      const single = [...background, ...buildOutput, ...rest].filter((url) => !packed.has(url));
+      // 나머지 전부를 낮은 우선순위로. 화면이 부르는 파일은 high 라 이 줄에 밀리지 않는다.
+      const [done, failed] = await Promise.all([
+        preloadUrls(single, { concurrency: usePacks ? 4 : 6, priority: "low" }),
+        usePacks ? loadPacks(versionBase, packs, { concurrency: 3 }) : Promise.resolve([] as string[]),
+      ]);
+      if (failed.length > 0) await preloadUrls(failed, { concurrency: 6, priority: "low" });
+      document.documentElement.dataset.preloadBackgroundDoneAt = String(Math.round(performance.now()));
+      document.documentElement.dataset.preloadBackgroundFiles = `${done.doneFiles + packed.size}/${done.totalFiles + packed.size}`;
+      document.documentElement.dataset.preloadPacks = usePacks ? `${packs.length}` : "0";
+    })();
+  }, 1500);
+}
+
+/**
+ * 판본 폴더의 preload-files.json(스토어 판본만 있다) → 절대 주소 목록과 그림 묶음. 없거나 이상하면 빈 값.
+ * 옛 판본(1.7 이전)은 배열 하나, 새 판본은 { v: 2, files, packs }.
+ */
+async function readPreloadPlan(base: URL): Promise<{ readonly files: string[]; readonly packs: PreloadPack[] }> {
+  const safe = (path: unknown): path is string => typeof path === "string" && /^[\w./-]+$/u.test(path) && !path.includes("..");
+  try {
+    const response = await fetch(new URL("preload-files.json", base));
+    if (!response.ok) return { files: [], packs: [] };
+    const raw = (await response.json()) as unknown;
+    const record = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as { files?: unknown; packs?: unknown }) : null;
+    const list = Array.isArray(raw) ? raw : Array.isArray(record?.files) ? record.files : [];
+    const files = list.filter(safe).slice(0, 20000).map((path) => new URL(path, base).href);
+    const packs = (Array.isArray(record?.packs) ? record.packs : [])
+      .filter((pack): pack is { path: string; files: unknown[] } => !!pack && typeof pack === "object" && safe((pack as { path?: unknown }).path) && /^packs\/p\d{3,4}\.json$/u.test((pack as { path: string }).path) && Array.isArray((pack as { files?: unknown }).files))
+      .slice(0, 500)
+      .map((pack) => ({ path: pack.path, files: pack.files.filter(safe) }));
+    return { files, packs };
+  } catch {
+    return { files: [], packs: [] };
+  }
 }
 
 type BundledProjectLoad =
   | { readonly ok: true; readonly project: Project }
   | { readonly ok: false; readonly message: string };
 
-async function loadBundledProject(boot: OpenRpgBootConfig): Promise<BundledProjectLoad> {
+async function loadBundledProject(projectUrl: URL, onBytes: (bytes: number) => void): Promise<BundledProjectLoad> {
   try {
-    const response = await fetch(boot.projectUrl ?? new URL("project.json", window.location.href));
+    const response = await fetchTextWithProgress(projectUrl, onBytes);
     if (response.status === 404) {
       return { ok: false, message: `이 주소에는 번들된 게임이 없습니다. ${OPRN_EXTENSION} 게임 파일을 열어 주세요.` };
     }
     if (!response.ok) return { ok: false, message: `project.json 로드 실패 (${response.status})` };
-    return { ok: true, project: deserialize(await response.text()) };
+    return { ok: true, project: deserialize(response.text) };
   } catch (error) {
     return { ok: false, message: error instanceof Error ? error.message : String(error) };
   }
@@ -114,15 +244,15 @@ async function loadBundledProject(boot: OpenRpgBootConfig): Promise<BundledProje
  * dev 서버(QA 하네스)에는 구운 파일이 없으므로 그때만 예전처럼 짓는다. 출하 빌드에서는 import.meta.env.DEV 가
  * 거짓이라 빌더 import 가 통째로 빠지고, 내보낸 게임 zip 에도 데모 빌더 청크가 실리지 않는다.
  */
-async function loadFlagshipDemo(id: string, assetBase: URL): Promise<BundledProjectLoad> {
+async function loadFlagshipDemo(id: string, assetBase: URL, onBytes: (bytes: number) => void): Promise<BundledProjectLoad> {
   if (import.meta.env.DEV) {
     const { createFlagshipDemoProject } = await import("@/project/flagship");
     return { ok: true, project: createFlagshipDemoProject(id as Parameters<typeof createFlagshipDemoProject>[0]).project };
   }
   try {
-    const response = await fetch(new URL(`demos/${encodeURIComponent(id)}.play.json`, assetBase));
+    const response = await fetchTextWithProgress(new URL(`demos/${encodeURIComponent(id)}.play.json`, assetBase), onBytes);
     if (!response.ok) return { ok: false, message: `데모 ${id} 를 읽지 못했습니다 (${response.status})` };
-    return { ok: true, project: deserialize(await response.text()) };
+    return { ok: true, project: deserialize(response.text) };
   } catch (error) {
     return { ok: false, message: error instanceof Error ? error.message : String(error) };
   }
@@ -157,6 +287,28 @@ async function qaCheckpointStart(boot: OpenRpgBootConfig, project: Project) {
   };
 }
 
+/**
+ * 스토어 웹 게임: 이 판본 세이브가 없고 옛 판본 세이브가 있으면 이어서 할지 묻는다(한 번만).
+ * 저장소에 손댈 수 없는 환경(사파리 비공개 창 등)에서도 부팅은 막지 않는다.
+ */
+async function offerOlderVersionSave(root: HTMLElement, storeGame: StoreGameBoot): Promise<void> {
+  let storage: Storage;
+  try {
+    storage = window.localStorage;
+  } catch {
+    return;
+  }
+  try {
+    const older = shouldOfferContinue(storage, storeGame);
+    if (!older) return;
+    const choice = await askContinueFromOlderVersion(root, storeGame, older);
+    if (choice === "continue") continueFromOlderVersion(storage, storeGame, older);
+    else declineOlderVersion(storage, storeGame);
+  } catch (error) {
+    console.warn("[oprn] 옛 판본 세이브 확인을 건너뜁니다:", error);
+  }
+}
+
 function openGameFilePicker(root: HTMLElement, boot: OpenRpgBootConfig, reason: string): void {
   renderOprnGameFilePicker(root, {
     reason,
@@ -177,7 +329,8 @@ async function startPlayer(
     setExportedProject(project);
     // 에디터 boot 를 거치지 않는 웹·단일 HTML 플레이어도 저장된 공통 글꼴을 쓴다.
     syncProjectFontTheme(project);
-    const saveNamespace = resolveExportSaveNamespace(project, {
+    const storeGame = parseStoreGameBoot(boot.storeGame);
+    const saveNamespace = storeGame && source === "bundled" ? storeGameSaveNamespace(storeGame) : resolveExportSaveNamespace(project, {
       source,
       hostSaveNamespace: boot.saveNamespace,
       pathname: window.location.pathname,
@@ -201,6 +354,7 @@ async function startPlayer(
       // 해상도를 안 정한 옛 320×240 프로젝트는 창에 맞춤. 저작자는 DB 시스템 「화면 맞춤」으로 바꾼다.
       // 마우스·터치로도 메뉴·전투를 연다(D15). 몬스터 수집 게임만 — 다른 게임은 기존 키보드 전용 계약을 지킨다.
       pointerInput: isEmeraldMonsterStyle(project),
+      touchInput: isTouchDevice(),
       saveIsolationScope: resolveCommunitySaveScope(window.location.pathname),
       qaInstrumentation: boot.qaInstrumentation === true,
       hostBridge: host,

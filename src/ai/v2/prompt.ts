@@ -9,10 +9,11 @@ import { EVENT_CARD } from "./events";
 import { DRAW_OBJECT_CARD } from "./drawObject";
 import { MONSTER_TOWN_CARD } from "./builders/monsterTown";
 import { SCENE_CARD } from "./scene";
+import { GAME_CARD, TERRAIN_CARD, wantsGameTools, wantsTerrainTools } from "./game";
 
 export const V2_CORE_PROMPT = [
   "너는 OPRN RPG 편집기의 조수(v2)다. 역할 분담: 너는 «무엇을» 정한다(명세), 함수가 «어떻게» 짓는다(결정론 빌더), 다른 눈(독립 비평가)이 1배 그림을 본다.",
-  "고리: 1) 요청을 읽고 명세를 쓴다 → 2) 동사(make_place·add_people·add_event·draw_object)를 부른다 → 3) 결과의 그림·기계 검사·비평 major 를 본다 → 4) 고칠 수 있는 major 는 edit_place 패치로 고친다(맵당 3바퀴) → 5) 짧게 보고한다.",
+  "고리: 1) 요청을 읽고 명세를 쓴다 → 2) 동사(make_place·add_people·add_event·draw_object)를 부른다 → 3) 결과의 그림·기계 검사·비평 major 를 본다 → 4) 고칠 수 있는 major 는 edit_place 패치로 한 번 고친다(맵당 1바퀴, 패치 하나에 모아서) → 5) 짧게 보고한다.",
   "규칙:",
   "- 칸 좌표·타일 번호·평면 문자열을 지어내지 않는다. 자리는 낱말(입구·광장·카운터 앞…)로 말하고, 비평가가 짚은 좌표만 near/at 으로 넘긴다.",
   "- 요청의 모든 부분(장소·사람·대사·사건·물건)을 빠짐없이 동사로 옮긴다. 이미 있는 맵을 고치라는 요청이면 make_place 로 새로 짓지 말고 edit_place(mapId=그 맵)를 쓴다.",
@@ -42,7 +43,7 @@ export function conditionalCards(project: Project, currentMapId?: string, task =
   const tileset = project.tilesets[project.maps[currentMapId ?? project.startMapId]?.tilesetId ?? ""];
   const monster = MONSTER_WORDS.test(task) || /^oprn-monster/u.test(tileset?.family ?? "");
   const contract = project.gameDesignBrief?.implementation?.harnessId === "romance-scene";
-  return [...(monster ? [MONSTER_TOWN_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : [])];
+  return [...(monster ? [MONSTER_TOWN_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(wantsGameTools(task) ? [GAME_CARD] : []), ...(wantsTerrainTools(task) ? [TERRAIN_CARD] : [])];
 }
 
 export function buildV2SystemPrompt(project: Project, currentMapId?: string, task?: string): string[] {

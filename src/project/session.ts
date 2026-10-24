@@ -968,6 +968,8 @@ export type ConditionEvalContext = {
   readonly partySkillIds?: () => ReadonlySet<string>;
   /** 캠페인 배지 스위치 id(badgeCount). 프로젝트를 아는 호출측이 badgeContext 로 만든다. */
   readonly badgeSwitchIds?: () => readonly string[];
+  /** 걷는 NPC 의 실시간 칸(eventSeesPlayer). 호출측이 장면 eventPositions 로 만든다. 생략 = session.eventLocations. */
+  readonly eventPosition?: ActorQueryOptions["eventPosition"];
 };
 
 // 조건(Condition) 평가. condition이 없으면 항상 참.
@@ -1003,7 +1005,7 @@ export function evalCondition(
       return compareVariableValue(session.gold, condition.op, condition.amount);
     case "timer": {
       const remaining = session.timers[condition.timerId] ?? 0;
-      return remaining <= condition.seconds;
+      return compareVariableValue(remaining, condition.op ?? "<=", condition.seconds);
     }
     case "timePhase":
       return conditionMatchesTimePhase(session.gameTime, condition.phase);
@@ -1039,12 +1041,13 @@ export function evalCondition(
     case "relativeFacing":
     case "hiding":
     case "pursuitActive":
+    case "eventSeesPlayer":
     case "clearCount":
     case "endingSeen":
     case "newGamePlus":
     case "weekday":
     case "stringVariable":
-      return evalActorQueryCondition(session, condition, { eventId, ...context?.host }, { ...context?.calendar, ...(context?.partySkillIds ? { partySkillIds: context.partySkillIds } : {}), ...(context?.badgeSwitchIds ? { badgeSwitchIds: context.badgeSwitchIds } : {}) });
+      return evalActorQueryCondition(session, condition, { eventId, ...context?.host }, { ...context?.calendar, ...(context?.partySkillIds ? { partySkillIds: context.partySkillIds } : {}), ...(context?.badgeSwitchIds ? { badgeSwitchIds: context.badgeSwitchIds } : {}), ...(context?.eventPosition ? { eventPosition: context.eventPosition } : {}), locations: () => context?.map?.locations });
     case "run":
       return evalRoguelikeRunCondition(session, condition);
     case "difficulty":

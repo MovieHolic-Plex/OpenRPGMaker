@@ -41,13 +41,16 @@ export async function critique(input: {
   readonly signal?: AbortSignal;
 }): Promise<CriticRun> {
   const t0 = Date.now();
-  const text = criticPrompt(input.task, input.type, input.map.name, input.map, pngSize(input.image), input.others.map((o) => o.name));
+  const withImages = input.others.filter((o) => o.image);
+  const nameOnly = input.others.filter((o) => !o.image).map((o) => o.name);
+  const text = criticPrompt(input.task, input.type, input.map.name, input.map, pngSize(input.image), withImages.map((o) => o.name))
+    + (nameOnly.length ? `\nThis build also has other maps not shown (${nameOnly.join(", ")}). Judge only this map; a requested feature that belongs to another floor/map (boss on the top or bottom floor, stairs' far end) is not missing here.` : "");
   const reply = await input.sideChat([{ role: "user", content: [
     { type: "text", text },
     { type: "image_url", image_url: { url: input.image } },
-    ...input.others.map((o) => ({ type: "image_url", image_url: { url: o.image } })),
+    ...withImages.map((o) => ({ type: "image_url", image_url: { url: o.image } })),
   ] }], input.signal);
-  return { verdict: parseFeatureCritic(reply, input.map.id, 1 + input.others.length), ms: Date.now() - t0 };
+  return { verdict: parseFeatureCritic(reply, input.map.id, 1 + withImages.length), ms: Date.now() - t0 };
 }
 
 /**

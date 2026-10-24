@@ -1229,6 +1229,7 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>['conditi
     case "relativeFacing":
     case "hiding":
     case "pursuitActive":
+    case "eventSeesPlayer":
     case "clearCount":
     case "endingSeen":
     case "newGamePlus":

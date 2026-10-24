@@ -4,7 +4,7 @@ import { withJosa } from "@/util/josa";
 import { activeActor } from "@/battle/battlePredict";
 import { expForRewardActor } from "@/battle/rewardPolicy";
 import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
-import { DEFAULT_MONSTER_EXP_CURVE, monsterExpInLevelBand, monsterSpeciesById } from "@/project/monsterCollection";
+import { DEFAULT_MONSTER_EXP_CURVE, monsterExpInLevelBand, monsterSpeciesById, stripWildNamePrefix } from "@/project/monsterCollection";
 import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";
 import { CONTINUE_KEY_PROMPT } from "@/player/keyBindings";
@@ -60,16 +60,21 @@ export function introDirectorState(snapshot: BattleSnapshot): BattleDirectorStat
     };
   }
   const living = snapshot.enemies.filter((enemy) => !enemy.defeated);
-  // 같은 이름은 묶어 「초원 슬라임 ×3, 숲 박쥐 ×3」 — 이름을 여섯 번 나열하면 첫 문장이
-  // 소음이 되고 창 폭(560px)을 넘겨 생략됐다(2026-09-14 실측).
-  const counts = new Map<string, number>();
-  const introName = (name: string): string => (emeraldNarrationActive() ? emeraldShortName(name) : name);
-  for (const enemy of living) counts.set(introName(enemy.name), (counts.get(introName(enemy.name)) ?? 0) + 1);
-  const names = [...counts.entries()].map(([name, count]) => (count > 1 ? `${name} ×${count}` : name));
-  const label = names.length > 1 ? `${names.slice(0, -1).join(", ")}, ${names[names.length - 1]}` : names[0] ?? "적";
   // 전원이 몬스터 종(speciesId)인 트룹에만 "야생의"를 붙인다 — 인간형/보스 트룹까지
   // 야생으로 부르지 않게. 파일 서두 주석이 약속해 온 포켓몬식 인트로 문구다.
   const wild = living.length > 0 && living.every((enemy) => enemy.speciesId);
+  // 「야생의」는 이 문장이 소유한다 — 저자가 적 이름에 이미 붙여 둔 접두(「야생 슬라임」)는 떼어
+  // 「야생의 야생 슬라임이 나타났다!」가 되지 않게 한다. 접두 뒤 공백을 요구하므로 「야생화」는 그대로다.
+  const introName = (name: string): string => {
+    const base = wild ? stripWildNamePrefix(name) : name;
+    return emeraldNarrationActive() ? emeraldShortName(base) : base;
+  };
+  // 같은 이름은 묶어 「초원 슬라임 ×3, 숲 박쥐 ×3」 — 이름을 여섯 번 나열하면 첫 문장이
+  // 소음이 되고 창 폭(560px)을 넘겨 생략됐다(2026-09-14 실측).
+  const counts = new Map<string, number>();
+  for (const enemy of living) counts.set(introName(enemy.name), (counts.get(introName(enemy.name)) ?? 0) + 1);
+  const names = [...counts.entries()].map(([name, count]) => (count > 1 ? `${name} ×${count}` : name));
+  const label = names.length > 1 ? `${names.slice(0, -1).join(", ")}, ${names[names.length - 1]}` : names[0] ?? "적";
   return {
     step: "intro",
     lines: [`${wild ? "야생의 " : ""}${withJosa(label, "이/가")} 나타났다!`],
@@ -145,11 +150,13 @@ function effectivenessPhrase(effectiveness: number | undefined): string {
   return effectiveness > 1 ? "효과가 굉장했다!" : "효과가 별로인 듯하다…";
 }
 
-/** 상성 문장이 있으면 결과 줄은 그 문장만 — 피해 숫자를 앞에 붙이면 메시지 창 한 줄을 넘쳐 셋째 줄이 잘렸다(2026-10-02 실측:
- *  「아쿠아링이 2 피해를 입었다! 효과가 별로인 / 듯하다…」). 3세대도 피해 숫자는 말하지 않는다 — 양은 HP 바·숫자가 센다. */
+/** 상성 문장이 있으면 — 포켓몬 스킨은 결과 줄을 그 문장만으로 바꾼다: 피해 숫자를 앞에 붙이면 메시지 창 한 줄을 넘쳐 셋째 줄이 잘렸다(2026-10-02 실측:
+ *  「아쿠아링이 2 피해를 입었다! 효과가 별로인 / 듯하다…」). 3세대도 피해 숫자는 말하지 않는다 — 양은 HP 바·숫자가 센다.
+ *  그 밖의 스킨(도트 측면 등)은 피해 숫자를 지키고 문장을 뒤에 덧붙인다 — 숫자를 말하는 스킨에서 상성이 보이게(폴른 스타 2026-10-24). */
 function withEffectiveness(damageLine: string, critical: boolean | undefined, effectiveness: number | undefined): string {
   const phrase = effectivenessPhrase(effectiveness);
   if (!phrase) return damageLine;
+  if (store.getCurrent().system.battleUiStyle !== "pokemon") return `${damageLine} ${phrase}`;
   return critical ? `급소에 맞았다! ${phrase}` : phrase;
 }
 

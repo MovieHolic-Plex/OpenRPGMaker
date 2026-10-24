@@ -363,7 +363,7 @@ function applyStamps(run: BuildRun, tilesetId: string, mapId: string, stamps: re
 
 /** 장소 견본(천문대 등)으로 짓기. 요청 앵커 중 견본이 갖춘 것은 그대로, 없는 것은 평면 빈 자리에 더한다. */
 function buildVenue(run: BuildRun, spec: PlaceSpec, venue: InteriorVenue, roomSpec: HandInteriorSpec, tilesetId: string, mapId: string, prev: InteriorState | undefined): PlaceBuildResult | undefined {
-  const variant = typeof spec.hints?.variant === "number" ? spec.hints.variant : 0;
+  const variant = typeof spec.hints?.variant === "number" ? spec.hints.variant : (spec.salt ?? 0) % 4;
   const words = (spec.zones ?? []).flatMap((z) => z.anchors ?? []);
   const withStairs = !!venue.stairs && ((spec.floors ?? 1) >= 2 || words.some((w) => /계단|stair|2층|위층/iu.test(w)) || (spec.zones ?? []).some((z) => z.floor === 2));
   const vb = venue.build(variant, withStairs);
@@ -435,8 +435,12 @@ function addBackDoor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: strin
       const kept = ((args.objects as Obj[]) ?? []).filter((o) => !gone.has(`${o.id}@${o.x},${o.y}`));
       const links = [...((args.links as unknown[]) ?? []).filter((l) => (l as { toMapId?: string }).toMapId !== backId),
         { x: doorX, y: doorY, toMapId: backId, toX: backEnt.x, toY: backEnt.y - 1, direction: "up" }];
-      const next = { ...args, objects: [...kept, { id: arch, x, y: standing ? room.y0 + 2 : room.y0 }], links };
-      if (!reachOk(build(run, next))) continue;
+      // 서 있는 문은 바닥에 선 벽장처럼 읽혔다(눈가림 2차) — 벽면에 아치 문틀을 같이 걸어 「벽에 난 문」으로 읽히게(문틀이 안 들어가면 문만).
+      const framed = standing && roomSpec.objects["round arch"] && x - 1 >= room.x0 ? [{ id: "round arch", x: x - 1, y: room.y0 }] : [];
+      let next = { ...args, objects: [...kept.filter((o) => !(roomSpec.objects[o.id.split(":")[0]!]?.kind === "hang" && o.y === room.y0 && o.x <= x + 1 && o.x + (roomSpec.objects[o.id.split(":")[0]!]?.w ?? 1) - 1 >= x - 1) || !framed.length), ...framed, { id: arch, x, y: standing ? room.y0 + 2 : room.y0 }], links };
+      let tryBuild = build(run, next);
+      if (framed.length && !reachOk(tryBuild)) { next = { ...args, objects: [...kept, { id: arch, x, y: standing ? room.y0 + 2 : room.y0 }], links }; tryBuild = build(run, next); }
+      if (!reachOk(tryBuild)) continue;
       let backArgs: Record<string, unknown> = { ...argsFromRebuild({ tileset: tilesetId, mapId: backId, name: `${name} 뒷방` }, back.data?.rebuild as Rebuild), links: [{ x: backEnt.x, y: backEnt.y, toMapId: mapId, toX: doorX, toY: doorY + 1, direction: "down" }] };
       const backFinal = build(run, backArgs);
       if (!backFinal.ok) continue;
@@ -657,10 +661,11 @@ export const interiorBuilder: PlaceBuilder = {
       return { id: zone.id ?? (n > 1 ? `${kind}${n}` : kind), kind, ...sized, ...(zone.keep?.floor ? { floor: zone.keep.floor } : {}), ...(zone.keep?.wall ? { wall: zone.keep.wall } : {}), zone };
     });
     const hints = spec.hints ?? {};
-    const variant = typeof hints.variant === "number" ? hints.variant : 0;
+    const variant = typeof hints.variant === "number" ? hints.variant : (spec.salt ?? 0) % 4;
     const seed = typeof hints.seed === "number" ? hints.seed : undefined;
+    const layoutSeed = seed ?? (spec.salt ? 1 + (spec.salt % 99991) : undefined);
     const base: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: true,
-      layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall })), ...(variant ? { variant } : {}), ...(seed ? { seed } : {}) } };
+      layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}) } };
     let first = build(run, base);
     if (!first.ok) {
       // 맵이 다른 칩셋의 살아 있는 맵이면 새 맵으로 짓는다(덮어쓰지 않는다).

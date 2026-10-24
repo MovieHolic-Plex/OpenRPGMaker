@@ -153,6 +153,26 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const isFloor = (x: number, y: number) => inb(x, y) && floorMask[idx(x, y)] === 1;
   /** 걸을 수 있는 바닥(액체 아님, 다리 포함). 장식·방 안 칸 고르기는 이것만 본다. */
   const isWalk = (x: number, y: number) => inb(x, y) && floorMask[idx(x, y)] === 1 && liquid[idx(x, y)] === 0;
+  // 마계: 허공 위 돌다리 한 칸은 «끊긴 계단»으로 읽힌다(dt r2 otherworld-b M3·M9) — 다리 칸은 섬을 잇는 땅 목으로 둔다.
+  // 바닥 사이에 갇힌 작은 벽 덩이(기둥, ≤40칸)는 떠 있는 ㄱ자 벽 토막으로 읽히므로 허공 구멍으로 바꾼다.
+  if (voidLiquid) {
+    for (let i = 0; i < W * H; i += 1) if (bridge[i]) { bridge[i] = 0; liquid[i] = 0; }
+    const seen = new Uint8Array(W * H);
+    for (let s = 0; s < W * H; s += 1) {
+      if (seen[s] || floorMask[s] === 1) continue;
+      const comp: number[] = [s]; seen[s] = 1; let edge = false;
+      for (let k = 0; k < comp.length; k += 1) {
+        const c = comp[k]!; const x = c % W, y = (c - x) / W;
+        if (x === 0 || y === 0 || x === W - 1 || y === H - 1) edge = true;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+          const X = x + dx, Y = y + dy;
+          if (!inb(X, Y) || seen[idx(X, Y)] || floorMask[idx(X, Y)] === 1) continue;
+          seen[idx(X, Y)] = 1; comp.push(idx(X, Y));
+        }
+      }
+      if (!edge && comp.length <= 40) for (const c of comp) { floorMask[c] = 1; liquid[c] = 1; }
+    }
+  }
 
   // ---- 둥근 탑 링 방(shape "ring", 2026-10-23 dungeon-themes): 방 바닥 w×h 가 링 지름 N=w+2(h=N-4)이면 gap 링 키트를 통째로 찍는다.
   // 바닥 마스크를 링 안 칸으로 바꾸고(벽·천장이 링 둘레에서 유도된다), 장식 전에 키트 그림으로 덮는다. 남쪽 가운데 두 칸 = 통로(bd-dg-tower-pass-s).
@@ -356,6 +376,29 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     if (gapWater) { lower[idx(x, y)] = autoCell(gapWater, m, x, y); continue; }
     lower[idx(x, y)] = canal?.variantMap[String(m)] ?? canal?.variantMap["255"] ?? voidTile;
   }
+  // 마계 허공(주제 그림 other.void_edge 가 구워져 있으면): 허공 칸 = 별빛 허공 몸통, 섬 바닥 바로 남쪽 두 칸 = 섬 밑 바위(1·2단),
+  // 허공에 닿는 바닥 칸 = 턱 오토타일(허공 쪽만 열림). 없으면 위 천장 오토타일 어둠 그대로.
+  const voidEdge = voidLiquid ? (ts.autotileGroups ?? []).find((a) => a.id === "beodeul_dungeon_theme_void_edge") : undefined;
+  if (voidEdge && hasKit(TK("void-body")) && hasKit(TK("void-underside"))) {
+    const isVoid = (x: number, y: number) => inb(x, y) && isFloor(x, y) && liquid[idx(x, y)] === 1 && !bridge[idx(x, y)];
+    const isGround = (x: number, y: number) => inb(x, y) && isFloor(x, y) && liquid[idx(x, y)] !== 1;
+    const bodies = kit(TK("void-body")).rows[0]!.tiles;
+    const under = kit(TK("void-underside")).rows;
+    const depth = (x: number, y: number): number => (!isVoid(x, y) ? 0 : isGround(x, y - 1) ? 1 : isVoid(x, y - 1) && isGround(x, y - 2) ? 2 : 0);
+    const bits: [number, number, number][] = [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]];
+    for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+      if (isVoid(x, y)) {
+        const d = depth(x, y);
+        lower[idx(x, y)] = d ? under[d - 1]!.tiles[(depth(x - 1, y) !== d ? 2 : 0) + (depth(x + 1, y) !== d ? 1 : 0)]! : bodies[Math.floor(hash01(x, y, seed * 7 + 11) * bodies.length)]!;
+        continue;
+      }
+      if (!isGround(x, y)) continue;
+      let touches = false;
+      let m = 0;
+      for (const [dx, dy, bit] of bits) { if (isVoid(x + dx, y + dy)) touches = true; else m |= bit; }
+      if (touches) lower[idx(x, y)] = autoCell(voidEdge, m, x, y);
+    }
+  }
   if (liquidCells && profile.liquid === "water" && !canal && !gapWater) warnings.push("이 타일셋 사본에 물 오토타일(beodeul_canal_lake_47)이 없어 물이 그려지지 않았다.");
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
     if (!bridge[idx(x, y)]) continue;
@@ -479,6 +522,17 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   };
 
   /** 방의 북쪽 벽 가운데 줄(b=1) 칸 중 양옆도 같은 줄 벽인 칸(벽 끝 마구리 칸에는 걸지 않는다). */
+  /** 납골 벽 n 개: 벽 앞면이 3단이면 3×3(가운데 줄 한 칸 위부터), 2단이면 3×2. 5칸 간격. */
+  const ossuaryWalls = (slots: { x: number; y: number }[], rs: () => number, n: number): void => {
+    if (!hasKit(TK("ossuary-2h"))) return;
+    let k = 0, last = -99;
+    for (const q of shuffle(rs, slots)) {
+      if (k >= n) break;
+      if (Math.abs(q.x - last) < 5) continue;
+      const tall = hasKit(TK("ossuary-3h")) && [-1, 0, 1].every((d) => wallB[idx(q.x + d, q.y - 1)] === 1);
+      if (tall ? put(TK("ossuary-3h"), q.x - 1, q.y - 1) : put(TK("ossuary-2h"), q.x - 1, q.y)) { k += 1; last = q.x; }
+    }
+  };
   const wallSlots = (r: PlacedRoom): { x: number; y: number }[] => {
     const out: { x: number; y: number }[] = [];
     for (let x = r.x - 1; x <= r.x + r.w; x += 1) {
@@ -621,10 +675,9 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         else warnings.push("입구 방 바닥에 내려가는 계단을 놓을 자리가 없다.");
       } else {
         s = flatWall(r, centerFirst);
-        if (s && entryKind === "door") {
-          entryStair = wallDoor(s);
-          if (!entryStair) s = null;
-        } else if (s) {
+        if (s && entryKind === "door") entryStair = wallDoor(s);
+        // 문 그림을 못 걸면 계단으로 — 입구가 아예 없는 것보다 낫다.
+        if (s && entryKind === "door" && entryStair) { /* 문 */ } else if (s) {
           entryStair = wallStairs(s);
           stairsUp = { x: entryStair.x, y: entryStair.y, front: entryStair.front };
           counts["stairs-up"] = 1;
@@ -695,6 +748,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         const e = edgeCells(r, rs);
         for (let c = 0; c < 2 + Math.floor(rs() * 2); c += 1) { const p = e[c * 5]; if (p) cluster(rs, p[0], p[1], 2 + Math.floor(rs() * 2), litter); }
         // 지하묘지 홀: 벽가에 동서 석관 두엇(주제 그림) — 홀이 그냥 기둥 방으로 읽혔다.
+        if (type === "catacomb") ossuaryWalls(slots, rs, 1);
         if (type === "catacomb" && hasKit(TK("sarcophagus-ew"))) { let n = 0; for (const [x, y] of e.slice(10)) { if (n >= 2) break; if (put(rs() < 0.2 && hasKit(TK("sarcophagus-ew-open")) ? TK("sarcophagus-ew-open") : TK("sarcophagus-ew"), x, y)) n += 1; } }
         break;
       }
@@ -702,6 +756,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         // 묘실: 벽감 줄(종류 섞고 군데군데 비움) + 관 줄(빈자리 흔들기) + 구석 뼈 더미·촛불
         // 주제 그림(theme-earth, 2026-10-23)이 있으면 관 줄은 남북 석관(가끔 뚜껑 열린 것), 바닥에 묘석 판 한두 장.
         const niches = [K.nicheSkull, K.nicheUrn, K.nicheShroud];
+        // 납골 벽(theme-earth r2): 벽 앞면을 뼈로 채운 판 하나둘 — 벽감보다 먼저(벽감이 그 자리를 먹지 않게).
+        if (type === "catacomb") ossuaryWalls(slots, rs, 1 + (r.w >= 12 ? 1 : 0));
         for (const s of slots) if (rs() < 0.55) put(niches[Math.floor(rs() * 3)]!, s.x, s.y);
         hangAlong(slots, rs, 5, torch, 2);
         // 관: 3칸 간격 격자 자리를 섞어 넓이에 맞는 수만큼(줄이 반듯하되 군데군데 빈다)

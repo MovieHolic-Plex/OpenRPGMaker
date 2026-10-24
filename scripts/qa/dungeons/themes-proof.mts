@@ -21,7 +21,7 @@ const CASES: Record<string, Record<string, unknown>> = {
   "catacomb-a": { type: "catacomb", name: "지하묘지", inspiration: "엘든링" }, "catacomb-b": { type: "catacomb", name: "납골당", layout: "hub", floors: 2 },
   "mine-a": { type: "mine", name: "나르쉐 광산", inspiration: "FF6" }, "mine-b": { type: "mine", name: "버려진 갱도", size: "large", layout: "loop" },
   "swamp-a": { type: "swamp", name: "독 늪" }, "swamp-b": { type: "swamp", name: "맹그로브 습지", size: "large", layout: "linear" },
-  "volcano-a": { type: "volcano", name: "화산 동굴" }, "volcano-b": { type: "volcano", name: "용암 신전", layout: "loop", size: "large" },
+  "volcano-a": { type: "volcano", name: "화산 동굴" }, "volcano-b": { type: "volcano", name: "용암 신전", layout: "loop", size: "large" }, "volcano-r2b": { type: "volcano", name: "무너진 대장간 화산", genre: "rpg", size: "medium" }, "cave-r2a": { type: "cave", name: "박쥐 동굴" }, "cave-r2b": { type: "cave", name: "지하 호수 동굴", size: "large" }, "otherworld-r2b": { type: "otherworld", name: "마계 허공 던전" },
   "ice-a": { type: "ice", name: "얼음 동굴" }, "ice-b": { type: "ice", name: "설산의 빙굴", size: "large", layout: "linear" },
   "pyramid-a": { type: "pyramid", name: "파라오의 피라미드" }, "pyramid-b": { type: "pyramid", name: "모래 왕묘", layout: "hub", size: "large" },
   "tower-a": { type: "tower", name: "마법탑", floors: 3, direction: "up" }, "tower-b": { type: "tower", name: "현자의 탑", inspiration: "크로노 트리거" },
@@ -39,7 +39,7 @@ for (const [name, args] of Object.entries(CASES)) {
     const ms = Math.round(performance.now() - t0);
     const floors: string[] = res.data.floors;
     for (const id of floors) fs.writeFileSync(path.join(out, `${name}-${id}.png`), renderMapPng(project, project.maps[id]!).png);
-    const issues = (lintProject(project) as any[]).filter((i) => floors.includes(i.mapId));
+    const issues = (lintProject(project) as any[]).filter((i) => floors.includes(i.mapId) || (!i.mapId && i.severity === "error"));   // 직렬화 왕복(카탈로그 값) 오류는 mapId 가 없다 — 커밋을 막는다
     const events = floors.map((id) => ({ id, name: project.maps[id]!.name, size: `${project.maps[id]!.width}x${project.maps[id]!.height}`,
       events: project.maps[id]!.events.map((e) => `${e.id}@${e.x},${e.y}${JSON.stringify(e.pages?.[0]?.commands ?? []).includes('"transfer"') ? "→" + JSON.stringify((e.pages![0]!.commands as any[]).find((c) => c.kind === "transfer")) : ""}`) }));
     fs.writeFileSync(path.join(out, `${name}.json`), JSON.stringify({ summary: res.summary, warnings: res.warnings, events, issues: issues.map((i) => `${i.severity} ${i.code} ${i.message}`), ...(process.env.DT_DUMP ? { maps: floors.map((id) => ({ id, w: project.maps[id]!.width, lower: project.maps[id]!.lowerTiles, upper: project.maps[id]!.upperTiles })) } : {}) }, null, 1));

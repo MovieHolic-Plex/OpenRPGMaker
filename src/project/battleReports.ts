@@ -24,6 +24,17 @@ const kindLabels: Partial<Record<BattleTimelineEntrySnapshot["kind"], string>> =
 };
 const commandLabels: Record<string, string> = { attack: "공격", enemyAttack: "공격", skill: "스킬", enemySkill: "스킬", item: "아이템", defend: "방어", escape: "도주", capture: "포획", switch: "교대" };
 
+/**
+ * 보고서의 「턴」 — 플레이어가 실제로 거쳤던 차례 수.
+ * strict 는 라운드 하나가 파티 전원의 명령 한 바퀴라 라운드 수가 정본이다.
+ * gauge 의 `turn` 은 생존 배틀러 전원이 한 번씩 행동해야 닫히는 사이클이라, 적 게이지가 느리면
+ * 파티가 여러 번 명령해도 1 에 머뭄다(실측: 7행동 도주 전투 → 1). 그래서 파티가 낸 명령 수를 센다.
+ */
+export function battleRoundCount(snapshot: BattleSnapshot): number {
+  if (snapshot.strictRound > 0) return Math.max(snapshot.strictRound, snapshot.turn);
+  return Math.max(1, snapshot.partyCommandRounds ?? snapshot.turn);
+}
+
 /** Record only emitted runtime facts; never synthesize turns or hits from HP deltas. */
 export function createBattleReport(project: Project, snapshot: BattleSnapshot, result: BattleResult): BattleReport {
   const names = new Map([...snapshot.actors, ...snapshot.reserveActors, ...snapshot.enemies].flatMap(b => [[b.id, b.name], [b.recordId, b.name]] as [string, string][]));
@@ -41,7 +52,7 @@ export function createBattleReport(project: Project, snapshot: BattleSnapshot, r
   });
   return {
     troopId: snapshot.troopId, troopName: project.database.troops.find(t => t.id === snapshot.troopId)?.name ?? snapshot.troopId,
-    result, turns: Math.max(snapshot.turn, snapshot.strictRound),
+    result, turns: battleRoundCount(snapshot),
     exp: result === "victory" ? snapshot.rewards.exp : 0,
     gold: result === "victory" ? snapshot.rewards.gold : 0,
     items: result === "victory" ? snapshot.rewards.items.map(id => project.database.items.find(i => i.id === id)?.name ?? id).slice(0, 100) : [],

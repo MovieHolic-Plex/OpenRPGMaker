@@ -764,7 +764,6 @@ describe("life placement live UI", () => {
       layout,
       getActiveScene: () => scene as unknown as PlayScene,
       getPlayStage: () => playStage,
-      getPlayStartedAt: () => 0,
       closeMenu: () => undefined,
       closeMenuWithJuice: () => undefined,
       renderTitle: () => undefined,
