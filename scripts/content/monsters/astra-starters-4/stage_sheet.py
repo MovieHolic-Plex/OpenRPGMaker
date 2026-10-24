@@ -20,7 +20,11 @@ def prev_sprite(sp):
     f = f'{SB}/bundle/{p}/front.png'
     if os.path.exists(f): return Image.open(f).convert('RGBA')
     g = ledger['picks'].get(p, {}).get('front')
-    return None
+    if not g: return None
+    if g.get('authored') and os.path.exists(f"{SB}/data/{g['authored']}"): return Image.open(f"{SB}/data/{g['authored']}").convert('RGBA')
+    src = g['sourcePath']; k = os.path.basename(src)[4:-4]
+    f = os.path.join(os.path.dirname(src) if os.path.isabs(src) else os.path.join(SB, '..', os.path.dirname(src)), f'sprite-{k}.png')
+    return Image.open(f).convert('RGBA') if os.path.exists(f) else None
 cols = 4; cw = 256 + 64 + 24; rh = 256 + 30
 S = Image.new('RGB', (cols*cw, ((len(items)+cols-1)//cols)*rh), (200, 222, 190)); d = ImageDraw.Draw(S)
 for i, it in enumerate(items):
