@@ -5,6 +5,39 @@
 
 <!-- releases -->
 
+## 0.333.0 — 2026-10-25
+
+### 기능
+
+- **harness** — cast-portrait repeated blind review (N=5, median + majority) calibrated on the cast (`1816e96`)
+- **fallen-star** — Valen defeat branch (Bram's ambush keeps the story going), machine-form tuning, FF6-style party display, Elena learns chain lightning at Lv5 (`7954fee`)
+- **fallen-star** — one container per room, open-style searches, star-keeper shrine save point (`cf3be43`)
+
+### 수정
+
+- **assistant-v2** — finish check catches act-end scenes that fire before the earlier step and act-end cards faked with a text line (#3404) (`6af5e0c`)
+- **assistant-v2** — Korean modern requests build a Korean city street and city interiors instead of Japanese ones; edit/delete words load event tools (#3403) (`7573f20`)
+- **ci** — compare the project title, not a system field that does not exist (`96b8ba6`)
+- **assistant-v2** — side-effect check no longer makes the assistant undo requested enemy/skill/item edits; second report must say it replaces the first (#3400) (`3fec095`)
+- **assistant-v2** — letterbox requests need a real letterbox command (#3399) (`6c842ad`)
+- **harness** — cast-portrait reviewer key falls back to ANTHROPIC_AUTH_TOKEN; never read the proxy config (`bad7cb0`)
+- **assistant-v2** — whole-game gaps G1-G5 — village on the blank start map gets its name and BGM, factory opening check, no rebuild of linked villages/dungeons (#3396) (`6527664`)
+- **fallen-star** — golems stand in front of Valen; recorder confirms the battle result and tolerates slow boots (`3a46a3e`)
+- **fallen-star** — Valen fight balanced against the game's own auto battle; second golem actually appears (`3f6222f`)
+- **fallen-star** — Valen walks to centre in phase 2 and stands behind soldiers in target order; dragon uses the field-foe path and the wake cutscene pans to it (`adb1de0`)
+- **fallen-star** — unused bindings and siege cell typing in act1Finale (`5dd2353`)
+
+### 테스트
+
+- **fallen-star** — shrine-save checkpoint waits on the in-game save list (`8c0a0e4`)
+- **fallen-star** — SQLite reload check covers Valen phases, circuit and party display (`99616bf`)
+- **fallen-star** — report-lost checkpoint for Hanel's Bram line (`1e23295`)
+- **fallen-star** — defeat checkpoint follows Bram's ambush to the circuit; recorder lose segment (`736f4ea`)
+
+### 기타
+
+- **fallen-star** — 3-phase Valen (soldiers, golems, machine form), circuit to Hanel, dragon field sprite, shorter fable, busts (`aecb8f2`)
+
 ## 0.332.0 — 2026-10-25
 
 ### 기능
