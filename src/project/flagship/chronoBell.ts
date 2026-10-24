@@ -18,14 +18,23 @@ import { runTool } from "@/editor/tools/toolRunner";
 import "@/editor/tools/toolRegistry";
 import { buildJrpgChapter } from "@/editor/tools/jrpgChapterTools";
 import { pickSpot, placeRoamer } from "@/editor/tools/jrpgVolumeTools";
+import { makeFieldEnemyChase } from "@/editor/tools/fieldEnemyTools";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import { buildFallenStarOpening, FALLEN_STAR_TITLE_BACKGROUND } from "./fallenStarOpening";
 import { clearOrphanShadows, rimPit } from "./fallenStarMapPolish";
 import { FS_VALEN_START, FS_VAULT_LENS, rebuildFallenRooms } from "./fallenStarRooms";
 import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./fallenStarStory";
+import { applyFallenLoreAndHanel } from "./fallen/loreAndHanel";
 import { reworkFallenTown } from "./fallenTown";
+import { applyFallenBattleItems, FS_SPEAR_PIKE, FS_SWORD_GALE } from "./fallen/battleItems";
+import { swOn, fadeOut } from "./firstLoveKit";
 import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX, ensureFallenValenChip } from "./fallenValenChip";
 import { buildFallenTownInteriors } from "./fallenTownInteriors";
+import { buildFallenTownLife, ensureFallenTownDatabase } from "./fallen/townLife";
+import { applyFallenTownQuests, FS_QUEST_FACE_ALIASES } from "./fallen/townQuests";
+import { buildFallenForestMaps } from "./fallen/forestMaps";
+import { applyFallenStoryPass } from "./fallen/storyPass";
+import { applyFaceCellEmotions, applyFallenTownCast, applyNorthForest, fallenSpeakerBusts } from "./fallen/townCast";
 import { placeFallenStarVessel } from "./fallenStarVessel";
 import { dressObservatoryHall } from "./fallenObservatoryHall";
 import { isFallenRoomRebuilt } from "./fallenRoomOwnership";
@@ -345,7 +354,7 @@ function polishLines(observatory: GameMap, forest: GameMap, vault: GameMap): voi
   replaceLine(observatory, hanel!.id, "자네 덕분에 살았어. 정말 고맙네.", [say(H, "북쪽 하늘탑으로 가거라. 이리스를 부탁한다.")]);
 
   replaceLine(forest, `ev_${FS_PREFIX}_bram`, "고맙네.", [say("숲지기 브람", "북쪽 끝 공터다. 길만 따라가라. 풀숲에선 늑대를 조심하고.")]);
-  replaceLine(forest, `ev_${FS_PREFIX}_main_inspect1`, "확인을 마쳤다.", [narrate("은빛 관은 텅 비었다. 안쪽에 아직 온기가 남아 있다.")]);
+  replaceLine(forest, `ev_${FS_PREFIX}_main_inspect1`, "확인을 마쳤다.", [narrate("은빛 알은 텅 비었다. 안쪽에 아직 온기가 남아 있다.")]);
 
   // 지하 상자 — 기본 표의 「기본 새우」 대신 상급 회복약.
   const chest = vault.events.find((e) => e.id === `ev_${FS_PREFIX}_vault_chest1`);
@@ -384,6 +393,102 @@ function setEventFace(map: GameMap, eventId: string, faceId: string | undefined)
  * 물러선 뒤에도 주인공 칸·서로의 칸을 나누지 않는다.
  */
 const BACK_STEP: Readonly<Record<"up" | "down" | "left" | "right", "up" | "down" | "left" | "right">> = { up: "down", down: "up", left: "right", right: "left" };
+/** F3(해질녘 다리 곁 등불의 발렌)와 9-A/9-B(망원경 앞 이리스 일지 한 줄)를 더한다. 말하는 쪽 얼굴은 applySpeakerFaces 가 붙인다. */
+const wait = (ms: number): Command => ({ kind: "wait", ms } as Command);
+
+function addBridgeValenAndScopeScene(project: Project, ids: { hub: string; observatory: string }): void {
+  const M = (id: string): GameMap => project.maps[id]!;
+  const SW_SCOPE_PLAYED = "sw_fs_scope_journal_played";
+  if (!project.switches.some((s) => s.id === SW_SCOPE_PLAYED)) project.switches.push({ id: SW_SCOPE_PLAYED, name: "망원경 일지 장면" });
+
+  // ── F3: 강가에서 등을 바라보는 발렌 (행진 뒤 ~ 이리스 합류 전) ──
+  const hub = M(ids.hub);
+  const srcValen = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_valen`);
+  const metaB = (project.tilesets[hub.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+  const onWater = (x: number, y: number): boolean => /다리|물/.test(metaB[hub.lowerTiles[y * hub.width + x]!]?.label ?? "")
+    || /다리|물/.test(metaB[hub.lowerTiles[(y + 1) * hub.width + x]!]?.label ?? "");
+  let spot: { x: number; y: number } | undefined;
+  for (let r = 0; r <= 5 && !spot; r += 1) for (let dy = -r; dy <= r && !spot; dy += 1) for (let dx = -r; dx <= r && !spot; dx += 1) {
+    if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+    const x = 21 + dx, y = 23 + dy;
+    if (x < 1 || y < 1 || x >= hub.width - 1 || y >= hub.height - 1 || !isPassable(project, hub, x, y) || onWater(x, y)) continue;
+    if (hub.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) continue;
+    if ((hub.upperTiles[y * hub.width + x] ?? -1) >= 0) continue;
+    spot = { x, y };
+  }
+  const srcGraphic = srcValen?.pages?.find((pg) => pg.graphic?.sprite)?.graphic;
+  if (spot && srcGraphic) {
+    const id = `ev_${FS_PREFIX}_valen_bridge`;
+    const gone = { transparent: true };
+    const watch = (dir: Step): Command[] => [{ kind: "moveEvent", eventId: id, route: { moves: [{ kind: "turn", dir }], repeat: false, wait: false, skippable: true } } as unknown as Command];
+    hub.events.push({
+      id, name: "등을 바라보는 발렌", x: spot.x, y: spot.y, trigger: { kind: "action" }, commands: [], placementRole: "npc",
+      pages: [
+        { id: `${id}_p0`, name: "아직 없음", conditions: [], graphic: gone, trigger: { kind: "action" }, priority: "below", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [] },
+        { id: `${id}_p1`, name: "등불 곁", conditions: [{ kind: "switch", switchId: SW_VALEN_MARCHED, value: true }],
+          graphic: { ...srcGraphic, direction: "left", pattern: charsetFrameIndex({ characterIndex: FS_VALEN_CHARSET_INDEX, direction: "left", pattern: 1 }) },
+          trigger: { kind: "action" }, priority: "same", overlapForbidden: true, movement: { type: "fixed", speed: 3, frequency: 3 },
+          commands: [
+            narrate("작은 등이 천천히 강 위로 떠 간다.\n누구를 위한 등인지는 알 수 없다."),
+            wait(700),
+            ...watch("down"),
+            narrate("(발렌이 돌아본다. 눈이 마주치기 전에\n장갑을 쥔다.)"),
+            say("심문관 발렌", "…잠깐 바람을 쐬러 왔을 뿐이다.\n별지기, 너는 일지나 쓰러 가라."),
+            ...watch("left"),
+          ] },
+        { id: `${id}_p2`, name: "없음", conditions: [{ kind: "switch", switchId: SW_IRIS_JOINED, value: true }], graphic: gone, trigger: { kind: "action" }, priority: "below", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [] },
+      ],
+    } as unknown as GameEvent);
+  }
+
+  // ── 9-A/9-B: 천문대 망원경 앞에서 이리스가 일지를 꺼낸다(이리스 합류 뒤, 한 번) ──
+  const obs = M(ids.observatory);
+  const scope = obs.events.find((e) => e.id === `ev_${FS_PREFIX}_scope`);
+  const base = scope?.pages?.[0];
+  if (scope && base) {
+    const Q1 = "sw_fs_q_bread_done";
+    const nine_a: Command[] = [
+      say("이리스", "…이게 하늘이에요?\n이렇게 작은 점들이?"),
+      say(FS_NAMES.hero, "작은 게 아니라, 먼 거야."),
+      say("이리스", "먼 것들이 이렇게 많이 반짝이는데\n저는 왜 혼자라고 느낄까요."),
+    ];
+    const nine_b: Command[] = [
+      narrate("(이리스가 접안경에서 눈을 뗀다.\n손에는 토마가 건넨 별 모양 빵이 한 조각 남아 있다.)"),
+      say("이리스", "카엘. 이 빵, 맛이 「따뜻한 모양」이에요.\n저는 맛을 모르는데도요."),
+      say(FS_NAMES.hero, "토마 아저씨가 열일곱 해 동안\n내 계단에 놓던 빵이야."),
+      say("이리스", "열일곱 해. 저는 어제 깨어났는데\n카엘은 그만큼 기다렸군요."),
+      say(FS_NAMES.hero, "기다린 줄도 몰랐어.\n빵이 있는 줄만 알았지."),
+      wait(600),
+      narrate("(이리스가 가슴께에서 작은 일지를 꺼낸다.\n비어 있다.)"),
+      say("이리스", "제 일지예요. 아직 한 줄도 없어요.\n카엘이 하나만 써 주실래요?"),
+      say(FS_NAMES.hero, "내가? 나는 당번 일지만 써 봤는데."),
+      say("엘레나", "당번 일지가 제일 정직해. 써."),
+      wait(500),
+      narrate("(카엘이 쓴다. 화면에 한 줄이 떠오른다.)"),
+      narrate("「오늘, 이리스가 빵을 먹었다.\n따뜻했다고 했다.」"),
+      say("이리스", "…이게 「기록」이에요?\n지워지지 않을까요, 이 줄도."),
+      say("엘레나", "지워지면 우리가 다시 써 줄게. 몇 번이고."),
+      say("이리스", "몇 번이고. …그 말도 적어 둘게요.\n엘레나가 한 말이라고."),
+      wait(600),
+      narrate("(이리스가 일지를 가슴에 안는다.\n망원경 렌즈가 한 번 반짝인다.)"),
+    ];
+    const played = { kind: "setSwitch", switchId: SW_SCOPE_PLAYED, value: true } as unknown as Command;
+    const fork = (cond: ReturnType<typeof swOn>, then: Command[], otherwise: Command[]): Command => ({ kind: "fork", condition: cond, then, else: otherwise } as unknown as Command);
+    scope.pages = [
+      ...(scope.pages ?? []),
+      { ...clone(base), id: `${scope.id}_journal`, name: "일지 한 줄",
+        conditions: [{ kind: "switch", switchId: SW_IRIS_JOINED, value: true }, { kind: "switch", switchId: SW_SCOPE_PLAYED, value: false }],
+        trigger: { kind: "action" },
+        commands: [
+          { kind: "cutsceneControl", mode: "begin", skippable: true } as unknown as Command,
+          fork(swOn(Q1), nine_b, nine_a),
+          played,
+          { kind: "cutsceneControl", mode: "end", skippable: true } as unknown as Command,
+        ] },
+    ] as typeof scope.pages;
+  }
+}
+
 function stageTalk(event: GameEvent | undefined): void {
   if (!event) return;
   const stepBack = (["up", "down", "left", "right"] as const).reduceRight<Command[]>((rest, facing) => [{
@@ -910,7 +1015,31 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   // 행렬이 떠나면 백성은 성문 쪽으로 고개를 돌려 배웅한다 — 빈 연설 자리를 보고 서 있었다(VQA r20 minor).
   const watch: Command[] = spots.map((spot, k) => ({ kind: "moveEvent", eventId: `ev_${FS_PREFIX}_crowd_${crowd[k]![0]}`,
     route: { moves: [{ kind: "turn", dir: face(spot, exit) }], repeat: false, wait: false, skippable: true } } as unknown as Command));
-  list.splice(after + 1, 0, ...marches, ...watch, ...follow);
+  // F2 — 소원 빈 아이(복선). 포고 끝, 행진 직전: 토비가 발렌 앞으로 뛰어들고, 발렌은 아이에게 소원을 묻는다.
+  // 왼손 장갑을 쥐었다 펴는 한 줄은 제2막 「망설임」의 첫 단서다. 토비가 마을에 없으면(마을 대본이 바뀌면) 건너뛴다.
+  const tobi = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_kid`);
+  const wishSpot = tobi ? nearFree(project, hub, { x: valen.x, y: valen.y + 2 }, 4, tobi.id) : undefined;
+  const tobiTurn = (dir: Step, wait = true): Command => ({ kind: "moveEvent", eventId: tobi!.id,
+    route: { moves: [{ kind: "turn", dir }], repeat: false, wait, skippable: true } } as unknown as Command);
+  const wish: Command[] = tobi && wishSpot ? [
+    { kind: "wait", ms: 500 } as Command,
+    { kind: "m2Command", commandId: "m2-040-set-event-location", fields: { target: tobi.id, mapId: hub.id, x: wishSpot.x, y: wishSpot.y } } as unknown as Command,
+    tobiTurn("up"),
+    { kind: "showEmote", target: { eventId: tobi.id }, emote: "exclamation", durationMs: 600 } as unknown as Command,
+    say("꼬마 토비", "저, 저기요! 나도 별똥별 봤어요!\n소원도 빌었어요!"),
+    { kind: "wait", ms: 400 } as Command,
+    say("심문관 발렌", "소원을 빌었다고? 뭘 빌었느냐."),
+    { kind: "showEmote", target: { eventId: tobi.id }, emote: "sweat", durationMs: 600 } as unknown as Command,
+    say("꼬마 토비", "비, 비밀이야!"),
+    { kind: "wait", ms: 700 } as Command,
+    say("심문관 발렌", "…좋다. 소원은 말하지 않아야\n이뤄진다더구나. 가거라."),
+    { kind: "moveEvent", eventId: tobi.id, route: { moves: [{ kind: "move", dir: "down" }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }], repeat: false, wait: false, skippable: true } } as unknown as Command,
+    { kind: "wait", ms: 900 } as Command,
+    narrate("(발렌이 왼손 장갑을 한 번 쥐었다 편다.)"),
+  ] : [];
+  // 토비·발렌은 서로(아래·위)를 본다 — 대사 자동 돌아보기가 서쪽 주인공 쪽으로 돌려 세우지 않게.
+  for (const c of wish) if (c.kind === "text") (c as { autoFace?: boolean }).autoFace = false;
+  list.splice(after + 1, 0, ...wish, ...marches, ...watch, ...follow);
   // 포고 동안 주인공(과 동료)은 발렌 쪽을 본다 — 화면만 보고 서 있었다(VQA r6 major).
   const begin = list.findIndex((c) => c.kind === "cutsceneControl");
   const towardValen: Step = valen.x > (project.startPos?.x ?? 0) ? "right" : "left";
@@ -1393,6 +1522,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
 
   setupCast(project);
   const troops = setupFoes(project);
+  applyFallenBattleItems(project); // 속성 상성·검/창·회복약·기믹 잡화·드롭 (fallen/battleItems.ts)
   if (!project.switches.some((s) => s.id === SW_IRIS_JOINED)) project.switches.push({ id: SW_IRIS_JOINED, name: "이리스 합류" });
 
   const built = buildJrpgChapter(project, FALLEN_STAR_ACT1, { chapterId: "fallen_star_act1", prefix: FS_PREFIX, seed: 7, troops });
@@ -1403,6 +1533,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   for (const id of Object.values(ids)) if (!project.maps[id]) throw new Error(`[fallen-star] 맵이 덜 지어졌다: ${id} ${JSON.stringify(built.warnings ?? [])}`);
   // 도구를 부를 때마다 맵 객체가 바뀐다 — 늘 새로 꺼낸다.
   const M = (id: string): GameMap => project.maps[id]!;
+  // 숲 조우율: 12(평균 11걸음)는 너무 잦다 → 1.0(해석 평균 약 40걸음, 실측 25~30). 길 도구가 정수로 내림해서 지어진 뒤 맵에 직접 쓴다.
+  M(ids.forest).encounterRate = 1.0;
 
   applySpeakerPrefixes(project);
 
@@ -1441,24 +1573,51 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
 
   // 떨어진 별을 열면 이리스가 깨어나 동료가 된다. 별빛 열쇠는 알 안에 있다 — 뚜껑이 열린 뒤 이리스가 건넨다.
   // 장 구성기 기본값인 「풀이 칸 바닥을 풀숲으로 바꾸기」(changeTile)는 그을린 흙 위에 풀 한 칸을 남겨 뺀다.
-  const podOpened = findTextList(M(ids.forest), "치익— 뚜껑이 열리고");
+  const podOpened = findTextList(M(ids.forest), "치익— 관이 열리고");
   if (!podOpened) throw new Error("[fallen-star] 떨어진 별 조사 대사를 찾지 못했다");
   const podList = podOpened.list;
+  let irisFacingBack: Command | undefined;
   const keyAt = podList.findIndex((c) => c.kind === "changeItem" && (c as { itemId?: string }).itemId === FS_STAR_KEY_ITEM);
   const keyGain = keyAt >= 0 ? podList.splice(keyAt, 2)[0]! : ({ kind: "changeItem", itemId: FS_STAR_KEY_ITEM, op: "+=", amount: 1 } as Command);
   for (let i = podList.length - 1; i >= 0; i -= 1) if (podList[i]!.kind === "changeTile") podList.splice(i, 1);
-  const opened = podList.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("치익— 뚜껑이 열리고"));
+  const opened = podList.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("치익— 관이 열리고"));
+  // 8-5 이리스 깨어남 — 한 박스 한 감정. 가까이 오면 움츠리고(몸을 돌렸다 돌아본다), 손을 내밀고, 처음 땅을 밟는다.
+  const irisRoute = (moves: Array<{ kind: "turn"; dir: string }>): Command =>
+    ({ kind: "moveEvent", eventId: `ev_${FS_PREFIX}_iris_field`, route: { moves, repeat: false, wait: true, skippable: true } } as unknown as Command);
+  const irisTurnBack = irisRoute([{ kind: "turn", dir: "left" }]);
+  irisFacingBack = irisTurnBack;
+  const irisEmote = (emote: string, durationMs: number): Command =>
+    ({ kind: "showEmote", target: { eventId: `ev_${FS_PREFIX}_iris_field` }, emote, durationMs } as unknown as Command);
+  const kaelEmote = (emote: string, durationMs: number): Command => ({ kind: "showEmote", target: "player", emote, durationMs } as unknown as Command);
+  const pause = (ms: number): Command => ({ kind: "wait", ms } as unknown as Command);
   podList.splice(opened + 1, 0,
-    say("이리스", "…여기는, 어디죠? 몸이… 아직 무거워요."),
-    say("카엘", "괜찮아? 너… 저 별 안에 있었던 거야?"),
-    say("이리스", "별이 아니에요. 하늘을 건너는 배예요. 저는 이리스, 기계예요."),
-    say("엘레나", "기계? 말도 하고, 숨도 쉬는데…"),
-    say("이리스", "숨은 흉내예요. 사람들이 덜 무서워하라고요."),
-    say("이리스", "…혹시, 제가 무서우세요?"),
-    say("카엘", "아니. 조금 놀랐을 뿐이야."),
-    say("이리스", "집에 신호를 보내야 해요. 높은 곳, 큰 렌즈가 있는 곳에서요."),
-    say("엘레나", "렌즈라면… 천문대에 있어."),
-    say("이리스", "이것도 드릴게요. 배 안에 박혀 있던 거예요."),
+    pause(600),
+    say("이리스", "…신호, 수신. 현지 시각 불명.\n저는 중계기 이리스입니다."),
+    kaelEmote("exclamation", 600),
+    say("카엘", "말을 했어. 엘레나, 방금 말했지?"),
+    say("엘레나", "응. 놀라지 마."),
+    irisEmote("sweat", 700),
+    irisRoute([{ kind: "turn", dir: "down" }]),
+    pause(400),
+    say("이리스", "오지 마세요. 사람은… 가까이 오면\n무서워해요. 늘 그랬어요."),
+    say("카엘", "안 무서워. 거짓말이야, 조금 무서워.\n근데 너도 떨고 있잖아."),
+    irisTurnBack,
+    say("이리스", "…떨리는 건 흉내예요.\n사람들이 덜 무서워하라고요."),
+    say("카엘", "흉내라도 괜찮아. 이름이 뭐야?"),
+    pause(300),
+    say("이리스", "이리스. 그리고 「집」이 있어요.\n얼굴은 기억 안 나는데, 이름표는 있어요."),
+    say("카엘", "집? 어디에?"),
+    irisEmote("ellipsis", 800),
+    say("이리스", "하늘 위라고 생각해요.\n거기서 부르는 소리를 따라왔어요."),
+    narrate("이리스가 관 유리 밖으로 손을 내민다. 손끝이 가늘게 떨린다."),
+    say("이리스", "저는 물건이 아니에요.\n집에 돌아가고 싶을 뿐이에요."),
+    say("카엘", "알아. 같이 가자.\n집까지 데려다줄게."),
+    { kind: "playAudio", resourceId: "easyrpg-sound-chime2", loop: false, channel: "se" } as Command,
+    narrate("알이 낮은 소리로 열린다. 이리스가 처음으로 땅을 밟는다."),
+    pause(500),
+    say("이리스", "…땅이 따뜻해요. 카엘, 이게 「아침」이에요?"),
+    say("엘레나", "…그래. 이게 아침이야."),
+    say("이리스", "이것도 드릴게요. 관 안에 박혀 있던 거예요."),
     keyGain,
     narrate("「별빛 열쇠」를 얻었다."),
     say("엘레나", "이 별 무늬… 천문대 서고 바닥 돌뚜껑의 홈이랑 똑같아!"),
@@ -1540,6 +1699,10 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       say("엘레나", "아, 이것도 챙겨. 숲에 짐승이 많대."),
       { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 3 } as Command,
       narrate("「회복약」 3개를 받았다."),
+      say("엘레나", "그리고 이거, 천문대 창고에서 나온 거야. 검이 편하면 검을, 창이 편하면 창을 써 봐."),
+      { kind: "changeItem", itemId: FS_SWORD_GALE, op: "+=", amount: 1 } as Command,
+      { kind: "changeItem", itemId: FS_SPEAR_PIKE, op: "+=", amount: 1 } as Command,
+      narrate("「바람결 검」과 「철심 창」을 받았다. 메뉴의 장비에서 바꿔 들 수 있다."),
     );
   }
   // 관 옆 두 칸 — 한 칸 옆이면 관 앞에 선 카엘과 대각선으로 붙어 24×32 몸이 겹쳐 보였다(가혹 검수 r9 장면 배치).
@@ -1551,6 +1714,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       pattern: charsetFrameIndex({ characterIndex: 7, direction, pattern: 1 }),
     });
     const facing = irisAt.x > podSpot.x ? "left" : "right";
+    if (irisFacingBack) ((irisFacingBack as unknown as { route: { moves: Array<{ dir: string }> } }).route.moves[0]!.dir = facing);
     M(ids.forest).events.push({
       id: `ev_${FS_PREFIX}_iris_field`, name: "이리스", x: irisAt.x, y: irisAt.y, trigger: { kind: "action" }, commands: [],
       pages: [
@@ -1595,7 +1759,6 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     conditions: [],
     epilogue: [
       { kind: "say", speaker: "이리스", text: "북쪽 하늘에서 아직 대답이 들려요. 아주 작게." },
-      { kind: "say", speaker: "카엘", text: "그럼 거기까지 가 보자. 같이." },
     ],
     // 가혹 검수 r5: 끝 화면이 두 줄뿐이라 여운이 약했다 — 짧은 크레딧 두루마리와 「다음 막」 예고를 단다.
     presentation: {
@@ -1604,7 +1767,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         // 첫 카드가 이미 제목·막 이름을 말한다 — 크레딧은 인물부터(가혹 검수 r10 「54·55 거의 같은 반복」).
         "카엘 — 견습 별지기", "엘레나 — 천문대의 마도학자", "이리스 — 별에서 온 기계 소녀", "",
         "천문대장 하넬", "숲지기 브람", "심문관 발렌", "",
-        "그날 밤 동쪽 숲에 떨어진 것은 별이 아니었다.", "이리스의 배가 남은 곳, 북쪽 하늘탑으로.", "",
+        "그날 밤 동쪽 숲에 떨어진 것은 별이 아니었다.", "이리스의 집이 부르는 곳, 북쪽 하늘탑으로.", "",
         "OPRN Studio 공식 데모", "",
         "제2막에서 계속됩니다.",
       ].join("\n"),
@@ -1613,6 +1776,25 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   const reported = findTextList(M(ids.observatory), "이리스를 집에 데려다주거라");
   if (!reported) throw new Error("[fallen-star] 보고 대사를 찾지 못했다");
   reported.list.push({ kind: "triggerEnding", endingId: ENDING_ID } as Command);
+  // 13-2·13-3 — 제1막 끝: 이리스가 숨겼던 한 줄, 그리고 붉은 못.
+  // 하넬 1페이지는 applyFallenLoreAndHanel 이 다시 짜므로, 줄은 거기서 triggerEnding 앞에 끼운다(아래).
+  const endingBeats: Command[] = [
+    narrate("(천문대 위층. 렌즈 가운데에서 하늘탑 방향 신호가 깜빡인다.)"),
+    say("카엘", "그럼 거기까지 가 보자. 같이."),
+    narrate("(이리스는 대답하지 않고 일지를 가슴에 안는다.)"),
+    wait(600),
+    say("이리스", "…카엘. 아까는 말 못 했어요.\n전문에 한 줄이 더 있었어요."),
+    say("이리스", "「중계기 이리스 수신 확인.\n귀환 시 현지 기록을 소거합니다.」"),
+    say("카엘", "소거? 기억을 지운다는 거야?"),
+    say("이리스", "집에 돌아가면 오늘 일도 지워져요.\n카엘이 부른 별 이름도. 빵 맛도요."),
+    say("카엘", "…그래도 갈 거야?"),
+    say("이리스", "네. 가서 확인해야 해요.\n지워지는 게 정말 「저」인지."),
+    say("카엘", "그럼 가기 전에 일지에 한 줄 더 쓰자.\n네가 잊으면, 내가 읽어 줄게."),
+    ...fadeOut(1500),
+    narrate("(북쪽 하늘에서 별 하나가 천천히 붉게 깜빡인다.)"),
+    narrate("(……탁.)"),
+    narrate("그 시각, 심문관은 지도의 북쪽 끝에 못을 박았다."),
+  ];
 
   // 숲길 — 보이는 적 셋(부딪히면 전투). 입구에서 공터까지 고르게 둔다.
   const forestEntry = M(ids.forest).events.find((e) => JSON.stringify(e).includes(`"mapId":"${M(ids.hub).id}"`));
@@ -1722,7 +1904,9 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       // 맵 위 끝에 붙은 구덩이는 1배 화면 위 테두리에 뒷벽이 잘려 「빈터에 판 밭」으로 읽혔다(VQA r21 major) — 빈터가 허락하는
       // 만큼(최대 네 칸) 내려 구덩이 뒤로 숲이 보이게 한다. 잔돌·풀 포기 덧그림은 막지 않는다(큰 나무만 막는다).
       const open = (x: number, y: number): boolean => ground(x, y) || ((grassFloor(y * fm.width + x) || (metaS[fm.lowerTiles[y * fm.width + x]!]?.label ?? "").startsWith("버들항 · 모랫길")) && !treeAt(y * fm.width + x));
-      const SHIFT = [4, 3, 2].find((d) => {
+      // 새 버들항 수관 숲(#3259 플래너)은 빈터 아래가 트여 옛 숲(2칸)과 달리 4칸까지 내려가고, 내리면 관이 숲길 끝(15,8)을 막는다 —
+      // 옛 설계 좌표(조사 칸 (15,7))와 같게 두 칸만 내린다.
+      const SHIFT = [2].find((d) => {
         if (pod.y + d >= fm.height - 4) return false;
         for (let y = pod.y; y <= pod.y + d; y += 1) for (let x = pod.x - 1; x <= pod.x + 1; x += 1) if (!open(x, y)) return false;
         return true;
@@ -2161,6 +2345,30 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 얼굴은 모든 대사 편집이 끝난 뒤 한 번에 건다(위 단계들이 대사를 찾아 바꾸고 덧붙인다).
   const actorFace = (id: string): string => project.database.actors.find((a) => a.id === id)?.faceResourceId ?? "";
   // 이야기 장면(하넬·브람·지하의 발렌)은 말을 걸면 한 칸 물러서 마주 선다.
+  applyFallenLoreAndHanel(project, ids);
+  {
+    // 13-2~13-4: 다시 짜인 하넬 1페이지의 「보고 끝」 목록(main_done 꺼짐 분기)에서 triggerEnding 바로 앞에 끼운다.
+    const hanel = M(ids.observatory).events.find((e) => e.id === `ev_${FS_PREFIX}_hanel`);
+    let done = false;
+    const visit = (cmds: Command[]): void => {
+      for (const c of cmds) {
+        const f = c as unknown as { kind: string; condition?: { kind?: string; switchId?: string; value?: boolean }; then?: Command[]; else?: Command[] };
+        if (f.kind !== "fork") continue;
+        if (!done && f.condition?.kind === "switch" && f.condition.switchId === "sw_fs_main_done" && f.condition.value === false && f.then) {
+          const at = f.then.findIndex((x) => x.kind === "triggerEnding");
+          if (at >= 0) {
+            f.then.splice(at, 0, ...endingBeats);
+            done = true;
+            return;
+          }
+        }
+        visit(f.then ?? []);
+        visit(f.else ?? []);
+      }
+    };
+    for (const page of hanel?.pages ?? []) visit(page.commands);
+    if (!done) throw new Error("[fallen-star] 제1막 끝 대사를 끼울 자리를 찾지 못했다");
+  }
   stageTalk(M(ids.observatory).events.find((e) => e.id === `ev_${FS_PREFIX}_hanel`));
   stageTalk(M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_bram`));
   // bossEvent 는 앞에서 잡은 옛 맵 객체일 수 있다(도구를 부를 때마다 맵이 새로 만들어진다) — id 로 다시 찾는다.
@@ -2169,10 +2377,15 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenSoundtrack(project, { hub: M(ids.hub), observatory: M(ids.observatory), forest: M(ids.forest), vault: M(ids.vault) }, bossEvent?.id);
   // 마을 집 안 — 여관·약방·집 셋을 손 도트 실내로 짓고 부딪힘 문으로 잇는다. 나머지 집 문은 잠겼다고 말한다(사용자 「집에 들어갈 수 없다」).
   // 행렬보다 먼저 짓는다 — 행렬(열 명)이 큰길 두 줄에 서면 리사네 문 앞이 막혀 문 잇기가 거절됐다.
+  ensureFallenTownDatabase(project);
   buildFallenTownInteriors(project, ids.hub, { irisJoined: SW_IRIS_JOINED, valenMarched: SW_VALEN_MARCHED });
+  // 집 안 수납(한 번만 뒤짐)·리사네 들킴·출입 금지 — 실내가 지어진 뒤에 얹는다.
+  buildFallenTownLife(project, ids.hub);
   // 길은 모든 소품·표지를 찍은 뒤에 잰다 — 앞에서 재면 뒤에 선 표지·자리 옮김이 길을 막았다.
   marchOffAfterProclamation(project, M(ids.hub));
   clearDoorFronts(project, M(ids.hub));
+  // 마을 대사·잔 일 셋(납작빵·은수저·창)·꾸지람·의뢰 일지 — 대본 3·4·5·14·15·16·18절 (fallen/townQuests.ts).
+  applyFallenTownQuests(project, { hub: ids.hub, forest: ids.forest });
   // 실내 맵의 방 밖은 전부 어둠(game-scene-polish 3-7·11-6, 사용자 지적 「방 사이가 회색 바닥 띠로 읽힌다」) — 회색 디더·바위 천장은
   // 같은 이웃 번호의 어두운 천장으로, 여백을 메운 바위벽 조각은 공허 칸으로.
   // 천문대 윗 홀 — 오프닝 컷처럼 둥근 단 위 큰 망원경·혼천의·태양계의·별 지도 탁자(VQA r3 「집처럼 보인다」).
@@ -2180,6 +2393,12 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   if (!roomsOwned(ids.observatory)) dressObservatoryHall(project, M(ids.observatory), "ev_fs_scope");
   if (!roomsOwned("fs_vault_gate")) unifyPuzzleFloor(project, M("fs_vault_gate"));
   joinForestTrail(project, ids.forest);
+  // 숲을 여섯 맵으로 나눈다 — 어귀·옛 수로·가시덤불 샛길·별지기 사당 터·사냥꾼 쉼터·깊은 숲(원래 숲의 북쪽 27줄).
+  // 왕도 동문은 어귀로 이어지고, 깊은 숲은 사당 터에서 들어간다(fallen/forestMaps.ts). 모든 숲 손질이 끝난 뒤에 자른다.
+  buildFallenForestMaps(project, { hub: ids.hub, forest: ids.forest }, troops.field, { understory: (mapId) => fillForestUnderstory(project, mapId) });
+  // 보이는 짐승은 보면 달려든다(사용자 2026-10-24) — 모든 맵의 떠도는 적(…_foeN)에 시야 추격을 건다: 앞쪽 부채꼴에 들면 「!」,
+  // 순찰보다 빠르게 쫓아와 닿으면 전투, 놓치면 잠깐 뒤지다 제자리로 돌아가 순찰한다(fieldEnemyTools.makeFieldEnemyChase). 보스·수호자는 그대로.
+  for (const map of Object.values(project.maps)) for (const event of map.events) if (/_foe\d+$/.test(event.id)) makeFieldEnemyChase(project, map, event);
   for (const map of Object.values(project.maps)) if (map.tilesetId === "atlas_biome_interior" && !isFallenRoomRebuilt(project, map.id)) { darkenInteriorMargins(map); dropFloorHangs(project, map); }
   // 둘레를 덧댄 실내(천문대·화로의 방)는 남쪽 출구가 맵 가장자리가 아니라 벽 틈 맨바닥이었다(scene-transfer-off-door) —
   // 틈에 열린 쇠창살 문틀 윗칸(상인방)을 세워(아랫칸 기둥은 바깥 천장 칸이라 얹지 않는다) 출구로 읽히게 한다.
@@ -2205,7 +2424,12 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       }
     }
   }
-  applySpeakerFaces(project, {
+  addBridgeValenAndScopeScene(project, ids);
+  // 제1막 대사 흐름·이리스 합류 선택·발렌 연막 퇴장·지하 광신도·빠진 꾸지람(fallen/storyPass.ts) — 모든 대사 편집 뒤, 얼굴 앞.
+  applyFallenStoryPass(project, ids);
+  // 마을 사람 칩·대장간 재고(이리스·엘레나 몫)·뛰노는 아이·숨은 목걸이·대사 표정(fallen/townCast.ts).
+  applyFallenTownCast(project);
+  const speakerFaces: Record<string, string> = {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),
     이리스: actorFace("actor_fs_iris"),
@@ -2216,7 +2440,13 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     "광장의 할머니": "easyrpg-faceset-people1-07",
     "꼬마 토비": "easyrpg-faceset-people1-00",
     "빵집 아주머니": "easyrpg-faceset-people1-03",
-  });
+  };
+  for (const [alias, of] of Object.entries(FS_QUEST_FACE_ALIASES)) if (speakerFaces[of]) speakerFaces[alias] = speakerFaces[of]!;
+  // 말하는 사람마다 흉상 — 칩의 짝 얼굴 → 공용 표정 세트 흉상(fallenSpeakerBusts). 대사 표정이 같은 세트 안에서 바꾼다.
+  applySpeakerFaces(project, fallenSpeakerBusts(project, speakerFaces));
+  applyFaceCellEmotions(project);
+  // 숲은 마을 북쪽 — 「동쪽 숲」「동문」을 북쪽으로(오프닝 연출·화로 퍼즐 방향은 제외, fallen/townCast.ts).
+  applyNorthForest(project);
 
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);

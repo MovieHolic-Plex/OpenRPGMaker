@@ -1,0 +1,6 @@
+[
+  { "kind": "key", "key": "Enter" },
+  { "kind": "waitFor", "testid": "runtime-state-json", "state": "present", "timeoutMs": 60000 },
+  { "kind": "move", "dir": "up", "steps": 2 },
+  { "kind": "move", "dir": "left", "steps": 1 }
+]

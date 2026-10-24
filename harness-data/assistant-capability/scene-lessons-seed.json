@@ -455,6 +455,26 @@
     "scene-transfer-pair",
     "scene-transfer-facing"
    ]
+  },
+  {
+   "id": "venue-room-return-door",
+   "label": "거리에서 들어간 실내 명소, 걸어서 돌아 나오기",
+   "port": 19523,
+   "lessons": [
+    "interior-exit-walk-back",
+    "transfer-facing"
+   ],
+   "prompt": "상점가 거리 맵을 만들어 줘. 거리에 서 있는 학생회장에게 말을 걸면 '학생회실' 실내로 들어갈 수 있고, 학생회실 안에서 걸어서 다시 거리로 나올 수 있어야 해. 게임은 거리에서 시작해.",
+   "requirements": [
+    "the street hub map exists and the game starts there",
+    "talking to the NPC offers a choice that transfers into the interior map",
+    "the interior landing cell is passable floor, not a wall tile",
+    "inside the interior room a playerTouch transfer returns to the street hub",
+    "walking from the landing cell in any direction reaches the return transfer without leaving the room's floor"
+   ],
+   "lint0": [
+    "scene-transfer-facing"
+   ]
   }
  ]
 }

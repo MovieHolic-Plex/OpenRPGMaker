@@ -63,6 +63,7 @@ import {
   transferTo as transferSceneTo,
 } from "@/player/playSceneMapCommands";
 import { findRuntimeEventInScene, resetEncounterCounter, updatePlayScene } from "@/player/playSceneMovement";
+import { prefetchBattleAssetsForMap } from "@/player/battleAssetPrefetch";
 import { recordDungeonEntrance } from "@/project/encounterGuard";
 import { createWorldAtlasController } from './worldAtlasOverlay';
 import { visitAtlasMap } from '@/project/worldAtlas';
@@ -497,6 +498,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     syncCloudShadowLayer(this);
     syncTransitForMap(this);
     void this.syncMinimap();
+    if (this.map) prefetchBattleAssetsForMap(store.getCurrent(), this.map);
   }
 
   renderTiles(): void {

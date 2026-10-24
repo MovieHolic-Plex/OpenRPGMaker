@@ -7,6 +7,7 @@ import { projectReferenceTileSize } from "@/project/mapViewScale";
 import { syncPlayerCharacterScale } from "@/player/playerCharacterScale";
 import { resetDetectionForMap } from "./npcDetectionEncounter";
 import { dialogueUi } from "./playSceneDom";
+import { syncContainerSearchedMarks } from "@/player/playSceneFieldFx";
 import { evalCondition } from "@/project/session";
 import { clearFurniturePush, furniturePushPosition } from './furniturePushAnimation';
 import { chipsetAnimationKey } from "@/assets/bundled";
@@ -566,6 +567,22 @@ function clearRootYSortTiles<TImage extends RenderedTileImage, TSprite extends R
   rootYSortTiles.delete(host);
 }
 
+/**
+ * 칸 (x,y) 에 그려진 y 정렬 상층 타일(가구·기물) 이미지 — 수납을 흔드는 연출(playSceneFieldFx)이 쓴다.
+ * 들린(높이 지형) 타일과 굽힌(캡처) 타일은 개별 이미지가 없을 수 있다 — 그때는 빈 배열이다.
+ */
+export function rootYSortTileImagesAt(scene: object & { sceneHost?: object }, x: number, y: number, tileSize: number): { x: number; y: number }[] {
+  const tiles = rootYSortTiles.get(scene.sceneHost ?? scene);
+  if (!tiles) return [];
+  const out: { x: number; y: number }[] = [];
+  for (const tile of tiles) {
+    const image = tile as RenderedTileImage & { x?: number; active?: boolean };
+    if (image.active === false || typeof image.x !== "number" || typeof image.y !== "number") continue;
+    if (image.x === x * tileSize && image.y === y * tileSize) out.push(image as { x: number; y: number });
+  }
+  return out;
+}
+
 function trackRootYSortTile<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
   scene: RenderTilesSceneContext<TImage, TSprite>,
   image: RenderedTileImage,
@@ -930,6 +947,8 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     if (id !== PLAYER_SHADOW_KEY && !retained.has(id)) destroyCharacterShadow(scene, id);
   }
   syncForageWarnings(scene);
+  // 뒤진 수납 칸의 흔적(열린 뚜껑·흘린 짚 …) — 「이미 뒤짐」 페이지가 켜진 이벤트만.
+  syncContainerSearchedMarks(scene as unknown as PlaySceneContext);
   scene.runtimeDom.syncMissingResourceError(scene.missingResources);
   scene.syncRuntimeState();
 }

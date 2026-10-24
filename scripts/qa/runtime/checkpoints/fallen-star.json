@@ -65,11 +65,185 @@
   },
   {
    "id": "forest-entry",
-   "label": "숲 입구(하넬 의뢰 뒤)",
-   "note": "chronoBell.ts hub->forest 착지 (15,38); 하넬 의뢰 sw_fs_main_started",
+   "label": "깊은 숲 입구(사당 터에서 북쪽으로 올라옴)",
+   "note": "fallen/forestMaps.ts shrine->deep 착지 (14,34) — 추락지까지 굽은 길, 브람 (14,18), 숨은 물건 (21,28)",
    "mapId": "fs_forest",
+   "x": 14,
+   "y": 34,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   }
+  },
+  {
+   "id": "forest-edge-entry",
+   "label": "숲 어귀(왕도 북문에서 들어옴)",
+   "note": "hub->edge 착지 (15,38) — 갈림목 (16,20): 북서 가시덤불 샛길 · 북동 옛 수로, 숨은 물건 (14,11)",
+   "mapId": "fs_forest_edge",
    "x": 15,
    "y": 38,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   }
+  },
+  {
+   "id": "forest-stream-entry",
+   "label": "옛 수로(어귀 북동에서 들어옴)",
+   "note": "edge->stream 착지 (7,30) — 굽은 개울 돌다리 (20,14), 숨은 물건 (6,19)",
+   "mapId": "fs_forest_stream",
+   "x": 7,
+   "y": 30,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   }
+  },
+  {
+   "id": "forest-thicket-entry",
+   "label": "가시덤불 샛길(어귀 북서에서 들어옴)",
+   "note": "edge->thicket 착지 (17,38) — 서쪽 곁길 끝 상자 (4,11)",
+   "mapId": "fs_forest_thicket",
+   "x": 17,
+   "y": 38,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   }
+  },
+  {
+   "id": "forest-shrine-entry",
+   "label": "별지기 사당 터(옛 수로에서 올라옴)",
+   "note": "stream->shrine 착지 (30,28) — 조우 없음, 회복 세이브·사당 공물 상자",
+   "mapId": "fs_forest_shrine",
+   "x": 30,
+   "y": 28,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   }
+  },
+  {
+   "id": "forest-glade-entry",
+   "label": "사냥꾼 쉼터(옛 수로 동쪽 곁길)",
+   "note": "stream->glade 착지 (1,13) — 막다른 곳 상자 (26,11)",
+   "mapId": "fs_forest_glade",
+   "x": 1,
+   "y": 13,
+   "facing": "right",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   }
+  },
+  {
+   "id": "forest-chase",
+   "label": "추격 — 숲 어귀 갈림목 아래, 남북으로 순찰하는 늑대 앞",
+   "note": "makeFieldEnemyChase: 시야 부채꼴에 들면 「!」 → 달려듦 → 닿으면 전투",
+   "mapId": "fs_forest_edge",
+   "x": 18,
+   "y": 22,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -458,10 +632,10 @@
   {
    "id": "report",
    "label": "하넬에게 보고",
-   "note": "ev_fs_main_report: 천문대 하넬(24,20) — 서재 벽난로 앞, (24,21) 에서 위로 말 건다, sw_fs_main_step2 뒤",
+   "note": "하넬은 #3314 부터 망원경 곁(12,12) — (12,13) 에서 위로 말 건다, sw_fs_main_step2 뒤(예전 (24,20) 벽난로 자리는 비었다)",
    "mapId": "fs_observatory",
-   "x": 24,
-   "y": 21,
+   "x": 12,
+   "y": 13,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -527,8 +701,8 @@
    "label": "엔딩 카드와 크레딧",
    "note": "ENDING_ID end_fs_act1 — 하넬 보고 대사 끝에 붙어 있다",
    "mapId": "fs_observatory",
-   "x": 24,
-   "y": 21,
+   "x": 12,
+   "y": 13,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -626,6 +800,174 @@
       }
      ],
      "shot": true
+    }
+   ]
+  },
+  {
+   "id": "hanel-h1",
+   "label": "하넬 첫 만남 (큰 망원경 곁)",
+   "note": "loreAndHanel.ts 읽을거리·하넬 대사 QA",
+   "mapId": "fs_observatory",
+   "x": 12,
+   "y": 13,
+   "facing": "up",
+   "switches": {
+    "sw_fs_valen_marched": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ]
+  },
+  {
+   "id": "hanel-h4",
+   "label": "하넬 — 의뢰 수락 뒤",
+   "note": "loreAndHanel.ts 읽을거리·하넬 대사 QA",
+   "mapId": "fs_observatory",
+   "x": 12,
+   "y": 13,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ]
+  },
+  {
+   "id": "hanel-h6",
+   "label": "하넬 — 이리스 합류 뒤",
+   "note": "loreAndHanel.ts 읽을거리·하넬 대사 QA",
+   "mapId": "fs_observatory",
+   "x": 12,
+   "y": 13,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ]
+  },
+  {
+   "id": "hanel-h10",
+   "label": "하넬 — 끝난 뒤",
+   "note": "loreAndHanel.ts 읽을거리·하넬 대사 QA",
+   "mapId": "fs_observatory",
+   "x": 12,
+   "y": 13,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_arrived": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_main_done": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ]
+  },
+  {
+   "id": "lore-irene",
+   "label": "읽을거리 — 이레네 명판",
+   "note": "loreAndHanel.ts 읽을거리·하넬 대사 QA",
+   "mapId": "fs_observatory",
+   "x": 12,
+   "y": 20,
+   "facing": "up",
+   "switches": {
+    "sw_fs_valen_marched": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ]
+  },
+  {
+   "id": "lore-journal",
+   "label": "읽을거리 — 하넬의 일지",
+   "note": "loreAndHanel.ts 읽을거리·하넬 대사 QA",
+   "mapId": "fs_observatory",
+   "x": 2,
+   "y": 17,
+   "facing": "left",
+   "switches": {
+    "sw_fs_valen_marched": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ]
+  },
+  {
+   "id": "lore-form",
+   "label": "읽을거리 — 정착 확인서 양식",
+   "note": "loreAndHanel.ts 읽을거리·하넬 대사 QA",
+   "mapId": "fs_observatory",
+   "x": 5,
+   "y": 10,
+   "facing": "up",
+   "switches": {
+    "sw_fs_valen_marched": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
     }
    ]
   }

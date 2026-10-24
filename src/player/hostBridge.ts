@@ -63,6 +63,8 @@ export type FullscreenToggleOptions = {
   readonly viewport: HTMLElement;
   /** requestFullscreen 대상 — 플레이어 루트 컨테이너. */
   readonly fullscreenRoot: HTMLElement;
+  /** 터치 기기 자동 노출 — 호스트가 hostFeatures 를 안 줘도 document.fullscreenEnabled 가 true 면 버튼을 붙인다. */
+  readonly autoOnTouch?: boolean;
 };
 
 /**
@@ -73,8 +75,11 @@ export type FullscreenToggleOptions = {
  */
 export function mountHostFullscreenToggle(options: FullscreenToggleOptions): (() => void) | null {
   const { bridge, viewport, fullscreenRoot } = options;
-  if (!bridge || !bridge.hostFeatures.includes("fullscreen")) return null;
   const doc = viewport.ownerDocument;
+  const hostAsked = Boolean(bridge && bridge.hostFeatures.includes("fullscreen"));
+  // iframe 에 allow="fullscreen" 이 없으면 fullscreenEnabled=false → 자동 노출하지 않는다.
+  const autoAllowed = options.autoOnTouch === true && (doc as { fullscreenEnabled?: boolean }).fullscreenEnabled === true;
+  if (!hostAsked && !autoAllowed) return null;
   if (
     typeof (fullscreenRoot as { requestFullscreen?: unknown }).requestFullscreen !== "function"
     || typeof (doc as { exitFullscreen?: unknown }).exitFullscreen !== "function"
@@ -108,10 +113,17 @@ export function mountHostFullscreenToggle(options: FullscreenToggleOptions): (()
 
   const onClick = (): void => {
     try {
-      const request = doc.fullscreenElement
-        ? doc.exitFullscreen()
-        : fullscreenRoot.requestFullscreen();
-      void Promise.resolve(request).catch(() => {
+      const entering = !doc.fullscreenElement;
+      const request = entering
+        ? fullscreenRoot.requestFullscreen({ navigationUI: "hide" } as FullscreenOptions)
+        : doc.exitFullscreen();
+      // 폰(안드로이드)은 전체 화면이 된 뒤 가로로 잠근다 — 손으로 돌리지 않아도 된다. iOS·데스크톱은 lock 이 없거나 거절한다(조용히 무시).
+      void Promise.resolve(request).then(() => {
+        if (options.autoOnTouch !== true) return;
+        const orientation = (typeof screen !== "undefined" ? screen.orientation : undefined) as (ScreenOrientation & { lock?: (o: string) => Promise<void>; unlock?: () => void }) | undefined;
+        if (entering) void orientation?.lock?.("landscape")?.catch(() => undefined);
+        else orientation?.unlock?.();
+      }).catch(() => {
         /* 제스처 요건/권한 실패는 조용히 무시 — 게임 진행에 영향 금지 */
       });
     } catch {

@@ -1,3 +1,4 @@
+import { installTapOrSwipeToClose, isTouchUiHost } from "@/player/touchTap";
 import { getEffectiveReadingPreferences, playerTextDelay, setAuthoredPreferenceDefaults } from '@/player/playerPreferences';
 import { backlogViewIsOpen, backlogRecentlyClosed, closeBacklogView, openBacklogView } from '@/player/dialogueBacklogView';
 import { dialogueUiText } from '@/player/dialogueUiStrings';
@@ -725,6 +726,13 @@ export function createDialogueUI(
       list.append(item);
     }
     if (logEntries.length === 0) list.append(el("li", { class: "dialogue-log-empty", text: "아직 나눈 대화가 없습니다." }));
+    const closeButton = el("button", {
+      class: "dialogue-log-close",
+      text: "닫기 ✕",
+      attrs: { type: "button", "aria-label": "대화 기록 닫기" },
+      dataset: { testid: "dialogue-log-close" },
+    });
+    closeButton.addEventListener("click", (event) => { event.stopPropagation(); closeLog(); });
     logPanel = el("div", {
       class: "dialogue-log",
       attrs: { role: "dialog", "aria-label": "대화 기록" },
@@ -732,11 +740,14 @@ export function createDialogueUI(
       children: [
         el("div", { class: "dialogue-log-head", children: [
           el("strong", { text: "대화 기록" }),
-          el("span", { text: "L · Esc 닫기 · ↑↓ 넘겨 보기" }),
+          el("span", { class: "dialogue-log-hint", text: isTouchUiHost(host) ? "탭하거나 쓸어서 닫기" : "L · Esc 닫기 · ↑↓ 넘겨 보기" }),
+          closeButton,
         ] }),
         list,
       ],
     });
+    // 폰에는 L·Esc 가 없다 — 보이는 닫기 단추와 탭·쓸기로 닫는다(2026-10-24, 아이폰에서 기록 창에 갇힌 신고).
+    installTapOrSwipeToClose(logPanel, closeLog);
     host.append(logPanel);
     list.scrollTop = list.scrollHeight;
   };

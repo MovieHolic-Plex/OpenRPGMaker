@@ -1,6 +1,9 @@
 import { MULTI_HIT_LIMIT, normalizeFixedDamage } from "@/project/skillBattleRules";
 import { withJosa } from "@/util/josa";
 import { starterChoiceCommands } from "@/project/starterChoice";
+import { resolveGraphic } from "./eventCompile";
+import { withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
+import { genreLockCharsetCatalogFilter } from "@/project/genreLockCharsets";
 import { ensureNamedSwitch } from "./flagHelpers";
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
 import { CAPTURE_CONDITION_KINDS, CAPTURE_CONDITION_MAX_MULTIPLIER, CAPTURE_CONDITION_MIN_MULTIPLIER } from "@/battle/captureBalls";
@@ -48,6 +51,7 @@ import type {
   CropRecord,
   EnemyRecord,
   EquipmentRecord,
+  EventPageGraphic,
   GameEvent,
   ItemRecord,
   MonsterSpeciesRecord,
@@ -2082,7 +2086,10 @@ const upsertActor: ToolDefinition = {
         !draft.database.battleCommands?.some((entry) => entry.id === id) && !klass?.battleCommands.some((entry) => entry.id === id));
       if (unknown.length > 0) warnings.push(`battleCommandIds 중 전역·직업 명령에 없는 id 는 전투 메뉴에서 빠집니다: ${unknown.join(", ")}`);
     }
-    const twin = actorCurveTwin(draft.database.actors, record);
+    // 쌍둥이 곡선 갈아끼우기는 새 배우에만 — 이미 있는 배우의 이름만 고치는 부분 수정이 곡선을 바꾸면 안 된다
+    // (2026-10-24 비교: {id,name} 만 보낸 개명이 주인공 maxHp 514→560 으로 바꿨다).
+    const existed = draft.database.actors.some((entry) => entry.id === record.id);
+    const twin = existed ? undefined : actorCurveTwin(draft.database.actors, record);
     if (twin && !("parameterCurves" in actorPatch)) {
       const roleHint = `${record.id} ${record.classId} ${record.name} ${record.nickname ?? ""}`;
       const preset = record.id === "actor_hero" || record.classId === "class_hero"
@@ -2970,6 +2977,9 @@ function starterMonsterEvent(
       { kind: "setSelfSwitch", key: "A", value: true },
     ],
   });
+  // 첫 파트너를 주는 사람은 화면에 보여야 한다 — 예전에는 두 페이지 모두 transparent 라 마을에
+  // 아무도 서 있지 않았고, 플레이어는 빈 타일을 조사해야 대화를 찾았다(2026-10-23 필드 QA F2).
+  const graphic = starterNpcGraphic(project, input.name);
   return {
     id: input.eventId,
     x: Math.max(0, input.x),
@@ -2981,7 +2991,7 @@ function starterMonsterEvent(
         id: `${input.eventId}_choose`,
         name: input.name,
         conditions: [],
-        graphic: { transparent: true },
+        graphic,
         trigger: { kind: "action" },
         priority: "same",
         overlapForbidden: true,
@@ -2992,7 +3002,7 @@ function starterMonsterEvent(
         id: `${input.eventId}_claimed`,
         name: `${input.name} 완료`,
         conditions: [{ kind: "selfSwitch", key: "A", value: true }],
-        graphic: { transparent: true },
+        graphic,
         trigger: { kind: "action" },
         priority: "same",
         overlapForbidden: true,
@@ -3001,6 +3011,22 @@ function starterMonsterEvent(
       },
     ],
   };
+}
+
+/**
+ * 스타팅 NPC 의 걷기 그림. 이름으로 먼저 찾고(「박사」·「간호사」), 못 찾으면 주민 칩으로 물러선다.
+ * 장르 잠금이 켜져 있으면 허용 칩 안에서만 고른다 — 잠금 밖 칩을 넣으면 커밋이 거부된다.
+ * 아무것도 못 고르면 투명으로 물러선다(도구를 실패시키지 않는다 — 예전 동작과 같다).
+ */
+function starterNpcGraphic(project: Project, name: string): EventPageGraphic {
+  const filter = genreLockCharsetCatalogFilter(project);
+  for (const query of [name, "villager"]) {
+    try {
+      const graphic = withNpcGraphicCatalogFilter(filter, () => resolveGraphic({ query }, { overrides: project.charsetLabels, seed: `starter:${name}` }));
+      if (graphic.sprite) return graphic;
+    } catch { /* 다음 후보 */ }
+  }
+  return { transparent: true };
 }
 
 function uniqueEventId(events: readonly GameEvent[], baseId: string): string {

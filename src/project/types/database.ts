@@ -376,6 +376,11 @@ export interface SkillRecord {
    */
   drainPercent?: number;
   /**
+   * 무기 공명: 시전자가 이 계열(장비 attackElementIds — sword·spear·bow·hit 등) 무기를 들고 있으면 피해·회복이 bonusPercent% 오른다.
+   * elementIds 를 비우면 기술 자신의 elementId 를 계열로 본다. 「검을 든 카엘의 검 기술이 더 세다」. 생략 = 없음.
+   */
+  weaponAffinity?: { readonly elementIds?: readonly string[]; readonly bonusPercent: number };
+  /**
    * 반동(0~100): 준 피해의 N% 를 시전자도 입는다(몸통박치기·이판사판). 피해가 1 이상일 때만, 최소 1. 타마다 적용한다.
    * 타임라인에 시전자 자신을 대상으로 한 damage 엔트리(aside recoil)를 남긴다. 생략 = 반동 없음.
    */
@@ -698,6 +703,10 @@ export interface EquipmentRecord {
   stateDefenseIds: StateId[];
   stateDefenseMode: "resist" | "inflict";
   stateResistanceChance: number;
+  /** 주는 피해 ±%(물리·마법 공통, -90~300). 여러 장비면 더한다. 생략 = 0. 예: 30 = 피해 +30%. */
+  damageDealtPercent?: number;
+  /** 받는 피해 ±%(물리·마법 공통, -90~300). 음수면 줄어든다. 생략 = 0. */
+  damageTakenPercent?: number;
   /** 실시간 액션 전투에서 이 무기를 들었을 때의 스윙 프로필. */
   actionWeapon?: ActionWeaponProfile;
   /** 장착 중에만 쓸 수 있는 스킬. 배우지 않아도 전투 스킬 목록에 들어간다. */
@@ -1175,6 +1184,8 @@ export interface StateRuntimeEffects {
   reraisePercent?: number;
   /** 선고: 걸린 뒤 자기 턴이 이만큼 지나면 쓰러진다(1~9). */
   doomTurns?: number;
+  /** 최대 지속: 걸린 뒤 자기 턴이 이만큼 지나면 회복 굴림과 상관없이 풀린다(1~9). 수면·마비가 운 나쁘게 끝없이 이어지지 않게. */
+  maxTurns?: number;
   /** 좀비: 이 상태인 동안 받는 HP 회복(회복 스킬·회복 아이템·재생)이 같은 양의 피해가 된다(FF6 좀비). MP 회복은 그대로. */
   invertHealing?: boolean;
   /**
@@ -2209,6 +2220,11 @@ export interface CompanionConfig {
    * ㄴ자 두 줄 대형. 장면이 끝나고 주인공이 걸으면 궤적 자리로 돌아온다(폴른 스타 가혹 검수 r11). 생략 = 기존 동작.
    */
   fanOutInScenes?: boolean;
+  /**
+   * false 면 파티 몬스터가 필드에서 주인공을 따라 걷지 않는다(HGSS 식 동행 끄기). 생략 = 따라온다 — 몬스터 동료는 주인공이
+   * 떠난 칸으로 같은 박자에 한 칸 뒤를 걷는다(@/player/playSceneFollowers beginFollowerStep).
+   */
+  monsterFollowers?: boolean;
 }
 
 export interface MonsterCareConfig {

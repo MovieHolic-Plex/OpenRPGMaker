@@ -217,14 +217,19 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
     for (const c of chambers) { x0 = Math.min(x0, c.cx - c.rx); x1 = Math.max(x1, c.cx + c.rx); y0 = Math.min(y0, c.cy - c.ry - 4); y1 = Math.max(y1, c.cy + c.ry); }
     return { x0, x1, y0, y1 };
   };
+  // 덩이 모양 가족(2026-10-23 v2 다양성): 0 뭉침(옛 모양) · 1 굽이(새 방은 마지막 방에만 붙어 긴 굽은 줄) · 2 옆으로 넓게(새 방이 좌우로 붙는다).
+  // 씨앗으로 고른다 — 같은 테마를 세 번 지으면 «풀밭 둘레에 나무 테두리» 한 모양만 나왔다.
+  const spread = Math.abs(Math.imul(seed, 2246822519) >>> 9) % 3;
   for (let round = 0; round < 40 && chambers.length < wantN; round += 1) {
     const rx = 5 + Math.floor(random() * 4);
     const ry = Math.max(4, Math.round(rx * (0.62 + random() * 0.22)));
     let best: { cx: number; cy: number; score: number } | null = null;
     for (let attempt = 0; attempt < 160; attempt += 1) {
-      const pool = chambers.length ? chambers : [seedNode];
+      const pool = !chambers.length ? [seedNode] : spread === 1 ? chambers.slice(-1) : chambers;
       const a = pool[Math.floor(random() * pool.length)]!;
-      const th = chambers.length ? random() * Math.PI * 2 : -Math.PI * (0.2 + random() * 0.6);
+      const th = !chambers.length ? -Math.PI * (0.2 + random() * 0.6)
+        : spread === 2 ? (random() < 0.5 ? 0 : Math.PI) + (random() - 0.5) * 1.1
+        : random() * Math.PI * 2;
       const gap = 1 + random() * 2.5;
       const cx = Math.round(a.cx + Math.cos(th) * (a.rx + rx + gap));
       const cy = Math.round(a.cy + Math.sin(th) * (a.ry + ry + gap + 1));

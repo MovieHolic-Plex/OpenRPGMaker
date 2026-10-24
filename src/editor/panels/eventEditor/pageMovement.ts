@@ -17,6 +17,7 @@ const MOVEMENT_TYPE_OPTIONS = [
   { value: "chase", label: "추격" },
   { value: "custom", label: "사용자 지정" },
   { value: "living", label: "생활 이동" },
+  { value: "fly", label: "하늘을 남(새)" },
 ] as const;
 
 export function renderPageMovement(mapId: MapId, eventId: string, page: EventPage): HTMLElement {

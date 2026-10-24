@@ -97,6 +97,9 @@ export function audioDeliveryPlugin(): Plugin {
     config(config) {
       const root = resolve(config.root ?? process.cwd());
       const directory = resolve(root, typeof config.publicDir === "string" ? config.publicDir : "public", CATALOG_RELATIVE_DIR);
+      // 대표 데모 굽기(scripts/content/bake-flagship-demos.mts)는 플레이어 번들처럼 «전곡 설치됨»으로 짓는다 —
+      // define 이 없으면 installedBgm.ts 가 모든 곡을 설치된 것으로 본다.
+      if (process.env.OPRN_ASSUME_ALL_BGM_INSTALLED === "1") return {};
       const files = config.publicDir === false ? [] : listInstalledCatalogFiles(directory);
       return { define: { __OPRN_INSTALLED_BGM_FILES__: JSON.stringify(files) } };
     },

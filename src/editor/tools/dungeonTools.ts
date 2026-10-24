@@ -526,7 +526,8 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   for (let k = 1; k <= floors; k += 1) {
     const first = k === 1, last = k === floors;
     // 들어오는 계단: 1층은 바깥과 이을 때만(안 이으면 죽은 계단이 된다). 다음 층부터는 아래층(지하)·위층(탑)에서 오는 계단.
-    const entry: FloorOpts["entry"] = first ? (direction === "up" && floors > 1 ? "door" : "up") : direction === "down" ? "up" : "down";
+    // 1층 바깥 입구 모양은 씨앗으로 계단·문(성문) 중 하나(2026-10-23 v2 다양성 — 늘 북벽 올라가는 계단이었다). 숲·늪은 compose 가 남쪽 길 끝으로 바꾼다.
+    const entry: FloorOpts["entry"] = first ? (direction === "up" && floors > 1 ? "door" : (baseSeed >>> 3) % 2 === 1 ? "door" : "up") : direction === "down" ? "up" : "down";
     const exit: FloorOpts["exit"] = last ? (genreHint === "pokemon" && floors === 1 ? "down" : "none") : direction === "down" ? "down" : "up";
     const floorArgs: Record<string, unknown> = { ...args, name: FLOOR_NAME(baseName, direction, k, floors) };
     delete floorArgs.floors; delete floorArgs.direction; delete floorArgs.populate; delete floorArgs.troops; delete floorArgs.seed; delete floorArgs.sourceMapId;

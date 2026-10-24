@@ -1,5 +1,6 @@
 /** 렌더러가 보는 데스크톱 스토어 다리(preload `window.oprn.store`). 구현: electron/main/assetStore.ts. */
 import type { GameConcept } from "../concepts/format";
+import type { StoreGameMeta, StoreGameMine, StoreGamePublishResult } from "./gamePublish";
 import type { StoreCatalogPage, StoreItemDetail, StoreItemSummary, StoreItemStatus, StoreLocale, StorePackManifest } from "./format";
 
 export interface StoreUser { readonly id: number; readonly email: string; readonly displayName: string; readonly role: string }
@@ -45,6 +46,15 @@ export interface OprnStoreBridge {
   visibility(input: { slug: string; hidden: boolean }): Promise<{ status: StoreItemStatus }>;
   /** 상품 신고(로그인 없이도 된다). 신고가 쌓이면 서버가 상품을 숨긴다(hidden: true). */
   report(input: { slug: string; reason: StoreReportReason; detail: string }): Promise<{ hidden: boolean }>;
+  /** 「바로 플레이」 게임: 이 프로젝트(projectKey)의 게임, 다음 판본 번호, 바뀐 점을 셀 지금 판본 project.json 문자열. */
+  gameMine(input: { projectKey: string }): Promise<StoreGameMine & { baselineProject: string | null }>;
+  /** 판본 올리기. 번호는 서버가 정한다(1.0 → 1.1, bump major → 2.0, version 은 작가가 고른 번호). 진행은 onProgress(upload). */
+  gamePublish(input: {
+    projectKey: string; meta: StoreGameMeta; files: Record<string, Uint8Array>; entry: string; cover: string | null; art: string[];
+    changelog: string; changes: Record<string, { added: string[]; changed: string[]; removed: string[] }>; bump: "minor" | "major"; version?: string | null;
+  }): Promise<StoreGamePublishResult>;
+  /** 지금 판본 바꾸기(되돌리기). */
+  gameCurrent(input: { slug: string; version: string }): Promise<{ from: string | null; to: string }>;
   /** 컨셉 피드 한 쪽(24개). cursor 는 앞 쪽의 nextCursor. 썸네일 thumb.full·card 는 blob sha256 이라 blob() 으로 받는다. */
   concepts(input: { tag?: string; q?: string; preset?: string; cursor?: string; lang?: StoreLocale }): Promise<{ items: GameConcept[]; nextCursor: string | null }>;
   /** 컨셉 상세와 비슷한 컨셉(최대 6개). 번역은 concept.locales 에 실려 오므로 화면은 localizedConcept 로 고른다. */
