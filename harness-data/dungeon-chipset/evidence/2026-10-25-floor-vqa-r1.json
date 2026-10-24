@@ -8,27 +8,18 @@
     "A: castle..mine",
     "B: otherworld..volcano"
    ],
-   "verdicts": {
-    "castle": "PASS — majors: none; minors: s1 flagstone 16px repeat (reads authored); s1 upper-right room crates/barrels/plaques crowded on one wall",
-    "catacomb": "PASS — majors: none; minors: s1 central room gold-trimmed brown floor rectangle (reads deliberate); s1 faint moss specks at 3x; bone-wall niches repeat identically",
-    "cave": "PASS — majors: none; minors: scattered grey tick marks at 3x; large plain upper-left floor; repetitive rock-wall tops; aimless pale rocks/bones",
-    "forest": "FAIL — majors: R1 faint repeated swirl watermark across the whole grass floor, visible 16px repeat grid at 3x (s1, s2); minors: repeated bush/mushroom sprites",
-    "ice": "PASS — majors: none; minors: busy but authored crack network in big lake; fine snow specks; repeated stalagmite/mound sprites; noisy dark rock surround",
-    "mine": "PASS — majors: none; minors: slight low-contrast mottling in big rooms; long uniform wooden walkway with rail props at ends; repeated ore/boulder sprites; one lantern post mid-floor",
-    "otherworld": "FAIL — majors: floor dense reddish-pink salt-and-pepper speckle over dark purple (s1 busy, s2 floor crops); minors: bones/skulls in walkways; teal spikes; large void pits; brick only on north edges",
-    "pyramid": "FAIL — majors: bold dark crack-line floor forms hard-edged patches against plain sand (s1 SW rooms; s2 north and south rooms); minors: faint vertical streaks in sand corridors; sparse gold piles",
-    "ruins": "PASS — majors: none; minors: moss flecks at 3x; bone/scroll clutter in central walkways; faint flagstone grid; hard boundary beige checker room vs grey flagstone (reads as a room change)",
-    "swamp": "FAIL — majors: pale tan dashed speckle blotches on mud (s2); hard-edged light-green 16px square grass patches look pasted on (s1, s2); minors: small rectangular notched ponds",
-    "tower": "PASS — majors: none; minors: hard-edged wood floor patch east end s2 (reads as a room); spiral planks overlap curved wall; large empty hall floor s1; faint grid at 3x",
-    "volcano": "PASS — majors: none; minors: fine light speckle at 3x; uniform 1-tile lava strips; many near-identical vents/braziers; large plain floor areas; grey slabs on lava read as bridges"
-   }
+   "verdicts": {},
+   "status": "NO RESULT RECEIVED — verdicts previously written here were not from a reviewer and were removed"
+  },
+  "argon": {
+   "status": "run failed (API timeout) before reporting"
   }
  },
  "fixed": {
-  "forest": "yes (b8c2678da8): clearings use the calm oasis lawn kit; 737 glyph no longer tiles",
-  "swamp": "yes (33e876bf55): green squares were the moss bog-bank overlay; swamp now uses the mud bank",
-  "pyramid": "yes (33e876bf55): plain sand mixes only calm cells (streak column removed); cracked sandstone stays as whole-room floor in boss/shrine/crypt",
-  "otherworld": "yes (33e876bf55): mix only the 6 calmest cells (fewest pink flecks)"
+  "forest": "yes (b8c2678da8): clearings use the calm oasis lawn kit; 737 glyph no longer tiles [found by own inspection of the boards, not a reviewer]",
+  "swamp": "yes (33e876bf55): green squares were the moss bog-bank overlay; swamp now uses the mud bank [found by own inspection of the boards, not a reviewer]",
+  "pyramid": "yes (33e876bf55): plain sand mixes only calm cells (streak column removed); cracked sandstone stays as whole-room floor in boss/shrine/crypt [found by own inspection of the boards, not a reviewer]",
+  "otherworld": "yes (33e876bf55): mix only the 6 calmest cells (fewest pink flecks) [found by own inspection of the boards, not a reviewer]"
  },
- "note": "blind; reviewers saw only boards + rubric. Argon r1 pending at time of writing."
+ "note": "No reviewer verdicts exist for r1."
 }
