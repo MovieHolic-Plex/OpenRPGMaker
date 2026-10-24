@@ -68,7 +68,8 @@ const brief = (item: StoreItemSummary) => ({
 const storeSearch: ToolDefinition = {
   name: "store_search",
   description: "에셋 스토어(공유 장터)에서 타일셋·캐릭터·얼굴·음악을 찾는다. 프로젝트에 필요한 타일이 없을 때는 이 도구보다 ask_missing_tiles 로 사용자에게 먼저 묻는다(카드가 검색 결과를 보여 준다). "
-    + "사용자가 스토어에서 찾아 달라고 직접 말했을 때 쓴다. aiReady:true 인 것은 참고문서가 있어 넣은 뒤 바로 맵을 깔 수 있다.",
+    + "사용자가 스토어에서 찾아 달라고 직접 말했을 때 쓴다. aiReady:true 인 것은 참고문서가 있어 넣은 뒤 바로 맵을 깔 수 있다. "
+    + "음악은 kind:\"music\" 에 장르·장면 낱말(예: 조선 전투)로 찾는다 — 넣은 음악 팩의 곡은 recommend_bgm 이 장면·분위기로 고른다.",
   mode: "read",
   domains: ["core"],
   parameters: {

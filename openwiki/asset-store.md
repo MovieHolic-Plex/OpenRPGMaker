@@ -76,6 +76,16 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
 없으면 짝 초상이 든 캐릭터 팩(char-gen 묶음)이 `reading 'characterAppearances'` 로 죽는다 — 공방 가져오기·스토어 넣기 모두.
 `applyPackToProject` 가 새 문서 칸을 건드리게 되면 이 빈 문서에도 그 칸을 같이 둔다(`pack.ts` 는 계약 고정 파일이라 그쪽에서 막지 않는다).
 
+### 음악 팩의 곡별 고르기 설명 (2026-10-25)
+
+음악 팩은 곡(에셋)마다 `meta.oprnMusic` 에 조수가 고를 때 쓰는 값을 싣는다. 넣으면 `meta` 가 그대로 `project.assets.uploaded[id].meta` 로 들어온다.
+읽는 쪽은 `src/assets/storeMusicMeta.ts` `readStoreMusicMeta` 하나다 — `sceneRoles`(town·field·dungeon·battle·boss·victory·sad·tense·title·ending 중 하나 이상, 없으면 무시)·
+`mood`(한국어 분위기 낱말)·`genreLine`/`genreLabel`·`bpm`·`energy`(1~5)·`tempo`(slow·medium·fast)·`loopable`(false = 징글)·`lengthSec`·`summaryKo`(한 줄).
+`listAudioResources` 가 이 값으로 태그(장르·장면 영/한·분위기·루프/징글)와 설명(출처 `ai-listening`)을 만들고,
+`recommend_bgm` 은 `scene` 을 곡 이름 대신 `sceneRoles` 로 맞추며 `scene`+`query` 를 같이 주면 그 장면 곡 안에서 장르·분위기로 순위를 매긴다(장면 안에 맞는 곡이 없으면 `sceneFallback`).
+후보에는 `music` 칸이 붙는다. 장르 곡이 프로젝트에 없으면 `store_search(kind:"music")` 로 찾아 사용자에게 권하고, 넣기는 허락 뒤 `store_install`.
+값은 팩 제작자가 실제로 들어 보고 적는다 — 이름에서 짐작해 채우지 않는다. 시험: `test/storeMusicPick.test.ts`.
+
 ## 게시기
 
 주소와 토큰은 코드·문서에 두지 않는다. 환경 변수로만 받고, 없으면 아무것도 보내지 않는다(plan 은 `configured:false`).
