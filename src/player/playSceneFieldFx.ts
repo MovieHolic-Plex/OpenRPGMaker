@@ -33,7 +33,10 @@ import { tilesetTextureKey } from "@/editor/tilesetImage";
 type Cell = { readonly x: number; readonly y: number };
 
 const FX_DEPTH_BUMP = 0.4;
-const DOOR_FRAME_MS = 90;
+const DOOR_FRAME_MS = 70;
+/** 문이 열리기 시작하고 이만큼 뒤에 이동(페이드)을 시작한다 — 나머지 문짝 접힘은 페이드와 겹쳐 흐른다.
+ *  예전엔 다 열릴 때까지(약 0.6초) 주인공이 멈춰 서 있어 문 앞에서 「버벅인다」고 느껴졌다(2026-10-24 사용자). */
+const DOOR_LEAD_MS = 160;
 
 function rowDepth(y: number, size: number): number {
   return characterDepth("same", characterSpriteY(y, size));
@@ -71,9 +74,10 @@ function cellTiles(project: Project, map: GameMap, x: number, y: number): { tile
   return out;
 }
 
-// 여닫는 문짝만. 계단·사다리·구멍·통로·문틀·성문 통로처럼 여닫지 않는 출구는 뺀다.
-const SWING_DOOR = /(?<![창주성대])문(?![양자서장제구화턱틀패])|door|gate|셔터|창살/i;
-const NOT_SWING = /계단|stair|사다리|ladder|구멍|hole|통로|passage|열린|open|arch|아치|포털|portal|뚜껑/i;
+// 여닫는 문짝만(이름표에 「문」·door). 성문·관문·통로·문틀·창살(걷어 올린 성문)·계단·사다리·동굴 입구·아치처럼
+// 여닫는 문짝 그림이 없는 출구는 뺀다 — 성문을 걸어 나가는데 문 열리는 연출이 나던 것을 막는다(2026-10-24 사용자).
+const SWING_DOOR = /(?<![창주성대관])문(?![양자서장제구화턱틀패루])|door/i;
+const NOT_SWING = /성문|관문|gate|portcullis|창살|걷어|올린|raised|통로|passage|입구|entrance|출구|exit|동굴|cave|굴|계단|stair|사다리|ladder|구멍|hole|열린|open|arch|아치|포털|portal|뚜껑/i;
 
 function doorTileAt(project: Project, map: GameMap, x: number, y: number): { tile: number } | null {
   for (const entry of cellTiles(project, map, x, y)) {
@@ -84,38 +88,162 @@ function doorTileAt(project: Project, map: GameMap, x: number, y: number): { til
 
 // ───────────────────────── 문 열기 ─────────────────────────
 
+/** 문 이벤트 그림이 문 캐릭터 시트인가(RPG Maker 관례 「!Door」 등). 성문(gate) 시트는 문짝이 아니다. */
+function isDoorCharset(spriteId: string): boolean {
+  return /door|(?<![성관])문(?!루)/i.test(spriteId) && !/gate|성문|관문/i.test(spriteId);
+}
+
+/** 맵마다 미리 정해 두는 문 연출 — 이벤트 id → 열 문짝(칸·잘라 둔 프레임). 맵을 그릴 때 한 번 만든다. */
+type DoorPanel = { readonly x: number; readonly y: number; readonly w: number; readonly h: number; readonly frame: string };
+type DoorPlan = { readonly kind: "charset" } | { readonly kind: "tile"; readonly bottom: Cell; readonly textureKey: string; readonly panels: readonly DoorPanel[] };
+const doorPlans = new WeakMap<GameMap, { readonly key: string; readonly plans: Map<string, DoorPlan | null> }>();
+
+function walkCommands(commands: readonly unknown[] | undefined, visit: (command: { kind?: string; [key: string]: unknown }) => void): void {
+  for (const raw of commands ?? []) {
+    const command = raw as { kind?: string; [key: string]: unknown };
+    visit(command);
+    for (const key of ["then", "else", "commands", "body"]) {
+      const nested = command[key];
+      if (Array.isArray(nested)) walkCommands(nested, visit);
+    }
+  }
+}
+
+/** 다른 맵으로 옮기는 transfer 를 가진 이벤트(문 연출 후보). door:false 뿐이면 뺀다. */
+function transferEventIds(map: GameMap): string[] {
+  const ids: string[] = [];
+  for (const event of map.events) {
+    let wants = false;
+    for (const page of event.pages ?? []) walkCommands(page.commands as unknown[], (c) => {
+      if (c.kind === "transfer" && c.mapId !== map.id && c.door !== false) wants = true;
+    });
+    if (wants) ids.push(event.id);
+  }
+  return ids;
+}
+
+function tilesetTextureKeyFor(scene: PlaySceneContext, project: Project, map: GameMap): string {
+  const tileset = project.tilesets[map.tilesetId];
+  // 메서드로 부른다(this 가 필요하다).
+  const host = scene as unknown as { resolveTilesetTexture?(t: NonNullable<typeof tileset>): string };
+  const key = tileset ? host.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset) : "";
+  return key && scene.textures.exists(key) ? key : "";
+}
+
 /**
- * 문 여는 연출 — 이동 직전에 부른다. 문 칸을 찾지 못하면 아무것도 하지 않고 곧장 끝난다(연출 없는 이동).
- * 찾는 순서: 실행 중 이벤트 칸 → 그 위 칸(벽에 그린 문짝) → 주인공이 바라보는 칸.
- * silent = 다른 장르 문 소리가 이미 났다(몬스터 장르).
+ * 맵을 그릴 때 부른다(renderEvents). 문 이벤트마다 문짝 칸·화소 상자·잘라 둔 프레임을 미리 정해 둔다 —
+ * 예전엔 이동하는 순간 getPixel 을 칸당 수백 번 불러(매번 1×1 캔버스 그리기+읽기) 문 열 때 화면이 멈칫했다.
+ * 같은 맵·같은 텍스처면 다시 만들지 않는다.
  */
-export async function playDoorOpenBeforeTransfer(scene: PlaySceneContext, eventId: string | undefined, options: { readonly silent?: boolean } = {}): Promise<boolean> {
+export function prepareDoorFx(scene: PlaySceneContext): void {
   const project = store.getCurrent();
   const map = scene.map;
-  const view = eventId ? runtimeEventViewById(project, map, scene.session, scene.eventPositions, eventId) : undefined;
-  // 문 캐릭터 시트를 쓰는 문 이벤트: 방향 줄 프레임을 넘긴다.
-  const spriteId = view?.sprite?.id ?? "";
-  if (view && !view.transparent && /door|문|gate/i.test(spriteId)) {
-    for (const frame of [1, 2, 3]) {
-      applyDoorCue(scene as unknown as Parameters<typeof applyDoorCue>[0], { kind: "doorCue", target: view.event.id, frame, ms: DOOR_FRAME_MS, ...(frame === 1 && !options.silent ? { se: DOOR_OPEN_SE } : {}) }, playSe);
-      await sleep(scene, DOOR_FRAME_MS);
-    }
-    return true;
+  if (!map) return;
+  const textureKey = tilesetTextureKeyFor(scene, project, map);
+  const key = `${textureKey}|${map.events.length}`;
+  if (doorPlans.get(map)?.key === key) return;
+  const plans = new Map<string, DoorPlan | null>();
+  doorPlans.set(map, { key, plans });
+  const size = mapTileSize(map);
+  for (const id of transferEventIds(map)) {
+    const event = map.events.find((e) => e.id === id)!;
+    const view = runtimeEventViewById(project, map, scene.session, scene.eventPositions, id);
+    if (view && !view.transparent && isDoorCharset(view.sprite?.id ?? "")) { plans.set(id, { kind: "charset" }); continue; }
+    plans.set(id, textureKey ? tileDoorPlan(scene, project, map, { x: event.x, y: event.y }, textureKey, size) : null);
   }
-  const facing = scene.session.playerFacing ?? "down";
-  const d = facing === "up" ? [0, -1] : facing === "down" ? [0, 1] : facing === "left" ? [-1, 0] : [1, 0];
-  const candidates: Cell[] = [];
-  if (view) candidates.push({ x: view.x, y: view.y }, { x: view.x, y: view.y - 1 });
-  candidates.push({ x: scene.tileX + d[0]!, y: scene.tileY + d[1]! }, { x: scene.tileX, y: scene.tileY });
-  const cell = candidates.find((c) => doorTileAt(project, map, c.x, c.y));
-  if (!cell) return false;
-  if (!options.silent) playSe(DOOR_OPEN_SE);
-  await swingDoorOpen(scene, project, map, cell);
+}
+
+/** 이벤트 칸 또는 바로 윗칸(벽에 그린 문짝)에 문 타일이 있으면 그 문짝 계획. */
+function tileDoorPlan(scene: PlaySceneContext, project: Project, map: GameMap, at: Cell, textureKey: string, size: number): DoorPlan | null {
+  const bottom = [at, { x: at.x, y: at.y - 1 }].find((c) => doorTileAt(project, map, c.x, c.y));
+  if (!bottom) return null;
+  const panels: DoorPanel[] = [];
+  for (const piece of doorPieces(scene, project, map, bottom, textureKey, size)) {
+    const frame = panelFrame(scene, textureKey, piece.tile, piece.box);
+    if (frame) panels.push({ x: piece.cell.x * size + piece.box.x, y: piece.cell.y * size + piece.box.y, w: piece.box.w, h: piece.box.h, frame });
+  }
+  return panels.length ? { kind: "tile", bottom, textureKey, panels } : null;
+}
+
+/**
+ * 문 여는 연출 — 이동 직전에 부른다. 반환: 연출을 했는가.
+ *  - mode "auto"(기본): 그 이벤트가 문 캐릭터 시트이거나, 이벤트 칸·바로 윗칸에 여닫는 문 타일이 있을 때만.
+ *    성문·통로·맵 가장자리·계단·동굴 입구는 연출 없이 곧장 넘어간다.
+ *  - mode "on"(transfer.door:true): 위 규칙으로 못 찾아도 주인공이 바라보는 칸·선 칸의 문 타일까지 찾아 연다.
+ * silent = 다른 장르 문 소리가 이미 났다(몬스터 장르).
+ */
+export async function playDoorOpenBeforeTransfer(
+  scene: PlaySceneContext,
+  eventId: string | undefined,
+  options: { readonly silent?: boolean; readonly mode?: "auto" | "on" } = {},
+): Promise<boolean> {
+  const project = store.getCurrent();
+  const map = scene.map;
+  prepareDoorFx(scene);
+  let plan = eventId ? doorPlans.get(map)?.plans.get(eventId) ?? null : null;
+  if (!plan && options.mode === "on") {
+    const view = eventId ? runtimeEventViewById(project, map, scene.session, scene.eventPositions, eventId) : undefined;
+    if (view && !view.transparent && /door|문|gate/i.test(view.sprite?.id ?? "")) plan = { kind: "charset" };
+    else {
+      const facing = scene.session.playerFacing ?? "down";
+      const d = facing === "up" ? [0, -1] : facing === "down" ? [0, 1] : facing === "left" ? [-1, 0] : [1, 0];
+      const textureKey = tilesetTextureKeyFor(scene, project, map);
+      for (const c of [...(view ? [{ x: view.x, y: view.y }] : []), { x: scene.tileX + d[0]!, y: scene.tileY + d[1]! }, { x: scene.tileX, y: scene.tileY }]) {
+        plan = textureKey ? tileDoorPlan(scene, project, map, c, textureKey, mapTileSize(map)) : null;
+        if (plan) break;
+      }
+    }
+  }
+  if (!plan) return false;
+  let animation: Promise<void>;
+  if (plan.kind === "charset") {
+    const target = eventId!;
+    animation = (async () => {
+      for (const frame of [1, 2, 3]) {
+        applyDoorCue(scene as unknown as Parameters<typeof applyDoorCue>[0], { kind: "doorCue", target, frame, ms: DOOR_FRAME_MS, ...(frame === 1 && !options.silent ? { se: DOOR_OPEN_SE } : {}) }, playSe);
+        await sleep(scene, DOOR_FRAME_MS);
+      }
+    })();
+  } else {
+    if (!options.silent) playSe(DOOR_OPEN_SE);
+    animation = swingDoorOpen(scene, plan);
+  }
+  await Promise.race([animation, sleep(scene, DOOR_LEAD_MS)]);
   return true;
 }
 
 type DoorBox = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
 const doorBoxCache = new Map<string, DoorBox | null>();
+
+/** 타일 프레임 하나의 화소 — 프레임마다 한 번만 작은 캔버스에 그려 읽는다(getPixel 은 화소마다 그리고 읽어 느렸다). */
+const framePixelCache = new Map<string, { readonly data: Uint8ClampedArray; readonly w: number } | null>();
+function framePixels(scene: PlaySceneContext, textureKey: string, frameName: string): ((x: number, y: number) => readonly [number, number, number, number] | null) | null {
+  const cacheKey = `${textureKey}|${frameName}`;
+  let pixels = framePixelCache.get(cacheKey);
+  if (pixels === undefined) {
+    pixels = null;
+    const frame = scene.textures.get(textureKey).get(frameName) as Phaser.Textures.Frame | undefined;
+    if (frame && frame.name === frameName) {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = frame.cutWidth; canvas.height = frame.cutHeight;
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        if (ctx) {
+          ctx.drawImage(frame.source.image as CanvasImageSource, frame.cutX, frame.cutY, frame.cutWidth, frame.cutHeight, 0, 0, frame.cutWidth, frame.cutHeight);
+          pixels = { data: ctx.getImageData(0, 0, frame.cutWidth, frame.cutHeight).data, w: frame.cutWidth };
+        }
+      } catch { pixels = null; }
+    }
+    framePixelCache.set(cacheKey, pixels);
+  }
+  if (!pixels) return null;
+  const { data, w } = pixels;
+  return (x, y) => {
+    if (x < 0 || y < 0 || x >= w) return null;
+    const i = (y * w + x) * 4;
+    return i + 3 < data.length ? [data[i]!, data[i + 1]!, data[i + 2]!, data[i + 3]!] : null;
+  };
+}
 
 /**
  * 문 타일 안에서 문짝이 차지하는 사각형(px, 프레임 좌표). 같은 줄 옆 칸(벽)과 다른 화소의 테두리 상자다 —
@@ -125,19 +253,24 @@ function doorPanelBox(scene: PlaySceneContext, textureKey: string, doorTile: num
   if (wallTile === null || wallTile === doorTile) return null;
   const key = `${textureKey}|${doorTile}|${wallTile}`;
   if (doorBoxCache.has(key)) return doorBoxCache.get(key)!;
-  let minX = size, minY = size, maxX = -1, maxY = -1;
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      const a = scene.textures.getPixel(x, y, textureKey, `tile_${doorTile}`);
-      const b = scene.textures.getPixel(x, y, textureKey, `tile_${wallTile}`);
-      if (!a || a.alpha < 128) continue;
-      const diff = !b || b.alpha < 128 ? 255 : Math.abs(a.red - b.red) + Math.abs(a.green - b.green) + Math.abs(a.blue - b.blue);
-      if (diff < 60) continue;
-      minX = Math.min(minX, x); minY = Math.min(minY, y); maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+  const door = framePixels(scene, textureKey, `tile_${doorTile}`);
+  const wall = framePixels(scene, textureKey, `tile_${wallTile}`);
+  let box: DoorBox | null = null;
+  if (door) {
+    let minX = size, minY = size, maxX = -1, maxY = -1;
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const a = door(x, y);
+        if (!a || a[3] < 128) continue;
+        const b = wall?.(x, y);
+        const diff = !b || b[3] < 128 ? 255 : Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]) + Math.abs(a[2] - b[2]);
+        if (diff < 60) continue;
+        minX = Math.min(minX, x); minY = Math.min(minY, y); maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+      }
     }
+    box = maxX >= minX && maxY >= minY && (maxX - minX + 1) >= 4 && (maxY - minY + 1) >= 4
+      ? { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 } : null;
   }
-  const box = maxX >= minX && maxY >= minY && (maxX - minX + 1) >= 4 && (maxY - minY + 1) >= 4
-    ? { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 } : null;
   doorBoxCache.set(key, box);
   return box;
 }
@@ -194,37 +327,34 @@ function doorPieces(scene: PlaySceneContext, project: Project, map: GameMap, bot
   return pieces;
 }
 
-/** 문짝(문 타일 그림)이 왼쪽 경첩으로 접히며 어두운 문간이 드러난다. 위로 이어진 문짝 칸도 같이 연다. */
-async function swingDoorOpen(scene: PlaySceneContext, project: Project, map: GameMap, bottom: Cell): Promise<void> {
-  const size = mapTileSize(map);
-  const tileset = project.tilesets[map.tilesetId];
-  // 메서드로 부른다(this 가 필요하다).
-  const host = scene as unknown as { resolveTilesetTexture?(t: NonNullable<typeof tileset>): string };
-  const textureKey = tileset ? host.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset) : "";
-  if (!textureKey || !scene.textures.exists(textureKey)) return;
-  const depth = rowDepth(bottom.y, size) + FX_DEPTH_BUMP;
+/** 문짝(문 타일 그림)이 왼쪽 경첩으로 접히며 어두운 문간이 드러난다. 미리 잘라 둔 프레임만 쓴다(이 순간 화소 계산 없음). */
+async function swingDoorOpen(scene: PlaySceneContext, plan: Extract<DoorPlan, { kind: "tile" }>): Promise<void> {
+  if (!scene.textures.exists(plan.textureKey)) return;
+  const size = mapTileSize(scene.map);
+  const depth = rowDepth(plan.bottom.y, size) + FX_DEPTH_BUMP;
   const objects: Phaser.GameObjects.GameObject[] = [];
   const panels: Phaser.GameObjects.Image[] = [];
-  for (const piece of doorPieces(scene, project, map, bottom, textureKey, size)) {
-    const x = piece.cell.x * size + piece.box.x, y = piece.cell.y * size + piece.box.y;
-    objects.push(scene.add.rectangle(x, y, piece.box.w, piece.box.h, 0x120c08).setOrigin(0, 0).setDepth(depth));
-    const frame = panelFrame(scene, textureKey, piece.tile, piece.box);
-    if (!frame) continue;
-    const image = scene.add.image(x, y, textureKey, frame).setOrigin(0, 0).setDepth(depth + 0.01);
+  for (const panel of plan.panels) {
+    // 어두운 문간 — Rectangle(도형 파이프라인)은 그 맵에서 처음 그릴 때 셰이더를 엮느라 한 프레임이 멈췄다.
+    // 타일과 같은 이미지 파이프라인(흰 텍스처 + 색)으로 그린다.
+    const doorway = scene.textures.exists("__WHITE")
+      ? scene.add.image(panel.x, panel.y, "__WHITE").setOrigin(0, 0).setDisplaySize(panel.w, panel.h).setTint(0x120c08)
+      : scene.add.rectangle(panel.x, panel.y, panel.w, panel.h, 0x120c08).setOrigin(0, 0);
+    objects.push(doorway.setDepth(depth));
+    const image = scene.add.image(panel.x, panel.y, plan.textureKey, panel.frame).setOrigin(0, 0).setDepth(depth + 0.01);
     panels.push(image);
     objects.push(image);
   }
   // 플레이어가 문 칸 위에 서 있으면 문간 그림 앞에 남게 한다.
   const playerDepth = scene.player?.depth;
-  if (scene.player && scene.tileX === bottom.x && scene.tileY === bottom.y) scene.player.setDepth(depth + 0.1);
+  if (scene.player && scene.tileX === plan.bottom.x && scene.tileY === plan.bottom.y) scene.player.setDepth(depth + 0.1);
   for (const scaleX of [0.8, 0.58, 0.36, 0.16]) {
     for (const image of panels) {
       image.setScale(scaleX, 1);
       image.setTint(scaleX > 0.5 ? 0xffffff : scaleX > 0.3 ? 0xc8beb4 : 0x9a9088);
     }
-    await sleep(scene, DOOR_FRAME_MS + 20);
+    await sleep(scene, DOOR_FRAME_MS);
   }
-  await sleep(scene, 160);
   // 페이드 뒤 맵이 바뀌면 그대로 사라진다. 같은 맵 이동이면 곧 치운다.
   scene.time.delayedCall(900, () => {
     for (const object of objects) object.destroy();

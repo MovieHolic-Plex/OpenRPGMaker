@@ -7,7 +7,7 @@ import { projectReferenceTileSize } from "@/project/mapViewScale";
 import { syncPlayerCharacterScale } from "@/player/playerCharacterScale";
 import { resetDetectionForMap } from "./npcDetectionEncounter";
 import { dialogueUi } from "./playSceneDom";
-import { syncContainerSearchedMarks } from "@/player/playSceneFieldFx";
+import { prepareDoorFx, syncContainerSearchedMarks } from "@/player/playSceneFieldFx";
 import { evalCondition } from "@/project/session";
 import { clearFurniturePush, furniturePushPosition } from './furniturePushAnimation';
 import { chipsetAnimationKey } from "@/assets/bundled";
@@ -949,6 +949,8 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
   syncForageWarnings(scene);
   // 뒤진 수납 칸의 흔적(열린 뚜껑·흘린 짚 …) — 「이미 뒤짐」 페이지가 켜진 이벤트만.
   syncContainerSearchedMarks(scene as unknown as PlaySceneContext);
+  // 문 연출 미리 계산(맵마다 한 번) — 이동하는 순간 화소를 읽지 않게.
+  prepareDoorFx(scene as unknown as PlaySceneContext);
   scene.runtimeDom.syncMissingResourceError(scene.missingResources);
   scene.syncRuntimeState();
 }
