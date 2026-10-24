@@ -13,7 +13,7 @@ import {
   charsetIdleFrameIndex,
   charsetWalkFrameIndex,
   charsetWalkStepFromElapsedMs,
-  isEasyRpgCharsetTextureKey,
+  isCharsetLikeTextureKey,
 } from "@/player/charsetMotion";
 import type { Dir } from "@/player/input";
 import { boardedVehicleId } from "@/project/vehicles";
@@ -56,7 +56,7 @@ const followerEmerging = new Map<string, number>();
 const FOLLOWER_EMERGE_FADE_MS = 140;
 
 function isFollowerCharsetTexture(textureKey: string): boolean {
-  return isEasyRpgCharsetTextureKey(textureKey) || store.getCurrent().assets.uploaded[textureKey]?.kind === "charset";
+  return isCharsetLikeTextureKey(textureKey) || store.getCurrent().assets.uploaded[textureKey]?.kind === "charset";
 }
 
 function lerp(start: number, end: number, progress: number): number {
