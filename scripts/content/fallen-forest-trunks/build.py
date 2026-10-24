@@ -163,7 +163,8 @@ def variants(im, name):
     return {
         'T1': taller_orig(im, ys, flare),
         'T2': repaint(im.copy(), w0 + 2 if (w0 + 2) in TRUNK else (12 if big else 8), ORIG, light_left=False, contact=False),
-        'T3': repaint(im.copy(), w0 if w0 in TRUNK else (10 if big else 6), WARM, light_left=True, contact=True),
+        # T3 최종(2026-10-24 사용자 선택): 원본 폭·높이 그대로 — 줄기 폭 = 밑변 폭 규칙과 composer 칸 크기를 지킨다. 그리는 법은 T4 r3 과 같다.
+        'T3': repaint_t3(im.copy(), name),
         'T4': repaint2(im.copy(), max(8, w0 + 2 if (w0 + 2) in TRUNK else (12 if big else 8)), HEIGHT_ADD[name], name),
     }
 
@@ -246,6 +247,80 @@ def repaint2(im, width, add, name):
     return im
 
 HEIGHT_ADD = {'bd-tree-d43edd': 8, 'bd-tree-5844f6': 8, 'bd-tree-b1d104': 12, 'bd-tree-1a786c': 16, 'bd-tree-d61d7e': 20, 'bd-tree-bdd36e': 16, 'bd-tree-1e09f0': 12}
+
+# T3 최종 r4(2026-10-24 관문 화풍 「줄기 2~3톤, 껍질 결 적음」): 원본 폭·높이, 9단 갈색(버들항 시트 색) · 세로 껍질 골 · 밑동 이끼.
+BARK9 = [(42, 26, 15), (49, 34, 16), (61, 34, 12), (69, 42, 23), (84, 55, 25), (99, 55, 18), (116, 76, 42), (136, 90, 38), (172, 112, 68)]
+MOSS = [(41, 101, 53), (73, 127, 60)]
+
+def repaint_t3(im, name):
+    W, H = im.size
+    ys, flare, cx, w0, _ = measure(im)
+    px = im.load()
+    for y in range(H):
+        for x in range(W):
+            k = kind(px[x, y])
+            if k == 'trunk' or (k == 'tuft' and y >= H - 6) or (y >= flare and k != 'clear'): px[x, y] = (0, 0, 0, 0)
+    crown_bottom = max(y for y in range(min(H, ys + 1)) if any(kind(px[x, y]) == 'crown' for x in range(int(cx - w0 / 2), int(cx + w0 / 2) + 1)))
+    seed = h32(*map(ord, name))
+    crown = {(x, y) for y in range(H) for x in range(W) if kind(px[x, y]) == 'crown' and px[x, y][3] == 255}
+    def put(x, y, c, a=255):
+        if not (0 <= x < W and 0 <= y < H) or (x, y) in crown: return
+        px[x, y] = c + (a,)
+    yroot = H - 4                       # 뿌리 퍼짐 4행(원본과 같은 높이)
+    ytop = max(0, min(ys, crown_bottom) - 6)
+    x0 = int(round(cx - w0 / 2)); wr = w0
+    # 세로 껍질 골: 폭에 따라 2~3줄, 줄마다 x 위치 고정 + 해시로 끊김
+    grooves = sorted({max(2, min(wr - 3, round(wr * f))) for f in ((0.38, 0.68) if wr < 9 else (0.3, 0.52, 0.74))})
+    for y in range(ytop, yroot):
+        r = yroot - 1 - y                 # 밑에서 센 행
+        below = y - crown_bottom
+        for u in range(wr):
+            f = (u + 0.5) / wr
+            # 9단 기본 명암(왼쪽 빛): 윤곽 1 · 빛 테 8/7 · 몸 6→3 · 그늘 테 2 · 윤곽 0
+            if u == 0: lv = 1
+            elif u == 1: lv = 8 if (r + seed) % 5 else 7
+            elif u == wr - 1: lv = 0
+            elif u == wr - 2: lv = 2
+            else: lv = round(7.6 - 4.4 * f)            # r6: 몸 한 단 밝게(원본 줄기 밝기)
+            # 껍질 골: 골은 두 단 어둡고 그 왼쪽(빛 쪽)은 한 단 밝다
+            hv = h32(seed, u, r // 3)
+            if u in grooves and hv % 6 != 0: lv = max(0, lv - 3)
+            elif u + 1 in grooves and 1 < u and hv % 6 != 0: lv = min(8, lv + 1)
+            # 수관 그늘
+            if y <= crown_bottom: lv = min(lv, 1)
+            elif below <= 2: lv = max(0, lv - 3)
+            elif below <= 3: lv = max(0, lv - 1)
+            c = BARK9[lv]
+            # 밑동 이끼: 빛 쪽 아래 2행에 이끼 두세 점
+            if r <= 1 and 1 <= u <= 2 and h32(seed, u, r, 7) % 2 == 0: c = MOSS[(u + r) % 2]
+            put(x0 + u, y, c)
+    # 뿌리(r5, 원본처럼): 밑동이 2행에 걸쳐 1칸씩 벌어지고, 그 아래 두 행에 땅을 기어가는 긴 뿌리 셋(왼쪽·오른쪽 길게, 앞 짧게).
+    # 뿌리 끝은 풀 쪽으로 가늘어지며 끝 화소는 밝은 테(lv 6) — 원본 bd-tree 뿌리 줄기와 같은 문법.
+    for j in range(2):
+        y = yroot + j; L, Rr = x0 - 1 - j, x0 + wr + j
+        for x in range(L, Rr + 1):
+            f = (x - L) / max(1, Rr - L)
+            lv = 0 if x == Rr else 1 if x == L else (7 if x == L + 1 else round(6 - 4.5 * f))
+            if (x - x0) in grooves: lv = max(0, lv - 2)
+            put(x, y, BARK9[lv])
+    reach = max(4, wr // 2 + 2)
+    yA, yB = yroot + 2, yroot + 3
+    for k in range(reach):                                   # 왼쪽 긴 뿌리
+        x = x0 - 2 - k; y = yA if k < reach // 2 else yB
+        put(x, y, BARK9[8 if k == reach - 1 else 6 if k % 2 else 7])
+        if k < reach // 2: put(x, y + 1, BARK9[1])           # 뿌리 밑 그늘 선
+    for k in range(reach + 1):                               # 오른쪽 긴 뿌리(그늘 쪽, 더 어둡다)
+        x = x0 + wr + 1 + k; y = yA if k < reach // 2 + 1 else yB
+        put(x, y, BARK9[6 if k == reach else 3 if k % 2 else 4])
+        if k < reach // 2 + 1: put(x, y + 1, BARK9[0])
+    xm = x0 + wr // 2                                        # 앞 짧은 뿌리
+    for d, lv in ((0, 5), (1, 6), (-1, 2)): put(xm + d, yA, BARK9[lv])
+    put(xm, yB, BARK9[3]); put(xm + 1, yB, BARK9[7])
+    # 접지 그늘(마지막 — 빈 칸에만)
+    for dy, inset in ((H - 2, 0), (H - 1, 2)):
+        for xx in range(x0 - 5 + inset, x0 + wr + 5 - inset):
+            if 0 <= xx < W and px[xx, dy][3] == 0: px[xx, dy] = SHADOW + (118,)
+    return im
 
 def cover(tile):
     a = tile.getchannel('A').tobytes()
