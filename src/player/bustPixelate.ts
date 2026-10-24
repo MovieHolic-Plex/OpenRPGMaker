@@ -10,7 +10,7 @@ export const BUST_ART_HEIGHT = 46;
 export const BUST_PIXEL_SCALE = 2;
 /** 큰 원래 격자 흉상(아스트라 인물 2판, 64x64 = 전투 트레이너 그림과 같은 화소 크기). 화면에서 2배 = 128x128 칸. */
 export const BUST_LARGE_SIZE = 64;
-const LARGE_BUST_PATH = /\/assets\/emerald-monster\/cast\/[a-z]+\/bust-[a-z]+\.png(?:$|[?#])/u;
+const LARGE_BUST_PATH = /\/assets\/emerald-monster\/cast\/[a-z][a-z0-9-]*\/bust-[a-z]+\.png(?:$|[?#])/u;
 const PALETTE_SIZE = 16;
 const ALPHA_CUT = 128;
 const OUTLINE: readonly [number, number, number] = [0x20, 0x30, 0x28];
