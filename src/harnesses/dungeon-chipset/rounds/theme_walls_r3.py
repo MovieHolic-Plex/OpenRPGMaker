@@ -440,7 +440,7 @@ def tower_kit(n=1):
 LTR = L('j:void1 a:vrock0 b:vrock1 c:vrock2 d:vrock3 e:vrock4 n:arcane0 x:void0 y:void1 z:void2')
 LTR2 = L('j:void1 a:vrock0 b:vrock1 c:vrock2 d:vrock3 e:iron4 n:arcane1 x:void0 y:void1 z:void2')
 TR_TONE = 'edcccbnj'     # 턱 · 갓돌 윗면 빛 · 평판 3 · 그늘 · 남보라 끝선 · 어둠 쪽 끝
-TR_GRAIN = {0: 'eeeeeeebeeeeeeeb', 1: 'ddddddnbddddddnb', 2: 'ccdccbnbcccdccnb', 3: 'cccccnbccccccnbc', 4: 'cdcccnbcccdccnbc'}
+TR_GRAIN = {k: v[-4:] + v[:-4] for k, v in {0: 'eeeeeeebeeeeeeeb', 1: 'ddddddnbddddddnb', 2: 'ccdccbnbcccdccnb', 3: 'cccccnbccccccnbc', 4: 'cdcccnbcccdccnbc'}.items()}   # 이음을 칸 경계(15열)에서 3·11열로
 
 
 def tower_rim(n=1):
