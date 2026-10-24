@@ -107,7 +107,13 @@ export async function battleQaOp(page, op) {
       await sleep(500);
       continue;
     }
-    if (ui.dialogue && ui.menu.length === 0) { await page.keyboard.press("Enter"); await sleep(400); continue; }
+    if (ui.dialogue && ui.menu.length === 0) {
+      // 영상에서 읽히게 잠깐 둔 뒤 넘긴다(op.dialogueHoldMs, 기본 1600ms).
+      await sleep(op.dialogueHoldMs ?? 1600);
+      await page.keyboard.press("Enter");
+      await sleep(400);
+      continue;
+    }
     if (ui.busy) { await sleep(120); continue; }
     if (ui.targetPrompt) {
       const targets = ui.menu.filter((id) => id.startsWith("battle-target-") && id !== "battle-target-cancel");

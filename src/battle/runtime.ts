@@ -2353,6 +2353,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function snapshot(): BattleSnapshot {
+    flushHitWakes();
     const enemiesInBattle = visibleEnemies();
     const nextReady = battleFlow === "gauge" && phase === "charging" && !result
       ? nextReadyBattler(chargingActors(), enemiesInBattle, Infinity, skinHasteMultiplier,
