@@ -76,7 +76,7 @@
             },
             {
               "kind": "waitFor",
-              "testid": "battle-skill-help",
+              "testid": "battle-skill-hint",
               "timeoutMs": 10000
             },
             {

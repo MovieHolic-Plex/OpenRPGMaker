@@ -16,6 +16,7 @@ export const DEFAULT_SEED = 1;
 /** 시나리오가 쓸 수 있는 op 종류. 목록 밖은 정규화 단계에서 거부한다. */
 export const OP_KINDS = [
   "audioAction",
+  "measureLayout",
   // 플레이 세션(scripts/qa/play)이 쓰는 op. 시나리오로 그대로 옮길 수 있도록 런타임 op 로 둔다 —
   // 세션 도구가 따로 실행기를 두면 재현과 회귀 시나리오가 서로 다른 동작을 검증하게 된다.
   "move",

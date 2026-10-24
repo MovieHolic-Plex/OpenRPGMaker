@@ -23,6 +23,7 @@ export type BattleSfxKind =
   | "dex"
   // 연계기 발동·레벨 업·새 기술 습득 팡파레(2026-10-24).
   | "combo"
+  | "comboImpact"
   | "levelUp"
   | "skillLearned";
 
@@ -177,6 +178,12 @@ export function playBattleSfx(kind: BattleSfxKind): void {
       [392, 523, 659].forEach((freq, index) => tone({ freq, type: "sawtooth", at: index * 0.06, duration: 0.22, gain: 0.18, slideTo: freq * 1.5 }));
       [784, 1046, 1318, 1568].forEach((freq, index) => tone({ freq, type: "triangle", at: 0.24 + index * 0.05, duration: 0.12, gain: 0.22 }));
       noise({ at: 0.2, duration: 0.25, gain: 0.18, filterFrom: 6000, filterTo: 1800, seed: 0x434f4d42 });
+      return;
+    case "comboImpact":
+      // 연계기 착탄 — 낮은 쿵 + 쓸어 올리는 잡음 + 높은 종소리(느린 화면과 함께 길게 끈다).
+      tone({ freq: 90, type: "sine", duration: 0.5, gain: 0.42, slideTo: 42 });
+      noise({ duration: 0.45, gain: 0.3, filterFrom: 400, filterTo: 5200, seed: 0x434d4249 });
+      [1318, 1760, 2349].forEach((freq, index) => tone({ freq, type: "triangle", at: 0.12 + index * 0.07, duration: 0.4, gain: 0.14 }));
       return;
     case "levelUp": {
       // 레벨 업 징글 — 장조 아르페지오 두 단과 길게 끄는 으뜸화음.

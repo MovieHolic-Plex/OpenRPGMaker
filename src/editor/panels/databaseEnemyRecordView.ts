@@ -682,6 +682,11 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
       updateDatabaseRecord("enemies", record.id, { battleScalePercent }),
       { min: 10, max: 300, step: 1, unit: "%" }
     ),
+    // 도트 측면 전투에서 아군에게 달려드는 속도(EnemyRecord.lungeSpeedPercent). 전역 세기는 「전투 화면 › 전투 연출」.
+    sliderStepperField("달려드는 속도 (%)", "db-field-enemy-lunge-speed", record.lungeSpeedPercent ?? 100, (lungeSpeedPercent) =>
+      updateDatabaseRecord("enemies", record.id, { lungeSpeedPercent: lungeSpeedPercent === 100 ? undefined : lungeSpeedPercent }),
+      { min: 25, max: 300, step: 5, unit: "%" }
+    ),
     selectField(
       "쓰러지는 연출",
       "db-field-enemy-collapse",

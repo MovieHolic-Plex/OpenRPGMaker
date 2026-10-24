@@ -28,7 +28,7 @@ import { applyFallenLoreAndHanel } from "./fallen/loreAndHanel";
 import { reworkFallenTown } from "./fallenTown";
 import { applyFallenBattleItems, FS_SPEAR_PIKE, FS_SWORD_GALE } from "./fallen/battleItems";
 import { applyFallenAreaEncounters, applyFallenBattleRoles } from "./fallen/battleRoles";
-import { applyFallenBattleDepth } from "./fallen/battleDepth";
+import { applyFallenBattleDepth, applyFallenGrowthCurves } from "./fallen/battleDepth";
 import { swOn, fadeOut } from "./firstLoveKit";
 import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX, ensureFallenValenChip } from "./fallenValenChip";
 import { buildFallenTownInteriors } from "./fallenTownInteriors";
@@ -1530,6 +1530,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenBattleItems(project); // 속성 상성·검/창·회복약·기믹 잡화·드롭 (fallen/battleItems.ts)
   applyFallenBattleRoles(project); // 기술 역할·새 적·발렌 재설계·시그니처 무기·MP 회복 (fallen/battleRoles.ts)
   applyFallenBattleDepth(project, execTool); // 깔기→거두기·도발·정화·화상·연계기 셋 (fallen/battleDepth.ts)
+  applyFallenGrowthCurves(project); // 역할별 성장 곡선 — 매 레벨 모든 능력치가 오른다 (fallen/battleDepth.ts)
   if (!project.switches.some((s) => s.id === SW_IRIS_JOINED)) project.switches.push({ id: SW_IRIS_JOINED, name: "이리스 합류" });
 
   const built = buildJrpgChapter(project, FALLEN_STAR_ACT1, { chapterId: "fallen_star_act1", prefix: FS_PREFIX, seed: 7, troops });

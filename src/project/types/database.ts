@@ -355,6 +355,8 @@ export interface SkillRecord {
    * 「카엘 MP 4 · 엘레나 MP 8」처럼 주 시전자와 보조가 다른 몫을 낸다. 생략 = 전원이 mpCost.
    */
   comboMpCosts?: readonly { readonly actorId: ActorId; readonly mp: number }[];
+  /** 연계기 연출 — 색·착탄 흔들림·느린 화면·제목 위 글(project/battleStaging.ts ComboStaging). 생략 = 속성 색·인원수 기본. */
+  comboStaging?: import("@/project/battleStaging").ComboStaging;
   /** 위치 범위기: 단일 대상 스코프에서 주 대상 둘레의 같은 편도 함께 맞힌다(전투장 픽셀). */
   area?: SkillArea;
   /**
@@ -772,6 +774,11 @@ export interface EnemyRecord {
   monsterResourceId?: string;
   /** 전투 이미지 표시 크기(10~300%, 정수). 생략 시 기존 크기 100%. */
   battleScalePercent?: number;
+  /**
+   * 도트 측면 전투에서 아군에게 달려드는 속도 %(생략 = 100, 25~300). 전역 기본은 system.battleStaging.enemyLunge(기본 fast).
+   * 늑대·맹수처럼 날랜 적은 120~160, 굼뜬 거인은 70~90. `project/battleStaging.ts` · `player/battleRetroMotion.measureEnemyReach`.
+   */
+  lungeSpeedPercent?: number;
   /**
    * 피해 계열별 받는 피해 %(생략 = 100). physical = 공격력 계열(statistic attack) 피해, magic = 마력 계열(statistic mind) 피해.
    * 0 = 그 계열 무효(「무효」 꼬리표), 300 = 세 배. 상태의 runtimeEffects.damageTypeRates 가 걸려 있으면 그 값이 이 값을 대신한다
@@ -2004,6 +2011,8 @@ export interface SystemRecords {
   battleLook?: import("@/project/battleLook").BattleLookSettings;
   /** 전투 결과 팡파레 — 레벨 업 배너·새 기술/연계기 카드·소리(project/battleFanfare.ts). 생략 = 전부 켜기·화려하게. */
   battleFanfare?: import("@/project/battleFanfare").BattleFanfareSettings;
+  /** 전투 연출 — 적 달려들기 속도·연계기 컷인·연계기 화려함·기술 한 줄 도움말(project/battleStaging.ts). 생략 = 빠르게·얼굴 교차·화려하게·한 줄. */
+  battleStaging?: import("@/project/battleStaging").BattleStagingSettings;
   /** 화면 표시 필터(project/displayFilter.ts) — 주사선·브라운관. 생략 = 없음. */
   displayFilter?: "scanlines" | "crt";
   /**

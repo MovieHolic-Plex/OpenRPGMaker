@@ -62,7 +62,7 @@
             },
             {
               "kind": "waitFor",
-              "testid": "battle-skill-help",
+              "testid": "battle-skill-hint",
               "timeoutMs": 10000
             },
             {
@@ -517,6 +517,168 @@
           "actor_fs_iris": 1600
         }
       }
+    },
+    {
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "id": "lunge-wolves",
+      "label": "늑대가 달려드는 속도",
+      "startEventId": "qa_fight_wolves",
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 9
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 9
+        }
+      ],
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "actor-command-attack",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 600
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "defend",
+          "note": "방어 두 차례 — 적이 달려드는 것만 본다",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "defend",
+                  "defend"
+                ],
+                "actor_fs_elena": [
+                  "defend",
+                  "defend"
+                ]
+              },
+              "commands": 4,
+              "timeoutMs": 120000,
+              "fallback": "defend"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 5000
+            },
+            {
+              "kind": "measureLayout",
+              "label": "lunge-wolves",
+              "selectors": [
+                ".battle-scene"
+              ]
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "id": "lunge-goblins",
+      "label": "고블린이 달려드는 속도",
+      "startEventId": "qa_fight_glade_poachers",
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 9
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 9
+        },
+        {
+          "actorId": "actor_fs_iris",
+          "level": 9
+        }
+      ],
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "actor-command-attack",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 600
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "defend",
+          "note": "방어 두 차례 — 적이 달려드는 것만 본다",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "defend",
+                  "defend"
+                ],
+                "actor_fs_elena": [
+                  "defend",
+                  "defend"
+                ],
+                "actor_fs_iris": [
+                  "defend",
+                  "defend"
+                ]
+              },
+              "commands": 6,
+              "timeoutMs": 120000,
+              "fallback": "defend"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 5000
+            },
+            {
+              "kind": "measureLayout",
+              "label": "lunge-goblins",
+              "selectors": [
+                ".battle-scene"
+              ]
+            }
+          ],
+          "shot": true
+        }
+      ]
     }
   ]
 }
