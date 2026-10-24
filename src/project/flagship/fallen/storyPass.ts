@@ -243,7 +243,7 @@ function elderDusk(hub: GameMap): void {
       conditions: [sw(SW_VALEN_MARCHED)],
       commands: [
         say(ELDER, "발렌 님은 해 질 녘마다 다리에서\n등을 하나 띄우시지."),
-        say(ELDER, "누굴 위한 건지는 말씀 안 하셔.\n…물어볼 사람도 없고."),
+        say(ELDER, "오늘은 숲으로 가셨으니 등도 없겠구먼.\n누굴 위한 건지는… 물어볼 사람도 없고."),
       ],
     } as EventPage,
   ];
@@ -526,13 +526,17 @@ function extraScolds(project: Project, ids: { hub: string; observatory: string }
     }
   }
 
-  // 심문회 상자(발렌) — 다리 곁 등불의 발렌(행렬 뒤 ~ 이리스 합류 전) 옆. 행렬 전에는 기사들 눈이 많아 손댈 수 없다. 벌금 15G.
+  // 심문회 상자(리노) — 행렬이 숲으로 떠난 뒤 동문 초소에 남은 압수품 상자. 행렬 전에는 기사들 눈이 많아 손댈 수 없다.
+  // 지키는 사람은 초소에 남은 리노 하나 — 그가 이쪽을 보고 있으면 들킨다(등 뒤로 돌아가면 조용히 챙길 수 있다). 벌금 15G.
+  // (발렌은 행렬과 함께 숲으로 갔다 — 예전에는 강가 등불 곁에 남아 상자를 지켰는데, 숲으로 간 사람이 마을에 또 있었다.)
   {
-    ensureVariable(project, "var_fs_scold_valen", "발렌에게 들킨 횟수(심문회 상자)");
-    const valen = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_valen_bridge`);
-    const spot = valen ? placeCrate(project, hub, valen, 27120, []) : null;
+    ensureVariable(project, "var_fs_scold_inquisition", "리노에게 들킨 횟수(심문회 상자)");
+    const rino = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_rino`);
+    const gate = hub.events.filter((e) => JSON.stringify(e.pages ?? []).includes('"mapId":"fs_forest"'));
+    const post = out.knightPost;
+    const spot = rino ? placeCrate(project, hub, rino, 27120, [...gate, ...(post ? [post] : [])]) : null;
     out.inquisitionBox = spot;
-    if (spot && valen) {
+    if (spot && rino) {
       const id = `ev_${FS_PREFIX}_cache_inquisition`;
       const take: Command[] = [
         narrate("(압수 목록) 서른 해 전 날짜 아래에 「새벽샘 — 하나」.\n오늘 날짜 아래는 아직 비어 있다."),
@@ -540,14 +544,13 @@ function extraScolds(project: Project, ids: { hub: string; observatory: string }
         { kind: "changeItem", itemId: "item_hi_potion", op: "+=", amount: 1 } as Command,
         { kind: "setSelfSwitch", key: "A", value: true } as Command,
       ];
-      const watching = all(sw(SW_VALEN_MARCHED), sw(SW_IRIS_JOINED, false));
       hub.events.push(boxEvent(id, { name: "수납 · 심문회 상자" }, spot.x, spot.y, [
         page(`${id}_p0`, "봉인", [], [narrate("붉은 봉인이 찍힌 심문회 상자다.\n기사들 눈이 많아 손댈 수가 없다.")]),
-        page(`${id}_p1`, "뒤지기", [sw(SW_VALEN_MARCHED)], [fork(watching, [seesFork(valen.id, 6, [
-          emote(valen.id, "exclamation", 900),
+        page(`${id}_p1`, "뒤지기", [sw(SW_VALEN_MARCHED)], [seesFork(rino.id, 7, [
+          emote(rino.id, "exclamation", 900),
           ...take,
-          scoldOnce("var_fs_scold_valen", [say(VALEN, "쥐가 한 마리 있군.")], 15),
-        ], take, true)], take)]),
+          scoldOnce("var_fs_scold_inquisition", [say(RINO, "그건 심문관님 압수품이다!\n…못 본 걸로 할 테니, 어서 가.")], 15),
+        ], take)]),
         page(`${id}_p2`, "이미 뒤짐", [{ kind: "selfSwitch", key: "A", value: true } as unknown as Condition], [narrate("심문회 상자는 이미 열어 봤다.\n압수 목록의 빈 줄이 마음에 걸린다.")]),
       ]));
     }
@@ -590,6 +593,8 @@ export function applyFallenStoryPass(project: Project, ids: { hub: string; obser
     if (!map) throw new Error(`[fallen-star story] 맵이 없다: ${id}`);
     return map;
   };
+  // 발렌은 포고 뒤 행렬과 함께 동문으로 나가 숲으로 간다(다음 등장은 지하). 강가 등불 곁에 다시 서 있던 장면은 걷어 낸다.
+  M(ids.hub).events = M(ids.hub).events.filter((e) => e.id !== `ev_${FS_PREFIX}_valen_bridge`);
   plazaLines(M(ids.hub));
   hanelAsk(M(ids.observatory));
   bramLines(M(ids.forest));

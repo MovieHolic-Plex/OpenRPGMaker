@@ -21,13 +21,20 @@ export const SW_LISA_BANNED = "sw_fs_lisa_banned";
 export const VAR_LISA_WARNED = "var_fs_lisa_warned";
 const BREAD_ICON = "cc0-jetrel-bread";
 
-/** 카엘 일행이 파는 무기·방어구(데모 DB 의 id). 없는 id 는 재고에서 빠진다. */
+/**
+ * 로한의 대장간 재고(데모 DB 의 id). 없는 id 는 재고에서 빠진다. 셋 모두 지금 장비보다 나은 것이 하나 이상 있게 —
+ * 카엘(전사: 검·창·방패·갑옷), 엘레나(마도사: 지팡이·마법봉·로브·수습모), 이리스(총사: 손 석궁·화승총·가죽 갑옷·여행 모자).
+ * 이리스가 쥘 수 있는 것은 townCast.ts 가 장비 쪽 허용 목록에 이리스를 더한다(직업 허용 목록은 시작 장비 넷뿐이다).
+ */
 const SMITHY_GOODS = [
   "equip_gen_sword_bronze", "equip_gen_sword_iron", "equip_gen_sword_steel", "equip_gen_sword_flame",
   "equip_fs_sword_gale", "equip_fs_sword_star",
   "equip_gen_spear_iron", "equip_gen_halberd_guard", "equip_fs_spear_pike", "equip_fs_spear_star",
-  "equip_gen_armor_leather", "equip_gen_armor_chain", "equip_gen_armor_plate",
-  "equip_gen_shield_wood", "equip_gen_shield_iron", "equip_gen_helm_leather", "equip_gen_helm_iron",
+  "equip_gen_wand_spark", "equip_gen_staff_crystal",
+  "equip_gen_crossbow_hand", "equip_gen_gun_flint",
+  "equip_gen_armor_leather", "equip_gen_armor_chain", "equip_gen_armor_plate", "equip_gen_robe_mage",
+  "equip_gen_shield_wood", "equip_gen_shield_iron",
+  "equip_gen_helm_leather", "equip_gen_helm_iron", "equip_mage_hat", "equip_gen_hat_traveler",
 ];
 const BAKERY_GOODS = [
   "fs_bread_flat", "fs_bread_warm", "fs_bread_herb", "fs_bread_hearty", "fs_bread_mystery", "fs_bread_stale", "item_bread", "item_potion",
@@ -160,13 +167,11 @@ const HOUSE_FINDS: Readonly<Record<string, readonly { label: RegExp; loot: Loot 
   ],
   fs_smithy: [{ label: /^궤짝$/, loot: { kind: "gold", amount: 40 } }],
 };
-/** 거리 수납 — 부두의 선원 궤짝·생선 상자·통 하나씩만 무언가가 들었다. */
-const STREET_FINDS: readonly { label: RegExp; loot: Loot }[] = [
-  { label: /선원 궤짝/, loot: { kind: "item", itemId: "item_hi_potion" } },
-  { label: /생선 상자/, loot: { kind: "gold", amount: 30 } },
-  { label: /^통$/, loot: { kind: "item", itemId: "item_potion" } },
-];
-
+/**
+ * 거리 수납 — 길가에서 손만 뻗으면 열리는 통·상자에는 아무것도 없다(사용자 피드백 6: 너무 쉽게 챙겨 균형이 무너졌다).
+ * 마을 쪽 값진 것은 리노가 지키는 초소 두 상자(행렬 뒤)와 골목 끝에 숨은 이끼 낀 상자 하나다(storyPass.ts · townCast.ts).
+ */
+const STREET_FINDS: readonly { label: RegExp; loot: Loot }[] = [];
 /** 아무것도 챙길 것 없는 수납이 보여 주는 한 줄 — 그 집 살림의 결. */
 const FLAVOR: readonly [RegExp, string][] = [
   [/생선 상자/, "생선 비린내만 남았다. 오늘 잡은 건 벌써 다 팔렸나 보다."],
