@@ -85,8 +85,16 @@ function equipIris(project: Project): void {
 }
 
 // ── C: 흉상 ──────────────────────────────────────────────────────────
+/**
+ * 흉상이 걷기 칩·얼굴과 다른 사람으로 읽히는 세트 — 48px 표정 얼굴 칸을 쓴다.
+ * 푸른 머리 머리띠(발렌): 얼굴과 발렌 칩은 금빛 머리띠인데 흉상·전신은 광대 모자를 썼다.
+ */
+const FACE_CELL_SETS = new Set(["shared-blue-headband-expressions"]);
+const CELL_OF_EMOTION: Readonly<Record<string, string>> = { happy: "02", surprised: "04", angry: "09", sad: "10" };
+
 function bustOfFace(faceId: string | undefined): string | undefined {
   const setId = sharedExpressionSetIdOf(faceId);
+  if (setId && FACE_CELL_SETS.has(setId)) return `${setId}-00`;
   const id = setId ? sharedPortraitId(setId, "bust", "base") : undefined;
   return id && findSharedPortrait(id) ? id : undefined;
 }
@@ -343,6 +351,30 @@ function hiddenNecklace(project: Project, hub: GameMap): Cell | null {
     ],
   } as unknown as GameEvent);
   return spot;
+}
+
+/**
+ * 얼굴 칸(shared-…-expressions-00)을 쓰는 화자의 표정 줄 — 런타임 대사 표정은 흉상·전신만 바꾸므로 그 줄 앞뒤에
+ * 표정 칸 얼굴과 기본 칸 얼굴을 직접 끼운다. applySpeakerFaces 뒤에 부른다.
+ */
+export function applyFaceCellEmotions(project: Project): number {
+  let n = 0;
+  for (const map of Object.values(project.maps)) for (const event of map.events) for (const list of eventLists(event)) {
+    let face: (Command & { resourceId?: string }) | undefined;
+    for (let i = 0; i < list.length; i += 1) {
+      const cmd = list[i] as Command & { resourceId?: string; emotion?: string };
+      if (cmd.kind === "changeFace") { face = cmd; continue; }
+      if (cmd.kind !== "text" || !cmd.emotion || !face?.resourceId) continue;
+      const m = /^(shared-.+-expressions)-00$/u.exec(face.resourceId);
+      const cell = cmd.emotion ? CELL_OF_EMOTION[cmd.emotion] : undefined;
+      if (!m || !cell) continue;
+      list.splice(i, 0, { ...face, resourceId: `${m[1]}-${cell}` } as Command);
+      list.splice(i + 2, 0, { ...face } as Command);
+      i += 2;
+      n += 1;
+    }
+  }
+  return n;
 }
 
 export type FallenTownCastResult = { kidsLoop: Cell[] | null; necklace: Cell | null; emotions: number };
