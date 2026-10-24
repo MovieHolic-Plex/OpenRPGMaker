@@ -165,6 +165,8 @@ export function updateEnemyRecord(database: DatabaseRecords, id: string, patch: 
   if ("monsterResourceId" in patch) record.monsterResourceId = patch.monsterResourceId;
   if ("battleScalePercent" in patch) record.battleScalePercent = patch.battleScalePercent;
   if ("collapseEffect" in patch) record.collapseEffect = patch.collapseEffect;
+  if ("hideHp" in patch) { if (patch.hideHp === true) record.hideHp = true; else delete record.hideHp; }
+  if ("damageTypeRates" in patch) { if (patch.damageTypeRates) record.damageTypeRates = patch.damageTypeRates; else delete record.damageTypeRates; }
   if ("graphicHue" in patch && patch.graphicHue !== undefined) record.graphicHue = patch.graphicHue;
   if ("transparent" in patch && patch.transparent !== undefined) record.transparent = patch.transparent;
   if ("flying" in patch && patch.flying !== undefined) record.flying = patch.flying;

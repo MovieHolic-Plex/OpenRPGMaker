@@ -1,3 +1,4 @@
+import { enemyHidesHp } from "@/project/enemyHpVisibility";
 import { statStageEffectText } from "@/battle/statStages";
 import { battleTypeBadges } from "@/player/battleTypeBadges";
 import { captureConditionLabel } from "@/battle/captureBalls";
@@ -388,8 +389,10 @@ export function syncEnemyListPanel(
     const shownHp = vitals ? vitals.hp : enemy.hp;
     const shownDefeated = vitals ? vitals.defeated : enemy.defeated;
     const hp = row.querySelector<HTMLElement>(".battle-enemy-list-hp");
-    if (hp) hp.textContent = `HP ${shownHp}/${enemy.maxHp}`;
+    const hideHp = enemyHidesHp(store.getCurrent(), enemy.recordId);
+    if (hp) hp.textContent = hideHp ? "HP ???" : `HP ${shownHp}/${enemy.maxHp}`;
     const bar = row.querySelector<HTMLElement>(".battle-enemy-list-bar");
+    if (bar) bar.hidden = hideHp;
     if (bar) {
       const pct = Math.max(0, Math.min(100, Math.round(shownHp / Math.max(1, enemy.maxHp) * 100)));
       bar.style.setProperty("--battle-stat", `${pct}%`);
@@ -415,7 +418,7 @@ function enemyListRow(
   const hp = document.createElement("span");
   hp.className = "battle-enemy-list-hp";
   hp.dataset.testid = `battle-enemy-list-hp-${enemy.id}`;
-  hp.textContent = `HP ${enemy.hp}/${enemy.maxHp}`;
+  hp.textContent = enemyHidesHp(store.getCurrent(), enemy.recordId) ? "HP ???" : `HP ${enemy.hp}/${enemy.maxHp}`;
   // 포켓몬 스킨에선 숫자 대신 이 바만 노출된다(CSS로 전환).
   const pct = Math.max(0, Math.min(100, Math.round(enemy.hp / Math.max(1, enemy.maxHp) * 100)));
   const bar = document.createElement("span");
@@ -837,7 +840,7 @@ function targetSelectionMenu(snapshot: BattleSnapshot, options: BattleCommandPan
     if (!target) continue;
     const peers = snapshot.targetSelection?.side === "actor" ? snapshot.actors : snapshot.enemies;
     const fullName = disambiguatedBattlerName(target, peers);
-    const button = commandButton(fullName, `battle-target-${target.id}`, "target", `${terms.hp} ${target.hp}/${target.maxHp}`, () => {
+    const button = commandButton(fullName, `battle-target-${target.id}`, "target", snapshot.targetSelection?.side !== "actor" && enemyHidesHp(store.getCurrent(), target.recordId) ? `${terms.hp} ???` : `${terms.hp} ${target.hp}/${target.maxHp}`, () => {
       options.confirmTargetSelection(target.id);
     });
     // 순번은 별도 노드로 — 이름이 생략부호로 잘릴 때 식별 정보(1/2)가 마지막에 남아야 한다.
