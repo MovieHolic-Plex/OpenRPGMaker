@@ -7,7 +7,24 @@ import { createPiToolset, type PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { getTool } from "@/editor/tools/toolRegistry";
 import type { PiAssistantV2Env } from "./env";
 
-export const GAME_WORDS = /퀘스트|의뢰|심부름|부탁|아이템|회복약|포션|무기|갑옷|방패|장비|장신구|상점|가게|팔게|팔기|열쇠|잠긴|보물|상자|제작|만들어 주는|주인공|이름|직업|레벨|능력치|체력|동료|파티|합류|떠나|스킬|기술|전투|싸우|보스|적\b|몬스터|무리|선택지|호감|기억|스위치|변수|횟수|레버|여관|묵으|저장|회복|치료|신부|골드|돈|엔딩|결말|게임|일지|제한 시간|타이머|낮에|밤에|시간대|아침|저녁|팻말|표지판|우물|동전|암호|비밀번호|통행료|경비|문지기|함정|독|중독|마비|수면|상태 ?이상|날씨|비가|비 ?오|무작위|랜덤|인카운터|조우|마주치|늑대|멧돼지|슬라임|고블린|얻게|얻는|얻을|모으|모았|모아|줍|주워|개수|몇 개|조사하면|조사할|입력|자물쇠|숫자|비밀번호|옮겨|옮기|묘비|회상|따라오|따라와|따라다|도망|사라지|나타나|말 걸|말을 걸|대사|다가가|밟으면|들어가면|문을|잇|이어 줘|이어줘|연결|follow|random|encounter|지진|흔들|번쩍|번개|음악|배경음|bgm|약초|광맥|이동석|눈이|눈 ?내|폭풍|안개|quest|item|shop|weapon|armor|battle|enemy|party|skill|inn|save|gold|ending|poison|weather/iu;
+export const GAME_WORDS = /퀘스트|의뢰|심부름|부탁|아이템|회복약|포션|무기|갑옷|방패|장비|장신구|상점|가게|팔게|팔기|열쇠|잠긴|보물|상자|제작|만들어 주는|주인공|이름|직업|레벨|능력치|체력|동료|파티|합류|떠나|스킬|기술|전투|싸우|보스|적\b|몬스터|무리|선택지|호감|기억|스위치|변수|횟수|레버|여관|묵으|저장|회복|치료|신부|골드|돈|엔딩|결말|게임|일지|제한 시간|타이머|낮에|밤에|시간대|아침|저녁|팻말|표지판|우물|동전|암호|비밀번호|통행료|경비|문지기|함정|독|중독|마비|수면|상태 ?이상|날씨|비가|비 ?오|무작위|랜덤|인카운터|조우|마주치|늑대|멧돼지|슬라임|고블린|얻게|얻는|얻을|모으|모았|모아|줍|주워|개수|몇 개|조사하면|조사할|입력|자물쇠|숫자|비밀번호|옮겨|옮기|묘비|회상|따라오|따라와|따라다|도망|사라지|나타나|말 걸|말을 걸|대사|다가가|밟으면|들어가면|문을|잇|이어 줘|이어줘|연결|follow|random|encounter|지진|흔들|번쩍|번개|음악|배경음|bgm|약초|광맥|이동석|눈이|눈 ?내|폭풍|안개|대화|표정|얼굴|초상|흉상|웃으|걱정|장면|뛰어다|돌아다|걸어 다|순찰|쫓아|쫓다|추격|발견|뒤지|뒤져|뒤질|수납|항아리|서랍|옷장|들키|들켜|몰래|숲|사당|오프닝|제목|타이틀|레터박스|검은 띠|카메라|연기|막 끝|막이|제\s*\d+\s*막|카드|페이즈|소환|불러|예고|힘을 모|꿰뚫|속성|약하게|약점|치명타|반지|목걸이|마나|에테르|\bMP\b|화상|기절|잠 |잠은|책장|비석|역사|망원경|이름을|줄여|절반|추가해|quest|item|shop|weapon|armor|battle|enemy|party|skill|inn|save|gold|ending|poison|weather/iu;
+
+
+/** 폴른 스타 제작에서 나온 일 묶음 — 요청 낱말이 있을 때만 그 도구를 더 싣는다(첫 턴을 무겁게 하지 않는다). */
+export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: readonly string[] }[] = [
+  { words: /숲|forest|woods?\b/iu, tools: ["author_forest_route"] },
+  { words: /뒤지|뒤져|뒤질|수납|항아리|통을|통이랑|통과 상자|서랍|옷장|들키|들켜|몰래|search/iu, tools: ["place_search_containers"] },
+  { words: /숨겨|숨긴|숨은|조사하면|조사할|비석|책장|망원경|표지판|팻말|일지/u, tools: ["place_examine_hotspots"] },
+  { words: /전부|모두|일괄|이름을|바꿔|바꾸/u, tools: ["replace_text_in_project"] },
+  { words: /상태|독|화상|기절|마비|잠|수면|꿰뚫|턴|state/iu, tools: ["upsert_state"] },
+  { words: /보스|페이즈|소환|불러|예고|힘을 모|충전|boss|phase/iu, tools: ["author_boss_phases", "simulate_battle"] },
+  { words: /오프닝|시작할 때|게임 시작|타이틀|제목|영화처럼|opening|title/iu, tools: ["plan_opening", "set_opening", "edit_opening", "create_opening_animatic_shot", "upsert_opening_layer", "animate_opening_camera", "animate_opening_layer", "set_opening_transition", "upsert_opening_audio_cue", "set_title_screen"] },
+  { words: /순찰|돌아다|뛰어다|걸어 다|patrol/iu, tools: ["configure_npc_patrol"] },
+  { words: /문을 열|문 열|성문|잠긴|창고 문|뒷문|door/iu, tools: ["place_door"] },
+];
+export function fallenTierTools(task: string): string[] {
+  return FALLEN_TIERS.filter((tier) => tier.words.test(task)).flatMap((tier) => tier.tools);
+}
 
 /** v1 도구 중 게임 요소에 쓰는 것(읽기 먼저). 레지스트리에 없는 이름은 빠진다. */
 export const V2_GAME_TOOLS: readonly string[] = [
@@ -53,6 +70,18 @@ export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전�
 - 이미 있는 NPC 는 add_people 로 다시 세우지 않는다(같은 이름이면 함수가 그 NPC 를 그대로 쓴다) — 그 그림·얼굴·자리는 바꾸지 않는다.
 - 엔딩·결말: list_endings 로 보고 define_ending(id·name·epilogue)으로 엔딩을 정의한 뒤 선택지 갈래에 {kind:'triggerEnding',endingId} 를 넣는다. 내레이션 + returnToTitle 만으로 엔딩을 흉내 내지 않는다. «마지막에» 묻는 선택이면 그 앞 조건(보스 처치·완료 스위치)을 페이지 조건으로 건다.
 - 요청이 가리키는 자리(다리 앞·강가·우물 옆…)가 맵에 없으면 묻지 않는다: 그 물건·지형을 만들어(stamp_object·fill_region 덧그리기, 없으면 가장 그럴듯한 길목) 짓고 보고에 「~가 없어 ~에 만들었다」고 쓴다.
+- [폴른 스타식 일 — 맞는 도구가 있으면 손으로 조립하지 말고 그 도구를 쓴다]
+  · 숲을 맵 여러 장으로(구불구불한 숲길·활엽수·나무 사이 숨은 물건·어둡고 안개 낀 숲): author_forest_route{fromMapId, side:'north'…, count, moods:['normal','darkfog'], hiddenPerMap}. 돌려받은 data.maps[i].mapId·clearing 에 보스·사당·적을 둔다.
+  · 뒤질 수 있는 통·상자·항아리·옷장(뒤지는 연출, 한 번만, 다시 보면 빈 것, 주인이 보면 「!」 꾸중, 벽 너머·다른 방은 못 봄, 들킨 횟수): place_search_containers{mapId, containers:[{x,y,style,loot,ownerId,caughtLines,caughtVariableId}]}. 「세 번 걸리면 안 판다」는 caughtVariableId 를 주고 상점 NPC 에 그 변수 ≥3 조건 페이지.
+  · 보이는 필드 적(돌아다니다 보면 「!」 하고 쫓아와 닿으면 전투, 멀어지면 포기, 앞만 보는 시야, 이기면 사라짐): place_field_enemy{behavior:'chase', sightRange, vision:'cone'(앞만 봄), giveUpRange(멀어지면 포기·복귀), patrol(순찰+추격)} — 마을 맵은 거부되니 숲·들판 맵에. 무작위 조우와 다르다.
+  · 일괄 글 바꾸기(「'북쪽 숲'을 전부 '속삭이는 숲'으로」·NPC 이름을 이름표와 대사 둘 다): replace_text_in_project{find, replace} 한 번. 한 줄씩 patch 하지 않는다.
+  · 상태: upsert_state — 지속 턴 상한 runtimeEffects.maxTurns(「독은 최대 3턴」), 턴마다 피해 hpDamagePercentPerTurn, 피해 계열 덮어쓰기 runtimeEffects.damageTypeRates({magic:300} = 마법 3배). 적의 계열 내성은 upsert_enemy damageTypeRates({magic:0} = 마법 무효). 스킬로 상태 걸기 = 스킬 stateEffects.
+  · 장비 수치: 주는 피해 +30% = upsert_equipment damageDealtPercent:30, 받는 피해 -20% = damageTakenPercent:-20, 치명타 = criticalRate. 「검을 들면 +20%」 스킬 = upsert_skill weaponAffinity{elementIds:['sword'],bonusPercent:20}. MP 회복 아이템 = upsert_item mpRecovery.
+  · 보스 패턴(체력 %에서 2페이즈 대사·강한 기술, 부하 소환, 한 번 회복): author_boss_phases{troopId, phases:[{atHpPercent,…}]}. 힘 모으기 예고 = 그 기술 chargeTurns:1. 다 만든 뒤 simulate_battle 로 한 번 돌린다.
+  · 게임 시작 오프닝(레터박스·밤하늘이 흐르는 패럴랙스·흔들림·제목): plan_opening 으로 장면을 잡고 create_opening_animatic_shot/upsert_opening_layer/animate_opening_camera 로 짓는다, 제목은 set_title_screen. system.opening 을 켠다.
+  · 연기와 함께 사라지기: add_scene 의 vanish 비트(연기+투명) 뒤 다시 안 나오게 셀프 스위치/스위치 페이지.
+  · 막 끝·제N막 카드 = define_ending(presentation.kicker:'제1막 끝') + triggerEnding — 대사로 흉내 내지 않는다.
+  · 순찰·뛰어다니기: configure_npc_patrol(닫힌 경로) 또는 add_people movement:'wander'. 문 열리는 연출 + 실내 = create_transfer_pair(doorAt) 또는 place_door.
 - 도구가 거절하면 이유를 읽고 고쳐 다시 부른다. 같은 거절이 두 번이면 방법을 바꾼다. 할 수 없는 것은 보고에 적는다.`;
 
 export function wantsGameTools(task: string): boolean {
@@ -74,7 +103,7 @@ export function wantsTerrainTools(task: string): boolean {
 /** 게임 도구 묶음 — 실행 기록은 v1 경로와 같은 onCall(env.record)로 남는다. */
 export function createGameTools(env: PiAssistantV2Env, task = ""): PiToolShape[] {
   // 게임 요청도 «조사하는 물건»(비석·이동석·분수)을 보이게 찍어야 해서 물건 찾기·찍기를 같이 준다(2026-10-24: 투명 이벤트가 맨땅에 남았다).
-  const want = [...(wantsGameTools(task) ? [...V2_GAME_TOOLS, "list_spatial_designs", "stamp_object"] : []), ...(wantsTerrainTools(task) ? V2_TERRAIN_TOOLS : [])];
+  const want = [...(wantsGameTools(task) ? [...V2_GAME_TOOLS, "list_spatial_designs", "stamp_object", ...fallenTierTools(task)] : []), ...(wantsTerrainTools(task) ? V2_TERRAIN_TOOLS : [])];
   const names = [...new Set(want)].filter((name) => getTool(name));
   return createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record });
 }
