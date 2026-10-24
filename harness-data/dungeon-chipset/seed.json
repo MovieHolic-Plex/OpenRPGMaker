@@ -4294,6 +4294,15 @@
     "wall.ice_face"
    ],
    "lead": "패널 8 반영: 얼음 벽을 층 바위(동굴 줄 C 결)로, 눈 띠 없음."
+  },
+  "theme-props-r8": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_props_r8.py",
+   "wave": "theme_props",
+   "title": "던전 테마 남은 조각 theme-props-r8",
+   "items": [
+    "prop.wisp"
+   ],
+   "lead": "object-gate 3/4(기둥: 윗면 3행·머리 타원 아님) 반영: 타원 윗면 화반 안에서 솟는 불꽃."
   }
  }
 }

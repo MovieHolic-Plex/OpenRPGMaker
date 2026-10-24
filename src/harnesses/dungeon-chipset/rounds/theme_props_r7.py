@@ -21,7 +21,7 @@ T = 16
 L = P1.L
 G = P1.G
 
-LIF = L('j:void1 a:vrock0 b:vrock1 c:vrock2 d:vrock3 e:iron4 A:vrock0 B:iron0 C:iron1 D:iron2 E:iron4 1:void1 2:vrock1 3:iron2 4:iron3 5:iron5 v:ice0 w:ice1 x:ice2 y:ice3 z:ice4 o:void0')
+LIF = L('j:void1 a:vrock0 b:vrock1 c:vrock2 d:vrock3 e:iron4 A:iron0 B:iron1 C:iron2 D:iron3 E:iron5 1:water0 2:water1 3:water2 4:iron3 5:water3 v:ice0 w:ice1 x:ice2 y:ice3 z:ice4 o:void0')
 LIF2 = L('j:vrock0 a:crock1 b:crock2 c:crock3 d:crock4 e:crock5 A:cata0 B:cata1 C:cata3 D:cata5 E:cata6 1:crock0 2:crock2 3:crock3 4:crock4 5:crock6 v:ice0 w:ice1 x:ice2 y:ice3 z:ice4 o:void0')
 
 # 켜 경계(위 → 아래) 기준 행 · 열마다 오르내림(16 주기) · 켜 몸 단
