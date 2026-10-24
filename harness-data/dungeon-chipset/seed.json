@@ -4256,6 +4256,25 @@
     "wall.tower_face"
    ],
    "lead": "패널 7 반영: 마계 테두리 눈금 없는 결 돌 띠, 돌 결 덩이 돌마다 다르게, 탑 창 밝은 테 제거."
+  },
+  "theme-props-r5": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_props_r5.py",
+   "wave": "theme_props",
+   "title": "던전 테마 남은 조각 theme-props-r5",
+   "items": [
+    "prop.minecart",
+    "wall.ice_face"
+   ],
+   "lead": "패널 7 반영: 광차 버들항 크기, 얼음 벽 서리 낀 돌·짧은 얼음 턱·긴 고드름은 새김 칸만."
+  },
+  "theme-props-r6": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_props_r6.py",
+   "wave": "theme_props",
+   "title": "던전 테마 남은 조각 theme-props-r6",
+   "items": [
+    "prop.cracked_floor"
+   ],
+   "lead": "패널 6·7 반영: 각진 꺼짐·북쪽 판석 옆면·기운 조각·짧은 금."
   }
  }
 }

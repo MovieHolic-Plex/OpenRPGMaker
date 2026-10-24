@@ -56,6 +56,26 @@ def two_ramp(rows, joints, seed, share=45):
     return [''.join(r) for r in out]
 
 
+def pit_speck(rows, sd, top=6):
+    """r8: 버들항 마름돌 알갱이 — 같은 줄 안에서 넷에 하나 화소를 한 단 위·아래, 그중 넷에 하나는 두 단 아래(패임). 0·6·7행은 그대로."""
+    out = [list(r) for r in rows]
+    for y in range(len(out)):
+        if y % 8 in (0, 6, 7):
+            continue
+        for x in range(1, 15):
+            c = out[y][x]
+            ramp = next((R for R in RAMPSETS if c in R[:top]), None)
+            if not ramp:
+                continue
+            h = (x * 2246822519 ^ y * 3266489917 ^ sd * 668265263) & 0xffffff
+            if h % 4:
+                continue
+            i = ramp.index(c)
+            # 버들항 마름돌처럼 같은 줄 안에서만(색상 안 바뀜): 넷에 하나 화소를 한 단 위·아래, 여덟에 하나는 두 단 아래(패임)
+            out[y][x] = ramp[max(i - 2, 0)] if (h >> 5) % 4 == 0 else (ramp[min(i + 1, top - 1)] if (h >> 7) % 2 else ramp[max(i - 1, 0)])
+    return [''.join(r) for r in out]
+
+
 def stone_rows(joints, table, letters, seed, last_dark=True):
     """돌마다 따로 칠한다(r5: 「돌이 똑같고 한 장씩 음영이 없다」). 돌 몸 단 = 표 값 ± 해시 한 단.
     돌 안: 윗줄 빛(+1, 왼 윗모서리 두 화소 +2) · 왼쪽 열 빛(+1) · 몸은 왼위→오른아래로 한 단 내려감 ·
@@ -207,8 +227,8 @@ TWO = list(range(16)) + list(range(32, 48))   # 2단 = 윗단 + 아랫단
 
 # ================================================================================================ 마계 벽 앞면
 # 마계 벽 = 흑요석 마름돌 8줄 켜 엇쌓기. 글자: j 이음(void0) · a~f = ostone 0~5 · p q r s = 빛 1~4 단.
-LOF = L('j:void0 a:ostone0 b:ostone1 c:ostone2 d:ostone3 e:ostone4 f:ostone5 A:void1 B:ostone0 C:ostone1 D:red0 E:ostone3 F:ostone4 1:void2 2:ostone1 3:arcane0 4:ostone3 5:red0 6:ostone5 p:arcane0 q:arcane1 r:arcane2 s:arcane3')
-LOF2 = L('j:void0 a:ostone0 b:ostone1 c:ostone2 d:ostone3 e:ostone4 f:ostone5 A:void1 B:ostone0 C:ostone1 D:red0 E:ostone3 F:ostone4 1:void2 2:ostone1 3:arcane0 4:ostone3 5:red0 6:ostone5 p:ostone3 q:red0 r:red1 s:red2')
+LOF = L('j:void0 a:ostone0 b:ostone1 c:ostone2 d:ostone3 e:ostone4 f:ostone5 A:void1 B:ostone0 C:ostone1 D:red0 E:ostone3 F:ostone4 1:void2 2:ostone1 3:arcane0 4:ostone3 5:red0 6:ostone5 p:red1 q:red1 r:fire1 s:fire3')
+LOF2 = L('j:void0 a:ostone0 b:ostone1 c:ostone2 d:ostone3 e:ostone4 f:ostone5 A:void1 B:ostone0 C:ostone1 D:red0 E:ostone3 F:ostone4 1:void2 2:ostone1 3:arcane0 4:ostone3 5:red0 6:ostone5 p:arcane1 q:arcane1 r:arcane3 s:arcane4')
 TONES = 'abcdef'
 # 켜(8줄)마다 세로 이음 열 — 번갈아 엇쌓기. 돌 단(몸) = 켜·돌마다 손으로 정한 표(왼 돌, 오른 돌).
 OF_JOINT = [4, 12, 4, 12, 4, 12]
@@ -240,37 +260,25 @@ def other_mid(n=1, cracked=False, flip=False):
                 (12, 15), (11, 16), (11, 17), (10, 18), (10, 19), (10, 20), (9, 21), (9, 22), (8, 23), (8, 24), (8, 25), (7, 26),
                 (7, 27), (6, 28), (6, 29), (5, 30), (5, 31), (4, 32), (4, 33), (4, 34), (5, 35), (5, 36), (6, 37),
                 (6, 38), (5, 39), (5, 40), (5, 41), (6, 42), (6, 43), (6, 44), (7, 45)]
-        # r5b: 금 = 돌을 쪼갠 홈. 왼쪽 위 = 깨진 돌 모서리 빛(돌 단 +1), 가운데 = 깊은 그늘 j, 그 안 드문드문 빛 줄기 r(이어지지 않음),
-        #      오른쪽 = 홈 안 벽 그늘 p(빛 번짐 아님). 홈 양옆 한 화소는 돌 쪽 단으로 남긴다.
-        up = {'a': 'b', 'b': 'c', 'c': 'd', 'd': 'e', 'e': 'f', 'f': 'f', 'A': 'B', 'B': 'C', 'C': 'D', 'D': 'E', 'E': 'F', 'F': 'F',
-              '1': '2', '2': '3', '3': '4', '4': '5', '5': '6', '6': '6'}
+        # r8: 금 = 3화소 폭 갈라진 틈(패널 7: 「1화소 점선 · 빛이 없다」). 가운데 = 깊은 어둠 j, 왼 입술 = 빛 s/r(끊어짐),
+        #     오른 입술 = 희미한 빛 q, 틈 밖 한 화소 = 깨진 돌 모서리(돌 단 -1). 세 단을 끝까지 내려간다.
+        dn = {'b': 'a', 'c': 'b', 'd': 'c', 'e': 'd', 'f': 'e', 'B': 'A', 'C': 'B', 'D': 'C', 'E': 'D', 'F': 'E',
+              '2': '1', '3': '2', '4': '3', '5': '4', '6': '5'}
         for i, (x, y) in enumerate(path):
-            rows[y][x] = 'r' if i % 4 == 1 else ('s' if i in (11, 30) else 'j')
-            if rows[y][x - 1] not in 'jqrsp':
-                rows[y][x - 1] = up.get(rows[y][x - 1], rows[y][x - 1])
-            if x + 1 < 16 and rows[y][x + 1] not in 'jqrs':
-                rows[y][x + 1] = 'p'
+            rows[y][x] = 'j'
+            if x - 1 >= 0:
+                rows[y][x - 1] = 's' if i % 3 == 0 else 'r'
+            if x + 1 < 16:
+                rows[y][x + 1] = 'q' if i % 4 else 'r'
+            for xx in (x - 2, x + 2):
+                if 0 <= xx < 16 and rows[y][xx] not in 'jqrs':
+                    rows[y][xx] = dn.get(rows[y][xx], rows[y][xx])
         rows = [''.join(r) for r in rows]
     if flip:   # 둘째 금 칸 = 같은 결을 좌우로 뒤집은 길(이음 자리는 다시 맞춘다)
         rows = [''.join(r) for r in rows]
     sd = 5 + (7 if flip else 0) + (3 if cracked else 0)
     rows = speck3(three_ramp(rows, OF_JOINT, sd), sd)
-    # r7: 돌 몸 낱점(버들항 마름돌의 흰 알갱이·패인 점) — 돌 하나에 한두 점, 한 단 위 또는 두 단 아래
-    out = [list(r) for r in rows]
-    for y in range(len(out)):
-        if y % 8 in (0, 6, 7):
-            continue
-        for x in range(1, 15):
-            c = out[y][x]
-            ramp = next((R for R in RAMPSETS if c in R), None)
-            if not ramp:
-                continue
-            h = (x * 2246822519 ^ y * 3266489917 ^ sd * 668265263) & 0xffffff
-            if h % 11:
-                continue
-            i = ramp.index(c)
-            out[y][x] = ramp[min(i + 2, 5)] if (h >> 5) % 3 else ramp[max(i - 2, 0)]
-    return [''.join(r) for r in out]
+    return pit_speck(rows, sd)
 
 
 def other_ends():
@@ -383,7 +391,8 @@ def other_kit(n=1):
     cells = [G(r, lg) for r in bot]
     k.base3 = hcat(*cells)   # 아랫단 = 금 없는 돌(r3 빛 뿌리는 흐린 번짐으로 읽혀 뺐다)
     alt = m.crop(0, 16, 16, 16)
-    stamp(alt, CRACK, lg, 0, 0)
+    # r8: 변형 = 모서리가 떨어져 나간 돌 하나(패널 7: 「> 표시 같은 금」 대신) — 빠진 자리 = 그늘 j·a, 깨진 면 빛 c
+    stamp(alt, ['........ccj.....', '.......cbaj.....', '.......baaj.....', '........jj......'], lg, 0, 2)
     k.alt3 = alt
     k.lg = lg
     return k
@@ -476,7 +485,7 @@ TF_STONE = [(3, 2), (2, 3), (2, 2), (3, 2), (2, 3), (1, 2)]
 def tower_mid(n=1):
     rows = stone_rows(TF_JOINT, TF_STONE, 'abcde', 7 + n)
     rows[0] = 'e' * 16
-    return speck3(three_ramp(rows, TF_JOINT, 9 + n), 9 + n, top=5)   # r5: 세 줄 돌 + 줄 넘는 잡티
+    return pit_speck(speck3(three_ramp(rows, TF_JOINT, 9 + n), 9 + n, top=5), 9 + n, top=5)   # r5: 세 줄 돌 + 줄 넘는 잡티
 
 
 def tower_ends():

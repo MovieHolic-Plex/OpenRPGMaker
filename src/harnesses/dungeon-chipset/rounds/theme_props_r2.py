@@ -175,13 +175,14 @@ def textured(base=None):
     return [''.join(r) for r in out]
 
 
-def slab_shaded():
+def slab_shaded(crack=None):
     """r2b: 판석마다 칠(object-gate: 「판석 한 장씩 음영이 없다·윤곽 근흑」). 성 판석 줄눈 자리는 바닥 키트와 같다(가로 7·15·23·31행,
     세로 5·21열 / 6·22열 엇갈림). 판석마다 몸 단(해시 g·G·h·H) · 윗줄과 왼 열 빛 M · 아랫줄과 오른 열 그늘 N · 결 잡티.
     구멍·금·줄눈 글자(o p q j b c d k)는 CRACK 그대로."""
-    out = [list(r) for r in CRACK]
+    crack = crack or CRACK
+    out = [list(r) for r in crack]
     bodies = ['g', 'G', 'h', 'g', 'H', 'G']
-    for y, r in enumerate(CRACK):
+    for y, r in enumerate(crack):
         band = y // 8
         js = (5, 21) if band % 2 == 0 else (6, 22)
         for x, c in enumerate(r):
@@ -244,17 +245,18 @@ def decal():
     return out
 
 
-def damaged():
+def damaged(crack=None, dmg_chars='opqjk', reach=3):
     """r2d: 불투명 판석(판석마다 칠) — 줄눈은 바닥 키트와 같은 무채 회색(D), 구멍·금 둘레 3화소 안의 줄눈만 먼지 낀 재질 색조(d).
     2×2 바깥 변은 바닥과 같은 줄눈이라 사각 조각 경계가 생기지 않는다."""
-    base = slab_shaded()
-    dmg = {(x, y) for y, r in enumerate(CRACK) for x, c in enumerate(r) if c in 'opqjk'}
+    crack = crack or CRACK
+    base = slab_shaded(crack)
+    dmg = {(x, y) for y, r in enumerate(crack) for x, c in enumerate(r) if c in dmg_chars}
     out = []
     for y, r in enumerate(base):
         row = list(r)
         for x, c in enumerate(r):
-            if CRACK[y][x] == 'd':
-                near = any((x + dx, y + dy) in dmg for dx in range(-3, 4) for dy in range(-3, 4))
+            if crack[y][x] == 'd':
+                near = any((x + dx, y + dy) in dmg for dx in range(-reach, reach + 1) for dy in range(-reach, reach + 1))
                 row[x] = 'd' if near else 'D'
         out.append(''.join(row))
     return out

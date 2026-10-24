@@ -1138,472 +1138,6 @@
  "rejects": [],
  "runs": [
   {
-   "round": "theme-walls-r3",
-   "at": "2026-10-24T20:08:25",
-   "fail": 0,
-   "warn": 4,
-   "warnByCode": {
-    "R": 4
-   },
-   "polish": [],
-   "hashes": {
-    "wall.other_face": {
-     "A1": "21377010138379cc5dcfe8bfc87c2d977970dcc4f2296dd58124fd6d949550be",
-     "A2": "f476d2fa6cffd6677e4aff075a4b67f9a659d9f4c5948b98c917a7fa36c5f947"
-    },
-    "wall.other_rim": {
-     "A1": "8152a8162fe4c9bb1e8005b8c18f90c3fad6026e273c05c82c3cc9f408f34429",
-     "A2": "4e5ed6f2a913188211f0209e626f1a166ec47eab4c64acd6882b0015d4c61f61"
-    },
-    "wall.tower_face": {
-     "A1": "0000e5062f4eb879775d79e70034364edd75395d519c08091943916479e0ade3",
-     "A2": "afc8a920a4faa7e868465d34155bf4108ed6e7708cb0d431fd4e72b18405f948"
-    },
-    "wall.tower_rim": {
-     "A1": "8190a22505eaba6e792a626141d30d09dd35abc1252a1cb55a225fd1e9f7bc39",
-     "A2": "58162f7ee17d705dd96ed32df73a94a7a8d6c6e97ee2a6dec717c45a7024bf5b"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r1",
-   "at": "2026-10-24T20:24:35",
-   "fail": 0,
-   "warn": 6,
-   "warnByCode": {
-    "R": 4,
-    "CONTRAST": 2
-   },
-   "polish": [
-    {
-     "item": "prop.wisp",
-     "key": "A1",
-     "code": "CONTRAST",
-     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.37 vs 바닥 0.46 차 0.10; 장면2(2칸) 그늘 쪽 0.40 vs 바닥 0.46 차 0.07; 장면3(2칸) 그늘 쪽 0.41 vs 바닥 0.46 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.37 vs 바닥 0.38 차 0.02; 장면2(2칸) 그늘 쪽 0.40 vs 바닥 0.38 차 0.01; 장면3(2칸) 그늘 쪽 0.41 vs 바닥 0.38 차 0.03 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.37 vs 바닥 0.44 차 0.07; 장면2(2칸) 그늘 쪽 0.40 vs 바닥 0.44 차 0.04; 장면3(2칸) 그늘 쪽 0.41 vs 바닥 0.44 차 0.03 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
-    },
-    {
-     "item": "prop.wisp",
-     "key": "A2",
-     "code": "CONTRAST",
-     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.35 vs 바닥 0.46 차 0.11; 장면2(2칸) 그늘 쪽 0.39 vs 바닥 0.46 차 0.07; 장면3(2칸) 그늘 쪽 0.40 vs 바닥 0.46 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.35 vs 바닥 0.38 차 0.03; 장면2(2칸) 그늘 쪽 0.39 vs 바닥 0.38 차 0.01; 장면3(2칸) 그늘 쪽 0.40 vs 바닥 0.38 차 0.02 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.35 vs 바닥 0.44 차 0.09; 장면2(2칸) 그늘 쪽 0.39 vs 바닥 0.44 차 0.05; 장면3(2칸) 그늘 쪽 0.40 vs 바닥 0.44 차 0.04 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
-    }
-   ],
-   "hashes": {
-    "prop.minecart": {
-     "A1": "acc92915585660909abf24b9733699d28c465750caae7f7cf7068b42002c7f47",
-     "A2": "f039c4a63b58bd6b46e2412baa1e1beba20b192cbaf86770919d8cc1807b1119"
-    },
-    "prop.cracked_floor": {
-     "A1": "5ce93f7553d44d47945975a60251f5e54d8770d435ee536323b69f81ab9e0dfb",
-     "A2": "600d5ef113809b28269d393ef14393ef844ee149f884effef69332fafb9e9b53"
-    },
-    "prop.wisp": {
-     "A1": "01498456049fda734596fc5d954323d1f10734fc415a0580950c70a3de364249",
-     "A2": "16de59c73d0ea1f61c543f545fe2a514f844e8df52242a31e136bab1a990fe4b"
-    },
-    "wall.ice_face": {
-     "A1": "b781e6941e0b71c0f30062fe3d8a61206eea321dd194a222af2a1d0d7885248b",
-     "A2": "67a2854e4fc70a9e29f343298e12bc7d1b412ad69e1147a942841bc19a828445"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r1",
-   "at": "2026-10-24T20:25:02",
-   "fail": 0,
-   "warn": 6,
-   "warnByCode": {
-    "R": 4,
-    "CONTRAST": 2
-   },
-   "polish": [
-    {
-     "item": "prop.wisp",
-     "key": "A1",
-     "code": "CONTRAST",
-     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.35 vs 바닥 0.46 차 0.12; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.46 차 0.09; 장면3(2칸) 그늘 쪽 0.39 vs 바닥 0.46 차 0.08 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.35 vs 바닥 0.38 차 0.04; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.38 차 0.01; 장면3(2칸) 그늘 쪽 0.39 vs 바닥 0.38 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.35 vs 바닥 0.44 차 0.09; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.44 차 0.07; 장면3(2칸) 그늘 쪽 0.39 vs 바닥 0.44 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
-    },
-    {
-     "item": "prop.wisp",
-     "key": "A2",
-     "code": "CONTRAST",
-     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.33 vs 바닥 0.46 차 0.13; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.46 차 0.09; 장면3(2칸) 그늘 쪽 0.38 vs 바닥 0.46 차 0.08 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.33 vs 바닥 0.38 차 0.05; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.38 차 0.01; 장면3(2칸) 그늘 쪽 0.38 vs 바닥 0.38 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.33 vs 바닥 0.44 차 0.11; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.44 차 0.07; 장면3(2칸) 그늘 쪽 0.38 vs 바닥 0.44 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
-    }
-   ],
-   "hashes": {
-    "prop.minecart": {
-     "A1": "acc92915585660909abf24b9733699d28c465750caae7f7cf7068b42002c7f47",
-     "A2": "f039c4a63b58bd6b46e2412baa1e1beba20b192cbaf86770919d8cc1807b1119"
-    },
-    "prop.cracked_floor": {
-     "A1": "5ce93f7553d44d47945975a60251f5e54d8770d435ee536323b69f81ab9e0dfb",
-     "A2": "600d5ef113809b28269d393ef14393ef844ee149f884effef69332fafb9e9b53"
-    },
-    "prop.wisp": {
-     "A1": "e89a103a025a4df444188d5b3ab1c16b3d8142e3b2d1b6b0bd51cb7fa21c90f1",
-     "A2": "f739deef91f1d0d01c838e0ccc1073f7ba9abefa96abbfcd07398792c2de8a14"
-    },
-    "wall.ice_face": {
-     "A1": "b781e6941e0b71c0f30062fe3d8a61206eea321dd194a222af2a1d0d7885248b",
-     "A2": "67a2854e4fc70a9e29f343298e12bc7d1b412ad69e1147a942841bc19a828445"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r1",
-   "at": "2026-10-24T20:25:32",
-   "fail": 0,
-   "warn": 6,
-   "warnByCode": {
-    "R": 4,
-    "CONTRAST": 2
-   },
-   "polish": [
-    {
-     "item": "prop.wisp",
-     "key": "A1",
-     "code": "CONTRAST",
-     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.35 vs 바닥 0.46 차 0.12; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.46 차 0.09; 장면3(2칸) 그늘 쪽 0.39 vs 바닥 0.46 차 0.08 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.35 vs 바닥 0.38 차 0.04; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.38 차 0.01; 장면3(2칸) 그늘 쪽 0.39 vs 바닥 0.38 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.35 vs 바닥 0.44 차 0.09; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.44 차 0.07; 장면3(2칸) 그늘 쪽 0.39 vs 바닥 0.44 차 0.05 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
-    },
-    {
-     "item": "prop.wisp",
-     "key": "A2",
-     "code": "CONTRAST",
-     "msg": "줄 A 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.33 vs 바닥 0.46 차 0.13; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.46 차 0.09; 장면3(2칸) 그늘 쪽 0.38 vs 바닥 0.46 차 0.08 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.33 vs 바닥 0.38 차 0.05; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.38 차 0.01; 장면3(2칸) 그늘 쪽 0.38 vs 바닥 0.38 차 0.00 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 바닥에 묻힘(하한 0.15): 장면1(2칸) 그늘 쪽 0.33 vs 바닥 0.44 차 0.11; 장면2(2칸) 그늘 쪽 0.37 vs 바닥 0.44 차 0.07; 장면3(2칸) 그늘 쪽 0.38 vs 바닥 0.44 차 0.06 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)"
-    }
-   ],
-   "hashes": {
-    "prop.minecart": {
-     "A1": "acc92915585660909abf24b9733699d28c465750caae7f7cf7068b42002c7f47",
-     "A2": "f039c4a63b58bd6b46e2412baa1e1beba20b192cbaf86770919d8cc1807b1119"
-    },
-    "prop.cracked_floor": {
-     "A1": "5ce93f7553d44d47945975a60251f5e54d8770d435ee536323b69f81ab9e0dfb",
-     "A2": "600d5ef113809b28269d393ef14393ef844ee149f884effef69332fafb9e9b53"
-    },
-    "prop.wisp": {
-     "A1": "e89a103a025a4df444188d5b3ab1c16b3d8142e3b2d1b6b0bd51cb7fa21c90f1",
-     "A2": "f739deef91f1d0d01c838e0ccc1073f7ba9abefa96abbfcd07398792c2de8a14"
-    },
-    "wall.ice_face": {
-     "A1": "b781e6941e0b71c0f30062fe3d8a61206eea321dd194a222af2a1d0d7885248b",
-     "A2": "67a2854e4fc70a9e29f343298e12bc7d1b412ad69e1147a942841bc19a828445"
-    }
-   }
-  },
-  {
-   "round": "theme-walls-r4",
-   "at": "2026-10-24T20:28:10",
-   "fail": 0,
-   "warn": 6,
-   "warnByCode": {
-    "R": 6
-   },
-   "polish": [],
-   "hashes": {
-    "wall.other_face": {
-     "A1": "f412dc0375d7b7d0d13475614588948f1cab0144c5b1e291d84eaf73a0e227a3",
-     "A2": "989709aeab156638d90421a6ea2de6ff863cbd0a6a5457e7cb1d5f15040ffa08"
-    },
-    "wall.other_rim": {
-     "A1": "04c645f112d6cc6a2a0ecce6a8707b699bf9b33d539e6f3072073095df22f60b",
-     "A2": "8152a8162fe4c9bb1e8005b8c18f90c3fad6026e273c05c82c3cc9f408f34429"
-    },
-    "wall.tower_face": {
-     "A1": "51bcf5678d53105e6c21656b7af7cd8291700a133f6c99718eb963afd6cb65d2",
-     "A2": "faaf727c86d5df863bb6fce7698d1d9579b5e53639526cd4cb1bb27f9ef9c30e"
-    },
-    "wall.tower_rim": {
-     "A1": "8190a22505eaba6e792a626141d30d09dd35abc1252a1cb55a225fd1e9f7bc39",
-     "A2": "58162f7ee17d705dd96ed32df73a94a7a8d6c6e97ee2a6dec717c45a7024bf5b"
-    }
-   }
-  },
-  {
-   "round": "theme-walls-r5",
-   "at": "2026-10-24T20:35:45",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.other_rim": {
-     "A1": "f9ea2b138ec7f68aad8ed5e6b8000000580f6a9d3bddc104cf55cd7b6ab3688c",
-     "A2": "751962489e6d5723a65958589b98d34447c298a10959cb80f8dbca0a83feef97"
-    }
-   }
-  },
-  {
-   "round": "theme-walls-r5",
-   "at": "2026-10-24T20:37:58",
-   "fail": 0,
-   "warn": 4,
-   "warnByCode": {
-    "R": 4
-   },
-   "polish": [],
-   "hashes": {
-    "wall.other_face": {
-     "A1": "6d9017318678a60aae7f233beebdc4efaa1f29057060cef798b4b5c0284d9b63",
-     "A2": "30018a37892d10f6b02eb67b50989adaebb091dfb505aacae581de4dd64073fa"
-    },
-    "wall.other_rim": {
-     "A1": "f9ea2b138ec7f68aad8ed5e6b8000000580f6a9d3bddc104cf55cd7b6ab3688c",
-     "A2": "751962489e6d5723a65958589b98d34447c298a10959cb80f8dbca0a83feef97"
-    },
-    "wall.tower_face": {
-     "A1": "53ec62e22329d11c55028112b888a1a5b816c445adcb66dd73325e59dd28688d",
-     "A2": "b4381f98510c9788bcd569250fa88298bdabc7c2a51678b59c182c7b24907269"
-    },
-    "wall.tower_rim": {
-     "A1": "8190a22505eaba6e792a626141d30d09dd35abc1252a1cb55a225fd1e9f7bc39",
-     "A2": "58162f7ee17d705dd96ed32df73a94a7a8d6c6e97ee2a6dec717c45a7024bf5b"
-    }
-   }
-  },
-  {
-   "round": "theme-walls-r5",
-   "at": "2026-10-24T20:41:06",
-   "fail": 0,
-   "warn": 4,
-   "warnByCode": {
-    "R": 4
-   },
-   "polish": [],
-   "hashes": {
-    "wall.other_face": {
-     "A1": "27ec8dc814f37ac0e9eeacbf5e21b4656dfca9e3cad3de18ff9428846391215a",
-     "A2": "1c8dbeb6b8ec6fbdd8f5f7aee9b5fc6f4cec343a9619024c184fc58ff627c8ed"
-    },
-    "wall.other_rim": {
-     "A1": "f9ea2b138ec7f68aad8ed5e6b8000000580f6a9d3bddc104cf55cd7b6ab3688c",
-     "A2": "751962489e6d5723a65958589b98d34447c298a10959cb80f8dbca0a83feef97"
-    },
-    "wall.tower_face": {
-     "A1": "d9d0f611327adfe6d36d2444405eee968b9ee4e6939c5455aaab4b4ce2c0f8ee",
-     "A2": "a4606ed3c4c45190522092e9fade6ce9f03670857ea7ec202581debab001f23e"
-    },
-    "wall.tower_rim": {
-     "A1": "8190a22505eaba6e792a626141d30d09dd35abc1252a1cb55a225fd1e9f7bc39",
-     "A2": "58162f7ee17d705dd96ed32df73a94a7a8d6c6e97ee2a6dec717c45a7024bf5b"
-    }
-   }
-  },
-  {
-   "round": "theme-walls-r5",
-   "at": "2026-10-24T20:43:27",
-   "fail": 0,
-   "warn": 4,
-   "warnByCode": {
-    "R": 4
-   },
-   "polish": [],
-   "hashes": {
-    "wall.other_face": {
-     "A1": "ba53e8617d745fbaf8d6a5a1722d2b7e35f1915d53b29b6a9dfba943041e0bfd",
-     "A2": "db2a33f85c93e92a2d2d14e85d4d695ad24be22ce513bc0e4a843649ad226d46"
-    },
-    "wall.other_rim": {
-     "A1": "f9ea2b138ec7f68aad8ed5e6b8000000580f6a9d3bddc104cf55cd7b6ab3688c",
-     "A2": "751962489e6d5723a65958589b98d34447c298a10959cb80f8dbca0a83feef97"
-    },
-    "wall.tower_face": {
-     "A1": "5e0c3edc238454a037d08c303d6f2d8f85afe6186ea34799b8910837b068609e",
-     "A2": "daa5718b54bb3f36cc5458b0adfb7b06b4c23b2032fa2b11b424794ef4cc03be"
-    },
-    "wall.tower_rim": {
-     "A1": "8190a22505eaba6e792a626141d30d09dd35abc1252a1cb55a225fd1e9f7bc39",
-     "A2": "58162f7ee17d705dd96ed32df73a94a7a8d6c6e97ee2a6dec717c45a7024bf5b"
-    }
-   }
-  },
-  {
-   "round": "theme-walls-r5",
-   "at": "2026-10-24T20:45:17",
-   "fail": 0,
-   "warn": 4,
-   "warnByCode": {
-    "R": 4
-   },
-   "polish": [],
-   "hashes": {
-    "wall.other_face": {
-     "A1": "c25a65b8ff529abdbd7f20700fd67a3f939a1aee6d4fa1e500a87c5eadc483fa",
-     "A2": "d708e53917fabdc8e1f4ee7bcdce8f8990d6343de482b1e24b7b10946cd9f164"
-    },
-    "wall.other_rim": {
-     "A1": "f9ea2b138ec7f68aad8ed5e6b8000000580f6a9d3bddc104cf55cd7b6ab3688c",
-     "A2": "751962489e6d5723a65958589b98d34447c298a10959cb80f8dbca0a83feef97"
-    },
-    "wall.tower_face": {
-     "A1": "3c809e761bb43154c1229a92fe67ac56add3a1459100b320d51785d8f6f48a4e",
-     "A2": "9651f9afe9d30d03aa8d370bce68b2432b85f402cc421231c57f8d3f7d6cdf70"
-    },
-    "wall.tower_rim": {
-     "A1": "8190a22505eaba6e792a626141d30d09dd35abc1252a1cb55a225fd1e9f7bc39",
-     "A2": "58162f7ee17d705dd96ed32df73a94a7a8d6c6e97ee2a6dec717c45a7024bf5b"
-    }
-   }
-  },
-  {
-   "round": "theme-walls-r6",
-   "at": "2026-10-24T20:48:02",
-   "fail": 0,
-   "warn": 2,
-   "warnByCode": {
-    "R": 2
-   },
-   "polish": [],
-   "hashes": {
-    "wall.other_rim": {
-     "A1": "5f7d1300fca6babcc13f4664a16fbeda192a1ff51562bf88dcca073d33e5609a",
-     "A2": "243c083ddcb6340dd214f7b452fae5b4392d976726136330f429e9627703e694"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r2",
-   "at": "2026-10-24T20:52:28",
-   "fail": 0,
-   "warn": 4,
-   "warnByCode": {
-    "R": 4
-   },
-   "polish": [],
-   "hashes": {
-    "prop.minecart": {
-     "A1": "770467ff0e12226474569888fc2d0a663a2a9cf68f70d80eaaa289c4266419bb",
-     "A2": "bbff5ed00317aa91d4f82b18eaa589c7fc8d8dfa0a1972dc467d19fbc243be88"
-    },
-    "prop.cracked_floor": {
-     "A1": "5c98e14ff9ed0d0b372a7f16bfe4ed779b3c3eee31cd23b2321db30a89a62f1e",
-     "A2": "967276daab18c1eb253d6b1e93632b3a3ba88e4abf306c81d105a7e98eb1de96"
-    }
-   }
-  },
-  {
-   "round": "theme-walls-r5",
-   "at": "2026-10-24T20:54:15",
-   "fail": 0,
-   "warn": 4,
-   "warnByCode": {
-    "R": 4
-   },
-   "polish": [],
-   "hashes": {
-    "wall.other_face": {
-     "A1": "c25a65b8ff529abdbd7f20700fd67a3f939a1aee6d4fa1e500a87c5eadc483fa",
-     "A2": "d708e53917fabdc8e1f4ee7bcdce8f8990d6343de482b1e24b7b10946cd9f164"
-    },
-    "wall.other_rim": {
-     "A1": "f9ea2b138ec7f68aad8ed5e6b8000000580f6a9d3bddc104cf55cd7b6ab3688c",
-     "A2": "751962489e6d5723a65958589b98d34447c298a10959cb80f8dbca0a83feef97"
-    },
-    "wall.tower_face": {
-     "A1": "f23df8e150f9218f6f4c859ff55e0062a53feef9b975c786ca63a00074f02caa",
-     "A2": "2eba259a1ffc27f84e962b913b0f801e127c0230d4cdbbece6278ff5e18796d3"
-    },
-    "wall.tower_rim": {
-     "A1": "8190a22505eaba6e792a626141d30d09dd35abc1252a1cb55a225fd1e9f7bc39",
-     "A2": "58162f7ee17d705dd96ed32df73a94a7a8d6c6e97ee2a6dec717c45a7024bf5b"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r3",
-   "at": "2026-10-24T20:58:04",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "ca130717d3e8677ecbdaf4048c5459c8123231c40335fcf5bafc9dc61f4027a3",
-     "A2": "ea829ed86cf1661aa7bb883dbd4752b7efcafe5a4ae0d054b8e948b732fc9685"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r2",
-   "at": "2026-10-24T21:01:12",
-   "fail": 0,
-   "warn": 4,
-   "warnByCode": {
-    "R": 4
-   },
-   "polish": [],
-   "hashes": {
-    "prop.minecart": {
-     "A1": "770467ff0e12226474569888fc2d0a663a2a9cf68f70d80eaaa289c4266419bb",
-     "A2": "bbff5ed00317aa91d4f82b18eaa589c7fc8d8dfa0a1972dc467d19fbc243be88"
-    },
-    "prop.cracked_floor": {
-     "A1": "64759d96d1a75d1c8d32d5c3697ed080eb830229088c50d5a525b765044fb495",
-     "A2": "803515ab4ff468f053e14c6900c814c0e832ac06dd2251f249d86ad0e70ad1f8"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r2",
-   "at": "2026-10-24T21:01:50",
-   "fail": 0,
-   "warn": 2,
-   "warnByCode": {
-    "R": 2
-   },
-   "polish": [],
-   "hashes": {
-    "prop.minecart": {
-     "A1": "770467ff0e12226474569888fc2d0a663a2a9cf68f70d80eaaa289c4266419bb",
-     "A2": "bbff5ed00317aa91d4f82b18eaa589c7fc8d8dfa0a1972dc467d19fbc243be88"
-    },
-    "prop.cracked_floor": {
-     "A1": "64759d96d1a75d1c8d32d5c3697ed080eb830229088c50d5a525b765044fb495",
-     "A2": "323b8cf6e6dda5df463ba031c55871617f9610c54f63de1af1f5d8fb12d67272"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r2",
-   "at": "2026-10-24T21:02:17",
-   "fail": 0,
-   "warn": 2,
-   "warnByCode": {
-    "R": 2
-   },
-   "polish": [],
-   "hashes": {
-    "prop.minecart": {
-     "A1": "770467ff0e12226474569888fc2d0a663a2a9cf68f70d80eaaa289c4266419bb",
-     "A2": "bbff5ed00317aa91d4f82b18eaa589c7fc8d8dfa0a1972dc467d19fbc243be88"
-    },
-    "prop.cracked_floor": {
-     "A1": "64759d96d1a75d1c8d32d5c3697ed080eb830229088c50d5a525b765044fb495",
-     "A2": "9a6552bf2db32ef90d59d05ce6b076e129150f06b43c32f99105f12bec3ad32c"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r2",
-   "at": "2026-10-24T21:03:59",
-   "fail": 0,
-   "warn": 2,
-   "warnByCode": {
-    "R": 2
-   },
-   "polish": [],
-   "hashes": {
-    "prop.minecart": {
-     "A1": "770467ff0e12226474569888fc2d0a663a2a9cf68f70d80eaaa289c4266419bb",
-     "A2": "bbff5ed00317aa91d4f82b18eaa589c7fc8d8dfa0a1972dc467d19fbc243be88"
-    },
-    "prop.cracked_floor": {
-     "A1": "38f93fcceda5756787f780d02d6422ad82d8a05b9146bff59205c19397371568",
-     "A2": "45f459000e41bce5790a9cb8321f4bcf428087d6e1c302d6b93cf8de95d4fc23"
-    }
-   }
-  },
-  {
    "round": "theme-props-r2",
    "at": "2026-10-24T21:04:24",
    "fail": 0,
@@ -2130,6 +1664,412 @@
     "wall.ice_face": {
      "A1": "1adeb26e66d8769550161fc63308d8d3eada6b1ed5f770db245406ea2469cdc0",
      "A2": "804a35c09c5ab4e3eb3393ec369b17c890178a0115d2065fb59f9299c299cc25"
+    }
+   }
+  },
+  {
+   "round": "theme-walls-r8",
+   "at": "2026-10-24T22:07:09",
+   "fail": 0,
+   "warn": 4,
+   "warnByCode": {
+    "R": 4
+   },
+   "polish": [],
+   "hashes": {
+    "wall.other_face": {
+     "A1": "db9aa9878e33ebd751eabcb0a4e6970aace21e386d8a8dc891bf1519d00c4d7e",
+     "A2": "6733b31e620d6ab91d468fe2f9a76af92a293e83f19dd35242da79c323eba150"
+    },
+    "wall.other_rim": {
+     "A1": "7ceaee72c087ec96a599cb009b87571540328ec2d969211847cf48fb1644eeb0",
+     "A2": "82a8647ba08f5e423ab552d288543c137e22ee9bf669d85acf771420f2f5d28e"
+    },
+    "wall.tower_face": {
+     "A1": "d80b3fe995fa31565fba69effa79199fd5167becf8c430a9f7ec0cbc273ad67d",
+     "A2": "69ff19101d37571cceaeef74c4d821142b64be2f43d704950e9f97c6b2095b0b"
+    },
+    "wall.tower_rim": {
+     "A1": "8190a22505eaba6e792a626141d30d09dd35abc1252a1cb55a225fd1e9f7bc39",
+     "A2": "58162f7ee17d705dd96ed32df73a94a7a8d6c6e97ee2a6dec717c45a7024bf5b"
+    }
+   }
+  },
+  {
+   "round": "theme-walls-r8",
+   "at": "2026-10-24T22:09:22",
+   "fail": 0,
+   "warn": 4,
+   "warnByCode": {
+    "R": 4
+   },
+   "polish": [],
+   "hashes": {
+    "wall.other_face": {
+     "A1": "22f2c0d2c3c7ccc56ae1ebb1845425bb09105880b86f3b557c5959de7d1a9a42",
+     "A2": "6de6d41082d645eab7dc165a5e8f877b29f93ad72a13535b531d8e17524f85ec"
+    },
+    "wall.other_rim": {
+     "A1": "7ceaee72c087ec96a599cb009b87571540328ec2d969211847cf48fb1644eeb0",
+     "A2": "82a8647ba08f5e423ab552d288543c137e22ee9bf669d85acf771420f2f5d28e"
+    },
+    "wall.tower_face": {
+     "A1": "aad03c63b38a5d501f9cf6fb98a0a2bc7bf79f0b651f5284a3fa1ca1fc658bfc",
+     "A2": "d1089b4c69fc39ab7149d5c21f8d5aeba629a512be3f49052321683bc9e5ac65"
+    },
+    "wall.tower_rim": {
+     "A1": "8190a22505eaba6e792a626141d30d09dd35abc1252a1cb55a225fd1e9f7bc39",
+     "A2": "58162f7ee17d705dd96ed32df73a94a7a8d6c6e97ee2a6dec717c45a7024bf5b"
+    }
+   }
+  },
+  {
+   "round": "theme-walls-r8",
+   "at": "2026-10-24T22:10:54",
+   "fail": 0,
+   "warn": 4,
+   "warnByCode": {
+    "R": 4
+   },
+   "polish": [],
+   "hashes": {
+    "wall.other_face": {
+     "A1": "46117d62471fa34de07c92ae58f02a595613dfb52e95bc83db115b9147b5b214",
+     "A2": "df5759b351f082ba1c29db1a5eacf384c1e9b213e2e7ecd05bd7ff6ef9e11faf"
+    },
+    "wall.other_rim": {
+     "A1": "7ceaee72c087ec96a599cb009b87571540328ec2d969211847cf48fb1644eeb0",
+     "A2": "82a8647ba08f5e423ab552d288543c137e22ee9bf669d85acf771420f2f5d28e"
+    },
+    "wall.tower_face": {
+     "A1": "09d98393ef47dd9b1a8543c6ffdec28013a20429a1fc4b54731d28a52f3404c2",
+     "A2": "66a0d4968c1dd43863fd0e22cc23e561f2484d4d2ca92bd5f852f6b945668b53"
+    },
+    "wall.tower_rim": {
+     "A1": "8190a22505eaba6e792a626141d30d09dd35abc1252a1cb55a225fd1e9f7bc39",
+     "A2": "58162f7ee17d705dd96ed32df73a94a7a8d6c6e97ee2a6dec717c45a7024bf5b"
+    }
+   }
+  },
+  {
+   "round": "theme-walls-r8",
+   "at": "2026-10-24T22:18:08",
+   "fail": 0,
+   "warn": 4,
+   "warnByCode": {
+    "R": 4
+   },
+   "polish": [],
+   "hashes": {
+    "wall.other_face": {
+     "A1": "f69ed597c47ced06ab0b51c5bdc12fbbc2baf922f42f8ec84bc9c075b16cbb90",
+     "A2": "7c09055c9fa257f0316005c1e898fd199cee99c5d00024b09d0f1b0c04a09c3a"
+    },
+    "wall.other_rim": {
+     "A1": "7ceaee72c087ec96a599cb009b87571540328ec2d969211847cf48fb1644eeb0",
+     "A2": "82a8647ba08f5e423ab552d288543c137e22ee9bf669d85acf771420f2f5d28e"
+    },
+    "wall.tower_face": {
+     "A1": "09d98393ef47dd9b1a8543c6ffdec28013a20429a1fc4b54731d28a52f3404c2",
+     "A2": "66a0d4968c1dd43863fd0e22cc23e561f2484d4d2ca92bd5f852f6b945668b53"
+    },
+    "wall.tower_rim": {
+     "A1": "8190a22505eaba6e792a626141d30d09dd35abc1252a1cb55a225fd1e9f7bc39",
+     "A2": "58162f7ee17d705dd96ed32df73a94a7a8d6c6e97ee2a6dec717c45a7024bf5b"
+    }
+   }
+  },
+  {
+   "round": "theme-walls-r8",
+   "at": "2026-10-24T22:18:56",
+   "fail": 0,
+   "warn": 4,
+   "warnByCode": {
+    "R": 4
+   },
+   "polish": [],
+   "hashes": {
+    "wall.other_face": {
+     "A1": "a67ca5d1ac4e889f418bcb108d50c6de0bfbf07ed193201745c4694df6b1bd17",
+     "A2": "3902b54d425117371e9e29db8699b63687a448bf72c4341fc23fd39ad4e49e97"
+    },
+    "wall.other_rim": {
+     "A1": "7ceaee72c087ec96a599cb009b87571540328ec2d969211847cf48fb1644eeb0",
+     "A2": "82a8647ba08f5e423ab552d288543c137e22ee9bf669d85acf771420f2f5d28e"
+    },
+    "wall.tower_face": {
+     "A1": "09d98393ef47dd9b1a8543c6ffdec28013a20429a1fc4b54731d28a52f3404c2",
+     "A2": "66a0d4968c1dd43863fd0e22cc23e561f2484d4d2ca92bd5f852f6b945668b53"
+    },
+    "wall.tower_rim": {
+     "A1": "8190a22505eaba6e792a626141d30d09dd35abc1252a1cb55a225fd1e9f7bc39",
+     "A2": "58162f7ee17d705dd96ed32df73a94a7a8d6c6e97ee2a6dec717c45a7024bf5b"
+    }
+   }
+  },
+  {
+   "round": "theme-walls-r8",
+   "at": "2026-10-24T22:20:28",
+   "fail": 0,
+   "warn": 4,
+   "warnByCode": {
+    "R": 4
+   },
+   "polish": [],
+   "hashes": {
+    "wall.other_face": {
+     "A1": "62f4d6bcd42a6403b3b9ed374a0a2332c1ae1adaf2bab1e0e8a3e67e619afe3b",
+     "A2": "2351c40af2248591898f3c781d48795c0f3137c12d7bd90d3b34825d335ca3f7"
+    },
+    "wall.other_rim": {
+     "A1": "7ceaee72c087ec96a599cb009b87571540328ec2d969211847cf48fb1644eeb0",
+     "A2": "82a8647ba08f5e423ab552d288543c137e22ee9bf669d85acf771420f2f5d28e"
+    },
+    "wall.tower_face": {
+     "A1": "09d98393ef47dd9b1a8543c6ffdec28013a20429a1fc4b54731d28a52f3404c2",
+     "A2": "66a0d4968c1dd43863fd0e22cc23e561f2484d4d2ca92bd5f852f6b945668b53"
+    },
+    "wall.tower_rim": {
+     "A1": "8190a22505eaba6e792a626141d30d09dd35abc1252a1cb55a225fd1e9f7bc39",
+     "A2": "58162f7ee17d705dd96ed32df73a94a7a8d6c6e97ee2a6dec717c45a7024bf5b"
+    }
+   }
+  },
+  {
+   "round": "theme-walls-r8",
+   "at": "2026-10-24T22:22:14",
+   "fail": 0,
+   "warn": 4,
+   "warnByCode": {
+    "R": 4
+   },
+   "polish": [],
+   "hashes": {
+    "wall.other_face": {
+     "A1": "a042f1ea7a68c89f6cfefef501da48f8e857f72feb1c383e2e07ed106a4c9e34",
+     "A2": "e3f244036de6852d921f0ecee436d30d225eb0497a420dcc84615985bc758769"
+    },
+    "wall.other_rim": {
+     "A1": "7ceaee72c087ec96a599cb009b87571540328ec2d969211847cf48fb1644eeb0",
+     "A2": "82a8647ba08f5e423ab552d288543c137e22ee9bf669d85acf771420f2f5d28e"
+    },
+    "wall.tower_face": {
+     "A1": "09d98393ef47dd9b1a8543c6ffdec28013a20429a1fc4b54731d28a52f3404c2",
+     "A2": "66a0d4968c1dd43863fd0e22cc23e561f2484d4d2ca92bd5f852f6b945668b53"
+    },
+    "wall.tower_rim": {
+     "A1": "8190a22505eaba6e792a626141d30d09dd35abc1252a1cb55a225fd1e9f7bc39",
+     "A2": "58162f7ee17d705dd96ed32df73a94a7a8d6c6e97ee2a6dec717c45a7024bf5b"
+    }
+   }
+  },
+  {
+   "round": "theme-walls-r8",
+   "at": "2026-10-24T22:23:42",
+   "fail": 0,
+   "warn": 4,
+   "warnByCode": {
+    "R": 4
+   },
+   "polish": [],
+   "hashes": {
+    "wall.other_face": {
+     "A1": "a042f1ea7a68c89f6cfefef501da48f8e857f72feb1c383e2e07ed106a4c9e34",
+     "A2": "e3f244036de6852d921f0ecee436d30d225eb0497a420dcc84615985bc758769"
+    },
+    "wall.other_rim": {
+     "A1": "7ceaee72c087ec96a599cb009b87571540328ec2d969211847cf48fb1644eeb0",
+     "A2": "82a8647ba08f5e423ab552d288543c137e22ee9bf669d85acf771420f2f5d28e"
+    },
+    "wall.tower_face": {
+     "A1": "9607a4fce223f1a44772172d25bc8088e5ed6bdd989009d347740eb7971c6254",
+     "A2": "93d33c044adea85f446a342d1a978d0843bbbe4de8d096d914ac676cb9350670"
+    },
+    "wall.tower_rim": {
+     "A1": "8190a22505eaba6e792a626141d30d09dd35abc1252a1cb55a225fd1e9f7bc39",
+     "A2": "58162f7ee17d705dd96ed32df73a94a7a8d6c6e97ee2a6dec717c45a7024bf5b"
+    }
+   }
+  },
+  {
+   "round": "theme-props-r5",
+   "at": "2026-10-24T22:25:08",
+   "fail": 0,
+   "warn": 4,
+   "warnByCode": {
+    "R": 2,
+    "CONTRAST": 2
+   },
+   "polish": [
+    {
+     "item": "prop.minecart",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 광차(2칸) 그늘 쪽 0.24 vs 바닥 0.46 차 0.22 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 광차(2칸) 그늘 쪽 0.24 vs 바닥 0.38 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 광차(2칸) 그늘 쪽 0.24 vs 바닥 0.44 차 0.20"
+    },
+    {
+     "item": "prop.minecart",
+     "key": "A2",
+     "code": "CONTRAST",
+     "msg": "줄 A 바닥: 광차(2칸) 그늘 쪽 0.24 vs 바닥 0.46 차 0.22 / 줄 B 바닥: 바닥에 묻힘(하한 0.15): 광차(2칸) 그늘 쪽 0.24 vs 바닥 0.38 차 0.14 — 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) / 줄 C 바닥: 광차(2칸) 그늘 쪽 0.24 vs 바닥 0.44 차 0.20"
+    }
+   ],
+   "hashes": {
+    "prop.minecart": {
+     "A1": "b0ab749f85df5693866b92472566fe28ef8756b15a83db254eed5d727d80b250",
+     "A2": "28bd0c4e385ff0f6cc8285deed14c5a07792bcd3646ee7f12fb0066a0ae93750"
+    }
+   }
+  },
+  {
+   "round": "theme-props-r5",
+   "at": "2026-10-24T22:26:31",
+   "fail": 0,
+   "warn": 2,
+   "warnByCode": {
+    "R": 2
+   },
+   "polish": [],
+   "hashes": {
+    "prop.minecart": {
+     "A1": "78920d23b927a97f4fe932e70f2abe3415f21b1dc4e43b13bb8cb88e920c0771",
+     "A2": "c8f04593d89424f931bca279364d8dd95dd0d2ce2a83cd4b7b433ee0047fbc47"
+    }
+   }
+  },
+  {
+   "round": "theme-props-r5",
+   "at": "2026-10-24T22:29:11",
+   "fail": 0,
+   "warn": 2,
+   "warnByCode": {
+    "R": 2
+   },
+   "polish": [],
+   "hashes": {
+    "prop.minecart": {
+     "A1": "78920d23b927a97f4fe932e70f2abe3415f21b1dc4e43b13bb8cb88e920c0771",
+     "A2": "c8f04593d89424f931bca279364d8dd95dd0d2ce2a83cd4b7b433ee0047fbc47"
+    },
+    "wall.ice_face": {
+     "A1": "3f521ec5c0c3ba93b4f1f83c47f982a3e45fbf5767541e6c74ac73123efaa43e",
+     "A2": "555764eb6e85d4907e3a9ed1a97004322656ec067aede304dcb1adc2504fa1d5"
+    }
+   }
+  },
+  {
+   "round": "theme-props-r5",
+   "at": "2026-10-24T22:29:46",
+   "fail": 0,
+   "warn": 2,
+   "warnByCode": {
+    "R": 2
+   },
+   "polish": [],
+   "hashes": {
+    "prop.minecart": {
+     "A1": "78920d23b927a97f4fe932e70f2abe3415f21b1dc4e43b13bb8cb88e920c0771",
+     "A2": "c8f04593d89424f931bca279364d8dd95dd0d2ce2a83cd4b7b433ee0047fbc47"
+    },
+    "wall.ice_face": {
+     "A1": "e26e75314dfe91f78f965e39afa03b5f726cce8a76d7e8cc0c23781f781cfe93",
+     "A2": "7ddcb5ba6369684edd96d092e9a672ef02eaba4ad07c8d973a7db2cc614803bd"
+    }
+   }
+  },
+  {
+   "round": "theme-props-r2",
+   "at": "2026-10-24T22:32:26",
+   "fail": 0,
+   "warn": 2,
+   "warnByCode": {
+    "R": 2
+   },
+   "polish": [],
+   "hashes": {
+    "prop.minecart": {
+     "A1": "770467ff0e12226474569888fc2d0a663a2a9cf68f70d80eaaa289c4266419bb",
+     "A2": "bbff5ed00317aa91d4f82b18eaa589c7fc8d8dfa0a1972dc467d19fbc243be88"
+    },
+    "prop.cracked_floor": {
+     "A1": "12a7a4c76b8081538c5c224230d942c54aedf09b5283c22affd7ee586d89f625",
+     "A2": "9135b1fe89d69748d71b800d907bc13a1abfac5fe6b91a56bae6b8b40a20b4a6"
+    }
+   }
+  },
+  {
+   "round": "theme-props-r6",
+   "at": "2026-10-24T22:32:28",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "prop.cracked_floor": {
+     "A1": "30bb83a6b7fef9f6f6e4e5ff5abf7901d465dc6c6efbb45d54357b830b1788e8",
+     "A2": "0c0f00f9ed2198693a7dc38e2d42e0367b0868945b9c465ba17893a810094b17"
+    }
+   }
+  },
+  {
+   "round": "theme-props-r2",
+   "at": "2026-10-24T22:33:20",
+   "fail": 0,
+   "warn": 2,
+   "warnByCode": {
+    "R": 2
+   },
+   "polish": [],
+   "hashes": {
+    "prop.minecart": {
+     "A1": "770467ff0e12226474569888fc2d0a663a2a9cf68f70d80eaaa289c4266419bb",
+     "A2": "bbff5ed00317aa91d4f82b18eaa589c7fc8d8dfa0a1972dc467d19fbc243be88"
+    },
+    "prop.cracked_floor": {
+     "A1": "12a7a4c76b8081538c5c224230d942c54aedf09b5283c22affd7ee586d89f625",
+     "A2": "9135b1fe89d69748d71b800d907bc13a1abfac5fe6b91a56bae6b8b40a20b4a6"
+    }
+   }
+  },
+  {
+   "round": "theme-props-r6",
+   "at": "2026-10-24T22:33:21",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "prop.cracked_floor": {
+     "A1": "4a788767450a7a8cb3cfbb8b1d0eb96bf13ffe37c045e04d00630bb93115026a",
+     "A2": "8d2be9b0734695b5f3bb7122ee0082673ad85da2d13366a3e3b26ad71e8d8e8c"
+    }
+   }
+  },
+  {
+   "round": "theme-props-r6",
+   "at": "2026-10-24T22:34:56",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "prop.cracked_floor": {
+     "A1": "76bd1e30c3596535863dec95c55181d935d405545c00dc91dbcda51dceb92799",
+     "A2": "8d2be9b0734695b5f3bb7122ee0082673ad85da2d13366a3e3b26ad71e8d8e8c"
+    }
+   }
+  },
+  {
+   "round": "theme-props-r6",
+   "at": "2026-10-24T22:36:11",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "prop.cracked_floor": {
+     "A1": "f6d1a9ffc75f606bd712a9418c5636687e98232239744948d1993b81a9cd4e99",
+     "A2": "8d2be9b0734695b5f3bb7122ee0082673ad85da2d13366a3e3b26ad71e8d8e8c"
     }
    }
   }
