@@ -40,7 +40,9 @@ if __name__ == "__main__":
     page = newpage()
     for c in cards:
         if x + c.width > PW: x = 0; y += rowh + 6; rowh = 0
-        if y + c.height > page.height: pages.append(page.crop((0, 0, PW, y))); page = newpage(); x = y = rowh = 0
+        if y + c.height > page.height:  # break before this card; keep the cards already in the current row
+            if x: y += rowh + 6
+            pages.append(page.crop((0, 0, PW, y))); page = newpage(); x = y = rowh = 0
         page.paste(c, (x, y)); x += c.width + 6; rowh = max(rowh, c.height)
     pages.append(page.crop((0, 0, PW, y + rowh)))
     for i, p in enumerate(pages, 1): p.save(out / f"sheet-{i}.png")

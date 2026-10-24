@@ -3,7 +3,7 @@
   python3 qa/ledger.py add <round> <git-rev-of-art> <key.json> <sonnet-fails.txt> <argon-fails.txt>
   python3 qa/ledger.py status            # current out/*.png: accepted (a unanimous blind PASS on this exact pixel hash) or not
 
-A piece is accepted only if BOTH judges passed this exact pixel hash in the SAME blind sheet. Any pixel change resets it.
+Acceptance rule: qa/protocol.md "Final acceptance rule" (>=2 sheets on this exact hash, >=1 unanimous, each judge >=2/3). Any pixel change resets it.
 """
 import hashlib, io, json, subprocess, sys
 from pathlib import Path
@@ -30,6 +30,8 @@ else:
     L = load(); ok = 0
     for i in ids:
         sha = phash(Image.open(HERE / "out" / f"{i}.png"))
-        hit = [r["round"] for r in L["rounds"] if r["pieces"].get(i, {}).get("sha") == sha and r["pieces"][i]["sonnet"] and r["pieces"][i]["argon"]]
-        ok += bool(hit); print(f"{'OK ' if hit else '-- '}{i:18} {','.join(hit)}")
+        seen = [(r["round"], r["pieces"][i]) for r in L["rounds"] if r["pieces"].get(i, {}).get("sha") == sha]
+        n = len(seen); s = sum(p["sonnet"] for _, p in seen); a = sum(p["argon"] for _, p in seen); u = sum(p["sonnet"] and p["argon"] for _, p in seen)
+        good = n >= 2 and u >= 1 and 3 * s >= 2 * n and 3 * a >= 2 * n
+        ok += good; print(f"{'OK ' if good else '-- '}{i:18} sheets {n} sonnet {s}/{n} argon {a}/{n} unanimous {u}")
     print(f"accepted {ok}/{len(ids)}")
