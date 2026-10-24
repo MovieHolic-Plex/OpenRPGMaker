@@ -695,6 +695,94 @@
    ]
   },
   {
+   "id": "report-lost",
+   "label": "하넬 — 발렌에게 진 뒤 보고(브람 갈래)",
+   "note": "act1Finale.ts hanelAfterCrash fork(sw_fs_valen_lost)",
+   "mapId": "fs_observatory",
+   "x": 12,
+   "y": 13,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_valen_lost": true
+   },
+   "variables": {
+    "var_fs_main_progress": 3
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 8
+    }
+   ],
+   "items": {
+    "item_potion": 3,
+    "item_fs_star_key": 1,
+    "item_fs_circuit": 1
+   },
+   "beats": [
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "bram-line",
+     "ops": [
+      {
+       "kind": "pressUntilText",
+       "key": "Enter",
+       "testid": "dialogue-box",
+       "text": "활을 놓지",
+       "maxPresses": 30,
+       "settleMs": 500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
    "id": "vault-entry",
    "label": "지하 등불 방 입구",
    "note": "fs_vault 착지 (15,25) — 발렌 결전은 추락지로 옮겼다",
