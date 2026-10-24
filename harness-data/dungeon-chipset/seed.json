@@ -4196,6 +4196,25 @@
     "wall.tower_rim"
    ],
    "lead": "r4 VQA + object-gate 화풍(평면 채움·정보량) 반영: 앞면 돌 몸 해시 잡티, 마계 테두리 = 앞면과 같은 자두빛 흑요석만."
+  },
+  "theme-walls-r6": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_walls_r6.py",
+   "wave": "theme_walls",
+   "title": "던전 테마 벽 다시 그림 theme-walls-r6",
+   "items": [
+    "wall.other_rim"
+   ],
+   "lead": "r5 VQA 반영: 마계 테두리를 PASS 한 탑 테두리 짜임으로, 자두빛 흑요석."
+  },
+  "theme-props-r2": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_props_r2.py",
+   "wave": "theme_props",
+   "title": "던전 테마 남은 조각 theme-props-r2",
+   "items": [
+    "prop.minecart",
+    "prop.cracked_floor"
+   ],
+   "lead": "r1 VQA 반영: 광차 3/4 통 안·두 레일 걸침, 금 간 바닥 북쪽 판석 두께·번짐 없음."
   }
  }
 }
