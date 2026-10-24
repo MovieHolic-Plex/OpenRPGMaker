@@ -143,10 +143,10 @@ class Layout:
 def decor_of(x, y, js, seed):
     r = h2(x * 7 + 3, y * 11 + 5, seed + 431) % 100
     q = h2(x * 13 + 1, y * 5 + 9, seed + 433)
-    if r < 46: d = 'plain1' if q % 4 == 0 else 'plain0'
-    elif r < 62: d = 'stain%d' % (q % 2)
-    elif r < 77: d = 'crack%d' % (q % 4)
-    elif r < 85: d = 'spall%d' % (q % 2)
+    if r < 36: d = 'plain1' if q % 4 == 0 else 'plain0'
+    elif r < 56: d = 'stain%d' % (q % 2)
+    elif r < 74: d = 'crack%d' % (q % 4)
+    elif r < 84: d = 'spall%d' % (q % 2)
     elif r < 93: d = 'weed%d' % (q % 2)
     else: d = 'chip' if js == 3 else 'heave'
     return d if decor_ok(d, js) else 'plain0'
@@ -160,7 +160,7 @@ def cell_tile(slab, road, L, x, y, seed):
     sides = (side(0, -1), side(1, 0), side(0, 1), side(-1, 0))
     js = (1 if L.jN(x, y) and sides[0] == 0 else 0) | (2 if L.jW(x, y) and sides[3] == 0 else 0)
     if sides == (0, 0, 0, 0): return IN_INDEX[js][decor_of(x, y, js, seed)]
-    v = h2(x * 5 + 1, y * 3 + 7, seed + 437) % 2
+    v = 1 if h2(x * 5 + 1, y * 3 + 7, seed + 437) % 4 == 0 else 0
     return RIM_INDEX[(sides, js, v)]
 
 
@@ -403,7 +403,9 @@ def draw_tile(c, ox, oy, spec):
     else:
         _, sides, js, v = spec
         seed = 9501 + sum(q * 3 ** i for i, q in enumerate(sides)) * 17 + js * 5 + v * 211
-        _joints(sub, js, v == 1, seed)
+        J = _joints(sub, js, v == 1, seed)
+        if v == 1:                                          # 둘레 칸 변형 1: 판 얼굴에 얼룩이나 금 하나(보도 띠가 맨 판으로만 이어지지 않게)
+            _stain(sub, J, seed + 2)
         _draw_edges(sub, sides, seed)
     c.a[oy:oy + 16, ox:ox + 16] = sub.a
 

@@ -175,10 +175,11 @@ class Board {
   /** 판석 칸(fillSlab) — 맵을 다 짠 뒤 가장자리 오토타일을 덮는다. */
   slab: boolean[] = [];
   hasAutotile(key: string): boolean { return (this.ts.autotileGroups ?? []).some((group) => group.id.startsWith("wl") && group.id.includes(key)); }
-  paint(key: string, cells: readonly boolean[], edgesOnly = false): void {
+  paint(key: string, cells: readonly boolean[], edgesOnly = false, joinAlso?: readonly boolean[]): void {
     const g = (this.ts.autotileGroups ?? []).find((group) => group.id.startsWith("wl") && group.id.includes(key));
     if (!g) return;
-    const conn = (x: number, y: number) => !this.inb(x, y) || cells[this.idx(x, y)]!;
+    // joinAlso: 이 칸들 쪽으로는 가장자리(흙 테)를 그리지 않는다 — 판(보도) 연석이 아스팔트에 바로 맞닿게(r60b).
+    const conn = (x: number, y: number) => !this.inb(x, y) || cells[this.idx(x, y)]! || !!joinAlso?.[this.idx(x, y)];
     const interior = (g as { interiorVariants?: number[][] }).interiorVariants?.flat() ?? [];
     // 가장자리 칸 변형(마스크마다 2~3장) — 곧은 길에서 같은 16px 가장자리가 되풀이되어 «애벌레 띠»로 읽혔다(아스팔트 r44).
     const maskVariants = (g as { maskVariants?: Record<string, number[]> }).maskVariants ?? {};
@@ -390,7 +391,7 @@ class SlabLayout {
 }
 function slabDecorOf(x: number, y: number, js: number, seed: number): string {
   const r = wlH2(x * 7 + 3, y * 11 + 5, seed + 431) % 100, q = wlH2(x * 13 + 1, y * 5 + 9, seed + 433);
-  const d = r < 46 ? (q % 4 === 0 ? "plain1" : "plain0") : r < 62 ? `stain${q % 2}` : r < 77 ? `crack${q % 4}` : r < 85 ? `spall${q % 2}` : r < 93 ? `weed${q % 2}` : js === 3 ? "chip" : "heave";
+  const d = r < 36 ? (q % 4 === 0 ? "plain1" : "plain0") : r < 56 ? `stain${q % 2}` : r < 74 ? `crack${q % 4}` : r < 84 ? `spall${q % 2}` : r < 93 ? `weed${q % 2}` : js === 3 ? "chip" : "heave";
   return slabDecorOk(d, js) ? d : "plain0";
 }
 function slabJointFinish(b: Board, joints: StructureKitDef, ground: StructureKitDef, road: readonly boolean[]): void {
@@ -398,6 +399,8 @@ function slabJointFinish(b: Board, joints: StructureKitDef, ground: StructureKit
   const on = (x: number, y: number) => b.inb(x, y) && b.slab[b.idx(x, y)]!;
   const rd = (x: number, y: number) => b.inb(x, y) && road[b.idx(x, y)]!;
   const seed = b.seed, L = new SlabLayout(b.w, b.h, seed), gh = Math.floor(ground.height / 3);
+  // 길 쪽 연석: 아스팔트 가장자리 흙 테가 판 쪽에 생기지 않게 판을 이어진 칸으로 보고 다시 깐다(같은 seed — 다른 칸은 그대로).
+  if (road.some(Boolean)) b.paint("asphalt", road, false, b.slab);
   for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) {
     if (!on(x, y)) continue;
     const i = b.idx(x, y);
@@ -409,7 +412,7 @@ function slabJointFinish(b: Board, joints: StructureKitDef, ground: StructureKit
     const side = (dx: number, dy: number) => (on(x + dx, y + dy) ? 0 : rd(x + dx, y + dy) ? 2 : 1);
     const sd = [side(0, -1), side(1, 0), side(0, 1), side(-1, 0)];
     const js = (L.jN(x, y) && sd[0] === 0 ? 1 : 0) | (L.jW(x, y) && sd[3] === 0 ? 2 : 0);
-    const key = sd.every((v) => v === 0) ? `in|${js}|${slabDecorOf(x, y, js, seed)}` : `rim|${sd.join("")}|${js}|${wlH2(x * 5 + 1, y * 3 + 7, seed + 437) % 2}`;
+    const key = sd.every((v) => v === 0) ? `in|${js}|${slabDecorOf(x, y, js, seed)}` : `rim|${sd.join("")}|${js}|${wlH2(x * 5 + 1, y * 3 + 7, seed + 437) % 4 === 0 ? 1 : 0}`;
     const k = SLAB_INDEX.get(key);
     const t = k === undefined ? -1 : at(k);
     if (t >= 0) setLayerTileAt(b.map, 2, i, t);
