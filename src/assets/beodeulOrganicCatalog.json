@@ -3,7 +3,7 @@
  "texture": "tex_beodeul_organic",
  "tileSize": 16,
  "tilesPerRow": 16,
- "count": 91,
+ "count": 88,
  "source": "scripts/content/beodeul-organic (code pixel art, Beodeul locked palette)",
  "items": [
   {
@@ -35,7 +35,7 @@
      1
     ]
    ],
-   "sha256": "8878ecd31c02d4faeb96a21f32f61d4b0a21f05cf27248149a4b1ae1a79dc1e8"
+   "sha256": "5f3cc7e695ffcc9fb9f88f065b6066e31e0ca1d25ed89b50651e84653e85e151"
   },
   {
    "id": "rock-boulder-m",
@@ -62,7 +62,7 @@
      0
     ]
    ],
-   "sha256": "ed179cf7002f5a0e67f240311bd4994be12d9081899b84d2e71c4101a13001d9"
+   "sha256": "008c004abc0ed5886c14678c15b4c8a0275e3c5859aa42edd5360e2ca61a0297"
   },
   {
    "id": "rock-pair",
@@ -76,11 +76,11 @@
    "rows": [
     [
      6,
-     7
+     -1
     ],
     [
-     8,
-     9
+     7,
+     8
     ]
    ],
    "block": [
@@ -93,7 +93,7 @@
      1
     ]
    ],
-   "sha256": "85fce445b740d42bd04fa6fd4b469149e8adc05a32007ff38e9dd82333cbb5b6"
+   "sha256": "77c06fd1328ca30e0130bda59f9cfc897deddbf8081af478c93cacf6a90f67f6"
   },
   {
    "id": "rock-slab",
@@ -106,8 +106,8 @@
    "height": 1,
    "rows": [
     [
-     10,
-     11
+     9,
+     10
     ]
    ],
    "block": [
@@ -120,7 +120,7 @@
      0
     ]
    ],
-   "sha256": "6f540764b1eb6bf3c592071707b5bf576e858dcd10d91935285741fa3343de41"
+   "sha256": "3572cb91ee76e9f8c118c88dc42b9f486067be659e5f737af7ec34e9beabc1aa"
   },
   {
    "id": "rock-s",
@@ -133,7 +133,7 @@
    "height": 1,
    "rows": [
     [
-     12
+     11
     ]
    ],
    "block": [
@@ -142,7 +142,7 @@
      0
     ]
    ],
-   "sha256": "eb42f8649e42727e50b2cc22912557c1b9945d62306295edb608ad2b71b52e28"
+   "sha256": "6a2a2faa83e0331225fb13550f6c5f6a78c8a50084f0b56187592be15c8a576e"
   },
   {
    "id": "rock-pebbles",
@@ -155,11 +155,11 @@
    "height": 1,
    "rows": [
     [
-     13
+     12
     ]
    ],
    "block": [],
-   "sha256": "4c6d92d01468bdd6fa8ae54031bd82cf6f2bd4be6e56c3c6b2ced72af511a6a5"
+   "sha256": "5fe28b27bdedc1a9fabb8b136aa2c90c3fc624304f5bb50feedf950412456e0a"
   },
   {
    "id": "moss-boulder",
@@ -172,12 +172,12 @@
    "height": 2,
    "rows": [
     [
-     14,
-     15
+     13,
+     14
     ],
     [
-     16,
-     17
+     15,
+     16
     ]
    ],
    "block": [
@@ -190,7 +190,7 @@
      1
     ]
    ],
-   "sha256": "117d7a8ea82ac6d465ae8754297c0122076ffa65ff3a330dc6be07b31c7006df"
+   "sha256": "cd921cb7684b05c90d344744f83c857a48c31fffe58c6c0ac594594df01e67b3"
   },
   {
    "id": "moss-stone",
@@ -203,7 +203,7 @@
    "height": 1,
    "rows": [
     [
-     18
+     17
     ]
    ],
    "block": [
@@ -212,7 +212,7 @@
      0
     ]
    ],
-   "sha256": "8b9c617fd11f671e9376155f71daf12a620336015cb234debb99946ad7998603"
+   "sha256": "77ca3b123dc95ff271ce66dd434282816dcb0b3f578c56803055bbaa1f81ea35"
   },
   {
    "id": "moss-stones-flat",
@@ -225,11 +225,11 @@
    "height": 1,
    "rows": [
     [
-     19
+     18
     ]
    ],
    "block": [],
-   "sha256": "2b8c8c3995aff043c717bb0355d3ca73a37d1c4ade3085090d955ce380f4dd74"
+   "sha256": "109b1741b50601d0d9fea1bbcca884055ab0f8d9150a22a695d26856dd1a17da"
   },
   {
    "id": "bush-s",
@@ -242,7 +242,7 @@
    "height": 1,
    "rows": [
     [
-     20
+     19
     ]
    ],
    "block": [
@@ -251,7 +251,7 @@
      0
     ]
    ],
-   "sha256": "990609d8515f62e49a93e7c6c4248bb2af87de831248b34f717145ea32179378"
+   "sha256": "2518ea4950fcaff00ec7e782f298710b835005705e7a4d5631b63ea39d697a42"
   },
   {
    "id": "bush-m",
@@ -264,12 +264,12 @@
    "height": 2,
    "rows": [
     [
-     21,
-     22
+     20,
+     21
     ],
     [
-     23,
-     24
+     22,
+     23
     ]
    ],
    "block": [
@@ -282,7 +282,7 @@
      1
     ]
    ],
-   "sha256": "3b29b7679278c464f0d4130ffaa69ac7aae57fe17b3bf395c547026ab340989d"
+   "sha256": "1de0053a46b4198f5afa5642c8d75376efde67186955f42acc6259d86da8f30a"
   },
   {
    "id": "bush-berry",
@@ -295,12 +295,12 @@
    "height": 2,
    "rows": [
     [
-     25,
-     26
+     24,
+     25
     ],
     [
-     27,
-     28
+     26,
+     27
     ]
    ],
    "block": [
@@ -313,7 +313,7 @@
      1
     ]
    ],
-   "sha256": "07a3b05928a3bc2a0c41bfa4a4db03fc201969bb50cc98959d061d5363ac9000"
+   "sha256": "c0d664ea70cb24349f047dd3e8fb284bc0bf3ce79ee5af7790f832c0d24938a6"
   },
   {
    "id": "shrub-tall",
@@ -326,10 +326,10 @@
    "height": 2,
    "rows": [
     [
-     29
+     28
     ],
     [
-     30
+     29
     ]
    ],
    "block": [
@@ -338,7 +338,7 @@
      1
     ]
    ],
-   "sha256": "f33450bc91d9e93b36fda8c421cab0b8617eddd353774195910947862292d9b8"
+   "sha256": "be2deaf7e2ffe2e48f39189807e9eff8879b6187ce98764c078d48a08dc7655d"
   },
   {
    "id": "bramble",
@@ -351,8 +351,8 @@
    "height": 1,
    "rows": [
     [
-     31,
-     32
+     30,
+     31
     ]
    ],
    "block": [
@@ -365,7 +365,7 @@
      0
     ]
    ],
-   "sha256": "e6e316ac089b4a3644d9a1ac79a99351c3245a1daa8c6beafb53d0426c252738"
+   "sha256": "6485c7b02277a049d678cee4d524d2ad7c0d2f688fe207324a0d41d02d11b024"
   },
   {
    "id": "log-long",
@@ -378,9 +378,9 @@
    "height": 1,
    "rows": [
     [
+     32,
      33,
-     34,
-     35
+     34
     ]
    ],
    "block": [
@@ -397,7 +397,7 @@
      0
     ]
    ],
-   "sha256": "ba0ae754cfbdf744e674c249016ca35d58b77012044553658c315e233cc2f775"
+   "sha256": "ff9f5904d77b4e58e95a4f98a2a79501192b53b4613df3819123b7d168f174d4"
   },
   {
    "id": "log-short",
@@ -410,8 +410,8 @@
    "height": 1,
    "rows": [
     [
-     36,
-     37
+     35,
+     36
     ]
    ],
    "block": [
@@ -424,7 +424,7 @@
      0
     ]
    ],
-   "sha256": "360e78d411d276eb2101670c1e53411c8b42ba1a619c4b358aebc1f7fff04d46"
+   "sha256": "6ac925d383b4281440971599d83017dcbb95f675e671999888e0cecfa2fe69da"
   },
   {
    "id": "log-mossy",
@@ -437,14 +437,14 @@
    "height": 2,
    "rows": [
     [
+     37,
      38,
-     39,
-     40
+     39
     ],
     [
+     40,
      41,
-     42,
-     43
+     42
     ]
    ],
    "block": [
@@ -461,7 +461,7 @@
      1
     ]
    ],
-   "sha256": "6d9869e8ab41ea9aab93f131598a1b3b0f2dd1c4a44b509d038a9a67f878d398"
+   "sha256": "d10235f551507253a427264e98d9d1a81a5592c47d49faaeab9cefcce162240f"
   },
   {
    "id": "stump-l",
@@ -474,12 +474,12 @@
    "height": 2,
    "rows": [
     [
-     44,
-     45
+     43,
+     44
     ],
     [
-     46,
-     47
+     45,
+     46
     ]
    ],
    "block": [
@@ -492,12 +492,34 @@
      1
     ]
    ],
-   "sha256": "33245b7687789cc9f38a5c7444d70b05783dcf4352099d0fa215f9dde71f1d55"
+   "sha256": "01f2967b3720b6d78be8d227cf4d83e50f08d36794c19748626ec7997e5d19c3"
   },
   {
    "id": "stump-s",
    "name": "작은 그루터기",
    "en": "small stump",
+   "family": "wood",
+   "kind": "organic",
+   "layer": 3,
+   "width": 1,
+   "height": 1,
+   "rows": [
+    [
+     47
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "sha256": "b315ba684c237d482181910d9f6b36fd26138f3a264b028c8bc243a74f66befa"
+  },
+  {
+   "id": "stump-shelf",
+   "name": "버섯 그루터기",
+   "en": "stump with shelf fungus",
    "family": "wood",
    "kind": "organic",
    "layer": 3,
@@ -514,29 +536,7 @@
      0
     ]
    ],
-   "sha256": "495ffff65cec2899ed8d9d14936a029bb67960b59ec17d12f89b1a0c9ddac9df"
-  },
-  {
-   "id": "stump-shelf",
-   "name": "버섯 그루터기",
-   "en": "stump with shelf fungus",
-   "family": "wood",
-   "kind": "organic",
-   "layer": 3,
-   "width": 1,
-   "height": 1,
-   "rows": [
-    [
-     49
-    ]
-   ],
-   "block": [
-    [
-     0,
-     0
-    ]
-   ],
-   "sha256": "8c2b69ff1c28bab4274be140d2d7d61a2508e5755b10a23dd9ec3d81ede93a04"
+   "sha256": "20946b567586d93623487beec93d387c698b3a962ec677f39464608ae134e02f"
   },
   {
    "id": "shroom-red",
@@ -549,11 +549,11 @@
    "height": 1,
    "rows": [
     [
-     50
+     49
     ]
    ],
    "block": [],
-   "sha256": "7a238bd55bc931d4d8498ff587b3a2746fa7168f61d1789c9c1007aa93ab9951"
+   "sha256": "bbb0a5b2eef81cb60c967b3cdfb7cfee39ae6de9861019079f5a2a2457fe8837"
   },
   {
    "id": "shroom-brown",
@@ -566,11 +566,11 @@
    "height": 1,
    "rows": [
     [
-     51
+     50
     ]
    ],
    "block": [],
-   "sha256": "56ba33df22bbeb1bec6987ccc80016e22628187e7bf86fa50f19dda3f75648ca"
+   "sha256": "1c3b5545cc94a9aecd52abc64a85e076c04718243232104fbb74e3210c0648fc"
   },
   {
    "id": "shroom-pale",
@@ -583,11 +583,11 @@
    "height": 1,
    "rows": [
     [
-     52
+     51
     ]
    ],
    "block": [],
-   "sha256": "66414ddda669ced7b69e121bd05e9a6b1ab7b9543a66074a9a1a8f946d927215"
+   "sha256": "b5acea708442b906aad3059b843ffa0b13158537d6017d9b894cd197296eb2b9"
   },
   {
    "id": "shroom-ring",
@@ -600,16 +600,16 @@
    "height": 2,
    "rows": [
     [
-     53,
-     54
+     52,
+     -1
     ],
     [
-     55,
-     56
+     53,
+     54
     ]
    ],
    "block": [],
-   "sha256": "79510c5daec8c8cd3c45aaee3f8b32fc8814cb21dc4f8432386df9c376b23e7f"
+   "sha256": "8ecfbd05424128e743be45bd55d96628d0f7bad9b61b8b9996d80b51c5c285f1"
   },
   {
    "id": "fern-s",
@@ -622,11 +622,11 @@
    "height": 1,
    "rows": [
     [
-     57
+     55
     ]
    ],
    "block": [],
-   "sha256": "e6ac24571afa91773e1b6654b17728b191a9a2b059d23afeabb6fa8e0e323137"
+   "sha256": "fc93014f65a8fae222d815a188880ade9b5aaa90603a9ff62a54a49c545ed131"
   },
   {
    "id": "fern-l",
@@ -639,12 +639,12 @@
    "height": 2,
    "rows": [
     [
-     58,
-     59
+     56,
+     57
     ],
     [
-     60,
-     61
+     58,
+     59
     ]
    ],
    "block": [
@@ -657,7 +657,7 @@
      1
     ]
    ],
-   "sha256": "d02da66a792e450bffb6d561becdcad098a4d0025f99888b66992c62585310b7"
+   "sha256": "0adc414e9834fd3304f382faf5940a3c00602382d6c5b892b3c3f2bab42d2a53"
   },
   {
    "id": "fern-cluster",
@@ -670,12 +670,12 @@
    "height": 1,
    "rows": [
     [
-     62,
-     63
+     60,
+     61
     ]
    ],
    "block": [],
-   "sha256": "20594022dede8724d4e0c00f4bc2bbeff11a2a5c11a31cc3e8a961de01241b1e"
+   "sha256": "2e38f3da7f7e7c3161d5d066bff16d13eb4d1bb4fcfecfb306b02476208f9e57"
   },
   {
    "id": "grass-tuft-a",
@@ -688,11 +688,11 @@
    "height": 1,
    "rows": [
     [
-     64
+     62
     ]
    ],
    "block": [],
-   "sha256": "bc73bda5030555d13cd9cb28e67cbb3039c16c747b3bb0697aaa067c5c80f902"
+   "sha256": "410bbddfb1c69f8cbb1af0c49f1c6c28012af2a294f6912f532ee0dd7cb0712e"
   },
   {
    "id": "grass-tuft-b",
@@ -705,11 +705,11 @@
    "height": 1,
    "rows": [
     [
-     65
+     63
     ]
    ],
    "block": [],
-   "sha256": "1f82b32ea5455f11b5e0513ff9f0be13f7a7db1f58882e2f815eda1c9af0b85d"
+   "sha256": "23291ad794fc954a61c58282e871538c5a769f25c377c80b10fe4f3cfce06269"
   },
   {
    "id": "grass-reeds",
@@ -722,11 +722,11 @@
    "height": 1,
    "rows": [
     [
-     66
+     64
     ]
    ],
    "block": [],
-   "sha256": "8126f5369fa7ae8e343151e67d3b99df0a2d6083713f89ffd11ffb330e97f596"
+   "sha256": "cd71c0fac5f58771d6d8ae4638ffaf715df799d78f0afbae15d50bfdcbd9cf53"
   },
   {
    "id": "flowers-yellow",
@@ -739,11 +739,11 @@
    "height": 1,
    "rows": [
     [
-     67
+     65
     ]
    ],
    "block": [],
-   "sha256": "f00742790335fc78e0cb1ec783353b5ad0ee74e90dc31fa0372b9a9b24cf4840"
+   "sha256": "3bd7547323a246e2d8656fe04f37354efbb1931ff77c2164fc7a102583ec718c"
   },
   {
    "id": "flowers-blue",
@@ -756,11 +756,11 @@
    "height": 1,
    "rows": [
     [
-     68
+     66
     ]
    ],
    "block": [],
-   "sha256": "2d0b7dbfdba9c2e88b66b846ab003802e4cf84a1c6279af5915e747068cfe82d"
+   "sha256": "a02460bc7cb07abb69b7c5982c8da35bad158fa309ab183027867b87b94e1b22"
   },
   {
    "id": "flowers-white",
@@ -773,11 +773,11 @@
    "height": 1,
    "rows": [
     [
-     69
+     67
     ]
    ],
    "block": [],
-   "sha256": "df0c6cb616d1313d973765125cb6e5afcf99dd53a9db9b13f44906af61ec3693"
+   "sha256": "fed775c1f50f97bd590b766dc4cf8ac14f474f9fc4390114c80513ecd203cbe9"
   },
   {
    "id": "flowers-pink",
@@ -790,11 +790,11 @@
    "height": 1,
    "rows": [
     [
-     70
+     68
     ]
    ],
    "block": [],
-   "sha256": "2dec9894598df0f8d9ba7ab964c8cba42a929b8d3757f19bb2e9878147f897b3"
+   "sha256": "00f1ff8fb495dfb5304144671e3d5a57f7498f907e0a10540a0f0a6f0b6cdb15"
   },
   {
    "id": "flowers-patch",
@@ -807,12 +807,12 @@
    "height": 1,
    "rows": [
     [
-     71,
-     72
+     69,
+     70
     ]
    ],
    "block": [],
-   "sha256": "18f5f6214bf966e37ef065fdd33a5e4bf67a639eb8187f02f6d640a7d4eb5d0f"
+   "sha256": "466df98a17af19e0d2f57a171bf046218e3dbc8e108914038fc42fa9fd465809"
   },
   {
    "id": "hollow-tree",
@@ -824,6 +824,11 @@
    "width": 3,
    "height": 4,
    "rows": [
+    [
+     -1,
+     71,
+     72
+    ],
     [
      73,
      74,
@@ -838,11 +843,6 @@
      79,
      80,
      81
-    ],
-    [
-     82,
-     83,
-     84
     ]
    ],
    "block": [
@@ -859,7 +859,7 @@
      3
     ]
    ],
-   "sha256": "7e1f049258015da6e5248cffac7d4fc95a65eb24af41d336cc040b0e86bf5c34"
+   "sha256": "6b441f579bef4bd7a4dc815a8884b64ce282f69bf67fd9f3eb667543e4aab486"
   },
   {
    "id": "shrine-stone",
@@ -872,16 +872,16 @@
    "height": 3,
    "rows": [
     [
-     85,
-     86
+     82,
+     83
     ],
     [
-     87,
-     88
+     84,
+     85
     ],
     [
-     89,
-     90
+     86,
+     87
     ]
    ],
    "block": [
@@ -894,7 +894,7 @@
      2
     ]
    ],
-   "sha256": "d461cce974397352e4f6b090037c131feeb423be87fb09008828c51e4459737b"
+   "sha256": "a9653802d12b59453d9344f306071cb68db55739135f7cd7901ba2810399b218"
   }
  ]
 }

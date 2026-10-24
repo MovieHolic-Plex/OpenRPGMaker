@@ -1,0 +1,361 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ff9f5904d77b4e58e95a4f98a2a79501192b53b4613df3819123b7d168f174d4",
+ "width": 48,
+ "height": 16,
+ "kind": "organic",
+ "name": "long fallen log with moss (fallen log / stump), natural map prop for the Beodeul 16px chipset, 3x1 tiles, standing object (3rd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/log-long",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 16,
+  "darkV5": 30,
+  "nearBlackEdge": 0.37,
+  "opaqueTiles": 3
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "log upper surface with moss and bark highlight",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "log front face (bark)",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cut end with pale growth rings (west end)",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "broken branch stub at the east end",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The log lies lengthwise and the silhouette widens from 10 px at row 3 to 47 px at rows 8-10. Rows 4-7 form a top band: an orange highlight (#b77541 at row 5 in column 35) and moss patches, then a slightly darker edge at about row 7, followed by the darker bark front face in rows 8-12 (L about 76-84). Rows 12-14 are very dark and read as a ground shadow under the log. The top band is only about 4 rows and is partly broken up by moss and bark texture, so the top reads weakly. It still shows an upper plane, a front-edge transition and a clear front face of 5-6 rows, so it is three_quarter, though a borderline one."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per tile. That sits between tree-1a786c (7) and tree-d43edd (29), and well above the sparse reference. Near-flat coverage is 0%, matching both references. None of the dark edge pixels are neutral (0%), so the outline carries a tint. By eye it reads as dark brown beside the bark and dark green beside the moss, not a black sticker line. The bark has a lit top, mid and dark underside, with a pale cut end ring and a few grain dots. The moss patches on top use two or three greens with highlight clumps. The log is a thin, sparse prop and sits a little below the rich tree in fine texture, but it is not flatter or thinner than a careful artist would accept next to the references. The reference kind is acceptable for a plant or trunk prop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16497
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "moss tufts and small twig on top of the log",
+      "rows": "1-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log upper bark/moss band (main body top)",
+      "rows": "4-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log front bark face",
+      "rows": "7-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cut end with pale rings at left",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark underside shadow",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 10 px at row 3 to 33 px at row 5 and 43-47 px at rows 6-10, so a rounded upper surface is visible. Rows 4-6 form a mossy bark band. At x=35 row 5 is a light highlight (#b77541) and row 6 a slightly darker line, and the darker brown face starts at row 7. That gives a thin top of about 3 rows. The front bark face is rows 7-11 (brown, L≈76-84), with a dark underside shadow in rows 12-14 (L=26), so the front face is about 8 rows. The pale ring-end at the left is a vertical end face, not a receding side face. The top is thin and curved, as expected for a cylinder lying on its side, but it is more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The log has a pale cut end with ring detail, bark in about 4-5 brown steps with grain streaks, and moss clumps in 3 greens on top. The dark edges lean brown or green, and the measured near-neutral share is 0%, so this is a material-tone outline and not a black sticker line. Measured visible tones per tile are 14, well above tree-1a786c (7) and below the rich canopy tree-d43edd (29). Near-flat coverage is 0%, so there are no flat fills. It is a thin, low prop, so it looks somewhat simpler than the full trees, but a careful artist would accept it beside tree-1a786c without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18540
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "log top surface (upper back of the trunk, orange-brown bark highlights)",
+      "rows": "4-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log front face (bark side, brown with darker lower rows)",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "12-14"
+     },
+     {
+      "part": "moss patches on the top",
+      "rows": "3-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cut end with pale growth rings at the left",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "broken branch stub at upper right",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 3 px at row 2 to 43 px at row 6 and about 47 px by row 8, so the upper rows form a rounded back surface of the trunk. Rows 4-6 carry a lighter orange-brown band (x=35 row 5 #b77541, row 6 #885a26), and the face below is a more uniform brown (rows 7-11, L about 76). Dark shadow follows in rows 12-14 (L=26). The moss tufts on top are decor. The pale ring-end at the left is a vertical end face of the log, not an isometric side face. The top band is thin and its edge line is ambiguous, but the log shows a top surface plus an 8-row front body, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The log has a pale cut end with rings, a brown bark body with several lightness steps, and a moss patch on top in a few greens with tufts. The outline is a dark brown/green lean with no neutral black: the near-neutral share of dark edge pixels is 0%. Near-flat coverage is 0%, so there are no flat fills. At 14 visible tones per tile it is well above tree-1a786c (7) and below the rich tree-d43edd (29). It is a thin, sparse prop, so the lower tone count against the rich reference is not held against it. By eye, a careful artist would accept it next to the references: it is not sticker-like, though the moss and bark grain could be a little denser.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18066
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "log upper back with moss patches and orange highlights",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss tufts on top",
+      "rows": "2-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log front/bark face",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "underside shadow",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens quickly from row 3 (10 px) to row 7 (45 px). Rows 4-7 form a lighter upper band with orange highlights and moss patches. The bark face below runs rows 8-12, and a dark shadow base runs rows 12-14 (L=26). The pale ring-cut end on the left is a flat end face, not an isometric side face. The top band is thin and the log is a rounded cylinder, so the top reading is modest but present, with a front face of more than 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The log is a thin, sparse prop about 3 tiles wide and roughly 10px tall, so I judged it mostly by eye next to the references. The bark body has about 5 brown steps, with a lit top edge, mid tone, dark underside and a pale cut end with a ring. Moss patches in 2-3 greens sit along the top and break up the silhouette, and bark grain dots are visible. The outline is a dark brown beside the bark and dark green beside the moss, not a black sticker line, which matches the 0% near-neutral dark edge pixels. Measured facts support this: 14 visible tones per tile is above tree-1a786c (7) and below the much richer tree-d43edd (29), near-flat coverage is 0%, and no region is a flat fill. The piece does not look thinner or flatter than the references at the same scale, though the moss clumps are small and less varied than the leaf clusters of d43edd.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16820
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.262Z",
+ "cells": {
+  "16": [
+   "0e21a3571961dc41",
+   "470ed616c08b1fe3",
+   "7deff703cfc29c7e"
+  ],
+  "24": [
+   "9d4148b00048ae3e",
+   "b1f96bdbcd3c05ec",
+   "cf1532cc691be07c",
+   "db902a89537abd3c"
+  ],
+  "32": [
+   "02ac0d06020cc8f4",
+   "0a3f6ed50ae73ab4",
+   "1461db668b0a5ec1",
+   "16f639387feed929",
+   "34fd6f9829ed998a",
+   "610755f285b85a72",
+   "89dae10a8b951cb6",
+   "9e1f7181b141d6ca",
+   "a48e23cd560a453b",
+   "d7333c202427cfc6",
+   "d98172d835d6a5b6",
+   "e323286330b82291"
+  ],
+  "48": [
+   "aace3145fa1c262c",
+   "aef945185d268cd5"
+  ]
+ }
+}

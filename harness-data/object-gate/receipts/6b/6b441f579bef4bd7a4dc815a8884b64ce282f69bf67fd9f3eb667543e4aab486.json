@@ -1,0 +1,355 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6b441f579bef4bd7a4dc815a8884b64ce282f69bf67fd9f3eb667543e4aab486",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "old hollow dead tree trunk (broken top, no canopy), dark hollow at its foot (forest landmark), natural map prop for the Beodeul 16px chipset, 3x4 tiles, standing object (3rd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/hollow-tree",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 25,
+  "nearBlackEdge": 0.44,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken jagged top with small dark hollow opening",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk body with bark texture",
+      "rows": "14-55",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark hollow doorway at foot",
+      "rows": "40-52",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "splayed roots",
+      "rows": "47-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 50,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The trunk is a tall, nearly continuous vertical bark face from about row 9 to row 56, with a flared root base at rows 47-58. The silhouette width goes 2 → 22 over rows 4-20, then narrows slowly to 15 at row 35 and widens into roots. The top is a jagged broken edge. The only hint of a top is a small dark hollow patch at rows 10-13 (about 6 px wide). It has no front-edge line, no eave shadow, and no ellipse widening and narrowing. It reads as a dark notch in the face, not a horizontal surface. The dark opening at rows 40-52 is a vertical door-like hollow on the front. There is no visible top plane, so it is a front elevation, not a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a broken, hollow trunk with a dark hollow, flared roots and vertical bark streaks. Its tones run from a light bark highlight through mid browns to a deep hollow, about 5 steps. Edge pixels are 0% neutral, so the outline is a dark brown tint of the bark rather than a black sticker line. It has 8 visible tones per tile, against 7 for tree-1a786c (a comparable low-colour reference) and 29 for the richer tree-d43edd. Near-flat coverage is 8%, small but not zero, and the picture shows no large flat patch. Bark grain and root shading give it some texture, though less than the leafy references. It is simpler than the best reference because it has no canopy clumps, but it would sit next to tree-1a786c without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17269
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken trunk top with dark hollow opening",
+      "rows": "9-13",
+      "evidence": "d",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "trunk body with bark and foot hollow",
+      "rows": "14-56",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "root flare",
+      "rows": "47-57",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 44,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The trunk is a tall, irregular vertical bark face from about row 14 to row 56. A dark foot hollow runs rows 39-51 and the roots flare out at rows 47-57. The broken top narrows from a 16-wide silhouette at rows 12-13 up to a jagged point at rows 4-9. A dark cavity at rows 10-13, about 8 px wide with a lighter back rim, shows the inside of the open broken top. This is a weak but present top surface of about 4 rows (evidence d). The jagged spike above it is not a top plane. The front face is clearly 3+ rows, and there is no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a dead trunk with a broken jagged top and a dark hollow, built from about 5 brown steps: highlight, light, mid, dark and the deep hollow. Its outline is a dark brown tint with no black line, and the measured near-neutral share of dark edge pixels is 0%, matching both references. Bark grain streaks, root flares and the jagged break give some texture, and near-flat coverage is only 8% (the references are at 0%). Visible tones per tile are 8, against 7 for tree-1a786c and 29 for the richer tree-d43edd. It therefore matches the simpler reference and is clearly below the richer one. Its total of 9 colours is limited, and it has less clump and detail variety than tree-d43edd. It still reads as a hand-shaded piece rather than a flat sticker, so I judge it acceptable next to tree-1a786c.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18525
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken top with dark hollow mouth",
+      "rows": "9-13",
+      "evidence": "d",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk bark face",
+      "rows": "14-48",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "root flare with dark hollow door",
+      "rows": "39-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss patches",
+      "rows": "30-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The trunk is a tall bark-textured front face from about row 14 to row 56, flaring into roots at the foot. At the broken top, rows 9-13, a dark hollow opening (rows 10-13, about x=25-31) is visible inside a jagged tan rim. That counts as contents or an opening seen from above, so I read a small top surface. The silhouette tapers like a jagged stump top, not a flat cap, so this top is weak and only about 4 rows. The dark door-like hollow at the foot (rows 40-51) is a vertical face detail, not a top. There is no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate trunk uses a brown ramp of about 5 steps: light bark highlights, mid browns, dark browns and a deep hollow. Its outline leans dark brown, matching the adjacent wood, and the measured near-neutral share of dark edge pixels is 0%, so it is not a black sticker line. Bark has vertical grain and strips, a jagged broken top, and root flares, so surfaces are not flat. Measured facts: 8 visible tones per tile, which is at or above tree-1a786c (7) but far below tree-d43edd (29). Near-flat coverage is 8% against 0% for both references, so there is a small amount of flat fill, but it is not a large dead area. Overall the piece is a little lower in density than the richest reference and comparable to the simpler one. A careful artist would accept it next to the references, so I pass it without much margin.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20725
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken jagged top rim with small dark hollow opening",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk bark front face",
+      "rows": "14-54",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "root flare at foot with dark hollow door",
+      "rows": "47-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette tapers from a jagged peak (rows 4-9, width 2 to 9) to the full trunk width by row 12. The only top-like feature is a dark hollow patch at rows 10-13, about 3-4 rows tall and partly hidden by the broken rim. There is no front-edge line, no eave shadow, and no ellipse width profile (width grows steadily with no widen-then-narrow). The trunk body from row 14 to row 56 is a vertical bark face with a dark hollow arch at rows 39-53 and flared roots below. This is a front elevation with a broken top, not a clear 3/4 top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The outline is a tinted dark brown beside the bark (0% neutral dark edge pixels), so it is not the black sticker look. The measured facts are 8 visible tones per tile against 7 for tree-1a786c, with 8% near-flat coverage against 0%. That is level with the smaller reference but far below tree-d43edd, which has 29 visible tones and 567 colours. The whole object uses only 9 distinct colours, so the bark ramp is about 5 browns plus the dark hollow. The grain is mostly a few vertical streaks and a handful of highlight dots. There are no per-patch highlights, no root or moss clusters, and little variation on the broken top or the ground at its foot. By eye it reads cleaner and flatter than either reference, and it is the thinnest of the three at the same scale. It falls short of the 5-6 well-textured steps per material, and being in doubt I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20802
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.322Z",
+ "cells": {
+  "16": [
+   "133525eb40d2f75c",
+   "18fc78b7cbc0357e",
+   "37277081cfa5e0ad",
+   "40b56c25751c3135",
+   "553709e26cf4b133",
+   "6567de545ea017ce",
+   "69a4e9fac34cecb3",
+   "702decc8c51e3f09",
+   "7871f4a1f97f1a9f",
+   "8d4cdeaf89c421a6",
+   "a88f68c6534bd070"
+  ],
+  "24": [
+   "294d42fbe0362a92",
+   "586687197ee92650",
+   "61b42356b1cf3ff4",
+   "6513fe69fa01bd58",
+   "676ff8d17f07f3e0",
+   "73d3101ab36d7f7b",
+   "8af908f6efcab1ed",
+   "96908cbb3d492f82",
+   "9c068d9867683cf9",
+   "b058fd3f93ee5ecb",
+   "bbc5ae2ef58f4dd2",
+   "f7c8c9fdcca08c5f"
+  ],
+  "32": [
+   "0f229680f1d4b8a0",
+   "1770b5aeb88c2d52",
+   "202e6dc495090a28",
+   "29c3fcd92a1b4304",
+   "501cd9f3f092da30",
+   "50e4b205b2ec35c3",
+   "8708faec7e89fbdb",
+   "8feb800f112aeede",
+   "93bf5303712428cc",
+   "cd60ae7808f955d6",
+   "d175bfece3e2ad66",
+   "ff84798a8c2ecfb3"
+  ],
+  "48": [
+   "0dbb2368c1328b1a",
+   "5664626406a3bb45",
+   "56c00700a0632a50",
+   "c23f68d9cc55d973"
+  ]
+ }
+}

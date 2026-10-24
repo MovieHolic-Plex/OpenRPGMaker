@@ -1,0 +1,289 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b315ba684c237d482181910d9f6b36fd26138f3a264b028c8bc243a74f66befa",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "small stump (fallen log / stump), natural map prop for the Beodeul 16px chipset, 1x1 tiles, standing object (3rd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/stump-s",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stump cut top (ringed wood face)",
+      "rows": "4-8",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bark trunk front face",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stump has an oval cut face in rows 4-8. The width profile goes 7, 9, 11, 11, 12, then drops to 10 at row 9, where the bark body starts. The face is light cream and tan with a ring curve (x=8, row 6 is brown), clearly lighter than the dark bark below. The bark front face is rows 9-13 (5 rows, dark brown L about 50-80) with a dark base outline at row 13. The cut face is therefore a real elliptical top of about 5 rows, not a 1-2 row rim, and the front face is 5 rows, so it reads as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The stump is about 10x11 source pixels, smaller than one tile, so the per-tile facts read 0 and I judged by eye. It uses 14 distinct colours in roughly 100 pixels, which is dense for a prop this size. The pale top has a ring, and the bark has vertical grain in a few browns with a dark base. The outline leans dark brown (0% neutral dark edge pixels) and is not a black sticker line. There are no 5x5 flat fills (0% near-flat). The shading is shallower than the references: about 4 steps against 6-7 for the trees, with less per-clump variation. That is expected for a tiny prop, and a careful artist would accept it on grass beside the trees without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16818
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stump top (cut face with tree rings)",
+      "rows": "4-8",
+      "evidence": "b",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "bark side of stump",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 7, 9, 11, 11, 12 over rows 4-8, then narrows to 10 at rows 9-10. That is an elliptical cut face seen from above. Its light cream ring pixels (#d9d2be, #e8b672) fill rows 5-8, with a dark outline on row 4. Row 8 is the lighter front rim. Below it, bark in darker brown (#885a26 down to #452a17) forms a front face over rows 9-13, about 5 rows, with a dark base on row 13. The result reads as a 3/4 stump with a visible top ellipse and a vertical bark face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is smaller than one tile (about 10x11 source px), so the per-tile tone count is 0 and I judged by eye. It still uses 14 distinct colours, more than tree-1a786c's 10 in total. The wood reads as about 5 steps: a pale cut top with ring marks, tan, mid brown, dark brown and a deep base. The bark has vertical grain and the edge is a dark brown that leans toward the wood, not neutral black. The measured near-neutral share of dark edge pixels is 0%. Near-flat coverage is 0%, so there are no flat fills. It is less dense than the rich d43edd tree, but a small stump prop is not expected to match a full canopy. It is comparable to the simpler tree-1a786c reference, so a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13999
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stump top (cut face with growth rings)",
+      "rows": "4-8",
+      "evidence": "b",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "stump trunk front face (bark)",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 7, 9, 11, 11, 12 over rows 4-8, so the cut face is an ellipse. The columns show a light cream and tan face with ring marks (x=8 has a darker ring at row 6) over rows 5-8. A cream front-edge line at row 8 is followed by a darker brown row 9. Below it, rows 9-13 hold a dark bark front face (L about 50-80) that flares at the base (12 wide at row 12). So the stump has a top surface of about 5 rows and a front face of about 5 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The stump is smaller than one tile, so the per-tile facts read 0 and I judged by eye. It has 14 distinct colours in roughly 10x10 source pixels, which is dense for its size. It shows a light cut-top with ring variation, mid and dark bark, and a darker base, about 5 steps. The edge pixels are 0% neutral, and the outline looks dark brown, tinted like the adjacent wood rather than a black sticker line. Near-flat coverage is 0% and I see no large flat fills. It has less variety than the full trees, but that is expected for a tiny single-material prop, and it reads as the same hand-shaded style as the Beodeul trunks, not as a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16623
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stump top with cut rings",
+      "rows": "4-8",
+      "evidence": "b",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "bark trunk front",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 7, 9, 11, 11, 12 over rows 4-8 and then drops to 10 at rows 9-10. That is an ellipse, with the back rim at row 4 and the front rim at row 8. The light cream ring pixels in rows 5-8 (#d9d2be, #e8b672) confirm the cut top. Below it, the darker bark front spans rows 9-13 (5 rows, L about 50-80), ending in a dark base line at row 13. This matches the green barrel reference: an ellipse top over a vertical face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The stump is under one tile, so the per-tile tone count is 0 and I judged by eye. Its 14 distinct colours in a roughly 12x12 sprite are more than reference tree-1a786c's 10 across the whole tree. The measured near-flat coverage is 0%, and the dark edge pixels are 0% neutral, so the outline carries a tint. By eye the outline is dark brown against bark, not black. The pale cut top has ring detail and the bark sides have vertical grain with a darker base, giving about 5 lightness steps. It is a small, simple prop, but it reads as shaded form rather than a flat sticker with a uniform outline. It is slightly less rich than the large d43edd tree, which is expected for a stump this size.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13992
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.271Z",
+ "cells": {
+  "16": [
+   "adb6094999ad5641"
+  ],
+  "24": [
+   "1a4037b09193b8ec",
+   "1c814bb3c43577e0",
+   "532071ee25ec98d9",
+   "89b93c216ca497a0",
+   "a718e583031b3236",
+   "dbb2f86d8f1ffc70"
+  ],
+  "32": [
+   "29cb27abd5550872",
+   "3f16d890c3934fd2",
+   "3ffe038055ce3f0a",
+   "6e48bcec3a9ed0a9",
+   "e25db1896c56563a",
+   "f9a964c114b32343"
+  ],
+  "48": [
+   "1efb848375f46bce",
+   "45958d6c20221068",
+   "e347f43c7feb8814",
+   "eaa49a49e92cd979",
+   "f3336fefe798e979",
+   "fd9f9400cca7fadf"
+  ]
+ }
+}

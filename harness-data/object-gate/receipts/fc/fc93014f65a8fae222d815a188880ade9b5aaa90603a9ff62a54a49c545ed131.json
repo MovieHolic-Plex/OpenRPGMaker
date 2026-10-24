@@ -1,0 +1,316 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc93014f65a8fae222d815a188880ade9b5aaa90603a9ff62a54a49c545ed131",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "small fern (fern), natural map prop for the Beodeul 16px chipset, 1x1 tiles, walk-over ground decor (2nd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/fern-s",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 32,
+  "nearBlackEdge": 0.54,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fern frond mass (lit upper foliage)",
+      "rows": "6-11",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "dark underside and base of the fern",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile grows from 1 px at row 6 to 14 px at row 11, then narrows to 13, 9 and 8 px at rows 12-14. That is a leafy clump with a lit upper surface. The columns show the brightest greens at rows 9-11 (x=4 peaks at L=168 on row 10, x=8 at L=168 on row 11). Rows 12-14 are clearly darker (L about 33-62, with x=8 at L=89 on row 13), so they read as shaded underside and base, about 3 rows. The top is foliage with highlights, not a flat plane, and there is no sharp front-edge line. The lightest row 11 followed by dark rows 12-13 is the closest match to a top-to-front transition, so this is a borderline read. It is a walk-over decor plant, so there is no hard-edged face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny fern tuft, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It has only 6 distinct colours. The ramp looks like about 3 greens: a light highlight, a mid green and a dark green. The dark edge pixels are tinted green, not neutral (0% near-neutral), so the outline is a dark material tone and not a sticker line. There are no large flat 5x5 areas, but the blob is small and clumpy. It has little frond structure: no separate fronds, no per-leaf highlights, no grain. Next to the references' multi-clump canopies with 5-6+ steps, it looks thinner and flatter. A fern prop is naturally small and sparse, but a careful artist would likely want more frond definition and another shade or two to match the leaf clumps in the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15882
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fern frond clump (lit leaf mass seen from above)",
+      "rows": "7-12",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark underside and base of the leaves",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a low mound that widens from 1 px at row 6 to 14 px at row 11, then narrows to 8 px at row 14. Bright leaf highlights sit in rows 9-11, and the leaf mass is seen from above. The dark band at rows 13-14 (L about 25-41) is only about 2 rows. It reads as leaf undersides and ground shadow, not as a vertical face. There is no front-edge line, no eave shadow and no distinct front face of 3 or more rows. This is a flat ground-cover clump drawn mostly from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny fern tuft, smaller than one 16x16 tile, so the per-tile tone count (0) can't be used against it and I judged by eye. It has only 6 distinct colours and roughly 3 visible green steps (dark, mid, light) with a few leaf-edge highlights. The references show 6-7 steps on the small tree and many more on the large one. The outline is a dark green that leans visibly toward the material, with no neutral black (0% neutral edge pixels), so it avoids the sticker look. There are no large flat fills, since the sprite is too small for a 5x5 flat block. But the shading is shallow for a prop meant to sit beside rich broadleaf trees. Fronds are barely distinguished, with no per-frond highlight and no clump variation, so it reads as a small green blob rather than a fern. A careful artist would find it thinner and flatter than the references, so it needs more steps and frond structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14589
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "frond clump, lit upper mass",
+      "rows": "6-11",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaded lower fronds and underside",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The fern is a single low mound of fronds, 14 px wide and rows 6-14 tall. The width grows from 1 to 14 px over rows 6-11, then narrows to 13, 9 and 8 px at rows 12-14. Light green highlights (L about 123-168) sit in rows 9-11, where the fronds are seen from above. Rows 12-14 are clearly darker (L about 25-62, column scan x=4, 8, 11), which reads as a shaded underside or front of about 3 rows. There is no front-edge line or eave shadow, so the top is a foliage heap (evidence d), not a built surface. This is a borderline call: the front face is only 3 rows and is shadow rather than a distinct vertical face. There is no planter, so nothing is decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tiny fern tuft, well under one 16x16 tile, so the per-tile tone count is 0 and I judged by eye. It has 6 raw colours and shows about 3-4 green steps: a dark green base, a mid green and a light highlight on the fronds. The outline is a dark green, not neutral (0% near-neutral edge pixels), so it reads as dark_material_tone. There are no flat 5x5 areas (0%), but the fronds have little grain or per-leaf clumping. Compared with the references, which carry 5-6 steps (tree-1a786c at 7 visible tones per tile, tree-d43edd at 29), the fern is thinner and shallower. For a small walk-over ground prop that is acceptable as simple, but it is not at reference richness. With so few colours and only a small cluster of fronds, it is lower than the references in shading depth and texture. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17966
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fern frond clump (leaf mass)",
+      "rows": "6-14",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 1 px at row 6 to 14 px at row 11, then narrows to 9 and 8 px at rows 13-14. This is a low mound of fronds, not a flat slab. Light leaf highlights (L~168) at rows 10-11 and darker leaves in rows 12-14 show the leaf tops seen from above and the shaded lower leaves below, so the shape has volume. It is an organic plant with no hard edges, and the leaf mass stands for the top surface (evidence d). Rows 12-14 give a short dark front face of about 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny fern tuft, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It uses only 6 distinct colours and about 3 visible green steps (dark base, mid, light tips). That is shallow next to the references' 5-6 steps per material, and tree-d43edd has ~29 visible tones. Its dark edge pixels are tinted dark green rather than neutral, so the outline is a dark material tone, which is fine. It has no flat 5x5 fills, but at this size it reads as a small blob with little frond structure. There are no individual frond blades, no clump variation, and no highlight dots. Next to the reference it looks thinner and more sticker-like. Because the object is a small, sparse prop, I did not fail it on the density number alone. I failed it on the visible shallow ramp and the lack of frond detail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 9748
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.289Z",
+ "cells": {
+  "16": [
+   "36303838769dd901"
+  ],
+  "24": [
+   "2fa813037241d60b",
+   "5593327ec9ad99f8",
+   "5a66893b0007d803",
+   "9b1114f342b57d4d",
+   "9e01acbd56d63830",
+   "e2f7234969a33392"
+  ],
+  "32": [
+   "16418d189585a000",
+   "22f4e7dbfa04ce1e",
+   "692f7430cf70841d",
+   "a0ccbfeb488855d4",
+   "b1fdf36e7f8aef0e",
+   "d8dc77d1a34fdf50"
+  ],
+  "48": [
+   "2fc0cb389255e9cd",
+   "5adb1bb0e9859e10",
+   "9d31d0f4177397f6",
+   "a5e8a1d0bcb7e65b",
+   "cc42f552513ce94b",
+   "e6dd6f4fbdd54efe"
+  ]
+ }
+}

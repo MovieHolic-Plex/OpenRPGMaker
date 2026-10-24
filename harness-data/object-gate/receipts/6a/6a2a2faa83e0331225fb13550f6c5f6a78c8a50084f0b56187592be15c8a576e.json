@@ -1,0 +1,325 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6a2a2faa83e0331225fb13550f6c5f6a78c8a50084f0b56187592be15c8a576e",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "small rock (rock), natural map prop for the Beodeul 16px chipset, 1x1 tiles, standing object (3rd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/rock-s",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (3/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (3/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 38,
+  "nearBlackEdge": 0.35,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rock top (lit upper dome)",
+      "rows": "5-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "rock front face (dark lower body)",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The rock is a single mound, rows 5-14, widening from 3 px to 13 px and then narrowing to 8 px at the base. In column x=8, rows 6-9 are light (L≈143), row 10 is a mid-tone line (L=111) that acts as the front-edge line, and rows 11-13 are darker (L=79) with a row-14 outline. Column x=4 shows the same pattern: light rows 8-9, then darkening through rows 10-14. This gives a lit top surface of about 6 rows (5-10) above a darker front face of about 4 rows (11-14). It reads as a 3/4 view, and no receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are full broadleaf trees, so the match is only nominal; a rock is a small natural prop. The candidate is a sub-tile grey rock with only 6 distinct colours in total and about 4 lightness steps: a light top highlight, a mid body, a dark underside and an edge tone. The references show 7 and 29 visible tones per tile, so it carries less tonal information. Because the piece is smaller than one tile, the per-tile counts are 0 and I judged density by eye. Its dark edge pixels are 47% near-neutral, which means the outline is part grey-black and part tinted, so it reads as mixed rather than a consistent dark material tone. There are no large flat fills, but there is also little grain, no per-facet shading and no stone texture dots. It reads as a smooth blob with a dark base, closer to a sticker than to the hand-shaded Beodeul stones. Since the rule is to fail when in doubt, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16327
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rock upper dome (lit top)",
+      "rows": "5-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "rock front/lower face (shaded)",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 3 px at row 5 to 13 px at rows 11-12, then narrows to 8 px at row 14, giving a boulder shape. Rows 5-9 are the light top (#a09088), and row 10 is a mid-tone transition line (#7a6a6c) at x=8 and x=11. Rows 11-13 darken (#584a52, #3a2e38), and row 14 is the darkest base outline (#231c26). That gives a lit top of about 6 rows over a shaded front of about 4 rows. The top is only weakly separated from the front, but the edge line and the darker band below it are enough to read as a top surface plus a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny rock, about 12x10 px, with only 6 distinct colours. It shows roughly 3 lightness steps: a light top, a mid grey body and a dark base. Its dark edge pixels are 47% near-neutral, so the outline is partly neutral grey-black and partly tinted. That is neither clearly dark material tone nor a pure sticker line, so I call it mixed. The rock has almost no texture: no speckle, no per-facet shading and no grain, and it has no grass tufts or soil blending to seat it on the ground. The references show 7 and 29 visible tones per tile, with tinted outlines and clumped, multi-tone foliage. The candidate is clearly thinner and flatter than either reference. The per-tile facts are 0 because the piece is smaller than a tile, so I judged by eye. The rock is a small, sparse object, but it still looks like a simple sticker next to the Beodeul references. A careful artist would want more facets and highlights, and the rock needs more shading steps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11974
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rock top (lit upper surface)",
+      "rows": "5-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "rock front face (dark lower body)",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 3 px at row 5 to 13 px at rows 11-12, then narrows to 8 px at row 14, which is a rounded boulder mass. In the column scans the light top plane (L about 143-148) covers rows 5-9. Row 10 is a mid-tone transition row (L=111) that works as the front-edge line. Rows 11-12 darken to L about 79 and 51 as the eave shadow. The darkest rows, 13-14 (L about 31), form the base of the front face. This gives a lit top of about 6 rows over a dark front face of about 4 rows. It is an organic rock with a top plane and a front face, not a flat slab or a pure front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny grey rock, smaller than one tile, with only 6 distinct colours. It shows about 3 lightness steps (a light top, a mid body and a dark base) against the references' 6 or more. Its dark edge pixels are 47% near-neutral, so the outline is partly grey/black and partly tinted, which I call mixed and which leans toward the sticker look. Texture is minimal: there are no visible speckles, cracks or per-facet shading, only a smooth blob. The references show 7 and 29 visible tones per tile with tinted outlines, clumps and grain. The candidate is a small prop, so I did not fail it for size or sparseness. I failed it because a careful artist would see it as flatter and more sticker-like than the references, with little shading depth or texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10982
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rock top (lit dome surface)",
+      "rows": "5-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "rock front face (shaded lower body)",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 3px at row 5 to 13px at rows 11-12, then narrows to 8px at row 14, which is a boulder shape. The column scan shows light top rows (x=8: L=143 on rows 6-9). A mid-tone transition row at row 10 (L=111) acts as the edge line. Darker rows 11-13 (L=79, then 51) follow, with a near-black base on row 14 (L=31). So there is a lit top plane of about 6 rows above a shaded front face of about 4 rows. The top-to-front shading is gradual, but the structure still reads as 3/4 view rather than a flat slab or a pure front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny grey rock, about 10x8 px, smaller than one full tile, so the per-tile facts read 0 and I judged by eye. It has only 6 distinct colours. The body shows about 3 steps: a light top highlight, a mid grey and a dark base. There is no per-stone texture, no speckle or cracks, and no moss or grass tufts at the base to blend it into the ground. The outline is a dark grey, near-neutral on about 47% of edge pixels, so it leans toward the sticker look instead of a dark material tone like the references' tinted edges. Beside the references, with 7 and 29 visible tones per tile and about 5-6 shading steps per material, the rock is a simple blob with little information. Small, simple props are allowed, but a careful artist would still see it as thinner and flatter than the Beodeul standard, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11544
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.224Z",
+ "cells": {
+  "16": [
+   "38f458bff6917f46"
+  ],
+  "24": [
+   "09c7d6f7611121b2",
+   "20cbb8530363dc27",
+   "32b1ce5bbf4de428",
+   "3438e6d26faa733b",
+   "86c1eb9a5e6253a7",
+   "872b11b09587c004"
+  ],
+  "32": [
+   "38c05ed907e4e8ff",
+   "39d683fa0865c978",
+   "59872b91d686d841",
+   "7b949057d33320be",
+   "bba22795a170d4e7",
+   "d5abacbea341977d"
+  ],
+  "48": [
+   "07819764eb8d2934",
+   "33c087bc2d4f188c",
+   "8210a5946e02121e",
+   "8daa163160dfd4b3",
+   "b4cc057a7c9401a5",
+   "b5aeadd43f88c519"
+  ]
+ }
+}
