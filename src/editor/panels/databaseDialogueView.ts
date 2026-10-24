@@ -326,10 +326,19 @@ function renderLineRow(line: DialogueLine, project: Project, panelRoot: HTMLElem
     });
     const live = el("span", { class: "db-dialogue-live" });
     const refreshLive = (): void => { live.replaceChildren(fitBadge(lineFit(project, line, area.value))); };
-    const cancel = (): void => { state.editingId = null; showText(); };
+    // 자료집 창의 Escape(닫기)는 document 캡처 단계에서 먼저 돈다 — 고치는 중의 Escape 는 그보다 앞(window 캡처)에서 「취소」로 가로챈다.
+    const escapeGuard = (event: KeyboardEvent): void => {
+      if (event.key !== "Escape" || event.target !== area) return;
+      event.preventDefault();
+      event.stopPropagation();
+      cancel();
+    };
+    window.addEventListener("keydown", escapeGuard, true);
+    const finish = (): void => { window.removeEventListener("keydown", escapeGuard, true); state.editingId = null; };
+    const cancel = (): void => { finish(); showText(); };
     const commit = (): void => {
       const value = area.value;
-      state.editingId = null;
+      finish();
       if (value === line.text) { showText(); return; }
       const verdict = editDialogueLine(line.id, line.hash, value);
       if (!verdict.ok) {
@@ -341,8 +350,7 @@ function renderLineRow(line: DialogueLine, project: Project, panelRoot: HTMLElem
     };
     area.addEventListener("input", refreshLive);
     area.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); cancel(); }
-      else if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) { event.preventDefault(); commit(); }
+      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) { event.preventDefault(); commit(); }
     });
     refreshLive();
     textCell.replaceChildren(el("div", {
