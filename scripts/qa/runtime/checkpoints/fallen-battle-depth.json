@@ -431,7 +431,7 @@
         },
         {
           "id": "page2",
-          "note": "카엘 새 기술 습득 — 화염검",
+          "note": "(넘김 확인)",
           "ops": [
             {
               "kind": "key",
@@ -447,7 +447,7 @@
         },
         {
           "id": "page3",
-          "note": "엘레나 LEVEL UP",
+          "note": "카엘 새 기술 습득 — 화염검(2/5)",
           "ops": [
             {
               "kind": "key",
@@ -463,7 +463,7 @@
         },
         {
           "id": "page4",
-          "note": "엘레나 새 기술 습득 — 연쇄 번개",
+          "note": "엘레나 LEVEL UP(3/5)",
           "ops": [
             {
               "kind": "key",
@@ -479,7 +479,7 @@
         },
         {
           "id": "page5",
-          "note": "새 연계기 — 폴른 스타",
+          "note": "엘레나 새 기술 습득 — 연쇄 번개(4/5)",
           "ops": [
             {
               "kind": "key",
@@ -489,6 +489,22 @@
               "kind": "hold",
               "dir": null,
               "ms": 3000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "page6",
+          "note": "마지막 장 — 새 연계기 폴른 스타",
+          "ops": [
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 3200
             }
           ],
           "shot": true
