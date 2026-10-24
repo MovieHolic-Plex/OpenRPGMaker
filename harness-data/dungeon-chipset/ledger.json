@@ -1157,6 +1157,30 @@
    "by": "delegated",
    "delegatedBy": "delegated by user to supervisor 2026-10-24",
    "evidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-8.json"
+  },
+  {
+   "round": "theme-walls-r9",
+   "item": "wall.tower_face",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "94e4564744573d3d636b9ff2d025ea50a8f05eb584f507ac8d83d5cbdac3d41c",
+   "note": "panel 0 majors; object-gate PASS receipt dc079d6a4878 (terrain)",
+   "at": "2026-10-24T23:30:12",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-24",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-9.json"
+  },
+  {
+   "round": "theme-props-r6",
+   "item": "prop.cracked_floor",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "8d71dae4fe2a81951d5c4370cb03595e021761c434666274fdb28f095121d927",
+   "note": "panel 0 majors; object-gate PASS receipt f74a0ce9d970 (debris)",
+   "at": "2026-10-24T23:30:13",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-24",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-9.json"
   }
  ],
  "rejects": [],

@@ -1,0 +1,47 @@
+{
+ "date": "2026-10-24",
+ "delegatedBy": "delegated by user to supervisor 2026-10-24",
+ "basis": "object-gate review on these exact pixels under uncalibrated profile (advisory PASS); 0 majors from the blind adversarial panel (fresh klb-sonnet-5-5 + argon); pick recorded in the dungeon-chipset ledger bound to the art hash. No calibrated final profile exists, so the exit is the signed delegated allow.",
+ "items": [
+  {
+   "pixelSha256": "380bee36eb7f6617c371dda332a09c4ee6878e4f3ea5cf9321d2a5a3199d0e2c",
+   "kind": "terrain",
+   "name": "wall.tower_rim A1",
+   "round": "theme-walls-r4",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-walls-r4-panel.json"
+  },
+  {
+   "pixelSha256": "c9162c2eba23aeff498f708a4a6887620c49cb63d9df03579cc668c41d6174b9",
+   "kind": "terrain",
+   "name": "wall.other_face A1",
+   "round": "theme-walls-r8",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-8.json"
+  },
+  {
+   "pixelSha256": "e142cfc7c42d937e3a5909c2dcab0103587fc6567a819a82af8de244559d0d8f",
+   "kind": "box",
+   "name": "prop.minecart A1",
+   "round": "theme-props-r5",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-8.json"
+  },
+  {
+   "pixelSha256": "dc079d6a4878bd5b53ead02d12fd2c3f814ecb88a6dbed0f18801c230e819a12",
+   "kind": "terrain",
+   "name": "wall.tower_face A1",
+   "round": "theme-walls-r9",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-9.json"
+  },
+  {
+   "pixelSha256": "f74a0ce9d9707cc0ee3b6703180069777edcbcd05c7f3489eefa8fca876dbca4",
+   "kind": "debris",
+   "name": "prop.cracked_floor A1",
+   "round": "theme-props-r6",
+   "gate": "pass",
+   "pickEvidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-9.json"
+  }
+ ]
+}

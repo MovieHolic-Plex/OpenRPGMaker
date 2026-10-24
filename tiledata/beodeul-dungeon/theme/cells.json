@@ -38962,6 +38962,464 @@ null,
 ],
 "passage": "solid",
 "layer": "lower"
+},
+{
+"key": "59b838c505a81e8bf08e8314",
+"origin": "prop.cracked_floor/*/theme-props-r6:A1@8d71dae4",
+"label": "버들항 던전 · 금 간 바닥 함정 2×2 금 간 바닥 (0,0)",
+"description": "판석이 가운데로 내려앉아 갈라진 함정 자리(덧그림 — 손상 둘레만 그리고 바깥은 투명, 진짜 바닥 위에 얹힌다. 걷는 칸).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"cracked-floor",
+"castle",
+"catacomb",
+"temple",
+"성",
+"묘지",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "71cea05f9e026c47f0b5addb",
+"origin": "prop.cracked_floor/*/theme-props-r6:A1@8d71dae4",
+"label": "버들항 던전 · 금 간 바닥 함정 2×2 금 간 바닥 (1,0)",
+"description": "판석이 가운데로 내려앉아 갈라진 함정 자리(덧그림 — 손상 둘레만 그리고 바깥은 투명, 진짜 바닥 위에 얹힌다. 걷는 칸).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"cracked-floor",
+"castle",
+"catacomb",
+"temple",
+"성",
+"묘지",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "1a86b3e441bd0439fb2b6f58",
+"origin": "prop.cracked_floor/*/theme-props-r6:A1@8d71dae4",
+"label": "버들항 던전 · 금 간 바닥 함정 2×2 금 간 바닥 (0,1)",
+"description": "판석이 가운데로 내려앉아 갈라진 함정 자리(덧그림 — 손상 둘레만 그리고 바깥은 투명, 진짜 바닥 위에 얹힌다. 걷는 칸).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"cracked-floor",
+"castle",
+"catacomb",
+"temple",
+"성",
+"묘지",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "538e3b11465b68f6678d1452",
+"origin": "prop.cracked_floor/*/theme-props-r6:A1@8d71dae4",
+"label": "버들항 던전 · 금 간 바닥 함정 2×2 금 간 바닥 (1,1)",
+"description": "판석이 가운데로 내려앉아 갈라진 함정 자리(덧그림 — 손상 둘레만 그리고 바깥은 투명, 진짜 바닥 위에 얹힌다. 걷는 칸).",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"cracked-floor",
+"castle",
+"catacomb",
+"temple",
+"성",
+"묘지",
+"유적"
+],
+"passage": "passable",
+"layer": "lower"
+},
+{
+"key": "608148305f026ba4a45651c4",
+"origin": "wall.tower_face/*/theme-walls-r9:A1@94e45647",
+"label": "버들항 던전 · 마법탑 벽 앞면 3단 (0,0)",
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "9d5f04a90a3dc586ab040ed0",
+"origin": "wall.tower_face/*/theme-walls-r9:A1@94e45647",
+"label": "버들항 던전 · 마법탑 벽 앞면 3단 (1,0)",
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "7b409c6817eadc545c9071ac",
+"origin": "wall.tower_face/*/theme-walls-r9:A1@94e45647",
+"label": "버들항 던전 · 마법탑 벽 앞면 3단 (2,0)",
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "b88e2961e9046a252506d900",
+"origin": "wall.tower_face/*/theme-walls-r9:A1@94e45647",
+"label": "버들항 던전 · 마법탑 벽 앞면 3단 (0,1)",
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "8dd59bff8c8647d185b9324a",
+"origin": "wall.tower_face/*/theme-walls-r9:A1@94e45647",
+"label": "버들항 던전 · 마법탑 벽 앞면 3단 (1,1)",
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "c76f51ce2de8bc5749fbbe1a",
+"origin": "wall.tower_face/*/theme-walls-r9:A1@94e45647",
+"label": "버들항 던전 · 마법탑 벽 앞면 3단 (2,1)",
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "ed108a7153fe2a6e1c9acaae",
+"origin": "wall.tower_face/*/theme-walls-r9:A1@94e45647",
+"label": "버들항 던전 · 마법탑 벽 앞면 3단 (0,2)",
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "cfdfbb3459df02766434a1b7",
+"origin": "wall.tower_face/*/theme-walls-r9:A1@94e45647",
+"label": "버들항 던전 · 마법탑 벽 앞면 3단 (1,2)",
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "b0153c9eefeb134d620cd562",
+"origin": "wall.tower_face/*/theme-walls-r9:A1@94e45647",
+"label": "버들항 던전 · 마법탑 벽 앞면 3단 (2,2)",
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "f9d0ad3f5090de88e651f043",
+"origin": "wall.tower_face/*/theme-walls-r9:A1@94e45647",
+"label": "버들항 던전 · 마법탑 벽 앞면 3단 아랫단 변형 (0,0)",
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "1d995a417698823c8b7fd66f",
+"origin": "wall.tower_face/*/theme-walls-r9:A1@94e45647",
+"label": "버들항 던전 · 마법탑 벽 앞면 3단 아랫단 변형 (1,0)",
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "6b119888716b1e97c6c5391d",
+"origin": "wall.tower_face/*/theme-walls-r9:A1@94e45647",
+"label": "버들항 던전 · 마법탑 벽 앞면 3단 아랫단 변형 (2,0)",
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "d4ee5be123884d9fa5079e52",
+"origin": "wall.tower_face/*/theme-walls-r9:A1@94e45647",
+"label": "버들항 던전 · 마법탑 벽 앞면 3단 새김 가운데 (0,0)",
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "c378f651804184c98d31c0b4",
+"origin": "wall.tower_face/*/theme-walls-r9:A1@94e45647",
+"label": "버들항 던전 · 마법탑 벽 앞면 3단 새김 가운데 (0,1)",
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "f67f67322a0f2c6e3d404453",
+"origin": "wall.tower_face/*/theme-walls-r9:A1@94e45647",
+"label": "버들항 던전 · 마법탑 벽 앞면 2단 새김 가운데 (0,0)",
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "1f3b33ed6235dbf1d1f1ac7b",
+"origin": "wall.tower_face/*/theme-walls-r9:A1@94e45647",
+"label": "버들항 던전 · 마법탑 벽 앞면 2단 새김 가운데 (0,1)",
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"passage": "solid",
+"layer": "lower"
+},
+{
+"key": "a185dc43acf2c10dd4b74cad",
+"origin": "wall.tower_face/*/theme-walls-r9:A1@94e45647",
+"label": "버들항 던전 · 마법탑 벽 앞면 3단 가운데단 변형",
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"passage": "solid",
+"layer": "lower"
 }
 ],
 "defs": {
@@ -44306,6 +44764,51 @@ null,
 ],
 "description": "마법탑 천장 오토타일 `beodeul_dungeon_ceiling_tower`. 하네스 theme-walls-r4 A1.",
 "placementRules": "방·통로 바깥 칸(천장)을 이 그룹으로 칠한다. author_dungeon 의 tower 테마가 저절로 쓴다."
+},
+"beodeul:dungeon_theme_prop_cracked_floor": {
+"id": "beodeul:dungeon_theme_prop_cracked_floor",
+"name": "버들항 던전 주제 금 간 바닥 함정 2×2",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+33015,
+33016,
+33017,
+33018
+],
+"description": "금 간 바닥 함정 2×2(키트 bd-pick-dungeon-theme-cracked-floor). 하네스 theme-props-r6 A1.",
+"placementRules": "통행: 걸음"
+},
+"beodeul:dungeon_theme_tower_face": {
+"id": "beodeul:dungeon_theme_tower_face",
+"name": "버들항 던전 주제 마법탑 벽 앞면",
+"role": "wall",
+"source": "bundled-default",
+"defaultLayer": "lower",
+"confidence": "high",
+"tileIds": [
+33019,
+33020,
+33021,
+33022,
+33023,
+33024,
+33025,
+33026,
+33027,
+33028,
+33029,
+33030,
+33031,
+33032,
+33033,
+33034,
+33035
+],
+"description": "마법탑 벽 앞면 키트(bd-pick-dungeon-theme-tower-face-3h, bd-pick-dungeon-theme-tower-face-2h, bd-pick-dungeon-theme-tower-face-3h-base, bd-pick-dungeon-theme-tower-face-3h-glyph, bd-pick-dungeon-theme-tower-face-2h-glyph, bd-pick-dungeon-theme-tower-face-3h-alt). 하네스 theme-walls-r9 A1.",
+"placementRules": "천장 테두리 아래 벽 앞면. author_dungeon 이 저절로 쓴다."
 }
 },
 "structureKits": {
@@ -49817,6 +50320,414 @@ null,
 "마계"
 ]
 }
+},
+"bd-pick-dungeon-theme-cracked-floor": {
+"id": "bd-pick-dungeon-theme-cracked-floor",
+"kind": "object",
+"name": "버들항 던전 · 금 간 바닥 함정 2×2 금 간 바닥 2×2",
+"width": 2,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+33015,
+33016
+]
+},
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+33017,
+33018
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "금 간 바닥 함정 2×2 — 금 간 바닥. 판석이 가운데로 내려앉아 갈라진 함정 자리(덧그림 — 손상 둘레만 그리고 바깥은 투명, 진짜 바닥 위에 얹힌다. 걷는 칸).",
+"placementRules": "통행: 걸음",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"cracked-floor",
+"castle",
+"catacomb",
+"temple",
+"성",
+"묘지",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"castle",
+"catacomb",
+"temple",
+"성",
+"묘지",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-tower-face-3h": {
+"id": "bd-pick-dungeon-theme-tower-face-3h",
+"kind": "section",
+"name": "버들항 던전 · 마법탑 벽 앞면 3단 3×3",
+"width": 3,
+"height": 3,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+33019,
+33020,
+33021
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+33022,
+33023,
+33024
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+33025,
+33026,
+33027
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 3단.",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"role": "wall",
+"repeatability": "repeat",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"tower",
+"탑",
+"마법탑"
+]
+}
+},
+"bd-pick-dungeon-theme-tower-face-2h": {
+"id": "bd-pick-dungeon-theme-tower-face-2h",
+"kind": "section",
+"name": "버들항 던전 · 마법탑 벽 앞면 2단 3×2",
+"width": 3,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+33019,
+33020,
+33021
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+},
+{
+"tiles": [
+33025,
+33026,
+33027
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 2단.",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"role": "wall",
+"repeatability": "repeat",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"tower",
+"탑",
+"마법탑"
+]
+}
+},
+"bd-pick-dungeon-theme-tower-face-3h-base": {
+"id": "bd-pick-dungeon-theme-tower-face-3h-base",
+"kind": "section",
+"name": "버들항 던전 · 마법탑 벽 앞면 3단 아랫단 변형 3×1",
+"width": 3,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+33028,
+33029,
+33030
+],
+"upperTiles": [
+-1,
+-1,
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 3단 아랫단 변형.",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"role": "wall",
+"repeatability": "repeat",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"tower",
+"탑",
+"마법탑"
+]
+}
+},
+"bd-pick-dungeon-theme-tower-face-3h-glyph": {
+"id": "bd-pick-dungeon-theme-tower-face-3h-glyph",
+"kind": "object",
+"name": "버들항 던전 · 마법탑 벽 앞면 3단 새김 가운데 1×3",
+"width": 1,
+"height": 3,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+33031
+],
+"upperTiles": [
+-1
+]
+},
+{
+"tiles": [
+33032
+],
+"upperTiles": [
+-1
+]
+},
+{
+"tiles": [
+33026
+],
+"upperTiles": [
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 3단 새김 가운데.",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"role": "wall",
+"repeatability": "fixed",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"tower",
+"탑",
+"마법탑"
+]
+}
+},
+"bd-pick-dungeon-theme-tower-face-2h-glyph": {
+"id": "bd-pick-dungeon-theme-tower-face-2h-glyph",
+"kind": "object",
+"name": "버들항 던전 · 마법탑 벽 앞면 2단 새김 가운데 1×2",
+"width": 1,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+33033
+],
+"upperTiles": [
+-1
+]
+},
+{
+"tiles": [
+33034
+],
+"upperTiles": [
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 2단 새김 가운데.",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"role": "wall",
+"repeatability": "fixed",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"tower",
+"탑",
+"마법탑"
+]
+}
+},
+"bd-pick-dungeon-theme-tower-face-3h-alt": {
+"id": "bd-pick-dungeon-theme-tower-face-3h-alt",
+"kind": "object",
+"name": "버들항 던전 · 마법탑 벽 앞면 3단 가운데단 변형 1×1",
+"width": 1,
+"height": 1,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+33035
+],
+"upperTiles": [
+-1
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "마법탑 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘. 3단 가운데단 변형.",
+"placementRules": "천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"벽",
+"앞면",
+"wall",
+"face",
+"마름돌",
+"tower",
+"탑",
+"마법탑"
+],
+"role": "wall",
+"repeatability": "fixed",
+"layerHome": "lower",
+"themes": [
+"dungeon",
+"던전",
+"tower",
+"탑",
+"마법탑"
+]
+}
 }
 }
 },
@@ -50766,6 +51677,41 @@ null,
 "bd-pick-dungeon-theme-otherworld-face-3h-glyph",
 "bd-pick-dungeon-theme-otherworld-face-2h-glyph",
 "bd-pick-dungeon-theme-otherworld-face-3h-alt"
+]
+}
+},
+"prop.cracked_floor|*": {
+"round": "theme-props-r6",
+"letter": "A1",
+"sha256": "8d71dae4fe2a81951d5c4370cb03595e021761c434666274fdb28f095121d927",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_prop_cracked_floor"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-cracked-floor"
+]
+}
+},
+"wall.tower_face|*": {
+"round": "theme-walls-r9",
+"letter": "A1",
+"sha256": "94e4564744573d3d636b9ff2d025ea50a8f05eb584f507ac8d83d5cbdac3d41c",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tower_face"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-tower-face-3h",
+"bd-pick-dungeon-theme-tower-face-2h",
+"bd-pick-dungeon-theme-tower-face-3h-base",
+"bd-pick-dungeon-theme-tower-face-3h-glyph",
+"bd-pick-dungeon-theme-tower-face-2h-glyph",
+"bd-pick-dungeon-theme-tower-face-3h-alt"
 ]
 }
 }

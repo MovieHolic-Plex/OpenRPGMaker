@@ -1,6 +1,6 @@
 // 던전 주제 견본(2026-10-24 dungeon-themes): 주제마다 author_dungeon 한 번씩 한 프로젝트에 지어 정본 SQLite 폴더에 저장 → 다시 열어
 // 맵이 같은지 대조하고, **다시 연 사본**에서 층 PNG 를 그린다(viz 는 이 PNG 를 쓴다).
-//   bun scripts/qa/dungeons/themes-samples.mts <projectDir(새 폴더)> <outDir> [seedSuffix]
+//   bun scripts/qa/dungeons/themes-samples.mts <projectDir(새 폴더)> <outDir> [seeds e.g. 1,2]
 import fs from "node:fs";
 import path from "node:path";
 import { createBlankProject } from "../../../src/project/defaults/blankProject.ts";
@@ -12,7 +12,9 @@ import { projectLint as lintProject } from "../../../src/project/lint/projectLin
 import { initLocalProjectStore, openLocalProjectStore } from "../../../electron/local-store/store.ts";
 import type { Project } from "../../../src/project/types.ts";
 
-const [dir, out = "/tmp/dt-samples"] = process.argv.slice(2);
+const [dir, out = "/tmp/dt-samples", seedsArg = ""] = process.argv.slice(2);
+// 시드 목록(쉼표) — 주면 주제마다 시드별로 따로 지어 `<theme>@<seed>-<층>.png` 로 그린다(시드 변주 대조)
+const SEEDS: (number | undefined)[] = seedsArg ? seedsArg.split(",").map(Number) : [undefined];
 if (!dir) throw Error("projectDir 필요");
 if (fs.existsSync(path.join(dir, "project.sqlite"))) throw Error("기존 정본 프로젝트를 덮어쓰지 않는다: " + dir);
 fs.mkdirSync(out, { recursive: true });
@@ -27,13 +29,14 @@ const project = createBlankProject();
 applyGenrePreset(project, "adventure-jrpg");
 store.loadProject?.(project);
 const made: { theme: string; floors: string[]; summary: string; gimmick: string }[] = [];
-for (const [theme, args] of THEMES) {
-  const host = `dt_${theme}`;
+for (const [theme0, args] of THEMES) for (const seed of SEEDS) {
+  const theme = seed === undefined ? theme0 : `${theme0}@${seed}`;
+  const host = `dt_${theme0}${seed === undefined ? "" : "_s" + seed}`;
   // 주제마다 빈 맵 하나를 새로 만들어 그 자리에 짓는다(시작 맵을 덮지 않게)
   const base = project.maps[project.startMapId]!;
   project.maps[host] = { ...structuredClone(base), id: host, name: String(args.name), events: [] };
   project.mapTree.children.push({ mapId: host, children: [] });
-  const res = getTool("author_dungeon")!.run(project, { ...args, mapId: host }) as { summary: string; data: any };
+  const res = getTool("author_dungeon")!.run(project, { ...args, mapId: host, ...(seed === undefined ? {} : { seed }) }) as { summary: string; data: any };
   made.push({ theme, floors: res.data.floors, summary: res.summary.slice(0, 200), gimmick: res.data.gimmick });
 }
 const lint = (lintProject(project) as any[]).filter((i) => i.severity === "error");
