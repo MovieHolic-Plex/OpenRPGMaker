@@ -169,7 +169,9 @@ export type EventBeat =
   /** 인물 모습 — shadow=검은 실루엣, ghost=반투명으로 뜸, normal=되돌림. */
   | { readonly do: "look"; readonly who: string; readonly as: "shadow" | "ghost" | "normal" }
   /** 인물이 연기처럼 사라진다(그 뒤 맵에서 안 보임). */
-  | { readonly do: "vanish"; readonly who: string };
+  | { readonly do: "vanish"; readonly who: string }
+  /** 실제 날씨(setWeather) — 비·폭풍·눈·안개, none 이면 갬. 컷신 뒤에도 남는다. tint 는 화면 색일 뿐 날씨가 아니다. */
+  | { readonly do: "weather"; readonly weather: "rain" | "storm" | "snow" | "fog" | "none"; readonly intensity?: number };
 
 /** 없는 기물 — draw_object 의 인자. */
 export interface ObjectSpec {
