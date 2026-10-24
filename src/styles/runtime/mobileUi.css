@@ -437,3 +437,66 @@
   height: calc(var(--touch-controls-y) - var(--touch-stick) / 2 - 52px - var(--play-stage-top, 0px));
   padding-bottom: 6px;
 }
+
+/* ── 좁은 터치 화면의 메뉴·창(2026-10-24) ──
+   무대가 화면보다 작게 그려지는 폰(배율 1.5 미만, data-touch-narrow)에서는 메뉴 글자가 논리 6~7px → 화면 5~6px 였다.
+   창 안 글자를 화면 12px 로 맞추고, 도트 스킨은 갈무리 11(12px 격자, #3341)로 그린다. --mobile-ui-k 가 화면 px → 논리 px.
+   세로에서는 메뉴를 무대 아래(조작 줄 위)까지 늘려 늘어난 글자가 들어갈 자리를 만든다(--touch-window-extra, playSurface). */
+.play-viewport[data-touch-layout="portrait"] > .play-stage:has(> [data-testid="main-menu"]) { overflow: visible; }
+.play-viewport[data-touch-layout="portrait"] > .play-stage > [data-testid="main-menu"] {
+  height: auto !important;
+  bottom: calc(-1 * var(--touch-window-extra, 0px) * var(--mobile-ui-k, 1)) !important;
+}
+.play-viewport[data-touch-narrow] [data-testid="main-menu"],
+.play-viewport[data-touch-narrow] [data-testid="main-menu"] * {
+  font-size: calc(12px * var(--mobile-ui-k, 1)) !important;
+  line-height: calc(16px * var(--mobile-ui-k, 1)) !important;
+}
+.play-viewport[data-touch-narrow] [data-testid="main-menu"][data-menu-skin="pixel"],
+.play-viewport[data-touch-narrow] [data-testid="main-menu"][data-menu-skin="pixel"] * {
+  font-family: "Galmuri11 Regular", "Galmuri11", "Galmuri9", "Noto Sans KR", monospace !important;
+}
+.play-viewport[data-touch-narrow] [data-testid="main-menu"] :is(.status-menu-detail-action, .status-menu-command) {
+  min-height: calc(28px * var(--mobile-ui-k, 1));
+  touch-action: manipulation;
+}
+/* 도트 스킨 세로: 글자가 커진 만큼 줄을 다시 짠다. 쇼케이스(고른 물건·능력치 변화)는 목록 옆 74px 열에서 글자가 한 자씩
+   꺾였다 — 목록 아래 전체 폭으로 내리고, 능력치 변화는 두 칸씩. 아래 안내 줄은 한 줄 높이를 준다. */
+.play-viewport[data-touch-narrow][data-touch-layout="portrait"] [data-testid="main-menu"][data-menu-skin="pixel"] .status-menu-detail.has-showcase {
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: auto minmax(0, max-content) minmax(calc(70px * var(--mobile-ui-k, 1)), 1fr) !important;
+}
+.play-viewport[data-touch-narrow][data-touch-layout="portrait"] [data-testid="main-menu"][data-menu-skin="pixel"] .status-menu-detail.has-showcase > .status-menu-detail-showcase {
+  grid-column: 1 !important;
+  grid-row: auto !important;
+  border-left: 0;
+  border-top: 1px solid var(--px-line, rgba(255, 255, 255, 0.25));
+  padding: calc(4px * var(--mobile-ui-k, 1)) 0 0;
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: calc(8px * var(--mobile-ui-k, 1));
+  row-gap: calc(2px * var(--mobile-ui-k, 1));
+  align-content: flex-start;
+  overflow: hidden;
+}
+.play-viewport[data-touch-narrow][data-touch-layout="portrait"] [data-testid="main-menu"][data-menu-skin="pixel"] .status-menu-detail-showcase > :is(.status-menu-showcase-description, .status-menu-stat-delta) { flex: 1 0 100%; }
+.play-viewport[data-touch-narrow][data-touch-layout="portrait"] [data-testid="main-menu"][data-menu-skin="pixel"] .status-menu-stat-delta {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  column-gap: calc(10px * var(--mobile-ui-k, 1));
+}
+.play-viewport[data-touch-narrow] [data-testid="main-menu"][data-menu-skin="pixel"] .status-menu-stat-delta-row { white-space: nowrap; }
+.play-viewport[data-touch-narrow] [data-testid="main-menu"][data-menu-skin="pixel"] .status-menu-footer {
+  height: auto !important;
+  min-height: calc(22px * var(--mobile-ui-k, 1));
+}
+.play-viewport[data-touch-narrow] [data-testid="main-menu"][data-menu-skin="pixel"] .status-menu-message { height: auto !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.play-viewport[data-touch-narrow] [data-testid="main-menu"][data-menu-skin="pixel"]:not(.has-party-overview) .status-menu-detail { bottom: calc(30px * var(--mobile-ui-k, 1)) !important; }
+.play-viewport[data-touch-narrow] [data-testid="main-menu"][data-menu-skin="pixel"] :is(.status-menu-entry-icon, .status-menu-detail-face) {
+  width: calc(12px * var(--mobile-ui-k, 1));
+  height: calc(12px * var(--mobile-ui-k, 1));
+}
+/* 도트 스킨 가로: 쇼케이스 열을 화면 130px 로 넓혀 「현재 → 변경 후」가 잘리지 않게. */
+.play-viewport[data-touch-narrow][data-touch-layout="landscape"] [data-testid="main-menu"][data-menu-skin="pixel"] .status-menu-detail.has-showcase {
+  grid-template-columns: minmax(0, 1fr) calc(130px * var(--mobile-ui-k, 1)) !important;
+}

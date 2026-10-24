@@ -116,6 +116,78 @@ async function padCheck(page, seg, step) {
   note(seg, `pad@${step}`, ok, JSON.stringify(r));
   return ok;
 }
+
+/** 열린 창(메뉴·상점)의 행: 글자·선택 여부·화면 글자 크기. */
+async function dumpRows(page, rootSel = "[data-testid='main-menu'], .runtime-shop-overlay") {
+  return gameFrame(page).evaluate((rootSel) => {
+    const root = document.querySelector(rootSel);
+    if (!root) return { rows: [], fonts: {} };
+    const rows = [];
+    for (const el of root.querySelectorAll("button, [role=menuitem], [role=option]")) {
+      const r = el.getBoundingClientRect();
+      if (r.width < 4 || r.height < 4) continue;
+      const fsCss = parseFloat(getComputedStyle(el).fontSize);
+      const k = r.height / (el.offsetHeight || r.height);
+      rows.push({ t: (el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 24), cur: el.matches(".selected, [aria-current='true'], [aria-selected='true']"), fs: +(fsCss * k).toFixed(1), y: Math.round(r.y), h: Math.round(r.height) });
+    }
+    const fonts = {};
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      const el = n.parentElement; if (!el || !(n.textContent || "").trim()) continue;
+      const r = el.getBoundingClientRect(); if (r.width < 2) continue;
+      const k = r.height / (el.offsetHeight || r.height);
+      const fs = Math.round(parseFloat(getComputedStyle(el).fontSize) * k * 10) / 10;
+      fonts[fs] = (fonts[fs] || 0) + (n.textContent || "").trim().length;
+    }
+    return { rows, fonts };
+  }, rootSel);
+}
+async function curText(page) {
+  return gameFrame(page).evaluate(() => [...document.querySelectorAll("[data-testid='main-menu'] :is(.selected, [aria-current='true'])")].map((e) => (e.textContent || "").trim().replace(/\s+/g, " ").slice(0, 20)));
+}
+
+/** 목록 줄(버튼·메뉴 항목)을 공백 뺀 글자로 찾아 가운데를 탭한다. */
+async function tapRowText(page, re) {
+  const pt = await gameFrame(page).evaluate((src) => {
+    const rx = new RegExp(src);
+    for (const el of document.querySelectorAll("button, [role=menuitem], [role=option], li")) {
+      const r = el.getBoundingClientRect();
+      if (r.width < 4 || r.height < 4 || getComputedStyle(el).visibility === "hidden") continue;
+      if (rx.test((el.textContent || "").replace(/\s+/g, ""))) return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+    }
+    return null;
+  }, re.source).catch(() => null);
+  if (!pt) return false;
+  const off = await frameOffset(page);
+  await tapAt(page, pt.x + off.x, pt.y + off.y, 300);
+  return true;
+}
+/** 글자가 맞는 목록 줄이 선택 표시를 달고 있는가. */
+async function rowSelected(page, re) {
+  return gameFrame(page).evaluate((src) => {
+    const rx = new RegExp(src);
+    return [...document.querySelectorAll(".selected, [aria-current='true'], [aria-selected='true']")].some((el) => rx.test((el.textContent || "").replace(/\s+/g, "")));
+  }, re.source);
+}
+/** 줄 탭 규칙: 첫 탭은 커서만(화면 그대로), 두 번째 탭이 결정. 결과 문자열을 note 로 남긴다. */
+async function tapRowTwice(page, seg, step, re, screenSig) {
+  const sig0 = await screenSig();
+  const already = await rowSelected(page, re);
+  const hit = await tapRowText(page, re);
+  await sleep(700);
+  const sig1 = await screenSig();
+  if (already) {
+    note(seg, `${step}-tap-selected-confirms`, hit && sig1 !== sig0, `screen ${sig0} -> ${sig1}`);
+    return sig1 !== sig0;
+  }
+  const moved = await rowSelected(page, re);
+  note(seg, `${step}-first-tap-moves`, hit && moved && sig0 === sig1, `hit=${hit} selected=${moved} screen ${sig0} -> ${sig1}`);
+  await tapRowText(page, re);
+  await sleep(900);
+  const sig2 = await screenSig();
+  note(seg, `${step}-second-tap-confirms`, sig2 !== sig1, `screen ${sig1} -> ${sig2}`);
+  return sig2 !== sig1;
+}
 async function shot(page, seg, name) {
   await page.screenshot({ path: join(OUT, `${seg}-${name}.png`), scale: "css" });
 }
@@ -320,17 +392,7 @@ const SEGMENTS = {
       note("field", "menu-equip-tap", eq);
       await sleep(800);
       await shot(page, "field", "6-equip");
-      // 장비 화면: A 로 배우·무기 칸까지 들어가고, 목록에 「철 검」이 보이면 그 줄을 직접 탭해 장착한다.
-      let picked = false;
-      for (let i = 0; i < 5 && !picked; i++) {
-        picked = await tapText(page, /철 검/);
-        if (!picked) await tapSel(page, "[data-testid='touch-action-a']", 900);
-      }
-      await sleep(900);
-      await shot(page, "field", "7-equip-pick");
-      const equipped = await gameFrame(page).evaluate(() => document.querySelector("[data-testid='main-menu']")?.textContent?.replace(/\s+/g, " "));
-      // 목록 줄을 탭해 무기 칸이 「없음」에서 바뀌었는지(어느 검이 들어갔는지는 목록 순서에 달렸다).
-      note("field", "equip-weapon-by-tap", picked && /무기\s*(?!없음)\S/.test((equipped ?? "").match(/장비:.{0,30}/)?.[0] ?? ""), (equipped ?? "").match(/장비:.{0,60}/)?.[0] ?? "");
+      // 줄 탭으로 장착하는 확인은 windows 구간(첫 탭 = 커서, 두 번째 = 결정)이 맡는다.
       const sig = await gameFrame(page).evaluate(() => document.querySelector("[data-testid='main-menu']")?.textContent?.replace(/\s+/g, " ").slice(0, 160));
       note("field", "equip-screen", /장비|무기|방어|머리|몸|장신/.test(sig ?? ""), sig);
       for (let i = 0; i < 5 && (await has(page, "[data-testid='main-menu']")); i++) await tapSel(page, "[data-testid='touch-action-b']", 700);
@@ -351,10 +413,76 @@ const SEGMENTS = {
     note("choice", "choices-shown", r === "choices" || r === true);
     await shot(page, "choice", "1-choices");
     await padCheck(page, "choice", "choices");
-    const ok = await tapSel(page, ".choices-active [role='menuitem'], .choices-active li, .choices-active button", 1200);
-    note("choice", "choice-tapped-closes", ok && !(await has(page, ".choices-active")));
+    // 선택 안 된 선택지를 한 번 탭 = 커서만, 한 번 더 = 결정.
+    const pick = await gameFrame(page).evaluate(() => {
+      const rows = [...document.querySelectorAll(".choices-active button, .choices-active [role='menuitem']")];
+      const i = rows.findIndex((r) => !r.matches(".selected, [aria-current='true'], [aria-selected='true']"));
+      return i < 0 ? null : (rows[i].textContent || "").replace(/\s+/g, "");
+    });
+    if (pick) {
+      const re = new RegExp(pick.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+      await tapRowText(page, re); await sleep(700);
+      note("choice", "choice-first-tap-moves", (await has(page, ".choices-active")) && (await rowSelected(page, re)), pick);
+      await tapRowText(page, re); await sleep(1200);
+    }
+    note("choice", "choice-tapped-closes", !(await has(page, ".choices-active")));
     await shot(page, "choice", "2-after-choice");
     await closePage(ctx, "choice", dir);
+  },
+  async windows(browser) {
+    const { ctx, page, dir } = await openPage(browser, "windows", { ...SHOP, items: { item_potion: 2, equip_iron_sword: 1 } });
+    note("windows", "boot", await waitBoot(page, true));
+    await sleep(2500);
+    for (let i = 0; i < 6 && !(await has(page, "[data-testid='main-menu']")); i++) await tapSel(page, "[data-testid='touch-menu']", 1200);
+    const menu = await has(page, "[data-testid='main-menu']");
+    note("windows", "menu-open", menu);
+    await shot(page, "windows", "1-menu");
+    const d0 = await dumpRows(page);
+    console.log("MENU", JSON.stringify(d0));
+    console.log("DIAG", JSON.stringify(await gameFrame(page).evaluate(() => {
+      const m = document.querySelector("[data-testid='main-menu']"); const st = document.querySelector(".play-stage");
+      const cs = getComputedStyle(m); const ss = getComputedStyle(st);
+      const row = m.querySelector(".status-menu-command"); 
+      return { cls: m.className, pos: cs.position, inset: [cs.top, cs.right, cs.bottom, cs.left], w: cs.width, h: cs.height, rect: m.getBoundingClientRect().toJSON(), stageOverflow: ss.overflow, stageRect: st.getBoundingClientRect().toJSON(), ff: row && getComputedStyle(row).fontFamily, skin: m.dataset.menuSkin, vars: ["--play-scale", "--mobile-ui-k", "--touch-band-top", "--touch-controls-y", "--touch-stick"].map((v) => getComputedStyle(document.querySelector(".play-viewport")).getPropertyValue(v)), parent: m.parentElement.className };
+    })));
+    // 첫 탭은 커서만, 두 번째 탭이 결정. 화면 서명 = 메뉴 화면 이름 + 선택 줄 + 본문 앞부분.
+    const sig = () => gameFrame(page).evaluate(() => {
+      const m = document.querySelector("[data-testid='main-menu']");
+      if (!m) return "closed";
+      return `${m.dataset.statusMenuScreen}|${(m.querySelector(".status-menu-detail-title")?.textContent || "").replace(/\s+/g, "")}|${[...m.querySelectorAll(".status-menu-detail-list > *")].map((e) => (e.textContent || "").replace(/\s+/g, "").slice(0, 6)).join(",")}`;
+    });
+    if (flag("diag")) { await closePage(ctx, "windows", dir); return; }
+    await tapRowTwice(page, "windows", "rail-equip", /^장비$/, sig);
+    await shot(page, "windows", "2-equip");
+    // 장비: 배우 → 무기 칸 → 철 검. 줄마다 같은 규칙.
+    await tapRowTwice(page, "windows", "equip-actor", /^카엘/, sig);
+    await shot(page, "windows", "3-equip-slots");
+    console.log("SLOTS", JSON.stringify(await dumpRows(page)));
+    await tapRowTwice(page, "windows", "equip-slot", /^무기/, sig);
+    await shot(page, "windows", "4-equip-candidates");
+    console.log("CANDS", JSON.stringify(await dumpRows(page)));
+    if (flag("tree")) console.log("TREE", await gameFrame(page).evaluate(() => {
+      const out = [];
+      const walk = (el, d) => { if (d > 5) return; const r = el.getBoundingClientRect(); if (r.width < 2) return; const cs = getComputedStyle(el);
+        out.push(`${"  ".repeat(d)}${el.tagName.toLowerCase()}.${[...el.classList].join(".")} ${Math.round(r.x)},${Math.round(r.y)} ${Math.round(r.width)}x${Math.round(r.height)} pos=${cs.position} ov=${cs.overflow} disp=${cs.display}`);
+        if (el.matches("button, [role=menuitem]")) return; for (const c of el.children) walk(c, d + 1); };
+      walk(document.querySelector("[data-testid='main-menu']"), 0); return out.join("\n"); }));
+    await tapRowTwice(page, "windows", "equip-iron", /철검/, sig);
+    await shot(page, "windows", "5-equipped");
+    const eqText = await gameFrame(page).evaluate(() => (document.querySelector("[data-testid='main-menu']")?.textContent || "").replace(/\s+/g, ""));
+    note("windows", "iron-sword-equipped", /무기철검/.test(eqText), eqText.match(/무기.{0,8}/)?.[0] ?? "");
+    console.log("EQUIP", JSON.stringify(await dumpRows(page)));
+    // 아이템 창 
+    for (let i = 0; i < 4 && (await sig()) !== "closed" && !/^main/.test(await sig()); i++) await tapSel(page, "[data-testid='touch-action-b']", 700);
+    await tapRowTwice(page, "windows", "rail-items", /^아이템$/, sig);
+    await shot(page, "windows", "6-items");
+    console.log("ITEMS", JSON.stringify(await dumpRows(page)));
+    for (let i = 0; i < 4 && !/^main/.test(await sig()); i++) await tapSel(page, "[data-testid='touch-action-b']", 700);
+    // 기록 ▸ → 저장 → 칸 목록: 둘째 칸 한 번 탭 = 커서만.
+    await tapRowTwice(page, "windows", "rail-record", /^기록/, sig);
+    await shot(page, "windows", "7-record");
+    console.log("RECORD", JSON.stringify(await dumpRows(page)));
+    await closePage(ctx, "windows", dir);
   },
   async shop(browser) {
     const { ctx, page, dir } = await openPage(browser, "shop", SHOP);
@@ -375,12 +503,17 @@ const SEGMENTS = {
     await padCheck(page, "shop", "shop");
     if (open) {
       await tapSel(page, "[data-testid='shop-mode-buy']", 1200);
+      const goldStart = await gameFrame(page).evaluate(() => document.querySelector(".runtime-shop-overlay")?.textContent?.match(/(\d[\d,]*)\s*(G|골드)/)?.[1]);
+      const shopRows = () => gameFrame(page).evaluate(() => [...document.querySelectorAll(".runtime-shop-item-row")].map((r) => `${(r.textContent || "").replace(/\s+/g, "").slice(0, 5)}${r.matches(".selected, [aria-current='true'], [aria-selected='true']") ? "*" : ""}`).join(" "));
+      if (flag("debug")) console.log("SHOP0", await shopRows());
       await tapSel(page, ".runtime-shop-item-row", 1000);
+      if (flag("debug")) console.log("SHOP1", await shopRows(), await gameFrame(page).evaluate(() => document.querySelector(".runtime-shop-overlay")?.dataset.shopStage ?? document.querySelector(".runtime-shop-overlay")?.className));
       await tapSel(page, ".runtime-shop-item-row", 1000);
+      if (flag("debug")) console.log("SHOP2", await shopRows(), await gameFrame(page).evaluate(() => document.querySelector(".runtime-shop-overlay")?.className));
       const gold0 = await gameFrame(page).evaluate(() => document.querySelector(".runtime-shop-overlay")?.textContent?.match(/(\d[\d,]*)\s*(G|골드)/)?.[1]);
       await tapSel(page, "[data-testid='shop-confirm'], [data-testid='shop-qty-confirm'], .runtime-shop-confirm", 1500);
       const gold1 = await gameFrame(page).evaluate(() => document.querySelector(".runtime-shop-overlay")?.textContent?.match(/(\d[\d,]*)\s*(G|골드)/)?.[1]);
-      note("shop", "buy", gold0 !== gold1, `${gold0} -> ${gold1}`);
+      note("shop", "buy", goldStart !== gold1 || gold0 !== gold1, `${goldStart} -> ${gold0} -> ${gold1}`);
       await shot(page, "shop", "2-bought");
       for (let i = 0; i < 6 && (await has(page, ".runtime-shop-overlay")); i++) await tapSel(page, "[data-testid='touch-action-b']", 800);
       note("shop", "shop-closed-by-B", !(await has(page, ".runtime-shop-overlay")));
