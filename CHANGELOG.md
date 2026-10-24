@@ -5,6 +5,24 @@
 
 <!-- releases -->
 
+## 0.328.0 — 2026-10-24
+
+### 기능
+
+- **fallen-star** — forest r2 — north of town, organic B1 woodland, hidden items, shrine rest point (#3344) (`b5f701f`)
+- **battle** — equipment damage-dealt / damage-taken percent traits (#3343) (`9417530`)
+- **player** — mobile controls in every state, Fold touch detection, closable log, portrait/landscape touch layout (#3333) (`52ee52e`)
+
+### 수정
+
+- **export** — declare Galmuri11.woff2 as a runtime asset (#3341 used it in fonts.css) (#3346) (`b298072`)
+- **player** — boot loader fits a landscape phone iframe and starts on any tap (#3345) (`952585b`)
+- **player** — pixel dialogue + field popup text on the font's pixel grid (Galmuri11 12px, whole-pixel stage); QA clips with SFX (#3341) (`7e7e6e5`)
+
+### 문서
+
+- **fallen-star** — act 1 script (boxes, event-id tags, side quests, readables L1-L10) (#3307) (`8e87019`)
+
 ## 0.327.0 — 2026-10-24
 
 ### 기능
