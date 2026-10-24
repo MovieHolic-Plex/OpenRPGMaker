@@ -414,7 +414,7 @@ function mapOrder(project: Project): string[] {
   const add = (id: string): void => {
     if (!seen.has(id) && project.maps[id]) { seen.add(id); order.push(id); }
   };
-  const start = (project as { startMapId?: string }).startMapId ?? project.system?.startMapId;
+  const start = (project as { startMapId?: string }).startMapId;
   const tree = (project as { mapTree?: unknown }).mapTree as { mapId?: string; children?: unknown[] } | undefined;
   const walk = (node: { mapId?: string; children?: unknown[] } | undefined): void => {
     if (!node) return;
@@ -430,13 +430,21 @@ function mapOrder(project: Project): string[] {
 
 // ─────────────────────────────────────────────────────────────── 이야기 짓기
 
-const cache = new WeakMap<Project, Story>();
+const cache = new WeakMap<Project, { readonly story: Story; readonly parts: readonly unknown[] }>();
 
-export function buildStory(project: Project): Story {
-  const cached = cache.get(project);
-  if (cached) return cached;
+function storyParts(project: Project): readonly unknown[] {
+  const loose = project as unknown as Record<string, unknown>;
+  return [project.maps, loose.commonEvents, loose.troops, loose.switches, loose.variables, loose.items, loose.actors, loose.endings, loose.mapTree];
+}
+
+/** 이야기 순서 대본. 같은 프로젝트 객체·같은 맵/이벤트 묶음이면 다시 계산하지 않는다.
+ *  조수 도구처럼 초안을 제자리에서 고치는 쪽은 fresh 로 부른다. */
+export function buildStory(project: Project, options: { readonly fresh?: boolean } = {}): Story {
+  const parts = storyParts(project);
+  const cached = options.fresh ? undefined : cache.get(project);
+  if (cached && cached.parts.every((part, index) => part === parts[index])) return cached.story;
   const story = buildStoryUncached(project);
-  cache.set(project, story);
+  cache.set(project, { story, parts });
   return story;
 }
 

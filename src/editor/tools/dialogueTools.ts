@@ -9,7 +9,7 @@
 // 스키마: 자유 키 객체·빈 enum 멤버를 쓰지 않는다(Gemini 400 — openwiki/editor-ai-tools.md). 배열은 items 를 단다.
 
 import { genId } from "@/util/id";
-import { readDialogueDesk, speakerVoiceNote, upsertDialogueProposals, writeSpeakerVoice, normalizeSpeakerName, type DialogueProposal } from "@/project/dialogueDesk";
+import { readDialogueDesk, speakerVoiceNote, upsertDialogueProposals, writeSceneNotes, writeSpeakerVoice, normalizeSpeakerName, type DialogueProposal } from "@/project/dialogueDesk";
 import {
   collectDialogueLines,
   dialogueContext,
@@ -19,6 +19,8 @@ import {
   type DialogueLine,
 } from "@/editor/dialogue/dialogueIndex";
 import { applyDialogueEdits, checkDialogueEdit, estimateLineFit, type DialogueEditRequest } from "@/editor/dialogue/dialogueEdits";
+import { buildStory, lineRefLabel, resolveStoryRef, type Story } from "@/editor/dialogue/storyScript";
+import { renderOutlineText, renderSceneText, selectScenes, storyCast, STORY_HASH_PREFIX } from "@/editor/dialogue/storyScriptText";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import type { Project } from "@/project/types";
 
@@ -172,19 +174,46 @@ const getDialogueContext: ToolDefinition = {
 const EDIT_ITEM_SCHEMA = {
   type: "object",
   properties: {
-    id: { type: "string", description: "list_dialogue 의 줄 id 그대로." },
-    hash: { type: "string", description: "list_dialogue 가 준 hash 그대로(원문이 그 사이 바뀌었으면 거절된다)." },
+    ref: { type: "string", description: "read_story_script 꼬리표 ⟨S12.3·a1b2c3⟩ 의 앞쪽(S12.3). id 대신 쓴다." },
+    id: { type: "string", description: "list_dialogue 의 줄 id 그대로. ref 를 쓰면 생략." },
+    hash: { type: "string", description: "list_dialogue 의 hash, 또는 read_story_script 꼬리표의 뒤쪽 6자(a1b2c3). 원문이 그 사이 바뀌었으면 거절된다." },
     text: { type: "string", description: "고친 글 전체. 줄바꿈은 실제 줄바꿈 문자로 넣는다(「\\n」 두 글자로 쓰지 않는다). 제어 코드(\\C[n] \\N[n] \\. \\| [흔들]…[/] {name} 등)는 원문 그대로 남긴다." },
     reason: { type: "string", description: "무엇을 왜 바꿨는지 한 줄(사람이 검토할 때 본다)." },
   },
-  required: ["id", "hash", "text"],
+  required: ["hash", "text"],
   additionalProperties: false,
 } as const;
+
+/** ref(S12.3)·짧은 hash(꼬리표 6자)를 정식 id·hash 로 푼다. 원문이 바뀌어 hash 가 안 맞으면 받은 값 그대로 둬 거절되게 한다. */
+function resolveEditTarget(project: Project, story: () => Story, index: number, record: Record<string, unknown>): { id: string; hash: string } {
+  const ref = str(record.ref).trim();
+  let id = str(record.id).trim();
+  const hash = str(record.hash).trim().replace(/^·/u, "");
+  if (!id && ref) {
+    const target = resolveStoryRef(story(), ref);
+    if (!target?.line) throw new ToolError(`edits[${index}] ref 「${ref}」 를 찾지 못했다 — read_story_script 를 다시 읽어 꼬리표를 확인하라.`, { code: "invalid-args" });
+    id = target.line.id;
+  }
+  if (!id || !hash) throw new ToolError(`edits[${index}] 에 ref(또는 id)·hash·text 가 필요하다.`, { code: "invalid-args" });
+  if (hash.length >= STORY_HASH_PREFIX && hash.length < 12) {
+    const line = collectDialogueLinesCached(project).get(id);
+    if (line && line.hash.startsWith(hash)) return { id, hash: line.hash };
+  }
+  return { id, hash };
+}
+
+const lineMaps = new WeakMap<Project, Map<string, DialogueLine>>();
+function collectDialogueLinesCached(project: Project): Map<string, DialogueLine> {
+  let map = lineMaps.get(project);
+  if (!map) { map = new Map(collectDialogueLines(project).map((line) => [line.id, line])); lineMaps.set(project, map); }
+  return map;
+}
 
 const rewriteDialogue: ToolDefinition = {
   name: "rewrite_dialogue",
   description:
-    "대사 여러 줄을 한 번에 고친다(윤문·말투 맞추기·줄이기). edits 는 {id, hash, text, reason} 배열(최대 80). " +
+    "대사 여러 줄을 한 번에 고친다(윤문·말투 맞추기·줄이기). edits 는 {ref 또는 id, hash, text, reason} 배열(최대 80). " +
+    "read_story_script 로 읽었으면 줄 끝 꼬리표 ⟨S12.3·a1b2c3⟩ 를 ref:\"S12.3\", hash:\"a1b2c3\" 로 넘긴다 — 한 장면을 한 번에 고쳐 내면 된다. " +
     "기본 mode:\"propose\" 는 게임 대사를 바꾸지 않고 «윤문 제안» 으로 남긴다 — 사람이 자료집 「대사」 탭에서 바꾸기 전·후를 보고 줄마다 받거나 버린다. " +
     "사람이 «바로 바꿔» 라고 분명히 말했을 때만 mode:\"apply\" 로 곧장 쓴다. " +
     "거절: 낡은 hash(원문이 바뀜)·없는 id·이벤트 편집기에서 열린 이벤트·제어 코드가 빠지거나 새로 생김·대화창 한 장을 원문보다 더 넘김(allowOverflow 로만 허용). " +
@@ -201,16 +230,17 @@ const rewriteDialogue: ToolDefinition = {
     required: ["edits"],
     additionalProperties: false,
   },
-  invalidArgsExample: { edits: [{ id: "ev/map_town/ev_guard/page_1/0#body", hash: "0123456789ab", text: "멈춰라. 통행증.", reason: "경비병 말투를 짧게" }], mode: "propose" },
+  invalidArgsExample: { edits: [{ ref: "S12.3", hash: "a1b2c3", text: "멈춰라. 통행증.", reason: "경비병 말투를 짧게" }], mode: "propose" },
   run(draft, args): ToolExecResult {
     const raw = Array.isArray(args.edits) ? args.edits : [];
     if (raw.length === 0) throw new ToolError("edits 가 비었다.", { code: "invalid-args" });
     if (raw.length > REWRITE_MAX) throw new ToolError(`한 번에 ${REWRITE_MAX}줄까지 — 나눠서 부른다.`, { code: "invalid-args" });
+    let story: Story | undefined;
+    const storyOf = (): Story => (story ??= buildStory(draft, { fresh: true }));
     const edits: (DialogueEditRequest & { readonly reason?: string })[] = raw.map((entry, index) => {
       const record = entry && typeof entry === "object" ? entry as Record<string, unknown> : {};
-      const id = str(record.id);
-      const hash = str(record.hash);
-      if (!id || !hash || typeof record.text !== "string") throw new ToolError(`edits[${index}] 에 id·hash·text 가 필요하다.`, { code: "invalid-args" });
+      if (typeof record.text !== "string") throw new ToolError(`edits[${index}] 에 text 가 필요하다.`, { code: "invalid-args" });
+      const { id, hash } = resolveEditTarget(draft, storyOf, index, record);
       const reason = str(record.reason).trim();
       return { id, hash, text: record.text, ...(reason ? { reason: reason.slice(0, 400) } : {}) };
     });
@@ -261,6 +291,7 @@ const rewriteDialogue: ToolDefinition = {
         mode,
         accepted: accepted.map((verdict) => ({
           id: verdict.id,
+          ...(story && lineRefLabel(story, verdict.id) ? { ref: lineRefLabel(story, verdict.id) } : {}),
           before: verdict.before,
           after: verdict.after,
           ...(verdict.fitAfter ? { lines: `${verdict.fitAfter.lines}/${verdict.fitAfter.maxLines}`, overflow: verdict.fitAfter.overflow } : {}),
@@ -300,4 +331,161 @@ const setSpeakerVoice: ToolDefinition = {
   },
 };
 
-export const DIALOGUE_TOOLS: readonly ToolDefinition[] = [listDialogue, getDialogueContext, rewriteDialogue, setSpeakerVoice];
+const SCRIPT_CHARS_DEFAULT = 14000;
+const SCRIPT_CHARS_MAX = 40000;
+
+function chapterArg(story: Story, raw: unknown): string | undefined {
+  const value = str(raw).trim();
+  if (!value) return undefined;
+  const found = story.chapters.find((chapter) => chapter.id === value || chapter.title === value || chapter.title.includes(value))
+    ?? (/^\d+$/u.test(value) ? story.chapters[Number(value) - 1] : undefined);
+  if (!found) throw new ToolError(`막 「${value}」 없음 — get_story_outline 의 막 id(ch1…)를 쓴다. 있는 막: ${story.chapters.map((chapter) => `${chapter.id} ${chapter.title}`).join(", ")}`, { code: "invalid-args" });
+  return found.id;
+}
+
+const getStoryOutline: ToolDefinition = {
+  name: "get_story_outline",
+  description:
+    "이야기 전체 줄거리 지도: 막(엔딩 카드로 나뉜다) → 장(장소) → 장면을 «이야기 순서» 로 돌려준다(맵 순서가 아니다 — 스위치·변수·아이템 조건과 자동 시작 컷신·이동으로 정렬). " +
+    "장면마다 번호(본줄 S1…, 곁가지 B1…)·장소·발동·조건·대사 수·한 줄 요약, 그리고 등장인물(대사 수·말투 메모)과 문체 규칙. " +
+    "대사를 다듬거나 이야기를 파악할 때 맨 먼저 부른다 → 그다음 read_story_script 로 장면 본문을 읽는다.",
+  mode: "read",
+  parameters: {
+    type: "object",
+    properties: {
+      chapter: { type: "string", description: "이 막만(ch1·ch2… 또는 막 제목)." },
+      includeSide: { type: "boolean", description: "곁가지(본줄 밖 NPC 잡담·조사·잠긴 문) 목록도. 기본 false — 본줄 장면마다 곁가지 개수만 붙는다." },
+    },
+    additionalProperties: false,
+  },
+  invalidArgsExample: { chapter: "ch1" },
+  run(project, args): ToolExecResult {
+    const story = buildStory(project, { fresh: true });
+    const chapterId = chapterArg(story, args.chapter);
+    const outline = renderOutlineText(project, story, { includeSide: args.includeSide === true, ...(chapterId ? { chapterId } : {}) });
+    const desk = readDialogueDesk(project);
+    const mainCount = story.chapters.reduce((sum, chapter) => sum + chapter.mainIds.length, 0);
+    const sideCount = story.chapters.reduce((sum, chapter) => sum + chapter.sideIds.length, 0);
+    return {
+      summary: `막 ${story.chapters.length}개 · 본줄 ${mainCount}장면 · 곁가지 ${sideCount}장면`,
+      data: {
+        outline,
+        chapters: story.chapters.map((chapter) => ({ id: chapter.id, title: chapter.title, main: chapter.mainIds.length, side: chapter.sideIds.length })),
+        cast: storyCast(project, story).slice(0, 40),
+        ...(project.aiAuthoring?.dialogueStyleRules?.trim() ? { styleRules: project.aiAuthoring.dialogueStyleRules.trim() } : {}),
+        pendingProposals: desk.proposals.length,
+        next: "read_story_script 로 장면 본문을 읽는다(chapter 또는 from/to). 요약이 «(자동)» 인 장면은 다 읽은 뒤 set_scene_summaries 로 한 줄 요약을 남겨 두면 다음에 다시 안 읽어도 된다.",
+      },
+    };
+  },
+};
+
+const readStoryScript: ToolDefinition = {
+  name: "read_story_script",
+  description:
+    "장면 본문을 대본처럼 읽는다: 장면 머리(장소·발동·조건) · 「화자: 대사」 · [지문](이동·전투·아이템·진행) · [선택지] 와 > 갈래 · {조건 분기}. " +
+    "줄 끝 꼬리표 ⟨S12.3·a1b2c3⟩ 는 rewrite_dialogue 의 ref·hash 다. 대사가 똑같은 쌍둥이 장면은 «S2 와 같다» 로 줄인다. " +
+    "chapter(막 하나), from/to(본줄 번호 범위, 그 사이 곁가지는 includeSide 일 때), scenes([\"S12\",\"B4\"]), speaker(그 인물이 나오는 장면만) 로 고른다. " +
+    "글이 maxChars 를 넘으면 잘라 nextFrom 을 준다 — 이어서 from:nextFrom 으로 부른다.",
+  mode: "read",
+  parameters: {
+    type: "object",
+    properties: {
+      chapter: { type: "string", description: "막 id(ch1…) 또는 제목." },
+      from: { type: "string", description: "시작 장면 번호(S5)." },
+      to: { type: "string", description: "끝 장면 번호(S12)." },
+      scenes: { type: "array", items: { type: "string" }, maxItems: 60, description: "읽을 장면 번호들(S12, B4)." },
+      speaker: { type: "string", description: "이 화자가 말하는 장면만." },
+      includeSide: { type: "boolean", description: "곁가지 장면도 함께(기본 false)." },
+      maxChars: { type: "integer", minimum: 2000, maximum: SCRIPT_CHARS_MAX },
+    },
+    additionalProperties: false,
+  },
+  invalidArgsExample: { chapter: "ch1", from: "S1", to: "S8" },
+  run(project, args): ToolExecResult {
+    const story = buildStory(project, { fresh: true });
+    const chapterId = chapterArg(story, args.chapter);
+    const sceneRefs = Array.isArray(args.scenes) ? args.scenes.map(str).filter(Boolean) : [];
+    const speaker = normalizeSpeakerName(str(args.speaker));
+    const scenes = selectScenes(story, {
+      ...(chapterId ? { chapterId } : {}),
+      ...(str(args.from) ? { from: str(args.from) } : {}),
+      ...(str(args.to) ? { to: str(args.to) } : {}),
+      ...(sceneRefs.length ? { sceneRefs } : {}),
+      ...(speaker ? { speaker } : {}),
+      includeSide: args.includeSide === true,
+    });
+    if (scenes.length === 0) throw new ToolError("고른 장면이 없다 — get_story_outline 의 번호(S1…, B1…)와 막 id 를 확인하라.", { code: "invalid-args" });
+    const maxChars = typeof args.maxChars === "number" ? Math.max(2000, Math.min(SCRIPT_CHARS_MAX, Math.trunc(args.maxChars))) : SCRIPT_CHARS_DEFAULT;
+    const parts: string[] = [];
+    let used = 0;
+    let nextFrom: string | undefined;
+    for (const scene of scenes) {
+      const text = renderSceneText(project, story, scene);
+      if (parts.length > 0 && used + text.length > maxChars) { nextFrom = scene.ref; break; }
+      parts.push(text);
+      used += text.length + 2;
+    }
+    const shown = parts.length;
+    const lineCount = scenes.slice(0, shown).reduce((sum, scene) => sum + (scene.sameAs ? 0 : scene.lines.length), 0);
+    return {
+      summary: `장면 ${shown}/${scenes.length}개 · 대사 ${lineCount}줄${nextFrom ? ` — 잘림, 이어서 from:${nextFrom}` : ""}`,
+      data: {
+        script: parts.join("\n\n"),
+        ...(nextFrom ? { nextFrom } : {}),
+        tagNote: "⟨S12.3·a1b2c3⟩ = rewrite_dialogue 의 ref:S12.3 · hash:a1b2c3. [ ] 는 지문(고칠 수 없다), { } 는 조건 갈래, > 는 선택지 갈래.",
+      },
+    };
+  },
+};
+
+const setSceneSummaries: ToolDefinition = {
+  name: "set_scene_summaries",
+  description:
+    "장면 한 줄 요약을 프로젝트에 남긴다(빈 summary 는 지움, 한 번에 60개). get_story_outline 이 자동 요약 대신 이것을 보이고, 사람도 「대사 → 대본」 에서 본다·고친다. " +
+    "장면을 다 읽은 뒤 «누가 무엇을 해서 무엇이 바뀌는지» 를 60자 안팎으로 쓴다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      items: {
+        type: "array",
+        minItems: 1,
+        maxItems: 60,
+        items: {
+          type: "object",
+          properties: {
+            scene: { type: "string", description: "장면 번호(S12·B4)." },
+            summary: { type: "string", description: "한 줄 요약(200자 이내)." },
+          },
+          required: ["scene", "summary"],
+          additionalProperties: false,
+        },
+      },
+    },
+    required: ["items"],
+    additionalProperties: false,
+  },
+  invalidArgsExample: { items: [{ scene: "S3", summary: "숲지기 브람이 추락지 위치를 알려 주고, 밤새 들린 사람 목소리를 전한다." }] },
+  run(draft, args): ToolExecResult {
+    const raw = Array.isArray(args.items) ? args.items : [];
+    if (raw.length === 0) throw new ToolError("items 가 비었다.", { code: "invalid-args" });
+    const story = buildStory(draft, { fresh: true });
+    const missing: string[] = [];
+    const items = raw.flatMap((entry) => {
+      const record = entry && typeof entry === "object" ? entry as Record<string, unknown> : {};
+      const ref = str(record.scene).trim();
+      const scene = resolveStoryRef(story, ref.replace(/\.\d+$/u, ""))?.scene ?? story.scenes.get(ref);
+      if (!scene) { missing.push(ref); return []; }
+      return [{ sceneId: scene.id, summary: str(record.summary) }];
+    });
+    if (items.length === 0) throw new ToolError(`장면을 못 찾았다 — ${missing.slice(0, 6).join(", ")}`, { code: "invalid-args" });
+    const changed = writeSceneNotes(draft, items, "ai");
+    return {
+      summary: `장면 요약 ${changed}개를 남겼다${missing.length ? ` (못 찾은 번호 ${missing.length}: ${missing.slice(0, 4).join(", ")})` : ""}.`,
+      data: { changed, missing },
+    };
+  },
+};
+
+export const DIALOGUE_TOOLS: readonly ToolDefinition[] = [getStoryOutline, readStoryScript, listDialogue, getDialogueContext, rewriteDialogue, setSpeakerVoice, setSceneSummaries];
