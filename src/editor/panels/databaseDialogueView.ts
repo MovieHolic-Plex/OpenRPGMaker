@@ -162,6 +162,7 @@ function renderProposals(project: Project, lines: readonly DialogueLine[], reren
     const line = byId.get(proposal.lineId);
     return !state.speaker || line?.speaker === state.speaker;
   });
+  if (visible.length === 0) return null;
   const freshIds = visible.filter((proposal) => byId.get(proposal.lineId)?.hash === proposal.baseHash).map((proposal) => proposal.id);
   const instructions = [...new Set(visible.map((proposal) => proposal.instruction).filter((value): value is string => Boolean(value)))];
   const acceptAll = (): void => {
@@ -233,7 +234,7 @@ function renderProposalRow(proposal: DialogueProposal, line: DialogueLine | unde
       el("div", {
         class: "db-dialogue-proposal-meta",
         children: [
-          el("span", { class: "db-dialogue-speaker", text: line?.speaker || (line ? dialogueKindLabel(line.kind) : "사라진 줄"), attrs: { translate: "no" }, dataset: { i18nSkip: "" } }),
+          el("span", { class: "db-dialogue-speaker", text: line?.speaker || (line ? (line.kind === "text" ? "내레이션" : dialogueKindLabel(line.kind)) : "사라진 줄"), attrs: { translate: "no" }, dataset: { i18nSkip: "" } }),
           el("span", { class: "db-dialogue-where", text: line?.groupLabel ?? proposal.lineId, attrs: { translate: "no" }, dataset: { i18nSkip: "" } }),
           ...(stale ? [el("span", { class: "db-dialogue-stale", text: "원문이 바뀜 — 받을 수 없음" })] : []),
         ],
