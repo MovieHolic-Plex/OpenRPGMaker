@@ -27,7 +27,7 @@ import { BATTLE_KEY_PROMPT } from "@/player/keyBindings";
 import { mountBattleCommandCss } from "@/project/battleCommandCss";
 import { withJosa } from "@/util/josa";
 import { teamSwapCommandNodes } from "@/player/battleTeamSwapDom";
-import { skillHelp, skillHelpTagLine } from "@/battle/skillHelp";
+import { elementDisplayName, skillHelp, skillHelpTagLine } from "@/battle/skillHelp";
 
 export type BattleCommandSubmenu =
   | { readonly kind: "skill"; readonly command: RuntimeBattleCommand }
@@ -797,18 +797,8 @@ function pokemonFightSubmenu(snapshot: BattleSnapshot, options: BattleCommandPan
 /** 기술 타입(속성) 배지. elementId 가 없는 기술에는 아무것도 붙이지 않는다 — 무속성
  *  기술까지 "타입" 을 지어내면 상성 표시가 거짓이 된다. 표시 이름은 elements 레코드에서
  *  읽고(데모는 한글 타입명을 저작한다), 레코드가 없으면 id 를 그대로 보여준다. */
-/** 새 프로젝트 기본 속성 이름은 영어(「Fire」「Sword」)다 — 한국어 게임의 전투 목록에 영어 꼬리표가 그대로 보였다(jrpg-loop-1 실측). 작가가 이름을 바꾸지 않은 기본 이름일 때만 한글로 보인다. */
-const DEFAULT_ELEMENT_DISPLAY_KO: Readonly<Record<string, readonly [english: string, korean: string]>> = {
-  sword: ["Sword", "검"], spear: ["Spear", "창"], hit: ["Hit", "타격"], bow: ["Bow", "활"],
-  fire: ["Fire", "화염"], ice: ["Ice", "빙결"], thunder: ["Thunder", "번개"], water: ["Water", "물"],
-  earth: ["Earth", "대지"], wind: ["Wind", "바람"], holy: ["Holy", "신성"], dark: ["Dark", "암흑"],
-  grass: ["Grass", "풀"],
-};
-
 export function skillElementBadgeLabel(project: ReturnType<typeof store.getCurrent>, elementId: string): string {
-  const name = (project.database.elements ?? []).find((record) => record.id === elementId)?.name ?? elementId;
-  const known = DEFAULT_ELEMENT_DISPLAY_KO[elementId];
-  return known && name === known[0] ? known[1] : name;
+  return elementDisplayName(project, elementId);
 }
 
 function appendSkillTypeBadge(

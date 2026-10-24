@@ -35,9 +35,22 @@ function stateName(project: Project, stateId: string): string {
   return project.database.states.find((state) => state.id === stateId)?.name ?? stateId;
 }
 
-function elementName(project: Project, elementId: string): string {
-  return (project.database.elements ?? []).find((element) => element.id === elementId)?.name ?? elementId;
+/** 새 프로젝트 기본 속성 이름은 영어(「Fire」「Sword」)다 — 한국어 게임의 전투 목록에 영어 꼬리표가 그대로 보였다(jrpg-loop-1 실측). 작가가 이름을 바꾸지 않은 기본 이름일 때만 한글로 보인다. */
+const DEFAULT_ELEMENT_DISPLAY_KO: Readonly<Record<string, readonly [english: string, korean: string]>> = {
+  sword: ["Sword", "검"], spear: ["Spear", "창"], hit: ["Hit", "타격"], bow: ["Bow", "활"],
+  fire: ["Fire", "화염"], ice: ["Ice", "빙결"], thunder: ["Thunder", "번개"], water: ["Water", "물"],
+  earth: ["Earth", "대지"], wind: ["Wind", "바람"], holy: ["Holy", "신성"], dark: ["Dark", "암흑"],
+  grass: ["Grass", "풀"],
+};
+
+/** 속성 표시 이름 — 기술 목록 배지·도움말 창이 같이 쓴다. */
+export function elementDisplayName(project: Pick<Project, "database">, elementId: string): string {
+  const name = (project.database.elements ?? []).find((element) => element.id === elementId)?.name ?? elementId;
+  const known = DEFAULT_ELEMENT_DISPLAY_KO[elementId];
+  return known && name === known[0] ? known[1] : name;
 }
+
+const elementName = elementDisplayName;
 
 function actorName(project: Project, actorId: string): string {
   return project.database.actors.find((actor) => actor.id === actorId)?.name ?? actorId;
@@ -64,11 +77,14 @@ export function skillHelpTags(project: Project, skill: SkillRecord): string[] {
   else if (skill.multiHit) tags.push(`${skill.multiHit.min}~${skill.multiHit.max}연타`);
   if (skill.criticalRate !== undefined && skill.criticalRate >= 20) tags.push(`급소 ${skill.criticalRate}%`);
   if (ignoresDefense(skill)) tags.push("방어 무시");
+  const removed: string[] = [];
   for (const row of skill.stateEffects ?? []) {
     const name = stateName(project, row.stateId);
-    if (row.operation === "remove") tags.push(`${name} 해제`);
+    if (row.operation === "remove") removed.push(name);
     else tags.push(row.chance >= 100 ? name : `${name} ${row.chance}%`);
   }
+  // 정화류는 지우는 상태가 열 가지가 넘기도 한다 — 셋까지만 이름, 나머지는 개수로.
+  if (removed.length) tags.push(`${removed.length > 3 ? `${removed.slice(0, 2).join("·")} 외 ${removed.length - 2}종` : removed.join("·")} 해제`);
   for (const row of skill.statStageEffects ?? []) tags.push(statStageEffectText(row));
   if (skill.drainPercent) tags.push(`흡수 ${skill.drainPercent}%`);
   if (skill.recoilPercent) tags.push(`반동 ${skill.recoilPercent}%`);
