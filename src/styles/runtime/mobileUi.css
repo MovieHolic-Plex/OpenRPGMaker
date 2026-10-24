@@ -344,3 +344,37 @@
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   column-gap: 10px;
 }
+
+/* 가로 겹침(2026-10-25): 무대가 화면 높이를 채우고 조작은 무대 가장자리 위에 반투명하게 얹힌다.
+   누르고 있는 동안만 진해진다. 달리기 단추는 대사 창(무대 아래쪽)을 가리지 않게 왼쪽 위(전체 화면 단추 아래)로 올린다. */
+.play-viewport[data-touch-overlay] > .touch-pad .touch-dpad-base.touch-dpad-base {
+  background: rgba(20, 24, 34, 0.22);
+  border-color: rgba(255, 255, 255, 0.34);
+}
+.play-viewport[data-touch-overlay] > .touch-pad .touch-stick-zone[data-active] .touch-dpad-base { background: rgba(40, 52, 80, 0.4); }
+.play-viewport[data-touch-overlay] > .touch-pad .touch-dpad-knob { opacity: 0.75; }
+.play-viewport[data-touch-overlay] > .touch-pad .touch-actions .touch-action-btn:not(.active),
+.play-viewport[data-touch-overlay] > .touch-pad .touch-menu-btn:not(.active),
+.play-viewport[data-touch-overlay] > .touch-pad .touch-run-btn:not(.on),
+.play-viewport[data-touch-overlay] > .play-fullscreen-toggle { opacity: 0.62; }
+.play-viewport[data-touch-overlay] > .touch-pad .touch-run-btn {
+  bottom: auto;
+  top: calc(env(safe-area-inset-top, 0px) + 56px);
+}
+
+/* 아이폰 「홈 화면에 추가」 안내(전체 화면 단추 자리, Fullscreen API 가 없을 때). */
+.play-viewport > .play-home-screen-hint {
+  position: absolute;
+  z-index: 47;
+  left: 50%;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  transform: translateX(-50%);
+  max-width: min(92%, 440px);
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(8, 10, 18, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #eef2ff;
+  font: 600 13px/1.45 system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  pointer-events: auto;
+}
