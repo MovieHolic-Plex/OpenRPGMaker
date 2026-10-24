@@ -90,7 +90,8 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
   temple: {
     ...GRAMMAR.temple,
     face: { h3: T("face-temple-3h"), h2: T("face-temple-2h") },
-    floor: { base: T("floor-ruin"), patches: [], byKind: { boss: T("floor-trav"), vault: T("floor-trav") } },
+    // 이끼 판석(floor-ruin)은 두 칸뿐이고 이끼가 칸마다 같은 자리라 16px 격자로 되풀이됐다(2026-10-25 floor VQA r3) — 신랑(큰 홀) 한 방만, 나머지는 잔잔한 석회 판석.
+    floor: { base: T("floor-trav"), patches: [], byKind: { nave: T("floor-ruin") } },
   },
   mine: {
     ...GRAMMAR.mine,
@@ -134,7 +135,7 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
     ...GRAMMAR.pyramid,
     face: { h3: [TK("sandstone-face-3h"), T("face-temple-3h")], h2: [TK("sandstone-face-2h"), T("face-temple-2h")] },
     // 모래 바닥: 칸 0·3·6 = 밝은 세로 줄(3칸마다 되풀이) — 나머지 칸만 섞는다.
-    floor: { base: D("ground-camp"), mix: true, mixCells: [1, 2, 4, 5, 7, 8], patches: [{ kit: D("ground-road"), at: 0.68, scale: 7 }], byKind: { boss: [TK("sandstone-floor"), D("ground-plaza")], shrine: [TK("sandstone-floor"), D("ground-plaza")], crypt: [TK("sandstone-floor"), D("ground-plaza")] } },
+    floor: { base: D("ground-camp"), mix: true, mixCells: [1, 2, 4, 5, 7, 8], patches: [{ kit: D("ground-road"), at: 0.68, scale: 7 }], byKind: { boss: [TK("sandstone-floor"), D("ground-plaza")] } },   // 금 간 사암 판석(결 29)은 파라오 묘실 한 방만 — 여러 방이면 모래 통로와 직선으로 맞닿는 산만한 방이 됐다(r3)
     ceiling: ["beodeul_dungeon_ceiling_sand"],
   },
   tower: {

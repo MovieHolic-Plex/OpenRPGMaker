@@ -111,12 +111,18 @@ function stampFlat(c: Ctx, kitId: string, cands: readonly Pt[], opts: { needPass
   const kit = kitOf(c.ts, kitId);
   if (!kit) return null;
   const W = c.map.width;
+  // 바닥 데칼(모자이크·카펫·석판)은 1층 칸이라 occupiedAbove 가 못 본다 — 그 위에 마법진을 겹쳐 찍었다(2026-10-25 floor VQA r3 유적).
+  // 맵 바닥에서 가장 흔한 칸들(바탕 바닥)만 덮어쓸 수 있게 한다: 칸 빈도 상위가 아닌 1층 칸 = 다른 데칼.
+  const freq = new Map<number, number>();
+  for (const t of c.map.lowerTiles) freq.set(t, (freq.get(t) ?? 0) + 1);
+  const plainMin = Math.max(6, Math.floor(c.map.lowerTiles.length * 0.004));
+  const plain = (i: number) => (freq.get(c.map.lowerTiles[i]!) ?? 0) >= plainMin;
   for (const p of cands) {
     const x0 = p.x - Math.floor(kit.width / 2), y0 = p.y - Math.floor(kit.height / 2);
     let ok = true;
     for (let dy = 0; dy < kit.height && ok; dy += 1) for (let dx = 0; dx < kit.width && ok; dx += 1) {
       const x = x0 + dx, y = y0 + dy;
-      if (!isPassable(c.draft, c.map, x, y) || occupiedAbove(c.map, y * W + x) || c.map.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) ok = false;
+      if (!isPassable(c.draft, c.map, x, y) || occupiedAbove(c.map, y * W + x) || !plain(y * W + x) || c.map.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) ok = false;
     }
     if (!ok) continue;
     kit.rows.forEach((row, dy) => {

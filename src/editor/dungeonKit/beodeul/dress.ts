@@ -235,11 +235,12 @@ function dressTemple(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | nul
   const ruin = (rr: PlacedRoom, n: number) => {
     // 무너진 구석: 잔해 모둠 + 부러진 기둥/쓰러진 기둥 + 인접 벽 덩굴
     for (let k = 0; k < n; k += 1) {
-      const e = c.shuffle(rs, c.floorCells(rr, 1)).filter(([x, y]) => free(c, x, y) && lonely(c, x, y, 1));
+      // 잔해 모둠은 벽가(벽에서 두 칸 안)에서만 — 신랑 한가운데 모자이크 위를 흰 잔해가 덮었다(2026-10-25 floor VQA r0·r3 유적).
+      const e = c.shuffle(rs, c.floorCells(rr, 1)).filter(([x, y]) => free(c, x, y) && lonely(c, x, y, 1) && nearWall(c, x, y, 2));
       const at = e[0]; if (!at) continue;
-      c.cluster(rs, at[0], at[1], 4, [[TEMPLE_RUBBLE, 4], [CC("rubble"), 1], [SW("bones"), 1]]);
+      c.cluster(rs, at[0], at[1], 3, [[TEMPLE_RUBBLE, 4], [CC("rubble"), 1], [SW("bones"), 1]]);
       // 풀 난 판석(theme-earth r2): 무너진 구석 곁 바닥이 뿌리·이끼로 갈라진다.
-      if (c.hasKit(TK("overgrown")) && rs() < 0.7) { const g = c.shuffle(rs, c.floorCells(rr, 1)).find(([x, y]) => Math.abs(x - at[0]) + Math.abs(y - at[1]) <= 4 && free(c, x, y) && free(c, x + 1, y) && free(c, x, y + 1) && free(c, x + 1, y + 1)); if (g) c.put(TK("overgrown"), g[0], g[1], { free: true }); }
+      if (c.hasKit(TK("overgrown")) && rs() < 0.7) { const g = c.shuffle(rs, c.floorCells(rr, 1)).find(([x, y]) => Math.abs(x - at[0]) + Math.abs(y - at[1]) <= 4 && nearWall(c, x, y, 1) && free(c, x, y) && free(c, x + 1, y) && free(c, x, y + 1) && free(c, x + 1, y + 1)); if (g) c.put(TK("overgrown"), g[0], g[1], { free: true }); }
       // 주제 그림(theme-earth): 무너진 석상 머리·큰 돌무더기가 있으면 구석마다 하나씩 섞는다 — 「옛 신의 신전」으로 읽히게.
       const big = rs();
       if (big < 0.3 && c.hasKit(TK("statue-head")) && stand(c, TK("statue-head"), at[0] + 2, at[1])) continue;
