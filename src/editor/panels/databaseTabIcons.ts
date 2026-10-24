@@ -38,6 +38,7 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "path", attrs: { d: "M6 18v-1a5 5 0 0 1 10 0v1" } },
   ],
   promotionTree: [{ tag: "path", attrs: { d: "M11 4v7M5 11h12M5 11v6M17 11v6" } }, { tag: "circle", attrs: { cx: "11", cy: "4", r: "2" } }, { tag: "circle", attrs: { cx: "5", cy: "18", r: "2" } }, { tag: "circle", attrs: { cx: "17", cy: "18", r: "2" } }],
+  comboTechs: [{ tag: "path", attrs: { d: "M4 18L12 4l8 14" } }, { tag: "path", attrs: { d: "M8 12h8" } }, { tag: "circle", attrs: { cx: "4", cy: "18", r: "2" } }, { tag: "circle", attrs: { cx: "20", cy: "18", r: "2" } }],
   skillTrees: [{ tag: "path", attrs: { d: "M5 17l6-12 6 12H5zM11 5v12" } }, { tag: "circle", attrs: { cx: "11", cy: "5", r: "2" } }, { tag: "circle", attrs: { cx: "5", cy: "17", r: "2" } }, { tag: "circle", attrs: { cx: "17", cy: "17", r: "2" } }],
   // 그룹 밖 고정 — 대시보드 격자
   overview: [

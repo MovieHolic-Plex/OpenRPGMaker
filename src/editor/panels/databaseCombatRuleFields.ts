@@ -57,6 +57,7 @@ export function skillCombatRuleCard(record: SkillRecord, options: { readonly col
     ...(record.fixedDamage?.mode === 'amount' ? [numberField('고정 피해 양', 'feature16-fixed-damage-amount', record.fixedDamage.amount, value => updateDatabaseRecord('skills', record.id, { fixedDamage: { mode: 'amount', amount: Math.max(1, value) } }), { min: 1, max: 999 })] : []),
     numberField('게이지 밀기 (-100~100)', 'feature16-gauge-shift', record.gaugeShift ?? 0, value => updateDatabaseRecord('skills', record.id, { gaugeShift: value === 0 ? undefined : value }), { min: -100, max: 100, step: 5 }),
     numberField('힘 모으기 턴 (0=바로)', 'feature16-charge-turns', record.chargeTurns ?? 0, value => updateDatabaseRecord('skills', record.id, { chargeTurns: value > 0 ? value : undefined }), { min: 0, max: 3 }),
+    ...skillExploitFields(record),
     selectField('소환 — 도트 연출에 나타날 몬스터', 'feature16-summon', record.summonResourceId ?? '', partyPixelChoices('소환 안 함', record.summonResourceId), value => updateDatabaseRecord('skills', record.id, { summonResourceId: value || undefined })),
     ...skillAreaAndComboFields(record),
     ...battleGimmickFields(record),
@@ -180,4 +181,23 @@ function skillAreaAndComboFields(record: SkillRecord): HTMLElement[] {
   const slotFields = slots.map((value, index) => selectField(`연계 배우 ${index + 1}`, `skill-combo-actor-${index + 1}`, value, options, next => { slots[index] = next; save(); }));
   refreshNote();
   return [shapeField, radius, ...slotFields, comboNote];
+}
+
+/**
+ * 약점 공략(SkillRecord.exploitStates) — 「대상이 이 상태면 피해 +N%」. 다른 기술(동료)이 깐 상태를 거두는 짝 기술을 만든다.
+ * 상태 하나 고르기 + 보너스 % + 깨뜨림. 여러 상태는 조수 도구(upsert_skill exploitStates)로.
+ */
+export function skillExploitFields(record: SkillRecord): HTMLElement[] {
+  const states = store.getCurrent().database.states;
+  const current = record.exploitStates;
+  const firstState = current?.stateIds[0] ?? '';
+  const save = (stateId: string, bonusPercent: number, consume: boolean): void => {
+    const rest = (current?.stateIds ?? []).slice(1).filter(id => id !== stateId);
+    updateDatabaseRecord('skills', record.id, { exploitStates: stateId ? { stateIds: [stateId, ...rest], bonusPercent: Math.max(1, Math.min(300, bonusPercent)), ...(consume ? { consume: true } : {}) } : undefined });
+  };
+  return [
+    selectField(`약점 공략 — 이 상태인 대상에게 더 아프게${(current?.stateIds.length ?? 0) > 1 ? ` (외 ${current!.stateIds.length - 1}개)` : ''}`, 'feature16-exploit-state', firstState, [{ id: '', name: '없음' }, ...states.map(state => ({ id: state.id, name: state.name }))], value => save(value, current?.bonusPercent ?? 50, current?.consume === true)),
+    numberField('약점 공략 보너스 %', 'feature16-exploit-bonus', current?.bonusPercent ?? 50, value => { if (firstState) save(firstState, value, current?.consume === true); }, { min: 1, max: 300, step: 5 }),
+    selectField('약점 공략 뒤 그 상태', 'feature16-exploit-consume', current?.consume ? 'consume' : 'keep', [{ id: 'keep', name: '남긴다' }, { id: 'consume', name: '깨뜨린다(지운다)' }], value => { if (firstState) save(firstState, current?.bonusPercent ?? 50, value === 'consume'); }),
+  ];
 }

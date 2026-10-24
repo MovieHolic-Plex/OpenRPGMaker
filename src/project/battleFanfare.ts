@@ -2,7 +2,7 @@
  * 전투 결과 팡파레 설정 — 레벨 업 배너·능력치 판·「새 기술 습득!」 카드·「새 연계기!」 카드의 켜기/끄기와 연출 세기(2026-10-24).
  *
  * `system.battleFanfare` 로 저장한다. 기본값(전부 켜기 · burst · 소리 켜기)은 저장하지 않는다 — 옛 JSON 바이트 그대로.
- * 자료집 「시스템 → 전투 화면」과 조수 `set_battle_fanfare` 가 같은 정규화를 쓴다.
+ * 자료집 「시스템 → 전투 화면」과 조수 `set_project_settings`(battle.fanfare) 가 같은 정규화를 쓴다.
  */
 export type BattleFanfareStyle = "burst" | "classic" | "minimal";
 
