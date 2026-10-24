@@ -32,7 +32,7 @@ export const EVENT_CARD =
   "walk{who,to}=걷기(to=길·광장·입구·문 앞 같은 자리 낱말, 다른 사람 이름이면 그 곁으로 걸어가 마주 선다, {x,y} 는 꼭 필요할 때만) / " +
   "say{who,text}=대사 / appear{who,where?,looks?,talk?}=그 자리에 «팍» 나타남(where 생략 가능 — 뒤에 주인공에게 걸어오면 함수가 4~8칸 떨어진 길 위를 고른다; talk=컷신 뒤 말 걸면 할 말 배열) / " +
   "face{who,toward}=바라봄 / wait{ms} / fade{dir:'in'|'out'} / " +
-  "tint{tone:'night'|'dusk'|'dawn'|'sepia'|'clear'}=화면 색(밤이 되면 컷신 뒤에도 밤으로 남는다, 되돌리려면 clear) / weather{weather:'rain'|'storm'|'snow'|'fog'|'none',intensity?:0~1}=실제 날씨(비가 오기 시작한다 → weather rain; tint 로 흉내 내지 않는다, 컷신 뒤에도 남는다) / camera{to}=카메라를 자리 낱말·사람·'x,y' 로 옮겨 보여 줌, to:'back' 이면 주인공에게 복귀(빠뜨려도 끝에 돌아온다) / " +
+  "tint{tone:'night'|'dusk'|'dawn'|'sepia'|'clear'}=화면 색(밤이 되면 컷신 뒤에도 밤으로 남는다, 되돌리려면 clear) / weather{weather:'rain'|'storm'|'snow'|'fog'|'none',intensity?:0~1}=실제 날씨(비가 오기 시작한다 → weather rain; tint 로 흉내 내지 않는다, 컷신 뒤에도 남는다) / shake{strength?:'weak'|'medium'|'strong',axis?:'vertical'(지진·쿵)|'horizontal'(부딪힘),ms?}=화면 흔들림(지진은 camera 로 흉내 내지 않는다) / flash{color?:'white'|'#rrggbb',ms?}=번쩍(번개·폭발 — fade 로 흉내 내지 않는다) / music{action:'bgm'|'se'|'stop'|'fade',query}=배경 음악 바꾸기(축제·전투 음악 등)·효과음 — query 는 음원 낱말 / camera{to}=카메라를 자리 낱말·사람·'x,y' 로 옮겨 보여 줌, to:'back' 이면 주인공에게 복귀(빠뜨려도 끝에 돌아온다) / " +
   "look{who,as:'shadow'|'ghost'|'normal'}=검은 실루엣·반투명 유령·원래 모습 / vanish{who}=연기처럼 사라짐(«지나가는» 그림자는 등장한 반대쪽 자리 낱말로 걸어가 사라진다 — 다른 사람 곁으로 걸으면 «찾아온» 장면이 된다). " +
   "대사 속 마을·사람 이름은 맵 이름·기존 NPC 대사에 있는 것을 그대로 쓴다(새로 짓지 않는다). " +
   "who: 주인공·player·hero = 플레이어, 그 밖의 이름 = 컷신에 나타나는 사람(appear 로 먼저 등장시키거나 맵에 이미 있는 NPC 이름). " +
@@ -645,6 +645,27 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
         const intensity = Math.min(1, Math.max(0.1, Number.isFinite(b.intensity) ? Number(b.intensity) : 0.6));
         out.push({ kind: "weather", weather: b.weather, intensity, durationMs: 1200 });
         effects.push(b.weather === "none" ? "the weather clears" : `real ${b.weather} weather starts (particles over the whole map, stays after the scene)`);
+        break;
+      }
+      case "shake": {
+        const intensity = b.strength === "weak" ? 3 : b.strength === "strong" ? 10 : 6;
+        const durationMs = Math.min(4000, Math.max(200, Number.isFinite(b.ms) ? Math.round(Number(b.ms)) : 900));
+        out.push({ kind: "shake", intensity, durationMs, axis: b.axis ?? "both" });
+        effects.push(`the screen shakes (${b.axis ?? "both"}, ${durationMs} ms)`);
+        break;
+      }
+      case "flash": {
+        const color = typeof b.color === "string" && /^#[0-9a-f]{6}$/iu.test(b.color) ? b.color : /red|빨/iu.test(String(b.color ?? "")) ? "#ff4040" : "#ffffff";
+        const durationMs = Math.min(2000, Math.max(100, Number.isFinite(b.ms) ? Math.round(Number(b.ms)) : 400));
+        out.push({ kind: "flash", color, durationMs });
+        effects.push(`the screen flashes ${color}`);
+        break;
+      }
+      case "music": {
+        const action = b.action ?? "bgm";
+        if ((action === "bgm" || action === "se") && !b.query?.trim()) { warnings.push("music: bgm·se 는 query(음원 낱말)가 필요하다."); break; }
+        out.push(action === "stop" || action === "fade" ? { kind: "music", action } : { kind: "music", action, resourceId: b.query!.trim() });
+        effects.push(action === "bgm" ? `the background music changes to a '${b.query}' track (stays after the scene)` : action === "se" ? `a '${b.query}' sound effect plays` : "the music stops");
         break;
       }
       case "camera": {

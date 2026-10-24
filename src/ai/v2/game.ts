@@ -7,7 +7,7 @@ import { createPiToolset, type PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { getTool } from "@/editor/tools/toolRegistry";
 import type { PiAssistantV2Env } from "./env";
 
-export const GAME_WORDS = /퀘스트|의뢰|심부름|부탁|아이템|회복약|포션|무기|갑옷|방패|장비|장신구|상점|가게|팔게|팔기|열쇠|잠긴|보물|상자|제작|만들어 주는|주인공|이름|직업|레벨|능력치|체력|동료|파티|합류|떠나|스킬|기술|전투|싸우|보스|적\b|몬스터|무리|선택지|호감|기억|스위치|변수|횟수|레버|여관|묵으|저장|회복|치료|신부|골드|돈|엔딩|결말|게임|일지|제한 시간|타이머|낮에|밤에|시간대|아침|저녁|팻말|표지판|우물|동전|암호|비밀번호|통행료|경비|문지기|함정|독|중독|마비|수면|상태 ?이상|날씨|비가|비 ?오|눈이|눈 ?내|폭풍|안개|quest|item|shop|weapon|armor|battle|enemy|party|skill|inn|save|gold|ending|poison|weather/iu;
+export const GAME_WORDS = /퀘스트|의뢰|심부름|부탁|아이템|회복약|포션|무기|갑옷|방패|장비|장신구|상점|가게|팔게|팔기|열쇠|잠긴|보물|상자|제작|만들어 주는|주인공|이름|직업|레벨|능력치|체력|동료|파티|합류|떠나|스킬|기술|전투|싸우|보스|적\b|몬스터|무리|선택지|호감|기억|스위치|변수|횟수|레버|여관|묵으|저장|회복|치료|신부|골드|돈|엔딩|결말|게임|일지|제한 시간|타이머|낮에|밤에|시간대|아침|저녁|팻말|표지판|우물|동전|암호|비밀번호|통행료|경비|문지기|함정|독|중독|마비|수면|상태 ?이상|날씨|비가|비 ?오|지진|흔들|번쩍|번개|음악|배경음|bgm|약초|광맥|이동석|눈이|눈 ?내|폭풍|안개|quest|item|shop|weapon|armor|battle|enemy|party|skill|inn|save|gold|ending|poison|weather/iu;
 
 /** v1 도구 중 게임 요소에 쓰는 것(읽기 먼저). 레지스트리에 없는 이름은 빠진다. */
 export const V2_GAME_TOOLS: readonly string[] = [
@@ -43,6 +43,9 @@ export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전�
 - 물건 보여 주기·내기(presentItem·아이템 고르기)는 그 물건을 가졌을 때만 뜨게 한다: 그 페이지 조건에 {kind:'item',itemId,present:true}(또는 fork 로 감싸기) — 물건이 없을 때는 평소 대사 페이지가 나와야 한다.
 - 상태 이상(독·마비·수면…): 화면 효과·소리만으로 흉내 내지 말고 실제 상태를 건다 — {kind:'m2Command',commandId:'m2-019-change-state',fields:{target:'party'(또는 배우 id),operation:'add',value:'state_poison'}}. 상태 id 는 get_database_records(states)로 확인. 효과음·번쩍임은 그 위에 덧붙인다.
 - 날씨(비·눈·폭풍·안개): 실제 날씨 명령 {kind:'setWeather',weather:'rain'|'storm'|'snow'|'fog'|'none',intensity:0~1} 을 쓴다(또는 add_event 의 weather 비트, 맵 전체 기본 날씨는 set_scene_mood). tint(화면 색)는 날씨가 아니다.
+- 흔들림·지진은 add_event 의 shake 비트(또는 m2Command m2-048-shake-screen), 번쩍·번개는 flash 비트(m2-047-flash-screen), 음악 바꾸기는 music 비트({do:'music',action:'bgm',query:'festival'} 또는 {kind:'playAudio',resourceId,loop:true}) — 카메라 이동·페이드로 흉내 내지 않는다.
+- 플레이어가 «조사하는» 물건(이동석·약초 자리·광맥·표지판·문·덤불)은 눈에 보여야 한다: 그 이벤트에 graphic.query 로 물건 그림을 주거나 이미 있는 물건 타일 칸에 둔다. 투명 이벤트를 맨땅에 두지 않는다(숨기라는 요청만 예외).
+- 이미 있는 NPC 는 add_people 로 다시 세우지 않는다(같은 이름이면 함수가 그 NPC 를 그대로 쓴다) — 그 그림·얼굴·자리는 바꾸지 않는다.
 - 엔딩·결말: list_endings 로 보고 define_ending(id·name·epilogue)으로 엔딩을 정의한 뒤 선택지 갈래에 {kind:'triggerEnding',endingId} 를 넣는다. 내레이션 + returnToTitle 만으로 엔딩을 흉내 내지 않는다. «마지막에» 묻는 선택이면 그 앞 조건(보스 처치·완료 스위치)을 페이지 조건으로 건다.
 - 요청이 가리키는 자리(다리 앞·강가·우물 옆…)가 맵에 없으면 묻지 않는다: 그 물건·지형을 만들어(stamp_object·fill_region 덧그리기, 없으면 가장 그럴듯한 길목) 짓고 보고에 「~가 없어 ~에 만들었다」고 쓴다.
 - 도구가 거절하면 이유를 읽고 고쳐 다시 부른다. 같은 거절이 두 번이면 방법을 바꾼다. 할 수 없는 것은 보고에 적는다.`;
