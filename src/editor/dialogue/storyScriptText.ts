@@ -89,6 +89,13 @@ export function selectScenes(story: Story, selection: ScriptSelection): StorySce
     }
   }
   if (!wanted && (selection.from || selection.to)) {
+    // 이어 읽기(nextFrom)처럼 고른 목록 안에 그 번호가 그대로 있으면 자리로 자른다(곁가지 B… 번호도 된다).
+    const at = (ref: string | undefined): number => (ref ? result.findIndex((scene) => scene.ref === ref.trim().toUpperCase()) : -1);
+    const fromAt = at(selection.from);
+    const toAt = at(selection.to);
+    if ((!selection.from || fromAt >= 0) && (!selection.to || toAt >= 0)) {
+      return result.slice(fromAt >= 0 ? fromAt : 0, toAt >= 0 ? toAt + 1 : result.length);
+    }
     const number = (ref: string | undefined): number | undefined => (ref ? Number(/\d+/u.exec(ref)?.[0]) : undefined);
     const from = number(selection.from);
     const to = number(selection.to);
