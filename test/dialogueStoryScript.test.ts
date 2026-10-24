@@ -6,7 +6,7 @@ import { collectDialogueLines, dialogueTextHash, resolveDialogueSlot } from "@/e
 import { applyDialogueEdits, checkDialogueEdit, dialogueMeasureKey, estimateLineFit } from "@/editor/dialogue/dialogueEdits";
 import { buildStory, resolveStoryRef } from "@/editor/dialogue/storyScript";
 import { renderOutlineText, renderSceneText, selectScenes } from "@/editor/dialogue/storyScriptText";
-import { readDialogueDesk, writeDialogueWindow } from "@/project/dialogueDesk";
+import { DIALOGUE_PROPOSAL_LIMIT, readDialogueDesk, upsertDialogueProposals, writeDialogueWindow, type DialogueProposal } from "@/project/dialogueDesk";
 import type { Command, EventPage, EventPageCondition, GameEvent, Project, Trigger } from "@/project/types";
 
 function page(id: string, commands: Command[], options: { conditions?: EventPageCondition[]; trigger?: Trigger } = {}): EventPage {
@@ -227,6 +227,35 @@ describe("assistant story tools", () => {
     expect(proposals).toHaveLength(1);
     expect(proposals[0]).toMatchObject({ lineId: line.id, after: "북쪽 동굴에 괴물이 있다. 가 줄 테냐?" });
     expect(lineBy(ctx.project, "북쪽 동굴").text).toBe(line.text);
+  });
+
+  it("read_story_script names the valid range instead of returning nothing for an unknown scene ref", () => {
+    const result = runTool(ctxOf(fixture()), "read_story_script", { includeSide: true, from: "B1", to: "B99" });
+    expect(result.ok).toBe(false);
+    expect(JSON.stringify(result)).toContain("B99 없음");
+    expect(JSON.stringify(result)).toContain("곁가지는 B1~B2");
+  });
+
+  it("never evicts older proposals when the proposal list is full; the overflow is reported as rejected", () => {
+    const project = fixture();
+    const filler: DialogueProposal[] = Array.from({ length: DIALOGUE_PROPOSAL_LIMIT - 1 }, (_, index) => ({
+      id: `p${index}`, lineId: `ev/x/y/z/${index}#body`, baseHash: "h", before: "a", after: "b", source: "ai", createdAt: "",
+    }));
+    expect(upsertDialogueProposals(project, filler)).toBe(DIALOGUE_PROPOSAL_LIMIT - 1);
+    const elder = lineBy(project, "북쪽 동굴");
+    const villager = lineBy(project, "날씨 좋네");
+    const ctx = ctxOf(project);
+    const result = runTool(ctx, "rewrite_dialogue", { edits: [
+      { id: elder.id, hash: elder.hash, text: "북쪽 동굴 괴물, 맡아 줄 테냐?" },
+      { id: villager.id, hash: villager.hash, text: "날씨 참 좋다." },
+    ] });
+    expect(result.ok).toBe(true);
+    const proposals = readDialogueDesk(ctx.project).proposals;
+    expect(proposals).toHaveLength(DIALOGUE_PROPOSAL_LIMIT);
+    expect(proposals[0]!.id).toBe("p0");
+    const data = result.data as { accepted: { id: string }[]; rejected: { id: string; reason: string }[] };
+    expect(data.accepted).toHaveLength(1);
+    expect(data.rejected).toEqual([expect.objectContaining({ reason: "full" })]);
   });
 
   it("rewrite_dialogue rejects an unknown ref", () => {

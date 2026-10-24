@@ -9,7 +9,7 @@
 // 스키마: 자유 키 객체·빈 enum 멤버를 쓰지 않는다(Gemini 400 — openwiki/editor-ai-tools.md). 배열은 items 를 단다.
 
 import { genId } from "@/util/id";
-import { readDialogueDesk, speakerVoiceNote, upsertDialogueProposals, writeSceneNotes, writeSpeakerVoice, normalizeSpeakerName, type DialogueProposal } from "@/project/dialogueDesk";
+import { DIALOGUE_PROPOSAL_LIMIT, readDialogueDesk, speakerVoiceNote, upsertDialogueProposals, writeSceneNotes, writeSpeakerVoice, normalizeSpeakerName, type DialogueProposal } from "@/project/dialogueDesk";
 import {
   collectDialogueLines,
   dialogueContext,
@@ -255,7 +255,7 @@ const rewriteDialogue: ToolDefinition = {
       ? applyDialogueEdits(draft, edits, options)
       : edits.map((edit) => checkDialogueEdit(draft, edit, options, lines));
     const accepted = verdicts.filter((verdict) => verdict.ok);
-    const rejected = verdicts.filter((verdict) => !verdict.ok).map((verdict) => ({ id: verdict.id, reason: verdict.reason, message: verdict.message }));
+    const rejected: { id: string; reason?: string; message?: string }[] = verdicts.filter((verdict) => !verdict.ok).map((verdict) => ({ id: verdict.id, reason: verdict.reason, message: verdict.message }));
     if (accepted.length === 0) {
       throw new ToolError(`고친 줄 0 — ${rejected.slice(0, 4).map((item) => `${item.id}: ${item.message}`).join(" / ")}`, { code: "dialogue-rewrite-rejected" });
     }
@@ -282,7 +282,15 @@ const rewriteDialogue: ToolDefinition = {
           createdAt: now,
         });
       }
-      upsertDialogueProposals(draft, proposals);
+      const placed = upsertDialogueProposals(draft, proposals);
+      if (placed < proposals.length) {
+        const dropped = proposals.slice(placed);
+        const full = `제안 칸이 찼다(최대 ${DIALOGUE_PROPOSAL_LIMIT}) — 사람이 「대사」 탭에서 걸린 제안을 받거나 버린 뒤 다시 낸다.`;
+        if (placed === 0) throw new ToolError(`고친 줄 0 — ${full}`, { code: "dialogue-proposals-full" });
+        const droppedIds = new Set(dropped.map((proposal) => proposal.lineId));
+        for (let index = accepted.length - 1; index >= 0; index -= 1) if (droppedIds.has(accepted[index]!.id)) accepted.splice(index, 1);
+        for (const proposal of dropped) rejected.push({ id: proposal.lineId, reason: "full", message: full });
+      }
     }
     const warnings = accepted.flatMap((verdict) => verdict.warning ? [`${verdict.id}: ${verdict.warning}`] : []);
     return {
@@ -410,6 +418,13 @@ const readStoryScript: ToolDefinition = {
     const chapterId = chapterArg(story, args.chapter);
     const sceneRefs = Array.isArray(args.scenes) ? args.scenes.map(str).filter(Boolean) : [];
     const speaker = normalizeSpeakerName(str(args.speaker));
+    // 없는 번호(곁가지가 B217 까지인데 B226)를 받으면 말없이 빈 결과로 떨어지지 않게 범위를 알려 준다.
+    const knownRefs = new Set([...story.scenes.values()].map((scene) => scene.ref));
+    const unknown = [str(args.from), str(args.to), ...sceneRefs].map((ref) => ref.trim().toUpperCase()).filter((ref) => ref && !knownRefs.has(ref));
+    if (unknown.length > 0) {
+      const count = (lane: "main" | "side"): number => [...story.scenes.values()].filter((scene) => scene.lane === lane).length;
+      throw new ToolError(`장면 번호 ${unknown.slice(0, 4).join(", ")} 없음 — 본줄은 S1~S${count("main")}, 곁가지는 B1~B${count("side")} 이다.`, { code: "invalid-args" });
+    }
     const scenes = selectScenes(story, {
       ...(chapterId ? { chapterId } : {}),
       ...(str(args.from) ? { from: str(args.from) } : {}),
