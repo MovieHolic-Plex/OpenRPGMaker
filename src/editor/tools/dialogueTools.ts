@@ -174,7 +174,7 @@ const EDIT_ITEM_SCHEMA = {
   properties: {
     id: { type: "string", description: "list_dialogue 의 줄 id 그대로." },
     hash: { type: "string", description: "list_dialogue 가 준 hash 그대로(원문이 그 사이 바뀌었으면 거절된다)." },
-    text: { type: "string", description: "고친 글 전체. 제어 코드(\\C[n] \\N[n] \\. \\| [흔들]…[/] {name} 등)는 원문 그대로 남긴다." },
+    text: { type: "string", description: "고친 글 전체. 줄바꿈은 실제 줄바꿈 문자로 넣는다(「\\n」 두 글자로 쓰지 않는다). 제어 코드(\\C[n] \\N[n] \\. \\| [흔들]…[/] {name} 등)는 원문 그대로 남긴다." },
     reason: { type: "string", description: "무엇을 왜 바꿨는지 한 줄(사람이 검토할 때 본다)." },
   },
   required: ["id", "hash", "text"],

@@ -58,6 +58,18 @@ export function estimateLineFit(project: Project, line: Pick<DialogueLine, "kind
   return measureDialogueFit(visibleDialogueText(text, { actorNames: actorNamesOf(project) }), metrics);
 }
 
+const LITERAL_NEWLINE = /\\n(?!\[)/gu;
+
+/**
+ * 고친 글의 줄바꿈을 맞춘다. CRLF 는 LF 로. 모델이 JSON 이스케이프를 한 번 더 해서 줄바꿈 대신 「\n」 두 글자를 보내는 일이 있다
+ * (2026-10-24 폴른 스타 실측: 발렌 제안 30줄 중 여러 줄) — 원문에 그 두 글자가 없으면 진짜 줄바꿈으로 바꾼다. `\N[1]` 같은 코드는 건드리지 않는다.
+ */
+export function normalizeEditedDialogueText(original: string, text: string): string {
+  const unified = text.replace(/\r\n?/gu, "\n");
+  if (/\\n(?!\[)/u.test(original)) return unified;
+  return unified.replace(LITERAL_NEWLINE, "\n");
+}
+
 /** 고치기 하나를 검사만 한다(프로젝트를 바꾸지 않는다). lines 를 주면 색인을 다시 만들지 않는다. */
 export function checkDialogueEdit(project: Project, edit: DialogueEditRequest, options: DialogueEditOptions = {}, lines?: readonly DialogueLine[]): DialogueEditVerdict {
   const slot = resolveDialogueSlot(project, edit.id);
@@ -66,7 +78,7 @@ export function checkDialogueEdit(project: Project, edit: DialogueEditRequest, o
     return { id: edit.id, ok: false, reason: "stale-hash", message: `원문이 바뀌었다(지금 해시 ${dialogueTextHash(slot.text)}). 다시 읽고 고쳐라.`, before: slot.text };
   }
   if (slot.drafted) return { id: edit.id, ok: false, reason: "drafted", message: "이 이벤트가 이벤트 편집기에서 열려 있다 — 편집기를 닫은 뒤 고친다.", before: slot.text };
-  const text = edit.text.replace(/\r\n?/gu, "\n");
+  const text = normalizeEditedDialogueText(slot.text, edit.text);
   if (text === slot.text) return { id: edit.id, ok: false, reason: "unchanged", message: "원문과 같다.", before: slot.text };
   if (!text.trim()) return { id: edit.id, ok: false, reason: "empty", message: "빈 글로 바꿀 수 없다. 줄을 없애려면 이벤트 명령을 지운다.", before: slot.text };
   if (text.length > DIALOGUE_TEXT_LIMIT) return { id: edit.id, ok: false, reason: "too-long", message: `${DIALOGUE_TEXT_LIMIT}자를 넘는다.`, before: slot.text };
@@ -110,7 +122,7 @@ export function applyDialogueEdits(
     if (!verdict.ok) return verdict;
     if (seen.has(verdict.id)) return { id: verdict.id, ok: false, reason: "stale-hash" as const, message: "같은 줄을 한 번에 두 번 고칠 수 없다." };
     seen.add(verdict.id);
-    resolveDialogueSlot(project, verdict.id)!.write(edits[index]!.text.replace(/\r\n?/gu, "\n"));
+    resolveDialogueSlot(project, verdict.id)!.write(verdict.after ?? normalizeEditedDialogueText(verdict.before ?? "", edits[index]!.text));
     return verdict;
   });
 }
