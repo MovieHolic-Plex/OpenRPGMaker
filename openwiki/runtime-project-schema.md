@@ -7,6 +7,8 @@
 로드(`io/shape.ts`)에서 `normalizeDialogueDesk` 로 다듬고 비면 키를 지운다. 제안은 최대 400, 메모는 800자.
 store.update 안에서 루트 키 **삭제**는 반영되지 않으므로 쓰기 쪽은 빈 책상을 대입한다. 변경 영역 라벨 「대사 책상」.
 
+`sceneNotes?: [{sceneId, summary, source, updatedAt?}]`(2026-10-25) — 「대본」 장면 한 줄 요약(장면 id = `ev/<맵>/<이벤트>/<쪽>` · `ce/…` · `tp/…`, 200자, 최대 2000). 사람(대본 화면)·조수(`set_scene_summaries`)가 쓴다. 빈 요약은 지운다.
+
 ## 세계 지도 연결 정의 — 선택 필드 `project.worldAtlases` (2026-10-05)
 
 6종의 이동 구조·실제 mapId·입구/문·연결·관문 switch id·핀을 보존한다.
