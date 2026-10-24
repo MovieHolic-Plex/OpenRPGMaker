@@ -1003,7 +1003,7 @@ export function evalCondition(
       return compareVariableValue(session.gold, condition.op, condition.amount);
     case "timer": {
       const remaining = session.timers[condition.timerId] ?? 0;
-      return remaining <= condition.seconds;
+      return compareVariableValue(remaining, condition.op ?? "<=", condition.seconds);
     }
     case "timePhase":
       return conditionMatchesTimePhase(session.gameTime, condition.phase);
