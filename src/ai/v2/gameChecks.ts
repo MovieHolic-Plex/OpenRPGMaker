@@ -299,6 +299,15 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     const idle = newDeclared.filter((id) => !/^sw_ev_.+_clear$/u.test(id) && !everywhere.includes(`"${id}"`) && !everywhere.includes(`[${id}]`));
     if (idle.length) problems.push(`[게임 검사 깃발] 선언만 하고 어디서도 쓰지 않는 깃발: ${idle.slice(0, 6).join(", ")} — 쓰거나 지운다.`);
   }
+  // 새 게임인데 오프닝이 공장 기본(「강을 낀 왕국…」) 그대로 켜져 있다 — 첫 화면부터 다른 이야기가 나온다(2026-10-25 조수 단독 게임 G3).
+  {
+    const op = after.system.opening as { enabled?: boolean; scenes?: { narration?: string; resourceId?: string }[] } | undefined;
+    const factory = !!op?.enabled && (op.scenes ?? []).some((sc) => /강을 낀 왕국에는 오래도록 전쟁이 없었다/u.test(sc.narration ?? "") || sc.resourceId === "oprn-still-kingdom-day");
+    const newGame = (after.system.title ?? "") !== (before.system.title ?? "") || /게임을? (하나 )?만들|게임 하나|새 게임|만들고 싶어/u.test(task);
+    if (factory && newGame && JSON.stringify(op) === JSON.stringify(before.system.opening)) {
+      problems.push("[게임 검사 오프닝] 게임을 새로 만들었는데 오프닝이 프로젝트 기본(「강을 낀 왕국에는 오래도록 전쟁이 없었다」)이 그대로 켜져 있다 — 새 게임 첫 화면에 엉뚱한 이야기가 나온다. plan_opening/set_opening 으로 이 게임 이야기(주인공·목표) 몇 장면으로 바꾸거나, 오프닝을 원하지 않으면 set_opening{enabled:false}.");
+    }
+  }
   // 못 이기는 전투(2026-10-25 사용자: 게임에서 못 쓰면 실패): 바뀐 이벤트가 여는 전투(지면 안 되는 것)를 시작 파티·시작 레벨로 모의 20판 → 0승이면 돌려보낸다.
   {
     const party = after.system.startActorIds ?? [];
