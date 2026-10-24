@@ -418,9 +418,12 @@ function buildEndingCg(terminal: TerminalScene, project: Project, presentation: 
 function fitEndingMessage(epilogue: HTMLElement): void {
   const message = epilogue.querySelector<HTMLElement>(".ending-message");
   if (!message || epilogue.clientHeight <= 0) return;
+  // 요약 글 상자는 자기 max-height 안에서 스크롤하므로 판만 재면 늘 «들어간다» 로 읽혔다 — 마지막 줄이 상자 안에서 잘렸다(첫사랑 VQA r35).
+  // 판과 글 상자 둘 다 넘치지 않는 가장 큰 크기를 고른다.
+  const fits = (): boolean => epilogue.scrollHeight <= epilogue.clientHeight + 1 && message.scrollHeight <= message.clientHeight + 1;
   for (let size = 4.6; size >= 3; size -= 0.2) {
     message.style.fontSize = `${size.toFixed(1)}cqh`;
-    if (epilogue.scrollHeight <= epilogue.clientHeight + 1) return;
+    if (fits()) return;
   }
 }
 
@@ -471,7 +474,11 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const body = message || cg?.epilogue;
     if (body) epilogue.append(textNode("div", "ending-message", body));
     terminal.root.append(epilogue);
-    if (cg) fitEndingMessage(epilogue);
+    if (cg) {
+      fitEndingMessage(epilogue);
+      // 글꼴이 늦게 들어오면 줄 높이가 바뀐다 — 들어온 뒤 한 번 더 맞춘다.
+      void document.fonts?.ready.then(() => { if (epilogue.isConnected) fitEndingMessage(epilogue); });
+    }
     terminal.phase("epilogue");
     if (!await terminal.wait(1800)) return;
     const hint = textNode("div", "game-over-hint", endingText("ending.continue"));

@@ -1200,6 +1200,29 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   await page.addInitScript(
     `window.__oprnReadBattlerGeometry = ${readBattlerGeometryInPage.toString()};`,
   );
+  // 소리 큐 기록 — Playwright 영상에는 소리가 없다. HTMLMediaElement.play 시각·파일·음량·반복·멈춘 시각을 모아 두면
+  // 영상 클립에 같은 파일을 그 시각에 다시 섞을 수 있다(scripts/qa/runtime/mux-audio-cues.py). 읽기만 하고 재생은 바꾸지 않는다.
+  await page.addInitScript(`(() => {
+    window.__qaSfx = [];
+    const proto = HTMLMediaElement.prototype;
+    const play = proto.play, pause = proto.pause;
+    const cueOf = (el) => el.__qaCue;
+    proto.play = function (...a) {
+      try {
+        if (window.__qaSfx.length < 4000) {
+          const cue = { at: Date.now(), src: this.currentSrc || this.src, volume: this.volume, rate: this.playbackRate, loop: !!this.loop };
+          this.__qaCue = cue; window.__qaSfx.push(cue);
+          if (!this.__qaWatch) {
+            this.__qaWatch = true;
+            this.addEventListener("volumechange", () => { const c = cueOf(this); if (c) (c.vol = c.vol ?? []).push([Date.now(), this.volume]); });
+            this.addEventListener("ended", () => { const c = cueOf(this); if (c && !c.end) c.end = Date.now(); });
+          }
+        }
+      } catch {}
+      return play.apply(this, a);
+    };
+    proto.pause = function (...a) { try { const c = cueOf(this); if (c && !c.end) c.end = Date.now(); } catch {} return pause.apply(this, a); };
+  })();`);
   // 콘솔·페이지 오류를 페이지 안에 모아 둔다 — 비트 단위 관측(expect.consoleErrorMatches)이
   // 읽는다. 러너의 report.errors 는 시나리오 전역이라 패턴 매칭에 쓸 수 없다.
   await page.addInitScript(`(() => {
@@ -1355,6 +1378,12 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       // "사각을 봤다" 처럼 읽힌다.
       ...(Object.keys(observed.events ?? {}).length > 0 ? { events: observed.events } : {}),
     });
+  }
+
+  // 소리 큐(위 addInitScript) — 영상 클립에 소리를 다시 섞는 재료. 비어 있으면 쓰지 않는다.
+  {
+    const cues = await page.evaluate(() => window.__qaSfx ?? []).catch(() => []);
+    if (cues.length) await writeFile(join(outDir, "audio-cues.json"), JSON.stringify(cues), "utf8").catch(() => {});
   }
 
   const report = {
