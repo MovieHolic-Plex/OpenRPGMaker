@@ -1,377 +1,337 @@
-"""wasteland_ruins 깨진 콘크리트 판 r60 — 두 층: 이음 없는 콘크리트 결(아래층) + 가장자리 맞춤(Wang) 줄눈 덧그림(위 평면층).
+"""wasteland_ruins 깨진 콘크리트 판 r60b — 곧은 줄눈(맵 단위 판 짜임) + 판마다 다른 단 + 칸 안 표시 + 흙 쪽 부서짐 · 길 쪽 연석.
 
-r58·r59(128화소 위상 판 안에 줄눈을 그려 넣은 판)는 세 번 모두 적대 검수에서 떨어졌다: 128 주기 줄눈 무늬가 보이고, 같은 얼룩이 모든 변형에 있고,
-판석(ashlar)처럼 읽히고, 결이 화강암 점무늬였다. r60 은 줄눈을 결에서 떼어 낸다.
+r58·r59(128화소 판 안에 그린 줄눈)와 r60a(가장자리 맞춤 구불 줄눈)는 적대 검수에서 떨어졌다: 128 주기 얼룩, 판석·조각 포장으로 읽힘,
+금이 줄눈과 같은 모양, 구멍이 벌레·리벳으로 읽힘, 보도와 아스팔트 사이 흙 틈. r60b 는 줄눈을 «판 짜임»으로 맵 단위에서 정한다:
 
-- `slab-ground` (terrain, 8×8칸, 주기 128): 줄눈 없는 콘크리트 결. 2~3화소 덩이가 ±1단, 넓은 젖은 자리 −1단. 낱화소 흰 점·갈색 점 없음.
-- `slab-joints` (flat, 16열 × 21행 = 칸 327): 칸 네 변마다 «줄눈이 그 변을 건너는 자리» 부호(0 = 안 건넘, 1·2·3 = 세 자리 중 하나)를 받고,
-  네 부호 (N, E, S, W) 조합마다 칸 안 줄눈 그림. 맞닿은 두 칸은 같은 변 부호를 쓰니 줄눈이 칸 경계에서 끊기지 않고 이어진다.
-  구성기가 변마다 해시로 부호를 정하므로(0 이 52%) 줄눈 짜임은 맵 어디서도 되풀이되지 않고, 줄눈은 칸 경계를 따라 눕지 않는다.
-  건넘이 하나뿐인 칸은 줄눈이 잦아들어 실금으로 끝난다(깨진 콘크리트의 금). 건넘 0 칸은 빈 칸·실금·얕은 벗겨짐.
-  칸 순서(구성기와 같은 규칙): 조합 = N*64 + E*16 + S*4 + W, 조합마다 변형 수 nv(k) (k = 0 아닌 부호 수: 0→6, 1→2, 2→2, 3·4→1),
-  조합 순서대로 변형을 이어 놓고, 그 순번 i 의 칸이 조각 안 (i % 16, i // 16).
-그림 규칙: 줄눈 = 1화소 짙은 회청(conc 1), 군데군데 흙 낀 토막. 줄눈 아래·오른쪽 한 화소 = 판 윗끝 빛(+1단), 위·왼쪽 = 그늘(−1단) — 끊김 없는 실선.
-금 = 줄눈보다 밝은 회갈(conc 3), 가늘고 끝이 잦아든다. 깨진 귀 = 흙이 드러난 구멍(3/4: 안쪽 윗벽이 가장 어둡다). 잡초 = 줄눈에서 자란 작은 포기.
+- 가로 줄눈 줄: 맵 y 위로 2~4칸마다(해시), 그 사이 띠마다 세로 줄눈이 2~4칸마다(띠마다 어긋남) — 2~4칸 네모 판, 줄눈은 길고 곧다.
+  줄눈은 칸 경계(칸 윗줄·왼줄 화소)에 눕는다. 이웃이 판이 아닌 쪽에는 줄눈이 없다(한 칸 보도 띠는 가로지르는 줄눈만 생긴다).
+- `slab-ground` (terrain, 8×24칸): 줄눈 없는 결 8×8 판을 단 셋(어두움·가운데·밝음)으로. 판(줄눈으로 둘린 네모)마다 단 하나를 해시로 고른다.
+  결은 2~3화소 골재 덩이(한 단)뿐 — 넓은 얼룩이 없어 128 주기가 드러나지 않는다.
+- `slab-joints` (flat): 칸 덧그림. 순서(구성기 slabJointFinish 와 같다):
+  1) 속 칸: 줄눈 상태 js(bit0 = 윗줄 줄눈, bit1 = 왼줄 줄눈) 0..3 마다 DECORS 중 쓸 수 있는 것 차례로.
+  2) 둘레 칸: 네 변 종류 코드 c = N*27 + E*9 + S*3 + W (0 판 · 1 흙 · 2 길), c = 1..80 마다, jN ∈ (0,1 if N 판), jW ∈ (0,1 if W 판), 변형 v ∈ 0..1.
+  칸 순번 i 의 자리 = (i % 16, i // 16).
+그림 규칙: 줄눈 = 1화소 짙은 회청 홈 + 그 아래(가로)·오른쪽(세로) 한 화소 밝은 판 끝(곧은 실선이라 점선이 아니다).
+금 = 줄눈보다 밝고 차가운 회색 1화소, 빛 테 없음, 끝은 한 단 밝게 잦아든다. 구멍 = 줄눈 옆 들쭉날쭉 패임(3/4: 안쪽 윗벽 가장 어둡고 바닥 흙, 아래 테 밝게).
+흙 쪽 = 판 끝이 흙으로 부서진다(남쪽은 판 두께 두 줄). 길 쪽 = 연석(윗면 밝은 테, 남쪽 길이면 두 줄 앞면).
 """
 from wl_kit import *
-from wl_ground import TERRAIN, FLAT, wrapnoise, blobs, fan, tiled, DIRT8_IDS
+from wl_ground import TERRAIN, FLAT, tiled, DIRT8_IDS
 
 SP = 128
-NCODE = 4
-H_OFF = (None, 3, 8, 12)       # 가로 변(N·S)을 건너는 줄눈의 x
-V_OFF = (None, 4, 9, 13)       # 세로 변(W·E)을 건너는 줄눈의 y
 COLS = 16
-
-GR = MAT['body']               # 바탕 램프(차가운 중립 회색): 0 676a77 · 1 757886 · 2 848794 · 3 9496a1 · 4 a1a3ac · 5 afb1b8 · 6 bcbdc3
+GR = MAT['body']               # 0 676a77 · 1 757886 · 2 848794 · 3 9496a1 · 4 a1a3ac · 5 afb1b8 · 6 bcbdc3
 G_BASE = 3
-J_COL = K('conc', 1)
+TONES = (-1, 0, 1)
+J_COL, J_DEEP = S['slate'][1], S['slate'][0]
 J_DIRT = (S['bark'][1], S['bark'][2])
-LIT, SHADE = GR[5], GR[1]
-CRACK, CRACK_LIT = K('conc', 2), GR[5]
+CRACK, CRACK_END = S['slate'][2], GR[1]
+DIRT = MAT['dirt']
+DECORS = ('plain0', 'plain1', 'crack0', 'crack1', 'crack2', 'crack3', 'spall0', 'spall1', 'weed0', 'weed1', 'chip', 'heave')
 
 
-def nv(k): return 6 if k == 0 else 2 if k in (1, 2) else 1
+def decor_ok(d, js):
+    if d.startswith(('spall', 'weed')): return js > 0
+    if d == 'chip': return js == 3
+    if d == 'heave': return bool(js & 1)
+    return True
 
 
-def combos():
-    """[(조합, 변형)] 칸 순서 — 구성기 slabJointTile 과 같다."""
+def tile_order():
     out = []
-    for c in range(NCODE ** 4):
-        n, e, s, w = c // 64, (c // 16) % 4, (c // 4) % 4, c % 4
-        k = (n > 0) + (e > 0) + (s > 0) + (w > 0)
-        for v in range(nv(k)): out.append(((n, e, s, w), v))
+    for js in range(4):
+        for d in DECORS:
+            if decor_ok(d, js): out.append(('in', js, d))
+    for c in range(1, 81):
+        n, e, s, w = c // 27, (c // 9) % 3, (c // 3) % 3, c % 3
+        for jn in ((0, 1) if n == 0 else (0,)):
+            for jw in ((0, 1) if w == 0 else (0,)):
+                for v in (0, 1): out.append(('rim', (n, e, s, w), jn | (jw << 1), v))
     return out
 
 
-def rim_combos():
-    """둘레 칸 [(조합, 흙 쪽 마스크)]: 마스크 m(N=1 E=2 S=4 W=8, 그 쪽 이웃이 판이 아님) 1~15 마다, 흙 쪽 부호는 0, 나머지 변 부호 조합 하나씩."""
-    out = []
-    for m in range(1, 16):
-        free = [i for i, bit in enumerate((1, 2, 4, 8)) if not m & bit]
-        for c in range(NCODE ** len(free)):
-            code = [0, 0, 0, 0]
-            for j, i in enumerate(free): code[i] = (c // NCODE ** j) % NCODE
-            out.append((tuple(code), m, 0))
-    # 한 칸 폭 띠(보도): 띠를 가로지르는 곧은 줄눈 두 가지. 가로 띠(위·아래가 판 아님) = 세로 줄 cut 1·2, 세로 띠 = 가로 줄 cut 3·4.
-    # 띠 칸의 흙 쪽 마스크 m 은 길 쪽을 빼므로 가로 띠 m ∈ {0,1,4,5}, 세로 띠 m ∈ {0,2,8,10}.
-    for m in (0, 1, 4, 5): out += [((0, 0, 0, 0), m, 1), ((0, 0, 0, 0), m, 2)]
-    for m in (0, 2, 8, 10): out += [((0, 0, 0, 0), m, 3), ((0, 0, 0, 0), m, 4)]
-    return out
+ORDER = tile_order()
+ROWS = (len(ORDER) + COLS - 1) // COLS
+IN_INDEX = {}
+RIM_INDEX = {}
+for _i, _t in enumerate(ORDER):
+    if _t[0] == 'in': IN_INDEX.setdefault(_t[1], {})[_t[2]] = _i
+    else: RIM_INDEX[(_t[1], _t[2], _t[3])] = _i
 
 
-COMBOS = combos()
-RIMS = rim_combos()
-ROWS = (len(COMBOS) + len(RIMS) + COLS - 1) // COLS
-
-
-# ------------------------------------------------------------------ 아래층: 콘크리트 결
+# ------------------------------------------------------------------ 아래층: 결 + 판 단
 _GT = {}
 
 
 def ground_tone(x, y):
+    """결 단(GR 색인, 판 단 더하기 전). 2~3화소 골재 덩이만 — 어두운 덩이 한 단, 드문 밝은 덩이 한 단."""
     if not _GT:
-        B = blobs(SP, 6011, 5)
-        keys = sorted({v[0] for v in B.values()}, key=lambda k: hsh(k[0], k[1], 6013))
-        R = {k: i / len(keys) for i, k in enumerate(keys)}
         for yy in range(SP):
-            for xx in range(SP):
-                k = B[(xx, yy)][0]
-                r = R[k]
-                wear = 0.55 * wrapnoise(xx, yy, 6017, 32, SP) + 0.45 * wrapnoise(xx, yy, 6019, 64, SP)
-                damp = wrapnoise(xx, yy, 6023, 32, SP)
-                t = G_BASE
-                if r < 0.04 + 0.10 * wear: t = G_BASE + 1
-                elif r > 0.95 - 0.05 * (1 - wear): t = G_BASE - 1
-                if damp < 0.20 and r > 0.3: t -= 1                                   # 넓은 젖은 자리(덩이째 한 단 어둡게)
-                g = h2((xx + (yy // 2) % 2) // 2 % (SP // 2), yy // 2 % (SP // 2), 6029) % 9    # 2×2 골재 덩이(낱화소 점 아님), 한 단만
-                if g == 0: t -= 1
-                elif g == 1 and t <= G_BASE: t += 1
-                elif g == 2 and wear > 0.55: t -= 2                     # 닳은 자리: 드러난 굵은 골재(2×2, 두 단 어둡게)
-                _GT[(xx, yy)] = max(1, min(5, t))
+            for xx in range(SP): _GT[(xx, yy)] = G_BASE
+        for k in range(1400):
+            r = h2(k, 17, 6101)
+            x0, y0 = r % SP, (r >> 7) % SP
+            shape = (r >> 14) % 4
+            pts = [(0, 0), (1, 0), (0, 1), (1, 1)] if shape == 0 else [(0, 0), (1, 0), (2, 0), (1, 1)] if shape == 1 else [(0, 0), (1, 0), (0, 1)] if shape == 2 else [(0, 0), (0, 1), (1, 1), (1, 2)]
+            light = k % 5 == 0
+            for dx, dy in pts:
+                p = ((x0 + dx) % SP, (y0 + dy) % SP)
+                if _GT[p] == G_BASE: _GT[p] = G_BASE + 1 if light else G_BASE - 1
     return _GT[(x % SP, y % SP)]
 
 
-@piece('slab-ground', '깨진 콘크리트 판 바탕', 8, 8, TERRAIN,
-       en='plain weathered city concrete ground seen from above, a seamless 8x8-tile field: flat light grey concrete with soft wear and damp patches '
-          'and small 2-3 px aggregate clumps one tone apart; the slab joints and cracks are a separate decal layer on top',
+@piece('slab-ground', '깨진 콘크리트 판 바탕 (단 셋)', 8, 24, TERRAIN,
+       en='plain old city concrete ground seen from above, seamless: flat light grey concrete with small 2-3 px aggregate clumps one tone apart, '
+          'in three slightly different greys (each poured slab takes one); the straight saw-cut joints, cracks and broken edges are a separate decal layer',
        group='ground', tags=['콘크리트', '광장', '보도', '바닥'],
-       desc='깨진 콘크리트 판의 아래층 결(줄눈 없음, 8×8칸·주기 128화소). 맵 칸 (x,y) 에는 판의 (x mod 8, y mod 8) 칸을 깔고, 위 평면층에 slab-joints 줄눈 덧그림을 얹는다.',
+       desc='깨진 콘크리트 판의 아래층(줄눈 없음). 8×8칸 결 판을 단 셋(rows 0~7 어두움 · 8~15 가운데 · 16~23 밝음)으로 둔다. '
+            '맵 칸 (x,y) 에는 판 단 t 의 rows[(y mod 8) + 8t].tiles[x mod 8] 칸 — 줄눈으로 둘린 판마다 단 하나. 위 평면층에 slab-joints.',
        sample=lambda f=0: board_sample(seed=5))
 def _ground(c):
-    for y in range(SP):
-        for x in range(SP): c.P(x, y, GR[ground_tone(x, y)])
+    for t, d in enumerate(TONES):
+        for y in range(SP):
+            for x in range(SP): c.P(x, t * SP + y, GR[ground_tone(x, y) + d])
 
 
-# ------------------------------------------------------------------ 위층: 줄눈 칸
-def _walk(a, b, seed, wob=0.12):
-    """a→b 8방향 걸음(목표로 가까워지는 걸음 중에서 흔들어 고른다). 양 끝 포함."""
-    (x, y), out = a, [a]
-    i = 0
-    while (x, y) != b and i < 64:
-        dx, dy = (b[0] > x) - (b[0] < x), (b[1] > y) - (b[1] < y)
-        opts = []
-        if dx and dy: opts = [(dx, dy), (dx, 0), (0, dy)]
-        elif dx: opts = [(dx, 0), (dx, 1), (dx, -1)]
-        else: opts = [(0, dy), (1, dy), (-1, dy)]
-        r = h2(x * 31 + i, y * 17, seed) % 100
-        step = opts[0] if r >= wob * 100 else opts[1 + r % 2]
-        nx, ny = x + step[0], y + step[1]
-        if abs(b[0] - nx) + abs(b[1] - ny) > abs(b[0] - x) + abs(b[1] - y) + 1: nx, ny = x + opts[0][0], y + opts[0][1]
-        x, y = nx, ny; out.append((x, y)); i += 1
+# ------------------------------------------------------------------ 판 짜임(맵 단위, 구성기와 같은 규칙)
+def _lines(n, seed, k, start_mod, lo, span):
+    out, p, j = [], -(h2(k, start_mod, seed) % 3), 0
+    while p < n:
+        out.append(p); p += lo + h2(k * 61 + j, start_mod + 1, seed) % span; j += 1
     return out
 
 
-def _cross_pts(code):
-    """변 부호 → [(변, 경계 화소, 한 칸 안쪽 화소)]. 경계에서 두 화소는 변에 수직으로 들어온다(이웃 칸 줄눈과 곧게 잇는다)."""
-    n, e, s, w = code
-    out = []
-    if n: out.append(('n', (H_OFF[n], 0), (H_OFF[n], 1)))
-    if s: out.append(('s', (H_OFF[s], 15), (H_OFF[s], 14)))
-    if w: out.append(('w', (0, V_OFF[w]), (1, V_OFF[w])))
-    if e: out.append(('e', (15, V_OFF[e]), (14, V_OFF[e])))
-    return out
+class Layout:
+    """맵 W×H 의 판 짜임: rows = 가로 줄눈 y 들, cols[band] = 그 띠의 세로 줄눈 x 들."""
+    def __init__(s, W, H, seed):
+        s.rows = _lines(H, seed + 501, 0, 0, 2, 3)
+        s.band = [0] * H
+        for y in range(H): s.band[y] = max(i for i, p in enumerate(s.rows) if p <= y) if any(p <= y for p in s.rows) else 0
+        s.cols = [set(_lines(W, seed + 503, k + 1, 2, 2, 3)) for k in range(len(s.rows))]
+        s.colsl = [sorted(c) for c in s.cols]
+        s.rowset = set(s.rows); s.seed = seed
+
+    def jN(s, x, y): return y in s.rowset
+    def jW(s, x, y): return x in s.cols[s.band[y]]
+
+    def tone(s, x, y):
+        k = s.band[y]; cs = s.colsl[k]
+        j = max([i for i, p in enumerate(cs) if p <= x] or [0])
+        r = h2(k * 97 + 3, j * 89 + 5, s.seed + 507) % 10
+        return 0 if r < 2 else 1 if r < 8 else 2
 
 
-def _inside(x, y, m=0): return m <= x <= 15 - m and m <= y <= 15 - m
+def decor_of(x, y, js, seed):
+    r = h2(x * 7 + 3, y * 11 + 5, seed + 431) % 100
+    q = h2(x * 13 + 1, y * 5 + 9, seed + 433)
+    if r < 72: d = 'plain1' if q % 4 == 0 else 'plain0'
+    elif r < 84: d = 'crack%d' % (q % 4)
+    elif r < 90: d = 'spall%d' % (q % 2)
+    elif r < 96: d = 'weed%d' % (q % 2)
+    else: d = 'chip' if js == 3 else 'heave'
+    return d if decor_ok(d, js) else 'plain0'
 
 
-def joint_layout(code, v):
-    """(줄눈 화소 집합, 금 화소 목록, 손질 정보)."""
-    seed = 7001 + sum(c * 4 ** i for i, c in enumerate(code)) * 7 + v * 131
-    cr = _cross_pts(code)
-    J, cracks = set(), []
-    if len(cr) >= 2:
-        if len(cr) == 2:
-            (_, a0, a1), (_, b0, b1) = cr
-            mx = (a1[0] + b1[0]) // 2 + (h2(seed, 1, 3) % 5) - 2
-            my = (a1[1] + b1[1]) // 2 + (h2(seed, 2, 3) % 5) - 2
-            mid = (max(3, min(12, mx)), max(3, min(12, my)))
-            for p in _walk(a1, mid, seed) + _walk(mid, b1, seed + 1): J.add(p)
-        else:
-            jx, jy = 5 + h2(seed, 3, 5) % 6, 5 + h2(seed, 4, 5) % 6
-            for i, (_, p0, p1) in enumerate(cr):
-                for p in _walk(p1, (jx, jy), seed + 11 * i): J.add(p)
-        for (_, p0, p1) in cr: J.add(p0); J.add(p1)
-    elif len(cr) == 1:                                                    # 줄눈이 잦아들어 금으로 끝난다
-        side, p0, p1 = cr[0]
-        J.add(p0); J.add(p1)
-        d = dict(n=(0, 1), s=(0, -1), w=(1, 0), e=(-1, 0))[side]
-        ln = 6 + h2(seed, 5, 7) % 5
-        end = (max(2, min(13, p1[0] + d[0] * ln + (h2(seed, 6, 7) % 7 - 3) * (d[0] == 0))),
-               max(2, min(13, p1[1] + d[1] * ln + (h2(seed, 7, 7) % 7 - 3) * (d[1] == 0))))
-        pts = _walk(p1, end, seed + 3, 0.45)
-        J.update(pts[:2]); cracks.append(pts[2:])
-    else:
-        if v in (3, 4):                                                   # 칸 안 실금(양 끝이 잦아든다)
-            a = (2 + h2(seed, 8, 9) % 4, 2 + h2(seed, 9, 9) % 5)
-            b = (10 + h2(seed, 10, 9) % 4, 9 + h2(seed, 11, 9) % 5)
-            if v == 4: a, b = (a[0], b[1]), (b[0], a[1])
-            pts = _walk(a, b, seed + 5, 0.5)
-            br = pts[len(pts) // 2]
-            cracks.append(pts)
-            cracks.append(_walk(br, (max(2, min(13, br[0] + (3 if v == 3 else -3))), min(13, br[1] + 4)), seed + 9, 0.5))
-    return J, cracks, seed
+def cell_tile(slab, road, L, x, y, seed):
+    """칸 (x,y) 의 slab-joints 칸 순번. slab/road = 칸 → bool."""
+    def side(dx, dy):
+        p = (x + dx, y + dy)
+        return 0 if slab(*p) else 2 if road(*p) else 1
+    sides = (side(0, -1), side(1, 0), side(0, 1), side(-1, 0))
+    js = (1 if L.jN(x, y) and sides[0] == 0 else 0) | (2 if L.jW(x, y) and sides[3] == 0 else 0)
+    if sides == (0, 0, 0, 0): return IN_INDEX[js][decor_of(x, y, js, seed)]
+    v = h2(x * 5 + 1, y * 3 + 7, seed + 437) % 2
+    return RIM_INDEX[(sides, js, v)]
 
 
-def _bevel(c, J):
-    for y in range(16):
-        for x in range(16):
-            if (x, y) in J: continue
-            if (x, y - 1) in J or (x - 1, y) in J: c.P(x, y, LIT)
-            elif (x, y + 1) in J or (x + 1, y) in J: c.P(x, y, SHADE)
+# ------------------------------------------------------------------ 칸 그림
+def _in(x, y, m=0): return m <= x <= 15 - m and m <= y <= 15 - m
 
 
-def _draw_joints(c, J, seed):
+def _joints(c, js, dirty, seed):
+    J = set()
+    if js & 1: J |= {(x, 0) for x in range(16)}
+    if js & 2: J |= {(0, y) for y in range(16)}
     for (x, y) in J:
-        dirt = h2(x // 3, y // 3, seed + 17) % 7 == 0 and _inside(x, y, 2)
-        c.P(x, y, J_DIRT[(x + y) % 2] if dirt else J_COL)
+        d = dirty and h2(x // 4 if y == 0 else y // 4, 1 if y == 0 else 2, seed + 7) % 3 == 0
+        c.P(x, y, J_DIRT[(x + y) % 2] if d else J_COL)
+    if js & 1:
+        for x in range(1 if js & 2 else 0, 16): c.P(x, 1, GR[5])
+    if js & 2:
+        for y in range(2 if js & 1 else 0, 16): c.P(1, y, GR[4])
+    return J
 
 
-def _draw_crack(c, pts, seed):
+def _crack(c, J, seed):
+    """금: 칸을 비스듬히 가로지르는 13~16화소 들쭉날쭉 1화소 선(한쪽 칸 끝에서 맞은쪽 끝까지 한 방향), 가운데쯤 짧은 가지 하나.
+    빛 테 없음 — 줄눈과 다른 차가운 회색, 양 끝 한 단 밝게 잦아든다."""
+    r = h2(seed, 3, 41)
+    sx = 1 if r % 2 else -1
+    x = (2 + (r >> 2) % 3) if sx > 0 else (13 - (r >> 2) % 3)
+    y = 2 + (r >> 4) % 3
+    tx, ty = (x + sx * (9 + (r >> 6) % 3)), 13 - (r >> 8) % 2
+    pts = [(x, y)]
+    i = 0
+    while (x, y) != (tx, ty) and i < 30:
+        dx, dy = (tx > x) - (tx < x), (ty > y) - (ty < y)
+        q = h2(i, r, seed + 1) % 10
+        if dx and dy: x, y = (x + dx, y + dy) if q < 5 else (x + dx, y) if q < 7 else (x, y + dy)
+        elif dx: x += dx
+        else: y += dy
+        pts.append((x, y)); i += 1
+    bx, by = pts[len(pts) // 2]
+    br = [(bx - sx * j, by + j) for j in range(1, 4 + (r >> 10) % 2)]
     n = len(pts)
-    for i, (x, y) in enumerate(pts):
-        if not _inside(x, y, 1): continue
-        fade = i >= n - 2 and n > 4
-        if fade and h2(x, y, seed) % 2: continue                          # 끝이 잦아든다
-        c.P(x, y, CRACK)
-    for (x, y) in pts[1:-2]:
-        if _inside(x, y + 1, 1) and (x, y + 1) not in pts and h2(x, y, seed + 1) % 3: c.P(x, y + 1, CRACK_LIT)
+    for k, p in enumerate(pts + br):
+        if p in J or not _in(*p, 1): continue
+        end = k in (0, n - 1) or k == n + len(br) - 1
+        c.P(p[0], p[1], CRACK_END if end else CRACK)
 
 
-def _chip(c, J, seed):
-    """줄눈 위 한 자리에서 판 귀가 깨져 흙이 드러났다(4~6화소): 안쪽 윗벽 가장 어둡고, 바닥 흙, 아래 테 한 화소 빛."""
-    cand = sorted([p for p in J if _inside(p[0], p[1], 4)], key=lambda p: h2(p[0], p[1], seed))
-    if not cand: return False
-    x0, y0 = cand[0]
-    hole = {(x0 + dx, y0 + dy) for dx in range(-2, 3) for dy in range(0, 3) if abs(dx) + dy <= 2 + (h2(dx, dy, seed) % 2)}
-    hole = {p for p in hole if _inside(p[0], p[1], 1)}
+def _spall(c, J, js, seed):
+    """줄눈 옆 패임(4~6×3~4): 안쪽 윗벽 가장 어둡고 바닥 흙, 아래 테 밝은 깨진 화소."""
+    r = h2(seed, 5, 43)
+    if js & 1 and (not js & 2 or r % 2):
+        x0, y0 = 4 + r % 7, 2
+    else:
+        x0, y0 = 2, 4 + r % 7
+    w, hh = 4 + (r >> 4) % 3, 3 + (r >> 6) % 2
+    hole = set()
+    for j in range(hh):
+        a = (h2(j, r, seed) % 2) if j else 0
+        b = (h2(j, r, seed + 1) % 2) if j < hh - 1 else 1
+        for i in range(a, w - b): hole.add((x0 + i, y0 + j))
     for (x, y) in hole:
-        top = (x, y - 1) not in hole
-        c.P(x, y, S['bark'][0] if top else S['bark'][2] if h2(x, y, seed + 3) % 3 else S['bark'][1])
+        if (x, y - 1) not in hole: c.P(x, y, J_DEEP)
+        elif (x, y + 1) not in hole: c.P(x, y, DIRT[3])
+        else: c.P(x, y, DIRT[2] if h2(x, y, seed + 3) % 3 else DIRT[1])
     for (x, y) in hole:
-        if (x, y + 1) not in hole and _inside(x, y + 1, 1) and h2(x, y, seed + 5) % 2: c.P(x, y + 1, LIT)
-    return True
+        if (x, y + 1) not in hole and _in(x, y + 1, 1) and h2(x, y, seed + 4) % 3: c.P(x, y + 1, GR[6])
 
 
-def _weed(c, J, seed):
-    cand = sorted([p for p in J if _inside(p[0], p[1], 4) and p[1] >= 6], key=lambda p: h2(p[0], p[1], seed + 2))
-    if not cand: return False
-    x, y = cand[0]
-    fan(c, x, y, 3 + seed % 2, 'grass', seed % 97, 4, 1)
-    return True
+def _weed(c, J, js, seed):
+    """줄눈에서 자란 풀(잎 4~5장, 키 2~4, 비대칭)."""
+    r = h2(seed, 7, 47)
+    if js & 1 and (not js & 2 or r % 2): bx, by = 4 + r % 8, 1
+    else: bx, by = 1, 6 + r % 7
+    if by == 1: by = 2
+    blades = [(-3, 2), (-2, 3), (-1, 4), (0, 5), (1, 4), (2, 3), (3, 2)][(r >> 4) % 2:]
+    for k, (dx, hgt) in enumerate(blades):
+        hgt = max(2, hgt - h2(k, r, seed) % 2)
+        for j in range(hgt):
+            x = bx + dx + (dx * j) // 3; y = by - j + 1
+            if not _in(x, y, 0): continue
+            t = 1 if j == 0 else 2 if j < hgt - 1 else 4
+            if (k + r) % 3 == 0: t = max(1, t - 1)
+            c.P(x, y, K('grass', t))
 
 
-def _heave(c, J, seed):
-    """들뜬 판 끝: 가로로 누운 줄눈 토막 5~8화소에서 아래 판 윗끝이 들렸다 — 틈은 가장 짙고 들린 끝 두 줄이 밝다."""
-    runs = [p for p in J if (p[0] + 1, p[1]) in J and (p[0] - 1, p[1]) in J and _inside(p[0], p[1], 2)]
-    if not runs: return False
-    x0, y0 = sorted(runs, key=lambda p: h2(p[0], p[1], seed + 4))[0]
-    for x in range(x0 - 3, x0 + 4):
-        if (x, y0) in J and _inside(x, y0 + 2, 1):
-            c.P(x, y0, K('conc', 0)); c.P(x, y0 + 1, K('conc', 7)); c.P(x, y0 + 2, K('conc', 6))
-    return True
+def _chip(c, seed):
+    """판 귀 떨어짐(줄눈 만나는 귀 오른아래): 3~4화소 삼각 패임, 판 그늘 단."""
+    n = 3 + seed % 2
+    for i in range(n):
+        for j in range(n - i):
+            x, y = 1 + i, 1 + j
+            c.P(x, y, GR[0] if i + j <= 1 else GR[1])
+    c.P(1 + n, 1, GR[5]); c.P(1, 1 + n, GR[4])
 
 
-def _spall(c, seed):
-    """얕게 벗겨진 자리: 한 단 밝은 속 + 윗 가장자리만 끊긴 짙은 선."""
-    cx, cy = 5 + h2(seed, 1, 13) % 6, 5 + h2(seed, 2, 13) % 6
-    A = {(x, y) for y in range(cy - 2, cy + 3) for x in range(cx - 4, cx + 4)
-         if ((x - cx) / 3.6) ** 2 + ((y - cy) / 2.0) ** 2 + (h2(x, y, seed) % 3) * 0.12 < 1}
-    for (x, y) in A:
-        if (x, y - 1) not in A: c.P(x, y, SHADE if h2(x, y, seed + 1) % 4 else None)
-        elif h2(x // 2, y, seed + 2) % 4: c.P(x, y, LIT)
+def _heave(c, seed):
+    """들뜬 판 끝: 윗줄 줄눈 6~9화소 토막이 벌어지고 그 밑 판 끝 두 줄이 밝다."""
+    a = 2 + seed % 5; b = min(14, a + 6 + (seed >> 3) % 4)
+    for x in range(a, b):
+        c.P(x, 0, J_DEEP); c.P(x, 1, GR[6]); c.P(x, 2, GR[5])
 
 
-_RIM_SIDES = ((1, 'n'), (2, 'e'), (4, 's'), (8, 'w'))
-
-
-def _rim_depth(side, t, seed):
-    """변 side 의 t(0..15) 자리 흙 깊이(0~4). 칸 끝(t = 0·15)은 늘 1 — 이웃 둘레 칸과 이어진다."""
-    if t in (0, 15): return 1
-    k = h2(t // 3, {'n': 1, 'e': 2, 's': 3, 'w': 4}[side], seed + 51)
-    base = 1 + k % 3
-    if t in (1, 14): base = min(base, 2)
-    return base + (1 if h2(t, 7, seed + 53) % 5 == 0 and 2 < t < 13 else 0)
-
-
-def rim_mask_pixels(m, seed):
-    """흙 쪽 마스크 m 의 흙 화소 집합(칸 좌표)."""
-    out = set()
-    for bit, side in _RIM_SIDES:
-        if not m & bit: continue
-        for t in range(16):
-            d = _rim_depth(side, t, seed)
-            for k in range(d):
-                out.add({'n': (t, k), 's': (t, 15 - k), 'w': (k, t), 'e': (15 - k, t)}[side])
+def _rim_profile(seed, side):
+    """변 하나의 흙 깊이 16개: 끝(0·15)은 2(이웃 칸과 같다), 속은 4~8화소 덩이마다 1~4."""
+    out, t = [], 0
+    while t < 16:
+        ln = 3 + h2(t, side, seed) % 5
+        d = 1 + h2(t, side + 5, seed) % 3
+        for j in range(ln):
+            q = h2(t + j, side + 9, seed) % 7
+            out.append(max(1, min(4, d + (1 if q == 0 else -1 if q == 1 else 0))))
+        t += ln
+    out = out[:16]
+    out[0] = out[15] = 2
+    out[1] = min(3, max(1, out[1])); out[14] = min(3, max(1, out[14]))
     return out
 
 
-def _draw_rim(c, m, seed):
-    """판 끝이 흙으로 부서져 끝난다: 흙 화소 + 깨진 판 끝 한 줄(빛 쪽 위·왼은 밝게, 남쪽은 1화소 앞면 그늘). 3/4: 남쪽 끝은 판 두께가 보인다."""
-    D = rim_mask_pixels(m, seed)
-    dirt = MAT['dirt']
-    for (x, y) in D:
-        c.P(x, y, dirt[3] if h2(x, y, seed + 61) % 4 else dirt[5] if h2(x, y, seed + 62) % 2 else dirt[2])
+def _draw_edges(c, sides, seed):
+    n, e, s, w = sides
+    dirt = set()
+    prof = {k: _rim_profile(seed, i) for i, k in enumerate('nesw')}
+    for t in range(16):
+        if n == 1:
+            for k in range(prof['n'][t]): dirt.add((t, k))
+        if s == 1:
+            for k in range(prof['s'][t] + 1): dirt.add((t, 15 - k))
+        if w == 1:
+            for k in range(prof['w'][t]): dirt.add((k, t))
+        if e == 1:
+            for k in range(prof['e'][t]): dirt.add((15 - k, t))
+    for (x, y) in dirt:
+        c.P(x, y, DIRT[1] if (x, y - 1) not in dirt and y > 0 and (x, y - 1) not in dirt and s == 1 and y >= 10 else
+            DIRT[3] if h2(x, y, seed + 61) % 4 else DIRT[5] if h2(x, y, seed + 62) % 2 else DIRT[2])
     for y in range(16):
         for x in range(16):
-            if (x, y) in D: continue
-            if (x, y + 1) in D: c.P(x, y, GR[0]); continue              # 판 남쪽 끝 앞면(두께)
-            if (x, y - 1) in D or (x - 1, y) in D or (x + 1, y) in D: c.P(x, y, GR[4] if h2(x, y, seed + 63) % 3 else GR[2])
-    for (x, y) in D:
-        if y > 0 and (x, y - 1) not in D: c.P(x, y, dirt[1])                  # 판 끝 밑 흙 그늘(판이 위에 있는 흙 화소)
+            if (x, y) in dirt: continue
+            if (x, y + 1) in dirt:                                         # 남쪽 끝: 판 두께 두 줄
+                c.P(x, y, GR[0])
+                if (x, y - 1) not in dirt and y > 0: c.P(x, y - 1, GR[1] if h2(x, y, seed + 64) % 3 else GR[2])
+            elif (x, y - 1) in dirt: c.P(x, y, GR[5])                      # 북쪽 깨진 끝(빛)
+            elif (x - 1, y) in dirt: c.P(x, y, GR[4])
+            elif (x + 1, y) in dirt: c.P(x, y, GR[1])
+    # 길 쪽 연석
+    if n == 2:
+        for x in range(16):
+            if (x, 0) not in dirt: c.P(x, 0, GR[6])
+    if s == 2:
+        for x in range(16):
+            if (x, 13) not in dirt: c.P(x, 13, GR[6])
+            c.P(x, 14, GR[1]); c.P(x, 15, GR[0])
+    if w == 2:
+        for y in range(16):
+            if (0, y) not in dirt and not (s == 2 and y >= 14): c.P(0, y, GR[6])
+    if e == 2:
+        for y in range(16):
+            if (15, y) not in dirt and not (s == 2 and y >= 14): c.P(15, y, GR[2])
 
 
-def draw_cell(c, ox, oy, code, v, rim=0, cut=0):
-    J, cracks, seed = joint_layout(code, v)
-    if cut:
-        vert = cut in (1, 2); cc = 1 + (cut - 1) % 2
-        o = 6 + 3 * (cc - 1) + h2(rim, cut, 71) % 2
-        J = {(o, t) for t in range(16)} if vert else {(t, o) for t in range(16)}
-        cracks = ([[(o + 1 + k // 2, 4 + k) for k in range(5)]] if vert else [[(4 + k, o + 1 + k // 2) for k in range(5)]]) if cc == 2 else []
-    if rim:
-        D = rim_mask_pixels(rim, seed)
-        J = {p for p in J if p not in D}
-        cracks = [[p for p in pts if p not in D] for pts in cracks]
-    k = sum(1 for q in code if q)
+def draw_tile(c, ox, oy, spec):
     sub = Cv(16, 16)
-    _bevel(sub, J)
-    for pts in cracks: _draw_crack(sub, pts, seed)
-    _draw_joints(sub, J, seed)
-    if k == 0 and v == 5: _spall(sub, seed)
-    if k == 1 and v == 1: _weed(sub, J, seed)
-    if k == 2 and v == 1:
-        m = h2(seed, 9, 11) % 3
-        ok = (_chip if m == 0 else _weed if m == 1 else _heave)(sub, J, seed)
-        if not ok: _chip(sub, J, seed) or _weed(sub, J, seed)
-    if rim: _draw_rim(sub, rim, seed)
+    if spec[0] == 'in':
+        _, js, d = spec
+        seed = 9001 + js * 101 + DECORS.index(d) * 13
+        J = _joints(sub, js, d == 'plain1', seed)
+        if d.startswith('crack'): _crack(sub, J, seed + int(d[-1]) * 7)
+        elif d.startswith('spall'): _spall(sub, J, js, seed + int(d[-1]) * 11)
+        elif d.startswith('weed'): _weed(sub, J, js, seed + int(d[-1]) * 5)
+        elif d == 'chip': _chip(sub, seed)
+        elif d == 'heave': _heave(sub, seed)
+    else:
+        _, sides, js, v = spec
+        seed = 9501 + sum(q * 3 ** i for i, q in enumerate(sides)) * 17 + js * 5 + v * 211
+        _joints(sub, js, v == 1, seed)
+        _draw_edges(sub, sides, seed)
     c.a[oy:oy + 16, ox:ox + 16] = sub.a
 
 
-@piece('slab-joints', '깨진 콘크리트 판 줄눈 덧그림 (가장자리 맞춤)', COLS, ROWS, FLAT,
-       en='broken old city concrete pavement seen from above: an irregular network of thin dark slab joints and fractures that never repeats, '
-          'each joint with a lit edge below and a shaded edge above, joints dying out into fine cracks, a few broken slab corners showing earth, '
-          'one heaved slab edge and small weeds in joints, drawn as a transparent decal over plain concrete',
+@piece('slab-joints', '깨진 콘크리트 판 줄눈·가장자리 덧그림', COLS, ROWS, FLAT,
+       en='old city concrete pavement seen from above: long straight saw-cut slab joints (thin dark groove with a lit slab edge below or right) laid as 2-4 tile '
+          'panels in staggered rows, thin hairline cracks lighter than the joints, a few spalled holes showing earth along joints, weeds in joints, a chipped corner '
+          'and a heaved slab edge; slab edges crumble into dirt (the south edge shows the slab thickness) and meet the asphalt road as a clean kerb; transparent decal over plain concrete',
        group='ground', tags=['콘크리트', '줄눈', '덧그림', '보도', '광장'],
-       desc='깨진 콘크리트 판의 줄눈 덧그림(위 평면층). 붓으로 찍지 않는다 — 구성기가 칸 네 변의 줄눈 건넘 부호(0~3)로 칸을 고른다: '
-            '조합 N*64+E*16+S*4+W 마다 변형 nv(k)개(k = 0 아닌 부호 수, 0→6·1→2·2→2·3·4→1)를 조합 순서로 이어 놓은 순번 i 의 칸이 (i%16, i//16). '
-            '맞닿은 칸은 같은 변 부호를 써서 줄눈이 이어진다. 아래층은 slab-ground.',
+       desc='깨진 콘크리트 판의 줄눈·표시·가장자리 덧그림(위 평면층). 붓으로 찍지 않는다 — 구성기가 맵 판 짜임(가로 줄눈 2~4칸마다, 띠마다 세로 줄눈 2~4칸)과 '
+            '네 이웃 종류(판·흙·길)로 칸을 고른다. 아래층은 slab-ground.',
        sample=lambda f=0: board_sample(SAMPLE_PLAN_B, seed=11))
-def _joints(c):
-    for i, (code, v) in enumerate(COMBOS):
-        draw_cell(c, (i % COLS) * 16, (i // COLS) * 16, code, v)
-    for j, (code, m, cut) in enumerate(RIMS):
-        i = len(COMBOS) + j
-        draw_cell(c, (i % COLS) * 16, (i // COLS) * 16, code, 0, m, cut)
+def _joint_sheet(c):
+    for i, spec in enumerate(ORDER): draw_tile(c, (i % COLS) * 16, (i // COLS) * 16, spec)
 
 
-# ------------------------------------------------------------------ 구성기와 같은 규칙의 표본 판
-def edge_code(kind, x, y, seed):
-    r = h2(x * 2 + (1 if kind == 'h' else 0), y * 2 + (0 if kind == 'h' else 1), seed + 401) % 100
-    return 0 if r < 52 else 1 + (r - 52) * 3 // 48
-
-
-def slab_codes(slab, x, y, seed):
-    """칸 (x,y) 의 (N,E,S,W) 부호. 한 칸 폭 띠(위아래가 판이 아닌 칸)는 길이 방향 줄눈을 막는다(가는 조각이 생기지 않게)."""
-    H, W = len(slab), len(slab[0])
-    on = lambda i, j: 0 <= i < W and 0 <= j < H and slab[j][i]
-    hstrip = lambda i, j: on(i, j) and not on(i, j - 1) and not on(i, j + 1)
-    vstrip = lambda i, j: on(i, j) and not on(i - 1, j) and not on(i + 1, j)
-    def hcode(i, j):                                   # 칸 (i,j-1)·(i,j) 사이 가로 변
-        if vstrip(i, j) and vstrip(i, j - 1): return 0
-        return edge_code('h', i, j, seed)
-    def vcode(i, j):                                   # 칸 (i-1,j)·(i,j) 사이 세로 변
-        if hstrip(i, j) and hstrip(i - 1, j): return 0
-        return edge_code('v', i, j, seed)
-    return hcode(x, y), vcode(x + 1, y), hcode(x, y + 1), vcode(x, y)
-
-
-INDEX = {}
-for _i, (_cd, _v) in enumerate(COMBOS): INDEX.setdefault(_cd, []).append(_i)
-RIM_INDEX = {(cd, m, cut): len(COMBOS) + j for j, (cd, m, cut) in enumerate(RIMS)}
-
-
-def cell_index(slab, x, y, seed, road=None):
-    """road(선택): 길 칸 집합 — 길 쪽 변은 흙으로 부서지지 않고(마스크에서 뺀다) 줄눈도 건너지 않는다(구성기와 같다)."""
-    H, W = len(slab), len(slab[0])
-    on = lambda i, j: 0 <= i < W and 0 <= j < H and slab[j][i]
-    rd = lambda i, j: bool(road) and (i, j) in road
-    m = (0 if on(x, y - 1) or rd(x, y - 1) else 1) | (0 if on(x + 1, y) or rd(x + 1, y) else 2) | (0 if on(x, y + 1) or rd(x, y + 1) else 4) | (0 if on(x - 1, y) or rd(x - 1, y) else 8)
-    cd = list(slab_codes(slab, x, y, seed))
-    for i, (dx, dy) in enumerate(((0, -1), (1, 0), (0, 1), (-1, 0))):
-        if rd(x + dx, y + dy): cd[i] = 0
-    hs = not on(x, y - 1) and not on(x, y + 1); vs_ = not on(x - 1, y) and not on(x + 1, y)
-    if not any(cd) and (hs or vs_) and not (hs and vs_):
-        r = h2(x * 5 + 3, y * 7 + 1, seed + 419) % 10
-        cc = 1 if r < 2 else 2 if r < 3 else 0
-        if cc and ((0, 0, 0, 0), m, cc + (0 if hs else 2)) in RIM_INDEX: return RIM_INDEX[((0, 0, 0, 0), m, cc + (0 if hs else 2))]
-    if m:
-        for i, bit in enumerate((1, 2, 4, 8)):
-            if m & bit: cd[i] = 0
-        return RIM_INDEX[(tuple(cd), m, 0)]
-    vs = INDEX[tuple(cd)]
-    return vs[h2(x * 3 + 1, y * 5 + 2, seed + 409) % len(vs)]
-
-
+# ------------------------------------------------------------------ 표본 판(구성기 규칙 그대로)
 SAMPLE_PLAN = [
     '......................',
     '..##################..',
@@ -383,13 +343,11 @@ SAMPLE_PLAN = [
     '..##################..',
     '......................',
     '######################',
-    '......................',
-    '...#........#.........',
-    '...#........#.........',
+    'RRRRRRRRRRRRRRRRRRRRRR',
+    'RRRRRRRRRRRRRRRRRRRRRR',
+    '######################',
     '...#........#.........',
 ]
-
-
 SAMPLE_PLAN_B = [
     '......................',
     '.###########..........',
@@ -398,30 +356,42 @@ SAMPLE_PLAN_B = [
     '.#########......###...',
     '.#########............',
     '......................',
-    '......................',
     '######################',
-    '......................',
+    'RRRRRRRRRRRRRRRRRRRRRR',
+    'RRRRRRRRRRRRRRRRRRRRRR',
+    '######################',
+    '.......#.......#......',
     '..##############......',
     '..##############......',
-    '..##############......',
-    '......................',
 ]
 
 
-def board_sample(plan=SAMPLE_PLAN, seed=5, joints=True):
-    """흙 위에 광장(가운데 흙 구덩이)·한 칸 보도 띠 둘(가로·세로)을 깐 표본 — 구성기 규칙 그대로."""
+def board_sample(plan=SAMPLE_PLAN, seed=5):
     H, W = len(plan), len(plan[0])
-    slab = [[ch == '#' for ch in r] for r in plan]
+    slab = lambda x, y: 0 <= x < W and 0 <= y < H and plan[y][x] == '#'
+    road = lambda x, y: 0 <= x < W and 0 <= y < H and plan[y][x] == 'R'
     dirt = tiled(DIRT8_IDS, [''.join('b' if h2(i, j, 6) % 16 < 10 else 'c' if h2(i, j, 6) % 16 < 13 else 'd' for i in range(W)) for j in range(H)])()
+    asph = render(PIECES['asphalt-ph']) if 'asphalt-ph' in PIECES else None
     G = render(PIECES['slab-ground']); Jm = render(PIECES['slab-joints'])
+    L = Layout(W, H, seed)
     a = dirt.copy()
     for y in range(H):
         for x in range(W):
-            if not slab[y][x]: continue
-            a[y * 16:(y + 1) * 16, x * 16:(x + 1) * 16] = G[(y % 8) * 16:(y % 8) * 16 + 16, (x % 8) * 16:(x % 8) * 16 + 16]
-            if not joints: continue
-            i = cell_index(slab, x, y, seed)
-            blk = Jm[(i // COLS) * 16:(i // COLS) * 16 + 16, (i % COLS) * 16:(i % COLS) * 16 + 16]
-            op = blk[..., 3] == 255
-            a[y * 16:(y + 1) * 16, x * 16:(x + 1) * 16][op] = blk[op]
+            blk = a[y * 16:(y + 1) * 16, x * 16:(x + 1) * 16]
+            if road(x, y) and asph is not None: blk[:] = _asphalt_full(asph, x, y)
+            if not slab(x, y): continue
+            t = L.tone(x, y)
+            blk[:] = G[(t * 8 + y % 8) * 16:(t * 8 + y % 8) * 16 + 16, (x % 8) * 16:(x % 8) * 16 + 16]
+            i = cell_tile(slab, road, L, x, y, seed)
+            src = Jm[(i // COLS) * 16:(i // COLS) * 16 + 16, (i % COLS) * 16:(i % COLS) * 16 + 16]
+            op = src[..., 3] == 255
+            blk[op] = src[op]
     return a
+
+
+def _asphalt_full(asph, x, y):
+    """asphalt-ph 의 마스크 15 위상 칸(구성기 paint 와 같은 자리 (x%P)+(y%P)*P)."""
+    import wl_ground as G_
+    P = G_.APH
+    k = (x % P) + (y % P) * P
+    return asph[15 * 16:16 * 16, k * 16:k * 16 + 16]                      # 조각 안 칸 (위상 k, 마스크 15)
