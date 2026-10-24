@@ -159,11 +159,13 @@ const HOUSE_FINDS: Readonly<Record<string, readonly { label: RegExp; loot: Loot 
     { label: /왕실 상자/, loot: { kind: "item", itemId: "item_hi_potion" } },
     { label: /약재 서랍장/, loot: { kind: "item", itemId: "item_wake_herb", amount: 2 } },
   ],
-  fs_bakery_home: [{ label: /사과 통/, loot: { kind: "item", itemId: "fs_bread_warm" } }],
+  // 통은 흔들어 뒤지는 수납이라 보상을 식당 찬장(여닫는 것)으로 옮긴다.
+  fs_bakery_home: [{ label: /찬장/, loot: { kind: "item", itemId: "fs_bread_warm" } }],
   fs_stargazer_home: [{ label: /여행 가방/, loot: { kind: "gold", amount: 80 } }],
   fs_lisa_home: [
     { label: /화장대/, loot: { kind: "item", itemId: "item_potion", amount: 2 } },
-    { label: /여행 가방/, loot: { kind: "gold", amount: 60 } },
+    // 안방에는 화장대 하나 — 60G 는 옷방 상자에 둔다(방마다 수납 하나).
+    { label: /^상자$/, loot: { kind: "gold", amount: 60 } },
   ],
   fs_smithy: [{ label: /^궤짝$/, loot: { kind: "gold", amount: 40 } }],
 };
@@ -466,9 +468,9 @@ function placeStreetContainers(project: Project, hubId: string): number {
       const sideOpen = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => after.has(`${c.x + dx!},${c.y + dy!}`));
       if (!sideOpen || !connectedFronts.every((f) => after.has(`${f.x},${f.y}`))) { placed.delete(`${c.x},${c.y}`); continue; }
       hub.upperTiles[at(c.x, c.y)] = tile;
+      // 보상이 정해진 칸만 뒤지는 수납이다 — 나머지 거리 통·상자는 부두 살림 그림일 뿐(사용자 2026-10-24 「상자가 너무 많다」).
       const find = streetFinds.findIndex((f) => f.label.test(name) && (f.loot.kind !== "item" || knownIds(project).has(f.loot.itemId)));
-      const loot: Loot = find >= 0 ? streetFinds.splice(find, 1)[0]!.loot : { kind: "flavor" };
-      hub.events.push(containerEvent(project, hubId, c, name, loot, null, null));
+      if (find >= 0) hub.events.push(containerEvent(project, hubId, c, name, streetFinds.splice(find, 1)[0]!.loot, null, null));
       n++;
     }
     return n;
@@ -482,15 +484,13 @@ function placeStreetContainers(project: Project, hubId: string): number {
       if (x < 0 || y < 0 || x >= W || y >= H) continue;
       if (Math.max(Math.abs(x - g.x), Math.abs(y - g.y)) >= 2) cands.push({ x, y });
     }
-    total += pickZone(cands, SHOP_ART, 2, `shop_${g.id}`);
+    total += pickZone(cands, SHOP_ART, 0, `shop_${g.id}`);
   }
   // 남쪽 부두·창고: 아랫 3분의 1.
   const dock: Cell[] = [];
   for (let y = Math.floor(H * 0.62); y < H - 3; y += 1) for (let x = 2; x < W - 2; x += 1) dock.push({ x, y });
-  total += pickZone(dock, DOCK_ART, 8, "dock");
-  // 부두의 한 켠 — 창고 그늘(남서쪽 둘레)과 동쪽 선착장에도 한 무더기씩.
-  total += pickZone(dock.filter((c) => c.x < W / 2), ["barrel", "crate"], 2, "dock_w");
-  total += pickZone(dock.filter((c) => c.x >= W / 2), ["fish", "stack"], 2, "dock_e");
+  // 가게 문 곁은 가게 앞 꾸밈(dressShopFronts)이 맡는다 — 거리 수납은 부두에만 몇 개(그림, 뒤지지 않는다).
+  total += pickZone(dock, DOCK_ART, 3, "dock");
   return total;
 }
 
