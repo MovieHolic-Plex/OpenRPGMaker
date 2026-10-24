@@ -100,8 +100,9 @@ def ground_cell(x, y, seed):
 
 
 @piece('slab-ground', '깨진 콘크리트 판 바탕 (단 셋)', 8, 24, TERRAIN,
-       en='plain old city concrete ground seen from above, seamless: flat light grey concrete with small 2-3 px aggregate clumps one tone apart, '
-          'in three slightly different greys (each poured slab takes one); the straight saw-cut joints, cracks and broken edges are a separate decal layer',
+       en='old city concrete ground seen from above, shown on a sample board as it is used: the joint-free poured concrete texture (light grey with small 2-3 px '
+          'aggregate clumps and a few soft worn spots, in three slightly different greys, one per slab) laid as plazas and sidewalks on dirt beside an asphalt road, '
+          'with its separate joint/crack/broken-edge decal layer drawn on top for context',
        group='ground', tags=['콘크리트', '광장', '보도', '바닥'],
        desc='깨진 콘크리트 판의 아래층(줄눈 없음). 8×8칸 결 판을 단 셋(rows 0~7 어두움 · 8~15 가운데 · 16~23 밝음)으로 둔다. '
             '칸 64개는 서로 독립(골재 덩이가 칸 경계를 넘지 않음). 맵 칸 (x,y) 에는 판 단 t 와 n = ground_cell(x,y) 로 rows[n//8 + 8t].tiles[n%8] — 주기 없음. 줄눈으로 둘린 판마다 단 하나. 위 평면층에 slab-joints.',
