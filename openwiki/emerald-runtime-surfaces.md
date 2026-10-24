@@ -132,7 +132,7 @@ see `pokemon-like-field-kit.md` for approval, canonical adoption and player proo
 
 | 요소 | 계약 | 구현 |
 |---|---|---|
-| 창 | 정수 배율만, 남는 창은 여백(letterbox). 1 미만으로 줄어드는 작은 창만 비정수 허용 | `resolvePlaySurfaceScaleMode`(`project/playSurfaceScaleMode.ts`)가 에메랄드 프로젝트는 저작값과 무관하게 `integer`(2026-10-20부터 해상도를 저장한 다른 게임도 기본 integer) · `bindEmeraldBattleSurface` 가 `floor` |
+| 창 | 정수 배율만, 남는 창은 여백(letterbox). 1 미만으로 줄어드는 작은 창만 비정수 허용. 소수 devicePixelRatio(Windows 125%·150%)에서는 **기기 화소** 정수 k 를 고르고 CSS 배율은 k/dpr, 무대 왼쪽 위도 1/dpr 격자(2026-10-24, `calculatePlaySurfaceScale`/`Placement` 의 dpr 인자 — 전에는 CSS 2배가 기기 2.5px 로 도트 폭이 들쭉날쭉했다). 정수 dpr·터치 배치는 그대로 | `resolvePlaySurfaceScaleMode`(`project/playSurfaceScaleMode.ts`)가 에메랄드 프로젝트는 저작값과 무관하게 `integer`(2026-10-20부터 해상도를 저장한 다른 게임도 기본 integer) · `bindEmeraldBattleSurface` 가 `floor` |
 | 타일·걷기 칩 | 16px 타일 ×2 카메라, 칩 24×32 ×2 | 기존(변경 없음) |
 | 몬스터 그림 | **캔버스 ≤64×64, 1 도트 = 1 논리 화소, 표시 128×128(2배)** · idle 스트립 프레임 64×N | `src/player/monsterArtScale.ts` `integerArtBox` — 상자 128 에 들어가는 최대 정수 배율. 64→128(2배), 112 캔버스→112(1배). `bindIntegerArtScale` 이 `--art-box-width/height`·`data-art-scale` 을 심고 CSS 가 읽는다. 오프닝 소개 몬스터(`.cinematic-creature`)도 같은 규칙 |
 | 글꼴 | Galmuri9 **18px**(9px 글리프 2배) 하나. 36px 는 제목 한정. 12·14·16·20·6.5·8px 와 Galmuri11(로드 안 됨→비도트 폴백)은 쓰지 않는다 | `emeraldSurfaces.css`·`playSurface.css`·`fieldHud.css`(collector 테마)·`monsterCampaignMenu.css` |
