@@ -307,7 +307,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   {
     const op = after.system.opening as { enabled?: boolean; scenes?: { narration?: string; resourceId?: string }[] } | undefined;
     const factory = !!op?.enabled && (op.scenes ?? []).some((sc) => /강을 낀 왕국에는 오래도록 전쟁이 없었다/u.test(sc.narration ?? "") || sc.resourceId === "oprn-still-kingdom-day");
-    const newGame = (after.system.title ?? "") !== (before.system.title ?? "") || /게임을? (하나 )?만들|게임 하나|새 게임|만들고 싶어/u.test(task);
+    const newGame = after.meta.title !== before.meta.title || /게임을? (하나 )?만들|게임 하나|새 게임|만들고 싶어/u.test(task);
     if (factory && newGame && JSON.stringify(op) === JSON.stringify(before.system.opening)) {
       problems.push("[게임 검사 오프닝] 게임을 새로 만들었는데 오프닝이 프로젝트 기본(「강을 낀 왕국에는 오래도록 전쟁이 없었다」)이 그대로 켜져 있다 — 새 게임 첫 화면에 엉뚱한 이야기가 나온다. plan_opening/set_opening 으로 이 게임 이야기(주인공·목표) 몇 장면으로 바꾸거나, 오프닝을 원하지 않으면 set_opening{enabled:false}.");
     }
