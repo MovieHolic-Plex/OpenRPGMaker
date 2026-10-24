@@ -385,6 +385,21 @@ export class AssetStoreClient {
     });
   }
 
+  /** 소식 글 올리기(+ 판본 코멘트). 작가만 — 서버가 판단한다. */
+  async gamePost(input: { slug: string; title: string; body: string; version?: string | null; pinned?: boolean; comment?: string; commentVersion?: string | null }): Promise<{ id: number; status: string; url: string; held: string[]; comment?: { status: string | null; held: string[] } }> {
+    if (!this.token) throw new StoreError("스토어에 글을 올리려면 먼저 로그인해 주세요.", 401);
+    const slug = encodeURIComponent(input.slug);
+    const made = await this.json<{ id: number; status: string; url: string; held: string[] }>(`/api/v1/games/${slug}/posts`, {
+      method: "POST", json: { title: input.title, body: input.body, version: input.version ?? null, pinned: input.pinned === true },
+    });
+    const label = input.commentVersion ?? input.version ?? null;
+    if (input.comment !== undefined && label) {
+      const comment = await this.json<{ status: string | null; held: string[] }>(`/api/v1/games/${slug}/versions/${encodeURIComponent(label)}/comment`, { method: "PUT", json: { comment: input.comment } });
+      return { ...made, comment };
+    }
+    return made;
+  }
+
   /** 되돌리기: 「지금 판본」을 옛 판본으로. */
   gameSetCurrent(slug: string, version: string): Promise<{ from: string | null; to: string }> {
     return this.json(`/api/v1/games/${encodeURIComponent(slug)}/current`, { method: "POST", json: { version } });

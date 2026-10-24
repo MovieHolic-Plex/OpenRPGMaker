@@ -52,7 +52,10 @@ export interface OprnStoreBridge {
   gamePublish(input: {
     projectKey: string; meta: StoreGameMeta; files: Record<string, Uint8Array>; entry: string; cover: string | null; art: string[];
     changelog: string; changes: Record<string, { added: string[]; changed: string[]; removed: string[] }>; bump: "minor" | "major"; version?: string | null;
+    comment?: string; post?: { title: string; body: string; pinned?: boolean } | null;
   }): Promise<StoreGamePublishResult>;
+  /** 소식 글 올리기(그 게임 작가만 — 서버가 판단). comment 를 주면 commentVersion(없으면 version, 그것도 없으면 지금 판본) 판본 코멘트도 고친다. */
+  gamePost?(input: { slug: string; title: string; body: string; version?: string | null; pinned?: boolean; comment?: string; commentVersion?: string | null }): Promise<{ id: number; status: string; url: string; held: string[]; comment?: { status: string | null; held: string[] } }>;
   /** 지금 판본 바꾸기(되돌리기). */
   gameCurrent(input: { slug: string; version: string }): Promise<{ from: string | null; to: string }>;
   /** 컨셉 피드 한 쪽(24개). cursor 는 앞 쪽의 nextCursor. 썸네일 thumb.full·card 는 blob sha256 이라 blob() 으로 받는다. */

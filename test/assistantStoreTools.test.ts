@@ -74,4 +74,21 @@ describe("조수 스토어 도구", () => {
     expect(storeCardFromEvent({ ...end, ok: false } as unknown as PiAgentEvent)).toBeNull();
     expect(storeCardFromEvent({ ...end, name: "paint_tiles" } as unknown as PiAgentEvent)).toBeNull();
   });
+
+  it("store_game_post 는 소식 글 카드만 돌려주고 올리지 않는다(길이·판본 번호 검사)", () => {
+    const r = tool("store_game_post").run(project(), { title: "  1막   대개편 ", body: "## 새로 들어온 것\n- 용", comment: "소리를 켜고 보세요", version: "1.17", pinned: true });
+    expect(r.data).toEqual({ kind: "store-game-post-proposal", title: "1막 대개편", body: "## 새로 들어온 것\n- 용", comment: "소리를 켜고 보세요", version: "1.17", pinned: true });
+    expect(isStoreCardRequest(r.data)).toBe(true);
+    expect(tool("store_game_post").mode).toBe("read");
+    expect((tool("store_game_post").run(project(), { title: "x", body: "", version: "v2" }).data as { version: unknown }).version).toBeNull();
+    expect(() => tool("store_game_post").run(project(), { title: "", body: "x" })).toThrow();
+    expect(() => tool("store_game_post").run(project(), { title: "x", body: "x", comment: "가".repeat(601) })).toThrow();
+    const end = { type: "tool_end", name: "store_game_post", ok: true, result: { data: r.data } };
+    expect(storeCardFromEvent(end as unknown as PiAgentEvent)).toEqual(r.data);
+  });
+
+  it("store_game_changes 는 데스크톱 다리가 없으면 그렇게 말한다", () => {
+    expect(() => tool("store_game_changes").run(project(), {})).toThrow(/데스크톱|스토어/);
+  });
 });
+
