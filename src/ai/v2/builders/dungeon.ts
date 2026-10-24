@@ -456,6 +456,23 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const { args, type, missing, warnings } = plan;
   const prev = previous?.result.state as DungeonState | undefined;
   const mapId = targetMapId(run, spec, previous);
+  // 다시 짓기 전에: 던전 밖 맵(숲·마을)에서 이 던전 층으로 들어오는 이동을 조수가 따로 이었으면, 층을 다시 지으면 크기가 바뀌어
+  // 그 이동 좌표가 맵 밖이 되고 커밋이 거부된다(2026-10-25 조수 단독 게임 G5: 「transfer 목적지가 맵 경계 밖 (29,50)」).
+  if (previous) {
+    const floors = new Set<string>([...(prev?.floors ?? previous.result.mapIds)]);
+    const linked: string[] = [];
+    for (const m of Object.values(run.ctx.project.maps)) {
+      if (floors.has(m.id)) continue;
+      for (const ev of m.events) {
+        const text = JSON.stringify(ev.pages ?? []);
+        const into = [...text.matchAll(/\{[^{}]*"kind":"transfer"[^{}]*\}/gu)].some((hit) => floors.has(/"mapId":"([^"]+)"/u.exec(hit[0])?.[1] ?? ""));
+        if (into) linked.push(`${m.name}의 ${ev.name ?? ev.id}`);
+      }
+    }
+    if (linked.length) {
+      return { ok: false, mapIds: [...floors], summary: `던전 다시 짓기 안 함: 바깥에서 이 던전으로 들어오는 문(${linked.slice(0, 3).join(", ")})이 이미 이어져 있다 — 다시 지으면 그 문이 맵 밖을 가리켜 거부된다. 같은 edit_place 를 되풀이하지 말고, 남은 문제는 덧그리기(stamp_object·fill_region)·move_event 로 고치거나 보고에 적는다.`, warnings, missingArt: missing, calls: [], state: prev };
+    }
+  }
   const variant = num(spec.hints?.variant);
   // 다른 배치(variant): 앞 씨앗이 없으면(도구가 맵 id 로 정함) 이름에서 씨앗을 만들어 variant 만큼 민다 — 안 그러면 세 번 고쳐도 같은 모양이었다(2026-10-23 v2 실조수).
   if (args.seed === undefined && (prev || variant)) {

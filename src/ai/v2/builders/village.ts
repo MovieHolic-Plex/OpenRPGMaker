@@ -118,6 +118,16 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   }
   const base: Record<string, unknown> = { name: spec.name, ...args };
   if (mapId) base.mapId = mapId;
+  // 이미 지은 마을에 게임 내용(사람·문·이벤트)이 붙었으면 다시 짓지 않는다 — 다시 지으면 그것이 다 지워지고, 시작 맵은 지울 수도 없어
+  // 「완성된 집 보호」 거절이 되풀이됐다(2026-10-25 조수 단독 게임 G4: 같은 거절 2번 + 되돌림 4번).
+  const existingMap = prev && mapId ? run.ctx.project.maps[mapId] : undefined;
+  if (existingMap && existingMap.events.length > 0) {
+    return {
+      ok: false, mapIds: [mapId!],
+      summary: `마을 다시 짓기 안 함: ${existingMap.name} 에 이미 이벤트·사람 ${existingMap.events.length}개가 있다${run.ctx.project.startMapId === mapId ? "(시작 맵)" : ""} — 다시 지으면 다 지워진다. 같은 edit_place 를 되풀이하지 말고, 남은 그림 문제는 덧그리기(stamp_object·fill_region)나 add_people·move_event 로 고치거나 보고에 그대로 적는다.`,
+      warnings, missingArt: missing, calls: [], state: prev,
+    };
+  }
   const firstCall = run.calls.length;
   let result = run.call("author_beodeul_town", base);
   // 완성된 집 보호: 집이 선 맵은 덮어 짓기가 거절된다 → 지우고 같은 id 로 다시 짓는다.
