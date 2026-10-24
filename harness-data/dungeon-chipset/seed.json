@@ -4275,6 +4275,25 @@
     "prop.cracked_floor"
    ],
    "lead": "패널 6·7 반영: 각진 꺼짐·북쪽 판석 옆면·기운 조각·짧은 금."
+  },
+  "theme-walls-r9": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_walls_r9.py",
+   "wave": "theme_walls",
+   "title": "던전 테마 벽 다시 그림 theme-walls-r9",
+   "items": [
+    "wall.other_rim",
+    "wall.tower_face"
+   ],
+   "lead": "패널 8 반영: 탑 앞면 한 줄 색·이음 엇갈림·알갱이, 마계 테두리 한 단 낮춤."
+  },
+  "theme-props-r7": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_props_r7.py",
+   "wave": "theme_props",
+   "title": "던전 테마 남은 조각 theme-props-r7",
+   "items": [
+    "wall.ice_face"
+   ],
+   "lead": "패널 8 반영: 얼음 벽을 층 바위(동굴 줄 C 결)로, 눈 띠 없음."
   }
  }
 }
