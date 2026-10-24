@@ -48,6 +48,22 @@ def ttop(a, x0, x1, y0, rows, face, back, rim):
     return y0 + rows + 1
 
 
+# 손으로 찍은 한글 9×9 — 자모 사이 1칸 틈(Argon r9: 글꼴 글자는 «국»의 ㅜ 줄기가 받침 ㄱ 에 붙고 «카»의 ㅋ 이 휘어 1배에서 안 읽혔다).
+HANGUL = {
+    '카': ["#####..#.", "....#..#.", "#####..##", "....#..#.", "....#..#.", "....#..#.", ".......#.", ".......#.", ".......#."],
+    '페': ["#####.#.#", ".#.#..#.#", ".#.#.##.#", ".#.#..#.#", "#####.#.#", "......#.#", "......#.#", "......#.#", "......#.#"],
+    '편': ["#####..#.", ".#.#..##.", ".#.#...#.", ".#.#..##.", "#####..#.", ".........", ".#.......", ".#.......", ".#######."],
+    '의': [".###...#.", "#...#..#.", "#...#..#.", ".###...#.", ".......#.", "#####..#.", ".......#.", ".......#.", ".......#."],
+    '국': [".#######.", ".......#.", ".........", "#########", "....#....", ".........", ".#######.", ".......#.", ".......#."],
+    '밥': ["#...#..#.", "#####..##", "#...#..#.", "#####..#.", ".........", ".#.....#.", ".#######.", ".#.....#.", ".#######."],
+    '약': [".###...#.", "#...#..##", "#...#..#.", "#...#..##", ".###...#.", ".........", ".#######.", ".......#.", ".......#."],
+}
+
+
+def hangul_mask(ch):
+    return np.array([[c == '#' for c in row] for row in HANGUL[ch]])
+
+
 _FONT = None
 
 
@@ -82,12 +98,12 @@ def stamp(a, mask, x0, y0, c, shade=None):
             if mask[y, x]: put(a, x0 + x, y0 + y, c)
 
 
-# 손으로 찍은 4×6 굵은 숫자(번호판용) — 글꼴 숫자는 판(7줄)보다 커서 넘쳤다.
+# 손으로 찍은 5×7 숫자(번호판용) — 획 1칸, 속 공간이 열려 있다(Argon r9: 4×6 은 «4» 속이 막히고 «3» 이 끊겼다).
 DIGITS = {
-    1: [".##.", "###.", ".##.", ".##.", ".##.", "####"],
-    2: ["###.", "...#", "..##", ".##.", "##..", "####"],
-    3: ["###.", "...#", ".##.", "...#", "...#", "###."],
-    4: ["..#.", ".##.", "#.#.", "####", "..#.", "..#."],
+    1: ["..#..", ".##..", "..#..", "..#..", "..#..", "..#..", ".###."],
+    2: [".###.", "#...#", "....#", "...#.", "..#..", ".#...", "#####"],
+    3: [".###.", "#...#", "....#", "..##.", "....#", "#...#", ".###."],
+    4: ["...#.", "..##.", ".#.#.", "#..#.", "#####", "...#.", "...#."],
 }
 
 
@@ -136,30 +152,44 @@ def ellipse_plate(a, cx, cy, rx, ry, top, back, rim, thick=2):
 
 
 def subway_exit(n):
-    """지하철 출구 기둥 3/4 (r7) — 몸통보다 양옆 4칸 넓은 타원 갓: 위에서 본 윗판(뒤쪽 밝게, 좌상 빛)과 앞 두께 3줄(청록 노선 띠,
-    오른쪽 끝 그늘)·처마 그늘. 가는 몸통에 노란 번호판, 땅에는 윗면이 앞 모서리보다 밝은 타원 받침(Argon r6: 받침 명암 역전·갓 앞 두께 1줄)."""
+    """지하철 출구 번호 기둥 3/4 (r11) — 몸통보다 양옆 한 칸 넓은 상자 머리: 위에서 본 윗면 4줄(뒤쪽 밝게, 좌상 빛)·앞 청록 노선 띠(흰 표지)·노란 번호판,
+    가는 회색 기둥, 땅에는 윗면이 앞 모서리보다 밝은 받침판. 타원 갓(r7)은 «버섯»으로 읽혔고, 받침 위에 뜬 그늘 줄이 윤곽 밖으로 샜다(Argon r9)."""
     a = canvas(16, 32)
-    x0, x1 = 4, 11
-    # 받침 먼저(몸통이 위를 덮는다): 윗면 SLATE 4(뒤)·3(앞), 앞 두께 SLATE 1, 윤곽.
-    b = canvas(16, 32); ellipse_plate(b, 8, 27.4, 7.5, 2.5, SLATE[3], SLATE[4], SLATE[1], thick=1)
-    m = b[..., 3] > 0; a[m] = b[m]
-    for y in range(10, 28):
-        put(a, x0, y, O); put(a, x1, y, O)
-        for x in range(x0 + 1, x1):
-            if y < 21: c = AMBER[4] if x == x0 + 1 else AMBER[3] if x == x0 + 2 else AMBER[2] if x < x1 - 1 else AMBER[1]
-            else: c = SLATE[4] if x == x0 + 1 else SLATE[3] if x == x0 + 2 else SLATE[2] if x < x1 - 1 else SLATE[1]
-            put(a, x, y, c)
-    for x in range(x0 + 1, x1): put(a, x, 21, O)
-    stamp(a, digit_mask(n), 6, 13, INK[1])
-    for y in range(22, 28): put(a, x1 + 1, y, SLATE[2])      # 몸통 오른쪽 그늘이 받침 윗면에 진다
-    # 갓: 윗판(뒤 WHITE 2·앞 WHITE 1) + 앞 두께 3줄(청록)
-    g = canvas(16, 32); yb = ellipse_plate(g, 8, 3.9, 8, 3.7, WHITE[1], WHITE[2], TEAL[3], thick=3)
-    m = g[..., 3] > 0; a[m] = g[m]
-    for (x, y) in ((7, 2), (8, 2), (6, 3), (9, 3), (7, 4), (8, 4)): put(a, x, y, TEAL[2])   # 윗판의 지하철 표지
-    for y in range(5, yb):
-        for x in range(10, 16):
-            if a[y, x, 3] and tuple(a[y, x, :3]) == TEAL[3]: put(a, x, y, TEAL[1])
-    for x in range(x0 + 1, x1): put(a, x, yb, INK[2])        # 처마 그늘
+    hx0, hx1 = 3, 12                                          # 머리 상자
+    fy = ttop(a, hx0, hx1, 0, 4, WHITE[1], WHITE[2], TEAL[4])  # 윗면 0..3, 4 = 윤곽
+    for x in range(hx0 + 3, hx0 + 6): put(a, x, 1, WHITE[2])
+    def face(y0, y1, ramp):
+        for y in range(y0, y1):
+            put(a, hx0, y, O); put(a, hx1, y, O)
+            for x in range(hx0 + 1, hx1):
+                put(a, x, y, ramp[-1] if x == hx0 + 1 else ramp[2] if x < hx1 - 1 else ramp[1])
+    face(fy, fy + 4, TEAL)                                    # 노선 띠 5..8
+    for (x, y) in ((7, 5), (8, 5), (6, 6), (9, 6), (6, 7), (9, 7), (7, 8), (8, 8)): put(a, x, y, WHITE[2])   # 지하철 표지(동그라미)
+    face(fy + 4, fy + 14, AMBER)                              # 번호판 9..18
+    stamp(a, digit_mask(n), 5, fy + 5, INK[1])
+    for x in range(hx0, hx1 + 1): put(a, x, fy + 14, O)       # 머리 아래 윤곽 19
+    for x in range(hx0 + 1, hx1): put(a, x, fy + 15, INK[2]) if 5 <= x <= 10 else None   # 머리 밑 그늘
+    # 기둥 (x 5..10)
+    px0, px1 = 5, 10
+    for y in range(fy + 15, 28):
+        put(a, px0, y, O); put(a, px1, y, O)
+        for x in range(px0 + 1, px1):
+            put(a, x, y, SLATE[4] if x == px0 + 1 else SLATE[3] if x < px1 - 1 else SLATE[1])
+    for x in range(px0 + 1, px1): put(a, x, fy + 15, INK[2])
+    # 받침판 (x 2..13, 윗면 28..29 · 앞 30 · 윤곽)
+    for x in range(2, 14):
+        put(a, x, 27, O)
+    for y in (28, 29):
+        put(a, 2, y, O); put(a, 13, y, O)
+        for x in range(3, 13): put(a, x, y, SLATE[4] if (y == 28 and x < 8) else SLATE[3])
+    for x in range(px0 + 1, px1 + 1): put(a, x, 27, O) if False else None
+    for x in range(px0, px1 + 1): put(a, x, 27, O)
+    for x in range(px1 + 1, px1 + 3): put(a, x, 28, SLATE[2])  # 기둥 그늘이 받침 윗면 오른쪽에 진다
+    for x in range(3, 13): put(a, x, 30, SLATE[1])
+    put(a, 2, 30, O); put(a, 13, 30, O)
+    for x in range(2, 14): put(a, x, 31, O)
+    # 받침 윗줄 윤곽은 기둥 밖만
+    for x in range(px0 + 1, px1): put(a, x, 27, SLATE[2])
     return a
 
 
@@ -174,27 +204,26 @@ SIGNS = [
 
 
 def vertical_sign(chars, ramp, ink):
-    """세로 상자형 입간판 3/4 (r10) — 위에서 본 윗면 6줄(뒤쪽 밝게, 좌상 빛, ttop)·앞면(간판 색, 오른쪽 두 줄 그늘)·낮은 받침판.
+    """세로 상자형 입간판 3/4 (r11, 손 한글) — 위에서 본 윗면 5줄(뒤쪽 밝게, 좌상 빛, ttop)·앞면(간판 색, 오른쪽 두 줄 그늘)·낮은 받침판.
     원통+타원 갓(r9)은 관문이 「정면 입면」으로 읽었다 — 자판기·입간판 기준 조각처럼 상자 윗면을 면으로 보인다.
     글자는 한 자에 한 칸(9줄), 칸 사이는 바탕 틈 1줄 + 어두운 띠 1줄 + 틈 1줄(Argon r5: 두 자가 붙어 1배에서 안 읽힘)."""
     a = canvas(16, 32)
-    x0, x1 = 1, 14
+    x0, x1 = 1, 13                                            # 바깥 13칸(자판기 기준 조각 12칸 + 글자 여백 1)
     dark, mid = ramp[0], ramp[1] if len(ramp) > 1 else ramp[0]
     lite = ramp[2] if len(ramp) > 2 else ramp[-1]
     top = ramp[-1]
-    fy = ttop(a, x0, x1, 0, 6, lite, top, mid)               # 윗면 0..5(뒤 두 줄 밝게, 앞 모서리 mid), 6 = 윤곽, 앞면 7 부터
-    for x in range(x0 + 3, x0 + 7): put(a, x, 1, WHITE[2])    # 윗면 좌상 하이라이트
+    fy = ttop(a, x0, x1, 0, 5, lite, top, mid)               # 윗면 0..4(뒤 두 줄 밝게, 앞 모서리 mid), 5 = 윤곽, 앞면 6 부터
+    for x in range(x0 + 3, x0 + 6): put(a, x, 1, WHITE[2])    # 윗면 좌상 하이라이트
     for x in range(x0 + 4, x1 - 3): put(a, x, 3, top)         # 윗면 가운데 조명 덮개 결
     for y in range(fy, 30):
         put(a, x0, y, O); put(a, x1, y, O)
         for x in range(x0 + 1, x1):
-            put(a, x, y, lite if x == x0 + 1 else mid if x < x1 - 2 else dark)
-    for x in range(x0 + 1, x1): put(a, x, 29, dark)           # 앞면 아래 모서리 그늘
-    for x in range(x0 + 2, x1 - 2): put(a, x, 18, dark)       # 두 칸 사이 띠(위아래 한 줄 바탕 틈)
+            put(a, x, y, lite if x == x0 + 1 else mid if x < x1 - 1 else dark)
+    for x in range(x0 + 1, x1): put(a, x, 29, dark)           # 앞면 아래 모서리 그늘(글자와 한 줄 떨어짐)
+    for x in range(x0 + 2, x1 - 1): put(a, x, 17, dark)       # 두 칸 사이 띠(위아래 한 줄 바탕 틈)
     for i, ch in enumerate(chars):
-        mk = glyph_mask(ch); h, w = mk.shape
-        gy = (8 if i == 0 else 20) + (9 - h) // 2
-        stamp(a, mk, x0 + 1 + (x1 - x0 - 3 - w + 1) // 2, gy, ink)
+        mk = hangul_mask(ch)
+        stamp(a, mk, x0 + 2, 7 if i == 0 else 19, ink)        # 글자 7..15 · 틈 16 · 띠 17 · 틈 18 · 글자 19..27 · 틈 28
     # 받침판: 윗면 한 줄(좌상 밝게)·윤곽
     for x in range(x0 + 1, x1): put(a, x, 30, SLATE[4] if x < 9 else SLATE[3])
     put(a, x0, 30, O); put(a, x1, 30, O)
@@ -204,30 +233,30 @@ def vertical_sign(chars, ramp, ink):
 
 # ---------------------------------------------------------------- 가로수 보호판(1×1, 바닥)
 def tree_grate():
-    """보도에 박힌 정사각 주철 보호판(r7, 대비 높임·바깥 잉크 윤곽) — 밝은 테 판(좌상 빛)에 짙은 홈 동심 사각 두 줄, 가운데 흙 구멍과 짙은 테. 바닥 그림(flat)."""
+    """보도에 박힌 정사각 주철 가로수 보호판(r11) — 짙은 주철판에 동심 사각 두 줄의 슬롯(구멍, 잉크)과 가운데 흙 구멍.
+    박힌 판이라 좌상 안쪽 턱이 그늘·우하 턱이 빛(볼록 버튼처럼 보이던 r7 의 바깥 밝은 베벨을 없앴다, Argon r9). 바닥 그림(flat)."""
     a = canvas(16, 16)
+    iron, iron_hi, iron_lo = SLATE[1], SLATE[2], SLATE[0]
     for y in range(16):
-        for x in range(16):
-            put(a, x, y, BODY[3])
-    for t in range(16):
-        put(a, t, 0, O); put(a, 0, t, O); put(a, t, 15, O); put(a, 15, t, O)              # 바깥 잉크 윤곽
+        for x in range(16): put(a, x, y, iron)
+    for t in range(16):                                       # 바깥 보도 턱: 위·왼쪽 = 그늘, 아래·오른쪽 = 빛
+        put(a, t, 0, O); put(a, 0, t, O); put(a, t, 15, SLATE[3]); put(a, 15, t, SLATE[3])
     for t in range(1, 15):
-        put(a, t, 1, BODY[5]); put(a, 1, t, BODY[5]); put(a, t, 14, BODY[0]); put(a, 14, t, BODY[0])
-    for t in range(2, 14):
-        put(a, t, 2, BODY[4]); put(a, 2, t, BODY[4]); put(a, t, 13, BODY[1]); put(a, 13, t, BODY[1])
-    # 홈: 동심 사각 두 줄(짙게) — 홈 아래·오른쪽 한 줄은 밝은 결(빛 받는 턱)
-    for k in (3, 5):
-        for t in range(k, 16 - k):
-            for (x, y) in ((t, k), (k, t), (t, 15 - k), (15 - k, t)): put(a, x, y, INK[2])
-        for t in range(k + 1, 15 - k):
-            put(a, t, k + 1, BODY[5])                         # 홈 아래 밝은 턱(오른쪽 홈은 끊지 않는다)
-    # 흙 구멍 + 짙은 테
-    for y in range(16):
-        for x in range(16):
-            d = (x - 7.5) ** 2 + (y - 7.5) ** 2
-            if d < 5.5: put(a, x, y, (0x5a, 0x45, 0x31) if (x * 3 + y) % 4 else (0x72, 0x58, 0x3f))
-            elif d < 9: put(a, x, y, INK[1])
-    for (x, y) in ((6, 6), (7, 6)): put(a, x, y, (0x86, 0x6a, 0x4c))
+        put(a, t, 1, iron_lo); put(a, 1, t, iron_lo)
+    # 슬롯: 동심 사각 고리 두 줄(k=3, k=6), 네 귀는 막고(주철 살) 변마다 짧은 구멍 2개
+    for k in (3, 6):
+        lo, hi = k, 15 - k
+        for t in range(lo + 1, hi):
+            if (t - lo) % 3 == 0: continue                    # 살(바)
+            for (x, y) in ((t, lo), (t, hi), (lo, t), (hi, t)):
+                put(a, x, y, O)
+                # 구멍 아래·오른쪽 가장자리는 빛 받는 살
+            for (x, y) in ((t, lo + 1), (t, hi + 1), (lo + 1, t), (hi + 1, t)):
+                if 0 < x < 15 and 0 < y < 15 and tuple(a[y, x, :3]) == tuple(iron): put(a, x, y, iron_hi)
+    # 흙 구멍(가운데 4×4) + 잉크 테
+    for y in range(6, 10):
+        for x in range(6, 10): put(a, x, y, (0x5a, 0x45, 0x31) if (x + y) % 3 else (0x72, 0x58, 0x3f))
+    for (x, y) in ((6, 6), (7, 6)): put(a, x, y, (0x40, 0x31, 0x24))   # 위 턱 그늘
     return a
 
 
