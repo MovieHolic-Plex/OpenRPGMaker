@@ -545,7 +545,7 @@ const SEGMENTS = {
     await closePage(ctx, "kbwindows", dir);
   },
   async shop(browser) {
-    const { ctx, page, dir } = await openPage(browser, "shop", SHOP);
+    const { ctx, page, dir } = await openPage(browser, "shop", flag("smith") ? { ...SHOP, id: "shop-smithy", mapId: "fs_smithy", x: 10, y: 7, facing: "up" } : SHOP);
     note("shop", "boot", await waitBoot(page, true));
     await sleep(2500);
     if (DEVICE === "Desktop") {
@@ -556,6 +556,13 @@ const SEGMENTS = {
       await shot(page, "shop", "1-shop");
       await page.keyboard.press("Enter"); await sleep(1200);
       await shot(page, "shop", "2-bought");
+      await page.keyboard.press("ArrowDown"); await sleep(400);
+      await page.keyboard.press("Enter"); await sleep(1200);
+      await shot(page, "shop", "3-confirm");
+      for (let i = 0; i < 3; i++) { await page.keyboard.press("Escape"); await sleep(600); if (await has(page, ".runtime-shop-menu-choice")) break; }
+      await page.keyboard.press("ArrowRight"); await sleep(400);
+      await page.keyboard.press("Enter"); await sleep(1200);
+      await shot(page, "shop", "4-sell");
       await closePage(ctx, "shop", dir);
       return;
     }

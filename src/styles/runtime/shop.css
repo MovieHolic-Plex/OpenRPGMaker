@@ -1357,3 +1357,9 @@
 .player-layout .play-viewport[data-shop-fit="compact"] > .runtime-shop-overlay:not(.emerald-shop-overlay) .runtime-shop-greeting-panel { padding: var(--shop-space-3); }
 .player-layout .play-viewport[data-shop-fit="compact"] > .runtime-shop-overlay:not(.emerald-shop-overlay) .runtime-shop-menu { gap: var(--shop-space-3); }
 .player-layout .play-viewport[data-shop-fit="compact"] > .runtime-shop-overlay:not(.emerald-shop-overlay) .runtime-shop-menu-choice { padding-block: var(--shop-space-2); }
+/* 파티 창 카드는 네 칸 고정이라, 게임 px 12px 글자에서 두 명이면 이름이 「엘…」로 잘렸다(1.15 이후). 있는 사람 수만큼 폭을 나눈다. */
+.player-layout .play-viewport > .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-cards {
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+}
