@@ -4224,6 +4224,27 @@
     "wall.ice_face"
    ],
    "lead": "r1 VQA 반영: 얼음 벽 돌마다 칠·깨진 면 얼음 껍질·길이 다른 고드름."
+  },
+  "theme-walls-r7": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_walls_r7.py",
+   "wave": "theme_walls",
+   "title": "던전 테마 벽 다시 그림 theme-walls-r7",
+   "items": [
+    "wall.other_face",
+    "wall.other_rim",
+    "wall.tower_face"
+   ],
+   "lead": "패널 6 반영: 돌 베개 대각 제거, 탑 창 벽 두께, 마계 테두리 밝은 흑요석 몸통."
+  },
+  "theme-props-r4": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_props_r4.py",
+   "wave": "theme_props",
+   "title": "던전 테마 남은 조각 theme-props-r4",
+   "items": [
+    "prop.minecart",
+    "wall.ice_face"
+   ],
+   "lead": "패널 6 반영: 낮은 3/4 광차·두 레일, 얼음 벽 낱점 잡티 제거·고드름 반복 줄임·턱 이음."
   }
  }
 }
