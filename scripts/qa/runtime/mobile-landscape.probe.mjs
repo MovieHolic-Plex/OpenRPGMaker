@@ -13,6 +13,8 @@ const iphone = devices["iPhone 15 landscape"];
 const DEVICES = {
   // 사파리 주소창·도구 막대가 보이는 가로(플레이라이트 기본값).
   "iphone15-land": iphone,
+  // 진짜 아이폰 사파리처럼 Fullscreen API 를 지운 판(크로미움 에뮬레이션에는 API 가 있다) — 「홈 화면에 추가」 안내 확인용.
+  "iphone15-land-noapi": { ...iphone, noFullscreenApi: true },
   // 홈 화면 앱(주소창 없음): 화면 전체 852×393.
   "iphone15-land-home": { ...iphone, viewport: { width: 852, height: 393 } },
   "galaxy-s24-land": devices["Galaxy S24 landscape"],
@@ -40,6 +42,25 @@ async function quiet(page) {
     if (open) { calm = 0; const menu = await page.evaluate(() => !!document.querySelector('[data-testid="main-menu"]')); await page.keyboard.press(menu ? "Escape" : "Enter"); } else calm += 1;
     await sleep(300);
   }
+}
+
+/** 체크포인트 뒤 자동 컷신(행진, 영화 띠)이 끝나 손으로 걸을 수 있을 때까지. */
+async function settle(page) {
+  const deadline = Date.now() + 240_000;
+  while (Date.now() < deadline) {
+    await quiet(page);
+    await page.evaluate(() => window.__oprnDebug.teleport("fs_hub", 30, 33));
+    await sleep(400);
+    const before = await page.evaluate(() => window.__oprnPlayerSprite?.());
+    await page.evaluate(() => window.__oprnInput.dir("right"));
+    await sleep(350);
+    await page.evaluate(() => window.__oprnInput.dir(null));
+    await sleep(500);
+    const after = await page.evaluate(() => window.__oprnPlayerSprite?.());
+    if (before && after && before.x !== after.x) return;
+    await sleep(1500);
+  }
+  throw new Error("settle: 자유 걷기 상태에 들어가지 못했다");
 }
 
 async function measure(page) {
@@ -77,16 +98,19 @@ const summary = {};
 const projectJson = await readFile(projectPath, "utf8");
 try {
   for (const id of deviceIds) {
-    const context = await browser.newContext({ ...DEVICES[id] });
+    const { noFullscreenApi, ...descriptor } = DEVICES[id];
+    const context = await browser.newContext(descriptor);
     const page = await context.newPage();
     await page.route("**/__runtime-qa/project.json", (route) => route.fulfill({ status: 200, contentType: "application/json", body: projectJson }));
     await page.addInitScript(([cp]) => {
       try { localStorage.clear(); } catch {}
       window.__OPENRPG_BOOT__ = { projectUrl: "/__runtime-qa/project.json", saveNamespace: "mobile-landscape", qaInstrumentation: true, qaCheckpoint: cp };
     }, [CHECKPOINT]);
+    if (noFullscreenApi) await page.addInitScript(() => { delete Element.prototype.requestFullscreen; delete Document.prototype.exitFullscreen; });
     await page.goto(`${server.url}/player.html`, { waitUntil: "domcontentloaded", timeout: 360_000 });
     await page.waitForFunction(() => window.__oprnDebug && document.querySelector('[data-testid="runtime-state-json"]'), null, { timeout: 360_000 });
-    await sleep(8000);
+    await sleep(3000);
+    await settle(page);
     await quiet(page);
     await page.evaluate(() => window.__oprnDebug.teleport("fs_hub", 30, 33));
     await sleep(800);
@@ -101,7 +125,16 @@ try {
     await sleep(1800);
     const dialogue = await measure(page);
     await page.screenshot({ path: join(outRoot, `${id}-dialogue.png`) });
-    summary[id] = { field, dialogue: dialogue.dialogue };
+    let hint = null;
+    if (field.fullscreenKind === "home-screen") {
+      await page.keyboard.press("Enter").catch(() => {});
+      await quiet(page);
+      await page.tap(".play-fullscreen-toggle");
+      await sleep(500);
+      hint = await page.evaluate(() => document.querySelector('[data-testid="play-home-screen-hint"]')?.textContent ?? null);
+      await page.screenshot({ path: join(outRoot, `${id}-hint.png`) });
+    }
+    summary[id] = { field, dialogue: dialogue.dialogue, hint };
     console.log(id, JSON.stringify({ vp: field.viewport, scale: field.scale, stage: field.stage, fillH: field.fillH, fillArea: field.fillArea, overlay: field.overlay, fs: field.fullscreenKind }));
     await context.close();
   }
