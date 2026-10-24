@@ -10,9 +10,9 @@
     {
       "id": "blizzard-wisps",
       "label": "엘레나 블리자드 — 도깨비불 넷에게 동시에",
-      "mapId": "fs_forest",
-      "x": 15,
-      "y": 38,
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
       "facing": "up",
       "switches": {
         "sw_fs_main_started": true,
@@ -74,9 +74,9 @@
     {
       "id": "single-arcane",
       "label": "단일 대상 회귀 — 비전 화살 한 마리",
-      "mapId": "fs_forest",
-      "x": 15,
-      "y": 38,
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
       "facing": "up",
       "switches": {
         "sw_fs_main_started": true,
@@ -138,9 +138,9 @@
     {
       "id": "weapon-cross",
       "label": "카엘 교차 베기 — 검 무기 보너스(무기↑)·급소",
-      "mapId": "fs_forest",
-      "x": 15,
-      "y": 38,
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
       "facing": "up",
       "switches": {
         "sw_fs_main_started": true,
@@ -203,9 +203,9 @@
     {
       "id": "pierce-beetle",
       "label": "뿔딱정벌레 — 검은 저항, 관통 찌르기는 방어 무시",
-      "mapId": "fs_forest",
-      "x": 15,
-      "y": 38,
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
       "facing": "up",
       "switches": {
         "sw_fs_main_started": true,
@@ -268,9 +268,9 @@
     {
       "id": "sleep-wake",
       "label": "잠의 안개 → 맞으면 깬다",
-      "mapId": "fs_forest",
-      "x": 15,
-      "y": 38,
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
       "facing": "up",
       "switches": {
         "sw_fs_main_started": true,
@@ -335,9 +335,9 @@
     {
       "id": "iris-crit",
       "label": "이리스 사격 — 급소 50%·2배(치명타 연출)",
-      "mapId": "fs_forest",
-      "x": 15,
-      "y": 38,
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
       "facing": "up",
       "switches": {
         "sw_fs_main_started": true,
@@ -399,9 +399,9 @@
     {
       "id": "ether-meditate",
       "label": "MP 회복 — 에테르와 명상",
-      "mapId": "fs_forest",
-      "x": 15,
-      "y": 38,
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
       "facing": "up",
       "switches": {
         "sw_fs_main_started": true,
@@ -470,9 +470,9 @@
     {
       "id": "deep-ghosts",
       "label": "깊은 곳 — 창백한 유령(빛 약점·물리 저항)과 잎새 정령(치유)",
-      "mapId": "fs_forest",
-      "x": 15,
-      "y": 38,
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
       "facing": "up",
       "switches": {
         "sw_fs_main_started": true,
@@ -543,9 +543,9 @@
     {
       "id": "valen-finale",
       "label": "발렌 결전 — 소환·예고·2단계·고유 무기 드롭",
-      "mapId": "fs_forest",
-      "x": 15,
-      "y": 38,
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
       "facing": "up",
       "switches": {
         "sw_fs_main_started": true,
