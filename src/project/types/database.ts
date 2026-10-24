@@ -1180,6 +1180,8 @@ export interface StateRuntimeEffects {
   reraisePercent?: number;
   /** 선고: 걸린 뒤 자기 턴이 이만큼 지나면 쓰러진다(1~9). */
   doomTurns?: number;
+  /** 최대 지속: 걸린 뒤 자기 턴이 이만큼 지나면 회복 굴림과 상관없이 풀린다(1~9). 수면·마비가 운 나쁘게 끝없이 이어지지 않게. */
+  maxTurns?: number;
   /** 좀비: 이 상태인 동안 받는 HP 회복(회복 스킬·회복 아이템·재생)이 같은 양의 피해가 된다(FF6 좀비). MP 회복은 그대로. */
   invertHealing?: boolean;
   /**
