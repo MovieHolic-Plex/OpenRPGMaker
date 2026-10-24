@@ -8,7 +8,7 @@ import { compareVariableValue } from "@/project/conditionEvaluation";
 import type { ActorQueryCondition, ConditionCompareOp, Dir } from "@/project/types";
 import type { GameTime } from "@/project/gameTime";
 import { SEASONS } from "@/project/gameTime";
-import { eventSeesPlayer, type SightLocation, type SightPoint } from "@/project/conditionEventSight";
+import { eventSeesPlayer, type SightBlocker, type SightLocation, type SightPoint } from "@/project/conditionEventSight";
 
 /** 조건 평가에 필요한 세션 조각. PlaySession 이 구조적으로 만족한다. */
 export interface ActorQuerySession {
@@ -139,6 +139,8 @@ export interface ActorQueryOptions {
    * 세션 eventLocations 만으로는 모른다 — 호출측이 장면 위치를 넘긴다. 생략하면 eventLocations 를 본다.
    */
   readonly eventPosition?: (eventId: string) => SightPoint | undefined;
+  /** eventSeesPlayer: 시선을 막는 칸(벽). 호출측이 sightBlockers.cachedSightBlocker 로 만든다. 생략 = 광선 검사 없음. */
+  readonly blocksSight?: SightBlocker;
 }
 
 /** 세션만으로 아는 스킬(프로젝트 없이): 배우가 배운 actorSkillIds 와 몬스터 파티 인스턴스의 명시 skillIds. */
@@ -203,7 +205,7 @@ export function evalActorQueryCondition(
       const live = options.eventPosition?.(condition.eventId);
       const loc = session.eventLocations?.[condition.eventId];
       const point: SightPoint | undefined = live ?? (loc && loc.mapId === session.currentMapId ? { x: loc.x, y: loc.y, direction: loc.direction } : undefined);
-      return eventSeesPlayer(point, { x: session.x, y: session.y }, condition, options.locations?.()) === (condition.value !== false);
+      return eventSeesPlayer(point, { x: session.x, y: session.y }, condition, options.locations?.(), options.blocksSight) === (condition.value !== false);
     }
     case "hiding":
       return Boolean(session.horror?.hiding) === condition.value;
