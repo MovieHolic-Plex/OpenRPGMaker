@@ -376,6 +376,11 @@ export interface SkillRecord {
    */
   drainPercent?: number;
   /**
+   * 무기 공명: 시전자가 이 계열(장비 attackElementIds — sword·spear·bow·hit 등) 무기를 들고 있으면 피해·회복이 bonusPercent% 오른다.
+   * elementIds 를 비우면 기술 자신의 elementId 를 계열로 본다. 「검을 든 카엘의 검 기술이 더 세다」. 생략 = 없음.
+   */
+  weaponAffinity?: { readonly elementIds?: readonly string[]; readonly bonusPercent: number };
+  /**
    * 반동(0~100): 준 피해의 N% 를 시전자도 입는다(몸통박치기·이판사판). 피해가 1 이상일 때만, 최소 1. 타마다 적용한다.
    * 타임라인에 시전자 자신을 대상으로 한 damage 엔트리(aside recoil)를 남긴다. 생략 = 반동 없음.
    */
@@ -1175,6 +1180,8 @@ export interface StateRuntimeEffects {
   reraisePercent?: number;
   /** 선고: 걸린 뒤 자기 턴이 이만큼 지나면 쓰러진다(1~9). */
   doomTurns?: number;
+  /** 최대 지속: 걸린 뒤 자기 턴이 이만큼 지나면 회복 굴림과 상관없이 풀린다(1~9). 수면·마비가 운 나쁘게 끝없이 이어지지 않게. */
+  maxTurns?: number;
   /** 좀비: 이 상태인 동안 받는 HP 회복(회복 스킬·회복 아이템·재생)이 같은 양의 피해가 된다(FF6 좀비). MP 회복은 그대로. */
   invertHealing?: boolean;
   /**

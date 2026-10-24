@@ -18,7 +18,7 @@ import { battleTroopError } from '@/project/battleAdmission';
 import { activeItemEffects, isCaptureTool, itemAllowsBattle } from "@/project/itemUsage";
 // SIZE_OK: Battle runtime keeps turn state, troop-event callbacks, and snapshot
 // assembly together so battle-event regressions can verify one state machine.
-import type { ActorId, ActorInitialEquipment, EnemyId, ItemId, ItemRecord, Project, SkillId } from "@/project/types";
+import type { ActorId, ActorInitialEquipment, EnemyId, ItemId, ItemRecord, Project, SkillId, SkillRecord } from "@/project/types";
 import { startStateOf } from "@/project/session";
 import { transitionItemState } from "@/project/itemTransitions";
 import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
@@ -472,17 +472,32 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let actionCounter = 0;
   let currentActionId: number | undefined;
   function beginTimelineAction(): void {
+    flushHitWakes();
     actionCounter += 1;
     currentActionId = actionCounter;
   }
+  // 맞아서 깬 상태(수면 등)는 그 타격 엔트리 바로 「뒤」에 기록한다 — 판정은 피해 기록 전에 일어나서
+  // 「숲늑대의 수면이 풀렸다」가 「카엘의 공격!」보다 먼저 떴다(2026-10-24 실측). 같은 대상의 피해 엔트리가 오면 그 뒤에,
+  // 다른 기록이 먼저 오거나 명령이 바뀌거나 스냅숏을 뜨면 그 앞에 내보낸다.
+  const pendingHitWakes: Omit<BattleTimelineEntrySnapshot, "sequence">[] = [];
+  function flushHitWakes(): void {
+    for (const wake of pendingHitWakes.splice(0)) timeline.push({ ...wake, sequence: timeline.length });
+  }
   function recordTimeline(entry: Omit<BattleTimelineEntrySnapshot, "sequence">): void {
     const stamped = currentActionId !== undefined && entry.actionId === undefined ? { ...entry, actionId: currentActionId } : entry;
+    const strikesWoken = (stamped.kind === "damage" || stamped.kind === "miss")
+      && pendingHitWakes.length > 0 && pendingHitWakes.every((wake) => wake.targetId === stamped.targetId);
+    if (!strikesWoken) flushHitWakes();
     timeline.push({ ...stamped, sequence: timeline.length });
+    if (strikesWoken) flushHitWakes();
   }
   /** 방금 기록된 타임라인 엔트리에 애니메이션을 붙인다. 스킬/아이템 실행부가
    *  recordAction 직후 lastAnimation 을 세팅하므로, 그 시점에 호출해 엔트리와 짝을 맞춘다. */
   function attachAnimationToLatestTimeline(animation: BattleAnimationSnapshot): void {
-    const latest = timeline[timeline.length - 1];
+    // 타격 뒤에 붙은 「맞아서 깸」 엔트리는 건너뛴다 — 애니메이션은 그 타격의 것이다.
+    let at = timeline.length - 1;
+    while (at > 0 && timeline[at]!.kind === "stateRemoved" && timeline[at]!.reason === "hit") at -= 1;
+    const latest = timeline[at];
     if (latest) (latest as { animation?: BattleAnimationSnapshot }).animation = animation;
   }
 
@@ -507,6 +522,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       ...(entry.skillId ? { skillId: entry.skillId } : {}),
       ...(() => { const combo = comboActorIdsOf(entry.skillId ? lookupSkill(entry.skillId) : undefined); return combo ? { comboActorIds: [...combo] } : {}; })(),
       ...(entry.effectiveness !== undefined && kind === "damage" ? { effectiveness: entry.effectiveness } : {}),
+      ...(entry.weaponAffinity ? { weaponAffinity: true } : {}),
       ...(resource ? { resource } : {}),
     });
   }
@@ -704,8 +720,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function recoverHitStates(battler: MutableBattler): void {
     const removed = recoverStatesWhenHit(options.project, battler, rng);
-    for (const stateId of removed) {
-      recordTimeline({ kind: "stateRemoved", side: battlerSide(battler), targetId: battler.id, stateId, reason: "hit" });
+    // 그 타격에 쓰러졌으면 깸을 말하지 않는다 — 「쓰러뜨렸다!」 뒤 「수면이 풀렸다」가 붙었다.
+    if (battler.hp > 0) for (const stateId of removed) {
+      pendingHitWakes.push({ kind: "stateRemoved", side: battlerSide(battler), targetId: battler.id, stateId, reason: "hit", ...(currentActionId !== undefined ? { actionId: currentActionId } : {}) });
     }
     refreshAfterStateChange(battler, removed);
   }
@@ -2287,6 +2304,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function finishStrictRoundLog(round: number): void {
+    flushHitWakes();
     roundLogs.push({
       round,
       actions: [...strictCurrentRoundActions],
@@ -2340,6 +2358,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function snapshot(): BattleSnapshot {
+    flushHitWakes();
     const enemiesInBattle = visibleEnemies();
     const nextReady = battleFlow === "gauge" && phase === "charging" && !result
       ? nextReadyBattler(chargingActors(), enemiesInBattle, Infinity, skinHasteMultiplier,
@@ -4284,6 +4303,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const hpBefore = target.hp;
     const mpBefore = target.mp;
     const targetMaxHpBefore = target.maxHp;
+    // 무기 공명(SkillRecord.weaponAffinity): 맞는 계열 무기를 들었으면 피해·회복 배율이 오른다.
+    const affinity = weaponAffinityMultiplier(user, skill);
     const rawResult = applySkillLike(user, target, {
       power,
       statistic,
@@ -4294,7 +4315,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       // 회피 상태는 물리(공격력 계열) 피해 기술만 피한다.
       hitRate: effectKind === "damage" ? withAccuracyStages(statistic === "attack" ? withEvasion(combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill),
       damageFormula: skill?.damageFormula,
-      hitMultiplier:hitMultiplier*(effectKind==="damage"?gimmickDamageMultiplier(user,target):1),
+      hitMultiplier:hitMultiplier*(effectKind==="damage"?gimmickDamageMultiplier(user,target):1)*(affinity?affinity:1),
       criticalMultiplier: skill?.criticalMultiplier,
       variance: skill?.variance,
       criticalRate: skill?.criticalRate ?? criticalRateFor(user),
@@ -4326,6 +4347,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       {
         userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name, skillId: skill?.id,
         ...(effectKind === "damage" && result.hit ? effectivenessField(battleEffectivenessMultiplier(options.project, skill?.elementId, target)) : {}),
+        ...(affinity > 1 && result.hit && (effectKind === "damage" || effectKind === "healing") ? { weaponAffinity: true } : {}),
       },
       timelineKind,
       commandKind,
@@ -4589,6 +4611,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   /** 상성 배율을 결과·타임라인에 싣는다 — 1(보통)이면 싣지 않아 기존 결과 모양이 그대로다. */
+  /** 무기 공명 배율 — 기술이 요구하는 계열을 시전자의 장비 공격 속성(attackElementIds)이 갖고 있으면 1 + bonus%. */
+  function weaponAffinityMultiplier(user: MutableBattler, skill: SkillRecord | undefined): number {
+    const affinity = skill?.weaponAffinity;
+    if (!affinity || !(affinity.bonusPercent > 0)) return 1;
+    const wanted = affinity.elementIds?.length ? affinity.elementIds : skill?.elementId ? [skill.elementId] : [];
+    const held = user.equipmentEffects?.attackElementIds ?? [];
+    return wanted.some((id) => held.includes(id)) ? 1 + affinity.bonusPercent / 100 : 1;
+  }
+
   function effectivenessField(multiplier: number): { effectiveness?: number } {
     return Number.isFinite(multiplier) && multiplier !== 1 ? { effectiveness: multiplier } : {};
   }

@@ -1132,7 +1132,9 @@ function skillName(skillId: string): string {
 }
 
 function itemName(itemId: string): string {
-  return store.getCurrent().database.items.find((item) => item.id === itemId)?.name ?? itemId;
+  const database = store.getCurrent().database;
+  return database.items.find((item) => item.id === itemId)?.name
+    ?? (database.equipment ?? []).find((entry) => entry.id === itemId)?.name ?? itemId;
 }
 
 function markByDataset(root: HTMLElement, key: string, value: string | undefined, className: string): void {

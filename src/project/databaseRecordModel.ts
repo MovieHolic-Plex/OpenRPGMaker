@@ -719,6 +719,14 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     ...(record.unforgettable === true ? { unforgettable: true } : {}),
     ...(Number.isFinite(record.hpCostPercent) && record.hpCostPercent! > 0 ? { hpCostPercent: clampInteger(record.hpCostPercent!, 0, 100) } : {}),
     ...(Number.isFinite(record.drainPercent) && record.drainPercent! > 0 ? { drainPercent: clampInteger(record.drainPercent!, 0, 100) } : {}),
+    ...(record.weaponAffinity && Number.isFinite(record.weaponAffinity.bonusPercent) && record.weaponAffinity.bonusPercent > 0
+      ? { weaponAffinity: {
+          bonusPercent: clampInteger(record.weaponAffinity.bonusPercent, 1, 300),
+          ...(Array.isArray(record.weaponAffinity.elementIds) && record.weaponAffinity.elementIds.length
+            ? { elementIds: record.weaponAffinity.elementIds.filter((id): id is string => typeof id === "string" && id.trim().length > 0).slice(0, 8) }
+            : {}),
+        } }
+      : {}),
     ...(Number.isFinite(record.recoilPercent) && record.recoilPercent! > 0 ? { recoilPercent: clampInteger(record.recoilPercent!, 0, 100) } : {}),
     ...(normalizeFixedDamage(record.fixedDamage) ? { fixedDamage: normalizeFixedDamage(record.fixedDamage) } : {}),
     ...(normalizeMultiHit(record.multiHit) ? { multiHit: normalizeMultiHit(record.multiHit) } : {}),

@@ -341,6 +341,8 @@ export interface BattleFieldPresentation {
   readonly calm?: boolean;
   /** 지금 impact 비트로 맞고 있는 배틀러 — 이 배틀러만 hit pose 를 보여준다. */
   readonly hitTargetId?: string;
+  /** 광역기 착탄에서 함께 맞는 배틀러들 — 모두 hit pose 를 보여준다. */
+  readonly hitTargetIds?: readonly string[];
   /** 필드 위 전투(battlePresentation onField): 배틀러가 필드 스프라이트 자리에 선다(battleOnField.ts). */
   readonly onField?: OnFieldAnchors;
   /** system.battleRollingHp: 아군 HP 표시가 이 미터를 따라 굴러간다(rollingHp.ts). 없으면 즉시 표시. */
@@ -437,8 +439,9 @@ function presentedState(
   }
   // 스냅샷 pose 는 라운드 "마지막" 액션 기준이라 비트 중에는 엉뚱한 배틀러가 hit 로
   // 보일 수 있다 — 지금 재생 중인 impact 의 대상에게만 hit 를 준다.
-  const beingHit = presentation?.hitTargetId !== undefined
-    && (presentation.hitTargetId === battler.id || presentation.hitTargetId === battler.recordId);
+  const beingHit = (presentation?.hitTargetId !== undefined
+    && (presentation.hitTargetId === battler.id || presentation.hitTargetId === battler.recordId))
+    || Boolean(presentation?.hitTargetIds?.some((id) => id === battler.id || id === battler.recordId));
   if (!vitals) {
     if (beingHit && !battler.defeated) pose = "hit";
     return { hp: battler.hp, defeated: battler.defeated, pose };
@@ -996,6 +999,28 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
         : (feedback.resource === "mp" ? `MP -${feedback.amount}`
           // battle-feel 2026-10-20: 도트 측면 전투는 FF·DQ 처럼 피해를 부호 없이 센다(「-37」의 빼기표가 숫자를 가늘게 만들었다).
           : field.closest<HTMLElement>(".battle-scene")?.dataset.battleMotion === "retro" ? String(feedback.amount) : `-${feedback.amount}`);
+  // 꼬리표 — 숫자 위에 작게 「치명타!」·「약점!」·「저항」·「무기↑」를 단다. 문장만으로는 광역기에서 누가 약했는지,
+  // 어느 숫자가 급소였는지 안 보였다(2026-10-24 폴른 스타). 표시 전용 글자(label)·빗나감·회복에는 달지 않는다.
+  if (!feedback.label && !feedback.miss && !feedback.healing && !feedback.blocked) {
+    const tags: { readonly kind: string; readonly text: string }[] = [];
+    if (feedback.critical) tags.push({ kind: "critical", text: "치명타!" });
+    const effectiveness = feedback.effectiveness;
+    if (effectiveness !== undefined && effectiveness !== 1) {
+      tags.push(effectiveness <= 0 ? { kind: "immune", text: "무효" } : effectiveness > 1 ? { kind: "weak", text: "약점!" } : { kind: "resist", text: "저항" });
+    }
+    if (feedback.weaponAffinity) tags.push({ kind: "affinity", text: "무기↑" });
+    if (tags.length > 0) {
+      const tag = document.createElement("span");
+      tag.className = "battle-damage-popup-tag";
+      tag.dataset.effectiveness = tags.find((row) => row.kind === "weak" || row.kind === "resist" || row.kind === "immune")?.kind ?? tags[0]!.kind;
+      tag.dataset.tags = tags.map((row) => row.kind).join(" ");
+      tag.textContent = tags.map((row) => row.text).join(" ");
+      const effective = tags.find((row) => row.kind === "weak" || row.kind === "resist" || row.kind === "immune");
+      if (effective) popup.dataset.effectiveness = effective.kind;
+      // 숫자 아래에 단다 — 위에 달면 화면 위쪽 적에서 메시지 창 뒤로 숨었다(2026-10-24 영상 실측).
+      popup.append(tag);
+    }
+  }
   const anchor = findBattlerNode(field, feedback.targetId);
   if (anchor) {
     popup.style.setProperty("--battle-node-x", anchor.style.getPropertyValue("--battle-node-x"));
