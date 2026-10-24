@@ -5,6 +5,46 @@
 
 <!-- releases -->
 
+## 0.327.0 — 2026-10-24
+
+### 기능
+
+- **player** — account cloud saves for store web games via a postMessage bridge to the play page (#3339) (`34543bf`)
+- **events** — wall/room-aware NPC sight + hearing, door-open before door transfer, data-driven container search fx (#3336) (`a686f3d`)
+- **battle** — AoE lands on all targets at once; crit/weak/resist/weapon tags; weaponAffinity; state maxTurns; equipment drops; hit-wake order (#3334) (`262fdd2`)
+- **fallen-star** — six-map whispering forest + field monsters that spot and chase (#3332) (`6d4907e`)
+- **ai-v2** — add_event afterTalk; silhouette before the actor shows; per-leg scene walk cap (#3328) (`4615f8c`)
+- **player** — mobile UI pass - touch-size menus, shop, battle, title; notch-safe portrait (#3324) (`4d5a32d`)
+- **fallen-star** — act 1 core scenes — Iris waking, scope journal, Valen foreshadowing, ending cliffhanger (#3323) (`8690927`)
+- **fallen-town** — act 1 town lines and three side quests (#3322) (`84163cc`)
+- **store** — image packs + version-scoped service worker — full preload 32-39 s → 13-18 s (#3320) (`de12607`)
+- **fallen-star** — battle elements, sword/spear lines, item gimmicks, drops, encounter rate, potion rebalance (#3315) (`0a85854`)
+- **store** — play store games in the browser — auto-versioned publish, loading screen, full prefetch (#3318) (`ad7c143`)
+- **fs-town** — owners catch you only by sight, many containers in houses and street (#3317) (`dd8de6b`)
+- **fallen-star** — Hanel by the telescope with state-dependent lines, 10 lore readables, canopy-autotile forest rebuild (#3314) (`902bf6a`)
+- **ai-v2** — game-element layer (quests, items, shops, battles, party, switches) + night/camera/shadow scene beats + 40-case game comparison set (#3312) (`db2cd77`)
+- **flagship** — Fallen Star town life — searchable containers, Lisa catch/ban, Toma bread gimmicks, smithy (`65cb7f9`)
+- **player** — mobile touch play — D-pad/A/B, tappable UI, fit scaling, fullscreen, iOS audio unlock (#3309) (`764e861`)
+
+### 수정
+
+- **events** — timer page condition honours an optional op (default <=, the old behaviour) (#3329) (`2c7455b`)
+- **ai-v2** — scene-only actors walk at most 24 steps per scene; scene check flags 30+ step walks (#3327) (`b441767`)
+- **ai-v2,cutscene** — no flicker on cutscene skip landing; vanishing scene actors get no follow-up line; cards for affinity variables, renames and place names (#3326) (`6c1b5fb`)
+- **ai-v2** — scenes after an NPC's talk, existing-map add-ons, shared gates for borrowed tools; upsert_actor keeps an existing actor's curves on partial edits (#3325) (`8e1a702`)
+- **editor** — open flagship demos from the baked project file as a real project (#3316) (`aca57eb`)
+- **flagship** — fallen town container labels/josa, QA probe walks doors with real keys (`b348f58`)
+- **flagship** — strip coordinate suffix from container labels; add townlife play probe (`06c433e`)
+- **flagship** — townLife type cast (`2d3303c`)
+
+### 문서
+
+- **openwiki** — store game storefront moved to play.openrpgmaker.com (#3321) (`ad530b3`)
+
+### CI
+
+- **ci-full** — 수동 실행은 브랜치마다 따로 줄을 선다 (#3340) (`b34b10f`)
+
 ## 0.326.0 — 2026-10-24
 
 ### 기능
