@@ -500,7 +500,7 @@ function entranceCamp(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | nu
 }
 
 function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null, slots: Slot[]): boolean {
-  const spikes = () => c.weighted(rs, [[CV("stalagmite-1"), 4], [CV("rock-pillar-2"), 1], [CV("rubble-cave"), 3]]);
+  const spikes = () => c.weighted(rs, [[CV("stalagmite-1"), 4], [CV("rock-pillar-2"), 1], [CV("rubble-cave"), 1]]);   // 잔돌은 드물게 — 흰 잔돌이 길가 쓰레기로 읽혔다(2026-10-25 floor VQA r2)
   const glow = () => c.weighted(rs, [[MUSH, 4], [CV("glow-moss-floor"), 2]]);
   const mossPatch = (cells: [number, number][], n: number) => {
     // 이끼 빛 한 덩이: 씨앗 칸 둘레 번짐

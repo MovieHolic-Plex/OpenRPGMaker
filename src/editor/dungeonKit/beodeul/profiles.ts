@@ -85,7 +85,7 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
   cave: {
     ...GRAMMAR.cave,
     face: { h3: C("face-cave-3h"), h2: C("face-cave-2h") },
-    floor: { base: M("ground-road"), patches: [] },   // 바다 동굴 모래 바닥은 칸마다 얼룩 결이라(결 11~18) 잔잔한 회갈색 흙바닥. 젖은 모래 물가 띠는 네모 고리로 읽혀 뺐다
+    floor: { base: M("ground-road"), patches: [], mix: true, mixCells: [1, 3, 6, 7, 8] },   // 회색 긁힌 자국이 적은 칸(3~7점)만 — 칸 0·2·5(12~16점)가 「잔 점」으로 읽혔다(2026-10-25 floor VQA r2)   // 바다 동굴 모래 바닥은 칸마다 얼룩 결이라(결 11~18) 잔잔한 회갈색 흙바닥. 젖은 모래 물가 띠는 네모 고리로 읽혀 뺐다
   },
   temple: {
     ...GRAMMAR.temple,
@@ -111,7 +111,8 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
     ceiling: ["beodeul_dungeon_ceiling_ice"],
     lakeFloor: [TK("ice-floor"), SN("ground-ice")],
     // gap 얼음굴 바닥(ice_floor A1, #3283): 얼음굴 돌바닥 오토타일 + 호수 방·덩이는 빙판 오토타일. 벽·천장은 검푸른 심층굴 바위(줄 C).
-    autoFloor: { ground: "beodeul_dungeon_ice_ground", sheet: "beodeul_dungeon_ice", sheetAt: 0.82, sheetScale: 8 },
+    // 빙판은 얼어붙은 호수 방에만(sheetAt 1 = 잡음 덩이 없음) — 금 간 빙판은 결이 커서(22~27) 눈 바닥 곳곳의 덩이가 계단 모양 네모 얼룩으로 읽혔다(2026-10-25 floor VQA r0·r2).
+    autoFloor: { ground: "beodeul_dungeon_ice_ground", sheet: "beodeul_dungeon_ice", sheetAt: 1, sheetScale: 8 },
   },
   forest: {
     ...GRAMMAR.forest,
