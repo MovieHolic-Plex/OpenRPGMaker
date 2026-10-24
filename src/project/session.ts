@@ -970,7 +970,22 @@ export type ConditionEvalContext = {
   readonly badgeSwitchIds?: () => readonly string[];
   /** 걷는 NPC 의 실시간 칸(eventSeesPlayer). 호출측이 장면 eventPositions 로 만든다. 생략 = session.eventLocations. */
   readonly eventPosition?: ActorQueryOptions["eventPosition"];
+  /** 시선을 막는 칸(eventSeesPlayer). 호출측이 sightBlockers.cachedSightBlocker 로 만든다. */
+  readonly blocksSight?: ActorQueryOptions["blocksSight"];
 };
+
+/** insideLocation 의 주체: eventId 가 있으면 그 이벤트(실시간 칸 → 같은 맵 eventLocations), 없으면 주인공. */
+function insideLocationSubject(
+  session: PlaySessionLike,
+  eventId: string | undefined,
+  live: ConditionEvalContext["eventPosition"],
+): { x: number; y: number } | undefined {
+  if (!eventId) return { x: session.x, y: session.y };
+  const point = live?.(eventId);
+  if (point) return point;
+  const loc = session.eventLocations?.[eventId];
+  return loc && loc.mapId === session.currentMapId ? loc : undefined;
+}
 
 // 조건(Condition) 평가. condition이 없으면 항상 참.
 // host: 셀프 스위치/활동은 event id, 호감도 self 는 characterId 필요 (SocialHost 권장).
@@ -1018,11 +1033,13 @@ export function evalCondition(
       // 해석 불가(맵 미전달·삭제된 로케이션)는 거짓이다. inside=false 라도 참이 되지 않는다 —
       // 없는 장소의 "밖"을 참으로 만들면 삭제 사고가 이벤트 폭주로 번진다.
       if (!location) return false;
+      const subject = insideLocationSubject(session, condition.eventId, context?.eventPosition);
+      if (!subject) return false;
       const inside =
-        session.x >= location.x &&
-        session.y >= location.y &&
-        session.x < location.x + Math.max(0, location.w) &&
-        session.y < location.y + Math.max(0, location.h);
+        subject.x >= location.x &&
+        subject.y >= location.y &&
+        subject.x < location.x + Math.max(0, location.w) &&
+        subject.y < location.y + Math.max(0, location.h);
       return inside === condition.inside;
     }
     case "friendshipAtLeast":
@@ -1047,7 +1064,7 @@ export function evalCondition(
     case "newGamePlus":
     case "weekday":
     case "stringVariable":
-      return evalActorQueryCondition(session, condition, { eventId, ...context?.host }, { ...context?.calendar, ...(context?.partySkillIds ? { partySkillIds: context.partySkillIds } : {}), ...(context?.badgeSwitchIds ? { badgeSwitchIds: context.badgeSwitchIds } : {}), ...(context?.eventPosition ? { eventPosition: context.eventPosition } : {}), locations: () => context?.map?.locations });
+      return evalActorQueryCondition(session, condition, { eventId, ...context?.host }, { ...context?.calendar, ...(context?.partySkillIds ? { partySkillIds: context.partySkillIds } : {}), ...(context?.badgeSwitchIds ? { badgeSwitchIds: context.badgeSwitchIds } : {}), ...(context?.eventPosition ? { eventPosition: context.eventPosition } : {}), ...(context?.blocksSight ? { blocksSight: context.blocksSight } : {}), locations: () => context?.map?.locations });
     case "run":
       return evalRoguelikeRunCondition(session, condition);
     case "difficulty":
