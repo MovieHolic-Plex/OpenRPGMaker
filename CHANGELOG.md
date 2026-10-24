@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.334.0 — 2026-10-25
+
+### 기능
+
+- **fallen-star** — act-1 dialogue polish with Argon (329 lines) + proposal-cap and unknown-ref fixes (#3405) (`96da59d`)
+
+### 수정
+
+- **assistant** — Argon turns no longer die with "Request was aborted" at the 8th-9th model turn; a cut-off turn says why; playAudio without an id says how to fix it (#3406) (`27b5ff2`)
+
 ## 0.333.0 — 2026-10-25
 
 ### 기능
