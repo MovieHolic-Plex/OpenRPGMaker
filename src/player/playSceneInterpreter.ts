@@ -1,3 +1,4 @@
+import { isTouchUiHost } from "@/player/touchTap";
 import { stepStopReason, stopsReading } from "@/project/dialogueSystem";
 import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
 import { playQuickTimeEvent, playTeleportMenu, playTimedChoice } from "@/player/playSceneMinigames";
@@ -307,7 +308,7 @@ export async function runCommands(
     // 다시 깔면서 쓰레기 수거까지 겹쳐, 문 칸을 밟는 순간 한 프레임이 100ms 넘게 멈췄다(2026-10-24 프로파일).
     if (!(result.kind === "transfer" && result.mapId !== scene.map.id)) scene.refreshRuntimeSurfaces();
     while (result.kind !== "done" && current()) {
-      if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", "Esc Esc: 컷신 건너뛰기");
+      if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", isTouchUiHost(scene.game?.canvas) ? "B 두 번: 컷신 건너뛰기" : "Esc Esc: 컷신 건너뛰기");
       const step = result;
       if (step.kind === "changeTile") changedTerrainMaps.add(step.mapId);
       result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current, () => { handledFailure = true; });

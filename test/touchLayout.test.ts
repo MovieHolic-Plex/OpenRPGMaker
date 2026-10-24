@@ -15,7 +15,7 @@ describe("calculateTouchLayout (mobile touch play, 2026-10-24)", () => {
     const stageBottom = layout.stageTop + 270 * layout.scale;
     expect(layout.stageTop).toBeGreaterThanOrEqual(safe.top);
     // 조이스틱 위쪽(메뉴 줄 포함)은 무대 아래, 아래쪽은 안전 영역 위.
-    expect(layout.controlsY - layout.stick / 2 - 44).toBeGreaterThanOrEqual(stageBottom - 0.5);
+    expect(layout.controlsY - layout.stick / 2 - 52).toBeGreaterThanOrEqual(stageBottom - 0.5);
     expect(layout.controlsY + layout.stick / 2).toBeLessThanOrEqual(h - safe.bottom);
     expect(layout.stick).toBeGreaterThanOrEqual(112);
     expect(layout.stick).toBeLessThanOrEqual(136);

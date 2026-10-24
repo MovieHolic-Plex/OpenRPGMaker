@@ -23,6 +23,7 @@ import { isPokemonMoveMotion } from "@/battle/pokemonMoveMotion";
 import { DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { normalizeDisplayFilter } from "@/project/displayFilter";
 import { normalizePlaySurfaceScale } from "@/project/playSurfaceScaleMode";
+import { normalizeTouchControls } from "@/project/touchControls";
 import { normalizeBattleLook } from "@/project/battleLook";
 import { normalizeBattleFanfare } from "@/project/battleFanfare";
 import { DEFAULT_MENU_SKIN_ID, isMenuSkinId } from "@/player/menuSkins/registry";
@@ -311,6 +312,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   // 진형 굴림·도주 가산 — 기본(굴림 없음·가산 0)은 저장하지 않는다(옛 JSON 바이트 유지).
   if (system.battleFormationRoll === true) records.battleFormationRoll = true;
   if (system.pointerMovement === true) records.pointerMovement = true;
+  const touchControls = normalizeTouchControls(system.touchControls);
+  if (touchControls) records.touchControls = touchControls;
   if (typeof system.escapeBonusPercent === "number" && Number.isFinite(system.escapeBonusPercent) && system.escapeBonusPercent !== 0) {
     records.escapeBonusPercent = clampInteger(system.escapeBonusPercent, 0, 100);
   }

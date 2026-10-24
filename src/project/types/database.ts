@@ -1955,6 +1955,11 @@ export interface SystemRecords {
   /** 맵을 클릭(탭)하면 주인공이 경로를 찾아 걸어간다(명작 공백 #32). 생략 = 꺼짐. */
   pointerMovement?: boolean;
   /**
+   * 휴대폰·태블릿 조작(터치 UI): 맵 탭 걷기·조이스틱 방식·진동·달리기 단추. 생략 = 기본(모두 켬, 조이스틱 auto).
+   * 데스크톱 플레이는 읽지 않는다. project/touchControls.ts.
+   */
+  touchControls?: import("@/project/touchControls").TouchControlSettings;
+  /**
    * 몸 사각 **하단 몇 행**이 지형·이벤트에 막히는가. 생략하면 몸 높이 전체(= 통행 사각 === 몸 사각).
    * 3x3 주인공에 1 이면 발밑 한 줄만 막혀 상체가 벽을 스치며 지나갈 수 있다.
    */

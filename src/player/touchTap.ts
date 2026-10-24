@@ -60,11 +60,20 @@ export function installTapConfirm(root: HTMLElement, options: TapConfirmOptions 
     if (!isBackdrop(start.target)) return;
     if (root.querySelector(BUSY_SELECTOR)) return;
     const dialogueOpen = root.querySelector(".dialogue-overlay:not(:empty) .dialogue-box") !== null;
-    if (!dialogueOpen && start.target instanceof HTMLCanvasElement && options.pointerMovement?.() === true) return;
+    // 맵 탭 걷기가 켜진 게임: 필드에서 맵(캔버스 상자 안)을 탭하면 걷기다 — 확인을 보내지 않는다.
+    // 캔버스는 pointer-events:none 이라 대상이 캔버스가 아니라 그 조상이다(예전 판정은 그래서 늘 확인을 보냈다). 좌표로 본다.
+    if (!dialogueOpen && options.pointerMovement?.() === true && insideCanvas(root, start.x, start.y)) return;
     pressKey("Enter");
   }, { capture: true, signal });
   root.addEventListener("pointercancel", () => { down = null; }, { capture: true, signal });
   return () => controller.abort();
+}
+
+function insideCanvas(root: HTMLElement, x: number, y: number): boolean {
+  const canvas = root.querySelector<HTMLCanvasElement>(".play-stage canvas, canvas");
+  if (!canvas) return false;
+  const r = canvas.getBoundingClientRect();
+  return x >= r.left && x < r.right && y >= r.top && y < r.bottom;
 }
 
 function pressKey(key: string): void {
