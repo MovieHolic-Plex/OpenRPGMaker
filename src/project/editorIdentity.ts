@@ -1,3 +1,4 @@
+import { t } from "@/i18n";
 import { randomUuid } from "@/util/id";
 
 type AiConfigProvider = () => { readonly model: string };
@@ -46,7 +47,7 @@ export function editorSessionId(): string {
 
 export function ownerLabel(): string {
   const customLabel = browserStorage()?.getItem(OWNER_LABEL_KEY)?.trim();
-  return customLabel || `브라우저 ${editorSessionId().slice(0, 4)}`;
+  return customLabel || t("브라우저 {0}").replace("{0}", editorSessionId().slice(0, 4));
 }
 
 export function setOwnerLabel(label: string): void {

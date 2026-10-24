@@ -2,8 +2,13 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>OPRN Player</title>
+    <style>
+      /* 불러오는 동안 검은 빈 화면 대신 점 셋이 깜박인다. 앱이 #app 에 무엇이든 붙이면 :empty 가 풀려 저절로 사라진다. */
+      #app:empty::after { content: "\2022  \2022  \2022"; position: fixed; inset: 0; display: grid; place-items: center; font: 16px/1 monospace; letter-spacing: 4px; color: #8aa; animation: oprn-boot-dots 1.2s steps(2) infinite; }
+      @keyframes oprn-boot-dots { 50% { opacity: 0.25; } }
+    </style>
   </head>
 <body style="margin:0;background:#000;color:#fff">
     <div id="app"></div>

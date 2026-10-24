@@ -103,7 +103,8 @@
 .database-modal-body .oprn-record-actors .actor-build-preview-grid {
   display: grid;
   gap: 10px;
-  grid-template-columns: minmax(260px, 1.35fr) minmax(160px, 0.8fr) minmax(180px, 1fr);
+  /* 상세 열 폭에 맞춰 접는다 — 뷰포트 미디어쿼리는 상세 열이 좁은 1600 창에서 접지 못해 잘렸다(VQA C01). */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
 }
 
 .database-modal-body .oprn-record-actors :is(.actor-build-stat-card, .actor-build-link-card) {

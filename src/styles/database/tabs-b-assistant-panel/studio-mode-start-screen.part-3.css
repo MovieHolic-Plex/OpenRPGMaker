@@ -510,3 +510,9 @@
   letter-spacing: 0.08em;
   writing-mode: vertical-rl;
 }
+
+/* 좁은 가운데 열(1024 이하)에서 요약 카드 4칸이 72px 로 줄어 「도달 가능」이 글자 단위로 쪼개졌다(2026-10-22 VQA A20).
+   카드마다 최소 폭을 주고 남으면 다음 줄로 넘긴다. */
+.ai-studio-shell .ai-studio-director-stats {
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+}

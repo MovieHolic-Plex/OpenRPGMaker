@@ -1,0 +1,15 @@
+{
+  "piece": "earth.sarc_ns A1 closed",
+  "pixelSha256": "7289d5e6e677680b53af717680a1b12317748bd74608af08fcf78bb2d284a441",
+  "receipt": "/home/main/z-project/rpg-zzu-dt-earth/harness-data/object-gate/receipts/72/7289d5e6e677680b53af717680a1b12317748bd74608af08fcf78bb2d284a441.json",
+  "verdict": "fail",
+  "sure": true,
+  "view34": "fail: reads as an upright coffin-shaped headstone/gravestone standing on a wider rectangular plinth (rows 23-29, width 12) rather than a horizontal sarcophagus lying on the floor. The shouldered lid (width 14 at rows 4-10 tapering to width 10 at rows 16-22) has no vertical box wall beneath the tapering shoulder overhang, and is shaded left-light/right-dark like a vertical slab. The 7-row bottom block (< 8 rows) reads as a gravestone pedestal, not the foot-end front face of a lying coffin.",
+  "style": "borderline: 12 tones with scattered speckle pixels, but the rigid vertical half-split shading across the lid reads schematic and flatter than the Beodeul reference props.",
+  "reasons": [
+    "Reads as an upright gravestone/stele mounted on a rectangular pedestal base, not a horizontal sarcophagus lying north-south on the floor",
+    "Missing vertical box walls beneath the tapering coffin shoulders (rows 11-22 taper from 14px to 10px against bare floor before widening to a 12px plinth at row 23)",
+    "Front face at the bottom is only 7 rows tall (< 8 minimum) and is wider than the lid foot (12px vs 10px), reinforcing the upright headstone-on-plinth silhouette",
+    "Lid is shaded with a vertical left-light/right-dark split like a standing slab rather than a horizontal top plane seen from above"
+  ]
+}

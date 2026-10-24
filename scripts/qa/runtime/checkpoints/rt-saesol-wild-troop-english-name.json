@@ -1,0 +1,499 @@
+{
+ "set": "rt-saesol-wild-troop-english-name",
+ "projectFixture": "examples/saesol-red/project.json.gz",
+ "viewport": {
+  "width": 1280,
+  "height": 720
+ },
+ "checkpoints": [
+  {
+   "id": "anchor",
+   "label": "세션 로그 line 486 저장",
+   "note": "/home/main/salad/play/runs/main1/tasks/saesol-red__battle/actions.jsonl 의 saves/0120.json 에서 부팅한다(리로드 경계를 넘지 않는 마지막 세이브). 기록 시점: field map_saesol_route (17,30).",
+   "snapshot": {
+    "schemaVersion": 5,
+    "projectTitle": "새솔 RED · 첫 번째 배지",
+    "savedAt": "2026-10-23T04:15:41.095Z",
+    "mapName": "1번 길 · 솔바람 산책로",
+    "partyLevel": 11,
+    "playTimeSeconds": 1092,
+    "monsterSummary": {
+     "caught": 1,
+     "dexTotal": 21,
+     "badges": 0,
+     "badgeTotal": 0,
+     "party": 1,
+     "trainer": "트레이너"
+    },
+    "session": {
+     "switches": {
+      "sw_0001": false,
+      "sw_0002": false,
+      "sw_0003": false,
+      "sw_0004": false,
+      "sw_0005": false,
+      "sw_0006": false,
+      "sw_0007": false,
+      "sw_0008": false,
+      "sw_0009": false,
+      "sw_0010": false,
+      "sw_0011": false,
+      "sw_0012": false,
+      "sw_0013": false,
+      "sw_0014": false,
+      "sw_0015": false,
+      "sw_0016": false,
+      "sw_0017": false,
+      "sw_0018": false,
+      "sw_0019": false,
+      "sw_0020": false,
+      "sw_gen2_sun_relay": false,
+      "sw_gen2_moon_relay": false,
+      "sw_gen2_bridge_relay": false,
+      "sw_gen2_seal_relay": false,
+      "sw_catalog_gate_open": false,
+      "sw_catalog_lighthouse_lit": false,
+      "sw_catalog_mine_lift": false,
+      "sw_catalog_fountain_flow": false,
+      "sw_catalog_archive_unlock": false,
+      "sw_catalog_beacon_lit": false,
+      "sw_catalog_aqueduct_route": false,
+      "sw_sr_starter": true,
+      "sw_sr_parcel": true,
+      "sw_sr_delivered": true,
+      "sw_sr_rival": true,
+      "sw_sr_scout": false,
+      "sw_sr_camper": false,
+      "sw_sr_trail": false,
+      "sw_sr_supply": false,
+      "sw_sr_noteA": false,
+      "sw_sr_noteB": false,
+      "sw_sr_crystal": false,
+      "sw_sr_warden": false,
+      "sw_sr_final1": false,
+      "sw_sr_badge": false,
+      "mx_seen_species_isaiah_burrlock": true,
+      "mx_caught_species_isaiah_burrlock": true,
+      "mx_seen_species_isaiah_chickadee": true
+     },
+     "selfSwitches": {},
+     "variables": {
+      "var_0001": 0,
+      "var_0002": 0,
+      "var_0003": 0,
+      "var_0004": 0,
+      "var_0005": 0,
+      "var_0006": 0,
+      "var_0007": 0,
+      "var_0008": 0,
+      "var_0009": 0,
+      "var_0010": 0,
+      "var_0011": 0,
+      "var_0012": 0,
+      "var_0013": 0,
+      "var_0014": 0,
+      "var_0015": 0,
+      "var_0016": 0,
+      "var_0017": 0,
+      "var_0018": 0,
+      "var_0019": 0,
+      "var_0020": 0
+     },
+     "timers": {},
+     "gold": 560,
+     "inventory": {
+      "item_isaiah_ball": 10,
+      "item_isaiah_potion": 9
+     },
+     "itemUseCharges": {},
+     "killedFieldSpawns": {},
+     "partyActorIds": [
+      "actor_hero"
+     ],
+     "shippingQueue": {},
+     "shippingHistory": [],
+     "bundleContributions": {},
+     "completedBundleIds": [],
+     "bundleRewardAppliedIds": [],
+     "unlockedRegionIds": [],
+     "unlockedRecipeIds": [],
+     "makerInstances": {},
+     "monsterInstances": {
+      "monster_1": {
+       "instanceId": "monster_1",
+       "speciesId": "species_isaiah_burrlock",
+       "level": 11,
+       "exp": 124,
+       "ivs": {
+        "hp": 10,
+        "atk": 8,
+        "def": 6,
+        "spd": 14
+       },
+       "friendship": 72,
+       "caughtAt": {
+        "mapId": "map_variety_lab",
+        "x": 11,
+        "y": 9
+       },
+       "currentHp": 24,
+       "stateIds": [],
+       "stateTurns": {},
+       "skillIds": [
+        "skill_isaiah_tackle",
+        "skill_isaiah_vine_whip",
+        "skill_isaiah_stun_spore"
+       ],
+       "skillPp": {
+        "skill_isaiah_tackle": 34,
+        "skill_isaiah_vine_whip": 9,
+        "skill_isaiah_stun_spore": 30
+       }
+      }
+     },
+     "monsterParty": [
+      "monster_1"
+     ],
+     "monsterBox": [],
+     "actorSkillIds": {},
+     "actorSkillPp": {},
+     "actorExperience": {
+      "actor_hero": 0
+     },
+     "actorLevels": {
+      "actor_hero": 1,
+      "actor_guardian": 1,
+      "actor_mage": 1,
+      "actor_scout": 1,
+      "actor_cleric": 1,
+      "actor_ranger": 1
+     },
+     "actorVitals": {
+      "actor_hero": {
+       "maxHp": 120,
+       "maxMp": 20,
+       "hp": 120,
+       "mp": 20
+      },
+      "actor_guardian": {
+       "maxHp": 514,
+       "maxMp": 43,
+       "hp": 514,
+       "mp": 43
+      },
+      "actor_mage": {
+       "maxHp": 514,
+       "maxMp": 43,
+       "hp": 514,
+       "mp": 43
+      },
+      "actor_scout": {
+       "maxHp": 514,
+       "maxMp": 43,
+       "hp": 514,
+       "mp": 43
+      },
+      "actor_cleric": {
+       "maxHp": 514,
+       "maxMp": 43,
+       "hp": 514,
+       "mp": 43
+      },
+      "actor_ranger": {
+       "maxHp": 514,
+       "maxMp": 43,
+       "hp": 514,
+       "mp": 43
+      }
+     },
+     "eventLocations": {},
+     "erasedEventIds": [],
+     "occupiedLocationIds": {
+      "map_variety_ridge": [],
+      "map_variety_lab": [],
+      "map_variety_market": [],
+      "map_saesol_route": []
+     },
+     "removedEventIds": {},
+     "spawnedEvents": {},
+     "camera": {
+      "mode": "follow",
+      "target": {
+       "kind": "player"
+      }
+     },
+     "lighting": {
+      "ambient": 0,
+      "sources": []
+     },
+     "npcTravelStates": {},
+     "npcActivities": {},
+     "npcScheduleStates": {},
+     "lifeSkills": {},
+     "farmPlots": {},
+     "friendship": {},
+     "relationships": {},
+     "dailyGifts": {},
+     "dailyTalks": {},
+     "monsterCareSteps": 44,
+     "monsterFieldPoisonSteps": 0,
+     "monsterCareDaily": {
+      "no-time": 2
+     },
+     "chests": {},
+     "placeables": {},
+     "followers": [
+      {
+       "id": "monster:monster_1",
+       "name": "부르록",
+       "graphic": {
+        "sprite": {
+         "type": "uploaded",
+         "id": "isaiah658-monster-burrlock-front"
+        },
+        "direction": "down",
+        "pattern": 1
+       },
+       "kind": "monster",
+       "monsterInstanceId": "monster_1"
+      }
+     ],
+     "followerTrail": [
+      {
+       "x": 16,
+       "y": 30,
+       "direction": "right"
+      },
+      {
+       "x": 15,
+       "y": 30,
+       "direction": "right"
+      },
+      {
+       "x": 14,
+       "y": 30,
+       "direction": "right"
+      },
+      {
+       "x": 13,
+       "y": 30,
+       "direction": "right"
+      },
+      {
+       "x": 13,
+       "y": 31,
+       "direction": "up"
+      },
+      {
+       "x": 13,
+       "y": 32,
+       "direction": "up"
+      },
+      {
+       "x": 13,
+       "y": 33,
+       "direction": "up"
+      },
+      {
+       "x": 13,
+       "y": 34,
+       "direction": "up"
+      },
+      {
+       "x": 13,
+       "y": 35,
+       "direction": "up"
+      },
+      {
+       "x": 13,
+       "y": 36,
+       "direction": "up"
+      },
+      {
+       "x": 12,
+       "y": 36,
+       "direction": "right"
+      },
+      {
+       "x": 12,
+       "y": 37,
+       "direction": "up"
+      }
+     ],
+     "currentMapId": "map_saesol_route",
+     "x": 17,
+     "y": 30,
+     "mapOverrides": {},
+     "flags": {},
+     "battleResult": "escape",
+     "audio": {
+      "bgm": {
+       "resourceId": "cc0-bgm-rtp-fld-002",
+       "loop": true
+      }
+     },
+     "pictures": {},
+     "actorEquipment": {
+      "actor_hero": {
+       "weapon": "equip_sword",
+       "shield": "equip_oak_shield",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+       "weapon": "equip_sword",
+       "shield": "equip_oak_shield",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+       "weapon": "equip_mage_staff",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+       "weapon": "equip_mage_staff",
+       "shield": "equip_oak_shield",
+       "armor": "equip_mystic_robe",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+       "weapon": "equip_scout_dagger",
+       "armor": "equip_leather_armor",
+       "helmet": "equip_traveler_hat",
+       "accessory": "equip_focus_charm"
+      }
+     },
+     "battleReports": [
+      {
+       "troopId": "troop_sr_rival",
+       "troopName": "민아의 치카디",
+       "result": "victory",
+       "turns": 2,
+       "exp": 43,
+       "gold": 60,
+       "items": [],
+       "omittedLines": 0,
+       "lines": [
+        {
+         "sequence": 0,
+         "text": "피해 · 부르록 · → 민아의 치카디 · 덩굴채찍 · HP 5"
+        },
+        {
+         "sequence": 1,
+         "text": "피해 · 민아의 치카디 · → 부르록 · 쪼기 · HP 5"
+        },
+        {
+         "sequence": 2,
+         "text": "피해 · 부르록 · → 민아의 치카디 · 몸통박치기 · HP 7 · 치명타"
+        }
+       ]
+      },
+      {
+       "troopId": "troop_sr_wild_chickadee",
+       "troopName": "야생 chickadee",
+       "result": "escape",
+       "turns": 1,
+       "exp": 0,
+       "gold": 0,
+       "items": [],
+       "omittedLines": 0,
+       "lines": [
+        {
+         "sequence": 0,
+         "text": "행동 · 부르록 · → 부르록 · 도주 · 성공"
+        }
+       ]
+      },
+      {
+       "troopId": "troop_sr_wild_chickadee",
+       "troopName": "야생 chickadee",
+       "result": "escape",
+       "turns": 1,
+       "exp": 0,
+       "gold": 0,
+       "items": [],
+       "omittedLines": 0,
+       "lines": [
+        {
+         "sequence": 0,
+         "text": "행동 · 부르록 · → 부르록 · 도주 · 성공"
+        }
+       ]
+      },
+      {
+       "troopId": "troop_sr_wild_chickadee",
+       "troopName": "야생 chickadee",
+       "result": "escape",
+       "turns": 2,
+       "exp": 0,
+       "gold": 0,
+       "items": [],
+       "omittedLines": 0,
+       "lines": [
+        {
+         "sequence": 0,
+         "text": "회복 · 부르록 · → 부르록 · 아이템 · HP 9"
+        },
+        {
+         "sequence": 1,
+         "text": "피해 · 야생 chickadee · → 부르록 · 쪼기 · HP 7"
+        },
+        {
+         "sequence": 2,
+         "text": "행동 · 부르록 · → 부르록 · 도주 · 성공"
+        }
+       ]
+      }
+     ],
+     "actorRows": {
+      "actor_hero": "front"
+     },
+     "actorNames": {},
+     "actorCharacterResourceIds": {},
+     "classOverrides": {},
+     "actorParamBonuses": {},
+     "actorStateIds": {},
+     "playerFacing": "right",
+     "stepCount": 144,
+     "playTimeSeconds": 1092,
+     "rng": {
+      "seed": 4198188030,
+      "streams": {
+       "encounter": {
+        "seed": 3761770514,
+        "state": 3761770514
+       },
+       "battle": {
+        "seed": 2404112671,
+        "state": 1516512213
+       },
+       "movement": {
+        "seed": 3994557008,
+        "state": 3994557008
+       },
+       "fishing": {
+        "seed": 656228093,
+        "state": 656228093
+       },
+       "misc": {
+        "seed": 2419474913,
+        "state": 2419474913
+       }
+      }
+     }
+    }
+   }
+  }
+ ]
+}

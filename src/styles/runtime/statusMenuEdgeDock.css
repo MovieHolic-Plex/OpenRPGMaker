@@ -206,7 +206,9 @@
 .oprn-status-menu .status-menu-detail-row.unavailable { color: var(--status-edge-muted); }
 .oprn-status-menu .status-menu-detail-row-compact { grid-template-columns: max-content minmax(0, 1fr) max-content; white-space: nowrap; }
 .oprn-status-menu .status-menu-detail-row-compact .status-menu-detail-value { grid-column: 3; grid-row: 1; }
-.oprn-status-menu .status-menu-detail-copy { display: grid; gap: 3px; grid-column: 2 / -1; grid-template-columns: minmax(0, 1fr) max-content; }
+/* 라벨이 fit-content 로 열 밖까지 번지면 값과 붙어 한 단어처럼 보인다(「테스트용영웅청동 검」, VQA SC03) — 열 폭에 맞춰 말줄임한다. */
+.oprn-status-menu .status-menu-detail-row-compact .status-menu-detail-label { justify-self: stretch; white-space: nowrap; }
+.oprn-status-menu .status-menu-detail-copy { display: grid; gap: 3px 5px; grid-column: 2 / -1; grid-template-columns: minmax(0, 1fr) max-content; }
 .oprn-status-menu .status-menu-detail-label,
 .oprn-status-menu .status-menu-detail-value,
 .oprn-status-menu .status-menu-detail-description { min-width: 0; overflow: hidden; text-overflow: ellipsis; }

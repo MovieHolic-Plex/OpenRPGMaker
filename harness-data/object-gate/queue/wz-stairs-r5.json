@@ -1,0 +1,22 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "wz-stairs-r5",
+ "title": "마법 학교 계단 r5 (내려가는 계단통 2)",
+ "explainImage": "/tmp/wzst/g12/wz-stairs-r5.png",
+ "explainText": "wz-stairs-r4 다음 판: 성채·부엉이 탑 내려가는 계단통의 솟은 모서리 기둥을 없애고 난간을 위에서 본 납작한 손잡이로만 그렸다. 남쪽에서 들어서 북쪽을 보며 내려간다.",
+ "createdAt": "2026-10-22T11:49:48.506Z",
+ "items": [
+  {
+   "sha": "fe3bef0bbb5b29c1fd0e5853c8a85c0ec3ad123bedee4193c780681b3a6cc39f",
+   "kind": "flat",
+   "label": "wizarding_world stairs wz-castle-stair-down (DOWN)",
+   "source": "/tmp/wzst/g12/wz-castle-stair-down.png"
+  },
+  {
+   "sha": "f6bfa2edcfda965e28ba11b4fe86300e884ec9aa8df8647f09d3f5b0c04aa978",
+   "kind": "flat",
+   "label": "wizarding_world stairs wz-owl-stair-down (DOWN)",
+   "source": "/tmp/wzst/g12/wz-owl-stair-down.png"
+  }
+ ]
+}

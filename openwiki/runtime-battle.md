@@ -1,3 +1,57 @@
+## 장비 「주는 피해 ±%」·「받는 피해 ±%」 (2026-10-24)
+
+`EquipmentRecord.damageDealtPercent` / `damageTakenPercent`(선택, 정수 -90~300, 0 이면 저장 안 함). 장착한 장비마다 더해
+`EquipmentRuntimeEffects` 에 실린다(`battleBattlers.ts`). 곱은 `runtime.ts` 의 `gimmickDamageMultiplier` 한 곳 —
+통상 공격(아군·적)·기술 피해(물리·마법) 모두 이 곱을 지난다. 배율 하한 0.1. 적은 장비가 없어 영향 없음. 회복에는 안 곱한다.
+편집기 장비 폼 「주는 피해(±%)」「받는 피해(±%)」, 효과 요약·상점 비교 표에 나온다. 헤드리스 확인: 전 장비 +30% → 늑대전 평균 5.5→2.7 차례, 받는 -50% → 남은 HP 911→1038.
+
+## 광역기 한 번에 맞기 · 숫자 꼬리표 · 무기 보너스 · 상태 상한 · 장비 드롭 (2026-10-24, fs-battle)
+
+**광역기 묶음 (`src/player/battleSequencer.ts`).** 한 행동(`actionId`·쪽·사용자·명령·기술이 같고 `aside` 없는 damage/healing/miss)이
+서로 다른 대상 둘 이상을 치면 `collectTargetGroup` 이 한 묶음으로 잡는다. 같은 actionId 의 stateAdded/stateRemoved 도 함께 들어온다.
+`playTargetGroup` 은 머리 항목 애니메이션을 **한 번** 틀고, 접근 박자 뒤 한 타이밍에 모든 대상의 숫자·HP·번쩍임을 같은 작업에서 올린다
+(`BATTLE_GROUP_IMPACT_STAGGER_MS = 0` — 30ms 타이머 간격은 부하에서 49~144ms 로 벌어져 차례로 맞는 것처럼 보였다).
+메시지는 「적 N체에게 합계 X 피해! 약점을 찔렀다!」 한 줄, 쓰러짐은 「A, B, C을 쓰러뜨렸다!」 한 줄, 상태는 종류별 한 줄(`playGroupStates`).
+`battleDom` 은 `onImpactGroup` 으로 맞는 대상 전체를 `hitTargetIds` 로 표시하고 히트스톱 해제 때 모두 깜빡인다.
+**단일 대상 경로는 그대로다** — `planEntryBeats` 로 뽑아낸 같은 박자를 쓴다. 에메랄드 문장 경로(`emeraldNarrationActive`)와
+보조형 광역(「action」 항목)은 묶지 않는다(차례 재생, 알려진 한계).
+
+**숫자 꼬리표 (`battleFieldDom.showDamageFeedback`).** 팝업 앞에 `.battle-damage-popup-tag` — 치명타! · 약점! · 저항 · 무효 · 무기↑.
+`data-effectiveness` 로 약점(주황)·저항 색. 레트로 스킨 덮어쓰기는 `27-retro-motion.css`.
+
+**무기 보너스 `SkillRecord.weaponAffinity { elementIds?, bonusPercent }`.** 사용자의 장비 `attackElementIds` 에 그 속성이 있으면 피해 ×(1+bonus/100).
+`elementIds` 가 비면 기술 자신의 `elementId`. 결과·타임라인에 `weaponAffinity: true` → 「무기↑」 꼬리표. 정규화 1~300%, 속성 8개까지.
+
+**상태 상한 `StateRuntimeEffects.maxTurns` (0~9).** 자연 회복 굴림과 별개로 그 차례 수가 차면 반드시 풀린다(보스 수면·정지 무한 사슬 방지).
+
+**장비 드롭.** `rewards.drops[].itemId` 에 장비 id 를 써도 된다 — `combatReferences` 가 장비도 받고, 결과 창 이름은 장비 이름으로 찾는다.
+소지품은 `session.inventory` 하나라 그대로 들어간다(보스 고유 무기). 편집기 드롭 칸 선택기는 아직 아이템만 보여 준다.
+
+**QA.** `scripts/lib/runtimeQaBattle.mjs` 의 `battle` op 가 전투 DOM 을 계획대로 누른다(`plan` 배우별 큐, `명령@대상`, 막힌 칸은 fallback,
+`logPath` 에 팝업·문장 시각 JSONL). 폴른 스타 체크포인트 `checkpoints/fallen-battle.json` + 픽스처 `scripts/qa/runtime/fallen-battle-fixture.mjs`.
+
+**맞아서 깸의 기록 순서 (`runtime.ts` `pendingHitWakes`).** 피격 해제(수면 등 `recoverWhenHitChance`)는 피해 판정 직후 일어나지만
+타임라인에는 그 타격 엔트리 **뒤**에 넣는다. 같은 대상의 damage/miss 는 지나 보내고, 다른 기록·다음 명령·스냅숏·라운드 로그에서 내보낸다.
+같은 대상의 damage/miss 바로 뒤에 붙고(애니메이션은 `attachAnimationToLatestTimeline` 이 그 타격에 단다), 그 타격으로 쓰러졌으면 기록하지 않는다.
+광역기로 쓰러진 대상의 상태 변화(걸림→죽어서 풀림)는 묶음 상태 줄에서 말하지 않고, 쓰러져 남은 대상의 stateRemoved(전투 끝 정리 등)는
+시퀀서가 건너뛴다(`staysDown` — 뒤에 그 대상의 damage/healing 이 없을 때만).
+QA battle op 는 전투 중 대사(.dialogue-box)를 1.6초, 결과 창 쪽마다 2.2초 두고 넘긴다(영상에서 읽히게).
+
+## 전투 진입 그림 준비 관문 battle readiness gate (2026-10-24)
+
+원인: `playSceneBattle` 이 진입 연출 덮개 직후 전투를 얹고 그림을 기다리지 않고 열었다. `mountBattleScene` 은 소리만 미리 받았고
+`battle*Dom` 은 `img.src`/CSS `background-image` 만 걸어 첫 프레임에 적 초상·배경이 비고, `--battle-sprite-top-pad` 는 열린 뒤 비동기 프로브로 정해졌다.
+느린 망에서는 장면 겹 PNG 같은 저우선 요청이 wav·이펙트 그림·BGM 홍수 뒤에 줄을 서서 더 늦었다.
+
+- `src/player/battleReadiness.ts` — `whenBattleStageReady(root, {extraUrls, settle, timeoutMs})`. 무대 안 `img`·배경 URL 을 모아 디코딩하고(절대 href 키 캐시, 지도 선로딩과 공유), 상한 `BATTLE_READY_TIMEOUT_MS`=6초를 넘기면 `[battle-ready]` 경고 후 그대로 연다.
+  무대 그림은 필수, 첫 전투 연출 시트(`battleAnimationSheetUrls`)는 무대가 끝난 뒤 요청하고 `BATTLE_EXTRA_GRACE_MS`=800ms 만 더 기다리며, 장면 겹(`battleScenery`)은 `BATTLE_SCENERY_GRACE_MS`=1500ms. 요청은 `fetchPriority="high"`.
+- `mountBattleScene({deferStart:true})` → `controller.ready: Promise<void>` 와 `begin()`. `playSceneBattle` 은 `ready` 를 기다린 뒤 `markBattleEntry; begin(); entryTransition.reveal()`.
+- `settle` 콜백에서 `--battle-sprite-top-pad` 를 이미 디코딩된 그림 크기로 첫 페인트 전에 계산한다(`settleBattleTopPads`).
+- 대량 워밍업(`retroSkillChoreography` 이펙트 시트, 전투 소리 preload)은 `deferUntilBattleReady` 로 관문이 끝난 뒤(없으면 7초 뒤)로 미룬다 — 안 그러면 좁은 망에서 무대 그림의 대역을 먹는다.
+- `src/player/battleAssetPrefetch.ts` — `loadMap` 끝에서 그 지도의 조우·이벤트 전투에 나올 수 있는 모든 troop 의 전투 그림과 공용 UI·배경을 idle 에 동시 2개로 데운다(중복 제거).
+- 진입 연출이 없는 `quickBattleModal`·`testPlayModal`·`backBattlerHarness` 는 바꾸지 않았다.
+- 실측(출하 플레이어 프로덕션 빌드, 1.5Mbps/300ms, 캐시 끔, 크로노벨 보스): 느린 망 첫 프레임 빠진 img 1·배경 7 → 0, 진입 +1.3초; 빠른 망 +0.5초. 재현 `node scripts/qa/runtime/battle-preload.record.mjs --out <dir> --static <빌드>`.
+
 ## 전투 체감 battle-feel r1 (#3063 머지) · r2 (2026-10-20)
 
 사용자 「전투가 허접」. 출하 player 녹화(`scripts/qa/runtime/battle-feel.record.mjs --out <dir> [--res 640x360] [--only group,boss,defeat]`,
@@ -54,6 +108,8 @@ r3:
 ## 야생 조우 보호 — 도망 무적 걸음·벌레퇴치·탈출 로프 (2026-10-16, poke-sys ②)
 
 - 도망 성공 → `grantEscapeGrace`(`playSceneMovement`), 걸음마다 `tickEncounterGuard`(`project/encounterGuard.ts`)가 면제를 깎는다. 세션 필드 `encounterGuard` 하나(저장·불러오기 왕복, 비면 생략). 벌레퇴치 `ItemRecord.repelSteps/repelBelowLead`, 탈출 로프 `escapeTo`(던전 `mapRole` 에서만). 자세한 규칙·조수 경로·화면 증거는 `openwiki/monster-expedition.md` 「야생 조우 보호·필드 도구·낚시」.
+
+- **연막탄(탈출 스킬)** `SkillRecord.type==='escape'`(아이템의 `useSkillId`)는 `applySkillCast` 에서 도망 판정을 거쳐 성공이면 「연기에 몸을 숨기고 무사히 도망쳤다!」, 아니면 「이 싸움에서는 도망칠 수 없다!」(보스전). 아군만 쓴다. 폴른 스타 `skill_fs_smoke_pellet`(`flagship/fallen/battleItems.ts`).
 
 ## 지닌 도구(held item) — 아이템 선언 + 몬스터 개체가 하나 지님 (2026-10-16, poke-depth PR4)
 
@@ -887,7 +943,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   **HP 숫자도 바와 같이 센다**(`countPokemonHp`; 세는 동안 `data-hp-countdown` 이 `setVitalNode` 의 덮어쓰기를 막는다).
   상성 배율은 타임라인 `effectiveness`(1 이면 생략)로 싣는다 — 일반 경로는 `battleEffectivenessMultiplier`, **몬스터 전투는 Gen1 경로**
   (`applyGen1Skill` → `applyExactGen1Damage` 가 `typeFactors` 곱을 돌려준다)라 둘 다 배선해야 한다. 문장 배율은 **자속 보정(STAB)을 뺀다** —
-  넣으면 물 몬스터의 물 기술이 늘 「굉장」이 된다. `describeEffectiveness`(포켓몬 스킨)일 때만 문장을 붙인다. 테스트 `test/battleEffectivenessMessage.test.ts`.
+  넣으면 물 몬스터의 물 기술이 늘 「굉장」이 된다. `describeEffectiveness` 는 이제 모든 스킨이 켠다(2026-10-24, 폴른 스타 속성 전투) — 포켓몬 스킨은 피해 줄을 문장으로 **대체**하고, 다른 스킨은 피해 줄 뒤에 문장을 **덧붙인다**(`withEffectiveness`, `battleDirectorDom.ts`). 테스트 `test/battleEffectivenessMessage.test.ts`.
   함정(실측): ① 적 HP 상자는 필드의 `.battle-enemy-hud`(포켓몬 스킨에서 숨김)가 아니라 정보 패널 `.battle-enemy-list-row` — 숨은 HUD 를 잡으면 적 HP 가
   착탄 순간 줄고 상자도 안 떤다. ② 아군 몬스터는 런타임 id(`mon:…`)로 맞으므로 대상 노드는 반드시 `findBattlerNode` 로(직접 조회하면 null → 깜빡임 없음).
   ③ 표시 원장 `vitalsFor` 는 `applyFeedback` 이 제자리에서 고치는 객체 — 맞기 전 HP 는 그 전에 떠 둘 것. ④ 바 전환은 타이머보다 한 프레임쯤 늦게 시작한다.
@@ -1058,8 +1114,12 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   죽은 1번이 예고 모션을 하던 결함. `battle-targeted`(피격 플래시)는 `impact` 단계에만 붙고 다른 단계에서 걷는다.
 - **적 대상 국면의 「뒤로」는 순환의 마지막 자리다.** ↓(마지막 적)/↑(첫 적)로 커서가 「뒤로」 행에 가고, 확인키는
   커서가 그 행(또는 포커스)에 있으면 취소를 누른다. 루트는 `data-battle-target-cursor="cancel"` 을 노출하고
-  rm2000 은 그때 선택 대상 행의 강조를 낮춘다. 대상 행의 순번은 `.battle-target-ordinal` 별도 노드라 이름이
-  잘려도 끝에 남는다. 대상 안내 문구는 `disambiguatedBattlerName` 을 쓰고 아군/적 갈래가 같은 어조다.
+  rm2000 은 그때 선택 대상 행의 강조를 낮춘다. **그 국면에서 손·▸ 글리프는 커서 행 하나에만 그린다** —
+  스킨의 손 규칙이 `.battle-target-selected`(조준 중인 적)만 보고도 그리면 커서가 둘로 보인다
+  (실측 2026-10-23: `rt-scarloxy-double-target-cursor` — 「핀스타 2」 + 「뒤로」). 가드는 세 층에 있다:
+  기본 `03-vxace-status-nodes.css` 의 `>` · `_retro2003.css` 의 손 · `20-pokemon-skin.css` 의 ▸,
+  그리고 `_rm2000.css` 의 `opacity: 0.5` 는 `content: none` 으로 바뀌었다(반투명 손도 손이다).
+  대상 행의 순번은 `.battle-target-ordinal` 별도 노드라 이름이 잘려도 끝에 남는다. 대상 안내 문구는 `disambiguatedBattlerName` 을 쓰고 아군/적 갈래가 같은 어조다.
 - **스크롤 큐(▾)는 자기 트랙 높이를 빼고 판정한다** — `contentHeight = scrollHeight − cueHeight`, 끝에 닿으면 끈다.
   포커스: 마운트 직후 씬 루트, 명령 국면 진입 시 커서 버튼, 결과 패널 생성 시 확인 버튼.
 - **결과 카드: 첫 확인 = 보상 전부 공개, 둘째 확인 = 닫기.** `revealAllResultRows` 가 `[data-revealed="false"]`
@@ -1471,7 +1531,7 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 
 - **연계기 해금** `SkillRecord.comboRequires [{actorId, skillId}]`: 그 배우가 그 기술을 **배운 상태**여야 메뉴에 열린다(`comboLockedBy`·`comboSkillIdsFor(…, party)`는 못 채운 연계기를 숨기고, `battleActorSkillFailure` 는 `comboLocked` 로 거절한다). 판정 참가자 `BattleComboParticipant.skillIds` 는 장비 부여 기술까지 합친다. 값이 비면 조건 없음(옛 프로젝트 불변).
 - **합체 능력치** `SkillRecord.comboCombinedStats:true`: 피해·치유 계산 동안만 시전자의 공격력·마력을 연계 참가자 전원 합으로 바꾼다(`applySkillHit` 래퍼, 끝나면 원복). 기술 위력은 낮게 잡는다. **`comboSwitchId`**: 연계기가 발동하면 전투 이벤트 상태의 스위치가 켜진다(세션으로 되돌려 쓰여 이후 이야기 분기). 타임라인 엔트리에 `comboActorIds` 가 실려 표시 계층이 참가자 전원에게 모션을 줄 수 있다(합체 모션 자체는 아직 없다 — 참가자는 선다).
-- **Active/Wait** 필드 메뉴 「대기 ON/OFF」는 이제 실제로 읽힌다: `PlayerPreferences.atbMode`(장치 설정, 세이브 밖) > `system.atbMode`(저작) > wait. `playSceneBattle` 이 `createBattleRuntime({atbMode})` 로 넘기고 런타임 `snapshot().atbMode` 가 전투 DOM 의 `data-battle-atb-mode`·메뉴 중 시간 진행을 정한다. 다음 전투부터 적용된다.
+- **Active/Wait** 필드 메뉴 「대기 ON/OFF」는 이제 실제로 읽힌다: `PlayerPreferences.atbMode`(장치 설정, 세이브 밖) > `system.atbMode`(저작) > wait. `playSceneBattle` 이 `createBattleRuntime({atbMode})` 로 넘기고 런타임 `snapshot().atbMode` 가 전투 DOM 의 `data-battle-atb-mode`·메뉴 중 시간 진행을 정한다. 다음 전투부터 적용된다. (2026-10-23: 「대기」 화면 자체가 스위치다 — 목록에서 고르는 순간이 아니라 그 화면의 행에서 Enter 로 바꾸고, 화면을 열기만 해서는 값이 바뀌지 않는다. `status-menu-wait-toggle`. 예전에는 화면을 열 때 토글되고 화면 안 Enter 는 「선택할 수 없습니다」로 거절됐다.)
 - **필드 위 전투 배치** `onFieldEnemyPoint`: 트룹 `members[].x/y` 가 모두 있으면 무게중심을 심볼 발밑에 두고 나머지를 24단위=한 칸으로 환산해 저작 배치대로 세운다(없으면 한 칸 간격 가로줄). 아군은 주인공·동료 스프라이트 자리가 정본이고, 동료가 겹치거나 모자라면 주인공 등 뒤로 엇갈려 선다(`onFieldPartyPoint`).
 - **걷기 칩이 없는 종**(박쥐·늑대 …)도 `place_field_enemy` 심볼이 된다: 전투 도트 그림(`generated-enemy-*`)을 정지 그림으로 쓴다(다른 그림으로 대체하지 않는다, 걷기 애니메이션 없음).
 - **필드 배경(`battleBackdrop:"field"`)** 도 스냅샷 전에 주인공·동료·시비 건 적 스프라이트를 투명하게 한다(`hideOnFieldSprites`) — 안 그러면 같은 캐릭터가 배틀러와 필드 그림에 두 번 보인다.
@@ -1696,6 +1756,8 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - **아이템 탭은 소지 장비도 보여 준다 (2026-09-01).** 예전 목록은 `database.items` 인벤토리만 그려서 장착 중인 검·갑옷이 안 보였다. 목록 맨 위 `장착 중` 행(`status-menu-owned-equipment-worn`)은 보기 전용이라 첫 결정 칸은 회복약 같은 아이템에 남긴다. 가방에만 있는 장비는 `N개` 행으로 아이템 아래에 붙이고 Enter 는 그 부위 장비 화면으로 간다. `status-menu-item-*` 접두와 분리해 아이템 행 수 단정을 깨지 않는다. 회귀: `test/playerStatusMenu.test.ts`.
 - **Monster field medicine (2026-10-03):** when `battleParty:"monsters"` (or its legacy flag) is enabled, ordinary `medicine` with ally/allAllies scope targets live party instances in the native item target menu. `project/monsterMedicine.ts` shares read-only eligibility previews and HP/status/PP mutation; actor/class-restricted medicine remains ineligible for monsters. Cures clear persistent `stateTurns`, ordinary medicine rejects fainted targets, and an ineffective use consumes nothing. `allAllies` applies to eligible party monsters and commits one inventory use. Care-profile items retain their separate care path. Optional `ppRecovery` restores each known move's capped PP in field and battle; MP recovery remains independent. PP-only medicine is included in battle commands and uses a special timeline message, so PP gains never count as HP/MP healing.
 - Player save slots are runtime-session snapshots in `src/player/saveSlots.ts`. Optional slot metadata such as `mapName`, `partyLevel`, and `playTimeSeconds` is non-breaking and must remain load-compatible with older snapshots that omit those fields.
+- **상태 메뉴 시계는 세션 플레이 시간을 읽는다 (2026-10-23).** `status-menu-time` 의 값은 `session.playTimeSeconds`(세이브에 실려 오고 필드 틱이 늘리는 정본)이고 `createPlayerStatusMenuSnapshot` 이 `formatPlayClock`(h:mm)으로 그린다. 예전에는 부팅 시각 기준 벽시계(`performance.now() - playStartedAt`)를 썼기 때문에 **불러온 판이 언제나 0:00 부근**이었고, 메뉴가 열려 있으면 틱이 멈춰 시간이 서 있었다. `playStartedAt`/`getPlayStartedAt`/`elapsedMs` 배관은 제거됐다 — 다시 벽시계로 돌리지 말 것. 회귀: `rt-fallen-star-status-clock-after-load`(실기), `test/playerStatusMenu.test.ts`.
+- **타이틀에 새로 들어올 때 커서는 첫 항목(새 게임) (2026-10-23).** `renderTitle` 은 `emitEnterJuice !== false`(새 진입)일 때 `titleMenuIndex` 를 0 으로 되돌린다. 예전에는 「이어하기」로 내려 둔 커서가 페이지에 남아, 게임 오버 → 타이틀 → Enter 가 **새 게임이 아니라 이어하기**를 눌러 죽은 판의 오토세이브로 돌아갔다. 방향키 이동은 `updateTitleSelection` 만 쓰고 `renderTitle` 을 다시 부르지 않으므로 이동 중 선택은 유지된다. 회귀: `rt-new-game-after-title-return`(실기), `test/playerRunControls.test.ts`.
 - Exported web players set the save-slot localStorage namespace to `oprn-export:<projectId>` before showing the title screen (saves left under the pre-2026-09 `rpgzzu-export:` namespace are copied to the new one on the first boot, old keys kept), so standalone builds do not collide with editor/dev save slots. Keep `setSaveSlotStorageNamespace()` in `src/player/saveSlots.ts` compatible with the existing default `oprn:save-slot:*` keys.
 - Session checkpoints live in `src/player/checkpoints.ts` as a single WeakMap-backed slot per active `PlaySession`. `checkpointSave` stores a save-slot-style snapshot for retry, but checkpoints are intentionally not serialized into save files or project JSON; normal save/load starts without a checkpoint.
 - Game over is now a retry loop when a checkpoint exists: `killPlayer` zeros the party, marks death state, and opens the game-over overlay with `다시 시도` plus `타이틀로`; without a checkpoint only title return is available. Keep keyboard behavior on the same terminal cursor/menu conventions as existing overlays.
@@ -1969,6 +2031,21 @@ Completed runtime timelines persist into bounded session reports accessible from
 팀 이름으로 「승부를 걸어왔다!」를 표시하며, 그렇지 않은 팀만 기존 종족 기반 야생 판정을 따른다.
 적 이름에 소유자 이름이 있다는 이유만으로 트레이너라고 추정하지 않는다. 포획 차단 조건은 그대로다.
 새솔 라이벌 실전에서 몬스터 종족만 보고 「야생의 세린의 …」로 소개하던 불일치를 확인했다.
+
+### 야생 도입 문구의 이름 출처와 「야생」 접두 (2026-10-23)
+
+「야생의 ○○이 나타났다!」의 ○○는 **트룹 이름이 아니라 살아 있는 적 배틀러의 이름**이다
+(`enemyBattlers` 가 `normalizeEnemyRecord(...).name` 을 싣고 `introDirectorState` 가 그것을 쓴다).
+그래서 저자가 적 이름에 영문 id 를 넣으면 화면에 그대로 나온다 — 새솔 RED 예제는
+`enemy_sr_wild_chickadee` 이름이 「야생 chickadee」 였다(수정: 종 이름 치카디·퍼즐·하울러,
+트룹 이름 「야생의 치카디」). 「야생의」는 이 문장이 소유하므로, 적 이름이 이미
+「야생 」/「야생의 」로 시작하면 인트로에서만 그 접두를 떼어 낸다(`monsterCollection.stripWildNamePrefix`;
+뒤에 공백이 올 때만 — 「야생화 꿀」은 그대로). 같은 접두를 붙이는 3세대 호칭
+`emeraldBattlerName`(「야생 ○○」·「상대 ○○」)도 같은 함수로 뗀다 — 프리셋 생성기
+`playableSegment.ts` 가 적 이름을 「야생 슬라임」으로 저작하고 monster-collect 팩은
+`oprnMonsterStyle: emerald` 이므로, 이 처리가 없으면 생성된 게임의 첫 조우가
+「야생의 야생 슬라임이 나타났다!」·행동 줄이 「야생 야생 슬라임」 으로 읽혔다.
+회귀: `npm run qa:runtime -- --scenario rt-saesol-wild-troop-english-name --checkpoint-set rt-saesol-wild-troop-english-name --checkpoint all`.
 
 ### Emerald trainer portraits (2026-10-04)
 

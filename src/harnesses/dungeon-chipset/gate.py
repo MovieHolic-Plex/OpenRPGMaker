@@ -94,15 +94,38 @@ def autotile_checks(name, at):
         bad |= palette_bad(v.a)[0]
     holes += sum(opaque(b.a) for b in at.bodies[1:])
     seams, info = [], []
+    if getattr(at, 'body32', None) is not None:
+        # 위상 몸통(32×32): 다른 세 위상의 47 모양도 불투명·팔레트, 몸통은 32px 반복 이음 + 그 안 16px 경계가 튀지 않아야 한다(격자 금지).
+        for p in range(1, at.phases):
+            for v in at.variants(p).values():
+                holes += opaque(v.a)
+                bad |= palette_bad(v.a)[0]
+        b, i = _seam_res(f'{name} 32몸통', at.body32, 'xy')
+        seams += b
+        info.append(i)
+        res16 = seam_big(dot.tiled(at.body32, 4, 4), 16, 16)
+        seams += [f'{name} 32몸통 16칸 경계 {ax} {b:.1f} > 안쪽 {i:.1f}' for ax, b, i, f in res16 if f]
+        info.append(', '.join(f'{name} 32몸통 16칸 {ax} {b:.1f}/{i:.1f}' for ax, b, i, _ in res16))
     if len(at.bodies) > 1:   # 몸통 변형: 엔진과 같은 해시로 8×8 섞어 깔고 경계를 본다
         res = seam_big(dot.mosaic(at, 8, 8), 16, 16)
         seams += [f'{name} 몸통 변형 섞음 {ax} 경계 {b:.1f} > 안쪽 {i:.1f}' for ax, b, i, f in res if f]
         info.append(', '.join(f'{name} 변형 섞음 {ax} {b:.1f}/{i:.1f}' for ax, b, i, _ in res))
-    for nm, tile, axes in ((f'{name} 몸통', at.body, 'xy'),
-                           (f'{name} 북변', at.tile(dot.E | dot.W | dot.S | dot.SE | dot.SW), 'x'),
-                           (f'{name} 남변', at.tile(dot.E | dot.W | dot.N | dot.NE | dot.NW), 'x'),
-                           (f'{name} 서변', at.tile(dot.N | dot.S | dot.E | dot.NE | dot.SE), 'y'),
-                           (f'{name} 동변', at.tile(dot.N | dot.S | dot.W | dot.NW | dot.SW), 'y')):
+    def edge(m, horiz):
+        """가장자리 띠 칸 — 위상 몸통이면 두 위상을 이어 붙인 32px 띠(몸통 반복 주기와 같게)."""
+        if getattr(at, 'body32', None) is None:
+            return at.tile(m)
+        a, b = (at.tile(m, 0), at.tile(m, 1)) if horiz else (at.tile(m, 0), at.tile(m, 2))
+        cv = dot.Cv(32 if horiz else 16, 16 if horiz else 32)
+        if horiz:
+            cv.a[:, :16], cv.a[:, 16:] = a.a, b.a
+        else:
+            cv.a[:16], cv.a[16:] = a.a, b.a
+        return cv
+    for nm, tile, axes in (((f'{name} 몸통', at.body, 'xy'),) if getattr(at, 'body32', None) is None else ()) + (
+                           (f'{name} 북변', edge(dot.E | dot.W | dot.S | dot.SE | dot.SW, True), 'x'),
+                           (f'{name} 남변', edge(dot.E | dot.W | dot.N | dot.NE | dot.NW, True), 'x'),
+                           (f'{name} 서변', edge(dot.N | dot.S | dot.E | dot.NE | dot.SE, False), 'y'),
+                           (f'{name} 동변', edge(dot.N | dot.S | dot.W | dot.NW | dot.SW, False), 'y')):
         b, i = _seam_res(nm, tile, axes)
         seams += b
         info.append(i)

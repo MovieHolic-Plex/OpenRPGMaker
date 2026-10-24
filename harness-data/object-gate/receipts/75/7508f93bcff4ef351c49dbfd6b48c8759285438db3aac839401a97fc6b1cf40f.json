@@ -1,0 +1,370 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7508f93bcff4ef351c49dbfd6b48c8759285438db3aac839401a97fc6b1cf40f",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "mine timber post",
+ "label": "beodeul_dungeon/earth.timber_post",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 49,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "post top (end face)",
+      "rows": "3-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "post shaft with iron band at rows 12-13",
+      "rows": "8-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flared foot",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top of the post is a lighter band at rows 3-7, 8 px wide. Row 3 is a light outline row and row 7 is a light front-edge line (L=131 in columns x=5 and x=8). Rows 8-11 below are darker (L~75-98), which reads as eave shadow. The front shaft runs from row 8 to row 28 with an iron band at rows 12-13 and a flared foot at rows 26-28, so the front face is well over 3 rows. No side face is drawn. The top is a small, fairly weak read, but it has a front-edge line and shadow below it."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a thin, small post, so the per-tile facts read 0 and I judged by eye. Its dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood, not a sticker-style black line. There are no flat fills: 0% near-flat coverage and no 5x5 blocks of a single colour. The post has a lighter cap, a banded middle and a darker base, which gives about 4 wood steps. Against the comparable thin and simple references (bench and lamp, 14 colours each), it has only 10 colours in total. The grain looks sparser and the form somewhat plainer, and next to the bench it reads slightly thinner and flatter. That is not clearly Beodeul-level, and when in doubt the rule is to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19023
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "post top face",
+      "rows": "3-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "iron strap band",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flared foot",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The post is a constant 8 px wide from row 3 to 25, with a flared foot at rows 26-28. Rows 3-7 form a top band outlined by a lighter row 3 and a light front-edge line at row 7 (L=131 in columns 5, 8 and 10). A darker inset sits between them at rows 4-6, and darker rows 8-9 below the edge line act as eave shadow. The front face is the vertical wood grain below, rows 8-28, with a grey metal strap at rows 12-13. The top reads as a shallow 5-row top surface, not a flat-topped silhouette, but the evidence is somewhat ambiguous because the band is also consistent with a framed end cap."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The post is a thin prop (about 10x25 source px), so the per-tile facts read 0 and I judged by eye against the bench and lamp. Its outline is a dark brown that leans toward the wood. The measured near-neutral edge share is 0%, so it is not a black sticker outline. There are no 5x5 flat fills (0% near-flat). Wood grain, a lighter edge and a darker banded section give about 4 lightness steps, one fewer than the bench and lamp. With 10 distinct colours against 14 for the bench and lamp, it is slightly lower in density but comparable in craft, and it does not look flatter than the simple references. This is a borderline pass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23377
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "post top",
+      "rows": "3-3",
+      "evidence": "none",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post shaft",
+      "rows": "4-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron band",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base foot",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The post is a tall vertical timber 8px wide with a single light row at row 3 as its top edge. That is a 1-row outline or rim, not a top surface. Row 7 has another light line, but it is a crossbar or face detail and has no eave shadow. Rows 4-27 are one vertical wood face with grain, and the iron band at rows 12-13 is a vertical strap. The base flare at rows 26-28 is a foot with no horizontal surface. There is no ellipse, no roof and no visible contents, so the drawing reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The post is a thin, sparse prop, so the per-tile density fact (0) is not used against it. The comparison is by eye against the bench and lamp, which are also thin props. The candidate has a lighter cap, a lit left edge, a darker right side, a band or bracket section and some grain dots, which gives about 4 wood tones against roughly 5 on the bench. Its dark edge pixels are 0% neutral, so the outline leans dark brown next to the wood rather than black. Near-flat coverage is 0% and there are no large flat fills. With 10 colours against the bench's 14 it is slightly leaner, but it does not look like a flat sticker beside the bench or lamp, so a careful artist would likely accept it next to them. This is a borderline pass.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17613
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "post top (end-grain cap)",
+      "rows": "3-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post shaft front face",
+      "rows": "8-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron strap band",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flared foot",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 8,
+     "shaft_width": 8,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-7 form a distinct top block, 8 px wide like the shaft. A light outline sits at row 3 and a darker inner area at rows 4-6. A 1-row light front-edge line at row 7 (#b77541 in columns 5 and 8) closes it, and the front face runs below it from row 8 to row 28. The top is a square end face, not an ellipse, and it is only weakly separated from the face below because there is no clear eave shadow after row 7. The rows 12-13 strap and the rows 26-28 foot flare (width 10-12) are vertical or base details and carry no top-surface expectation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The post is a thin, narrow prop, so the per-tile facts are 0 and I judged by eye against the bench and lamp references. Measured facts: 0% near-flat coverage and 0% neutral dark edge pixels, so the outline is tinted. It reads as dark brown beside the wood, not a black sticker line. The post shows about 4 wood steps: dark edge, mid, light face and a highlight, plus a banded section and vertical grain dots. That is a little less than the bench and lamp references, which use about 5 steps and 14 colours against its 10. It has no large flat fills and carries enough grain and banding to sit next to the bench without looking flatter. Its density is only slightly below the references, which is acceptable for such a thin object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21402
+  }
+ ],
+ "decidedAt": "2026-10-23T04:42:25.101Z",
+ "cells": {
+  "16": [
+   "3fb250b4a9519982",
+   "dca537b9dc19ab87"
+  ],
+  "24": [
+   "0411ebb990a1c63b",
+   "0aaf12777b700b4f",
+   "13ac15cdbe7821b7",
+   "20b02a1aedd1523e",
+   "2146fc431a87f408",
+   "2ff0fe1249bedced",
+   "4b9c496e7cb2ec91",
+   "67d58171277676e8",
+   "999fdf7d0d7ddf11",
+   "aad25ff22c3d5af2",
+   "d9f52ab205cb7144",
+   "ff7bbbe265547bbd"
+  ],
+  "32": [
+   "a29fd686b780f209",
+   "e58732437ef90f0c",
+   "eddf46b0c8ced158"
+  ],
+  "48": [
+   "12dee195de443595",
+   "22d88ef7fd886c2c",
+   "54c6c81c1649699d",
+   "71700591a0b61553",
+   "c118bfc4c2763cbd",
+   "e7593c0ab01accf7"
+  ]
+ }
+}

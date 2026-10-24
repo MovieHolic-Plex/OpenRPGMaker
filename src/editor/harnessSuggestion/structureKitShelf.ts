@@ -28,7 +28,8 @@ export function makeStructureKitShelf(input: StructureKitShelfInput): HTMLElemen
     class: "structure-kit-shelf panel-subsection",
     dataset: { testid: "structure-kit-shelf" },
   });
-  shelf.append(el("div", { class: "structure-kit-shelf-title", text: input.title ?? "내 구조물" }));
+  // title:"" 은 제목 없음 — 사이드바 표면처럼 머리줄이 이미 같은 이름을 보일 때 쓴다.
+  if (input.title !== "") shelf.append(el("div", { class: "structure-kit-shelf-title", text: input.title ?? "내 구조물" }));
   const grid = el("div", { class: "structure-kit-shelf-grid", ...(input.showNames ? {attrs:{style:'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px'}} : {}) });
   for (const kit of learnedKits) grid.append(makeKitButton(kit, input));
   shelf.append(grid);

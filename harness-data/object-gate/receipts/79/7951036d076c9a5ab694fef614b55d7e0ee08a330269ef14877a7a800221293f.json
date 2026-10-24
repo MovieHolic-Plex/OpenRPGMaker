@@ -1,0 +1,345 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7951036d076c9a5ab694fef614b55d7e0ee08a330269ef14877a7a800221293f",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "Astra mart kit cell 6 (r1 c2)",
+ "label": "monster_overworld/astra-mart-kit-6 (칸 2246)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 88,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cream band / roof slab",
+      "rows": "0-2",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-4"
+     },
+     {
+      "part": "front face with purple stripes and a dark inset with a brown post",
+      "rows": "5-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-2 are a full-width cream band (16 px wide) that ends in a brown front-edge line at row 3. Row 4 is a darker brown eave shadow, which matches evidence (a). Below it, rows 5-15 are a vertical front face made of dark and purple-blue stripes, with a small brown post at rows 7-10 near x=8. The top band is only 3 rows tall, which is thin, but it has both an edge line and eave shadow. The brown strip on the right edge is a frame outline, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny signboard on a purple base, not a whole building with roof, walls and door/windows, so it does not match the reference kind. The measured facts are fine: 10 visible tones, 0% near-flat coverage and 0% near-neutral dark edges, so the outline is tinted rather than black. But the whole piece uses only 10 colours in total, against 185 and 66 for the references. By eye the board, its edge and the base each get about 2-3 tones. There are no tile scallops, no plaster or stone grain, and no clustered texture. It looks thinner and flatter than either reference, and sparseness alone is not the reason; the missing material ramps and grain are. Next to the references it reads as a simple sticker-like prop. Because it is the wrong kind and clearly shallower in shading, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15580
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band (cream)",
+      "rows": "0-2",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "brown edge/trim under the top band",
+      "rows": "3-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face (purple panels with a small brown post)",
+      "rows": "5-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Columns x=4, 8 and 11 all show rows 0-2 as a light cream band. Row 3 (#a06234) is a darker brown front-edge line, and row 4 is a second brown row. Rows 5-6 are dark eave shadow (L=56-60). Below that, rows 5-15 form an 11-row front face of purple and blue panels with a brown post at about x=13. The top surface is thin at 3 rows plus a 2-row brown trim, but it has an edge line and shadow, so it is more than a 1-2 row rim. The front face is clearly 3+ rows. The silhouette is a constant 16 wide, so there is no ellipse or side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny signboard-like prop: a white/cream board with a brown edge on a purple post. It is not a whole building with roof, walls and door/windows, so it does not match the reference kind. It is about the size of a single tile, with no roof tile scallops, plaster speckle or stone shading. Its 10 distinct colours across the whole piece compare with 185 and 66 for the references. The 10 visible tones per tile and 0% near-flat coverage are measured on a very small area and do not show comparable richness. By eye it has about 3 shading steps per material against 5-6 in the references. The dark edge pixels carry a tint (0% neutral), so it is not a black sticker outline, but the piece is far thinner and simpler than a building. This is a fail on kind mismatch and low richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 19043
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cream top band (roof or counter top)",
+      "rows": "0-2",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-4"
+     },
+     {
+      "part": "purple striped front wall with a small brown post",
+      "rows": "5-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-2 form a light cream band across the full 16px width. It ends in a lighter brown edge line at row 3 (#a06234), followed by a darker brown eave-shadow row at row 4 (#7e4824). Below it, rows 5-15 (11 rows) are a vertical purple and blue striped face with a small brown vertical detail at x=8, rows 5-12. The top band is thin, only 3 rows, but it has an edge line and shadow, so it counts as evidence (a). The 11-row front face reads as a south face. No isometric side face is drawn. This is a tile fragment of a larger structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sign or counter-like prop, about 12x12 source pixels, smaller than one 16x16 tile. It has no roof, walls, door or windows, so it does not match the building references. The per-tile facts are not meaningful for a piece this small. It has only 10 distinct colours in total, against 66 and 185 for the references. By eye it shows about 3 shading steps: a pale top, a mid body and a dark purple base. The references show 5-6 steps, with per-tile roof scallops, plaster speckle and stone shaded one by one. It has none of that grain or per-element shading, so it looks thinner and flatter than the references. The kind mismatch alone is enough to fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15024
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cream top band (roof/counter top)",
+      "rows": "0-2",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "front wall face with purple stripes and small brown post",
+      "rows": "5-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-2 form a cream band across the full 16px width. It ends in a brown front-edge line at rows 3-4, with row 3 lighter and row 4 darker. Dark eave shadow follows at rows 5-6 (L=56, #383c58). Below that, the striped purple/blue front face runs from row 5 to row 15, which is 11 rows. The top band is short at 3 rows, but it has an edge line and eave shadow, so it counts as a top surface under (a). There is no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is not a whole building. It is a tiny sign-like prop (a cream board on a brown cap with a purple pedestal), about one tile across. It has no roof tiles, walls, door or windows, so it cannot be compared with the two full house references. Its measured facts (10 visible tones per tile, 0% near-flat, 0% neutral dark edges) look fine, but they come from a very small area and say little about structure. By eye, its ramps are shallow, with about 3 steps per material against the references' 5-6 on tile roofs, timber and stone. It has no per-tile roof highlights, plaster speckle or stone-by-stone shading. Next to the references it looks thin and sticker-like. Its edge tint is only mildly material-toned, so I call it mixed. The kind mismatch alone fails it: a building cell holds a sign prop.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13975
+  }
+ ],
+ "decidedAt": "2026-10-20T22:08:46.682Z",
+ "cells": {
+  "16": [
+   "467592c5fb55fabb"
+  ],
+  "24": [
+   "13d0d66293c8f9c8",
+   "19fb74722a6665bb",
+   "568c2abe85b5dbbf",
+   "75f9ad6ff65ae610",
+   "b3fc5cf9ea1b72ec",
+   "f059b620253cac4e"
+  ],
+  "32": [
+   "2718d7c9e8433b0d",
+   "3c2f23f2620eee92",
+   "53524f21ac449981",
+   "98f9b22e6ff16f8d",
+   "b6fc8f1e11c17337",
+   "d472f61c4d550d25"
+  ],
+  "48": [
+   "2265a9e4e1661134",
+   "421b9150cdf90264",
+   "7d8175d9863e0260",
+   "9aacd952a764ceb1",
+   "a6f7ba8b491eea49",
+   "ddd94eefa0e79887"
+  ]
+ }
+}

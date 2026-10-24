@@ -133,7 +133,7 @@ def main():
             rows = [{"lower": r.get("tiles") or [], "upper": r.get("upperTiles") or []} for r in e["rows"]]
             dict_rows.append({"kit": e["id"], "name": e["name"], "size": f"{c['w']}x{c['h']}", "leads": c["leads"], "mode": c["mode"], "side": c["side"],
                               "trigger": c["trigger"], "approach": c["approach"], **({"exit": c["exit"]} if c.get("exit") else {}),
-                              "arrivalFacing": FACING.get(c["side"], "앞 칸 → 계단 반대쪽"), "rows": rows, "image": f"stair-{ts}-{slug}"})
+                              "arrivalFacing": FACING.get(c["side"], "앞 칸 → 계단 반대쪽"), "note": c.get("note", ""), "rows": rows, "image": f"stair-{ts}-{slug}"})
         kit_by_id = {k["id"]: k for k in kits}
         obj_rows = []
         for obj_id, ref in sorted((spec_objects.get(ts) or {}).items()):

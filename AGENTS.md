@@ -123,6 +123,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Editor database: `openwiki/editor-database.md`
    - 세계 생성 규칙 (AI 마을 생성의 물·숲·길 수치와 낱말 판정을 DB 「세계 → 생성 규칙」 탭으로 저작): `openwiki/world-generation-rules.md`
    - 버들항 v6 · 로마풍 항구 도시 (Python 손 도트 100×100 을 칸으로 자른 공용 타일셋 beodeul_city 23,936칸·animationStrips 1,699·구역/건물/소품 키트 120, 참고문서 4용도·정본 저장·조수 시험, 다음 판 참고 그림): `openwiki/beodeul-city.md`
+   - 던전 주제 열넷 (조수 `author_dungeon` 의 숲·늪·피라미드·마법탑·마계·얼음 등 종류, 배치 가족 linear/hub/loop/vertical, 주제 장치 lever·bridge·teleporter·minecart·iceslide·sandpit, 게임 참고 inspiration, 주제 적, 새 그림 키트 이름 `bd-pick-dungeon-theme-*`): `openwiki/dungeon-themes.md`
    - 조선(바람의나라풍) 칩셋 joseon_baram · 손 도트 조각 291종+실내·사냥터·동굴 키트·오토타일 19종을 공용 번들 타일셋으로 (변환기 `build-joseon-tileset.py`, 시트 여러 장 합치기, 칸 통행 X/C/F·꼬리 복사본, 참고문서 6용도, 지도 15장 저장·장소 카드, 재실행 한 줄 `rebuild-joseon.sh`): `openwiki/joseon-baram.md`
    - 열대 군도·해적 항구 pirate_isles (`oprn-pirate`, 16px 코드 손 도트 174조각 → object-gate 통과분만 굽기 `pi_bake.py`, 순수 구성기 `pirateIslesComposer.ts` + 조수 도구 `compose_pirate_isles_map`, 해적·열대·군도 낱말 경로, 참고문서 `pi_refs.py`): `openwiki/pirate-isles.md`
    - 전국·에도 일본 번들 sengoku_edo (성하마을·여관 거리·무가 저택·성·신사/절·농촌 야외 + 다다미 실내, 손 도트 + object-gate 영수증만 굽기, 구성 도구 compose_sengoku_edo_map · link_sengoku_edo_interior, 방 구성 7개, 적대 QA 결함표): `openwiki/sengoku-edo.md`
@@ -134,6 +135,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 사막·동양풍 번들 desert_east(계열 oprn-desert-east) · 오아시스 마을·바자르·궁전·피라미드 유적·대상 숙소 + 찻집·가게·알현실·묘실·함맘·여관 실내를 코드 손 도트로 그려 object-gate 영수증 통과분만 굽고(모서리 왕 타일 5벌), 순수 구성기 `compose_desert_east_map`·`compose_desert_east_room`(발 밑 재질·문 접근칸·BFS)로 깐다: `openwiki/desert-east.md`
    - 북방 설원 번들 snow_north · 눈 덮인 북방 마을·얼어붙은 호수 낚시터·얼음 동굴 입구·겨울 장터 + 오두막·회관·선술집·사우나·얼음 동굴 실내 코드 손 도트 131조각(오토타일 6, object-gate 영수증·조립 그림, 프로필 미보정), 구성기 `compose_snow_north_map`, 버들항 눈 기후(theme:"snow")와의 라우팅 경계는 `src/ai/snowNorthPolicy.ts`: `openwiki/snow-north.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
+   - 조수 v2 (기본 꺼짐 — 모델은 명세만, 결정론 빌더가 짓고 독립 비평가가 1배 그림을 본다; `?assistant=v2`, v1 비교 결과): `openwiki/assistant-v2.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - 에디터 「공방」 (하네스를 에디터 안에서 사용자 계정 모델로 돌리기 — 왼쪽 막대, 실행기·저장·표면): `openwiki/editor-workshop.md`
    - 코딩 에이전트의 스토어 제출 (`npm run -s store`, 에이전트 토큰·확인 대기·검사 목록): `openwiki/store-agent-contribution.md`

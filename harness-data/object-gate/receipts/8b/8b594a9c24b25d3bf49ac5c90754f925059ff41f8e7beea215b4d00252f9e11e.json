@@ -1,0 +1,290 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8b594a9c24b25d3bf49ac5c90754f925059ff41f8e7beea215b4d00252f9e11e",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "engraved tomb slab set in the floor",
+ "label": "beodeul_dungeon/earth.tomb_slab",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 10,
+  "darkV5": 48,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "engraved floor slab seen from above, with concentric border lines and a cross engraving",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 32x32 square, 32 columns wide on every row. The column scans show only a flat stone-grey field with engraved dark-brown lines (nested border frames and a cross) and speckles. There is no front-edge line, no eave shadow, and no vertical south face. The only dark row near the bottom (row 31, L=40) is the outline. Rows 29-30 are another frame line, not a front face. This is a flat plate seen straight from above, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The slab has a lit top-left bevel, a darker bottom-right edge, a mid-grey mottled face and a recessed cross with its own shadow, which gives about 5 lightness steps against roughly 6 in the paving reference. It shows 9 visible tones per tile against 7 for the paving and 3 for the grass, with 0% near-flat coverage, so it matches or beats both on density. The face carries speckle and mottling rather than a flat fill. The edge is partly tinted and partly neutral (35% neutral, against 80% for the paving reference), so it is not a uniform black sticker line, though the neutral grey shares the paving's cool character. The surface is slightly smoother than the cobbled paving, which is why texture is rated 'some' rather than 'rich'. It is a small single inset slab, which is acceptable for this kind of object, and it would not look thinner or flatter next to the reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13317
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "engraved tomb slab seen from above, with nested rectangular grooves and a cross engraving",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 32x32 square, the same width on every row 0-31. The interior is a flat stone plate with concentric engraved groove lines and a cross, all seen straight from above. There is no front face. Only row 31 is a dark bottom outline, which is not a vertical face. This is a flat floor plate, which matches the kind 'flat'."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small bevelled slab with a cross engraving, and the rest of its area is empty backdrop. It has 9 visible tones per tile against 7 for the paving and 3 for the grass, and 0% near-flat coverage, so the numbers match or beat the references. By eye, though, the slab body is mostly one smooth mid-tone with a light bevel edge and a darker engraved cross. That is about 4 shading steps, with little per-stone grain or speckle. The reference paving shows many individually shaded cobbles and a joint pattern. Only 35% of the dark edge pixels are neutral, so the outline is mixed: partly tinted, partly grey-black. The slab does not read as a 4x3 ground patch with the paving's tile-by-tile variation. It looks thinner and more sticker-like beside the reference, so I fail it on doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14315
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "engraved stone slab seen from above, with concentric border grooves and a cross engraving",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 31,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a 32-wide square across rows 0-31, with a 1-row dark outline at the top (row 0) and bottom (row 31). The inside is a flat grey slab with nested rectangular grooves, a cross engraving in rows 8-23, and scattered speckles. There is no front-face band, no eave shadow, no legs or apron and no receding side face, so there is no vertical south face of 3 or more rows. It is a flat floor plate seen straight from above, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The slab has a bevel (light top-left edge, dark bottom-right edge), a cross engraving and a little speckle, so it is not a plain sticker. Measured facts are at or above the references: 9 visible tones per tile against 7 for paving and 3 for grass, and 0% near-flat coverage. The look is still shallow. Only 11 distinct colours are used in total, giving about 4 lightness steps on the slab face, while the paving reference shades each cobble separately (about 6 steps). The slab face is a smooth, lightly dotted surface with no per-stone grain or chips. The surrounding ground reads as one flat dark tone with no soil or stone variation. The edge outline is partly neutral dark grey (35% near-neutral) and partly tinted, so I call it mixed. Next to the reference paving it looks thinner and flatter, and when in doubt I fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14742
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "engraved tomb slab with cross and concentric border grooves, seen from above",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a 32-wide, 32-row square with constant width. The interior is a flat stone plate with an engraved cross and nested rectangular border grooves, all seen straight from above. There is no front-edge line, no eave shadow, no ellipse and no vertical south face. The only dark band is the bottom outline at rows 30-31, which is 1-2 rows and reads as an outline, so the drawing has no front face of 3+ rows. For a flat floor object this is the expected top-down view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has about 9 visible tones per tile, above the paving reference (7) and the grass reference (3). Near-flat coverage is 0%, so the speckled floor and slab interior are not flat fills. It uses 11 colours in total, the same order as the paving reference (7 total), which is also built from a few well-separated tones. The slab has a bevelled edge with highlight, mid and dark steps, and the engraved cross is cut with a shadow and a light edge, which gives about 5 steps. Only 35% of the dark edge pixels are neutral, so the edges lean toward tinted tones rather than a uniform black sticker line, though a few near-black pixels remain, hence 'mixed'. It is simpler than the cobble paving, which has stones shaded one by one, so I rate density slightly lower. Even so, it is at or above the paving reference on the measured facts and is acceptable next to it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14605
+  }
+ ],
+ "decidedAt": "2026-10-23T03:47:44.973Z",
+ "cells": {
+  "16": [
+   "437c8696d37fb5f1",
+   "438f90222fcb614b",
+   "565924e35a46a2d4",
+   "797c46abd1183571"
+  ],
+  "24": [
+   "03f963cb13b45431",
+   "0d574854d9a1e8b4",
+   "17dd9556a96af2db",
+   "183c955b9678ccbd",
+   "2e8e65362e64ecc8",
+   "41573dcf53d096d6",
+   "4d2f5d2bf471947e",
+   "4da05dba75f5ed6a",
+   "51362b87116cbcb7",
+   "51807742582416fa",
+   "5882822473086ca8",
+   "5a059fbf8f06637d",
+   "5c437f6378ac9ade",
+   "804781c6e1662477",
+   "84c1cee6a5d1686f",
+   "8bba5cb7bf89c7b9",
+   "9c5f62c92655a46f",
+   "a409e3ca1118eeec",
+   "c2856d170bf0ce93",
+   "c84139871e1d0cd2",
+   "d62aff4586650ff0",
+   "da411b58100882a9",
+   "f25093ad93f24a0c",
+   "fbb1143ef7ff6e83"
+  ],
+  "32": [
+   "d8f89b3bd7794c57"
+  ],
+  "48": [
+   "211b0f270706ee58",
+   "2399a3b4d153dac7",
+   "8774d67f7b348ca2",
+   "a6399b24bddb22c5",
+   "fa3b0f4c983a6b42",
+   "ffe61b1a9f7e3734"
+  ]
+ }
+}

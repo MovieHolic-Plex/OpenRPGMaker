@@ -1,5 +1,6 @@
 import { jsonEqual } from "@/util/structuralJson";
 import { clearChildren, el } from "@/util/dom";
+import { t } from "@/i18n";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { branchEmptyActionLabel, eventCommandBranches } from "@/editor/eventCommandBranches";
 import { openEventCommandEditDialog } from "./commandEditDialog";
@@ -325,7 +326,8 @@ function renderCommandItem(
     el("span", {
       class: "cmd-cat-icon",
       attrs: { "aria-hidden": "true", title: `${categoryVisual.label} 명령` },
-      dataset: { category: categoryVisual.key, glyph: categoryVisual.glyph, label: categoryVisual.label },
+      // 배지는 CSS ::after(attr(data-label)) 로 그려져 DOM 번역기가 못 바꾼다 — 속성에 번역된 낱말을 넣는다.
+      dataset: { category: categoryVisual.key, glyph: categoryVisual.glyph, label: t(categoryVisual.label) },
       children: [renderCategoryIcon(categoryVisual)],
     }),
     summary,

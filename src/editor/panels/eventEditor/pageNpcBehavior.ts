@@ -5,7 +5,7 @@ import type { DetectionEncounter, EventPage, MapId, NpcSight } from '@/project/t
 import { el } from '@/util/dom';
 import { selectWithOptions, selectedOptionValue } from './dom';
 
-const FACING_OPTIONS = [{ value: 'any', label: '모든 방향' }, { value: 'forward', label: '정면 직선' }] as const;
+const FACING_OPTIONS = [{ value: 'any', label: '모든 방향' }, { value: 'forward', label: '정면 직선' }, { value: 'cone', label: '정면 부채꼴' }] as const;
 const label = (text: string, control: HTMLElement) => el('label', { class: 'event-horror-field', children: [el('span', { text }), control] });
 
 function numberField(id: string, value: number, min: number, max: number, change: (value: number) => void): HTMLInputElement {

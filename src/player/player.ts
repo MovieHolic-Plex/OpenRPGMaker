@@ -50,6 +50,8 @@ import type { PlaySurfaceScaleMode } from "@/player/playSurfaceScale";
 import { resolvePlaySurfaceScaleMode } from "@/project/playSurfaceScaleMode";
 import type { Project } from "@/project/types";
 import { createTouchPad, isTouchDevice, type TouchPadHandle } from "@/player/touchPad";
+import { installTapConfirm } from "@/player/touchTap";
+import { installTouchListTap } from "@/player/touchListTap";
 import { renderPlayerLoadPanel } from "@/player/playerLoadPanel";
 import { createPlayerStatusMenuController } from "@/player/playerStatusMenuController";
 import { currentStatusMenu } from "@/player/playerStatusMenuControllerDom";
@@ -91,6 +93,7 @@ import {
   type PlayLoadingOverlay,
 } from "@/player/playLoadingOverlay";
 import { warmBundledPlayAssets } from "@/assets/bundledAssetWarmup";
+import { scenePreloadEnabled } from "@/player/scenePreload";
 import { createCinematicAssets } from './cinematicAssets';
 import { warmPlayGameRuntime } from './createPlayGame';
 import { createRuntimeAudioWarmup } from './runtimeAudioWarmup';
@@ -140,6 +143,8 @@ export type RenderPlayerOptions = {
   // 켜면 메뉴·전투 명령·대사 상자의 클릭이 키보드와 같은 핸들러를 타고, 오른쪽 클릭은 취소(Esc)가 되며,
   // 터치 기기(coarse 포인터)에서는 가상 패드가 붙는다. 몬스터 수집 게임(에메랄드 프로필)이 쓴다.
   readonly pointerInput?: boolean;
+  /** 터치 기기에서 가상 패드·탭 UI 를 연다(모든 게임 공통). 에메랄드 스킨(monsterStyle)은 pointerInput 만 켠다. */
+  readonly touchInput?: boolean;
   // 타이틀을 건너뛰고 새 런을 바로 시작한다. 편집 → 테스트 왕복마다 Enter 를 눌러
   // 타이틀을 통과하던 비용을 없앤다(startOverride / initialSession 가 있으면 이미 그 경로다).
   readonly autoStartRun?: boolean;
@@ -186,7 +191,6 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   let titleConfirmTimer: ReturnType<typeof setTimeout> | undefined;
   let game: Phaser.Game | null = null;
   let startRun = 0;
-  let playStartedAt = 0;
   let titleMenuIndex = 0;
   let titleConfirming = false;
   let loadDetach: (() => void) | null = null;
@@ -200,8 +204,19 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   let lastBootRequest: PlayBootRequest = { safeMode: options.safeMode === true };
   // teardownPlayer 이후에 호스트 버튼/F5 가 들어와도 새 런(타이머·리스너)을 만들지 않는다.
   let shellActive = true;
-  const surfaceScaleFor = (project: Project): PlaySurfaceScaleMode => options.surfaceScaleMode ?? resolvePlaySurfaceScaleMode(project);
-  const pointerInput = options.pointerInput === true;
+  // 터치 기기는 작은 화면을 꽉 채우는 것이 우선이라 정수 배율 대신 맞춤(fit)을 쓴다.
+  const surfaceScaleFor = (project: Project): PlaySurfaceScaleMode => options.surfaceScaleMode ?? (options.touchInput === true ? "fit" : resolvePlaySurfaceScaleMode(project));
+  const emeraldStyle = options.pointerInput === true;
+  // 터치 기기에서는 모든 게임이 탭으로 메뉴·대사·전투를 연다. 키보드 전용 계약은 데스크톱에서만 남는다.
+  const pointerInput = emeraldStyle || options.touchInput === true;
+  // 터치 UI: 조작이 게임을 가리지 않게 자리를 떼는 배치 + 모든 화면(타이틀·메뉴·상점·전투)에 조작 패드(2026-10-24).
+  const touchUi = pointerInput && isTouchDevice();
+  const surfaceOptions = { topAlignPortrait: pointerInput, touchUi } as const;
+  // 터치 화면의 패드는 무대 밖 뷰포트에 붙는다. 데스크톱은 기존처럼 무대 안 env 오버라이드만.
+  const mountTouchPad = (surface: { readonly viewport: HTMLElement; readonly stage: HTMLElement }): void => {
+    touchPad?.cleanup();
+    touchPad = createTouchPad(pointerInput ? surface.viewport : surface.stage, pointerInput ? { enabled: touchUi, skin: emeraldStyle ? "gba" : "touch" } : undefined);
+  };
   // 재시작용 시작 지점. 선택-이벤트 테스트는 호출자가 세션을 주므로 그 세션이 플레이 중
   // 이동하기 전인 마운트 시점의 스폰만 붙잡아 둔다.
   const restartSpawn: { readonly mapId: string; readonly x: number; readonly y: number } | undefined =
@@ -217,9 +232,12 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     class: "player-layout system-shell",
     dataset: { playInputOwner: pointerInput ? "play-ui" : "keyboard-only" },
   });
-  if (pointerInput) { layout.dataset.pointerInput = "true"; layout.dataset.monsterStyle = "emerald"; }
+  if (pointerInput) { layout.dataset.pointerInput = "true"; if (emeraldStyle) layout.dataset.monsterStyle = "emerald"; }
   const cleanupPointerBlocker = installPlayPointerBlocker(layout);
   const cleanupRightClickCancel = pointerInput ? installRightClickCancel(layout) : () => {};
+  // 목록 창: 첫 탭은 커서 이동, 커서가 있는 줄을 탭하면 결정.
+  const cleanupListTap = touchUi ? installTouchListTap(layout) : () => {};
+  const cleanupTapConfirm = touchUi ? installTapConfirm(layout, { pointerMovement: () => store.getCurrent().system.pointerMovement === true }) : () => {};
   main.append(layout);
 
   const stopGame = (): void => {
@@ -243,7 +261,6 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     cleanupPlaySurface?.();
     cleanupPlaySurface = null;
     playStage = null;
-    playStartedAt = 0;
     // 고친 프로젝트 스냅숏은 런과 수명이 같다. LIFO 로 풀어야 호스트(테스트 플레이 창)가
     // 올려 둔 샌드박스 스냅숏이 되돌아온다.
     releaseBootProject?.();
@@ -267,6 +284,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       bridge: options.hostBridge,
       viewport,
       fullscreenRoot: main,
+      autoOnTouch: options.touchInput === true,
     });
   };
 
@@ -319,9 +337,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     warnIfPlayBootIssues(store.getCurrent());
     const run = ++startRun;
     const startedAt = performance.now();
-    playStartedAt = startedAt;
     clearChildren(layout);
-    const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleFor(store.getCurrent()), store.getCurrent().system.displayFilter, { topAlignPortrait: pointerInput });
+    const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleFor(store.getCurrent()), store.getCurrent().system.displayFilter, surfaceOptions);
     playStage = surface.stage;
     layout.append(surface.viewport);
     mountHostControls(surface.viewport);
@@ -333,7 +350,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     cleanupPlaySurface = surface.cleanup;
     // 터치 기기에서만 가상 패드를 부착(데스크톱은 no-op). 방향키/Enter/Escape
     // 합성 이벤트로 기존 키보드 입력 경로(이동/대사/메뉴)를 그대로 구동한다.
-    touchPad = createTouchPad(pointerInput ? surface.viewport : surface.stage, pointerInput ? { enabled: isTouchDevice(), skin: "gba" } : undefined);
+    mountTouchPad(surface);
     if (preflight.blockers.length > 0) {
       // 고칠 수 없는 상태(맵 0개 등)는 Phaser 를 띄우지 않는다 — 왜 못 노는지를 그대로 말한다.
       presentRecovery(loading, run, {
@@ -713,12 +730,13 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       onLoadAutosave: () => loadAutosave(fromTitle),
     });
     if (fromTitle) {
-      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleFor(store.getCurrent()), store.getCurrent().system.displayFilter, { topAlignPortrait: pointerInput });
+      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleFor(store.getCurrent()), store.getCurrent().system.displayFilter, surfaceOptions);
       clearChildren(surface.stage);
       playStage = surface.stage;
       cleanupPlaySurface = surface.cleanup;
       layout.append(surface.viewport);
       mountHostControls(surface.viewport);
+      mountTouchPad(surface);
       surface.stage.append(panel);
       surface.sync();
     } else {
@@ -768,7 +786,6 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     layout,
     getActiveScene: activeScene,
     getPlayStage: () => playStage,
-    getPlayStartedAt: () => playStartedAt,
     closeMenu,
     closeMenuWithJuice,
     renderTitle: () => renderTitle(),
@@ -890,6 +907,12 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const renderTitle = (titleOptions: { readonly emitEnterJuice?: boolean } = {}): void => {
     titleConfirming = false;
     const firstEnter = titleOptions.emitEnterJuice ?? true;
+    // 타이틀에 **새로 들어올 때** 커서는 언제나 첫 항목(새 게임)에서 시작한다. 이전 판에서 「이어하기」로
+    // 내려 두었던 커서가 남아 있으면, 게임 오버 뒤 타이틀에서 Enter 가 새 게임이 아니라 이어하기를 눌러
+    // 죽은 판의 오토세이브로 되돌아갔다(2026-10-23 실측: 세션 359-364 재현 — 이어하기로 내려간 커서가
+    // 두 번째 게임 오버 뒤에도 남아 있었다). 방향키 이동은 updateTitleSelection 만 쓰고 이 함수를
+    // 다시 부르지 않으므로, 여기서 0 으로 되돌려도 커서 이동 중의 선택은 깨지지 않는다.
+    if (firstEnter) titleMenuIndex = 0;
     const redrawOfTitle = !firstEnter && !!layout.querySelector("[data-testid='title-screen']");
     // 방향키 재렌더가 파티클 canvas/레이어 스택을 파괴하지 않도록, 지우기 전에 기존 fx 노드를
     // 붙잡아 renderTitleScreen 에 넘긴다(설정 서명이 같으면 같은 노드가 새 루트로 move 된다).
@@ -917,7 +940,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     titleMenuIndex = clampTitleMenuIndex(titleMenuIndex, options.length);
     // 타이틀을 보는 동안 맵/캐릭셋 이미지를 HTTP 캐시에 미리 올려
     // "새 게임" 직후 로딩 체감을 줄인다(Phaser 텍스처 등록은 여전히 씬 preload).
-    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), project.system.displayFilter, { topAlignPortrait: pointerInput });
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), project.system.displayFilter, surfaceOptions);
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;
@@ -934,6 +957,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     }, titleMenuIndex, titleContext);
     layout.append(surface.viewport);
     mountHostControls(surface.viewport);
+    mountTouchPad(surface);
     surface.stage.append(title);
     focusSelectedTitleOption(title);
     surface.sync();
@@ -946,7 +970,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       audioWarmup.warm(project, [titleProject.system.titleScreen?.musicResourceId,
         ...Object.values(titleProject.system.titleScreen?.sounds ?? {}),
         field.kind === 'play' ? field.resourceId : undefined]);
-      void warmBundledPlayAssets(project);
+      // 웹 판본은 scenePreload 가 같은 그림을 시작 뒤 뒤에서 받는다 — 두 번 부르지 않는다.
+      if (!scenePreloadEnabled()) void warmBundledPlayAssets(project);
       void warmPlayGameRuntime().catch(() => undefined); // Actual boot retains normal recovery/retry.
     }));
     if (firstEnter) emitTitleJuice("title-enter");
@@ -985,8 +1010,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const project = store.getCurrent(), sequence = project.system.opening;
     if (!sequence?.enabled || sequence.entry?.mode !== 'before-title' || !sequence.scenes.length) { renderTitle(); return; }
     stopGame(); stopAllAudio();
-    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), undefined, { topAlignPortrait: pointerInput });
-    playStage = surface.stage; cleanupPlaySurface = surface.cleanup; layout.append(surface.viewport); surface.sync();
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), undefined, surfaceOptions);
+    playStage = surface.stage; cleanupPlaySurface = surface.cleanup; layout.append(surface.viewport); mountTouchPad(surface); surface.sync();
     const controller = new AbortController(); openingController = controller;
     const playback = playCinematicSequence({ host: surface.stage, project, sequence, signal: controller.signal, dismissOnAnyInput: true });
     void playback.done.then(result => { if (result !== 'aborted' && shellActive && openingController === controller) { openingController = null; renderTitle(); } });
@@ -1021,7 +1046,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     stopGame();
     clearChildren(layout);
     const project = store.getCurrent();
-    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), project.system.displayFilter, { topAlignPortrait: pointerInput });
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), project.system.displayFilter, surfaceOptions);
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;
@@ -1042,6 +1067,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     });
     layout.append(surface.viewport);
     mountHostControls(surface.viewport);
+    mountTouchPad(surface);
     surface.stage.append(panel);
     surface.sync();
     const buttons = Array.from(panel.querySelectorAll<HTMLElement>("[data-testid^='difficulty-option-']"));
@@ -1186,6 +1212,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     document.removeEventListener("keydown", onKeyDown);
     cleanupPointerBlocker();
     cleanupRightClickCancel();
+    cleanupTapConfirm();
+    cleanupListTap();
     stopGame();
     audioEngine.setQaInstrumentation(false);
     clearChildren(layout);

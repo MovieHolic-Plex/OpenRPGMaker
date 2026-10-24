@@ -28,6 +28,29 @@ import { getLocale, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES, sourceAtt
  * 「보기 ▾」 버튼과 그 메뉴. `.oprn-menu-popup` 이 형제 기준으로 위치를 잡으므로 감싸면 CSS 를
  * 함께 고쳐야 한다.
  */
+/**
+ * role=menu 팝업의 키보드 조작 — ↑↓ Home End 로 항목 포커스를 옮긴다.
+ * 방향키를 삼키지 않으면 뒤쪽 맵 캔버스(Phaser 키보드)가 스크롤된다.
+ */
+export function handleMenuArrowKeys(event: KeyboardEvent, menu: HTMLElement): void {
+  if (event.key !== "ArrowDown" && event.key !== "ArrowUp" && event.key !== "Home" && event.key !== "End") return;
+  const items = Array.from(menu.querySelectorAll<HTMLButtonElement>('[role^="menuitem"]')).filter((item) => !item.disabled);
+  if (items.length === 0) return;
+  event.preventDefault();
+  event.stopPropagation();
+  const current = items.indexOf(document.activeElement as HTMLButtonElement);
+  let next: number;
+  if (event.key === "Home") next = 0;
+  else if (event.key === "End") next = items.length - 1;
+  else if (event.key === "ArrowDown") next = current < 0 ? 0 : (current + 1) % items.length;
+  else next = current < 0 ? items.length - 1 : (current - 1 + items.length) % items.length;
+  items[next]?.focus();
+}
+
+export function focusFirstMenuItem(menu: HTMLElement): void {
+  menu.querySelector<HTMLButtonElement>('[role^="menuitem"]:not(:disabled)')?.focus();
+}
+
 export function renderWorkspaceBar(): readonly [HTMLElement, HTMLElement] {
   return renderPanelsMenu();
 }
@@ -98,7 +121,9 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
     }
     document.addEventListener("pointerdown", onOutsidePointerDown, true);
     document.addEventListener("keydown", onEscapeKey, true);
+    focusFirstMenuItem(menu);
   };
+  menu.addEventListener("keydown", (event) => handleMenuArrowKeys(event, menu));
   button.addEventListener("click", (event) => {
     event.stopPropagation();
     if (button.getAttribute("aria-expanded") === "true") close();

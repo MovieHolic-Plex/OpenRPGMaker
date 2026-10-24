@@ -8,7 +8,7 @@ import { parseStoreDeepLink } from "../../src/assetStore/deepLink";
 import { OPRN_CHANNELS } from "../shared/channels";
 import {
   storeCatalogSchema, storeConceptMadeSchema, storeConceptSlugSchema, storeConceptsSchema, storeLoginSchema, storeSlugSchema, storeUploadSchema, storeUrlSchema,
-  storeBlobSchema, storeReportSchema, storeVisibilitySchema,
+  storeBlobSchema, storeReportSchema, storeVisibilitySchema, storeGameMineSchema, storeGamePublishSchema, storeGameCurrentSchema,
 } from "../shared/schemas";
 import { AssetStoreClient, sameOriginUrl, StoreError } from "./assetStoreClient";
 
@@ -197,6 +197,15 @@ export function registerAssetStore(host?: StoreLinkHost): void {
     const result = await storeClient().upload({ manifest: input.manifest, blobs: input.blobs, ...(input.targetSlug ? { targetSlug: input.targetSlug } : {}) }, progress);
     broadcast(OPRN_CHANNELS.storeChanged, { kind: "uploaded", slug: result.slug });
     return result;
+  }));
+  ipcMain.handle(OPRN_CHANNELS.storeGameMine, (_event, payload: unknown) => wrap(() => storeClient().gameMine(storeGameMineSchema.parse(payload).projectKey)));
+  ipcMain.handle(OPRN_CHANNELS.storeGamePublish, (_event, payload: unknown) => wrap(() => {
+    const input = storeGamePublishSchema.parse(payload);
+    return storeClient().gamePublish({ ...input, version: input.version ?? null }, progress);
+  }));
+  ipcMain.handle(OPRN_CHANNELS.storeGameCurrent, (_event, payload: unknown) => wrap(() => {
+    const { slug, version } = storeGameCurrentSchema.parse(payload);
+    return storeClient().gameSetCurrent(slug, version);
   }));
   ipcMain.handle(OPRN_CHANNELS.storeReport, (_event, payload: unknown) => wrap(() => {
     const { slug, reason, detail } = storeReportSchema.parse(payload);

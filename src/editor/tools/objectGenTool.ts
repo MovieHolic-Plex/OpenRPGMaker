@@ -147,6 +147,16 @@ const generateMissingObject: ToolDefinition = {
   },
   invalidArgsExample: { title: "나무 벌통", description: "짚으로 엮은 둥근 벌통이 나무 받침대 위에 놓여 있다.", objectKind: "floor", tilesW: 1, tilesH: 1, base: { x: 12, y: 9 }, need: "광장 옆 풀밭에 벌통을 놔 줘." },
   run(project, args): ToolExecResult {
+    return buildObjectGenRequest(project, args);
+  },
+};
+
+/**
+ * 도구 인자 → 공방 요청. 공방 「한 번에 만들기」도 같은 길(크기 사전·배경·통행)을 탄다 — skipExisting 이면 이름이 맞는
+ * 이미 있는 기물이 있어도 거부하지 않는다(사람이 새로 만들어 달라고 눌렀다).
+ */
+export function buildObjectGenRequest(project: Project, args: Record<string, unknown>, options: { readonly skipExisting?: boolean } = {}): ToolExecResult & { data: ObjectGenRequest } {
+  {
     const map = requireMap(project, String(args.mapId ?? ""));
     const tileset = project.tilesets[map.tilesetId];
     if (!tileset) throw new ToolError(`맵 ${map.id} 의 칩셋 ${map.tilesetId} 이 프로젝트에 없다.`, { code: "not-found", mapId: map.id });
@@ -201,7 +211,7 @@ const generateMissingObject: ToolDefinition = {
       base = { x, y };
     }
     const notThese = new Set(Array.isArray(args.notThese) ? args.notThese.filter((id): id is string => typeof id === "string") : []);
-    const existing = existingMatches(project, tileset, title).filter((row) => !notThese.has(row.id));
+    const existing = options.skipExisting ? [] : existingMatches(project, tileset, title).filter((row) => !notThese.has(row.id));
     if (existing.length) {
       throw new ToolError(
         `「${title}」과(와) 이름이 맞는 기물이 이 칩셋에 이미 있다 — 새로 그리지 말고 이것을 써라: ${existing.map((row) => `${row.id}(${row.name}) → ${row.how}`).join(" · ")}. `
@@ -223,7 +233,7 @@ const generateMissingObject: ToolDefinition = {
       summary: `「${title}」 그리기 카드를 띄운다(${sizeLine}; 칩셋 ${tileset.id}, 배경 ${request.setting}). 공방 작업 줄에 서서 다른 요청과 함께 그려진다. 후보를 사용자가 고르면 물체 id 가 후속 요청으로 온다 — 없는 물건이 더 있으면 지금 이어서 부르고, 그 밖에는 더 칠하지 말고 그렸다고 말하지 말고 이 턴을 끝내라.`,
       data: request,
     };
-  },
-};
+  }
+}
 
 export const OBJECT_GEN_TOOLS: readonly ToolDefinition[] = [generateMissingObject];

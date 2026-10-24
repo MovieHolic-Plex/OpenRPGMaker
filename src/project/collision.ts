@@ -180,6 +180,15 @@ export function ledgeDirectionAt(tileset: TilesetDef, map: GameMap, x: number, y
   return null;
 }
 
+/**
+ * 자율 이동(NPC·떠도는 생물)이 한 방향 턱 칸에 올라서는가. 턱은 주인공이 뛰어넘는 칸이라 걸어 올라설 칸이 아니다 —
+ * 서 있는 사람이 턱 줄 위에 얹혀 보이지 않게 NPC 이동 판정에서만 막는다(주인공은 playSceneMovement 가 따로 넘는다).
+ */
+export function isLedgeCell(project: Project, map: GameMap, x: number, y: number): boolean {
+  const tileset = getTileset(project, map);
+  return !!tileset && ledgeDirectionAt(tileset, map, x, y) !== null;
+}
+
 function oppositeDir(dir: Dir): Dir {
   switch (dir) {
     case "up": return "down";

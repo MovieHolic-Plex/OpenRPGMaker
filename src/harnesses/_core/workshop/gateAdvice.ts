@@ -59,7 +59,7 @@ export function magnifyWithRuler(image: RgbaImage, maxScale = 10): RgbaImage {
 }
 
 /** 칠한 화소만 남긴 사각(관문은 잘라 낸 그림을 잰다 — 위 패딩 행이 행 번호를 밀지 않게). */
-function cropOpaque(image: RgbaImage): RgbaImage {
+export function cropOpaque(image: RgbaImage): RgbaImage {
   let x0 = image.width, y0 = image.height, x1 = -1, y1 = -1;
   for (let y = 0; y < image.height; y++) for (let x = 0; x < image.width; x++) {
     if (image.data[(y * image.width + x) * 4 + 3]! < 128) continue;

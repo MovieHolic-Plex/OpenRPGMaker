@@ -159,7 +159,7 @@ export async function serveHolds({ host, port }: { host: string; port: number })
             opus: f ? { verdict: f.verdict, reasons: f.reasons, view34: f.view34, style: f.style, kindOk: f.kindOk, sure: f.sure, profileHash: f.profileHash, calibrated: finalCalibrated.has(f.profileHash), decidedAt: f.decidedAt } : null,
             sha, label: e.label, name: r?.name ?? e.label, kind: e.kind, kindMeaning: OBJECT_GATE_KINDS[e.kind as keyof typeof OBJECT_GATE_KINDS]?.meaning ?? '', width: r?.width ?? 0, height: r?.height ?? 0,
             status, aiVerdict: r?.verdict ?? null, profileHash: r?.profileHash ?? null, calibrated: !!r && calibrated.has(r.profileHash), reasons: r?.reasons ?? [],
-            view34: r?.view34?.verdict ?? null, style: r?.style?.verdict ?? null, styleKind: r?.style?.styleKind ?? null, refs: r?.style?.refs ?? [],
+            view34: r?.view34?.verdict ?? null, style: r?.style?.verdict ?? null, styleKind: r?.style?.styleKind ?? null, refs: r?.style?.refs ?? [], refSet: r?.style?.refSet?.id ?? 'beodeul_city',
             hasImage: existsSync(heldImagePath(sha)), decision: decision ? { decision: decision.decision, by: decision.by, ...(decision.by === 'delegated' ? { delegatedBy: decision.delegatedBy, evidence: decision.evidence } : {}), ...(decision.supersededBy ? { supersededBy: decision.supersededBy, supersededAt: decision.supersededAt } : {}), decidedBy: decision.decidedBy, decidedAt: decision.decidedAt, note: decision.note } : null,
           }];
         }) : [];
@@ -175,9 +175,10 @@ export async function serveHolds({ host, port }: { host: string; port: number })
         if (!path) { json(404, { error: '설명 그림 없음' }); return; }
         png(path); return;
       }
-      const ref = url.pathname.match(/^\/ref\/([a-z_]+)\/([-_a-z0-9]+)\.png$/);
+      // /ref/<종류>/<이름>.png = 버들항 묶음, /ref/<묶음>/<종류>/<이름>.png = 칩셋 묶음(2026-10-23).
+      const ref = url.pathname.match(/^\/ref\/(?:([a-z0-9_]+)\/)?([a-z_]+)\/([-_a-z0-9]+)\.png$/);
       if (req.method === 'GET' && ref) {
-        const found = styleRefs(ref[1] as never).find(r => r.name === ref[2]);
+        const found = styleRefs(ref[2] as never, ref[1] ?? undefined).find(r => r.name === ref[3]);
         if (!found || !existsSync(found.path)) { json(404, { error: '기준 그림 없음' }); return; }
         png(found.path); return;
       }

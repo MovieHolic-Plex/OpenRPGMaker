@@ -1,0 +1,469 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ec49e5f45078c0df678feecdc9b12c14714471b84b131ec5e1bdd9a9a7c933ff",
+ "width": 48,
+ "height": 144,
+ "kind": "structure",
+ "name": "sandstone (desert) Roman-style square wall tower, 3/4 top-down: crenellated top platform seen from above with a wooden trapdoor and a pennant on a pole, corbel band, tall ashlar front face with corner quoins and three cross-shaped arrow slits, plinth",
+ "label": "beodeul_town_wall/tower_desert",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 20,
+  "darkV5": 58,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 27
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top platform floor with flagstones, seen from above (between back and front parapets)",
+      "rows": "11-37",
+      "evidence": "a",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": "50-52"
+     },
+     {
+      "part": "back crenellated parapet",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front crenellated parapet (merlons seen face-on)",
+      "rows": "38-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trapdoor on platform",
+      "rows": "13-25",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pennant on pole",
+      "rows": "11-36",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "corbel band with dark openings",
+      "rows": "47-52",
+      "evidence": "none",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": "50-52"
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 90,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tower shows a wide platform floor drawn from above (rows 11-37, flagstones, trapdoor and a pennant pole standing on it). It is bounded by a back parapet (rows 0-10) and a front crenellated parapet (rows 38-46). A dark line at row 47 and the corbel band with dark openings at rows 50-52 act as the front edge and eave shadow. Below that is a tall ashlar front face (rows 53-143) with arrow slits, quoins and a plinth. The platform is a visible horizontal surface of about 27 rows, over a front face of more than 3 rows, so this is a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 13 visible tones per tile against 12 and 10 for the references, so it matches or exceeds them. Near-flat coverage is 3%, close to the references' 0%. The 0% neutral share of dark edge pixels means the outlines carry a tint; by eye they are dark brown-sienna beside the sandstone, not black. The ashlar courses are shaded block by block with light and dark tones. The quoins, the crenellation, the corbel band, the plank trapdoor with its grain, and the pennant are all separated by value, with no uniform black sticker line. Its sandstone ramp looks like about 5 steps, close to the references' 5-6 on tile, plaster and stone. The three cross-shaped arrow slits and the plinth add structure. The wall faces show no large flat fills. It reads as the same craft level as the references and would sit next to them without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14845
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "platform floor with trapdoor, seen from above, bounded by back and side merlons",
+      "rows": "11-37",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front crenellation merlons and corbel band with dark machicolation slots",
+      "rows": "38-54",
+      "evidence": "a",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": "50-54"
+     },
+     {
+      "part": "pennant on pole",
+      "rows": "10-21",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 89,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tower's top platform is a large floor area (rows 11-37) with a trapdoor and plank and beam texture, framed by merlons at the back, sides and front. The front crenellations end at a dark edge line at row 47, and dark corbel slots follow at rows 50-54. Below that is a tall ashlar front face (rows about 55-134) with arrow slits and a plinth at rows 135-143. The pennant is decor. The top surface is about 27 rows and the front face is far more than 3 rows, so the tower reads as 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts favour the candidate: 13 visible tones per tile against 12 and 10 for the references, 3% near-flat coverage, and 0% neutral dark edge pixels, so the outlines carry a brown tint. By eye the sandstone ashlar has about 4-5 lightness steps with block joints, per-block speckle and quoins. The crenellated platform has a wooden trapdoor and a pennant, and the dark edges lean brown rather than black, matching Beodeul's material-tone outlines. Weaknesses: the tall front face repeats a very regular block pattern, so it looks more uniform and less hand-varied than the references' per-tile scallops, plaster speckle and stone-by-stone shading. The three arrow slits are small, sparse dark marks, and the large wall area is a bit smooth. The corbel band and plinth are thinly articulated. The piece is slightly less rich than the references' roof and stone work but is not a sticker or flat fill. A careful artist would find it close but a little thin, so it fails under the doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14961
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crenellated top platform (plank floor seen from above, back merlons rows 1-10, front merlons rows 38-46)",
+      "rows": "0-46",
+      "evidence": "a",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": "47-56"
+     },
+     {
+      "part": "wooden trapdoor set into the platform floor",
+      "rows": "13-26",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pennant on pole",
+      "rows": "8-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "corbel band with dark slots under the platform",
+      "rows": "47-56",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 47,
+    "front_face_rows": 96,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tower's upper 47 rows (0-46) show the platform from above. Back merlons sit at rows 1-10 and a wooden plank floor with a trapdoor fills rows 11-37. Front merlons at rows 38-46 end in a dark front-edge line at row 47, followed by the corbel band with dark slots. Below that, the ashlar front face runs from about row 48 to row 143. It has quoins, three cross-shaped arrow slits and a plinth at the bottom. No receding side face is drawn. The platform is a large horizontal surface above a tall vertical south face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 13 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 3% against 0%, so only a few small flat patches. Dark edge pixels are 0% neutral, so the outline is tinted: a dark brown-sandstone tone beside the stone and a dark brown around the trapdoor, not a black sticker line. By eye, the ashlar face is shaded block by block with light tops, mid faces and dark joints. Quoins at the corners, speckle grain, a corbel band with its own shading and a crenellated platform with a wooden trapdoor add structure. The sandstone ramp has about 5 steps, a little below the 5-6 on the references' roof tiles, but the density per tile matches the references. The tall, narrow wall is somewhat regular, and the arrow slits are simple dark crosses. Overall it would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15652
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back merlons / parapet",
+      "rows": "0-10",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "platform floor with wooden planks and trapdoor",
+      "rows": "11-37",
+      "evidence": "d",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front merlons",
+      "rows": "38-46",
+      "evidence": "a",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": "47-47"
+     },
+     {
+      "part": "pennant on pole",
+      "rows": "14-36",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "corbel band with dark machicolation gaps",
+      "rows": "47-55",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ashlar front face with quoins and arrow slits",
+      "rows": "56-133",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth",
+      "rows": "134-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 47,
+    "front_face_rows": 96,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top platform spans rows 0-46: back merlons at rows 0-10, a visible plank floor with trapdoor at rows 11-37 (evidence d, contents seen from above), and front merlons at rows 38-46. It ends in a dark front-edge/eave line at row 47. Below it the corbel band (rows 47-55) and a tall ashlar front face with three arrow slits (rows 56-133) and a plinth (rows 134-143) give about 96 rows of vertical south face. The top and the front are both clearly present, so it reads as a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate's measured facts are at or above the references: 13 visible tones per tile against 12 and 10, 3% near-flat coverage, and 0% neutral dark edge pixels, so the outlines carry a tint. By eye the outlines are dark brown-tan, matching the sandstone, with no black sticker line. The ashlar face has about 5 sandstone steps: highlight, light, mid, dark and deep joint lines. Block courses carry speckle and per-block variation, and the crenellations and trapdoor are shaded. It is a little more regular and repetitive than the Beodeul pieces. The wall face repeats one block pattern with little per-stone variation, and the 31 total colours are far fewer than the references' 66 and 185. The arrow slits are small flat dark marks, and the plinth is thin. Overall it is a credible match to the reference, with no large flat fills and tinted outlines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15482
+  }
+ ],
+ "decidedAt": "2026-10-22T16:26:33.858Z",
+ "cells": {
+  "16": [
+   "00b4c8518acc80aa",
+   "23a3a52b3024fb11",
+   "3499f2cc535c22c5",
+   "3c74dbb2d64908ab",
+   "3ead92c45a0006b3",
+   "4263be71af0ce340",
+   "52952cdfb8ba095a",
+   "5608fc0e07477da0",
+   "5831baa4db3f25d3",
+   "58eb44da2ca76097",
+   "651d7df00e686078",
+   "72b529764a693b40",
+   "830545f658848971",
+   "8a250d6a8062d237",
+   "8ba904f43e4a830b",
+   "9ab8f2db9c0e4f37",
+   "9b6d2d76ca518c82",
+   "9bcf3d4f39355ef6",
+   "a39051e66f995be4",
+   "ac34cc37b3668be4",
+   "b5826576a8d84a36",
+   "c9742d3f1a7862fc",
+   "ca90c11b36bd8528",
+   "db4022ef9c41531a",
+   "e041d3f40f910d38",
+   "e8ab04b9908109a5",
+   "fd7c478b31968af9"
+  ],
+  "24": [
+   "12d33a726cea6b51",
+   "177591c30e0b9881",
+   "37a38ae0eda86fc0",
+   "3c0da4ca97f239da",
+   "50fec89bac1b95c8",
+   "726a2d2e964c15c7",
+   "983a6bdfbdabc563",
+   "cb3756cd137ccbc6",
+   "dab5e2210a5c625b",
+   "e1c52240940a6270",
+   "ecbd56507baf389c",
+   "ecf55b192b06bd21"
+  ],
+  "32": [
+   "00bdaac5775e6463",
+   "04ba13e97d85d33e",
+   "084a7192f7e79f24",
+   "0fde179bb4a5639a",
+   "1bfdda48a2baf04f",
+   "1c5e47d08a457abb",
+   "227d142f707e4304",
+   "27ff7a556672cb3d",
+   "2de5d3b2b36f66be",
+   "2e77c04c5a120032",
+   "34bcda1c64917991",
+   "36064f36c4627526",
+   "375780cecf48c5a5",
+   "39175a230a31f2d3",
+   "3d749a167c0f7178",
+   "4af3f4600ed66499",
+   "4ce7693724c48b8a",
+   "5806edff13ec7701",
+   "5e8fc7606d15f79b",
+   "5fb2a7533b8dc212",
+   "5fbc141d83973327",
+   "62a56745a58e9fbf",
+   "67483d978b1680d5",
+   "6e419be607f413ab",
+   "6fcecafaa4541c0f",
+   "78fbaf0dc35f6633",
+   "7e7f060a957e3de7",
+   "83886d7e2737c272",
+   "91deba4b43d500cd",
+   "9604c56a65953fd8",
+   "9bf9215ebb0598e4",
+   "9d5bbf8e55c0e0e2",
+   "a06c5781d40630e6",
+   "a1a271f336919233",
+   "a82a7351af682d97",
+   "ac55e1f588bb5650",
+   "afbe446c474d3c83",
+   "b0778703825185cf",
+   "b315bea28318bea1",
+   "b4a978411046d7f9",
+   "c748f12e93568cb3",
+   "c7ed596d6a2cb161",
+   "d22581d65f6400e3",
+   "d44cba8e40c53105",
+   "d905ae7c3ab1d227",
+   "d9ca7c3a039eb0a0",
+   "db7ac764fc52b7fb",
+   "dd15ebf89b7a9616",
+   "deeacd80c5be1d38",
+   "e06d660b76f921fb",
+   "e0fd678c2a4bf986",
+   "e4f27b8b0fd72b4a",
+   "e802d7db5a02d93a",
+   "e82a5ad459c07db2",
+   "eeeba42d5eefc36f",
+   "eeee0cd7820763af",
+   "efb1c3d926b8f9bf",
+   "f106c337a67f1ba1",
+   "f44efcfa3dd1a6c2",
+   "fd4be7fa9068d2ab"
+  ],
+  "48": [
+   "0e5d8ccf223bd138",
+   "3fe762edf48d450f",
+   "9f8007e76cd999b3"
+  ]
+ }
+}

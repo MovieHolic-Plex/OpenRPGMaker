@@ -105,8 +105,21 @@ function onKeydown(event: KeyboardEvent): void {
   root.querySelector<HTMLElement>(".wq-pill")?.focus();
 }
 
+/**
+ * 알약은 할 일이 남았을 때만 — 진행·고를 차례·멈춤. 다 끝나면 「모두 끝남」을 잠깐(SETTLED_LINGER_MS) 보이고 숨는다.
+ * 전에는 끝난 작업이 줄에 남아 있는 한 「공방 작업 모두 끝남」이 화면 구석에 계속 떠 있었다(2026-10-23 UX 검수).
+ */
+const SETTLED_LINGER_MS = 6000;
+let lastLiveAt = 0;
+function pillWanted(snapshot: QueueSnapshot, now = Date.now()): boolean {
+  const { active, queued, ready, paused } = snapshot.counts;
+  // 못 그린 작업은 그 카드(공방 창)가 알린다 — 알약을 영영 붙잡지 않는다.
+  if (active + queued + ready + paused > 0 || snapshot.hold) { lastLiveAt = now; return true; }
+  return snapshot.jobs.length > 0 && now - lastLiveAt < SETTLED_LINGER_MS;
+}
+
 function signature(snapshot: QueueSnapshot): string {
-  return JSON.stringify([open, snapshot.limit, snapshot.hold, snapshot.hold?.until ? Math.ceil((snapshot.hold.until - Date.now()) / 1000) : 0, snapshot.backend, [...busy],
+  return JSON.stringify([open, pillWanted(snapshot), snapshot.limit, snapshot.hold, snapshot.hold?.until ? Math.ceil((snapshot.hold.until - Date.now()) / 1000) : 0, snapshot.backend, [...busy],
     snapshot.jobs.map((view) => (view.job.pause?.until ? Math.ceil((view.job.pause.until - Date.now()) / 1000) : 0)),
     snapshot.jobs.map((view) => [view.job.id, view.state, view.holding, Math.round(view.progress * 20), view.etaMs === null ? null : Math.ceil(view.etaMs / 60_000),
       view.job.pause?.reason, view.job.error, view.job.installWait, view.job.calls,
@@ -121,7 +134,7 @@ function render(force: boolean): void {
   lastSignature = next;
   requestAnimationFrame(clearFloatingNeighbours);
   // 공방 큰 화면이 열려 있는 동안은 알약을 숨긴다(공방 머리에 「작업 줄」 단추가 있다) — 알약이 후보 카드 단추를 가렸다(2026-10-21 VQA).
-  const visible = (snapshot.jobs.length > 0 && !suppressed) || open;
+  const visible = (pillWanted(snapshot) && !suppressed) || open;
   root.hidden = !visible;
   if (!visible) return;
   const focusedJob = (document.activeElement as HTMLElement | null)?.closest?.("[data-job]")?.getAttribute("data-job") ?? null;
@@ -136,12 +149,13 @@ function render(force: boolean): void {
 }
 
 function pill(snapshot: QueueSnapshot): HTMLElement {
-  const { active, queued, ready, paused } = snapshot.counts;
+  const { active, queued, ready, paused, failed } = snapshot.counts;
   const working = active + queued;
   const parts: string[] = [];
   if (working) parts.push(`${working}개 진행`);
   if (ready) parts.push(`${ready}개 고를 차례`);
   if (paused) parts.push(`${paused}개 멈춤`);
+  if (failed) parts.push(`${failed}개 못 그림`);
   // 조각마다 따로 번역되게 span 으로 잇는다(한 덩이로 이으면 영어에서 「1개 진행 · 8 to pick」처럼 반만 바뀌었다).
   const label = partsNodes(parts.length ? parts : ["모두 끝남"]);
   return markReveal(el("button", {
@@ -365,7 +379,7 @@ function actions(view: JobView): HTMLElement[] {
         if (reason) { toast(reason, "info"); return; }
         open = false;
         render(true);
-        toast(`「${job.title}」 붓을 들었어요. 맵에서 놓을 곳을 누르세요. Esc 로 내려놓아요.`, "info");
+        toast(`「${job.title}」 붓을 들었어요. 맵에서 놓을 곳을 누르세요. Esc로 그만둬요.`, "info");
       }, true, disabled));
     }
     out.push(actionButton("줄에서 빼기", "remove", () => act(id, () => queue.remove(id), "작업을 바꾸지 못했어요"), false, disabled, true));

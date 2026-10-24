@@ -11,9 +11,12 @@ vi.mock("@/assets/bundledAssetWarmup", () => ({ warmBundledPlayAssets: vi.fn() }
 // 연출(주스)·BGM 은 이 테스트의 검증 대상이 아니고 타이머/오디오 노이즈만 만든다.
 vi.mock("@/player/runtimeJuice", () => ({ emitRuntimeJuice: vi.fn(() => ({})) }));
 vi.mock("@/player/audio", () => ({
+  AUDIO_HANDOFF_REGISTRY_KEY: "oprn:test-audio-handoff",
   getAudioEngine: vi.fn(() => ({ setQaInstrumentation: vi.fn() })),
   playAudioCommand: vi.fn(),
   stopAudioCommand: vi.fn(),
+  // renderTitle 은 새 진입에서 stopAllAudio() 를 부른다 — 목에 없으면 타이틀 복귀가 예외로 죽는다.
+  stopAllAudio: vi.fn(),
 }));
 
 import { renderPlayer, teardownPlayer, type PlayerRunControls } from "@/player/player";
@@ -75,6 +78,17 @@ function onPlayBootSuccess(): void {
 
 function titleScreen(main: HTMLElement): HTMLElement | null {
   return main.querySelector<HTMLElement>("[data-testid='title-screen']");
+}
+
+/** 지금 커서가 놓인 타이틀 항목의 글자. */
+function selectedTitleLabel(root: HTMLElement): string | null {
+  const option = Array.from(root.querySelectorAll<HTMLElement>(".rm-title-menu-button"))
+    .find((button) => button.getAttribute("aria-current") === "true");
+  return option ? (option.textContent ?? "").trim() : null;
+}
+
+function pressKey(key: string): void {
+  document.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
 }
 
 let main: HTMLElement;
@@ -206,6 +220,24 @@ describe("renderPlayer run controls", () => {
 
     expect(titleScreen(main)).not.toBeNull();
     expect(destroyedGames).toBe(1);
+  });
+
+  it("puts the title cursor back on the first option when the title is entered again", () => {
+    // F1(2026-10-23): 커서를 아래 항목으로 내려 둔 판에서 게임 오버로 타이틀에 돌아오면 Enter 가
+    // 새 게임이 아니라 그 항목(보통 「이어하기」)을 눌러 죽은 판의 오토세이브로 되돌아갔다.
+    // 타이틀에 **새로 들어올 때** 커서는 언제나 첫 항목(새 게임)이어야 한다.
+    render({ autoStartRun: false });
+    const first = selectedTitleLabel(main);
+    expect(first).toBe("새 게임");
+
+    pressKey("ArrowDown");
+    const moved = selectedTitleLabel(main);
+    expect(moved).not.toBeNull();
+    expect(moved).not.toBe(first);
+
+    controls?.returnToTitle();
+
+    expect(selectedTitleLabel(main)).toBe(first);
   });
 
   it("marks both the title and the run surface with the requested scale mode", async () => {

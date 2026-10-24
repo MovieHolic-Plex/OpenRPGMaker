@@ -1,0 +1,115 @@
+{
+ "_meta": {
+  "chipset": "modern_city",
+  "sheet": "public/assets/modern-city/modern-city-chipset.png",
+  "tileset": "src/assets/modernCityTileset.json"
+ },
+ "building": {
+  "cafe-a": {
+   "h": 95,
+   "kit": "mc-bld-cafe-A",
+   "rows": null,
+   "sha256": "8d62f2fead2cfc7db3b3eedb93b0f354b669a0a535cb8e38f149556388a5a63a",
+   "w": 80
+  },
+  "house-modern-a": {
+   "h": 95,
+   "kit": "mc-bld-house-modern-A",
+   "rows": null,
+   "sha256": "36eb9e4d9e0a411f288ce2b89d3d9ebd6f502b91f52e026a3e77097762794f83",
+   "w": 78
+  }
+ },
+ "ground": {
+  "floor-stone-lobby": {
+   "group": "mc:interior-floor-mci-stone-lobby",
+   "h": 48,
+   "sha256": "e11f2fd88a8df0b502748091cd948cbcafb74c4a7c466e3dfa70727c65647e40",
+   "tiles": [
+    10196,
+    10197,
+    10198,
+    10199,
+    10200,
+    10201,
+    10202,
+    10203,
+    10204,
+    10205,
+    10206,
+    10207
+   ],
+   "w": 64
+  },
+  "floor-wood-oak": {
+   "group": "mc:interior-floor-mci-wood-oak",
+   "h": 48,
+   "sha256": "b04576146acc9b4b89697766b55d61595932e0883f43df784ec893905d4cb57f",
+   "tiles": [
+    10240,
+    10241,
+    10242,
+    10243,
+    10244,
+    10245,
+    10246,
+    10247,
+    10248,
+    10249,
+    10250,
+    10251
+   ],
+   "w": 64
+  }
+ },
+ "prop": {
+  "bus-shelter-a": {
+   "h": 44,
+   "kit": "mc-prop-bus-shelter-a",
+   "rows": null,
+   "sha256": "5f5360d7e8a10e0e7e4b7e482460921c567861a8292bfc4f1abf45116aee9075",
+   "w": 30
+  },
+  "kiosk-a": {
+   "h": 28,
+   "kit": "mc-prop-kiosk-a",
+   "rows": null,
+   "sha256": "9d9d4150432f478d1724be26c015a37bf17d7a4f8dc69098a19330363d424cd1",
+   "w": 24
+  },
+  "vending-a": {
+   "h": 26,
+   "kit": "mc-prop-vending-a",
+   "rows": null,
+   "sha256": "5793ca68c8dad9d4434aa816df7dc8a605d0822fab7b5a03832d48740b17bcf5",
+   "w": 14
+  }
+ },
+ "tree": {
+  "tree-a": {
+   "h": 48,
+   "kit": "mc-prop-tree-a",
+   "rows": null,
+   "sha256": "f3476a6e90e8800a8603c1287e9487f4ec576665d7fbfe24c132d21ababfa571",
+   "w": 30
+  }
+ },
+ "wall": {
+  "wall-home": {
+   "group": "mc:interior-wall-mci-wall-home",
+   "h": 32,
+   "sha256": "8ddca7ad881db48e215481badf650dd27186cd5e2f533ac1aad58bffe9ac88c4",
+   "tiles": [
+    10406,
+    10407,
+    10408,
+    10409,
+    10410,
+    10411,
+    10412,
+    10413
+   ],
+   "w": 64
+  }
+ }
+}

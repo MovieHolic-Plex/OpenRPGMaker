@@ -11,9 +11,18 @@
 | **앱 버전** | `0.1.0` | 도구 OPRN Studio 자체의 릴리스 | `package.json` → 빌드가 주입 |
 | 프로젝트 문서 스키마 | `SCHEMA_VERSION` = 4 | 저장 파일 포맷 호환 | `src/project/types/base.ts`, `projects.schema_version` |
 | 로컬 스토어 포맷 | 설계 중 | SQLite 레이아웃 | `docs/superpowers/specs/2026-09-15-oprn-local-sqlite-store-design.md` (`meta.format_version`) |
-| 발행 게임 버전 | 기본 `1.0` | **사용자가 만든 게임**의 릴리스 | 발행 대화상자 "게임 버전" (`src/editor/panels/publishingDialog.ts`) |
+| 발행 게임 버전 | 자동 `1.0` → `1.1` … | **사용자가 만든 게임**의 릴리스 | 스토어 게임은 스토어 서버가 매긴다(`store_game_versions`). 발행 대화상자의 버전 칸은 비우면 자동, 적으면 그 번호 (`src/editor/panels/publishingDialog.ts`) |
 
 앱 `0.1.0` 과 게임 `1.0` 은 다른 물건이다. 앱 버전을 올렸다고 사용자 게임 버전이 바뀌지 않는다.
+
+### 스토어 「바로 플레이」 게임 판본 (2026-10-23)
+
+- 올릴 때마다 판본이 자동으로 생긴다: 첫 판 `1.0`, 그다음 `1.1`, 「큰 갱신」이면 앞자리(`2.0`). 작가가 번호를 적으면 그 번호(지금까지보다 커야 한다).
+  내용 해시(경로·파일 해시 목록의 sha256)가 마지막 판본과 같으면 판본을 만들지 않는다.
+- 판본마다 내용 해시·시각·「무엇이 바뀌었나」(맵·이벤트·캐릭터 더함/바꿈/뺌 — `src/project/storeGameRelease.ts` `projectChangeSummary`, 글은 작가가 고친다)를 남긴다.
+- 판본 폴더 `<게임 호스트>/<slug>/<판본>/` 는 한 번 쓰면 바뀌지 않는다(DB 트리거 + 디스크 원자 이름 바꾸기). 옛 판본도 계속 플레이할 수 있고, 「지금 판본」 되돌리기는 버튼 하나다.
+- 세이브는 게임+판본 이름(`oprn-export:store:<slug>@<판본>`)에 둔다. 새 판본을 처음 열 때 옛 판본 세이브가 있으면 호환 안내와 함께 이어서 할지 묻는다(`src/player/storeGameHost.ts`).
+- 서버 계약은 비공개 저장소 OpenRPGMaker-store `src/games.ts`, 데모 게시는 `npm run store:publish-game`(`openwiki/asset-store.md` 「바로 플레이 게임」).
 
 ## 릴리스 버전은 왜 매 머지가 아닌가
 
@@ -102,10 +111,12 @@ gh release upload v0.3.0 dist-packages/OPRN\ Studio-0.3.0.*
 - **서명·자동 업데이트는 아직 없다**(`publish: null`, 설계서 비목표). 채널이 생기면 `electron-builder` 의
   publish 설정과 latest.yml 을 같이 도입한다.
 - GitHub Release 파일 상한(2GB/파일) 안이므로 AppImage·dmg 모두 문제없다.
-- README 다운로드는 버전이 없는 이름을 쓴다. `scripts/release-desktop.mjs` 가 버전 파일과 함께
-  `OPRN.Studio-linux.AppImage`, `OPRN.Studio-windows.zip` 을 같은 릴리스에 올린다. 주소는
-  `https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/` 뒤에 그 이름이다.
-  macOS 패키지는 아직 없다.
+- README 다운로드는 버전이 없는 이름을 쓴다. `.github/workflows/desktop-release.yml` 이
+  정식 `vX.Y.Z` 릴리스가 나오면 GitHub 호스티드 `ubuntu-latest` 에서 AppImage·윈도우 zip·portable exe 를
+  만들어 버전 파일과 함께 `OPRN.Studio-linux.AppImage`, `OPRN.Studio-windows.zip`, `OPRN.Studio-windows.exe` 를
+  같은 릴리스에 올린다. 주소는 `https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/`
+  뒤에 그 이름이다. 이미 세 파일이 있으면 빌드하지 않는다. 소유자 컴퓨터의 `scripts/release-desktop.mjs` 는
+  `OPRN_DESKTOP_LOCAL=1` 일 때만 같은 일을 한다. macOS 패키지는 아직 없다.
 
 ### 윈도우 zip·단일 exe 는 리눅스에서 만든다 (2026-09-22, 갱신 2026-10-10)
 

@@ -57,6 +57,24 @@ describe("player status menu", () => {
     }
   });
 
+  it("renders the session play time in the header clock", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.menuUiStyle = "workbench";
+      const session = startSession(project);
+      // 세이브에서 되살아난 값(예: fallen-star 6:31) — 시계는 이 값을 읽어야 한다.
+      session.playTimeSeconds = 391;
+      const menu = renderWithFakeDom(() =>
+        renderPlayerStatusMenu({ project, session, slots: [], actions: noopActions }),
+      );
+
+      expect(findByTestId(menu, "status-menu-time")?.textContent).toBe("6:31");
+    } finally {
+      restoreDom();
+    }
+  });
+
   it("renders the folded rail and full party vitals", () => {
     const restoreDom = installFakeDom();
     try {

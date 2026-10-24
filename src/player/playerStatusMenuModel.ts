@@ -237,7 +237,6 @@ export type PlayerStatusMenuSnapshot = {
 };
 
 export type StatusMenuSnapshotOptions = {
-  readonly elapsedMs?: number;
   readonly waitModeEnabled?: boolean;
 };
 /** O3: hide 관계 rail unless giftSystem or any known friendship keys. */
@@ -251,7 +250,11 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
   const authored = fieldMenu(project);
   return (authored ? authored.entries.map(row => row.command) : STATUS_MENU_COMMAND_GROUPS.flatMap((group) => group.commandIds)).filter((id) => {
     if (id === 'trainer-card') return Boolean(authored);
-    if (id === "monster-dex") return monsterDexSpeciesIds(project).length > 0;
+    if (id === "monster-dex") {
+      // 도감을 받는 이벤트가 있는 게임은 받기 전에는 항목 자체를 숨긴다(스위치가 정의되지 않은 게임은 그대로).
+      const gated = project.switches.some((sw) => sw.id === "mx_pokedex_received") && !session.switches["mx_pokedex_received"];
+      return !gated && monsterDexSpeciesIds(project).length > 0;
+    }
     if (id === "region-map" || id === "campaign-progress") return Boolean(monsterCampaign(project));
     if (usesMonsterParty(project) && (id === "equipment" || id === "row" || id === "formation")) return false;
     // 관계 중심 게임은 호감 기록이 아직 없어도 호감도 항목이 있다 — 비어 있어도 「아직 아무도」 가 보여야 한다. 일정은 퀘스트가 정의된 게임만.
@@ -362,7 +365,9 @@ export function createPlayerStatusMenuSnapshot(
     commandLabels: commands.map((command) => command.label),
     partyRows,
     goldLabel: `${terms.goldPrefix}${session.gold}${terms.gold}`,
-    timeLabel: formatElapsedTime(options.elapsedMs ?? 0),
+    // 시계의 정본은 세션의 플레이 시간(초)이다 — 세이브에 실려 오고 필드 틱이 늘린다.
+    // 예전에는 부팅 시각 기준 벽시계(performance.now - playStartedAt)로 셌으므로 불러온 판이 0:00 이었다.
+    timeLabel: formatPlayClock(session.playTimeSeconds ?? 0),
     chapterLabel: currentChapterLabel(project, session),
     emptyPartyLabel: partyRows.length === 0 ? usesMonsterParty(project) ? "아직 동료가 없습니다" : "파티원이 없습니다" : null,
   };
@@ -446,8 +451,9 @@ export function partyVitalLevel(ratio: number): PartyVitalLevel {
   return "safe";
 }
 
-function formatElapsedTime(elapsedMs: number): string {
-  const totalSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
+/** h:mm — 세션 플레이 시간(초)을 상태 메뉴 시계 글자로. */
+function formatPlayClock(seconds: number): string {
+  const totalSeconds = Math.max(0, Math.floor(Number.isFinite(seconds) ? seconds : 0));
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   return `${hours}:${minutes.toString().padStart(2, "0")}`;

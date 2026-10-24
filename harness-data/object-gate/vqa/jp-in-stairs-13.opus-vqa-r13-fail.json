@@ -1,0 +1,4 @@
+{"queue":"jp-in-stairs-13","round":13,"judge":"claude-opus-5.5 (fresh subagent, no prior scores)","date":"2026-10-22","verdict":"fail","majors":3,"axis2":7,"axis6":6,
+ "majorFindings":["mc-stairwell-down: light south tread bar + dark corners + even stripes = framed vent/cage in the corridor","of-stairwell-down: same, next to the elevator reads as floor vent/machine housing","scene: 2x2 wells framed on all four sides"],
+ "minorFindings":["wood up treads too cool/grey","1-cell rails thin","sc well grille tendency","as damage noise","cs side walls thin","cs bar on wainscot"],
+ "action":"wells: per tread a dark drop line then a 1px light nose edge, south rim a 1px dark cut line, inner side walls widen northward (perspective), side posts end 4px above the south rim"}

@@ -1,0 +1,111 @@
+{
+ "_meta": {
+  "chipset": "wizarding_world",
+  "sheet": "public/assets/wizarding-world/wizarding-world-chipset.png",
+  "tileset": "src/assets/wizardingWorldTileset.json"
+ },
+ "building": {
+  "lake-boathouse-5": {
+   "h": 80,
+   "kit": "wz-lake-boathouse-5",
+   "rows": null,
+   "sha256": "058134bbd245545c49a21eb60dc054c4a421660179755d74ed603f4d9879555e",
+   "w": 80
+  }
+ },
+ "ground": {
+  "floor-flag": {
+   "group": "wz:floor:wz-castle-floor-flag",
+   "h": 48,
+   "sha256": "2c442bedb016e01950ca9309db6a3be9d238f4aea8da88da72dce956441487f0",
+   "tiles": [
+    577,
+    577,
+    577,
+    577,
+    577,
+    577,
+    577,
+    577,
+    577,
+    577,
+    577,
+    577
+   ],
+   "w": 64
+  },
+  "floor-oak": {
+   "group": "wz:floor:wz-castle-floor-oak",
+   "h": 48,
+   "sha256": "23fa4f7278358d7bfb3aefd078131857010ad04183f0985bd008f56d9c930516",
+   "tiles": [
+    579,
+    579,
+    579,
+    579,
+    579,
+    579,
+    579,
+    579,
+    579,
+    579,
+    579,
+    579
+   ],
+   "w": 64
+  }
+ },
+ "prop": {
+  "dorm-wardrobe": {
+   "h": 48,
+   "kit": "wz-dorm-wardrobe",
+   "rows": null,
+   "sha256": "15d438674753bac25901b7c9b2b608e88e39df424ac06cf6342f189429083df0",
+   "w": 32
+  },
+  "furn-table-small": {
+   "h": 26,
+   "kit": "wz-furn-table-small",
+   "rows": null,
+   "sha256": "7cd408ba72e7bc25bd39f9616aded934314abebc30694581601d0a2efecea8f0",
+   "w": 26
+  },
+  "gh-workbench": {
+   "h": 29,
+   "kit": "wz-gh-workbench",
+   "rows": null,
+   "sha256": "4b783635c9e350da3800faa39b41ac865609485390f5391c5ee2aeed1bae14d6",
+   "w": 48
+  },
+  "hd-workbench": {
+   "h": 31,
+   "kit": "wz-hd-workbench",
+   "rows": null,
+   "sha256": "7ec88cd503ce8a1d173c1b51b856cea0b23cc68a2e3ddf67792056aab1675b97",
+   "w": 48
+  },
+  "lib-record-table": {
+   "h": 30,
+   "kit": "wz-lib-record-table",
+   "rows": null,
+   "sha256": "9d18f39019e402f426fad1598409f7290d86c92672b1a7967a67ea4be7e77f2b",
+   "w": 32
+  }
+ },
+ "wall": {
+  "castle-door2-closed": {
+   "h": 64,
+   "kit": "wz-castle-door2-closed",
+   "rows": null,
+   "sha256": "33aa2fe27fdc1097c4d72cd5b4c65197fd1aa7e1d49e6d222c057d5b28ad040a",
+   "w": 32
+  },
+  "castle-wall-n-window2": {
+   "h": 64,
+   "kit": "wz-castle-wall-n-window2",
+   "rows": null,
+   "sha256": "e571ef9545be435a1cfe17802a620ebfdfc95745f17f8df9a1f7d36398b17421",
+   "w": 32
+  }
+ }
+}

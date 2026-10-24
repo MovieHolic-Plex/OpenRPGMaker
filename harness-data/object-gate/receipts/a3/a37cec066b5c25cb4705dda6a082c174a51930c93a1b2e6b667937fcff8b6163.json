@@ -1,0 +1,412 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a37cec066b5c25cb4705dda6a082c174a51930c93a1b2e6b667937fcff8b6163",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "atlas_biome_interior / stairs up stone",
+ "label": "abi-stairs-v5:stairs up stone",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 14,
+  "darkV5": 10,
+  "nearBlackEdge": 0.07,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel / cornice strip",
+      "rows": "0-2",
+      "evidence": "a",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "3-4"
+     },
+     {
+      "part": "stair treads (stacked steps)",
+      "rows": "14-46",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27"
+     },
+     {
+      "part": "dark doorway/opening above stairs",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side stone piers",
+      "rows": "4-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stairs are drawn as a stack of treads. Each tread is a 2-4 row band with a lighter front-edge line (rows 26, 32, 38) and a 1-2 row dark shadow or riser band beneath it (rows 17-18, 22-23, 27, 33). Tread and riser alternate down the whole flight, so the treads read as horizontal surfaces seen from above. The top lintel (rows 0-2) has a light edge line at row 2 and a dark shadow row at 3. Piers on either side show only front faces, but they are minor parts. Overall it reads as three-quarter, though the tread bands are thin (about 3 rows each)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The facts are acceptable: 10 visible tones per tile against 9 for the hedge, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted rather than a black sticker line. By eye, though, the piece is weaker than the richer references (well 20 tones, stall 17). The stone frame has only about 4 lightness steps, and its blocks are not shaded one by one like the well stones. The stair interior reads as evenly striped grey bands, closer to a roller shutter than to individually lit stone treads, with little grain or chipping. It sits at the hedge level but below the well and stall, so a careful artist would likely call it flatter and thinner than the best Beodeul props. With the 'when in doubt, fail' rule, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 28176
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lintel / top cornice strip",
+      "rows": "0-2",
+      "evidence": "a",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "3"
+     },
+     {
+      "part": "stair tread 1 (top)",
+      "rows": "15-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "stair tread 2",
+      "rows": "19-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "stair tread 3",
+      "rows": "24-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "stair tread 4",
+      "rows": "29-32",
+      "evidence": "a",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": "33"
+     },
+     {
+      "part": "stair tread 5",
+      "rows": "35-38",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": "39-40"
+     },
+     {
+      "part": "stair tread 6 (bottom)",
+      "rows": "41-45",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 44,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a staircase set in a stone arch. Each step is a tread band that ends in a 1-row lighter front-edge line (for example row 26 at L=134, row 32 at L=164 and row 38 at L=164). A dark riser or shadow band follows each edge line (rows 27-28, 33, 39-40). The tread bands get taller toward the bottom, 2 rows at the top and 4-5 rows at the bottom, which gives a receding-surface effect. Steps are separated by dark risers, so there are horizontal top surfaces plus vertical faces, not a flat elevation. The lintel at rows 0-2 has a light edge line at row 2 and a dark shadow at row 3, so I count it as having a top. The pillars at the sides are plain vertical faces with no receding side face. The front face runs about 44 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a stone arch frame with a staircase inside. The frame has a lit top and bevel, block seams and a dark inner reveal, which gives about 5 grey steps. The stair treads add banded light and dark steps. Measured facts: 10 visible tones per tile, which is level with the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outlines carry a tint and read as a dark version of the stone rather than a black sticker line. Texture is a little sparser than the well or stall because the stair face is mostly clean horizontal bands, and the 15 total colours are modest. Overall it is acceptable beside the references and does not look flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 29075
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel / cornice strip",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "3"
+     },
+     {
+      "part": "stair treads (stepped flights, widening downward)",
+      "rows": "14-47",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27"
+     },
+     {
+      "part": "dark archway opening above stairs",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stairs are drawn as a stack of treads. Each tread is a 2-3 row lighter band that ends in a bright front-edge line (rows 16, 21, 26, 32, 38, 45) and is followed by 1-3 rows of dark shadow or riser (rows 17-18, 22-23, 27-28, 33-34, 39-41). The treads widen toward the bottom, which gives a receding stepped read. The lintel at rows 0-3 has a light edge line at row 2 and a dark row at row 3. The dark arch opening at rows 4-11 sits above the flight, and the side pillars are vertical faces. Because each tread is only 2-3 rows, the horizontal surfaces are shallow, but they are present and have edge lines and shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a stone stair-up in an arched block frame. The frame carries a highlight, mid, dark and deep ramp, with a visible block pattern and an inner shadow around the dark opening. The steps are banded in about 4-5 grey tones with a lit edge on each tread. The measured facts support it: 10 visible tones per tile, against 9 for the hedge and 17-20 for the stall and well. Near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outlines lean toward the neighbouring stone tone rather than flat black. It is a little less textured than the well and stall, because the step faces are fairly clean bands and the stones are not shaded one by one. It still reads as built from the same construction as the references and would sit acceptably beside them, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21704
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lintel / top cornice strip",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "3"
+     },
+     {
+      "part": "side stone wall piers",
+      "rows": "4-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark archway opening",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper steps (treads)",
+      "rows": "15-16, 19-21",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "17-18, 22-23"
+     },
+     {
+      "part": "middle steps (treads)",
+      "rows": "24-26, 29-32",
+      "evidence": "a",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": "27-28, 33"
+     },
+     {
+      "part": "lower steps (treads)",
+      "rows": "35-38, 41-45",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": "39-40"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 44,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the staircase. Each step is a tread band of 3-4 rows, ending in a lighter front-edge line (for example row 32 and row 38). Below each band is a dark riser or shadow of 1-2 rows (rows 17-18, 22-23, 27-28, 33, 39-40). The steps are drawn on a south face about 44 rows tall. This shows tops plus fronts, repeated per step, so the stairs read as three-quarter. The lintel (rows 0-3) and the side wall piers are drawn only as front-facing vertical strips and faces, with no real top surface. That is why all_major_parts_have_top is false. The archway rows 4-11 are a dark opening."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a stone-framed stairwell. The frame has a lit bevel, mid stone, shadow and deep tones, and the steps are banded with a light tread edge over a darker riser, so I count about 5 ramp steps, similar to the references. The measured facts support it: 10 visible tones per tile is on par with the hedge (9) and below the well (20) and stall (17). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline leans toward the stone's own cool tint rather than a black sticker line. It is a little thinner than the well and stall, with only 15 distinct colours and fairly smooth step bands, so density is slightly lower. It still reads as a shaded, selectively outlined piece that a careful artist would accept beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 29190
+  }
+ ],
+ "decidedAt": "2026-10-22T12:26:02.276Z",
+ "cells": {
+  "16": [
+   "1a2515699b3358dc",
+   "1e3f56680e9d23a0",
+   "3621653a3d43eaf3",
+   "5ddd22488ec2b5af",
+   "955aba53152d039d",
+   "b2070f9cab0fde1c",
+   "bdd2aac405e25ea9",
+   "d20cfd5e56fc8afc",
+   "d9faf96481ae8680"
+  ],
+  "24": [
+   "25c7e167a904b6e1",
+   "2d8744872cb1659f",
+   "6227da644257787e",
+   "8f4460959b64f6b3"
+  ],
+  "32": [
+   "015b67ef639ea84e",
+   "1abbe5c509b4723e",
+   "1d03ca9b6a688146",
+   "2a31315b47a7e546",
+   "31f9f5e5740417d3",
+   "3887ac5cc75d47dd",
+   "39ad9ec3950c8dc0",
+   "4ac404c3d2c72a95",
+   "4f04acc01c33ce9b",
+   "77c7da7fc466d58e",
+   "7e7635859505b4c1",
+   "84b2603b92904077",
+   "8e6dbf8580604240",
+   "93f98d927970a6a0",
+   "94538606cfbb49ef",
+   "a0cd3461de96107a",
+   "a594150c6cb92758",
+   "abff7ec6be4ff025",
+   "b4b453ff99343d0e",
+   "bbda1570de4d9fd7",
+   "c171a62145d8fe6f",
+   "fa88b79f9bda705f",
+   "faa47c6df6252a7c",
+   "fddde34c32053bf3"
+  ],
+  "48": [
+   "7cdbf7fefec46fc4"
+  ]
+ }
+}

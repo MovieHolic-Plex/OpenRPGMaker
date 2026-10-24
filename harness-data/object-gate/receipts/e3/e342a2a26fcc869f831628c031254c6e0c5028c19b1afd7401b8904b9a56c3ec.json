@@ -1,0 +1,326 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e342a2a26fcc869f831628c031254c6e0c5028c19b1afd7401b8904b9a56c3ec",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "stone sarcophagus north-south",
+ "label": "beodeul_dungeon/earth.sarc_ns",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 6/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 6/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 48,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "wrong",
+   "right",
+   "wrong",
+   "right",
+   "right",
+   "wrong",
+   "borderline",
+   "right",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sarcophagus top with open recess and skeleton inside",
+      "rows": "1-19",
+      "evidence": "d",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front (south) face with inset panel",
+      "rows": "20-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In columns x=4, 8 and 11, rows 1-6 are a lit stone rim that shades from L=207 to 124. Rows 7-18 are a dark recess (L=40-83) with light bone shapes at x=8 (L=174-199). This is the interior and contents seen from above, so evidence (d). Row 19 is a light front-edge line (L=199, #d2c6b0). Below it, rows 20-29 are a vertical front face with a recessed panel, 10 rows tall. The silhouette is a constant 14 px wide, so the body is a long box. The top is tall because the long axis runs north-south. This matches the green sarcophagus reference, which shows a top with contents above a front panel."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, narrow stone slab. It shows 11 visible tones in a full tile, which is close to the hedge reference (9) and below the well (20) and stall (17). It has 0% near-flat coverage, so no large flat fills. The stone ramp reads as about 4-5 steps: lid highlight, light, mid, dark, plus a carved glyph. About 50% of the dark edge pixels are neutral, so the outline is mixed rather than a uniform black sticker line. Some edges lean toward a darker stone tone. Grey stone is naturally low in tint, so this is acceptable. The piece has only 11 colours in total, fewer than the richer references (38-40). That makes it slightly less dense than the well or stall, but it matches the hedge and bench, which are accepted Beodeul pieces. A careful artist would accept it beside them, though it is a bit lean.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20062
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sarcophagus top with raised rim",
+      "rows": "1-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark recessed opening with skeleton/figure contents",
+      "rows": "7-18",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south front face with panel",
+      "rows": "20-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The long axis runs north-south, so the top surface fills rows 1-19 at a constant width of 14. Rows 1-6 are a light bevelled rim. Rows 7-18 are a dark recessed opening holding a light skeleton-like figure, which counts as contents seen from above (d). Row 19 (L=199) is a light front-edge line, and the stone front face with its recessed panel and base runs below it in rows 20-29 (10 rows). This matches the green sarcophagus reference, which has a large top and a front body below. Row 20 is not darker than the face, so there is no clear eave shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 11 visible tones per tile and 0% near-flat coverage. That is on par with the hedge (9) but well below the well (20) and the cheese stall (17). By eye, the stone body reads as about 4 lightness steps: a pale lid, a mid face, a dark edge and a carved relief mark. Beodeul stone and roof materials carry about 6 steps, with per-stone shading and speckle. Half of the dark edge pixels are neutral, so the outline is mixed. A near-black rim around a pale body gives it a slightly sticker-like look, where the references mostly separate forms by tinted dark tones and value. The piece has no large flat fills, but it has little grain, chipping or per-block shading, so it looks a bit thinner and cleaner than the references. A careful artist would likely ask for more stone texture and a tinted outline before placing it beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19176
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sarcophagus top with open interior showing a skeleton",
+      "rows": "1-19",
+      "evidence": "d",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front (south) face with recessed panel",
+      "rows": "20-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 are the lid rim, light at the top and stepping darker. Rows 7-18 are a dark opening with a pale skeleton inside (evidence d: contents visible from above). Row 19 is a light front-edge line (L=199) closing the top. Rows 20-29 are the front face, about 10 rows, with a recessed panel and a base. The width is a constant 14 columns with no side face. The top is large and the front face is 3+ rows, so this is a top surface plus a front face, like the green sarcophagus reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a narrow, two-tile-tall stone sarcophagus with a carved relief panel on the lid. It shows about 5 stone tones: a light highlight on the lid, a mid face, darker side planes, and a dark base edge. The measured facts support this: 11 visible tones per tile is above prop-hedge (9) and below prop-well-roofed (20) and prop-stall-cheese (17). Near-flat coverage is 0%, so there are no large flat fills, and the carved relief and edge shading break up the surface. Half of the dark edge pixels are neutral, so the outline is mixed. Part of that comes from grey stone being a neutral material, and the rest of the edge leans toward the stone's own dark tone, so it is not a uniform black sticker outline. It is slightly less textured than the well and stall, but it is comparable to the hedge and the bench, and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17359
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sarcophagus top with stone rim and open interior holding a skeleton figure",
+      "rows": "1-19",
+      "evidence": "d",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front (south) face with recessed panel",
+      "rows": "20-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 are a light stone rim that steps down in lightness. Rows 7-18 are a dark recessed opening with bone-like contents visible inside, so the inside is seen from above (evidence d). Row 19 is a light front-edge line (L=199). Rows 20-29 are a vertical front face with a panel, shading and a dark base, about 10 rows. The top surface is large and the front face is 3+ rows, which matches the green 'sarcophagus' reference pair."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a narrow, roughly one-tile-wide stone sarcophagus with a lid, a body and a carved emblem. At this scale I could only judge fine detail roughly. Measured facts: 11 visible tones per 16x16 tile, which is in the range of prop-hedge (9) and below prop-well-roofed (20) and prop-stall-cheese (17). Near-flat coverage is 0%, so no large flat fills. Dark edge pixels are 50% near-neutral, which is mixed. That is in line with the bench (44%) and the well (33%), and a grey stone material naturally leans neutral. The stone shows about 4 lightness steps (lid highlight, face, shade, dark edge) plus the carving, against about 5 on the reference materials. Total palette is small (11 colours versus 38-40 on the well and stall), so it is a little leaner than the richest references. It is not a flat sticker, though, because it has no uniform black outline and the lid and body are separated by value.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17267
+  }
+ ],
+ "decidedAt": "2026-10-23T04:26:06.590Z",
+ "cells": {
+  "16": [
+   "4da0c66c3c3a8667",
+   "787bbcc1cd5ceec1"
+  ],
+  "24": [
+   "11bb298de271f9e9",
+   "2091b608617320f4",
+   "3406023af12cbb05",
+   "5547e6e4d4e098a0",
+   "5ae9d1088c019582",
+   "6179ccf86b404409",
+   "636a5bebe93386b2",
+   "aa70c147cc59c7fd",
+   "e0bb2a60257a0bd5",
+   "e38db0726dca3908",
+   "ed95d4da96bbfeaf",
+   "f19482d0487712a2"
+  ],
+  "32": [
+   "93321292a7c03766",
+   "9ce4c4abffcbed5d",
+   "ac3caa27b436a6f2"
+  ],
+  "48": [
+   "37e2dcc67175cc20",
+   "670b8e3287ebf2e9",
+   "6ba14746ffa24267",
+   "d6588995aee82f84",
+   "ee11cb0928835d5c",
+   "fa1d70ac2dc8a430"
+  ]
+ }
+}

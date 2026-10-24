@@ -118,7 +118,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
             const reason = armWorkshopStamp(item, grid);
             if (reason) { placeNote.textContent = reason; return; }
             close();
-            toast(`「${item.title}」 붓을 들었어요. 맵에서 놓을 곳을 누르세요. Esc 로 내려놓아요.`, "info");
+            toast(`「${item.title}」 붓을 들었어요. 맵에서 놓을 곳을 누르세요. Esc로 그만둬요.`, "info");
           },
         },
       })

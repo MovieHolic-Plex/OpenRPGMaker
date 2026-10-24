@@ -1,0 +1,533 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "02139eb18bfa09c224e63d1e47bc98acb7ddedac655d0d2509bae864b01aecc0",
+ "width": 64,
+ "height": 128,
+ "kind": "structure",
+ "name": "Roman-style stone town gatehouse, 3/4 top-down: crenellated walkable top platform seen from above (windlass drum, portcullis pit with grate, stone balls, barrel), corbelled front face with a deep round arch tunnel (vault ribs, raised portcullis, darker toward the inside, paved road through), two wall torches",
+ "label": "beodeul_town_wall/gatehouse_open",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 23,
+  "darkV5": 49,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 32
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "walkable crenellated top platform (floor seen from above, with rear and front parapets)",
+      "rows": "0-47",
+      "evidence": "a",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": "48-52"
+     },
+     {
+      "part": "windlass drum with rope/barrel on platform",
+      "rows": "14-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "portcullis pit with grate",
+      "rows": "24-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone balls and barrel on platform",
+      "rows": "26-38",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "corbel/machicolation band under the platform",
+      "rows": "48-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with round arch tunnel, portcullis and road",
+      "rows": "48-127",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wall torches and banners",
+      "rows": "56-105",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 37,
+    "front_face_rows": 80,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The upper part, rows 0-47, is a large platform seen from above. It has crenellations at the back (rows 0-10), floor with a windlass, grate, balls and barrel (rows 11-38), and a front parapet (rows 39-46). It ends in a dark front-edge line at row 47 and is followed by dark corbel openings (rows 48-52). Below that, rows 48-127 are an 80-row south face with a round arch tunnel, portcullis, torches and a paved road. The top surface is about 37 rows against a front face of 80, so the object reads as a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate meets or beats both references on the primary facts. It has 15 visible tones per tile against 12 and 10, and near-flat coverage of 3% against 0% for the references, so it has no flat 5x5 fills worth failing. Only 5% of its dark edge pixels are near-neutral, so the outlines lean toward the material (a cool dark stone tone) rather than a black sticker line. By eye, the stone is shaded block by block with light and dark faces and mortar variation. The corbelled band, crenellations, vault and portcullis grate, the darker tunnel interior, the paved road and the torches each add small clusters of detail. Stone has about 5 visible lightness steps, a little under the roofs' 6, but the density and texture hold up beside the references. The top platform is smaller and simpler than the front face, though it still carries props and grain. Overall a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17187
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "walkable top platform with crenellated back parapet, pit, grate and front merlons",
+      "rows": "0-47",
+      "evidence": "a",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": "48-52"
+     },
+     {
+      "part": "windlass drum, stone balls and barrel on platform",
+      "rows": "15-38",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "corbelled front face with machicolation slots, banners, arch tunnel and portcullis",
+      "rows": "48-127",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 80,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-47 show a large horizontal platform seen from above. It has back merlons (rows 0-10), a floor with the windlass, grate pit, stone balls and barrel (rows 11-38), and front merlons (rows 40-47). A dark front-edge line at row 47 is followed by the dark corbel/machicolation openings at about rows 48-52. Below it the vertical south face runs from row 48 to 127 and holds the stone courses, banners, round arch, portcullis, torches and road. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has about 5 grey stone steps (light block faces, mid, shadow joints, a dark tunnel interior and a darker inner arch), against roughly 5-6 steps on the reference roofs and walls. The measured facts back this up. It shows 15 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 3%, with no large flat areas. Only 5% of dark edge pixels are neutral, so the outlines carry a tint, a dark grey-blue or brown toned to the neighbouring stone, and the shapes are not ringed in black. The stone courses are shaded block by block and carry speckle. The arch voussoirs, the portcullis grid, the darker vault toward the inside and the paved road each read as separate surfaces. The top platform props (windlass, grate, balls, barrel) are small but separated by value. The stone is less textured than the references' tile scallops and plaster speckle, which is why texture is 'some' rather than 'rich'. Overall it would sit acceptably next to the references without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15516
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "walkable crenellated top platform (battlements, floor, portcullis pit)",
+      "rows": "0-46",
+      "evidence": "a",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": "48-52"
+     },
+     {
+      "part": "windlass drum, stone balls and barrel on the platform",
+      "rows": "15-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "corbelled machicolation course under the platform edge",
+      "rows": "47-52",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front wall with banners and torches",
+      "rows": "53-127",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round arch tunnel with portcullis and road",
+      "rows": "74-127",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 47,
+    "front_face_rows": 80,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-46 show the platform seen from above: crenellations, floor, a portcullis pit, a windlass drum, stone balls and a barrel. A dark front-edge line at row 47 closes it, and dark machicolation slots (rows 48-52) act as eave shadow. Below it, rows 48-127 are a tall south face with stone courses, an arch tunnel, a portcullis, banners and torches. The platform is clearly a top surface and the front face is clearly vertical, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's stone masonry is shaded block by block in about 5 grey steps (highlight, light, mid, dark, deep), with a darker value toward the inside of the arch tunnel. The portcullis grate, cobbled road, crenellations, windlass, barrels and stone balls all add grain and clusters. Measured facts: 15 visible tones per tile against 12 and 10 for the references; near-flat coverage 3% against 0%; only 5% of dark edge pixels are neutral, so the outlines lean toward the material tone rather than a black sticker line. The raw 64 distinct colours are a lean locked palette, but the visible tones match the references. There are no large flat fills. It is slightly less stepped than the roof ramps on the references, but it would sit acceptably beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13564
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "walkable platform with crenellated parapet, seen from above",
+      "rows": "0-47",
+      "evidence": "a",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": "48-52"
+     },
+     {
+      "part": "windlass drum, portcullis grate pit, stone balls and barrel on the platform",
+      "rows": "14-38",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "corbel and machicolation slot band under the platform edge",
+      "rows": "48-54",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 47,
+    "front_face_rows": 79,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The upper part, rows 0-47, is a large platform seen from above. It has back crenellations at rows 0-10, a floor with a windlass, grate pit, stone balls and barrel, and a front parapet. Column x=47 shows a dark edge line at row 47 (L=90), then dark corbel slots at about rows 50-53. Below that, rows 48-126 are a vertical south face with stone courses, banners, a round arch with a portcullis, a dark tunnel and torches. The platform's depth (about 47 rows) and the front face (about 79 rows) both read clearly, so this is a 3/4 view and not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 15 visible tones per tile against 12 and 10 for the references, so it is at or above them. Near-flat coverage is 3% against 0%, which is negligible. Only 5% of dark edge pixels are neutral, so the outlines lean toward the material tone (bluish-grey or brown-grey beside the stone) instead of a uniform black line. By eye, the stone is shaded block by block with light, mid and dark faces, and the arch has vault ribs, a portcullis grate and cobbled paving, with the tunnel growing darker toward the inside. The corbelled band and crenellations add tone variation, and the torches and banners add small accents. Stone gets about 5 steps, slightly fewer than the references' 5-6 on the roof tiles, but the structure and grain match the reference quality. It would not look thinner or more sticker-like beside the houses.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17198
+  }
+ ],
+ "decidedAt": "2026-10-22T16:26:33.689Z",
+ "cells": {
+  "16": [
+   "0350012866eec566",
+   "07e43cdbf8c1357d",
+   "10fec32981d27939",
+   "1f1b60a17b9be7fb",
+   "1f60f02915172365",
+   "22984720542f0c33",
+   "25639acf1f2c45d2",
+   "27854a5a4a7a44e2",
+   "28d68c237b91fbc3",
+   "4a995a729f6b7119",
+   "50845e1e0c4e8990",
+   "5752ac71f29fc3cb",
+   "5a541f4c1e0f08f0",
+   "671991f70dc90566",
+   "75d2dfcf7cc8ee00",
+   "85a56298c4ca5ec9",
+   "9a18007cb98377ff",
+   "a1ab3ae6c19dd731",
+   "a81b1169932a1ca1",
+   "b4d46002eed32e58",
+   "b4ecbfba21f7a6d8",
+   "c0553e0ce0322168",
+   "c2d1d37889254e33",
+   "c849399b3aa1f846",
+   "cb4776addf6b4429",
+   "ddcd119f93efa2f0",
+   "ee2874be76b28315",
+   "f0e93652169d7cbc",
+   "f321a6147d49b28f",
+   "f73075dfeeff8b9c",
+   "f7d09a1be6d22788",
+   "f81fb4570970b231"
+  ],
+  "24": [
+   "019c4b41d88f2ba6",
+   "02b0d5c4f85acf06",
+   "05810060e11b3577",
+   "07fe77b2c059d465",
+   "0d96ee07b0d784ed",
+   "0defcda6b28c56ae",
+   "10369ce3066d4310",
+   "12050e06d2e08a37",
+   "1222075727dc3f64",
+   "133efa232babca29",
+   "19917f20da463e7f",
+   "19e6f9aa7509cf9f",
+   "1d3aa95ab8ed1f87",
+   "1ea37069cbe3ba64",
+   "1ee1ecadb2eb2ed1",
+   "21546e0ac4468e7a",
+   "2249f1a0c616eaf1",
+   "28ccd4058d3edffe",
+   "2fb1b54611fb4cfc",
+   "32c0cd3d11a6396e",
+   "355585c433a0befd",
+   "357a080f0bac77ea",
+   "359cf76c0dfa35ab",
+   "36441295be4b2ae6",
+   "3b928a29d76cbabf",
+   "3c2f3a1315337fd3",
+   "40dff887dc331013",
+   "42348d81cc9a4bc3",
+   "42fd767c7a2fd5d1",
+   "4593dac2c41e488f",
+   "468483356a9a5763",
+   "480848710cb0178f",
+   "49ab88335dc68378",
+   "4b6363cde61b1447",
+   "4deec21ac1ccd342",
+   "4e699c2de09a9302",
+   "4f77d1d418027c4f",
+   "509947b4dfe4bce7",
+   "50f8b8497ecf31b2",
+   "5123bf2ed482d19d",
+   "541ddfc36e603bb1",
+   "54853aae561dd554",
+   "5b8ea99b3e2c3503",
+   "5f4128208d9e225c",
+   "5ff74854edf4e64a",
+   "61322485f1747554",
+   "62466698d8d18e17",
+   "62ef7e47e378e26f",
+   "6682d6bc3b6b4ff8",
+   "69de5ce1cfcf678f",
+   "6a718a30d6ac9d8e",
+   "6ef7d3c6cf8ffb6d",
+   "704b2bc2a993d36a",
+   "721597088d47e5c0",
+   "7398c561ea340258",
+   "7949f2b684430ad5",
+   "79db17d8d6442c97",
+   "7b6d56108a1dbe3a",
+   "7bfa71814faf0071",
+   "7d4b8cca9b138be6",
+   "7eefb7790925d809",
+   "7efdc123f90a3f60",
+   "7f5278c998cdf276",
+   "80f3e467eccb64c8",
+   "822d2842e85c21b4",
+   "836f43b6a09624e0",
+   "8b12548f98390fd8",
+   "8e2bf4248b1f8ddc",
+   "98585e4509218dd2",
+   "9914ecdabd866688",
+   "99bf3de2e1be1f48",
+   "9c2f6d4124695a66",
+   "9e10445475a74b3d",
+   "a17a79250b030cdf",
+   "a2a5f81c7faa8890",
+   "a69e9ecb3e5ec4aa",
+   "a835684c3421562d",
+   "a8bb13dde3e2a0b5",
+   "a9c5d16bd5eb4cd3",
+   "ad67df7868fd5f5e",
+   "ae689348aad5428c",
+   "b08ad8b88f990983",
+   "b098678cef8500ed",
+   "b330c28b8d888223",
+   "b8fd90cab48cf20d",
+   "bcd5c975dda061bc",
+   "bf325bfa59917ddf",
+   "c217bb21934f6c73",
+   "c44781a8b034c308",
+   "cb367d6d1bdb0dfd",
+   "cc57baad663cbf9c",
+   "cf7cb813fd9db9eb",
+   "d5d44a26d8b7896d",
+   "d794dc8b0e4686a5",
+   "de36b42f6d357929",
+   "e04ae3fb256e1ccc",
+   "e1cd15d4bc5873e9",
+   "e52e644b4c80afeb",
+   "eb869f4e684c544d",
+   "ebdff88b66b99f62",
+   "ee0dabe796cabaad",
+   "efb05ece382b456f",
+   "f1d2f17dc04bb3aa",
+   "f4d978c1937a8759",
+   "fb9353e425805b64",
+   "fbda28fb1fc20448",
+   "fbe8d7a8e479a86c",
+   "fef31864da4274ba"
+  ],
+  "32": [
+   "25f5640d897f1f7d",
+   "29e5f0d290510618",
+   "2a16b174d6bb266b",
+   "59ca2067a53fa00a",
+   "a4fd55758d78223a",
+   "c57dc3c1263c7f51",
+   "e8935142696d869b",
+   "feeead220eb44d18"
+  ],
+  "48": [
+   "0e41ee6d79e8e444",
+   "27ff46af62340af1",
+   "339464fcfe511e42",
+   "359e37105f49f4de",
+   "43cba4aadf8e9d3b",
+   "43e189b86639845a",
+   "4ed932a8346b144d",
+   "5f172ec7e21e7475",
+   "613afae14c0133f0",
+   "659474fb1863a697",
+   "669c7ccd9c4d3b4e",
+   "673f66aa551e7a1b",
+   "691893f9caf50bfc",
+   "6a59b1e43d74dfb3",
+   "6c6536d57d7788f7",
+   "6ebf57fc98bfa221",
+   "73cea7dece8fb027",
+   "78bccd0bb7be2da2",
+   "79dabb8d93d4b13d",
+   "85c0f2ab797dbcc8",
+   "8f6ee821b37171b5",
+   "900d2266ec6e5d9f",
+   "920a3736c42536a3",
+   "9dd46e406de35d0b",
+   "9e48040aef2b3d6e",
+   "a23a679fdeddac58",
+   "a8b9397dc7f3d740",
+   "b0bbcf0f97561f13",
+   "bbb1bc0883efa6d9",
+   "c0ee13397d9d745c",
+   "cdad7c1bc28ec399",
+   "db4be16e6f4e7b07",
+   "eb4ca40ebdc70edb",
+   "ec60e78667164a04",
+   "f0e49ab58efad404",
+   "fe71050116d69d87"
+  ]
+ }
+}

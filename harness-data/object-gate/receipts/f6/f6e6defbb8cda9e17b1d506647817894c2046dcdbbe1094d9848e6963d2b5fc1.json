@@ -1,0 +1,303 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f6e6defbb8cda9e17b1d506647817894c2046dcdbbe1094d9848e6963d2b5fc1",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "other.crystal",
+ "label": "beodeul_dungeon/other.crystal",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 63,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central crystal spire cluster (main body)",
+      "rows": "5-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side crystal shards left and right",
+      "rows": "17-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base plate under the crystals",
+      "rows": "26-28",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-30"
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a cluster of pointed, flame-like crystal spires. Its silhouette widens steadily from 1 px at row 5 to 15 px at row 21, with no ellipse and no front-edge line on the crystals. Each spire is a vertical shaded face ending in a point. The only horizontal surface is the dark base plate at rows 26-28. It is a thin strip, with row 28 lighter (#703f57) and rows 29-30 darker. It is not the main volume. With no top surface on the crystals, the drawing reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small crystal cluster, smaller than one tile, so this is a sparse single-prop case. By eye it has about 5 lightness steps, from a pale yellow highlight through orange and red to a dark red-brown shadow, plus a dark base. Facets are separated by value, and the outline is a tinted dark red-brown, not neutral black. The measured facts agree: 0% neutral dark edge pixels and 0% near-flat coverage. It has 10 visible tones against 7 for tree-1a786c, so it is above that reference, but it is well below the very rich tree-d43edd at 29. Texture is limited to facet shading with no grain dots, which fits a smooth crystal. It would not look noticeably thinner or flatter than tree-1a786c, although it is clearly simpler than tree-d43edd. A careful artist would likely accept it, so I pass it, narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19214
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crystal/flame cluster body",
+      "rows": "5-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark purple base plinth",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a tapering cluster of spikes (width grows 1→15 px over rows 5-22) drawn as a face-on silhouette. It has only tip highlights (rows 5-6, 14, 21) and no band ending in a front-edge line, no eave shadow and no ellipse. The pointed peaks are not horizontal surfaces. The base (rows 26-30, widths 14-16) is a flat dark strip with no visible top plane. The body has a front face of more than 3 rows and no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small orange/red crystal cluster on a dark base, so it is far smaller than the two reference trees. Its measured facts are at or above the weaker reference and below the richer one. It has 10 visible tones per tile against 7 for tree-1a786c and 29 for tree-d43edd. Near-flat coverage is 0%, matching both references. The dark edge pixels are 0% neutral, so the outlines lean dark red-brown rather than black, which fits the dark-material-tone approach. By eye there are about 5 lightness steps, from yellow-orange highlight through orange and red to a dark red-brown base, with facets separated by value instead of a uniform line. It is not a flat sticker, though it is thinner than the big d43edd tree. For a small prop it holds up next to tree-1a786c without looking flatter or more sticker-like, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17524
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crystal/flame cluster (main body)",
+      "rows": "5-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base mound",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a cluster of pointed spikes. The width profile grows steadily from 1 px at row 5 to 15-16 px at rows 21-29, with no widen-then-narrow ellipse and no front-edge line or eave shadow. The tips are drawn as pointed vertical faces (columns x=8 and x=11 show continuous face colour from the tips down), so no horizontal top plane is visible. A dark base at rows 26-30 (width 14, 16, 16, 16, 14) is only a thin footing under the crystal and not the main volume. The drawing is a flat front elevation without a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small crystal cluster about one tile in size, so it is not directly comparable to the full trees. It shows 10 visible tones per tile, above tree-1a786c (7) and below tree-d43edd (29). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, and by eye the outline leans dark red-brown beside the crystal body, so it is not a sticker-style near-black line. The crystal has roughly 5 lightness steps from a pale yellow core through orange to deep red, with a dark base. The facet shading is cleanly stepped, but texture is limited to facet highlights with no grain or speckle. That is slightly sparser than the best reference, but acceptable for a small single-tile prop. It would not look flatter or thinner than the weaker reference tree next to it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15971
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crystal shards (main body)",
+      "rows": "5-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base plate under the crystals",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-30"
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a flame-like cluster of pointed crystal shards. Their width grows steadily from 1px at row 5 to 15px at rows 21-22, with no widening-then-narrowing ellipse and no horizontal surface. The shards are drawn only as vertical faces with pointed tips. A dark base at rows 26-30 shows only a thin lighter line at row 28, with dark rows below it. That reads as a 1-3 row rim or plinth strip, not a real top surface. There is no top surface on the main body, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny crystal cluster, about 12x14 source pixels, sitting on a dark base. Its flame-like shards run yellow, orange and red with a dark red-brown edge, so the outline is tinted. The measured facts show 0% near-neutral dark edge pixels and 0% flat coverage, and 10 visible tones per tile sits between the references (7 and 29). Nothing structural fails on the numbers. By eye, though, each shard has only about 3-4 lightness steps. There are no per-facet speckles, grain or clumps like the rich canopy clusters and bark in tree-d43edd. The base is a small dark blob with little shading. Next to the lush reference trees it reads as a thinner, more sticker-like sprite. A careful artist would not accept it as equal to the reference, so I fail it on the doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15894
+  }
+ ],
+ "decidedAt": "2026-10-23T02:57:48.828Z",
+ "cells": {
+  "16": [
+   "1cb501d20ba71b9e",
+   "79ae7ac59256f7d1"
+  ],
+  "24": [
+   "23b0291fbb90b5cb",
+   "24e283448b8e7053",
+   "43f0c256cf5bd211",
+   "479ae92464c1ecca",
+   "573b0850321fd398",
+   "6947b0e9fef40004",
+   "c446037e03d6417c",
+   "e1b68983798df6de",
+   "e89bdbbf47afc281",
+   "eda3417912ad3306",
+   "f1a2f8489a449d9e",
+   "f381406da18f4dea"
+  ],
+  "32": [
+   "8d65b991c7592126",
+   "ab49f5f79e1fe3d2",
+   "f8243658590114f6"
+  ],
+  "48": [
+   "1d990e8cef621088",
+   "705675bb336256c2",
+   "79db8015fe2a3d3c",
+   "fa2e915ef3ab029f",
+   "fc2f43bef25f6f76",
+   "fd6c07b626aae643"
+  ]
+ }
+}

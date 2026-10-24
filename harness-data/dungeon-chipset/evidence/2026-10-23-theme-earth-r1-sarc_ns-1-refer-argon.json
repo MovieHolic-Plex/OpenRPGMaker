@@ -1,0 +1,13 @@
+{
+  "piece": "earth.sarc_ns A1 open",
+  "pixelSha256": "d0f8627f40ad5f4c06168c2d39748ff0e70cf453bed3f65bd49eaafecf1ea4d9",
+  "receipt": "/home/main/z-project/rpg-zzu-dt-earth/harness-data/object-gate/receipts/d0/d0f8627f40ad5f4c06168c2d39748ff0e70cf453bed3f65bd49eaafecf1ea4d9.json",
+  "verdict": "fail",
+  "sure": true,
+  "view34": "fail: rows 16-22 taper narrower (10px) and sit atop a wider rectangular pedestal at rows 23-29 (12px), and the cavity lacks an inner north wall drop at the head end while the skeleton is drawn in full-height front elevation, making the piece read as an upright standing coffin on a plinth rather than a coffin lying horizontally on the floor in 3/4 view",
+  "style": "pass: stone palette, tinted outline, and 5-step shading fit Beodeul dungeon props",
+  "reasons": [
+    "Reads as an upright coffin standing vertically on a wider stone pedestal (rows 23-29 are 12px wide beneath a 10px tapered lower coffin body at rows 16-22) rather than a horizontal coffin lying on the floor.",
+    "The interior cavity has no visible north inner wall drop from the top rim (row 1 goes straight to dark void around a front-facing upright skeleton), reinforcing the front-elevation upright impression flagged 12/12 by the independent eye check."
+  ]
+}

@@ -1,0 +1,130 @@
+{
+ "panel": 9,
+ "round": "theme-earth-r1",
+ "rule": "majority of 4; on a 2-2 tie the majority of the 3 Opus judges decides; a major counts when 2 of 4 raise the same problem",
+ "delegatedBy": "delegated by user to supervisor 2026-10-23",
+ "prompt": "You are a blind reviewer of 16px pixel-art game tiles for a SNES-style JRPG (3/4 top-down view). Do not read any code or other files; judge only the PNG boards listed below (open each with the Read tool; crop/zoom with python PIL into /tmp if you need detail). Each board shows: a reference from the existing game (\"Beodeul\", the quality bar) at 1x and 3x, then two candidates X and Y, each as the piece at 1x and 3x (checkerboard = transparent) and in a small scene with a 16x24 character for scale.\n\nCriteria for each candidate:\n(1) reads correctly in 3/4 top-down at 1x (top surfaces seen from above, front faces full height, no oblique/side view, no flat front elevation)\n(2) looks like it belongs to the same game as the Beodeul reference (palette, shading, texture density, outline, pixel density, scale vs the character)\n(3) joins are seamless (rails/carpet/decals line up, no visible 16px repeat, no broken edges)\n(4) reads as its stated purpose and theme (title line on each board)\n\nA \"major\" is a defect that would make you reject the piece for the game; a \"minor\" is polish. Be adversarial and concrete (say where in the picture).\n\nBoards:\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r9/throne.png\n\nWrite your answer as JSON (and nothing else) to /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r9/ans-1.json, in this form, then reply with just \"done\":\n{\"items\": {\"<board file name without .png>\": {\"X\": {\"majors\": [\"...\"], \"minors\": [\"...\"]}, \"Y\": {\"majors\": [], \"minors\": []}, \"pick\": \"X\" or \"Y\", \"why\": \"one line\"}}}\n",
+ "results": [
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r9/throne.png",
+   "round": "theme-earth-r1",
+   "item": "earth.throne",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "a7713da89a77befc8d925e6a057e637836c0e55b4155d867be2473c399c127d9"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "3f97b4bc2b3ccc6555776091344ed814af8fc759ca5fc3c0a767fc27e8479ce1"
+    }
+   },
+   "votes": {
+    "opus1": "X",
+    "opus2": "X",
+    "opus3": "X",
+    "argon": "X"
+   },
+   "tie": false,
+   "pick": "X",
+   "pickKey": "A1",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "Dais is barely 'stepped': the stone front face is a single ~2-row brick band at the bottom; only the carpet strip shows step lines, the cream stone sides to left/right have no step risers",
+       "Throne seat has no readable front face/legs: the red cushion and gold rim sit directly on the carpet, with a dark brown shadow block only on the right side (asymmetric, looks like a hole at 1x)",
+       "Throne back top-left is ragged: the left gold post pokes above the back panel and the top edge is uneven compared to the right post",
+       "Red/gold are more saturated than the muted Beodeul reference palette; carpet dither (red/purple checker) on the dais top is busier than the reference texture density and reads noisy at 1x",
+       "Cream dais stone is warmer/lighter than the gray dungeon floor in the scene; acceptable as marble but slightly pasted-on"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "Dais top surface is drawn as a vertical brick wall (running-bond courses with mortar lines across the whole top area) so it reads as a flat front elevation, not a walkable top seen from above",
+       "Throne reads as a gray tombstone/altar with a pointed gable rather than a royal throne: gray-on-gray with the dais, only a small red cushion and one gold strip, fails 'castle throne' at 1x",
+       "Flat, low-detail shading with isolated white speck noise on the bricks; texture/pixel density well below the Beodeul statue and stele reference"
+      ],
+      "minors": [
+       "Steps at the bottom are clear but plain flat gray bands; carpet edge on steps has a purple column on the right only",
+       "Throne seat front slab is a hard dark band with a black notch at its right end"
+      ]
+     },
+     "pick": "X",
+     "why": "X reads as a regal throne on a carpeted dais with a proper top surface and reference-like stone; Y's dais top is a brick wall elevation and the throne reads as a gray tombstone."
+    },
+    "opus2": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "Dais is barely 'stepped': front face is only ~2 rows of cream stone with one step band; the central red stair is the only real step, so 'stepped dais' reads weakly at 1x",
+       "Palette much more saturated (pure red + bright yellow gold) and busier than the muted, desaturated Beodeul statue/plaque; the diamond-pattern carpet on the dais top is noisy at 1x and fights the throne silhouette",
+       "Throne has no visible arms/legs and its seat front merges into the carpet; the dark-brown shadow block on the right side of the throne (3x, right of seat) looks like a hard rectangle rather than a cast shadow",
+       "Gold frame left edge of the throne back is a flat bright yellow strip with little shading vs the 3-4 tone ramps in the reference"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "Dais top is drawn as a running-bond brick wall with mortar lines and highlights, so the platform's top surface reads as a vertical front elevation (a wall block) instead of a floor seen from above; at 1x the whole piece reads as a stone wall/altar block with a niche, not a raised dais",
+       "Throne is a flat grey slab with a pointed tombstone top and a tiny red seat strip: no arms, no depth, front-elevation only; it reads as a gravestone/shrine, not a castle throne (fails purpose/theme)"
+      ],
+      "minors": [
+       "Grey palette is flatter and lighter than the reference stone, with few shading tones; the single gold line and gold dot are too small to signal royalty",
+       "Steps at the bottom are good (three bands) but the red runner stops at the dais edge and does not continue up onto the dais/to the throne"
+      ]
+     },
+     "pick": "X",
+     "why": "X reads as a regal throne on a raised carpeted dais seen from above; Y's brick-wall dais top and tombstone throne read as a flat front-elevation wall/grave."
+    },
+    "opus3": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "Throne back and seat are one heavy red slab with a thick 2px gold frame on the left only (right side is dark brown), so the throne looks lopsided at 1x",
+       "Diamond-lattice carpet on the dais top is much busier and more saturated than the Beodeul reference's calm stone/cream textures; at 1x the whole piece is a red blob around the throne",
+       "Stray dark-brown pixels just right of the seat (row under the seat, ~2/3 across) read as a hole in the carpet rather than a cast shadow",
+       "Dais front steps: the cream stone step faces have only faint coursing, the 3 steps barely separate at 1x; carpet runner stripes on the steps are fine but the gold runner edges continue unbroken up onto the dais top with no tread/riser change"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "The dais top is drawn as a brick wall (full running-bond courses with mortar lines and highlight dots across the whole 3x3), i.e. a flat front elevation, not a top surface seen from above; in the scene it reads as a grey wall block with a chair stuck in it rather than a raised platform you stand on",
+       "Throne itself is a front-elevation grey slab with a pointed gable top and a tiny red seat pad, too small and low-contrast to read as a castle throne at 1x; nearly vanishes against the identically coloured floor and dais",
+       "Palette is flat mid-grey with almost no warm accent; does not match the warmer cream stone and richer shading of the Beodeul reference, and merges with the scene floor tiles"
+      ],
+      "minors": [
+       "Steps only exist along the bottom edge; sides of the dais have no visible thickness/step-down, so 'stepped dais' is only half delivered",
+       "Red runner on the steps is a plain stripe block with a purple right edge that doesn't match the gold left edge"
+      ]
+     },
+     "pick": "X",
+     "why": "X reads as a raised carpeted dais with a proper 3/4 throne and front steps; Y's dais top is a brick-wall elevation and the throne disappears into grey."
+    },
+    "argon": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "Warm tan stone of the dais contrasts with the cool grey castle floor tiles in the scene",
+       "Stair runner meets the gold border of the platform rug rather than flowing continuously over the step lip",
+       "Top edge of the throne backrest is a single 1px gold line with minimal top-plane thickness"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "Grey stone throne has almost the exact same value and hue as the grey stone dais, making the chair blend into the platform at 1x and read like a small tombstone or obelisk rather than a castle throne",
+       "Throne backrest is a flat, unshaded grey slab with a 45-degree pointed top and no 3/4 top surface thickness or stone texture density matching the Beodeul reference",
+       "Red stair carpet terminates abruptly at the top step edge into bare grey stone instead of leading up to the throne"
+      ],
+      "minors": [
+       "Armrests and front legs are thin 1-2px grey strips with weak 3D volume",
+       "Dais top stone courses show stiff, repetitive horizontal bands across the 3x3 span"
+      ]
+     },
+     "pick": "X",
+     "why": "X reads immediately at 1x as an ornate castle throne on a carpeted stepped dais with proper 3/4 planes and rich SNES pixel texture, while Y is a flat grey slab that camouflages into its own grey platform."
+    }
+   }
+  }
+ ]
+}

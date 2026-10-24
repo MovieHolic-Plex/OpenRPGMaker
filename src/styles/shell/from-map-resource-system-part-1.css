@@ -204,6 +204,15 @@
   position: relative;
 }
 
+/* 전체 모드도 제목 막대가 자리를 차지한다 — 오버레이로 두면 게임 화면 위 30px(메뉴 창 윗변)이 막대 밑에 깔려 잘린다(VQA SA12). */
+.test-play-window[data-window-mode="fullscreen"] .test-play-titlebar {
+  position: relative;
+}
+
+.test-play-window[data-window-mode="fullscreen"] .test-play-modal-body {
+  height: calc(100% - 30px);
+}
+
 /* map/resource-system.part-1.css:300-306 */
 .test-play-title {
   height: 1px;

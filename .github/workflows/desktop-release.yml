@@ -1,0 +1,124 @@
+name: desktop-release
+
+# 정식 vX.Y.Z 릴리스가 나오면 호스티드 러너에서 리눅스 AppImage, 윈도우 zip,
+# 윈도우 portable exe 를 만들어 그 릴리스에 올린다. 소유자 컴퓨터에서는 돌리지 않는다.
+# 윈도우 패키지도 wine 없이 리눅스에서 만든다(electron-builder 가 makensis 를 받는다).
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: vX.Y.Z
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: desktop-release-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  packages:
+    if: github.event_name == 'workflow_dispatch' || github.event.release.prerelease == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: 디스크 확보
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache /usr/local/share/boost || true
+          df -h /
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+
+      # 호스티드 러너에는 bun 이 없다. AI 워커(oh-my-pi-worker)를 이 단계에서 컴파일한다.
+      - name: bun
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y p7zip-full
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> "$GITHUB_PATH"
+          "$HOME/.bun/bin/bun" --version
+
+      # 체크아웃은 릴리스 태그다. 빌드 절차는 이 파일에 둔다 — 태그 쪽 스크립트가
+      # 이 워크플로보다 옛 것이어도 호스티드 러너에서 같은 산출물이 나오게.
+      - name: 패키지 빌드 후 릴리스에 업로드
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OPRN_DESKTOP_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+          SEVENZIP_MEMUSE: 2g
+        run: |
+          set -euo pipefail
+          tag="$OPRN_DESKTOP_TAG"
+          if [[ ! "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "태그가 vX.Y.Z 가 아님: $tag"
+            exit 1
+          fi
+          names="$(gh release view "$tag" --json assets --jq '.assets[].name')"
+          if grep -Eq '\.AppImage$' <<<"$names" && grep -Eq 'win.*\.zip$' <<<"$names" && grep -Eq '\.exe$' <<<"$names"; then
+            echo "$tag 에 AppImage·윈도우 zip·단일 exe 가 이미 있음"
+            exit 0
+          fi
+          npm ci
+          node scripts/build-electron.mjs
+          npx vite build --configLoader runner
+          mkdir -p "$HOME/.cache/electron-builder"
+          printf '%s\n' '{"type":"commonjs"}' > "$HOME/.cache/electron-builder/package.json"
+          wrapper="$RUNNER_TEMP/7za-memcap.sh"
+          cat > "$wrapper" << 'EOF'
+          #!/bin/sh
+          set -eu
+          limit=${SEVENZIP_MEMUSE:-2g}
+          cached=$(find "$HOME/.cache/electron-builder" -type f -name 7zz -perm -111 2>/dev/null | head -n 1 || true)
+          system=$(command -v 7zz || command -v 7z || command -v 7za || true)
+          cmd=${1:-}
+          if { [ "$cmd" = "a" ] || [ "$cmd" = "u" ]; } && [ -n "$cached" ]; then
+            shift
+            for arg in "$@"; do
+              case "$arg" in
+                -mmemuse*) exec "$cached" "$cmd" "$@" ;;
+              esac
+            done
+            exec "$cached" "$cmd" "-mmemuse=$limit" "$@"
+          fi
+          real=${cached:-$system}
+          if [ -z "$real" ]; then echo "7za-memcap: 7z 없음" >&2; exit 127; fi
+          exec "$real" "$@"
+          EOF
+          # heredoc 가 들여쓰기를 스크립트에 넣으면 sh 가 죽는다. 앞 공백을 벗긴다.
+          sed -i 's/^          //' "$wrapper"
+          chmod +x "$wrapper"
+          ELECTRON_BUILDER_7ZIP_PATH="$wrapper" npx electron-builder \
+            --config scripts/electron-builder.config.mjs \
+            --linux AppImage --win zip portable --x64
+          out=dist-packages
+          shopt -s nullglob
+          files=()
+          for f in "$out"/*.AppImage "$out"/*win*.zip "$out"/*.exe; do
+            files+=("$f")
+          done
+          printf '%s\n' "${files[@]}" | grep -q 'AppImage'
+          printf '%s\n' "${files[@]}" | grep -q 'win.zip'
+          printf '%s\n' "${files[@]}" | grep -q '\.exe'
+          stable=()
+          for f in "${files[@]}"; do
+            base="$(basename "$f")"
+            if [[ "$base" == *.AppImage ]]; then alias="OPRN.Studio-linux.AppImage"
+            elif [[ "$base" == *.exe ]]; then alias="OPRN.Studio-windows.exe"
+            else alias="OPRN.Studio-windows.zip"
+            fi
+            cp -f "$f" "$out/$alias"
+            stable+=("$out/$alias")
+          done
+          gh release upload "$tag" "${files[@]}" "${stable[@]}" --clobber
+          echo "업로드 완료: $tag"

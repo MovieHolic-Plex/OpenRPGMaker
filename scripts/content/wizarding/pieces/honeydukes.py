@@ -4,6 +4,7 @@
 import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from wzlib import REG, Cv, K, OL, OL2, darker, run_module   # noqa: E402
+import _wz_stairs as S   # noqa: E402
 
 MODULE = 'honeydukes'
 SP = 'honeydukes'
@@ -304,47 +305,12 @@ def _fp(c):
 
 
 # ───────────────────────── 계단 2×3 ─────────────────────────
-@REG.piece('wz-hd-stairs-down', '창고 내려오는 나무 계단', 2, 3, ['SS', 'FF', 'FF'], 'architecture', SP,
-           desc='위층 가게에서 내려오는 나무 계단 2×3. 위쪽은 어두운 계단통 입구, 아래로 갈수록 디딤판이 바닥에 가까워진다.',
-           rules='북벽 앞에 놓는다. 위 한 줄은 막히고 아래 두 줄로 걸어 오른다.',
-           tags=['계단', '내림', '나무'], role='prop')
+@REG.piece('wz-hd-stairs-down', '창고에서 가게로 올라가는 나무 계단', 2, 3, ['SS', 'FF', 'ff'], 'architecture', SP,
+           desc='올라가는 계단(지하 창고 → 위층 가게). id 의 down 은 옛 이름이고 이 계단은 위로 오른다. 북벽의 돌 첨두 아치 문틀(나무 책장과 구별되는 밝은 돌) 안으로 오크 디딤판 8단이 북쪽으로 올라가 위층 가게 등불빛 속으로 사라진다 — 꼭대기 두 단이 황동빛으로 밝다. 맨 아래 단들은 지하 바닥으로 나오고 첫 단 양 끝에 낮은 나무 친주가 선다. 남쪽에서 들어서서 북쪽을 보며 오른다. 가게에서 이 계단으로 내려오면 맨 아래 줄 남쪽 앞 칸에 서서 계단을 등지고 남쪽(아래)을 본다.',
+           rules='북벽에 붙인다: 위 두 줄이 북벽 정면 자리(맨 위 줄은 벽 위에 덮는 막힌 칸), 맨 아래 줄이 바닥. 들어서는 쪽 = 남쪽: 바로 남쪽 두 칸 중 적어도 하나는 비운 바닥. 층 이동 이벤트는 맨 아래 줄(이동 칸)에.',
+           tags=['계단', '오름', '올라가는 계단', '나무'], role='prop')
 def _stairs(c):
-    W = 32
-    # 위쪽 석벽·계단통 입구
-    blocks16(c, 0, 16)
-    ceiling_shade(c, 3)
-    c.R(3, 0, 26, 14, K('night', 0))
-    c.HL(3, 12, 26, K('night', 1)); c.HL(3, 13, 26, K('night', 2))
-    c.R(0, 0, 3, 16, K(ST, 2)); c.R(29, 0, 3, 16, K(ST, 2))
-    c.VL(2, 0, 16, K(ST, 0)); c.VL(29, 0, 16, K(ST, 0))
-    # 위쪽 보 멍에
-    c.R(3, 0, 26, 3, K('wood', 3)); c.HL(3, 2, 26, K('wood', 1)); c.HL(3, 0, 26, K('wood', 4))
-    # 디딤판 6단: 각 8px = 윗면 3 + 챌판 5, 아래로 갈수록 밝고(가까움) 약간 넓다
-    for i in range(5):
-        y = 16 + i * 6 if False else 14 + i * 7
-        x0, x1 = 3, 29
-        top_h, ris_h = 3, 4
-        c.R(x0, y, x1 - x0, top_h, K('wood', 5)); c.HL(x0, y, x1 - x0, K('wood', 5))
-        c.HL(x0, y + 1, x1 - x0, K('wood', 5)); c.HL(x0, y + 2, x1 - x0, K('wood', 4))
-        c.R(x0, y + top_h, x1 - x0, ris_h, K('wood', 2)); c.HL(x0, y + top_h, x1 - x0, K('wood', 1))
-        c.HL(x0, y + top_h + ris_h - 1, x1 - x0, K('wood', 0))
-        for x in range(x0, x1):
-            if hsh(x, i, 6) < 0.16: c.P(x, y + 1, K('wood', 4))
-            if hsh(x, i, 7) < 0.14: c.P(x, y + top_h + 1, K('wood', 1))
-        # 못
-        c.P(x0 + 2, y + top_h + 2, K('iron', 3)); c.P(x1 - 3, y + top_h + 2, K('iron', 3))
-    # 마지막 단 아래 바닥 그림자
-    c.R(3, 49, 26, 1, K('wood', 1))
-    # 양옆 난간 기둥·손잡이 줄
-    for xs in (0, 29):
-        c.R(xs, 14, 3, 34, K('wood', 3)); c.VL(xs, 14, 34, K('wood', 4)); c.VL(xs + 2, 14, 34, K('wood', 1))
-    for y in (15, 30, 44):
-        c.R(0, y - 1, 3, 3, K('wood', 5)); c.HL(0, y + 1, 3, K('wood', 2))
-        c.R(29, y - 1, 3, 3, K('wood', 5)); c.HL(29, y + 1, 3, K('wood', 2))
-    # 계단통에 번지는 위층 불빛(작은 덩이 둘)
-    c.R(10, 4, 12, 2, K('fire', 1)); c.R(8, 6, 16, 3, K('fire', 1)); c.R(11, 5, 10, 3, K('fire', 2)); c.R(14, 6, 4, 1, K('fire', 3))
-    c.R(6, 9, 20, 3, K('night', 1))
-    c.outline()
+    S.up_into_doorway(c, dict(tread='wood', tread_hi=5, tread_lo=4, riser='wood', rise_hi=2, rise_lo=1, side='wood', rail='wood', frame='stone', glow='shop'))
 
 
 

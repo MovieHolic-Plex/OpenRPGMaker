@@ -185,7 +185,9 @@ export function syncMonsterPartyFollowers(project: Project, session: PlaySession
     (entry) => entry.kind !== "monster" && !entry.monsterInstanceId
   );
   const monsterFollowers: RuntimeFollower[] = [];
-  for (const instanceId of session.monsterParty ?? []) {
+  // 게임 설정으로 몬스터 동행을 껐으면 액터 동료만 남긴다.
+  const walkWithMonsters = project.system.companions?.monsterFollowers !== false;
+  for (const instanceId of walkWithMonsters ? session.monsterParty ?? [] : []) {
     const instance = session.monsterInstances?.[instanceId];
     if (!instance) continue;
     const species = (project.database.monsterSpecies ?? []).find((record) => record.id === instance.speciesId);
@@ -302,12 +304,25 @@ export function resetFollowerTrailNearPlayer(
   const gap = Math.max(effectiveGap(session, config), typeof config?.gap === "number" ? 1 : MAX_FOLLOWER_BODY_SPAN);
   const slots = Math.min(trailIndexFor(session.followers.length - 1, gap) + 1, MAX_TRAIL_POINTS);
   const facing = options?.facing ?? session.playerFacing ?? "down";
+  // 출입구(장소 이동 이벤트) 칸은 비워 둔다 — 전멸 뒤 회복 센터에 위를 보고 서면 「뒤」가 아래 벽의 출구 매트라
+  // 동료가 방 밖 검은 곳에 서 있었다(2026-10-21 적대 검수 M11).
+  const exits = new Set((map?.events ?? []).filter((event) => JSON.stringify(event.pages ?? []).includes('"kind":"transfer"')).map((event) => `${event.x},${event.y}`));
   const open = (x: number, y: number): boolean => {
     if (options?.blocked?.(x, y)) return false;
+    if (exits.has(`${x},${y}`)) return false;
     if (!map) return true;
     if (!inBounds(map, x, y)) return false;
     return options?.project ? isPassable(options.project, map, x, y) : true;
   };
+  // 몬스터만 따라오는 열차(HGSS): 바로 뒤 칸이 문·계단·벽이면 옆 칸에 세우지 않고 잠깐 숨긴다 — 주인공이 첫 걸음을 떼면
+  // 주인공이 떠난 칸(문 앞·계단 앞)에서 나타나 뒤를 따른다. 옆 칸에 세우면 주인공이 그쪽으로 걸을 때 둘이 서로를
+  // 뚫고 자리를 바꿨다(2026-10-23 회복 센터 문·2층 계단 실측).
+  const monsterOnly = session.followers.every((entry) => entry.kind === "monster" || Boolean(entry.monsterInstanceId));
+  const back = DIR_STEP[OPPOSITE[facing]];
+  if (monsterOnly && !open(session.x + back.dx, session.y + back.dy)) {
+    session.followerTrail = [];
+    return;
+  }
   session.followerTrail = trailBehind({ x: session.x, y: session.y }, facing, slots, open);
 }
 
@@ -338,14 +353,18 @@ function trailBehind(
   open: (x: number, y: number) => boolean
 ): RuntimeFollowerTrailPoint[] {
   const behind = OPPOSITE[facing];
-  const sides: readonly Dir[] = facing === "up" || facing === "down" ? ["left", "right"] : ["up", "down"];
-  const order: readonly Dir[] = [behind, ...sides, facing];
+  const sidesOf = (dir: Dir): readonly Dir[] => (dir === "up" || dir === "down" ? ["left", "right"] : ["up", "down"]);
+  // 첫 칸은 주인공 바로 뒤 → 옆 → 앞. 둘째 칸부터는 앞 걸음의 방향을 이어 간다(곧장 → 옆 → 되돌아감) —
+  // 뒤가 막혀 첫 칸이 옆으로 빠져도 줄이 지그재그·대각선으로 꺾이지 않고 칸마다 사방 인접으로 이어진다.
+  const firstOrder: readonly Dir[] = [behind, ...sidesOf(facing), facing];
   const used = new Set<string>([`${hero.x},${hero.y}`]);
   const key = (x: number, y: number): string => `${x},${y}`;
   const trail: RuntimeFollowerTrailPoint[] = [];
   let prev = hero;
+  let stepDir: Dir | null = null;
   for (let i = 0; i < count; i += 1) {
     let next: { x: number; y: number } | null = null;
+    const order: readonly Dir[] = stepDir ? [stepDir, ...sidesOf(stepDir), OPPOSITE[stepDir]] : firstOrder;
     for (const dir of order) {
       const x = prev.x + DIR_STEP[dir].dx, y = prev.y + DIR_STEP[dir].dy;
       if (!used.has(key(x, y)) && open(x, y)) { next = { x, y }; break; }
@@ -358,6 +377,7 @@ function trailBehind(
     }
     used.add(key(next.x, next.y));
     trail.push({ x: next.x, y: next.y, direction: dirToward(next, prev) });
+    if (Math.abs(next.x - prev.x) + Math.abs(next.y - prev.y) === 1) stepDir = dirToward(prev, next);
     prev = next;
   }
   return trail;
@@ -415,6 +435,13 @@ export type FollowerWorld = {
   readonly blocked?: (x: number, y: number) => boolean;
   /** 이벤트(대화·장면)가 도는 중 — companions.fanOutInScenes 가 켜져 있으면 둘째 동료부터 옆 줄에 선다. */
   readonly inScene?: boolean;
+  /** 주인공이 보는 방향. 궤적 없이 옆으로 비켜 선 동료(spreadWhenBlocked — 문으로 막 들어온 직후)는 주인공과 같은 쪽을 본다. */
+  readonly playerFacing?: Dir;
+  /**
+   * 주인공이 서 있는(또는 지금 걸어 들어가는) 칸. 걸음을 **시작하는** 순간 동료도 함께 한 칸 내딛게 하려고(HGSS 식 동시 걸음)
+   * 세션 좌표(걸음이 끝나야 바뀐다) 대신 목적지 칸을 준다. 없으면 세션 좌표.
+   */
+  readonly heroAt?: { readonly x: number; readonly y: number };
 };
 
 export function followerPositions(
@@ -433,13 +460,15 @@ export function followerPositions(
   readonly hidden?: boolean;
 }[] {
   const { formation } = resolveCompanionRules(config);
+  // 걸음을 막 시작한 주인공은 목적지 칸에 선 것으로 본다 — 동료가 비워지는 칸(주인공이 떠나는 칸)으로 같이 걷는다.
+  const hero = world?.heroAt ?? { x: session.x, y: session.y };
   const gap = effectiveGap(session, config);
-  const slots = formation === "beside" ? besideSlots(session, world) : [];
+  const slots = formation === "beside" ? besideSlots(hero, world) : [];
   // 몸끼리 띄울 최소 거리(체비쇼프, 칸). 1 이면 「같은 칸만 피한다」 — 몸 길이 1 인 옛 동작 그대로다.
   // 24×32 칩(몸 길이 2)은 대각선·옆 이웃도 겹쳐 그려지므로 모퉁이·되돌아오기에서 그 칸을 쓰지 않는다.
   const minDistance = followerMinDistance(session, config);
   // 옆자리(beside) 동료는 저작자가 고른 붙어 서기라 거리 판정에 넣지 않는다 — 그 대형의 기존 계약 그대로다.
-  const taken: { x: number; y: number }[] = [{ x: session.x, y: session.y }];
+  const taken: { x: number; y: number }[] = [{ x: hero.x, y: hero.y }];
   const blocked = world?.blocked;
   const clear = (point: { readonly x: number; readonly y: number }): boolean =>
     !blocked?.(point.x, point.y)
@@ -448,7 +477,7 @@ export function followerPositions(
   const followers = session.followers ?? [];
   // 같은 궤적·같은 주인공 칸이면 같은 답 — 조명·동료 공격이 한 프레임에 여러 번 물어도 「기다리기」가 흔들리지 않는다.
   const memo = followerPlacementMemo.get(session);
-  if (memo && memo.trail === trail && memo.x === session.x && memo.y === session.y && memo.followers === followers
+  if (memo && memo.trail === trail && memo.x === hero.x && memo.y === hero.y && memo.followers === followers
     && memo.gap === gap && memo.minDistance === minDistance && slots.length === 0 && formation === "line" && !blocked) {
     return memo.result;
   }
@@ -456,10 +485,21 @@ export function followerPositions(
   let cursor = -1;
   const placed: { readonly x: number; readonly y: number; readonly direction?: Dir; readonly hidden?: boolean }[] = [];
   const result = followers.map((follower, index) => {
-    const entry = placeOne(follower, index);
+    const entry = sceneFacing(placeOne(follower, index));
     placed.push(entry);
     return entry;
   });
+  // 장면 중에는 동료가 주인공과 같은 쪽(말하는 이)을 본다 — 주인공이 동료 쪽으로 돌아서면(동료가 말할 때) 동료는 주인공을 본다.
+  // 궤적 방향 그대로 두면 포고 중 동료가 화면만 보고, 주인공이 돌아서도 동료는 등을 보였다(폴른 스타 VQA r6).
+  function sceneFacing<T extends { readonly x: number; readonly y: number; readonly direction?: Dir; readonly hidden?: boolean }>(entry: T): T {
+    const facing = world?.inScene ? world.playerFacing : undefined;
+    if (!facing || entry.hidden) return entry;
+    const dx = entry.x - hero.x, dy = entry.y - hero.y;
+    const along = facing === "up" ? -dy : facing === "down" ? dy : facing === "left" ? -dx : dx;
+    const across = facing === "up" || facing === "down" ? Math.abs(dx) : Math.abs(dy);
+    const opposite: Record<Dir, Dir> = { up: "down", down: "up", left: "right", right: "left" };
+    return { ...entry, direction: along > 0 && along <= 4 && across <= along ? opposite[facing] : facing };
+  }
   function placeOne(follower: RuntimeFollower, index: number) {
     // 옆자리가 모자라면(인접 4칸 초과 인원, 또는 물·벽으로 막힌 칸) 그 동료는 일렬로 떨어진다.
     const slot = slots[index];
@@ -483,7 +523,7 @@ export function followerPositions(
     // 장면 중 ㄴ자 대형(companions.fanOutInScenes): 둘째 동료부터 앞 동료 옆 칸(몸 길이만큼)에 선다.
     const front = index > 0 ? placed[index - 1] : undefined;
     if (front && !front.hidden && config?.fanOutInScenes === true && world?.inScene) {
-      const side = besideOf(session, front, minDistance, world, clear);
+      const side = besideOf(hero, front, minDistance, world, clear);
       if (side) {
         taken.push(side);
         return { follower, x: side.x, y: side.y, direction: front.direction ?? follower.graphic.direction };
@@ -491,18 +531,18 @@ export function followerPositions(
     }
     const point = trail[at];
     if (!point) {
-      const spread = config?.spreadWhenBlocked === true && world ? nearestSpreadCell(session, world, clear) : null;
+      const spread = config?.spreadWhenBlocked === true && world ? nearestSpreadCell(hero, world, clear) : null;
       if (spread) {
         taken.push(spread);
-        return { follower, x: spread.x, y: spread.y, direction: follower.graphic.direction };
+        return { follower, x: spread.x, y: spread.y, direction: world?.playerFacing ?? follower.graphic.direction };
       }
-      return { follower, x: session.x, y: session.y, direction: follower.graphic.direction, hidden: true };
+      return { follower, x: hero.x, y: hero.y, direction: follower.graphic.direction, hidden: true };
     }
     cursor = at;
     taken.push({ x: point.x, y: point.y });
     return { follower, x: point.x, y: point.y, direction: point.direction ?? follower.graphic.direction };
   }
-  followerPlacementMemo.set(session, { trail, x: session.x, y: session.y, followers, gap, minDistance, result });
+  followerPlacementMemo.set(session, { trail, x: hero.x, y: hero.y, followers, gap, minDistance, result });
   return result;
 }
 
@@ -665,6 +705,16 @@ export type FollowerSlotMotion = {
   readonly durationMs: number;
   /** 앞사람 몸에 들어가지 않으려고 이번 걸음에서 멈춰 선 누적 시간(ms). 한 걸음 길이를 넘기면 더 멈추지 않는다. */
   readonly pausedMs?: number;
+  /**
+   * 주인공 걸음과 함께 시작한 걸음(beginFollowerStep). 진행도는 시계가 아니라 주인공 걸음 진행도를 그대로 쓴다 —
+   * 대시·탈것 배속·프레임 분할이 달라도 동료가 한 프레임도 뒤처지거나 앞서지 않는다.
+   */
+  readonly lockToHero?: boolean;
+  /**
+   * 대각선 이동(두 축이 다 바뀜)을 한 칸씩 꺾어 가는 경유 지점. 슬롯이 사방 인접이 아닐 때 직선으로 미끄러지면
+   * 비스듬히 가로지르고 바라보는 쪽도 틀린다 — 클래식 JRPG 처럼 한 축을 먼저 걷고 꺾는다.
+   */
+  readonly via?: FollowerSlot;
 };
 
 /** 플레이어 사방 인접 4칸. 플레이어 칸 자체는 넣지 않는다 — 겹쳐 서면 동료가 안 보인다. */

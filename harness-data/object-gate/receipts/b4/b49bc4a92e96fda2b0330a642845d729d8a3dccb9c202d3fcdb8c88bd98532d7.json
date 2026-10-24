@@ -1,0 +1,408 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b49bc4a92e96fda2b0330a642845d729d8a3dccb9c202d3fcdb8c88bd98532d7",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "arcane.crystal_pedestal",
+ "label": "beodeul_dungeon/arcane.crystal_pedestal",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 92,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crystal cluster on top",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal cap plate",
+      "rows": "12-16",
+      "evidence": "b",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-19"
+     },
+     {
+      "part": "pedestal base plinth",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 14,
+     "shaft_width": 8,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The crystal in rows 1-11 is decor sitting on the pedestal. Below it the stone cap widens from 12 px (row 12) to 14 px (rows 13-15), then narrows to 12 px (rows 16-17), 10 px (rows 18-19) and the 8 px shaft (rows 20-25). That is an ellipse-like plate overhanging the shaft, with a lighter front-edge line at row 16 and a dark brown band below it at rows 17-19 acting as eave shadow. The shaft front face runs from row 17 to row 30 (14 rows), with a widened base plinth at rows 26-30. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small crystal on a grey stone pedestal with only 14 distinct colours in total. That gives about 3-4 steps per material (crystal facets, pedestal stone), against about 5-6 per material in the well, stall and hedge references. The measured dark edge pixels are 100% near-neutral, so the outline is a neutral dark line with no tint of the neighbouring material. The pedestal's tone does not account for this: the well and hedge references have tinted edges (33% and 0% neutral) and the candidate does not. The sticker-like outline plus the shallow ramps weigh against it. There are no flat fills (0% near-flat coverage), and 9 visible tones per tile matches the hedge. That is still well below the well (20) and stall (17), and the stone shows no per-block shading or grain. A careful artist would find it thinner and more outlined than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18915
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crystal cluster",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal cap plate",
+      "rows": "12-16",
+      "evidence": "b",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-19"
+     },
+     {
+      "part": "shaft",
+      "rows": "17-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flared base",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 14,
+     "shaft_width": 8,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The crystals on top (rows 1-11) are decor. The pedestal head is a cap plate whose width goes 12 (row 12), 14 (rows 13-15), then 12 (row 16), 12 (row 17), 10 (rows 18-19) and 8 (shaft). It widens and then narrows again, so it is an ellipse that overhangs the 8px shaft by 3px per side. A light front-edge line sits at row 16, followed by a brown band at rows 17-19 acting as the shadow below it. The shaft and flared base (rows 17-30) give a front face of about 14 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small crystal on a grey stone pedestal with only 14 distinct colours in total. Each material has about 3 ramp steps (crystal: white, light blue, mid blue; pedestal: light, mid, dark grey), where the Beodeul references use about 5-6. 100% of its dark edge pixels are near-neutral, so the outline is a grey-black line and not a tinted dark tone of the adjacent material. The references that carry real material (hedge 0%, stall 1%, well 33%) have tinted or mixed edges. The piece has no flat 5x5 areas (0% near-flat) and 9 visible tones per tile, which matches the hedge but is far below the stall (17) and the well (20). By eye the pedestal reads as smooth faceted blocks with little stone grain or per-block shading, and the crystal has few facets. It looks thinner and more sticker-like than the well or stall, so it fails given the shallow ramps and the neutral outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16895
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crystal cluster on top",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal cap plate",
+      "rows": "12-16",
+      "evidence": "b",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-19"
+     },
+     {
+      "part": "shaft and base",
+      "rows": "17-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 14,
+     "shaft_width": 8,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The crystal (rows 1-11) is decor. Below it the pedestal cap runs from row 12 (width 12) through rows 13-15 (width 14) and narrows to 12 at rows 16-17, then 10 at rows 18-19, then the 8-wide shaft. That is an overhanging rounded plate about 5 rows tall. Light edge lines at rows 14 and 16 mark the front rim, and a brown band at rows 17-19 acts as the shadow beneath it. The shaft (rows 17-30) is a vertical front face over a flared foot at rows 26-30. The cap is fairly squat and its rounding is subtle, but it matches the ellipse-cap pattern in the guide rather than a flat band."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small faceted crystal on a grey stone pedestal. It has about 14 colours in total, so each material gets only about 4 shading steps (crystal facets, pedestal top, face and base) against the references' 5-6. Its 9 visible tones per tile match the hedge but sit well below the well (20) and stall (17). Flat-fill coverage is 0%, so there are no large flat areas. The measured dark edge pixels are 100% near-neutral, and by eye the outline is a uniform dark grey/black line around the crystal and pedestal. That is the sticker look, not the tinted dark-material outline of the hedge, stall and well, whose neutral shares are 0%, 1% and 33%. The pedestal has little stone grain or per-block shading, and the crystal is shaded with only a few facets. Next to the richer references it looks thinner and more outlined, so it fails on the outline and the shallow ramps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16858
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crystal cluster on top",
+      "rows": "1-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone cap plate of pedestal",
+      "rows": "12-16",
+      "evidence": "b",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-19"
+     },
+     {
+      "part": "shaft with brown bands",
+      "rows": "17-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 14,
+     "shaft_width": 8,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The crystal (rows 1-12) is decor. The stone cap widens from 12 to 14 px across rows 12-15 and narrows again to 12, 10 and 8 px across rows 16-20, so it overhangs the 8 px shaft. A light front-edge line at row 16 is followed by a brown band at rows 17-19. This gives an elliptical cap plate of about 5 rows. The shaft below (rows 17-25) is a vertical face of about 14 rows, and the base flares to 14 px at rows 27-29."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small crystal on a grey stone pedestal. Each material ramp looks like about 3 steps: the crystal has a white highlight, a light blue and a mid blue, and the pedestal has a light grey, a mid grey and a dark grey. The Beodeul well, stall and hedge carry 5-6 steps per material with per-stone and per-tile detail. The measured dark edge pixels are 100% near-neutral, so the outline reads as a uniform dark grey/black line. It does not lean blue next to the crystal or warm next to the stone, which gives the sticker look. By contrast the hedge (0%), stall (1%) and well (33%) have tinted outlines. Visible tones per tile are 9, which matches the hedge but is well below the well (20) and stall (17). There are no large flat fills (0% flat coverage), but the pedestal faces have little grain or stone-by-stone shading. Overall it is clean but shallower and more sticker-like than the references, so it fails."
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19284
+  }
+ ],
+ "decidedAt": "2026-10-23T03:03:14.641Z",
+ "cells": {
+  "16": [
+   "0d4e069a5997e590",
+   "c8304daf4dfd0130"
+  ],
+  "24": [
+   "1f51fb98aaaba77b",
+   "6acf968c0617a5d1",
+   "6fc7b8e30335bfb8",
+   "774cc04e23460f01",
+   "7b86f05bf632bb41",
+   "82a12a284ef631c2",
+   "9e6912fc9a8edb9d",
+   "b157612e7264abd4",
+   "b86c7b12a31c8b50",
+   "c75e009d739a6492",
+   "cce1ade09ce7214d",
+   "ffda6c6482d063af"
+  ],
+  "32": [
+   "28c3eefdbf2dcb68",
+   "a237a7f0b55e096f",
+   "b7996ea6379be7f5"
+  ],
+  "48": [
+   "3c18656af2d2df88",
+   "7cda23f968c2fbb6",
+   "895279c3b88e51a7",
+   "a71cc2a627a5d21d",
+   "a9b2b0dbddeb39f1",
+   "ddee70cf83d05785"
+  ]
+ }
+}

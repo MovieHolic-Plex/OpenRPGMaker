@@ -15,6 +15,7 @@ import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'interior'))
 from ikit import Registry, K, OL, run_block, ROOT
+import stairart as SA   # noqa: E402
 
 BLOCK = 'interior_post'
 R = Registry(BLOCK, '우체국·맨션 공용부')
@@ -531,48 +532,21 @@ def _mc_elev(c):
 
 
 def _cstairs(c):
-    """콘크리트 계단 한 칸 폭 16×48 — 아래(발칸)에서 북쪽 벽 속으로 오른다. 디딤판 밝고 챌판 어둡고 코마다 미끄럼 방지 줄."""
-    rc(c, 0, 0, 16, 48, kc('yoru', -3))
-    ys = (2, 7, 12, 17, 22, 28, 34, 40)                                                               # 단 위 끝(먼 단 → 가까운 단)
-    for i, y in enumerate(ys):
-        y1 = ys[i + 1] if i + 1 < len(ys) else 47
-        t = -3 + (i * 4) // 7                                                                         # 먼 단은 어둡고 가까운 단일수록 밝다
-        tread = max(2, (y1 - y) - 2)
-        rc(c, 2, y, 11, tread, kc('conc', t + 1)); hl(c, 2, y, 11, kc('conc', t + 2))                  # 디딤판(코 밝음)
-        hl(c, 2, y + 1, 11, kc('hodo', t))                                                            # 미끄럼 방지 홈
-        rc(c, 2, y + tread, 11, y1 - y - tread, kc('yoru', -2 + i // 3))                              # 챌판(어둡게)
-        rc(c, 2, y, 2, y1 - y, kc('yoru', -3 + i // 3)); px(c, 4, y, kc('conc', t))                   # 왼쪽 벽이 드리운 그늘
-    rc(c, 2, 0, 11, 3, kc('yoru', -3))                                                                # 위는 벽 속 어둠으로 사라진다
-    rc(c, 0, 0, 2, 48, kc('conc', 0)); vl(c, 0, 0, 48, OL); vl(c, 1, 0, 48, kc('conc', 1))            # 왼쪽 벽 끝
-    rc(c, 13, 0, 3, 48, kc('conc', -1)); vl(c, 13, 0, 48, kc('tekko', 2)); vl(c, 14, 0, 48, kc('tekko', 0)); vl(c, 15, 0, 48, OL)   # 오른쪽 철 손잡이
-    for y in range(6, 46, 8): px(c, 14, y, kc('tekko', 3))
-    hl(c, 0, 47, 16, OL)
+    """맨션 공용 콘크리트 계단 한 칸 폭 — interior/stairart.py up_stairs(2026-10-22 다시 그림)."""
+    SA.up_stairs(c, 1, 'mansion', left='wall', right='pipe')
 
 
-@R.obj('mc-stairs-up', '공용 계단(위)', w=1, h=1, up=32, kind='wall', walk=[(0, 0)], stairs='up', use=('travel',), cat=MC, cat_ko=MC_KO,
+@R.obj('mc-stairs-up', '맨션 공용 계단(올라가는)', w=1, h=1, up=32, kind='wall', walk=[(0, 0)], stairs='up', use=('travel',), cat=MC, cat_ko=MC_KO,
        tags=('계단', '맨션', '엘리베이터 홀', '階段'), place='엘리베이터 홀 북쪽 벽 바로 아래(벽 가구 자리) — 발칸에 위층 links',
-       desc='맨션 공용 콘크리트 계단 한 칸 폭 — 북쪽 벽 속으로 오르고 디딤판 코마다 미끄럼 방지 줄, 오른쪽 철 손잡이. 발칸에서 위로 올라가면 위층으로 이동.')
+       desc='맨션 공용 콘크리트 계단 한 칸 폭 — 북쪽 벽 앞에서 천장 구멍으로 오른다. 밝은 디딤판·어두운 챌판, 위 단일수록 어두워 천장 구멍으로 사라진다. 양옆은 계단통 벽이고 왼쪽 벽에 비스듬한 쇠 손잡이. 올라가는 계단 — 들어서는 쪽: 남쪽 앞 칸(발칸 바로 아래 바닥). 오를 때 보는 방향: 북쪽(화면 위). 발칸에서 북쪽으로 걸으면 위층으로 이동하고, 위층 mc-stairwell-down(외복도 내려가는 공용 계단통) 남쪽 앞 칸에 계단을 등지고 남쪽(아래)을 보고 선다.')
 def _mc_st(c): _cstairs(c)
 
 
-@R.obj('mc-stairwell-down', '내려가는 공용 계단통', w=2, h=2, up=16, kind='floor', use=('travel',), stairs='down', walk=((0, 1), (1, 1)), cat=MC, cat_ko=MC_KO,
+@R.obj('mc-stairwell-down', '내려가는 맨션 공용 계단통', w=2, h=2, up=16, kind='floor', use=('travel',), stairs='down', walk=((0, 1), (1, 1)), cat=MC, cat_ko=MC_KO,
        tags=('계단', '맨션', '외복도', '階段', '난간'), place='외복도 한쪽 끝',
-       desc='외복도 끝 바닥에 뚫린 내려가는 콘크리트 계단통 2×2 — 북·동·서는 철 난간, 남쪽이 열린 입구. 윗줄(난간)은 막히고 아랫줄 두 칸은 밟는다 — 그 칸에 아래층 links.')
+       desc='외복도 바닥에 뚫린 2×2 콘크리트 계단통 — 북·동·서 철 난간, 남쪽만 열린 입구, 디딤판 코마다 노란 미끄럼 방지 줄. 북쪽으로 한 단씩 낮아지며 어두워진다. 윗줄(구멍)은 막히고 아랫줄 두 칸을 밟는다. 내려가는 계단 — 들어서는 쪽: 남쪽 앞 칸(키트 바로 아래 바닥, 북·동·서는 난간·턱으로 막힘). 내려갈 때 보는 방향: 북쪽(화면 위, 구멍 속 어둠 쪽). 아랫줄 두 칸(밟는 칸)에 들어서면 아래층으로 이동하고, 아래층 mc-stairs-up(맨션 올라가는 공용 계단) 남쪽 앞 칸에 계단을 등지고 남쪽(아래)을 보고 선다. 바닥 세 줄(구멍 줄·밟는 줄·앞 칸)이 필요하다 — 벽면 아랫줄 바로 아래 첫 바닥 줄부터 놓는다(난간 윗부분이 벽면 아랫줄 위로 솟는다).')
 def _mc_well(c):
-    rc(c, 1, 18, 30, 29, OL)
-    rc(c, 3, 20, 26, 24, kc('yoru', -2))
-    for i in range(6):
-        y = 22 + i * 4
-        t = -2 + i // 2
-        rc(c, 4, y, 24, 2, kc('conc', -t - 1)); hl(c, 4, y, 24, kc('conc', -t)); hl(c, 4, y + 1, 24, kc('kii', -2) if i % 2 == 0 else kc('conc', -t - 1))
-        rc(c, 4, y + 2, 24, 2, kc('yoru', -1 - (i % 2)))
-    rc(c, 1, 44, 30, 3, kc('conc', 0)); hl(c, 1, 44, 30, kc('conc', 2)); hl(c, 1, 46, 30, kc('conc', -2)); hl(c, 1, 47, 30, kc('conc', -3))
-    rc(c, 2, 17, 28, 2, kc('tekko', 1)); hl(c, 2, 17, 28, kc('tekko', 3)); hl(c, 2, 19, 28, kc('tekko', -2))   # 북쪽 손잡이
-    for x in (6, 11, 16, 21, 26): rc(c, x, 19, 1, 3, kc('tekko', 0))
-    for x in (1, 29):
-        c.R(x, 18, 2, 27, kc('tekko', 0)); vl(c, x, 18, 27, kc('tekko', 2))
-        rc(c, x - 1 if x == 1 else x, 6, 3, 40, kc('tekko', -2)); rc(c, x, 7, 1, 38, kc('tekko', 0))   # 옆 난간 기둥
-        rc(c, x - 1 if x == 1 else x, 4, 3, 2, kc('tekko', 3))
+    SA.down_well(c, 'mansion')
 
 
 @R.obj('mc-railing', '외복도 난간(허리벽 + 철 난간)', w=1, h=1, up=0, kind='floor', cat=MC, cat_ko=MC_KO, use=('block',),

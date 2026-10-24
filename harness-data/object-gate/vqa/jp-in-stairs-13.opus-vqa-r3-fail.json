@@ -1,0 +1,4 @@
+{"queue":"jp-in-stairs-13","round":3,"judge":"claude-opus-5.5 (fresh subagent, no prior scores)","date":"2026-10-22","verdict":"fail","majors":8,"axis2":7,"axis6":5,
+ "majorFindings":["stairwells (wood, sc, mc, of, as): rails ran to the south edge + closed outline -> read as crate/cage/cabinet, not a floor hole","mc-stairs-up, of-stairs-up: 1-cell grey stripes read as ladder/shutter","scene school 2F/3F: up stair and stairwell had the same light-near/dark-far gradient, hard to tell apart"],
+ "minorFindings":["1-cell wood stair still narrow","bottom tread lacks riser","cs side walls thin","cs cones on wainscot"],
+ "action":"stairwells: transparent floor ring around the hole, side rails end in newels 4px north of the open south edge, no frame lines on W/E, deep treads sink into near-black (only nearest tread lit); 1-cell up stairs drop the west stringer (tread 12px), tread=ceil(p/2) light + mid + 1 dark"}

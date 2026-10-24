@@ -109,6 +109,10 @@
 }
 .battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup-heal { color: #80ff98; }
 .battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup-critical { color: #ffe878; }
+/* 약점을 찌른 숫자는 주황, 꼬리표 「약점!」은 노랑 — 광역기에서 누가 약했는지 숫자만 보고 안다. */
+.battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup[data-effectiveness="weak"] { color: #ffb347; }
+.battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup[data-effectiveness="resist"] { color: #b8c8d8; }
+.battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-damage-popup .battle-damage-popup-tag { font-size: 12px; }
 /* 상태 부여 팝업(「스톱」「암흑」) — 숫자 팝업 경로를 쓰는 표시 전용 글자. 숫자보다 작고 하늘색. */
 .battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup-status {
   color: #9fe8ff;

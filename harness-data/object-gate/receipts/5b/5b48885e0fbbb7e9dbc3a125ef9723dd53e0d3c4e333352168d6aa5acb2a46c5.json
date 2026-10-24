@@ -1,0 +1,372 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5b48885e0fbbb7e9dbc3a125ef9723dd53e0d3c4e333352168d6aa5acb2a46c5",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "standing candelabra",
+ "label": "beodeul_dungeon/earth.candelabra",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 48,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "candle flames and candles",
+      "rows": "0-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "arms with drip cups",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "central shaft",
+      "rows": "15-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base foot",
+      "rows": "24-29",
+      "evidence": "b",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "28-29"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The base is a stepped foot whose width profile widens and then narrows (rows 24-29: 5, 10, 12, 12, 10, 8). Its top rows 24-27 are lighter, and rows 28-29 are a dark front edge and shadow. That gives a small elliptical top of about 4 rows. The thin shaft (rows 15-24) is the front face. The arms (row 10 light tips, row 11 dark) show a small cup top with an edge line. The candles and flames at rows 0-9 are decor. The top surfaces are small but present, so this is not a pure front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candelabra is a thin, sparse prop, so the per-tile facts (0 tones, 0% flat) say nothing for or against it; I judged by eye against the lamp-crook and bench. The measured neutral share of dark edge pixels is 0%, so the outline carries a tint, unlike the lamp-crook's 100% neutral line. That puts it in the dark-material-tone family and avoids the sticker look. The metal stem and base show about 4 lightness steps, with highlight and shadow sides. The candles, flames and arms are separated by value rather than a uniform black line. It has 14 distinct colours, the same as the lamp-crook and bench references. There are no large flat fills. It reads slightly less textured than the best references (well, stall), but at this size and thinness a careful artist would accept it next to the lamp-crook without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18082
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flames",
+      "rows": "0-4",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "candles",
+      "rows": "4-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "arm cups / branch bar",
+      "rows": "10-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base disc",
+      "rows": "24-27",
+      "evidence": "b",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "28-29"
+     },
+     {
+      "part": "central shaft",
+      "rows": "12-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the thin shaft standing on a round base. The base widens and narrows again (widths 5, 10, 12, 12, 10, 8 over rows 24-29). Its left side is lighter on rows 25-27 (L=148, then 123) and goes dark on rows 28-29 (L=36-64), which reads as a small elliptical top about 3 rows high with a front edge at row 27 and shadow below. The candles and flames are decor. The arm cups at rows 10-11 are only a 2-row rim, but they are thin parts and not the main body. The shaft and base give a front face of 3+ rows. The top surface is small and marginal, but it is present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candelabra is a thin, sparse prop, so the per-tile tone count of 0 is not held against it. By eye it has a multi-step metal ramp on the stem and base, with highlight, mid and dark tones. The candles are pale and the flames are warm with a brighter core. Its dark edge pixels are 0% near-neutral, so the outline is tinted dark material tone rather than the black sticker line. Near-flat coverage is 0% and there are no large flat fills. It has 14 distinct colours, the same as the lamp-crook and bench references, and it looks no thinner or flatter than the lamp-crook. It is slightly less rich than the richest references (well, stall), which is expected for such a slender object. A careful artist would accept it next to the lamp-crook.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19495
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "candles and flames",
+      "rows": "0-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "arm cup / drip-tray plate",
+      "rows": "8-11",
+      "evidence": "b",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "stem",
+      "rows": "12-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round foot / base",
+      "rows": "24-29",
+      "evidence": "b",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "28-29"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 4,
+     "cap_width": 12,
+     "shaft_width": 2,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The candles with flames (rows 0-9) are ornaments on top, so I count them as decor. The foot at rows 24-29 has widths 5,10,12,12,10,8, so it widens and narrows again like an ellipse. Its highlighted top (rows 24-27) sits above dark shadow rows 28-29, which gives a visible top surface. The thin 2px stem (rows 12-23) is the front face. The arm plate at rows 8-11 (widths 8,9,12,10,6) also widens and narrows, with a lighter edge at row 10 and shadow at row 11, so it reads as a small ellipse. The foot is only moderately convincing as an ellipse because of the shading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candelabra is a thin, sparse prop, so the per-tile facts (0 visible tones, 0% flat) cannot be used against it. It has 14 distinct colours, the same as the bench and crook lamp, which are comparably thin references. By eye, the silver-grey stem and tripod base show about 4 steps (highlight, light, mid, dark). The cream candles and warm flames have their own small ramps, and the three arms are separated by value. The dark edge pixels are 0% neutral, so the outline leans toward the material's tint rather than a black sticker line, and it is used selectively. There are no large flat areas. It is slightly simpler than the well and stall, but a careful artist would accept it next to the lamp-crook and bench without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24414
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "candle flames and candles",
+      "rows": "0-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "arm tray / candle cups",
+      "rows": "8-14",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "base disc",
+      "rows": "24-29",
+      "evidence": "b",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "28-29"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the thin shaft on a base. The base widens and narrows again (5,10,12,12,10,8 over rows 24-29), which makes an ellipse. Its light top rows 25-26 have a darker front edge at row 27, then shadow in rows 28-29. The arm tray at rows 10-11 has a light top line (L=148 at x=4 and x=11) followed by a dark row, so it also shows a small top. The shaft (rows 15-24) and the base below the tray give a front face of about 14 rows. The candles and flames at rows 0-9 are decor and do not count as the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candelabra is a thin, sparse prop, so the per-tile facts (0 visible tones) say nothing against it, and I judged it by eye against the thin references, mainly prop-lamp-crook. Its near-neutral share of dark edge pixels is 0%, so the outline is tinted. It reads as a dark metal tone rather than a uniform black sticker line, which is better than the lamp-crook's 100% neutral edge. The metal stem, curved arms and pedestal base show about 4 lightness steps with highlight and shadow sides. The candles have lit tops and flames, which adds detail. Near-flat coverage is 0% and there are no large flat fills. It is a little simpler than the richest references (well and stall), but it is at least as rich as the lamp-crook and bench, which are the same kind of thin prop. A careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17012
+  }
+ ],
+ "decidedAt": "2026-10-23T03:14:49.813Z",
+ "cells": {
+  "16": [
+   "d93c04087e42a14b",
+   "d96a425cf1c268c1"
+  ],
+  "24": [
+   "065cffebffe74f95",
+   "23e2712582d1e35d",
+   "28b4a4f375b6c8fd",
+   "4d3570a28f280cd2",
+   "6cf8bfa03cce210b",
+   "76834d582067a834",
+   "835e84e4cc799b01",
+   "8a4c4a4a19a2afce",
+   "bdb3eecdb2a0ffe1",
+   "eb02661e5fc95a7f",
+   "edf78912b794e6c6",
+   "f45faed27b3ea64c"
+  ],
+  "32": [
+   "00d4b3c26571ea57",
+   "3167a3d9f860963b",
+   "b3c922736e81dfa1"
+  ],
+  "48": [
+   "2333a1de523cc21c",
+   "2ada38c8316ed973",
+   "48e240f2a700449e",
+   "a95a423cb10e7159",
+   "c9daceca7252c917",
+   "fd23b4b9dcf27a94"
+  ]
+ }
+}

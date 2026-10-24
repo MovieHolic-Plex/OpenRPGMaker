@@ -651,6 +651,8 @@
 
 .asset-source-viewport {
   background: #1c1a17;
+  color: #ece8df;
+  color-scheme: dark;
   min-height: 420px;
   position: relative;
 }

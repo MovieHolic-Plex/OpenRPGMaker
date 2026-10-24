@@ -91,7 +91,7 @@ export function clearUpperByLabel(project: Project, map: GameMap, pattern: RegEx
  * bank="bankLava" 는 같은 모양의 그을린 흑요석 둑(검은 재 띠 + 불씨 주황 모서리) — 추락 구덩이용. 풀 둑은 진흙 입술로 읽힌다(감사 라운드 2).
  * 이미 2층에 무언가 있는 칸은 건드리지 않는다. 얹은 칸 수를 돌려준다.
  */
-export function rimPit(project: Project, map: GameMap, cells: ReadonlySet<number>, bank: "bankGrass" | "bankLava" = "bankGrass"): number {
+export function rimPit(project: Project, map: GameMap, cells: ReadonlySet<number>, bank: "bankGrass" | "bankLava" | "bankMud" = "bankGrass"): number {
   const tileset = project.tilesets[map.tilesetId];
   if (!tileset) return 0;
   const nature = project.tilesets[BEODEUL_NATURE_ID] && project.tilesets[BEODEUL_NATURE_ID]!.count >= BEODEUL_NATURE.count
@@ -294,9 +294,12 @@ export function padMapCentered(map: GameMap, padX: number, padY: number, rockTil
   map.lowerOverlayTiles = shiftLayer(map.lowerOverlayTiles, () => -1);
   map.upperOverlayTiles = shiftLayer(map.upperOverlayTiles, () => -1);
   map.width = nw; map.height = nh;
+  // 같은 명령 객체가 여러 페이지·목록에 공유되어 있으면 한 번만 민다 — 여러 번 밀려 화로 점화 그림이 방 밖 (30,19) 같은 칸에 찍혔다.
+  const seen = new Set<object>();
   const walk = (node: unknown): void => {
+    if (!node || typeof node !== "object" || seen.has(node)) return;
+    seen.add(node);
     if (Array.isArray(node)) { node.forEach(walk); return; }
-    if (!node || typeof node !== "object") return;
     const rec = node as Record<string, unknown>;
     if (rec.kind === "changeTile" && rec.mapId === map.id && typeof rec.x === "number" && typeof rec.y === "number") { rec.x += padX; rec.y += padY; }
     if (rec.kind === "m2Command") {

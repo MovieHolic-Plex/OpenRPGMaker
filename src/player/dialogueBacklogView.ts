@@ -2,6 +2,7 @@
 // 백로그 전체 화면 — 지난 대사를 스크롤로 다시 읽는다(2026-10-17, 미연시 시스템 UI 1단계).
 // 대사창의 「백로그」 단추·L·휠 위, ESC 메뉴의 「백로그」 둘이 같은 화면을 연다. 화자 이름·본문·선택지로 고른 항목을 보인다.
 // 키는 문서 캡처 단계에서 가로채 게임·대사창에 새지 않게 한다(Esc 가 컷신 건너뛰기·메뉴 토글로 번지면 안 된다).
+import { installTapOrSwipeToClose } from "@/player/touchTap";
 import { dialogueUiText } from "@/player/dialogueUiStrings";
 import { isCancelKey, isConfirmKey, normalizeKey } from "@/player/keyBindings";
 import type { AuthoredDialogueSystem, BacklogEntry } from "@/project/dialogueSystem";
@@ -113,6 +114,7 @@ export function openBacklogView(options: {
     else if (key === "end") list.scrollTop = list.scrollHeight;
   };
   document.addEventListener("keydown", onKey, true);
+  installTapOrSwipeToClose(root, closeBacklogView);
   root.addEventListener("wheel", (event) => { event.stopPropagation(); }, { passive: true });
   options.host.append(root);
   view = { root, list, onKey, onClose: options.onClose };

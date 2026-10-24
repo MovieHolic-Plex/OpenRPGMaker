@@ -1,0 +1,34 @@
+{
+ "queue": "jp-in-stairs-13",
+ "round": 29,
+ "judges": "3x claude-opus-5.5 fresh subagents in parallel, no prior scores; a major counts only if >=2 of 3 raise it",
+ "date": "2026-10-22",
+ "verdict": "fail",
+ "perReviewer": {
+  "A": {
+   "majors": 3,
+   "axis2": 7,
+   "axis6": 6
+  },
+  "B": {
+   "majors": 3,
+   "axis2": 8,
+   "axis6": 6
+  },
+  "C": {
+   "majors": 2,
+   "axis2": 8,
+   "axis6": 6
+  }
+ },
+ "majorityMajors": [
+  "grey stairwells sc/mc/of (A+B+C): at 1x evenly spaced dark bars on a dark field inside light vertical side frames -> oven/radiator/appliance"
+ ],
+ "minorityMajors": [
+  "stairwell-down-wood hearth (A only)",
+  "cs-stairs-up-bare shutter (C only)"
+ ],
+ "upStairs": "no majority major on any up stair",
+ "majoritycount": 1,
+ "action": "grey wells: brighter slow ramp, drop lines only two steps darker (no black slats), shallow pit walls (<=3px), no light lip line, side handrails in mid steel"
+}

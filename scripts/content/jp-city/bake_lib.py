@@ -204,7 +204,7 @@ def check_definition(data, expect_tpr=TPR):
         if m.get('source') not in ENUM['source']: no('source', i)
         if m.get('layerBacking') not in (None, 'none') and not isinstance(m.get('layerBacking'), int): no('layerBacking', i)
         if m.get('tags') is not None and not all(isinstance(t, str) for t in m['tags']): no('tags', i)
-        if m.get('passage') == 'solid' and (p['up'] or p['down']) or m.get('passage') in ('passable', 'star') and not p['up']: no('passage-vs-passability', i)
+        if m.get('passage') == 'solid' and (p['up'] or p['down']) or m.get('passage') in ('passable', 'star') and not any(p.values()): no('passage-vs-passability', i)
     gids = set()
     for g in data['tileGroups']:
         if g['id'] in gids: no('group-dup', g['id'])

@@ -1,0 +1,6 @@
+{
+  "stateEquals": { "screen": "field", "mapId": "map_variety_ridge", "x": 12, "y": 24 },
+  "testidPresent": ["runtime-state-json"],
+  "textAbsent": "모험 시작",
+  "note": "타이틀에서 Enter → 위로 2칸, 왼쪽 1칸이면 마을 (12,24). 타이틀 메뉴 글자는 사라져 있어야 한다"
+}

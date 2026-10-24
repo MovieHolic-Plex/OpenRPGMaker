@@ -1,0 +1,454 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "536b205321111c351490dba469d082e18d05e74b2082c4731e00e059a6be08f3",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "other.portal",
+ "label": "beodeul_dungeon/other.portal",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 3 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 3 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 13,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pillar caps (left and right)",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "arch/pediment outline over opening",
+      "rows": "2-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gem at apex",
+      "rows": "2-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth strip",
+      "rows": "42-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The portal is a flat, face-on elevation. The two side pillars are vertical panels with 2-row caps (rows 8-9, then a lighter band at 10-11). They have no front-edge line and no eave shadow, and no ellipse. The arch at the top (rows 2-9) is a thin sloped outline around a dark interior, not a roof plane with tile rows. The base (rows 42-45) is a front-facing strip. The dark opening (rows 12-41) is filled with a crossed-bar pattern and a central gem, all vertical. The width profile rises steadily from 2 to 46 over rows 1-9 and then stays at 46, which matches the arch outline silhouette and not any top surface. No lintel or roof top surface is visible, so the main top is at most a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small purple portal or shrine frame, not a building with roof, walls and door like the references, so the kind match is weak. It shows about 3 lightness steps on its main purple ramp, plus a gem accent and a dark interior. The references use 5-6 steps per material. Dark edge pixels are 0% neutral, so the outline is a tinted dark purple, which counts as dark_material_tone. The measured facts put it at 8 visible tones per tile against 10-12 for the references. Near-flat coverage is 19% against 0% for both references, so there are flat fills in the dark interior and panel areas. It has none of the per-tile highlights, grain or speckle that the roof and stone references carry. It would look thinner and flatter than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15060
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gable/arch frame over the opening",
+      "rows": "2-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right pillars (caps with small horns)",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gem on the arch crown",
+      "rows": "2-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth band",
+      "rows": "42-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The portal is a flat frontal drawing: two pillars with a dark sealed interior, crossed bars and a central gem disc. The top is a stepped 1-2 row outline that slopes from the gem down to the pillars (width grows 2 to 44 over rows 1-8). It has no filled roof plane, no front-edge line and no eave shadow. The pillar tops are thin rims with small horns. The base at rows 42-45 is a front-facing band. The whole body from rows 8-41 is a vertical face, so there is no readable top surface and no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate portal is a small, simple arch/gate with a purple-tinted dark frame and a gem at the centre. Its outline is a tinted dark purple, not neutral black (0% neutral edge pixels), so that part matches the Beodeul approach. The shading is shallow, though: the frame and the inner panel show about 3 lightness steps, against 5-6 on the reference roofs and walls. Texture is minimal. The inner panel is mostly flat dark fill with a few diagonal lines, and 19% of the piece is near-flat against 0% on both references. It shows 8 visible tones per tile against 10-12, and it has no per-tile highlights, grain, speckle or stone-by-stone shading like the references. A careful artist would find it flatter and thinner than the houses beside it. Because the piece is small and compact, the density fact alone would not fail it, but the shallow ramps, the flat panel fills and the lack of grain all point the same way.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15561
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "arched lintel / gable frame",
+      "rows": "1-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side pillars with horn tips",
+      "rows": "4-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base threshold step",
+      "rows": "42-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gem above arch and gem in door center",
+      "rows": "2-7, 21-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The portal is drawn flat-on. The top (rows 1-9) is a front-facing peaked or arched frame that widens from 2 to 44 px. It has no front-edge line, no eave shadow and no visible roof plane or tile rows, so it reads as a silhouette outline rather than a top surface. The two side pillars and the dark door interior with crossed blades and a gem (rows 10-41) are all vertical faces with flat caps. The base at rows 42-45 is a front-facing threshold strip, not a horizontal surface. There are 36 or more rows of front face and no ellipse, roof slope or top plane, so it is front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small purple portal/shrine with a dark-purple frame and a glowing gem. Its outlines lean purple (0% near-neutral dark edge pixels), so they are dark material tone rather than a black sticker line. Shading is shallow, with about 3 steps on the frame and the dark interior panel. It has 8 visible tones per tile against 12 and 10 in the references. 19% near-flat coverage against 0% for both references shows flat fills in the dark interior and frame areas. The references have per-tile roof scallops, plaster speckle and stone-by-stone shading, which the candidate largely lacks. Only 16 distinct colours overall against 185 and 66 for the references. It reads as a clean but flatter, simpler piece than the Beodeul buildings.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16510
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "arched lintel / pediment with gem",
+      "rows": "2-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right pillars (flat tops with horn tips)",
+      "rows": "1-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth strip",
+      "rows": "42-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold-framed gem on door",
+      "rows": "21-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The portal is drawn flat-on. The arch at rows 2-9 is a stepped, front-facing outline (widths 2, 6, 10, 14, 24, 32, 38, 44) with no front-edge line and no eave shadow, so it reads as a vertical arch band rather than a roof plane. The pillars at rows 5-42 end in flat, narrow tops with no horizontal surface. The base at rows 42-45 is a 4-row front strip (L=73 then L=45) with no top. The dark door opening (rows 12-41) is a vertical face with a gem and crossed bars, so no top surface appears anywhere on the structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small purple portal/shrine, much simpler than the full houses. Its measured 8 visible tones per tile is below the references' 10-12, and 19% near-flat coverage against 0% for both references, so there are visible flat fills in the dark panels and frame. Only 16 distinct colours in total against 66-185 for the references. The dark edge pixels are tinted (0% neutral), so the outline reads as a dark purple material tone rather than a black sticker line, which is good. Shading on the frame and doors is shallow, about 3 steps, with little per-surface grain or per-element highlighting like the roof-tile scallops and stone-by-stone shading on the references. Next to the references it looks flatter and thinner. The glowing gem centre is the only richly detailed spot.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17521
+  }
+ ],
+ "decidedAt": "2026-10-23T02:52:32.491Z",
+ "cells": {
+  "16": [
+   "0c07c7e8b6e413e8",
+   "187b47694c9c514b",
+   "1f42b46f029b0859",
+   "2e70bc3d86e07e01",
+   "598722461bbcf04d",
+   "66213f6d8ab723ba",
+   "9f5046db1bdc2327",
+   "a46b5213e10dd97e",
+   "af0f08838a1c2d12"
+  ],
+  "24": [
+   "643c8e3331f40352",
+   "6a47310c966d1627",
+   "883c71a3ba692200",
+   "954d875d9867ecc3"
+  ],
+  "32": [
+   "016ec4469328ceaa",
+   "0c5763ce8ce80e62",
+   "11fa377dc10a889b",
+   "33932b1767cbc6de",
+   "3a88d02911c2120c",
+   "49462279aa58fed9",
+   "4ee7d64c38fc0fdc",
+   "55fcde7084eabed1",
+   "5602b4a972059ed4",
+   "649c4b394ad55ebf",
+   "6cc42bbc4379ce18",
+   "6efff4d1a496c4fc",
+   "78eccde0750c0f73",
+   "8425592e247f9388",
+   "8f0f7cac0da8624c",
+   "9376ca2a78e7ff45",
+   "9b35491a9a94dbf4",
+   "a1401d3a1526e4e2",
+   "a58416747fe48765",
+   "b34efa36b82b34ef",
+   "bd6e5bc707c62521",
+   "c2138af44f0d3c53",
+   "c8a338a69c13db81",
+   "df0c1b164cf03680"
+  ],
+  "48": [
+   "5a2fd6ae44b04131"
+  ]
+ }
+}

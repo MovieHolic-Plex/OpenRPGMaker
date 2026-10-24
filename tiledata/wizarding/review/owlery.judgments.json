@@ -134,11 +134,11 @@
   },
   "wz-owl-stair-up": {
     "verdict": "PASS",
-    "reason": "recheck: treads, nosing shadows and risers now read as ascending stairs."
+    "reason": "2026-10-23 다시 그림(원근 디딤판·얇은 챌판/계단통 얇은 내림 단). Opus 적대 검수 r2 3명 중 다수 major 0 — 올라가는/내려가는 계단으로 1배·3배에서 읽힘, 3/4 윗면 일관, wizarding_world 화풍. {'wz-clock-stair': 'object-gate PASS (wizarding_world refs)', 'wz-castle-stair-up': 'object-gate PASS (wizarding_world refs)', 'wz-hd-stairs-down': 'object-gate PASS (wizarding_world refs)', 'wz-owl-stair-down': 'object-gate PASS (wizarding_world refs, kind flat)', 'wz-owl-stair-up': 'object-gate REFER → fresh Argon adversarial PASS → delegated allow 2026-10-23', 'wz-castle-stair-down': 'object-gate REFER (style split) → fresh Argon adversarial PASS → delegated allow 2026-10-23'}."
   },
   "wz-owl-stair-down": {
     "verdict": "PASS",
-    "reason": "recheck: floor-rim frame and darkening steps read as stairwell going down."
+    "reason": "2026-10-23 다시 그림(원근 디딤판·얇은 챌판/계단통 얇은 내림 단). Opus 적대 검수 r2 3명 중 다수 major 0 — 올라가는/내려가는 계단으로 1배·3배에서 읽힘, 3/4 윗면 일관, wizarding_world 화풍. {'wz-clock-stair': 'object-gate PASS (wizarding_world refs)', 'wz-castle-stair-up': 'object-gate PASS (wizarding_world refs)', 'wz-hd-stairs-down': 'object-gate PASS (wizarding_world refs)', 'wz-owl-stair-down': 'object-gate PASS (wizarding_world refs, kind flat)', 'wz-owl-stair-up': 'object-gate REFER → fresh Argon adversarial PASS → delegated allow 2026-10-23', 'wz-castle-stair-down': 'object-gate REFER (style split) → fresh Argon adversarial PASS → delegated allow 2026-10-23'}."
   },
   "wz-owl-door-closed": {
     "verdict": "PASS",

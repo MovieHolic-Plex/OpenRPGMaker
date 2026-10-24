@@ -1,0 +1,20 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "04a96e2cd308307807ad8a54fa38e2d49e426aa95bb45a75b15133abdd216ea8",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-20T22:09:47.221Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(top_down_slab) (3/4)",
+  "3/4: 앞면 0행 < 3 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "note": "묶음 허용: Astra 센터·마트 키트 32칸 (4d293f96db) — 사용자 위임·Opus 적대 VQA 통과 2026-10-21 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/astra-centre-mart-kits.opus-vqa-r2.json",
+ "sig": "8f31f77e84486321413974cdde6e0f3450b1341da596b42ec0a1ab0061d8c9b3"
+}

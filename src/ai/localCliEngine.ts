@@ -7,7 +7,7 @@
 // 지금은 고른 사람만 쓴다(D1: 동등성 입증 전 opt-in). 설정 화면(첫 화면 개편, home-redesign-1)이 이 값을 쓴다.
 // 화면이 오기 전에는 개발 콘솔에서: `localStorage.setItem("oprn:assistant-engine", JSON.stringify({ kind: "local-cli", cli: "claude" }))`.
 
-import type { RoleModel, SpecialistModels } from "./modelRoles";
+import type { RoleModel, SpecialistModels, ThinkingEffort } from "./modelRoles";
 
 export type LocalCliEngineId = "claude" | "codex" | "gemini";
 export const LOCAL_CLI_ENGINE_IDS: readonly LocalCliEngineId[] = ["claude", "codex", "gemini"];
@@ -78,7 +78,7 @@ export function saveAssistantEngine(choice: AssistantEngineChoice | undefined): 
  * 엔진 선택을 설정에 입힌다 — 실행·시공·작문·시각 역할과 계획(ultrabrain)이 모두 같은 CLI 로 간다.
  * 키가 필요한 계정 역할을 섞지 않는다(우리는 키를 쥐지 않는다). 이미지 생성 칸은 건드리지 않는다(CLI 는 그림을 만들지 않는다).
  */
-export function applyAssistantEngine<T extends { providerId?: string; model: string; liteModel?: string; roleModels?: SpecialistModels; pixelModel?: RoleModel; ultrabrainProviderId?: string; ultrabrainModel?: string; ultrabrainReasoningEffort?: "low" | "medium" | "high" }>(config: T, choice: AssistantEngineChoice | undefined): T {
+export function applyAssistantEngine<T extends { providerId?: string; model: string; liteModel?: string; roleModels?: SpecialistModels; pixelModel?: RoleModel; ultrabrainProviderId?: string; ultrabrainModel?: string; ultrabrainReasoningEffort?: ThinkingEffort }>(config: T, choice: AssistantEngineChoice | undefined): T {
   if (!choice) return config;
   const provider = localCliProviderId(choice.cli);
   const routine = choice.routineModel ?? LOCAL_CLI_DEFAULT_MODELS[choice.cli].routine;

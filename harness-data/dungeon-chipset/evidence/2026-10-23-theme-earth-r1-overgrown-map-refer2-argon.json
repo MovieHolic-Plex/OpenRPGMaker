@@ -1,0 +1,14 @@
+{
+  "piece": "earth.overgrown A2 decal on the Beodeul ruin floor (assembled sample)",
+  "pixelSha256": "2d1ed7f5421a4cfcfb94e5f78c1017ac7dbbf6bfe3761a99e2b4d04586b9a382",
+  "receipt": "/home/main/z-project/rpg-zzu-dt-earth/harness-data/object-gate/receipts/2d/2d1ed7f5421a4cfcfb94e5f78c1017ac7dbbf6bfe3761a99e2b4d04586b9a382.json",
+  "verdict": "pass",
+  "sure": true,
+  "view34": "Flat floor decal on 3/4 top-down stone slabs; moss tufts, creeping grass blades, and the dark fissure lie flush with the floor plane and follow the mortar seams without false vertical volume.",
+  "style": "The new overgrowth decal uses a 4-5 step Beodeul olive/moss green ramp and warm dark-brown fissure tones that match the Beodeul grass reference beside it; the gate split (2/4 fail) only penalized the calm faces of the existing underlying Beodeul ruin floor slabs.",
+  "reasons": [
+    "Reads clearly as grass tufts, moss patches, and a dark slab crack breaking through the ruin floor joints flat on the ground.",
+    "Green pixel clusters and dark-material-tone crack shading match the Beodeul palette and pixel grain.",
+    "In the 3x room scene with the character and mossy stone wall, the assembled floor reads naturally as an overgrown temple ruin floor."
+  ]
+}

@@ -109,7 +109,19 @@ export function openCommandPalette(): HTMLElement {
             el("span", { class: "command-palette-item-desc", text: entry.detail }),
             ...(entry.hotkey ? [el("span", { class: "command-palette-hotkey", text: entry.hotkey })] : []),
           ],
-          on: { click: () => runEntry(entry) },
+          on: {
+            click: () => runEntry(entry),
+            // hover 가 Enter 대상을 옮긴다 — 키보드 선택과 hover 가 따로 강조돼 대상이 모호했다.
+            // 목록을 다시 그리면 hover 가 끊기므로 클래스만 옮긴다.
+            mousemove: () => {
+              if (index === activeIndex) return;
+              activeIndex = index;
+              listHost.querySelectorAll(".command-palette-item").forEach((node, nodeIndex) => {
+                node.classList.toggle("is-active", nodeIndex === index);
+                node.setAttribute("aria-selected", String(nodeIndex === index));
+              });
+            },
+          },
         }),
       );
     });
@@ -130,6 +142,13 @@ export function openCommandPalette(): HTMLElement {
       const entry = entries[activeIndex];
       if (entry) runEntry(entry);
     }
+  });
+  // aria-modal 이므로 Tab 이 배경(톱바 메뉴·자료집 단추 등)으로 나가지 않게 입력칸으로 되돌린다.
+  // 초점이 항목 버튼에 있어도 백드롭에서 받는다.
+  backdrop.addEventListener("keydown", (event) => {
+    if (event.key !== "Tab") return;
+    event.preventDefault();
+    search.focus();
   });
   backdrop.addEventListener("mousedown", (event) => {
     if (event.target === backdrop) close();

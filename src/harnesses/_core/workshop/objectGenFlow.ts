@@ -18,6 +18,7 @@ import type { ChatMessage, ContentPart } from "@/ai/llmClient";
 import { footprintClass, isOrganicObject } from "./footprint";
 import { kitConstant, kitFile, objectGenKit } from "./genKits";
 import { gridToAnswer, onBackground, renderGrid, scaleImage } from "./grid";
+import { styleFacts } from "@/harnesses/object-gate/node/facts";
 import type { BaseInfo, DrawContext, Grid, Palette, PaletteEntry, Rgba, RgbaImage, ReviewContext, Verdict, WorkshopEnv, WorkshopItem } from "./types";
 
 type KitSection = "prompts" | "reference" | "picker" | "vqa" | "drawer" | "exemplars" | "footprint" | "checks";
@@ -594,10 +595,19 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
   const edge = painted.filter(([x, y]) => [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => at(x + dx!, y + dy!) === null));
   const ink = edge.filter(([x, y]) => { const e = palette.byKey.get(at(x, y)!); return e ? (e.rgba[0] + e.rgba[1] + e.rgba[2]) / 3 <= 30 : false; });
   if (edge.length && ink.length > 0.6 * edge.length) warn.push({ code: "INK", msg: `${ink.length}/${edge.length} edge pixels are near-black - outline with the material's darkest shade` });
-  const topRows = topPlaneRows(renderGrid(grid, palette));
+  // 화풍 밀도(2026-10-23): 공방 「한 번에 만들기」의 마지막 관문(object-gate 화풍 판정자)은 칸당 보이는 색조를 칩셋 소품과 나란히 잰다.
+  // 실측 — 낡은 우물 두 장이 모양은 맞았지만 「보이는 색조 14 vs 기준 20, 지붕이 납작」으로 4/4 탈락해 다시 그리기까지 16분을 썼다.
+  // 관문 기준은 그대로 두고, 그리는 쪽이 같은 숫자를 미리 보고 고치게 경고만 단다(통과 판정에 쓰지 않는다).
+  const rendered = renderGrid(grid, palette);
+  const facts = styleFacts({ width: rendered.width, height: rendered.height, data: rendered.data as unknown as Uint8Array });
+  if (!LOOSE_STYLE_KINDS.has(item.gateKind ?? "") && facts.visibleTonesMedian > 0 && facts.visibleTonesMedian < STYLE_TONES_FLOOR) {
+    warn.push({ code: "THIN", msg: `${facts.visibleTonesMedian} visible tones per full 16x16 tile (median) - comparable props of this chipset carry about 17-20 (a roofed well 20, a market stall 17); the style gate fails thin, flat shading. Give each material 5-6 shades (tile/plank texture with highlights on roofs, individually shaded stones)` });
+  }
+  if (facts.nearFlatFill > 0.2) warn.push({ code: "FLAT", msg: `${Math.round(facts.nearFlatFill * 100)}% of the object is 5x5 blocks with no visible change - break flat fills with texture and shading` });
+  const topRows = topPlaneRows(rendered);
   if (ogIsOrganic(item)) {
     // 반투명 화소(바닥 그림자)는 물체 모양이 아니다 — 모든 모양·잎 잣대에서 뺀다(object-gen geometry_issues)
-    const full = renderGrid(grid, palette);
+    const full = rendered;
     let translucent = 0;
     const solidData = new Uint8ClampedArray(full.data);
     for (let i = 3; i < solidData.length; i += 4) if (solidData[i]! < 255) { if (solidData[i]! > 0) translucent++; solidData[i] = 0; }
@@ -705,6 +715,10 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
   } else if (TOP_KINDS.has(item.gateKind ?? "") && STANDING.has(anchor) && topRows < 3) warn.push({ code: "TOP", msg: `measured top plane is ${topRows} row(s) (column scan) - a 3/4 top needs >= 3 lit rows above the front` });
   return { ok: hard.length === 0, hard, warn, topRows };
 }
+/** 칩셋 소품 수준의 칸당 보이는 색조 하한 — 경고용(관문 기준이 아니다). */
+const STYLE_TONES_FLOOR = 17;
+/** 풀·덤불·바닥 같은 종류는 칩셋 기준도 색조가 적다(버들항 산울타리 9) — 경고하지 않는다. */
+const LOOSE_STYLE_KINDS = new Set(["organic", "flat", "terrain", "debris"]);
 export const describeCheck = (check: OgCheck): string => [
   `${check.ok ? "PASS" : "FAIL"} (mechanical checks only - not an approval) · measured top plane ${check.topRows} row(s)`,
   ...check.hard.map((i) => `  FAIL ${i.code}: ${i.msg}`), ...check.warn.map((i) => `  warn ${i.code}: ${i.msg}`),
@@ -755,6 +769,13 @@ export function ogDrawBrief(ctx: DrawContext, opts: { readonly hasReference: boo
   ];
   const note = [ctx.roundNote, ctx.redrawNote].filter(Boolean).join("\n");
   if (note) lines.push("## Note from the person (follow first)", note, "");
+  if (ctx.gated) {
+    lines.push("## Final check (automatic, strict - nobody overrides it)",
+      "After the review the drawing goes to this chipset's 3/4 + style gate. It puts your drawing next to the chipset's own shipped props",
+      "at the same scale and fails anything thinner or flatter than them, even when the form is right. Built props there carry about 17-20",
+      "visible tones per 16x16 tile and 5-6 shades per material: roofs show tile or plank texture with highlights, stones are shaded",
+      "one by one, outlines use each material's darkest shade (not flat black), and there are no large flat fills.", "");
+  }
   const rules = ogRules(item);
   if (rules) lines.push("## Drawing rules for this set (follow them; the picker checks them as well as readability)", rules, "");
   const v = ctx.lastVerdict;
@@ -826,7 +847,8 @@ export function ogLookMessage(ctx: DrawContext, grid: Grid, env: WorkshopEnv, st
     content: [
       txt(`Look ${look}/${max}. preview: your drawing at 8x, then 1x (what the player sees), then 2x, on the floor colour.`),
       img(env.encodePng(scaleImage(art, 8))), img(env.encodePng(art)), img(env.encodePng(scaleImage(art, 2))),
-      txt(`j.dry: ${describeCheck(check)}\n\nFix every FAIL code; look honestly - would it sit next to the exemplars in the same game, and read at 1x? `
+      txt(`j.dry: ${describeCheck(check)}\n\n${ctx.gated && check.warn.some((w) => w.code === "THIN" || w.code === "FLAT")
+        ? "THIN/FLAT matter here: the final style gate measures exactly these numbers against this chipset's props and has failed drawings with fewer than about 17 visible tones per tile. Do not keep it as is - redraw the shading (more steps per material, textured roof and stones) and answer the whole JSON.\n\n" : ""}Fix every FAIL code; look honestly - would it sit next to the exemplars in the same game, and read at 1x? `
         + "Compare with the reference pictures (FORM only) and the exemplars above. If anything should change, answer the whole improved JSON "
         + "(same format). If it is done, answer exactly {\"keep\": true, \"note\": \"<what you drew, and anything that still does not read>\"}."),
     ],
@@ -988,10 +1010,20 @@ export function aggregateJudge(results: readonly JudgeRunResult[], need = OG_JUD
 /** 원본 vqa.review: 유효 3판이 모일 때까지(무효는 2번까지 더) 새 판정 호출. */
 export async function ogReview(ctx: ReviewContext, env: WorkshopEnv, style: OgStyle, anchors: OgAnchors | null, ask: (messages: ChatMessage[]) => Promise<string>, rand: Rand = Math.random): Promise<Verdict> {
   const results: JudgeRunResult[] = [];
-  for (let i = 0; i < OG_JUDGE_RUNS + OG_JUDGE_RETRIES; i++) {
+  const one = async (): Promise<JudgeRunResult> => {
     const run = ogJudgeRun(ctx, env, style, anchors, rand);
-    results.push(scoreJudge(await ask(run.messages), run.key));
+    return scoreJudge(await ask(run.messages), run.key);
+  };
+  // 첫 두 판은 함께 묻는다(2026-10-23 「한 번에 만들기」 속도). 둘 다 유효하고 판정이 같으면 셋째 판은 3판 다수결을 바꿀 수 없다 —
+  // 2:0 이면 셋째가 무엇이든 같은 결론이라 호출 하나를 아낀다. 갈리거나 무효가 있으면 원본처럼 유효 3판까지 더 묻는다.
+  results.push(...await Promise.all([one(), one()]));
+  const firstValid = results.filter((r) => !r.void);
+  if (firstValid.length === 2 && Boolean(firstValid[0]!.view34 && firstValid[0]!.quality) === Boolean(firstValid[1]!.view34 && firstValid[1]!.quality)) {
+    return aggregateJudge(results, 2);
+  }
+  for (let i = results.length; i < OG_JUDGE_RUNS + OG_JUDGE_RETRIES; i++) {
     if (results.filter((r) => !r.void).length >= OG_JUDGE_RUNS) break;
+    results.push(await one());
   }
   return aggregateJudge(results);
 }

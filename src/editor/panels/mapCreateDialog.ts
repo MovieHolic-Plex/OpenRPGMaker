@@ -1,3 +1,4 @@
+import { t } from "@/i18n";
 import { addMapFolder, createMapFromSpec } from "@/editor/actions";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { openEventSubdialog } from "@/editor/panels/eventEditor/subdialog";
@@ -28,7 +29,8 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
     render: (body, close) => {
       const name = el("input", {
         attrs: { type: "text", "aria-label": "맵 이름" },
-        value: spec.name,
+        // 저장되는 데이터 기본값이라 입력칸 value 는 DOM 번역이 건드리지 않는다 — 기본 이름만 현재 언어로 채운다.
+        value: localizedDefaultName(spec.name),
         dataset: { testid: "map-create-name" },
       }) as HTMLInputElement;
       const width = el("input", {
@@ -55,7 +57,7 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
       // (mapTree.insertTreeNode: parentId "" → root). 이 저장소의 최상위는 언제나 실제 맵
       // 하나라서 예전 「(루트)」는 없는 계층(형제 최상위 맵)을 약속했다 — 실제로 부모가 되는
       // 맵을 이름으로 밝힌다(OPRN-OUT-027). 저장 구조는 그대로다.
-      parent.append(el("option", { text: `${rootParentPrefix(project)}의 하위`, attrs: { value: "" } }));
+      parent.append(el("option", { text: t("{0}의 하위").replace("{0}", rootParentPrefix(project)), attrs: { value: "" } }));
       appendTreeParentOptions(parent, project.mapTree, project.maps, 0);
       parent.value = spec.parentId;
 
@@ -119,7 +121,7 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
           field("상위", parent),
           el("p", {
             class: "map-create-hint",
-            text: `상위를 고르지 않은 맵은 ${rootParentPrefix(project)}의 하위로 들어갑니다. 나란히 서는 최상위 맵은 만들 수 없습니다.`,
+            text: t("상위를 고르지 않은 맵은 {0}의 하위로 들어갑니다. 나란히 서는 최상위 맵은 만들 수 없습니다.").replace("{0}", rootParentPrefix(project)),
           }),
           el("p", {
             class: "map-create-hint",
@@ -167,8 +169,13 @@ export function openMapCreateUnder(parentId: MapId): void {
  * 최상위는 보통 실제 맵이지만 합성 분류가 앉을 수도 있어(mapInspection 의 같은 방어) 낱말을 가른다.
  */
 function rootParentPrefix(project: Pick<Project, "mapTree" | "maps">): string {
-  const noun = isMapTreeFolder(project.mapTree) ? "분류" : "맵";
-  return `최상위 ${noun} 「${mapTreeNodeLabel(project.mapTree, project.maps)}」`;
+  const label = mapTreeNodeLabel(project.mapTree, project.maps);
+  // 낱말을 가르지 않고 완성 문장 키로 둔다 — 조각 이어 붙임은 번역기가 잘못 잡는다.
+  return t(isMapTreeFolder(project.mapTree) ? "최상위 분류 「{0}」" : "최상위 맵 「{0}」").replace("{0}", t(label));
+}
+
+function localizedDefaultName(name: string): string {
+  return name === "새 맵" || name === "새 방" ? t(name) : name;
 }
 
 function appendTreeParentOptions(

@@ -1,0 +1,150 @@
+{
+ "round": "gap-lava-r2",
+ "panel": 1,
+ "at": "2026-10-23",
+ "item": "gap.lava_edge",
+ "labels": {
+  "P": "C1",
+  "Q": "C2",
+  "R": "B1",
+  "S": "B2"
+ },
+ "hashes": {
+  "C1": "63c495ba",
+  "C2": "a7d32a2c",
+  "B1": "3ad87fc7",
+  "B2": "938634e2"
+ },
+ "boards": "qa-runs/lava/p1/board-{P,Q,R,S}.png + frames3x-*.png",
+ "prompt": "qa-runs/lava/panel-prompt.txt",
+ "reviewers": [
+  "opus general-purpose A",
+  "opus general-purpose B",
+  "opus general-purpose C",
+  "argon"
+ ],
+ "raw_summary": {
+  "opusA": {
+   "P": [
+    "repeat-16",
+    "bank-no-depth",
+    "anim-shimmer"
+   ],
+   "Q": [
+    "repeat-16",
+    "crust-looks-like-rocks",
+    "bank-no-depth",
+    "anim-shimmer"
+   ],
+   "R": [
+    "repeat-16",
+    "bank-no-depth",
+    "anim-shimmer"
+   ],
+   "S": [
+    "repeat-16",
+    "crust-looks-like-rocks",
+    "bank-no-depth",
+    "anim-shimmer"
+   ],
+   "pick": {
+    "blue_black_cave": "neither",
+    "brown_cave": "neither"
+   }
+  },
+  "opusB": {
+   "P": [
+    "repeat-16",
+    "bank-no-depth"
+   ],
+   "Q": [
+    "crust-looks-like-rocks",
+    "repeat-16",
+    "bank-no-depth"
+   ],
+   "R": [
+    "repeat-16",
+    "bank-no-depth"
+   ],
+   "S": [
+    "crust-looks-like-rocks",
+    "repeat-16",
+    "bank-no-depth"
+   ],
+   "minors": "anim-lattice-persists P/R, anim-rock-jitter Q/S, palette-drift, rim-red-specks",
+   "pick": {
+    "blue_black_cave": "neither",
+    "brown_cave": "neither"
+   }
+  },
+  "opusC": {
+   "P": [
+    "repeat-16",
+    "bank-no-3/4"
+   ],
+   "Q": [
+    "repeat-16",
+    "crust-looks-like-rocks",
+    "bank-no-3/4"
+   ],
+   "R": [
+    "repeat-16",
+    "bank-no-3/4"
+   ],
+   "S": [
+    "repeat-16",
+    "crust-looks-like-rocks",
+    "bank-no-3/4"
+   ],
+   "minors": "anim-shimmer/blink all, scale-mismatch-ref, rim-red-dots",
+   "pick": {
+    "blue_black_cave": "neither",
+    "brown_cave": "neither"
+   }
+  },
+  "argon": {
+   "P": [
+    "repeat-32",
+    "anim-blink",
+    "ref-style-mismatch"
+   ],
+   "Q": [
+    "crust-looks-like-rocks",
+    "repeat-32",
+    "anim-blink"
+   ],
+   "R": [
+    "repeat-32",
+    "anim-blink",
+    "bank-grid",
+    "ref-style-mismatch"
+   ],
+   "S": [
+    "crust-looks-like-rocks",
+    "repeat-32",
+    "anim-blink",
+    "bank-grid"
+   ],
+   "pick": {
+    "blue_black_cave": "neither",
+    "brown_cave": "neither"
+   }
+  }
+ },
+ "counted_majors": {
+  "all": [
+   "repeat-lattice (4/4)",
+   "bank-no-depth: no lit north lip / darker south bank (3/4)",
+   "anim-blink: crust frozen, only highlights flicker (2/4 major + 2 minor)"
+  ],
+  "Q,S": [
+   "crust-looks-like-rocks (4/4)"
+  ]
+ },
+ "not_counted": [
+  "ref-style-mismatch (argon only; minors from others)",
+  "bank-grid north teeth (argon only)",
+  "rim-red-specks (minor)"
+ ],
+ "verdict": "no candidate passes; redraw"
+}

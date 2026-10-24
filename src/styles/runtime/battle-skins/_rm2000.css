@@ -1212,8 +1212,14 @@
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-target-cursor="cancel"] .battle-target-menu .battle-command:not(:disabled).battle-target-selected {
   background: none;
 }
+/* 손 커서는 **커서가 놓인 행 하나**에만 그린다. 적 대상 국면에서 화살표가 마지막 적을 지나
+   「뒤로」 행으로 넘어가면 battleDom.syncEnemyTargetCursor 가 root 에 `data-battle-target-cursor="cancel"`
+   을 붙이고 손은 그 행으로 간다 — 그런데 스킨의 손 규칙은 `.battle-target-selected`(조준 중인 적)만
+   보고도 손을 그려서, 대상 행과 「뒤로」 행에 손이 **둘** 떴다(실측: rt-scarloxy-double-target-cursor —
+   「핀스타 2」 + 「뒤로」). 조준 표시(금색 띠)는 남기고 손만 내린다. 예전엔 opacity 0.5 로 반만 죽였는데,
+   반투명 손도 손이다 — Enter 가 무엇을 누르는지 여전히 두 곳이 주장했다. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-target-cursor="cancel"] .battle-target-menu .battle-command:not(:disabled).battle-target-selected::before {
-  opacity: 0.5;
+  content: none;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-phase="targetSelect"] .battle-key-prompts {

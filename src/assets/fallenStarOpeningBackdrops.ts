@@ -5,7 +5,8 @@
  * 프롬프트는 게임의 16px 3/4 탑뷰 칩셋 화풍을 지시하고 실제 맵 화면을 참고 그림으로 주었다(.omo 작업 스크립트 genart.mts).
  * 원본(1672×941)을 게임 화면 배율에 맞춰 줄이고 64색 도트로 눌렀다 — 타이틀은 480×270(화면 1배), 오프닝 컷은
  * 카메라가 천천히 흐를 수 있게 528×297(1.1배)이다. 무대에서는 nearest 로 1배 그대로 그린다.
- * 후보 비교: ~/claude-viz/fallen-star-title-pick-1.html. 플레이어·내보내기는 generatedAssetResourceResolver 가 id 로 찾는다.
+ * 후보 비교: ~/claude-viz/fallen-star-title-pick-1.html. 타이틀·town·fall·morning 은 다시 짠 왕도(fallenTown.ts)를
+ * 참고 그림으로 다시 뽑았다(2026-10-21, ~/claude-viz/fallen-town-match.html, 이름 앞 fallen-town). 플레이어·내보내기는 generatedAssetResourceResolver 가 id 로 찾는다.
  */
 export type FallenStarArtId = 'title' | 'town' | 'fall' | 'observatory' | 'crash' | 'morning';
 
@@ -24,12 +25,12 @@ const art = (id: FallenStarArtId, width: number, height: number, source: string)
 });
 
 export const FALLEN_STAR_ART: readonly FallenStarArt[] = [
-  art('title', 480, 270, 'title-3 · by: supervisor'),
-  art('town', 528, 297, 'town-2 · by: supervisor'),
-  art('fall', 528, 297, 'fall-2 · by: supervisor'),
+  art('title', 480, 270, 'fallen-town walled title-3 · by: supervisor'),
+  art('town', 528, 297, 'fallen-town walled town-2 · by: supervisor'),
+  art('fall', 528, 297, 'fallen-town walled fall-1 · by: supervisor'),
   art('observatory', 528, 297, 'observatory-2 · by: supervisor'),
   art('crash', 528, 297, 'crash-2 · by: supervisor'),
-  art('morning', 528, 297, 'morning-2 · by: supervisor'),
+  art('morning', 528, 297, 'fallen-town walled morning-3 · by: supervisor'),
 ];
 
 export const FALLEN_STAR_BACKDROP_URLS: Readonly<Record<string, string>> = Object.fromEntries(

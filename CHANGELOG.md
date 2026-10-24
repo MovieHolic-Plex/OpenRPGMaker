@@ -5,6 +5,156 @@
 
 <!-- releases -->
 
+## 0.329.0 — 2026-10-24
+
+### 기능
+
+- **fallen-star** — act 1 story flow, Valen smoke exit, vault cultists, curated loot, town cast & north forest (#3338) (`3a976f5`)
+- **player** — touch list rows move the cursor first, tap the highlighted row to confirm; readable menu text on narrow touch screens (#3347) (`295048b`)
+
+## 0.328.0 — 2026-10-24
+
+### 기능
+
+- **fallen-star** — forest r2 — north of town, organic B1 woodland, hidden items, shrine rest point (#3344) (`b5f701f`)
+- **battle** — equipment damage-dealt / damage-taken percent traits (#3343) (`9417530`)
+- **player** — mobile controls in every state, Fold touch detection, closable log, portrait/landscape touch layout (#3333) (`52ee52e`)
+
+### 수정
+
+- **export** — declare Galmuri11.woff2 as a runtime asset (#3341 used it in fonts.css) (#3346) (`b298072`)
+- **player** — boot loader fits a landscape phone iframe and starts on any tap (#3345) (`952585b`)
+- **player** — pixel dialogue + field popup text on the font's pixel grid (Galmuri11 12px, whole-pixel stage); QA clips with SFX (#3341) (`7e7e6e5`)
+
+### 문서
+
+- **fallen-star** — act 1 script (boxes, event-id tags, side quests, readables L1-L10) (#3307) (`8e87019`)
+
+## 0.327.0 — 2026-10-24
+
+### 기능
+
+- **player** — account cloud saves for store web games via a postMessage bridge to the play page (#3339) (`34543bf`)
+- **events** — wall/room-aware NPC sight + hearing, door-open before door transfer, data-driven container search fx (#3336) (`a686f3d`)
+- **battle** — AoE lands on all targets at once; crit/weak/resist/weapon tags; weaponAffinity; state maxTurns; equipment drops; hit-wake order (#3334) (`262fdd2`)
+- **fallen-star** — six-map whispering forest + field monsters that spot and chase (#3332) (`6d4907e`)
+- **ai-v2** — add_event afterTalk; silhouette before the actor shows; per-leg scene walk cap (#3328) (`4615f8c`)
+- **player** — mobile UI pass - touch-size menus, shop, battle, title; notch-safe portrait (#3324) (`4d5a32d`)
+- **fallen-star** — act 1 core scenes — Iris waking, scope journal, Valen foreshadowing, ending cliffhanger (#3323) (`8690927`)
+- **fallen-town** — act 1 town lines and three side quests (#3322) (`84163cc`)
+- **store** — image packs + version-scoped service worker — full preload 32-39 s → 13-18 s (#3320) (`de12607`)
+- **fallen-star** — battle elements, sword/spear lines, item gimmicks, drops, encounter rate, potion rebalance (#3315) (`0a85854`)
+- **store** — play store games in the browser — auto-versioned publish, loading screen, full prefetch (#3318) (`ad7c143`)
+- **fs-town** — owners catch you only by sight, many containers in houses and street (#3317) (`dd8de6b`)
+- **fallen-star** — Hanel by the telescope with state-dependent lines, 10 lore readables, canopy-autotile forest rebuild (#3314) (`902bf6a`)
+- **ai-v2** — game-element layer (quests, items, shops, battles, party, switches) + night/camera/shadow scene beats + 40-case game comparison set (#3312) (`db2cd77`)
+- **flagship** — Fallen Star town life — searchable containers, Lisa catch/ban, Toma bread gimmicks, smithy (`65cb7f9`)
+- **player** — mobile touch play — D-pad/A/B, tappable UI, fit scaling, fullscreen, iOS audio unlock (#3309) (`764e861`)
+
+### 수정
+
+- **events** — timer page condition honours an optional op (default <=, the old behaviour) (#3329) (`2c7455b`)
+- **ai-v2** — scene-only actors walk at most 24 steps per scene; scene check flags 30+ step walks (#3327) (`b441767`)
+- **ai-v2,cutscene** — no flicker on cutscene skip landing; vanishing scene actors get no follow-up line; cards for affinity variables, renames and place names (#3326) (`6c1b5fb`)
+- **ai-v2** — scenes after an NPC's talk, existing-map add-ons, shared gates for borrowed tools; upsert_actor keeps an existing actor's curves on partial edits (#3325) (`8e1a702`)
+- **editor** — open flagship demos from the baked project file as a real project (#3316) (`aca57eb`)
+- **flagship** — fallen town container labels/josa, QA probe walks doors with real keys (`b348f58`)
+- **flagship** — strip coordinate suffix from container labels; add townlife play probe (`06c433e`)
+- **flagship** — townLife type cast (`2d3303c`)
+
+### 문서
+
+- **openwiki** — store game storefront moved to play.openrpgmaker.com (#3321) (`ad530b3`)
+
+### CI
+
+- **ci-full** — 수동 실행은 브랜치마다 따로 줄을 선다 (#3340) (`b34b10f`)
+
+## 0.326.0 — 2026-10-24
+
+### 기능
+
+- **assistant-v2** — variety — same request no longer gives the same map; dungeon layout spread families and gate/stairs entrance; includes dungeon-themes @9f9ab6c60f (default off) (#3304) (`7752501`)
+- **assistant-v2** — round 6 — speed (one repair round, own-map critics), plain dungeon variety, cutscene staging fix (default off) (#3303) (`6c0be78`)
+- **assistant-v2** — round 4 — bosses drawn 2.5x with a 3x2 body, residential alleys keep a residential layout, outdoor people stand beside the road, modern-stage hero dressed as a schoolboy (default off) (#3298) (`7f2020f`)
+- **assistant-v2** — round 3 — themed dungeons, framed north back door, refused patch costs a round, monster town title hint (default off) (#3294) (`86eec51`)
+- **assistant-v2** — round 2 — interior venues, edit-in-place with north back door, simulated cutscene staging, place words, monster town and romance scene (default off) (#3290) (`8b2c791`)
+- **qa** — agent play sessions on the shipped player + save-anchored regression scenarios (#3289) (`498945e`)
+- **runtime** — natural town life — NPC strolls, free-flying birds, HGSS one-tile monster follower (#3288) (`115531f`)
+- **dungeon-themes** — bake theme art (arcane, earth, r2 lava) and wire it into the builder (#3287) (`9aa0536`)
+- **dungeon-themes** — 12 dungeon themes in the builder + first theme art bake (forest, ice, swamp, pyramid) (#3285) (`7e65f15`)
+- **assistant-v2** — opt-in v2 assistant (spec → deterministic builders → independent critic), default off (#3284) (`90a497d`)
+- **beodeul-dungeon** — gap pieces — rock/water/ice floor/door/lever/goblin camp/tower kit baked and wired (#3283) (`6a71413`)
+- **astra** — redraw NPC dialogue portraits as clean 64x64 GBA-style busts (#3282) (`4406825`)
+- **dungeon** — assistant dungeons 2 — crop void, always an exit, tower/liquid/boss themes, fixed judge brief (#3281) (`c7f21c5`)
+- **assistant-capability** — 500-command family matrix with judge self-check and a pinned OpenAI-compatible model (#3272) (`411bcda`)
+- **workshop** — one-click objects pass the 3/4 gate; faster object path; minor UX fixes (#3280) (`7ab99db`)
+- **dungeon** — assistant builds working multi-floor, populated dungeons (stairs, counts, lever gate, flood, lair) (#3278) (`1cc1a19`)
+- **fallen-star** — playable royal town matching the opening art, proclamation and two-abreast escort, five interiors, crash-site scorch trail (#3277) (`1c72caf`)
+- **workshop** — one-click 공방 — object, character, terrain from one line (#3276) (`2430ced`)
+- **beodeul-wall** — redraw town wall 3rd edition — 3/4 depth, texture, posterns, biome variants (#3273) (`362cf1b`)
+- **astra** — install r5b battle trainer sprites + trainer-intro staging fixes (#3225) (`7ce0c34`)
+- **wizarding** — redraw the six stair kits (up = north-wall doorway, down = floor stairwell) (#3264) (`75e1e01`)
+- **jp-city** — redraw interior stairs (13 kits) with explicit up/down direction (#3270) (`9102060`)
+- **interior-v5** — redraw stairs up stone/wood, stairs down, stairwell down so up/down reads at 1x; descriptions state direction, entry side, facing, arrival (#3267) (`bf743c3`)
+- **ai** — village types by era — catalog, find_village_type, honest needs-art, quarter dressing, moonbase recompose (#3265) (`9497aee`)
+
+### 수정
+
+- **runtime** — followers keep the leader's trail and corner diagonal slot changes with correct facing (#3308) (`74b07b4`)
+- **player** — battle entry waits for first-frame art (readiness gate) + map prefetch of battle assets (#3306) (`f2a01c8`)
+- **player** — keep keyboard focus inside the game when embedded; no page scroll on game keys; release held keys on blur (`cf552ff`)
+- **export** — no dead runtime asset declarations; retired art exports with a warning; guard script (#3302) (`f74203d`)
+- **battle** — wild encounter names read Korean species names (#3301) (`05e2d91`)
+- **shitamachi** — venue rooms get real return doors (#3300) (`aff42c3`)
+- **battle** — only the cursor row paints a target glyph (#3299) (`97a8b52`)
+- **player** — settings rows act, battle reports count party rounds, quest steps read cleanly (#3297) (`4daf827`)
+- **player** — play clock reads the save and the title cursor resets on re-entry (#3296) (`915d0ba`)
+- **field** — visible quest givers, campaign-backed map/badge menu, gated confession, honoured transfer arrival (#3295) (`416b7af`)
+- **player** — hosted player reads public art and BGM from the host root (#3292) (`022693f`)
+- **ai** — accept xhigh and max thinking effort in config types (`994e404`)
+- **fallen-star** — guard MARCH_DEBUG reads so the shipped player doesn't throw ReferenceError: process (#3286) (`675390c`)
+- **ai** — room loop 2 — observatory slit converges, cutscene review renders and judges, faster room runs, hidden start marker (#3275) (`96b896a`)
+- **object-gate** — judge style against the candidate chipset's own shipped art, record the ref set in the receipt (#3271) (`a435a8c`)
+- **editor** — VQA am3685 shell-studio — top bar chips, studio 1024 layout, assistant overlay/menu, team cancel, help text (#3252) (`cff33ce`)
+- **editor** — VQA am3685 database — 자료집 레이아웃·리소스 관리자·타이틀 크레딧 16건 (#3251) (`e239653`)
+- **editor** — VQA am3685 map-tools — 붓 보조·타일 속성·이벤트 툴바·진행 패널·검사 메뉴 등 10건 (#3248) (`e5b6406`)
+- **editor** — VQA am3685 palette-modal — palette/modal Esc layers, toasts, select filter, header overflow (#3245) (`67bb208`)
+- **editor** — VQA am3685 i18n — 번역 누락·문맥 오역·캔버스 0높이 수정 (#3246) (`d5f6fe6`)
+- **ci** — let the desktop builder extract 7z before its own 7zz exists (`b541002`)
+- **ci** — install bun on the hosted desktop builder (`7d82348`)
+
+### 성능
+
+- **player** — bake flagship demos at build time; fix web/HTML export failures (#3293) (`bcb0f1d`)
+
+### CI
+
+- **desktop** — build release packages on GitHub-hosted runners (`11ab6a3`)
+
+### 잡무
+
+- **object-gate** — persist delegated allows and VQA evidence recorded in the shared holds dir (town wall, stairs) (#3274) (`e367b48`)
+
+## 0.325.0 — 2026-10-22
+
+### 기능
+
+- **jp-city** — hand-pixel street stairs (overpass, side stairs + stage, wall ladder) and explicit stair notes (#3263) (`c4edf79`)
+- **ai** — polish mode — opt-in longer 1x review/critic/fix loop from the checklist panel (#3261) (`363a31f`)
+- **workshop** — object-gen footprint decision, better reference pictures, multi-cell objects (#3260) (`70edc7c`)
+
+## 0.324.0 — 2026-10-22
+
+### 기능
+
+- **beodeul** — village and brush forests use the joined canopy autotile (#3259) (`016546a`)
+- **ai** — per-feature 1x review loop with an independent rubric critic for built interiors (#3258) (`ac9c8f8`)
+
+### 수정
+
+- **beodeul** — existing projects get town wall cells (graft relocation), delegated hold records, walled-village leftovers (#3255) (`445429c`)
+
 ## 0.323.1 — 2026-10-22
 
 ### 수정

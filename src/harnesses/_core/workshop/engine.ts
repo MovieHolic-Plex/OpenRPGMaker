@@ -5,13 +5,14 @@
  * 사람만 고른다 — 엔진은 고르지 않는다. 판은 바뀔 때마다 통째로 저장해, 탭을 닫아도 resume() 로 잇는다.
  */
 import type { ChatMessage } from "@/ai/llmClient";
-import { applyRowFix, parseDrawAnswer, rowsNeedingFix } from "./grid";
+import { applyRowFix, parseDrawAnswer, renderGrid, rowsNeedingFix } from "./grid";
+import { cropOpaque, gateKindOf } from "./gateAdvice";
 import { parseRefViewCheck, REF_TRIES, REF_VIEW_PROMPT, refMinTop, refPrompt, refPromptNames } from "./referencePrompt";
 import { kitConstant, objectGenKit } from "./genKits";
 import type { WorkshopStore } from "./store";
 import { perItem } from "./types";
 import type {
-  AnchorSample, BaseInfo, ChatFn, DrawContext, Grid, Palette, PaletteEntry, ReferenceColor, RejectedSample, RgbaImage, RoundReference, Verdict, WorkshopEnv, WorkshopItem, WorkshopRound, WorkshopRun,
+  AnchorSample, BaseInfo, ChatFn, DrawContext, GateAdvice, Grid, Palette, PaletteEntry, ReferenceColor, RejectedSample, RgbaImage, RoundReference, Verdict, WorkshopEnv, WorkshopItem, WorkshopRound, WorkshopRun,
   WorkshopRunner, WorkshopSurface,
 } from "./types";
 
@@ -47,7 +48,7 @@ export type WorkshopEngineOptions = {
 export interface WorkshopEngine {
   /** count = 이번 판 후보 수(1 ~ runner.candidates). 없으면 runner.candidates. */
   /** reference:false = 참고 그림 단계를 건너뛴다(참고 있음/없음 비교·사용자가 끈 경우). */
-  startRound(item: WorkshopItem, options?: { note?: string; count?: number; reference?: boolean }): Promise<WorkshopRound>;
+  startRound(item: WorkshopItem, options?: { note?: string; count?: number; reference?: boolean; looks?: number; gate?: "receipt" }): Promise<WorkshopRound>;
   redrawRun(roundId: string, letter: string, note: string): Promise<void>;
   cancelRound(roundId: string): Promise<void>;
   resume(): Promise<number>;
@@ -171,6 +172,8 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
   const rounds = new Map<string, WorkshopRound>();
   const queue: { roundId: string; letter: string }[] = [];
   const running = new Map<string, AbortController>();
+  /** 마무리 중인 장에 들어온 다시 그리기(장 키 → 고칠 점) */
+  const redrawAfter = new Map<string, string>();
   const writes = new Map<string, Promise<void>>();
   let idleWaiters: (() => void)[] = [];
 
@@ -208,7 +211,14 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       const controller = new AbortController();
       running.set(runKey(next.roundId, next.letter), controller);
       void runOne(round, runOf(round, next.letter), controller.signal).finally(() => {
-        running.delete(runKey(next.roundId, next.letter));
+        const key = runKey(next.roundId, next.letter);
+        running.delete(key);
+        // 마무리 중에 받은 다시 그리기(redrawRun) — 이제 돌린다.
+        const later = redrawAfter.get(key);
+        if (later !== undefined) {
+          redrawAfter.delete(key);
+          void api.redrawRun(next.roundId, next.letter, later);
+        }
         pump();
         settleIdle();
         options.onStatus?.();
@@ -374,7 +384,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
   async function lookLoop(ctx: DrawContext, messages: ChatMessage[], text: string, first: { grid: Grid; note: string; topRows: number | null }, run: WorkshopRun, round: WorkshopRound, signal: AbortSignal): Promise<{ grid: Grid; note: string; topRows: number | null }> {
     let best = { grid: first.grid, note: first.note, topRows: first.topRows };
     let lastText = text;
-    const max = perItem(runner.looks ?? 0, ctx.item);
+    const max = Math.min(perItem(runner.looks ?? 0, ctx.item), round.looks ?? Number.POSITIVE_INFINITY);
     for (let look = 1; look <= max; look++) {
       messages.push({ role: "assistant", content: lastText }, await runner.lookMessage!(ctx, best.grid, env, look, max));
       lastText = await call("workshop-draw", messages, run, round, signal);
@@ -419,8 +429,40 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       notes: feedback.map((f) => f.note).filter(Boolean).slice(-5),
       reference: reference[0] ?? null,
       references: reference,
+      gated: round.gate === "receipt",
       ...(reference.length && round.reference?.colors?.length ? { referenceColors: round.reference.colors } : {}),
     };
+  }
+
+  /**
+   * 관문 영수증 한 장(호스트). done 은 던지지 않는다: 통과 = pass, 영수증 불통과 = 코드 GATE, 돌릴 수 없음·오류 = 코드 GATE_UNAVAILABLE.
+   * 그만두기(signal)는 그대로 던진다.
+   */
+  function startGate(item: WorkshopItem, grid: Grid, palette: Palette, signal: AbortSignal): { done: Promise<{ pass: boolean; code: string; advice: GateAdvice; fix?: string }>; stop: () => void } {
+    const controller = new AbortController();
+    const onAbort = () => controller.abort();
+    signal.addEventListener("abort", onAbort, { once: true });
+    const kind = gateKindOf(item);
+    const done = (async (): Promise<{ pass: boolean; code: string; advice: GateAdvice; fix?: string }> => {
+      if (!env.objectGate) return { pass: false, code: "GATE_UNAVAILABLE", advice: { state: "refer" as const, kind, reasons: ["그림 확인기를 쓸 수 없는 환경"], topRows: null, readsAs: "" } };
+      try {
+        const png = env.encodePng(cropOpaque(renderGrid(grid, palette)));
+        const result = await env.objectGate({ png, kind, name: item.title, label: item.key, ...(item.tilesetId ? { chipset: item.tilesetId } : {}) }, controller.signal);
+        const advice: GateAdvice = {
+          state: result.final === "pass" ? "pass" : result.verdict === "refer" ? "refer" : "fail", kind, reasons: [...result.reasons].slice(0, 4), topRows: null, readsAs: "",
+          receipt: { final: result.final, verdict: result.verdict, reasons: [...result.reasons].slice(0, 4), pixelSha256: result.pixelSha256, profileHash: result.profileHash, refer: result.refer ? { verdict: result.refer.verdict, judge: result.refer.judge } : null },
+        };
+        return { pass: result.final === "pass", code: "GATE", advice, ...(result.fix ? { fix: result.fix } : {}) };
+      } catch (error) {
+        if (signal.aborted) throw error;
+        const message = error instanceof Error ? error.message : String(error);
+        return { pass: false, code: "GATE_UNAVAILABLE", advice: { state: "refer" as const, kind, reasons: [message.slice(0, 160)], topRows: null, readsAs: "" } };
+      } finally {
+        signal.removeEventListener("abort", onAbort);
+      }
+    })();
+    done.catch(() => undefined);
+    return { done, stop: () => controller.abort() };
   }
 
   async function runOne(round: WorkshopRound, run: WorkshopRun, signal: AbortSignal): Promise<void> {
@@ -469,6 +511,8 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
         run.topRows = drawn.topRows;
         run.status = "reviewing";
         void save(round);
+        // 관문 영수증(판이 요구할 때): 블라인드 검수와 **함께** 시작한다 — 검수가 떨어지면 끈다(호스트 호출을 아낀다). 순서대로 하면 첫 결과가 그만큼 늦다.
+        const gating = round.gate === "receipt" ? startGate(item, drawn.grid, ctx.palette, signal) : null;
         const reviewCtx = {
           item, palette: ctx.palette, direction: ctx.direction, attempt, maxAttempts,
           candidate: drawn.grid, current: ctx.current, anchors: ctx.anchors, previousVerdict: lastVerdict,
@@ -484,15 +528,29 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
             parsed = { verdict: "FAIL", codes: ["READ"], top: "", topRows: null, reasons: "검수 답을 읽지 못했다", fix: "", worse: false };
           }
         }
-        const verdict = runner.gate(item, parsed);
+        let verdict = runner.gate(item, parsed);
+        let gateStop = false;
+        if (gating) {
+          if (verdict.verdict !== "PASS") gating.stop();
+          else {
+            const checked = await gating.done;
+            run.gate = checked.advice;
+            if (!checked.pass) {
+              // 영수증 불통과·확인 불가 — 이 장은 여기서 끝(엔진 안에서 다시 그리지 않는다). 고칠 점은 영수증 이유.
+              verdict = { ...verdict, verdict: "FAIL", codes: [checked.code], reasons: `관문: ${checked.advice.reasons.join(" / ")}`, fix: checked.fix || checked.advice.reasons.join(" / ") };
+              gateStop = true;
+            }
+          }
+        }
         run.verdict = verdict;
         run.attempts.push({ attempt, hard: [], verdict, grid: drawn.grid });
-        if (verdict.verdict === "PASS") break;
+        if (verdict.verdict === "PASS" || gateStop) break;
         previousGrid = drawn.grid;
         lastVerdict = verdict;
       }
       // 3/4 관문 조언 배지(2026-10-21): 다 그린 후보를 object-gate 규칙으로 한 번 잰다. 굽기를 막지 않는다 — 실패해도 장은 끝난다.
-      if (run.grid && runner.adviseMessages && runner.parseAdvice) {
+      // 영수증 판(round.gate)은 위에서 영수증을 받았으므로 조언 호출을 하지 않는다(같은 질문을 두 번 묻지 않는다).
+      if (run.grid && round.gate !== "receipt" && runner.adviseMessages && runner.parseAdvice) {
         try {
           const adviceText = await call("workshop-review", await runner.adviseMessages(item, run.grid, runner.palette(item), env), run, round, signal);
           run.gate = runner.parseAdvice(item, adviceText);
@@ -532,12 +590,14 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
     error: null, errorKind: null, calls: 0, redrawNote: "", startedAt: null, finishedAt: null,
   });
 
-  return {
+  const api: WorkshopEngine = {
     async startRound(item, startOptions = {}) {
       blocked = null;
       const round: WorkshopRound = {
         id: newId(), projectKey, harnessId: runner.harnessId, itemKey: item.key, note: startOptions.note ?? "", created: now(),
         runs: runner.directions(item).slice(0, Math.max(1, Math.min(runner.candidates, Math.round(startOptions.count ?? runner.candidates)))).map((d) => freshRun(d.letter, d.text)),
+        ...(startOptions.looks !== undefined ? { looks: Math.max(0, Math.round(startOptions.looks)) } : {}),
+        ...(startOptions.gate ? { gate: startOptions.gate } : {}),
         ...(startOptions.reference === false ? { reference: { status: "none" as const, tries: 0, note: "참고 그림 없이 그림 — 이 판은 참고 단계를 껐다" } } : {}),
       };
       await save(round);
@@ -549,7 +609,14 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       const round = rounds.get(roundId) ?? (await store.getRound(roundId));
       if (!round) throw new Error(`판 ${roundId} 가 없다`);
       // 같은 글자가 진행 중이거나 줄 서 있으면 겹쳐 돌리지 않는다(두 번째 실행이 첫 실행의 취소 줄을 지운다).
-      if (running.has(runKey(roundId, letter)) || queue.some((q) => q.roundId === roundId && q.letter === letter)) return;
+      // 단, 이미 끝난(done·failed) 장이 아직 마무리(저장·running 해제) 중이면 그 마무리 뒤에 다시 그린다 — 끝남 알림을 받은 쪽(작업 줄)이
+      // 바로 부르면 running 에 아직 남아 있어 말없이 버려졌고, 「한 번에 만들기」 다시 그리기가 영영 시작되지 않았다(2026-10-23 실측).
+      if (queue.some((q) => q.roundId === roundId && q.letter === letter)) return;
+      if (running.has(runKey(roundId, letter))) {
+        const status = runOf(round, letter).status;
+        if (status === "done" || status === "failed") redrawAfter.set(runKey(roundId, letter), note);
+        return;
+      }
       const old = runOf(round, letter);
       const run = { ...freshRun(letter, old.direction), grid: old.grid, verdict: old.verdict, redrawNote: note };
       round.runs = round.runs.map((r) => (r.letter === letter ? run : r));
@@ -610,4 +677,5 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       queue.length = 0;
     },
   };
+  return api;
 }

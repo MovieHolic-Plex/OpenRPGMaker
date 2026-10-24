@@ -1,0 +1,394 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7d0b348c17ed7992b70345fb8b501bc46c8c63d5e039b28e401d850d700c816",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "arcane.candelabra",
+ "label": "beodeul_dungeon/arcane.candelabra",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 69,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flames",
+      "rows": "0-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "candles",
+      "rows": "3-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drip bowl / cap plate",
+      "rows": "11-16",
+      "evidence": "b",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "stem with knot",
+      "rows": "17-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base",
+      "rows": "26-29",
+      "evidence": "a",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 6,
+     "cap_width": 16,
+     "shaft_width": 2,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The bowl at rows 11-16 has a width profile of 11, 15, 16, 14, 12, 6. It widens from the 6-wide candle rows above, peaks at 16, then narrows to the 2-wide stem at rows 17-20, so it reads as an ellipse plate that overhangs the shaft. Its lighter top rows 12-14 sit above a dark underside at rows 15-16. The stem (rows 17-25, with a knot at 21-22) is the front face. The base (rows 26-29, widths 6, 10, 12, 12) has a lighter top band and a darker bottom row at 29. The candles and flames are decor standing on the bowl."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, thin prop, so the per-tile measures read 0 and do not count against it. I judged by eye against the thin references (lamp-crook, bench). It uses 13 distinct colours, close to lamp-crook (14) and bench (14). The metal pedestal and the three candles with flames show about 4 lightness steps, with highlight and shadow sides and a stepped base. The dark edge pixels are 0% near-neutral, so the outline is tinted (a dark bluish-grey lean) rather than a black sticker line, which matches the lamp-crook and bench treatment. There are no large flat fills (0% near-flat). It is a little less textured than the richer references (well, stall), but a careful artist would accept it beside the lamp and bench without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19395
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "candles and flames",
+      "rows": "0-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dish plate (cap)",
+      "rows": "11-15",
+      "evidence": "b",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "shaft",
+      "rows": "16-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 16,
+     "shaft_width": 2,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The width profile at rows 11-15 goes 11, 15, 16, 14, 12 and then drops to 6 at row 16 and 2 on the shaft. That is a plate that widens and then narrows again, so it is an ellipse that overhangs the shaft. The upper rows 11-12 are lighter and read as the top surface. Rows 13-15 are darker and read as the bowl underside, with a dark front-edge line at row 15. The candles and flames above (rows 0-10) are decor. The 2-px shaft (rows 16-25) is the front face. The base (rows 26-29) flares from 6 to 12 px wide."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candelabra is a thin, sparse prop, so the per-tile tone count of 0 is not held against it. It is judged by eye against the lamp-crook and bench, the closest thin references. It uses 13 distinct colours against 14 for the lamp-crook and bench. The stand shows about 4 lightness steps (highlight, light, mid, dark) on the base bowl, stem and arms. The candles have a pale body with a shaded side, and the flames have a warm core and rim. The measured dark-edge neutral share is 0%, so the outline is tinted and follows the adjacent material rather than a uniform black sticker line. Near-flat coverage is 0% and no area of 5x5 pixels or more is one flat colour. It is a little less textured than the well or stall, but those are far larger and more complex objects. Next to the lamp-crook it looks as rich, and slightly richer in shading than the plain bench.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18654
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flames and candles",
+      "rows": "0-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "candle dish / cap plate",
+      "rows": "11-15",
+      "evidence": "b",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "stem",
+      "rows": "16-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "foot base",
+      "rows": "26-29",
+      "evidence": "b",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 16,
+     "shaft_width": 2,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The width profile at rows 11-15 is 11,15,16,14,12. It widens and then narrows again, so it is an elliptical plate that overhangs a 2px stem (rows 17-20). Rows 11-12 are light (the top surface), rows 13-14 are mid-tone and row 15 is a dark front rim. The stem below reads as the front face. The candles and flames above (rows 0-10) are decor on the dish. The foot (rows 26-29, widths 6,10,12,12) also widens like a base disc."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candelabra is a thin, sparse prop, so the per-tile tone count of 0 is not held against it. It has 13 distinct colours, about the same as prop-lamp-crook (14) and prop-bench-wood (14). The metal stand and base show roughly 4 lightness steps (highlight, light, mid, dark) with a lit side and a shaded side. The candles carry a light and shadow tone, and the flames have a warm core and rim. The measured near-neutral share of dark edge pixels is 0%, so the outlines lean towards the material tone and are not a black sticker line. That is better than prop-lamp-crook, which measures 100% neutral. Near-flat coverage is 0%, so there are no flat fills. It is a little simpler than the richer references (well, stall) and sits slightly below them in density. Next to the lamp and bench of the same thin kind it would not look flatter or thinner, so it is acceptable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18552
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "candles and flames",
+      "rows": "0-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "candelabra dish (elliptical cap plate)",
+      "rows": "11-16",
+      "evidence": "b",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "stem",
+      "rows": "17-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "foot/base",
+      "rows": "26-29",
+      "evidence": "b",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-29"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 6,
+     "cap_width": 16,
+     "shaft_width": 2,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The dish at rows 11-16 has a width profile of 11, 15, 16, 14, 12, 6. It widens and then narrows again, so it is an elliptical plate that overhangs a 2px stem (rows 17-20). Its light top surface is rows 11-13, with a darker front edge at row 14 and dark underside shadow at rows 15-16. The stem (rows 17-25) is a vertical front face. The foot at rows 26-29 widens from 6 to 12 and has a lighter top with a dark bottom row. The candles and flames above the dish are decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candelabra is a thin, sparse prop, so the per-tile tone count of 0 says nothing against it. It is comparable to the thin references (prop-lamp-crook and prop-bench-wood, both 0). Its 13 distinct colours match their 14. By eye, the metal stand has a flared base, a stem and curved arms with about 4 lightness steps from highlight to shadow. The candles are pale with warm flame pixels. Dark edge pixels are 0% neutral, so the outline is a tinted dark version of the metal rather than a black sticker line (the lamp-crook reference is 100% neutral). Measured near-flat coverage is 0% and I saw no large flat fills. It is slightly less textured than the richer references such as the well and stall, but it is on par with the lamp and bench of the same thin kind, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18620
+  }
+ ],
+ "decidedAt": "2026-10-23T02:56:05.563Z",
+ "cells": {
+  "16": [
+   "56429801bdb9b7e5",
+   "79dca85689ea0157"
+  ],
+  "24": [
+   "0244e1b5adf043d7",
+   "0c527e987f0f217d",
+   "2717e577bf33175f",
+   "56aeca8cc830cbda",
+   "5db4e114ca53ae26",
+   "6a56954b0798370c",
+   "7ed039e347baf5ad",
+   "833ba89b989171d8",
+   "af67ff471c3d0b68",
+   "cb1932b69a3f22a2",
+   "f45c497721b551d4",
+   "fb75ae6f2015c916"
+  ],
+  "32": [
+   "9c6d93159e7f8d01",
+   "cd0a6456cbbb2b23",
+   "f8a4b2b319feb973"
+  ],
+  "48": [
+   "05c9602a415aaac7",
+   "2308ca94e70458d9",
+   "3926caca14bc8106",
+   "6d88ab8bc0d75eb2",
+   "7569732b503a230b",
+   "dc3a5b50b5458349"
+  ]
+ }
+}

@@ -12,6 +12,9 @@ TS = json.load(open(ROOT / "src/assets/beodeulCityTileset.json"))
 OUT = ROOT / "tiledata/beodeul-variants/pick-doors.json"
 TS_PATH = ROOT / "src/assets/beodeulCityTileset.json"
 BUILDING = re.compile(r"-(?:[nsewd]\d(?:-[a-z]+)?|hall|hut|shed|inn|khan|temple|shrine|smith|smelt|boss|bath|loom|pierhut|winery|lighthouse|fish-market|adit|toll-booth|guard-post|greenhouse|wizard-tower)$")
+# 그림 판정이 틀린 키트(눈으로 확인한 문 열): 설원 오두막은 통나무 벽과 문짝 색이 같아 2열을 골랐지만 문짝은 1열(x 22~32)에 있다
+# — 문 앞 길이 한 칸 옆에서 시작하고 문 그림 바로 아래에 장작이 놓였다(2026-10-22 성벽 마을 VQA r6).
+DOOR_OVERRIDE = {"bd-pick-snowfield-hut": 1}
 res = {}
 for k in TS["structureKits"]:
     if not k["id"].startswith("bd-pick-") or k["width"] < 3 or k["height"] < 4: continue
@@ -37,6 +40,7 @@ for k in TS["structureKits"]:
         if s > best[0]: best = (s, c)
     # 건물(이름으로 고름)은 모두 문을 갖는다 — 신호가 약하면(통나무 벽처럼 문과 벽 색이 같으면) 가운데 칸
     col = best[1] if best[0] >= 0.12 and best[1] >= 0 else (k["width"] - 1) // 2
+    if k["id"] in DOOR_OVERRIDE: col = DOOR_OVERRIDE[k["id"]]
     res[k["id"]] = {"dx": col, "dy": k["height"] - 1, "score": round(best[0], 2)}
 print(len(res), "doors"); [print(i, v) for i, v in list(res.items())]
 def door_part(v):

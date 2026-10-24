@@ -60,9 +60,10 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
       { object: "kit:atlas_biome_interior/hand-interior:star chart", where: "north" },
       { object: "kit:atlas_biome_interior/hand-interior:orrery", where: "center", light: "#ffd890" },
     ],
-    // 숲 북쪽 끝 공터의 금속 「알」. 알 앞 칸이 단서 조사(퍼즐) 자리다. 그을린 흙 자국은 chronoBell.ts 가 둘레에 칠한다.
+    // 숲 북쪽 끝 공터에 누운 뚜껑 달린 별의 관(오프닝 crash 컷의 누운 관). 관 앞 칸이 단서 조사(퍼즐) 자리다. 그을린 흙 자국은 chronoBell.ts 가 둘레에 칠한다.
+    // 세워 둔 SF 냉동 캡슐은 화면 달린 금속 단말기·자판기로 읽혔고 숲 화풍과 어긋났다(VQA r5) — 버들항 돌 관 키트로 바꾼다.
     forest: [
-      { object: "kit:sf_station/sf-cryo-pod", where: "north", mark: "clue", light: "#8ff0ff" },
+      { object: "kit:beodeul_city/bd-pick-aqueduct-sewer-coffin", where: "north", mark: "clue", light: "#8ff0ff" },
     ],
     vault: [
       { object: "kit:beodeul_city/bd-pick-headland-lighthouse-lamp-lens", where: "boss", light: "#a8e0ff" },
@@ -98,7 +99,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
     clue: {
       map: "forest",
       label: "떨어진 별",
-      lines: ["치익— 뚜껑이 열리고, 하얀 김 속에서 한 소녀가 몸을 일으켰다."],
+      lines: ["치익— 관이 열리고, 하얀 김 속에서 한 소녀가 몸을 일으켰다."],
     },
     foe: {
       map: "vault",
@@ -134,7 +135,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
   // 떨어진 별 = 금속 알. 세 단계 모두 생각해야 풀린다(정답 위치가 다르다).
   puzzle: {
     intro: [
-      "그을린 구덩이에 사람 키만 한 은빛 관이 박혀 있다. 아직 따뜻하다.",
+      "그을린 구덩이에 사람 키만 한 은빛 알이 박혀 있다. 아직 따뜻하다.",
       "엘레나: 별이… 아니야. 이건 누군가 만든 거야.",
       "표면의 무늬 세 개가 늘 같은 순서로 깜빡인다. 별 → 달 → 해, 별 → 달 → 해, 별 → 달 → …",
       "…그리고 거기서 멈췄다. 다음 차례가 비어 있다.",
@@ -151,14 +152,14 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
         prompt: "손바닥 자국에 무엇을 댈까?",
         options: ["칼끝으로 누른다", "엘레나에게 마법을 부탁한다", "맨손을 얹는다"],
         answer: 2,
-        hit: { lines: ["손바닥 아래가 따뜻해진다. 안에서 작은 목소리가 들렸다.", "관 속의 목소리: …거기 누구 있어요? 바깥은… 안전한가요?"], fx: ["se:chime2", "emote:exclamation"] },
+        hit: { lines: ["손바닥 아래가 따뜻해진다. 안에서 작은 목소리가 들렸다.", "알 속의 목소리: …거기 누구 있어요? 바깥은… 안전한가요?"], fx: ["se:chime2", "emote:exclamation"] },
         miss: { lines: ["자국은 아무 반응이 없다. 『살아 있는 손만』이라고 했었지."] },
       },
       {
         prompt: "떨리는 목소리다. 뭐라고 답할까?",
         options: ["누구냐! 정체를 밝혀라!", "괜찮아. 우리가 지켜 줄게.", "심문관이 오기 전에 빨리 나와!"],
         answer: 1,
-        hit: { lines: ["관 속의 목소리: …믿을게요. 지금, 뚜껑을 열게요."] },
+        hit: { lines: ["알 속의 목소리: …믿을게요. 지금, 관을 열게요."] },
         miss: { lines: ["목소리가 뚝 끊겼다. 관이 다시 차갑게 식는다."] },
       },
     ],
@@ -166,7 +167,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
     wrongFx: ["shake:1"],
     solvedFx: ["shake:3", "flash:white", "particles:sparkle"],
     reward: {
-      item: { id: FS_STAR_KEY_ITEM, name: "별빛 열쇠", description: "은빛 관 안쪽에 박혀 있던 별 모양 조각. 천문대 서고 바닥, 봉인석 사이 돌뚜껑의 별 모양 홈과 꼭 맞는다." },
+      item: { id: FS_STAR_KEY_ITEM, name: "별빛 열쇠", description: "은빛 알 안쪽에 박혀 있던 별 모양 조각. 천문대 서고 바닥, 봉인석 사이 돌뚜껑의 별 모양 홈과 꼭 맞는다." },
       line: "「별빛 열쇠」를 얻었다.",
     },
   },

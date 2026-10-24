@@ -1,0 +1,270 @@
+{
+ "round": 32,
+ "date": "2026-10-23",
+ "reviewers": "3 fresh Opus 5.5, parallel; a major counts only if 2 of 3 raise it",
+ "evidence": "/tmp/gatechk/r34 (6x strip, 4x same-scale with shipped jp counters, 1x/3x map scenes)",
+ "majorityMajors": 0,
+ "kits": {
+  "jp-in-as-stairs-up-broken": {
+   "pixelSha256": "e36d3d9ae56f77a6deb53f70e4e07c60857bbcc796f45536ce16d806fed31e5c",
+   "verdict": "pass",
+   "refSet": "jp_city"
+  },
+  "jp-in-as-stairwell-down": {
+   "pixelSha256": "93d9a22a63398fcea95730d57e41eb6e3d10351be6bea8a372cc320333c61b8c",
+   "verdict": "pass",
+   "refSet": "jp_city"
+  },
+  "jp-in-cs-stairs-up-bare": {
+   "pixelSha256": "cf0e8418b011994572a383917599980d422337453ed4d24a19a5f39009d031b8",
+   "verdict": "pass",
+   "refSet": "jp_city"
+  },
+  "jp-in-cs-stairwell-down": {
+   "pixelSha256": "d572cfe3dc843d0853c000a11801f9d00e721d089173bb946356ae3b535ac106",
+   "verdict": "pass",
+   "refSet": "jp_city"
+  },
+  "jp-in-mc-stairs-up": {
+   "pixelSha256": "f7cf00eeb8c21704ed7ddda4758d7a8cd8f828e6f0e448f54f3538359d5a2c50",
+   "verdict": "pass",
+   "refSet": "jp_city"
+  },
+  "jp-in-mc-stairwell-down": {
+   "pixelSha256": "9e73cdd472fbca07e94cef143f40f0a09b745a28d20934ffdf6a922dc6e4cc28",
+   "verdict": "pass",
+   "refSet": "jp_city"
+  },
+  "jp-in-of-stairs-up": {
+   "pixelSha256": "f7cf00eeb8c21704ed7ddda4758d7a8cd8f828e6f0e448f54f3538359d5a2c50",
+   "verdict": "pass",
+   "refSet": "jp_city"
+  },
+  "jp-in-sc-stairs-up": {
+   "pixelSha256": "a50d2e7e5691b87b46a94461242330c2ef309c438bce00fdaf31d774bc48cfe6",
+   "verdict": "pass",
+   "refSet": "jp_city"
+  },
+  "jp-in-sc-stairwell-down": {
+   "pixelSha256": "f55976f8bd82941f2d14baf9646be56f63e2f18ec256d408b7ede47798a6f8f4",
+   "verdict": "pass",
+   "refSet": "jp_city"
+  },
+  "jp-in-stairs-up-wood": {
+   "pixelSha256": "57153da0ed4277757490bd2e40fb4c4130913b0ab64b72998c853eb107c34ed7",
+   "verdict": "pass",
+   "refSet": "jp_city"
+  },
+  "jp-in-stairs-up-wood-wide": {
+   "pixelSha256": "955c7df3bee412a70302b2f3e20873c48bc7245951a427bf2aedcb8d33cfbab5",
+   "verdict": "pass",
+   "refSet": "jp_city"
+  },
+  "jp-in-stairwell-down-wood": {
+   "pixelSha256": "58e4241c6438e916d6e48daeec901f764e253d8ebce47dfc4894f83c0f79ea54",
+   "verdict": "pass",
+   "refSet": "jp_city"
+  },
+  "jp-in-of-stairwell-down": {
+   "pixelSha256": "f55976f8bd82941f2d14baf9646be56f63e2f18ec256d408b7ede47798a6f8f4",
+   "verdict": "pass",
+   "refSet": "jp_city"
+  }
+ },
+ "reviews": {
+  "jp-in-stairs-up-wood": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "1-wide with no side walls; in house-1f it sits in a dark gap between wall pieces and relies on that gap for its sides",
+     "treads taper only slightly, so at 1x the depth cue is weak but it still reads as stairs"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "1-wide: at 1x in house-1f the dark-shaded lower treads plus the dark side frame make it read a little like a narrow tansu/shelf column; perspective narrowing toward the north opening is what saves it",
+     "in house-1f 3x the piece renders noticeably darker/muddier than the 6x sheet, tread highlights almost vanish"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "1-wide is narrow; treads at 1x merge into a tan column, but perspective taper + dark ceiling opening still read as up-stair",
+     "speckle noise heavier than the flat shipped counters"
+    ]
+   }
+  ],
+  "jp-in-mc-stairs-up": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "1-wide grey treads look close to the 2-wide school stair, just narrower; light speckle noise on the treads is busier than the flat shipped counters"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "1-wide grey treads are thin; at 1x in mansion lobby it reads as stairs but only just, close to a stacked-shelf look"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "grey treads close in value to grey floor; edges carried mostly by the dark stringer lines",
+     "speckle texture noisier than shipped jp counters"
+    ]
+   }
+  ],
+  "jp-in-of-stairs-up": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "same pixels as mc-stairs-up, so office and mansion share one look"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "identical pixels to mc-stairs-up; in office-1f it sits in a cramped notch beside the large plain counter block and reads small but still as stairs"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "identical pixels to mc-stairs-up; same minors"
+    ]
+   }
+  ],
+  "jp-in-sc-stairs-up": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "side wall speckle is denser than the shipped jp_city walls next to it in school-2f; tread texture noise is a bit high"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "side stringer diagonals are clean; tread speckle slightly noisier than the flat shipped counters at 4x"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "right-side rail line is thin/broken in places at 6x; reads fine at 1x",
+     "speckle noisier than shipped kit"
+    ]
+   }
+  ],
+  "jp-in-stairs-up-wood-wide": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "dark brown side walls are almost the colour of the wood risers, so the stringer and wall boundary is soft at 1x"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "dark brown side walls are heavier than the tread colour, giving a slight boxed look"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "strong trapezoid taper is a bit more 'tunnel' than the flat-front counters but reads clearly as stairs"
+    ]
+   }
+  ],
+  "jp-in-as-stairs-up-broken": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "orange '+' debris at the bottom-left tread reads as a small flower or pickup item rather than rubble",
+     "red specks on the right stringer look like stray pixels",
+     "ivy hangs past the left edge of the piece and does not join the side wall"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "orange '+' cluster on the bottom-left tread reads as a flower/sparkle pickup rather than debris",
+     "dark rubble chips on mid treads read as small loose objects; red flecks on the right stringer look like stray pixels"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "orange cross debris on bottom-left tread reads as a sparkle/pickup item rather than rubble",
+     "red specks on right stringer read as stray pixels",
+     "ivy strip on left edge cut hard at tile border"
+    ]
+   }
+  ],
+  "jp-in-cs-stairs-up-bare": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "the rough texture on both side walls is so heavy that at 1x it reads close to the floor beside it"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "no rail plus heavy speckle on side walls makes the right edge a bit mushy; still reads as climbing north"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "without rail the side walls are only noise texture; tread edges still read",
+     "heavy speckle on side walls"
+    ]
+   }
+  ]
+ },
+ "note": "r31 (previous art of the up stairs, before the flat-fill texture pass) also had 0 majority majors; the art changed after it, so r32 is the receipt."
+}

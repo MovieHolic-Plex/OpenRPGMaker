@@ -35,6 +35,10 @@ export default defineConfig({
       await writePlayerArtifactManifest({ artifactRoot: outputDirectory, repoRoot: thisRoot });
     },
   }, playerEditorOnlyAssetsVitePlugin(), appVersionPlugin(), runtimeLicenseBannerPlugin(fileURLToPath(new URL("./LICENSE-RUNTIME.md", import.meta.url)))],
+  // iife 출력은 import.meta.url 을 `{}.url`(undefined)로 그린다. 그러면 `new URL("data:…", import.meta.url)` 같은
+  // 정적 에셋 참조(retroSkillChoreography 의 도트 효과 시트)가 «Invalid base URL» 로 부팅을 통째로 막았다
+  // (2026-10-23 실측: 실행형 HTML 이 타이틀 없이 빈 화면). 에셋은 전부 data: 로 인라인되므로 기준 주소는 형식만 맞으면 된다.
+  define: { "import.meta.url": JSON.stringify("file:///oprn-standalone/standalone.js") },
   resolve: {
     alias: [
       { find: /^@\/app\/mode$/, replacement: src("player/exportAppModeShim.ts") },

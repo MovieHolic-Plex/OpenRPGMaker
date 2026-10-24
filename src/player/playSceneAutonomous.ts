@@ -3,7 +3,7 @@ import { actionFieldSlow } from "./actionFieldSlow";
 import { isDetectionEmoting } from "./npcDetectionEncounter";
 import { pursuitTarget } from "./horrorRuntime";
 import { pursuitPass, pursuitState } from "./pursuitNavigation";
-import { canMoveFootprint, isPassableLanding } from "@/project/collision";
+import { canMoveFootprint, isLedgeCell, isPassableLanding } from "@/project/collision";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { yieldingLivingMovers, routeForLivingMovement } from "@/player/npcLivingTravel";
 import { passageBounds, rectsOverlap } from "@/project/footprint";
@@ -28,6 +28,9 @@ import { detourAroundPlayer, sidestepForPlayer } from "@/player/commandRouteDeto
 import { startPlayerRoute } from "@/player/playerRouteState";
 import { applySpriteAlpha, setNpcIdleFrame, setNpcWalkFrame } from "@/player/playSceneAutonomousSprites";
 import { nextChaseDecision } from "@/player/chaseAi";
+import { strollChainPending, strollPauseScale, wanderCommand } from "@/player/npcStroll";
+import { followerOccupiesTile } from "@/player/playSceneFollowers";
+import { nextSessionRandom } from "@/project/session";
 import type { AutonomousNpcSceneContext } from "@/player/playSceneAutonomousTypes";
 import { moveRuntimeEventPosition,
 runtimeEventView,
@@ -51,6 +54,9 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
     // 명령 경로(moveEvent·시간표 이동): 걸음 사이에 빈도 대기를 넣지 않고 이어 걷는다(RPG Maker MV/MZ 「이동 루트 설정」).
     // 예전에는 기본 빈도(3)로 걸음마다 560ms 서 있어 칸당 1초 가까이 걸렸다(2026-10-22 실측, @/project/characterMotion).
     const routeForced = scene.commandMoveRouteEventIds?.has(eventId) === true && mover.strategy === "sequence";
+    // 페이지 산책(custom·random): 같은 방향 걸음은 서지 않고 이어 간다(@/player/npcStroll).
+    const strolling = !routeForced && mover.naturalStroll === true && (mover.strategy === "sequence" || mover.strategy === "random")
+      && !scene.commandMoveRouteEventIds?.has(eventId);
     if (mover.activeMove) {
       if (mover.strategy === "chase" && !mover.chaseTarget && !mover.actionFrozen) {
         const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId);
@@ -58,7 +64,12 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
       }
       updateActiveNpcMove({ scene, eventId, mover }, deltaMs);
       // 걸음이 이번 프레임에 끝났으면 같은 프레임에 다음 명령으로 — 칸 경계에서 한 프레임 서지 않는다.
-      if (mover.activeMove || !routeForced) continue;
+      if (mover.activeMove) continue;
+      if (strolling && !strollChainPending(mover)) {
+        // 걷기 묶음이 끝났다 — 이번 멈춤 길이를 흔든다(여럿이 같은 박자로 서고 걷지 않게).
+        mover.pauseScale = strollPauseScale(() => nextSessionRandom(scene.session, "movement"));
+      }
+      if (!routeForced && !(strolling && strollChainPending(mover))) continue;
     } else {
       mover.carryMs = 0;
     }
@@ -86,9 +97,9 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
       mover.timer += Math.max(0, deltaMs);
       if (mover.timer < (mover.routeWaitMs ?? 0)) continue;
       mover.routeWaitMs = 0;
-    } else {
+    } else if (!(strolling && strollChainPending(mover))) {
       mover.timer += Math.max(0, deltaMs);
-      if (mover.timer < mover.moveIntervalMs) continue;
+      if (mover.timer < mover.moveIntervalMs * (strolling ? mover.pauseScale ?? 1 : 1)) continue;
     }
     mover.timer = 0;
     const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId);
@@ -96,7 +107,20 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
       completeRouteCommand(mover);
       continue;
     }
-    const command = nextMoveCommandForScene(scene, mover);
+    const command = strolling && mover.strategy === "random"
+      ? wanderCommand({
+        mover,
+        at: { x: view.x, y: view.y },
+        home: { x: view.event.x, y: view.event.y },
+        canStep: (dir) => {
+          const d = dir === "up" ? { x: 0, y: -1 } : dir === "down" ? { x: 0, y: 1 } : dir === "left" ? { x: -1, y: 0 } : { x: 1, y: 0 };
+          const to = { x: view.x + d.x, y: view.y + d.y };
+          return !isPlayerOccupyingTile(scene, to.x, to.y) && !followerOccupiesTile(followerSpritesOf(scene), to.x, to.y)
+            && canNpcMove({ project, scene, mover, eventId, from: { x: view.x, y: view.y }, to }, { ...d, face: dir });
+        },
+        rng: () => nextSessionRandom(scene.session, "movement"),
+      })
+      : nextMoveCommandForScene(scene, mover);
     mover.step += 1;
     const baseFrame = view.page?.graphic.pattern ?? 0;
     const sprite = scene.eventSprites.get(eventId);
@@ -107,6 +131,11 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
       if (routeForced && command.kind === "wait") mover.routeWaitMs = mover.moveIntervalMs;
       // 문 단계(doorCue)는 문 프레임 사이를 잠깐 쉰다 — 소리와 문 그림이 걸음과 겹치지 않게.
       else if (routeForced && command.kind === "doorCue") mover.routeWaitMs = Math.max(0, Math.min(1000, command.ms ?? 0));
+      // 산책 중 멈춰 서서 둘러보거나 기다렸다 — 다음 걸음은 이어 걷기가 아니라 새 묶음이다.
+      if (strolling) {
+        mover.lastStepDir = undefined;
+        mover.pauseScale = strollPauseScale(() => nextSessionRandom(scene.session, "movement"));
+      }
       mover.carryMs = 0;
       completeRouteCommand(mover);
       continue;
@@ -121,9 +150,20 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
     const nx = position.x + movement.x;
     const ny = position.y + movement.y;
     const frameDir = applyFacing(mover, movement.face);
+    // 산책하는 주민은 주인공 뒤 동료의 몸으로 걸어 들어가지 않는다 — 잠깐 서 있다가 같은 걸음을 다시 해 본다.
+    if (strolling && !movement.jump && !mover.through && followerOccupiesTile(followerSpritesOf(scene), nx, ny)) {
+      setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
+      mover.lastStepDir = undefined;
+      mover.wanderRun = undefined;
+      if (mover.strategy === "sequence") mover.step -= 1;
+      mover.pauseScale = 0.5;
+      continue;
+    }
     // eventTouch fires when the event tries to step onto the player (including mid-move destination).
     if (!movement.jump && !mover.through && isPlayerOccupyingTile(scene, nx, ny)) {
       livingBlockers.delete(mover);
+      mover.lastStepDir = undefined;
+      mover.wanderRun = undefined;
       fireEventTouch(scene, eventId, view.trigger.kind);
       setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
       // 명령 경로(moveEvent)는 주인공을 비켜 같은 끝 칸으로 간다 — 말을 건 주인공이 옆에 서 있어 걸음이 다 버려지고
@@ -165,6 +205,7 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
     }
     if (canNpcMove({ project, scene, mover, eventId, from: position, to: { x: nx, y: ny } }, movement)) {
       mover.blockedSteps = 0;
+      mover.lastStepDir = command.kind === "move" ? command.dir : undefined;
       livingBlockers.delete(mover);
       moveAutonomousRuntimePosition(scene, eventId, nx, ny, frameDir);
       mover.activeMove = {
@@ -194,9 +235,14 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
           setNpcWalkFrame(sprite, baseFrame, frameDir, mover.activeMove.elapsedMs, view.animationType, mover.animationEnabled, mover.moveDurationMs, mover.walkPhase ?? 0);
         }
       }
+      // 이어 걷기로 남은 시간을 이어받았으면 이번 프레임에 그만큼 나아간 자리에 그린다. 출발 칸에 그리면 칸 경계마다
+      // 한 프레임 덜 가고 다음 프레임에 두 배 가서 칸마다 살짝 끊겨 보였다(2026-10-23 적대 검수, 0.6px → 2.7px).
+      if (!movement.hop && (mover.activeMove?.elapsedMs ?? 0) > 0) updateActiveNpcMove({ scene, eventId, mover }, 0);
       scene.runtimeDom.upsertEventMarker(runtimeEventView(view.event, scene.session, scene.eventPositions), undefined, mapTileSize(scene.map));
     } else {
       setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
+      mover.lastStepDir = undefined;
+      mover.wanderRun = undefined;
       if (mover.stopOnBlocked) {
         scene.autonomousNPCs.delete(eventId);
         scene.commandMoveRouteEventIds?.delete(eventId);
@@ -457,6 +503,10 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
   scene.syncRuntimeState?.();
 }
 
+function followerSpritesOf(scene: AutonomousNpcSceneContext): ReadonlyMap<string, { readonly visible: boolean }> | undefined {
+  return (scene as { readonly followerSprites?: ReadonlyMap<string, { readonly visible: boolean }> }).followerSprites;
+}
+
 function completeRouteCommand(mover: AutonomousMover): void {
   if (!mover.repeat && mover.step >= mover.moves.length) mover.moves = [];
 }
@@ -649,6 +699,7 @@ function repathBlockedLivingNpc(
   // 플레이어만 막는 경우에는 탐색하지 않는다(넓은 몸의 옆칸도 포함).
   if (!yieldingLivingMovers.has(mover) && !blocked(nextRect)
     && canMoveFootprint(project, scene.map, view.x, view.y, view.footprint, nx, ny, view.passRows)
+    && !isLedgeCell(project, scene.map, nx, ny)
     && !isSpatialPlacementBlocking(project, scene.session, scene.map.id, nextRect)) return;
   const canStep = (fx: number, fy: number, tx: number, ty: number) => {
     const rect = passageBounds(tx, ty, view.footprint, view.passRows);
@@ -657,6 +708,7 @@ function repathBlockedLivingNpc(
     }
     return !blocked(rect)
       && canMoveFootprint(project, scene.map, fx, fy, view.footprint, tx, ty, view.passRows)
+      && !isLedgeCell(project, scene.map, tx, ty)
       && !isSpatialPlacementBlocking(project, scene.session, scene.map.id, rect);
   };
   const yielding = livingYields.get(mover);

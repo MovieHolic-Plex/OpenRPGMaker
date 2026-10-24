@@ -58,7 +58,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
     "mapId 없으면 버들항 새 맵을 만든다(마을 기본 56×44 안팎, 36×30~96×80 / 도시 기본 60×60). mapId 가 있으면 그 버들항 맵 전체를 비우고 다시 깐다(다른 계열 맵이면 거부, 마을 집이 이미 선 맵은 완성된 집 보호로 거부). " +
     "같은 seed·선택 = 같은 마을. 시공 뒤 check_city_form·check_reachability 로 점검한다(마을의 문 앞 칸은 결과 data.doors). " +
     "고칠 곳만 stamp_object(kit:beodeul_city/…)·fill_region 으로 손본다 — 집을 하나씩 따로 놓지 말 것. " +
-    "성벽 마을(성벽·성곽·성문·요새로 둘러싼 마을)은 walls:true 로 짓는다 — 버들항 마을 성벽(3/4 성벽 통로·흉벽·앞면, 4×4 성문루, 기와 망루, 계단)이 맵 둘레를 두른다. 성문루는 wallGate 쪽(S 남문 기본 · N 북문 · NS 남북)에 하나씩, 가운데에 가까운 길에 서고 그 길이 맵 끝까지 나간다. 그 밖에서 성벽을 지나는 길은 성벽 안에서 끊긴다(서·동 틈은 wallSideGaps:true 일 때만). 평지로 짓고, 강가 마을은 강 없이(water none) 짓는다(강이 성벽을 뚫는 수문 그림은 없다). theme river·desert·snow 만. " +
+    "성벽 마을(성벽·성곽·성문·요새로 둘러싼 마을)은 walls:true 로 짓는다 — 버들항 마을 성벽(3/4: 두 줄 깊이 성벽 윗면·흉벽, 네 줄 높이(단층 집보다 높은) 마름돌 앞면, 4×8 아치 터널 성문루, 성벽보다 높이 솟은 3×9 망루, 옆 계단, 땅 그림자 — 설원 마을은 눈 덮인 성벽, 사막 마을은 사암 성벽)이 맵 둘레를 두른다. 성문루는 wallGate 쪽(S 남문 기본 · N 북문 · NS 남북)에 하나씩, 가운데에 가까운 길에 서고 그 길이 맵 끝까지 나간다. 그 밖에서 성벽을 지나는 길은 성벽 안에서 끊긴다(서·동 쪽문 — 성벽 위에 솟은 작은 문루 밑으로 길이 지난다 — 은 wallSideGaps:true 일 때만). 평지로 짓고, 강가 마을은 강 없이(water none) 짓는다(강이 성벽을 뚫는 수문 그림은 없다). theme river·desert·snow 만. " +
     "paint_tiles·fill_region 으로 맵 테두리에 돌 줄을 그려 성벽 흉내를 내지 말 것(위에서 본 납작한 선이 되어 3/4 시점이 깨진다) — 성벽 조각을 손으로 놓을 일이 있으면 키트 beodeul_city/bd-wall-*(성문루·닫힌 성문루·망루·계단·곧은 성벽)와 참고문서 beodeul-town-wall 을 따른다. " +
     "농가·농촌 마을은 지은 뒤 농장 키트로 쓰임을 더한다: 헛간 bd-farm-barn 6×6·닭장 bd-farm-coop 3×3 을 흙 마당에 모은 농가 덩이, 울타리 두른 밭 bd-farm-fenced-plot 7×6(문 아래 흙길), 작물 밭 bd-farm-plot-wheat·cabbage·tomato·sowing — 밭 덩이 사이·마당 길은 폭 2칸 흙길(fill_region 재료 「버들항 농장 흙길」), 넓은 풀밭을 경작지로 통째로 덮지 않는다(참고문서 beodeul-farm). 던전·필드는 이 도구가 아니다(참고문서 beodeul-picks-dungeon·field, 필드 길은 author_wild_route).",
   mode: "write",
@@ -84,7 +84,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       forestType: { type: "string", enum: [...BEODEUL_FOREST_TYPES], description: "숲 종류(theme river·coast 마을만). 숲 덩이는 늘 이어진 수관 오토타일(활엽 사이 전나무)이고, 이 값은 낱 나무·숲 둘레 나무를 고른다: broadleaf 활엽(기본) · conifer 전나무·측백(숲 둘레에도 선다) · mixed 혼효" },
       walls: { type: "boolean", description: "true 이면 마을 둘레에 성벽을 두른다(성벽·성곽·성문·요새 마을). theme river·desert·snow 마을만 — 평지로, 강가 마을은 강 없이 짓는다. 성문루·망루·계단도 함께. 결과 data.walls." },
       wallGate: { type: "string", enum: ["S", "N", "NS"], description: "walls 일 때 성문 쪽. S 남문 하나(기본) · N 북문 하나 · NS 남북에 하나씩. 사용자가 말한 쪽을 그대로." },
-      wallSideGaps: { type: "boolean", description: "walls 일 때 서·동 성벽을 지나는 길에 열린 틈을 둘지(기본 false — 성문 말고는 성벽이 닫힌다). 사용자가 옆 출입구를 말할 때만 true." },
+      wallSideGaps: { type: "boolean", description: "walls 일 때 서·동 성벽 밑으로 길이 지나는 쪽문(작은 문루)을 낼지(기본 false — 성문 말고는 성벽이 닫힌다). 사용자가 옆 출입구를 말할 때만 true." },
       harbour: { type: "boolean", description: `true 이고 가로 ${HARBOUR_W} 이상이면 맨 아래에 항구 호수를 붙인다(세로 ${HARBOUR_H}칸 추가).` },
     },
   },
@@ -561,7 +561,7 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
   let mapId = typeof args.mapId === "string" && args.mapId.trim() ? args.mapId.trim() : "";
   const [dw0, dh0] = villageDefaultSize(theme, houseCount);
   // 성벽 띠(바깥 3줄 + 성벽·앞면 + 망루 지붕)가 가장자리를 먹으므로 기본 크기를 조금 키운다
-  const [dw, dh] = wallsWanted(args, theme) ? [dw0 + 2, dh0 + 4] : [dw0, dh0];
+  const [dw, dh] = wallsWanted(args, theme) ? [dw0 + 4, dh0 + 11] : [dw0, dh0]; // 3판 성벽 띠: 좌우 세 열씩, 위 아홉 줄·아래 아홉 줄(앞면 네 줄)
   if (!mapId) {
     const W = intArg(args, "width", dw, VILLAGE_MIN_W, VILLAGE_MAX_W);
     // highland(산골)는 큰길 위로 비탈 세 단이 서야 하므로 높이 46 이상

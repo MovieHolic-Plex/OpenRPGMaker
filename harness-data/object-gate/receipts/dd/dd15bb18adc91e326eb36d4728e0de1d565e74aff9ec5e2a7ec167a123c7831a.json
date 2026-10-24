@@ -1,0 +1,383 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dd15bb18adc91e326eb36d4728e0de1d565e74aff9ec5e2a7ec167a123c7831a",
+ "width": 64,
+ "height": 16,
+ "kind": "structure",
+ "name": "fallen bridge waterline",
+ "label": "beodeul_city/workshop/fallen-town-bridge-waterline",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 2
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 41,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "broken bridge slab fragment (centre)",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tapering underside / wedge",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a downward-tapering wedge, 33 px wide at row 0 narrowing to 2 px at row 15. The centre column shows light grey in rows 0-2 and 4-6, with dark lines at rows 3 and 9 and a darker grey in rows 7-15. The dark lines read as plank or joint seams, not a front-edge line with eave shadow. No band, ellipse, roof or visible contents shows a horizontal top surface, and the width profile never widens and narrows again as an ellipse would. The object is a flat front or side elevation of broken bridge pieces, and it does not look like a gate, pavilion or building."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a building. It is three tiny grey fragments (small broken-post and wedge shapes) with about 8 colours in total, each far smaller than one 16x16 tile. Nothing here has a roof, walls or a door, so it does not match the reference kind. Its dark edge pixels are 100% near-neutral, against 7-9% for the references, which means a neutral grey/black outline, i.e. the sticker look. It has only about 2-3 grey steps per shape, against 5-6 in the references, which have per-tile scalloped roof highlights, plaster speckle and stones shaded one by one. The per-tile facts are 0 because the piece is smaller than a tile, so I judged density by eye: it is plainly much thinner and flatter than either reference. A careful artist would not accept it next to these buildings.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16734
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper slab band of the central fragment",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tapering wedge body below the band",
+      "rows": "4-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The silhouette is an inverted wedge. Width is 33 at row 0 and narrows steadily to 2 at row 15, with no ellipse and no roof plane. At x=32, rows 0-2 are a lighter band ending in a dark line at row 3, which could be a front-edge line but may be a seam or crack. There is no eave shadow. Below it, rows 4-15 are a tapering shaded mass with a highlight near row 8 and a dark tip. The shape reads as a broken, pointed bridge fragment, not a gate, pavilion or building with a roof, lintel and front face. The top band is weak evidence at best, and the wedge has no proper horizontal surface or consistent front face, so it does not read cleanly as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a building. It is three tiny grey fragments (about 8 distinct colours in total) set against the references' full houses with roofs, walls and doors. Each fragment has only 2-3 grey steps, with a dark neutral edge and no visible material-tone outline; the measured near-neutral share of dark edge pixels is 100%, against 7-9% for the references. There is no tile texture, no scallops, no plaster or stone grain, and the shading is shallow. The per-tile tone count is 0 because the piece is smaller than a tile, so the density fact does not count against it. By eye, though, it is far thinner and flatter than either reference and looks like a sticker. It is not comparable to a whole building, so the kind does not match and it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 20202
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper wedge face with dark seam",
+      "rows": "0-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower tapering shaded face",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is an inverted triangle that narrows from 33px at row 0 to 2px at row 15, like a broken wedge seen face-on. Rows 0-2 and 4-6 have the same lightness (L=147), split only by a dark 1-row seam at row 3. That seam reads as a crack or joint, not a front-edge line with eave shadow. There is no ellipse, roof or slope plane, and no visible contents. The rest of the shape (rows 7-15) is a darker tapering face, with no horizontal surface anywhere. It does not read like a gate, pavilion or building with a top slope."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a building. It is three tiny grey fragments (small debris or posts, with a triangular shape in the middle), each far smaller than one 16x16 tile. Visible tones per tile is 0, so I judged by eye. It has only 8 distinct colours in total against 66-185 for the references. It shows about 2-3 grey steps per fragment, with no roof, walls or door. Its dark edge pixels are 100% near-neutral, so the outline is a neutral dark line. The references have 7-9% neutral edges and tinted outlines. The references carry 10-12 visible tones per tile, with tile scallops, plaster speckle and stone shaded one by one. The candidate has none of that texture. It reads as a flat, sticker-like sprite and is much thinner than either reference. The piece also does not match the 'building' kind it was submitted as.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17918
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper slab band of central wedge",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tapering wedge face of central fragment",
+      "rows": "4-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side fragments at left and right edges",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is an inverted triangular wedge, 33 px wide at row 0 narrowing to 2 px at row 15. Only a dark 1-row seam at row 3 (L=63) separates the light top rows 0-2 from the face. There is no band that widens and narrows again, so no ellipse, and no roof or slope plane and no eave shadow. Below the seam the shape is a flat vertical face with a second dark line at row 9. The side fragments are also plain vertical faces. Nothing here reads as a horizontal top surface, so this is a front elevation with at most a 1-row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is three tiny grey fragments, each smaller than one 16x16 tile. It is not a whole building with roof, walls and door/windows, so it does not match the reference kind. It has only 8 distinct colours and about 2-3 grey steps per fragment. The measured near-neutral share of dark edge pixels is 100%, against 7-9% for the references, so the outline is a neutral dark line with no material tint. The fragments are flat grey wedges with no tile scallops, grain or speckle. The references carry 10-12 visible tones per tile with tinted outlines and per-tile texture. The candidate is far thinner, flatter and more sticker-like than either reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16888
+  }
+ ],
+ "decidedAt": "2026-10-21T15:33:52.685Z",
+ "cells": {
+  "16": [
+   "04ad0d96ed6a3ea6",
+   "b436a6b5d3774ace",
+   "f80e668fb1841ebc",
+   "fd545e0129959871"
+  ],
+  "24": [
+   "0b9e37ef17e7410b",
+   "0bd7d50bd69ffd1b",
+   "0ce4f5272ccc6d76",
+   "0dfb0da35554dafd",
+   "105cbaee335c7658",
+   "12c0ac6bdbaa1bb9",
+   "2d6a4d7066997296",
+   "2df2e172847230bb",
+   "5055b75cc076e9de",
+   "50c4272076039a2b",
+   "5f6f8af3a23ba4e2",
+   "604f60d4a5a956c7",
+   "98f5f8faefe820f8",
+   "9d3bbb3e29244955",
+   "a8362bce7abbe174",
+   "d3c53b991f4d0d44",
+   "d4406939eef787ed",
+   "fb40e2fc3a149a91"
+  ],
+  "32": [
+   "0f9f232cdc91db9d",
+   "60f4e54c90b7b468",
+   "892bbc48e080b83d",
+   "abe842670e2d75fe"
+  ],
+  "48": [
+   "1b6e602ee9480ed2",
+   "227baf136a42225f",
+   "2af8ec6df982f7cb",
+   "353314837ed7f188",
+   "3dea5a975c82674c",
+   "52450dec0a28b981",
+   "55535bb009255e96",
+   "82e41b6215bbfa85",
+   "93ced2128bb8b29e",
+   "b0e28a47f32fd5c6",
+   "c9a9ab234faf9bae",
+   "d46267c9229edb96"
+  ]
+ }
+}

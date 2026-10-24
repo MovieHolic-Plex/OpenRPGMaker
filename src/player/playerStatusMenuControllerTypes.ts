@@ -8,7 +8,6 @@ export type PlayerStatusMenuControllerOptions = {
   readonly layout: HTMLElement;
   readonly getActiveScene: () => PlayScene | undefined;
   readonly getPlayStage: () => HTMLElement | null;
-  readonly getPlayStartedAt: () => number;
   readonly closeMenu: () => void;
   readonly closeMenuWithJuice: () => void;
   readonly renderTitle: () => void;

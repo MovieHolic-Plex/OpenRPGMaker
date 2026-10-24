@@ -96,6 +96,15 @@
   content: ">";
 }
 
+/* 조준 중인 적 행(`.battle-target-selected`)은 «커서» 가 아니다 — 커서가 「뒤로」 행으로 넘어간
+   국면(root `data-battle-target-cursor="cancel"`, battleDom.syncEnemyTargetCursor)에서는 글리프를
+   내린다. 이 기본값이 없으면 대상 행과 「뒤로」 행에 글리프가 둘 그려진다(실측:
+   rt-scarloxy-double-target-cursor). 스킨이 자기 글리프를 그리는 경우(_retro2003 손 ·
+   20-pokemon ▸)도 각자 같은 가드를 둔다. */
+.battle-scene[data-battle-target-cursor="cancel"] .battle-target-menu .battle-command.battle-target-selected::before {
+  content: none;
+}
+
 .battle-command:focus-visible::before,
 .battle-command[data-battle-command-cursor="true"]::before,
 .battle-enemy-list-row:focus-visible::before {

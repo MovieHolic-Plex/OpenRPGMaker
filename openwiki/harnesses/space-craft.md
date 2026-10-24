@@ -56,4 +56,13 @@ npm run harness -- space-craft status --out <실행>
 결과와 도구 수리는 `openwiki/atlas-biome-interior.md` 「조수 실력 시험 — 폴른 스타 세 방」.
 
 검수 그림은 `measure.json` 의 `render.clean`(편집기 전용 시작 위치 표시를 뺀 1배 그림)을 쓴다 — 시작 표시를 이동 칸으로 읽은 검수자가 출구 major 를 매긴 적이 있다(2026-10-22).
+2026-10-23 부터 모든 검수 그림은 시작 표시가 기본으로 빠진다 — `measure` 의 `render/<id>.png` 와 판정자 그림은 `renderReviewMapPng`(scripts/qa-game/render.mts),
+편집기 캡처(editorDriver·genreExperiment·worldmapFilm)는 `__oprnHideStartMarker`. 표시가 든 그림은 `render/<id>.marker.png` 로 따로 남는다. 표시를 켜려면 `HARNESS_START_MARKER=1`.
 `measure` 는 실내 빈 바닥(`bareFloor`, 보정된 자)도 함께 남긴다. 과제 `fantasy-magic-library`(마법 학교 도서관 — 조수가 wizarding_world 로 짓는다)를 더했다.
+
+## 던전 9요청 (`dg-*`, 2026-10-22~23)
+
+- 사례: `dg-small-cave`·`dg-goblin-den`·`dg-tower3`·`dg-catacomb`·`dg-ice-cave`·`dg-lava-cave`·`dg-flooded-temple`·`dg-puzzle`·`dg-boss-run`. 공용 DB 는 앞 판의 `shared-content.sqlite` 를 `--shared-from` 으로 고정한다.
+- `measure` 뒤 `bun scripts/qa/dungeons/space-run.mts <run>/dg-*` 가 사례마다 `space.json`(깊은 허공·맨바닥·가장 큰 빈 직사각형·플레이어 카메라 최악 창 허공 %), `python3 scripts/qa/dungeons/event-digest.py <run>/dg-*` 가 `events.json` 을 쓴다.
+- 판정은 매 판 같은 지침 `harness-data/space-craft/dungeon-vqa-brief.md` 로 새 Opus 판정자가 한다(major 목록 M1~M10 고정, 출구 없음은 blocker, 자리표시 출구는 minor). 지침을 판마다 고쳐 쓰면 major 목록이 흔들려 판끼리 비교가 안 됐다.
+- 걷기 영상: `bun scripts/qa/dungeons/walk-route.mts <case-run> <out>` 로 경로를 만들고 `QA_RECORD_VIDEO=<dir> node scripts/runtime-qa.mjs --scenario dungeon-walk --project <out>/project.json --netns`.

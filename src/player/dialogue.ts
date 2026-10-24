@@ -1,3 +1,4 @@
+import { installTapOrSwipeToClose, isTouchUiHost } from "@/player/touchTap";
 import { getEffectiveReadingPreferences, playerTextDelay, setAuthoredPreferenceDefaults } from '@/player/playerPreferences';
 import { backlogViewIsOpen, backlogRecentlyClosed, closeBacklogView, openBacklogView } from '@/player/dialogueBacklogView';
 import { dialogueUiText } from '@/player/dialogueUiStrings';
@@ -17,6 +18,7 @@ import { resolveAuthoredVnLook, resolveVnLook, vnLookAttributes, vnLookShowsPort
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
+import { applyPixelBust } from "@/player/bustPixelate";
 import { dialogueFaceForEmotion, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId, sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { appearancePortraitForEmotion, faceForDialogueEmotion, resolveActorAppearance, resolveAppearancePortrait } from "@/project/characterAppearances";
@@ -724,6 +726,13 @@ export function createDialogueUI(
       list.append(item);
     }
     if (logEntries.length === 0) list.append(el("li", { class: "dialogue-log-empty", text: "아직 나눈 대화가 없습니다." }));
+    const closeButton = el("button", {
+      class: "dialogue-log-close",
+      text: "닫기 ✕",
+      attrs: { type: "button", "aria-label": "대화 기록 닫기" },
+      dataset: { testid: "dialogue-log-close" },
+    });
+    closeButton.addEventListener("click", (event) => { event.stopPropagation(); closeLog(); });
     logPanel = el("div", {
       class: "dialogue-log",
       attrs: { role: "dialog", "aria-label": "대화 기록" },
@@ -731,11 +740,14 @@ export function createDialogueUI(
       children: [
         el("div", { class: "dialogue-log-head", children: [
           el("strong", { text: "대화 기록" }),
-          el("span", { text: "L · Esc 닫기 · ↑↓ 넘겨 보기" }),
+          el("span", { class: "dialogue-log-hint", text: isTouchUiHost(host) ? "탭하거나 쓸어서 닫기" : "L · Esc 닫기 · ↑↓ 넘겨 보기" }),
+          closeButton,
         ] }),
         list,
       ],
     });
+    // 폰에는 L·Esc 가 없다 — 보이는 닫기 단추와 탭·쓸기로 닫는다(2026-10-24, 아이폰에서 기록 창에 갇힌 신고).
+    installTapOrSwipeToClose(logPanel, closeLog);
     host.append(logPanel);
     list.scrollTop = list.scrollHeight;
   };
@@ -1976,7 +1988,13 @@ function setFaceImage(node: HTMLElement, resourceId: string): void {
   const url = safeResourceImageUrl(resolveAssetResourceUrl(resourceId, { project: store.getCurrent() }));
   if (!url) return;
   if (node.classList.contains("dialogue-face-image")) node.style.setProperty("--face-url", `url("${url}")`);
-  else node.style.backgroundImage = `url("${url}")`;
+  else {
+    node.style.backgroundImage = `url("${url}")`;
+    if (node.classList.contains("dialogue-face-bust")) {
+      delete node.dataset.bustPixel;
+      applyPixelBust(node, url);
+    }
+  }
   node.dataset.resourceId = resourceId;
   if (node.dataset.portraitRender) node.dataset.portraitRender = sharedPortraitRendering(resourceId);
 }
@@ -2623,7 +2641,7 @@ function renderFace(face: FaceGraphic): HTMLElement {
   const mode = dialoguePortraitMode(face);
   if (mode !== "face") {
     const side = face.position === "right" ? "right" : "left";
-    return el("div", {
+    const bust = el("div", {
       class: [
         "dialogue-face",
         "dialogue-face-bust",
@@ -2646,6 +2664,10 @@ function renderFace(face: FaceGraphic): HTMLElement {
         portraitRender: sharedPortraitRendering(face.resourceId),
       },
     });
+    // 그림(또는 에메랄드 화면의 도트 변환본)이 준비될 때까지 숨긴다 — 빈 틀이 먼저 보였다(2026-10-21 아스트라 첫 10분 녹화).
+    bust.style.visibility = "hidden";
+    applyPixelBust(bust, url, () => { bust.style.visibility = ""; });
+    return bust;
   }
   // 얼굴은 낱장 파일(48×48) 한 장이다 — 상자 크기만 정하고 이미지를 통째로 그린다.
   const style = [

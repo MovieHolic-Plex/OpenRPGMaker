@@ -1,0 +1,5 @@
+{"queue":"jp-in-stairs-13","round":7,"judge":"claude-opus-5.5 (fresh subagent, no prior scores)","date":"2026-10-22","verdict":"pass","majors":0,"axis2":8,"axis6":8,
+ "images":"~/jpi-work/r7/pieces-4x.png + scene-*-1x/3x.png (published ~/claude-viz/jp-stairs-1/jp-interior/)",
+ "pieces":{"stairs-up-wood":"up, north, yes","stairs-up-wood-wide":"up, north, yes","stairwell-down-wood":"down, north, yes (weakly)","sc-stairs-up":"yes","sc-stairwell-down":"yes","mc-stairs-up":"yes","mc-stairwell-down":"yes","of-stairs-up":"yes","of-stairwell-down":"yes","as-stairs-up-broken":"yes","as-stairwell-down":"yes","cs-stairs-up-bare":"partly (minor: side walls thin)","cs-stairwell-down":"yes"},
+ "minorFindings":["even step spacing on up stairs (no narrowing)","wood well south tread saturated","1-cell up stairs lean to ladder","stairwell side rails slight cage look","as rubble/rust stamped","cs up side walls thin","cs cones small"],
+ "scene":"school up stair vs well easy to tell apart; no wrong wall cuts; palette matches existing jp_city art"}

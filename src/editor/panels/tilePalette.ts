@@ -612,6 +612,7 @@ function appendPaletteUtilities(
     rerender: renderPalettePreservingViewport,
     body: () => makeStructureKitShelf({
       tileset,
+      title: "",
       activeKitId: state.activePaletteStamp?.kitId ?? null,
       rerender: renderPalettePreservingViewport,
     })! }));

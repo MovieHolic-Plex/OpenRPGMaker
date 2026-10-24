@@ -1,0 +1,5 @@
+{"queue":"jp-in-stairs-13","round":1,"judge":"claude-opus-5.5 (fresh subagent, no prior scores)","date":"2026-10-22","verdict":"fail","majors":7,"axis2":5,"axis6":4,
+ "images":["pieces-4x.png","scene-*-1x.png","scene-*-3x.png","ref structure sample (not committed)"],
+ "majorFindings":["stairs-up-wood: 1-wide reads as ladder/bookshelf","sc-stairs-up: uniform grey bars read as rolling shutter","mc-stairs-up: dashes read as drawer handles (cabinet)","of-stairs-up: reads as wall shelving","as-stairs-up-broken: damaged shutter read","cs-stairs-up-bare: garage-door read, no rise cue","cs-stairwell-down: framed on all four sides reads as hatch","scene school-2f: up stair and stairwell indistinguishable"],
+ "minorFindings":["stairwells: inner shadow on east side, should be west for upper-left light","south lip of stairwell reads as closed edge","north rail lacks contact shadow on wainscot","metal greys bluer than existing furniture"],
+ "action":"up_stairs redesigned (foreshortened 3-tone steps, dark opening at top, open stringers, newel); stairwells: west inner shadow, south lip = nosing only, rail contact shadow; cs-stairwell graded"}

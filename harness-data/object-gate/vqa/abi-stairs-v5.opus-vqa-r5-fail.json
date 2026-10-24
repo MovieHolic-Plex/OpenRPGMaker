@@ -1,0 +1,16 @@
+{
+ "round": 5,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "abi-stairs-v5",
+ "images": "http://mdc-server:18301/jp-stairs-1/interior-v5/r5/kits-4x.png (+ scene 1x/3x and before/)",
+ "pieces": [
+  "stairs up stone",
+  "stairs up wood",
+  "stairs down",
+  "stairwell down"
+ ],
+ "rubric": "axis 2 (style/palette/3/4 fit) + axis 6 (1x readability incl. up/down direction)",
+ "majors": 8,
+ "verdict": "FAIL",
+ "summary": "P1 up stone partly: [major] steps too flat (4 tread / thin riser) reads louvered shutter; minors hue mauve/blue, rails, cheek plinths.\nP2 up wood weakly: [major] reads bookshelf at 1x (thin risers, knots); [major] salmon tread off-ramp.\nP3 stairs down NO: [major] nosing on south edge = up rhythm; should be lit north edge + south shadow; [major] 1x oven: too few treads, far wall 4 rows black.\nP4 stairwell partly: [major] same wrong-edge nosing, deepest too dark.\nSCENE: [major] manor-1f stair = wardrobe; [major] cellar = furnace (dups of piece fixes).\nMAJORS 8\n"
+}

@@ -1,0 +1,486 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a728feeb60662b370d215a483472c09d335c8df26c14b23b91eef4355143e8a9",
+ "width": 64,
+ "height": 128,
+ "kind": "structure",
+ "name": "snow-covered Roman-style stone town gatehouse, 3/4 top-down: crenellated top platform seen from above (windlass drum, portcullis pit, stone balls, barrel), front face with a round arch closed by two iron-banded wooden doors",
+ "label": "beodeul_town_wall/gatehouse_closed_snow",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 20,
+  "darkV5": 47,
+  "nearBlackEdge": 0.07,
+  "opaqueTiles": 32
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crenellated top platform with snow, seen from above",
+      "rows": "0-48",
+      "evidence": "a",
+      "front_edge_line_row": 49,
+      "eave_shadow_rows": "49-52"
+     },
+     {
+      "part": "windlass drum, portcullis pit, stone balls and barrel on the platform",
+      "rows": "16-38",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall with round arch and iron-banded double doors, banners and torches",
+      "rows": "49-127",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 79,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The upper part of the sprite (rows 0-48) is a large horizontal platform seen from above. It holds a windlass drum, a portcullis pit, stone balls and a barrel. These objects are lying on the platform surface, and the snow drifts and the crenellations on the rear and side edges show it as a surface. The platform ends in a dark front-edge line at row 49 (L=90), with the merlon and shadow band in rows 50-52 beneath it. Below that is a tall vertical south face, rows 49-127, with stone courses, banners, torches and a round arch closed by wooden doors. This gives a top surface of about 48 rows over a front face of about 79 rows, which reads as a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts put the candidate level with the references. It has 12 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 3% against 0%, and only 5% of dark edge pixels are neutral (references 7% and 9%), so the outlines carry a tint. By eye, the outlines are dark blue-grey beside the stone and dark brown beside the doors, which fits the dark-material-tone approach and is not a uniform black sticker line. The stone wall has individually shaded blocks in about 5 grey steps, with a lit arch voussoir ring, banners, torches, and iron-banded doors with grain and studs. The snowy top platform has several props (drum, balls, barrel) and a few tones of pale shading. Weaker points are that the block courses are slightly regular and the snow platform is a bit simpler than the reference roofs, which have per-tile scallops and highlights. The piece is still comparable in richness and a careful artist would accept it next to the references. It has no large flat fills, since the 5x5 flat share is only 2%.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15933
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crenellated top platform (snow-covered floor with parapet merlons at the back and front)",
+      "rows": "0-48",
+      "evidence": "a",
+      "front_edge_line_row": 49,
+      "eave_shadow_rows": "50-52"
+     },
+     {
+      "part": "windlass drum, portcullis pit, stone balls and barrel on the platform",
+      "rows": "15-38",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 49,
+    "front_face_rows": 78,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-48 show a large top platform seen from above. It has back merlons at rows 0-4, a snowy floor holding the windlass, pit, balls and barrel, and front merlons at rows 40-48. A dark front-edge line at row 49 follows (x=16 and x=32 both L=90), with machicolation slots in shadow just below it. Below that, rows 50-127 are a stone front face with banners, torches, a round arch and two iron-banded wooden doors. No side face is drawn. The top surface and the tall front face are both clearly present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's visible tones per 16x16 tile (12) match house-h101_0 (12) and exceed house-h112_0-stone (10). Near-flat coverage is 3%, close to the references' 0%, so there are no real flat fills. Only 5% of dark edge pixels are near-neutral, so the outlines are tinted: dark blue-grey beside the stone and dark brown beside the wood doors, not a black sticker line. The stone wall shows per-block shading and speckle. The snow top carries several light blue-white steps with shadow clumps. The arch voussoirs, iron-banded doors, banners and torches add detail. The structure reads as a building with a roof-equivalent platform, walls and a door, comparable to the references. About 5 shading steps on the stone against the references' 5-6 is acceptable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12608
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top platform (snow-covered floor with back and front crenellated parapets)",
+      "rows": "0-48",
+      "evidence": "d",
+      "front_edge_line_row": 49,
+      "eave_shadow_rows": "50-52"
+     },
+     {
+      "part": "windlass drum, portcullis pit, stone balls and barrel on the platform",
+      "rows": "15-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall with round arch and double doors",
+      "rows": "49-127",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 49,
+    "front_face_rows": 78,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-48 show a large horizontal platform seen from above. It has a back parapet, snowy floor contents (windlass, pit, stone balls, barrel) and a front parapet. A dark front-edge line at row 49 and the shadowed gaps in the merlons at rows 50-52 end the top surface. Below that, rows 50-127 hold a vertical stone front face with an arch and two banded wooden doors, so the gatehouse has both a top surface and a front face of well over 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "Measured facts are close to the references: 12 visible tones per tile against 12 and 10, near-flat coverage 3% against 0%, and only 5% of dark edge pixels are neutral, so the outlines are tinted. By eye, the stone blocks on the front face are shaded individually with several grey-blue steps, the arch voussoirs are separated by value, and the wooden doors have grain and iron bands. These match the Beodeul standard reasonably well. The snow-covered top platform is lighter and flatter, with larger pale areas and fewer texture dots than the reference roof tiles and stone walls. Total distinct colours (40, against 66 and 185) and the 3% flat coverage show slightly less variation than the references. The banners and torches are small, simple accents. It is a slightly shallower rendering than the references, but not a sticker look.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12596
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crenellated top platform (snow-covered floor with parapet merlons on all sides)",
+      "rows": "0-48",
+      "evidence": "a",
+      "front_edge_line_row": 49,
+      "eave_shadow_rows": "50-54"
+     },
+     {
+      "part": "windlass drum, portcullis pit, stone balls, barrel on the platform",
+      "rows": "14-36",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front battlement merlons and gaps (front parapet seen from above)",
+      "rows": "40-48",
+      "evidence": "a",
+      "front_edge_line_row": 49,
+      "eave_shadow_rows": "50-54"
+     }
+    ],
+    "main_top_rows": 49,
+    "front_face_rows": 78,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-48 show a large platform seen from above. It has a snow floor, merlons around the edge, and a windlass, pit, stone balls and barrel standing on it. A dark front-edge line at row 49 (L=90) closes the platform. Dark crenel-gap and eave shadow follow in rows 50-54. Below it, rows 50-127 form a vertical south face of stone courses with a round arch, two iron-banded doors, banners and torches. The platform has a top of about 49 rows and the front face is about 78 rows, so the object reads as three-quarter, not a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "Visible tones per 16x16 tile are 12, equal to house-h101_0 (12) and above house-h112_0-stone (10). Near-flat coverage is 3%, close to the references' 0%, so there are no large flat fills. Only 5% of dark edge pixels are neutral, so the outlines lean tinted (dark blue-grey beside stone, dark brown beside wood) rather than a black sticker line. The stone wall has individually shaded blocks with speckle and an arch voussoir ring. The doors have planks, iron bands and rivets in about 4 wood tones. The snow platform has light and shadow steps with props (drum, balls, barrel) that break up the surface. Stone and snow ramps show about 4-5 steps against the reference's 5-6, and only 40 distinct colours, which is consistent with a locked palette. The banners and torches are small and fairly flat, so density is slightly lower than the references, but a careful artist would accept it beside them."
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17225
+  }
+ ],
+ "decidedAt": "2026-10-22T16:26:33.768Z",
+ "cells": {
+  "16": [
+   "07e43cdbf8c1357d",
+   "1250592b31e818a1",
+   "1d2bee42e30e0cce",
+   "2f02671c3833df0d",
+   "2fe62b5c009c94d7",
+   "4e54b9a6dc859d56",
+   "4f0d26bb9243e7a8",
+   "5c5235513c03cd89",
+   "665dd97782511639",
+   "671991f70dc90566",
+   "78d1ff2b6f784db6",
+   "85a56298c4ca5ec9",
+   "8661295e74b6afb3",
+   "872a506bc7e46380",
+   "8bf2e04535e931d1",
+   "95bc2f92c57db4d9",
+   "967c91022944db97",
+   "9af75f980b114cbc",
+   "a02b96f88a5f4061",
+   "a79ddb6ca7d03510",
+   "ab04fd189e21400c",
+   "ab999edde162af1b",
+   "cb4776addf6b4429",
+   "d0d8fc1ae54ea4a4",
+   "d12c21061bd7f691",
+   "db560a5abee77456",
+   "f0e93652169d7cbc",
+   "f0ef08a277c68945",
+   "f7bcf787a474d932",
+   "f7fa9769c2d71cee",
+   "f898e6f76c7e27a9",
+   "fa314536cb75f4ad"
+  ],
+  "24": [
+   "00c037a470b6c298",
+   "00d7221c46f78848",
+   "01f6192c467a8fd9",
+   "0719d135550e4f38",
+   "084a01b167443e29",
+   "0a1d32c58b52caef",
+   "0bd8821a19ce95f9",
+   "0d68dfae449cc656",
+   "0db9d181dc1964bc",
+   "19cfea7441b4b577",
+   "1c1b3341131e9922",
+   "1d3aa95ab8ed1f87",
+   "20526cc0ca36bb6c",
+   "2101767002fb08b8",
+   "21263449ccbefa5c",
+   "226c999d3cb1f0fd",
+   "257119fcfeb661a3",
+   "2a210a2dd689c975",
+   "2b40538d3d0f662a",
+   "2d5201b13de13832",
+   "2e2a43032b4a2730",
+   "2f0fef56b1cb5130",
+   "3ad2be2d84e5d006",
+   "3dff9be0de0f39d6",
+   "4591e07cd2474d8d",
+   "45a827ec676a118e",
+   "47a36809ae6c324d",
+   "47a6b1fa3ecc8eb0",
+   "52f6865b6f385236",
+   "539d33baa168e714",
+   "543da6a60bd3d821",
+   "54f5b48469acce7b",
+   "5948ef3efcdb7b65",
+   "59ecc20a7c42e133",
+   "5b39af895c0271fe",
+   "5c3039c2a13e85c6",
+   "5ca543a60e0e952e",
+   "5dbbe1c802170690",
+   "6007262c10c41ae2",
+   "60b32c1929d896e5",
+   "61c34d45867ebf61",
+   "6291e1403b660cd7",
+   "6744e4d176402d44",
+   "69ad48c9daedc5c5",
+   "6bc5b47d7338a6b3",
+   "6be4b79da22727b0",
+   "6bee6f9e47172b5f",
+   "6de805f7967337cc",
+   "70597c48de3cb404",
+   "71096a151d59dbf2",
+   "758c343d3fa60c86",
+   "79ec8a984f0bc41e",
+   "7ad368ac3c08a0c1",
+   "7ade9a75eeadf541",
+   "7af6b7aa3e86e170",
+   "7b449de21c65dffd",
+   "80c890b60d0aa37f",
+   "85bdc191e8cdd74b",
+   "8663de44aa7fb9c7",
+   "877c014bc86fae18",
+   "8bf7608ff049060d",
+   "94e5c8f171309ac9",
+   "94eca396aa80024d",
+   "9518e528876f9e5e",
+   "9685d0059fab5870",
+   "973d1d16e1365402",
+   "9e4bea4203521b36",
+   "a6d15efd73c78f86",
+   "a83e4201c34edf1e",
+   "ae21ff59d2aa6e2f",
+   "b063d419a4bd7896",
+   "b07c8da8b69b3020",
+   "b330c28b8d888223",
+   "b3ba123342b6c583",
+   "b58bab909e87d0e3",
+   "b774dbabdac099c2",
+   "b95a414c99d80c9a",
+   "bb42fabe96c449a0",
+   "bdc1b1f8b3f51d7e",
+   "c761ebd68dc29ca6",
+   "c80511d482139bf0",
+   "cc57baad663cbf9c",
+   "cde8a0de4dcfb55a",
+   "cf075f3730e07121",
+   "d150022f727ed53f",
+   "d411010844421c22",
+   "d560392eecaeb6fb",
+   "d6dceb2255b68345",
+   "dcd4c7d90b68951b",
+   "e11636021785a335",
+   "e1685bd5ae557657",
+   "e4f8224c20f3086b",
+   "eaa403461f65b8ec",
+   "eaa8a3f4188ef73a",
+   "f02b58d3064e1248",
+   "f144bd824ce57a7d",
+   "f17b2ced1c2eb12e",
+   "f3094438a43e3135",
+   "f32a9e89e2850b1a",
+   "f4aa5a43374f62f8",
+   "f55dbf599db765d0",
+   "f5a41ca3a184476f",
+   "f5d7a2827acb9830",
+   "f641cf98bf7a53e9",
+   "fce1fdcf709fba84",
+   "fee452c84eb8eb7e",
+   "ff1d694c03b71100"
+  ],
+  "32": [
+   "18f9044980160dfe",
+   "4f47ff7dc2fe51fd",
+   "5bc70b95190a2518",
+   "8a0655ea885e6e95",
+   "8b1b6f54729e18c2",
+   "a8f26d02704fa7b3",
+   "ab6e4335ed8b4c09",
+   "acd5e3fd4f8a6121"
+  ],
+  "48": [
+   "07467cc586c4eab3",
+   "0d0231ec2abeb271",
+   "18e561fdf8d028f8",
+   "2dd6f8b0ad7ff6b7",
+   "35200193730265b5",
+   "3b585601b3e8db53",
+   "59a68e6f1d465670",
+   "5b5be86d3818e466",
+   "5bc0bab5a9eb84df",
+   "5d4e888695b47031",
+   "60c2c5b37b3909b0",
+   "6d73b4e8e1b73966",
+   "6ed916f74353a8a5",
+   "76fb3fd9e0e69240",
+   "7f66da82f1450dc7",
+   "96486190deee217d",
+   "9da037eee46f8cfc",
+   "9e0f4e37360d782f",
+   "a8d19c78a595d8bc",
+   "b7e8d549b685dd5e",
+   "c1c7a09310c20a2b",
+   "c2ab7fe63bb53b2f",
+   "c51e482fd65cfa32",
+   "cc1a5b28d7599d6d",
+   "cd3c785c9c47347d",
+   "cea9c10409da2123",
+   "dc7f8a8fd36fd7f3",
+   "e16cab91a46852c5",
+   "e915372e0264413b",
+   "ea88343990350198",
+   "eaa231aeb07c3480",
+   "ec90b83fc9a62900",
+   "f365e2d995e88a10",
+   "f6357d7b8a8a113c",
+   "f6da4de3e41f0ee8",
+   "fb31c970870a3b74"
+  ]
+ }
+}

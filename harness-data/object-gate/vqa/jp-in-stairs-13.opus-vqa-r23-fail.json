@@ -1,0 +1,33 @@
+{
+ "queue": "jp-in-stairs-13",
+ "round": 23,
+ "judges": "3x claude-opus-5.5 fresh subagents in parallel, no prior scores; a major counts only if >=2 of 3 raise it",
+ "date": "2026-10-22",
+ "verdict": "fail",
+ "perReviewer": {
+  "A": {
+   "majors": 1,
+   "axis2": 7,
+   "axis6": 6
+  },
+  "B": {
+   "majors": 2,
+   "axis2": 6,
+   "axis6": 6
+  },
+  "C": {
+   "majors": 0,
+   "axis2": 7,
+   "axis6": 8
+  }
+ },
+ "majorityMajors": [
+  "grey down stairwells sc/mc/of (A+B): at 1x the evenly spaced grey stripes inside a railed box read as a floor vent / wire rack / trolley"
+ ],
+ "minorityMajors": [
+  "stairwell-down-wood reads as crate (B only)"
+ ],
+ "upStairs": "no major on any up stair from any reviewer",
+ "majoritycount": 1,
+ "action": "grey wells: 7px near-black north wall, tread heights grow toward the south (2,2,3,4,6), lower north rail (T=9), side posts end 5px before the south edge (no legs)"
+}

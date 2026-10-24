@@ -11,6 +11,7 @@
 //  오류가 하나라도 있으면 issues 에 담는다 — 도구는 그때 맵을 바꾸지 않는다.
 import spec from "@/assets/wizardingSpaceSpec.json";
 import { passabilityOf } from "@/project/collision";
+import { stairContractForKit } from "@/project/stairs/contract";
 import type { AutotileGroup, TilesetDef } from "@/project/types";
 
 /** north-wall 북벽 앞·벽에 걸기 · side-wall 서·동 벽 앞 · free 아무 바닥 · center 가운데 가까이 · corner 구석 ·
@@ -653,7 +654,9 @@ function buildOnce(input: WizardingSpaceInput, tileset: TilesetDef, specIn: Wiza
     for (const w of r.with ?? []) { const p = resolve(w.kit); if (p) parts.push({ piece: p, dx: w.dx, dy: w.dy, under: !!w.under }); }
     return parts;
   };
-  const flatOnly = (p: Piece) => p.cells.every((c) => c.lower < 0 && c.upper >= 0 && isFlat(c.upper));
+  // 계단통(바닥 구멍)은 칸이 전부 투명 덧그림이어도 깔개가 아니라 가구다 — 자리를 차지하고 앞 칸 접근을 지킨다.
+  const isStair = (id: string) => !!(stairContractForKit(tileset.id, id) ?? stairContractForKit("wizarding_world", id));
+  const flatOnly = (p: Piece) => !isStair(p.id) && p.cells.every((c) => c.lower < 0 && c.upper >= 0 && isFlat(c.upper));
   const mountedRow = (r: WizardingFurnitureRecipe, y: number) => recipe.layout === "room" && r.placement === "north-wall" && y < NR && y >= 0;
 
   /** 덩이를 (x,y) 에 놓아 본다. 성공하면 Group, 실패하면 이유 문자열. 실패 시 판은 그대로. */

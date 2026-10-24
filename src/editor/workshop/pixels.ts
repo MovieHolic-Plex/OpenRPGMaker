@@ -93,9 +93,11 @@ async function referenceImage(prompt: string, signal: AbortSignal, options?: { r
       return dataUrl ? { dataUrl, source: "dev-hook" } : null;
     }
   }
-  const [{ generateAiImage }, { loadAiConfig }, { resolveImageRoute }, { companionCredentialMissing }] = await Promise.all([
-    import("@/ai/imageGenerationClient"), import("@/ai/llmClient"), import("@/ai/imageRoute"), import("@/ai/chatgptOAuthClient"),
+  const [{ generateAiImage }, { loadAiConfig }, { resolveImageRoute }, { companionCredentialMissing }, { loadAssistantEngine }] = await Promise.all([
+    import("@/ai/imageGenerationClient"), import("@/ai/llmClient"), import("@/ai/imageRoute"), import("@/ai/chatgptOAuthClient"), import("@/ai/localCliEngine"),
   ]);
+  // 조수 엔진이 내 PC 의 에이전트 CLI 면 그림 계정 경로가 없다 — 부르면 401 「AI 연결이 끊겼습니다」 알림만 뜬다(2026-10-23 실화면). 참고 없이 그린다.
+  if (loadAssistantEngine()) return null;
   const route = resolveImageRoute("object-form-reference", loadAiConfig());
   if (route.kind !== "generative" || await companionCredentialMissing(route.providerId)) return null;
   // 견본(시점·화풍, 물체 비율 캔버스)을 붙인다 — 그림 경로는 붙인 그림의 비율·시점을 따른다(2026-10-22 A/B).
@@ -105,8 +107,15 @@ async function referenceImage(prompt: string, signal: AbortSignal, options?: { r
   return { dataUrl: image.dataUrl, source: `${image.provider}/${image.model}` };
 }
 
+/** 3/4 관문 영수증(호스트 판정기, oneClick/hostGen.ts) — round.gate = "receipt" 판만 부른다. */
+const objectGate: NonNullable<WorkshopEnv["objectGate"]> = async (input, signal) => {
+  const { runHostGate } = await import("./oneClick/hostGen");
+  const result = await runHostGate(input, signal);
+  return { final: result.final, verdict: result.verdict, reasons: result.reasons, ...(result.fix ? { fix: result.fix } : {}), pixelSha256: result.pixelSha256, profileHash: result.profileHash, refer: result.refer ? { verdict: result.refer.verdict, judge: result.refer.judge } : null };
+};
+
 export function browserWorkshopEnv(): WorkshopEnv {
-  return { loadImage, encodePng, tilesetSource, referenceImage, assetUrl: (path) => `${import.meta.env.BASE_URL}${path}` };
+  return { loadImage, encodePng, tilesetSource, referenceImage, objectGate, assetUrl: (path) => `${import.meta.env.BASE_URL}${path}` };
 }
 
 const cache = new Map<string, string>();

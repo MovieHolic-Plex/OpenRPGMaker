@@ -33,6 +33,33 @@ export function withStoreCredits(notices: string | null, credits: string): strin
   return `${(notices ?? licenseNoticeText()).trimEnd()}\n\n${credits}`;
 }
 
+/** 마크다운 기호(##, **, 백틱, 링크, 표 줄)를 걷어 플레이어가 읽을 문장으로 만든다. */
+function plainMarkdownLine(line: string): string {
+  return line
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1 ($2)")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/`([^`]+)`/g, "$1");
+}
+
+/** ATTRIBUTION.md 같은 마크다운 원문을 제목·문단 요소로 그린다. 내용은 그대로, 기호만 걷는다. */
+function renderLicenseText(host: HTMLElement, text: string): void {
+  const doc = host.ownerDocument;
+  let gap = false;
+  for (const raw of text.split("\n")) {
+    const line = raw.trimEnd();
+    if (line.trim() === "") { gap = true; continue; }
+    if (/^\|[\s:|-]+\|$/.test(line.trim())) continue;
+    const heading = /^#{1,6}\s+(.*)$/.exec(line);
+    const node = doc.createElement(heading ? "h3" : "p");
+    if (heading) node.className = "rm-license-dialog-heading";
+    else if (gap && host.childElementCount > 0) node.className = "rm-license-dialog-para";
+    gap = false;
+    const cells = /^\|(.*)\|$/.exec(line.trim());
+    node.textContent = plainMarkdownLine(heading ? heading[1] : cells ? cells[1].split("|").map((cell) => cell.trim()).join(" · ") : line);
+    host.append(node);
+  }
+}
+
 /** 타이틀 메뉴 「크레딧」이 여는 저작자 표기 창. 닫히면 onClose 로 타이틀 포커스를 돌려받는다. */
 export function openLicenseDialog(onClose?: () => void): void {
   void fetchLicenseNotices()
@@ -47,9 +74,9 @@ function showLicenseDialog(body: string | null, onClose?: () => void): void {
   dialog.className = "rm-license-dialog";
   dialog.setAttribute("aria-label", "크레딧 — 게임 에셋 저작자 표기");
   dialog.dataset.testid = "title-credits-dialog";
-  const pre = view.document.createElement("pre");
+  const pre = view.document.createElement("div");
   pre.className = "rm-license-dialog-body";
-  pre.textContent = body ?? licenseNoticeText();
+  renderLicenseText(pre, body ?? licenseNoticeText());
   const heading = view.document.createElement("h2");
   heading.className = "rm-license-dialog-title";
   heading.textContent = "크레딧";

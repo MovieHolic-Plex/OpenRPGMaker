@@ -219,6 +219,14 @@ export function loadAuthoringJourneyProgress(
   }
 }
 
+const progressListeners = new Set<() => void>();
+
+/** 진행 저장소에 쓰기가 일어날 때마다 알린다 — 프로젝트 변경 없이 바뀌는 단계(테스트 부팅)를 패널이 따라가게 한다. */
+export function subscribeAuthoringJourneyProgress(listener: () => void): () => void {
+  progressListeners.add(listener);
+  return () => { progressListeners.delete(listener); };
+}
+
 export function saveAuthoringJourneyProgress(
   scope: string,
   progress: AuthoringJourneyProgress,
@@ -229,6 +237,7 @@ export function saveAuthoringJourneyProgress(
   } catch {
     // Journey hints must never block editing in private/quota-limited storage.
   }
+  for (const listener of progressListeners) listener();
 }
 
 function storageKey(scope: string): string {

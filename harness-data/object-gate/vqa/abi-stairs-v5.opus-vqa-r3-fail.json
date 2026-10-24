@@ -1,0 +1,16 @@
+{
+ "round": 3,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "abi-stairs-v5",
+ "images": "http://mdc-server:18301/jp-stairs-1/interior-v5/r3/kits-4x.png (+ scene 1x/3x and before/)",
+ "pieces": [
+  "stairs up stone",
+  "stairs up wood",
+  "stairs down",
+  "stairwell down"
+ ],
+ "rubric": "axis 2 (style/palette/3/4 fit) + axis 6 (1x readability incl. up/down direction)",
+ "majors": 5,
+ "verdict": "FAIL",
+ "summary": "P1 up stone yes: [major] converging taper vs parallel 3/4; minors: tread/riser ratio, zigzag rails, newels, no depth cue.\nP2 up wood yes: [major] same taper; minors: opening too short, nail dots, foot posts.\nP3 stairs down partly: [major] rail flat 1px orange frame, no height, reads picture frame/crate; minors south strip, side wall hues, lip hidden.\nP4 stairwell NO: [major] treads invisible (one value apart), reads dark rug; [major] far wall vertical bars read as grate.\nAXIS2 6, AXIS6 5. MAJORS 5\n"
+}

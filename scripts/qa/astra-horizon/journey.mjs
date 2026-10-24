@@ -123,10 +123,31 @@ const settled = async (done) => {
   }
   return true;
 };
+// 기술 칸이 가득 차 「잊게 할까?」가 뜨면 사람처럼 「예」를 고르고 가장 약한 기술(위력이 가장 낮은 것)을 잊는다.
+// Enter 만 누르면 기본값 「아니오」라 위력 55 기술(Lv10)을 끝내 못 배우고 리그에 갔다(r33 물).
+async function nextKey() {
+  const menu = await page.evaluate(() => {
+    const node = document.querySelector('[data-testid="emerald-movelearn-menu"]');
+    if (!node || node.hidden) return null;
+    const rows = [...node.querySelectorAll(".emerald-movelearn-row")];
+    return { labels: rows.map((r) => r.querySelector(".emerald-movelearn-label")?.textContent ?? ""), cursor: rows.findIndex((r) => r.dataset.cursor === "true") };
+  }).catch(() => null);
+  if (!menu) return "Enter";
+  if (menu.labels.length === 2 && menu.labels[0] === "예") {
+    // 기본 커서가 「예」인지 보이는 증거 한 장(VQA R9-3).
+    if (!report.moveLearnShot) report.moveLearnShot = { cursor: menu.cursor, labels: menu.labels, file: await shot("move-learn-prompt") };
+    return menu.cursor === 0 ? "Enter" : "ArrowUp";
+  }
+  const power = (name) => project.database.skills.find((s) => s.name === name)?.power ?? 0;
+  let weakest = 0;
+  menu.labels.forEach((name, i) => { if (power(name) < power(menu.labels[weakest])) weakest = i; });
+  if (menu.cursor === weakest) return "Enter";
+  return menu.cursor < weakest ? "ArrowDown" : "ArrowUp";
+}
 const pressEnterUntil = async (done, max = 40) => {
   for (let i = 0; i < max; i++) {
     if (await settled(done)) return true;
-    await page.keyboard.press("Enter");
+    await page.keyboard.press(await nextKey());
     await page.waitForTimeout(250);
   }
   return settled(done);
@@ -159,10 +180,13 @@ const talk = async (dir) => {
 };
 const action = () => page.evaluate(() => window.__oprnInput.action());
 const eventOf = (mapId, eventId) => project.maps[mapId].events.find((event) => event.id === eventId);
-const free = (mapId, x, y) => !project.maps[mapId].events.some((event) => event.x === x && event.y === y);
+// 시야 전투로 다가온 트레이너는 원래 칸을 떠나 있다 — 살아 있는 위치(eventLocations)로 본다. 옛 위치로 보면 옆 칸에 다른 트레이너가 서 있어 말이 안 걸렸다(체육관 수련생 0, 0턴 ✗).
+let liveSpots = {};
+const spotOf = (mapId, event) => { const l = liveSpots[event.id]; return l && l.mapId === mapId ? l : event; };
+const free = (mapId, x, y) => !project.maps[mapId].events.some((event) => { const at = spotOf(mapId, event); return at.x === x && at.y === y; });
 /** 이벤트 옆 서 있을 칸과 바라볼 방향(아래쪽부터). */
-const besideOf = (mapId, event) => [[0, 1, "up"], [-1, 0, "right"], [1, 0, "left"], [0, -1, "down"]]
-  .map(([dx, dy, dir]) => ({ x: event.x + dx, y: event.y + dy, dir })).find((p) => free(mapId, p.x, p.y));
+const besideOf = (mapId, event) => { const at = spotOf(mapId, event); return [[0, 1, "up"], [-1, 0, "right"], [1, 0, "left"], [0, -1, "down"]]
+  .map(([dx, dy, dir]) => ({ x: at.x + dx, y: at.y + dy, dir })).find((p) => free(mapId, p.x, p.y)); };
 
 /**
  * 영상용 걷기 — 맵 칸 통행(타일 통행표·이벤트)으로 최단 경로를 짜고 실제 방향 입력으로 한 칸씩 간다. 표가 틀려 못 가면 그 칸을 막힘으로 배우고 다시 짠다.
@@ -183,7 +207,8 @@ const passable = (mapId, x, y, target) => {
   const ts = project.tilesets[map.tilesetId], i = y * map.width + x;
   if (tileBlocks(ts, map.lowerTiles[i]) || tileBlocks(ts, map.upperTiles[i])) return false;
   // 다른 문(맵을 옮기는 이벤트)은 밟지 않는다 — 북쪽 출구 둘(도로·학교)이 붙어 있어 도로로 가다 학교 문을 밟았다.
-  return !map.events.some((e) => e.x === x && e.y === y && (!(e.pages?.[0]?.priority === "below") || /"kind":"transfer"/.test(JSON.stringify(e.pages ?? e.commands))));
+  // 문은 첫 줄 명령이 바로 이동인 이벤트만 — 전투에 진 뒤 센터로 옮기는 깊은 분기(1번 도로 첫 야생)까지 문으로 보면 길이 막혔다.
+  return !map.events.some((e) => e.x === x && e.y === y && (!(e.pages?.[0]?.priority === "below") || (e.pages?.[0]?.commands ?? e.commands ?? []).some((c) => c.kind === "transfer" || (c.kind === "fork" && (c.then ?? []).some((t) => t.kind === "transfer")))));
 };
 const DIRS = [["up", 0, -1], ["down", 0, 1], ["left", -1, 0], ["right", 1, 0]];
 async function walkTo(mapId, target, maxSteps = 160) {
@@ -192,6 +217,8 @@ async function walkTo(mapId, target, maxSteps = 160) {
     if (here.currentMapId !== mapId) return "map-changed";
     if (here.x === target.x && here.y === target.y) return "arrived";
     if (await present("battle-scene")) return "battle";
+    // 밟으면 말을 거는 칸(박사 인사 칸) — 대사가 뜨면 멈춘다. 멈추지 않으면 못 가는 칸으로 배워 길이 막혔다.
+    if (await present("dialogue-box")) return "dialogue";
     if (await present("dialogue-box")) { await page.keyboard.press("Enter"); await page.waitForTimeout(300); continue; }
     const prev = new Map([[`${here.x},${here.y}`, null]]), queue = [[here.x, here.y]];
     let found = false;
@@ -252,6 +279,9 @@ async function walkThroughDoor(fromMapId, toMapId) {
 /** 전투가 끝날 때까지: 포획 모드면 체력이 반 아래일 때 가방 → 첫 포획구, 아니면 싸운다 → 가장 강한 기술. */
 async function fight(label, { capture = false, run = false } = {}) {
   const log = [];
+  const switchedFor = new Set();
+  // 쓰러진 뒤 다음 동료를 내는 것은 차례를 쓰지 않는다 — 턴 수(log 길이)에 넣지 않는다(모의전 avgTurns 와 같은 셈).
+  const forcedSwitches = [];
   for (let turn = 0; turn < 40; turn++) {
     if (!(await present("battle-scene"))) break;
     if (await present("battle-result-panel")) {
@@ -261,7 +291,7 @@ async function fight(label, { capture = false, run = false } = {}) {
     // 앞 동료가 쓰러지면 「교체 필요」 — 남은 동료를 낸다(이 칸을 Enter 로만 누르면 1분 가까이 멈춰 있었다, 2026-10-07 영상).
     const forced = page.locator('[data-testid^="actor-switch-"]');
     if (!(await page.locator('[data-testid="actor-command-fight"]').count())) {
-      if (await forced.count()) { log.push(`turn ${turn}: switch`); await forced.first().focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(800); continue; }
+      if (await forced.count()) { forcedSwitches.push(turn); await forced.first().focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(800); continue; }
       const pkmn = page.locator('[data-testid="actor-command-pkmn"]');
       if (await pkmn.count()) { await pkmn.focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(500); continue; }
     }
@@ -272,7 +302,13 @@ async function fight(label, { capture = false, run = false } = {}) {
       await page.waitForTimeout(1500); continue;
     }
     const ready = await page.locator('[data-testid="actor-command-fight"]').count();
-    if (!ready) { await page.keyboard.press("Enter"); await page.waitForTimeout(300); continue; }
+    if (!ready) { await page.keyboard.press(await nextKey()); await page.waitForTimeout(300); continue; }
+    // 플레이어처럼: 체력이 바닥이면 회복약, 상성이 크게 불리하면 더 나은 동료로 교체(적 한 마리당 한 번).
+    {
+      // 잡으려는 싸움에서도 체력이 바닥이면 회복약은 쓴다(교체는 안 한다).
+      const tactic = await playerTactic(switchedFor, { potionOnly: Boolean(capture) });
+      if (tactic) { log.push(`turn ${turn}: ${tactic}`); await page.waitForTimeout(400); continue; }
+    }
     // 적 체력은 화면 HUD 글자(「현재/최대」)에서 읽는다 — 플레이어가 보는 그 값.
     const enemyHp = await page.evaluate(() => {
       for (const node of document.querySelectorAll('[data-testid^="battle-enemy-hp-"]')) {
@@ -295,7 +331,9 @@ async function fight(label, { capture = false, run = false } = {}) {
       await skills.first().waitFor({ timeout: 10000 });
       const pick = capture ? skills.first() : await bestSkill(skills);
       log.push(`turn ${turn}: ${await pick.getAttribute("data-testid")}`);
-      await pick.focus(); await page.keyboard.press("Enter");
+      // 기술 창이 막 바뀌는 사이 포커스가 30초 걸려 여정 전체가 끝났다(r24 풀) — 짧게 기다리고 못 잡으면 이번 차례를 다시 돈다.
+      if (!(await pick.focus({ timeout: 5000 }).then(() => true, () => false))) { await page.keyboard.press("Escape").catch(() => {}); await page.waitForTimeout(400); continue; }
+      await page.keyboard.press("Enter");
     }
     await page.waitForTimeout(300);
     const target = page.locator('button[data-testid^="battle-target-"]:not([data-testid="battle-target-cancel"])');
@@ -322,6 +360,8 @@ const CHART = {
   bug: { grass: 2, psychic: 2, fire: 0.5, flying: 0.5, fighting: 0.5 }, ground: { fire: 2, electric: 2, rock: 2, poison: 2, grass: 0.5, bug: 0.5, flying: 0 },
   flying: { grass: 2, bug: 2, fighting: 2, rock: 0.5, electric: 0.5 }, fighting: { normal: 2, rock: 2, ice: 2, flying: 0.5, psychic: 0.5, bug: 0.5 },
   electric: { water: 2, flying: 2, ground: 0, grass: 0.5, electric: 0.5 }, rock: { fire: 2, flying: 2, bug: 2, ice: 2, ground: 0.5, fighting: 0.5 },
+  // 얼음·에스퍼가 빠져 있어 물 스타터가 브램보어(땅·풀)에게 4배 서리발 대신 여울방울을 골랐다(2026-10-21 r21).
+  ice: { grass: 2, ground: 2, flying: 2, dragon: 2, fire: 0.5, water: 0.5, ice: 0.5 }, psychic: { fighting: 2, poison: 2, psychic: 0.5 },
 };
 const speciesByName = new Map((project.database.monsterSpecies ?? []).map((sp) => [sp.name, sp]));
 const skillById = new Map(project.database.skills.map((sk) => [sk.id, sk]));
@@ -332,6 +372,8 @@ async function bestSkill(skills) {
   const myTypes = (project.database.monsterSpecies ?? []).find((sp) => sp.id === mine?.speciesId)?.types ?? [];
   let best = skills.last(), bestScore = -1;
   for (let i = 0; i < await skills.count(); i++) {
+    // 횟수(PP)가 다 된 기술은 회색으로 잠겨 있다 — 고르면 아무 일도 없이 멈췄다(r35 풀: 햇살쉼 0/10 에서 리그 중 멈춤).
+    if (await skills.nth(i).isDisabled().catch(() => false)) continue;
     const id = (await skills.nth(i).getAttribute("data-testid") ?? "").replace("actor-skill-", "");
     const sk = skillById.get(id);
     const el = sk?.elementId ?? "normal";
@@ -343,6 +385,86 @@ async function bestSkill(skills) {
   return best;
 }
 
+/** 종·레벨로 지금 쓸 수 있는 기술(배운 것 중 마지막 넷)과 그 적에 대한 최고 점수. */
+// 실제로 아는 기술(개체 skillIds)이 있으면 그것으로 — 종 표로만 보면 비행 기술을 아직 못 배운 피오르로 바꿔 어깨툭만 치다 관장전이 11턴이 됐다(r27).
+function moveScore(speciesId, level, enemyTypes, skillIds) {
+  const sp = (project.database.monsterSpecies ?? []).find((s) => s.id === speciesId);
+  if (!sp) return 0;
+  const known = Array.isArray(skillIds) && skillIds.length ? skillIds.map((skillId) => ({ skillId })) : (sp.skillsByLevel ?? []).filter((e) => e.level <= level).slice(-4);
+  let best = 0;
+  for (const { skillId } of known) {
+    const sk = skillById.get(skillId); if (!sk) continue;
+    const el = sk.elementId ?? "normal", power = sk.power ?? 30;
+    let eff = 1; for (const t of enemyTypes) eff *= CHART[el]?.[t] ?? 1;
+    best = Math.max(best, power * eff * ((sp.types ?? []).includes(el) ? 1.5 : 1));
+  }
+  // 받는 쪽 상성: 적 타입이 내 타입을 2배로 치면 깎는다.
+  let taken = 1; for (const et of enemyTypes) for (const mt of sp.types ?? []) taken *= CHART[et]?.[mt] ?? 1;
+  return best / Math.max(0.5, taken);
+}
+async function playerTactic(switchedFor, { potionOnly = false } = {}) {
+  const info = await page.evaluate(() => {
+    const scene = document.querySelector('[data-testid="battle-scene"]');
+    const enemy = [...document.querySelectorAll(".battle-enemy-name")].map((n) => n.textContent?.trim()).find(Boolean) ?? "";
+    let enemyHp = null;
+    for (const node of document.querySelectorAll('[data-testid^="battle-enemy-hp-"]')) { const [hp, max] = (node.textContent ?? "").split("/").map(Number); if (max > 0 && hp > 0) enemyHp = hp / max; }
+    const box = scene?.querySelector(".battle-party .battle-actor-status") ?? scene?.querySelector(".battle-party");
+    const m = (box?.textContent ?? "").match(/(\d+)\s*\/\s*(\d+)/);
+    const name = (box?.textContent ?? "").trim().split(/\s*Lv/)[0].trim();
+    return { enemy, enemyHp, name, hp: m ? Number(m[1]) : null, max: m ? Number(m[2]) : null };
+  });
+  const enemyName = info.enemy.replace(/\s*Lv.*$/, "");
+  const enemyTypes = speciesByName.get(enemyName)?.types ?? [];
+  const party = (await live()).party;
+  const nameOf = (m) => (project.database.monsterSpecies ?? []).find((sp) => sp.id === m.speciesId)?.name ?? "";
+  const active = party.find((m) => (m.currentHp ?? 1) > 0 && (m.nickname ?? nameOf(m)) === info.name) ?? party.find((m) => (m.currentHp ?? 1) > 0 && nameOf(m) === info.name) ?? party.find((m) => (m.currentHp ?? 1) > 0);
+  const back = async () => { await page.keyboard.press("Escape"); await page.waitForTimeout(250); if (!(await page.locator('[data-testid="actor-command-fight"]').count())) { const b = page.locator('[data-testid="actor-command-back"]'); if (await b.count()) { await b.first().focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(250); } } };
+  // 1) 회복약 — 내 체력 35% 아래이고 상대가 아직 버티면.
+  if (info.hp !== null && info.max && info.hp / info.max < 0.35 && (info.enemyHp === null || info.enemyHp > 0.25)) {
+    const item = page.locator('[data-testid="actor-command-item"]');
+    if (await item.count() && await item.isEnabled()) {
+      await item.focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(300);
+      const potion = page.locator('[data-testid^="actor-item-"]').filter({ hasText: /회복약|포션|약/ }).first();
+      if (await potion.count()) {
+        await potion.focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(300);
+        const target = page.locator('button[data-testid^="battle-target-"]:not([data-testid="battle-target-cancel"])');
+        if (await target.count()) { await target.first().focus(); await page.keyboard.press("Enter"); }
+        await page.waitForFunction(() => !document.querySelector('[data-testid="battle-scene"]') || document.querySelector('[data-testid="battle-result-panel"]') || document.querySelector('[data-testid="actor-command-fight"]') || document.querySelector('[data-testid^="actor-switch-"]'), undefined, { timeout: 45000 }).catch(() => {});
+        return `potion (${info.hp}/${info.max})`;
+      }
+      await back();
+    }
+  }
+  if (potionOnly) return null;
+  // 2) 교체 — 다른 동료의 상성 점수가 1.6배 이상이고 체력이 반 이상이면(적 한 마리에 한 번).
+  if (active && enemyTypes.length && !switchedFor.has(enemyName)) {
+    const mine = moveScore(active.speciesId, active.level, enemyTypes, active.skillIds);
+    // 지금 동료에게 효과가 굉장한(2배 이상) 기술이 있으면 바꾸지 않는다 — 사람은 그 기술로 계속 친다. 물 스타터가 서리물보라(2배)를 두고 루미링으로 바꿔 관장전이 13턴이 됐다(r34).
+    const superEffective = (active.skillIds ?? []).some((id) => { const sk = skillById.get(id); if (!sk || !(sk.power > 0)) return false; let eff = 1; for (const t of enemyTypes) eff *= CHART[sk.elementId ?? "normal"]?.[t] ?? 1; return eff >= 2; });
+    const better = party.filter((m) => m !== active && (m.currentHp ?? 1) > 0).map((m) => ({ m, score: moveScore(m.speciesId, m.level, enemyTypes, m.skillIds) })).sort((a, b) => b.score - a.score)[0];
+    if (better && !superEffective && better.score >= mine * 1.6) {
+      const pk = page.locator('[data-testid="actor-command-pkmn"]');
+      if (await pk.count() && await pk.isEnabled()) {
+        await pk.focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(300);
+        const name = (project.database.monsterSpecies ?? []).find((s) => s.id === better.m.speciesId)?.name ?? "";
+        const btn = page.locator('[data-testid^="actor-switch-"]').filter({ hasText: name }).first();
+        const ok = await btn.count() && /체력\s*(\d+)\s*\/\s*(\d+)/.test(await btn.textContent() ?? "") && (() => true)();
+        if (ok) {
+          const [, h, mx] = (await btn.textContent()).match(/체력\s*(\d+)\s*\/\s*(\d+)/);
+          if (Number(h) / Number(mx) >= 0.5) {
+            switchedFor.add(enemyName);
+            await btn.focus(); await page.keyboard.press("Enter");
+            await page.waitForFunction(() => !document.querySelector('[data-testid="battle-scene"]') || document.querySelector('[data-testid="battle-result-panel"]') || document.querySelector('[data-testid="actor-command-fight"]') || document.querySelector('[data-testid^="actor-switch-"]'), undefined, { timeout: 45000 }).catch(() => {});
+            return `switch → ${name} (${better.score.toFixed(0)} vs ${mine.toFixed(0)})`;
+          }
+        }
+        await back();
+        switchedFor.add(enemyName);
+      }
+    }
+  }
+  return null;
+}
 const here = () => page.evaluate(() => window.__oprnDebug.readLive());
 const eventRunning = () => page.evaluate(() => Boolean(window.__oprnHooksScene?.running));
 /** 대사·선택지가 없고 이벤트 실행도 끝날 때까지 — 배지 연출처럼 상자 없이 도는 구간에 순간이동하면 연출이 끊기고 그림이 남았다. */
@@ -364,6 +486,13 @@ async function go(fromMapId, toMapId) {
 }
 /** 이벤트 옆까지 걸어가 말을 건다. 못 걸으면 순간이동. */
 async function approachAndTalk(mapId, event) {
+  // 세션 eventLocations 에는 시야 접근으로 움직인 칸이 안 남는다(r34 화면: 수련생 0 이 두 칸 옆에 서 있는데 live null) — 장면의 지금 맵 위치(eventPositions)를 같이 본다.
+  liveSpots = (await page.evaluate(() => {
+    const out = { ...(window.__oprnDebug.readState().eventLocations ?? {}) };
+    const scene = window.__oprnHooksScene, mapId = window.__oprnDebug.readState().currentMapId;
+    for (const [id, p] of Object.entries(scene?.eventPositions ?? {})) if (p && typeof p.x === "number") out[id] = { x: p.x, y: p.y, mapId };
+    return out;
+  }).catch(() => ({}))) ?? {};
   const spot = besideOf(mapId, event);
   if (!spot) return false;
   const now = await here();
@@ -394,7 +523,7 @@ async function healAt(townId) {
 }
 
 try {
-  await page.goto(`${server.url}/player.html`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${server.url}/player.html`, { waitUntil: "domcontentloaded", timeout: 240000 });
   await page.waitForSelector("[data-testid='title-screen']", { timeout: 120000 });
   await page.waitForTimeout(3500);
   step("title", true, project.meta?.title ?? "", await shot("01-title"));
@@ -434,14 +563,22 @@ try {
   await go(home, lab.id);
   await shot("05-lab");
   const professor = findEvent(lab.id, /_professor$/);
-  await approachAndTalk(lab.id, professor);
+  // 박사 첫 인사는 한 칸 떨어진 통로 칸(박사 인사 칸)을 밟으면 시작한다 — 플레이어처럼 문에서 걸어 올라간다.
+  const greet = findEvent(lab.id, /_professor_greeting_step$/);
+  const greetWalk = greet ? await walkTo(lab.id, { x: greet.x, y: greet.y }, 200) : "none";
+  if (greetWalk === "arrived") await page.waitForSelector('[data-testid="dialogue-box"]', { timeout: 3000 }).catch(() => {});
+  if (!(await present("dialogue-box"))) await approachAndTalk(lab.id, professor);
   await page.waitForSelector("[data-testid='dialogue-box']", { timeout: 15000 }).catch(() => {});
   await shot("06-professor");
   let choiceShot = false;
   for (let i = 0; i < 80; i++) {
     const l = await live();
     if (l.party.length > 0 && !(await present("dialogue-box")) && !(await present("runtime-choices"))) break;
-    if (!choiceShot && await present("runtime-choices")) { choiceShot = true; await page.waitForTimeout(500); await shot("07-starter-choice"); }
+    if (!choiceShot && await present("runtime-choices")) {
+      choiceShot = true; await page.waitForTimeout(500); await shot("07-starter-choice");
+      // QA_STARTER=0|1|2 — 첫 선택 창에서 그만큼 아래로(스타터 3종 균형 비교).
+      for (let k = 0; k < Number(process.env.QA_STARTER ?? 0); k++) { await page.keyboard.press("ArrowDown"); await page.waitForTimeout(120); }
+    }
     await page.keyboard.press("Enter");
     await page.waitForTimeout(300);
   }
@@ -476,30 +613,36 @@ try {
   }
   const now0 = await here();
   grassCells.sort((a, b) => (b.grass - a.grass) || (Math.abs(a.x - now0.x) + Math.abs(a.y - now0.y)) - (Math.abs(b.x - now0.x) + Math.abs(b.y - now0.y)));
-  let encountered = false;
-  for (const cell of grassCells.slice(0, 6)) {
-    const r = await walkTo(route.id, cell, 120);
-    if (r === "battle") { encountered = true; break; }
-    if (r !== "arrived") continue;
-    for (let i = 0; i < 80 && !encountered; i++) {
-      await page.evaluate((d) => window.__oprnInput.dir(d), i % 2 ? "left" : "right");
-      await page.waitForTimeout(260);
-      await page.evaluate(() => window.__oprnInput.dir(null));
-      encountered = await present("battle-scene");
+  // 실제 플레이어처럼 놓치면 다시 풀숲을 걸어 잡을 때까지(최대 3번) 시도한다 — 한 번 놓쳐 혼자 다니면 보스·리그가 부당하게 어려워진다.
+  let captured = false;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    let encountered = false;
+    for (const cell of grassCells.slice(0, 6)) {
+      const r = await walkTo(route.id, cell, 120);
+      if (r === "battle") { encountered = true; break; }
+      if (r !== "arrived") continue;
+      for (let i = 0; i < 80 && !encountered; i++) {
+        await page.evaluate((d) => window.__oprnInput.dir(d), i % 2 ? "left" : "right");
+        await page.waitForTimeout(260);
+        await page.evaluate(() => window.__oprnInput.dir(null));
+        encountered = await present("battle-scene");
+      }
+      if (encountered) break;
     }
-    if (encountered) break;
+    if (encountered) await page.waitForTimeout(2500);
+    step("wild-encounter", encountered, encountered ? "battle-scene" : "조우 없음", await shot("12-wild-battle"));
+    if (encountered) {
+      const before = await live();
+      const captureLog = await fight("13-capture", { capture: true });
+      const after = await live();
+      const owned = after.party.length + after.box.length;
+      const cap = await page.evaluate(() => window.__journeyBattleWatch.capture);
+      if (owned > before.party.length + before.box.length) captured = true;
+      step(`capture${attempt ? `-${attempt + 1}` : ""}`, owned > before.party.length + before.box.length, `${captureLog.join(" / ")} → 보유 ${owned} · ${JSON.stringify(cap)}`, await shot("14-after-capture"));
+    }
+    if (captured) break;
+    if (attempt < 2) { await go(route.id, home); await healAt(home); await go(home, route.id); }
   }
-  if (encountered) await page.waitForTimeout(2500);
-  step("wild-encounter", encountered, encountered ? "battle-scene" : "조우 없음", await shot("12-wild-battle"));
-  if (encountered) {
-    const before = await live();
-    const captureLog = await fight("13-capture", { capture: true });
-    const after = await live();
-    const owned = after.party.length + after.box.length;
-    const cap = await page.evaluate(() => window.__journeyBattleWatch.capture);
-    step("capture", owned > before.party.length + before.box.length, `${captureLog.join(" / ")} → 보유 ${owned} · ${JSON.stringify(cap)}`, await shot("14-after-capture"));
-  }
-
   // 포획전으로 지친 동료를 마을 회복 센터에 맡기고 돌아온다(플레이어가 하듯)
   await go(route.id, home); await healAt(home); await go(home, route.id);
   step("heal-home", true, await partyLine());
@@ -513,7 +656,9 @@ try {
     if (started) { await page.waitForTimeout(2500); if (k === 0) await shot("15-trainer-battle"); }
     const log = started ? await fight(`15b-trainer-${k}`) : [];
     const st = await state();
-    step(`trainer-${k}`, started && st.battleResult === "victory", `${trainer.id}: ${log.length}턴 → ${st.battleResult} (${r}) · ${await partyLine()}`, k === 0 ? await shot("16-after-trainer") : undefined);
+    // 다가가는 길에 시야 전투로 이미 이긴 트레이너는 말을 걸어도 승부가 다시 열리지 않는다(다시 말 걸기 쪽) — 0턴 ✗ 로 적던 것(r4 R4-7)을 사실대로.
+    const already = !started && (await live()).switches?.[`${trainer.id}_won`] === true;
+    step(`trainer-${k}`, already || (started && st.battleResult === "victory"), already ? `${trainer.id}: 앞서 시야 전투로 이김(다시 말 걸면 한 줄) · ${await partyLine()}` : `${trainer.id}: ${log.length}턴 → ${st.battleResult} (${r}) · ${await partyLine()}`, k === 0 ? await shot("16-after-trainer") : undefined);
     if (st.battleResult !== "victory") { await pressEnterUntil(async () => !(await present("dialogue-box")), 30); }
   }
   report.wildFights = wildFights;
@@ -535,20 +680,38 @@ try {
     const r = await approachAndTalk(gym.id, dev);
     await pressEnterUntil(async () => !(await present("dialogue-box")) && !(await present("runtime-choices")), 30);
     await shot(`19-gym-device-${k}`);
-    if (await present("battle-scene")) await fight(`gym-dev-battle-${k}`);
-    step(`gym-device-${k}`, r === true, dev.id);
+    // 받침으로 가다 수련생 눈에 띄어 싸웠으면, 싸운 뒤 그 받침에 다시 말을 건다(플레이어처럼) — 안 그러면 꽃 받침 순서가 틀어진다.
+    let talked = r;
+    if (await present("battle-scene")) {
+      await fight(`gym-dev-battle-${k}`);
+      await pressEnterUntil(async () => !(await present("dialogue-box")) && !(await present("battle-scene")), 30);
+      talked = await approachAndTalk(gym.id, dev);
+      await pressEnterUntil(async () => !(await present("dialogue-box")) && !(await present("runtime-choices")), 30);
+    }
+    step(`gym-device-${k}`, talked === true, dev.id);
   }
   const puzzleSwitches = [...new Set((JSON.stringify(gym.events) .match(/mx_gym_\d+_puzzle\b/g) ?? []))];
   const st0 = await state();
   step("gym-puzzle", puzzleSwitches.every((s) => st0.switches[s] === true), puzzleSwitches.map((s) => `${s}=${st0.switches[s]}`).join(","), await shot("20-gym-solved"));
   // 수련생 셋 — 플레이어처럼 다 싸운다
   for (const [k, grunt] of gym.events.filter((e) => /_grunt_\d+$/.test(e.id)).entries()) {
-    await approachAndTalk(gym.id, grunt);
+    // 플레이어처럼: 앞 동료 체력이 바닥(12 아래, Lv8 최대의 40% 쯤)이면 이기지 않은 수련생에게 가기 전 마을 센터에서 쉰다 — 체력 2 로 수련생에게 덤벼 진 것(r28 불)을 난이도로 잘못 읽었다.
+    const lead0 = (await live()).party.find((m) => (m.currentHp ?? 1) > 0);
+    if (town2 && (await live()).switches?.[`${grunt.id}_won`] !== true && lead0?.currentHp !== undefined && lead0.currentHp < 12) {
+      await go(gym.id, town2.id); await healAt(town2.id); await go(town2.id, gym.id);
+    }
+    // 퍼즐을 푼 뒤 연출(이벤트 실행)이 도는 동안 말을 걸면 무시된다 — 체육관 수련생 0 이 「0턴」으로 남던 원인 후보(r29 probe: 옆 칸에서 대사 없음). 끝날 때까지 기다리고, 안 열리면 한 번 더.
+    await waitIdle();
+    let approach = await approachAndTalk(gym.id, grunt);
+    if (!approach && (await live()).switches?.[`${grunt.id}_won`] !== true) { await page.waitForTimeout(1500); await waitIdle(); approach = await approachAndTalk(gym.id, grunt); }
+    if (!approach) await shot(`20c-gym-trainer-${k}-no-talk`);
+    const probe = { running: await eventRunning(), approach, spot: besideOf(gym.id, grunt), live: liveSpots[grunt.id] ?? null, hero: await here().then((h) => `${h.x},${h.y}`), dialogue: await present("dialogue-box") };
     const started = await pressEnterUntil(() => present("battle-scene"), 30);
     if (started) { await page.waitForTimeout(2000); if (k === 0) await shot("20b-gym-trainer"); }
     const log = started ? await fight(`gym-grunt-${k}`) : [];
     const st = await state();
-    step(`gym-trainer-${k}`, started && st.battleResult === "victory", `${grunt.id}: ${log.length}턴 → ${st.battleResult} · ${await partyLine()}`);
+    const already = !started && (await live()).switches?.[`${grunt.id}_won`] === true;
+    step(`gym-trainer-${k}`, already || (started && st.battleResult === "victory"), already ? `${grunt.id}: 장치로 가는 길에 시야 전투로 이김(다시 말 걸면 한 줄) · ${await partyLine()}` : `${grunt.id}: ${log.length}턴 → ${st.battleResult} · ${await partyLine()}${started ? "" : ` · ${JSON.stringify(probe)}`}`);
   }
   // 관장 — 회복은 플레이어가 하듯 마을 센터에서
   if (town2) { await go(gym.id, town2.id); await healAt(town2.id); await go(town2.id, gym.id); }
@@ -620,8 +783,13 @@ try {
     if (res2 !== "victory") {
       // 또 진 경우: 기록만 남기고, 엔딩 화면까지 보려고 레벨을 올려 다시 도전한다(디버그 쓰기로 적는다).
       await waitIdle();
-      await page.evaluate(() => { const s = window.__oprnHooksScene.session; for (const id of s.monsterParty) { const m = s.monsterInstances[id]; m.level = Math.max(m.level, 20); m.currentHp = undefined; } });
-      report.debugWrites.push(`${key}: 패배 뒤 파티 Lv20 으로 재도전`);
+      // 디버그 올림은 그 보스를 겨우 넘을 만큼만(보스 최고 레벨 + 3) — 예전엔 Lv20 으로 올려 다음 리그 전투가 정직 측정이 아니었다.
+      const troopId = JSON.stringify(ev.pages).match(/"troopId":"([^"]+)"/)?.[1];
+      const troop = project.database.troops.find((t) => t.id === troopId);
+      const bossLevel = Math.max(0, ...(troop?.members ?? []).map((m) => project.database.enemies.find((e) => e.id === m.enemyId)?.level ?? 0));
+      const lift = bossLevel ? bossLevel + 3 : 20;
+      await page.evaluate((lv) => { const s = window.__oprnHooksScene.session; for (const id of s.monsterParty) { const m = s.monsterInstances[id]; m.level = Math.max(m.level, lv); m.currentHp = undefined; } }, lift);
+      report.debugWrites.push(`${key}: 패배 뒤 파티 Lv${lift} 로 재도전`);
       if (town2) await go((await here()).currentMapId, map.id).catch(() => {});
       await approachAndTalk(map.id, ev);
       if (await pressEnterUntil(() => present("battle-scene"), 40)) await fight(`24c-${key}-retry`);

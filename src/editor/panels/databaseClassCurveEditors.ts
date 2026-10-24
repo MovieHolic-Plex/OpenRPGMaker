@@ -135,7 +135,7 @@ function openClassParameterDialog(record: ClassRecord, initialKey: ActorParamete
           ] }),
         ] }),
         el("footer", { children: [
-          el("button", { class: "btn", text: "OK", dataset: { testid: "db-class-parameter-close" }, attrs: { type: "button" }, on: { click: () => {
+          el("button", { class: "btn", text: "확인", dataset: { testid: "db-class-parameter-close" }, attrs: { type: "button" }, on: { click: () => {
             commitDraft();
             close();
           } } }),

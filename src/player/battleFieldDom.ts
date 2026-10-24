@@ -1,3 +1,4 @@
+import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { STAT_STAGE_ABBREVIATIONS, STAT_STAGE_KEYS, STAT_STAGE_LABELS } from "@/battle/statStages";
 import { beginEnemyCollapse, markEnemyCollapsed } from "@/player/battleEnemyCollapse";
 import { WEATHER_GLYPHS, WEATHER_LABELS } from "@/battle/weather";
@@ -215,6 +216,34 @@ function applyPixelEnemySheet(node: HTMLElement, image: HTMLImageElement, resour
 
 const pixelSheetTopPad = new Map<string, number>();
 
+/**
+ * 전투 진입 준비 문(battleReadiness)이 이미지를 다 읽은 직후, 첫 그림 전에 `--battle-sprite-top-pad` 를 채운다.
+ * 비동기 probe 의 load 를 기다리면 첫 프레임 뒤에 배지 위치가 튀므로, 이미 디코드된 이미지에서 같은 값을 동기로 계산한다.
+ */
+export function settleBattleTopPads(root: HTMLElement, decoded: (url: string) => HTMLImageElement | undefined): void {
+  const apply = (node: HTMLElement, rawUrl: string | undefined, cell: number): void => {
+    if (!rawUrl) return;
+    let pad = pixelSheetTopPad.get(rawUrl);
+    if (pad === undefined) {
+      let href = rawUrl;
+      try { href = new URL(rawUrl, document.baseURI).href; } catch { /* keep raw */ }
+      const image = decoded(href) ?? decoded(rawUrl);
+      if (!image) return;
+      pad = measureTopPad(image, cell);
+      pixelSheetTopPad.set(rawUrl, pad);
+    }
+    node.style.setProperty("--battle-sprite-top-pad", `${Math.round(pad * 1000) / 10}%`);
+  };
+  root.querySelectorAll<HTMLElement>("[data-pixel-enemy-cell]").forEach((node) => {
+    const image = node.querySelector<HTMLElement>("[data-pixel-sheet]");
+    const raw = image?.style.getPropertyValue("--pixel-enemy-url").match(/url\(\s*["']?([^"')]+)["']?\s*\)/)?.[1];
+    apply(node, raw, Number(node.dataset.pixelEnemyCell) || 48);
+  });
+  root.querySelectorAll<HTMLElement>("[data-charset-enemy]").forEach((node) => {
+    apply(node, node.querySelector<HTMLElement>("[data-battler-sheet-url]")?.dataset.battlerSheetUrl, BATTLE_SHEET_CELL);
+  });
+}
+
 /** 시트 첫 칸(대기 0번)에서 불투명 픽셀이 시작되는 줄의 비율(0~1). 읽지 못하면 0. */
 function measureTopPad(image: HTMLImageElement, cell: number): number {
   try {
@@ -312,6 +341,8 @@ export interface BattleFieldPresentation {
   readonly calm?: boolean;
   /** 지금 impact 비트로 맞고 있는 배틀러 — 이 배틀러만 hit pose 를 보여준다. */
   readonly hitTargetId?: string;
+  /** 광역기 착탄에서 함께 맞는 배틀러들 — 모두 hit pose 를 보여준다. */
+  readonly hitTargetIds?: readonly string[];
   /** 필드 위 전투(battlePresentation onField): 배틀러가 필드 스프라이트 자리에 선다(battleOnField.ts). */
   readonly onField?: OnFieldAnchors;
   /** system.battleRollingHp: 아군 HP 표시가 이 미터를 따라 굴러간다(rollingHp.ts). 없으면 즉시 표시. */
@@ -408,8 +439,9 @@ function presentedState(
   }
   // 스냅샷 pose 는 라운드 "마지막" 액션 기준이라 비트 중에는 엉뚱한 배틀러가 hit 로
   // 보일 수 있다 — 지금 재생 중인 impact 의 대상에게만 hit 를 준다.
-  const beingHit = presentation?.hitTargetId !== undefined
-    && (presentation.hitTargetId === battler.id || presentation.hitTargetId === battler.recordId);
+  const beingHit = (presentation?.hitTargetId !== undefined
+    && (presentation.hitTargetId === battler.id || presentation.hitTargetId === battler.recordId))
+    || Boolean(presentation?.hitTargetIds?.some((id) => id === battler.id || id === battler.recordId));
   if (!vitals) {
     if (beingHit && !battler.defeated) pose = "hit";
     return { hp: battler.hp, defeated: battler.defeated, pose };
@@ -472,7 +504,8 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, pr
     const row = party.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${actor.recordId}"]`);
     if (!row) continue;
     const level = row.querySelector(".battle-actor-level .battle-vital-value");
-    if (level && actor.level !== undefined && !row.dataset.expRolledLevel) level.textContent = ` ${actor.level}`;
+    // 에메랄드 상자는 「Lv9」 붙여 쓰기(actorStatusRow 와 같게) — 여기서 앞 공백을 다시 넣어 아군만 「Lv 9」로 상대 상자와 달랐다(아스트라 2026-10-23 VQA).
+    if (level && actor.level !== undefined && !row.dataset.expRolledLevel) level.textContent = isEmeraldMonsterStyle(store.getCurrent()) ? `${actor.level}` : ` ${actor.level}`;
     syncExpBar(row, actor, snapshot, presentation);
     const presented = rollingVitals(actor, presentedState(actor, presentation), presentation);
     // 롤링 미터: 치명타를 맞고 미터가 아직 0 에 닿지 않은 아군. 스킨이 붉게 깜빡이게 그릴 수 있다.
@@ -966,6 +999,28 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
         : (feedback.resource === "mp" ? `MP -${feedback.amount}`
           // battle-feel 2026-10-20: 도트 측면 전투는 FF·DQ 처럼 피해를 부호 없이 센다(「-37」의 빼기표가 숫자를 가늘게 만들었다).
           : field.closest<HTMLElement>(".battle-scene")?.dataset.battleMotion === "retro" ? String(feedback.amount) : `-${feedback.amount}`);
+  // 꼬리표 — 숫자 위에 작게 「치명타!」·「약점!」·「저항」·「무기↑」를 단다. 문장만으로는 광역기에서 누가 약했는지,
+  // 어느 숫자가 급소였는지 안 보였다(2026-10-24 폴른 스타). 표시 전용 글자(label)·빗나감·회복에는 달지 않는다.
+  if (!feedback.label && !feedback.miss && !feedback.healing && !feedback.blocked) {
+    const tags: { readonly kind: string; readonly text: string }[] = [];
+    if (feedback.critical) tags.push({ kind: "critical", text: "치명타!" });
+    const effectiveness = feedback.effectiveness;
+    if (effectiveness !== undefined && effectiveness !== 1) {
+      tags.push(effectiveness <= 0 ? { kind: "immune", text: "무효" } : effectiveness > 1 ? { kind: "weak", text: "약점!" } : { kind: "resist", text: "저항" });
+    }
+    if (feedback.weaponAffinity) tags.push({ kind: "affinity", text: "무기↑" });
+    if (tags.length > 0) {
+      const tag = document.createElement("span");
+      tag.className = "battle-damage-popup-tag";
+      tag.dataset.effectiveness = tags.find((row) => row.kind === "weak" || row.kind === "resist" || row.kind === "immune")?.kind ?? tags[0]!.kind;
+      tag.dataset.tags = tags.map((row) => row.kind).join(" ");
+      tag.textContent = tags.map((row) => row.text).join(" ");
+      const effective = tags.find((row) => row.kind === "weak" || row.kind === "resist" || row.kind === "immune");
+      if (effective) popup.dataset.effectiveness = effective.kind;
+      // 숫자 아래에 단다 — 위에 달면 화면 위쪽 적에서 메시지 창 뒤로 숨었다(2026-10-24 영상 실측).
+      popup.append(tag);
+    }
+  }
   const anchor = findBattlerNode(field, feedback.targetId);
   if (anchor) {
     popup.style.setProperty("--battle-node-x", anchor.style.getPropertyValue("--battle-node-x"));
@@ -2222,8 +2277,18 @@ function isGeneratedBattleActor(resourceId: string): boolean {
 function captureThrowerUrl(): string {
   const project = store.getCurrent();
   const id = project.database.troops.find((troop) => troop.trainerSprite?.back)?.trainerSprite?.back ?? "hero_m";
-  if (project.assets.uploaded[id]) return resolveAssetResourceUrl(id, { project }) ?? "/assets/battle-trainers/hero_m/back.png";
-  return /^[a-z][a-z0-9_]*$/u.test(id) ? `/assets/battle-trainers/${id}/back.png` : "/assets/battle-trainers/hero_m/back.png";
+  if (project.assets.uploaded[id]) return resolveAssetResourceUrl(id, { project }) ?? withInlineAsset("/assets/battle-trainers/hero_m/back.png");
+  return withInlineAsset(/^[a-z][a-z0-9_]*$/u.test(id) ? `/assets/battle-trainers/${id}/back.png` : "/assets/battle-trainers/hero_m/back.png");
+}
+
+/** 던지는 사람의 던지기 시트(troop.trainerSprite.backThrow, 정사각 칸 × N, 마지막 칸 = 빈손 마무리). 없으면 undefined.
+ *  뒷모습 그림이 손에 구슬을 그려 두었으면 엔진 구슬이 손을 떠날 때 마지막 칸으로 바꿔 구슬이 두 개 보이지 않게 한다. */
+function captureThrowerSheetUrl(): string | undefined {
+  const project = store.getCurrent();
+  const id = project.database.troops.find((troop) => troop.trainerSprite?.back)?.trainerSprite?.backThrow;
+  if (!id) return undefined;
+  if (project.assets.uploaded[id]) return resolveAssetResourceUrl(id, { project }) ?? undefined;
+  return /^[a-z][a-z0-9_]*$/u.test(id) ? withInlineAsset(`/assets/battle-trainers/${id}/throw.png`) : undefined;
 }
 
 /** 던지는 사람이 미끄러져 들어와 손을 휘두를 때까지(ms). 구슬은 이 뒤에 손에서 떠난다. */
@@ -2283,11 +2348,28 @@ export function playCaptureCinematic(field: HTMLElement, targetId: string, succe
       thrower.style.top = `${box.y.toFixed(1)}px`;
       thrower.style.bottom = "auto";
       thrower.style.width = `${(mineRect.width / fieldScale).toFixed(1)}px`;
-      // 손: 그림의 오른쪽 위 3/4 지점(뒷모습이 손을 들고 있다) — 구슬은 여기서 떠난다.
-      const hand = local(mineRect, 0.78, 0.4);
+      // 손: 뒷모습이 들고 있는 구슬 자리(그림 상자의 0.80, 0.36) — 엔진 구슬은 여기서 떠난다.
+      const hand = local(mineRect, 0.8, 0.36);
       orbFrom = { x: `${hand.x.toFixed(1)}px`, y: `${hand.y.toFixed(1)}px` };
     }
     field.append(thrower);
+    // 구슬이 손을 떠나는 순간 그림 속 구슬을 지운다: 던지기 시트의 마지막 칸(빈손 마무리)으로 바꾼다. 미리 불러 두고, 못 불러오면 뒷모습 그대로 둔다.
+    const sheetUrl = captureThrowerSheetUrl();
+    if (sheetUrl) {
+      const sheet = new Image();
+      const startedAt = performance.now();
+      sheet.onload = () => {
+        if (sheet.naturalHeight <= 0 || sheet.naturalWidth < sheet.naturalHeight * 2) return;
+        at(() => {
+          if (!thrower) return;
+          thrower.src = sheet.src;
+          thrower.style.objectFit = "cover";
+          thrower.style.objectPosition = "100% 100%";
+          thrower.dataset.throwFrame = "last";
+        }, Math.max(0, lead - (performance.now() - startedAt)));
+      };
+      sheet.src = sheetUrl;
+    }
     // 내 몬스터는 던지는 동안 자리를 비켜 준다(같은 자리에 주인공이 선다).
     field.classList.add("battle-capture-thrower-active");
     // 구슬이 손을 떠나 날아가는 동안 주인공이 팔을 거둬 나간다 — 흔들림 내내 서 있지 않는다.

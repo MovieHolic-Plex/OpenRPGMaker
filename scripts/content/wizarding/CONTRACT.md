@@ -59,7 +59,8 @@
 | `wz-castle-door1-closed` `-open` `-locked` | 1×4 | 북벽에 끼우는 1칸 오크 문 3상태(첨두 문틀) |
 | `wz-castle-door2-closed` `-open` `-locked` | 2×4 | 2칸 오크 문 3상태 |
 | `wz-castle-door-s` | 1×2 | 남벽 출입구(문턱, 통행) |
-| `wz-castle-stair-down` `wz-castle-stair-up` | 2×2 | 계단 |
+| `wz-castle-stair-up` | 2×3 | 올라가는 계단: 북벽에 붙인다(위 두 줄 = 북벽 정면 자리의 첨두 문틀). 남쪽에서 들어서 북쪽을 보며 오른다 |
+| `wz-castle-stair-down` | 2×2 | 내려가는 계단통: 바닥 구멍, 북·서·동 낮은 난간, 남쪽만 열림. 남쪽에서 들어서 북쪽을 보며 내려간다 |
 | `wz-castle-flag` | 오토타일 | 마른 석재 포석(바깥 = 어두운 틈) |
 | `wz-castle-floor-flag` `wz-castle-floor-flag-worn` `wz-castle-floor-oak` | 1×1 | 반복 바닥(F) |
 

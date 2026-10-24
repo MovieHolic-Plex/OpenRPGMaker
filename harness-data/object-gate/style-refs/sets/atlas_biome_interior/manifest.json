@@ -1,0 +1,86 @@
+{
+ "_meta": {
+  "chipset": "atlas_biome_interior",
+  "sheet": "public/assets/atlas-interior/interior-chipset.png",
+  "tileset": "src/assets/atlasBiomeInteriorTileset.json"
+ },
+ "ground": {
+  "floor-boards": {
+   "group": "hand-interior:floor:boards",
+   "h": 48,
+   "sha256": "e034e9b891b488fd1bb33e0241e84f6aaf1c534dc0824a07b1eaf0e41315cf1c",
+   "tiles": [
+    258,
+    259,
+    260,
+    261,
+    262,
+    263,
+    264,
+    265,
+    266,
+    267,
+    268,
+    269
+   ],
+   "w": 64
+  },
+  "floor-flag": {
+   "group": "hand-interior:floor:flag",
+   "h": 48,
+   "sha256": "e700f2871ed7940a32d0371dd9e1ea19eb40cc45b0ca0c7834f72d393cc83b99",
+   "tiles": [
+    454,
+    455,
+    456,
+    457,
+    458,
+    459,
+    460,
+    461,
+    462,
+    463,
+    464,
+    465
+   ],
+   "w": 64
+  }
+ },
+ "prop": {
+  "bookshelf-2w": {
+   "h": 38,
+   "kit": "hand-interior:bookshelf 2w",
+   "rows": null,
+   "sha256": "d7f2cbbe88c4fab10f2b8371814f41524aa42bc9f248a7497ea14ee9544aa731",
+   "w": 32
+  },
+  "counter-3x1": {
+   "h": 24,
+   "kit": "hand-interior:counter 3x1",
+   "rows": null,
+   "sha256": "919ebc75e052cd3c2776c82d42451d620acbaef0c6568f496d12ca5fc9e9ab25",
+   "w": 48
+  },
+  "desk-2x2": {
+   "h": 31,
+   "kit": "hand-interior:desk 2x2",
+   "rows": null,
+   "sha256": "edd35f56e69d0f7d671407a8c62500ee6f800c5a40ea07e0298e31b0cbb39665",
+   "w": 32
+  },
+  "double-bed-green": {
+   "h": 38,
+   "kit": "hand-interior:double bed green",
+   "rows": null,
+   "sha256": "055a6d04ab90da9d9c21e9db56f1a29425bec6b6e56d079dab9bc36db9709487",
+   "w": 32
+  },
+  "stove": {
+   "h": 24,
+   "kit": "hand-interior:stove",
+   "rows": null,
+   "sha256": "334882ac6afd213a13b9da72fd44713188c917555fe2c60631468bc24d353925",
+   "w": 14
+  }
+ }
+}

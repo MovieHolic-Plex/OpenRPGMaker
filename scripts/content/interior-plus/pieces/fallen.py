@@ -189,7 +189,7 @@ def _seal_frame(c):
     c.hl(x0, x1, y0, K('linen', 0)); c.vl(x0, y0, y1, K('linen', 0)); c.vl(x1, y0, y1, K('linen', 0)); c.hl(x0, x1, y1, K('linen', 0))
 
 
-@REG.piece('star seal', '별 봉인 돌뚜껑(닫힘, 2×2)', 'gimmick', 'flat', 2, 2, 0, 'flat',
+@REG.piece('star seal', '별 봉인 돌뚜껑(지하 입구·닫힘, 2×2)', 'gimmick', 'flat', 2, 2, 0, 'flat',
            '바닥에 박힌 돌 테두리 속 내려가는 돌계단을 검은 돌 뚜껑이 덮었다 — 뚜껑 한가운데 다섯 갈래 별 모양 홈(금테, 속은 보랏빛), 둘레에 룬 점.',
            ['던전', '유적', '천문대', '봉인'],
            '서고·지하 입구 바닥. 양옆에 봉인석(seal stone) 한 쌍. 열쇠로 열면 같은 칸을 star seal open 으로 바꿔 낀다.', ['seal stone', 'star seal open'], use=('seal',))

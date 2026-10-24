@@ -1,18 +1,18 @@
 {
  "tiles": {
-  "count": 20071,
+  "count": 20199,
   "tilesPerRow": 96,
-  "rows": 210,
+  "rows": 211,
   "sheetPx": [
    1536,
-   3360
+   3376
   ],
   "height_ok": true,
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 15044,
-  "legacy": 1890,
+  "block_cells": 15103,
+  "legacy": 1959,
   "legacy_ids": [
    3747,
    3748,
@@ -35,7 +35,7 @@
    3765,
    3766
   ],
-  "rekeyed_art": 372,
+  "rekeyed_art": 441,
   "rekeyed_sample": [
    [
     "buildings/house_flat3/0.0",
@@ -110,40 +110,40 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 15044
+   "block": 15103
   }
  },
  "pc_counts": {
-  "star": 7550,
-  "solid": 4357,
-  "floor": 3990,
+  "star": 7558,
+  "solid": 4371,
+  "floor": 4018,
   "solidfloor": 1318,
-  "flat": 811,
+  "flat": 820,
   "blank": 155
  },
  "kits": {
-  "total": 1566,
+  "total": 1573,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 1390
+   "block-kit": 1397
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 1390
+  "block_kit": 1397
  },
  "groups": {
-  "total": 376,
+  "total": 377,
   "by_kind": {
    "street": 9,
    "band": 60,
    "deco": 73,
    "prop": 11,
-   "block": 223
+   "block": 224
   }
  },
  "autotiles": {
@@ -220,7 +220,8 @@
    "jp_regions_pack",
    "jp_inaka_pack",
    "jp_forest_r4",
-   "interior_house3"
+   "interior_house3",
+   "street_stairs"
   ],
   "merged": [
    "autotiles_ground",
@@ -265,7 +266,8 @@
    "jp_regions_pack",
    "jp_inaka_pack",
    "jp_forest_r4",
-   "interior_house3"
+   "interior_house3",
+   "street_stairs"
   ],
   "missing": [],
   "on_disk_not_in_order": [
@@ -619,11 +621,19 @@
     "groups": 1,
     "kits": 6,
     "notes": "일본 집 보강(object-gen) — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 0 · 벽면 1 · 천장 0 · 가구 6 · 탁자 0 · 탁상 1"
+   },
+   {
+    "name": "street_stairs",
+    "cells": 59,
+    "autotiles": 0,
+    "groups": 1,
+    "kits": 7,
+    "notes": "거리 계단 7키트: 육교 곧은 계단(-e/-w, 2×8) + 상판(붉은 갈색, 2×6 가로 반복, 거더·쇠 기둥·도로 그늘) + 옆 계단 한 쌍(-l/-r, 3×2, 콘크리트 판 4단) + 단상(2×4 가로 반복) + 벽 사다리(1×3, 4층). 높이 문법: 상판·단상 = 지면에서 16px, 윗면은 제 칸 줄, 앞면(거더·옹벽)은 그 밑 줄. 계단 칸은 위·아래로만, 옆 계단 0줄은 동서로만(dirs). 3/4 관문: 부품은 조립 그림(육교·단상)이 덮는다(_gate/assembled.json). 한계: 육교 줄은 남북으로 못 지난다(차도가 끊긴다)."
    }
   ]
  },
  "reassembly": {
-  "kits_checked": 1566,
+  "kits_checked": 1573,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -658,7 +668,7 @@
    "bank": 3,
    "crosswalk": 1,
    "foot": 1,
-   "wall": 1,
+   "wall": 2,
    "rail": 5,
    "sf": 143,
    "pave": 3,
@@ -711,7 +721,10 @@
    "monthly": 1,
    "hokora": 1,
    "rg": 28,
-   "inaka": 31
+   "inaka": 31,
+   "overpass": 3,
+   "side": 2,
+   "stage": 1
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -721,9 +734,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 20071,
-  "kits_checked": 1566,
-  "groups_checked": 376,
+  "tiles_checked": 20199,
+  "kits_checked": 1573,
+  "groups_checked": 377,
   "autotiles_checked": 25
  },
  "relayout_identical": {
@@ -785,10 +798,10 @@
    }
   }
  },
- "sheet_hash": "c0b83981f013f6aa69e4681fc3ff073f15d18d6f",
+ "sheet_hash": "b86016492cc517f5ccbc520a9a20e7de2350d4fe",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 1566,
+  "kits_checked": 1573,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -823,7 +836,7 @@
    "bank": 3,
    "crosswalk": 1,
    "foot": 1,
-   "wall": 1,
+   "wall": 2,
    "rail": 5,
    "sf": 143,
    "pave": 3,
@@ -876,7 +889,10 @@
    "monthly": 1,
    "hokora": 1,
    "rg": 28,
-   "inaka": 31
+   "inaka": 31,
+   "overpass": 3,
+   "side": 2,
+   "stage": 1
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -886,9 +902,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 20071,
-  "kits_checked": 1566,
-  "groups_checked": 376,
+  "tiles_checked": 20199,
+  "kits_checked": 1573,
+  "groups_checked": 377,
   "autotiles_checked": 25
  },
  "files": {

@@ -1,0 +1,16 @@
+{
+ "round": 4,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "abi-stairs-v5",
+ "images": "http://mdc-server:18301/jp-stairs-1/interior-v5/r4/kits-4x.png (+ scene 1x/3x and before/)",
+ "pieces": [
+  "stairs up stone",
+  "stairs up wood",
+  "stairs down",
+  "stairwell down"
+ ],
+ "rubric": "axis 2 (style/palette/3/4 fit) + axis 6 (1x readability incl. up/down direction)",
+ "majors": 3,
+ "verdict": "FAIL",
+ "summary": "P1 up stone yes: minors (tread=riser height, cheeks no cap in floor row, moss, newels).\nP2 up wood yes: minors (salmon treads, knot noise, side posts no cap).\nP3 stairs down partly: [major] south edge closed (row 27 dark line + lips to it) reads hatch/furnace; minors near tread too dark, pyramid, rail material, W/E flat strips.\nP4 stairwell NO at 1x: [major] south edge closed; [major] treads lost, reads fireplace, N rail like mantel.\nMAJORS 3\n"
+}

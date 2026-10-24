@@ -19,8 +19,9 @@ import { normalizeBuildSpec, plannedGrowthForSpec, validateBuildSpec, type Build
 import { growthGuidanceLine } from "../../src/ai/session/buildSpecGate.ts";
 import type { ActivityVisual } from "../../src/ai/activityVisual";
 import { inspectPiLayoutQuality, piLayoutRepairPrompt, piLayoutShortfallPrompt } from "../../src/ai/piAgent/layoutQuality.ts";
-import { FEATURE_CHECKLIST_SYSTEM_PROMPT, FEATURE_REVIEW_MAX_CROPS, FEATURE_REVIEW_MAX_REBUILDS, FEATURE_REVIEW_SOFT_BUDGET_MS, PiFeatureChecklist, SET_FEATURE_CHECKLIST_DESCRIPTION, SET_FEATURE_CHECKLIST_PARAMETERS, featureChecklistSummary, featureJudgePrompt, featureRepairPrompt, featureShortfallPrompt, parseFeatureJudge, featureCriticPrompt, parseFeatureCritic, criticToVerdict, type FeatureJudgeImage, type FeatureVerdict } from "../../src/ai/piAgent/featureReview.ts";
+import { FEATURE_CHECKLIST_SYSTEM_PROMPT, FEATURE_REVIEW_MAX_CROPS, FEATURE_REVIEW_MAX_REBUILDS, FEATURE_REVIEW_SOFT_BUDGET_MS, PiFeatureChecklist, SET_FEATURE_CHECKLIST_DESCRIPTION, SET_FEATURE_CHECKLIST_PARAMETERS, featureChecklistSummary, featureJudgePrompt, featureRepairPrompt, featureShortfallPrompt, parseFeatureJudge, featureCriticPrompt, parseFeatureCritic, criticToVerdict, featurePolishSystemPrompt, type FeatureJudgeImage, type FeatureVerdict } from "../../src/ai/piAgent/featureReview.ts";
 import { roomSpecOf } from "../../src/editor/handInterior/builder.ts";
+import { applyHandInteriorEdit, type HandInteriorEdit } from "../../src/editor/handInterior/edit.ts";
 import { INTERIOR_BARE_FLOOR_LIMIT, measureInteriorBareFloor } from "../../src/editor/handInterior/bareFloor.ts";
 import { conceptSkipsLayoutQuality } from "../../src/ai/conceptCards.ts";
 import { PiRepeatBreaker } from "../../src/ai/piAgent/repeatBreaker.ts";
@@ -114,7 +115,7 @@ interface PiLoopDriver {
 }
 
 /** 로컬 CLI 제공자(`local-cli:claude|codex|gemini`)의 한 번짜리 글 생성 — 내부 보조 호출(event_command_assist·도트 글)용. */
-function localCliChat(cli: NonNullable<ReturnType<typeof localCliIdOf>>, model: string | undefined) {
+function localCliChat(cli: NonNullable<ReturnType<typeof localCliIdOf>>, model: string | undefined, onUsage?: (usage: { input: number; output: number; cacheRead: number; cacheWrite: number; calls: number }, costUsd?: number) => void) {
   return async (messages: readonly unknown[], signal?: AbortSignal): Promise<string> => {
     const images: { mimeType: string; data: string }[] = [];
     const text = messages.map((message) => {
@@ -128,7 +129,7 @@ function localCliChat(cli: NonNullable<ReturnType<typeof localCliIdOf>>, model: 
       }).join("\n") : "";
       return `[${m.role ?? "user"}]\n${body}`;
     }).join("\n\n");
-    return LOCAL_CLI_ADAPTERS[cli].complete(text, { binary: localCliBinary(cli), ...(model ? { model } : {}), ...(signal ? { signal } : {}), ...(images.length ? { images } : {}) });
+    return LOCAL_CLI_ADAPTERS[cli].complete(text, { binary: localCliBinary(cli), ...(model ? { model } : {}), ...(signal ? { signal } : {}), ...(images.length ? { images } : {}), ...(onUsage ? { onUsage } : {}) });
   };
 }
 
@@ -174,7 +175,15 @@ export interface RunPiAgentOptions {
   readonly streamFn?: StreamFn;
   /** Team mailbox notifications, delivered through the core steering queue at a tool boundary. */
   readonly subscribeTeamMessages?: (notify: () => void) => () => void;
+  /**
+   * 조수 v2(scripts/lib/assistantV2Runtime.ts) — 도구 목록을 v2 동사로 바꾸고 v1 의 낱말별 지시·완료 검사·배치 권고를 끈다.
+   * 동사는 이 실행의 ctx 위에서 결정론 빌더를 부르고, 체크포인트·시공 재생·사용량 집계는 v1 과 같은 길로 간다. 없으면 v1 그대로다.
+   */
+  readonly v2?: PiAssistantV2Hooks;
 }
+
+export type { PiAssistantV2Env, PiAssistantV2Hooks } from "../../src/ai/v2/env.ts";
+import type { PiAssistantV2Env, PiAssistantV2Hooks } from "../../src/ai/v2/env.ts";
 
 const DEFAULT_MAX_TURNS = 200;
 const DEFAULT_TIMEOUT_MS = PI_AGENT_DEFAULT_TIMEOUT_MS;
@@ -262,6 +271,19 @@ function createWebSearchTool(options: {
 export const resolvePiModel = resolveOhMyPiModel;
 
 /** pi-agent-core 가 실패한 도구 결과에 싣는 첫 텍스트(인자 검증 오류·throw 메시지). */
+/**
+ * 맵 한 영역을 그림으로 — show_map_region 을 읽기로 돌려 그 결과(칸 배열 포함)를 렌더러에 넘긴다.
+ * 렌더러(toolImageRenderer.renderPiMapImage)는 칸 배열을 받는다. 좌표만 넘기면 「map-rendering-unavailable: invalid region」으로 거절한다 —
+ * 1배 확인 루프(#3258)에서 고친 것과 같은 실패가 컷신 검토·inspect_interior_layout 그림에도 남아 있었다(2026-10-22).
+ */
+export async function renderMapRegionImage(project: Project, region: { mapId: string; x: number; y: number; w: number; h: number },
+  renderToolImage: NonNullable<RunPiAgentOptions["renderToolImage"]>, signal?: AbortSignal): Promise<string> {
+  const copy = cloneProjectSharingSharedDictionaries(project);
+  const shown = runTool({ project: copy, assistantRun: false }, "show_map_region", region, { dryRun: true });
+  if (!shown.ok) throw new Error(shown.summary);
+  return renderToolImage(copy, "show_map_region", shown.data, signal);
+}
+
 function toolErrorText(result: unknown): string {
   const content = (result as { content?: unknown } | undefined)?.content;
   if (!Array.isArray(content)) return "";
@@ -324,12 +346,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 배열 교체(setTools)는 진행 중 루프에 닿지 않는다(컨텍스트가 같은 배열을 잡고 있어서다).
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
-  const monsterGameProduction = new PiMonsterGameProduction(!request.readOnly && !options.readOnlyTools && (requestsEmeraldMonsterGame(request.task) || classifyMonsterGameRequest(request.task) === 'campaign'), request.task);
+  const monsterGameProduction = new PiMonsterGameProduction(!options.v2 && !request.readOnly && !options.readOnlyTools && (requestsEmeraldMonsterGame(request.task) || classifyMonsterGameRequest(request.task) === 'campaign'), request.task);
   const gameSystemProduction = new PiGameSystemProduction();
   // 채팅 한 줄 연애 게임 요청 — 도구 목록이 고정된 팀 하위 실행은 제외(팀은 finish 게이트가 한다).
   const romanceProduction = new PiRomanceProduction(!request.readOnly && !options.readOnlyTools && !options.toolNames && !options.subscribeTeamMessages, request.task);
   const npcLayoutProduction = new PiNpcLayoutProduction();
-  const openingProduction = new PiOpeningProduction(!request.readOnly && !options.readOnlyTools && !monsterGameProduction.requested && (request.openingProduction ?? requestsOpeningProduction(request.task)), request.task);
+  const openingProduction = new PiOpeningProduction(!options.v2 && !request.readOnly && !options.readOnlyTools && !monsterGameProduction.requested && (request.openingProduction ?? requestsOpeningProduction(request.task)), request.task);
   const interiorCompletion = new PiInteriorCompletion(!request.readOnly && !options.readOnlyTools && !!options.interiorRequirements, options.interiorRequirements);
   // 묶음 실행이면 호출 시점에 묶음 밖 맵 변경을 거부한다(병합의 「범위 밖 변경 버림」은 최후 안전망으로 남는다).
   // 계약 범위거나 호출자가 병합한다고 알린 실행(mapBundleMerge)이면 켠다 — 판정은 piMapScopeGuard 한 곳.
@@ -349,14 +371,26 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   });
   const findToolsCallable = (name: string): boolean => allowedNames.has(name);
   // event_command_assist 는 안에서 LLM 을 한 번 더 부른다 — 워커에는 편집기 동반 서비스가 없으니 이 실행의 제공자로 보낸다.
+  // 내부 보조 호출(1배 확인표 판정자·독립 비평가·컷신 판정 등)의 사용량 — 조수 루프 사용량과 따로 모아 done 통계에 넣는다(2026-10-22: 판정 토큰이 합계에서 빠져 있었다).
+  const sideUsage = { calls: 0, ms: 0, input: 0, output: 0, cacheRead: 0, cacheWrite: 0, costUsd: 0 };
+  const addSideUsage = (u: { input?: number; output?: number; cacheRead?: number; cacheWrite?: number }, costUsd?: number) => {
+    sideUsage.input += u.input ?? 0; sideUsage.output += u.output ?? 0; sideUsage.cacheRead += u.cacheRead ?? 0; sideUsage.cacheWrite += u.cacheWrite ?? 0;
+    if (costUsd) sideUsage.costUsd += costUsd;
+  };
   const eventAssistChat = async (_config: unknown, chat: { messages: readonly unknown[]; signal?: AbortSignal }) => {
-    if (localCli) return { message: { role: "assistant" as const, content: await localCliChat(localCli, request.model)(chat.messages, chat.signal) }, finishReason: "stop" };
+    const t0 = Date.now();
+    sideUsage.calls += 1;
+    try {
+    if (localCli) return { message: { role: "assistant" as const, content: await localCliChat(localCli, request.model, addSideUsage)(chat.messages, chat.signal) }, finishReason: "stop" };
     const key = (options.providerApiKeys ? options.providerApiKeys[request.provider] : undefined) ?? options.apiKey;
     const result = await completeProvider(request.provider, {
       model: String((model as { id?: string }).id ?? request.model ?? ""), max_tokens: 8192, messages: chat.messages,
     }, { ...(key ? { apiKey: key } : {}), ...(chat.signal ? { signal: chat.signal } : {}) });
+    const reported = (result.completion as { usage?: { prompt_tokens?: number; completion_tokens?: number } }).usage;
+    if (reported) addSideUsage({ input: reported.prompt_tokens ?? 0, output: reported.completion_tokens ?? 0 });
     const choice = result.completion.choices[0];
     return { message: { role: "assistant" as const, content: typeof choice?.message.content === "string" ? choice.message.content : "" }, finishReason: choice?.finish_reason ?? null };
+    } finally { sideUsage.ms += Date.now() - t0; }
   };
   const shapeFor = (name: string): PiToolShape | undefined => {
     if (PI_PRESENTATION_GENERATORS.some(generator => generator === name)) {
@@ -480,8 +514,29 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 읽고 쓰기 도구도 없는 팀장에게 수리를 시키지 않게. 읽기 도구는 겹쳐 돌 수 있어 마지막 것이 끝날 때 되돌린다.
   let liveDepth = 0;
   let ownProject = ctx.project;
+  // 실내 짓기 «고친 곳만»(edit) — mapId 마다 마지막으로 성공한 build_hand_interior_room 전체 인자. 다듬기는 앞 턴의 마지막 짓기 호출에서 시작한다.
+  const lastHandInteriorArgs = new Map<string, Record<string, unknown>>(Object.entries(request.polish?.lastBuilds ?? {})
+    .filter(([, b]) => b.tool === "build_hand_interior_room" && !!b.args && typeof b.args === "object")
+    .map(([mapId, b]) => [mapId, { ...(b.args as Record<string, unknown>), mapId }]));
+  const withHandInteriorEdits = (tool: PiToolShape): PiToolShape => tool.name !== "build_hand_interior_room" ? tool : ({ ...tool,
+    async execute(id, params, signal) {
+      const raw = (params ?? {}) as Record<string, unknown>;
+      const mapId = typeof raw.mapId === "string" ? raw.mapId : undefined;
+      let args = raw, note = "";
+      if (raw.edit && typeof raw.edit === "object") {
+        const base = mapId ? lastHandInteriorArgs.get(mapId) : undefined;
+        if (!base) throw new Error(`edit(고친 곳만)는 이 실행에서 같은 mapId 로 성공한 짓기가 있어야 쓴다${mapId ? ` — ${mapId} 의 앞선 짓기가 없다` : " — mapId 가 없다"}. 이번에는 전체 인자(plan·objects…)로 부른다.`);
+        const merged = applyHandInteriorEdit(base, raw.edit as HandInteriorEdit);
+        args = merged.args;
+        note = merged.summary;
+      }
+      const result = await tool.execute(id, args as typeof params, signal);
+      if (mapId) lastHandInteriorArgs.set(mapId, { ...args, mapId });
+      if (note) result.content.unshift({ type: "text", text: `[${note}]` });
+      return result;
+    } });
   const wrapTool = (tool: PiToolShape): PiToolShape => {
-    const wrapped = wrapCoreTool(tool);
+    const wrapped = wrapCoreTool(withHandInteriorEdits(tool));
     const live = options.liveProject;
     return live ? { ...wrapped, async execute(id, params, signal) {
       if (liveDepth++ === 0) ownProject = ctx.project;
@@ -644,8 +699,26 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         if (!options.renderToolImage) throw new Error("맵 이미지 전달 경로가 없습니다. 배열만으로 시각 검토를 완료할 수 없습니다.");
         const inspectedMap = tool.name === 'inspect_interior_layout' ? ctx.project.maps[String((params as { mapId?: unknown }).mapId)] : undefined;
         const data = inspectedMap ? { mapId: inspectedMap.id, x: 0, y: 0, w: inspectedMap.width, h: inspectedMap.height } : (result.details as { data?: unknown } | undefined)?.data;
-        const png = await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, data, signal ?? options.signal);
+        // inspect_interior_layout 은 좌표만 있다 — 칸 배열을 붙여 그린다(좌표만 넘기면 렌더러가 거절한다).
+        const png = inspectedMap
+          ? await renderMapRegionImage(ctx.project, { mapId: inspectedMap.id, x: 0, y: 0, w: inspectedMap.width, h: inspectedMap.height }, options.renderToolImage, signal ?? options.signal)
+          : await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, data, signal ?? options.signal);
         result.content.push({ type: "image", mimeType: "image/png", data: png });
+        // 손 도트 실내(방 짓기 역할표 칩셋)는 칸 번호로 고치지 않는다(평면·가구 인자로 다시 짓는다) — 그림을 함께 보냈으면 칸 번호 배열(맵 하나 7천 자 안팎)을 뺀다.
+        // 2026-10-22 다듬기 실행: show_map_region 18번 결과 글 13만 자가 대부분 이 배열이었다.
+        const shownMap = tool.name === "show_map_region" && data && typeof data === "object" ? ctx.project.maps[String((data as { mapId?: unknown }).mapId)] : undefined;
+        if (png && shownMap && roomSpecOf(ctx.project.tilesets[shownMap.tilesetId])) {
+          for (const [index, part] of result.content.entries()) {
+            if (part.type !== "text") continue;
+            try {
+              const parsed = JSON.parse(part.text) as { data?: Record<string, unknown> };
+              if (!parsed.data || !Array.isArray(parsed.data.lower)) continue;
+              const { lower: _l, upper: _u, layer2: _2, layer4: _4, shadow: _s, blockedCells, ...rest } = parsed.data;
+              parsed.data = { ...rest, blockedCount: Array.isArray(blockedCells) ? blockedCells.length : 0, note: "손 도트 실내 — 칸 번호 배열은 뺐다(그림을 본다). 고칠 때는 build_hand_interior_room 인자로." };
+              result.content[index] = { type: "text", text: JSON.stringify(parsed) };
+            } catch { /* JSON 이 아니면 그대로 */ }
+          }
+        }
         if (png && data && typeof data === "object") interiorCompletion.recordPreview(ctx.project, data);
         const region = data && typeof data === 'object' ? data as Record<string, unknown> : {};
         options.onEvent?.({ type: "execution_status", name: "map.image.delivered", ok: true, summary: "현재 초안 이미지를 모델 도구 응답에 포함했습니다.", data: { toolCallId: id, base64Length: png.length,
@@ -706,8 +779,24 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...registryTools.filter(tool => tool.name !== WEB_SEARCH_TOOL && !PI_PRESENTATION_GENERATORS.some(name => name === tool.name)).map(wrapTool),
     ...(options.extraTools ?? []),
   );
+  // v2 동사 — wrapTool 을 거쳐 쓰기마다 체크포인트(실시간 적용·시공 재생)가 v1 과 같은 길로 간다.
+  const v2Env: PiAssistantV2Env | undefined = options.v2 ? {
+    ctx, request, emit, record: recordCall,
+    checkpoint: (label: string) => request.applyMode !== "step" ? checkpoint(label, label, options.signal) : Promise.resolve(),
+    sideChat: async (messages, signal) => {
+      const reply = await eventAssistChat(null, { messages, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
+      return typeof reply.message.content === "string" ? reply.message.content : "";
+    },
+    ...(options.renderToolImage ? { render: async (mapId: string, x: number, y: number, w: number, h: number) => `data:image/png;base64,${await renderMapRegionImage(ctx.project, { mapId, x, y, w, h }, options.renderToolImage!, options.signal)}` } : {}),
+    ...(options.signal ? { signal: options.signal } : {}),
+    toolsetOptions: { referenceGate, charsetGate, findToolsCallable, eventAssistChat: eventAssistChat as never, ...scopeGuard },
+  } : undefined;
+  if (options.v2 && v2Env) tools.push(...options.v2.tools(v2Env).map(wrapTool));
   for (const tool of tools) exposed.add(tool.name);
-  if (openingProduction.requested) for (const name of ['plan_opening', 'show_opening_image', 'get_opening', 'review_opening', 'list_opening_media', 'generate_opening_image', 'set_opening', 'edit_opening', 'get_animatic_capabilities', 'get_opening_references', 'preview_opening_reference', 'configure_opening_entry', 'create_opening_animatic_shot', 'place_opening_background', 'upsert_opening_layer', 'remove_opening_layer', 'animate_opening_layer', 'apply_opening_motion', 'animate_opening_camera', 'set_opening_transition', 'upsert_opening_audio_cue', 'remove_opening_audio_cue', 'retime_opening_shot', 'inspect_opening_timeline', 'preview_opening_animatic', 'generate_opening_layer', 'set_opening_pixel_grid', 'set_opening_region_loop', 'upsert_opening_light_fx', 'upsert_opening_emote', 'set_opening_caption', 'apply_opening_walk', 'place_opening_charset_actor', 'get_opening_direction', 'make_opening_storybook', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio', 'generate_title_art', 'get_title_screen', 'set_title_screen', 'show_title_opening', 'run_ffmpeg', 'generate_original_bgm', 'generate_original_se', 'script_cutscene', 'script_cutscene_staged', 'read_directing_guide', 'show_map_region', 'upsert_event']) {
+  // 인게임 오프닝(시작 맵 컷신)은 애니메틱·그림책 도구 40여 개가 필요 없다 — 다 내보내면 도구 목록이 20만 자를 넘어 로컬 CLI 세션이 문맥을 채우고 멈췄다
+  // (2026-10-22 실측: 컷신 요청이 도구 102개·목록 198K 자로 세 번 자동 압축 뒤 끝났다). 그 밖의 도구는 find_tools 로 부른다.
+  const IN_GAME_OPENING_TOOLS = ['get_opening', 'set_opening', 'configure_opening_entry', 'script_cutscene', 'script_cutscene_staged', 'read_directing_guide', 'show_map_region', 'upsert_event', 'generate_title_art', 'get_title_screen', 'set_title_screen', 'set_game_audio'];
+  if (openingProduction.requested) for (const name of openingProduction.inGame ? IN_GAME_OPENING_TOOLS : ['plan_opening', 'show_opening_image', 'get_opening', 'review_opening', 'list_opening_media', 'generate_opening_image', 'set_opening', 'edit_opening', 'get_animatic_capabilities', 'get_opening_references', 'preview_opening_reference', 'configure_opening_entry', 'create_opening_animatic_shot', 'place_opening_background', 'upsert_opening_layer', 'remove_opening_layer', 'animate_opening_layer', 'apply_opening_motion', 'animate_opening_camera', 'set_opening_transition', 'upsert_opening_audio_cue', 'remove_opening_audio_cue', 'retime_opening_shot', 'inspect_opening_timeline', 'preview_opening_animatic', 'generate_opening_layer', 'set_opening_pixel_grid', 'set_opening_region_loop', 'upsert_opening_light_fx', 'upsert_opening_emote', 'set_opening_caption', 'apply_opening_walk', 'place_opening_charset_actor', 'get_opening_direction', 'make_opening_storybook', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio', 'generate_title_art', 'get_title_screen', 'set_title_screen', 'show_title_opening', 'run_ffmpeg', 'generate_original_bgm', 'generate_original_se', 'script_cutscene', 'script_cutscene_staged', 'read_directing_guide', 'show_map_region', 'upsert_event']) {
     const shape = shapeFor(name); if (shape) declare(shape);
   }
   if (!openingProduction.requested && !request.readOnly && !options.readOnlyTools && (romanceProduction.requested || requestsFullGameOpeningProduction(request.task) || /plan_opening|set_opening|create_opening_animatic_shot|set_opening_pixel_grid|오프닝|opening\b/iu.test(request.task))) {
@@ -764,8 +853,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   });
   // 요청 특징 확인표(featureReview.ts) — 짓기 턴에서 조수가 적고, 끝에 실행기가 1배 그림으로 항목마다 확인한다.
   // 팀 하위 실행(도구 목록 고정)·몬스터 캠페인·오프닝 제작은 각자 완료 검사가 따로 있어 뺀다.
-  const featureReviewEnabled = !request.readOnly && !options.readOnlyTools && spatialWork && !options.toolNames
-    && !monsterGameProduction.requested && !openingProduction.requested;
+  // 다듬기 모드(request.polish) — 이미 지은 맵을 1배 검토→고치기로 더 오래 다듬는다. 짓기 턴이 아니어도 켠다.
+  const polish = request.polish && !request.readOnly ? request.polish : undefined;
+  const featureReviewEnabled = (!request.readOnly && !options.readOnlyTools && spatialWork && !options.toolNames
+    && !monsterGameProduction.requested && !openingProduction.requested) || !!polish;
   const featureChecklist = new PiFeatureChecklist();
   const emitFeatureChecklist = (ok = true) => {
     const snapshot = featureChecklist.snapshot();
@@ -801,6 +892,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const systemPrompt = request.systemPrompt
     ? [...request.systemPrompt]
     : buildPiAgentSystemPrompt(base, request.mapIds, request.scopeStrict !== false, { spatialWork });
+  // v2 는 낱말별 v1 지시(없는 도구 이름을 부른다)를 싣지 않는다 — 지시문은 v2 카드가 정한다.
+  if (!options.v2) {
   if (openingProduction.requested) systemPrompt.push(OPENING_PRODUCTION_PROMPT);
   if (monsterGameProduction.requested) systemPrompt.push(MONSTER_GAME_PRODUCTION_PROMPT + monsterScaleNote(request.task), EMERALD_MONSTER_AUTHORING_GUIDE);
   else if (isEmeraldMonsterStyle(base)) systemPrompt.push(EMERALD_MONSTER_AUTHORING_GUIDE);
@@ -813,11 +906,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     const openingSupport = new Set(['find_tools', 'get_project_summary', 'get_database_records', 'get_event', 'find_events', 'list_resources', 'recommend_bgm', 'read_project_wiki', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio']);
     systemPrompt.push(buildToolCapabilityIndex(openingProduction.requested ? allowedDefinitions.filter(t => /opening|animatic/.test(t.name) || openingSupport.has(t.name)) : allowedDefinitions));
   }
+  }
   // 읽기 전용은 툴 목록으로 강제된다(options.readOnlyTools). 이 한 줄은 모델이 "왜 답만 하는지" 알게 한다 —
   // 이유를 모르면 쓰기를 시도하며 턴을 태운다.
   if (request.readOnly) systemPrompt.push(READ_ONLY_INSTRUCTION);
   if (!request.readOnly && !options.readOnlyTools && spatialWork) systemPrompt.push("집·마을처럼 여러 영역을 시공할 때는 먼저 set_build_spec으로 실제 좌표와 buildOrder를 제출하여 사용자가 맵에서 밑그림을 보게 하라. 밑그림은 타일 배치가 아니다. 제출 후 반드시 실제 시공 도구를 실행하라. 단순 한 영역 칠하기는 도구 좌표로 작업 영역을 표시하므로 생략할 수 있다.");
   if (featureReviewEnabled) systemPrompt.push(FEATURE_CHECKLIST_SYSTEM_PROMPT);
+  if (polish) systemPrompt.push(featurePolishSystemPrompt(polish));
   if (incremental && request.applyMode === "step") systemPrompt.push("작업을 지형, 건물·길, NPC·이벤트 등 의미 있는 단계로 나누고 각 단계를 끝낼 때 반드시 finish_stage를 호출하라. 승인 결과를 받기 전 다음 단계의 쓰기 도구를 호출하지 마라. 도구 호출마다 승인받지 말고 작업 단위로 묶어라.");
   if (request.applyMode === "yolo") systemPrompt.push("YOLO: 별도 검수·승인 요청 없이 요청한 변경을 최대한 실행하라. 사용자 범위와 데이터 형식은 지켜라.");
   if (writer && tools.some(tool => tool.name === "consult_writer")) systemPrompt.push("You are Deep, responsible for careful implementation and validation. For multi-scene story, lore, or quest prose, consult_writer delegates authorship to Writer. Pass relevant context, then apply its output using project tools. For a single NPC or short greeting/shop/inn lines, write the dialogue directly in place_npc without calling consult_writer. Do not call Writer for mechanical work.");
@@ -1060,16 +1155,24 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: "execution_status", name: "plan_execution_rekick", ok: false, summary: "계획만 다시 쓰고 바뀐 것 없이 끝나 실행을 한 번 더 요청합니다." });
       await promptResuming(PLAN_EXECUTION_REKICK);
     }
+    // v2 완료 조건(비평 통과·기계 검사 통과) — 못 채웠으면 한 차례 더 돌며 사실대로 보고하게 한다.
+    if (options.v2?.afterMain && v2Env && !fatal && !rejected && !options.signal?.aborted && turns < maxTurns) {
+      const followUp = await options.v2.afterMain(v2Env);
+      if (followUp && !fatal && !rejected && !options.signal?.aborted) await promptResuming(followUp);
+    }
     // 인게임 컷신은 조수의 보고가 아니라 객관 측정 + 독립 판정자로 검증한다(openingProduction.recordCutsceneReview).
     const reviewInGameCutscene = async (): Promise<void> => {
       if (!openingProduction.inGame) return;
       const start = ctx.project.maps[ctx.project.startMapId];
-      const autoEvents = (start?.events ?? []).filter(e => (e.pages ?? []).some(pg => (pg.trigger as { kind?: string } | undefined)?.kind === 'auto' && pg.commands.some(c => c.kind === 'showPicture')));
+      // 그림(showPicture) 없는 script_cutscene 도 잰다 — 그림 있는 컷신만 재면 검증이 끝내 안 돌고 「객관 검증이 아직 실행되지 않았습니다」만
+      // 세 번 반복하다 실패로 끝났다(2026-10-23 실측, 컷신 4판). inspect 의 판단도 자동 실행 이벤트 존재 하나다.
+      const isCutscenePage = (pg: { trigger?: unknown; commands: readonly unknown[] }) => (pg.trigger as { kind?: string } | undefined)?.kind === 'auto' && pg.commands.length > 0;
+      const autoEvents = (start?.events ?? []).filter(e => (e.pages ?? []).some(isCutscenePage));
       if (!start || !autoEvents.length) return;
       const fingerprint = openingProduction.cutsceneFingerprint(ctx.project);
       if (openingProduction.hasCutsceneReview(fingerprint)) return;
       // 시작 맵의 자동 컷신은 전부 잰다 — 옛 컷신이 남은 채 새 이벤트가 따로 생기면(실측) 둘이 겹쳐 재생된다.
-      const probes = autoEvents.map(e => ({ event: e, page: e.pages.find(pg => (pg.trigger as { kind?: string } | undefined)?.kind === 'auto' && pg.commands.some(c => c.kind === 'showPicture'))! }))
+      const probes = autoEvents.map(e => ({ event: e, page: e.pages.find(isCutscenePage)! }))
         .map(({ event, page }) => ({ event, probe: probeCutscene(ctx.project, page.commands, ctx.project.system.playResolution ?? DEFAULT_PLAY_RESOLUTION) }));
       const merged = probes.flatMap(({ event, probe }) => probe.issues.map(issue => (probes.length > 1 ? `[이벤트 ${event.id}] ` : '') + issue));
       if (probes.length > 1) merged.push(`시작 맵에 자동 컷신 이벤트가 ${probes.length}개(${probes.map(p => p.event.id).join(', ')})라 겹쳐 재생됩니다. 하나만 남기세요 — script_cutscene_staged 에 eventId 를 주어 기존 것을 대체하거나, 쓸모없는 이벤트를 지우세요.`);
@@ -1086,17 +1189,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         if (mapImage) break;
         const w = Math.min(win.w, start.width), h = Math.min(win.h, start.height);
         const x = Math.max(0, Math.min(start.width - w, Math.round(((event as { x?: number }).x ?? start.width / 2) - w / 2))), y = Math.max(0, Math.min(start.height - h, Math.round(((event as { y?: number }).y ?? start.height / 2) - h / 2)));
-        try { mapImage = `data:image/png;base64,${await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), 'show_map_region', { mapId: start.id, x, y, w, h }, options.signal)}`; } catch (error) { mapImage = undefined; mapError = error instanceof Error ? error.message : String(error); if (options.signal?.aborted) return; }
+        try { mapImage = `data:image/png;base64,${await renderMapRegionImage(ctx.project, { mapId: start.id, x, y, w, h }, options.renderToolImage, options.signal)}`; } catch (error) { mapImage = undefined; mapError = error instanceof Error ? error.message : String(error); if (options.signal?.aborted) return; }
       }
       if (!mapImage) { emit({ type: 'execution_status', name: 'cutscene.review.judged', ok: false, summary: `시작 맵 그림을 얻지 못해 독립 판정을 건너뜁니다(${mapError.slice(0, 160)}) — 합격으로 보고하지 않습니다` }); openingProduction.recordCutsceneReview(fingerprint, [], { verdict: 'unjudged', scores: {}, fix: '시작 맵 그림 렌더 실패', judge: 'none' }); return; }
       let motionImage: string | undefined;
       try { const imgs = await cutscenePreviewImages(ctx.project, { mapId: start.id, eventId: event.id }, mapImage ? { mapImage } : undefined); sheetImage = imgs[0]?.dataUrl; motionImage = imgs[1]?.dataUrl; } catch { sheetImage = undefined; }
-      const critique = await critiqueCutscene({ brief: request.task, probeSummary: probe.summary, ...(mapImage ? { mapImage } : {}), ...(sheetImage ? { sheetImage } : {}), ...(motionImage ? { motionImage } : {}), ...(options.signal ? { signal: options.signal } : {}) });
+      const critique = await critiqueCutscene({ brief: request.task, probeSummary: probe.summary, ...(mapImage ? { mapImage } : {}), ...(sheetImage ? { sheetImage } : {}), ...(motionImage ? { motionImage } : {}), ...(options.signal ? { signal: options.signal } : {}),
+        fallbackChat: async (messages, signal) => { const reply = await eventAssistChat(null, { messages, ...(signal ? { signal } : {}) }); return typeof reply.message.content === 'string' ? reply.message.content : ''; } });
       openingProduction.recordCutsceneReview(fingerprint, [], critique);
       emit({ type: 'execution_status', name: 'cutscene.review.judged', ok: critique.verdict === 'accept', summary: critique.verdict === 'unjudged' ? `독립 판정 불가(${critique.fix}) — 합격으로 보고하지 않습니다` : `독립 판정자(${critique.judge}) ${critique.verdict === 'accept' ? '합격' : '불합격'}: ${Object.entries(critique.scores).map(([k, v]) => `${k} ${v}`).join(', ')}${critique.fix ? ` — ${critique.fix}` : ''}`, data: critique });
     };
     let previousOpeningIssues = '';
-    for (let attempt = 0; !fatal && !rejected && attempt < (openingProduction.inGame ? 3 : openingProduction.requiresPixelAnimatic ? 4 : 2) && turns < maxTurns && !options.signal?.aborted; attempt++) {
+    for (let attempt = 0; !options.v2 && !fatal && !rejected && attempt < (openingProduction.inGame ? 3 : openingProduction.requiresPixelAnimatic ? 4 : 2) && turns < maxTurns && !options.signal?.aborted; attempt++) {
       await reviewInGameCutscene();
       const issues = [...openingProduction.inspect(ctx.project, base),...gameSystemProduction.inspect(ctx.project),...npcLayoutProduction.inspect(ctx.project),...monsterGameProduction.inspect(ctx.project),...romanceProduction.inspect(ctx.project)], signature = JSON.stringify(issues);
       if (!issues.length || (signature === previousOpeningIssues && !openingProduction.inGame && !openingProduction.requiresPixelAnimatic)) break;
@@ -1139,22 +1243,22 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         const map = ctx.project.maps[id];
         return !!map && !!roomSpecOf(ctx.project.tilesets[map.tilesetId]) && map.climate?.mode === "indoor";
       };
+      // 다듬기는 바뀌지 않은 맵도 본다 — 요청 범위(mapIds·지금 맵)의 맵과 항목이 가리키는 맵.
+      const polishScope = polish ? (polish.mapIds?.length ? polish.mapIds : [...request.mapIds, ...(request.currentMapId ? [request.currentMapId] : [])]).filter((id) => !!ctx.project.maps[id]) : [];
       const targetIds = (): string[] => {
-        const named = featureChecklist.judgeItems.map((i) => i.mapId).filter((id): id is string => !!id && !!ctx.project.maps[id] && mapChanged(id));
-        const interiors = Object.keys(ctx.project.maps).filter((id) => handInterior(id) && mapChanged(id));
+        const changed = (id: string) => mapChanged(id) || polishScope.includes(id);
+        const named = featureChecklist.judgeItems.map((i) => i.mapId).filter((id): id is string => !!id && !!ctx.project.maps[id] && (changed(id) || !!polish));
+        const interiors = Object.keys(ctx.project.maps).filter((id) => handInterior(id) && changed(id));
         return [...new Set([...named, ...interiors])].slice(0, 3);
       };
-      const reviewTask = request.task;
-      const maxRebuilds = FEATURE_REVIEW_MAX_REBUILDS;
-      const budgetMs = FEATURE_REVIEW_SOFT_BUDGET_MS;
+      const reviewTask = polish?.request ?? request.task;
+      const maxRebuilds = polish ? Math.max(1, Math.min(20, polish.maxRounds)) : FEATURE_REVIEW_MAX_REBUILDS;
+      const budgetMs = polish ? Math.max(60_000, polish.budgetMs) : FEATURE_REVIEW_SOFT_BUDGET_MS;
       // 그림 렌더러는 show_map_region 결과(칸 배열 포함)를 받는다 — 좌표만 넘기면 「invalid region」으로 거절한다. 읽기 도구를 그대로 돌려 그 결과를 넘긴다.
       const renderErrors: string[] = [];
       const render = async (mapId: string, x: number, y: number, w: number, h: number): Promise<string | undefined> => {
         try {
-          const project = cloneProjectSharingSharedDictionaries(ctx.project);
-          const shown = runTool({ project, assistantRun: false }, "show_map_region", { mapId, x, y, w, h }, { dryRun: true });
-          if (!shown.ok) throw new Error(shown.summary);
-          return `data:image/png;base64,${await options.renderToolImage!(project, "show_map_region", shown.data, options.signal)}`;
+          return `data:image/png;base64,${await renderMapRegionImage(ctx.project, { mapId, x, y, w, h }, options.renderToolImage!, options.signal)}`;
         } catch (error) {
           if (options.signal?.aborted) throw error;
           renderErrors.push(`${mapId} (${x},${y}) ${w}×${h}: ${error instanceof Error ? error.message.slice(0, 160) : String(error)}`);
@@ -1191,8 +1295,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           featureChecklist.setMeasured({ id: itemId, text: `${map.name}: 독립 비평(축 1·2·6) major 0`, mapId: id });
           try {
             const px = pngSize(dataUrl);
-            const reply = await eventAssistChat(null, { messages: [{ role: "user", content: [{ type: "text", text: featureCriticPrompt(reviewTask, map.name, map, px) }, { type: "image_url", image_url: { url: dataUrl } }] }], ...(options.signal ? { signal: options.signal } : {}) });
-            const critic = parseFeatureCritic(typeof reply.message.content === "string" ? reply.message.content : "", id, 1);
+            const others = [...fullImages].filter(([other]) => other !== id);
+            const reply = await eventAssistChat(null, { messages: [{ role: "user", content: [
+              { type: "text", text: featureCriticPrompt(reviewTask, map.name, map, px, others.map(([other]) => ctx.project.maps[other]!.name)) },
+              { type: "image_url", image_url: { url: dataUrl } }, ...others.map(([, url]) => ({ type: "image_url", image_url: { url } }))] }], ...(options.signal ? { signal: options.signal } : {}) });
+            const critic = parseFeatureCritic(typeof reply.message.content === "string" ? reply.message.content : "", id, 1 + others.length);
             emit({ type: "execution_status", name: "feature_review.critic", ok: !critic.problem && critic.majors.length === 0, summary: `${map.name} 독립 비평 ${critic.score ?? "?"}점 · major ${critic.majors.length}${critic.problem ? ` · ${critic.problem}` : ""}`, data: critic });
             return criticToVerdict(itemId, critic);
           } catch (error) {
@@ -1259,7 +1366,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         const failingKey = failing.map((v) => v.id).sort().join("|");
         unchanged = failingKey && failingKey === previousFailing ? unchanged + 1 : 0;
         previousFailing = failingKey;
-        const stuck = unchanged >= 2;
+        const stuck = unchanged >= (polish ? 3 : 2);
         if (!failing.length || rebuild >= maxRebuilds || overBudget || stuck || turns >= maxTurns) {
           const reason = !failing.length ? "판정자가 일부 항목을 판정하지 못했다(확인 안 됨)." : rebuild >= maxRebuilds ? `고치기 ${maxRebuilds}바퀴를 다 썼다.` : stuck ? "같은 항목이 두 번 고친 뒤에도 그대로 안 읽힌다." : overBudget ? "작업 시간 한도에 닿아 더 고치지 않는다." : "턴 한도에 닿았다.";
           emit({ type: "execution_status", name: "feature_review.unresolved", ok: false, summary: `${reason} 남은 항목 ${open.length}개` });
@@ -1267,7 +1374,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           break;
         }
         const repairStarted = Date.now();
-        emit({ type: "execution_status", name: "feature_review.repair", ok: true, summary: `고치기 ${rebuild + 1}/${maxRebuilds}바퀴 · 경과 ${Math.round((Date.now() - started) / 60_000)}분`, data: { round: rebuild + 1, maxRounds: maxRebuilds, elapsedMs: Date.now() - started, budgetMs } });
+        emit({ type: "execution_status", name: "feature_review.repair", ok: true, summary: `${polish ? "다듬기" : "고치기"} ${rebuild + 1}/${maxRebuilds}바퀴 · 경과 ${Math.round((Date.now() - started) / 60_000)}분${polish ? ` / ${Math.round(budgetMs / 60_000)}분` : ""}`, data: { round: rebuild + 1, maxRounds: maxRebuilds, elapsedMs: Date.now() - started, budgetMs, polish: !!polish } });
         await promptResuming(featureRepairPrompt(rebuild + 1, maxRebuilds, featureChecklist.allItems, round.verdicts));
         longestRepair = Math.max(longestRepair, Date.now() - repairStarted);
       }
@@ -1278,7 +1385,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     // 구성기가 구역마다 쓰임을 정해 깐 맵(composed-layout 표식, 예: compose_steampunk_city_map)도 뺀다 — inspectPiLayoutQuality 가 isComposedLayoutMap 으로 스스로 건너뛴다.
     // 전체 몬스터 게임도 뺀다 — 맵은 검수된 공용 캠페인이 깔고(포켓몬 마을·센터는 원래 트였고 대칭이다), 고칠 도구가 없어
     // 조수가 repair 를 한 번 더 부른 뒤 「마지막 변경 뒤 read/review_monster_game」 완료 검사에 걸려 실행 실패로 끝났다(2026-10-06 실측).
-    if (!fatal && !rejected && !request.readOnly && turns < maxTurns && !options.signal?.aborted && !conceptSkipsLayoutQuality(request.task) && !monsterGameProduction.requested) {
+    if (!options.v2 && !fatal && !rejected && !request.readOnly && turns < maxTurns && !options.signal?.aborted && !conceptSkipsLayoutQuality(request.task) && !monsterGameProduction.requested) {
       const describe = (issues: typeof layout) => issues.map(i => `${i.mapId} ${i.problems.join(", ")}`).join(" / ");
       // 1배 특징 확인을 거친 맵은 빈 바닥(보정된 자)까지 그 루프가 봤다 — 옛 권고를 한 번 더 돌리지 않는다.
       let layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds, reviewedMapIds);
@@ -1335,7 +1442,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(fatal ? { stoppedEarly: fatal } : {}),
     project: ctx.project,
     stats: { ms: Date.now() - started, turns, toolCalls, toolErrors, ...(usage ? { usage } : {}), ...(localLoop ? (() => { const local = localLoop.stats(); return { engine: local.engine, billing: local.billing, ...(local.costUsd !== undefined ? { costUsd: local.costUsd } : {}),
-      exposure: { systemChars: local.weight.systemChars, toolsListed: local.weight.listCount, listChars: local.weight.listChars, listChanged: local.listChanged } }; })() : {}) },
+      exposure: { systemChars: local.weight.systemChars, toolsListed: local.weight.listCount, listChars: local.weight.listChars, listChanged: local.listChanged,
+        ...(local.weight.systemSections ? { systemSections: local.weight.systemSections } : {}), ...(local.weight.listTop ? { listTop: local.weight.listTop } : {}),
+        ...(local.weight.requests ? { requests: local.weight.requests } : {}), results: local.weight.results } }; })() : {}),
+      ...(sideUsage.calls ? { review: { ...sideUsage, totalTokens: sideUsage.input + sideUsage.output + sideUsage.cacheRead + sideUsage.cacheWrite } } : {}) },
     changedKeys: changedProjectKeys(base, ctx.project),
     // 정본 증거는 이 프로세스 안에만 살아 있다 — 브라우저 수용 게이트가 쓸 수 있게 다이제스트로 내보낸다.
     spatialProof: exportSpatialToolProof(ctx.project),

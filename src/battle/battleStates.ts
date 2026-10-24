@@ -53,6 +53,8 @@ export interface StateBehavior {
   readonly reflect: boolean;
   readonly reraisePercent: number;
   readonly doomTurns: number;
+  /** 0 이면 제한 없음. 걸린 뒤 자기 턴이 이만큼 지나면 반드시 풀린다. */
+  readonly maxTurns: number;
   readonly invertHealing: boolean;
   readonly grantSkillIds: readonly string[];
 }
@@ -112,6 +114,7 @@ export function stateBehavior(record: StateRecord): StateBehavior {
     reflect: runtime?.reflect === true,
     reraisePercent: clampPercent(runtime?.reraisePercent),
     doomTurns: Math.max(0, Math.min(9, Math.round(Number(runtime?.doomTurns ?? 0) || 0))),
+    maxTurns: Math.max(0, Math.min(9, Math.round(Number(runtime?.maxTurns ?? 0) || 0))),
     invertHealing: runtime?.invertHealing === true,
     grantSkillIds: Array.isArray(runtime?.grantSkillIds) ? runtime.grantSkillIds.filter((id): id is string => typeof id === "string" && id.length > 0).slice(0, 12) : [],
   };
@@ -267,7 +270,8 @@ export function runStateUpkeep(project: Project, battler: MutableBattler, rng: R
       removedStateIds.push(stateId);
       return { hpDamage, hpHealing, removedStateIds, doomedStateId: stateId, doomedHp };
     }
-    if (turns >= behavior.recoverNaturallyFromTurn && rollPercent(behavior.recoverNaturallyChance, rng)) {
+    if ((behavior.maxTurns > 0 && turns >= behavior.maxTurns)
+      || (turns >= behavior.recoverNaturallyFromTurn && rollPercent(behavior.recoverNaturallyChance, rng))) {
       removeState(battler, stateId);
       removedStateIds.push(stateId);
     }

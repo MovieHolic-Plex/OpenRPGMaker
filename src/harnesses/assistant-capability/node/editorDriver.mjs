@@ -91,10 +91,14 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
       loads.push({sha256:body.sha256,revision:body.revision,maps:document.maps,database:document.database});
     }).catch(()=>{});
   });
-  await page.addInitScript(({assistantEngine,...config})=>{
+  await page.addInitScript(({assistantEngine,hideStartMarker,assistantVersion,...config})=>{
+    // 검수 그림에서 편집기 전용 시작 위치 표시를 뺀다(기본). HARNESS_START_MARKER=1 이면 그대로 둔다.
+    if(hideStartMarker)window.__oprnHideStartMarker=true;
     localStorage.setItem('oprn:ai-config',JSON.stringify({configVersion:2,piTeam:false,piApply:'default',piApplyPolicyVersion:1,...config}));
     // 조수 엔진(로컬 CLI) 선택은 설정과 따로 저장된다 — 제품 설정 화면이 쓰는 그 칸(src/ai/localCliEngine.ts).
     if(assistantEngine)localStorage.setItem('oprn:assistant-engine',JSON.stringify(assistantEngine));
+    // 조수 v2 비교(ai-config 의 assistantVersion:"v2") — 제품 스위치(src/ai/v2/switch.ts)와 같은 칸.
+    if(assistantVersion==='v2')localStorage.setItem('oprn:assistant-v2','1');
     window.__capEvents=[];
     const original=window.fetch;
     window.fetch=async function(...args){
@@ -105,11 +109,13 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
         const reader=response.clone().body.getReader(),decoder=new TextDecoder();let pending='';
         const consume=line=>{try{
           const outer=JSON.parse(line.replace(/^data:\s*/,'')),event=outer.type==='agent_event'?outer.event:outer;
-          if(['assistant','tool_start','tool_end','error','execution_status','done','cancelled'].includes(event?.type)){
-            // Never persist reasoning, auth headers or system prompt payloads.
+          if(['assistant','tool_start','tool_end','error','execution_status','done','cancelled','prompt_inspection'].includes(event?.type)){
+            // Never persist reasoning, auth headers or system prompt payloads. A prompt_inspection keeps only its
+            // scalar receipt (model·max_tokens·reasoning_effort) — the sections are the whole prompt and stay out.
             window.__capEvents.push({type:event.type,name:event.name??event.toolName,id:event.id,ok:event.ok,
               text:event.type==='assistant'?event.text:undefined,summary:event.summary,message:event.message,args:event.args,
-              data:['charset.image.delivered','charset.image.received','feature_checklist','feature_review','feature_review.critic','feature_review.repair'].includes(event.name)?event.data:undefined,
+              data:event.type==='prompt_inspection'?(event.snapshot?{boundary:event.snapshot.boundary,model:event.snapshot.model,scalars:event.snapshot.scalars}:undefined)
+                :['charset.image.delivered','charset.image.received','feature_checklist','feature_review','feature_review.critic','feature_review.repair','cutscene.review','cutscene.review.judged'].includes(event.name)?event.data:undefined,
               runId:outer.runId,usage:event.usage,stats:event.type==='done'?event.stats:undefined,at:Date.now()});
           }
           if(outer.type==='done'&&event.type!=='done')window.__capEvents.push({type:'done',runId:outer.runId,at:Date.now()});
@@ -145,7 +151,7 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
       }
       return response;
     };
-  },config??{});
+  },{...(config??{}),hideStartMarker:process.env.HARNESS_START_MARKER!=='1'});
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:120000});
   if(await page.locator('#access-code').count()) {
     await page.locator('#access-code').fill(readFileSync(resolve(projectDir,'.oprn-host-access'),'utf8').trim());
@@ -219,9 +225,25 @@ export async function execute(entry, dir, timeoutMs, config, diagnostics={}) {
       await page.evaluate(()=>window.__oprnAiBridge.abort()).catch(()=>{});
       throw Error(`Turn did not settle within ${timeoutMs}ms: ${error.message.slice(0,120)}`);
     }
+    // 다듬기 모드 시험(HARNESS_POLISH=1): 확인표 상자의 「다듬기」 단추를 실제로 눌러 두 번째 턴을 끝까지 돌린다.
+    let polish;
+    if(process.env.HARNESS_POLISH==='1') {
+      const button=page.getByTestId('ai-feature-polish');
+      if(await button.count()) {
+        const mark=await page.evaluate(()=>window.__capEvents.length);
+        const polishStart=Date.now();
+        await button.first().click();
+        await page.waitForFunction((mark)=>{
+          const events=window.__capEvents.slice(mark);
+          return events.some(e=>['stream_closed','error'].includes(e.type)) && !window.__oprnAiBridge.status().turnBusy;
+        },mark,{timeout:Number(process.env.HARNESS_POLISH_TIMEOUT_MS??2_700_000),polling:1000});
+        polish={clicked:true,fromEvent:mark,elapsedMs:Date.now()-polishStart};
+      } else polish={clicked:false,reason:'no polish button (all items passed or no checklist)'};
+      console.log(`${entry.id}: polish ${JSON.stringify(polish)}`);
+    }
     const events=await page.evaluate(()=>window.__capEvents);
     const answer=events.filter(e=>e.type==='assistant').map(e=>e.text??'').join('\n');
-    writeFileSync(resolve(dir,'trace.json'),JSON.stringify({requests,events,errors,elapsedMs:Date.now()-start},null,2));
+    writeFileSync(resolve(dir,'trace.json'),JSON.stringify({requests,events,errors,elapsedMs:Date.now()-start,...(polish?{polish}:{})},null,2));
     phase='save';
     const flush=await saveThroughUi(page);
     const applied=stored(projectDir);

@@ -1,0 +1,323 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "287622959a185727bb9669f1a74c17ebe243946a539b274c897898973029453a",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "catacomb ossuary wall face",
+ "label": "beodeul_dungeon/earth.ossuary",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 46,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ossuary wall face, upper skull row with ledge",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ossuary wall face, lower bone row with ledge",
+      "rows": "15-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tile is a flat wall face seen straight on. Rows 1-31 are 46 px wide throughout. They show horizontal courses of skulls and bones (skulls at rows 5-9, bone ends at rows 11-13, a repeat at rows 19-29), separated by lighter ledge bands at rows 1 and 15. These ledge bands are 1-row strips with no eave shadow, so they read as bands or lips, not top surfaces. No ellipse, roof or visible contents. Nothing recedes. It is a terrain wall tile, so a front-facing wall is expected, and it has no horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 11 visible tones per 16x16 tile, above the paving reference (7) and the grass reference (3). Near-flat coverage is 0%, the same as both references, so no 5x5 area is a single flat colour. The wall carries banded shelves, a row of skulls with eye-socket shading, and stone grain. Its stone ramp has about 4 steps, a little fewer than Beodeul's 5-6. About 55% of its dark edge pixels are neutral, which is below the paving reference's 80%, so the outline reads as mixed. Paving is the closest reference kind here, and its neutral outlines are accepted in the Beodeul set. Only 12 colours are used in total, but they are spread into distinct visible tones, so the piece does not look thinner or more sticker-like than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12998
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper skull and bone shelf row",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower skull and bone shelf row",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a flat wall face seen straight on. It has two stacked niche rows of skulls and bones, separated by a lighter stone ledge at rows 15-16 and framed by a border at rows 1-2. The dark band at rows 3-4 and 17-18 is shadow inside the niche, not an eave over a top surface. No ellipse, no roof plane and no contents of an open container are visible. The whole 31-row height is a vertical face. For a terrain wall-face tile this is the expected flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are favourable: 11 visible tones per tile against 7 for the paving reference and 3 for grass, with 0% near-flat coverage. By eye the piece reads thinner than the paving reference. The top and bottom bands are broad, dark, nearly uniform grey with little grain or per-stone shading. All the detail sits in one narrow strip of tiny skulls and bone ledges. The whole patch uses only 12 distinct colours, so each material ramp has about 4 steps, not Beodeul's 5-6. The outline is mixed: 55% of dark edge pixels are neutral, so the ledges and skulls lean on neutral dark lines and not on tinted material tones. The paving reference gets its richness from a cobble-by-cobble pattern that repeats across every tile, and the candidate has nothing comparable. A careful artist would likely see it as flatter and sparser than the reference, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15770
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top ledge/rim strip",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": 1,
+      "eave_shadow_rows": "3-4"
+     },
+     {
+      "part": "upper niche with skulls and bones (vertical face)",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle ledge strip",
+      "rows": "14-16",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "lower niche with bones and skulls (vertical face)",
+      "rows": "19-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base strip",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tile is a flat front-on wall face. It has two tiers of bone niches separated by thin 1-row ledge lines at rows 1 and 15, each followed by dark shadow rows (3-4 and 17-18). The ledges are only 1-2 row strips, so they count as rims and not as top surfaces. The skulls and bone rows (5-13 and 19-29) are seen face-on. No ellipse, roof plane or visible container contents appear from above, and no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate measures 11 visible tones per 16x16 tile, against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 0%, the same as both references. Its dark edge pixels are 55% neutral, so the outline is mixed, between the paving reference (80%) and the grass reference (0%). By eye, the stacked shelves with rows of skulls and bone bands show about 5 distinct lightness steps. The skulls and shelf lips give some texture, though less grain than the paving reference's stone-by-stone shading. The dark upper and lower bands vary slightly rather than sitting as large flat fills. A careful artist would accept it next to the paving reference without it looking thinner or flatter, so it passes, though not by a wide margin.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17402
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper skull and bone niche band",
+      "rows": "2-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "horizontal ledge strip between bands (1-row light line with dark rows below)",
+      "rows": "15-16",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-18"
+     },
+     {
+      "part": "lower bone and skull niche band",
+      "rows": "17-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a flat, face-on wall panel, 46 px wide and 31 rows tall. Two stacked bands show skulls, bone rows and dark niche gaps, all seen as vertical faces. Row 1 and row 15 are 1-row light lines (L=147) with dark rows below them. They work as thin ledge or trim strips, not as a top plane. No band of rows ends in a front-edge line with a foreshortened horizontal surface above a front face. There is no ellipse, roof or visible container contents, and no receding side face. For a terrain wall tile this is a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a bone-shelf wall with a row of skulls, ledges and a stone backing. It reaches 11 visible tones per 16x16 tile, above the grass reference (3) and the paving reference (7). Near-flat coverage is 0%, so there are no flat fills. The backing stone and shelves show grain and the skulls have eye and teeth dots, though only 12 colours are used in total, so each ramp is about 4-5 steps against Beodeul's 5-6. Outline is mixed: 55% of dark edge pixels are neutral, which is between the tinted grass (0%) and the neutral grey paving (80%). The paving reference is also neutral grey, so this is not the sticker look, and the outline lines are selective with value separation between forms. Overall it holds up beside the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18296
+  }
+ ],
+ "decidedAt": "2026-10-23T03:35:00.666Z",
+ "cells": {
+  "16": [
+   "0029589cfdc59f04",
+   "16f4f07bcd130911",
+   "95084fa3a7711d80",
+   "b7df20832485102f",
+   "cb3df5dedf650cf1",
+   "ef63db51e2c458b9"
+  ],
+  "24": [
+   "091751c898f9bd1f",
+   "208eaeb9994edfe7",
+   "58038561ff97c8c1",
+   "920e6c9a3fc1dba7",
+   "9743cd186b9f2161",
+   "a8d24e3cb928f017",
+   "b1a1297c96c1f1c0",
+   "ba0f28aab3fcbcaa"
+  ],
+  "32": [
+   "024903fb4a508981",
+   "19cef84e97124e7f",
+   "20662e2181865f80",
+   "51b777e5de3270ee",
+   "93dca26a1763bb60",
+   "997c0c8841357688"
+  ],
+  "48": [
+   "29f7477d85ffe4df",
+   "fe019a27095c4641"
+  ]
+ }
+}

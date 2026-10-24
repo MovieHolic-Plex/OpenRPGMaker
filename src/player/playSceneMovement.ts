@@ -46,6 +46,8 @@ import type { EventAnimationType, Trigger } from "@/project/types";
 import { nextSessionRandom } from "@/project/session";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import { recordFollowerPlayerStep } from "@/project/followers";
+import { beginFollowerStep } from "@/player/playSceneFollowers";
+import { updateAmbientFlyers } from "@/player/playSceneAmbientFlyers";
 import { updateFollowerSpriteMotion } from "@/player/playSceneFollowers";
 import { applyWalkCareTicks } from "@/project/monsterCare";
 import { applyGen1FieldPoisonStep, monsterBattlePartyOf } from "@/project/monsterCollection";
@@ -116,9 +118,6 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     return;
   }
   updateDetectionEncounters(scene, deltaMs);
-  // 팔로워 스프라이트 보간은 논리 틱과 무관하게 매 렌더 프레임 이어진다 —
-  // 고주사율(틱 0) 프레임에서도 걸음이 끊기지 않는다.
-  updateFollowerSpriteMotion(scene, deltaMs);
   const world = { project: store.getCurrent(), map: scene.map, session: scene.session, positions: scene.eventPositions };
   if (!scene.running && advancePursuitDoors(world, deltaMs)) refreshRuntimeEntities(scene);
   scene.player.setVisible?.(!isPlayerHiding(world));
@@ -151,9 +150,13 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     else if (scene.actionCombatState?.skillCharge) updateActionSkillCharge(scene, ticks * LOGIC_TICK_MS, !cutsceneInputLocked && scene.input_.isSkillHeld());
     scene.input_.resetEdges();
   }
+  // 팔로워 스프라이트 보간은 논리 틱과 무관하게 매 렌더 프레임 이어진다 — 고주사율(틱 0) 프레임에서도 걸음이 끊기지 않는다.
+  // 주인공 틱 **뒤에** 그린다: 주인공과 함께 연 걸음은 이번 프레임의 주인공 진행도를 그대로 쓴다(beginFollowerStep).
+  updateFollowerSpriteMotion(scene, deltaMs);
   // Forced event routes must progress while the interpreter awaits completion.
   // The NPC updater keeps unrelated autonomous routes paused during dialogue.
   scene.updateAutonomousNPCs(deltaMs);
+  updateAmbientFlyers(scene, deltaMs);
   if (canUpdateWaitingEvents(scene) || conditionWaitScenes.has(scene)) {
     scene.updateParallelEvents(deltaMs);
   }
@@ -409,6 +412,9 @@ function beginPlayerStep(scene: PlaySceneContext, toX: number, toY: number): voi
   scene.moving = true;
   scene.moveProgress = 0;
   scene.moveElapsedFrames = 0;
+  // 동료는 주인공이 떠나는 칸으로 같은 박자에 들어선다(HGSS). 걸음이 끝난 뒤 기록하던 옛 경로도 그대로 남아 있지만
+  // 같은 칸은 두 번 쌓이지 않는다(recordFollowerPlayerStep).
+  beginFollowerStep(scene, scene.movingFrom, scene.movingTo, stepFrames(scene) * LOGIC_TICK_MS);
 }
 
 function tryStartMove(scene: PlaySceneContext, input: InputState): void {
@@ -567,6 +573,16 @@ export function tryStartFurniturePush(scene: PlaySceneContext, event: RuntimeEve
 
 
 function advancePlayerRoute(scene: PlaySceneContext): void {
+  const facingBefore = scene.facing;
+  advancePlayerRouteCommands(scene);
+  // 제자리 회전(turn)도 동료가 다시 선다 — 장면 중 동료는 주인공이 보는 쪽을 따라 돌아선다(followers §sceneFacing).
+  if (scene.facing !== facingBefore && !scene.moving) {
+    scene.session.playerFacing = scene.facing;
+    syncFollowerSprites(scene);
+  }
+}
+
+function advancePlayerRouteCommands(scene: PlaySceneContext): void {
   // 이동을 시작하지 않는 명령(회전/스위치 등)은 같은 프레임에 연속 소비한다.
   // repeat + 이동 없는 루트의 프레임당 무한 루프를 막기 위해 상한을 둔다.
   let guard = 0;

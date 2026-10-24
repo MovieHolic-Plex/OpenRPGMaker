@@ -11,6 +11,7 @@ import { startSession, type PlaySession } from "@/project/session";
 import type { Dir, Project } from "@/project/types";
 import { applySaveSnapshot, type SaveSnapshot } from "@/player/saveSlots";
 import { applyStatePreset } from "@/testing/debugSession";
+import { syncMonsterPartyFollowers } from "@/project/followers";
 
 export type QaCheckpointPartyMember = {
   readonly actorId: string;
@@ -97,7 +98,12 @@ export function sessionFromQaCheckpoint(project: Project, checkpoint: QaCheckpoi
     }
   }
   if (checkpoint.party) applyParty(project, session, checkpoint.party);
-  if (checkpoint.sessionPatch) deepMerge(session as unknown as Record<string, unknown>, checkpoint.sessionPatch);
+  if (checkpoint.sessionPatch) {
+    deepMerge(session as unknown as Record<string, unknown>, checkpoint.sessionPatch);
+    // 몬스터 파티를 덮었으면 따라오는 동료 열차도 그 파티로 맞춘다 — 실제 게임은 포획·스타터 선택 때 맞춘다.
+    // 안 맞추면 체크포인트에서 시작한 장면에만 동료가 없어 따라오기를 검사할 수 없었다(2026-10-23).
+    if ("monsterParty" in checkpoint.sessionPatch) syncMonsterPartyFollowers(project, session);
+  }
   if (checkpoint.startEventId) {
     const events = project.maps[mapId]?.events ?? [];
     if (!events.some((event) => event.id === checkpoint.startEventId)) {
