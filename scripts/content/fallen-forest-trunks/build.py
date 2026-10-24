@@ -164,7 +164,7 @@ def variants(im, name):
         'T1': taller_orig(im, ys, flare),
         'T2': repaint(im.copy(), w0 + 2 if (w0 + 2) in TRUNK else (12 if big else 8), ORIG, light_left=False, contact=False),
         # T3 최종(2026-10-24 사용자 선택): 원본 폭·높이 그대로 — 줄기 폭 = 밑변 폭 규칙과 composer 칸 크기를 지킨다. 그리는 법은 T4 r3 과 같다.
-        'T3': repaint_t3(im.copy(), name),
+        'T3': repaint_t3b(im.copy(), name),
         'T4': repaint2(im.copy(), max(8, w0 + 2 if (w0 + 2) in TRUNK else (12 if big else 8)), HEIGHT_ADD[name], name),
     }
 
@@ -320,6 +320,84 @@ def repaint_t3(im, name):
     for dy, inset in ((H - 2, 0), (H - 1, 2)):
         for xx in range(x0 - 5 + inset, x0 + wr + 5 - inset):
             if 0 <= xx < W and px[xx, dy][3] == 0: px[xx, dy] = SHADOW + (118,)
+    return im
+
+# T3 r7(2026-10-24 Argon 적대 검수 7/7 FAIL 대응): 원본 버들항 줄기 4색만(#967042 #70502e #4c3620 #2e2016),
+# 왼쪽 위 빛 원기둥(왼쪽 밝음 → 오른쪽 어둠, 세로 1px 골 금지), 껍질은 2~3px 엇갈린 덩이, 수관 밑까지 밝은 껍질(근흑 띠 금지),
+# 뿌리는 원본처럼 땅을 기어가며 가늘어지는 뿌리 — 나무마다 길이·갈래가 다르다(찍은 3갈래 틀 금지).
+P4 = {'H': (150, 112, 66), 'M': (112, 80, 46), 'S': (76, 54, 32), 'D': (46, 32, 22)}
+
+def repaint_t3b(im, name):
+    W, H = im.size
+    ys, flare, cx, w0, _ = measure(im)
+    px = im.load()
+    for y in range(H):
+        for x in range(W):
+            k = kind(px[x, y])
+            if k == 'trunk' or (k == 'tuft' and y >= H - 6) or (y >= flare and k != 'clear'): px[x, y] = (0, 0, 0, 0)
+    crown = {(x, y) for y in range(H) for x in range(W) if kind(px[x, y]) == 'crown' and px[x, y][3] == 255}
+    def put(x, y, role):
+        if 0 <= x < W and 0 <= y < H and (x, y) not in crown: px[x, y] = P4[role] + (255,)
+    seed = h32(*map(ord, name))
+    rnd = lambda *a: h32(seed, *a) / 4294967296
+    wr = w0; x0 = int(round(cx - wr / 2))
+    ybase = H - 3                      # 줄기 몸 마지막 행(80px 그림의 77행) — 그 아래 2행은 뿌리 끝
+    ytop = max(0, ys - 7)              # 수관 속으로 들어간 윗부분까지(구멍 없게)
+    # 원기둥 명암 띠(왼쪽 위 빛): 폭 비율로 H | M | M | S | D
+    def band(u, w, y):
+        f = (u + 0.5) / w
+        if u == w - 1: return 'D'
+        if f < 0.34:                                                   # 빛 쪽: 바탕 M 에 H 덩이를 엇갈려(세로 줄 금지)
+            k = (y + 2 * u + seed % 5) % 7
+            return 'H' if (k < 3 and u >= (1 if w >= 7 else 0)) else 'M'
+        if f < 0.64: return 'M'
+        if f < 0.82: return 'S' if (y + u) % 5 else 'M'
+        return 'S'
+    # 껍질 덩이: 2~3px 엇갈린 무늬(세로로 이어지지 않게 행마다 위치를 옮긴다)
+    clumps = set()
+    for k in range(int((ybase - ytop) * wr / 9)):
+        cy = ytop + int(rnd(k, 1) * (ybase - ytop)); cxk = x0 + 1 + int(rnd(k, 2) * max(1, wr - 2))
+        L = 2 + int(rnd(k, 3) * 2)
+        horiz = rnd(k, 4) < 0.5
+        for t in range(L): clumps.add((cxk + (t if horiz else 0), cy + (0 if horiz else t) ) if horiz else (cxk + (t // 2), cy + t))
+    for y in range(ytop, ybase + 1):
+        # 줄기는 밑으로 1px 씩 두 번 벌어진다(아래 4행)
+        grow = 0 if y < ybase - 3 else (1 if y < ybase - 1 else 2)
+        xl, w = x0 - (grow + 1) // 2, wr + grow
+        for u in range(w):
+            x = xl + u; role = band(u, w, y)
+            if (x, y) in clumps:
+                role = {'H': 'M', 'M': 'S', 'S': 'D', 'D': 'D'}[role] if rnd(x, y, 5) < 0.75 else {'H': 'H', 'M': 'H', 'S': 'M', 'D': 'S'}[role]
+            # 수관 바로 밑 2행만 한 단 그늘(근흑 띠 아님)
+            if 0 <= y - (ys - 1) <= 1 and role == 'H': role = 'M'
+            put(x, y, role)
+    # 뿌리: 왼쪽·오른쪽은 원본처럼 땅을 기어가는 긴 뿌리(길이 나무마다), 가끔 앞 짧은 뿌리. 위 행 = 몸 색, 아래 행 = 그늘, 끝은 1px.
+    def root(xs, dirn, length, dy0, lit):
+        """줄기 밑동 옆에서 시작해 바깥·아래로 기어가는 뿌리. 처음 두 칸은 2px 두께(몸+그늘), 그 뒤 1px, 끝은 땅 쪽 한 칸."""
+        y = ybase - 1 + dy0; x = xs
+        for t in range(length):
+            if t in (1, length // 2 + 1) and y < H - 1: y += 1
+            thick = t < 2
+            put(x, y, ('H' if t == 0 else 'M') if lit else ('S' if t < length - 1 else 'D'))
+            if thick and y + 1 < H: put(x, y + 1, 'S' if lit else 'D')
+            x += dirn
+    wl = x0 - 2; wr_x = x0 + wr + 1
+    root(wl, -1, 4 + int(rnd(1) * 4), 0, True)
+    root(wr_x, 1, 5 + int(rnd(2) * 5), 0, False)
+    if rnd(3) < 0.6: root(wl, -1, 2 + int(rnd(4) * 2), 2, True)
+    if rnd(5) < 0.5: root(wr_x, 1, 2 + int(rnd(6) * 2), 2, False)
+    # 밑동 앞치마: 줄기 바로 밑 한 행은 몸 폭보다 1px 씩 넓은 단단한 갈색(원본처럼 뿌리 덩이가 땅을 덮는다)
+    for x in range(x0 - 2, x0 + wr + 2):
+        f = (x - (x0 - 2)) / max(1, wr + 3)
+        put(x, ybase + 1, 'M' if f < 0.55 else 'S' if x < x0 + wr + 1 else 'D')
+    # 앞 뿌리: 줄기 가운데 근처에서 아래로 1~2px
+    xm = x0 + int(wr * (0.35 + 0.3 * rnd(7)))
+    put(xm, ybase + 1, 'M'); put(xm + 1, ybase + 1, 'S'); put(xm, ybase + 2, 'S'); put(xm + 1, ybase + 2, 'D')
+    if rnd(8) < 0.6: put(xm, ybase + 3, 'D')
+    # 뿌리 사이 땅 그늘: 줄기 밑동 바깥 양옆의 빈 칸에만(줄기 속 아래는 갈색이 채운다)
+    for x in list(range(x0 - 4, x0 - 1)) + list(range(x0 + wr + 1, x0 + wr + 4)):
+        for y in (ybase + 1, ybase + 2):
+            if 0 <= x < W and y < H and px[x, y][3] == 0: px[x, y] = SHADOW + (100,)
     return im
 
 def cover(tile):
