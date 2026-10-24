@@ -205,7 +205,7 @@ export function applyFallenBattleRoles(project: Project): void {
   // 발렌: 1막 결전(사용자 지적 8). 체력을 올리고, 큰 기술은 한 차례 모은 뒤 쏜다(머리 위 예고 띠), 도깨비불을 두 번 부르고,
   // 체력 절반에서 장갑을 벗고 공격이 오른다. 수면 30%·기절 무효 — 상태 사슬로 묶어 두지 못한다(사용자 지적 2).
   const valen = find<EnemyRecord>(db.enemies, "enemy_fs_valen");
-  valen.stats = { ...valen.stats, maxHp: 980, attack: 88, defense: 70, mind: 92, agility: 46 };
+  valen.stats = { ...valen.stats, maxHp: 1600, attack: 108, defense: 70, mind: 92, agility: 46 };
   rates("enemy_fs_valen", {}, { state_sleep: "D", state_stop: "E", state_paralysis: "D", state_poison: "C", state_defense_down: "C" });
   tune("skill_fs_judgment", {
     elementId: "holy", power: 120, chargeTurns: 1,
