@@ -2,7 +2,7 @@
  * 구운 폴른 스타(dist/demos/chrono-bell.{project,play}.json)를 다시 읽어 숲 여섯 맵을 확인한다 — 재로드 검증.
  *   node node_modules/vite-node/dist/cli.mjs --script scripts/content/fallen-forest-verify.mts [dist/demos]
  * 확인: 맵 존재·이름, 숲 맵 사이 모든 이동의 목적지가 맵 안·걸을 수 있는 칸이고 짝 문이 있다, 출구끼리 걸어서 이어진다,
- * 상자, 조우, 떠도는 짐승의 추격(부채꼴 시야·「!」·복귀).
+ * 모든 조사 이벤트(상자·숨은 물건·회복 세이브·표지)에 닿음, 조우, 떠도는 짐승의 추격(부채꼴 시야·「!」·복귀)·트룹.
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -45,15 +45,26 @@ for (const file of ["chrono-bell.project.json", "chrono-bell.play.json"]) {
     if (first) {
       const r = reach(p, map, { x: first.e.x, y: first.e.y });
       for (const { e } of doors) if (!r.has(e.y * map.width + e.x)) fail(`${id} 문 (${e.x},${e.y}) 에 못 닿음`);
-      for (const c of map.events.filter((ev) => /_chest$/.test(ev.id))) {
-        const near = [[0, 1], [0, -1], [1, 0], [-1, 0]].some(([dx, dy]) => r.has((c.y + dy!) * map.width + c.x + dx!));
-        if (!near) fail(`${id} 상자 (${c.x},${c.y}) 에 못 닿음`);
+      // 조사·상자·숨은 물건·세이브·사람 — 모든 조사 이벤트에 닿는가(그 칸이나 이웃 칸).
+      for (const c of map.events.filter((ev) => (ev.pages ?? []).some((pg) => pg.trigger.kind === "action"))) {
+        const near = [[0, 0], [0, 1], [0, -1], [1, 0], [-1, 0]].some(([dx, dy]) => r.has((c.y + dy!) * map.width + c.x + dx!));
+        if (!near) fail(`${id} 조사 이벤트 ${c.id} (${c.x},${c.y}) 에 못 닿음`);
       }
+      const hidden = map.events.filter((ev) => /_hidden$/.test(ev.id));
+      if (hidden.length) console.log(`  숨은 물건 ${hidden.map((h) => `${h.id}(${h.x},${h.y})`).join(" ")}`);
+      const rest = map.events.filter((ev) => JSON.stringify(ev.pages ?? []).includes('"recoverAll"') && JSON.stringify(ev.pages ?? []).includes('"openSaveMenu"'));
+      if (rest.length) console.log(`  회복 세이브 ${rest.map((h) => `${h.id}(${h.x},${h.y})`).join(" ")}`);
+      const foeTroops = foes.map((f) => JSON.stringify(f.pages ?? []).match(/"troopId":"([^"]+)"/)?.[1]);
+      console.log(`  짐승 트룹 ${foeTroops.join(" ")} · 조우 ${(map.encounterTable ?? []).map((t) => t.troopId).join(" ")}`);
     }
   }
   const hubDoor = transfers(p.maps.fs_hub!).filter(({ t }) => FOREST.includes(t.mapId));
   console.log(`fs_hub → ${hubDoor.map(({ t }) => `${t.mapId}(${t.x},${t.y},${t.direction})`).join(" ")}`);
-  if (!hubDoor.length || hubDoor.some(({ t }) => t.mapId !== "fs_forest_edge")) fail("왕도 동문이 어귀로 가지 않는다");
+  if (!hubDoor.length || hubDoor.some(({ t }) => t.mapId !== "fs_forest_edge")) fail("왕도 성문이 어귀로 가지 않는다");
+  const hiddenAll = FOREST.flatMap((id) => (p.maps[id]?.events ?? []).filter((e) => /_hidden$/.test(e.id)));
+  if (hiddenAll.length < 2) fail(`숨은 물건 ${hiddenAll.length}개(2개 이상이어야)`);
+  const restAll = FOREST.flatMap((id) => (p.maps[id]?.events ?? []).filter((e) => JSON.stringify(e.pages ?? []).includes('"recoverAll"')));
+  if (!restAll.length) fail("숲에 회복 쉼터가 없다");
   const allFoes = Object.values(p.maps).flatMap((m) => m.events.filter((e) => /_foe\d+$/.test(e.id)).map((e) => `${m.id}:${e.id}:${(e.pages ?? [])[0]?.movement.type}`));
   console.log(`all foes: ${allFoes.join(" ")}`);
 }
