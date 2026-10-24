@@ -345,7 +345,7 @@ function fillSlab(b: Board, x0: number, y0: number, w: number, h: number): void 
  * 맵 단위 «판 짜임»: 가로 줄눈 줄이 y 위로 2~4칸마다, 그 띠마다 세로 줄눈이 2~4칸마다(띠마다 어긋남) — 2~4칸 네모 판.
  * 판마다 바탕 단(slab-ground 8×24 의 단 0·1·2)을 고르고, 위 평면층에 칸 덧그림(줄눈 · 금 · 패임 · 풀 · 흙 쪽 부서짐 · 길 쪽 연석)을 얹는다.
  */
-const SLAB_DECORS = ["plain0", "plain1", "crack0", "crack1", "crack2", "crack3", "spall0", "spall1", "weed0", "weed1", "chip", "heave", "stain0", "stain1", "patch", "weed2", "weed3", "spall2", "stain2"];
+const SLAB_DECORS = ["plain0", "plain1", "crack0", "crack1", "crack2", "crack3", "spall0", "spall1", "weed0", "weed1", "chip", "heave", "stain0", "stain1", "patch", "weed2", "weed3", "spall2", "stain2", "spall3", "spall4"];
 function slabDecorOk(d: string, js: number): boolean {
   if (d.startsWith("spall") || d.startsWith("weed")) return js > 0;
   if (d === "chip") return js === 3;
@@ -389,17 +389,24 @@ class SlabLayout {
     return r < 2 ? 0 : r < 8 ? 1 : 2;
   }
 }
-const SLAB_DECOR_N: Record<string, number> = { stain: 3, crack: 4, spall: 3, weed: 4 };
-/** 칸 표시 — wl_slab.decor_of 와 같다(종류는 해시, 변형 번호는 칸 자리로 칠해 같은 줄·열 두 칸 안에서 늘 다르다). */
+const SLAB_DECOR_N: Record<string, number> = { stain: 3, crack: 4, spall: 5, weed: 4 };
+function slabFam(x: number, y: number, seed: number): string {
+  const r = wlH2(x * 7 + 3, y * 11 + 5, seed + 431) % 100;
+  return r < 36 ? "plain" : r < 58 ? "stain" : r < 78 ? "crack" : r < 84 ? "spall" : r < 93 ? "weed" : "end";
+}
+/** 칸 표시 — wl_slab.decor_of 와 같다: 종류는 해시, 패임·풀은 앞선 가까운 칸에 같은 종류가 있으면 맨 판, 변형 번호는 칸 자리로 칠한다. */
 function slabDecorOf(x: number, y: number, js: number, seed: number): string {
-  const r = wlH2(x * 7 + 3, y * 11 + 5, seed + 431) % 100, q = wlH2(x * 13 + 1, y * 5 + 9, seed + 433);
+  const q = wlH2(x * 13 + 1, y * 5 + 9, seed + 433), fam = slabFam(x, y, seed);
   let d: string;
-  if (r < 36) d = q % 4 === 0 ? "plain1" : "plain0";
-  else if (r < 93) {
-    const fam = r < 56 ? "stain" : r < 74 ? "crack" : r < 84 ? "spall" : "weed";
-    const v = SLAB_DECOR_N[fam] === 4 ? (((x + 3 * y + seed) % 4) + 4) % 4 : (((x + y + seed) % 3) + 3) % 3;
+  if (fam === "plain") d = q % 4 === 0 ? "plain1" : "plain0";
+  else if (fam === "end") d = js === 3 ? "chip" : "heave";
+  else {
+    if (fam === "spall") for (let dy = -3; dy <= 0; dy++) for (let dx = -3; dx <= 3; dx++) if ((dy < 0 || dx < 0) && slabFam(x + dx, y + dy, seed) === "spall") return "plain0";
+    if (fam === "weed") for (const k of [1, 2, 3]) if (slabFam(x - k, y, seed) === "weed" || slabFam(x, y - k, seed) === "weed") return "plain0";
+    const n = SLAB_DECOR_N[fam]!, m = (a: number, k: number) => ((a % k) + k) % k;
+    const v = n === 5 ? m(x + 2 * y + seed, 5) : n === 4 ? m(x + 3 * y + seed, 4) : m(x + y + seed, 3);
     d = `${fam}${v}`;
-  } else d = js === 3 ? "chip" : "heave";
+  }
   return slabDecorOk(d, js) ? d : "plain0";
 }
 function slabJointFinish(b: Board, joints: StructureKitDef, ground: StructureKitDef, road: readonly boolean[]): void {

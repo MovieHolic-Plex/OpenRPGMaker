@@ -27,7 +27,7 @@ J_COL, J_DEEP = S['slate'][1], S['slate'][0]
 J_DIRT = (S['bark'][1], S['bark'][2])
 CRACK, CRACK_END = S['slate'][2], GR[1]
 DIRT = MAT['dirt']
-DECORS = ('plain0', 'plain1', 'crack0', 'crack1', 'crack2', 'crack3', 'spall0', 'spall1', 'weed0', 'weed1', 'chip', 'heave', 'stain0', 'stain1', 'patch', 'weed2', 'weed3', 'spall2', 'stain2')
+DECORS = ('plain0', 'plain1', 'crack0', 'crack1', 'crack2', 'crack3', 'spall0', 'spall1', 'weed0', 'weed1', 'chip', 'heave', 'stain0', 'stain1', 'patch', 'weed2', 'weed3', 'spall2', 'stain2', 'spall3', 'spall4')
 
 
 def decor_ok(d, js):
@@ -146,21 +146,29 @@ class Layout:
         return 0 if r < 2 else 1 if r < 8 else 2
 
 
-DECOR_N = {'stain': 3, 'crack': 4, 'spall': 3, 'weed': 4}
+DECOR_N = {'stain': 3, 'crack': 4, 'spall': 5, 'weed': 4}
+
+
+def _fam(x, y, seed):
+    r = h2(x * 7 + 3, y * 11 + 5, seed + 431) % 100
+    return 'plain' if r < 36 else 'stain' if r < 58 else 'crack' if r < 78 else 'spall' if r < 84 else 'weed' if r < 93 else 'end'
 
 
 def decor_of(x, y, js, seed):
-    """칸 표시. 종류는 해시, 변형 번호는 칸 자리로 칠한다(4종: (x + 3y + s) mod 4, 3종: (x + y + s) mod 3) —
-    같은 줄·같은 열 두 칸 안의 같은 종류 표시는 늘 다른 그림이다(r60b 검수: 같은 풀 둘이 32px 간격으로 섰다). 표시 유무가 해시라 주기는 보이지 않는다."""
-    r = h2(x * 7 + 3, y * 11 + 5, seed + 431) % 100
+    """칸 표시. 종류는 해시; 패임은 앞선(위·왼) 3칸 안에 패임이, 풀은 같은 줄·열 앞선 3칸 안에 풀이 있으면 맨 판으로 둔다(r60b 검수: 같은 자국이 짝지어 섰다).
+    변형 번호는 칸 자리로 칠한다(같은 줄·열 가까운 칸끼리 늘 다른 그림). 이웃 판정은 해시 종류만 보므로 연쇄가 없다."""
     q = h2(x * 13 + 1, y * 5 + 9, seed + 433)
-    if r < 36: d = 'plain1' if q % 4 == 0 else 'plain0'
-    elif r < 93:
-        fam = 'stain' if r < 56 else 'crack' if r < 74 else 'spall' if r < 84 else 'weed'
+    fam = _fam(x, y, seed)
+    if fam == 'plain': d = 'plain1' if q % 4 == 0 else 'plain0'
+    elif fam == 'end': d = 'chip' if js == 3 else 'heave'
+    else:
+        if fam == 'spall' and any(_fam(x + dx, y + dy, seed) == 'spall' for dy in range(-3, 1) for dx in range(-3, 4) if dy < 0 or dx < 0):
+            return 'plain0'
+        if fam == 'weed' and any(_fam(x - k, y, seed) == 'weed' or _fam(x, y - k, seed) == 'weed' for k in (1, 2, 3)):
+            return 'plain0'
         n = DECOR_N[fam]
-        v = (x + 3 * y + seed) % 4 if n == 4 else (x + y + seed) % 3
+        v = (x + 2 * y + seed) % 5 if n == 5 else (x + 3 * y + seed) % 4 if n == 4 else (x + y + seed) % 3
         d = '%s%d' % (fam, v)
-    else: d = 'chip' if js == 3 else 'heave'
     return d if decor_ok(d, js) else 'plain0'
 
 
@@ -276,32 +284,43 @@ def _crack(c, J, seed):
         c.P(p[0], p[1], GR[1] if k in (0, m - 1) else GR[0])
 
 
-def _spall(c, J, js, seed):
-    """줄눈을 따라 떨어져 나간 자리(7~10×4~6, 들쭉날쭉 덩이): 안쪽 윗벽(그늘, 짙은 회청 → 판 그늘) · 바닥 흙에 회색 자갈 알 ·
-    아래·오른 테는 깨진 밝은 판 끝, 바깥 둘레 몇 화소는 금 간 판(한 단 어둠). 3/4: 위쪽 벽이 보이고 아래 벽은 테만."""
+SPALL_SHAPES = (                       # 줄눈에 붙어 떨어져 나간 덩이 윤곽(행마다 (시작, 끝) — 줄눈 쪽이 첫 행). 다섯 모양.
+    ((0, 9), (0, 10), (1, 10), (1, 8), (2, 7), (3, 5)),
+    ((0, 7), (0, 8), (0, 8), (1, 6), (2, 6)),
+    ((0, 11), (1, 11), (1, 9), (3, 9), (4, 7)),
+    ((0, 6), (0, 7), (1, 8), (1, 8), (2, 7), (2, 5), (3, 4)),
+    ((0, 8), (1, 9), (0, 9), (2, 9), (2, 6)),
+)
+
+
+def _spall(c, J, js, seed, var=0):
+    """줄눈을 따라 떨어져 나간 콘크리트 덩이 자리. 모양 다섯(var), 윤곽은 들쭉날쭉 계단.
+    3/4 시점: 북·서쪽 안벽이 보인다(가장 어두운 판 그늘 GR0 한 줄, 그 아래 GR1) · 바닥 = 드러난 굵은 골재(GR2·GR1·GR3 알) ·
+    남·동쪽 테는 깨진 판 끝이 빛을 받아 밝다(GR6). 흙 알갱이·짙은 회청 띠 없음 — 벌레·리벳으로 읽혔다(검수)."""
     r = h2(seed, 5, 43)
+    rows = SPALL_SHAPES[var % 5]
     along_h = js & 1 and (not js & 2 or r % 2)
-    w, hh = 9 + (r >> 4) % 3, 5 + (r >> 6) % 2
-    if along_h: x0, y0 = 3 + r % (12 - w + 1 if w < 12 else 1), 2
-    else: x0, y0 = 2, 4 + r % (12 - hh)
-    hole = set()
-    for k in range(4 + (r >> 9) % 2):                      # 둥근 덩이 네댓 개를 합친 패임 — 네모·뚜껑 모양이 아니다
-        q = h2(k, r, seed + 2)
-        bx, by = x0 + q % w, y0 + 1 + (q >> 4) % max(1, hh - 1)
-        rad = 2.4 + ((q >> 8) % 3) * 0.4
-        for y in range(int(by - rad) - 1, int(by + rad) + 2):
-            for x in range(int(bx - rad) - 1, int(bx + rad) + 2):
-                if (x - bx) ** 2 + (y - by) ** 2 <= rad * rad and _in(x, y, 1): hole.add((x, y))
+    w = max(e for _, e in rows)
+    if along_h:
+        x0, y0 = 3 + r % max(1, 13 - w), 2
+        hole = {(x0 + i, y0 + j) for j, (a, e) in enumerate(rows) for i in range(a, e)}
+    else:
+        x0, y0 = 2, 4 + r % max(1, 12 - w)
+        hole = {(x0 + j, y0 + i) for j, (a, e) in enumerate(rows) for i in range(a, e)}
+    if (r >> 5) % 2:                                       # 좌우(가로 줄눈) · 위아래(세로 줄눈) 뒤집기
+        if along_h: hole = {(2 * x0 + w - 1 - x, y) for x, y in hole}
+        else: hole = {(x, 2 * y0 + w - 1 - y) for x, y in hole}
+    hole = {p for p in hole if _in(*p, 1)}
     for (x, y) in hole:
-        up = (x, y - 1) not in hole
-        up2 = (x, y - 2) not in hole
-        if up: c.P(x, y, J_DEEP if (x, y - 1) in J or h2(x, y, seed + 5) % 3 == 0 else S['slate'][2])
-        elif up2: c.P(x, y, GR[0])
-        else:                                              # 패인 바닥 = 드러난 굵은 골재(회색 알), 흙은 드문 알갱이만
-            q = h2(x, y, seed + 3) % 10
-            c.P(x, y, GR[3] if q < 2 else GR[2] if q < 4 else GR[0] if q < 6 else DIRT[3] if q == 6 else GR[1])
-    for (x, y) in hole:                                    # 아래 테만 밝게(깨진 판 끝이 빛을 받는다) — 옆 테·외톨이 화소는 다리처럼 읽혀 뺐다
-        if (x, y + 1) not in hole and (x, y + 1) not in J and _in(x, y + 1, 1): c.P(x, y + 1, GR[6])
+        n_out, w_out = (x, y - 1) not in hole, (x - 1, y) not in hole
+        if n_out or w_out: c.P(x, y, GR[0])
+        elif (x, y - 2) not in hole or (x - 2, y) not in hole: c.P(x, y, GR[1])
+        else:
+            q = h2(x, y, seed + 3) % 6
+            c.P(x, y, GR[3] if q == 0 else GR[1] if q == 1 else GR[2])
+    for (x, y) in hole:
+        for p, col in (((x, y + 1), GR[6]), ((x + 1, y), GR[5])):
+            if p not in hole and p not in J and _in(*p, 1): c.P(p[0], p[1], col)
 
 
 def _weed(c, J, js, seed, var=0):
@@ -413,7 +432,7 @@ def draw_tile(c, ox, oy, spec):
         seed = 9001 + js * 101 + DECORS.index(d) * 13
         J = _joints(sub, js, d == 'plain1', seed)
         if d.startswith('crack'): _crack(sub, J, seed + int(d[-1]) * 7)
-        elif d.startswith('spall'): _spall(sub, J, js, seed + int(d[-1]) * 11)
+        elif d.startswith('spall'): _spall(sub, J, js, seed + int(d[-1]) * 11, int(d[-1]))
         elif d.startswith('weed'): _weed(sub, J, js, seed + int(d[-1]) * 5, int(d[-1]))
         elif d == 'chip': _chip(sub, seed)
         elif d == 'heave': _heave(sub, seed)
@@ -436,7 +455,7 @@ def draw_tile(c, ox, oy, spec):
        group='ground', tags=['콘크리트', '줄눈', '덧그림', '보도', '광장'],
        desc='깨진 콘크리트 판의 줄눈·표시·가장자리 덧그림(위 평면층). 붓으로 찍지 않는다 — 구성기가 맵 판 짜임(가로 줄눈 2~4칸마다, 띠마다 세로 줄눈 2~4칸)과 '
             '네 이웃 종류(판·흙·길)로 칸을 고른다. 아래층은 slab-ground.',
-       sample=lambda f=0: board_sample(SAMPLE_PLAN_B, seed=195))
+       sample=lambda f=0: board_sample(SAMPLE_PLAN_B, seed=92))
 def _joint_sheet(c):
     for i, spec in enumerate(ORDER): draw_tile(c, (i % COLS) * 16, (i // COLS) * 16, spec)
 
@@ -456,7 +475,7 @@ SAMPLE_PLAN = [
     'RRRRRRRRRRRRRRRRRRRRRR',
     'RRRRRRRRRRRRRRRRRRRRRR',
     '######################',
-    '...#........#.........',
+    '......................',
 ]
 SAMPLE_PLAN_B = [
     '......................',
