@@ -179,6 +179,38 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     const phasePages = changed.some((ev) => ev.pages.some((pg) => { const g = obj(pg.graphic); return !!(g && (g.sprite || g.appearanceId)); }) && ev.pages.some((pg) => flatConditions(pg.conditions).some((c) => c.kind === "timePhase")));
     if (!scheduled && !phasePages) problems.push("[게임 검사 시간] 요청에 시간대마다 자리·행동이 바뀌는 사람이 있는데 시간표(set_npc_schedule)도 시간대 페이지({kind:'timePhase'} 조건)도 없다 — configure_time_system 을 켜고 set_npc_schedule 로 낮·밤 자리를 정한다.");
   }
+  // 1f) 새로 지은 맵에 들어가는 길: 다른 맵의 이벤트·연결 어디에도 그 맵 id 가 없으면 플레이어가 못 간다(집 실내·필드가 고립됐다).
+  {
+    const newMaps = Object.keys(after.maps).filter((id) => !before.maps[id] && id !== after.startMapId);
+    if (newMaps.length) {
+      const rest = after as unknown as Obj;
+      for (const id of newMaps) {
+        const others = JSON.stringify({ maps: Object.values(after.maps).filter((m) => m.id !== id).map((m) => m.events), common: after.commonEvents, conn: rest.mapConnections ?? rest.connections ?? null, world: rest.worldmap ?? null });
+        if (!others.includes(`"${id}"`)) problems.push(`[게임 검사 이동] 새 맵 「${after.maps[id]!.name ?? id}」(${id}) 로 들어가는 문·이동이 어느 맵에도 없다 — 플레이어가 갈 수 없다. create_transfer_pair 로 문(집 문·마을 가장자리)과 잇는다.`);
+      }
+    }
+  }
+  // 1g) 한 번만 주는 보상: 말 걸 때마다 물건·돈·동료가 또 생긴다(개 동행 셋, 회상 반복 — 2026-10-24 스위트).
+  for (const ev of changed) {
+    ev.pages.forEach((pg, pi) => {
+      if (obj(pg.trigger)?.kind !== "action" && obj(pg.trigger)?.kind !== "playerTouch" && obj(pg.trigger)?.kind !== "touch") return;
+      const rows: { cmd: Obj; guards: readonly Obj[] }[] = [];
+      walkCommands(pg.commands, (cmd, guards) => rows.push({ cmd, guards }));
+      const grants = rows.filter((r) => (r.cmd.kind === "addFollower") || (r.cmd.kind === "changeParty" && r.cmd.action === "add") || ((r.cmd.kind === "changeItem" || r.cmd.kind === "changeGold") && r.cmd.op !== "-=" && !(Number(r.cmd.amount) < 0)));
+      if (!grants.length) return;
+      // 돈을 내고 사는 거래(같은 페이지에 돈·물건을 빼는 명령)와 상점·여관은 반복이 맞다.
+      if (rows.some((r) => (r.cmd.kind === "changeGold" || r.cmd.kind === "changeItem") && (r.cmd.op === "-=" || Number(r.cmd.amount) < 0)) || rows.some((r) => r.cmd.kind === "shop" || r.cmd.kind === "inn")) return;
+      const setsFlag = rows.some((r) => ["setSelfSwitch", "setSwitch", "setVariable", "removeEvent", "eraseEvent"].includes(String(r.cmd.kind)) || (r.cmd.kind === "m2Command" && /erase|remove/iu.test(String(r.cmd.commandId))));
+      const ungated = grants.filter((g) => !g.guards.length);
+      if (!setsFlag && ungated.length) problems.push(`[게임 검사 반복] 「${ev.name}」(${ev.id}) 페이지 ${pi + 1}: ${ungated.map((g) => String(g.cmd.kind)).slice(0, 3).join("·")} 를 주는데 스위치·셀프 스위치를 안 켜서 말 걸 때마다 또 준다 — 한 번만이면 셀프 스위치를 켜고 그 조건의 「이미 받았다」 페이지를 둔다.`);
+    });
+  }
+  // 1h) 무작위 조우: 「랜덤 인카운터·풀숲에서 마주치는」 요청인데 조우표가 안 바뀌었다(보이는 적 이벤트만 놓았다).
+  if (/랜덤|무작위|인카운터|마주치|조우|encounter/iu.test(task)) {
+    const enc = (m: unknown) => { const o = m as Obj | undefined; const v = o?.encounterTable ?? o?.encounters ?? o?.encounter; return Array.isArray(v) && v.length ? JSON.stringify(v) : ""; };
+    const changedEnc = Object.values(after.maps).some((m) => enc(m) && enc(m) !== enc(before.maps[m.id]));
+    if (!changedEnc) problems.push("[게임 검사 조우] 요청에 무작위 조우가 있는데 어느 맵의 조우표도 바뀌지 않았다 — set_encounter_table 로 그 맵에 적 그룹·빈도를 단다(보이는 적 이벤트는 무작위 조우가 아니다).");
+  }
   // 2) 엔딩: 엔딩 정의 + triggerEnding.
   if (ENDING_WORDS.test(task)) {
     const newEndings = (after.endings ?? []).filter((e) => !(before.endings ?? []).some((b) => b.id === e.id && JSON.stringify(b) === JSON.stringify(e)));
