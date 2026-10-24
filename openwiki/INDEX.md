@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **183쪽 / 6898KB / 약 2,021,016 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **183쪽 / 6902KB / 약 2,022,243 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -29,7 +29,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-pre-edit-routing.md` | 189KB | 72KB ⚠상한 초과 — 절을 더 쪼개라 | 1171 | ~55,451 |
 | `openwiki/editor-validation.md` | 53KB | 8KB | 388 | ~14,789 |
 | `openwiki/editor-workflows-misc.md` | 90KB | 33KB | 635 | ~25,270 |
-| `openwiki/editor-workshop.md` | 61KB | 15KB | 237 | ~18,197 |
+| `openwiki/editor-workshop.md` | 63KB | 15KB | 253 | ~18,806 |
 | `openwiki/harnesses/assistant-capability.md` | 59KB | 8KB | 380 | ~18,190 |
 | `openwiki/harnesses/interview-scene-bank.md` | 56KB | 38KB | 197 | ~17,387 |
 | `openwiki/harnesses/monster-collect-species.md` | 58KB | 18KB | 332 | ~17,539 |
@@ -79,7 +79,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/agent-worktrees.md` | 1 | `scripts/gen-combined-town-chipset-report.mts` |
 | `openwiki/ai-workflow.md` | 10 | `.omo/evidence/ai-assistant-failure-modes.md`, `20260709000000_ai_activity_logs.sql`, `docs/2026-07-10-tool-calling-architecture-review.md`, `docs/tool-catalog.md`, `latest.json`, `src/ai/plannerSkip.ts`, `test/authorVillageScopeGate.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/architecture.md` | 10 | `.lazy.ts`, `.mjs`, `app.cjs`, `bridge.js`, `dist-electron/main.cjs`, `dist-electron/project-core.cjs`, `dist/start-screen.html`, `editor-demo-load.mjs`, `player.js`, `project.json` |
-| `openwiki/asset-store.md` | 12 | `DATA/store-uploads.json`, `OpenRPGMaker-store/scripts/storeCli.ts`, `deploy/README.md`, `installed.json`, `loading.json`, `migrations/012_games.sql`, `packs/pNNN.json`, `preload-files.json`, `preload-sw.js`, `scripts/check-contract.mjs`, `scripts/games-host.mjs`, `src/games.ts` |
+| `openwiki/asset-store.md` | 15 | `DATA/store-uploads.json`, `OpenRPGMaker-store/scripts/storeCli.ts`, `deploy/README.md`, `installed.json`, `loading.json`, `migrations/012_games.sql`, `migrations/016_game_saves.sql`, `packs/pNNN.json`, `preload-files.json`, `preload-sw.js`, `public/cloudsave.js`, `scripts/check-contract.mjs`, `scripts/games-host.mjs`, `src/gameSaves.ts`, `src/games.ts` |
 | `openwiki/atlas-biome-interior.md` | 8 | `.loop.json`, `.loop.png`, `interior-merged-palette.html`, `public/assets/atlas-biomes/jungle-chipset.png`, `public/assets/atlas-interior/dungeon-chipset.png`, `scripts/content/atlas-dungeon/split-dungeon.mjs`, `src/assets/atlasBiomeDungeonTileset.json`, `verify-shots/interior-bake-4/new-objects.png` |
 | `openwiki/authoring-play-presets.md` | 1 | `catalog-96.json` |
 | `openwiki/autotiles.md` | 13 | `install-pixel-art-world-shared-host.mjs`, `pixelArtWorldAutotiles.ts`, `prepare-pixel-art-world-xp-library.mjs`, `publish-pixel-art-world-xp-library.mjs`, `reports/pr617-621-integration.md`, `src/assets/tiboRecoveredTileset.json`, `src/project/defaults/iceGrandPlain64.ts`, `src/project/defaults/tallGrassArrange.ts`, `test/iceGrandPlain64.test.ts`, `test/placeConceptRender.test.ts`, `test/villageBuilder.test.ts`, `tiboRecovery.test.ts`, `wildRouteForest.ts` |
@@ -300,7 +300,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/asset-store.md` — 26KB · 220줄 · ~7,632 토큰 · 깨진 줄 1
+### `openwiki/asset-store.md` — 28KB · 233줄 · ~8,250 토큰 · 깨진 줄 1
 
 - `L6` 어디에 무엇이 있나
 - `L25` 계약 동기화 절차
@@ -1384,20 +1384,21 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L17` Quick routing
 - `L25` For AI agents
 
-### `openwiki/editor-workshop.md` — 61KB · 237줄 · ~18,197 토큰 · 통째읽기 잘림
+### `openwiki/editor-workshop.md` — 63KB · 253줄 · ~18,806 토큰 · 통째읽기 잘림
 
 - `L50` 한 번에 만들기 — 「딸깍」 공방 (2026-10-23)
   - `L72` 캐릭터 = 호스트가 고정판 char-gen 을 띄운다
-  - `L83` 지형 = 빠르게(기본) 또는 새로 그리기(「자세히」)
-  - `L98` 물건 — 첫 결과 시간 줄이기
-  - `L106` 실화면 시험
-  - `L119` 2차 (2026-10-23): 3/4 관문 배선 · 물건 속도 · 작은 것
-- `L143` 공방 실행기(물건·가구 카드 안)
-- `L157` 칩셋에 굽기 (2단계, 2026-10-07)
-- `L169` 새 기물은 object-gen 흐름 그대로 그린다 (2026-10-21)
-- `L184` 새 기물 그리기 품질 — 참고 그림 단계 · 크기·윗면 · 1배 읽힘 · 3/4 관문 조언 (2026-10-21)
-- `L207` 작업 줄 — 여러 개를 함께 그리기 (2026-10-21)
-- `L225` 생성기 저장소 고정 — `npm run gen-kits:sync` (2026-10-21)
+  - `L83` 캐릭터 · 사진으로 만들기 (2026-10-23)
+  - `L99` 지형 = 빠르게(기본) 또는 새로 그리기(「자세히」)
+  - `L114` 물건 — 첫 결과 시간 줄이기
+  - `L122` 실화면 시험
+  - `L135` 2차 (2026-10-23): 3/4 관문 배선 · 물건 속도 · 작은 것
+- `L159` 공방 실행기(물건·가구 카드 안)
+- `L173` 칩셋에 굽기 (2단계, 2026-10-07)
+- `L185` 새 기물은 object-gen 흐름 그대로 그린다 (2026-10-21)
+- `L200` 새 기물 그리기 품질 — 참고 그림 단계 · 크기·윗면 · 1배 읽힘 · 3/4 관문 조언 (2026-10-21)
+- `L223` 작업 줄 — 여러 개를 함께 그리기 (2026-10-21)
+- `L241` 생성기 저장소 고정 — `npm run gen-kits:sync` (2026-10-21)
 
 ### `openwiki/emerald-fields.md` — 23KB · 208줄 · ~7,314 토큰
 

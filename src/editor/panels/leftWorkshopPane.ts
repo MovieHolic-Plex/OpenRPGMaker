@@ -126,7 +126,11 @@ export function createLeftWorkshopPane(): { root: HTMLElement; show(): void; dis
     const importGen = kind === "character" ? "char-gen" : kind === "terrain" ? "tile-gen" : "object-gen";
     root.append(el("div", {
       class: "left-workshop-actions",
-      children: [button("만든 묶음 가져오기", `workshop-gen-import-${importGen}`, () => openGen(importGen))],
+      // 캐릭터 탭: 사진 한 장으로 후보를 만들어 고르는 길(genWorkspace photoStep) — 같은 캐릭터 창을 연다.
+      children: [
+        ...(kind === "character" ? [button("사진으로 만들기", "workshop-gen-photo-open", () => openGen("char-gen"))] : []),
+        button("만든 묶음 가져오기", `workshop-gen-import-${importGen}`, () => openGen(importGen)),
+      ],
     }));
     const upcoming = WORKSHOP_GENERATORS.filter((g) => g.status === "next" || g.status === "soon");
     if (upcoming.length) {

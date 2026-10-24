@@ -72,7 +72,10 @@ export function openGenWorkspace(generator: LocalGenerator): void {
   if (generator === "char-gen") steps.push(requestStep());
   if (generator === "tile-gen") steps.push(terrainRequestStep());
   // 단계가 하나뿐이면 번호를 달지 않는다(순서가 없으니까)
-  steps.push(importStep(generator, steps.length ? steps.length + 1 : 0));
+  const importer = importStep(generator, steps.length ? steps.length + 1 : 0);
+  steps.push(importer.box);
+  // 사진으로 만들기는 부탁 글 길과 다른 길이라 번호 없이 맨 위에 둔다 — 고른 후보의 묶음은 가져오기 칸에 선다.
+  if (generator === "char-gen") steps.unshift(photoStep(importer.show));
 
   host.append(el("section", {
     class: "workshop workshop-gen",
@@ -276,7 +279,141 @@ function autotileCount(tilesetIds: readonly string[]): number {
   return tilesetIds.reduce((sum, id) => sum + (tilesets[id]?.autotileGroups?.length ?? 0), 0);
 }
 
-function importStep(generator: LocalGenerator, n: number): HTMLElement {
+/**
+ * char-gen 사진으로 만들기 — 사진 한 장 → 호스트가 고정판 char-gen `photo` 를 사용자 CLI 로 돌려 후보(걷기 GIF·검사)를 낸다 →
+ * 사람이 하나 고른다 → 호스트가 그 칩만 묶는다 → 가져오기 칸의 「이 게임에 넣기」. 새로 그리지 않고 RTP 머리·몸을 다시 칠한
+ * 종이 인형이다. 사진은 호스트 작업 폴더에만 있고 게임에는 들어가지 않는다.
+ */
+function photoStep(showPack: (pack: LocalPack) => void): HTMLElement {
+  const status = el("p", { class: "workshop-gen-status", attrs: { role: "status", "aria-live": "polite" }, dataset: { testid: "workshop-gen-photo-status" } });
+  const picks = el("div", { class: "workshop-photo-picks", dataset: { testid: "workshop-gen-photo-picks" } });
+  const thumb = el("img", { class: "workshop-photo-thumb", attrs: { alt: "고른 사진", hidden: "" } }) as HTMLImageElement;
+  const file = el("input", { attrs: { type: "file", accept: "image/jpeg,image/png,image/webp", hidden: "" }, dataset: { testid: "workshop-gen-photo-file" } }) as HTMLInputElement;
+  const name = el("input", { attrs: { type: "text", placeholder: "예: 빨간 가디건의 소녀", "aria-label": "캐릭터 이름" }, dataset: { testid: "workshop-gen-photo-name" } }) as HTMLInputElement;
+  let photo = "";
+  let jobId = "";
+  let polling = false;
+  const choose = el("button", { text: "사진 고르기", attrs: { type: "button" }, dataset: { testid: "workshop-gen-photo-choose" }, on: { click: () => file.click() } });
+  const start = el("button", { class: "workshop-primary", text: "후보 만들기", attrs: { type: "button", disabled: "" }, dataset: { testid: "workshop-gen-photo-start" } }) as HTMLButtonElement;
+  const setStatus = (text: string, kind: "" | "is-error" | "is-done" = ""): void => {
+    status.classList.remove("is-error", "is-done");
+    if (kind) status.classList.add(kind);
+    status.textContent = text;
+  };
+  file.addEventListener("change", () => {
+    const chosen = file.files?.[0];
+    file.value = "";
+    if (!chosen) return;
+    if (chosen.size > 12 * 1024 * 1024) { setStatus("사진이 너무 커요(12MB 까지).", "is-error"); return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      photo = String(reader.result ?? "");
+      thumb.src = photo;
+      thumb.hidden = false;
+      start.disabled = false;
+      clearChildren(picks);
+      setStatus("");
+    };
+    reader.onerror = () => setStatus("사진을 읽지 못했어요.", "is-error");
+    reader.readAsDataURL(chosen);
+  });
+
+  /** 호스트 작업을 기다린다 — 후보가 나오면(picking) 고르기, 묶음이 나오면(done) 가져오기 칸으로. */
+  const poll = async (): Promise<void> => {
+    if (polling) return;
+    polling = true;
+    const { hostGenStatus, packFromHost } = await import("./oneClick/hostGen");
+    try {
+      for (let wait = 2000; jobId; wait = Math.min(5000, wait + 500)) {
+        await new Promise((done) => setTimeout(done, wait));
+        if (!host || !jobId) return;
+        const st = await hostGenStatus(jobId);
+        if (st.state === "running") {
+          const left = st.expectMs && st.elapsedMs !== undefined ? Math.max(1, Math.round((st.expectMs - st.elapsedMs) / 60000)) : 0;
+          setStatus(st.stage === "packing" ? "고른 캐릭터를 묶는 중…" : left ? `사진에 맞는 머리·몸을 고르고 색을 칠하는 중… (약 ${left}분 남음)` : "사진에 맞는 머리·몸을 고르고 색을 칠하는 중…");
+          continue;
+        }
+        if (st.state === "picking" && st.photoCandidates) { showCandidates(st.photoCandidates); start.disabled = !photo; return; }
+        if (st.state === "done" && st.pack) {
+          const pack = await packFromHost(st.pack, "사진으로 만들기");
+          setStatus("묶었어요. 아래 「이 게임에 넣기」를 눌러 넣어요.", "is-done");
+          showPack(pack);
+          return;
+        }
+        setStatus(st.error ?? "만들지 못했어요. 다시 해 주세요.", "is-error");
+        start.disabled = !photo;
+        return;
+      }
+    } catch (error) {
+      setStatus(`만들지 못했어요: ${error instanceof Error ? error.message : String(error)}`, "is-error");
+      start.disabled = !photo;
+    } finally {
+      polling = false;
+    }
+  };
+
+  const showCandidates = (list: readonly import("./oneClick/hostGen").HostPhotoCandidate[]): void => {
+    clearChildren(picks);
+    setStatus(`후보 ${list.length}명이에요. 마음에 드는 하나를 골라 주세요. 눈이 자연스럽고 오류 없는 것이 앞에 있어요.`);
+    for (const c of list) {
+      const pick = el("button", {
+        class: "workshop-primary", text: "이 캐릭터로", attrs: { type: "button" }, dataset: { testid: "workshop-gen-photo-pick", rank: String(c.rank) },
+        on: {
+          click: () => {
+            for (const b of picks.querySelectorAll("button")) (b as HTMLButtonElement).disabled = true;
+            card.classList.add("is-picked");
+            setStatus("고른 캐릭터를 묶는 중…");
+            void import("./oneClick/hostGen").then(({ pickHostGen }) => pickHostGen(jobId, c.rank, name.value.trim() || t("사진 속 사람")))
+              .then(() => poll(), (error: unknown) => {
+                for (const b of picks.querySelectorAll("button")) (b as HTMLButtonElement).disabled = false;
+                card.classList.remove("is-picked");
+                setStatus(`고르지 못했어요: ${error instanceof Error ? error.message : String(error)}`, "is-error");
+              });
+          },
+        },
+      });
+      const badge = c.passed === null ? null
+        : el("span", { class: "workshop-chip" + (c.passed ? " is-ok" : " is-warn"), text: c.passed ? "검사 통과" : `오류 ${c.errors ?? 0}건` });
+      const card = el("figure", {
+        class: "workshop-photo-card", dataset: { testid: "workshop-gen-photo-card" },
+        children: [
+          el("span", { class: "workshop-photo-rank", text: String(c.rank) }),
+          el("img", { attrs: { src: c.gif, alt: `후보 ${c.rank}` } }),
+          el("figcaption", {
+            children: [
+              ...(badge ? [badge] : []),
+              ...(c.eyes !== null ? [el("span", { class: "workshop-item-meta", text: `눈 ${Math.round(c.eyes * 10) / 10}위` })] : []),
+              pick,
+            ],
+          }),
+        ],
+      });
+      picks.append(card);
+    }
+  };
+
+  start.addEventListener("click", () => {
+    if (!photo) return;
+    start.disabled = true;
+    clearChildren(picks);
+    setStatus("호스트에 보내는 중…");
+    void import("./oneClick/hostGen").then(({ startHostGen }) => startHostGen({ generator: "char-gen", mode: "photo", photo, text: name.value.trim() || t("사진 속 사람") }))
+      .then((id) => { jobId = id; return poll(); }, (error: unknown) => {
+        start.disabled = false;
+        setStatus(`시작하지 못했어요: ${error instanceof Error ? error.message : String(error)}`, "is-error");
+      });
+  });
+
+  return stepBox(0, "사진으로 만들기", [
+    el("p", { class: "workshop-item-meta", text: "사람 사진 한 장을 고르면, 내 컴퓨터의 AI 에이전트가 사진 속 사람에 맞는 머리·몸을 골라 색을 칠한 후보를 몇 명 만들어요. 그중 하나를 내가 골라요. 사진은 내 컴퓨터에만 있고 게임에는 들어가지 않아요." }),
+    el("div", { class: "workshop-form-row", children: [el("div", { class: "workshop-photo-pick-file", children: [choose, file, thumb] }), el("label", { class: "workshop-gen-grow", children: ["이름(선택)", name] })] }),
+    el("div", { class: "workshop-form-actions", children: [start] }),
+    status,
+    picks,
+  ], "workshop-gen-step-photo");
+}
+
+function importStep(generator: LocalGenerator, n: number): { box: HTMLElement; show: (pack: LocalPack) => void } {
   const status = el("p", { class: "workshop-gen-status", attrs: { role: "status", "aria-live": "polite" }, dataset: { testid: "workshop-gen-status" } });
   const result = el("div", { class: "workshop-gen-result", dataset: { testid: "workshop-gen-result" } });
   const picker = el("input", { attrs: { type: "file", multiple: "", webkitdirectory: "", hidden: "" }, dataset: { testid: "workshop-gen-folder" } }) as HTMLInputElement;
@@ -418,5 +555,6 @@ function importStep(generator: LocalGenerator, n: number): HTMLElement {
     },
   });
 
-  return stepBox(n, "다 만든 묶음 가져오기", [drop, picker, status, result], "workshop-gen-step-import");
+  const box = stepBox(n, "다 만든 묶음 가져오기", [drop, picker, status, result], "workshop-gen-step-import");
+  return { box, show: (pack) => { status.classList.remove("is-error", "is-done"); status.textContent = ""; show(pack); box.scrollIntoView({ block: "nearest" }); } };
 }

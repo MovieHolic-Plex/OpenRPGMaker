@@ -13,11 +13,28 @@ export interface HostGenStart {
   readonly count?: number;
   readonly mode?: string;
   readonly tileset?: { readonly png: string; readonly refs: readonly (readonly [number, number])[] };
+  /** char-gen mode "photo": 사진(data URL, JPG·PNG·WEBP). 사진은 호스트 작업 폴더에만 있고 묶음에는 들어가지 않는다. */
+  readonly photo?: string;
+}
+
+/** 사진으로 만든 후보 하나(호스트 state "picking") — 사람이 고른다. */
+export interface HostPhotoCandidate {
+  readonly rank: number;
+  readonly head: string;
+  readonly body: string;
+  readonly fit: number;
+  /** 조립 오류 검사 통과(검사를 안 했으면 null) */
+  readonly passed: boolean | null;
+  readonly errors: number | null;
+  /** 눈 순위(1 = 가장 낫다) */
+  readonly eyes: number | null;
+  /** 네 방향 걷기 GIF(data URL) */
+  readonly gif: string;
 }
 
 export interface HostGenStatus {
   readonly ok: boolean;
-  readonly state: "running" | "done" | "failed" | "cancelled" | "missing";
+  readonly state: "running" | "picking" | "done" | "failed" | "cancelled" | "missing";
   readonly stage?: string;
   readonly engine?: string;
   readonly progress?: number;
@@ -33,6 +50,7 @@ export interface HostGenStatus {
   readonly made?: number | null;
   readonly asked?: number | null;
   readonly pack?: { readonly manifest: StorePackManifest; readonly blobs: Readonly<Record<string, string>> };
+  readonly photoCandidates?: readonly HostPhotoCandidate[];
 }
 
 async function call<T>(method: "GET" | "POST", path: string, body?: unknown): Promise<T> {
@@ -64,6 +82,12 @@ export async function startHostGen(input: HostGenStart): Promise<string> {
 
 export function hostGenStatus(jobId: string): Promise<HostGenStatus> {
   return call<HostGenStatus>("GET", `/workshop/gen?jobId=${encodeURIComponent(jobId)}`);
+}
+
+/** 사진 후보 중 하나를 고른다 — 호스트가 그 칩만 묶고 작업은 다시 running → done. */
+export async function pickHostGen(jobId: string, rank: number, title: string): Promise<void> {
+  const result = await call<{ ok: boolean; error?: string }>("POST", "/workshop/gen/pick", { jobId, rank, title });
+  if (!result.ok) throw new Error(result.error ?? "후보를 고르지 못했어요.");
 }
 
 export function cancelHostGen(jobId: string): Promise<unknown> {
