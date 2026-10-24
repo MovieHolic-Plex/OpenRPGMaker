@@ -92,7 +92,18 @@
    "Simisage",
    "Ambipom",
    "Kangaskhan",
-   "Kyogre"
+   "Kyogre",
+   "Flaaffy",
+   "Ampharos",
+   "Bouffalant",
+   "Gogoat",
+   "Arcanine",
+   "Rapidash",
+   "Wailord",
+   "Brionne",
+   "Lapras",
+   "Sharpedo",
+   "Keldeo"
   ]
  },
  "animation": {
@@ -247,10 +258,10 @@
     "fire"
    ],
    "stage": 1,
-   "design": "A baby lamb starter standing on four short stubby legs: a very big round head with a warm red-orange face and big bright eyes, a big round puffy cloud of cream wool covering its head top and body, small floppy ears, tiny dark hooves, a small puff tail.",
-   "signature": "two tiny curled horn nubs on its head that glow ember yellow-orange",
-   "accent": "bright yellow-orange (only the two little horn nubs)",
-   "palette": "red-orange, cream wool, dark maroon, yellow-orange",
+   "design": "A baby lamb starter standing on four short stubby legs: a big round cloud of cream wool covering its head top and body, a round warm orange face with big bright eyes, a small puff tail, dark-red outline.",
+   "signature": "two big curled yellow-orange ram horns on its head, as big as its face",
+   "accent": "bright yellow-orange (only the curled horns)",
+   "palette": "cream wool, orange, dark red, yellow-orange",
    "motion": {
     "flicker": "flame"
    }
@@ -263,10 +274,10 @@
     "fighting"
    ],
    "stage": 2,
-   "design": "The evolved form: a sturdy young ram standing UPRIGHT on two legs in a boxing guard with both fists raised, a red-orange body, a thick round cream wool collar around its neck and wool wraps on its fists, a confident grin, big eyes.",
-   "signature": "two medium curled horns, each tip ending in one small crisp flat flame",
-   "accent": "bright yellow-orange (only the two horn-tip flames)",
-   "palette": "red-orange, cream wool, dark maroon, yellow-orange",
+   "design": "The evolved form: a sturdy young ram that now stands UPRIGHT on two strong hind legs in a forward-leaning charging stance, head lowered to butt, broad chest, cream wool vest over its body, orange face and arms, small dark-red hooves on its fists, big eyes, a brave grin, dark-red outline. A clearly new body plan: upright and stocky, not a bigger lamb.",
+   "signature": "its cream wool burns at the tips: the wool on its shoulders and back ends in a few big crisp flat flame tufts, and the curled horns are bigger and thicker",
+   "accent": "bright yellow-orange (only the flame wool tips and the horns)",
+   "palette": "cream wool, orange, dark red, yellow-orange",
    "evolvesFrom": "fire-a-1",
    "motion": {
     "flicker": "flame"
@@ -280,10 +291,10 @@
     "fighting"
    ],
    "stage": 3,
-   "design": "The final form: a huge heavy ram champion with a massive broad chest covered by a big cream wool mane, LEANING FORWARD low in a charging headbutt stance on two thick legs, thick muscular arms with big dark hoof fists, a brave friendly face with big eyes.",
-   "signature": "two huge thick spiral horns curling around the sides of its head, each horn wrapped in one big crisp flat flame",
-   "accent": "bright yellow-orange (only the horn flames)",
-   "palette": "red-orange, cream wool, dark maroon, yellow-orange",
+   "design": "The final form: a big blazing ram KNIGHT standing tall and heavy on two legs, a massive armoured chest with a cream wool mantle like a knight's cloak, orange arms with dark-red gauntlet hooves, one fist raised, a noble brave face with big eyes, dark-red outline. Clearly bigger and more heroic than stage 2.",
+   "signature": "two huge thick spiral horns that blaze with fire like a crown, the flames streaming back from the horns, plus a short flame plume on the wool mantle",
+   "accent": "bright yellow-orange (only the blazing horns and the plume)",
+   "palette": "cream wool, orange, dark red, yellow-orange",
    "evolvesFrom": "fire-a-2",
    "motion": {
     "flicker": "flame"
@@ -345,10 +356,10 @@
     "water"
    ],
    "stage": 1,
-   "design": "A baby orca calf starter lying on its belly on four tiny stubby flipper feet, one round bean-shaped head-and-body, a navy-blue back and a pure white belly and chin, a happy open smile, a short tail fluke.",
-   "signature": "each big round shining eye sits INSIDE a large white oval patch on the side of its head, so the white patch frames the eye like a big round spectacle",
-   "accent": "pale cyan (only a small rounded dorsal fin)",
-   "palette": "navy blue, white, dark navy, pale cyan"
+   "design": "A baby orca calf starter lying on its belly on two small front flippers, a round bean-shaped navy-blue head-and-body with a white chin, white belly and a white eye patch around each big bright eye, a small happy smile, a tail fluke curled up behind it.",
+   "signature": "a big curling cyan ocean-wave crest growing from the top of its head like a breaking wave, taller than its head",
+   "accent": "bright cyan (only the wave crest)",
+   "palette": "navy blue, white, dark navy, cyan"
   },
   {
    "id": "water-a-2",
@@ -357,10 +368,10 @@
     "water"
    ],
    "stage": 2,
-   "design": "The evolved form: a sleek young orca SLIDING forward on its belly with its head raised high and its chest lifted on two broad front flippers, a longer body, a navy back and white belly, the eye inside the big white eye patch, a confident smile.",
-   "signature": "a tall curved dorsal fin shaped like a breaking wave, pale cyan with a white crest",
-   "accent": "pale cyan (only the wave dorsal fin)",
-   "palette": "navy blue, white, dark navy, pale cyan",
+   "design": "The evolved form: a sleek adolescent orca caught mid-LEAP, its whole body arched in a curve as if jumping out of the sea, front flippers spread wide like wings, longer and slimmer than stage 1, navy back with white belly and white eye patches, big bright eyes, an excited open smile. A clearly new pose and body plan: an arched leaping body, not a bigger calf lying down.",
+   "signature": "a bigger curling cyan wave fin that runs from its head down along its back like a surfing wave",
+   "accent": "bright cyan (only the wave fin)",
+   "palette": "navy blue, white, dark navy, cyan",
    "evolvesFrom": "water-a-1"
   },
   {
@@ -371,10 +382,10 @@
     "ice"
    ],
    "stage": 3,
-   "design": "The final form: a huge heavy orca beast standing on FOUR thick flipper legs like a guardian lion, a massive long body, a broad white chest, the eye inside the big white eye patch, a heavy tail fluke, a calm protective face.",
-   "signature": "the dorsal fin grown into one tall smooth pale-cyan iceberg crest with three big clean facets",
-   "accent": "pale cyan ice (only the iceberg crest)",
-   "palette": "navy blue, white, dark navy, pale cyan",
+   "design": "The final form: a large powerful tidal orca rearing UPRIGHT out of the water on its tail, a massive broad white chest, big strong flippers raised wide, navy back with white eye patches, calm commanding big eyes. Clearly much bigger and more imposing than stage 2.",
+   "signature": "a towering tsunami crest: a huge curling cyan wave rises from its head and pours down its back and shoulders like a cape, with a few white frost-crystal tips on the crest (water/ice)",
+   "accent": "bright cyan and white frost (only the tsunami crest and its frost tips)",
+   "palette": "navy blue, white, dark navy, cyan",
    "evolvesFrom": "water-a-2"
   },
   {
