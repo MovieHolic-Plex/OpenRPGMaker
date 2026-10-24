@@ -4172,6 +4172,18 @@
     "wall.ice_face"
    ],
    "lead": "광차·금 간 바닥·도깨비불 등잔·얼음굴 앞면."
+  },
+  "theme-walls-r4": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_walls_r4.py",
+   "wave": "theme_walls",
+   "title": "던전 테마 벽 다시 그림 theme-walls-r4",
+   "items": [
+    "wall.other_face",
+    "wall.other_rim",
+    "wall.tower_face",
+    "wall.tower_rim"
+   ],
+   "lead": "r3 독립 VQA 반영: 마계 아랫단 빛 뿌리 제거·금 칸 두 벌·A2 금 진홍, 마계 테두리 흑요석 단, 탑 돌 잡티 도장 제거·창 높임·창턱 세 줄."
   }
  }
 }
