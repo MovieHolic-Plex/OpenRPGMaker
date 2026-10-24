@@ -16,6 +16,8 @@ export const STORE_MUSIC_SCENE_LABELS: Readonly<Record<StoreMusicScene, string>>
 export interface StoreMusicMeta {
   readonly genre: string;
   readonly genreLabel: string;
+  /** 한국어 장르 이름(조선 전통, 무협 …). 사용자가 「조선풍」처럼 말하므로 검색 태그에 싣는다. */
+  readonly genreKo: string;
   readonly scenes: readonly StoreMusicScene[];
   readonly mood: readonly string[];
   readonly energy: number | null;
@@ -44,6 +46,7 @@ export function readStoreMusicMeta(meta: unknown): StoreMusicMeta | null {
   return {
     genre: text(raw.genreLine, 40),
     genreLabel: text(raw.genreLabel, 60),
+    genreKo: text(raw.genreKo, 40),
     scenes,
     mood: words(raw.mood, 8),
     energy: number(raw.energy, 1, 5),
@@ -58,7 +61,7 @@ export function readStoreMusicMeta(meta: unknown): StoreMusicMeta | null {
 /** 검색 태그: 장르·장면(영·한)·분위기·빠르기·루프 여부. */
 export function storeMusicTags(music: StoreMusicMeta): string[] {
   return [...new Set([
-    music.genreLabel, music.genre,
+    music.genreKo, music.genreLabel, music.genre,
     ...music.scenes.flatMap((scene) => [scene, STORE_MUSIC_SCENE_LABELS[scene]]),
     ...music.mood,
     ...(music.tempo ? [music.tempo] : []),
@@ -69,7 +72,7 @@ export function storeMusicTags(music: StoreMusicMeta): string[] {
 /** 조수가 읽는 한 줄 설명 + 고르기 사실. */
 export function storeMusicDescription(music: StoreMusicMeta): string {
   const facts = [
-    music.genreLabel && `장르 ${music.genreLabel}`,
+    (music.genreKo || music.genreLabel) && `장르 ${music.genreKo || music.genreLabel}`,
     `장면 ${music.scenes.map((scene) => STORE_MUSIC_SCENE_LABELS[scene]).join("·")}`,
     music.mood.length ? `분위기 ${music.mood.join("·")}` : "",
     music.bpm !== null ? `${Math.round(music.bpm)} BPM` : "",

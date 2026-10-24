@@ -80,7 +80,7 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
 
 음악 팩은 곡(에셋)마다 `meta.oprnMusic` 에 조수가 고를 때 쓰는 값을 싣는다. 넣으면 `meta` 가 그대로 `project.assets.uploaded[id].meta` 로 들어온다.
 읽는 쪽은 `src/assets/storeMusicMeta.ts` `readStoreMusicMeta` 하나다 — `sceneRoles`(town·field·dungeon·battle·boss·victory·sad·tense·title·ending 중 하나 이상, 없으면 무시)·
-`mood`(한국어 분위기 낱말)·`genreLine`/`genreLabel`·`bpm`·`energy`(1~5)·`tempo`(slow·medium·fast)·`loopable`(false = 징글)·`lengthSec`·`summaryKo`(한 줄).
+`mood`(한국어 분위기 낱말)·`genreLine`/`genreLabel`/`genreKo`(한국어 장르 이름 — 「조선풍」 검색용)·`bpm`·`energy`(1~5)·`tempo`(slow·medium·fast)·`loopable`(false = 징글)·`lengthSec`·`summaryKo`(한 줄).
 `listAudioResources` 가 이 값으로 태그(장르·장면 영/한·분위기·루프/징글)와 설명(출처 `ai-listening`)을 만들고,
 `recommend_bgm` 은 `scene` 을 곡 이름 대신 `sceneRoles` 로 맞추며 `scene`+`query` 를 같이 주면 그 장면 곡 안에서 장르·분위기로 순위를 매긴다(장면 안에 맞는 곡이 없으면 `sceneFallback`).
 후보에는 `music` 칸이 붙는다. 장르 곡이 프로젝트에 없으면 `store_search(kind:"music")` 로 찾아 사용자에게 권하고, 넣기는 허락 뒤 `store_install`.

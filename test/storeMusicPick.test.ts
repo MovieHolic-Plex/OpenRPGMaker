@@ -14,7 +14,7 @@ function storeTrack(id: string, name: string, oprnMusic: Record<string, unknown>
 
 function projectWithPack(): Project {
   const project = createEmptyToolProject();
-  const joseon = { genreLine: "joseon", genreLabel: "조선 전통", tempo: "fast", loopable: true, lengthSec: 72, bpm: 150, energy: 5 };
+  const joseon = { genreLine: "joseon", genreLabel: "Joseon Korean Traditional", genreKo: "조선 전통", tempo: "fast", loopable: true, lengthSec: 72, bpm: 150, energy: 5 };
   project.assets.uploaded.jb = storeTrack("jb", "Tiger Pass Duel", { ...joseon, sceneRoles: ["boss"], mood: ["비장한", "격렬한"], summaryKo: "장구와 해금이 몰아치는 조선풍 보스전." });
   project.assets.uploaded.jt = storeTrack("jt", "Hanok Morning", { ...joseon, sceneRoles: ["town"], mood: ["평화로운", "그리운"], tempo: "medium", energy: 2, summaryKo: "대금이 이끄는 한가로운 조선 마을." });
   project.assets.uploaded.jv = storeTrack("jv", "Drum Roll Cheer", { ...joseon, sceneRoles: ["victory"], mood: ["승리의"], loopable: false, lengthSec: 6, summaryKo: "짧은 태평소 승리 팡파르." });
