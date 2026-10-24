@@ -1,113 +1,94 @@
-"""Bushes: hand-placed lobe clusters, shaded per lobe (light upper-left), dark gaps, s/S ground shadow."""
-import random
-DK = {"o":"#071f1d","1":"#08372c","2":"#0a5134","3":"#226b39","4":"#418640","5":"#8cbf5f"}
-WD = {"o":"#071d1b","1":"#063328","2":"#104c2f","3":"#296535","4":"#497f3c","5":"#94b353"}
-
-def lobes_img(W, H, lobes, ramp, seed, berries=(), thorns=False):
-    rnd = random.Random(seed)
-    g = [["."]*W for _ in range(H)]
-    own = [[None]*W for _ in range(H)]
-    # lobes drawn back to front (list order); later lobes overlap earlier
-    for i,(cx,cy,rx,ry) in enumerate(lobes):
-        for y in range(H):
-            for x in range(W):
-                dx=(x-cx)/rx; dy=(y-cy)/ry; d=dx*dx+dy*dy
-                wob = 0.18*rnd.random()
-                if d <= 1.0-wob:
-                    own[y][x]=(i,dx,dy,d)
-    gx,gy=W/2,H/2
-    for y in range(H):
-        for x in range(W):
-            o=own[y][x]
-            if not o: continue
-            i,dx,dy,d=o
-            cx,cy,_,_=lobes[i]
-            # global darkening toward lower-right of whole bush
-            glob=((cx-gx)/W*1.2+(cy-gy)/H*1.6)*3.0
-            v = -(dx+dy)*2.4 - d*1.0 - glob + 2.1
-            # edge between different lobes -> inner contour
-            edge=False
-            for ax,ay in ((1,0),(0,1),(-1,0),(0,-1)):
-                nx,ny=x+ax,y+ay
-                if 0<=nx<W and 0<=ny<H and own[ny][nx] and own[ny][nx][0]!=i and own[ny][nx][0]<i and (ax<0 or ay<0)==False:
-                    pass
-                if (ax,ay) in ((0,1),(1,0)) and 0<=nx<W and 0<=ny<H and own[ny][nx] and own[ny][nx][0]>i+1 and d>0.35:
-                    edge=True
-            v += rnd.choice((0,0,0,0.6,-0.6))
-            if v>2.6: c="5"
-            elif v>1.7: c="4"
-            elif v>0.8: c="3"
-            elif v>0.0: c="2"
-            else: c="1"
-            if edge: c="o" if c in "12" else "1"
-            if d>0.5 and (dx+dy)>0.35: c="1" if c in "123" else "2"
-            g[y][x]=c
-    # thin isolated '5' singles -> 4 (clump the highlights)
-    for y in range(H):
-        for x in range(W):
-            if g[y][x]=="5":
-                n=sum(1 for ax,ay in ((1,0),(0,1),(-1,0),(0,-1)) if 0<=x+ax<W and 0<=y+ay<H and g[y+ay][x+ax]=="5")
-                if n==0: g[y][x]="4"
-    # outline
-    out=[r[:] for r in g]
-    for y in range(H):
-        for x in range(W):
-            if g[y][x]!=".": continue
-            if any(0<=x+ax<W and 0<=y+ay<H and g[y+ay][x+ax] not in "." for ax,ay in ((1,0),(0,1),(-1,0),(0,-1))):
-                out[y][x]="o"
-    g=out
-    for y in range(H):
-        for x in range(W):
-            if g[y][x]=="o" and rnd.random()<0.12:
-                if any(0<=x+ax<W and 0<=y+ay<H and g[y+ay][x+ax]=="." for ax,ay in ((1,0),(0,1),(-1,0),(0,-1))):
-                    g[y][x]="."
-    # dark holes inside mass
-    for y in range(1,H-1):
-        for x in range(1,W-1):
-            if g[y][x]=="1" and rnd.random()<0.25 and all(g[y+ay][x+ax]!="." for ax,ay in ((1,0),(0,1),(-1,0),(0,-1))):
-                g[y][x]="o"
-    for (x,y) in berries:
-        for (ax,ay,c) in ((0,0,"r"),(1,0,"R"),(0,1,"d")):
-            if g[y+ay][x+ax]!=".": g[y+ay][x+ax]=c
-        if rnd.random()<0.5 and g[y][x]=="r": g[y][x]="h"
-    if thorns:
-        for _ in range(W//2):
-            x=rnd.randrange(1,W-1); y=rnd.randrange(1,H-3)
-            if g[y][x] in "234": g[y][x]="t"
-    # ground shadow lower-right
-    for y in range(H-1,-1,-1):
-        pass
-    for x in range(W):
-        col=[y for y in range(H) if g[y][x]!="."]
-        if not col: continue
-        b=max(col)
-        for k,ch in ((1,"S"),(2,"s")):
-            yy=b+k
-            if yy<H and g[yy][x]=="." and x>W*0.25: g[yy][x]=ch
-    return ["".join(r) for r in g]
-
-def scatter(seed, cx, cy, rx, ry, n, r0, r1):
-    rnd=random.Random(seed); L=[]
-    while len(L)<n:
-        a=rnd.uniform(-1,1); b=rnd.uniform(-1,1)
-        if a*a+b*b>1: continue
-        if len(L)<n//2: a*=0.6; b*=0.6
-        r=rnd.uniform(r0,r1)
-        L.append((cx+a*rx, cy+b*ry, r, r*rnd.uniform(0.75,0.95)))
-    L.sort(key=lambda t:t[1]+0.3*t[0])
-    return L
-
-def keys(ramp, extra=None):
-    k=dict(ramp); k.update({"s":"s","S":"S"})
-    if extra: k.update(extra)
-    return k
-
-BER={"r":"#dd2912","R":"#9e2514","d":"#650000","h":"#e8a8b9"}
-TH={"t":"#6f4725"}
-ART={
- "bush-s":(lobes_img(16,16,scatter(4,8,9,4.6,3.6,16,2.2,3.0),DK,3),keys(DK)),
- "bush-m":(lobes_img(32,32,scatter(8,16,18,10.5,6.5,40,3.0,4.4),WD,7),keys(WD)),
- "bush-berry":(lobes_img(32,32,scatter(22,16,16,8.5,8,30,3.6,5.0),DK,11,berries=[(9,11),(17,13),(22,9),(13,19),(24,18),(7,17),(19,22),(11,23),(26,14),(15,8)]),keys(DK,BER)),
- "shrub-tall":(lobes_img(16,32,scatter(6,8,17,3.0,10,26,2.4,3.2),WD,5),keys(WD)),
- "bramble":(lobes_img(32,16,scatter(10,16,10,12.5,2.6,28,2.2,3.0),WD,9,thorns=True),keys(WD,TH)),
+"""Bushes: hand-placed leaf clusters (positions and tone levels chosen by hand, back to front).
+Lit top/left edges end in the light tone (no outline); only lower-right edge gets the darkest tone."""
+WD = {"5":"#94b353","4":"#497f3c","3":"#296535","2":"#104c2f","1":"#063328","o":"#071d1b","g":"#0c2222","s":"s","S":"S"}
+BR = {"5":"#8cbf5f","4":"#418640","3":"#226b39","2":"#0a5134","1":"#08372c","o":"#071f1d","g":"#071d1b","s":"s","S":"S",
+      "r":"#9e2514","R":"#61160d","h":"#dd2912"}
+TH = dict(WD, t="#6f4725", T="#452a17")
+# leaf cluster shapes (L light rim, M mid, D dark core / underside)
+CL = {
+ "A": ["..LL.LL.", ".LMMLMML", "LMMMMMMD", "MMMMMMDD", "MMMMMDDD", ".MMDDDD.", "..DDD..."],
+ "B": [".LLL...", "LMMML..", "LMMMMLL", "MMMMMMD", "MMMMDDD", ".MDDDD.", "..DD..."],
+ "a": [".LL..", "LMML.", "MMMDD", ".MDD.", "..D.."],
+ "b": ["..LL.", ".LMM.", "LMMD.", "MMDD.", ".DD.."],
+ "c": [".L.L.", "LMLM.", "MMMDD", "MDDD.", ".D..."],
+ "d": ["LL..", "MMLL", "MDMD", ".DD."],
 }
+LV = [("5","4","3"), ("4","3","2"), ("3","2","1"), ("2","1","o")]
+
+def paint(W, H, stamps, ground=True, base_lo=None):
+    g = [["."]*W for _ in range(H)]
+    for (x, y, sh, lv) in stamps:
+        L, M, D = LV[lv]
+        shape = CL[sh]
+        for j, row in enumerate(shape):
+            for i, ch in enumerate(row):
+                if ch == ".": continue
+                X, Y = x+i, y+j
+                # pixel just below/right of this lobe's lower-right D edge in earlier paint -> gap
+                for ax, ay in ((1,1),(0,1)):
+                    nx, ny = X+ax, Y+ay
+                    inside = 0 <= ny-y < len(shape) and 0 <= nx-x < len(shape[ny-y]) and shape[ny-y][nx-x] != "."
+                    if ch == "D" and not inside and 0 <= nx < W and 0 <= ny < H and g[ny][nx] not in ".o":
+                        g[ny][nx] = "1" if g[ny][nx] in "345" else "o"
+        for j, row in enumerate(CL[sh]):
+            for i, ch in enumerate(row):
+                if ch == "." : continue
+                X, Y = x+i, y+j
+                if 0 <= X < W and 0 <= Y < H:
+                    g[Y][X] = {"L":L,"M":M,"D":D}[ch]
+    # dark edge only on right / bottom sides
+    out = [r[:] for r in g]
+    for Y in range(H):
+        for X in range(W):
+            if g[Y][X] == ".": continue
+            right = X+1 >= W or g[Y][X+1] == "."
+            below = Y+1 >= H or g[Y+1][X] == "."
+            if (below and Y > H*0.45) or (right and X > W*0.55):
+                out[Y][X] = "o" if out[Y][X] not in "5" else "2"
+    if ground:
+        for X in range(W):
+            col = [Y for Y in range(H) if out[Y][X] != "."]
+            if not col: continue
+            b = max(col)
+            if b+1 < H and X > W*0.2: out[b+1][X] = "S" if X > W*0.4 else "s"
+            if b+2 < H and X > W*0.5: out[b+2][X] = "s"
+    return out
+
+def fin(g): return ["".join(r) for r in g]
+
+# bush-s: low clump of three big lobes
+bs = paint(16, 16, [
+ (5,4,"B",0), (1,7,"B",0), (8,6,"A",1), (3,9,"A",2), (9,9,"B",3)])
+# bush-m: big woodland bush, two humps, notched top
+bm = paint(32, 32, [
+ (6,8,"A",0),(15,9,"B",0),(21,11,"A",1),
+ (2,13,"B",0),(10,13,"A",1),(17,14,"A",1),(24,15,"B",2),
+ (1,18,"A",1),(8,18,"B",2),(14,19,"A",2),(21,19,"A",2),(26,20,"B",3),
+ (3,22,"A",3),(10,23,"B",3),(16,23,"A",3),(22,23,"A",3)])
+# bush-berry: brighter, tall rounded-lumpy bush with berries in shade
+bb = paint(32, 32, [
+ (12,6,"B",0),(6,9,"A",0),(17,8,"A",0),
+ (3,13,"B",0),(11,12,"A",1),(19,13,"B",1),(24,14,"A",2),
+ (5,17,"A",1),(13,17,"B",2),(20,18,"A",2),
+ (3,21,"B",2),(9,21,"A",3),(16,22,"A",3),(23,21,"B",3)])
+for (x,y) in [(10,15),(17,13),(22,18),(7,20),(14,21),(19,20),(25,19),(11,25),(18,25)]:
+    if bb[y][x] in "123" and bb[y][x+1] in "123":
+        bb[y][x] = "r"; bb[y][x+1] = "R"
+# shrub-tall: wide skirt at base, tiers narrowing up, tip leaning
+st = paint(16, 32, [
+ (5,4,"d",0),(4,6,"B",0),(7,9,"d",1),
+ (2,10,"B",0),(7,12,"A",1),
+ (1,15,"A",1),(6,17,"B",2),
+ (0,20,"B",1),(5,21,"A",2),(9,22,"B",3),(2,24,"A",3)])
+# bramble: low tangled thicket, arching thorny canes poking out, gaps between clumps
+br = paint(32, 16, [
+ (1,7,"B",1),(8,8,"A",2),(14,6,"B",1),(21,7,"A",2),(26,8,"d",2),
+ (4,10,"d",3),(17,10,"d",3),(24,10,"d",3),(28,10,"d",3)])
+for pts in ([(4,6),(5,5),(6,4),(7,4),(8,5)], [(12,6),(13,5),(14,4),(15,3),(16,3),(17,4)],
+            [(22,6),(23,5),(24,4),(25,4),(26,5),(27,6),(28,7)], [(29,10),(30,9),(30,8)], [(0,9),(1,8)]):
+    for i,(x,y) in enumerate(pts):
+        br[y][x] = "t" if i % 2 == 0 else "T"
+        if br[y-1][x] == "." and i % 3 == 1: br[y-1][x] = "T"
+for (x,y) in [(9,9),(18,8),(26,9),(14,11)]: br[y][x] = "t"
+
+ART = {"bush-s":(fin(bs),WD),"bush-m":(fin(bm),WD),"bush-berry":(fin(bb),BR),"shrub-tall":(fin(st),WD),"bramble":(fin(br),TH)}
