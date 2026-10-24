@@ -28,6 +28,7 @@ import { TILESET_REFERENCE_TOOLS, withTilesetReferencePurpose } from "./tilesetR
 // toOpenAiTools()로 OpenAI function calling `tools` 배열을 자동 파생한다.
 
 import { BATTLE_TOOLS } from "./battleTools";
+import { COMBO_TECH_TOOLS } from "./comboTechTools";
 import { TROOP_BATTLE_PAGE_TOOLS } from "./troopBattlePageTools";
 import { CLUSTER_RULE_TOOLS } from "./clusterRuleTools";
 import { DB_TOOLS } from "./dbTools";
@@ -49,6 +50,7 @@ import { BEODEUL_GROUND_TOOLS } from './beodeulGroundTools';
 import { BEODEUL_ARCHITECTURE_TOOLS } from './beodeulArchitectureTools';
 import { DIRECTING_GUIDE_TOOLS } from "./directingGuideTools";
 import { ASSISTANT_SKILL_TOOLS } from "./assistantSkillTools";
+import { DIALOGUE_TOOLS } from "./dialogueTools";
 import { NPC_CAST_TOOLS } from "./npcCastTools";
 import { EXPORT_TOOLS } from "./exportTools";
 import { MAP_GEN_TOOLS } from "./generateMapTool";
@@ -353,6 +355,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(DIRECTING_GUIDE_TOOLS, "event"),
   // 조수 스킬(assistant-skills/*/SKILL.md 번들) — 장면 다듬기 교훈 등. 장면·이벤트 작업에서 읽는다.
   ...withDomain(ASSISTANT_SKILL_TOOLS, "event"),
+  // 대사 관리(윤문) — 대사 색인·문맥·제안/적용·화자 말투 메모. 자료집 「대사」 탭과 같은 색인을 쓴다.
+  ...withDomain(DIALOGUE_TOOLS, "event"),
   ...withDomain(LIFE_FLOWER_TOOLS, "event"),
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),
@@ -386,6 +390,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(STORY_ARC_TOOLS, "event"),
   ...withDomain(STORY_TOOLS, "quest"),
   ...withDomain(BATTLE_TOOLS, "battle"),
+  ...withDomain(COMBO_TECH_TOOLS, "battle"),
   ...withDomain(TROOP_BATTLE_PAGE_TOOLS, "battle"),
   ...withDomain(REFACTOR_TOOLS, "system"),
   ...withDomain(QUALITY_EVALUATION_TOOLS, "system"),

@@ -27,13 +27,17 @@ import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./falle
 import { applyFallenLoreAndHanel } from "./fallen/loreAndHanel";
 import { reworkFallenTown } from "./fallenTown";
 import { applyFallenBattleItems, FS_SPEAR_PIKE, FS_SWORD_GALE } from "./fallen/battleItems";
+import { applyFallenAreaEncounters, applyFallenBattleRoles } from "./fallen/battleRoles";
+import { applyFallenBattleDepth } from "./fallen/battleDepth";
 import { swOn, fadeOut } from "./firstLoveKit";
 import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX, ensureFallenValenChip } from "./fallenValenChip";
 import { buildFallenTownInteriors } from "./fallenTownInteriors";
 import { buildFallenTownLife, ensureFallenTownDatabase } from "./fallen/townLife";
 import { applyFallenTownQuests, FS_QUEST_FACE_ALIASES } from "./fallen/townQuests";
+import { applyFallenInteractiveProps } from "./fallen/interactProps";
 import { buildFallenForestMaps } from "./fallen/forestMaps";
 import { applyFallenStoryPass } from "./fallen/storyPass";
+import { applyFallenAct1Finale } from "./fallen/act1Finale";
 import { applyFaceCellEmotions, applyFallenTownCast, applyNorthForest, fallenSpeakerBusts } from "./fallen/townCast";
 import { placeFallenStarVessel } from "./fallenStarVessel";
 import { dressObservatoryHall } from "./fallenObservatoryHall";
@@ -1096,10 +1100,11 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   // 듣는 백성(발렌 두~다섯 줄 아래)은 상자 밑이라 안 보였다(VQA r27). 상자 위 열 줄 안에 호위·발렌·가까운 백성이 함께 든다.
   {
     // 발렌 두 줄 아래가 화면 가운데 — 호위 두 줄이 화면 위 끝에 잘리지 않고, 가까운 백성 줄이 상자 위에 든다.
+    // 오프닝이 맵으로 넘어가자마자 도는 첫 움직임이다 — 0.7초는 화면이 튀는 것처럼 보였다(2026-10-24 오프닝 녹화). 1.4초로 천천히 옮긴다.
     const cy = valen.y + 2;
     const cx = Math.round((startX + valen.x) / 2) + 1;
     const box = list.findIndex((c) => c.kind === "m2Command" && (c as { commandId?: string }).commandId === "m2-202-screen-effect");
-    if (box >= 0) list.splice(box + 1, 0, camera({ mode: "panTo", target: "screen", x: String(cx), y: String(cy), durationMs: "700", wait: "true" }));
+    if (box >= 0) list.splice(box + 1, 0, camera({ mode: "panTo", target: "screen", x: String(cx), y: String(cy), durationMs: "1400", wait: "true" }));
   }
 }
 
@@ -1523,6 +1528,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   setupCast(project);
   const troops = setupFoes(project);
   applyFallenBattleItems(project); // 속성 상성·검/창·회복약·기믹 잡화·드롭 (fallen/battleItems.ts)
+  applyFallenBattleRoles(project); // 기술 역할·새 적·발렌 재설계·시그니처 무기·MP 회복 (fallen/battleRoles.ts)
+  applyFallenBattleDepth(project, execTool); // 깔기→거두기·도발·정화·화상·연계기 셋 (fallen/battleDepth.ts)
   if (!project.switches.some((s) => s.id === SW_IRIS_JOINED)) project.switches.push({ id: SW_IRIS_JOINED, name: "이리스 합류" });
 
   const built = buildJrpgChapter(project, FALLEN_STAR_ACT1, { chapterId: "fallen_star_act1", prefix: FS_PREFIX, seed: 7, troops });
@@ -1767,7 +1774,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         // 첫 카드가 이미 제목·막 이름을 말한다 — 크레딧은 인물부터(가혹 검수 r10 「54·55 거의 같은 반복」).
         "카엘 — 견습 별지기", "엘레나 — 천문대의 마도학자", "이리스 — 별에서 온 기계 소녀", "",
         "천문대장 하넬", "숲지기 브람", "심문관 발렌", "",
-        "그날 밤 동쪽 숲에 떨어진 것은 별이 아니었다.", "이리스의 집이 부르는 곳, 북쪽 하늘탑으로.", "",
+        "그날 밤 북쪽 숲에 떨어진 것은 별이 아니었다.", "이리스의 집이 부르는 곳, 북쪽 하늘탑으로.", "",
         "OPRN Studio 공식 데모", "",
         "제2막에서 계속됩니다.",
       ].join("\n"),
@@ -2425,10 +2432,14 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     }
   }
   addBridgeValenAndScopeScene(project, ids);
+  // 수납 뒤지기 연출·집주인 반응(돌아보기·「!」·「?」·방 이름 기척) — 지금 있는 수납만 고친다 (fallen/interactProps.ts).
+  applyFallenInteractiveProps(project);
   // 제1막 대사 흐름·이리스 합류 선택·발렌 연막 퇴장·지하 광신도·빠진 꾸지람(fallen/storyPass.ts) — 모든 대사 편집 뒤, 얼굴 앞.
   applyFallenStoryPass(project, ids);
   // 마을 사람 칩·대장간 재고(이리스·엘레나 몫)·뛰노는 아이·숨은 목걸이·대사 표정(fallen/townCast.ts).
   applyFallenTownCast(project);
+  // 제1막 새 뼈대 — 추락지 발렌·지하 미궁(3·4층)·달비늘 용·「달의 아이」 패널·광장 포위 끝(fallen/act1Finale.ts). 얼굴 앞.
+  applyFallenAct1Finale(project, execTool, ids);
   const speakerFaces: Record<string, string> = {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),
@@ -2447,6 +2458,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFaceCellEmotions(project);
   // 숲은 마을 북쪽 — 「동쪽 숲」「동문」을 북쪽으로(오프닝 연출·화로 퍼즐 방향은 제외, fallen/townCast.ts).
   applyNorthForest(project);
+  // 숲 구역별 조우 표 — 모든 맵 구성 뒤(숲 맵 작업이 표를 다시 써도 이 표가 이긴다). 지형·이벤트는 건드리지 않는다.
+  applyFallenAreaEncounters(project);
 
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);

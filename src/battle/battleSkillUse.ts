@@ -30,10 +30,17 @@ export function battleSkillMpCost(skill: Pick<SkillRecord, "mpCost">, maxMp: num
 
 /** 시전자 장비의 MP 절반 효과까지 반영한 소모량. 적법성·소비·메뉴 표시가 같은 값을 본다. */
 export function battleSkillMpCostFor(
-  skill: Pick<SkillRecord, "mpCost">,
-  user: { readonly maxMp: number; readonly equipmentEffects?: { readonly halfMpCost?: boolean } },
+  skill: Pick<SkillRecord, "mpCost"> & Partial<Pick<SkillRecord, "comboMpCosts">>,
+  user: { readonly maxMp: number; readonly recordId?: string; readonly equipmentEffects?: { readonly halfMpCost?: boolean }; readonly halfMpCost?: boolean },
 ): number {
-  return battleSkillMpCost(skill, user.maxMp, user.equipmentEffects?.halfMpCost === true);
+  const half = user.equipmentEffects?.halfMpCost === true || user.halfMpCost === true;
+  // 연계기 비용 나누기(comboMpCosts): 참가자 몫이 정해져 있으면 그 고정값(장비 절반 반영)을 낸다.
+  const share = user.recordId ? skill.comboMpCosts?.find((entry) => entry.actorId === user.recordId) : undefined;
+  if (share) {
+    const cost = Math.max(0, Math.trunc(share.mp));
+    return half ? Math.floor((cost + 1) / 2) : cost;
+  }
+  return battleSkillMpCost(skill, user.maxMp, half);
 }
 
 /** 장비가 준 스킬까지 포함해 이 배틀러가 「가진」 스킬인가. */
@@ -218,7 +225,7 @@ export function battleActorSkillFailure(
   for (const member of members) {
     if (!member || member.recordId === user.recordId) continue;
     if (!member.ready || !canBattlerAct(project, member) || stateBlocksSkillUse(project, member)) return "comboPartnerNotReady";
-    if (member.mp < battleSkillMpCost(skill, member.maxMp, member.halfMpCost === true)) return "comboPartnerMp";
+    if (member.mp < battleSkillMpCostFor(skill, member)) return "comboPartnerMp";
   }
   return partyFailure;
 }

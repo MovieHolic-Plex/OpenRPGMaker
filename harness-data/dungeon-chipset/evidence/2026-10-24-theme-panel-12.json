@@ -1,0 +1,26 @@
+{
+ "round": "theme-props-r7",
+ "panel": 12,
+ "date": "2026-10-24",
+ "boards": [
+  "qa-runs/walls/theme-props-r7/board-wall.ice_face-p7h.png"
+ ],
+ "criteria": "(1) true 3/4 top-down at 1x; (2) same game as Beodeul reference (palette, 4-6 steps, material-tone dark edges, no glow/toy/confetti); (3) no seams/16px repeat; (4) fits theme. A MAJOR = a defect a player would notice at 1x in the room view. Blind: only PNG paths and criteria given.",
+ "reviewers": {
+  "klb-sonnet-5-5": "a30d5d64c37386755",
+  "argon": "afef005a82282f1b3"
+ },
+ "count_rule": "an item passes only when neither blind reviewer raises a major against the candidate",
+ "tally": {
+  "wall.ice_face": {
+   "A1": "argon PASS (minors: frost highlight speckle, ice node slightly orb-like); sonnet FAIL (blue-grey wave band repeats horizontally, near-black rim heavy, rock not icy, noisy)",
+   "A2": "argon PASS; sonnet FAIL (olive-grey mossy stone, not ice)"
+  }
+ },
+ "result": {
+  "pass": [],
+  "redraw": [
+   "wall.ice_face"
+  ]
+ }
+}

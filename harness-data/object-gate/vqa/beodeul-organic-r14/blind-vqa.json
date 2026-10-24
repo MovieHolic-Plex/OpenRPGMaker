@@ -1,0 +1,2542 @@
+{
+ "reviewers": [
+  "argon (Gemini 4 Argon high)",
+  "klb-sonnet-5-5"
+ ],
+ "method": "blind mixed sheets: 37 new + 16 Beodeul original kits under neutral codes, fresh judge processes per round (qa/blind.py, qa/protocol.md)",
+ "rule": ">=2 blind sheets on the exact pixel hash, >=1 sheet with both judges PASS, each judge PASS in >=2/3 of those sheets",
+ "originalsControlPassRate": "each judge passes only 2-10 of the 16 Beodeul originals per sheet",
+ "verdict": "PASS",
+ "pieces": {
+  "rock-boulder-l": [
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P53",
+    "sha": "2d901c28fa6debe8bfedde1c10955d6c5d093cb093d69a25343b06b234c997ee",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P37",
+    "sha": "2d901c28fa6debe8bfedde1c10955d6c5d093cb093d69a25343b06b234c997ee",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P42",
+    "sha": "2d901c28fa6debe8bfedde1c10955d6c5d093cb093d69a25343b06b234c997ee",
+    "sonnet": true,
+    "argon": false
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P50",
+    "sha": "2d901c28fa6debe8bfedde1c10955d6c5d093cb093d69a25343b06b234c997ee",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P27",
+    "sha": "2d901c28fa6debe8bfedde1c10955d6c5d093cb093d69a25343b06b234c997ee",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P14",
+    "sha": "2d901c28fa6debe8bfedde1c10955d6c5d093cb093d69a25343b06b234c997ee",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P08",
+    "sha": "2d901c28fa6debe8bfedde1c10955d6c5d093cb093d69a25343b06b234c997ee",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P20",
+    "sha": "2d901c28fa6debe8bfedde1c10955d6c5d093cb093d69a25343b06b234c997ee",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P06",
+    "sha": "2d901c28fa6debe8bfedde1c10955d6c5d093cb093d69a25343b06b234c997ee",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "rock-boulder-m": [
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P39",
+    "sha": "aeba5b948310b68bfa7291a68e2f1586cd70b3934bb65dde05e194237846cf90",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P49",
+    "sha": "aeba5b948310b68bfa7291a68e2f1586cd70b3934bb65dde05e194237846cf90",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P38",
+    "sha": "aeba5b948310b68bfa7291a68e2f1586cd70b3934bb65dde05e194237846cf90",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P29",
+    "sha": "aeba5b948310b68bfa7291a68e2f1586cd70b3934bb65dde05e194237846cf90",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P48",
+    "sha": "aeba5b948310b68bfa7291a68e2f1586cd70b3934bb65dde05e194237846cf90",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P53",
+    "sha": "aeba5b948310b68bfa7291a68e2f1586cd70b3934bb65dde05e194237846cf90",
+    "sonnet": false,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P46",
+    "sha": "aeba5b948310b68bfa7291a68e2f1586cd70b3934bb65dde05e194237846cf90",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P21",
+    "sha": "aeba5b948310b68bfa7291a68e2f1586cd70b3934bb65dde05e194237846cf90",
+    "sonnet": true,
+    "argon": false
+   }
+  ],
+  "rock-pair": [
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P25",
+    "sha": "7a665e535168ddef9805d412793d7c7cf6fd09dc335258f01a75819b9a280f70",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P15",
+    "sha": "7a665e535168ddef9805d412793d7c7cf6fd09dc335258f01a75819b9a280f70",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P48",
+    "sha": "7a665e535168ddef9805d412793d7c7cf6fd09dc335258f01a75819b9a280f70",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P46",
+    "sha": "7a665e535168ddef9805d412793d7c7cf6fd09dc335258f01a75819b9a280f70",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P03",
+    "sha": "7a665e535168ddef9805d412793d7c7cf6fd09dc335258f01a75819b9a280f70",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P21",
+    "sha": "7a665e535168ddef9805d412793d7c7cf6fd09dc335258f01a75819b9a280f70",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P12",
+    "sha": "7a665e535168ddef9805d412793d7c7cf6fd09dc335258f01a75819b9a280f70",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "rock-slab": [
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P47",
+    "sha": "12a729355ec0d1b7fd7a843ec2865e21809a42ffb53267fac524cf47298a0a58",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P50",
+    "sha": "12a729355ec0d1b7fd7a843ec2865e21809a42ffb53267fac524cf47298a0a58",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P10",
+    "sha": "12a729355ec0d1b7fd7a843ec2865e21809a42ffb53267fac524cf47298a0a58",
+    "sonnet": false,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P32",
+    "sha": "12a729355ec0d1b7fd7a843ec2865e21809a42ffb53267fac524cf47298a0a58",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P17",
+    "sha": "12a729355ec0d1b7fd7a843ec2865e21809a42ffb53267fac524cf47298a0a58",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "rock-s": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P14",
+    "sha": "ec07e63e1826a3021b68da8fc379b3802898d50f1167e53b42a0b372b281ba3f",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P03",
+    "sha": "ec07e63e1826a3021b68da8fc379b3802898d50f1167e53b42a0b372b281ba3f",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P52",
+    "sha": "ec07e63e1826a3021b68da8fc379b3802898d50f1167e53b42a0b372b281ba3f",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P04",
+    "sha": "ec07e63e1826a3021b68da8fc379b3802898d50f1167e53b42a0b372b281ba3f",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P23",
+    "sha": "ec07e63e1826a3021b68da8fc379b3802898d50f1167e53b42a0b372b281ba3f",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P06",
+    "sha": "ec07e63e1826a3021b68da8fc379b3802898d50f1167e53b42a0b372b281ba3f",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P41",
+    "sha": "ec07e63e1826a3021b68da8fc379b3802898d50f1167e53b42a0b372b281ba3f",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P42",
+    "sha": "ec07e63e1826a3021b68da8fc379b3802898d50f1167e53b42a0b372b281ba3f",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P06",
+    "sha": "ec07e63e1826a3021b68da8fc379b3802898d50f1167e53b42a0b372b281ba3f",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P39",
+    "sha": "ec07e63e1826a3021b68da8fc379b3802898d50f1167e53b42a0b372b281ba3f",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "rock-pebbles": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P51",
+    "sha": "d64f932a68c92fccc852b509522a1ce3740453cd8f0b04a49020f5688a6e91d0",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P09",
+    "sha": "d64f932a68c92fccc852b509522a1ce3740453cd8f0b04a49020f5688a6e91d0",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P10",
+    "sha": "d64f932a68c92fccc852b509522a1ce3740453cd8f0b04a49020f5688a6e91d0",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P52",
+    "sha": "d64f932a68c92fccc852b509522a1ce3740453cd8f0b04a49020f5688a6e91d0",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P45",
+    "sha": "d64f932a68c92fccc852b509522a1ce3740453cd8f0b04a49020f5688a6e91d0",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P51",
+    "sha": "d64f932a68c92fccc852b509522a1ce3740453cd8f0b04a49020f5688a6e91d0",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P29",
+    "sha": "d64f932a68c92fccc852b509522a1ce3740453cd8f0b04a49020f5688a6e91d0",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P23",
+    "sha": "d64f932a68c92fccc852b509522a1ce3740453cd8f0b04a49020f5688a6e91d0",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P49",
+    "sha": "d64f932a68c92fccc852b509522a1ce3740453cd8f0b04a49020f5688a6e91d0",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P27",
+    "sha": "d64f932a68c92fccc852b509522a1ce3740453cd8f0b04a49020f5688a6e91d0",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "moss-boulder": [
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P24",
+    "sha": "9b33ea6990d0b21efc8008c9695148f26bf8111dc549c119d4f0c9ed9deabcb2",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P38",
+    "sha": "9b33ea6990d0b21efc8008c9695148f26bf8111dc549c119d4f0c9ed9deabcb2",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P32",
+    "sha": "9b33ea6990d0b21efc8008c9695148f26bf8111dc549c119d4f0c9ed9deabcb2",
+    "sonnet": true,
+    "argon": false
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P24",
+    "sha": "9b33ea6990d0b21efc8008c9695148f26bf8111dc549c119d4f0c9ed9deabcb2",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P08",
+    "sha": "9b33ea6990d0b21efc8008c9695148f26bf8111dc549c119d4f0c9ed9deabcb2",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P30",
+    "sha": "9b33ea6990d0b21efc8008c9695148f26bf8111dc549c119d4f0c9ed9deabcb2",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P31",
+    "sha": "9b33ea6990d0b21efc8008c9695148f26bf8111dc549c119d4f0c9ed9deabcb2",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P40",
+    "sha": "9b33ea6990d0b21efc8008c9695148f26bf8111dc549c119d4f0c9ed9deabcb2",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P37",
+    "sha": "9b33ea6990d0b21efc8008c9695148f26bf8111dc549c119d4f0c9ed9deabcb2",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "moss-stone": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P09",
+    "sha": "c95bbee6aced3f0618c2e5b9aa4a173d0d8c5af43485b37478d822d72a87f39d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P51",
+    "sha": "c95bbee6aced3f0618c2e5b9aa4a173d0d8c5af43485b37478d822d72a87f39d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P31",
+    "sha": "c95bbee6aced3f0618c2e5b9aa4a173d0d8c5af43485b37478d822d72a87f39d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P33",
+    "sha": "c95bbee6aced3f0618c2e5b9aa4a173d0d8c5af43485b37478d822d72a87f39d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P17",
+    "sha": "c95bbee6aced3f0618c2e5b9aa4a173d0d8c5af43485b37478d822d72a87f39d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P11",
+    "sha": "c95bbee6aced3f0618c2e5b9aa4a173d0d8c5af43485b37478d822d72a87f39d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P38",
+    "sha": "c95bbee6aced3f0618c2e5b9aa4a173d0d8c5af43485b37478d822d72a87f39d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P21",
+    "sha": "c95bbee6aced3f0618c2e5b9aa4a173d0d8c5af43485b37478d822d72a87f39d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P44",
+    "sha": "c95bbee6aced3f0618c2e5b9aa4a173d0d8c5af43485b37478d822d72a87f39d",
+    "sonnet": true,
+    "argon": false
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P43",
+    "sha": "c95bbee6aced3f0618c2e5b9aa4a173d0d8c5af43485b37478d822d72a87f39d",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "moss-stones-flat": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P43",
+    "sha": "91ad558495a506e3f7f677fa0e69bf8b11fdd1fee24984aefcac72e2053fdd3e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P45",
+    "sha": "91ad558495a506e3f7f677fa0e69bf8b11fdd1fee24984aefcac72e2053fdd3e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P01",
+    "sha": "91ad558495a506e3f7f677fa0e69bf8b11fdd1fee24984aefcac72e2053fdd3e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P48",
+    "sha": "91ad558495a506e3f7f677fa0e69bf8b11fdd1fee24984aefcac72e2053fdd3e",
+    "sonnet": true,
+    "argon": false
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P34",
+    "sha": "91ad558495a506e3f7f677fa0e69bf8b11fdd1fee24984aefcac72e2053fdd3e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P50",
+    "sha": "91ad558495a506e3f7f677fa0e69bf8b11fdd1fee24984aefcac72e2053fdd3e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P17",
+    "sha": "91ad558495a506e3f7f677fa0e69bf8b11fdd1fee24984aefcac72e2053fdd3e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P40",
+    "sha": "91ad558495a506e3f7f677fa0e69bf8b11fdd1fee24984aefcac72e2053fdd3e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P18",
+    "sha": "91ad558495a506e3f7f677fa0e69bf8b11fdd1fee24984aefcac72e2053fdd3e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P11",
+    "sha": "91ad558495a506e3f7f677fa0e69bf8b11fdd1fee24984aefcac72e2053fdd3e",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "bush-s": [
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P08",
+    "sha": "bc7d03bddae4c4e7702ce87ebbbe993402cd9b057398f482d5a53690ec4cb8dc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P28",
+    "sha": "bc7d03bddae4c4e7702ce87ebbbe993402cd9b057398f482d5a53690ec4cb8dc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P08",
+    "sha": "bc7d03bddae4c4e7702ce87ebbbe993402cd9b057398f482d5a53690ec4cb8dc",
+    "sonnet": true,
+    "argon": false
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P29",
+    "sha": "bc7d03bddae4c4e7702ce87ebbbe993402cd9b057398f482d5a53690ec4cb8dc",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "bush-m": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P13",
+    "sha": "111a8986a4776c9509247b7675ae277f5038a0fdef7ccb871bbd616f8ecc85ce",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P25",
+    "sha": "111a8986a4776c9509247b7675ae277f5038a0fdef7ccb871bbd616f8ecc85ce",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P19",
+    "sha": "111a8986a4776c9509247b7675ae277f5038a0fdef7ccb871bbd616f8ecc85ce",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P36",
+    "sha": "111a8986a4776c9509247b7675ae277f5038a0fdef7ccb871bbd616f8ecc85ce",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P32",
+    "sha": "111a8986a4776c9509247b7675ae277f5038a0fdef7ccb871bbd616f8ecc85ce",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P18",
+    "sha": "111a8986a4776c9509247b7675ae277f5038a0fdef7ccb871bbd616f8ecc85ce",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P02",
+    "sha": "111a8986a4776c9509247b7675ae277f5038a0fdef7ccb871bbd616f8ecc85ce",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P13",
+    "sha": "111a8986a4776c9509247b7675ae277f5038a0fdef7ccb871bbd616f8ecc85ce",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P39",
+    "sha": "111a8986a4776c9509247b7675ae277f5038a0fdef7ccb871bbd616f8ecc85ce",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P23",
+    "sha": "111a8986a4776c9509247b7675ae277f5038a0fdef7ccb871bbd616f8ecc85ce",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "bush-berry": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P26",
+    "sha": "42d2a10e1d4b2475e370eadd39d2d8170767e8aec2365c38e36dad3994e7c869",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P20",
+    "sha": "42d2a10e1d4b2475e370eadd39d2d8170767e8aec2365c38e36dad3994e7c869",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P27",
+    "sha": "42d2a10e1d4b2475e370eadd39d2d8170767e8aec2365c38e36dad3994e7c869",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P34",
+    "sha": "42d2a10e1d4b2475e370eadd39d2d8170767e8aec2365c38e36dad3994e7c869",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P30",
+    "sha": "42d2a10e1d4b2475e370eadd39d2d8170767e8aec2365c38e36dad3994e7c869",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P43",
+    "sha": "42d2a10e1d4b2475e370eadd39d2d8170767e8aec2365c38e36dad3994e7c869",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P34",
+    "sha": "42d2a10e1d4b2475e370eadd39d2d8170767e8aec2365c38e36dad3994e7c869",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P24",
+    "sha": "42d2a10e1d4b2475e370eadd39d2d8170767e8aec2365c38e36dad3994e7c869",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P10",
+    "sha": "42d2a10e1d4b2475e370eadd39d2d8170767e8aec2365c38e36dad3994e7c869",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P34",
+    "sha": "42d2a10e1d4b2475e370eadd39d2d8170767e8aec2365c38e36dad3994e7c869",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "shrub-tall": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P42",
+    "sha": "c564daaade3a49fdce33bfd9eaea6120e1b09760090ed90e7976dd1555372436",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P26",
+    "sha": "c564daaade3a49fdce33bfd9eaea6120e1b09760090ed90e7976dd1555372436",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P15",
+    "sha": "c564daaade3a49fdce33bfd9eaea6120e1b09760090ed90e7976dd1555372436",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P03",
+    "sha": "c564daaade3a49fdce33bfd9eaea6120e1b09760090ed90e7976dd1555372436",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P47",
+    "sha": "c564daaade3a49fdce33bfd9eaea6120e1b09760090ed90e7976dd1555372436",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P44",
+    "sha": "c564daaade3a49fdce33bfd9eaea6120e1b09760090ed90e7976dd1555372436",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P53",
+    "sha": "c564daaade3a49fdce33bfd9eaea6120e1b09760090ed90e7976dd1555372436",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P29",
+    "sha": "c564daaade3a49fdce33bfd9eaea6120e1b09760090ed90e7976dd1555372436",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P34",
+    "sha": "c564daaade3a49fdce33bfd9eaea6120e1b09760090ed90e7976dd1555372436",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P15",
+    "sha": "c564daaade3a49fdce33bfd9eaea6120e1b09760090ed90e7976dd1555372436",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "bramble": [
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P21",
+    "sha": "ce9bd808aabccd2016bc9954eea1bd45aff835f9247b0859b28ac99b0fc206ba",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P45",
+    "sha": "ce9bd808aabccd2016bc9954eea1bd45aff835f9247b0859b28ac99b0fc206ba",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P09",
+    "sha": "ce9bd808aabccd2016bc9954eea1bd45aff835f9247b0859b28ac99b0fc206ba",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P04",
+    "sha": "ce9bd808aabccd2016bc9954eea1bd45aff835f9247b0859b28ac99b0fc206ba",
+    "sonnet": true,
+    "argon": false
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P22",
+    "sha": "ce9bd808aabccd2016bc9954eea1bd45aff835f9247b0859b28ac99b0fc206ba",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P48",
+    "sha": "ce9bd808aabccd2016bc9954eea1bd45aff835f9247b0859b28ac99b0fc206ba",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "log-long": [
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P26",
+    "sha": "1d3bf98dfc40508410aad861a669f2a305c1e16489c6e911150a035c2f37f5d5",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P53",
+    "sha": "1d3bf98dfc40508410aad861a669f2a305c1e16489c6e911150a035c2f37f5d5",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P20",
+    "sha": "1d3bf98dfc40508410aad861a669f2a305c1e16489c6e911150a035c2f37f5d5",
+    "sonnet": false,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P33",
+    "sha": "1d3bf98dfc40508410aad861a669f2a305c1e16489c6e911150a035c2f37f5d5",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P06",
+    "sha": "1d3bf98dfc40508410aad861a669f2a305c1e16489c6e911150a035c2f37f5d5",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P30",
+    "sha": "1d3bf98dfc40508410aad861a669f2a305c1e16489c6e911150a035c2f37f5d5",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P38",
+    "sha": "1d3bf98dfc40508410aad861a669f2a305c1e16489c6e911150a035c2f37f5d5",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P18",
+    "sha": "1d3bf98dfc40508410aad861a669f2a305c1e16489c6e911150a035c2f37f5d5",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "log-short": [
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P02",
+    "sha": "a2e815553404f4c56c39ea7b5fda89443fed2ba40099df44ba6a7616bcc9e96e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P08",
+    "sha": "a2e815553404f4c56c39ea7b5fda89443fed2ba40099df44ba6a7616bcc9e96e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P09",
+    "sha": "a2e815553404f4c56c39ea7b5fda89443fed2ba40099df44ba6a7616bcc9e96e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P17",
+    "sha": "a2e815553404f4c56c39ea7b5fda89443fed2ba40099df44ba6a7616bcc9e96e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P36",
+    "sha": "a2e815553404f4c56c39ea7b5fda89443fed2ba40099df44ba6a7616bcc9e96e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P45",
+    "sha": "a2e815553404f4c56c39ea7b5fda89443fed2ba40099df44ba6a7616bcc9e96e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P19",
+    "sha": "a2e815553404f4c56c39ea7b5fda89443fed2ba40099df44ba6a7616bcc9e96e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P04",
+    "sha": "a2e815553404f4c56c39ea7b5fda89443fed2ba40099df44ba6a7616bcc9e96e",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "log-mossy": [
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P46",
+    "sha": "a9f456ca1a711ec26717b1c62b85d6200001872369b3e90312cd5b338bccc888",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P14",
+    "sha": "a9f456ca1a711ec26717b1c62b85d6200001872369b3e90312cd5b338bccc888",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P49",
+    "sha": "a9f456ca1a711ec26717b1c62b85d6200001872369b3e90312cd5b338bccc888",
+    "sonnet": true,
+    "argon": false
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P01",
+    "sha": "a9f456ca1a711ec26717b1c62b85d6200001872369b3e90312cd5b338bccc888",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P33",
+    "sha": "a9f456ca1a711ec26717b1c62b85d6200001872369b3e90312cd5b338bccc888",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P25",
+    "sha": "a9f456ca1a711ec26717b1c62b85d6200001872369b3e90312cd5b338bccc888",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P15",
+    "sha": "a9f456ca1a711ec26717b1c62b85d6200001872369b3e90312cd5b338bccc888",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P19",
+    "sha": "a9f456ca1a711ec26717b1c62b85d6200001872369b3e90312cd5b338bccc888",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "stump-l": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P41",
+    "sha": "d0022f1a63da056fe5002b9ee38a3164e8227b98cee01cbdf3949af5d8053669",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P17",
+    "sha": "d0022f1a63da056fe5002b9ee38a3164e8227b98cee01cbdf3949af5d8053669",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P23",
+    "sha": "d0022f1a63da056fe5002b9ee38a3164e8227b98cee01cbdf3949af5d8053669",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P07",
+    "sha": "d0022f1a63da056fe5002b9ee38a3164e8227b98cee01cbdf3949af5d8053669",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P08",
+    "sha": "d0022f1a63da056fe5002b9ee38a3164e8227b98cee01cbdf3949af5d8053669",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P19",
+    "sha": "d0022f1a63da056fe5002b9ee38a3164e8227b98cee01cbdf3949af5d8053669",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P44",
+    "sha": "d0022f1a63da056fe5002b9ee38a3164e8227b98cee01cbdf3949af5d8053669",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P50",
+    "sha": "d0022f1a63da056fe5002b9ee38a3164e8227b98cee01cbdf3949af5d8053669",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P05",
+    "sha": "d0022f1a63da056fe5002b9ee38a3164e8227b98cee01cbdf3949af5d8053669",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P03",
+    "sha": "d0022f1a63da056fe5002b9ee38a3164e8227b98cee01cbdf3949af5d8053669",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "stump-s": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P52",
+    "sha": "6efd917f01a36c7d4ec6a8f0eb5fde9cfd17d0f8b75ac0cbfaf4e66c1352a7df",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P31",
+    "sha": "6efd917f01a36c7d4ec6a8f0eb5fde9cfd17d0f8b75ac0cbfaf4e66c1352a7df",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P04",
+    "sha": "6efd917f01a36c7d4ec6a8f0eb5fde9cfd17d0f8b75ac0cbfaf4e66c1352a7df",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P21",
+    "sha": "6efd917f01a36c7d4ec6a8f0eb5fde9cfd17d0f8b75ac0cbfaf4e66c1352a7df",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P25",
+    "sha": "6efd917f01a36c7d4ec6a8f0eb5fde9cfd17d0f8b75ac0cbfaf4e66c1352a7df",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P21",
+    "sha": "6efd917f01a36c7d4ec6a8f0eb5fde9cfd17d0f8b75ac0cbfaf4e66c1352a7df",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P25",
+    "sha": "6efd917f01a36c7d4ec6a8f0eb5fde9cfd17d0f8b75ac0cbfaf4e66c1352a7df",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P36",
+    "sha": "6efd917f01a36c7d4ec6a8f0eb5fde9cfd17d0f8b75ac0cbfaf4e66c1352a7df",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P47",
+    "sha": "6efd917f01a36c7d4ec6a8f0eb5fde9cfd17d0f8b75ac0cbfaf4e66c1352a7df",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P46",
+    "sha": "6efd917f01a36c7d4ec6a8f0eb5fde9cfd17d0f8b75ac0cbfaf4e66c1352a7df",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "stump-shelf": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P48",
+    "sha": "9af86a98779bc1f94926edc7f89a0eb5c3fd19a1643de00e0978413ead28095e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P11",
+    "sha": "9af86a98779bc1f94926edc7f89a0eb5c3fd19a1643de00e0978413ead28095e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P20",
+    "sha": "9af86a98779bc1f94926edc7f89a0eb5c3fd19a1643de00e0978413ead28095e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P47",
+    "sha": "9af86a98779bc1f94926edc7f89a0eb5c3fd19a1643de00e0978413ead28095e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P29",
+    "sha": "9af86a98779bc1f94926edc7f89a0eb5c3fd19a1643de00e0978413ead28095e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P42",
+    "sha": "9af86a98779bc1f94926edc7f89a0eb5c3fd19a1643de00e0978413ead28095e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P35",
+    "sha": "9af86a98779bc1f94926edc7f89a0eb5c3fd19a1643de00e0978413ead28095e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P41",
+    "sha": "9af86a98779bc1f94926edc7f89a0eb5c3fd19a1643de00e0978413ead28095e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P03",
+    "sha": "9af86a98779bc1f94926edc7f89a0eb5c3fd19a1643de00e0978413ead28095e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P10",
+    "sha": "9af86a98779bc1f94926edc7f89a0eb5c3fd19a1643de00e0978413ead28095e",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "shroom-red": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P29",
+    "sha": "1f6a31cf4877e721e45cec36e54a5f90f5aadec121b58e3018351fb6b544e91c",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P02",
+    "sha": "1f6a31cf4877e721e45cec36e54a5f90f5aadec121b58e3018351fb6b544e91c",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P33",
+    "sha": "1f6a31cf4877e721e45cec36e54a5f90f5aadec121b58e3018351fb6b544e91c",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P30",
+    "sha": "1f6a31cf4877e721e45cec36e54a5f90f5aadec121b58e3018351fb6b544e91c",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P53",
+    "sha": "1f6a31cf4877e721e45cec36e54a5f90f5aadec121b58e3018351fb6b544e91c",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P05",
+    "sha": "1f6a31cf4877e721e45cec36e54a5f90f5aadec121b58e3018351fb6b544e91c",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P37",
+    "sha": "1f6a31cf4877e721e45cec36e54a5f90f5aadec121b58e3018351fb6b544e91c",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P07",
+    "sha": "1f6a31cf4877e721e45cec36e54a5f90f5aadec121b58e3018351fb6b544e91c",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P53",
+    "sha": "1f6a31cf4877e721e45cec36e54a5f90f5aadec121b58e3018351fb6b544e91c",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P07",
+    "sha": "1f6a31cf4877e721e45cec36e54a5f90f5aadec121b58e3018351fb6b544e91c",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "shroom-brown": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P10",
+    "sha": "9b97223f3fb99dd489c52918a2dbb84ba66031b7b33ae28ff348bf7c6c1921b3",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P14",
+    "sha": "9b97223f3fb99dd489c52918a2dbb84ba66031b7b33ae28ff348bf7c6c1921b3",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P47",
+    "sha": "9b97223f3fb99dd489c52918a2dbb84ba66031b7b33ae28ff348bf7c6c1921b3",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P35",
+    "sha": "9b97223f3fb99dd489c52918a2dbb84ba66031b7b33ae28ff348bf7c6c1921b3",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P01",
+    "sha": "9b97223f3fb99dd489c52918a2dbb84ba66031b7b33ae28ff348bf7c6c1921b3",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P15",
+    "sha": "9b97223f3fb99dd489c52918a2dbb84ba66031b7b33ae28ff348bf7c6c1921b3",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P19",
+    "sha": "9b97223f3fb99dd489c52918a2dbb84ba66031b7b33ae28ff348bf7c6c1921b3",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P33",
+    "sha": "9b97223f3fb99dd489c52918a2dbb84ba66031b7b33ae28ff348bf7c6c1921b3",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P17",
+    "sha": "9b97223f3fb99dd489c52918a2dbb84ba66031b7b33ae28ff348bf7c6c1921b3",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P05",
+    "sha": "9b97223f3fb99dd489c52918a2dbb84ba66031b7b33ae28ff348bf7c6c1921b3",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "shroom-pale": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P44",
+    "sha": "68860e46db8b7822abddde5af383bfacee763eac61b1a46f3c983cf778cccdee",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P18",
+    "sha": "68860e46db8b7822abddde5af383bfacee763eac61b1a46f3c983cf778cccdee",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P53",
+    "sha": "68860e46db8b7822abddde5af383bfacee763eac61b1a46f3c983cf778cccdee",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P01",
+    "sha": "68860e46db8b7822abddde5af383bfacee763eac61b1a46f3c983cf778cccdee",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P33",
+    "sha": "68860e46db8b7822abddde5af383bfacee763eac61b1a46f3c983cf778cccdee",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P37",
+    "sha": "68860e46db8b7822abddde5af383bfacee763eac61b1a46f3c983cf778cccdee",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P21",
+    "sha": "68860e46db8b7822abddde5af383bfacee763eac61b1a46f3c983cf778cccdee",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P46",
+    "sha": "68860e46db8b7822abddde5af383bfacee763eac61b1a46f3c983cf778cccdee",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P43",
+    "sha": "68860e46db8b7822abddde5af383bfacee763eac61b1a46f3c983cf778cccdee",
+    "sonnet": true,
+    "argon": false
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P47",
+    "sha": "68860e46db8b7822abddde5af383bfacee763eac61b1a46f3c983cf778cccdee",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "shroom-ring": [
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P51",
+    "sha": "e07506785c1e7c94e82a871236ea31cfceffd2cc0fae6e132b29cc1193323fbb",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P27",
+    "sha": "e07506785c1e7c94e82a871236ea31cfceffd2cc0fae6e132b29cc1193323fbb",
+    "sonnet": false,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P45",
+    "sha": "e07506785c1e7c94e82a871236ea31cfceffd2cc0fae6e132b29cc1193323fbb",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "fern-s": [
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P44",
+    "sha": "9f29731690a01c438d8ea690ae96d69cc53f0a3e899bb37bfd3c95e3fb22a0b5",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P40",
+    "sha": "9f29731690a01c438d8ea690ae96d69cc53f0a3e899bb37bfd3c95e3fb22a0b5",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P14",
+    "sha": "9f29731690a01c438d8ea690ae96d69cc53f0a3e899bb37bfd3c95e3fb22a0b5",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P49",
+    "sha": "9f29731690a01c438d8ea690ae96d69cc53f0a3e899bb37bfd3c95e3fb22a0b5",
+    "sonnet": true,
+    "argon": false
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P16",
+    "sha": "9f29731690a01c438d8ea690ae96d69cc53f0a3e899bb37bfd3c95e3fb22a0b5",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P12",
+    "sha": "9f29731690a01c438d8ea690ae96d69cc53f0a3e899bb37bfd3c95e3fb22a0b5",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P45",
+    "sha": "9f29731690a01c438d8ea690ae96d69cc53f0a3e899bb37bfd3c95e3fb22a0b5",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P24",
+    "sha": "9f29731690a01c438d8ea690ae96d69cc53f0a3e899bb37bfd3c95e3fb22a0b5",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "fern-l": [
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P32",
+    "sha": "88e0a1d392867c216d87805b6f859fa5e0601abfb7f239ed4f1f9bb5850a139d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P48",
+    "sha": "88e0a1d392867c216d87805b6f859fa5e0601abfb7f239ed4f1f9bb5850a139d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P36",
+    "sha": "88e0a1d392867c216d87805b6f859fa5e0601abfb7f239ed4f1f9bb5850a139d",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "fern-cluster": [
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P39",
+    "sha": "f6a3a815c53d17b7e68b0d4db9c6ee82bfb70694e8239528a5a0e1d4c068ba11",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P32",
+    "sha": "f6a3a815c53d17b7e68b0d4db9c6ee82bfb70694e8239528a5a0e1d4c068ba11",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P02",
+    "sha": "f6a3a815c53d17b7e68b0d4db9c6ee82bfb70694e8239528a5a0e1d4c068ba11",
+    "sonnet": true,
+    "argon": false
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P25",
+    "sha": "f6a3a815c53d17b7e68b0d4db9c6ee82bfb70694e8239528a5a0e1d4c068ba11",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P52",
+    "sha": "f6a3a815c53d17b7e68b0d4db9c6ee82bfb70694e8239528a5a0e1d4c068ba11",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "grass-tuft-a": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P47",
+    "sha": "6fb4d7648d4fbdc55855e580e9f7b94c33d4946ae813bcfa92f210914384f85d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P12",
+    "sha": "6fb4d7648d4fbdc55855e580e9f7b94c33d4946ae813bcfa92f210914384f85d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P51",
+    "sha": "6fb4d7648d4fbdc55855e580e9f7b94c33d4946ae813bcfa92f210914384f85d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P28",
+    "sha": "6fb4d7648d4fbdc55855e580e9f7b94c33d4946ae813bcfa92f210914384f85d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P18",
+    "sha": "6fb4d7648d4fbdc55855e580e9f7b94c33d4946ae813bcfa92f210914384f85d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P02",
+    "sha": "6fb4d7648d4fbdc55855e580e9f7b94c33d4946ae813bcfa92f210914384f85d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P52",
+    "sha": "6fb4d7648d4fbdc55855e580e9f7b94c33d4946ae813bcfa92f210914384f85d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P44",
+    "sha": "6fb4d7648d4fbdc55855e580e9f7b94c33d4946ae813bcfa92f210914384f85d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P11",
+    "sha": "6fb4d7648d4fbdc55855e580e9f7b94c33d4946ae813bcfa92f210914384f85d",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P28",
+    "sha": "6fb4d7648d4fbdc55855e580e9f7b94c33d4946ae813bcfa92f210914384f85d",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "grass-tuft-b": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P40",
+    "sha": "d55e6c8d6750622e5dfcc8006aed745bff695f19adac9356a1a380ae06a31107",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P34",
+    "sha": "d55e6c8d6750622e5dfcc8006aed745bff695f19adac9356a1a380ae06a31107",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P28",
+    "sha": "d55e6c8d6750622e5dfcc8006aed745bff695f19adac9356a1a380ae06a31107",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P24",
+    "sha": "d55e6c8d6750622e5dfcc8006aed745bff695f19adac9356a1a380ae06a31107",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P07",
+    "sha": "d55e6c8d6750622e5dfcc8006aed745bff695f19adac9356a1a380ae06a31107",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P32",
+    "sha": "d55e6c8d6750622e5dfcc8006aed745bff695f19adac9356a1a380ae06a31107",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P40",
+    "sha": "d55e6c8d6750622e5dfcc8006aed745bff695f19adac9356a1a380ae06a31107",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P11",
+    "sha": "d55e6c8d6750622e5dfcc8006aed745bff695f19adac9356a1a380ae06a31107",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P36",
+    "sha": "d55e6c8d6750622e5dfcc8006aed745bff695f19adac9356a1a380ae06a31107",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P16",
+    "sha": "d55e6c8d6750622e5dfcc8006aed745bff695f19adac9356a1a380ae06a31107",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "grass-reeds": [
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P10",
+    "sha": "3d01610e1d11862aef13b421f2186283d9ed4f8185d585dd08628618d767926a",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P49",
+    "sha": "3d01610e1d11862aef13b421f2186283d9ed4f8185d585dd08628618d767926a",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P50",
+    "sha": "3d01610e1d11862aef13b421f2186283d9ed4f8185d585dd08628618d767926a",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P35",
+    "sha": "3d01610e1d11862aef13b421f2186283d9ed4f8185d585dd08628618d767926a",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P52",
+    "sha": "3d01610e1d11862aef13b421f2186283d9ed4f8185d585dd08628618d767926a",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P03",
+    "sha": "3d01610e1d11862aef13b421f2186283d9ed4f8185d585dd08628618d767926a",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P17",
+    "sha": "3d01610e1d11862aef13b421f2186283d9ed4f8185d585dd08628618d767926a",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P09",
+    "sha": "3d01610e1d11862aef13b421f2186283d9ed4f8185d585dd08628618d767926a",
+    "sonnet": true,
+    "argon": false
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P42",
+    "sha": "3d01610e1d11862aef13b421f2186283d9ed4f8185d585dd08628618d767926a",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "flowers-yellow": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P02",
+    "sha": "d2cf8fc31da5bfdb3761478b59c2c15b6265871db758d335c7176ccaca036bbc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P52",
+    "sha": "d2cf8fc31da5bfdb3761478b59c2c15b6265871db758d335c7176ccaca036bbc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P35",
+    "sha": "d2cf8fc31da5bfdb3761478b59c2c15b6265871db758d335c7176ccaca036bbc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P13",
+    "sha": "d2cf8fc31da5bfdb3761478b59c2c15b6265871db758d335c7176ccaca036bbc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P05",
+    "sha": "d2cf8fc31da5bfdb3761478b59c2c15b6265871db758d335c7176ccaca036bbc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P34",
+    "sha": "d2cf8fc31da5bfdb3761478b59c2c15b6265871db758d335c7176ccaca036bbc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P39",
+    "sha": "d2cf8fc31da5bfdb3761478b59c2c15b6265871db758d335c7176ccaca036bbc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P48",
+    "sha": "d2cf8fc31da5bfdb3761478b59c2c15b6265871db758d335c7176ccaca036bbc",
+    "sonnet": true,
+    "argon": false
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P27",
+    "sha": "d2cf8fc31da5bfdb3761478b59c2c15b6265871db758d335c7176ccaca036bbc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P30",
+    "sha": "d2cf8fc31da5bfdb3761478b59c2c15b6265871db758d335c7176ccaca036bbc",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "flowers-blue": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P33",
+    "sha": "7d9bf8a4fe5d7a7290c6f16df084101fd253b7b202e4c2701edaebf1af2d2ea0",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P16",
+    "sha": "7d9bf8a4fe5d7a7290c6f16df084101fd253b7b202e4c2701edaebf1af2d2ea0",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P05",
+    "sha": "7d9bf8a4fe5d7a7290c6f16df084101fd253b7b202e4c2701edaebf1af2d2ea0",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P41",
+    "sha": "7d9bf8a4fe5d7a7290c6f16df084101fd253b7b202e4c2701edaebf1af2d2ea0",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P22",
+    "sha": "7d9bf8a4fe5d7a7290c6f16df084101fd253b7b202e4c2701edaebf1af2d2ea0",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P53",
+    "sha": "7d9bf8a4fe5d7a7290c6f16df084101fd253b7b202e4c2701edaebf1af2d2ea0",
+    "sonnet": true,
+    "argon": false
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P20",
+    "sha": "7d9bf8a4fe5d7a7290c6f16df084101fd253b7b202e4c2701edaebf1af2d2ea0",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P37",
+    "sha": "7d9bf8a4fe5d7a7290c6f16df084101fd253b7b202e4c2701edaebf1af2d2ea0",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P35",
+    "sha": "7d9bf8a4fe5d7a7290c6f16df084101fd253b7b202e4c2701edaebf1af2d2ea0",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P41",
+    "sha": "7d9bf8a4fe5d7a7290c6f16df084101fd253b7b202e4c2701edaebf1af2d2ea0",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "flowers-white": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P05",
+    "sha": "902f08e793ec97614cf109c3784f9efb4a9a343aeb386b517131e1f3454b8679",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P22",
+    "sha": "902f08e793ec97614cf109c3784f9efb4a9a343aeb386b517131e1f3454b8679",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P45",
+    "sha": "902f08e793ec97614cf109c3784f9efb4a9a343aeb386b517131e1f3454b8679",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P02",
+    "sha": "902f08e793ec97614cf109c3784f9efb4a9a343aeb386b517131e1f3454b8679",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P52",
+    "sha": "902f08e793ec97614cf109c3784f9efb4a9a343aeb386b517131e1f3454b8679",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P24",
+    "sha": "902f08e793ec97614cf109c3784f9efb4a9a343aeb386b517131e1f3454b8679",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P04",
+    "sha": "902f08e793ec97614cf109c3784f9efb4a9a343aeb386b517131e1f3454b8679",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P20",
+    "sha": "902f08e793ec97614cf109c3784f9efb4a9a343aeb386b517131e1f3454b8679",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P50",
+    "sha": "902f08e793ec97614cf109c3784f9efb4a9a343aeb386b517131e1f3454b8679",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P26",
+    "sha": "902f08e793ec97614cf109c3784f9efb4a9a343aeb386b517131e1f3454b8679",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "flowers-pink": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P45",
+    "sha": "93d210858602bf3b14451e77d62c137a5776e52b1a3aa354bf560de8d4722fdc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P05",
+    "sha": "93d210858602bf3b14451e77d62c137a5776e52b1a3aa354bf560de8d4722fdc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P12",
+    "sha": "93d210858602bf3b14451e77d62c137a5776e52b1a3aa354bf560de8d4722fdc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r8",
+    "artRev": "66a36deb6d",
+    "code": "P31",
+    "sha": "93d210858602bf3b14451e77d62c137a5776e52b1a3aa354bf560de8d4722fdc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P37",
+    "sha": "93d210858602bf3b14451e77d62c137a5776e52b1a3aa354bf560de8d4722fdc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P31",
+    "sha": "93d210858602bf3b14451e77d62c137a5776e52b1a3aa354bf560de8d4722fdc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P15",
+    "sha": "93d210858602bf3b14451e77d62c137a5776e52b1a3aa354bf560de8d4722fdc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P09",
+    "sha": "93d210858602bf3b14451e77d62c137a5776e52b1a3aa354bf560de8d4722fdc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P13",
+    "sha": "93d210858602bf3b14451e77d62c137a5776e52b1a3aa354bf560de8d4722fdc",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P14",
+    "sha": "93d210858602bf3b14451e77d62c137a5776e52b1a3aa354bf560de8d4722fdc",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "flowers-patch": [
+   {
+    "round": "r5",
+    "artRev": "HEAD~1",
+    "code": "P23",
+    "sha": "fbd91bad54c94f31bb46b29c63c78a0550cc9d463e0a3ac40ce8ccb89ffb4051",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r6",
+    "artRev": "HEAD",
+    "code": "P43",
+    "sha": "fbd91bad54c94f31bb46b29c63c78a0550cc9d463e0a3ac40ce8ccb89ffb4051",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r7",
+    "artRev": "245edfb857",
+    "code": "P30",
+    "sha": "fbd91bad54c94f31bb46b29c63c78a0550cc9d463e0a3ac40ce8ccb89ffb4051",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P12",
+    "sha": "fbd91bad54c94f31bb46b29c63c78a0550cc9d463e0a3ac40ce8ccb89ffb4051",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P22",
+    "sha": "fbd91bad54c94f31bb46b29c63c78a0550cc9d463e0a3ac40ce8ccb89ffb4051",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P11",
+    "sha": "fbd91bad54c94f31bb46b29c63c78a0550cc9d463e0a3ac40ce8ccb89ffb4051",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P22",
+    "sha": "fbd91bad54c94f31bb46b29c63c78a0550cc9d463e0a3ac40ce8ccb89ffb4051",
+    "sonnet": true,
+    "argon": false
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P04",
+    "sha": "fbd91bad54c94f31bb46b29c63c78a0550cc9d463e0a3ac40ce8ccb89ffb4051",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P08",
+    "sha": "fbd91bad54c94f31bb46b29c63c78a0550cc9d463e0a3ac40ce8ccb89ffb4051",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "hollow-tree": [
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P37",
+    "sha": "433f72d3c7a4e988db147964cee7bc0c371abde72b587b3a2037bf59e4a92e4e",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P02",
+    "sha": "433f72d3c7a4e988db147964cee7bc0c371abde72b587b3a2037bf59e4a92e4e",
+    "sonnet": true,
+    "argon": true
+   }
+  ],
+  "shrine-stone": [
+   {
+    "round": "r9",
+    "artRev": "ea75dc776d",
+    "code": "P11",
+    "sha": "662a364964ee3aea2f1de47eb76dd0385e080fdadcab34ac9eee146c5dafd1d3",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r10",
+    "artRev": "2764c114cc",
+    "code": "P07",
+    "sha": "662a364964ee3aea2f1de47eb76dd0385e080fdadcab34ac9eee146c5dafd1d3",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r11",
+    "artRev": "afa57cc2f2",
+    "code": "P49",
+    "sha": "662a364964ee3aea2f1de47eb76dd0385e080fdadcab34ac9eee146c5dafd1d3",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r12",
+    "artRev": "453fa82655",
+    "code": "P05",
+    "sha": "662a364964ee3aea2f1de47eb76dd0385e080fdadcab34ac9eee146c5dafd1d3",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r13",
+    "artRev": "153afe5c9f",
+    "code": "P42",
+    "sha": "662a364964ee3aea2f1de47eb76dd0385e080fdadcab34ac9eee146c5dafd1d3",
+    "sonnet": true,
+    "argon": true
+   },
+   {
+    "round": "r14",
+    "artRev": "8f6d4921bc",
+    "code": "P44",
+    "sha": "662a364964ee3aea2f1de47eb76dd0385e080fdadcab34ac9eee146c5dafd1d3",
+    "sonnet": true,
+    "argon": true
+   }
+  ]
+ }
+}

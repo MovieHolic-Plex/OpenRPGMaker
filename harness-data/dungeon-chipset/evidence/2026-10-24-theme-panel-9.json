@@ -1,0 +1,51 @@
+{
+ "round": "theme-walls-r9 / theme-props-r6 / theme-props-r7 / theme-props-r8",
+ "panel": 9,
+ "date": "2026-10-24",
+ "boards": [
+  "qa-runs/walls/theme-walls-r9/board-wall.tower_face-p9.png",
+  "qa-runs/walls/theme-walls-r9/board-wall.other_rim-p9.png",
+  "qa-runs/walls/theme-props-r6/board-prop.cracked_floor-p6c.png",
+  "qa-runs/walls/theme-props-r7/board-wall.ice_face-p7d.png",
+  "qa-runs/walls/theme-props-r8/board-prop.wisp-p8.png"
+ ],
+ "criteria": "(1) true 3/4 top-down at 1x; (2) same game as Beodeul reference (palette, 4-6 steps, material-tone dark edges, no glow/toy/confetti); (3) no seams/16px repeat; (4) fits theme. A MAJOR = a defect a player would notice at 1x in the room view. Blind: only PNG paths and criteria given.",
+ "reviewers": {
+  "klb-sonnet-5-5": "ae6f98c3779d70046",
+  "argon": "ad60191de5762df79"
+ },
+ "count_rule": "an item passes only when neither blind reviewer raises a major against the candidate",
+ "tally": {
+  "wall.tower_face": {
+   "A1": "PASS both (sonnet minor: blotchy moss bricks, heavy dark bottom course; argon minor: speckling busier than Beodeul)",
+   "A2": "FAIL both (sandstone confetti)"
+  },
+  "wall.other_rim": {
+   "A1": "argon PASS; sonnet FAIL (fuzzy magenta halo reads as glow, saturated, flat band no top/front split)",
+   "A2": "argon PASS; sonnet FAIL (same)"
+  },
+  "prop.cracked_floor": {
+   "A1": "PASS both (minors: spider-like crack prongs; strong purple pit)",
+   "A2": "sonnet PASS; argon FAIL (green pit clashes with grey floor)"
+  },
+  "wall.ice_face": {
+   "A1": "FAIL both (16px repeat, saturated cyan noise; argon: snow base stops on end tiles)",
+   "A2": "FAIL both"
+  },
+  "prop.wisp": {
+   "A1": "argon PASS; sonnet FAIL (bowl front-on with no visible top opening, near-white glow flame + sparkles, frames nearly identical)",
+   "A2": "argon PASS; sonnet FAIL (same)"
+  }
+ },
+ "result": {
+  "pass": [
+   "wall.tower_face theme-walls-r9 A1",
+   "prop.cracked_floor theme-props-r6 A1"
+  ],
+  "redraw": [
+   "wall.other_rim",
+   "wall.ice_face",
+   "prop.wisp"
+  ]
+ }
+}

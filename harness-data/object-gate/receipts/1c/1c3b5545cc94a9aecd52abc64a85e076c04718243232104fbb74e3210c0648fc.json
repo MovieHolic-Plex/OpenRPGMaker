@@ -1,0 +1,371 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1c3b5545cc94a9aecd52abc64a85e076c04718243232104fbb74e3210c0648fc",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "brown mushroom cluster (mushrooms), natural map prop for the Beodeul 16px chipset, 1x1 tiles, walk-over ground decor (2nd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/shroom-brown",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 61,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large mushroom cap (dome)",
+      "rows": "5-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "9-9"
+     },
+     {
+      "part": "large mushroom stem",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small mushroom cap (dome)",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "12-12"
+     },
+     {
+      "part": "small mushroom stem",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the large mushroom, rows 5-13. Its width profile grows 4, 8, 10, 10, then 9 and 7. That is a dome with a flat underside sitting on a narrower stem. It is a hat shape, not an ellipse, and it has no back-to-front widen-then-narrow cap. Rows 5-6 are lighter highlight rows at the top of the dome, rows 7-8 are darker and row 9 is a dark purple gill shadow. No front-edge line closes a horizontal top band. Counting the highlight as at most a 1-2 row rim, the cap is a side-view dome and no real top surface is visible. The stem below (rows 10-13) is a vertical face. The small mushroom beside it is built the same way."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny prop, about 15x12 source pixels, so the per-tile facts read 0 and I judged it by eye. Its dark edge pixels are 0% neutral, so the outline leans dark brown and fits the material-tone rule. It has 12 distinct colours, close to the small reference tree-1a786c (10), and no flat 5x5 areas. Each cap seems to carry roughly 3-4 steps (highlight, mid, dark, rim) and each stem about 2-3, short of the 5-6 steps Beodeul uses per material. Texture is limited to a few cap spots and a stem shade, with no grain, soil or grass tufts at the base. The 'cluster' is only two mushrooms standing on bare ground, which makes it look thinner and more sticker-like than the references. A careful artist would likely ask for another cap tone, more texture dots and some grass or soil grounding before accepting it. I am failing it because of that doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 23573
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large mushroom cap",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-9"
+     },
+     {
+      "part": "large mushroom stem",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small mushroom cap",
+      "rows": "9-11",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-12"
+     },
+     {
+      "part": "small mushroom stem",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The large mushroom cap spans rows 5-8 and widens from 4 to 10 px. Its top is lit orange in rows 5-6 and shades to darker brown in rows 7-8. Row 9 is a dark purple gill or eave shadow line (x=5 L=58) that closes the cap, so the cap reads as a domed top surface over a front face. Below it the pale stem is the front face in rows 10-13, 4 rows. The small mushroom on the right repeats the same structure, with cap rows 9-11, shadow in row 12 and stem in rows 12-13. This is an organic prop with a volumetric cap and a front face, not a flat top-down slab or a plain front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny two-mushroom prop, smaller than one tile, so the per-tile facts read 0 and I judged by eye. The outline is tinted dark brown, consistent with 0% near-neutral edge pixels, so it is not a black sticker line. There are no flat fills, since the pieces are too small for 5x5 blocks. However, only 12 distinct colours are used in total. Each cap and stem shows about 3 steps (highlight, mid, dark) against the references' 5-6 per material. There is no soil grain, grass tuft, or per-element texture at the base, and the shapes are simple and smooth. Next to the leaf-clump richness of tree-d43edd, and even the 7-tone tree-1a786c, it looks thinner and flatter. Sparse objects are allowed to be simple, but a careful artist would likely want more cap speckle, a stem shadow, and a ground-contact detail before accepting it. Doubtful, so fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17817
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large mushroom cap (brown dome with lighter top highlight)",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "large mushroom stem (pale, front face)",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small mushroom cap at right",
+      "rows": "8-10",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "small mushroom stem",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the large mushroom. Its brown cap spans rows 5-8 and widens from 4 to 10 px, with lighter highlight rows 5-6 (L about 131-159) on top. Row 9 is a dark purple gill or underside line (#562945, L=58) acting as the front-edge line and eave shadow. Below it a pale stem face spans rows 10-13 (L about 174-210), giving about 5 front-face rows including the shadow row. The small mushroom at right repeats the same cap, shadow and stem structure. The cap is a dome seen from slightly above rather than a flat band, so it reads as three-quarter, though the top surface is only moderately deep."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny two-mushroom cluster smaller than one tile, so the per-tile tone count is 0 and I judged by eye. It has 12 distinct colours in total. The caps look to have a highlight, a mid tone and a dark underside, and the stems a light and a shaded side. That is about 3-4 steps per material against roughly 6 on the references. Dark edge pixels are 0% neutral, and the outline looks brown-tinted rather than black, so it reads as dark material tone. There are no large flat fills (0% near-flat). Even so, at this size the caps and stems show little grain, speckle or per-surface texture. Next to the Beodeul trees it reads as simpler and more sticker-like. The ground contact is also thin, with no grass tufts or soil grain around the base. A careful artist would probably ask for another shading step and some texture dots on the caps and ground, so I fail it as borderline and give it the benefit of doubt only on outline and flat fills.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20091
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large mushroom cap",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "large mushroom stem",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small mushroom cap",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "small mushroom stem",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The large mushroom has a cap in rows 5-8 whose width grows from 4 to 10 and which is lit on top. It ends in a dark gill shadow line at row 9 (column x=5 #562945, x=8 #3d220c), which acts as the front-edge line and eave shadow. Below it a pale stem face runs through rows 10-13, so the front face is about 5 rows including the shadow. The small mushroom on the right repeats the pattern: a cap at rows 9-12, darkening to row 12 at x=12, and a stem at row 13. The cap is a dome sitting on a narrower stem, but the dark underside and the stem below give a top plus a front face. The object is a natural prop, not a column, so no round_cap is reported."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny two-mushroom cluster, smaller than one 16x16 tile, so the per-tile facts are 0 and I judged density by eye. Its dark edge pixels are 0% neutral, so the outline leans brown and reads as dark_material_tone, not a black sticker line. The 12 distinct colours cover two caps, two stems and the outline. Each cap shows about 3 steps (highlight, mid, dark underside) and each stem about 2. The references show 5-6 steps per material and clustered grain. The caps look smooth, with no per-cap speckle, spots or gill grain, and the stems are simple. There are no flat 5x5 fills (0%), but next to the references the piece looks thinner and flatter. It would need another light or dark step on the caps, plus some texture dots and grass or soil contact at the base, to match the Beodeul standard. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19723
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.282Z",
+ "cells": {
+  "16": [
+   "02628bd056f337d9"
+  ],
+  "24": [
+   "19daf8a208b2fcac",
+   "355bcd45d3985099",
+   "4012caab0a629b0f",
+   "4ac89141caef9fa0",
+   "b19b3bf86ead0938",
+   "e1125c956ebde155"
+  ],
+  "32": [
+   "403fe88fdccc774a",
+   "5f78ce9bfd3613a4",
+   "69e211824b6afd16",
+   "989b5b31974410d1",
+   "d5446f41ab725e49",
+   "e047335cdad8602a"
+  ],
+  "48": [
+   "44e596059c6e8c1a",
+   "78623968a6e843f0",
+   "91ddce6e556b50fd",
+   "94726257d3d941fe",
+   "f435246b13b543a5",
+   "f43fa88db39f7b0f"
+  ]
+ }
+}

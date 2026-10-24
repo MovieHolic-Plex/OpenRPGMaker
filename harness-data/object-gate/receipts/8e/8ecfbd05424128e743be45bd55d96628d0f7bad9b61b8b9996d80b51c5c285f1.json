@@ -1,0 +1,426 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8ecfbd05424128e743be45bd55d96628d0f7bad9b61b8b9996d80b51c5c285f1",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "fairy ring of small mushrooms (mushrooms), natural map prop for the Beodeul 16px chipset, 2x2 tiles, walk-over ground decor (2nd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/shroom-ring",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 64,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large red mushroom cap (upper left cluster)",
+      "rows": "9-16",
+      "evidence": "b",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "small mushroom cap (middle left)",
+      "rows": "21-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mushroom cluster caps (lower center)",
+      "rows": "23-27",
+      "evidence": "b",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "26-27"
+     },
+     {
+      "part": "small mushroom cap (lower right)",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts",
+      "rows": "14-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the scattered cluster of red mushrooms. The largest cap (rows 9-16) has a widening and narrowing width profile (3,4,5,6,7,9,8,7,5), which reads as a domed ellipse, followed by a dark underside row and a short pale stem at rows 17-19. The lower cluster (rows 23-27) has the same cap and stem structure. The smaller mushrooms are only 2-3 rows tall and are drawn as small caps over stems. The grass tufts are decor. The ring is sparse and loosely drawn, but the caps show top surfaces with stems below, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny scatter of about 6 red-capped mushrooms in a loose ring, with only 15 distinct colours in total. It is much smaller than the references and far less detailed. The tile-based facts give 0 because it is smaller than a full tile, so I judged by eye. Each cap has roughly 3 steps (dark red, red, a white dot highlight), and the stems are plain pale blobs. There is no visible grass, soil or leaf grain around the ring, so the 2x2 tile footprint is mostly empty. The 11% near-neutral share of dark edge pixels suggests the outlines are mostly tinted, but the shapes are so small that this barely shows. Next to the references, which have 5-6 green steps, clumped leaf texture and tinted dark outlines, it looks thinner and more sticker-like. Even allowing for a sparse prop, the shading is shallow and the ring lacks the ground grain and tufts that would make it sit in the grass. A careful artist would not accept it beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10561
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large red mushroom cap (upper left cluster)",
+      "rows": "9-16",
+      "evidence": "b",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small mushroom at left",
+      "rows": "21-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mushroom cluster lower center",
+      "rows": "23-28",
+      "evidence": "b",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "small mushroom at right",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts",
+      "rows": "14-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The largest mushroom cluster (rows 9-16) has rounded red caps whose width profile widens from 3 to 9 and narrows to 5-7 by row 17, which reads as an ellipse-like cap. Short pale stems appear beneath at rows 17-19, giving a front face of about 3 rows. The lower cluster (rows 23-28) repeats the cap-then-stem structure, and the small separate mushrooms have tiny caps. This is a scattered natural prop rather than a built object, and it reads as a 3/4 top-down view, not a flat slab or a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny scatter of about 5-6 red-capped mushrooms with white dots, much smaller than the 2x2-tile footprint and far smaller than the reference trees. It does not read as a ring. Each cap has only about 3 tones (a dark red, a mid red and a white or pink dot), and the stems are close to flat. The measured tones per tile are 0 because the piece is smaller than a tile, so I judged by eye. It uses only 15 colours in total, against 10 for tree-1a786c and 567 for tree-d43edd. The dark edge pixels are only 11% neutral, so the outline leans dark red-brown rather than black. There are no large flat fills, but each mushroom is only a few pixels across, so there is little clustering, grain or ground texture such as grass tufts or soil. This is a sparse prop, but it still looks thinner and simpler than the Beodeul references, so I fail it rather than pass it on cleanliness alone.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13182
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large mushroom cluster upper-left (red cap)",
+      "rows": "9-16",
+      "evidence": "b",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "small mushroom left-middle",
+      "rows": "21-24",
+      "evidence": "b",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24"
+     },
+     {
+      "part": "mushroom cluster lower-center (red caps)",
+      "rows": "23-27",
+      "evidence": "b",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "small mushroom lower-right",
+      "rows": "26-28",
+      "evidence": "b",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "28"
+     },
+     {
+      "part": "grass blades",
+      "rows": "14-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The largest mushroom group (rows 9-16) widens from 3 to 9 px and narrows again to 7 and 5, which is an ellipse-like red cap. A pale stem and shadow follow in rows 17-19, which gives about 3 front rows. The other small mushrooms use the same pattern, a red cap with a short stem and shadow below, so each reads as a cap seen from above with a front face. The scattered green pixels are grass, not part of the mushrooms. The stems are short and faint, so the front face is minimal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate renders as a tiny cluster of a few red-capped mushrooms in the lower right of the board. It is far smaller than the 2x2 tile footprint, so the per-tile facts read 0 and I judged by eye. The mushrooms show about 3 steps (red cap, a lighter spot and a dark base) against the references' 6 or more. Some dark edge pixels lean red/brown but 11% are neutral, so the outline is mixed rather than clearly material-toned. There is almost no texture or grain, and no grass, soil or clump detail to give a 'fairy ring' on grass. The object is also sparse: the ring shape is not readable, and it looks much thinner and more sticker-like than either reference, which carry 7 and 29 visible tones per tile. A careful artist would not accept it next to those references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10153
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large mushroom cap cluster (upper left)",
+      "rows": "9-16",
+      "evidence": "b",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "stems of large cluster",
+      "rows": "17-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small mushroom (centre left)",
+      "rows": "22-24",
+      "evidence": "b",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mushroom cluster (lower centre)",
+      "rows": "23-27",
+      "evidence": "b",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "25-26"
+     },
+     {
+      "part": "small mushroom (right)",
+      "rows": "26-28",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass blades",
+      "rows": "14-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the largest mushroom, rows 9-19. Its cap width profile runs 3,4,5,6,7,9,8,7,5, so it widens and narrows again like an ellipse, with bright red highlight rows on top. Dark red shading in rows 15-16 acts as the front rim and eave shadow. Below that, grey stem and shadow pixels in rows 17-19 form the front face. The smaller mushrooms (rows 22-28) repeat the same cap-plus-stem structure at a smaller scale. The caps read as domed tops seen from above-front, not a flat front elevation. The front face is short, 3-4 rows, so this is a borderline call."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny scatter of about 5-6 red-capped mushrooms, only roughly 20x15 source pixels, well under the 2x2 tile footprint. It does not read as a ring. The tile-density fact is 0 because the piece is smaller than one tile, so I judged by eye. The caps show only about 3 steps (dark red, red, white or pink dots) and the stems look nearly flat. The dark edge pixels are only 11% neutral and lean red-brown, so the outline is a material tone, not a sticker line. There are no large flat fills, but the piece is too sparse to carry texture. It has no grass tufts, soil grain or clumps, and no per-element shading comparable to the references' 7 and 29 visible tones per tile. Beside the references it looks thinner and flatter than a careful artist would accept for a 2x2 prop.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18363
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.286Z",
+ "cells": {
+  "16": [
+   "56f22c9ec01e97f6",
+   "b3a2696c7281e835",
+   "b50b2571c957fcd5"
+  ],
+  "24": [
+   "0329db11f48c3232",
+   "1d1de5ca9c77ffb7",
+   "39caa7cfad91d050",
+   "3c080d8f25fba02a",
+   "4029a2a3cfa98eec",
+   "665b35a7e8767696",
+   "6edcbf4390a507f6",
+   "79b17fbebc3fb188",
+   "7c60c46c5aae91e9",
+   "8d50127ff8359c6e",
+   "96d7bc2917105d17",
+   "ae80eea33d7d1a21",
+   "bad5b8270e8545dc",
+   "ebab5cdd7230a05a",
+   "ed4ab930cdce40a5"
+  ],
+  "32": [
+   "e1ffbe17f44b1df2"
+  ],
+  "48": [
+   "30a197f8aa15dbc1",
+   "6d0a71bbc373307d",
+   "c3ed11dd27ee1644",
+   "e58837c527158898",
+   "f2bbd9959c97884c",
+   "f73bc01280d15e63"
+  ]
+ }
+}

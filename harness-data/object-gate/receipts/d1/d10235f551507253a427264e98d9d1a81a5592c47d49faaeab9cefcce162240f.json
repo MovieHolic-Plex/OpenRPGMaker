@@ -1,0 +1,364 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d10235f551507253a427264e98d9d1a81a5592c47d49faaeab9cefcce162240f",
+ "width": 48,
+ "height": 32,
+ "kind": "organic",
+ "name": "rotting mossy log with ferns (fallen log / stump), natural map prop for the Beodeul 16px chipset, 3x2 tiles, standing object (3rd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/log-mossy",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 30,
+  "nearBlackEdge": 0.21,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ferns and leaf clumps growing on and above the log",
+      "rows": "9-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log top strip (right half, lighter bark/moss band)",
+      "rows": "19-20",
+      "evidence": "none",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log trunk front face (bark side)",
+      "rows": "21-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cut end face on the west end (pale rings)",
+      "rows": "20-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The log is a horizontal cylinder shown mostly as a side profile. At x=34 there is a 1-row dark row 19, a lighter edge row 20 (#b77541), then the bark face in rows 21-24 and dark shadow in rows 25-26. That gives only about a 2-row top strip, which is a rim and not an ellipse or a real top plane. On the left, moss and ferns cover the top, so no horizontal surface shows there. The pale cut end at the west is a vertical face. The ferns in rows 9-19 are decor. The silhouette widens quickly from rows 17 to 21 and narrows again by rows 26-28. This comes from the fern and moss mass and the shadow, not from a top plane. So the log reads as front elevation with a thin top rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts do not count against the candidate. It has 14 visible tones per tile, between the two references (7 and 29). Near-flat coverage is 0%, and the dark edge pixels are 0% neutral, so the outlines carry a tint (dark brown by the wood, dark green by the moss). By eye it still looks thinner than the richer reference, tree-d43edd. The log is a small, low strip that does not fill the 3x2 footprint. The bark reads as about 3-4 steps (brown body, a light cut end, a dark underside) with little grain. The moss and fern are a few clustered greens, not the many-toned leaf clumps the references show. The log sits close to flat-bodied, and the fern tufts are tiny. Next to the references it looks sparser and simpler than a careful artist would accept for this chipset, so it fails on shading depth and density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18733
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fern fronds above the log (upper left and right)",
+      "rows": "9-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss and fern patches on the log's upper surface",
+      "rows": "16-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log trunk upper strip (right half)",
+      "rows": "19-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log trunk front/side face with bark",
+      "rows": "21-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cut end with pale growth rings (left)",
+      "rows": "19-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The log lies horizontally and is drawn mostly in profile. The cut end with pale rings at the left (cols about 8-12, rows 19-24) is a vertical end face, not a top. The only top-like part is a thin band on the right half: row 19 is dark, row 20 is a light line (#b77541), and rows 21-23 are the mid-brown face. That is about 2 rows, which is a rim-sized strip and not an ellipse or a real top plane. Below it the bark face runs rows 21-27, so the front face is present. The width profile grows from 17 at row 17 to 42 at row 21 and shrinks to 9 at row 27. That reflects moss and ferns on top plus a rounded underside, not a flat horizontal surface. The mossy tufts and ferns read as decor on a profile-view log. The trunk itself shows no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small prop, roughly 3x1 tiles of visible pixels. It has a brown log body with a lighter cut end, moss and fern clumps in several greens, and darker undersides. The dark edge pixels are 0% near-neutral, so the outline is tinted dark brown or green, not a black sticker line. Near-flat coverage is 0%, so there are no flat fills. It shows 14 visible tones per tile, double tree-1a786c (7) and below tree-d43edd (29), which is a much larger canopy tree. It has 19 distinct colours against 10 for tree-1a786c. Shading is a bit shallower than the references, at about 4 steps on the wood and 3-4 on the greens, and the bark grain is modest. It would sit acceptably beside tree-1a786c, which is the closer match in scale and simplicity, without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19361
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fern fronds above the log (upper left and right)",
+      "rows": "9-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log top: moss clumps and bark band along the back",
+      "rows": "17-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "log front face (bark and shadowed underside)",
+      "rows": "21-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cut end with pale rings (west end)",
+      "rows": "19-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The log is a horizontal cylinder. The silhouette widens from 17 px at row 17 to 40 px at row 20, so a top band is drawn there. Moss and bark fill rows 17-20, and the bright bark line at row 20 on the right (x=34, #b77541) works as the front-edge line. Dark eave shadow follows at rows 21-22 (#063328 at x=13 and x=24). Below that the brown front face and underside run through rows 21-27, about 7 rows. The ferns at rows 9-17 are plants growing on the log and count as decor. The west end shows a pale cut face, which is the log's end profile and not a receding side face. The top band is thin and partly covered by moss, so it only just clears the rim threshold, but it has an edge line and shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a thin, sparse prop, so I judged it by eye against the measured facts. It carries 14 visible tones per tile, double tree-1a786c (7) and about half of tree-d43edd (29). Near-flat coverage is 0%, the same as both references. Dark edge pixels are 0% neutral, so the outlines lean brown or green: dark brown beside the wood and dark green beside the moss, not a sticker-style black line. The wood has about 4-5 lightness steps, with a lighter end cap, grain and a bark edge. The moss and fern clumps use several greens on top. The log is smaller and simpler than the d43edd reference, and its ferns are fairly small. It is still at or above the weaker reference on every primary fact and is not flat or sticker-like, so a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20174
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fern fronds above log",
+      "rows": "9-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss clumps on log back",
+      "rows": "17-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log upper bark strip",
+      "rows": "19-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "log front bark face",
+      "rows": "21-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cut end ring (west end)",
+      "rows": "19-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The log is a horizontal cylinder drawn as a side profile. At x=34 the bark has one light highlight line at row 20 (#b77541) over a thin row-19 strip, which is only a 1-2 row rim. Rows 21-26 are the vertical bark face, darkening toward the bottom shadow at rows 25-26. The silhouette runs from 17 px wide at row 17 to 40 px at row 20 and tapers at rows 26-28, so there is no ellipse or flat top plane. The green blobs at rows 9-21 are fern and moss decor, not a top surface. The west cut end is a small face-on ring, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, sparse prop, so I judged it mainly by eye and by the facts. It has 14 visible tones per tile, against 7 for tree-1a786c and 29 for tree-d43edd, so it sits between the two references and is richer than the weaker one. Near-flat coverage is 0%, matching both references, and I saw no large flat fills. The dark edge pixels are 0% neutral, so the outlines carry a tint: dark brown beside the bark and dark green beside the moss and ferns, not a black sticker line. The log shows about 4-5 brown steps (lit cut end, bark highlight, mid, dark underside), plus a few greens in the moss and fern clumps. That is slightly short of the reference's 5-6 steps per material, and the bark grain is modest. The ferns and moss are broken into clumps instead of flat patches. A careful artist would accept it next to the references without it looking noticeably thinner or flatter than tree-1a786c.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19746
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.267Z",
+ "cells": {
+  "16": [
+   "656148425f370029",
+   "75dd970a4b78b82f",
+   "7ca12dd0b6fc3931",
+   "8d57adb20d857f65",
+   "ab1c99aaafbaea5b",
+   "e1b4efd0950cce82"
+  ],
+  "24": [
+   "21e037ae08e26aab",
+   "3f41465daa8a5af8",
+   "46e27ba060359794",
+   "7d7ea6304035c23e",
+   "847f4680d82a0c61",
+   "f097ff66189761c6"
+  ],
+  "32": [
+   "00d2502c4e2c281c",
+   "0787fb765b14e8bd",
+   "44bd17b6685f6da0",
+   "73a81b23d030e1c8",
+   "b8a208bcc5856cc9",
+   "ba0c6ae3a00e41ce"
+  ],
+  "48": [
+   "b91f19526103b12d",
+   "bb1a78c82c6e6424"
+  ]
+ }
+}

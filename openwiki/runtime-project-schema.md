@@ -1,5 +1,12 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 대사 책상 — 선택 필드 `project.dialogueDesk` (2026-10-24)
+
+`{ voices: [{speaker, note, updatedAt?}], proposals: [{id, lineId, baseHash, before, after, reason?, batchId?, instruction?, source: "ai"|"human", createdAt}] }`
+(`src/project/dialogueDesk.ts`). 화자 말투 메모와 아직 받지 않은 윤문 제안. 런타임은 읽지 않는다 — 게임 대사는 제안을 받을 때만 명령 자체가 바뀐다.
+로드(`io/shape.ts`)에서 `normalizeDialogueDesk` 로 다듬고 비면 키를 지운다. 제안은 최대 400, 메모는 800자.
+store.update 안에서 루트 키 **삭제**는 반영되지 않으므로 쓰기 쪽은 빈 책상을 대입한다. 변경 영역 라벨 「대사 책상」.
+
 ## 세계 지도 연결 정의 — 선택 필드 `project.worldAtlases` (2026-10-05)
 
 6종의 이동 구조·실제 mapId·입구/문·연결·관문 switch id·핀을 보존한다.

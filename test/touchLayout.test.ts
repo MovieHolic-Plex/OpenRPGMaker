@@ -15,7 +15,7 @@ describe("calculateTouchLayout (mobile touch play, 2026-10-24)", () => {
     const stageBottom = layout.stageTop + 270 * layout.scale;
     expect(layout.stageTop).toBeGreaterThanOrEqual(safe.top);
     // 조이스틱 위쪽(메뉴 줄 포함)은 무대 아래, 아래쪽은 안전 영역 위.
-    expect(layout.controlsY - layout.stick / 2 - 44).toBeGreaterThanOrEqual(stageBottom - 0.5);
+    expect(layout.controlsY - layout.stick / 2 - 52).toBeGreaterThanOrEqual(stageBottom - 0.5);
     expect(layout.controlsY + layout.stick / 2).toBeLessThanOrEqual(h - safe.bottom);
     expect(layout.stick).toBeGreaterThanOrEqual(112);
     expect(layout.stick).toBeLessThanOrEqual(136);
@@ -30,5 +30,18 @@ describe("calculateTouchLayout (mobile touch play, 2026-10-24)", () => {
     expect(layout.stageLeft).toBeGreaterThanOrEqual(layout.gutter - 1);
     expect(layout.stageLeft + 480 * layout.scale).toBeLessThanOrEqual(w - layout.gutter + 1);
     expect(layout.stageTop + 270 * layout.scale).toBeLessThanOrEqual(h - safe.bottom + 0.5);
+  });
+
+  it("portrait phones below 1x get the 320x300 window panel at 1x", () => {
+    const layout = calculateTouchLayout(393, 659, 480, 270, zero, { scaleMode: "integer" });
+    expect(layout.scale).toBeLessThan(1);
+    expect(layout.panel?.scale).toBe(1);
+    expect(layout.panel!.top).toBeGreaterThanOrEqual(layout.stageTop);
+  });
+
+  it("iPad mini uses the 1.5x step in portrait and landscape", () => {
+    expect(calculateTouchLayout(768, 1024, 480, 270, zero, { scaleMode: "integer" }).scale).toBe(1.5);
+    expect(calculateTouchLayout(1024, 768, 480, 270, zero, { scaleMode: "integer" }).scale).toBe(1.5);
+    expect(calculateTouchLayout(1024, 768, 480, 270, zero, { scaleMode: "integer" }).panel).toBeNull();
   });
 });

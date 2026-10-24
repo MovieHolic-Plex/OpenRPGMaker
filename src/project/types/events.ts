@@ -458,7 +458,7 @@ export type Command =
   | { kind: "advanceCropGrowth"; days: number }
   | { kind: "setTime"; hour: number; minute?: number }
   | { kind: "sleepUntilMorning" }
-  /** door=false: 문 칸에서 떠나도 문 여는 연출을 하지 않는다(생략 = 문 칸이면 문짝이 열리고 문 소리 뒤 이동). */
+  /** 문 열림 연출: 생략 = 자동(문 캐릭터 시트이거나 이벤트 칸·바로 윗칸에 여닫는 문 타일일 때만 — 성문·통로·맵 가장자리·계단은 없음), true = 켜기, false = 끄기. */
   | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition; door?: boolean }
   | { kind: "moveEvent"; eventId: string; route: MoveRoute }
   | { kind: "setEventGraphicPattern"; eventId: string; pattern: number }

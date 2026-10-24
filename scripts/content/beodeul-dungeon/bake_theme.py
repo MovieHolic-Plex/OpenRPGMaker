@@ -33,7 +33,7 @@ G.STORE_PNG = G.STORE / "cells.png"
 G.STORE_JSON = G.STORE / "cells.json"
 G.KIT_PREFIX = "bd-pick-dungeon-theme-"
 G.GROUP_PREFIX = "beodeul_dungeon_theme_"
-G.OWN_GROUPS = re.compile(r"^beodeul_dungeon_(theme_|ceiling_(ice|sand|void)$)")
+G.OWN_GROUPS = re.compile(r"^beodeul_dungeon_(theme_|ceiling_(ice|sand|void|tower)$)")
 G.TILEGROUP_PREFIX = "beodeul:dungeon_theme"
 G.THEMES = ["dungeon", "던전"]
 KP = G.KIT_PREFIX
@@ -63,9 +63,13 @@ KIT_NAME = {
     # 숲
     "tc.fo_ancient_tree": "giant-tree", "tc.fo_ring": "mushroom-ring", "tc.fo_boulder": "mossy-boulder", "tc.fo_bramble": "bramble",
     "tc.fo_waystone": "waystone",
+    # 남은 조각(theme_props)
+    "prop.minecart": "minecart", "prop.cracked_floor": "cracked-floor", "prop.wisp": "will-o-wisp",
 }
 # 주제 테마 낱말(키트 ai.themes) — 조수 카탈로그가 고를 때 본다.
 THEME_OF = {"arcane": ["tower", "탑", "마법탑"], "other": ["otherworld", "마계"], "earth": ["mine", "catacomb", "castle", "temple", "광산", "묘지", "성", "유적"],
+            "wall.other": ["otherworld", "마계"], "wall.tower": ["tower", "탑", "마법탑"], "wall.ice": ["ice", "얼음"],
+            "prop.minecart": ["mine", "광산"], "prop.cracked_floor": ["castle", "catacomb", "temple", "성", "묘지", "유적"], "prop.wisp": ["swamp", "늪"],
             "tc.pyr": ["pyramid", "피라미드", "사막"], "tc.ice": ["ice", "얼음"], "tc.sw": ["swamp", "늪"], "tc.fo": ["forest", "숲"]}
 
 
@@ -297,9 +301,56 @@ def bake_auto_floor(gid, kid, title, desc, rune_kid=None):
     return run
 
 
+def bake_face(prefix, what, material, item_key):
+    """벽 앞면 키트(피라미드 앞면과 같은 부품 배치) — prefix 「otherworld」 → otherworld-face-3h|2h(-glyph|-base|-alt)."""
+    def run(st, p, line, meta, origin):
+        parts = meta["parts"]
+        tags = ["주제", "벽", "앞면", "wall", "face", material] + themes_of(p["item"])[2:]
+        desc = f"{what} 벽 앞면(천장 테두리 아래, 바닥 위). 열 0 왼끝 · 1 가운데(가로 반복) · 2 오른끝. 막힘."
+        kits, ids = [], set()
+        spec = [("face3h", f"{prefix}-face-3h", "3단"), ("face2h", f"{prefix}-face-2h", "2단"), ("base3h", f"{prefix}-face-3h-base", "3단 아랫단 변형"),
+                ("glyph3h", f"{prefix}-face-3h-glyph", "3단 새김 가운데"), ("glyph2h", f"{prefix}-face-2h-glyph", "2단 새김 가운데"),
+                ("alt3h", f"{prefix}-face-3h-alt", "3단 가운데단 변형")]
+        for part, name, w_ in spec:
+            cv = parts.get(part)
+            if cv is None:
+                continue
+            w, h = cv.w // T, cv.h // T
+            lo = lower_cells(st, cv, f"버들항 던전 · {what} 벽 앞면 {w_}", desc, tags, "solid", origin)
+            ids |= {t for r in lo for t in r}
+            kits.append(G.kit(f"{KP}{name}", f"버들항 던전 · {what} 벽 앞면 {w_} {w}×{h}", w, h, blank(w, h), lo, desc=f"{desc} {w_}.",
+                              rules="천장 테두리 바로 밑, 바닥 북쪽 변 위. 새김·변형 칸은 가운데 칸 대신 드문드문.", tags=tags, role="wall",
+                              repeat="repeat" if w == 3 else "fixed", layer_home="lower", themes=themes_of(p["item"])))
+        tg = dict(id=f"{G.TILEGROUP_PREFIX}_{item_key}_face", name=f"버들항 던전 주제 {what} 벽 앞면", role="wall", source="bundled-default", defaultLayer="lower",
+                  confidence="high", tileIds=sorted(ids), description=f"{what} 벽 앞면 키트({', '.join(k['id'] for k in kits)}). 하네스 {p['round']} {p['letter']}.",
+                  placementRules="천장 테두리 아래 벽 앞면. author_dungeon 이 저절로 쓴다.")
+        return [], [tg], kits
+    return run
+
+
+def bake_rim(gid, what, material, item_key):
+    def run(st, p, line, meta, origin):
+        at = meta["autotiles"]["rim"]
+        def cmeta(m):
+            s_ = G.mask_sides(m)
+            return G.cm(f"버들항 던전 · {what} 천장 ({material} 테두리)" + (f"({s_} 열림)" if s_ else " 몸통"),
+                        f"{what} 천장 오토타일 47 모양(마스크 {m}). 바닥·벽 앞면과 닿는 쪽에 벽 두께 띠, 안쪽은 어둠. 막힘. 그룹 `{gid}`.",
+                        ["천장", "wall", "ceiling", material], "solid", "lower")
+        g = G.bake_autotile(st, at, gid, f"버들항 던전 {what} 천장({material} 테두리)", origin, cmeta)
+        tg = dict(id=f"{G.TILEGROUP_PREFIX}_{item_key}_rim", name=f"버들항 던전 주제 {what} 천장 테두리", role="wall", source="bundled-default", defaultLayer="lower",
+                  confidence="high", tileIds=list(g["memberTileIds"]), description=f"{what} 천장 오토타일 `{gid}`. 하네스 {p['round']} {p['letter']}.",
+                  placementRules=f"방·통로 바깥 칸(천장)을 이 그룹으로 칠한다. author_dungeon 의 {item_key} 테마가 저절로 쓴다.")
+        return [g], [tg], []
+    return run
+
+
 HANDLERS = {"arcane.tower_floor": bake_auto_floor("beodeul_dungeon_theme_tower_floor", "tower-floor", "마법탑 돌 바닥", "마법탑의 다듬은 돌 바닥", "tower-rune"),
             "other.ground": bake_auto_floor("beodeul_dungeon_theme_otherworld_ground", "otherworld-floor", "마계 검은 돌 바닥", "마계의 갈라진 보라 검은 돌 바닥"),
-            "tc.pyr_floor": bake_pyr_floor, "tc.pyr_face": bake_pyr_face, "tc.pyr_rim": bake_pyr_rim, "tc.pyr_sand_trap": bake_pyr_sand_trap}
+            "tc.pyr_floor": bake_pyr_floor, "tc.pyr_face": bake_pyr_face, "tc.pyr_rim": bake_pyr_rim, "tc.pyr_sand_trap": bake_pyr_sand_trap,
+            "wall.other_face": bake_face("otherworld", "마계", "흑요석", "otherworld"), "wall.tower_face": bake_face("tower", "마법탑", "마름돌", "tower"),
+            "wall.other_rim": bake_rim("beodeul_dungeon_ceiling_void", "마계", "흑요석", "otherworld"),
+            "wall.tower_rim": bake_rim("beodeul_dungeon_ceiling_tower", "마법탑", "갓돌", "tower"),
+            "wall.ice_face": bake_face("ice", "얼음굴", "얼음", "ice")}
 
 
 # gap 물결이지만 주제 꼬리에 굽는 고름 — 32px 위상 몸통 용암(gap-lava-r2)은 칸이 많아 gap 꼬리(30,848 앞)에 들어가지 않는다.

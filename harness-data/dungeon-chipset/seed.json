@@ -56,7 +56,9 @@
   "gap": "조수 던전 그림 부족분(2026-10-23, http://mdc-server:18301/assistant-dungeons-1.html 「그림 부족」 표): 방 사이를 채우는 바위(검은 허공 대신), 용암·물 가장자리 전이+움직임, 얼음 바닥·얼음 바위, 탑 조각, 버들항 화풍 문·레버, 고블린 야영 소품. 적대 검수(새 Opus 3명, 2명 이상 지적 = 큰 문제) 0건까지 고친 뒤 시트에 올린다.",
   "theme_climate": "기후 테마 던전 부족분(2026-10-23, 감독 dungeon-themes): 피라미드(사암 바닥·앞면·천장 테두리·석관·오벨리스크·모래 함정·석상·금 더미), 얼음굴(고드름·얼음 수정·얼어붙은 전사·눈 더미), 늪(맹그로브 뿌리 아치·늘어진 이끼·연잎·도깨비불·가라앉은 석상·부서진 널길), 숲(거목·버섯 고리·이끼 바위·가시덤불·길돌). 모두 줄 공통(A1·A2). 버들항 기존 키트(desert-oasis·snowfield·swamp-stilt·deep-forest-path·bd-tree)와 다른 작업자 gap 판(얼음 바닥·얼음 바위·물가)을 먼저 쓰고 없는 것만 그린다. 블라인드 패널(Opus 3 + Argon 1, 2명 이상 = 큰 문제) 0건 → object-gate → 위임 pick.",
   "theme_arcane": "던전 테마 그림 부족분(2026-10-23, 감독 dungeon-themes): 「마법탑」(탑 바닥·책장·독서대·차원 이동진·받침 수정·촛대)과 「마계/이세계」(보라 검은 바닥·떠 있는 섬 허공 가장자리·타락한 수정·마왕 옥좌·가시 뼈 기둥·보라 불꽃 화로·봉인된 차원문). 이미 있는 버들항 마법사의 탑 키트(혼천의·증류로·지구본·태양계의·별자리 지도·달돌 표석·가로등)와 gap-tower-r1(둥근 탑 벽·계단·창)은 다시 그리지 않는다. 줄 공통(A1·A2), 블라인드 패널(새 Opus 3 + Argon 1, 2명 이상 같은 지적 = 큰 문제) 0건까지 고친 뒤 object-gate 를 받는다.",
-  "theme_earth": "땅 계열 던전 테마 넷(광산·지하묘지·성/요새·고대 유적)의 빠진 조각(2026-10-23 조수 던전 테마 부족분). 버들항 키트로 이미 있는 것(광차·광석 더미·성벽 흉벽 길·관·벽감·기둥·덩굴…)은 다시 그리지 않고 쓴다."
+  "theme_earth": "땅 계열 던전 테마 넷(광산·지하묘지·성/요새·고대 유적)의 빠진 조각(2026-10-23 조수 던전 테마 부족분). 버들항 키트로 이미 있는 것(광차·광석 더미·성벽 흉벽 길·관·벽감·기둥·덩굴…)은 다시 그리지 않고 쓴다.",
+  "theme_walls": "던전 테마 벽(2026-10-24, 감독 dungeon-themes 재개): 마계·마법탑이 회색 동굴·성 벽과 회색 천장 테두리로 지어져(빌더가 찾는 TK otherworld-face·tower-face·ceiling_void 그림이 없음) 주제가 읽히지 않았다. 피라미드 벽 키트(tc.pyr_face·tc.pyr_rim)와 같은 짜임으로 앞면 키트·천장 테두리 47을 그린다. 줄 공통(A1·A2), 독립 적대 VQA(klb-sonnet-5-5 / argon) 큰 문제 0 → object-gate → 위임 pick.",
+  "theme_props": "던전 테마 남은 조각(2026-10-24): 빌더가 찾지만 그림이 없어 옛 키트로 물러서던 광차·금 간 바닥 함정·도깨비불(r1 관문 FAIL 다시 그림)·얼음굴 벽 앞면. 줄 공통 A1·A2, 독립 적대 VQA → object-gate → 위임 pick."
  },
  "lines": {
   "note": "던전은 컨셉이 여럿이라 화풍을 하나로 고정하지 않는다(사용자 2026-10-08: 「A B C 셋다 써도 그만일거같은데? … 버리긴 아깝군.」). style-r1 의 후보 글자 A·B·C 가 곧 줄이다. 이후 판은 줄마다 후보를 그린다(후보 키 <줄><번호>: A1 A2 B1 …). 줄의 화풍 기준 = style-r1 의 그 글자 조각(색·결 — 윤곽은 rules.outline 외곽선 규칙이 우선, 먹 윤곽 없음). 컨셉에 안 맞는 항목은 그 줄 skip 에 이유와 함께 적고 그리지 않는다. 고르기 단위는 (항목, 줄).",
@@ -3171,6 +3173,16 @@
    "walk_grid": {
     "기본": [
      "o"
+    ],
+    "한 칸 폭": [
+     "o",
+     "o",
+     "o"
+    ],
+    "세 칸 폭": [
+     "ooo",
+     "ooo",
+     "ooo"
     ]
    },
    "wave": "theme_earth",
@@ -3352,6 +3364,206 @@
    },
    "wave": "theme_earth",
    "common": "테마 조각 — 재질이 동굴 줄(A·B·C 화풍)이 아니라 버들항 테마 키트(바다 동굴 앞면·카타콤 앞면·성 앞면·신전 폐허 바닥)에 붙는다"
+  },
+  {
+   "id": "wall.other_face",
+   "wave": "theme_walls",
+   "title": "마계 벽 앞면 3단·2단 + 빛 새는 봉인 새김 칸",
+   "kind": "tile",
+   "size": [
+    8,
+    3
+   ],
+   "layer": "lower",
+   "walk": "막힘",
+   "brief": "천장 아래 벽 앞면 키트(피라미드 앞면과 같은 배치 128×48). 흑요석 큰 마름돌, 새김 칸 = 금에서 보라 빛이 새는 봉인 눈.",
+   "refs": [
+    "castle-catacombs:face_cata_3h"
+   ],
+   "accept": [
+    "앞면이 바닥보다 어둡고 벽으로 읽힘",
+    "가운데 반복 이음 없음",
+    "주제로 읽힘(회색 동굴·성 벽과 구별)"
+   ],
+   "common": "테마 벽 — 재질(흑요석·청회색 마름돌)이 동굴 줄과 무관한 그 주제 전용 벽"
+  },
+  {
+   "id": "wall.other_rim",
+   "wave": "theme_walls",
+   "title": "마계 천장 테두리 47",
+   "kind": "autotile",
+   "size": [
+    8,
+    6
+   ],
+   "layer": "lower",
+   "walk": "막힘",
+   "brief": "beodeul_dungeon_ceiling_void — 허공 어둠 몸통 + 보라 검은 돌 윗면 띠, 바닥 쪽 끝에 끊긴 빛 테.",
+   "refs": [
+    "castle-catacombs:render"
+   ],
+   "accept": [
+    "방 둘레에 벽 두께 띠가 이어짐",
+    "앞면 키트와 한 벌로 보임"
+   ],
+   "common": "테마 벽 — 재질(흑요석·청회색 마름돌)이 동굴 줄과 무관한 그 주제 전용 벽"
+  },
+  {
+   "id": "wall.tower_face",
+   "wave": "theme_walls",
+   "title": "마법탑 벽 앞면 3단·2단 + 룬 판 새김 칸",
+   "kind": "tile",
+   "size": [
+    8,
+    3
+   ],
+   "layer": "lower",
+   "walk": "막힘",
+   "brief": "청회색 다듬은 마름돌 + 가운데단 놋쇠 띠돌, 새김 = 띠돌 위 빛 룬 판, 아랫단 = 굽도리.",
+   "refs": [
+    "castle-catacombs:face_cata_3h"
+   ],
+   "accept": [
+    "앞면이 바닥보다 어둡고 벽으로 읽힘",
+    "가운데 반복 이음 없음",
+    "주제로 읽힘(회색 동굴·성 벽과 구별)"
+   ],
+   "common": "테마 벽 — 재질(흑요석·청회색 마름돌)이 동굴 줄과 무관한 그 주제 전용 벽"
+  },
+  {
+   "id": "wall.tower_rim",
+   "wave": "theme_walls",
+   "title": "마법탑 천장 테두리 47",
+   "kind": "autotile",
+   "size": [
+    8,
+    6
+   ],
+   "layer": "lower",
+   "walk": "막힘",
+   "brief": "beodeul_dungeon_ceiling_tower — 청회색 갓돌 두 켜 + 밝은 턱, 안쪽 어둠.",
+   "refs": [
+    "castle-catacombs:render"
+   ],
+   "accept": [
+    "방 둘레에 벽 두께 띠가 이어짐",
+    "앞면 키트와 한 벌로 보임"
+   ],
+   "common": "테마 벽 — 재질(흑요석·청회색 마름돌)이 동굴 줄과 무관한 그 주제 전용 벽"
+  },
+  {
+   "id": "prop.minecart",
+   "wave": "theme_props",
+   "title": "광산 광차 2×2",
+   "kind": "objects",
+   "size": [
+    2,
+    2
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "layer": "upper",
+   "walk": "막힘",
+   "walk_grid": {
+    "기본": [
+     "xx",
+     "xx"
+    ]
+   },
+   "brief": "쇠테 두른 나무 광차 + 광석 더미, 선로 위. 윗면(통 테두리·광석) 보임.",
+   "refs": [
+    "castle-catacombs:wall"
+   ],
+   "accept": [
+    "광차로 읽힘",
+    "3/4 윗면"
+   ],
+   "common": "테마 조각 — 재질이 동굴 줄과 무관한 그 주제 전용 그림"
+  },
+  {
+   "id": "prop.cracked_floor",
+   "wave": "theme_props",
+   "title": "금 간 바닥 함정 2×2",
+   "kind": "objects",
+   "size": [
+    2,
+    2
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "layer": "upper",
+   "walk": "걸음",
+   "walk_grid": {
+    "기본": [
+     "oo",
+     "oo"
+    ]
+   },
+   "brief": "판석이 가운데로 내려앉아 갈라진 함정 자리(덧그림 — 손상 둘레만 그리고 바깥은 투명, 진짜 바닥 위에 얹힌다. 걷는 칸).",
+   "refs": [
+    "castle-catacombs:floor_castle"
+   ],
+   "accept": [
+    "주변 바닥과 같은 재질",
+    "꺼질 듯한 금"
+   ],
+   "common": "테마 조각 — 재질이 동굴 줄과 무관한 그 주제 전용 그림"
+  },
+  {
+   "id": "prop.wisp",
+   "wave": "theme_props",
+   "title": "도깨비불 등잔 1×2(3장면)",
+   "kind": "objects",
+   "size": [
+    3,
+    2
+   ],
+   "footprint": [
+    1,
+    2
+   ],
+   "layer": "upper",
+   "walk": "막힘",
+   "walk_grid": {
+    "기본": [
+     "o",
+     "x"
+    ]
+   },
+   "brief": "이끼 낀 돌 받침 위 흔들리는 도깨비불(3장면).",
+   "refs": [
+    "castle-catacombs:brazier"
+   ],
+   "accept": [
+    "떠 있는 불로 읽힘",
+    "장면이 흔들림"
+   ],
+   "common": "테마 조각 — 재질이 동굴 줄과 무관한 그 주제 전용 그림"
+  },
+  {
+   "id": "wall.ice_face",
+   "wave": "theme_props",
+   "title": "얼음굴 벽 앞면 3단·2단 + 고드름 새김 칸",
+   "kind": "tile",
+   "size": [
+    8,
+    3
+   ],
+   "layer": "lower",
+   "walk": "막힘",
+   "brief": "피라미드 앞면과 같은 배치. 얼어붙은 청석 마름돌 + 흘러내려 굳은 얼음 띠, 새김 = 고드름 다발.",
+   "refs": [
+    "castle-catacombs:face_cata_3h"
+   ],
+   "accept": [
+    "얼음굴 벽으로 읽힘",
+    "가운데 반복 이음 없음"
+   ],
+   "common": "테마 조각 — 재질이 동굴 줄과 무관한 그 주제 전용 그림"
   }
  ],
  "refs": {
@@ -3922,6 +4134,194 @@
    ],
    "reused": {},
    "line_notes": "줄 공통 4 항목(테마 조각) — 항목 id·시드 명세는 r1 그대로."
+  },
+  "theme-walls-r1": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_walls_r1.py",
+   "wave": "theme_walls",
+   "title": "던전 테마 벽 theme-walls-r1 — 마계·마법탑 앞면·천장 테두리",
+   "items": [
+    "wall.other_face",
+    "wall.other_rim",
+    "wall.tower_face",
+    "wall.tower_rim"
+   ],
+   "lead": "피라미드 벽 키트와 같은 짜임. 앞면 128×48(3단|2단+아랫단 변형|새김 3단|새김 2단+가운데단 변형), 천장 47 변형."
+  },
+  "theme-walls-r2": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_walls_r2.py",
+   "wave": "theme_walls",
+   "title": "던전 테마 벽 다시 그림 theme-walls-r2",
+   "items": [
+    "wall.other_face",
+    "wall.other_rim",
+    "wall.tower_face",
+    "wall.tower_rim"
+   ],
+   "lead": "r1 독립 VQA(argon) 8 후보 FAIL 반영: 마계 앞면 8줄 켜 엇쌓기·사선 흠집·스티커 눈 제거·A2 붉은 빛만, 천장 테두리 = 깊이 규칙으로 변·모서리를 한 띠에서(체커 디더·모서리 끊김 해결), 마법탑 = 짙은 청철 돌·리벳 놋쇠 띠·판 룬 홈·돌림돌 굽도리."
+  },
+  "theme-walls-r3": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_walls_r3.py",
+   "wave": "theme_walls",
+   "title": "던전 테마 벽 다시 그림 theme-walls-r3",
+   "items": [
+    "wall.other_face",
+    "wall.other_rim",
+    "wall.tower_face",
+    "wall.tower_rim"
+   ],
+   "lead": "r2 독립 VQA(sonnet+argon) 반영: 천장 테두리 = 평판 갓돌 + 끊긴 턱(빛 번짐·레일 없음), 탑 테두리 남보라 끝선, 마계 금 세 단 끝까지 파인 틈, 탑 앞면 = 짙은 청석·남보라 줄눈·밤하늘 아치 창(놋쇠 띠 없음)."
+  },
+  "theme-props-r1": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_props_r1.py",
+   "wave": "theme_props",
+   "title": "던전 테마 남은 조각 theme-props-r1",
+   "items": [
+    "prop.minecart",
+    "prop.cracked_floor",
+    "prop.wisp",
+    "wall.ice_face"
+   ],
+   "lead": "광차·금 간 바닥·도깨비불 등잔·얼음굴 앞면."
+  },
+  "theme-walls-r4": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_walls_r4.py",
+   "wave": "theme_walls",
+   "title": "던전 테마 벽 다시 그림 theme-walls-r4",
+   "items": [
+    "wall.other_face",
+    "wall.other_rim",
+    "wall.tower_face",
+    "wall.tower_rim"
+   ],
+   "lead": "r3 독립 VQA 반영: 마계 아랫단 빛 뿌리 제거·금 칸 두 벌·A2 금 진홍, 마계 테두리 흑요석 단, 탑 돌 잡티 도장 제거·창 높임·창턱 세 줄."
+  },
+  "theme-walls-r5": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_walls_r5.py",
+   "wave": "theme_walls",
+   "title": "던전 테마 벽 다시 그림 theme-walls-r5",
+   "items": [
+    "wall.other_face",
+    "wall.other_rim",
+    "wall.tower_face",
+    "wall.tower_rim"
+   ],
+   "lead": "r4 VQA + object-gate 화풍(평면 채움·정보량) 반영: 앞면 돌 몸 해시 잡티, 마계 테두리 = 앞면과 같은 자두빛 흑요석만."
+  },
+  "theme-walls-r6": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_walls_r6.py",
+   "wave": "theme_walls",
+   "title": "던전 테마 벽 다시 그림 theme-walls-r6",
+   "items": [
+    "wall.other_rim"
+   ],
+   "lead": "r5 VQA 반영: 마계 테두리를 PASS 한 탑 테두리 짜임으로, 자두빛 흑요석."
+  },
+  "theme-props-r2": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_props_r2.py",
+   "wave": "theme_props",
+   "title": "던전 테마 남은 조각 theme-props-r2",
+   "items": [
+    "prop.minecart",
+    "prop.cracked_floor"
+   ],
+   "lead": "r1 VQA 반영: 광차 3/4 통 안·두 레일 걸침, 금 간 바닥 북쪽 판석 두께·번짐 없음."
+  },
+  "theme-props-r3": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_props_r3.py",
+   "wave": "theme_props",
+   "title": "던전 테마 남은 조각 theme-props-r3",
+   "items": [
+    "wall.ice_face"
+   ],
+   "lead": "r1 VQA 반영: 얼음 벽 돌마다 칠·깨진 면 얼음 껍질·길이 다른 고드름."
+  },
+  "theme-walls-r7": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_walls_r7.py",
+   "wave": "theme_walls",
+   "title": "던전 테마 벽 다시 그림 theme-walls-r7",
+   "items": [
+    "wall.other_face",
+    "wall.other_rim",
+    "wall.tower_face"
+   ],
+   "lead": "패널 6 반영: 돌 베개 대각 제거, 탑 창 벽 두께, 마계 테두리 밝은 흑요석 몸통."
+  },
+  "theme-props-r4": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_props_r4.py",
+   "wave": "theme_props",
+   "title": "던전 테마 남은 조각 theme-props-r4",
+   "items": [
+    "prop.minecart",
+    "wall.ice_face"
+   ],
+   "lead": "패널 6 반영: 낮은 3/4 광차·두 레일, 얼음 벽 낱점 잡티 제거·고드름 반복 줄임·턱 이음."
+  },
+  "theme-walls-r8": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_walls_r8.py",
+   "wave": "theme_walls",
+   "title": "던전 테마 벽 다시 그림 theme-walls-r8",
+   "items": [
+    "wall.other_face",
+    "wall.other_rim",
+    "wall.tower_face"
+   ],
+   "lead": "패널 7 반영: 마계 테두리 눈금 없는 결 돌 띠, 돌 결 덩이 돌마다 다르게, 탑 창 밝은 테 제거."
+  },
+  "theme-props-r5": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_props_r5.py",
+   "wave": "theme_props",
+   "title": "던전 테마 남은 조각 theme-props-r5",
+   "items": [
+    "prop.minecart",
+    "wall.ice_face"
+   ],
+   "lead": "패널 7 반영: 광차 버들항 크기, 얼음 벽 서리 낀 돌·짧은 얼음 턱·긴 고드름은 새김 칸만."
+  },
+  "theme-props-r6": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_props_r6.py",
+   "wave": "theme_props",
+   "title": "던전 테마 남은 조각 theme-props-r6",
+   "items": [
+    "prop.cracked_floor"
+   ],
+   "lead": "패널 6·7 반영: 각진 꺼짐·북쪽 판석 옆면·기운 조각·짧은 금."
+  },
+  "theme-walls-r9": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_walls_r9.py",
+   "wave": "theme_walls",
+   "title": "던전 테마 벽 다시 그림 theme-walls-r9",
+   "items": [
+    "wall.other_rim",
+    "wall.tower_face"
+   ],
+   "lead": "패널 8 반영: 탑 앞면 한 줄 색·이음 엇갈림·알갱이, 마계 테두리 한 단 낮춤."
+  },
+  "theme-props-r7": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_props_r7.py",
+   "wave": "theme_props",
+   "title": "던전 테마 남은 조각 theme-props-r7",
+   "items": [
+    "wall.ice_face"
+   ],
+   "lead": "패널 8 반영: 얼음 벽을 층 바위(동굴 줄 C 결)로, 눈 띠 없음."
+  },
+  "theme-props-r8": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_props_r8.py",
+   "wave": "theme_props",
+   "title": "던전 테마 남은 조각 theme-props-r8",
+   "items": [
+    "prop.wisp"
+   ],
+   "lead": "object-gate 3/4(기둥: 윗면 3행·머리 타원 아님) 반영: 타원 윗면 화반 안에서 솟는 불꽃."
+  },
+  "theme-walls-r10": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_walls_r10.py",
+   "wave": "theme_walls",
+   "title": "던전 테마 벽 다시 그림 theme-walls-r10",
+   "items": [
+    "wall.other_rim"
+   ],
+   "lead": "패널 9 반영: 마계 테두리 = 탑 갓돌 짜임 + 흑요석 색(점박이 결·빛 번짐 없음)."
   }
  }
 }

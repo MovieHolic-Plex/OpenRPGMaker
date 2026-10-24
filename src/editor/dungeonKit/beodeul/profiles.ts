@@ -134,6 +134,7 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
     ...GRAMMAR.tower,
     face: { h3: [TK("tower-face-3h"), K("face-castle-3h")], h2: [TK("tower-face-2h"), K("face-castle-2h")] },
     floor: { base: [TK("tower-floor"), K("floor-castle")], patches: [{ kit: T("floor-trav"), at: 0.8, scale: 4 }], byKind: { library: [TK("tower-floor-wood"), S("floor-plank")] } },
+    ceiling: ["beodeul_dungeon_ceiling_tower"],
   },
   otherworld: {
     ...GRAMMAR.otherworld,

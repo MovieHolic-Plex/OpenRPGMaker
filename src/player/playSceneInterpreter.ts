@@ -1,3 +1,4 @@
+import { isTouchUiHost } from "@/player/touchTap";
 import { stepStopReason, stopsReading } from "@/project/dialogueSystem";
 import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
 import { playQuickTimeEvent, playTeleportMenu, playTimedChoice } from "@/player/playSceneMinigames";
@@ -18,6 +19,7 @@ import {
 import { playMonsterSfx } from "@/player/monsterSfx";
 import { playDoorOpenBeforeTransfer } from "@/player/playSceneFieldFx";
 import { store } from "@/project/store";
+import { COMPANION_SCENE_FLAG, syncFollowerSceneVisibility } from "@/player/playSceneFollowers";
 import { setEventSpritePattern } from "@/player/eventSpriteResources";
 import { playAudioCommand, stopAudioChannel, stopAudioCommand } from "@/player/audio";
 import { resolveEventPage } from "@/project/io";
@@ -303,9 +305,11 @@ export async function runCommands(
   observe("started");
   try {
     let result = interpreter.start(), normalCompletion = true, handledFailure = false, lostBattle = false;
-    scene.refreshRuntimeSurfaces();
+    // 첫 걸음이 다른 맵으로 가는 이동(문·출구 이벤트)이면 지금 맵을 다시 그리지 않는다 — 곧 버릴 맵의 타일·이벤트를
+    // 다시 깔면서 쓰레기 수거까지 겹쳐, 문 칸을 밟는 순간 한 프레임이 100ms 넘게 멈췄다(2026-10-24 프로파일).
+    if (!(result.kind === "transfer" && result.mapId !== scene.map.id)) scene.refreshRuntimeSurfaces();
     while (result.kind !== "done" && current()) {
-      if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", "Esc Esc: 컷신 건너뛰기");
+      if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", isTouchUiHost(scene.game?.canvas) ? "B 두 번: 컷신 건너뛰기" : "Esc Esc: 컷신 건너뛰기");
       const step = result;
       if (step.kind === "changeTile") changedTerrainMaps.add(step.mapId);
       result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current, () => { handledFailure = true; });
@@ -413,6 +417,7 @@ async function consumeBlockingStep(
         ? runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions).find((view) => view.event.id === currentEventId)?.event
         : undefined;
       const speaker = step.speaker ?? getCharacterProfile(project, event?.characterId)?.displayName;
+      markCompanionSpeaking(project, scene, speaker);
       // 말하는 인물이 듣는 인물 쪽으로 돈다(둘 다 맵에 있고 가까울 때, text.autoFace=false 면 안 돈다).
       applyDialogueFacing(scene, step, currentEventId);
       // 흉상 좌우·듣는 흉상을 맵 위 자리로(text.bustSide = "stage").
@@ -542,9 +547,10 @@ async function consumeBlockingStep(
         const destinationName = project.maps[step.mapId]?.name ?? "";
         genreDoorSound = playMonsterSfx(project, /체육관|gym/i.test(destinationName) ? "gym-door" : "door-open") === true;
       }
-      // 문 칸에서 떠나는 이동이면 문짝이 열리고(문 소리) 그다음 넘어간다. 문이 아니면 곧장 넘어간다.
+      // 문 열림 연출: door 생략 = 자동(문 캐릭터 시트이거나 이벤트 칸·바로 윗칸에 여닫는 문 타일일 때만),
+      // true = 켜기(주인공 앞 문 타일까지 찾는다), false = 끄기. 성문·통로·맵 가장자리·계단은 자동에서 연출이 없다.
       if (step.mapId !== scene.map.id && step.door !== false) {
-        try { await playDoorOpenBeforeTransfer(scene, currentEventId, { silent: genreDoorSound }); } catch (error) { console.warn("[player] door open fx", error); }
+        try { await playDoorOpenBeforeTransfer(scene, currentEventId, { silent: genreDoorSound, mode: step.door === true ? "on" : "auto" }); } catch (error) { console.warn("[player] door open fx", error); }
       }
       try { await scene.transferTo(step); }
       finally { finishTransfer?.(); }
@@ -959,4 +965,23 @@ function bindStageTargets(moves: MoveCommand[], currentEventId: string | undefin
   if (!moves.some((m) => (m.kind === "approach" || m.kind === "turnToward") && (m.target === "@this" || m.target === "this-event"))) return moves;
   return moves.map((m) => (m.kind === "approach" || m.kind === "turnToward") && (m.target === "@this" || m.target === "this-event")
     ? { ...m, target: currentEventId ?? "" } : m);
+}
+
+/**
+ * companions.display "scenesOnly"(FF6 식): 도는 이벤트에서 선두가 아닌 파티원이 말하면 그 이벤트가 끝날 때까지
+ * 동료를 주인공 옆에 세운다. 평범한 NPC 대화에서는 동료가 튀어나오지 않는다.
+ */
+function markCompanionSpeaking(project: ReturnType<typeof store.getCurrent>, scene: PlaySceneContext, speaker: string | undefined): void {
+  if (project.system.companions?.display !== "scenesOnly" || !speaker?.trim()) return;
+  if (scene.session.flags[COMPANION_SCENE_FLAG] === true) return;
+  const name = speaker.trim();
+  const companions = scene.session.partyActorIds.slice(1);
+  const speaks = companions.some((actorId) => {
+    const own = scene.session.actorNames?.[actorId]?.trim();
+    const record = project.database.actors.find((actor) => actor.id === actorId);
+    return name === own || name === record?.name?.trim() || name === record?.nickname?.trim();
+  });
+  if (!speaks) return;
+  scene.session.flags[COMPANION_SCENE_FLAG] = true;
+  syncFollowerSceneVisibility(scene);
 }

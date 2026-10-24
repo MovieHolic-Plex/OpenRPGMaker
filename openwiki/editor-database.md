@@ -1,5 +1,28 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 이야기 › 대사 탭 — 모든 대사 한 화면, 창 넘침, 말투 메모, 조수 윤문 받기 (2026-10-24)
+
+자료집 「이야기」 그룹의 `dialogue` 탭(`db-tab-dialogue`, 렌더 `src/editor/panels/databaseDialogueView.ts`, CSS `src/styles/database/dialogue-desk.css`).
+레일 배지 = 대사 명령·선택지 수(설명 제외, 프로젝트 판본마다 한 번 셈).
+
+- **색인** `src/editor/dialogue/dialogueIndex.ts` `collectDialogueLines(project)` — 맵 이벤트(쪽마다, 쪽 없는 옛 `event.commands` 포함)·공용 이벤트·
+  적 그룹 전투 쪽/전투 뒤·아이템/장비/스킬 설명. `eventCommandBranches` 로 모든 가지를 걷는다. 줄 id 는 자리 그대로라 안정적이다:
+  `ev/<맵>/<이벤트>/<쪽|_>/<명령 경로 점>#<칸>` · `ce/…` · `tp/…` · `ta/…` · `db/<items|equipment|skills>/<id>#description`
+  (칸 = `body` `prompt` `opt<i>` `title` `message` `description`). 각 줄은 내용 해시(12자)를 같이 갖는다 — 쓰기는 해시가 맞을 때만.
+  이벤트 편집기에 초안(`event.draft`)이 열려 있으면 그 이벤트 줄은 잠긴다(`drafted`).
+- **창 넘침** `src/editor/dialogue/dialogueWindowMeasure.ts` — 런타임 대화창과 같은 클래스(`.dialogue-overlay.position-bottom > .dialogue-box > .body`)를
+  런타임 CSS(`preloadRuntimeStyles`)로 보이지 않게 붙여 **실제 글 폭·글꼴·한 장 줄 수**를 재고, 런타임과 같은 `paginateDialogueSegments` 로 장을 나눈다.
+  화자 스타일·글꼴·얼굴 칸 조합마다 한 번 잰다. 판정 = 한 장을 넘어 다음 장으로 넘겨야 하는가. 측정 전에는 추정치(점선 배지).
+  실측 폴른 스타: `글 폭 432px · Galmuri11 12px · 한 장 2줄 (480×270)`, 넘침 28줄.
+- **고치기** 글을 누르면 그 자리 textarea(Ctrl+Enter 저장·Esc 취소, 입력하는 동안 맞춤 배지가 바뀐다). 「이동」은 맵 이벤트 편집기(그 쪽)·공용 이벤트·적 그룹·아이템/스킬 레코드로 연다.
+- **말투 메모** 왼쪽 화자를 고르면 메모 칸. `project.dialogueDesk.voices` 에 남고 조수 도구가 문체 지침으로 읽는다.
+- **윤문 제안 받기** 조수가 `rewrite_dialogue` (기본 propose)로 남긴 제안이 위에 뜬다: 전/후 글자 차이(`textDiff.ts`, 지운 글자 취소선·넣은 글자 밑색),
+  전/후 창 맞춤, 이유, 요청 문장. 줄마다 받기/버리기, 모두 받기/버리기. 원문이 그 사이 바뀐 제안은 「받을 수 없음」으로 남는다.
+- 쓰기는 전부 `src/editor/dialogue/dialogueActions.ts` — `recordProjectSnapshot` + `store.update` 한 번(라벨 `대사 고치기: …` · `대사 제안 N줄 받기` ·
+  `말투 메모: <화자>`, `fields` 에 줄 id·전·후). 되돌리기와 편집 감사 로그에 그대로 잡힌다.
+- 검사 공통(`dialogueEdits.ts`): 제어 코드(`\C[n]` `\N[n]` `\.` `\|` `[흔들]…[/]` `{name}` …) 개수가 원문과 같아야 하고, 2000자 한도, 빈 글 금지.
+  사람 편집은 넘침을 허용(배지로만 알림), 조수는 원문보다 더 넘기면 거절(`allowOverflow` 로만 허용).
+
 ## 주인공 마법 5종 · 노출 시간과 앞뒤 층 (2026-10-05)
 
 공용 화염/빙결/번개/심판의 빛은 직접 도트 시트, 용권 본체는 기존 히드라 원화 재사용을 사용한다.
@@ -2598,3 +2621,11 @@ CSS로 접힌 작은 창·도크 상태에서는 참조 변경을 계속 반영�
 - **세계 개요**는 레일 대신 한 줄 바(작성 상태·공개 범위·「AI 미리보기」 칩).
 - **측정(1440×900 / 1100×700, 문서 40개):** 한 화면 문서 6→17 / 3→11, 본문 칸 면적 31.5%→64% / 22.4%→52.3%.
 - 검증: 범위 tsc 0, 임시 SQLite 호스트 프로젝트에서 AI 숨김·공개 범위·연결·태그·세계 개요 비밀 저장→새 브라우저 재로드 일치. vitest·gates·e2e 미실행(`world-authoring-regression.spec.ts` 는 절차만 고쳐 두었고 실행하지 않음).
+
+## 스킬 → 「연계기」 하위 보기 · 약점 공략 칸 · 결과 연출 카드 (2026-10-24, fs-battle-2)
+
+- **연계기** 탭 id `comboTechs`(testid `db-tab-combo-techs`, 레일에는 없고 스킬 탭 보기 전환 줄의 세 번째 — 스킬 편집 · 성장 트리 · 연계기). `src/editor/panels/databaseComboTechView.ts`.
+  연계기(`comboActorIds` 2명 이상)마다 카드: 미리보기 줄(참가자 · 몫 · 전투 도움말 꼬리표), 참가자 칸 셋(시전자·동료 1·동료 2(없음=듀얼)) 각각 MP 몫과 「배워야 하는 기술」(그 배우·직업 습득표), 이름·설명·대상·속성·위력·타수·합체 능력치, 접힌 「도트 연출」 고르기(`retroChoreographyPicker`). 「새 연계기」(`db-combo-add`)는 시작 파티 앞 둘로 만든다.
+  저장은 `updateDatabaseRecord("skills", …)` — `updateSkillRecord` 화이트리스트에 `comboMpCosts`·`exploitStates` 추가.
+- 스킬 「전투 규칙」 카드에 **약점 공략** 셋(`feature16-exploit-state`·`-bonus`·`-consume`). 상태 하나 고르기 UI 이고, 여러 상태는 조수 도구로(카드가 「외 N개」를 보인다).
+- 「전투 화면」 탭에 **레벨 업 · 기술 습득 연출** 카드(`db-battle-fanfare-card`): 세기·LEVEL UP 배너·새 기술 카드·새 연계기 카드·소리 → `system.battleFanfare`.

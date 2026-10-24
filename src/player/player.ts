@@ -52,6 +52,7 @@ import type { Project } from "@/project/types";
 import { createTouchPad, isTouchDevice, type TouchPadHandle } from "@/player/touchPad";
 import { installTapConfirm } from "@/player/touchTap";
 import { installTouchListTap } from "@/player/touchListTap";
+import { currentTouchControls } from "@/player/touchControlSettings";
 import { renderPlayerLoadPanel } from "@/player/playerLoadPanel";
 import { createPlayerStatusMenuController } from "@/player/playerStatusMenuController";
 import { currentStatusMenu } from "@/player/playerStatusMenuControllerDom";
@@ -204,8 +205,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   let lastBootRequest: PlayBootRequest = { safeMode: options.safeMode === true };
   // teardownPlayer 이후에 호스트 버튼/F5 가 들어와도 새 런(타이머·리스너)을 만들지 않는다.
   let shellActive = true;
-  // 터치 기기는 작은 화면을 꽉 채우는 것이 우선이라 정수 배율 대신 맞춤(fit)을 쓴다.
-  const surfaceScaleFor = (project: Project): PlaySurfaceScaleMode => options.surfaceScaleMode ?? (options.touchInput === true ? "fit" : resolvePlaySurfaceScaleMode(project));
+  // 터치 기기도 프로젝트 배율 방식을 따른다(2026-10-24) — 기본 정수 배율: 1배 이상이면 정수, 화면이 1배보다 작을 때만 줄인다.
+  // 기기마다 다른 소수 배율은 도트를 흐리고 「폰마다 다르게 보인다」를 만들었다. 남는 자리는 레터박스다.
+  const surfaceScaleFor = (project: Project): PlaySurfaceScaleMode => options.surfaceScaleMode ?? resolvePlaySurfaceScaleMode(project);
   const emeraldStyle = options.pointerInput === true;
   // 터치 기기에서는 모든 게임이 탭으로 메뉴·대사·전투를 연다. 키보드 전용 계약은 데스크톱에서만 남는다.
   const pointerInput = emeraldStyle || options.touchInput === true;
@@ -215,7 +217,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   // 터치 화면의 패드는 무대 밖 뷰포트에 붙는다. 데스크톱은 기존처럼 무대 안 env 오버라이드만.
   const mountTouchPad = (surface: { readonly viewport: HTMLElement; readonly stage: HTMLElement }): void => {
     touchPad?.cleanup();
-    touchPad = createTouchPad(pointerInput ? surface.viewport : surface.stage, pointerInput ? { enabled: touchUi, skin: emeraldStyle ? "gba" : "touch" } : undefined);
+    touchPad = createTouchPad(pointerInput ? surface.viewport : surface.stage, pointerInput ? { enabled: touchUi, skin: emeraldStyle ? "gba" : "touch", settings: currentTouchControls } : undefined);
   };
   // 재시작용 시작 지점. 선택-이벤트 테스트는 호출자가 세션을 주므로 그 세션이 플레이 중
   // 이동하기 전인 마운트 시점의 스폰만 붙잡아 둔다.
@@ -237,7 +239,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const cleanupRightClickCancel = pointerInput ? installRightClickCancel(layout) : () => {};
   // 목록 창: 첫 탭은 커서 이동, 커서가 있는 줄을 탭하면 결정.
   const cleanupListTap = touchUi ? installTouchListTap(layout) : () => {};
-  const cleanupTapConfirm = touchUi ? installTapConfirm(layout, { pointerMovement: () => store.getCurrent().system.pointerMovement === true }) : () => {};
+  const cleanupTapConfirm = touchUi ? installTapConfirm(layout, { pointerMovement: () => store.getCurrent().system.pointerMovement === true || currentTouchControls().tapToMove }) : () => {};
   main.append(layout);
 
   const stopGame = (): void => {
