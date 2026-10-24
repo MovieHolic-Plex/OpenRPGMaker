@@ -1,0 +1,230 @@
+/*
+ * 전투 깊이(2026-10-24, fs-battle-2) — 기술 도움말 창 · 「연계」 명령과 연계기 발동 띠 · 「공략!」 꼬리표 ·
+ * 결과 팡파레(LEVEL UP 배너·빛줄기·「새 기술 습득!」/「새 연계기!」 카드).
+ * TS: battleCommandDom(syncBattleSkillHelp) · battleComboCutIn · battleFanfareDom. 색은 hex 대신 rgb()(CSS 예산 hexLiterals).
+ */
+
+/* ── 기술 도움말 창: 명령 패널 위에 뜬다(패널 높이를 뺏지 않는다) ───────────────── */
+.battle-scene .battle-command-panel[data-skill-help="true"] { position: relative; overflow: visible; }
+.battle-scene .battle-command-panel .battle-skill-help {
+  background: rgb(10 14 40 / 0.94);
+  border: 2px solid rgb(221 234 255 / 0.7);
+  border-radius: 4px;
+  bottom: calc(100% + 6px);
+  box-shadow: 0 0 0 2px rgb(4 6 20 / 0.9), 0 6px 18px rgb(0 0 0 / 0.45);
+  color: rgb(255 247 214);
+  display: grid;
+  font-size: 13px;
+  gap: 3px;
+  left: 0;
+  line-height: 1.35;
+  padding: 7px 10px 8px;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  text-align: left;
+  z-index: 6;
+}
+.battle-scene .battle-command-panel .battle-skill-help[hidden] { display: none; }
+.battle-scene .battle-skill-help-head { align-items: baseline; display: flex; gap: 10px; justify-content: space-between; }
+.battle-scene .battle-skill-help-name { color: rgb(255 226 120); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.battle-scene .battle-skill-help-cost { color: rgb(150 214 255); flex: none; font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.battle-scene .battle-skill-help-tags { color: rgb(190 238 170); font-size: 12px; }
+.battle-scene .battle-skill-help-description { margin: 0; }
+.battle-scene .battle-skill-help-reason { color: rgb(255 150 140); font-size: 12px; }
+.battle-scene .battle-skill-help[data-combo="true"] { border-color: rgb(255 214 110 / 0.9); }
+/* 좁은 세로 화면: 창이 화면 위로 넘치지 않게 글자를 줄이고 설명은 두 줄까지. */
+@media (max-width: 520px) {
+  .battle-scene .battle-command-panel .battle-skill-help { font-size: 12px; padding: 5px 8px 6px; }
+  .battle-scene .battle-skill-help-description { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+}
+
+/* 「연계」 명령 아이콘(다른 아이콘은 스킨 시트, 이것은 글자). */
+.battle-scene .battle-command-icon-combo::before { color: rgb(255 214 110); content: "✦"; display: block; font-size: 14px; line-height: 1; text-align: center; }
+.battle-scene .battle-command[data-testid="actor-command-combo"][data-combo-ready="true"] strong { color: rgb(255 226 120); text-shadow: 0 0 6px rgb(255 190 80 / 0.7); }
+
+/* 「공략!」 꼬리표 — 약점과 다른 색(청록). */
+.battle-scene .battle-damage-popup-tag[data-tags~="exploit"] { color: rgb(110 250 230); }
+
+/* ── 연계기 발동 띠 ─────────────────────────────────────────────────── */
+.battle-scene .battle-combo-cutin {
+  align-items: center;
+  animation: battle-combo-band var(--combo-ms, 1500ms) cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  background: linear-gradient(90deg, rgb(20 10 50 / 0) 0%, rgb(30 14 70 / 0.92) 14%, rgb(60 20 90 / 0.92) 86%, rgb(20 10 50 / 0) 100%);
+  border-block: 2px solid rgb(255 214 110 / 0.85);
+  color: rgb(255 247 214);
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  left: 0;
+  overflow: hidden;
+  padding: 6px 12px;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  text-shadow: 2px 2px 0 rgb(10 6 30);
+  top: 18%;
+  z-index: 40;
+}
+.battle-scene .battle-combo-cutin-label { color: rgb(255 214 110); font-size: 22px; font-weight: 800; letter-spacing: 1px; }
+.battle-scene .battle-combo-cutin-names { font-size: 15px; }
+.battle-scene .battle-combo-cutin-skill { color: rgb(255 255 255); font-size: 20px; }
+.battle-scene .battle-combo-cutin-sparks { inset: 0; position: absolute; }
+.battle-scene .battle-combo-cutin-sparks i {
+  animation: battle-combo-spark 900ms ease-out both;
+  animation-delay: calc(var(--spark-i) * 60ms);
+  background: rgb(255 236 160);
+  height: 3px;
+  left: calc(6% + var(--spark-i) * 9%);
+  position: absolute;
+  top: 50%;
+  width: 3px;
+}
+@keyframes battle-combo-band {
+  0% { opacity: 0; transform: translateX(-60%) skewX(-12deg); }
+  14% { opacity: 1; transform: translateX(0) skewX(0); }
+  80% { opacity: 1; transform: translateX(0); }
+  100% { opacity: 0; transform: translateX(30%); }
+}
+@keyframes battle-combo-spark {
+  0% { opacity: 0; transform: translateY(0) scale(1); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-26px) scale(0.4); }
+}
+/* 참가자 전원: 빛을 두르고 한 번 뛰어오른다(transform 대신 translate — 도트 연출의 transform 과 겹친다). */
+.battle-scene .battle-actor.battle-combo-member {
+  animation: battle-combo-member var(--combo-member-ms, 1300ms) ease-out var(--combo-delay, 0ms) both;
+}
+@keyframes battle-combo-member {
+  0% { filter: none; translate: 0 0; }
+  18% { filter: drop-shadow(0 0 6px rgb(255 220 120)) brightness(1.5); translate: 0 -10px; }
+  36% { filter: drop-shadow(0 0 10px rgb(255 200 90)) brightness(1.3); translate: 0 0; }
+  80% { filter: drop-shadow(0 0 6px rgb(255 220 120)) brightness(1.15); }
+  100% { filter: none; translate: 0 0; }
+}
+
+/* ── 결과 팡파레 ────────────────────────────────────────────────────── */
+.battle-scene .battle-result-levelup-modal .battle-result-levelup { overflow: visible; }
+.battle-scene .battle-result-levelup[data-active="true"] { animation: battle-fanfare-pop 420ms cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+.battle-scene .battle-result-levelup[data-active="true"][data-style="minimal"] { animation: none; }
+@keyframes battle-fanfare-pop {
+  0% { opacity: 0; transform: scale(0.7); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.battle-scene .battle-levelup-banner {
+  display: grid;
+  justify-items: center;
+  margin: -6px 0 2px;
+  position: relative;
+}
+.battle-scene .battle-levelup-banner-text {
+  background: linear-gradient(180deg, rgb(255 250 200), rgb(255 200 70) 55%, rgb(230 130 40));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(2px 2px 0 rgb(60 20 10)) drop-shadow(0 0 8px rgb(255 200 90 / 0.6));
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  position: relative;
+  z-index: 1;
+}
+.battle-scene .battle-result-levelup[data-active="true"] .battle-levelup-banner-text { animation: battle-levelup-text 700ms cubic-bezier(0.2, 1.6, 0.4, 1) 80ms both; }
+.battle-scene .battle-result-levelup[data-style="classic"] .battle-levelup-banner-text { font-size: 24px; }
+.battle-scene .battle-result-levelup[data-style="minimal"] .battle-levelup-banner-text { animation: none; font-size: 18px; filter: none; }
+@keyframes battle-levelup-text {
+  0% { letter-spacing: 18px; opacity: 0; transform: scale(1.8); }
+  60% { letter-spacing: 2px; opacity: 1; transform: scale(0.95); }
+  100% { letter-spacing: 3px; transform: scale(1); }
+}
+/* 능력치 줄이 위에서부터 차례로 들어온다. */
+.battle-scene .battle-result-levelup[data-active="true"]:not([data-style="minimal"]) .battle-result-levelup-row { animation: battle-fanfare-row 360ms ease-out both; }
+.battle-scene .battle-result-levelup[data-active="true"] .battle-result-levelup-row:nth-child(2) { animation-delay: 220ms; }
+.battle-scene .battle-result-levelup[data-active="true"] .battle-result-levelup-row:nth-child(3) { animation-delay: 300ms; }
+.battle-scene .battle-result-levelup[data-active="true"] .battle-result-levelup-row:nth-child(4) { animation-delay: 380ms; }
+.battle-scene .battle-result-levelup[data-active="true"] .battle-result-levelup-row:nth-child(5) { animation-delay: 460ms; }
+.battle-scene .battle-result-levelup[data-active="true"] .battle-result-levelup-row:nth-child(6) { animation-delay: 540ms; }
+.battle-scene .battle-result-levelup[data-active="true"] .battle-result-levelup-row:first-child { animation-delay: 140ms; }
+.battle-scene .battle-result-levelup[data-active="true"] .battle-result-levelup-row.up .battle-result-levelup-delta { animation: battle-fanfare-delta 900ms ease-out 600ms both; }
+@keyframes battle-fanfare-row { 0% { opacity: 0; transform: translateX(-14px); } 100% { opacity: 1; transform: none; } }
+@keyframes battle-fanfare-delta { 0% { transform: scale(1); } 30% { color: rgb(255 255 200); transform: scale(1.5); } 100% { transform: scale(1); } }
+
+/* 빛줄기·파티클(burst). 창 뒤에 깔린다. */
+.battle-scene .battle-fanfare-burst { inset: -40px; pointer-events: none; position: absolute; z-index: 0; }
+.battle-scene .battle-levelup-banner .battle-fanfare-burst { inset: -60px -40px; }
+.battle-scene .battle-fanfare-rays {
+  animation: battle-fanfare-rays 6s linear infinite, battle-fanfare-fade 700ms ease-out both;
+  background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--fanfare-tint, rgb(255 230 140)) 55%, transparent) 0deg 8deg, transparent 8deg 22deg);
+  border-radius: 50%;
+  inset: 0;
+  mask-image: radial-gradient(circle, rgb(0 0 0) 0%, rgb(0 0 0 / 0.6) 35%, transparent 68%);
+  -webkit-mask-image: radial-gradient(circle, rgb(0 0 0) 0%, rgb(0 0 0 / 0.6) 35%, transparent 68%);
+  opacity: 0.55;
+  position: absolute;
+}
+.battle-scene .battle-fanfare-sparks { inset: 0; position: absolute; }
+.battle-scene .battle-fanfare-sparks i {
+  animation: battle-fanfare-spark 1600ms ease-out var(--spark-d, 0ms) infinite;
+  background: var(--fanfare-tint, rgb(255 230 140));
+  box-shadow: 0 0 6px var(--fanfare-tint, rgb(255 230 140));
+  height: 4px;
+  left: calc(50% + var(--spark-x) * 1%);
+  position: absolute;
+  top: 60%;
+  transform: scale(var(--spark-s, 1));
+  width: 4px;
+}
+.battle-scene .battle-result-levelup:not([data-active="true"]) .battle-fanfare-burst { display: none; }
+@keyframes battle-fanfare-rays { to { rotate: 360deg; } }
+@keyframes battle-fanfare-fade { from { opacity: 0; scale: 0.4; } to { opacity: 0.55; scale: 1; } }
+@keyframes battle-fanfare-spark {
+  0% { opacity: 0; translate: 0 0; }
+  15% { opacity: 1; }
+  100% { opacity: 0; translate: calc(var(--spark-x) * 0.6px) -90px; }
+}
+/* 창 안 글자는 빛줄기 위에. */
+.battle-scene .battle-result-levelup > :not(.battle-fanfare-burst) { position: relative; z-index: 1; }
+.battle-scene .battle-result-levelup > .battle-result-levelup-page { position: absolute; }
+
+/* 「새 기술 습득!」·「새 연계기!」 카드 */
+.battle-scene .battle-learn-card { border-color: var(--emblem-tint, rgb(255 214 110)); }
+.battle-scene .battle-learn-card-kicker {
+  color: var(--emblem-tint, rgb(255 214 110));
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-align: center;
+  text-shadow: 2px 2px 0 rgb(20 10 30), 0 0 10px color-mix(in srgb, var(--emblem-tint, rgb(255 214 110)) 60%, transparent);
+}
+.battle-scene .battle-learn-card[data-active="true"]:not([data-style="minimal"]) .battle-learn-card-kicker { animation: battle-levelup-text 700ms cubic-bezier(0.2, 1.6, 0.4, 1) 60ms both; }
+.battle-scene .battle-learn-card-body { align-items: center; display: flex; gap: 14px; }
+.battle-scene .battle-learn-card-text { display: grid; gap: 2px; min-width: 0; }
+.battle-scene .battle-learn-card-who { color: rgb(200 210 240); font-size: 13px; }
+.battle-scene .battle-learn-card-name { color: rgb(255 255 255); font-size: 22px; line-height: 1.15; }
+.battle-scene .battle-learn-card-cost { color: rgb(150 214 255); font-size: 13px; }
+.battle-scene .battle-learn-card-tags { color: rgb(190 238 170); font-size: 13px; }
+.battle-scene .battle-learn-card-description { color: rgb(255 247 214); font-size: 14px; line-height: 1.45; margin: 0; }
+.battle-scene .battle-learn-emblem {
+  align-items: center;
+  background: radial-gradient(circle at 35% 30%, rgb(255 255 255 / 0.9), var(--emblem-tint, rgb(255 214 110)) 45%, rgb(30 20 60) 100%);
+  border: 2px solid rgb(255 250 220);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgb(20 10 40), 0 0 14px var(--emblem-tint, rgb(255 214 110));
+  display: grid;
+  flex: none;
+  height: 52px;
+  justify-items: center;
+  width: 52px;
+}
+.battle-scene .battle-learn-card[data-active="true"]:not([data-style="minimal"]) .battle-learn-emblem { animation: battle-learn-emblem 900ms cubic-bezier(0.2, 1.5, 0.4, 1) both; }
+.battle-scene .battle-learn-emblem-glyph { color: rgb(30 16 50); font-size: 26px; line-height: 1; text-shadow: 0 1px 0 rgb(255 255 255 / 0.6); }
+@keyframes battle-learn-emblem {
+  0% { opacity: 0; transform: rotate(-200deg) scale(0.2); }
+  70% { opacity: 1; transform: rotate(10deg) scale(1.15); }
+  100% { transform: none; }
+}
+.battle-scene .battle-learn-card.is-combo .battle-learn-card-name { color: rgb(255 226 120); }
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene :is(.battle-combo-cutin, .battle-actor.battle-combo-member, .battle-fanfare-rays, .battle-fanfare-sparks i, .battle-levelup-banner-text, .battle-learn-emblem, .battle-learn-card-kicker, .battle-result-levelup-row, .battle-result-levelup[data-active="true"]) { animation: none; }
+}

@@ -523,6 +523,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       ...(() => { const combo = comboActorIdsOf(entry.skillId ? lookupSkill(entry.skillId) : undefined); return combo ? { comboActorIds: [...combo] } : {}; })(),
       ...(entry.effectiveness !== undefined && kind === "damage" ? { effectiveness: entry.effectiveness } : {}),
       ...(entry.weaponAffinity ? { weaponAffinity: true } : {}),
+      ...(entry.exploit ? { exploit: true } : {}),
       ...(resource ? { resource } : {}),
     });
   }
@@ -4310,6 +4311,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const targetMaxHpBefore = target.maxHp;
     // 무기 공명(SkillRecord.weaponAffinity): 맞는 계열 무기를 들었으면 피해·회복 배율이 오른다.
     const affinity = weaponAffinityMultiplier(user, skill);
+    // 약점 공략(SkillRecord.exploitStates): 대상이 그 상태에 걸려 있으면 피해가 오른다(피해 기술만).
+    const exploited = effectKind === "damage" ? exploitedStateIds(skill, target) : [];
+    const exploit = exploited.length > 0 ? 1 + (skill!.exploitStates!.bonusPercent / 100) : 1;
     const rawResult = applySkillLike(user, target, {
       power,
       statistic,
@@ -4321,7 +4325,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       hitRate: effectKind === "damage" ? withAccuracyStages(statistic === "attack" ? withEvasion(combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill),
       damageFormula: skill?.damageFormula,
       // 피해 계열 받는 피해 %(적 damageTypeRates · 상태 damageTypeRates): 마력 계열 = 마법, 그 밖 = 물리.
-      hitMultiplier:hitMultiplier*(effectKind==="damage"?gimmickDamageMultiplier(user,target)*damageTypeMultiplier(options.project,statistic==="mind"?"magic":"physical",target,skill?.elementId):1)*(affinity?affinity:1),
+      hitMultiplier:hitMultiplier*(effectKind==="damage"?gimmickDamageMultiplier(user,target)*damageTypeMultiplier(options.project,statistic==="mind"?"magic":"physical",target,skill?.elementId):1)*(affinity?affinity:1)*exploit,
       criticalMultiplier: skill?.criticalMultiplier,
       variance: skill?.variance,
       criticalRate: skill?.criticalRate ?? criticalRateFor(user),
@@ -4354,6 +4358,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name, skillId: skill?.id,
         ...(effectKind === "damage" && result.hit ? effectivenessField(battleEffectivenessMultiplier(options.project, skill?.elementId, target) * damageTypeMultiplier(options.project, statistic === "mind" ? "magic" : "physical", target, skill?.elementId)) : {}),
         ...(affinity > 1 && result.hit && (effectKind === "damage" || effectKind === "healing") ? { weaponAffinity: true } : {}),
+        ...(exploit > 1 && result.hit ? { exploit: true } : {}),
       },
       timelineKind,
       commandKind,
@@ -4371,6 +4376,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // 이 순서라야 이번 스킬로 새로 부여한 상태가 즉시 해제되지 않는다.
     if (result.hit && effectKind === "damage" && result.amount > 0) {
       recoverHitStates(target);
+    }
+    // 공략한 상태를 깨뜨린다(consume) — 기술 자신의 상태 효과보다 먼저(같은 상태를 다시 거는 기술이면 새로 건다).
+    if (result.hit && exploited.length > 0 && skill?.exploitStates?.consume && target.hp > 0) {
+      applyStates(user, target, exploited.map((stateId) => ({ stateId, chance: 100, operation: "remove" as const })));
     }
     if (result.hit) {
       applyStates(user, target, skill?.stateEffects);
@@ -4618,6 +4627,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   /** 상성 배율을 결과·타임라인에 싣는다 — 1(보통)이면 싣지 않아 기존 결과 모양이 그대로다. */
   /** 무기 공명 배율 — 기술이 요구하는 계열을 시전자의 장비 공격 속성(attackElementIds)이 갖고 있으면 1 + bonus%. */
+  /** 약점 공략 — 대상이 지금 걸린 상태 중 기술이 노리는 것(exploitStates.stateIds). 없으면 빈 배열. */
+  function exploitedStateIds(skill: SkillRecord | undefined, target: MutableBattler): string[] {
+    const exploit = skill?.exploitStates;
+    if (!exploit || !(exploit.bonusPercent > 0)) return [];
+    return exploit.stateIds.filter((stateId) => target.stateIds.includes(stateId));
+  }
+
   function weaponAffinityMultiplier(user: MutableBattler, skill: SkillRecord | undefined): number {
     const affinity = skill?.weaponAffinity;
     if (!affinity || !(affinity.bonusPercent > 0)) return 1;

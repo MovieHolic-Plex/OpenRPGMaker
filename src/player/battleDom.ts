@@ -23,7 +23,8 @@ import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import type { BattleAnimationPlayback } from "@/player/battleAnimationDom";
 import { battleAnimationImpactMs, battleAnimationLeadPlan, preloadAllBattleAnimationSounds, preloadBattleAnimationSounds, syncBattleAnimationLayer } from "@/player/battleAnimationDom";
 import { createPresentationLedger, type BattlePresentationLedger } from "@/player/battlePresentation";
-import { commandPanel, enemyListPanel, syncEnemyListPanel, type BattleCommandSubmenu } from "@/player/battleCommandDom";
+import { playComboCutIn } from "@/player/battleComboCutIn";
+import { commandPanel, enemyListPanel, syncEnemyListPanel, syncBattleSkillHelp, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import {
   advanceBattleResultLevelUps,
   applyBattleDirectorState,
@@ -531,6 +532,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         preloadBattleAnimationSounds(entry.animation?.animationId);
       }
       if (retroMotion) retroTimelineEntry(field, entry);
+      // 연계기: 참가자 띠·뛰어오름·화음(표시 전용). 행동 하나에 한 번.
+      if (entry.comboActorIds && entry.comboActorIds.length >= 2) {
+        const snapshotNow = options.runtime.snapshot();
+        playComboCutIn(root, entry, {
+          actorName: (recordId) => snapshotNow.actors.find((actor) => actor.recordId === recordId)?.name
+            ?? store.getCurrent().database.actors.find((actor) => actor.id === recordId)?.name ?? recordId,
+          skillName: (row) => store.getCurrent().database.skills.find((skill) => skill.id === row.skillId)?.name ?? row.skillName ?? "",
+          speed: sequencer.speedMultiplier,
+        });
+      }
       // 훔치기처럼 결과가 특수 메시지 한 줄뿐인 직업 스킬은 시각 비트가 없다 — 그 메시지에서 연출을 시작한다.
       if (retroMotion && entry.kind === "special") {
         const pending = entry.side === "actor" && entry.userRecordId === pendingRetroSkillUserId ? pendingRetroSkillId : undefined;
@@ -1018,6 +1029,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     selected.dataset.battleCommandCursor = "true";
     selected.setAttribute("aria-current", "true");
     selected.tabIndex = 0;
+    // 기술·연계 목록이면 커서가 선 기술의 도움말 창을 갱신한다(설명·비용·꼬리표).
+    syncBattleSkillHelp(commandHost, selected, snapshot.actors.find((entry) => entry.recordId === snapshot.activeActorId));
     return selected;
   }
 
@@ -1245,6 +1258,23 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
   commandHost.addEventListener("mouseover", onMenuPointerOrFocus);
   commandHost.addEventListener("focusin", onMenuPointerOrFocus);
+  // 터치: 기술 행의 첫 탭은 커서만 옮겨 도움말 창을 띄우고, 커서가 선 행을 다시 누르면 쓴다.
+  // 탭은 pointerdown → (호환 mouseover) → click 순이라 mouseover 가 커서를 먼저 옮긴다 — 그래서 누르기 시작한 순간의 커서를 기억한다.
+  let touchArmedOnDown = true;
+  commandHost.addEventListener("pointerdown", (event) => {
+    if (event.pointerType !== "touch" && event.pointerType !== "pen") { touchArmedOnDown = true; return; }
+    const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>("button.battle-command[data-skill-help-id]") : null;
+    touchArmedOnDown = !button || button.dataset.battleCommandCursor === "true";
+  }, true);
+  commandHost.addEventListener("click", (event) => {
+    if (touchArmedOnDown) return;
+    touchArmedOnDown = true;
+    const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>("button.battle-command[data-skill-help-id]") : null;
+    if (!button || !commandHost.contains(button)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    setMenuCursor(options.runtime.snapshot(), button, true);
+  }, true);
   // 확정음 — 키보드(Enter→button.click())와 마우스 클릭이 같은 경로로 울린다.
   commandHost.addEventListener("click", (event) => {
     const button = event.target instanceof Element

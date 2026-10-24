@@ -19,7 +19,9 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   // ── 인물·성장·장비 ──
   { terms: ["배우", "캐릭터 만들", "파티원", "동료 만들", "주인공 만들", "actor", "character record", "party member"], tools: ["upsert_actor", "upsert_class", "upsert_character_profile"], label: "배우" },
   { terms: ["직업", "클래스", "class", "job"], tools: ["upsert_class", "define_promotion"], label: "직업" },
-  { terms: ["스킬", "기술", "마법", "주문", "필살기", "리미트", "연계기", "skill", "spell", "magic", "limit break", "ability"], tools: ["upsert_skill", "read_retro_skill_guide", "upsert_state"], label: "스킬" },
+  { terms: ["연계기", "합체기", "듀얼 테크", "트리플 테크", "협동기", "combo tech", "dual tech", "triple tech", "연계"], tools: ["upsert_combo_tech", "list_combo_techs", "upsert_skill"], label: "연계기(듀얼·트리플 테크)" },
+  { terms: ["레벨업 연출", "레벨 업 연출", "기술 습득 연출", "새 기술 습득", "팡파레", "level up fanfare", "skill learned"], tools: ["set_project_settings"], label: "전투 결과 팡파레(battle.fanfare)" },
+  { terms: ["스킬", "기술", "마법", "주문", "필살기", "리미트", "skill", "spell", "magic", "limit break", "ability"], tools: ["upsert_skill", "read_retro_skill_guide", "upsert_state"], label: "스킬" },
   { terms: ["장비", "무기", "방어구", "방패", "투구", "유물", "악세사리", "액세서리", "equipment", "weapon", "armor", "accessory", "relic"], tools: ["upsert_equipment", "upsert_item"], label: "장비" },
   { terms: ["마석", "에스퍼", "소환수", "소환", "esper", "summon", "materia", "magicite"], tools: ["upsert_equipment", "upsert_skill"], label: "마석·에스퍼(장비로 스킬 부여)" },
   { terms: ["장비 마법", "장착 마법", "장착하면 배", "착용 시 기술", "grantsskill", "grant skill", "equip learn", "장비 기술 부여", "equipment skill"], tools: ["upsert_equipment", "upsert_skill"], label: "장비가 스킬 부여" },

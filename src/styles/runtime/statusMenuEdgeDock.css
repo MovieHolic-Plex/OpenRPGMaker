@@ -258,7 +258,7 @@
   font: 500 6.5px/1.5 var(--runtime-ui-font);
   margin: 0;
   overflow-wrap: anywhere;
-  white-space: normal;
+  white-space: pre-line;
   word-break: keep-all;
 }
 .oprn-status-menu .status-menu-entry-icon,

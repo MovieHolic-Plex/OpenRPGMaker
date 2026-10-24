@@ -27,9 +27,12 @@ import { BATTLE_KEY_PROMPT } from "@/player/keyBindings";
 import { mountBattleCommandCss } from "@/project/battleCommandCss";
 import { withJosa } from "@/util/josa";
 import { teamSwapCommandNodes } from "@/player/battleTeamSwapDom";
+import { skillHelp, skillHelpTagLine } from "@/battle/skillHelp";
 
 export type BattleCommandSubmenu =
   | { readonly kind: "skill"; readonly command: RuntimeBattleCommand }
+  /** 연계기(듀얼·트리플 테크) 목록 — 기술 목록과 따로 「연계」 명령으로 연다. */
+  | { readonly kind: "combo" }
   | { readonly kind: "pokemonFight" }
   | { readonly kind: "item" }
   | { readonly kind: "capture" }
@@ -86,8 +89,73 @@ export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPan
   }
   attachScrollCue(menu);
   panel.append(menu);
+  if (options.submenu?.kind === "skill" || options.submenu?.kind === "combo") {
+    panel.dataset.skillHelp = "true";
+    panel.append(skillHelpBox());
+  }
   panel.append(keyPrompts());
   return panel;
+}
+
+/** 기술 도움말 창 — 커서가 선 기술의 설명·비용·꼬리표. 내용은 syncBattleSkillHelp 가 채운다. */
+function skillHelpBox(): HTMLElement {
+  const box = document.createElement("div");
+  box.className = "battle-skill-help";
+  box.dataset.testid = "battle-skill-help";
+  box.setAttribute("role", "status");
+  box.setAttribute("aria-live", "polite");
+  box.hidden = true;
+  return box;
+}
+
+/**
+ * 커서가 선 버튼의 기술 도움말을 그린다(battleDom 의 커서 표시가 부른다). 도움말 창이 없거나 기술 행이 아니면 숨긴다.
+ * 터치는 첫 탭이 커서만 옮기고(이 창이 뜬다) 같은 행을 한 번 더 누르면 쓴다 — battleDom 의 터치 가드.
+ */
+export function syncBattleSkillHelp(host: HTMLElement, selected: HTMLElement | undefined, actor: BattleBattlerSnapshot | undefined): void {
+  const box = host.querySelector<HTMLElement>(".battle-skill-help");
+  if (!box) return;
+  const skillId = selected?.dataset.skillHelpId;
+  const project = store.getCurrent();
+  const skill = skillId ? project.database.skills.find((record) => record.id === skillId) : undefined;
+  if (!skill) {
+    box.hidden = true;
+    box.replaceChildren();
+    return;
+  }
+  if (box.dataset.skillId === skill.id && !box.hidden) return;
+  const help = skillHelp(project, skill, actor ? { recordId: actor.recordId, maxMp: actor.maxMp, ...(actor.equipmentEffects ? { equipmentEffects: actor.equipmentEffects } : {}) } : undefined);
+  box.dataset.skillId = skill.id;
+  box.dataset.combo = help.comboNames ? "true" : "false";
+  const head = document.createElement("div");
+  head.className = "battle-skill-help-head";
+  const name = document.createElement("strong");
+  name.className = "battle-skill-help-name";
+  name.textContent = help.comboNames ? `${help.name} — ${help.comboNames.join(" × ")}` : help.name;
+  const cost = document.createElement("span");
+  cost.className = "battle-skill-help-cost";
+  cost.textContent = help.cost;
+  head.append(name, cost);
+  const tags = document.createElement("div");
+  tags.className = "battle-skill-help-tags";
+  tags.dataset.testid = "battle-skill-help-tags";
+  tags.textContent = skillHelpTagLine(help);
+  const children: HTMLElement[] = [head, tags];
+  if (help.description) {
+    const description = document.createElement("p");
+    description.className = "battle-skill-help-description";
+    description.dataset.testid = "battle-skill-help-description";
+    description.textContent = help.description;
+    children.push(description);
+  }
+  if (selected?.dataset.battleCommandInert === "true" && selected.dataset.battleCommandInertReason) {
+    const reason = document.createElement("div");
+    reason.className = "battle-skill-help-reason";
+    reason.textContent = selected.dataset.battleCommandInertReason;
+    children.push(reason);
+  }
+  box.replaceChildren(...children);
+  box.hidden = false;
 }
 
 /**
@@ -171,6 +239,10 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     menu.append(...skillSubmenu(snapshot, options, terms));
     return menu;
   }
+  if (options.submenu?.kind === "combo") {
+    menu.append(...comboSubmenu(snapshot, options, terms));
+    return menu;
+  }
   if (options.submenu?.kind === "pokemonFight") {
     menu.append(...pokemonFightSubmenu(snapshot, options));
     return menu;
@@ -208,6 +280,15 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     grantedCommands: actor?.equipmentEffects?.grantedCommands,
   })) {
     menu.append(commandControl(snapshot, options, command, actor, targetMode));
+    // 「연계」는 기술 명령 바로 뒤에 선다 — 연계기를 쓸 수 있는 동료가 참전 중일 때만.
+    if (command.kind === "skill" && !command.skillId && !menu.querySelector("[data-testid='actor-command-combo']")) {
+      const combo = comboCommandButton(snapshot, options, actor, targetMode);
+      if (combo) menu.append(combo);
+    }
+  }
+  if (!menu.querySelector("[data-testid='actor-command-combo']") && !snapshot.forcedSwitchActorId) {
+    const combo = comboCommandButton(snapshot, options, actor, targetMode);
+    if (combo) menu.append(combo);
   }
   if (!targetMode && !snapshot.forcedSwitchActorId) menu.append(...teamSwapCommandNodes(snapshot, options, commandButton));
   return menu;
@@ -453,22 +534,84 @@ function syncEnemyListName(
 // 여기서 다시 내보내 기존 소비자(battleDirectorDom·battleSequencer)의 경로를 유지한다.
 export { disambiguatedBattlerName };
 
-function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: RuntimeBattleCommand, snapshot?: BattleSnapshot): SkillId[] {
+function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: RuntimeBattleCommand, _snapshot?: BattleSnapshot): SkillId[] {
   if (!actor) return command?.skillId ? [command.skillId] : [];
   if (command?.skillId) return [command.skillId];
   const project = store.getCurrent();
-  // 연계기는 배우지 않아도 연계 멤버의 목록에 뜬다 — 동료가 참전 중일 때만.
   // 장비가 준 스킬은 배우지 않아도 목록에 뜬다(EquipmentRecord.grantsSkillIds).
+  // 연계기는 「연계」 명령이 따로 연다(listedComboSkillIds) — 기술 목록에는 넣지 않는다.
   const owned = battlerSkillIdsWithGrants(actor);
-  const combos = snapshot
-    ? comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), owned, comboParticipantsFromSnapshot(snapshot))
-    : [];
-  return [...owned, ...combos].filter((id) => {
+  return owned.filter((id) => {
     const skill = project.database.skills.find((record) => record.id === id);
     if (!skill) return true;
+    if (comboActorIdsOf(skill)) return false;
     if (command?.skillSubsetName) return skill.type === skillTypeForSubsetName(command.skillSubsetName);
     return true;
   });
+}
+
+/** 이 배우가 지금 고를 수 있는 연계기 — 배운 연계기 + 연계 멤버라서 열린 것. 동료가 전부 참전 중인 것만. */
+export function listedComboSkillIds(actor: BattleBattlerSnapshot | undefined, snapshot: BattleSnapshot): SkillId[] {
+  if (!actor || actor.monsterInstanceId) return [];
+  const project = store.getCurrent();
+  const owned = battlerSkillIdsWithGrants(actor);
+  const partyIds = snapshot.actors.map((entry) => entry.recordId);
+  const ownedCombos = owned.filter((id) => {
+    const combo = comboActorIdsOf(project.database.skills.find((record) => record.id === id));
+    return combo !== undefined && combo.every((member) => partyIds.includes(member));
+  });
+  return [...ownedCombos, ...comboSkillIdsFor(project, actor.recordId, partyIds, owned, comboParticipantsFromSnapshot(snapshot))];
+}
+
+/** 루트 메뉴의 「연계」 명령. 연계기가 하나도 없으면 null(명령을 아예 안 보인다). */
+function comboCommandButton(
+  snapshot: BattleSnapshot,
+  options: BattleCommandPanelOptions,
+  actor: BattleBattlerSnapshot | undefined,
+  targetMode: boolean,
+): HTMLButtonElement | null {
+  if (!actor) return null;
+  const project = store.getCurrent();
+  if (project.system.battleUiStyle === "pokemon") return null;
+  const combos = listedComboSkillIds(actor, snapshot);
+  if (combos.length === 0) return null;
+  const ready = combos.filter((skillId) => !actorSkillFailure(snapshot, actor, skillId));
+  const firstFailure = ready.length === 0 ? actorSkillFailure(snapshot, actor, combos[0]!) : undefined;
+  const reason = firstFailure
+    ? battleSkillUseFailureLabel(firstFailure, project.database.skills.find((record) => record.id === combos[0]), actor, project)
+    : undefined;
+  const button = commandButton("연계", "actor-command-combo", "combo", ready.length > 0 ? `${ready.length}개` : "준비 중", () => {
+    if (targetMode) return;
+    options.setSubmenu({ kind: "combo" });
+    options.render();
+  }, targetMode || ready.length === 0, reason);
+  button.dataset.comboReady = ready.length > 0 ? "true" : "false";
+  return button;
+}
+
+function comboSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions, terms: ResolvedTerms): HTMLElement[] {
+  const header = document.createElement("div");
+  header.className = "battle-submenu-header";
+  header.textContent = "연계";
+  const nodes: HTMLElement[] = [header];
+  const actor = activeActor(snapshot);
+  const project = store.getCurrent();
+  for (const skillId of listedComboSkillIds(actor, snapshot)) {
+    const skill = project.database.skills.find((record) => record.id === skillId);
+    const failure = actor ? actorSkillFailure(snapshot, actor, skillId) : "notLearned";
+    const reason = failure && actor ? battleSkillUseFailureLabel(failure, skill, actor, project) : failure ? "사용자가 없습니다." : undefined;
+    const partners = skill && actor ? comboPartnerNames(snapshot, skill, actor.recordId) : "";
+    const detail = [skill && actor ? skillMpDetail(project, skill, terms, actor) : "", partners ? `+ ${partners}` : ""].filter(Boolean).join(" · ");
+    const hint = skill && actor ? skillDetailFor(project, skill, terms, actor) : reason ?? terms.skill;
+    const button = commandButton(skill?.name ?? skillId, `actor-skill-${skillId}`, "combo", detail, () => {
+      options.beginTargetCommand({ kind: "skill", skillId });
+    }, Boolean(reason), reason, hint);
+    button.dataset.skillHelpId = skillId;
+    button.dataset.combo = "true";
+    appendSkillTypeBadge(button, project, skill?.elementId);
+    nodes.push(button);
+  }
+  return nodes;
 }
 
 // 자료집의 스킬 종류는 「일반」「스위치」처럼 한국어로 보이지만 저장값은 normal · switch 다.
@@ -567,6 +710,7 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
     const button = commandButton(skill?.name ?? skillId, `actor-skill-${skillId}`, "fire", detail, () => {
       options.beginTargetCommand({ kind: "skill", skillId });
     }, Boolean(reason), reason, hint);
+    button.dataset.skillHelpId = skillId;
     appendSkillTypeBadge(button, project, skill?.elementId);
     nodes.push(button);
   }
