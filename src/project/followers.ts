@@ -435,6 +435,11 @@ export type FollowerWorld = {
   readonly blocked?: (x: number, y: number) => boolean;
   /** 이벤트(대화·장면)가 도는 중 — companions.fanOutInScenes 가 켜져 있으면 둘째 동료부터 옆 줄에 선다. */
   readonly inScene?: boolean;
+  /**
+   * 이야기 장면 중 — 컷신 제어가 켜졌거나, 도는 이벤트에서 선두가 아닌 파티원이 대사를 했다.
+   * companions.display "scenesOnly"(FF6 식)는 이때만 액터 동료를 주인공 옆에 세우고, 그 밖에는 숨긴다.
+   */
+  readonly storyScene?: boolean;
   /** 주인공이 보는 방향. 궤적 없이 옆으로 비켜 선 동료(spreadWhenBlocked — 문으로 막 들어온 직후)는 주인공과 같은 쪽을 본다. */
   readonly playerFacing?: Dir;
   /**
@@ -478,7 +483,8 @@ export function followerPositions(
   // 같은 궤적·같은 주인공 칸이면 같은 답 — 조명·동료 공격이 한 프레임에 여러 번 물어도 「기다리기」가 흔들리지 않는다.
   const memo = followerPlacementMemo.get(session);
   if (memo && memo.trail === trail && memo.x === hero.x && memo.y === hero.y && memo.followers === followers
-    && memo.gap === gap && memo.minDistance === minDistance && slots.length === 0 && formation === "line" && !blocked) {
+    && memo.gap === gap && memo.minDistance === minDistance && slots.length === 0 && formation === "line" && !blocked
+    && config?.display !== "scenesOnly") {
     return memo.result;
   }
   const previous = memo?.result;
@@ -501,6 +507,14 @@ export function followerPositions(
     return { ...entry, direction: along > 0 && along <= 4 && across <= along ? opposite[facing] : facing };
   }
   function placeOne(follower: RuntimeFollower, index: number) {
+    // FF6 식(companions.display "scenesOnly"): 액터 동료는 필드에서 숨고, 이야기 장면에서만 주인공 바로 옆 빈 칸에 선다.
+    // 몬스터 동행은 monsterFollowers 가 따로 정하므로 여기서 건드리지 않는다.
+    if (config?.display === "scenesOnly" && follower.kind !== "monster" && !follower.monsterInstanceId) {
+      const spot = world?.storyScene ? nearestSpreadCell(hero, world, clear) : null;
+      if (!spot) return { follower, x: hero.x, y: hero.y, direction: follower.graphic.direction, hidden: true };
+      taken.push(spot);
+      return { follower, x: spot.x, y: spot.y, direction: world?.playerFacing ?? follower.graphic.direction };
+    }
     // 옆자리가 모자라면(인접 4칸 초과 인원, 또는 물·벽으로 막힌 칸) 그 동료는 일렬로 떨어진다.
     const slot = slots[index];
     if (slot && !blocked?.(slot.x, slot.y)) return { follower, x: slot.x, y: slot.y, direction: slot.direction };

@@ -18,6 +18,7 @@ import {
 import { playMonsterSfx } from "@/player/monsterSfx";
 import { playDoorOpenBeforeTransfer } from "@/player/playSceneFieldFx";
 import { store } from "@/project/store";
+import { COMPANION_SCENE_FLAG, syncFollowerSceneVisibility } from "@/player/playSceneFollowers";
 import { setEventSpritePattern } from "@/player/eventSpriteResources";
 import { playAudioCommand, stopAudioChannel, stopAudioCommand } from "@/player/audio";
 import { resolveEventPage } from "@/project/io";
@@ -414,6 +415,7 @@ async function consumeBlockingStep(
         ? runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions).find((view) => view.event.id === currentEventId)?.event
         : undefined;
       const speaker = step.speaker ?? getCharacterProfile(project, event?.characterId)?.displayName;
+      markCompanionSpeaking(project, scene, speaker);
       // 말하는 인물이 듣는 인물 쪽으로 돈다(둘 다 맵에 있고 가까울 때, text.autoFace=false 면 안 돈다).
       applyDialogueFacing(scene, step, currentEventId);
       await dialogue.showText({
@@ -958,4 +960,23 @@ function bindStageTargets(moves: MoveCommand[], currentEventId: string | undefin
   if (!moves.some((m) => (m.kind === "approach" || m.kind === "turnToward") && (m.target === "@this" || m.target === "this-event"))) return moves;
   return moves.map((m) => (m.kind === "approach" || m.kind === "turnToward") && (m.target === "@this" || m.target === "this-event")
     ? { ...m, target: currentEventId ?? "" } : m);
+}
+
+/**
+ * companions.display "scenesOnly"(FF6 식): 도는 이벤트에서 선두가 아닌 파티원이 말하면 그 이벤트가 끝날 때까지
+ * 동료를 주인공 옆에 세운다. 평범한 NPC 대화에서는 동료가 튀어나오지 않는다.
+ */
+function markCompanionSpeaking(project: ReturnType<typeof store.getCurrent>, scene: PlaySceneContext, speaker: string | undefined): void {
+  if (project.system.companions?.display !== "scenesOnly" || !speaker?.trim()) return;
+  if (scene.session.flags[COMPANION_SCENE_FLAG] === true) return;
+  const name = speaker.trim();
+  const companions = scene.session.partyActorIds.slice(1);
+  const speaks = companions.some((actorId) => {
+    const own = scene.session.actorNames?.[actorId]?.trim();
+    const record = project.database.actors.find((actor) => actor.id === actorId);
+    return name === own || name === record?.name?.trim() || name === record?.nickname?.trim();
+  });
+  if (!speaks) return;
+  scene.session.flags[COMPANION_SCENE_FLAG] = true;
+  syncFollowerSceneVisibility(scene);
 }
