@@ -62,7 +62,7 @@ def stone_rows(joints, table, letters, seed, last_dark=True):
                 side = (x < J) == (J > 8)
                 sx = (x - J - 1) % 16          # 돌 왼끝에서의 거리 0..14
                 h = (k * 2654435761 ^ (0 if side else 40503) ^ seed * 97) & 0xffff
-                base = table[k][0 if side else 1] + ((h >> 3) % 3 - 1)
+                base = table[k][0 if side else 1] + (1 if (h >> 3) % 4 == 0 else 0)
                 if yy == 0:
                     t = base + (2 if sx <= 1 else 1)
                 elif yy == 6:
@@ -94,26 +94,28 @@ def three_ramp(rows, joints, seed):
 
 
 def speck3(rows, seed, top=6):
-    """세 줄을 넘나드는 잡티: 같은 단의 다른 줄 색(결 섞임) 또는 한 단 위·아래. 0행(윗모서리 빛)·이음은 그대로."""
+    """r5b: 결 = 2화소 덩이(가로로 둘, 가끔 세로 하나 더) — 한 화소 잡티가 「색종이」로 읽힌다(VQA). 덩이는 돌 몸 단에서
+    같은 단의 다른 줄 색(결 섞임) 또는 한 단 위(빛 받은 결)·아래(패임). 덩이 자리는 돌마다 해시로 2~3개. 0행·이음은 그대로."""
     out = [list(r) for r in rows]
-    for y, r in enumerate(rows):
-        if y % 8 == 0:
+    H = len(rows)
+    for y in range(H):
+        if y % 8 in (0, 6, 7):
             continue
-        for x, c in enumerate(r):
+        for x in range(15):
+            c = rows[y][x]
             ramp = next((R for R in RAMPSETS if c in R[:top]), None)
-            if not ramp:
+            if not ramp or rows[y][x + 1] != c:
+                continue
+            h = (x * 73856093 ^ y * 19349663 ^ seed * 83492791) & 0xffffff
+            if h % 17:
                 continue
             i = ramp.index(c)
-            h = (x * 73856093 ^ y * 19349663 ^ seed * 83492791) & 0xffffff
-            m = h % 7
-            if m == 0:
-                out[y][x] = RAMPSETS[(RAMPSETS.index(ramp) + 1 + (h >> 7) % 2) % 3][i]
-            elif m == 1:
-                out[y][x] = ramp[min(i + 1, top - 1)]
-            elif m == 2 and (h >> 11) % 2:
-                out[y][x] = ramp[max(i - 1, 0)]
-            elif m == 3 and (h >> 13) % 5 == 0:
-                out[y][x] = ramp[min(i + 2, top - 1)]
+            m = (h >> 6) % 4
+            nc = (RAMPSETS[(RAMPSETS.index(ramp) + 1) % 3][i] if m == 0 else
+                  ramp[min(i + 1, top - 1)] if m in (1, 2) else ramp[max(i - 1, 0)])
+            out[y][x] = out[y][x + 1] = nc
+            if (h >> 9) % 3 == 0 and y + 1 < H and rows[y + 1][x] == c and (y + 1) % 8 not in (6, 7):
+                out[y + 1][x] = nc
     return [''.join(r) for r in out]
 
 
@@ -194,12 +196,12 @@ TWO = list(range(16)) + list(range(32, 48))   # 2단 = 윗단 + 아랫단
 
 # ================================================================================================ 마계 벽 앞면
 # 마계 벽 = 흑요석 마름돌 8줄 켜 엇쌓기. 글자: j 이음(void0) · a~f = ostone 0~5 · p q r s = 빛 1~4 단.
-LOF = L('j:void0 a:ostone0 b:ostone1 c:ostone2 d:ostone3 e:ostone4 f:ostone5 A:crock0 B:rim0 C:cfloor0 D:red0 E:marble0 F:bone0 1:void2 2:ostone1 3:arcane0 4:ostone3 5:arcane1 6:ostone5 p:arcane0 q:arcane1 r:arcane2 s:arcane3')
-LOF2 = L('j:void0 a:ostone0 b:ostone1 c:ostone2 d:ostone3 e:ostone4 f:ostone5 A:crock0 B:rim0 C:cfloor0 D:red0 E:marble0 F:bone0 1:void2 2:ostone1 3:arcane0 4:ostone3 5:arcane1 6:ostone5 p:ostone3 q:red0 r:red1 s:red2')
+LOF = L('j:void0 a:ostone0 b:ostone1 c:ostone2 d:ostone3 e:ostone4 f:ostone5 A:void1 B:ostone0 C:ostone1 D:red0 E:ostone3 F:ostone4 1:void2 2:ostone1 3:arcane0 4:ostone3 5:arcane1 6:ostone5 p:arcane0 q:arcane1 r:arcane2 s:arcane3')
+LOF2 = L('j:void0 a:ostone0 b:ostone1 c:ostone2 d:ostone3 e:ostone4 f:ostone5 A:void1 B:ostone0 C:ostone1 D:red0 E:ostone3 F:ostone4 1:void2 2:ostone1 3:arcane0 4:ostone3 5:arcane1 6:ostone5 p:ostone3 q:red0 r:red1 s:red2')
 TONES = 'abcdef'
 # 켜(8줄)마다 세로 이음 열 — 번갈아 엇쌓기. 돌 단(몸) = 켜·돌마다 손으로 정한 표(왼 돌, 오른 돌).
 OF_JOINT = [4, 12, 4, 12, 4, 12]
-OF_TONE = [(3, 2), (2, 3), (3, 3), (2, 2), (2, 3), (1, 2)]   # 위 켜가 밝고 아래로 어두워진다
+OF_TONE = [(3, 4), (2, 3), (4, 2), (3, 2), (2, 3), (1, 2)]   # 위 켜가 밝고 아래로 어두워진다
 
 
 PATHS = [
@@ -227,12 +229,16 @@ def other_mid(n=1, cracked=False, flip=False):
                 (12, 15), (11, 16), (11, 17), (10, 18), (10, 19), (10, 20), (9, 21), (9, 22), (8, 23), (8, 24), (8, 25), (7, 26),
                 (7, 27), (6, 28), (6, 29), (5, 30), (5, 31), (4, 32), (4, 33), (4, 34), (5, 35), (5, 36), (6, 37),
                 (6, 38), (5, 39), (5, 40), (5, 41), (6, 42), (6, 43), (6, 44), (7, 45)]
+        # r5b: 금 = 돌을 쪼갠 홈. 왼쪽 위 = 깨진 돌 모서리 빛(돌 단 +1), 가운데 = 깊은 그늘 j, 그 안 드문드문 빛 줄기 r(이어지지 않음),
+        #      오른쪽 = 홈 안 벽 그늘 p(빛 번짐 아님). 홈 양옆 한 화소는 돌 쪽 단으로 남긴다.
+        up = {'a': 'b', 'b': 'c', 'c': 'd', 'd': 'e', 'e': 'f', 'f': 'f', 'A': 'B', 'B': 'C', 'C': 'D', 'D': 'E', 'E': 'F', 'F': 'F',
+              '1': '2', '2': '3', '3': '4', '4': '5', '5': '6', '6': '6'}
         for i, (x, y) in enumerate(path):
-            rows[y][x] = 's' if i in (11, 24) else ('q' if i % 5 == 3 else 'r')
-            if rows[y][x - 1] not in 'qrs':
-                rows[y][x - 1] = 'j'          # 틈 왼쪽 = 깊은 그늘(파인 홈)
-            if rows[y][x + 1] in 'abcdefj':
-                rows[y][x + 1] = 'p'          # 오른쪽 = 희미한 빛 번짐
+            rows[y][x] = 'r' if i % 4 == 1 else ('s' if i in (11, 30) else 'j')
+            if rows[y][x - 1] not in 'jqrsp':
+                rows[y][x - 1] = up.get(rows[y][x - 1], rows[y][x - 1])
+            if x + 1 < 16 and rows[y][x + 1] not in 'jqrs':
+                rows[y][x + 1] = 'p'
         rows = [''.join(r) for r in rows]
     if flip:   # 둘째 금 칸 = 같은 결을 좌우로 뒤집은 길(이음 자리는 다시 맞춘다)
         rows = [''.join(r) for r in rows]
@@ -432,7 +438,7 @@ def other_rim(n=1):
 # ================================================================================================ 마법탑 벽 앞면
 # 짙은 청석 마름돌 8줄 켜(엇쌓기, 돌마다 단이 달라 얼룩) · 줄눈 = 남보라(arcane0, 비전 결) · 돌 결 점.
 # 글자: j 줄눈 · a~e = vrock 0~4 · u v w = 창 밤하늘(void1 · arcane0 · arcane1) · S 별(ice3) · t 별 희미(arcane3) · k l = 창턱 윗면(iron4·iron5)
-LTF = L('j:arcane0 a:vrock0 b:vrock1 c:vrock2 d:vrock3 e:vrock4 A:iron0 B:iron1 C:iron2 D:iron3 E:iron4 1:castle0 2:castle1 3:castle2 4:castle4 5:castle5 o:void0 u:void1 v:arcane0 w:arcane1 S:ice3 t:arcane3 k:iron4 l:iron5')
+LTF = L('j:arcane0 a:vrock0 b:vrock1 c:vrock2 d:vrock3 e:vrock4 A:vrock0 B:vrock1 C:iron1 D:iron2 E:iron4 1:vrock0 2:castle1 3:castle2 4:castle3 5:castle4 o:void0 u:void1 v:arcane0 w:arcane1 S:ice3 t:arcane3 k:iron4 l:iron5')
 # A2 = 흰 대리석 탑(밝은 마름돌, 줄눈 = 짙은 남보라) — 창은 같은 밤하늘
 LTF2 = L('j:arcane1 a:marble1 b:marble2 c:marble3 d:marble4 e:marble5 A:cfloor1 B:cfloor2 C:cfloor4 D:cfloor7 E:bone4 1:bone0 2:bone1 3:bone2 4:bone3 5:snow0 o:void0 u:void1 v:arcane0 w:arcane1 S:ice3 t:arcane3 k:iron4 l:iron5')
 TF_TONE = 'abcde'
@@ -514,7 +520,7 @@ def tower_kit(n=1):
     cells = [G(r, lg) for r in bot]
     for c in cells:
         # r5: 굽도리 = 앞으로 나온 큰 돌 켜(돌마다 단·결이 다름, 위에 그림자 한 줄), 납작한 쇠 막대 아님
-        stamp(c, ['aaaaaaaaaaaaaaaa', 'eEdedjd2eDeedj3e', 'dCcDcjc3dcCdcj2d', 'cB3cbjbc3bBccjcb', 'bAbabjab2abAbjba', 'jjjjjjjjjjjjjjjj'], lg, 0, 9)
+        stamp(c, ['aaaaaaaaaaaaaaaa', 'eeedejeedeeeejee', 'dddcdjdcddddcjdd', 'ccbccjccccbccjcc', 'bbbabjbbabbbbjab', 'jjjjjjjjjjjjjjjj'], lg, 0, 9)
     k.base3 = hcat(*cells)
     alt = m.crop(0, 16, 16, 16)
     stamp(alt, ['.....jj.........', '....jabj........', '....jaoj........', '....jaoj........', '....jaoj........', '....jaoj........',
