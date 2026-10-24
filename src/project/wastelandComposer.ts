@@ -352,7 +352,8 @@ const SLAB_RIM: Map<string, number> = (() => {
     const free = [0, 1, 2, 3].filter((k) => !(m & (1 << k)));
     for (let c = 0; c < 4 ** free.length; c++) { const code = [0, 0, 0, 0]; free.forEach((k, j) => { code[k] = Math.floor(c / 4 ** j) % 4; }); m2.set(`${code.join("")}|${m}|0`, i++); }
   }
-  for (const m of [5, 10]) { m2.set(`0000|${m}|1`, i++); m2.set(`0000|${m}|2`, i++); }
+  for (const m of [0, 1, 4, 5]) { m2.set(`0000|${m}|1`, i++); m2.set(`0000|${m}|2`, i++); }
+  for (const m of [0, 2, 8, 10]) { m2.set(`0000|${m}|3`, i++); m2.set(`0000|${m}|4`, i++); }
   return m2;
 })();
 /** wl_core h2 와 같은 해시(파이썬 hsh 두 번). */
@@ -362,7 +363,7 @@ function wlHsh(x: number, y: number, s: number): number {
   return (h ^ (h >>> 16)) & 0xffff;
 }
 function wlH2(x: number, y: number, s: number): number { return wlHsh(wlHsh(x, y, s) ^ Math.imul(x, 7919), Math.imul(y, 104729) + x, s + 1); }
-function slabJointFinish(b: Board, joints: StructureKitDef): void {
+function slabJointFinish(b: Board, joints: StructureKitDef, road: readonly boolean[]): void {
   const cols = joints.width, at = (i: number) => joints.rows[Math.floor(i / cols)]?.upperTiles?.[i % cols] ?? joints.rows[Math.floor(i / cols)]?.tiles[i % cols] ?? -1;
   const on = (x: number, y: number) => b.inb(x, y) && b.slab[b.idx(x, y)]!;
   const seed = b.seed;
@@ -375,14 +376,22 @@ function slabJointFinish(b: Board, joints: StructureKitDef): void {
     if (!on(x, y)) continue;
     const i = b.idx(x, y);
     if ((layerTileAt(b.map, 2, i) ?? -1) >= 0) continue;
-    const m = (on(x, y - 1) ? 0 : 1) | (on(x + 1, y) ? 0 : 2) | (on(x, y + 1) ? 0 : 4) | (on(x - 1, y) ? 0 : 8);
+    // 길(아스팔트) 쪽은 흙으로 부서지지 않는다(연석처럼 맞닿는다) — 둘레 마스크에서 빼고, 그 변의 줄눈 건넘만 막는다.
+    const rd = (dx: number, dy: number) => b.inb(x + dx, y + dy) && road[b.idx(x + dx, y + dy)]!;
+    const m = (on(x, y - 1) || rd(0, -1) ? 0 : 1) | (on(x + 1, y) || rd(1, 0) ? 0 : 2) | (on(x, y + 1) || rd(0, 1) ? 0 : 4) | (on(x - 1, y) || rd(-1, 0) ? 0 : 8);
     const cd = [hcode(x, y), vcode(x + 1, y), hcode(x, y + 1), vcode(x, y)];
+    [[0, -1], [1, 0], [0, 1], [-1, 0]].forEach(([dx, dy], j) => { if (rd(dx!, dy!)) cd[j] = 0; });
     let k: number | undefined;
-    if (m) {
+    // 한 칸 폭 띠(보도): 띠를 가로지르는 곧은 줄눈을 드물게(가로 띠 = 세로 줄 1·2, 세로 띠 = 가로 줄 3·4).
+    const hs = !on(x, y - 1) && !on(x, y + 1), vs = !on(x - 1, y) && !on(x + 1, y);
+    if (!cd.some((v) => v) && hs !== vs) {
+      const r = wlH2(x * 5 + 3, y * 7 + 1, seed + 419) % 10, cc = r < 2 ? 1 : r < 3 ? 2 : 0;
+      if (cc) k = SLAB_RIM.get(`0000|${m}|${cc + (hs ? 0 : 2)}`);
+    }
+    if (k !== undefined) { /* 띠 이음 */ }
+    else if (m) {
       [1, 2, 4, 8].forEach((bit, j) => { if (m & bit) cd[j] = 0; });
-      let cut = 0;
-      if ((m === 5 || m === 10) && !cd.some((v) => v)) { const r = wlH2(x * 5 + 3, y * 7 + 1, seed + 419) % 10; cut = r < 2 ? 1 : r < 3 ? 2 : 0; }
-      k = SLAB_RIM.get(`${cd.join("")}|${m}|${cut}`);
+      k = SLAB_RIM.get(`${cd.join("")}|${m}|0`);
     } else {
       const c = cd[0]! * 64 + cd[1]! * 16 + cd[2]! * 4 + cd[3]!, n = SLAB_INNER[c + 1]! - SLAB_INNER[c]!;
       k = SLAB_INNER[c]! + (wlH2(x * 3 + 1, y * 5 + 2, seed + 409) % n);
@@ -393,9 +402,9 @@ function slabJointFinish(b: Board, joints: StructureKitDef): void {
 }
 
 /** 판석 둘레 칸(4방향 중 하나라도 판석 아님)에 깨짐 덧칠(위층 평면) — 아래층 판석 결은 끝까지 이어진다. 위에 기물이 선 칸은 건너뛴다. */
-function finishSlab(b: Board): void {
+function finishSlab(b: Board, road: readonly boolean[] = []): void {
   const joints = b.kit("slab-joints");
-  if (joints && b.kit("slab-ground")) { slabJointFinish(b, joints); return; }
+  if (joints && b.kit("slab-ground")) { slabJointFinish(b, joints, road); return; }
   const g = (b.ts.autotileGroups ?? []).find((group) => group.id.startsWith("wl") && group.id.includes("slab-break"));
   if (!g) return;
   const slabTiles = new Set<number>();
@@ -1060,7 +1069,7 @@ export function composeWastelandMap(map: GameMap, tileset: TilesetDef, kind: Was
   const b = new Board(map, tileset, seed + (kind === "settlement" ? 0 : kind === "ruined-city" ? 7919 : 15887));
   for (let i = 0; i < map.width * map.height; i++) { setLayerTileAt(map, 2, i, -1); setLayerTileAt(map, 3, i, -1); setLayerTileAt(map, 4, i, -1); }
   const out = kind === "settlement" ? ((seed & 1) === 0 ? composeRoadsideSettlement(b) : composeSettlement(b)) : kind === "ruined-city" ? composeRuinedCity(b) : composeShanty(b);
-  finishSlab(b);
+  finishSlab(b, out.road);
   scatterDecals(b, kind === "ruined-city" ? 0.09 : kind === "settlement" ? 0.045 : 0.045, out.road);
   const counts = new Map<string, number>();
   for (const p of b.placed) counts.set(p.id, (counts.get(p.id) ?? 0) + 1);

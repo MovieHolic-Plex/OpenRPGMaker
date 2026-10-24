@@ -52,8 +52,10 @@ def rim_combos():
             code = [0, 0, 0, 0]
             for j, i in enumerate(free): code[i] = (c // NCODE ** j) % NCODE
             out.append((tuple(code), m, 0))
-    for m in (5, 10):                                   # 한 칸 폭 띠: 띠를 가로지르는 곧은 줄눈(보도 판 이음) 두 가지
-        out += [((0, 0, 0, 0), m, 1), ((0, 0, 0, 0), m, 2)]
+    # 한 칸 폭 띠(보도): 띠를 가로지르는 곧은 줄눈 두 가지. 가로 띠(위·아래가 판 아님) = 세로 줄 cut 1·2, 세로 띠 = 가로 줄 cut 3·4.
+    # 띠 칸의 흙 쪽 마스크 m 은 길 쪽을 빼므로 가로 띠 m ∈ {0,1,4,5}, 세로 띠 m ∈ {0,2,8,10}.
+    for m in (0, 1, 4, 5): out += [((0, 0, 0, 0), m, 1), ((0, 0, 0, 0), m, 2)]
+    for m in (0, 2, 8, 10): out += [((0, 0, 0, 0), m, 3), ((0, 0, 0, 0), m, 4)]
     return out
 
 
@@ -81,9 +83,10 @@ def ground_tone(x, y):
                 if r < 0.04 + 0.10 * wear: t = G_BASE + 1
                 elif r > 0.95 - 0.05 * (1 - wear): t = G_BASE - 1
                 if damp < 0.20 and r > 0.3: t -= 1                                   # 넓은 젖은 자리(덩이째 한 단 어둡게)
-                g = h2((xx + (yy // 2) % 2) // 2 % (SP // 2), yy // 2 % (SP // 2), 6029) % 13   # 2×2 골재 덩이(낱화소 점 아님), 한 단만
+                g = h2((xx + (yy // 2) % 2) // 2 % (SP // 2), yy // 2 % (SP // 2), 6029) % 9    # 2×2 골재 덩이(낱화소 점 아님), 한 단만
                 if g == 0: t -= 1
                 elif g == 1 and t <= G_BASE: t += 1
+                elif g == 2 and wear > 0.55: t -= 2                     # 닳은 자리: 드러난 굵은 골재(2×2, 두 단 어둡게)
                 _GT[(xx, yy)] = max(1, min(5, t))
     return _GT[(x % SP, y % SP)]
 
@@ -281,9 +284,10 @@ def _draw_rim(c, m, seed):
 def draw_cell(c, ox, oy, code, v, rim=0, cut=0):
     J, cracks, seed = joint_layout(code, v)
     if cut:
-        o = 6 + 3 * (cut - 1) + h2(rim, cut, 71) % 2
-        J = {(o, t) for t in range(16)} if rim == 5 else {(t, o) for t in range(16)}
-        if cut == 2: cracks = [[(o + 1 + k // 2, 4 + k) for k in range(5)]] if rim == 5 else [[(4 + k, o + 1 + k // 2) for k in range(5)]]
+        vert = cut in (1, 2); cc = 1 + (cut - 1) % 2
+        o = 6 + 3 * (cc - 1) + h2(rim, cut, 71) % 2
+        J = {(o, t) for t in range(16)} if vert else {(t, o) for t in range(16)}
+        cracks = ([[(o + 1 + k // 2, 4 + k) for k in range(5)]] if vert else [[(4 + k, o + 1 + k // 2) for k in range(5)]]) if cc == 2 else []
     if rim:
         D = rim_mask_pixels(rim, seed)
         J = {p for p in J if p not in D}
@@ -346,19 +350,24 @@ for _i, (_cd, _v) in enumerate(COMBOS): INDEX.setdefault(_cd, []).append(_i)
 RIM_INDEX = {(cd, m, cut): len(COMBOS) + j for j, (cd, m, cut) in enumerate(RIMS)}
 
 
-def cell_index(slab, x, y, seed):
+def cell_index(slab, x, y, seed, road=None):
+    """road(선택): 길 칸 집합 — 길 쪽 변은 흙으로 부서지지 않고(마스크에서 뺀다) 줄눈도 건너지 않는다(구성기와 같다)."""
     H, W = len(slab), len(slab[0])
     on = lambda i, j: 0 <= i < W and 0 <= j < H and slab[j][i]
-    m = (0 if on(x, y - 1) else 1) | (0 if on(x + 1, y) else 2) | (0 if on(x, y + 1) else 4) | (0 if on(x - 1, y) else 8)
+    rd = lambda i, j: bool(road) and (i, j) in road
+    m = (0 if on(x, y - 1) or rd(x, y - 1) else 1) | (0 if on(x + 1, y) or rd(x + 1, y) else 2) | (0 if on(x, y + 1) or rd(x, y + 1) else 4) | (0 if on(x - 1, y) or rd(x - 1, y) else 8)
     cd = list(slab_codes(slab, x, y, seed))
+    for i, (dx, dy) in enumerate(((0, -1), (1, 0), (0, 1), (-1, 0))):
+        if rd(x + dx, y + dy): cd[i] = 0
+    hs = not on(x, y - 1) and not on(x, y + 1); vs_ = not on(x - 1, y) and not on(x + 1, y)
+    if not any(cd) and (hs or vs_) and not (hs and vs_):
+        r = h2(x * 5 + 3, y * 7 + 1, seed + 419) % 10
+        cc = 1 if r < 2 else 2 if r < 3 else 0
+        if cc and ((0, 0, 0, 0), m, cc + (0 if hs else 2)) in RIM_INDEX: return RIM_INDEX[((0, 0, 0, 0), m, cc + (0 if hs else 2))]
     if m:
         for i, bit in enumerate((1, 2, 4, 8)):
             if m & bit: cd[i] = 0
-        cut = 0
-        if m in (5, 10) and not any(cd):
-            r = h2(x * 5 + 3, y * 7 + 1, seed + 419) % 10
-            cut = 1 if r < 2 else 2 if r < 3 else 0
-        return RIM_INDEX[(tuple(cd), m, cut)]
+        return RIM_INDEX[(tuple(cd), m, 0)]
     vs = INDEX[tuple(cd)]
     return vs[h2(x * 3 + 1, y * 5 + 2, seed + 409) % len(vs)]
 
@@ -399,7 +408,7 @@ SAMPLE_PLAN_B = [
 ]
 
 
-def board_sample(plan=SAMPLE_PLAN, seed=5):
+def board_sample(plan=SAMPLE_PLAN, seed=5, joints=True):
     """흙 위에 광장(가운데 흙 구덩이)·한 칸 보도 띠 둘(가로·세로)을 깐 표본 — 구성기 규칙 그대로."""
     H, W = len(plan), len(plan[0])
     slab = [[ch == '#' for ch in r] for r in plan]
@@ -410,6 +419,7 @@ def board_sample(plan=SAMPLE_PLAN, seed=5):
         for x in range(W):
             if not slab[y][x]: continue
             a[y * 16:(y + 1) * 16, x * 16:(x + 1) * 16] = G[(y % 8) * 16:(y % 8) * 16 + 16, (x % 8) * 16:(x % 8) * 16 + 16]
+            if not joints: continue
             i = cell_index(slab, x, y, seed)
             blk = Jm[(i // COLS) * 16:(i // COLS) * 16 + 16, (i % COLS) * 16:(i % COLS) * 16 + 16]
             op = blk[..., 3] == 255
