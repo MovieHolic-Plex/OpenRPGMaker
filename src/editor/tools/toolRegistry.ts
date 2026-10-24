@@ -59,6 +59,7 @@ import { GROUP_SAMPLE_TOOLS } from "./groupSampleTool";
 import { HISTORY_TOOLS } from "./historyTools";
 import { HOUSE_VISION_TOOLS } from "./houseVisionTools";
 import { INVESTIGATION_TOOLS } from "./investigationTools";
+import { SEARCH_CONTAINER_TOOLS } from "./searchContainerTools";
 import { MYSTERY_CASE_TOOLS } from "./mysteryCaseTool";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
 import { CUTSCENE_ART_TOOLS } from "./cutsceneArtTools";
@@ -336,6 +337,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(TILE_CHANGE_EFFECT_TOOLS, "event"),
   ...withDomain(VEHICLE_TOOLS, "event"),
   ...withDomain(INVESTIGATION_TOOLS, "event"),
+  ...withDomain(SEARCH_CONTAINER_TOOLS, "event"),
   ...withDomain(PUZZLE_AUTHORING_TOOLS, "event"),
   ...withDomain(MYSTERY_CASE_TOOLS, "event"),
   ...withDomain(NARRATIVE_HORROR_TEMPLATE_TOOLS, "event"),
