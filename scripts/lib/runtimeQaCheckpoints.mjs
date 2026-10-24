@@ -119,9 +119,11 @@ export async function runCheckpoints({ scenario, set, checkpoints, parallel = 2,
           // QA_RECORD_VIDEO=<폴더> — 체크포인트마다 <폴더>/<체크포인트 id>/ 에 webm 하나. 컨텍스트를 닫아야 파일로 끝난다.
           const videoDir = process.env.QA_RECORD_VIDEO;
           const size = checkpointScenario.viewport;
+          // 시나리오 deviceScaleFactor — 소수 배율 화면(Windows 125%·150%)의 도트 정렬을 잴 때.
+          const dsf = checkpointScenario.deviceScaleFactor ? { deviceScaleFactor: checkpointScenario.deviceScaleFactor } : {};
           context = await browser.newContext(videoDir
-            ? { ...(size ? { viewport: size } : {}), recordVideo: { dir: resolve(REPO_ROOT, videoDir, checkpoint.id), ...(size ? { size } : {}) } }
-            : {});
+            ? { ...dsf, ...(size ? { viewport: size } : {}), recordVideo: { dir: resolve(REPO_ROOT, videoDir, checkpoint.id), ...(size ? { size } : {}) } }
+            : dsf);
           const page = await context.newPage();
           const report = await runRuntimeQa(page, checkpointScenario, {
             serverUrl,
