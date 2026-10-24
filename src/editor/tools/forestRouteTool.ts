@@ -41,7 +41,7 @@ function exitCell(side: Side, u: number, v: number): Cell {
   return { x: Math.round(c.x), y: Math.round(c.y) };
 }
 
-function forestSpec(id: string, name: string, side: Side, seed: number, last: boolean, entryU: number): { spec: WoodSpec; entry: Cell; exit: Cell | null } {
+function forestSpec(id: string, name: string, side: Side, seed: number, last: boolean, entryU: number, field = false): { spec: WoodSpec; entry: Cell; exit: Cell | null } {
   const rnd = mulberry32(seed);
   const across = (lo: number, hi: number) => lo + rnd() * (hi - lo);
   const exitU = Math.round(across(7, 24)) + 0.5;
@@ -60,6 +60,8 @@ function forestSpec(id: string, name: string, side: Side, seed: number, last: bo
     { ...centerBlob(side, mid.x, mid.y, across(3.2, 4.6), across(2.4, 3.4)) },
     { ...centerBlob(side, entryU, ALONG - 4, across(3.5, 5), 2.8) },
     ...(last ? [centerBlob(side, raw[raw.length - 1]!.x, endV + 1, 5.5, 4)] : []),
+    // 들판: 길 따라 큰 풀밭 빈터 셋 — 나무는 가장자리 띠와 섬으로만 남는다.
+    ...(field ? [raw[1]!, raw[2]!, raw[3]!].map((p) => centerBlob(side, Math.max(9, Math.min(ACROSS - 10, p.x)), p.y, across(9, 11.5), across(6, 8))) : []),
   ];
   const nooks = [raw[1]!, raw[3]!].map((p, k) => {
     const dir = k % 2 === 0 ? 1 : -1;
@@ -67,11 +69,12 @@ function forestSpec(id: string, name: string, side: Side, seed: number, last: bo
     const to = toMap(side, Math.max(2, Math.min(ACROSS - 3, Math.round(p.x + dir * across(3, 5)))), Math.round(p.y - 1));
     return { from, to };
   });
+  const groves = field ? [centerBlob(side, across(6, 10), across(12, 18), 1.6, 1.3), centerBlob(side, across(20, 26), across(22, 30), 1.8, 1.4)] : [];
   const entry = exitCell(side, entryU, ALONG - 1);
   const exit = last ? null : exitCell(side, exitU, 0);
   const { width, height } = dims(side);
   return {
-    spec: { id, name, width, height, seed, paths: [{ pts, w: [2.2, 3.4] }], exits: exit ? [entry, exit] : [entry], clearings, nooks },
+    spec: { id, name, width, height, seed, paths: [{ pts, w: [2.2, 3.4] }], exits: exit ? [entry, exit] : [entry], clearings, nooks, ...(groves.length ? { groves } : {}), ...(field ? { undergrowth: 0.6 } : {}) },
     entry, exit,
   };
 }
@@ -142,7 +145,7 @@ const MOODS: Record<Mood, { ambient?: number; color?: string; fog?: number }> = 
 const authorForestRoute: ToolDefinition = {
   name: "author_forest_route",
   description:
-    "숲을 구불구불한 숲길 맵 여러 장(1~5)으로 지어 시작 맵의 한쪽 가장자리(north·south·east·west)와 줄줄이 잇는다 — 폴른 스타 속삭이는 숲과 같은 "
+    "숲(또는 terrain:'field' 트인 들판)을 구불구불한 길 맵 여러 장(1~5)으로 지어 시작 맵의 한쪽 가장자리(north·south·east·west)와 줄줄이 잇는다 — 폴른 스타 속삭이는 숲과 같은 "
     + "B1 활엽수 화가(곡선 숲길·빈터·나무 섬·나무 사이 틈). 「마을 북쪽에 숲을 맵 3개로 나눠 이어 줘」「숲 두 개, 두 번째는 어둡고 안개」의 정본. "
     + "moods[i] = normal·dim·dark·fog·darkfog(실제 조명·안개). hiddenPerMap 개수만큼 나무 사이 틈에 숨은 물건(조사하면 한 번, 그림 없음)을 둔다. "
     + "마지막 숲은 막다른 빈터로 끝난다(보스·사당 자리). 결과 data.maps[i] = {mapId, entry, exit, clearing}.",
@@ -157,6 +160,7 @@ const authorForestRoute: ToolDefinition = {
       moods: { type: "array", items: { type: "string", enum: ["normal", "dim", "dark", "fog", "darkfog"] } },
       hiddenPerMap: { type: "integer", description: "맵마다 숨은 물건 수 0~3(기본 0)" },
       hiddenItemIds: { type: "array", items: { type: "string" }, description: "숨은 물건 아이템 id(돌아가며 쓴다, 없으면 돈)" },
+      terrain: { type: "string", enum: ["forest", "field"], description: "forest(기본)=나무 사이 숲길 · field=트인 들판(큰 풀밭 빈터, 가장자리만 나무)" },
       seed: { type: "integer" },
     },
     required: ["fromMapId", "side"],
@@ -172,16 +176,18 @@ const authorForestRoute: ToolDefinition = {
     const moods = Array.isArray(args.moods) ? args.moods.map(String) as Mood[] : [];
     const hidden = Math.max(0, Math.min(3, Math.floor(Number(args.hiddenPerMap ?? 0)) || 0));
     const itemIds = (Array.isArray(args.hiddenItemIds) ? args.hiddenItemIds.map(String) : []).filter((id) => draft.database.items.some((i) => i.id === id) || draft.database.equipment.some((i) => i.id === id));
+    const field = args.terrain === "field";
     const warnings: string[] = [];
     const out: Array<{ mapId: string; name: string; entry: Cell; exit: Cell | null; clearing: Cell; hidden: Cell[] }> = [];
     let prev: { mapId: string } & Cell = { mapId: from.id, ...originEdge(draft, from, side) };
     let used = 0;
     for (let i = 0; i < count; i += 1) {
-      let id = `map_forest_${side}_${i + 1}`;
-      for (let n = 2; draft.maps[id]; n += 1) id = `map_forest_${side}_${i + 1}_${n}`;
-      const name = names[i] ?? (count > 1 ? `숲 ${i + 1}` : "숲");
+      let id = `map_${field ? "field" : "forest"}_${side}_${i + 1}`;
+      for (let n = 2; draft.maps[id]; n += 1) id = `map_${field ? "field" : "forest"}_${side}_${i + 1}_${n}`;
+      const base = field ? "들판" : "숲";
+      const name = names[i] ?? (count > 1 ? `${base} ${i + 1}` : base);
       const entryU = 10 + mulberry32(seed0 + i * 31)() * 12;
-      const { spec, entry, exit } = forestSpec(id, name, side, seed0 + i * 97, i === count - 1, entryU);
+      const { spec, entry, exit } = forestSpec(id, name, side, seed0 + i * 97, i === count - 1, entryU, field);
       const result = paintWoodland(draft, spec);
       // 시작 맵의 이 숲 묶음 아래로 — 범위 체크포인트가 새 맵을 버리지 않게.
       try { call(draft, "manage_map_tree", { operation: "move", mapId: id, parentId: from.id }); } catch { /* 트리 이동 실패는 무시 */ }
@@ -219,7 +225,7 @@ const authorForestRoute: ToolDefinition = {
       if (exit) prev = { mapId: id, ...exit };
     }
     return {
-      summary: `숲 ${count}장(${side}): ${out.map((m) => `${m.name}=${m.mapId}${m.hidden.length ? ` 숨은 물건 ${m.hidden.length}` : ""}`).join(" → ")} · ${from.id} ${side} 가장자리와 연결`,
+      summary: `${field ? "들판" : "숲"} ${count}장(${side}): ${out.map((m) => `${m.name}=${m.mapId}${m.hidden.length ? ` 숨은 물건 ${m.hidden.length}` : ""}`).join(" → ")} · ${from.id} ${side} 가장자리와 연결`,
       data: { maps: out },
       ...(warnings.length ? { warnings } : {}),
     };
