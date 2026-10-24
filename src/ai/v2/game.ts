@@ -18,7 +18,7 @@ export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: re
   { words: /전부|모두|일괄|이름을|바꿔|바꾸/u, tools: ["replace_text_in_project"] },
   { words: /상태|독|화상|기절|마비|잠|수면|꿰뚫|턴|state/iu, tools: ["upsert_state"] },
   { words: /보스|페이즈|소환|불러|예고|힘을 모|충전|boss|phase/iu, tools: ["author_boss_phases", "simulate_battle"] },
-  { words: /오프닝|시작할 때|게임 시작|타이틀|제목|영화처럼|opening|title/iu, tools: ["plan_opening", "set_opening", "edit_opening", "create_opening_animatic_shot", "upsert_opening_layer", "animate_opening_camera", "animate_opening_layer", "set_opening_transition", "upsert_opening_audio_cue", "set_title_screen"] },
+  { words: /오프닝|시작할 때|게임 시작|타이틀|제목|영화처럼|opening|title/iu, tools: ["plan_opening", "set_opening", "edit_opening", "get_animatic_capabilities", "configure_opening_entry", "create_opening_animatic_shot", "place_opening_background", "upsert_opening_layer", "animate_opening_camera", "animate_opening_layer", "set_opening_transition", "set_opening_caption", "upsert_opening_audio_cue", "inspect_opening_timeline", "set_title_screen", "list_resources"], card: "· 오프닝의 하늘·배경: 마을 맵 위를 카메라로 훑어 «밤하늘»을 흉내 내지 않는다. list_resources{kind:'backdrop', query:'night'|'sky'|'stars'} 로 그림을 찾아 place_opening_background{shotId, layerId, resourceId} 로 깔고, 별은 upsert_opening_layer 의 particles{preset:'stars'}, «흘러가는» 하늘은 animate_opening_layer 로 그 배경 층 x(또는 y)를 천천히 옮긴다. 레터박스·흔들림·제목은 create_opening_animatic_shot/animate_opening_camera/set_opening_caption. 다 짓고 inspect_opening_timeline 으로 확인." },
   { words: /순찰|돌아다|뛰어다|걸어 다|patrol/iu, tools: ["configure_npc_patrol"] },
   { words: /문을 열|문 열|성문|잠긴|창고 문|뒷문|door/iu, tools: ["place_door"] },
   // 2026-10-25 데모(폴른 스타 전투·대사 책상·모바일·첫사랑 거리)에서 일반 기능으로 연 것 — 낱말이 맞을 때만.
