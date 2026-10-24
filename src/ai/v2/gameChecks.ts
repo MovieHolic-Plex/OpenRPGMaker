@@ -288,6 +288,23 @@ export function flatPerDayPeople(project: Project, task: string): string[] {
   return [...people.entries()].filter(([, r]) => r.values.size < 3).map(([name, r]) => `${name}(${r.ids.slice(0, 3).join(",")}: 날짜로 갈리는 대사 ${r.values.size}가지)`);
 }
 
+/** 아무것도 열지 않는 단서: 쪽지·일기를 읽으면 켜지는 스위치를 그 이벤트 자신의 「이미 읽음」 페이지만 본다 — 퍼즐은 단서 없이 풀린다(G25 재현: 괘종시계). */
+export function deadClues(project: Project, changedIds: ReadonlySet<string>): string[] {
+  const out: string[] = [];
+  const all = [...eventsOf(project).values()];
+  for (const ev of all) {
+    if (!changedIds.has(ev.id) || ev.mapId === "common") continue;
+    const sets = new Set(allCommands(ev).filter((r) => r.cmd.kind === "setSwitch" && r.cmd.value !== false && typeof r.cmd.switchId === "string").map((r) => String(r.cmd.switchId)));
+    if (!sets.size || allCommands(ev).some((r) => ["changeItem", "changeGold", "transfer", "triggerEnding", "battleProcessing"].includes(String(r.cmd.kind)))) continue;
+    for (const id of sets) {
+      const readers = all.filter((other) => other.pages.some((pg) => flatConditions(pg.conditions).some((c) => c.switchId === id))
+        || allCommands(other).some((r) => flatConditions(r.cmd.condition).some((c) => c.switchId === id)));
+      if (readers.length && readers.every((r) => r.id === ev.id)) out.push(`「${ev.name}」(${ev.id}) 가 켜는 단서 스위치 ${id} 를 그 이벤트 자신의 「이미 읽음」 쪽만 본다`);
+    }
+  }
+  return out;
+}
+
 const WEATHER_WORDS = /비가|비\s*(가\s*)?오|빗방울|빗줄기|소나기|폭우|장마|눈이\s*(오|내|와|쌓)|눈\s*내리|함박눈|폭풍|폭설|안개|날씨|천둥 ?(이|소리|번개)|rain|snow|storm|fog|weather/iu;
 const SHAKE_WORDS = /흔들리|흔들린|흔들려|흔들어|지진|진동|쿵\s*(하|소리)|earthquake|tremor|shake/iu;
 const FLASH_WORDS = /번쩍|섬광|번개(?!\s*(의\s*서|마법|기술|스킬|주문|책|의\s*검))(?!['’」』])|빛이\s*터|flash|lightning/iu;
@@ -487,6 +504,13 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     const changedIds = new Set(changed.map((ev) => ev.id));
     const clues = skippableClues(after).filter((line) => [...changedIds].some((id) => line.includes(`(${id})`)));
     if (clues.length) problems.push(`[게임 검사 퍼즐] ${clues.slice(0, 3).join(" / ")}. 단서 전 페이지에서는 보상 항목을 빼고 「뭔가 단서가 필요하다」 대사만 두며, 보상은 단서 스위치 조건 페이지에만 남긴다.`);
+    if (/단서|쪽지|힌트|일기|메모|적혀|써\s*있|clue|hint|note/iu.test(task) && /맞추|맞춰|퍼즐|비밀번호|암호|자물쇠|금고|열쇠가 나|puzzle|code/iu.test(task)) {
+      // 숫자·글자를 입력하는 자물쇠는 답을 알아야 풀리니 단서 스위치로 막지 않아도 된다 — 고르기 창으로 찍어 맞힐 수 있는 퍼즐만 본다.
+      const guessable = changed.some((ev) => !allCommands(ev).some((r) => /^input/u.test(String(r.cmd.kind)))
+        && allCommands(ev).some((r) => r.cmd.kind === "choices" && JSON.stringify(r.cmd.options ?? []).match(/"kind":"(changeItem|setSwitch)"/u)));
+      const dead = guessable ? deadClues(after, changedIds) : [];
+      if (dead.length) problems.push(`[게임 검사 퍼즐] ${dead.slice(0, 3).join(" / ")} — 퍼즐 이벤트가 그 스위치를 보지 않아 단서를 안 읽어도 풀린다. 퍼즐 이벤트의 첫 페이지는 「뭔가 단서가 필요하다」 대사만 두고, 정답 고르기·보상은 그 단서 스위치 조건의 다음 페이지로 옮긴다.`);
+    }
     const chasers = vanishingChasers(after).filter((line) => [...changedIds].some((id) => line.includes(`(${id})`)));
     if (chasers.length) problems.push(`[게임 검사 위협] ${chasers.slice(0, 3).join(" / ")}. 숨기가 «이번 한 번» 지나가게 하는 것이면 그 스위치를 다시 끈다(예: 옷장에서 나온 뒤 기다렸다 setSwitch false, 또는 맵을 나갈 때), 영영 사라지는 것이 요청이면 보고에 적는다.`);
   }

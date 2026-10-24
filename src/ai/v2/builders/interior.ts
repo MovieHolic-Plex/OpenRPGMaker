@@ -454,6 +454,11 @@ function addBackDoor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: strin
   return { args, note: "북쪽 뒷문 — 맨 북쪽 방 북벽에 문을 낼 자리가 없다" };
 }
 
+/** 위층 맵 이름 — 「저택 1층」이면 「저택 2층」(「저택 1층 2층」이 되지 않게). */
+function upperName(name: string): string {
+  return /\s*(1층|일층|1F|1st floor)\s*$/iu.test(name) ? name.replace(/\s*(1층|일층|1F|1st floor)\s*$/iu, " 2층") : `${name} 2층`;
+}
+
 /** 위층: 올라가는 계단이 놓인 아래층(builtMapId)에 위층을 짓고 계단끼리 잇는다. 아래층에 붙일 이동(lowerLink)을 돌려준다. */
 function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: string, spec: PlaceSpec, builtMapId: string, stairsUp: { id: string; x: number; y: number; w: number }, prevUpper: string | undefined, missing: string[], notes: string[], placed: { zone: string; what: string; id: string }[]): { upperMapId?: string; upperArgs?: Record<string, unknown>; lowerLink?: Record<string, unknown> } {
   let upperMapId = prevUpper;
@@ -468,7 +473,7 @@ function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: s
       while (upKinds.length < 2) upKinds = [...upKinds, upKinds[0] ?? "inn_room"];
       upKinds = [...upKinds, "corridor"];
     }
-    const upBase: Record<string, unknown> = { tileset: tilesetId, ...(upperMapId ? { mapId: upperMapId, replace: true } : {}), name: `${spec.name} 2층`,
+    const upBase: Record<string, unknown> = { tileset: tilesetId, ...(upperMapId ? { mapId: upperMapId, replace: true } : {}), name: upperName(spec.name),
       // 복도는 방 수에 맞춘 작은 계단참(방마다 4칸 + 1, 높이 5) — 견본 크기 그대로면 38칸짜리 빈 홀이 됐다.
       layout: { rooms: (upKinds.length ? upKinds : ["bedroom"]).map((kind, i, all) => ({ id: `${kind}${i + 1}`, kind, ...(/corridor/u.test(kind) ? { w: Math.max(9, 4 * (all.length - 1) + 1), h: 5 } : {}) })) } };
     // 위층은 배치 후보 넷 중 맵 틀 안 검은 바깥이 가장 적은 것(방 넓이 ÷ 맵 넓이 최대) — 객실 둘 + 긴 복도가 ㄱ자로 앉아 왼쪽 위가 통째로 검었다(비평 major).
@@ -490,7 +495,7 @@ function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: s
       upperMapId = String(up.data?.mapId);
       let urb = up.data?.rebuild as Rebuild;
       // 위층은 바깥으로 나가는 남쪽 문이 없다(계단으로만 오간다).
-      let uargs: Record<string, unknown> = { ...argsFromRebuild({ tileset: tilesetId, mapId: upperMapId, name: `${spec.name} 2층` }, urb), exitWidth: 0, exit: { ...(urb.exit as object), width: 0 } };
+      let uargs: Record<string, unknown> = { ...argsFromRebuild({ tileset: tilesetId, mapId: upperMapId, name: upperName(spec.name) }, urb), exitWidth: 0, exit: { ...(urb.exit as object), width: 0 } };
       urb = { ...urb, exit: uargs.exit, objects: urb.objects.filter((o) => !/doormat|door mat/u.test(o.id)) };
       uargs = { ...uargs, objects: urb.objects };
       const down = findPart(roomSpec, "stairwell down");
