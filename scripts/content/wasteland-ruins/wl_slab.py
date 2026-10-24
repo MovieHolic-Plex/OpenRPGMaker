@@ -174,9 +174,9 @@ def _joints(c, js, dirty, seed):
     J = set()
     H, V = js & 1, js & 2
     if H:
-        for x in range(16): c.P(x, 0, GR[2])
+        for x in range(16): c.P(x, 0, GR[1])
     if V:
-        for y in range(16): c.P(0, y, GR[2])
+        for y in range(16): c.P(0, y, GR[1])
     if H: J |= {(x, 1) for x in range(16)}
     if V: J |= {(1, y) for y in range(16)}
     for (x, y) in J:
@@ -302,7 +302,7 @@ def _weed(c, J, js, seed):
     r = h2(seed, 7, 47)
     if js & 1 and (not js & 2 or r % 2): bx, by = 4 + r % 8, 2
     else: bx, by = 2, 6 + r % 7
-    blades = [(-3, 2), (-2, 3), (-1, 4), (0, 5), (1, 4), (2, 3), (3, 2)][(r >> 4) % 2:]
+    blades = [(-4, 2), (-3, 3), (-2, 4), (-1, 5), (0, 6), (1, 5), (2, 4), (3, 3), (4, 2)][(r >> 4) % 2:]
     for k, (dx, hgt) in enumerate(blades):
         hgt = max(2, hgt - h2(k, r, seed) % 2)
         for j in range(hgt):
@@ -415,7 +415,7 @@ def draw_tile(c, ox, oy, spec):
        group='ground', tags=['콘크리트', '줄눈', '덧그림', '보도', '광장'],
        desc='깨진 콘크리트 판의 줄눈·표시·가장자리 덧그림(위 평면층). 붓으로 찍지 않는다 — 구성기가 맵 판 짜임(가로 줄눈 2~4칸마다, 띠마다 세로 줄눈 2~4칸)과 '
             '네 이웃 종류(판·흙·길)로 칸을 고른다. 아래층은 slab-ground.',
-       sample=lambda f=0: board_sample(SAMPLE_PLAN_B, seed=11))
+       sample=lambda f=0: board_sample(SAMPLE_PLAN_B, seed=195))
 def _joint_sheet(c):
     for i, spec in enumerate(ORDER): draw_tile(c, (i % COLS) * 16, (i // COLS) * 16, spec)
 
@@ -439,18 +439,18 @@ SAMPLE_PLAN = [
 ]
 SAMPLE_PLAN_B = [
     '......................',
-    '.###########..........',
-    '.###########....###...',
-    '.###########....###...',
-    '.###########....###...',
-    '.#########............',
+    '.##############.......',
+    '.##############..####.',
+    '.##############..####.',
+    '.#####....#####..####.',
+    '.#####....#####.......',
+    '.##############.......',
     '......................',
     '######################',
     'RRRRRRRRRRRRRRRRRRRRRR',
     'RRRRRRRRRRRRRRRRRRRRRR',
     '######################',
     '.......#.......#......',
-    '..##############......',
     '..##############......',
 ]
 
