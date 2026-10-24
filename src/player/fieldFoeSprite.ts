@@ -52,7 +52,7 @@ export function ensureDerivedFieldFoeTexture(scene: { readonly textures?: unknow
     const canvas = document.createElement("canvas");
     canvas.width = sheet.w;
     canvas.height = sheet.h;
-    canvas.getContext("2d")!.putImageData(new ImageData(sheet.data, sheet.w, sheet.h), 0, 0);
+    canvas.getContext("2d")!.putImageData(new ImageData(new Uint8ClampedArray(sheet.data), sheet.w, sheet.h), 0, 0);
     const texture = textures.addCanvas(key, canvas);
     if (!texture) { failed.add(sourceKey); return undefined; }
     texture.setFilter(1 as Phaser.Textures.FilterMode); // NEAREST
