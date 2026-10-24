@@ -37,5 +37,5 @@ def run(mods):
             print("wrote", iid)
 
 if __name__ == "__main__":
-    mods = sys.argv[1:] or sorted(p.stem for p in (HERE / "art").glob("*.py") if p.stem != "__init__")
+    mods = sys.argv[1:] or sorted(p.stem for p in (HERE / "art").glob("*.py") if not p.stem.startswith("_"))
     run(mods)
