@@ -4331,6 +4331,15 @@
     "wall.ice_face"
    ],
    "lead": "버들항 동굴 앞면 틀 + 얼음 재질: 깨진 면(빙하 면 · 얼음 덮인 바위 · 결정 기둥) 세 안, 가로 띠·벽돌 없음."
+  },
+  "theme-props-r10": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_props_r10.py",
+   "wave": "theme_props",
+   "title": "던전 테마 얼음굴 벽 2판 theme-props-r10",
+   "items": [
+    "wall.ice_face"
+   ],
+   "lead": "패널 13: 칸 경계를 넘는 큰 평평한 다각 면(48열 덩이) + 면마다 빛 가장자리 하나, 채도 낮춤."
   }
  }
 }
