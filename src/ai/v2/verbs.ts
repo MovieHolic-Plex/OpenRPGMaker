@@ -380,7 +380,19 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     async execute(id, params) {
       // 같은 요청 → 같은 맵을 막는다(2026-10-23 다양성: 역전 상점가가 v1·v2·4차·5차 모두 화소까지 같았다). 고치기는 기록된 명세의 salt 를 물려받는다.
       const raw = (params as { spec: PlaceSpec }).spec;
-      const spec: PlaceSpec = localizePlaceSpec({ ...raw, salt: Math.floor(Math.random() * 1_000_000) }, String(task ?? ""));
+      let spec: PlaceSpec = localizePlaceSpec({ ...raw, salt: Math.floor(Math.random() * 1_000_000) }, String(task ?? ""));
+      // 이번 실행에서 이미 다른 장소를 지은 맵 위에 새 장소를 짓지 않는다 — 「지하 예배당」을 지은 맵에 「검은 장미 저택」을 다시 지어
+      // 예배당이 1층 한 구석으로 사라졌다(2026-10-25 조수 단독 게임 G27). 같은 장소를 다시 짓는 것(이름이 같거나 한쪽이 다른 쪽을 품음)은 그대로 둔다.
+      const target = spec.mapId ?? (spec.type === "interior" ? (run.ctx.currentMapId ?? run.ctx.project.startMapId) : undefined);
+      const other = target ? session.places.get(target) : undefined;
+      const norm = (s: string) => s.replace(/\s+/gu, "");
+      const samePlace = (a: string, b: string) => { const [x, y] = norm(a).length <= norm(b).length ? [norm(a), norm(b)] : [norm(b), norm(a)]; return !!x && (y === x || y.startsWith(x) || y.endsWith(x)); };
+      let keptNote = "";
+      if (other && !samePlace(other.spec.name, spec.name)) {
+        const { mapId: _drop, ...rest } = spec;
+        spec = { ...rest, hints: { ...(spec.hints ?? {}), newMap: true } };
+        keptNote = `「${other.spec.name}」(${target}) 는 이번에 지은 다른 장소라 덮지 않고 「${spec.name}」을 새 맵에 지었다 — 두 장소를 create_transfer_pair 로 잇는다(계단·문).`;
+      }
       const builder = builderFor(spec);
       if (!builder) {
         session.missingArt.add(`${spec.name}(${spec.type}${spec.style ? `·${spec.style}` : ""}) — 이 종류를 짓는 빌더가 없다`);
@@ -390,6 +402,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       await builder.prepare?.(spec);
       let result = builder.build(run, spec);
       result = withSetupDefaults(result, builder.id, run.ctx.project, String(task ?? ""));
+      if (keptNote) result = { ...result, warnings: [keptNote, ...result.warnings] };
       return finishPlace(id, "make_place", params, spec, builder.id, result, 0);
     },
   };
