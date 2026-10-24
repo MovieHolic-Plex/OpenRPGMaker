@@ -130,3 +130,4 @@
 
 @import "./tileset-references.css" layer(database);
 @import "./studio-refresh.css" layer(database);
+@import "./dialogue-desk.css" layer(database);

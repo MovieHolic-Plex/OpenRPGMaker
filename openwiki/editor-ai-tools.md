@@ -1,5 +1,21 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 대사 관리·윤문 `list_dialogue` · `get_dialogue_context` · `rewrite_dialogue` · `set_speaker_voice` (2026-10-24)
+
+파일 `src/editor/tools/dialogueTools.ts`(도메인 event), 별칭 「대사 관리·윤문」, 레시피 `dialogue-polish`, Pi 시스템 프롬프트 한 줄.
+색인·검사는 자료집 「대사」 탭과 같은 `src/editor/dialogue/*` 를 쓴다([editor-database.md](editor-database.md) 같은 날 절).
+
+- `list_dialogue` (read) — 거르개 query·speaker·mapId·scope(all/map/common/troop/database)·kind(all/line/choice/description)·overflowOnly·minChars, offset/limit(≤200).
+  줄마다 `{id, hash, speaker, text, where, lines "쓴줄/한장", overflow, locked, pendingProposal}`. 첫 쪽에는 화자 목록(수·말투 메모)·`styleRules`·걸린 제안 수.
+  화자는 자유 문자열이라 정확히 같은 이름이 없으면 낱말 포함으로 넓히고 요약에 그 사실을 적는다(「발렌」→「심문관 발렌」).
+- `get_dialogue_context` (read) — 같은 이벤트 쪽 안의 앞뒤 줄, 화자 말투 메모, 창 맞춤 추정, 걸린 제안.
+- `rewrite_dialogue` (write) — `edits:[{id,hash,text,reason}]`(≤80), `mode: propose(기본)|apply`, `instruction`, `allowOverflow`.
+  propose 는 게임 대사를 바꾸지 않고 `project.dialogueDesk.proposals` 에 남긴다(같은 줄의 옛 제안은 대체) — 사람이 「대사」 탭에서 받는다.
+  거절 사유: unknown-line · stale-hash · drafted · control-codes · too-long · overflow · empty · unchanged. 한 줄도 못 받으면 `ToolError dialogue-rewrite-rejected`.
+- `set_speaker_voice` (write) — `{speaker, note}`(빈 note 는 지움, 800자).
+- 스키마: 자유 키 객체·빈 enum 없음, 배열은 `items` 를 단다(Gemini 400 규칙).
+- 도구 창 넘침은 **추정**(9px·한 장 3줄 기준 글자 폭 가중치)이다. 실측은 편집기 탭만 한다(헤드리스에는 DOM 이 없다).
+
 ## 계단 입구 계약 — 조립기·stamp_object·create_transfer_pair (2026-10-22)
 
 계단 키트는 앞 칸(approach)이 빈 바닥이어야 찍히고, 층 이동은 이동 칸(trigger)에, 도착은 앞 칸에 계단을 등지고 둔다. `list_hand_interior_parts`·`list_spatial_designs` 행의 `entrance`, 칩셋 참고문서 「계단 입구」. 상세 `openwiki/stair-entrance-contract.md`.
