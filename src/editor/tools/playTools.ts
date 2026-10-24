@@ -235,12 +235,14 @@ const runSceneTestTool: ToolDefinition = {
     const { input: flatArgs, flattened } = flattenNestedExpectSteps(rawArgs);
     const { input: splitArgs, split } = splitInteractWalkSteps(flatArgs);
     const { input: adjacentArgs, normalized } = normalizeAdjacentSteps(project, splitArgs);
-    const { input: args, expanded } = expandRepeatedMoveSteps(adjacentArgs);
+    const { input: movedArgs, expanded } = expandRepeatedMoveSteps(adjacentArgs);
+    const { input: args, fixes } = repairCommonSceneFields(movedArgs);
     const problem = sceneTestInputProblem(args);
     if (problem || !isSceneTestInput(args)) throw new ToolError(`Malformed scene test input: ${problem}`, { code: "invalid-scene-test" });
     const result = runSceneTest(project, args);
     return {
-      ...(flattened.length + split.length + normalized.length + expanded.length > 0 ? { warnings: [
+      ...(flattened.length + split.length + normalized.length + expanded.length + fixes.length > 0 ? { warnings: [
+        ...fixes,
         ...(flattened.length > 0 ? [`expect 스텝 ${flattened.join(", ")} 의 { kind:"expect", expect:{…} } 를 { kind:"expect", …} 로 펼쳐 실행했다 — 단언 필드는 스텝에 바로 쓴다.`] : []),
         ...(split.length > 0 ? [`interact 스텝 ${split.join(", ")} 의 to/adjacent 를 앞 스텝 {kind:"walk",to,adjacent:true} 로 나눠 실행했다 — 걷기와 조사는 두 스텝이다(스텝 번호가 하나씩 밀린다).`] : []),
         ...(normalized.length > 0 ? [`스텝 ${normalized.join(", ")} 의 adjacent 를 walk 스텝으로 옮겨 실행했다 — adjacent 는 {kind:"walk",to,adjacent:true} 에만 있다(interact 는 앞에 walk 가 붙어 스텝 번호가 밀린다).`] : []),
@@ -282,3 +284,34 @@ const runActionCombatTestTool: ToolDefinition = {
 };
 
 export const PLAY_TOOLS: readonly ToolDefinition[] = [playWalkthrough, runSceneTestTool, runActionCombatTestTool];
+
+
+/**
+ * 모델이 자주 틀리는 시험 스텝 칸을 뜻이 분명한 것만 고친다(2026-10-24 v2 스위트: run_scene_test 거절이 도구 실패의 1위).
+ * - expect.text/message/says → messageShown:true(대사가 떴는가만 본다 — 글자 비교는 시험기가 하지 않는다)
+ * - expect.variableEquals/variableAtLeast {id,value} → {variableId,value}
+ * - expect.eventOnMap "id" → {eventId:"id", mapId: 시험 맵}
+ * - useItem.actorId·target → 버린다(아이템은 파티에 쓴다)
+ * - set.hour·minute·time → 버린다(시험기는 시간을 못 바꾼다 — advanceDays 만)
+ */
+function repairCommonSceneFields(input: unknown): { input: unknown; fixes: string[] } {
+  const fixes: string[] = [];
+  if (!input || typeof input !== "object" || !Array.isArray((input as { steps?: unknown }).steps)) return { input, fixes };
+  const mapId = (input as { mapId?: unknown }).mapId;
+  const steps = ((input as { steps: unknown[] }).steps).map((raw, i) => {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return raw;
+    const step = { ...(raw as Record<string, unknown>) };
+    if (step.kind === "expect") {
+      for (const k of ["text", "message", "says", "dialogue", "textIncludes"]) if (k in step) { delete step[k]; step.messageShown = true; fixes.push(`steps[${i}] expect.${k} 를 messageShown:true 로 바꿨다(대사 글자는 비교하지 않는다).`); }
+      for (const k of ["variableEquals", "variableAtLeast"]) {
+        const v = step[k] as Record<string, unknown> | undefined;
+        if (v && typeof v === "object" && typeof v.id === "string" && v.variableId === undefined) { step[k] = { variableId: v.id, value: v.value }; fixes.push(`steps[${i}] expect.${k}.id 를 variableId 로 옮겼다.`); }
+      }
+      if (typeof step.eventOnMap === "string") { step.eventOnMap = { eventId: step.eventOnMap, mapId }; fixes.push(`steps[${i}] expect.eventOnMap 문자열을 {eventId,mapId} 로 감쌌다.`); }
+    }
+    if (step.kind === "useItem") for (const k of ["actorId", "target", "actor"]) if (k in step) { delete step[k]; fixes.push(`steps[${i}] useItem.${k} 는 없는 칸이라 뺐다(아이템은 파티에 쓴다).`); }
+    if (step.kind === "set") for (const k of ["hour", "minute", "time", "timePhase"]) if (k in step) { delete step[k]; fixes.push(`steps[${i}] set.${k} 는 시험기가 못 바꿔 뺐다(시간은 advanceDays 만 — 시간대 페이지는 정적 확인).`); }
+    return step;
+  });
+  return { input: { ...(input as Record<string, unknown>), steps }, fixes };
+}

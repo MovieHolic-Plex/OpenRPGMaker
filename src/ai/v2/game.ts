@@ -46,9 +46,10 @@ export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전�
 - 흔들림·지진은 add_event 의 shake 비트(또는 m2Command m2-048-shake-screen), 번쩍·번개는 flash 비트(m2-047-flash-screen), 음악 바꾸기는 music 비트({do:'music',action:'bgm',query:'festival'} 또는 {kind:'playAudio',resourceId,loop:true}) — 카메라 이동·페이드로 흉내 내지 않는다.
 - 플레이어가 «조사하는» 물건(이동석·약초 자리·광맥·표지판·문·덤불)은 눈에 보여야 한다: 그 이벤트에 graphic.query 로 물건 그림을 주거나 이미 있는 물건 타일 칸에 둔다. 투명 이벤트를 맨땅에 두지 않는다(숨기라는 요청만 예외).
 - 꼭 맞는 그림이 없는 물건(사과나무·묘비·상자 더미)은 draw_object 카드만 남기고 멈추지 않는다: 가장 비슷한 기존 물건(나무·돌·표지판) 칸 위에 조사 이벤트를 두고 아이템·대사·스위치는 그대로 만든다. 그림이 대체물이면 보고에 적는다.
-- 숫자 자물쇠·암호 입력은 {kind:'inputNumber',variableId,digits:4} 로 변수에 받고 fork 조건 {kind:'var',id,op:'==',value:1024} 으로 연다. 자물쇠가 달린 창고·문이 없으면 그 건물·문을 먼저 만든다(add_event·create_transfer_pair).
+- 숫자 자물쇠·암호 입력은 {kind:'inputNumber',variableId,digits:4} 로 변수에 받고 fork 조건 {kind:'variable',variableId,op:'==',value:1024} 으로 연다(조건의 kind 는 'variable' — 'var' 는 setVariable 의 피연산자 {kind:'var',id} 에만 쓴다). 자물쇠가 달린 창고·문이 없으면 그 건물·문을 먼저 만든다(add_event·create_transfer_pair).
 - 새 맵(실내·필드)을 만들면 반드시 들어가는 길을 단다: 집 문 칸 ↔ 실내 입구는 create_transfer_pair, 마을 가장자리 ↔ 필드도 create_transfer_pair. 무작위로 나오는 적은 set_encounter_table(보이는 적 이벤트가 아니다).
 - 한 번만 주는 보상·동료(addFollower)·회상은 셀프 스위치를 켜고 그 조건의 「이미 했다」 페이지를 둔다. 머리 위 「!」 같은 감정은 add_event 의 emote 비트(대사로 쓰지 않는다).
+- 난수(확률 70%·무작위 보상) 명령은 엔진에 없다(setVariable 의 value 는 숫자나 {kind:'var',id} 뿐) — 여러 번 시도하지 말고, 순서로 돌아가는 결과(예: 세 번에 한 번 실패)로 대신하고 보고에 «확률 대신 순서»라고 적는다.
 - 이미 있는 NPC 는 add_people 로 다시 세우지 않는다(같은 이름이면 함수가 그 NPC 를 그대로 쓴다) — 그 그림·얼굴·자리는 바꾸지 않는다.
 - 엔딩·결말: list_endings 로 보고 define_ending(id·name·epilogue)으로 엔딩을 정의한 뒤 선택지 갈래에 {kind:'triggerEnding',endingId} 를 넣는다. 내레이션 + returnToTitle 만으로 엔딩을 흉내 내지 않는다. «마지막에» 묻는 선택이면 그 앞 조건(보스 처치·완료 스위치)을 페이지 조건으로 건다.
 - 요청이 가리키는 자리(다리 앞·강가·우물 옆…)가 맵에 없으면 묻지 않는다: 그 물건·지형을 만들어(stamp_object·fill_region 덧그리기, 없으면 가장 그럴듯한 길목) 짓고 보고에 「~가 없어 ~에 만들었다」고 쓴다.
