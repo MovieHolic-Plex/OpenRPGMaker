@@ -46,8 +46,11 @@ if (!existsSync(transcript)) writeFileSync(transcript, `# Whole-game session tra
 const log = text => appendFileSync(transcript, text + '\n');
 
 // Cards that need a user answer. Their text is dumped so the operator can decide like a user.
-const CARD_SELECTOR = ['ai-decision-prompt', 'ai-tileset-change-card', 'ai-creation-choice', 'ai-store-missing-card',
-  'ai-pending-review', 'ai-objectgen-card'].map(id => `[data-testid="${id}"]`).join(',');
+// Only these hold the turn. Object-generation / store cards stay on screen without blocking, so they are
+// reported (INFO_SELECTOR) but never treated as awaiting an answer.
+const CARD_SELECTOR = ['ai-decision-prompt', 'ai-tileset-change-card', 'ai-creation-choice', 'ai-pending-review']
+  .map(id => `[data-testid="${id}"]`).join(',');
+const INFO_SELECTOR = ['ai-objectgen-card', 'ai-store-missing-card'].map(id => `[data-testid="${id}"]`).join(',');
 
 let state = { phase: 'startup', startedAt: new Date().toISOString(), turns: 0 };
 const writeState = extra => { state = { ...state, ...extra, updatedAt: new Date().toISOString() }; json(resolve(out, 'state.json'), state); };
@@ -84,11 +87,11 @@ async function save() {
   return page.getByTestId('toolbar-save').getAttribute('data-autosave-kind');
 }
 const busy = () => page.evaluate(() => Boolean(window.__oprnAiBridge?.status().turnBusy)).catch(() => true);
-async function cards() {
+async function cards(selector = CARD_SELECTOR) {
   return page.evaluate(selector => [...document.querySelectorAll(selector)].filter(node => node.offsetParent !== null).map(node => ({
     testid: node.dataset.testid, text: node.innerText.slice(0, 1500),
     buttons: [...node.querySelectorAll('button')].filter(b => !b.disabled).map(b => ({ testid: b.dataset.testid ?? null, text: b.innerText.trim().slice(0, 80) })),
-  })), CARD_SELECTOR).catch(() => []);
+  })), selector).catch(() => []);
 }
 async function waitSettle(mark, startedAt) {
   // A turn is over when the stream closed after the mark and the bridge is idle, or a card waits for an answer.
@@ -133,7 +136,7 @@ try {
   writeState({ phase: 'idle', projectId: base.projectId, hostUrl: host.url });
   log(`baseline: projectId ${base.projectId}, revision ${base.revision}\n`);
   for (;;) {
-    const next = readdirSync(resolve(out, 'inbox')).filter(n => /\.(txt|click|reload|stop)$/.test(n)).sort()[0];
+    const next = readdirSync(resolve(out, 'inbox')).filter(n => /\.(txt|click|reload|stop|wait)$/.test(n)).sort()[0];
     if (!next) { await sleep(2000); continue; }
     const step = next.replace(/\.[a-z]+$/, ''), kind = next.split('.').pop();
     const body = readFileSync(resolve(out, 'inbox', next), 'utf8').trim();
@@ -154,8 +157,11 @@ try {
       writeState({ phase: 'idle', lastStep: step });
       continue;
     }
-    const mark = await page.evaluate(() => (window.__capEvents ?? []).length);
-    if (kind === 'txt') {
+    // .wait: keep observing the previous turn from its own event mark (a turn misread as settled).
+    const mark = kind === 'wait' ? (state.lastMark ?? 0) : await page.evaluate(() => (window.__capEvents ?? []).length);
+    if (kind === 'wait') {
+      log(`\n## ${step} WAIT (continue observing from event ${mark})\n`);
+    } else if (kind === 'txt') {
       if (await busy()) await waitSettle(mark, Date.now());
       await page.getByTestId('ai-input').fill(body);
       await page.getByTestId('ai-send').click();
@@ -172,7 +178,7 @@ try {
       await page.waitForFunction(() => !window.__oprnAiBridge?.status().turnBusy, null, { timeout: 60000 }).catch(() => {});
     }
     const events = await page.evaluate(m => (window.__capEvents ?? []).slice(m), mark);
-    const pending = await cards();
+    const pending = [...await cards(), ...await cards(INFO_SELECTOR)];
     let saveKind = null;
     if (outcome !== 'awaiting-answer') saveKind = await save().catch(error => `save-failed: ${error.message.slice(0, 200)}`);
     const snap = stored(projectDir);
@@ -182,6 +188,7 @@ try {
       requests: requests.slice(requestMark), errors: events.filter(e => ['error', 'stream_error'].includes(e.type)).map(e => e.message),
       pageErrors: pageErrors.slice(errorMark), toolCalls: tools.filter(t => t.type === 'tool_end'), pendingCards: pending, answer,
       done: events.filter(e => e.type === 'done').map(e => ({ stats: e.stats, usage: e.usage })),
+      statusNotes: events.filter(e => e.type === 'execution_status').map(e => `${e.name}: ${String(e.summary ?? '').slice(0, 300)}`).slice(-40),
       maps: Object.values(snap.project.maps).map(m => ({ id: m.id, name: m.name, size: `${m.width}x${m.height}`, events: (m.events ?? []).length })) };
     json(resolve(out, 'turns', `${step}.json`), turn);
     await page.screenshot({ path: resolve(out, 'turns', `${step}.png`) }).catch(() => {});
@@ -190,7 +197,7 @@ try {
       `tools (${turn.toolCalls.length}): ${toolLine || '-'}\n` + (turn.errors.length ? `errors: ${turn.errors.join(' | ').slice(0, 800)}\n` : '') +
       (pending.length ? `PENDING CARDS: ${JSON.stringify(pending).slice(0, 1500)}\n` : '') + `\n${answer || '(no assistant text)'}\n`);
     state.turns += 1;
-    writeState({ phase: outcome === 'awaiting-answer' ? 'awaiting-answer' : 'idle', lastStep: step, lastOutcome: outcome });
+    writeState({ phase: outcome === 'awaiting-answer' ? 'awaiting-answer' : 'idle', lastStep: step, lastOutcome: outcome, lastMark: mark });
   }
 } catch (error) {
   writeState({ phase: 'crashed', failure: String(error?.stack ?? error).slice(0, 2000) });
