@@ -29,6 +29,8 @@ interface MeasuredWindow {
 export interface DialogueWindowMeasurer {
   /** 대화창 줄이 아니면 undefined. */
   fit(line: Pick<DialogueLine, "kind" | "speaker" | "context" | "withFace">, text: string): DialogueFit | undefined;
+  /** 그 줄이 뜨는 창의 기준(글 폭·글꼴·한 장 줄 수). */
+  metrics(line: Pick<DialogueLine, "speaker" | "context" | "withFace">): DialogueWindowMetrics;
   /** 사람에게 보여 줄 기준: 「글 폭 442px · Pretendard 9px · 한 장 3줄」. */
   describe(line?: Pick<DialogueLine, "kind" | "speaker" | "context" | "withFace">): string;
   dispose(): void;
@@ -134,6 +136,9 @@ export async function createDialogueWindowMeasurer(project: Project): Promise<Di
   };
 
   return {
+    metrics(line) {
+      return windowFor(line).metrics;
+    },
     fit(line, text) {
       if (!dialogueLineUsesMessageWindow(line)) return undefined;
       const window = windowFor(line);

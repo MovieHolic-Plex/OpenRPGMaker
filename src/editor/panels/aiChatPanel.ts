@@ -620,6 +620,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dataset: { testid: "ai-input" },
   }) as HTMLTextAreaElement;
 
+  // 조수 워커(DOM 없음)의 대사 창 넘침 판정이 편집기 실측을 쓰도록, 입력을 시작할 때 대화창을 한 번 재 둔다(같은 설정이면 다시 안 잰다).
+  input.addEventListener("focus", () => {
+    void import("@/editor/panels/dialogueViewShared")
+      .then(({ warmDialogueMeasurerForTools }) => warmDialogueMeasurerForTools(store.getCurrent()))
+      .catch(() => undefined);
+  }, { once: true });
+
   const sendButton = el("button", {
     class: "ai-assistant-action ai-chat-send",
     attrs: { type: "button", title: "보낼 지시를 입력하세요", "aria-label": "보내기" },

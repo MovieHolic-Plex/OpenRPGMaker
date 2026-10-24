@@ -88,7 +88,8 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["고딕", "저택", "묘지", "gothic", "manor", "graveyard"], tools: ["build_gothic_place", "list_gothic_places"], label: "고딕" },
   // ── 이벤트·연출·플래그 ──
   { terms: ["없는 기물", "없는 소품", "없는 가구", "기물 그리", "소품 그리", "가구 그리", "새로 그려", "그려 넣", "missing prop", "missing object", "draw a prop", "object-gen", "object gen"], tools: ["generate_missing_object", "list_spatial_designs", "list_hand_interior_parts"], label: "없는 기물 그리기(먼저 찾기)" },
-  { terms: ["대사", "윤문", "말투", "다듬", "대사 줄", "대사 길", "어투", "문체", "톤 맞", "dialogue", "line polish", "rewrite lines", "voice"], tools: ["list_dialogue", "get_dialogue_context", "rewrite_dialogue", "set_speaker_voice"], label: "대사 관리·윤문" },
+  { terms: ["대사", "윤문", "말투", "다듬", "대사 줄", "대사 길", "어투", "문체", "톤 맞", "dialogue", "line polish", "rewrite lines", "voice"], tools: ["get_story_outline", "read_story_script", "list_dialogue", "get_dialogue_context", "rewrite_dialogue", "set_speaker_voice", "set_scene_summaries"], label: "대사 관리·윤문" },
+  { terms: ["줄거리", "스토리 흐름", "전체 흐름", "이야기 흐름", "대본", "시나리오 읽", "1막", "2막", "막 전체", "장면 순서", "story outline", "screenplay", "script", "plot"], tools: ["get_story_outline", "read_story_script", "set_scene_summaries"], label: "이야기 흐름·대본 읽기" },
   { terms: ["조수 스킬", "교훈", "장면 다듬기", "장면 검수", "assistant skill", "scene polish", "lesson"], tools: ["read_assistant_skill", "list_assistant_skills"], label: "조수 스킬" },
   { terms: ["컷신", "연출", "장면", "cutscene", "scene"], tools: ["script_cutscene", "script_cutscene_staged", "read_directing_guide", "preview_cutscene"], label: "컷신" },
   { terms: ["오프닝", "타이틀", "opening", "title screen", "intro"], tools: ["set_opening", "plan_opening", "generate_title_art", "set_title_screen"], label: "오프닝·타이틀" },

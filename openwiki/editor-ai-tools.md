@@ -1,5 +1,18 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 이야기 흐름 읽기 `get_story_outline` · `read_story_script` · `set_scene_summaries` (2026-10-25)
+
+같은 파일 `dialogueTools.ts`. 모델은 자료집 「대사 › 대본」 과 같은 `buildStory`([editor-database.md](editor-database.md) 「대본」 절). 별칭 「이야기 흐름·대본 읽기」(줄거리·전체 흐름·1막·대본…)와 「대사 관리·윤문」 양쪽에 걸린다.
+윤문 순서(레시피 `dialogue-polish`·Pi 프롬프트): **개요 → 장면 본문 → 고치기 → 요약 남기기**.
+
+- `get_story_outline` (read) `{chapter?, includeSide?}` — 막·장·장면(본줄 S…, 곁가지 B…)마다 장소·발동·조건·줄 수·한 줄 요약(저장된 것 또는 «(자동)»), `cast`(화자·줄 수·장면 수·말투 메모), `styleRules`.
+- `read_story_script` (read) `{chapter?, from?, to?, scenes?[], speaker?, includeSide?, maxChars?(기본 14000, ≤40000)}` — 대본 글:
+  `### S12. 장소 — 제목` · `(발동 · 조건)` · `요약` · `화자: 대사 ⟨S12.3·a1b2c3⟩` · `(내레이션): …` · `[지문]` · `[선택지]` + `> 갈래` · `{조건}`. 쌍둥이 장면은 한 줄로 줄인다. 넘치면 `nextFrom`.
+  폴른 스타 1막 본줄 전체 ≈ 16.5k자.
+- `rewrite_dialogue` 는 이제 `{ref:"S12.3", hash:"a1b2c3"}`(꼬리표 그대로)도 받는다 — `id` 대신 `ref`, 해시는 6자 이상 앞부분이면 원문 해시로 푼다(원문이 바뀌었으면 그대로 거절). 받은 줄 결과에 `ref` 를 붙인다.
+- `set_scene_summaries` (write) `{items:[{scene:"S3", summary}]}`(≤60, 200자, 빈 글은 지움) → `project.dialogueDesk.sceneNotes`. 개요와 화면이 자동 요약 대신 이것을 보인다.
+- 장면 번호는 프로젝트가 바뀌면 다시 매겨진다 — 저장 키는 장면 id(`ev/<맵>/<이벤트>/<쪽>`)이고 번호는 읽을 때마다 새로 받는다.
+
 ## 대사 관리·윤문 `list_dialogue` · `get_dialogue_context` · `rewrite_dialogue` · `set_speaker_voice` (2026-10-24)
 
 파일 `src/editor/tools/dialogueTools.ts`(도메인 event), 별칭 「대사 관리·윤문」, 레시피 `dialogue-polish`, Pi 시스템 프롬프트 한 줄.
@@ -14,7 +27,12 @@
   거절 사유: unknown-line · stale-hash · drafted · control-codes · too-long · overflow · empty · unchanged. 한 줄도 못 받으면 `ToolError dialogue-rewrite-rejected`.
 - `set_speaker_voice` (write) — `{speaker, note}`(빈 note 는 지움, 800자).
 - 스키마: 자유 키 객체·빈 enum 없음, 배열은 `items` 를 단다(Gemini 400 규칙).
-- 도구 창 넘침은 **추정**(9px·한 장 3줄 기준 글자 폭 가중치)이다. 실측은 편집기 탭만 한다(헤드리스에는 DOM 이 없다).
+- 도구 창 넘침: 도구는 Pi 워커(bun, DOM 없음)에서 돈다. 그래서 편집기가 런타임 CSS 로 잰 대화창 기준(글 폭·글꼴 크기·한 장 줄 수, 얼굴×이름표 4가지)을
+  `project.dialogueDesk.window` 에 남기고(`persistWindowMetrics`, 라벨 「대화창 실측 기록」, 되돌리기 없음), `estimateLineFit`·`checkDialogueEdit`·`read_story_script` 의 «창 넘침 3/2줄» 이
+  키(해상도·글꼴·대화창 모양)가 맞을 때 그 기준으로 잰다(글자 폭은 가중 추정). 재는 때: 조수 입력창에 처음 들어갈 때, 「대사」 탭을 열 때. 편집기 안 화면은 캔버스 실측(`registerMeasuredDialogueFit`).
+  기준이 없거나 키가 다르면 **추정**(9px·한 장 3줄). 도구 결과의 `windowNote`/`windowCheck` 가 어느 쪽인지 밝힌다.
+  실측(2026-10-25 폴른 스타): 추정은 한 장 3줄, 실측은 2줄(Galmuri11 12px) — 조수가 추정만 보고 3줄로 줄인 기록 패널 26줄이 실제로는 넘쳤다. 그래서 실측을 워커까지 넘긴다.
+  워커는 편집기 패널 모듈을 import 하지 못한다(동적 import 도 bun 컴파일이 런타임 CSS 를 끌어와 실패한다).
 
 ## 계단 입구 계약 — 조립기·stamp_object·create_transfer_pair (2026-10-22)
 

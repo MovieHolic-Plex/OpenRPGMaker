@@ -4,6 +4,10 @@
 //   voices    화자별 말투 메모. 사람이 자료집 「대사」 탭에서 쓰고, 조수(rewrite_dialogue)는 다듬을 때 이것을 문체 지침으로 읽는다.
 //   proposals 조수가 낸 윤문 제안(바꾸기 전·후). 사람이 「대사」 탭에서 한 줄씩 또는 한꺼번에 받거나 버린다.
 //             받기 전에는 게임 대사가 바뀌지 않는다. 제안은 원문 해시를 들고 있어, 원문이 그 사이 바뀌었으면 받을 수 없다.
+//   sceneNotes 대본 장면 한 줄 요약(장면 id = 대사 색인의 groupKey). 조수가 한 번 지어 두고 사람·조수가 고친다.
+//             없으면 대본이 자동 요약을 보인다.
+//   window    편집기가 런타임 CSS 로 잰 대화창 기준(글 폭·글꼴 크기·한 장 줄 수). 조수 도구 워커(DOM 없음)의
+//             창 넘침 판정이 이것을 쓴다. 해상도·글꼴·대화창 모양 키가 바뀌면 무시된다.
 //
 // 대사 본문은 이벤트 명령이 정본이다. 여기에는 대사 사본을 두지 않는다(제안의 before 는 검토용 기록일 뿐이다).
 // optional 이라 마이그레이션이 필요 없다. 화면·스토어를 모르는 순수 모듈이다(조수 도구 워커도 쓴다).
@@ -35,10 +39,38 @@ export interface DialogueProposal {
   readonly createdAt: string;
 }
 
+export interface DialogueSceneNote {
+  readonly sceneId: string;
+  readonly summary: string;
+  readonly source: DialogueProposalSource;
+  readonly updatedAt?: string;
+}
+
+export interface DialogueWindowVariant {
+  readonly face: boolean;
+  readonly speaker: boolean;
+  readonly bodyWidthPx: number;
+  readonly fontSizePx: number;
+  readonly maxLines: number;
+  readonly fontLabel: string;
+}
+
+export interface DialogueWindowRecord {
+  /** 창 맞춤이 달라지는 설정 키(dialogueMeasureKey). */
+  readonly key: string;
+  readonly variants: readonly DialogueWindowVariant[];
+  readonly measuredAt?: string;
+}
+
 export interface DialogueDesk {
   voices: DialogueSpeakerVoice[];
   proposals: DialogueProposal[];
+  sceneNotes?: DialogueSceneNote[];
+  window?: DialogueWindowRecord;
 }
+
+export const DIALOGUE_SCENE_NOTE_LIMIT = 200;
+export const DIALOGUE_SCENE_NOTES_MAX = 2000;
 
 export const DIALOGUE_VOICE_NOTE_LIMIT = 800;
 export const DIALOGUE_PROPOSAL_LIMIT = 400;
@@ -101,8 +133,53 @@ export function normalizeDialogueDesk(value: unknown): DialogueDesk | undefined 
       if (proposals.length >= DIALOGUE_PROPOSAL_LIMIT) break;
     }
   }
-  if (voices.length === 0 && proposals.length === 0) return undefined;
-  return { voices, proposals };
+  const sceneNotes: DialogueSceneNote[] = [];
+  const seenScenes = new Set<string>();
+  if (Array.isArray(raw.sceneNotes)) {
+    for (const entry of raw.sceneNotes) {
+      if (!entry || typeof entry !== "object") continue;
+      const record = entry as Record<string, unknown>;
+      const sceneId = str(record.sceneId, 600);
+      const summary = str(record.summary, DIALOGUE_SCENE_NOTE_LIMIT)?.trim();
+      if (!sceneId || !summary || seenScenes.has(sceneId)) continue;
+      seenScenes.add(sceneId);
+      const updatedAt = str(record.updatedAt, 40);
+      sceneNotes.push({ sceneId, summary, source: record.source === "human" ? "human" : "ai", ...(updatedAt ? { updatedAt } : {}) });
+      if (sceneNotes.length >= DIALOGUE_SCENE_NOTES_MAX) break;
+    }
+  }
+  const window = normalizeWindowRecord(raw.window);
+  if (voices.length === 0 && proposals.length === 0 && sceneNotes.length === 0 && !window) return undefined;
+  return { voices, proposals, ...(sceneNotes.length ? { sceneNotes } : {}), ...(window ? { window } : {}) };
+}
+
+function normalizeWindowRecord(value: unknown): DialogueWindowRecord | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const raw = value as Record<string, unknown>;
+  const key = str(raw.key, 2000);
+  if (!key || !Array.isArray(raw.variants)) return undefined;
+  const variants: DialogueWindowVariant[] = [];
+  for (const entry of raw.variants.slice(0, 8)) {
+    if (!entry || typeof entry !== "object") continue;
+    const record = entry as Record<string, unknown>;
+    const bodyWidthPx = Number(record.bodyWidthPx);
+    const fontSizePx = Number(record.fontSizePx);
+    const maxLines = Number(record.maxLines);
+    if (!(bodyWidthPx > 0 && bodyWidthPx < 4000 && fontSizePx > 0 && fontSizePx < 200 && maxLines >= 1 && maxLines <= 20)) continue;
+    variants.push({ face: record.face === true, speaker: record.speaker === true, bodyWidthPx, fontSizePx, maxLines: Math.round(maxLines), fontLabel: str(record.fontLabel, 120) ?? "" });
+  }
+  if (variants.length === 0) return undefined;
+  const measuredAt = str(raw.measuredAt, 40);
+  return { key, variants, ...(measuredAt ? { measuredAt } : {}) };
+}
+
+/** 편집기 실측 대화창 기준을 기록한다. 같으면 false. */
+export function writeDialogueWindow(project: DeskHost, record: DialogueWindowRecord): boolean {
+  const desk = readDialogueDesk(project);
+  const same = desk.window?.key === record.key && JSON.stringify(desk.window.variants) === JSON.stringify(record.variants);
+  if (same) return false;
+  project.dialogueDesk = { ...desk, voices: [...desk.voices], proposals: [...desk.proposals], window: record };
+  return true;
 }
 
 interface DeskHost { dialogueDesk?: DialogueDesk }
@@ -154,5 +231,34 @@ export function removeDialogueProposals(project: DeskHost, proposalIds: Readonly
 // 비어도 키를 지우지 않는다 — store.update 의 copy-on-write 정리(applyCleanedProjection)는 뿌리 키 삭제를
 // 전파하지 않는다(openwiki/editor-observability.md). 빈 책상은 저장본 정규화(normalizeDialogueDesk)가 걷어낸다.
 function setDesk(project: DeskHost, desk: DialogueDesk): void {
-  project.dialogueDesk = desk;
+  const sceneNotes = desk.sceneNotes ?? project.dialogueDesk?.sceneNotes;
+  const window = desk.window ?? project.dialogueDesk?.window;
+  project.dialogueDesk = { voices: desk.voices, proposals: desk.proposals, ...(sceneNotes?.length ? { sceneNotes: [...sceneNotes] } : {}), ...(window ? { window } : {}) };
+}
+
+/** 장면 요약을 쓰거나(빈 summary 면) 지운다. 바뀐 개수를 돌려준다. */
+export function writeSceneNotes(
+  project: DeskHost,
+  items: readonly { readonly sceneId: string; readonly summary: string }[],
+  source: DialogueProposalSource,
+  now = new Date().toISOString(),
+): number {
+  const desk = readDialogueDesk(project);
+  const notes = new Map((desk.sceneNotes ?? []).map((note) => [note.sceneId, note]));
+  let changed = 0;
+  for (const item of items) {
+    const summary = item.summary.replace(/\s+/gu, " ").trim().slice(0, DIALOGUE_SCENE_NOTE_LIMIT);
+    const previous = notes.get(item.sceneId);
+    if (!summary) {
+      if (previous) { notes.delete(item.sceneId); changed += 1; }
+      continue;
+    }
+    if (previous?.summary === summary) continue;
+    notes.set(item.sceneId, { sceneId: item.sceneId, summary, source, updatedAt: now });
+    changed += 1;
+  }
+  if (changed > 0) {
+    project.dialogueDesk = { ...desk, voices: [...desk.voices], proposals: [...desk.proposals], sceneNotes: [...notes.values()].slice(-DIALOGUE_SCENE_NOTES_MAX) };
+  }
+  return changed;
 }

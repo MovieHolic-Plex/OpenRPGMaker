@@ -51,8 +51,45 @@ export function actorNamesOf(project: Project): string[] {
 }
 
 /** 도구·사람 공통의 추정 창 맞춤. 편집기 화면은 실제 DOM 측정으로 따로 보여 준다. */
-export function estimateLineFit(project: Project, line: Pick<DialogueLine, "kind" | "withFace">, text: string): DialogueFit | undefined {
+/** 측정기(편집기 DOM 에서 런타임 CSS 로 잰 것)가 이 프로젝트의 창 설정과 같은 키로 등록돼 있으면 추정 대신 그것을 쓴다. */
+type MeasuredFit = (line: Pick<DialogueLine, "kind" | "speaker" | "context" | "withFace">, text: string) => DialogueFit | undefined;
+let measuredFit: { readonly key: string; readonly fit: MeasuredFit } | null = null;
+
+/** 창 맞춤이 달라지는 설정(해상도·글꼴·대화창 모양)의 키. */
+export function dialogueMeasureKey(project: Project): string {
+  const system = project.system as Project["system"] & { dialogueStyle?: unknown; dialogueFont?: unknown };
+  return JSON.stringify([system.playResolution ?? null, system.fonts ?? null, system.dialogueStyle ?? null, system.dialogueFont ?? null]);
+}
+
+/** 편집기가 실측기를 만들면 등록한다 — 조수 도구의 창 넘침 판정도 같은 실측을 쓰게. */
+export function registerMeasuredDialogueFit(key: string, fit: MeasuredFit | null): void {
+  measuredFit = fit ? { key, fit } : null;
+}
+
+export function hasMeasuredDialogueFit(project: Project): boolean {
+  const key = dialogueMeasureKey(project);
+  return measuredFit?.key === key || project.dialogueDesk?.window?.key === key;
+}
+
+export function estimateLineFit(project: Project, line: Pick<DialogueLine, "kind" | "withFace"> & Partial<Pick<DialogueLine, "speaker" | "context">>, text: string): DialogueFit | undefined {
   if (!dialogueLineUsesMessageWindow(line)) return undefined;
+  const key = dialogueMeasureKey(project);
+  if (measuredFit && measuredFit.key === key) {
+    return measuredFit.fit({ kind: line.kind, withFace: line.withFace, speaker: line.speaker ?? "", ...(line.context ? { context: line.context } : {}) }, text);
+  }
+  // 조수 도구 워커(DOM 없음): 편집기가 저장해 둔 실측 기준(글 폭·글꼴 크기·한 장 줄 수)으로 잰다.
+  const stored = project.dialogueDesk?.window;
+  if (stored?.key === key) {
+    const speaker = Boolean(line.speaker);
+    const variant = stored.variants.find((entry) => entry.face === line.withFace && entry.speaker === speaker)
+      ?? stored.variants.find((entry) => entry.face === line.withFace)
+      ?? stored.variants[0];
+    if (variant) {
+      return measureDialogueFit(visibleDialogueText(text, { actorNames: actorNamesOf(project) }), {
+        bodyWidthPx: variant.bodyWidthPx, fontSizePx: variant.fontSizePx, maxLines: variant.maxLines, source: "estimate", fontLabel: `${variant.fontLabel}(편집기 실측 기준)`,
+      });
+    }
+  }
   const width = resolvePlayResolution(project.system).width;
   const metrics = estimateDialogueWindowMetrics(width, { face: line.withFace });
   return measureDialogueFit(visibleDialogueText(text, { actorNames: actorNamesOf(project) }), metrics);
