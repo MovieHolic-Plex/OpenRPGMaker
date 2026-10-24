@@ -618,6 +618,8 @@ export interface BattleSnapshot {
   readonly battleFlow: BattleFlow;
   /** 이번 전투에 실제로 적용된 ATB 방식(플레이어 설정 > 저작 설정 > wait). gauge 흐름에서만 active 가 의미 있다. */
   readonly atbMode: "active" | "wait";
+  /** 연계 대기(holdForCombo)로 게이지를 채운 채 동료를 기다리는 배우 recordId. 비면 생략. */
+  readonly heldActorIds?: readonly string[];
   readonly activeActorId?: ActorId;
   readonly activeSlots: number;
   readonly forcedSwitchActorId?: ActorId;
@@ -681,6 +683,12 @@ export interface BattleRuntime {
   performActorCommand(command: ActorCommand): void;
   /** 팀 교대 전투(system.battleTeams)에서 지금 명령을 고르는 배우의 차례로 활성 팀을 바꾼다. 팀 설정이 없으면 아무 일도 없다. */
   performTeamSwap?(command: TeamSwapCommand): void;
+  /**
+   * 연계 대기(gauge 흐름) — 지금 명령을 고르는 배우가 차례를 미루고 게이지를 채운 채 기다린다.
+   * 다른 아군의 차례가 오면 함께 「준비」 상태라 연계기를 고를 수 있다(크로노 트리거의 「다음 사람으로 넘기기」).
+   * 성공하면 true. strict·연계기 없는 배우·혼자 남은 배우는 false.
+   */
+  holdForCombo?(): boolean;
   chooseAutoCommand(): ActorCommand | undefined;
   executeEquipmentUse(actorId: ActorId, equipmentId: string, target: EquipmentUseTarget): EquipmentUseResult;
   snapshot(): BattleSnapshot;

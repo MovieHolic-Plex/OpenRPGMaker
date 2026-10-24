@@ -48,6 +48,8 @@ export interface BattleCommandPanelOptions {
   runActorCommand(command: ActorCommand): void;
   /** 팀 교대 전투(system.battleTeams) 전용 — 설정이 없으면 호출되지 않는다. */
   runTeamSwap?(targetTeamId: string): void;
+  /** 연계 대기 — 준비된 연계기가 없을 때 「연계」를 누르면 차례를 미루고 동료를 기다린다(runtime.holdForCombo). */
+  holdForCombo?(): void;
   beginTargetCommand(command: TargetedActorCommand): void;
   confirmTargetSelection(targetId: string): void;
   cancelTargetSelection?(): void;
@@ -580,12 +582,21 @@ function comboCommandButton(
   const reason = firstFailure
     ? battleSkillUseFailureLabel(firstFailure, project.database.skills.find((record) => record.id === combos[0]), actor, project)
     : undefined;
-  const button = commandButton("연계", "actor-command-combo", "combo", ready.length > 0 ? `${ready.length}개` : "준비 중", () => {
+  // 동료가 아직 준비 전이면(게이지 흐름) 「연계」가 곧 「동료 기다리기」다 — 차례를 미루고 게이지를 채운 채 기다린다.
+  const canHold = ready.length === 0 && snapshot.battleFlow === "gauge" && Boolean(options.holdForCombo)
+    && combos.some((skillId) => actorSkillFailure(snapshot, actor, skillId) === "comboPartnerNotReady");
+  const detail = ready.length > 0 ? `${ready.length}개` : canHold ? "동료 기다리기" : "준비 중";
+  const button = commandButton("연계", "actor-command-combo", "combo", detail, () => {
     if (targetMode) return;
+    if (ready.length === 0) {
+      if (canHold) options.holdForCombo?.();
+      return;
+    }
     options.setSubmenu({ kind: "combo" });
     options.render();
-  }, targetMode || ready.length === 0, reason);
+  }, targetMode || (ready.length === 0 && !canHold), canHold ? undefined : reason, canHold ? "차례를 미루고 동료의 차례를 기다린다 — 그때 둘 다 준비되어 연계기를 고를 수 있다." : undefined);
   button.dataset.comboReady = ready.length > 0 ? "true" : "false";
+  if (canHold) button.dataset.comboHold = "true";
   return button;
 }
 

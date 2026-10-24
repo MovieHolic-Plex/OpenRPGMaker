@@ -228,3 +228,12 @@
 @media (prefers-reduced-motion: reduce) {
   .battle-scene :is(.battle-combo-cutin, .battle-actor.battle-combo-member, .battle-fanfare-rays, .battle-fanfare-sparks i, .battle-levelup-banner-text, .battle-learn-emblem, .battle-learn-card-kicker, .battle-result-levelup-row, .battle-result-levelup[data-active="true"]) { animation: none; }
 }
+
+/* 연계 대기(holdForCombo) — 차례를 미루고 동료를 기다리는 배우. */
+.battle-scene .battle-command[data-testid="actor-command-combo"][data-combo-hold="true"] small { color: rgb(150 214 255); }
+.battle-scene [data-combo-held="true"] { animation: battle-combo-held 1100ms ease-in-out infinite; }
+@keyframes battle-combo-held {
+  0%, 100% { filter: drop-shadow(0 0 2px rgb(255 214 110 / 0.5)); }
+  50% { filter: drop-shadow(0 0 7px rgb(255 214 110)) brightness(1.15); }
+}
+@media (prefers-reduced-motion: reduce) { .battle-scene [data-combo-held="true"] { animation: none; filter: drop-shadow(0 0 4px rgb(255 214 110)); } }

@@ -137,7 +137,7 @@ import {
   normalizeBattleFieldBackgroundId,
 } from "@/project/databaseEnemyTroopRecordModel";
 import { mulberry32, type Rng } from "@/util/rng";
-import { battleActorSkillFailure, battleSkillMpCostFor, battleSkillPartyGaugeCost, battleSkillUseFailure, battlerSkillIdsWithGrants, comboActorIdsOf, consumeBattleSkillResource, type BattleComboParticipant } from "@/battle/battleSkillUse";
+import { battleActorSkillFailure, battleSkillMpCostFor, battleSkillPartyGaugeCost, battleSkillUseFailure, battlerSkillIdsWithGrants, comboActorIdsOf, comboLockedBy, consumeBattleSkillResource, type BattleComboParticipant } from "@/battle/battleSkillUse";
 import { applyBattleHitGauges, clampPartyGauge, initialPartyGauge, seedBattleGauges } from "@/battle/battleGauges";
 import { applyStateEffectsWithEmotion, createWeaknessTracker, emotionDamageMultiplier } from "@/battle/battleEmotion";
 import {
@@ -418,6 +418,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let activeTeamId: string | undefined = battleTeams?.find((team) => team.actorIds.includes(actors[0]?.recordId as ActorId))?.id ?? battleTeams?.[0]?.id;
   // 한 턴 비용으로 들어온 팀은 적이 한 번 행동할 때까지 쉰다(게이지가 차지 않는다).
   const teamResting = new Set<string>();
+  /** 연계 대기 중인 배우(게이지 100 유지·충전 제외). 아군 누군가의 차례가 오면 풀려 resumedFromHold 로 옮긴다. */
+  const heldForCombo = new Set<string>();
+  /** 연계 대기에서 풀려 다시 차례를 받는 배우 — 차례 시작 처리(지속 피해·턴 수)를 두 번 받지 않는다. */
+  const resumedFromHold = new Set<string>();
   let activeActorIds: ActorId[] = battleTeams
     ? (battleTeams.find((team) => team.id === activeTeamId)?.actorIds ?? []).slice(0, activeSlots)
     : actors.slice(0, activeSlots).map((actor) => actor.recordId);
@@ -1367,6 +1371,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const enemiesInBattle = visibleEnemies();
     const battlerAgilityMultiplier = (battler: MutableBattler): number =>
       gaugeFrozenByStates(options.project, battler) ? 0 : agilityMultiplierForStates(options.project, battler);
+    if (heldForCombo.size > 0 && !chargingActors().some((actor) => actor.hp > 0)) {
+      // 기다릴 동료가 없다(쓰러짐 등) — 대기를 풀어 차례를 돌려준다.
+      for (const id of heldForCombo) resumedFromHold.add(id);
+      heldForCombo.clear();
+    }
     const chargers = chargingActors();
     const ready = nextReadyBattler(chargers, enemiesInBattle, deltaMs, skinHasteMultiplier, battlerAgilityMultiplier);
     if (!ready) {
@@ -1376,8 +1385,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     chargeBattlers(chargers, enemiesInBattle, ready.timeMs, skinHasteMultiplier, battlerAgilityMultiplier);
     ready.battler.gauge = 100;
     if (ready.kind === "actor") {
+      // 연계 대기가 풀린다 — 기다리던 배우는 게이지 100 그대로 이 배우 다음 차례를 받는다(그 사이 이 배우는 연계기를 고를 수 있다).
+      for (const id of heldForCombo) resumedFromHold.add(id);
+      heldForCombo.clear();
+      const resumed = resumedFromHold.delete(ready.battler.recordId);
       // 턴 시작 상태 처리(지속 피해/자연 회복). 행동 불가(수면 등)면 명령 없이 턴을 넘긴다.
-      if (!gen1) {
+      if (!gen1 && !resumed) {
         rewardTurn = turn + 1;
         applyUpkeep(ready.battler);
         resolveOutcome();
@@ -1435,6 +1448,30 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
    * FF6 식 팀 교대. 지금 명령을 고르는 배우의 차례를 써서 활성 팀을 바꾼다(gauge: 이 행동 슬롯을 소비, strict: 이 라운드 전체를 소비).
    * 물러나는 팀의 이번 라운드 명령은 버린다. ActorCommand 합집합과 분리된 별도 입구다(types.ts TeamSwapCommand).
    */
+  function holdForCombo(): boolean {
+    if (battleFlow !== "gauge" || cancelled || eventChoice || eventPause || result || phase !== "actorCommand" || !activeActorId) return false;
+    if (forcedSwitchActor()) return false;
+    const actor = actors.find((entry) => entry.recordId === activeActorId);
+    if (!actor || actor.hp <= 0) return false;
+    // 기다려서 열릴 연계기가 있어야 한다 — 이 배우가 낀 연계기 중 동료가 모두 참전해 살아 있는 것.
+    const party = activeActors().filter((battler) => battler.hp > 0);
+    // 연계기는 참가자면 배우지 않아도 열린다(comboSkillIdsFor) — 해금 조건(comboRequires)은 실제 고를 때 battleActorSkillFailure 가 본다.
+    const hasCombo = options.project.database.skills.some((skill) => {
+      const combo = comboActorIdsOf(skill);
+      if (!combo || !combo.includes(actor.recordId as ActorId)) return false;
+      if (comboLockedBy(skill, comboParticipants(true)).length > 0) return false;
+      return combo.every((id) => party.some((battler) => battler.recordId === id));
+    });
+    if (!hasCombo) return false;
+    if (!party.some((battler) => battler !== actor && !heldForCombo.has(battler.recordId))) return false;
+    heldForCombo.add(actor.recordId);
+    resumedFromHold.delete(actor.recordId);
+    activeActorId = undefined;
+    targetSelection = undefined;
+    phase = "charging";
+    return true;
+  }
+
   function performTeamSwap(command: TeamSwapCommand): void {
     if (cancelled || eventChoice || eventPause || result || phase !== "actorCommand" || !activeActorId) return;
     if (forcedSwitchActor()) return;
@@ -2378,6 +2415,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       eventPause,
       battleFlow,
       atbMode: activeAtb ? "active" : "wait",
+      ...(heldForCombo.size > 0 ? { heldActorIds: [...heldForCombo] } : {}),
       activeActorId,
       activeSlots,
       forcedSwitchActorId: forcedActor?.recordId,
@@ -4801,7 +4839,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   /** 게이지가 차는 아군 — 한 턴 비용으로 막 들어온 팀은 적이 한 번 행동할 때까지 쉰다. */
   function chargingActors(): readonly MutableBattler[] {
-    return teamResting.size === 0 ? activeActors() : activeActors().filter((actor) => !teamResting.has(actor.recordId));
+    const rested = teamResting.size === 0 ? activeActors() : activeActors().filter((actor) => !teamResting.has(actor.recordId));
+    return heldForCombo.size === 0 ? rested : rested.filter((actor) => !heldForCombo.has(actor.recordId));
   }
 
   function reserveActors(): readonly MutableBattler[] {
@@ -5160,6 +5199,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     cancelTargetSelection,
     performActorCommand,
     performTeamSwap,
+    holdForCombo,
     chooseAutoCommand,
     executeEquipmentUse,
     snapshot,

@@ -429,6 +429,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     render(): void;
     runActorCommand(command: ActorCommand): void;
     runTeamSwap(targetTeamId: string): void;
+    holdForCombo(): void;
     beginTargetCommand(command: TargetedActorCommand): void;
     confirmTargetSelection(targetId: string): void;
     cancelTargetSelection(): void;
@@ -445,6 +446,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     render: () => syncView(),
     runActorCommand,
     runTeamSwap,
+    holdForCombo,
     beginTargetCommand,
     confirmTargetSelection,
     cancelTargetSelection: cancelTargetSelectionAndRestore,
@@ -1348,6 +1350,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const runtimeSnapshot = options.runtime.snapshot();
     options.onSnapshot?.(runtimeSnapshot);
     const snapshot = withoutUnannouncedEnemies(runtimeSnapshot);
+    syncComboHeld(runtimeSnapshot.heldActorIds);
     const showingResult = Boolean(snapshot.result) && directorState.step === "result";
     if (showingResult) {
       directorState = resultDirectorState(snapshot, directorState);
@@ -1638,6 +1641,26 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       || after.turn !== before.turn
       || after.result !== before.result
       || after.strictQueuedActorIds.join(",") !== before.strictQueuedActorIds.join(",");
+  }
+
+  /** 연계 대기 중인 배우 노드에 표시(빛 맥동) — 「누가 기다리는지」. */
+  function syncComboHeld(held: readonly string[] | undefined): void {
+    const set = new Set(held ?? []);
+    for (const node of root.querySelectorAll<HTMLElement>('[data-testid^="battle-actor-"]')) {
+      const id = node.dataset.testid!.slice("battle-actor-".length);
+      if (set.has(id)) node.dataset.comboHeld = "true";
+      else if (node.dataset.comboHeld) delete node.dataset.comboHeld;
+    }
+  }
+
+  /** 연계 대기 — 지금 배우가 차례를 미루고 동료를 기다린다(runtime.holdForCombo). 시퀀서에 흘릴 행동은 없다. */
+  function holdForCombo(): void {
+    if (sequenceBusy || inputPrompt || !options.runtime.holdForCombo) return;
+    if (!options.runtime.holdForCombo()) return;
+    submenu = null;
+    targetReturnSubmenu = null;
+    panelOptions.submenu = null;
+    syncView();
   }
 
   /** FF6 식 팀 교대(system.battleTeams). 시퀀서에는 「전열 교체」 한 줄로 흘려 보낸다. */
