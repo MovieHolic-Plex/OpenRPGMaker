@@ -301,9 +301,9 @@ export function applyFallenBattleRoles(project: Project): void {
   // 수호상: 돌 몸 — 수면·기절 무효, 마비 저항. 창·번개·방어 무시가 답.
   rates("enemy_fs_guardian", {}, { state_sleep: "E", state_stop: "E", state_paralysis: "D", state_poison: "E" });
   // 발렌: 1막 결전(사용자 지적 8). 체력을 올리고, 큰 기술은 한 차례 모은 뒤 쏜다(머리 위 예고 띠), 도깨비불을 두 번 부르고,
-  // 체력 절반에서 장갑을 벗고 공격이 오른다. 수면 30%·기절 무효 — 상태 사슬로 묶어 두지 못한다(사용자 지적 2).
+  // 체력 절반에서 장갑을 벗는다 — 빨라지고(민첩 상승) 두 번 베지만 방어가 반으로 준다. 수면 30%·기절 무효 — 상태 사슬로 묶어 두지 못한다(사용자 지적 2).
   const valen = find<EnemyRecord>(db.enemies, "enemy_fs_valen");
-  valen.stats = { ...valen.stats, maxHp: 1600, attack: 108, defense: 70, mind: 92, agility: 46 };
+  valen.stats = { ...valen.stats, maxHp: 2100, attack: 112, defense: 70, mind: 92, agility: 46 };
   rates("enemy_fs_valen", {}, { state_sleep: "D", state_stop: "E", state_paralysis: "D", state_poison: "C", state_defense_down: "C" });
   tune("skill_fs_judgment", {
     elementId: "holy", power: 120, chargeTurns: 1,
@@ -341,7 +341,9 @@ export function applyFallenBattleRoles(project: Project): void {
       conditions: [{ kind: "enemyHpBelow", enemyId: "enemy_fs_valen", percent: 50 }],
       commands: [
         text("…장갑을 벗을 때가 됐군."),
-        m2("m2-100-change-enemy-state", { target: "enemy_fs_valen", operation: "add", value: "state_attack_up" }),
+        // 장갑을 벗는다 = 빨라지고(연격) 물러진다. 공격 상승(×2)은 연격과 겹쳐 한 차례 300 가까이 들어가 너무 셌다(QA 영상 실측).
+        m2("m2-100-change-enemy-state", { target: "enemy_fs_valen", operation: "add", value: "state_agility_up" }),
+        m2("m2-100-change-enemy-state", { target: "enemy_fs_valen", operation: "add", value: "state_defense_down" }),
       ] },
   ] as typeof finale.battleEventPages;
 

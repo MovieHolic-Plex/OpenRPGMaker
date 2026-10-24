@@ -587,18 +587,42 @@
               "kind": "battle",
               "plan": {
                 "actor_hero": [
-                  "skill_hero_rush_pierce"
+                  "skill_hero_rush_pierce@enemy-1"
                 ],
                 "actor_fs_elena": [
                   "skill_sleep_mist@enemy-1",
-                  "skill_mage_magic_missile"
+                  "skill_mage_magic_missile@enemy-1",
+                  "skill_heal@actor_fs_iris",
+                  "skill_mage_magic_missile@enemy-1",
+                  "skill_heal@actor_hero",
+                  "skill_mage_magic_missile@enemy-1",
+                  "skill_heal@actor_fs_iris",
+                  "skill_mage_magic_missile@enemy-1",
+                  "skill_heal@actor_hero",
+                  "skill_mage_magic_missile@enemy-1",
+                  "skill_heal@actor_fs_iris",
+                  "skill_mage_magic_missile@enemy-1",
+                  "skill_heal@actor_hero",
+                  "skill_mage_magic_missile@enemy-1",
+                  "skill_heal@actor_fs_iris",
+                  "skill_mage_magic_missile@enemy-1",
+                  "skill_heal@actor_hero",
+                  "skill_mage_magic_missile@enemy-1",
+                  "skill_heal@actor_fs_iris",
+                  "skill_mage_magic_missile@enemy-1",
+                  "skill_heal@actor_hero",
+                  "skill_mage_magic_missile@enemy-1",
+                  "skill_heal@actor_fs_iris",
+                  "skill_mage_magic_missile@enemy-1",
+                  "skill_heal@actor_hero",
+                  "skill_mage_magic_missile@enemy-1"
                 ],
                 "actor_fs_iris": [
-                  "skill_gunner_snipe"
+                  "skill_gunner_snipe@enemy-1"
                 ]
               },
               "logPath": "verify-shots/fs-battle/logs/valen-finale.jsonl",
-              "timeoutMs": 600000,
+              "timeoutMs": 900000,
               "fallback": "attack",
               "untilEnd": true
             },
