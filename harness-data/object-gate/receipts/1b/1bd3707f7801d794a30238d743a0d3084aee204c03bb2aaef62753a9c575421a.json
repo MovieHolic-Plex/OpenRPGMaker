@@ -1,0 +1,733 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1bd3707f7801d794a30238d743a0d3084aee204c03bb2aaef62753a9c575421a",
+ "width": 128,
+ "height": 128,
+ "kind": "terrain",
+ "name": "other.void_edge",
+ "label": "beodeul_dungeon/other.void_edge",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 7,
+  "darkV5": 35,
+  "nearBlackEdge": 0.77,
+  "opaqueTiles": 64
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main floating plateau top (cracked stone ground)",
+      "rows": "17-95",
+      "evidence": "a",
+      "front_edge_line_row": 95,
+      "eave_shadow_rows": "96"
+     },
+     {
+      "part": "left/bottom cliff face under the plateau",
+      "rows": "97-120",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper-right ledge top (notch)",
+      "rows": "17-47",
+      "evidence": "a",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": "48"
+     },
+     {
+      "part": "upper-right ledge cliff face",
+      "rows": "49-64",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle step top",
+      "rows": "66-79",
+      "evidence": "a",
+      "front_edge_line_row": 79,
+      "eave_shadow_rows": "80"
+     },
+     {
+      "part": "middle step cliff face",
+      "rows": "81-102",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-right strip top",
+      "rows": "66-95",
+      "evidence": "a",
+      "front_edge_line_row": 95,
+      "eave_shadow_rows": "96"
+     },
+     {
+      "part": "lower-right cliff face",
+      "rows": "97-112",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 79,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The large floating platform has a textured flat top spanning rows 17-95, ending in a bright 1-row front-edge line at rows 94-95 followed by a dark shadow row 96. Below it hangs a tapering, striped cliff face of about 22 rows (97-120). The notched ledges (edge lines at rows 47, 79 and 95) each repeat this pattern: a top surface, an edge line, then a cliff face. This is a void-edge terrain tile seen in 3/4 view, not a flat slab or a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a floating purple rock slab against a starry void. Its top surface shows only about 4 visible tones, against 3 for the grass and 7 for the paving. Near-flat coverage is 49%, while both references are at 0%. Large areas of the slab face are one flat dark purple, with only a few sparse speckles, one small crack and a faint diagonal highlight. The stalactite undersides have scalloped wave lines in 2-3 purple steps, which is some texture, but the main body is flat. Outline pixels are 0% neutral, so they lean purple and read as a dark material tone. The bright purple rim lines on the lower edges are a good touch. Overall the shading is shallow (about 4 steps against 5-6) and the slab is too flat and sticker-like for the Beodeul standard, so it fails on flat fills and density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18132
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "floating ground slab top (main plateau)",
+      "rows": "17-94",
+      "evidence": "a",
+      "front_edge_line_row": 95,
+      "eave_shadow_rows": "96-96"
+     },
+     {
+      "part": "right upper ledge top, with its cliff face below",
+      "rows": "17-46",
+      "evidence": "a",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle and right lower ground strip top",
+      "rows": "66-79",
+      "evidence": "a",
+      "front_edge_line_row": 79,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging rock cliff faces (south faces)",
+      "rows": "96-118",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 78,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a floating-island void-edge tile. The main ground plateau is a large textured surface from about row 17 to 94. It ends in a bright front-edge line at rows 94-95 (L=84 then 121 at x=32), followed by a dark row at 96. Below that, a tapering layered rock cliff hangs down as the front face, about 20 rows tall. The same pattern repeats at the notches: x=64 has an edge line at rows 77-79 with void below, and x=95 has one at rows 46-47. A thin 1px lighter rim runs along the left side and top, which is only an outline. There is no isometric side face. The top is a large surface and the south cliff face is 3+ rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a floating void-island patch: a purple rock top with a lighter purple edge lip and hanging stalactite wedges against a dark starfield. Measured facts show 4 visible tones per tile against 3 for the grass reference and 7 for paving, so it is within range. Near-flat coverage is 49%, while both references sit at 0%. The large purple top face is mostly one flat mid-purple, with only a few speckles, one faint crack and a diagonal streak. That is the flat fill the references avoid. The stalactites have faint wavy strata, which is some texture. Outline pixels lean purple, not neutral (0% near-neutral), so they read as dark material tone. Shading is about 4 steps: top face, lip highlight, underside dark, and background. Beodeul materials use 5-6 steps with per-tile grain. The candidate falls short on top-face grain and variation, so it looks flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14476
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main upper ground slab (left and top)",
+      "rows": "17-95",
+      "evidence": "a",
+      "front_edge_line_row": 95,
+      "eave_shadow_rows": "96"
+     },
+     {
+      "part": "left cliff front face (stalactite-shaped)",
+      "rows": "96-116",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper right ledge top",
+      "rows": "17-47",
+      "evidence": "a",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": "48"
+     },
+     {
+      "part": "upper right ledge cliff face",
+      "rows": "48-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle lower ledge top",
+      "rows": "66-79",
+      "evidence": "a",
+      "front_edge_line_row": 79,
+      "eave_shadow_rows": "80"
+     },
+     {
+      "part": "middle ledge cliff face",
+      "rows": "80-102",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 78,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tile is a floating ground slab. A large speckled top surface fills rows 17-94 and ends in a light front-edge line at rows 94-95 (#8462d6). A dark eave row follows at row 96. Below it a tapering cliff face of about 20 rows hangs down, with layered wavy bands and stalactite tips. The notches on the right repeat the same structure: each ledge has a top, a bright edge line (rows 47 and 79) and a cliff face beneath. The cliffs are drawn as front faces only, with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a floating void-island ground with a purple stone top, hanging stalactite undersides and a starfield. It reads as a ground patch, but the shading is shallow: about 3 lightness steps on the main purple top (base, a slightly lighter speckle, and a bright edge highlight). Its 4 visible tones per tile are in the range of the grass reference (3) but well below the paving reference (7). Near-flat coverage is 49% against 0% for both references, so large areas of the top face are one flat colour with only sparse faint speckles and a single crack. The raw palette is 10 colours against 80 for grass, which confirms the thin texture. The edge lines lean purple rather than neutral (0% neutral), so the outline is a tinted dark material tone, and that part is fine. The stalactite undersides have a few wavy lines, but they are repetitive and shallow. Beodeul grass and paving carry per-clump and per-stone variation across every tile, and the candidate would look flatter and more sticker-like next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15949
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main floating platform top (cracked void-stone floor)",
+      "rows": "17-94",
+      "evidence": "a",
+      "front_edge_line_row": 94,
+      "eave_shadow_rows": "96-96"
+     },
+     {
+      "part": "main platform front cliff face (layered stalactite rock)",
+      "rows": "96-115",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper right ledge top",
+      "rows": "17-45",
+      "evidence": "a",
+      "front_edge_line_row": 46,
+      "eave_shadow_rows": "47-47"
+     },
+     {
+      "part": "upper right inset cliff face",
+      "rows": "48-64",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle bridge top",
+      "rows": "66-77",
+      "evidence": "a",
+      "front_edge_line_row": 78,
+      "eave_shadow_rows": "79-79"
+     },
+     {
+      "part": "middle cliff face",
+      "rows": "80-97",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower right pillar top",
+      "rows": "66-93",
+      "evidence": "a",
+      "front_edge_line_row": 94,
+      "eave_shadow_rows": "96-96"
+     },
+     {
+      "part": "lower right cliff face",
+      "rows": "96-112",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 78,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The terrain is a floating void platform. A large stone floor top spans rows 17-94 and ends in a bright 1-row front-edge line at rows 94-95. A darker, layered cliff face of about 19 rows hangs below it, tapering into stalactites. The notches on the right and in the middle repeat the same pattern: a top, an edge line at rows 46 and 78, then a cliff face below. The left side has only a 1-px vertical highlight, not a receding side face. It is a 3/4 view terrain block with a top and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a floating void-edge slab in purple. Its top face is a large, nearly uniform dark purple with only a few speckles and one small crack, and 49% of it is near-flat against 0% for both references. It shows 4 visible tones per tile, which is more than the grass (3) but fewer than the paving (7). Raw colours per tile are only 5 against 26 for grass, and the whole piece uses just 10 colours. Shading is roughly 3 steps: a body tone, a lighter top-edge highlight and a dark ground. The hanging stalactite undersides carry some wavy strata lines, and the edge outlines lean purple (0% neutral), so the outline reads as dark material tone and not a black sticker line. Even so, the big top face is a flat fill without grain, tile-by-tile shading or clumps, and it falls short of the Beodeul references' per-tile richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15169
+  }
+ ],
+ "decidedAt": "2026-10-23T03:55:53.769Z",
+ "cells": {
+  "16": [
+   "045702bd3f2f6813",
+   "0e0216d2c5014537",
+   "1f716cc41449e43d",
+   "25865425a5929d6b",
+   "25d40dce3a2131e3",
+   "2c4cca1aeb636ee8",
+   "30b66361056777a5",
+   "39d5c389678e51da",
+   "3edc32bdccefe37d",
+   "469ced6330468601",
+   "51e06e700f9b0490",
+   "5a3cbbb00ef28d37",
+   "626abb3b2a51879b",
+   "64e225511d0f3784",
+   "6d21fa3b235a2b85",
+   "76b46c2fa60cc5ad",
+   "77ab1afae70af254",
+   "7bc18e816cb1f0d8",
+   "818fec071a4035b3",
+   "9fa172018ba1dcd2",
+   "ab26859e147d02e1",
+   "aedda359131c4b5f",
+   "b19f3d83422b27b7",
+   "b362d3baeb7c34ff",
+   "bd14938f0959e714",
+   "bdd14a18a6c2ff28",
+   "c20b69fa47fb0e65",
+   "c34712c9095cae74",
+   "c4681ef27ad85beb",
+   "c786d97b295d6650",
+   "dc3422a61327a069"
+  ],
+  "24": [
+   "006717c06e656d7d",
+   "013b3de5e5b5c7b4",
+   "022456c57fa9797a",
+   "02737672d71d8874",
+   "02eb81096ab5f0fb",
+   "03761828cf7347de",
+   "07b63be0394c933c",
+   "08dc7bfc2ad66022",
+   "0d79d5b47bc1ab6b",
+   "0da37b456559e81b",
+   "0f82b72430d46d3e",
+   "1007f5e402dd2d4b",
+   "126b24019e648219",
+   "1620a7f18fbad571",
+   "19425972b0796a60",
+   "1bf1cca7de808986",
+   "1c28eb2c8caaa8ff",
+   "1c5565c899304124",
+   "1cf5c4bff3c4233b",
+   "244970d9e4ff97e1",
+   "24c487e6e50f30a8",
+   "2505cda689ca1dd6",
+   "26edb6f9d3e8db3f",
+   "28362cd2856fa59c",
+   "285fc9eda78a5685",
+   "2b2c6cfdd3b66f3a",
+   "2b33533eebcf1585",
+   "2d5850074d71c7c1",
+   "2ddda9726a8b32e2",
+   "2e0c7de17cb12be3",
+   "2f8c132ab5ce49bf",
+   "2fe809d7854aa809",
+   "303588c97e80fb48",
+   "30d9e0db601f9551",
+   "32834c8b3cbf31f8",
+   "330656bcd4b15356",
+   "33f270c2bb3b2c95",
+   "3504a03c67252eb9",
+   "3821bf4799a1ddc6",
+   "3b41f60c33e68037",
+   "3bd64b1f7b48bca3",
+   "3fda322c0810c765",
+   "40b591023adf11ec",
+   "4409ee03cc5704e5",
+   "46bb47767847cfd7",
+   "482c064d28e59c5b",
+   "486736347f5f6d75",
+   "48e027cf17c13193",
+   "4954e527ca686775",
+   "4969dd3c9f385b62",
+   "4bca831e8a6f8a39",
+   "4e708d849c84574b",
+   "4ef3e4d1f10880a4",
+   "50047a3351d5462d",
+   "503c7cc32fac527d",
+   "54149face7c2dab4",
+   "562ad7fb086c9bc8",
+   "56ac18f4875c6f22",
+   "59c24528f4be6c7f",
+   "59efb50a5502ae9c",
+   "5a3b1da011598ab4",
+   "5a45495ee86544d7",
+   "5aa39f8e41bd60c7",
+   "5dbb8fe3e39aa575",
+   "5f11b4e209fb17c8",
+   "60ae1adbcebee7f2",
+   "61da1f0506891e9f",
+   "6277aa9f11459ca5",
+   "6447f9eb236d644f",
+   "65d5e73561fab73e",
+   "6624bad16ac076cd",
+   "6653ba009c65ed1d",
+   "674b372423210dc8",
+   "67d3dfb1753d36df",
+   "6a255036198b29dd",
+   "6a5da071cc1286e3",
+   "6b228a935e263f17",
+   "6c41389f0607b0de",
+   "6d985afd45fe597b",
+   "6ef3bb72668d42ac",
+   "6f621e7020380681",
+   "70c05f4146d5078e",
+   "71b5bc49e455aa27",
+   "7290e070506f41f7",
+   "735a355e2221cf47",
+   "74d7f28796bb6784",
+   "75641503fd517663",
+   "75b65ca86e8f8840",
+   "7772aef4b17a8ce5",
+   "784db0230967d98e",
+   "7af980239bb16a8b",
+   "7b65b3b5e895ad13",
+   "7bdbcded1ee55563",
+   "7bf1b389dce3ba6c",
+   "7ef4fd49381e8785",
+   "7f00ea2b8008824d",
+   "8371e4437e6e4fe7",
+   "84530a45fb54cf21",
+   "84ed4374baa3efab",
+   "89b8cf16d4431413",
+   "89d245420180fdab",
+   "8cba0fd088c38480",
+   "8f9830d28faac274",
+   "90a1bd0e0407c42a",
+   "924d0c384227bc4c",
+   "93fd42396fb1ee23",
+   "94c169c8436a86dd",
+   "9635ebad682b028e",
+   "96cdc0e138300985",
+   "9715c851f52aaefa",
+   "98746ce8bb94117d",
+   "9a816da18f10379d",
+   "9ad17e11ac65095c",
+   "9ae00695d4a2c065",
+   "9b5ce403bdda0857",
+   "a045725f022a444a",
+   "a160eafb5e5963f5",
+   "a1d52b3f345c9360",
+   "a3a3a7eb389620d3",
+   "a5344231cc77a717",
+   "a57564e7d0d3d9ab",
+   "a758972dab930905",
+   "a7978da3728f9f73",
+   "a7d309effa75b75b",
+   "a8297abc15cb3edd",
+   "a8aad32df65403f9",
+   "a9c3a02172b3339c",
+   "aa06cdd5cfeba036",
+   "aa2a70cc0fda83a2",
+   "adc0754a6910831c",
+   "adcf27742812e90b",
+   "af39b213d6b07b61",
+   "b1f526622138b9c2",
+   "b27c8a725b4e76ec",
+   "b29026253c26a6aa",
+   "b4373988187a9ab2",
+   "b438d4d66c6d459d",
+   "b47b56cc58ecef60",
+   "b546ed1fdc8f74e6",
+   "b5531e5aec783f42",
+   "b597d7baaf92398a",
+   "b8d7d2e2afe67b8a",
+   "bc2e30fdd61ba031",
+   "bd487b00e037ac44",
+   "bf724af7c4660176",
+   "c00b4c075a8104e6",
+   "c1df599b9fb541ab",
+   "c498c3b65fd5f2de",
+   "c69924b7ee9bf015",
+   "c6d17dd074a4f0d2",
+   "c73dae32ba778148",
+   "c9f6b679b44801b8",
+   "cc58d20c34ee1e05",
+   "cd6917f3d9b3d8b8",
+   "ceb86b29728a03a2",
+   "d03174eacbab04ab",
+   "d03e677b36dc7266",
+   "d0b5541861592aa4",
+   "d11cc3ce5b1b6a07",
+   "d478c18276ca441a",
+   "d4d52d3048b60189",
+   "d4f71486b6ba2122",
+   "d59e7238dbb90ac5",
+   "d608dc42aeaf04bf",
+   "d644057ca0c60427",
+   "d7ff6f0dfea2df53",
+   "dab8923d6de0c30a",
+   "db2901d4e9080dd4",
+   "db5ae8cd4a57b738",
+   "ddb7d862e0c1df97",
+   "dec28240b20cf49b",
+   "ded97219ed5164a8",
+   "dfc4ada54beb91f6",
+   "e1840a579bbc8076",
+   "e1baa8337ec607ab",
+   "e2af5fe76b3180cd",
+   "e5128587dabe6e44",
+   "e5503df4b7f1ae7a",
+   "e560b85a85f1a9fc",
+   "e8a27e9a23c7820f",
+   "e93380f84cc9e90f",
+   "eb708c06e7016a9c",
+   "eb9ed5eba88cc30b",
+   "ec6015c5c84a21c1",
+   "ee0f82e994612201",
+   "ee6fc33e68eba56c",
+   "ee78d70837ae7ee6",
+   "ef1e2d8abd4d5402",
+   "f0c5c6d6e8eefa0d",
+   "f2020b6cbe56afaa",
+   "f2e4ac3d8053a12b",
+   "f33c2f64a150bbed",
+   "f35ff55a6ef175d7",
+   "f458e3192a067417",
+   "f4b6f8581b7ef581",
+   "f4dc3dfc18900324",
+   "f567efc7daac4bfe",
+   "fafe4cf3d705a9b1",
+   "fb7219eb584960fe",
+   "fc1104f29df84ff1",
+   "fe4ff5c7e48511dd"
+  ],
+  "32": [
+   "37e4fcb5329fe590",
+   "3b428c5ea68b1516",
+   "4c54e5977b89cbb7",
+   "76f765f7b08e4b3b",
+   "800f86eb68c1cecd",
+   "8c3aa8685bf7e255",
+   "a08090eba39f5d7d",
+   "a540f2caf669c506",
+   "a95cdf623c4746ea",
+   "bbb50642521fa3cc",
+   "c03abe0ac41c0d1c",
+   "ca5c415d33a8ae52",
+   "d77e08e83349efe6",
+   "db8e9f286ab67f5e",
+   "f36d8b42b3751788",
+   "f6d50ff6ba2e9a95"
+  ],
+  "48": [
+   "03c59c111766d12a",
+   "0f5a1030910b51bf",
+   "10c985019c3805b9",
+   "190dd50b6dd6a474",
+   "1d0a031cb86f6d36",
+   "1fc627e4c6fd3c90",
+   "26c154891f98fcbf",
+   "2aa10e18f26e829c",
+   "2e58d0e913278d96",
+   "3e8747e8417ce502",
+   "3e98a75e3e5c8b2a",
+   "3f2d18e08f689b91",
+   "413dbff826e42804",
+   "467b2025e14c6a8a",
+   "4780b8e4f5756002",
+   "4d38a15c3c68dc25",
+   "6624014fba28e2e4",
+   "7234584cfaa5e936",
+   "7638af21ba1451c1",
+   "772612a273c218b5",
+   "773f1db7b674663d",
+   "8038bf7f67046170",
+   "865f9a59c60a3443",
+   "886fc240bde8d60e",
+   "88f405bcbea31556",
+   "892efb9f519bcda0",
+   "8a5cf8c74be46f2b",
+   "8ed78caa03c61f09",
+   "934af515b56f17eb",
+   "9cd2aff806faa621",
+   "a993f7e3e0d5f94d",
+   "aebd2f94599f7cfb",
+   "b7d183f1c6e1aaac",
+   "bdd146aab683bec1",
+   "c5ff8d1152dbb9c7",
+   "c6e88bbb6d03062a",
+   "c7c8412737b7c95f",
+   "caddf81896680550",
+   "cd6438cd9f013608",
+   "d0b33427a303da7d",
+   "d427d36085d17676",
+   "d8582d6aae0ca18a",
+   "db309670d14a4bd7",
+   "dff655bb326c1f8b",
+   "e04c66d385914d80",
+   "e637ed48f6f23497",
+   "e7e076c26cc7f3ff",
+   "e955e9e6f0017341",
+   "ec8f3dbfd76472c4",
+   "f113b7917b5748ce",
+   "f2fe8794643d489d",
+   "f5cdfef0f7332dc8",
+   "f790910aa80add67",
+   "f90f2fb9c48bbe31"
+  ]
+ }
+}

@@ -12,7 +12,7 @@ import { DungeonComposeError } from "../dungeonKit/errors";
 import { capabilityTableText } from "../dungeonKit/capabilities";
 import { DUNGEON_GENRES, GENRE_PRESETS, genreOfProject, planPopulation } from "../dungeonKit/genres";
 import { DUNGEON_REFERENCES, GRAMMAR, inferDungeonRequest, inferDungeonType } from "../dungeonKit/grammar";
-import { DUNGEON_GIMMICKS, GIMMICK_LABEL, THEME_GIMMICKS, placeLever, placeThemeGimmick, wallFirst, type DungeonGimmick } from "./dungeonGimmicks";
+import { DUNGEON_GIMMICKS, GIMMICK_LABEL, THEME_GIMMICKS, placeLever, placeThemeGimmick, placeTowerWarp, wallFirst, type DungeonGimmick } from "./dungeonGimmicks";
 import { composeRouted, routeDungeon } from "../dungeonKit/route";
 import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS } from "./mapTools";
@@ -27,6 +27,7 @@ import { beodeulNatureTileset, planBeodeulCanopy, writeBeodeulCanopy } from "./b
 import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { translateTiles } from "@/project/objectStamp";
 import { setLayerTileAt } from "@/project/mapLayers";
+import { mapBackgroundFromPanoramaSet } from "@/assets/oprnPanoramas";
 
 const createMapTool = MAP_TOOLS.find((tool) => tool.name === "create_map")!;
 const resizeMapTool = MAP_TOOLS.find((tool) => tool.name === "resize_map")!;
@@ -350,9 +351,14 @@ function populateFloor(draft: Project, mapId: string, data: Record<string, unkno
   const out: string[] = [];
   const foes: string[] = [];
   if (troops.field.length) {
-    planned("enemies").filter((e) => e.room !== bossRoom?.id && e.room !== restRoom?.id).slice(0, 4).forEach((e, i) => {
-      if (!free(e)) return;
-      if (attempt(`보이는 적 (${e.x},${e.y})`, () => placeRoamer(draft, { mapId, x: e.x, y: e.y, troopId: troops.field[(i + salt) % troops.field.length], behavior: "patrol", id: `ev_${mapId}_foe${i + 1}` }, i % 2 === 1))) foes.push(`(${e.x},${e.y})`);
+    // 보이는 적은 다른 이벤트(이동·순간이동·함정·표지) 2칸 안에 못 선다(place_field_enemy 규칙) — 미리 걸러 경고·빈자리를 줄인다.
+    const foeFree = (c: Pt): boolean => free(c) && !map.events.some((e) => Math.max(Math.abs(e.x - c.x), Math.abs(e.y - c.y)) <= 2);
+    planned("enemies").filter((e) => e.room !== bossRoom?.id && e.room !== restRoom?.id && foeFree(e)).slice(0, 4).forEach((e, i) => {
+      if (!foeFree(e)) return;
+      const troopId = troops.field[(i + salt) % troops.field.length]!;
+      // 적 이름을 좌표에 붙인다 — 이름이 없으면 조수가 「박쥐는 없다」고 답했다(dt r2 cave-a, 실제로는 박쥐 둘).
+      const names = (draft.database.troops.find((t) => t.id === troopId)?.members ?? []).map((m) => draft.database.enemies.find((x) => x.id === m.enemyId)?.name).filter(Boolean);
+      if (attempt(`보이는 적 (${e.x},${e.y})`, () => placeRoamer(draft, { mapId, x: e.x, y: e.y, troopId, behavior: "patrol", id: `ev_${mapId}_foe${i + 1}` }, i % 2 === 1))) foes.push(`(${e.x},${e.y})${names.length ? ` ${[...new Set(names)].join("·")}` : ""}`);
     });
   } else warnings.push(`${map.name}: 데이터베이스에 적 그룹이 없어 보이는 적을 두지 않았다 — upsert_troop 뒤 troops 로 다시 짓거나 place_field_enemy.`);
   if (foes.length) out.push(`보이는 적 ${foes.join(" ")}`);
@@ -496,6 +502,8 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
     }
   }
   // 층을 쌓는 배치(vertical): 층 수를 안 주면 2층(탑·마법탑은 3층 위로).
+  // 탑(type tower)은 층·방 목록·배치를 안 줘도 층을 쌓는다 — 「마법사의 탑」이 한 층 넓은 던전으로 지어졌다(dt r2 tower-a).
+  if (args.type === "tower" && args.floors === undefined && args.rooms === undefined && args.layout === undefined) args.layout = "vertical";
   if (args.layout === "vertical" && args.floors === undefined && args.rooms === undefined) {
     args.floors = args.type === "tower" ? 3 : 2;
     if (args.direction === undefined && args.type === "tower") args.direction = "up";
@@ -518,7 +526,8 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   for (let k = 1; k <= floors; k += 1) {
     const first = k === 1, last = k === floors;
     // 들어오는 계단: 1층은 바깥과 이을 때만(안 이으면 죽은 계단이 된다). 다음 층부터는 아래층(지하)·위층(탑)에서 오는 계단.
-    const entry: FloorOpts["entry"] = first ? (direction === "up" && floors > 1 ? "door" : "up") : direction === "down" ? "up" : "down";
+    // 1층 바깥 입구 모양은 씨앗으로 계단·문(성문) 중 하나(2026-10-23 v2 다양성 — 늘 북벽 올라가는 계단이었다). 숲·늪은 compose 가 남쪽 길 끝으로 바꾼다.
+    const entry: FloorOpts["entry"] = first ? (direction === "up" && floors > 1 ? "door" : (baseSeed >>> 3) % 2 === 1 ? "door" : "up") : direction === "down" ? "up" : "down";
     const exit: FloorOpts["exit"] = last ? (genreHint === "pokemon" && floors === 1 ? "down" : "none") : direction === "down" ? "down" : "up";
     const floorArgs: Record<string, unknown> = { ...args, name: FLOOR_NAME(baseName, direction, k, floors) };
     delete floorArgs.floors; delete floorArgs.direction; delete floorArgs.populate; delete floorArgs.troops; delete floorArgs.seed; delete floorArgs.sourceMapId;
@@ -544,14 +553,20 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   const filled: string[] = [];
   let gimmickPlaced: DungeonGimmick | null = null;
   let gimmickAfter: (() => void) | null = null;
-  const gimmickArg = args.gimmick === "none" ? "none" : (DUNGEON_GIMMICKS as readonly string[]).includes(String(args.gimmick)) ? (args.gimmick as DungeonGimmick) : args.puzzle === "lever" ? "lever" : undefined;
+  const gimmickArg = args.gimmick === "none" ? "none" : (DUNGEON_GIMMICKS as readonly string[]).includes(String(args.gimmick)) ? (args.gimmick as DungeonGimmick) : args.puzzle === "lever" ? "lever" : gimmickCue(`${typeof args.name === "string" ? args.name : ""} ${typeof args.inspiration === "string" ? args.inspiration : ""}`);
   if (gimmickArg !== "none" && datas.every((d) => d.adapter === "beodeul") && (gimmickArg || (args.populate !== false && datas.every((d) => d.genre === "rpg")))) {
     const i = datas.length - 1;
     const m = draft.maps[mapIds[i]!]!;
-    const { gimmick, line, after } = placeThemeGimmick(draft, m, datas[i]!, datas[i]!.type as DungeonType, gimmickArg, baseSeed, warnings, () => placeLeverGate(draft, m, datas[i]!, []));
-    gimmickAfter = after;
-    gimmickPlaced = gimmick;
-    if (line) filled.push(`${m.name}: ${line}`);
+    // 탑(여러 층)의 순간이동: 꼭대기 층은 방이 둘뿐이라 층 안 마법진 쌍 자리가 없다 — 1층 ↔ 꼭대기 층 건너 마법진을 먼저 해 본다.
+    const towerWarp = datas.length > 1 && datas[i]!.type === "tower" && (gimmickArg === "teleporter" || (!gimmickArg && THEME_GIMMICKS.tower?.[baseSeed % 2] === "teleporter"))
+      ? placeTowerWarp(draft, draft.maps[mapIds[0]!]!, datas[0]!, m, datas[i]!, "tower") : "";
+    if (towerWarp) { gimmickPlaced = "teleporter"; filled.push(towerWarp); }
+    else {
+      const { gimmick, line, after } = placeThemeGimmick(draft, m, datas[i]!, datas[i]!.type as DungeonType, gimmickArg, baseSeed, warnings, () => placeLeverGate(draft, m, datas[i]!, []));
+      gimmickAfter = after;
+      gimmickPlaced = gimmick;
+      if (line) filled.push(`${m.name}: ${line}`);
+    }
   }
   // 채우기(rpg): 생략하면 켠다. 몬스터 수집(pokemon)은 야생 조우 구역이 정본이라 건너뛴다.
   const populate = args.populate !== false && datas.every((d) => d.genre === "rpg");
@@ -571,6 +586,9 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   }
   // 주제 장치가 채우기 뒤로 미룬 맵 변경(다리 걷기)
   (gimmickAfter as (() => void) | null)?.();
+  // 탑(위로 쌓은 여러 층): 둥근 방 바깥 깊은 천장(8 이웃도 천장)을 비우고 구름 바다 배경을 빈 칸에 비친다 — 검은 허공이 화면 반을 넘었다(dt r2 tower-b 55%).
+  // 벽에 닿는 천장 띠는 남아 탑 외벽 두께로 읽힌다. 「하늘 위의 탑」(크로노 트리거 지일 왕국·FF 의 탑).
+  if (floors > 1 && direction === "up") for (const id of mapIds) skyAroundTower(draft, draft.maps[id]!);
   // 레버 쇠창살을 안 놓았으면 잠긴 문 계획을 지운다 — 남겨 두면 조수가 「열쇠로 여는 잠긴 문이 있다」로 답했다(2026-10-23 VQA boss-run).
   if (gimmickPlaced !== "lever") for (const d of datas) { const pop = field(d, "population"); if (pop && typeof pop === "object") delete (pop as Record<string, unknown>).lockedGate; }
   const floorWarnings = results.flatMap((r) => r.warnings ?? []);
@@ -589,6 +607,43 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
     data: results.length === 1 ? { ...datas[0], floors: [mapIds[0]], populated: populate, gimmick: gimmickPlaced } : { ...datas[0], floors: mapIds, floorData: datas, links, populated: populate, gimmick: gimmickPlaced },
     ...(all.length ? { warnings: all } : {}),
   };
+}
+
+/** 탑 층 바깥: 깊은 천장 칸을 비우고 구름 바다 배경(빈 칸에 보이기)을 건다. 비운 칸 수를 돌려준다. */
+function skyAroundTower(draft: Project, map: GameMap): number {
+  const ts = draft.tilesets[map.tilesetId];
+  const bg = mapBackgroundFromPanoramaSet("oprn-clouds");
+  if (!ts || !bg) return 0;
+  const ceil = new Set<number>();
+  for (const g of ts.autotileGroups ?? []) if (/ceiling/.test(g.id)) {
+    for (const v of Object.values(g.variantMap ?? {})) ceil.add(Number(v));
+    for (const row of g.interiorVariants ?? []) for (const v of row) ceil.add(Number(v));
+  }
+  const W = map.width, H = map.height;
+  const ev = new Set(map.events.map((e) => e.y * W + e.x));
+  const isCeil = (x: number, y: number) => x < 0 || y < 0 || x >= W || y >= H || (ceil.has(map.lowerTiles[y * W + x]!) && (map.upperTiles[y * W + x] ?? -1) < 0);
+  const clear: number[] = [];
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+    if (ev.has(y * W + x) || !isCeil(x, y) || !ceil.has(map.lowerTiles[y * W + x]!)) continue;
+    let deep = true;
+    for (let dy = -1; dy <= 1 && deep; dy += 1) for (let dx = -1; dx <= 1; dx += 1) if (!isCeil(x + dx, y + dy)) { deep = false; break; }
+    if (deep) clear.push(y * W + x);
+  }
+  if (clear.length === 0) return 0;
+  for (const i of clear) map.lowerTiles[i] = -1;
+  map.background = bg;
+  return clear.length;
+}
+
+/** 이름·inspiration 낱말 → 장치(인자를 안 줬을 때). 「지하 호수 동굴」은 다리, 「광차」는 광차 — 같은 종류 두 요청이 같은 레버로 끝나던 것(dt r2 cave-a/b). */
+function gimmickCue(text: string): DungeonGimmick | undefined {
+  if (/광차|선로|레일|minecart|mine\s*cart/iu.test(text)) return "minecart";
+  if (/미끄러|빙판|얼어붙은\s*호수|ice\s*slide/iu.test(text)) return "iceslide";
+  if (/마법진|순간\s*이동|워프|차원문|teleport|warp/iu.test(text)) return "teleporter";
+  if (/함정|구덩이|모래\s*늪|trap|pit/iu.test(text)) return "sandpit";
+  if (/레버|쇠창살|lever/iu.test(text)) return "lever";
+  if (/호수|지하\s*강|강물|물줄기|다리|lake|river|bridge/iu.test(text)) return "bridge";
+  return undefined;
 }
 
 export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {

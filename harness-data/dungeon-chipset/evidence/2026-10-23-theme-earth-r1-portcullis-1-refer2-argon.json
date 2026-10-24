@@ -1,0 +1,14 @@
+{
+  "piece": "earth.portcullis A1 raised",
+  "pixelSha256": "57e04798a9522a57ae199fbe9750b8d247d2d6f590da8b3f7c4e709248171fd2",
+  "receipt": "/home/main/z-project/rpg-zzu-dt-earth/harness-data/object-gate/receipts/57/57e04798a9522a57ae199fbe9750b8d247d2d6f590da8b3f7c4e709248171fd2.json",
+  "verdict": "pass",
+  "sure": true,
+  "view34": "pass — wall-mounted south-facing stone gateway in 3/4 view with top coping rim, inner jambs, stepped threshold sill, and raised portcullis teeth under the arch.",
+  "style": "pass — matches Beodeul stone and iron shading (4-5 tone stone blocks with mortar and warm earth speckles, 3-tone metallic teeth, tinted material outlines, no sticker outline).",
+  "reasons": [
+    "Reads clearly as a castle wall gateway with the portcullis raised: seven shaded metallic teeth hang under the arch and match the lowered portcullis state in the scene.",
+    "Stonework and iron teeth match Beodeul shading depth, palette ramp, and non-black material outlines.",
+    "The dark passage is a convincing recessed doorway rather than a dead flat fill, featuring inner side jambs, a multi-stepped stone threshold at the base, and dithered stone speckles fading into depth."
+  ]
+}

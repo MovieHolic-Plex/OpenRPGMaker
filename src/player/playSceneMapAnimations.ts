@@ -15,6 +15,8 @@ import { UNIT_FOOTPRINT } from "@/project/footprint";
 import { store } from "@/project/store";
 import type { BattleAnimationRecord, CharacterFootprint, ShowAnimationTarget } from "@/project/types";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
+import { parseFieldFxId } from "@/project/containerFx";
+import { playFieldFx } from "@/player/playSceneFieldFx";
 
 const MAP_ANIMATION_DEPTH = 800_000;
 const RAW_TEXTURE_PREFIX = "__oprn_battle_animation_raw_";
@@ -48,6 +50,12 @@ export function playMapAnimation(
   step: Extract<StepResult, { kind: "showAnimation" }>,
   currentEventId?: string
 ): Promise<void> {
+  // 내장 필드 연출(fx:container:… · fx:popup:… · fx:door-open) — 전투 애니메이션 DB 대신 절차 그림.
+  const fieldFx = parseFieldFxId(step.animationId);
+  if (fieldFx) {
+    const tile = resolveShowAnimationTargetTile(step.target, sceneTileResolver(scene, currentEventId));
+    return playFieldFx(scene, fieldFx, tile, currentEventId);
+  }
   const project = store.getCurrent();
   const record = project.database.battleAnimations.find((entry) => entry.id === step.animationId);
   const durationMs = battleAnimationDurationMs(record);

@@ -22,6 +22,7 @@ import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
 import { BattlePlaybackClock } from "@/player/battlePlaybackClock";
 import { playBattleSample, preloadBattleSamples } from "@/player/battleSeSamples";
+import { deferUntilBattleReady } from "@/player/battleReadiness";
 import { partyPixelBackgroundPosition, partyPixelSheet, partyPixelSheetUrl } from "@/assets/partyPixelSheets";
 import type { PartyPixelCell } from "@/assets/pixelEnemySheets";
 
@@ -146,7 +147,7 @@ export function setRetroSkillEntry(field: HTMLElement, entry: BattleTimelineEntr
 }
 export function preloadRetroSkillFx(): void {
   preloadBattleSamples([...new Set(Object.values(RETRO_SKILL_RECIPES).map((recipe) => recipe.sound))]);
-  for (const url of Object.values(SHEETS)) { const img = new Image(); img.src = url; }
+  deferUntilBattleReady(() => { for (const url of Object.values(SHEETS)) { const img = new Image(); img.src = url; } });
 }
 function track(field: HTMLElement, node: HTMLElement): void {
   let nodes = effects.get(field);
@@ -1348,9 +1349,11 @@ export function preloadRetroClassSkillFx(): void {
   for (const skill of RETRO_ALL_CLASS_SKILLS) for (const id of retroTimelineSounds(retroClassSkillTimeline(skill))) sounds.add(id);
   for (const skill of RETRO_MONSTER_SKILLS) for (const id of retroTimelineSounds(retroMonsterSkillTimeline(skill))) sounds.add(id);
   preloadBattleSamples([...sounds]);
-  for (const url of Object.values(classSheets)) { const img = new Image(); img.src = url; }
-  for (const layer of RETRO_ALL_FX_SHEETS.filter(row => row.plane === "backdrop")) {
-    for (let frame = 0; frame < layer.frames; frame += 1) { const img = new Image(); img.src = classSheetUrl(`${layer.key}-f${frame}`); }
-  }
+  deferUntilBattleReady(() => {
+    for (const url of Object.values(classSheets)) { const img = new Image(); img.src = url; }
+    for (const layer of RETRO_ALL_FX_SHEETS.filter(row => row.plane === "backdrop")) {
+      for (let frame = 0; frame < layer.frames; frame += 1) { const img = new Image(); img.src = classSheetUrl(`${layer.key}-f${frame}`); }
+    }
+  });
 }
 

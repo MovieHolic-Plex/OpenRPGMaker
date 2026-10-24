@@ -11,7 +11,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   const started = Date.now();
   const done = await runPiAgent({
     ...request,
-    systemPrompt: buildV2SystemPrompt(request.project, request.currentMapId),
+    systemPrompt: buildV2SystemPrompt(request.project, request.currentMapId, request.task),
     initialToolNames: [],
     openingProduction: false,
   }, {

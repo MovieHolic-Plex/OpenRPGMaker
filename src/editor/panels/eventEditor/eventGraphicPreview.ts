@@ -305,6 +305,8 @@ function movementTitle(movementType: AutonomousMovement): string {
       return "사용자 지정 이동 미리보기";
     case "living":
       return "생활 이동 미리보기";
+    case "fly":
+      return "비행 미리보기";
     case "fixed":
       return "";
   }

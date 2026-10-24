@@ -1,0 +1,279 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "925a98ad9cd3e3a8a8c2718c4ad328c30d92e0ec7c05eb4d351cc776c26000a5",
+ "width": 48,
+ "height": 48,
+ "kind": "flat",
+ "name": "arcane.teleport_circle",
+ "label": "beodeul_dungeon/arcane.teleport_circle",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 12,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "magic circle disc (grey outer ring, blue rune rings, glowing center)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a near-perfect circle, 48 px wide at its widest (rows 22-25) and 48 rows tall. The width profile is symmetric top to bottom (4,14,20,24... up to 48, then back down to 4), so the disc is not foreshortened. There is no front (south) face, no thickness band, no front-edge line and no eave shadow. The grey ring is only an outline and the rune rings are drawn as concentric patterns seen straight from above. This is a flat decal drawn top-down with no front face, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 10 visible tones per 16x16 tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 0%, the same as both references, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline leans dark navy or blue-grey, a dark tone of the adjacent material rather than a black sticker line. The rune ring and glowing core step through about 5 blue lightness levels, and the stone disc shows a slate gradient with ring bands and rune marks. It has only 14 distinct colours in total, so the texture is less grainy than the Beodeul grass or paving. That is acceptable under a locked palette, since the visible tone count is at or above the references. Overall it reads as a crafted ground piece, not a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15710
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "magic circle disc with stone rim and blue rune rings",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a true circle, 48 px wide (max, rows 22-25) and 48 rows tall (rows 0-47). It is not foreshortened into an ellipse. The width profile grows and shrinks symmetrically. The grey stone rim, concentric rune rings and bright central core are all drawn as seen straight from above. No front (south) face, thickness band, front-edge line or eave shadow appears at the bottom; the lower rows 42-47 just continue the circular outline. This is a flat decal seen top-down with no vertical front face (0 rows)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has about 10 visible tones per 16x16 tile, against 7 for the paving reference and 3 for the grass reference, so it is at or above both. Near-flat coverage is 0%, and 0% of its dark edge pixels are neutral, so the outlines lean dark blue rather than black. The blue rune ring and core glow show about 4-5 lightness steps, and the grey outer ring is shaded separately from the dark inner floor, so it does not read as a flat sticker. Its weak point is the total of only 14 distinct colours, with a little less grain than the paving's stone-by-stone shading. It is still a layered, value-separated design that a careful artist would accept next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16457
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "circular magic circle disc (rune plate with gray rim)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a circular disc seen straight from above. The width profile widens from 4 at row 0 to 48 at rows 22-25, then narrows back to 4 at row 47, a full symmetric circle. The concentric rune rings and central glow are all on one horizontal plane. There is no front-edge line, no eave shadow, and no vertical south face. The gray rim is a uniform outline all the way around, with no thicker band at the bottom that would suggest thickness. This is a flat decal, which matches the kind flat, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 10 visible tones per tile, against 7 for the paving reference and 3 for the grass reference. Its near-flat coverage is 0%, the same as both references. Its dark edge pixels are 0% neutral, so the outlines lean visibly blue and match the material, unlike a black sticker line. By eye, the stone disc has a bevelled rim, an inner ring and a glowing blue rune ring with a bright core. That gives about 5 lightness steps on the stone and on the glow, with some speckle and gradient and no large flat areas. It uses only 14 colours in total and is smoother than the grass reference, which lowers its texture rating to 'some'. On structure and density, though, it holds up next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13301
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "magic circle disc (runic plate with stone rim)",
+      "rows": "0-47",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a circular magic circle seen from above. The silhouette widens from 4 px at row 0 to 48 px at rows 22-25 and narrows back to 4 px at row 47, so it is a full ellipse. It has concentric rune rings and a glowing center. There is no vertical front face, no thickness band, no eave shadow and no side face. That matches the flat kind and reads as a flat top-down plate with 0 front face rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 10 visible tones per 16x16 tile, against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 0%, the same as both references, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outlines lean blue/slate rather than black. By eye, the outer rim steps through several slate tones, and the blue rune ring has a bright core, mid glow and dark edge, about 5 steps. Rune ticks and inner rings break up the surface. The total palette is only 14 colours, and the stone texture is less grainy than the paving's per-stone highlights, so it is slightly simpler than the references. Even so, it is not thinner or more sticker-like than the paving at the same scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14114
+  }
+ ],
+ "decidedAt": "2026-10-23T03:18:48.777Z",
+ "cells": {
+  "16": [
+   "169598dcbf813641",
+   "1e33e02550a71e7b",
+   "3f71a7d596adf004",
+   "a5adffdd93228ebf",
+   "d54e3a10fbe569c3",
+   "d953c30909144fcd",
+   "ea99a636f0502538",
+   "efb46c4969bc97f6",
+   "f06225bcca34558b"
+  ],
+  "24": [
+   "317d41f473e19d30",
+   "402cc336d6f6bbb0",
+   "416acb2927b49b64",
+   "ef410394fb0340d1"
+  ],
+  "32": [
+   "0285d7286aecbcf3",
+   "0f705f95a368a8bb",
+   "2f6a13f840b9da51",
+   "3845b25d666ae567",
+   "395f73c7a4356dd9",
+   "465e63120475b530",
+   "63b0bf3eb253137a",
+   "69916e8e4b23cc9b",
+   "7563ebc3b3651198",
+   "821fa8e51f5be299",
+   "8aa5a6cab826f495",
+   "8c46bc5e2e94ef29",
+   "9e4fa0703d2c15f8",
+   "b7eb0da480afc5ad",
+   "ba3e72ad72448c75",
+   "beeb43c0993dac78",
+   "da5a1029236218ef",
+   "e550e3033e096a8c",
+   "e5c8af2a1e8053be",
+   "e7c1369bad3faa21",
+   "f16e2bdbf0eab35d",
+   "f3a34e86103e3125",
+   "f6e386d7347071b7",
+   "fed1d33909deb85d"
+  ],
+  "48": [
+   "fc406efb514ad515"
+  ]
+ }
+}

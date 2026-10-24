@@ -322,6 +322,8 @@ function conditionReferencesDatabase(condition: Condition | BattleEventCondition
       return collection === "enemies" && condition.enemyId === id;
     case "enemyHpBelow":
       return collection === "enemies" && condition.enemyId === id;
+    case "enemyState":
+      return (collection === "enemies" && condition.enemyId === id) || (collection === "states" && condition.stateId === id);
     // fix(db): all/any/not 안에 숨은 참조도 봐야 한다. 여기서 멈추면 AND 그룹 안에서만
     // 쓰이는 레코드가 경고 없이 삭제되고, 남은 조건이 사라진 id를 읽어 조용히 죽는다.
     case "all":

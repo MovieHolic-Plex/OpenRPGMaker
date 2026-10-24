@@ -1,0 +1,20 @@
+{
+  "set": "fallen-battle",
+  "note": "폴른 스타 전투 연출·기술 역할 QA. 픽스처는 scripts/qa/runtime/fallen-battle-fixture.mjs 가 구운 play.json 에서 만든다(숲에 트룹마다 qa_fight_* 이벤트).",
+  "projectFixture": ".omo/fs-battle/fixture.json",
+  "viewport": { "width": 960, "height": 540 },
+  "checkpoints": [
+    {
+      "id": "blizzard-wisps",
+      "label": "엘레나 블리자드 — 도깨비불 셋에게 동시에",
+      "mapId": "fs_forest_edge", "x": 14, "y": 22, "facing": "up",
+      "switches": { "sw_fs_main_started": true, "sw_fs_valen_marched": true },
+      "party": [{ "actorId": "actor_hero", "level": 6 }, { "actorId": "actor_fs_elena", "level": 6 }],
+      "startEventId": "qa_fight_wisps",
+      "beats": [
+        { "id": "battle", "note": "전투 시작", "ops": [{ "kind": "waitFor", "testid": "battle-scene", "timeoutMs": 60000 }], "shot": true },
+        { "id": "blizzard", "note": "카엘 방어 → 엘레나 블리자드(광역) 한 번", "ops": [{ "kind": "battle", "plan": { "actor_hero": ["defend"], "actor_fs_elena": ["skill_mage_blizzard"] }, "commands": 3, "logPath": "verify-shots/fs-battle/logs/blizzard-wisps.jsonl", "timeoutMs": 120000 }, { "kind": "hold", "dir": null, "ms": 1500 }], "shot": true }
+      ]
+    }
+  ]
+}

@@ -64,7 +64,7 @@ export async function createStandaloneHtmlExport(
     const prepared = prepareWebExport(exportProject);
     const html = await buildStandaloneRelease(prepared, source);
     return { blob: new Blob([html], { type: "text/html;charset=utf-8" }), fileName: standaloneHtmlFileName(project.meta.title),
-      summary: { assetCount: prepared.assets.length, missingAssets: [], htmlBytes: new TextEncoder().encode(html).length } };
+      summary: { assetCount: prepared.assets.length, missingAssets: prepared.summary.skippedRetiredResources, htmlBytes: new TextEncoder().encode(html).length } };
   }
   const fetchBytes: StandaloneFetchBytes = async (path) => {
     let bytes: Uint8Array;
@@ -102,7 +102,7 @@ export async function createStandaloneHtmlExport(
     fileName: standaloneHtmlFileName(title),
     summary: {
       assetCount: Object.keys(inlineAssets).length,
-      missingAssets: [],
+      missingAssets: prepared.summary.skippedRetiredResources,
       htmlBytes: html.length,
     },
   };

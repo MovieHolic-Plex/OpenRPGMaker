@@ -1,6 +1,6 @@
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
-import { MONSTER_PARTY_MAX, monsterBattleStatsForSpecies, monsterSpeciesById, monsterStatExtrasFor } from "@/project/monsterCollection";
+import { MONSTER_PARTY_MAX, monsterBattleStatsForSpecies, monsterSpeciesById, monsterStatExtrasFor, stripWildNamePrefix } from "@/project/monsterCollection";
 import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";
 import { withJosa } from "@/util/josa";
@@ -45,9 +45,11 @@ export function emeraldBattlerName(battler: BattleBattlerSnapshot | undefined, s
   if (!battler) return "상대";
   const isEnemy = [...snapshot.enemies, ...(snapshot.departedEnemies ?? [])].some((enemy) => enemy.id === battler.id)
     && !snapshot.actors.some((actor) => actor.id === battler.id);
-  const name = emeraldShortName(battler.name);
+  const trainer = emeraldTrainerTroop(snapshot);
+  // 「야생」은 이 호칭이 붙인다 — 저자가 이름에 이미 적어 둔 접두는 떼어 「야생 야생 슬라임」을 막는다.
+  const name = emeraldShortName(isEnemy && !trainer ? stripWildNamePrefix(battler.name) : battler.name);
   if (!isEnemy) return name;
-  return `${emeraldTrainerTroop(snapshot) ? "상대" : "야생"} ${name}`;
+  return `${trainer ? "상대" : "야생"} ${name}`;
 }
 
 /** 3세대 주요 상태 문장. 걸림·풀림·못 움직임. 주요 상태가 아니면 undefined(일반 문장으로). */

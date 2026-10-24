@@ -943,23 +943,9 @@ async function newScarloxyDemoProject(): Promise<void> {
 }
 
 async function loadFlagshipDemoInEditor(id: FlagshipDemoId, playNow = false): Promise<void> {
-  // 데모 빌더는 예제 그림 수십 MB 를 끌고 온다 — 편집기 첫 화면 번들에 넣지 않고 누를 때 받는다.
-  const { createFlagshipDemoProject } = await import("@/project/flagship");
-  let demo: ReturnType<typeof createFlagshipDemoProject>;
-  try {
-    demo = createFlagshipDemoProject(id);
-  } catch (error) {
-    // 빌드 예외를 삼키면 아무 반응이 없어 보인다 — 알리고 끝낸다.
-    console.error("[demo] 데모를 만들지 못했습니다:", error);
-    toast("데모를 열지 못했습니다. 잠시 뒤 다시 시도해 주세요.", "error");
-    return;
-  }
-  store.replaceProject(demo.project, { label: `${demo.manifest.title} 데모 열기`, origin: "human" });
-  focusLoadedProjectStartMap();
-  toast(t(`${demo.manifest.title} 데모를 불러왔습니다`), "ok");
-  if (playNow) {
-    void openTestPlayWindow();
-  }
+  // 구운 데모(dist/demos/<id>.project.json)를 읽는다. 열기는 편집 가능한 새 프로젝트 폴더로 만든다.
+  const { openFlagshipDemo } = await import("@/editor/flagshipDemoLoader");
+  await openFlagshipDemo(id, { action: playNow ? "play" : "open" });
 }
 
 function focusLoadedProjectStartMap(): void {
@@ -1132,7 +1118,14 @@ async function doExportWebGame(): Promise<void> {
     const project = store.getCurrent();
     const result = await createWebPlayerExportPackage(project);
     downloadBlob(result.blob, webExportFileName(project));
-    toast(`게임 내보내기 완료: 맵 ${result.summary.mapCount}개, 에셋 ${result.summary.assetCount}개`, "ok");
+    const skipped = result.summary.skippedRetiredResources;
+    if (skipped.length > 0) console.warn("[web-export] skipped retired (deleted) art:", skipped);
+    toast(
+      skipped.length === 0
+        ? `게임 내보내기 완료: 맵 ${result.summary.mapCount}개, 에셋 ${result.summary.assetCount}개`
+        : `게임 내보내기 완료(경고): 맵 ${result.summary.mapCount}개, 에셋 ${result.summary.assetCount}개, 삭제된 그림 ${skipped.length}개는 빼고 냈습니다`,
+      skipped.length === 0 ? "ok" : "info",
+    );
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     toast(`게임 내보내기 실패: ${message}`, "error");
@@ -1154,6 +1147,7 @@ async function doExportStandaloneHtml(): Promise<void> {
     downloadBlob(result.blob, result.fileName);
     const size = (result.summary.htmlBytes / 1048576).toFixed(1);
     const missing = result.summary.missingAssets.length;
+    if (missing > 0) console.warn("[standalone-export] skipped retired (deleted) art:", result.summary.missingAssets);
     toast(
       missing === 0
         ? `실행형 HTML 완료: ${size}MB, 에셋 ${result.summary.assetCount}개`

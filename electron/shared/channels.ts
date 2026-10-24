@@ -88,6 +88,10 @@ export const OPRN_CHANNELS = {
   storeUpload: "oprn:store.upload",
   storeVisibility: "oprn:store.visibility",
   storeReport: "oprn:store.report",
+  /** 「바로 플레이」 게임: 이 프로젝트의 게임·다음 판본, 판본 올리기, 지금 판본 바꾸기(되돌리기). */
+  storeGameMine: "oprn:store.gameMine",
+  storeGamePublish: "oprn:store.gamePublish",
+  storeGameCurrent: "oprn:store.gameCurrent",
   /** 컨셉 피드(새 게임): 목록 한 쪽·상세·「이걸로 만들었다」 세기. 썸네일은 storeBlob 으로 받는다. */
   storeConcepts: "oprn:store.concepts",
   storeConcept: "oprn:store.concept",

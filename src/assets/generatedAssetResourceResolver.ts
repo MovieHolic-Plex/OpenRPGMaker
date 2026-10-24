@@ -28,6 +28,7 @@ import { resolveOgaBackdropAssetUrl } from "./ogaBackdropAssets";
 import { resolveOgaCraftpixAssetUrl } from "./ogaCraftpixBackgrounds";
 import { resolveOprnPanoramaAssetUrl } from "./oprnPanoramas";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
+import { isRetiredResourceId } from "@/assets/retiredAssets";
 import { FACESET_FACE_ASSETS } from "@/assets/facesetFaceAssets";
 import { SHARED_PORTRAIT_ASSETS, resolveSharedPortraitUrl } from "@/assets/sharedPortraitAssets";
 import type { GeneratedAssetManifest } from "./generatedAssetManifest";
@@ -308,18 +309,26 @@ export function generatedAssetPromotedPathToUrl(promotedPath: string | null): st
   return `/${runtimePath}`;
 }
 
+/**
+ * An id the project may still reference but whose art is intentionally gone: purged EasyRPG
+ * categories (retiredAssets.ts) or built-in ids kept recognized with no runtime URL.
+ * Only meaningful when `resolveAssetResourceUrl` returned null for it.
+ */
+export function isKnownRetiredResource(resourceId: string): boolean {
+  return isRetiredResourceId(resourceId)
+    || (Object.hasOwn(BUILTIN_GENERATED_RESOURCE_URLS, resourceId) && BUILTIN_GENERATED_RESOURCE_URLS[resourceId] === null);
+}
+
 export function resolveEasyRpgRuntimeAssetUrl(resourceId: string): string | null {
   const entry = EASYRPG_RTP_ASSETS.find(
     (asset) => asset.id === resourceId || ("textureKey" in asset && asset.textureKey === resourceId)
   );
   if (entry !== undefined) return `/${entry.path}`;
-  if (resourceId.startsWith("tex_easyrpg_chipset_")) {
-    const suffix = resourceId.replace("tex_easyrpg_chipset_", "");
-    return `/assets/easyrpg-chipset-${suffix.replace(/_/g, "-")}-transparent.png`;
-  }
-  if (resourceId === "tex_tiles_default") {
-    return "/assets/easyrpg-chipset-exterior.png";
-  }
+  // The EasyRPG chipset sheets (assets/easyrpg-chipset-*.png) were deleted on 2026-10-07. Do not
+  // synthesize their old paths: a request for a missing file made every web export fail.
+  if (isRetiredResourceId(resourceId)) return null;
+  // The default texture key survives as a blank sheet of the same size (bundled.ts ASSET_TILESET).
+  if (resourceId === "tex_tiles_default") return "/assets/blank-chipset.png";
   return null;
 }
 

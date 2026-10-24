@@ -3,7 +3,7 @@ import { BATTLE_SCENERY_CATALOG } from "@/assets/battleSceneryCatalog";
 import { findOpeningStillPackEntry } from "@/assets/openingStillPackRuntime";
 import { openingStillPackUrl } from "@/assets/openingStillPackCdn";
 import { BUNDLED_IMAGE_ASSETS, TEX_DIALOGUE_FRAME, TEX_TILESET } from "@/assets/bundled";
-import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { isKnownRetiredResource, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { sharedPortraitExpressionSiblings } from "@/assets/sharedPortraitAssets";
 import { DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID } from "./cinematicSettings";
 import { battlerIdleAnimation } from "@/assets/battlerIdleAnimations";
@@ -20,6 +20,11 @@ import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import type { ResourceKind } from "@/project/types";
 import { requiredRuntimeAssetPaths } from "@/project/webExportRuntimeAssets";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { PLACEABLE_OVERLAY_TEXTURE_KEYS } from "@/player/placeableOverlayGraphics";
+import { RETRO_PIXEL_FX_KEYS, RETRO_PIXEL_FX_SOUNDS, retroPixelFxResourceId } from "@/assets/retroPixelAnimations";
+import { retroTimelineSoundIds } from "@/battle/retroSkillTimeline";
+import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
+import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { Project } from "@/project/types";
 import type { WebExportAsset } from "@/project/webExportTypes";
 import { webUploadedAssetPath } from './webUploadedAssetPath';
@@ -35,6 +40,28 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   if (Object.values(project.maps).some((map) => map.climate?.mode === "fixed" && map.climate.weather === "snow")) {
     ids.add("scarloxy-backdrop-ice");
   }
+  // Retro (side-view dot) battles swap bundled effects for the pixel-fx sheets and play their sounds from
+  // source tables (retroPixelAnimations, retroSkillTimeline) — none of those ids are in project data.
+  if (getBattleSkin(resolveSkinId(project.system.battleUiStyle)).motionStyle === "retro") {
+    for (const key of RETRO_PIXEL_FX_KEYS) ids.add(retroPixelFxResourceId(key));
+    for (const sound of Object.values(RETRO_PIXEL_FX_SOUNDS)) ids.add(sound);
+    for (const sound of retroTimelineSoundIds()) ids.add(sound);
+  }
+  // Dialogue shows the reviewed face paired with a speaker's walking sprite (dialogue.ts reviewedFaceIdForCharset).
+  for (const actor of project.database.actors) {
+    const face = actor.characterResourceId ? reviewedFaceIdForCharset(actor.characterResourceId, actor.characterIndex ?? 0) : undefined;
+    if (face) ids.add(face);
+  }
+  for (const map of Object.values(project.maps)) for (const event of map.events) for (const page of event.pages ?? []) {
+    const spriteId = page.graphic?.sprite?.id;
+    if (!spriteId) continue;
+    const pattern = typeof page.graphic.pattern === "number" ? page.graphic.pattern : 0;
+    const face = reviewedFaceIdForCharset(spriteId, decodeCharsetFrameIndex(pattern).characterIndex);
+    if (face) ids.add(face);
+  }
+  // The player always loads the placeable overlay textures (rock/gem charset, tree) — see
+  // projectBundledTextureKeys in bundled.ts — so the export must always ship them.
+  for (const key of PLACEABLE_OVERLAY_TEXTURE_KEYS) ids.add(key);
   // 공용 흉상·전신은 대사의 표정에 따라 런타임이 같은 모양의 다른 표정 그림으로 바꾼다 — 참조된 모양의 5표정을 같이 싣는다.
   for (const id of [...ids]) for (const sibling of sharedPortraitExpressionSiblings(id)) ids.add(sibling);
   const usedUploadedIds = collectUsedUploadedAssetIds(project);
@@ -113,6 +140,19 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   return [...assets.values()].sort((left, right) => left.zipPath.localeCompare(right.zipPath));
 }
 
+/**
+ * Resource ids the project still references whose art was deleted (see retiredAssets.ts).
+ * Export skips them; the caller reports them as warnings instead of failing the whole export.
+ */
+export function collectRetiredExportReferences(project: Project): readonly string[] {
+  const authored = new Set<string>();
+  collectStrings({ ...project, audioDescriptions: undefined, monsterMetadata: undefined }, authored);
+  // Only ids the author's data actually references — not the implicit runtime defaults collectProjectStrings adds.
+  return [...authored]
+    .filter((id) => isKnownRetiredResource(id) && !resolveAssetResourceUrl(id, { project }))
+    .sort();
+}
+
 export function collectUsedUploadedAssetIds(project: Project): Set<string> {
   const ids = collectProjectStrings(project);
   const uploaded = new Set<string>();
@@ -160,6 +200,11 @@ const USAGE_WALK_SKIPPED_KEYS: readonly string[] = ["uploaded"];
 // - 이미지: 그대로 센다. webExportFacesetFaces.test.ts 가 "등록만 하고 대사에 안 쓴 얼굴도
 //   함께 나간다" 를 현재 계약으로 못 박아 뒀고, 그 이유("저작 중 고른 얼굴이 빠지는 사고를
 //   막는다")가 타당하다. 전량이 0.37MB 라 이걸 뒤집어 벌 이득도 없다.
+//
+// - 칩셋: 맵이 쓰는 칩셋 그림은 타일셋(tilesets[*].image)으로 이미 잡힌다. 카탈로그 행까지 세면 모든 번들 칩셋
+//   시트(수십 MB)가 모든 게임에 실렸고, 2026-10-07 저작권 정리로 파일이 지워진 합본 마을 칩셋 행
+//   (tex_easyrpg_chipset_combined_town, 모든 새 프로젝트의 기본 카탈로그) 때문에 빈 프로젝트까지
+//   «runtime-asset-unavailable» 로 웹·HTML 내보내기가 실패했다(2026-10-23 실측).
 //
 // 어느 쪽이든 카탈로그 행 자체는 project.json 에 그대로 남으므로 id→파일 해석은 계속 동작한다.
 const USAGE_WALK_CATALOG_KEY = "resourceProfiles";
@@ -217,6 +262,10 @@ export function isAudioCatalogRow(row: unknown): boolean {
   return typeof kind === "string" && getResourceProfileSpec(kind as ResourceKind).media === "audio";
 }
 
+function isChipsetCatalogRow(row: unknown): boolean {
+  return typeof row === "object" && row !== null && (row as { readonly kind?: unknown }).kind === "chipset";
+}
+
 function collectStrings(value: unknown, out: Set<string>): void {
   if (typeof value === "string") {
     out.add(value);
@@ -230,7 +279,7 @@ function collectStrings(value: unknown, out: Set<string>): void {
   for (const [key, child] of Object.entries(value)) {
     if (USAGE_WALK_SKIPPED_KEYS.includes(key)) continue;
     if (key === USAGE_WALK_CATALOG_KEY && Array.isArray(child)) {
-      collectStrings(child.filter((row) => !isAudioCatalogRow(row)), out);
+      collectStrings(child.filter((row) => !isAudioCatalogRow(row) && !isChipsetCatalogRow(row)), out);
       continue;
     }
     collectStrings(child, out);

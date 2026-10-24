@@ -34,6 +34,18 @@ describe("web player export", () => {
     expect(zipPaths).toContain("assets/easyrpg-chipset-exterior.png");
   });
 
+  it("칩셋 카탈로그 행만으로는 칩셋 그림을 싣지 않는다 — 맵이 쓰는 칩셋은 타일셋으로 실린다", () => {
+    const project = prepareWebExport(createBlankProject()).project;
+    const zipPaths = collectWebExportAssets(project).map((asset) => asset.zipPath);
+    // 저작권 정리로 파일이 지워진 합본 마을 칩셋은 모든 새 프로젝트의 기본 카탈로그 행이다(2026-10-23 내보내기 실패 원인).
+    expect(project.resourceProfiles.some((row) => row.assetId === "tex_easyrpg_chipset_combined_town")).toBe(true);
+    expect(zipPaths).not.toContain("assets/easyrpg-chipset-combined-town-transparent.png");
+    for (const tileset of Object.values(project.tilesets)) {
+      if (tileset.image.type !== "bundled") continue;
+      expect(collectWebExportAssets(project).some((asset) => asset.kind === "public" && asset.resourceId === tileset.image.id)).toBe(true);
+    }
+  });
+
   it("내보낸 에셋과 메타데이터 수정은 열린 프로젝트를 바꾸지 않는다", () => {
     const source = projectWithUploadedAssets();
     const asset = source.assets.uploaded.used_picture!;

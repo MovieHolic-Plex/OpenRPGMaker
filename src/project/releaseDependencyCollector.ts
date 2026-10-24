@@ -1,5 +1,5 @@
 import { BUNDLED_IMAGE_ASSETS } from "../assets/bundled";
-import { resolveAssetResourceUrl } from "../assets/generatedAssetResourceResolver";
+import { isKnownRetiredResource, resolveAssetResourceUrl } from "../assets/generatedAssetResourceResolver";
 import { collectResourceIds, validateOptionalResource } from "./io/resourceReferenceValidation";
 import { contractPath, assertUniquePaths } from "./playerDeploymentPaths";
 import { collectWebExportAssets, dataUrlBytes, isAudioCatalogRow } from "./webExportAssets";
@@ -40,6 +40,8 @@ export function collectReleaseDependencies(projectJson: string): readonly Releas
     const uploaded = Object.hasOwn(project.assets.uploaded, id) ? project.assets.uploaded[id] : undefined;
     if (uploaded && uploaded.id !== id) throw new Error("Uploaded resource identity mismatch");
     const url = bundled ? `/${bundled.path}` : resolveAssetResourceUrl(id, { project });
+    // Art deleted on purpose (retiredAssets.ts) has no file to ship: skip it, the export summary reports it.
+    if (!url && isKnownRetiredResource(id)) return;
     if (!url) throw new Error("Unresolved authored resource");
     if (url.startsWith("data:")) { validateEmbeddedMedia(url); return; }
     if (!url.startsWith("/") || url.startsWith("//")) throw new Error("External authored resource");

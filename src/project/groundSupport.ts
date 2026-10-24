@@ -28,7 +28,7 @@ export function supportSurfaceOf(ts: TilesetDef, tile: number): SupportSurface {
 
 const isDungeonKit = (kit: StructureKitDef): boolean => (kit.ai?.themes ?? []).some((t) => t === "dungeon" || t === "던전");
 /** 벽 앞면에 붙는 물건 — 바닥 위에 서면 허공에 걸린 것처럼 보인다. */
-const WALL_MOUNT = /torch-wall|banner|niche|chains|sconce|wall-lamp|vines|hanging-chain|tower-window|lever-(up|down)/;
+const WALL_MOUNT = /torch-wall|banner|niche|chains|sconce|wall-lamp|vines|hanging-chain|tower-window|lever-(up|down)|timber-frame|ore-vein|icicles|ossuary/;
 /** 물·용암 위에 놓여도 되는 물건(배·말뚝·유목·그물). 그 밖은 액체 칸 위에 서면 걸을 수 없는 칸에 물건이 뜬 것이다. */
 const LIQUID_OK = /boat|dock|driftwood|fish-net|bridge|lily|raft/;
 const isLiquidTile = (ts: TilesetDef, tile: number): boolean => tile >= 0 && (ts.tileMeta?.[tile]?.tags ?? []).includes("water");

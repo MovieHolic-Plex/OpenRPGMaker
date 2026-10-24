@@ -51,7 +51,7 @@ export type StepResult =
       items: readonly { readonly itemId: string; readonly count: number }[];
       settings: MessageWindowSettings;
     }
-  | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition }
+  | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition; door?: boolean }
   | { kind: "wait"; ms: number; allowParallelEvents?: boolean }
   | { kind: "eraseEvent"; eventId?: string }
   | { kind: "waitForAllMovement" }

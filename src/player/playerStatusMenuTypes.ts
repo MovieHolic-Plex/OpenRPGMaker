@@ -55,7 +55,6 @@ export type PlayerStatusMenuOptions = {
   readonly session: PlaySession;
   readonly slots: readonly SaveSlotReadResult[];
   readonly message?: string;
-  readonly elapsedMs?: number;
   readonly selectedCommand?: StatusMenuRailId;
   readonly mode?: "main" | "function";
   readonly selectedDetailActionIndex?: number;

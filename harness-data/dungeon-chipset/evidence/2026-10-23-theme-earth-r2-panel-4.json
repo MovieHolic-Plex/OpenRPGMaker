@@ -1,0 +1,416 @@
+{
+ "round": "theme-earth-r2",
+ "panel": 4,
+ "date": "2026-10-23",
+ "boards": [
+  "qa-runs/r2/board-earth.ore_vein-p4.png",
+  "qa-runs/r2/board-earth.overgrown-p4.png"
+ ],
+ "art": {
+  "earth.ore_vein": {
+   "A1": "64368062",
+   "A2": "a3446567"
+  },
+  "earth.overgrown": {
+   "A1": "77e8a22f",
+   "A2": "3cacb983"
+  }
+ },
+ "criteria": "(1) reads in 3/4 top-down at 1x; (2) same game as Beodeul reference (palette, density, 4-6 shading steps, material-tone dark edges, no toy/flat look); (3) seamless joins, no 16px repeat; (4) reads as purpose and theme. Blind: only PNG paths and criteria given.",
+ "count_rule": "a major counts when at least 2 of 4 reviewers raise the same problem as a major",
+ "scope": "earth.ore_vein and earth.overgrown only (earth.rails clean at panel 1, earth.ossuary A1 clean at panel 3)",
+ "tally": {
+  "earth.ore_vein": {
+   "A1": "counted majors: X/propeller sticker shape with light rim floating on the wall (4/4)",
+   "A2": "0 counted majors (thin streaks read as scratches: major opus-a only)"
+  },
+  "earth.overgrown": {
+   "A1": "counted majors: raised block object, not a flat decal; grid mismatch (4/4)",
+   "A2": "0 counted majors (4/4 no majors)"
+  }
+ },
+ "picks": {
+  "earth.ore_vein": {
+   "A2": [
+    "opus-a",
+    "opus-b",
+    "opus-c",
+    "argon"
+   ]
+  },
+  "earth.overgrown": {
+   "A2": [
+    "opus-a",
+    "opus-b",
+    "opus-c",
+    "argon"
+   ]
+  }
+ },
+ "gate": {
+  "earth.ore_vein A1": "FAIL 51750e2e473e",
+  "earth.ore_vein A2": "FAIL 3a0e8050dc03 (density much lower 3/4, 3 steps 3/4) -> redrawn thicker with recessed groove, re-gate",
+  "earth.overgrown A2": "PASS 881593b6bc57"
+ },
+ "answers_source": "verbatim result blocks of the four blind reviewer agents (opus-a a0c0d9ce, opus-b ae2ecd87, opus-c a2f57fac, argon a2d35e21)",
+ "answers": {
+  "opus-a": {
+   "items": [
+    {
+     "item": "earth.ore_vein",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "The ore is drawn as a spiky X or starfish shape with a light grey rim. It looks like a sticker floating on the wall, not mineral set into the rock. There is no dark cavity or seam and no rock-tone shadow line where the ore meets the wall.",
+         "where": "all four pieces, most visible on the 2x2 gold and 2x2 iron pieces in the scene"
+        },
+        {
+         "problem": "The iron arms are pale blue-grey and the gold blobs are bright and flat. Both are much lighter than the dark mossy wall, so they pop out like icons. Compare the Beodeul ore boulder, where gold flecks sit inside dark, shaded rock.",
+         "where": "iron 2x2 and iron 1x1; gold blob highlights"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "The 2x2 pieces have the same symmetric branching outline, so placing two side by side shows an obvious repeat.",
+         "where": "2x2 gold vs 2x2 iron in the scene"
+        },
+        {
+         "problem": "The 1x1 pieces are tiny bow-tie shapes and do not read as ore at 1x.",
+         "where": "gold 1x1, iron 1x1"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [
+        {
+         "problem": "The veins are 1–2 px diagonal streaks with tiny gold or iron specks. At 1x they read as scratches or cracks, not ore, and the gold is barely visible. The material does not read at game scale.",
+         "where": "all four pieces at 1x, both in the scene and in the piece row"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "The streaks are still slightly lighter than the wall and have no dark rock-tone groove around them. They look painted onto the surface rather than embedded in it.",
+         "where": "iron 2x2 and gold 2x2 in the scene"
+        },
+        {
+         "problem": "The gold and iron pieces have nearly the same diagonal silhouette and are told apart only by a few speck colours.",
+         "where": "gold 2x2 vs iron 2x2"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2 at least reads as a seam running through the rock and sits closer to the wall's value range. A1's star-shaped, light-rimmed sticker shapes are a stronger rejection. Neither meets the Beodeul ore boulder quality bar: A2 needs a thicker vein, a dark recess and larger, shaded gold nuggets."
+    },
+    {
+     "item": "earth.overgrown",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "The piece reads as raised stacked blocks, a little cube or altar, not a flat floor decal. It has a dark outline around its silhouette, lighter block tops with front faces, and a protruding silhouette. It looks like an object standing on the floor.",
+         "where": "the whole piece, clearly visible in the scene at 1x and 2x"
+        },
+        {
+         "problem": "The flagstones inside the piece are a different size and bond from the surrounding ruin floor, and the piece has a hard, irregular cutout edge. It looks like a pasted sticker rather than part of the floor.",
+         "where": "decal boundary against the floor in the scene"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "Moss is limited to small sprigs on top, so it reads as a few weeds rather than overgrowth.",
+         "where": "top edge of the piece"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [],
+       "minors": [
+        {
+         "problem": "The moss uses dark, saturated greens with near-black cracks. That is slightly harsher than the Beodeul moss and vine greens and gives a little more contrast than the floor's texture.",
+         "where": "the central moss mass and crack lines"
+        },
+        {
+         "problem": "The 2x2 square footprint is faintly visible where the moss stops abruptly near the tile edges.",
+         "where": "left and bottom edges of the decal in the scene"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2 lies flat on the flagstones, follows the floor's material, and clearly reads as moss and cracks overgrowing a ruin floor. A1 reads as a raised block object and breaks the floor decal's purpose."
+    }
+   ]
+  },
+  "opus-b": {
+   "items": [
+    {
+     "item": "earth.ore_vein",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "The veins read as stickers or cut-out icons pasted onto the wall, not ore set into the rock. Each X-shaped crossing-bar glyph has a light grey-white rim all the way round, so it floats above the dark wall texture like a toy or scatter sticker.",
+         "where": "all four decals, most visible on the iron 2x2 and the gold 2x2 in the scene"
+        },
+        {
+         "problem": "The shape reads as a symbol, a starfish or pinwheel of straight arms with rounded nubs, not a mineral seam that follows the rock. That is far from the reference ore boulder, which has small gold flecks embedded in dark stone.",
+         "where": "gold 2x2 and iron 2x2"
+        },
+        {
+         "problem": "Too few shading steps and too much contrast. The flat saturated gold and blue-grey blocks with hard light rims sit outside the wall's muted green-grey range, so the palette does not fit the Beodeul wall.",
+         "where": "gold nuggets and iron arms"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "The 1x1 pieces are just a fragment of one arm with a nugget and read as debris rather than a small vein.",
+         "where": "gold 1x1, iron 1x1"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [],
+       "minors": [
+        {
+         "problem": "The iron seams are low contrast against the wall and get close to vanishing at 1x. Only the gold flecks carry the ore reading, so iron is weaker as ore.",
+         "where": "iron 2x2 and iron 1x1 at 1x"
+        },
+        {
+         "problem": "The seams run on a long uniform diagonal and look a little like scratches. A slightly more broken, irregular path would read better as a seam.",
+         "where": "both 2x2 decals"
+        },
+        {
+         "problem": "The highlight pixels on the iron are close to white and slightly hotter than the reference's highlights.",
+         "where": "iron seam highlights"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2's seams are embedded in the wall with material-tone edges and gold flecks, in the same style as the reference ore boulder. A1 reads as rimmed X-shaped stickers floating on the wall."
+    },
+    {
+     "item": "earth.overgrown",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "This is not a floor decal. It is a cross or plus-shaped cluster of separate stone blocks with dark outlined edges and a raised look, so it reads as a pile of rubble or a small object sitting on the floor. It does not read as moss and cracks lying flat in the flagstones.",
+         "where": "whole piece, at 1x and in the scene"
+        },
+        {
+         "problem": "The silhouette is sharp-edged and does not blend into the surrounding flagstones. It interrupts the floor's joint grid with its own misaligned block pattern and dark seams, so it shows a hard boundary rather than a seamless join.",
+         "where": "piece perimeter and internal joints vs the floor"
+        },
+        {
+         "problem": "Very little moss or grass for an 'overgrown' piece. The greenery is just sparse sprigs at the edges and the cracks are hard to read, so the piece misses its purpose.",
+         "where": "whole piece"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "The dark brown joint lines are heavier than the floor's own joints and come close to an ink outline.",
+         "where": "block outlines"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [],
+       "minors": [
+        {
+         "problem": "The moss clumps are bright, saturated mid-greens with few steps, a little louder than the reference greenery. At 1x they lean slightly toward a flat green blotch.",
+         "where": "two moss clusters (upper-left and lower)"
+        },
+        {
+         "problem": "The long straight moss tendrils and crack lines run at a uniform diagonal across the joints and look slightly drawn-on. Cracks that followed or broke at the flagstone joints would integrate better.",
+         "where": "diagonal crack/vine strokes"
+        },
+        {
+         "problem": "The edge of the 2x2 footprint is faintly visible where the tendrils stop abruptly.",
+         "where": "right and bottom edges of the decal"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2 lies flat on the flagstones, keeps the floor's joint grid and reads as moss and cracks overgrowing the stones. A1 reads as a raised, outlined rubble object with almost no overgrowth."
+    }
+   ]
+  },
+  "opus-c": {
+   "items": [
+    {
+     "item": "earth.ore_vein",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "Every vein has a near-black ink outline plus a light-grey drop-shadow halo along its lower edge. It reads as a sticker pasted on the wall, not ore set into the rock, and nothing like Beodeul's material-tone edges.",
+         "where": "all four pieces, outer contour; very visible in the 2x scene"
+        },
+        {
+         "problem": "The 2x2 pieces are tidy symmetric X / propeller shapes with a nugget at each arm tip. They read as an icon or ornament, not a natural vein following the rock grain.",
+         "where": "gold 2x2 and iron 2x2 silhouettes"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "The gold and iron versions are the same shape recoloured, so a wall using both shows an obvious repeated pattern.",
+         "where": "gold vs iron 2x2 and 1x1 pairs"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [],
+       "minors": [
+        {
+         "problem": "The iron variant is too close in value and hue to the wall rock. At 1x it barely reads as ore and looks like a faint crack.",
+         "where": "iron 2x2 and iron 1x1"
+        },
+        {
+         "problem": "The gold uses 1-2 px, nearly flat bright-yellow specks with few shading steps, so the ore has no bulk. The 1x1 gold piece reads as a single glint.",
+         "where": "gold nuggets on the gold 2x2 and gold 1x1"
+        },
+        {
+         "problem": "All four pieces run on the same long diagonal at the same angle, so several veins on one wall would look stamped.",
+         "where": "piece silhouettes"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2 blends into the wall face and reads as a vein in the rock. A1's ink-and-halo X shapes look like stickers stuck on top of the wall."
+    },
+    {
+     "item": "earth.overgrown",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "It is not a flat floor decal. It is a stacked, cross-shaped cluster of raised slabs with a grey niche in the middle, and in the scene it reads as a small standing ruin or shrine object.",
+         "where": "whole piece silhouette; obvious in the scene"
+        },
+        {
+         "problem": "The flagstones are boxed in a thick dark-brown ink outline, and grass tufts stick out of the transparent edge. It looks like a sticker and does not merge into the surrounding flagstone floor.",
+         "where": "outer contour and the gaps between slabs"
+        },
+        {
+         "problem": "The slab layout and sizes do not continue the floor's running-bond joints, so it sits as a foreign patch.",
+         "where": "joins with the surrounding floor in the scene"
+        }
+       ],
+       "minors": []
+      },
+      {
+       "id": "A2",
+       "majors": [],
+       "minors": [
+        {
+         "problem": "The cracks are thick 2 px dark-brown strokes, darker and heavier than the floor's mortar joints and the Beodeul crack reference.",
+         "where": "right half, vertical and diagonal cracks"
+        },
+        {
+         "problem": "The moss is a saturated mid-green with dark-green '+' cross lines, a little stylized and more vivid than the Beodeul moss and vine greens.",
+         "where": "central and left moss masses"
+        },
+        {
+         "problem": "The slab joints inside the 2x2 do not quite line up with the floor's brick pattern, and the stone is slightly pinker, so the square's edge is faintly visible.",
+         "where": "outer border of the 32x32 square in the scene"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2 lies flat on the floor and reads clearly as moss and cracks overgrowing the flagstones. A1 reads as a raised object with ink outlines, not a floor decal."
+    }
+   ]
+  },
+  "argon": {
+   "items": [
+    {
+     "item": "earth.ore_vein",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "Reads as a symmetrical 4-lobed propeller or sticker emblem rather than a natural mineral vein embedded in rock; the thick grey rim around capsule-shaped blobs makes it float on top of the wall like a pasted badge.",
+         "where": "all four pieces (gold 2x2, iron 2x2, gold 1x1, iron 1x1)"
+        },
+        {
+         "problem": "Gold and iron variants use the exact same geometry with only a color swap, making repetition immediately obvious when placed on the same wall.",
+         "where": "2x2 pair and 1x1 pair"
+        }
+       ],
+       "minors": []
+      },
+      {
+       "id": "A2",
+       "majors": [],
+       "minors": [
+        {
+         "problem": "The rock fissure border uses a cool slate-blue grey that clashes slightly with the warmer olive-grey cave wall background in the scene.",
+         "where": "outer stone lip along the diagonal crack on all pieces"
+        },
+        {
+         "problem": "Iron ore nuggets have low contrast against the surrounding grey fissure stone at 1x, reading mostly as a plain rock crack except for one or two bright pixels.",
+         "where": "iron 2x2 and iron 1x1"
+        },
+        {
+         "problem": "Gold and iron veins share the exact same silhouette and crack layout with only the nugget colors swapped.",
+         "where": "2x2 pair and 1x1 pair"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2 actually reads as an ore-bearing rock fissure in a cave wall at 1x, whereas A1 looks like a floating 4-blade propeller sticker."
+    },
+    {
+     "item": "earth.overgrown",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "Draws its own cross-shaped cutout of flagstones with heavy dark outer edges and a mismatched brick grid, so when placed on the flagstone floor it reads as a raised stone platform or pasted patch that breaks the floor's mortar grid.",
+         "where": "entire 2x2 piece perimeter and internal stone blocks"
+        }
+       ],
+       "minors": []
+      },
+      {
+       "id": "A2",
+       "majors": [],
+       "minors": [
+        {
+         "problem": "The straight diagonal crack in the upper-right tile is visually distinct enough that placing two decals near each other reveals the repetition.",
+         "where": "top-right quadrant of the 2x2 decal"
+        },
+        {
+         "problem": "A few moss pixels terminate abruptly against the outer 2x2 tile boundary on the left and top edges.",
+         "where": "upper-left and mid-left border of the 2x2 piece"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2 preserves the underlying flagstone mortar grid seamlessly and integrates moss and cracks naturally in the Beodeul palette, while A1 breaks the floor grid with a floating cross-shaped stone cutout."
+    }
+   ]
+  }
+ }
+}

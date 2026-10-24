@@ -1,4 +1,5 @@
 import { actorQueryConditionProblems } from "@/editor/panels/eventEditor/actorQueryConditionForm";
+import { isBuiltinFieldFxId } from "@/project/containerFx";
 import { commandReferenceField, m2ReferenceField, withEventDraftIssueDetails } from "./eventDraftIssueDetails";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import {
@@ -652,6 +653,7 @@ function validateCondition(
     case "relativeFacing":
     case "hiding":
     case "pursuitActive":
+    case "eventSeesPlayer":
     case "clearCount":
     case "endingSeen":
     case "newGamePlus":
@@ -1145,7 +1147,7 @@ function validateCommand(
       }
       return;
     case "showAnimation":
-      require("reference.animation.missing", "전투 애니메이션", command.animationId, refs.animations);
+      if (!isBuiltinFieldFxId(command.animationId)) require("reference.animation.missing", "전투 애니메이션", command.animationId, refs.animations);
       if (typeof command.target === "object") {
         if ("eventId" in command.target) {
           require("reference.event.missing", "애니메이션 대상 이벤트", command.target.eventId, refs.events, true);

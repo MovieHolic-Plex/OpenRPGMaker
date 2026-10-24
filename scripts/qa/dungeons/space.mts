@@ -17,8 +17,11 @@ export function measureSpace(project: Project, map: GameMap): SpaceMeasure {
   const pass = (t: number) => { const p = ts.passability?.[t]; return !!p && Object.values(p).some(Boolean); };
   const ev = new Set(map.events.map((e) => e.y * W + e.x));
   const isVoid = new Uint8Array(N), empty = new Uint8Array(N), walk = new Uint8Array(N);
+  // 빈 칸에 맵 배경(구름 바다·별 등)이 비치면 그 칸은 검은 허공이 아니다 — 플레이어는 배경 그림을 본다.
+  const sky = map.background?.showInEmptyCells === true;
   for (let i = 0; i < N; i += 1) {
     const lo = map.lowerTiles[i]!, up = map.upperTiles?.[i] ?? -1;
+    if (lo < 0 && sky) continue;
     if (lo < 0 || ceil.has(lo)) { isVoid[i] = 2; continue; }
     if (pass(lo) && (up < 0 || pass(up))) { walk[i] = 1; if (up < 0 && !ev.has(i)) empty[i] = 1; }
   }

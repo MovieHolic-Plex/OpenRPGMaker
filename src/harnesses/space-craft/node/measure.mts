@@ -67,6 +67,34 @@ function reachability(project: Project, map: GameMap) {
       if (component.size > seen.size) { seen = component; start = { x, y }; }
     }
   }
+  // 장치로 열리는 길(2026-10-23 dungeon-themes): 닿는 칸에 선 이벤트가 이 맵의 칸을 바꾸면(changeTile — 레버가 다리를 내림)
+  // 그 바뀐 맵에서 다시 잰다. 더 닿는 이벤트가 없을 때까지. 이벤트 자체는 막힘으로 치지 않던 기존 규칙과 같은 눈높이다.
+  if (start) {
+    let cur = map, used = new Set<string>();
+    for (let round = 0; round < 8; round++) {
+      const changes: { x: number; y: number; layer: string; tile: number }[] = [];
+      for (const ev of cur.events) {
+        if (used.has(ev.id) || !seen.has(`${ev.x},${ev.y}`)) continue;
+        const walk = (v: unknown): void => {
+          if (Array.isArray(v)) { v.forEach(walk); return; }
+          if (!v || typeof v !== 'object') return;
+          const r = v as Record<string, unknown>;
+          if (r.kind === 'changeTile' && (r.mapId === undefined || r.mapId === map.id) && typeof r.x === 'number' && typeof r.y === 'number' && typeof r.tile === 'number') changes.push({ x: r.x, y: r.y, layer: String(r.layer ?? 'lower'), tile: r.tile });
+          Object.values(r).forEach(walk);
+        };
+        const before = changes.length;
+        walk(ev.pages);
+        if (changes.length > before) used.add(ev.id);
+      }
+      if (!changes.length) break;
+      const lowerTiles = [...cur.lowerTiles], upperTiles = [...cur.upperTiles];
+      for (const ch of changes) (ch.layer === 'upper' ? upperTiles : lowerTiles)[ch.y * cur.width + ch.x] = ch.tile;
+      cur = { ...cur, lowerTiles, upperTiles };
+      const next = computeReachableCells(project, cur, start.x, start.y);
+      if (next.size <= seen.size) break;
+      seen = next;
+    }
+  }
   const reachable = cells.filter(key => seen.has(key)).length;
   return { passable, reachable, ratio: reachable / passable, entry: start ?? null, entryFound: entries.length > 0 };
 }

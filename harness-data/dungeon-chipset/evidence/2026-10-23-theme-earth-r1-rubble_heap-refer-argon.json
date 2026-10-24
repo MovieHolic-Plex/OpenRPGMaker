@@ -1,0 +1,14 @@
+{
+  "piece": "earth.rubble_heap A1",
+  "pixelSha256": "d88ffdc1264c9b8021de6bba27441761e258dd6830d1e52d86cffe6dd673cdc0",
+  "receipt": "/home/main/z-project/rpg-zzu-dt-earth/harness-data/object-gate/receipts/d8/d88ffdc1264c9b8021de6bba27441761e258dd6830d1e52d86cffe6dd673cdc0.json",
+  "verdict": "fail",
+  "sure": true,
+  "view34": "Each block has a light 3-4px top plane and a taller front face below, but several blocks (upper-center cols 17-18 rows 5-12, right cols 25-26 rows 10-15, lower-left cols 14-15 rows 22-26) also show a 2px-wide shaded right-hand side face.",
+  "style": "Material-tinted dark brown edges (nearBlackEdge 0) and 5-6 tones are present, but all seven blocks repeat an identical cookie-cutter template (bright cream rounded cap, mid-taupe front with one tan dot and one dark dot, dark brown base band) rather than varied Beodeul stonework.",
+  "reasons": [
+    "All seven blocks repeat the same stamped loaf-like motif (bright cream rounded top cap + grey-taupe front with identical two-dot speckle + dark brown base stripe), reading as stacked uniform boxes/loaves rather than fractured collapsed temple masonry.",
+    "High contrast between the bright cream top caps and darker grey-taupe vertical faces makes the tops read like separate caps/frosting rather than planar cuts of the same stone material.",
+    "Several blocks include a 2px-wide dark right-hand side plane (cols 17-18, 25-26, 14-15), introducing slight oblique side faces."
+  ]
+}

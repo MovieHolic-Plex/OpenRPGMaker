@@ -1,0 +1,293 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "814fd326f6e817c04738a5ce3733b9bb4f0ad57587e59e163f4a69ee985029c3",
+ "width": 48,
+ "height": 48,
+ "kind": "flat",
+ "name": "arcane.teleport_circle",
+ "label": "beodeul_dungeon/arcane.teleport_circle",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 8,
+  "darkV5": 56,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "circular teleport plate with rune ring, hexagram and glowing center",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a circle seen from straight above, 48 rows tall and about 48 wide. The width profile widens and narrows symmetrically (4, 14, 20 ... 48 ... 24, 14, 4), so it is a full disc. The inner rune ring, hexagram and bright center are all drawn face-on. There is no front-edge line, no eave shadow and no vertical south face. This is a flat floor decal with no front face, so it reads as a top-down slab. That is the expected form for a flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 7 visible tones per 16x16 tile, the same as the paving reference and above the grass reference (3). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline carries a tint (dark blue-slate beside the stone rim and glow) and is not a black sticker line. The shading reads as a light bevel on the rim, mid stone, a dark inner band, blue rune lines and a bright core glow, about 5 steps. That is slightly fewer than Beodeul's 5-6 but comparable to the paving reference, which also uses only 7 colours. Texture is lighter than the references: the rune ring and the glow gradient supply the variation, and there is little stone grain. A careful artist would accept it next to the paving without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18604
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "magic circle disc, viewed from above as a circular plate with rune rings",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a near-circular disc (width grows from 4 at row 0 to 48 at rows 22-25, then shrinks to 4 at row 47). It is nearly as tall as it is wide, so it is drawn as a plate seen from above rather than foreshortened. It has no front face, no vertical south face, and no side face. The grey rim ring and the rune pattern are all on the same flat plane. This matches the flat kind (magic circle) and has no front face of 3 or more rows, so it is a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a round teleport disc, not a tiling 4x3 ground patch, so it is only loosely the same kind as the grass and paving references. Its measured facts are decent: 7 visible tones per tile (equal to the paving reference), 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted dark blue-slate and not a black sticker line. The picture still looks shallower than the paving. The whole piece has only 10 distinct colours, which gives about 4 ramp steps across the stone rim, the dark disc and the blue glow. The stone rim reads as a smooth bevel with no per-stone shading. The disc interior is mostly a smooth dark field with thin rune lines and little grain or speckle. The paving reference shades each stone separately, with highlights, joints and pitting. The candidate's tone count matches the paving only because the runes add blue values, not because the surface has texture. Since the verdict defaults to fail when in doubt, it fails: the ramps are shallower than Beodeul's 5-6 steps and the surface texture is thinner.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19538
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "magic circle disc (stone rim, dark floor, rune patterns, glowing center)",
+      "rows": "0-47",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a circular disc, 48 rows tall and about 48 px wide at its widest (rows 22-25). The width profile is a full circle: it widens from 4 at row 0 to 48 and narrows back to 4 at row 47. It is seen straight from above, with concentric rune rings and a glowing core. There is no vertical front face, no eave line and no shadow band. Only a faint gray rim shadow shows on the lower right. This is the correct look for a flat floor decal, and the drawing has no front face, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 7 visible tones per tile, the same as the paving reference and above the grass reference's 3. Near-flat coverage is 0%, and none of its dark edge pixels are neutral, so the outline leans blue-slate rather than black. The stone ring shows about 5 lightness steps with highlight and shadow edges. The interior carries rune strokes, a glowing core and a stepped inner halo, so there are no large single-colour areas. The total palette is only 10 colours, which is lean, but the paving reference has just 7 and is accepted at the same visible richness. Next to the references it does not look thinner, flatter or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16583
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "magic circle disc seen from above (rim, runes, central glow)",
+      "rows": "0-47",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a flat circular magic circle (silhouette widths grow from 4 to 48 and shrink back to 4 over rows 0-47). It has a stone ring, rune patterns and a central glow, all drawn as a plate seen from above. It has no vertical front face: rows 42-46 are the narrowing lower arc of the ring plus a slight shadow, not a south wall. This matches the flat kind, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are not the problem. The candidate has 7 visible tones per tile, equal to the paving reference and above the grass reference's 3. It has 0% near-flat coverage and 0% neutral dark edge pixels, so its outline is tinted dark blue-slate rather than a black sticker line. My concerns come from the picture. The whole piece uses only 10 distinct colours, against 80 for the grass reference. The slate disc reads as a smooth, almost vector-like emblem: a gradient-like dark base, a thin glowing ring and rune ticks. There is little per-stone grain, speckle or clustered dots like the paving's one-by-one shaded cobbles. The main material ramp (the slate disc) has about 4 steps, below Beodeul's 5-6. The glowing ring is a single light cyan line on a dark field with little mid-tone shading. It is clean, but a careful artist would likely see it as thinner and more graphic than the references. It is also a circular emblem rather than a ground patch that blends into the surrounding ground. Because I am in doubt, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18333
+  }
+ ],
+ "decidedAt": "2026-10-23T02:37:57.645Z",
+ "cells": {
+  "16": [
+   "6c7caba92b011dae",
+   "8f33b1571b672653",
+   "9f4c136bb47440bb",
+   "a5d25869f1844563",
+   "abae2b050510efbd",
+   "bb2d2e41cc735fe0",
+   "cc9fd4140e662d76",
+   "dd4cfc5e79b18e9f",
+   "fb0e1f61ecd88dd2"
+  ],
+  "24": [
+   "52084416b28d01e9",
+   "a936a4415f3ede48",
+   "b026a1e3ef833315",
+   "c9f5f84f6a535dd9"
+  ],
+  "32": [
+   "0408aa5d893bc8a1",
+   "053d793502db1cc1",
+   "0e45be5caadc2644",
+   "1091a2b17cc85331",
+   "169c1ec07ded17ef",
+   "2a8de6911baa1a0d",
+   "2d16a9dd56b3a44c",
+   "2e7296076ec0dba5",
+   "4c03d7ed1cf40ff6",
+   "518469a82b1f2c33",
+   "600ff5aec7fabb10",
+   "694d5dbc7aed7816",
+   "7ea4cece5e304612",
+   "9622b47c3b6208f7",
+   "982fa4b8e306e5f8",
+   "9d084f7c566c21a7",
+   "a7e7724f99da4ee6",
+   "ab34ce406197bf85",
+   "ae27fc0543592788",
+   "b2c9a3ecf41b9071",
+   "e148417b069d347f",
+   "e54a643de1e4d0c8",
+   "eb41cd8e0f1fe312",
+   "f37054b0d2d041ad"
+  ],
+  "48": [
+   "c6fef22c9a3cce62"
+  ]
+ }
+}

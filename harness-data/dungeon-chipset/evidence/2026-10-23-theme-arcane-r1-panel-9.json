@@ -1,0 +1,578 @@
+{
+ "panel": "theme-arcane-r1-panel-9",
+ "rule": "major counts if raised by >=2 of 4 blind reviewers (3 opus general-purpose + 1 argon)",
+ "mapping": {
+  "other.ground": {
+   "X": {
+    "key": "A2",
+    "sha256": "a9878b9f03f00c98a99b2b5bd355758c8113069f7358ec5338f51bbadb80cfbf"
+   },
+   "Y": {
+    "key": "A1",
+    "sha256": "2cb1a31933a35a6631240d22c4a4fe392d6a622c79010f8c30a92bbfdf20e407"
+   }
+  },
+  "other.void_edge": {
+   "X": {
+    "key": "A2",
+    "sha256": "cbc35ebcf435a6126ee93be7601baa0a5826eacac3de2d87567c2f02b09c9f85"
+   },
+   "Y": {
+    "key": "A1",
+    "sha256": "d3013066f57c7c5a46c5d564e7dce81dbcea4063c9afeedfe2cca8affa324e0d"
+   }
+  },
+  "other.crystal": {
+   "X": {
+    "key": "A1",
+    "sha256": "906bea1243981a2a37d89a368d84cf07690d7225a1f5856dd57a4671c6690824"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "f409ef2d2c15be6ba707d7fe5444e223713c6cb5f62864bb0edbec0488d07e19"
+   }
+  },
+  "other.crystal_big": {
+   "X": {
+    "key": "A2",
+    "sha256": "546d6a8bc6b4da9b51cf114899cd7895c0aa6a4355500daf06708facb7f8c489"
+   },
+   "Y": {
+    "key": "A1",
+    "sha256": "2358e115f22dfac64737716a357d07c4f3f32fb3aca769c1027aca32c8360f7e"
+   }
+  }
+ },
+ "prompt": "You are a blind pixel-art reviewer. Do not read any code or other files; look ONLY at the PNG boards listed below (open each with the Read tool; they are large, look carefully, zoom by reading them, do not skip any).\n\nContext: 16px-cell hand-pixel chipset for a JRPG dungeon, 3/4 top-down view (you see the top surface of things and their front face; NO side faces / no isometric). Two themes: MAGIC TOWER (wizard tower interior) and OTHERWORLD (demon realm, violet-black). Each board shows: the item description (yellow line at top), a Beodeul reference image from the existing chipset that sets the quality bar (shown 1x and 3x) with an Actor1 person for scale, then two anonymous candidates X and Y: piece at 1x and 3x, the piece placed in a scene (animation frames shown side by side), and sometimes extra sheets (autotile 6x6 mosaics, irregular test maps).\n\nCriteria, judge each candidate against them:\n1. Reads instantly as the described object at 1x game scale.\n2. 3/4 top-down view: top surface + front face visible, no side faces, no isometric skew, perspective consistent with the Beodeul reference and the Actor1 person.\n3. Style matches the Beodeul reference: material shading instead of black ink outlines, similar contrast, detail density and pixel cleanliness (no noise, no orphan pixels, no banding).\n4. Scale vs. the person is plausible; the object sits on the floor (contact shadow/base) rather than floating.\n5. Animation frames (if any): change is visible, smooth, loops, no jitter of the static parts.\n6. Autotiles: no visible seams or repeating grid, edges/corners join correctly in the mosaic and irregular map; floating-island underside hangs only below south edges.\n7. Fits its theme (magic tower / demon realm) and is distinct from generic.\n\nA MAJOR is a problem that would make you reject the piece for shipping (misreads, wrong view, broken seams, clashing style, ugly artefact clearly visible at 1x). A MINOR is a polish note.\n\nBoards (directory /home/main/z-project/rpg-zzu-dt-arcane/qa-runs/dungeon-themes/panel/r9/):\nother.ground.png other.void_edge.png other.crystal.png other.crystal_big.png\n\nWrite your answer as JSON to /home/main/z-project/rpg-zzu-dt-arcane/qa-runs/dungeon-themes/panel/r9/answer-1.json (use the Write tool) and also return the same JSON as your final message. Format:\n{\"items\":{\"<item id e.g. arcane.lectern>\":{\"X\":{\"majors\":[{\"problem\":\"...\",\"where\":\"...\"}],\"minors\":[{\"problem\":\"...\",\"where\":\"...\"}]},\"Y\":{...},\"pick\":\"X\"|\"Y\",\"why\":\"one line\"}}}\nCover all 4 items. Be specific and honest; do not invent problems, do not be polite. Do not edit anything else.\n",
+ "answers": {
+  "answer-1.json": {
+   "items": {
+    "other.ground": {
+     "X": {
+      "majors": [
+       {
+        "problem": "Does not read as cracked stone: surface is a uniform field of scattered 1-2px pinkish dashes with no slab shapes, crack lines or material shading, so at 1x it reads as noise/static carpet rather than stone",
+        "where": "piece 3x, scene, large mosaic"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Glow veins are identical stamped copies; two same-shape veins stacked vertically at the bottom and three near-identical ones top-left make the repeat obvious",
+        "where": "extra mosaic, bottom-centre and top-left"
+       },
+       {
+        "problem": "Veins are bright orange with yellow core: more lava than 'faint', and they are the only warm accent so they pop hard against the violet base",
+        "where": "extra mosaic veins"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Same noise problem as X but worse: high-contrast bright blue-violet speckles on violet base read as glitter/static carpet, not cracked stone; busier than the Beodeul reference's calm material shading",
+        "where": "piece 3x, scene 2x, large mosaic"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Glow veins are so faint (lavender on violet) they are nearly invisible at 1x, and they are the same stamped copies repeated",
+        "where": "extra mosaic top-left and bottom"
+       },
+       {
+        "problem": "Overall too saturated/bright for 'violet-black'; character contrast against floor drops",
+        "where": "scene"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both read as noise rather than cracked stone, but X is darker and calmer, closer to violet-black, and its veins are actually visible."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "N/W/E lip is very low contrast (dark mauve on dark floor); the island border against the void is weak at 1x",
+        "where": "scene 1x, island north and side edges"
+       },
+       {
+        "problem": "Underside rock is so dark it nearly merges with the void, losing the floating-island depth read",
+        "where": "scene 2x below south edges"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Bright violet south lip and underside highlights are a cooler hue than the reddish floor top, so the edge looks like a separate trim rather than the same rock",
+        "where": "south lips in scene 2x"
+       },
+       {
+        "problem": "Void starfield is a bit busy with bright pixels; competes slightly with the island",
+        "where": "scene background"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Both join correctly with underside only below south edges, but Y's violet rim and lit underside make the floating edge read clearly at 1x and fit the demon realm."
+    },
+    "other.crystal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Spikes are fairly thin and the dark base rock is small; at 1x the piece is slight and a little generic 'amethyst' rather than visibly corrupted",
+        "where": "piece 1x, scene"
+       },
+       {
+        "problem": "Violet crystal is close in hue to the violet void rim, lowering separation in the otherworld palette",
+        "where": "scene 2x"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Reads as a flame/campfire rather than a crystal: tapering wavy orange-red-yellow spikes look like fire tongues at 1x",
+        "where": "piece 1x/3x and scene"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Warm orange clashes with the violet-black demon realm palette",
+        "where": "scene"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X reads as a crystal with faceted planes and fits the violet realm; Y reads as fire."
+    },
+    "other.crystal_big": {
+     "X": {
+      "majors": [
+       {
+        "problem": "Reads as a bonfire/burning brazier rather than a crystal cluster: fanned flame-shaped orange spikes on a flat dish",
+        "where": "piece 3x and scene 2x"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Oval flat base looks like a tray/plate set on the floor",
+        "where": "base"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Outer spikes splay outward in a symmetric fan, slightly crown-like rather than a natural cluster",
+        "where": "piece 3x"
+       },
+       {
+        "problem": "Oval flat base reads a bit like a plate rather than rock rooted in the floor",
+        "where": "base"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y reads as a crystal cluster and matches the violet single crystal X; X reads as fire."
+    }
+   }
+  },
+  "answer-2.json": {
+   "items": {
+    "other.ground": {
+     "X": {
+      "majors": [
+       {
+        "problem": "Texture is a uniform scatter of short mauve diagonal dashes on near-black: it reads as grain/static noise, not cracked stone. There are no slab shapes, no crack lines with depth and no light/shadow material shading like the Beodeul stone. At 1x the whole floor turns into a busy shimmering field",
+        "where": "piece 1x/3x and scene floor"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "The glow veins are rare red/orange zigzags that sit on top of the noise like stray decals, not lines running along cracks. The same vein shape repeats twice stacked vertically, which gives the repeat away",
+        "where": "extra 256px view, bottom middle (two identical veins) and top left"
+       },
+       {
+        "problem": "Pink-on-violet hue gives a muddy brown cast rather than the violet-black asked for",
+        "where": "scene"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Same problem as X: a random speckle of bright violet pixels on flat purple, with no crack structure and no stone forms. It is noisier and higher in contrast than X and reads as sparkly carpet or starfield noise at 1x",
+        "where": "piece 1x/3x and scene floor"
+       },
+       {
+        "problem": "The faint glow veins are practically invisible. They are low-contrast violet strokes lost in the speckle, so the 'glow veins' part of the brief is missing",
+        "where": "extra 256px view, top left and bottom middle"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Overall value is fairly light and saturated purple rather than violet-black, so it clashes with the darker void/edge pieces",
+        "where": "scene vs other boards"
+       },
+       {
+        "problem": "Mosaic cells show darker 1px frames on some variants, faintly visible as grid lines in the mosaic",
+        "where": "mosaic, row 2-4 cells"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both are noise rather than cracked stone. X is darker and calmer, closer to violet-black, and its veins are at least visible."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [
+       {
+        "problem": "The N/W/E lip is a thin mauve line almost the same value as the floor, so at 1x the island top just ends with no readable rim. Only the south lip reads",
+        "where": "scene 1x, north and west edges of the big island; mosaic edge cells"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "The underside rock is very dark and low contrast and dissolves into the void after 1-2 rows. It does hang correctly only below south edges",
+        "where": "scene, below south lips"
+       },
+       {
+        "problem": "The floor fill is the same dash-noise ground, busy at 1x",
+        "where": "island top"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "The underside reads more like stacked violet brick courses than rough hanging rock. It is a bit regular and wall-like",
+        "where": "scene, below the long south lip and on the small island"
+       },
+       {
+        "problem": "The bright violet lip is saturated and slightly neon next to the muted floor. It edges toward a UI outline rather than a rock rim",
+        "where": "lip along N/W/E"
+       },
+       {
+        "problem": "Floor fill is the same dash-noise ground texture",
+        "where": "island top"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "The violet lip clearly marks the N/W/E edges and the south underside, corners join cleanly, and the underside hangs only below south edges. X's rim is nearly invisible."
+    },
+    "other.crystal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Plain amethyst cluster with nothing that says 'corrupted' (no dark veins, cracks or inner glow). It is fairly generic",
+        "where": "piece 3x"
+       },
+       {
+        "problem": "The violet crystal sits close to the violet void lip in hue. It still separates from the brown floor",
+        "where": "scene"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "The tall thin red/orange spikes with yellow tips read as flames or a campfire at 1x, not as a crystal. The faceting is lost in the flicker-like jagged silhouette",
+        "where": "piece 1x and scene"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Many hard yellow single pixels along the edges look like orphan highlights",
+        "where": "piece 3x, right side spikes"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "It reads instantly as a crystal on a grounded rock base, its facet shading matches the reference and its violet fits the demon realm. Y reads as fire."
+    },
+    "other.crystal_big": {
+     "X": {
+      "majors": [
+       {
+        "problem": "The fan of thin red/orange/yellow spikes over a dark base reads as a bonfire or flame burst at 1x, not as a crystal cluster",
+        "where": "piece 1x and scene"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "The footprint is very wide and flat for a 2x2: spikes splay sideways like a crown, and the edge pixels are ragged with stray yellow dots",
+        "where": "piece 3x, left and right ends"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Generic amethyst with no corruption cue (dark inclusions, cracks, glow)",
+        "where": "piece 3x"
+       },
+       {
+        "problem": "The outer side shards are thin and spiky, and the leftmost shard leans out and looks slightly detached from the base",
+        "where": "piece 3x, far left shard"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "It reads as a crystal cluster with clear facets and a grounded base, and it is consistent with the 1x2 violet crystal. X reads as flames."
+    }
+   }
+  },
+  "answer-3.json": {
+   "items": {
+    "other.ground": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Reads more as uniform dash/speckle noise (carpet-like) than 'cracked stone': no slab or crack structure, only short diagonal dashes at even density",
+        "where": "piece 3x and the 2x scene floor"
+       },
+       {
+        "problem": "Glow veins are sparse and the same zigzag stamp repeats (two identical vein shapes stacked near the bottom of the large mosaic)",
+        "where": "extra view large mosaic, bottom centre"
+       },
+       {
+        "problem": "Texture is busier than the Beodeul stone; the evenly spread pink dashes sit close to noise at 1x",
+        "where": "1x scene"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Bright blue-violet single pixels scattered evenly read as glitter/noise, not cracked stone; contrast with the dark base is higher than the Beodeul bar and the floor competes with the actor",
+        "where": "piece 3x, 2x scene floor, large mosaic"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Glow veins are nearly invisible (faint lilac), so the 'faint glow veins' requirement barely shows; the same zigzag stamp repeats",
+        "where": "extra view large mosaic"
+       },
+       {
+        "problem": "Cool blue-purple reads more as night-sky carpet than violet-black demon stone",
+        "where": "scene"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both are noisy, but X's muted red-violet with ember veins is calmer, reads closer to stone and suits the demon realm; Y's glitter speckle is the noisier of the two"
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [
+       {
+        "problem": "North/west/east lip is almost indistinguishable from the ground (muted pink-brown, low contrast), so the island's edge against the void is hard to read at 1x except on the south faces",
+        "where": "1x scene, island N and W edges"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Underside reads as regular brick masonry rather than hanging rock",
+        "where": "south underside under the main island and small islands"
+       },
+       {
+        "problem": "Void background is near-flat with faint speckle, so the 'floating over void' feel is weak",
+        "where": "scene background"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "The violet lip on N/W/E is a thin, bright, nearly uniform 1px line, closer to an ink outline than to material shading",
+        "where": "island N/W/E edges in 2x scene"
+       },
+       {
+        "problem": "Underside is still somewhat brick-like and repeats evenly",
+        "where": "main south underside"
+       },
+       {
+        "problem": "Short 1-tile ledge steps give only a stub of underside, which looks a bit truncated",
+        "where": "right-side steps of the main island"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "The violet lip and starfield void make the floating-island edge readable on every side; the underside hangs only below south edges and corners join cleanly"
+    },
+    "other.crystal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Reads as a clean but generic amethyst; nothing signals 'corrupted' (no dark veins, no inner glow or tainted core)",
+        "where": "piece 3x"
+       },
+       {
+        "problem": "Facet outline edges are fairly dark/inky compared with Beodeul's material shading",
+        "where": "crystal silhouette at 3x"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Orange/red tapering spikes read as a flame or campfire, not a crystal, at 1x; the palette is lifted from the Beodeul ore reference and clashes with the violet-black otherworld",
+        "where": "1x piece and both scenes"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Thin tall shape with flickery edges reinforces the fire reading",
+        "where": "piece 3x"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X reads instantly as a crystal and matches the realm palette; Y reads as fire"
+    },
+    "other.crystal_big": {
+     "X": {
+      "majors": [
+       {
+        "problem": "A wide fan of orange/yellow spikes reads as a bonfire or fire patch, not a crystal cluster, and clashes with the violet theme",
+        "where": "1x piece and 2x scene"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Base slab is a flat brown oval that looks like a plate under flames",
+        "where": "piece 3x base"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Spikes are thin and evenly fanned; the cluster is a bit sparse for a 2x2 and lacks any 'corruption' cue",
+        "where": "piece 3x"
+       },
+       {
+        "problem": "Base is a flat brownish oval slab that reads slightly like a dish rather than rock embedded in the ground",
+        "where": "base at 3x and in scene"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y reads as a violet crystal cluster that fits the realm; X reads as fire"
+    }
+   }
+  },
+  "answer-4.json": {
+   "items": {
+    "other.ground": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Diagonal crack lines have a slight top-right to bottom-left directional bias across uniform fills, and the warm glow veins only appear in the extra mosaic variants rather than the base scene fill.",
+        "where": "in a scene (1x/2x) and extra view mosaic"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Reads as bright indigo-blue rather than violet-black, and the higher-contrast periwinkle crack highlights make the 16px tile repeat more noticeable across open floors.",
+        "where": "piece 3x and in a scene (1x/2x)"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Darker violet-black stone value and restrained warm fissures match the demon-realm ground description better and keep visual noise low under sprites."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "The north, west, and east rim highlight is close in value to the cracked ground interior, making the non-south edges slightly soft against the void at 1x.",
+        "where": "in a scene (1x) along N/W/E island borders"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "The south cliff lip and rock underside shift to a cool electric-indigo hue while the ground and N/W/E rims remain warm plum, creating a noticeable color split at south corners.",
+        "where": "piece 3x, autotile variants sheet, and south edges in scene"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Maintains a unified warm plum-violet stone palette across the ground surface, N/W/E rims, and hanging south cliff underside."
+    },
+    "other.crystal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Spire facets rely on straight vertical 1px stripes and a symmetrical oval rock base rather than angled polyhedral planes.",
+        "where": "piece 3x crystal spires and base mound"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Identical geometry to X but uses the Beodeul reference's fiery orange-gold palette, reading more like a magma/fire crystal than a corrupted otherworld crystal.",
+        "where": "piece 1x/3x and in a scene"
+       },
+       {
+        "problem": "Spire facets rely on straight vertical 1px stripes and a symmetrical oval rock base rather than angled polyhedral planes.",
+        "where": "piece 3x crystal spires and base mound"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Amethyst-violet palette with bright lilac highlights fits the corrupted otherworld theme while still reading clearly against the dark floor at 1x."
+    },
+    "other.crystal_big": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Uses a fiery orange-gold palette that reads as a magma/fire cluster rather than a corrupted otherworld crystal.",
+        "where": "piece 1x/3x and in a scene"
+       },
+       {
+        "problem": "Shards are arranged as a flat front-facing fan of vertical needles on a narrow strip base, giving limited 3/4 depth.",
+        "where": "piece 3x cluster silhouette and base"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Shards are arranged as a flat front-facing fan of vertical needles on a narrow strip base, giving limited 3/4 depth.",
+        "where": "piece 3x cluster silhouette and base"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Matches the corrupted violet-amethyst palette of other.crystal X and reads cleanly at 1x with strong lavender-white facet contrast."
+    }
+   }
+  }
+ }
+}

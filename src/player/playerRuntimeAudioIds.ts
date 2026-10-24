@@ -44,4 +44,18 @@ export const PLAYER_RUNTIME_AUDIO_RESOURCE_IDS: readonly string[] = Object.freez
   "easyrpg-sound-blow2",
   // playerStatusMenuMutations — 아이템 사용
   "easyrpg-sound-item1",
+  // battleRetroMotion — 도트 측면 전투 동작음(2026-10-23 내보낸 게임 404 로 발견)
+  "easyrpg-sound-buff",
+  "easyrpg-sound-darkness3",
+  "easyrpg-sound-earth2",
+  "easyrpg-sound-fire1",
+  "easyrpg-sound-flash1",
+  "easyrpg-sound-flash3",
+  "easyrpg-sound-holy2",
+  "easyrpg-sound-ice1",
+  "easyrpg-sound-magic2",
+  "easyrpg-sound-move",
+  "easyrpg-sound-shot1",
+  "easyrpg-sound-teleport2",
+  "easyrpg-sound-wind8",
 ]);

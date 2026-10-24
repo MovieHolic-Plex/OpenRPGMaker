@@ -1,0 +1,340 @@
+{
+ "panel": "theme-climate-r2 blind panel 3 (3 fresh Opus + 1 Argon), 2026-10-23",
+ "rule": "a major counts only if at least 2 of the 4 judges raise the same problem; pick = candidate with 0 counted majors, majority vote among those",
+ "delegatedBy": "delegated by user to supervisor 2026-10-23",
+ "note": "Votes: floor A1 3/4 (0 counted majors; grid raised by opus2 only), floor A2 has 1 counted major. pyr_drift: both 0 counted majors, votes 4/4 for A2, but A2 (pixel sha256 of r2 panel-1 A1 art) holds an object-gate FAIL receipt 02d20e9a5f1d (style: shading 3 steps < 4, low tile information) — a FAIL is never overridden, so A2 is not eligible; A1 is the only zero-major candidate with a PASS receipt (2d0ebcaaba33) and is the pick. floor A1 (panel-3 art d1db7148) then got an object-gate FAIL (89fcc6409006, style judge 3/4: little grain inside slabs, 6% near-flat) and was redrawn with in-slab grain (no change to joints or bevel) -> fresh panel 4.",
+ "prompt": "# Blind review panel — dungeon chipset pieces\n\nYou are one independent judge. Do not edit or create any files; only open the PNG boards below with the Read tool\n(they are large; read each one fully). No other context is needed.\n\nEach board is one item for an OPRN 16px RPG chipset in 3/4 top-down view (RPG Maker style: tops are visible planes, fronts below them,\nno side faces, light from top-left). At the top of the board are REFERENCE crops from the existing \"Beodeul\" chipset (the quality\nbar) at 1x and 3x and an RPG Maker person for scale. Below are anonymous candidates labelled X and Y for the same item: the piece at 1x and\n3x, its parts, a small scene at 1x and 2x (animated items show all frames side by side), and extras (tile mosaics / test maps) for\nfloors, walls and autotiles.\n\nJudge each candidate against these criteria:\n1. reads correctly in 3/4 top-down at 1x (top planes visible, fronts below, no side/isometric faces, sits on the floor with contact);\n2. sits in the same game as the Beodeul reference (palette harmony, texture density, number of shading steps, no toy/flat/clip-art look,\n   no black ink outlines);\n3. seamless joins: floors/walls/autotiles show no visible 16px repeat or seams; multi-cell objects join without cuts;\n4. reads as its stated purpose and as its theme (the board title says what it is).\n\nA MAJOR problem = something that would make you refuse to ship it (misreads at 1x, wrong view, clearly below the reference's quality,\nvisible seams/grid, does not read as the item). A MINOR problem = worth polishing but shippable.\n\nReply with ONLY a JSON object, no prose before or after:\n{\"<board file name without .png>\": {\"X\": {\"majors\": [{\"problem\": \"...\", \"where\": \"...\"}], \"minors\": [{\"problem\": \"...\", \"where\": \"...\"}]},\n                                    \"Y\": {\"majors\": [...], \"minors\": [...]},\n                                    \"pick\": \"X\" or \"Y\", \"why\": \"one sentence\"}, ...}\n\nBoards:\n- /home/main/z-project/rpg-zzu-dt-fix/qa-runs/tcr2/panel-3/theme-climate-r2__tc.pyr_floor.png\n- /home/main/z-project/rpg-zzu-dt-fix/qa-runs/tcr2/panel-3/theme-climate-r2__tc.pyr_drift.png\n",
+ "boards": {
+  "theme-climate-r2__tc.pyr_floor": {
+   "item": "tc.pyr_floor",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "48d3124640dfbf30655f8d9edc731abe5467376d0a88ac246b9c66e2fa172657"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "d1db714800df4582e26b5e532235c2aacb20c851051780c01b16333723dcae71"
+    }
+   },
+   "votes": {
+    "opus1": "A1",
+    "opus2": "A2",
+    "opus3": "A1",
+    "argon": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": [
+     "reads as cracked dry mud, not cut flagstones (argon, opus3)"
+    ]
+   },
+   "pick": "A1"
+  },
+  "theme-climate-r2__tc.pyr_drift": {
+   "item": "tc.pyr_drift",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "acfd24d743a0d10b7e08cba6ff41c7ff43814eb59ca2b92e6c1dfa75beb8f6ef"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "5a7c02a5e937895a59960fb469d203e32af5bc4ade6d6771e4f3787508715668"
+    }
+   },
+   "votes": {
+    "opus1": "A2",
+    "opus2": "A2",
+    "opus3": "A2",
+    "argon": "A2"
+   },
+   "counted": {
+    "A1": [],
+    "A2": []
+   },
+   "pick": "A1"
+  }
+ },
+ "raw": {
+  "opus1": {
+   "theme-climate-r2__tc.pyr_floor": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Irregular cracked-plate pattern looks like dried mud or crazed clay, not cut sandstone flagstones; it is weaker on the 'flagstone' theme than the reference's coursed blocks",
+       "where": "X piece 3x / mix 6x6"
+      },
+      {
+       "problem": "Dense speckle noise makes the texture busier than the Beodeul ground-plaza",
+       "where": "X mix 6x6 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Bright highlight rims on every crack make the floor busy and give it a slight crazy-paving or giraffe look at 1x",
+       "where": "Y test map 1x"
+      },
+      {
+       "problem": "The stones are irregular polygons, not squared flagstones, so they read only weakly as cut stone",
+       "where": "Y piece 3x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's lit stone edges give the plates readable top planes and a cleaner, more stone-like read that sits closer to the reference's shading, while X reads more like cracked mud."
+   },
+   "theme-climate-r2__tc.pyr_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The scattered loose grains around the flat mound look like a detached halo of pixels, not sand settling on the floor",
+       "where": "X part 2 4x"
+      },
+      {
+       "problem": "The drifts are close in value to the sandstone floor, so they are hard to pick out at 1x",
+       "where": "X scene 1x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The cone has a hard vertical light/dark split and a pointed tip, so it reads more like a pyramid or rock than a soft drift",
+       "where": "Y part 1 4x"
+      },
+      {
+       "problem": "The edges are ragged and blocky, and the flat drift looks fuzzy and noisy",
+       "where": "Y part 2 4x"
+      },
+      {
+       "problem": "Low contrast against the floor at 1x",
+       "where": "Y scene 1x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's mounds have softer, rounder sand shading with a gentler top-left light and read more naturally as drifted sand, while Y's cones look like faceted stone pyramids."
+   }
+  },
+  "opus2": {
+   "theme-climate-r2__tc.pyr_floor": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The cracks are dark and uneven, so at 1x the floor reads more like dried, cracked mud than cut flagstones",
+       "where": "X piece 1x / X mix 6x6"
+      },
+      {
+       "problem": "There is little difference between light and shadow on the stones, so the floor looks slightly flat next to the reference's bevelled bricks",
+       "where": "X mix 6x6 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "There are long straight joint lines running both across and down, so the 16px/32px grid shows clearly when tiled",
+       "where": "Y mix 6x6 3x and Y test map"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The highlight lines are bright and dense, so the floor feels busier than the reference sandstone",
+       "where": "Y piece 3x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X tiles into an irregular, seamless stone pattern without a visible grid, while Y's straight joint lines expose the cell repeat."
+   },
+   "theme-climate-r2__tc.pyr_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The cone-shaped pile reads a bit like a small mound or anthill rather than drifted sand",
+       "where": "X part 1"
+      },
+      {
+       "problem": "There is little contrast against the sandstone floor, so the drift almost disappears at 1x",
+       "where": "X scene 1x / on floor 4x3"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The tall, symmetric cone looks like a pyramid or toy pile, and the stray pixels around it are noisy",
+       "where": "Y part 1 / part 2"
+      },
+      {
+       "problem": "There is weak contrast against the floor at 1x",
+       "where": "Y scene 1x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's softer, flatter drift with a shaded edge sits on the floor more naturally and looks more like sand than Y's sharp cone."
+   }
+  },
+  "opus3": {
+   "theme-climate-r2__tc.pyr_floor": {
+    "X": {
+     "majors": [
+      {
+       "problem": "reads as cracked dry mud/earth, not cut sandstone flagstones; irregular crazed polygons with no squared slab geometry",
+       "where": "X piece 3x and X mix 6x6"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "low contrast and only about two shading steps, so it flattens to a noisy orange field at 1x next to the wall bricks",
+       "where": "X scene 1x / test map"
+      },
+      {
+       "problem": "heavy speckle noise is denser than the Beodeul ground-plaza texture",
+       "where": "X mix 6x6"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "slabs are still irregular, wavy polygons rather than squared flagstones, so it reads a little like crazy paving",
+       "where": "Y mix 6x6"
+      },
+      {
+       "problem": "the bright joint highlights repeat strongly from cell to cell, so a faint 16px grid rhythm shows in the large mix",
+       "where": "Y mix 6x6 3x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's lit-edge slabs read as laid stone that matches the Beodeul plaza palette, while X reads as cracked mud."
+   },
+   "theme-climate-r2__tc.pyr_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the cone variant is quite regular and pointed, so it reads a bit like a toy pile rather than wind-blown drift",
+       "where": "X part 1 4x"
+      },
+      {
+       "problem": "the drifts are close to the floor's own colour and nearly vanish at 1x",
+       "where": "X scene 1x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the cone is even more triangular and symmetric, with a tall pointed tip that looks unnatural for a drift",
+       "where": "Y part 1 4x"
+      },
+      {
+       "problem": "the flat variant has a ragged, noisy edge with stray pixels that look like debris rather than sand",
+       "where": "Y part 2 4x"
+      },
+      {
+       "problem": "low contrast against the floor at 1x",
+       "where": "Y scene 1x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's softer mound and the oval drift with its scattered grains read more naturally as blown sand and sit more softly on the floor than Y's sharp cone."
+   }
+  },
+  "argon": {
+   "theme-climate-r2__tc.pyr_floor": {
+    "X": {
+     "majors": [
+      {
+       "problem": "Reads as cracked dry mud or crazed earth rather than cut sandstone flagstones; the irregular thin dark crack lines have no slab bevels or highlight edges like the reference floors",
+       "where": "X piece 3x, X mix 6x6"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "Heavy uniform speckle noise makes the texture busier than the Beodeul plaza/castle floors; small slabs read as fine crazing at 1x",
+       "where": "X scene 1x, X test map"
+      },
+      {
+       "problem": "Slightly darker orange hue than the reference sand plaza",
+       "where": "X scene 2x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Slabs are irregular crazy-paving rather than squared cut flagstones; reads more as natural stone pavement than pyramid masonry",
+       "where": "Y mix 6x6"
+      },
+      {
+       "problem": "Some joint lines near the cell borders run roughly straight and line up, giving a faint 16px rhythm in the random mix",
+       "where": "Y mix 6x6 3x, vertical joints"
+      },
+      {
+       "problem": "Low contrast between floor and rim at 1x",
+       "where": "Y test map 1x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's beveled, highlighted slab edges read as stone flagstones in the reference's shading style, while X reads as cracked mud."
+   },
+   "theme-climate-r2__tc.pyr_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The conical pile variant reads as a small sand cone or anthill rather than a wind drift; it is very tall for a floor-scatter overlay",
+       "where": "X part 1 4x"
+      },
+      {
+       "problem": "Drift colour is nearly the same as the sandstone floor, so it loses separation at 1x",
+       "where": "X scene 1x"
+      },
+      {
+       "problem": "Loose scatter dots around the low mound look slightly noisy and spray-like",
+       "where": "X part 2 4x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Lumpy pixel-staircase silhouette with jagged stepped edges on both variants; less refined than the Beodeul rock and sand",
+       "where": "Y part 1 4x, Y part 2 4x"
+      },
+      {
+       "problem": "Same low separation from the floor at 1x",
+       "where": "Y scene 1x"
+      },
+      {
+       "problem": "Flatter shading with fewer smooth light-to-shadow steps than X",
+       "where": "Y piece 3x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X has smoother silhouettes and cleaner top-left shading with a soft contact fringe, so it sits closer to the reference quality than Y's jagged mounds."
+   }
+  }
+ }
+}

@@ -107,7 +107,7 @@ function crashShot(): OpeningAnimatic {
     particles("smoke", "dust", "#8090a8", { x: pod.x - 40, y: pod.y - 90, width: 110, height: 90 }, 18, 12, { opacity: 0.4, blend: undefined }),
     caption([
       { atMs: 300, text: "동쪽 숲 깊은 곳. 나무가 쓰러지고 흙이 검게 탔다." },
-      { atMs: 3600, text: "그 한가운데, 유리창 달린 은빛 관이 빛나고 있었다." },
+      { atMs: 3600, text: "그 한가운데, 유리창 달린 은빛 알이 빛나고 있었다." },
     ]),
   ], {
     keys: {

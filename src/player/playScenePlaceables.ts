@@ -10,8 +10,8 @@ import { mapTileSize } from "@/project/tileGeometry";
  * 그래픽이 없는 종류는 **그리지 않는다.** 상자(`kind: "chest"`)는 이미 이벤트로 저작하는
  * 관행이라, 여기서 회색 사각형을 얹으면 기존 프로젝트에 유령 상자가 겹쳐 보인다.
  *
- * 나무(`kind: "tree"`)는 기본 합본 마을 칩셋의 `TILE.TREE`(290) — 실측 한 칸 작은 나무 그림 —
- * 을 쓴다. 바위/보석 캐릭셋 마커로 대체하지 않는다.
+ * 나무(`kind: "tree"`)는 버들항 따뜻한 나무 한 그루(`tex_placeable_tree`) — 옛 합본 마을 칩셋 290 은
+ * 2026-10-07 저작권 정리로 지워졌다. 바위/보석 캐릭셋 마커로 대체하지 않는다.
  */
 import { characterDepth, characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import { resolveEventSpriteTexture, resolveSpatialGraphicTexture } from "@/player/eventSpriteResources";

@@ -4,6 +4,15 @@
 export type RuntimeQaDir = "up" | "down" | "left" | "right";
 
 export type RuntimeQaOp =
+  /**
+   * 한 걸음 = 방향을 밀고 **타일이 바뀔 때까지** 기다린다. 플레이 세션(scripts/qa/play/qp.mjs move)과
+   * 재현이 같은 실행기를 쓰도록 런타임 op 로 둔다.
+   */
+  | { readonly kind: "move"; readonly dir: RuntimeQaDir; readonly steps?: number; readonly stepTimeoutMs?: number }
+  /** 캔버스 좌표 클릭(포인터 이동·터치 표면). */
+  | { readonly kind: "clickCanvas"; readonly x: number; readonly y: number }
+  /** 화면 글자(innerText)에 이 문자열이 나올 때까지 기다린다 — testid 를 모르는 화면용. */
+  | { readonly kind: "waitForBodyText"; readonly text: string; readonly timeoutMs?: number }
   | { readonly kind: "cinematic"; readonly action: "key"; readonly key: string; readonly selector: string; readonly absent?: boolean }
   | { readonly kind: "cinematic"; readonly action: "input"; readonly beforeMap?: boolean }
   | { readonly kind: "cinematic"; readonly action: "reduced-motion" | "video-error" | "video-end" | "detach" | "reject-autoplay" | "geometry" }
@@ -46,6 +55,16 @@ export type RuntimeQaOp =
       readonly mapId: string;
       readonly x: number;
       readonly y: number;
+      readonly timeoutMs?: number;
+    }
+  /**
+   * 맵 전환만 기다린다. `not: true` 면 그 맵이 **아닐** 때까지 — 도착 좌표가 기대와 달라도
+   * (그게 버그인 경우에도) "전환은 일어났다"를 조건으로 표현할 수 있다.
+   */
+  | {
+      readonly kind: "waitForMap";
+      readonly mapId: string;
+      readonly not?: boolean;
       readonly timeoutMs?: number;
     }
   | {
@@ -134,6 +153,15 @@ export type RuntimeQaExpect = {
   readonly testidPresent?: readonly string[];
   readonly testidAbsent?: readonly string[];
   /**
+   * 콘솔·페이지 오류 중 하나가 이 패턴과 맞아야 한다(증상 재현). `"/정규식/플래그"` 면 정규식,
+   * 아니면 부분 문자열. 관측은 페이지 안 버퍼(window.__oprnConsoleErrors)와 러너의 오류 목록을 합친다.
+   */
+  readonly consoleErrorMatches?: string | readonly string[];
+  /** 화면 글자(innerText)에 이 패턴이 있어야 한다. 정규식 표기는 consoleErrorMatches 와 같다. */
+  readonly textPresent?: string | readonly string[];
+  /** 화면 글자에 이 패턴이 없어야 한다. */
+  readonly textAbsent?: string | readonly string[];
+  /**
    * testid → 그 노드에 **화면에 보이는 상태로** 들어 있어야 하는 부분 문자열.
    * {@link RuntimeQaExpect.testidPresent} 는 DOM 존재만 본다 — 클래식 전투 스킨은 적 HP 목록
    * 패널을 display:none 으로 숨기므로, 그 축으로 HP 감소를 단정하면 화면에 없는 숫자를 증거로
@@ -143,6 +171,13 @@ export type RuntimeQaExpect = {
    * 노드(상태 배지 등)는 textContent 가 반드시 비어 있다.
    */
   readonly visibleText?: Readonly<Record<string, string>>;
+  /**
+   * 페이지 안에서 직접 평가하는 불변식. `fn` 은 인자 없는 함수 **소스**이고, `true` 면 통과,
+   * 문자열이면 그 문자열이 실패 사유가 된다. 고정 축(testid 존재·글자 포함)으로 표현할 수 없는
+   * "정확히 하나"·"보이는 것만 센다" 같은 판정에 쓴다(실측: 전투 대상 목록의 커서가 두 개).
+   * 한 비트라도 이름을 댄 단언은 모든 비트에서 같은 방식으로 평가된다(비트 사이 관측 차이 금지).
+   */
+  readonly pageAssertions?: readonly RuntimeQaPageAssertion[];
   readonly playerSpriteResourceNonEmpty?: boolean;
   /** 정수리 이모트 개수 하한(__oprnEmotes 훅). */
   readonly emoteCountAtLeast?: number;
@@ -272,12 +307,29 @@ export type RuntimeQaBeat = {
 
 export type RuntimeQaViewport = { readonly width: number; readonly height: number };
 
+/** 페이지 안 단언 하나 — `fn` 은 인자 없는 함수 소스. true = 통과, 문자열 = 실패 사유. */
+export type RuntimeQaPageAssertion = {
+  readonly id: string;
+  readonly fn: string;
+  readonly note?: string;
+};
+
 export type RuntimeQaScenario = {
   readonly id: string;
   readonly beats: readonly RuntimeQaBeat[];
   readonly seed?: number;
   readonly viewport?: RuntimeQaViewport;
   readonly projectFixture?: string;
+  /**
+   * 생성기 게임(`scripts/qa/play/games.json` 의 `kind: "generator"`)을 실행 시점에 만든다.
+   * 커밋된 시나리오가 tmp 산출물을 가리키면 다른 기계에서 안 돌기 때문에, 큰 생성기 게임은
+   * 픽스처를 커밋하는 대신 이 축을 쓴다(scripts/lib/qaProjectGenerator.mjs).
+   */
+  readonly projectGenerator?: { readonly game: string };
+  /** 체크포인트 세트 이름 — `--checkpoint-set` 없이 실행해도 이 세트를 쓴다. */
+  readonly checkpointSet?: string;
+  /** 체크포인트 id → 비트. 체크포인트 실행기는 `beats` 대신 이것을 먼저 본다. */
+  readonly checkpointBeats?: Readonly<Record<string, readonly RuntimeQaBeat[]>> | ((checkpoint: unknown) => readonly RuntimeQaBeat[]);
   /** QA 사본에만 얹는 시스템 설정(예: menuUiStyle 고정). 픽스처 파일은 바꾸지 않는다. */
   readonly systemPatch?: Readonly<Record<string, unknown>>;
   /** player.html 에 붙일 쿼리(예: e2eVitals=1 로 액터 바이탈 훅 개방). */

@@ -1,6 +1,6 @@
 {
   "name": "oprn",
-  "version": "0.325.0",
+  "version": "0.329.0",
   "description": "웹 기반 탑뷰 타일 JRPG 메이커 (MVP)",
   "private": true,
   "license": "SEE LICENSE IN LICENSE.md",
@@ -49,7 +49,7 @@
     "release": "node scripts/release.mjs",
     "release:auto": "node scripts/release-auto.mjs",
     "start": "node scripts/start-preview.mjs",
-    "build": "tsc --noEmit -p tsconfig.app.json && vite build --configLoader runner && npm run build:player && npm run build:standalone:bundle && npm run archive:runtime",
+    "build": "tsc --noEmit -p tsconfig.app.json && vite build --configLoader runner && npm run build:player && npm run bake:demos && npm run build:standalone:bundle && npm run archive:runtime",
     "archive:runtime": "vite-node scripts/archive-runtime.mts",
     "build:app": "vite build --configLoader runner",
     "build:fast": "vite build --configLoader runner",
@@ -59,7 +59,9 @@
     "package:dir": "npm run build:packaged && npm run build:electron && electron-builder --config electron-builder.config.mjs --dir",
     "electron:smoke": "npm run build:fast && npm run build:electron && playwright test -c playwright.electron.config.ts",
     "qa:package": "node scripts/qa/verifyPackagedApp.mjs",
-    "build:player": "vite build --config vite.player.config.ts --configLoader runner && node scripts/build-player-sdk.mjs",
+    "build:player": "npm run check:runtime-assets && vite build --config vite.player.config.ts --configLoader runner && node scripts/build-player-sdk.mjs",
+    "check:runtime-assets": "vite-node --script scripts/check-runtime-assets.mts",
+    "bake:demos": "node scripts/content/bake-flagship-demos.mjs",
     "preview": "vite preview --configLoader runner",
     "typecheck": "tsc --noEmit",
     "typecheck:app": "tsc --noEmit -p tsconfig.app.json",
@@ -109,7 +111,8 @@
     "object-gate:sync": "node scripts/object-gate-sync.mjs",
     "store": "vite-node --script scripts/store/agentStore.mts --",
     "store:publish-buildings": "vite-node --script scripts/store/publish-buildings.mts --",
-    "store:publish-bundle": "vite-node --script scripts/store/publish-bundle.mts --"
+    "store:publish-bundle": "vite-node --script scripts/store/publish-bundle.mts --",
+    "store:publish-game": "node scripts/store/publish-game.mjs"
   },
   "dependencies": {
     "@oh-my-pi/pi-agent-core": "^18.8.4",

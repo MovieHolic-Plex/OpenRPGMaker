@@ -1,0 +1,14 @@
+{
+  "piece": "earth.overgrown A2 (assembled floor sample)",
+  "pixelSha256": "f94f6d384a01f3f656494c5178ecaae78f6794193c8a623e4ae6ed27cba48a71",
+  "receipt": "/home/main/z-project/rpg-zzu-dt-earth/harness-data/object-gate/receipts/f9/f94f6d384a01f3f656494c5178ecaae78f6794193c8a623e4ae6ed27cba48a71.json",
+  "verdict": "fail",
+  "sure": true,
+  "view34": "pass — flat ground overlay on top-down ruin slabs with no standing volume or side-face violation, though the vertical comb-teeth grass blades and three hanging vertical bars read as flat-pasted side-view symbols",
+  "style": "fail — the brown soil patch is a closed dark-ringed oval sticker sitting arbitrarily over slab faces instead of emerging from mortar cracks, with mechanical 1px-spaced comb spikes on top, three rigid parallel vertical bars below, hollow loop leaves, and obvious identical 4x stamp repetition",
+  "reasons": [
+    "Closed dark-bordered brown oval reads as a pasted sticker/pod on top of the stone face rather than soil and roots breaking through slab cracks",
+    "Grass tufts are drawn as mechanical 1px-alternating vertical comb teeth above the oval and three rigid parallel vertical bars below it, lacking Beodeul organic cluster shapes",
+    "Hollow green loop leaf and identical 2x2 motif stamped four times across the sample look diagrammatic and repetitive"
+  ]
+}

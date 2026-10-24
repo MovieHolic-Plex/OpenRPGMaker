@@ -159,7 +159,7 @@ export default {
     { id: "iris-wakes", note: "이리스 깨어남", ops: [{ kind: "pressUntilText", key: "Enter", testid: "dialogue-box", text: "하늘을 건너는 배", maxPresses: 30 }], shot: true },
     { id: "iris-key", note: "열쇠", ops: [{ kind: "pressUntilText", key: "Enter", testid: "dialogue-box", text: "별빛 열쇠", maxPresses: 30 }], shot: true },
     { id: "iris-joined", note: "합류", ops: [...closeDialogue(), dumpState("iris")], shot: true },
-    { id: "back-to-hub", note: "숲 → 광장", ops: [...stepInto("fs_forest", 15, 38, "down")], shot: true },
+    { id: "back-to-hub", note: "숲 어귀 → 광장", ops: [...stepInto("fs_forest_edge", 15, 38, "down")], shot: true },
     { id: "plaza-after", note: "광장 — 발렌 일행이 떠났는가", ops: [{ kind: "teleport", mapId: "fs_hub", x: 36, y: 27 }, { kind: "hold", dir: null, ms: 1200 }], shot: true },
     { id: "back-to-obs", note: "천문대", ops: [...stepInto("fs_hub", 24, 21, "up")], shot: false },
     { id: "hanel-hint", note: "하넬 — 다음 갈 곳", ops: [...approachFromEast("fs_observatory", 24, 21), ...talk("up")], shot: true },

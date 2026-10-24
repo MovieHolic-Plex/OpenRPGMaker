@@ -33,6 +33,25 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
 - `troopId` 를 생략하고 `graphic` 만 주면 그 칸을 그리는 전투 시트를 선두로 둔 적 그룹을 고른다.
 - 대응 칸이 없는 종(박쥐·늑대·거미 등)은 **거절**한다(`field-enemy-no-field-graphic`) — 다른 그림으로 대체하지 않는다. 필드에 놓을 종을 늘리려면 charset 에 같은 종 칸이 생긴 뒤 표에 한 줄을 더한다.
 
+## 걷기 칩이 없는 종: 전투 그림에서 필드 칩을 뽑는다 (2026-10-24)
+
+위 표에 걷기 칩이 없는 종(늑대·거미·도깨비불·멧돼지 … 생성 도트 몬스터 대부분, 사용자가 올린 `monster` 그림)은 이벤트 그림이
+전투 그림 그대로(`{sprite:{type:'bundled', id:'generated-enemy-…'}}`)다. 예전 런타임은 이것을 2칸 상자에 줄인 **정지 그림**으로 세웠다
+(방향·걸음·그림자 없음 — 사용자 「정말 별로」). 지금 플레이어는 그 텍스처에서 **필드 걷기 칩을 런타임에 뽑는다**
+(`src/player/fieldFoeSprite.ts`, `eventSpriteResources.withDerivedFieldFoe`, 호출 `playSceneMapRuntime` 이벤트 갱신):
+
+- 크기: 정확한 정수배 축소(64px → 32px, 약 2칸). 블록 최빈색, 동률이면 밝은 색. 프레임 폭은 24px 칩 제한이 없다 — 텍스처 프레임을
+  칩 번호(`charsetFrameIndex`, 0번 캐릭터)로 등록하므로 기존 걷기·제자리걸음·방향 코드가 그대로 돈다(`isCharsetLikeTextureKey`).
+  배율은 24px 칩과 같게 잡는다(`EventSpriteTexture.derived`).
+- 방향: 오른쪽 = 원본(전투 그림은 오른쪽을 본다), 왼쪽 = 좌우 반전. 위 = 오른쪽 그림, 아래 = 왼쪽 그림(측면 그림뿐).
+- 걸음: 열 0 = 1px 눌림, 열 1 = 기본, 열 2 = 1px 들림. 걸을 때 칩 걷기 주기를 그대로 탄다.
+- 읽힘: 어두운 1px 외곽선(그림의 가장 어두운 색) + 바깥 1px 밝은 반투명 테 + 두 단 바닥 그림자.
+- 덮어쓰기: 이벤트가 걷기 칩(charset)을 지정하면 이 경로를 타지 않는다 — 손으로 찍은 필드 칩이 언제나 이긴다.
+- 화소를 못 읽으면(오염된 캔버스 등) 예전 정지 그림으로 떨어진다. 편집기 맵 표시(`editSceneEventMarkers`)는 아직 정지 그림이다.
+- 3/4 관문: 새로 그린 그림이 아니라 전투 도트에서 런타임에 파생한 그림이고, 몬스터 전투 도트·캐릭터 칩은 object-gate 대상이 아니다
+  (`openwiki/harnesses/object-gate.md` 「대상」). 굽는 파일도 없다.
+- 비교·결정 기록: `~/claude-viz/field-foes-1.html`(A 파생 / B 손 도트 / C 심볼 / D 오라 — 사용자가 A 선택), 비교 도구 `scripts/content/field-foes/`.
+
 ## 이벤트 모양 (한 마리 = 이벤트 하나, 페이지 셋)
 
 1. `_fight` — 접촉(eventTouch). 움직임은 behavior 에 따라 fixed / 닫힌 경로 custom / chase.
@@ -46,6 +65,18 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
    (그 맵에 있을 때만 흐른다 — 맵을 떠나 있는 시간은 세지 않는다).
 
 처치 상태는 스위치라서 저장·맵 재진입에서도 유지된다. 스위치 id 를 안 주면 도구가 새로 만든다(`clearSwitchId` 로 한 스위치에 여럿을 묶을 수 있다).
+
+## 이미 놓인 적을 「보면 달려드는」 적으로 — `makeFieldEnemyChase` (2026-10-24)
+
+`src/editor/tools/fieldEnemyTools.ts` 의 `makeFieldEnemyChase(project, map, event, options)` 는 이미 놓인 필드 적(순찰·보초)의 `_fight` 페이지를
+추격으로 바꾸는 다시 쓰는 묶음이다(도구 인자 아님 — 데모·생성기 코드용). 순찰 경로(custom route)는 걸음마다 두 박자 쉬는 시야 밖 걸음으로 살리고,
+추격은 `pace`(기본 fast: speed 5·frequency 6)로 순찰보다 눈에 띄게 빠르다(그래도 주인공 걷기보다는 느리다).
+
+- 시야 `sight.facing:'cone'` — `NpcSight` 의 새 값. 이벤트 시선 조건 `eventSeesPlayer` 와 같은 90° 앞쪽 부채꼴(`conditionEventSight.inViewCone`)을
+  `npcPerception.npcSeesPoint` 가 쓴다(거리는 맨해튼, 벽 가림 lineOfSight 그대로). 등 뒤로는 못 본다. 편집기 「정면 부채꼴」.
+- 들면 `sightAlert`(기본 exclamation, 0.7초) → 쫓다 닿으면 전투 → 놓치면 `pursuit.searchMs`(기본 2500) 두리번 뒤 `onLost:'return'` 으로 제자리 → 순찰.
+- 입구(`entryCells`)가 시야+1 안이면 시야를 줄이고, 2칸 밑이면 바꾸지 않는다(들어서자마자 덮치지 않게, `field-enemy-ambush` 와 같은 규칙).
+- 폴른 스타는 모든 맵의 `…_foeN` 에 건다(chronoBell.ts — 숲 여섯 맵 포함). 보스·수호자는 제자리.
 
 ## 안전 장치 (도구가 거절하는 것)
 

@@ -3,12 +3,16 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 describe("touch controls over runtime modal surfaces", () => {
-  it("hides the touch pad while the player status menu is open", async () => {
-    const css = await readFile(resolve("src/styles/runtime/touchpad.css"), "utf8");
-
-    expect(css).toMatch(
-      /\.play-stage:has\(\[data-testid=["']main-menu["']\]\)\s*>\s*\.touch-pad\s*\{[^}]*visibility:\s*hidden/s,
-    );
+  it("keeps the touch pad visible while the player status menu, dialogue, shop or battle is open", async () => {
+    // 2026-10-24 폰 신고: 대사·메뉴에서 패드가 사라져 아이폰 사용자가 기록 창에 갇혔다. 터치 배치는 무대를 줄여
+    // 조작 자리를 먼저 떼므로(playSurface calculateTouchLayout) 숨길 이유가 없다 — 숨기는 규칙이 돌아오면 안 된다.
+    const touchCss = await readFile(resolve("src/styles/runtime/touchpad.css"), "utf8");
+    const mobileCss = await readFile(resolve("src/styles/runtime/mobileUi.css"), "utf8");
+    for (const css of [touchCss, mobileCss]) {
+      expect(css).not.toMatch(/main-menu["']\]\)[^{]*\.touch-pad[^{]*\{[^}]*visibility:\s*hidden/s);
+      expect(css).not.toMatch(/battle-scene["']\]\)[^{]*\.touch-pad[^{]*\{[^}]*visibility:\s*hidden/s);
+      expect(css).not.toMatch(/dialogue-overlay:not\(:empty\)\)[^{]*\.touch-pad[^{]*\{[^}]*visibility:\s*hidden/s);
+    }
   });
 
   it("keeps status-menu copy legible and all four life-ledger labels visible", async () => {

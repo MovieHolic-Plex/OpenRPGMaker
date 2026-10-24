@@ -1,0 +1,526 @@
+{
+ "round": "gap-lava-r2",
+ "panel": 5,
+ "at": "2026-10-23",
+ "item": "gap.lava_edge",
+ "labels": {
+  "D": "C1",
+  "F": "C2",
+  "G": "B1",
+  "J": "B2"
+ },
+ "hashes": {
+  "C1": "b0e043ea",
+  "C2": "19d198a4",
+  "B1": "fedcc3f6",
+  "B2": "410b9ee9"
+ },
+ "boards": "qa-runs/lava/p5/",
+ "prompt": "qa-runs/lava/panel-prompt-5.txt",
+ "raw": {
+  "opusA": {
+   "candidates": {
+    "D": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "Dark maroon crust blobs sit on a regular diagonal lattice; at 1x the body mosaic and the large west pool show an obvious periodic scale/quilt pattern instead of random crust",
+       "where": "6x6 body mosaic and 1x copy; west pool body"
+      },
+      {
+       "id": "crust-looks-like-scales",
+       "problem": "Crust patches are near-identical rounded dark lumps with bright rims, reading as fish scales / cobbles rather than cooling lava skin",
+       "where": "whole lava body"
+      }
+     ],
+     "minors": [
+      {
+       "id": "too-dark-vs-ref",
+       "problem": "Much darker and redder than the Beodeul reference (which has no near-black crust); value range is wider than the reference",
+       "where": "body vs reference panel"
+      },
+      {
+       "id": "flat-south-bank",
+       "problem": "South bank uses the same thin dark outline as the other sides; little extra darkness to sell the sunken surface, and no shadow band under the north lip inside the pool",
+       "where": "pool rims, esp. south edge of west lobe and stream"
+      },
+      {
+       "id": "isolated-cell-tiny",
+       "problem": "Isolated cell collapses to a small cup shape with very little lava visible",
+       "where": "single cell right of stream"
+      }
+     ]
+    },
+    "F": {
+     "majors": [],
+     "minors": [
+      {
+       "id": "uniform-hatch",
+       "problem": "Dark crack strokes all run in the same diagonal direction at similar length, giving a woven/bark hatch feel at 1x",
+       "where": "whole body, visible in 1x copy"
+      },
+      {
+       "id": "flat-south-bank",
+       "problem": "South rim is the same dark line as north; north lit lip is present but the pool lacks an inner shadow under it, so depth reads weakly",
+       "where": "pool rims"
+      },
+      {
+       "id": "low-crust-contrast",
+       "problem": "Few cooler crust areas; reads as bright molten field but slightly busy/noisy compared to the reference's broader shapes",
+       "where": "body"
+      }
+     ]
+    },
+    "G": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "Same body as D: regular diagonal lattice of dark crust lumps clearly repeats at 1x",
+       "where": "6x6 body mosaic, 1x copy, west pool"
+      },
+      {
+       "id": "crust-looks-like-scales",
+       "problem": "Crust lumps read as scales/cobbles rather than lava skin",
+       "where": "whole lava body"
+      }
+     ],
+     "minors": [
+      {
+       "id": "too-dark-vs-ref",
+       "problem": "Darker and more contrasty than the reference lava",
+       "where": "body vs reference"
+      },
+      {
+       "id": "bank-thorns",
+       "problem": "Small dark specks/spikes poke out of the brown bank outline at concave corners, looking like stray pixels",
+       "where": "inner corners of the brown rim, e.g. stream junction and west lobe"
+      },
+      {
+       "id": "flat-south-bank",
+       "problem": "South bank not noticeably darker than other sides; weak sunken read",
+       "where": "pool rims"
+      }
+     ]
+    },
+    "J": {
+     "majors": [],
+     "minors": [
+      {
+       "id": "uniform-hatch",
+       "problem": "Same-direction diagonal crack strokes give a hatched/bark pattern at 1x",
+       "where": "whole body"
+      },
+      {
+       "id": "bank-thorns",
+       "problem": "Stray dark specks on the brown rim at concave corners",
+       "where": "inner corners of rim"
+      },
+      {
+       "id": "flat-south-bank",
+       "problem": "South rim not darker than north/side rims; depth relies only on the north lit lip",
+       "where": "pool rims"
+      }
+     ]
+    }
+   },
+   "pick": {
+    "blue_black_cave": "F",
+    "brown_cave": "J"
+   },
+   "why": "D and G share a body whose dark crust lumps form a visible diagonal lattice that reads as scales and repeats at 1x, and they are far darker than the reference; F and J stay closer to the reference palette, hide the tile grid better and their 4 frames shift the crack/glow pattern so the surface churns rather than blinks, with only polish issues (uniform crack direction, weak south-bank depth)."
+  },
+  "opusB": {
+   "candidates": {
+    "D": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "Dark crust ovals sit on a strict staggered brick lattice; at 1x the pool reads as a regular diagonal dotted grid instead of random crust",
+       "where": "6x6 body mosaic and the large west lobe of the pool, also the 1x body copy"
+      },
+      {
+       "id": "crust-looks-like-holes",
+       "problem": "Crust is near-black maroon with hard outlines, much darker than anything in the reference lava; reads as dark rocks/holes punched in the surface rather than cooling skin, giving a busy leopard-spot look",
+       "where": "every body cell; most obvious in the 1x body copy next to the reference"
+      }
+     ],
+     "minors": [
+      {
+       "id": "bank-uniform-outline",
+       "problem": "Blue-black rim is almost the same thickness and value on all four sides; the north lit lip is only a thin lighter line and the south bank is not clearly darker, so the pool reads slightly like an outlined sticker",
+       "where": "pool rim, especially south and inner-corner edges"
+      },
+      {
+       "id": "anim-reshuffle",
+       "problem": "Frames reposition crust blobs rather than drifting them; reads as boiling churn but borders on a reshuffled pattern",
+       "where": "frames3x-D frame 2->3"
+      },
+      {
+       "id": "isolated-cell",
+       "problem": "1-cell pool is mostly rim with a tiny lava wedge",
+       "where": "isolated cell right of the stream"
+      }
+     ]
+    },
+    "F": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "Dark diagonal crack dashes recur in evenly spaced rows, giving a woven/scale pattern with a visible period at 1x",
+       "where": "6x6 body mosaic rows; the 1x body copy shows clear horizontal banding of dashes"
+      }
+     ],
+     "minors": [
+      {
+       "id": "dash-cracks-stiff",
+       "problem": "Cracks are uniform straight dashes all at the same angle; reads more like scratches than crust seams",
+       "where": "all body cells"
+      },
+      {
+       "id": "bank-uniform-outline",
+       "problem": "Same blue-black rim as D: north lit lip weak, south bank not clearly darker",
+       "where": "pool rim"
+      },
+      {
+       "id": "anim-shimmer",
+       "problem": "Frames move highlights and dashes but without a consistent flow direction; reads as shimmer more than flow",
+       "where": "frames3x-F"
+      }
+     ]
+    },
+    "G": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "Same body as D: dark crust ovals on a strict staggered lattice, visible diagonal grid at 1x",
+       "where": "6x6 body mosaic and the west lobe of the pool"
+      },
+      {
+       "id": "crust-looks-like-holes",
+       "problem": "Near-black crust blobs too dark vs reference lava; spotty holes rather than molten skin",
+       "where": "all body cells"
+      }
+     ],
+     "minors": [
+      {
+       "id": "anim-reshuffle",
+       "problem": "Crust blobs reshuffle between frames rather than drift",
+       "where": "frames3x-G"
+      },
+      {
+       "id": "isolated-cell",
+       "problem": "1-cell pool mostly rim",
+       "where": "isolated cell"
+      }
+     ]
+    },
+    "J": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "Same body as F: evenly spaced rows of diagonal crack dashes form a visible period/banding at 1x",
+       "where": "6x6 body mosaic, 1x body copy"
+      }
+     ],
+     "minors": [
+      {
+       "id": "dash-cracks-stiff",
+       "problem": "Uniform same-angle dashes read as scratches",
+       "where": "all body cells"
+      },
+      {
+       "id": "anim-shimmer",
+       "problem": "No consistent flow direction across frames; shimmer rather than flow",
+       "where": "frames3x-J"
+      },
+      {
+       "id": "isolated-cell",
+       "problem": "1-cell pool small, mostly rim",
+       "where": "isolated cell"
+      }
+     ]
+    }
+   },
+   "pick": {
+    "blue_black_cave": "F",
+    "brown_cave": "J"
+   },
+   "why": "F/J match the reference lava's brightness and density far better and their repeat is milder than D/G's near-black crust lattice, which reads as spotted holes on a visible diagonal grid; J also gets the best bank (lit tan north lip, darker south). Both F/J still need the crack dashes broken up to remove the row banding before final acceptance."
+  },
+  "opusC": {
+   "candidates": {
+    "D": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "Dark crust blobs sit on a rigid diagonal lattice; the same blob shape and spacing recurs every 2 cells, so the pool reads as wallpaper rather than a liquid surface.",
+       "where": "6x6 body mosaic and the 1x body copy; also the wide upper-left pool area of the test map"
+      },
+      {
+       "id": "crust-looks-like-rocks",
+       "problem": "Large near-black maroon blobs with lit rims read as cobblestones or a crusted rock floor, not molten lava; the dark share is far higher than the reference lava.",
+       "where": "the whole pool body, most obvious in the left lobe and the right basin"
+      }
+     ],
+     "minors": [
+      {
+       "id": "palette-darker-than-ref",
+       "problem": "Overall value is much darker and redder than the Beodeul reference (which is yellow-orange dominant), so the two would clash if placed in the same game.",
+       "where": "body mosaic next to the reference"
+      },
+      {
+       "id": "south-bank-weak",
+       "problem": "The south edge is just a dark outline about as thick as the north one; the north lit lip versus darker south bank depth cue is faint at 1x.",
+       "where": "bottom edges of the pool, the stream tip, and the isolated cell"
+      },
+      {
+       "id": "anim-shift",
+       "problem": "Frames mostly translate the same blob lattice, so the motion reads as a sliding texture more than churning.",
+       "where": "frames3x-D, frames 2 to 4"
+      }
+     ]
+    },
+    "F": {
+     "majors": [],
+     "minors": [
+      {
+       "id": "streak-rhythm",
+       "problem": "The short dark crack dashes fall in a regular diagonal row rhythm; you can feel a 2-cell beat in the mosaic at 1x, though there are no hard seams.",
+       "where": "6x6 body mosaic and 1x body copy"
+      },
+      {
+       "id": "cracks-like-scratches",
+       "problem": "The thin dark dashes read slightly as scratches or wood grain rather than cooling crust plates.",
+       "where": "the pool body, especially the upper-left lobe"
+      },
+      {
+       "id": "south-bank-weak",
+       "problem": "The north lip is lit but the south bank adds little darker depth, so the sunken read relies only on the outline.",
+       "where": "south edges and the stream"
+      },
+      {
+       "id": "anim-subtle",
+       "problem": "The frame-to-frame change is a mild texture shift; acceptable as churning but low energy.",
+       "where": "frames3x-F"
+      }
+     ]
+    },
+    "G": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "Same lava body as D: the dark crust blobs tile on an obvious diagonal 2-cell lattice that is visible at 1x.",
+       "where": "6x6 body mosaic, 1x body copy, and the large pool lobes"
+      },
+      {
+       "id": "crust-looks-like-rocks",
+       "problem": "Heavy black-maroon blobs read as stones or a cooled rock bed and dominate the surface; this does not match the brighter reference lava.",
+       "where": "whole pool body"
+      }
+     ],
+     "minors": [
+      {
+       "id": "bank-thin-brown",
+       "problem": "The brown bank lip harmonises with the floor, but the south side is barely darker than the north, which weakens the sunken read.",
+       "where": "south edges and isolated cell"
+      },
+      {
+       "id": "anim-shift",
+       "problem": "The animation slides the blob lattice rather than churning it.",
+       "where": "frames3x-G"
+      }
+     ]
+    },
+    "J": {
+     "majors": [],
+     "minors": [
+      {
+       "id": "streak-rhythm",
+       "problem": "Regular diagonal rows of crack dashes give a faint 2-cell rhythm in large fills.",
+       "where": "6x6 body mosaic and the 1x body copy"
+      },
+      {
+       "id": "cracks-like-scratches",
+       "problem": "The dark dashes read a little like grain or scratches rather than crust.",
+       "where": "pool body"
+      },
+      {
+       "id": "south-bank-weak",
+       "problem": "The south bank shows little extra darkening compared with the lit north lip.",
+       "where": "south edges, stream, and isolated cell"
+      },
+      {
+       "id": "anim-subtle",
+       "problem": "The motion is a mild texture shift with low churn.",
+       "where": "frames3x-J"
+      }
+     ]
+    }
+   },
+   "pick": {
+    "blue_black_cave": "F",
+    "brown_cave": "J"
+   },
+   "why": "D and G share a body whose dark crust blobs tile on a visible 2-cell lattice and read as cobblestones, far darker than the reference. F and J keep the reference's orange-dominant value, show no hard grid, and read as lava; their only issues are a faint streak rhythm and a weak south bank."
+  },
+  "argon": {
+   "candidates": {
+    "D": {
+     "majors": [],
+     "minors": [
+      {
+       "id": "crust-repeat-32",
+       "problem": "The largest kidney-shaped dark crust island repeats on a noticeable 32px (2x2 cell) period in the open 6x6 mosaic, though pool edges mask most of it in the test map.",
+       "where": "6x6 lava body mosaic and wider pool interior"
+      },
+      {
+       "id": "stepped-corner-rim",
+       "problem": "Inner 90-degree bank corners form a slightly boxy stair-step silhouette.",
+       "where": "North-east and central bay corners of the pool bank"
+      }
+     ]
+    },
+    "F": {
+     "majors": [
+      {
+       "id": "slit-bean-texture",
+       "problem": "Every bright magma lobe is bisected by a short straight dark slash, making the surface read like tiled coffee beans or scales rather than molten liquid.",
+       "where": "Entire lava body in pool and 6x6 mosaic at 1x and 3x"
+      },
+      {
+       "id": "too-noisy",
+       "problem": "Uniformly packed small lobes and dark slits create high-frequency visual chatter at 1x with no calm molten areas or larger crust contrast.",
+       "where": "1x pool and 1x 6x6 body"
+      }
+     ],
+     "minors": [
+      {
+       "id": "rigid-scroll-anim",
+       "problem": "Because the bean-like slit motifs are so uniform, the 4-frame drift reads mostly as rigid diagonal scrolling of a static pattern.",
+       "where": "frames3x-F across frames 1 to 4"
+      }
+     ]
+    },
+    "G": {
+     "majors": [],
+     "minors": [
+      {
+       "id": "stray-bank-pixels",
+       "problem": "Isolated reddish pixels protrude 1px outside the dark outer bank outline onto the brown cave floor.",
+       "where": "West and south outer edges of the pool bank and the 1-cell stream"
+      },
+      {
+       "id": "crust-repeat-32",
+       "problem": "The kidney-shaped dark crust cluster shows a visible 32px periodic alignment in the 6x6 body mosaic.",
+       "where": "6x6 lava body mosaic"
+      }
+     ]
+    },
+    "J": {
+     "majors": [
+      {
+       "id": "slit-bean-texture",
+       "problem": "Repeated oval blobs split by straight dark slashes read as coffee beans or woven scales instead of liquid lava.",
+       "where": "Entire lava body in pool and 6x6 mosaic at 1x and 3x"
+      },
+      {
+       "id": "too-noisy",
+       "problem": "Dense, uniform micro-blobs lack hierarchy between cooled crust and hot magma veins, looking overly busy at 1x compared to the cave floor and reference lava.",
+       "where": "1x pool and 1x 6x6 body"
+      }
+     ],
+     "minors": [
+      {
+       "id": "stray-bank-pixels",
+       "problem": "Single reddish pixels bleed outside the dark brown bank outline into the surrounding dirt floor.",
+       "where": "West and south outer edges of the pool bank"
+      },
+      {
+       "id": "rigid-scroll-anim",
+       "problem": "The 4-frame animation mostly translates the dense slash pattern diagonally without convincing liquid churning.",
+       "where": "frames3x-J across frames 1 to 4"
+      }
+     ]
+    }
+   },
+   "pick": {
+    "blue_black_cave": "D",
+    "brown_cave": "G"
+   },
+   "why": "D and G pair glowing magma veins with darker cooled crust islands that read immediately as sunken molten lava in 3/4 view and harmonize with both cave palettes, whereas F and J cover the surface in repetitive slash-split blobs that look like noisy coffee beans at 1x."
+  }
+ },
+ "majors_raised": {
+  "C2/F": {
+   "opusA": [],
+   "opusB": [
+    "repeat-32 (dash row banding)"
+   ],
+   "opusC": [],
+   "argon": [
+    "slit-bean-texture",
+    "too-noisy"
+   ]
+  },
+  "B2/J": {
+   "opusA": [],
+   "opusB": [
+    "repeat-32 (dash row banding)"
+   ],
+   "opusC": [],
+   "argon": [
+    "slit-bean-texture",
+    "too-noisy"
+   ]
+  },
+  "C1/D": {
+   "opusA": [
+    "repeat-32",
+    "crust-looks-like-scales"
+   ],
+   "opusB": [
+    "repeat-32",
+    "crust-looks-like-holes"
+   ],
+   "opusC": [
+    "repeat-32",
+    "crust-looks-like-rocks"
+   ],
+   "argon": []
+  },
+  "B1/G": {
+   "opusA": [
+    "repeat-32",
+    "crust-looks-like-scales"
+   ],
+   "opusB": [
+    "repeat-32",
+    "crust-looks-like-holes"
+   ],
+   "opusC": [
+    "repeat-32",
+    "crust-looks-like-rocks"
+   ],
+   "argon": []
+  }
+ },
+ "counted_majors": {
+  "C2/F": [],
+  "B2/J": [],
+  "C1/D": [
+   "repeat-32 (A,B,C)",
+   "crust reads as rocks/scales/holes (A,B,C)"
+  ],
+  "B1/G": [
+   "same as D"
+  ]
+ },
+ "note": "C2/B2: each major raised by a single reviewer only (B repeat-banding; argon bean-slit, too-noisy) -> 0 counted majors. Related minors from A/C (uniform hatch / scratches / streak rhythm) recorded as polish.",
+ "picks": {
+  "opusA": "F/J",
+  "opusB": "F/J",
+  "opusC": "F/J",
+  "argon": "D/G"
+ },
+ "verdict": "C2 (line C) and B2 (line B) clean: 0 counted majors; panel majority picks C2/B2. C1/B1 rejected."
+}

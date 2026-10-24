@@ -1,0 +1,428 @@
+{
+ "panel": "theme-arcane-r2-panel-1",
+ "rule": "major counts if raised by >=2 of 4 blind reviewers (3 opus general-purpose + 1 argon); answer-4 = argon",
+ "mapping": {
+  "other.portal": {
+   "X": {
+    "key": "A1",
+    "sha256": "6fb93cf6b3ab193a2e99244a29cfbbb740bf79d2449bedafe946c4e232a82da8"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "e172d565eda06bfa32b07ec98755f4cf434623c561d3c52f6a4f1f1b9da4d81d"
+   }
+  },
+  "other.void_edge": {
+   "X": {
+    "key": "A2",
+    "sha256": "b59312e23482650c15606c6f1451cfdd7dceb4dbdc66fead0aaa61931f7bd287"
+   },
+   "Y": {
+    "key": "A1",
+    "sha256": "45765b1ca802a6a229494c65ae56ad86e71fb7f3da7ef1d7382eeea52d35da52"
+   }
+  }
+ },
+ "prompt": "You are a blind pixel-art reviewer. Do not read any code or other files; look ONLY at the PNG boards listed below (open each with the Read tool; look carefully, do not skip any).\n\nContext: 16px-cell hand-pixel chipset for a JRPG dungeon, 3/4 top-down view (you see the top surface of things and their front face; NO side faces / no isometric). Theme: OTHERWORLD (demon realm, violet-black floating islands over a void). Each board shows: the item description (yellow line at top), Beodeul reference images from the existing chipset that set the quality bar (shown 1x and 3x) with an Actor1 person for scale, then one anonymous candidate (X or Y): piece at 1x and 3x, the piece placed in a scene (animation frames side by side), and for autotiles extra sheets (variants, underside sample, small platform, void mosaic). There are two boards per item, one per candidate.\n\nCriteria, judge each candidate against them:\n1. Reads instantly as the described object at 1x game scale.\n2. 3/4 top-down view: top surfaces visible as planes (caps, lintel, base/dais top) + front faces, no side faces, no isometric skew, perspective consistent with the Beodeul reference and the Actor1 person.\n3. Style matches the Beodeul reference: material shading instead of black ink outlines, similar contrast, 4+ step material ramps, texture density and pixel cleanliness (no noise, no orphan pixels, no banding).\n4. Scale vs. the person is plausible; the object sits on the floor (contact shadow/base) rather than floating.\n5. Animation frames (if any): change is visible, smooth, loops, no jitter of the static parts.\n6. Autotiles: no visible seams or repeating grid, edges/corners join correctly in the variants and irregular map; floating-island underside hangs only below south edges.\n7. Fits its theme (demon realm) and is distinct from generic.\n\nA MAJOR is a problem that would make you reject the piece for shipping (misreads, wrong view, broken seams, clashing style, ugly artefact clearly visible at 1x). A MINOR is a polish note.\n\nBoards (directory /home/main/z-project/rpg-zzu-dt-fix2/qa-runs/fix2/panel-1/):\nother.portal-X.png other.portal-Y.png other.void_edge-X.png other.void_edge-Y.png\n\nWrite your answer as JSON to /home/main/z-project/rpg-zzu-dt-fix2/qa-runs/fix2/panel-1/answer-<k>.json (use the Write tool) and also return the same JSON as your final message. Format:\n{\"items\":{\"<item id e.g. other.portal>\":{\"X\":{\"majors\":[{\"problem\":\"...\",\"where\":\"...\"}],\"minors\":[{\"problem\":\"...\",\"where\":\"...\"}]},\"Y\":{...},\"pick\":\"X\"|\"Y\",\"why\":\"one line\"}}}\nCover both items. Be specific and honest; do not invent problems, do not be polite. Do not edit anything else.\n",
+ "answers": {
+  "answer-1.json": {
+   "items": {
+    "other.portal": {
+     "X": {
+      "majors": [
+       {
+        "problem": "Gate opening is only ~15px tall while the Actor1 person is ~30px; the whole structure is barely taller than the hero, so it reads as a squat shrine/cabinet or altar niche rather than a gate you walk through (Beodeul gate reference is ~1.5x person height with a person-sized opening)",
+        "where": "opening between the pillars, all 4 frames; scene frames show the person next to it"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Opening is a rectangle with rounded top corners under a flat lintel slab; no arch silhouette, so the 'gate' reading depends entirely on the swirl",
+        "where": "lintel/opening shape"
+       },
+       {
+        "problem": "Swirl change between open frames 1/2/3 is small (mostly rotation of the same bands); readable at 3x but subtle at 1x",
+        "where": "open frames 1-3 swirl"
+       },
+       {
+        "problem": "Dais front face is a full-width grey slab with repeated identical glyph marks per cell; slightly tiled-looking",
+        "where": "base slab front face"
+       },
+       {
+        "problem": "Grey stone is fairly generic; only small violet gem flecks tie it to the demon realm",
+        "where": "pillars and lintel"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Same scale problem: opening ~15px vs ~30px person, structure barely taller than the hero",
+        "where": "opening, all frames and scene"
+       },
+       {
+        "problem": "Orange/yellow spiral inside a rectangular niche under a mantel-like lintel reads as a fireplace/furnace/forge at 1x, not a portal; warm salmon-stone palette also clashes with the violet-black island it sits on",
+        "where": "open frames 1-3, scene frames"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Swirl frame change is subtle, same as X",
+        "where": "open frames 1-3"
+       },
+       {
+        "problem": "Pinkish-beige stone with red flecks is lower contrast against the violet floor and looks washed out",
+        "where": "pillars, base slab"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both share the undersized opening, but X's violet swirl reads as a demon-realm portal and matches the island palette, while Y reads as a fireplace."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Island lip is a uniform 1px pink line around the floor, which reads as a drawn outline/border rather than a lip with thickness or light; no shading difference between north and south edges",
+        "where": "all 47 lip variants, island rim in scene"
+       },
+       {
+        "problem": "Underside is very dark and low contrast against the void; at 1x the hanging rock nearly disappears, so the island reads almost flat",
+        "where": "underside face sample, south edges in scene"
+       },
+       {
+        "problem": "Underside is drawn as regular rectangular bricks in rows, reading as masonry rather than broken rock, and the same 16px column visibly repeats along long south edges",
+        "where": "long south edge of the main island in scene"
+       },
+       {
+        "problem": "Red ember pixels on the underside sit in a regular grid of isolated single pixels, which looks like orphan pixels",
+        "where": "underside sample, platform underside"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Lip is still essentially a 1px outline, although it has violet light on north/west and pink on south/east",
+        "where": "lip variants, island rim"
+       },
+       {
+        "problem": "Underside uses the same brick rows and 16px repeat as X: reads as masonry and tiles visibly along long south edges",
+        "where": "long south edge in scene"
+       },
+       {
+        "problem": "Violet speck pixels on the underside are placed on a regular grid and look like isolated dots",
+        "where": "underside sample, platform underside"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Same structure, but Y's brighter underside and two-tone violet/pink rim read clearly against the void and give the island volume; X's underside sinks into the void."
+    }
+   }
+  },
+  "answer-2.json": {
+   "items": {
+    "other.portal": {
+     "X": {
+      "majors": [
+       {
+        "problem": "Proportions are squat: the swirl opening is only about 1 cell tall and lower than the Actor1 person's head, and the whole 3x3 block is wider than tall. At 1x in the scene it reads as a stone altar/cabinet with a glowing screen, not a gate. The Beodeul gate reference stands clearly taller than the person.",
+        "where": "whole piece, scene frames (portal vs person on its left)"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Near-black 1px contour around the pillars, lintel and dais reads as ink outline rather than the soft material edge of the Beodeul stone",
+        "where": "pillar and lintel silhouettes, 3x strip"
+       },
+       {
+        "problem": "With only 3 open frames the spiral turns in large steps and will look choppy in play. Static parts are steady, with no jitter.",
+        "where": "open frames 1-3"
+       },
+       {
+        "problem": "Dais front-face runes form a fairly regular grid. The thin violet glow strip on the dais top is the only contact cue, and there is no shadow on the floor in front.",
+        "where": "base/dais"
+       },
+       {
+        "problem": "Grey stone is close to the generic Beodeul grey. The demon-realm feel comes only from the violet gems and swirl.",
+        "where": "pillars/lintel"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Same squat geometry as X: the opening is shorter than the person, so at 1x it reads as an altar/furnace box more than a gate",
+        "where": "whole piece, scene frames"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Saturated orange/yellow swirl uses flat 3-tone banding with little ramp. It reads as a lava/fire portal and is the hottest colour on a violet-void map, so it clashes with the island and void palette.",
+        "where": "open frames 1-3 swirl"
+       },
+       {
+        "problem": "Near-black outlines around the stone blocks, same as X",
+        "where": "pillars/lintel"
+       },
+       {
+        "problem": "3-frame spiral steps are large and will look choppy",
+        "where": "open frames"
+       },
+       {
+        "problem": "Pinkish-grey dais is washed out against the dark red-brown pillars and looks pasted on",
+        "where": "base/dais"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Identical structure, but X's violet swirl and gems belong to the violet-black void palette, while Y's flat orange fire swirl clashes and is cruder in ramp."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [
+       {
+        "problem": "The underside is drawn as regular offset rectangular bricks, so it reads as a masonry foundation wall, not jagged rock hanging under a floating island",
+        "where": "underside tiers under every south edge, underside sample"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Underside is very dark and low-contrast against the void. At 1x the second tier almost disappears, which weakens the 'floating' read.",
+        "where": "scene south edges, small platform"
+       },
+       {
+        "problem": "The lip is a flat 1px mauve line with no ramp, so it effectively acts as an outline frame, not a material edge",
+        "where": "lip on all variants"
+       },
+       {
+        "problem": "Underside repeats an identical brick and ember pattern every 16px along long south edges, so the grid is visible",
+        "where": "long south edge in scene"
+       },
+       {
+        "problem": "Floor fill repeats the same dash motif each cell, so the tiling is visible at 3x",
+        "where": "piece 3x, variants"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Same brick-masonry underside as X, even more legible because it is brighter: it reads as a wall/foundation rather than hanging rock",
+        "where": "underside tiers, underside sample"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "The violet rim on the north/west lip is a good void-glow cue, but it is applied only to some edges and sits as a 1px line plus a few stray violet pixels inside the lip",
+        "where": "lip variants top/left edges, 3x piece top edge"
+       },
+       {
+        "problem": "Brick pattern repeats every 16px along the long south edge",
+        "where": "scene long south edge"
+       },
+       {
+        "problem": "Floor dash motif repeats per cell",
+        "where": "piece 3x, variants"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Same autotile logic. Y's underside separates from the void at 1x, and its violet rim light gives a demon-void identity, while X's underside sinks into the background. Both share the brick-not-rock underside problem."
+    }
+   }
+  },
+  "answer-3.json": {
+   "items": {
+    "other.portal": {
+     "X": {
+      "majors": [
+       {
+        "problem": "Gate opening is only about 16px tall (half the Actor1 height); with the deep plinth and a flat lintel, the piece reads as a squat altar or cabinet, not a gate a person could walk through",
+        "where": "in-scene 2x frames, opening vs person"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Blue-grey stone pillars and dais are close to generic dungeon stone; only the swirl and a few rune pixels say demon realm",
+        "where": "pillars/dais"
+       },
+       {
+        "problem": "Open frames 1-3 differ only slightly (small swirl rotation), so the animation is barely visible at 1x",
+        "where": "open frame 1|2|3"
+       },
+       {
+        "problem": "The rectangular lintel has no arch, which weakens the 'gate' read compared with the Beodeul arch reference",
+        "where": "top lintel"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Orange-red fire swirl in a squat stone surround reads at 1x as a fireplace or furnace hearth, not a portal",
+        "where": "open frames, 1x and in-scene"
+       },
+       {
+        "problem": "Same scale problem: the opening is about half the person's height, so it cannot read as a walk-through gate",
+        "where": "in-scene 2x frames"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "The saturated orange swirl clashes with the violet-black otherworld palette and pulls the eye harder than anything else in the scene",
+        "where": "swirl vs scene"
+       },
+       {
+        "problem": "Swirl frame-to-frame change is small, the same as X",
+        "where": "open frame 1|2|3"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both are too squat, but X's violet void swirl at least reads as a portal and fits the otherworld palette; Y reads as a fireplace."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [
+       {
+        "problem": "The underside is drawn as regular brick courses with a flat bottom edge and red dots spaced on an exact grid, so it repeats visibly along long south edges and reads as masonry wall, not hanging rock that tapers to points",
+        "where": "long south edge underside in scene, underside sample"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "The lip is a single thin pink line with no visible top-plane thickness, so the island edge is weak against the noisy floor at 1x",
+        "where": "lip around island"
+       },
+       {
+        "problem": "The lowest underside tier is very dark and nearly disappears into the void",
+        "where": "underside tier 2"
+       },
+       {
+        "problem": "Void body is almost flat noise with sparse stars, which is fine but generic",
+        "where": "void mosaic"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Same as X: grid-regular brick courses with violet dots on a fixed interval and a flat cut-off bottom; repeats visibly and reads as built wall rather than floating-island rock",
+        "where": "long south edge underside in scene, underside sample"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "The violet rim highlight along the lip is only on the north and west edges and is broken into dashes along the south lip, which looks slightly noisy",
+        "where": "lip highlight, south edge"
+       },
+       {
+        "problem": "Underside courses are brighter and more uniform than X, which makes the brick read stronger",
+        "where": "underside"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Nearly identical; Y's violet rim glow separates the island from the void better at 1x and its underside does not sink into the void, but both share the masonry-underside problem."
+    }
+   }
+  },
+  "answer-4.json": {
+   "items": {
+    "other.portal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Neutral light-grey stonework reads like standard overworld castle masonry and contrasts starkly against the dark violet-ash demon-realm floor.",
+        "where": "pillars, lintel, and base dais in scene view"
+       },
+       {
+        "problem": "Archway opening is only about 16px tall (roughly half the height of the Actor1 sprite), reading slightly squat for a walk-through gate.",
+        "where": "center arch opening vs Actor1 scale"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Lower stone dais is much lighter grey-mauve than the dark obsidian pillars above it, creating a slight material disconnect.",
+        "where": "bottom row dais vs upper pillars"
+       },
+       {
+        "problem": "Archway opening is only about 16px tall (roughly half the height of the Actor1 sprite), reading slightly squat for a walk-through gate.",
+        "where": "center arch opening vs Actor1 scale"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Dark obsidian stonework with crimson rune accents integrates far better with the demon-realm palette while the fiery vortex provides a strong focal point."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "South underside stalactite tips repeat on a per-tile cadence along long straight horizontal edges, creating a regular scalloped rhythm.",
+        "where": "bottom tier of south cliff underside in scene and small platform"
+       },
+       {
+        "problem": "Void body tile has a faint diagonal star/spore cluster alignment when tiled across a 6x6 area.",
+        "where": "void body 6x6 mosaic"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Brighter magenta-violet lip highlight reads slightly more like a hard outline around the island perimeter than X's softer plum lip.",
+        "where": "outer lip edge in scene and 47 lip variants"
+       },
+       {
+        "problem": "South underside stalactite tips repeat on a per-tile cadence along long straight horizontal edges, creating a regular scalloped rhythm.",
+        "where": "bottom tier of south cliff underside in scene and small platform"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Softer plum lip shading blends more naturally into the violet-ash floor and the subtle ember specks on the underside tie into the floor's lava fissures."
+    }
+   }
+  }
+ },
+ "counted_majors": {
+  "other.portal": {
+   "X": [
+    "opening ~half person height, squat altar/cabinet read (1,2,3)"
+   ],
+   "Y": [
+    "same squat opening (1,2,3)",
+    "reads as fireplace/furnace (1,3)"
+   ]
+  },
+  "other.void_edge": {
+   "X": [
+    "underside regular brick courses read as masonry wall, 16px repeat (2,3)"
+   ],
+   "Y": [
+    "same brick underside (2,3)"
+   ]
+  }
+ },
+ "picks": {
+  "other.portal": {
+   "X": 3,
+   "Y": 1
+  },
+  "other.void_edge": {
+   "Y": 3,
+   "X": 1
+  }
+ }
+}

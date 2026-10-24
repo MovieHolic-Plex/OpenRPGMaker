@@ -2,6 +2,7 @@ import { BATTLER_HIRES_SHEETS } from "@/assets/battlerHiresSheets";
 import { BATTLER_IDLE_ANIMATIONS } from "@/assets/battlerIdleAnimations";
 import { FARMING_LIFE_UI_ASSETS } from "@/assets/farmingLifeUi";
 import { hasLifeLedgerData } from "@/player/lifeLedgerData";
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { PLAYER_RUNTIME_ASSET_PATHS } from "@/project/playerDeploymentManifest";
 import type { Project } from "@/project/types";
 
@@ -32,6 +33,12 @@ const CONDITIONAL_RUNTIME_ASSET_GROUPS: readonly ConditionalRuntimeAssetGroup[] 
       ...BATTLER_IDLE_ANIMATIONS.filter((entry) => entry.tier === "sheet-cell").map((entry) => entry.path),
     ].filter((path, index, all) => all.indexOf(path) === index),
     needed: usesGeneratedHeroBattlers,
+  },
+  {
+    // emeraldSurfaces.css 가 경로로만 참조하는 에메랄드 전투 배경 — 에메랄드 몬스터 스타일이 아니면 그 화면이 없다.
+    reason: "에메랄드 전투 배경 여섯 장 — 에메랄드 몬스터 스타일 프로젝트만 쓴다",
+    paths: ["cave", "grass", "indoor", "sand", "snow", "water"].map((terrain) => `assets/emerald-monster/battle/${terrain}.png`),
+    needed: isEmeraldMonsterStyle,
   },
 ];
 

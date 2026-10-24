@@ -1,3 +1,4 @@
+import { loadBakedFlagshipDemo } from "@/editor/flagshipDemoLoader";
 import { createBlankProject } from "@/project/defaults";
 import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import type { FlagshipDemoBuildResult, FlagshipDemoId } from "@/project/flagship/types";
@@ -26,7 +27,13 @@ export function flagshipDemoIdForLocation(): FlagshipDemoId | null {
  * 예전에는 편집기 진입 번들이 데모 빌더를 정적으로 품어 모든 부팅이 예제 그림 약 18MB 를 읽었다(2026-10-20 실측).
  */
 export async function prepareDevShowcaseProjectFactory(): Promise<() => Project | null> {
-  if (flagshipDemoIdForLocation() === null) return () => createDevShowcaseProjectForLocation();
+  const demoId = flagshipDemoIdForLocation();
+  if (demoId === null) return () => createDevShowcaseProjectForLocation();
+  // 출하 빌드는 데모를 미리 구워 둔다(scripts/content/bake-flagship-demos.mts → dist/demos/<id>.project.json).
+  // 런처의 「플레이」·「열기」(/index.html?demo=…)가 브라우저에서 모든 맵을 다시 짓지 않게 그 파일을 먼저 읽는다.
+  // dev 서버·패키지 빌드처럼 구운 파일이 없으면 예전처럼 빌더로 짓는다.
+  const baked = await loadBakedFlagshipDemo(demoId);
+  if (baked) return () => baked;
   const { createFlagshipDemoProject } = await import("@/project/flagship");
   return () => createDevShowcaseProjectForLocation(createFlagshipDemoProject);
 }

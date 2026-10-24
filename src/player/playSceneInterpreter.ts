@@ -16,6 +16,7 @@ import {
   showPictureState,
 } from "@/project/session";
 import { playMonsterSfx } from "@/player/monsterSfx";
+import { playDoorOpenBeforeTransfer } from "@/player/playSceneFieldFx";
 import { store } from "@/project/store";
 import { setEventSpritePattern } from "@/player/eventSpriteResources";
 import { playAudioCommand, stopAudioChannel, stopAudioCommand } from "@/player/audio";
@@ -535,10 +536,15 @@ async function consumeBlockingStep(
       const finishTransfer = owner?.beginAuthoredTransfer(step.mapId);
       if (owner && !finishTransfer) return { kind: "done" };
       // 몬스터 장르: 다른 맵으로 드나드는 문 소리(체육관 이름이면 무거운 문). 다른 장르는 무음 그대로.
+      let genreDoorSound = false;
       if (step.mapId !== scene.map.id) {
         const project = store.getCurrent();
         const destinationName = project.maps[step.mapId]?.name ?? "";
-        playMonsterSfx(project, /체육관|gym/i.test(destinationName) ? "gym-door" : "door-open");
+        genreDoorSound = playMonsterSfx(project, /체육관|gym/i.test(destinationName) ? "gym-door" : "door-open") === true;
+      }
+      // 문 칸에서 떠나는 이동이면 문짝이 열리고(문 소리) 그다음 넘어간다. 문이 아니면 곧장 넘어간다.
+      if (step.mapId !== scene.map.id && step.door !== false) {
+        try { await playDoorOpenBeforeTransfer(scene, currentEventId, { silent: genreDoorSound }); } catch (error) { console.warn("[player] door open fx", error); }
       }
       try { await scene.transferTo(step); }
       finally { finishTransfer?.(); }
