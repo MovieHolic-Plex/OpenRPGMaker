@@ -36,7 +36,7 @@ export const astraCastCardId = (cid: AstraCastId): string => `oprn_astra_cast_${
  * - chargen: 옛 그림(cast/professor/).
  * 기본(ASTRA_PROFESSOR_BUST)이 대사에 쓰이고, 나머지도 oprn_astra_cast_professor_<후보>_bust_<표정> id 로 고를 수 있다.
  */
-export const ASTRA_PROFESSOR_BUST_VARIANTS = ["hand-a", "hand-b", "shared-elder", "shared-moustache", "chargen"] as const;
+export const ASTRA_PROFESSOR_BUST_VARIANTS = ["cg-nat10", "cg-nat9", "cg-nat12", "cg-nat1", "hand-a", "hand-b", "shared-elder", "shared-moustache", "chargen"] as const;
 export type AstraProfessorBustVariant = (typeof ASTRA_PROFESSOR_BUST_VARIANTS)[number];
 /** 대사에 쓰는 박사 흉상. 바꾸려면 이 값 하나만 바꾼다(눈가림 검수 순위는 위 PR·verify-shots/astra-presentation 참고). */
 export const ASTRA_PROFESSOR_BUST: AstraProfessorBustVariant = "hand-a";
