@@ -225,6 +225,8 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       behavior: { type: 'string', enum: [...BEHAVIORS], description: '기본 stationary' },
       patrol: { type: 'object', description: 'behavior:patrol 또는 chase(순찰+추격) 일 때. {length?:1..8 칸 왕복(기본 3), axis?:horizontal|vertical} 또는 {directions:[up|down|left|right..]} 출발 칸으로 돌아오는 닫힌 경로', properties: { length: { type: 'integer' }, axis: { type: 'string', enum: ['horizontal', 'vertical'] }, directions: { type: 'array', items: { type: 'string', enum: ['up', 'down', 'left', 'right'] } } } },
       sightRange: { type: 'integer', description: 'behavior:chase 시야(칸, 2..8, 기본 4). 이 안에서 벽에 안 가리면 쫓는다' },
+      vision: { type: 'string', enum: ['any', 'cone'], description: "behavior:chase 시야 모양. any(기본)=사방, cone=바라보는 방향 앞 부채꼴만(등 뒤로 몰래 지나가면 못 본다)" },
+      giveUpRange: { type: 'integer', description: 'behavior:chase 이만큼(칸) 멀어지면 포기하고 출발 칸으로 돌아간다(기본 시야+4, 시야+1..20)' },
       pace: { type: 'string', enum: [...PACES], description: 'slow(기본)|normal|fast — 셋 다 주인공 걷기보다 느리다' },
       graphic: { ...GRAPHIC_SPEC_SCHEMA, description: '생략 시 적 그룹 선두 몬스터 이름으로 검색한 기존 도트' },
       alert: { type: 'string', enum: [...ALERTS], description: '머리 위 말풍선(chase=시야에 든 순간, 그 외=닿기 직전). 기본 exclamation, none 이면 말풍선 없이 바로' },
@@ -351,10 +353,11 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       } : undefined;
       const movement: EventPage['movement'] = behavior === 'chase'
         ? {
-          type: 'chase', speed: chase.speed, frequency: chase.frequency, sightRange: sightRaw, giveUpRange: sightRaw + 4, pathfind: true,
+          type: 'chase', speed: chase.speed, frequency: chase.frequency, sightRange: sightRaw,
+          giveUpRange: Number.isFinite(Number(args.giveUpRange)) ? Math.max(sightRaw + 1, Math.min(20, Math.round(Number(args.giveUpRange)))) : sightRaw + 4, pathfind: true,
           // 시야·수색·복귀는 기존 추격 정책(sight+pursuit)을 쓴다: 시야(벽 가림) 안이면 쫓고, 놓치면 마지막 목격 자리를 뒤지다
           // 출발 칸으로 돌아간다(onLost:'return'). 순찰 경로가 있으면 돌아온 뒤 처음부터 다시 순찰한다.
-          sight: { range: sightRaw, lineOfSight: true, facing: 'any' },
+          sight: { range: sightRaw, lineOfSight: true, facing: args.vision === 'cone' ? 'cone' : 'any' },
           pursuit: { scope: 'map', doorDelayMs: 0, searchMs: SEARCH_BEFORE_RETURN_MS, onLost: 'return' },
           ...(patrol ? { route: patrolRoute(true) } : {}),
           ...(alert === 'none' ? {} : { sightAlert: { emote: alert, holdMs: ALERT_HOLD_MS } }),
