@@ -287,7 +287,7 @@ function valenScenes(vault: GameMap): void {
   const look = (fields: Record<string, unknown>): Command =>
     m2("m2-225-sprite-look", Object.fromEntries(Object.entries({ target: "this-event", ...fields }).map(([k, v]) => [k, typeof v === "boolean" ? v : String(v)])));
   const vanish: Command[] = [
-    say(VALEN, "삼십 년 전에도… 꼭 이랬지."),
+    say(VALEN, "삼십 년 전에도 그랬다.\n모두가 자기만 옳다고 믿었지."),
     say(VALEN, "…네가 틀렸기를 바란다.\n정말로."),
     narrate("발렌이 장갑 낀 왼손을 바닥으로 내리친다."),
     // 연막이 먼저 차오르고(같은 칸에 여러 줄기를 겹쳐 짙게), 그 속에서 몸이 흐려지다 사라진다. 섬광은 아주 짧게 한 번.

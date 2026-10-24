@@ -759,7 +759,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     ["c", "tex_easyrpg_charset_people4", 2, "광장의 상인", "포고 때문에 북문 길이 막히면\n오늘 장사는 다 했네."],
     ["d", "tex_easyrpg_charset_people1", 6, "광장의 노인", "하늘에서 온 걸 함부로 부르면\n화를 입는 법이야."],
     // 오프닝 아침 그림은 길가에 백성이 늘어서 있다 — 넷은 적었다(VQA r17).
-    ["e", "tex_easyrpg_charset_people5", 3, "광장의 처녀", "기사님들 갑옷 좀 봐…\n숲에 정말 큰 게 떨어졌나 봐."],
+    ["e", "tex_easyrpg_charset_people5", 3, "광장의 처녀", "기사님들 갑옷 좀 봐… 숲에 정말 뭐가 떨어졌나 봐."],
     ["f", "tex_easyrpg_charset_people1", 1, "광장의 청년", "이단이라니…\n별 보고 소원 빈 것도 죄가 되나?"],
   ];
   const hubMeta = (project.tilesets[hub.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
@@ -1642,7 +1642,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 선택지를 닫으면 관에서 물러선다(다시 조사하면 처음부터). gotoLabel 은 바깥 프레임까지 거슬러 찾는다.
   {
     const podPage = podSpot.pages![0]!;
-    const WRONG = "다시 눌러 보자.";
+    const WRONG = "이 단계만 다시 해 보자.";
     const isWrong = (branch: Command[]): boolean => branch.some((c) => c.kind === "text" && (c as { body?: string }).body === WRONG);
     const stageLabels: string[] = [];
     const wire = (list: Command[]): void => {

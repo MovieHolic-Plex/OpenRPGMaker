@@ -488,7 +488,7 @@ function crashSite(project: Project, forestId: string): void {
   const puff = (dx: number, dy: number, ms: number): Command => fx("smoke", at.x + dx, at.y + dy, ms);
   const vanish: Command[] = [
     narrate("쇠가 식는 소리. 톱니가 살갗 밑으로 가라앉고,\n발렌은 다시 사람의 모습으로 무릎을 짚는다."),
-    say(VALEN, "삼십 년 전에도… 꼭 이랬지."),
+    say(VALEN, "삼십 년 전에도 그랬다.\n모두가 자기만 옳다고 믿었지."),
     say(VALEN, "…네가 틀렸기를 바란다.\n정말로."),
     narrate("발렌이 장갑 낀 왼손을 땅으로 내리친다."),
     se("easyrpg-sound-fog1"),
@@ -976,7 +976,7 @@ function floorB4(project: Project): GameMap {
       setSw(SW_DRAGON_DOWN),
       look(dragonId, { reset: true }),
       narrate("달비늘 용이 비늘을 떨구며\n푸른 빛가루로 흩어졌다."),
-      say(IRIS, "…여길 지키던 문지기였어요."),
+      say(IRIS, "…문지기였어요. 무언가를 지키고 있었어요."),
       say(ELENA, "저 안쪽, 벽에서 빛이 깜빡여."),
     ], [
       { kind: "recoverAll" } as unknown as Command,

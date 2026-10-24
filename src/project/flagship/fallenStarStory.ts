@@ -153,7 +153,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
         options: ["칼끝으로 누른다", "엘레나에게 마법을 부탁한다", "맨손을 얹는다"],
         answer: 2,
         hit: { lines: ["손바닥 아래가 따뜻해진다. 안에서 작은 목소리가 들렸다.", "알 속의 목소리: …거기 누구 있어요? 바깥은… 안전한가요?"], fx: ["se:chime2", "emote:exclamation"] },
-        miss: { lines: ["마력이 헛되이 흩어진다. 아무 반응이 없다."] },
+        miss: { lines: ["자국은 아무 반응이 없다. 『살아 있는 손만』이라고 했었지."] },
       },
       {
         prompt: "떨리는 목소리다. 뭐라고 답할까?",
@@ -163,7 +163,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
         miss: { lines: ["목소리가 뚝 끊겼다. 관이 다시 차갑게 식는다."] },
       },
     ],
-    wrong: ["다시 눌러 보자."],
+    wrong: ["이 단계만 다시 해 보자."],
     wrongFx: ["shake:1"],
     solvedFx: ["shake:3", "flash:white", "particles:sparkle"],
     reward: {

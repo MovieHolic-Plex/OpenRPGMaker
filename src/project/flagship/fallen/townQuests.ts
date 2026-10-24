@@ -185,7 +185,7 @@ function plazaPeople(project: Project, hubId: string): void {
   tobi.pages!.push(hiddenPage(`${tobi.id}_q_bridge`, [sw(Q2_FLOUR), sw(Q2_FOUND, false)]));
 
   const gate = mustEvent(project, hubId, "ev_fs_gate");
-  const gateQ1 = breadHandOff(Q1_GATE, [say(GATE, "…딱딱하군. 그래도 따뜻하네.\n브람 영감은 공터 쪽 오두막에 있을 거다.")]);
+  const gateQ1 = breadHandOff(Q1_GATE, [say(GATE, "…딱딱하군. 근데 따뜻하네.\n브람 영감이 이 시간엔 공터 쪽 오두막에 있을 거야.")]);
   rewritePages(gate, [
     { name: "기본", conditions: [], commands: [
       gateQ1,
@@ -263,7 +263,7 @@ function bramBread(project: Project, forestId: string): void {
   if (!bram) return;
   const handOff = breadHandOff(Q1_BRAM, [
     say(BRAM, "토마가 보냈나. 평생 부풀기만 해서\n걱정이더니, 이번 건 납작하군."),
-    say(BRAM, "고맙다고 전해라.\n오늘은 아직 빈속이었거든."),
+    say(BRAM, "고맙다고 전해라. 오늘은\n아무 데서도 얻어먹지 못했거든."),
   ]);
   for (const page of bram.pages ?? []) {
     const list = page.commands as Command[];
