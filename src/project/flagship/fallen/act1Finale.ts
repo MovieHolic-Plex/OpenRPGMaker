@@ -305,7 +305,7 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
   // 사람 크기(아군과 같은 걷기 칩 비율) · 보스라 HP 를 숨긴다.
   delete (valen as Partial<EnemyRecord>).battleScalePercent;
   (valen as EnemyRecord & { hideHp?: boolean }).hideHp = true;
-  valen.stats = { ...valen.stats, maxHp: 1800, attack: 115, defense: 70, mind: 100, agility: 48 };
+  valen.stats = { ...valen.stats, maxHp: 1500, attack: 115, defense: 70, mind: 100, agility: 48 };
   // 같은 사람 모양 적(광신도·설교자)도 사람 크기로.
   for (const id of ["enemy_fs_fanatic", "enemy_fs_fanatic_preacher"]) {
     const e = db.enemies.find((x) => x.id === id);
@@ -385,7 +385,7 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
   upsert(db.enemies, human(FS_VALEN_CROSSBOW, "심문회 석궁병", "charset-battler-people3-7", { maxHp: 85, maxMp: 0, attack: 43, defense: 14, mind: 10, agility: 44 }, 24));
   upsert(db.enemies, {
     ...clone(golem), id: FS_VALEN_GOLEM, name: "심문회 골렘", monsterResourceId: "generated-enemy-golem-stone", battleScalePercent: undefined,
-    stats: { maxHp: 220, maxMp: 0, attack: 66, defense: 55, mind: 20, agility: 20 }, collapseEffect: "pixelBreak",
+    stats: { maxHp: 220, maxMp: 0, attack: 58, defense: 55, mind: 20, agility: 20 }, collapseEffect: "pixelBreak",
     rewards: { exp: 40, gold: 0, dropRatePercent: 0, drops: [] },
   } as unknown as EnemyRecord);
   for (const e of db.enemies) if ([FS_VALEN_SOLDIER, FS_VALEN_CROSSBOW, FS_VALEN_GOLEM].includes(e.id)) e.stateRates = { ...(e.stateRates ?? {}), [FS_PIERCED_STATE]: "E" } as EnemyRecord["stateRates"];
@@ -421,7 +421,14 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
           st(FS_VALEN_ENEMY, "remove", FS_VALEN_STANDBY_STATE),
           // 병사들이 서 있던 한가운데로 걸어 나온다(뒷줄 가장자리에 걸려 잘려 보이지 않게).
           m2("m2-218-move-enemy", { target: FS_VALEN_ENEMY, x: 150, y: 110, durationMs: 900 }),
-          text("심문관이 장검을 고쳐 쥐고 걸어 나온다.")] },
+          text("심문관이 장검을 고쳐 쥐고 걸어 나온다."),
+          // 단계 사이 숨 고르기 — 병사들이 쓰러진 틈에 엘레나가 일행을 추스른다(세 단계를 한 숨에 버티지 않게).
+          text("병사들이 무너진 틈이야.\n…숨 돌려, 지금!", ELENA),
+          anim("actor_fs_elena", "anim_gen_heal"),
+          ...["actor_hero", "actor_fs_elena", "actor_fs_iris"].flatMap((actorId) => [
+            { kind: "changeActorHp", actorId, op: "+=", amount: 35, amountMode: "percent" } as unknown as Command,
+            { kind: "changeActorMp", actorId, op: "+=", amount: 30, amountMode: "percent" } as unknown as Command,
+          ])] },
       { id: "troop_fs_valen_crash_summon1", name: "2단계 — 골렘 하나", span: "battle", runOnce: true,
         conditions: [sw(SW_VALEN_P2), { kind: "enemyHpBelow", enemyId: FS_VALEN_ENEMY, percent: 85 }],
         commands: [text("흙이여, 일어나 방패가 되어라.", VALEN), appear(FS_VALEN_GOLEM)] },
@@ -441,7 +448,7 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
           m2("m2-046-tint-screen", { color: "white", durationMs: 120 }), wait(260),
           st(FS_VALEN_ENEMY, "add", FS_VALEN_MACHINE_STATE),
           anim(FS_VALEN_ENEMY, "anim_gen_thunder_strike"),
-          hp(FS_VALEN_ENEMY, 1300),
+          hp(FS_VALEN_ENEMY, 1000),
           m2("m2-046-tint-screen", { color: "neutral", durationMs: 700 }),
           text("살갗이 갈라지고, 그 밑에서\n톱니와 금빛 선이 드러난다."),
           text("저건… 저랑 같은 거예요.\n칼도 주문도 튕겨 나가요!", IRIS),
