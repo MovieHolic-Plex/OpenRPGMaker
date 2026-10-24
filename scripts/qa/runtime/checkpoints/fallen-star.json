@@ -527,6 +527,14 @@
        "maxRounds": 300,
        "ops": [
         {
+         "kind": "pressUntil",
+         "key": "Enter",
+         "testid": "dialogue-box",
+         "state": "absent",
+         "maxPresses": 4,
+         "timeoutMs": 400
+        },
+        {
          "kind": "evalToFile",
          "fn": "() => {\n  const q = (t) => document.querySelector('[data-testid=\"' + t + '\"]');\n  if (q(\"battle-result-panel\") && !false) return \"result-panel\";\n  const ok = q(\"battle-result-confirm\"); if (ok) { ok.click(); return \"confirm\"; }\n  const live = [...document.querySelectorAll(\"button.battle-command\")].filter((n) => !n.disabled && n.dataset.previewOnly !== \"true\");\n  const cmd = live.find((n) => n.dataset.testid === \"actor-command-defend\") ?? live.find((n) => n.dataset.testid === \"actor-command-attack\");\n  if (cmd) { cmd.click(); return cmd.dataset.testid; }\n  const target = live.find((n) => (n.dataset.testid || \"\").startsWith(\"battle-target-\") && n.dataset.testid !== \"battle-target-cancel\");\n  if (target) { target.click(); return \"target\"; }\n  return null;\n}",
          "out": "/tmp/qa-fs-lose-step.json"
