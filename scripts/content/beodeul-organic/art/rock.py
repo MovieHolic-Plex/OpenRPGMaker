@@ -350,3 +350,7 @@ def lift(rows):
     """shift a drawing up 1px so the bottom pixel row stays empty."""
     return rows[1:] + ["." * len(rows[0])]
 ART["rock-pebbles"] = (lift(ART["rock-pebbles"][0]), KEYS)
+
+from art._base import fix
+for _k in ("rock-slab", "rock-boulder-l", "rock-boulder-m"):
+    ART[_k] = (fix(ART[_k][0]), KEYS)

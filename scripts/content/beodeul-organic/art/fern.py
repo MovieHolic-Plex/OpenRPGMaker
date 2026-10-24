@@ -181,3 +181,4 @@ FC3 = ["."*32]*2 + [
  ".......21o1oSSs.................",
 ]
 ART = {"fern-s": (FS_FROZEN, K), "fern-l": (FL3, K), "fern-cluster": (FC3, K)}
+ART["fern-cluster"] = (FC3[1:] + ["."*32], K)  # walk-over decor: keep the bottom row empty

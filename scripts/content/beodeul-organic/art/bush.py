@@ -130,3 +130,26 @@ ST_FROZEN = ['................', '................', '.......5........', '......
 # shrub-tall passed both blind judges: frozen as literal rows
 ART = {"bush-s": (fin(BS), WD), "bush-m": (fin(BM), WD), "bush-berry": (fin(BB), BR),
        "shrub-tall": (ST_FROZEN, WD), "bramble": (fin(BRAM), TH)}
+
+# ---- r6 bramble: one asymmetric thorny mound, hand-written rows. Canes t (lit) / T (shade) / u (dark), 1-2px,
+# arcing at different heights and crossing; dense leaf mass at the base; a few dark berries r; one continuous shadow.
+TH6 = dict(WD, t="#885a26", T="#543719", u="#2a1a0f", r="#61160d", R="#9e2514")
+BRAM6 = [
+ "................................",
+ "................................",
+ "..........tt....................",
+ "........tT..t...................",
+ ".......t.....T.......tt.........",
+ "......t...5...T....tT..t........",
+ ".....T...544...T..t.....T.......",
+ "...tT...54431..tTt..55...u......",
+ "..t.T.55443215.tT.55443..u..t...",
+ ".....54431544321.5443321.T.t.T..",
+ "...5443215443o2154432o1544T..u..",
+ "..54R3215443o1544321o15443321...",
+ ".5443o1T443r1o54432o1o543321o1..",
+ ".4321o1o3221o1o3321o1R3321o11o..",
+ "..21o1o1o11o1oo1o11oo1o1o1oogSS.",
+ "...gSSSSSSSSSSSSSSSSSSSSSSSSSs..",
+]
+ART["bramble"] = (BRAM6, TH6)

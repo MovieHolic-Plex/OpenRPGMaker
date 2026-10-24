@@ -37,6 +37,7 @@ def hollow_tree():
         for x in range(a, b + 1):
             if y < top.get(x, TOPY): continue
             n = (x - a) / max(1, b - a)
+            n += 0.12 * (H(x // 2, y // 3, 7) - 0.5)
             g[y][x] = "h" if n < 0.22 else ("l" if n < 0.45 else ("m" if n < 0.7 else ("d" if n < 0.88 else "D")))
     # roots: split into toes like the Beodeul trees, uneven lengths and drops
     def root(x, y, dx, ln, drop):
@@ -83,26 +84,31 @@ def hollow_tree():
             for y in range(TOPY - 2 + dt, TOPY - 1):
                 g[y][x] = "w" if x < (a + b) / 2 else "h"
             g[TOPY - 3 + dt][x] = "D"
-    # bark: staggered 2-4px dark clusters in plates
-    for y in range(TOPY + 5, 52):
-        a, b = sp(y)
-        for x in range(a + 1, b):
-            if g[y][x] not in "hlmdD": continue
-            col = x - a; band = (y + 3 * (col // 3)) // 4
-            if col % 3 == 1 and H(x, band) < 0.5 and (y + col) % 4 != 0:
-                g[y][x] = "D" if g[y][x] in "md" else "d"
-            elif col % 3 == 0 and H(x, band, 2) < 0.25 and g[y][x] in "lm":
-                g[y][x] = "h" if g[y][x] == "l" else "l"
-    # hollow at foot: dark mouth, inner wood thickness as a brown band on the right and the sill, no light specks
-    cx, cy = 22, 45
-    for y in range(38, 52):
-        r = 3.3 * math.sqrt(max(0.0, 1 - ((y - cy) / 7) ** 2))
-        L, R = int(round(cx - r)), int(round(cx + r))
-        if R <= L: continue
+    # bark: short 2-4px strokes, staggered, with a few knots; nothing above the hollow mouth
+    def clear_zone(x, y): return 33 <= y <= 40 and 17 <= x <= 27
+    for (x0, y0, ln) in ((19,15,3),(22,17,4),(25,14,2),(20,21,2),(24,22,3),(27,19,3),(18,26,3),(23,27,2),(26,25,4),
+                         (21,31,3),(27,30,2),(19,44,2),(28,34,3),(28,42,3),(26,47,2),(24,12,2)):
+        for k in range(ln):
+            x, y = x0 + (1 if k == ln - 1 and ln > 2 else 0), y0 + k
+            if clear_zone(x, y) or g[y][x] not in "hlmdD": continue
+            g[y][x] = "D" if g[y][x] in "dD" else "d"
+            if k == 0 and g[y][x - 1] in "hl": g[y][x - 1] = "h"
+    for (kx, ky) in ((22,23),(25,29)):           # knots: dark eye-free oval knot with a lit lower edge
+        for (dx, dy, c) in ((0,0,"D"),(1,0,"d"),(0,1,"d"),(1,1,"D"),(0,2,"h"),(1,2,"l")):
+            g[ky+dy][kx+dx] = c
+    # hollow at foot: off-centre to the left, leaning right toward its top, ragged; inner wood on the right, lit lower lip
+    for y in range(40, 52):
+        t = (y - 40) / 11
+        cx = 21.0 + 2.0 * (1 - t)            # top leans right
+        r = 1.2 + 2.6 * min(1.0, t * 1.6) - (0.8 if y > 49 else 0)
+        L, R = int(round(cx - r)), int(round(cx + r * 0.8))
+        if y in (43, 46): L -= 1
         for x in range(L, R + 1): g[y][x] = "k"
-        g[y][R] = "q"; g[y][L - 1] = "o"
+        g[y][R] = "q"
         if g[y][R + 1] != ".": g[y][R + 1] = "m"
-    for x in range(19, 26): g[51][x] = "m" if x < 24 else "d"
+        g[y][L - 1] = "D"
+    for x in range(18, 25): g[51][x] = "h" if x < 23 else "l"          # lit lower lip (sill)
+    g[52][19] = "l"; g[52][20] = "h"
     # moss clumps (woodland ramp) on the lit side and roots
     for (x, y, c) in ((17,24,"M"),(18,24,"G"),(17,25,"G"),(18,25,"g"),(17,26,"g"),
                      (17,33,"G"),(18,33,"M"),(17,34,"g"),(18,34,"G"),
@@ -190,25 +196,26 @@ def shrine_stone():
         for y in range(y0, y0 + h0):
             for x in range(x0 + (y - y0) % 2 * 0, x0 + w0):
                 if g[y][x] in "bBmdDT": g[y][x] = c
-    # blocky texture clusters over the front face (2-3px lumps, lit and dark)
-    for y in range(14, 41, 3):
-        for x in range(4, 22, 3):
-            if g[y][x] not in "bmdD": continue
-            hv = H(x, y, 4)
-            if hv < 0.33:
-                c = {"b": "B", "m": "b", "d": "m", "D": "d"}[g[y][x]]
-            elif hv < 0.6:
-                c = {"b": "m", "m": "d", "d": "D", "D": "o"}[g[y][x]]
-            else: continue
-            for (dx, dy) in ((0,0),(1,0),(0,1),(1,1)) if hv < 0.45 else ((0,0),(1,0),(0,1)):
-                if g[y+dy][x+dx] in "bmdD": g[y+dy][x+dx] = c
-    # lumpy base: break the flat bottom into steps
-    for x, d in ((5,1),(6,1),(9,0),(10,-1),(11,-1),(14,0),(15,1),(18,0),(19,-1)):
-        if d > 0:
-            g[42][x] = "D"; g[43][x] = "o"
-        elif d < 0:
-            g[42][x] = "o"; g[41][x] = "o" if g[41][x] in "DdoB." else g[41][x]
-    # carved star: flat 5-point groove; upper-left inner edge in shadow, lower-right lip lit
+    def despeckle(passes=2):
+        stone = "bBmdDT"
+        for _ in range(passes):
+            src = [r[:] for r in g]
+            for y in range(1, 47):
+                for x in range(1, 31):
+                    c = src[y][x]
+                    if c not in stone: continue
+                    nb = [src[y+dy][x+dx] for dx, dy in ((1,0),(-1,0),(0,1),(0,-1)) if src[y+dy][x+dx] in stone]
+                    if len(nb) >= 3 and c not in nb:
+                        g[y][x] = max(set(nb), key=nb.count)
+    # tone clusters: 3x2 / 2x3 blocks of one step lighter on the left, darker on the right, placed by hand
+    for (x0, y0, w0, h0, c) in ((8,14,3,2,"B"),(7,20,2,3,"B"),(11,28,3,2,"B"),(5,31,2,3,"B"),(8,35,3,2,"b"),
+                               (14,15,3,2,"b"),(16,26,2,3,"d"),(9,37,3,2,"m"),(13,32,2,3,"m"),(17,35,2,3,"D"),(15,38,3,2,"D"),
+                               (10,12,2,2,"T"),(12,24,2,2,"b"),(6,26,2,2,"m")):
+        for y in range(y0, y0 + h0):
+            for x in range(x0, x0 + w0):
+                if g[y][x] in "bBmdDT": g[y][x] = c
+    despeckle()
+    # carved star recess: dark upper-left inner edge, mid fill, lit (stone B) lower-right lip, no pale ring
     star = ["....x....", "....x....", "...xxx...", "xxxxxxxxx", ".xxxxxxx.", "..xxxxx..", "..xx.xx..", ".xx...xx.", ".x.....x."]
     ox, oy = 9, 18
     pts = {(ox + i, oy + j) for j, r in enumerate(star) for i, ch in enumerate(r) if ch == "x"}
@@ -217,7 +224,7 @@ def shrine_stone():
     for (x, y) in pts:
         for (dx, dy) in ((1, 0), (0, 1)):
             q = (x + dx, y + dy)
-            if q not in pts and g[q[1]][q[0]] not in ".o": g[q[1]][q[0]] = "T"
+            if q not in pts and g[q[1]][q[0]] in "bmdDT": g[q[1]][q[0]] = "B"
     # moss: on the crown and the left shoulder, flowing down a little
     for (x, y, c) in ((12,6,"G"),(13,6,"M"),(11,7,"G"),(12,7,"M"),(13,7,"L"),(14,8,"M"),(10,8,"g"),(11,8,"G"),
                      (9,9,"G"),(10,9,"M"),(9,10,"g"),(8,11,"G"),(9,11,"g"),(8,12,"g"),(7,14,"G"),(7,15,"g"),
@@ -231,13 +238,16 @@ def shrine_stone():
            (6,42):"M",(7,42):"G",(8,42):"g",(7,41):"G",(7,40):"L",(8,41):"M"}
     for (x, y), c in off.items(): g[y][x] = c
     # a single pebble right of the foot
-    for (x, y, c) in ((21,44,"a"),(22,44,"B"),(23,44,"o"),(21,45,"o"),(22,45,"o")): g[y][x] = c
     for y in range(41, 48):
         for x in range(8, 32):
             if g[y][x] == ".":
                 d = ((x - 18) / 11) ** 2 + ((y - 43.5) / 3) ** 2
                 if d < 0.5: g[y][x] = "S"
                 elif d < 1: g[y][x] = "s"
+    for y in range(1, 47):
+        for x in range(1, 31):
+            if g[y][x] not in ".sS" and all(g[y+dy][x+dx] in ".sS" for dx, dy in ((1,0),(-1,0),(0,1),(0,-1))):
+                g[y][x] = "S" if y > 40 else "."
     keys = {"o": "#231c26", "D": "#3a2e38", "d": "#584a52", "m": "#7a6a6c", "b": "#868281", "B": "#a09088",
             "T": "#c4c6c3", "a": "#584a52",
             "g": "#063328", "G": "#104c2f", "M": "#296535", "L": "#497f3c",

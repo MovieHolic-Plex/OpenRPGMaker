@@ -88,3 +88,22 @@ ART = {"grass-tuft-a": (TA, K), "grass-tuft-b": (TB, K), "grass-reeds": (RD, K)}
 def _up(rows): return rows[1:] + ["." * len(rows[0])]
 # grass-reeds already fills row 0..; shifting it up would clip its top seed head, so it stays (see report)
 ART = {k: ((_up(r) if k != "grass-reeds" else r), kk) for k, (r, kk) in ART.items()}
+
+# ---- r6 reeds: fits rows 1-14, shorter tapered seed heads (2x2 + tip), stems of different height and lean
+RD6 = [E, E,
+ ".......a........",
+ "......abc...a...",
+ "..a...bcd..abc..",
+ ".abc...d...bcd..",
+ ".bcd...4....d...",
+ "..d....41..41...",
+ "..4....41..41...",
+ "..41..431.41....",
+ "...41.41.431.54.",
+ ".54.4141431.431.",
+ "..431431431o1o..",
+ "...4314314o1....",
+ "....3o21o1o1S...",
+ ".....SSSSSSs....",
+]
+ART["grass-reeds"] = (RD6, K)

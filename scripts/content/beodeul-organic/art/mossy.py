@@ -82,3 +82,6 @@ _X = {"moss-boulder": (MB, KEYS), "moss-stone": (MS, KEYS), "moss-stones-flat": 
 
 from art.rock import lift
 ART["moss-stones-flat"] = (lift(ART["moss-stones-flat"][0]), KEYS)
+
+from art._base import fix
+ART["moss-boulder"] = (fix(ART["moss-boulder"][0]), KEYS)
