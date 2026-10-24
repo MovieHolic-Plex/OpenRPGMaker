@@ -765,7 +765,15 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
     if (base + 2 > 14) return null;
     const inAdit = (x: number, y: number) => x >= adit.x && x < adit.x + adit.w && y >= top && y < adit.y + adit.h + 1;
     const hitPiece = (x: number, y: number) => inAdit(x, y) || placed.some((p) => x >= p.x && x < p.x + p.w && y >= p.y && y < p.y + p.h + 1);
-    const can = (x: number, y: number) => { if (x < 0 || y < 0 || x >= W || y >= H) return false; const i = y * W + x; return !!(ok[i] || grid[i]) && !hitPiece(x, y) && (relief.levels[i] ?? 0) === base; };
+    // r13: 둔덕이 마당 위 큰길을 덮어 길을 끊고, 통나무집 앞벽에 맞붙었다 — 마당 밖으로 솟는 칸은 풀밭만(길·흙길 칸 금지), 집 보호 칸과 그 둘레 1칸도 금지.
+    const yardCell = (i: number) => !!ok[i];
+    const nearHouse = (x: number, y: number) => { for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (houseCells.has((y + dy) * W + x + dx)) return true; return false; };
+    const can = (x: number, y: number) => {
+      if (x < 0 || y < 0 || x >= W || y >= H) return false;
+      const i = y * W + x;
+      if (!(ok[i] || grid[i]) || hitPiece(x, y) || (relief.levels[i] ?? 0) !== base || nearHouse(x, y)) return false;
+      return yardCell(i) || (grassTile !== undefined && m.lowerTiles[i] === grassTile);
+    };
     const cells = new Set<number>();
     let l = adit.x - 2, r = adit.x + adit.w + 1;
     for (let y = top - 1, k = 0; y >= top - depth && y >= 0; y--, k++) {
@@ -788,6 +796,8 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
       if (!vert || !horiz) cells.delete(c);
     }
     if (cells.size < adit.w + 4) return null;
+    // r13: 뒤 줄이 길에 막혀 둔덕이 갱구 옆 기둥으로만 섰다 — 갱구 바로 뒤 줄(보이는 윗변 위)과 그 위 한 줄은 갱구 폭 전부가 둔덕이어야 한다.
+    for (const y of [top - 1, top - 2]) for (let x = adit.x; x < adit.x + adit.w; x++) if (!cells.has(y * W + x)) return null;
     const pass = (x: number, y: number) => !cells.has(y * W + x) && !(x >= adit.x && x < adit.x + adit.w && y >= top && y < adit.y + adit.h) && isPassable(draft, m, x, y);
     let from = comp.seed; if (!pass(from.x, from.y)) from = { x: adit.x + 1, y: adit.y + adit.h };
     if (!pass(from.x, from.y)) return null;
@@ -798,6 +808,7 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
     return { cells, base, top, ...(grassTile !== undefined ? { grass: grassTile } : {}) };
   };
   let mound: { cells: Set<number>; base: number; top: number; grass?: number } | null = null;
+  const houseCells = protectedSet(map);
   const kitRows = (id: string) => draft.tilesets[quarter.tilesetId]?.structureKits?.find((k) => k.id === id)?.rows ?? [];
   // 갱구 둘레 흙 칸에 산길 돌 부스러기 덧그림(위층) — 바위 땅을 깔았더니 회색 콘크리트 판으로 읽혀(r7 시험) 부스러기만 남겼다.
   const screeAround = (adit: Box): void => {
@@ -899,6 +910,13 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
           // 마당 안 아무 자리에서 자라게 했더니 귀퉁이 기준점이면 반경 밖 빈 마당을 못 썼다 — 마당 안 남은 자리를 훑어 채운다.
           ?? (!outside && plazaBox && yardFreeAnchor ? packSlot(ok, walk, taken, W, H, piece.size.w, piece.size.h, plazaBox, attempt, fromRight) : null));
       if (!b) break;
+      // r13: 무너진 바닥 판(floor-ruin)이 맨흙 위에 칼각 네모로 찍혀 «붙여 넣은 타일»로 읽혔다 — 신전 판석 섬 칸 위에만 둔다(아니면 그 자리를 버리고 다음).
+      if (flagIsland && piece.id.endsWith("-floor-ruin")) {
+        const fm = new Set(flagIsland.memberTileIds); let onFlag = 0;
+        const lm = draft.maps[map.id]!;
+        for (let yy = b.y; yy < b.y + b.h; yy++) for (let xx = b.x; xx < b.x + b.w; xx++) if (fm.has(lm.lowerTiles[yy * W + xx]!)) onFlag++;
+        if (onFlag < b.w * b.h) { mark(taken, W, H, { ...b, w: 1, h: 1 }); continue; }
+      }
       const objectId = `kit:${quarter.tilesetId}/${piece.id}`;
       const snapshot = structuredClone(draft.maps[map.id]!);
       const startBefore = draft.startPos ? { ...draft.startPos } : undefined;
