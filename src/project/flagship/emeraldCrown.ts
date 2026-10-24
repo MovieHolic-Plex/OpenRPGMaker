@@ -24,9 +24,9 @@ const SPECIES_NAMES: Readonly<Record<string, string>> = {
   mx_species_bramblet: "실바리온",
   mx_species_canopine: "벨데로드",
   mx_species_coalbit: "숯꼬미",
-  // 볼케이건은 기존 작품 이름과 소리가 가까웠다(2026-10-21) — 가마(kiln) + 발톱(claw).
-  mx_species_kilnclaw: "가마발톱",
-  mx_enemy_kilnclaw: "가마발톱",
+  // 볼케이건은 기존 작품 이름과 소리가 가까웠다(2026-10-21). 2026-10-24 불 계통이 양으로 바뀌어 박치기 양 「불박치」.
+  mx_species_kilnclaw: "불박치",
+  mx_enemy_kilnclaw: "불박치",
   mx_species_pyroscale: "마그렉스",
   mx_species_rivulet: "아가핀",
   mx_species_tideling: "마린웨이",
@@ -57,7 +57,8 @@ const NAME_SWAPS: ReadonlyArray<readonly [string, string]> = [
   // 생성기 로스터의 옛 이름이 한글 원작 이름과 한 글자 차이라 먼저 바꾼다.
   ["파이린", "숯꼬미"],
   ["아쿠링", "아가핀"],
-  ["볼케이건", "가마발톱"],
+  ["볼케이건", "불박치"],
+  ["가마발톱", "불박치"],
   ["1번길 · 별싹 들판", PLACE.route1],
   ["별빛 리그 · 챔피언", PLACE.league],
   ["별빛 리그", "아스트라 리그"],
@@ -1099,13 +1100,19 @@ function varyTackle(project: Project): void {
 }
 
 /**
- * 아스트라 스타터 세 마리는 2026-10-23 에 새로 그렸다(귀가 처진 새싹 토끼·불꽃 꼬리 레서판다·물줄기 뿔 일각고래).
- * 공용 탐험 로스터의 도감 문장은 옛 그림(토끼·천산갑·수달)을 말하므로 이 게임에서만 첫 단계 문장을 바꾼다.
+ * 아스트라 스타터 세 계통은 2026-10-24 에 다시 그렸다(사용자 승인 astra-starters-5: 잎꼬리 여우원숭이 → 연꽃 현자, 솜털 양 → 불뿔 기사,
+ * 파도 볏 범고래 → 해일 범고래). 공용 탐험 로스터의 도감 문장은 옛 그림(토끼·천산갑·수달)을 말하므로 이 게임에서만 아홉 종 문장을 바꾼다.
  */
 const STARTER_NOTES: Record<string, string> = {
-  mx_species_spriglet: "축 늘어진 잎사귀 귀로 햇볕을 모은다. 머리의 새싹이 기분 좋을 때 살랑인다.",
-  mx_species_coalbit: "고리 무늬 꼬리 끝에 작은 불꽃을 달고 다닌다. 추운 밤에는 꼬리로 몸을 감싸 잠든다.",
-  mx_species_rivulet: "물줄기를 감아 만든 뿔로 물결을 읽는다. 기쁘면 등에서 물보라를 뿜는다.",
+  mx_species_spriglet: "둥글게 만 잎줄무늬 꼬리를 베개 삼아 잔다. 이마의 꽃봉오리가 햇볕을 받으면 살짝 벌어진다.",
+  mx_species_frondhare: "꼬리를 물음표처럼 세우고 나뭇가지 사이를 뛰어다닌다. 반쯤 핀 이마 꽃으로 마음을 읽는다.",
+  mx_species_grovewarden: "활짝 핀 이마 연꽃의 보석으로 숲의 생각을 듣는다. 떠다니는 빛구슬로 다친 몬스터를 감싼다.",
+  mx_species_coalbit: "솜털 속에 따뜻한 불씨를 품고 다닌다. 기분이 좋으면 동그란 뿔이 노랗게 달아오른다.",
+  mx_species_kilnclaw: "털끝에서 불꽃이 피어오르면 고개를 숙이고 돌진한다. 박치기 한 번에 바위가 갈라진다.",
+  mx_species_furnscale: "불타는 두 뿔을 투구처럼 두르고 동료 앞을 지킨다. 털 망토에 불이 붙어도 꿈쩍하지 않는다.",
+  mx_species_rivulet: "머리의 파도 볏으로 물결의 방향을 읽는다. 기쁘면 볏이 출렁이며 물보라를 튀긴다.",
+  mx_species_brookraft: "커다란 파도 지느러미를 세우고 바다 위로 뛰어오른다. 높이 뛸수록 볏이 길게 자란다.",
+  mx_species_tidekeeper: "꼬리로 바다 위에 우뚝 서서 해일 같은 볏을 펼친다. 볏 끝의 서리로 거친 파도를 얼려 멈춘다.",
 };
 
 export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {

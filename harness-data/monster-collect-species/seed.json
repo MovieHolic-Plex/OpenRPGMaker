@@ -64,7 +64,46 @@
       "Froakie",
       "Quaxly",
       "Smoochum",
-      "Snorlax"
+      "Snorlax",
+      "Raboot",
+      "Cinderace",
+      "Infernape",
+      "Blaziken",
+      "Emboar",
+      "Pignite",
+      "Mareep",
+      "Dubwool",
+      "Lucario",
+      "Walrein",
+      "Dewgong",
+      "Spheal",
+      "Sealeo",
+      "Seel",
+      "Empoleon",
+      "Primarina",
+      "Wailmer",
+      "Sawsbuck",
+      "Sandslash",
+      "Tropius",
+      "Gardevoir",
+      "Nuzleaf",
+      "Shiftry",
+      "Pansage",
+      "Simisage",
+      "Ambipom",
+      "Kangaskhan",
+      "Kyogre",
+      "Flaaffy",
+      "Ampharos",
+      "Bouffalant",
+      "Gogoat",
+      "Arcanine",
+      "Rapidash",
+      "Wailord",
+      "Brionne",
+      "Lapras",
+      "Sharpedo",
+      "Keldeo"
     ]
   },
   "animation": {
@@ -143,10 +182,10 @@
       "stage": 1,
       "starterSet": "first-region",
       "campaignSpeciesId": "mx_species_coalbit",
-      "design": "A baby fire red panda cub starter standing on four tiny stubby legs: a very big round head (half of its height) with big bright eyes, a tiny black nose and a small happy smile, round fluffy cheeks, small round ears with cream inner fur, rusty orange-red fur with a cream face mask, dark brown legs, a short plump round body.",
-      "signature": "a gigantic fluffy ringed tail curled up behind it, bigger than its whole body, with alternating orange-red and cream rings, and the tail tip is a big round puff of crisp pixel flame (flat colors, dark outline, not glowing)",
-      "accent": "bright yellow-orange (only the flame tail tip)",
-      "palette": "rusty orange-red, cream, dark brown, maroon",
+      "design": "A baby lamb starter standing on four short stubby legs: a big round cloud of cream wool covering its head top and body, a round warm orange face with big bright eyes, a small puff tail, dark-red outline.",
+      "signature": "two big curled yellow-orange ram horns on its head, as big as its face",
+      "accent": "bright yellow-orange (only the curled horns)",
+      "palette": "cream wool, orange, dark red, yellow-orange",
       "motion": {
         "flicker": "flame"
       }
@@ -160,10 +199,10 @@
       "stage": 1,
       "starterSet": "first-region",
       "campaignSpeciesId": "mx_species_rivulet",
-      "design": "A baby narwhal calf starter that waddles on land on four tiny stubby flipper feet: a very big round head-and-body (one soft round bean shape) with big bright eyes and a small happy smile, smooth sky-blue skin with a white belly and white chin, a few small pale dots on its back, a short tail ending in a small upturned whale fluke.",
-      "signature": "a short soft spiral horn on its forehead shaped like a twisting water spout, ending in a big round water droplet at the tip - pale aqua with white spiral lines, as tall as half its head",
-      "accent": "bright aqua cyan (only the water-spout horn and droplet)",
-      "palette": "sky blue, white, navy, pale aqua"
+      "design": "A baby orca calf starter lying on its belly on two small front flippers, a round bean-shaped navy-blue head-and-body with a white chin, white belly and a white eye patch around each big bright eye, a small happy smile, a tail fluke curled up behind it.",
+      "signature": "a big curling cyan ocean-wave crest growing from the top of its head like a breaking wave, taller than its head",
+      "accent": "bright cyan (only the wave crest)",
+      "palette": "navy blue, white, dark navy, cyan"
     },
     {
       "id": "leafling",
@@ -174,10 +213,10 @@
       "stage": 1,
       "starterSet": "first-region",
       "campaignSpeciesId": "mx_species_spriglet",
-      "design": "A baby grass bunny starter sitting up on its haunches: a very big round head (half of its height) with big bright eyes and a tiny happy smile, a small round chubby body like a rice ball, short stubby paws held to its chest, soft mint-green fur with a cream face patch and cream belly, a small round cotton-ball tail.",
-      "signature": "two huge drooping lop ears that are broad soft leaves - each leaf ear hangs down to the ground beside its cheeks like long floppy rabbit ears, as long as its whole body, rounded leaf tips with one bright vein line, and a tiny two-leaf sprout growing from the top of its head between the ears",
-      "accent": "bright lime green (the leaf ears and the sprout)",
-      "palette": "mint green, cream, leaf green, dark forest green"
+      "design": "A baby leaf-lemur starter sitting on all fours in a compact round ball shape: a very big round head (half of its height) with a big plain cream face, a round leaf-green body, two big round leaf-shaped ears, short stubby legs.",
+      "signature": "one long thick tail with three broad cream rings curled into a single big round spiral beside its body, as big as its head",
+      "accent": "soft pink (only one small closed flower bud on its forehead)",
+      "palette": "leaf green, cream, dark forest green, soft pink"
     },
     {
       "id": "gustchick",
@@ -242,10 +281,10 @@
       "stage": 2,
       "evolvesFrom": "leafling",
       "campaignSpeciesId": "mx_species_frondhare",
-      "design": "The evolved form of the leafling fox: it now stands upright on two sturdy legs like a brave young swordsman fox, a slim body and a big round friendly face with a SHORT cute muzzle: the face is large, plain cream, fully visible and in front of the leaves, with big bright round eyes (large dark pupils with a 2x2 white sparkle) - the leaf mane grows only BEHIND and above the head like a collar and never covers the face, the acorn cap grown into a small crown, a long leaf-blade tail like a green sword.",
-      "signature": "a huge flamboyant mane made of only about eight big broad leaves fanning out from its neck and shoulders like a peacock fan or lion's mane, taller than its head and wider than its body, in layered greens",
-      "accent": "golden yellow (only the tips of the mane leaves)",
-      "palette": "leaf green, cream, acorn brown, dark green"
+      "design": "The evolved form: a sturdy young leaf-lemur standing UPRIGHT on two legs in a lively balancing pose, one arm raised, a plump solid body (not skinny), a big round head with a big cream face, larger pointed leaf ears, the forehead bud half open.",
+      "signature": "the long ringed tail rising high above its head and curling into a big spiral like a question mark, taller than its body",
+      "accent": "soft pink (only the half-open forehead flower)",
+      "palette": "leaf green, cream, dark forest green, soft pink"
     },
     {
       "id": "kilnclaw",
@@ -257,10 +296,13 @@
       "stage": 2,
       "evolvesFrom": "sparkit",
       "campaignSpeciesId": "mx_species_kilnclaw",
-      "design": "The evolved form of the sparkit newt: a sturdy chunky salamander brawler standing up on two thick hind legs with a big round friendly head and a short rounded snout, huge muscular forearms ending in thick dark claws, charcoal-grey armor plates over the shoulders and back, ember-orange cracked skin with dark red stripes, big bright round eyes (large dark pupils with a 2x2 white sparkle, brave but friendly, never tiny slits), a spiked charcoal ridge down its neck.",
-      "signature": "a colossal flaming coal-club tail, far bigger than its head - a huge cracked charcoal mace-ball wrapped in a big crown of crisp pixel flames (flat colors, dark outline, not glowing), raised behind it like a war hammer",
-      "accent": "bright yellow-orange (the flames and cracks)",
-      "palette": "ember orange, charcoal grey, dark red, cream"
+      "design": "The evolved form: a sturdy young ram that now stands UPRIGHT on two strong hind legs in a forward-leaning charging stance, head lowered to butt, broad chest, cream wool vest over its body, orange face and arms, small dark-red hooves on its fists, big eyes, a brave grin, dark-red outline. A clearly new body plan: upright and stocky, not a bigger lamb.",
+      "signature": "its cream wool burns at the tips: the wool on its shoulders and back ends in a few big crisp flat flame tufts, and the curled horns are bigger and thicker",
+      "accent": "bright yellow-orange (only the flame wool tips and the horns)",
+      "palette": "cream wool, orange, dark red, yellow-orange",
+      "motion": {
+        "flicker": "flame"
+      }
     },
     {
       "id": "brookraft",
@@ -271,10 +313,10 @@
       "stage": 2,
       "evolvesFrom": "aqualing",
       "campaignSpeciesId": "mx_species_brookraft",
-      "design": "The evolved form of the aqualing axolotl: a big sturdy heavy amphibian standing on four thick webbed legs, big bright round eyes (large dark pupils with a 2x2 white sparkle, calm and kind), a broad flat driftwood raft of bark planks lashed on its back like a barge, a blue body with a pale belly, a long thick fin-edged paddle tail.",
-      "signature": "a giant sail-like fan of coral-pink gill fronds, as tall as its whole body, flaring up and back from the head like a great frilled crown",
-      "accent": "coral pink (only the gill fan)",
-      "palette": "blue, pale cream, driftwood brown, coral pink"
+      "design": "The evolved form: a sleek adolescent orca caught mid-LEAP, its whole body arched in a curve as if jumping out of the sea, front flippers spread wide like wings, longer and slimmer than stage 1, navy back with white belly and white eye patches, big bright eyes, an excited open smile. A clearly new pose and body plan: an arched leaping body, not a bigger calf lying down.",
+      "signature": "a bigger curling cyan wave fin that runs from its head down along its back like a surfing wave",
+      "accent": "bright cyan (only the wave fin)",
+      "palette": "navy blue, white, dark navy, cyan"
     },
     {
       "id": "coralpin",
@@ -488,10 +530,10 @@
       "stage": 3,
       "evolvesFrom": "frondhare",
       "campaignSpeciesId": "mx_species_grovewarden",
-      "design": "The final evolved form of the frondhare fox: a tall noble guardian fox standing upright on two strong legs, a BROAD heavy chest and thick solid body clearly bigger and bulkier than frondhare, with a long full cape of layered leaves down its back to the ground, a BIG rounded head (about a third of the body height) with a big plain cream face and a short muzzle, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (calm and wise), the acorn crown grown bigger, a long leaf-blade tail.",
-      "signature": "a big pair of tree-branch antler ears - two brown branching wooden antlers growing from the top of the head (above the face, never covering it) with a few broad green leaves on the tips, about as wide as its body like the crown of a tree",
-      "accent": "golden yellow (only the leaf tips)",
-      "palette": "leaf green, cream, acorn brown, dark green"
+      "design": "The final form: a tall, assertive leaf-lemur sage STANDING UPRIGHT and proud with a broad chest and big shoulders, clearly bigger and heavier than its stage 2, one arm raised with an open palm, a big round head with a big cream face and big eyes, a short cape made of only three big broad leaves over its shoulders (no small leaves, no leaf skirt), two large pointed leaf ears. Its ringed tail is a medium ring behind its back, smaller than its body.",
+      "signature": "a psychic aura: a big round pink-violet gem on its forehead inside the opened flower, and two round pink-violet orbs floating in the air beside its head",
+      "accent": "pink-violet (only the forehead gem and the two floating orbs)",
+      "palette": "leaf green, cream, dark forest green, pink-violet"
     },
     {
       "id": "furnscale",
@@ -503,10 +545,10 @@
       "stage": 3,
       "evolvesFrom": "kilnclaw",
       "campaignSpeciesId": "mx_species_furnscale",
-      "design": "The final evolved form of the kilnclaw salamander: a big heavy armored salamander brawler standing upright, huge muscular arms with thick dark claws, layered charcoal-grey scale armor on its shoulders and back, ember-orange skin with dark red stripes, a big round friendly head with a short snout and big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (brave).",
-      "signature": "a gigantic furnace on its back - a big round charcoal kiln dome with a bright orange furnace mouth and a short chimney topped by a crisp pixel flame, bigger than its head (flat colors, dark outline, not glowing)",
-      "accent": "bright yellow-orange (only the furnace mouth and flame)",
-      "palette": "ember orange, charcoal grey, dark red, cream",
+      "design": "The final form: a MASSIVE heavyweight ram knight, much wider and taller than its stage 2, filling the whole frame, standing wide and planted on two thick armoured legs, a huge barrel chest covered by a thick cream wool breastplate, very broad shoulders with dark-red armour plates, both big fists raised in a boxer's guard with clearly visible knuckles, a stern but heroic face with big eyes and a short snout (not a fox, not a dog), dark-red outline.",
+      "signature": "two huge thick spiral horns curling forward around its head like a knight's helmet, the horns burning with a few big crisp flat flames like a crown",
+      "accent": "bright yellow-orange (only the burning horns)",
+      "palette": "cream wool, orange, dark red, yellow-orange",
       "motion": {
         "flicker": "flame"
       }
@@ -521,10 +563,10 @@
       "stage": 3,
       "evolvesFrom": "brookraft",
       "campaignSpeciesId": "mx_species_tidekeeper",
-      "design": "The final evolved form of the brookraft axolotl: a large calm amphibian guardian standing on four thick webbed legs, a blue body with a pale belly, a long fin-edged paddle tail, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (calm and kind), coral-pink gill fronds with icy white frost tips.",
-      "signature": "a giant spiral conch-shell crown on its head - a big pale-cream and coral-pink spiral seashell like a royal crown, as big as its head, ringed with small icy-white frost spikes",
-      "accent": "coral pink (only the gill fronds and shell crown)",
-      "palette": "blue, pale cream, icy white, coral pink"
+      "design": "The final form: a MASSIVE orca guardian, much bigger and heavier than its stage 2, filling the whole frame, standing UPRIGHT on a thick powerful tail, a huge broad white chest, two big strong flippers held out wide with sharp ice-crystal edges, navy back with white eye patches, two short white ice fangs, calm commanding big eyes. Angular pale-cyan glacier armour plates on its shoulders and chest.",
+      "signature": "a towering faceted ICE crest on its head and back shaped like a frozen breaking wave, made of big flat angular crystal facets in pale cyan and white (ice, not foam)",
+      "accent": "pale cyan and white (only the frozen crest and glacier plates)",
+      "palette": "navy blue, white, dark navy, cyan"
     },
     {
       "id": "orchardant",
@@ -666,7 +708,10 @@
     {
       "id": "sandnip",
       "name": "스콜피",
-      "types": ["poison", "ground"],
+      "types": [
+        "poison",
+        "ground"
+      ],
       "stage": 1,
       "campaignSpeciesId": "mx_species_sandnip",
       "design": "A baby desert scorpion standing low on six short legs: a big round sandy-orange head-body with a cream face, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly), two chunky round pincers held up in front, rust-brown back plates.",
@@ -677,7 +722,10 @@
     {
       "id": "dunestalk",
       "name": "듄스팅어",
-      "types": ["poison", "ground"],
+      "types": [
+        "poison",
+        "ground"
+      ],
       "stage": 2,
       "evolvesFrom": "sandnip",
       "campaignSpeciesId": "mx_species_dunestalk",
@@ -689,7 +737,10 @@
     {
       "id": "miragespike",
       "name": "미라주온",
-      "types": ["poison", "ground"],
+      "types": [
+        "poison",
+        "ground"
+      ],
       "stage": 3,
       "evolvesFrom": "dunestalk",
       "campaignSpeciesId": "mx_species_miragespike",
@@ -701,7 +752,10 @@
     {
       "id": "flurrykit",
       "name": "설아링",
-      "types": ["ice", "normal"],
+      "types": [
+        "ice",
+        "normal"
+      ],
       "stage": 1,
       "campaignSpeciesId": "mx_species_flurrykit",
       "design": "A baby snow lynx kitten sitting upright on four small paws: a big round head with a white muzzle, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly), a fluffy pale-blue body with a white chest, a short fluffy tail.",
@@ -712,7 +766,10 @@
     {
       "id": "rimepelt",
       "name": "샤베펠트",
-      "types": ["ice", "normal"],
+      "types": [
+        "ice",
+        "normal"
+      ],
       "stage": 2,
       "evolvesFrom": "flurrykit",
       "campaignSpeciesId": "mx_species_rimepelt",
@@ -724,7 +781,10 @@
     {
       "id": "glaciermane",
       "name": "글레이팽",
-      "types": ["ice", "normal"],
+      "types": [
+        "ice",
+        "normal"
+      ],
       "stage": 3,
       "evolvesFrom": "rimepelt",
       "campaignSpeciesId": "mx_species_glaciermane",
@@ -736,7 +796,10 @@
     {
       "id": "miretail",
       "name": "미르핀",
-      "types": ["poison", "water"],
+      "types": [
+        "poison",
+        "water"
+      ],
       "stage": 1,
       "campaignSpeciesId": "mx_species_miretail",
       "design": "A baby swamp newt standing on four tiny stubby legs: a big round head with a pale lilac face, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly), a soft plump slate-purple body with a pale lilac belly.",
@@ -747,7 +810,10 @@
     {
       "id": "venomfrill",
       "name": "베놈프릴",
-      "types": ["poison", "water"],
+      "types": [
+        "poison",
+        "water"
+      ],
       "stage": 2,
       "evolvesFrom": "miretail",
       "campaignSpeciesId": "mx_species_venomfrill",
@@ -759,7 +825,10 @@
     {
       "id": "marshcrown",
       "name": "베노로드",
-      "types": ["poison", "water"],
+      "types": [
+        "poison",
+        "water"
+      ],
       "stage": 3,
       "evolvesFrom": "venomfrill",
       "campaignSpeciesId": "mx_species_marshcrown",
@@ -771,7 +840,10 @@
     {
       "id": "dozemite",
       "name": "몽환아",
-      "types": ["psychic", "bug"],
+      "types": [
+        "psychic",
+        "bug"
+      ],
       "stage": 1,
       "campaignSpeciesId": "mx_species_dozemite",
       "design": "A baby sleepy mantis sitting upright on four thin legs: a big round lilac head with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly, half-closed sleepy lids), a small plump violet body, two short folded arms.",
@@ -782,7 +854,10 @@
     {
       "id": "trancescythe",
       "name": "문사이드",
-      "types": ["psychic", "bug"],
+      "types": [
+        "psychic",
+        "bug"
+      ],
       "stage": 2,
       "evolvesFrom": "dozemite",
       "campaignSpeciesId": "mx_species_trancescythe",
@@ -794,7 +869,10 @@
     {
       "id": "oraclemantis",
       "name": "오라클온",
-      "types": ["psychic", "bug"],
+      "types": [
+        "psychic",
+        "bug"
+      ],
       "stage": 3,
       "evolvesFrom": "trancescythe",
       "campaignSpeciesId": "mx_species_oraclemantis",
@@ -806,7 +884,10 @@
     {
       "id": "threadimp",
       "name": "마리오네",
-      "types": ["ghost", "psychic"],
+      "types": [
+        "ghost",
+        "psychic"
+      ],
       "stage": 1,
       "campaignSpeciesId": "mx_species_threadimp",
       "design": "A small floating puppet ghost: a big round slate-blue cloth head with a pale cream face, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) and a little smile, a short ragged cloth body with two tiny stubby arms, no legs.",
@@ -817,7 +898,10 @@
     {
       "id": "hushdoll",
       "name": "팬텀돌",
-      "types": ["ghost", "psychic"],
+      "types": [
+        "ghost",
+        "psychic"
+      ],
       "stage": 2,
       "evolvesFrom": "threadimp",
       "campaignSpeciesId": "mx_species_hushdoll",
@@ -829,7 +913,10 @@
     {
       "id": "veilmaster",
       "name": "녹턴베일",
-      "types": ["ghost", "psychic"],
+      "types": [
+        "ghost",
+        "psychic"
+      ],
       "stage": 3,
       "evolvesFrom": "hushdoll",
       "campaignSpeciesId": "mx_species_veilmaster",
@@ -841,7 +928,10 @@
     {
       "id": "reedpeep",
       "name": "청비오",
-      "types": ["flying", "water"],
+      "types": [
+        "flying",
+        "water"
+      ],
       "stage": 1,
       "campaignSpeciesId": "mx_species_reedpeep",
       "design": "A baby marsh bird chick standing on two thin legs: a big round teal-green head and a plump round teal body with a cream belly, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly), small folded wings.",
@@ -852,7 +942,10 @@
     {
       "id": "fenstrider",
       "name": "블루헤론",
-      "types": ["flying", "water"],
+      "types": [
+        "flying",
+        "water"
+      ],
       "stage": 2,
       "evolvesFrom": "reedpeep",
       "campaignSpeciesId": "mx_species_fenstrider",
@@ -864,7 +957,10 @@
     {
       "id": "mistralheron",
       "name": "미스트랄",
-      "types": ["flying", "water"],
+      "types": [
+        "flying",
+        "water"
+      ],
       "stage": 3,
       "evolvesFrom": "fenstrider",
       "campaignSpeciesId": "mx_species_mistralheron",
@@ -876,7 +972,10 @@
     {
       "id": "thundercairn",
       "name": "뇌제라칸",
-      "types": ["electric", "rock"],
+      "types": [
+        "electric",
+        "rock"
+      ],
       "stage": 3,
       "campaignSpeciesId": "mx_species_thundercairn",
       "design": "A legendary storm ibex standing on four sturdy hooved legs: a strong stocky body of golden fur with grey stone armor plates on its shoulders and back, a cream face with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (calm and wise), a short beard.",
@@ -887,7 +986,10 @@
     {
       "id": "winterquill",
       "name": "빙화세라",
-      "types": ["ice", "flying"],
+      "types": [
+        "ice",
+        "flying"
+      ],
       "stage": 3,
       "campaignSpeciesId": "mx_species_winterquill",
       "design": "A legendary moon crane drawn in a cute chibi style: a plump round white body on two short thin legs, a BIG round white head nearly as wide as the body with a cream face and two huge round navy eyes (each eye a solid 4x4 dark pupil with a 2x2 white sparkle, friendly, calm and wise), a short pale beak, a small crescent-moon crest on top of the head.",
@@ -898,7 +1000,10 @@
     {
       "id": "solmane",
       "name": "솔라레온",
-      "types": ["fire", "normal"],
+      "types": [
+        "fire",
+        "normal"
+      ],
       "stage": 3,
       "campaignSpeciesId": "mx_species_solmane",
       "design": "A legendary sun lion sitting proudly on four strong paws: a powerful golden-yellow body with a cream muzzle and chest, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (brave), a long tail ending in a round flame tuft.",
@@ -909,7 +1014,10 @@
     {
       "id": "lunavane",
       "name": "루나만타",
-      "types": ["psychic", "water"],
+      "types": [
+        "psychic",
+        "water"
+      ],
       "stage": 3,
       "campaignSpeciesId": "mx_species_lunavane",
       "design": "A legendary moon manta ray gliding in the air: a broad flat lavender-blue body seen from the front-top, a pale cream face with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (calm and wise), a long thin whip tail.",
@@ -920,7 +1028,10 @@
     {
       "id": "relicarab",
       "name": "스카라킹",
-      "types": ["bug", "rock"],
+      "types": [
+        "bug",
+        "rock"
+      ],
       "stage": 3,
       "campaignSpeciesId": "mx_species_relicarab",
       "design": "A legendary ancient scarab beetle standing on six sturdy legs: a big round golden-brown shell with carved stone rune patterns, a cream face with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (calm and wise), translucent teal wings half open behind the shell.",
@@ -931,7 +1042,10 @@
     {
       "id": "astralhart",
       "name": "아스트록",
-      "types": ["grass", "ghost"],
+      "types": [
+        "grass",
+        "ghost"
+      ],
       "stage": 3,
       "campaignSpeciesId": "mx_species_astralhart",
       "design": "A legendary spirit stag standing on four long slender legs: a graceful pale-green body with dark green leaf patterns, a cream face and chest, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (calm and wise), a short white tail.",

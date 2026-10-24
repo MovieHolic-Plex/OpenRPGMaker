@@ -345,7 +345,7 @@ function starterCoverage(project: Project): void {
   const fromStart: Record<string, { readonly base: string; readonly name: string; readonly power: number }> = {
     mx_species_spriglet: { base: "mx_skill_flying_1", name: "잎새돌풍", power: 40 },
     mx_species_rivulet: { base: "mx_skill_ice_1", name: "서리물보라", power: 40 },
-    // 리그의 두 배 위협(불 ← 로키온 바위)에 불만 맞설 기술이 없었다 — 가마숨이 반감인 채 두 배로 맞아 첫 도전에 졌다(r32). 진화형(가마발톱, 불·격투)에 맞춰 격투 하나.
+    // 리그의 두 배 위협(불 ← 로키온 바위)에 불만 맞설 기술이 없었다 — 가마숨이 반감인 채 두 배로 맞아 첫 도전에 졌다(r32). 진화형(불박치, 불·격투)에 맞춰 격투 하나.
     mx_species_coalbit: { base: "mx_skill_fighting_1", name: "다부진주먹", power: 40 },
   };
   for (const species of project.database.monsterSpecies ?? []) {
