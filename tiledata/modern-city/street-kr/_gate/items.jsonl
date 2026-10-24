@@ -6,3 +6,4 @@
 {"png": "/home/main/z-project/rpg-zzu-first-love/tiledata/modern-city/street-kr/_gate/mc-prop-kr-sign-conv.png", "kind": "other", "name": "세로 입간판 「편의」", "label": "modern_city/street-kr/mc-prop-kr-sign-conv", "chipset": "modern_city"}
 {"png": "/home/main/z-project/rpg-zzu-first-love/tiledata/modern-city/street-kr/_gate/mc-prop-kr-sign-food.png", "kind": "other", "name": "세로 입간판 「국밥」", "label": "modern_city/street-kr/mc-prop-kr-sign-food", "chipset": "modern_city"}
 {"png": "/home/main/z-project/rpg-zzu-first-love/tiledata/modern-city/street-kr/_gate/mc-prop-kr-sign-pharm.png", "kind": "other", "name": "세로 입간판 「약국」", "label": "modern_city/street-kr/mc-prop-kr-sign-pharm", "chipset": "modern_city"}
+{"png": "/home/main/z-project/rpg-zzu-first-love/tiledata/modern-city/street-kr/_gate/mc-prop-kr-tree-grate.png", "kind": "flat", "name": "가로수 보호판(주철)", "label": "modern_city/street-kr/mc-prop-kr-tree-grate", "chipset": "modern_city"}
