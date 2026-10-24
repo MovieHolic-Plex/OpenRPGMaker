@@ -1,4 +1,5 @@
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
+import { isDerivedFieldFoeTextureKey } from "@/player/fieldFoeSprite";
 import {
   charsetFrameIndex,
   decodeCharsetFrameIndex,
@@ -12,6 +13,11 @@ const WALK_PATTERNS = [0, 1, 2, 1] as const;
 
 export function isEasyRpgCharsetTextureKey(textureKey: string): boolean {
   return CHARSET_ASSETS.some((asset) => asset.textureKey === textureKey);
+}
+
+/** Bundled walking chips plus field-enemy sheets derived from battle art — both use the charset frame layout. */
+export function isCharsetLikeTextureKey(textureKey: string): boolean {
+  return isDerivedFieldFoeTextureKey(textureKey) || isEasyRpgCharsetTextureKey(textureKey);
 }
 
 export function charsetWalkFrameIndex(

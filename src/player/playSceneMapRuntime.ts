@@ -52,7 +52,7 @@ import { runCommands } from "@/player/playSceneInterpreter";
 import { abortHop, clearAllHopScales, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
 import { destroyCharacterShadow, destroyAllCharacterShadows } from "@/player/characterShadow";
 import { startMapBgm } from "@/player/mapBgm";
-import { eventSpriteFrameForDirection, eventSpriteScale, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
+import { eventSpriteFrameForDirection, eventSpriteScale, resolveEventSpriteTexture, withDerivedFieldFoe } from "@/player/eventSpriteResources";
 import {
   characterSpriteY,
   footprintSpriteX,
@@ -877,7 +877,7 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     const overrideFrame = scene.eventGraphicPatternOverrides?.get(event.id);
     const authoredPattern = view.page?.graphic.pattern;
     const pattern = overrideFrame ?? authoredPattern;
-    const spriteTexture = resolveEventSpriteTexture(store.getCurrent(), sprite.id, pattern);
+    const spriteTexture = withDerivedFieldFoe(scene, resolveEventSpriteTexture(store.getCurrent(), sprite.id, pattern));
     if (!spriteTexture) scene.missingResources.add(sprite.id);
     // Static art has one frame. Charset overrides already encode direction/walk.
     const frame =
