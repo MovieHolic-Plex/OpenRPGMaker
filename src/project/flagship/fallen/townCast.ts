@@ -8,7 +8,7 @@
  * - C: 말하는 사람마다 흉상. 칩 → 공용 대응표(sharedCharacterGraphics.json)의 짝 얼굴 → 그 얼굴의 표정 세트 흉상.
  *   같은 흉상을 두 사람이 나눠 쓰지 않는다(이름 있는 사람이 먼저 갖는다). 감정이 뚜렷한 줄에는 대사 표정을 단다.
  * - 2: 행렬이 떠난 뒤 광장 둘레를 아이 셋이 빠르게 뛰며 술래잡기를 한다(People1 #1 · People4 #0 · People5 #1).
- * - 3: 마을 외진 막다른 구석의 이끼 낀 상자에 「새벽샘 별조각 목걸이」(공격·정신 크게 상승, 치명타율 +10%) 하나.
+ * - 3: 마을 외진 막다른 구석의 이끼 낀 상자에 「새벽샘 별조각 목걸이」(주는 피해 +30% — 물리·마법 모두, 치명타율 +10%) 하나.
  * - 6: 길가에서 손만 뻗으면 열리던 거리 수납의 보상은 걷어 냈다(townLife.ts STREET_FINDS) — 마을 쪽 값진 것은
  *   리노가 지키는 초소 두 상자(행렬 뒤), 이 숨은 상자뿐이다.
  */
@@ -254,9 +254,10 @@ function ensureNecklace(project: Project): void {
     name: "새벽샘 별조각 목걸이",
     slot: "accessory",
     price: 0,
-    description: "서른 해 전 새벽샘에 떨어진 별의 조각을 꿴 목걸이. 쥔 손에 별의 무게가 실린다 — 공격 +16 · 정신 +14 · 치명타율 +10%.",
-    statBonuses: { attack: 16, defense: 0, mind: 14, agility: 0 },
+    description: "서른 해 전 새벽샘에 떨어진 별의 조각을 꿴 목걸이. 쥔 손에 별의 무게가 실린다 — 주는 피해 +30% · 치명타율 +10%.",
+    statBonuses: { attack: 0, defense: 0, mind: 0, agility: 0 },
     criticalRate: 10,
+    damageDealtPercent: 30,
     equippableActorIds: ["actor_hero", "actor_fs_elena", "actor_fs_iris"],
     equippableClassIds: [],
     cursed: false,
