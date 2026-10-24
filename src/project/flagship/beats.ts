@@ -108,7 +108,7 @@ export const CHRONO_BELL_BEATS: readonly FlagshipBeat[] = [
     act: "1막 1장 · 왕도 아스텔 · 별빛 천문대",
     mapKey: "fs_hub",
     sceneTitle: "심문관의 포고와 하넬의 부탁",
-    playerFeel: "광장에서 심문관 발렌의 포고를 듣고, 천문대장 하넬에게서 동쪽 숲에 떨어진 별을 먼저 찾아 달라는 부탁을 받는다. 망원경으로 숲 위 연기를 본다.",
+    playerFeel: "광장에서 심문관 발렌의 포고를 듣고, 천문대장 하넬에게서 북쪽 숲에 떨어진 별을 먼저 찾아 달라는 부탁을 받는다. 망원경으로 숲 위 연기를 본다.",
     mechanics: ["author_jrpg_chapter", "script_cutscene", "create_quest"],
     sharedAssets: ["beodeul_city", "atlas_biome_interior"],
   },
@@ -276,7 +276,7 @@ export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBe
     endingCount: 1,
     releaseOrder: 2,
     priorityRank: 1,
-    summary: "왕도 아스텔의 견습 별지기 카엘과 마도학자 엘레나가 동쪽 숲에 떨어진 별을 찾아가, 그 안에서 깨어난 기계 소녀 이리스를 만난다. 하늘에서 온 것을 모두 거두려는 심문관 발렌보다 먼저 천문대 지하의 옛 렌즈로 이리스의 집에 신호를 보내는 중세 마법 판타지 JRPG 제1막.",
+    summary: "왕도 아스텔의 견습 별지기 카엘과 마도학자 엘레나가 북쪽 숲에 떨어진 별을 찾아가, 그 안에서 깨어난 기계 소녀 이리스를 만난다. 하늘에서 온 것을 모두 거두려는 심문관 발렌보다 먼저 천문대 지하의 옛 렌즈로 이리스의 집에 신호를 보내는 중세 마법 판타지 JRPG 제1막.",
     thumb: "/assets/generated/welcome/slide-04.png",
     cast: [
       { id: "actor_hero", name: "카엘", role: "주인공 · 견습 별지기", assetId: "easyrpg-charset-actor1" },

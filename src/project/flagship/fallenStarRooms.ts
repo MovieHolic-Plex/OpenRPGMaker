@@ -16,7 +16,7 @@ import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/
 type Exec = (project: Project, name: string, args: Record<string, unknown>) => void;
 type Dir = "up" | "down" | "left" | "right";
 type Cell = { x: number; y: number };
-type RoomSpec = {
+export type RoomSpec = {
   plan: string[];
   floor: string;
   wall: string;
@@ -441,7 +441,7 @@ const PORTCULLIS_OPEN = [7116, 7117, 7118, 7119];
 const GATE_STAIRS: readonly Cell[] = [{ x: 25, y: 3 }, { x: 26, y: 3 }, { x: 27, y: 3 }];   // 돌 계단 밟는 줄(천문대로)
 const OBS_STAIRS: readonly Cell[] = [{ x: 3, y: 19 }, { x: 4, y: 19 }, { x: 3, y: 20 }, { x: 4, y: 20 }];   // 별 봉인 돌뚜껑 2×2
 
-function kitTile(project: Project, name: string, dx = 0, dy = 0): number {
+export function kitTile(project: Project, name: string, dx = 0, dy = 0): number {
   const kit = project.tilesets[TILESET]?.structureKits?.find((k) => k.id === `hand-interior:${name}`);
   const row = kit?.rows?.[dy] as { upperTiles?: number[] } | undefined;
   const tile = row?.upperTiles?.[dx];
@@ -481,7 +481,7 @@ function touchDoor(id: string, at: Cell, to: { mapId: string } & Cell & { direct
   } as unknown as GameEvent;
 }
 
-function build(project: Project, exec: Exec, mapId: string, spec: RoomSpec): GameMap {
+export function build(project: Project, exec: Exec, mapId: string, spec: RoomSpec): GameMap {
   const before = project.maps[mapId];
   if (!before) throw new Error(`[fallen-star] 맵 ${mapId} 이 없다`);
   // 옛 지하 묘소는 버들항 칩셋이었다 — 같은 실내 칩셋으로 바꿔 다시 짓는다(도구는 같은 칩셋 맵만 replace 한다).
@@ -510,7 +510,7 @@ const LIGHTS: Record<string, { radius: number; dy: number; w?: number; flicker?:
   "paschal candle": { radius: 1.8, dy: 0, flicker: true },
   "candle": { radius: 1.4, dy: 0, flicker: true },
 };
-function lightRoom(project: Project, exec: Exec, mapId: string, spec: RoomSpec, ambient: number, color: string, extra: Array<Cell & { radius: number; color: string; intensity?: number }> = []): void {
+export function lightRoom(project: Project, exec: Exec, mapId: string, spec: RoomSpec, ambient: number, color: string, extra: Array<Cell & { radius: number; color: string; intensity?: number }> = []): void {
   const sources: Array<Record<string, unknown>> = [];
   spec.objects.forEach((o, i) => {
     const l = LIGHTS[o.id];
@@ -612,7 +612,7 @@ export function rebuildFallenRooms(project: Project, exec: Exec, ids: { hub: str
   build(project, exec, ids.gate, GATE_ROOM);
   exec(project, "stamp_object", { objectId: KIT("magic circle"), mapId: ids.gate, x: 15, y: 10 });   // 두 비석 앞 별 원
   build(project, exec, ids.vault, VAULT_ROOM);
-  exec(project, "stamp_object", { objectId: KIT("magic circle"), mapId: ids.vault, x: 26, y: 7 });   // 성소 동쪽 별 원
+  exec(project, "stamp_object", { objectId: KIT("star seal"), mapId: ids.vault, x: 26, y: 7 });   // 성소 동쪽 별 봉인(렌즈 빛이 열면 아래층 미궁으로)
   // VQA r16~r22: 단이 바닥 무늬로만 읽혔다 → 단 맨 아랫줄에 앞 턱(가장자리·앞면·그림자)과 가운데 두 계단을 덧찍는다.
   const riser = (mapId: string, x0: number, x1: number, y: number, stepsX: number): void => {
     for (let x = x0; x <= x1; x++) {
