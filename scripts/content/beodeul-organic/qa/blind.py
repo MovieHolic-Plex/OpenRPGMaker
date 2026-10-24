@@ -37,14 +37,16 @@ if __name__ == "__main__":
     page, pages, x, y, rowh, PW = None, [], 0, 0, 0, 1800
     def newpage():
         return Image.new("RGB", (PW, 1500), (40, 40, 40))
-    page = newpage()
+    page = newpage(); spots = []
     for c in cards:
         if x + c.width > PW: x = 0; y += rowh + 6; rowh = 0
         if y + c.height > page.height:  # break before this card; keep the cards already in the current row
             if x: y += rowh + 6
             pages.append(page.crop((0, 0, PW, y))); page = newpage(); x = y = rowh = 0
-        page.paste(c, (x, y)); x += c.width + 6; rowh = max(rowh, c.height)
+        page.paste(c, (x, y)); x += c.width + 6; rowh = max(rowh, c.height); spots.append((len(pages), y, c.height))
     pages.append(page.crop((0, 0, PW, y + rowh)))
     for i, p in enumerate(pages, 1): p.save(out / f"sheet-{i}.png")
+    for pi, cy, ch in spots: assert cy + ch <= pages[pi].height, ("card cropped off", pi, cy, ch)  # every card fully on its page
+    assert len(spots) == len(cards)
     (out / "key.json").write_text(json.dumps(key, indent=1))
     print(len(pages), "pages", len(pool), "pieces")
