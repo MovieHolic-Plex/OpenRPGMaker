@@ -5,6 +5,34 @@
 
 <!-- releases -->
 
+## 0.332.0 — 2026-10-25
+
+### 기능
+
+- **ai** — assistant reads store reviews of the user's game, drafts creator replies and complaint-addressing news (#3394) (`786918b`)
+- **harness** — cast-portrait verdict/pick/install, eye colour-count check; cg-nat10 pixel fixes picked by the user (`84854c0`)
+- **harness** — cast-portrait — dialogue busts locked to the existing cast's pipeline and spec (`3a6b0f1`)
+- **player** — run by pushing the stick past 70% (ring shows the zone), tap-walk runs on paths of 5+ tiles; separate Run button is now opt-in (`7dc3e36`)
+- **assistant-v2** — opening tier gets backdrop/caption/timeline tools and a night-sky card; finish check simulates battles events open (#3391) (`150c486`)
+- **store** — creator voice — version comments and news posts from editor, CLI and assistant (#3388) (`ae4537f`)
+- **assistant-v2** — load demo features by request words — combo techs, battle staging/fanfare, touch settings, dialogue desk, street walkers, modern street, rooftop background (#3386) (`c10a833`)
+- **battle** — enemy weaknesses are discovered, not told — first-hit 「약점 발견!」, per-enemy knownWeaknesses in the save, battle.revealWeakness (never|afterDiscovery|always) for targeting; strip monster-weakness hints from Fallen Star skill and item texts (`abc0a9e`)
+- **player** — landscape controls rise above dialogue/battle windows and step aside for the ESC menu/shop; leftovers probe + wiki (`25223da`)
+- **player** — touch leftovers — 44px ESC menu rows (pixel skin) opened by one tap, 44px fullscreen button, cutscene skip restores camera/zoom/letterbox, controls fade under messages and battle in landscape (`672ea2a`)
+
+### 수정
+
+- **ci** — drop the duplicate damageTypeRates keys blocking main typecheck (`8bc2218`)
+
+### 문서
+
+- **openwiki** — drop a stray rebase marker from the assistant-v2 demo-tier note (#3389) (`3885e7b`)
+
+### 테스트
+
+- **qa** — mobile-run probe (stick deflection speed, tap route speed, always-dash); wiki: touch running rules (`3ca3358`)
+- **dialogue** — story order, screenplay text, story tools and edit rejections; side scenes anchor after their map's entrance (#3383) (`6ffbbaf`)
+
 ## 0.331.0 — 2026-10-25
 
 ### 기능
