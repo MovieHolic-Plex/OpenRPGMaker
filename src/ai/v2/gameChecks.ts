@@ -164,6 +164,21 @@ export function gameContentProblems(before: Project, after: Project, task: strin
       problems.push(`[게임 검사 보임] 「${ev.name}」(${ev.id}) 는 조사하는 이벤트인데 그림도 없고 그 칸(${String(raw.x)},${String(raw.y)})에 물건 타일도 없다 — 플레이어 눈에 맨땅이다. 그림(graphic.query·물건 칩)을 주거나 보이는 물건 칸 위로 옮긴다.`);
     }
   }
+  // 1d) 상점: 사고파는 요청인데 바꾼 이벤트 어디에도 상점 명령이 없다(대장장이가 낮에 대사만 했다 — 2026-10-24 스위트).
+  if (/상점|가게|무기점|도구점|잡화점|장사|shop|store/iu.test(task) && /팔|사고|살 수|구매|장사|문을 열|열고|열어|buy|sell/iu.test(task) && !kinds.has("shop")) {
+    problems.push("[게임 검사 상점] 요청에 사고파는 상점이 있는데 바꾼 이벤트에 상점 명령(kind:'shop')이 없다 — set_shop_stock 으로 그 NPC 에 상점을 달거나, 시간대 페이지라면 열린 시간 페이지에 {kind:'shop',goods,allowSell:true} 를 넣는다.");
+  }
+  // 1e) 시간표: 「밤에는 집에·낮에는 가게에」처럼 시간대마다 자리가 바뀌는 사람 — 시간표(schedule)나 시간대 페이지(timePhase)가 있어야 한다.
+  if (/(밤|저녁|아침|낮|새벽|시간)[^.!?]{0,12}(에는|엔|이 되면|마다|동안)[^.!?]{0,30}(집|가게|광장|여관|들어가|돌아가|나와|나가|옮|있)/u.test(task)) {
+    const scheduled = Object.values(after.maps).some((m) => (m.events ?? []).some((e) => {
+      const prev = before.maps[m.id]?.events?.find((b) => b.id === e.id) as unknown as Obj | undefined;
+      const sch = (e as unknown as Obj).schedule;
+      return Array.isArray(sch) && sch.length > 0 && JSON.stringify(sch) !== JSON.stringify(prev?.schedule);
+    }));
+    // 시간대 페이지는 «사람» 이벤트(그림 있는 페이지)여야 한다 — 팻말 하나에만 시간대 페이지가 있으면 사람은 그대로다.
+    const phasePages = changed.some((ev) => ev.pages.some((pg) => { const g = obj(pg.graphic); return !!(g && (g.sprite || g.appearanceId)); }) && ev.pages.some((pg) => flatConditions(pg.conditions).some((c) => c.kind === "timePhase")));
+    if (!scheduled && !phasePages) problems.push("[게임 검사 시간] 요청에 시간대마다 자리·행동이 바뀌는 사람이 있는데 시간표(set_npc_schedule)도 시간대 페이지({kind:'timePhase'} 조건)도 없다 — configure_time_system 을 켜고 set_npc_schedule 로 낮·밤 자리를 정한다.");
+  }
   // 2) 엔딩: 엔딩 정의 + triggerEnding.
   if (ENDING_WORDS.test(task)) {
     const newEndings = (after.endings ?? []).filter((e) => !(before.endings ?? []).some((b) => b.id === e.id && JSON.stringify(b) === JSON.stringify(e)));
