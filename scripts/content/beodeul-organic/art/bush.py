@@ -153,3 +153,63 @@ BRAM6 = [
  "...gSSSSSSSSSSSSSSSSSSSSSSSSSs..",
 ]
 ART["bramble"] = (BRAM6, TH6)
+
+# ---- r7 outline pass: every exterior edge gets an outline. Upper/left side uses a mid-dark tone (lit side),
+# lower/right side the darkest. Lone pixels (no 4-neighbour of art) are removed first. Shadow pixels are not art.
+def outline(rows, mid="2", dark="o", margin=1):
+    H, W = len(rows), len(rows[0])
+    g = [list(r) for r in rows]
+    art = lambda x, y: 0 <= x < W and 0 <= y < H and g[y][x] not in ".sS"
+    for y in range(H):
+        for x in range(W):
+            if art(x, y) and not any(art(x+a, y+b) for a, b in ((1,0),(-1,0),(0,1),(0,-1))):
+                g[y][x] = "."
+    out = [r[:] for r in g]
+    for y in range(H):
+        for x in range(W):
+            if art(x, y): continue
+            if not (margin <= x < W - margin and margin <= y < H - margin): continue
+            nb = [(a, b) for a, b in ((1,0),(-1,0),(0,1),(0,-1)) if art(x+a, y+b)]
+            if not nb: continue
+            # art lies below or right of this pixel -> we are on its upper/left (lit) side
+            lit = all(a >= 0 and b >= 0 for a, b in nb)
+            out[y][x] = mid if lit else dark
+    return ["".join(r) for r in out]
+# r7 bush-s: four lobes kept 2px off the edges, then outlined all round (lit side mid-dark, lower-right darkest)
+BS7 = paint(16, 16, [
+ (2, 5, "B", 0), (7, 4, "C", 1),
+ (2, 8, "d", 1), (5, 8, "B", 1), (9, 7, "A", 2)])
+BS7 = [r[:] for r in BS7]
+for y in range(16):
+    for x in range(16):
+        if BS7[y][x] in "sS": BS7[y][x] = "."
+BS7 = outline(fin(BS7), mid="2", dark="o")
+BS7 = [list(r) for r in BS7]
+for x in range(16):
+    col = [y for y in range(16) if BS7[y][x] != "."]
+    if col and x >= 4:
+        b = max(col)
+        if b + 1 < 16: BS7[b+1][x] = "S" if x >= 6 else "s"
+ART["bush-s"] = (fin(BS7), WD)
+# r7 bramble: low dense leafy thicket, mostly leaf mass; three short 2px cane tips; undulating base on a shadow pool
+TH7 = dict(WD, t="#885a26", T="#543719", u="#2a1a0f", r="#61160d")
+BRAM7 = [
+ "................................",
+ "................................",
+ "................................",
+ "................................",
+ "........tT..............uT......",
+ ".........tT.......5.....tu......",
+ "......55..tT.55..544.55.Tu......",
+ ".....5443o25443.54431544355.....",
+ "...554432154432154432o154443....",
+ "..5443321o443321o4432154321o1...",
+ ".54432r1o5443o215443o1544321o1..",
+ ".4432o1o544321o1o4432154r32o1o..",
+ ".43321o1443o21r1o3321o1o4321oo..",
+ "..3221oo1321o1oo1o221o1oo211oog.",
+ "...g11og.g1oog1ogg11oog1o1og.SS.",
+ ".....gg....gg.SSSSgg..SSggSSSs..",
+]
+ART["bramble"] = (outline(BRAM7, mid="2", dark="o"), TH7)
+_b = list(ART["bramble"][0]); _b[15] = _b[15].replace("g", "S"); ART["bramble"] = (_b, TH7)  # art ends by row 14

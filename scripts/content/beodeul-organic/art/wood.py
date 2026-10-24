@@ -26,61 +26,64 @@ def runs(n, rnd, choices, lo=2, hi=4):
 
 END = ["  ll", " jkkl", "jkrkm", "lrmrr", "lrrmr", "lkrrk", " jkkm", "  ll"]  # warm cut face, brown ring
 
-def wavy(n, rnd, amp):
-    """Offsets that change every 2-4 columns: no flat run longer than 4px."""
+def wavy(n, rnd, amp, lo=3, hi=6):
+    """Outline offsets that wander 1px every 3-6 columns (no straight run over 6px, no 1px teeth)."""
     out, v = [], 0
     while len(out) < n:
         v = max(-amp, min(amp, v + rnd.choice([-1, 1])))
-        out += [v] * rnd.randint(2, 4)
+        out += [v] * rnd.randint(lo, hi)
+    return out[:n]
+
+def strokes(n, rnd, choices, lo=2, hi=3):
+    out = []
+    while len(out) < n:
+        out += [rnd.choice(choices)] * rnd.randint(lo, hi)
     return out[:n]
 
 def body(c, x0, x1, top, H, seed, moss):
     rnd = random.Random(seed)
     n = x1 - x0 + 1
-    tw = wavy(n, rnd, 1); bw = wavy(n, rnd, 1)
-    # tone field from 2-4px blocks: each block picks a shift (-1 lighter, 0, +1 darker)
-    ramp = ["t", "m", "s", "s", "u", "v", "v", "x"]
-    blocks = {}
-    def shift(x, y):
-        key = (x // rnd_w[x % len(rnd_w)], y // 2)
-        if key not in blocks: blocks[key] = rnd.choice([-1, 0, 0, 0, 1])
-        return blocks[key]
-    rnd_w = [3]
+    tw = wavy(n, rnd, 1); bw = wavy(n, rnd, 1, 4, 6)
     tops, bots = [], []
+    # per-row stroke lists: staggered 2-3px strokes, rows grouped in pairs so no lone pixels
+    band = strokes(n, rnd, ["t", "t", "m"], 2, 4)          # lit top band (2 rows)
+    band2 = strokes(n, rnd, ["m", "m", "t", "i"], 2, 4)
+    face = [strokes(n, rnd, ["s", "s", "m", "u"], 2, 3) for _ in range(3)]
+    low = strokes(n, rnd, ["u", "u", "v"], 3, 5)
     for i in range(n):
         x = x0 + i; t = top + tw[i]; b = top + H + bw[i]
         tops.append(t); bots.append(b)
         for y in range(t, b + 1):
-            f = (y - t) / max(1, b - t)
-            if y == t: ch = "d"
-            elif y == b: ch = "x" if (i // 3) % 2 else "y"
-            else:
-                idx = 1 if f < .3 else (2 if f < .55 else (4 if f < .8 else 5))
-                idx = max(0, min(6, idx + shift(x, y)))
-                ch = ramp[idx]
-                if f < .2 and ch == "m" and (x // 3) % 2: ch = "i"
+            k = y - t
+            if k == 0: ch = "d"
+            elif k == 1: ch = band[i]
+            elif k == 2: ch = band2[i]
+            elif y == b: ch = "y"
+            elif y == b - 1: ch = "x"
+            elif y == b - 2: ch = low[i]
+            else: ch = face[((y - top) // 2) % 3][i]
             put(c, x, y, ch)
-        put(c, x + 1, b + 1, "S"); put(c, x + 2, b + 2, "~")
-        if i % 7 == 3: put(c, x, b + 1, "S")
-    # crack clusters: short 2-3px dark slashes, irregular
-    for _ in range(n // 6):
-        i = rnd.randint(3, n - 4); y = tops[i] + rnd.randint(3, 4)
-        put(c, x0 + i, y, "v"); put(c, x0 + i + 1, y, "v"); put(c, x0 + i + 1, y + 1, "x")
+    # continuous shadow pool under the log
+    for i in range(-1, n + 2):
+        bi = bots[max(0, min(n - 1, i))]
+        put(c, x0 + i + 1, bi + 1, "S")
+        if 1 < i < n: put(c, x0 + i + 1, bi + 2, "~")
+    # crack strokes: 2-3px dark horizontal-diagonal pairs on the face
+    for _ in range(n // 7):
+        i = rnd.randint(3, n - 5); y = tops[i] + rnd.randint(4, 5)
+        put(c, x0 + i, y, "v"); put(c, x0 + i + 1, y, "v"); put(c, x0 + i + 1, y + 1, "u"); put(c, x0 + i + 2, y + 1, "u")
     if moss:
         x = moss[0]
         while x < moss[1]:
             w = rnd.randint(3, 6)
             if rnd.random() < moss[2]:
-                d = rnd.choice([2, 2, 3])
                 for q in range(w):
                     i = x + q - x0
                     if x + q >= moss[1] or i >= n: break
-                    dd = d if 0 < q < w - 1 else 1
-                    for k in range(dd + 1):
-                        put(c, x + q, tops[i] + k, "o" if k == 0 else ("f" if k < dd else "q"))
+                    put(c, x + q, tops[i], "o"); put(c, x + q, tops[i] + 1, "f" if 0 < q < w - 1 else "o")
+                    if 0 < q < w - 1: put(c, x + q, tops[i] - 1, "e")
                     if q in (1, 2): put(c, x + q, tops[i], "p")
-                    if 0 < q < w - 1: put(c, x + q, tops[i] - 1, "e" if q % 2 else "f")
-            x += w + rnd.randint(1, 4)
+            x += w + rnd.randint(2, 4)
     return tops, bots
 
 def log_long():

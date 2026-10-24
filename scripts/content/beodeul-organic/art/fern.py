@@ -182,3 +182,41 @@ FC3 = ["."*32]*2 + [
 ]
 ART = {"fern-s": (FS_FROZEN, K), "fern-l": (FL3, K), "fern-cluster": (FC3, K)}
 ART["fern-cluster"] = (FC3[1:] + ["."*32], K)  # walk-over decor: keep the bottom row empty
+
+# ---- r7 outline pass: every exterior edge gets an outline. Upper/left side uses a mid-dark tone (lit side),
+# lower/right side the darkest. Lone pixels (no 4-neighbour of art) are removed first. Shadow pixels are not art.
+def outline(rows, mid="2", dark="o", margin=1):
+    H, W = len(rows), len(rows[0])
+    g = [list(r) for r in rows]
+    art = lambda x, y: 0 <= x < W and 0 <= y < H and g[y][x] not in ".sS"
+    for y in range(H):
+        for x in range(W):
+            if art(x, y) and not any(art(x+a, y+b) for a, b in ((1,0),(-1,0),(0,1),(0,-1))):
+                g[y][x] = "."
+    out = [r[:] for r in g]
+    for y in range(H):
+        for x in range(W):
+            if art(x, y): continue
+            if not (margin <= x < W - margin and margin <= y < H - margin): continue
+            nb = [(a, b) for a, b in ((1,0),(-1,0),(0,1),(0,-1)) if art(x+a, y+b)]
+            if not nb: continue
+            # art lies below or right of this pixel -> we are on its upper/left (lit) side
+            lit = all(a >= 0 and b >= 0 for a, b in nb)
+            out[y][x] = mid if lit else dark
+    return ["".join(r) for r in out]
+# ferns: shift fern-s / fern-cluster art right 1px where it touches the left edge, then outline; lit side '1', dark side 'o'
+def _pad(rows):
+    if any(r[0] not in ".sS" for r in rows): rows = ["." + r[:-1] for r in rows]
+    if any(r[-1] not in ".sS" for r in rows): rows = [r[1:] + "." for r in rows]
+    return rows
+def _calm(rows):
+    # break gradient runs: a 5 with no 5 neighbour becomes 4; a 2 isolated inside 4s becomes 3
+    g = [list(r) for r in rows]; H, W = len(g), len(g[0])
+    for y in range(H):
+        for x in range(W):
+            if g[y][x] == "5" and not any(0<=x+a<W and 0<=y+b<H and g[y+b][x+a]=="5" for a,b in ((1,0),(-1,0),(0,1),(0,-1))):
+                g[y][x] = "4"
+    return ["".join(r) for r in g]
+for _k in ("fern-s", "fern-l", "fern-cluster"):
+    _r, _kk = ART[_k]
+    ART[_k] = (outline(_pad(_calm(_r)), mid="1", dark="o"), _kk)
