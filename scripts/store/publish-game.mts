@@ -53,6 +53,8 @@ const CONTROLS = (pointer: boolean) => [
   { keys: "Esc · X", action: "취소 · 메뉴" },
   { keys: "Shift", action: "누르고 있으면 달리기" },
   ...(pointer ? [{ keys: "마우스 클릭", action: "메뉴·전투 명령 고르기 (오른쪽 클릭 = 취소)" }] : []),
+  { keys: "휴대폰: 맵 탭", action: "그곳까지 걷기 · 사람을 탭하면 다가가 말 걸기" },
+  { keys: "휴대폰: 왼쪽 패드 · A · B", action: "이동 · 확인 · 취소 (「달리기」 단추로 걷기/달리기)" },
 ];
 
 /** dist/export-player 는 이 체크아웃에서, 공용 그림·소리는 public/(없으면 OPRN_ASSET_ROOTS). */

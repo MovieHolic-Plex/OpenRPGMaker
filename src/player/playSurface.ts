@@ -254,7 +254,7 @@ export function calculateTouchLayout(
   // 정사각에 가까운 화면(폴드 펼침 가로 1040×930)은 좌우 칸을 떼면 무대가 작아지고 위아래가 빈다 — 아래 띠 배치가 낫다.
   const portrait = height >= width * 0.75;
   if (portrait) {
-    const controlsBlock = stick + 80; // 메뉴 줄(44) + 조이스틱 + 아래 숨 쉴 틈
+    const controlsBlock = stick + 88; // 메뉴 줄(44 단추 + 8 틈) + 조이스틱 + 아래 숨 쉴 틈
     const reserve = controlsBlock + safe.bottom + 16;
     const topPad = Math.max(8, safe.top + 4);
     const availW = width - safe.left - safe.right;
@@ -275,11 +275,11 @@ export function calculateTouchLayout(
       free = Math.max(0, free - dockH - 8);
     }
     const controlsTop = dock ? dock.top + dock.height + 4 : bandTop;
-    const controlsY = controlsTop + free * 0.4 + 44 + stick / 2;
+    const controlsY = controlsTop + free * 0.4 + 52 + stick / 2;
     let panel: TouchLayout["panel"] = null;
     if (options.windowPanel !== false && scale < 1) {
       // 칸은 무대 위쪽부터 메뉴 단추 줄 바로 위까지에 들어간다. 아래(메뉴 단추 쪽)에 붙여 무대 위쪽이 되도록 많이 보이게 한다.
-      const menuRowTop = controlsY - stick / 2 - 44;
+      const menuRowTop = controlsY - stick / 2 - 52;
       const room = { w: availW - 8, h: menuRowTop - 4 - stageTop };
       const panelScale = Math.min(1, room.w / WINDOW_PANEL_WIDTH, room.h / WINDOW_PANEL_HEIGHT);
       if (panelScale > scale) {

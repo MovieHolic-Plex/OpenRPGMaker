@@ -1,3 +1,4 @@
+import { TOUCH_STICK_MODES, isTouchStickMode, normalizeTouchControls, resolveTouchControls, type ResolvedTouchControls, type TouchStickMode } from "@/project/touchControls";
 import { normalizeGallerySettings } from "@/project/gallery";
 import { fieldHudEditor } from "./databaseFieldHud";
 import { battleTeamsSection } from "@/editor/panels/databaseBattleTeamsSection";
@@ -501,6 +502,7 @@ function systemSectionNodes(
             else delete draft.system.pointerMovement;
           });
         }),
+        ...touchControlFields(project),
         // 마더식 롤링 HP: 표시 HP 가 서서히 흐르고, 치명타를 받아도 미터가 0 에 닿기 전에 이기면 살아남는다.
         checkboxField("롤링 HP 미터", "db-field-system-rolling-hp", project.system.battleRollingHp === true, (checked) => {
           updateSystem((draft) => {
@@ -1955,6 +1957,30 @@ function obedienceCapFields(project: Project, rerender: () => void): HTMLElement
     );
   }
   return out;
+}
+
+/** 휴대폰·태블릿 조작(system.touchControls) — 데스크톱 플레이에는 영향이 없다. 기본은 모두 켬, 조이스틱 자동. */
+function touchControlFields(project: Project): HTMLElement[] {
+  const current = resolveTouchControls(project.system.touchControls);
+  const patch = (next: Partial<ResolvedTouchControls>): void => {
+    updateSystem((draft) => {
+      const merged = normalizeTouchControls({ ...resolveTouchControls(draft.system.touchControls), ...next });
+      if (merged) draft.system.touchControls = merged;
+      else delete draft.system.touchControls;
+    }, "system:touch-controls");
+  };
+  const stick = el("select", { dataset: { testid: "db-field-system-touch-stick" } }) as HTMLSelectElement;
+  const stickLabels: Record<TouchStickMode, string> = { auto: "자동(판 곁은 바로 방향, 먼 곳은 엄지 밑으로)", fixed: "고정", floating: "떠다님(누른 자리가 중심)" };
+  for (const mode of TOUCH_STICK_MODES) stick.append(el("option", { text: stickLabels[mode], attrs: { value: mode } }));
+  stick.value = current.stick;
+  stick.style.maxWidth = "340px";
+  stick.addEventListener("change", () => patch({ stick: isTouchStickMode(stick.value) ? stick.value : "auto" }));
+  return [
+    checkboxField("휴대폰: 맵을 탭해서 걷기", "db-field-system-touch-tap-to-move", current.tapToMove, (checked) => patch({ tapToMove: checked })),
+    field("휴대폰: 조이스틱", stick),
+    checkboxField("휴대폰: 진동", "db-field-system-touch-haptics", current.haptics, (checked) => patch({ haptics: checked })),
+    checkboxField("휴대폰: 달리기 단추", "db-field-system-touch-run-button", current.runButton, (checked) => patch({ runButton: checked })),
+  ];
 }
 
 function checkboxField(label: string, testid: string, checked: boolean, onChange: (checked: boolean) => void): HTMLElement {
