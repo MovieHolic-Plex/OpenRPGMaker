@@ -311,9 +311,9 @@ const WEEDS = ["weeds-a", "weeds-b", "weeds-c"];
  * slab-a 짜임 덩이 안에서만 칸마다 a·b·c 변형(같은 줄눈, 얼룩·풀만 다름)을 섞는다.
  */
 function slabAt(b: Board, x: number, y: number): number {
-  // r60: 줄눈 없는 바탕 slab-ground 가 있으면 그것만 깐다 — 줄눈은 finishSlab 이 위 평면층(2층)에 가장자리 맞춤 칸으로 얹는다.
+  // r60b: 줄눈 없는 바탕 slab-ground(단 셋) 가 있으면 가운데 단을 깐다 — finishSlab 이 판 짜임대로 판마다 단을 고르고 위 평면층에 줄눈을 얹는다.
   const g = b.kit("slab-ground");
-  if (g) { const t = g.rows[y % g.height]?.tiles[x % g.width] ?? -1; if (t >= 0) return t; }
+  if (g) { const gh = Math.floor(g.height / 3); const t = g.rows[(y % gh) + gh]?.tiles[x % g.width] ?? -1; if (t >= 0) return t; }
   const alts = ["slab-d", "slab-e"].filter((id) => b.kit(id));
   if (alts.length) {
     const r = hash2(Math.floor(x / 8), Math.floor(y / 8), b.seed + 211);
@@ -340,21 +340,25 @@ function fillSlab(b: Board, x0: number, y0: number, w: number, h: number): void 
 }
 
 /**
- * r60 줄눈 칸 번호(scripts/content/wasteland-ruins/wl_slab.py 와 같은 규칙). 칸 네 변마다 줄눈이 그 변을 건너는 자리 부호 0~3 을
- * 변 좌표 해시로 정한다(맞닿은 두 칸이 같은 값을 읽어 줄눈이 이어진다). 속 칸: 조합 N*64+E*16+S*4+W 마다 변형 nv(k) 개를 차례로 둔 순번.
- * 둘레 칸(흙 쪽 마스크 m, 흙 쪽 부호 0): 속 칸 327 개 뒤에 m = 1..15 마다 나머지 변 부호 조합 순서로, 그 뒤 한 칸 폭 띠(m 5·10)의 가로지르는 이음 둘씩.
+ * r60b 판 줄눈(scripts/content/wasteland-ruins/wl_slab.py 의 Layout · tile_order · cell_tile · decor_of 와 같은 규칙).
+ * 맵 단위 «판 짜임»: 가로 줄눈 줄이 y 위로 2~4칸마다, 그 띠마다 세로 줄눈이 2~4칸마다(띠마다 어긋남) — 2~4칸 네모 판.
+ * 판마다 바탕 단(slab-ground 8×24 의 단 0·1·2)을 고르고, 위 평면층에 칸 덧그림(줄눈 · 금 · 패임 · 풀 · 흙 쪽 부서짐 · 길 쪽 연석)을 얹는다.
  */
-const SLAB_NV = [6, 2, 2, 1, 1];
-const SLAB_INNER: number[] = (() => { const start: number[] = []; let n = 0; for (let c = 0; c < 256; c++) { start.push(n); const k = [c >> 6, (c >> 4) & 3, (c >> 2) & 3, c & 3].filter((v) => v > 0).length; n += SLAB_NV[k]!; } start.push(n); return start; })();
-const SLAB_RIM: Map<string, number> = (() => {
-  const m2 = new Map<string, number>(); let i = SLAB_INNER[256]!;
-  for (let m = 1; m < 16; m++) {
-    const free = [0, 1, 2, 3].filter((k) => !(m & (1 << k)));
-    for (let c = 0; c < 4 ** free.length; c++) { const code = [0, 0, 0, 0]; free.forEach((k, j) => { code[k] = Math.floor(c / 4 ** j) % 4; }); m2.set(`${code.join("")}|${m}|0`, i++); }
+const SLAB_DECORS = ["plain0", "plain1", "crack0", "crack1", "crack2", "crack3", "spall0", "spall1", "weed0", "weed1", "chip", "heave"];
+function slabDecorOk(d: string, js: number): boolean {
+  if (d.startsWith("spall") || d.startsWith("weed")) return js > 0;
+  if (d === "chip") return js === 3;
+  if (d === "heave") return (js & 1) === 1;
+  return true;
+}
+const SLAB_INDEX: Map<string, number> = (() => {
+  const m = new Map<string, number>(); let i = 0;
+  for (let js = 0; js < 4; js++) for (const d of SLAB_DECORS) if (slabDecorOk(d, js)) m.set(`in|${js}|${d}`, i++);
+  for (let c = 1; c < 81; c++) {
+    const n = Math.floor(c / 27), e = Math.floor(c / 9) % 3, s = Math.floor(c / 3) % 3, w = c % 3;
+    for (const jn of n === 0 ? [0, 1] : [0]) for (const jw of w === 0 ? [0, 1] : [0]) for (const v of [0, 1]) m.set(`rim|${n}${e}${s}${w}|${jn | (jw << 1)}|${v}`, i++);
   }
-  for (const m of [0, 1, 4, 5]) { m2.set(`0000|${m}|1`, i++); m2.set(`0000|${m}|2`, i++); }
-  for (const m of [0, 2, 8, 10]) { m2.set(`0000|${m}|3`, i++); m2.set(`0000|${m}|4`, i++); }
-  return m2;
+  return m;
 })();
 /** wl_core h2 와 같은 해시(파이썬 hsh 두 번). */
 function wlHsh(x: number, y: number, s: number): number {
@@ -363,39 +367,50 @@ function wlHsh(x: number, y: number, s: number): number {
   return (h ^ (h >>> 16)) & 0xffff;
 }
 function wlH2(x: number, y: number, s: number): number { return wlHsh(wlHsh(x, y, s) ^ Math.imul(x, 7919), Math.imul(y, 104729) + x, s + 1); }
-function slabJointFinish(b: Board, joints: StructureKitDef, road: readonly boolean[]): void {
+function slabLines(n: number, seed: number, k: number, startMod: number, lo: number, span: number): number[] {
+  const out: number[] = []; let p = -(wlH2(k, startMod, seed) % 3), j = 0;
+  while (p < n) { out.push(p); p += lo + (wlH2(k * 61 + j, startMod + 1, seed) % span); j++; }
+  return out;
+}
+class SlabLayout {
+  readonly rows: number[]; readonly rowset: Set<number>; readonly band: number[]; readonly cols: number[][]; readonly colset: Set<number>[];
+  constructor(W: number, H: number, readonly seed: number) {
+    this.rows = slabLines(H, seed + 501, 0, 0, 2, 3); this.rowset = new Set(this.rows);
+    this.band = [];
+    for (let y = 0; y < H; y++) { let k = 0; this.rows.forEach((p, i) => { if (p <= y) k = i; }); this.band.push(k); }
+    this.cols = this.rows.map((_, k) => slabLines(W, seed + 503, k + 1, 2, 2, 3)); this.colset = this.cols.map((c) => new Set(c));
+  }
+  jN(_x: number, y: number): boolean { return this.rowset.has(y); }
+  jW(x: number, y: number): boolean { return this.colset[this.band[y]!]!.has(x); }
+  tone(x: number, y: number): number {
+    const k = this.band[y]!; let j = 0; this.cols[k]!.forEach((p, i) => { if (p <= x) j = i; });
+    const r = wlH2(k * 97 + 3, j * 89 + 5, this.seed + 507) % 10;
+    return r < 2 ? 0 : r < 8 ? 1 : 2;
+  }
+}
+function slabDecorOf(x: number, y: number, js: number, seed: number): string {
+  const r = wlH2(x * 7 + 3, y * 11 + 5, seed + 431) % 100, q = wlH2(x * 13 + 1, y * 5 + 9, seed + 433);
+  const d = r < 72 ? (q % 4 === 0 ? "plain1" : "plain0") : r < 84 ? `crack${q % 4}` : r < 90 ? `spall${q % 2}` : r < 96 ? `weed${q % 2}` : js === 3 ? "chip" : "heave";
+  return slabDecorOk(d, js) ? d : "plain0";
+}
+function slabJointFinish(b: Board, joints: StructureKitDef, ground: StructureKitDef, road: readonly boolean[]): void {
   const cols = joints.width, at = (i: number) => joints.rows[Math.floor(i / cols)]?.upperTiles?.[i % cols] ?? joints.rows[Math.floor(i / cols)]?.tiles[i % cols] ?? -1;
   const on = (x: number, y: number) => b.inb(x, y) && b.slab[b.idx(x, y)]!;
-  const seed = b.seed;
-  const edge = (h: boolean, x: number, y: number) => { const r = wlH2(x * 2 + (h ? 1 : 0), y * 2 + (h ? 0 : 1), seed + 401) % 100; return r < 52 ? 0 : 1 + Math.floor(((r - 52) * 3) / 48); };
-  const hstrip = (x: number, y: number) => on(x, y) && !on(x, y - 1) && !on(x, y + 1);
-  const vstrip = (x: number, y: number) => on(x, y) && !on(x - 1, y) && !on(x + 1, y);
-  const hcode = (x: number, y: number) => (vstrip(x, y) && vstrip(x, y - 1) ? 0 : edge(true, x, y));
-  const vcode = (x: number, y: number) => (hstrip(x, y) && hstrip(x - 1, y) ? 0 : edge(false, x, y));
+  const rd = (x: number, y: number) => b.inb(x, y) && road[b.idx(x, y)]!;
+  const seed = b.seed, L = new SlabLayout(b.w, b.h, seed), gh = Math.floor(ground.height / 3);
   for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) {
     if (!on(x, y)) continue;
     const i = b.idx(x, y);
+    // 바탕 칸 64개는 서로 독립(골재 덩이가 칸 경계를 넘지 않는다) — 칸마다 해시로 골라 주기를 없앤다(wl_slab.ground_cell).
+    const n = wlH2(x * 3 + 11, y * 7 + 13, seed + 509) % (gh * ground.width);
+    const g = ground.rows[Math.floor(n / ground.width) + gh * L.tone(x, y)]?.tiles[n % ground.width] ?? -1;
+    if (g >= 0) b.setLower(x, y, g);
     if ((layerTileAt(b.map, 2, i) ?? -1) >= 0) continue;
-    // 길(아스팔트) 쪽은 흙으로 부서지지 않는다(연석처럼 맞닿는다) — 둘레 마스크에서 빼고, 그 변의 줄눈 건넘만 막는다.
-    const rd = (dx: number, dy: number) => b.inb(x + dx, y + dy) && road[b.idx(x + dx, y + dy)]!;
-    const m = (on(x, y - 1) || rd(0, -1) ? 0 : 1) | (on(x + 1, y) || rd(1, 0) ? 0 : 2) | (on(x, y + 1) || rd(0, 1) ? 0 : 4) | (on(x - 1, y) || rd(-1, 0) ? 0 : 8);
-    const cd = [hcode(x, y), vcode(x + 1, y), hcode(x, y + 1), vcode(x, y)];
-    [[0, -1], [1, 0], [0, 1], [-1, 0]].forEach(([dx, dy], j) => { if (rd(dx!, dy!)) cd[j] = 0; });
-    let k: number | undefined;
-    // 한 칸 폭 띠(보도): 띠를 가로지르는 곧은 줄눈을 드물게(가로 띠 = 세로 줄 1·2, 세로 띠 = 가로 줄 3·4).
-    const hs = !on(x, y - 1) && !on(x, y + 1), vs = !on(x - 1, y) && !on(x + 1, y);
-    if (!cd.some((v) => v) && hs !== vs) {
-      const r = wlH2(x * 5 + 3, y * 7 + 1, seed + 419) % 10, cc = r < 2 ? 1 : r < 3 ? 2 : 0;
-      if (cc) k = SLAB_RIM.get(`0000|${m}|${cc + (hs ? 0 : 2)}`);
-    }
-    if (k !== undefined) { /* 띠 이음 */ }
-    else if (m) {
-      [1, 2, 4, 8].forEach((bit, j) => { if (m & bit) cd[j] = 0; });
-      k = SLAB_RIM.get(`${cd.join("")}|${m}|0`);
-    } else {
-      const c = cd[0]! * 64 + cd[1]! * 16 + cd[2]! * 4 + cd[3]!, n = SLAB_INNER[c + 1]! - SLAB_INNER[c]!;
-      k = SLAB_INNER[c]! + (wlH2(x * 3 + 1, y * 5 + 2, seed + 409) % n);
-    }
+    const side = (dx: number, dy: number) => (on(x + dx, y + dy) ? 0 : rd(x + dx, y + dy) ? 2 : 1);
+    const sd = [side(0, -1), side(1, 0), side(0, 1), side(-1, 0)];
+    const js = (L.jN(x, y) && sd[0] === 0 ? 1 : 0) | (L.jW(x, y) && sd[3] === 0 ? 2 : 0);
+    const key = sd.every((v) => v === 0) ? `in|${js}|${slabDecorOf(x, y, js, seed)}` : `rim|${sd.join("")}|${js}|${wlH2(x * 5 + 1, y * 3 + 7, seed + 437) % 2}`;
+    const k = SLAB_INDEX.get(key);
     const t = k === undefined ? -1 : at(k);
     if (t >= 0) setLayerTileAt(b.map, 2, i, t);
   }
@@ -404,7 +419,8 @@ function slabJointFinish(b: Board, joints: StructureKitDef, road: readonly boole
 /** 판석 둘레 칸(4방향 중 하나라도 판석 아님)에 깨짐 덧칠(위층 평면) — 아래층 판석 결은 끝까지 이어진다. 위에 기물이 선 칸은 건너뛴다. */
 function finishSlab(b: Board, road: readonly boolean[] = []): void {
   const joints = b.kit("slab-joints");
-  if (joints && b.kit("slab-ground")) { slabJointFinish(b, joints, road); return; }
+  const ground = b.kit("slab-ground");
+  if (joints && ground) { slabJointFinish(b, joints, ground, road); return; }
   const g = (b.ts.autotileGroups ?? []).find((group) => group.id.startsWith("wl") && group.id.includes("slab-break"));
   if (!g) return;
   const slabTiles = new Set<number>();

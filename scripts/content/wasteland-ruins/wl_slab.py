@@ -64,20 +64,28 @@ _GT = {}
 
 
 def ground_tone(x, y):
-    """결 단(GR 색인, 판 단 더하기 전). 2~3화소 골재 덩이만 — 어두운 덩이 한 단, 드문 밝은 덩이 한 단."""
+    """결 단(GR 색인, 판 단 더하기 전). 2~3화소 골재 덩이만 — 어두운 덩이 한 단, 드문 밝은 덩이 한 단.
+    덩이는 칸(16화소) 경계를 넘지 않는다: 칸 64개가 서로 독립이라 구성기가 칸마다 아무 칸이나 해시로 골라도 이음이 없고, 주기가 생기지 않는다."""
     if not _GT:
         for yy in range(SP):
             for xx in range(SP): _GT[(xx, yy)] = G_BASE
+        shapes = ([(0, 0), (1, 0), (0, 1), (1, 1)], [(0, 0), (1, 0), (2, 0), (1, 1)], [(0, 0), (1, 0), (0, 1)], [(0, 0), (0, 1), (1, 1), (1, 2)])
         for k in range(1400):
             r = h2(k, 17, 6101)
-            x0, y0 = r % SP, (r >> 7) % SP
-            shape = (r >> 14) % 4
-            pts = [(0, 0), (1, 0), (0, 1), (1, 1)] if shape == 0 else [(0, 0), (1, 0), (2, 0), (1, 1)] if shape == 1 else [(0, 0), (1, 0), (0, 1)] if shape == 2 else [(0, 0), (0, 1), (1, 1), (1, 2)]
+            cx, cy = (r % 64) % 8, (r % 64) // 8
+            pts = shapes[(r >> 6) % 4]
+            mx, my = max(p[0] for p in pts), max(p[1] for p in pts)
+            x0 = cx * 16 + (r >> 8) % (16 - mx); y0 = cy * 16 + h2(k, 19, 6103) % (16 - my)
             light = k % 5 == 0
             for dx, dy in pts:
-                p = ((x0 + dx) % SP, (y0 + dy) % SP)
+                p = (x0 + dx, y0 + dy)
                 if _GT[p] == G_BASE: _GT[p] = G_BASE + 1 if light else G_BASE - 1
     return _GT[(x % SP, y % SP)]
+
+
+def ground_cell(x, y, seed):
+    """맵 칸 (x,y) 가 쓰는 slab-ground 칸(0..63, 단 안 순번). 칸이 서로 독립이라 해시로 고른다(구성기와 같은 규칙)."""
+    return h2(x * 3 + 11, y * 7 + 13, seed + 509) % 64
 
 
 @piece('slab-ground', '깨진 콘크리트 판 바탕 (단 셋)', 8, 24, TERRAIN,
@@ -85,7 +93,7 @@ def ground_tone(x, y):
           'in three slightly different greys (each poured slab takes one); the straight saw-cut joints, cracks and broken edges are a separate decal layer',
        group='ground', tags=['콘크리트', '광장', '보도', '바닥'],
        desc='깨진 콘크리트 판의 아래층(줄눈 없음). 8×8칸 결 판을 단 셋(rows 0~7 어두움 · 8~15 가운데 · 16~23 밝음)으로 둔다. '
-            '맵 칸 (x,y) 에는 판 단 t 의 rows[(y mod 8) + 8t].tiles[x mod 8] 칸 — 줄눈으로 둘린 판마다 단 하나. 위 평면층에 slab-joints.',
+            '칸 64개는 서로 독립(골재 덩이가 칸 경계를 넘지 않음). 맵 칸 (x,y) 에는 판 단 t 와 n = ground_cell(x,y) 로 rows[n//8 + 8t].tiles[n%8] — 주기 없음. 줄눈으로 둘린 판마다 단 하나. 위 평면층에 slab-joints.',
        sample=lambda f=0: board_sample(seed=5))
 def _ground(c):
     for t, d in enumerate(TONES):
@@ -163,29 +171,31 @@ def _joints(c, js, dirty, seed):
 
 
 def _crack(c, J, seed):
-    """금: 칸을 비스듬히 가로지르는 13~16화소 들쭉날쭉 1화소 선(한쪽 칸 끝에서 맞은쪽 끝까지 한 방향), 가운데쯤 짧은 가지 하나.
-    빛 테 없음 — 줄눈과 다른 차가운 회색, 양 끝 한 단 밝게 잦아든다."""
+    """금: 가지 없는 머리카락 금 한 줄 — 칸을 거의 가로(또는 세로)로 11~14화소 흘러가며 2~3화소마다 한 화소 꺾인다.
+    r60a·r60b 첫 판의 Y 자·갈고리 금은 기호로 읽혔다(검수). 줄눈(짙은 회청 곧은 홈)과 달리 판 색보다 두 단 어두운 회색, 빛 테 없음, 양 끝 한 단 옅게."""
     r = h2(seed, 3, 41)
-    sx = 1 if r % 2 else -1
-    x = (2 + (r >> 2) % 3) if sx > 0 else (13 - (r >> 2) % 3)
-    y = 2 + (r >> 4) % 3
-    tx, ty = (x + sx * (9 + (r >> 6) % 3)), 13 - (r >> 8) % 2
-    pts = [(x, y)]
-    i = 0
-    while (x, y) != (tx, ty) and i < 30:
-        dx, dy = (tx > x) - (tx < x), (ty > y) - (ty < y)
-        q = h2(i, r, seed + 1) % 10
-        if dx and dy: x, y = (x + dx, y + dy) if q < 5 else (x + dx, y) if q < 7 else (x, y + dy)
-        elif dx: x += dx
-        else: y += dy
-        pts.append((x, y)); i += 1
-    bx, by = pts[len(pts) // 2]
-    br = [(bx - sx * j, by + j) for j in range(1, 4 + (r >> 10) % 2)]
-    n = len(pts)
-    for k, p in enumerate(pts + br):
+    horiz = r % 2 == 0
+    a = 3 + (r >> 1) % 10                 # 가로 금이면 시작 y, 세로 금이면 시작 x
+    u0 = 1 + (r >> 5) % 3
+    n = 11 + (r >> 7) % 4
+    pts, v, drift = [], a, 1 if (r >> 9) % 2 else -1
+    step = 0
+    for k in range(n):
+        u = u0 + k
+        if u > 14: break
+        step += 1
+        if step >= 2 + h2(k, r, seed + 1) % 2:
+            step = 0
+            if h2(k, r, seed + 2) % 4 == 0: drift = -drift
+            nv = v + drift
+            if 2 <= nv <= 13:
+                pts.append((u, v) if horiz else (v, u))
+                v = nv
+        pts.append((u, v) if horiz else (v, u))
+    m = len(pts)
+    for k, p in enumerate(pts):
         if p in J or not _in(*p, 1): continue
-        end = k in (0, n - 1) or k == n + len(br) - 1
-        c.P(p[0], p[1], CRACK_END if end else CRACK)
+        c.P(p[0], p[1], GR[1] if k in (0, m - 1) else GR[0])
 
 
 def _spall(c, J, js, seed):
@@ -380,8 +390,8 @@ def board_sample(plan=SAMPLE_PLAN, seed=5):
             blk = a[y * 16:(y + 1) * 16, x * 16:(x + 1) * 16]
             if road(x, y) and asph is not None: blk[:] = _asphalt_full(asph, x, y)
             if not slab(x, y): continue
-            t = L.tone(x, y)
-            blk[:] = G[(t * 8 + y % 8) * 16:(t * 8 + y % 8) * 16 + 16, (x % 8) * 16:(x % 8) * 16 + 16]
+            t, n = L.tone(x, y), ground_cell(x, y, seed)
+            blk[:] = G[(t * 8 + n // 8) * 16:(t * 8 + n // 8) * 16 + 16, (n % 8) * 16:(n % 8) * 16 + 16]
             i = cell_tile(slab, road, L, x, y, seed)
             src = Jm[(i // COLS) * 16:(i // COLS) * 16 + 16, (i % COLS) * 16:(i % COLS) * 16 + 16]
             op = src[..., 3] == 255
