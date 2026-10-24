@@ -350,6 +350,11 @@ export interface SkillRecord {
   comboCombinedStats?: boolean;
   /** 연계기가 발동할 때 켜지는 스위치(전투 이벤트 페이지 조건·전투 뒤 이야기 분기에 쓴다). */
   comboSwitchId?: string;
+  /**
+   * 연계기 비용 나누기: 참가 배우별 MP 고정 소모(halfMpCost 장비는 절반). 목록에 없는 참가자는 mpCost 를 그대로 낸다.
+   * 「카엘 MP 4 · 엘레나 MP 8」처럼 주 시전자와 보조가 다른 몫을 낸다. 생략 = 전원이 mpCost.
+   */
+  comboMpCosts?: readonly { readonly actorId: ActorId; readonly mp: number }[];
   /** 위치 범위기: 단일 대상 스코프에서 주 대상 둘레의 같은 편도 함께 맞힌다(전투장 픽셀). */
   area?: SkillArea;
   /**
@@ -380,6 +385,11 @@ export interface SkillRecord {
    * elementIds 를 비우면 기술 자신의 elementId 를 계열로 본다. 「검을 든 카엘의 검 기술이 더 세다」. 생략 = 없음.
    */
   weaponAffinity?: { readonly elementIds?: readonly string[]; readonly bonusPercent: number };
+  /**
+   * 약점 공략(set-up → payoff): 맞는 대상이 stateIds 중 하나에 걸려 있으면 피해 +bonusPercent%(1~300).
+   * consume 이면 공략한 상태를 그 타격으로 풀어 버린다(「얼어붙은 적을 깨뜨린다」). 숫자 아래 「공략!」 꼬리표. 생략 = 없음.
+   */
+  exploitStates?: { readonly stateIds: readonly string[]; readonly bonusPercent: number; readonly consume?: boolean };
   /**
    * 반동(0~100): 준 피해의 N% 를 시전자도 입는다(몸통박치기·이판사판). 피해가 1 이상일 때만, 최소 1. 타마다 적용한다.
    * 타임라인에 시전자 자신을 대상으로 한 damage 엔트리(aside recoil)를 남긴다. 생략 = 반동 없음.
@@ -1987,6 +1997,8 @@ export interface SystemRecords {
   battleHitFeel?: import("@/project/battleHitFeel").BattleHitFeel;
   /** 전투 화면 꾸미기(project/battleLook.ts) — 프리셋 + 바꾼 칸. 생략 = 「도트 창」 프리셋. 스킨(전투 방식)과 별개 축이다. */
   battleLook?: import("@/project/battleLook").BattleLookSettings;
+  /** 전투 결과 팡파레 — 레벨 업 배너·새 기술/연계기 카드·소리(project/battleFanfare.ts). 생략 = 전부 켜기·화려하게. */
+  battleFanfare?: import("@/project/battleFanfare").BattleFanfareSettings;
   /** 화면 표시 필터(project/displayFilter.ts) — 주사선·브라운관. 생략 = 없음. */
   displayFilter?: "scanlines" | "crt";
   /**

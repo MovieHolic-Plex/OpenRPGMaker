@@ -3646,3 +3646,12 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
   - 바이킹은 partial이다. 롱십·용머리 회관 그림이 없다.
   - needs-art 대안은 seed를 1 이상으로 준다. 기본 seed 0이면 대안 맵이 그 종류를 직접 요청한 맵과 바이트까지 같았다.
 - **시험 시드:** `harness-data/assistant-capability/village-eras-seed.json`(18건, 조수 대용 Sonnet 5.5 high, 포트 19640~19657).
+
+## 연계기·기술 정체성·결과 팡파레 — `list_combo_techs` · `upsert_combo_tech` · `battle.fanfare` (2026-10-24, fs-battle-2)
+
+- `list_combo_techs {actorId?}` (읽기): 연계기마다 참가자·비용 몫·꼬리표(전투 도움말과 같은 문장 `skillHelp`)·해금 조건·연출·지금 파티로 열렸는지(`unlockedAtStart`, 못 채운 조건 `missing`).
+- `upsert_combo_tech` (쓰기, 도메인 database·battle): 듀얼·트리플 테크를 한 번에 — `actorIds`(첫째가 시전자)·`requires [{actorId, skillId}]`·`mpCosts [{actorId, mp}]`·scope·kind·statistic·power·elementId·hits·`combinedStats`·stateEffects·`exploitStates`·drainPercent·gaugeShift·`choreographyId`(→ retroChoreographyId)·switchId.
+  저장은 `upsert_skill` 실행을 그대로 지난다(같은 검증·정규화). 연출이 없거나 참가자가 파티에 없으면 경고. 폴른 스타의 연계기 셋도 이 도구로 저작한다(`battleDepth.ts`).
+- `upsert_skill` 스키마에 `comboMpCosts`·`exploitStates`(약점 공략: 대상이 그 상태면 +N%, consume 이면 지움) 추가. 없는 상태 id 는 `state-not-found`.
+- `set_project_settings {battle: {fanfare: {levelUp, skillLearned, comboUnlocked, style: burst|classic|minimal, sound}}}` — 결과 화면 팡파레.
+- 레시피 `combo-techs`(`toolCapabilityIndex`) 정책: 기술마다 「센 한 방」 말고 한 가지 쓰임(깔기→거두기·지키기·시간·지속 피해·정화)을 엔진 수단으로 주고 설명에 그 쓰임을 쓴다. 연계기는 해금 조건을 레벨 업 기술에 걸어 「새 연계기!」 카드가 뜨게 한다. 별칭: 연계기·합체기·듀얼 테크 → 이 도구들, 팡파레·레벨 업 연출 → set_project_settings.

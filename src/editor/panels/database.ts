@@ -68,6 +68,7 @@ import { spatialAllSourceDesignCount } from "@/editor/panels/spatialCatalog";
 import { listUnlabeledTileIds } from "@/editor/panels/tilesetMetadataControls";
 import { renderWorldCanonTab } from "@/editor/panels/databaseWorldCanonView";
 import { renderWorldCodexTab } from "@/editor/panels/databaseWorldCodexView";
+import { comboTechCount, renderComboTechTab } from "@/editor/panels/databaseComboTechView";
 import { renderRetroChoreographyTab, resetRetroChoreographyViewState } from "@/editor/panels/databaseRetroChoreographyView";
 import { worldCanonHasContent } from "@/project/world/canon";
 import {} from "@/editor/uiCopy";
@@ -79,6 +80,7 @@ import { clearChildren, el } from "@/util/dom";
 export type DatabaseTab =
   | "promotionTree"
   | "skillTrees"
+  | "comboTechs"
   | "overview"
   | DatabaseCollection
   | "animations"
@@ -132,6 +134,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "characterAppearances", label: "캐릭터 외형", testid: "db-tab-character-appearances" },
   { id: "promotionTree", label: "직업 승급 트리", testid: "db-tab-promotion-tree" },
   { id: "skillTrees", label: "스킬 트리", testid: "db-tab-skill-trees" },
+  { id: "comboTechs", label: "연계기", testid: "db-tab-combo-techs" },
   { id: "classes", label: "직업", testid: "db-tab-classes" },
   { id: "skills", label: "스킬", testid: "db-tab-skills" },
   { id: "items", label: "아이템·장비", testid: "db-tab-items" },
@@ -267,6 +270,7 @@ export const PARTY_SUBVIEW_PARENT: Partial<Record<DatabaseTab, DatabaseTab>> = {
   characterAppearances: "actors",
   promotionTree: "classes",
   skillTrees: "skills",
+  comboTechs: "skills",
   animations: "retroChoreographies",
 };
 
@@ -282,6 +286,7 @@ const PARTY_SUBVIEWS: Partial<Record<DatabaseTab, readonly { readonly tab: Datab
   skills: [
     { tab: "skills", label: "스킬 편집", slug: "skills" },
     { tab: "skillTrees", label: "성장 트리", slug: "skill-trees" },
+    { tab: "comboTechs", label: "연계기", slug: "combo-techs" },
   ],
   retroChoreographies: [
     { tab: "retroChoreographies", label: "도트 연출", slug: "retro-choreographies" },
@@ -691,6 +696,8 @@ function databaseTabCount(tab: DatabaseTab): number | null {
       return database.classes.length;
     case "skillTrees":
       return project.growth?.skillTrees.length ?? 0;
+    case "comboTechs":
+      return comboTechCount(project);
     case "actors":
     case "classes":
     case "skills":
@@ -820,6 +827,7 @@ const LEGACY_TAB_SEARCH: Partial<Record<DatabaseTab, string>> = {
   structureKits: "구조물",
   tilesetSpaces: "공간 종류",
   // 옛 「전투 애니메이션」 레일 칸은 도트 연출의 하위 보기로 들어갔다(2026-10-02) — 그 이름으로 찾아도 연출 탭이 걸린다.
+  comboTechs: "연계 합체기 듀얼 트리플 테크 combo tech 크로노",
   retroChoreographies: "스킬 이펙트 연출 번개 도트 skillChoreographies 전투 애니메이션 animations",
   spatialTiles: "타일셋 AI 참고문서 MD 이미지 통행 지형 tilesets references",
   spatialObjects: "구조물 부품 보관함 오브젝트 structureKits",
@@ -1435,6 +1443,9 @@ function renderActiveTabUnguarded(
           selector?.focus();
         }
       });
+      break;
+    case "comboTechs":
+      renderComboTechTab(body, rerender);
       break;
     case "actors":
     case "classes":

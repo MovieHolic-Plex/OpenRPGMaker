@@ -8,6 +8,7 @@ import { replaceProjectContents } from "./historyTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import type { Project, Terms } from "@/project/types";
 import { BATTLE_HIT_FEEL_IDS, DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
+import { BATTLE_FANFARE_STYLES, isBattleFanfareStyle, normalizeBattleFanfare, resolveBattleFanfare } from "@/project/battleFanfare";
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, isDisplayFilterName, normalizeDisplayFilter } from "@/project/displayFilter";
 import { BATTLE_SKINS, isRetiredBattleSkinId, listActiveBattleSkinIds } from "@/battle/skins/registry";
 import { applyBattleMethod } from "@/project/battleMethod";
@@ -152,7 +153,7 @@ const resetProject: ToolDefinition = {
 
 const setProjectSettings: ToolDefinition = {
   name: "set_project_settings",
-  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도(playResolution)·기본 음악/시스템 리소스·초기 파티·전투 기본값·전투 화면 꾸미기(battle.look — 전투창 디자인·전투 UI 를 소박하게/화려하게: 창 모양·파티/명령 배치·빛 연출 프리셋 12종)·공통 글꼴(fonts)·대화창 스타일(dialogue.style)·강하게 다시 하기(newGamePlus)·장 표시(chapter)를 한 번에 설정한다. 해상도는 픽셀 밀도이고 시야는 카메라 배율이 정한다 — 둘을 같이 맞춰야 한다.",
+  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도(playResolution)·기본 음악/시스템 리소스·초기 파티·전투 기본값·전투 화면 꾸미기(battle.look — 전투창 디자인·전투 UI 를 소박하게/화려하게: 창 모양·파티/명령 배치·빛 연출 프리셋 12종)·전투 결과 팡파레(battle.fanfare — 레벨 업 배너·「새 기술 습득!」·「새 연계기!」 카드 켜기/끄기·연출 세기·소리)·공통 글꼴(fonts)·대화창 스타일(dialogue.style)·강하게 다시 하기(newGamePlus)·장 표시(chapter)를 한 번에 설정한다. 해상도는 픽셀 밀도이고 시야는 카메라 배율이 정한다 — 둘을 같이 맞춰야 한다.",
   mode: "write",
   domains: ["system", "database"],
   parameters: {
@@ -294,6 +295,18 @@ const setProjectSettings: ToolDefinition = {
           },
           rollingHp: { type: "boolean", description: "true = 마더식 롤링 HP 미터: 표시 HP 가 서서히 실제 HP 로 흐르고, 치명타를 받아도 미터가 0 에 닿기 전에 이기면 살아남는다. false = 즉시 표시(기본)" },
           rollingHpPerSecond: { type: "integer", minimum: 1, maximum: 999, description: "롤링 HP 속도(HP/초). 생략 = 40" },
+          fanfare: {
+            type: "object",
+            description: "전투 결과 팡파레(도트 측면 결과 화면). 레벨 업 배너+능력치 판, 「새 기술 습득!」 카드, 「새 연계기!」 카드, 효과음. 생략한 칸은 그대로 둔다. 기본은 전부 켜기·burst",
+            properties: {
+              levelUp: { type: "boolean", description: "레벨 업 배너·능력치 판" },
+              skillLearned: { type: "boolean", description: "레벨 업으로 배운 기술마다 「새 기술 습득!」 카드(이름·속성·설명·꼬리표)" },
+              comboUnlocked: { type: "boolean", description: "배운 기술로 연계기 해금 조건(comboRequires)이 채워지면 「새 연계기!」 카드" },
+              style: { type: "string", enum: [...BATTLE_FANFARE_STYLES], description: "burst = 빛줄기·파티클·흔들림 · classic = 창만 크게 · minimal = 창만(연출 없음)" },
+              sound: { type: "boolean", description: "팡파레 효과음" },
+            },
+            additionalProperties: false,
+          },
         },
         additionalProperties: false,
       },
@@ -460,6 +473,18 @@ const setProjectSettings: ToolDefinition = {
         }
         // 방식 하나가 화면과 규칙을 같이 정한다(자료집 「전투 방식」과 같은 규칙, project/battleMethod.ts).
         applyBattleMethod(draft, battle.uiStyle === "pokemon" ? "monster" : "side");
+      }
+      if (battle.fanfare !== undefined) {
+        if (!battle.fanfare || typeof battle.fanfare !== "object" || Array.isArray(battle.fanfare)) {
+          throw new ToolError("battle.fanfare 는 {levelUp?, skillLearned?, comboUnlocked?, style?, sound?} 객체여야 합니다.", { code: "invalid-args" });
+        }
+        const patch = battle.fanfare as Record<string, unknown>;
+        if (patch.style !== undefined && !isBattleFanfareStyle(patch.style)) {
+          throw new ToolError(`battle.fanfare.style 은 ${BATTLE_FANFARE_STYLES.join(" · ")} 중 하나입니다(받은 값 ${JSON.stringify(patch.style)}).`, { code: "invalid-args" });
+        }
+        const next = normalizeBattleFanfare({ ...resolveBattleFanfare(draft.system.battleFanfare), ...patch });
+        if (next) draft.system.battleFanfare = next;
+        else delete draft.system.battleFanfare;
       }
       if (isBattleHitFeel(battle.hitFeel)) {
         if (battle.hitFeel === DEFAULT_BATTLE_HIT_FEEL) delete draft.system.battleHitFeel;

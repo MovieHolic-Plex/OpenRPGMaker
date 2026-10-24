@@ -175,6 +175,8 @@ export async function battleQaOp(page, op) {
       if (choice === "attack") ok = await press(page, "actor-command-attack");
       else if (choice === "defend") ok = await press(page, "actor-command-defend");
       else if (choice.startsWith("item:")) { wanted = choice; ok = await press(page, "actor-command-item"); }
+      // 연계기는 「연계」 명령의 목록에 있다(combo:<skillId>). 연계 명령이 없으면(옛 화면) 기술 목록에서 찾는다.
+      else if (choice.startsWith("combo:")) { wanted = choice.slice(6); ok = await press(page, root.includes("actor-command-combo") ? "actor-command-combo" : "actor-command-skill"); }
       else if (root.includes(`actor-command-skill-${choice}`)) ok = await press(page, `actor-command-skill-${choice}`);
       else { wanted = choice; ok = await press(page, "actor-command-skill"); }
       if (!ok) throw new Error(`battle op: ${ui.active} 의 명령 ${choice} 를 누를 수 없다 (보이는 것: ${root.join(", ")})`);

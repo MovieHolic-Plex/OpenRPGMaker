@@ -78,6 +78,8 @@ export const OP_KINDS = [
   // 타이틀 이어하기처럼 클릭이 자연스러운 표면도 있다. 레일/타이틀 항목은 진짜
   // 클릭 대상이므로 가려짐·비활성·0 크기를 검사한 뒤 보이는 상자 중심을 누른다.
   "pointerClick",
+  "click",
+  "tap",
   "wheel",
   "waitForAttr",
   "pressUntil",
