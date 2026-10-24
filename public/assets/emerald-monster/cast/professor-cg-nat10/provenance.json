@@ -19,7 +19,7 @@
   "bust-happy.png": {
    "source": "professor-nat10-happy-t1.png",
    "sourceSha256": "7cf79c9095e155856da11a7b15009d23ee64ea5cce208d3c8de18204045eed7c",
-   "pixelSha256": "cc827583babba5d090a8226fd487d4f72f8805d1e9dd6052b9301487c0fc4565"
+   "pixelSha256": "f91d3d267bddfac993a8043339e6b5b5887fa06b304903e73afe4b5a2192ee3c"
   },
   "bust-sad.png": {
    "source": "professor-nat10-sad-t1.png",
@@ -29,12 +29,12 @@
   "bust-angry.png": {
    "source": "professor-nat10-angry-t1.png",
    "sourceSha256": "c198042a2424bc3d4b9d912b5ca22abdf331f2953c716e3a01b9d1abca306b55",
-   "pixelSha256": "ff8436a6912b36391666e571c0a78ed50f95b718e817723ba58569e35e70419c"
+   "pixelSha256": "03b21f1bc18a23dd42fd8972a861b979ae10419ed92b9dc7b652cacdf9c15458"
   },
   "bust-surprised.png": {
    "source": "professor-nat10-surprised-t1.png",
    "sourceSha256": "94fe454c335229bec57922d2e063820be7cfa24316934d93194bb99505a8adf9",
-   "pixelSha256": "db4d1073017b4415e7da4f3c3bf4238e198ff41cce392430475efc1845237fc3"
+   "pixelSha256": "01a78ebe052d5da27d48f11f2157ac8f446aabca0ecad474ac0bf64ab79dc268"
   }
  }
 }

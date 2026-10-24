@@ -34,12 +34,15 @@ export const astraCastCardId = (cid: AstraCastId): string => `oprn_astra_cast_${
  * - hand-a·hand-b: 코드 손 도트(scripts/content/monsters/astra_professor_hand/variant_a.py·variant_b.py), 걷기 칩 색 그대로.
  * - shared-elder·shared-moustache: 공용 흉상(people2-white-elder·people1-mustache)을 칩 색으로 다시 칠하고 64x64 로 줄임(shared_recolor.py).
  * - chargen: 옛 그림(cast/professor/).
+ * 2차(사용자 「다 별론데 … 기존 다른 포트레잇과 비교해서」): 캐스트와 같은 char-gen 경로(같은 프롬프트 골격·격자 복원·64x64·16색)로
+ * 다시 만든 cg-nat10·cg-nat9·cg-nat12·cg-nat1(scripts/content/monsters/astra_professor_chargen/). 눈가림 Argon 순위 nat10 > nat9 > nat1 > nat12,
+ * nat10 은 손 보정(bake.py FIXES) 뒤 「캐스트와 화풍 구분 불가」 판정이라 기본이다. 1차 후보(hand-*·shared-*)도 그대로 고를 수 있다.
  * 기본(ASTRA_PROFESSOR_BUST)이 대사에 쓰이고, 나머지도 oprn_astra_cast_professor_<후보>_bust_<표정> id 로 고를 수 있다.
  */
 export const ASTRA_PROFESSOR_BUST_VARIANTS = ["cg-nat10", "cg-nat9", "cg-nat12", "cg-nat1", "hand-a", "hand-b", "shared-elder", "shared-moustache", "chargen"] as const;
 export type AstraProfessorBustVariant = (typeof ASTRA_PROFESSOR_BUST_VARIANTS)[number];
 /** 대사에 쓰는 박사 흉상. 바꾸려면 이 값 하나만 바꾼다(눈가림 검수 순위는 위 PR·verify-shots/astra-presentation 참고). */
-export const ASTRA_PROFESSOR_BUST: AstraProfessorBustVariant = "hand-a";
+export const ASTRA_PROFESSOR_BUST: AstraProfessorBustVariant = "cg-nat10";
 const professorBustFolder = (variant: AstraProfessorBustVariant): string => variant === "chargen" ? "professor" : `professor-${variant}`;
 export const astraProfessorVariantBustId = (variant: AstraProfessorBustVariant, expression: AstraCastExpression = "base"): string =>
   `oprn_astra_cast_professor_${variant.replace(/-/gu, "_")}_bust_${expression}`;
