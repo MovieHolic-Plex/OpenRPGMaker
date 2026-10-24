@@ -82,7 +82,7 @@ export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전�
   · 표정(웃다가 걱정하는 얼굴로): 대사 text 명령에 emotion:'happy'|'sad'|'angry'|'surprised'(걱정·슬픔 = sad)를 주거나 줄 앞에 [표정:sad] 태그 — 대화창 얼굴 칸이 그 표정으로 바뀐다(NPC 그림의 짝 얼굴이 있어야 한다: list_npc_graphics 에서 얼굴 있는 그림). 감정 말풍선(emote)으로 흉내 내지 않는다. 이미 있는 NPC 의 대사는 그 이벤트 id 에 patch_event_page/upsert_event 로 — add_event 로 새로 만들지 않는다.
   · 긴 읽을거리(책장·비석·일지·편지): place_examine_hotspots 의 readable:true(양피지 「편지·책」 창, lines 한 줄 = 한 쪽, 쪽마다 3~5문장) — 또는 text 명령 style:'letter'. 물건은 stamp_object 로 보이게.
   · 연기와 함께 사라지기: add_scene 의 vanish 비트(연기+투명) 뒤 다시 안 나오게 셀프 스위치/스위치 페이지.
-  · 막 끝·제N막 카드 = define_ending(presentation.kicker:'제1막 끝') + triggerEnding — 대사로 흉내 내지 않는다.
+  · 막 끝·「제N막 끝」「제2막으로 이어집니다」 카드 = define_ending{id:'ending_act1',presentation:{finalTitle:'제1막 끝', badge:'제2막으로 이어집니다'}} + 그 자리에서 {kind:'triggerEnding',endingId} — 대사·그림으로 흉내 내지 않는다.
   · 순찰·뛰어다니기: configure_npc_patrol(닫힌 경로) 또는 add_people movement:'wander'. 문 열리는 연출 + 실내 = create_transfer_pair(doorAt) 또는 place_door.
 - 도구가 거절하면 이유를 읽고 고쳐 다시 부른다. 같은 거절이 두 번이면 방법을 바꾼다. 할 수 없는 것은 보고에 적는다.`;
 
