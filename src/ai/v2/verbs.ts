@@ -459,18 +459,20 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
 
   const addEvent: PiToolShape = {
     name: "add_event", label: "사건·컷신", concurrency: "exclusive",
-    description: "컷신·대화 사건을 비트 목록으로 만든다(walk/say/appear/face/wait/fade/tint/weather/camera/look/vanish). 함수가 걸을 수 있는 길·자리를 정하고 미리보기 탐침으로 검사한다.",
+    description: "컷신·대화 사건을 비트 목록으로 만든다(walk/say/appear/face/wait/fade/tint/weather/shake/flash/music/camera/look/vanish). 함수가 걸을 수 있는 길·자리를 정하고 미리보기 탐침으로 검사한다.",
     parameters: { type: "object", properties: { event: { type: "object", properties: {
       kind: { type: "string", enum: ["cutscene", "talk", "trigger"] }, mapId: { type: "string" },
       when: { type: "string", enum: ["game-start", "touch", "talk"] }, where: { type: "string" }, at: POINT,
       after: { type: "string", description: "이 NPC 이름과 대화가 끝나면 이어서 재생(그 NPC 대화 끝에 붙는다, 한 번만)" },
       afterTalk: { type: "array", items: { type: "string" }, description: "after 장면이 끝난 뒤 그 NPC 에게 다시 말 걸면 할 말(밤이 됐다·사건 뒤처럼 상황이 바뀌었으면). 없으면 원래 대사" },
       beats: { type: "array", items: { type: "object", properties: {
-        do: { type: "string", enum: ["walk", "say", "appear", "face", "wait", "fade", "tint", "weather", "camera", "look", "vanish"] },
+        do: { type: "string", enum: ["walk", "say", "appear", "face", "wait", "fade", "tint", "weather", "shake", "flash", "music", "camera", "look", "vanish"] },
         who: { type: "string" }, to: { type: "string", description: "자리 낱말(또는 'x,y')" }, text: { type: "string" },
         where: { type: "string" }, looks: { type: "string" }, toward: { type: "string" }, ms: { type: "number" }, dir: { type: "string", enum: ["in", "out"] },
         tone: { type: "string", enum: ["night", "dusk", "dawn", "sepia", "clear"] }, as: { type: "string", enum: ["shadow", "ghost", "normal"] },
         weather: { type: "string", enum: ["rain", "storm", "snow", "fog", "none"] }, intensity: { type: "number" },
+        strength: { type: "string", enum: ["weak", "medium", "strong"] }, axis: { type: "string", enum: ["both", "horizontal", "vertical"] }, color: { type: "string" },
+        action: { type: "string", enum: ["bgm", "se", "stop", "fade"] }, query: { type: "string", description: "music: 음원 찾을 낱말(festival·battle·town·sad·boss·door…)" },
       }, required: ["do"] } },
     }, required: ["kind", "beats"] } }, required: ["event"] },
     async execute(id, params) {

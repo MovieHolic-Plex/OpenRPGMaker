@@ -101,6 +101,10 @@ function readsOf(project: Project): { switches: Set<string>; variables: Set<stri
 }
 
 const WEATHER_WORDS = /비가|비\s*(가\s*)?오|빗방울|빗줄기|소나기|폭우|장마|눈이\s*(오|내|와|쌓)|눈\s*내리|함박눈|폭풍|폭설|안개|날씨|천둥|번개|rain|snow|storm|fog|weather/iu;
+const SHAKE_WORDS = /흔들리|흔들린|흔들려|흔들어|지진|진동|쿵\s*(하|소리)|earthquake|tremor|shake/iu;
+const FLASH_WORDS = /번쩍|섬광|번개|빛이\s*터|flash|lightning/iu;
+const MUSIC_WORDS = /음악|배경음|브금|bgm|music/iu;
+const HIDDEN_WORDS = /숨겨|숨은|몰래|보이지\s*않|투명|비밀|hidden|secret|invisible/iu;
 const ENDING_WORDS = /엔딩|결말|ending/iu;
 const STATE_WORDS = /독초|독에|독이|독을|독\s*상태|중독|맹독|마비|수면\s*상태|잠\s*상태|상태\s*이상|혼란|침묵|poison|paraly|stun/iu;
 
@@ -126,6 +130,39 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   // 1) 날씨: 실제 setWeather(컷신 weather 비트·set_scene_mood 도 결국 setWeather 다).
   if (WEATHER_WORDS.test(task) && !kinds.has("setWeather") && !cmds.some((r) => r.cmd.kind === "m2Command" && /m2-050/u.test(String(r.cmd.commandId)))) {
     problems.push(`[게임 검사 날씨] 요청에 비·눈·날씨가 있는데 바꾼 이벤트에 실제 날씨 명령(setWeather)이 없다${kinds.has("tint") ? " — 화면 색(tint)은 비가 아니다" : ""}. add_event 의 weather 비트나 upsert_event 의 {kind:'setWeather',weather:'rain',intensity:0.6} 로 넣는다.`);
+  }
+  // 1b) 화면 흔들림·번쩍·음악: 실제 명령(카메라 이동·페이드로 흉내 내지 않는다).
+  const m2Has = (re: RegExp) => cmds.some((r) => r.cmd.kind === "m2Command" && re.test(String(r.cmd.commandId)));
+  if (SHAKE_WORDS.test(task) && !m2Has(/m2-048/u)) problems.push("[게임 검사 화면] 요청에 흔들림·지진이 있는데 실제 화면 흔들기 명령이 없다(카메라 이동은 흔들림이 아니다). add_event 의 shake 비트({do:'shake',strength:'strong',axis:'vertical'})로 넣는다.");
+  if (FLASH_WORDS.test(task) && !m2Has(/m2-047/u) && !cmds.some((r) => r.cmd.kind === "setWeather" && r.cmd.weather === "storm")) problems.push("[게임 검사 화면] 요청에 번쩍임·번개가 있는데 실제 화면 번쩍 명령이 없다(페이드 아웃은 번쩍이 아니다). add_event 의 flash 비트({do:'flash',color:'white'})로 넣는다.");
+  if (MUSIC_WORDS.test(task) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu)) problems.push("[게임 검사 음악] 요청에 음악·BGM 이 있는데 바꾼 이벤트에 음악 명령(playAudio)이 없다. add_event 의 music 비트({do:'music',action:'bgm',query:'festival'})로 넣는다.");
+  // 1c) 눈에 안 보이는 «조사하는» 물건: 새로 만든 결정 키(action) 이벤트에 그림도 없고 그 칸에 물건 타일도 없다(이동석·덤불·표지판이 맨땅으로 보였다).
+  if (!HIDDEN_WORDS.test(task)) {
+    for (const ev of changed) {
+      if (ev.mapId === "common") continue;
+      const map = after.maps[ev.mapId] as unknown as Obj | undefined;
+      const raw = ((map?.events as Obj[] | undefined) ?? []).find((e) => e.id === ev.id);
+      if (!map || !raw) continue;
+      const pages = ev.pages;
+      if (!pages.length || !pages.some((pg) => obj(pg.trigger)?.kind === "action")) continue;
+      if (pages.some((pg) => { const g = obj(pg.graphic); return !!(g && (g.sprite || g.appearanceId)); })) continue;
+      const w = Number(map.width), i = Number(raw.y) * w + Number(raw.x);
+      const at = (layer: unknown) => Array.isArray(layer) ? Number(layer[i]) : -1;
+      // 도구가 만든 장면 받침(ev_cutscene_*·호위 목적지)은 빼고, 그 칸이나 바로 위(북쪽) 칸에 물건 타일·건물 도장이 있으면 «그 물건 앞»이라 본다.
+      if (/^ev_(cutscene|escort)_/u.test(ev.id)) continue;
+      const x0 = Number(raw.x), y0 = Number(raw.y), h = Number(map.height);
+      let near = false;
+      for (const [dx, dy] of [[0, 0], [0, -1]] as const) {
+        const x = x0 + dx, y = y0 + dy;
+        if (x < 0 || y < 0 || x >= w || y >= h) continue;
+        const j = y * w + x;
+        const v = (layer: unknown) => Array.isArray(layer) ? Number(layer[j]) : -1;
+        if (v(map.upperTiles) > 0 || v(map.lowerOverlayTiles) > 0) near = true;
+      }
+      const inStamp = ((map.structurePlacements as Obj[] | undefined) ?? []).some((sp) => x0 >= Number(sp.x) && x0 < Number(sp.x) + Number(sp.w) && y0 >= Number(sp.y) && y0 < Number(sp.y) + Number(sp.h));
+      if (near || inStamp || at(map.upperTiles) > 0) continue;
+      problems.push(`[게임 검사 보임] 「${ev.name}」(${ev.id}) 는 조사하는 이벤트인데 그림도 없고 그 칸(${String(raw.x)},${String(raw.y)})에 물건 타일도 없다 — 플레이어 눈에 맨땅이다. 그림(graphic.query·물건 칩)을 주거나 보이는 물건 칸 위로 옮긴다.`);
+    }
   }
   // 2) 엔딩: 엔딩 정의 + triggerEnding.
   if (ENDING_WORDS.test(task)) {
@@ -199,7 +236,23 @@ export function unaskedChanges(before: Project, after: Project, task: string): s
       if (g0 !== "null" && (g0 !== g1 || f0 !== f1)) out.push(`[게임 검사 부작용] 기존 「${ev.name || ev.id}」의 그림·얼굴이 요청 없이 바뀌었다 — 원래 graphic·face 를 그대로 둔다.`);
     }
   }
-  return out.slice(0, 4);
+  // 이미 있던 데이터(아이템·장비·적·기술·직업)를 요청이 그 이름을 말하지 않았는데 고쳤다 — 값·능력치가 게임 전체에서 바뀐다(2026-10-24 스위트).
+  const bdb = before.database as unknown as Record<string, unknown>, adb = after.database as unknown as Record<string, unknown>;
+  for (const section of ["items", "weapons", "armors", "enemies", "skills", "classes", "actors"]) {
+    const old = new Map(((bdb[section] as Obj[] | undefined) ?? []).map((r) => [String(r.id), r]));
+    for (const r of (adb[section] as Obj[] | undefined) ?? []) {
+      const prev = old.get(String(r.id));
+      if (!prev || JSON.stringify(prev) === JSON.stringify(r)) continue;
+      const name = String(r.name ?? prev.name ?? "");
+      if (name && task.includes(name)) continue;
+      // 주인공·동료 요청은 배우 고치기가 정상이다.
+      if (section === "actors" && /주인공|동료|파티|합류|이름|직업|레벨|능력치|hero|party/iu.test(task)) continue;
+      if (section === "classes" && /직업|레벨|스킬|기술|배우|class|skill|level/iu.test(task)) continue;
+      const keys = Object.keys({ ...prev, ...r }).filter((k) => JSON.stringify(prev[k]) !== JSON.stringify(r[k]));
+      out.push(`[게임 검사 부작용] 요청에 없는 기존 ${section} 「${name || String(r.id)}」 를 바꿨다(${keys.slice(0, 4).join(",")}) — 게임 전체 값이 바뀐다. 새 레코드를 만들거나 되돌린다.`);
+    }
+  }
+  return out.slice(0, 6);
 }
 
 export type { Command };
