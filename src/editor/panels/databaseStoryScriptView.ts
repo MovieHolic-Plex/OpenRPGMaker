@@ -29,12 +29,16 @@ interface ScriptState {
   editingSummary: string | null;
   /** 다시 그린 뒤 이 장면으로 간다(개요에서 접힌 곁가지를 골랐을 때). */
   jumpTo: string | null;
+  /** 다시 그린 뒤 이 줄(제안)로 간다. */
+  jumpLine: string | null;
+  /** 「다음 제안」 이 마지막으로 간 줄. */
+  proposalCursor: string;
   /** 대본 창의 스크롤 — 받기·고치기로 다시 그려도 읽던 자리에 남는다. */
   scrollTop: number;
   scrollKey: string;
 }
 
-const scriptState: ScriptState = { chapterId: "", query: "", activeSceneId: "", openSide: new Set(), editingSummary: null, jumpTo: null, scrollTop: 0, scrollKey: "" };
+const scriptState: ScriptState = { chapterId: "", query: "", activeSceneId: "", openSide: new Set(), editingSummary: null, jumpTo: null, jumpLine: null, proposalCursor: "", scrollTop: 0, scrollKey: "" };
 
 const watchedScrollers = new WeakSet<HTMLElement>();
 
@@ -297,7 +301,8 @@ function renderSideLane(context: RenderContext, key: string, sides: readonly Sto
     ],
   }) as HTMLDetailsElement;
   const fill = (): void => { if (body.childElementCount === 0) body.append(...sides.map((scene) => renderScene(context, scene, true))); };
-  const open = scriptState.openSide.has(key) || Boolean(context.query) || pending > 0;
+  // 제안이 있어도 저절로 펼치지 않는다 — 본줄 대본이 곁가지에 밀려 내려가지 않게. 「다음 제안」 이 필요한 곁가지만 펼친다.
+  const open = scriptState.openSide.has(key) || Boolean(context.query);
   if (open) { fill(); details.open = true; }
   details.addEventListener("toggle", () => {
     if (details.open) { scriptState.openSide.add(key); fill(); } else scriptState.openSide.delete(key);
@@ -440,10 +445,10 @@ export function renderStoryScriptView(
           children: [
             el("button", {
               class: "db-ws-btn db-ws-btn-ghost",
-              text: "첫 제안으로",
-              attrs: { type: "button" },
+              text: "다음 제안으로",
+              attrs: { type: "button", title: "대본 읽는 순서로 다음 제안 줄로 갑니다(접힌 곁가지는 펼칩니다)" },
               dataset: { testid: "db-script-first-proposal" },
-              on: { click: () => host.querySelector<HTMLElement>(".db-script-proposal")?.scrollIntoView({ block: "center", behavior: "smooth" }) },
+              on: { click: () => goToNextProposal() },
             }),
             el("button", {
               class: "db-ws-btn db-ws-btn-ghost",
@@ -472,6 +477,37 @@ export function renderStoryScriptView(
       ],
     }));
   }
+
+  // 읽는 순서(처음부터 곁가지 → 본줄 장면 → 그 뒤 곁가지)대로 제안 줄을 늘어놓는다.
+  const proposalOrder: { readonly lineId: string; readonly lane: string | null }[] = [];
+  if (chapter && proposals.size > 0) {
+    const sidesOf = new Map<string, StoryScene[]>();
+    for (const id of chapter.sideIds) {
+      const scene = story.scenes.get(id)!;
+      const key = scene.anchorId ?? "start";
+      sidesOf.set(key, [...(sidesOf.get(key) ?? []), scene]);
+    }
+    const take = (scene: StoryScene, lane: string | null): void => {
+      for (const line of scene.lines) if (proposals.has(line.id)) proposalOrder.push({ lineId: line.id, lane });
+    };
+    for (const scene of sidesOf.get("start") ?? []) take(scene, "start");
+    for (const id of chapter.mainIds) {
+      const scene = story.scenes.get(id)!;
+      take(scene, null);
+      for (const side of sidesOf.get(id) ?? []) take(side, id);
+    }
+  }
+  const goToNextProposal = (): void => {
+    if (proposalOrder.length === 0) return;
+    const at = proposalOrder.findIndex((entry) => entry.lineId === scriptState.proposalCursor);
+    const next = proposalOrder[(at + 1) % proposalOrder.length]!;
+    scriptState.proposalCursor = next.lineId;
+    const visible = host.querySelector<HTMLElement>(`[data-testid="db-script-line"][data-line-id="${CSS.escape(next.lineId)}"]`);
+    if (visible) { visible.scrollIntoView({ block: "center", behavior: "smooth" }); return; }
+    if (next.lane) scriptState.openSide.add(next.lane);
+    scriptState.jumpLine = next.lineId;
+    rerender();
+  };
 
   const script = el("div", { class: "db-script-page", dataset: { testid: "db-script-page" } });
   if (chapter) {
@@ -524,13 +560,17 @@ export function renderStoryScriptView(
   host.append(shell);
   const scrollKey = `${scriptState.chapterId}|${query}`;
   const jumpTo = scriptState.jumpTo;
+  const jumpLine = scriptState.jumpLine;
   scriptState.jumpTo = null;
+  scriptState.jumpLine = null;
   requestAnimationFrame(() => {
     const scroller = scrollParent(script);
     if (!scroller) return;
     const jumpScene = jumpTo ? story.scenes.get(jumpTo) : undefined;
     const target = jumpScene ? host.querySelector<HTMLElement>(`#${CSS.escape(sceneAnchor(jumpScene))}`) : null;
-    if (target) target.scrollIntoView({ block: "start" });
+    const lineTarget = jumpLine ? host.querySelector<HTMLElement>(`[data-testid="db-script-line"][data-line-id="${CSS.escape(jumpLine)}"]`) : null;
+    if (lineTarget) lineTarget.scrollIntoView({ block: "center" });
+    else if (target) target.scrollIntoView({ block: "start" });
     else if (scriptState.scrollKey === scrollKey) scroller.scrollTop = scriptState.scrollTop;
     scriptState.scrollKey = scrollKey;
     if (!watchedScrollers.has(scroller)) {
