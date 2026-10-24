@@ -1,4 +1,5 @@
 import { BUILTIN_EQUIPMENT_SLOTS } from "@/project/equipmentSlots";
+import { isBuiltinFieldFxId } from "@/project/containerFx";
 import type {
   BattleEventCondition,
   BattleEventPageRecord,
@@ -360,7 +361,7 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       assert(context.resourceIds.has(command.resourceId), `playAudio: resourceId가 존재하지 않습니다: ${command.resourceId}`);
       return;
     case "showAnimation":
-      assert(context.animationIds.has(command.animationId), `showAnimation: animationId가 존재하지 않습니다: ${command.animationId}`);
+      assert(context.animationIds.has(command.animationId) || isBuiltinFieldFxId(command.animationId), `showAnimation: animationId가 존재하지 않습니다: ${command.animationId}`);
       return;
     case "showEmote":
       return;

@@ -450,7 +450,8 @@ export type Command =
   | { kind: "advanceCropGrowth"; days: number }
   | { kind: "setTime"; hour: number; minute?: number }
   | { kind: "sleepUntilMorning" }
-  | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition }
+  /** door=false: 문 칸에서 떠나도 문 여는 연출을 하지 않는다(생략 = 문 칸이면 문짝이 열리고 문 소리 뒤 이동). */
+  | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition; door?: boolean }
   | { kind: "moveEvent"; eventId: string; route: MoveRoute }
   | { kind: "setEventGraphicPattern"; eventId: string; pattern: number }
   | {
@@ -787,11 +788,16 @@ export interface ChaseAcrossMaps {
 }
 
 export interface EventObjectInteraction {
-  kind: "pushable" | "hiding";
+  /** container = 뒤질 수 있는 수납(상자·통·자루·서랍). 연출·흔적은 project/containerFx.ts. */
+  kind: "pushable" | "hiding" | "container";
   /** A push always moves one tile. Omitted directions allow all four directions. */
   directions?: Dir[];
   /** pushable 전용: 밀기가 시작될 때 한 번 울리는 효과음 리소스 id(예: 바위 긁는 소리). 생략하면 무음. */
   sound?: string;
+  /** container 전용: 수납 종류(ContainerStyle — chest·crate·barrel·sack·straw·drawer·jar). 생략 = 이름표로 추정. */
+  style?: string;
+  /** container 전용: 이미 뒤진 페이지. 켜져 있는 동안 칸에 뒤진 흔적을 그린다. */
+  searched?: boolean;
 }
 
 /** 시야에 처음 들어온 순간의 놀람 — 머리 위 말풍선을 띄우고 holdMs 동안 멈췄다가 쫓는다(chase 전용). */
