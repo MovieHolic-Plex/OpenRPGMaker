@@ -8,7 +8,7 @@
  * 후보 비교: ~/claude-viz/fallen-star-title-pick-1.html. 타이틀·town·fall·morning 은 다시 짠 왕도(fallenTown.ts)를
  * 참고 그림으로 다시 뽑았다(2026-10-21, ~/claude-viz/fallen-town-match.html, 이름 앞 fallen-town). 플레이어·내보내기는 generatedAssetResourceResolver 가 id 로 찾는다.
  */
-export type FallenStarArtId = 'title' | 'town' | 'fall' | 'observatory' | 'crash' | 'morning';
+export type FallenStarArtId = 'title' | 'town' | 'fall' | 'observatory' | 'crash' | 'morning' | 'town-ground' | 'fall-ground';
 
 export type FallenStarArt = {
   readonly id: FallenStarArtId;
@@ -31,6 +31,10 @@ export const FALLEN_STAR_ART: readonly FallenStarArt[] = [
   art('observatory', 528, 297, 'observatory-2 · by: supervisor'),
   art('crash', 528, 297, 'crash-2 · by: supervisor'),
   art('morning', 528, 297, 'fallen-town walled morning-3 · by: supervisor'),
+  // 시차 층(2026-10-24 시네마틱 오프닝): 위 town·fall 에서 하늘만 투명하게 오려 낸 것 — 새 화소 없음.
+  // 뒤에 밤하늘 파노라마 세 겹을 깊이별로 깐다. 생성: scripts/content/fallen-star-opening-cutouts.py
+  art('town-ground', 528, 297, 'town 하늘 오림 · scripts/content/fallen-star-opening-cutouts.py'),
+  art('fall-ground', 528, 297, 'fall 하늘 오림 · scripts/content/fallen-star-opening-cutouts.py'),
 ];
 
 export const FALLEN_STAR_BACKDROP_URLS: Readonly<Record<string, string>> = Object.fromEntries(

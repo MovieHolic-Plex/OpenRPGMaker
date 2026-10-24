@@ -404,7 +404,14 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   update(_time: number, deltaMs: number): void {
-    if (this.game.registry.get('initialPresentationPending') === true) return;
+    if (this.game.registry.get('initialPresentationPending') === true) {
+      // Behind the opening cover nothing advances, but the visible tile window must already be built:
+      // otherwise the cover fades onto sprites over a black ground that fills in a few frames later (pop-in).
+      const pendingView = runtimeCameraTileView(this.cameras.main);
+      syncRuntimeTileWindow(this, pendingView);
+      syncTileCulling(this, pendingView, mapTileSize(this.map));
+      return;
+    }
     this.worldAtlasController?.update();
     if (this.worldAtlasController?.isOpen) {
       this.input_.resetEdges();
