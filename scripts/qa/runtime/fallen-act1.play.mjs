@@ -20,7 +20,7 @@ const BASE = { sw_fs_main_started: true, sw_fs_main_step0: true, sw_fs_valen_mar
 const trio = (level) => ["actor_hero", "actor_fs_elena", "actor_fs_iris"].map((actorId) => ({ actorId, level }));
 const AFTER_CRASH = { ...BASE, sw_fs_valen_crash_on: true, sw_fs_valen_crash_met: true, sw_fs_main_step2: true, sw_fs_vault_seal_open: true, sw_fs_b3_west_lever: true, sw_fs_b3_sun_lever: true, sw_fs_b3_moon_lever: true };
 const SEGMENTS = {
-  valen: { id: "fs-act1-valen", mapId: "fs_forest", x: 15, y: 9, facing: "down", switches: { ...BASE }, party: trio(7), items: { item_potion: 3 } },
+  valen: { id: "fs-act1-valen", mapId: "fs_forest", x: 15, y: 9, facing: "down", switches: { ...BASE, sw_fs_valen_crash_on: true }, party: trio(7), items: { item_potion: 3 } },
   dragon: { id: "fs-act1-dragon", mapId: "fs_vault_b4", x: 14, y: 21, facing: "up", switches: { ...AFTER_CRASH }, party: trio(8), items: { item_potion: 6, item_hi_potion: 3, item_ether: 4 } },
   panel: { id: "fs-act1-panel", mapId: "fs_vault_b4", x: 14, y: 4, facing: "up", switches: { ...AFTER_CRASH, sw_fs_dragon_met: true, sw_fs_dragon_down: true }, party: trio(9), items: { item_potion: 3 } },
 };
@@ -46,9 +46,11 @@ async function read(page, texts, until, { maxMs = 240_000 } = {}) {
     if (s.box === null) { await page.waitForTimeout(150); continue; }
     const clean = s.box.replace(/\s+/g, " ").trim();
     if (clean && clean !== last) {
-      texts.push(clean); last = clean;
-      const long = clean.length > 70 || /\[|▒/.test(clean);
-      await page.waitForTimeout(long ? 3600 : 1700);
+      await page.waitForTimeout(900);
+      const full = ((await ui(page)).box ?? clean).replace(/\s+/g, " ").trim();
+      texts.push(full); last = full;
+      const long = full.length > 70 || /\[|▒/.test(full);
+      await page.waitForTimeout(long ? 2800 : 900);
       if (/달의 아이|맏딸|정착 확인|잘 지내|잡아라|선생님/.test(clean) && textShots < 10) { textShots += 1; shot(page, `text-${texts.length}`); }
     } else {
       await page.waitForTimeout(250);
@@ -88,9 +90,48 @@ async function segment(browser, server, key, run) {
   await page.addInitScript(([projectUrl, ns, qaCheckpoint]) => {
     localStorage.clear();
     window.__qaSfx = [];
+    // 미리 받은 소리는 blob: 주소로 재생된다 — 원래 주소로 되돌릴 수 있게 Response→Blob→URL 을 잇는다.
+    const blobSrc = new WeakMap(); window.__qaBlobUrl = {};
+    const rblob = Response.prototype.blob;
+    Response.prototype.blob = function () { const url = this.url; return rblob.call(this).then((b) => { try { blobSrc.set(b, url); } catch {} return b; }); };
+    const mk = URL.createObjectURL;
+    URL.createObjectURL = function (o) { const u = mk.call(URL, o); try { const src = blobSrc.get(o); if (src) window.__qaBlobUrl[u] = src; } catch {} return u; };
+    // 스트림으로 읽어 new Blob(chunks) 로 묶는 미리 받기(scenePreload)도 원래 주소를 잃지 않게 한다.
+    const streamUrl = new WeakMap(), chunkUrl = new WeakMap();
+    const bodyDesc = Object.getOwnPropertyDescriptor(Response.prototype, "body");
+    Object.defineProperty(Response.prototype, "body", { configurable: true, get() { const b = bodyDesc.get.call(this); try { if (b) streamUrl.set(b, this.url); } catch {} return b; } });
+    const getReader = ReadableStream.prototype.getReader;
+    ReadableStream.prototype.getReader = function (...a) {
+      const r = getReader.apply(this, a); const u = streamUrl.get(this);
+      if (u && typeof r.read === "function") { const rd = r.read.bind(r); r.read = () => rd().then((res) => { try { if (res && res.value && typeof res.value === "object") chunkUrl.set(res.value, u); } catch {} return res; }); }
+      return r;
+    };
+    const NativeBlob = window.Blob;
+    window.Blob = class extends NativeBlob { constructor(parts, opts) { super(parts, opts); try { const u = parts && parts.length ? chunkUrl.get(parts[0]) : undefined; if (u) blobSrc.set(this, u); } catch {} } };
+    // 효과음 대부분은 WebAudio 버퍼로 난다 — 받은 바이트 → 디코딩 버퍼 → 재생 시작을 원래 주소로 잇는다.
+    const abUrl = new WeakMap(), bufUrl = new WeakMap();
+    const abs = (u) => { try { return window.__qaBlobUrl[u] ?? new URL(u, location.href).href; } catch { return u; } };
+    const rab = Response.prototype.arrayBuffer;
+    Response.prototype.arrayBuffer = function () { const u = this.url; return rab.call(this).then((b) => { try { abUrl.set(b, abs(u)); } catch {} return b; }); };
+    const xopen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function (m, u, ...r) { this.__qaUrl = String(u); return xopen.call(this, m, u, ...r); };
+    const respDesc = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, "response");
+    Object.defineProperty(XMLHttpRequest.prototype, "response", { configurable: true, get() { const r = respDesc.get.call(this); try { if (r instanceof ArrayBuffer && this.__qaUrl) abUrl.set(r, abs(this.__qaUrl)); } catch {} return r; } });
+    const decode = BaseAudioContext.prototype.decodeAudioData;
+    BaseAudioContext.prototype.decodeAudioData = function (ab, ok, err) {
+      const u = abUrl.get(ab);
+      const tag = (buf) => { try { if (u && buf) bufUrl.set(buf, u); } catch {} return buf; };
+      const p = decode.call(this, ab, ok ? (b) => { tag(b); ok(b); } : undefined, err);
+      return p && typeof p.then === "function" ? p.then(tag) : p;
+    };
+    const startSrc = AudioBufferSourceNode.prototype.start;
+    AudioBufferSourceNode.prototype.start = function (...a) {
+      try { const u = this.buffer && bufUrl.get(this.buffer); if (u && !this.loop) window.__qaSfx.push({ at: Date.now(), src: u, volume: 0.85, via: "webaudio" }); } catch {}
+      return startSrc.apply(this, a);
+    };
     const play = HTMLMediaElement.prototype.play;
     HTMLMediaElement.prototype.play = function (...a) {
-      try { if (!this.loop) window.__qaSfx.push({ at: Date.now(), src: this.currentSrc || this.src, volume: this.volume }); } catch {}
+      try { if (!this.loop) { const raw = this.currentSrc || this.src; window.__qaSfx.push({ at: Date.now(), src: window.__qaBlobUrl[raw] ?? raw, volume: this.volume }); } } catch {}
       return play.apply(this, a);
     };
     window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace: ns, qaInstrumentation: true, qaCheckpoint };
@@ -115,11 +156,25 @@ const browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "
 try {
   if (only.has("valen")) await segment(browser, server, "valen", async (page, mark, seg) => {
     mark("valen_start");
-    await page.evaluate(() => window.__oprnDebug.setSwitch("sw_fs_valen_crash_on", true));
+    // 체크포인트가 「발렌이 올라온다」 스위치를 켠 채로 맵에 들어온다 — 자동 실행 인트로가 곧바로 돈다.
     shot(page, "valen-walk", 4200);
     await read(page, seg.texts, (s) => s.battle);
     shot(page, "valen-battle", 3000);
-    await page.waitForTimeout(6500);
+    await page.waitForTimeout(2500);
+    // 첫 두 바퀴 — 소환·예고(심판의 빛)가 보일 만큼만 싸운다.
+    const msgs = [];
+    const tEnd = Date.now() + 45_000;
+    let idle = 0;
+    while (Date.now() < tEnd) {
+      const s = await ui(page);
+      const line = s.box ? `[대사] ${s.box.replace(/\s+/g, " ").trim()}` : s.msg;
+      if (line && line !== msgs.at(-1)) msgs.push(line);
+      if (/심판의 빛/.test(line ?? "") && !msgs.some((m) => m === "#shot")) { msgs.push("#shot"); shot(page, "valen-judgement", 300); }
+      const step = await battleStep(page, {});
+      if (step) idle = 0; else if (s.box !== null || ++idle > 8) { await page.keyboard.press("Enter", { delay: 80 }); idle = 0; }
+      await page.waitForTimeout(step ? 450 : 300);
+    }
+    seg.battleMessages = msgs.filter((m) => m !== "#shot");
     mark("valen_end");
   });
   if (only.has("dragon")) await segment(browser, server, "dragon", async (page, mark, seg) => {
@@ -129,18 +184,19 @@ try {
     await page.waitForTimeout(2500);
     const plan = { 카엘: "skill_hero_rush_pierce", 엘레나: "skill_mage_fireball", 이리스: "attack" };
     const msgs = [];
-    let cracked = 0, castsAfter = 0;
+    let cracked = 0, castsAfter = 0, idle = 0;
     const tEnd = Date.now() + 150_000;
     while (Date.now() < tEnd) {
       const s = await ui(page);
-      if (s.msg && s.msg !== msgs.at(-1)) {
-        msgs.push(s.msg);
-        if (/비늘이 갈라졌다/.test(s.msg) && !cracked) { cracked = Date.now(); shot(page, "dragon-crack", 200); }
-        if (cracked && /엘레나/.test(s.msg)) { castsAfter += 1; shot(page, `dragon-magic-${castsAfter}`, 700); }
+      const line = s.box ? `[대사] ${s.box.replace(/\s+/g, " ").trim()}` : s.msg;
+      if (line && line !== msgs.at(-1)) {
+        msgs.push(line);
+        if (/비늘이 갈라졌다|관통상에 걸렸다/.test(line) && !cracked) { cracked = Date.now(); plan.카엘 = "attack"; shot(page, "dragon-crack", 200); }
+        if (cracked && /엘레나가 파이어볼/.test(line)) { castsAfter += 1; shot(page, `dragon-magic-${castsAfter}`, 700); }
       }
       if (cracked && castsAfter >= 2) { await page.waitForTimeout(3500); break; }
       const step = await battleStep(page, plan);
-      if (step) log("battle", step);
+      if (step) { log("battle", step); idle = 0; } else if (s.box !== null || ++idle > 8) { await page.keyboard.press("Enter", { delay: 80 }); idle = 0; }
       await page.waitForTimeout(step ? 450 : 300);
     }
     seg.battleMessages = msgs;
@@ -184,7 +240,7 @@ console.error("DONE");
 
 /** 녹화에는 소리가 없다 — 실행 중 기록한 효과음 큐(시각·파일·음량)대로 실제 SE 파일을 그 시각에 섞는다(fallen-interact 와 같은 방식). */
 function muxSfx(file, sfx, start, end) {
-  const cues = sfx.filter((c) => c.t >= start - 0.05 && c.t <= end && c.src);
+  const cues = sfx.filter((c) => c.t >= start - 0.05 && c.t <= end && c.src && !c.src.startsWith("blob:"));
   const local = (src) => resolve("public", decodeURIComponent(new URL(src).pathname).replace(/^\//, ""));
   const args = ["-y", "-loglevel", "error", "-i", file];
   const parts = [];

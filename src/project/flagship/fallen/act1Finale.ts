@@ -364,6 +364,7 @@ function crashSite(project: Project, forestId: string): void {
   const intro: Command[] = [
     cutBegin(),
     letterbox(),
+    se("cc0-se-orp-inventory-metal-small2"),
     narrate("숲길 아래에서 쇠 장화 소리가 올라온다."),
     emote("player", "exclamation", 700),
     scroll("down", 4),
@@ -381,6 +382,7 @@ function crashSite(project: Project, forestId: string): void {
     say(ELENA, "카엘, 저 사람 심문관이야.\n…정말 싸울 거야?"),
     say(KAEL, "응."),
     say(VALEN, "좋다. 그럼 배워라.\n하늘의 것을 감싼 손이 무엇을 치르는지."),
+    se("cc0-se-orp-battle-sword-unsheathe"),
     shake(3, 500),
     narrate("발렌이 장검을 뽑는다. 칼날에 하얀 빛이 고인다."),
     cutLabel(),
