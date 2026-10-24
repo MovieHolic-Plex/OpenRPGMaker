@@ -177,6 +177,26 @@
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
+/* 문 열림 연출: 자동/켜기/끄기 — 요약 줄 아래 한 줄 전체. */
+.transfer-command-door-row {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  grid-column: 1 / -1;
+  margin: 6px 0 2px;
+}
+
+.transfer-command-door-row > span {
+  flex: none;
+  white-space: nowrap;
+}
+
+/* 편집기는 select 를 .event-custom-select 로 감싸고 그 감싸개가 줄 끝까지 늘어난다 — 이 줄에서만 좁게. */
+.transfer-command-editor .transfer-command-door-row > :is(select, .event-custom-select) {
+  flex: none;
+  width: 140px !important;
+}
+
 .transfer-command-summary {
   border: 1px solid var(--border-soft, var(--border-subtle));
   border-radius: 6px;

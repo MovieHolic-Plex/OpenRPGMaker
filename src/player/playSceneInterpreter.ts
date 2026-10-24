@@ -303,7 +303,9 @@ export async function runCommands(
   observe("started");
   try {
     let result = interpreter.start(), normalCompletion = true, handledFailure = false, lostBattle = false;
-    scene.refreshRuntimeSurfaces();
+    // 첫 걸음이 다른 맵으로 가는 이동(문·출구 이벤트)이면 지금 맵을 다시 그리지 않는다 — 곧 버릴 맵의 타일·이벤트를
+    // 다시 깔면서 쓰레기 수거까지 겹쳐, 문 칸을 밟는 순간 한 프레임이 100ms 넘게 멈췄다(2026-10-24 프로파일).
+    if (!(result.kind === "transfer" && result.mapId !== scene.map.id)) scene.refreshRuntimeSurfaces();
     while (result.kind !== "done" && current()) {
       if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", "Esc Esc: 컷신 건너뛰기");
       const step = result;
@@ -540,9 +542,10 @@ async function consumeBlockingStep(
         const destinationName = project.maps[step.mapId]?.name ?? "";
         genreDoorSound = playMonsterSfx(project, /체육관|gym/i.test(destinationName) ? "gym-door" : "door-open") === true;
       }
-      // 문 칸에서 떠나는 이동이면 문짝이 열리고(문 소리) 그다음 넘어간다. 문이 아니면 곧장 넘어간다.
+      // 문 열림 연출: door 생략 = 자동(문 캐릭터 시트이거나 이벤트 칸·바로 윗칸에 여닫는 문 타일일 때만),
+      // true = 켜기(주인공 앞 문 타일까지 찾는다), false = 끄기. 성문·통로·맵 가장자리·계단은 자동에서 연출이 없다.
       if (step.mapId !== scene.map.id && step.door !== false) {
-        try { await playDoorOpenBeforeTransfer(scene, currentEventId, { silent: genreDoorSound }); } catch (error) { console.warn("[player] door open fx", error); }
+        try { await playDoorOpenBeforeTransfer(scene, currentEventId, { silent: genreDoorSound, mode: step.door === true ? "on" : "auto" }); } catch (error) { console.warn("[player] door open fx", error); }
       }
       try { await scene.transferTo(step); }
       finally { finishTransfer?.(); }
