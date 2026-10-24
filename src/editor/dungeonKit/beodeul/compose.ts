@@ -319,7 +319,15 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     }
     if (fl.shore && hasKit(fl.shore) && nearLiquid(x, y) && hash01(x, y, seed + 71) < 0.8) id = fl.shore;
     if (fl.tile !== undefined && id === pick(fl.base)) { lower[idx(x, y)] = fl.tile; continue; }
-    if (fl.mix || kit(id).ai?.tags?.includes("섞음")) { const rows = kit(id).rows; lower[idx(x, y)] = rows[Math.floor(hash01(x, y, seed * 5 + 3) * rows.length)]!.tiles[Math.floor(hash01(y, x, seed * 7 + 1) * rows[0]!.tiles.length)]!; }
+    if (fl.mix || kit(id).ai?.tags?.includes("섞음")) {
+      const rows = kit(id).rows, w = rows[0]!.tiles.length;
+      // mixCells 는 첫 후보 키트 기준 번호 — 옛 사본이 다른(작은) 키트로 물러섰으면 범위 안 번호만 남는다.
+      const all = Array.from({ length: rows.length * w }, (_, k) => k);
+      const listed = id === pick(fl.base) ? (fl.mixCells ?? []).filter((k) => k < all.length) : [];
+      const cells = listed.length ? listed : all;
+      const k = cells[Math.floor(hash01(x, y, seed * 5 + 3) * cells.length)]!;
+      lower[idx(x, y)] = rows[Math.floor(k / w)]!.tiles[k % w]!;
+    }
     else lower[idx(x, y)] = tileOf(id, x, y);
   }
   // 오토타일 바닥(얼음굴): 걷는 바닥 = ground 오토타일(이웃 = 걷는 바닥·다리), 호수 방 + 잡음 덩이 = 빙판 오토타일(이웃 = 빙판 칸).
@@ -720,7 +728,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         cluster(rs, e[0]?.[0] ?? r.x + 1, e[0]?.[1] ?? r.y + 1, 3, [[K.crate, 2], [K.barrel, 2], [K.crateStack, 1], [K.bucket, 1]]);
         put(K.brazier, r.x + 1 + Math.floor(rs() * 2), r.y + r.h - 2);
         put(K.brazier, r.x + r.w - 2 - Math.floor(rs() * 2), r.y + r.h - 2);
-        for (const [x, y] of e.slice(3, 7)) if (rs() < 0.6) put(weighted(rs, litter), x, y);
+        for (const [x, y] of e.slice(3, 5)) if (rs() < 0.5) put(weighted(rs, litter), x, y);
         // 입구 앵커: 계단 앞 길 양옆 기둥 한 쌍 — 「거의 빈 10×8 바닥」으로 읽혔다(2026-10-23 dg2-r1 VQA 지하 묘지). 길(계단 앞 세로 줄)은 비운다.
         if (s && r.w >= 9 && r.h >= 5) { const y = Math.min(r.y + r.h - 3, s.y + 3); if (put(K.column, s.x - 2, y - 1)) put(K.column, s.x + 2, y - 1); }
         break;
@@ -742,14 +750,15 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         if (r.h >= 7 && r.w >= 11) {
           const my = r.y + Math.floor(r.h / 2);
           if (put(K.brazier, cx - 3, my)) put(K.brazier, cx + 3, my);
-          const side = rs() < 0.5 ? r.x + 2 : r.x + r.w - 4;
-          cluster(rs, side, my, 3, litter);
+          rs();   // 가운데 잔해 무더기는 뺐다 — 기둥 줄 사이 길이 잔해로 막혀 보였다(2026-10-25 floor VQA r0). 난수 한 번은 그대로 소비.
         }
         hangAlong(slots, rs, 4, () => (rs() < 0.75 ? K.torch : K.banner));
         // 벽 장식 아치는 두지 않는다 — 열린 아치도 쇠창살 아치도 「어디로도 안 가는 문」으로 읽혔다(2026-10-23 VQA r1·r2). 난수 한 번은 그대로 소비해 배치를 흔들지 않는다.
         rs();
         const e = edgeCells(r, rs);
-        for (let c = 0; c < 2 + Math.floor(rs() * 2); c += 1) { const p = e[c * 5]; if (p) cluster(rs, p[0], p[1], 2 + Math.floor(rs() * 2), litter); }
+        // 잔해 모둠은 구석 한 곳만(edgeCells 는 구석이 앞), 작게.
+        rs();
+        if (e[0]) cluster(rs, e[0][0], e[0][1], 2, litter);
         // 지하묘지 홀: 벽가에 동서 석관 두엇(주제 그림) — 홀이 그냥 기둥 방으로 읽혔다.
         if (type === "catacomb") ossuaryWalls(slots, rs, 1);
         if (type === "catacomb" && hasKit(TK("sarcophagus-ew"))) { let n = 0; for (const [x, y] of e.slice(10)) { if (n >= 2) break; if (put(rs() < 0.2 && hasKit(TK("sarcophagus-ew-open")) ? TK("sarcophagus-ew-open") : TK("sarcophagus-ew"), x, y)) n += 1; } }
@@ -877,9 +886,10 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     }
     for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
       if (doorstep[idx(x, y)]) continue;
+      // 배수 창살은 하수도·미궁만(성·묘지 통로 바닥 창살 띠가 「납작한 쇠 띠」로 읽혔다), 잔해는 드물게 — 2026-10-25 floor VQA r0.
       const v = hash01(x, y, seed + i);
-      if (v < 0.05) put(K.grate, x, y, { free: true });
-      else if (v < 0.09) put(weighted(rs, litter), x, y);
+      if (v < 0.03 && (type === "sewer" || type === "labyrinth")) put(K.grate, x, y, { free: true });
+      else if (v > 0.975) put(weighted(rs, litter), x, y);
     }
   });
 

@@ -324,7 +324,8 @@ function placeIceSlide(c: Ctx): string {
   // 얼음 줄: 미끄럼 칸 그림(새 그림이 없으면 설원 얼음 바닥)을 깐다
   // gap 빙판 오토타일이 이미 호수를 덮었으면(얼음굴 바닥) 덧칠하지 않는다 — 가장자리가 끊긴다.
   const sheet = (c.ts.autotileGroups ?? []).find((g) => g.id === "beodeul_dungeon_ice");
-  const onSheet = !!sheet && Array.from({ length: best.x1 - best.x0 + 1 }, (_, k) => c.map.lowerTiles[best!.y * W + best!.x0 + k]!).every((t) => sheet.memberTileIds.includes(t) || (sheet.interiorVariants ?? []).some((v) => v.includes(t)));
+  const onSheet = !!sheet && Array.from({ length: best.x1 - best.x0 + 1 }, (_, k) => c.map.lowerTiles[best!.y * W + best!.x0 + k]!).some((t) => sheet.memberTileIds.includes(t) || (sheet.interiorVariants ?? []).some((v) => v.includes(t)));
+  // 줄 일부라도 빙판 오토타일 위면 덧칠하지 않는다 — 반만 덧칠하면 빙판 가운데 글자 무늬 띠가 생겼다(2026-10-25 floor VQA r0 얼음굴 seed1).
   const ice = onSheet ? undefined : firstKit(c.ts, [TK("ice-floor"), "bd-pick-snowfield-ground-ice"]);
   if (ice) { const k = kitOf(c.ts, ice)!; for (let x = best.x0; x <= best.x1; x += 1) { const t = k.rows[best.y % k.height]!.tiles[x % k.width]!; if (t >= 0) c.map.lowerTiles[best.y * W + x] = t; } }
   const n = best.x1 - best.x0;

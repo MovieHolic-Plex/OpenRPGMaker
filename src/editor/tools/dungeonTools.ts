@@ -444,7 +444,8 @@ function towerRooms(top: boolean, k: number, seed = 0, shape: TowerFloorShape = 
   if (top) {
     const big = h(99) < 0.6;
     if (shape === "hall") return [landing, { id: "gallery", kind: "hall", w: 12, h: 5, from, dir: "N", shift: 0, len: 3 }, { id: "throne", kind: "boss", w: 10, h: 7, from: "gallery", dir: "N", shift: 0, len: 3, shape: "round" }];
-    if (shape === "observatory") return [landing, { id: "throne", kind: "boss", w: 10, h: 8, from, dir: "N", shift: 0, len: 4, shape: "ring" },
+    // 링(gap 탑 링 키트)은 남·북 문만 있어 동·서 곁방이 닿지 않았다(시드 1·10·18·19 「닿지 않는 방 vault_w, vault_e」) — 관측실 보스방은 둥근 방으로.
+    if (shape === "observatory") return [landing, { id: "throne", kind: "boss", w: 10, h: 8, from, dir: "N", shift: 0, len: 4, shape: "round" },
       { id: "vault_w", kind: "vault", w: 6, h: 5, from: "throne", dir: "W", shape: "round" }, { id: "vault_e", kind: "storage", w: 6, h: 5, from: "throne", dir: "E", shape: "round" }];
     const study: DungeonRoomInput[] = h(k + 7) < 0.55 ? [{ id: "study", kind: h(k + 3) < 0.5 ? "library" : "storage", w: 7, h: 6, from, dir: side, shape: "round" }] : [];
     return [landing, { id: "throne", kind: "boss", w: big ? 10 : 8, h: big ? 8 : 6, from, dir: "N", shift: 0, len: 4, shape: "ring" }, ...study];

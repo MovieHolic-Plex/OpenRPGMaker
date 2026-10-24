@@ -76,13 +76,22 @@ function shoreCells(c: DressCtx, r: PlacedRoom): [number, number][] {
   return c.floorCells(r).filter(([x, y]) => [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => c.liquid[c.idx(x + dx!, y + dy!)] === 1));
 }
 
-/** 방 안쪽에 드문드문(확률 p, 둘레 rad 비움) 흩뿌린다. */
+/** 잔해·뼈 같은 바닥 부스러기(1칸 데칼) — 방 한가운데 길에 흩으면 「바닥이 지저분하다」로 읽혔다(2026-10-25 floor VQA r0). */
+export const DEBRIS_RE = /bones|skull|rubble|slagrock|pebble|stones-|coal-pile|grate-floor|ember-a/;
+/** 벽 바로 앞(사방 중 한쪽이 막힌) 칸 또는 그 한 칸 안쪽 — 부스러기는 벽가·구석에만 모인다. */
+const nearWall = (c: DressCtx, x: number, y: number, d = 1): boolean => {
+  for (let dy = -d; dy <= d; dy += 1) for (let dx = -d; dx <= d; dx += 1) if (!c.isWalk(x + dx, y + dy)) return true;
+  return false;
+};
+/** 방 안쪽에 드문드문(확률 p, 둘레 rad 비움) 흩뿌린다. 부스러기 키트는 벽가(벽에서 한 칸 안)에만, 방마다 최대 2개. */
 function sprinkle(c: DressCtx, rs: () => number, r: PlacedRoom, p: number, pick: () => string, opts: { inset?: number; rad?: number; max?: number; bottomOnly?: boolean } = {}): number {
-  let n = 0;
+  let n = 0, debris = 0;
   for (const [x, y] of c.shuffle(rs, c.floorCells(r, opts.inset ?? 1))) {
     if (n >= (opts.max ?? 99)) break;
     if (rs() > p || !lonely(c, x, y, opts.rad ?? 1)) continue;
-    if (stand(c, pick(), x, y)) n += 1;
+    const id = pick();
+    if (DEBRIS_RE.test(id) && (debris >= 2 || !nearWall(c, x, y, 2))) continue;
+    if (stand(c, id, x, y)) { n += 1; if (DEBRIS_RE.test(id)) debris += 1; }
   }
   return n;
 }
@@ -118,7 +127,7 @@ export function dressCorridor(c: DressCtx, type: DungeonType, cor: PlacedCorrido
     const bit = type === "volcano" ? VC("ember-a") : type === "ice" ? pickKit(c, [TK("snow-drift"), CV("rubble-cave")]) : type === "otherworld" ? VC("ember-a")
       : type === "forest" ? FF("heath-a") : type === "swamp" ? FF("toadstools-b") : CV("rubble-cave");
     for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
-      if (hashDoor(c, x, y) || rs() > 0.05) continue;
+      if (hashDoor(c, x, y) || rs() > 0.02) continue;
       stand(c, bit, x, y);
     }
     return true;
@@ -513,7 +522,7 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
       if (c.lair) lairCamp(c, r, rs, e, false);
       let n = 0; for (const [x, y] of e) { if (n >= 7) break; if (rs() < 0.5 && lonely(c, x, y, 1) && stand(c, spikes(), x, y)) n += 1; }
       sprinkle(c, rs, r, 0.03, spikes, { inset: 2, rad: 2, max: 3 });
-      if (!c.lair) { mossPatch(e, 4); mossPatch(c.floorCells(r, 2), 3); }
+      if (!c.lair) mossPatch(e, 3);   // 이끼 빛은 벽가 한 덩이만 — 방 한가운데 덩이가 걷는 길을 막아 보였다(2026-10-25 floor VQA r1)
       if (rs() < 0.7) { for (const [x, y] of shoreCells(c, r).slice(0, 3)) stand(c, MUSH, x, y); }
       vinesOnWalls(c, rs, slots, 3);
       c.hangAlong(slots, rs, 7, () => TORCH, 1);
@@ -534,7 +543,7 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
     case "grotto": {
       const e = c.edgeCells(r, rs);
       if (c.lair) { lairCamp(c, r, rs, e, false); return true; }
-      mossPatch(e, 6); mossPatch(c.floorCells(r, 1), 5);
+      mossPatch(e, 5);
       for (const [x, y] of e.slice(0, 6)) if (rs() < 0.5 && lonely(c, x, y, 1)) stand(c, glow(), x, y);
       sprinkle(c, rs, r, 0.04, () => c.weighted(rs, [[SW("bones"), 2], [SW("skulls"), 1], [CV("rubble-cave"), 2]]), { max: 3 });
       vinesOnWalls(c, rs, slots, 3);
