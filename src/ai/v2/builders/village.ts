@@ -19,7 +19,7 @@ export const VILLAGE_CARD =
 const KNOWN_HINTS = new Set(["houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "width", "height", "seed", "variant", "harbour"]);
 const BEODEUL_TILESET = "beodeul_city";
 
-interface VillageState { readonly args: Record<string, unknown>; readonly seed?: number; readonly variant?: number }
+interface VillageState { readonly args: Record<string, unknown>; readonly seed?: number; readonly variant?: number; readonly doors?: readonly { x: number; y: number; kit?: string }[] }
 
 const words = (spec: PlaceSpec): string => [spec.name, spec.style, spec.theme, ...(spec.features ?? []), ...(spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""}`)].join(" ").toLowerCase();
 const has = (text: string, re: RegExp): boolean => re.test(text);
@@ -140,7 +140,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     ? { mapId: builtId, x: start.x, y: start.y }
     : { mapId: builtId, x: ent?.x ?? Math.floor((num(data.width) ?? 40) / 2), y: ent?.y ?? Math.floor((num(data.height) ?? 32) / 2) };
   const parts = [`${String(data.theme ?? "")} ${String(data.form ?? "")} 마을`, `집 ${houses ?? "?"}채`, data.gathering ? `모이는 곳 ${(data.gathering as { why?: string }).why ?? ""}` : "", data.walls ? "성벽" : "", data.bridge ? "다리" : ""].filter(Boolean);
-  const state: VillageState = { args, seed, variant };
+  const state: VillageState = { args, seed, variant, ...(Array.isArray(data.doors) ? { doors: data.doors as VillageState["doors"] } : {}) };
   return { ok: true, mapIds: [builtId], entrance, summary: `${spec.name}: ${parts.join(" · ")} (${num(data.width)}×${num(data.height)}, seed ${seed})`, warnings, missingArt: missing, calls, state };
 }
 

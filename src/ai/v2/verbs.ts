@@ -19,6 +19,7 @@ import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
 // 콘텐츠 동사(컷신 무대·연출 비평·물건 자리 계획) — finishContent·addEvent·drawObjectVerb·placeObject 가 쓴다.
 import { critiqueStaging } from "./critic";
 import { createGameTools, wantsGameTools, wantsTerrainTools } from "./game";
+import { edgeCell, eventBeats, isInside, isOutdoor, oppositeSide, makeGameOn, orderPlaces, pickDoor, villageDoors, walkGame, wantsMakeGame, type GameSpec } from "./makeGame";
 import { pickStageFrames, stageFrameProject, type EventBuildResult } from "./events";
 import { rememberObjectPlan, takeObjectPlan, type DrawObjectResult } from "./drawObject";
 
@@ -531,6 +532,144 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
 
+  // ───── make_game: 작은 게임 한 판(맵 5~8장·잇기·사람·사건)을 계획 한 번으로 ─────
+  const personItem = (addPeople.parameters as { properties: { people: { items: { properties: Record<string, unknown>; required: string[] } } } }).properties.people.items;
+  const eventItem = (addEvent.parameters as { properties: { event: { properties: Record<string, unknown>; required: string[] } } }).properties.event;
+  const hasTransferTo = (fromId: string, toId: string): boolean => {
+    const walk = (node: unknown): boolean => Array.isArray(node) ? node.some(walk) : !!node && typeof node === "object" && (((node as { kind?: string; mapId?: string }).kind === "transfer" && (node as { mapId?: string }).mapId === toId) || Object.values(node).some(walk));
+    return (env.ctx.project.maps[fromId]?.events ?? []).some((e) => walk(e.commands ?? []) || walk(e.pages ?? []));
+  };
+  const makeGame: PiToolShape = {
+    name: "make_game", label: "작은 게임 짓기", concurrency: "exclusive",
+    description: "작은 게임 한 판 — 장소 여러 곳(5~8)을 짓고 부모-자식으로 잇고(마을 집 문↔실내, 바깥 가장자리끼리, 던전 입구), 사람·사건을 둔 뒤, 시작에서 모든 맵에 갔다 돌아오는 길을 기계로 걸어 보고 맵마다 비평을 돌려준다. 맵마다 make_place 를 따로 부르지 않는다.",
+    parameters: { type: "object", properties: { game: { type: "object", properties: {
+      title: { type: "string" },
+      start: { type: "string", description: "시작 장소 key(생략하면 첫 장소)" },
+      places: { type: "array", maxItems: 8, items: { type: "object", properties: {
+        key: { type: "string" }, spec: PLACE_SPEC_SCHEMA, from: { type: "string", description: "들어오는 부모 장소 key(시작 장소는 생략)" },
+        side: { type: "string", enum: ["north", "south", "east", "west"], description: "바깥끼리 잇는 쪽(부모에서 본 방향)" },
+      }, required: ["key", "spec"] } },
+      people: { type: "array", items: { ...personItem, properties: { ...personItem.properties, place: { type: "string", description: "장소 key" } }, required: [...personItem.required, "place"] } },
+      events: { type: "array", items: { ...eventItem, properties: { ...eventItem.properties, place: { type: "string", description: "장소 key" } }, required: [...eventItem.required, "place"] } },
+    }, required: ["places"] } }, required: ["game"] },
+    async execute(id, params) {
+      const game = (params as { game: GameSpec }).game;
+      const { order, warnings } = orderPlaces(game);
+      if (order.length < 2) return text({ ok: false, summary: "장소가 둘 이상이어야 한다 — 하나면 make_place 를 쓴다." });
+      const built = new Map<string, { spec: PlaceSpec; builderId: string; result: PlaceBuildResult }>();
+      const lines: string[] = [];
+      const linkNotes: string[] = [];
+      for (const [i, place] of order.entries()) {
+        const spec0: PlaceSpec = { ...place.spec, salt: Math.floor(Math.random() * 1_000_000) };
+        const parent = place.from ? built.get(place.from) : undefined;
+        const parentMap = parent?.result.mapIds[0];
+        // 실내는 새 맵 id 로(지금 맵을 덮어쓰지 않게), 나머지는 부모 맵을 「지금 맵」으로 — 빌더가 새 맵을 만들고 던전은 부모와 입구를 잇는다.
+        const spec: PlaceSpec = i > 0 && isInside(spec0) && !spec0.mapId ? { ...spec0, mapId: `map_${place.key.replace(/[^A-Za-z0-9_]/gu, "") || "room"}_${Math.floor(Math.random() * 1e6).toString(36)}` } : spec0;
+        const builder = builderFor(spec);
+        if (!builder) { session.missingArt.add(`${spec.name}(${spec.type}) — 이 종류를 짓는 빌더가 없다`); lines.push(`${place.key}: 짓는 빌더 없음`); continue; }
+        env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${i + 1}/${order.length}, ${builder.id})` });
+        await builder.prepare?.(spec);
+        const sub = i === 0 ? env.ctx : { ...env.ctx, project: env.ctx.project, currentMapId: parentMap ?? env.ctx.currentMapId };
+        const subRun = i === 0 ? run : createBuildRun(sub);
+        let result = builder.build(subRun, spec);
+        if (sub !== env.ctx) env.ctx.project = sub.project;
+        recordWrite(env, subRun, `${id}:${place.key}`, "make_game", { place: place.key, spec }, result.ok, result.summary, { mapIds: result.mapIds });
+        for (const m of result.missingArt) session.missingArt.add(m);
+        if (!result.ok) { lines.push(`${place.key}: 실패 — ${result.summary.slice(0, 160)}`); continue; }
+        if (i === 0) {
+          if (!isInside(spec)) { const fixed = fixPlayerStart(env.ctx.project, result.mapIds); if (fixed.note) env.ctx.project = fixed.project; }
+          const ent = result.entrance;
+          if (ent && env.ctx.project.startMapId !== result.mapIds[0]) run.call("set_start_position", { mapId: ent.mapId, x: ent.x, y: ent.y });
+        }
+        const first = env.ctx.project.maps[result.mapIds[0]!];
+        if (first && first.name !== spec.name && !isInside(spec) && spec.type !== "dungeon" && spec.type !== "cave") run.call("set_map_properties", { mapId: first.id, name: spec.name });
+        built.set(place.key, { spec, builderId: builder.id, result });
+        const record: PlaceRecord = { builder: builder.id, spec, result, rounds: 0 };
+        for (const mapId of result.mapIds) session.places.set(mapId, record);
+        lines.push(`${place.key}: ${result.summary.slice(0, 200)}`);
+        // 잇기
+        if (!parent || !parentMap) continue;
+        const childMap = result.mapIds[0]!;
+        const pName = env.ctx.project.maps[parentMap]?.name ?? parentMap, cName = env.ctx.project.maps[childMap]?.name ?? childMap;
+        if (hasTransferTo(parentMap, childMap)) { linkNotes.push(`${pName} ↔ ${cName}: 짓기에서 이어짐`); continue; }
+        const usedDoors = new Set<string>((env.ctx.project.maps[parentMap]?.events ?? []).map((e) => `${e.x},${e.y + 1}`));
+        let linked = false;
+        if (isInside(spec) && result.entrance) {
+          const door = pickDoor(villageDoors(parent.result), spec.name, usedDoors, env.ctx.project.maps[parentMap]!);
+          if (door) {
+            const r = run.call("create_transfer_pair", { a: { mapId: parentMap, x: door.x, y: door.y, doorAt: { x: door.x, y: door.y - 1 } }, b: { mapId: childMap, x: result.entrance.x, y: result.entrance.y } });
+            linked = r.ok; linkNotes.push(r.ok ? `${pName} 집 문(${door.x},${door.y - 1}${door.kit ? ` ${door.kit}` : ""}) ↔ ${cName}` : `${pName} 집 문 잇기 실패: ${r.summary.slice(0, 160)}`);
+          }
+        } else if (spec.type === "dungeon" || spec.type === "cave") {
+          // 던전: 부모 맵의 걸어 닿는 칸 ↔ 던전 입구 계단(자리표시 출구가 있으면 그것을 바꾼다).
+          const at = edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, place.side ?? "north");
+          const r = at ? run.call("link_world_entrance", { worldMapId: parentMap, links: [{ x: at.x, y: at.y, toMapId: childMap }] }) : undefined;
+          linked = !!r?.ok && hasTransferTo(parentMap, childMap);
+          if (linked) linkNotes.push(`${pName}(${at!.x},${at!.y}) ↔ ${cName} 입구`);
+        } else if (isOutdoor(spec) && isOutdoor(parent.spec)) {
+          const side = place.side ?? "north";
+          const r = run.call("link_maps", { from: { mapId: parentMap, exit: { side } }, to: { mapId: childMap, entry: { side: oppositeSide(side) } } });
+          linked = r.ok; if (r.ok) linkNotes.push(`${pName} ${side} 가장자리 ↔ ${cName}`);
+        }
+        if (!linked) {
+          // 대신 걸어 닿는 칸끼리 문을 둔다(그림 없는 이동 칸) — 못 이은 채 두지 않는다.
+          const side = place.side ?? "north";
+          const a = edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, side);
+          const b = result.entrance && result.entrance.mapId === childMap ? { x: result.entrance.x, y: result.entrance.y } : edgeCell(env.ctx.project, env.ctx.project.maps[childMap]!, oppositeSide(side));
+          const r = a && b ? run.call("create_transfer_pair", { a: { mapId: parentMap, ...a }, b: { mapId: childMap, ...b } }) : undefined;
+          if (r?.ok) linkNotes.push(`${pName}(${a!.x},${a!.y}) ↔ ${cName}(${b!.x},${b!.y}) — 문 그림 없이 이동 칸으로 이었다`);
+          else linkNotes.push(`${pName} ↔ ${cName}: 잇지 못했다(${r?.summary.slice(0, 120) ?? "걸어 닿는 칸이 없다"})`);
+        }
+      }
+      recordWrite(env, run, `${id}:links`, "make_game", { links: true }, true, linkNotes.join(" / ").slice(0, 400));
+      // 사람·사건
+      const content: string[] = [];
+      const mapOf = (key: string) => built.get(key)?.result.mapIds[0];
+      const byPlace = new Map<string, PersonSpec[]>();
+      for (const p of game.people ?? []) { const list = byPlace.get(p.place) ?? []; const { place: _place, ...person } = p; list.push(person); byPlace.set(p.place, list); }
+      for (const [key, people] of byPlace) {
+        const mapId = mapOf(key);
+        if (!mapId) { content.push(`사람 ${people.length}명: 장소 「${key}」가 없다`); continue; }
+        const r = buildPeople(run, people, mapId);
+        session.content.push({ verb: "add_people", result: r });
+        recordWrite(env, run, `${id}:people:${key}`, "add_people", { mapId, people }, r.ok, r.summary);
+        content.push(`사람(${key}): ${r.summary.slice(0, 160)}`);
+      }
+      for (const ev of game.events ?? []) {
+        const mapId = mapOf(ev.place);
+        if (!mapId) { content.push(`사건: 장소 「${ev.place}」가 없다`); continue; }
+        const { place: _place, ...event } = ev;
+        const r = buildEvent(run, { ...event, mapId, beats: eventBeats(event) });
+        session.content.push({ verb: "add_event", result: r });
+        recordWrite(env, run, `${id}:event:${ev.place}`, "add_event", { ...event, mapId }, r.ok, r.summary);
+        content.push(`사건(${ev.place}): ${r.summary.slice(0, 160)}`);
+      }
+      await env.checkpoint("make_game");
+      // 길 검사 + 맵마다 보기(비평은 장소마다 첫 맵, 6곳까지 함께)
+      const allMaps = [...built.values()].flatMap((b) => b.result.mapIds).filter((m) => env.ctx.project.maps[m]);
+      const path = walkGame(env.ctx.project, allMaps);
+      const views = await Promise.all([...built.values()].map(async (b, i) => {
+        const ids = b.result.mapIds.filter((m) => env.ctx.project.maps[m]);
+        const seen = await see(env, session, task, b.spec.type, ids.slice(0, i < 6 ? 3 : 1), b.result.entrance, i < 6);
+        for (const mapId of ids) session.seen.set(mapId, seen);
+        return { b, seen };
+      }));
+      const problems = views.flatMap(({ b, seen }) => [
+        ...seen.checks.filter((c) => !c.ok).map((c) => `${b.spec.name} [기계 ${c.id}] ${c.detail}`),
+        ...seen.critics.flatMap((v) => v.majors.map((m) => `${b.spec.name} [비평] ${m.what}${m.fix ? ` → ${m.fix}` : ""}`)),
+      ]);
+      const shots: Seen = { checks: [], critics: views.flatMap((v) => v.seen.critics), images: views.flatMap((v) => v.seen.images.slice(0, 1)) };
+      return withImages({
+        ok: built.size > 0, title: game.title, places: lines, links: linkNotes, warnings, content,
+        path: path.lines, mapIds: Object.fromEntries([...built].map(([k, b]) => [k, b.result.mapIds])),
+        problems: problems.slice(0, 20), missingArt: [...session.missingArt],
+        next: path.unreached.length || path.noWayBack.length ? "닿지 않는 맵·돌아가는 문 없는 맵이 있다 — 그 맵 문을 create_transfer_pair 로 잇거나 보고에 적는다."
+          : problems.length ? "고칠 major 는 edit_place 로 장소마다 한 번, 게임 요소(퀘스트·아이템·전투)는 게임 도구로 덧붙인 뒤 보고한다."
+          : "길·검사 통과 — 남은 게임 요소가 있으면 덧붙이고 보고한다.",
+      }, shots, 4);
+    },
+  };
+
   const inspect: PiToolShape = {
     name: "inspect", label: "맵 보기", concurrency: "shared",
     description: "맵 하나의 1배 그림·기계 검사·사람/이벤트 목록을 본다(비평가 없이). 고치기 전에 지금 상태를 확인할 때.",
@@ -569,7 +708,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [makePlace, editPlace, addPeople, addEvent, addScene, drawObjectVerb, placeObject, inspect, askUser].map(guard);
+  const verbs = [makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, addPeople, addEvent, addScene, drawObjectVerb, placeObject, inspect, askUser].map(guard);
   // 게임 요소(퀘스트·아이템·전투·파티) 요청이면 v1 게임 도구를 덧붙인다 — 기록은 도구 묶음이 env.record 로 직접 남긴다.
   const t = String(task ?? "");
   return wantsGameTools(t) || wantsTerrainTools(t) ? [...verbs, ...createGameTools(env, t)] : verbs;
