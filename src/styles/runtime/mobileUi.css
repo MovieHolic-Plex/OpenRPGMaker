@@ -401,3 +401,23 @@
   touch-action: manipulation;
 }
 .play-viewport[data-touch-ui]:not([data-window-panel]) .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] :is(.status-menu-location, .status-menu-time, .status-menu-chapter) { display: none; }
+
+/* 가로 겹침 — 창이 무대 아래쪽을 쓰는 동안(대사 창·흉상, 전투 명령 창·파티 게이지) 조이스틱·A/B 를 위로 올린다(2026-10-25).
+   중심선을 0.68배(화면 높이의 62% → 42%)로 올리고 조이스틱 칸도 그 아래까지만 받아, 창 위의 탭을 조이스틱이 가로채지 않는다.
+   달리기 단추는 올라온 조이스틱과 겹치므로 이 동안 쉰다. */
+.play-viewport[data-touch-overlay]:has(.dialogue-box, [data-testid="battle-scene"]) > .touch-pad .touch-stick-zone {
+  bottom: auto;
+  height: calc(var(--touch-controls-y) * 0.68 + var(--touch-stick) / 2 + 8px);
+}
+.play-viewport[data-touch-overlay]:has(.dialogue-box, [data-testid="battle-scene"]) > .touch-pad .touch-stick-zone .touch-dpad:not([data-floating]),
+.play-viewport[data-touch-overlay]:has(.dialogue-box, [data-testid="battle-scene"]) > .touch-pad .touch-actions.touch-actions {
+  top: calc(var(--touch-controls-y) * 0.68);
+}
+.play-viewport[data-touch-overlay]:has(.dialogue-box, [data-testid="battle-scene"]) > .touch-pad .touch-run-btn { pointer-events: none; opacity: 0.25; }
+
+/* 메뉴·상점이 열린 동안(가로 겹침): 명령 줄·목록이 무대 좌우 끝까지 오므로 조이스틱·A/B 는 25% 로 옅게 두고 탭을 받지 않는다.
+   줄은 손가락으로 바로 고르고, 뒤로/닫기는 「메뉴」 단추(= B, Esc)가 맡는다. */
+.play-viewport[data-touch-overlay]:has([data-testid="main-menu"], .runtime-shop-overlay) > .touch-pad :is(.touch-stick-zone, .touch-actions, .touch-action-btn, .touch-run-btn) {
+  pointer-events: none !important;
+  opacity: 0.25;
+}

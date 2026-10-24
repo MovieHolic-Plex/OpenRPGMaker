@@ -119,6 +119,9 @@ async function fullscreenStep(id, descriptor) {
 
 async function skipStep(id, descriptor) {
   const { context, page, tap } = await boot(descriptor, MARCH);
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(String(e?.message ?? e).slice(0, 300)));
+  page.on("console", (m) => { if (m.type() === "error") errors.push(m.text().slice(0, 300)); });
   const hint = () => page.evaluate(() => document.body.innerText.includes("컷신 건너뛰기"));
   const cam = () => page.evaluate(() => { const c = window.__oprnCamera?.(); const h = window.__oprnPlayerSprite?.(); return c && h ? { scrollX: Math.round(c.scrollX), scrollY: Math.round(c.scrollY), zoom: c.zoom, heroX: Math.round(h.x), heroY: Math.round(h.y), dx: Math.round(c.scrollX + c.width / 2 / c.zoom - h.x), dy: Math.round(c.scrollY + c.height / 2 / c.zoom - h.y) } : null; });
   let skippable = false;
@@ -127,18 +130,26 @@ async function skipStep(id, descriptor) {
   const before = await cam();
   await page.screenshot({ path: join(outRoot, `${id}-skip-before.png`) });
   const b = await rect(page, '[data-testid="touch-action-b"]');
+  await page.evaluate(() => { window.__esc = []; document.addEventListener("keydown", (e) => { if (e.key === "Escape") window.__esc.push(Math.round(performance.now())); }, true); });
+  const hitB = await page.evaluate(([x, y]) => { const e = document.elementFromPoint(x, y); return e ? `${e.tagName}.${e.className}` : null; }, center(b));
   await tap(...center(b), 50); await sleep(150); await tap(...center(b), 50);
-  await sleep(2500);
+  const escapes = await page.evaluate(() => window.__esc);
+  const timeline = [{ b, hitB, escapes }];
+  for (let i = 0; i < 8; i += 1) { await sleep(400); timeline.push({ t: (i + 1) * 400, hint: await hint(), cam: await cam(), letterbox: await page.evaluate(() => Math.round(document.querySelector('[data-testid="runtime-letterbox-top"]')?.getBoundingClientRect().height ?? 0)), dialogue: await page.evaluate(() => !!document.querySelector('[data-testid="dialogue-box"]')) }); }
   await quiet(page);
   await sleep(1500);
   const after = { ...(await cam()), letterbox: await page.evaluate(() => document.querySelector('[data-testid="runtime-letterbox-top"]')?.getBoundingClientRect().height ?? 0) };
   await page.screenshot({ path: join(outRoot, `${id}-skip-after.png`) });
   // 걸어서 카메라가 따라오는지: 왼쪽으로 3칸쯤.
-  await page.evaluate(() => window.__oprnInput.dir("left")); await sleep(1200); await page.evaluate(() => window.__oprnInput.dir(null)); await sleep(1000);
-  const walked = await cam();
+  let walked = after;
+  for (const dir of ["left", "down", "right", "up"]) {
+    await page.evaluate((d) => window.__oprnInput.dir(d), dir); await sleep(1200); await page.evaluate(() => window.__oprnInput.dir(null)); await sleep(1000);
+    walked = await cam();
+    if (walked && after && (walked.heroX !== after.heroX || walked.heroY !== after.heroY)) break;
+  }
   await page.screenshot({ path: join(outRoot, `${id}-skip-walk.png`) });
   await context.close();
-  return { skippable, before, after, walked, heroMoved: walked && after ? walked.heroX !== after.heroX : null, cameraFollowed: walked && after ? Math.abs(walked.dx) <= 48 && walked.scrollX !== after.scrollX : null };
+  return { skippable, errors, timeline, before, after, walked, heroMoved: walked && after ? walked.heroX !== after.heroX : null, cameraCentered: walked ? Math.abs(walked.dx) <= 24 && Math.abs(walked.dy) <= 24 : null };
 }
 
 async function battleStep(id, descriptor) {
