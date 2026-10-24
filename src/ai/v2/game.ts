@@ -141,9 +141,29 @@ export function storeTierCard(task: string): string {
 }
 
 /** 게임 도구 묶음 — 실행 기록은 v1 경로와 같은 onCall(env.record)로 남는다. */
+/**
+ * 무거운 게임 도구 묶음 — 요청 낱말이 그 일을 말할 때만 싣는다.
+ * 왜 (2026-10-25 조수 단독 게임 G12/G14 후속): 연애 게임 「서연 대사를 날마다 다르게」 한 턴에 도구 56개 스키마가 21만 자였고, 그중
+ * 전투(직업·기술·적·부대·전투 페이지·조우·필드 적)·엔딩·퀘스트 도구가 약 9만 자였다. 제공자는 이 목록을 매 턴 다시 받는다(9턴 입력 71만 토큰).
+ * 낱말은 넓게 잡는다 — 못 실으면 조수가 «도구가 없다»며 흉내 낸다(폴른 과업의 가장 흔한 실패). 기록된 실행 260여 개로 확인: scripts 없이
+ * /tmp/ctx-gate-check.mts — 실제로 쓴 도구가 새 묶음에서 빠지는 실행이 없어야 한다.
+ */
+export const GAME_TOOL_GROUPS: readonly { readonly words: RegExp; readonly tools: readonly string[] }[] = [
+  { words: /전투|싸우|싸움|싸워|보스|적\b|적이|적을|적의|적과|적들|적 |몬스터|마물|무리|스킬|기술|마법|주문|레벨|능력치|직업|공격|방어|피해|데미지|체력|\bHP\b|\bMP\b|마나|에테르|약점|약하게|속성|치명타|상태|독|중독|마비|수면|화상|기절|인카운터|조우|마주치|늑대|멧돼지|슬라임|고블린|드래곤|도마뱀|박쥐|무기|칼|검을|검이|검과|검 |활|창을|갑옷|방패|장비|장신구|반지|목걸이|연계|합체|협동|콤보|부하|소환|페이즈|레벨 ?업|팡파레|습득|달려들|돌진|동료|파티|합류|battle|enemy|skill|boss|monster|weapon|armor|class|level|party/iu,
+    tools: ["upsert_class", "upsert_skill", "upsert_enemy", "upsert_troop", "upsert_troop_battle_page", "set_encounter_table", "place_field_enemy", "upsert_equipment"] },
+  { words: /상점|가게|팔게|팔기|파는|팔아|판매|구입|사는|살 수|가격|값|골드|돈|무기|갑옷|방패|장비|장신구|반지|목걸이|shop|price|equipment/iu, tools: ["upsert_equipment"] },
+  { words: /엔딩|결말|끝나|끝내|끝이|끝에|마지막 날|마지막에|마지막 장면|막 끝|막이|제\s*\d+\s*막|에필로그|타이틀로|게임 오버|게임이 끝|ending|epilogue/iu, tools: ["list_endings", "define_ending"] },
+  { words: /퀘스트|의뢰|심부름|부탁|임무|보상|일지|할 일|모으|모아|모았|수집|가져가|가져오|가져다|찾아 ?(주|오|와)|구해 ?(오|와)|quest/iu, tools: ["create_quest"] },
+];
+const GROUPED = new Set(GAME_TOOL_GROUPS.flatMap((g) => g.tools));
+export function gameToolNames(task: string): string[] {
+  const groups = GAME_TOOL_GROUPS.filter((g) => g.words.test(task)).flatMap((g) => g.tools);
+  return [...V2_GAME_TOOLS.filter((name) => !GROUPED.has(name)), ...groups];
+}
+
 export function createGameTools(env: PiAssistantV2Env, task = ""): PiToolShape[] {
   // 게임 요청도 «조사하는 물건»(비석·이동석·분수)을 보이게 찍어야 해서 물건 찾기·찍기를 같이 준다(2026-10-24: 투명 이벤트가 맨땅에 남았다).
-  const want = [...(wantsGameTools(task) ? [...V2_GAME_TOOLS, "list_spatial_designs", "stamp_object", ...fallenTierTools(task)] : []), ...(wantsTerrainTools(task) ? V2_TERRAIN_TOOLS : []), ...storeTierTools(task)];
+  const want = [...(wantsGameTools(task) ? [...gameToolNames(task), "list_spatial_designs", "stamp_object", ...fallenTierTools(task)] : []), ...(wantsTerrainTools(task) ? V2_TERRAIN_TOOLS : []), ...storeTierTools(task)];
   const names = [...new Set(want)].filter((name) => getTool(name));
   return createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record });
 }
