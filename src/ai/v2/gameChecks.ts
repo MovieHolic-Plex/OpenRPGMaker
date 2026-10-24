@@ -299,6 +299,23 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     const idle = newDeclared.filter((id) => !/^sw_ev_.+_clear$/u.test(id) && !everywhere.includes(`"${id}"`) && !everywhere.includes(`[${id}]`));
     if (idle.length) problems.push(`[게임 검사 깃발] 선언만 하고 어디서도 쓰지 않는 깃발: ${idle.slice(0, 6).join(", ")} — 쓰거나 지운다.`);
   }
+  // 순서가 있는 이야기: 「숲을 조사하고 돌아오면 … 제1막 끝」인데 엔딩·막 끝이 조건 없는 페이지에 있어 첫 대화에 바로 터진다
+  // (2026-10-25 폴른 과업 fs-end-act: 숲에 가기도 전에 촌장 첫 대화에서 마을 습격 + 「제1막 끝」).
+  if (/돌아오면|다녀오면|다녀온 (?:뒤|다음|후)|(?:하|마치|끝내|조사하|보고하|만나|잡|물리치|구하)고 (?:나서|나면|오면|돌아)|한 (?:뒤|다음|후)에?|끝나면|마치면|이후에/u.test(task)) {
+    for (const r of cmds) {
+      const endingText = r.cmd.kind === "text" && /제\s*\d+\s*막\s*끝|막이?\s*끝|THE END/iu.test(String(r.cmd.body ?? ""));
+      if ((r.cmd.kind !== "triggerEnding" && !endingText) || r.ev.mapId === "common") continue;
+      const gated = flatConditions(r.page.conditions).length > 0 || r.guards.length > 0;
+      const trig = String(obj(r.page.trigger)?.kind ?? "action");
+      if (gated || (trig !== "action" && trig !== "touch" && trig !== "autorun")) continue;
+      problems.push(`[게임 검사 순서] 요청은 앞 일을 마친 «뒤»에 일어나는 이야기인데 「${r.ev.name}」(${r.ev.id}) ${r.pageIndex + 1}쪽의 ${endingText ? "막 끝 장면" : `엔딩(triggerEnding ${String(r.cmd.endingId ?? "")})`}이 조건 없는 페이지에 있어 처음 말 걸거나 밟자마자 터진다. 앞 일(숲 끝·보스·조사)을 마치는 이벤트가 스위치를 켜고(declare_story_flag), 이 장면은 그 스위치 조건의 더 높은 번호 페이지로 옮긴다 — 조건 전 페이지에는 「아직」 대사를 둔다.`);
+      break;
+    }
+  }
+  // 「제1막 끝」 카드: 대사 한 줄로 흉내 내면 게임이 그대로 이어진다 — 진짜 엔딩(막 끝 화면)이어야 한다(fs-end-act).
+  if (/제\s*\d+\s*막\s*끝|막이?\s*끝나|막 끝/u.test(task) && !kinds.has("triggerEnding")) {
+    problems.push("[게임 검사 엔딩] 요청에 「막 끝」 화면이 있는데 바꾼 이벤트에 진짜 엔딩 명령이 없다 — 대사 「제1막 끝」만으로는 게임이 그대로 이어진다. define_ending{id:'ending_act1',presentation:{finalTitle:'제1막 끝',badge:'제2막으로 이어집니다'}} 뒤 그 장면 끝에 {kind:'triggerEnding',endingId:'ending_act1'} 를 넣는다.");
+  }
   // 레터박스(위아래 검은 띠): 컷신이 띠를 저절로 넣지 않는다 — 실제 띠 명령이 있어야 한다(2026-10-25 폴른 과업 fs-cine-letterbox: 「자동」이라 믿고 빠뜨림).
   if (/레터박스|검은 띠|letterbox/iu.test(task) && JSON.stringify(after.system.opening ?? null) === JSON.stringify(before.system.opening ?? null) && !JSON.stringify(changed.map((ev) => ev.pages)).includes("letterbox")) {
     problems.push("[게임 검사 화면] 요청에 위아래 검은 띠(레터박스)가 있는데 바꾼 이벤트에 띠 명령이 없다 — 컷신은 띠를 저절로 넣지 않는다. add_scene/script_cutscene 의 letterbox 비트({do:'letterbox',show:true,size:12}) 또는 {kind:'m2Command',commandId:'m2-202-screen-effect',fields:{effect:'letterbox',value:12,durationMs:400}} 를 장면 맨 앞에 넣는다.");
