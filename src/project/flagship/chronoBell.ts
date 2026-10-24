@@ -1092,10 +1092,11 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   // 듣는 백성(발렌 두~다섯 줄 아래)은 상자 밑이라 안 보였다(VQA r27). 상자 위 열 줄 안에 호위·발렌·가까운 백성이 함께 든다.
   {
     // 발렌 두 줄 아래가 화면 가운데 — 호위 두 줄이 화면 위 끝에 잘리지 않고, 가까운 백성 줄이 상자 위에 든다.
+    // 오프닝이 맵으로 넘어가자마자 도는 첫 움직임이다 — 0.7초는 화면이 튀는 것처럼 보였다(2026-10-24 오프닝 녹화). 1.4초로 천천히 옮긴다.
     const cy = valen.y + 2;
     const cx = Math.round((startX + valen.x) / 2) + 1;
     const box = list.findIndex((c) => c.kind === "m2Command" && (c as { commandId?: string }).commandId === "m2-202-screen-effect");
-    if (box >= 0) list.splice(box + 1, 0, camera({ mode: "panTo", target: "screen", x: String(cx), y: String(cy), durationMs: "700", wait: "true" }));
+    if (box >= 0) list.splice(box + 1, 0, camera({ mode: "panTo", target: "screen", x: String(cx), y: String(cy), durationMs: "1400", wait: "true" }));
   }
 }
 

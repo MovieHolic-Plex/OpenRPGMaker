@@ -117,8 +117,9 @@ function follow(cam: CamKeys, screenPath: (t: number) => Point, from: number, to
 
 const offsetKeys = (keys: AnimaticKey[], by: number): AnimaticKey[] => keys.map(k => ({ ...k, value: k.value - by }));
 
+// upscale nearest: 정수 배율 캔버스에 그려 도트가 번지지 않는다(글자·빛은 그 해상도로).
 const shot = (layers: AnimaticLayer[], camera: OpeningAnimatic["camera"], transition: OpeningAnimatic["transition"], audioCues: OpeningAnimatic["audioCues"] = [], background = "#03050d"): OpeningAnimatic =>
-  ({ width: STAGE.width, height: STAGE.height, background, letterbox: LETTERBOX, layers, ...(camera ? { camera } : {}), ...(transition ? { transition } : {}), ...(audioCues.length ? { audioCues } : {}) });
+  ({ width: STAGE.width, height: STAGE.height, background, letterbox: LETTERBOX, upscale: "nearest", layers, ...(camera ? { camera } : {}), ...(transition ? { transition } : {}), ...(audioCues.length ? { audioCues } : {}) });
 
 // ── 1. 밤하늘 ───────────────────────────────────────────────────────────
 /** 깊이가 다른 별들이 천천히 흐른다. 한 별만 점점 밝아진다. */
@@ -174,17 +175,17 @@ function crackShot(): OpeningAnimatic {
 }
 
 // ── 3. 숲 위로 떨어진다 ─────────────────────────────────────────────────
-/** 카메라가 불덩이를 따라 하늘에서 왕도 위로 내려온다. 불덩이는 동쪽 숲 나무 뒤로 떨어지고 지평선이 하얗게 터진다. */
+/** 카메라가 불덩이를 따라 하늘에서 왕도 위로 내려온다. 불덩이는 왕도 북쪽 숲 나무 뒤로 떨어지고 지평선이 하얗게 터진다. */
 const FALL_GROUND_Y = 400;
-const FALL_CAM: CamKeys = { x: [key(0, 240), key(5600, 288, "ease-in-out")], y: [key(0, 230), key(5600, 500, "ease-in-out")] };
-/** 떨어지는 곳 — fall 그림의 동쪽 성벽 너머 숲(그림 좌표 476,62). */
-const IMPACT = { x: 476, y: FALL_GROUND_Y + 62 };
+const FALL_CAM: CamKeys = { x: [key(0, 244), key(5600, 264, "ease-in-out")], y: [key(0, 230), key(5600, 500, "ease-in-out")] };
+/** 떨어지는 곳 — fall 그림 위쪽(북쪽) 성벽 너머 숲의 나무선(그림 좌표 320,70). 왕도의 숲은 북쪽에 있다. */
+const IMPACT = { x: 320, y: FALL_GROUND_Y + 70 };
 const FALL_HIT = 5250;
 
 function fireballScreen(t: number): Point {
   // 화면 위치 — 왼쪽 위에서 들어와 지평선(카메라와 함께 올라온다) 바로 위를 지나 나무 뒤로.
   const end = camAt(FALL_CAM, FALL_HIT), endScreen = { x: IMPACT.x - (end.x - CENTER.x), y: IMPACT.y - (end.y - CENTER.y) };
-  const path: [number, Point][] = [[0, { x: 30, y: 40 }], [1800, { x: 190, y: 78 }], [3800, { x: 330, y: 92 }], [FALL_HIT, endScreen]];
+  const path: [number, Point][] = [[0, { x: 40, y: 40 }], [1800, { x: 160, y: 70 }], [3800, { x: 250, y: 92 }], [FALL_HIT, endScreen]];
   for (let i = 1; i < path.length; i++) {
     const [ta, a] = path[i - 1]!, [tb, b] = path[i]!;
     if (t <= tb) { const u = Math.max(0, (t - ta) / (tb - ta)); return { x: a.x + (b.x - a.x) * u, y: a.y + (b.y - a.y) * u }; }
@@ -213,7 +214,7 @@ function fallShot(): OpeningAnimatic {
     // 지나가는 불빛이 왕도를 붉게 물들인다.
     screenFill("warm", "#ff8a40", [key(0, 0), key(3800, 0.08, "ease-in"), key(FALL_HIT, 0.14), key(6000, 0.2)], "screen"),
     screenFill("flash", "#fff4d8", [key(0, 0), key(FALL_HIT, 0), key(FALL_HIT + 80, 0.85), key(5750, 0.12, "ease-out"), key(6000, 0.3, "ease-in")]),
-    caption([{ atMs: 1200, text: "불꼬리를 끌며, 동쪽 숲으로." }]),
+    caption([{ atMs: 1200, text: "불꼬리를 끌며, 왕도 북쪽 숲으로." }]),
   ], { keys: FALL_CAM, shake: { atMs: FALL_HIT, durationMs: 740, amplitude: 4, frequency: 14, seed: 4 } }, { kind: "cut", durationMs: 1 }, [
     { id: "roar", resourceId: SE.fire, atMs: 0, durationMs: 2600, volume: 0.55, fadeOutMs: 900 },
     { id: "roar-2", resourceId: SE.fire, atMs: 2400, durationMs: 2600, volume: 0.7, fadeOutMs: 900 },
@@ -236,7 +237,7 @@ function aftermathShot(): OpeningAnimatic {
     particles("embers", "sparks", "#ffb070", { x: pod.x - 90, y: pod.y - 60, width: 180, height: 100 }, 26, 9, { parallax: 1.25, keys: { opacity: [key(0, 0.95), key(3600, 0, "ease-in")] }, endMs: 3600 }),
     particles("fireflies", "dust", "#d8ff88", { x: pod.x - 200, y: pod.y - 110, width: 400, height: 200 }, 22, 31, { parallax: 1.4, startMs: 2400, keys: { opacity: [key(2400, 0), key(4200, 0.85, "ease-in-out")] } }),
     screenFill("cool", "#203a68", [key(0, 0), key(2000, 0), key(6000, 0.22, "ease-in-out")], "multiply"),
-    caption([{ atMs: 1500, text: "동쪽 숲 깊은 곳. 그 한가운데, 은빛 알이 숨 쉬듯 빛났다." }]),
+    caption([{ atMs: 1500, text: "북쪽 숲 깊은 곳. 그 한가운데, 은빛 알이 숨 쉬듯 빛났다." }]),
   ], { keys: cam }, { kind: "flash", durationMs: 450, color: "#fff2d0" }, [
     { id: "rubble", resourceId: SE.rubble, atMs: 0, durationMs: 1500, volume: 0.6 },
     { id: "crackle", resourceId: SE.crackle, atMs: 300, durationMs: 2400, volume: 0.25, fadeOutMs: 1200 },
@@ -244,7 +245,7 @@ function aftermathShot(): OpeningAnimatic {
 }
 
 // ── 5. 종이 울린다 ──────────────────────────────────────────────────────
-/** 왕도의 밤. 천문대 종이 박마다 울리고, 발코니의 카엘이 동쪽 하늘을 올려다본다. 카메라는 발코니로 정수 2배까지 다가선다. */
+/** 왕도의 밤. 천문대 종이 박마다 울리고, 발코니의 카엘이 북쪽 하늘을 올려다본다. 카메라는 발코니로 정수 2배까지 다가선다. */
 function bellShot(): OpeningAnimatic {
   const cam: CamKeys = { x: [key(0, 262), key(1500, 258), key(6000, 200, "ease-in-out")], y: [key(0, 138), key(1500, 142), key(6000, 168, "ease-in-out")],
     zoom: [key(0, 1), key(1500, 1), key(6000, 2, "ease-in-out")] };
@@ -255,8 +256,8 @@ function bellShot(): OpeningAnimatic {
     keys: { scaleX: [key(at, 0.3), key(at + 1200, 1.7, "ease-out")], scaleY: [key(at, 0.3), key(at + 1200, 1.7, "ease-out")], opacity: [key(at, 0.5), key(at + 1200, 0, "ease-in")] } });
   return shot([
     ...nightSky({ x: cam.x, y: cam.y }, { nebula: 0.12, far: 0.3, near: 0.5, twinkle: 0.7 }),
-    // 동쪽 숲은 아직 타고 있다 — 지평선 너머 붉은 빛(하늘과 땅 사이 깊이).
-    glow("east-fire", "#ff8040", { x: 520, y: 52 }, 140, { parallax: 0.9, opacity: 0.55, glow: { inner: 0.2, pulse: { hz: 1.3, amount: 0.35, pattern: "flicker", seed: 14 } } }),
+    // 북쪽 숲은 아직 타고 있다 — 성벽 위 나무선 너머 붉은 빛(하늘과 땅 사이 깊이).
+    glow("north-fire", "#ff8040", { x: 340, y: 46 }, 150, { parallax: 0.9, opacity: 0.55, glow: { inner: 0.2, pulse: { hz: 1.3, amount: 0.35, pattern: "flicker", seed: 14 } } }),
     art("town-ground"),
     flicker("door", { x: 205, y: 235 }, 26), flicker("lamp-l", { x: 162, y: 262 }), flicker("balcony", { x: 205, y: 178 }, 20),
     flicker("win-a", { x: 75, y: 160 }), flicker("win-b", { x: 470, y: 200 }, 18), flicker("bridge-lamp", { x: 130, y: 265 }),
@@ -264,7 +265,7 @@ function bellShot(): OpeningAnimatic {
     { id: "kael-looks", kind: "emote", role: "effect", x: kael.x - 7, y: kael.y - 23, width: 14, height: 16, startMs: 2600, endMs: 5600, emote: { preset: "exclaim", tail: "down", popMs: 160, outMs: 220 } },
     { id: "elena-looks", kind: "emote", role: "effect", x: elena.x - 7, y: elena.y - 23, width: 14, height: 16, startMs: 3500, endMs: 5600, emote: { preset: "question", tail: "down", popMs: 160, outMs: 220 } },
     particles("fireflies", "dust", "#d8ff88", { x: 60, y: 120, width: 420, height: 160 }, 14, 41, { parallax: 1.3, opacity: 0.6 }),
-    caption([{ atMs: 400, text: "그 밤, 천문대의 종이 울렸다." }, { atMs: 3000, text: "견습 별지기 카엘은 동쪽 하늘을 올려다보았다." }]),
+    caption([{ atMs: 400, text: "그 밤, 천문대의 종이 울렸다." }, { atMs: 3000, text: "견습 별지기 카엘은 북쪽 하늘을 올려다보았다." }]),
   ], { keys: cam }, { kind: "fade", durationMs: 500 }, [
     { id: "bell-1", resourceId: SE.bell, atMs: 0, durationMs: 1400, volume: 0.8 },
     { id: "bell-2", resourceId: SE.bell, atMs: 2 * BEAT, durationMs: 1400, volume: 0.7 },

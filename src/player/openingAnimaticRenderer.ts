@@ -620,7 +620,11 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
   const ready = (async () => {
     try {
       const images = await loadAnimaticImages(options.project, a, signal); if (stopped || signal.aborted) return;
-      canvas.width = a.width; canvas.height = a.height; drawAnimaticFrame(canvas, a, images, 0, draw);
+      const box = canvas.getBoundingClientRect(), dpr = view.devicePixelRatio || 1;
+      const k = a.upscale === 'nearest' && !a.pixelGrid && box.width > 0 && box.height > 0
+        ? Math.max(1, Math.min(8, Math.floor(Math.min(box.width * dpr / a.width, box.height * dpr / a.height)))) : 1;
+      canvas.width = a.width * k; canvas.height = a.height * k; if (k > 1) canvas.style.imageRendering = 'pixelated';
+      drawAnimaticFrame(canvas, a, images, 0, draw);
       started = view.performance.now(); options.onReady();
       const tick = (now: number) => {
         if (stopped || signal.aborted) return;
