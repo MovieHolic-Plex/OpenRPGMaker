@@ -10,7 +10,7 @@ import type { GameEvent, GameMap, Project } from "@/project/types";
 import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../types";
 
 export const MONSTER_TOWN_CARD =
-  "몬스터 수집(포켓몬류) 마을: make_place {type:'village', style:'monster', name:마을 이름, theme?:'meadow'|'desert'|'snow'|'coast'|'volcano', hints?:{title:게임 제목(프로젝트 제목이 아직 「새 프로젝트」·시험 이름이면 지어 넣는다), region:지방 이름, professor:박사 이름, firstRoute:첫 길 이름, gymCount:체육관 수(기본 1), townSize:small|medium|large, streets:cross(십자)|ladder(가로 길 둘)|loop(고리 길)|jog(꺾인 큰길), pond:true|false — 풀밭 시작 마을 짜임을 요청에 맞게 고른다}}. " +
+  "몬스터 수집(포켓몬류) 마을: make_place {type:'village', style:'monster', name:마을 이름, theme?:'meadow'|'desert'|'snow'|'coast'|'volcano', hints?:{title:게임 제목(프로젝트 제목이 아직 「새 프로젝트」·시험 이름이면 지어 넣는다), region:지방 이름, professor:박사 이름, firstRoute:첫 길 이름, gymCount:체육관 수(기본 1), townSize:small|medium|large, streets:cross(십자)|ladder(가로 길 둘)|loop(고리 길)|jog(꺾인 큰길), pond:true|false — 요청이 크기·길·연못을 말했을 때만 넣는다. 말하지 않았으면 비워 둔다(비우면 판마다 다른 마을, 채우면 늘 같은 마을)}}. " +
   "빈 프로젝트에서만 된다 — 몬스터 게임 생성기가 첫 마을(주인공 집·2층 내 방·박사 연구소·몬스터 센터·도구점)과 북쪽 1번길(키큰 풀숲·야생 조우·트레이너), 그 뒤 짧은 캠페인을 한 번에 짓고 칩셋을 몬스터 계열로 잠근다. " +
   "생성기의 기본 주민은 빼 두므로 마을 사람은 add_people(mapId=마을 맵)로 요청한 수만큼 둔다(where: 광장·입구·가운데…). 다시 짓기·고치기(edit_place)는 안 된다.";
 

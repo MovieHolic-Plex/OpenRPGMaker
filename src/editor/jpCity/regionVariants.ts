@@ -71,7 +71,7 @@ export function stationPlazaOps(seed: number, layout: StationPlazaLayout = {}): 
   const roadY = j(r, 0.66, 0.02);
   const lk = LANDMARK_KIT[landmark];
   const extras = shuffle(r, STATION_LANDMARKS.filter((l) => l !== landmark)).slice(0, 1 + Math.floor(r() * 2)).map((l) => LANDMARK_KIT[l]);
-  const cx = plaza === "crossing" ? pick(r, [0.3, 0.7]) : j(r, 0.5, 0.06);
+  const cx = plaza === "crossing" ? (r() < 0.5 ? j(r, 0.3, 0.06) : j(r, 0.7, 0.06)) : j(r, 0.5, 0.1);
   if (plaza === "rotary") {
     // 로터리: 양옆 차로가 잔디 섬을 둘러싼다. 섬 크기·차로 자리는 씨앗.
     const lane = j(r, 0.18, 0.04);
@@ -86,9 +86,11 @@ export function stationPlazaOps(seed: number, layout: StationPlazaLayout = {}): 
     ops.push({ op: "put", kit: "jp-prop-bench", at: [cx + hw - 0.03, 0.57], onPath: true });
   } else if (plaza === "crossing") {
     // 교차로: 광장 한쪽으로 큰길이 내려와 앞길과 만나고(횡단보도), 다른 쪽 반이 보행 광장이다.
-    const roadX = 1 - cx;
-    ops.push({ op: "band", mat: M.road, dir: "v", at: roadX, size: 4, span: [0.4, roadY] });
-    ops.push({ op: "area", mat: M.pave, box: [cx - 0.16, 0.43, cx + 0.16, 0.58], clear: true, zone: "plaza" });
+    const roadX = cx < 0.5 ? j(r, 0.72, 0.1) : j(r, 0.28, 0.1);
+    const hw = j(r, 0.15, 0.04);
+    ops.push({ op: "band", mat: M.road, dir: "v", at: roadX, size: pick(r, [3, 4] as const), span: [0.4, roadY] });
+    ops.push({ op: "area", mat: pick(r, [M.pave, M.pave, M.lawn]), box: [cx - hw, 0.43, cx + hw, 0.58], clear: true, zone: "plaza" });
+    if (r() < 0.5) ops.push({ op: "line", kit: pick(r, ["jp-prop-tree-zelkova", "jp-prop-tree-ginkgo", "jp-prop-tree-sakura"]), dir: "h", at: 0.47, span: [roadX < 0.5 ? roadX + 0.08 : 0.06, roadX < 0.5 ? 0.94 : roadX - 0.08], step: 9 + Math.floor(r() * 4) });
     ops.push({ op: "put", kit: lk, at: [cx, 0.5], onPath: true });
     extras.forEach((k, i) => ops.push({ op: "put", kit: k, at: [cx + (i ? 0.11 : -0.11), 0.49], onPath: true }));
     ops.push({ op: "line", kit: "jp-prop-planter", dir: "h", at: 0.44, span: [cx - 0.14, cx + 0.14], step: 6, onPath: true });

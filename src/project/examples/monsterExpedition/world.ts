@@ -620,8 +620,10 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const center = make(`${t.key}_center`, `${lookTown(t).name} · 회복 센터`, "overworld/room-center", "town", "interior");
     const mart = make(`${t.key}_mart`, `${lookTown(t).name} · 도구점`, "overworld/room-mart", "town", "interior");
     // 집은 마을마다 다른 방(부엌·거실·서재)이고 모두 2층이 있다 — 여덟 마을 집이 한 장 그림이었다(2026-10-07 사용자 「실내 많이 다듬어야」).
-    const home = make(`${t.key}_house`, `${lookTown(t).name} · 주민의 집`, ["overworld/room-house", "overworld/room-house-b", "overworld/room-house-c"][i % 3]!, "town", "interior");
-    const upstairs = make(`${t.key}_house_2f`, i === 0 ? "내 방" : `${lookTown(t).name} · 주민의 집 2층`, i % 2 ? "overworld/room-house-2f-b" : "overworld/room-house-2f", "town", "interior");
+    // 시작 마을 짜임을 받았으면 주인공 집·내 방 판도 씨앗으로(2026-10-24 — 늘 같은 집 안이었다).
+    const roomPick = i === 0 && options.startLayout ? Math.abs(options.startLayout.seed ?? 0) : i;
+    const home = make(`${t.key}_house`, `${lookTown(t).name} · 주민의 집`, ["overworld/room-house", "overworld/room-house-b", "overworld/room-house-c"][roomPick % 3]!, "town", "interior");
+    const upstairs = make(`${t.key}_house_2f`, i === 0 ? "내 방" : `${lookTown(t).name} · 주민의 집 2층`, (i === 0 && options.startLayout ? (roomPick >> 2) % 2 : i % 2) ? "overworld/room-house-2f-b" : "overworld/room-house-2f", "town", "interior");
     const lounge = make(`${t.key}_center_2f`, `${lookTown(t).name} · 회복 센터 2층`, "overworld/room-center-2f", "town", "interior");
     attachStairs(home, upstairs); attachStairs(center, lounge);
     const doors = doorways(map);
