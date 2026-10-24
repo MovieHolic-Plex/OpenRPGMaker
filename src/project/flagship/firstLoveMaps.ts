@@ -248,6 +248,26 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   }
   // 둘레 빌딩 숲(VQA r22: 하늘만 두르면 옥상이 공중에 뜬 상자로 읽혔다) — 옆 빈 칸과 난간 위로 이웃 빌딩이 보인다.
   roofRoom.background = mapBackgroundFromPanoramaSet("oprn-sky-day-city");
+  // 난간 너머로 내려다본 아래 거리(사용자 2026-10-24: 원 크기 거리는 너무 컸다) — 거리 맵을 0.4배로 줄여 안개를 섞은 층.
+  // 가까운 빌딩 실루엣 층 자리에 둔다. 세로는 한 장(loopY:false): 거리 아랫단이 난간 바로 뒤에 오게 focusY 를 거리 높이 너머로 민다.
+  {
+    const streetMap = project.maps[FL_MAP.street];
+    const bg = roofRoom.background;
+    if (streetMap && bg) {
+      const scale = 0.4;
+      // 거리 북쪽 건물 줄 아랫단(6~10행)과 차도(11~18행)만 띠로: 차도가 난간 바로 뒤, 건물 줄이 그 위. 띠 위로는 하늘·먼 빌딩이 남는다.
+      const region = { x: 0, y: 6, width: streetMap.width, height: 13 };
+      const cell = streetMap.tileSize * scale;
+      const railScreenY = 108; // 도착 화면의 난간 윗줄(논리 px, 480×270)
+      const bandTop = railScreenY - region.height * cell;
+      const focusY = Math.round((region.y + (135 - bandTop) / cell - 0.5) * 100) / 100;
+      const layers = (bg.layers ?? []).filter((layer) => !layer.imageId.endsWith("-near"));
+      roofRoom.background = {
+        ...bg,
+        layers: [...layers, { imageId: "", fromMap: { mapId: FL_MAP.street, scale, haze: 0.3, desaturate: 0.35, focusY, region, feather: 0.18 }, loopX: true, loopY: false, cameraFollow: 0.4 }],
+      };
+    }
+  }
   // 옥상 양옆의 검은 벽 열(원래 맵 바깥벽)과 덧댄 하늘 열이 «하늘에 뜬 액자»로 읽혔다(VQA r25·r26). 옥상 바닥과 철망 난간을
   // 화면 양 끝까지 이어 «화면 밖으로 이어지는 넓은 옥상»으로 만든다 — 같은 줄의 빈 바닥 칸·난간 칸 그림을 그대로 복사한다.
   {

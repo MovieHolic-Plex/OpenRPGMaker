@@ -1240,6 +1240,14 @@ function validateMapRecords(
     if (backgroundImageId) {
       capture(issues, () => validateOptionalResource(`map ${map.id}: background.imageId`, backgroundImageId, resourceIds));
     }
+    // 「다른 맵을 줄여 그린 배경」: 그 맵이 있어야 하고 자기 자신은 안 된다.
+    for (const [index, layer] of [map.background, ...(map.background?.layers ?? [])].entries()) {
+      const fromMapId = layer?.fromMap?.mapId;
+      if (!fromMapId) continue;
+      const label = index === 0 ? "background.fromMap" : `background.layers[${index - 1}].fromMap`;
+      if (fromMapId === map.id) issues.push(`map ${map.id}: ${label}.mapId 는 자기 맵일 수 없다.`);
+      else if (!project.maps[fromMapId]) issues.push(`map ${map.id}: ${label}.mapId does not exist: ${fromMapId}`);
+    }
     for (const [index, entry] of (map.encounterTable ?? []).entries()) {
       if (!context.troopIds.has(entry.troopId)) issues.push(`map ${map.id}: encounterTable[${index}].troopId does not exist: ${entry.troopId}`);
       if (entry.conditions?.switchId) collectExistingIdIssues(`map ${map.id}: encounterTable[${index}].conditions.switchId`, [entry.conditions.switchId], switchIds, issues);

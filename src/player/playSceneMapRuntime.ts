@@ -678,7 +678,7 @@ function renderEmptyCellCover<TImage extends RenderedTileImage, TSprite extends 
   const upper = topTileInStack(map, "upper", index) ?? map.upperTiles[index];
   if (isPanoramaWindowTile(lower) || isPanoramaWindowTile(upper)) return;
   // 저작자가 「빈 칸에도 배경」 을 켰다 — 창 타일이 없는 칩셋(숲마을·기후 시트)은 이 길뿐이다.
-  if (map.background?.showInEmptyCells === true && (map.background.imageId || map.background.layers?.length)) return;
+  if (map.background?.showInEmptyCells === true && (map.background.imageId || map.background.fromMap || map.background.layers?.length)) return;
   const size = mapTileSize(map);
   if (typeof scene.add.rectangle !== "function") return;
   const cover = scene.add.rectangle(x * size, y * size, size, size, 0x000000);
