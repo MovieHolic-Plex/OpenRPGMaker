@@ -114,7 +114,7 @@ def rock(seed=0):
             y = bs[k] + 1
             h = ((x + seed * 5) * 2654435761 ^ k * 97) & 0xff
             if y < 48 and out[y][x] not in 'jovwxyz.':
-                out[y][x] = 'w' if h % 4 == 0 else ('v' if h % 9 == 1 else out[y][x])
+                out[y][x] = 'v' if h % 5 == 0 else ('k' if h % 7 == 1 else out[y][x])   # r7g: 서리 = 짙은 얼음 v·물빛 k 만(밝은 점 = 색종이, 패널 11 argon)
     return [''.join(r) for r in out]
 
 
@@ -128,14 +128,25 @@ def ends(mid):
 
 ICICLES = P3.ICICLES
 FROZEN = P3.FROZEN
+# r7g: 얼음 턱 = 바위 위에 얹힌 둔한 얼음(윗선 한 단만 밝게, 몸은 짙은 얼음·물빛) — 밝은 물결 띠(패널 11 「장난감 같은 트림」) 대신
 LEDGE = [
-    '.........z......',
-    '.zz.....zyz...zz',
-    'zyyz.zzzyxyz.zyy',
-    'yxxyzyyyxxwxzyxx',
-    'xwwxyxxxwwvwyxww',
-    'wvvwxwwwvvvvxwvv',
-    'vvvvvvvvvvvvvvvv',
+    '................',
+    '................',
+    '...xx...........',
+    '.xxwvx.....xxx..',
+    'xwvvkvxxxxxwvvx.',
+    'vkkookvvwvvkookx',
+    'kooooookkkkooooo',
+]
+# 변형 칸: 바위에 박힌 얼음 덩이(둔한 얼음, 빛 가장자리 한 줄) — 흰 심이 빛나는 구슬로 읽혔다
+FROZEN_DULL = [
+    '....kkvk........',
+    '...kvwwvk.......',
+    '..kvwxwwvk......',
+    '..kvwwvvvkk.....',
+    '...kvvvkkk......',
+    '....kkkko.......',
+    '.....ooo........',
 ]
 
 
@@ -161,7 +172,7 @@ def ice_kit(n=1):
         stamp(c, LEDGE, lg, 0, 9)
     k.base3 = W8.hcat(*cells)
     alt = m.crop(0, 16, 16, 16)
-    stamp(alt, FROZEN, lg, 3, 4)
+    stamp(alt, FROZEN_DULL, lg, 3, 4)
     k.alt3 = alt
     return k
 
