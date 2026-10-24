@@ -340,19 +340,40 @@ export async function playContainerFx(scene: PlaySceneContext, style: ContainerS
   burstParticles(scene, cell, style);
 }
 
-/** 찾은 것이 칸 위로 떠오른다 — 「+ 이름」 글자와 반짝임. */
+/** 떠오르는 글자 글꼴 — 갈무리 11(12px 격자). 격자 정수배 크기·정수 좌표·카메라 배율과 같은 해상도로만 그려야 또렷하다. */
+const POPUP_FONT = '"Galmuri11 Regular", "Galmuri9", monospace';
+const POPUP_FONT_PX = 12;
+
+/** 찾은 것이 칸 위로 떠오른다 — 「+ 이름」 글자. 도트 글꼴을 화소 격자에 맞춰 그린다(소수 좌표·확대 재표본 없음). */
 export function playLootPopup(scene: PlaySceneContext, cell: Cell, text: string, color: string, se: string): void {
   playSe(se);
   const size = mapTileSize(scene.map);
-  const s = size / 16;
-  const x = cell.x * size + size / 2;
-  const y = cell.y * size - 2 * s;
-  const label = scene.add.text(x, y, text, {
-    fontFamily: "Galmuri11, 'Noto Sans KR', sans-serif", fontSize: `${Math.round(8 * s)}px`, color, stroke: "#1a1008", strokeThickness: Math.max(2, Math.round(2 * s)),
-  }).setOrigin(0.5, 1).setDepth(rowDepth(cell.y + 2, size) + 1).setResolution(4);
+  const zoom = Math.max(1, Math.round(scene.cameras.main.zoom || 1));
+  const cx = cell.x * size + size / 2;
+  const y = Math.round(cell.y * size - 2);
+  const make = (): Phaser.GameObjects.Text => {
+    // 글자 텍스처는 카메라 배율과 같은 해상도(재표본 없음), 크기는 글꼴 격자 그대로(월드 px = 12 / 배율).
+    const label = scene.add.text(0, y, text, {
+      fontFamily: POPUP_FONT, fontSize: `${POPUP_FONT_PX}px`, color, stroke: "#1a1008", strokeThickness: 2,
+    }).setResolution(zoom).setScale(1 / zoom).setOrigin(0, 1).setDepth(rowDepth(cell.y + 2, size) + 1);
+    // 가운데 맞춤을 origin 0.5 로 하면 홀수 폭에서 반 화소에 걸린다 — 왼쪽 끝을 정수로 둔다.
+    label.x = Math.round(cx - label.displayWidth / 2);
+    return label;
+  };
+  const label = make();
   label.setAlpha(0);
-  scene.tweens.add({ targets: label, alpha: 1, y: y - 6 * s, duration: 220, ease: "Quad.easeOut" });
-  scene.tweens.add({ targets: label, alpha: 0, y: y - 12 * s, delay: 900, duration: 320, onComplete: () => label.destroy() });
+  // 글꼴이 아직 안 내려왔으면(첫 사용) 받은 뒤 다시 그린다 — 대체 글꼴의 흐린 글자가 남지 않게.
+  if (typeof document !== "undefined" && document.fonts?.check && !document.fonts.check(`${POPUP_FONT_PX}px "Galmuri11 Regular"`)) {
+    void document.fonts.load(`${POPUP_FONT_PX}px "Galmuri11 Regular"`).then(() => {
+      if (!label.active) return;
+      label.setFontFamily(POPUP_FONT);
+      label.x = Math.round(cx - label.displayWidth / 2);
+    });
+  }
+  // 오르는 동안에도 정수 px 로만 움직인다(roundPixels 가 있어도 글자 텍스처는 소수 위치에서 흐려진다).
+  const snap = (): void => { label.y = Math.round(label.y); };
+  scene.tweens.add({ targets: label, alpha: 1, y: y - 6, duration: 220, ease: "Quad.easeOut", onUpdate: snap });
+  scene.tweens.add({ targets: label, alpha: 0, y: y - 12, delay: 900, duration: 320, onUpdate: snap, onComplete: () => label.destroy() });
 }
 
 /** showAnimation 이 내장 연출 id 를 받으면 여기로 온다. wait 면 연출 길이만큼 기다린다. */

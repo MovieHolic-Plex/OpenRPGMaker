@@ -69,6 +69,12 @@ async function settle(page) {
   return -1;
 }
 
+/** 원본 해상도 무손실 스크린숏(영상은 VP8 압축이라 글자 판정에 못 쓴다). */
+const shots = [];
+function shot(page, tag, delay) {
+  shots.push(page.waitForTimeout(delay).then(() => page.screenshot({ path: resolve(out, `native-${tag}.png`) })).catch(() => {}));
+}
+
 async function placeAt(page, mapId, x, y, dir) {
   await settle(page);
   await page.evaluate(([m, px, py, d]) => { window.__oprnInput.face(d); window.__oprnDebug.teleport(m, px, py); }, [mapId, x, y, dir]);
@@ -104,6 +110,13 @@ try {
   page.on("request", (r) => { const u = r.url(); if (SOUND.test(u)) facts.sounds.push({ t: +((Date.now() - videoT0) / 1000).toFixed(2), url: u.split("/").pop() }); });
   await page.addInitScript(([projectUrl, ns, qaCheckpoint]) => {
     localStorage.clear();
+    // 효과음 큐 기록 — 영상에는 소리가 없으므로 이 시각에 실제 파일을 ffmpeg 로 섞는다.
+    window.__qaSfx = [];
+    const play = HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play = function (...a) {
+      try { if (!this.loop) window.__qaSfx.push({ at: Date.now(), src: this.currentSrc || this.src, volume: this.volume, rate: this.playbackRate }); } catch {}
+      return play.apply(this, a);
+    };
     window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace: ns, qaInstrumentation: true, qaCheckpoint };
   }, ["/__runtime-qa/project.json", `fs-interact-${Date.now()}`, CHECKPOINT]);
   await page.route("**/__runtime-qa/project.json", (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify(project) }));
@@ -142,6 +155,7 @@ try {
     await page.evaluate(() => window.__oprnInput.action());
     const texts = [];
     await page.waitForTimeout(300);
+    shot(page, tag, 1300);
     await drain(page, texts);
     await page.waitForTimeout(400);
     // 한 걸음 물러서 흔적을 보여 준다.
@@ -170,6 +184,7 @@ try {
       await page.evaluate(() => window.__oprnInput.action());
       const texts = [];
       await page.waitForTimeout(300);
+      shot(page, tag, 900);
       await drain(page, texts);
       await page.waitForTimeout(1500);
       mark(`${tag}_end`);
@@ -184,6 +199,8 @@ try {
   facts.clips.sack = await streetSearch("sack", 44, 30);
 
   }
+  await Promise.all(shots);
+  facts.sfx = (await page.evaluate(() => window.__qaSfx ?? [])).map((c) => ({ ...c, t: +((c.at - videoT0) / 1000).toFixed(3) }));
   videoPath = await page.video().path();
   await context.close();
 } finally {
