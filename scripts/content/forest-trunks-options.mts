@@ -4,7 +4,7 @@
  *   bun scripts/qa-game/render.mts --project <out.project.json> --out <dir>
  * 맵 id = fs_forest_edge__<시안>. 실제 숲 맵 정의(forestSpecs)는 바꾸지 않는다.
  */
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { ensureBundledTilesets } from "@/project/defaults/defaultAssets";
 import { serialize } from "@/project/io";
@@ -35,6 +35,21 @@ const OPTIONS: Record<string, WoodLook> = {
   G: { forest: { front: TRUNKED, rim: TRUNKED, alternate: { light: [["T3", 0.7], ["T4", 0.3]], dark: [["D3", 1]] } },
     skirt: true, castShadows: "outside", loose: { every: 6, reach: 3 }, plainGround: true },
 };
+// 줄기 다시 그린 시안(scripts/content/fallen-forest-trunks/build.py 산출물, 3/4 관문 통과 전)
+const TR_DIR = "scripts/content/fallen-forest-trunks";
+const trunkSets = JSON.parse(readFileSync(`${TR_DIR}/sprites.json`, "utf8")) as Record<string, { sprites: never[] }>;
+const trunks = (v: string) => ({ id: v, sheet: `data:image/png;base64,${readFileSync(`${TR_DIR}/sheet-${v}.png`).toString("base64")}`, sprites: trunkSets[v]!.sprites });
+if (process.env.ROUND === "trunks") {
+  for (const k of Object.keys(OPTIONS)) delete OPTIONS[k];
+  Object.assign(OPTIONS, {
+    cur: {},
+    T1: { trunks: trunks("T1") },
+    T2: { trunks: trunks("T2") },
+    T3: { trunks: trunks("T3") },
+    T4: { trunks: trunks("T4"), forest: { front: TRUNKED, core: [["T3", 0.45], ["D3", 0.35], ["T4", 0.2]] } },
+    T5: { trunks: trunks("T4"), forest: { gy: 3, front: TRUNKED, core: [["T3", 0.45], ["D3", 0.35], ["T4", 0.2]] } },
+  } satisfies Record<string, WoodLook>);
+}
 const project: Project = createBlankProject();
 ensureBundledTilesets(project as never);
 const only = process.env.ONLY?.split(",");

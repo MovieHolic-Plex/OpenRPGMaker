@@ -9,7 +9,7 @@
 import { runTool } from "@/editor/tools/toolRunner";
 import { CONSTRUCTION_TOOLS_V3 } from "@/editor/tools/v3/constructionTools";
 import { BEODEUL_PLAIN_GRASS } from "@/editor/tools/wildRouteBeodeul";
-import { beodeulNatureTileset, beodeulWoodlandGrass, composeBeodeulForest, type BeodeulForestLook, type BeodeulForestPlan } from "@/editor/tools/beodeulForest";
+import { beodeulForestComposer, beodeulNatureTileset, beodeulWoodlandGrass, composeBeodeulForest, type BeodeulForestLook, type BeodeulForestPlan } from "@/editor/tools/beodeulForest";
 import { composeTreesPlaced, type TreePlacement } from "@/project/defaults/treeComposer";
 import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { translateTiles } from "@/project/objectStamp";
@@ -63,6 +63,11 @@ export interface WoodLook {
   readonly plainGround?: boolean;
   readonly loose?: { readonly every: number; readonly reach: number };
   readonly skirt?: boolean;
+  /**
+   * 줄기 다시 그린 나무(scripts/content/fallen-forest-trunks): 시안 칸 시트(16칸 폭 PNG dataUrl)와 그 시트 칸 번호로 쓴 그림 정의.
+   * 시트는 업로드 그림판으로 넣고 translateTiles 로 대상 칩셋에 이식한다. 그림 정의에 없는 이름(덤불 B2·D2)은 원본 그대로.
+   */
+  readonly trunks?: { readonly id: string; readonly sheet: string; readonly sprites: readonly import("@/project/types").TreeComposerSprite[] };
 }
 
 export interface WoodResult {
@@ -271,7 +276,8 @@ export function paintWoodlandOnto(project: Project, map0: GameMap, spec: WoodSpe
   const isF = (x: number, y: number) => inMap(x, y) && forest.has(idx(x, y));
   const look = spec.look ?? {};
   let plan: BeodeulForestPlan | null = null;
-  const def = composeBeodeulForest(project, map, tileset, "broadleaf", isF, isF, seed, isF, "woodland", look.forest ?? {}, (p) => { plan = p; });
+  const forestLook: BeodeulForestLook = { ...(look.forest ?? {}), ...(look.trunks ? { sprites: trunkSprites(project, tileset, look.trunks) } : {}) };
+  const def = composeBeodeulForest(project, map, tileset, "broadleaf", isF, isF, seed, isF, "woodland", forestLook, (p) => { plan = p; });
   map = project.maps[map0.id]!;
   const placements: TreePlacement[] = [...((plan as BeodeulForestPlan | null)?.placements ?? [])];
   if (look.loose) placements.push(...plantLooseTrees(map, def.sprites, spec, { path, water, nookCells, forest, open }, look.loose, editable));
@@ -302,6 +308,26 @@ export function paintWoodlandOnto(project: Project, map0: GameMap, spec: WoodSpe
   map = project.maps[map0.id]!;
   void isPassable;
   return { map, path, open, forest, water, pockets };
+}
+
+/** 줄기 시안 시트를 업로드 그림판으로 넣고 칸을 대상 칩셋에 이식한 그림 정의. 원본 정의에서 이름이 같은 그림을 바꿔 끼운다. */
+function trunkSprites(project: Project, tileset: Project["tilesets"][string],
+  t: NonNullable<WoodLook["trunks"]>): import("@/project/types").TreeComposerSprite[] {
+  const sheetId = `fs_trunks_${t.id}`;
+  const maxTile = Math.max(...t.sprites.flatMap((s) => s.tiles));
+  project.assets.uploaded[sheetId] ??= { id: sheetId, name: `폴른 스타 줄기 시안 ${t.id} (3/4 관문 통과 전)`, kind: "tileset", dataUrl: t.sheet, meta: { tileSize: 16 } } as never;
+  const n = Math.ceil((maxTile + 1) / 16) * 16;
+  const src = {
+    id: sheetId, name: sheetId, image: { type: "uploaded", id: sheetId }, kind: "custom", tileSize: 16, tilesPerRow: 16, count: n,
+    passability: Array.from({ length: n }, () => ({ up: false, down: false, left: false, right: false })),
+    priority: Array.from({ length: n }, () => "upper"), terrain: Array.from({ length: n }, () => 0),
+    tileMeta: Array.from({ length: n }, () => ({ label: "폴른 스타 줄기 시안", description: "3/4 관문 통과 전", tags: ["tree"] })),
+  } as unknown as Project["tilesets"][string];
+  project.tilesets[sheetId] ??= src;
+  const tr = translateTiles(project.tilesets[sheetId]!, tileset, new Set(t.sprites.flatMap((s) => s.tiles.filter((x) => x >= 0))));
+  const swapped = new Map(t.sprites.map((s) => [`${s.name}|${s.dark ? 1 : 0}`, { ...s, tiles: s.tiles.map((x) => (x < 0 ? -1 : tr.map.get(x)!)) }]));
+  const base = beodeulForestComposer(project, tileset, "broadleaf").sprites;
+  return base.map((s) => swapped.get(`${s.name}|${s.dark ? 1 : 0}`) ?? s);
 }
 
 /** 원본 나무 키트 낙하 그림자(beodeul_nature shadows, 마을 시공기와 같은 표)를 키트 원점 기준으로 2층 빈 칸에 얹는다. */

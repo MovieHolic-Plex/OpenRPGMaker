@@ -164,6 +164,8 @@ export interface BeodeulForestLook {
   readonly alternate?: { readonly light: Shapes; readonly dark: Shapes };
   readonly gx?: number;
   readonly gy?: number;
+  /** 나무 그림 정의를 바꿔 끼운다(줄기 다시 그린 시안 — 같은 이름·모양·칸 크기, 칸 번호만 다르다). */
+  readonly sprites?: TreeComposerSprite[];
 }
 
 /**
@@ -304,6 +306,7 @@ export function composeBeodeulForest(project: Project, map: GameMap, target: Til
   write: (x: number, y: number) => boolean = hold, family: BeodeulDarkGrassFamily = "plain", look: BeodeulForestLook = {},
   planOut?: (plan: BeodeulForestPlan) => void): TreeComposerDef {
   const def = beodeulForestComposer(project, target, type);
+  if (look.sprites) def.sprites = look.sprites;
   const plan = planBeodeulForest(map, def, type, forest, hold, seed, look);
   composeTreesPlaced(map, def, plan.placements, plan.shade, forest, hold, write);
   paintBeodeulDarkGrass(project, map, target, family, plan.dark, write);
