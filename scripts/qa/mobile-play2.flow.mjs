@@ -28,7 +28,7 @@ const PLAY = arg("play", "/tmp/mp/demos/chrono-bell.play.json");
 const OUT = arg("out", `/tmp/mp2/run-${DEVICE.replace(/\W+/g, "_")}${LANDSCAPE ? "-land" : ""}${FRAME ? "-frame" : ""}`);
 const ONLY = (arg("only", "") || "").split(",").filter(Boolean);
 mkdirSync(OUT, { recursive: true });
-const dev = devices[LANDSCAPE ? `${DEVICE} landscape` : DEVICE];
+const dev = DEVICE === "Desktop" ? { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 720 } } : devices[LANDSCAPE ? `${DEVICE} landscape` : DEVICE];
 if (!dev) throw new Error(`no device ${DEVICE}`);
 const isWebkit = dev.defaultBrowserType === "webkit";
 const cps = JSON.parse(readFileSync(join(REPO, "scripts/qa/runtime/checkpoints/fallen-star.json"), "utf8")).checkpoints;
@@ -251,11 +251,11 @@ async function openPage(browser, seg, checkpoint) {
     });
   }
   if (!URL_) {
-    await page.addInitScript(([url, cpt]) => {
+    await page.addInitScript(([url, cpt, nodock]) => {
       // 「이 기기는 터치」 기억(첫 터치 승격)은 남긴다 — 지우면 승격 뒤 다시 읽기가 끝없이 돈다.
-      try { const t = localStorage.getItem("oprn-touch-input"); localStorage.clear(); if (t) localStorage.setItem("oprn-touch-input", t); } catch {}
+      try { const t = localStorage.getItem("oprn-touch-input"); localStorage.clear(); if (t) localStorage.setItem("oprn-touch-input", t); if (nodock) localStorage.setItem("oprn-dialogue-dock", "0"); } catch {}
       window.__OPENRPG_BOOT__ = { projectUrl: url, saveNamespace: "mobile-play2", qaInstrumentation: true, ...(cpt ? { qaCheckpoint: cpt } : {}) };
-    }, ["/__mp/project.json", checkpoint]);
+    }, ["/__mp/project.json", checkpoint, flag("nodock")]);
     await page.route("**/__mp/project.json", (route) => route.fulfill({ status: 200, contentType: "application/json", path: PLAY }));
     if (FRAME) {
       // 스토어 플레이 화면 흉내: 위 막대 + 남는 높이 전부를 iframe 으로(운영 sandbox·allow 그대로).
@@ -484,10 +484,80 @@ const SEGMENTS = {
     console.log("RECORD", JSON.stringify(await dumpRows(page)));
     await closePage(ctx, "windows", dir);
   },
+  async matrix(browser) {
+    // 기기 비교판(2026-10-24): 같은 장면(대사 → 선택지 → 메뉴)을 찍고, 대사 상자·메뉴를 게임 px 로 잰다.
+    const { ctx, page, dir } = await openPage(browser, "matrix", cp("hanel-h1"));
+    note("matrix", "boot", await waitBoot(page, true));
+    await sleep(2500);
+    const touch = await has(page, "[data-testid='touch-stick-zone']");
+    const key = async (k) => { if (FRAME) await gameFrame(page).evaluate((k) => { const t = document.activeElement && document.activeElement !== document.body ? document.activeElement : document; t.dispatchEvent(new KeyboardEvent("keydown", { key: k, code: k, bubbles: true })); t.dispatchEvent(new KeyboardEvent("keyup", { key: k, code: k, bubbles: true })); }, k); else await page.keyboard.press(k); await sleep(700); };
+    const advance = async () => { if (touch) await tapSel(page, "[data-testid='dialogue-box']", 800); else await key("Enter"); };
+    const geo = () => gameFrame(page).evaluate(() => {
+      const st = document.querySelector(".play-stage"); const vp = document.querySelector(".play-viewport");
+      if (!st) return null;
+      const sr = st.getBoundingClientRect(); const s = sr.width / st.offsetWidth;
+      const g = (sel) => { const e = document.querySelector(sel); if (!e) return null; const r = e.getBoundingClientRect(); return [Math.round((r.x - sr.x) / s), Math.round((r.y - sr.y) / s), Math.round(r.width / s), Math.round(r.height / s), +(r.width).toFixed(0)]; };
+      const fsOf = (sel) => { const e = document.querySelector(sel); if (!e) return null; const r = e.getBoundingClientRect(); return +(parseFloat(getComputedStyle(e).fontSize) * (r.height / (e.offsetHeight || r.height))).toFixed(1); };
+      return { vp: `${innerWidth}x${innerHeight}`, scale: +s.toFixed(3), dock: vp?.dataset.dialogueDock === "true", stage: [Math.round(sr.x), Math.round(sr.y), Math.round(sr.width), Math.round(sr.height)], box: g("[data-testid='dialogue-box']"), boxFont: fsOf("[data-testid='dialogue-box'] .dialogue-text, [data-testid='dialogue-box']"), choices: g(".choices-active .dialogue-choices, .choices-active [role='menu'], .choices-active ul"), menu: g("[data-testid='main-menu']"), menuFont: fsOf("[data-testid='main-menu'] .status-menu-command, [data-testid='main-menu'] button") };
+    });
+    // 하넬에게 말 걸기(A / Enter) — 대사가 뜰 때까지.
+    for (let i = 0; i < 6 && !(await has(page, "[data-testid='dialogue-box']")) && !(await has(page, ".choices-active")); i++) {
+      if (touch) await tapSel(page, "[data-testid='touch-action-a']", 1000); else await key("Enter");
+      for (let j = 0; j < 6 && !(await has(page, "[data-testid='dialogue-box']")); j++) await sleep(400);
+    }
+    await sleep(800);
+    if (flag("diag")) console.log("BOXDIAG", JSON.stringify(await gameFrame(page).evaluate(() => {
+      const out = []; let e = document.querySelector("[data-testid='dialogue-box']");
+      for (let i = 0; e && i < 4; i++, e = e.parentElement) { const c = getComputedStyle(e); out.push({ cls: e.className.slice(0, 80), pos: c.position, l: c.left, r: c.right, w: c.width, ml: c.marginLeft, mr: c.marginRight, mw: c.maxWidth, inl: e.getAttribute("style")?.slice(0, 120) }); }
+      return out; })));
+    if (!(await has(page, ".choices-active"))) {
+      await shot(page, "matrix", "1-dialogue");
+      note("matrix", "dialogue", true, JSON.stringify(await geo()));
+    }
+    for (let i = 0; i < 20 && !(await has(page, ".choices-active")); i++) { if (await has(page, "[data-testid='dialogue-box']")) await advance(); else await sleep(500); }
+    const ch = await has(page, ".choices-active");
+    if (ch) { await shot(page, "matrix", "2-choice"); }
+    note("matrix", "choice", ch, JSON.stringify(await geo()));
+    if (ch) { if (touch) { await tapSel(page, ".choices-active button, .choices-active [role='menuitem']", 600); await tapSel(page, ".choices-active button, .choices-active [role='menuitem']", 900); } else await key("Enter"); }
+    for (let i = 0; i < 30 && ((await has(page, "[data-testid='dialogue-box']")) || (await has(page, ".choices-active"))); i++) { if (await has(page, ".choices-active")) { if (touch) await tapSel(page, ".choices-active button", 900); else await key("Enter"); } else await advance(); }
+    let menu = false;
+    for (let i = 0; i < 6 && !menu; i++) { if (touch) await tapSel(page, "[data-testid='touch-menu']", 1200); else await key("Escape"); menu = await has(page, "[data-testid='main-menu']"); }
+    if (menu) { await sleep(600); await shot(page, "matrix", "3-menu"); }
+    note("matrix", "menu", menu, JSON.stringify(await geo()));
+    await closePage(ctx, "matrix", dir);
+  },
+  async kbwindows(browser) {
+    // 키보드(데스크톱)로 메뉴 → 장비 → 무기 후보 → 아이템 화면을 찍는다 — 같은 창이 데스크톱 배율에서 어떻게 보이는지.
+    const { ctx, page, dir } = await openPage(browser, "kbwindows", { ...SHOP, items: { item_potion: 2, equip_iron_sword: 1 } });
+    note("kbwindows", "boot", await waitBoot(page, true));
+    await sleep(2500);
+    const k = async (key, ms = 600) => { await page.keyboard.press(key); await sleep(ms); };
+    await k("Escape", 1200);
+    note("kbwindows", "menu", await has(page, "[data-testid='main-menu']"));
+    await shot(page, "kbwindows", "1-menu");
+    await k("ArrowDown"); await k("ArrowDown"); await k("Enter", 900);
+    await shot(page, "kbwindows", "2-equip");
+    await k("Enter", 900); await shot(page, "kbwindows", "3-equip-slots");
+    await k("Enter", 900); await shot(page, "kbwindows", "4-equip-candidates");
+    await k("Escape"); await k("Escape"); await k("Escape"); await k("ArrowUp"); await k("ArrowUp"); await k("Enter", 900);
+    await shot(page, "kbwindows", "6-items");
+    await closePage(ctx, "kbwindows", dir);
+  },
   async shop(browser) {
     const { ctx, page, dir } = await openPage(browser, "shop", SHOP);
     note("shop", "boot", await waitBoot(page, true));
     await sleep(2500);
+    if (DEVICE === "Desktop") {
+      // 데스크톱(키보드): 말 걸기 → 대사 넘기기 → 상점 → 「구입」 목록을 찍는다(배치 비교용).
+      const isShop = () => has(page, ".runtime-shop-overlay");
+      for (let i = 0; i < 25 && !(await isShop()); i++) { await page.keyboard.press("Enter"); await sleep(800); }
+      note("shop", "shop-open", await isShop());
+      await shot(page, "shop", "1-shop");
+      await page.keyboard.press("Enter"); await sleep(1200);
+      await shot(page, "shop", "2-bought");
+      await closePage(ctx, "shop", dir);
+      return;
+    }
     await tapSel(page, "[data-testid='touch-action-a']", 1200);
     const r = await advanceDialogue(page, "shop", () => has(page, "[data-testid='shop-scene'], .runtime-shop-overlay"), 12);
     if (r === "choices") {
@@ -514,6 +584,7 @@ const SEGMENTS = {
       await tapSel(page, "[data-testid='shop-confirm'], [data-testid='shop-qty-confirm'], .runtime-shop-confirm", 1500);
       const gold1 = await gameFrame(page).evaluate(() => document.querySelector(".runtime-shop-overlay")?.textContent?.match(/(\d[\d,]*)\s*(G|골드)/)?.[1]);
       note("shop", "buy", goldStart !== gold1 || gold0 !== gold1, `${goldStart} -> ${gold0} -> ${gold1}`);
+      if (flag("diag")) console.log("SHOPDIAG", await gameFrame(page).evaluate(() => { const o = document.querySelector(".runtime-shop-overlay"); const sh = o?.querySelector(".runtime-shop-items-shell"); return JSON.stringify({ fit: document.querySelector(".play-viewport")?.dataset.shopFit, cls: o?.className, cols: sh && getComputedStyle(sh).gridTemplateColumns, side: [...(sh?.children ?? [])].map((c) => `${c.className.split(" ")[0]}:${getComputedStyle(c).display}:${Math.round(c.getBoundingClientRect().width)}`), font: o && getComputedStyle(o.querySelector(".runtime-shop-item-row") ?? o).fontSize, ow: o && o.offsetWidth, oh: o && o.offsetHeight, tf: o && getComputedStyle(o).transform, scopes: [...document.styleSheets].flatMap((ss) => { const all = []; const walk = (rs) => { for (const r of rs) { all.push(r); if (r.cssRules) walk(r.cssRules); } }; try { walk(ss.cssRules); } catch {} return all; }).filter((r) => r.constructor.name === "CSSScopeRule").map((r) => `${r.start}|${r.cssRules.length}|${o?.matches(r.start)}`) }); }));
       await shot(page, "shop", "2-bought");
       for (let i = 0; i < 6 && (await has(page, ".runtime-shop-overlay")); i++) await tapSel(page, "[data-testid='touch-action-b']", 800);
       note("shop", "shop-closed-by-B", !(await has(page, ".runtime-shop-overlay")));
@@ -551,7 +622,7 @@ const engine = isWebkit ? webkit : chromium;
 const browser = await engine.launch({ headless: true, args: isWebkit ? [] : ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
 try {
   const names = URL_ ? ["title"] : Object.keys(SEGMENTS);
-  for (const name of names.filter((n) => !ONLY.length || ONLY.includes(n))) {
+  for (const name of names.filter((n) => (ONLY.length ? ONLY.includes(n) : n !== "matrix" && n !== "kbwindows"))) {
     try { await SEGMENTS[name](browser); } catch (e) { note(name, "crash", false, String(e.message ?? e).slice(0, 200)); }
   }
 } finally {

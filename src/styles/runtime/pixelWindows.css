@@ -202,6 +202,9 @@
 /* ── ESC 메뉴 · 스킨 pixel ──────────────────────────────────────────────────
    창 배치(논리 320×240): 왼쪽 큰 창(파티 개요 / 작업 패널) · 오른쪽 명령 창 · 소지금 창 · 시간 창 · 아래 조작 줄. */
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] {
+  /* 글자는 도트 글꼴의 격자 크기만 쓴다(#3341): 본문 갈무리 11 = 12px, 작은 글자 갈무리 9 = 10px. 게임 px 이라 어느 기기든 같은 배치다(2026-10-24). */
+  --px-menu-font: "Galmuri11 Regular", var(--runtime-pixel-font);
+  --px-small-font: "Galmuri9", var(--runtime-pixel-font);
   --status-edge-ivory: var(--px-ink);
   --status-edge-muted: var(--px-ink-dim);
   --status-edge-amber: var(--px-accent);
@@ -209,18 +212,18 @@
   --status-edge-border: var(--px-line);
   /* 이름·수치·상태 줄은 색을 따로 정하지 않아 밝은 테마의 짙은 글자색을 물려받았다 — 창 잉크를 루트에서 준다(VQA SA02). */
   color: var(--px-ink);
-  font: 400 7.5px/1.3 var(--runtime-pixel-font);
+  font: 400 12px/16px var(--px-menu-font);
   text-shadow: var(--px-shadow);
 }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] {
   /* 명령 한 줄 14px + 위아래 안쪽 4px. 6항목까지는 예전 94px 그대로, 그보다 많으면 늘어나 마지막 항목이 창 밖으로 안 나간다(R10). 아래 돈·장소·시간·장 창은 그만큼 내려온다. */
-  --px-dock-h: max(94px, calc(var(--status-menu-command-count, 6) * 14px + 8px));
+  --px-dock-h: max(94px, calc(var(--status-menu-command-count, 6) * 16px + 8px));
 }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"]::before { background: var(--px-stage); border: 0; border-radius: 0; box-shadow: none; inset: 0; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] :is(button, .status-menu-command, .status-menu-detail-row, .status-menu-detail-title,
   .status-menu-detail-hint, .status-menu-detail-empty, .status-menu-detail-description, .status-menu-showcase-name, .status-menu-showcase-description,
   .status-menu-stat-delta-row, .status-menu-target-vital, .status-menu-footer, .status-menu-actor-vitals, .life-ledger-tab) {
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--px-menu-font);
   font-weight: 400;
 }
 /* 창 — 상점 도트 창과 같은 표면·이중 테두리. */
@@ -248,8 +251,8 @@
   white-space: nowrap;
   width: 78px;
 }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-gold { color: var(--px-ink); font-size: 8.5px; top: calc(var(--px-dock-h, 94px) + 10px); }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-location { color: var(--px-ink-dim); font-size: 6.5px; top: calc(var(--px-dock-h, 94px) + 32px); }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-gold { color: var(--px-ink); font-size: 12px; top: calc(var(--px-dock-h, 94px) + 10px); }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-location { color: var(--px-ink-dim); font-size: 10px; font-family: var(--px-small-font); top: calc(var(--px-dock-h, 94px) + 32px); }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-time { color: var(--px-ink-dim); top: calc(var(--px-dock-h, 94px) + 52px); }
 /* 장(NG+ 회차) — 시간 창 아래 같은 폭. 이야기 진행이 첫 화면에서 보인다. */
 .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-chapter { color: var(--px-accent); top: calc(var(--px-dock-h, 94px) + 72px); }
@@ -274,7 +277,7 @@
   border-radius: 0;
   color: var(--px-ink);
   flex: 0 0 14px;
-  font-size: 8px;
+  font-size: 12px;
   padding: 0 4px 0 17px;
   text-shadow: var(--px-shadow);
 }
@@ -300,8 +303,8 @@
 
 /* 조작 줄 — 맨 아래 창. 작업 화면은 설명 한 줄을 위에 더한다. */
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-footer { bottom: 6px; gap: 1px; left: 6px; padding: 3px 7px; right: 6px; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-message { color: var(--px-ink); font-size: 7px; height: 9px; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-controls { border-top: 0; color: var(--px-ink-dim); font-size: 6.5px; padding-top: 0; white-space: nowrap; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-message { color: var(--px-ink); font-size: 10px; font-family: var(--px-small-font); height: 12px; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-controls { border-top: 0; color: var(--px-ink-dim); font-size: 10px; font-family: var(--px-small-font); padding-top: 0; white-space: nowrap; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-message { display: none; }
 
 /* 첫 화면: 파티 창 — 걷는 캐릭터 · 이름 · 직업/Lv · 상태 · HP/MP/EX 숫자와 막대. */
@@ -330,16 +333,18 @@
   image-rendering: pixelated;
   justify-self: center;
 }
-.oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-info { gap: 1px; line-height: 1.15; }
+.oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-info { gap: 0; line-height: 11px; }
+/* 12px 글자에서는 네 칸(파티 넷)에 이름·HP·MP·EX 만 들어간다 — 「정상」 상태 줄은 이상이 있을 때만 보인다. */
+.oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-states:not(.has-state) { display: none; }
 .oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-head { gap: 5px; }
-.oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-head .status-menu-actor-name { font-size: 8.5px; font-weight: 400; }
-.oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-head .status-menu-actor-subline { color: var(--px-ink-dim); font-size: 6.5px; }
-.oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-chip { border-radius: 0; font-size: 6px; font-weight: 400; padding: 1px 2px; }
-.oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-states { color: var(--px-ink-faint); font-size: 6.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-head .status-menu-actor-name { font-size: 12px; font-weight: 400; }
+.oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-head .status-menu-actor-subline { color: var(--px-ink-dim); font-size: 10px; font-family: var(--px-small-font); }
+.oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-chip { border-radius: 0; font-size: 10px; font-family: var(--px-small-font); font-weight: 400; padding: 1px 2px; }
+.oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-states { color: var(--px-ink-faint); font-size: 10px; font-family: var(--px-small-font); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-states.has-state { color: var(--px-loss); }
 .oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-vital { gap: 4px; grid-template-columns: 11px minmax(0, 1fr) 52px; }
-.oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-vital-label { color: var(--px-ink-dim); font-size: 6.5px; font-weight: 400; letter-spacing: 0; }
-.oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-value { font-size: 7px; text-align: right; }
+.oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-vital-label { color: var(--px-ink-dim); font-size: 10px; font-family: var(--px-small-font); font-weight: 400; letter-spacing: 0; }
+.oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-value { font-size: 10px; font-family: var(--px-small-font); text-align: right; }
 .oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-track { background: var(--px-track); border-radius: 0; box-shadow: 0 0 0 1px rgba(150, 170, 240, 0.35); height: 3px; }
 .oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-fill { border-radius: 0; }
 .oprn-status-menu[data-menu-skin="pixel"] .status-menu-overview-track.hp .status-menu-overview-fill { background: var(--px-hp); }
@@ -350,18 +355,18 @@
 
 /* 작업 화면: 왼쪽 큰 창이 작업 패널이 된다. 쇼케이스 열을 넓혀 「현재 → 변경 후 ▲▼」 가 한 줄에 선다. */
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail { bottom: 36px; gap: 3px; left: 6px; padding: 5px 7px; right: 88px; top: 6px; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail.has-showcase { column-gap: 7px; grid-template-columns: minmax(0, 1fr) 90px; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail.life-ledger-detail.has-showcase[data-status-menu-command="skills"] { grid-template-columns: minmax(0, 1fr) 90px; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail-title { color: var(--px-ink-dim); font-size: 7px; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail.has-showcase { column-gap: 7px; grid-template-columns: minmax(0, 1fr) 128px; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail.life-ledger-detail.has-showcase[data-status-menu-command="skills"] { grid-template-columns: minmax(0, 1fr) 128px; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail-title { color: var(--px-ink-dim); font-size: 10px; font-family: var(--px-small-font); }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail-list { gap: 0; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail-list:not(:has(.with-vitals, .has-description)) { --oprn-menu-row-step: 14px; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail-list:not(:has(.with-vitals, .has-description)) { --oprn-menu-row-step: 16px; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail-row {
   background: transparent;
   border: 0;
   border-radius: 0;
   color: var(--px-ink);
-  font-size: 7.5px;
-  min-height: 14px;
+  font-size: 12px;
+  min-height: 16px;
   padding: 1px 3px 1px 16px;
   position: relative;
   text-shadow: var(--px-shadow);
@@ -371,23 +376,23 @@
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail-row.disabled,
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail-row.unavailable { color: var(--px-ink-faint); }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail-value { color: var(--px-ink-dim); }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"] :is(.status-menu-detail-hint, .status-menu-detail-empty, .status-menu-detail-description) { color: var(--px-ink-dim); font-size: 6.5px; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] :is(.status-menu-detail-hint, .status-menu-detail-empty, .status-menu-detail-description) { color: var(--px-ink-dim); font-size: 10px; font-family: var(--px-small-font); }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-entry-icon,
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail-face { background-color: transparent; height: 12px; width: 12px; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail-showcase { border-left: 1px solid var(--px-line); gap: 3px; padding-left: 6px; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-showcase-frame { background: rgba(0, 0, 30, 0.3); border-radius: 0; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-showcase-name { font-size: 8px; font-weight: 400; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-showcase-value { color: var(--px-accent); font-size: 7px; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-showcase-description { color: var(--px-ink-dim); font-size: 6.5px; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-showcase-name { font-size: 12px; font-weight: 400; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-showcase-value { color: var(--px-accent); font-size: 10px; font-family: var(--px-small-font); }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-showcase-description { color: var(--px-ink-dim); font-size: 10px; font-family: var(--px-small-font); }
 /* 능력치 비교 — 라벨 · 현재 → 변경 후 · ▲▼차이. 오르면 초록, 떨어지면 빨강. */
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-stat-delta { gap: 1px; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-stat-delta-row { font-size: 7px; gap: 3px; grid-template-columns: 18px minmax(0, 1fr) 20px; line-height: 1.25; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-stat-delta-row { font-size: 10px; font-family: var(--px-small-font); gap: 3px; grid-template-columns: 22px minmax(0, 1fr) 22px; line-height: 12px; white-space: nowrap; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-stat-delta-label { color: var(--px-ink-dim); }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-stat-delta-value { color: var(--px-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-stat-delta-row.up .status-menu-stat-delta-value { color: var(--px-gain); }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-stat-delta-row.down .status-menu-stat-delta-value { color: var(--px-loss); }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-item-facts .status-menu-stat-delta-row { grid-template-columns: max-content minmax(0, 1fr); }
-.oprn-status-menu .status-menu-delta { font-size: 6px; text-align: right; white-space: nowrap; }
+.oprn-status-menu .status-menu-delta { font-size: 10px; font-family: var(--px-small-font); text-align: right; white-space: nowrap; }
 .oprn-status-menu .status-menu-delta.up { color: var(--px-gain, rgba(144, 220, 168, 1)); }
 .oprn-status-menu .status-menu-delta.down { color: var(--px-loss, rgba(255, 158, 151, 1)); }
 /* 아이템 대상 — 이름 · 상태(→ 정상) / HP · MP 숫자와 막대. 늘어날 구간은 막대에서 깜빡인다. */
@@ -399,12 +404,12 @@
   row-gap: 1px;
 }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .with-vitals > .status-menu-detail-face { height: 24px; width: 24px; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"] .with-vitals .status-menu-target-name { font-size: 8px; font-weight: 400; grid-column: 2; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"] .with-vitals .status-menu-target-states { color: var(--px-ink-faint); font-size: 6.5px; grid-column: 3; justify-self: end; white-space: nowrap; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .with-vitals .status-menu-target-name { font-size: 12px; font-weight: 400; grid-column: 2; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .with-vitals .status-menu-target-states { color: var(--px-ink-faint); font-size: 10px; font-family: var(--px-small-font); grid-column: 3; justify-self: end; white-space: nowrap; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .with-vitals .status-menu-target-states.has-state .status-menu-target-state-now { color: var(--px-loss); }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .with-vitals .status-menu-target-state-next { color: var(--px-gain); }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .with-vitals.disabled { opacity: 0.55; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-target-vital { color: var(--px-ink); font-size: 6.5px; gap: 1px; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-target-vital { color: var(--px-ink); font-size: 10px; font-family: var(--px-small-font); gap: 1px; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-target-vital.gains .status-menu-target-vital-text { color: var(--px-gain); }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-target-track { background: var(--px-track); box-shadow: 0 0 0 1px rgba(150, 170, 240, 0.35); height: 3px; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-target-fill { background: var(--px-hp); }
@@ -415,7 +420,7 @@
 .oprn-status-menu.main-menu[data-menu-skin="pixel"].has-party-overview .status-menu-detail { bottom: 120px; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-party { bottom: 36px; left: 6px; padding: 3px; right: 88px; top: 124px; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-party-row { background: transparent; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"] .life-ledger-tab { font-size: 7px; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .life-ledger-tab { font-size: 10px; font-family: var(--px-small-font); }
 @media (prefers-reduced-motion: reduce) {
   .oprn-status-menu[data-menu-skin="pixel"] :is(.status-menu-character, .status-menu-target-preview),
   .oprn-status-menu[data-menu-skin="pixel"] :is(.status-menu-command, .status-menu-detail-action).selected::before { animation: none; }
