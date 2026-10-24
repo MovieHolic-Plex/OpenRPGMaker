@@ -12,8 +12,8 @@ npm run harness -- cast-portrait draw astra-horizon professor --round r4 --n 4
 npm run harness -- cast-portrait check astra-horizon r4
 npm run harness -- cast-portrait lineup astra-horizon r4
 npm run harness -- cast-portrait dialogue astra-horizon professor r4
-#   → 독립 Argon 검수자에게 qa-runs/…/r4/_blind/REVIEW-PROMPT.md 를 준다(감독이 직접 판정하지 않는다)
-npm run harness -- cast-portrait verdict astra-horizon r4 qa-runs/…/r4/review-argon.json --reviewer argon
+OPRN_LIVE_KEY=… npm run harness -- cast-portrait review astra-horizon r4 --n 5      # 관문: 눈가림 검수 5번, 중앙값·과반
+# (선택) 사람이 볼 비교 묶음: qa-runs/…/r4/_blind/REVIEW-PROMPT.md 를 독립 검수자에게 → verdict 로 기록(참고용, 관문 아님)
 npm run harness -- cast-portrait fix astra-horizon r4 <후보> happy 24,38=#f9c485 --why "…"   # 결함이 있으면 고치고 lineup 부터 다시
 npm run harness -- cast-portrait pick astra-horizon professor r4 <후보> --by "user: 「…」"
 npm run harness -- cast-portrait install astra-horizon professor r4 <후보>
@@ -74,12 +74,53 @@ npm run harness -- cast-portrait install astra-horizon professor r4 <후보>
 
 기계 통과는 합격이 아니다. 같은 작가인지·표정마다 결함이 없는지는 눈가림 검수자가 본다(`verdict`).
 `pick` 은 현재 그림 해시에 check PASS 와 「sameArtist + 모든 표정 none」 판정이 둘 다 있을 때만 받고, `--by` 에 고른 사람을 적어야 한다(에이전트·감독 불가).
+관문은 `review`(아래)의 집계다. `verdict` 로 기록하는 한 번짜리 비교 검수는 참고용이다.
 기계 검사는 절대 면제되지 않는다. 눈가림 판정만은 **그림을 직접 본 사람**이 `--override "<본 것과 이유>"` 로 뒤집을 수 있고, 그 사실이 picks.json 에 그대로 남는다.
 `fix` 로 화소를 고치면 해시가 바뀌어 이전 판정이 무효가 된다 — lineup(새 `--seed` 로 글자도 섞는다)·dialogue·검수를 다시 한다.
 
 **검수자 편차(실측, 같은 cg-nat10):** 2026-10-24 묶음 9.5·같은 작가 → 하네스 묶음 세 번 5·7·5, 같은 작가 아님. 같은 화소에도 점수가 4점 넘게 흔들리고
 매번 다른 결함을 짚는다. 그래서 (1) 검수자가 짚은 결함 중 **화소로 확인되는 것만** 고치고(좌표를 열어 확인), (2) 화풍 판단(팔자 주름, 홍채 두 톤,
 놀람 눈 크기)은 사람에게 넘긴다. 검수 지시문에는 「캐스트 자체가 보이는 차이는 결함이 아니다 — 주장마다 cast-only-3x 로 확인하라」를 넣었다.
+
+## 반복 눈가림 검수 (`review`, 관문)와 보정 (`calibrate-review`)
+
+검수자 한 번은 믿을 수 없다(위 실측: 같은 그림 9.5 → 5·7·5, 매번 1등이 다름). 그래서 관문은:
+
+- 후보마다 **새 호출 5번**(`--n`), 후보 하나씩 보는 묶음: 캐스트(번호), 캐스트 줄 안 무작위 자리에 후보를 넣은 1·3배, 후보 표정 4배.
+  검수자는 후보가 무엇인지 모른다. 엔드포인트는 OpenAI 호환 이미지 채팅(기본 로컬 Argon 큐 `127.0.0.1:8319`, 모델 `gemini-4-argon-high`),
+  키는 환경 변수 `OPRN_LIVE_KEY` 로만(출력·커밋 금지). `CAST_PORTRAIT_REVIEW_URL`·`CAST_PORTRAIT_REVIEW_MODEL` 로 바꿀 수 있다.
+- 집계: 적합도 **중앙값**, 「같은 작가」 **과반**, 표정별 결함 표 수, 다섯 점수 전부(퍼짐)를 `reviews.json` 에 남기고 `status`·`pick` 에 보인다.
+- 문턱은 `calibrate-review` 가 정한다: **알려진 합격**(실제 캐스트 6명, 한 명씩 줄에서 빼고 그 사람을 후보 자리에)과
+  **알려진 불합격**(사용자가 반려한 옛 박사·공용 흉상 재채색 둘·손 도트 hand-a·hand-b)을 같은 묶음으로 5번씩 검수한다.
+  결과 `harness-data/cast-portrait/<project>/review-calibration.json`(커밋).
+
+아스트라 보정 결과(2026-10-25, N=5, gemini-4-argon-high):
+
+| 종류 | 대상 | 중앙값 | 다섯 점수 | 같은 작가 | 결함 표(최다 표정) |
+|---|---|---|---|---|---|
+| 합격 | hero | 9 | 9 9 9 6 7 | 3/5 | 5 |
+| 합격 | mom | 9 | 9 9 9 9 9 | 5/5 | 2 |
+| 합격 | nurse | 8 | 8 7 9 7 8 | 3/5 | 5 |
+| 합격 | naru | 8 | 9 8 8 9 8 | 5/5 | 5 |
+| 합격 | yurim | 8 | 9 8 8 8 8 | 5/5 | 4 |
+| 합격 | muyeong | 8 | 9 9 8 7 8 | 4/5 | 5 |
+| 불합격 | 옛 박사(chargen) | 5 | 5 6 6 5 4 | 0/5 | 5 |
+| 불합격 | shared-elder | 1 | 1 1 1 1 1 | 0/5 | 5 |
+| 불합격 | shared-moustache | 1 | 1 2 1 1 1 | 0/5 | 5 |
+| 불합격 | hand-a | 3 | 3 3 3 3 3 | 0/5 | 3 |
+| 불합격 | hand-b | 4 | 4 3 4 3 4 | 0/5 | 5 |
+| 참고 | cg-nat10 승인본 | 9 | 9 9 9 9 9 | 5/5 | 5 |
+| 참고 | cg-nat10 1.17 | 9 | 10 9 9 9 9 | 5/5 | 0 |
+| 참고 | cg-nat9 | 9 | 9 9 9 8 9 | 5/5 | 1 |
+| 참고 | cg-nat1 | 9 | 9 9 9 9 9 | 5/5 | 5 |
+| 참고 | cg-nat12 | 6 | 7 7 6 6 6 | 0/5 | 5 |
+
+- 합격 6/6, 불합격 5/5 로 갈린다. 가장 약한 합격 중앙값 8, 가장 강한 불합격 5 → **문턱 = 중앙값 ≥ 6.5(가운데) 그리고 같은 작가 ≥ 3/5**.
+- **결함 표는 관문이 아니다**: 실제 캐스트도 표정마다 4~5/5 결함 표를 받는다(검수자는 원작에서도 「비대칭」을 찾는다). 결함 표는 사람에게 보여 주고,
+  화소로 확인되는 것만 `fix` 한다.
+- 비교 묶음(후보 넷을 한 장에)은 점수가 크게 흔들렸고(5~9.5), 후보 하나씩 보는 묶음은 퍼짐이 0~3 이다. 관문은 하나씩 보는 묶음만 쓴다.
+- cg-nat9·cg-nat1 은 검수는 통과하지만 기계 검사(두 눈)에서 떨어진다 — 두 관문은 서로 다른 것을 잡는다.
+- cg-nat10(1.17 그림): check PASS + review 중앙값 9(9~10), 같은 작가 5/5 → `pick`(사람: 사용자) 이 덮어쓰기 없이 통과.
 
 ## 기록 위치
 
@@ -98,7 +139,7 @@ npm run harness -- cast-portrait install astra-horizon professor r4 <후보>
 - 2차 = 하네스 r3-chargen: cg-nat10·9·1·12, Argon 순위 nat10 > nat9 > nat1 > nat12, nat10 손 보정 3곳(기쁨 볼 얼룩, 화남 잔점, 놀람 입 속) →
   같은 작가 판정 → 사용자 허용(「이거는 꽤 규격이 괜찮네」), 기본 흉상(`src/assets/astraCast.ts` `ASTRA_PROFESSOR_BUST`). 다른 후보도 id 로 고를 수 있다.
   스토어 1.16 은 이 그림.
-- 하네스로 다시 돌림(2026-10-25): 새 눈가림 묶음 세 번(5·7·5, 같은 작가 아님). 화소로 확인된 결함 31화소를 `fix` 로 고침 — 오른쪽 눈을 왼쪽 눈 거울로
+- 하네스로 다시 돌림(2026-10-25): 새 눈가림 묶음 세 번(5·7·5, 같은 작가 아님). 화소로 확인된 결함을 `fix` 로 고침(편집 38번, 승인본 대비 바뀐 화소 34개 — 앞서 「31」이라 적은 것은 잘못) — 오른쪽 눈을 왼쪽 눈 거울로
   (홍채 4/3화소), 화남에 base 의 팔자 주름 유지, 기쁨·놀람 입에 어두운 테두리, base 에만 있던 턱 아래 줄 제거, 슬픔 주름 한 화소.
   check PASS. 눈가림 판정은 통과 못 함 → 사용자 허용을 근거로 `pick --override` 로 기록(harness-data/cast-portrait/astra-horizon/picks.json), `install`.
   같은 보정은 `scripts/content/monsters/astra_professor_chargen/bake.py` 의 `cg-nat10-r2` 에도 있어 다시 구워도 같은 화소가 나온다. 스토어 1.17.

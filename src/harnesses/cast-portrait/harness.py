@@ -323,6 +323,74 @@ def dialogue(a):
     return r.returncode
 
 
+# ---------------------------------------------------------------- repeated blind review (the gate) + its calibration
+def load_set(spec, d):
+    d = ROOT / d if not os.path.isabs(str(d)) else Path(d)
+    return [Image.open(d / f'bust-{e}.png').convert('RGBA') for e in spec['expressions']]
+
+
+def cast_bases(spec, exclude=None):
+    return [cast_img(spec, m['id']) for m in spec['lineup'] if m['id'] != exclude]
+
+
+def thresholds(project):
+    c = rd(DATA / project / 'review-calibration.json')
+    if not c: raise SystemExit(f'run `calibrate-review {project}` first: the review gate needs thresholds measured on the cast')
+    return c['thresholds']
+
+
+def review(a):
+    """N fresh blind calls per candidate (single-subject packets), aggregated. Writes <round>/reviews.json."""
+    from review import review_many, aggregate, decide
+    spec = spec_of(a.project); th = thresholds(a.project); rdir = round_dir(a.project, a.round)
+    out = rd(rdir / 'reviews.json', {})
+    for c in (a.candidates or cands(a.project, a.round)):
+        subj = load_set(spec, rdir / c)
+        runs = review_many(cast_bases(spec), subj, spec['expressions'], a.n, a.seed, a.par)
+        agg = aggregate(runs, spec['expressions']); ok, why = decide(agg, th)
+        out[c] = {'hashes': hashes(a.project, a.round, c, spec), 'runs': runs, 'aggregate': agg, 'pass': ok, 'why': why, 'thresholds': th, 'at': now()}
+        wr(rdir / 'reviews.json', out)
+        print(f'{"PASS" if ok else "FAIL"} {c}: median {agg["median"]} (spread {agg["min"]}-{agg["max"]}: {agg["scores"]}), same artist {agg["sameArtistVotes"]}/{agg["n"]}, defect votes {agg["defectVotes"]}' + ('' if ok else f'  <- {"; ".join(why)}'))
+    return 0
+
+
+def calibrate_review(a):
+    """known positives (each real cast member, held out of the lineup) and known negatives (spec calibration.negatives) are
+    reviewed N times each with the same packet as candidates; thresholds are set so the positives pass and the negatives fail."""
+    from review import review_many, aggregate
+    spec = spec_of(a.project); cal = spec.get('calibration', {})
+    subjects = [('positive', m['id'], m['dir'], m['id']) for m in spec['lineup']]
+    subjects += [('negative', n['id'], n['dir'], None) for n in cal.get('negatives', [])]
+    subjects += [('probe', n['id'], n['dir'], None) for n in cal.get('probes', [])]
+    prev = rd(DATA / a.project / 'review-calibration.json', {}).get('subjects', {}) if a.resume else {}
+    res = dict(prev)
+    for kind, sid, d, hold in subjects:
+        if sid in res and res[sid].get('kind') == kind: continue
+        subj = load_set(spec, d)
+        runs = review_many(cast_bases(spec, exclude=hold), subj, spec['expressions'], a.n, a.seed, a.par)
+        agg = aggregate(runs, spec['expressions'])
+        res[sid] = {'kind': kind, 'dir': d, 'aggregate': agg, 'runs': runs}
+        print(f'{kind:8s} {sid:24s} median {agg["median"]:4} spread {agg["min"]}-{agg["max"]} {agg["scores"]} same {agg["sameArtistVotes"]}/{agg["n"]} worst-defect-votes {agg["worstDefectVotes"]}')
+        wr(DATA / a.project / 'review-calibration.json', {'n': a.n, 'model': os.environ.get('CAST_PORTRAIT_REVIEW_MODEL', 'gemini-4-argon-high'), 'subjects': res, 'at': now()})
+    pos = [v['aggregate'] for v in res.values() if v['kind'] == 'positive']; neg = [v['aggregate'] for v in res.values() if v['kind'] == 'negative']
+    # Rule (2026-10-25 calibration): defect votes do not separate — real cast members get 4-5/5 defect votes too — so they are
+    # shown to the human but do not gate. Same artist needs a majority. The fit threshold sits midway between the weakest
+    # positive and the strongest negative (margin against reviewer noise); if the two overlap, the weakest positive is used.
+    pmin = min(g['median'] for g in pos); nmax = max((g['median'] for g in neg), default=0)
+    fit = (pmin + nmax) / 2 if pmin > nmax else pmin
+    th = {'fitMin': fit, 'sameArtistMin': a.n // 2 + 1, 'defectMaxVotes': a.n}
+    okf = lambda g: g['median'] >= th['fitMin'] and g['sameArtistVotes'] >= th['sameArtistMin']
+    tp = sum(okf(g) for g in pos); tn = sum(not okf(g) for g in neg)
+    summary = {'positivesPassing': f'{tp}/{len(pos)}', 'negativesRejected': f'{tn}/{len(neg)}',
+               'separates': tp == len(pos) and tn == len(neg), 'weakestPositiveMedian': pmin, 'strongestNegativeMedian': nmax,
+               'probes': {k: {'median': v['aggregate']['median'], 'sameArtistVotes': v['aggregate']['sameArtistVotes'], 'passes': okf(v['aggregate'])}
+                          for k, v in res.items() if v['kind'] == 'probe'}}
+    wr(DATA / a.project / 'review-calibration.json', {'n': a.n, 'model': os.environ.get('CAST_PORTRAIT_REVIEW_MODEL', 'gemini-4-argon-high'), 'thresholds': th,
+                                                     'summary': summary, 'subjects': res, 'at': now()})
+    print('thresholds', th, summary)
+    return 0
+
+
 # ---------------------------------------------------------------- verdict / pick / install / status
 def verdict(a):
     """record the blind reviewer's JSON (see _blind/REVIEW-PROMPT.md) against the hashes the packet was built from."""
@@ -345,17 +413,12 @@ def passes(spec, project, rnd, cand):
     ch = rd(round_dir(project, rnd) / 'checks.json', {}).get(cand)
     if not ch or ch['hashes'] != cur: return False, 'check not run on the current pixels'
     if not ch['pass']: return False, 'check failed: ' + '; '.join(ch['fails'][:3])
-    for rec in reversed(rd(round_dir(project, rnd) / 'verdicts.json', [])):
-        L = {v: k for k, v in rec['letters'].items()}.get(cand)
-        if L is None or rec['hashes'].get(cand) != cur: continue
-        r = rec['review']['candidates'].get(L, {})
-        if not r.get('sameArtist'): return False, f'blind reviewer: not the same artist ({rec["reviewer"]})'
-        bad = {e: x for e, x in r.get('defects', {}).items() if str(x).strip().lower() != 'none'}
-        if bad: return False, f'blind reviewer defects: {bad}'
-        missing = [e for e in spec['expressions'] if e not in r.get('defects', {})]
-        if missing: return False, f'blind review did not cover {missing}'
-        return True, f'check PASS + blind {rec["reviewer"]} sameArtist (fit {r.get("castFit")}, rank {rec["review"].get("ranking", []).index(L) + 1 if L in rec["review"].get("ranking", []) else "?"}), no defects'
-    return False, 'no blind verdict on the current pixels'
+    rv = rd(round_dir(project, rnd) / 'reviews.json', {}).get(cand)
+    if not rv or rv['hashes'] != cur: return False, 'no repeated blind review (review stage) on the current pixels'
+    g = rv['aggregate']
+    tag = f'median {g["median"]} (spread {g["min"]}-{g["max"]}), same artist {g["sameArtistVotes"]}/{g["n"]}'
+    if not rv['pass']: return False, f'repeated blind review: {tag}; ' + '; '.join(rv['why'])
+    return True, f'check PASS + repeated blind review {tag}'
 
 
 def pick(a):
@@ -372,6 +435,7 @@ def pick(a):
            'hashes': hashes(a.project, a.round, a.candidate, spec),
            # qa-runs/ is not committed: keep the evidence the pick stands on next to the pick
            'check': rd(rd_ / 'checks.json', {}).get(a.candidate, {}).get('measures', {}).get('base'),
+           'review': (lambda r: r and {k: r[k] for k in ('aggregate', 'pass', 'why', 'thresholds')})(rd(rd_ / 'reviews.json', {}).get(a.candidate)),
            'verdict': rd(rd_ / 'verdicts.json', [])[-1] if rd(rd_ / 'verdicts.json', []) else None,
            'fixes': rd(rd_ / a.candidate / 'fixes.json', []) or rd(rd_ / a.candidate / 'provenance.json', {}).get('fixes', [])}
     picks = rd(DATA / a.project / 'picks.json', []); picks.append(rec); wr(DATA / a.project / 'picks.json', picks)
@@ -419,12 +483,14 @@ def main():
     q = sp.add_parser('check'); q.add_argument('project'); q.add_argument('round'); q.add_argument('candidates', nargs='*')
     q = sp.add_parser('lineup'); q.add_argument('project'); q.add_argument('round'); q.add_argument('candidates', nargs='*'); q.add_argument('--seed', type=int, default=7)
     q = sp.add_parser('dialogue'); q.add_argument('project'); q.add_argument('role'); q.add_argument('round'); q.add_argument('candidates', nargs='*'); q.add_argument('--redump', action='store_true'); q.add_argument('--no-netns', action='store_true')
+    q = sp.add_parser('review'); q.add_argument('project'); q.add_argument('round'); q.add_argument('candidates', nargs='*'); q.add_argument('--n', type=int, default=5); q.add_argument('--par', type=int, default=5); q.add_argument('--seed', type=int, default=101)
+    q = sp.add_parser('calibrate-review'); q.add_argument('project'); q.add_argument('--n', type=int, default=5); q.add_argument('--par', type=int, default=5); q.add_argument('--seed', type=int, default=101); q.add_argument('--resume', action='store_true')
     q = sp.add_parser('verdict'); q.add_argument('project'); q.add_argument('round'); q.add_argument('file'); q.add_argument('--reviewer', required=True); q.add_argument('--source', default='')
     for n in ('pick', 'install'):
         q = sp.add_parser(n); q.add_argument('project'); q.add_argument('role'); q.add_argument('round'); q.add_argument('candidate')
         if n == 'pick': q.add_argument('--by', required=True); q.add_argument('--override')
     a = ap.parse_args()
-    return {'list': list_, 'calibrate': calibrate, 'draw': draw, 'import': import_, 'fix': fix, 'check': check, 'lineup': lineup, 'dialogue': dialogue,
+    return {'review': review, 'calibrate-review': calibrate_review, 'list': list_, 'calibrate': calibrate, 'draw': draw, 'import': import_, 'fix': fix, 'check': check, 'lineup': lineup, 'dialogue': dialogue,
             'verdict': verdict, 'pick': pick, 'install': install, 'status': status}[a.stage](a)
 
 

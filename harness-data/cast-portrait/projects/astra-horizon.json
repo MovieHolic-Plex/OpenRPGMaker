@@ -149,5 +149,52 @@
    "installDir": "public/assets/emerald-monster/cast/professor-{candidate}",
    "selectableIn": "src/assets/astraCast.ts ASTRA_PROFESSOR_BUST_VARIANTS / ASTRA_PROFESSOR_BUST"
   }
+ },
+ "calibration": {
+  "note": "Known negatives = portraits the user rejected for this cast. Probes are reviewed for information only (not used to set thresholds).",
+  "negatives": [
+   {
+    "id": "old-professor-chargen",
+    "dir": "public/assets/emerald-monster/cast/professor"
+   },
+   {
+    "id": "shared-elder",
+    "dir": "public/assets/emerald-monster/cast/professor-shared-elder"
+   },
+   {
+    "id": "shared-moustache",
+    "dir": "public/assets/emerald-monster/cast/professor-shared-moustache"
+   },
+   {
+    "id": "hand-a",
+    "dir": "public/assets/emerald-monster/cast/professor-hand-a"
+   },
+   {
+    "id": "hand-b",
+    "dir": "public/assets/emerald-monster/cast/professor-hand-b"
+   }
+  ],
+  "probes": [
+   {
+    "id": "cg-nat10-approved",
+    "dir": "harness-data/cast-portrait/astra-horizon/approved-cg-nat10"
+   },
+   {
+    "id": "cg-nat10-shipped-1.17",
+    "dir": "public/assets/emerald-monster/cast/professor-cg-nat10"
+   },
+   {
+    "id": "cg-nat9",
+    "dir": "public/assets/emerald-monster/cast/professor-cg-nat9"
+   },
+   {
+    "id": "cg-nat1",
+    "dir": "public/assets/emerald-monster/cast/professor-cg-nat1"
+   },
+   {
+    "id": "cg-nat12",
+    "dir": "public/assets/emerald-monster/cast/professor-cg-nat12"
+   }
+  ]
  }
 }
