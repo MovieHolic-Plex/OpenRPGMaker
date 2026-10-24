@@ -1,4 +1,4 @@
-import type { MapBackground, MapBackgroundFit, MapBackgroundLayer } from "@/project/types";
+import type { MapBackground, MapBackgroundMapView, MapBackgroundFit, MapBackgroundLayer } from "@/project/types";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { resolveCameraZoom } from "@/project/cameraZoom";
 
@@ -129,18 +129,54 @@ export function normalizeMapBackgroundFit(value: unknown): MapBackgroundFit | un
   return value === "cover" || value === "native" ? value : undefined;
 }
 
+/** 「다른 맵을 줄여 그린 배경」 값 정리(MapBackgroundMapView). mapId 가 없으면 undefined. */
+export const MAP_VIEW_SCALE_RANGE = { min: 0.15, max: 1, default: 0.4 } as const;
+export function normalizeMapBackgroundMapView(value: unknown): MapBackgroundMapView | undefined {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return undefined;
+  const r = value as Record<string, unknown>;
+  const mapId = typeof r.mapId === "string" ? r.mapId.trim() : "";
+  if (!mapId) return undefined;
+  const clamp = (v: unknown, lo: number, hi: number): number | undefined =>
+    typeof v === "number" && Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : undefined;
+  const scale = clamp(r.scale, MAP_VIEW_SCALE_RANGE.min, MAP_VIEW_SCALE_RANGE.max);
+  const haze = clamp(r.haze, 0, 1);
+  const desaturate = clamp(r.desaturate, 0, 1);
+  const hazeColor = typeof r.hazeColor === "string" && /^#[0-9a-f]{6}$/i.test(r.hazeColor.trim()) ? r.hazeColor.trim() : undefined;
+  const focusX = typeof r.focusX === "number" && Number.isFinite(r.focusX) ? Math.round(r.focusX * 100) / 100 : undefined;
+  const focusY = typeof r.focusY === "number" && Number.isFinite(r.focusY) ? Math.round(r.focusY * 100) / 100 : undefined;
+  const rr = r.region as Record<string, unknown> | undefined;
+  const int = (v: unknown, lo: number): number | undefined => typeof v === "number" && Number.isFinite(v) ? Math.max(lo, Math.round(v)) : undefined;
+  const region = rr && typeof rr === "object" && !Array.isArray(rr)
+    && int(rr.x, 0) !== undefined && int(rr.y, 0) !== undefined && int(rr.width, 1) !== undefined && int(rr.height, 1) !== undefined
+    ? { x: int(rr.x, 0)!, y: int(rr.y, 0)!, width: int(rr.width, 1)!, height: int(rr.height, 1)! }
+    : undefined;
+  return {
+    mapId,
+    ...(scale !== undefined ? { scale } : {}),
+    ...(haze !== undefined ? { haze } : {}),
+    ...(desaturate !== undefined ? { desaturate } : {}),
+    ...(hazeColor !== undefined ? { hazeColor } : {}),
+    ...(focusX !== undefined ? { focusX } : {}),
+    ...(focusY !== undefined ? { focusY } : {}),
+    ...(region ? { region } : {}),
+    ...(clamp(r.feather, 0, 0.5) ? { feather: clamp(r.feather, 0, 0.5)! } : {}),
+  };
+}
+
 function normalizeMapBackgroundLayer(value: unknown): MapBackgroundLayer | undefined {
   if (typeof value !== "object" || value === null || Array.isArray(value)) return undefined;
   const record = value as Record<string, unknown>;
-  if (typeof record.imageId !== "string") return undefined;
-  const imageId = record.imageId.trim();
-  if (!imageId) return undefined;
+  const fromMap = normalizeMapBackgroundMapView(record.fromMap);
+  if (typeof record.imageId !== "string" && !fromMap) return undefined;
+  const imageId = typeof record.imageId === "string" ? record.imageId.trim() : "";
+  if (!imageId && !fromMap) return undefined;
   const scrollX = normalizeMapBackgroundScroll(record.scrollX);
   const scrollY = normalizeMapBackgroundScroll(record.scrollY);
   const fit = normalizeMapBackgroundFit(record.fit);
   const cameraFollow = normalizeMapBackgroundCameraFollow(record.cameraFollow);
   return {
-    imageId,
+    imageId: fromMap ? "" : imageId,
+    ...(fromMap ? { fromMap } : {}),
     ...(scrollX !== undefined ? { scrollX } : {}),
     ...(scrollY !== undefined ? { scrollY } : {}),
     ...(record.loopX === false ? { loopX: false } : {}),
@@ -171,14 +207,16 @@ export function normalizeMapBackgroundLayers(value: unknown): MapBackgroundLayer
 export function normalizeMapBackground(value: unknown): MapBackground | undefined {
   if (typeof value !== "object" || value === null || Array.isArray(value)) return undefined;
   const record = value as Record<string, unknown>;
-  if (typeof record.imageId !== "string") return undefined;
+  const fromMap = normalizeMapBackgroundMapView(record.fromMap);
+  if (typeof record.imageId !== "string" && !fromMap) return undefined;
   const scrollX = normalizeMapBackgroundScroll(record.scrollX);
   const scrollY = normalizeMapBackgroundScroll(record.scrollY);
   const layers = normalizeMapBackgroundLayers(record.layers);
   const fit = normalizeMapBackgroundFit(record.fit);
   const cameraFollow = normalizeMapBackgroundCameraFollow(record.cameraFollow);
   return {
-    imageId: record.imageId.trim(),
+    imageId: fromMap ? "" : String(record.imageId).trim(),
+    ...(fromMap ? { fromMap } : {}),
     ...(scrollX !== undefined ? { scrollX } : {}),
     ...(scrollY !== undefined ? { scrollY } : {}),
     ...(fit !== undefined ? { fit } : {}),

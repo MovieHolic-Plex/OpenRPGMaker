@@ -123,6 +123,7 @@ import { SNOW_NORTH_TOOLS } from "./snowNorthTools";
 import { FIND_VILLAGE_TYPE_TOOL } from "./villageTypeTool";
 import { DRESS_JOSEON_MARKET_TOOL, DRESS_VILLAGE_QUARTER_TOOL } from "./villageQuarterTool";
 import { TRANSIT_TOOLS } from "./transitTools";
+import { ADD_STREET_WALKERS_TOOL } from "./streetWalkersTool";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
 import { CINEMATIC_TOOLS } from "./cinematicTools";
@@ -304,6 +305,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   DRESS_JOSEON_MARKET_TOOL,
   // 맵 위 탈것(차 흐름·버스·노면전차·전철·지하철) — 길 그림에서 자동으로 또는 칸 경로로 노선을 깐다. 런타임이 실제로 움직인다.
   ...withDomain(TRANSIT_TOOLS, "map"),
+  ...withDomain([ADD_STREET_WALKERS_TOOL], "event"),
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),
   ...withDomain(TILESET_OBJECT_TOOLS, "tile"),
   ...withDomain(TILE_QUERY_TOOLS, "tile"),

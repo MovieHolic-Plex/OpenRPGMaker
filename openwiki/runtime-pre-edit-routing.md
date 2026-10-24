@@ -598,6 +598,9 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   캐릭터와 y 정렬. 그래서 **같은 칸에 3층 ★ + 4층 ×/○ 이면 3층이 위**다(MZ 도 ★ 를 윗 타일맵에 그린다). 캔버스·에디터는
   순서대로 그려 4층이 위라 이 경우만 에디터와 게임 화면이 다르다. 실측: Rasak p02 (7,4) 한 칸(휴리스틱상 ★ 인 B 칸 위의
   × 나무). 같은 규칙끼리는 4층이 +0.01 위다.
+- **벽면 ★ 예외(2026-10-22):** ★ 상층이라도 그 칸의 하층이 막혔고(×) 바로 아래 칸 하층이 밟는 칸이면(엘리베이터 문·벽에 박힌
+  문틀의 맨 아래 줄) 고정 컨테이너가 아니라 root 에서 제 줄 + 0.5 로 캐릭터와 y 정렬한다(`playSceneMapRuntime.isWallFaceCell`).
+  문턱에 선 사람의 머리가 문틀 밑에 짓눌려 보였다(첫사랑 사무실 승강기, #3231 리뷰). 같은 줄(문 안쪽 칸)은 타일이 이겨 문 안의 사람은 계속 가려진다.
 - 통행은 `collision.ts` 의 `cellPassability`(4 → 1, ★ 건너뛰기). 게임 쪽 `canMove`/`isPassable` 이 그대로 쓴다.
 - 출하 경로 검증: `npm run qa:runtime -- --scenario rasak-layers --project /tmp/... --out /tmp/...` (Rasak 자료는
   재배포 금지라 프로젝트·PNG 는 저장소 밖). 프레임을 멈추고 같은 수만 밀어 합성 판과 4층 판을 비교했다:
@@ -864,6 +867,14 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 - **남은 한계:** `show_map_region` 은 배경을 그리지 못해(설계상 거부) 조수가 배경을 눈으로 검수하지 못한다 — 생성 도구는 그림을 첨부해 대신한다.
   Pi 경로는 되묻기를 건너뛰므로(`executionRoute.ts clarifyBypassed`) 「배경 좀 예쁘게」 는 묻지 않고 해석한다. 칸을 비운 가장자리는 여전히 각지다. 견본 바다·구름 바다는 흐릿한 얼룩 질감이고 노을 견본의 해는 7줄 바닥선에 반쯤 잘린다(견본 그림 문제, 이번 변경 밖). 다리 상판 타일(버들항 3640)은 자기 그림에 물이 있어 다리 밑으로 배경이 비치지 않는다.
 
+## 맵 배경 「다른 맵 보기」 층 `fromMap` (2026-10-24)
+
+- 배경·배경 층에 `fromMap: { mapId, scale?, haze?, desaturate?, hazeColor?, focusX?, focusY?, region?, feather? }` 를 주면 **다른 맵을 줄여 그린 그림**이 그 층이 된다(옥상에서 내려다본 거리, 창밖 마을 등). 타입 `src/project/types/project.ts` 의 `MapBackgroundMapView`, 정규화 `normalizeMapBackgroundMapView`(`src/project/mapBackground.ts`, scale 0.15~1·기본 0.4, feather 0~0.5).
+- 렌더 `src/player/mapBackgroundMapView.ts`: 대상 맵(아래층·위층 타일)을 캔버스에 `scale` 배로 그리고 `region`(칸 사각형) 만 자른다. `haze`(안개색 섞기)·`desaturate`·`feather`(위아래 가장자리 알파 페이드)를 화소에 굽는다. 텍스처 키에 맵 id·배율·범위·페더가 들어간다. 이벤트·사람은 그리지 않는다(정지 그림).
+- 자리 `playSceneMapBackground.ts` `mapViewFocusOffset`: focus 칸(기본 = 범위 가운데)이 화면 가운데에 오게 민다. `loopY:false` 로 세로 한 장, `cameraFollow` 로 시차. `fromMap` 층은 `showInEmptyCells` 로 친다(편집기 `EditScene` 와 런타임 둘 다).
+- 조수: `set_map_properties.background{,layers[]}.fromMap`(`mapTools.ts` `MAP_VIEW_SCHEMA`) — 자기 자신·없는 맵은 거부. 참조 검사 `src/project/io/references.ts`.
+- 쓰임: 「첫사랑」 옥상(`firstLoveMaps.ts`) — 거리 맵 북쪽 줄·큰길을 1/3 배로, 난간 바로 뒤에 오게 focusY 계산.
+
 ## 8차 맵 진입 (2026-09-28)
 
 `playSceneMapRuntime.renderTiles`의 **한 번의 동기 패스**가 `TileRenderPass`를 소유한다.
@@ -967,6 +978,10 @@ See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant
 - **선택지.** (2026-10-22 고정 틀로 대체) 선택지는 같은 세션이면 바로 앞 대사 상자의 자리(`lastBoxPosition`)에 선다 — 흉상 대사 바로 뒤 선택지가 위로 뛰지 않는다. 퇴장 끝·`resetOverlay`/`dispose` 에서 초기화한다. 숫자 입력(`dialogueNumberInput.ts`)은 대사 직후가 아니라 따로 이어 쓰지 않는다.
 - **선택지 입력 유예 (2026-10-21, 첫사랑).** `showChoices` 는 열린 뒤 `CHOICE_CONFIRM_GRACE_MS`(300ms) 동안 **실제(isTrusted)** 결정·숫자 키를 버리고, 그 사이 키보드발 클릭(detail 0)도 버린다. 앞 대사를 넘기던 Enter 연타가 선택지가 그려진 바로 그 순간 닿아 플레이어가 읽지 못한 0번이 골라지고, 이어진 연타가 엔딩·타이틀을 넘겨 「새 게임으로 리셋」처럼 보이던 결함의 수정이다(재현 로그: 선택지 등장과 Enter 가 같은 0.1초). 단위 테스트의 합성 이벤트는 isTrusted 가 거짓이라 영향이 없다.
 - **호감 변화 알림 (2026-10-21).** `changeFriendship` 은 인터프리터 훅 `onFriendshipChanged` 를 부르고, 관계 메뉴를 쓰는 게임(`usesRelationshipMenu`)에서만 `playSceneRelationshipPulse.ts` 가 오른쪽 위에 「♥ 이름 · 호감이 올랐다/내려갔다」를 3.2초 띄운다(대사 진행을 막지 않음, 스타일 `playSurface.css`). 관계 메뉴 행은 `project.characters[key].note` 한 줄 소개를 함께 보인다.
+- **오른쪽 흉상 이름표 (2026-10-21, 첫사랑 r2).** 미연시 룩(`[data-vn-look]`)에서 말하는 흉상이 오른쪽이면(`.bust-right`) 이름표도 오른쪽(`vnLook.css`). 앞 화자 흉상이 왼쪽 「듣는 사람」으로 남는 두 사람 장면에서 왼쪽 이름표가 듣는 사람 이름처럼 읽히던 결함.
+- **창이 위아래로 뛰지 않게 (첫사랑 r2).** 「주인공을 가리지 않게」(`preventObscuringPlayer`)가 켜져 있으면 흉상 없는 줄·선택지가 주인공 위치에 따라 위로 뛴다. 고정하려면 줄마다 `position: "bottom"` 과 시작 장면의 `displayTextSettings`(아래·`preventObscuringPlayer:false` — 선택지 창은 줄 위치가 아니라 세션 설정을 따른다) 둘 다. 장소·시각 자막은 같은 자리에서 `context: "narration"`(테두리 없는 짙은 띠·가운데 기울임)으로 모양만 다르게.
+- **첫사랑 탐침 (r2).** `scripts/qa/runtime/first-love-probes.mts` — 자동 장면을 갈래마다 흉내 내어 인물 걷기 칸(통행·겹침)·퇴장/등장(출구 옆·같은 칸 교대·검은 화면만 허용)·옮기기 도착 칸과 문 등지기·문 도달·대사 아래 고정·말풍선(showEmote·balloon) 없음·움직이는 탈것 없음을 검사한다. 걷기 길은 데모를 다 지은 뒤 `routeKey` 표식으로 채운다 — 도구 호출(`define_ending` 등)이 프로젝트를 복제해 맵을 갈아 끼우므로 명령 객체를 붙잡으면 빈 길이 된다.
+- **첫사랑 음악 (r2).** 판타지 RPG 마을곡(fld-003·town·inn)과 합성 원곡을 버리고 CC0 카탈로그 여섯 곡(wks-001 사무·rad-002 옥상·pon-001 밤·rst-001 회상/타이틀·flt-022 고백/엔딩 B·sea-001 엔딩 A)을 귀 판정(8318 프록시 `gemini-4-argon-high` 에 60초 발췌 `input_audio`, 곡마다 2회)으로 골랐다. 카탈로그 곡은 레포에 없으므로(CDN 미설정 시 로컬 404) 여섯 파일을 `public/assets/cc0/audio/catalog/` 에 `.gitignore` 예외로 싣는다.
 - **전환 부드럽게.** 같은 세션에서 초상 규칙이 창 자리를 바꾸는 줄(흉상 없음(위) ↔ 흉상 있음(아래))에서만 `glideFromPreviousBox` 가 Web Animations `translate` 로 앞 창 자리에서 새 자리까지 220ms 미끄러진다. 레이아웃은 즉시 새 자리로 확정되고 출발점은 변환(진입 연출)을 뺀 `offsetTop` 에 호스트 배율을 곱한 값이다 — 배율로 나누지 않으면 화면 배율(3.2배)만큼 어긋나 창이 화면 밖에서 날아온다(실측). 움직임 줄이기에서는 쓰지 않는다. 그 밖의 줄(같은 위치끼리의 높이 변화 등)은 옛 동작 그대로다.
 - **옛 위쪽 흉상 CSS.** `.position-top` 흉상 매달기 규칙(위 절)은 `dialogue.ts` 경로에서는 더는 닿지 않는다(흉상이면 아래). 편집기 미리보기·저작 도구가 직접 `position-top` 을 붙일 때를 위해 남겼다.
 - **편집기·도구 안내.** 이벤트 명령 「문장 표시 설정」 위치 그룹, 자료집 「메뉴·시스템」 대사창·대사창 룩 카드(`db-menu-system-portrait-bottom-note`), 도구 설명(`schemaShapes` say·displayTextSettings position, `cutsceneStageTools`, `set_dialogue_system`, `set_vn_look`), `gameAuthoringPresets/romance.md` 한 문단. 카탈로그 en/ja/zh 에 안내 문장 한 줄.

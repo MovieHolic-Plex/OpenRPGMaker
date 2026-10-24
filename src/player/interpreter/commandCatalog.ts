@@ -546,6 +546,16 @@ export function executeCommand(
   state.beforeCommand?.(command);
   switch (command.kind) {
     case "changeFace": {
+      // 말을 다른 상대에게 돌릴 때: [듣는 사람 얼굴(반대 자리)] [화자 얼굴] [대사] — 앞 얼굴을 듣는 사람으로 남긴다(첫사랑 r9 편의점:
+      // 점원 다음 지후에게 말하는데 듣는 사람 자리에 점원이 남았다). 대사 사이에 한 번만 바꾸는 보통 흐름에는 영향이 없다.
+      const previousFace = state.currentFace;
+      const hadFaceSinceText = state.faceSinceText === true;
+      state.faceSinceText = true;
+      const keepListener = (next: FaceGraphic | undefined): void => {
+        state.listenerFace = hadFaceSinceText && previousFace && next && (previousFace.position === "right") !== (next.position === "right")
+          ? previousFace
+          : undefined;
+      };
       if (command.appearanceId !== undefined) {
         const face = state.project ? resolveAppearancePortrait(state.project, command.appearanceId, command.presentation ?? "face") : undefined;
         state.currentFace = face
@@ -556,6 +566,7 @@ export function executeCommand(
               flipHorizontally: command.flipHorizontally,
             }
           : undefined;
+        keepListener(state.currentFace);
         return resumeNext(frame);
       }
       state.currentFace = command.resourceId
@@ -567,14 +578,19 @@ export function executeCommand(
             flipHorizontally: command.flipHorizontally,
           }
         : undefined;
+      keepListener(state.currentFace);
       return resumeNext(frame);
     }
-    case "text":
+    case "text": {
+      const listenerFace = state.listenerFace;
+      state.listenerFace = undefined;
+      state.faceSinceText = false;
       return pause("text", {
         kind: "text",
         speaker: command.speaker,
         body: textBodyOf(command),
         face: state.currentFace,
+        ...(listenerFace ? { listenerFace } : {}),
         settings: state.session.messageWindowSettings,
         autoAdvance: command.autoAdvance === true,
         emotion: command.emotion,
@@ -587,8 +603,11 @@ export function executeCommand(
         ...(command.speakerActor ? { speakerActor: command.speakerActor } : {}),
         ...(command.addressee ? { addressee: command.addressee } : {}),
         ...(command.autoFace === false ? { autoFace: false } : {}),
+        ...(command.bustSide === "stage" ? { bustSide: "stage" as const } : {}),
+        ...(command.listenerBust ? { listenerBust: command.listenerBust } : {}),
         ...(command.calling === true ? { calling: true } : {}),
       });
+    }
     case "choices":
       return pause("choices", {
         kind: "choices",

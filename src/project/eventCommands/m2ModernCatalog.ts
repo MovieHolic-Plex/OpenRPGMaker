@@ -43,6 +43,9 @@ export const SCREEN_EFFECT_OPTIONS: readonly M2CommandFieldOption[] = [
   // 영화식 위아래 검은 띠. 값 = 띠 두께(화면 높이 %, 비우면 12), 0 = 걷기.
   { value: "letterbox", label: "레터박스 (위아래 검은 띠)" },
   { value: "clearLetterbox", label: "레터박스 걷기" },
+  // 타일 그림 문 열기·닫기. 값 = "x,y,너비,높이,slide|swing,left|right[,lit|dark|none][,l4,r3,t7,b1]"(문 그림 왼쪽 위 칸, 문틀 두께 px). 소리는 효과음 명령을 같이.
+  { value: "doorOpen", label: "문 열기 (타일 문 그림)" },
+  { value: "doorClose", label: "문 닫기 (타일 문 그림)" },
 ];
 
 export const SHAKE_DIRECTION_OPTIONS: readonly M2CommandFieldOption[] = SHAKE_DIRECTIONS.map((value) => ({

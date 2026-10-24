@@ -8,6 +8,7 @@ import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
 import { coordinateAxisSpec, resolveDestination } from "@/project/eventCommands/coordinateDestination";
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { planScreenEffect } from "./screenEffectPlan";
+import { doorKey } from "@/project/eventCommands/doorAnimation";
 import { pushM2History } from "./m2RuntimeState";
 import { calendarOptionsOf, sessionQueryValue } from "@/project/conditionActorQueries";
 
@@ -230,6 +231,11 @@ function applyScreenEffect(session: PlaySessionLike, runtime: M2RuntimeState, fi
       if (isNeutralScreenDistortion(next)) delete runtime.screen.distortion;
       else runtime.screen.distortion = { ...next };
       runtime.screen.distortionDurationMs = plan.durationMs;
+      return true;
+    }
+    case "door": {
+      const key = doorKey(session.currentMapId, plan.door.x, plan.door.y);
+      runtime.screen.doors = { ...(runtime.screen.doors ?? {}), [key]: { ...plan.door, mapId: session.currentMapId, open: plan.open, durationMs: plan.durationMs } };
       return true;
     }
     case "letterbox":

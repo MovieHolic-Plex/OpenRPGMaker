@@ -26,6 +26,7 @@ import { resolveEventPage } from "@/project/io";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
 import type { Interpreter } from "@/player/interpreter";
 import { applyDialogueFacing } from "@/player/playSceneDialogueFacing";
+import { stageBusts } from "@/player/playSceneBustStage";
 import { playInn, playShop } from "@/player/playSceneCommerce";
 import { playOpenChest } from "@/player/playSceneChest";
 import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
@@ -419,6 +420,8 @@ async function consumeBlockingStep(
       markCompanionSpeaking(project, scene, speaker);
       // 말하는 인물이 듣는 인물 쪽으로 돈다(둘 다 맵에 있고 가까울 때, text.autoFace=false 면 안 돈다).
       applyDialogueFacing(scene, step, currentEventId);
+      // 흉상 좌우·듣는 흉상을 맵 위 자리로(text.bustSide = "stage").
+      const staged = stageBusts(scene, step);
       await dialogue.showText({
         speaker,
         look: resolveDialogueLook(project, {
@@ -431,7 +434,8 @@ async function consumeBlockingStep(
         }),
         ...dialogueSceneHooks(scene, { speaker, currentEventId }),
         body: step.body,
-        face: step.face,
+        face: staged ? staged.face : step.face,
+        ...(staged ? { stageListener: true, ...(staged.listenerFace ? { listenerFace: staged.listenerFace } : {}) } : step.listenerFace ? { listenerFace: step.listenerFace } : {}),
         settings: textWindowSettings(scene.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS, step.position),
         textContext: { session: scene.session, project: store.getCurrent() },
         playerTileY: scene.tileY,

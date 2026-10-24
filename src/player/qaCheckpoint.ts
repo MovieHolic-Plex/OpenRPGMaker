@@ -6,6 +6,7 @@
 // `qaCheckpoint` (exportEntry.ts). 일반 빌드·호스트 셸은 둘 다 넣지 않는다.
 // 프로젝트 데이터는 건드리지 않는다 — 세션만 만든다.
 // 문서: openwiki/testing.md 「런타임 QA 체크포인트」.
+import { applyMapDefaultLighting } from "@/project/lightingRules";
 import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import { startSession, type PlaySession } from "@/project/session";
 import type { Dir, Project } from "@/project/types";
@@ -92,6 +93,9 @@ export function sessionFromQaCheckpoint(project: Project, checkpoint: QaCheckpoi
     ...(checkpoint.x !== undefined && checkpoint.y !== undefined ? { startPos: { x: checkpoint.x, y: checkpoint.y } } : {}),
   });
   if (checkpoint.facing) session.playerFacing = checkpoint.facing;
+  // 저장본 없이 다른 맵에서 시작하면 세션 조명은 시작 맵 것이다(부팅은 applyDefaultLighting:false).
+  // 실제 게임은 그 맵으로 옮길 때 맵 조명을 입는다 — 체크포인트도 같게(밤거리가 낮으로 찍혔다, 2026-10-25).
+  if (!checkpoint.snapshot && mapId !== project.startMapId) applyMapDefaultLighting(session, project.maps[mapId]!);
   if (checkpoint.selfSwitches) {
     for (const [eventId, flags] of Object.entries(checkpoint.selfSwitches)) {
       session.selfSwitches[eventId] = { ...(session.selfSwitches[eventId] ?? {}), ...flags };
