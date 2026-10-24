@@ -20,6 +20,6 @@ for li, line in enumerate(cfg['lines']):
     rows.append(f'<tr><th>{line["name"]}</th>{"".join(cells)}</tr><tr><td></td><td colspan=3 class=v>{line["verdict"]}</td></tr>')
 html = f'''<!doctype html><meta charset="utf-8"><title>Astra starters 5</title>
 <style>body{{font:14px system-ui,sans-serif;background:#15171d;color:#e3e6ec;margin:12px}}table{{border-collapse:collapse}}td,th{{padding:4px 10px;vertical-align:bottom;text-align:left}}
-img{{image-rendering:pixelated;background:#c8dcc0;margin-right:4px;vertical-align:bottom}}img.o{{margin-left:2px}}.open span{{display:inline-block;margin-right:10px}}.open b{{display:block}}td div{{color:#9aa3b2;font-size:12px}}.v{{color:#ffd27a;padding-bottom:14px}}</style>
+img{{image-rendering:pixelated;background:#c8dcc0;margin-right:4px;vertical-align:bottom;display:inline-block}}td{{white-space:nowrap}}img.o{{margin-left:2px}}.open span{{display:inline-block;margin-right:10px}}.open b{{display:block}}td div{{color:#9aa3b2;font-size:12px}}.v{{color:#ffd27a;padding-bottom:14px}}</style>
 <h2>Astra starters 5</h2><table><tr><th></th><th>stage 1</th><th>stage 2</th><th>stage 3</th></tr>{"".join(rows)}</table>'''
 open(f'{VIZ}/astra-starters-5.html', 'w').write(html); print(f'{VIZ}/astra-starters-5.html')
