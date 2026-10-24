@@ -62,8 +62,9 @@ def pool(cell: Image.Image, box: tuple[int, int, int, int], tw: int, th: int) ->
                     if p[3] > 128:
                         seen[p[:3]] += 1
             if seen and sum(seen.values()) / total >= 0.38:
-                # Prefer darker colours on ties: keeps line work that box filters wash out.
-                colour = max(seen.items(), key=lambda kv: (kv[1], -sum(kv[0])))[0]
+                # Prefer lighter colours on ties: at 1/3 scale the battler's own dark line work otherwise
+                # swallows the body (first pass read as dark blobs on the forest floor).
+                colour = max(seen.items(), key=lambda kv: (kv[1], sum(kv[0])))[0]
                 dst[tx, ty] = (*colour, 255)
     return out
 
@@ -93,7 +94,7 @@ def derive(species: str, fit: tuple[int, int] = (21, 22)) -> list[Image.Image]:
     tw, th = max(1, round(bw / k)), max(1, round(bh / k))
     opaque = [p[:3] for c in cells for p in c.get_flattened_data() if p[3] > 128]
     dark = min(opaque, key=lambda c: sum(c))
-    line = tuple(max(0, int(v * 0.55)) for v in dark)
+    line = tuple(max(0, int(v * 0.8)) for v in dark)
     return [outline(pool(c, box, tw, th), line) for c in cells]
 
 

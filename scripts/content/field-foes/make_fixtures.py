@@ -95,10 +95,26 @@ def build(src: dict, variant: str) -> dict:
     return project
 
 
-if __name__ == "__main__":
+def write_ts_sheets(path: Path) -> None:
+    """Dev-only module for the in-browser demo builder (?demo=fallen-star&fieldFoeLook=<v>), see fieldFoeLookProto.ts."""
+    lines = ["// 생성 파일 — scripts/content/field-foes/make_fixtures.py --ts. 필드 적 모습 비교 프로토타입 시트(커밋된 PNG 의 dataURL).", "export const FIELD_FOE_LOOK_SHEETS: Readonly<Record<string, string>> = {"]
+    for variant in ["a", "b", "c", "d"]:
+        sheet = Image.open(HERE / "out" / f"option-{variant}.png").convert("RGBA")
+        if variant == "b":
+            sheet = with_shadows(sheet)
+        lines.append(f'  {variant}: "{data_url(sheet)}",')
+    lines.append("};")
+    path.write_text("\n".join(lines) + "\n")
+    print("wrote", path)
+
+
+if __name__ == "__main__" and sys.argv[1:2] == ["--ts"]:
+    write_ts_sheets(HERE.parents[2] / "src/project/flagship/fallen/fieldFoeLookProtoSheets.ts")
+elif __name__ == "__main__":
     src = json.loads(Path(sys.argv[1]).read_text())
     out = Path(sys.argv[2])
     out.mkdir(parents=True, exist_ok=True)
     for variant in sys.argv[3:] or ["base", "a", "b", "c"]:
         (out / f"{variant}.play.json").write_text(json.dumps(build(src, variant)))
         print("wrote", out / f"{variant}.play.json")
+

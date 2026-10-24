@@ -270,7 +270,11 @@ async function loadBundledProject(projectUrl: URL, onBytes: (bytes: number) => v
 async function loadFlagshipDemo(id: string, assetBase: URL, onBytes: (bytes: number) => void): Promise<BundledProjectLoad> {
   if (import.meta.env.DEV) {
     const { createFlagshipDemoProject } = await import("@/project/flagship");
-    return { ok: true, project: createFlagshipDemoProject(id as Parameters<typeof createFlagshipDemoProject>[0]).project };
+    const project = createFlagshipDemoProject(id as Parameters<typeof createFlagshipDemoProject>[0]).project;
+    // 필드 적 모습 비교 프로토타입(개발 서버 전용): ?fieldFoeLook=<base|a|b|c|d>
+    const fieldFoeLook = new URLSearchParams(window.location.search).get("fieldFoeLook");
+    if (fieldFoeLook) (await import("@/project/flagship/fallen/fieldFoeLookProto")).applyFieldFoeLook(project, fieldFoeLook);
+    return { ok: true, project };
   }
   try {
     const response = await fetchTextWithProgress(new URL(`demos/${encodeURIComponent(id)}.play.json`, assetBase), onBytes);
