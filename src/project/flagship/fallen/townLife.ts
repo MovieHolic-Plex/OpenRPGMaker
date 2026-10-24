@@ -1,7 +1,8 @@
 /**
  * 『폴른 스타』 왕도 아스텔의 살림(2026-10-24): 집 안 수납 뒤지기·주인에게 들키기·토마 빵집·대장간 재고.
  *
- * - 수납(통·궤짝·옷장·바구니·자루…)은 한 번만 뒤질 수 있고 먼저 말하는 한 줄로 결과를 보여 준다(더러는 빈다).
+ * - 수납(통·궤짝·옷장·바구니·자루…)은 집마다 정해 둔 한두 곳만 무언가를 품고(HOUSE_FINDS), 나머지는 그 집 살림을 보여 주는
+ *   한 줄이다(챙길 것 없음·꾸지람 없음). 보상이 든 곳은 한 번만 뒤질 수 있다.
  * - 리사·오스본·토마는 집 안을 오가며 산다(걷는 경로). 수납을 뒤질 때 주인이 같은 방에서 이쪽을 향해 5칸 안에
  *   있어야만(eventSeesPlayer) 들킨다. 못 보면 그냥 챙긴다 — 다른 방이면 기척 없이, 가까이 있으면 「달그락」 소리.
  *   들키면 「!」 말풍선, 처음은 경고, 두 번째는 호통·내쫓김(리사·오스본은 출입 금지 스위치가 저장되고 문이 거절).
@@ -138,18 +139,74 @@ function hashCell(mapId: string, x: number, y: number): number {
   return (h ^ (h >>> 15)) >>> 0;
 }
 
-type Loot = { kind: "empty" } | { kind: "gold"; amount: number } | { kind: "item"; itemId: string };
-const LOOT_ITEMS = ["item_potion", "item_antidote", "item_wake_herb", "item_bread"];
+type Loot = { kind: "empty" } | { kind: "flavor" } | { kind: "gold"; amount: number } | { kind: "item"; itemId: string; amount?: number };
 
-function rollLoot(project: Project, mapId: string, c: Cell, rich: boolean): Loot {
-  const h = hashCell(mapId, c.x, c.y);
-  if (rich) return (h >>> 3) % 2 === 0 ? { kind: "gold", amount: 100 } : { kind: "item", itemId: "item_hi_potion" };
-  const r = h % 100;
-  if (r < 22) return { kind: "empty" };
-  if (r < 52) return { kind: "gold", amount: [15, 30, 50][(h >>> 8) % 3]! };
+/**
+ * 집 안 수납 보상(사용자 2026-10-24 「집마다 털 것이 너무 많다」): 가구 칸마다 굴리던 보상(90칸 중 75칸)을 버리고,
+ * 집마다 눈여겨볼 한두 곳만 정해 둔다. 나머지는 그 집 살림을 보여 주는 한 줄(뒤져도 챙길 것이 없다)이다.
+ * 라벨 정규식에 맞는 첫 칸(아래 줄부터)이 그 보상을 가진다. 없는 아이템 id 는 빠진다.
+ */
+const HOUSE_FINDS: Readonly<Record<string, readonly { label: RegExp; loot: Loot }[]>> = {
+  fs_inn: [{ label: /^궤짝$/, loot: { kind: "item", itemId: "item_hi_potion" } }],
+  fs_apothecary: [
+    { label: /왕실 상자/, loot: { kind: "item", itemId: "item_hi_potion" } },
+    { label: /약재 서랍장/, loot: { kind: "item", itemId: "item_wake_herb", amount: 2 } },
+  ],
+  fs_bakery_home: [{ label: /사과 통/, loot: { kind: "item", itemId: "fs_bread_warm" } }],
+  fs_stargazer_home: [{ label: /여행 가방/, loot: { kind: "gold", amount: 80 } }],
+  fs_lisa_home: [
+    { label: /화장대/, loot: { kind: "item", itemId: "item_potion", amount: 2 } },
+    { label: /여행 가방/, loot: { kind: "gold", amount: 60 } },
+  ],
+  fs_smithy: [{ label: /^궤짝$/, loot: { kind: "gold", amount: 40 } }],
+};
+/** 거리 수납 — 부두의 선원 궤짝·생선 상자·통 하나씩만 무언가가 들었다. */
+const STREET_FINDS: readonly { label: RegExp; loot: Loot }[] = [
+  { label: /선원 궤짝/, loot: { kind: "item", itemId: "item_hi_potion" } },
+  { label: /생선 상자/, loot: { kind: "gold", amount: 30 } },
+  { label: /^통$/, loot: { kind: "item", itemId: "item_potion" } },
+];
+
+/** 아무것도 챙길 것 없는 수납이 보여 주는 한 줄 — 그 집 살림의 결. */
+const FLAVOR: readonly [RegExp, string][] = [
+  [/생선 상자/, "생선 비린내만 남았다. 오늘 잡은 건 벌써 다 팔렸나 보다."],
+  [/선원 궤짝/, "선원 궤짝은 자물쇠가 단단히 걸려 있다."],
+  [/쌓인 상자/, "빈 상자들이 비뚤게 쌓여 있다."],
+  [/곡식 자루/, "곡식이 가득 차 있다. 누군가의 한 철 양식이다."],
+  [/밀가루 자루/, "밀가루가 가득하다. 손을 넣었다가 소매만 하얘졌다."],
+  [/술통 선반/, "술통마다 날짜가 적혀 있다. 반듯한 글씨다."],
+  [/약재 서랍장/, "서랍마다 약초 이름이 적혀 있다. 함부로 섞으면 안 될 것 같다."],
+  [/약초 바구니/, "말린 약초 냄새가 코를 찌른다."],
+  [/양모 바구니/, "털실 뭉치가 굴러다닌다. 뜨다 만 목도리가 걸려 있다."],
+  [/사과 통/, "사과가 반쯤 남아 있다. 하나같이 멍이 들었다."],
+  [/담금질 통/, "검은 물이 고여 있다. 쇳내가 올라온다."],
+  [/숯 통/, "숯가루만 손에 묻었다."],
+  [/무기 통/, "날이 빠진 창 자루들이 꽂혀 있다."],
+  [/찬장/, "그릇이 가지런히 쌓여 있다. 이가 빠진 것까지 버리지 않았다."],
+  [/옷장/, "옷이 가지런히 걸려 있다. 남의 옷장이다."],
+  [/화장대/, "작은 거울과 머리끈이 놓여 있다."],
+  [/협탁/, "협탁 위에 누가 두고 간 빗 하나가 놓여 있다."],
+  [/여행 가방/, "가방은 비어 있다. 오래 쓰지 않은 것 같다."],
+  [/왕실 상자/, "장식만 화려하고 속은 비었다."],
+  [/궤짝/, "궤짝 속에는 접힌 이불뿐이다."],
+  [/자루/, "자루 속은 마른 콩이다."],
+  [/통/, "통 안에는 빗물만 고여 있다."],
+  [/상자/, "상자 안에는 낡은 천 조각뿐이다."],
+];
+function flavorLine(label: string): string {
+  return FLAVOR.find(([re]) => re.test(label))?.[1] ?? `${label}에는 눈여겨볼 것이 없다.`;
+}
+
+/** 이 집(또는 거리)에서 정해 둔 보상을 칸마다 나눈다 — 나머지 칸은 살림 한 줄(flavor). */
+function assignFinds(project: Project, spots: readonly { cell: Cell; label: string }[], finds: readonly { label: RegExp; loot: Loot }[]): Map<string, Loot> {
   const known = knownIds(project);
-  const pool = LOOT_ITEMS.filter((id) => known.has(id));
-  return { kind: "item", itemId: pool[(h >>> 4) % pool.length]! };
+  const out = new Map<string, Loot>();
+  for (const f of finds) {
+    if (f.loot.kind === "item" && !known.has(f.loot.itemId)) continue;
+    const hit = spots.find((s) => f.label.test(s.label) && !out.has(`${s.cell.x},${s.cell.y}`));
+    if (hit) out.set(`${hit.cell.x},${hit.cell.y}`, f.loot);
+  }
+  return out;
 }
 
 /** 가구 칸을 라벨로 찾는다 — 키 큰 가구는 윗칸이 아닌 앞(아래)칸 하나만, 이웃 칸은 합친다. */
@@ -188,12 +245,15 @@ const narrate = (body: string): Command => ({ kind: "text", body, context: "narr
 const say = (speaker: string, body: string): Command => ({ kind: "text", speaker, body } as Command);
 
 function lootCommands(project: Project, loot: Loot, label: string): Command[] {
+  if (loot.kind === "flavor") return [narrate(flavorLine(label))];
   if (loot.kind === "empty") return [narrate(`${label}${josa(label, "을", "를")} 뒤져 봤지만 먼지뿐이다. 비어 있다.`)];
   if (loot.kind === "gold") {
     return [narrate(`${label} 바닥에서 ${loot.amount}G 를 찾았다.`), { kind: "changeGold", op: "+=", amount: loot.amount } as Command];
   }
   const name = project.database.items?.find((i) => i.id === loot.itemId)?.name ?? loot.itemId;
-  return [narrate(`${label}에서 「${name}」${josa(name, "을", "를")} 찾았다.`), { kind: "changeItem", itemId: loot.itemId, op: "+=", amount: 1 } as Command];
+  const amount = loot.amount ?? 1;
+  const count = amount > 1 ? ` ${amount}개` : "";
+  return [narrate(`${label}에서 「${name}」${count}${amount > 1 ? "를" : josa(name, "을", "를")} 찾았다.`), { kind: "changeItem", itemId: loot.itemId, op: "+=", amount } as Command];
 }
 
 function ensureSwitch(project: Project, id: string, name: string): void {
@@ -255,6 +315,16 @@ function containerEvent(
   project: Project, mapId: string, c: Cell, label: string, loot: Loot, owner: Owner | null, expel: Command[] | null,
 ): GameMap["events"][number] {
   const id = `ev_fs_box_${mapId}_${c.x}_${c.y}`;
+  if (loot.kind === "flavor") {
+    // 살림 한 줄 — 챙길 것이 없으니 주인 시야·꾸지람도 없다. 몇 번을 봐도 같은 줄.
+    return {
+      id, name: `수납 · ${label}`, x: c.x, y: c.y, trigger: { kind: "action" }, commands: [],
+      pages: [{
+        id: `${id}_p0`, name: "살펴보기", conditions: [], graphic: { transparent: true },
+        movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "same", trigger: { kind: "action" }, commands: lootCommands(project, loot, label),
+      }],
+    } as unknown as GameMap["events"][number];
+  }
   const take = [...lootCommands(project, loot, label), { kind: "setSelfSwitch", key: "A", value: true } as Command];
   let first: Command[] = take;
   if (owner && expel) {
@@ -344,6 +414,7 @@ function placeStreetContainers(project: Project, hubId: string): number {
   const fronts = gates.map((g) => ({ x: g.x, y: g.y + 1 })).filter((c) => c.y < H && isPassable(project, hub, c.x, c.y));
 
   const placed = new Set<string>();
+  const streetFinds = [...STREET_FINDS];
   const blockedNow = (x: number, y: number) => placed.has(`${x},${y}`) || !isPassable(project, hub, x, y) || hub.events.some((e) => e.x === x && e.y === y && !hasTransfer(e) && (e.pages?.[0]?.priority ?? "same") === "same" && e.id.startsWith("ev_fs_box_"));
   const reach = (start: Cell): Set<string> => {
     const seen = new Set<string>([`${start.x},${start.y}`]);
@@ -390,8 +461,8 @@ function placeStreetContainers(project: Project, hubId: string): number {
       const sideOpen = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => after.has(`${c.x + dx!},${c.y + dy!}`));
       if (!sideOpen || !connectedFronts.every((f) => after.has(`${f.x},${f.y}`))) { placed.delete(`${c.x},${c.y}`); continue; }
       hub.upperTiles[at(c.x, c.y)] = tile;
-      const h = hashCell(hubId, c.x, c.y);
-      const loot = rollLoot(project, hubId, c, h % 9 === 0);
+      const find = streetFinds.findIndex((f) => f.label.test(name) && (f.loot.kind !== "item" || knownIds(project).has(f.loot.itemId)));
+      const loot: Loot = find >= 0 ? streetFinds.splice(find, 1)[0]!.loot : { kind: "flavor" };
       hub.events.push(containerEvent(project, hubId, c, name, loot, null, null));
       n++;
     }
@@ -437,8 +508,9 @@ export function buildFallenTownLife(project: Project, hubId: string): TownLifeRe
     const exit = gate ? { mapId: hubId, x: gate.x, y: gate.y + 1 } : null;
     const spots = findContainers(project, map, (x, y) => x >= 0 && y >= 0 && x < map.width && y < map.height && isPassable(project, map, x, y));
     let n = 0;
+    const finds = assignFinds(project, spots, HOUSE_FINDS[mapId] ?? []);
     for (const { cell, label } of spots) {
-      const loot = rollLoot(project, mapId, cell, false);
+      const loot: Loot = finds.get(`${cell.x},${cell.y}`) ?? { kind: "flavor" };
       map.events.push(containerEvent(project, mapId, cell, label, loot, owner, owner && exit ? expelCommands(owner, exit) : null));
       n++;
     }

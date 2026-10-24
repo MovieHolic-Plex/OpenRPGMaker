@@ -33,6 +33,7 @@ import { buildFallenTownInteriors } from "./fallenTownInteriors";
 import { buildFallenTownLife, ensureFallenTownDatabase } from "./fallen/townLife";
 import { applyFallenTownQuests, FS_QUEST_FACE_ALIASES } from "./fallen/townQuests";
 import { buildFallenForestMaps } from "./fallen/forestMaps";
+import { applyFallenStoryPass } from "./fallen/storyPass";
 import { placeFallenStarVessel } from "./fallenStarVessel";
 import { dressObservatoryHall } from "./fallenObservatoryHall";
 import { isFallenRoomRebuilt } from "./fallenRoomOwnership";
@@ -2423,6 +2424,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     }
   }
   addBridgeValenAndScopeScene(project, ids);
+  // 제1막 대사 흐름·이리스 합류 선택·발렌 연막 퇴장·지하 광신도·빠진 꾸지람(fallen/storyPass.ts) — 모든 대사 편집 뒤, 얼굴 앞.
+  applyFallenStoryPass(project, ids);
   const speakerFaces: Record<string, string> = {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),
