@@ -50,38 +50,48 @@
 .battle-scene .battle-combo-cutin {
   align-items: center;
   animation: battle-combo-band var(--combo-ms, 1500ms) cubic-bezier(0.2, 0.9, 0.3, 1) both;
-  background: linear-gradient(90deg, rgb(20 10 50 / 0) 0%, rgb(30 14 70 / 0.92) 14%, rgb(60 20 90 / 0.92) 86%, rgb(20 10 50 / 0) 100%);
-  border-block: 2px solid rgb(255 214 110 / 0.85);
+  background: linear-gradient(90deg, rgb(20 10 50 / 0) 0%, rgb(36 16 80 / 0.94) 12%, rgb(70 22 100 / 0.94) 88%, rgb(20 10 50 / 0) 100%);
+  border-block: 3px solid rgb(255 214 110 / 0.9);
+  box-shadow: 0 0 24px rgb(255 190 80 / 0.45);
   color: rgb(255 247 214);
   display: flex;
-  gap: 14px;
+  flex-wrap: wrap;
+  gap: 4px 18px;
   justify-content: center;
   left: 0;
   overflow: hidden;
-  padding: 6px 12px;
+  padding: 10px 16px;
   pointer-events: none;
   position: absolute;
   right: 0;
   text-shadow: 2px 2px 0 rgb(10 6 30);
-  top: 18%;
+  top: 32%;
   z-index: 40;
 }
-.battle-scene .battle-combo-cutin-label { color: rgb(255 214 110); font-size: 22px; font-weight: 800; letter-spacing: 1px; }
-.battle-scene .battle-combo-cutin-names { font-size: 15px; }
-.battle-scene .battle-combo-cutin-skill { color: rgb(255 255 255); font-size: 20px; }
+.battle-scene .battle-combo-cutin-label { color: rgb(255 214 110); font-size: 34px; font-weight: 900; letter-spacing: 2px; position: relative; }
+.battle-scene .battle-combo-cutin-names { align-self: center; font-size: 18px; position: relative; }
+.battle-scene .battle-combo-cutin-skill { color: rgb(255 255 255); font-size: 30px; position: relative; }
+.battle-scene .battle-combo-cutin[data-members="3"] .battle-combo-cutin-label { color: rgb(150 230 255); }
+@media (max-width: 520px) {
+  .battle-scene .battle-combo-cutin { padding: 6px 8px; }
+  .battle-scene .battle-combo-cutin-label { font-size: 24px; }
+  .battle-scene .battle-combo-cutin-skill { font-size: 20px; }
+  .battle-scene .battle-combo-cutin-names { font-size: 14px; }
+}
 .battle-scene .battle-combo-cutin-sparks { inset: 0; position: absolute; }
 .battle-scene .battle-combo-cutin-sparks i {
   animation: battle-combo-spark 900ms ease-out both;
   animation-delay: calc(var(--spark-i) * 60ms);
   background: rgb(255 236 160);
-  height: 3px;
+  box-shadow: 0 0 6px rgb(255 220 120);
+  height: 4px;
   left: calc(6% + var(--spark-i) * 9%);
   position: absolute;
   top: 50%;
-  width: 3px;
+  width: 4px;
 }
 @keyframes battle-combo-band {
-  0% { opacity: 0; transform: translateX(-60%) skewX(-12deg); }
+  0% { opacity: 0; transform: translateX(-60%) skewX(-14deg); }
   14% { opacity: 1; transform: translateX(0) skewX(0); }
   80% { opacity: 1; transform: translateX(0); }
   100% { opacity: 0; transform: translateX(30%); }
@@ -89,8 +99,48 @@
 @keyframes battle-combo-spark {
   0% { opacity: 0; transform: translateY(0) scale(1); }
   30% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-26px) scale(0.4); }
+  100% { opacity: 0; transform: translateY(-34px) scale(0.4); }
 }
+/* 화면 번쩍 — 연계가 시작되는 순간. */
+.battle-scene .battle-combo-flash {
+  animation: battle-combo-flash 480ms ease-out both;
+  background: radial-gradient(circle at 70% 55%, rgb(255 244 200 / 0.75), rgb(255 214 110 / 0.25) 45%, transparent 75%);
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 39;
+}
+@keyframes battle-combo-flash { 0% { opacity: 0; } 25% { opacity: 1; } 100% { opacity: 0; } }
+/* 참가자 발밑 빛 고리 + 솟는 별빛. */
+.battle-scene .battle-combo-aura {
+  animation: battle-combo-aura var(--combo-member-ms, 1300ms) ease-out var(--combo-delay, 0ms) both;
+  border: 3px solid rgb(255 220 120);
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgb(255 200 90), inset 0 0 10px rgb(255 230 150 / 0.7);
+  height: calc(var(--aura-w) * 0.38);
+  pointer-events: none;
+  position: absolute;
+  transform: translate(-50%, -60%);
+  width: var(--aura-w);
+  z-index: 38;
+}
+.battle-scene .battle-combo-aura i {
+  animation: battle-combo-mote 1000ms ease-out calc(var(--combo-delay, 0ms) + var(--mote-i) * 90ms) both;
+  background: rgb(255 240 170);
+  box-shadow: 0 0 6px rgb(255 214 110);
+  height: 4px;
+  left: calc(10% + var(--mote-i) * 15%);
+  position: absolute;
+  top: 40%;
+  width: 4px;
+}
+@keyframes battle-combo-aura {
+  0% { opacity: 0; scale: 0.3; }
+  20% { opacity: 1; scale: 1.1; }
+  75% { opacity: 1; scale: 1; }
+  100% { opacity: 0; scale: 1.3; }
+}
+@keyframes battle-combo-mote { 0% { opacity: 0; translate: 0 0; } 25% { opacity: 1; } 100% { opacity: 0; translate: 0 -64px; } }
 /* 참가자 전원: 빛을 두르고 한 번 뛰어오른다(transform 대신 translate — 도트 연출의 transform 과 겹친다). */
 .battle-scene .battle-actor.battle-combo-member {
   animation: battle-combo-member var(--combo-member-ms, 1300ms) ease-out var(--combo-delay, 0ms) both;
@@ -226,6 +276,7 @@
 .battle-scene .battle-learn-card.is-combo .battle-learn-card-name { color: rgb(255 226 120); }
 
 @media (prefers-reduced-motion: reduce) {
+  .battle-scene :is(.battle-combo-flash, .battle-combo-aura) { display: none; }
   .battle-scene :is(.battle-combo-cutin, .battle-actor.battle-combo-member, .battle-fanfare-rays, .battle-fanfare-sparks i, .battle-levelup-banner-text, .battle-learn-emblem, .battle-learn-card-kicker, .battle-result-levelup-row, .battle-result-levelup[data-active="true"]) { animation: none; }
 }
 

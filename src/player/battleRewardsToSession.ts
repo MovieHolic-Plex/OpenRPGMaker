@@ -3,7 +3,7 @@ import type { BattleBattlerSnapshot, BattleCapturedMonsterSnapshot, BattleEventS
 import { computeActorLevelUp, computeTechPointLearning, type BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { computeApLearning } from "@/battle/battleEsperAp";
 import { effectiveActorEquipment } from "@/project/equipmentRules";
-import { effectiveActorClassId } from "@/project/sessionClass";
+import { classLearnedSkillIdsUpToLevel, effectiveActorClassId } from "@/project/sessionClass";
 import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 import { expForRewardActor, monsterExpPlan, rewardActorIds } from "@/battle/rewardPolicy";
 import { changeGold, type PlaySession } from "@/project/session";
@@ -390,10 +390,13 @@ export function applyActorLevelUp(session: PlaySession, project: Project, actorI
   }
 
   // 새로 배우는 직업/레벨 스킬을 세션 스킬 목록에 추가(중복 없이).
-  if (result.learnedSkillIds.length > 0) {
+  // 직업 습득표가 주는 기술은 빼다 — 배틀러가 직업에서 매번 다시 계산한다(세션에 넣으면 직업을 바꿔도 남는다).
+  const classTaught = new Set(classLearnedSkillIdsUpToLevel(project, effectiveActorClassId(project, session, actorId) ?? "", result.toLevel));
+  const sessionLearned = result.learnedSkillIds.filter((skillId) => !classTaught.has(skillId));
+  if (sessionLearned.length > 0) {
     const known = session.actorSkillIds[actorId] ?? [];
     const merged = [...known];
-    for (const skillId of result.learnedSkillIds) {
+    for (const skillId of sessionLearned) {
       if (!merged.includes(skillId)) merged.push(skillId);
     }
     session.actorSkillIds[actorId] = merged;

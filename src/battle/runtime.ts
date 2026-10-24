@@ -4419,7 +4419,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (result.hit && exploited.length > 0 && skill?.exploitStates?.consume && target.hp > 0) {
       applyStates(user, target, exploited.map((stateId) => ({ stateId, chance: 100, operation: "remove" as const })));
     }
-    if (result.hit) {
+    // 피해 기술로 쓰러뜨린 대상에게는 상태를 걸지 않는다 — 「쓰러뜨렸다!」 다음 「화상에 걸렸다!」가 떴다(fs-battle-2 녹화).
+    if (result.hit && !(effectKind === "damage" && target.hp <= 0)) {
       applyStates(user, target, skill?.stateEffects);
       if (effectKind !== "damage" || result.amount > 0) applyStatStageEffects(user, target, skill);
     }

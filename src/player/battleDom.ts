@@ -1260,23 +1260,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
   commandHost.addEventListener("mouseover", onMenuPointerOrFocus);
   commandHost.addEventListener("focusin", onMenuPointerOrFocus);
-  // 터치: 기술 행의 첫 탭은 커서만 옮겨 도움말 창을 띄우고, 커서가 선 행을 다시 누르면 쓴다.
-  // 탭은 pointerdown → (호환 mouseover) → click 순이라 mouseover 가 커서를 먼저 옮긴다 — 그래서 누르기 시작한 순간의 커서를 기억한다.
-  let touchArmedOnDown = true;
-  commandHost.addEventListener("pointerdown", (event) => {
-    if (event.pointerType !== "touch" && event.pointerType !== "pen") { touchArmedOnDown = true; return; }
-    const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>("button.battle-command[data-skill-help-id]") : null;
-    touchArmedOnDown = !button || button.dataset.battleCommandCursor === "true";
-  }, true);
-  commandHost.addEventListener("click", (event) => {
-    if (touchArmedOnDown) return;
-    touchArmedOnDown = true;
-    const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>("button.battle-command[data-skill-help-id]") : null;
-    if (!button || !commandHost.contains(button)) return;
-    event.preventDefault();
-    event.stopPropagation();
-    setMenuCursor(options.runtime.snapshot(), button, true);
-  }, true);
+  // 터치의 「첫 탭 = 커서(→ 기술 도움말 창), 커서 선 줄 다시 탭 = 사용」은 전역 목록 규칙(touchListTap)이 맡는다.
   // 확정음 — 키보드(Enter→button.click())와 마우스 클릭이 같은 경로로 울린다.
   commandHost.addEventListener("click", (event) => {
     const button = event.target instanceof Element

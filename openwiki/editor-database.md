@@ -2621,3 +2621,11 @@ CSS로 접힌 작은 창·도크 상태에서는 참조 변경을 계속 반영�
 - **세계 개요**는 레일 대신 한 줄 바(작성 상태·공개 범위·「AI 미리보기」 칩).
 - **측정(1440×900 / 1100×700, 문서 40개):** 한 화면 문서 6→17 / 3→11, 본문 칸 면적 31.5%→64% / 22.4%→52.3%.
 - 검증: 범위 tsc 0, 임시 SQLite 호스트 프로젝트에서 AI 숨김·공개 범위·연결·태그·세계 개요 비밀 저장→새 브라우저 재로드 일치. vitest·gates·e2e 미실행(`world-authoring-regression.spec.ts` 는 절차만 고쳐 두었고 실행하지 않음).
+
+## 스킬 → 「연계기」 하위 보기 · 약점 공략 칸 · 결과 연출 카드 (2026-10-24, fs-battle-2)
+
+- **연계기** 탭 id `comboTechs`(testid `db-tab-combo-techs`, 레일에는 없고 스킬 탭 보기 전환 줄의 세 번째 — 스킬 편집 · 성장 트리 · 연계기). `src/editor/panels/databaseComboTechView.ts`.
+  연계기(`comboActorIds` 2명 이상)마다 카드: 미리보기 줄(참가자 · 몫 · 전투 도움말 꼬리표), 참가자 칸 셋(시전자·동료 1·동료 2(없음=듀얼)) 각각 MP 몫과 「배워야 하는 기술」(그 배우·직업 습득표), 이름·설명·대상·속성·위력·타수·합체 능력치, 접힌 「도트 연출」 고르기(`retroChoreographyPicker`). 「새 연계기」(`db-combo-add`)는 시작 파티 앞 둘로 만든다.
+  저장은 `updateDatabaseRecord("skills", …)` — `updateSkillRecord` 화이트리스트에 `comboMpCosts`·`exploitStates` 추가.
+- 스킬 「전투 규칙」 카드에 **약점 공략** 셋(`feature16-exploit-state`·`-bonus`·`-consume`). 상태 하나 고르기 UI 이고, 여러 상태는 조수 도구로(카드가 「외 N개」를 보인다).
+- 「전투 화면」 탭에 **레벨 업 · 기술 습득 연출** 카드(`db-battle-fanfare-card`): 세기·LEVEL UP 배너·새 기술 카드·새 연계기 카드·소리 → `system.battleFanfare`.

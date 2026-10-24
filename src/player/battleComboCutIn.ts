@@ -55,18 +55,37 @@ export function playComboCutIn(root: HTMLElement, entry: BattleTimelineEntrySnap
   band.append(sparks, label, names, skill);
   stage.append(band);
   window.setTimeout(() => band.remove(), Math.round(CUTIN_MS / speed) + 120);
-  // 참가자 전원 — 아군 노드 testid 는 battle-actor-<recordId>.
+  // 참가자 전원 — 발밑에 빛 고리와 솟는 별빛(노드 자체가 아니라 무대 위 겹 — 배틀러 노드는 다시 그려지면 클래스가 지워진다).
+  const stageRect = stage.getBoundingClientRect();
   ordered.forEach((recordId, index) => {
     const node = root.querySelector<HTMLElement>(`[data-testid="battle-actor-${CSS.escape(recordId)}"]`);
     if (!node) return;
-    node.classList.remove("battle-combo-member");
-    // 다시 걸기 위해 한 프레임 비운다(같은 사람이 연달아 연계기를 쓸 때).
-    void node.offsetWidth;
-    node.style.setProperty("--combo-delay", `${Math.round((index * 140) / speed)}ms`);
-    node.style.setProperty("--combo-member-ms", `${Math.round(MEMBER_MS / speed)}ms`);
+    const rect = node.getBoundingClientRect();
+    if (rect.width < 1 || rect.height < 1) return;
+    const aura = document.createElement("span");
+    aura.className = "battle-combo-aura";
+    aura.dataset.testid = `battle-combo-aura-${recordId}`;
+    aura.setAttribute("aria-hidden", "true");
+    aura.style.left = `${rect.left - stageRect.left + rect.width / 2}px`;
+    aura.style.top = `${rect.top - stageRect.top + rect.height}px`;
+    aura.style.setProperty("--aura-w", `${Math.max(28, rect.width * 1.3)}px`);
+    aura.style.setProperty("--combo-delay", `${Math.round((index * 140) / speed)}ms`);
+    aura.style.setProperty("--combo-member-ms", `${Math.round(MEMBER_MS / speed)}ms`);
+    for (let i = 0; i < 6; i += 1) {
+      const mote = document.createElement("i");
+      mote.style.setProperty("--mote-i", String(i));
+      aura.append(mote);
+    }
+    stage.append(aura);
+    window.setTimeout(() => aura.remove(), Math.round((MEMBER_MS + index * 140) / speed) + 120);
     node.classList.add("battle-combo-member");
     window.setTimeout(() => node.classList.remove("battle-combo-member"), Math.round((MEMBER_MS + index * 140) / speed) + 80);
   });
+  const flash = document.createElement("span");
+  flash.className = "battle-combo-flash";
+  flash.setAttribute("aria-hidden", "true");
+  stage.append(flash);
+  window.setTimeout(() => flash.remove(), Math.round(500 / speed));
   playBattleSfx("combo");
   return true;
 }
