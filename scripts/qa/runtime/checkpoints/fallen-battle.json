@@ -2,19 +2,544 @@
   "set": "fallen-battle",
   "note": "폴른 스타 전투 연출·기술 역할 QA. 픽스처는 scripts/qa/runtime/fallen-battle-fixture.mjs 가 구운 play.json 에서 만든다(숲에 트룹마다 qa_fight_* 이벤트).",
   "projectFixture": ".omo/fs-battle/fixture.json",
-  "viewport": { "width": 960, "height": 540 },
+  "viewport": {
+    "width": 960,
+    "height": 540
+  },
   "checkpoints": [
     {
       "id": "blizzard-wisps",
-      "label": "엘레나 블리자드 — 도깨비불 셋에게 동시에",
-      "mapId": "fs_forest_edge", "x": 14, "y": 22, "facing": "up",
-      "switches": { "sw_fs_main_started": true, "sw_fs_valen_marched": true },
-      "party": [{ "actorId": "actor_hero", "level": 6 }, { "actorId": "actor_fs_elena", "level": 6 }],
+      "label": "엘레나 블리자드 — 도깨비불 넷에게 동시에",
+      "mapId": "fs_forest",
+      "x": 15,
+      "y": 38,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 6
+        }
+      ],
       "startEventId": "qa_fight_wisps",
       "beats": [
-        { "id": "battle", "note": "전투 시작", "ops": [{ "kind": "waitFor", "testid": "battle-scene", "timeoutMs": 60000 }], "shot": true },
-        { "id": "blizzard", "note": "카엘 방어 → 엘레나 블리자드(광역) 한 번", "ops": [{ "kind": "battle", "plan": { "actor_hero": ["defend"], "actor_fs_elena": ["skill_mage_blizzard"] }, "commands": 3, "logPath": "verify-shots/fs-battle/logs/blizzard-wisps.jsonl", "timeoutMs": 120000 }, { "kind": "hold", "dir": null, "ms": 1500 }], "shot": true }
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "act",
+          "note": "엘레나 블리자드 — 도깨비불 넷에게 동시에",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "defend"
+                ],
+                "actor_fs_elena": [
+                  "skill_mage_blizzard"
+                ]
+              },
+              "commands": 3,
+              "logPath": "verify-shots/fs-battle/logs/blizzard-wisps.jsonl",
+              "timeoutMs": 150000,
+              "fallback": "attack"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            }
+          ],
+          "shot": true
+        }
       ]
+    },
+    {
+      "id": "single-arcane",
+      "label": "단일 대상 회귀 — 비전 화살 한 마리",
+      "mapId": "fs_forest",
+      "x": 15,
+      "y": 38,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 6
+        }
+      ],
+      "startEventId": "qa_fight_wisps",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "act",
+          "note": "단일 대상 회귀 — 비전 화살 한 마리",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "defend"
+                ],
+                "actor_fs_elena": [
+                  "skill_arcane_bolt@enemy-2"
+                ]
+              },
+              "commands": 3,
+              "logPath": "verify-shots/fs-battle/logs/single-arcane.jsonl",
+              "timeoutMs": 150000,
+              "fallback": "attack"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "weapon-cross",
+      "label": "카엘 교차 베기 — 검 무기 보너스(무기↑)·급소",
+      "mapId": "fs_forest",
+      "x": 15,
+      "y": 38,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 6
+        }
+      ],
+      "startEventId": "qa_fight_wolves",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "act",
+          "note": "카엘 교차 베기 — 검 무기 보너스(무기↑)·급소",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "skill_hero_cross_slash",
+                  "skill_hero_cross_slash"
+                ],
+                "actor_fs_elena": [
+                  "defend"
+                ]
+              },
+              "commands": 4,
+              "logPath": "verify-shots/fs-battle/logs/weapon-cross.jsonl",
+              "timeoutMs": 150000,
+              "fallback": "attack"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "pierce-beetle",
+      "label": "뿔딱정벌레 — 검은 저항, 관통 찌르기는 방어 무시",
+      "mapId": "fs_forest",
+      "x": 15,
+      "y": 38,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 6
+        }
+      ],
+      "startEventId": "qa_fight_spiders",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "act",
+          "note": "뿔딱정벌레 — 검은 저항, 관통 찌르기는 방어 무시",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "skill_sword_slash@enemy-2",
+                  "skill_hero_rush_pierce@enemy-2"
+                ],
+                "actor_fs_elena": [
+                  "defend"
+                ]
+              },
+              "commands": 4,
+              "logPath": "verify-shots/fs-battle/logs/pierce-beetle.jsonl",
+              "timeoutMs": 150000,
+              "fallback": "attack"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "sleep-wake",
+      "label": "잠의 안개 → 맞으면 깬다",
+      "mapId": "fs_forest",
+      "x": 15,
+      "y": 38,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 6
+        }
+      ],
+      "startEventId": "qa_fight_wolves",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "act",
+          "note": "잠의 안개 → 맞으면 깬다",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_fs_elena": [
+                  "skill_sleep_mist@enemy-1",
+                  "skill_sleep_mist@enemy-1",
+                  "defend"
+                ],
+                "actor_hero": [
+                  "defend",
+                  "attack@enemy-1"
+                ]
+              },
+              "commands": 6,
+              "logPath": "verify-shots/fs-battle/logs/sleep-wake.jsonl",
+              "timeoutMs": 150000,
+              "fallback": "attack"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "iris-crit",
+      "label": "이리스 사격 — 급소 50%·2배(치명타 연출)",
+      "mapId": "fs_forest",
+      "x": 15,
+      "y": 38,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_iris",
+          "level": 6
+        }
+      ],
+      "startEventId": "qa_fight_wolves",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "act",
+          "note": "이리스 사격 — 급소 50%·2배(치명타 연출)",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_fs_iris": [
+                  "skill_gunner_shot"
+                ],
+                "actor_hero": [
+                  "defend"
+                ]
+              },
+              "commands": 6,
+              "logPath": "verify-shots/fs-battle/logs/iris-crit.jsonl",
+              "timeoutMs": 150000,
+              "fallback": "attack"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "ether-meditate",
+      "label": "MP 회복 — 에테르와 명상",
+      "mapId": "fs_forest",
+      "x": 15,
+      "y": 38,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 6
+        }
+      ],
+      "startEventId": "qa_fight_spiders",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "act",
+          "note": "MP 회복 — 에테르와 명상",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_fs_elena": [
+                  "skill_mage_blizzard",
+                  "skill_fs_meditate",
+                  "item:item_ether@1"
+                ],
+                "actor_hero": [
+                  "defend"
+                ]
+              },
+              "commands": 6,
+              "logPath": "verify-shots/fs-battle/logs/ether-meditate.jsonl",
+              "timeoutMs": 150000,
+              "fallback": "attack"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            }
+          ],
+          "shot": true
+        }
+      ],
+      "items": {
+        "item_ether": 2
+      }
+    },
+    {
+      "id": "valen-finale",
+      "label": "발렌 결전 — 소환·예고·2단계·고유 무기 드롭",
+      "mapId": "fs_forest",
+      "x": 15,
+      "y": 38,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_iris",
+          "level": 8
+        }
+      ],
+      "startEventId": "qa_fight_finale",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "act",
+          "note": "발렌 결전 — 소환·예고·2단계·고유 무기 드롭",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "skill_hero_rush_pierce"
+                ],
+                "actor_fs_elena": [
+                  "skill_sleep_mist@enemy-1",
+                  "skill_mage_magic_missile"
+                ],
+                "actor_fs_iris": [
+                  "skill_gunner_snipe"
+                ]
+              },
+              "logPath": "verify-shots/fs-battle/logs/valen-finale.jsonl",
+              "timeoutMs": 600000,
+              "fallback": "attack",
+              "untilEnd": true
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 2500
+            }
+          ],
+          "shot": true
+        }
+      ],
+      "items": {
+        "item_potion": 5,
+        "item_ether": 3
+      }
     }
   ]
 }

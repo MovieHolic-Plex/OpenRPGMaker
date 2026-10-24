@@ -148,7 +148,7 @@ export function applyFallenBattleRoles(project: Project): void {
   });
   tune("skill_gunner_snipe", {
     power: 120, elementId: "spear", chargeTurns: 1, damageFormula: "power + a.atk * 1.4", mpCost: { flat: 6, percentMax: 0 },
-    description: "한 차례 조준한 뒤 방어 무시 한 발. 느리지만 가장 세다.",
+    description: "한 차례 조준한 뒤 일직선을 꿰뚫는 방어 무시 한 발.",
   });
   tune("skill_gunner_butt_strike", {
     power: 50, stateEffects: [{ stateId: "state_stop", chance: 60, operation: "add" }],
