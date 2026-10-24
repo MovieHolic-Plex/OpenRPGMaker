@@ -206,7 +206,8 @@ export function calculateTouchLayout(
   safe: { top: number; right: number; bottom: number; left: number },
 ): TouchLayout {
   const stick = touchStickSize(width, height);
-  const portrait = height >= width * 0.9;
+  // 정사각에 가까운 화면(폴드 펼침 가로 1040×930)은 좌우 칸을 떼면 무대가 작아지고 위아래가 빈다 — 아래 띠 배치가 낫다.
+  const portrait = height >= width * 0.75;
   if (portrait) {
     const controlsBlock = stick + 80; // 메뉴 줄(44) + 조이스틱 + 아래 숨 쉴 틈
     const reserve = controlsBlock + safe.bottom + 16;

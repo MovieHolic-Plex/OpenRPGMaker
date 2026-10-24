@@ -306,17 +306,16 @@ const SEGMENTS = {
       note("field", "menu-equip-tap", eq);
       await sleep(800);
       await shot(page, "field", "6-equip");
-      // 배우 → 칸 → 물건: 보이는 첫 줄을 차례로 탭(A 로 확정)
-      const before = await gameFrame(page).evaluate(() => document.querySelector("[data-testid='main-menu']")?.textContent?.replace(/\s+/g, " "));
-      for (let i = 0; i < 3; i++) { await tapSel(page, "[data-testid='touch-action-a']", 900); }
-      const afterPick = await gameFrame(page).evaluate(() => document.querySelector("[data-testid='main-menu']")?.textContent?.replace(/\s+/g, " "));
-      note("field", "equip-changed", before !== afterPick, (afterPick ?? "").slice(0, 200));
-      // 무기 칸 → 철 검 탭으로 장착(목록 줄을 직접 탭).
-      const picked = await tapText(page, /철 검/);
+      // 장비 화면: A 로 배우·무기 칸까지 들어가고, 목록에 「철 검」이 보이면 그 줄을 직접 탭해 장착한다.
+      let picked = false;
+      for (let i = 0; i < 5 && !picked; i++) {
+        picked = await tapText(page, /철 검/);
+        if (!picked) await tapSel(page, "[data-testid='touch-action-a']", 900);
+      }
       await sleep(900);
+      await shot(page, "field", "7-equip-pick");
       const equipped = await gameFrame(page).evaluate(() => document.querySelector("[data-testid='main-menu']")?.textContent?.replace(/\s+/g, " "));
       note("field", "equip-iron-sword", picked && /무기\s*철 검/.test(equipped ?? ""), (equipped ?? "").match(/장비:.{0,60}/)?.[0] ?? "");
-      await shot(page, "field", "7-equip-pick");
       const sig = await gameFrame(page).evaluate(() => document.querySelector("[data-testid='main-menu']")?.textContent?.replace(/\s+/g, " ").slice(0, 160));
       note("field", "equip-screen", /장비|무기|방어|머리|몸|장신/.test(sig ?? ""), sig);
       for (let i = 0; i < 5 && (await has(page, "[data-testid='main-menu']")); i++) await tapSel(page, "[data-testid='touch-action-b']", 700);
