@@ -1,0 +1,39 @@
+{
+ "round": "theme-walls-r10 / theme-props-r7 / theme-props-r8",
+ "panel": 10,
+ "date": "2026-10-24",
+ "boards": [
+  "qa-runs/walls/theme-walls-r10/board-wall.other_rim-p10.png",
+  "qa-runs/walls/theme-props-r7/board-wall.ice_face-p7e.png",
+  "qa-runs/walls/theme-props-r8/board-prop.wisp-p8b.png"
+ ],
+ "criteria": "(1) true 3/4 top-down at 1x; (2) same game as Beodeul reference (palette, 4-6 steps, material-tone dark edges, no glow/toy/confetti); (3) no seams/16px repeat; (4) fits theme. A MAJOR = a defect a player would notice at 1x in the room view. Blind: only PNG paths and criteria given.",
+ "reviewers": {
+  "klb-sonnet-5-5": "a2ed480063d46e9da",
+  "argon": "a599919b7e27a22b3"
+ },
+ "count_rule": "an item passes only when neither blind reviewer raises a major against the candidate",
+ "tally": {
+  "wall.other_rim": {
+   "A1": "FAIL both (bright cyan/violet stud dots repeat like neon dotted line)",
+   "A2": "PASS both (sonnet minor: dusty mauve, stud rhythm on long runs; argon minor: inner corner finish monotone) — object-gate REFER cad82a3b70f6 (style split 2/4), not allowable yet"
+  },
+  "wall.ice_face": {
+   "A1": "FAIL both (dark-blue arch motif repeats every 16px, saturated cobalt; icicle tiles break strata)",
+   "A2": "FAIL both (reads as grey-green mossy brick; '5' crack glyphs; horizontal groove stripes)"
+  },
+  "prop.wisp": {
+   "A1": "PASS both (minors: frames nearly identical at 1x, crystalline flame shape, faint moss)",
+   "A2": "sonnet PASS; argon FAIL (olive-outlined yellow-green flame reads as plant bud on swamp floor)"
+  }
+ },
+ "result": {
+  "pass": [
+   "prop.wisp theme-props-r8 A1"
+  ],
+  "redraw": [
+   "wall.other_rim (A2 passed panel; needs object-gate)",
+   "wall.ice_face"
+  ]
+ }
+}
