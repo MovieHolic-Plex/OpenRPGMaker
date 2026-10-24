@@ -11,8 +11,10 @@ const REPO_ROOT = fileURLToPath(new URL("../../../", import.meta.url));
 const source = process.argv[2] ?? "/tmp/fsb/demos/chrono-bell.play.json";
 const out = resolve(REPO_ROOT, process.argv[3] ?? ".omo/fs-battle/fixture.json");
 const project = JSON.parse(await readFile(source, "utf8"));
-const forest = project.maps.fs_forest;
-if (!forest) throw new Error("fs_forest 맵이 없다");
+// 숲이 여섯 맵으로 나뉜 뒤(#3332)에는 어귀(fs_forest_edge)에, 예전 한 장 숲이면 fs_forest 에 단다.
+const forestId = project.maps.fs_forest_edge ? "fs_forest_edge" : "fs_forest";
+const forest = project.maps[forestId];
+if (!forest) throw new Error("숲 맵이 없다");
 const troops = Array.isArray(project.database.troops) ? project.database.troops : Object.values(project.database.troops);
 const events = Array.isArray(forest.events) ? forest.events : Object.values(forest.events);
 let added = 0;
@@ -34,4 +36,4 @@ forest.events = Array.isArray(forest.events) ? events : Object.fromEntries(event
 forest.encounterRate = 0;
 await mkdir(dirname(out), { recursive: true });
 await writeFile(out, JSON.stringify(project));
-console.log(JSON.stringify({ out, fights: added }));
+console.log(JSON.stringify({ out, map: forestId, fights: added }));

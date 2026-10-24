@@ -7,7 +7,7 @@
     {
       "id": "blizzard-wisps",
       "label": "엘레나 블리자드 — 도깨비불 셋에게 동시에",
-      "mapId": "fs_forest", "x": 15, "y": 38, "facing": "up",
+      "mapId": "fs_forest_edge", "x": 14, "y": 22, "facing": "up",
       "switches": { "sw_fs_main_started": true, "sw_fs_valen_marched": true },
       "party": [{ "actorId": "actor_hero", "level": 6 }, { "actorId": "actor_fs_elena", "level": 6 }],
       "startEventId": "qa_fight_wisps",
