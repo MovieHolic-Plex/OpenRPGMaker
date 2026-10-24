@@ -23,7 +23,8 @@ import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import type { BattleAnimationPlayback } from "@/player/battleAnimationDom";
 import { battleAnimationImpactMs, battleAnimationLeadPlan, preloadAllBattleAnimationSounds, preloadBattleAnimationSounds, syncBattleAnimationLayer } from "@/player/battleAnimationDom";
 import { createPresentationLedger, type BattlePresentationLedger } from "@/player/battlePresentation";
-import { commandPanel, enemyListPanel, syncEnemyListPanel, type BattleCommandSubmenu } from "@/player/battleCommandDom";
+import { playComboCutIn } from "@/player/battleComboCutIn";
+import { commandPanel, enemyListPanel, syncEnemyListPanel, syncBattleSkillHelp, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import {
   advanceBattleResultLevelUps,
   applyBattleDirectorState,
@@ -428,6 +429,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     render(): void;
     runActorCommand(command: ActorCommand): void;
     runTeamSwap(targetTeamId: string): void;
+    holdForCombo(): void;
     beginTargetCommand(command: TargetedActorCommand): void;
     confirmTargetSelection(targetId: string): void;
     cancelTargetSelection(): void;
@@ -444,6 +446,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     render: () => syncView(),
     runActorCommand,
     runTeamSwap,
+    holdForCombo,
     beginTargetCommand,
     confirmTargetSelection,
     cancelTargetSelection: cancelTargetSelectionAndRestore,
@@ -531,6 +534,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         preloadBattleAnimationSounds(entry.animation?.animationId);
       }
       if (retroMotion) retroTimelineEntry(field, entry);
+      // 연계기: 참가자 띠·뛰어오름·화음(표시 전용). 행동 하나에 한 번.
+      if (entry.comboActorIds && entry.comboActorIds.length >= 2) {
+        const snapshotNow = options.runtime.snapshot();
+        playComboCutIn(root, entry, {
+          actorName: (recordId) => snapshotNow.actors.find((actor) => actor.recordId === recordId)?.name
+            ?? store.getCurrent().database.actors.find((actor) => actor.id === recordId)?.name ?? recordId,
+          skillName: (row) => store.getCurrent().database.skills.find((skill) => skill.id === row.skillId)?.name ?? row.skillName ?? "",
+          speed: sequencer.speedMultiplier,
+        });
+      }
       // 훔치기처럼 결과가 특수 메시지 한 줄뿐인 직업 스킬은 시각 비트가 없다 — 그 메시지에서 연출을 시작한다.
       if (retroMotion && entry.kind === "special") {
         const pending = entry.side === "actor" && entry.userRecordId === pendingRetroSkillUserId ? pendingRetroSkillId : undefined;
@@ -1018,6 +1031,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     selected.dataset.battleCommandCursor = "true";
     selected.setAttribute("aria-current", "true");
     selected.tabIndex = 0;
+    // 기술·연계 목록이면 커서가 선 기술의 도움말 창을 갱신한다(설명·비용·꼬리표).
+    syncBattleSkillHelp(commandHost, selected, snapshot.actors.find((entry) => entry.recordId === snapshot.activeActorId));
     return selected;
   }
 
@@ -1245,6 +1260,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
   commandHost.addEventListener("mouseover", onMenuPointerOrFocus);
   commandHost.addEventListener("focusin", onMenuPointerOrFocus);
+  // 터치의 「첫 탭 = 커서(→ 기술 도움말 창), 커서 선 줄 다시 탭 = 사용」은 전역 목록 규칙(touchListTap)이 맡는다.
   // 확정음 — 키보드(Enter→button.click())와 마우스 클릭이 같은 경로로 울린다.
   commandHost.addEventListener("click", (event) => {
     const button = event.target instanceof Element
@@ -1318,6 +1334,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const runtimeSnapshot = options.runtime.snapshot();
     options.onSnapshot?.(runtimeSnapshot);
     const snapshot = withoutUnannouncedEnemies(runtimeSnapshot);
+    syncComboHeld(runtimeSnapshot.heldActorIds);
     const showingResult = Boolean(snapshot.result) && directorState.step === "result";
     if (showingResult) {
       directorState = resultDirectorState(snapshot, directorState);
@@ -1608,6 +1625,26 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       || after.turn !== before.turn
       || after.result !== before.result
       || after.strictQueuedActorIds.join(",") !== before.strictQueuedActorIds.join(",");
+  }
+
+  /** 연계 대기 중인 배우 노드에 표시(빛 맥동) — 「누가 기다리는지」. */
+  function syncComboHeld(held: readonly string[] | undefined): void {
+    const set = new Set(held ?? []);
+    for (const node of root.querySelectorAll<HTMLElement>('[data-testid^="battle-actor-"]')) {
+      const id = node.dataset.testid!.slice("battle-actor-".length);
+      if (set.has(id)) node.dataset.comboHeld = "true";
+      else if (node.dataset.comboHeld) delete node.dataset.comboHeld;
+    }
+  }
+
+  /** 연계 대기 — 지금 배우가 차례를 미루고 동료를 기다린다(runtime.holdForCombo). 시퀀서에 흘릴 행동은 없다. */
+  function holdForCombo(): void {
+    if (sequenceBusy || inputPrompt || !options.runtime.holdForCombo) return;
+    if (!options.runtime.holdForCombo()) return;
+    submenu = null;
+    targetReturnSubmenu = null;
+    panelOptions.submenu = null;
+    syncView();
   }
 
   /** FF6 식 팀 교대(system.battleTeams). 시퀀서에는 「전열 교체」 한 줄로 흘려 보낸다. */

@@ -165,7 +165,7 @@ function scopeLines(obs: GameMap): void {
     const ti = page.commands.findIndex((c) => c.kind === "text");
     if (ti < 0) continue;
     const rest = page.commands.filter((c) => c.kind !== "text");
-    page.commands = [...rest, narrate("망원경 너머, 동쪽 숲 위로\n연기가 아직 가늘게 피어오른다."), narrate("렌즈가 깨끗하게 닦여 있다.\n하넬 선생님이 밤새 들여다보신 모양이다.")];
+    page.commands = [...rest, narrate("망원경 너머, 북쪽 숲 위로\n연기가 아직 가늘게 피어오른다."), narrate("렌즈가 깨끗하게 닦여 있다.\n하넬 선생님이 밤새 들여다보신 모양이다.")];
   }
 }
 

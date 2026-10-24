@@ -81,6 +81,12 @@ export type AnimaticAudioCue = {
 export type OpeningAnimatic = {
   width: number; height: number; background?: string; letterbox?: number;
   pixelGrid?: AnimaticPixelGrid;
+  /**
+   * Playback backing store. 'smooth' (default): the canvas is stage-sized and the browser scales it up (soft).
+   * 'nearest': the canvas is the largest integer multiple of the stage that fits the displayed box, so
+   * nearest-sampled art keeps square pixels and text/glows render at that resolution.
+   */
+  upscale?: 'smooth' | 'nearest';
   layers: AnimaticLayer[]; camera?: AnimaticCamera; audioCues?: AnimaticAudioCue[];
   transition?: { kind: 'cut' | 'fade' | 'wipe-left' | 'wipe-right' | 'iris' | 'flash' | 'dither'; durationMs: number; color?: string };
 };
@@ -166,7 +172,8 @@ export function validateAnimaticTracks(value: unknown, properties: string[], dur
 /** Strict and additive: unsupported animation fields are errors, never silently discarded. */
 export function validateOpeningAnimatic(value: unknown, durationMs: number, path = 'animatic'): asserts value is OpeningAnimatic {
   number(durationMs, path + '.durationMs', 1, 120000, true);
-  const a = object(value, path); fields(a, ['width', 'height', 'background', 'letterbox', 'pixelGrid', 'layers', 'camera', 'audioCues', 'transition'], path);
+  const a = object(value, path); fields(a, ['width', 'height', 'background', 'letterbox', 'pixelGrid', 'upscale', 'layers', 'camera', 'audioCues', 'transition'], path);
+  option(a.upscale, ['smooth', 'nearest'], path + '.upscale');
   number(a.width, path + '.width', 64, ANIMATIC_LIMITS.dimension, true); number(a.height, path + '.height', 64, ANIMATIC_LIMITS.dimension, true);
   color(a.background, path + '.background'); if (a.letterbox !== undefined) number(a.letterbox, path + '.letterbox', 0, 0.25);
   if (a.pixelGrid !== undefined) {

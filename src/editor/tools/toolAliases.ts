@@ -19,7 +19,9 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   // ── 인물·성장·장비 ──
   { terms: ["배우", "캐릭터 만들", "파티원", "동료 만들", "주인공 만들", "actor", "character record", "party member"], tools: ["upsert_actor", "upsert_class", "upsert_character_profile"], label: "배우" },
   { terms: ["직업", "클래스", "class", "job"], tools: ["upsert_class", "define_promotion"], label: "직업" },
-  { terms: ["스킬", "기술", "마법", "주문", "필살기", "리미트", "연계기", "skill", "spell", "magic", "limit break", "ability"], tools: ["upsert_skill", "read_retro_skill_guide", "upsert_state"], label: "스킬" },
+  { terms: ["연계기", "합체기", "듀얼 테크", "트리플 테크", "협동기", "combo tech", "dual tech", "triple tech", "연계"], tools: ["upsert_combo_tech", "list_combo_techs", "upsert_skill"], label: "연계기(듀얼·트리플 테크)" },
+  { terms: ["레벨업 연출", "레벨 업 연출", "기술 습득 연출", "새 기술 습득", "팡파레", "level up fanfare", "skill learned"], tools: ["set_project_settings"], label: "전투 결과 팡파레(battle.fanfare)" },
+  { terms: ["스킬", "기술", "마법", "주문", "필살기", "리미트", "skill", "spell", "magic", "limit break", "ability"], tools: ["upsert_skill", "read_retro_skill_guide", "upsert_state"], label: "스킬" },
   { terms: ["장비", "무기", "방어구", "방패", "투구", "유물", "악세사리", "액세서리", "equipment", "weapon", "armor", "accessory", "relic"], tools: ["upsert_equipment", "upsert_item"], label: "장비" },
   { terms: ["마석", "에스퍼", "소환수", "소환", "esper", "summon", "materia", "magicite"], tools: ["upsert_equipment", "upsert_skill"], label: "마석·에스퍼(장비로 스킬 부여)" },
   { terms: ["장비 마법", "장착 마법", "장착하면 배", "착용 시 기술", "grantsskill", "grant skill", "equip learn", "장비 기술 부여", "equipment skill"], tools: ["upsert_equipment", "upsert_skill"], label: "장비가 스킬 부여" },
@@ -86,6 +88,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["고딕", "저택", "묘지", "gothic", "manor", "graveyard"], tools: ["build_gothic_place", "list_gothic_places"], label: "고딕" },
   // ── 이벤트·연출·플래그 ──
   { terms: ["없는 기물", "없는 소품", "없는 가구", "기물 그리", "소품 그리", "가구 그리", "새로 그려", "그려 넣", "missing prop", "missing object", "draw a prop", "object-gen", "object gen"], tools: ["generate_missing_object", "list_spatial_designs", "list_hand_interior_parts"], label: "없는 기물 그리기(먼저 찾기)" },
+  { terms: ["대사", "윤문", "말투", "다듬", "대사 줄", "대사 길", "어투", "문체", "톤 맞", "dialogue", "line polish", "rewrite lines", "voice"], tools: ["list_dialogue", "get_dialogue_context", "rewrite_dialogue", "set_speaker_voice"], label: "대사 관리·윤문" },
   { terms: ["조수 스킬", "교훈", "장면 다듬기", "장면 검수", "assistant skill", "scene polish", "lesson"], tools: ["read_assistant_skill", "list_assistant_skills"], label: "조수 스킬" },
   { terms: ["컷신", "연출", "장면", "cutscene", "scene"], tools: ["script_cutscene", "script_cutscene_staged", "read_directing_guide", "preview_cutscene"], label: "컷신" },
   { terms: ["오프닝", "타이틀", "opening", "title screen", "intro"], tools: ["set_opening", "plan_opening", "generate_title_art", "set_title_screen"], label: "오프닝·타이틀" },

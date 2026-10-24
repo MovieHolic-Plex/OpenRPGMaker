@@ -1,0 +1,392 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "77c06fd1328ca30e0130bda59f9cfc897deddbf8081af478c93cacf6a90f67f6",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "two leaning boulders (rock), natural map prop for the Beodeul 16px chipset, 2x2 tiles, standing object (3rd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/rock-pair",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 질감 없음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "질감 없음 (3/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 6,
+  "darkV5": 38,
+  "nearBlackEdge": 0.41,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left boulder top plane (light, sloping)",
+      "rows": "12-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-21"
+     },
+     {
+      "part": "right boulder top plane (light)",
+      "rows": "18-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "left boulder dark front face",
+      "rows": "19-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right boulder dark front face",
+      "rows": "22-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Both boulders show a lighter, foreshortened top plane that steps sharply to a dark front face. In the left boulder at x=9, light rows 13-18 (L=141) drop to dark rows 19-26 (L=51 down to 31). In the right boulder at x=23, light rows 19-21 (L=144) drop through rows 22-23 to dark rows 24-27. The silhouette widens from 3px at row 11 to 29px at rows 22-23, which gives a rounded mass. The main body is the left boulder, with a top of about 7 rows and a front of about 8 rows. This matches the green 'top plus front' references, not the flat or rim-only red ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is two small grey boulders with about 3 lightness steps each (light top face, mid body, dark underside) plus a dark outline. It has 6 raw colours in total, and the 6 visible tones per tile are close to tree-1a786c's 7. Against tree-d43edd's 29 visible tones, and by eye against both references, it is much simpler. The 0% near-flat figure is misleading, because the faces are small, smooth blobs with no stone grain, no cracks, no per-facet highlights and no moss or grass blending at the base. 40% of the dark edge pixels are neutral, so the outline is mixed, partly a neutral dark line giving a sticker look, rather than a consistent dark tone of the rock. The pair is also noticeably smaller and thinner than a full 2x2-tile prop. Placed next to the richly clumped, multi-tone references, it looks flatter and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15375
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left boulder top (lit sloped plane)",
+      "rows": "12-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-21"
+     },
+     {
+      "part": "left boulder front face",
+      "rows": "19-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right boulder top (lit plane)",
+      "rows": "19-23",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24"
+     },
+     {
+      "part": "right boulder front face",
+      "rows": "24-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Left boulder (largest) has a light top plane at rows 12-18 (x=9 L=141) that ends abruptly at row 19, where the dark front face starts (L=51, 79, 31 down to row 26). The width profile widens from 3 to 29 px over rows 11-23, a rounded mass with a top and a front. The right boulder has a light top at rows 19-21 (L=144) with a mid-tone slope at rows 22-23, then a dark front at rows 24-27. Both rocks show a lit upper plane above a dark vertical face, so the pair reads as 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The whole candidate uses only 6 distinct colours, so each rock gets roughly 3-4 lightness steps (top highlight, mid, shadow side, dark base) against about 5-6 per material in Beodeul. The measured per-tile figure of 6 visible tones sits near tree-1a786c (7), but tree-d43edd has 29, and the candidate is far below that richer reference. The rocks read as smooth, lightly faceted blobs with no per-stone grain, speckle, cracks, moss or grass-contact detail. No 5x5 block is flat, but that is because the shapes are small and the shading is coarse, not because the surface is textured. Dark edge pixels are 40% near-neutral, against 0% in both references. The outline looks like a grey-black rim rather than a dark tone of the stone, which gives a partly sticker-like look. The pair also sits on nothing: no grass tufts or soil blend into the base. Next to the references it looks thinner, flatter and simpler, so a careful artist would not accept it as equal.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14983
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left boulder lit top plane",
+      "rows": "12-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "19-21"
+     },
+     {
+      "part": "right boulder lit top plane",
+      "rows": "18-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "24-25"
+     },
+     {
+      "part": "left boulder front face",
+      "rows": "19-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right boulder front face",
+      "rows": "24-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan at x=9 shows a light top plane on the left boulder (rows 13-18, L=141) that drops abruptly to dark rock (rows 19-21, L=51). That drop works as a front-edge line with shadow beneath, and a dark front face of about 8 rows continues to row 26. At x=23 the right boulder shows the same pattern: a light plane (rows 19-23, L=144 then 111), then darker rows 24-27. The width profile grows steadily from 3 to 29 and then closes at row 27, which is a lumpy rock mass rather than a flat slab. Both boulders have a lit top and a darker front, so the main body reads as 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is two small grey boulders with only 6 colours in total. Each rock reads as about 3-4 steps: a light top facet, a mid grey body and a dark underside. The references use 5-6 steps per material, and tree-d43edd shows 29 visible tones per tile against the candidate's 6. The outline is dark and mostly grey, and 40% of the dark edge pixels are neutral, so it leans toward the near-black sticker look rather than a tinted dark tone of the stone. There are no flat 5x5 areas, but the surfaces are smooth. They have no per-stone speckle, cracks, moss or grass tufts at the base, and there is no tinted contact shadow to seat them on the grass. Next to the richly clumped canopies and bark grain of the references, the rocks look thinner, flatter and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16697
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left boulder lit top plane",
+      "rows": "12-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-21"
+     },
+     {
+      "part": "left boulder dark front face",
+      "rows": "19-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right boulder lit top plane",
+      "rows": "18-23",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24"
+     },
+     {
+      "part": "right boulder dark front face",
+      "rows": "24-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Both boulders have a light upper plane followed by a sharp drop to much darker front rock. In column x=9 the light plane is rows 13-18 (L=141) and the dark front is rows 19-26 (L=31-79). In column x=23 the light plane is rows 19-21 (L=144) and 22-23 (L=111), with a dark front at rows 24-27. The silhouette widens from 3 px at row 11 to 29 px at rows 22-23, so the top is foreshortened and the front is a dark base of 4-8 rows. This is a top plane with a front face, not a flat slab or an elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is two small grey boulders drawn with only about 4 lightness steps (highlight top, mid face, dark underside, dark edge) and 6 colours in total. The reference trees show 5-6 steps with leaf clumps, bark grain and dithered transitions. The boulder faces are smooth and have no speckle, cracks, moss or per-stone grain, so they read as smooth blobs. The 0% near-flat figure comes from tiny gradient steps, not real texture. Visible tones per tile (6) are far below tree-d43edd (29) and only close to tree-1a786c (7) on the number alone. By eye, tree-1a786c carries much more clustered leaf detail. 40% of the dark edge pixels are neutral, so the outline is partly a near-black sticker line rather than a consistent dark tint of the stone. The object also fills well under a 2x2 tile footprint and looks thin and flat beside the references. It is clean but shallower than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17016
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.216Z",
+ "cells": {
+  "16": [
+   "310cab75b54f91bf",
+   "b8d7c4b841d6dd8d",
+   "b9e5caf2d48bf0f3"
+  ],
+  "24": [
+   "0ac4cdcb4ca67258",
+   "2be14102df181655",
+   "33ba19e2b01f7538",
+   "46fc3b92a1a23f9d",
+   "475f7693e1ff0df5",
+   "48acabd824a36c00",
+   "4d26d78a0b699637",
+   "627a80c5718c71b9",
+   "684968ce6327a9f7",
+   "6902271099d9c341",
+   "9a115269a4d9de6f",
+   "c2ae793c500781d1",
+   "c55eb00988393bb2",
+   "cfd06e624e174528",
+   "dd4406a9bb430f07",
+   "f0b2379b4b79ba80",
+   "fe2ecd01c952ee1e",
+   "ffc42800aa80c35e"
+  ],
+  "32": [
+   "7859dcacd2107ec4"
+  ],
+  "48": [
+   "017f245d13d7befe",
+   "05308afdad11e0cd",
+   "0b31d9c675372f3c",
+   "4e9d5fc0984f88de",
+   "a4cd0667d89ce2ba",
+   "f47cbba6c52e76c3"
+  ]
+ }
+}

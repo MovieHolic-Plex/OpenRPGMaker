@@ -1,3 +1,17 @@
+## 피해 계열 받는 피해 %(물리·마법) · 상태가 바꿔 쓰는 값 · 「적이 상태에 걸렸다」 전투 조건 (2026-10-24)
+
+`EnemyRecord.damageTypeRates`(선택, `{ physical?, magic? }` 정수 %, 0~1000, 비면 저장 안 함)는 적이 **피해 계열별로** 받는 피해 배율이다.
+계열은 기술의 `effect.statistic` 으로 가른다 — `mind`(마력 계열) = magic, 그 밖(공격력 계열·통상 공격) = physical. 속성과는 따로다
+(빛 속성이어도 공격력 계열이면 물리). 0 = 무효, 300 = 세 배.
+`StateRuntimeEffects.damageTypeRates`(같은 모양)는 그 상태인 동안 기본값을 **바꿔 쓴다**(곱하지 않는다). 여러 상태가 같은 계열을 정하면 가장 큰 값.
+그래서 「마법 무효(magic 0)인 적」도 상태 하나(magic 300)로 그 동안만 마법 ×3 이 된다(폴른 스타 1막 용 · 「관통상」).
+곱은 `battleElementModifiers.damageTypeMultiplier` 한 곳, `runtime.ts` 의 통상 공격(아군·적)·기술 피해 hitMultiplier 와
+효과 꼬리표(effectiveness: 0 → 「무효」, >1 → 「약점!」)에 같이 곱한다. 회복에는 안 곱한다. gen1 경로는 그대로.
+
+트룹 전투 이벤트 조건 `{ kind: "enemyState", enemyId?, stateId, present? }` — 살아 있는 적(생략 = 아무 적)이 그 상태에 걸려 있으면 참
+(`present: false` 면 걸려 있지 않을 때 참). 매 행동 뒤 평가하므로 `span: "moment"` + `runOnce: false` 와 스위치 하나로
+「걸린 순간 한 줄」「풀린 순간 한 줄」을 띄운다(같은 스위치를 켜고 끄며 번갈아). 편집기 트룹 조건 폼에는 아직 전용 칸이 없다(잠긴 종류로 보인다).
+
 ## 장비 「주는 피해 ±%」·「받는 피해 ±%」 (2026-10-24)
 
 `EquipmentRecord.damageDealtPercent` / `damageTakenPercent`(선택, 정수 -90~300, 0 이면 저장 안 함). 장착한 장비마다 더해
@@ -2317,3 +2331,28 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
   세 번 닫으면 리스너 3개와 끝나지 않는 Promise 3개가 남았다.
 - **전술 전투 중에도 게임 시계가 멈춘다** — `isGameTimePausedForRuntime` 이 `[data-testid='tactics-battle']` 를 본다. 격자는
   `.play-viewport` 층(`.play-stage` 바깥)에 붙으므로 판정 루트도 `.play-viewport` 로 올렸다(없으면 `.play-stage`).
+
+## 전투 깊이 — 기술 도움말 · 「연계」 명령 · 연계 대기 · 약점 공략 · 결과 팡파레 (fs-battle-2, 2026-10-24)
+
+사용자(폴른 스타 플레이): 「스킬 설명을 볼 수가 없다」「그냥 강하게 때린다가 끝이냐」「배우거나 레벨 업하면 화려하게」「연계기」.
+전부 엔진·자료집·조수 기능이고, 폴른 스타는 데이터로 쓴다(`src/project/flagship/fallen/battleDepth.ts`).
+
+- **기술 도움말 한 벌** `src/battle/skillHelp.ts` — `skillHelp(project, skill, user?)` → 이름·설명·비용(연계기는 「카엘 MP 3 · 엘레나 MP 5」)·꼬리표.
+  꼬리표는 레코드에서 기계적으로 뽑는다(대상 → 속성 → 위력/회복 → 타수 → 급소 → 방어 무시 → 상태(지우기는 셋 넘으면 「외 N종」) → 능력 단계 → 흡수/반동/HP 대가 → 모음 → 행동 지연 → 무기 공명 → 약점 공략 → 재사용 …).
+  전투 도움말 창·필드 메뉴 스킬 화면(`playerStatusMenuDetails.fieldSkillDescription`)·결과 「새 기술 습득!」 카드·자료집 연계기 미리보기·`list_combo_techs` 가 같은 문장을 쓴다.
+  기본 속성 이름(Fire·Sword…)은 `elementDisplayName` 이 한글로 보인다(기술 배지와 같은 표).
+- **전투 도움말 창** `battleCommandDom.syncBattleSkillHelp` — 기술·연계 하위 목록이 열려 있으면 명령 패널 **위**에 뜨고(패널 높이를 뺏지 않는다) 커서를 따라 바뀐다(`battleDom.markMenuCursor`). testid `battle-skill-help`(`-tags`·`-description`).
+  **터치**: 기술 칸을 처음 탭하면 커서만 옮겨 도움말을 보이고, 커서가 이미 있던 칸을 다시 탭해야 쓴다 — 전역 목록 탭 규칙(`touchListTap`)이 커서를 옮기고, 커서 이동이 `markMenuCursor` → 도움말 창을 갱신한다. 마우스·키보드는 그대로 한 번에 쓴다.
+- **「연계」 명령** — 연계기는 기술 목록에서 빠지고 루트 명령 `actor-command-combo`(아이콘 ✦) 아래 따로 열린다(`listedComboSkillIds`, 포켓몬 UI 제외). 준비된 연계기가 있으면 「N개」.
+  **연계 대기**(`runtime.holdForCombo`, gauge 흐름): wait 모드에서는 메뉴 중 게이지가 멈춰 두 사람이 같이 준비되는 일이 게이지가 우연히 같을 때뿐이었다.
+  준비된 연계기가 없고 동료가 준비 전(`comboPartnerNotReady`)이면 「연계」 = 「동료 기다리기」 — 그 배우는 게이지 100 그대로 충전 고리에서 빠지고(`heldForCombo`), 다음 아군 차례가 오면 풀려 그 바로 다음 차례를 받는다(차례 시작 처리는 다시 하지 않는다 `resumedFromHold`).
+  기다릴 동료가 없으면 바로 풀린다. 스냅샷 `heldActorIds`, 배우 노드 `data-combo-held`(빛 맥동).
+- **연계기 발동 연출** `src/player/battleComboCutIn.ts` — 타임라인 엔트리에 `comboActorIds` 가 2명 이상이면(행동당 한 번) 무대에 「연계!」/「트리플 연계!」 띠(참가자 × · 기술 이름), 화면 번쩍, 참가자 발밑 빛 고리와 솟는 별빛, 합성음 `combo`. 기술 그림은 기존 도트 연출(`retroChoreographyId`) 그대로.
+- **연계 MP 나누기** `SkillRecord.comboMpCosts [{actorId, mp}]` — 참가자별 몫. 없는 참가자는 `mpCost`. `battleSkillMpCostFor(skill, user)` 가 단일 권위(장비 절반 적용).
+- **약점 공략** `SkillRecord.exploitStates {stateIds, bonusPercent, consume?}` — 대상이 그 상태면 피해 ×(1+bonus/100), `consume` 이면 그 상태를 지운다(기술 자신의 상태 효과보다 먼저). 타임라인 `exploit:true` → 숫자 아래 「공략!」.
+  「깔기 → 거두기」 짝(둔화 → 십자베기, 기절 → 광선 조준)을 만드는 수단이다.
+- **쓰러뜨린 대상에게 상태를 걸지 않는다** — 피해 기술의 상태 효과는 대상 HP 가 남았을 때만(녹화에서 「쓰러뜨렸다!」 다음 「화상에 걸렸다!」가 떴다).
+- **결과 팡파레** `src/player/battleFanfareDom.ts` + `system.battleFanfare`(`src/project/battleFanfare.ts`, 기본값은 저장 안 함) — 도트 결과 화면의 레벨 업 창 넘기기 줄에:
+  레벨 업 창 머리 「LEVEL UP!」 배너(빛줄기·파티클·능력치 줄 차례 등장) → 그 배우가 배운 기술마다 「새 기술 습득!」 카드(속성색 문장·비용·꼬리표·설명) → 이번에 해금 조건이 채워진 연계기마다 「새 연계기!」 카드(`newlyUnlockedCombos`).
+  `levelUp`·`skillLearned`·`comboUnlocked`·`style`(burst·classic·minimal)·`sound`. 소리는 합성 `levelUp`·`skillLearned`·`combo`.
+- QA: `scripts/qa/runtime/checkpoints/fallen-battle-depth.json`(데스크톱: 도움말·듀얼·연계 대기→트리플·레벨 업 팡파레), `-mobile`(세로, `context.hasTouch`)·`-landscape`. 새 op `click`(DOM 클릭)·`tap`(터치), 세트 `context` 는 브라우저 컨텍스트 옵션. 전투 op 계획 `combo:<skillId>` 는 「연계」 명령을 누른다(준비 전이면 연계 대기).

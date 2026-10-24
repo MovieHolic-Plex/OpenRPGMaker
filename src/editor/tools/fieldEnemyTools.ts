@@ -324,9 +324,10 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
         graphicNote = `필드 그림 「${expected.label}」 — 전투 그림(${lead?.monsterResourceId})과 같은 종류로 자동 선택`;
       } else if (lead?.monsterResourceId && isGeneratedMonsterSprite(lead.monsterResourceId)) {
         // 같은 종류의 걷기 칩이 없는 종(박쥐·늑대·거미 …): 전투에 서는 **같은 도트 그림**을 필드 심볼로 쓴다.
-        // 다른 그림으로 대체하는 것이 아니라 전투 그림 그대로이므로 필드의 모습과 전투가 어긋나지 않는다(정지 그림, 걷는 칸 애니메이션 없음).
+        // 다른 그림으로 대체하는 것이 아니라 전투 그림 그대로이므로 필드의 모습과 전투가 어긋나지 않는다. 플레이어가 이 그림에서
+        // 약 2칸 크기의 걷기 칩(좌우 방향·걸음 통통·그림자·외곽선)을 런타임에 뽑는다(src/player/fieldFoeSprite.ts).
         graphic = { sprite: { type: 'bundled', id: lead.monsterResourceId }, direction: 'down', pattern: 0 };
-        graphicNote = `걷기 칩이 없는 종 — 전투 도트 그림(${lead.monsterResourceId})을 필드 심볼로 그대로 사용(정지 그림)`;
+        graphicNote = `걷기 칩이 없는 종 — 전투 도트 그림(${lead.monsterResourceId})에서 필드 걷기 칩을 자동으로 뽑아 씀(약 2칸, 좌우 방향·걸음·그림자)`;
       } else if (!lead?.monsterResourceId) {
         // 전투 그림이 아직 없는 적 — 이름으로 찾되 못 찾으면 다른 그림으로 대체하지 않고 거절한다.
         for (const name of [lead?.name?.trim(), troop.name?.trim()].filter((entry): entry is string => !!entry)) {

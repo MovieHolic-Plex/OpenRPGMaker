@@ -879,6 +879,16 @@ function measureEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapsho
   if (!Number.isFinite(dx) || !Number.isFinite(dy)) return undefined;
   const distance = Math.hypot(dx, dy) * fieldAssetZoom(field);
   const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
+  // 사람 적(걷기 칩)은 아군 배우처럼 걷는다 — 아군 근접 걸음(approachMsFor walk · RETURN_PX_PER_MS)과 같은 박자.
+  // 도트 괴물 속도(0.3px/ms + 정지)를 쓰면 같은 사람 몸이 아군보다 두 배 느리게 다가가 「굼뜬 보스」로 읽혔다(2026-10-24).
+  if (charset) {
+    return {
+      dx,
+      dy,
+      approachMs: approachMsFor("dash", distance),
+      recoverMs: clamp(distance / RETURN_PX_PER_MS, 280, 480),
+    };
+  }
   const speed = motion === "dash" ? 0.65 : motion === "stomp" ? 0.34 : hovering ? 0.42 : 0.3;
   return {
     dx,

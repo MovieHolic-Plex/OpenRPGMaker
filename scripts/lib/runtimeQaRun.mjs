@@ -570,6 +570,18 @@ export async function applyOp(page, op, runState) {
       await page.waitForTimeout(200);
       return;
     }
+    case "click":
+      // DOM 단추 누르기(element.click — 전투 QA 의 press 와 같다). 가려짐 검사가 필요하면 pointerClick.
+      await page.waitForSelector(`[data-testid="${op.testid}"]`, { timeout: op.timeoutMs ?? 10_000 });
+      await page.evaluate((testid) => document.querySelector(`[data-testid="${testid}"]`).click(), op.testid);
+      return;
+    case "tap": {
+      // 터치 탭(컨텍스트가 hasTouch 여야 한다 — 체크포인트 세트 context). pointerType 이 touch 인 입력 경로를 잰다.
+      const box = await page.locator(`[data-testid="${op.testid}"]`).first().boundingBox();
+      if (!box) throw new Error(`tap target missing: ${op.testid}`);
+      await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+      return;
+    }
     case "pointerClick": {
       const info = await page.evaluate((testid) => {
         const nodes = document.querySelectorAll(`[data-testid="${testid}"]`);

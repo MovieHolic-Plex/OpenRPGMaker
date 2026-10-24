@@ -1,0 +1,310 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "20946b567586d93623487beec93d387c698b3a962ec677f39464608ae134e02f",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "stump with shelf fungus (fallen log / stump), natural map prop for the Beodeul 16px chipset, 1x1 tiles, standing object (3rd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/stump-shelf",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 16,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stump cut top (tan ring with cream bark rim)",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "stump trunk front face",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf fungus bracket on right side",
+      "rows": "7-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stump top is a lighter band at rows 2-5. Its width grows 7, 9, 11 from the back rim, and it ends in a pale front-edge line at row 5 (#d9d2be at x=4 and x=7). Below that, a darker brown trunk face runs rows 6-12 (about 7 rows) and ends in a dark base outline at row 12-13. The shelf fungus bracket on the right (width 13 at rows 10-11) has its own light top at rows 7-9 and a darker front edge below it. The object has a top surface of more than 2 rows plus a front face of 3 or more rows, so it matches the three-quarter reference pairs, not the rim-only or flat-band cases."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a single-tile stump, much smaller than the two full trees, so I judged density by the per-tile facts and by eye. It has 15 visible tones per 16x16 tile, which is above tree-1a786c (7) and below the dense tree-d43edd (29). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline leans brown, in the dark tone of the adjacent wood, and is not a black sticker line. The stump shows a lit ring top, bark grain in several browns, and shelf fungus in a separate ramp, giving about 4-5 steps on the wood. That is slightly shallower than the 5-6 steps of the references, but it is not flat or sticker-like at this size. A careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18505
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stump top (cut face with cream rim)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "stump trunk front face (bark)",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf fungus bracket on right side",
+      "rows": "7-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stump's top occupies rows 1-5. Its width grows from 7 to 9 to 11, and the tan and cream cut face (x=4 rows 2-4) ends in a light cream front-edge line at row 5. A darker brown row 6 (#885a26) follows as eave shadow. Below it, bark rows 6-12 form a front face about 7 rows tall, ending in a dark base at rows 12-13. The bracket fungus protruding on the right (rows 7-11, width up to 13) is a small attached detail and is treated as decor. The stump top is a rounded cut face with no clear narrowing at its front, but the edge line and shadow still give it a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The stump is about one tile and reads as brown wood with a lighter cut top, ring detail and small shelf-fungus caps. Its outline leans dark brown rather than neutral black, and the measured 0% near-neutral dark edge pixels agrees. It has 15 visible tones per tile, well above tree-1a786c (7) and below the dense tree-d43edd (29), which is a large canopy tree. Near-flat coverage is 0%, so there are no flat fills. The wood ramp has roughly 4-5 steps against about 6 in the references, a small gap that is acceptable for a 1x1 prop. A careful artist would accept it beside the references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20860
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stump cut top (growth rings, pale ring)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "shelf fungus bracket on right side",
+      "rows": "7-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column x=4 shows a light cut-wood top in rows 2-4 (L≈179) ending in a pale cream front-edge line at row 5 (#d9d2be). A darker brown band at row 6 follows as eave shadow, then the bark trunk face runs rows 7-12 and ends in a dark base outline at row 13. The silhouette widens 7, 9, 11 over rows 1-3, consistent with a rounded stump top. The top is about 5 rows and the front bark face is about 7 rows, so the main body has both a top surface and a front face. The shelf fungus on the right (rows 7-11) is a growth on the stump and is listed as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a single 16px stump, much smaller than the two large reference trees, so I judged it by eye as a small prop. It shows a lighter cut top with ring detail, a bark side with a few brown steps, and a small fungus shelf that reads as a separate material. The dark edge pixels are brown-tinted, not neutral (0% near-neutral), so the outline follows the adjacent material. Near-flat coverage is 0%, with no 5x5 flat fills. It has 15 visible tones per tile, well above tree-1a786c (7) and below the dense canopy tree-d43edd (29). That is plausible for a 1x1 prop and it does not look like a sticker next to the references. It is a little less textured than the best tree, but a careful artist would accept it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16592
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stump top (cut face with pale ring)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "stump trunk front face",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf fungus on right side",
+      "rows": "7-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stump has a top surface in rows 1-5. The silhouette widens from 7 to 9 to 11 px, and the pale ring in rows 2-5 closes with a lighter front-edge line at row 5 (#d9d2be at x=4). Row 6 is a darker brown (#885a26), which reads as a shadow under the edge. The top is rounded only at its upper edge and does not narrow again at the bottom, so it is a weaker ellipse than a clean cap. Rows 6-12 are the brown bark front face, 7 rows tall, ending in a dark base outline at row 12. The shelf fungus protruding on the right (rows 7-11, widening to 13 px) is treated as decor. The main body still shows a top plus a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small 1x1 stump, so the references are far larger and are only a loose comparison. It has 15 visible tones in its tile, which is well above tree-1a786c (7) and about half of tree-d43edd (29). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, matching the references, so the outline leans toward the brown of the bark rather than black. By eye there is a lit top face with ring detail, a barked side in several browns, and a fungus shelf with its own highlight and shade. That gives roughly 5 steps on the wood, a bit under the 5-6 Beodeul uses. It is a little thin next to the dense reference, but it does not look like a sticker beside the simpler reference and would be accepted as a small prop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18223
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.273Z",
+ "cells": {
+  "16": [
+   "cc245c9a0c2ae449"
+  ],
+  "24": [
+   "3a62ff010004d65d",
+   "41a53cf55e816423",
+   "5050b0acbb9c0498",
+   "99863a7c0a2142b0",
+   "b217d81697be0dcb",
+   "ce05a9e88f96ff81"
+  ],
+  "32": [
+   "33aa97cd294269e2",
+   "7b18ab078487d79b",
+   "93071384e0bc890f",
+   "a59e9cd23b4effbf",
+   "bf5a8266a7e647eb",
+   "cff466a1e30d2af6"
+  ],
+  "48": [
+   "3913c1a505b42797",
+   "64e8e26dc0d2514a",
+   "809d1297e04091e0",
+   "99382a939e0bf71e",
+   "ba1e88a4134928f0",
+   "bbfe4e74dedd7eaa"
+  ]
+ }
+}

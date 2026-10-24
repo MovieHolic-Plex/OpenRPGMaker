@@ -1,3 +1,4 @@
+import { cancelPointerRoute, consumePendingTapAction } from "@/player/playScenePointerMove";
 import { showBattleAdmissionError } from "@/player/playSceneOverlays";
 import { transitBlocksCell, tryBoardTransit } from "@/player/playSceneTransit";
 import { heldInputSnapshot, installHeldKeyTracker } from "@/player/heldKeyTracker";
@@ -131,6 +132,9 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   // 틱이 없는 프레임(고주사율)에서는 입력을 읽지 않는다 — 엣지와 탭이 다음 틱 프레임으로 살아서 간다.
   if (ticks > 0) {
     const pushingAtFrameStart = furniturePushFrames(scene) !== undefined;
+    // 사람·물건을 탭해 곁까지 걸어왔으면 이번 프레임에 말을 건다 — 입력을 읽기 전에 확인 엣지를 넣는다
+    // (프레임 끝 resetEdges 가 소비 안 된 엣지를 지우므로 읽은 뒤에 넣으면 사라진다).
+    if (!scene.running && !isCutsceneInputLocked(scene.session)) consumePendingTapAction(scene);
     const input = scene.input_.update();
     const cutsceneInputLocked = isCutsceneInputLocked(scene.session);
     for (let tick = 0; tick < ticks; tick += 1) tickPlayerMovement(scene, input, cutsceneInputLocked);
@@ -203,6 +207,8 @@ function stepFrames(scene: Pick<PlaySceneContext, "dashing" | "moveDurationMs" |
 function tickPlayerMovement(scene: PlaySceneContext, input: InputState, cutsceneInputLocked: boolean): void {
   if (scene.session.horror?.hiding) return;
   // 체공 중에는 새 이동을 시작하지 않는다 — 공중에서 입력을 받으면 낙하가 취소된다.
+  // 맵 탭으로 걷는 중에 패드·키로 방향을 넣으면 탭 경로를 그만두고 손 조작으로 넘어간다.
+  if (scene.playerRoute?.pointer === true && !cutsceneInputLocked && (input.x !== 0 || input.y !== 0)) cancelPointerRoute(scene);
   if (!scene.moving && !scene.playerHop) {
     // 주인공 강제 이동 루트가 있으면 입력보다 우선해 자동으로 걷는다.
     if (scene.playerRoute) advancePlayerRoute(scene);

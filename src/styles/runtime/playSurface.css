@@ -445,8 +445,9 @@
 
 /* 시네마틱 오프닝: 건너뛰기 안내(3초 뒤 서서히) · 레터박스 막대 안 한 줄 자막. */
 /* 밝은 하늘·모래 위에서 흰 글자만으로는 보이지 않았다(2026-10-20 검수) — 어두운 바탕 띠를 깐다. */
-.cinematic-skip-hint { position: absolute; top: 8px; right: 10px; z-index: 5; font: 9px/12px Galmuri9, system-ui, sans-serif; color: #fff; background: #0b1420c0; padding: 2px 6px; text-shadow: none; pointer-events: none; opacity: 0; animation: cinematic-skip-hint-in .6s ease 3s forwards; }
-@keyframes cinematic-skip-hint-in { to { opacity: 1; } }
+.cinematic-skip-hint { position: absolute; top: 8px; right: 10px; z-index: 5; font: 9px/12px Galmuri9, system-ui, sans-serif; color: #fff; background: #0b1420c0; padding: 2px 6px; text-shadow: none; border: 0; border-radius: 0; margin: 0; cursor: pointer; touch-action: manipulation; pointer-events: auto; opacity: .85; }
+/* Visible from the first frame: it is re-created every shot, so a delayed fade-in hid the tap target for 3 s of each shot. */
+.cinematic-skip-hint:hover, .cinematic-skip-hint:active { opacity: 1; }
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bar"] { position: absolute; left: 0; right: 0; bottom: 0; height: var(--cinematic-letterbox); width: auto; max-width: none; max-height: none; padding: 0 6%; display: flex; align-items: center; justify-content: center; text-align: center; background: none; overflow: hidden; }
 
 /* 폰 세로(D16): 무대는 가로 폭에 맞춰 0.8배로 줄 수밖에 없다(480 논리 폭 > 390 화면). 글자가 작게 보이는 대신

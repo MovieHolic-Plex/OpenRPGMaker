@@ -23,7 +23,9 @@ import { isPokemonMoveMotion } from "@/battle/pokemonMoveMotion";
 import { DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { normalizeDisplayFilter } from "@/project/displayFilter";
 import { normalizePlaySurfaceScale } from "@/project/playSurfaceScaleMode";
+import { normalizeTouchControls } from "@/project/touchControls";
 import { normalizeBattleLook } from "@/project/battleLook";
+import { normalizeBattleFanfare } from "@/project/battleFanfare";
 import { DEFAULT_MENU_SKIN_ID, isMenuSkinId } from "@/player/menuSkins/registry";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
 import { normalizeActionCombatConfig, normalizeActionSkillProfile, normalizeActionWeaponProfile } from "@/project/actionCombat";
@@ -310,6 +312,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   // 진형 굴림·도주 가산 — 기본(굴림 없음·가산 0)은 저장하지 않는다(옛 JSON 바이트 유지).
   if (system.battleFormationRoll === true) records.battleFormationRoll = true;
   if (system.pointerMovement === true) records.pointerMovement = true;
+  const touchControls = normalizeTouchControls(system.touchControls);
+  if (touchControls) records.touchControls = touchControls;
   if (typeof system.escapeBonusPercent === "number" && Number.isFinite(system.escapeBonusPercent) && system.escapeBonusPercent !== 0) {
     records.escapeBonusPercent = clampInteger(system.escapeBonusPercent, 0, 100);
   }
@@ -325,6 +329,9 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (playSurfaceScale) records.playSurfaceScale = playSurfaceScale;
   // 전투 화면 꾸미기도 같은 계약 — 프리셋과 같은 칸·미등록 값은 저장하지 않는다(project/battleLook.ts).
   if (battleLook) records.battleLook = battleLook;
+  // 결과 팡파레 — 기본(전부 켜기·burst)은 저장하지 않는다(project/battleFanfare.ts).
+  const battleFanfare = normalizeBattleFanfare(system.battleFanfare);
+  if (battleFanfare) records.battleFanfare = battleFanfare;
   // ESC 메뉴 스킨도 같은 계약 — 기본(workbench)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
   if (isMenuSkinId(system.menuUiStyle) && system.menuUiStyle !== DEFAULT_MENU_SKIN_ID) records.menuUiStyle = system.menuUiStyle;
   // 대화창 스타일도 같은 계약 — 기본(glass)과 미등록 값은 저장하지 않는다.
@@ -727,6 +734,13 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
             : {}),
         } }
       : {}),
+    ...(() => {
+      const exploit = record.exploitStates;
+      if (!exploit || !Number.isFinite(exploit.bonusPercent) || exploit.bonusPercent <= 0 || !Array.isArray(exploit.stateIds)) return {};
+      const stateIds = uniqueCleanIds(exploit.stateIds.filter((id): id is string => typeof id === "string")).slice(0, 8);
+      if (stateIds.length === 0) return {};
+      return { exploitStates: { stateIds, bonusPercent: clampInteger(exploit.bonusPercent, 1, 300), ...(exploit.consume === true ? { consume: true as const } : {}) } };
+    })(),
     ...(Number.isFinite(record.recoilPercent) && record.recoilPercent! > 0 ? { recoilPercent: clampInteger(record.recoilPercent!, 0, 100) } : {}),
     ...(normalizeFixedDamage(record.fixedDamage) ? { fixedDamage: normalizeFixedDamage(record.fixedDamage) } : {}),
     ...(normalizeMultiHit(record.multiHit) ? { multiHit: normalizeMultiHit(record.multiHit) } : {}),
@@ -774,6 +788,17 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
         ...(comboRequires.length > 0 ? { comboRequires } : {}),
         ...(record.comboCombinedStats === true ? { comboCombinedStats: true as const } : {}),
         ...(typeof record.comboSwitchId === "string" && record.comboSwitchId.trim() ? { comboSwitchId: record.comboSwitchId.trim() } : {}),
+        ...(() => {
+          const rows = Array.isArray(record.comboMpCosts)
+            ? record.comboMpCosts.flatMap((entry) => {
+                const actorId = typeof entry?.actorId === "string" ? entry.actorId.trim() : "";
+                return actorId && comboActorIds.includes(actorId) && Number.isFinite(entry.mp)
+                  ? [{ actorId, mp: clampInteger(entry.mp, 0, 9999) }] : [];
+              })
+            : [];
+          const unique = rows.filter((row, index) => rows.findIndex((other) => other.actorId === row.actorId) === index);
+          return unique.length > 0 ? { comboMpCosts: unique } : {};
+        })(),
       };
     })(),
     ...(record.area && (record.area.shape === "circle" || record.area.shape === "line")
@@ -999,6 +1024,7 @@ function normalizeCompanionConfig(value: CompanionConfig | undefined): Companion
   if (value.fromParty === true) out.fromParty = true;
   if (value.spreadWhenBlocked === true) out.spreadWhenBlocked = true;
   if (value.fanOutInScenes === true) out.fanOutInScenes = true;
+  if (value.display === "scenesOnly") out.display = "scenesOnly";
   if (value.monsterFollowers === false) out.monsterFollowers = false;
   return Object.keys(out).length > 0 ? out : undefined;
 }

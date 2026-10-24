@@ -1,0 +1,348 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6ac925d383b4281440971599d83017dcbb95f675e671999888e0cecfa2fe69da",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "short log section (fallen log / stump), natural map prop for the Beodeul 16px chipset, 2x1 tiles, standing object (3rd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/log-short",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 30,
+  "nearBlackEdge": 0.29,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "log trunk upper surface (lit bark ridge)",
+      "rows": "6-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "cut end face (pale rings, left end)",
+      "rows": "6-13",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small branch stub on top",
+      "rows": "3-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 7,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a horizontal log, rows 5-14, 26 px wide. Its upper rows 6-8 are lit bark that is lighter (L 98-131 at x=9, 16 and 22) and the shading steps down to a darker mid-tone at rows 8-9. That reads as the upper surface, with a darker front bark face below it (rows 9-14, ending in the darkest shadow rows 12-14). There is no crisp 1-row front-edge line, so the top is rounded and modest, about 3 rows. At the west end, the pale cut face is a rounded shape (about 5 columns wide, rows 6-13) with a ring highlight. It shows the end of the log as a receding side face, so the log is not a flat profile. The silhouette is 22-26 px wide with a rounded bottom (rows 13-14 narrowing from 20 to 10), which gives it volume. The branch stub on top (rows 3-5) is decor. It is borderline between a rounded-cylinder top and a front elevation, but the highlight band with a darker face below it, together with the visible end face, favours three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small log about 2x1 tiles, so the per-tile facts read 0 and I judged by eye. It has a cut end with ring detail and a bark body in about 4 brown steps, with a darker underside and a lighter top. The outline is a dark brown tint and not neutral black, which matches the dark-material-tone approach, but it is fairly uniform around the whole silhouette, so I call it mixed. Texture is limited to a few bark streaks and rings. Next to the references, which carry 6+ steps, clustered leaf and bark grain and many visible tones, the log is thinner and flatter. The bark body has few grain dots and no moss, grass overlap or per-section highlights, so it reads somewhat like a sticker. It is cleanly drawn, but a careful artist would likely want more bark grain and ramp steps before placing it beside the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18224
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "log body top highlight band",
+      "rows": "5-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "log body front face (bark, shaded underside)",
+      "rows": "8-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pale cut end ring at left, drawn as an oval",
+      "rows": "6-13",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small branch stub on top",
+      "rows": "3-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette width grows from 2-3 px at rows 3-4 to 22-26 px at rows 6-10, then narrows to 10 px at row 14. This is a lying cylinder. The top is a lighter bark band at rows 5-7, with a lighter edge row at 6-7 (x=9 L=131 at row 7, x=16 L=131 at row 6). Below it are mid-dark rows 8-11 and the darkest rows 12-14, which form the front and underside, about 8 rows. The pale oval at the left end (rows 6-13) is the cut end, drawn as a visible end face. The top band is thin and the shading is cylindrical rather than a flat plane with a hard eave, so the top reading is modest but present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small log under 2x1 tiles, so the per-tile tone count is 0 and I judged by eye. Its dark edge pixels are 0% neutral, so the outline leans dark brown beside the wood. That fits the Beodeul approach and is not a sticker line. The 14 distinct colours are about the same as tree-1a786c (10), but tree-d43edd is far richer (29 visible tones per tile, 567 colours). The body reads as a roughly four-step brown ramp: a highlight along the top, a mid tone, a darker underside and a lighter cut end with a ring. Bark grain is only a few sparse lines, with no per-clump or per-patch highlights, no moss or knots, and no grass tufts or soil grain at the base. Next to the references' multi-tone trunks and roots, it looks slightly thinner and smoother, closer to a tidy cylinder than a worked-over natural prop. No large flat fills were measured (0% near-flat), but the shading is shallow for the Beodeul bar, and I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20170
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "log trunk upper curve (bark top highlight)",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "log front bark face",
+      "rows": "8-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cut end grain disc at left",
+      "rows": "7-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small branch stub on top",
+      "rows": "3-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The log lies east-west. The width profile widens from 11 px at row 5 to 22-24 px at rows 6-7 and 26 px at rows 8-10, then narrows to 10 px by row 14, so it reads as a rounded cylinder. The column scans at x=9, 16 and 22 show lighter bark highlights at rows 6-8 (L about 98-131). Below them is a mid-dark face at rows 8-12 (L about 72), and below that a darkest underside at rows 11-14 (L about 26-33). That gives a top-surface band of about 3 rows, a front face of about 7 rows, and a shaded underside. The cream cut end at the left is a flat disc, not a receding side face. The top is only a thin curved highlight, so the 3/4 read is modest but present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The log is smaller than one tile tall, so the per-tile tone count is 0 and I judged density by eye. It has 14 distinct colours, more than reference tree-1a786c (10), which carries 7 visible tones per tile. By eye the body shows about 5 brown steps: a highlight along the top, mid bark, a darker underside and a lighter cut end with ring detail. Bark streaks break up the surface, so there is no large flat fill and near-flat coverage is 0%. Dark edge pixels are 0% neutral, so the outline is a dark brown that follows the wood, not a black sticker line, and the underside is separated by value. It is simpler and less textured than the lush d43edd tree, but that is expected for a small prop. It would sit acceptably beside tree-1a786c without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18583
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "log body upper highlight band",
+      "rows": "5-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "cut end face (pale ellipse, west end)",
+      "rows": "6-13",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small branch stub",
+      "rows": "3-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 7,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette widens from 11 px at row 5 to 26 px at rows 8-10, then narrows to 10 px at row 14. At the top, rows 5-7 are a thin highlight band: an outline at row 5, then a mid or light tone at rows 6-7. The light row shifts between columns (row 7 at x=9, row 6 at x=16, rows 7-8 at x=22), so it follows the log's curve and is not a flat plane with a single edge line. Below it, rows 8-14 are a dark bark face with a darker underside at rows 11-14, which gives about 7 rows of front face. The pale cut end disc on the west side is a vertical end face drawn face-on. The log therefore reads mostly as a side view of a cylinder with a roughly 3-row top highlight, not a clear top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The log is a small 2x1 prop, so the per-tile facts read 0 and I judged by eye. It has 14 distinct colours, more than reference tree-1a786c (10) and a fraction of tree-d43edd (567). The body shows a highlight, mid, dark and shadow ramp of about 4-5 browns. The lighter cut end carries ring detail, and bark grain lines run along the body. The outline is a dark brown that leans toward the wood, with 0% neutral dark edge pixels, so it is not a black sticker line. There are no 5x5 flat blocks (0% near-flat). It is a little simpler than the big canopy references, as expected for a small prop, but it is not thinner or flatter than the simpler reference tree. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22382
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.265Z",
+ "cells": {
+  "16": [
+   "6ca4fc669152736a",
+   "a069311500a5c4ba"
+  ],
+  "24": [
+   "09d332936ed712ba",
+   "0e48fb11c1dde157",
+   "19db260122c2780d",
+   "4ddeab920b76e9ae",
+   "8ad6f683a140be8f",
+   "9918095ff38ccd16",
+   "a7d2961b561a776b",
+   "abaffbf9f087d50e",
+   "b4c77a145fcbe659",
+   "bbf19f39253c02b8",
+   "e77857311cd48934",
+   "ee1d8a8184321110"
+  ],
+  "32": [
+   "2fbeb1668dd8e06c",
+   "fe775a09dca209bb"
+  ],
+  "48": [
+   "074c165d6aeaa488",
+   "588a64b3641f7a87",
+   "7b7adbc359008806",
+   "d6ccd15250091648",
+   "e2d75c5af4bf5f06",
+   "fe6467b8bf304bf7"
+  ]
+ }
+}

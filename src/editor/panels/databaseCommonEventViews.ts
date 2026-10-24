@@ -56,6 +56,12 @@ let commonEventSearch = "";
 //    `db-common-event-duplicate` / `db-common-event-delete-<id>` testid
 // ---------------------------------------------------------------------------
 
+/** 다른 탭(「대사」 탭의 이동)이 공용 이벤트 하나를 골라 둔 채로 이 탭을 연다. */
+export function selectCommonEventForView(id: string): void {
+  selectedCommonEventId = id;
+  commonEventSearch = "";
+}
+
 export function renderCommonEventsTab(host: HTMLElement, rerender: () => void): void {
   const commonEvents = store.getCurrent().commonEvents;
   if (!commonEvents.some((record) => record.id === selectedCommonEventId)) {

@@ -169,7 +169,17 @@ export type EventBeat =
   /** 인물 모습 — shadow=검은 실루엣, ghost=반투명으로 뜸, normal=되돌림. */
   | { readonly do: "look"; readonly who: string; readonly as: "shadow" | "ghost" | "normal" }
   /** 인물이 연기처럼 사라진다(그 뒤 맵에서 안 보임). */
-  | { readonly do: "vanish"; readonly who: string };
+  | { readonly do: "vanish"; readonly who: string }
+  /** 실제 날씨(setWeather) — 비·폭풍·눈·안개, none 이면 갬. 컷신 뒤에도 남는다. tint 는 화면 색일 뿐 날씨가 아니다. */
+  | { readonly do: "weather"; readonly weather: "rain" | "storm" | "snow" | "fog" | "none"; readonly intensity?: number }
+  /** 화면 흔들림(지진·쿵) — 카메라 이동으로 흉내 내지 않는다. */
+  | { readonly do: "shake"; readonly strength?: "weak" | "medium" | "strong"; readonly axis?: "both" | "horizontal" | "vertical"; readonly ms?: number }
+  /** 번쩍(번개·폭발·마법) — 페이드 아웃으로 흉내 내지 않는다. */
+  | { readonly do: "flash"; readonly color?: string; readonly ms?: number }
+  /** 배경 음악 바꾸기·효과음·멈춤 — query 는 음원 찾을 낱말(festival·battle·town·sad…). */
+  /** 머리 위 감정 표시(!·?·♥·땀·…) — 대사창으로 흉내 내지 않는다. */
+  | { readonly do: "emote"; readonly who: string; readonly emote: string }
+  | { readonly do: "music"; readonly action?: "bgm" | "se" | "stop" | "fade"; readonly query?: string };
 
 /** 없는 기물 — draw_object 의 인자. */
 export interface ObjectSpec {

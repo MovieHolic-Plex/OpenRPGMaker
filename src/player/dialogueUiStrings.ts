@@ -13,11 +13,24 @@ export type DialogueUiKey =
   | "value.slow" | "value.normal" | "value.fast" | "value.scopeRead" | "value.scopeAll" | "value.on" | "value.off"
   | "option.title" | "option.footer" | "option.saved" | "option.savedSession" | "option.bgm" | "option.se" | "option.voice" | "option.down" | "option.up" | "option.volumeHint"
   | "option.textSpeed" | "option.textSpeedHint" | "option.menuMotion" | "option.menuMotionHint"
+  | "option.alwaysRun" | "option.alwaysRunHint" | "option.tapToMove" | "option.tapToMoveHint" | "option.stick" | "option.stickHint" | "option.haptics" | "option.hapticsHint"
+  | "value.stickAuto" | "value.stickFixed" | "value.stickFloating"
   | "controls.compact" | "controls.function" | "controls.grid" | "controls.list";
 
 type Row = Readonly<Record<SupportedLocale, string>>;
 
 export const DIALOGUE_UI_STRINGS: Readonly<Record<DialogueUiKey, Row>> = {
+  "option.alwaysRun": { ko: "항상 달리기", en: "Always run", ja: "常時ダッシュ", zh: "始终奔跑" },
+  "option.alwaysRunHint": { ko: "켜면 늘 달립니다. 달리기 키(Shift)나 터치 달리기 단추는 이 값을 뒤집습니다.", en: "Run by default. The run key (Shift) and the touch Run button flip it.", ja: "常に走ります。ダッシュキー(Shift)やタッチのダッシュボタンで切り替えます。", zh: "默认奔跑。奔跑键(Shift)或触屏奔跑按钮可切换。" },
+  "option.tapToMove": { ko: "탭해서 걷기", en: "Tap to move", ja: "タップで移動", zh: "点击移动" },
+  "option.tapToMoveHint": { ko: "맵을 탭하면 그곳까지 걷고, 사람·물건을 탭하면 곁으로 가서 말을 겁니다. 패드를 만지면 멈춥니다.", en: "Tap the map to walk there; tap a person or object to walk up and talk. Touching the pad stops it.", ja: "マップをタップするとそこへ歩き、人や物をタップすると近づいて話しかけます。パッドに触れると止まります。", zh: "点击地图走到该处，点击人物或物件会走过去交谈。触碰摇杆即停止。" },
+  "option.stick": { ko: "조이스틱", en: "Joystick", ja: "スティック", zh: "摇杆" },
+  "option.stickHint": { ko: "자동: 판 곁을 누르면 바로 그 방향, 먼 곳은 엄지 밑으로. 고정: 판이 움직이지 않음. 떠다님: 누른 자리가 중심.", en: "Auto: press near the pad for that direction, elsewhere the pad comes to your thumb. Fixed: pad stays put. Floating: wherever you press is the center.", ja: "自動: パッド付近を押すとその方向、離れた所では親指の下に移動。固定: 動かない。フローティング: 押した所が中心。", zh: "自动：按在摇杆附近即为该方向，远处则摇杆移到拇指下。固定：不移动。浮动：按下处为中心。" },
+  "option.haptics": { ko: "진동", en: "Vibration", ja: "振動", zh: "振动" },
+  "option.hapticsHint": { ko: "단추를 누르거나 방향이 바뀔 때 짧게 떱니다(지원하는 기기만).", en: "Short buzz on button presses and direction changes (supported devices only).", ja: "ボタンや方向が変わる時に短く振動します（対応端末のみ）。", zh: "按键或方向变化时短暂振动（仅支持的设备）。" },
+  "value.stickAuto": { ko: "자동", en: "Auto", ja: "自動", zh: "自动" },
+  "value.stickFixed": { ko: "고정", en: "Fixed", ja: "固定", zh: "固定" },
+  "value.stickFloating": { ko: "떠다님", en: "Floating", ja: "フローティング", zh: "浮动" },
   "backlog.title": { ko: "백로그", en: "Backlog", ja: "バックログ", zh: "对话回顾" },
   "backlog.hint": { ko: "휠·↑↓ 넘겨 보기 · Esc 닫기", en: "Wheel / Up Down to scroll · Esc to close", ja: "ホイール・↑↓ でスクロール · Esc で閉じる", zh: "滚轮 / ↑↓ 滚动 · Esc 关闭" },
   "backlog.empty": { ko: "아직 나눈 대화가 없습니다.", en: "No conversation yet.", ja: "まだ会話がありません。", zh: "还没有对话记录。" },

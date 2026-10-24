@@ -591,8 +591,28 @@ function transferBody(context: CommandEditContext, cmd: Extract<Command, { kind:
     },
     () => undefined
   );
-  host.append(summary, pickerHost);
+  host.append(summary, transferDoorRow(context, seeded), pickerHost);
   return host;
+}
+
+/** 문 열림 연출: 자동(문 그림이 있는 칸에서만) / 켜기 / 끄기 — transfer.door 생략·true·false. */
+function transferDoorRow(context: CommandEditContext, cmd: Extract<Command, { kind: "transfer" }>): HTMLElement {
+  const select = el("select", { dataset: { testid: "transfer-door-mode" }, attrs: { "aria-label": "문 열림 연출" } }) as HTMLSelectElement;
+  for (const [value, label] of [["auto", "자동"], ["on", "켜기"], ["off", "끄기"]] as const) {
+    const option = el("option", { text: label, attrs: { value } }) as HTMLOptionElement;
+    select.append(option);
+  }
+  select.value = cmd.door === true ? "on" : cmd.door === false ? "off" : "auto";
+  select.addEventListener("change", () => {
+    const { door: _drop, ...rest } = cmd;
+    const next = select.value === "on" ? { ...rest, door: true } : select.value === "off" ? { ...rest, door: false } : rest;
+    context.actions.replaceCommand(context.path, next as Extract<Command, { kind: "transfer" }>);
+  });
+  return el("label", {
+    class: "transfer-command-door-row",
+    attrs: { title: "자동: 이벤트 칸이나 바로 윗칸에 여닫는 문 그림(또는 문 캐릭터)이 있을 때만 문이 열리고 넘어간다. 성문·통로·맵 가장자리·계단은 연출 없음." },
+    children: [el("span", { text: "문 열림 연출" }), select],
+  });
 }
 
 function waitBody(context: CommandEditContext, cmd: Extract<Command, { kind: "wait" }>): HTMLElement {

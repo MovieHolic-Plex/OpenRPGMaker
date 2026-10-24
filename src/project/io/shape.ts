@@ -21,6 +21,7 @@ import { normalizeDatabaseRecords, normalizeSystemRecords } from "../databaseRec
 import { STORY_FLAG_ID_PATTERN } from "../storyFlags";
 import { normalizeMapPlanningItems } from "../mapPlanningItems";
 import { normalizeWorldCanon } from "../world/canonNormalize";
+import { normalizeDialogueDesk } from "../dialogueDesk";
 import { normalizeWorld } from "../world/guards";
 import { normalizeProjectFactions } from "../factions";
 import type { ProjectWorld } from "../world/types";
@@ -202,6 +203,11 @@ function normalizeProjectV4(data: JsonRecord, adoptParsed = false): Project {
     const canon = normalizeWorldCanon(data.worldCanon);
     if (canon !== undefined) project.worldCanon = canon;
     else delete project.worldCanon;
+  }
+  if (data.dialogueDesk !== undefined) {
+    const desk = normalizeDialogueDesk(data.dialogueDesk);
+    if (desk) project.dialogueDesk = desk;
+    else delete project.dialogueDesk;
   }
   if (data.factions !== undefined) project.factions = normalizeProjectFactions(project.factions);
   if (data.worldGraph !== undefined) project.worldGraph = normalizeWorldGraph(data.worldGraph);
