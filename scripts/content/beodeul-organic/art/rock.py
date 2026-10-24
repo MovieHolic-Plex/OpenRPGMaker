@@ -534,3 +534,28 @@ ART["rock-slab"] = (SL9b, SLK)
 SL9b = nick(SL9b, [(20,5,"5"),(4,8,"5"),(14,8,"4"),(14,9,"3"),(16,12,"2"),(20,13,"1"),
                    (3,11,"b"),(2,12,"b"),(3,12,"a"),(2,13,"b"),(3,13,"b")])
 ART["rock-slab"] = (SL9b, SLK)
+
+# ---- r10: taper right end (stepped curve, 2px clear) + slight dome middle-left ----
+def _r10(rows):
+    g = [list(r) for r in rows]
+    # right end per row: (last body col, rim tones for the last 2 px)
+    ends = {5: (26, "43"), 6: (27, "43"), 7: (28, "43"), 8: (28, "32"), 9: (29, "32"),
+            10: (29, "21"), 11: (28, "21"), 12: (27, "11"), 13: (25, "11")}
+    for y, (e, tone) in ends.items():
+        for x in range(e + 1, 32):
+            if g[y][x] not in ".sS": g[y][x] = "."
+        g[y][e - 1], g[y][e] = tone[0], tone[1]
+    # shadow pool tucked under the new right end
+    for y, xs in {11: (29,), 12: (28, 29), 13: (26, 27, 28), 14: (24, 25, 26, 27)}.items():
+        for x in xs: g[y][x] = "S"
+    for x in range(28, 32):
+        if g[14][x] in "sS" and x > 27: g[14][x] = "."
+    g[14][28] = "s"; g[12][31] = "."; g[13][29] = g[13][30] = "."
+    # dome: one more lit row over the middle-left, top plane rows 4-5 brightened there
+    g[3][9:14] = list("34443")
+    g[4][8:17] = list("345555544")
+    return ["".join(r) for r in g]
+SL10 = _r10(SL9b)
+ART["rock-slab"] = (SL10, SLK)
+SL10 = nick(SL10, [(26,6,"5"),(27,7,"3"),(27,8,"4"),(28,9,"2"),(27,10,"2"),(28,10,"1"),(3,12,"b")])
+ART["rock-slab"] = (SL10, SLK)
