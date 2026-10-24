@@ -18,12 +18,12 @@ export const JP_CITY_CARD =
   "가게 konbini·izakaya·ramen·cafe·sento·bento·machiya·apartment·office·garage, 소품 vending/자판기·park/공원·crosswalk/횡단보도·signal·bus stop·post box·river/다리·bench·sakura·bicycle·car·lamp. " +
   "한 맵=지역 하나: station/역전·school/학교·university·shrine/신사·temple/절·castle·rail crossing/건널목·danchi·onsen·harbor·beach·rice terraces·mountain trail·festival·museum·yokocho·office district·canal (넣으면 그 지역 문법). " +
   "size small 40×28·medium 48×36·large 60×48. house=집·가게 실내 하나: 다다미/옛집(平屋)·단독주택(floors 2면 2층+계단)·원룸·맨션·편의점·라멘·이자카야·초밥·찻집·빵집·서점·약국·꽃집·센토·파출소·의원·우체국·학교·역·료칸·노래방… " +
-  "zones kind 로 방(ldk·washitsu·bedroom·kitchen·genkan·bath·toilet·study) 직접 지정 가능. 거리와 실내 잇기·사람·탑·지하철 노선은 못 함(보고됨). hints: seed·variant·region·style·parkForest.";
+  "zones kind 로 방(ldk·washitsu·bedroom·kitchen·genkan·bath·toilet·study) 직접 지정 가능. 거리와 실내 잇기·사람·탑·지하철 노선은 못 함(보고됨). hints: seed·variant·region·style·parkForest. 역전(station)은 짜임을 직접 고른다: hints.length short|medium|long, hints.plaza rotary|crossing|square, hints.landmark fountain|hachiko|clock|zelkova|kiosk, hints.shops 「books,cafe,…」(books·cafe·pharmacy·ramen·bakery·izakaya·sushi·soba·teishoku·flower·barber·cleaning·wagashi·conbini·parking·office 중 4~7곳 순서대로), hints.mirror — 요청에 맞게 고르고 안 고른 것은 씨앗.";
 
 type Rule = readonly [RegExp, string];
 const has = (text: string, re: RegExp): boolean => re.test(text);
 const num = (v: unknown): number | undefined => (typeof v === "number" && Number.isFinite(v) ? v : undefined);
-const KNOWN_HINTS = new Set(["seed", "variant", "region", "style", "parkForest", "width", "height", "program"]);
+const KNOWN_HINTS = new Set(["seed", "variant", "region", "style", "parkForest", "width", "height", "program", "length", "plaza", "landmark", "shops", "mirror"]);
 
 /** 한 장에 한 지역 — 거리 조합기가 아니라 지역 문법(compose_jp_region)으로 짓는 낱말. 앞이 우선. */
 const REGION_RULES: readonly Rule[] = [
@@ -101,6 +101,17 @@ interface PlanView { ids: string[]; parks: number }
 const textOf = (spec: PlaceSpec): string => [spec.name, spec.style, spec.theme, ...(spec.features ?? []), ...(spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""} ${(z.anchors ?? []).join(" ")}`)].join(" ");
 /** 요청 낱말 목록(features·zones). 이름은 거리 짜임·지역 판단에만 쓰고, 소품 확인은 낱말별로 한다. */
 const requestedWords = (spec: PlaceSpec): string[] => [...(spec.features ?? []), ...(spec.zones ?? []).flatMap((z) => [z.kind, ...(z.anchors ?? [])])].map((w) => String(w).trim()).filter(Boolean);
+
+/** 역전 짜임 손잡이(hints 의 낱값) → compose_jp_region layout. */
+function stationLayout(spec: PlaceSpec): Record<string, unknown> {
+  const h = spec.hints ?? {};
+  const out: Record<string, unknown> = {};
+  if (typeof h.plaza === "string") out.plaza = h.plaza;
+  if (typeof h.landmark === "string") out.landmark = h.landmark;
+  if (typeof h.shops === "string") out.shops = h.shops.split(/[,\s·]+/).map((x) => x.trim().toLowerCase()).filter(Boolean);
+  if (typeof h.mirror === "boolean") out.mirror = h.mirror;
+  return out;
+}
 
 function pickRegion(spec: PlaceSpec, text: string): { region?: string; others: string[] } {
   const asked = typeof spec.hints?.region === "string" ? spec.hints.region : undefined;
@@ -235,6 +246,11 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
   if (r) {
     const scale = sizeKey === "small" ? 0.8 : sizeKey === "large" ? 1.25 : 1;
     w = Math.max(40, Math.round(r.size[0] * scale)); h = Math.max(28, Math.round(r.size[1] * scale));
+    // 거리 길이(역전): 모델이 고른 길이 → 폭. 안 고르면 씨앗으로 셋 중 하나(늘 같은 폭이면 같은 장면으로 읽힌다).
+    if (r.id === "station_plaza") {
+      const len = spec.hints?.length === "short" || spec.hints?.length === "medium" || spec.hints?.length === "long" ? spec.hints.length : (["short", "medium", "long"] as const)[Math.abs(baseSeed) % 3]!;
+      w = Math.round(w * ({ short: 0.85, medium: 1, long: 1.3 } as const)[len]);
+    }
   } else [w, h] = SIZES[sizeKey] ?? SIZES.medium!;
   w = num(spec.hints?.width) ?? w; h = num(spec.hints?.height) ?? h;
   w = Math.max(40, Math.min(200, Math.round(w))); h = Math.max(28, Math.min(200, Math.round(h)));
@@ -248,7 +264,7 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
   const notRegion = (word: string) => !REGION_RULES.some(([re]) => has(word, re));
   if (r) {
     kind = "region";
-    args = { mapId, region: r.id, seed, replace: true };
+    args = { mapId, region: r.id, seed, replace: true, layout: stationLayout(spec) };
     const leftovers = words.filter((wd) => notRegion(wd) && !STYLE_WORDS.test(wd) && !UNSUPPORTED.some(([re]) => has(wd, re)));
     if (leftovers.length) warnings.push(`${leftovers.join("·")} — ${r.ko} 지도는 지역 문법대로 놓아 하나씩 확인하지 않았다`);
   } else {

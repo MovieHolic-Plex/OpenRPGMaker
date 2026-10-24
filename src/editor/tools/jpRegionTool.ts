@@ -3,6 +3,7 @@
 import { JP_REGION_CATEGORIES, JP_REGIONS, jpRegionBrief, jpRegionById, searchJpRegions, type JpRegion } from "@/editor/jpCity/japaneseRegionsCatalog";
 import { composeJpForestR4, hasJpForestR3, hasJpForestR4, paintJpForest } from "@/editor/jpCity/forestPainter";
 import { paintJpRegionGround, planJpRegionScene } from "@/editor/jpCity/regionComposer";
+import { regionWithLayout, STATION_LANDMARKS, STATION_PLAZA_KINDS, STATION_SHOP_POOL, type StationPlazaLayout } from "@/editor/jpCity/regionVariants";
 import { isPassable } from "@/project/collision";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { isJpCityTileset, JP_CITY_FAMILY, JP_CITY_ID } from "@/project/defaults/jpCity";
@@ -89,6 +90,16 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
       seed: { type: "integer", minimum: 0, description: "배치 씨앗 - 다른 값이면 다른 배치. 생략하면 0" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 짓는다(이벤트는 남는다)" },
       grounding: { type: "boolean", description: "옛 인자 — 무시한다. 숲 나무 밑 땅 그늘(접지)은 늘 켜진다" },
+      layout: {
+        type: "object", additionalProperties: false,
+        description: "역전(station_plaza) 짜임 손잡이 — 고른 것만 그대로, 안 고른 것은 씨앗이 고른다. 다른 지역은 무시한다.",
+        properties: {
+          plaza: { type: "string", enum: [...STATION_PLAZA_KINDS], description: "rotary 잔디 섬 로터리 · crossing 큰길이 내려와 만나는 교차로+반쪽 광장 · square 차로 없는 너른 판석 광장" },
+          landmark: { type: "string", enum: [...STATION_LANDMARKS], description: "광장 가운데 랜드마크" },
+          shops: { type: "array", maxItems: 7, items: { type: "string", enum: Object.keys(STATION_SHOP_POOL) }, description: "앞줄 가게(왼쪽부터 순서대로, 4~7곳)" },
+          mirror: { type: "boolean", description: "좌우 뒤집기" },
+        },
+      },
     },
     required: ["region"],
     additionalProperties: false,
@@ -106,6 +117,7 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     }
     const seed = typeof args.seed === "number" && Number.isInteger(args.seed) ? args.seed : 0;
     const info = regionData(region);
+    const varied = regionWithLayout(region, seed, args.layout && typeof args.layout === "object" ? args.layout as StationPlazaLayout : undefined);
     if (region.engine.kind === "street") {
       const res = callTool(draft, "compose_jp_city_street", { mapId, seed, style: region.engine.style, replace: args.replace === true });
       const section4 = { v1Failures: 0, whitelistViolations: 0, signatureClones: 0, adjacentClones: 0, strayTrees: 0, stairEndpoints: 0 };
@@ -123,9 +135,9 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     // 숲 구획: r3 오토타일이 있거나, 나무 composer(r4 활엽)가 있으면 paint_forest 로 칠한다. 대숲 등산로는 r4(활엽만)로 바꾸면 대숲이 사라지므로 r3 가 없을 땐 옛 키트(대숲·삼나무)로 둔다.
     const useForestAutotile = hasJpForestR3(tileset) || (hasJpForestR4(tileset) && region.id !== "bamboo_mountain_trail");
     const grounding = args.grounding !== false;
-    let plan = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed, kitSize: (id) => kits.get(id), forestAutotile: useForestAutotile });
+    let plan = planJpRegionScene({ region: varied.region, mapId, width: map.width, height: map.height, seed, kitSize: (id) => kits.get(id), forestAutotile: useForestAutotile });
     for (let retry = 1; retry < 8 && plan.violations.length > 0; retry++) {
-      const candidate = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed: seed + retry, kitSize: (id) => kits.get(id), forestAutotile: useForestAutotile });
+      const candidate = planJpRegionScene({ region: varied.region, mapId, width: map.width, height: map.height, seed: seed + retry, kitSize: (id) => kits.get(id), forestAutotile: useForestAutotile });
       if (candidate.violations.length < plan.violations.length) plan = candidate;
       if (plan.violations.length === 0) break;
     }
@@ -196,7 +208,7 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     ];
     return {
       summary: `${region.ko}(${region.ja}) 지역을 지었다 — 키트 ${stamped}개, 씨앗 ${seed}. 주조 팔레트 ${region.palette.join("·")}, 권장 ${region.season}/${region.timeOfDay}. show_map_region 으로 확인하고 문·이벤트를 단다.${region.alsoWith ? ` 변형: ${region.alsoWith}.` : ""}${startNote}`,
-      data: { mapId, seed, region: info, stamped, unplaced: plan.unplaced, failed, violations: plan.violations, section4: plan.section4, ...(forest ? { forest } : {}) },
+      data: { mapId, seed, region: info, ...(varied.layout ? { layout: varied.layout } : {}), stamped, unplaced: plan.unplaced, failed, violations: plan.violations, section4: plan.section4, ...(forest ? { forest } : {}) },
       ...(warnings.length ? { warnings } : {}),
     };
   },
