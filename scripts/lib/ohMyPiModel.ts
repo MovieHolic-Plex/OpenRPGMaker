@@ -44,7 +44,9 @@ export function resolveOhMyPiModel(provider: string, requested?: string) {
   // 사고 강도 라우팅 이름만 다르다. 번들 카탈로그가 이 모델을 싣게 되면 위 exact 경로가 먼저 잡는다.
   if (provider === "google-antigravity" && id === "gemini-4-argon") {
     const base = getBundledModel("google-antigravity", "gemini-3.7-flash");
-    if (base) return { ...base, id, name: "Gemini 4 Argon", thinking: {
+    // 첫 응답 감시: 3.7 Flash 의 60초를 물려받으면 큰 대화(읽기 결과·그림 수십만 토큰)에서 Argon 이 생각하는 동안 요청이 끊긴다
+    // (2026-10-25 조수 단독 게임 G12/G14: 8~9번째 턴마다 「Request was aborted」 네 번 연속). Pro 급 기본값 5분으로 둔다.
+    if (base) return { ...base, id, name: "Gemini 4 Argon", compat: { ...base.compat, streamFirstEventTimeoutMs: 300_000 }, thinking: {
       ...base.thinking!, effortRouting: {
         minimal: "gemini-4-argon-low", low: "gemini-4-argon-low",
         medium: "gemini-4-argon-medium", high: "gemini-4-argon-high",

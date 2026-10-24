@@ -11309,6 +11309,7 @@
 "작업 중":"Task in progress",
 "작업 중 {0}":"Working: {0}",
 "작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요.":"Some issues occurred during the task. Please check the task process.",
+"AI 모델의 첫 응답이 너무 늦어 요청이 끊겼어요. 같은 요청을 다시 보내면 이어서 해요.":"The AI model took too long to start answering, so the request was cut off. Send the same request again to continue.",
 "작업 중…":"Working…",
 "작업 중… ({0}/{1})":"Working… ({0}/{1})",
 "작업 중단 — 실행 한도 도달":"Task stopped — execution limit reached",

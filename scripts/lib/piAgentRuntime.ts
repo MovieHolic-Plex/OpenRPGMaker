@@ -1113,7 +1113,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           emit({ type: "execution_status", name: "provider_retry", summary: `제공자 연결이 끊겨 이어서 진행합니다 (${providerRetries + 1}/${PI_PROVIDER_STREAM_RETRY_LIMIT}): ${message.errorMessage}` });
           return;
         }
-        fatal = fatal ?? explainOpenAiCompatRunError(request.provider, message.errorMessage) ?? "제공자 오류";
+        fatal = fatal ?? (/^Request was aborted\.?$/.test(message.errorMessage ?? "") && !options.signal?.aborted
+          ? `AI 모델의 첫 응답이 늦어 제공자 쪽에서 요청이 끊겼습니다(이어 가기 ${providerRetries}번 뒤). 같은 요청을 다시 보내면 이어서 합니다.`
+          : explainOpenAiCompatRunError(request.provider, message.errorMessage)) ?? "제공자 오류";
         emit({ type: "error", message: fatal });
       }
     }
@@ -1141,7 +1143,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     }
     // 이어 가기를 못 한 채 끝났다면(한도 소진·중단) 끊김 자체가 실행의 끝 사유다.
     if (resumeAfter) {
-      fatal = fatal ?? resumeAfter;
+      fatal = fatal ?? (/^Request was aborted\.?$/.test(resumeAfter) ? `AI 모델의 첫 응답이 늦어 제공자 쪽에서 요청이 끊겼습니다(이어 가기 ${providerRetries}번 뒤). 같은 요청을 다시 보내면 이어서 합니다.` : resumeAfter);
       emit({ type: "error", message: fatal });
       resumeAfter = undefined;
     }
