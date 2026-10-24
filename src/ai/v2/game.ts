@@ -50,6 +50,8 @@ export const V2_GAME_TOOLS: readonly string[] = [
   // 2026-10-24 새 12 사례 비교: v1 이 쓰고 v2 에 없던 것 — 칩 고르기(없으면 그림 관문이 막는다)·이야기 깃발·엔딩·필드 적·이벤트 옮기기/지우기·문 잇기·날씨.
   "list_npc_graphics", "list_resources", "read_npc_layout", "declare_story_flag", "list_endings", "define_ending", "place_field_enemy",
   "move_event", "remove_event", "create_transfer_pair", "set_scene_mood",
+  // 2026-10-25 조수 단독 게임 G22/G23: 쓰지 않는 맵·중복 맵을 지울 길이 없어 「손으로 지우세요」라고 했다. 맵이 사라지면 적용 전에 맵 소실 확인 카드가 뜬다(결과 기반).
+  "remove_map",
 ];
 
 export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전투·파티·스위치] 이 요청에는 v1 게임 도구를 그대로 쓴다(장소·연출은 위 동사).
@@ -99,6 +101,7 @@ export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전�
   · 순찰·뛰어다니기: configure_npc_patrol(닫힌 경로) 또는 add_people movement:'wander'. 문 열리는 연출 + 실내 = create_transfer_pair(doorAt) 또는 place_door.
   · 문 열림 연출을 «꼭 나오게/나오지 않게»: 그 이동 이벤트의 transfer 명령에 door:true(켜기)|false(끄기)를 patch_event_page 로 넣는다(생략 = 자동: 문 그림 칸만). 페이드만 = door:false + fade.
   · 숲·들판 자연 기물(바위·이끼 돌·쓰러진 통나무·그루터기·버섯·고사리·들꽃·덤불·억새·이끼 사당 돌): list_spatial_designs{kind:'object', query:'버들항 자연'} 의 「버들항 자연 · …」 물건(bd-org-*)을 쓴다 — 사막·설원·바다 동굴 바위는 다른 장소용. 길·문 앞·이벤트 칸을 피해 덩이로 흩어 찍는다(한 줄로 늘어놓지 않는다).
+- 맵 지우기: 쓰지 않는 맵·같은 역할로 두 번 지은 맵은 remove_map{mapId} 로 지운다(그 맵으로 가는 이동은 함께 정리되고, 적용 전에 사용자 확인 카드가 뜬다). 시작 맵은 먼저 set_start_position 으로 옮긴다. 「손으로 지우세요」라고 넘기지 않는다.
 - 도구가 거절하면 이유를 읽고 고쳐 다시 부른다. 같은 거절이 두 번이면 방법을 바꾼다. 할 수 없는 것은 보고에 적는다.`;
 
 export function wantsGameTools(task: string): boolean {
