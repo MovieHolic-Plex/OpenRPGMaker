@@ -142,6 +142,125 @@ export function lostLinks(before: Project, after: Project): string[] {
   return out;
 }
 
+/** 게임을 막 시작했을 때 켜져 있는 페이지 — 조건이 없거나 처음 값(셀프 스위치·스위치 꺼짐)으로 참인 페이지 중 번호가 가장 높은 것. */
+function initialPage(pages: readonly Obj[]): Obj | undefined {
+  let found: Obj | undefined;
+  for (const pg of pages) {
+    const conds = flatConditions(pg.conditions).filter((c) => !Array.isArray(c.conditions) && !c.condition);
+    if (conds.every((c) => (c.kind === "selfSwitch" || c.kind === "switch") && c.value === false)) found = pg;
+  }
+  return found;
+}
+
+/** 확인 키만 눌러 가는 길(고르기 창은 첫 항목 — 커서가 처음 놓인 자리)에 엔딩·게임 오버가 있으면 그 명령 이름. */
+function defaultPathEnd(commands: unknown): { kind: string; choice?: string } | undefined {
+  if (!Array.isArray(commands)) return undefined;
+  for (const raw of commands) {
+    const cmd = obj(raw);
+    if (!cmd) continue;
+    if (cmd.kind === "triggerEnding" || cmd.kind === "gameOver") return { kind: String(cmd.kind) };
+    if (cmd.kind === "choices" && Array.isArray(cmd.options)) {
+      const first = obj(cmd.options[0]);
+      const hit = defaultPathEnd(first?.branch);
+      if (hit) return { kind: hit.kind, choice: String(first?.text ?? "") };
+      return undefined;
+    }
+  }
+  return undefined;
+}
+
+/** 시작하자마자 끝나는 길: 시작 맵의 자동 실행, 또는 시작 칸에서 몇 걸음 안의 이벤트가 확인 키만으로 엔딩·게임 오버에 닿는다(2026-10-25 G24). */
+export function instantEndings(project: Project, near = 3): string[] {
+  const map = project.startMapId ? project.maps[project.startMapId] : undefined;
+  const sp = project.startPos as { x: number; y: number } | undefined;
+  if (!map || !sp) return [];
+  const out: string[] = [];
+  for (const ev of map.events ?? []) {
+    const pg = initialPage((ev.pages ?? []) as unknown as Obj[]);
+    if (!pg) continue;
+    const trig = String(obj(pg.trigger)?.kind ?? "action");
+    const dist = Math.abs(ev.x - sp.x) + Math.abs(ev.y - sp.y);
+    const auto = trig === "auto" || trig === "autorun";
+    if (!auto && dist > near) continue;
+    const hit = defaultPathEnd(pg.commands);
+    if (!hit) continue;
+    const what = hit.kind === "gameOver" ? "게임 오버" : "엔딩";
+    out.push(`「${ev.name || ev.id}」(${ev.id}, ${ev.x},${ev.y}) — ${auto ? "시작 맵 자동 실행" : `시작 칸(${sp.x},${sp.y})에서 ${dist}걸음`}${hit.choice ? `, 첫 항목 「${hit.choice}」` : ""} → ${what}`);
+  }
+  return out;
+}
+
+/** 단서 건너뛰기: 같은 이벤트에서 단서 스위치 조건 페이지가 주는 물건·스위치를, 그 조건이 없는 아래 페이지도 준다(괘종시계 G25). */
+export function skippableClues(project: Project): string[] {
+  const out: string[] = [];
+  for (const ev of eventsOf(project).values()) {
+    if (ev.mapId === "common" || ev.pages.length < 2) continue;
+    const gives = (pg: Obj): Set<string> => {
+      const g = new Set<string>();
+      walkCommands(pg.commands, (cmd) => {
+        if (cmd.kind === "changeItem" && typeof cmd.itemId === "string" && cmd.op !== "-=" && !(Number(cmd.amount) < 0)) g.add(`item:${cmd.itemId}`);
+      });
+      return g;
+    };
+    ev.pages.forEach((pg, i) => {
+      const clue = flatConditions(pg.conditions).filter((c) => c.kind === "switch" && c.value !== false && typeof c.switchId === "string");
+      if (!clue.length) return;
+      const reward = gives(pg);
+      if (!reward.size) return;
+      for (let j = 0; j < i; j++) {
+        const lower = ev.pages[j]!;
+        const lowerConds = new Set(flatConditions(lower.conditions).map((c) => String(c.switchId ?? "")));
+        if (clue.every((c) => lowerConds.has(String(c.switchId)))) continue;
+        const same = [...gives(lower)].filter((k) => reward.has(k));
+        if (!same.length) continue;
+        out.push(`「${ev.name}」(${ev.id}) ${i + 1}쪽은 단서 스위치 ${clue.map((c) => String(c.switchId)).join(",")} 가 켜져야 ${same.map((k) => k.slice(5)).join(",")} 를 주는데, 그 조건이 없는 ${j + 1}쪽도 같은 것을 준다 — 단서 없이 풀린다`);
+        break;
+      }
+    });
+  }
+  return out;
+}
+
+/** 한 번 숨으면 영영 사라지는 추격자: 쫓는 페이지를 덮는 스위치 페이지에 그림·쫓기가 없고, 그 스위치를 다시 끄는 곳이 없다(G25). */
+export function vanishingChasers(project: Project): string[] {
+  const out: string[] = [];
+  const offs = new Set<string>();
+  for (const ev of eventsOf(project).values()) for (const { cmd } of allCommands(ev)) if (cmd.kind === "setSwitch" && cmd.value === false && typeof cmd.switchId === "string") offs.add(cmd.switchId);
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    const pages = (ev.pages ?? []) as unknown as Obj[];
+    const chaseAt = pages.findIndex((pg) => obj(pg.movement)?.type === "chase" || obj(pg.moveRoute)?.type === "chase");
+    if (chaseAt < 0) continue;
+    // 싸워서 이기면 사라지는 필드 적(처치 스위치)은 맞는 동작이다 — 잡히면 끝나는(전투 없는) 위협만 본다.
+    if (JSON.stringify(pages[chaseAt]!.commands ?? []).includes("battleProcessing")) continue;
+    for (let i = chaseAt + 1; i < pages.length; i++) {
+      const pg = pages[i]!;
+      const sw = flatConditions(pg.conditions).find((c) => c.kind === "switch" && c.value !== false && typeof c.switchId === "string");
+      if (!sw) continue;
+      const g = obj(pg.graphic);
+      const still = !!(g && (g.sprite || g.appearanceId)) && (obj(pg.movement)?.type === "chase" || obj(pg.moveRoute)?.type === "chase");
+      if (still || offs.has(String(sw.switchId))) continue;
+      out.push(`「${ev.name || ev.id}」(${ev.id}) — 스위치 ${String(sw.switchId)} 가 켜지면 ${i + 1}쪽(쫓지 않는 빈 페이지)이 쫓는 ${chaseAt + 1}쪽을 덮고, 그 스위치를 다시 끄는 곳이 없다 → 한 번 뒤로 추격자가 영영 사라진다`);
+    }
+  }
+  return out;
+}
+
+/** 같은 이름·같은 역할의 맵(「저택 2층」 둘, 「지하 예배당」과 「저택 지하 예배당」) — 이번 실행이 새로 만들거나 이름을 바꾼 맵이 낀 쌍만(G19). */
+export function duplicateMaps(before: Project, after: Project): string[] {
+  const norm = (s: string) => s.replace(/\s+/gu, "").replace(/\(.*?\)|（.*?）/gu, "");
+  const maps = Object.values(after.maps).map((m) => ({ id: m.id, name: m.name ?? m.id, key: norm(m.name ?? ""), touched: !before.maps[m.id] || before.maps[m.id]!.name !== m.name }));
+  const out: string[] = [];
+  for (let i = 0; i < maps.length; i++) for (let j = i + 1; j < maps.length; j++) {
+    const a = maps[i]!, b = maps[j]!;
+    if (!a.touched && !b.touched) continue;
+    if (/미사용|unused|백업|backup|사본|copy/iu.test(`${a.name}${b.name}`)) continue;
+    const [short, long] = a.key.length <= b.key.length ? [a.key, b.key] : [b.key, a.key];
+    if (short.length < 4 || !(long === short || long.endsWith(short))) continue;
+    out.push(`「${a.name}」(${a.id}) 와 「${b.name}」(${b.id})`);
+  }
+  return out;
+}
+
 const WEATHER_WORDS = /비가|비\s*(가\s*)?오|빗방울|빗줄기|소나기|폭우|장마|눈이\s*(오|내|와|쌓)|눈\s*내리|함박눈|폭풍|폭설|안개|날씨|천둥 ?(이|소리|번개)|rain|snow|storm|fog|weather/iu;
 const SHAKE_WORDS = /흔들리|흔들린|흔들려|흔들어|지진|진동|쿵\s*(하|소리)|earthquake|tremor|shake/iu;
 const FLASH_WORDS = /번쩍|섬광|번개(?!\s*(의\s*서|마법|기술|스킬|주문|책|의\s*검))(?!['’」』])|빛이\s*터|flash|lightning/iu;
@@ -329,6 +448,26 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   // 초대가 빠졌고, 걷는 장면은 sw_0005 를 기다리는데 켜는 곳이 사라졌다 — 보고는 「못 한 것 없음」).
   const lost = lostLinks(before, after);
   if (lost.length) problems.push(`[게임 검사 끊긴 고리] 이번에 고친 이벤트에서 빠진 명령 때문에 닿을 수 없게 된 내용이 있다: ${lost.slice(0, 4).join(" / ")} — 빠뜨린 명령(초대·스위치 켜기·공통 이벤트 부르기)을 새 페이지에 다시 넣거나, 일부러 없앤 것이면 그 조건 페이지도 지우고 보고에 적는다.`);
+  // 시작하자마자 끝나는 게임: 확인 키만 몇 번 눌러도 엔딩·게임 오버(2026-10-25 조수 단독 게임 G24 — 시작 칸 바로 앞이 정문이고 첫 항목이 「혼자 도망친다(배드 엔딩)」).
+  {
+    const startTouched = after.startMapId !== before.startMapId || JSON.stringify(after.startPos) !== JSON.stringify(before.startPos);
+    const changedIds = new Set(changed.map((ev) => ev.id));
+    const instant = instantEndings(after).filter((line) => startTouched || [...changedIds].some((id) => line.includes(`(${id},`)));
+    if (instant.length) problems.push(`[게임 검사 시작] 시작하자마자 확인 키만 눌러도 게임이 끝난다: ${instant.slice(0, 3).join(" / ")} — 끝내는 항목은 고르기 창의 마지막 항목으로 옮기고(첫 항목은 「돌아간다」처럼 이어지는 쪽), 시작 칸을 그 이벤트에서 떨어뜨리거나(set_start_position) 그 엔딩을 앞 일을 마친 뒤의 스위치 조건 페이지로 옮긴다.`);
+  }
+  // 단서를 건너뛰는 퍼즐·한 번 숨으면 사라지는 추격자(G25) — 바뀐 이벤트만.
+  {
+    const changedIds = new Set(changed.map((ev) => ev.id));
+    const clues = skippableClues(after).filter((line) => [...changedIds].some((id) => line.includes(`(${id})`)));
+    if (clues.length) problems.push(`[게임 검사 퍼즐] ${clues.slice(0, 3).join(" / ")}. 단서 전 페이지에서는 보상 항목을 빼고 「뭔가 단서가 필요하다」 대사만 두며, 보상은 단서 스위치 조건 페이지에만 남긴다.`);
+    const chasers = vanishingChasers(after).filter((line) => [...changedIds].some((id) => line.includes(`(${id})`)));
+    if (chasers.length) problems.push(`[게임 검사 위협] ${chasers.slice(0, 3).join(" / ")}. 숨기가 «이번 한 번» 지나가게 하는 것이면 그 스위치를 다시 끈다(예: 옷장에서 나온 뒤 기다렸다 setSwitch false, 또는 맵을 나갈 때), 영영 사라지는 것이 요청이면 보고에 적는다.`);
+  }
+  // 같은 역할의 맵이 둘(G19: 「저택 2층」 두 장, 「지하 예배당」 두 장 — 계단이 2층→2층으로 이어졌다).
+  {
+    const dups = duplicateMaps(before, after);
+    if (dups.length) problems.push(`[게임 검사 맵] 같은 이름·역할의 맵이 둘 있다: ${dups.slice(0, 3).join(" / ")} — 하나만 남기고 그 맵으로 가는 문을 그 하나로 모은 뒤, 남는 맵은 remove_map 으로 지운다(지울 수 없으면 이름을 바꿔 역할을 나눈다).`);
+  }
   // 셀프 스위치: 켰는데 그 이벤트 어느 페이지도 그 키를 조건으로 안 본다.
   for (const ev of changed) {
     const key = `${ev.mapId === "common" ? "common" : ev.mapId}/${ev.id}`;
