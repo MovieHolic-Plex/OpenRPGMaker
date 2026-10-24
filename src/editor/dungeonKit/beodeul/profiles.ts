@@ -116,8 +116,9 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
   forest: {
     ...GRAMMAR.forest,
     face: { h3: C("face-cave-3h"), h2: C("face-cave-2h") },
-    // 숲 바닥 = 버들항 공용 잔디 칸 737(BEODEUL_PLAIN_GRASS) + 흙길 덩이. 벽 칸은 수관 숲(writeBeodeulCanopy)이 덮는다.
-    floor: { base: T("floor-grass"), tile: 737, patches: [] },   // 결은 dungeonTools 가 빈터에 짙은 풀 오토타일 덩이로 깬다   // 흙 덩이는 가장자리 그림이 없어 네모 얼룩으로 읽혔다 — 맨 잔디 + 풀·고사리 장식으로 결을 낸다
+    // 벽 칸은 수관 숲(writeBeodeulCanopy)이 덮는다.
+    // 숲 바닥 잔디: 공용 잔디 737 은 칸마다 같은 풀 무늬가 박혀 16px 격자로 되풀이됐다(2026-10-25 floor VQA r0·r1) — 같은 색(평균 RGB 차 1)의 잔잔한 3×3 오아시스 잔디. 737 그림은 마을·길이 쓰니 건드리지 않는다.
+    floor: { base: [D("ground-lawn"), T("floor-grass")], patches: [] },   // 흙 덩이는 가장자리 그림이 없어 네모 얼룩으로 읽혔다 — 맨 잔디 + 풀·고사리 장식으로 결을 낸다
     bank: "grass", canopy: "leaf",
     bridge: { ew: SWP("ground-deck"), ns: SWP("ground-deck") },
   },
