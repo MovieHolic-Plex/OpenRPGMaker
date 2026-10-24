@@ -71,7 +71,8 @@ export type Condition =
   | { kind: "monsterSpecies"; speciesId: MonsterSpeciesId; present: boolean }
   | { kind: "item"; itemId: ItemId; present: boolean }
   | { kind: "gold"; op: ">=" | "<=" | ">" | "<" | "==" | "!="; amount: number }
-  | { kind: "timer"; timerId: "timer1" | "timer2"; seconds: number }
+  /** 남은 시간 비교 — op 를 빼면 «남은 시간 ≤ seconds»(예전 동작). */
+  | { kind: "timer"; timerId: "timer1" | "timer2"; seconds: number; op?: ">=" | "<=" | ">" | "<" | "==" | "!=" }
   | { kind: "timePhase"; phase: TimePhase }
   | { kind: "season"; season: Season }
   | { kind: "npcActivity"; activity: string }
