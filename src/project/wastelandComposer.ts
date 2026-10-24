@@ -427,7 +427,7 @@ function slabJointFinish(b: Board, joints: StructureKitDef, ground: StructureKit
     const side = (dx: number, dy: number) => (on(x + dx, y + dy) ? 0 : rd(x + dx, y + dy) ? 2 : 1);
     const sd = [side(0, -1), side(1, 0), side(0, 1), side(-1, 0)];
     const js = (L.jN(x, y) && sd[0] === 0 ? 1 : 0) | (L.jW(x, y) && sd[3] === 0 ? 2 : 0);
-    const key = sd.every((v) => v === 0) ? `in|${js}|${slabDecorOf(x, y, js, seed)}` : `rim|${sd.join("")}|${js}|${wlH2(x * 5 + 1, y * 3 + 7, seed + 437) % 4 === 0 ? 1 : 0}`;
+    const key = sd.every((v) => v === 0) ? `in|${js}|${slabDecorOf(x, y, js, seed)}` : `rim|${sd.join("")}|${js}|${wlH2(x * 5 + 1, y * 3 + 7, seed + 437) % 2}`;
     const k = SLAB_INDEX.get(key);
     const t = k === undefined ? -1 : at(k);
     if (t >= 0) setLayerTileAt(b.map, 2, i, t);

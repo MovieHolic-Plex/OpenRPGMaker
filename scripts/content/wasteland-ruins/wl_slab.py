@@ -180,7 +180,7 @@ def cell_tile(slab, road, L, x, y, seed):
     sides = (side(0, -1), side(1, 0), side(0, 1), side(-1, 0))
     js = (1 if L.jN(x, y) and sides[0] == 0 else 0) | (2 if L.jW(x, y) and sides[3] == 0 else 0)
     if sides == (0, 0, 0, 0): return IN_INDEX[js][decor_of(x, y, js, seed)]
-    v = 1 if h2(x * 5 + 1, y * 3 + 7, seed + 437) % 4 == 0 else 0
+    v = h2(x * 5 + 1, y * 3 + 7, seed + 437) % 2
     return RIM_INDEX[(sides, js, v)]
 
 
@@ -388,6 +388,10 @@ def _draw_edges(c, sides, seed):
     n, e, s, w = sides
     dirt = set()
     prof = {k: _rim_profile(seed, i) for i, k in enumerate('nesw')}
+    # 한 칸 폭 띠(맞은편 변도 흙): 양쪽이 다 파먹혀 목이 좁아지지 않게 깊이를 1~2 로 누른다(r60b 검수: 띠 잇기 목이 「흘러내린 혀」로 읽혔다)
+    for a, b in (('e', 'w'), ('n', 's')):
+        if sides['nesw'.index(a)] == 1 and sides['nesw'.index(b)] == 1:
+            for k in (a, b): prof[k] = [min(2, d) for d in prof[k]]
     for t in range(16):
         if n == 1:
             for k in range(prof['n'][t]): dirt.add((t, k))
@@ -443,7 +447,7 @@ def draw_tile(c, ox, oy, spec):
         seed = 9501 + sum(q * 3 ** i for i, q in enumerate(sides)) * 17 + js * 5 + v * 211
         J = _joints(sub, js, v == 1, seed)
         if v == 1:                                          # 둘레 칸 변형 1: 판 얼굴에 얼룩이나 금 하나(보도 띠가 맨 판으로만 이어지지 않게)
-            _stain(sub, J, seed + 2)
+            if seed % 2: _stain(sub, J, seed + 2)
         _draw_edges(sub, sides, seed)
     c.a[oy:oy + 16, ox:ox + 16] = sub.a
 
