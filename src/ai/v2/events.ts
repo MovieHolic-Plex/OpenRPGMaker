@@ -47,6 +47,8 @@ const PLAYER = "player";
 const START_HOST_ID = "ev_v2cut_start";
 const START_ACTOR_PREFIX = "ev_v2cut_a_";
 const MIN_WALK = 3;
+/** 장면에만 나오는 사람이 한 장면에서 걷는 걸음 상한(한 걸음 약 ¼초 — 24걸음이면 6초 남짓). */
+const SCENE_WALK_BUDGET = 24;
 /** tint 비트의 화면 색 — 'r,g,b,알파' 덮개(밤은 푸른 어둠), sepia 는 회상 필터, clear 는 원래대로. */
 const TINT_TONES: Record<string, string> = { night: "20,30,80,0.5", dusk: "170,80,40,0.28", dawn: "255,190,150,0.18", sepia: "sepia", clear: "" };
 
@@ -424,6 +426,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   const effects: string[] = [];
   const vanished = new Set<string>();
   const followUps = new Map<string, string[]>();
+  const sceneSteps = new Map<string, number>();
   /** 아직 맵에 없는 사람을 지금(비트 i 시점) 세운다. */
   const ensureActor = (name: string, beatIndex: number): string | undefined => {
     const have = actorIds.get(name);
@@ -563,6 +566,22 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
             Object.assign(sim.actors.get(key)!, keep);
             legs = waypoints.map((wp) => sim.walk(key, wp, 0));
           }
+        }
+        // 장면에만 나오는 사람은 장면 전체 24걸음까지만 걷는다 — 넘으면 같은 길 위 그 걸음째 칸에서 멈춘다
+        // (2026-10-24 밤 컷신: 그림자가 52~62걸음을 걸어 한 번 말 걸기 안에 장면이 안 끝나 보였다).
+        if (createdActors.has(key)) {
+          const room = SCENE_WALK_BUDGET - (sceneSteps.get(key) ?? 0);
+          const total2 = legs.reduce((n, l) => n + l.steps, 0);
+          if (total2 > room && room >= MIN_WALK) {
+            const flat = legs.flatMap((l, li) => (li === 0 ? l.path : l.path.slice(1)));
+            const cut = flat[room]!;
+            Object.assign(sim.actors.get(key)!, { ...keep, cell: { ...keep.cell } });
+            warnings.push(`${b.who}: 장면에서 ${(sceneSteps.get(key) ?? 0) + total2}걸음은 길어 '${intent}' 쪽으로 ${room}걸음째 (${cut.x},${cut.y}) 에서 멈추게 했다.`);
+            intent = `${intent}→(${cut.x},${cut.y})`;
+            waypoints = [cut];
+            legs = [sim.walk(key, cut, 0)];
+          }
+          sceneSteps.set(key, (sceneSteps.get(key) ?? 0) + legs.reduce((n, l) => n + l.steps, 0));
         }
         for (const wp of waypoints) out.push({ kind: "approach", actor: idFor(key), x: wp.x, y: wp.y, distance: 0, wait: true });
         const rec = recordWalk(b.who, intent, legs);
