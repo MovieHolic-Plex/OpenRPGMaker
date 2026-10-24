@@ -455,6 +455,234 @@
      "argon": true
     }
    }
+  },
+  {
+   "round": "r7",
+   "rev": "245edfb857",
+   "pieces": {
+    "moss-stones-flat": {
+     "code": "P01",
+     "sha": "91ad558495a506e3f7f677fa0e69bf8b11fdd1fee24984aefcac72e2053fdd3e",
+     "sonnet": true,
+     "argon": true
+    },
+    "log-short": {
+     "code": "P02",
+     "sha": "a2e815553404f4c56c39ea7b5fda89443fed2ba40099df44ba6a7616bcc9e96e",
+     "sonnet": true,
+     "argon": true
+    },
+    "stump-s": {
+     "code": "P04",
+     "sha": "6efd917f01a36c7d4ec6a8f0eb5fde9cfd17d0f8b75ac0cbfaf4e66c1352a7df",
+     "sonnet": true,
+     "argon": true
+    },
+    "flowers-blue": {
+     "code": "P05",
+     "sha": "7d9bf8a4fe5d7a7290c6f16df084101fd253b7b202e4c2701edaebf1af2d2ea0",
+     "sonnet": true,
+     "argon": true
+    },
+    "rock-slab": {
+     "code": "P06",
+     "sha": "3654d24fe7f06cbdd6fb315f750feb8b0cd5f8e10a0cb1c57dc4e2056ec93cb7",
+     "sonnet": false,
+     "argon": false
+    },
+    "bush-s": {
+     "code": "P08",
+     "sha": "51f1963a295e6b53977f98a16ea2dde0127f887fd8accad5730e3bed63dc7c87",
+     "sonnet": false,
+     "argon": false
+    },
+    "shroom-ring": {
+     "code": "P09",
+     "sha": "dc9a6343e9daf1b26462468870b279cee959d0418fdc4c1c726828ac24af288c",
+     "sonnet": true,
+     "argon": true
+    },
+    "rock-pebbles": {
+     "code": "P10",
+     "sha": "d64f932a68c92fccc852b509522a1ce3740453cd8f0b04a49020f5688a6e91d0",
+     "sonnet": true,
+     "argon": true
+    },
+    "flowers-pink": {
+     "code": "P12",
+     "sha": "93d210858602bf3b14451e77d62c137a5776e52b1a3aa354bf560de8d4722fdc",
+     "sonnet": true,
+     "argon": true
+    },
+    "bramble": {
+     "code": "P14",
+     "sha": "298ab94dbff60d1a3fa6d5c0fb9f2dd142ca6ecba4551a43a1105291eb079752",
+     "sonnet": true,
+     "argon": false
+    },
+    "shrub-tall": {
+     "code": "P15",
+     "sha": "c564daaade3a49fdce33bfd9eaea6120e1b09760090ed90e7976dd1555372436",
+     "sonnet": true,
+     "argon": true
+    },
+    "bush-m": {
+     "code": "P19",
+     "sha": "111a8986a4776c9509247b7675ae277f5038a0fdef7ccb871bbd616f8ecc85ce",
+     "sonnet": true,
+     "argon": true
+    },
+    "stump-shelf": {
+     "code": "P20",
+     "sha": "9af86a98779bc1f94926edc7f89a0eb5c3fd19a1643de00e0978413ead28095e",
+     "sonnet": true,
+     "argon": true
+    },
+    "stump-l": {
+     "code": "P23",
+     "sha": "d0022f1a63da056fe5002b9ee38a3164e8227b98cee01cbdf3949af5d8053669",
+     "sonnet": true,
+     "argon": true
+    },
+    "log-long": {
+     "code": "P26",
+     "sha": "1d3bf98dfc40508410aad861a669f2a305c1e16489c6e911150a035c2f37f5d5",
+     "sonnet": true,
+     "argon": true
+    },
+    "bush-berry": {
+     "code": "P27",
+     "sha": "42d2a10e1d4b2475e370eadd39d2d8170767e8aec2365c38e36dad3994e7c869",
+     "sonnet": true,
+     "argon": true
+    },
+    "grass-tuft-b": {
+     "code": "P28",
+     "sha": "d55e6c8d6750622e5dfcc8006aed745bff695f19adac9356a1a380ae06a31107",
+     "sonnet": true,
+     "argon": true
+    },
+    "flowers-patch": {
+     "code": "P30",
+     "sha": "fbd91bad54c94f31bb46b29c63c78a0550cc9d463e0a3ac40ce8ccb89ffb4051",
+     "sonnet": true,
+     "argon": true
+    },
+    "moss-stone": {
+     "code": "P31",
+     "sha": "c95bbee6aced3f0618c2e5b9aa4a173d0d8c5af43485b37478d822d72a87f39d",
+     "sonnet": true,
+     "argon": true
+    },
+    "shroom-red": {
+     "code": "P33",
+     "sha": "1f6a31cf4877e721e45cec36e54a5f90f5aadec121b58e3018351fb6b544e91c",
+     "sonnet": true,
+     "argon": true
+    },
+    "flowers-yellow": {
+     "code": "P35",
+     "sha": "d2cf8fc31da5bfdb3761478b59c2c15b6265871db758d335c7176ccaca036bbc",
+     "sonnet": true,
+     "argon": true
+    },
+    "rock-boulder-l": {
+     "code": "P37",
+     "sha": "2d901c28fa6debe8bfedde1c10955d6c5d093cb093d69a25343b06b234c997ee",
+     "sonnet": true,
+     "argon": true
+    },
+    "moss-boulder": {
+     "code": "P38",
+     "sha": "9b33ea6990d0b21efc8008c9695148f26bf8111dc549c119d4f0c9ed9deabcb2",
+     "sonnet": true,
+     "argon": true
+    },
+    "rock-boulder-m": {
+     "code": "P39",
+     "sha": "aeba5b948310b68bfa7291a68e2f1586cd70b3934bb65dde05e194237846cf90",
+     "sonnet": true,
+     "argon": true
+    },
+    "fern-cluster": {
+     "code": "P40",
+     "sha": "4638648642f44c287a401b41994d2e24c778c71827677264d6a060243a2ca5f1",
+     "sonnet": false,
+     "argon": false
+    },
+    "rock-pair": {
+     "code": "P41",
+     "sha": "7ac489e1b1a801b6cea5097479ec8f4ea3c8d87d45bbc7309adef4b16668b947",
+     "sonnet": true,
+     "argon": false
+    },
+    "fern-l": {
+     "code": "P43",
+     "sha": "819af56fff36a4d564d26310866341f9e9c0287417ae2a8ee8e4399a3839c326",
+     "sonnet": true,
+     "argon": true
+    },
+    "fern-s": {
+     "code": "P44",
+     "sha": "9f29731690a01c438d8ea690ae96d69cc53f0a3e899bb37bfd3c95e3fb22a0b5",
+     "sonnet": true,
+     "argon": true
+    },
+    "flowers-white": {
+     "code": "P45",
+     "sha": "902f08e793ec97614cf109c3784f9efb4a9a343aeb386b517131e1f3454b8679",
+     "sonnet": true,
+     "argon": true
+    },
+    "log-mossy": {
+     "code": "P46",
+     "sha": "a9f456ca1a711ec26717b1c62b85d6200001872369b3e90312cd5b338bccc888",
+     "sonnet": true,
+     "argon": true
+    },
+    "shroom-brown": {
+     "code": "P47",
+     "sha": "9b97223f3fb99dd489c52918a2dbb84ba66031b7b33ae28ff348bf7c6c1921b3",
+     "sonnet": true,
+     "argon": true
+    },
+    "shrine-stone": {
+     "code": "P48",
+     "sha": "a9933271f645637d9b1ab401b697aa967c12eaa52a2651bcb4976afadf1f8bf6",
+     "sonnet": false,
+     "argon": true
+    },
+    "grass-reeds": {
+     "code": "P49",
+     "sha": "3d01610e1d11862aef13b421f2186283d9ed4f8185d585dd08628618d767926a",
+     "sonnet": true,
+     "argon": true
+    },
+    "hollow-tree": {
+     "code": "P50",
+     "sha": "1f0e578440380f2b74a2f3350d0b38f2fda2bb7c904110e55e2f53bb74b5f8f6",
+     "sonnet": true,
+     "argon": true
+    },
+    "grass-tuft-a": {
+     "code": "P51",
+     "sha": "6fb4d7648d4fbdc55855e580e9f7b94c33d4946ae813bcfa92f210914384f85d",
+     "sonnet": true,
+     "argon": true
+    },
+    "rock-s": {
+     "code": "P52",
+     "sha": "ec07e63e1826a3021b68da8fc379b3802898d50f1167e53b42a0b372b281ba3f",
+     "sonnet": true,
+     "argon": true
+    },
+    "shroom-pale": {
+     "code": "P53",
+     "sha": "68860e46db8b7822abddde5af383bfacee763eac61b1a46f3c983cf778cccdee",
+     "sonnet": true,
+     "argon": true
+    }
+   }
   }
  ]
 }
