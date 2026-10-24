@@ -1,3 +1,17 @@
+## 피해 계열 받는 피해 %(물리·마법) · 상태가 바꿔 쓰는 값 · 「적이 상태에 걸렸다」 전투 조건 (2026-10-24)
+
+`EnemyRecord.damageTypeRates`(선택, `{ physical?, magic? }` 정수 %, 0~1000, 비면 저장 안 함)는 적이 **피해 계열별로** 받는 피해 배율이다.
+계열은 기술의 `effect.statistic` 으로 가른다 — `mind`(마력 계열) = magic, 그 밖(공격력 계열·통상 공격) = physical. 속성과는 따로다
+(빛 속성이어도 공격력 계열이면 물리). 0 = 무효, 300 = 세 배.
+`StateRuntimeEffects.damageTypeRates`(같은 모양)는 그 상태인 동안 기본값을 **바꿔 쓴다**(곱하지 않는다). 여러 상태가 같은 계열을 정하면 가장 큰 값.
+그래서 「마법 무효(magic 0)인 적」도 상태 하나(magic 300)로 그 동안만 마법 ×3 이 된다(폴른 스타 1막 용 · 「관통상」).
+곱은 `battleElementModifiers.damageTypeMultiplier` 한 곳, `runtime.ts` 의 통상 공격(아군·적)·기술 피해 hitMultiplier 와
+효과 꼬리표(effectiveness: 0 → 「무효」, >1 → 「약점!」)에 같이 곱한다. 회복에는 안 곱한다. gen1 경로는 그대로.
+
+트룹 전투 이벤트 조건 `{ kind: "enemyState", enemyId?, stateId, present? }` — 살아 있는 적(생략 = 아무 적)이 그 상태에 걸려 있으면 참
+(`present: false` 면 걸려 있지 않을 때 참). 매 행동 뒤 평가하므로 `span: "moment"` + `runOnce: false` 와 스위치 하나로
+「걸린 순간 한 줄」「풀린 순간 한 줄」을 띄운다(같은 스위치를 켜고 끄며 번갈아). 편집기 트룹 조건 폼에는 아직 전용 칸이 없다(잠긴 종류로 보인다).
+
 ## 장비 「주는 피해 ±%」·「받는 피해 ±%」 (2026-10-24)
 
 `EquipmentRecord.damageDealtPercent` / `damageTakenPercent`(선택, 정수 -90~300, 0 이면 저장 안 함). 장착한 장비마다 더해

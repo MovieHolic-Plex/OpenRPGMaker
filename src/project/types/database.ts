@@ -762,6 +762,12 @@ export interface EnemyRecord {
   monsterResourceId?: string;
   /** 전투 이미지 표시 크기(10~300%, 정수). 생략 시 기존 크기 100%. */
   battleScalePercent?: number;
+  /**
+   * 피해 계열별 받는 피해 %(생략 = 100). physical = 공격력 계열(statistic attack) 피해, magic = 마력 계열(statistic mind) 피해.
+   * 0 = 그 계열 무효(「무효」 꼬리표), 300 = 세 배. 상태의 runtimeEffects.damageTypeRates 가 걸려 있으면 그 값이 이 값을 대신한다
+   * (예: 마법 무효인 용에 「관통상」이 걸린 동안만 마법 ×3). `battle/battleElementModifiers.damageTypeMultiplier`.
+   */
+  damageTypeRates?: DamageTypeRates;
   graphicHue: number;
   transparent: boolean;
   flying: boolean;
@@ -1004,7 +1010,9 @@ export type BattleEventCondition =
   | { kind: "actorHp"; actorId: ActorId; minPercent: number; maxPercent: number }
   | { kind: "enemyTurn"; enemyId: EnemyId; turn: number }
   | { kind: "actorTurn"; actorId: ActorId; turn: number }
-  | { kind: "actorCommand"; actorId: ActorId; commandId: string };
+  | { kind: "actorCommand"; actorId: ActorId; commandId: string }
+  /** 적(생략 = 아무 적)이 이 상태에 걸려 있다(present 생략 = true) / 걸려 있지 않다(false). 쓰러진 적은 세지 않는다. */
+  | { kind: "enemyState"; enemyId?: EnemyId; stateId: string; present?: boolean };
 
 export interface BattleEventPageRecord {
   id: string;
@@ -1141,6 +1149,12 @@ export interface StateRecord {
   battleAura?: string;
 }
 
+/** 피해 계열별 받는 피해 %(100 = 보통, 0 = 무효). */
+export interface DamageTypeRates {
+  physical?: number;
+  magic?: number;
+}
+
 export interface StateEmotion {
   family: string;
   /** 1 부터. 같은 계열에서 클수록 강하다. */
@@ -1166,6 +1180,11 @@ export interface StateRuntimeEffects {
   forcedAction?: "attackRandom" | "rage";
   /** 이 상태인 동안 속성 등급을 덮어쓴다(속성 id → A~E). */
   elementRates?: Record<string, ActorRateGrade>;
+  /**
+   * 이 상태인 동안 피해 계열별 받는 피해 %를 **바꿔 쓴다**(더하거나 곱하지 않는다 — 적의 기본 damageTypeRates 를 대신한다).
+   * 여러 상태가 같은 계열을 정하면 가장 큰 값. 예: 「관통상」 { magic: 300 } — 마법 무효인 용도 이 상태 동안은 마법 피해 ×3.
+   */
+  damageTypeRates?: DamageTypeRates;
   /** 석화처럼 전투 불능으로 친다 — 아군 전원이 쓰러졌거나 이 상태면 패배. 이 상태로는 행동하지 못한다. */
   incapacitates?: boolean;
   /** 받는 HP 피해 중 이 비율(0~1)을 MP 에서 대신 깎는다(MP 가 모자라면 남은 만큼만). */
