@@ -5,6 +5,7 @@
 import { store } from "@/project/store";
 import { dialogueKindLabel, dialogueLineUsesMessageWindow, type DialogueLine } from "@/editor/dialogue/dialogueIndex";
 import { dialogueMeasureKey, estimateLineFit, registerMeasuredDialogueFit } from "@/editor/dialogue/dialogueEdits";
+import { writeDialogueWindow, type DialogueWindowRecord } from "@/project/dialogueDesk";
 import { editDialogueLine } from "@/editor/dialogue/dialogueActions";
 import { createDialogueWindowMeasurer, type DialogueWindowMeasurer } from "@/editor/dialogue/dialogueWindowMeasure";
 import { diffText } from "@/editor/dialogue/textDiff";
@@ -40,10 +41,28 @@ export function measurerFor(project: Project): Promise<DialogueWindowMeasurer> {
   const promise = createDialogueWindowMeasurer(project).then((value) => {
     readyMeasurer = value;
     registerMeasuredDialogueFit(resolution, (line, text) => value.fit(line, text));
+    persistWindowMetrics(value, resolution);
     return value;
   });
   measurer = { project, resolution, promise };
   return promise;
+}
+
+/** 잰 기준을 프로젝트에 남긴다 — 조수 도구 워커(DOM 없음)가 같은 기준으로 창 넘침을 판정한다. 되돌리기 기록은 남기지 않는다. */
+function persistWindowMetrics(value: DialogueWindowMeasurer, key: string): void {
+  try {
+    const variants = [false, true].flatMap((face) => [false, true].map((speaker) => {
+      const metrics = value.metrics({ speaker: speaker ? "이름" : "", withFace: face });
+      return { face, speaker, bodyWidthPx: Math.round(metrics.bodyWidthPx * 10) / 10, fontSizePx: metrics.fontSizePx, maxLines: metrics.maxLines, fontLabel: metrics.fontLabel };
+    }));
+    const record: DialogueWindowRecord = { key, variants, measuredAt: new Date().toISOString() };
+    if (dialogueMeasureKey(store.getCurrent()) !== key) return;
+    const probe = structuredClone({ dialogueDesk: store.getCurrent().dialogueDesk });
+    if (!writeDialogueWindow(probe, record)) return;
+    store.update((draft) => { writeDialogueWindow(draft, record); }, { scope: "project", label: "대화창 실측 기록", origin: "system" });
+  } catch (error) {
+    console.warn("[dialogue] 대화창 실측 기록 실패:", error);
+  }
 }
 
 /** 실제 런타임 글꼴·폭 측정기가 아직이면 띄우고, 준비되는 순간 한 번 다시 그린다(그 전에는 추정치). */

@@ -67,13 +67,28 @@ export function registerMeasuredDialogueFit(key: string, fit: MeasuredFit | null
 }
 
 export function hasMeasuredDialogueFit(project: Project): boolean {
-  return measuredFit?.key === dialogueMeasureKey(project);
+  const key = dialogueMeasureKey(project);
+  return measuredFit?.key === key || project.dialogueDesk?.window?.key === key;
 }
 
 export function estimateLineFit(project: Project, line: Pick<DialogueLine, "kind" | "withFace"> & Partial<Pick<DialogueLine, "speaker" | "context">>, text: string): DialogueFit | undefined {
   if (!dialogueLineUsesMessageWindow(line)) return undefined;
-  if (measuredFit && measuredFit.key === dialogueMeasureKey(project)) {
+  const key = dialogueMeasureKey(project);
+  if (measuredFit && measuredFit.key === key) {
     return measuredFit.fit({ kind: line.kind, withFace: line.withFace, speaker: line.speaker ?? "", ...(line.context ? { context: line.context } : {}) }, text);
+  }
+  // 조수 도구 워커(DOM 없음): 편집기가 저장해 둔 실측 기준(글 폭·글꼴 크기·한 장 줄 수)으로 잰다.
+  const stored = project.dialogueDesk?.window;
+  if (stored?.key === key) {
+    const speaker = Boolean(line.speaker);
+    const variant = stored.variants.find((entry) => entry.face === line.withFace && entry.speaker === speaker)
+      ?? stored.variants.find((entry) => entry.face === line.withFace)
+      ?? stored.variants[0];
+    if (variant) {
+      return measureDialogueFit(visibleDialogueText(text, { actorNames: actorNamesOf(project) }), {
+        bodyWidthPx: variant.bodyWidthPx, fontSizePx: variant.fontSizePx, maxLines: variant.maxLines, source: "estimate", fontLabel: `${variant.fontLabel}(편집기 실측 기준)`,
+      });
+    }
   }
   const width = resolvePlayResolution(project.system).width;
   const metrics = estimateDialogueWindowMetrics(width, { face: line.withFace });

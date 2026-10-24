@@ -28,12 +28,6 @@ const LIST_LIMIT_DEFAULT = 60;
 const LIST_LIMIT_MAX = 200;
 const REWRITE_MAX = 80;
 
-/** 편집기 안에서 돌면 런타임 CSS 실측기를 띄워 둔다(정적 import 는 DOM 모듈을 헤드리스 도구로 끌어온다). */
-function warmMeasure(project: Project): void {
-  if (typeof document === "undefined" || hasMeasuredDialogueFit(project)) return;
-  void import("@/editor/panels/dialogueViewShared").then(({ warmDialogueMeasurerForTools }) => warmDialogueMeasurerForTools(project)).catch(() => undefined);
-}
-
 function str(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
@@ -85,7 +79,6 @@ const listDialogue: ToolDefinition = {
   },
   invalidArgsExample: { speaker: "발렌", limit: 40 },
   run(project, args): ToolExecResult {
-    warmMeasure(project);
     const query = str(args.query).trim().toLocaleLowerCase();
     const speaker = normalizeSpeakerName(str(args.speaker));
     const mapId = str(args.mapId).trim();
@@ -122,8 +115,8 @@ const listDialogue: ToolDefinition = {
         ...(project.aiAuthoring?.dialogueStyleRules?.trim() ? { styleRules: project.aiAuthoring.dialogueStyleRules.trim() } : {}),
         pendingProposals: desk.proposals.length,
         windowNote: hasMeasuredDialogueFit(project)
-          ? "lines 는 대화창 줄 수(쓴 줄/한 장 최대) — 편집기가 런타임 글꼴·폭으로 잰 실측."
-          : "lines 는 대화창 줄 수 추정(쓴 줄/한 장 최대). 편집기 실측기가 준비되면 다음 호출부터 실측으로 바뀐다.",
+          ? "lines 는 대화창 줄 수(쓴 줄/한 장 최대) — 편집기가 런타임 글꼴·폭으로 잰 기준."
+          : "lines 는 대화창 줄 수 추정(쓴 줄/한 장 최대). 편집기가 대화창을 재 두면(조수 입력창·대사 탭을 열 때) 실측 기준으로 바뀐다.",
       }
       : {};
     return {
@@ -242,7 +235,6 @@ const rewriteDialogue: ToolDefinition = {
   },
   invalidArgsExample: { edits: [{ ref: "S12.3", hash: "a1b2c3", text: "멈춰라. 통행증.", reason: "경비병 말투를 짧게" }], mode: "propose" },
   run(draft, args): ToolExecResult {
-    warmMeasure(draft);
     const raw = Array.isArray(args.edits) ? args.edits : [];
     if (raw.length === 0) throw new ToolError("edits 가 비었다.", { code: "invalid-args" });
     if (raw.length > REWRITE_MAX) throw new ToolError(`한 번에 ${REWRITE_MAX}줄까지 — 나눠서 부른다.`, { code: "invalid-args" });
@@ -371,7 +363,6 @@ const getStoryOutline: ToolDefinition = {
   },
   invalidArgsExample: { chapter: "ch1" },
   run(project, args): ToolExecResult {
-    warmMeasure(project);
     const story = buildStory(project, { fresh: true });
     const chapterId = chapterArg(story, args.chapter);
     const outline = renderOutlineText(project, story, { includeSide: args.includeSide === true, ...(chapterId ? { chapterId } : {}) });
@@ -446,7 +437,7 @@ const readStoryScript: ToolDefinition = {
         script: parts.join("\n\n"),
         ...(nextFrom ? { nextFrom } : {}),
         tagNote: "⟨S12.3·a1b2c3⟩ = rewrite_dialogue 의 ref:S12.3 · hash:a1b2c3. «창 넘침 3/2줄» = 대화창 한 장(2줄)을 넘는 줄 — 줄여서 한 장에 맞춘다. [ ] 는 지문(고칠 수 없다), { } 는 조건 갈래, > 는 선택지 갈래.",
-        windowCheck: hasMeasuredDialogueFit(project) ? "창 넘침 = 편집기 실측(런타임 글꼴·폭)" : "창 넘침 = 추정(편집기 실측기가 아직 준비 전)",
+        windowCheck: hasMeasuredDialogueFit(project) ? "창 넘침 = 편집기 실측(런타임 글꼴·폭)" : "창 넘침 = 추정(편집기가 아직 대화창을 재지 않았다)",
       },
     };
   },
