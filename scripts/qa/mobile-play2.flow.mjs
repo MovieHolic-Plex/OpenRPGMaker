@@ -162,6 +162,13 @@ async function openPage(browser, seg, checkpoint) {
   const ctx = await browser.newContext({ ...dev, locale: "ko-KR", ...(VIDEO ? { recordVideo: { dir, size: dev.viewport } } : {}) });
   const page = await ctx.newPage();
   page.on("pageerror", (e) => console.log("PAGEERROR", String(e).slice(0, 240)));
+  if (process.env.MP_REQ_DEBUG) {
+    const open = new Map();
+    page.on("request", (r) => open.set(r, Date.now()));
+    page.on("requestfinished", (r) => open.delete(r));
+    page.on("requestfailed", (r) => { console.log("REQFAIL", r.url().slice(0, 160), r.failure()?.errorText); open.delete(r); });
+    setInterval(() => { const now = Date.now(); for (const [r, t] of open) if (now - t > 20000) { console.log("REQSTUCK", Math.round((now - t) / 1000), r.url().slice(0, 160)); open.delete(r); } }, 5000).unref();
+  }
   page.on("console", (m) => { if (m.type() === "error") console.log("CONSOLE", m.text().slice(0, 240)); });
   if (flag("fine")) {
     // 펜 디지타이저가 있는 안드로이드(갤럭시 폴드 등)는 `(pointer: fine)` 으로 보고한다 — 그 상태를 흉내 낸다.
