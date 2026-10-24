@@ -20,6 +20,13 @@ for (const spec of (process.env.FS_SIM_ENEMY ?? "").split(";").filter(Boolean)) 
   const enemy = project.database.enemies.find((e) => e.id === id) as unknown as { stats: Record<string, number> } & Record<string, unknown>;
   for (const pair of body!.split(",")) { const [k, v] = pair.split("="); if (k! in enemy.stats) enemy.stats[k!] = Number(v); else enemy[k!] = Number(v); }
 }
+// FS_SIM_JSON='{"enemies":{"enemy_x":{...}},"skills":{"skill_y":{...}}}' — 레코드에 얕게 덮어쓴다(구운 파일은 그대로).
+const patch = JSON.parse(process.env.FS_SIM_JSON ?? "{}") as Record<string, Record<string, Record<string, unknown>>>;
+for (const [table, rows] of Object.entries(patch)) for (const [id, fields] of Object.entries(rows)) {
+  const rec = (project.database as unknown as Record<string, Array<{ id: string }>>)[table]!.find((r) => r.id === id);
+  if (!rec) throw new Error(`no ${table}.${id}`);
+  Object.assign(rec, fields);
+}
 const PIERCED = "state_fs_pierced";
 const PIERCE: Record<string, string> = { actor_hero: "skill_hero_rush_pierce", actor_fs_iris: "skill_gunner_snipe" };
 const trio = ["actor_hero", "actor_fs_elena", "actor_fs_iris"];
@@ -36,6 +43,7 @@ function run(troopId: string, level: number, policy: Policy, rng: Rng, inventory
   } as unknown as BattleRuntimeOptions;
   const rt = createBattleRuntime(options);
   let actions = 0, pierces = 0, magic3x = 0, potions = 0;
+  const uses: Record<string, number> = {};
   for (let step = 0; step < 9000; step += 1) {
     const snap = headlessBattleSnapshot(rt);
     if (snap.result) break;
@@ -63,11 +71,18 @@ function run(troopId: string, level: number, policy: Policy, rng: Rng, inventory
       const skill = project.database.skills.find((s) => s.id === (cmd as { skillId: string }).skillId);
       if (skill?.effect.kind === "damage" && skill.effect.statistic === "mind") magic3x += 1;
     }
+    const tag = cmd?.kind === "skill" ? cmd.skillId.replace(/^skill_/, "") : cmd?.kind === "item" ? cmd.itemId : (cmd?.kind ?? "attack");
+    uses[tag] = (uses[tag] ?? 0) + 1;
     rt.performActorCommand(cmd ?? { kind: "attack", targetEnemyId: boss.id });
   }
   const final = headlessBattleSnapshot(rt);
   const fired = new Set(final.eventLogs.filter((l) => l.kind === "fired").map((l) => l.pageId));
-  return { win: final.result === "victory", rounds: final.turn, actions, pierces, magic3x, potions, hpLeft: final.actors.reduce((s, a) => s + Math.max(0, a.hp), 0), fired };
+  const taken: Record<string, number> = {};
+  for (const r of final.roundLogs) for (const e of r.actions) {
+    const k = `${e.side === "enemy" ? "E" : "A"}.${e.skillName ?? e.commandKind}`;
+    if (typeof e.amount === "number") taken[k] = (taken[k] ?? 0) + e.amount;
+  }
+  return { uses, taken, win: final.result === "victory", rounds: final.turn, actions, pierces, magic3x, potions, hpLeft: final.actors.reduce((s, a) => s + Math.max(0, a.hp), 0), fired };
 }
 
 const cases: Array<{ troopId: string; level: number; policy: Policy; inv: Record<string, number> }> = [
@@ -78,15 +93,21 @@ for (const c of cases.filter((x) => !only || x.troopId.endsWith(only))) {
   const rng = mulberry32(11);
   let wins = 0, rounds = 0, pierces = 0, magic3x = 0, potions = 0, hp = 0;
   const fired = new Map<string, number>();
+  const uses: Record<string, number> = {};
+  const taken: Record<string, number> = {};
   for (let i = 0; i < n; i += 1) {
     const r = run(c.troopId, c.level, c.policy, rng, c.inv);
     if (r.win) wins += 1;
     rounds += r.rounds; pierces += r.pierces; magic3x += r.magic3x; potions += r.potions; hp += r.hpLeft;
     for (const id of r.fired) fired.set(id, (fired.get(id) ?? 0) + 1);
+    for (const [k, v] of Object.entries(r.uses)) uses[k] = (uses[k] ?? 0) + v;
+    for (const [k, v] of Object.entries(r.taken)) taken[k] = (taken[k] ?? 0) + v;
   }
   console.log(JSON.stringify({
     troop: c.troopId, lv: c.level, policy: c.policy, win: Math.round((wins / n) * 100) / 100, rounds: Math.round((rounds / n) * 10) / 10,
     pierces: Math.round((pierces / n) * 10) / 10, magic3x: Math.round((magic3x / n) * 10) / 10, potions: Math.round((potions / n) * 10) / 10, hpLeft: Math.round(hp / n),
+    uses: process.env.FS_SIM_VERBOSE ? Object.entries(uses).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, v]) => `${k}:${Math.round(v / n)}`).join(" ") : undefined,
+    taken: process.env.FS_SIM_VERBOSE ? Object.entries(taken).map(([k, v]) => `${k}:${Math.round(v / n)}`).join(" ") : undefined,
     pages: [...fired].map(([id, k]) => `${id.replace(/^troop_fs_(dragon|valen_crash)_/, "")}:${k}`).join(" "),
   }));
 }

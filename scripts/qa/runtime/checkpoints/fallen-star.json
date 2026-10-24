@@ -305,51 +305,13 @@
    }
   },
   {
-   "id": "vault-entry",
-   "label": "지하 등불 방 입구",
-   "note": "fallenStarRooms.ts vault_gate->vault 착지 (15,25) — 남쪽 출구(15,26) 앞; 아직 발렌 도착 전(valen_arrived=false)",
-   "mapId": "fs_vault",
-   "x": 15,
-   "y": 25,
-   "facing": "up",
-   "switches": {
-    "sw_fs_main_started": true,
-    "sw_fs_main_step0": true,
-    "sw_fs_valen_marched": true,
-    "sw_fs_main_step1": true,
-    "sw_fs_iris_awake": true,
-    "sw_fs_iris_joined": true
-   },
-   "variables": {
-    "var_fs_main_progress": 2
-   },
-   "party": [
-    {
-     "actorId": "actor_hero",
-     "level": 7
-    },
-    {
-     "actorId": "actor_fs_elena",
-     "level": 7
-    },
-    {
-     "actorId": "actor_fs_iris",
-     "level": 6
-    }
-   ],
-   "items": {
-    "item_potion": 3,
-    "item_fs_star_key": 1
-   }
-  },
-  {
    "id": "pre-boss",
-   "label": "결전 직전 — 발렌 도착 뒤",
-   "note": "fallenStarRooms.ts FS_VAULT_BOSS (15,8) 바로 아래; valenWalksIn: sw_fs_valen_arrived 가 서야 보스가 실체",
-   "mapId": "fs_vault",
+   "label": "추락지 — 발렌이 숲길을 올라온다",
+   "note": "act1Finale.ts crashSite 인트로 걷기(16,17)→(16,11)",
+   "mapId": "fs_forest",
    "x": 15,
    "y": 9,
-   "facing": "up",
+   "facing": "down",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_step0": true,
@@ -357,7 +319,7 @@
     "sw_fs_main_step1": true,
     "sw_fs_iris_awake": true,
     "sw_fs_iris_joined": true,
-    "sw_fs_valen_arrived": true
+    "sw_fs_valen_crash_on": true
    },
    "variables": {
     "var_fs_main_progress": 2
@@ -365,11 +327,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 7
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 7
     },
     {
      "actorId": "actor_fs_iris",
@@ -382,12 +344,22 @@
    },
    "beats": [
     {
-     "id": "arrive",
+     "id": "walk",
      "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 12000
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 2000
+       "ms": 2600
       }
      ],
      "shot": true
@@ -396,12 +368,12 @@
   },
   {
    "id": "boss",
-   "label": "결전 개시",
-   "note": "ev_fs_main_kill2 troop_fs_finale",
-   "mapId": "fs_vault",
+   "label": "추락지 — 발렌 중간 보스",
+   "note": "act1Finale.ts crashSite: 이리스 합류 직후 sw_fs_valen_crash_on 자동 시작, troop_fs_valen_crash",
+   "mapId": "fs_forest",
    "x": 15,
    "y": 9,
-   "facing": "up",
+   "facing": "down",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_step0": true,
@@ -409,7 +381,7 @@
     "sw_fs_main_step1": true,
     "sw_fs_iris_awake": true,
     "sw_fs_iris_joined": true,
-    "sw_fs_valen_arrived": true
+    "sw_fs_valen_crash_on": true
    },
    "variables": {
     "var_fs_main_progress": 2
@@ -417,11 +389,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 7
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 7
     },
     {
      "actorId": "actor_fs_iris",
@@ -434,20 +406,13 @@
    },
    "beats": [
     {
-     "id": "talk",
+     "id": "intro",
      "ops": [
-      {
-       "kind": "face",
-       "dir": "up"
-      },
-      {
-       "kind": "action"
-      },
       {
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",
-       "timeoutMs": 8000
+       "timeoutMs": 12000
       },
       {
        "kind": "hold",
@@ -465,7 +430,7 @@
        "key": "Enter",
        "testid": "battle-scene",
        "state": "present",
-       "maxPresses": 30,
+       "maxPresses": 40,
        "timeoutMs": 900
       },
       {
@@ -480,12 +445,12 @@
   },
   {
    "id": "defeat",
-   "label": "결전 패배 카드와 물러섬",
-   "note": "ev_fs_main_kill2 canLose=true, else recoverAll + 엘레나 「일단 물러서!」",
-   "mapId": "fs_vault",
+   "label": "추락지 발렌에게 짐 — 물러서기",
+   "note": "act1Finale.ts crashSite 패배 갈래(recoverAll·엘레나 줄)",
+   "mapId": "fs_forest",
    "x": 15,
    "y": 9,
-   "facing": "up",
+   "facing": "down",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_step0": true,
@@ -493,7 +458,7 @@
     "sw_fs_main_step1": true,
     "sw_fs_iris_awake": true,
     "sw_fs_iris_joined": true,
-    "sw_fs_valen_arrived": true
+    "sw_fs_valen_crash_on": true
    },
    "variables": {
     "var_fs_main_progress": 2
@@ -501,11 +466,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 8
+     "level": 7
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 8
+     "level": 7
     },
     {
      "actorId": "actor_fs_iris",
@@ -524,13 +489,6 @@
        "kind": "evalToFile",
        "fn": "() => { for (const id of window.__oprnDebug.readState().partyActorIds) window.__oprnSetActorVitals(id, 1, 999); return true; }",
        "out": "/tmp/qa-fs-weak.json"
-      },
-      {
-       "kind": "face",
-       "dir": "up"
-      },
-      {
-       "kind": "action"
       },
       {
        "kind": "waitFor",
@@ -631,8 +589,8 @@
   },
   {
    "id": "report",
-   "label": "하넬에게 보고",
-   "note": "하넬은 #3314 부터 망원경 곁(12,12) — (12,13) 에서 위로 말 건다, sw_fs_main_step2 뒤(예전 (24,20) 벽난로 자리는 비었다)",
+   "label": "하넬 — 이리스와 첫 만남 + 숲의 발렌 보고",
+   "note": "act1Finale.ts hanelAfterCrash",
    "mapId": "fs_observatory",
    "x": 12,
    "y": 13,
@@ -644,7 +602,8 @@
     "sw_fs_main_step1": true,
     "sw_fs_iris_awake": true,
     "sw_fs_iris_joined": true,
-    "sw_fs_valen_arrived": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
     "sw_fs_main_step2": true
    },
    "variables": {
@@ -653,11 +612,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 9
+     "level": 8
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 9
+     "level": 8
     },
     {
      "actorId": "actor_fs_iris",
@@ -668,7 +627,6 @@
     "item_potion": 3,
     "item_fs_star_key": 1
    },
-   "gold": 300,
    "beats": [
     {
      "id": "talk",
@@ -697,12 +655,12 @@
    ]
   },
   {
-   "id": "ending",
-   "label": "엔딩 카드와 크레딧",
-   "note": "ENDING_ID end_fs_act1 — 하넬 보고 대사 끝에 붙어 있다",
-   "mapId": "fs_observatory",
-   "x": 12,
-   "y": 13,
+   "id": "vault-entry",
+   "label": "지하 등불 방 입구",
+   "note": "fs_vault 착지 (15,25) — 발렌 결전은 추락지로 옮겼다",
+   "mapId": "fs_vault",
+   "x": 15,
+   "y": 25,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -711,20 +669,59 @@
     "sw_fs_main_step1": true,
     "sw_fs_iris_awake": true,
     "sw_fs_iris_joined": true,
-    "sw_fs_valen_arrived": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
     "sw_fs_main_step2": true
    },
    "variables": {
-    "var_fs_main_progress": 3
+    "var_fs_main_progress": 2
    },
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 9
+     "level": 7
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 9
+     "level": 7
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3,
+    "item_fs_star_key": 1
+   }
+  },
+  {
+   "id": "lens",
+   "label": "렌즈가 별 봉인을 연다",
+   "note": "act1Finale.ts vaultSeal (16,6) 렌즈 → (26,7) 봉인 changeTile",
+   "mapId": "fs_vault",
+   "x": 16,
+   "y": 7,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
     },
     {
      "actorId": "actor_fs_iris",
@@ -732,10 +729,8 @@
     }
    ],
    "items": {
-    "item_potion": 3,
     "item_fs_star_key": 1
    },
-   "gold": 300,
    "beats": [
     {
      "id": "talk",
@@ -752,18 +747,463 @@
        "testid": "dialogue-box",
        "state": "present",
        "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
       }
      ],
-     "shot": false
+     "shot": true
     },
     {
-     "id": "ending-card",
+     "id": "open",
      "ops": [
+      {
+       "kind": "pressUntil",
+       "key": "Enter",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxPresses": 30,
+       "timeoutMs": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "b3-entry",
+   "label": "지하 3층 가라앉은 회랑 입구",
+   "note": "act1Finale.ts floorB3 착지 (21,4)",
+   "mapId": "fs_vault_b3",
+   "x": 21,
+   "y": 4,
+   "facing": "down",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_vault_seal_open": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 8
+    }
+   ],
+   "items": {
+    "item_potion": 4
+   },
+   "beats": [
+    {
+     "id": "arrive",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ],
+   "selfSwitches": {}
+  },
+  {
+   "id": "b3-levers",
+   "label": "지하 3층 손잡이 방 — 달 먼저 당기면 경종",
+   "note": "act1Finale.ts 달 손잡이 (41,26), 해 손잡이 전",
+   "mapId": "fs_vault_b3",
+   "x": 41,
+   "y": 27,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_vault_seal_open": true,
+    "sw_fs_b3_west_lever": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 8
+    }
+   ],
+   "items": {
+    "item_potion": 4
+   },
+   "selfSwitches": {
+    "ev_fs_b3_arrive": {
+     "A": true
+    }
+   },
+   "beats": [
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "b4-rest",
+   "label": "지하 4층 쉼터",
+   "note": "act1Finale.ts floorB4 결정·샘·다친 광신도",
+   "mapId": "fs_vault_b4",
+   "x": 14,
+   "y": 30,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_vault_seal_open": true,
+    "sw_fs_b3_west_lever": true,
+    "sw_fs_b3_sun_lever": true,
+    "sw_fs_b3_moon_lever": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 8
+    }
+   ],
+   "items": {
+    "item_potion": 6,
+    "item_hi_potion": 3,
+    "item_ether": 4
+   },
+   "beats": [
+    {
+     "id": "look",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "dragon",
+   "label": "달비늘 용 — 깨어남·전투",
+   "note": "act1Finale.ts 깨우는 줄 (14,19)→ troop_fs_dragon",
+   "mapId": "fs_vault_b4",
+   "x": 14,
+   "y": 20,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_vault_seal_open": true,
+    "sw_fs_b3_west_lever": true,
+    "sw_fs_b3_sun_lever": true,
+    "sw_fs_b3_moon_lever": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 8
+    }
+   ],
+   "items": {
+    "item_potion": 6,
+    "item_hi_potion": 3,
+    "item_ether": 4
+   },
+   "beats": [
+    {
+     "id": "wake",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 400
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "battle",
+     "ops": [
+      {
+       "kind": "pressUntil",
+       "key": "Enter",
+       "testid": "battle-scene",
+       "state": "present",
+       "maxPresses": 40,
+       "timeoutMs": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "panel",
+   "label": "기계 패널 — 「달의 아이」",
+   "note": "act1Finale.ts MOON_CHILD_FABLE 단말 문체",
+   "mapId": "fs_vault_b4",
+   "x": 14,
+   "y": 4,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_vault_seal_open": true,
+    "sw_fs_b3_west_lever": true,
+    "sw_fs_b3_sun_lever": true,
+    "sw_fs_b3_moon_lever": true,
+    "sw_fs_dragon_met": true,
+    "sw_fs_dragon_down": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 9
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 9
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 9
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   },
+   "beats": [
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "ending",
+   "label": "광장 포위 → 제1막 끝 카드",
+   "note": "act1Finale.ts 승강 장치 도착(천문대) → 광장 포위 → end_fs_act1",
+   "mapId": "fs_observatory",
+   "x": 4,
+   "y": 18,
+   "facing": "down",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_vault_seal_open": true,
+    "sw_fs_b3_west_lever": true,
+    "sw_fs_b3_sun_lever": true,
+    "sw_fs_b3_moon_lever": true,
+    "sw_fs_dragon_met": true,
+    "sw_fs_dragon_down": true,
+    "sw_fs_main_step3": true,
+    "sw_fs_act1_lifted": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 9
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 9
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 9
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   },
+   "gold": 300,
+   "beats": [
+    {
+     "id": "alarm",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 12000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "siege",
+     "ops": [
+      {
+       "kind": "pressUntil",
+       "key": "Enter",
+       "testid": "dialogue-box",
+       "state": "present",
+       "maxPresses": 40,
+       "timeoutMs": 900
+      },
       {
        "kind": "repeatUntil",
        "testid": "ending-screen",
        "state": "present",
-       "maxRounds": 80,
+       "maxRounds": 140,
        "ops": [
         {
          "kind": "key",
@@ -772,7 +1212,7 @@
         {
          "kind": "hold",
          "dir": null,
-         "ms": 400
+         "ms": 500
         }
        ]
       },

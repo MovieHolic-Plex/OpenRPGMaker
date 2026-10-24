@@ -221,15 +221,15 @@ function database(project: Project): void {
   const base = db.skills.find((s) => s.id === "skill_fs_judgment") as SkillRecord;
   const skill = (id: string, fields: Partial<SkillRecord>): SkillRecord => ({ ...(JSON.parse(JSON.stringify(base)) as SkillRecord), id, stateEffects: [], ...fields } as SkillRecord);
   upsert(db.skills, skill("skill_fs_dragon_bite", {
-    name: "물어뜯기", scope: "enemy", power: 64, chargeTurns: undefined, animationId: "anim_gen_claw_rake", elementId: undefined,
+    name: "물어뜯기", scope: "enemy", power: 90, chargeTurns: undefined, animationId: "anim_gen_claw_rake", elementId: undefined,
     description: "달비늘 용이 한 사람을 문다.", effect: { kind: "damage", statistic: "attack", affects: "hp" },
   } as Partial<SkillRecord>));
   upsert(db.skills, skill("skill_fs_dragon_tail", {
-    name: "꼬리 휩쓸기", scope: "allEnemies", power: 30, chargeTurns: undefined, animationId: "anim_gen_tackle_impact", elementId: undefined,
+    name: "꼬리 휩쓸기", scope: "allEnemies", power: 50, chargeTurns: undefined, animationId: "anim_gen_tackle_impact", elementId: undefined,
     description: "꼬리로 앞줄을 쓸어 낸다.", effect: { kind: "damage", statistic: "attack", affects: "hp" },
   } as Partial<SkillRecord>));
   upsert(db.skills, skill("skill_fs_dragon_breath", {
-    name: "달빛 숨결", scope: "allEnemies", power: 96, chargeTurns: 1, animationId: "anim_gen_ice_shatter", elementId: "ice",
+    name: "달빛 숨결", scope: "allEnemies", power: 110, chargeTurns: 1, animationId: "anim_gen_ice_shatter", elementId: "ice",
     description: "한 차례 숨을 모은 뒤 서리 빛을 내뿜는다. 모으는 동안 방어하라.", effect: { kind: "damage", statistic: "mind", affects: "hp" },
   } as Partial<SkillRecord>));
   upsert(db.skills, skill("skill_fs_dragon_scales", {
@@ -245,11 +245,13 @@ function database(project: Project): void {
     ...(JSON.parse(JSON.stringify(template)) as EnemyRecord),
     id: FS_DRAGON_ENEMY, name: "달비늘 용", level: 10, monsterResourceId: "generated-enemy-dragon-blue", battleScalePercent: 150,
     skillIds: ["skill_fs_dragon_bite", "skill_fs_dragon_tail", "skill_fs_dragon_breath", "skill_fs_dragon_scales"],
-    stats: { maxHp: 2600, maxMp: 99, attack: 104, defense: 150, mind: 84, agility: 40 },
+    stats: { maxHp: 3200, maxMp: 99, attack: 165, defense: 160, mind: 130, agility: 40 },
     damageTypeRates: { magic: 0 },
     actions: [
       act("skill_fs_dragon_bite", 6), act("skill_fs_dragon_tail", 5),
       act("skill_fs_dragon_breath", 10, { kind: "turn", start: 3, interval: 4 }),
+      // 오래 끌면(기믹 없이 평타로 버티면) 숨결이 두 차례마다 — 비늘을 가르지 않으면 이길 수 없게 하는 시계.
+      act("skill_fs_dragon_breath", 11, { kind: "turn", start: 14, interval: 2 }),
       act("skill_fs_dragon_scales", 9, { kind: "turn", start: 5, interval: 4 }),
     ],
     stateRates: { [FS_PIERCED_STATE]: "A", state_sleep: "E", state_stop: "E", state_paralysis: "E", state_poison: "D", state_defense_down: "C" },
@@ -265,7 +267,7 @@ function database(project: Project): void {
     members: [{ enemyId: FS_DRAGON_ENEMY, x: 0, y: 0, hidden: false }], autoAlign: true, uncapturable: true,
     backdropLayers: [{ preset: "glow", opacity: 70 }, { preset: "fog", opacity: 40 }, { preset: "embers", opacity: 30 }],
     battleEventPages: [
-      { id: "troop_fs_dragon_open", name: "시작 — 마력이 미끄러진다", span: "battle", runOnce: true, conditions: [{ kind: "onRound", round: 0 }],
+      { id: "troop_fs_dragon_open", name: "시작 — 마력이 미끄러진다", span: "battle", runOnce: true, conditions: [{ kind: "onRound", round: 1 }],
         commands: [text("비늘이 마력을 먹어요…!\n주문은 그냥 미끄러질 거예요.", IRIS), text("수첩에 적혀 있던 대로야.\n비늘부터 가른다!", KAEL)] },
       { id: "troop_fs_dragon_crack", name: "관통상 — 비늘이 갈라졌다", span: "battle", runOnce: false,
         conditions: [{ kind: "enemyState", enemyId: FS_DRAGON_ENEMY, stateId: FS_PIERCED_STATE }, sw(SW_DRAGON_CRACK, false)],
@@ -280,7 +282,10 @@ function database(project: Project): void {
     ],
   } as unknown as TroopRecord);
 
-  // 추락지 발렌 — 지하 결전에서 수호상만 뺀다(소환 둘·2페이즈는 그대로).
+  // 추락지 발렌 — 지하 결전에서 수호상만 뺀다(소환 둘·2페이즈는 그대로). 수호상 몫을 발렌이 진다(헤드리스 자동 전투 Lv6~7 승률 8할 안팎).
+  const valen = db.enemies.find((e) => e.id === "enemy_fs_valen");
+  if (!valen) throw new Error("[fallen-star act1] enemy_fs_valen 이 없다");
+  valen.stats = { ...valen.stats, maxHp: 2600, attack: 135, defense: 75, mind: 108, agility: 48 };
   const finale = db.troops.find((t) => t.id === "troop_fs_finale");
   if (!finale) throw new Error("[fallen-star act1] troop_fs_finale 이 없다");
   const crash = JSON.parse(JSON.stringify(finale)) as TroopRecord & Rec;
@@ -377,7 +382,7 @@ function crashSite(project: Project, forestId: string): void {
     say(KAEL, "응."),
     say(VALEN, "좋다. 그럼 배워라.\n하늘의 것을 감싼 손이 무엇을 치르는지."),
     shake(3, 500),
-    say(VALEN, "길 잃은 불씨들아, 내 등불로 오라!"),
+    narrate("발렌이 장검을 뽑는다. 칼날에 하얀 빛이 고인다."),
     cutLabel(),
     clearLetterbox(),
     cutEnd(),
@@ -484,7 +489,8 @@ function openGate(map: GameMap, cells: Cell[]): Command[] {
   return [
     se("cc0-se-osx-machine-01"),
     shake(1, 400),
-    ...swapTiles(map, cells.flatMap((c) => [{ x: c.x, y: c.y - 1, from: 6421, to: 6423 }, { x: c.x, y: c.y, from: 6422, to: 6424 }])),
+    // 열린 문 아래 칸(6424)은 칩셋 통행이 막혀 있다 — 들어 올린 문짝(6423)만 남기고 발밑은 비운다(-1).
+    ...swapTiles(map, cells.flatMap((c) => [{ x: c.x, y: c.y - 1, from: 6421, to: 6423 }, { x: c.x, y: c.y, from: 6422, to: -1 }])),
     se("cc0-se-osx-metal-03"),
   ];
 }
@@ -877,7 +883,11 @@ function hanelAfterCrash(project: Project, obsId: string): void {
       eachList(meet, (l) => {
         const at = l.findIndex((c) => (c as unknown as Rec).kind === "setSwitch" && (c as unknown as Rec).switchId === "sw_fs_hanel_met_iris");
         if (at < 0 || met) return;
-        l.splice(at, 0,
+        // 하넬 「…그 아이가」·이리스 자기소개 두 줄 뒤, 렌즈 안내 앞에 숲의 발렌 보고를 끼운다.
+        const textsBefore = l.slice(0, at).filter((c) => c.kind === "text").length;
+        let insertAt = at;
+        if (textsBefore >= 2) { let seen = 0; insertAt = l.findIndex((c) => c.kind === "text" && ++seen === 2) + 1; }
+        l.splice(insertAt, 0,
           say(KAEL, "선생님, 추락지에 심문관이 왔어요.\n발렌이요. 싸워서… 물리쳤어요."),
           emote(hanel.id, "exclamation", 700),
           say(H, "…발렌이."),
