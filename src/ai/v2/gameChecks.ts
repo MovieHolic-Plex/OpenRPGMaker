@@ -4,6 +4,7 @@
 // 암호 → 「이미 통과」 페이지 없음·선언 안 한 깃발. 모델이 「됐다」고 말해도 이 검사가 남은 문제를 끝맺음 관문에 올린다.
 // 순수 함수(before·after·요청 글) — 워커·테스트가 같이 부른다.
 import type { Command, Project } from "@/project/types";
+import { simulateBattle } from "@/battle/simulate";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -179,6 +180,38 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     const phasePages = changed.some((ev) => ev.pages.some((pg) => { const g = obj(pg.graphic); return !!(g && (g.sprite || g.appearanceId)); }) && ev.pages.some((pg) => flatConditions(pg.conditions).some((c) => c.kind === "timePhase")));
     if (!scheduled && !phasePages) problems.push("[게임 검사 시간] 요청에 시간대마다 자리·행동이 바뀌는 사람이 있는데 시간표(set_npc_schedule)도 시간대 페이지({kind:'timePhase'} 조건)도 없다 — configure_time_system 을 켜고 set_npc_schedule 로 낮·밤 자리를 정한다.");
   }
+  // 1e2) 같은 두 맵 사이 문이 따로 떨어져 둘 이상: 짓기 도구가 이미 이은 뒤 다시 이어서 풀밭 한가운데 투명 문이 남았다(2026-10-25 숲 3건).
+  {
+    const transfersOf = (ev: Obj): string[] => {
+      const out: string[] = [];
+      const walk = (list: unknown): void => { if (!Array.isArray(list)) return; for (const c of list as Obj[]) { if (c?.kind === "transfer" && typeof c.mapId === "string") out.push(c.mapId); for (const k of ["then", "else", "branch", "commands"]) walk(c?.[k]); if (Array.isArray(c?.options)) for (const o of c.options as Obj[]) walk(o?.branch); } };
+      for (const page of (ev.pages as Obj[] | undefined) ?? []) walk(page.commands);
+      walk(ev.commands);
+      return out;
+    };
+    for (const map of Object.values(after.maps)) {
+      const old = new Set((before.maps[map.id]?.events ?? []).map((e) => e.id));
+      const byTarget = new Map<string, { x: number; y: number; id: string; fresh: boolean }[]>();
+      for (const ev of map.events) for (const to of new Set(transfersOf(ev as unknown as Obj))) {
+        if (to === map.id) continue;
+        const list = byTarget.get(to) ?? []; list.push({ x: ev.x, y: ev.y, id: ev.id, fresh: !old.has(ev.id) }); byTarget.set(to, list);
+      }
+      for (const [to, doors] of byTarget) {
+        if (!doors.some((d) => d.fresh) || doors.length < 2) continue;
+        // 붙어 있는 문(두 칸 폭)은 한 문으로 친다.
+        const groups: (typeof doors)[] = [];
+        for (const d of doors) { const g = groups.find((gr) => gr.some((o) => Math.abs(o.x - d.x) + Math.abs(o.y - d.y) <= 2)); if (g) g.push(d); else groups.push([d]); }
+        if (groups.length < 2) continue;
+        const where = groups.map((g) => `(${g[0]!.x},${g[0]!.y}) ${g[0]!.id}`).join(" · ");
+        problems.push(`[게임 검사 이동] ${map.name ?? map.id} 에서 「${after.maps[to]?.name ?? to}」로 가는 문이 ${groups.length}곳 따로 있다: ${where} — 짓기 도구가 이미 이은 문과 새로 단 문이 겹쳤다. 요청한 자리(가장자리 길 끝·문) 하나만 남기고 나머지는 remove_event 로 지운다(반대쪽 맵의 짝 문도).`);
+      }
+    }
+  }
+  // 1e3) 「숲·들판에 적/사당」인데 새 맵 없이 마을 맵에 두었다(마을 나무 덩이 안의 고블린·멧돼지 — 2026-10-25).
+  if (/숲|들판|필드|초원/u.test(task) && !/마을\s*(안|광장|길|숲)|광장/u.test(task) && !Object.keys(after.maps).some((id) => !before.maps[id])) {
+    const foes = changed.filter((ev) => ((ev as unknown as Obj).pages as Obj[] | undefined ?? []).some((p) => (p.trigger as Obj | undefined)?.kind === "eventTouch" && JSON.stringify(p.commands ?? []).includes("battleProcessing")));
+    if (foes.length) problems.push(`[게임 검사 장소] 요청은 숲·들판인데 새 맵 없이 기존 맵에 필드 적 ${foes.length}개를 두었다 — author_forest_route(숲, 들판은 terrain:'field')로 그 맵을 짓고 가장자리로 이은 뒤 거기에 둔다.`);
+  }
   // 1f) 새로 지은 맵에 들어가는 길: 다른 맵의 이벤트·연결 어디에도 그 맵 id 가 없으면 플레이어가 못 간다(집 실내·필드가 고립됐다).
   {
     const newMaps = Object.keys(after.maps).filter((id) => !before.maps[id] && id !== after.startMapId);
@@ -265,6 +298,28 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     // 던전 도구가 적마다 만드는 「처치」 스위치(sw_ev_<맵>_<적>_clear)는 다시 짓기로 그 적이 사라져도 남는다 — 엔진 장부라 사용자 깃발로 세지 않는다.
     const idle = newDeclared.filter((id) => !/^sw_ev_.+_clear$/u.test(id) && !everywhere.includes(`"${id}"`) && !everywhere.includes(`[${id}]`));
     if (idle.length) problems.push(`[게임 검사 깃발] 선언만 하고 어디서도 쓰지 않는 깃발: ${idle.slice(0, 6).join(", ")} — 쓰거나 지운다.`);
+  }
+  // 못 이기는 전투(2026-10-25 사용자: 게임에서 못 쓰면 실패): 바뀐 이벤트가 여는 전투(지면 안 되는 것)를 시작 파티·시작 레벨로 모의 20판 → 0승이면 돌려보낸다.
+  {
+    const party = after.system.startActorIds ?? [];
+    const level = Math.max(1, ...party.map((id) => after.database.actors.find((a) => a.id === id)?.initialLevel ?? 1));
+    const seen = new Set<string>();
+    for (const r of cmds) {
+      const c = r.cmd as { kind?: string; troopId?: string; canLose?: boolean; troopSource?: string };
+      if (c.kind !== "battleProcessing" || c.canLose || c.troopSource === "variable" || !c.troopId || seen.has(c.troopId)) continue;
+      seen.add(c.troopId);
+      if (!after.database.troops.some((t) => t.id === c.troopId) || !party.length) continue;
+      try {
+        const sim = simulateBattle({ project: after, troopId: c.troopId, heroLevel: level, n: 20, seed: 7, useSkills: true });
+        if (sim.winRate === 0) problems.push(`[게임 검사 전투] ${r.ev.id} 가 여는 전투(${c.troopId})를 시작 파티(Lv${level})로 모의 20판 해 보니 한 번도 못 이긴다 — 플레이어가 그 전에 레벨을 올릴 길이 없으면 게임이 막힌다. upsert_enemy 로 HP·공격을 낮추거나(simulate_battle 로 승률 40~80% 확인), 지는 이야기 전투면 canLose:true.`);
+      } catch { /* 모의 실패는 넘어간다 */ }
+    }
+  }
+  // 연계기(두세 사람이 같이 쓰는 기술): 요청에 있는데 새/바뀐 연계 기록(comboActorIds 2명 이상)이 없다 — 평범한 기술 두 개로 흉내 내지 않는다(2026-10-25 데모 과업).
+  if (/연계|합체기|협동 기술|콤보 기술|같이 쓰는 (기술|필살기)|combo/iu.test(task)) {
+    const prior = new Map(before.database.skills.map((sk) => [sk.id, JSON.stringify(sk)]));
+    const combo = after.database.skills.some((sk) => (sk.comboActorIds?.length ?? 0) >= 2 && prior.get(sk.id) !== JSON.stringify(sk));
+    if (!combo) problems.push("[게임 검사 연계기] 요청에 연계기가 있는데 새로 만든 연계 기록이 없다(평범한 기술은 「연계」 명령에 안 뜬다). upsert_combo_tech{id:'skill_combo_…', name, actorIds:[두 배우], mpCosts, scope, power} 로 만들고, 참가 배우가 파티에 없으면 set_party 로 넣는다.");
   }
   return problems;
 }

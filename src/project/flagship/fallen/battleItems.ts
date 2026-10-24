@@ -104,7 +104,7 @@ export function applyFallenBattleItems(project: Project): void {
   cloneSkill("skill_item_thunder_stone", "skill_fs_water_flask", { name: "물 주머니 효과", power: 76, elementId: "water", description: "물을 쏟아 물 속성 피해를 줍니다." });
   cloneItem("item_gen2_frost_vial", FS_FIRE_FLASK, {
     name: "불씨 병", price: 90, skillId: "skill_fs_fire_flask", activateSkillId: "skill_fs_fire_flask",
-    description: "던지면 불 속성 피해. 늑대·거미에게 효과가 굉장하지만 도깨비불에는 소용없다.",
+    description: "던지면 불 속성 피해.",
     iconResourceId: "cc0-jetrel-fire-bomb", imageResourceId: "cc0-jetrel-fire-bomb",
   });
   cloneItem("item_gen2_frost_vial", FS_WATER_FLASK, {
@@ -218,7 +218,7 @@ export function applyFallenBattleItems(project: Project): void {
   };
   weapon(FS_SWORD_GALE, {
     name: "바람결 검", price: 220,
-    description: "가볍고 빠른 검. 공격 14 · 민첩 +6 · 급소 확률 +14%. 행동이 빨라지고 급소가 잘 난다. 늑대·도깨비불(날 저항) 상대로 쓰기 전에 약점을 보자.",
+    description: "가볍고 빠른 검. 공격 14 · 민첩 +6 · 급소 확률 +14%. 행동이 빨라지고 급소가 잘 난다.",
     statBonuses: { attack: 14, defense: 0, mind: 0, agility: 6 }, attackElementIds: ["sword"], criticalRate: 14, accuracy: 100,
   });
   weapon(FS_SWORD_STAR, {
@@ -228,7 +228,7 @@ export function applyFallenBattleItems(project: Project): void {
   });
   weapon(FS_SPEAR_PIKE, {
     name: "푸른 불꽃 창", price: 220,
-    description: "무겁고 긴 창. 공격 22 · 민첩 -3 · 회피 무시. 날랜 적도 꿰뚫는다. 거미·수호상은 창에 약하다.\n푸른 불씨를 먹은 쇠는 식어도 푸르다.",
+    description: "무겁고 긴 창. 공격 22 · 민첩 -3 · 회피 무시. 날랜 적도 꿰뚫는다.\n푸른 불씨를 먹은 쇠는 식어도 푸르다.",
     statBonuses: { attack: 22, defense: 0, mind: 0, agility: -3 }, attackElementIds: ["spear"], criticalRate: 2, accuracy: 100,
     effectFlags: { ...ZERO_FLAGS, ignoreDodge: true },
   });

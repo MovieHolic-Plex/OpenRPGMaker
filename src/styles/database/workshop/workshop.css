@@ -269,3 +269,18 @@ body.is-map-picking canvas { cursor: crosshair !important; }
   filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.9)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
 }
 .map-pick-ghost[hidden] { display: none; }
+
+/* 사진으로 만들기(char-gen photo) — 후보 카드: 네 방향 걷기 GIF 를 정수 배율 그대로, 고르면 테두리 */
+.workshop-photo-pick-file { display: flex; align-items: center; gap: var(--space-2); }
+.workshop-photo-thumb { max-width: 72px; max-height: 72px; border-radius: var(--radius-s); object-fit: cover; }
+.workshop-photo-picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: var(--space-3); }
+.workshop-photo-picks:empty { display: none; }
+.workshop-photo-card { position: relative; margin: 0; display: grid; gap: var(--space-2); padding: var(--space-2); border: 2px solid var(--border-default); border-radius: var(--radius-m); background: var(--success); }
+.workshop-photo-card.is-picked { border-color: var(--accent); }
+.workshop-photo-card img { width: 100%; max-width: 432px; image-rendering: pixelated; justify-self: center; }
+.workshop-photo-card figcaption { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; color: var(--on-accent); }
+.workshop-photo-card figcaption .workshop-item-meta { color: var(--on-accent); opacity: 0.9; }
+.workshop-photo-card figcaption button { margin-left: auto; }
+.workshop-photo-rank { position: absolute; top: 6px; left: 8px; padding: 0 6px; border-radius: var(--radius-s); background: rgb(0 0 0 / 55%); color: var(--on-accent); font-weight: 700; }
+.workshop-chip.is-ok { background: var(--success); color: var(--on-accent); }
+.workshop-chip.is-warn { background: var(--danger); color: var(--on-accent); }

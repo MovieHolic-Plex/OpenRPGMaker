@@ -12,6 +12,7 @@ import { decodePackBundle, type DecodedPackBundle } from "../../src/assetStore/p
 import { sniffMime } from "../../src/assetStore/sniff";
 import { normalizeGameConcept, type GameConcept } from "../../src/concepts/format";
 import { publishStoreGame, type StoreGameMine, type StoreGamePublishRequest, type StoreGamePublishResult } from "../../src/assetStore/gamePublish";
+import type { StoreReviewsPage } from "../../src/assetStore/bridgeTypes";
 
 export const DEFAULT_STORE_URL = "https://store.openrpgmaker.com";
 
@@ -383,6 +384,33 @@ export class AssetStoreClient {
     }, { ...input, files: new Map(Object.entries(input.files)) }, (event) => {
       if (event.phase === "upload") progress({ slug: label, phase: "upload", done: event.done, total: event.total });
     });
+  }
+
+  /** 소식 글 올리기(+ 판본 코멘트). 작가만 — 서버가 판단한다. */
+  async gamePost(input: { slug: string; title: string; body: string; version?: string | null; pinned?: boolean; comment?: string; commentVersion?: string | null }): Promise<{ id: number; status: string; url: string; held: string[]; comment?: { status: string | null; held: string[] } }> {
+    if (!this.token) throw new StoreError("스토어에 글을 올리려면 먼저 로그인해 주세요.", 401);
+    const slug = encodeURIComponent(input.slug);
+    const made = await this.json<{ id: number; status: string; url: string; held: string[] }>(`/api/v1/games/${slug}/posts`, {
+      method: "POST", json: { title: input.title, body: input.body, version: input.version ?? null, pinned: input.pinned === true },
+    });
+    const label = input.commentVersion ?? input.version ?? null;
+    if (input.comment !== undefined && label) {
+      const comment = await this.json<{ status: string | null; held: string[] }>(`/api/v1/games/${slug}/versions/${encodeURIComponent(label)}/comment`, { method: "PUT", json: { comment: input.comment } });
+      return { ...made, comment };
+    }
+    return made;
+  }
+
+  /** 게임 평가 한 쪽. 공개 목록이지만 로그인돼 있으면 토큰을 같이 보낸다. */
+  gameReviews(input: { slug: string; sort?: "helpful" | "recent" | "funny"; filter?: "all" | "up" | "down"; limit?: number }): Promise<StoreReviewsPage> {
+    const params = new URLSearchParams({ rsort: input.sort ?? "recent", rfilter: input.filter ?? "all", limit: String(input.limit ?? 30) });
+    return this.json<StoreReviewsPage>(`/api/v1/games/${encodeURIComponent(input.slug)}/reviews?${params}`);
+  }
+
+  /** 제작자 답글. 작가만 — 서버가 판단한다. */
+  async reviewReply(input: { slug: string; reviewId: number; reply: string }): Promise<{ status: string | null; held: string[] }> {
+    if (!this.token) throw new StoreError("답글을 달려면 먼저 스토어에 로그인해 주세요.", 401);
+    return this.json(`/api/v1/games/${encodeURIComponent(input.slug)}/reviews/${input.reviewId}/reply`, { method: "PUT", json: { reply: input.reply } });
   }
 
   /** 되돌리기: 「지금 판본」을 옛 판본으로. */

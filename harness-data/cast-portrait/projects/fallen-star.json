@@ -1,0 +1,68 @@
+{
+ "project": "fallen-star",
+ "title": "Fallen Star speaker busts (shared portrait sets)",
+ "note": "Measure/lineup/review only. This cast came from the shared portrait library (high-resolution illustrations shown through src/player/bustPixelate.ts), not from char-gen + bake_astra_busts64, so `draw` is not configured. Rules are derived from `calibrate` (cast range).",
+ "lineup": [
+  {
+   "id": "hanel",
+   "dir": "public/assets/shared/portraits/people2-white-elder",
+   "resource": "shared-people2-white-elder-expressions-bust-{expr}"
+  },
+  {
+   "id": "valen",
+   "dir": "public/assets/shared/portraits/blue-headband",
+   "resource": "shared-blue-headband-expressions-bust-{expr}"
+  },
+  {
+   "id": "knight",
+   "dir": "public/assets/shared/portraits/helmet-guard",
+   "resource": "shared-helmet-guard-expressions-bust-{expr}"
+  },
+  {
+   "id": "bram",
+   "dir": "public/assets/shared/portraits/green-scholar",
+   "resource": "shared-green-scholar-expressions-bust-{expr}"
+  },
+  {
+   "id": "grandma",
+   "dir": "public/assets/shared/portraits/people1-old-woman",
+   "resource": "shared-people1-old-woman-expressions-bust-{expr}"
+  },
+  {
+   "id": "tobi",
+   "dir": "public/assets/shared/portraits/people1-boy",
+   "resource": "shared-people1-boy-expressions-bust-{expr}"
+  },
+  {
+   "id": "baker",
+   "dir": "public/assets/shared/portraits/people1-blonde-woman",
+   "resource": "shared-people1-blonde-woman-expressions-bust-{expr}"
+  }
+ ],
+ "expressions": [
+  "base",
+  "happy",
+  "sad",
+  "angry",
+  "surprised"
+ ],
+ "openEyeExpressions": [
+  "base",
+  "sad",
+  "surprised"
+ ],
+ "dialogueExpressions": [
+  "base",
+  "happy",
+  "surprised",
+  "sad"
+ ],
+ "canvas": null,
+ "displayScale": null,
+ "rules": "calibrate",
+ "pipeline": {
+  "kind": "none"
+ },
+ "dialogue": null,
+ "roles": {}
+}

@@ -75,7 +75,7 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
   });
   tune("skill_hero_flame_sword", {
     stateEffects: [{ stateId: FS_BURN_STATE, chance: 60, operation: "add" }],
-    description: "불 속성 베기 + 60% 화상(매 차례 HP 3%). 늑대 약점. 도깨비불엔 무효.",
+    description: "불 속성 베기 + 60% 화상(매 차례 HP 3%).",
   });
   make("skill_focus", FS_TAUNT_SKILL, {
     name: "도발", scope: "self", power: 0, mpCost: { flat: 3, percentMax: 0 },

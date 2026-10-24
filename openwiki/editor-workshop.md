@@ -25,7 +25,7 @@
 | 카드 | 생성기 | 상태 | 하는 일 |
 |---|---|---|---|
 | 물건·가구 | object-gen | 여기서 바로 | 「새 물건 그리기」= 아래 공방 실행기(사용자 자기 AI 계정). 넣을 곳 전환: 실내 가구(`interior-props`, 손 도트 실내 칩셋) · 지금 맵 칩셋(`map-objects`). 「만든 묶음 가져오기」= object-gen `pack` 폴더 가져오기 |
-| 캐릭터 | char-gen (비공개 — 2026-10-21 바뀜, `MovieHolic-Plex/char-gen`. 설치 링크를 내지 않는다) | 내 컴퓨터에서 | 파이썬 도구라 브라우저에서 못 돈다. 「부탁하고 가져오기」(`genWorkspace.ts`)가 ① 무엇·몇 명 → 사용자 AI 에이전트에 붙여 넣을 부탁 글(언어별, `charGenRequest`) ② `char-gen pack` 폴더 가져오기 → 미리 보기 → 이 게임에 넣기 |
+| 캐릭터 | char-gen (비공개 — 2026-10-21 바뀜, `MovieHolic-Plex/char-gen`. 설치 링크를 내지 않는다) | 내 컴퓨터에서 | 파이썬 도구라 브라우저에서 못 돈다. 「부탁하고 가져오기」(`genWorkspace.ts`)가 ① 무엇·몇 명 → 사용자 AI 에이전트에 붙여 넣을 부탁 글(언어별, `charGenRequest`) ② `char-gen pack` 폴더 가져오기 → 미리 보기 → 이 게임에 넣기. 맨 위 「사진으로 만들기」는 호스트가 돌려 후보를 고르게 한다(아래 「캐릭터 · 사진으로 만들기」) |
 | 지형·바닥 | tile-gen (비공개, `MovieHolic-Plex/tile-gen`) | 내 컴퓨터에서 | **지형 생성기**(2026-10-21 다시 만듦): 이음매 없는 바닥 채우기, 47칸 자동 타일 가장자리(풀↔흙·길·카펫), 물가·움직이는 물, 숲(숲 바닥 오토타일 + 편집기가 놓는 나무 — tile-gen PR #4 부터 그룹에 `composer` `{kind:"trees", layers:[4,3,2], sprites t4·t3a·t3b·t2 와 그늘판 d}` 가 붙고 옛 trunk_* 줄 칸은 없다, 붓이 칠하면 `autotileEngine` → `composeTreesAround` 가 2~4층에 나무를 짠다), 절벽·단. 물건·기물·건물은 object-gen 만 — tile-gen 을 물건 생성기로 소개하지 않는다(`tile-gen new --mode prop` 은 거절하고 object-gen 을 가리킨다). 화면: ① 종류(`TERRAIN_MODES`: floor·autotile·water·forest·cliff) 또는 재질 프리셋(`TERRAIN_PRESETS`: lava·swamp·poison·deep_water·beach = 물 계열, snow·ice·sand·road·cobble·meadow = 자동 타일 계열 — CLI `--mode <프리셋>`, tile-gen PR #3)·어떤 지형·참고 칸 `x,y`(선택) + 「지금 맵 칩셋 그림 받기」 → 부탁 글(`tileGenRequest`: `tile-gen auto` → 로컬 `tile-gen pick` → `tile-gen pack`) ② 묶음 가져오기. 묶음 = `oprn-store-pack/1` tileset 하나 + `autotileGroups`(256 이웃 키 `variantMap` + **`phaseVariants`** `{w:16,h:16,maps:[256 표]}` — 채움 변형 4~6·바깥 변형 1~6 을 칸 위치로 고른다, `autotileVariantForMask` 가 붓·채우기·길에서 따른다. 바닥도 phaseVariants. 옛 `interiorVariants` 는 tile-gen PR #3 에서 없어졌다) + 물은 멤버 칸마다 `animationStrips`(3~4프레임). 멤버 칸이 수백 개(물 시험 묶음 372칸·띠 372개). `content.objects`·ObjectSpec 킷은 없다. 가져오기는 타일셋을 통째로 옮겨(`applyPackToProject` 의 `mapStrings`) 이 칸들을 그대로 둔다 — 2026-10-21 tile-gen 시험 묶음(`examples/demo` 정해진 답, 물+바닥)으로 저장·다시 열기 뒤 phaseVariants·animationStrips 가 똑같이 남는 것을 SQLite 로 확인, 숲 시험 묶음(740칸)으로 `composer` 를 포함한 그룹 JSON 이 저장·다시 열기 뒤 바이트 그대로인 것도 확인 — 이때 저장 검사가 `composer.overhangOnGroups`(사람이 읽는 이름, 엔진은 `overhangOnTiles` 만 본다)를 필수로 요구해 400 으로 저장이 막혔다, 지금은 있을 때만 검사 — 넣은 뒤 안내에 자동 타일 벌 수를 보인다. 견본 그림은 비워 둔다(위 「견본」 줄 참고). 한계: 새 지형은 **새 칩셋**으로 들어가 그 칩셋을 쓰는 맵에서만 칠한다(지금 맵 칩셋에 합치기는 아직 없다), 절벽 면 줄은 붓이 아직 안 놓는다. 숲 그림은 아직 사람 검수를 통과한 것이 없다 |
 | 아이템 아이콘 | item-gen | 준비 중 | 저장소가 없다(2026-10-21 조직·홈 확인). `scripts/asset-gen/generate.mjs`(agy CLI, 사람 고르기 없음)만 있어 가짜로 채우지 않았다 |
 
@@ -79,6 +79,22 @@
   호스트에서 고정판을 그대로 띄우면 생성기 저장소의 수정이 lock 갱신만으로 들어온다. 바탕은 글 낱말로 고른다(`chooseCharBase`: 여자·소녀·아이·농부/노인·기본, Scarloxy People1 0~6).
 - 실측(Sonnet, 같은 글 「검은 머리 여고생」 1명): CLI 직접 5분 37초(1차 행 폭 25 로 검사 탈락 → 2차 통과), 편집기 「만들기」 → 완성 토스트 4분 29초 · 1분 27초(첫 시도 통과).
   남은 시간은 호스트 어림(`expectMs`, 1명 5분)에서 센다 — 작업 줄 평균으로 「약 2분」이라 했다가 4분 반 걸렸다.
+
+### 캐릭터 · 사진으로 만들기 (2026-10-23)
+- 공방 「캐릭터」 창 맨 위 「사진으로 만들기」(`genWorkspace.ts` `photoStep`). 사람 사진 한 장 → 후보 몇 명 → **사람이 하나 고른다** → 묶음 → 「이 게임에 넣기」(가져오기 칸과 같은 길).
+- 호스트(`workshopGen.mjs` `runCharPhoto`)가 고정판 char-gen `cli.py photo 사진 --out run --no-picture` 를 사용자 CLI 로 돈다.
+  - 환경 변수: `CHARGEN_VISION_CLI`=고른 CLI, `CHARGEN_VISION_MODEL`=모델.
+  - 그림을 새로 그리지 않는다. RTP(EasyRPG, CC BY 4.0) 머리·몸 짝을 사진 속 사람의 특징(성별·나이·머리·옷·선글라스)으로 고르고, 옷·머리 색을 사진에 맞게 칠하는 종이 인형이다.
+  - 후보는 조립 오류 검사(dolleye, 같은 CLI) → 눈 순위 → 닮음 순으로 줄 선다.
+  - 걷기 영상 검사는 CLI 가 영상을 못 봐서 건너뛴다(`walk: skipped`).
+- 작업이 `state:"picking"` 에서 멈추고 `photoCandidates`(순위·검사 통과·오류 수·눈 순위·네 방향 걷기 GIF)를 준다.
+  - 고르기는 `POST /v1/workshop/gen/pick {jobId, rank, title}` 로 한다(`hostGen.pickHostGen`).
+  - 고르면 호스트가 그 칩만 `cli.py pack … --chip-model <CLI/모델> --license CC-BY-4.0` 으로 묶어 `done` + `pack` 을 준다. 생성 방식은 mixed 다(머리·몸 고르기와 색을 모델이 정했다). `--chip-method procedural` 로 묶으면 `aiGenerated:true` 와 어긋나 `validateManifest` 가 거절했다.
+- 사진은 호스트 작업 폴더(`~/.cache/oprn/workshop-gen/<job>/`)에만 있고 묶음에는 들어가지 않는다.
+- lock: char-gen `39dd8ab`(계약 동사에 `photo` 추가).
+- 시험:
+  - 호스트: `test/workshop/workshopGenPhoto.test.ts`(가짜 char-gen·CLI 로 picking → pick → done, 입력 거절).
+  - 실화면: `scripts/qa/workshop-photo-capture.mjs`(PHOTO=사진 경로, 사진은 저장소에 두지 않는다).
 
 ### 지형 = 빠르게(기본) 또는 새로 그리기(「자세히」)
 - **빠르게(`src/project/workshopQuickTerrain.ts` + `oneClick/quickTerrain.ts`, 몇 초, 모델 없음):** 지금 맵 칩셋의 자동 타일(물·운하 / 길 포석 / 모랫길)을 하나 골라

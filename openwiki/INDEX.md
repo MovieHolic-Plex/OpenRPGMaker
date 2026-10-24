@@ -29,7 +29,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-pre-edit-routing.md` | 189KB | 72KB ⚠상한 초과 — 절을 더 쪼개라 | 1171 | ~55,451 |
 | `openwiki/editor-validation.md` | 53KB | 8KB | 388 | ~14,789 |
 | `openwiki/editor-workflows-misc.md` | 90KB | 33KB | 635 | ~25,270 |
-| `openwiki/editor-workshop.md` | 61KB | 15KB | 237 | ~18,197 |
+| `openwiki/editor-workshop.md` | 63KB | 15KB | 253 | ~18,806 |
 | `openwiki/harnesses/assistant-capability.md` | 59KB | 8KB | 380 | ~18,190 |
 | `openwiki/harnesses/interview-scene-bank.md` | 56KB | 38KB | 197 | ~17,387 |
 | `openwiki/harnesses/monster-collect-species.md` | 63KB | 18KB | 353 | ~19,132 |
@@ -1388,20 +1388,21 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L17` Quick routing
 - `L25` For AI agents
 
-### `openwiki/editor-workshop.md` — 61KB · 237줄 · ~18,197 토큰 · 통째읽기 잘림
+### `openwiki/editor-workshop.md` — 63KB · 253줄 · ~18,806 토큰 · 통째읽기 잘림
 
 - `L50` 한 번에 만들기 — 「딸깍」 공방 (2026-10-23)
   - `L72` 캐릭터 = 호스트가 고정판 char-gen 을 띄운다
-  - `L83` 지형 = 빠르게(기본) 또는 새로 그리기(「자세히」)
-  - `L98` 물건 — 첫 결과 시간 줄이기
-  - `L106` 실화면 시험
-  - `L119` 2차 (2026-10-23): 3/4 관문 배선 · 물건 속도 · 작은 것
-- `L143` 공방 실행기(물건·가구 카드 안)
-- `L157` 칩셋에 굽기 (2단계, 2026-10-07)
-- `L169` 새 기물은 object-gen 흐름 그대로 그린다 (2026-10-21)
-- `L184` 새 기물 그리기 품질 — 참고 그림 단계 · 크기·윗면 · 1배 읽힘 · 3/4 관문 조언 (2026-10-21)
-- `L207` 작업 줄 — 여러 개를 함께 그리기 (2026-10-21)
-- `L225` 생성기 저장소 고정 — `npm run gen-kits:sync` (2026-10-21)
+  - `L83` 캐릭터 · 사진으로 만들기 (2026-10-23)
+  - `L99` 지형 = 빠르게(기본) 또는 새로 그리기(「자세히」)
+  - `L114` 물건 — 첫 결과 시간 줄이기
+  - `L122` 실화면 시험
+  - `L135` 2차 (2026-10-23): 3/4 관문 배선 · 물건 속도 · 작은 것
+- `L159` 공방 실행기(물건·가구 카드 안)
+- `L173` 칩셋에 굽기 (2단계, 2026-10-07)
+- `L185` 새 기물은 object-gen 흐름 그대로 그린다 (2026-10-21)
+- `L200` 새 기물 그리기 품질 — 참고 그림 단계 · 크기·윗면 · 1배 읽힘 · 3/4 관문 조언 (2026-10-21)
+- `L223` 작업 줄 — 여러 개를 함께 그리기 (2026-10-21)
+- `L241` 생성기 저장소 고정 — `npm run gen-kits:sync` (2026-10-21)
 
 ### `openwiki/emerald-fields.md` — 23KB · 208줄 · ~7,314 토큰
 

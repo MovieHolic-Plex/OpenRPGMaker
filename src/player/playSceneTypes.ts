@@ -179,6 +179,8 @@ export interface PlayerRouteState {
   through?: boolean;
   /** 맵 탭(클릭)으로 시작한 경로 — 패드·키 입력이 들어오면 그만두고, 걷는 중 새 탭이 갈아 끼운다. */
   pointer?: boolean;
+  /** 이 경로는 달린다(맵 탭으로 먼 곳에 갈 때 — playScenePointerMove TAP_RUN_MIN_STEPS). 생략 = 걷기(이벤트 강제 이동). */
+  dash?: boolean;
 }
 
 /**

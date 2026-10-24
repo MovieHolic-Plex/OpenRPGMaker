@@ -1,3 +1,4 @@
+import { hasBatchim } from "@/util/josa";
 import { enemyCombatConditions } from "@/project/combatReferences";
 // editor/tools/refactorTools.ts
 // 전역 리팩토링 툴(Phase 5): rename_switch / prune_unused.
@@ -710,4 +711,92 @@ const pruneUnused: ToolDefinition = {
   },
 };
 
-export const REFACTOR_TOOLS: readonly ToolDefinition[] = [renameSwitch, renameVariable, pruneUnused];
+
+// ── 프로젝트 전체 글 바꾸기(폴른 스타 applyNorthForest 를 일반화) ──────────────────────────
+// 대사·선택지·이벤트/맵 이름·퀘스트·공통 이벤트·아이템/장비/적/스킬 이름과 설명의 글자만 바꾼다. id·리소스 키·타일은 건드리지 않는다.
+// 바꾼 낱말 바로 뒤 조사(은/는·이/가·을/를·와/과·으로/로)는 새 낱말 받침에 맞춘다.
+const NON_TEXT_KEY = /^(id|kind|op|type|trigger|priority|direction|mode|preset|emote|key|style|layer|layers|sprite|graphic|dataUrl|tilesetId|lowerTiles|upperTiles|lowerOverlayTiles|upperOverlayTiles|passability|conditions?)$|(Id|Ids|Url|Key)$/u;
+const JOSA_FIX: readonly [string, string][] = [["은", "는"], ["이", "가"], ["을", "를"], ["과", "와"]];
+function replaceKeepingJosa(text: string, find: string, to: string): string {
+  if (!text.includes(find)) return text;
+  const toBatchim = hasBatchim(to);
+  return text.split(find).reduce((acc, part, index) => {
+    if (index === 0) return part;
+    let rest = part;
+    if (hasBatchim(find) !== toBatchim) {
+      if (rest.startsWith("으로") && !toBatchim) rest = "로" + rest.slice(2);
+      else if (rest.startsWith("로") && toBatchim) rest = "으로" + rest.slice(1);
+      else for (const [withB, withoutB] of JOSA_FIX) {
+        const from = toBatchim ? withoutB : withB, into = toBatchim ? withB : withoutB;
+        if (rest.startsWith(from) && !/^[가-힣]/u.test(rest.slice(from.length, from.length + 1))) { rest = into + rest.slice(from.length); break; }
+      }
+    }
+    return acc + to + rest;
+  }, "");
+}
+const replaceTextInProject: ToolDefinition = {
+  name: "replace_text_in_project",
+  description:
+    "프로젝트 전체의 글자를 한 번에 바꾼다 — 대사·선택지·화자 이름·이벤트 이름·맵 이름·퀘스트·공통 이벤트·아이템/장비/적/스킬 이름과 설명. "
+    + "「대사에 나오는 '북쪽 숲'을 전부 '속삭이는 숲'으로」·「대장장이 이름을 볼칸으로(이름표+대사)」 같은 일괄 이름 바꾸기의 정본. "
+    + "id·그림·타일·조건은 건드리지 않고, 바꾼 낱말 뒤 조사(은/는·이/가·을/를·와/과·으로/로)를 받침에 맞춘다. dryRun:true 면 바꿀 곳만 센다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      find: { type: "string", description: "찾을 글자(정확히 일치)" },
+      replace: { type: "string", description: "바꿀 글자" },
+      scope: { type: "string", enum: ["all", "dialogue"], description: "dialogue = 이벤트·공통 이벤트 명령 글만, all(기본) = 이름·DB 포함" },
+      mapIds: { type: "array", items: { type: "string" }, description: "이 맵들만(생략 = 전부)" },
+      dryRun: { type: "boolean" },
+    },
+    required: ["find", "replace"],
+  },
+  invalidArgsExample: { find: "북쪽 숲", replace: "속삭이는 숲" },
+  run(draft, args): ToolExecResult {
+    const find = typeof args.find === "string" ? args.find : "";
+    const to = typeof args.replace === "string" ? args.replace : "";
+    if (!find.trim()) throw new ToolError("find 가 비었습니다.");
+    if (find === to) throw new ToolError("find 와 replace 가 같습니다.");
+    const dry = args.dryRun === true;
+    const dialogueOnly = args.scope === "dialogue";
+    const only = Array.isArray(args.mapIds) && args.mapIds.length ? new Set(args.mapIds.map(String)) : null;
+    const hits = new Map<string, number>();
+    const fix = (value: string, where: string): string => {
+      if (!value.includes(find)) return value;
+      hits.set(where, (hits.get(where) ?? 0) + value.split(find).length - 1);
+      return dry ? value : replaceKeepingJosa(value, find, to);
+    };
+    const walk = (node: unknown, where: string): unknown => {
+      if (typeof node === "string") return fix(node, where);
+      if (Array.isArray(node)) { for (let i = 0; i < node.length; i += 1) node[i] = walk(node[i], where); return node; }
+      if (node && typeof node === "object") {
+        for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
+          if (NON_TEXT_KEY.test(k)) continue;
+          if (dialogueOnly && k === "name") continue;
+          (node as Record<string, unknown>)[k] = walk(v, where);
+        }
+      }
+      return node;
+    };
+    for (const [id, map] of Object.entries(draft.maps)) {
+      if (only && !only.has(id)) continue;
+      for (const event of map.events) walk(event, `맵 ${map.name ?? id}`);
+      if (!dialogueOnly) map.name = fix(map.name, `맵 이름`);
+    }
+    if (!only) {
+      walk(draft.commonEvents, "공통 이벤트");
+      if (!dialogueOnly) {
+        walk((draft as unknown as { quests?: unknown }).quests, "퀘스트");
+        const db = draft.database as unknown as Record<string, unknown>;
+        for (const key of ["items", "equipment", "enemies", "skills", "states", "actors", "classes", "troops"]) walk(db[key], `DB ${key}`);
+      }
+    }
+    const total = [...hits.values()].reduce((a, b) => a + b, 0);
+    if (!total) return { summary: `'${find}' 를 찾지 못했다 — 바꾼 곳 없음.`, warnings: [`'${find}' 0곳 — 띄어쓰기·조사 붙은 꼴을 get_event 로 확인하라.`] };
+    const detail = [...hits.entries()].map(([w, n]) => `${w} ${n}`).join(", ");
+    return { summary: `${dry ? "(미리보기) " : ""}'${find}' → '${to}' ${total}곳: ${detail}` };
+  },
+};
+
+export const REFACTOR_TOOLS: readonly ToolDefinition[] = [renameSwitch, renameVariable, pruneUnused, replaceTextInProject];

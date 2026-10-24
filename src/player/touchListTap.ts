@@ -1,4 +1,5 @@
 // 터치 화면의 목록 창 탭 규칙(2026-10-24): 첫 탭은 그 줄로 커서만 옮기고, 이미 커서가 있는 줄을 탭하면 결정이다.
+// 예외(EXCLUDE): ESC 메뉴 첫 명령 줄은 한 번 탭으로 고르고 연다(2026-10-25).
 // 장비·아이템·스킬·상점·기록 칸·선택지·전투 명령 등 「선택 표시가 있는 목록」이면 어느 창이든 똑같이 동작한다.
 //
 // 창마다 커서 모델이 따로 있으므로(runtimeCursorMenu·상태 메뉴 리듀서·상점·대사 선택지·전투) 여기서는 그 안을
@@ -12,8 +13,12 @@ import { keyTarget } from "@/player/touchPad";
 
 const MARK = ".selected, [aria-current='true'], [aria-selected='true']";
 const ROW = "button, [role='menuitem'], [role='option'], [role='button'], li, .rm-nav-item";
-/** 탭 하나가 곧 행동인 곳: 탭(분류 전환), 이름 입력 글자판, 기록 창, 터치 패드, 입력칸. */
-const EXCLUDE = "[role='tab'], .touch-pad, .name-entry-overlay, [data-testid='dialogue-log'], [data-testid='dialogue-backlog'], input, textarea, select, .play-fullscreen-toggle";
+/**
+ * 탭 하나가 곧 행동인 곳: 탭(분류 전환), 이름 입력 글자판, 기록 창, 터치 패드, 입력칸,
+ * ESC 메뉴 첫 명령 줄(아이템·스킬·장비…) — 화면을 여는 것뿐이라 되돌리기 쉽고, 두 번 눌러야 열리면 고장처럼 보였다(2026-10-25).
+ * 그 안의 목록(아이템 쓰기·장비 바꾸기 등 되돌리기 어려운 결정)은 여전히 첫 탭 = 커서, 두 번째 = 결정이다.
+ */
+const EXCLUDE = "[role='tab'], .touch-pad, .name-entry-overlay, [data-testid='dialogue-log'], [data-testid='dialogue-backlog'], input, textarea, select, .play-fullscreen-toggle, .status-menu-command-rail";
 const MAX_STEPS = 40;
 const DOWN_TO_CLICK_MS = 1500;
 

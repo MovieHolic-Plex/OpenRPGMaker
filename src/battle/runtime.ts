@@ -12,6 +12,7 @@ import { damageEffectKind, firstLearnableSkill, pickRandomSkill, rageActionSkill
 import { permanentActorSkillIds } from "@/project/growth/runtime";
 import { inputSequencePowerMultiplier } from "@/battle/battleInputSequence";
 import { battleEffectivenessMultiplier, battleElementMultiplier, damageTypeMultiplier } from "@/battle/battleElementModifiers";
+import { effectivenessParts, recordWeaknessDiscovery, type EffectivenessPart, type KnownWeaknesses } from "@/battle/weaknessDiscovery";
 import { restoreSkillDrain, spendSkillHp } from "@/battle/battleSkillVitals";
 import { effectiveActorClassId } from '@/project/sessionClass';
 import { battleTroopError } from '@/project/battleAdmission';
@@ -354,6 +355,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // Runtime-only growth fields are optional on the authored ProjectSession fallback.
   const rawSessionState = options.sessionState ?? startStateOf(options.project);
   const sessionState = rawSessionState as BattleSessionState;
+  // 약점 발견 장부 — 세션이 준 객체에 직접 적는다(playSceneBattle 이 session.knownWeaknesses 를 넘긴다). 없으면 이 전투만의 장부.
+  const knownWeaknesses: KnownWeaknesses = (sessionState.knownWeaknesses as KnownWeaknesses | undefined) ?? {};
   const actorEquipment = new Map(
     options.project.database.actors.map((actor) => [
       actor.id,
@@ -528,8 +531,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       ...(entry.effectiveness !== undefined && kind === "damage" ? { effectiveness: entry.effectiveness } : {}),
       ...(entry.weaponAffinity ? { weaponAffinity: true } : {}),
       ...(entry.exploit ? { exploit: true } : {}),
+      ...(kind === "damage" && entry.effectivenessParts && noteWeaknessDiscovery(entry) ? { weaknessDiscovered: true } : {}),
       ...(resource ? { resource } : {}),
     });
+  }
+  /** 아군이 적을 처음 약점·저항으로 맞힌 타격이면 세션 knownWeaknesses 에 적고 true. */
+  function noteWeaknessDiscovery(entry: BattleActionResultSnapshot): boolean {
+    if (!actors.some((actor) => actor.recordId === entry.userRecordId || actor.id === entry.userRecordId)) return false;
+    const enemy = enemies.find((row) => row.id === entry.targetId);
+    if (!enemy) return false;
+    return recordWeaknessDiscovery(knownWeaknesses, enemy.recordId, entry.effectivenessParts ?? []);
   }
   let result: BattleResult | undefined;
   let cancelled = false;
@@ -1784,7 +1795,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (result.hit && result.amount > 0) recoverHitStates(target);
     if (result.hit) applyNormalAttackEquipmentStates(actor, target);
     recordAction(
-      { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, ...effectivenessField(result.hit ? battleEffectivenessMultiplier(options.project, actor.equipmentEffects?.attackElementIds?.[0], target) * damageTypeMultiplier(options.project, "physical", target, actor.equipmentEffects?.attackElementIds?.[0]) : 1) },
+      { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, ...effectivenessField(result.hit ? battleEffectivenessMultiplier(options.project, actor.equipmentEffects?.attackElementIds?.[0], target) * damageTypeMultiplier(options.project, "physical", target, actor.equipmentEffects?.attackElementIds?.[0]) : 1) , ...(result.hit ? partsField(effectivenessParts(options.project, actor.equipmentEffects?.attackElementIds?.[0], "physical", target)) : {}) },
       result.hit ? "damage" : "miss",
       "attack",
     );
@@ -2409,6 +2420,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // 승리: 살아 있는 아군만 victory 포즈(쓰러진 아군은 resolveBattlerPose 가 dead 를 우선한다).
     const actorPoseContext = result === "victory" ? { ...poseContext, victory: true } : poseContext;
     return {
+      ...(Object.keys(knownWeaknesses).length > 0 ? { knownWeaknesses } : {}),
       nextReadyBattlerId: nextReady?.battler.id,
       phase,
       eventChoice,
@@ -4395,6 +4407,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       {
         userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name, skillId: skill?.id,
         ...(effectKind === "damage" && result.hit ? effectivenessField(battleEffectivenessMultiplier(options.project, skill?.elementId, target) * damageTypeMultiplier(options.project, statistic === "mind" ? "magic" : "physical", target, skill?.elementId)) : {}),
+        ...(effectKind === "damage" && result.hit ? partsField(effectivenessParts(options.project, skill?.elementId, statistic === "mind" ? "magic" : "physical", target)) : {}),
         ...(affinity > 1 && result.hit && (effectKind === "damage" || effectKind === "healing") ? { weaponAffinity: true } : {}),
         ...(exploit > 1 && result.hit ? { exploit: true } : {}),
       },
@@ -4681,6 +4694,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return wanted.some((id) => held.includes(id)) ? 1 + affinity.bonusPercent / 100 : 1;
   }
 
+  function partsField(parts: readonly EffectivenessPart[]): { effectivenessParts?: readonly EffectivenessPart[] } {
+    return parts.length > 0 ? { effectivenessParts: parts } : {};
+  }
   function effectivenessField(multiplier: number): { effectiveness?: number } {
     return Number.isFinite(multiplier) && multiplier !== 1 ? { effectiveness: multiplier } : {};
   }

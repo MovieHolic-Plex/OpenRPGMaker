@@ -184,6 +184,31 @@ export const storeGamePublishSchema = z.object({
   changes: z.record(z.string().max(24), storeGameChangeSet),
   bump: z.enum(["minor", "major"]),
   version: storeGameVersion.nullable().optional(),
+  comment: z.string().max(600).optional(),
+  post: z.object({ title: z.string().max(120), body: z.string().max(20000), pinned: z.boolean().optional() }).strict().nullable().optional(),
+}).strict();
+/** 소식 글 올리기(조수 카드·발행 대화상자). 판본 코멘트를 같이 고칠 수 있다(commentVersion 판본에). */
+export const storeGamePostSchema = z.object({
+  slug: storeSlug,
+  title: z.string().min(1).max(120),
+  body: z.string().max(20000),
+  version: storeGameVersion.nullable().optional(),
+  pinned: z.boolean().optional(),
+  comment: z.string().max(600).optional(),
+  commentVersion: storeGameVersion.nullable().optional(),
+}).strict();
+/** 평가 목록 한 쪽(조수 store_game_reviews). */
+export const storeGameReviewsSchema = z.object({
+  slug: storeSlug,
+  sort: z.enum(["helpful", "recent", "funny"]).optional(),
+  filter: z.enum(["all", "up", "down"]).optional(),
+  limit: z.number().int().min(1).max(50).optional(),
+}).strict();
+/** 제작자 답글(빈 글이면 지운다). 조수 답글 카드에서 사용자가 눌렀을 때만. */
+export const storeReviewReplySchema = z.object({
+  slug: storeSlug,
+  reviewId: z.number().int().positive(),
+  reply: z.string().max(2000),
 }).strict();
 export const storeGameCurrentSchema = z.object({ slug: storeSlug, version: storeGameVersion }).strict();
 export const storeUploadSchema = z.object({

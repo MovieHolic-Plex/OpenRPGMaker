@@ -1,0 +1,73 @@
+{
+ "project": "first-love",
+ "title": "First Love dialogue busts (shared modern portrait sets)",
+ "note": "Measure/lineup/review only. This cast came from the shared portrait library (high-resolution illustrations shown through src/player/bustPixelate.ts), not from char-gen + bake_astra_busts64, so `draw` is not configured. Rules are derived from `calibrate` (cast range).",
+ "lineup": [
+  {
+   "id": "seoha",
+   "dir": "public/assets/shared/portraits/modern-casual-girl-lavender",
+   "resource": "shared-modern-casual-girl-lavender-expressions-bust-{expr}"
+  },
+  {
+   "id": "jihu",
+   "dir": "public/assets/shared/portraits/modern-casual-boy-hoodie",
+   "resource": "shared-modern-casual-boy-hoodie-expressions-bust-{expr}"
+  },
+  {
+   "id": "minho",
+   "dir": "public/assets/shared/portraits/modern-casual-boy-mustard",
+   "resource": "shared-modern-casual-boy-mustard-expressions-bust-{expr}"
+  },
+  {
+   "id": "lead",
+   "dir": "public/assets/shared/portraits/modern-teacher-cardigan",
+   "resource": "shared-modern-teacher-cardigan-expressions-bust-{expr}"
+  },
+  {
+   "id": "client",
+   "dir": "public/assets/shared/portraits/modern-suit-boy-charcoal",
+   "resource": "shared-modern-suit-boy-charcoal-expressions-bust-{expr}"
+  },
+  {
+   "id": "clerk",
+   "dir": "public/assets/shared/portraits/modern-apron-brown",
+   "resource": "shared-modern-apron-brown-expressions-bust-{expr}"
+  },
+  {
+   "id": "seohaYoung",
+   "dir": "public/assets/shared/portraits/modern-uni-girl-long",
+   "resource": "shared-modern-uni-girl-long-expressions-bust-{expr}"
+  },
+  {
+   "id": "jihuYoung",
+   "dir": "public/assets/shared/portraits/modern-uni-boy-navy",
+   "resource": "shared-modern-uni-boy-navy-expressions-bust-{expr}"
+  }
+ ],
+ "expressions": [
+  "base",
+  "happy",
+  "surprised",
+  "sad",
+  "embarrassed"
+ ],
+ "openEyeExpressions": [
+  "base",
+  "sad",
+  "surprised"
+ ],
+ "dialogueExpressions": [
+  "base",
+  "happy",
+  "surprised",
+  "sad"
+ ],
+ "canvas": null,
+ "displayScale": null,
+ "rules": "calibrate",
+ "pipeline": {
+  "kind": "none"
+ },
+ "dialogue": null,
+ "roles": {}
+}

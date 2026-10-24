@@ -57,12 +57,19 @@ function tilesetViolations(before: Project, after: Project): MonsterAssetViolati
   return out;
 }
 
+/** 「maps/<맵>/events/<이벤트>」·「database/actors/<배우>」 처럼 그림 주인까지의 경로 — 페이지를 갈아 끼워도(replacePages) 같은 주인이다. */
+const ownerOf = (path: string): string => path.split("/").slice(0, path.startsWith("maps/") ? 4 : 3).join("/");
+
 function charsetViolations(before: Project, after: Project): MonsterAssetViolation[] {
   const old = collectCharsetUses(before);
+  // 이미 그 이벤트·배우가 쓰던 칩은 그대로 둘 수 있다 — 기존 NPC 의 페이지를 다시 쓰면서 원래 그림을 지키려다 거부당해
+  // 다른 칩으로 바꿔 버렸다(2026-10-25 빵집 주인). 새 칩만 막는다.
+  const kept = new Set([...old].map(([path, use]) => `${ownerOf(path)}|${use.resourceId}|${use.characterIndex}`));
   const out: MonsterAssetViolation[] = [];
   for (const [path, use] of collectCharsetUses(after)) {
     const previous = old.get(path);
     if (previous && previous.resourceId === use.resourceId && previous.characterIndex === use.characterIndex) continue;
+    if (kept.has(`${ownerOf(path)}|${use.resourceId}|${use.characterIndex}`)) continue;
     if (use.unresolved !== undefined || !use.resourceId) continue;
     if (isMonsterCollectOnlyCharset(after, use.resourceId)) out.push({ kind: "charset", where: use.where, detail: `캐릭터 칩 ${use.resourceId}#${use.characterIndex}(몬스터 수집 트레이너·하네스 칩)` });
   }

@@ -551,6 +551,7 @@ const stateRuntimeEffectsSchema = objectSchema({
   doomTurns: numberSchema("선고 1~9 — 걸린 뒤 자기 차례가 이만큼 오면 전투 불능. 상태를 풀면 멈춘다"),
   damageTypeRates: { ...damageTypeRatesSchema, description: "이 상태인 동안 받는 피해 계열 %를 적의 기본 damageTypeRates 대신 쓴다(갈아 끼움, 여러 상태면 큰 값). 예: 「관통상」 { magic: 300 } · 변신 기계 형태 { physical: 0, magic: 25, elements: { thunder: 200 } }(transformResourceId 와 함께)" },
   invertHealing: booleanSchema("좀비 — 이 상태인 동안 받는 HP 회복(회복 스킬·회복 아이템·재생)이 같은 양의 피해가 된다. 기본 상태 id state_zombie"),
+  maxTurns: integerSchema("최대 지속 1~9 — 걸린 뒤 자기 턴이 이만큼 지나면 회복 굴림과 상관없이 풀린다(「독은 최대 3턴」)"),
 });
 
 const heldEffectSchema = objectSchema({
@@ -895,6 +896,7 @@ const skillRecordSchema = objectSchema({
   hpCostPercent: integerSchema(
     "시전 대가로 시전자가 최대 HP 의 N% 를 잃는다(0~100, 0=없음, HP 는 1 밑으로 안 내려감). 희생·폭발계 기술의 대가",
   ),
+  weaponAffinity: objectSchema({ elementIds: stringArraySchema("무기 계열(장비 attackElementIds — sword·spear·bow·gun·hit 등). 비우면 기술 자신의 elementId"), bonusPercent: integerSchema("그 계열 무기를 들고 쓰면 피해·회복 +%") }, "무기 공명: 「검을 들고 쓰면 위력 +20%」"),
   drainPercent: integerSchema(
     "준 피해의 N% 만큼 시전자가 회복(0~100, 0=없음, affects mp 면 MP). 흡수·흡혈계 기술. 피해를 주는 기술에만 의미가 있다",
   ),
@@ -985,6 +987,8 @@ const equipmentRecordSchema = objectSchema({
   stateDefenseIds: stringArraySchema(),
   stateDefenseMode: { type: "string", enum: ["resist", "inflict"] },
   stateResistanceChance: integerSchema(),
+  damageDealtPercent: integerSchema("주는 피해 ±% (-90~300, 물리·마법 공통). 30 = 피해 +30%. 여러 장비면 더한다"),
+  damageTakenPercent: integerSchema("받는 피해 ±% (-90~300). -20 = 받는 피해 20% 감소"),
   grantsSkillIds: stringArraySchema("장착 중에만 쓸 수 있는 스킬 id. 배우지 않아도 전투 스킬 목록에 뜬다"),
   apGrants: arrayOf(objectSchema({
     skillId: stringSchema("영구 습득할 스킬 id(먼저 upsert_skill 로 만든다)"),

@@ -3674,3 +3674,17 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - `set_project_settings {battle: {fanfare: {levelUp, skillLearned, comboUnlocked, style: burst|classic|minimal, sound}}}` — 결과 화면 팡파레.
 - 레시피 `combo-techs`(`toolCapabilityIndex`) 정책: 기술마다 「센 한 방」 말고 한 가지 쓰임(깔기→거두기·지키기·시간·지속 피해·정화)을 엔진 수단으로 주고 설명에 그 쓰임을 쓴다. 연계기는 해금 조건을 레벨 업 기술에 걸어 「새 연계기!」 카드가 뜨게 한다. 별칭: 연계기·합체기·듀얼 테크 → 이 도구들, 팡파레·레벨 업 연출 → set_project_settings.
 - (2026-10-25, fs-battle-3) `set_project_settings {battle: {staging: {enemyLunge: fast|normal|classic, comboCutIn: faces|band|off, comboFx: spectacular|simple, skillHint: line|window}}}` — 전투 연출(모르는 값은 ToolError, 기본값은 저장 안 함). `upsert_enemy.lungeSpeedPercent`(25~300, 100 = 기본) — 그 적만 더 빠르게/느리게 달려든다. `upsert_skill.comboStaging` · `upsert_combo_tech.staging` `{tint:"#rrggbb", shake: none|light|heavy, slowMo, kicker}` — 연계기 하나의 색·착탄 흔들림·느린 화면·제목 위 작은 글. 런타임 의미는 [runtime-battle.md](runtime-battle.md) 「전투 연출 설정」.
+
+## 폴른 스타 제작을 조수 도구로 (2026-10-25, 폴른 재현 트랙)
+
+폴른 스타를 만들며 손으로(플래그십 코드로) 하던 일을 자연어 요청으로 할 수 있게 연 도구들. v2 조수는 요청 낱말이 맞을 때만 싣는다(`src/ai/v2/game.ts` `FALLEN_TIERS`).
+
+- `author_forest_route{fromMapId, side, count 1~5, terrain:'forest'|'field', moods[], hiddenPerMap}` — `flagship/fallen/woodland.ts` 화가(B1 활엽 composer)로 구불구불한 숲길(또는 트인 들판) 맵을 여러 장 짓고 시작 맵 가장자리 ↔ 숲1 ↔ 숲2 … 를 잇는다. 마지막 맵은 막다른 빈터. 나무 사이 틈에 숨은 물건. 새 맵은 시작 맵 밑으로 옮긴다(범위 체크포인트 보존).
+- `place_search_containers{mapId, containers[]}` — `project/containerSearchPattern.ts` 패턴. 여는 연출·전리품 떠오르기·한 번만·「이미 뒤짐」, `ownerId` 면 `eventSeesPlayer` 시선 분기(벽·방 경계), 시끄러운 수납은 「?」 들음. `caughtTakesLoot`(기본 false)·`caughtVariableId`(들킨 횟수). 칸이 비었으면 칩셋의 1칸 물건을 찍어 보이게 한다. `eventSeesPlayer` 는 **분기(fork) 조건 전용** — 페이지 조건으로 쓰면 직렬화가 거부한다.
+- `replace_text_in_project{find, replace, scope?, mapIds?, dryRun?}` — 대사·화자·이벤트/맵 이름·퀘스트·공통 이벤트·DB 글의 일괄 바꾸기(폴른 `applyNorthForest` 일반화). id·그림·조건 제외, 뒤 조사(은/는·이/가·을/를·와/과·으로/로)를 받침에 맞춘다.
+- 스키마가 막던 엔진 필드 개방: `upsert_equipment` `damageDealtPercent`/`damageTakenPercent`, `upsert_skill` `weaponAffinity`, `upsert_enemy` `damageTypeRates`, `upsert_state` `runtimeEffects.maxTurns`/`damageTypeRates`.
+- `place_field_enemy` `vision:'cone'`(앞만 봄)·`giveUpRange`. `place_examine_hotspots` `readable:true`(양피지 「편지·책」 창, 한 줄 = 한 쪽).
+- 몬스터 수집 잠금: 이벤트·배우가 **이미 쓰던** 칩은 페이지를 갈아 끼워도 유지된다(새로 고른 칩만 막는다).
+- v2 마무리 검사(`gameChecks.ts`): 같은 두 맵 사이 떨어진 문 둘 이상(짓기 도구 자동 연결 + 다시 잇기), 숲·들판 요청인데 새 맵 없이 마을 맵에 둔 필드 적.
+- (2026-10-25) `set_project_settings {battle: {revealWeakness: never|afterDiscovery|always}}`(= `battle.staging.revealWeakness`) — 적 약점·저항을 대상 고르기에서 보이는가. 기본 afterDiscovery: 처음 맞힌 타격의 「약점 발견!」 뒤로만. 도구 설명이 「기술 설명에 ○○ 약점처럼 적 이름을 쓰지 말 것」을 함께 말한다.
+- (2026-10-25 데모 기능 묶음) v2 `FALLEN_TIERS` 에 데모 기능 묶음을 더했다 — 연계기(`upsert_combo_tech`)·전투 연출/팡파레/휴대폰 조작(`set_project_settings`)·대사 책상(`list_dialogue`·`rewrite_dialogue`·`set_speaker_voice`·`read_story_script`…)·거리 행인(`add_street_walkers`)·현대 거리(`compose_modern_city_street`)·옥상 배경(`set_map_properties` background.fromMap). 묶음마다 한 줄 사용법(`fallenTierCard`)이 게임 카드 뒤에 붙는다. 마무리 관문의 «아무것도 안 바뀜» 비교에 `system`·`dialogueDesk` 를 넣었고(설정·윤문 제안만 바꾼 요청이 거짓 「안 바뀜」으로 되돌아가지 않게), 기본값이 이미 켜진 설정 요청은 그 검사를 건너뛴다. 연계기 요청인데 연계 기록이 없으면 게임 검사가 돌려보낸다. 자연 기물은 `list_spatial_designs` query 「버들항 자연」(bd-org-*).

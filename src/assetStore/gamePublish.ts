@@ -28,22 +28,36 @@ export interface StoreGamePublishRequest {
   readonly bump: "minor" | "major";
   /** 작가가 직접 정한 번호(선택). 지금까지의 판본보다 커야 한다. */
   readonly version?: string | null;
+  /** 이 판본의 제작자 코멘트(선택, 600자). 스토어 판본 카드에 작가 말투로 보인다. */
+  readonly comment?: string;
+  /** 같이 올릴 소식 글(선택). 본문은 마크다운 — 스토어가 안전한 부분만 보여 준다. */
+  readonly post?: StoreGamePostDraft | null;
 }
+
+/** 소식 글(스토어 「소식」 탭). 그림은 그 판본 파일 경로(예: store/shot1.webp)만 보인다. */
+export interface StoreGamePostDraft { readonly title: string; readonly body: string; readonly pinned?: boolean }
 
 export interface StoreGamePublishResult {
   readonly slug: string; readonly version: string; readonly unchanged: boolean; readonly status: string;
   readonly playUrl: string; readonly pageUrl: string; readonly gameUrl: string;
+  /** 코멘트·소식 글 결과(보냈을 때만). 판본은 이것과 무관하게 올라간다 — 실패하면 error 코드가 온다. */
+  readonly comment?: { readonly status?: string | null; readonly held?: readonly string[]; readonly error?: string };
+  readonly post?: { readonly id?: number; readonly status?: string; readonly url?: string; readonly held?: readonly string[]; readonly error?: string };
 }
 
 /** 편집기 대화상자가 미리 받는 것: 이 프로젝트의 게임, 다음 판본 번호, 바뀐 점을 셀 기준 project.json. */
 export interface StoreGameMine {
-  readonly game: { readonly slug: string; readonly title: string; readonly status: string; readonly currentVersion: string | null; readonly latestVersion: string | null; readonly pageUrl: string } | null;
+  readonly game: {
+    readonly slug: string; readonly title: string; readonly status: string; readonly currentVersion: string | null; readonly latestVersion: string | null; readonly pageUrl: string;
+    /** 소식 글 본문에 쓸 수 있는 그림 경로(지금 판본의 표지·스크린샷). 옛 서버는 보내지 않는다. */
+    readonly images?: readonly string[];
+  } | null;
   readonly next: { readonly minor: string; readonly major: string };
   readonly baseline: { readonly version: string; readonly projectUrl: string } | null;
 }
 
 export interface StoreGameTransport {
-  json(method: "GET" | "POST", path: string, body?: unknown): Promise<unknown>;
+  json(method: "GET" | "POST" | "PUT", path: string, body?: unknown): Promise<unknown>;
   upload(path: string, bytes: Uint8Array, headers: Readonly<Record<string, string>>): Promise<void>;
 }
 
@@ -99,6 +113,8 @@ export async function publishStoreGame(
     changes: request.changes,
     bump: request.bump,
     ...(request.version ? { version: request.version } : {}),
+    ...(request.comment?.trim() ? { comment: request.comment.trim() } : {}),
+    ...(request.post?.title.trim() ? { post: { title: request.post.title.trim(), body: request.post.body, pinned: request.post.pinned === true } } : {}),
   }) as StoreGamePublishResult;
   onProgress({ phase: "publish", done: 1, total: 1 });
   return result;

@@ -15,6 +15,11 @@ import type { FetchBytes } from "@/project/playerDeploymentTypes";
 import { buildStoreGamePacks, PRELOAD_SW_NAME, PRELOAD_SW_SOURCE } from "@/project/storeGamePacks";
 import { firstPlayableUrls, mapSceneUrls, mapsByDistance } from "@/player/scenePreload";
 
+/** 스토어가 이 프로젝트의 게임을 알아보는 열쇠(발행 대화상자·조수 도구가 같다). */
+export function storeGameProjectKey(project: Pick<Project, "meta">): string {
+  return project.meta.publication?.gameId ?? `title:${project.meta.title}`;
+}
+
 export interface StoreGameChangeSet { readonly added: readonly string[]; readonly changed: readonly string[]; readonly removed: readonly string[] }
 export type StoreGameChanges = Readonly<Record<"maps" | "events" | "characters", StoreGameChangeSet>>;
 

@@ -8,7 +8,7 @@ import { parseStoreDeepLink } from "../../src/assetStore/deepLink";
 import { OPRN_CHANNELS } from "../shared/channels";
 import {
   storeCatalogSchema, storeConceptMadeSchema, storeConceptSlugSchema, storeConceptsSchema, storeLoginSchema, storeSlugSchema, storeUploadSchema, storeUrlSchema,
-  storeBlobSchema, storeReportSchema, storeVisibilitySchema, storeGameMineSchema, storeGamePublishSchema, storeGameCurrentSchema,
+  storeBlobSchema, storeReportSchema, storeVisibilitySchema, storeGameMineSchema, storeGamePublishSchema, storeGamePostSchema, storeGameCurrentSchema, storeGameReviewsSchema, storeReviewReplySchema,
 } from "../shared/schemas";
 import { AssetStoreClient, sameOriginUrl, StoreError } from "./assetStoreClient";
 
@@ -203,6 +203,9 @@ export function registerAssetStore(host?: StoreLinkHost): void {
     const input = storeGamePublishSchema.parse(payload);
     return storeClient().gamePublish({ ...input, version: input.version ?? null }, progress);
   }));
+  ipcMain.handle(OPRN_CHANNELS.storeGamePost, (_event, payload: unknown) => wrap(() => storeClient().gamePost(storeGamePostSchema.parse(payload))));
+  ipcMain.handle(OPRN_CHANNELS.storeGameReviews, (_event, payload: unknown) => wrap(() => storeClient().gameReviews(storeGameReviewsSchema.parse(payload))));
+  ipcMain.handle(OPRN_CHANNELS.storeReviewReply, (_event, payload: unknown) => wrap(() => storeClient().reviewReply(storeReviewReplySchema.parse(payload))));
   ipcMain.handle(OPRN_CHANNELS.storeGameCurrent, (_event, payload: unknown) => wrap(() => {
     const { slug, version } = storeGameCurrentSchema.parse(payload);
     return storeClient().gameSetCurrent(slug, version);
