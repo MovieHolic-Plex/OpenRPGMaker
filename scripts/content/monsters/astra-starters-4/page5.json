@@ -1,0 +1,68 @@
+{
+ "lines": [
+  {
+   "name": "Grass",
+   "stages": [
+    {
+     "sprite": "/home/main/astra-starters-wip/s4/sb/runs/grass-a-1/front/20261024-110545/sprite-2.png",
+     "label": "leaf-lemur"
+    },
+    {
+     "sprite": "/home/main/astra-starters-wip/s4/sb/runs/grass-a-2/front/20261024-111605/sprite-1.png",
+     "label": "passed (Argon)"
+    },
+    {
+     "sprite": "/home/main/astra-starters-wip/s4/sb/runs/grass-a-3/front/20261024-113110/sprite-1.png",
+     "label": "your pick"
+    }
+   ],
+   "verdict": "Complete: stage 2 passed blind review, stage 3 is your pick. Only 64px touch-ups left."
+  },
+  {
+   "name": "Fire",
+   "stages": [
+    {
+     "sprite": "/home/main/astra-starters-wip/s4/sb/runs/fire-a-1/front/20261024-110626/sprite-3.png",
+     "label": "your pick (ram)"
+    },
+    {
+     "sprite": "/home/main/astra-starters-wip/s4/sb/runs/fire-a-2/front/20261024-115254/sprite-2.png",
+     "label": "borderline pass (Sonnet)"
+    },
+    {
+     "sprite": null,
+     "label": "open: round 1 failed, round 2 in review",
+     "alts": [
+      "/home/main/astra-starters-wip/s4/sb/runs/fire-a-3/front/20261024-115759/sprite-5.png",
+      "/home/main/astra-starters-wip/s4/sb/runs/fire-a-3/front/20261024-115759/sprite-2.png",
+      "/home/main/astra-starters-wip/s4/sb/runs/fire-a-3/front/20261024-115759/sprite-1.png"
+     ]
+    }
+   ],
+   "verdict": "Stage 3 round 1: all 5 fail (Argon). Too close to Infernape or Arcanine, and not bigger than stage 2. Top 3 shown as A-C."
+  },
+  {
+   "name": "Water",
+   "stages": [
+    {
+     "sprite": "/home/main/astra-starters-wip/s4/sb/runs/water-a-1/front/20261024-114924/sprite-1.png",
+     "label": "your pick (orca)"
+    },
+    {
+     "sprite": "/home/main/astra-starters-wip/s4/sb/runs/water-a-2/front/20261024-115224/sprite-2.png",
+     "label": "fixable (Sonnet), only new pose"
+    },
+    {
+     "sprite": null,
+     "label": "open: round 1 failed, round 2 in review",
+     "alts": [
+      "/home/main/astra-starters-wip/s4/sb/runs/water-a-3/front/20261024-115730/sprite-5.png",
+      "/home/main/astra-starters-wip/s4/sb/runs/water-a-3/front/20261024-115730/sprite-4.png",
+      "/home/main/astra-starters-wip/s4/sb/runs/water-a-3/front/20261024-115730/sprite-2.png"
+     ]
+    }
+   ],
+   "verdict": "Stage 3 round 1: all 5 fail (Argon). Ice reads as foam, close to Kyogre or Walrein. Top 3 shown as A-C."
+  }
+ ]
+}
