@@ -75,6 +75,8 @@ import { mountEmeraldTrainerIntro } from "@/player/emeraldTrainerIntro";
 import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } from "@/player/rollingHp";
 import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
 import { emeraldNarrationActive, emeraldNoEscapeLine } from "@/player/emeraldBattleNarration";
+import { revealedEffectiveness, WEAKNESS_REVEAL_LABEL } from "@/battle/weaknessDiscovery";
+import { resolveBattleStaging } from "@/project/battleStaging";
 
 /** 포켓몬 스킨의 동작 템포(배율). 05-poses-motion.css·20-pokemon-skin.css 의 포켓몬 전환 길이도 이 배율로 줄여 두었다. */
 export const POKEMON_MOTION_TEMPO = 1.5;
@@ -1490,6 +1492,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const enemyTargeting = snapshot.phase === "targetSelect" && snapshot.targetSelection?.side === "enemy";
     if (!enemyTargeting) enemyTargetCursorOnCancel = false;
     if (signature === commandPanelSignature && commandHost.childElementCount > 0) {
+      syncWeaknessReveal(snapshot, enemyTargeting);
       if (enemyTargeting) syncEnemyTargetCursor(snapshot);
       else markMenuCursor(snapshot);
       return;
@@ -1497,6 +1500,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
     commandPanelSignature = signature;
     commandHost.replaceChildren(commandPanel(snapshot, panelOptions));
+    syncWeaknessReveal(snapshot, enemyTargeting);
     if (enemyTargeting) {
       syncEnemyTargetCursor(snapshot);
       return;
@@ -1505,6 +1509,61 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 시퀀스(인트로·액션 비트)가 도는 동안 명령 패널은 숨어 있다. 여기서 focus() 하면 숨은 버튼에 포커스를 주려고
     // 동기 레이아웃만 강제된다(첫 전투 진입 focus 64ms 실측). 명령 국면이 되면 syncView 가 커서 버튼에 포커스를 준다.
     if (selected && !sequenceBusy && document.activeElement !== selected) selected.focus({ preventScroll: true });
+  }
+
+  /**
+   * 대상 고르기에서 이 공격이 각 적에게 약점·저항인지 — **알아낸 것만**(system.battleStaging.revealWeakness, 기본 afterDiscovery).
+   * 약점은 플레이어가 처음 맞혀 「약점 발견!」을 볼 때 알게 된다(2026-10-25 사용자 「몬스터 약점은 알아가는 재미」). never 면 표시 없음.
+   */
+  function syncWeaknessReveal(snapshot: BattleSnapshot, enemyTargeting: boolean): void {
+    const command = enemyTargeting ? snapshot.targetSelection?.command : undefined;
+    const project = store.getCurrent();
+    const mode = resolveBattleStaging(project.system.battleStaging).revealWeakness;
+    let elementId: string | undefined;
+    let kind: "physical" | "magic" = "physical";
+    let damaging = false;
+    if (command?.kind === "attack") {
+      damaging = true;
+      elementId = snapshot.actors.find((actor) => actor.recordId === snapshot.activeActorId)?.equipmentEffects?.attackElementIds?.[0];
+    } else if (command?.kind === "skill") {
+      const skill = project.database.skills.find((record) => record.id === command.skillId);
+      if (skill?.effect.kind === "damage") {
+        damaging = true;
+        elementId = skill.elementId;
+        kind = skill.effect.statistic === "mind" ? "magic" : "physical";
+      }
+    }
+    const rows = damaging && mode !== "never"
+      ? snapshot.enemies.map((enemy) => [enemy.id, revealedEffectiveness(project, mode, snapshot.knownWeaknesses as never, enemy, elementId, kind)] as const)
+      : [];
+    // 적 노드는 다시 그려질 수 있다 — 매번 노드별로 맞추되, 같으면 건드리지 않는다.
+    const want = new Map(rows.filter((row) => row[1]).map(([id, reveal]) => [id, reveal!]));
+    for (const node of field.querySelectorAll<HTMLElement>(".battle-enemy")) {
+      const reveal = want.get(node.dataset.battleTargetId ?? "");
+      if ((node.dataset.weaknessReveal ?? "") === (reveal ?? "") && (!reveal || node.querySelector(".battle-weakness-reveal"))) continue;
+      node.querySelectorAll(".battle-weakness-reveal").forEach((old) => old.remove());
+      if (!reveal) { delete node.dataset.weaknessReveal; continue; }
+      node.dataset.weaknessReveal = reveal;
+      const chip = document.createElement("span");
+      chip.className = "battle-weakness-reveal";
+      chip.dataset.testid = "battle-weakness-reveal";
+      chip.textContent = WEAKNESS_REVEAL_LABEL[reveal];
+      // 노드 위쪽 = 대상 커서(▼) 바로 아래. 크롬(이름표)은 스킨에 따라 숨어 있어 거기 달면 안 보였다(0×0 실측).
+      node.append(chip);
+    }
+    // 대상 목록 줄에도 같은 글자 — 스프라이트 그림 모양과 상관없이 읽힌다.
+    for (const row of commandHost.querySelectorAll<HTMLElement>("[data-battle-target-side='enemy'][data-testid^='battle-target-']")) {
+      const reveal = want.get((row.dataset.testid ?? "").slice("battle-target-".length));
+      const existing = row.querySelector<HTMLElement>(".battle-weakness-row");
+      if ((existing?.dataset.reveal ?? "") === (reveal ?? "")) continue;
+      existing?.remove();
+      if (!reveal) continue;
+      const label = document.createElement("span");
+      label.className = "battle-weakness-row";
+      label.dataset.reveal = reveal;
+      label.textContent = WEAKNESS_REVEAL_LABEL[reveal];
+      (row.querySelector<HTMLElement>(".battle-command-text > strong") ?? row).append(label);
+    }
   }
 
   /** 적 대상 국면의 커서: 「뒤로」 행이 커서를 갖고 있으면 그 행, 아니면 필드의 선택 적. */

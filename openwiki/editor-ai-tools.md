@@ -3686,3 +3686,4 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - `place_field_enemy` `vision:'cone'`(앞만 봄)·`giveUpRange`. `place_examine_hotspots` `readable:true`(양피지 「편지·책」 창, 한 줄 = 한 쪽).
 - 몬스터 수집 잠금: 이벤트·배우가 **이미 쓰던** 칩은 페이지를 갈아 끼워도 유지된다(새로 고른 칩만 막는다).
 - v2 마무리 검사(`gameChecks.ts`): 같은 두 맵 사이 떨어진 문 둘 이상(짓기 도구 자동 연결 + 다시 잇기), 숲·들판 요청인데 새 맵 없이 마을 맵에 둔 필드 적.
+- (2026-10-25) `set_project_settings {battle: {revealWeakness: never|afterDiscovery|always}}`(= `battle.staging.revealWeakness`) — 적 약점·저항을 대상 고르기에서 보이는가. 기본 afterDiscovery: 처음 맞힌 타격의 「약점 발견!」 뒤로만. 도구 설명이 「기술 설명에 ○○ 약점처럼 적 이름을 쓰지 말 것」을 함께 말한다.

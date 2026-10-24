@@ -10,7 +10,7 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import type { Project, Terms } from "@/project/types";
 import { BATTLE_HIT_FEEL_IDS, DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { BATTLE_FANFARE_STYLES, isBattleFanfareStyle, normalizeBattleFanfare, resolveBattleFanfare } from "@/project/battleFanfare";
-import { BATTLE_COMBO_CUT_INS, BATTLE_COMBO_FXS, BATTLE_ENEMY_LUNGES, BATTLE_SKILL_HINTS, normalizeBattleStaging, resolveBattleStaging } from "@/project/battleStaging";
+import { BATTLE_COMBO_CUT_INS, BATTLE_COMBO_FXS, BATTLE_ENEMY_LUNGES, BATTLE_REVEAL_WEAKNESSES, BATTLE_SKILL_HINTS, normalizeBattleStaging, resolveBattleStaging } from "@/project/battleStaging";
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, isDisplayFilterName, normalizeDisplayFilter } from "@/project/displayFilter";
 import { BATTLE_SKINS, isRetiredBattleSkinId, listActiveBattleSkinIds } from "@/battle/skins/registry";
 import { applyBattleMethod } from "@/project/battleMethod";
@@ -155,7 +155,7 @@ const resetProject: ToolDefinition = {
 
 const setProjectSettings: ToolDefinition = {
   name: "set_project_settings",
-  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도(playResolution)·기본 음악/시스템 리소스·초기 파티·전투 기본값·휴대폰 조작(touchControls — 맵 탭 걷기·조이스틱·진동·달리기 단추)·전투 화면 꾸미기(battle.look — 전투창 디자인·전투 UI 를 소박하게/화려하게: 창 모양·파티/명령 배치·빛 연출 프리셋 12종)·전투 결과 팡파레(battle.fanfare — 레벨 업 배너·「새 기술 습득!」·「새 연계기!」 카드 켜기/끄기·연출 세기·소리)·전투 연출(battle.staging — 적 달려들기 속도·연계기 얼굴 교차 컷인·연계기 화려함·기술 한 줄 도움말)·공통 글꼴(fonts)·대화창 스타일(dialogue.style)·강하게 다시 하기(newGamePlus)·장 표시(chapter)를 한 번에 설정한다. 해상도는 픽셀 밀도이고 시야는 카메라 배율이 정한다 — 둘을 같이 맞춰야 한다.",
+  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도(playResolution)·기본 음악/시스템 리소스·초기 파티·전투 기본값·휴대폰 조작(touchControls — 맵 탭 걷기·조이스틱·진동·달리기 단추)·전투 화면 꾸미기(battle.look — 전투창 디자인·전투 UI 를 소박하게/화려하게: 창 모양·파티/명령 배치·빛 연출 프리셋 12종)·전투 결과 팡파레(battle.fanfare — 레벨 업 배너·「새 기술 습득!」·「새 연계기!」 카드 켜기/끄기·연출 세기·소리)·전투 연출(battle.staging — 적 달려들기 속도·연계기 얼굴 교차 컷인·연계기 화려함·기술 한 줄 도움말·적 약점 표시 battle.revealWeakness)·공통 글꼴(fonts)·대화창 스타일(dialogue.style)·강하게 다시 하기(newGamePlus)·장 표시(chapter)를 한 번에 설정한다. 해상도는 픽셀 밀도이고 시야는 카메라 배율이 정한다 — 둘을 같이 맞춰야 한다.",
   mode: "write",
   domains: ["system", "database"],
   parameters: {
@@ -328,8 +328,14 @@ const setProjectSettings: ToolDefinition = {
               comboCutIn: { type: "string", enum: [...BATTLE_COMBO_CUT_INS], description: "연계기 컷인. faces = 참가자 흉상이 양쪽에서 미끄러져 들어와 대각선으로 엇갈림 · band = 이름 띠만 · off" },
               comboFx: { type: "string", enum: [...BATTLE_COMBO_FXS], description: "연계기 화려함. spectacular = 번쩍임·확대·흔들림·참가자별 빛 → 합쳐진 마무리·착탄 느린 화면·피해 숫자 폭발 · simple = 번쩍임만" },
               skillHint: { type: "string", enum: [...BATTLE_SKILL_HINTS], description: "전투 기술 도움말. line = 「○○은 무엇을 할까?」 자리에 한 줄(MP6 · 적 전체 · 냉기 · 둔화) · window = 긴 도움말 창" },
+              revealWeakness: { type: "string", enum: [...BATTLE_REVEAL_WEAKNESSES], description: "battle.revealWeakness 와 같다" },
             },
             additionalProperties: false,
+          },
+          revealWeakness: {
+            type: "string",
+            enum: [...BATTLE_REVEAL_WEAKNESSES],
+            description: "적 약점·저항을 대상 고르기에서 보이는가. 약점은 플레이어가 알아 가는 재미다 — 처음 맞힌 타격에 「약점 발견!」이 뜨고 적 종류별로 세이브에 남는다. never = 대상 고를 때 안 보임 · afterDiscovery(기본) = 알아낸 것만 · always = 처음부터. 기술 설명에 「○○ 약점」처럼 적 이름을 쓰지 말 것",
           },
         },
         additionalProperties: false,
@@ -521,12 +527,12 @@ const setProjectSettings: ToolDefinition = {
         if (next) draft.system.battleFanfare = next;
         else delete draft.system.battleFanfare;
       }
-      if (battle.staging !== undefined) {
-        if (!battle.staging || typeof battle.staging !== "object" || Array.isArray(battle.staging)) {
-          throw new ToolError("battle.staging 은 {enemyLunge?, comboCutIn?, comboFx?, skillHint?} 객체여야 합니다.", { code: "invalid-args" });
+      if (battle.staging !== undefined || battle.revealWeakness !== undefined) {
+        if (battle.staging !== undefined && (!battle.staging || typeof battle.staging !== "object" || Array.isArray(battle.staging))) {
+          throw new ToolError("battle.staging 은 {enemyLunge?, comboCutIn?, comboFx?, skillHint?, revealWeakness?} 객체여야 합니다.", { code: "invalid-args" });
         }
-        const patch = battle.staging as Record<string, unknown>;
-        const lists: Record<string, readonly string[]> = { enemyLunge: BATTLE_ENEMY_LUNGES, comboCutIn: BATTLE_COMBO_CUT_INS, comboFx: BATTLE_COMBO_FXS, skillHint: BATTLE_SKILL_HINTS };
+        const patch: Record<string, unknown> = { ...(battle.staging as Record<string, unknown> | undefined), ...(battle.revealWeakness !== undefined ? { revealWeakness: battle.revealWeakness } : {}) };
+        const lists: Record<string, readonly string[]> = { enemyLunge: BATTLE_ENEMY_LUNGES, comboCutIn: BATTLE_COMBO_CUT_INS, comboFx: BATTLE_COMBO_FXS, skillHint: BATTLE_SKILL_HINTS, revealWeakness: BATTLE_REVEAL_WEAKNESSES };
         for (const [key, list] of Object.entries(lists)) {
           if (patch[key] !== undefined && !list.includes(String(patch[key]))) {
             throw new ToolError(`battle.staging.${key} 는 ${list.join(" · ")} 중 하나입니다(받은 값 ${JSON.stringify(patch[key])}).`, { code: "invalid-args" });

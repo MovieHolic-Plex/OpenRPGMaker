@@ -1,5 +1,5 @@
 /**
- * 전투 연출 설정(2026-10-25, fs-battle-3) — 적이 달려드는 속도 · 연계기 컷인(얼굴 교차) · 연계기 화려함 · 기술 한 줄 도움말.
+ * 전투 연출 설정(2026-10-25, fs-battle-3) — 적이 달려드는 속도 · 연계기 컷인(얼굴 교차) · 연계기 화려함 · 기술 한 줄 도움말 · 약점 공개.
  *
  * 사용자(폴른 스타 시연): 「늑대가 고블린보다 느리네 — 빠른 것을 기준으로」「연계기 할 때 서로의 얼굴이 교차하는 느낌으로」
  * 「연계기는 좀 더 화려해야」「기술 도움말은 '카엘은 무엇을 할까?' 자리에 1줄로 짧게」.
@@ -12,11 +12,14 @@ export type BattleEnemyLunge = "fast" | "normal" | "classic";
 export type BattleComboCutIn = "faces" | "band" | "off";
 export type BattleComboFx = "spectacular" | "simple";
 export type BattleSkillHint = "line" | "window";
+/** 적 약점·저항을 대상 고르기에서 보이는가 — 약점은 플레이어가 알아 가는 것(src/battle/weaknessDiscovery.ts). */
+export type BattleRevealWeakness = "never" | "afterDiscovery" | "always";
 
 export const BATTLE_ENEMY_LUNGES: readonly BattleEnemyLunge[] = ["fast", "normal", "classic"];
 export const BATTLE_COMBO_CUT_INS: readonly BattleComboCutIn[] = ["faces", "band", "off"];
 export const BATTLE_COMBO_FXS: readonly BattleComboFx[] = ["spectacular", "simple"];
 export const BATTLE_SKILL_HINTS: readonly BattleSkillHint[] = ["line", "window"];
+export const BATTLE_REVEAL_WEAKNESSES: readonly BattleRevealWeakness[] = ["never", "afterDiscovery", "always"];
 
 export const BATTLE_ENEMY_LUNGE_LABELS: Readonly<Record<BattleEnemyLunge, string>> = {
   fast: "빠르게(사람 적 걸음이 기준, 짐승은 더 빠르게)",
@@ -37,6 +40,12 @@ export const BATTLE_SKILL_HINT_LABELS: Readonly<Record<BattleSkillHint, string>>
   window: "도움말 창(긴 설명)",
 };
 
+export const BATTLE_REVEAL_WEAKNESS_LABELS: Readonly<Record<BattleRevealWeakness, string>> = {
+  never: "안 보임(맞혀 본 순간의 「약점!」만)",
+  afterDiscovery: "알아낸 뒤에만(처음 맞힌 「약점 발견!」 뒤로 대상 고를 때 표시)",
+  always: "처음부터(대상 고를 때 늘 표시)",
+};
+
 export interface BattleStagingSettings {
   /** 생략 = fast. */
   readonly enemyLunge?: BattleEnemyLunge;
@@ -46,6 +55,8 @@ export interface BattleStagingSettings {
   readonly comboFx?: BattleComboFx;
   /** 생략 = line. */
   readonly skillHint?: BattleSkillHint;
+  /** 생략 = afterDiscovery. */
+  readonly revealWeakness?: BattleRevealWeakness;
 }
 
 export interface ResolvedBattleStaging {
@@ -53,9 +64,10 @@ export interface ResolvedBattleStaging {
   readonly comboCutIn: BattleComboCutIn;
   readonly comboFx: BattleComboFx;
   readonly skillHint: BattleSkillHint;
+  readonly revealWeakness: BattleRevealWeakness;
 }
 
-const DEFAULTS: ResolvedBattleStaging = { enemyLunge: "fast", comboCutIn: "faces", comboFx: "spectacular", skillHint: "line" };
+const DEFAULTS: ResolvedBattleStaging = { enemyLunge: "fast", comboCutIn: "faces", comboFx: "spectacular", skillHint: "line", revealWeakness: "afterDiscovery" };
 
 const pick = <T extends string>(list: readonly T[], value: unknown): T | undefined =>
   typeof value === "string" && (list as readonly string[]).includes(value) ? (value as T) : undefined;
@@ -73,6 +85,8 @@ export function normalizeBattleStaging(value: unknown): BattleStagingSettings | 
   if (fx && fx !== DEFAULTS.comboFx) out.comboFx = fx;
   const hint = pick(BATTLE_SKILL_HINTS, raw.skillHint);
   if (hint && hint !== DEFAULTS.skillHint) out.skillHint = hint;
+  const reveal = pick(BATTLE_REVEAL_WEAKNESSES, raw.revealWeakness);
+  if (reveal && reveal !== DEFAULTS.revealWeakness) out.revealWeakness = reveal;
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
@@ -82,6 +96,7 @@ export function resolveBattleStaging(value: BattleStagingSettings | undefined): 
     comboCutIn: pick(BATTLE_COMBO_CUT_INS, value?.comboCutIn) ?? DEFAULTS.comboCutIn,
     comboFx: pick(BATTLE_COMBO_FXS, value?.comboFx) ?? DEFAULTS.comboFx,
     skillHint: pick(BATTLE_SKILL_HINTS, value?.skillHint) ?? DEFAULTS.skillHint,
+    revealWeakness: pick(BATTLE_REVEAL_WEAKNESSES, value?.revealWeakness) ?? DEFAULTS.revealWeakness,
   };
 }
 
