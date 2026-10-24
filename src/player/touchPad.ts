@@ -50,7 +50,7 @@ export function rememberTouchInput(): void {
   try { window.localStorage.setItem(TOUCH_OVERRIDE_KEY, "1"); } catch { /* 저장 안 됨 */ }
 }
 
-function rememberedTouchInput(): boolean {
+export function rememberedTouchInput(): boolean {
   try { return window.localStorage.getItem(TOUCH_OVERRIDE_KEY) === "1"; } catch { return false; }
 }
 
@@ -71,7 +71,8 @@ export function isTouchDevice(): boolean {
   const query = (q: string): boolean => hasPointerQueries && window.matchMedia(q).matches;
   const touchPoints = typeof navigator !== "undefined" ? navigator.maxTouchPoints ?? 0 : 0;
   if (query("(pointer: coarse)")) return true;
-  if (touchPoints > 0 && (isMobileUserAgent() || rememberedTouchInput())) return true;
+  // 휴대폰·태블릿 UA 는 그 자체로 터치다(iframe 안에서 터치 점·포인터 질의가 비어 오는 브라우저가 있다).
+  if (isMobileUserAgent() || rememberedTouchInput()) return true;
   if (touchPoints > 0 && query("(any-pointer: coarse)") && query("(hover: none)")) return true;
   // Hybrid laptops and desktop browsers can expose touch APIs while their primary
   // interaction remains a mouse. Avoid covering the play surface there.

@@ -33,7 +33,7 @@ import { warmPlayGameRuntime } from "@/player/createPlayGame";
 import { repairFaceMatches } from "@/project/faceMatchRepair";
 import { installFocusGuard } from "@/player/focusGuard";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
-import { isTouchDevice, rememberTouchInput } from "@/player/touchPad";
+import { isTouchDevice, rememberTouchInput, rememberedTouchInput } from "@/player/touchPad";
 import type { ActionCombatRuntimeResult } from "@/testing/actionCombatProof";
 import {
   askContinueFromOlderVersion,
@@ -86,7 +86,8 @@ void bootExportedPlayer(app);
  * 「이 기기는 터치」라고 기억하고 한 번 다시 연다. 키보드 전용 화면은 모든 누름을 막아 폰에서 아무것도 못 한다.
  */
 function installTouchUpgrade(): void {
-  if (isTouchDevice()) return;
+  // 이미 승격을 기억했으면(=isTouchDevice 가 참) 다시 읽지 않는다 — 한 번만 다시 연다.
+  if (isTouchDevice() || rememberedTouchInput()) return;
   const onTouch = (event: TouchEvent | PointerEvent): void => {
     if ("pointerType" in event && event.pointerType !== "touch") return;
     window.removeEventListener("touchstart", onTouch, true);

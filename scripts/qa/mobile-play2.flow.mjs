@@ -42,7 +42,9 @@ function gameFrame(page) {
   return page.frames().find((f) => f !== page.mainFrame() && /player\.html|index\.html|games-kr|:18322/.test(f.url())) ?? page.mainFrame();
 }
 async function box(page, sel) {
-  return gameFrame(page).locator(sel).first().boundingBox().catch(() => null);
+  const loc = gameFrame(page).locator(sel).first();
+  if ((await loc.count().catch(() => 0)) === 0) return null; // 없는 요소에 30초씩 기다리지 않는다
+  return loc.boundingBox({ timeout: 3000 }).catch(() => null);
 }
 async function tapAt(page, x, y, wait = 700) { await page.touchscreen.tap(x, y); await sleep(wait); }
 async function tapSel(page, sel, wait = 700) {
@@ -167,7 +169,8 @@ async function openPage(browser, seg, checkpoint) {
   }
   if (!URL_) {
     await page.addInitScript(([url, cpt]) => {
-      try { localStorage.clear(); } catch {}
+      // 「이 기기는 터치」 기억(첫 터치 승격)은 남긴다 — 지우면 승격 뒤 다시 읽기가 끝없이 돈다.
+      try { const t = localStorage.getItem("oprn-touch-input"); localStorage.clear(); if (t) localStorage.setItem("oprn-touch-input", t); } catch {}
       window.__OPENRPG_BOOT__ = { projectUrl: url, saveNamespace: "mobile-play2", qaInstrumentation: true, ...(cpt ? { qaCheckpoint: cpt } : {}) };
     }, ["/__mp/project.json", checkpoint]);
     await page.route("**/__mp/project.json", (route) => route.fulfill({ status: 200, contentType: "application/json", path: PLAY }));
