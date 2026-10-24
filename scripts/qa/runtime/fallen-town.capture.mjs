@@ -17,7 +17,7 @@ const party = (lv) => [{ actorId: "actor_hero", level: lv }, { actorId: "actor_f
 const marched = { sw_fs_valen_marched: true, sw_fs_knight_marched: true, ...Object.fromEntries("abcdefgh".split("").map((k) => [`sw_fs_escort_${k}_marched`, true])) };
 const SCENES = {
   smith: { mapId: "fs_smithy", x: 10, y: 8, facing: "up", switches: { ...marched, sw_fs_main_started: true, sw_fs_q_spear_met: true, sw_fs_q_spear_done: true, sw_fs_iris_joined: true }, party: party(6), gold: 3000 },
-  kids: { mapId: "fs_hub", x: 24, y: 31, facing: "down", switches: { ...marched, sw_fs_main_started: true }, party: party(6).slice(0, 2) },
+  kids: { mapId: "fs_hub", x: 24, y: 28, facing: "up", switches: { ...marched, sw_fs_main_started: true }, party: party(6).slice(0, 2) },
   necklace: { mapId: "fs_hub", x: 35, y: 19, facing: "up", switches: { ...marched, sw_fs_main_started: true }, party: party(6).slice(0, 2) },
   bridge: { mapId: "fs_hub", x: 21, y: 26, facing: "up", switches: { ...marched, sw_fs_main_started: true }, party: party(6).slice(0, 2) },
   oden: { mapId: "fs_apothecary", x: 15, y: 14, facing: "up", switches: { ...marched, sw_fs_main_started: true }, party: party(6).slice(0, 2) },
