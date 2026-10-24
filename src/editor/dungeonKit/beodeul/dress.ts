@@ -132,7 +132,7 @@ export function dressCorridor(c: DressCtx, type: DungeonType, cor: PlacedCorrido
   }
   const trackY = r.y + Math.floor(r.h / 2);
   // 광차: 선로 줄 위(통로 한가운데 줄이 널판이다), 너무 붙지 않게.
-  if (r.w >= 8 && rs() < 0.7) c.put(MV("cart-h"), r.x + 2 + Math.floor(rs() * (r.w - 5)), trackY - 1);
+  if (r.w >= 8 && rs() < 0.7) c.put(pickKit(c, [TK("minecart"), MV("cart-h")]), r.x + 2 + Math.floor(rs() * (r.w - 5)), trackY - 1);
   // 갱목 틀 쌍: 선로 줄 위아래 가장자리 칸에 3칸 간격(선반 2×2 조각이 곧 갱목 틀 모양이다)
   for (let x = r.x + 2; x < r.x + r.w - 2; x += 5) {
     if (rs() < 0.75) { stand(c, MV("rack"), x, r.y + r.h - 1); }
@@ -331,7 +331,7 @@ function dressMine(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
     case "junction": {
       // 갈림 방: 선로 줄 위에 광차, 벽에 램프, 가장자리에 광석·통
       const cart = [r.x + 2, r.x + r.w - 4];
-      if (rs() < 0.8) c.put(MV("cart-h"), cart[Math.floor(rs() * 2)]!, trackY - 1);
+      if (rs() < 0.8) c.put(pickKit(c, [TK("minecart"), MV("cart-h")]), cart[Math.floor(rs() * 2)]!, trackY - 1);
       timberFrames(c, rs, slots, 1);
       oreVeins(c, rs, slots, 1);
       for (const q of centerFirst.slice(0, 3)) if (rs() < 0.6 && lonely(c, q.x, q.y, 1)) c.put(TORCH, q.x, q.y);

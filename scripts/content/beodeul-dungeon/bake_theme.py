@@ -63,10 +63,13 @@ KIT_NAME = {
     # 숲
     "tc.fo_ancient_tree": "giant-tree", "tc.fo_ring": "mushroom-ring", "tc.fo_boulder": "mossy-boulder", "tc.fo_bramble": "bramble",
     "tc.fo_waystone": "waystone",
+    # 남은 조각(theme_props)
+    "prop.minecart": "minecart", "prop.cracked_floor": "cracked-floor", "prop.wisp": "will-o-wisp",
 }
 # 주제 테마 낱말(키트 ai.themes) — 조수 카탈로그가 고를 때 본다.
 THEME_OF = {"arcane": ["tower", "탑", "마법탑"], "other": ["otherworld", "마계"], "earth": ["mine", "catacomb", "castle", "temple", "광산", "묘지", "성", "유적"],
-            "wall.other": ["otherworld", "마계"], "wall.tower": ["tower", "탑", "마법탑"],
+            "wall.other": ["otherworld", "마계"], "wall.tower": ["tower", "탑", "마법탑"], "wall.ice": ["ice", "얼음"],
+            "prop.minecart": ["mine", "광산"], "prop.cracked_floor": ["castle", "catacomb", "temple", "성", "묘지", "유적"], "prop.wisp": ["swamp", "늪"],
             "tc.pyr": ["pyramid", "피라미드", "사막"], "tc.ice": ["ice", "얼음"], "tc.sw": ["swamp", "늪"], "tc.fo": ["forest", "숲"]}
 
 
@@ -346,7 +349,8 @@ HANDLERS = {"arcane.tower_floor": bake_auto_floor("beodeul_dungeon_theme_tower_f
             "tc.pyr_floor": bake_pyr_floor, "tc.pyr_face": bake_pyr_face, "tc.pyr_rim": bake_pyr_rim, "tc.pyr_sand_trap": bake_pyr_sand_trap,
             "wall.other_face": bake_face("otherworld", "마계", "흑요석", "otherworld"), "wall.tower_face": bake_face("tower", "마법탑", "마름돌", "tower"),
             "wall.other_rim": bake_rim("beodeul_dungeon_ceiling_void", "마계", "흑요석", "otherworld"),
-            "wall.tower_rim": bake_rim("beodeul_dungeon_ceiling_tower", "마법탑", "갓돌", "tower")}
+            "wall.tower_rim": bake_rim("beodeul_dungeon_ceiling_tower", "마법탑", "갓돌", "tower"),
+            "wall.ice_face": bake_face("ice", "얼음굴", "얼음", "ice")}
 
 
 # gap 물결이지만 주제 꼬리에 굽는 고름 — 32px 위상 몸통 용암(gap-lava-r2)은 칸이 많아 gap 꼬리(30,848 앞)에 들어가지 않는다.

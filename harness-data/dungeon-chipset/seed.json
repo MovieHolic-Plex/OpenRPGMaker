@@ -3493,7 +3493,7 @@
      "oo"
     ]
    },
-   "brief": "판석이 가운데로 내려앉아 방사로 갈라진 함정 자리(불투명, 바닥 칸).",
+   "brief": "판석이 가운데로 내려앉아 방사로 갈라진 함정 자리(불투명, 바닥 칸 — 바깥 줄눈은 성 바닥 키트와 같은 회색).",
    "refs": [
     "castle-catacombs:floor_castle"
    ],
@@ -4215,6 +4215,15 @@
     "prop.cracked_floor"
    ],
    "lead": "r1 VQA 반영: 광차 3/4 통 안·두 레일 걸침, 금 간 바닥 북쪽 판석 두께·번짐 없음."
+  },
+  "theme-props-r3": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_props_r3.py",
+   "wave": "theme_props",
+   "title": "던전 테마 남은 조각 theme-props-r3",
+   "items": [
+    "wall.ice_face"
+   ],
+   "lead": "r1 VQA 반영: 얼음 벽 돌마다 칠·깨진 면 얼음 껍질·길이 다른 고드름."
   }
  }
 }

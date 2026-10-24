@@ -513,7 +513,8 @@ def tower_kit(n=1):
     bot = cols3(mid[32:48], el[32:48], er[32:48])
     cells = [G(r, lg) for r in bot]
     for c in cells:
-        stamp(c, ['eeeeeeeeeeeeeeee', 'dddddjdddddddjdd', 'cccccjcccccccjcc', 'bbbbbjbbbbbbbjbb', 'aaaaaaaaaaaaaaaa', 'jjjjjjjjjjjjjjjj'], lg, 0, 9)
+        # r5: 굽도리 = 앞으로 나온 큰 돌 켜(돌마다 단·결이 다름, 위에 그림자 한 줄), 납작한 쇠 막대 아님
+        stamp(c, ['aaaaaaaaaaaaaaaa', 'eEdedjd2eDeedj3e', 'dCcDcjc3dcCdcj2d', 'cB3cbjbc3bBccjcb', 'bAbabjab2abAbjba', 'jjjjjjjjjjjjjjjj'], lg, 0, 9)
     k.base3 = hcat(*cells)
     alt = m.crop(0, 16, 16, 16)
     stamp(alt, ['.....jj.........', '....jabj........', '....jaoj........', '....jaoj........', '....jaoj........', '....jaoj........',
