@@ -114,48 +114,119 @@ export async function playDoorOpenBeforeTransfer(scene: PlaySceneContext, eventI
   return true;
 }
 
-/** 문짝(문 타일 그림)이 왼쪽 경첩으로 접히며 어두운 문간이 드러난다. 위 칸도 문이면 두 칸 높이로 연다. */
+type DoorBox = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
+const doorBoxCache = new Map<string, DoorBox | null>();
+
+/**
+ * 문 타일 안에서 문짝이 차지하는 사각형(px, 프레임 좌표). 같은 줄 옆 칸(벽)과 다른 화소의 테두리 상자다 —
+ * 문 타일은 대개 벽 무늬 위에 문짝을 그린 것이라 벽과 같은 화소를 빼면 문짝만 남는다. 옆 벽이 없으면 null.
+ */
+function doorPanelBox(scene: PlaySceneContext, textureKey: string, doorTile: number, wallTile: number | null, size: number): DoorBox | null {
+  if (wallTile === null || wallTile === doorTile) return null;
+  const key = `${textureKey}|${doorTile}|${wallTile}`;
+  if (doorBoxCache.has(key)) return doorBoxCache.get(key)!;
+  let minX = size, minY = size, maxX = -1, maxY = -1;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const a = scene.textures.getPixel(x, y, textureKey, `tile_${doorTile}`);
+      const b = scene.textures.getPixel(x, y, textureKey, `tile_${wallTile}`);
+      if (!a || a.alpha < 128) continue;
+      const diff = !b || b.alpha < 128 ? 255 : Math.abs(a.red - b.red) + Math.abs(a.green - b.green) + Math.abs(a.blue - b.blue);
+      if (diff < 60) continue;
+      minX = Math.min(minX, x); minY = Math.min(minY, y); maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+    }
+  }
+  const box = maxX >= minX && maxY >= minY && (maxX - minX + 1) >= 4 && (maxY - minY + 1) >= 4
+    ? { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 } : null;
+  doorBoxCache.set(key, box);
+  return box;
+}
+
+/** 같은 층 좌우 칸에서 문이 아닌 벽 타일. */
+function neighbourWallTile(project: Project, map: GameMap, cell: Cell, layer: (typeof LAYER_KEYS)[number]): number | null {
+  for (const dx of [-1, 1]) {
+    const x = cell.x + dx;
+    if (x < 0 || x >= map.width) continue;
+    const tile = (map[layer] as ArrayLike<number> | undefined)?.[cell.y * map.width + x] ?? -1;
+    if (tile < 0) continue;
+    if (doorTileAt(project, map, x, cell.y)) continue;
+    return tile;
+  }
+  return null;
+}
+
+/** 문짝 조각 하나 — 칸, 그 칸 타일, 프레임 안 사각형. */
+type DoorPiece = { readonly cell: Cell; readonly tile: number; readonly box: DoorBox };
+
+/** 타일 프레임의 일부를 새 프레임으로 잘라 둔다(setCrop 대신 — 배율을 걸면 경첩 쪽으로 자연히 접힌다). */
+function panelFrame(scene: PlaySceneContext, textureKey: string, tile: number, box: DoorBox): string | null {
+  const name = `__door_${tile}_${box.x}_${box.y}_${box.w}_${box.h}`;
+  const texture = scene.textures.get(textureKey);
+  if (texture.has(name)) return name;
+  const base = texture.get(`tile_${tile}`) as Phaser.Textures.Frame | undefined;
+  if (!base || base.name !== `tile_${tile}`) return null;
+  texture.add(name, base.sourceIndex, base.cutX + box.x, base.cutY + box.y, box.w, box.h);
+  return name;
+}
+
+/** 아래 문 칸에서 위로 이어진 문짝(윗칸 그림이 문 이름표가 아니어도 문짝 화소가 아래 문과 이어지면 문이다). */
+function doorPieces(scene: PlaySceneContext, project: Project, map: GameMap, bottom: Cell, textureKey: string, size: number): DoorPiece[] {
+  const pieces: DoorPiece[] = [];
+  const door = doorTileAt(project, map, bottom.x, bottom.y);
+  if (!door) return pieces;
+  const layer = cellTiles(project, map, bottom.x, bottom.y).find((t) => t.tile === door.tile)?.layer ?? "upperTiles";
+  const inset = Math.round(2 * size / 16);
+  const box = doorPanelBox(scene, textureKey, door.tile, neighbourWallTile(project, map, bottom, layer), size)
+    ?? { x: inset, y: inset, w: size - inset * 2, h: size - inset };
+  pieces.push({ cell: bottom, tile: door.tile, box });
+  let below = box;
+  for (let up = 1; up <= 2; up++) {
+    const cell = { x: bottom.x, y: bottom.y - up };
+    const tile = (map[layer] as ArrayLike<number> | undefined)?.[cell.y * map.width + cell.x] ?? -1;
+    if (cell.y < 0 || tile < 0 || below.y > 1) break;
+    const found = doorPanelBox(scene, textureKey, tile, neighbourWallTile(project, map, cell, layer), size);
+    if (!found || found.y + found.h < size - 1) break;
+    const left = Math.max(found.x, box.x), right = Math.min(found.x + found.w, box.x + box.w);
+    if (right - left < box.w * 0.5) break;
+    below = { x: box.x, y: found.y, w: box.w, h: size - found.y };
+    pieces.unshift({ cell, tile, box: below });
+  }
+  return pieces;
+}
+
+/** 문짝(문 타일 그림)이 왼쪽 경첩으로 접히며 어두운 문간이 드러난다. 위로 이어진 문짝 칸도 같이 연다. */
 async function swingDoorOpen(scene: PlaySceneContext, project: Project, map: GameMap, bottom: Cell): Promise<void> {
   const size = mapTileSize(map);
-  const s = size / 16;
-  const cells: Cell[] = [bottom];
-  if (doorTileAt(project, map, bottom.x, bottom.y - 1)) cells.unshift({ x: bottom.x, y: bottom.y - 1 });
   const tileset = project.tilesets[map.tilesetId];
-  const resolver = (scene as unknown as { resolveTilesetTexture?: (t: NonNullable<typeof tileset>) => string }).resolveTilesetTexture;
-  const textureKey = tileset ? resolver?.(tileset) ?? tilesetTextureKey(tileset) : "";
+  // 메서드로 부른다(this 가 필요하다).
+  const host = scene as unknown as { resolveTilesetTexture?(t: NonNullable<typeof tileset>): string };
+  const textureKey = tileset ? host.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset) : "";
+  if (!textureKey || !scene.textures.exists(textureKey)) return;
   const depth = rowDepth(bottom.y, size) + FX_DEPTH_BUMP;
-  const inset = Math.round(2 * s);
   const objects: Phaser.GameObjects.GameObject[] = [];
-  const panels: { image: Phaser.GameObjects.Image; left: number }[] = [];
-  cells.forEach((c, i) => {
-    const top = i === 0 ? inset : 0;
-    const left = c.x * size + inset;
-    const width = size - inset * 2;
-    const dark = scene.add.rectangle(left, c.y * size + top, width, size - top, 0x120c08).setOrigin(0, 0).setDepth(depth);
-    objects.push(dark);
-    const door = doorTileAt(project, map, c.x, c.y);
-    if (door && textureKey && scene.textures.exists(textureKey)) {
-      const image = scene.add.image(c.x * size, c.y * size, textureKey, `tile_${door.tile}`).setOrigin(0, 0).setDepth(depth + 0.01);
-      image.setCrop(inset, top, width, size - top);
-      panels.push({ image, left });
-      objects.push(image);
-    }
-  });
+  const panels: Phaser.GameObjects.Image[] = [];
+  for (const piece of doorPieces(scene, project, map, bottom, textureKey, size)) {
+    const x = piece.cell.x * size + piece.box.x, y = piece.cell.y * size + piece.box.y;
+    objects.push(scene.add.rectangle(x, y, piece.box.w, piece.box.h, 0x120c08).setOrigin(0, 0).setDepth(depth));
+    const frame = panelFrame(scene, textureKey, piece.tile, piece.box);
+    if (!frame) continue;
+    const image = scene.add.image(x, y, textureKey, frame).setOrigin(0, 0).setDepth(depth + 0.01);
+    panels.push(image);
+    objects.push(image);
+  }
   // 플레이어가 문 칸 위에 서 있으면 문간 그림 앞에 남게 한다.
   const playerDepth = scene.player?.depth;
-  if (scene.player && cells.some((c) => c.x === scene.tileX && c.y === scene.tileY)) scene.player.setDepth(depth + 0.1);
-  for (const scaleX of [0.7, 0.42, 0.18]) {
-    for (const { image, left } of panels) {
+  if (scene.player && scene.tileX === bottom.x && scene.tileY === bottom.y) scene.player.setDepth(depth + 0.1);
+  for (const scaleX of [0.8, 0.58, 0.36, 0.16]) {
+    for (const image of panels) {
       image.setScale(scaleX, 1);
-      // 크롭은 프레임 좌표다 — 배율을 걸면 크롭 시작점(inset)도 줄어드니 왼쪽 문틀에 붙게 되돌린다.
-      image.x = left - inset * scaleX;
-      image.setTint(scaleX > 0.5 ? 0xffffff : 0xb8b0a8);
+      image.setTint(scaleX > 0.5 ? 0xffffff : scaleX > 0.3 ? 0xc8beb4 : 0x9a9088);
     }
-    await sleep(scene, DOOR_FRAME_MS);
+    await sleep(scene, DOOR_FRAME_MS + 20);
   }
-  await sleep(scene, 60);
-  // 이동(페이드) 뒤 맵이 바뀌면 함께 치운다. 같은 맵 이동이면 바로 치운다.
-  scene.time.delayedCall(700, () => {
+  await sleep(scene, 160);
+  // 페이드 뒤 맵이 바뀌면 그대로 사라진다. 같은 맵 이동이면 곧 치운다.
+  scene.time.delayedCall(900, () => {
     for (const object of objects) object.destroy();
     if (scene.player && playerDepth !== undefined && scene.player.active) scene.player.setDepth(Math.max(scene.player.depth, playerDepth));
   });
@@ -205,9 +276,9 @@ function burstParticles(scene: PlaySceneContext, cell: Cell, style: ContainerSty
   for (let i = 0; i < spec.count; i++) {
     const color = spec.colors[i % spec.colors.length]!;
     const angle = (-Math.PI / 2) + (i / spec.count - 0.5) * Math.PI * 1.3 + (Math.sin(i * 12.9898) * 0.25);
-    const speed = (spec.kind === "sparkle" ? 9 : 7 + (i % 3) * 2) * s;
-    const w = spec.kind === "straw" ? 3 * s : spec.kind === "splinter" ? 2 * s : 1 * s;
-    const h = spec.kind === "straw" ? 1 * s : spec.kind === "splinter" ? 1 * s : 1 * s;
+    const speed = (spec.kind === "sparkle" ? 10 : 9 + (i % 3) * 3) * s;
+    const w = spec.kind === "straw" ? 4 * s : spec.kind === "splinter" ? 3 * s : 2 * s;
+    const h = spec.kind === "straw" ? 1 * s : spec.kind === "splinter" ? 2 * s : 2 * s;
     const bit = scene.add.rectangle(cx, cy, Math.max(1, w), Math.max(1, h), color).setDepth(depth);
     if (spec.kind === "straw" || spec.kind === "splinter") bit.setAngle((i * 47) % 180);
     const tx = cx + Math.cos(angle) * speed;
@@ -245,7 +316,20 @@ async function liftLid(scene: PlaySceneContext, cell: Cell): Promise<void> {
     g.fillStyle(0xb07a3e, 1).fillRect(x0 + 2 * s, y0 + (5 - gap - lift / 2) * s, 12 * s, 1 * s);
     await sleep(scene, 70);
   }
-  scene.time.delayedCall(700, () => g.destroy());
+  // 뒤진 흔적(syncContainerSearchedMarks)이 그 칸에 그려질 때까지 열린 채로 둔다 — 대사 동안 뚜껑이 닫혀 보이지 않게.
+  holdUntilMark(scene, cell, g);
+}
+
+const pendingLids = new WeakMap<PlaySceneContext, Map<string, Phaser.GameObjects.Graphics>>();
+
+function holdUntilMark(scene: PlaySceneContext, cell: Cell, g: Phaser.GameObjects.Graphics): void {
+  const pending = pendingLids.get(scene) ?? new Map<string, Phaser.GameObjects.Graphics>();
+  pendingLids.set(scene, pending);
+  const key = `${scene.map.id}|${cell.x},${cell.y}`;
+  pending.get(key)?.destroy();
+  pending.set(key, g);
+  // 흔적 페이지가 없는 수납(저작자가 searched 페이지를 안 둔 경우)도 결국 닫힌다.
+  scene.time.delayedCall(15_000, () => { if (pending.get(key) === g) { pending.delete(key); g.destroy(); } });
 }
 
 export async function playContainerFx(scene: PlaySceneContext, style: ContainerStyle, cell: Cell): Promise<void> {
@@ -347,6 +431,8 @@ export function syncContainerSearchedMarks(scene: PlaySceneContext): void {
   let layer = markLayers.get(scene);
   if (!layer || layer.mapId !== scene.map.id) {
     for (const g of layer?.marks.values() ?? []) g.destroy();
+    for (const g of pendingLids.get(scene)?.values() ?? []) g.destroy();
+    pendingLids.get(scene)?.clear();
     layer = { mapId: scene.map.id, marks: new Map() };
     markLayers.set(scene, layer);
   }
@@ -359,6 +445,9 @@ export function syncContainerSearchedMarks(scene: PlaySceneContext): void {
     const style = isContainerStyle(interaction.style) ? interaction.style : containerStyleForLabel(view.event.name);
     const key = `${view.event.id}|${view.x},${view.y}|${style}`;
     keep.add(key);
+    const lidKey = `${scene.map.id}|${view.x},${view.y}`;
+    const lid = pendingLids.get(scene)?.get(lidKey);
+    if (lid) { lid.destroy(); pendingLids.get(scene)!.delete(lidKey); }
     if (layer.marks.get(key)?.active) continue;
     const g = scene.add.graphics().setDepth(rowDepth(view.y, size) + 0.2);
     drawMark(g, CONTAINER_FX[style].mark, view.x * size, view.y * size, s);
