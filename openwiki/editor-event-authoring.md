@@ -186,7 +186,7 @@ Enter 로 맡기면 곧바로 닫혀 다음 칸을 누를 수 있다. 맡긴 일
 | `facing` | 주인공(`session.playerFacing`) 또는 이 이벤트의 방향 | 이벤트 위치 모르면 거짓 |
 | `relativeFacing` | 주인공이 이벤트를 봄 / 이벤트 등 뒤 / 이벤트가 주인공 등 뒤 | 같은 칸은 거짓 |
 | `hiding` · `pursuitActive` | 숨는 중 · 추격 중(`session.horror`) | — |
-| `eventSeesPlayer` | 이벤트 `eventId` 가 지금 주인공을 보는가(같은 방 `GameMap.locations` · 시야 부채꼴 · `range` 기본 5칸). `sameRoom`·`requireFacing` 기본 true, `value:false` 면 못 볼 때. 실시간 위치는 `state.eventPositions`(NPC 산책·`moveEvent` 반영). 순수 함수 `src/project/conditionEventSight.ts`. 집 주인이 뒤질 때 보는 경우만 잡게 할 때 | — |
+| `eventSeesPlayer` | 이벤트 `eventId` 가 지금 주인공을 보는가. `range`(기본 5칸, 체비셰프) · 같은 방(`GameMap.locations`; 방 밖 문틀 칸은 맞닿은 방 모두에 속함, 맵에 방이 없으면 방 판정 생략) · **벽 시선 광선**(`src/project/sightBlockers.ts` — 하층 벽면·천장·빈 칸, 방 사이 못 걷는 칸; 가구는 안 막음) · 바라보는 90° 부채꼴(바로 옆 칸은 방향 무관). `sameRoom:false` = 방·벽 무관 가까움(옆방 기척). `hearRange` = 소리로 알아차리는 거리(벽 칸마다 +3) — 시끄러운 행동에만, `range:0` 과 함께 쓰면 「들음」만. `value:false` 면 못 볼 때. 실시간 위치는 `state.eventPositions`. 순수 함수 `src/project/conditionEventSight.ts`, 판정기는 `commandCatalog.locationEvalContext` 가 `cachedSightBlocker` 로 넘긴다. 수납 패턴 `src/project/containerSearchPattern.ts` | — |
 | `clearCount` · `endingSeen` · `newGamePlus` | **기기** 회차 기록(`session.clearHistory`, 부팅 때 clearRecord 에서 채움) | 기록 없으면 0회 |
 | `weekday` | 게임 달력 요일(0=일…6=토, `system.timeSystem.startWeekday` 기본 월) | 시계 꺼짐이면 거짓 |
 | `stringVariable` | 문자열 변수 ==·!=·포함·비어 있음 | 없는 변수는 빈 문자열 |

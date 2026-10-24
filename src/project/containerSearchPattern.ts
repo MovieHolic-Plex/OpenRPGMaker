@@ -38,12 +38,18 @@ export function lootPopupFor(command: Command): Command | null {
 const isPopup = (command: Command | undefined): boolean =>
   command?.kind === "showAnimation" && String((command as { animationId?: string }).animationId).startsWith("fx:popup:");
 
-/** 명령 목록(분기 안까지)의 전리품 명령마다 바로 앞에 떠오르기 연출을 끼운다. 이미 있으면 두 번 넣지 않는다. */
+/** 명령 목록(분기 안까지)의 첫 전리품 명령 앞에 떠오르기 연출을 끼운다. 이미 있으면 두 번 넣지 않는다. */
 export function withLootPopups(commands: readonly Command[]): Command[] {
   const out: Command[] = [];
   for (const command of commands) {
     const popup = lootPopupFor(command);
-    if (popup && !isPopup(out[out.length - 1])) out.push(popup);
+    if (popup && !out.some(isPopup)) {
+      // 「…을 찾았다」 대사가 바로 앞에 있으면 그 대사(와 얼굴 바꾸기) 앞에 — 글과 함께 떠오른다.
+      let at = out.length;
+      if (out[at - 1]?.kind === "text") at--;
+      if (at < out.length && out[at - 1]?.kind === "changeFace") at--;
+      out.splice(at, 0, popup);
+    }
     out.push(mapBranches(command, withLootPopups));
   }
   return out;
