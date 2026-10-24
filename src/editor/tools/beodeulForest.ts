@@ -11,6 +11,7 @@ import type { AutotileGroup, GameMap, Project, TilesetDef, TreeComposerDef, Tree
 import { composeTreesPlaced, treeComposerOwnTiles, treeHash, type TreePlacement } from "@/project/defaults/treeComposer";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import { BEODEUL_NATURE, BEODEUL_NATURE_ID, createBeodeulNatureTileset } from "@/project/defaults/beodeulNature";
+import { BEODEUL_FOREST_TRUNKS, BEODEUL_FOREST_TRUNKS_ID, createBeodeulForestTrunksTileset } from "@/project/defaults/beodeulForestTrunks";
 
 export const BEODEUL_FOREST_TYPES = ["broadleaf", "conifer", "mixed"] as const;
 export type BeodeulForestType = (typeof BEODEUL_FOREST_TYPES)[number];
@@ -30,9 +31,29 @@ export const BEODEUL_DARK_GRASS_GROUP: Record<BeodeulDarkGrassFamily, string> = 
  * 대상 칩셋(beodeul_city 계열)에서 쓸 composer 정의. r5(2026-10-21 사용자 정정): 코드가 그린 그늘 칸(접지 ground)은 쓰지 않는다 —
  * 나무 밑 땅은 원본 「짙은 풀」 오토타일(ensureBeodeulDarkGrass)이 맡는다. 그래서 def.ground 가 없고 composer 는 2~4층 나무만 쌓는다.
  */
-export function beodeulForestComposer(_project: Project, _target: TilesetDef, type: BeodeulForestType): TreeComposerDef {
+export function beodeulForestComposer(project: Project, target: TilesetDef, type: BeodeulForestType): TreeComposerDef {
   const { groundShadeCover: _c, groundShadeRows: _r, ...rest } = structuredClone(data.types[type]);
-  return rest as unknown as TreeComposerDef;
+  const def = rest as unknown as TreeComposerDef;
+  def.sprites = withRedrawnTrunks(project, target, def.sprites);
+  return def;
+}
+
+/**
+ * 활엽수 줄기 T3(나무껍질 대비, 2026-10-24 사용자 선택·허용 — 「줄기가 안 보여 풀 덩이 같다」): 원본 나무 키트에서 줄기·뿌리 칸만
+ * beodeul_forest_trunks 칸으로 바꿔 이식한다. 수관 칸은 원본 칸 번호 그대로. 표에 없는 나무(덤불·침엽수)는 손대지 않는다.
+ */
+function withRedrawnTrunks(project: Project, target: TilesetDef, sprites: TreeComposerSprite[]): TreeComposerSprite[] {
+  const table = BEODEUL_FOREST_TRUNKS.cells;
+  if (!sprites.some((s) => table[s.name]) || target.tileSize !== 16) return sprites;
+  const source = project.tilesets[BEODEUL_FOREST_TRUNKS_ID] ??= createBeodeulForestTrunksTileset();
+  const wanted = new Set(sprites.flatMap((s) => (table[s.name] ?? []).filter((n) => n >= 0)));
+  const map = translateTiles(source, target, wanted).map;
+  return sprites.map((s) => {
+    const cells = table[s.name];
+    if (!cells || cells.length !== s.tiles.length) return s;
+    return { ...s, tiles: s.tiles.map((t, i) => (cells[i] === -1 ? t : cells[i] === -2 ? -1 : map.get(cells[i]!) ?? t)),
+      cover: BEODEUL_FOREST_TRUNKS.cover[s.name] ?? s.cover };
+  });
 }
 
 /** 숲 장면 잔디(737 채도 ×0.84, r4 B) 를 대상 칩셋으로 이식한 칸 번호. 공용 잔디 737 은 바꾸지 않는다. */
