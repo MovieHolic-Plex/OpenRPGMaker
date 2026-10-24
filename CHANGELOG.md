@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.329.0 — 2026-10-24
+
+### 기능
+
+- **fallen-star** — act 1 story flow, Valen smoke exit, vault cultists, curated loot, town cast & north forest (#3338) (`3a976f5`)
+- **player** — touch list rows move the cursor first, tap the highlighted row to confirm; readable menu text on narrow touch screens (#3347) (`295048b`)
+
 ## 0.328.0 — 2026-10-24
 
 ### 기능

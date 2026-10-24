@@ -55,6 +55,7 @@ function renameSpeaker(map: GameMap, eventId: string, name: string): void {
   if (!event) return;
   const old = event.name;
   event.name = name;
+  if (!old) return;
   for (const page of event.pages ?? []) if (page.name.startsWith(old)) page.name = name + page.name.slice(old.length);
   for (const list of eventLists(event)) for (const cmd of list) {
     const rec = cmd as unknown as { kind: string; speaker?: string };

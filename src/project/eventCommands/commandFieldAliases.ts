@@ -9,6 +9,7 @@
 
 import type { Command } from "@/project/types";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
+import { m2CommandById } from "./m2Catalog";
 
 type RecordValue = Record<string, unknown>;
 
@@ -293,6 +294,37 @@ function canonicalizeChangeFace(command: RecordValue): string | undefined {
 export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined {
   if (raw === null || typeof raw !== "object" || Array.isArray(raw)) return undefined;
   const command = raw as RecordValue;
+  // m2 명령의 글자 칸(text·select)에 숫자를 주면 모양 검사가 「fields.value가 문자열」로 거절했다(2026-10-24 g3-boss-heal) — 글자로 바꿔 받는다.
+  if (command.kind === "m2Command" && typeof command.commandId === "string" && command.fields && typeof command.fields === "object") {
+    const spec = m2CommandById(command.commandId);
+    const fields = command.fields as RecordValue;
+    const fixed: string[] = [];
+    for (const f of spec?.fields ?? []) {
+      const v = fields[f.key];
+      if ((f.type === "text" || f.type === "textarea" || f.type === "select") && (typeof v === "number" || typeof v === "boolean")) { fields[f.key] = String(v); fixed.push(f.key); }
+    }
+    if (fixed.length) return `m2Command ${command.commandId} 의 ${fixed.join(",")} 숫자를 글자로 바꿨습니다.`;
+  }
+  // 함정·독초 이벤트가 showAnimation/showEmote 에 target 을 빠뜨려 「target가 객체가 아닙니다」로 거절됐다(2026-10-24 g2-poison-trap·g3-sleep-gas).
+  //   빠졌거나 "party"·"hero" 같은 주인공 낱말이면 주인공("player")으로 받는다. showEmote 의 text 는 emote 별칭.
+  if ((command.kind === "showAnimation" || command.kind === "showEmote") && (command.target === undefined || (typeof command.target === "string" && command.target !== "player"))) {
+    const was = command.target;
+    if (was === undefined || /^(party|hero|actor|주인공|파티|self|me)$/iu.test(String(was))) {
+      command.target = "player";
+      const emoteFix = command.kind === "showEmote" && command.emote === undefined && typeof command.text === "string" ? (command.emote = command.text, delete command.text, " text 를 emote 로 옮겼습니다.") : "";
+      return `${command.kind}.target ${was === undefined ? "이 없어" : `"${String(was)}" 를`} 주인공("player")으로 받았습니다.${emoteFix}`;
+    }
+  }
+  // fork 조건에 setVariable 피연산자 모양 {kind:'var',id,...} 을 쓴 사례(2026-10-24 g3-number-lock·h-fishing-spot) — 조건의 kind 는 variable·variableId 다.
+  if (command.kind === "fork" && command.condition && typeof command.condition === "object") {
+    const fixed = fixVarConditions(command.condition);
+    if (fixed) return `fork 조건의 {kind:"var",id} 를 {kind:"variable",variableId} 로 고쳤습니다(${fixed}곳).`;
+  }
+  // 전직 명령에 classId 로 쓴 사례(2026-10-24 g3-class-change) — 런타임은 toClassId 만 읽어 기본 전직으로 갔다.
+  if (command.kind === "promoteActor" && command.toClassId === undefined && typeof command.classId === "string") {
+    command.toClassId = command.classId; delete command.classId;
+    return "promoteActor.classId 를 toClassId 로 옮겼습니다(전직할 직업 칸은 toClassId).";
+  }
   if (command.kind === "changeParty") {
     const actorFix = canonicalizePartyActorAlias(command);
     if (command.action === "add" || command.action === "remove" || command.action === "lead") {
@@ -446,4 +478,21 @@ export function canonicalizeCommandFieldAliases(commands: readonly unknown[] | u
       for (const branch of branches) canonicalizeCommandFieldAliases(branch as readonly unknown[], onFix);
     }
   }
+}
+
+/** 조건 나무 안의 {kind:"var", id} → {kind:"variable", variableId}(all·any·not 안쪽까지). 고친 수를 돌려준다. */
+export function fixVarConditions(node: unknown): number {
+  if (Array.isArray(node)) return node.reduce((n: number, c) => n + fixVarConditions(c), 0);
+  if (!node || typeof node !== "object") return 0;
+  const c = node as RecordValue;
+  let n = 0;
+  if (c.kind === "var" && (typeof c.id === "string" || typeof c.variableId === "string") && (c.op !== undefined || c.value !== undefined)) {
+    c.kind = "variable";
+    if (c.variableId === undefined) { c.variableId = c.id; delete c.id; }
+    if (c.op === undefined) c.op = "==";
+    n++;
+  }
+  if (Array.isArray(c.conditions)) n += fixVarConditions(c.conditions);
+  if (c.condition) n += fixVarConditions(c.condition);
+  return n;
 }

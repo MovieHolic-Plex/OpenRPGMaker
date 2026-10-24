@@ -20,9 +20,9 @@ export const DUNGEON_CARD =
   "mine 광산 · sewer 하수도 · labyrinth 미궁 · cave 동굴. size small|medium|large, floors 1~5(탑·마법탑은 위로, 나머지는 아래로; 보스는 마지막 층 맨 안쪽 방). " +
   "features: 원문의 적 낱말(늑대·유령·미라·전갈·도마뱀 인간·눈알·갑옷·악마·박쥐…)과 보스 낱말(히드라·붉은 용·얼음 용·대마법사·마계의 군주…)을 그대로, " +
   "boss·chests·enemies, 장치 함정(모래 함정)·다리·마법진·레버·얼음 미끄럼·광차, flooded(물에 잠긴 방), goblin lair. 적 낱말 → 보이는 적 그림, 보스 낱말 → 보스 그림. " +
-  "hints: variant(다른 배치)·seed·direction(up|down)·gimmick·inspiration(「엘든링 같은」 게임 이름). 고치기는 variant·features·size·floors 만 — 방·소품 하나하나는 못 한다.";
+  "hints: variant(다른 배치)·seed·direction(up|down)·gimmick·inspiration(「엘든링 같은」 게임 이름). 탑은 층마다 직접 고른다: floorShapes 「cross,spiral,hall」(아래층부터 — 중간 ring·gallery·cross·spiral·twin, 꼭대기 ring·hall·observatory), floorGimmicks 「none,teleporter」(중간 층 장치 lever·bridge·teleporter·minecart·iceslide·sandpit·none). 고치기는 variant·features·size·floors 만 — 방·소품 하나하나는 못 한다.";
 
-const KNOWN_HINTS = new Set(["type", "size", "floors", "direction", "seed", "variant", "width", "height", "populate", "flooded", "lair", "puzzle", "style", "gimmick", "inspiration", "layout"]);
+const KNOWN_HINTS = new Set(["type", "size", "floors", "direction", "seed", "variant", "width", "height", "populate", "flooded", "lair", "puzzle", "style", "gimmick", "inspiration", "layout", "floorShapes", "floorGimmicks"]);
 const BEODEUL_TILESET = "beodeul_city";
 const TYPES: readonly DungeonType[] = DUNGEON_TYPES;
 
@@ -155,6 +155,7 @@ export function dungeonArgs(spec: PlaceSpec, keepType?: DungeonType): DungeonPla
     if (!KNOWN_HINTS.has(key)) { warnings.push(`알 수 없는 hints.${key} 는 무시했다`); continue; }
     if (key === "variant" || key === "style") continue;
     if (key === "type" && !(TYPES as readonly string[]).includes(String(value))) { warnings.push(`알 수 없는 type ${String(value)} → ${type}`); continue; }
+    if (key === "floorShapes" || key === "floorGimmicks") { args[key] = String(value).split(/[,\s·]+/).map((x) => x.trim().toLowerCase()).filter(Boolean); continue; }
     args[key] = value;
   }
   // 적·보스 낱말. 보스 낱말을 먼저 지워야 「얼음 용」의 「용」이 잡몹으로 안 잡힌다.
