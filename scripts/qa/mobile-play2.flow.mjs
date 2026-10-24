@@ -108,6 +108,8 @@ async function padCheck(page, seg, step) {
     const stage = document.querySelector(".play-stage")?.getBoundingClientRect();
     out.stage = stage ? `${Math.round(stage.left)},${Math.round(stage.top)} ${Math.round(stage.width)}x${Math.round(stage.height)}` : "none";
     out.vp = `${vw}x${vh}`;
+    out.owner = document.querySelector(".player-layout")?.dataset.playInputOwner;
+    out.touchLayout = document.querySelector(".play-viewport")?.dataset.touchLayout ?? null;
     return out;
   }).catch((e) => ({ error: String(e).slice(0, 80) }));
   const ok = ["stick", "a", "b", "menu"].every((k) => r[k] === "ok");
@@ -159,6 +161,8 @@ async function openPage(browser, seg, checkpoint) {
   const dir = join(OUT, `v-${seg}`);
   const ctx = await browser.newContext({ ...dev, locale: "ko-KR", ...(VIDEO ? { recordVideo: { dir, size: dev.viewport } } : {}) });
   const page = await ctx.newPage();
+  page.on("pageerror", (e) => console.log("PAGEERROR", String(e).slice(0, 240)));
+  page.on("console", (m) => { if (m.type() === "error") console.log("CONSOLE", m.text().slice(0, 240)); });
   if (flag("fine")) {
     // 펜 디지타이저가 있는 안드로이드(갤럭시 폴드 등)는 `(pointer: fine)` 으로 보고한다 — 그 상태를 흉내 낸다.
     await page.addInitScript(() => {
@@ -318,7 +322,8 @@ const SEGMENTS = {
       await sleep(900);
       await shot(page, "field", "7-equip-pick");
       const equipped = await gameFrame(page).evaluate(() => document.querySelector("[data-testid='main-menu']")?.textContent?.replace(/\s+/g, " "));
-      note("field", "equip-iron-sword", picked && /무기\s*철 검/.test(equipped ?? ""), (equipped ?? "").match(/장비:.{0,60}/)?.[0] ?? "");
+      // 목록 줄을 탭해 무기 칸이 「없음」에서 바뀌었는지(어느 검이 들어갔는지는 목록 순서에 달렸다).
+      note("field", "equip-weapon-by-tap", picked && /무기\s*(?!없음)\S/.test((equipped ?? "").match(/장비:.{0,30}/)?.[0] ?? ""), (equipped ?? "").match(/장비:.{0,60}/)?.[0] ?? "");
       const sig = await gameFrame(page).evaluate(() => document.querySelector("[data-testid='main-menu']")?.textContent?.replace(/\s+/g, " ").slice(0, 160));
       note("field", "equip-screen", /장비|무기|방어|머리|몸|장신/.test(sig ?? ""), sig);
       for (let i = 0; i < 5 && (await has(page, "[data-testid='main-menu']")); i++) await tapSel(page, "[data-testid='touch-action-b']", 700);
