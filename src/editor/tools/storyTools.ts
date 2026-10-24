@@ -46,6 +46,8 @@ const declareStoryFlag: ToolDefinition = {
   },
   run(project, args): ToolExecResult {
     const action = parseAction(args.action);
+    // 없는 플래그를 update 하면서 kind·description 을 주면 새로 선언하려던 것이다(2026-10-24 v2 스위트 「story flag를 찾을 수 없습니다」).
+    if (action === "update" && args.kind && typeof args.id === "string" && !storyFlagById(project, requiredStoryFlagId(args.id), { includeRetired: true })) return createStoryFlag(project, args);
     if (action === "update") return updateStoryFlagDescription(project, args);
     if (action === "rename") return renameStoryFlag(project, args);
     if (action === "retire") return retireStoryFlag(project, args);
@@ -192,7 +194,7 @@ function createStoryFlag(project: Project, args: Record<string, unknown>): ToolE
   }
   const kind = parseKind(args.kind);
   const description = requiredNonEmptyString(args.description, "description");
-  const targetId = resolveTargetForDeclare(project, kind, args.targetId);
+  const targetId = resolveTargetForDeclare(project, kind, args.targetId, args.id);
   if (storyFlagForTarget(project, kind, targetId, { includeRetired: true })) {
     throw new ToolError(`story flag target이 이미 등록되어 있습니다: ${storyFlagTargetKey(kind, targetId)}`, {
       code: "story-flag-duplicate-target",
@@ -245,13 +247,23 @@ function retireStoryFlag(project: Project, args: Record<string, unknown>): ToolE
   };
 }
 
-function resolveTargetForDeclare(project: Project, kind: StoryFlagKind, rawTargetId: unknown): string {
+function resolveTargetForDeclare(project: Project, kind: StoryFlagKind, rawTargetId: unknown, rawId?: unknown): string {
+  // 스위치·변수 이름 꼴(sw_…/var_…)이면 그 이름으로 칸을 만든다 — 이벤트가 이미 그 id 로 켜고 읽는다(선언 안 된 깃발이 되지 않게).
+  const named = (raw: unknown) => typeof raw === "string" && (kind === "switch" ? /^sw_[A-Za-z0-9_]+$/u : /^var_[A-Za-z0-9_]+$/u).test(raw.trim()) ? raw.trim() : undefined;
   if (typeof rawTargetId === "string" && rawTargetId.trim().length > 0) {
-    const targetId = normalizeStoryFlagTargetId(project, kind, rawTargetId);
+    const targetId = normalizeStoryFlagTargetId(project, kind, rawTargetId) ?? (named(rawTargetId) ? createNamedSlot(project, kind, named(rawTargetId)!) : undefined);
     if (!targetId) throw new ToolError(`targetId를 찾을 수 없습니다: ${rawTargetId}`, { code: "story-flag-target-not-found" });
     return targetId;
   }
+  const fromId = named(rawId);
+  if (fromId) return normalizeStoryFlagTargetId(project, kind, fromId) ?? createNamedSlot(project, kind, fromId);
   return allocateUnusedTarget(project, kind);
+}
+
+function createNamedSlot(project: Project, kind: StoryFlagKind, id: string): string {
+  if (kind === "switch") { project.switches.push({ id, name: "" }); project.session.switches[id] ??= false; }
+  else { project.variables.push({ id, name: "" }); project.session.variables[id] ??= 0; }
+  return id;
 }
 
 function allocateUnusedTarget(project: Project, kind: StoryFlagKind): string {
@@ -355,7 +367,9 @@ function parseKind(value: unknown): StoryFlagKind {
 
 function requiredStoryFlagId(value: unknown): string {
   if (typeof value !== "string") throw new ToolError("id 문자열이 필요합니다.", { code: "story-flag-id" });
-  const id = cleanStoryFlagId(value);
+  let id = cleanStoryFlagId(value);
+  // 2026-10-24 v2 스위트: 모델이 스위치 이름(sw_wolf_bounty_kill1)을 그대로 id 로 줘서 거절됐다 — 밑줄·대문자는 슬러그로 바꿔 받는다.
+  if (!STORY_FLAG_ID_PATTERN.test(id)) id = value.trim().toLowerCase().replace(/[_\s]+/gu, "-").replace(/[^a-z0-9-]/gu, "").replace(/-+/gu, "-").replace(/^-|-$/gu, "");
   if (!STORY_FLAG_ID_PATTERN.test(id)) {
     throw new ToolError(`id는 kebab-case 슬러그여야 합니다: ${value}`, { code: "story-flag-id" });
   }

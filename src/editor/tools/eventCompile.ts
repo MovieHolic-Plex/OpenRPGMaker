@@ -514,6 +514,19 @@ function normalizeCondition(raw: unknown, path: string, warnings: string[] | und
     delete condition.id;
     warnings?.push(`SimplePage 정규화: ${path}.id를 switch.switchId로 사용했습니다.`);
   }
+  // 2026-10-24 v2 스위트: 골드 조건에 amount 대신 value 를 주거나 숫자를 문자열로 줘서 「amount가 숫자가 아닙니다」로 거절됐다(g2-skill-teacher·g3-donation).
+  if (condition.kind === "gold" && condition.amount === undefined && condition.value !== undefined) {
+    condition.amount = condition.value;
+    delete condition.value;
+    warnings?.push(`SimplePage 정규화: ${path}.value를 gold.amount로 사용했습니다.`);
+  }
+  for (const key of ["amount", "value", "seconds"] as const) {
+    const v = condition[key];
+    if (typeof v === "string" && /^\s*-?\d+(\.\d+)?\s*$/u.test(v) && !(condition.kind === "selfSwitch" || condition.kind === "switch" || condition.kind === "stringVariable")) {
+      condition[key] = Number(v);
+      warnings?.push(`SimplePage 정규화: ${path}.${key} 숫자 문자열을 숫자로 바꿨습니다.`);
+    }
+  }
   if ((condition.kind === "selfSwitch" || condition.kind === "switch") && (condition.value === "true" || condition.value === "false")) {
     condition.value = condition.value === "true";
     warnings?.push(`SimplePage 정규화: ${path}.value 문자열을 boolean으로 변환했습니다.`);

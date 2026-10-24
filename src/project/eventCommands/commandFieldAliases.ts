@@ -9,6 +9,7 @@
 
 import type { Command } from "@/project/types";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
+import { m2CommandById } from "./m2Catalog";
 
 type RecordValue = Record<string, unknown>;
 
@@ -293,6 +294,17 @@ function canonicalizeChangeFace(command: RecordValue): string | undefined {
 export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined {
   if (raw === null || typeof raw !== "object" || Array.isArray(raw)) return undefined;
   const command = raw as RecordValue;
+  // m2 명령의 글자 칸(text·select)에 숫자를 주면 모양 검사가 「fields.value가 문자열」로 거절했다(2026-10-24 g3-boss-heal) — 글자로 바꿔 받는다.
+  if (command.kind === "m2Command" && typeof command.commandId === "string" && command.fields && typeof command.fields === "object") {
+    const spec = m2CommandById(command.commandId);
+    const fields = command.fields as RecordValue;
+    const fixed: string[] = [];
+    for (const f of spec?.fields ?? []) {
+      const v = fields[f.key];
+      if ((f.type === "text" || f.type === "textarea" || f.type === "select") && (typeof v === "number" || typeof v === "boolean")) { fields[f.key] = String(v); fixed.push(f.key); }
+    }
+    if (fixed.length) return `m2Command ${command.commandId} 의 ${fixed.join(",")} 숫자를 글자로 바꿨습니다.`;
+  }
   if (command.kind === "changeParty") {
     const actorFix = canonicalizePartyActorAlias(command);
     if (command.action === "add" || command.action === "remove" || command.action === "lead") {

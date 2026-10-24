@@ -695,8 +695,9 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   let gateSwitch: string | undefined;
   if (gated.length > 0) {
     const key = `v2scene_${(run.calls.length * 7919 + gated.length * 104729 + Date.now()) % 1_000_000}`;
-    const fl = run.call("create_quest_flags", { questKey: key, steps: 1 });
-    gateSwitch = fl.ok ? ((fl.data ?? {}) as { started?: string }).started : undefined;
+    // 스위치 하나만 선언한다 — create_quest_flags 는 안 쓰는 _done·_progress 까지 만들어 「선언만 하고 안 쓰는 깃발」이 됐다(2026-10-24 스위트).
+    const fl = run.call("declare_story_flag", { action: "declare", id: key.replace(/_/gu, "-"), kind: "switch", targetId: `sw_${key}_shown`, description: "장면 전에는 숨겨 둔 사람(장면이 켠다)" });
+    gateSwitch = fl.ok ? ((fl.data ?? {}) as { flag?: { targetId?: string } }).flag?.targetId : undefined;
     if (gateSwitch) {
       const cur = findMap(run.ctx.project, mapId);
       for (const id of gated) {
