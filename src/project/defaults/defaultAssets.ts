@@ -515,6 +515,15 @@ function bundledTilesetIdForAsset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)
 /** 계약 테스트 전용 — id 계산이 생성자 결과와 같은지 대조한다. */
 export const bundledTilesetIdForAssetForTest = bundledTilesetIdForAsset;
 
+/**
+ * 2026-10-07 저작권 정리로 번들에서 지운 EasyRPG 시트(실내·합본 마을 등)의 타일셋 정의를 칸 번호만으로 다시 만든다.
+ * 그 전에 만든 프로젝트가 저장본에 들고 있는 정의와 같은 경로(bundledStandardChipsetTileset)다 — 그림 파일은 없다.
+ * 새 프로젝트에 넣지 않는다. 옛 저장본 호환을 재현해야 하는 쪽(테스트 픽스처·이관 도구)만 쓴다.
+ */
+export function retiredEasyRpgChipsetTileset(textureKey: string, name: string): TilesetDef {
+  return bundledStandardChipsetTileset({ textureKey, name });
+}
+
 function bundledStandardChipsetTileset(asset: { readonly textureKey: string; readonly name: string }): TilesetDef {
   const tileset = makeBundledTileset(bundledEasyRpgTilesetId(asset.textureKey), asset.name, asset.textureKey);
   tileset.tileMeta = Array.from({ length: tileset.count }, () => ({
