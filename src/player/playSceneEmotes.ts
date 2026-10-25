@@ -1,5 +1,5 @@
 import { spriteReliefLiftPx } from "@/player/playSceneRelief";
-import Phaser from "phaser";
+import type Phaser from "phaser";
 import { runtimeMapWorldScale } from "@/player/runtimeViewScale";
 import { TILE_SIZE } from "@/assets/bundled";
 import {
