@@ -24,6 +24,7 @@ type Schema = {
   readonly oneOf?: readonly Schema[];
   readonly enum?: readonly unknown[];
   readonly const?: unknown;
+  readonly additionalProperties?: unknown;
 };
 
 type Obj = Record<string, unknown>;
@@ -64,7 +65,11 @@ export function repairToolArgs(schema: unknown, args: unknown): ArgRepair {
       const asObject = objectSchema(props[slot]);
       const asItem = asObject ? undefined : arrayItemObject(props[slot]);
       const inner = asObject ?? asItem;
-      if (!inner?.properties || !stray.every((k) => k in inner.properties!)) continue;
+      if (!inner?.properties) continue;
+      // 전부 그 칸의 속성이거나, 그 칸이 다른 열쇠도 받고(additionalProperties) 그 칸의 필수 열쇠가 다 최상위에 와 있고 절반 이상이 그 칸의 속성일 때.
+      const belongs = stray.filter((k) => k in inner.properties!);
+      const open = inner.additionalProperties !== false && (inner.required ?? []).every((k) => stray.includes(k)) && belongs.length * 2 >= stray.length;
+      if (!belongs.length || (belongs.length !== stray.length && !open)) continue;
       const moved: Obj = {};
       for (const k of stray) { moved[k] = out[k]; delete out[k]; }
       out[slot] = asItem ? [moved] : moved;
@@ -131,5 +136,17 @@ export function requiredShapeExample(schema: unknown, depth = 0): unknown {
 /** 같은 도구가 검증에 연달아 실패할 때 오류 끝에 붙이는 교정 안내. */
 export function repeatedShapeHint(toolName: string, schema: unknown, failures: number): string {
   return `\n\n「${toolName}」 이(가) 인자 모양 오류로 ${failures}번 연달아 실패했다. 같은 인자로 다시 부르지 말고, 위 오류가 말한 칸을 채운 모양으로 부른다.`
-    + ` 필수 칸만 적은 최상위 모양: ${JSON.stringify(requiredShapeExample(schema))}`;
+    + ` 필수 칸만 채운 최소 예시(이 모양 그대로, … 자리만 채운다): ${JSON.stringify(requiredShapeExample(schema))}`;
+}
+
+/** 검증 오류에서 «무엇이 틀렸나» 줄만(받은 인자 덩어리 앞까지) — 같은 오류가 되풀이되는지 비교한다. */
+export function shapeErrorSignature(message: string): string {
+  return message.split(/\n\s*Received arguments/u)[0]!.replace(/\s+/gu, " ").trim().slice(0, 600);
+}
+
+/** 같은 도구·같은 모양 오류가 세 번째면 실행하지 않고 돌려줄 말. */
+export function shapeLoopRefusal(toolName: string, schema: unknown, errorLines: string, failures: number): string {
+  return `「${toolName}」 호출을 거절했다 — 같은 인자 모양 오류(${errorLines.slice(0, 240)})가 ${failures}번째다. 같은 모양으로 다시 부르지 않는다.`
+    + ` 방법을 바꾼다: 아래 최소 예시대로 필수 칸을 채워 부르거나, 다른 도구로 하거나, 못 하는 것이면 보고에 적는다.`
+    + ` 최소 예시: ${JSON.stringify(requiredShapeExample(schema))}`;
 }
