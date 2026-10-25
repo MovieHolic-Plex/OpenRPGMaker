@@ -173,5 +173,37 @@ export function createGameTools(env: PiAssistantV2Env, task = ""): PiToolShape[]
   // 게임 요청도 «조사하는 물건»(비석·이동석·분수)을 보이게 찍어야 해서 물건 찾기·찍기를 같이 준다(2026-10-24: 투명 이벤트가 맨땅에 남았다).
   const want = [...(wantsGameTools(task) ? [...gameToolNames(task), "list_spatial_designs", "stamp_object", ...fallenTierTools(task)] : []), ...(wantsTerrainTools(task) ? V2_TERRAIN_TOOLS : []), ...storeTierTools(task)];
   const names = [...new Set(want)].filter((name) => getTool(name));
-  return createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record });
+  return withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record }));
+}
+
+/**
+ * 그림 찾기 상한(G44, 2026-10-25 장난감 가게): 묶음에 장난감 가게 그림이 없는데 list_resources 를 14번 돌렸다.
+ * 그림·배경(picture·backdrop·faceset) 검색이 0개로 끝난 것이 3번이면 더 찾지 않고 «없다»를 분명히 돌려준다 —
+ * 사용자에게 그리기/일반 그림 중 고르게 하거나, 가장 가까운 일반 그림을 쓰고 보고에 적으라고 한다.
+ */
+export const PICTURE_SEARCH_MISSES = 3;
+export function withPictureSearchBudget(tools: PiToolShape[]): PiToolShape[] {
+  let misses = 0;
+  const tried: string[] = [];
+  return tools.map((tool) => tool.name !== "list_resources" ? tool : {
+    ...tool,
+    async execute(id, params, signal) {
+      const args = (params ?? {}) as { kind?: string; query?: string };
+      const pictureLike = ["picture", "backdrop", "faceset"].includes(String(args.kind));
+      if (pictureLike && misses >= PICTURE_SEARCH_MISSES) {
+        const summary = `그림 묶음에 맞는 그림이 없다(이미 ${misses}번 0개: ${tried.join(", ")}). 더 찾지 않는다 — ` +
+          "(1) 사용자에게 «꼭 맞는 그림이 없어요. 새로 그릴까요, 비슷한 일반 그림을 쓸까요?»라고 ask_user 로 묻거나, " +
+          "(2) 이미 찾은 것 중 가장 가까운 일반 그림(밤하늘·들판·실내 등)을 쓰고 보고에 «맞는 그림이 없어 일반 그림을 썼다»고 적는다.";
+        return { content: [{ type: "text", text: JSON.stringify({ ok: false, summary }) }] } as Awaited<ReturnType<PiToolShape["execute"]>>;
+      }
+      const result = await tool.execute(id, params, signal);
+      if (pictureLike) {
+        const first = result.content.find((c) => c.type === "text") as { text: string } | undefined;
+        let count = -1;
+        try { const parsed = JSON.parse(first?.text ?? "{}") as { summary?: string }; count = Number(/리소스 (\d+)개/u.exec(String(parsed.summary ?? ""))?.[1] ?? -1); } catch { /* 글 */ }
+        if (count === 0) { misses += 1; tried.push(`${args.kind}:${String(args.query ?? "").slice(0, 30)}`); }
+      }
+      return result;
+    },
+  });
 }
