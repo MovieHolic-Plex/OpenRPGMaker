@@ -535,7 +535,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 2600
+       "ms": 4000
       }
      ],
      "shot": true
@@ -546,7 +546,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1400
+       "ms": 2000
       }
      ],
      "shot": true
@@ -557,7 +557,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 2500
+       "ms": 3000
       }
      ],
      "shot": true
@@ -599,7 +599,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 2300
+       "ms": 3800
       }
      ],
      "shot": true
@@ -885,10 +885,11 @@
        "timeoutMs": 60000
       },
       {
-       "kind": "waitFor",
-       "testid": "battle-combo-faces",
-       "state": "present",
-       "timeoutMs": 20000
+       "kind": "pressUntilJs",
+       "key": "Shift",
+       "fn": "(()=>(window.__qaBattleLog||[]).some(r=>/연계기/.test(r.line||'')))",
+       "maxPresses": 3,
+       "settleMs": 400
       },
       {
        "kind": "hold",
