@@ -106,10 +106,12 @@ async function waitSettle(mark, startedAt, graceMs = 20000) {
     if (value) {
       const closed = value.events.some(e => ['stream_closed', 'error', 'stream_error'].includes(e.type));
       if (!value.busy && (closed || Date.now() - startedAt > graceMs)) return 'settled';
-      if ((await cards()).length && value.busy) {
+      // 답한 카드(단추가 모두 꺼진 카드)는 남아 있어도 기다리는 질문이 아니다 — 그 답의 후속 턴이 도는 중일 수 있다.
+      const open = async () => (await cards()).filter(card => card.buttons.length > 0).length;
+      if (await open() && value.busy) {
         // A pending question card holds the turn. Give the operator the decision.
         await sleep(5000);
-        if ((await cards()).length && await busy()) return 'awaiting-answer';
+        if (await open() && await busy()) return 'awaiting-answer';
       }
       writeState({ phase: 'turn', elapsedMs: Date.now() - startedAt, events: value.events.length,
         lastTool: value.events.filter(e => e.type === 'tool_start').at(-1)?.name ?? null });
