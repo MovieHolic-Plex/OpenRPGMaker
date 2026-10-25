@@ -47,7 +47,7 @@
    "note": "configure_companion_rules display follow · set_project_settings saveAccess savePoints · place_savepoint ev_fs_hub_savepoint",
    "mapId": "fs_forest_edge",
    "x": 15,
-   "y": 38,
+   "y": 35,
    "facing": "up",
    "party": [
     {
