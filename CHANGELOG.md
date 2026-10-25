@@ -5,6 +5,20 @@
 
 <!-- releases -->
 
+## 0.335.2 — 2026-10-25
+
+### 수정
+
+- **ai** — v2 turns off the HP HUD in any non-combat game start, and flags night/day made only with switch+tint while the clock runs (G51) (#3425) (`2e6aaef`)
+- **ending** — credits with literal \n render as lines; long ending card and final title no longer clip or overlap (G50, G52) (#3424) (`b4e282b`)
+- **assistant** — opening caption track hides the duplicate narration box; finish check flags a drawn person's invisible base page that talks (G38, G49) (#3423) (`9a57072`)
+- **assistant** — flashback people stay gone after the scene, flashbacks must show past people, dimmed opening backgrounds no longer reject (G34, G37, G40) (#3422) (`2796d89`)
+- **assistant** — toy-shop game gaps — false opening claims, unasked deletes, sepia/colour rejects, map lock leak, shipped opening (G29–G32, G35, G42, G45, G46) (#3419) (`d801820`)
+
+### 성능
+
+- **assistant-v2** — halve the tool list sent every turn — battle/ending/quest tools load only when the request talks about them; repeated schema descriptions sent once (#3421) (`72683f7`)
+
 ## 0.335.1 — 2026-10-25
 
 ### 수정
