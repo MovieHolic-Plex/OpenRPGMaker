@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { chooseAutoBattleCommand } from "@/battle/battleAuto";
 import { createBattleRuntime } from "@/battle/runtime";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
@@ -240,6 +241,128 @@ describe("battle runtime defect regressions", () => {
 
     expect(runtime.snapshot().lastActionResult?.targetId).toBe("enemy-1");
     expect(runtime.snapshot().actors[0]!.hp).toBe(actorHp);
+  });
+
+  it("revives a downed enemy ally on the next round instead of attacking", () => {
+    const project = battleProject();
+    project.database.skills.push({
+      id: "skill_revive",
+      name: "부활",
+      scope: "ally",
+      power: 40,
+      description: "",
+      type: "normal",
+      mpCost: { flat: 0, percentMax: 0 },
+      successRate: 100,
+      variance: 0,
+      hitRate: 100,
+      effect: { kind: "healing", statistic: "mind", affects: "hp" },
+      stateEffects: [{ stateId: "state_death", chance: 100, operation: "remove" }],
+    });
+    const slime = project.database.enemies.find((record) => record.id === "enemy_slime")!;
+    slime.stats = { ...slime.stats, maxHp: 999, maxMp: 20, attack: 1, defense: 1, mind: 30, agility: 1 };
+    // 1라운드는 통상 공격만. 부활은 2라운드부터 — strict 는 라운드 시작에 행동을 고르므로
+    // 같은 라운드에 쓰러진 동료는 다음 라운드에 일으킨다.
+    slime.actions = [
+      { skillId: "", priority: 1, condition: { kind: "always" }, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } },
+      { skillId: "skill_revive", priority: 50, condition: { kind: "turn", start: 2, interval: 1 }, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } },
+    ];
+    const dragon = project.database.enemies.find((record) => record.id === "enemy_dragon")!;
+    dragon.stats = { ...dragon.stats, maxHp: 1, maxMp: 1, attack: 1, defense: 0, mind: 1, agility: 1 };
+    dragon.skillIds = [];
+    dragon.actions = [];
+    const troop = project.database.troops.find((record) => record.id === "troop_slime")!;
+    troop.members = [
+      { enemyId: "enemy_slime", x: 80, y: 100, hidden: false },
+      { enemyId: "enemy_dragon", x: 120, y: 100, hidden: false },
+    ];
+    const runtime = createBattleRuntime({ project, troopId: "troop_slime", canEscape: false, canLose: true, battleFlow: "strict", rng: () => 0 });
+    const dragonId = runtime.snapshot().enemies.find((enemy) => enemy.recordId === "enemy_dragon")!.id;
+    const slimeId = runtime.snapshot().enemies.find((enemy) => enemy.recordId === "enemy_slime")!.id;
+
+    runtime.performActorCommand({ kind: "attack", targetEnemyId: dragonId });
+
+    expect(runtime.snapshot().result).toBeUndefined();
+    expect(runtime.snapshot().enemies.find((enemy) => enemy.id === dragonId)?.hp).toBe(0);
+    expect(runtime.snapshot().phase).toBe("actorCommand");
+
+    runtime.performActorCommand({ kind: "attack", targetEnemyId: slimeId });
+
+    const revived = runtime.snapshot().enemies.find((enemy) => enemy.id === dragonId);
+    expect(revived?.hp).toBeGreaterThan(0);
+    expect(runtime.snapshot().timeline.some((entry) => entry.kind === "healing" && entry.targetId === dragonId && entry.side === "enemy")).toBe(true);
+  });
+
+  it("auto battle revives a downed ally and a plain heal does not", () => {
+    const project = battleProject();
+    project.database.skills.push(
+      {
+        id: "skill_revive",
+        name: "부활",
+        scope: "ally",
+        power: 40,
+        description: "",
+        type: "normal",
+        mpCost: { flat: 0, percentMax: 0 },
+        successRate: 100,
+        variance: 0,
+        hitRate: 100,
+        effect: { kind: "healing", statistic: "mind", affects: "hp" },
+        stateEffects: [{ stateId: "state_death", chance: 100, operation: "remove" }],
+      },
+      {
+        id: "skill_heal",
+        name: "치유",
+        scope: "ally",
+        power: 40,
+        description: "",
+        type: "normal",
+        mpCost: { flat: 0, percentMax: 0 },
+        successRate: 100,
+        variance: 0,
+        hitRate: 100,
+        effect: { kind: "healing", statistic: "mind", affects: "hp" },
+      },
+    );
+    const hero = project.database.actors[0]!;
+    project.database.actors.push({ ...hero, id: "actor_ally", name: "동료" });
+    const slime = project.database.enemies.find((record) => record.id === "enemy_slime")!;
+    slime.stats = { ...slime.stats, maxHp: 999, attack: 1, agility: 1 };
+    const party = {
+      levels: { actor_hero: 1, actor_ally: 1 },
+      experience: {},
+      partyActorIds: ["actor_hero", "actor_ally"],
+      vitals: { actor_hero: { hp: 9999, mp: 30 }, actor_ally: { hp: 0, mp: 0 } },
+    };
+    const runtime = createBattleRuntime({
+      project,
+      troopId: "troop_slime",
+      canEscape: false,
+      canLose: true,
+      battleFlow: "strict",
+      rng: () => 0,
+      party: { ...party, skillIds: { actor_hero: ["skill_revive"] } },
+    });
+    const before = runtime.snapshot();
+    expect(before.actors.find((actor) => actor.recordId === "actor_ally")?.hp).toBe(0);
+    const command = chooseAutoBattleCommand(project, before, () => 0);
+    expect(command).toMatchObject({ kind: "skill", skillId: "skill_revive", targetActorId: "actor_ally" });
+    expect(chooseAutoBattleCommand(project, before, () => 0, "attackAll")).not.toMatchObject({ skillId: "skill_revive" });
+
+    runtime.performActorCommand(command!);
+    expect(runtime.snapshot().actors.find((actor) => actor.recordId === "actor_ally")?.hp).toBeGreaterThan(0);
+
+    const healRuntime = createBattleRuntime({
+      project,
+      troopId: "troop_slime",
+      canEscape: false,
+      canLose: true,
+      battleFlow: "strict",
+      rng: () => 0,
+      party: { ...party, skillIds: { actor_hero: ["skill_heal"] } },
+    });
+    const healCommand = chooseAutoBattleCommand(project, healRuntime.snapshot(), () => 0);
+    expect(healCommand).not.toMatchObject({ targetActorId: "actor_ally" });
   });
 
   it("does not auto-win when all troop members start hidden", () => {

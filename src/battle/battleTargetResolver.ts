@@ -6,6 +6,16 @@ export type BattleTargetScope = SkillRecord["scope"];
 export type BattleTargetSide = "actor" | "enemy";
 export type BattleTarget = MutableBattler | BattleBattlerSnapshot;
 
+/**
+ * 부활 기술: HP 회복이면서 state_death 를 해제한다.
+ * 런타임 대상 해결(commandRevives)과 적 AI·자동 전투가 같은 판정을 쓴다.
+ * 쓰러짐 자체는 HP 0 이고, 이 상태 해제는 「쓰러진 아군도 대상」이라는 표식이다.
+ */
+export function skillRevivesDefeatedAllies(skill: Pick<SkillRecord, "effect" | "stateEffects"> | undefined): boolean {
+  return skill?.effect.kind === "healing"
+    && (skill.stateEffects ?? []).some((effect) => effect.operation === "remove" && effect.stateId === "state_death");
+}
+
 export interface BattleTargetResolution<T extends BattleTarget> {
   readonly scope: BattleTargetScope;
   readonly side: BattleTargetSide;

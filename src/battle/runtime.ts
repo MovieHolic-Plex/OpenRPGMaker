@@ -145,6 +145,7 @@ import {
   areaTargets,
   requestedTargetId,
   resolveBattleTargets,
+  skillRevivesDefeatedAllies,
   targetIdFor,
   targetScopeForCommand,
   type BattleTargetScope,
@@ -1343,7 +1344,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const skillId = ids[Math.min(ids.length - 1, Math.floor(rng() * ids.length))] ?? "";
     const skill = skillId ? lookupSkill(skillId) : undefined;
     if (!skill) return { kind: "attack", targetEnemyId: opponent.id };
-    const resolution = resolveBattleTargets({ scope: skill.scope, user: actor, actors: activeActors(), enemies: visibleEnemies() });
+    const resolution = resolveBattleTargets({
+      scope: skill.scope,
+      user: actor,
+      actors: activeActors(),
+      enemies: visibleEnemies(),
+      includeDefeatedAllies: skillRevivesDefeatedAllies(skill),
+    });
     const candidates = resolution.candidates.filter((entry) => entry.hp > 0 || resolution.scope === "ally");
     if (resolution.targets.length === 0 && candidates.length === 0) return { kind: "attack", targetEnemyId: opponent.id };
     const pick = resolution.requiresSelection
@@ -1649,8 +1656,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function commandRevives(command: TargetedActorCommand): boolean {
     if (command.kind === "item") return options.project.database.items.find(item => item.id === command.itemId)?.onlyEffectiveOnDeadActors === true;
     if (command.kind !== "skill") return false;
-    const skill = lookupSkill(command.skillId);
-    return skill?.effect.kind === "healing" && (skill.stateEffects ?? []).some(effect => effect.operation === "remove" && effect.stateId === "state_death");
+    return skillRevivesDefeatedAllies(lookupSkill(command.skillId));
   }
 
   function resolvedCommandTargets(user: MutableBattler, command: TargetedActorCommand & { readonly targetEnemyId?: string; readonly targetActorId?: string }) {
@@ -1666,8 +1672,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // 직접 실행 경로(테스트/헤드리스)에서 ally 계열 대상이 명시되지 않으면
     // 가장 아픈 생존 동료를 자동 선택한다(전투 UI 의 beginTargetSelection 은 그대로).
     if (resolution.targets.length === 0 && (resolution.scope === "ally" || resolution.scope === "allAllies" || resolution.scope === "self")) {
-      const ally = resolution.candidates
-        .filter((entry) => entry.hp > 0)
+      const downed = commandRevives(command) ? resolution.candidates.filter((entry) => entry.hp <= 0) : [];
+      const ally = (downed.length > 0 ? downed : resolution.candidates.filter((entry) => entry.hp > 0))
         .sort((a, b) => (a.hp / Math.max(1, a.maxHp)) - (b.hp / Math.max(1, b.maxHp)))[0];
       if (ally) return { ...resolution, targets: [ally] };
     }
@@ -2708,6 +2714,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         enemies: visibleEnemies(),
         requestedTargetId,
         area: skill.area,
+        includeDefeatedAllies: skillRevivesDefeatedAllies(skill),
       });
       const targets = resolution.requiresSelection
         ? resolution.targets
@@ -3483,6 +3490,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           user: enemy,
           actors: activeActors(),
           enemies: visibleEnemies(),
+          includeDefeatedAllies: skillRevivesDefeatedAllies(skill),
         });
         if (resolution.candidates.length === 0) return [];
         // 효용 0(풀피 힐, 기대 데미지 0)인 저작 액션도 버리지 않는다 — 예전에는 여기서
@@ -3514,6 +3522,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
             user: enemy,
             actors: activeActors(),
             enemies: visibleEnemies(),
+            includeDefeatedAllies: skillRevivesDefeatedAllies(skill),
           });
           if (resolution.candidates.length === 0) return [];
           const targets = resolution.requiresSelection
@@ -3589,6 +3598,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       return expected + (expected >= target.hp ? 1000 : 0) + (1 - target.hp / Math.max(1, target.maxHp)) * 20;
     }
     if (skill.effect.kind === "healing") {
+      // 쓰러진 동료(HP 0)는 회복량 0이라 풀피 힐과 같이 버려졌다. 부활 기술이면
+      // 어떤 피해·생환자 힐보다 우선한다(최대 HP 99999 + 처치 보너스보다 큼).
+      if (target.hp <= 0) return skillRevivesDefeatedAllies(skill) ? 100_000_000 : 0;
       const missing = skill.effect.affects === "mp" ? target.maxMp - target.mp : target.maxHp - target.hp;
       return missing > 0 ? missing + (target.hp / Math.max(1, target.maxHp) < 0.35 ? 500 : 0) : 0;
     }

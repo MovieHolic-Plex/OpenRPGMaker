@@ -1,5 +1,5 @@
 import { battleActorSkillFailure, battleSkillMpCost, battlerSkillIdsWithGrants, comboParticipantsFromSnapshot, comboSkillIdsFor } from "@/battle/battleSkillUse";
-import { areaTargets, resolveBattleTargets, targetIdFor } from "@/battle/battleTargetResolver";
+import { areaTargets, resolveBattleTargets, skillRevivesDefeatedAllies, targetIdFor } from "@/battle/battleTargetResolver";
 import { predictSkillDamageFor } from "@/battle/battlePredict";
 import type { ActorCommand, BattleBattlerSnapshot, BattleSnapshot } from "@/battle/types";
 import { stateBehavior } from "@/battle/battleStates";
@@ -91,14 +91,21 @@ function bestRecovery(
 ): ActorCommand | undefined {
   const candidates: Array<{ skill: SkillRecord; target: BattleBattlerSnapshot; score: number }> = [];
   for (const skill of skills) {
+    const revives = skillRevivesDefeatedAllies(skill);
     const resolution = resolveBattleTargets({
       scope: skill.scope,
       user: actor,
       actors: snapshot.actors,
       enemies: snapshot.enemies,
+      includeDefeatedAllies: revives,
     });
     if (resolution.side !== "actor") continue;
     for (const target of resolution.candidates) {
+      // 쓰러진 동료는 생환자 힐(문턱 점수)보다 먼저 일으킨다. 전원 공격 작전은 이 함수에 들어오지 않는다.
+      if (revives && (target.hp <= 0 || target.defeated)) {
+        candidates.push({ skill, target, score: 1000 });
+        continue;
+      }
       const hpDanger = skill.effect.kind === "healing" && skill.effect.affects === "hp"
         ? Math.max(0, hpThreshold - target.hp / Math.max(1, target.maxHp)) * 100
         : 0;
