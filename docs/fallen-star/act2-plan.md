@@ -582,3 +582,11 @@
 
 - 1막 실제 뼈대: `src/project/flagship/fallen/act1Finale.ts`(발렌 두 전투·회로·지하 3·4층·달빛의 용·「달의 아이」 단말 문구·승강 장치·광장 포위·엔딩 에필로그·필드 규칙), `battleDepth.ts`(연계기 셋·성장 곡선), `fallenStarStory.ts`(이름·장 사양).
 - 도구 존재: `src/editor/tools/toolRegistry.ts` 가 들이는 파일에서 이름을 뽑아 비교. 연계기 2~3명 제한은 `comboTechTools.ts`·`battle/battleSkillUse.ts`, 파티 묶음 명령은 `project/types/events.ts`(storeParty·recallParty, 조수 도구 없음), 다부위·반응·흡수·차지는 `project/types/database.ts`, 설원 키트는 `beodeulVillage.ts`(theme snow)·`dungeonKit/beodeul/profiles.ts`(canopy snow 미사용), 퍼즐 프리셋 20종은 `puzzleAuthoringTools.ts`(stealth_guard_patrol·mirror_beam_refraction·cracked_plank_bridge 포함).
+
+---
+
+## 9. 진행 상황·남은 순서 (2026-10-25 밤)
+
+- 누락 도구 10개 중 8개 머지(설원 길·불탄 마을·틈 도약·파티 나누기·4인 연계기·유대·충전 끊기 + 저장 스크립트). 일지·제한 시간 탈출·전투 손님(+과제 11)은 PR 이 열린 채 머지 대기였다.
+- 비트 B1~B13: **아직 0줄.** 다음 순서는 B1→B6(마일스톤 A) → B7~B9 → B10~B13.
+- 인계 문서(머지 목록·열린 PR·정본 저장·체크포인트 명령·함정): `docs/fallen-star/act2-handoff.md`.
