@@ -157,6 +157,21 @@ let disposeFirstRunGuide: (() => void) | null = null;
 // 좌측 도크 마운트 — 패널 호스트를 레이아웃 데이터에서 만든 결과. 구성이 바뀔 때만 다시 짓는다.
 let leftDock: DockMount | null = null;
 
+/** 맵 칸 로딩 표시. EditScene.create 가 `[data-map-loading]` 을 지우고 aria-busy 를 내린다. */
+function mountMapLoadingIndicator(container: HTMLElement): void {
+  container.setAttribute("aria-busy", "true");
+  const ring = document.createElement("div");
+  ring.dataset.mapLoading = "";
+  ring.dataset.testid = "map-loading";
+  ring.setAttribute("aria-hidden", "true");
+  ring.style.cssText = "position:absolute;left:50%;top:50%;width:28px;height:28px;margin:-14px 0 0 -14px;border-radius:50%;"
+    + "border:3px solid rgba(74,87,214,.18);border-top-color:#4a57d6;pointer-events:none;z-index:1";
+  container.append(ring);
+  if (typeof ring.animate === "function" && !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+    ring.animate([{ transform: "rotate(0deg)" }, { transform: "rotate(360deg)" }], { duration: 900, iterations: Infinity });
+  }
+}
+
 export function renderEditor(main: HTMLElement): void {
   clearChildren(main);
   installEditorToolHook(); // 헤드리스(Playwright) 에디터 조작용 window.__oprnEditorTool.
@@ -273,6 +288,9 @@ export function renderEditor(main: HTMLElement): void {
   window.addEventListener("oprn:test-play-window", onTestPlayWindowRequest);
   window.addEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, onAuthoringTestBootSuccess);
   bindMapSurfaceFocusHandoff(phaserContainer);
+  // 맵 판이 그려지기 전(Phaser 기동·텍스처·팔레트 준비, 약 1~2s)에는 셸이 먼저 보인다 — 그동안 맵 칸에 작은 도는 표시를 둔다.
+  // EditScene.create 가 걷는다. 글자는 넣지 않는다(DOM 번역 카탈로그 밖) — 상태는 aria-busy 로 알린다.
+  mountMapLoadingIndicator(phaserContainer);
   void startEditGame(phaserContainer).then(() => scheduleFitCanvas());
   unsubLayoutBbox = installLayoutBboxOverlay();
   // 명명 로케이션 레이어. 꺼져 있으면 포인터를 받지 않으므로 타일 편집과 겹치지 않는다.

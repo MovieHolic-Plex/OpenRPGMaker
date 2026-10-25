@@ -514,6 +514,10 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   create(): void {
+    // 셸이 먼저 보이는 동안 맵 칸에 둔 로딩 표시를 걷는다(panels/editor.ts mountMapLoadingIndicator).
+    const host = this.game.canvas?.parentElement;
+    host?.querySelector("[data-map-loading]")?.remove();
+    host?.removeAttribute("aria-busy");
     this.initTextureRedraw();
     registerBundledFrames(this, store.getCurrent());
     this.cameras.main.setBackgroundColor("#E7E0D0");
