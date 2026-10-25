@@ -996,7 +996,7 @@ function compileFadeBeat(beat: CutsceneFadeBeat, forceNonBlocking: boolean, stat
 }
 
 /** 화면 색조 select 가 받는 이름. hex·rgb 는 value 칸으로 간다(카탈로그 계약). */
-const SCREEN_TINT_COLOR_NAMES: ReadonlySet<string> = new Set(["neutral", "white", "red", "green", "blue", "yellow", "purple", "black"]);
+const SCREEN_TINT_COLOR_NAMES: ReadonlySet<string> = new Set(["neutral", "white", "red", "green", "blue", "yellow", "purple", "black", "sepia"]);
 
 /**
  * `color:"#c4a070"` 처럼 색 값을 color 에 넣으면 카탈로그 검증이 「값이 카탈로그 옵션에 없습니다」로 컷신 전체를 거부했다 —
