@@ -3599,6 +3599,17 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 도망 성공 뒤 무적 걸음은 `configure_monster_system {escapeGraceSteps: 0~99}`(생략 시 몬스터 파티 게임 4, 0 = 끔).
 - 낚싯대는 새 도구가 아니다: `configure_fishing` 의 몬스터 어획(`catches[] {speciesId,…}`) + `upsert_tool_action {action:"fish", itemId}` 로 잇고, NPC `changeItem` 으로 낚싯대를 준다. 기본 `build_monster_game` 캠페인에는 이미 들어 있다. 능력 색인 `monster-field-items`, 별칭 「벌레퇴치·탈출 로프·도망 무적·낚싯대」. 자세한 런타임 동작은 `openwiki/monster-expedition.md` 「야생 조우 보호·필드 도구·낚시」.
 
+## 이야기형 연애 기본값 `apply_romance_preset` (2026-10-25, 시타마치)
+
+인터뷰로 시작하지 않은 프로젝트(대표 데모·빈 프로젝트에서 조수가 연애 게임을 짓는 경우)에는 `applyRomanceDefaults` 가 아무 일도 하지 않아 체력 하트 「514/514」 HUD 가 그대로 남았다. `applyRomanceDefaults(project, {force, dayLoop})` 가 생겼다: `force:true` 면 인터뷰 장르가 아니어도 깔고, `dayLoop:false` 면 시간·소셜 루프(기한 결말)를 깔지 않으며 HUD 는 시계 없이 호감 위젯 하나(`storyRomanceHudConfig`)다. 조수 도구 `apply_romance_preset({dayLoop?})`(`gameSystemToggleTools.ts`, 이름표 「연애 기본값 깔기」). 엔딩 화면은 캡션·요약을 `.ending-final-meta` 세로 묶음에 넣어 긴 엔딩 이름이 두 줄이 되어도 「플레이 시간」 줄과 겹치지 않는다(`playSceneOverlays.ts`, `gameOver.css`).
+
+### 대화 중 인물 보이기 `system.dialogueKeepActorsVisible` (2026-10-25)
+
+시타마치 after VQA 두 검수자가 모두 1순위로 짚은 결함: 필드 대사창(아래)과 선택지 창(가운데)이 화면 아래 절반을 덮고 카메라는 주인공을 화면 가운데에 두므로, 마주 서서 말하는 두 사람이 창 뒤에 숨는다. 이 설정을 켜면 `src/player/dialogueCameraLift.ts` 가 프레임마다 덮개(`.dialogue-overlay .dialogue-box`·`runtime-choices`) 윗변을 재고, 주인공을 따르는 카메라의 추적 오프셋을 내려 주인공을 빈 띠의 55% 높이(최소 20%)에 둔다. 맵 아래 끝·화면보다 작은 방(전철 칸)에서는 그 동안만 카메라 경계 아래를 같은 만큼 늘리고(늘어난 곳은 창 밑), 창이 닫히면 오프셋과 경계를 되돌린다 — 경계는 그 사이 맵 이동이 바꾸지 않았을 때만 되돌린다. 카메라 고정·이동 연출 중에는 손대지 않는다.
+- 조수: `set_project_settings({dialogue:{keepActorsVisible:true}})`. `apply_romance_preset` 도 값이 없을 때 켠다. false 도 저장한다(연애 기본값이 저작자가 끈 값을 다시 켜지 않게).
+- 시험: `test/dialogueCameraLift.test.ts`, 하네스 과제 `dialogue-keeps-speakers-visible`(scene-lessons-seed, 19528).
+헤드리스 러너(`sceneTestRunner`): 선택 → 장소 이동으로 끝나는 이벤트 뒤, 도착 맵 자동 실행이 선택지에서 기다리면 그 안쪽 해석기를 그대로 들고 간다(예전에는 «Nested interaction still waiting» 실패로 자동 플레이가 첫 장면에서 멈췄다).
+
 ## 연애 3차 수리 — 칩·ESC 메뉴·뼈대·완료 문 (2026-10-16, romance-fix-3)
 
 - **인물 칩 = Modern1~3(24칸).** 장르 잠금 `romance` 에 `charsets`(families `modern`·`object`·`uploaded`, 주인공 기본 `oprn-charset-modern2` 칸 2)가 생겼고 `enableGenreLockSettled` 로 켠다(`romancePreset.ts`) — 켜는 순간 기본 로스터·주인공이 Modern 칩으로 옮겨진다. `charsetQuery.categoryOf()` 는 `tex_oprn_charset_modern*` 을 `people` 로 센다(이게 `object` 로 새서 「villager」「npc」 같은 일반 질의와 place_npc 기본값이 잠금 아래 0건이었다). `list_npc_graphics` 가 0건이면 `data.hint` 에 낱말 하나로 줄이라고 적는다(공백으로 이은 여러 낱말은 모두 맞아야 한다).

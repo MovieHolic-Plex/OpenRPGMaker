@@ -539,7 +539,11 @@ export function playCinematicSequence(options: {
         // (2026-10-25 장난감 가게 G49). 화면 읽기용 글은 상자 안에 남기되 보이지 않게 한다.
         if (scene.composition.layers.some(layer => (layer as { caption?: unknown }).caption)) narration.classList.add('cinematic-narration--captioned');
         const canvas = el("canvas", { class: "cinematic-animatic", dataset: { testid: "opening-animatic-stage" } });
-        canvas.setAttribute('aria-label', '레이어와 카메라로 구성한 오프닝');
+        // 컷에 자막 층(caption)이 있으면 그 글자가 캔버스 안에 이미 그려진다. 같은 글을 담은 DOM 내레이션까지 띄우면
+        // 자막이 두 겹으로 보였다(시타마치 VQA before 02·03 「유령 글자」) — 내레이션은 화면에서 숨기고 캔버스 설명으로 옮긴다.
+        const canvasCaptions = scene.composition.layers.some(layer => layer.kind === 'caption' && (layer.caption?.cues?.length ?? 0) > 0);
+        if (canvasCaptions && scene.narration.trim()) { narration.hidden = true; narration.dataset.captionedOnCanvas = 'true'; }
+        canvas.setAttribute('aria-label', canvasCaptions && scene.narration.trim() ? scene.narration : '레이어와 카메라로 구성한 오프닝');
         canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000';
         ready(canvas); beginLoading();
         playOpeningAnimatic({ project, canvas, composition: scene.composition, durationMs: scene.durationMs, signal: lifetime.signal, reducedMotion,

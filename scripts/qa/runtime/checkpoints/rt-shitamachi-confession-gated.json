@@ -10,15 +10,16 @@
  "checkpoints": [
   {
    "id": "anchor",
-   "label": "세션 로그 line 490 저장",
-   "note": "/home/main/salad/play/runs/rerun2/tasks/shitamachi-fourth-season__first-run/actions.jsonl 의 saves/0155.json 에서 부팅한다(리로드 경계를 넘지 않는 마지막 세이브). 기록 시점: field map_shitamachi_arcade (20,14).",
+   "label": "상점가 · 등롱 0개(진행 단계 2)",
+   "note": "2026-10-25 재구성 판 플레이(tmp/qp/a6 saves/0089) — 서연의 부탁을 들은 직후, 소원 등롱 0개. 상점가 (16,13).",
    "snapshot": {
     "schemaVersion": 5,
     "projectTitle": "시타마치의 네 번째 계절",
-    "savedAt": "2026-10-23T06:49:34.182Z",
-    "mapName": "시타마치 개화 상점가 아케이드",
+    "savedAt": "2026-10-25T06:54:53.598Z",
+    "mapName": "시타마치 상점가",
     "partyLevel": 1,
-    "playTimeSeconds": 0,
+    "playTimeSeconds": 292,
+    "sceneLine": "하진: …이사 가던 날이다. 내년엔 같이 등롱 보자고, 그렇게 말했었지.",
     "session": {
      "switches": {
       "sw_0001": false,
@@ -56,7 +57,16 @@
       "switch_shared_relay_moon": false,
       "switch_shared_relay_tide": false,
       "switch_shared_relay_earth": false,
-      "sw_shitamachi_lantern_lit": false
+      "sw_sm_lantern_seoyeon": false,
+      "sw_sm_lantern_jiho": false,
+      "sw_sm_lantern_yuna": false,
+      "sw_shitamachi_lantern_lit": false,
+      "sw_sm_photo_seen": true,
+      "sw_sm_note_read": true,
+      "sw_sm_gather": false,
+      "sw_sm_jiho_taste": false,
+      "sw_sm_train_yuna_off": true,
+      "sw_sm_seoyeon_hub_off": true
      },
      "selfSwitches": {},
      "variables": {
@@ -80,9 +90,12 @@
       "var_0018": 0,
       "var_0019": 0,
       "var_0020": 0,
-      "var_aff_seoyeon": 0,
-      "var_aff_jiho": 0,
-      "var_aff_yuna": 0
+      "var_sm_stage": 2,
+      "var_sm_date": 0,
+      "var_sm_lanterns": 0,
+      "var_sm_seoyeon": 0,
+      "var_sm_jiho": 0,
+      "var_sm_yuna": 1
      },
      "timers": {},
      "gold": 0,
@@ -257,7 +270,9 @@
      "eventLocations": {},
      "erasedEventIds": [],
      "occupiedLocationIds": {
-      "map_shitamachi_arcade": []
+      "map_venue_train": [],
+      "map_shitamachi_arcade": [],
+      "map_venue_house": []
      },
      "removedEventIds": {},
      "spawnedEvents": {},
@@ -269,6 +284,7 @@
      },
      "lighting": {
       "ambient": 0,
+      "color": "#000000",
       "sources": []
      },
      "npcTravelStates": {},
@@ -276,24 +292,226 @@
      "npcScheduleStates": {},
      "lifeSkills": {},
      "farmPlots": {},
-     "friendship": {},
+     "friendship": {
+      "yuna": 100
+     },
      "relationships": {},
+     "dialogueBacklog": [
+      {
+       "kind": "line",
+       "text": "가을의 끝, 저녁 통학 전철.",
+       "context": "narration"
+      },
+      {
+       "kind": "line",
+       "text": "여덟 살 때 떠났던 시타마치로 돌아온 게 올봄이었다.",
+       "speaker": "하진",
+       "context": "thought"
+      },
+      {
+       "kind": "line",
+       "text": "봄, 여름, 가을. 이 동네에서 맞는 세 번째 계절도 다 지나간다.",
+       "speaker": "하진",
+       "context": "thought"
+      },
+      {
+       "kind": "line",
+       "text": "…저 애, 오늘도 같은 칸이네.",
+       "speaker": "하진",
+       "context": "thought"
+      },
+      {
+       "kind": "line",
+       "text": "…….",
+       "speaker": "유나",
+       "context": "speech"
+      },
+      {
+       "kind": "line",
+       "text": "(낡은 필름 카메라를 두 손으로 감싸 쥐고 창밖을 보고 있다.)",
+       "speaker": "유나",
+       "context": "speech"
+      },
+      {
+       "kind": "choice",
+       "picked": "가볍게 목례만 한다"
+      },
+      {
+       "kind": "line",
+       "text": "……(작게 고개를 숙인다)",
+       "speaker": "유나",
+       "context": "speech"
+      },
+      {
+       "kind": "line",
+       "text": "곧 시타마치, 시타마치입니다. 내리실 문은 왼쪽입니다.",
+       "speaker": "안내 방송",
+       "context": "speech"
+      },
+      {
+       "kind": "line",
+       "text": "…저, 여기서 내려요. 그럼.",
+       "speaker": "유나",
+       "context": "speech"
+      },
+      {
+       "kind": "line",
+       "text": "시타마치 상점가. 아케이드 지붕 아래로 저녁 장 보는 사람들이 오간다.",
+       "context": "narration"
+      },
+      {
+       "kind": "line",
+       "text": "하진! 딱 맞춰 왔네.",
+       "speaker": "서연",
+       "context": "speech"
+      },
+      {
+       "kind": "line",
+       "text": "서연? 학생회장이 여기서 뭐 해?",
+       "speaker": "하진",
+       "context": "speech"
+      },
+      {
+       "kind": "line",
+       "text": "내일 밤이 「시타마치 등롱 축제」인 거 알지? 진흥회 어르신들 일손이 모자라서 학생회가 돕기로 했어.",
+       "speaker": "서연",
+       "context": "speech"
+      },
+      {
+       "kind": "line",
+       "text": "정문 큰 등롱에 「소원 등롱」 세 개를 넣어야 불이 켜지는데, 아직 하나도 안 모였어.",
+       "speaker": "서연",
+       "context": "speech"
+      },
+      {
+       "kind": "line",
+       "text": "하나는 코하루 베이커리, 하나는 센토 마츠노유. 마지막 하나는… 진흥회 사무소에서 서류랑 씨름 중인 나한테 있고.",
+       "speaker": "서연",
+       "context": "speech"
+      },
+      {
+       "kind": "line",
+       "text": "셋 다 모이면 정문 옆 등롱지기 할아버지께 가져다드리면 돼.",
+       "speaker": "서연",
+       "context": "speech"
+      },
+      {
+       "kind": "choice",
+       "picked": "「학생회 일을 왜 내가…」"
+      },
+      {
+       "kind": "line",
+       "text": "…그러게. 미안, 부탁할 사람이 너밖에 생각이 안 났어.",
+       "speaker": "서연",
+       "context": "speech"
+      },
+      {
+       "kind": "line",
+       "text": "베이커리는 지호네잖아. 네 소꿉친구. 센토는 아케이드 지나 북쪽 뒷길이고. 그럼, 사무소에서 기다릴게!",
+       "speaker": "서연",
+       "context": "speech"
+      },
+      {
+       "kind": "line",
+       "text": "소원 등롱 세 개. 베이커리, 센토, 진흥회 사무소.",
+       "speaker": "하진",
+       "context": "thought"
+      },
+      {
+       "kind": "line",
+       "text": "…그 전에 집에 들러 가방부터 놓고 갈까. 우리 집은 아케이드 지나 북쪽 뒷길이다.",
+       "speaker": "하진",
+       "context": "thought"
+      },
+      {
+       "kind": "line",
+       "text": "식탁 위에 엄마의 쪽지가 있다.",
+       "context": "narration"
+      },
+      {
+       "kind": "line",
+       "text": "하진아, 진흥회 일 돕는다며? 내일 축제 끝나고 늦으면 연락해. 저녁은 냉장고에.",
+       "speaker": "엄마의 쪽지",
+       "context": "speech"
+      },
+      {
+       "kind": "line",
+       "text": "추신. 지호네 빵집에 안부 전해 줘. 너 어릴 때 거기서 살다시피 했잖니.",
+       "speaker": "엄마의 쪽지",
+       "context": "speech"
+      },
+      {
+       "kind": "line",
+       "text": "책장 위에 낡은 사진 한 장.",
+       "context": "narration"
+      },
+      {
+       "kind": "line",
+       "text": "코하루 베이커리 앞. 등롱을 든 채 울고 있는 꼬마 지호와, 그 옆에서 어쩔 줄 모르는 나.",
+       "speaker": "하진",
+       "context": "thought"
+      },
+      {
+       "kind": "line",
+       "text": "…이사 가던 날이다. 내년엔 같이 등롱 보자고, 그렇게 말했었지.",
+       "speaker": "하진",
+       "context": "thought"
+      }
+     ],
+     "dialogueRead": [
+      "16uyucj",
+      "df4tb4",
+      "1ko5tzm",
+      "f8gijm",
+      "nfel3f",
+      "1cedjz8",
+      "xd7p6i",
+      "1gmz0vn",
+      "1ahytml",
+      "1ywrdrn",
+      "9ahqyv",
+      "c0fua0",
+      "qa9skq",
+      "5h81e1",
+      "1su2g5p",
+      "1rro2h1",
+      "dibile",
+      "1ne4wta",
+      "1h12bmg",
+      "67wy3e",
+      "vcw15q",
+      "m05tpp",
+      "idi06q",
+      "198sks3",
+      "grroc3",
+      "wqla8h"
+     ],
      "dailyGifts": {},
      "dailyTalks": {},
-     "monsterCareDaily": {},
+     "monsterCareSteps": 38,
+     "monsterCareDaily": {
+      "no-time": 0
+     },
      "chests": {},
      "placeables": {},
      "followers": [],
      "followerTrail": [],
      "currentMapId": "map_shitamachi_arcade",
-     "x": 20,
-     "y": 14,
+     "x": 16,
+     "y": 13,
      "mapOverrides": {},
-     "flags": {},
+     "flags": {
+      "screen-effect:fadeIn": true,
+      "screen-effect:fadeOut": true
+     },
      "audio": {
       "bgm": {
-       "resourceId": "cc0-bgm-rtp-fld-003",
+       "resourceId": "cc0-bgm-rtp-qui-001",
        "loop": true
+      },
+      "se": {
+       "resourceId": "cc0-se-osx-dishes-02",
+       "loop": false
       }
      },
      "pictures": {},
@@ -934,32 +1152,38 @@
      "classOverrides": {},
      "actorParamBonuses": {},
      "actorStateIds": {},
-     "playerFacing": "down",
-     "playTimeSeconds": 0,
+     "playerFacing": "right",
+     "stepCount": 88,
+     "playTimeSeconds": 292,
      "rng": {
-      "seed": 3053455570,
+      "seed": 564411976,
       "streams": {
        "encounter": {
-        "seed": 2191219375,
-        "state": 2191219375
+        "seed": 3900396129,
+        "state": 3900396129
        },
        "battle": {
-        "seed": 3907912088,
-        "state": 3907912088
+        "seed": 788951158,
+        "state": 788951158
        },
        "movement": {
-        "seed": 2818118515,
-        "state": 2818118515
+        "seed": 1556899729,
+        "state": 2876935966
        },
        "fishing": {
-        "seed": 70601828,
-        "state": 70601828
+        "seed": 2196560882,
+        "state": 2196560882
        },
        "misc": {
-        "seed": 4290680522,
-        "state": 4290680522
+        "seed": 2632394140,
+        "state": 2632394140
        }
       }
+     },
+     "screen": {
+      "tint": "none",
+      "hidden": false,
+      "tintDurationMs": 600
      }
     }
    }

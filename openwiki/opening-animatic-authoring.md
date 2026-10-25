@@ -183,6 +183,12 @@ pixel-animatic request as an in-game cutscene request and sent the assistant to 
 - `node scripts/qa/opening-pixel-compare.mjs <name> --ref <dir> --run <label>=<outDir> …` — one self-contained page with
   the reference capture beside every iteration's contact sheet, both videos and shot table.
 
+## Game map as the opening background (2026-10-25, Shitamachi)
+
+When there is no matching still, an image layer may use `resourceId: "map-view:<mapId>"` — the player draws that map's tile layers once at 1 map pixel = 1 stage pixel (`src/player/mapBackgroundMapView.ts` `renderMapViewCanvas`, cached per project in `openingAnimaticRenderer.ts`) and the layer `crop` (map pixels) chooses the part shown. Events are not drawn; put people on top with `place_opening_charset_actor` (stage px = map px − crop origin).
+The tool surface is `place_opening_background({shotId, layerId, mapId, focus:{x,y}, zoom})` — it computes the stage-ratio crop around the focus cell (`src/project/openingMapView.ts` `openingMapViewCrop`). The «one backdrop per shot» rule counts a map-view background as reused only when the crop origin is the same (two different streets corners of one map are different shots). Resource validation lists `map-view:<id>` for every map (`openingMapViewResourceIds`).
+Captions: when an animatic shot has a caption layer with cues, the DOM narration line is hidden (`data-captioned-on-canvas`), so a tool-made shot that also kept `narration` no longer shows the same sentence twice; the narration still becomes the canvas aria-label.
+
 ## Entry timing
 
 `configure_opening_entry` sets one sequence location: `new-game` (default), `before-title` (first cold title visit after resume/test precedence), or `attract` (idle title demo with configurable initial/repeat wait). This is one authored sequence; it does not hold three independently authored tracks simultaneously. Non-New-Game modes do not replay on New Game. Any non-repeated key dismisses before-title/attract without activating the underlying title menu. Mouse input continues to follow the player's keyboard ownership contract.
