@@ -687,6 +687,35 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   return problems;
 }
 
+/** 값의 크기(배열 길이·객체의 빈 아닌 칸 수·빈 아닌 값 1). */
+function fill(v: unknown): number {
+  if (Array.isArray(v)) return v.length;
+  if (v && typeof v === "object") return Object.values(v as Obj).reduce<number>((n, x) => n + (fill(x) > 0 ? 1 : 0), 0);
+  return v === undefined || v === null || v === "" || v === false ? 0 : 1;
+}
+const BATTLE_DATA: Record<"actors" | "classes", readonly string[]> = {
+  actors: ["learnedSkills", "initialEquipment", "battleCommandIds", "classId"],
+  classes: ["skillIds", "learnedSkills", "battleCommands", "equipmentPermissions"],
+};
+/** 배우·직업의 전투 데이터가 줄었다(요청이 메뉴·화면이 아니라 그 데이터를 지우라고 했을 때만 정상). */
+export function battleDataEmptied(before: Project, after: Project, task: string): string[] {
+  const deleteAsk = /(스킬|기술|장비|직업|전투\s*명령|skill|equip)[^.!?\n]{0,10}(지워|지우|없애|삭제|비워|빼앗|못\s*쓰게|배우지)/iu.test(task)
+    && !/메뉴|탭|ESC|화면|창에서|창의|HUD|menu/iu.test(task);
+  if (deleteAsk) return [];
+  const out: string[] = [];
+  for (const section of ["actors", "classes"] as const) {
+    const old = new Map(((before.database as unknown as Obj)[section] as Obj[] | undefined ?? []).map((r) => [String(r.id), r]));
+    for (const r of ((after.database as unknown as Obj)[section] as Obj[] | undefined) ?? []) {
+      const prev = old.get(String(r.id));
+      if (!prev) continue;
+      const lost = BATTLE_DATA[section].filter((k) => fill(prev[k]) > 0 && fill(r[k]) < fill(prev[k]));
+      if (!lost.length) continue;
+      out.push(`[게임 검사 부작용] 기존 ${section === "actors" ? "배우" : "직업"} 「${String(r.name ?? r.id)}」의 전투 데이터(${lost.join(",")})를 비웠다 — 요청은 그 데이터를 지우라는 것이 아니다. 메뉴·화면에서 숨기는 것은 데이터 지우기가 아니다: 원래 값으로 되돌리고(${section === "actors" ? "upsert_actor" : "upsert_class"}), 메뉴 항목은 configure_field_menu{preset:'story'} 로, 체력 표시는 set_field_hud{off:true} 로 뺀다.`);
+    }
+  }
+  return out;
+}
+
 /** 요청과 상관없이 바뀌면 안 되는 것 — 기존 NPC 의 그림·이름이 요청 없이 바뀌었는지(고치기 요청에서 흔한 부작용). */
 export function unaskedChanges(before: Project, after: Project, task: string): string[] {
   const artAsk = /그림|외형|모습|얼굴|옷|칩|graphic|sprite|face/iu.test(task);
@@ -718,6 +747,10 @@ export function unaskedChanges(before: Project, after: Project, task: string): s
       }
     }
   }
+  // 배우·직업의 전투 데이터(배울 기술·처음 장비·전투 명령·장비 허용)를 비웠다 — 「메뉴의 스킬·장비 빼 줘」를 데이터 지우기로 흉내 냈다
+  // (2026-10-25 장난감 가게 고치기 4턴: 메뉴 도구가 안 실려 upsert_actor·upsert_class 로 주인공 기술·직업을 비웠다. 요청에 「파티」「스킬」이 있어
+  // 아래 일반 검사의 낱말 면제에 걸려 못 잡았다). 메뉴·화면에서 숨기는 요청이면 데이터는 그대로 둔다 — 낱말 면제 없이 본다.
+  out.push(...battleDataEmptied(before, after, task));
   // 이미 있던 데이터(아이템·장비·적·기술·직업)를 요청이 그 이름을 말하지 않았는데 고쳤다 — 값·능력치가 게임 전체에서 바뀐다(2026-10-24 스위트).
   const bdb = before.database as unknown as Record<string, unknown>, adb = after.database as unknown as Record<string, unknown>;
   if (!artAsk) for (const section of ["items", "weapons", "armors", "enemies", "skills", "classes", "actors"]) {
