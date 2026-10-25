@@ -18,6 +18,7 @@ import { ensureNamedSwitch } from "./flagHelpers";
 import { asCell, field, list, text } from "./jrpgVolumeTools";
 import { makePage, puzzleEvent, sfx, shake, flash, textCmd, choices, TRANSPARENT } from "./puzzleKit";
 import { resolveGraphic } from "./eventCompile";
+import { planTileGate, placeTileGate, type TileGateKits, type TileGatePlan } from "./tileGate";
 
 export const DUNGEON_GIMMICKS = ["lever", "bridge", "teleporter", "minecart", "iceslide", "sandpit"] as const;
 export type DungeonGimmick = (typeof DUNGEON_GIMMICKS)[number];
@@ -47,6 +48,48 @@ export function chokeBlockGraphic(type: DungeonType | string | undefined) {
   return NATURAL_TYPES.has(type as DungeonType)
     ? resolveGraphic({ textureKey: "tex_easyrpg_charset_object2", characterIndex: 5 } as never)
     : resolveGraphic({ textureKey: "tex_easyrpg_charset_object1", characterIndex: 5 } as never);
+}
+
+/** 레버 관문 그림이 타일 키트인 종류(지은 던전) — 내리닫이 쇠창살문 3×2 닫힘·올림. 문 이벤트는 보이지 않고 막기만 한다(tileGate.ts). */
+const PORTCULLIS_TYPES: ReadonlySet<DungeonType> = new Set<DungeonType>(["castle", "catacomb", "pyramid", "temple", "mine", "tower"]);
+export const PORTCULLIS_KITS: TileGateKits = { closed: TK("portcullis"), open: TK("portcullis-open") };
+/** 레버 관문 그림 방식: portcullis = 쇠창살문 타일 키트(문간 이벤트는 보이지 않음) · bars = 옛 캐릭터 쇠창살 · rock = 바위. */
+export const LEVER_GATE_STYLES = ["portcullis", "bars", "rock"] as const;
+export type LeverGateStyle = (typeof LEVER_GATE_STYLES)[number];
+/** 종류 기본 방식(지은 던전 = portcullis, 자연 굴 = rock, 그 밖 = bars). 요청한 방식이 있으면 그것. */
+export function leverGateStyle(type: DungeonType | string | undefined, asked?: unknown): LeverGateStyle {
+  if (typeof asked === "string" && (LEVER_GATE_STYLES as readonly string[]).includes(asked)) return asked as LeverGateStyle;
+  return PORTCULLIS_TYPES.has(type as DungeonType) ? "portcullis" : NATURAL_TYPES.has(type as DungeonType) ? "rock" : "bars";
+}
+/** 레버 관문 타일 키트 짝(portcullis 방식일 때). */
+export function leverGateKits(type: DungeonType | string | undefined, asked?: unknown): TileGateKits | null {
+  return leverGateStyle(type, asked) === "portcullis" ? PORTCULLIS_KITS : null;
+}
+
+/**
+ * 레버 관문을 놓는다(두 레버 경로 공용): portcullis 방식이면 목에 키트를 칠하고 문간에 보이지 않는 문 이벤트,
+ * 아니면 목 칸마다 그림 이벤트(바위·캐릭터 쇠창살). 반환한 openCommands 를 레버 당김 명령에 붙인다. 놓지 못하면 null.
+ */
+export function placeLeverBlock(draft: Project, map: GameMap, type: DungeonType | string | undefined, cells: readonly Pt[], sw: string, plan?: TileGatePlan | null, asked?: unknown): { cells: Pt[]; openCommands: Command[]; tiles: boolean } | null {
+  const style = leverGateStyle(type, asked);
+  const kits = style === "portcullis" ? PORTCULLIS_KITS : null;
+  if (kits) {
+    const p = plan ?? planTileGate(draft, map, cells, kits);
+    if (!p) return null;
+    const r = placeTileGate(draft, map, p, { idPrefix: `ev_${map.id}_lever_gate`, name: "쇠창살문", switchId: sw, closedText: "굳게 닫힌 쇠창살문이다. 어딘가의 레버로 올리는 것 같다.", closedName: "닫힌 쇠창살문", openName: "올린 쇠창살문" });
+    return { ...r, tiles: true };
+  }
+  // 닫힌 페이지는 겹침 금지(overlapForbidden) — 예전엔 false 라 런타임에서 바위·쇠창살을 그냥 지나갔다(2026-10-25 머리 없는 레버 검사).
+  const rock = style === "rock";
+  const bars = resolveGraphic({ textureKey: rock ? "tex_easyrpg_charset_object2" : "tex_easyrpg_charset_object1", characterIndex: 5 } as never);
+  cells.forEach((p, k) => {
+    const gid = k === 0 ? `ev_${map.id}_lever_gate` : `ev_${map.id}_lever_gate_${p.x}_${p.y}`;
+    upsertEventIntoMap(map, { id: gid, name: rock ? "막힌 바위" : "쇠창살", x: p.x, y: p.y, trigger: { kind: "action" }, commands: [], pages: [
+      { id: `${gid}_p1`, name: rock ? "길을 막은 바위" : "닫힌 쇠창살", conditions: [], graphic: bars, trigger: { kind: "action" }, priority: "same", overlapForbidden: true, movement: fixedMove, commands: [textCmd(rock ? "큰 바위가 길을 막고 있다. 어딘가의 레버로 치울 수 있을 것 같다." : "굳게 닫힌 쇠창살이다. 어딘가의 레버로 여는 것 같다.")] },
+      { id: `${gid}_p2`, name: rock ? "치운 바위" : "열린 쇠창살", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", overlapForbidden: false, movement: fixedMove, commands: [] },
+    ] } as GameEvent);
+  });
+  return { cells: [...cells], openCommands: [], tiles: false };
 }
 
 export const GIMMICK_LABEL: Readonly<Record<DungeonGimmick, string>> = {
@@ -491,11 +534,16 @@ function placeChokeLever(c: Ctx, entranceOk = true): string {
       }
       if (cells.length > 4) continue;
       // 지은 던전의 쇠창살 문은 문틀 그림이라 양옆이 벽인 목에만 — 트인 바닥 한가운데 선 창살이 「허공에 걸린 사슬·창살」로 읽혔다(2026-10-25 floor VQA r4·r5 catacomb·pyramid).
-      if (!NATURAL_TYPES.has(c.type)) {
+      if (leverGateStyle(c.type, field(c.data, "gateStyle")) !== "rock") {
         const ends = horiz ? [{ x: Math.min(...cells.map((p) => p.x)) - 1, y }, { x: Math.max(...cells.map((p) => p.x)) + 1, y }] : [{ x, y: Math.min(...cells.map((p) => p.y)) - 1 }, { x, y: Math.max(...cells.map((p) => p.y)) + 1 }];
         if (ends.some((p) => isPassable(c.draft, c.map, p.x, p.y))) continue;
         if (!horiz) continue;   // 세로 단면(가로 통로를 막는 세로 창살 줄)은 정면 그림이 옆으로 늘어서 문으로 안 읽힌다
       }
+      const askedStyle = field(c.data, "gateStyle");
+      const kits = leverGateKits(c.type, askedStyle);
+      const gatePlan = kits ? planTileGate(c.draft, c.map, cells, kits) : null;
+      // 문틀 키트가 안 들어가는 목(위층이 찬 칸 등)은 그 목을 버리지 않고 옛 쇠창살 이벤트로 — 버리면 탑 레버가 6/10 → 3/10 으로 줄었다(2026-10-25).
+      const gateStyle = kits && !gatePlan ? "bars" : askedStyle;
       const blocked = new Set(cells.map((p) => p.y * W + p.x));
       const seen = reach(c, blocked);
       if (tgtCells.some((p) => seen[p.y * W + p.x])) continue;   // 옆으로 돌아간다 — 목이 아니다
@@ -509,21 +557,14 @@ function placeChokeLever(c: Ctx, entranceOk = true): string {
       for (let yy = leverRoom.y; yy < leverRoom.y + leverRoom.h; yy += 1) for (let xx = leverRoom.x; xx < leverRoom.x + leverRoom.w; xx += 1) if (seen[yy * W + xx] && !blocked.has(yy * W + xx) && free(c, { x: xx, y: yy })) roomCells.push({ x: xx, y: yy });
       if (!roomCells.length) continue;
       const sw = `sw_${c.map.id}_lever`;
-      const rock = NATURAL_TYPES.has(c.type);
+      const rock = leverGateStyle(c.type, gateStyle) === "rock";
       ensureNamedSwitch(c.draft, sw, `${c.map.name}: 레버 당김(${rock ? "바위 치움" : "쇠창살 열림"})`);
-      const bars = chokeBlockGraphic(c.type);
-      cells.forEach((p, k) => {
-        const gid = k === 0 ? `ev_${c.map.id}_lever_gate` : `ev_${c.map.id}_lever_gate_${p.x}_${p.y}`;
-        upsertEventIntoMap(c.map, { id: gid, name: rock ? "막힌 바위" : "쇠창살", x: p.x, y: p.y, trigger: { kind: "action" }, commands: [], pages: [
-          { id: `${gid}_p1`, name: rock ? "길을 막은 바위" : "닫힌 쇠창살", conditions: [], graphic: bars, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixedMove, commands: [textCmd(rock ? "큰 바위가 길을 막고 있다. 어딘가의 레버로 치울 수 있을 것 같다." : "굳게 닫힌 쇠창살이다. 어딘가의 레버로 여는 것 같다.")] },
-          { id: `${gid}_p2`, name: rock ? "치운 바위" : "열린 쇠창살", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", overlapForbidden: false, movement: fixedMove, commands: [] },
-        ] } as GameEvent);
-      });
+      const gate = placeLeverBlock(c.draft, c.map, c.type, cells, sw, gatePlan, gateStyle)!;
       const placed = placeLever(c.draft, c.map, wallFirst(c.draft, c.map, roomCells), `ev_${c.map.id}_lever`, "레버", sw,
-        [shake(3, 500), textCmd(rock ? "쿠르릉… 어디선가 바위가 굴러가는 소리가 울렸다." : "어디선가 쇠창살이 올라가는 소리가 울렸다.")], "녹슨 레버가 있다. 힘껏 당겼다!", "레버는 이미 당겨져 있다.");
+        [shake(3, 500), ...gate.openCommands, textCmd(rock ? "쿠르릉… 어디선가 바위가 굴러가는 소리가 울렸다." : "어디선가 쇠창살이 올라가는 소리가 울렸다.")], "녹슨 레버가 있다. 힘껏 당겼다!", "레버는 이미 당겨져 있다.");
       if (!placed) return "";
       const leverAt = placed.at;
-      return `레버 퍼즐: 레버 ${leverRoom.id}(${leverAt.x},${leverAt.y}) → ${target.id} 앞 좁은 목 쇠창살 ${cells.map((p) => `(${p.x},${p.y})`).join(" ")} 스위치 ${sw}.`;
+      return `레버 퍼즐: 레버 ${leverRoom.id}(${leverAt.x},${leverAt.y}) → ${target.id} 앞 좁은 목 ${gate.tiles ? "쇠창살문(타일 키트, 문간 이벤트" : "쇠창살"} ${gate.cells.map((p) => `(${p.x},${p.y})`).join(" ")}${gate.tiles ? ")" : ""} 스위치 ${sw}.`;
     }
   }
   return "";

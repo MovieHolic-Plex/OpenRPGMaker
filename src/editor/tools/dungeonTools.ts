@@ -12,7 +12,7 @@ import { DungeonComposeError } from "../dungeonKit/errors";
 import { capabilityTableText } from "../dungeonKit/capabilities";
 import { DUNGEON_GENRES, GENRE_PRESETS, genreOfProject, planPopulation } from "../dungeonKit/genres";
 import { DUNGEON_REFERENCES, GRAMMAR, inferDungeonRequest, inferDungeonType } from "../dungeonKit/grammar";
-import { DUNGEON_GIMMICKS, GIMMICK_LABEL, NATURAL_TYPES, THEME_GIMMICKS, chokeBlockGraphic, placeLever, placeThemeGimmick, placeTowerWarp, wallFirst, type DungeonGimmick } from "./dungeonGimmicks";
+import { DUNGEON_GIMMICKS, GIMMICK_LABEL, THEME_GIMMICKS, LEVER_GATE_STYLES, leverGateStyle, placeLever, placeLeverBlock, placeThemeGimmick, placeTowerWarp, wallFirst, type DungeonGimmick } from "./dungeonGimmicks";
 import { composeRouted, routeDungeon } from "../dungeonKit/route";
 import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS } from "./mapTools";
@@ -293,6 +293,12 @@ function doorOpenCommands(map: GameMap, at: Stair): Command[] {
 }
 
 /** 레버 퍼즐(같은 칩셋 안): 보물 방(없으면 보스방)으로 들어가는 통로 칸에 닫힌 쇠창살 문, 먼 곁방에 레버. 레버를 당기면 스위치가 켜지고 문이 사라진다. */
+/** 쇠창살 이벤트가 문으로 읽히는 단면: 가로 한 줄(세로 단면은 옆으로 늘어선 창살 기둥이 된다)이고 양 끝 바깥이 벽. 2026-10-25 gate Sonnet: 트인 바닥에 선 세로 창살 기둥 = 「떠 있는 쇠창살」. */
+function barsFitDoorway(draft: Project, map: GameMap, cells: readonly Pt[]): boolean {
+  if (!cells.length || cells.some((p) => p.y !== cells[0]!.y)) return false;
+  const y = cells[0]!.y, xs = cells.map((p) => p.x);
+  return !isPassable(draft, map, Math.min(...xs) - 1, y) && !isPassable(draft, map, Math.max(...xs) + 1, y);
+}
 function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unknown>, warnings: string[]): string {
   const lock = field(field(data, "population"), "lockedGate");
   const gate = asCell(lock);
@@ -305,25 +311,19 @@ function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unkno
   if (map.events.some((e) => (e.x === gate.x && e.y === gate.y) || (e.x === key.x && e.y === key.y))) { warnings.push(`${map.name}: 레버·창살 자리에 이미 이벤트가 있다`); return ""; }
   const sw = `sw_${map.id}_lever`;
   ensureNamedSwitch(draft, sw, `${map.name}: 레버 당김(쇠창살 열림)`);
-  const fixed = { type: "fixed", speed: 3, frequency: 3 } as const;
-  const rock = NATURAL_TYPES.has(String(field(data, "type")) as DungeonType);
-  const bars = chokeBlockGraphic(String(field(data, "type")));
-  // 같은 이름 = 한 물체(통로 폭만큼 놓은 창살 칸들) — 이름이 없으면 린트가 「서로 다른 조사물이 같은 그림」으로 본다.
-  const ev = (id: string, at: Pt, name: string, pages: GameEvent["pages"]): GameEvent => ({ id, name, x: at.x, y: at.y, trigger: { kind: "action" }, commands: [], pages } as GameEvent);
+  const rock = leverGateStyle(String(field(data, "type")), field(data, "gateStyle")) === "rock";
   // 쇠창살은 통로 폭 전체를 막는다 — 3칸 통로 가운데 한 칸에만 두면 레버 없이 옆으로 지나갔다(2026-10-23 dg-r2 VQA).
   const corr = list(data, "corridors").find((v) => { const x = Number(field(v, "x")), y = Number(field(v, "y")), w = Number(field(v, "w")), h = Number(field(v, "h")); return gate.x >= x && gate.x < x + w && gate.y >= y && gate.y < y + h; });
   const across: Pt[] = !corr ? [gate] : (text(corr, "dir") === "N" || text(corr, "dir") === "S")
     ? Array.from({ length: Number(field(corr, "w")) }, (_, k) => ({ x: Number(field(corr, "x")) + k, y: gate.y }))
     : Array.from({ length: Number(field(corr, "h")) }, (_, k) => ({ x: gate.x, y: Number(field(corr, "y")) + k }));
   const barCells = across.filter((c) => (c.x === gate.x && c.y === gate.y) || (isPassable(draft, map, c.x, c.y) && !map.events.some((e) => e.x === c.x && e.y === c.y)));
-  barCells.forEach((cell, k) => {
-    const gid = k === 0 && cell.x === gate.x && cell.y === gate.y ? `ev_${map.id}_lever_gate` : `ev_${map.id}_lever_gate_${cell.x}_${cell.y}`;
-    upsertEventIntoMap(map, ev(gid, cell, rock ? "막힌 바위" : "쇠창살", [
-      { id: `${gid}_p1`, name: rock ? "길을 막은 바위" : "닫힌 쇠창살", conditions: [], graphic: bars, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixed,
-        commands: [{ kind: "text", body: rock ? "큰 바위가 길을 막고 있다. 어딘가의 레버로 치울 수 있을 것 같다." : "굳게 닫힌 쇠창살이다. 어딘가의 레버로 여는 것 같다." } as Command] },
-      { id: `${gid}_p2`, name: rock ? "치운 바위" : "열린 쇠창살", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", overlapForbidden: false, movement: fixed, commands: [] },
-    ] as GameEvent["pages"]));
-  });
+  // 그림·막기는 공용 도우미가 한다(지은 던전 = 쇠창살문 타일 키트 + 보이지 않는 문 이벤트, 자연 굴 = 바위 이벤트).
+  // 키트가 안 들어가는 단면(동서 통로의 세로 단면 등)이면 이 경로를 접고 placeChokeLever 가 다른 목을 찾는다.
+  // 쇠창살문 키트가 안 들어가는 단면이면 옛 쇠창살 이벤트로 물러선다 — 접으면 탑 레버가 6/10 → 3/10 으로 줄었다(2026-10-25).
+  const block = placeLeverBlock(draft, map, String(field(data, "type")), barCells, sw, null, field(data, "gateStyle"))
+    ?? (field(data, "gateStyle") === undefined && leverGateStyle(String(field(data, "type"))) === "portcullis" && barsFitDoorway(draft, map, barCells) ? placeLeverBlock(draft, map, String(field(data, "type")), barCells, sw, null, "bars") : null);
+  if (!block) { warnings.push(`${map.name}: 잠긴 통로 단면에 쇠창살문 키트가 들어가지 않는다 — 다른 좁은 목을 찾는다.`); return ""; }
   // gap 벽걸이 레버(#3283): 레버 칸 바로 북쪽 벽 앞면에 걸고 벽을 보고 조사한다. 그림·벽이 없으면 바닥에 옛 캐릭터 레버.
   // 벽 레버 후보: 열쇠 방 상자 안 모든 바닥 칸(북쪽이 벽인 칸 먼저, 계획 자리에 가까운 순)
   const roomCells: Pt[] = [];
@@ -331,10 +331,10 @@ function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unkno
     for (let y = ry; y < ry + rh; y += 1) for (let x = rx; x < rx + rw; x += 1) if (isPassable(draft, map, x, y) && !map.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) roomCells.push({ x, y }); }
   roomCells.sort((a, b) => Math.hypot(a.x - key.x, a.y - key.y) - Math.hypot(b.x - key.x, b.y - key.y));
   const placedLever = placeLever(draft, map, [...wallFirst(draft, map, roomCells), key], `ev_${map.id}_lever`, "레버", sw,
-    [{ kind: "text", body: rock ? "쿠르릉… 어디선가 바위가 굴러가는 소리가 울렸다." : "어디선가 쇠창살이 올라가는 소리가 울렸다." } as Command], "녹슨 레버가 있다. 힘껏 당겼다!", "레버는 이미 당겨져 있다.");
+    [...block.openCommands, { kind: "text", body: rock ? "쿠르릉… 어디선가 바위가 굴러가는 소리가 울렸다." : "어디선가 쇠창살이 올라가는 소리가 울렸다." } as Command], "녹슨 레버가 있다. 힘껏 당겼다!", "레버는 이미 당겨져 있다.");
   if (!placedLever) { warnings.push(`${map.name}: 레버 자리를 못 찾았다`); return ""; }
   const at = placedLever.at;
-  return `레버 퍼즐: ${placedLever.wall ? "벽 " : ""}레버 (${at.x},${at.y}${placedLever.wall ? " — 그 아래 칸에서 벽을 보고 조사" : ""}) → 쇠창살 ${barCells.map((c) => `(${c.x},${c.y})`).join(" ")}(통로 폭 전체) 스위치 ${sw}. 레버는 한 칸짜리 벽 레버 그림이 정상이다 — 다시 짓거나 다른 칩셋의 레버 기물을 찍지 않는다`;
+  return `레버 퍼즐: ${placedLever.wall ? "벽 " : ""}레버 (${at.x},${at.y}${placedLever.wall ? " — 그 아래 칸에서 벽을 보고 조사" : ""}) → ${block.tiles ? "쇠창살문(타일 키트 — 문간 이벤트 " : "쇠창살 "}${block.cells.map((c) => `(${c.x},${c.y})`).join(" ")}${block.tiles ? ")" : "(통로 폭 전체)"} 스위치 ${sw}. 레버는 한 칸짜리 벽 레버 그림이 정상이다 — 다시 짓거나 다른 칩셋의 레버 기물을 찍지 않는다`;
 }
 
 /** 층 하나를 채운다(rpg): 계획된 자리의 보이는 적·상자, 보스방 수호자/층 수문장, 보스 앞 방의 회복 세이브 포인트. 실패한 자리는 경고로 넘긴다. */
@@ -603,6 +603,8 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   const filled: string[] = [];
   let gimmickPlaced: DungeonGimmick | null = null;
   let gimmickAfter: (() => void) | null = null;
+  // 레버 관문 그림 방식(gateStyle): 생략하면 종류 기본(지은 던전 = 쇠창살문 타일, 자연 굴 = 바위). 레버 경로 둘이 층 자료에서 읽는다.
+  if (typeof args.gateStyle === "string" && (LEVER_GATE_STYLES as readonly string[]).includes(args.gateStyle)) for (const d of datas) (d as Record<string, unknown>).gateStyle = args.gateStyle;
   const gimmickArg = args.gimmick === "none" ? "none" : (DUNGEON_GIMMICKS as readonly string[]).includes(String(args.gimmick)) ? (args.gimmick as DungeonGimmick) : args.puzzle === "lever" ? "lever" : gimmickCue(`${typeof args.name === "string" ? args.name : ""} ${typeof args.inspiration === "string" ? args.inspiration : ""}`);
   if (gimmickArg !== "none" && datas.every((d) => d.adapter === "beodeul") && (gimmickArg || (args.populate !== false && datas.every((d) => d.genre === "rpg")))) {
     const i = datas.length - 1;
@@ -765,6 +767,7 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
       floorShapes: { type: "array", maxItems: 5, items: { type: "string", enum: [...new Set([...TOWER_FLOOR_SHAPES, ...TOWER_TOP_SHAPES])] }, description: "위로 쌓는 탑의 층마다 꼴(아래층부터). 중간 층 ring 둥근 큰 방·gallery 긴 회랑 끝 링·cross 가운데 홀 사방 곁방·spiral 돌아 오르는 방 사슬·twin 양 날개 방, 꼭대기 ring·hall 알현 회랑·observatory 링 보스방+양옆 보물 방. 생략한 층은 시드(바로 아래층과 다른 꼴)." },
       floorGimmicks: { type: "array", maxItems: 5, items: { type: "string", enum: [...DUNGEON_GIMMICKS, "none"] }, description: "탑 중간 층마다 장치(아래층부터, 꼭대기는 gimmick). none = 그 층 장치 없음. 생략하면 씨앗으로 마법진." },
       layout: { type: "string", enum: [...DUNGEON_LAYOUTS], description: "층 배치 가족: linear 한 줄 사슬(곁방 하나) · hub 가운데 홀에서 갈래 · loop 고리로 돌아오는 지름길 · vertical 층을 쌓는다(floors 생략 시 2층, tower 는 3층 위로). 생략하면 시드로 고른다 — 같은 종류 두 번 요청도 배치가 달라진다." },
+      gateStyle: { type: "string", enum: [...LEVER_GATE_STYLES], description: "레버 관문 그림(lever 장치·puzzle lever): portcullis = 문틀째 그린 내리닫이 쇠창살문 3×2 타일(당기면 올라간다, 지은 던전 기본) · bars = 옛 캐릭터 쇠창살 · rock = 바위(자연 굴 기본). 생략하면 종류 기본." },
       puzzle: { type: "string", enum: ["lever"], description: "같은 칩셋 안의 퍼즐(마지막 층): lever = 보물 방(없으면 보스방)으로 들어가는 통로를 닫힌 쇠창살로 막고, 먼 곁방에 레버를 둔다(당기면 열림). 「레버로 문을 여는 퍼즐 던전」은 이것 하나 — 다른 칩셋(손 도트 실내) 퍼즐 방을 따로 만들어 잇지 말 것(화풍이 갈린다)." },
       lair: { type: "boolean", description: "무리가 사는 소굴(고블린·도적·오크·짐승 굴): 버들항 cave 방마다 모닥불·가죽 걸이·궤짝·통·자루·뼈 무더기를 깔아 「누가 사는 굴」로 읽히게 한다. 보스방은 우두머리 자리로 더 쌓는다. 「고블린 굴」은 type cave + lair:true + troops." },
       rockLine: { type: "string", enum: ["A", "B", "C", "none"], description: "버들항 동굴 바위 덩이 줄(가로 2줄 바위 앞면 + 바위 윗면). 비우면 cave→A(동굴 바위)·mine→B(광산 바위)·volcano→C(화산암). none 이면 옛 3줄 돌벽. 보통은 비워 둔다." },
