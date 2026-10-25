@@ -39,6 +39,12 @@ npm run harness -- cast-portrait install astra-horizon professor r4 <후보>
 고해상 일러스트를 `src/player/bustPixelate.ts` 가 화면에서 도트로 바꾸는 것이라 char-gen 생성 경로가 없다. 새 인물이 필요하면
 그 캐스트를 만든 경로를 `pipeline` 에 먼저 적는다. 대사창 픽스처도 아직 없다).
 
+폴른 스타 발렌(2026-10-25): `pipeline.kind = "shared-portrait-sheet"`(`scripts/content/portraits/fallen_valen.py` — portraits2 시트 한 장 + 표정 시트 편집 → finalize → `compose`).
+일러스트 캐스트는 `reviewView: "bustPixelate"` 로 **화면에 보이는 그대로**(`pixelate_view.py` = `src/player/bustPixelate.ts` 의 파이썬 판, 44×46·16색·윤곽) 잰다 — 측정·검사·줄 세우기·눈가림 검수 모두.
+캐스트 보정은 갈리지 않았다(기사 흉상이 혼자 빠지면 중앙값 3 · 같은 화가 0/5) — 문턱은 사용자 지시 그대로 중앙값 6.5·같은 화가 3/5(`review-calibration.json thresholds`, 보정값은 `calibratedThresholds`).
+r1 원본은 「머리가 너무 작다」·「표정마다 그림이 밀린다」로 떨어졌고, `compose`(머리 가까이 자르기 + 표정은 얼굴 상자만 맞춰 붙이기) 뒤 중앙값 8·같은 화가 4/5 로 통과했다.
+설치는 `public/assets/shared/portraits/fs-inquisitor-valen/`, 등록은 `sharedPortraitAssets.ts CAST_PORTRAIT_SETS`(흉상·대사 5표정).
+
 ## 아스트라 규격 (측정값, 2026-10-25)
 
 캐스트 6명(주인공·엄마·간호사·나루·유림·무영)을 `calibrate` 로 잰 값:

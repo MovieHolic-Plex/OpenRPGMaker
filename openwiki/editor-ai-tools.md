@@ -14,7 +14,18 @@
   `abreast` = 주인공이 보는 방향에 수직으로 나란히(첫째 화면 왼쪽, 둘째 오른쪽, 그 바깥), 칸이 막히면 옛 `nearest` 로 떨어진다(`followers.ts abreastCell`).
   옛 `nearest` 는 빈 칸 중 가장 가까운 곳이라, 적이 걸어오는 쪽(주인공 앞)에 동료가 서는 일이 있었다.
 - 보스 HP 숨김은 이미 있던 적 단위 `upsert_enemy {enemy:{id, hideHp:true}}` 를 쓴다(새 필드 없음). 「대형·횡대·보스 HP·체력 숨김」 낱말이면 `configure_companion_rules`·`upsert_enemy`·`upsert_troop`·`get_database_records` 를 연다.
-- 조수 트랙 과제: `harness-data/space-craft/seed.json` 의 `fs-boss-squad-first`·`fs-boss-hidehp`·`fs-reveal-lift`.
+- 「대형」은 뒤따르기(`display:"follow"`)에서도 컷신 동안 횡대로 선다(장면이 끝나 걸으면 궤적으로). 폴른 스타는 10-24 의 FF6 식 `scenesOnly`(필드에서 동료 숨김)를 걷어 다시 뒤따른다.
+- 전투·저장·필드 규칙(같은 날, 사용자 7건):
+  - `set_project_settings battle.allowAutoBattle:false` → `system.allowAutoBattle` — F 키 토글·「자동」 표시가 사라진다(`battleDom.ts`). 배우별 `ActorOptions.autoBattle` 과 별개.
+  - `battle.clearStatesAfterBattle:true` → 전투가 끝나면 파티 상태 이상이 풀린다. 상태 하나는 `upsert_state clearOnBattleEnd:true|false` 가 이긴다.
+    둘 다 없으면 `removalCondition` 글이 「전투 종료」일 때만 풀린다(「전투 종료 후 유지」는 남는다). 전투 불능은 풀지 않는다. 판정 `src/project/battleEndStates.ts`, 적용 `battleRewardsToSession.ts`.
+  - `set_project_settings saveAccess:"savePoints"` → 메뉴 「저장」이 사라지고 자동 저장도 멈춘다. `place_savepoint`(openSaveMenu)는 그대로 저장한다.
+  - `tune_field_enemies {mapIds?, sightRange, vision, pace, lungeSteps, lungeSpeed}` — 이미 놓인 보이는 적을 한꺼번에 추격형으로. 덮치기는 `movement.chaseLunge {steps, speed}`:
+    놀람(`sightAlert`) 멈춤이 끝난 뒤 첫 steps 칸을 speed 랭크 걸음으로 쉬지 않고(`playSceneAutonomous.ts`). speed 는 6(주인공 걷기 160ms/칸)까지만 받는다 — 계속 걸으면 피할 수 있다.
+  - 랜덤 조우 끄기는 `set_encounter_table {entries:[], encounterRate:0}`. 보이는 적으로 레벨을 올리게 하려면 `place_field_enemy respawnSec` 로 다시 나타나는 적을 둔다.
+  - 연계기 「얼굴 교차」 컷인의 흉상(결의 표정)은 런타임이 고르는 그림이라 데이터에 이름이 없어 스토어 판본에 빠졌다(폴른 스타 1.20). 고르는 순서를 `src/project/comboBust.ts` 하나로 모으고 `webExportAssets` 가 같은 그림을 싣는다.
+  - 노출: 「자동 전투·상태 이상 풀림·세이브 포인트·메뉴 저장」 → set_project_settings·upsert_state·place_savepoint, 「랜덤 조우·보이는 적·덮치·멀리서」 → set_encounter_table·tune_field_enemies·place_field_enemy.
+- 조수 트랙 과제: `harness-data/space-craft/seed.json` 의 `fs-boss-squad-first`·`fs-boss-hidehp`·`fs-reveal-lift`·`fs-battle-noauto`·`fs-battle-combo-faces`·`fs-state-clear-after`·`fs-foe-lunge`·`fs-foe-no-random`·`fs-save-points`·`fs-party-follow`.
 
 ## 이야기 흐름 읽기 `get_story_outline` · `read_story_script` · `set_scene_summaries` (2026-10-25)
 
