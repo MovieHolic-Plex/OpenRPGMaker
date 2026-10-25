@@ -11,6 +11,7 @@ import { installedRuntimeTarget, RUNTIME_ARCHIVE_BASE } from "../../project/publ
 import { parseRuntimeManifest, type RuntimeManifest } from "../../project/gameRelease";
 import { defaultFetchBytes } from "../../project/webExportZip";
 import { prepareWebExport, WEB_PLAYER_BUNDLE_BASE } from "../../project/webExport";
+import { STANDALONE_HTML_GITHUB_PAGES_HINT } from "../../project/standaloneHostingNotice";
 import { createStoreGameSection } from "./storeGameSection";
 import { storeGameProjectKey } from "../../project/storeGameRelease";
 import {
@@ -496,12 +497,13 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
     });
   };
 
-  const action = (id: string, label: string, run: () => void, primary = false) => {
+  const action = (id: string, label: string, run: () => void, primary = false, title?: string) => {
     const button = el("button", {
       class: `app-modal-button${primary ? " is-confirm" : ""}`,
       text: label,
       attrs: {
         type: "button",
+        ...(title ? { title } : {}),
         ...(primary
           ? {
               style: "background: linear-gradient(135deg, #0284c7, #2563eb); color: #ffffff; font-weight: 800; border-color: #0284c7; padding: 9px 18px; font-size: 13px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);",
@@ -632,7 +634,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
             upgrade,
             fork,
             action("zip", "웹 서버 ZIP 내보내기", () => exportAction("zip")),
-            action("html", "고급: 디버그 단일 HTML", () => exportAction("html")),
+            action("html", "고급: 디버그 단일 HTML", () => exportAction("html"), false, STANDALONE_HTML_GITHUB_PAGES_HINT),
           ],
         }),
         buildDesktopButton,

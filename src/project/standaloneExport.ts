@@ -13,6 +13,7 @@ import {
 import { prepareWebExport } from "@/project/webExport";
 import { buildStandaloneRelease } from "./standaloneRelease";
 import { exportAssetSourceUrl, invalidExportDependencyBytes } from "@/project/webExportAssets";
+import { utf8ByteLength } from "@/project/standaloneHostingNotice";
 import { projectWithInlineUploadedMedia } from "@/project/package";
 import type { Project } from "@/project/types";
 
@@ -64,7 +65,7 @@ export async function createStandaloneHtmlExport(
     const prepared = prepareWebExport(exportProject);
     const html = await buildStandaloneRelease(prepared, source);
     return { blob: new Blob([html], { type: "text/html;charset=utf-8" }), fileName: standaloneHtmlFileName(project.meta.title),
-      summary: { assetCount: prepared.assets.length, missingAssets: prepared.summary.skippedRetiredResources, htmlBytes: new TextEncoder().encode(html).length } };
+      summary: { assetCount: prepared.assets.length, missingAssets: prepared.summary.skippedRetiredResources, htmlBytes: utf8ByteLength(html) } };
   }
   const fetchBytes: StandaloneFetchBytes = async (path) => {
     let bytes: Uint8Array;
@@ -103,7 +104,7 @@ export async function createStandaloneHtmlExport(
     summary: {
       assetCount: Object.keys(inlineAssets).length,
       missingAssets: prepared.summary.skippedRetiredResources,
-      htmlBytes: html.length,
+      htmlBytes: utf8ByteLength(html),
     },
   };
 }

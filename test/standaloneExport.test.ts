@@ -37,6 +37,9 @@ describe("standalone html export", () => {
     expect(html).toContain(`id="${STANDALONE_PROJECT_NODE_ID}"`);
     expect(html).toContain(`id="${STANDALONE_ASSETS_NODE_ID}"`);
     expect(html).toContain("data:image/png;base64,");
+    // Korean in the project makes UTF-16 length smaller than the downloaded file.
+    expect(result.summary.htmlBytes).toBe(result.blob.size);
+    expect(result.summary.htmlBytes).toBeGreaterThan(html.length);
   });
 
   afterEach(() => vi.unstubAllGlobals());
