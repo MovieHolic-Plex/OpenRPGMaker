@@ -1,3 +1,4 @@
+import { FIELD_APPROACH_STYLES, isFieldApproachStyle } from "@/project/fieldApproachStyle";
 import { isNpcSight, isDetectionEncounter } from '@/project/npcBehavior';
 import { isBlendModeName } from "@/project/blendMode";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
@@ -334,6 +335,14 @@ function validateCharacterScale(label: string, value: unknown): void {
  */
 function validateCharacterFootprintFields(label: string, page: Record<string, unknown>): void {
   validateFootprintPair(`${label}.footprint`, page.footprint, `${label}.passRows`, page.passRows);
+  if (page.glow !== undefined) {
+    const glow = requireRecord(`${label}.glow`, page.glow);
+    assert(glow.color === undefined || (typeof glow.color === "string" && /^#[0-9a-f]{6}$/i.test(glow.color)), `${label}.glow.color 는 #rrggbb 입니다.`);
+    assert(glow.radius === undefined || (typeof glow.radius === "number" && glow.radius >= 1 && glow.radius <= 3), `${label}.glow.radius 는 1~3 칸입니다.`);
+    for (const key of ["offsetX", "offsetY"] as const) {
+      assert(glow[key] === undefined || (typeof glow[key] === "number" && Math.abs(glow[key] as number) <= 4), `${label}.glow.${key} 는 -4~4 칸입니다.`);
+    }
+  }
   if (page.nearSparkle !== undefined) {
     const near = requireRecord(`${label}.nearSparkle`, page.nearSparkle);
     const radius = requireNumber(`${label}.nearSparkle.radius`, near.radius);
@@ -525,6 +534,9 @@ function validatePageShape(label: string, value: unknown): void {
     const steps = requireNumber(`${label}.movement.chaseLunge.steps`, lunge.steps);
     const speed = requireNumber(`${label}.movement.chaseLunge.speed`, lunge.speed);
     assert(Number.isInteger(steps) && steps >= 1 && steps <= 8 && Number.isInteger(speed) && speed >= 1 && speed <= 8, `${label}: 덮치기는 steps 1~8 · speed 1~8`);
+  }
+  if (movement.approachStyle !== undefined) {
+    assert(isFieldApproachStyle(movement.approachStyle), `${label}: 다가오는 방식은 ${FIELD_APPROACH_STYLES.join("|")}`);
   }
   if (movement.pursuit !== undefined) {
     const pursuit = requireRecord(`${label}.movement.pursuit`, movement.pursuit);

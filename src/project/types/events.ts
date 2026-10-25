@@ -842,6 +842,11 @@ export interface EventPageMovement {
    * 그 뒤는 평소 추격 걸음. 주인공 걷기(랭크 6 = 160ms/칸)보다 빠르게 두면 피할 수 없으니 6 이하로 둔다.
    */
   chaseLunge?: ChaseLunge;
+  /**
+   * chase 전용 «다가오는 방식» — 종족마다 다른 몸짓(질주·도약·통통·급강하·육중·부유·기기). 생략·walk = 기존 걷기.
+   * 표는 project/fieldApproachStyle.ts. 조수: place_field_enemy·tune_field_enemies(approachStyle, auto = 종족으로)·set_field_approach_style.
+   */
+  approachStyle?: import("@/project/fieldApproachStyle").FieldApproachStyle;
 }
 
 export interface ChaseLunge {
@@ -881,8 +886,23 @@ export interface EventPage {
    * 조사할 것을 멀리서도 알아보게 한다. 안에 머무는 동안은 다시 터지지 않고, 나갔다 들어오면 또 터진다.
    */
   nearSparkle?: NearSparkle;
+  /**
+   * 늘 빛나는 표지(세이브 포인트·성물) — 거리와 무관하게 끝없이 돈다: 숨 쉬듯 커졌다 작아지는 빛무리, 둘레 반짝임, 위로 오르는
+   * 빛 알갱이. 화면 끝에서도 눈에 띄게 하려고 칸보다 크게 번진다. 그리기는 player/playSceneFieldStaging(syncEventGlows).
+   */
+  glow?: EventGlow;
   movement: EventPageMovement;
   commands: Command[];
+}
+
+export interface EventGlow {
+  /** 빛 색(#rrggbb). 기본 푸른 별빛 #8fd8ff. */
+  color?: string;
+  /** 빛무리 반지름(칸, 1~3). 기본 2. */
+  radius?: number;
+  /** 빛을 놓을 칸이 이벤트 칸에서 얼마나 떨어졌나(오브젝트 그림 가운데로 옮길 때). 기본 0,0. */
+  offsetX?: number;
+  offsetY?: number;
 }
 
 export interface NearSparkle {

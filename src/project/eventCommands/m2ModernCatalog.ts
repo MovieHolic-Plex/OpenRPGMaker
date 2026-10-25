@@ -61,6 +61,16 @@ export const PARTICLE_PRESET_OPTIONS: readonly M2CommandFieldOption[] = PARTICLE
   label: PARTICLE_PRESET_LABELS[value],
 }));
 
+const LIFT_MODE_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "depart", label: "떠나기(움직인 채로 — 뒤에 장소 이동)" },
+  { value: "arrive", label: "도착하기(반대쪽에서 지금 자리로)" },
+  { value: "move", label: "같은 맵 안 다른 층으로" },
+];
+const LIFT_DIRECTION_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "up", label: "위로" },
+  { value: "down", label: "아래로" },
+];
+
 /** 파티클·모습 효과가 붙을 대상. event 면 eventId 칸을 쓴다. */
 const STAGING_TARGET_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "player", label: "주인공" },
@@ -428,6 +438,19 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
         { key: "afterimage", label: "잔상", type: "select", defaultValue: "keep", options: KEEP_ON_OFF_OPTIONS },
         { key: "angle", label: "기울기(도, 비우면 그대로)", type: "text", defaultValue: "" },
         { key: "opacity", label: "불투명도(%, 비우면 그대로)", type: "text", defaultValue: "" },
+      ];
+    case "Lift Ride":
+      return [
+        { key: "mode", label: "방식", type: "select", defaultValue: "depart", options: LIFT_MODE_OPTIONS },
+        { key: "direction", label: "방향", type: "select", defaultValue: "up", options: LIFT_DIRECTION_OPTIONS },
+        { key: "distance", label: "움직이는 칸 수", type: "number", defaultValue: 4, min: 1, max: 20, step: 1 },
+        { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 2600, min: 400, max: 20000, step: 100 },
+        { key: "x", label: "발판 왼쪽 X(-1 = 주인공 칸)", type: "number", defaultValue: -1 },
+        { key: "y", label: "발판 위쪽 Y(-1 = 주인공 칸)", type: "number", defaultValue: -1 },
+        { key: "width", label: "발판 폭(칸)", type: "number", defaultValue: 2, min: 1, max: 6, step: 1 },
+        { key: "depth", label: "발판 깊이(칸)", type: "number", defaultValue: 2, min: 1, max: 4, step: 1 },
+        { key: "se", label: "기계음 효과음", type: "text", defaultValue: "cc0-se-osx-machine-02" },
+        { key: "wait", label: "끝날 때까지 대기", type: "boolean", defaultValue: true },
       ];
     case "Data Query":
       return [

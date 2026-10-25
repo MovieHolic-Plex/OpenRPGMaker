@@ -55,6 +55,8 @@ const SW_DRAGON_DOWN = "sw_fs_dragon_down";
 const SW_DRAGON_CRACK = "sw_fs_dragon_crack";
 const SW_LIFTED = "sw_fs_act1_lifted";
 const SW_LIFT_OPEN = "sw_fs_b4_lift_open";
+/** 천문대에 승강 장치가 올라와 서는 자리(발판 왼쪽 위 = 주인공 칸). */
+const OBS_LIFT = { x: 4, y: 18 } as const;
 const SW_SIEGE = "sw_fs_siege_on";
 const SW_SIEGE_HANEL = "sw_fs_siege_hanel";
 const SW_SIEGE_VALEN = "sw_fs_siege_valen";
@@ -1095,14 +1097,14 @@ function floorB4(project: Project): GameMap {
     ], [narrate("녹색 글자가 조용히 깜빡인다.\n옆의 승강 장치가 기다리고 있다.")]),
   ];
   // 승강 장치 — 드러난 칸(B4.lift, 2×2)에 올라서면 천문대로 오른다. 드러나기 전에는 아무것도 없다.
+  // 발판·레일·사슬을 그리고 동료까지 발판에 모아 위로 끌어올린다(Lift Ride — 일반 명령, 조수 도구 place_lift 와 같다).
   const ride: Command[] = [
     narrate("승강 장치에 올라탔다."),
-    se("cc0-se-osx-machine-02"),
-    shake(1, 600),
-    fadeOut(1000),
-    wait(1000),
+    m2("m2-226-lift-ride", { mode: "depart", direction: "up", distance: 5, durationMs: 3000, x: B4.lift.x, y: B4.lift.y, width: 2, depth: 2, se: "cc0-se-osx-machine-02", wait: true }),
+    fadeOut(700),
+    wait(700),
     setSw(SW_LIFTED),
-    transfer("fs_observatory", { x: 4, y: 18 }, "down"),
+    { ...transfer("fs_observatory", OBS_LIFT, "down"), fade: "none" } as unknown as Command,
   ];
   for (let dy = 0; dy < 2; dy += 1) for (let dx = 0; dx < 2; dx += 1) {
     const lid = `ev_${FS_PREFIX}_b4_lift_${dx}${dy}`;
@@ -1195,8 +1197,10 @@ function observatoryAlarm(project: Project, obsId: string, hubId: string, siegeF
   addEvent(obs, id, "승강 장치 도착", { x: 0, y: 0 }, [
     page(`${id}_wait`, "대기", [], []),
     page(`${id}_run`, "도착", [sw(SW_LIFTED), sw(SW_SIEGE, false)], [
-      fadeIn(800),
-      wait(400),
+      // 같은 발판이 아래 갱도에서 올라와 선다 — 파티가 타고 들어온다.
+      m2("m2-226-lift-ride", { mode: "arrive", direction: "up", distance: 4, durationMs: 2600, x: OBS_LIFT.x, y: OBS_LIFT.y, width: 2, depth: 2, se: "cc0-se-osx-machine-02", wait: false }),
+      fadeIn(700),
+      wait(2600),
       se("cc0-se-osx-gong-02"),
       shake(2, 600),
       emote(hanelId, "exclamation", 800),
@@ -1502,7 +1506,7 @@ export function applyFallenFieldRules(project: Project, exec: Exec): void {
     exec(project, "set_encounter_table", { mapId: map.id, entries: [], encounterRate: 0 });
   }
   // 보이는 적은 더 멀리서(7칸) 알아보고, 발견 직후 3칸을 주인공 걷기와 같은 빠르기로 덮친다 — 계속 걸으면 피할 수 있다.
-  exec(project, "tune_field_enemies", { sightRange: 7, vision: "cone", pace: "fast", lungeSteps: 3, lungeSpeed: 6 });
+  exec(project, "tune_field_enemies", { sightRange: 7, vision: "cone", pace: "fast", lungeSteps: 3, lungeSpeed: 6, approachStyle: "auto" });
   exec(project, "set_project_settings", { battle: { allowAutoBattle: false, clearStatesAfterBattle: true }, saveAccess: "savePoints" });
   // 마을 세이브 포인트 — 광장 분수 곁 별빛 결정(사당 제단·지하 4층 푸른 결정과 같은 결정 모양).
   exec(project, "place_savepoint", { mapId: "fs_hub", x: 37, y: 28, id: "ev_fs_hub_savepoint", name: "별빛 기록석", mode: "slot",
@@ -1513,23 +1517,12 @@ export function applyFallenFieldRules(project: Project, exec: Exec): void {
     const page = project.maps[mapId]?.events.find((event) => event.id === eventId)?.pages?.[0];
     if (page) page.nearSparkle = { radius: 2 };
   }
-  // 사당 결정처럼 쉬지 않고 은은히 반짝인다 — 마을·지하 4층 결정에도 같은 투명 병렬 이벤트.
-  for (const [mapId, x, y] of [["fs_hub", 37, 28], ["fs_vault_b4", 10, 26]] as const) {
+  // 세 결정 모두 늘 빛난다(page.glow — place_savepoint 기본). 지하 4층 결정은 손으로 만든 이벤트라 직접 켠다(그림은 위 칸 받침 수정).
+  for (const mapId of ["fs_hub", "fs_vault_b4"]) {
     const map = project.maps[mapId];
-    if (!map) continue;
-    const glowId = `ev_${mapId}_save_glow`;
-    map.events = map.events.filter((event) => event.id !== glowId);
-    map.events.push({
-      id: glowId, name: "기록 결정 반짝임", x, y, trigger: { kind: "parallel" }, commands: [],
-      pages: [{
-        id: `${glowId}_page`, name: "반짝임", conditions: [], graphic: { transparent: true },
-        movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "parallel" },
-        commands: [
-          m2("m2-224-particle-effect", { preset: "sparkle", target: "tile", x, y, durationMs: 1400, wait: false }),
-          { kind: "wait", ms: 2200 } as unknown as Command,
-        ],
-      } as unknown as EventPage],
-    } as unknown as GameEvent);
+    if (map) map.events = map.events.filter((event) => event.id !== `ev_${mapId}_save_glow`);
   }
+  const b4Crystal = project.maps.fs_vault_b4?.events.find((event) => event.id === "ev_fs_b4_crystal")?.pages?.[0];
+  if (b4Crystal) b4Crystal.glow = { radius: 2, offsetY: -0.5 };
 }
 

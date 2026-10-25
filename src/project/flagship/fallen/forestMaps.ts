@@ -438,20 +438,9 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
           { text: "아니오", branch: [] },
         ], cancelBranch: [] } as unknown as Command,
       ];
-      // 제단의 별 조각은 쉬지 않고 반짝인다 — 투명 병렬 이벤트가 결정 칸에 반짝이를 띄운다.
-      const glowId = `ev_${id}_rest_glow`;
-      live.events = live.events.filter((e) => e.id !== glowId);
-      live.events.push({
-        id: glowId, name: "별 조각 반짝임", x: crystal.x, y: crystal.y, trigger: { kind: "parallel" }, commands: [],
-        pages: [{
-          id: `${glowId}_page`, name: "반짝임", conditions: [], graphic: { transparent: true },
-          movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "parallel" },
-          commands: [
-            m2("m2-224-particle-effect", { preset: "sparkle", target: "tile", x: crystal.x, y: crystal.y, durationMs: 1400, wait: false }),
-            { kind: "wait", ms: 2200 } as unknown as Command,
-          ],
-        } as unknown as EventPage],
-      } as unknown as GameEvent);
+      // 제단의 별 조각은 늘 빛난다 — 숨 쉬는 빛무리·반짝임·오르는 빛 알갱이(page.glow, place_savepoint 기본). 빛은 결정 칸에.
+      live.events = live.events.filter((e) => e.id !== `ev_${id}_rest_glow`);
+      restPage.glow = { radius: 2, offsetX: crystal.x - rest.x, offsetY: crystal.y - rest.y - 0.5 };
     }
     lights.push({ id: `light_${id}_rest`, at: crystal ?? restAt, radius: 3, intensity: 0.85, color: "#bfe8ff", flicker: true });
     setMood(project, id, mood, lights);
