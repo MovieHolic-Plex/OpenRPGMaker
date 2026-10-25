@@ -252,6 +252,28 @@ def check(bid, quiet=False):
             last = np.where(col.any(1))[0].max()
             if walk[chh - 1][cx] != '.' and last != h - 1:
                 fails.append(f'열 {cx}: 땅 칸이 있는데 그림이 맨 아래 줄까지 안 닿는다')
+    # 갇힌 투명 화소(바깥과 이어지지 않은 구멍)와 바닥 근처 가로 틈(아래 8줄 안에서 위·아래가 그림인 투명 화소) — 검수자가 늘 잡는 깨짐
+    from collections import deque
+    seen = np.zeros_like(alpha)
+    dq = deque((y, x) for y in range(h) for x in (0, w - 1) if not alpha[y, x])
+    dq.extend((y, x) for x in range(w) for y in (0, h - 1) if not alpha[y, x])
+    for y, x in dq:
+        seen[y, x] = True
+    while dq:
+        y, x = dq.popleft()
+        for yy, xx in ((y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)):
+            if 0 <= yy < h and 0 <= xx < w and not alpha[yy, xx] and not seen[yy, xx]:
+                seen[yy, xx] = True
+                dq.append((yy, xx))
+    holes = int((~alpha & ~seen).sum())
+    if holes:
+        ys, xs = np.where(~alpha & ~seen)
+        warns.append(f'갇힌 투명 구멍 {holes}화소 (예: ({xs[0]},{ys[0]})) — 풍차 날개 사이 같은 의도된 빈칸이 아니면 막는다')
+    low = alpha[max(0, h - 8):]
+    slit = [(x, h - 8 + y) for x in range(w) for y in range(1, low.shape[0] - 1)
+            if not low[y, x] and low[:y, x].any() and low[y + 1:, x].any()]
+    if slit:
+        fails.append(f'바닥 근처 가로 틈 {len(slit)}화소 (예: {slit[0]}) — 아래 줄이 벽에서 떨어져 보인다')
     # 먹 윤곽: 투명과 맞닿은 테두리 화소 중 밝기 ≤ 0.12 인 비율
     lum = (a[..., :3].astype(float) @ np.array([0.299, 0.587, 0.114])) / 255
     edge = alpha & ~(np.pad(alpha, 1)[2:, 1:-1] & np.pad(alpha, 1)[:-2, 1:-1] & np.pad(alpha, 1)[1:-1, 2:] & np.pad(alpha, 1)[1:-1, :-2])
@@ -549,6 +571,9 @@ artist's side: your job is to find reasons each candidate must be REJECTED. Neve
 Each candidate has two boards (open both with Read):
   <code>-1x.png  candidate at 1x on grass, next to two shipped "Beodeul port" reference buildings at 1x (same game, the quality bar)
   <code>-4x.png  candidate at 4x next to one Beodeul reference at 4x
+
+Before judging style, inspect each 4x board slowly from top to bottom for any horizontal or vertical band of grass/background showing
+through the building (cuts, slits, gaps between parts) — such a cut is a blocking B defect.
 
 Judge each candidate on:
  A. 3/4 top-down view (required): the roof's upper surface is visible as a real surface (not a thin strip = flat front elevation);

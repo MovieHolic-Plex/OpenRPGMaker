@@ -70,6 +70,13 @@ class MassingTest(unittest.TestCase):
         fails, _ = M.check('passage', quiet=True)
         self.assertEqual(fails, [])
 
+    def test_bottom_slit_fail(self):
+        rows = self.solid()
+        rows[28] = '.' * 20 + rows[28][20:]
+        self.write('slit', rows, ['**', 'DX'])
+        fails, _ = M.check('slit', quiet=True)
+        self.assertTrue(any('가로 틈' in f for f in fails), fails)
+
     def test_off_palette_fail(self):
         rows = self.solid()
         rows[3] = '€' + rows[3][1:]
