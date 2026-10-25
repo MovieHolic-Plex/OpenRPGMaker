@@ -4,6 +4,7 @@ import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailFact } fr
 import { HELD_ITEM_KIND_LABELS } from "@/battle/heldItems";
 import type { HeldItemEffectKind, Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { keepWholeRows } from "@/player/runtimeTextFit";
 
 export type StatusMenuDetailPanelOptions = {
   readonly selectedActionIndex?: number;
@@ -157,6 +158,8 @@ export function renderStatusMenuDetailPanel(
     if (actionIndex !== undefined) enabledActionIndex += 1;
   }
   panel.append(list);
+  // 마지막 행이 창 경계에 반쯤 걸리지 않게 실제 행 경계로 자른다 — CSS 행 간격 반올림은 스킨마다 행 높이가 달라 어긋난다(J22).
+  keepWholeRows(list);
   // 쇼케이스는 목록 바깥의 별도 영역이다 — 행 안에 설명을 다시 넣으면 행 높이가 두 배가 되는 전력이 있다(위 주석).
   const sideColumn = appendSideColumn(panel, options.side);
   if (options.showcase && interactiveList && selectedEntry) {

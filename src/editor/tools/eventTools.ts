@@ -58,12 +58,13 @@ import { assertEventPartyActorReferences } from "./partyActorReferences";
 import { declareReferencedFlags, declaredFlagsWarning, ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
+import { SHARED_OBJECT_TOOLS, prepareSharedObject } from "./sharedObjectTools";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
 import { isFlushPassable, snapFlushToWall } from "./wallFlush";
 import { pageKeyFindings, pageKeyRejectMessage, pageKeyWarning } from "./eventPageKeys";
 import { CHANGE_TILE_USAGE, changeTileProblems, collectChangeTileCommands } from "@/project/changeTileValidation";
 import { withJosa } from "@/util/josa";
-import { assertDoorExitWidths, reachableGateCandidates, transferGatesStayApproachable, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
+import { assertDoorExitWidths, playerAnchors, reachableGateCandidates, transferGatesStayApproachable, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
 import {
   COMMAND_SCHEMA_COMPACT,
   COORD_SCHEMA,
@@ -3511,14 +3512,42 @@ const placeSavepoint: ToolDefinition = {
       id: { type: "string" },
       heal: { type: "boolean", description: "true 면 저장 전에 파티 전원 회복(recoverAll). 기본 false — 크로노 트리거의 세이브 포인트는 회복하지 않는다." },
       mode: { type: "string", enum: ["both", "slot", "checkpoint"], description: "both(기본): 체크포인트 + 저장 칸 메뉴 · slot: 저장 칸 메뉴만 · checkpoint: 사망 재시도용 메모리 체크포인트만" },
+      prompt: { type: "string", description: "조사하면 먼저 묻는 말(예: 「기록하시겠습니까?」). 주면 예/아니오 선택지가 뜨고 「예」일 때만 저장 칸을 연다." },
+      sparkleRadius: { type: "integer", minimum: 0, maximum: 6, description: "플레이어가 이 칸 수 안으로 다가오면 세이브 포인트에 반짝임이 한 번 터진다(page.nearSparkle). 0 이면 끔. objectId 를 주면 기본 2." },
+      objectId: { type: "string", description: "세이브 포인트를 눈에 띄는 공용 오브젝트 그림(stamp_object 와 같은 id, 예: 받침 위 수정 덩이)으로 세운다. x,y 를 그림의 왼쪽 위로 찍고, 이벤트는 그림 맨 아래 줄 가운데 칸에 투명하게 둔다. 생략하면 기본 크리스탈 걷기 칩." },
     },
     required: ["mapId", "x", "y"],
     additionalProperties: false,
   },
+  prepare: (args) => (typeof args.objectId === "string" ? prepareSharedObject(args.objectId) : Promise.resolve()),
   run(draft, args): ToolExecResult {
-    const map = requireMap(draft, args.mapId as string);
-    const requestedX = args.x as number;
-    const requestedY = args.y as number;
+    let map = requireMap(draft, args.mapId as string);
+    let requestedX = args.x as number;
+    let requestedY = args.y as number;
+    let objectFootprint: { x: number; y: number; w: number; h: number } | undefined;
+    if (typeof args.objectId === "string" && args.objectId) {
+      // 오브젝트를 찍고, 바뀐 칸의 테두리에서 맨 아래 줄 가운데를 조사 칸으로 쓴다(그림은 칸이 맡고 이벤트는 투명).
+      const stamp = SHARED_OBJECT_TOOLS.find((tool) => tool.name === "stamp_object");
+      if (!stamp) throw new ToolError("stamp_object 도구가 없습니다.", { code: "savepoint-no-stamp", mapId: map.id });
+      const layers = ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"] as const;
+      const before = layers.map((key) => [...((map as unknown as Record<string, number[] | undefined>)[key] ?? [])]);
+      stamp.run(draft, { objectId: args.objectId, mapId: map.id, x: requestedX, y: requestedY });
+      map = requireMap(draft, args.mapId as string);
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      layers.forEach((key, li) => {
+        const after = (map as unknown as Record<string, number[] | undefined>)[key] ?? [];
+        for (let i = 0; i < after.length; i += 1) {
+          if (after[i] === (before[li]![i] ?? -1)) continue;
+          const cx = i % map.width, cy = Math.floor(i / map.width);
+          minX = Math.min(minX, cx); maxX = Math.max(maxX, cx); minY = Math.min(minY, cy); maxY = Math.max(maxY, cy);
+        }
+      });
+      if (Number.isFinite(minX)) {
+        objectFootprint = { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
+        requestedX = Math.floor((minX + maxX) / 2);
+        requestedY = maxY;
+      }
+    }
     const heal = args.heal === true;
     const saveMode = args.mode === undefined ? "both" : args.mode;
     if (saveMode !== "both" && saveMode !== "slot" && saveMode !== "checkpoint") {
@@ -3535,7 +3564,11 @@ const placeSavepoint: ToolDefinition = {
       replacesAutoInspect: true,
     });
     const { x, y, adjusted } = placement;
-    const graphic = resolveGraphic({ query: "크리스탈" }, { overrides: draft.charsetLabels });
+    const prompt = typeof args.prompt === "string" && args.prompt.trim() ? args.prompt.trim() : undefined;
+    const sparkleRadius = Math.max(0, Math.min(6, Math.round(Number(args.sparkleRadius ?? (objectFootprint ? 2 : 0)) || 0)));
+    const graphic = objectFootprint
+      ? ({ transparent: true } as EventPageGraphic)
+      : resolveGraphic({ query: "크리스탈" }, { overrides: draft.charsetLabels });
     const id = (args.id as string | undefined) ?? genId("ev_save");
     const name = (args.name as string | undefined) ?? "세이브 포인트";
     const trigger: Trigger = { kind: "action" };
@@ -3556,11 +3589,20 @@ const placeSavepoint: ToolDefinition = {
           overlapForbidden: false,
           animationType: "fixedGraphic",
           movement: PASSIVE,
+          ...(sparkleRadius > 0 ? { nearSparkle: { radius: sparkleRadius } } : {}),
           commands: [
             ...(heal ? [{ kind: "recoverAll" } as Command] : []),
             ...(saveMode !== "slot" ? [{ kind: "checkpointSave", label: "savepoint" } as Command] : []),
-            { kind: "text", body: heal ? "기운이 돌아왔다. 이곳에 모험을 기록했다." : saveMode === "checkpoint" ? "이곳에 모험을 기록했다." : "이곳에 모험을 기록할 수 있다." },
-            ...(saveMode !== "checkpoint" ? [{ kind: "openSaveMenu" } as Command] : []),
+            ...(prompt && saveMode !== "checkpoint"
+              ? [...(heal ? [{ kind: "text", body: "기운이 돌아왔다." } as Command] : []),
+                { kind: "choices", prompt, cancelBehavior: "branch", options: [
+                  { text: "예", branch: [{ kind: "openSaveMenu" }] },
+                  { text: "아니오", branch: [] },
+                ], cancelBranch: [] } as unknown as Command]
+              : [
+                { kind: "text", body: heal ? "기운이 돌아왔다. 이곳에 모험을 기록했다." : saveMode === "checkpoint" ? "이곳에 모험을 기록했다." : "이곳에 모험을 기록할 수 있다." } as Command,
+                ...(saveMode !== "checkpoint" ? [{ kind: "openSaveMenu" } as Command] : []),
+              ]),
           ],
         },
       ],
@@ -3572,8 +3614,8 @@ const placeSavepoint: ToolDefinition = {
       ...(map.disableSave && saveMode !== "checkpoint" ? [`${map.name} 은(는) 저장 금지 맵이라 저장 칸 메뉴에서 저장할 수 없습니다 — 저장 장소라면 set_map_properties 로 이 맵의 저장 금지를 끄세요.`] : []),
     ];
     return {
-      summary: `${map.name}에 세이브 포인트 '${name}' 배치 (${x}, ${y}) — ${saveMode === "slot" ? "저장 칸 메뉴" : saveMode === "checkpoint" ? "체크포인트(저장 칸 안 염)" : "체크포인트 + 저장 칸 메뉴"}${heal ? " · 전원 회복 포함" : ""}${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
-      data: { eventId: id, x, y, adjusted, heal, mode: saveMode },
+      summary: `${map.name}에 세이브 포인트 '${name}' 배치 (${x}, ${y})${objectFootprint ? ` · 그림 ${String(args.objectId)}` : ""} — ${saveMode === "slot" ? "저장 칸 메뉴" : saveMode === "checkpoint" ? "체크포인트(저장 칸 안 염)" : "체크포인트 + 저장 칸 메뉴"}${heal ? " · 전원 회복 포함" : ""}${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
+      data: { eventId: id, x, y, adjusted, heal, mode: saveMode, ...(objectFootprint ? { object: { id: args.objectId, ...objectFootprint } } : {}) },
       ...(saveWarnings.length > 0 ? { warnings: saveWarnings } : {}),
     };
   },
@@ -3826,9 +3868,18 @@ const moveEvent: ToolDefinition = {
       code: "move-event-impassable",
     });
     const previous = { x: event.x, y: event.y };
+    const reachBefore = walkAroundSolidEvents(draft, map);
     event.x = placement.x;
     event.y = placement.y;
+    // 길을 막는 자리로 옮기면 다른 사람·물건이 못 닿게 된다(2026-10-25 G33: 장난감을 옮긴 뒤 장면 시험이 (2,6)→(11,5) 못 감으로 실패).
+    const reachAfter = reachBefore ? walkAroundSolidEvents(draft, map) : null;
+    const cutOff: string[] = [];
+    if (reachBefore && reachAfter && reachAfter.size < reachBefore.size) {
+      const touches = (set: Set<number>, ev: { x: number; y: number }) => [[1, 0], [-1, 0], [0, 1], [0, -1], [0, 0]].some(([dx, dy]) => { const x = ev.x + dx!, y = ev.y + dy!; return inMapBounds(map, x, y) && set.has(y * map.width + x); });
+      for (const other of map.events) if (other.id !== event.id && (other.pages ?? []).some((pg) => { const k = typeof pg.trigger === "string" ? pg.trigger : (pg.trigger as { kind?: string } | undefined)?.kind ?? "action"; return !/^(auto|autorun|parallel)/u.test(k); }) && touches(reachBefore, other) && !touches(reachAfter, other)) cutOff.push(`${other.name || other.id}(${other.x},${other.y})`);
+    }
     const warnings = [
+      ...(cutOff.length ? [`이 자리가 길을 막아 ${cutOff.slice(0, 5).join(", ")}${cutOff.length > 5 ? ` 외 ${cutOff.length - 5}개` : ""} 에 더는 걸어 닿지 못한다 — 통로가 아닌 벽 쪽 칸으로 옮긴다`] : []),
       ...(placement.adjusted ? [placementAdjustedWarning(`이벤트 '${event.id}'`, { x: requestedX, y: requestedY }, placement)] : []),
       ...followScheduleSlots(map.id, event, previous),
     ];
@@ -4129,7 +4180,7 @@ const scriptCutscene: ToolDefinition = {
     "잠금/해제와 스킵 라벨은 컴파일러가 자동으로 감싸므로 upsert_event 로 수동 조립하지 말 것. beat 종류: " +
     "say{speaker,face,text|lines,actor?,to?,calling?,autoFace?}(말하는 인물은 듣는 인물 쪽으로 저절로 돈다 — to 생략 시 주인공, 멀리서 부르면 calling:true, 끄려면 autoFace:false), approach{actor:'player'|eventId|이름,target:'player'|eventId|이름 또는 x,y,distance?(기본 1),wait}(대상 곁 빈 칸까지 길을 찾아 걸어가 대상을 본다 — 말 걸기 전에 이것을 쓴다. 걸음을 손으로 늘어놓지 말 것), faceEachOther{a,b}(둘이 마주 본다), faceToward{actor,target|x,y}, exitVia{actor,door?|x,y,wait}(NPC 가 문·출구 칸 위로 걸어 들어가 문 소리와 함께 사라진다 — 떠나는 인물은 이것으로 내보내고 그 뒤에 지우거나 «떠남» 스위치. 문 한 칸 앞에서 지우지 말 것. door 생략 = 가장 가까운 문), enterVia{actor,door?|x,y,dir?,wait}(문 칸에 나타나 한 걸음 들어선다), moveActor{target:'player'|eventId,moves:[{kind:'move',dir:'up'},{kind:'turn',dir:'left'}],wait}(정해진 칸 수만큼 걷기·퇴장 같은 자유 이동만), " +
     "camera{mode:'pan|follow|fixed|return',target|x,y,durationMs,wait,zoom}, " +
-    "picture{action:'show|move|erase',pictureId,resourceId,x,y,scale,opacity,durationMs,easing,blendMode,wait}(easing:'easeOut' 이면 멈출 때 부드럽다, blendMode:'add' 면 빛기둥·유령처럼 밝게 겹친다), music{action:'bgm|se|fade|stop',resourceId}, fade{direction:'in|out',durationMs,wait}, tint{color|value(sepia·#rrggbb·'r,g,b,알파'),durationMs,wait}, background{flowPercent,imageId?,durationMs,wait}(먼 배경 흐름 — 회상 진입에 flowPercent:0 으로 구름이 서서히 멈춘다. 배경 자체는 set_map_properties.background.preset), distort{effect:'wave|mosaic|rotate|clear',amount?,durationMs,wait}(화면 그림 자체를 비튼다 — 수중·꿈은 wave, 장면 전환은 mosaic(전환에만 — 켠 채 대사를 잇지 말고 곧 clear), 시간 왜곡은 rotate. 컷신 뒤에도 남으니 끝낼 때 clear), flash{color,durationMs}, shake{intensity:1|3|6|10,durationMs,axis:'both|horizontal|vertical'}(지진·쿵은 vertical, 부딪힘은 horizontal), " +
+    "picture{action:'show|move|erase',pictureId,resourceId,x,y,scale,opacity,durationMs,easing,blendMode,wait}(easing:'easeOut' 이면 멈출 때 부드럽다, blendMode:'add' 면 빛기둥·유령처럼 밝게 겹친다), music{action:'bgm|se|bgs|fade|stop',resourceId}(bgs=음악 밑에 깔리는 반복 환경음), fade{direction:'in|out',durationMs,wait}, tint{color|value(sepia·#rrggbb·'r,g,b,알파'),durationMs,wait}, background{flowPercent,imageId?,durationMs,wait}(먼 배경 흐름 — 회상 진입에 flowPercent:0 으로 구름이 서서히 멈춘다. 배경 자체는 set_map_properties.background.preset), distort{effect:'wave|mosaic|rotate|clear',amount?,durationMs,wait}(화면 그림 자체를 비튼다 — 수중·꿈은 wave, 장면 전환은 mosaic(전환에만 — 켠 채 대사를 잇지 말고 곧 clear), 시간 왜곡은 rotate. 컷신 뒤에도 남으니 끝낼 때 clear), flash{color,durationMs}, shake{intensity:1|3|6|10,durationMs,axis:'both|horizontal|vertical'}(지진·쿵은 vertical, 부딪힘은 horizontal), " +
     "letterbox{show,size?,durationMs}(영화식 위아래 검은 띠 — 중요한 장면 시작에 넣는다. 컷신 끝에 자동으로 걷힘, 남기려면 keep:true), " +
     "freeze{show?,style?:'warm|mono|sepia|cool|none',durationMs?}(만화식 정지 화면 — 부딪힘·첫 만남·결정적 순간에 지금 화면을 하얗게 번쩍 멈춘 한 장으로 세운다. 대사는 그 위에. 컷신 끝에 자동으로 풀림, show:false 로 직접 풀기), " +
     "particles{preset:'sparkle|magic|heal|fire|smoke|dust|explosion|splash|paper|petals',target:'player'|이벤트 id|생략+x,y,durationMs,wait}(한 인물·한 칸에서 터지는 효과 — 보물=sparkle, 주문=magic, 회복=heal, 사라짐=smoke, 착지=dust, 폭발=explosion, 부딪혀 서류가 흩날림=paper, 벚꽃 꽃잎=petals), " +
@@ -4409,3 +4460,26 @@ export const EVENT_TOOLS: readonly ToolDefinition[] = [
   moveEvent,
   scriptCutscene,
 ];
+
+/** 시작·착지점에서 걸어 닿는 칸 — 지나갈 수 없는 이벤트(첫 페이지가 «같은 층»이고 통과가 아닌 것)가 선 칸은 막힌 것으로 본다. */
+function walkAroundSolidEvents(project: Project, map: GameMap): Set<number> | null {
+  const solid = new Set<number>();
+  for (const ev of map.events) {
+    const page = ev.pages?.[0] as { priority?: string; through?: boolean } | undefined;
+    if (page && (page.priority ?? "same") === "same" && !page.through) solid.add(ev.y * map.width + ev.x);
+  }
+  const anchors = playerAnchors(project, map);
+  if (!anchors.length) return null;
+  const seen = new Set<number>(anchors.map((a) => a.y * map.width + a.x));
+  const queue = [...anchors];
+  for (let i = 0; i < queue.length; i += 1) {
+    const c = queue[i]!;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const x = c.x + dx, y = c.y + dy, key = y * map.width + x;
+      if (!inMapBounds(map, x, y) || seen.has(key) || solid.has(key) || !canMove(project, map, c.x, c.y, x, y)) continue;
+      seen.add(key);
+      queue.push({ x, y });
+    }
+  }
+  return seen;
+}

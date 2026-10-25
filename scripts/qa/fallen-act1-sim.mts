@@ -1,4 +1,4 @@
-// 폴른 스타 1막 — 추락지 발렌·달비늘 용 헤드리스 승률(정책별).
+// 폴른 스타 1막 — 추락지 발렌·달빛의 용 헤드리스 승률(정책별).
 //   node_modules/.bin/vite-node --script scripts/qa/fallen-act1-sim.mts <project.json> [n] [only]
 // 정책:
 //   aware    — 용이 관통상이 아니면 카엘 「돌진 찌르기」/이리스 「충전 광선포」로 먼저 가르고, 나머지는 자동 AI(예측이 3배 마법을 고른다).
@@ -98,6 +98,8 @@ function run(troopId: string, level: number, policy: Policy, rng: Rng, inventory
 }
 
 const cases: Array<{ troopId: string; level: number; policy: Policy; inv: Record<string, number> }> = [
+  // 1차: 병사 넷(발렌 없음, 2026-10-25) — 이기면 같은 이벤트가 2차(발렌)로 잇는다.
+  ...((process.env.FS_SIM_LEVELS ? process.env.FS_SIM_LEVELS.split(",").map(Number) : [6, 7])).map((level) => ({ troopId: "troop_fs_valen_squad", level, policy: "auto" as Policy, inv: { item_potion: 5, item_hi_potion: 1, item_ether: 2 } })),
   ...((process.env.FS_SIM_LEVELS ? process.env.FS_SIM_LEVELS.split(",").map(Number) : [6, 7])).flatMap((level) => (["aware", "auto", "nothunder"] as Policy[]).map((policy) => ({ troopId: "troop_fs_valen_crash", level, policy, inv: { item_potion: 5, item_hi_potion: 1, item_ether: 2 } }))),
   ...([8, 9] as const).flatMap((level) => (["aware", "auto", "nopierce"] as Policy[]).map((policy) => ({ troopId: "troop_fs_dragon", level, policy, inv: { item_potion: 6, item_hi_potion: 3, item_ether: 4 } }))),
 ];

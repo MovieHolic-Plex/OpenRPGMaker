@@ -157,6 +157,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   define_ending: world("엔딩 정의", "flag"),
   set_deadline_ending: world("기한 엔딩", "flag"),
   set_project_genre: system("장르 정하기"),
+  apply_romance_preset: system("연애 기본값 깔기"),
   set_project_settings: system("프로젝트 설정"),
   set_title_screen: system("타이틀 화면"),
   configure_game_systems: system("게임 시스템"),

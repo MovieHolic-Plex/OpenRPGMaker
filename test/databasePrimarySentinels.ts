@@ -29,6 +29,7 @@ export const DATABASE_PRIMARY_SENTINELS: Readonly<Record<string, string>> = {
   spatialRegions: '[data-testid="spatial-shell-regions"]',
   spatialWorlds: '[data-testid="spatial-shell-worlds"]',
   commonEvents: '[data-testid="db-common-event-search"]',
+  dialogue: '[data-testid="db-dialogue-view"]',
   system: '[data-testid="db-system-nav-font"]',
   menuSystem: '[data-testid="db-menu-system-intro"]',
   opening: '[data-testid="db-cinematic-opening"] [data-testid="db-cinematic-enabled"]',

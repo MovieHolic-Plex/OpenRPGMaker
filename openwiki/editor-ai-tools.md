@@ -1,5 +1,32 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 「드러났다」를 지도에 보이기 `stage_map_reveal` · 장면 대형 `sceneFormation` · 보스 HP 숨김 (2026-10-25)
+
+사용자 지적(폴른 스타 1막): 「승강 장치가 드러났다」는 대사뿐이고 지도에는 아무것도 나타나지 않았다. 일반 도구로 푼다.
+
+- `stage_map_reveal` (write, `src/editor/tools/revealTools.ts`, 도메인 event·map) `{mapId, eventId, pageId?, objectId+x+y | tiles[], afterText?, theme?(stone·machine·magic·fire), camera?(기본 true), switchId?}`.
+  `objectId` 는 `stamp_object` 와 같은 공용 오브젝트 id 다. 초안에 한 번 찍어 보고 4층의 차이만 뽑은 뒤 맵을 되돌린다(이식된 그림 칸은 칩셋에 남는다).
+  그 차이를 이벤트 페이지 안 `afterText` 가 든 첫 대사 바로 뒤(갈래·선택지 안까지 찾는다)에 끼운다:
+  카메라 `panTo`(좌표, `target` 은 주지 않는다 — 카탈로그에 `position` 이 없어 굽기가 거절한다) → `revealInWaves`(세 물결 changeTile·먼지·흔들림·색조) → `switchId` 켬 → 카메라 `return`.
+  changeTile 은 세션 칸 덮어쓰기라 저장·불러오기에 남는다. 드러난 것을 쓰게 하려면 그 칸에 같은 `switchId` 조건 페이지를 가진 이벤트를 따로 둔다.
+  노출: 「드러나·나타나게·숨은 문/통로/계단·승강 장치·비밀 문·reveal」 낱말이면 `sessionToolExposure` 가 `stage_map_reveal`·`list_spatial_designs`·`find_events`·`get_event`·`show_map_region` 을 함께 연다.
+- `configure_companion_rules {sceneFormation: "nearest"|"abreast"}` → `system.companions.sceneFormation`. `display:"scenesOnly"` 의 장면에서 동료가 서는 자리다.
+  `abreast` = 주인공이 보는 방향에 수직으로 나란히(첫째 화면 왼쪽, 둘째 오른쪽, 그 바깥), 칸이 막히면 옛 `nearest` 로 떨어진다(`followers.ts abreastCell`).
+  옛 `nearest` 는 빈 칸 중 가장 가까운 곳이라, 적이 걸어오는 쪽(주인공 앞)에 동료가 서는 일이 있었다.
+- 보스 HP 숨김은 이미 있던 적 단위 `upsert_enemy {enemy:{id, hideHp:true}}` 를 쓴다(새 필드 없음). 「대형·횡대·보스 HP·체력 숨김」 낱말이면 `configure_companion_rules`·`upsert_enemy`·`upsert_troop`·`get_database_records` 를 연다.
+- 「대형」은 뒤따르기(`display:"follow"`)에서도 컷신 동안 횡대로 선다(장면이 끝나 걸으면 궤적으로). 폴른 스타는 10-24 의 FF6 식 `scenesOnly`(필드에서 동료 숨김)를 걷어 다시 뒤따른다.
+- 전투·저장·필드 규칙(같은 날, 사용자 7건):
+  - `set_project_settings battle.allowAutoBattle:false` → `system.allowAutoBattle` — F 키 토글·「자동」 표시가 사라진다(`battleDom.ts`). 배우별 `ActorOptions.autoBattle` 과 별개.
+  - `battle.clearStatesAfterBattle:true` → 전투가 끝나면 파티 상태 이상이 풀린다. 상태 하나는 `upsert_state clearOnBattleEnd:true|false` 가 이긴다.
+    둘 다 없으면 `removalCondition` 글이 「전투 종료」일 때만 풀린다(「전투 종료 후 유지」는 남는다). 전투 불능은 풀지 않는다. 판정 `src/project/battleEndStates.ts`, 적용 `battleRewardsToSession.ts`.
+  - `set_project_settings saveAccess:"savePoints"` → 메뉴 「저장」이 사라지고 자동 저장도 멈춘다. `place_savepoint`(openSaveMenu)는 그대로 저장한다. 눈에 띄게 하려면 `place_savepoint objectId:"kit:beodeul_city/bd-pick-dungeon-theme-crystal-pedestal"` — 오브젝트를 x,y(왼쪽 위)에 찍고 이벤트는 그림 맨 아래 줄 가운데에 투명하게 둔다(기본 크리스탈 칩은 회색 돌처럼 보여 눈에 안 띈다). `prompt:"기록하시겠습니까?"` 를 주면 예/아니오 뒤에만 저장 칸을 열고, `sparkleRadius`(objectId 를 주면 기본 2)는 페이지 `nearSparkle` 로 플레이어가 그 반경에 들어올 때 반짝임을 한 번 터뜨린다(런타임 `playSceneFieldStaging.syncNearSparkles`).
+  - `tune_field_enemies {mapIds?, sightRange, vision, pace, lungeSteps, lungeSpeed}` — 이미 놓인 보이는 적을 한꺼번에 추격형으로. 덮치기는 `movement.chaseLunge {steps, speed}`:
+    놀람(`sightAlert`) 멈춤이 끝난 뒤 첫 steps 칸을 speed 랭크 걸음으로 쉬지 않고(`playSceneAutonomous.ts`). speed 는 6(주인공 걷기 160ms/칸)까지만 받는다 — 계속 걸으면 피할 수 있다.
+  - 랜덤 조우 끄기는 `set_encounter_table {entries:[], encounterRate:0}`. 보이는 적으로 레벨을 올리게 하려면 `place_field_enemy respawnSec` 로 다시 나타나는 적을 둔다.
+  - 연계기 「얼굴 교차」 컷인의 흉상(결의 표정)은 런타임이 고르는 그림이라 데이터에 이름이 없어 스토어 판본에 빠졌다(폴른 스타 1.20). 고르는 순서를 `src/project/comboBust.ts` 하나로 모으고 `webExportAssets` 가 같은 그림을 싣는다.
+  - 노출: 「자동 전투·상태 이상 풀림·세이브 포인트·메뉴 저장」 → set_project_settings·upsert_state·place_savepoint, 「랜덤 조우·보이는 적·덮치·멀리서」 → set_encounter_table·tune_field_enemies·place_field_enemy.
+- 조수 트랙 과제: `harness-data/space-craft/seed.json` 의 `fs-boss-squad-first`·`fs-boss-hidehp`·`fs-reveal-lift`·`fs-battle-noauto`·`fs-battle-combo-faces`·`fs-state-clear-after`·`fs-foe-lunge`·`fs-foe-no-random`·`fs-save-points`·`fs-party-follow`.
+
 ## 이야기 흐름 읽기 `get_story_outline` · `read_story_script` · `set_scene_summaries` (2026-10-25)
 
 같은 파일 `dialogueTools.ts`. 모델은 자료집 「대사 › 대본」 과 같은 `buildStory`([editor-database.md](editor-database.md) 「대본」 절). 별칭 「이야기 흐름·대본 읽기」(줄거리·전체 흐름·1막·대본…)와 「대사 관리·윤문」 양쪽에 걸린다.
@@ -3571,6 +3598,17 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 벌레퇴치 = `item {repelSteps: 1~9999, repelBelowLead?: boolean, occasion:"field", scope:"none", consumable:true}`. 탈출 로프 = `item {escapeTo:"entrance", occasion:"field", scope:"none"}`(던전·동굴 맵 mapRole `dungeon` 에서만, 마지막 입구로). 거절: `repelSteps` 가 1 미만·정수 아님 → `invalid-repel-steps`, `escapeTo` 가 "entrance" 아님 → `invalid-escape-to`. occasion 이 field/always 가 아니거나 scope 가 none 이 아니면 저장하되 경고. 둘을 한 아이템에 쓰면 벌레퇴치가 먼저 적용된다는 경고.
 - 도망 성공 뒤 무적 걸음은 `configure_monster_system {escapeGraceSteps: 0~99}`(생략 시 몬스터 파티 게임 4, 0 = 끔).
 - 낚싯대는 새 도구가 아니다: `configure_fishing` 의 몬스터 어획(`catches[] {speciesId,…}`) + `upsert_tool_action {action:"fish", itemId}` 로 잇고, NPC `changeItem` 으로 낚싯대를 준다. 기본 `build_monster_game` 캠페인에는 이미 들어 있다. 능력 색인 `monster-field-items`, 별칭 「벌레퇴치·탈출 로프·도망 무적·낚싯대」. 자세한 런타임 동작은 `openwiki/monster-expedition.md` 「야생 조우 보호·필드 도구·낚시」.
+
+## 이야기형 연애 기본값 `apply_romance_preset` (2026-10-25, 시타마치)
+
+인터뷰로 시작하지 않은 프로젝트(대표 데모·빈 프로젝트에서 조수가 연애 게임을 짓는 경우)에는 `applyRomanceDefaults` 가 아무 일도 하지 않아 체력 하트 「514/514」 HUD 가 그대로 남았다. `applyRomanceDefaults(project, {force, dayLoop})` 가 생겼다: `force:true` 면 인터뷰 장르가 아니어도 깔고, `dayLoop:false` 면 시간·소셜 루프(기한 결말)를 깔지 않으며 HUD 는 시계 없이 호감 위젯 하나(`storyRomanceHudConfig`)다. 조수 도구 `apply_romance_preset({dayLoop?})`(`gameSystemToggleTools.ts`, 이름표 「연애 기본값 깔기」). 엔딩 화면은 캡션·요약을 `.ending-final-meta` 세로 묶음에 넣어 긴 엔딩 이름이 두 줄이 되어도 「플레이 시간」 줄과 겹치지 않는다(`playSceneOverlays.ts`, `gameOver.css`).
+
+### 대화 중 인물 보이기 `system.dialogueKeepActorsVisible` (2026-10-25)
+
+시타마치 after VQA 두 검수자가 모두 1순위로 짚은 결함: 필드 대사창(아래)과 선택지 창(가운데)이 화면 아래 절반을 덮고 카메라는 주인공을 화면 가운데에 두므로, 마주 서서 말하는 두 사람이 창 뒤에 숨는다. 이 설정을 켜면 `src/player/dialogueCameraLift.ts` 가 프레임마다 덮개(`.dialogue-overlay .dialogue-box`·`runtime-choices`) 윗변을 재고, 주인공을 따르는 카메라의 추적 오프셋을 내려 주인공을 빈 띠의 55% 높이(최소 20%)에 둔다. 맵 아래 끝·화면보다 작은 방(전철 칸)에서는 그 동안만 카메라 경계 아래를 같은 만큼 늘리고(늘어난 곳은 창 밑), 창이 닫히면 오프셋과 경계를 되돌린다 — 경계는 그 사이 맵 이동이 바꾸지 않았을 때만 되돌린다. 카메라 고정·이동 연출 중에는 손대지 않는다.
+- 조수: `set_project_settings({dialogue:{keepActorsVisible:true}})`. `apply_romance_preset` 도 값이 없을 때 켠다. false 도 저장한다(연애 기본값이 저작자가 끈 값을 다시 켜지 않게).
+- 시험: `test/dialogueCameraLift.test.ts`, 하네스 과제 `dialogue-keeps-speakers-visible`(scene-lessons-seed, 19528).
+헤드리스 러너(`sceneTestRunner`): 선택 → 장소 이동으로 끝나는 이벤트 뒤, 도착 맵 자동 실행이 선택지에서 기다리면 그 안쪽 해석기를 그대로 들고 간다(예전에는 «Nested interaction still waiting» 실패로 자동 플레이가 첫 장면에서 멈췄다).
 
 ## 연애 3차 수리 — 칩·ESC 메뉴·뼈대·완료 문 (2026-10-16, romance-fix-3)
 

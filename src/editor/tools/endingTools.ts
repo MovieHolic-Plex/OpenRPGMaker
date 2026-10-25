@@ -146,7 +146,9 @@ const defineEnding: ToolDefinition = {
     const epilogueWarnings: string[] = [];
     const epilogue = parseEpilogue(draft, args.epilogue, epilogueWarnings);
     const prior = draft.endings?.find(entry => entry.id === id);
-    const presentation = args.presentation === undefined ? prior?.presentation : args.presentation as EndingPresentation;
+    let presentation = args.presentation === undefined ? prior?.presentation : args.presentation as EndingPresentation;
+    // 크레딧·엔딩 글에 줄바꿈을 글자 「\n」로 두 번 이스케이프해 보내면 화면에 「\n」이 그대로 찍혔다(2026-10-25 G50·심판 J2).
+    if (presentation && typeof presentation.credits === "string" && /(?:\\r)?\\n/u.test(presentation.credits)) presentation = { ...presentation, credits: presentation.credits.replace(/(?:\\r)?\\n/gu, "\n") };
     if (presentation !== undefined) {
       try { validateEndingPresentation(presentation); } catch (error) { throw new ToolError(String(error), { code: "invalid-args" }); }
       if (presentation.musicResourceId && !collectResourceIds(draft).has(presentation.musicResourceId)) throw new ToolError("엔딩 음악 리소스를 찾을 수 없습니다.", { code: "invalid-args" });

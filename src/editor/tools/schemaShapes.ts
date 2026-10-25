@@ -516,8 +516,8 @@ export const LIGHT_SOURCE_SCHEMA: JsonSchema = {
     id: { type: "string" },
     at: {
       type: "object",
-      description: "{x,y} 또는 {eventId}. 'player' 문자열도 허용된다(문자열로 보낼 때는 이 객체를 쓰지 않는다).",
-      properties: { x: { type: "integer" }, y: { type: "integer" }, eventId: { type: "string" } },
+      description: "광원 자리(객체). 플레이어를 따라가는 빛(손전등) = {kind:'player'}, 칸 = {x,y}, 이벤트 = {eventId}.",
+      properties: { kind: { type: "string", enum: ["player"], description: "플레이어를 따라가는 빛" }, x: { type: "integer" }, y: { type: "integer" }, eventId: { type: "string" } },
     },
     radius: { type: "number" },
     intensity: { type: "number" },

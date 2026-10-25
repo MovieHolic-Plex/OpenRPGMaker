@@ -1197,7 +1197,12 @@
 
 /* 아래 창 — 설명 + 보유/장착 수, 소지금. */
 .runtime-shop-desc-panel { display: flex; flex-direction: column; justify-content: center; gap: 0.3em; min-width: 0; padding: 0.6em 1.1em; }
-.runtime-shop-desc-text { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+/* 설명은 줄 바꿈한다(한글은 낱말 단위) — 높이·글자 크기 맞춤은 runtimeTextFit.fitTextToLines 가 잰다(J21: nowrap 말줄임이라 능력치가 안 보였다). */
+.runtime-shop-desc-text { min-width: 0; overflow: hidden; white-space: normal; word-break: keep-all; overflow-wrap: anywhere; line-height: 1.2; }
+/* 도트 상점 설명창은 두 줄 자리를 늘 잡아 둔다 — 커서가 한 줄짜리 ↔ 두 줄짜리 설명을 오갈 때 위 목록 창 높이(보이는 행 수)가 출렁이지 않게. */
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-desc-text { min-height: 2.4em; }
+.runtime-shop-desc-text.is-text-clamped { display: -webkit-box; -webkit-box-orient: vertical; text-overflow: ellipsis; }
+.runtime-shop-desc-stats { color: var(--shop-accent); }
 .runtime-shop-desc-owned { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
 .runtime-shop-purse-panel { display: flex; flex-direction: column; justify-content: center; align-items: flex-end; padding: 0.5em 1.1em; }
 .runtime-shop-purse-label { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }

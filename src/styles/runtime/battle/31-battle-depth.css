@@ -78,28 +78,11 @@
   .battle-scene .battle-combo-cutin-skill { font-size: 20px; }
   .battle-scene .battle-combo-cutin-names { font-size: 14px; }
 }
-.battle-scene .battle-combo-cutin-sparks { inset: 0; position: absolute; }
-.battle-scene .battle-combo-cutin-sparks i {
-  animation: battle-combo-spark 900ms ease-out both;
-  animation-delay: calc(var(--spark-i) * 60ms);
-  background: rgb(255 236 160);
-  box-shadow: 0 0 6px rgb(255 220 120);
-  height: 4px;
-  left: calc(6% + var(--spark-i) * 9%);
-  position: absolute;
-  top: 50%;
-  width: 4px;
-}
 @keyframes battle-combo-band {
   0% { opacity: 0; transform: translateX(-60%) skewX(-14deg); }
   14% { opacity: 1; transform: translateX(0) skewX(0); }
   80% { opacity: 1; transform: translateX(0); }
   100% { opacity: 0; transform: translateX(30%); }
-}
-@keyframes battle-combo-spark {
-  0% { opacity: 0; transform: translateY(0) scale(1); }
-  30% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-34px) scale(0.4); }
 }
 /* 화면 번쩍 — 연계가 시작되는 순간. */
 .battle-scene .battle-combo-flash {

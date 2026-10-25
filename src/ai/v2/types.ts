@@ -103,6 +103,8 @@ export interface PlaceRecord {
   readonly spec: PlaceSpec;
   readonly result: PlaceBuildResult;
   readonly rounds: number;
+  /** 더 나빠져 되돌린 고치기 수 — 첫 되돌림은 고치기 횟수에 세지 않는다(G28). */
+  readonly reverts?: number;
 }
 
 /** 빌더가 v1 도구를 부르는 창구. 실행기가 시공 재생 기록·도구 기록을 붙여 준다. */
@@ -179,7 +181,7 @@ export type EventBeat =
   /** 배경 음악 바꾸기·효과음·멈춤 — query 는 음원 찾을 낱말(festival·battle·town·sad…). */
   /** 머리 위 감정 표시(!·?·♥·땀·…) — 대사창으로 흉내 내지 않는다. */
   | { readonly do: "emote"; readonly who: string; readonly emote: string }
-  | { readonly do: "music"; readonly action?: "bgm" | "se" | "stop" | "fade"; readonly query?: string };
+  | { readonly do: "music"; readonly action?: "bgm" | "se" | "bgs" | "stop" | "fade"; readonly query?: string };
 
 /** 없는 기물 — draw_object 의 인자. */
 export interface ObjectSpec {

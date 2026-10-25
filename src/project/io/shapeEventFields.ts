@@ -334,6 +334,12 @@ function validateCharacterScale(label: string, value: unknown): void {
  */
 function validateCharacterFootprintFields(label: string, page: Record<string, unknown>): void {
   validateFootprintPair(`${label}.footprint`, page.footprint, `${label}.passRows`, page.passRows);
+  if (page.nearSparkle !== undefined) {
+    const near = requireRecord(`${label}.nearSparkle`, page.nearSparkle);
+    const radius = requireNumber(`${label}.nearSparkle.radius`, near.radius);
+    assert(Number.isInteger(radius) && radius >= 1 && radius <= 6, `${label}.nearSparkle.radius 는 1~6 정수여야 합니다.`);
+    assert(near.preset === undefined || near.preset === "sparkle" || near.preset === "magic", `${label}.nearSparkle.preset 은 sparkle 또는 magic 입니다.`);
+  }
 }
 
 /**
@@ -513,6 +519,12 @@ function validatePageShape(label: string, value: unknown): void {
     requireString(`${label}.movement.sightAlert.emote`, alert.emote);
     const holdMs = requireNumber(`${label}.movement.sightAlert.holdMs`, alert.holdMs);
     assert(Number.isFinite(holdMs) && holdMs >= 0 && holdMs <= 5000, `${label}: 시야 놀람 멈춤은 0~5000ms`);
+  }
+  if (movement.chaseLunge !== undefined) {
+    const lunge = requireRecord(`${label}.movement.chaseLunge`, movement.chaseLunge);
+    const steps = requireNumber(`${label}.movement.chaseLunge.steps`, lunge.steps);
+    const speed = requireNumber(`${label}.movement.chaseLunge.speed`, lunge.speed);
+    assert(Number.isInteger(steps) && steps >= 1 && steps <= 8 && Number.isInteger(speed) && speed >= 1 && speed <= 8, `${label}: 덮치기는 steps 1~8 · speed 1~8`);
   }
   if (movement.pursuit !== undefined) {
     const pursuit = requireRecord(`${label}.movement.pursuit`, movement.pursuit);

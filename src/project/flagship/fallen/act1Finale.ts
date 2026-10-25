@@ -4,8 +4,8 @@
  * 1. 추락지 중간 보스 — 이리스가 합류하자마자 발렌이 숲길을 올라온다. 소환·「심판의 빛」·2페이즈는 그대로(수호상만 뺀 트룹),
  *    앞뒤 장면과 연막 퇴장. 지하의 발렌 결전·등장 신호는 걷어 낸다(발렌은 숲에서 물러난 뒤 마을 포위 때 다시 나온다).
  * 2. 지하 미궁 — 옛 별지기의 방 렌즈가 아래를 비추면 별 봉인이 열린다 → 지하 3층(가라앉은 회랑, 레버·쇠살문·막다른 길 보상·광신도)
- *    → 지하 4층(쉼터: 기록 결정·샘·다친 광신도 / 달비늘 용 / 기계 패널).
- * 3. 달비늘 용 — 마법 무효(damageTypeRates.magic 0). 카엘 「돌진 찌르기」·이리스 「충전 광선포」가 「관통상」을 남기면
+ *    → 지하 4층(쉼터: 기록 결정·샘·다친 광신도 / 달빛의 용 / 기계 패널).
+ * 3. 달빛의 용 — 마법 무효(damageTypeRates.magic 0). 카엘 「돌진 찌르기」·이리스 「충전 광선포」가 「관통상」을 남기면
  *    마법이 3배로 들어간다(상태 damageTypeRates.magic 300). 전투 중 알림은 enemyState 조건 페이지.
  * 4. 기계 패널 — 「달의 아이」 우화(단말 문체, 여러 쪽). 끝에 카엘이 살아 있는 손으로 대답하고, 소거 안내가 이리스에게 닿는다.
  * 5. 승강 장치로 천문대 → 광장. 기사 수십이 에워싸고, 발렌·하넬, 「잡아라」, 제1막 끝 카드.
@@ -20,6 +20,8 @@ import { FS_NAMES, FS_PREFIX } from "../fallenStarStory";
 import { build, lightRoom } from "../fallenStarRooms";
 import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX } from "../fallenValenChip";
 import { B3, B3_ROOM, B4, B4_ROOM, FS_B3_ID, FS_B3_NAME, FS_B4_ID, FS_B4_NAME } from "./vaultLabyrinthRooms";
+
+const SAVE_PROMPT = "기록하시겠습니까?";
 
 type Exec = (project: Project, name: string, args: Record<string, unknown>) => void;
 type Cell = { x: number; y: number };
@@ -39,6 +41,7 @@ const SW_CRASH_ON = "sw_fs_valen_crash_on";
 const SW_CRASH_MET = "sw_fs_valen_crash_met";
 const SW_SOLDIERS_GONE = "sw_fs_valen_soldiers_gone";
 const SW_VALEN_LOST = "sw_fs_valen_lost";
+const SW_SQUAD_DOWN = "sw_fs_valen_squad_down";
 const SW_STEP2 = "sw_fs_main_step2";
 const SW_STEP3 = "sw_fs_main_step3";
 const SW_DONE = "sw_fs_main_done";
@@ -51,6 +54,7 @@ const SW_DRAGON_MET = "sw_fs_dragon_met";
 const SW_DRAGON_DOWN = "sw_fs_dragon_down";
 const SW_DRAGON_CRACK = "sw_fs_dragon_crack";
 const SW_LIFTED = "sw_fs_act1_lifted";
+const SW_LIFT_OPEN = "sw_fs_b4_lift_open";
 const SW_SIEGE = "sw_fs_siege_on";
 const SW_SIEGE_HANEL = "sw_fs_siege_hanel";
 const SW_SIEGE_VALEN = "sw_fs_siege_valen";
@@ -222,7 +226,7 @@ function database(project: Project): void {
   const skill = (id: string, fields: Partial<SkillRecord>): SkillRecord => ({ ...(JSON.parse(JSON.stringify(base)) as SkillRecord), id, stateEffects: [], ...fields } as SkillRecord);
   upsert(db.skills, skill("skill_fs_dragon_bite", {
     name: "물어뜯기", scope: "enemy", power: 90, chargeTurns: undefined, animationId: "anim_gen_claw_rake", elementId: undefined,
-    description: "달비늘 용이 한 사람을 문다.", effect: { kind: "damage", statistic: "attack", affects: "hp" },
+    description: "달빛의 용이 한 사람을 문다.", effect: { kind: "damage", statistic: "attack", affects: "hp" },
   } as Partial<SkillRecord>));
   upsert(db.skills, skill("skill_fs_dragon_tail", {
     name: "꼬리 휩쓸기", scope: "allEnemies", power: 50, chargeTurns: undefined, animationId: "anim_gen_tackle_impact", elementId: undefined,
@@ -243,7 +247,7 @@ function database(project: Project): void {
   const neutral = Object.fromEntries(Object.keys(template.elementRates ?? {}).map((k) => [k, "C"]));
   upsert(db.enemies, {
     ...(JSON.parse(JSON.stringify(template)) as EnemyRecord),
-    id: FS_DRAGON_ENEMY, name: "달비늘 용", level: 10, monsterResourceId: "generated-enemy-dragon-blue", battleScalePercent: 150,
+    id: FS_DRAGON_ENEMY, name: "달빛의 용", level: 10, monsterResourceId: "generated-enemy-dragon-blue", battleScalePercent: 150,
     skillIds: ["skill_fs_dragon_bite", "skill_fs_dragon_tail", "skill_fs_dragon_breath", "skill_fs_dragon_scales"],
     stats: { maxHp: 3200, maxMp: 99, attack: 165, defense: 160, mind: 130, agility: 40 },
     damageTypeRates: { magic: 0 },
@@ -263,7 +267,7 @@ function database(project: Project): void {
 
   const text = (body: string, speaker?: string): Command => (speaker ? say(speaker, body) : narrate(body));
   upsert(db.troops, {
-    id: FS_DRAGON_TROOP, name: "달비늘 용", enemyIds: [FS_DRAGON_ENEMY],
+    id: FS_DRAGON_TROOP, name: "달빛의 용", enemyIds: [FS_DRAGON_ENEMY],
     members: [{ enemyId: FS_DRAGON_ENEMY, x: 0, y: 0, hidden: false }], autoAlign: true, uncapturable: true,
     backdropLayers: [{ preset: "glow", opacity: 70 }, { preset: "fog", opacity: 40 }, { preset: "embers", opacity: 30 }],
     battleEventPages: [
@@ -277,7 +281,7 @@ function database(project: Project): void {
         commands: [setSw(SW_DRAGON_CRACK, false), text("갈라진 비늘이 다시 맞물렸다!\n마력이 비늘 위로 튕겨 나간다.")] },
       { id: "troop_fs_dragon_phase2", name: "2페이즈 — 체력 절반", span: "battle", runOnce: true,
         conditions: [{ kind: "enemyHpBelow", enemyId: FS_DRAGON_ENEMY, percent: 50 }],
-        commands: [text("달비늘 용이 몸을 웅크리고\n등줄기의 비늘을 곤두세운다."),
+        commands: [text("달빛의 용이 몸을 웅크리고\n등줄기의 비늘을 곤두세운다."),
           m2("m2-100-change-enemy-state", { target: FS_DRAGON_ENEMY, operation: "add", value: "state_agility_up" })] },
     ],
   } as unknown as TroopRecord);
@@ -285,12 +289,14 @@ function database(project: Project): void {
   valenCrash(project, text);
 }
 
-// ── 추락지 발렌 — 세 단계(병사 8 → 발렌 → 금단의 주술·기계) ─────────────────────────
+// ── 추락지 발렌 — 두 전투(1: 심문회 병사 넷 · 2: 발렌 → 골렘 → 금단의 주술·기계) ─────────
 export const FS_VALEN_ENEMY = "enemy_fs_valen";
 export const FS_VALEN_SOLDIER = "enemy_fs_valen_soldier";
-export const FS_VALEN_CROSSBOW = "enemy_fs_valen_crossbow";
+/** 창병(People3 #7 — 그림이 창을 든 병사다. 옛 이름 「석궁병」은 그림과 맞지 않았다). */
+export const FS_VALEN_SPEARMAN = "enemy_fs_valen_spearman";
+/** 1전 — 발렌 없이 심문회 병사 넷(병사 둘·창병 둘). 발렌은 2전부터 직접 나선다. */
+export const FS_VALEN_SQUAD_TROOP = "troop_fs_valen_squad";
 export const FS_VALEN_GOLEM = "enemy_fs_valen_golem";
-export const FS_VALEN_STANDBY_STATE = "state_fs_valen_standby";
 export const FS_VALEN_MACHINE_STATE = "state_fs_valen_machine";
 export const FS_CIRCUIT_ITEM = "item_fs_circuit";
 export const FS_IRIS_SHOCK_SKILL = "skill_fs_iris_shock";
@@ -317,12 +323,6 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
   judgment.animationId = "anim_gen_holy_beam";
   judgment.elementId = "holy";
 
-  // 기다림 — 병사들이 싸우는 동안 발렌은 뒤에서 지켜본다(행동하지 않고, 어떤 피해도 받지 않는다).
-  upsert(db.states as StateRecord[], {
-    id: FS_VALEN_STANDBY_STATE, name: "지휘", restriction: "없음", removalCondition: "전투 종료",
-    recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0, recoverWhenHitChance: 0,
-    runtimeEffects: { restrictsAction: true, damageTypeRates: { physical: 0, magic: 0 }, removeOnBattleEnd: true },
-  } as StateRecord);
   // 금단의 주술 — 기계의 몸. 물리 무효 · 마법 1/4 · 번개(전기)만 두 배로 들어간다.
   upsert(db.states as StateRecord[], {
     id: FS_VALEN_MACHINE_STATE, name: "기계화", restriction: "없음", removalCondition: "전투 종료", battleAura: "paralyze-spark",
@@ -371,7 +371,7 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
     description: "발렌이 사라진 자리에 떨어져 있던 손바닥만 한 판. 금빛 선이 아직 희미하게 맥박친다. 이 땅의 누구도 이런 것을 만들지 못한다.",
   } as unknown as typeof db.items[number]);
 
-  // 병사·석궁병·골렘.
+  // 병사·창병·골렘.
   const fanatic = db.enemies.find((e) => e.id === "enemy_fs_fanatic");
   const golem = db.enemies.find((e) => e.id === "enemy_golem_stone") ?? db.enemies.find((e) => e.id === "enemy_fs_guardian");
   if (!fanatic || !golem) throw new Error("[fallen-star act1] 병사·골렘 견본이 없다");
@@ -382,53 +382,51 @@ function valenCrash(project: Project, text: (body: string, speaker?: string) => 
       rewards: { exp, gold: 12, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 10, quantity: 1, condition: { kind: "always" } }] } } as EnemyRecord;
   };
   upsert(db.enemies, human(FS_VALEN_SOLDIER, "심문회 병사", "charset-battler-actor1-2", { maxHp: 100, maxMp: 0, attack: 40, defense: 20, mind: 10, agility: 36 }, 24));
-  upsert(db.enemies, human(FS_VALEN_CROSSBOW, "심문회 석궁병", "charset-battler-people3-7", { maxHp: 85, maxMp: 0, attack: 43, defense: 14, mind: 10, agility: 44 }, 24));
+  upsert(db.enemies, human(FS_VALEN_SPEARMAN, "심문회 창병", "charset-battler-people3-7", { maxHp: 85, maxMp: 0, attack: 43, defense: 14, mind: 10, agility: 44 }, 24));
   upsert(db.enemies, {
     ...clone(golem), id: FS_VALEN_GOLEM, name: "심문회 골렘", monsterResourceId: "generated-enemy-golem-stone", battleScalePercent: undefined,
     stats: { maxHp: 220, maxMp: 0, attack: 58, defense: 55, mind: 20, agility: 20 }, collapseEffect: "pixelBreak",
     rewards: { exp: 40, gold: 0, dropRatePercent: 0, drops: [] },
   } as unknown as EnemyRecord);
-  for (const e of db.enemies) if ([FS_VALEN_SOLDIER, FS_VALEN_CROSSBOW, FS_VALEN_GOLEM].includes(e.id)) e.stateRates = { ...(e.stateRates ?? {}), [FS_PIERCED_STATE]: "E" } as EnemyRecord["stateRates"];
+  for (const e of db.enemies) if ([FS_VALEN_SOLDIER, FS_VALEN_SPEARMAN, FS_VALEN_GOLEM].includes(e.id)) e.stateRates = { ...(e.stateRates ?? {}), [FS_PIERCED_STATE]: "E" } as EnemyRecord["stateRates"];
 
   const st = (target: string, operation: "add" | "remove", value: string): Command => m2("m2-100-change-enemy-state", { target, operation, value });
   const appear = (target: string): Command => m2("m2-101-enemy-encounter", { target });
   const anim = (target: string, animationId: string): Command => m2("m2-103-show-animation", { target, animationId });
   const hp = (target: string, value: number): Command => m2("m2-098-change-enemy-hp", { target, operation: "add", value });
-  const soldiers: Array<[string, number, number]> = [
-    [FS_VALEN_SOLDIER, 150, 40], [FS_VALEN_SOLDIER, 210, 60], [FS_VALEN_SOLDIER, 150, 110], [FS_VALEN_SOLDIER, 210, 130],
-    [FS_VALEN_SOLDIER, 150, 180], [FS_VALEN_CROSSBOW, 95, 30], [FS_VALEN_CROSSBOW, 95, 150], [FS_VALEN_CROSSBOW, 210, 200],
-  ];
+  // 1전 — 심문회 병사 넷. 발렌은 필드에서 지켜보고, 이 전투에는 나오지 않는다.
+  upsert(db.troops, {
+    id: FS_VALEN_SQUAD_TROOP, name: "심문회 병사들",
+    enemyIds: [FS_VALEN_SOLDIER, FS_VALEN_SOLDIER, FS_VALEN_SPEARMAN, FS_VALEN_SPEARMAN],
+    members: [
+      { enemyId: FS_VALEN_SOLDIER, x: 150, y: 70, hidden: false },
+      { enemyId: FS_VALEN_SOLDIER, x: 150, y: 150, hidden: false },
+      { enemyId: FS_VALEN_SPEARMAN, x: 90, y: 40, hidden: false },
+      { enemyId: FS_VALEN_SPEARMAN, x: 90, y: 180, hidden: false },
+    ],
+    autoAlign: false, uncapturable: true,
+    backdropLayers: [{ preset: "fog", opacity: 45 }, { preset: "embers", opacity: 40 }, { preset: "stars", opacity: 40 }],
+    battleEventPages: [
+      { id: "troop_fs_valen_squad_open", name: "병사들이 먼저", span: "battle", runOnce: true, conditions: [{ kind: "onRound", round: 1 }],
+        commands: [text("발렌은 뒤에서 보고만 있어요.\n병사들부터 쓰러뜨려요!", IRIS)] },
+    ],
+  } as unknown as TroopRecord);
+  // 2전 — 발렌이 직접. 85%·55% 에서 골렘을 하나씩 부르고, 30% 아래에서 기계가 된다.
   upsert(db.troops, {
     id: FS_VALEN_CRASH_TROOP, name: "심문관 발렌",
-    enemyIds: [FS_VALEN_ENEMY, ...soldiers.map((m) => m[0]), FS_VALEN_GOLEM, FS_VALEN_GOLEM],
+    enemyIds: [FS_VALEN_ENEMY, FS_VALEN_GOLEM, FS_VALEN_GOLEM],
     members: [
-      // 발렌은 병사 뒤 순서 — 1단계에 기본 대상 커서가 무적인 발렌이 아니라 병사에게 간다.
-      ...soldiers.map(([enemyId, x, y]) => ({ enemyId, x, y, hidden: false })),
-      { enemyId: FS_VALEN_ENEMY, x: 60, y: 110, hidden: false },
+      { enemyId: FS_VALEN_ENEMY, x: 130, y: 110, hidden: false },
       { enemyId: FS_VALEN_GOLEM, x: 200, y: 55, hidden: true },
       { enemyId: FS_VALEN_GOLEM, x: 200, y: 170, hidden: true },
     ],
     autoAlign: false, uncapturable: true,
     backdropLayers: [{ preset: "fog", opacity: 45 }, { preset: "embers", opacity: 40 }, { preset: "stars", opacity: 40 }],
     battleEventPages: [
-      { id: "troop_fs_valen_crash_open", name: "1단계 — 병사들이 먼저", span: "battle", runOnce: true, conditions: [{ kind: "onRound", round: 1 }],
-        commands: [setSw(SW_VALEN_P2, false), setSw(SW_VALEN_P3, false), st(FS_VALEN_ENEMY, "add", FS_VALEN_STANDBY_STATE),
-          text("심문회, 앞으로.\n인형만 데려오면 된다.", VALEN),
-          text("발렌은 뒤에 서 있어요…!\n기사들부터 뚫어야 해요.", IRIS)] },
-      { id: "troop_fs_valen_crash_p2", name: "2단계 — 발렌이 직접", span: "battle", runOnce: true,
-        conditions: [{ kind: "enemiesAlive", atMost: 1 }],
-        commands: [setSw(SW_VALEN_P2), text("…비켜라. 내가 나선다.", VALEN), anim(FS_VALEN_ENEMY, "anim_gen_power_aura"),
-          st(FS_VALEN_ENEMY, "remove", FS_VALEN_STANDBY_STATE),
-          // 병사들이 서 있던 한가운데로 걸어 나온다(뒷줄 가장자리에 걸려 잘려 보이지 않게).
-          m2("m2-218-move-enemy", { target: FS_VALEN_ENEMY, x: 150, y: 110, durationMs: 900 }),
-          text("심문관이 장검을 고쳐 쥐고 걸어 나온다."),
-          // 단계 사이 숨 고르기 — 병사들이 쓰러진 틈에 엘레나가 일행을 추스른다(세 단계를 한 숨에 버티지 않게).
-          text("병사들이 무너진 틈이야.\n…숨 돌려, 지금!", ELENA),
-          anim("actor_fs_elena", "anim_gen_heal"),
-          ...["actor_hero", "actor_fs_elena", "actor_fs_iris"].flatMap((actorId) => [
-            { kind: "changeActorHp", actorId, op: "+=", amount: 35, amountMode: "percent" } as unknown as Command,
-            { kind: "changeActorMp", actorId, op: "+=", amount: 30, amountMode: "percent" } as unknown as Command,
-          ])] },
+      { id: "troop_fs_valen_crash_open", name: "발렌이 직접", span: "battle", runOnce: true, conditions: [{ kind: "onRound", round: 1 }],
+        commands: [setSw(SW_VALEN_P2), setSw(SW_VALEN_P3, false), anim(FS_VALEN_ENEMY, "anim_gen_power_aura"),
+          text("심문관이 장검을 고쳐 쥔다."),
+          text("발렌이 상대예요.\n골렘을 부르기 전에 몰아붙여요!", IRIS)] },
       { id: "troop_fs_valen_crash_summon1", name: "2단계 — 골렘 하나", span: "battle", runOnce: true,
         conditions: [sw(SW_VALEN_P2), { kind: "enemyHpBelow", enemyId: FS_VALEN_ENEMY, percent: 85 }],
         commands: [text("일어나 앞을 막아라.", VALEN), appear(FS_VALEN_GOLEM)] },
@@ -557,12 +555,38 @@ function crashSite(project: Project, forestId: string): void {
     clearLetterbox(),
     cutEnd(),
   ];
+  // 1전(병사 넷)에 지면 게임 오버 없이 한 걸음 물러난다 — 발렌에게 다시 말을 걸면 그 1전부터 다시.
+  const pushedBack: Command[] = [
+    { kind: "recoverAll" } as unknown as Command,
+    say(ELENA, "물러서! 숨 고르고 다시 붙자."),
+    say(VALEN, "…그 정도인가."),
+  ];
+  // 1전과 2전 사이 — 병사들이 물러나고 발렌이 직접 나선다. 엘레나가 일행을 추스른다(두 전투를 한 숨에 버티지 않게).
+  const squadDown: Command[] = [
+    narrate("병사들이 무기를 떨구고\n숲길 아래로 물러난다."),
+    setSw(SW_SOLDIERS_GONE),
+    emote(id, "ellipsis", 900),
+    say(VALEN, "…비켜라. 내가 나선다."),
+    say(ELENA, "병사들이 물러난 틈이야.\n…숨 돌려, 지금!"),
+    se("easyrpg-sound-recovery7"),
+    m2("m2-224-particle-effect", { preset: "heal", target: "player", durationMs: 800, wait: false }),
+    ...["actor_hero", "actor_fs_elena", "actor_fs_iris"].flatMap((actorId) => [
+      { kind: "changeActorHp", actorId, op: "+=", amount: 35, amountMode: "percent" } as unknown as Command,
+      { kind: "changeActorMp", actorId, op: "+=", amount: 30, amountMode: "percent" } as unknown as Command,
+    ]),
+  ];
   const fight = (): Command[] => [
     setSw(SW_CRASH_MET),
     battleBgm("cc0-bgm-rtp-btl-002"),
-    battle(FS_VALEN_CRASH_TROOP, true),
-    battleBgmReset(),
-    won([setSw(SW_SOLDIERS_GONE), ...vanish], rescue),
+    fork(sw(SW_SQUAD_DOWN, false), [
+      battle(FS_VALEN_SQUAD_TROOP, true),
+      won([setSw(SW_SQUAD_DOWN), ...squadDown], [battleBgmReset(), ...pushedBack]),
+    ]),
+    fork(sw(SW_SQUAD_DOWN), [
+      battle(FS_VALEN_CRASH_TROOP, true),
+      battleBgmReset(),
+      won([setSw(SW_SOLDIERS_GONE), ...vanish], rescue),
+    ]),
   ];
   // 병사 넷 — 발렌 뒤를 따라 올라와 길을 막는다(전투의 병사 여덟 중 앞줄). 전투에 이기면 사라진다.
   const soldierWalks: Command[] = [];
@@ -606,6 +630,7 @@ function crashSite(project: Project, forestId: string): void {
     se("cc0-se-orp-battle-sword-unsheathe"),
     shake(3, 500),
     narrate("발렌이 장검을 뽑는다. 칼날에 하얀 빛이 고인다."),
+    say(VALEN, "심문회, 앞으로.\n인형만 데려오면 된다."),
     cutLabel(),
     clearLetterbox(),
     cutEnd(),
@@ -902,7 +927,7 @@ function floorB3(project: Project, vault: GameMap): GameMap {
 }
 
 // ════════════════════════════════════════════════════════════════════
-// 5. 지하 4층 · 달비늘의 자리 — 쉼터·용·기계 패널
+// 5. 지하 4층 · 달빛 용의 자리 — 쉼터·용·기계 패널
 // ════════════════════════════════════════════════════════════════════
 
 
@@ -928,9 +953,9 @@ function floorB4(project: Project): GameMap {
     se("easyrpg-sound-recovery7"), flash("blue", 300), m2("m2-224-particle-effect", { preset: "heal", target: "player", durationMs: 800, wait: false }),
     narrate("푸른 결정에 손을 대자, 지친 몸에 힘이 차올랐다."),
     { kind: "recoverAll" } as unknown as Command,
-    { kind: "choices", prompt: "여기까지를 기록할까?", cancelBehavior: "branch", options: [
-      { text: "기록한다", branch: [{ kind: "openSaveMenu" } as unknown as Command] },
-      { text: "그만둔다", branch: [] },
+    { kind: "choices", prompt: SAVE_PROMPT, cancelBehavior: "branch", options: [
+      { text: "예", branch: [{ kind: "openSaveMenu" } as unknown as Command] },
+      { text: "아니오", branch: [] },
     ], cancelBranch: [] } as unknown as Command,
   ], { overlapForbidden: true })]);
   const springId = `ev_${FS_PREFIX}_b4_spring`;
@@ -975,7 +1000,7 @@ function floorB4(project: Project): GameMap {
       wait(500),
       setSw(SW_DRAGON_DOWN),
       look(dragonId, { reset: true }),
-      narrate("달비늘 용이 비늘을 떨구며\n푸른 빛가루로 흩어졌다."),
+      narrate("달빛의 용이 비늘을 떨구며\n푸른 빛가루로 흩어졌다."),
       say(IRIS, "…문지기였어요. 무언가를 지키고 있었어요."),
       say(ELENA, "저 안쪽, 벽에서 빛이 깜빡여."),
     ], [
@@ -984,12 +1009,12 @@ function floorB4(project: Project): GameMap {
       route("@player", walk(["down", "down", "down"])),
     ]),
   ];
-  addEvent(map, dragonId, "달비늘 용", B4.dragon, [
+  addEvent(map, dragonId, "달빛의 용", B4.dragon, [
     page(`${dragonId}_sleep`, "잠든 용", [], [
       narrate("거대한 짐승이 몸을 말고 잠들어 있다.\n숨결마다 비늘 틈으로 푸른 빛이 샌다."),
     ], { graphic: dragonGfx, footprint: { width: 3, height: 2 }, overlapForbidden: true, animationType: "fixedGraphic" }),
     page(`${dragonId}_awake`, "깨어난 용", [sw(SW_DRAGON_MET)], [
-      narrate("달비늘 용이 낮게 으르렁거린다."),
+      narrate("달빛의 용이 낮게 으르렁거린다."),
       ...dragonFight(),
     ], { graphic: { ...dragonGfx, direction: "down" }, footprint: { width: 3, height: 2 }, overlapForbidden: true, animationType: "step" }),
     page(`${dragonId}_down`, "흩어짐", [sw(SW_DRAGON_DOWN)], []),
@@ -1061,19 +1086,32 @@ function floorB4(project: Project): GameMap {
       setSw(SW_STEP3),
       { kind: "setVariable", variableId: "var_fs_main_progress", op: "+=", value: 1 } as unknown as Command,
       se("cc0-se-osx-machine-03"),
-      shake(2, 900),
-      narrate("패널 옆 벽이 갈라지며\n좁은 승강 장치가 드러났다."),
+      narrate("패널 옆 바닥 판이 덜컹거리기 시작했다."),
+      // ↑ 이 줄 뒤에 stage_map_reveal 이 「카메라 → 바닥이 열리며 화물 승강구가 솟는다 → 복귀」를 끼운다(applyFallenAct1Finale).
+      narrate("바닥 판이 열리고\n좁은 승강 장치가 올라왔다."),
       say(ELENA, "천문대 쪽으로 이어져 있어.\n올라가서 선생님부터 뵙자."),
       cutLabel(),
       cutEnd(),
-    ], []),
+    ], [narrate("녹색 글자가 조용히 깜빡인다.\n옆의 승강 장치가 기다리고 있다.")]),
+  ];
+  // 승강 장치 — 드러난 칸(B4.lift, 2×2)에 올라서면 천문대로 오른다. 드러나기 전에는 아무것도 없다.
+  const ride: Command[] = [
     narrate("승강 장치에 올라탔다."),
     se("cc0-se-osx-machine-02"),
+    shake(1, 600),
     fadeOut(1000),
     wait(1000),
     setSw(SW_LIFTED),
     transfer("fs_observatory", { x: 4, y: 18 }, "down"),
   ];
+  for (let dy = 0; dy < 2; dy += 1) for (let dx = 0; dx < 2; dx += 1) {
+    const lid = `ev_${FS_PREFIX}_b4_lift_${dx}${dy}`;
+    addEvent(map, lid, "승강 장치", { x: B4.lift.x + dx, y: B4.lift.y + dy }, [
+      page(`${lid}_hidden`, "아직 없음", [], [], { priority: "below" }),
+      page(`${lid}_on`, "드러난 승강 장치", [sw(SW_LIFT_OPEN)], ride.map((cmd) => JSON.parse(JSON.stringify(cmd)) as Command),
+        { priority: "below", trigger: { kind: "playerTouch" } }),
+    ]);
+  }
   B4.panel.forEach((c, i) => {
     const pid = `ev_${FS_PREFIX}_b4_panel_${i}`;
     addEvent(map, pid, "기계 패널", c, [
@@ -1326,7 +1364,7 @@ function ending(project: Project): void {
     kicker: "제1막 끝",
     credits: [
       "카엘 — 견습 별지기", "엘레나 — 천문대의 마도학자", "이리스 — 넷째 아이, 중계기", "",
-      "천문대장 하넬", "숲지기 브람", "심문관 발렌", "교단 광신도들", "달비늘 용 — 문지기", "",
+      "천문대장 하넬", "숲지기 브람", "심문관 발렌", "교단 광신도들", "달빛의 용 — 문지기", "",
       "그날 밤 북쪽 숲에 떨어진 것은 별이 아니었다.", "달이 보낸 넷째 아이였고,", "누군가 그 아이에게 대답했다.", "",
       "OPRN Studio 공식 데모", "", "제2막에서 계속됩니다.",
     ].join("\n"),
@@ -1371,9 +1409,9 @@ export function applyFallenAct1Finale(project: Project, exec: Exec, ids: FallenA
     [SW_CRASH_ON, "추락지: 발렌이 올라온다"], [SW_CRASH_MET, "추락지: 발렌과 맞섰다"], [SW_STEP3, "떨어진 별: 기계 패널"],
     [SW_SEAL_OPEN, "지하: 별 봉인 열림"], [SW_WEST_LEVER, "지하 3층: 서쪽 손잡이"], [SW_SUN_LEVER, "지하 3층: 해 손잡이"],
     [SW_MOON_LEVER, "지하 3층: 달 손잡이"], [SW_ALARM, "지하 3층: 경종"], [SW_DRAGON_MET, "지하 4층: 용이 깼다"],
-    [SW_DRAGON_DOWN, "지하 4층: 용 쓰러짐"], [SW_DRAGON_CRACK, "전투: 용 비늘 갈라짐"], [SW_LIFTED, "승강 장치로 올라옴"],
+    [SW_DRAGON_DOWN, "지하 4층: 용 쓰러짐"], [SW_DRAGON_CRACK, "전투: 용 비늘 갈라짐"], [SW_LIFTED, "승강 장치로 올라옴"], [SW_LIFT_OPEN, "지하 4층: 승강 장치 드러남"],
     [SW_SIEGE, "광장 포위"], [SW_SIEGE_HANEL, "포위: 하넬 나옴"], [SW_SIEGE_VALEN, "포위: 발렌 등장"],
-    [SW_SOLDIERS_GONE, "추락지: 병사들 물러남"], [SW_VALEN_LOST, "추락지: 발렌에게 졌다(브람이 구함)"], [SW_VALEN_P2, "전투: 발렌 2단계"], [SW_VALEN_P3, "전투: 발렌 기계화"],
+    [SW_SOLDIERS_GONE, "추락지: 병사들 물러남"], [SW_SQUAD_DOWN, "추락지: 1전 병사 넷을 이겼다"], [SW_VALEN_LOST, "추락지: 발렌에게 졌다(브람이 구함)"], [SW_VALEN_P2, "전투: 발렌 2단계"], [SW_VALEN_P3, "전투: 발렌 기계화"],
   ] as const) ensureSwitch(project, id, name);
   database(project);
   crashSite(project, ids.forest);
@@ -1382,6 +1420,19 @@ export function applyFallenAct1Finale(project: Project, exec: Exec, ids: FallenA
   vaultSeal(project, ids.vault);
   floorB3(project, vault);
   floorB4(project);
+  // 「승강 장치가 드러났다」를 지도 위에 실제로 — 패널 옆 바닥에 화물 승강구가 솟는다(조수 도구 stage_map_reveal).
+  for (let i = 0; i < B4.panel.length; i += 1) {
+    exec(project, "stage_map_reveal", {
+      mapId: FS_B4_ID, eventId: `ev_${FS_PREFIX}_b4_panel_${i}`, pageId: `ev_${FS_PREFIX}_b4_panel_${i}_on`,
+      objectId: "kit:atlas_biome_interior/hand-interior:deck grate", x: B4.lift.x, y: B4.lift.y,
+      afterText: "패널 옆 바닥 판이 덜컹거리기", theme: "machine", switchId: SW_LIFT_OPEN,
+    });
+  }
+  // 보스 HP 숨김 — 용(발렌은 이미 숨김). 조수 도구 upsert_enemy 의 hideHp.
+  exec(project, "upsert_enemy", { enemy: { id: FS_DRAGON_ENEMY, hideHp: true } });
+  // 보스와 마주 서는 장면 — 동료가 주인공 좌우 한 줄로 서서 같은 쪽(발렌)을 본다. 조수 도구 configure_companion_rules.
+  // 동료는 주인공 뒤를 따라 걷고(10-24 의 FF6 식 숨김을 걷음, 사용자 2026-10-25 「동료가 사라졌다」), 컷신에서는 횡대로 선다.
+  exec(project, "configure_companion_rules", { display: "follow", sceneFormation: "abreast" });
   hanelAfterCrash(project, ids.observatory);
   const door = M(project, ids.hub).events.find((e) => JSON.stringify(e).includes(`"mapId":"${ids.observatory}"`));
   if (!door) throw new Error("[fallen-star act1] 광장의 천문대 문이 없다");
@@ -1395,3 +1446,90 @@ export function applyFallenAct1Finale(project: Project, exec: Exec, ids: FallenA
 
 /** 시뮬레이터용 — 관통상을 거는 기술 id. */
 export const FS_PIERCE_SKILL_IDS = PIERCE_SKILLS;
+
+// ════════════════════════════════════════════════════════════════════
+// 필드 규칙(사용자 2026-10-25) — 랜덤 조우 없음·보이는 적만, 적은 멀리서 알아보고 덮친다, 자동 전투 없음,
+// 전투 뒤 상태 이상 해제, 저장은 세이브 포인트(마을·사당·지하)에서만. 모두 조수 도구로 — 구역 조우 표가 다 깔린 뒤에 부른다.
+// ════════════════════════════════════════════════════════════════════
+
+/** 레벨을 올릴 만큼 보이는 적을 채울 맵과 목표 마릿수(기존 + 다시 나타나는 적). */
+const LEVELING_FOES: ReadonlyArray<readonly [string, number]> = [
+  ["fs_forest_edge", 5], ["fs_forest_stream", 5], ["fs_forest_thicket", 5], ["fs_forest_glade", 4], ["fs_forest", 4],
+  ["fs_vault", 4], ["fs_vault_b3", 5],
+];
+const FOE_RESPAWN_SEC = 45;
+
+function isFieldFoe(event: GameMap["events"][number]): boolean {
+  return (event.pages ?? []).some((page) => page.trigger.kind === "eventTouch" && page.commands.some((c) => c.kind === "battleProcessing"));
+}
+
+function foeTroops(map: GameMap): string[] {
+  const fromTable = (map.encounterTable ?? []).map((row) => row.troopId).filter((id): id is string => typeof id === "string");
+  const fromFoes = map.events.filter(isFieldFoe).flatMap((event) => (event.pages ?? []).flatMap((page) => page.commands.flatMap((c) => (c as unknown as Rec).kind === "battleProcessing" ? [String((c as unknown as Rec).troopId)] : [])));
+  return [...new Set([...fromTable, ...fromFoes])].filter((id) => id && id !== "undefined");
+}
+
+const SAVE_CRYSTAL_KIT = "kit:beodeul_city/bd-pick-dungeon-theme-crystal-pedestal";
+
+export function applyFallenFieldRules(project: Project, exec: Exec): void {
+  for (const [mapId, target] of LEVELING_FOES) {
+    const map = project.maps[mapId];
+    if (!map) continue;
+    const troops = foeTroops(map);
+    let have = map.events.filter(isFieldFoe).length;
+    // 빈 칸을 맵 전체에 고르게 훑는다(기존 적에게서 먼 칸부터). 도구가 입구 근처·닿지 않는 칸은 거절한다.
+    const foes = map.events.filter(isFieldFoe).map((e) => ({ x: e.x, y: e.y }));
+    const cells: Cell[] = [];
+    for (let y = 2; y < map.height - 2; y += 3) for (let x = 2; x < map.width - 2; x += 3) cells.push({ x, y });
+    const far = (c: Cell): number => Math.min(99, ...foes.map((f) => Math.abs(f.x - c.x) + Math.abs(f.y - c.y)));
+    cells.sort((a, b) => far(b) - far(a) || a.y - b.y || a.x - b.x);
+    let n = 0;
+    for (const cell of cells) {
+      if (have >= target || troops.length === 0) break;
+      if (far(cell) < 4) break;
+      try {
+        exec(project, "place_field_enemy", {
+          mapId, x: cell.x, y: cell.y, troopId: troops[n % troops.length], behavior: "chase", pace: "fast",
+          patrol: { length: 2, axis: n % 2 === 0 ? "horizontal" : "vertical" }, respawnSec: FOE_RESPAWN_SEC,
+        });
+        have += 1; n += 1; foes.push(cell);
+      } catch { /* 그 칸은 도구가 거절 — 다음 칸 */ }
+    }
+  }
+  // 랜덤 조우를 끈다 — 표를 비우고 발생률 0(set_encounter_table 의 「끄기」).
+  for (const map of Object.values(project.maps)) {
+    if (!map.id.startsWith("fs_") || (!(map.encounterTable?.length) && !(map.encounterRate ?? 0) && !(map.troopIds?.length))) continue;
+    exec(project, "set_encounter_table", { mapId: map.id, entries: [], encounterRate: 0 });
+  }
+  // 보이는 적은 더 멀리서(7칸) 알아보고, 발견 직후 3칸을 주인공 걷기와 같은 빠르기로 덮친다 — 계속 걸으면 피할 수 있다.
+  exec(project, "tune_field_enemies", { sightRange: 7, vision: "cone", pace: "fast", lungeSteps: 3, lungeSpeed: 6 });
+  exec(project, "set_project_settings", { battle: { allowAutoBattle: false, clearStatesAfterBattle: true }, saveAccess: "savePoints" });
+  // 마을 세이브 포인트 — 광장 분수 곁 별빛 결정(사당 제단·지하 4층 푸른 결정과 같은 결정 모양).
+  exec(project, "place_savepoint", { mapId: "fs_hub", x: 37, y: 28, id: "ev_fs_hub_savepoint", name: "별빛 기록석", mode: "slot",
+    objectId: SAVE_CRYSTAL_KIT, prompt: SAVE_PROMPT, sparkleRadius: 2 });
+  // 세 세이브 포인트(마을·숲 사당·지하 4층)는 같은 모습이다 — 받침 위 수정 덩이(빛 3장면), 다가가면 반짝임, 「기록하시겠습니까?」.
+  exec(project, "stamp_object", { objectId: SAVE_CRYSTAL_KIT, mapId: "fs_vault_b4", x: 10, y: 26 });
+  for (const [mapId, eventId] of [["fs_vault_b4", "ev_fs_b4_crystal"], ["fs_forest_shrine", "ev_fs_forest_shrine_rest"]] as const) {
+    const page = project.maps[mapId]?.events.find((event) => event.id === eventId)?.pages?.[0];
+    if (page) page.nearSparkle = { radius: 2 };
+  }
+  // 사당 결정처럼 쉬지 않고 은은히 반짝인다 — 마을·지하 4층 결정에도 같은 투명 병렬 이벤트.
+  for (const [mapId, x, y] of [["fs_hub", 37, 28], ["fs_vault_b4", 10, 26]] as const) {
+    const map = project.maps[mapId];
+    if (!map) continue;
+    const glowId = `ev_${mapId}_save_glow`;
+    map.events = map.events.filter((event) => event.id !== glowId);
+    map.events.push({
+      id: glowId, name: "기록 결정 반짝임", x, y, trigger: { kind: "parallel" }, commands: [],
+      pages: [{
+        id: `${glowId}_page`, name: "반짝임", conditions: [], graphic: { transparent: true },
+        movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "parallel" },
+        commands: [
+          m2("m2-224-particle-effect", { preset: "sparkle", target: "tile", x, y, durationMs: 1400, wait: false }),
+          { kind: "wait", ms: 2200 } as unknown as Command,
+        ],
+      } as unknown as EventPage],
+    } as unknown as GameEvent);
+  }
+}
+

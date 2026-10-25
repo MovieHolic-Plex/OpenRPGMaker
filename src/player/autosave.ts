@@ -30,9 +30,11 @@ export function shouldAutosave(
   _trigger: AutosaveTrigger,
   lastAutosaveAtMs: number | null,
   nowMs: number,
-  project?: Pick<Project, "maps">,
+  project?: Pick<Project, "maps"> & { readonly system?: Pick<Project["system"], "saveAccess"> },
 ): boolean {
   if (session.m2Runtime?.access?.save === false) return false;
+  // 세이브 포인트에서만 저장하는 게임(system.saveAccess "savePoints")은 자동 저장도 하지 않는다.
+  if (project?.system?.saveAccess === "savePoints") return false;
   if (project?.maps[session.currentMapId]?.disableSave === true) return false;
   if (isCutsceneInputLocked(session)) return false;
   if (lastAutosaveAtMs !== null && nowMs - lastAutosaveAtMs < AUTOSAVE_DEBOUNCE_MS) return false;

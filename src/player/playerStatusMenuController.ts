@@ -75,6 +75,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   // 접힌 그룹을 통해 들어온 경우의 부모 — 취소하면 레일이 아니라 그룹 목록으로 돌아간다.
   let openGroupId: StatusMenuGroupEntryId | undefined;
   let mode: "main" | "function" = "main";
+  // 세이브 포인트(openSaveMenu)로 연 메뉴 — 메뉴 저장이 꺼진 게임(saveAccess savePoints · Change Save Access)에서도 저장 칸을 연다.
+  let savePointOpen = false;
   let selectedDetailActionIndex = 0;
   const detailCursors = new Map<string, number>();
   const detailScrolls = new Map<string, number>();
@@ -110,6 +112,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
   const reset = (): void => {
     initialMenuSelection = true;
+    savePointOpen = false;
     const session = options.getActiveScene()?.getSession();
     selectedCommand = session ? listStatusMenuRailIds(store.getCurrent(), session)[0] ?? 'items' : 'items';
     openGroupId = undefined;
@@ -174,7 +177,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     // 접힌 그룹 안의 명령(관계·임무·전투 기록…)은 레일 id 가 아니지만 보이는 명령이다 — 레일에 없다고 첫 항목(아이템)으로 되돌리면
     // 기록 묶음이 둘 이상인 프로젝트(연애: 전투 기록·임무·관계)에서 그 명령을 열 수 없다.
     const visibleCommands: readonly StatusMenuRailId[] = listStatusMenuCommandIds(project, session);
-    selectedCommand = available.includes(nextCommand) || visibleCommands.includes(nextCommand) ? nextCommand : available[0] ?? "items";
+    selectedCommand = available.includes(nextCommand) || visibleCommands.includes(nextCommand) || (savePointOpen && nextCommand === "save")
+      ? nextCommand : available[0] ?? "items";
     initialMenuSelection = false;
     selectedDetailActionIndex = detailCursors.get(detailStateKey()) ?? defaultDetailCursor();
     const panel = renderPlayerStatusMenu({
@@ -368,6 +372,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
   const openSaveMenu = (): void => {
     reset();
+    savePointOpen = true;
     // 이벤트 진입은 레일 선택만 바꾸지 않고 저장 슬롯에 바로 포커스를 준다.
     // 저장 가능 여부는 렌더링과 saveSlot의 기존 맵/세션 제한을 그대로 따른다.
     mode = "function";

@@ -208,6 +208,9 @@
 .oprn-status-menu .status-menu-detail-row-compact .status-menu-detail-value { grid-column: 3; grid-row: 1; }
 /* 라벨이 fit-content 로 열 밖까지 번지면 값과 붙어 한 단어처럼 보인다(「테스트용영웅청동 검」, VQA SC03) — 열 폭에 맞춰 말줄임한다. */
 .oprn-status-menu .status-menu-detail-row-compact .status-menu-detail-label { justify-self: stretch; white-space: nowrap; }
+/* 라벨로 시작하는 줄(아이콘 없음): 열이 좁으면 라벨이 온 글자 말줄임으로 줄고 값은 통째로 남는다 — 예전엔 첫 열이
+   max-content 라 행 전체가 목록 밖으로 넘쳐 목록 테두리가 값을 글자 중간에서 잘랐다(J22 「2번 저장 ㅂ」). */
+.oprn-status-menu .status-menu-detail-row-compact:has(> .status-menu-detail-label:first-child) { grid-template-columns: minmax(0, max-content) minmax(0, 1fr) max-content; }
 .oprn-status-menu .status-menu-detail-copy { display: grid; gap: 3px 5px; grid-column: 2 / -1; grid-template-columns: minmax(0, 1fr) max-content; }
 .oprn-status-menu .status-menu-detail-label,
 .oprn-status-menu .status-menu-detail-value,
@@ -224,6 +227,23 @@
   grid-template-areas: "title title" "list showcase";
   grid-template-columns: minmax(0, 1fr) 76px;
   grid-template-rows: auto minmax(0, 1fr);
+}
+/* 저장/로드: 쇼케이스(저장 요약)를 목록 옆 좁은 열이 아니라 목록 아래 전체 폭에 둔다 — 옆 열이 목록을 75px 로 눌러
+   「2번 저장 · 비어 있음」이 「2번 저장 ㅂ」처럼 글자 중간에서 잘렸고(J22), 요약도 한 줄에 두세 자씩 쌓였다.
+   목록은 칸 수만큼(넘치면 스크롤), 쇼케이스는 남는 높이(최소 36%). */
+.oprn-status-menu .status-menu-detail.has-showcase:not(.has-side):is([data-status-menu-command="save"], [data-status-menu-command="load"]) {
+  grid-template-areas: "title" "list" "showcase";
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, max-content) minmax(36%, 1fr);
+  row-gap: 4px;
+}
+/* 목록 칸 높이는 내용이 정한다 — 고정 행 간격(--oprn-menu-row-step) 반올림이 실제 행(도트 스킨 18.7px)과 어긋나 셋째 칸을 반 잘랐다.
+   넘치면 칸 높이까지 줄고 keepWholeRows 가 행 경계로 자른다. */
+.oprn-status-menu .status-menu-detail.has-showcase:not(.has-side):is([data-status-menu-command="save"], [data-status-menu-command="load"]) > .status-menu-detail-list { height: auto; max-height: 100%; }
+.oprn-status-menu .status-menu-detail.has-showcase:not(.has-side):is([data-status-menu-command="save"], [data-status-menu-command="load"]) > .status-menu-detail-showcase {
+  border-left: 0;
+  border-top: 1px solid var(--status-edge-border);
+  padding: 4px 0 0;
 }
 .oprn-status-menu .status-menu-detail.has-showcase > .status-menu-detail-title { grid-area: title; }
 .oprn-status-menu .status-menu-detail.has-showcase > .status-menu-detail-list { grid-area: list; }

@@ -37,7 +37,7 @@ import { applyFallenTownQuests, FS_QUEST_FACE_ALIASES } from "./fallen/townQuest
 import { applyFallenInteractiveProps } from "./fallen/interactProps";
 import { buildFallenForestMaps } from "./fallen/forestMaps";
 import { applyFallenStoryPass } from "./fallen/storyPass";
-import { applyFallenAct1Finale } from "./fallen/act1Finale";
+import { applyFallenAct1Finale, applyFallenFieldRules } from "./fallen/act1Finale";
 import { applyFaceCellEmotions, applyFallenTownCast, applyNorthForest, fallenSpeakerBusts } from "./fallen/townCast";
 import { placeFallenStarVessel } from "./fallenStarVessel";
 import { dressObservatoryHall } from "./fallenObservatoryHall";
@@ -113,9 +113,9 @@ function setupCast(project: Project): void {
   project.system.startActorIds = [hero.id, ELENA_ID];
   // 런타임은 새 게임 파티를 session.partyActorIds 에서 읽는다 — 둘 다 맞춘다(감사 2차: 엘레나가 대사에만 있고 파티에 없었다).
   project.session.partyActorIds = [hero.id, ELENA_ID];
-  // FF6 식 — 필드에는 선두만 걷고, 동료는 이야기 장면(컷신·동료가 말하는 줄)에서만 주인공 곁에 나타난다
-  // (2026-10-24 「뒤따라오는 동료가 매우 어색하다」). 설 칸이 없으면 가까운 빈 칸, 장면 중 ㄴ자 대형은 그대로 쓴다.
-  project.system.companions = { ...project.system.companions, fromParty: true, display: "scenesOnly", spreadWhenBlocked: true, fanOutInScenes: true } as typeof project.system.companions;
+  // 동료는 주인공 뒤를 따라 걷는다(2026-10-25 사용자 「동료가 사라졌다」 — 10-24 의 FF6 식 display "scenesOnly" 를 걷었다).
+  // 장면 대형(횡대)은 act1Finale 이 configure_companion_rules 로 정한다. 설 칸이 없으면 가까운 빈 칸.
+  project.system.companions = { ...project.system.companions, fromParty: true, spreadWhenBlocked: true, fanOutInScenes: true } as typeof project.system.companions;
   // 턴제 파티 RPG — 필드에 액션 전투용 하트 HUD 를 띄우지 않는다(감사 2차: 지도 왼쪽 위를 늘 가렸다).
   project.system.fieldHud = JRPG_CLASSIC_FIELD_HUD;
   // 보스전에서 남은 체력이 보이게 — 도트 측면 스킨은 적 체력을 숨긴다(가혹 검수 r1: 「적 HP 표시가 전혀 없음」).
@@ -2441,15 +2441,15 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenTownCast(project);
   // 이야기·마을 사람 단계가 단 보상 수납(초소 보급 상자·이끼 낀 상자·서랍)도 같은 「여는」 연출로 — 두 번 불러도 같다.
   applyFallenInteractiveProps(project);
-  // 제1막 새 뼈대 — 추락지 발렌·지하 미궁(3·4층)·달비늘 용·「달의 아이」 패널·광장 포위 끝(fallen/act1Finale.ts). 얼굴 앞.
+  // 제1막 새 뼈대 — 추락지 발렌·지하 미궁(3·4층)·달빛의 용·「달의 아이」 패널·광장 포위 끝(fallen/act1Finale.ts). 얼굴 앞.
   applyFallenAct1Finale(project, execTool, ids);
   const speakerFaces: Record<string, string> = {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),
     이리스: actorFace("actor_fs_iris"),
     "천문대장 하넬": "easyrpg-faceset-people2-04",
-    // 발렌 — 칩 짝 얼굴(푸른 머리띠)의 흉상은 광대 모자라 다른 사람으로 읽힌다. 수염 난 검은 머리 흉상(작은 얼굴 칸 대신).
-    "심문관 발렌": "shared-actor2-mustache-expressions-bust-base",
+    // 발렌 — 칩(푸른 장발·금테·검은 갑옷·남색 망토)에 맞춰 같은 화풍으로 새로 그린 흉상(cast-portrait 하네스, 2026-10-25).
+    "심문관 발렌": "shared-fs-inquisitor-valen-expressions-bust-base",
     // 두건 쓴 광신도 — 복면 흉상.
     "교단 광신도": "shared-actor2-masked-expressions-bust-base",
     "광신도 설교자": "shared-actor2-masked-expressions-bust-base",
@@ -2467,6 +2467,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyNorthForest(project);
   // 숲 구역별 조우 표 — 모든 맵 구성 뒤(숲 맵 작업이 표를 다시 써도 이 표가 이긴다). 지형·이벤트는 건드리지 않는다.
   applyFallenAreaEncounters(project);
+  // 랜덤 조우 끄기·보이는 적 채우기·덮치기·자동 전투 없음·전투 뒤 상태 해제·세이브 포인트 전용(fallen/act1Finale.ts, 조수 도구).
+  applyFallenFieldRules(project, execTool);
 
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
