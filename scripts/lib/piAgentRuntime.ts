@@ -1042,6 +1042,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let imagesStripped = false;
   let lastRequestHadImages = false;
   let emptyRetries = 0;
+  // 이 실행이 사용자에게 글로 된 답을 한 번이라도 냈나 — 없이 «정상» 끝나면 빈 보고로 정착시키지 않는다.
+  let answered = false;
   const agent: PiLoopDriver = localLoop ?? new Agent({
     transformContext: async (messages: unknown[]) => {
       lastRequestHadImages = messagesHaveImages(messages);
@@ -1190,10 +1192,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         .filter((part): part is { type: "text"; text: string } => !!part && typeof part === "object" && (part as { type?: string }).type === "text")
         .map((part) => part.text)
         .join("");
-      if (text.trim()) emit({ type: "assistant", text });
+      if (text.trim()) { emit({ type: "assistant", text }); answered = true; }
       usage = addPiAgentUsage(usage, message.usage);
       // 글도 도구 호출도 없는 «정상 끝» = 제공자가 답을 못 만든 것. 끝난 차례로 두지 않고 한 번 더 묻는다(그림이 원인이면 그림을 빼고).
-      if (!fatal && !options.signal?.aborted && isEmptyAssistantReply(message)) {
+      // 로컬 CLI 는 도구 호출 블록·사용량 결과를 내용 없는 message_end 로 알린다 — 빈 답으로 보지 않는다(끝에 보고가 없으면 아래 run.no_answer).
+      if (!localLoop && !fatal && !options.signal?.aborted && isEmptyAssistantReply(message)) {
         const imageCause = lastRequestHadImages && !imagesStripped;
         if (imageCause) imagesStripped = true;
         if (imageCause || emptyRetries < 1) {
@@ -1550,6 +1553,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   }
   emitMapDelta();
   if (fatal && toolCalls === 0) throw Object.assign(new Error(fatal), { status: 502 });
+  // 글 답 없이 끝난 실행(2026-10-25 romance-seoul-v2: 적용 대기 46분 중단 뒤 다음 차례들이 20초 만에 빈 답으로 «정착»했다).
+  // 빈 보고로 두지 않고, 무엇을 했는지와 함께 «보고 없이 끝났다»고 정직하게 남긴다.
+  if (!fatal && !answered && !options.signal?.aborted) {
+    const note = toolCalls
+      ? `AI 가 도구를 ${toolCalls}번 쓴 뒤 보고 없이 끝났습니다(오류 ${toolErrors}번). 요청이 다 됐는지 확인되지 않았습니다 — 결과를 확인하거나 다시 보내 주세요.`
+      : "AI 가 아무 일도 하지 않고 보고 없이 끝났습니다. 요청은 처리되지 않았습니다 — 다시 보내 주세요(같으면 모델을 바꿔 보세요).";
+    emit({ type: "execution_status", name: "run.no_answer", ok: false, summary: note });
+    emit({ type: "assistant", text: note });
+  }
   const interiorProblems = interiorCompletion.inspect(ctx.project, base);
   if (interiorProblems.length) emit({ type: 'error', message: '실내 미완료: ' + JSON.stringify(interiorProblems) });
   const done: PiAgentDoneEvent = {
