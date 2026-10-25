@@ -605,6 +605,112 @@
    ],
    "lint0": [],
    "port": 19531
+  },
+  {
+   "id": "title-intro-legend-chase",
+   "label": "타이틀 앞 전설 추격 인트로",
+   "port": 19532,
+   "lessons": [
+    "title-intro-track",
+    "silhouette-tint",
+    "meteor-particles",
+    "beat-cut-audio"
+   ],
+   "prompt": "몬스터 수집 게임이야. 게임을 켜면 타이틀보다 먼저 20~30초짜리 인트로가 돌게 해 줘. 별똥별이 흐르는 밤하늘 → 전설의 몬스터가 검은 실루엣으로 달 앞을 가로지르고 → 숲가의 스타터 셋이 놀라 하늘을 올려다보고 → 게임 로고가 쾅 박히면서 화면이 번쩍. 아무 키나 누르면 바로 타이틀로.",
+   "requirements": [
+    "system.titleIntro exists and is enabled and skippable (not system.opening)",
+    "total scene duration 20000-30000 ms",
+    "a particles layer with preset meteors",
+    "an image layer with tint (silhouette) crossing the frame via x keys",
+    "three starter monster images with an emote or hop",
+    "a text logo layer with a scale or opacity key plus a camera shake or flash near the same time",
+    "at least one audioCue on the logo beat",
+    "project saves and reloads with the same titleIntro"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "title-screen-runners-press-start",
+   "label": "타이틀: 별 흐르는 밤 + 스타터 달리기 + PRESS START",
+   "port": 19533,
+   "lessons": [
+    "title-parallax-layers",
+    "title-stars",
+    "title-runners",
+    "title-press-start",
+    "title-cover-layer"
+   ],
+   "prompt": "타이틀 화면을 밤 풍경으로 바꿔 줘. 별이 깜빡이며 천천히 흐르고 가끔 별똥별이 지나가게, 하늘은 두 겹이 다른 속도로 흐르게. 스타터 셋이 화면을 가로질러 줄지어 달려가고, 메뉴 대신 「PRESS START」가 깜빡이다가 키를 누르면 메뉴가 나오게 해 줘.",
+   "requirements": [
+    "titleScreen.particles.preset == stars",
+    "at least two backgroundLayers with different scrollXPerSec",
+    "a foreground layer uses fit cover or the background art is not stretched",
+    "titleScreen.runners has 3 entries using the starters' field charsets with staggered delayMs",
+    "titleScreen.pressStart present",
+    "in the shipped player the title shows PRESS START first and the menu after one key"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "professor-region-flyover",
+   "label": "박사 소개: 몬스터 튀어나옴 + 지역 비행",
+   "port": 19534,
+   "lessons": [
+    "opening-monster-pop",
+    "opening-region-pan",
+    "opening-place-labels"
+   ],
+   "prompt": "새 게임을 누르면 나오는 박사 소개를 더 화려하게 해 줘. 박사 대사는 그대로 두고, 스타터를 소개하는 컷에서는 빛 구슬이 터지며 진짜 몬스터 그림이 하나씩 튀어나오게, '이 세계' 이야기를 하는 컷에서는 카메라가 지역 지도 위를 날며 마을 이름이 하나씩 뜨게.",
+   "requirements": [
+    "system.opening narration lines unchanged",
+    "the starter shot has image layers of the starter species front sprites with y/scale keys and a glow or particles burst",
+    "one shot pans the camera over several map pictures with x keys spanning > 600 px",
+    "place-name text layers appear in sequence",
+    "save/reload keeps opening"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "name-gender-showcase",
+   "label": "성별 고르기 + 별빛 쇼케이스 이름 짓기",
+   "port": 19535,
+   "lessons": [
+    "gender-choice-actor-graphic",
+    "name-entry-showcase",
+    "name-control-code"
+   ],
+   "prompt": "게임이 시작되면 박사가 소년인지 소녀인지 묻고, 고른 쪽으로 주인공 모습이 바뀌게 해 줘. 그다음 이름을 짓는데, 평범한 창 말고 별빛 배경에서 주인공이 빙글 돌고 확정하면 반짝 터지는 화려한 이름 입력으로. 이름을 정하면 박사가 그 이름을 불러 줘.",
+   "requirements": [
+    "a choices command with two options, each branch changes the hero graphic (Change Actor Graphic) to different character sheets/cells",
+    "an enterHeroName command with presentation showcase",
+    "a following text line uses \\N[1] (or the hero name control code)",
+    "in the shipped player the showcase overlay shows the hero sprite and the confirm burst"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "pokemon-style-opening",
+   "label": "포켓몬식(3세대) 오프닝 전체: 짧은 밝은 인트로 → 타이틀 → 박사 소개 → 성별·이름 → 작아지며 세계로",
+   "port": 19536,
+   "lessons": [
+    "title-intro-track",
+    "title-runners",
+    "title-press-start",
+    "opening-capsule-pop",
+    "actor-picture",
+    "name-showcase"
+   ],
+   "prompt": "포켓몬식 오프닝 만들어 줘. 전원을 켜면 10초 안쪽으로 맑은 들판에서 스타터들이 뛰노는 짧은 인트로, 그다음 로고와 깜빡이는 PRESS START 타이틀. 새 게임을 누르면 박사가 「어서 와! 몬스터의 세계에 온 걸 환영해」 하며 구슬에서 몬스터를 꺼내 보여 주고, 사람과 몬스터가 함께 사는 세계를 짧게 소개해 줘. 그다음 남자아이/여자아이를 고르고 이름을 지으면, 「모험이 시작된다」 하고 주인공이 작아지며 방으로 들어가게 해 줘. 밤하늘·달·별똥별은 쓰지 마.",
+   "requirements": [
+    "system.titleIntro.enabled and skippable; every scene is an animatic; total durationMs <= 10000",
+    "no titleIntro layer uses particles preset stars or meteors, an image tint, or a night/moon resource",
+    "titleScreen.pressStart present and titleScreen.runners has at least one entry",
+    "system.opening has 3-8 pages, each line <= 22 Korean characters and <= 2 lines, one page shows a monster popping out of a capsule",
+    "the start map's first autorun has a 2-option gender choice that changes the hero graphic and an enterHeroName",
+    "after naming, a showPicture of actor:<hero actor id> shrinks (scale goes down with durationMs >= 500) and the stage pictures are erased",
+    "every animatic composition passes validateOpeningAnimatic and the project saves and reloads"
+   ],
+   "lint0": []
   }
  ]
 }

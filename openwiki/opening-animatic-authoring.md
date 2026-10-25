@@ -405,3 +405,10 @@ hides the campaign and causes unrelated repair attempts in system tasks.
 - **Skip by tap.** The sequence's skip hint is now a `button` (`data-testid="cinematic-skip"`, `data-play-input-owner="play-ui"` so `installPlayPointerBlocker` lets it through); `pointerup` finishes the sequence as `skipped`, same as Esc. It is visible from the first frame (no delayed fade-in: the hint is re-created every shot, so the old 3 s delay hid it for 3 s of each shot).
 - **No black ground at handoff.** `PlayScene.update` returned early while `initialPresentationPending`, so the tile window (`syncRuntimeTileWindow` / `syncTileCulling`) was first built after the cover faded — sprites appeared over a black ground for ~0.6 s. The pending branch now builds the visible tile window (visual only; no time, events or input advance). The first movement after the handoff is the proclamation's authored pan to Valen (`chronoBell.ts`); at 0.7 s it read as a jump, now 1.4 s.
 - **Evidence.** `node scripts/qa/runtime/fallen-opening.capture.mjs <play.json> <out> --skip-test` boots the shipped `player.html`, starts a new game and writes `opening.webm`/`opening.mp4` (1x, trimmed to the opening), `timeline.json` and frames; `--skip-test` taps the skip button in a second boot and checks the map is reached. Playwright video has no audio.
+
+## Title-intro track, silhouettes, meteors (2026-10-25)
+
+- `system.titleIntro` is a second `CinematicSequence` that plays before the title on boot (entry before-title/attract only). Tools take `track: "title-intro"` on `create_opening_animatic_shot`, `configure_opening_entry` and `inspect_opening_timeline`; `configure_title_intro` sets music/enabled/remove. Every other shot tool resolves the shot id across both tracks, so ids must be unique across tracks. Slot `title-intro` in `cinematicWire.ts`.
+- Image layers accept `tint: { color, amount? }` (source-atop fill, amount 1 = flat silhouette).
+- Particle preset `meteors` draws diagonal streaks as a pure function of time.
+- Reference build: `src/project/flagship/astraTitleIntro.ts` (27 s, five beat-aligned shots). Details in `title-opening-effects.md` 「타이틀 앞 인트로 트랙」.

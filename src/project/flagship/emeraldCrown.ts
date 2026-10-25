@@ -1,5 +1,6 @@
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { configureEmeraldMonsterOpening, type EmeraldOpeningPage } from "@/project/emeraldMonsterOpening";
+import { astraIntroCast, buildAstraTitleIntro } from "@/project/flagship/astraTitleIntro";
 import { createMonsterExpedition } from "@/project/examples/monsterExpedition";
 import mapTemplates from "@/project/examples/monsterExpedition/mapTemplates.json";
 import { composeTown, type TownSketch, type TownTemplate } from "@/project/examples/monsterExpedition/townLayouts";
@@ -215,13 +216,13 @@ const MAP_TITLES: Readonly<Record<string, string>> = {
 };
 
 // 첫 인사는 박사가 선 연구소 컷으로, 꺼져 가는 등대 이야기는 바닷가 컷으로(2026-10-21 적대 검수: 인사하는 박사가 화면에 없었다).
+// 박사 소개(포켓몬 3세대 결, 2026-10-25 다시 짬): 환영 → 구슬에서 튀어나오는 몬스터 → 사람과 몬스터가 함께 사는 세계 → 「네 이야기를 들려주렴」.
+// 한 쪽에 두 줄, 줄마다 22자 안. Enter 로 넘기고 Esc 로 건너뛴다. 성별·이름은 이어서 내 방의 박사 무대(emeraldCrownFirstTen)에서 고른다.
 const OPENING_PAGES: EmeraldOpeningPage[] = [
-  { id: "emerald_intro_welcome", shot: "lab", text: "안녕! 만나서 반갑구나.\n나는 오르비스 천문 연구소의 천문박사란다." },
-  { id: "emerald_intro_world", shot: "route", text: "아스트라 군도의 새벽 하늘에는 「여명의 날개」 새떼가\n등대 불빛을 따라 섬과 섬을 건넌단다." },
-  { id: "emerald_intro_lab", shot: "dawn", text: "그런데 요즘 등대가 자꾸 꺼져 가는구나.\n밤막회사가 별모래 신전의 별빛을 모으고 있다더군." },
-  { id: "emerald_intro_companions", shot: "stage", text: "풀의 토리프, 불의 숯꼬미, 물의 아가핀.\n첫 동료는 네가 직접 고르렴." },
-  { id: "emerald_intro_rival", shot: "gym", text: "실바나 체육관의 관장 유림, 그리고 네 소꿉친구 나루도\n너를 기다리고 있단다." },
-  { id: "emerald_intro_departure", shot: "town", text: "다우닝 시티의 네 방에서 모험이 시작된다.\n준비가 되면 연구소로 오렴!" },
+  { id: "emerald_intro_welcome", shot: "welcome", text: "어서 와! 몬스터의 세계에\n온 걸 환영해!" },
+  { id: "emerald_intro_capsule", shot: "capsule", text: "나는 오르비스 연구소의 천문박사.\n몬스터를 연구하고 있단다." },
+  { id: "emerald_intro_world", shot: "together", text: "이 세계에선 사람과 몬스터가\n서로 도우며 함께 살아간단다." },
+  { id: "emerald_intro_companions", shot: "stage", text: "너도 곧 첫 동료를 만나게 될 거야.\n그 전에, 네 이야기를 들려주겠니?" },
 ];
 
 const DAWNING_CITY_SKETCH: TownSketch = {
@@ -1115,6 +1116,25 @@ const STARTER_NOTES: Record<string, string> = {
   mx_species_tidekeeper: "꼬리로 바다 위에 우뚝 서서 해일 같은 볏을 펼친다. 볏 끝의 서리로 거친 파도를 얼려 멈춘다.",
 };
 
+/**
+ * 타이틀 화면(승인안 C): 밤하늘 성운 위로 먼 별·가까운 별 두 겹이 다른 속도로 흐르고, 하늘을 오린 밤 풀밭이 앞에 선다.
+ * 별이 깜빡이며 이따금 별똥별이 긋고, 스타터 셋이 차례로 화면을 가로질러 달린다. 「PRESS START」가 깜빡이고 키를 누르면 메뉴.
+ */
+/**
+ * 밝은 낮 타이틀(포켓몬 3세대 결): 들판 키아트(configureEmeraldMonsterOpening 이 고른 그림·효과) 그대로 두고,
+ * 스타터 셋이 길을 따라 통통 달리며 PRESS START 가 깜빡인다. 아무 키나 누르면 메뉴가 열린다.
+ */
+function configureAstraDayTitle(project: Project): void {
+  const title = project.system.titleScreen;
+  if (!title) return;
+  title.runners = astraIntroCast(project).starters.flatMap((starter, i) => starter.chip
+    ? [{ resourceId: starter.chip.resourceId, characterIndex: starter.chip.index, direction: "right" as const, y: 230 - i * 2, speed: 60, scale: 2, delayMs: 600 + i * 1000, everyMs: 11000, hop: true }]
+    : []);
+  // 논리 y(240 높이 기준) 112 = 산등성이 위 하늘 — 키아트의 여우(논리 y 129~)와 겹치지 않는다(적대 검수 r3).
+  title.pressStart = { text: "PRESS START", blinkMs: 700, y: 112 };
+}
+
+
 export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   const { project } = createMonsterExpedition({ firstGymType: "grass", gymCount: 1 });
 
@@ -1218,7 +1238,10 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   if (project.system.titleScreen) {
     project.system.titleScreen.title = "아스트라 호라이즌";
     project.system.titleScreen.logoSubtitle = "다우닝 시티와 여명의 날개";
+    configureAstraDayTitle(project);
   }
+  // 게임을 켜면 타이틀보다 먼저 도는 맑은 들판 인트로(8.6초, 아무 키나 누르면 타이틀).
+  buildAstraTitleIntro(project);
 
   remapAstraBuildingKits(project);
   const serialized = serialize(project);

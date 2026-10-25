@@ -92,6 +92,7 @@ import {
 import { reliefFieldOf, type ReliefTextureManager } from "@/player/reliefStrips";
 import { reliefPaintsCell, reliefSignature } from "@/project/relief/screen";
 import { reliefGroundFromImage, reliefTilesetImage } from "@/editor/reliefGroundSurface";
+import { nameEntryShowcaseHero } from "@/player/nameEntry/nameEntryShowcase";
 
 interface RenderedTileImage {
   /** 높이 지형 들림을 얹을 때 쓴다. 테스트 스텁은 생략한다. */
@@ -1041,7 +1042,7 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
   // HUD and picture layer directly and never builds or serializes that payload.
   if (!scene.runtimeDom.instrumented) {
     syncVisibleRuntimeHud(scene, project);
-    scene.runtimeDom.syncPictureLayer(scene.session.pictures);
+    scene.runtimeDom.syncPictureLayer(scene.session.pictures, (actorId) => nameEntryShowcaseHero(project, scene.session, actorId));
     return;
   }
   // 계측 부팅(편집기 테스트 플레이·QA)의 상태 미러는 **읽을 때만** 만든다. 매 프레임 이벤트 뷰 전체를
@@ -1056,7 +1057,7 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
     scene.runtimeDom.syncRuntimeState(runtimeStateSnapshot(scene));
   }
   scene.runtimeDom.syncAudioState(scene.session.audio);
-  scene.runtimeDom.syncPictureLayer(scene.session.pictures);
+  scene.runtimeDom.syncPictureLayer(scene.session.pictures, (actorId) => nameEntryShowcaseHero(project, scene.session, actorId));
 }
 
 function syncVisibleRuntimeHud(scene: PlaySceneContext, project: ReturnType<typeof store.getCurrent>): void {

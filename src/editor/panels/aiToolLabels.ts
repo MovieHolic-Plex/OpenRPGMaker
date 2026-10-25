@@ -440,6 +440,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   get_opening_references: inspect("오프닝 참고 자료 읽기", "book"),
   preview_opening_reference: inspect("오프닝 참고 프레임 보기", "eye"),
   configure_opening_entry: system("오프닝 재생 위치 정하기", "gear"),
+  configure_title_intro: system("타이틀 앞 인트로 설정", "gear"),
   create_opening_animatic_shot: build("오프닝 샷 추가", "spark"),
   upsert_opening_layer: build("오프닝 레이어 넣기", "spark"),
   remove_opening_layer: build("오프닝 레이어 빼기", "x"),

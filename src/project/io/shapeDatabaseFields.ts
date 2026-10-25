@@ -99,6 +99,7 @@ export function validateSystem(value: unknown): void {
   requireArray("system.startActorIds", system.startActorIds);
   if (system.fieldHud !== undefined) validateFieldHud(system.fieldHud);
   if (system.opening !== undefined) validateCinematicSequence("system.opening", system.opening);
+  if (system.titleIntro !== undefined) validateCinematicSequence("system.titleIntro", system.titleIntro);
   if (system.gameOver !== undefined) validateGameOverSettings(system.gameOver);
   if (system.captureShakesVariableId !== undefined) requireNonBlankString("system.captureShakesVariableId", system.captureShakesVariableId);
   if (system.defaultGameOverId !== undefined) requireNonBlankString("system.defaultGameOverId", system.defaultGameOverId);
@@ -150,6 +151,8 @@ export function validateSystem(value: unknown): void {
     if (titleScreen.backgroundLayers !== undefined) {
       requireArray("system.titleScreen.backgroundLayers", titleScreen.backgroundLayers);
     }
+    if (titleScreen.runners !== undefined) requireArray("system.titleScreen.runners", titleScreen.runners);
+    if (titleScreen.pressStart !== undefined) requireRecord("system.titleScreen.pressStart", titleScreen.pressStart);
   }
   if (system.monsterCollection !== undefined) requireBoolean("system.monsterCollection", system.monsterCollection);
   if (system.monsterCampaign !== undefined) validateMonsterCampaign(system.monsterCampaign);
@@ -254,7 +257,7 @@ export function validateSystem(value: unknown): void {
 
 function validateCinematicSequence(label: string, value: unknown): void {
   const sequence = requireRecord(label, value);
-  requireOnlyFields(label, sequence, ["enabled", "skippable", "musicResourceId", "scenes", ...(label === "system.opening" ? ["entry"] : [])]);
+  requireOnlyFields(label, sequence, ["enabled", "skippable", "musicResourceId", "scenes", ...(label === "system.opening" || label === "system.titleIntro" ? ["entry"] : [])]);
   requireBoolean(`${label}.enabled`, sequence.enabled);
   requireBoolean(`${label}.skippable`, sequence.skippable);
   if (sequence.musicResourceId !== undefined) requireNonBlankString(`${label}.musicResourceId`, sequence.musicResourceId);
@@ -262,6 +265,7 @@ function validateCinematicSequence(label: string, value: unknown): void {
     const entry = requireRecord(`${label}.entry`, sequence.entry);
     requireOnlyFields(`${label}.entry`, entry, ["mode", "idleMs", "repeatDelayMs"]);
     assert(entry.mode === "new-game" || entry.mode === "before-title" || entry.mode === "attract", `${label}.entry.mode invalid`);
+    assert(label !== "system.titleIntro" || entry.mode !== "new-game", `${label}.entry.mode: a title intro plays before the title (before-title or attract)`);
     for (const key of ["idleMs", "repeatDelayMs"]) if (entry[key] !== undefined) assertSafeIntegerInRange(`${label}.entry.${key}`, entry[key], 1000, 300000);
   }
   const scenes = requireArray(`${label}.scenes`, sequence.scenes);

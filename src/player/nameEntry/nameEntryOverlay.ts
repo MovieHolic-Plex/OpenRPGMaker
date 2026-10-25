@@ -4,6 +4,8 @@
 // Promise<string> 을 반환하며, 확정 시 최종 이름을 resolve 한다.
 
 import { clearChildren, el } from "@/util/dom";
+import { applyCharsetFrameCrop, charsetFrameCropPosition } from "@/assets/charsetFrameCrop";
+import type { NameEntryShowcaseHero } from "@/player/nameEntry/nameEntryShowcase";
 import {
   appendChar,
   charAt,
@@ -24,6 +26,38 @@ export interface NameEntryRequest {
   readonly showInitialName: boolean;
   /** 제목 대신 보일 안내(자유 텍스트 입력). 생략 = "이름 입력". */
   readonly prompt?: string;
+  /** 있으면 별빛 쇼케이스 연출(enterHeroName presentation:"showcase"). hero 가 null 이면 주인공 그림 없이. */
+  readonly showcase?: { readonly hero: NameEntryShowcaseHero | null };
+}
+
+const SHOWCASE_SCALE = 3;
+const SHOWCASE_TURN_MS = 520;
+const SHOWCASE_CONFIRM_MS = 720;
+const SHOWCASE_DIRECTIONS = ["down", "left", "up", "right"] as const;
+
+/** 쇼케이스 무대: 별빛 배경 + 사방으로 도는 주인공(걷는 발) + 확정 반짝이. 정리 함수를 돌려준다. */
+function mountShowcaseStage(overlay: HTMLElement, hero: NameEntryShowcaseHero | null): () => void {
+  const stage = el("div", { class: "name-entry-showcase-stage", dataset: { testid: "runtime-name-entry-showcase" } });
+  stage.append(el("div", { class: "name-entry-showcase-stars" }), el("div", { class: "name-entry-showcase-ring" }));
+  let timer: ReturnType<typeof setInterval> | undefined;
+  if (hero) {
+    const sprite = el("span", { class: "name-entry-showcase-hero", attrs: { role: "img", "aria-hidden": "true" } });
+    applyCharsetFrameCrop(sprite, hero.spriteUrl, { characterIndex: hero.characterIndex, direction: "down", pattern: 1 }, SHOWCASE_SCALE);
+    stage.append(sprite);
+    let tick = 0;
+    const reduced = typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduced) {
+      timer = setInterval(() => {
+        tick += 1;
+        const direction = SHOWCASE_DIRECTIONS[Math.floor(tick / 4) % SHOWCASE_DIRECTIONS.length]!;
+        const pattern = [0, 1, 2, 1][tick % 4]!;
+        sprite.style.backgroundPosition = charsetFrameCropPosition({ characterIndex: hero.characterIndex, direction, pattern }, SHOWCASE_SCALE);
+      }, SHOWCASE_TURN_MS / 4);
+    }
+  }
+  stage.append(el("div", { class: "name-entry-showcase-burst" }));
+  overlay.prepend(stage);
+  return () => { if (timer !== undefined) clearInterval(timer); };
 }
 
 // 공백/특수 문자를 그리드 셀에 알아보기 쉽게 표기한다.
@@ -40,9 +74,11 @@ export function showNameEntry(host: HTMLElement, request: NameEntryRequest): Pro
     let cursor: GridCursor = { row: 0, col: 0 };
 
     const overlay = el("div", {
-      class: "name-entry-overlay",
+      class: `name-entry-overlay${request.showcase ? " name-entry-showcase" : ""}`,
       dataset: { testid: "runtime-name-entry" },
     });
+    let stopShowcase: () => void = () => {};
+    let finishing = false;
 
     const nameBar = el("div", {
       class: "name-entry-bar",
@@ -106,6 +142,8 @@ export function showNameEntry(host: HTMLElement, request: NameEntryRequest): Pro
         for (let colIndex = 0; colIndex < page.rows[rowIndex].length; colIndex += 1) {
           const selected = rowIndex === cursor.row && colIndex === cursor.col;
           keys[flatIndex]?.classList.toggle("selected", selected);
+          // 문자표가 스크롤되므로 방향키로 고른 칸이 늘 보이게 한다.
+          if (selected) keys[flatIndex]?.scrollIntoView?.({ block: "nearest" });
           flatIndex += 1;
         }
       }
@@ -154,11 +192,21 @@ export function showNameEntry(host: HTMLElement, request: NameEntryRequest): Pro
     };
 
     const finish = (): void => {
+      if (finishing) return;
+      finishing = true;
       document.removeEventListener("keydown", onKey, true);
-      overlay.remove();
       // 빈 이름이면 기존 이름을 유지한다(RM2K3 동작).
-      const result = value.trim().length > 0 ? value : request.currentName;
-      resolve(clampName(result, maxLength));
+      const result = clampName(value.trim().length > 0 ? value : request.currentName, maxLength);
+      const close = (): void => {
+        stopShowcase();
+        overlay.remove();
+        resolve(result);
+      };
+      if (!request.showcase) { close(); return; }
+      // 쇼케이스: 확정한 이름을 크게 보이고 반짝이 폭발 뒤 닫는다.
+      syncValue(result);
+      overlay.classList.add("confirmed");
+      setTimeout(close, SHOWCASE_CONFIRM_MS);
     };
 
     const onKey = (event: KeyboardEvent): void => {
@@ -252,6 +300,7 @@ export function showNameEntry(host: HTMLElement, request: NameEntryRequest): Pro
       gridEl,
       controls
     );
+    if (request.showcase) stopShowcase = mountShowcaseStage(overlay, request.showcase.hero);
     host.append(overlay);
     document.addEventListener("keydown", onKey, true);
     focusInput();
