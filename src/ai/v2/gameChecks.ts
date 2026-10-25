@@ -369,6 +369,16 @@ export function gameContentProblems(before: Project, after: Project, task: strin
       problems.push(`[게임 검사 보임] 「${ev.name}」(${ev.id}) 는 조사하는 이벤트인데 그림도 없고 그 칸(${String(raw.x)},${String(raw.y)})에 물건 타일도 없다 — 플레이어 눈에 맨땅이다. list_spatial_designs{kind:'object',query:'비석·돌·분수·나무…'} 로 물건을 찾아 stamp_object 로 그 칸 바로 위(${String(raw.x)},${Number(raw.y) - 1})나 그 칸에 찍거나, 이벤트를 이미 있는 물건 앞으로 move_event 한다.`);
     }
   }
+  // 1c2) 그림 있는 사람의 「그림 없는 기본 페이지」가 말을 한다 — 장면 전에는 빈 바닥인데 결정 키를 누르면 대사가 나온다
+  //   (2026-10-25 장난감 가게 G38: 회상 대역 ev_flashback_* 의 투명 페이지 0 에 「젊은 제페토: …」 한 줄).
+  for (const ev of changed) {
+    if (ev.mapId === "common" || /^ev_(cutscene|escort)_/u.test(ev.id)) continue;
+    const drawn = (pg: Obj) => { const g = obj(pg.graphic); return !!(g && (g.sprite || g.appearanceId)); };
+    if (!ev.pages.some((pg) => drawn(pg as unknown as Obj))) continue;
+    const bare = ev.pages.find((pg) => { const p = pg as unknown as Obj; return !drawn(p) && obj(p.trigger)?.kind === "action" && !((p.conditions as unknown[] | undefined) ?? []).length
+      && ((p.commands as Obj[] | undefined) ?? []).some((c) => c.kind === "text"); });
+    if (bare) problems.push(`[게임 검사 보임] 「${ev.name}」(${ev.id}) 의 그림 없는 기본 페이지가 말을 한다 — 그 사람이 보이기 전에는 빈 바닥인데 결정 키를 누르면 대사가 나온다. 그 페이지의 대사를 비우거나(명령 없음) 보이는 페이지에만 대사를 둔다.`);
+  }
   // 1d) 상점: 사고파는 요청인데 바꾼 이벤트 어디에도 상점 명령이 없다(대장장이가 낮에 대사만 했다 — 2026-10-24 스위트).
   if (/상점|가게|무기점|도구점|잡화점|장사|shop|store/iu.test(task) && /팔|사고|살 수|구매|장사|문을 열|열고|열어|buy|sell/iu.test(task) && !kinds.has("shop")) {
     problems.push("[게임 검사 상점] 요청에 사고파는 상점이 있는데 바꾼 이벤트에 상점 명령(kind:'shop')이 없다 — set_shop_stock 으로 그 NPC 에 상점을 달거나, 시간대 페이지라면 열린 시간 페이지에 {kind:'shop',goods,allowSell:true} 를 넣는다.");

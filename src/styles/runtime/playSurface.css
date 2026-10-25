@@ -300,6 +300,8 @@
 }
 /* 애니메틱 캔버스는 position:absolute 라 static 자막을 덮는다 - 연출 없는 애니메틱 컷도 자막이 캔버스 위에 와야 읽힌다. */
 .cinematic-sequence[data-scene-kind="animatic"] .cinematic-frame:not([data-presented="true"]) .cinematic-narration { position: relative; z-index: 1; }
+/* 자막 트랙이 있는 애니메틱 샷: 글은 캔버스 자막이 그린다 — 상자는 화면 읽기용으로만 남긴다(G49). */
+.cinematic-narration.cinematic-narration--captioned { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; padding: 0; border: 0; background: none; }
 .cinematic-narration:empty { display: none; }
 .cinematic-status {
   position: absolute; bottom: 8px; max-width: 90%;
