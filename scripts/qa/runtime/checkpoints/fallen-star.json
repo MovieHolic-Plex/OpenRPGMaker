@@ -73,18 +73,28 @@
      "ops": [
       {
        "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "hold",
        "dir": "up",
-       "ms": 1600
+       "ms": 2200
       },
       {
        "kind": "hold",
        "dir": "right",
-       "ms": 700
+       "ms": 500
+      },
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 1600
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 400
+       "ms": 600
       }
      ],
      "shot": true
