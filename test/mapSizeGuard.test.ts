@@ -145,7 +145,8 @@ describe("나머지 조수 생성/크기변경 경로", () => {
   ] as const)("%s %o → ok:%s", (tool, args, ok) => {
     const context = ctx();
     const result = runTool(context, tool, { ...args,
-      ...(tool === 'generate_map' ? { tilesetId: 'easyrpg_chipset_combined_town' } : {}) });
+      // 2026-10-07 정리 뒤 generate_map 프로필은 Scarloxy 만 남았다(mapGenerationProfiles.ts) — 합본 마을은 unsupported-tileset.
+      ...(tool === 'generate_map' ? { tilesetId: 'scarloxy_chipset_grassland' } : {}) });
     expect(result.ok, result.summary).toBe(ok);
     if (!ok) {
       expectRejection(result.summary);

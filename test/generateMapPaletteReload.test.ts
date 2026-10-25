@@ -7,7 +7,6 @@ import { passableFlag, blockedFlag } from "@/project/tilesetPassage";
 import { sha256HexText } from "@/util/sha256";
 import type { Project } from "@/project/types";
 import type { ElectronBridgeSession, SharedWire } from "./support/electronBridgeSession";
-import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 // 저장소만 바꿔 끼운다. 와이어 직렬화·store 로드 정규화·변이 추적·영수증·generate_map 은 전부 실제 코드다.
 let session: ElectronBridgeSession | null = null;
@@ -28,12 +27,14 @@ describe("generator real store palette identity", () => {
     "%s -> real save receipt -> fresh load has identical rules and no migration", async mode => {
       // Prevent unrelated debounce autosaves; every operation is explicitly awaited.
       vi.useFakeTimers();
-      wire.current = serialize(withRetiredEasyRpgTilesets(createBlankProject()));
+      wire.current = serialize(createBlankProject());
       const store = await freshStore();
       await store.load();
       await store.flush();
       const ctx = { project: structuredClone(store.getCurrent()) };
-      const ts = ctx.project.tilesets.easyrpg_chipset_combined_town!;
+      // 2026-10-07 정리 뒤 generate_map 프로필은 Scarloxy 셋만 남았다(mapGenerationProfiles.ts). 옛 합본 마을 자리는
+      // wilds(동굴=wilds 배치)가, native-upper 는 grassland(장애물 48 이 upper 고체)가 맡는다. 385 는 두 프로필 모두 쓰지 않는 칸이다.
+      const ts = ctx.project.tilesets.scarloxy_chipset_wilds!;
       if (mode === "authored-lower" || mode === "authored-upper") {
         const lower = mode === "authored-lower";
         setTileLayerOverride(ts, 385, lower ? "lower" : "upper");
@@ -44,7 +45,7 @@ describe("generator real store palette identity", () => {
       const result = runTool(ctx, "generate_map", {
         name: "지하실", theme: "cave", id: "map_cellar", entrance: { y: 8, x: 1 },
         pois: [{ x: 9, y: 2 }], border: "wall", height: 10, width: 12,
-        ...(mode === "native-upper" ? { tilesetId: "scarloxy_chipset_grassland" } : { tilesetId: "easyrpg_chipset_combined_town" }),
+        ...(mode === "native-upper" ? { tilesetId: "scarloxy_chipset_grassland" } : { tilesetId: "scarloxy_chipset_wilds" }),
       });
       expect(result.ok, result.summary).toBe(true);
       expect(ctx.project.tilesets).toEqual(rulesBefore);
