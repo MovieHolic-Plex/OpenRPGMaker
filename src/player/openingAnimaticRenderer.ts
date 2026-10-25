@@ -688,11 +688,14 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
         for (const cue of a.audioCues ?? []) {
           let audio = cues.get(cue.id); const active = t >= cue.atMs && t < cue.atMs + cue.durationMs;
           if (active && !audio) {
-            const url = resolveAssetResourceUrl(cue.resourceId, { project: options.project }); if (!url) { stop(); options.onError('오디오 큐 없음: ' + cue.resourceId); return; }
+            // 소리 문제는 그림을 멈추지 않는다 — 큐 하나가 못 울려도 컷은 끝까지 돈다(2026-10-25: 짧은 효과음이 로딩 중
+            // pause 되며 play() 가 AbortError 로 거절되자 컷 전체가 멈추고 화면에 「자동재생 차단」 글이 떴다). 문제는 data-audio-issue 에 남긴다.
+            const audioIssue = (why: string) => { canvas.dataset.audioIssue = `${why}:${cue.resourceId}`; };
+            const url = resolveAssetResourceUrl(cue.resourceId, { project: options.project }); if (!url) { audioIssue('missing'); cues.set(cue.id, canvas.ownerDocument.createElement('audio')); continue; }
             audio = canvas.ownerDocument.createElement('audio'); audio.src = url; audio.loop = cue.loop ?? false; audio.dataset.testid = 'animatic-audio-cue'; audio.dataset.cueId = cue.id; audio.volume = animaticCueVolume(cue, t); canvas.parentElement?.append(audio); cues.set(cue.id, audio);
             audio.addEventListener('loadedmetadata', () => { if (!stopped && audio!.duration > 0 && Number.isFinite(audio!.duration)) { const offset = (cue.offsetMs ?? 0) / 1000 + Math.max(0, view.performance.now() - started - cue.atMs) / 1000; audio!.currentTime = audio!.loop ? offset % audio!.duration : Math.min(offset, audio!.duration); } }, { once: true, signal });
-            audio.addEventListener('error', () => { if (!stopped) { stop(); options.onError('오디오 큐 로딩 실패: ' + cue.resourceId); } }, { once: true, signal });
-            void audio.play().catch(() => { if (!stopped) { stop(); options.onError('오디오 큐 자동재생 차단: ' + cue.resourceId); } });
+            audio.addEventListener('error', () => { if (!stopped) audioIssue('load'); }, { once: true, signal });
+            void audio.play().catch((error: unknown) => { if (!stopped && (error as { name?: string } | null)?.name !== 'AbortError') audioIssue('blocked'); });
           }
           if (audio) { audio.volume = animaticCueVolume(cue, t); if (!active) audio.pause(); }
         }

@@ -1,7 +1,6 @@
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { configureEmeraldMonsterOpening, type EmeraldOpeningPage } from "@/project/emeraldMonsterOpening";
 import { astraIntroCast, buildAstraTitleIntro } from "@/project/flagship/astraTitleIntro";
-import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import { astraArt } from "@/assets/astraOpeningArt";
 import { createMonsterExpedition } from "@/project/examples/monsterExpedition";
 import mapTemplates from "@/project/examples/monsterExpedition/mapTemplates.json";
@@ -372,26 +371,7 @@ function startInBedroom(project: Project, introEvent: GameEvent | undefined): vo
   intro.x = start.x;
   intro.y = start.y;
   intro.id = "mx_map_home_house_2f_opening";
-  // 박사 소개의 끝(승인안 B): 소년·소녀를 고르고, 별빛 쇼케이스에서 이름을 짓는다. 소녀는 주인공 시트 대신 캡 소녀 칩(마을 NPC 가 쓰지 않는 칸).
-  const changeHeroGraphic = (value: string): Command => {
-    const entry = M2_COMMAND_CATALOG.find((candidate) => candidate.title === "Change Actor Graphic" && candidate.index <= 97);
-    if (!entry) throw new Error("[astra] Change Actor Graphic 명령을 찾지 못했다");
-    return { kind: "m2Command", commandId: entry.id, fields: { target: "actor_hero", value } };
-  };
   const commands: Command[] = [
-    textCommand("그럼, 이제 너에 대해 조금 알려 주겠니?", "천문박사"),
-    {
-      kind: "choices",
-      prompt: "너는 소년이니, 소녀니?",
-      options: [
-        { text: "소년", branch: [changeHeroGraphic("oprn-charset-scarloxy-people14#2")] },
-        { text: "소녀", branch: [changeHeroGraphic("oprn-charset-scarloxy-people10#3")] },
-      ],
-      cancelBehavior: "disallow",
-    },
-    textCommand("좋아. 그럼 이름은 뭐라고 부르면 될까?", "천문박사"),
-    { kind: "enterHeroName", actorId: "actor_hero", maxLength: 6, showInitialName: false, presentation: "showcase" },
-    textCommand("\\N[1]! 멋진 이름이구나.\n자, \\N[1]의 이야기가 이제 막 시작된단다!", "천문박사"),
     textCommand("오늘은 첫 동료를 받는 날!"),
     textCommand("방향키로 걷고, Z/Enter로 말을 걸고, X/Esc로 메뉴를 연다."),
     { kind: "setSwitch", switchId: "mx_intro", value: true },

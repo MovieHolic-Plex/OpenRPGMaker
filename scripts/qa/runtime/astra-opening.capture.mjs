@@ -98,6 +98,30 @@ try {
     report.marks.profEnd = Date.now() - t0;
     await page.waitForTimeout(2500);
     await page.screenshot({ path: shotName("after-prof", Date.now() - t0) });
+    // 4) 방 첫 이벤트: 소년/소녀 고르기 → 별빛 쇼케이스 이름 짓기. 대사는 Enter 로 넘기고, 선택지에선 아래(소녀)를 고른다.
+    report.marks.nameStart = Date.now() - t0;
+    for (let i = 0; i < 24 && !(await present(page, "[data-testid='runtime-name-entry']")); i++) {
+      const choice = await page.locator("[data-testid*='choice']").count().catch(() => 0);
+      if (choice > 0 && !report.marks.choiceShot) { report.marks.choiceShot = true; await page.screenshot({ path: shotName("choice", Date.now() - t0) }); await page.keyboard.press("ArrowDown"); await page.waitForTimeout(250); }
+      await page.keyboard.press("Enter");
+      await page.waitForTimeout(800);
+    }
+    report.marks.nameEntry = await present(page, "[data-testid='runtime-name-entry']");
+    if (report.marks.nameEntry) {
+      await page.waitForTimeout(1200);
+      await page.keyboard.type("루나", { delay: 200 });
+      await page.waitForTimeout(1400);
+      await page.screenshot({ path: shotName("name-showcase", Date.now() - t0) });
+      await page.keyboard.press("Enter");
+      await page.waitForTimeout(260);
+      await page.screenshot({ path: shotName("name-confirm", Date.now() - t0) });
+      await page.waitForTimeout(1600);
+      await page.screenshot({ path: shotName("name-after", Date.now() - t0) });
+      await page.keyboard.press("Enter");
+      await page.waitForTimeout(1500);
+      await page.screenshot({ path: shotName("name-after2", Date.now() - t0) });
+    }
+    report.marks.nameEnd = Date.now() - t0;
   }
   const video = page.video();
   await context.close();
@@ -107,6 +131,7 @@ try {
   if (report.marks.introSeen) cut(src, "intro", Math.max(0, report.marks.introStart - 200), report.marks.introEnd + 400);
   cut(src, "title", report.marks.titleStart, report.marks.titleEnd);
   if (withProfessor && report.marks.profStart) cut(src, "professor", report.marks.profStart, report.marks.profEnd + 1000);
+  if (report.marks.nameEntry) cut(src, "naming", report.marks.nameStart, report.marks.nameEnd);
 } finally {
   await writeFile(join(out, "timeline.json"), JSON.stringify(report, null, 1));
   console.log(JSON.stringify({ marks: report.marks, intro: report.introShots, prof: report.professorShots, errors: report.errors.slice(0, 5), console: report.console.slice(0, 5) }));

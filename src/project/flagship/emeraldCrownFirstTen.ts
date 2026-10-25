@@ -2,6 +2,7 @@ import type { Command, GameEvent, Project } from "@/project/types";
 import { castTheAstraHorizon } from "./emeraldCrownCast";
 import { isLedgeCell } from "@/project/collision";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 
 /**
  * 아스트라 호라이즌 첫 10분(타이틀 → 내 방 → 엄마 → 연구소 → 스타터 → 라이벌 → 1번 도로 → 실바나 체육관) 다듬기.
@@ -42,11 +43,38 @@ function replaceText(event: GameEvent | undefined, from: RegExp, to: Command[]):
   }
 }
 
+/**
+ * 소년·소녀 고르기 → 별빛 쇼케이스 이름 짓기 → 박사가 이름을 불러 준다. 소녀는 마을 NPC 가 쓰지 않는 칸(캡 소녀)을 입는다.
+ * 고른 모습은 Change Actor Graphic 으로 세션에 남아 맵·메뉴·이름 쇼케이스가 함께 따른다.
+ */
+function heroIntroductionCommands(): Command[] {
+  const entry = M2_COMMAND_CATALOG.find((candidate) => candidate.title === "Change Actor Graphic" && candidate.index <= 97);
+  if (!entry) throw new Error("[astra] Change Actor Graphic 명령을 찾지 못했다");
+  const wear = (value: string): Command => ({ kind: "m2Command", commandId: entry.id, fields: { target: "actor_hero", value } });
+  return [
+    text("그럼, 이제 너에 대해 조금 알려 주겠니?", "천문박사"),
+    {
+      kind: "choices",
+      prompt: "너는 소년이니, 소녀니?",
+      options: [
+        { text: "소년", branch: [wear("oprn-charset-scarloxy-people14#2")] },
+        { text: "소녀", branch: [wear("oprn-charset-scarloxy-people10#3")] },
+      ],
+      cancelBehavior: "disallow",
+    },
+    text("좋아. 그럼 이름은 뭐라고 부르면 될까?", "천문박사"),
+    { kind: "enterHeroName", actorId: "actor_hero", maxLength: 6, showInitialName: false, presentation: "showcase" },
+    text("\\N[1]! 멋진 이름이구나.\n자, \\N[1]의 이야기가 이제 막 시작된단다!", "천문박사"),
+  ];
+}
+
 /** 내 방 — 오늘 무슨 날인지 한 줄, 조작은 짧은 안내 한 줄. */
 function polishBedroom(project: Project): void {
   const intro = eventOf(project, "mx_map_home_house_2f", "mx_map_home_house_2f_opening");
   for (const page of intro?.pages ?? []) {
     page.commands = [
+      // 박사 소개의 끝(2026-10-25 승인안 B): 소년·소녀를 고르고 별빛 쇼케이스에서 이름을 짓는다.
+      ...heroIntroductionCommands(),
       // 한 쪽에 한 생각(적대 검수 m1: 문장 가운데서 쪽이 넘어갔다).
       text("드디어 오늘! 박사님께 첫 동료를 받는 날이다."),
       text("창밖에서는 「여명의 날개」 새들이 길을 잃은 듯 맴돌고 있다."),

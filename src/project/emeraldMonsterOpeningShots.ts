@@ -150,10 +150,11 @@ function stageShot(cast: EmeraldOpeningCast): OpeningAnimatic {
         particles: { preset: 'sparks', count: 22, seed: 70 + i, speed: 22, size: 1.6 }, keys: { opacity: [{ atMs: burst, value: 1 }, { atMs: land + 1400, value: 0, ease: 'ease-in' }] } },
       { id: `starter-${i}-shadow`, kind: 'shape', shape: 'ellipse', role: 'prop', space: 'screen', color: '#0b1420', x: x + 24, y: rest + MONSTER - 14, width: MONSTER - 48, height: 12,
         keys: { opacity: [{ atMs: 0, value: 0 }, { atMs: land, value: 0 }, { atMs: land + 80, value: 0.35 }] } },
-      { id: `starter-${i}`, kind: 'image', role: 'actor', characterRole: 'monster', space: 'screen', resourceId: starter.frontResourceId, sampling: 'nearest', x, y: STAGE.height + 8, width: MONSTER, height: MONSTER,
+      { id: `starter-${i}`, kind: 'image', role: 'actor', characterRole: 'monster', space: 'screen', resourceId: starter.frontResourceId, sampling: 'nearest', x: cx, y: STAGE.height + 8 + MONSTER, width: MONSTER, height: MONSTER,
+        // 발밑 기준점(가운데 아래) — 착지 때 눌렸다 펴지는 squash 가 땅에 붙어 일어난다. y 키는 발끝 자리.
         anchorX: 0.5, anchorY: 1,
         keys: {
-          y: [{ atMs: at, value: STAGE.height + 8 }, { atMs: at + 340, value: rest - 28, ease: 'ease-out' }, { atMs: land, value: rest, ease: 'ease-in' }, ...bob],
+          y: [{ atMs: at, value: STAGE.height + 8 + MONSTER }, { atMs: at + 340, value: rest - 28 + MONSTER, ease: 'ease-out' }, { atMs: land, value: rest + MONSTER, ease: 'ease-in' }, ...bob.map(k => ({ ...k, value: k.value + MONSTER }))],
           scaleX: [{ atMs: at, value: 0.6 }, { atMs: at + 200, value: 1 }, { atMs: land, value: 1 }, { atMs: land + 70, value: 1.18, ease: 'ease-out' }, { atMs: land + 220, value: 1, ease: 'ease-in-out' }],
           scaleY: [{ atMs: at, value: 0.6 }, { atMs: at + 200, value: 1.08 }, { atMs: land, value: 1 }, { atMs: land + 70, value: 0.82, ease: 'ease-out' }, { atMs: land + 220, value: 1, ease: 'ease-in-out' }],
         } },
@@ -206,9 +207,11 @@ function regionShot(cast: EmeraldOpeningCast): OpeningAnimatic {
     const c = centers[i]!, at = camX[i]!.atMs, from = Math.max(0, at - 700), to = Math.min(ms, at + 1300);
     if (!name) return [];
     return [
-      { id: `pin-${i}`, kind: 'glow', role: 'effect', color: '#ffe27a', blend: 'lighter', x: c.x - 22, y: c.y - 22, width: 44, height: 44, startMs: from, endMs: to,
+      { id: `pin-${i}`, kind: 'glow', role: 'effect', color: '#ffe27a', blend: 'lighter', x: c.x - 14, y: c.y - 14, width: 28, height: 28, startMs: from, endMs: to,
         glow: { inner: 0.4, pulse: { hz: 2, amount: 0.3, pattern: 'pulse', seed: i } }, keys: { opacity: [{ atMs: from, value: 0 }, { atMs: from + 200, value: 1 }, { atMs: to - 250, value: 1 }, { atMs: to, value: 0 }] } },
       { id: `label-${i}`, kind: 'text', role: 'credit', text: name, color: '#fff6d8', x: c.x - 120, y: c.y - 56, width: 240, height: 24, startMs: from, endMs: to,
+        // 기준점을 적어 둬야 렌더러의 「가운데 정렬 글이 화면 밖으로 넘치면 화면 가운데로」 보정이 세계 좌표 이름표를 끌고 가지 않는다.
+        anchorX: 0, anchorY: 0,
         typography: { fontSize: 17, weight: 900, align: 'center' }, keys: { opacity: [{ atMs: from, value: 0 }, { atMs: from + 220, value: 1 }, { atMs: to - 250, value: 1 }, { atMs: to, value: 0 }], y: [{ atMs: from, value: c.y - 48 }, { atMs: from + 260, value: c.y - 56, ease: 'ease-out' }] } },
     ];
   });
