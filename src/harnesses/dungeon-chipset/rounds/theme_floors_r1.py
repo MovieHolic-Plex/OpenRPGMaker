@@ -23,7 +23,7 @@ WAVE = 'theme_arcane'
 
 # 글자: e 가장 깊은 홈(ostone0) · d 홈/이음(ostone0) · b 바탕(ostone1) · c 판 빛(ostone2) · m 판 윗변 빛(ostone3, 드묾)
 #       k 금·가장자리 그늘(ostone0) · v 빛 핏줄(arcane1) · V 핏줄 심(arcane2)
-LEG = {'A1': L('b:ostone1 c:ostone2 m:ostone3 d:ostone0 e:ostone0 k:ostone0 v:arcane1 V:arcane2'),
+LEG = {'A1': L('b:ostone1 c:ostone2 m:ostone3 h:ostone4 d:ostone0 e:ostone0 k:ostone0 v:arcane1 V:arcane2'),
        'A2': L('b:ostone1 c:ostone2 m:ostone3 d:ostone0 e:ostone0 k:ostone0 v:arcane1 V:arcane2')}
 
 # 가장자리 틀: 빛 쪽(북·서 d) = 밝은 턱 ostone2, 그늘 쪽(동·남 k) = ostone0 — 먹 윤곽 대신 재질 명암
@@ -136,21 +136,66 @@ A1_VEIN = {3: [((10, 3), (12, 5), (13, 7))]}
 
 
 def a1_body(i):
-    f = [[_wave(x, y, _phase(0)) * (1 - min(1.0, max(0, min(x, y, 15 - x, 15 - y) - 1) / 3.0))
-          + _wave(x, y, _phase(i + 5)) * min(1.0, max(0, min(x, y, 15 - x, 15 - y) - 1) / 3.0)
-          for x in range(16)] for y in range(16)]
-    g = [['c' if f[y][x] > 0.6 else 'b' for x in range(16)] for y in range(16)]
-    g = _clean(g, 6)
+    """판마다 바탕 한 단(둘레에 닿는 판은 모든 몸통이 같은 1단 — 이음 없음, 속 판은 2·3단 번갈아),
+    위·왼 홈 밑 = 빛 한 단 위(2화소 이상 줄), 아래·오른 홈 위 = 그늘 한 단 아래, 판 속 2×2 결(한 단 차)."""
     G = {p for seg in A1_LAYOUTS[i] for p in poly(*seg)}
-    for x, y in G:
-        g[y][x] = 'd'
-    for x, y in G:                                   # 판 위·왼 모서리 빛(홈 아래·오른)
-        X, Y = x, (y + 1) % 16
-        if (X, Y) not in G:
-            g[Y][X] = 'c'
+    reg = [[-1] * 16 for _ in range(16)]
+    n = 0
+    tone = {}
+    for sy in range(16):
+        for sx in range(16):
+            if (sx, sy) in G or reg[sy][sx] >= 0:
+                continue
+            st, cells, edge = [(sx, sy)], [], False
+            reg[sy][sx] = n
+            while st:
+                x, y = st.pop()
+                cells.append((x, y))
+                edge |= x in (0, 15) or y in (0, 15)
+                for X, Y in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+                    if 0 <= X < 16 and 0 <= Y < 16 and (X, Y) not in G and reg[Y][X] < 0:
+                        reg[Y][X] = n
+                        st.append((X, Y))
+            tone[n] = 1 if edge else (2 if (n + i) % 3 else 3)
+            n += 1
+    t = [[0 if (x, y) in G else tone[reg[y][x]] for x in range(16)] for y in range(16)]
+    base = [r[:] for r in t]
+    for y in range(16):
+        for x in range(16):
+            b = base[y][x]
+            if not b:
+                continue
+            up = (x, (y - 1) % 16) in G or (x, (y - 2) % 16) in G and b == 3
+            lf = ((x - 1) % 16, y) in G
+            dn = (x, (y + 1) % 16) in G
+            rt = ((x + 1) % 16, y) in G
+            if up or lf:
+                t[y][x] = b + 1
+            elif dn or rt:
+                t[y][x] = b - 1 if b > 1 else 0 if False else max(b - 1, 1) if b > 1 else 1
+    for k in range(5):                                # 판 속 2×2 결(위치는 몸통마다 다름)
+        gx = (i * 5 + k * 7) % 12 + 2
+        gy = (i * 3 + k * 11) % 12 + 2
+        d = 1 if k % 2 else -1
+        cells = [(gx, gy), (gx + 1, gy), (gx, gy + 1), (gx + 1, gy + 1), (gx + 2, gy)]
+        if all(base[Y][X] and t[Y][X] == base[Y][X] for X, Y in cells):
+            for X, Y in cells:
+                t[Y][X] = max(1, min(4, base[Y][X] + d))
+    for _ in range(2):                                # 외톨이 한 화소 → 이웃 다수
+        h = [r[:] for r in t]
+        for y in range(16):
+            for x in range(16):
+                if not t[y][x]:
+                    continue
+                nb = [t[(y + dy) % 16][(x + dx) % 16] for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))]
+                if t[y][x] not in nb:
+                    h[y][x] = max(sorted(set(v for v in nb if v)), key=nb.count)
+        t = h
+    g = [['deb' 'cmh'[0:0] + 'dbcmh'[v] if False else 'dbcmh'[v] for v in r] for r in t]
     for seg in A1_CRACKS.get(i, []):
         for x, y in poly(*seg):
-            g[y][x] = 'k'
+            if (x, y) not in G:
+                g[y][x] = 'k'
     pts = [p for seg in A1_VEIN.get(i, []) for p in poly(*seg)]
     for x, y in pts:
         g[y][x] = 'v'

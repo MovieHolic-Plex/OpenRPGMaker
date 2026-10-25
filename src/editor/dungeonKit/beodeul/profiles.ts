@@ -94,7 +94,7 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
     ...GRAMMAR.temple,
     face: { h3: T("face-temple-3h"), h2: T("face-temple-2h") },
     // 이끼 판석(floor-ruin)은 두 칸뿐이고 이끼가 칸마다 같은 자리라 16px 격자로 되풀이됐다(2026-10-25 floor VQA r3) — 신랑(큰 홀) 한 방만, 나머지는 잔잔한 석회 판석.
-    floor: { base: T("floor-trav"), mix: true, patches: [], byKind: { nave: T("floor-ruin") } },
+    floor: { base: T("floor-trav"), mix: true, patches: [] },   // 신랑 이끼 판석도 뺐다 — 한 칸이 신랑 전체에 약 200번 되풀이됐다(2026-10-25 floor VQA r4 ruins)
   },
   mine: {
     ...GRAMMAR.mine,
