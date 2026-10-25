@@ -21,14 +21,14 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { Project, TileGroupMetadata, TilesetDef } from "@/project/types";
-import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 
 const EXAMPLE = { mapId: "map_1", rect: { x: 0, y: 0, w: 8, h: 6 }, material: "벤치" };
 const SYMMETRIC = { axis: "vertical", symmetric: true } as const;
 const PLAIN = { axis: "vertical", symmetric: false } as const;
 
 function project(): Project {
-  return withRetiredEasyRpgTilesets(createBlankProject());
+  return withRetiredCombinedTownMaps(createBlankProject());
 }
 
 function tileset(proj = project()): TilesetDef {

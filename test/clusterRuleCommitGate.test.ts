@@ -3,7 +3,7 @@ import { commitChangeset } from "@/editor/tools/changeset";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import type { ClusterRule, GameMap, Project, TileGroupMetadata } from "@/project/types";
-import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 
 const MAP_ID = "map_cluster_gate";
 
@@ -45,7 +45,7 @@ function clusterGroup(): TileGroupMetadata {
 }
 
 function projectForGate(): { readonly map: GameMap; readonly project: Project } {
-  const project = withRetiredEasyRpgTilesets(createBlankProject());
+  const project = withRetiredCombinedTownMaps(createBlankProject());
   const map = project.maps[project.startMapId] ?? mapForGate();
   for (const candidate of Object.values(project.maps)) {
     candidate.lowerTiles.fill(TILE.GRASS);

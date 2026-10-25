@@ -4,7 +4,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { createBlankMap, createBlankProject } from "@/project/defaults";
 import type { ClusterRule, GameMap, Project, TileGroupMetadata } from "@/project/types";
-import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+import { useRetiredCombinedTown, withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 
 function at(map: GameMap, x: number, y: number): number {
   return y * map.width + x;
@@ -30,9 +30,9 @@ function adjacencyGroup(): TileGroupMetadata {
 }
 
 function twoMapProject(): { readonly project: Project; readonly left: GameMap; readonly right: GameMap } {
-  const project = withRetiredEasyRpgTilesets(createBlankProject());
-  const left = createBlankMap("map-left", 6, 6);
-  const right = createBlankMap("map-right", 6, 6);
+  const project = withRetiredCombinedTownMaps(createBlankProject());
+  const left = useRetiredCombinedTown(createBlankMap("map-left", 6, 6));
+  const right = useRetiredCombinedTown(createBlankMap("map-right", 6, 6));
   project.maps = { [left.id]: left, [right.id]: right };
   project.mapTree = { mapId: left.id, children: [{ mapId: right.id, children: [] }] };
   project.startMapId = left.id;
@@ -43,7 +43,7 @@ function twoMapProject(): { readonly project: Project; readonly left: GameMap; r
 
 describe("AI 타일 커밋 핫패스", () => {
   it("createDraft는 타일 버퍼를 원본과 분리해 복사한다", () => {
-    const project = withRetiredEasyRpgTilesets(createBlankProject());
+    const project = withRetiredCombinedTownMaps(createBlankProject());
     const map = project.maps[project.startMapId];
     if (!map) throw new Error("시작 맵이 없습니다");
     map.lowerTiles[0] = 3;
@@ -59,7 +59,7 @@ describe("AI 타일 커밋 핫패스", () => {
   });
 
   it("skipRoundtrip 커밋은 직렬화 실패를 차단 사유로 쓰지 않는다", () => {
-    const project = withRetiredEasyRpgTilesets(createBlankProject());
+    const project = withRetiredCombinedTownMaps(createBlankProject());
     Object.defineProperty(project, "boom", {
       enumerable: true,
       get() {
