@@ -59,6 +59,13 @@ export const DUNGEON_CEILING_GROUPS = ["beodeul_dungeon_ceiling", "beodeul_dunge
  * 키트가 없는 옛 사본은 예전 천장·운하 물·용암 무늬로 물러선다(경고 없음 — 기본 동작). spec.rockLine 으로 줄을 고르거나 none 으로 끈다.
  */
 export const GAP_ROCK_LINE: Partial<Record<DungeonType, "A" | "B" | "C">> = { cave: "A", mine: "B", volcano: "C", ice: "C" };
+/**
+ * 전용 바위 재질(줄 A/B/C 대신): 이 종류는 이 재질의 윗면 오토타일·앞면 키트를 먼저 쓰고, 없는 옛 사본이면 GAP_ROCK_LINE 줄로 물러선다.
+ * 얼음 동굴(gap.ice_rock, gap-ice-r2) = 서리 낀 바위 윗면 `beodeul_dungeon_ice_rock` + 앞면 `bd-dg-ice-rock-face` · `-face-single` · `-face-mid`(48px 덩이).
+ */
+export const GAP_ROCK_MATERIAL: Partial<Record<DungeonType, { readonly group: string; readonly face: string }>> = {
+  ice: { group: "beodeul_dungeon_ice_rock", face: "bd-dg-ice-rock-face" },
+};
 export const GAP_KIT = {
   door: "bd-dg-door-closed", doorOpen: "bd-dg-door-open", leverUp: "bd-dg-lever-up", leverDown: "bd-dg-lever-down",
   windowDark: "bd-dg-tower-window-dark", windowLit: "bd-dg-tower-window-lit",
@@ -123,9 +130,15 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const autos = new Map((ts.autotileGroups ?? []).map((g) => [g.id, g] as const));
   // gap 바위 줄: 바위 윗면 오토타일 + 앞면 키트가 둘 다 있어야 쓴다. 앞면이 2단이라 벽 높이도 2줄이다.
   const gapLine = spec.rockLine === "none" ? null : (spec.rockLine ?? GAP_ROCK_LINE[type] ?? null);
-  const rockGroup = gapLine ? autos.get(`beodeul_dungeon_rock_${gapLine}`) : undefined;
-  const rockFace = gapLine && hasKit(`bd-dg-rock-${gapLine}-face`) ? kits.get(`bd-dg-rock-${gapLine}-face`)! : undefined;
-  const rockSingle = gapLine && hasKit(`bd-dg-rock-${gapLine}-face-single`) ? kits.get(`bd-dg-rock-${gapLine}-face-single`)! : undefined;
+  // 종류 전용 재질(얼음 동굴 등)은 줄을 직접 고르지 않았을 때만, 윗면 오토타일과 앞면 키트가 둘 다 구워져 있을 때만 쓴다 — 아니면 줄 바위.
+  const material = spec.rockLine === undefined ? GAP_ROCK_MATERIAL[type] : undefined;
+  const useMaterial = !!(material && autos.has(material.group) && hasKit(material.face));
+  const rockFaceId = useMaterial ? material!.face : gapLine ? `bd-dg-rock-${gapLine}-face` : "";
+  const rockGroup = useMaterial ? autos.get(material!.group) : gapLine ? autos.get(`beodeul_dungeon_rock_${gapLine}`) : undefined;
+  const rockFace = rockFaceId && hasKit(rockFaceId) ? kits.get(rockFaceId)! : undefined;
+  const rockSingle = rockFaceId && hasKit(`${rockFaceId}-single`) ? kits.get(`${rockFaceId}-single`)! : undefined;
+  // 48px 가운데 덩이(3칸 폭, 2단): 벽 줄 첫 칸부터 센 순번 % 3 열 — 끝 마구리 다음 칸이 언제나 열 1 이라 마구리와 덩이가 이어진다.
+  const rockMid = rockFaceId && hasKit(`${rockFaceId}-mid`) ? kits.get(`${rockFaceId}-mid`)! : undefined;
   const useRock = !!(rockGroup && rockFace);
   const WR = useRock ? 2 : WALL_ROWS;
   const gapWater = useRock && gapLine ? autos.get(`beodeul_dungeon_water_${gapLine}`) : undefined;
@@ -252,6 +265,13 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
       // gap 바위 앞면 2단: 열 0 서끝 · 1 가운데 · 2 동끝, 한 칸 폭 벽은 홑칸 키트
       const left = x > 0 && wallB[idx(x - 1, y)] === b, right = x + 1 < W && wallB[idx(x + 1, y)] === b;
       const rr = rockFace!.rows[1 - b]!.tiles;
+      if (left && right && rockMid && rockMid.rows.length === 2) {
+        let run = 0;
+        while (x - run - 1 >= 0 && wallB[idx(x - run - 1, y)] === b) run += 1;
+        const mr = rockMid.rows[1 - b]!.tiles;
+        lower[idx(x, y)] = mr[run % mr.length]!;
+        continue;
+      }
       lower[idx(x, y)] = !left && !right && rockSingle ? rockSingle.rows[1 - b]!.tiles[0]! : left && right ? rr[1]! : !left && right ? rr[0]! : left && !right ? rr[2]! : rr[1]!;
       continue;
     }
