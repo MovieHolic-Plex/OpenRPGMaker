@@ -10,7 +10,8 @@ import { usesRelationshipMenu } from "@/project/relationshipMenu";
 import { simulateBattle } from "@/battle/simulate";
 import { lockBypasses, placeholderTexts, selfRevealingLocks, unjoinedFollowers } from "./puzzleChecks";
 import { splitScriptSpeaker } from "@/project/endingSummary";
-import { oversizedSprites } from "./lookChecks";
+import { wantsWholeGame } from "./shipChecks";
+import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMismatch } from "./lookChecks";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -698,6 +699,13 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   }
   // 그림 크기(J23): 보스가 아닌데 파티보다 훨씬 크게 그린 칩.
   problems.push(...oversizedSprites(before, after));
+  // 그림 ↔ 이름(J35·J30·J41): 젊은 인물에 노인 얼굴, 인형·태엽 병정에 사람 얼굴, 하얀 드레스에 분홍 드레스 칩.
+  problems.push(...lookMismatches(before, after));
+  // 타이틀 그림 ↔ 시대(J38): 이번에 타이틀을 바꿨을 때만.
+  if (JSON.stringify(before.system.titleScreen ?? null) !== JSON.stringify(after.system.titleScreen ?? null)) problems.push(...titleBackdropMismatch(after, task));
+  // 주인공 모습 ↔ 장르(J43): 게임을 만드는 요청은 출하 검사(hero-look)가 이미 짚는다. 그 밖에는 이번에 장소(맵)를 새로 지은 실행만 —
+  // 시작 위치 옮기기 같은 작은 고치기에서 시키지 않은 주인공 바꾸기를 시키지 않는다.
+  if (!wantsWholeGame(task) && Object.keys(after.maps).some((id) => !before.maps[id])) problems.push(...pristineFantasyHero(after, task));
   return problems;
 }
 
