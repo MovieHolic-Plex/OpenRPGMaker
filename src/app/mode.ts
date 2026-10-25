@@ -196,7 +196,8 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     && typeof window !== "undefined"
     && new URLSearchParams(window.location.search).get("play") === "1"
     && new URLSearchParams(window.location.search).has("demo");
-  const playAtBoot = demoPlayAtBoot || (!modeMounted && takeStartPlayRequest(window.location, window.history));
+  // 바로 위 demoPlayAtBoot 처럼 window 가 없는 부팅(헤드리스·노드 테스트)을 견딘다 — 예전에는 여기서 ReferenceError 로 부팅이 멈췄다(ci-full 40165485978, modeTransitions).
+  const playAtBoot = demoPlayAtBoot || (!modeMounted && typeof window !== "undefined" && takeStartPlayRequest(window.location, window.history));
   // 데스크톱 시작 화면의 「만들기」로 막 만든 폴더면, 거기서 고른 장르를 채택·저장하고 한 문장을 조수에게 넘긴다.
   // 시작 화면이 이미 「어떤 게임을 만들까요?」를 물었으므로 캔버스 브리핑은 다시 띄우지 않는다.
   const startHandoff = modeMounted ? null : await applyStartScreenHandoffAtBoot();
