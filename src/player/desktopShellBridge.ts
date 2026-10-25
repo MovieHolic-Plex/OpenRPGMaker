@@ -312,22 +312,18 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
   let active = true;
 
   const dispatchSyntheticKey = (type: "keydown" | "keyup", key: string, code: string): void => {
+    // One event, on the focused element, so it bubbles through document to window once.
+    // A second copy dispatched on window made one pad press confirm twice: the first
+    // event already reaches window listeners (battle, tactics). That second event also
+    // has target=window, so a text-field guard that looks at event.target let it through
+    // while the player was typing. Battle then treated one A press as command + target.
     const target = document.activeElement instanceof HTMLElement ? document.activeElement : document.body;
-    const event = new KeyboardEvent(type, {
+    target.dispatchEvent(new KeyboardEvent(type, {
       key,
       code,
       bubbles: true,
       cancelable: true,
-    });
-    target.dispatchEvent(event);
-    window.dispatchEvent(
-      new KeyboardEvent(type, {
-        key,
-        code,
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
+    }));
   };
 
   const poll = (): void => {
