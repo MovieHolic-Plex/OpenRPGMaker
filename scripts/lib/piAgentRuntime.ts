@@ -52,7 +52,8 @@ import { presentationArtIds, presentationArtImages } from '../../src/editor/tool
 // 이 파일 하나를 다시 쓰면 된다.
 
 import { Agent, type StreamFn } from "@oh-my-pi/pi-agent-core";
-import { streamSimple } from "@oh-my-pi/pi-ai";
+import { streamSimple, validateToolArguments } from "@oh-my-pi/pi-ai";
+import { repairToolArgs, repeatedShapeHint } from "../../src/ai/piAgent/argRepair.ts";
 import type { RoleModel } from "../../src/ai/modelRoles.ts";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import { codexVersionFetch } from "./codexClientVersion.ts";
@@ -544,15 +545,44 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       if (note) result.content.unshift({ type: "text", text: `[${note}]` });
       return result;
     } });
+  // 인자 모양 고치기(src/ai/piAgent/argRepair.ts) — 코어 검증을 느슨하게 하고 여기서 검증한다. 맞는 호출은 그대로 지나가고,
+  // 실패한 호출만 뜻이 분명한 모양 실수(감싸는 객체 빠뜨림·안쪽 칸 바깥에 둠·목록 항목 id 빠뜨림)를 고쳐 한 번 더 검증한다.
+  // 같은 도구가 연달아 모양 오류를 내면 오류 끝에 필수 칸 모양을 붙인다(2026-10-25: 같은 인자로 13번 실패).
+  const shapeFailures = new Map<string, number>();
+  const withArgRepair = (tool: PiToolShape): PiToolShape => (!tool.parameters ? tool : { ...tool, lenientArgValidation: true, async execute(id, params, signal) {
+    const check = (args: unknown) => validateToolArguments(tool as never, { type: "toolCall", id, name: tool.name, arguments: args as Record<string, unknown> } as never);
+    let valid: unknown;
+    try {
+      valid = check(params);
+    } catch (error) {
+      const repaired = repairToolArgs(tool.parameters, params);
+      let fixed: unknown;
+      let repairedError: unknown;
+      if (repaired.changes.length) { try { fixed = check(repaired.args); } catch (again) { repairedError = again; } }
+      if (fixed === undefined) {
+        const failures = (shapeFailures.get(tool.name) ?? 0) + 1;
+        shapeFailures.set(tool.name, failures);
+        // 모양을 고친 뒤에도 틀리면 고친 쪽 오류가 더 가깝다(남은 빈칸만 말한다) — 무엇을 고쳤는지 함께 알린다.
+        const message = repairedError
+          ? `[인자 모양 고침: ${repaired.changes.join(" · ")} — 그래도 남은 오류]\n${repairedError instanceof Error ? repairedError.message : String(repairedError)}`
+          : error instanceof Error ? error.message : String(error);
+        throw new Error(failures >= 2 ? `${message}${repeatedShapeHint(tool.name, tool.parameters, failures)}` : message);
+      }
+      valid = fixed;
+      emit({ type: 'execution_status', name: 'tool.args.repaired', ok: true, summary: `${tool.name}: 인자 모양을 고쳐 실행 — ${repaired.changes.join(" · ")}`, data: { toolCallId: id, tool: tool.name, changes: repaired.changes } });
+    }
+    shapeFailures.delete(tool.name);
+    return tool.execute(id, valid, signal);
+  } });
   const wrapTool = (tool: PiToolShape): PiToolShape => {
     const wrapped = wrapCoreTool(withHandInteriorEdits(tool));
     const live = options.liveProject;
-    return live ? { ...wrapped, async execute(id, params, signal) {
+    return withArgRepair(live ? { ...wrapped, async execute(id, params, signal) {
       if (liveDepth++ === 0) ownProject = ctx.project;
       ctx.project = cloneProjectSharingSharedDictionaries(live());
       try { return await wrapped.execute(id, params, signal); }
       finally { if (--liveDepth === 0) ctx.project = ownProject; }
-    } } : wrapped;
+    } } : wrapped);
   };
   const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_map_background', 'generate_image_asset', 'run_ffmpeg', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources'].includes(tool.name) ? tool : ({ ...tool,
     async execute(id, params, signal) {
