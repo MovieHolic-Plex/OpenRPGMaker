@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.346.4 — 2026-10-26
+
+### 수정
+
+- **ai** — send find_tools to the tools that author party splits, snow paths, journals, and timed escapes (#3577) (`005e9e0`)
+- **player** — name the storage chest dialog and label its quantity field (#3576) (`6ec1bec`)
+
 ## 0.346.3 — 2026-10-26
 
 ### 수정
