@@ -4,6 +4,9 @@
 // 암호 → 「이미 통과」 페이지 없음·선언 안 한 깃발. 모델이 「됐다」고 말해도 이 검사가 남은 문제를 끝맺음 관문에 올린다.
 // 순수 함수(before·after·요청 글) — 워커·테스트가 같이 부른다.
 import type { Command, Project } from "@/project/types";
+import { choiceMetaTag } from "@/project/choiceText";
+import { fieldMenu } from "@/project/fieldMenu";
+import { usesRelationshipMenu } from "@/project/relationshipMenu";
 import { simulateBattle } from "@/battle/simulate";
 import { lockBypasses, placeholderTexts, selfRevealingLocks, unjoinedFollowers } from "./puzzleChecks";
 
@@ -379,6 +382,21 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     const bare = ev.pages.find((pg) => { const p = pg as unknown as Obj; return !drawn(p) && obj(p.trigger)?.kind === "action" && !((p.conditions as unknown[] | undefined) ?? []).length
       && ((p.commands as Obj[] | undefined) ?? []).some((c) => c.kind === "text"); });
     if (bare) problems.push(`[게임 검사 보임] 「${ev.name}」(${ev.id}) 의 그림 없는 기본 페이지가 말을 한다 — 그 사람이 보이기 전에는 빈 바닥인데 결정 키를 누르면 대사가 나온다. 그 페이지의 대사를 비우거나(명령 없음) 보이는 페이지에만 대사를 둔다.`);
+  }
+  // 1c3) 선택지 문구에 제작 메모 꼬리표 — 「(엔딩)」「(배드 엔딩)」「(+1일)」은 스포일러이자 제작 흔적이다(2026-10-25 판정 J37).
+  //   런타임도 보여 줄 때 걷지만(playerChoiceText), 저작본에서 지워야 편집기·대화 기록에도 남지 않는다.
+  for (const r of cmds) {
+    if (r.cmd.kind !== "choices" || !Array.isArray(r.cmd.options)) continue;
+    const tagged = (r.cmd.options as Obj[]).map((o) => ({ text: String(o?.text ?? ""), tag: choiceMetaTag(String(o?.text ?? "")) })).filter((o) => o.tag);
+    if (tagged.length) problems.push(`[게임 검사 선택지] 「${r.ev.name}」(${r.ev.id}) 의 선택지에 제작 메모가 보인다: ${tagged.slice(0, 3).map((o) => `「${o.text}」`).join(" · ")} — 플레이어 문구에서 ${tagged.map((o) => o.tag).filter((t, i, a) => a.indexOf(t) === i).join("·")} 를 지운다(엔딩·날짜 경과는 선택 뒤 장면이 보여 준다).`);
+  }
+  // 1c4) 전투 없는 이야기 메뉴인데 전투를 넣었다 — 스킬·장비가 메뉴에 없어 전투 준비를 못 한다.
+  {
+    const menu = fieldMenu(after);
+    const commands = new Set(menu?.entries.map((e) => e.command) ?? []);
+    if (menu && !commands.has("skills") && !commands.has("equipment") && !usesRelationshipMenu(after) && cmds.some((r) => r.cmd.kind === "battleProcessing")) {
+      problems.push("[게임 검사 메뉴] 전투(battleProcessing)를 넣었는데 ESC 메뉴가 전투 없는 이야기용이다 — 스킬·장비·상태를 볼 수 없다. configure_field_menu{preset:'default'} 로 기본 메뉴로 되돌리거나 custom add 로 skills·equipment·status 를 더한다.");
+    }
   }
   // 1d) 상점: 사고파는 요청인데 바꾼 이벤트 어디에도 상점 명령이 없다(대장장이가 낮에 대사만 했다 — 2026-10-24 스위트).
   if (/상점|가게|무기점|도구점|잡화점|장사|shop|store/iu.test(task) && /팔|사고|살 수|구매|장사|문을 열|열고|열어|buy|sell/iu.test(task) && !kinds.has("shop")) {
