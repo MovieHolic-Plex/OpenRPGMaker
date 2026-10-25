@@ -168,7 +168,10 @@ describe("public technical tile passage capability", () => {
     expect(result.stoppedReason).toBe("error");
     expect(result.error).toBe("fixture-dispatch-observed");
     expect(requests).toHaveLength(3);
-    expect(requests[0].tools?.some(tool => tool.function.name === SETTER)).toBe(true);
+    // The first request is narrowed on purpose (the full catalog exceeds the window), so the setter
+    // arrives through find_tools rather than in the opening tool list.
+    expect(requests[0].tools?.some(tool => tool.function.name === "find_tools")).toBe(true);
+    expect(requests[0].tools?.some(tool => tool.function.name === SETTER)).toBe(false);
     expect(events.filter(event => event.type === "tool_call")).toMatchObject([
       { name: "find_tools", result: { ok: true } },
       { name: SETTER, result: { ok: true, data: { tilesetId: TILESET, tile: 1, passable } } },
