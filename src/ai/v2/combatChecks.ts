@@ -92,7 +92,11 @@ export function healingSources(project: Project): string[] {
     }
   }
   for (const [id, n] of Object.entries(project.session.inventory ?? {})) if (n > 0 && items.has(id)) out.push(`시작 소지품 ${id}`);
-  for (const e of project.database.enemies) for (const d of e.drops ?? []) if (d.ratePercent > 0 && items.has(d.itemId)) out.push(`${e.name} 드롭 ${d.itemId}`);
+  for (const e of project.database.enemies) {
+    const r = e.rewards;
+    const drops = r?.drops ?? (r?.dropItemId ? [{ itemId: r.dropItemId, ratePercent: r.dropRatePercent }] : []);
+    for (const d of drops) if (d.ratePercent > 0 && items.has(d.itemId)) out.push(`${e.name} 드롭 ${d.itemId}`);
+  }
   const heals = healingSkillIds(project);
   for (const id of project.system.startActorIds ?? []) {
     const raw = project.database.actors.find((a) => a.id === id);
