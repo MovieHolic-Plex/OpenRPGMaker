@@ -20,8 +20,8 @@ const backdrop = (id: FirstLoveOpeningBackdropId, mapId: string, crop: FirstLove
 });
 
 export const FIRST_LOVE_OPENING_BACKDROPS: readonly FirstLoveOpeningBackdrop[] = [
-  // 거리 남서쪽 블록 — 노란 벚나무·카페 테라스와 보도(맵 아래쪽).
-  backdrop('blossom', 'fl_street', { x: 0, y: 503, width: 528, height: 297 }),
+  // 거리 남동쪽 공원 — 노란 벚나무·잔디·분수와 보도(차도는 왼쪽 끝 한 줄만).
+  backdrop('blossom', 'fl_street', { x: 300, y: 330, width: 500, height: 290 }),
   // 아침 승강장 — 기둥·의자·점자 끝선·선로 두 줄.
   backdrop('subway', 'fl_platform_am', { x: 0, y: 0, width: 528, height: 272 }),
   // 사무층 — 자리 무리·엘리베이터 홀.

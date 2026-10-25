@@ -40,7 +40,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 2600
+       "ms": 5200
       }
      ],
      "shot": true
@@ -80,6 +80,29 @@
        "kind": "hold",
        "dir": null,
        "ms": 700
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "after",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !document.querySelector(\"[data-testid='dialogue-box']\") && (window.__oprnDebug.readState().variables.var_fl_stage ?? 0) >= 2",
+       "maxPresses": 20,
+       "settleMs": 1400
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
       }
      ],
      "shot": true
