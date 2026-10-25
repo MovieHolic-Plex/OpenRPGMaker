@@ -165,43 +165,9 @@ describe("나머지 조수 생성/크기변경 경로", () => {
     expect(context.project.maps.map_resize?.width).toBe(MAX_TOOL_MAP_DIMENSION);
   });
 
-  it("start_dungeon_room_session 은 초대형 방을 거부한다", () => {
-    const context = ctx();
-    const result = runTool(context, "start_dungeon_room_session", {
-      mapId: "map_room_over",
-      theme: "lava",
-      width: OVER,
-      height: OVER,
-    });
-    expect(result.ok).toBe(false);
-    expectRejection(result.summary);
-    expect(context.project.maps.map_room_over).toBeUndefined();
-  });
+  // start_dungeon_room_session / start_interior_room_session cases retired: both tools were removed before the public baseline (2026-10-09).
 
-  it("start_interior_room_session 은 초대형 실내를 거부한다", () => {
-    const context = ctx();
-    const result = runTool(context, "start_interior_room_session", {
-      mapId: "map_interior_over",
-      theme: "bedroom",
-      width: OVER,
-      height: OVER,
-      door: { x: 4, y: OVER - 1 },
-      wings: [{ x: 1, y: 1, w: OVER - 2, h: OVER - 2 }],
-    });
-    expect(result.ok).toBe(false);
-    expectRejection(result.summary);
-    expect(context.project.maps.map_interior_over).toBeUndefined();
-  });
-
-  it("author_village 는 초대형 새 맵 대상을 거부한다", () => {
-    const context = ctx();
-    const result = runTool(context, "author_village", {
-      target: { kind: "new", mapId: "map_village_over", name: "초대형 마을", width: OVER, height: OVER },
-      houseCount: 2,
-    });
-    expect(result.ok).toBe(false);
-    expect(context.project.maps.map_village_over).toBeUndefined();
-  });
+  // author_village case retired: the tool was removed on purpose (CONSTRUCTION_WRITE_SUPERSEDED in src/editor/tools/toolRegistry.ts).
 
   it("build_village/build_castle 은 상한을 넘는 맵을 만들지 않는다", () => {
     const context = ctx();

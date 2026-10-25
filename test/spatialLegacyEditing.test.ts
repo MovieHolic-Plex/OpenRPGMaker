@@ -1,10 +1,10 @@
 // @vitest-environment happy-dom
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { createSpatialAuthoringController } from "@/editor/spatial/actions";
-import { bindSpatialAuthoringControllerFactory, hasAuthoringDraft, visibleAuthoringProject, previewAuthoringDraft, applyAuthoringPreview } from "@/editor/panels/spatialAuthoringAccess";
-import { openDetachedKitPainter, commitLiveOrDraft } from "@/editor/panels/spatialObjectMutations";
+import { bindSpatialAuthoringControllerFactory, hasAuthoringDraft } from "@/editor/panels/spatialAuthoringAccess";
+import { commitLiveOrDraft } from "@/editor/panels/spatialObjectMutations";
 import { renameOwnedKit } from "@/editor/panels/spatialObjectDraft";
 import { resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { renderSpatialSpacesInspector } from "@/editor/panels/spatialSpaceInspector";
@@ -14,8 +14,6 @@ import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { deserialize, serialize } from "@/project/io";
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 
-import { convertLegacySpatialSnapshot } from "@/project/spatial/legacyImport";
-import { resolveSpatialGraphic } from "@/project/spatial/assets";
 import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const previous = store.getCurrent();
@@ -66,24 +64,4 @@ it("copies a builtin room without overwriting an existing authored rule with the
   expect(records[1].id).not.toBe(kind.id);
 });
 
-it("bakes a canonical builtin graphic into a private editable kit and applies through the controller", () => {
-  store.replace(convertLegacySpatialSnapshot(serialize(store.getCurrent())).preview, { preserveEventDrafts: false });
-  const before = store.getCurrent();
-  const object = Object.values(before.spatialAuthoring!.library.objects)
-    .find(entry => resolveSpatialGraphic(before, entry.graphic)?.source === "builtin")!;
-  expect(object).toBeDefined();
-  const refresh = vi.fn();
-  openDetachedKitPainter(object.graphic.tilesetId, object.graphic.kitId, refresh, object.id);
-  expect(document.querySelector("[data-testid='structure-kit-editor']")).not.toBeNull();
-  const edited = visibleAuthoringProject().spatialAuthoring!.library.objects[object.id];
-  expect(edited.graphic.kitId).not.toBe(object.graphic.kitId);
-  expect(store.getCurrent()).toBe(before);
-  expect(resolveSpatialGraphic(visibleAuthoringProject(), edited.graphic)?.source).toBe("authored");
-  const overlay = document.querySelector<HTMLElement>("[data-testid='structure-kit-editor']")!;
-  overlay.click();
-  expect(refresh).toHaveBeenCalledTimes(1);
-  expect(overlay.isConnected).toBe(false);
-  expect(previewAuthoringDraft().kind).toBe("ok");
-  expect(applyAuthoringPreview().kind).toBe("ok");
-  expect(store.getCurrent().spatialAuthoring!.library.objects[object.id].graphic.kitId).toBe(edited.graphic.kitId);
-});
+// The "bakes a canonical builtin graphic" case is retired: builtin graphics need the bundled EasyRPG interior atlas, which the 2026-10-07 copyright purge (#2335) removed.
